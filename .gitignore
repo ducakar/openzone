@@ -1,0 +1,7 @@
+openzone.kdev*
+doxygen
+precompiled.hpp.gch
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+Makefile

@@ -1,0 +1,22 @@
+/*
+ *  $MODULE$.h
+ *
+ *  [description]
+ *
+ *  Copyright (C) 2002-$YEAR$, Davorin Učakar <davorin.ucakar@gmail.com>
+ *
+ *  $Id$
+ */
+
+#pragma once
+
+namespace oz
+{
+
+  class $MODULE$
+  {
+    public:
+
+  };
+
+}

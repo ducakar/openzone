@@ -1,0 +1,20 @@
+/*
+ *  $MODULE$.cpp
+ *
+ *  [description]
+ *
+ *  Copyright (C) 2002-$YEAR$, Davorin Učakar <davorin.ucakar@gmail.com>
+ *
+ *  $Id$
+ */
+
+#include "precompiled.h"
+
+#include "$MODULE$.h"
+
+namespace oz
+{
+
+
+
+}
