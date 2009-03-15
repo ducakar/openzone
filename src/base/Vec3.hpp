@@ -1,5 +1,5 @@
 /*
- *  Vec3.h
+ *  Vec3.hpp
  *
  *  3D vector library
  *
@@ -30,7 +30,7 @@ namespace oz
       *this = *(Vec3*) v;
     }
 
-    // implemented in Quat.h
+    // implemented in Quat.hpp
     explicit Vec3( const Quat &q );
 
     static Vec3 zero()

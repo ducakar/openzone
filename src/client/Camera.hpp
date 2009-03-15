@@ -1,5 +1,5 @@
 /*
- *  Camera.h
+ *  Camera.hpp
  *
  *  [description]
  *

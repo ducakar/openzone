@@ -1,5 +1,5 @@
 /*
- *  Skybox.h
+ *  Skybox.hpp
  *
  *  [description]
  *

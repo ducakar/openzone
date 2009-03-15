@@ -1,5 +1,5 @@
 /*
- *  Client.h
+ *  Client.hpp
  *
  *  [description]
  *

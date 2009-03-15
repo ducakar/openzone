@@ -1,5 +1,5 @@
 /*
- *  Effect.h
+ *  Effect.hpp
  *
  *  [description]
  *

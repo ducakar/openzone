@@ -1,5 +1,5 @@
 /*
- *  Structure.h
+ *  Structure.hpp
  *
  *  [description]
  *

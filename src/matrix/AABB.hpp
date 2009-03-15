@@ -1,5 +1,5 @@
 /*
- *  AABB.h
+ *  AABB.hpp
  *
  *  [description]
  *

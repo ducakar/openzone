@@ -1,5 +1,5 @@
 /*
- *  Item.h
+ *  Item.hpp
  *
  *  [description]
  *

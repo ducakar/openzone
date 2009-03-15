@@ -1,5 +1,5 @@
 /*
- *  Physics.h
+ *  Physics.hpp
  *
  *  Physics engine
  *

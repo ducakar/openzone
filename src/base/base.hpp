@@ -1,8 +1,8 @@
 /*
- *  base.h
+ *  base.hpp
  *
  *  Common include file.
- *  It is included in "precompiled.h", so include the latter instead of this file for faster
+ *  It is included in "precompiled.hpp", so include the latter instead of this file for faster
  *  compiling.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>

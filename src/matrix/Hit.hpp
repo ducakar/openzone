@@ -1,5 +1,5 @@
 /*
- *  Hit.h
+ *  Hit.hpp
  *
  *  [description]
  *

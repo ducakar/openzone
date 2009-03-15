@@ -1,5 +1,5 @@
 /*
- *  Particle.h
+ *  Particle.hpp
  *
  *  [description]
  *

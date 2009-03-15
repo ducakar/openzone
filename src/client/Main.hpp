@@ -1,5 +1,5 @@
 /*
- *  Main.h
+ *  Main.hpp
  *
  *  Game initialization and main loop
  *

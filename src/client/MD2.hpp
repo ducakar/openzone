@@ -1,5 +1,5 @@
 /*
- *  MD2.h
+ *  MD2.hpp
  *
  *  MD2 model class
  *

@@ -1,5 +1,5 @@
 /*
- *  bv.h
+ *  bv.hpp
  *
  *  Bounding volumes
  *

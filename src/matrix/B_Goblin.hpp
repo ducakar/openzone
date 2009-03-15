@@ -1,5 +1,5 @@
 /*
- *  B_Goblin.h
+ *  B_Goblin.hpp
  *
  *  [description]
  *

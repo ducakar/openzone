@@ -1,5 +1,5 @@
 /*
- *  Matrix.h
+ *  Matrix.hpp
  *
  *  World model
  *

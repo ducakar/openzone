@@ -1,5 +1,5 @@
 /*
- *  MD3.h
+ *  MD3.hpp
  *
  *  [description]
  *

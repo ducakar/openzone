@@ -1,5 +1,5 @@
 /*
- *  Frustum.h
+ *  Frustum.hpp
  *
  *  [description]
  *

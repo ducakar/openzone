@@ -1,5 +1,5 @@
 /*
- *  SoundManager.h
+ *  SoundManager.hpp
  *
  *  [description]
  *

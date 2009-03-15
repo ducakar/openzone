@@ -1,5 +1,5 @@
 /*
- *  Mat44.h
+ *  Mat44.hpp
  *
  *  Column-major 4x4 matrix
  *
@@ -465,7 +465,7 @@ namespace oz
 
   };
 
-  // declared in Quat.h
+  // declared in Quat.hpp
   inline Mat44 Quat::rotMat44() const
   {
     // this matrix is in column major format in implementation
@@ -495,7 +495,7 @@ namespace oz
                   0.0f,           0.0f,     0.0f,     1.0f );
   }
 
-  // declared in Quat.h
+  // declared in Quat.hpp
   inline Mat44 Quat::invRotMat44() const
   {
     // this matrix is in column major format in implementation
@@ -525,7 +525,7 @@ namespace oz
                   0.0f,           0.0f,     0.0f,     1.0f );
   }
 
-  // declared in Quat.h
+  // declared in Quat.hpp
   inline Mat33::Mat33( const Mat44 &m ) :
       _00( m._00 ), _01( m._01 ), _02( m._02 ),
       _10( m._10 ), _11( m._11 ), _12( m._12 ),

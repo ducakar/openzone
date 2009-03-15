@@ -1,5 +1,5 @@
 /*
- *  ReuseAlloc.h
+ *  ReuseAlloc.hpp
  *
  *  Reuse allocator
  *  Base class for memory reusing. All classes which inherit from ReuseAlloc will have overloaded

@@ -1,5 +1,5 @@
 /*
- *  SVector.h
+ *  SVector.hpp
  *
  *  Static size vector
  *

@@ -1,5 +1,5 @@
 /*
- *  precompiled.h
+ *  precompiled.hpp
  *
  *  Precompiled header.
  *  It should be included in all ".cpp" source files in the project. Do not include it via another

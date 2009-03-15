@@ -1,5 +1,5 @@
 /*
- *  DList.h
+ *  DList.hpp
  *
  *  Double-linked list
  *  The Type should provide the "prev[INDEX]" and "next[INDEX]" pointers

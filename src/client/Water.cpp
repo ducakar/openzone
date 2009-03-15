@@ -30,7 +30,7 @@ namespace Client
 
   void Water::init()
   {
-    texture = context.loadTexture( "water1.jpg", true );
+    texture = context.loadTexture( "tex/water1.jpg", true );
   }
 
   void Water::update()

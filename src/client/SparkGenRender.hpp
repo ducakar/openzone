@@ -1,5 +1,5 @@
 /*
- *  SparkGenRender.h
+ *  SparkGenRender.hpp
  *
  *  Visual particle generator
  *

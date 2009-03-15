@@ -1,5 +1,5 @@
 /*
- *  Collider.h
+ *  Collider.hpp
  *
  *  [description]
  *

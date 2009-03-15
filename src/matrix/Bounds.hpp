@@ -1,5 +1,5 @@
 /*
- *  Bounds.h
+ *  Bounds.hpp
  *
  *  [description]
  *
@@ -108,7 +108,7 @@ namespace oz
           b.mins.z - eps <= maxs.z && mins.z <= b.maxs.z + eps;
     }
 
-    // implemented in AABB.h
+    // implemented in AABB.hpp
     bool isInside( const AABB &a, float eps = 0.0f ) const;
     bool includes( const AABB &a, float eps = 0.0f ) const;
     bool overlaps( const AABB &a, float eps = 0.0f ) const;

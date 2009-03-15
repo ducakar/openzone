@@ -204,8 +204,8 @@ namespace Client
 
   void Terrain::init()
   {
-    tTerraDetail = context.loadTexture( "detail.jpg" );
-    tTerraMap = context.loadTexture( "map.png" );
+    tTerraDetail = context.loadTexture( "terra/detail.jpg" );
+    tTerraMap = context.loadTexture( "terra/map.png" );
 
 #ifdef __WIN32__
     glMultiTexCoord2i = (PFNGLMULTITEXCOORD2IPROC) SDL_GL_GetProcAddress( "glMultiTexCoord2i" );

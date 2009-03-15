@@ -1,5 +1,5 @@
 /*
- *  Event.h
+ *  Event.hpp
  *
  *  [description]
  *

@@ -1,5 +1,5 @@
 /*
- *  Sphere.h
+ *  Sphere.hpp
  *
  *  [description]
  *

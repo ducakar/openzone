@@ -1,5 +1,5 @@
 /*
- *  OBJ.h
+ *  OBJ.hpp
  *
  *  [description]
  *

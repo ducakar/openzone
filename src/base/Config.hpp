@@ -1,5 +1,5 @@
 /*
- *  Config.h
+ *  Config.hpp
  *
  *  List that reads configuration file
  *

@@ -1,5 +1,5 @@
 /*
- *  Weapon.h
+ *  Weapon.hpp
  *
  *  [description]
  *

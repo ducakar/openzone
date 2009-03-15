@@ -1,5 +1,5 @@
 /*
- *  List.h
+ *  List.hpp
  *
  *  Linked list
  *  The Type should provide the "next[INDEX]" pointer

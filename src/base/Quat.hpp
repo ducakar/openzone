@@ -1,5 +1,5 @@
 /*
- *  Quat.h
+ *  Quat.hpp
  *
  *  Quaternion library
  *
@@ -259,16 +259,16 @@ namespace oz
       return Quat( a.x * k, a.y * k, a.z * k, a.w * k );
     }
 
-    // make rotation matrix (implemented in Mat33.h)
+    // make rotation matrix (implemented in Mat33.hpp)
     Mat33 rotMat33() const;
 
-    // make transposed (inverse) rotation matrix (implemented in Mat33.h)
+    // make transposed (inverse) rotation matrix (implemented in Mat33.hpp)
     Mat33 invRotMat33() const;
 
-    // make rotation matrix (implemented in Mat44.h)
+    // make rotation matrix (implemented in Mat44.hpp)
     Mat44 rotMat44() const;
 
-    // make transposed (inverse) rotation matrix (implemented in Mat44.h)
+    // make transposed (inverse) rotation matrix (implemented in Mat44.hpp)
     Mat44 invRotMat44() const;
 
     // make quaternion for rotation around given axis
@@ -368,7 +368,7 @@ namespace oz
 
   };
 
-  // declared in Vec3.h
+  // declared in Vec3.hpp
   inline Vec3::Vec3( const Quat &q )
   {
     *this = *(Vec3*) &q;

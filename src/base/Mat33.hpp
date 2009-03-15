@@ -1,5 +1,5 @@
 /*
- *  Mat33.h
+ *  Mat33.hpp
  *
  *  Column-major 3x3 matrix
  *
@@ -40,7 +40,7 @@ namespace oz
       *this = *(Mat33*) v;
     }
 
-    // implemented in Mat44.h
+    // implemented in Mat44.hpp
     explicit Mat33( const Mat44 &m );
 
     Mat33( const Vec3 &a, const Vec3 &b, const Vec3 &c ) :
@@ -358,7 +358,7 @@ namespace oz
 
   };
 
-  // declared in Quat.h
+  // declared in Quat.hpp
   inline Mat33 Quat::rotMat33() const
   {
     // this matrix is in column major format in implementation
@@ -386,7 +386,7 @@ namespace oz
                   xz + yw,        yz - xw,  xx1 - yy );
   }
 
-  // declared in Quat.h
+  // declared in Quat.hpp
   inline Mat33 Quat::invRotMat33() const
   {
     // this matrix is in column major format in implementation

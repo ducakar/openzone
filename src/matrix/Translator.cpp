@@ -36,8 +36,10 @@ namespace oz
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
-      textureIndices.add( file->d_name, textures.length() );
-      textures << file->d_name;
+      String fileName = String( "tex/" ) + file->d_name;
+
+      textureIndices.add( fileName, textures.length() );
+      textures << fileName;
     }
     closedir( dir );
 

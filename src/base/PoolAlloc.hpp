@@ -1,5 +1,5 @@
 /*
- *  PoolAlloc.h
+ *  PoolAlloc.hpp
  *
  *  Pool allocator
  *  Base class for allocation of memory for same-size elements. All classes which inherit from

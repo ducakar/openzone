@@ -1,5 +1,5 @@
 /*
- *  D_MetalBarrel.h
+ *  D_MetalBarrel.hpp
  *
  *  [description]
  *

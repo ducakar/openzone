@@ -1,5 +1,5 @@
 /*
- *  SparkGen.h
+ *  SparkGen.hpp
  *
  *  [description]
  *

@@ -1,5 +1,5 @@
 /*
- *  Vector.h
+ *  Vector.hpp
  *
  *  Vector
  *  It can be also used as stack or small set.

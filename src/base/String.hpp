@@ -1,5 +1,5 @@
 /*
- *  String.h
+ *  String.hpp
  *
  *  Immutable string object (similar to Java String)
  *

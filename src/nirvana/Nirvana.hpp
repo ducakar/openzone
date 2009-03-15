@@ -1,5 +1,5 @@
 /*
- *  Nirvana.h
+ *  Nirvana.hpp
  *
  *  [description]
  *

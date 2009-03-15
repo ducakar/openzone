@@ -1,5 +1,5 @@
 /*
- *  MD2StaticModel.h
+ *  MD2StaticModel.hpp
  *
  *  [description]
  *

@@ -1,7 +1,7 @@
 /*
- *  Math.h
+ *  Math.hpp
  *
- *  Replacement for math.h and some other utility functions
+ *  Replacement for math.hpp and some other utility functions
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */

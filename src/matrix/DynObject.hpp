@@ -1,5 +1,5 @@
 /*
- *  DynObject.h
+ *  DynObject.hpp
  *
  *  [description]
  *

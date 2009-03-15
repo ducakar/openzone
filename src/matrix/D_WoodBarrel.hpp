@@ -1,5 +1,5 @@
 /*
- *  D_WoodBarrel.h
+ *  D_WoodBarrel.hpp
  *
  *  [description]
  *

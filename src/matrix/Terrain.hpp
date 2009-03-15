@@ -1,5 +1,5 @@
 /*
- *  Terrain.h
+ *  Terrain.hpp
  *
  *  Matrix structure for terrain
  *

@@ -1,5 +1,5 @@
 /*
- *  Translator.h
+ *  Translator.hpp
  *
  *  [description]
  *

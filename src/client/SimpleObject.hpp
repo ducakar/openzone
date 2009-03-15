@@ -1,5 +1,5 @@
 /*
- *  SimpleObject.h
+ *  SimpleObject.hpp
  *
  *  [description]
  *

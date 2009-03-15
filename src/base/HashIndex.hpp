@@ -1,5 +1,5 @@
 /*
- *  HashIndex.h
+ *  HashIndex.hpp
  *
  *  Chaining hashtable implementation with uint key type.
  *  A prime number is recommended as hashtable size.

@@ -1,5 +1,5 @@
 /*
- *  Font.h
+ *  Font.hpp
  *
  *  Bitmap font loader and print function
  *

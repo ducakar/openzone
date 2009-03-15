@@ -1,5 +1,5 @@
 /*
- *  Context.h
+ *  Context.hpp
  *
  *  [description]
  *
@@ -22,11 +22,9 @@ namespace Client
       struct Texture
       {
         uint id;
-
-        union {
-          int nUsers;
-          int nextSlot;
-        };
+        int nUsers;
+        // TODO union
+        int nextSlot;
       };
 
       struct Sound
@@ -38,17 +36,14 @@ namespace Client
       struct Lists
       {
         uint base;
-
-        union {
-          int count;
-          int nextSlot;
-        };
+        int count;
+        // TODO union
+        int nextSlot;
       };
 
-      Texture         *textures;
-      Sound           *sounds;
-      Sparse<Lists>   lists;
-      Sparse<Texture> bufferTextures;
+      Texture       *textures;
+      Sound         *sounds;
+      Sparse<Lists> lists;
 
       static uint buildTexture( const ubyte *data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
@@ -79,12 +74,25 @@ namespace Client
                             int magFilter = GL_LINEAR_MIPMAP_NEAREST,
                             int minFilter = GL_LINEAR_MIPMAP_NEAREST );
 
-      uint loadTexture( int resource,
+      uint requestTexture( int resource,
+                           bool wrap = true,
+                           int magFilter = GL_LINEAR_MIPMAP_NEAREST,
+                           int minFilter = GL_LINEAR_MIPMAP_NEAREST );
+
+      uint requestNormalmap( int resource,
+                             const Vec3 &lightNormal,
+                             bool wrap = true,
+                             int magFilter = GL_LINEAR_MIPMAP_NEAREST,
+                             int minFilter = GL_LINEAR_MIPMAP_NEAREST );
+
+      void releaseTexture( int resource );
+
+      uint loadTexture( const char *file,
                         bool wrap = true,
                         int magFilter = GL_LINEAR_MIPMAP_NEAREST,
                         int minFilter = GL_LINEAR_MIPMAP_NEAREST );
 
-      uint loadNormalmap( int resource,
+      uint loadNormalmap( const char *file,
                           const Vec3 &lightNormal,
                           bool wrap = true,
                           int magFilter = GL_LINEAR_MIPMAP_NEAREST,
@@ -98,32 +106,6 @@ namespace Client
       uint genList();
       uint genLists( int count );
       void freeLists( uint listId );
-
-      /*
-       * Loading by file name
-       */
-      uint loadTexture( const char *file,
-                        bool wrap = true,
-                        int magFilter = GL_LINEAR_MIPMAP_NEAREST,
-                        int minFilter = GL_LINEAR_MIPMAP_NEAREST )
-      {
-        return loadTexture( translator.getTexture( file ), wrap, magFilter, minFilter );
-      }
-
-      uint loadNormalmap( const char *file,
-                          const Vec3 &lightNormal,
-                          bool wrap = true,
-                          int magFilter = GL_LINEAR_MIPMAP_NEAREST,
-                          int minFilter = GL_LINEAR_MIPMAP_NEAREST )
-      {
-        return loadNormalmap( translator.getTexture( file ), lightNormal, wrap,
-                              magFilter, minFilter );
-      }
-
-      uint loadSound( const char *file )
-      {
-        return loadSound( translator.getSound( file ) );
-      }
 
   };
 

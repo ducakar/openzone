@@ -1,5 +1,5 @@
 /*
- *  Particles.h
+ *  Particles.hpp
  *
  *  Loads and/or generates GL lists for common particles.
  *

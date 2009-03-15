@@ -1,5 +1,5 @@
 /*
- *  World.h
+ *  World.hpp
  *
  *  Matrix data structure for world (terrain, all structures and objects in the world)
  *

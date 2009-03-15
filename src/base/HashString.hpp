@@ -1,5 +1,5 @@
 /*
- *  HashString.h
+ *  HashString.hpp
  *
  *  Chaining hashtable implementation with String key type
  *  A prime number is recommended as hashtable size.

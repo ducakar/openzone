@@ -1,5 +1,5 @@
 /*
- *  BSP.h
+ *  BSP.hpp
  *
  *  BSP level rendering class
  *

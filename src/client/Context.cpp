@@ -138,7 +138,6 @@ namespace Client
     delete[] textures;
     delete[] sounds;
     lists.clear();
-    bufferTextures.clear();
 
     textures = null;
     sounds = null;
@@ -175,16 +174,16 @@ namespace Client
     return texNum;
   }
 
-  uint Context::loadTexture( int resource, bool wrap, int magFilter, int minFilter )
+  uint Context::requestTexture( int resource, bool wrap, int magFilter, int minFilter )
   {
     if( textures[resource].nUsers >= 0 ) {
       textures[resource].nUsers++;
       return textures[resource].id;
     }
 
-    String fileName = String( "tex/" ) + translator.textures[resource];
+    String fileName = translator.textures[resource];
 
-    logFile.print( "Loading texture from file '%s' ...", fileName.cstr() );
+    logFile.print( "Loading registered texture '%s' ...", fileName.cstr() );
 
     SDL_Surface *image = IMG_Load( fileName.cstr() );
     if( image == null ) {
@@ -209,17 +208,17 @@ namespace Client
     return texNum;
   }
 
-  uint Context::loadNormalmap( int resource, const Vec3 &lightNormal,
-                               bool wrap, int magFilter, int minFilter )
+  uint Context::requestNormalmap( int resource, const Vec3 &lightNormal,
+                                  bool wrap, int magFilter, int minFilter )
   {
     if( textures[resource].nUsers >= 0 ) {
       textures[resource].nUsers++;
       return textures[resource].id;
     }
 
-    String fileName = String( "tex/" ) + translator.textures[resource];
+    String fileName = translator.textures[resource];
 
-    logFile.print( "Loading normalmap texture from file '%s' ...", fileName.cstr() );
+    logFile.print( "Loading registerded normalmap texture '%s' ...", fileName.cstr() );
 
     SDL_Surface *image = IMG_Load( fileName.cstr() );
     if( image == null ) {
@@ -242,6 +241,74 @@ namespace Client
     textures[resource].id = texNum;
     textures[resource].nUsers = 1;
     return texNum;
+  }
+
+  void Context::releaseTexture( int resource )
+  {
+    assert( textures[resource].nUsers > 0 );
+
+    textures[resource].nUsers--;
+
+    if( textures[resource].nUsers == 0 ) {
+      glDeleteTextures( 1, (GLuint*) &textures[resource] );
+      textures[resource].nUsers = -1;
+    }
+  }
+
+  uint Context::loadTexture( const char *fileName, bool wrap, int magFilter, int minFilter )
+  {
+    logFile.print( "Loading texture from file '%s' ...", fileName );
+
+    SDL_Surface *image = IMG_Load( fileName );
+    if( image == null ) {
+      logFile.printRaw( " No such file\n" );
+      return 0;
+    }
+    if( image->w != image->h ) {
+      logFile.printRaw( " Dimensions are not equal ..." );
+    }
+    logFile.printRaw( " OK\n" );
+
+//     assert( image->w == image->h );
+
+    int bytesPerPixel = image->format->BitsPerPixel / 8;
+    int texNum = createTexture( (const ubyte*) image->pixels, image->w, image->h,
+                                bytesPerPixel, wrap, magFilter, minFilter );
+
+    SDL_FreeSurface( image );
+
+    return texNum;
+  }
+
+  uint Context::loadNormalmap( const char *fileName, const Vec3 &lightNormal,
+                               bool wrap, int magFilter, int minFilter )
+  {
+    logFile.print( "Loading normalmap texture from file '%s' ...", fileName );
+
+    SDL_Surface *image = IMG_Load( fileName );
+    if( image == null ) {
+      logFile.printRaw( " No such file\n" );
+      return 0;
+    }
+    if( image->w != image->h ) {
+      logFile.printRaw( " Dimensions are not equal" );
+    }
+    logFile.printRaw( " OK\n" );
+
+    assert( image->w == image->h );
+
+    int bytesPerPixel = image->format->BitsPerPixel / 8;
+    int texNum = createNormalmap( (ubyte*) image->pixels, lightNormal, image->w, image->h,
+                                   bytesPerPixel, wrap, magFilter, minFilter );
+
+    SDL_FreeSurface( image );
+
+    return texNum;
+  }
+
+  void Context::freeTexture( uint id )
+  {
+    glDeleteTextures( 1, &id );
   }
 
   uint Context::genList()

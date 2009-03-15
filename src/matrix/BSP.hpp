@@ -1,5 +1,5 @@
 /*
- *  BSP.h
+ *  BSP.hpp
  *
  *  Data structure and loaders for Internal BSP, Quake3 BSP and OpenBSP formats
  *
