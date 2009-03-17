@@ -12,7 +12,7 @@
 
 namespace oz
 {
-namespace Server
+namespace server
 {
 
 

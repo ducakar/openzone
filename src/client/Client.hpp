@@ -10,7 +10,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   struct Settings

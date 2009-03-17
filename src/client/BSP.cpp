@@ -20,7 +20,7 @@ static PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture = null;
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   BSP::BSP()
@@ -102,7 +102,7 @@ namespace Client
     textures = new uint[bsp->nTextures];
     for( int i = 0; i < bsp->nTextures; i++ ) {
       if( bsp->textures[i] != null ) {
-        textures[i] = context.requestTexture( bsp->textures[i], true );
+        textures[i] = context.requestTexture( bsp->textures[i] );
       }
     }
 
@@ -117,8 +117,7 @@ namespace Client
       lightMaps[i] = context.createTexture( bits,
                                             oz::BSP::LIGHTMAP_DIM,
                                             oz::BSP::LIGHTMAP_DIM,
-                                            oz::BSP::LIGHTMAP_BPP,
-                                            true );
+                                            oz::BSP::LIGHTMAP_BPP );
     }
 
     hiddenFaces.setSize( bsp->nFaces );

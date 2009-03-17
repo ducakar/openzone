@@ -37,8 +37,6 @@ namespace oz
     mass = 50.0f;
 
     content = content_;
-
-    model = translator.getModel( "woodBarrel.md2" );
   }
 
   D_WoodBarrel::~D_WoodBarrel()

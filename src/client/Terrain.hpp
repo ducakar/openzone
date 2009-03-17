@@ -16,7 +16,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   struct Quadtree : Sphere

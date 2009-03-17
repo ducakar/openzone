@@ -14,7 +14,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   bool MD3::load( const char * )

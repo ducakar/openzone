@@ -14,7 +14,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   Particles particles;

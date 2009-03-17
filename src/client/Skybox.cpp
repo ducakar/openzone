@@ -14,7 +14,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   void Skybox::drawUpper( uint top, uint front, uint left, uint back, uint right )

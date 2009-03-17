@@ -242,6 +242,16 @@ namespace oz
         return x * ( _1_PI * 180.0f );
       }
 
+      static const int &toBits( const float &f )
+      {
+        return *(int*) &f;
+      }
+
+      static const float &fromBits( const int &b )
+      {
+        return *(float*) &b;
+      }
+
       /**
        * Is power of two?
        */

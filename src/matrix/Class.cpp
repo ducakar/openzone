@@ -1,23 +1,20 @@
 /*
- *  Server.hpp
+ *  Class.cpp
  *
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *
+ *  $Id$
  */
 
-#pragma once
+#include "precompiled.hpp"
+
+#include "Class.hpp"
 
 namespace oz
 {
-namespace Server
-{
 
-  class server
-  {
-    public:
 
-  };
 
-}
 }

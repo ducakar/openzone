@@ -17,7 +17,7 @@
 
 namespace oz
 {
-namespace Server
+namespace server
 {
 
   Main main;
@@ -160,6 +160,6 @@ namespace Server
 
 int main( int, char *[] )
 {
-  oz::Server::main.main();
+  oz::server::main.main();
   return 0;
 }

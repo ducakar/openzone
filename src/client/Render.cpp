@@ -24,7 +24,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   Render render;

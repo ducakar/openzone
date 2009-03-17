@@ -14,7 +14,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   struct MD3Header

@@ -36,13 +36,14 @@ namespace oz
     ANIM_MAX
   };
 
+  // TODO: remove models
   class Translator
   {
     private:
 
-      HashString<int, 1024> textureIndices;
-      HashString<int, 1024> soundIndices;
-      HashString<int, 1024> modelIndices;
+      HashString<int, 223> textureIndices;
+      HashString<int, 223> soundIndices;
+      HashString<int, 223> modelIndices;
 
     public:
 

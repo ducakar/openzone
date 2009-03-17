@@ -2,7 +2,8 @@
  *  HashString.hpp
  *
  *  Chaining hashtable implementation with String key type
- *  A prime number is recommended as hashtable size.
+ *  A prime number is recommended as hashtable size. You can find a list of millions of primes at
+ *  http://www.bigprimes.net/.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */

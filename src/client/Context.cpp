@@ -14,7 +14,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   Context context;
@@ -23,9 +23,9 @@ namespace Client
   {}
 
   uint Context::buildTexture( const ubyte *data, int width, int height, int bytesPerPixel,
-                                      bool wrap, int magFilter, int minFilter )
+                              bool wrap, int magFilter, int minFilter )
   {
-    assert( glGetError() == GL_NO_ERROR );
+//     assert( glGetError() == GL_NO_ERROR );
 
     GLenum format = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
 
@@ -53,19 +53,19 @@ namespace Client
 
     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
-    if( glGetError() != GL_NO_ERROR ) {
-      glDeleteTextures( 1, &texNum );
-      texNum = 0;
-
-      do {
-      }
-      while( glGetError() != GL_NO_ERROR );
-    }
+//     if( glGetError() != GL_NO_ERROR ) {
+//       glDeleteTextures( 1, &texNum );
+//       texNum = ~0;
+//
+//       do {
+//       }
+//       while( glGetError() != GL_NO_ERROR );
+//     }
     return texNum;
   }
 
   uint Context::buildNormalmap( ubyte *data, const Vec3 &lightNormal, int width, int height,
-                                        int bytesPerPixel, bool wrap, int magFilter, int minFilter )
+                                int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
     assert( glGetError() == GL_NO_ERROR );
 
@@ -112,7 +112,7 @@ namespace Client
 
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texNum );
-      texNum = 0;
+      texNum = ~0;
 
       do {
       }
@@ -129,6 +129,13 @@ namespace Client
 
     textures = new Texture[translator.textures.length()];
     sounds = new Sound[translator.sounds.length()];
+
+    for( int i = 0; i < translator.textures.length(); i++ ) {
+      textures[i].nUsers = -1;
+    }
+    for( int i = 0; i < translator.sounds.length(); i++ ) {
+      sounds[i].nUsers = -1;
+    }
   }
 
   void Context::free()
@@ -150,10 +157,12 @@ namespace Client
 
     int texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
 
-    if( texNum == 0 ) {
+    if( texNum == ~0 ) {
       logFile.printRaw( " Error\n" );
     }
-    logFile.printRaw( " OK" );
+    else {
+      logFile.printRaw( " OK\n" );
+    }
 
     return texNum;
   }
@@ -166,10 +175,12 @@ namespace Client
     int texNum = buildNormalmap( data, lightNormal, width, height, bytesPerPixel, wrap,
                                  magFilter, minFilter );
 
-    if( texNum == 0 ) {
+    if( texNum == ~0 ) {
       logFile.printRaw( " Error\n" );
     }
-    logFile.printRaw( " OK" );
+    else {
+      logFile.printRaw( " OK\n" );
+    }
 
     return texNum;
   }
@@ -189,9 +200,6 @@ namespace Client
     if( image == null ) {
       logFile.printRaw( " No such file\n" );
       return 0;
-    }
-    if( image->w != image->h ) {
-      logFile.printRaw( " Dimensions are not equal ..." );
     }
     logFile.printRaw( " OK\n" );
 
@@ -224,9 +232,6 @@ namespace Client
     if( image == null ) {
       logFile.printRaw( " No such file\n" );
       return 0;
-    }
-    if( image->w != image->h ) {
-      logFile.printRaw( " Dimensions are not equal" );
     }
     logFile.printRaw( " OK\n" );
 
@@ -264,9 +269,6 @@ namespace Client
       logFile.printRaw( " No such file\n" );
       return 0;
     }
-    if( image->w != image->h ) {
-      logFile.printRaw( " Dimensions are not equal ..." );
-    }
     logFile.printRaw( " OK\n" );
 
 //     assert( image->w == image->h );
@@ -289,9 +291,6 @@ namespace Client
     if( image == null ) {
       logFile.printRaw( " No such file\n" );
       return 0;
-    }
-    if( image->w != image->h ) {
-      logFile.printRaw( " Dimensions are not equal" );
     }
     logFile.printRaw( " OK\n" );
 

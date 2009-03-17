@@ -37,8 +37,6 @@ namespace oz
     mass = 150.0f;
 
     content = content_;
-
-    model = translator.getModel( "crate1.md2" );
   }
 
   D_BigCrate::~D_BigCrate()

@@ -18,12 +18,6 @@ namespace oz
 {
 
   struct Sector;
-  class Matrix;
-
-  namespace Client
-  {
-    class Model;
-  }
 
   // static object abstract class
   class Object : public AABB
@@ -73,24 +67,27 @@ namespace oz
       // if object can push other objects in orthogonal direction of collision normal
       static const int PUSHING_BIT = 0x00080000;
 
+      // if object is currently fricting
+      static const int FRICTING_BIT = 0x00040000;
+
+      // if object collided in last step
+      static const int HIT_BIT = 0x00020000;
+
       // if the object lies or moves on a structure, terrain or non-dynamic object
       // (if on another dynamic object, we determine that with "lower" index)
-      static const int ON_FLOOR_BIT = 0x00040000;
-
-      // if object is currently fricting
-      static const int FRICTING_BIT = 0x00020000;
+      static const int ON_FLOOR_BIT = 0x00010000;
 
       // if object intersects with water
-      static const int ON_WATER_BIT = 0x00010000;
+      static const int ON_WATER_BIT = 0x00008000;
 
       // if object center is in water
-      static const int UNDER_WATER_BIT = 0x00008000;
+      static const int UNDER_WATER_BIT = 0x00004000;
 
       // if object can climb
-      static const int CLIMBER_BIT = 0x00004000;
+      static const int CLIMBER_BIT = 0x00002000;
 
       // if object is on ladder
-      static const int ON_LADDER_BIT = 0x00002000;
+      static const int ON_LADDER_BIT = 0x00001000;
 
       /*
        *  RENDER FLAGS
@@ -140,15 +137,9 @@ namespace oz
       // effects are similar to events, but must be manually creared (used for continuous sounds)
       List<Effect, 0> effects;
 
-      // graphics model
-      int model;
-      float alpha;
-      int anim;
-
     public:
 
-      Object() : index( -1 ), sector( null ), flags( 0 ), type( -1 ),
-          damage( Math::INF ), rotZ( 0.0f ), alpha( 1.0f )
+      Object() : index( -1 ), sector( null ), flags( 0 ), type( -1 ), damage( Math::INF )
       {}
 
       virtual ~Object()

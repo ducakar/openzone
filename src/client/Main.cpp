@@ -15,17 +15,17 @@
 #include "Render.hpp"
 
 #ifdef WIN32
-#  include <direct.h>
-#  include <sys/types.h>
-#  include <sys/stat.h>
+# include <direct.h>
+# include <sys/types.h>
+# include <sys/stat.h>
 #else
-#  include <unistd.h>
-#  include <sys/stat.h>
+# include <unistd.h>
+# include <sys/stat.h>
 #endif
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   Main main;
@@ -428,6 +428,6 @@ namespace Client
 
 int main( int, char *[] )
 {
-  oz::Client::main.main();
+  oz::client::main.main();
   return 0;
 }

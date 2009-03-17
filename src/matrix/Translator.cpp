@@ -40,6 +40,8 @@ namespace oz
 
       textureIndices.add( fileName, textures.length() );
       textures << fileName;
+
+      logFile.println( "texture: %s", fileName.cstr() );
     }
     closedir( dir );
 
@@ -53,8 +55,12 @@ namespace oz
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
-      soundIndices.add( file->d_name, sounds.length() );
-      sounds << file->d_name;
+      String fileName = String( "snd/" ) + file->d_name;
+
+      soundIndices.add( fileName, sounds.length() );
+      sounds << fileName;
+
+      logFile.println( "sound: %s", fileName.cstr() );
     }
     closedir( dir );
 

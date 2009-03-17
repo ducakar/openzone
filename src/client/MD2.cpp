@@ -20,7 +20,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   struct MD2Header

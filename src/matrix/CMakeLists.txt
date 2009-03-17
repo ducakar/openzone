@@ -10,6 +10,8 @@ add_library( matrix STATIC
   B_Spirit.cpp
   B_Spirit.hpp
   Bot.hpp
+  BotClass.cpp
+  BotClass.hpp
   Bounds.hpp
   Collider.cpp
   Collider.hpp
@@ -23,6 +25,8 @@ add_library( matrix STATIC
   D_WoodBarrel.hpp
   DynObject.cpp
   DynObject.hpp
+  DynObjectClass.cpp
+  DynObjectClass.hpp
   Effect.hpp
   Hit.hpp
   Item.cpp
@@ -37,6 +41,8 @@ add_library( matrix STATIC
   O_Tree2.hpp
   Object.cpp
   Object.hpp
+  ObjectClass.cpp
+  ObjectClass.hpp
   Particle.cpp
   Particle.hpp
   Physics.cpp

@@ -64,8 +64,6 @@ namespace oz
     oldKeys = 0;
 
     mind    = mind_;
-
-    model   = translator.getModel( "goblin.md2" );
   }
 
   void B_Goblin::onUpdate()

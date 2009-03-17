@@ -198,6 +198,8 @@ namespace oz
       else {
         String name = "tex/" + String( texture.name ).substring( 9 ) + ".jpg";
         textures[i] = translator.getTexture( name );
+
+        logFile.println( "%s %d", name.cstr(), textures[i] );
       }
       if( texture.flags != 0 ) {
         textures[i] = ~textures[i];

@@ -23,7 +23,7 @@ static PFNGLACTIVETEXTUREPROC glActiveTexture = null;
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   Quadtree::~Quadtree()

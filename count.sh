@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FILES="src/*/*.h src/*/*.cpp *.sh CMakeLists.txt src/CMakeLists.txt src/*/CMakeLists.txt"
+FILES="src/*/*.hpp src/*/*.cpp *.sh CMakeLists.txt src/CMakeLists.txt src/*/CMakeLists.txt"
 
 wc -cl $FILES
 
@@ -14,3 +14,7 @@ echo $nFiles files
 
 unset nFiles
 unset FILES
+
+if [ -x /usr/bin/sloccount ]; then
+  LANG=C /usr/bin/sloccount src
+fi

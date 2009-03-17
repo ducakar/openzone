@@ -33,8 +33,6 @@ namespace oz
     type = TYPE;
 
     damage = Math::INF;
-
-    model = translator.getModel( "tree2.md2" );
   }
 
   O_Tree1::O_Tree1( float x, float y )
@@ -46,8 +44,6 @@ namespace oz
     type = TYPE;
 
     damage = Math::INF;
-
-    model = translator.getModel( "tree2.md2" );
   }
 
   void O_Tree1::onDestroy()

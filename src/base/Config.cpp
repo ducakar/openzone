@@ -69,39 +69,36 @@ namespace oz
       const char *name = (const char*) xmlTextReaderConstName( reader );
 
       // only check "var" nodes, ignore others
-      if( name != null && String::compare( name, "var" ) == 0 ) {
-        void *pKey = xmlTextReaderGetAttribute( reader, BAD_CAST "name" );
-        void *pValue = xmlTextReaderGetAttribute( reader, BAD_CAST "value" );
+      if( name != null && String::equals( name, "var" ) ) {
+        void *key = xmlTextReaderGetAttribute( reader, BAD_CAST "name" );
+        void *value = xmlTextReaderGetAttribute( reader, BAD_CAST "value" );
 
         // error if "var" tag doesn't has "name" and "value" attributes
-        if( pKey == null || pValue == null ) {
+        if( key == null || value == null ) {
           error = -1;
           break;
         }
-        String key = (const char*) pKey;
-        String value = (const char*) pValue;
+        add( (const char*) key, (const char*) value );
 
         // FIXME VC++ has problems with this WTF???
 #ifndef WIN32
-          ::free( pKey );
-          ::free( pValue );
+        ::free( key );
+        ::free( value );
 #endif
-
-          add( key, value );
       }
       error = xmlTextReaderRead( reader );
     }
     xmlFreeTextReader( reader );
+    xmlCleanupParser();
 
     if( error != 0 ) {
-      xmlCleanupParser();
       logFile.printRaw( " Parse error\n" );
       return false;
     }
-
-    xmlCleanupParser();
-    logFile.printRaw( " OK\n" );
-    return true;
+    else {
+      logFile.printRaw( " OK\n" );
+      return true;
+    }
   }
 
   bool Config::save( const char *file )

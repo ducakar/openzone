@@ -15,7 +15,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   Water water;

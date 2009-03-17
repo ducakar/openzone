@@ -8,9 +8,9 @@
  *  $Id$
  */
 
-#include "precompiled.h"
+#include "precompiled.hpp"
 
-#include "$MODULE$.h"
+#include "$MODULE$.hpp"
 
 namespace oz
 {

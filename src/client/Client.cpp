@@ -19,7 +19,7 @@
 
 namespace oz
 {
-namespace Client
+namespace client
 {
 
   Input input;
@@ -33,14 +33,7 @@ namespace Client
     sscanf( config["input.keys.xSens"], "%f", &settings.keyXSens );
     sscanf( config["input.keys.ySens"], "%f", &settings.keyYSens );
 
-    if( !translator.init() ) {
-      logFile.unindent();
-      logFile.println( "}" );
-      return false;
-    }
-
     matrix.load();
-
     nirvana.load();
 
     return true;

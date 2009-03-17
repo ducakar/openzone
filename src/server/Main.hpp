@@ -15,7 +15,7 @@
 
 namespace oz
 {
-namespace Server
+namespace server
 {
 
   class Main
