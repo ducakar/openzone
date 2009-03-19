@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "Class.hpp"
+
 namespace oz
 {
 
@@ -36,24 +38,23 @@ namespace oz
     ANIM_MAX
   };
 
-  // TODO: remove models
   class Translator
   {
     private:
 
-      HashString<int, 223> textureIndices;
-      HashString<int, 223> soundIndices;
-      HashString<int, 223> modelIndices;
+      HashString<int, 1021> textureIndices;
+      HashString<int, 1021> soundIndices;
 
     public:
 
       Vector<String> textures;
       Vector<String> sounds;
-      Vector<String> models;
 
-      int getTexture( const char *name );
-      int getSound( const char *name );
-      int getModel( const char *name );
+      HashString<Class::InitFunc, 31> baseClasses;
+      HashString<Class*, 251> classes;
+
+      int textureIndex( const char *file );
+      int soundIndex( const char *file );
 
       bool init();
       void free();

@@ -13,6 +13,4 @@
 namespace oz
 {
 
-  Pool<Effect> effectsPool;
-
 }

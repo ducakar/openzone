@@ -10,8 +10,17 @@
 
 #include "Translator.hpp"
 
+#include "ObjectClass.hpp"
+#include "LadderClass.hpp"
+#include "DynObjectClass.hpp"
+#include "BotClass.hpp"
+#include "VehicleClass.hpp"
+
 #include <dirent.h>
 #include <sys/types.h>
+
+#define OZ_REGISTER_BASECLASS( name ) \
+  baseClasses.add( #name, &name##Class::init )
 
 namespace oz
 {
@@ -20,9 +29,16 @@ namespace oz
 
   bool Translator::init()
   {
+    OZ_REGISTER_BASECLASS( Object );
+    OZ_REGISTER_BASECLASS( Ladder );
+    OZ_REGISTER_BASECLASS( DynObject );
+    OZ_REGISTER_BASECLASS( Bot );
+    OZ_REGISTER_BASECLASS( Vehicle );
+
     logFile.println( "Translator mapping resources {" );
     logFile.indent();
 
+    Config classConfig;
     DIR *dir;
     struct dirent *file;
 
@@ -36,7 +52,20 @@ namespace oz
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
-      String fileName = String( "tex/" ) + file->d_name;
+      String name = file->d_name;
+      String fileName = "tex/" + name;
+
+      if( name.length() <= 4  ) {
+        logFile.println( "skipping %s", fileName.cstr() );
+        continue;
+      }
+
+      String extension = name.substring( name.length() - 4 );
+
+      if( extension != ".jpg" && extension != ".png" ) {
+        logFile.println( "skipping %s", fileName.cstr() );
+        continue;
+      }
 
       textureIndices.add( fileName, textures.length() );
       textures << fileName;
@@ -55,7 +84,20 @@ namespace oz
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
-      String fileName = String( "snd/" ) + file->d_name;
+      String name = file->d_name;
+      String fileName = "tex/" + name;
+
+      if( name.length() <= 4  ) {
+        logFile.println( "skipping %s", fileName.cstr() );
+        continue;
+      }
+
+      String extension = name.substring( name.length() - 4 );
+
+      if( extension != ".wav" && extension != ".ogg" ) {
+        logFile.println( "skipping %s", fileName.cstr() );
+        continue;
+      }
 
       soundIndices.add( fileName, sounds.length() );
       sounds << fileName;
@@ -64,17 +106,51 @@ namespace oz
     }
     closedir( dir );
 
-    dir = opendir( "mdl" );
+    dir = opendir( "class" );
     if( dir == null ) {
       free();
-      logFile.println( "Cannot open mdl/" );
+
+      logFile.println( "Cannot open class/" );
       logFile.unindent();
       logFile.println( "}" );
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
-      modelIndices.add( file->d_name, models.length() );
-      models << file->d_name;
+      String name = file->d_name;
+      String fileName = "class/" + name;
+
+      if( name.length() <= 4 ) {
+        logFile.println( "skipping %s", fileName.cstr() );
+        continue;
+      }
+
+      String extension = name.substring( name.length() - 4 );
+
+      if( extension != ".xml" ) {
+        logFile.println( "skipping %s", fileName.cstr() );
+        continue;
+      }
+
+      name = name.substring( 0, name.length() - 4 );
+
+      if( !classConfig.load( fileName ) ) {
+        logFile.println( "invalid config file %s", fileName.cstr() );
+        classConfig.clear();
+        continue;
+      }
+      if( !classConfig.contains( "base" ) ) {
+        logFile.println( "missing base variable" );
+        classConfig.clear();
+        continue;
+      }
+      if( !baseClasses.contains( classConfig["base"] ) ) {
+        logFile.println( "invalid base %s", classConfig["base"].cstr() );
+        classConfig.clear();
+        continue;
+      }
+
+      classes.add( name, baseClasses.cachedValue()( &classConfig ) );
+      classConfig.clear();
     }
     closedir( dir );
 
@@ -84,47 +160,27 @@ namespace oz
     return true;
   }
 
-  int Translator::getTexture( const char *name )
+  int Translator::textureIndex( const char *file )
   {
-    if( textureIndices.contains( name ) ) {
-      return textureIndices.cachedValue();
-    }
-    else {
-      assert( false );
-
-      return -1;
-    }
+    return textureIndices.contains( file ) ?
+        textureIndices.cachedValue() :
+        ( assert( false ), -1 );
   }
 
-  int Translator::getSound( const char *name )
+  int Translator::soundIndex( const char *file )
   {
-    if( soundIndices.contains( name ) ) {
-      return soundIndices.cachedValue();
-    }
-    else {
-      assert( false );
-
-      return -1;
-    }
-  }
-
-  int Translator::getModel( const char *name )
-  {
-    if( modelIndices.contains( name ) ) {
-      return modelIndices.cachedValue();
-    }
-    else {
-      assert( false );
-
-      return -1;
-    }
+    return soundIndices.contains( file ) ?
+        soundIndices.cachedValue() :
+        ( assert( false ), -1 );
   }
 
   void Translator::free()
   {
     textureIndices.clear();
     soundIndices.clear();
-    modelIndices.clear();
+
+    baseClasses.clear();
+    classes.clear();
   }
 
 }

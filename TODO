@@ -1,15 +1,10 @@
 - Object: private (sector, index, lower, ...), friends (World, Collider, ...)
-- static Object::create()
-- register of objects: create( String className )
-- static registration?
+- Context, add Sounds?
+- PHYSFS
+- SoundManager -> Audio
 
 - rotateable structures
-
-- foreach where possible
-
 - Object isUpdated, onUpdateSelf, thread-safe update
-
-- Context, add Sounds?
 
 Matrix/World
   - networking support
@@ -17,6 +12,9 @@ Matrix/World
 
 Render
   - weather
+  - TTF
+  - free camera
+  - 3rd person
 
 Nirvana
   EVERYTHING

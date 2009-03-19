@@ -24,11 +24,10 @@ namespace client
     };
 
     State state;
-    Model *prev[1];
-    Model *next[1];
+
+    static Model *create( Config *config );
 
     virtual void load() = 0;
-
     virtual void draw() = 0;
   };
 

@@ -1,5 +1,5 @@
 /*
- *  BotClass.cpp
+ *  VehicleClass.cpp
  *
  *  [description]
  *
@@ -10,18 +10,18 @@
 
 #include "precompiled.hpp"
 
-#include "BotClass.hpp"
+#include "VehicleClass.hpp"
 
 namespace oz
 {
 
-  Class *BotClass::init( Config* )
+  Class *VehicleClass::init( Config* )
   {
     assert( false );
     return null;
   }
 
-  Object *BotClass::create( const Vec3& )
+  Object *VehicleClass::create( const Vec3& )
   {
     assert( false );
     return null;

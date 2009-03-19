@@ -18,9 +18,6 @@ namespace oz
   {
     public:
 
-      static const float DEFAULT_MASS;
-      static const float DEFAULT_LIFT;
-
       Vec3    velocity;
       Vec3    newVelocity;  // temporary velocity for the next frame
 
@@ -34,8 +31,7 @@ namespace oz
 
     public:
 
-      DynObject() : velocity( Vec3::zero() ), newVelocity( Vec3::zero() ),
-          mass( DEFAULT_MASS ), lift( DEFAULT_LIFT ), lower( -1 )
+      DynObject() : velocity( Vec3::zero() ), newVelocity( Vec3::zero() ), lower( -1 )
       {}
 
       void setInWater( const AABB &water )

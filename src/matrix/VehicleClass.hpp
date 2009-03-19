@@ -1,5 +1,5 @@
 /*
- *  ObjectClass.hpp
+ *  VehicleClass.hpp
  *
  *  [description]
  *
@@ -10,21 +10,15 @@
 
 #pragma once
 
-#include "Class.hpp"
+#include "DynObjectClass.hpp"
+#include "Vehicle.hpp"
 
 namespace oz
 {
 
-  struct ObjectClass : Class
+  // TODO VehicleClass
+  struct VehicleClass : DynObjectClass
   {
-    String  name;
-
-    Vec3    dim;
-    int     flags;
-    int     type;
-    float   damage;
-    String  model;
-
     static Class *init( Config *config );
 
     Object *create( const Vec3 &pos );

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+cat << EOF > CMakeLists.txt
+add_library( matrix STATIC
+EOF
+
+ls *.cpp >> CMakeLists.txt
+
+cat << EOF >> CMakeLists.txt
+)
+
+add_dependencies( matrix precompile )
+EOF

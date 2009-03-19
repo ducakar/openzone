@@ -10,31 +10,33 @@
 
 #pragma once
 
-#define OZ_CLASS_READ_INT( name, default ) \
+#include "Object.hpp"
+
+#define OZ_CLASS_READ_INT( clazz, name, default ) \
   if( config.contains( #name ) ) { \
-    name = atoi( config[#name] ); \
+    clazz->name = atoi( config[#name] ); \
   } \
   else { \
     logFile.println( "missing property " #name ); \
-    name = ( default ); \
+    clazz->name = ( default ); \
   }
 
-#define OZ_CLASS_READ_FLOAT( name, default ) \
+#define OZ_CLASS_READ_FLOAT( clazz, name, default ) \
   if( config.contains( #name ) ) { \
-    name = strtof( config[#name], null ); \
+    clazz->name = strtof( config[#name], null ); \
   } \
   else { \
     logFile.println( "missing property " #name ); \
-    name = ( default ); \
+    clazz->name = ( default ); \
   }
 
-#define OZ_CLASS_READ_STRING( name, default ) \
+#define OZ_CLASS_READ_STRING( clazz, name, default ) \
   if( config.contains( #name ) ) { \
-    name = config[#name]; \
+    clazz->name = config[#name]; \
   } \
   else { \
     logFile.println( "missing property " #name ); \
-    name = ( default ); \
+    clazz->name = ( default ); \
   }
 
 namespace oz
@@ -42,7 +44,9 @@ namespace oz
 
   struct Class
   {
+    typedef Class *( *InitFunc )( Config *config );
 
+    virtual Object *create( const Vec3 &pos ) = 0;
   };
 
 }

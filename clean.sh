@@ -13,6 +13,8 @@ echo 'rm -rf src/CMakeFiles src/cmake_install.cmake src/Makefile'
 rm -rf src/CMakeFiles src/cmake_install.cmake src/Makefile
 echo 'rm -rf src/*/CMakeFiles src/*/cmake_install.cmake src/*/Makefile'
 rm -rf src/*/CMakeFiles src/*/cmake_install.cmake src/*/Makefile
+echo 'rm -f src/base/CMakeLists.txt src/matrix/CMakeLists.txt src/nirvana/CMakeLists.txt src/client/CMakeLists.txt src/server/CMakeLists.txt'
+rm -f src/base/CMakeLists.txt src/matrix/CMakeLists.txt src/nirvana/CMakeLists.txt src/client/CMakeLists.txt src/server/CMakeLists.txt
 echo 'rm -f *.kdevelop.filelist *.kdevelop.pcs *.kdevses'
 rm -f *.kdevelop.filelist *.kdevelop.pcs *.kdevses
 echo 'rm -rf doxygen'

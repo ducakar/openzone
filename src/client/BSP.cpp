@@ -101,7 +101,7 @@ namespace client
 
     textures = new uint[bsp->nTextures];
     for( int i = 0; i < bsp->nTextures; i++ ) {
-      if( bsp->textures[i] != null ) {
+      if( bsp->textures[i] >= 0 ) {
         textures[i] = context.requestTexture( bsp->textures[i] );
       }
     }

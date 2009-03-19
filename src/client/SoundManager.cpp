@@ -214,7 +214,7 @@ namespace client
     for( HashIndex<ContSource, HASHTABLE_SIZE>::Iterator i( contSources );
          !i.isPassed(); )
     {
-      ContSource *src = i.value();
+      ContSource *src = i;
       uint key = i.key();
 
       // we should advance now, so that we don't remove the element the iterator is pointing at

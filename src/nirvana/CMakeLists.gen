@@ -1,0 +1,13 @@
+#!/bin/sh
+
+cat << EOF > CMakeLists.txt
+add_library( nirvana STATIC
+EOF
+
+ls *.cpp >> CMakeLists.txt
+
+cat << EOF >> CMakeLists.txt
+)
+
+add_dependencies( nirvana precompile )
+EOF

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+cat << EOF > CMakeLists.txt
+link_libraries( base matrix nirvana )
+
+add_executable( openzone
+EOF
+
+ls *.cpp >> CMakeLists.txt
+
+cat << EOF >> CMakeLists.txt
+)
+
+add_dependencies( openzone precompile )
+EOF

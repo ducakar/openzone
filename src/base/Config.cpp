@@ -54,7 +54,7 @@ namespace oz
 
   bool Config::load( const char *file )
   {
-    logFile.print( "Reading configuration from '%s' ...", file );
+    logFile.print( "Reading variables from '%s' ...", file );
 
     xmlTextReader *reader = xmlReaderForFile( file, null, 0 );
 
@@ -103,7 +103,7 @@ namespace oz
 
   bool Config::save( const char *file )
   {
-    logFile.print( "Writing configuration to '%s' ...", file );
+    logFile.print( "Writing variables to '%s' ...", file );
 
     // first we sort all the variables by key
     int size = vars.length();
@@ -111,8 +111,8 @@ namespace oz
 
     HashString<String, SIZE>::Iterator j( vars );
     for( int i = 0; !j.isPassed(); i++, j++ ) {
-      sortedVars[i].key = j.key()->cstr();
-      sortedVars[i].value = j.value()->cstr();
+      sortedVars[i].key = j.key().cstr();
+      sortedVars[i].value = j.value().cstr();
       size = i;
     }
     size++;
@@ -178,8 +178,8 @@ namespace oz
 
     int i = 0;
     foreach( j, vars.iterator() ) {
-      sortedVars[i].key = j.key()->cstr();
-      sortedVars[i].value = j.value()->cstr();
+      sortedVars[i].key = j.key().cstr();
+      sortedVars[i].value = j.value().cstr();
       size = ++i;
     }
     aSort( sortedVars, size );
