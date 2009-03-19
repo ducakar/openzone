@@ -239,7 +239,7 @@ namespace client
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createNormalmap( (ubyte*) image->pixels, lightNormal, image->w, image->h,
-                                   bytesPerPixel, wrap, magFilter, minFilter );
+                                  bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
 
@@ -255,7 +255,7 @@ namespace client
     textures[resource].nUsers--;
 
     if( textures[resource].nUsers == 0 ) {
-      glDeleteTextures( 1, (GLuint*) &textures[resource] );
+      glDeleteTextures( 1, &textures[resource].id );
       textures[resource].nUsers = -1;
     }
   }
@@ -298,7 +298,7 @@ namespace client
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createNormalmap( (ubyte*) image->pixels, lightNormal, image->w, image->h,
-                                   bytesPerPixel, wrap, magFilter, minFilter );
+                                  bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
 

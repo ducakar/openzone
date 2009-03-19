@@ -110,7 +110,7 @@ namespace oz
     Node          *nodes;
     Leaf          *leafs;
     int           *leafFaces;
-    int           *leafSimplexes;
+    int           *leafSimplices;
 
     Simplex       *simplices;
     int           *simplexSides;

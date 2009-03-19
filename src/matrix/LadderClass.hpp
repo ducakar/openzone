@@ -1,5 +1,5 @@
 /*
- *  ObjectClass.hpp
+ *  LadderClass.hpp
  *
  *  [description]
  *
@@ -10,21 +10,15 @@
 
 #pragma once
 
-#include "Class.hpp"
+#include "ObjectClass.hpp"
+#include "Ladder.hpp"
 
 namespace oz
 {
 
-  struct ObjectClass : Class
+  // TODO LadderClass
+  struct LadderClass : ObjectClass
   {
-    String  name;
-
-    Vec3    dim;
-    int     flags;
-    int     type;
-    float   damage;
-    String  model;
-
     static Class *init( Config *config );
 
     Object *create( const Vec3 &pos );

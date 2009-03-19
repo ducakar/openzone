@@ -13,6 +13,7 @@
 namespace oz
 {
 
+  // TODO Ladder
   class Ladder : public Object
   {
     protected:

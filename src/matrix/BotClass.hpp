@@ -10,13 +10,37 @@
 
 #pragma once
 
+#include "DynObjectClass.hpp"
+#include "Bot.hpp"
+
 namespace oz
 {
 
-  class BotClass
+  // TODO BotClass
+  struct BotClass : DynObjectClass
   {
-    public:
+    Vec3  dimCrouch;
 
+    Vec3  camPos;
+    Vec3  camPosCrouch;
+
+    float bobInc;
+    float bobAmplitude;
+
+    float walkVelocity;
+    float runVelociy;
+    float crouchVelocity;
+    float jumpVelocity;
+
+    float stepInc;
+    float stepMax;
+
+    float airControl;
+    float grabDistance;
+
+    static Class *init( Config *config );
+
+    Object *create( const Vec3 &pos );
   };
 
 }

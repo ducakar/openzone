@@ -51,7 +51,7 @@ namespace oz
       BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
 
       for( int i = 0; i < leaf.nSimplexes; i++ ) {
-        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplexes[leaf.firstSimplex + i] ];
+        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplices[leaf.firstSimplex + i] ];
 
         if( ( simplex.flags & BSP::COLLIDABLE_BIT ) && !testPointSimplex( &simplex ) ) {
           return false;
@@ -384,7 +384,7 @@ namespace oz
       leafEndPos   = endPos;
 
       for( int i = 0; i < leaf.nSimplexes; i++ ) {
-        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplexes[leaf.firstSimplex + i] ];
+        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplices[leaf.firstSimplex + i] ];
 
         if( simplex.flags & BSP::COLLIDABLE_BIT ) {
           trimPointSimplex( &simplex );
@@ -562,7 +562,7 @@ namespace oz
       BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
 
       for( int i = 0; i < leaf.nSimplexes; i++ ) {
-        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplexes[leaf.firstSimplex + i] ];
+        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplices[leaf.firstSimplex + i] ];
 
         if( ( simplex.flags & BSP::COLLIDABLE_BIT ) && !testAABBSimplex( &simplex ) ) {
           return false;
@@ -840,7 +840,7 @@ namespace oz
       leafEndPos   = endPos;
 
       for( int i = 0; i < leaf.nSimplexes; i++ ) {
-        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplexes[leaf.firstSimplex + i] ];
+        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplices[leaf.firstSimplex + i] ];
 
         if( simplex.flags & BSP::COLLIDABLE_BIT ) {
           trimAABBSimplex( &simplex );

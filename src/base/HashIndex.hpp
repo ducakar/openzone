@@ -99,7 +99,7 @@ namespace oz
           /**
            * @return current element's key
            */
-          uint key() const
+          const uint &key() const
           {
             return B::elem->key;
           }
@@ -107,17 +107,17 @@ namespace oz
           /**
            * @return pointer to current element's value
            */
-          Type *value()
+          Type &value()
           {
-            return &B::elem->value;
+            return B::elem->value;
           }
 
           /**
            * @return constant pointer to current element's value
            */
-          const Type *value() const
+          const Type &value() const
           {
-            return &B::elem->value;
+            return B::elem->value;
           }
 
           /**
@@ -355,7 +355,15 @@ namespace oz
       /**
        * @return cached element's key
        */
-      uint &cachedKey() const
+      uint &cachedKey()
+      {
+        return cached->key;
+      }
+
+      /**
+       * @return cached element's key
+       */
+      const uint &cachedKey() const
       {
         return cached->key;
       }
@@ -363,7 +371,15 @@ namespace oz
       /**
        * @return cached element's value
        */
-      Type &cachedValue() const
+      Type &cachedValue()
+      {
+        return cached->value;
+      }
+
+      /**
+       * @return cached element's value
+       */
+      const Type &cachedValue() const
       {
         return cached->value;
       }
@@ -408,6 +424,32 @@ namespace oz
           cached = elem;
           count++;
         }
+        return cached->value;
+      }
+
+      /**
+       * If given key exists, return constant reference to it's value.
+       * Only use this function if you are certain that the key exists.
+       * @param key
+       * @return reference to value associated to the given key
+       */
+      const Type &operator [] ( uint key ) const
+      {
+        int  i = key % SIZE;
+        Elem *p = data[i];
+
+        while( p != null ) {
+          if( p->key == key ) {
+            cached = p;
+            return p->value;
+          }
+          else {
+            p = p->next[0];
+          }
+        }
+
+        assert( false );
+
         return cached->value;
       }
 

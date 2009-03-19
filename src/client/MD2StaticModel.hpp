@@ -8,15 +8,16 @@
 
 #pragma once
 
+#include "Model.hpp"
+
 namespace oz
+{
+namespace client
 {
 
   class MD2StaticModel : public Model
   {
-    public:
-
-
-
   };
 
+}
 }

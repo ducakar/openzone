@@ -189,6 +189,7 @@ namespace oz
       QBSPTexture texture;
 
       fread( &texture, sizeof( QBSPTexture ), 1, f );
+      logFile.print( "texture %s ...", texture.name );
 
       if( String::length( texture.name ) <= 9 ||
           String::equals( texture.name, "textures/NULL" ) )
@@ -197,13 +198,13 @@ namespace oz
       }
       else {
         String name = "tex/" + String( texture.name ).substring( 9 ) + ".jpg";
-        textures[i] = translator.getTexture( name );
-
-        logFile.println( "%s %d", name.cstr(), textures[i] );
+        textures[i] = translator.textureIndex( name );
       }
       if( texture.flags != 0 ) {
         textures[i] = ~textures[i];
       }
+
+      logFile.printRaw( " %d\n", textures[i] );
     }
 
     int nPlanes = lumps[QBSP_LUMP_PLANES].length / sizeof( BSP::Plane );
@@ -283,10 +284,10 @@ namespace oz
     fseek( f, lumps[QBSP_LUMP_LEAFFACES].offset, SEEK_SET );
     fread( leafFaces, sizeof( int ), nLeafFaces, f );
 
-    int nLeafSimplexes = lumps[QBSP_LUMP_LEAFBRUSHES].length / sizeof( int );
-    leafSimplexes = new int[nLeafSimplexes];
+    int nLeafSimplices = lumps[QBSP_LUMP_LEAFBRUSHES].length / sizeof( int );
+    leafSimplices = new int[nLeafSimplices];
     fseek( f, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
-    fread( leafSimplexes, sizeof( int ), nLeafSimplexes, f );
+    fread( leafSimplices, sizeof( int ), nLeafSimplices, f );
 
     int nSimplices = lumps[QBSP_LUMP_BRUSHES].length / sizeof( QBSPSimplex );
     simplices = new BSP::Simplex[nSimplices];
@@ -404,9 +405,9 @@ namespace oz
       delete[] leafFaces;
       leafFaces = null;
     }
-    if( leafSimplexes != null ) {
-      delete[] leafSimplexes;
-      leafSimplexes = null;
+    if( leafSimplices != null ) {
+      delete[] leafSimplices;
+      leafSimplices = null;
     }
 
     if( simplices != null ) {

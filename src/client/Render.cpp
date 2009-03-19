@@ -113,29 +113,7 @@ namespace client
       bsps << new BSP( world.bsps[i] );
     }
 
-    lists << shape.genBox( context.genList(), AABB( Vec3::zero(), Vec3( 0.01f, 0.01f, 0.01f ) ), 0 );
-    lists << shape.genBox( context.genList(), AABB( Vec3::zero(), Vec3( 10, 10, 10 ) ), 0 );
-    lists << shape.genRandomTetrahedicParticle( context.genList(), 0.5f );
-    shape.genBox( context.genList(), AABB( Vec3::zero(), Vec3( 0.3f, 0.3f, 0.3f ) ),
-                  context.loadTexture( "crate1.jpg", false ) );
-    lists << shape.genBox( context.genList(), AABB( Vec3::zero(), Vec3( 0.6f, 0.6f, 0.6f ) ),
-                           context.loadTexture( "crate2.jpg", false ) );
-    lists << MD2::genList( "mdl/woodBarrel.md2", INCH, Vec3( 0.0f, 0.0f, -0.482f ) );
-    lists << MD2::genList( "mdl/metalBarrel.md2", INCH, Vec3( 0.0f, 0.0f, -0.5922f ) );
-
-    md2s << new MD2();
-    md2s.last()->load( "mdl/goblin.md2" );
-    md2s.last()->scale( 0.03f );
-    md2s.last()->translate( Vec3( 0.0f, 0.0f, 0.1f ) );
-    md2s.last()->translate( MD2::ANIM_CROUCH_STAND, Vec3( 0.0f, 0.0f, 0.15f ) );
-    md2s.last()->translate( MD2::ANIM_CROUCH_WALK, Vec3( 0.0f, 0.0f, 0.15f ) );
-
-    md2s << new MD2();
-    md2s.last()->load( "mdl/knight.md2" );
-    md2s.last()->scale( 0.04f );
-
-//     lists << OBJ::genList( "monkey.obj" );
-//     lists << OBJ::genList( "monkey.obj" );
+    // TODO load lists and models
 
     // prepare for first frame
     glEnable( GL_DEPTH_TEST );

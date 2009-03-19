@@ -13,6 +13,7 @@
 namespace oz
 {
 
+  // TODO Vehicle
   class Vehicle : Bot
   {
   };

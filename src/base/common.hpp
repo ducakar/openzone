@@ -288,7 +288,7 @@ namespace oz
    * @param last pointer to last element in the array
    */
   template <class Type>
-  static void quicksort( Type *first, Type *last )
+  void quicksort( Type *first, Type *last )
   {
     // 8-14 seem as optimal tresholds for switching to selection sort
     if( last - first > 10 ) {

@@ -12,7 +12,6 @@
 #include "Event.hpp"
 #include "Effect.hpp"
 #include "Hit.hpp"
-#include "Translator.hpp"
 
 namespace oz
 {
