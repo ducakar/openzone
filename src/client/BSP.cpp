@@ -6,12 +6,12 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "BSP.hpp"
+#include "BSP.h"
 
-#include "Context.hpp"
-#include "Frustum.hpp"
+#include "Context.h"
+#include "Frustum.h"
 
 #ifdef __WIN32__
 static PFNGLACTIVETEXTUREPROC glActiveTexture = null;

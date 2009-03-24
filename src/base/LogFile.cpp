@@ -6,7 +6,7 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "base.hpp"
+#include "base.h"
 
 #include <stdarg.h>
 #include <stdio.h>

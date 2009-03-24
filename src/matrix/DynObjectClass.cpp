@@ -4,34 +4,31 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *
- *  $Id$
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "DynObjectClass.hpp"
+#include "DynObjectClass.h"
 
 namespace oz
 {
 
-  Class *DynObjectClass::init( Config *config_ )
+  Class *DynObjectClass::init( Config *config )
   {
-    Config &config = *config_;
     DynObjectClass *clazz = new DynObjectClass();
 
-    OZ_CLASS_READ_FLOAT( clazz, dim.x, 0.5f );
-    OZ_CLASS_READ_FLOAT( clazz, dim.y, 0.5f );
-    OZ_CLASS_READ_FLOAT( clazz, dim.z, 0.5f );
+    clazz->dim.x = config->read( "dim.x", 0.5f );
+    clazz->dim.y = config->read( "dim.y", 0.5f );
+    clazz->dim.z = config->read( "dim.z", 0.5f );
 
-    OZ_CLASS_READ_INT( clazz, flags, Object::DYNAMIC_BIT | Object::CLIP_BIT );
-    OZ_CLASS_READ_INT( clazz, type, 0 );
-    OZ_CLASS_READ_FLOAT( clazz, damage, 1.0f );
+    clazz->flags = config->read( "flags", Object::DYNAMIC_BIT | Object::CLIP_BIT );
+    clazz->type = config->read( "type", 0 );
+    clazz->damage = config->read( "damage", 1.0f );
 
-    OZ_CLASS_READ_FLOAT( clazz, mass, 10.0f );
-    OZ_CLASS_READ_FLOAT( clazz, lift, 0.03f );
+    clazz->mass = config->read( "mass", 10.0f );
+    clazz->lift = config->read( "lift", 0.03f );
 
-    OZ_CLASS_READ_STRING( clazz, model, "mdl/goblin.md2" );
+    clazz->model = config->read( "model", "mdl/goblin.md2" );
 
     return clazz;
   }

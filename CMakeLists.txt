@@ -76,14 +76,14 @@ else( WIN32 )
   include_directories( . )
 
   add_custom_target( precompile ALL
-    DEPENDS precompiled.hpp.gch )
+    DEPENDS precompiled.h.gch )
 
   add_custom_command(
-    OUTPUT precompiled.hpp.gch
-    DEPENDS base precompiled.hpp
+    OUTPUT precompiled.h.gch
+    DEPENDS base precompiled.h
     COMMAND
-      rm -f precompiled.hpp.gch &&
-      ${CMAKE_CXX_COMPILER} ${CXX_FLAGS} precompiled.hpp )
+      rm -f precompiled.h.gch &&
+      ${CMAKE_CXX_COMPILER} ${CXX_FLAGS} precompiled.h )
 
 endif( WIN32 )
 

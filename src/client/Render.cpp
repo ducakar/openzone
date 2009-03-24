@@ -6,21 +6,21 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Render.hpp"
+#include "Render.h"
 
-#include "matrix/Matrix.hpp"
-#include "matrix/Physics.hpp"
-#include "matrix/B_Goblin.hpp"
+#include "matrix/Matrix.h"
+#include "matrix/Physics.h"
+#include "matrix/B_Goblin.h"
 
-#include "Frustum.hpp"
-#include "Shape.hpp"
+#include "Frustum.h"
+#include "Shape.h"
 
-#include "Sky.hpp"
-#include "Water.hpp"
-#include "Terrain.hpp"
-#include "BSP.hpp"
+#include "Sky.h"
+#include "Water.h"
+#include "Terrain.h"
+#include "BSP.h"
 
 namespace oz
 {

@@ -6,11 +6,14 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Context.hpp"
+#include "Context.h"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Translator.h"
+
+#define OZ_REGISTER_MODELCLASS( name ) \
+  modelClasses.add( #name, &name##Class::create )
 
 namespace oz
 {

@@ -6,13 +6,13 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Main.hpp"
+#include "Main.h"
 
-#include "Client.hpp"
-#include "SoundManager.hpp"
-#include "Render.hpp"
+#include "Client.h"
+#include "SoundManager.h"
+#include "Render.h"
 
 #ifdef WIN32
 # include <direct.h>

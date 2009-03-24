@@ -6,16 +6,16 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Client.hpp"
+#include "Client.h"
 
-#include "matrix/Timer.hpp"
-#include "matrix/Bot.hpp"
-#include "matrix/Matrix.hpp"
-#include "nirvana/Nirvana.hpp"
+#include "matrix/Timer.h"
+#include "matrix/Bot.h"
+#include "matrix/Matrix.h"
+#include "nirvana/Nirvana.h"
 
-#include "Camera.hpp"
+#include "Camera.h"
 
 namespace oz
 {

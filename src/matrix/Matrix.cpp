@@ -6,25 +6,25 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Matrix.hpp"
+#include "Matrix.h"
 
-#include "Translator.hpp"
-#include "Physics.hpp"
-#include "Water.hpp"
+#include "Translator.h"
+#include "Physics.h"
+#include "Water.h"
 
-#include "O_Tree1.hpp"
-#include "O_Tree2.hpp"
+#include "O_Tree1.h"
+#include "O_Tree2.h"
 
-#include "D_SmallCrate.hpp"
-#include "D_BigCrate.hpp"
-#include "D_WoodBarrel.hpp"
-#include "D_MetalBarrel.hpp"
+#include "D_SmallCrate.h"
+#include "D_BigCrate.h"
+#include "D_WoodBarrel.h"
+#include "D_MetalBarrel.h"
 
-#include "B_Spirit.hpp"
-#include "B_Human.hpp"
-#include "B_Goblin.hpp"
+#include "B_Spirit.h"
+#include "B_Human.h"
+#include "B_Goblin.h"
 
 namespace oz
 {

@@ -6,11 +6,11 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "D_SmallCrate.hpp"
+#include "D_SmallCrate.h"
 
-#include "World.hpp"
+#include "World.h"
 
 namespace oz
 {
