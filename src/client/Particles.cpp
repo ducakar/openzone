@@ -6,11 +6,11 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Particles.hpp"
+#include "Particles.h"
 
-#include "Context.hpp"
+#include "Context.h"
 
 namespace oz
 {

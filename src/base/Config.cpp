@@ -6,7 +6,7 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "base.hpp"
+#include "base.h"
 
 #include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
@@ -27,29 +27,50 @@ namespace oz
 
   Config config;
 
-  void Config::add( const String &key, const String &value )
+  bool Config::read( const char *name, bool defVal )
   {
-    if( vars.contains( key ) ) {
-      vars.cachedValue() = value;
+    if( contains( name ) ) {
+      assert( get( name ) == "0" || get( name ) == "1" );
+
+      return atoi( get( name ) ) != 0;
     }
     else {
-      vars.add( key, value );
+      logFile.println( "missing property %s", name );
+      return defVal;
     }
   }
 
-  void Config::remove( const String &key )
+  int Config::read( const char *name, int defVal )
   {
-    vars.remove( key );
+    if( contains( name ) ) {
+      return atoi( get( name ) );
+    }
+    else {
+      logFile.println( "missing property %s", name );
+      return defVal;
+    }
   }
 
-  bool Config::contains( const String &key )
+  float Config::read( const char *name, float defVal )
   {
-    return vars.contains( key );
+    if( contains( name ) ) {
+      return strtof( get( name ), null );
+    }
+    else {
+      logFile.println( "missing property %s", name );
+      return defVal;
+    }
   }
 
-  String &Config::operator [] ( const String &key )
+  const char *Config::read( const char *name, const char *defVal )
   {
-    return vars[key];
+    if( contains( name ) ) {
+      return get( name );
+    }
+    else {
+      logFile.println( "missing property %s", name );
+      return defVal;
+    }
   }
 
   bool Config::load( const char *file )

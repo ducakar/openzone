@@ -6,14 +6,14 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Terrain.hpp"
+#include "Terrain.h"
 
-#include "matrix/World.hpp"
+#include "matrix/World.h"
 
-#include "Context.hpp"
-#include "Frustum.hpp"
+#include "Context.h"
+#include "Frustum.h"
 
 #ifdef __WIN32__
 static PFNGLMULTITEXCOORD2IPROC glMultiTexCoord2i = null;

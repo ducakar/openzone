@@ -1,6 +1,7 @@
+data
 openzone.kdev*
 doxygen
-precompiled.hpp.gch
+precompiled.h.gch
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake

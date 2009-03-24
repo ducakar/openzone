@@ -6,11 +6,11 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "MD3.hpp"
+#include "MD3.h"
 
-#include "matrix/bv.hpp"
+#include "matrix/bv.h"
 
 namespace oz
 {

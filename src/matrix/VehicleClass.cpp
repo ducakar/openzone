@@ -4,13 +4,11 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *
- *  $Id$
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "VehicleClass.hpp"
+#include "VehicleClass.h"
 
 namespace oz
 {

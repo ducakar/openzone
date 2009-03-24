@@ -6,12 +6,12 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Water.hpp"
+#include "Water.h"
 
-#include "Collider.hpp"
-#include "DynObject.hpp"
+#include "Collider.h"
+#include "DynObject.h"
 
 namespace oz
 {
@@ -25,6 +25,7 @@ namespace oz
     dim = dim_;
 
     flags = Object::UPDATE_FUNC_BIT | Object::WATER_BIT;
+    oldFlags = flags;
     type = TYPE;
 
     damage = Math::INF;

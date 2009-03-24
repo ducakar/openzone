@@ -6,11 +6,11 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "SparkGenRender.hpp"
+#include "SparkGenRender.h"
 
-#include "Frustum.hpp"
+#include "Frustum.h"
 
 namespace oz
 {

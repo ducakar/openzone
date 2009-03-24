@@ -6,11 +6,11 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "O_Tree2.hpp"
+#include "O_Tree2.h"
 
-#include "World.hpp"
+#include "World.h"
 
 namespace oz
 {

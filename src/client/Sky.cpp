@@ -6,12 +6,12 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Sky.hpp"
+#include "Sky.h"
 
-#include "matrix/Timer.hpp"
-#include "matrix/World.hpp"
+#include "matrix/Timer.h"
+#include "matrix/World.h"
 
 namespace oz
 {

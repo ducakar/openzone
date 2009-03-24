@@ -6,12 +6,12 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Water.hpp"
+#include "Water.h"
 
-#include "matrix/Water.hpp"
-#include "Context.hpp"
+#include "matrix/Water.h"
+#include "Context.h"
 
 namespace oz
 {

@@ -6,11 +6,11 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "BSP.hpp"
+#include "BSP.h"
 
-#include "Translator.hpp"
+#include "Translator.h"
 
 #define fourC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) <<16 ) | ( ( d ) << 24 ) )

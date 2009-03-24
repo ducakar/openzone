@@ -6,9 +6,9 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "M_Walker.hpp"
+#include "M_Walker.h"
 
 namespace oz
 {

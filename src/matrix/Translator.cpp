@@ -6,15 +6,15 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "Translator.hpp"
+#include "Translator.h"
 
-#include "ObjectClass.hpp"
-#include "LadderClass.hpp"
-#include "DynObjectClass.hpp"
-#include "BotClass.hpp"
-#include "VehicleClass.hpp"
+#include "ObjectClass.h"
+#include "LadderClass.h"
+#include "DynObjectClass.h"
+#include "BotClass.h"
+#include "VehicleClass.h"
 
 #include <dirent.h>
 #include <sys/types.h>

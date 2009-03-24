@@ -6,11 +6,11 @@
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
 
-#include "precompiled.hpp"
+#include "precompiled.h"
 
-#include "B_Human.hpp"
+#include "B_Human.h"
 
-#include "Physics.hpp"
+#include "Physics.h"
 
 namespace oz
 {
