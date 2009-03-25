@@ -13,7 +13,7 @@
 namespace oz
 {
 
-  Class *VehicleClass::init( Config* )
+  ObjectClass *VehicleClass::init( Config* )
   {
     assert( false );
     return null;

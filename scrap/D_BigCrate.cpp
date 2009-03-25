@@ -1,5 +1,5 @@
 /*
- *  D_WoodBarrel.cpp
+ *  D_BigCrate.cpp
  *
  *  [description]
  *
@@ -8,45 +8,45 @@
 
 #include "precompiled.h"
 
-#include "D_WoodBarrel.h"
+#include "D_BigCrate.h"
 
 #include "World.h"
 
 namespace oz
 {
 
-  const char *D_WoodBarrel::NAME = "D_WoodBarrel";
-  const int D_WoodBarrel::TYPE = String::hash( D_WoodBarrel::NAME );
+  const char *D_BigCrate::NAME = "D_BigCrate";
+  const int D_BigCrate::TYPE = String::hash( D_BigCrate::NAME );
 
-  Object *D_WoodBarrel::build( const Vec3 &p, Object *content )
+  Object *D_BigCrate::build( const Vec3 &p, Object *content )
   {
-    return new D_WoodBarrel( p, content );
+    return new D_BigCrate( p, content );
   }
 
-  D_WoodBarrel::D_WoodBarrel( const Vec3 &p_, Object *content_ )
+  D_BigCrate::D_BigCrate( const Vec3 &p_, Object *content_ )
   {
     p = p_,
-    dim = Vec3( 0.35f, 0.35f, 0.482f );
+    dim = Vec3( 0.6f, 0.6f, 0.6f );
 
     flags = Object::DYNAMIC_BIT | Object::CLIP_BIT;
-    type = TYPE;
+    type = null;
 
     damage = Math::INF;
 
     velocity = Vec3::zero();
-    mass = 50.0f;
+    mass = 150.0f;
 
     content = content_;
   }
 
-  D_WoodBarrel::~D_WoodBarrel()
+  D_BigCrate::~D_BigCrate()
   {
     if( content != null ) {
       delete content;
     }
   }
 
-  void D_WoodBarrel::onDestroy()
+  void D_BigCrate::onDestroy()
   {
     world.genParticles( 10, p, velocity, 1.2f, 1.2f, 0.0f, 20.0f, 0.1f,
                         Vec3( 0.5f, 0.5f, 0.5f ), 0.2f );

@@ -29,7 +29,7 @@ namespace oz
     dim = Vec3( 0.3f, 0.3f, 0.3f );
 
     flags = Object::DYNAMIC_BIT | Object::CLIP_BIT;
-    type = TYPE;
+    type = null;
 
     damage = Math::INF;
 

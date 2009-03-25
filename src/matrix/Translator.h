@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "Class.h"
+#include "ObjectClass.h"
 
 namespace oz
 {
@@ -50,8 +50,8 @@ namespace oz
       Vector<String> textures;
       Vector<String> sounds;
 
-      HashString<Class::InitFunc, 31> baseClasses;
-      HashString<Class*, 251> classes;
+      HashString<ObjectClass::InitFunc, 31> baseClasses;
+      HashString<ObjectClass*, 251> classes;
 
       int textureIndex( const char *file );
       int soundIndex( const char *file );

@@ -25,7 +25,7 @@ namespace oz
     dim = dim_;
 
     flags = Object::UPDATE_FUNC_BIT;
-    type = TYPE;
+    type = null;
 
     damage = Math::INF;
   }

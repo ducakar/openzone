@@ -286,6 +286,7 @@ namespace client
 
     String modelFile = String( path ) + "/tris.md2";
     String skinFile = String( path ) + "/skin.jpg";
+    String configFile = String( path ) + "/skin.jpg";
 
     logFile.print( "Loading MD2 model '%s' ... ", modelFile.cstr() );
 
@@ -340,7 +341,18 @@ namespace client
 
     logFile.printRaw( "OK\n" );
 
-    texId = context.loadTexture( skinFile.cstr(), true );
+    texId = context.loadTexture( skinFile, true );
+
+    Config config;
+    config.load( configFile );
+
+    float scale = config.read( "scale", 1.0f );
+    Vec3 translate( config.read( "translate.x", 0.0f ),
+                    config.read( "translate.y", 0.0f ),
+                    config.read( "translate.z", 0.0f ) );
+
+    scale( scale );
+
 
     if( texId == 0 ) {
       return false;

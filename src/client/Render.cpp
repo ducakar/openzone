@@ -22,6 +22,8 @@
 #include "Terrain.h"
 #include "BSP.h"
 
+#include "MD2StaticModel.h"
+
 namespace oz
 {
 namespace client
@@ -136,16 +138,16 @@ namespace client
     if( obj->flags & Object::WATER_BIT ) {
       waterObjects << obj;
     }
-    else if( obj->flags | Object::BLEND_BIT ) {
+    else if( obj->flags & Object::BLEND_BIT ) {
       blendedObjects << obj;
     }
     else {
-//       if( obj->model == null ) {
-//         obj->createModel();
-//       }
-//       // draw model
-//       models[ (uint) obj ]->draw();
-//       obj->model->state = Model::UPDATED;
+      if( !models.contains( (uint) obj ) ) {
+        models.add( (uint) obj, MD2StaticModel::create( obj->type ) );
+      }
+      // draw model
+      models.cachedValue()->draw();
+      models.cachedValue()->state = Model::UPDATED;
     }
     if( drawAABBs ) {
       glRotatef( -obj->rotZ, 0.0f, 0.0f, 1.0f );
@@ -227,8 +229,10 @@ namespace client
     }
     drawnStructures.clearAll();
 
-    float minXCenter = (float) ( ( frustum.minX - World::MAX / 2 ) * Sector::DIM ) + Sector::DIM / 2.0f;
-    float minYCenter = (float) ( ( frustum.minY - World::MAX / 2 ) * Sector::DIM ) + Sector::DIM / 2.0f;
+    float minXCenter = (float) ( ( frustum.minX - World::MAX / 2 ) * Sector::DIM ) +
+        Sector::DIM / 2.0f;
+    float minYCenter = (float) ( ( frustum.minY - World::MAX / 2 ) * Sector::DIM ) +
+        Sector::DIM / 2.0f;
 
     float x = minXCenter;
     for( int i = frustum.minX; i <= frustum.maxX; i++, x += Sector::DIM ) {

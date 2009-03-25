@@ -17,6 +17,7 @@ namespace oz
 {
 
   struct Sector;
+  struct ObjectClass;
 
   // static object abstract class
   class Object : public AABB
@@ -123,7 +124,7 @@ namespace oz
       int     flags;
       int     oldFlags;
 
-      int     type;
+      ObjectClass *type;
 
       // damage
       float   damage;
@@ -138,16 +139,10 @@ namespace oz
 
     public:
 
-      Object() : index( -1 ), sector( null )
+      Object() : index( -1 ), sector( null ), rotZ( 0.0f )
       {}
 
-      virtual ~Object()
-      {
-        assert( dim.x <= AABB::REAL_MAX_DIMXY );
-        assert( dim.y <= AABB::REAL_MAX_DIMXY );
-
-        effects.free();
-      }
+      virtual ~Object();
 
       void addEffect( int id )
       {

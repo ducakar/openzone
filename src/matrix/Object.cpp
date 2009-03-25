@@ -13,25 +13,30 @@
 namespace oz
 {
 
+  Object::~Object()
+  {
+    assert( dim.x <= AABB::REAL_MAX_DIMXY );
+    assert( dim.y <= AABB::REAL_MAX_DIMXY );
+
+    effects.free();
+  }
+
   void Object::load( FILE *stream )
   {
     fread( &p, sizeof( p ), 1, stream );
     fread( &dim, sizeof( dim ), 1, stream );
     fread( &index, sizeof( index ), 1, stream );
     fread( &flags, sizeof( flags ), 1, stream );
-    fread( &type, sizeof( type ), 1, stream );
     fread( &rotZ, sizeof( rotZ ), 1, stream );
 
     index = SDL_SwapBE32( index );
     flags = SDL_SwapBE32( flags );
-    type  = SDL_SwapBE32( type );
   }
 
   void Object::save( FILE *stream )
   {
     index = SDL_SwapBE32( index );
     flags = SDL_SwapBE32( flags );
-    type  = SDL_SwapBE32( type );
 
     fwrite( &p, sizeof( p ), 1, stream );
     fwrite( &dim, sizeof( dim ), 1, stream );
@@ -42,7 +47,6 @@ namespace oz
 
     index = SDL_SwapBE32( index );
     flags = SDL_SwapBE32( flags );
-    type  = SDL_SwapBE32( type );
   }
 
 }

@@ -13,7 +13,7 @@
 namespace oz
 {
 
-  Class *BotClass::init( Config* )
+  ObjectClass *BotClass::init( Config* )
   {
     assert( false );
     return null;

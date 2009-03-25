@@ -10,9 +10,25 @@
 
 #include "MD2StaticModel.h"
 
+#include "Context.h"
+
 namespace oz
 {
+namespace client
+{
 
+  Model *MD2StaticModel::create( ObjectClass *clazz )
+  {
+    MD2StaticModel *model = new MD2StaticModel();
 
+    model->list = context.loadMD2StaticModel( clazz->modelPath );
+    return model;
+  }
 
+  void MD2StaticModel::draw()
+  {
+    glCallList( list );
+  }
+
+}
 }

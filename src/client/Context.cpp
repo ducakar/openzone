@@ -130,8 +130,8 @@ namespace client
 
     logFile.println( "Context created" );
 
-    textures = new Texture[translator.textures.length()];
-    sounds = new Sound[translator.sounds.length()];
+    textures = new Resource<uint>[translator.textures.length()];
+    sounds = new Resource<uint>[translator.sounds.length()];
 
     for( int i = 0; i < translator.textures.length(); i++ ) {
       textures[i].nUsers = -1;
@@ -148,6 +148,12 @@ namespace client
     delete[] textures;
     delete[] sounds;
     lists.clear();
+
+    md2Models.clear();
+    md2StaticModels.clear();
+    md3Models.clear();
+    md3StaticModels.clear();
+    objModels.clear();
 
     textures = null;
     sounds = null;
@@ -327,6 +333,20 @@ namespace client
     lists[index].base = glGenLists( count );
     lists[index].count = count;
     return lists[index].base;
+  }
+
+  uint Context::loadMD2StaticModel( const char *path )
+  {
+    if( md2StaticModels.contains( path ) ) {
+      md2StaticModels.cachedValue().nUsers++;
+      return md2StaticModels.cachedValue().id;
+    }
+    else {
+      md2StaticModels.add( path, Resource<uint>() );
+      md2StaticModels.cachedValue().id = MD2::genList( path );
+      md2StaticModels.cachedValue().nUsers = 1;
+      return md2StaticModels.cachedValue().id;
+    }
   }
 
   void Context::freeLists( uint listId )

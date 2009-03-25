@@ -10,7 +10,6 @@
 
 #include "matrix/bv.h"
 #include "matrix/Timer.h"
-#include "Context.h"
 
 namespace oz
 {

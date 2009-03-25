@@ -43,7 +43,7 @@ namespace oz
 
     flags   = Object::UPDATE_FUNC_BIT | Object::HIT_FUNC_BIT | Object::CLIP_BIT |
         Object::DYNAMIC_BIT | Object::PUSHING_BIT | Object::BOT_BIT;
-    type    = TYPE;
+    type    = null;
 
     damage  = 2.0f;
 

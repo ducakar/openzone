@@ -22,8 +22,8 @@ namespace oz
 
   void Nirvana::load()
   {
-    add( new M_Walker( (Bot*) world.objects[1] ) );
-    add( new M_Walker( (Bot*) world.objects[2] ) );
+//     add( new M_Walker( (Bot*) world.objects[1] ) );
+//     add( new M_Walker( (Bot*) world.objects[2] ) );
   }
 
   void Nirvana::start()

@@ -10,24 +10,27 @@
 
 #pragma once
 
-#include "Class.h"
+#include "Object.h"
 
 namespace oz
 {
 
-  struct ObjectClass : Class
+  struct ObjectClass
   {
-    String  name;
+    typedef ObjectClass *( *InitFunc )( Config *config );
 
-    Vec3    dim;
-    int     flags;
-    int     type;
-    float   damage;
-    String  model;
+    String name;
 
-    static Class *init( Config *config );
+    Vec3   dim;
+    int    flags;
+    int    type;
+    float  damage;
 
-    Object *create( const Vec3 &pos );
+    String modelType;
+    String modelPath;
+
+    static ObjectClass *init( Config *config );
+    virtual Object *create( const Vec3 &pos );
   };
 
 }
