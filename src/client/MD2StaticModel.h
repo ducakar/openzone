@@ -15,16 +15,12 @@ namespace oz
 namespace client
 {
 
-  class MD2StaticModel : public Model
+  struct MD2StaticModel : public Model
   {
-    private:
+    uint list;
 
-
-
-    public:
-
-      static Model *create( const char *path );
-
+    static Model *create( ObjectClass *clazz );
+    virtual void draw();
   };
 
 }

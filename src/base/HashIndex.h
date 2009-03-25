@@ -429,12 +429,9 @@ namespace oz
           }
         }
 
-        Elem *elem = new Elem( key, data[i] );
+        assert( false );
 
-        data[i] = elem;
-        cached = elem;
-        count++;
-        return elem->value;
+        return cached->value;
       }
 
       /**

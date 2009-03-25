@@ -358,7 +358,7 @@ namespace oz
       /**
        * @return cached element's key
        */
-      uint &cachedKey()
+      String &cachedKey()
       {
         return cached->key;
       }
@@ -366,7 +366,7 @@ namespace oz
       /**
        * @return cached element's key
        */
-      const uint &cachedKey() const
+      const String &cachedKey() const
       {
         return cached->key;
       }
@@ -393,9 +393,9 @@ namespace oz
        * @param key
        * @return true if found
        */
-      bool contains( const String &key )
+      bool contains( const char *key )
       {
-        int  i  = key.hash() % SIZE;
+        int  i  = String::hash( key ) % SIZE;
         Elem *p = data[i];
 
         while( p != null ) {
@@ -411,45 +411,14 @@ namespace oz
       }
 
       /**
-       * If given key exists, return reference to it's value, otherwise create a new element with
-       * the given key and return reference to it's UNINITIALIZED value.
-       * This function caches the found element.
-       * @param key
-       * @return reference to value associated to the given key
-       */
-      Type &operator [] ( const String &key )
-      {
-        int  i  = key.hash() % SIZE;
-        Elem *p = data[i];
-
-        while( p != null ) {
-          if( p->key == key ) {
-            cached = p;
-            return p->value;
-          }
-          else {
-            p = p->next[0];
-          }
-        }
-
-        Elem *elem = new Elem( key, data[i] );
-
-        data[i] = elem;
-        cached = elem;
-        count++;
-
-        return elem->value;
-      }
-
-      /**
-       * If given key exists, return constant reference to it's value.
+       * If given key exists, return reference to it's value.
        * Only use this function if you are certain that the key exists.
        * @param key
        * @return reference to value associated to the given key
        */
-      const Type &operator [] ( const String &key ) const
+      Type &operator [] ( const char *key )
       {
-        int  i  = key.hash() % SIZE;
+        int  i  = String::hash( key ) % SIZE;
         Elem *p = data[i];
 
         while( p != null ) {
@@ -465,6 +434,49 @@ namespace oz
         assert( false );
 
         return cached->value;
+      }
+
+      /**
+       * If given key exists, return constant reference to it's value.
+       * Only use this function if you are certain that the key exists.
+       * @param key
+       * @return reference to value associated to the given key
+       */
+      const Type &operator [] ( const char *key ) const
+      {
+        int  i  = String::hash( key ) % SIZE;
+        Elem *p = data[i];
+
+        while( p != null ) {
+          if( p->key == key ) {
+            cached = p;
+            return p->value;
+          }
+          else {
+            p = p->next[0];
+          }
+        }
+
+        assert( false );
+
+        return cached->value;
+      }
+
+      /**
+       * Add new element. The key must not yet exist in this HashIndex.
+       * @param key
+       * @param value
+       */
+      void add( const char *key, const Type &value )
+      {
+        assert( !contains( key ) );
+
+        int  i = String::hash( key ) % SIZE;
+        Elem *elem = new Elem( key, value, data[i] );
+
+        data[i] = elem;
+        cached = elem;
+        count++;
       }
 
       /**
@@ -488,9 +500,9 @@ namespace oz
        * Remove element with given key.
        * @param key
        */
-      void remove( const String &key )
+      void remove( const char *key )
       {
-        int  i  = key.hash() % SIZE;
+        int  i  = String::hash( key ) % SIZE;
         Elem *p = data[i];
         Elem **prev = &data[i];
 

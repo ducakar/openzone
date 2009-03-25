@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include "matrix/Class.h"
-#include "MD2.h"
+#include "matrix/ObjectClass.h"
 
 namespace oz
 {
@@ -18,7 +17,7 @@ namespace client
 
   struct Model
   {
-    typedef Model *( *InitFunc )( const Class *clazz );
+    typedef Model *( *InitFunc )( const ObjectClass *clazz );
 
     enum State
     {
@@ -28,7 +27,6 @@ namespace client
 
     State state;
 
-    virtual void load() = 0;
     virtual void draw() = 0;
   };
 

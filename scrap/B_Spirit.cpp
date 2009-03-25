@@ -32,7 +32,7 @@ namespace oz
 
     flags   = Object::UPDATE_FUNC_BIT | Object::DYNAMIC_BIT | Object::HOVER_BIT |
         Object::SPIRIT_BIT | Object::BOT_BIT;
-    type    = TYPE;
+    type    = null;
 
     damage  = Math::INF;
 

@@ -30,7 +30,7 @@ namespace oz
     dim = Vec3( 0.7f, 0.7f, 3.8f );
 
     flags = Object::CLIP_BIT | Object::RELEASED_CULL_BIT;
-    type = TYPE;
+    type = null;
 
     damage = Math::INF;
   }
@@ -41,7 +41,7 @@ namespace oz
     dim = Vec3( 0.7f, 0.7f, 3.8f );
 
     flags = Object::CLIP_BIT | Object::RELEASED_CULL_BIT;
-    type = TYPE;
+    type = null;
 
     damage = Math::INF;
   }

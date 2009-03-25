@@ -29,7 +29,7 @@ namespace oz
     dim = Vec3( 0.6f, 0.6f, 2.25f );
 
     flags = Object::CLIP_BIT | Object::RELEASED_CULL_BIT;
-    type = TYPE;
+    type = null;
   }
 
   O_Tree2::O_Tree2( float x, float y )
@@ -38,7 +38,7 @@ namespace oz
     dim = Vec3( 0.6f, 0.6f, 2.25f );
 
     flags = Object::CLIP_BIT | Object::RELEASED_CULL_BIT;
-    type = TYPE;
+    type = null;
   }
 
   void O_Tree2::onDestroy()

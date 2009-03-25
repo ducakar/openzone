@@ -14,16 +14,6 @@
 #include "Physics.h"
 #include "Water.h"
 
-#include "O_Tree1.h"
-#include "O_Tree2.h"
-
-#include "D_SmallCrate.h"
-#include "D_BigCrate.h"
-#include "D_WoodBarrel.h"
-#include "D_MetalBarrel.h"
-
-#include "B_Spirit.h"
-#include "B_Human.h"
 #include "B_Goblin.h"
 
 namespace oz
@@ -62,53 +52,70 @@ namespace oz
     world.add( new B_Goblin( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
     //world.add( new B_Spirit( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
 
-    world.add( new B_Goblin( Vec3( 40, -35, 85 ) ) );
+//     world.add( new B_Goblin( Vec3( 40, -35, 85 ) ) );
+//
+//     world.add( new B_Goblin( Vec3( 41, -35, 85 ) ) );
+//
+//     world.genParticles( 1000, Vec3( 40, -42, 74 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
+//                        0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
+//     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 80.0f ) ) );
+//     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 82.0f ) ) );
+//     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 84.0f ) ) );
+//
+//     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 80.0f ) ) );
+//     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 82.0f ) ) );
+//     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 84.0f ) ) );
+//
+//     world.add( new D_SmallCrate( Vec3( 41.0f, -41.0f, 80.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 41.0f, -41.0f, 81.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 41.0f, -41.0f, 82.0f ) ) );
+//
+//     world.add( new D_SmallCrate( Vec3( 41.0f, -42.0f, 80.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 41.0f, -42.0f, 81.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 41.0f, -42.0f, 82.0f ) ) );
+//
+//     world.add( new D_SmallCrate( Vec3( 42.0f, -42.0f, 80.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 42.0f, -42.0f, 81.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 42.0f, -42.0f, 82.0f ) ) );
+//
+//     world.add( new D_SmallCrate( Vec3( 42.0f, -41.0f, 80.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 42.0f, -41.0f, 81.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 42.0f, -40.0f, 82.0f ) ) );
 
-    world.add( new B_Goblin( Vec3( 41, -35, 85 ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -41.0f, 80.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -41.0f, 81.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -41.0f, 82.0f ) ) );
 
-    world.genParticles( 1000, Vec3( 40, -42, 74 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
-                       0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
-    world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 80.0f ) ) );
-    world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 82.0f ) ) );
-    world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 84.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -42.0f, 80.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -42.0f, 81.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -42.0f, 82.0f ) ) );
 
-    world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 80.0f ) ) );
-    world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 82.0f ) ) );
-    world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 84.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -42.0f, 80.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -42.0f, 81.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -42.0f, 82.0f ) ) );
 
-    world.add( new D_SmallCrate( Vec3( 41.0f, -41.0f, 80.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 41.0f, -41.0f, 81.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 41.0f, -41.0f, 82.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -41.0f, 80.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -41.0f, 81.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -40.0f, 82.0f ) ) );
 
-    world.add( new D_SmallCrate( Vec3( 41.0f, -42.0f, 80.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 41.0f, -42.0f, 81.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 41.0f, -42.0f, 82.0f ) ) );
-
-    world.add( new D_SmallCrate( Vec3( 42.0f, -42.0f, 80.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 42.0f, -42.0f, 81.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 42.0f, -42.0f, 82.0f ) ) );
-
-    world.add( new D_SmallCrate( Vec3( 42.0f, -41.0f, 80.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 42.0f, -41.0f, 81.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 42.0f, -40.0f, 82.0f ) ) );
-
-    world.add( new D_BigCrate( Vec3( 40.0f, -55.0f, 80.0f ), new D_SmallCrate() ) );
-    world.add( new D_BigCrate( Vec3( 40.0f, -55.0f, 82.0f ), new D_SmallCrate() ) );
-    world.add( new D_BigCrate( Vec3( 40.0f, -55.0f, 84.0f ), new D_SmallCrate() ) );
-
-    world.add( new O_Tree1( 0.0f, -30.0f ) );
-    world.add( new O_Tree2( 0.0f, -42.0f ) );
-
-    world.add( new Water( Vec3( -80.0f, 112.0f, 33.0f ), Vec3( 3.0f, 3.0f, 1.0f ) ) );
-    world.add( new Water( Vec3( -86.0f, 112.0f, 33.0f ), Vec3( 3.0f, 3.0f, 1.0f ) ) );
-    world.add( new Water( Vec3( -80.0f, 118.0f, 33.0f ), Vec3( 3.0f, 3.0f, 1.0f ) ) );
-
-    world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), 3 ) );
-    world.add( new Water( Vec3( 40.0f, -60.0f, 75.0f ), Vec3( 3.0f, 3.0f, 3.0f ) ) );
-
-    world.add( new D_SmallCrate( Vec3( 42.0f, -61.0f, 81.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 42.0f, -61.0f, 82.0f ) ) );
-    world.add( new D_SmallCrate( Vec3( 42.0f, -61.0f, 83.0f ) ) );
+//
+//     world.add( new D_BigCrate( Vec3( 40.0f, -55.0f, 80.0f ), new D_SmallCrate() ) );
+//     world.add( new D_BigCrate( Vec3( 40.0f, -55.0f, 82.0f ), new D_SmallCrate() ) );
+//     world.add( new D_BigCrate( Vec3( 40.0f, -55.0f, 84.0f ), new D_SmallCrate() ) );
+//
+//     world.add( new O_Tree1( 0.0f, -30.0f ) );
+//     world.add( new O_Tree2( 0.0f, -42.0f ) );
+//
+//     world.add( new Water( Vec3( -80.0f, 112.0f, 33.0f ), Vec3( 3.0f, 3.0f, 1.0f ) ) );
+//     world.add( new Water( Vec3( -86.0f, 112.0f, 33.0f ), Vec3( 3.0f, 3.0f, 1.0f ) ) );
+//     world.add( new Water( Vec3( -80.0f, 118.0f, 33.0f ), Vec3( 3.0f, 3.0f, 1.0f ) ) );
+//
+//     world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), 3 ) );
+//     world.add( new Water( Vec3( 40.0f, -60.0f, 75.0f ), Vec3( 3.0f, 3.0f, 3.0f ) ) );
+//
+//     world.add( new D_SmallCrate( Vec3( 42.0f, -61.0f, 81.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 42.0f, -61.0f, 82.0f ) ) );
+//     world.add( new D_SmallCrate( Vec3( 42.0f, -61.0f, 83.0f ) ) );
   }
 
   void Matrix::update()

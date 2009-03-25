@@ -13,7 +13,7 @@
 namespace oz
 {
 
-  Class *LadderClass::init( Config *config )
+  ObjectClass *LadderClass::init( Config *config )
   {
     LadderClass *clazz = new LadderClass();
 
@@ -22,10 +22,10 @@ namespace oz
     clazz->dim.z = config->read( "dim.z", 0.5f );
 
     clazz->flags = config->read( "flags", Object::DYNAMIC_BIT | Object::CLIP_BIT );
-    clazz->type = config->read( "type", 0 );
     clazz->damage = config->read( "damage", 1.0f );
 
-    clazz->model = config->read( "model", "mdl/goblin.md2" );
+    clazz->modelType = config->read( "model.type", "MD2" );
+    clazz->modelPath = config->read( "model.path", "mdl/goblin.md2" );
 
     return clazz;
   }
@@ -38,7 +38,7 @@ namespace oz
     obj->dim = dim;
 
     obj->flags = flags;
-    obj->type = type;
+    obj->type = this;
     obj->damage = damage;
 
     return obj;

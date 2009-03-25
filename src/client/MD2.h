@@ -95,6 +95,7 @@ namespace client
       ~MD2();
 
       bool load( const char *path );
+      void free();
 
       void drawFrame( int frame );
       void draw( AnimState *anim );
@@ -105,7 +106,6 @@ namespace client
 
       static uint genList( const char *path, float scale = 1.0f, const Vec3 &t = Vec3::zero() );
 
-      void free();
   };
 
 }

@@ -26,7 +26,7 @@ namespace oz
 
     flags = Object::UPDATE_FUNC_BIT | Object::WATER_BIT;
     oldFlags = flags;
-    type = TYPE;
+    type = null;
 
     damage = Math::INF;
   }
