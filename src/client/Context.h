@@ -13,6 +13,7 @@
 #include "MD2.h"
 #include "MD3.h"
 #include "OBJ.h"
+#include "Model.h"
 
 namespace oz
 {
@@ -39,6 +40,19 @@ namespace client
         int  nextSlot;
       };
 
+      template <class Type>
+      struct Resource<Type*>
+      {
+        Type *object;
+        int  nUsers;
+        int  nextSlot;
+
+        ~Resource()
+        {
+          delete object;
+        }
+      };
+
       Resource<uint> *textures;
       Resource<uint> *sounds;
       Sparse<Lists>  lists;
@@ -48,6 +62,8 @@ namespace client
       HashString< Resource<MD3*>, 253 > md3Models;
       HashString< Resource<uint>, 253 > md3StaticModels;
       HashString< Resource<uint>, 253 > objModels;
+
+      HashString<Model::InitFunc, 253> modelClasses;
 
       static uint buildTexture( const ubyte *data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
@@ -116,6 +132,11 @@ namespace client
       MD3  *loadMD3Model( const char *path );
       uint loadMD3StaticModel( const char *path );
       uint loadOBJModel( const char *path );
+
+      Model *createModel( const Object *obj )
+      {
+        return modelClasses[obj->type->modelType]( obj );
+      }
 
   };
 

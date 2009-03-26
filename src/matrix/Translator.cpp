@@ -149,6 +149,7 @@ namespace oz
         continue;
       }
 
+      classConfig.add( "name", name );
       classes.add( name, baseClasses.cachedValue()( &classConfig ) );
       classConfig.clear();
     }

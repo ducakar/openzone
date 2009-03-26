@@ -219,14 +219,7 @@ namespace oz
         return buffer[i];
       }
 
-      char &operator [] ( int i )
-      {
-        assert( 0 <= i && i < count );
-
-        return buffer[i];
-      }
-
-      char charAt( int i ) const
+      const char &charAt( int i ) const
       {
         assert( 0 <= i && i < count );
 
@@ -389,21 +382,21 @@ namespace oz
         return r;
       }
 
-//       Vector<String> split( char ch ) const
-//       {
-//         Vector<String> v;
-//
-//         int p0 = 0;
-//         int p1 = index( ch );
-//
-//         while( p1 >= 0 ) {
-//           v << substring( p0, p1 );
-//           p0 = p1 + 1;
-//           p1 = index( ch, p0 );
-//         }
-//         v << substring( p0 );
-//         return v;
-//       }
+      Vector<String> split( char ch ) const
+      {
+        Vector<String> v;
+
+        int p0 = 0;
+        int p1 = index( ch );
+
+        while( p1 >= 0 ) {
+          v << substring( p0, p1 );
+          p0 = p1 + 1;
+          p1 = index( ch, p0 );
+        }
+        v << substring( p0 );
+        return v;
+      }
 
   };
 

@@ -1,5 +1,5 @@
 /*
- *  MD2StaticModel.h
+ *  OBJModel.h
  *
  *  [description]
  *
@@ -15,7 +15,7 @@ namespace oz
 namespace client
 {
 
-  struct MD2StaticModel : Model
+  struct OBJModel : Model
   {
     uint list;
 

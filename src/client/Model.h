@@ -17,7 +17,7 @@ namespace client
 
   struct Model
   {
-    typedef Model *( *InitFunc )( const ObjectClass *clazz );
+    typedef Model *( *InitFunc )( const Object *object );
 
     enum State
     {

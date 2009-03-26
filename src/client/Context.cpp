@@ -10,10 +10,12 @@
 
 #include "Context.h"
 
-#include "matrix/Translator.h"
+#include "MD2Model.h"
+#include "MD2StaticModel.h"
+#include "OBJModel.h"
 
 #define OZ_REGISTER_MODELCLASS( name ) \
-  modelClasses.add( #name, &name##Class::create )
+  modelClasses.add( #name, &name##Model::create )
 
 namespace oz
 {
@@ -129,7 +131,6 @@ namespace client
     assert( textures == null && sounds == null );
 
     logFile.println( "Context created" );
-
     textures = new Resource<uint>[translator.textures.length()];
     sounds = new Resource<uint>[translator.sounds.length()];
 
@@ -139,6 +140,10 @@ namespace client
     for( int i = 0; i < translator.sounds.length(); i++ ) {
       sounds[i].nUsers = -1;
     }
+
+    OZ_REGISTER_MODELCLASS( MD2 );
+    OZ_REGISTER_MODELCLASS( MD2Static );
+    OZ_REGISTER_MODELCLASS( OBJ );
   }
 
   void Context::free()
@@ -146,7 +151,9 @@ namespace client
     assert( textures != null && sounds != null );
 
     delete[] textures;
+    textures = null;
     delete[] sounds;
+    sounds = null;
     lists.clear();
 
     md2Models.clear();
@@ -155,8 +162,7 @@ namespace client
     md3StaticModels.clear();
     objModels.clear();
 
-    textures = null;
-    sounds = null;
+    modelClasses.clear();
   }
 
   uint Context::createTexture( const ubyte *data, int width, int height, int bytesPerPixel,
@@ -346,6 +352,35 @@ namespace client
       md2StaticModels.cachedValue().id = MD2::genList( path );
       md2StaticModels.cachedValue().nUsers = 1;
       return md2StaticModels.cachedValue().id;
+    }
+  }
+
+  MD2 *Context::loadMD2Model( const char *path )
+  {
+    if( md2Models.contains( path ) ) {
+      md2Models.cachedValue().nUsers++;
+      return md2Models.cachedValue().object;
+    }
+    else {
+      md2Models.add( path, Resource<MD2*>() );
+      md2Models.cachedValue().object = new MD2();
+      md2Models.cachedValue().object->load( path );
+      md2Models.cachedValue().nUsers = 1;
+      return md2Models.cachedValue().object;
+    }
+  }
+
+  uint Context::loadOBJModel( const char *path )
+  {
+    if( objModels.contains( path ) ) {
+      objModels.cachedValue().nUsers++;
+      return objModels.cachedValue().id;
+    }
+    else {
+      objModels.add( path, Resource<uint>() );
+      objModels.cachedValue().id = OBJ::genList( path );
+      objModels.cachedValue().nUsers = 1;
+      return objModels.cachedValue().id;
     }
   }
 

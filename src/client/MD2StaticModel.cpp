@@ -17,11 +17,11 @@ namespace oz
 namespace client
 {
 
-  Model *MD2StaticModel::create( ObjectClass *clazz )
+  Model *MD2StaticModel::create( const Object *object )
   {
     MD2StaticModel *model = new MD2StaticModel();
 
-    model->list = context.loadMD2StaticModel( clazz->modelPath );
+    model->list = context.loadMD2StaticModel( object->type->modelPath );
     return model;
   }
 

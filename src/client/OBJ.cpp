@@ -196,12 +196,12 @@ namespace client
     return true;
   }
 
-  bool OBJ::loadMaterial( const char *path )
+  bool OBJ::loadMaterial( const String &path )
   {
     FILE *file;
     char buffer[LINE_BUFFER_SIZE];
 
-    file = fopen( String( path ) + "/data.mtl", "r" );
+    file = fopen( path + "/data.mtl", "r" );
     if( file == null ) {
       return false;
     }
@@ -221,7 +221,7 @@ namespace client
             end = readWord( pos );
             *end = '\0';
 
-            textureId = context.loadTexture( String( path ) + "/" + String( pos ), true );
+            textureId = context.loadTexture( path + "/" + String( pos ), true );
           }
           break;
         }
@@ -251,7 +251,20 @@ namespace client
     FILE *file;
     char buffer[LINE_BUFFER_SIZE];
 
-    file = fopen( String( path ) + "/data.obj", "r" );
+    String sPath = path;
+    String modelFile = sPath + "/data.obj";
+    String configFile = sPath + "/config.xml";
+
+    Config config;
+    config.load( configFile );
+
+    float scaling = config.read( "scale", 1.0f );
+    Vec3 translation( config.read( "translate.x", 0.0f ),
+                      config.read( "translate.y", 0.0f ),
+                      config.read( "translate.z", 0.0f ) );
+    config.clear();
+
+    file = fopen( modelFile.cstr(), "r" );
     if( file == null ) {
       return false;
     }
@@ -290,7 +303,7 @@ namespace client
         }
         // usemtl
         case 'm': {
-          if( aEquals( pos, "mtllib", 6 ) && !loadMaterial( path ) ) {
+          if( aEquals( pos, "mtllib", 6 ) && !loadMaterial( sPath ) ) {
             fclose( file );
             logFile.println( "cannot load material at line: %s", buffer );
             return false;
@@ -311,7 +324,10 @@ namespace client
     nVertices = tempVerts.length();
     if( nVertices > 0 ) {
       vertices = new Vec3[nVertices];
-      aCopy( vertices, tempVerts.dataPtr(), nVertices );
+
+      for( int i = 0; i < nVertices; i++ ) {
+        vertices[i] = translation + scaling * tempVerts[i];
+      }
     }
     else {
       nVertices = 0;
@@ -401,13 +417,11 @@ namespace client
     }
   }
 
-  uint OBJ::genList( const char *file, float scale, const Vec3 &t )
+  uint OBJ::genList( const char *file )
   {
     OBJ obj;
 
     obj.load( file );
-    obj.scale( scale );
-    obj.translate( t );
 
     uint list = context.genList();
 

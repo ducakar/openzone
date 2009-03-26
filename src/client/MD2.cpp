@@ -267,7 +267,7 @@ namespace client
   };
 
   MD2::MD2() : nFrames( 0 ), nVerts( 0 ), nGlCmds( 0 ),
-           verts( null ), glCmds( null ), lightNormals( null )
+      verts( null ), glCmds( null ), lightNormals( null )
   {}
 
   MD2::~MD2()
@@ -284,9 +284,10 @@ namespace client
     Vec3      *pVerts;
     int       *pNormals;
 
-    String modelFile = String( path ) + "/tris.md2";
-    String skinFile = String( path ) + "/skin.jpg";
-    String configFile = String( path ) + "/skin.jpg";
+    String sPath = path;
+    String modelFile = sPath + "/tris.md2";
+    String skinFile = sPath + "/skin.jpg";
+    String configFile = sPath + "/config.xml";
 
     logFile.print( "Loading MD2 model '%s' ... ", modelFile.cstr() );
 
@@ -346,13 +347,26 @@ namespace client
     Config config;
     config.load( configFile );
 
-    float scale = config.read( "scale", 1.0f );
-    Vec3 translate( config.read( "translate.x", 0.0f ),
-                    config.read( "translate.y", 0.0f ),
-                    config.read( "translate.z", 0.0f ) );
+    float scaling = config.read( "scale", 1.0f );
+    Vec3 translation( config.read( "translate.x", 0.0f ),
+                      config.read( "translate.y", 0.0f ),
+                      config.read( "translate.z", 0.0f ) );
+    Vec3 crouchTranslation( config.read( "crouchTranslate.x", 0.0f ),
+                            config.read( "crouchTranslate.y", 0.0f ),
+                            config.read( "crouchTranslate.z", 0.0f ) );
+    config.clear();
 
-    scale( scale );
-
+    if( scaling != 1.0f ) {
+      scale( scaling );
+    }
+    if( !translation.isZero() ) {
+      translate( translation );
+      translate( ANIM_CROUCH_STAND,  crouchTranslation );
+      translate( ANIM_CROUCH_WALK,   crouchTranslation );
+      translate( ANIM_CROUCH_ATTACK, crouchTranslation );
+      translate( ANIM_CROUCH_PAIN,   crouchTranslation );
+      translate( ANIM_CROUCH_DEATH,  crouchTranslation );
+    }
 
     if( texId == 0 ) {
       return false;
@@ -477,13 +491,11 @@ namespace client
     glFrontFace( GL_CCW );
   }
 
-  uint MD2::genList( const char *path, float scale, const Vec3 &t )
+  uint MD2::genList( const char *path )
   {
     MD2 md2;
 
     md2.load( path );
-    md2.scale( scale );
-    md2.translate( t );
 
     uint list = context.genList();
 

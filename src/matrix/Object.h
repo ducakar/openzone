@@ -58,7 +58,7 @@ namespace oz
       // if the object is dynamic
       static const int DYNAMIC_BIT = 0x00400000;
 
-      // if object is still and on surface, we won't handle physics for it
+      // if object is still and on a still surface, we won't handle physics for it
       static const int DISABLED_BIT = 0x00200000;
 
       // if the object is immune to gravity
@@ -109,7 +109,6 @@ namespace oz
 
       static const int BOT_BIT = 0x00000080;
       static const int WATER_BIT = 0x00000040;
-      static const int SPARKGEN_BIT = 0x00000020;
 
       /*
        *  FIELDS
