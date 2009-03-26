@@ -104,7 +104,7 @@ namespace client
       void translate( const Vec3 &t );
       void translate( int animType, const Vec3 &t );
 
-      static uint genList( const char *path, float scale = 1.0f, const Vec3 &t = Vec3::zero() );
+      static uint genList( const char *path );
 
   };
 

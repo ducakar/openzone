@@ -17,6 +17,8 @@ namespace oz
   {
     ObjectClass *clazz = new ObjectClass();
 
+    clazz->name = config->get( "name" );
+
     clazz->dim.x = config->read( "dim.x", 0.5f );
     clazz->dim.y = config->read( "dim.y", 0.5f );
     clazz->dim.z = config->read( "dim.z", 0.5f );

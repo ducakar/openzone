@@ -143,7 +143,7 @@ namespace client
     }
     else {
       if( !models.contains( (uint) obj ) ) {
-        models.add( (uint) obj, MD2StaticModel::create( obj->type ) );
+        models.add( (uint) obj, context.createModel( obj ) );
       }
       // draw model
       models.cachedValue()->draw();
@@ -396,7 +396,6 @@ namespace client
   void Render::free()
   {
     models.clear();
-    md2s.free();
     bsps.free();
     context.free();
   }

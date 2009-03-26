@@ -189,7 +189,6 @@ namespace oz
       QBSPTexture texture;
 
       fread( &texture, sizeof( QBSPTexture ), 1, f );
-      logFile.print( "texture %s ...", texture.name );
 
       if( String::length( texture.name ) <= 9 ||
           String::equals( texture.name, "textures/NULL" ) )
@@ -203,8 +202,6 @@ namespace oz
       if( texture.flags != 0 ) {
         textures[i] = ~textures[i];
       }
-
-      logFile.printRaw( " %d\n", textures[i] );
     }
 
     int nPlanes = lumps[QBSP_LUMP_PLANES].length / sizeof( BSP::Plane );

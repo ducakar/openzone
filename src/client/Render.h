@@ -44,10 +44,6 @@ namespace client
       Vector<BSP*> bsps;
       Bitset       drawnStructures;
 
-      Vector<uint> lists;
-
-      Vector<MD2*> md2s;
-
       HashIndex<Model*, 1024> models;
 
       Vector<Structure*> structures;

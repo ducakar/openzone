@@ -75,4 +75,5 @@
  * Utilities
  */
 #include "LogFile.h"
+#include "Exit.h"
 #include "Config.h"

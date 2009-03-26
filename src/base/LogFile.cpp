@@ -49,6 +49,11 @@ namespace oz
     return true;
   }
 
+  bool LogFile::isFile() const
+  {
+    return !isStdout;
+  }
+
   void LogFile::printRaw( const char *s, ... ) const
   {
     va_list ap;

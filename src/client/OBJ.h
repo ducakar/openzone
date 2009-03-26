@@ -62,7 +62,7 @@ namespace client
                            Vector<Vec3> *tempNormals,
                            Vector<TexCoord> *tempTexCoords ) const;
       bool readFace( char *pos, Face *face ) const;
-      bool loadMaterial( const char *path );
+      bool loadMaterial( const String &path );
 
     public:
 
@@ -73,7 +73,7 @@ namespace client
       void free();
 
       void draw() const;
-      static uint genList( const char *file, float scale = 1.0f, const Vec3 &t = Vec3::zero() );
+      static uint genList( const char *file );
 
       void scale( float scale );
       void translate( const Vec3 &t );

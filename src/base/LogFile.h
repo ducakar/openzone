@@ -32,6 +32,11 @@ namespace oz
       bool init( const char *fileName, bool clearFile = true, const char *indentStr = "  " );
 
       /**
+       * @return true, if writting in a file
+       */
+      bool isFile() const;
+
+      /**
        * Indents and prints the text.
        * @param s
        */

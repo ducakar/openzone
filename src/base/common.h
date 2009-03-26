@@ -342,8 +342,6 @@ namespace oz
   template <class Type>
   inline void aSort( Type *array, int count )
   {
-    assert( count > 1 );
-
     quicksort( array, array + count - 1 );
   }
 

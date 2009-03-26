@@ -1,5 +1,5 @@
 /*
- *  MD2StaticModel.h
+ *  MD2Model.h
  *
  *  [description]
  *
@@ -8,18 +8,24 @@
 
 #pragma once
 
+#include "matrix/Bot.h"
 #include "Model.h"
+#include "MD2.h"
 
 namespace oz
 {
 namespace client
 {
 
-  struct MD2StaticModel : Model
+  struct MD2Model : Model
   {
-    uint list;
+    Bot            *bot;
+    MD2            *md2;
+    MD2::AnimState anim;
 
     static Model *create( const Object *object );
+
+    void setAnim( int type );
     virtual void draw();
   };
 

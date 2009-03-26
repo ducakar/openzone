@@ -17,6 +17,12 @@ namespace oz
 namespace client
 {
 
+  MD3::MD3()
+  {}
+
+  MD3::~MD3()
+  {}
+
   bool MD3::load( const char * )
   {
     //FILE *file;
