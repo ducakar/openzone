@@ -403,8 +403,14 @@ namespace client
     for( int i = 0; i < nFaces; i++ ) {
       Face &face = faces[i];
 
-      glBegin( GL_POLYGON );
-        for( int j = 0; j < face.nVerts; j++ ) {
+      // draw polygon as a triangle strip
+      glBegin( GL_TRIANGLE_STRIP );
+        assert( face.nVerts >= 3 );
+
+        int outerMiddle = face.nVerts / 2 + 1;
+        int innerMiddle = ( face.nVerts - 1 ) / 2;
+        for( int j = 0; j < outerMiddle; j++ ) {
+
           if( texCoords ) {
             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
           }
@@ -412,6 +418,18 @@ namespace client
             glNormal3fv( normals[face.normIndices[j]] );
           }
           glVertex3fv( vertices[face.vertIndices[j]] );
+
+          if( j == 0 || j > innerMiddle ) {
+            continue;
+          }
+
+          if( texCoords ) {
+            glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[face.nVerts - j]] );
+          }
+          if( normals ) {
+            glNormal3fv( normals[face.normIndices[face.nVerts - j]] );
+          }
+          glVertex3fv( vertices[face.vertIndices[face.nVerts - j]] );
         }
       glEnd();
     }

@@ -282,7 +282,7 @@ namespace client
       shutdown();
       return;
     }
-//     soundManager.loadMusic( "music/music.ogg" );
+    soundManager.loadMusic( "music/01_fanatic-assault.ogg" );
 
     logFile.unindent();
     logFile.println( "}" );
