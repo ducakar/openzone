@@ -43,8 +43,8 @@ namespace client
     logFile.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
     logFile.println( "OpenAL extensions: %s", alGetString( AL_EXTENSIONS ) );
 
-    logFile.println( "FreeALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
-    logFile.println( "FreeALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_MEMORY ) );
+    logFile.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
+    logFile.println( "ALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_MEMORY ) );
 
     alGenSources( 1, &musicSource );
 
@@ -52,14 +52,8 @@ namespace client
     alSourcefv( musicSource, AL_POSITION, Vec3::zero() );
     alSourcefv( musicSource, AL_DIRECTION, Vec3::zero() );
 
-    float fVolume;
-    float fMusicVolume;
-
-    sscanf( config["sound.volume.effects"], "%f", &fVolume );
-    sscanf( config["sound.volume.music"], "%f", &fMusicVolume );
-
-    setVolume( fVolume );
-    setMusicVolume( fMusicVolume );
+    setVolume( config.read( "sound.volume.effects", 1.0f ) );
+    setMusicVolume( config.read( "sound.music.effects", 1.0f ) );
 
     return true;
   }
@@ -93,45 +87,45 @@ namespace client
   {
     logFile.print( "Loading sound '%s' ...", file );
 
-//     FILE *oggFile = fopen( file, "rb" );
-//     OggVorbis_File oggStream;
-//
-//     if( oggFile == null ) {
-//       logFile.printRaw( " Failed\n" );
-//       return false;
-//     }
-//     if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
-//       fclose( oggFile );
-//       logFile.printRaw( " Failed\n" );
-//       return false;
-//     }
-//
-//     vorbis_info *vorbisInfo = ov_info( &oggStream, -1 );
-//     ALenum format = ( vorbisInfo->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16 );
-//     int size = oggStream.end - oggStream.offset;
-//
-//     logFile.println( "%d %d", size, vorbisInfo->rate );
-//
-//     char data[size];
-//     int section;
-//     ov_read( &oggStream, data, size, 0, 2, 1, &section );
-//     ov_clear( &oggStream );
-//
-//     alBufferData( buffers[sample], format, data, size, vorbisInfo->rate );
-//
-//     logFile.printRaw( " OK\n" );
-//     return true;
+    FILE *oggFile = fopen( file, "rb" );
+    OggVorbis_File oggStream;
 
-    buffers[sample] = alutCreateBufferFromFile( file );
-
-    if( buffers[sample] == AL_NONE ) {
+    if( oggFile == null ) {
       logFile.printRaw( " Failed\n" );
       return false;
     }
-    else {
-      logFile.printRaw( " OK\n" );
-      return true;
+    if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
+      fclose( oggFile );
+      logFile.printRaw( " Failed\n" );
+      return false;
     }
+
+    vorbis_info *vorbisInfo = ov_info( &oggStream, -1 );
+    ALenum format = ( vorbisInfo->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16 );
+    int size = oggStream.end - oggStream.offset;
+
+    logFile.println( "%d %d", size, vorbisInfo->rate );
+
+    char data[size];
+    int section;
+    ov_read( &oggStream, data, size, 0, 2, 1, &section );
+    ov_clear( &oggStream );
+
+    alBufferData( buffers[sample], format, data, size, vorbisInfo->rate );
+
+    logFile.printRaw( " OK\n" );
+    return true;
+
+//     buffers[sample] = alutCreateBufferFromFile( file );
+//
+//     if( buffers[sample] == AL_NONE ) {
+//       logFile.printRaw( " Failed\n" );
+//       return false;
+//     }
+//     else {
+//       logFile.printRaw( " OK\n" );
+//       return true;
+//     }
   }
 
   void SoundManager::playSector( int sectorX, int sectorY )
@@ -199,58 +193,58 @@ namespace client
   void SoundManager::update()
   {
     // add new sounds
-    alListenerfv( AL_ORIENTATION, camera.at );
-    alListenerfv( AL_POSITION, camera.p );
-
-    world.getInters( camera.p, DMAX );
-
-    for( int x = world.minSectX ; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
-        playSector( x, y );
-      }
-    }
-
-    // remove continous sounds that are not played any more
-    for( HashIndex<ContSource, HASHTABLE_SIZE>::Iterator i( contSources );
-         !i.isPassed(); )
-    {
-      ContSource *src = i;
-      uint key = i.key();
-
-      // we should advance now, so that we don't remove the element the iterator is pointing at
-      i++;
-
-      if( src->state == ContSource::NOT_UPDATED ) {
-        alSourceStop( src->source );
-        alDeleteSources( 1, &src->source );
-        contSources.remove( key );
-      }
-      else {
-        src->state = ContSource::NOT_UPDATED;
-      }
-    }
-
-    // remove stopped sources of non-continous sounds
-    if( clearCount >= CLEAR_INTERVAL ) {
-      Source *src = sources.first();
-
-      while( src != null ) {
-        Source *next = src->next[0];
-        ALint value = AL_STOPPED;
-
-        alGetSourcei( src->source, AL_SOURCE_STATE, &value );
-
-        if( value != AL_PLAYING ) {
-          alDeleteSources( 1, &src->source );
-
-          sources.remove( src );
-          delete src;
-        }
-        src = next;
-      }
-      clearCount -= CLEAR_INTERVAL;
-    }
-    clearCount += timer.frameMillis;
+//     alListenerfv( AL_ORIENTATION, camera.at );
+//     alListenerfv( AL_POSITION, camera.p );
+//
+//     world.getInters( camera.p, DMAX );
+//
+//     for( int x = world.minSectX ; x <= world.maxSectX; x++ ) {
+//       for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+//         playSector( x, y );
+//       }
+//     }
+//
+//     // remove continous sounds that are not played any more
+//     for( HashIndex<ContSource, HASHTABLE_SIZE>::Iterator i( contSources );
+//          !i.isPassed(); )
+//     {
+//       ContSource *src = i;
+//       uint key = i.key();
+//
+//       // we should advance now, so that we don't remove the element the iterator is pointing at
+//       i++;
+//
+//       if( src->state == ContSource::NOT_UPDATED ) {
+//         alSourceStop( src->source );
+//         alDeleteSources( 1, &src->source );
+//         contSources.remove( key );
+//       }
+//       else {
+//         src->state = ContSource::NOT_UPDATED;
+//       }
+//     }
+//
+//     // remove stopped sources of non-continous sounds
+//     if( clearCount >= CLEAR_INTERVAL ) {
+//       Source *src = sources.first();
+//
+//       while( src != null ) {
+//         Source *next = src->next[0];
+//         ALint value = AL_STOPPED;
+//
+//         alGetSourcei( src->source, AL_SOURCE_STATE, &value );
+//
+//         if( value != AL_PLAYING ) {
+//           alDeleteSources( 1, &src->source );
+//
+//           sources.remove( src );
+//           delete src;
+//         }
+//         src = next;
+//       }
+//       clearCount -= CLEAR_INTERVAL;
+//     }
+//     clearCount += timer.frameMillis;
 
     updateMusic();
   }
