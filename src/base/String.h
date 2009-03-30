@@ -56,8 +56,8 @@ namespace oz
 
       String( bool b ) : buffer( baseBuffer )
       {
-        // against supidly small buffers
-        assert( BUFFER_SIZE > 5 );
+        // some protection against too small buffers
+        assert( BUFFER_SIZE >= 6 );
 
         if( b ) {
           count = 4;
@@ -80,14 +80,18 @@ namespace oz
         }
       }
 
-      String( int n )
+      String( int n ) : buffer( baseBuffer ), count( 1 )
       {
+        // that should assure enough space, since log10( 2^( 8*sizeof(int) ) ) <= 3*sizeof(int),
+        // +2 for sign and terminating null char
+        assert( BUFFER_SIZE >= 3 * (int) sizeof( int ) + 2 );
+
         // we have [sign +] first digit + remaining digits
         // since we always count first digit, we assure that we never get 0 digits (if n == 0)
 
-        // first, we count first digit + remaining digits
+        // first, we count first digit + remaining digits (count has been set to 1 in initialization)
         int nn = n / 10;
-        for( count = 1; nn != 0; count++ ) {
+        while( nn != 0 ) {
           nn /= 10;
           count++;
         }
@@ -96,22 +100,24 @@ namespace oz
         if( n < 0 ) {
           n = -n;
           count++;
-          ensureCapacity();
           buffer[0] = '-';
         }
-        else {
-          ensureCapacity();
-        }
+
+        // terminating null character
+        buffer[count] = '\0';
 
         // we always write first digit
-        buffer[count] = '0' + ( n % 10 );
+        buffer[count - 1] = '0' + ( n % 10 );
         n /= 10;
 
-        for( int i = count - 1; n != 0; i-- ) {
+        for( int i = count - 2; n != 0; i-- ) {
           buffer[i] = '0' + ( n % 10 );
           n /= 10;
         }
       }
+
+      String( float f );
+      String( double d );
 
       ~String()
       {

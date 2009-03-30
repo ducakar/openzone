@@ -8,6 +8,7 @@
 
 #include "base.h"
 
+#include <stdlib.h>
 #include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
 
@@ -27,48 +28,58 @@ namespace oz
 
   Config config;
 
-  bool Config::read( const char *name, bool defVal )
+  bool Config::get( const char *name, bool defVal )
   {
-    if( contains( name ) ) {
-      assert( get( name ) == "0" || get( name ) == "1" );
+    assert( !vars.contains( name ) ||
+            vars.cachedValue() == "true" ||
+            vars.cachedValue() == "false" );
 
-      return atoi( get( name ) ) != 0;
+    if( vars.contains( name ) ) {
+      if( vars.cachedValue() == "true" ) {
+        return true;
+      }
+      else if( vars.cachedValue() == "false" ) {
+        return false;
+      }
+      else {
+        return defVal;
+      }
     }
     else {
-      logFile.println( "missing property %s", name );
+      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  int Config::read( const char *name, int defVal )
+  int Config::get( const char *name, int defVal )
   {
-    if( contains( name ) ) {
-      return atoi( get( name ) );
+    if( vars.contains( name ) ) {
+      return atoi( vars.cachedValue() );
     }
     else {
-      logFile.println( "missing property %s", name );
+      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  float Config::read( const char *name, float defVal )
+  float Config::get( const char *name, float defVal )
   {
-    if( contains( name ) ) {
-      return strtof( get( name ), null );
+    if( vars.contains( name ) ) {
+      return strtof( vars.cachedValue(), null );
     }
     else {
-      logFile.println( "missing property %s", name );
+      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  const char *Config::read( const char *name, const char *defVal )
+  const char *Config::get( const char *name, const char *defVal )
   {
-    if( contains( name ) ) {
-      return get( name );
+    if( vars.contains( name ) ) {
+      return vars.cachedValue();
     }
     else {
-      logFile.println( "missing property %s", name );
+      vars.add( name, defVal );
       return defVal;
     }
   }

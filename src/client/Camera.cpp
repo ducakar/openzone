@@ -29,7 +29,7 @@ namespace client
 
   void Camera::init()
   {
-    sscanf( config["render.camera.smoothCoef"], "%f", &smoothCoef );
+    smoothCoef = config.get( "render.camera.smoothCoef", 0.3f );
     smoothCoef_1 = 1.0f - smoothCoef;
   }
 

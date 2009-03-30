@@ -347,13 +347,13 @@ namespace client
     Config config;
     config.load( configFile );
 
-    float scaling = config.read( "scale", 1.0f );
-    Vec3 translation( config.read( "translate.x", 0.0f ),
-                      config.read( "translate.y", 0.0f ),
-                      config.read( "translate.z", 0.0f ) );
-    Vec3 crouchTranslation( config.read( "crouchTranslate.x", 0.0f ),
-                            config.read( "crouchTranslate.y", 0.0f ),
-                            config.read( "crouchTranslate.z", 0.0f ) );
+    float scaling = config.get( "scale", 1.0f );
+    Vec3 translation( config.get( "translate.x", 0.0f ),
+                      config.get( "translate.y", 0.0f ),
+                      config.get( "translate.z", 0.0f ) );
+    Vec3 crouchTranslation( config.get( "crouchTranslate.x", 0.0f ),
+                            config.get( "crouchTranslate.y", 0.0f ),
+                            config.get( "crouchTranslate.z", 0.0f ) );
     config.clear();
 
     if( scaling != 1.0f ) {

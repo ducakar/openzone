@@ -26,19 +26,17 @@ namespace client
       static const int INIT_SDL = 0x01;
       static const int INIT_SDL_VIDEO = 0x02;
       static const int INIT_RENDER_INIT = 0x04;
-      static const int INIT_SOUND = 0x08;
+      static const int INIT_AUDIO = 0x08;
       static const int INIT_CLIENT_INIT = 0x10;
       static const int INIT_RENDER_LOAD = 0x20;
       static const int INIT_CLIENT_START = 0x40;
 
       int initFlags;
 
-      void defaultConfig();
-      void shutdown();
-
     public:
 
       void main();
+      void shutdown();
 
   };
 

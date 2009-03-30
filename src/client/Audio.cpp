@@ -1,5 +1,5 @@
 /*
- *  SoundManager.cpp
+ *  Audio.cpp
  *
  *  [description]
  *
@@ -8,7 +8,7 @@
 
 #include "precompiled.h"
 
-#include "SoundManager.h"
+#include "Audio.h"
 
 #include "Camera.h"
 
@@ -17,12 +17,12 @@ namespace oz
 namespace client
 {
 
-  SoundManager soundManager;
+  Audio audio;
 
-  const float SoundManager::DMAX = 100.0f;
-  const float SoundManager::DMAX_SQ = DMAX * DMAX;
+  const float Audio::DMAX = 100.0f;
+  const float Audio::DMAX_SQ = DMAX * DMAX;
 
-  bool SoundManager::init()
+  bool Audio::init()
   {
     logFile.print( "Initializing OpenAL audio device ..." );
 
@@ -49,16 +49,15 @@ namespace client
     alGenSources( 1, &musicSource );
 
     alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
-    alSourcefv( musicSource, AL_POSITION, Vec3::zero() );
-    alSourcefv( musicSource, AL_DIRECTION, Vec3::zero() );
+    alSourcei( musicSource, AL_ROLLOFF_FACTOR, 0 );
 
-    setVolume( config.read( "sound.volume.effects", 1.0f ) );
-    setMusicVolume( config.read( "sound.music.effects", 1.0f ) );
+    setVolume( config.get( "sound.volume.effects", 1.0f ) );
+    setMusicVolume( config.get( "sound.music.effects", 1.0f ) );
 
     return true;
   }
 
-  void SoundManager::free()
+  void Audio::free()
   {
     for( Source *src = sources.first(); src != null; src = src->next[0] ) {
       alSourceStop( src->source );
@@ -83,7 +82,7 @@ namespace client
     alutExit();
   }
 
-  bool SoundManager::load( int sample, const char *file )
+  bool Audio::load( int sample, const char *file )
   {
     logFile.print( "Loading sound '%s' ...", file );
 
@@ -128,7 +127,7 @@ namespace client
 //     }
   }
 
-  void SoundManager::playSector( int sectorX, int sectorY )
+  void Audio::playSector( int sectorX, int sectorY )
   {
     Sector &sector = world.sectors[sectorX][sectorY];
 
@@ -190,7 +189,7 @@ namespace client
     }
   }
 
-  void SoundManager::update()
+  void Audio::update()
   {
     // add new sounds
 //     alListenerfv( AL_ORIENTATION, camera.at );
@@ -249,7 +248,7 @@ namespace client
     updateMusic();
   }
 
-  bool SoundManager::loadMusic( const char *file )
+  bool Audio::loadMusic( const char *file )
   {
     logFile.print( "Loading music '%s' ...", file );
 
@@ -272,15 +271,16 @@ namespace client
     isMusicPlaying = true;
 
     alGenBuffers( 2, musicBuffers );
-    alSourceQueueBuffers( musicSource, 2, musicBuffers );
-
-    updateMusic();
+    loadMusicBuffer( musicBuffers[0] );
+    loadMusicBuffer( musicBuffers[1] );
+    alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
+    alSourcePlay( musicSource );
 
     logFile.printRaw( " OK\n" );
     return true;
   }
 
-  void SoundManager::freeMusic()
+  void Audio::freeMusic()
   {
     if( isMusicLoaded ) {
       alSourceStop( musicSource );
@@ -293,57 +293,50 @@ namespace client
     }
   }
 
-  void SoundManager::updateMusic()
+  void Audio::loadMusicBuffer( ALuint buffer )
+  {
+    char data[MUSIC_BUFFER_SIZE];
+    int  section;
+    int  size = 0;
+    int  result;
+
+    do {
+      result = ov_read( &oggStream, &data[size], MUSIC_BUFFER_SIZE - size, 0, 2, 1, &section );
+      size += result;
+      if( result < 0 ) {
+        isMusicPlaying = false;
+        return;
+      }
+    }
+    while( result > 0 && size < MUSIC_BUFFER_SIZE );
+
+    alBufferData( buffer, musicFormat, data, size, vorbisInfo->rate );
+  }
+
+  void Audio::updateMusic()
   {
     if( !isMusicPlaying ) {
       return;
     }
 
     int processed;
-
     alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &processed );
 
     while( processed > 0 ) {
       ALuint buffer;
-
       alSourceUnqueueBuffers( musicSource, 1, &buffer );
-
-      char data[MUSIC_BUFFER_SIZE];
-      int  size = 0;
-
-      while( size < MUSIC_BUFFER_SIZE ) {
-        int section;
-        int result = ov_read( &oggStream, &data[size], MUSIC_BUFFER_SIZE - size, 0, 2, 1, &section );
-
-        if( result <= 0 ) {
-          alSourceQueueBuffers( musicSource, 1, &buffer );
-
-          isMusicPlaying = false;
-          return;
-        }
-        size += result;
-      }
-
-      alBufferData( buffer, musicFormat, data, size, vorbisInfo->rate );
+      loadMusicBuffer( buffer );
       alSourceQueueBuffers( musicSource, 1, &buffer );
-
       processed--;
-    }
-
-    ALint value;
-    alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
-
-    if( value != AL_PLAYING ) {
-      alSourcePlay( musicSource );
     }
   }
 
-  void SoundManager::setVolume( float volume )
+  void Audio::setVolume( float volume )
   {
     alListenerf( AL_GAIN, volume );
   }
 
-  void SoundManager::setMusicVolume( float volume )
+  void Audio::setMusicVolume( float volume )
   {
     alSourcef( musicSource, AL_GAIN, volume );
   }

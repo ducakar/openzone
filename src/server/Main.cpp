@@ -108,7 +108,7 @@ namespace server
       logFile.println( "}" );
     }
 
-    const char *data = config["data"].cstr();
+    const char *data = config.get( "data", "/usr/share/openzone" );
 
     logFile.print( "Going to working directory '%s' ...", (const char*) data );
 
@@ -129,7 +129,7 @@ namespace server
 
     bool isAlive = true;
 
-    Uint32 tick     = atoi( config["tick"] );
+    Uint32 tick     = config.get( "tick", 20 );
     Uint32 time;
     Uint32 timeZero = SDL_GetTicks();
     Uint32 timeLast = timeZero;
