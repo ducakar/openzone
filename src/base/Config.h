@@ -28,23 +28,14 @@ namespace oz
       // Hashtable of variables.
       HashString<String, SIZE> vars;
 
-      // No copying
-      Config( const Config& );
-
     public:
-
-      /**
-       * Default constructor.
-       */
-      Config()
-      {}
 
       /**
        * Add variable.
        * @param key variable name
        * @param value variable value
        */
-      void add( const String &key, const String &value )
+      void add( const char *key, const char *value )
       {
         if( vars.contains( key ) ) {
           vars.cachedValue() = value;
@@ -58,7 +49,7 @@ namespace oz
        * Remove variable.
        * @param key variable name
        */
-      void remove( const String &key )
+      void remove( const char *key )
       {
         vars.remove( key );
       }
@@ -67,28 +58,58 @@ namespace oz
        * @param key variable name
        * @return true if config contains the variable
        */
-      bool contains( const String &key )
+      bool contains( const char *key )
       {
         return vars.contains( key );
       }
 
       /**
+       * Get value of variable. Only use this function if you are sure the key exists.
        * @param key variable name
        * @return variable value
        */
-      String &operator [] ( const String &key )
-      {
-        return get( key );
-      }
-
-      /**
-       * @param key variable name
-       * @return variable value
-       */
-      String &get( const String &key )
+      const String &operator [] ( const char *key )
       {
         return vars[key];
       }
+
+      /**
+       * Get value of variable. Only use this function if you are sure the key exists.
+       * @param key variable name
+       * @return variable value
+       */
+      const String &get ( const char *key )
+      {
+        return vars[key];
+      }
+
+      /**
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configration
+       * @return value of given variable
+       */
+      bool get( const char *name, bool defVal );
+
+      /**
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configration
+       * @return value of given variable
+       */
+      int get( const char *name, int defVal );
+
+      /**
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configration
+       * @return value of given variable
+       */
+      float get( const char *name, float defVal );
+
+      /**
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configration
+       * @return value of given variable
+       */
+      const char *get( const char *name, const char *defVal );
 
       /**
        * Load variables from an XML file. It only reads the nodes named "var" that must have the
@@ -118,11 +139,6 @@ namespace oz
        * Clear variables.
        */
       void clear();
-
-      bool read( const char *name, bool defVal );
-      int read( const char *name, int defVal );
-      float read( const char *name, float defVal );
-      const char *read( const char *name, const char *defVal );
 
       /**
        * Print variables to a formatted String. It's formatted like

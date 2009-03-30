@@ -11,7 +11,7 @@
 #include "Main.h"
 
 #include "Client.h"
-#include "SoundManager.h"
+#include "Audio.h"
 #include "Render.h"
 
 #ifdef WIN32
@@ -30,48 +30,6 @@ namespace client
 
   Main main;
 
-  void Main::defaultConfig()
-  {
-    config.add( "data",                               "/usr/share/dark/data" );
-    config.add( "tick",                               "20" );
-
-    config.add( "screen.width",                       "1024" );
-    config.add( "screen.height",                      "768" );
-    config.add( "screen.bpp",                         "32" );
-    config.add( "screen.nvVSync",                     "1" );
-    config.add( "screen.full",                        "1" );
-
-    config.add( "sound.volume.effects",               "1.0" );
-    config.add( "sound.volume.music",                 "1.0" );
-
-    // SDL_mixer
-#ifdef __WIN32__
-    config.add( "sound.sdl.device",                   "waveout" );
-#else
-    config.add( "sound.sdl.device",                   "alsa" );
-#endif
-    config.add( "sound.sdl.frequency",                "44100" );
-    config.add( "sound.sdl.channels",                 "2" );
-    config.add( "sound.sdl.chunkSize",                "512" );
-
-    config.add( "input.mouse.xSens",                  "0.2" );
-    config.add( "input.mouse.ySens",                  "0.2" );
-    config.add( "input.keys.xSens",                   "0.2" );
-    config.add( "input.keys.ySens",                   "0.2" );
-
-    config.add( "render.perspective.angle",           "80.0" );
-    config.add( "render.perspective.aspect",          "0.0" );
-    config.add( "render.perspective.min",             "0.1" );
-    config.add( "render.perspective.max",             "300.0" );
-
-    config.add( "render.camera.smoothCoef",           "0.3" );
-
-    config.add( "render.particleRadius",              "0.5" );
-    config.add( "render.drawAABBs",                   "0" );
-    config.add( "render.showAim",                     "0" );
-    config.add( "render.blendHeaven",                 "1" );
-  }
-
   void Main::shutdown()
   {
     if( initFlags & INIT_CLIENT_START ) {
@@ -88,10 +46,10 @@ namespace client
       logFile.unindent();
       logFile.printRaw( " OK\n" );
     }
-    if( initFlags & INIT_SOUND ) {
-      logFile.print( "Shutting down Sound ..." );
+    if( initFlags & INIT_AUDIO ) {
+      logFile.print( "Shutting down Audio ..." );
       logFile.indent();
-      soundManager.free();
+      audio.free();
       logFile.unindent();
       logFile.printRaw( " OK\n" );
     }
@@ -116,7 +74,7 @@ namespace client
   {
 #ifdef WIN32
     const char *homeVar = getenv( "HOME" );
-    String home( homeVar == null ? OZ_RC_DIR : homeVar + String( "\\" OZ_RC_DIR ) );
+    String home = String( homeVar == null ? OZ_RC_DIR : homeVar + String( "\\" OZ_RC_DIR ) );
 
     struct _stat homeDirStat;
     if( _stat( home.cstr(), &homeDirStat ) ) {
@@ -132,7 +90,7 @@ namespace client
     home = home + "\\";
 #else
     const char *homeVar = getenv( "HOME" );
-    String home( homeVar == null ? OZ_RC_DIR "/" : homeVar + String( "/" OZ_RC_DIR "/" ) );
+    String home = String( homeVar == null ? OZ_RC_DIR "/" : homeVar + String( "/" OZ_RC_DIR "/" ) );
 
     struct stat homeDirStat;
     if( stat( home.cstr(), &homeDirStat ) ) {
@@ -175,34 +133,14 @@ namespace client
 
     initFlags |= INIT_SDL;
 
-    logFile.print( "Loading default config ..." );
-    defaultConfig();
-    logFile.printRaw( " OK\n" );
-
     const char *configPath = ( home + OZ_CONFIG_FILE ).cstr();
+    config.load( configPath );
 
-    if( !config.load( configPath ) ) {
-      logFile.println( "Config not found, creating default {", configPath );
-      logFile.indent();
-
-      printf( "Config not found, creating default '%s' ...", configPath );
-
-      if( !config.save( configPath ) ) {
-        printf( " Failed\n" );
-        shutdown();
-        return;
-      }
-      printf( " OK\n" );
-
-      logFile.unindent();
-      logFile.println( "}" );
-    }
-
-    logFile.println( "Printing current config {" );
+    logFile.println( "Printing loaded config {" );
     logFile.print( "%s", config.toString( "  " ).cstr() );
     logFile.println( "}" );
 
-    const char *data = config["data"].cstr();
+    const char *data = config.get( "data", "/usr/share/openzone" );
 
     logFile.print( "Going to working directory '%s' ...", (const char*) data );
 
@@ -226,10 +164,10 @@ namespace client
     }
 #endif
 
-    int screenX    = atoi( config["screen.width"] );
-    int screenY    = atoi( config["screen.height"] );
-    int screenBpp  = atoi( config["screen.bpp"] );
-    int screenFull = config["screen.full"] == "1" ? SDL_FULLSCREEN : 0;
+    int screenX    = config.get( "screen.width", 1024 );
+    int screenY    = config.get( "screen.height", 768 );
+    int screenBpp  = config.get( "screen.bpp", 32 );
+    int screenFull = config.get( "screen.full", false ) ? SDL_FULLSCREEN : 0;
 
     Uint16 screenCenterX = (Uint16) ( screenX / 2 );
     Uint16 screenCenterY = (Uint16) ( screenY / 2 );
@@ -238,7 +176,7 @@ namespace client
                    screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
 
 #ifndef WIN32
-    if( config["screen.nvVSync"] == "1" ) {
+    if( config.get( "screen.nvVSync", true ) ) {
       putenv( (char*) "__GL_SYNC_TO_VBLANK=1" );
     }
 #endif
@@ -275,18 +213,18 @@ namespace client
 
     initFlags |= INIT_RENDER_INIT;
 
-    logFile.println( "Initializing Sound {" );
+    logFile.println( "Initializing Audio {" );
     logFile.indent();
 
-    if( !soundManager.init() ) {
+    if( !audio.init() ) {
       shutdown();
       return;
     }
-    soundManager.loadMusic( "music/01_fanatic-assault.ogg" );
+    audio.loadMusic( "music/01_fanatic-assault.ogg" );
 
     logFile.unindent();
     logFile.println( "}" );
-    initFlags |= INIT_SOUND;
+    initFlags |= INIT_AUDIO;
 
     logFile.println( "Initializing Game {" );
     logFile.indent();
@@ -321,7 +259,7 @@ namespace client
     bool isActive = true;
     int  nFrames = 0;
 
-    Uint32 tick     = atoi( config["tick"] );
+    Uint32 tick     = config.get( "tick", 20 );
     // time passed form start of the frame
     Uint32 time;
     Uint32 timeZero = SDL_GetTicks();
@@ -391,7 +329,7 @@ namespace client
 
       // update world
       isAlive &= client.update( tick );
-      soundManager.update();
+      audio.update();
 
       // render graphics, if we have enough time left
       time = SDL_GetTicks() - timeLast;
@@ -420,7 +358,11 @@ namespace client
 
     logFile.println( "Average framerate: %g",
                      (float) nFrames / (float) ( timeLast - timeZero ) * 1000.0f );
-    shutdown();
+
+    logFile.println( "Printing config at exit {" );
+    logFile.print( "%s", config.toString( "  " ).cstr() );
+    logFile.println( "}" );
+    config.save( configPath );
   }
 
 }
@@ -428,6 +370,18 @@ namespace client
 
 int main( int, char *[] )
 {
-  oz::client::main.main();
+  try {
+    oz::client::main.main();
+  }
+  catch( const char *e ) {
+    oz::logFile.println();
+    oz::logFile.println( "EXCEPTION: %s", e );
+
+    if( oz::logFile.isFile() ) {
+      printf( "EXCEPTION: %s\n", e );
+    }
+  }
+  oz::client::main.shutdown();
+
   return 0;
 }

@@ -56,14 +56,11 @@ namespace oz
       String fileName = "tex/" + name;
 
       if( name.length() <= 4  ) {
-        logFile.println( "skipping %s", fileName.cstr() );
         continue;
       }
 
       String extension = name.substring( name.length() - 4 );
-
       if( extension != ".jpg" && extension != ".png" ) {
-        logFile.println( "skipping %s", fileName.cstr() );
         continue;
       }
 
@@ -88,14 +85,11 @@ namespace oz
       String fileName = "tex/" + name;
 
       if( name.length() <= 4  ) {
-        logFile.println( "skipping %s", fileName.cstr() );
         continue;
       }
 
       String extension = name.substring( name.length() - 4 );
-
       if( extension != ".wav" && extension != ".ogg" ) {
-        logFile.println( "skipping %s", fileName.cstr() );
         continue;
       }
 
@@ -120,14 +114,11 @@ namespace oz
       String fileName = "class/" + name;
 
       if( name.length() <= 4 ) {
-        logFile.println( "skipping %s", fileName.cstr() );
         continue;
       }
 
       String extension = name.substring( name.length() - 4 );
-
       if( extension != ".xml" ) {
-        logFile.println( "skipping %s", fileName.cstr() );
         continue;
       }
 

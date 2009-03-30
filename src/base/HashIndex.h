@@ -274,10 +274,9 @@ namespace oz
        */
       HashIndex &operator = ( const HashIndex &t )
       {
+        assert( count == 0 );
+
         for( int i = 0; i < SIZE; i++ ) {
-          if( data[i] != null ) {
-            delete data[i];
-          }
           data[i] = copyChain( t.data[i] );
         }
         cached = t.cached;

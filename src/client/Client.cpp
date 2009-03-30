@@ -27,11 +27,10 @@ namespace client
 
   bool Client::init()
   {
-    logFile.println( "Setting game variables" );
-    sscanf( config["input.mouse.xSens"], "%f", &settings.mouseXSens );
-    sscanf( config["input.mouse.ySens"], "%f", &settings.mouseYSens );
-    sscanf( config["input.keys.xSens"], "%f", &settings.keyXSens );
-    sscanf( config["input.keys.ySens"], "%f", &settings.keyYSens );
+    settings.mouseXSens = config.get( "input.mouse.xSens", 0.2f );
+    settings.mouseYSens = config.get( "input.mouse.ySens", 0.2f );
+    settings.keyXSens   = config.get( "input.keys.xSens", 0.2f );
+    settings.keyYSens   = config.get( "input.keys.ySens", 0.2f );
 
     matrix.load();
     nirvana.load();

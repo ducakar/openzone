@@ -1,5 +1,5 @@
 /*
- *  SoundManager.h
+ *  Audio.h
  *
  *  [description]
  *
@@ -18,7 +18,7 @@ namespace oz
 namespace client
 {
 
-  class SoundManager
+  class Audio
   {
     private:
 
@@ -86,6 +86,7 @@ namespace client
       ALuint         musicSource;
       ALenum         musicFormat;
 
+      void loadMusicBuffer( ALuint buffer );
       void updateMusic();
       void freeMusic();
 
@@ -102,7 +103,7 @@ namespace client
 
   };
 
-  extern SoundManager soundManager;
+  extern Audio audio;
 
 }
 }

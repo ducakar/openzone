@@ -50,13 +50,13 @@ namespace client
 
     font.init( "base/font.png", 2.0f );
 
-    int screenX = atoi( config["screen.width"] );
-    int screenY = atoi( config["screen.height"] );
+    int screenX = config.get( "screen.width", 1024 );
+    int screenY = config.get( "screen.height", 768 );
 
-    sscanf( config["render.perspective.angle"], "%f", &perspectiveAngle );
-    sscanf( config["render.perspective.aspect"], "%f", &perspectiveAspect );
-    sscanf( config["render.perspective.min"], "%f", &perspectiveMin );
-    sscanf( config["render.perspective.max"], "%f", &perspectiveMax );
+    perspectiveAngle  = config.get( "render.perspective.angle", 80.0f );
+    perspectiveAspect = config.get( "render.perspective.aspect", 0.0f );
+    perspectiveMin    = config.get( "render.perspective.min", 0.1f );
+    perspectiveMax    = config.get( "render.perspective.max", 300.0f );
 
     if( perspectiveAspect == 0.0f ) {
       perspectiveAspect = (float) screenX / (float) screenY;
@@ -99,10 +99,10 @@ namespace client
 
     glEnable( GL_LIGHT0 );
 
-    sscanf( config["render.particleRadius"], "%f", &particleRadius );
-    drawAABBs   = config["render.drawAABBs"] == "1";
-    showAim     = config["render.showAim"] == "1";
-    blendHeaven = config["render.blendHeaven"] == "1";
+    particleRadius = config.get( "render.particleRadius", 0.5f );
+    drawAABBs      = config.get( "render.drawAABBs", false );
+    showAim        = config.get( "render.showAim", false );
+    blendHeaven    = config.get( "render.blendHeaven", false );
 
     camera.init();
     frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
