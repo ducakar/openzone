@@ -106,7 +106,7 @@ namespace oz
       /**
        * Create an empty list.
        */
-      DList() : firstElem( null ), lastElem( null )
+      explicit DList() : firstElem( null ), lastElem( null )
       {}
 
       /**

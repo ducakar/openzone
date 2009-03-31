@@ -166,7 +166,7 @@ namespace oz
 
     FILE *f = fopen( fileName, "rb" );
     if( f == null ) {
-      logFile.printRaw( " Not found\n" );
+      logFile.printEnd( " Not found" );
       return;
     }
 
@@ -174,7 +174,7 @@ namespace oz
     fread( &header, sizeof( Header ), 1, f );
 
     if( header.id != fourC( 'I', 'B', 'S', 'P' ) || header.version != 46 ) {
-      logFile.printRaw( " Wrong format\n" );
+      logFile.printEnd( " Wrong format" );
       return;
     }
 
@@ -376,7 +376,7 @@ namespace oz
       }
     }
 
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
   }
 
   void BSP::free()

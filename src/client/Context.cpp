@@ -173,10 +173,10 @@ namespace client
     int texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
 
     if( texNum == ~0 ) {
-      logFile.printRaw( " Error\n" );
+      logFile.printEnd( " Error" );
     }
     else {
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
 
     return texNum;
@@ -191,10 +191,10 @@ namespace client
                                  magFilter, minFilter );
 
     if( texNum == ~0 ) {
-      logFile.printRaw( " Error\n" );
+      logFile.printEnd( " Error" );
     }
     else {
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
 
     return texNum;
@@ -213,10 +213,10 @@ namespace client
 
     SDL_Surface *image = IMG_Load( fileName.cstr() );
     if( image == null ) {
-      logFile.printRaw( " No such file\n" );
+      logFile.printEnd( " No such file" );
       return 0;
     }
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
 
     assert( image->w == image->h );
 
@@ -245,10 +245,10 @@ namespace client
 
     SDL_Surface *image = IMG_Load( fileName.cstr() );
     if( image == null ) {
-      logFile.printRaw( " No such file\n" );
+      logFile.printEnd( " No such file" );
       return 0;
     }
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
 
     assert( image->w == image->h );
 
@@ -281,10 +281,10 @@ namespace client
 
     SDL_Surface *image = IMG_Load( fileName );
     if( image == null ) {
-      logFile.printRaw( " No such file\n" );
+      logFile.printEnd( " No such file" );
       return 0;
     }
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
 
 //     assert( image->w == image->h );
 
@@ -304,10 +304,10 @@ namespace client
 
     SDL_Surface *image = IMG_Load( fileName );
     if( image == null ) {
-      logFile.printRaw( " No such file\n" );
+      logFile.printEnd( " No such file" );
       return 0;
     }
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
 
     assert( image->w == image->h );
 

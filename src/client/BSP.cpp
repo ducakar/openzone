@@ -23,9 +23,6 @@ namespace oz
 namespace client
 {
 
-  BSP::BSP()
-  {}
-
   BSP::BSP( oz::BSP *bsp )
   {
     textures = null;
@@ -143,21 +140,23 @@ namespace client
     logFile.println( "}" );
   }
 
-  void BSP::draw( const Vec3 &p )
+  void BSP::draw( const Structure *str )
   {
     glPushMatrix();
-    glTranslatef( p.x, p.y, p.z );
+    glTranslatef( str->p.x, str->p.y, str->p.z );
+    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
 
     drawnFaces = hiddenFaces;
 
-    int    cluster = bsp->leafs[ getLeafIndex( camera.p ) ].cluster;
+    // TODO: rotated BSPs
+//     int    cluster = bsp->leafs[ getLeafIndex( camera.p ) ].cluster;
 //     printf( "%d\n", getLeafIndex( camera.p ) );
-    Bitset &bitset = bsp->visual.bitsets[cluster];
+//     Bitset &bitset = bsp->visual.bitsets[cluster];
 
     for( int i = 0; i < bsp->nLeafs; i++ ) {
       oz::BSP::Leaf &leaf = bsp->leafs[i];
 
-      if( ( cluster < 0 || bitset.get( leaf.cluster ) ) && frustum.isVisible( leaf + p ) ) {
+//       if( ( cluster < 0 || bitset.get( leaf.cluster ) ) && frustum.isVisible( leaf + t.p() ) ) {
         for( int j = 0; j < leaf.nFaces; j++ ) {
           int faceIndex = bsp->leafFaces[leaf.firstFace + j];
 
@@ -166,7 +165,7 @@ namespace client
             drawnFaces.set( faceIndex );
           }
         }
-      }
+//       }
     }
     glPopMatrix();
   }

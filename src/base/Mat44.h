@@ -11,37 +11,34 @@
 namespace oz
 {
 
-  struct Mat44
+  union Mat44
   {
     // WARNING: first index is column, second is line
-    float _00;
-    float _01;
-    float _02;
-    float _03;
-    float _10;
-    float _11;
-    float _12;
-    float _13;
-    float _20;
-    float _21;
-    float _22;
-    float _23;
-    float _30;
-    float _31;
-    float _32;
-    float _33;
+    float m[16];
 
-    Mat44()
+    struct
+    {
+      // first column (i base vector)
+      float xx, xy, xz, xw;
+      // second column (j base vector)
+      float yx, yy, yz, yw;
+      // third column (k base vector)
+      float zx, zy, zz, zw;
+      // last column (usually used for position)
+      float px, py, pz, pw;
+    };
+
+    explicit Mat44()
     {}
 
-    Mat44( float m00, float m01, float m02, float m03,
-           float m10, float m11, float m12, float m13,
-           float m20, float m21, float m22, float m23,
-           float m30, float m31, float m32, float m33 ) :
-        _00( m00 ), _01( m01 ), _02( m02 ), _03( m03 ),
-        _10( m10 ), _11( m11 ), _12( m12 ), _13( m13 ),
-        _20( m20 ), _21( m21 ), _22( m22 ), _23( m23 ),
-        _30( m30 ), _31( m31 ), _32( m32 ), _33( m33 )
+    explicit Mat44( float xx_, float xy_, float xz_, float xw_,
+                    float yx_, float yy_, float yz_, float yw_,
+                    float zx_, float zy_, float zz_, float zw_,
+                    float px_, float py_, float pz_, float pw_ ) :
+        xx( xx_ ), xy( xy_ ), xz( xz_ ), xw( xw_ ),
+        yx( yx_ ), yy( yy_ ), yz( yz_ ), yw( yw_ ),
+        zx( zx_ ), zy( zy_ ), zz( zz_ ), zw( zw_ ),
+        px( px_ ), py( py_ ), pz( pz_ ), pw( pw_ )
     {}
 
     explicit Mat44( const float *v )
@@ -50,24 +47,24 @@ namespace oz
     }
 
     explicit Mat44( const Mat33 &m ) :
-        _00( m._00 ), _01( m._01 ), _02( m._02 ), _03( 0.0f ),
-        _10( m._10 ), _11( m._11 ), _12( m._12 ), _13( 0.0f ),
-        _20( m._20 ), _21( m._21 ), _22( m._22 ), _23( 0.0f ),
-        _30(  0.0f ), _31(  0.0f ), _32(  0.0f ), _33( 1.0f )
+        xx( m.xx ), xy( m.xy ), xz( m.xz ), xw( 0.0f ),
+        yx( m.yx ), yy( m.yy ), yz( m.yz ), yw( 0.0f ),
+        zx( m.zx ), zy( m.zy ), zz( m.zz ), zw( 0.0f ),
+        px( 0.0f ), py( 0.0f ), pz( 0.0f ), pw( 1.0f )
     {}
 
-    Mat44( const Vec3 &a, const Vec3 &b, const Vec3 &c, const Vec3 &d ) :
-        _00( a.x ), _01( a.y ), _02( a.z ), _03( 0.0f ),
-        _10( b.x ), _11( b.y ), _12( b.z ), _13( 0.0f ),
-        _20( c.x ), _21( c.y ), _22( c.z ), _23( 0.0f ),
-        _30( d.x ), _31( d.y ), _32( d.z ), _33( 1.0f )
+    explicit Mat44( const Vec3 &a, const Vec3 &b, const Vec3 &c, const Vec3 &d ) :
+        xx( a.x ), xy( a.y ), xz( a.z ), xw( 0.0f ),
+        yx( b.x ), yy( b.y ), yz( b.z ), yw( 0.0f ),
+        zx( c.x ), zy( c.y ), zz( c.z ), zw( 0.0f ),
+        px( d.x ), py( d.y ), pz( d.z ), pw( 1.0f )
     {}
 
-    Mat44( const Quat &a, const Quat &b, const Quat &c, const Quat &d ) :
-        _00( a.x ), _01( a.y ), _02( a.z ), _03( a.w ),
-        _10( b.x ), _11( b.y ), _12( b.z ), _13( b.w ),
-        _20( c.x ), _21( c.y ), _22( c.z ), _23( c.w ),
-        _30( d.x ), _31( d.y ), _32( d.z ), _33( d.w )
+    explicit Mat44( const Quat &a, const Quat &b, const Quat &c, const Quat &d ) :
+        xx( a.x ), xy( a.y ), xz( a.z ), xw( a.w ),
+        yx( b.x ), yy( b.y ), yz( b.z ), yw( b.w ),
+        zx( c.x ), zy( c.y ), zz( c.z ), zw( c.w ),
+        px( d.x ), py( d.y ), pz( d.z ), pw( d.w )
     {}
 
     static Mat44 zero()
@@ -86,66 +83,106 @@ namespace oz
                     0.0f, 0.0f, 0.0f, 1.0f );
     }
 
-    operator float* () const
+    operator float* ()
     {
-      return (float*) this;
+      return m;
     }
 
     operator const float* () const
     {
-      return (float*) this;
+      return m;
     }
 
     float &operator [] ( int i )
     {
-      return ( (float*) this )[i];
+      return m[i];
     }
 
     const float &operator [] ( int i ) const
     {
-      return ( (const float*) this )[i];
+      return m[i];
+    }
+
+    Vec3 &x()
+    {
+      return *(Vec3*) &m[0];
+    }
+
+    const Vec3 &x() const
+    {
+      return *(const Vec3*) &m[0];
+    }
+
+    Vec3 &y()
+    {
+      return *(Vec3*) &m[4];
+    }
+
+    const Vec3 &y() const
+    {
+      return *(const Vec3*) &m[4];
+    }
+
+    Vec3 &z()
+    {
+      return *(Vec3*) &m[8];
+    }
+
+    const Vec3 &z() const
+    {
+      return *(const Vec3*) &m[8];
+    }
+
+    Vec3 &p()
+    {
+      return *(Vec3*) &m[12];
+    }
+
+    const Vec3 &p() const
+    {
+      return *(const Vec3*) &m[12];
     }
 
     bool operator == ( const Mat44 &a ) const
     {
       return
-          _00 == a._00 &&
-          _01 == a._01 &&
-          _02 == a._02 &&
-          _03 == a._03 &&
-          _10 == a._10 &&
-          _11 == a._11 &&
-          _12 == a._12 &&
-          _13 == a._13 &&
-          _20 == a._20 &&
-          _21 == a._21 &&
-          _22 == a._22 &&
-          _23 == a._23 &&
-          _30 == a._30 &&
-          _31 == a._31 &&
-          _32 == a._32 &&
-          _33 == a._33;
+          m[ 0] == a.m[ 0] &&
+          m[ 1] == a.m[ 1] &&
+          m[ 2] == a.m[ 2] &&
+          m[ 3] == a.m[ 3] &&
+          m[ 4] == a.m[ 4] &&
+          m[ 5] == a.m[ 5] &&
+          m[ 6] == a.m[ 6] &&
+          m[ 7] == a.m[ 7] &&
+          m[ 8] == a.m[ 8] &&
+          m[ 9] == a.m[ 9] &&
+          m[10] == a.m[10] &&
+          m[11] == a.m[11] &&
+          m[12] == a.m[12] &&
+          m[13] == a.m[13] &&
+          m[14] == a.m[14] &&
+          m[15] == a.m[15];
     }
 
     bool operator != ( const Mat44 &a ) const
     {
       return
-          _00 != a._00 ||
-          _01 != a._01 ||
-          _02 != a._02 ||
-          _03 != a._03 ||
-          _10 != a._10 ||
-          _11 != a._11 ||
-          _12 != a._12 ||
-          _13 != a._13 ||
-          _20 != a._20 ||
-          _21 != a._21 ||
-          _22 != a._22 ||
-          _23 != a._23 ||
-          _30 != a._30 ||
-          _31 != a._31 ||
-          _32 != a._32 ||
-          _33 != a._33;
+          m[ 0] != a.m[ 0] ||
+          m[ 1] != a.m[ 1] ||
+          m[ 2] != a.m[ 2] ||
+          m[ 3] != a.m[ 3] ||
+          m[ 4] != a.m[ 4] ||
+          m[ 5] != a.m[ 5] ||
+          m[ 6] != a.m[ 6] ||
+          m[ 7] != a.m[ 7] ||
+          m[ 8] != a.m[ 8] ||
+          m[ 9] != a.m[ 9] ||
+          m[10] != a.m[10] ||
+          m[11] != a.m[11] ||
+          m[12] != a.m[12] ||
+          m[13] != a.m[13] ||
+          m[14] != a.m[14] ||
+          m[15] != a.m[15];
     }
 
     Mat44 operator + () const
@@ -155,259 +192,299 @@ namespace oz
 
     Mat44 operator - () const
     {
-      return Mat44( -_00, -_01, -_02, -_03,
-                    -_10, -_11, -_12, -_13,
-                    -_20, -_21, -_22, -_23,
-                    -_30, -_31, -_32, -_33 );
+      return Mat44( -m[ 0], -m[ 1], -m[ 2], -m[ 3],
+                    -m[ 4], -m[ 5], -m[ 6], -m[ 7],
+                    -m[ 8], -m[ 9], -m[10], -m[11],
+                    -m[12], -m[13], -m[14], -m[15] );
     }
 
     float det() const
     {
-      float klop = _22 * _33 - _32 * _23;
-      float jlnp = _12 * _33 - _32 * _13;
-      float jkno = _12 * _23 - _22 * _13;
-      float ilmp = _02 * _33 - _32 * _03;
-      float ikmo = _02 * _23 - _22 * _03;
-      float ijmn = _02 * _13 - _12 * _03;
+      float klop = m[10] * m[15] - m[14] * m[11];
+      float jlnp = m[ 6] * m[15] - m[14] * m[ 7];
+      float jkno = m[ 6] * m[11] - m[10] * m[ 7];
+      float ilmp = m[ 2] * m[15] - m[14] * m[ 3];
+      float ikmo = m[ 2] * m[11] - m[10] * m[ 3];
+      float ijmn = m[ 2] * m[ 7] - m[ 6] * m[ 3];
       return
-          _00 * _11 * klop -
-          _00 * _21 * jlnp +
-          _00 * _31 * jkno -
-          _10 * _01 * klop +
-          _10 * _21 * ilmp -
-          _10 * _31 * ikmo +
-          _20 * _01 * jlnp -
-          _20 * _11 * ilmp +
-          _20 * _31 * ijmn -
-          _30 * _01 * jkno +
-          _30 * _11 * ikmo -
-          _30 * _21 * ijmn;
+          m[ 0] * m[ 5] * klop -
+          m[ 0] * m[ 9] * jlnp +
+          m[ 0] * m[13] * jkno -
+          m[ 4] * m[ 1] * klop +
+          m[ 4] * m[ 9] * ilmp -
+          m[ 4] * m[13] * ikmo +
+          m[ 8] * m[ 1] * jlnp -
+          m[ 8] * m[ 5] * ilmp +
+          m[ 8] * m[13] * ijmn -
+          m[12] * m[ 1] * jkno +
+          m[12] * m[ 5] * ikmo -
+          m[12] * m[ 9] * ijmn;
     }
 
     Mat44 operator ~ () const
     {
-      return Mat44( _00, _10, _20, _30,
-                    _01, _11, _21, _31,
-                    _02, _12, _22, _32,
-                    _03, _13, _23, _33 );
+      return Mat44( m[ 0], m[ 4], m[ 8], m[12],
+                    m[ 1], m[ 5], m[ 9], m[13],
+                    m[ 2], m[ 6], m[10], m[14],
+                    m[ 3], m[ 7], m[11], m[15] );
     }
 
     Mat44 &trans()
     {
-      swap( _01, _10 );
-      swap( _02, _20 );
-      swap( _03, _30 );
-      swap( _12, _21 );
-      swap( _13, _31 );
-      swap( _23, _32 );
+      swap( m[ 1], m[ 4] );
+      swap( m[ 2], m[ 8] );
+      swap( m[ 3], m[12] );
+      swap( m[ 6], m[ 9] );
+      swap( m[ 7], m[13] );
+      swap( m[11], m[14] );
       return *this;
     }
 
     bool isZero() const
     {
       return
-          0.f == _00 &&
-          _00 == _01 &&
-          _01 == _02 &&
-          _02 == _03 &&
-          _03 == _10 &&
-          _10 == _11 &&
-          _11 == _12 &&
-          _12 == _13 &&
-          _13 == _20 &&
-          _20 == _21 &&
-          _21 == _22 &&
-          _22 == _23 &&
-          _23 == _30 &&
-          _30 == _31 &&
-          _31 == _32 &&
-          _32 == _33;
+          m[ 0] == 0.0f &&
+          m[ 1] == 0.0f &&
+          m[ 2] == 0.0f &&
+          m[ 3] == 0.0f &&
+          m[ 4] == 0.0f &&
+          m[ 5] == 0.0f &&
+          m[ 6] == 0.0f &&
+          m[ 7] == 0.0f &&
+          m[ 8] == 0.0f &&
+          m[ 9] == 0.0f &&
+          m[10] == 0.0f &&
+          m[11] == 0.0f &&
+          m[12] == 0.0f &&
+          m[13] == 0.0f &&
+          m[14] == 0.0f &&
+          m[15] == 0.0f;
     }
 
     Mat44 &setZero()
     {
-      _33 = _32 = _31 = _30 = _23 = _22 = _21 = _20 = _13 = _12 = _11 = _10 =
-          _03 = _02 = _01 = _00 = 0.0f;
+      m[ 0] = 0.0f;
+      m[ 1] = 0.0f;
+      m[ 2] = 0.0f;
+      m[ 3] = 0.0f;
+      m[ 4] = 0.0f;
+      m[ 5] = 0.0f;
+      m[ 6] = 0.0f;
+      m[ 7] = 0.0f;
+      m[ 8] = 0.0f;
+      m[ 9] = 0.0f;
+      m[10] = 0.0f;
+      m[11] = 0.0f;
+      m[12] = 0.0f;
+      m[13] = 0.0f;
+      m[14] = 0.0f;
+      m[15] = 0.0f;
       return *this;
     }
 
     bool isId() const
     {
       return
-          0.f == _01 && _01 == _02 && _02 == _03 && _03 == _10 &&
-          _10 == _12 && _12 == _13 && _13 == _20 && _20 == _21 &&
-          _21 == _23 && _23 == _30 && _30 == _31 && _31 == _32 &&
-          1.f == _00 && _00 == _11 && _11 == _22 && _22 == _33;
+          m[ 0] == 1.0f &&
+          m[ 1] == 0.0f &&
+          m[ 2] == 0.0f &&
+          m[ 3] == 0.0f &&
+          m[ 4] == 0.0f &&
+          m[ 5] == 1.0f &&
+          m[ 6] == 0.0f &&
+          m[ 7] == 0.0f &&
+          m[ 8] == 0.0f &&
+          m[ 9] == 0.0f &&
+          m[10] == 1.0f &&
+          m[11] == 0.0f &&
+          m[12] == 0.0f &&
+          m[13] == 0.0f &&
+          m[14] == 0.0f &&
+          m[15] == 1.0f;
     }
 
     Mat44 &setId()
     {
-      _32 = _31 = _30 = _23 = _21 = _20 = _13 = _12 = _10 = _03 = _02 = _01 = 0.0f;
-      _33 = _22 = _11 = _00 = 1.0f;
+      m[ 0] = 1.0f;
+      m[ 1] = 0.0f;
+      m[ 2] = 0.0f;
+      m[ 3] = 0.0f;
+      m[ 4] = 0.0f;
+      m[ 5] = 1.0f;
+      m[ 6] = 0.0f;
+      m[ 7] = 0.0f;
+      m[ 8] = 0.0f;
+      m[ 9] = 0.0f;
+      m[10] = 1.0f;
+      m[11] = 0.0f;
+      m[12] = 0.0f;
+      m[13] = 0.0f;
+      m[14] = 0.0f;
+      m[15] = 1.0f;
       return *this;
     }
 
     Mat44 &operator += ( const Mat44 &a )
     {
-      _00 += a._00;
-      _01 += a._01;
-      _02 += a._02;
-      _03 += a._03;
-      _10 += a._10;
-      _11 += a._11;
-      _12 += a._12;
-      _13 += a._13;
-      _20 += a._20;
-      _21 += a._21;
-      _22 += a._22;
-      _23 += a._23;
-      _30 += a._30;
-      _31 += a._31;
-      _32 += a._32;
-      _33 += a._33;
+      m[ 0] += a.m[ 0];
+      m[ 1] += a.m[ 1];
+      m[ 2] += a.m[ 2];
+      m[ 3] += a.m[ 3];
+      m[ 4] += a.m[ 4];
+      m[ 5] += a.m[ 5];
+      m[ 6] += a.m[ 6];
+      m[ 7] += a.m[ 7];
+      m[ 8] += a.m[ 8];
+      m[ 9] += a.m[ 9];
+      m[10] += a.m[10];
+      m[11] += a.m[11];
+      m[12] += a.m[12];
+      m[13] += a.m[13];
+      m[14] += a.m[14];
+      m[15] += a.m[15];
       return *this;
     }
 
     Mat44 &operator -= ( const Mat44 &a )
     {
-      _00 -= a._00;
-      _01 -= a._01;
-      _02 -= a._02;
-      _03 -= a._03;
-      _10 -= a._10;
-      _11 -= a._11;
-      _12 -= a._12;
-      _13 -= a._13;
-      _20 -= a._20;
-      _21 -= a._21;
-      _22 -= a._22;
-      _23 -= a._23;
-      _30 -= a._30;
-      _31 -= a._31;
-      _32 -= a._32;
-      _33 -= a._33;
+      m[ 0] -= a.m[ 0];
+      m[ 1] -= a.m[ 1];
+      m[ 2] -= a.m[ 2];
+      m[ 3] -= a.m[ 3];
+      m[ 4] -= a.m[ 4];
+      m[ 5] -= a.m[ 5];
+      m[ 6] -= a.m[ 6];
+      m[ 7] -= a.m[ 7];
+      m[ 8] -= a.m[ 8];
+      m[ 9] -= a.m[ 9];
+      m[10] -= a.m[10];
+      m[11] -= a.m[11];
+      m[12] -= a.m[12];
+      m[13] -= a.m[13];
+      m[14] -= a.m[14];
+      m[15] -= a.m[15];
       return *this;
     }
 
     Mat44 &operator *= ( float k )
     {
-      _00 *= k;
-      _01 *= k;
-      _02 *= k;
-      _03 *= k;
-      _10 *= k;
-      _11 *= k;
-      _12 *= k;
-      _13 *= k;
-      _20 *= k;
-      _21 *= k;
-      _22 *= k;
-      _23 *= k;
-      _30 *= k;
-      _31 *= k;
-      _32 *= k;
-      _33 *= k;
+      m[ 0] *= k;
+      m[ 1] *= k;
+      m[ 2] *= k;
+      m[ 3] *= k;
+      m[ 4] *= k;
+      m[ 5] *= k;
+      m[ 6] *= k;
+      m[ 7] *= k;
+      m[ 8] *= k;
+      m[ 9] *= k;
+      m[10] *= k;
+      m[11] *= k;
+      m[12] *= k;
+      m[13] *= k;
+      m[14] *= k;
+      m[15] *= k;
       return *this;
     }
 
     Mat44 &operator /= ( float k )
     {
       k = 1.0f / k;
-      _00 *= k;
-      _01 *= k;
-      _02 *= k;
-      _03 *= k;
-      _10 *= k;
-      _11 *= k;
-      _12 *= k;
-      _13 *= k;
-      _20 *= k;
-      _21 *= k;
-      _22 *= k;
-      _23 *= k;
-      _30 *= k;
-      _31 *= k;
-      _32 *= k;
-      _33 *= k;
+      m[ 0] *= k;
+      m[ 1] *= k;
+      m[ 2] *= k;
+      m[ 3] *= k;
+      m[ 4] *= k;
+      m[ 5] *= k;
+      m[ 6] *= k;
+      m[ 7] *= k;
+      m[ 8] *= k;
+      m[ 9] *= k;
+      m[10] *= k;
+      m[11] *= k;
+      m[12] *= k;
+      m[13] *= k;
+      m[14] *= k;
+      m[15] *= k;
       return *this;
     }
 
     Mat44 operator + ( const Mat44 &a ) const
     {
-      return Mat44( _00 + a._00, _01 + a._01, _02 + a._02, _03 + a._03,
-                    _10 + a._10, _11 + a._11, _12 + a._12, _13 + a._13,
-                    _20 + a._20, _21 + a._21, _22 + a._22, _23 + a._23,
-                    _30 + a._30, _31 + a._31, _32 + a._32, _33 + a._33 );
+      return Mat44( m[ 0] + a.m[ 0], m[ 1] + a.m[ 1], m[ 2] + a.m[ 2], m[ 3] + a.m[ 3],
+                    m[ 4] + a.m[ 4], m[ 5] + a.m[ 5], m[ 6] + a.m[ 6], m[ 7] + a.m[ 7],
+                    m[ 8] + a.m[ 8], m[ 9] + a.m[ 9], m[10] + a.m[10], m[11] + a.m[11],
+                    m[12] + a.m[12], m[13] + a.m[13], m[14] + a.m[14], m[15] + a.m[15] );
     }
 
     Mat44 operator - ( const Mat44 &a ) const
     {
-      return Mat44( _00 - a._00, _01 - a._01, _02 - a._02, _03 - a._03,
-                    _10 - a._10, _11 - a._11, _12 - a._12, _13 - a._13,
-                    _20 - a._20, _21 - a._21, _22 - a._22, _23 - a._23,
-                    _30 - a._30, _31 - a._31, _32 - a._32, _33 - a._33 );
+      return Mat44( m[ 0] - a.m[ 0], m[ 1] - a.m[ 1], m[ 2] - a.m[ 2], m[ 3] - a.m[ 3],
+                    m[ 4] - a.m[ 4], m[ 5] - a.m[ 5], m[ 6] - a.m[ 6], m[ 7] - a.m[ 7],
+                    m[ 8] - a.m[ 8], m[ 9] - a.m[ 9], m[10] - a.m[10], m[11] - a.m[11],
+                    m[12] - a.m[12], m[13] - a.m[13], m[14] - a.m[14], m[15] - a.m[15] );
     }
 
     Mat44 operator * ( float k ) const
     {
-      return Mat44( _00 * k, _01 * k, _02 * k, _03 * k,
-                    _10 * k, _11 * k, _12 * k, _13 * k,
-                    _20 * k, _21 * k, _22 * k, _23 * k,
-                    _30 * k, _31 * k, _32 * k, _33 * k );
+      return Mat44( m[ 0] * k, m[ 1] * k, m[ 2] * k, m[ 3] * k,
+                    m[ 4] * k, m[ 5] * k, m[ 6] * k, m[ 7] * k,
+                    m[ 8] * k, m[ 9] * k, m[10] * k, m[11] * k,
+                    m[12] * k, m[13] * k, m[14] * k, m[15] * k );
     }
 
     Mat44 operator / ( float k ) const
     {
       k = 1.0f / k;
-      return Mat44( _00 * k, _01 * k, _02 * k, _03 * k,
-                    _10 * k, _11 * k, _12 * k, _13 * k,
-                    _20 * k, _21 * k, _22 * k, _23 * k,
-                    _30 * k, _31 * k, _32 * k, _33 * k );
+      return Mat44( m[ 0] * k, m[ 1] * k, m[ 2] * k, m[ 3] * k,
+                    m[ 4] * k, m[ 5] * k, m[ 6] * k, m[ 7] * k,
+                    m[ 8] * k, m[ 9] * k, m[10] * k, m[11] * k,
+                    m[12] * k, m[13] * k, m[14] * k, m[15] * k );
     }
 
     Mat44 operator * ( const Mat44 &a ) const
     {
-      return Mat44( _00 * a._00 + _10 * a._01 + _20 * a._02 + _30 * a._03,
-                    _01 * a._00 + _11 * a._01 + _21 * a._02 + _31 * a._03,
-                    _02 * a._00 + _12 * a._01 + _22 * a._02 + _32 * a._03,
-                    _03 * a._00 + _13 * a._01 + _23 * a._02 + _33 * a._03,
+      return Mat44( m[ 0] * a.m[ 0] + m[ 4] * a.m[ 1] + m[ 8] * a.m[ 2] + m[12] * a.m[ 3],
+                    m[ 1] * a.m[ 0] + m[ 5] * a.m[ 1] + m[ 9] * a.m[ 2] + m[13] * a.m[ 3],
+                    m[ 2] * a.m[ 0] + m[ 6] * a.m[ 1] + m[10] * a.m[ 2] + m[14] * a.m[ 3],
+                    m[ 3] * a.m[ 0] + m[ 7] * a.m[ 1] + m[11] * a.m[ 2] + m[15] * a.m[ 3],
 
-                    _00 * a._10 + _10 * a._11 + _20 * a._12 + _30 * a._13,
-                    _01 * a._10 + _11 * a._11 + _21 * a._12 + _31 * a._13,
-                    _02 * a._10 + _12 * a._11 + _22 * a._12 + _32 * a._13,
-                    _03 * a._10 + _13 * a._11 + _23 * a._12 + _33 * a._13,
+                    m[ 0] * a.m[ 4] + m[ 4] * a.m[ 5] + m[ 8] * a.m[ 6] + m[12] * a.m[ 7],
+                    m[ 1] * a.m[ 4] + m[ 5] * a.m[ 5] + m[ 9] * a.m[ 6] + m[13] * a.m[ 7],
+                    m[ 2] * a.m[ 4] + m[ 6] * a.m[ 5] + m[10] * a.m[ 6] + m[14] * a.m[ 7],
+                    m[ 3] * a.m[ 4] + m[ 7] * a.m[ 5] + m[11] * a.m[ 6] + m[15] * a.m[ 7],
 
-                    _00 * a._20 + _10 * a._21 + _20 * a._22 + _30 * a._23,
-                    _01 * a._20 + _11 * a._21 + _21 * a._22 + _31 * a._23,
-                    _02 * a._20 + _12 * a._21 + _22 * a._22 + _32 * a._23,
-                    _03 * a._20 + _13 * a._21 + _23 * a._22 + _33 * a._23,
+                    m[ 0] * a.m[ 8] + m[ 4] * a.m[ 9] + m[ 8] * a.m[10] + m[12] * a.m[11],
+                    m[ 1] * a.m[ 8] + m[ 5] * a.m[ 9] + m[ 9] * a.m[10] + m[13] * a.m[11],
+                    m[ 2] * a.m[ 8] + m[ 6] * a.m[ 9] + m[10] * a.m[10] + m[14] * a.m[11],
+                    m[ 3] * a.m[ 8] + m[ 7] * a.m[ 9] + m[11] * a.m[10] + m[15] * a.m[11],
 
-                    _00 * a._30 + _10 * a._31 + _20 * a._32 + _30 * a._33,
-                    _01 * a._30 + _11 * a._31 + _21 * a._32 + _31 * a._33,
-                    _02 * a._30 + _12 * a._31 + _22 * a._32 + _32 * a._33,
-                    _03 * a._30 + _13 * a._31 + _23 * a._32 + _33 * a._33 );
+                    m[ 0] * a.m[12] + m[ 4] * a.m[13] + m[ 8] * a.m[14] + m[12] * a.m[15],
+                    m[ 1] * a.m[12] + m[ 5] * a.m[13] + m[ 9] * a.m[14] + m[13] * a.m[15],
+                    m[ 2] * a.m[12] + m[ 6] * a.m[13] + m[10] * a.m[14] + m[14] * a.m[15],
+                    m[ 3] * a.m[12] + m[ 7] * a.m[13] + m[11] * a.m[14] + m[15] * a.m[15] );
     }
 
     Vec3 operator * ( const Vec3 &v ) const
     {
-      return Vec3( v.x * _00 + v.y * _10 + v.z * _20 + _30,
-                   v.x * _01 + v.y * _11 + v.z * _21 + _31,
-                   v.x * _02 + v.y * _12 + v.z * _22 + _32 );
+      return Vec3( v.x * m[ 0] + v.y * m[ 4] + v.z * m[ 8] + m[12],
+                   v.x * m[ 1] + v.y * m[ 5] + v.z * m[ 9] + m[13],
+                   v.x * m[ 2] + v.y * m[ 6] + v.z * m[10] + m[14] );
     }
 
     Vec3 invMultiply( const Vec3 &v ) const
     {
-      return Vec3( v.x * _00 + v.y * _01 + v.z * _02 + _03,
-                   v.x * _10 + v.y * _11 + v.z * _12 + _13,
-                   v.x * _20 + v.y * _21 + v.z * _22 + _23 );
+      return Vec3( v.x * m[ 0] + v.y * m[ 1] + v.z * m[ 2] + m[ 3],
+                   v.x * m[ 4] + v.y * m[ 5] + v.z * m[ 6] + m[ 7],
+                   v.x * m[ 8] + v.y * m[ 9] + v.z * m[10] + m[11] );
     }
 
     friend Mat44 operator * ( float k, const Mat44 &a )
     {
-      return Mat44( a._00 * k, a._01 * k, a._02 * k, a._03 * k,
-                    a._10 * k, a._11 * k, a._12 * k, a._13 * k,
-                    a._20 * k, a._21 * k, a._22 * k, a._23 * k,
-                    a._30 * k, a._31 * k, a._32 * k, a._33 * k );
+      return Mat44( a.m[ 0] * k, a.m[ 1] * k, a.m[ 2] * k, a.m[ 3] * k,
+                    a.m[ 4] * k, a.m[ 5] * k, a.m[ 6] * k, a.m[ 7] * k,
+                    a.m[ 8] * k, a.m[ 9] * k, a.m[10] * k, a.m[11] * k,
+                    a.m[12] * k, a.m[13] * k, a.m[14] * k, a.m[15] * k );
     }
 
     // transformation matrices
@@ -464,6 +541,12 @@ namespace oz
     }
 
   };
+
+  inline Mat33::Mat33( const Mat44 &m ) :
+      xx( m.xx ), xy( m.xy ), xz( m.xz ),
+      yx( m.yx ), yy( m.yy ), yz( m.yz ),
+      zx( m.zx ), zy( m.zy ), zz( m.zz )
+  {}
 
   // declared in Quat.h
   inline Mat44 Quat::rotMat44() const
@@ -524,12 +607,5 @@ namespace oz
                   xz - yw,        yz + xw,  xx1 - yy, 0.0f,
                   0.0f,           0.0f,     0.0f,     1.0f );
   }
-
-  // declared in Quat.h
-  inline Mat33::Mat33( const Mat44 &m ) :
-      _00( m._00 ), _01( m._01 ), _02( m._02 ),
-      _10( m._10 ), _11( m._11 ), _12( m._12 ),
-      _20( m._20 ), _21( m._21 ), _22( m._22 )
-  {}
 
 }

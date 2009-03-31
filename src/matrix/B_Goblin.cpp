@@ -52,6 +52,7 @@ namespace oz
     newVelocity.setZero();
     lower   = -1;
     mass    = 50.0f;
+    lift    = 0.03f;
 
     h       = h_;
     v       = v_;

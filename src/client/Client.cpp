@@ -35,6 +35,9 @@ namespace client
     matrix.load();
     nirvana.load();
 
+    camera.player = (Bot*) world.objects[0];
+    camera.oldP = camera.player->p;
+
     return true;
   }
 
@@ -42,14 +45,12 @@ namespace client
   {
     logFile.print( "Starting Nirvana thread ..." );
     nirvana.start();
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
   }
 
   bool Client::update( int time )
   {
     nirvana.requestSuspend = true;
-
-    camera.player = (Bot*) world.objects[0];
 
     camera.player->h -= input.mouse.x * settings.mouseXSens;
     camera.player->v -= input.mouse.y * settings.mouseYSens;
@@ -127,7 +128,7 @@ namespace client
   {
     logFile.print( "Stopping Nirvana thread ..." );
     nirvana.stop();
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
   }
 
   void Client::free()
@@ -138,7 +139,7 @@ namespace client
     nirvana.free();
 
     logFile.unindent();
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
 
     logFile.print( "Shutting down Matrix ..." );
     logFile.indent();
@@ -146,7 +147,7 @@ namespace client
     matrix.free();
 
     logFile.unindent();
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
   }
 
 }

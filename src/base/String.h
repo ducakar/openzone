@@ -21,7 +21,7 @@ namespace oz
       int  count;
       char baseBuffer[BUFFER_SIZE];
 
-      String( int count_, int ) : count( count_ )
+      explicit String( int count_, int ) : count( count_ )
       {
         ensureCapacity();
       }
@@ -34,7 +34,7 @@ namespace oz
 
     public:
 
-      String() : buffer( baseBuffer ), count( 0 )
+      explicit String() : buffer( baseBuffer ), count( 0 )
       {
         buffer[0] = '\0';
       }

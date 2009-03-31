@@ -14,28 +14,46 @@
 namespace oz
 {
 
+  // FIXME debug collision for VS2008!!!
   class Collider
   {
-    protected:
+    private:
 
       static const Vec3 bbNormals[];
 
-      Vec3      point;
-      AABB      aabb;
-      Object    *obj;
-      Vec3      move;
+      Vec3         point;
+      AABB         aabb;
+      Object       *obj;
+      Vec3         move;
 
-      Bounds    trace;
+      Bounds       trace;
 
-      Vec3      leafStartPos;
-      Vec3      leafEndPos;
-      Vec3      globalStartPos;
-      Vec3      globalEndPos;
-      float     leafStartRatio;
-      float     leafEndRatio;
+      Vec3         leafStartPos;
+      Vec3         leafEndPos;
+      Vec3         globalStartPos;
+      Vec3         globalEndPos;
+      float        leafStartRatio;
+      float        leafEndRatio;
 
       const BSP    *bsp;
+      Structure    *str;
       const Object *exclObj;
+
+      /**
+       * Rotate vector from absolute coordinate system to structure coordinate system. Do not
+       * translate (because of normals).
+       * @param v
+       * @return
+       */
+      Vec3 toStructCS( const Vec3 &v ) const;
+
+      /**
+       * Rotate vector from structure coordinate system to absolute coordinate system. Do not
+       * translate (because of normals).
+       * @param v
+       * @return
+       */
+      Vec3 toAbsoluteCS( const Vec3 &v ) const;
 
       bool testPointTerraQuad( int x, int y );
       bool testPointSimplex( const BSP::Simplex *simplex );

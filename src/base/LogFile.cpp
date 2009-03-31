@@ -54,7 +54,7 @@ namespace oz
     return !isStdout;
   }
 
-  void LogFile::printRaw( const char *s, ... ) const
+  void LogFile::printEnd( const char *s, ... ) const
   {
     va_list ap;
     FILE *f;
@@ -63,6 +63,7 @@ namespace oz
 
     va_start( ap, s );
     vfprintf( f, s, ap );
+    fprintf( f, "\n" );
     va_end( ap );
 
     if( !isStdout ) {
@@ -101,9 +102,8 @@ namespace oz
     }
     va_start( ap, s );
     vfprintf( f, s, ap );
-    va_end( ap );
-
     fprintf( f, "\n" );
+    va_end( ap );
 
     if( !isStdout ) {
       fclose( f );
@@ -129,9 +129,8 @@ namespace oz
 
     va_start( ap, s );
     vfprintf( f, s, ap );
-    va_end( ap );
-
     fprintf( f, "\n" );
+    va_end( ap );
 
     if( !isStdout ) {
       fclose( f );
@@ -155,9 +154,8 @@ namespace oz
     }
     va_start( ap, s );
     vfprintf( f, s, ap );
-    va_end( ap );
-
     fprintf( f, " %02d:%02d:%02d\n", t.tm_hour, t.tm_min, t.tm_sec );
+    va_end( ap );
 
     if( !isStdout ) {
       fclose( f );
@@ -182,10 +180,9 @@ namespace oz
     }
     va_start( ap, s );
     vfprintf( f, s, ap );
-    va_end( ap );
-
     fprintf( f, " %02d.%02d.%04d %02d:%02d:%02d\n", t.tm_mday, t.tm_mon + 1, t.tm_year + 1900,
              t.tm_hour, t.tm_min, t.tm_sec );
+    va_end( ap );
 
     if( !isStdout ) {
       fclose( f );
@@ -203,6 +200,11 @@ namespace oz
     if( !isStdout ) {
       fclose( f );
     }
+  }
+
+  void LogFile::resetIndent()
+  {
+    tabs = 0;
   }
 
   void LogFile::indent()

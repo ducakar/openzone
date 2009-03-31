@@ -43,10 +43,10 @@ namespace oz
       void print( const char *s, ... ) const;
 
       /**
-       * Do not indent.
+       * Print rest of the line. (Do not indent and put '\n' at the end.)
        * @param s
        */
-      void printRaw( const char *s, ... ) const;
+      void printEnd( const char *s, ... ) const;
 
       /**
        * Indents, prints the text and terminates the line.
@@ -76,6 +76,11 @@ namespace oz
        * Write a blank line.
        */
       void println() const;
+
+      /**
+       * Sets indent to none.
+       */
+      void resetIndent();
 
       /**
        * Increases ident.

@@ -22,11 +22,10 @@ namespace client
       float smoothCoef;
       float smoothCoef_1;
 
-      Vec3  oldP;
-
     public:
 
       Vec3  p;
+      Vec3  oldP;
       float h, v, r;
 
       Vec3  at;

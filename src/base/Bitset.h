@@ -37,7 +37,7 @@ namespace oz
       /**
        * Create a new bitset without allocating any space.
        */
-      Bitset() : data( null ), size( 0 )
+      explicit Bitset() : data( null ), size( 0 )
       {}
 
       /**

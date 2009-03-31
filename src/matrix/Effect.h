@@ -16,11 +16,8 @@ namespace oz
     int    id;
     Effect *next[1];
 
-    Effect()
-    {}
-
-    explicit Effect( int id_ ) : id( id_ )
-    {}
+    Effect() {}
+    explicit Effect( int id_ ) : id( id_ ) {}
   };
 
 }
