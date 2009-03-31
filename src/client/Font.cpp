@@ -27,7 +27,7 @@ namespace client
   {
     SDL_Surface *image = IMG_Load( fileName );
     if( image == null ) {
-      logFile.printRaw( "No such file\n" );
+      logFile.printEnd( "No such file" );
       return 0;
     }
 
@@ -81,7 +81,7 @@ namespace client
       }
     }
     baseList -= 32;
-    logFile.printRaw( "OK\n" );
+    logFile.printEnd( "OK" );
   }
 
   void Font::print( float x, float y, const char *string, ... ) const

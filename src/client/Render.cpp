@@ -280,7 +280,7 @@ namespace client
     for( int i = 0; i < structures.length(); i++ ) {
       Structure *str = structures[i];
 
-      bsps[str->bsp]->draw( str->p );
+      bsps[str->bsp]->draw( str );
     }
     structures.clear();
 
@@ -363,9 +363,11 @@ namespace client
     font.print( -45, 35, "camera.player.vel ( %.2f %.2f %.2f )",
                 camera.player->velocity.x, camera.player->velocity.y, camera.player->velocity.z );
 
-    font.print( -45, 33, "l %d f %d ow %d iw %d ovlp %d",
+    font.print( -45, 33, "l %d f %d h %d fr %d ow %d uw %d ovlp %d",
                 camera.player->lower >= 0,
                 ( camera.player->flags & Object::ON_FLOOR_BIT ) != 0,
+                ( camera.player->flags & Object::HIT_BIT ) != 0,
+                ( camera.player->flags & Object::FRICTING_BIT ) != 0,
                 ( camera.player->flags & Object::ON_WATER_BIT ) != 0,
                 ( camera.player->flags & Object::UNDER_WATER_BIT ) != 0,
                 collider.test( *camera.player ) );

@@ -50,7 +50,7 @@ namespace client
       if( nMatches != 3 ) {
         return false;
       }
-      *tempVerts << Vec3( x, y, z );
+      *tempVerts << Vec3( -x, -y, -z );
       return true;
     }
     // vertex normal coords
@@ -251,6 +251,9 @@ namespace client
     FILE *file;
     char buffer[LINE_BUFFER_SIZE];
 
+    // default texture if none loaded
+    textureId = 0;
+
     String sPath = path;
     String modelFile = sPath + "/data.obj";
     String configFile = sPath + "/config.xml";
@@ -392,25 +395,43 @@ namespace client
 
   void OBJ::draw() const
   {
-    if( texCoords == null ) {
-      glDisable( GL_TEXTURE_2D );
-    }
-    else {
-      glEnable( GL_TEXTURE_2D );
-      glBindTexture( GL_TEXTURE_2D, textureId );
-    }
+    glBindTexture( GL_TEXTURE_2D, textureId );
 
     for( int i = 0; i < nFaces; i++ ) {
       Face &face = faces[i];
 
-      // draw polygon as a triangle strip
-      glBegin( GL_TRIANGLE_STRIP );
-        assert( face.nVerts >= 3 );
+//       // draw polygon as a triangle strip
+//       glBegin( GL_TRIANGLE_STRIP );
+//         assert( face.nVerts >= 3 );
+//
+//         int outerMiddle = face.nVerts / 2 + 1;
+//         int innerMiddle = ( face.nVerts - 1 ) / 2;
+//         for( int j = 0; j < outerMiddle; j++ ) {
+//
+//           if( texCoords ) {
+//             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
+//           }
+//           if( normals ) {
+//             glNormal3fv( normals[face.normIndices[j]] );
+//           }
+//           glVertex3fv( vertices[face.vertIndices[j]] );
+//
+//           if( j == 0 || j > innerMiddle ) {
+//             continue;
+//           }
+//
+//           if( texCoords ) {
+//             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[face.nVerts - j]] );
+//           }
+//           if( normals ) {
+//             glNormal3fv( normals[face.normIndices[face.nVerts - j]] );
+//           }
+//           glVertex3fv( vertices[face.vertIndices[face.nVerts - j]] );
+//         }
+//       glEnd();
 
-        int outerMiddle = face.nVerts / 2 + 1;
-        int innerMiddle = ( face.nVerts - 1 ) / 2;
-        for( int j = 0; j < outerMiddle; j++ ) {
-
+      glBegin( GL_POLYGON );
+        for( int j = 0; j < face.nVerts; j++ ) {
           if( texCoords ) {
             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
           }
@@ -418,18 +439,6 @@ namespace client
             glNormal3fv( normals[face.normIndices[j]] );
           }
           glVertex3fv( vertices[face.vertIndices[j]] );
-
-          if( j == 0 || j > innerMiddle ) {
-            continue;
-          }
-
-          if( texCoords ) {
-            glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[face.nVerts - j]] );
-          }
-          if( normals ) {
-            glNormal3fv( normals[face.normIndices[face.nVerts - j]] );
-          }
-          glVertex3fv( vertices[face.vertIndices[face.nVerts - j]] );
         }
       glEnd();
     }

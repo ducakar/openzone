@@ -44,7 +44,7 @@ namespace oz
             byte  data[BLOCK_SIZE * sizeof( Type )];
             Block *next[1];
 
-            Block()
+            explicit Block()
             {
               for( int i = 0; i < BLOCK_SIZE - 1; i++ ) {
                 get( i ).next[INDEX] = &get( i + 1 );
@@ -76,7 +76,7 @@ namespace oz
            * Create empty pool with initial capacity BLOCK_SIZE.
            * @param initSize
            */
-          Pool() : freeSlot( null ), size( 0 ), count( 0 )
+          explicit Pool() : freeSlot( null ), size( 0 ), count( 0 )
           {}
 
           /**

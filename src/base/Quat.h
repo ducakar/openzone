@@ -11,8 +11,8 @@
 namespace oz
 {
 
-  struct Mat33;
-  struct Mat44;
+  union Mat33;
+  union Mat44;
 
   struct Quat
   {
@@ -21,10 +21,10 @@ namespace oz
     float z;
     float w;
 
-    Quat()
+    explicit Quat()
     {}
 
-    Quat( float x_, float y_, float z_, float w_ ) : x( x_ ), y( y_ ), z( z_ ), w( w_ )
+    explicit Quat( float x_, float y_, float z_, float w_ ) : x( x_ ), y( y_ ), z( z_ ), w( w_ )
     {}
 
     explicit Quat( float *q )
@@ -46,7 +46,7 @@ namespace oz
       return Quat( 0.0f, 0.0f, 0.0f, 1.0f );
     }
 
-    operator float* () const
+    operator float* ()
     {
       return (float*) this;
     }

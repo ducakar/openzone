@@ -98,7 +98,7 @@ namespace oz
       /**
        * Create an empty list.
        */
-      List() : firstElem( null )
+      explicit List() : firstElem( null )
       {}
 
       /**

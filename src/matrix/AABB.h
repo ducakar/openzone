@@ -23,11 +23,8 @@ namespace oz
     Vec3 p;
     Vec3 dim;
 
-    AABB()
-    {}
-
-    AABB( const Vec3 &p_, const Vec3 &dim_ ) : p( p_ ), dim( dim_ )
-    {}
+    AABB() {}
+    AABB( const Vec3 &p_, const Vec3 &dim_ ) : p( p_ ), dim( dim_ ) {}
 
     Bounds toBounds( float eps = 0.0f ) const
     {

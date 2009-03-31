@@ -64,7 +64,7 @@ namespace oz
       /**
        * Create empty vector with initial capacity 8.
        */
-      Vector() : data( new Type[8] ), size( 8 ), count( 0 )
+      explicit Vector() : data( new Type[8] ), size( 8 ), count( 0 )
       {}
 
       /**

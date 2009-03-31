@@ -19,10 +19,10 @@ namespace oz
     float y;
     float z;
 
-    Vec3()
+    explicit Vec3()
     {}
 
-    Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
+    explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
     {}
 
     explicit Vec3( float *v )
@@ -38,8 +38,7 @@ namespace oz
       return Vec3( 0.0f, 0.0f, 0.0f );
     }
 
-    // casting
-    operator float* () const
+    operator float* ()
     {
       return (float*) this;
     }

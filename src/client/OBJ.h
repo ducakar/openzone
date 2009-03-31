@@ -33,11 +33,8 @@ namespace client
         float u;
         float v;
 
-        TexCoord()
-        {}
-
-        TexCoord( float u_, float v_ ) : u( u_ ), v( v_ )
-        {}
+        TexCoord() {}
+        TexCoord( float u_, float v_ ) : u( u_ ), v( v_ ) {}
       };
 
       uint     textureId;

@@ -49,7 +49,7 @@ namespace oz
       /**
        * Create empty vector with capacity SIZE.
        */
-      SVector() : count( 0 )
+      explicit SVector() : count( 0 )
       {}
 
       /**

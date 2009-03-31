@@ -8,8 +8,12 @@
 
 #pragma once
 
-// 0.1 mm
-#define EPSILON ( 0.0001f )
+namespace oz
+{
+  // 0.5 mm
+  extern const float EPSILON;
+
+}
 
 #include "Bounds.h"
 #include "AABB.h"

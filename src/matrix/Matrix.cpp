@@ -45,9 +45,13 @@ namespace oz
     world.bsps[2]->loadQBSP( "bsp/temple.bsp", BSP::BSP_SCALE, 4.0f );
     world.bsps[3]->loadQBSP( "bsp/pool.bsp", BSP::BSP_SCALE, 4.0f );
 
-    world.add( new Structure( Vec3( 47.0f, -33.0f, 75.5f ), 0 ) );
-    world.add( new Structure( Vec3( 33.0f, -34.0f, 75.5f ), 1 ) );
-    world.add( new Structure( Vec3( 40.0f, -40.0f, 75.8f ), 2 ) );
+    Mat33 t = Mat33( Vec3(  -1.0f, 0.0f, 0.0f ),
+                     Vec3(  0.0f, -1.0f, 0.0f ),
+                     Vec3(  0.0f, 0.0f, 1.0f ) );
+
+    world.add( new Structure( Vec3( 47.0f, -33.0f, 75.5f ), Structure::R180, 0 ) );
+//     world.add( new Structure( Vec3( 33.0f, -34.0f, 75.5f ), Mat44::id(), 1 ) );
+//     world.add( new Structure( Vec3( 40.0f, -40.0f, 75.8f ), Mat44::id(), 2 ) );
 
     world.add( new B_Goblin( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
     //world.add( new B_Spirit( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
@@ -82,22 +86,6 @@ namespace oz
 //     world.add( new D_SmallCrate( Vec3( 42.0f, -41.0f, 81.0f ) ) );
 //     world.add( new D_SmallCrate( Vec3( 42.0f, -40.0f, 82.0f ) ) );
 
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -41.0f, 80.0f ) ) );
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -41.0f, 81.0f ) ) );
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -41.0f, 82.0f ) ) );
-
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -42.0f, 80.0f ) ) );
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -42.0f, 81.0f ) ) );
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -42.0f, 82.0f ) ) );
-
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -42.0f, 80.0f ) ) );
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -42.0f, 81.0f ) ) );
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -42.0f, 82.0f ) ) );
-
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -41.0f, 80.0f ) ) );
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -41.0f, 81.0f ) ) );
-    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -40.0f, 82.0f ) ) );
-
 //
 //     world.add( new D_BigCrate( Vec3( 40.0f, -55.0f, 80.0f ), new D_SmallCrate() ) );
 //     world.add( new D_BigCrate( Vec3( 40.0f, -55.0f, 82.0f ), new D_SmallCrate() ) );
@@ -116,6 +104,33 @@ namespace oz
 //     world.add( new D_SmallCrate( Vec3( 42.0f, -61.0f, 81.0f ) ) );
 //     world.add( new D_SmallCrate( Vec3( 42.0f, -61.0f, 82.0f ) ) );
 //     world.add( new D_SmallCrate( Vec3( 42.0f, -61.0f, 83.0f ) ) );
+
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -41.0f, 80.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -41.0f, 81.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -41.0f, 82.0f ) ) );
+
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -42.0f, 80.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -42.0f, 81.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 41.0f, -42.0f, 82.0f ) ) );
+
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -42.0f, 80.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -42.0f, 81.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -42.0f, 82.0f ) ) );
+
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -41.0f, 80.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -41.0f, 81.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -40.0f, 82.0f ) ) );
+
+    world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.0f, 80.0f ) ) );
+    world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.0f, 82.0f ) ) );
+    world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.0f, 84.0f ) ) );
+
+//     world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), Mat44::id(), 3 ) );
+    world.add( new Water( Vec3( 40.0f, -60.0f, 75.0f ), Vec3( 3.0f, 3.0f, 3.0f ) ) );
+
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -61.0f, 81.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -61.0f, 82.0f ) ) );
+    world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -61.0f, 83.0f ) ) );
   }
 
   void Matrix::update()

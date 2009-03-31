@@ -155,6 +155,7 @@ namespace oz
 
       void update()
       {
+        flags &= ~( HIT_BIT | FRICTING_BIT );
         events.free();
 
         if( flags & UPDATE_FUNC_BIT ) {

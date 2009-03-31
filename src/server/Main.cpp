@@ -33,7 +33,7 @@ namespace server
     if( initFlags & INIT_SDL ) {
       logFile.print( "Shutting down SDL ..." );
       SDL_Quit();
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
     logFile.printlnETD( "%s finished on", OZ_APP_NAME );
   }
@@ -77,17 +77,17 @@ namespace server
 
     logFile.print( "Initializing SDL ..." );
     if( SDL_Init( 0 ) ) {
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       shutdown();
       return;
     }
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
 
     initFlags |= INIT_SDL;
 
     logFile.print( "Loading default config ..." );
     defaultConfig();
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
 
     const char *configPath = ( home + OZ_CONFIG_FILE ).cstr();
 
@@ -115,12 +115,12 @@ namespace server
 #ifdef WIN32
 #else
     if( chdir( data ) != 0 ) {
-      logFile.printRaw(" Failed\n");
+      logFile.printEnd(" Failed");
       shutdown();
       return;
     }
     else {
-      logFile.printRaw(" OK\n");
+      logFile.printEnd(" OK");
     }
 #endif
 

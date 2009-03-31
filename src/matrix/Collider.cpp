@@ -25,6 +25,44 @@ namespace oz
     Vec3(  0.0f,  0.0f, -1.0f )
   };
 
+  Vec3 Collider::toStructCS( const Vec3 &v ) const
+  {
+    switch( str->rot ) {
+      case Structure::R0: {
+        return v;
+      }
+      case Structure::R90: {
+        return Vec3( -v.y, v.x, v.z );
+      }
+      case Structure::R180: {
+        return Vec3( -v.x, -v.y, v.z );
+      }
+      default:
+      case Structure::R270: {
+        return Vec3( v.y, -v.x, v.z );
+      }
+    }
+  }
+
+  Vec3 Collider::toAbsoluteCS( const Vec3 &v ) const
+  {
+    switch( str->rot ) {
+      case Structure::R0: {
+        return v;
+      }
+      case Structure::R90: {
+        return Vec3( v.y, -v.x, v.z );
+      }
+      case Structure::R180: {
+        return Vec3( -v.x, -v.y, v.z );
+      }
+      default:
+      case Structure::R270: {
+        return Vec3( -v.y, v.x, v.z );
+      }
+    }
+  }
+
   //***********************************
   //*    POINT COLLISION DETECTION     *
   //***********************************
@@ -96,12 +134,12 @@ namespace oz
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
-          Structure *str = world.structures[*strIndex];
+          str = world.structures[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            globalStartPos = aabb.p - str->p;
+            globalStartPos = toStructCS( aabb.p - str->p );
 
             if( str->includes( point, EPSILON ) && !testPointNode( 0 ) ) {
               return false;
@@ -156,12 +194,12 @@ namespace oz
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
-          Structure *str = world.structures[*strIndex];
+          str = world.structures[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            globalStartPos = aabb.p - str->p;
+            globalStartPos = toStructCS( aabb.p - str->p );
 
             if( str->includes( point, EPSILON ) && !testPointNode( 0 ) ) {
               return false;
@@ -362,7 +400,7 @@ namespace oz
 
       if( newRatio < hit.ratio ) {
         hit.ratio  = newRatio;
-        hit.normal = *tmpNormal;
+        hit.normal = toAbsoluteCS( *tmpNormal );
         hit.sObj   = null;
 
         trace.fromPointMove( globalStartPos, move * hit.ratio, EPSILON );
@@ -508,13 +546,15 @@ namespace oz
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
-          Structure *str = world.structures[*strIndex];
+          str = world.structures[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
             if( str->overlaps( trace, EPSILON ) ) {
-              trimPointNode( 0, 0.0f, 1.0f, globalStartPos - str->p, globalEndPos - str->p );
+              trimPointNode( 0, 0.0f, 1.0f,
+                             toStructCS( globalStartPos - str->p ),
+                             toStructCS( globalEndPos - str->p ) );
             }
             oldStr = str;
           }
@@ -613,12 +653,12 @@ namespace oz
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
-          Structure *str = world.structures[*strIndex];
+          str = world.structures[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            globalStartPos = aabb.p - str->p;
+            globalStartPos = toStructCS( aabb.p - str->p );
 
             if( str->overlaps( aabb, EPSILON ) && !testAABBNode( 0 ) ) {
               return false;
@@ -678,12 +718,12 @@ namespace oz
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
-          Structure *str = world.structures[*strIndex];
+          str = world.structures[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            globalStartPos = aabb.p - str->p;
+            globalStartPos = toStructCS( aabb.p - str->p );
 
             if( str->overlaps( aabb, EPSILON ) && !testAABBNode( 0 ) ) {
               return false;
@@ -820,7 +860,7 @@ namespace oz
 
       if( newRatio < hit.ratio ) {
         hit.ratio  = newRatio;
-        hit.normal = *tmpNormal;
+        hit.normal = toAbsoluteCS( *tmpNormal );
         hit.sObj   = null;
       }
     }
@@ -927,14 +967,16 @@ namespace oz
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
-          Structure *str = world.structures[*strIndex];
+          str = world.structures[*strIndex];
 
           // to prevent some of duplicated structure tests
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
             if( str->overlaps( trace, EPSILON ) ) {
-              trimAABBNode( 0, 0.0f, 1.0f, globalStartPos - str->p, globalEndPos - str->p );
+              trimAABBNode( 0, 0.0f, 1.0f,
+                            toStructCS( globalStartPos - str->p ),
+                            toStructCS( globalEndPos - str->p ) );
             }
             oldStr = str;
           }
@@ -972,12 +1014,12 @@ namespace oz
 
         if( structs != null ) {
           foreach( strIndex, sector.structures.iterator() ) {
-            Structure *str = world.structures[*strIndex];
+            str = world.structures[*strIndex];
 
             if( !structs->contains( str ) ) {
               bsp = world.bsps[str->bsp];
 
-              globalStartPos = aabb.p - str->p;
+              globalStartPos = toStructCS( aabb.p - str->p );
 
               if( str->overlaps( aabb ) && !testAABBNode( 0 ) ) {
                 structs->add( str );

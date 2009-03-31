@@ -86,7 +86,7 @@ namespace oz
       /**
        * Create empty sparse vector with initial capacity 8.
        */
-      Sparse() : data( new Type[8] ), size( 8 ), count( 0 ), freeSlot( 0 )
+      explicit Sparse() : data( new Type[8] ), size( 8 ), count( 0 ), freeSlot( 0 )
       {
         for( int i = 0; i < size; i++ ) {
           data[i].nextSlot = i + 1;

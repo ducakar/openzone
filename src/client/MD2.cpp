@@ -293,7 +293,7 @@ namespace client
 
     file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
-      logFile.printRaw( "No such file\n" );
+      logFile.printEnd( "No such file" );
 
       assert( false );
       return false;
@@ -302,7 +302,7 @@ namespace client
     fread( &header, 1, sizeof( header ), file );
     if( header.id != MD2_ID || header.version != MD2_VERSION ) {
       fclose( file );
-      logFile.printRaw( "Invalid file\n" );
+      logFile.printEnd( "Invalid file" );
 
       assert( false );
       return false;
@@ -340,7 +340,7 @@ namespace client
     delete[] buffer;
     fclose( file );
 
-    logFile.printRaw( "OK\n" );
+    logFile.printEnd( "OK" );
 
     texId = context.loadTexture( skinFile, true );
 

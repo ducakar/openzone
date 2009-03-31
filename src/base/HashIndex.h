@@ -24,12 +24,12 @@ namespace oz
         Type  value;
         Elem  *next[1];
 
-        Elem( uint key_, const Type &value_, Elem *next_ ) : key( key_ ), value( value_ )
+        explicit Elem( uint key_, const Type &value_, Elem *next_ ) : key( key_ ), value( value_ )
         {
           next[0] = next_;
         }
 
-        Elem( uint key_, Elem *next_ ) : key( key_ )
+        explicit Elem( uint key_, Elem *next_ ) : key( key_ )
         {
           next[0] = next_;
         }
@@ -241,7 +241,7 @@ namespace oz
       /**
        * Constructor.
        */
-      HashIndex() : cached( null ), count( 0 )
+      explicit HashIndex() : cached( null ), count( 0 )
       {
         for( int i = 0; i < SIZE; i++ ) {
           data[i] = null;

@@ -31,11 +31,11 @@ namespace client
     isMusicPlaying = false;
 
     if( alutGetError() != ALUT_ERROR_NO_ERROR ) {
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       return false;
     }
     else {
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
 
     logFile.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
@@ -90,12 +90,12 @@ namespace client
     OggVorbis_File oggStream;
 
     if( oggFile == null ) {
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       return false;
     }
     if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
       fclose( oggFile );
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       return false;
     }
 
@@ -112,17 +112,17 @@ namespace client
 
     alBufferData( buffers[sample], format, data, size, vorbisInfo->rate );
 
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
     return true;
 
 //     buffers[sample] = alutCreateBufferFromFile( file );
 //
 //     if( buffers[sample] == AL_NONE ) {
-//       logFile.printRaw( " Failed\n" );
+//       logFile.printEnd( " Failed" );
 //       return false;
 //     }
 //     else {
-//       logFile.printRaw( " OK\n" );
+//       logFile.printEnd( " OK" );
 //       return true;
 //     }
   }
@@ -255,12 +255,12 @@ namespace client
     FILE *oggFile = fopen( file, "rb" );
 
     if( oggFile == null ) {
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       return false;
     }
     if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
       fclose( oggFile );
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       return false;
     }
 
@@ -276,7 +276,7 @@ namespace client
     alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
     alSourcePlay( musicSource );
 
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
     return true;
   }
 

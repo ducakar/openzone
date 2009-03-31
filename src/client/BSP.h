@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "matrix/BSP.h"
+#include "matrix/Structure.h"
 
 #define BSP_GAMMA_CORR        0.5
 
@@ -38,13 +38,13 @@ namespace client
 
     public:
 
-      BSP();
+      BSP() {};
       ~BSP();
 
       explicit BSP( oz::BSP *bsp );
 
       void init( oz::BSP *bsp );
-      void draw( const Vec3 &p );
+      void draw( const Structure *str );
       uint genList();
 
       static void beginRender();

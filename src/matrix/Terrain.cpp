@@ -81,7 +81,7 @@ namespace oz
     FILE *f = fopen( heightMapFile, "rb" );
 
     if( f == null ) {
-      logFile.printRaw( " No such file\n" );
+      logFile.printEnd( " No such file" );
       return;
     }
 
@@ -89,7 +89,7 @@ namespace oz
     load( data );
     fclose( f );
 
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
   }
 
   void Terrain::loadIMG( const char *heightMapFile ) {
@@ -98,7 +98,7 @@ namespace oz
     SDL_Surface *image = IMG_Load( heightMapFile );
 
     if( image == null ) {
-      logFile.printRaw( " No such file\n" );
+      logFile.printEnd( " No such file" );
       return;
     }
 
@@ -106,7 +106,7 @@ namespace oz
 
     SDL_FreeSurface( image );
 
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
   }
 
   void Terrain::getIndices( float x, float y ) {

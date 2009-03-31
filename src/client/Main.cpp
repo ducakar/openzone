@@ -32,6 +32,9 @@ namespace client
 
   void Main::shutdown()
   {
+    logFile.println( "Shutdown {" );
+    logFile.indent();
+
     if( initFlags & INIT_CLIENT_START ) {
       logFile.println( "Stopping Game {" );
       logFile.indent();
@@ -44,14 +47,14 @@ namespace client
       logFile.indent();
       render.free();
       logFile.unindent();
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_AUDIO ) {
       logFile.print( "Shutting down Audio ..." );
       logFile.indent();
       audio.free();
       logFile.unindent();
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_CLIENT_INIT ) {
       logFile.println( "Shutting down Game {" );
@@ -64,9 +67,13 @@ namespace client
       logFile.print( "Shutting down SDL ..." );
       SDL_ShowCursor( true );
       SDL_Quit();
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
+
+    logFile.unindent();
+    logFile.println( "}" );
     logFile.printlnETD( "%s finished on", OZ_APP_NAME );
+
     config.clear();
   }
 
@@ -124,12 +131,12 @@ namespace client
 
     logFile.print( "Initializing SDL ..." );
     if( SDL_Init( SDL_INIT_VIDEO ) ) {
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       shutdown();
       return;
     }
     input.currKeys = SDL_GetKeyState( null );
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
 
     initFlags |= INIT_SDL;
 
@@ -146,21 +153,21 @@ namespace client
 
 #ifdef WIN32
     if( _chdir( data ) != 0 ) {
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       shutdown();
       return;
     }
     else {
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
 #else
     if( chdir( data ) != 0 ) {
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       shutdown();
       return;
     }
     else {
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
 #endif
 
@@ -186,21 +193,21 @@ namespace client
     int modeResult = SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
 
     if( modeResult == 0 ) {
-      logFile.printRaw( " Mode not supported\n" );
+      logFile.printEnd( " Mode not supported" );
       shutdown();
       return;
     }
     if( SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull ) == null ) {
-      logFile.printRaw( " Failed\n" );
+      logFile.printEnd( " Failed" );
       shutdown();
       return;
     }
 
     if( modeResult != screenBpp ) {
-      logFile.printRaw( " OK, but at %dbpp\n", modeResult );
+      logFile.printEnd( " OK, but at %dbpp", modeResult );
     }
     else {
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
     }
 
     initFlags |= INIT_SDL_VIDEO;
@@ -220,7 +227,7 @@ namespace client
       shutdown();
       return;
     }
-    audio.loadMusic( "music/01_fanatic-assault.ogg" );
+//     audio.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
 
     logFile.unindent();
     logFile.println( "}" );
@@ -368,17 +375,17 @@ namespace client
 }
 }
 
-int main( int, char *[] )
+int main( int, char*[] )
 {
   try {
     oz::client::main.main();
   }
   catch( const char *e ) {
-    oz::logFile.println();
-    oz::logFile.println( "EXCEPTION: %s", e );
+    oz::logFile.resetIndent();
+    oz::logFile.printEnd( "\n*** EXCEPTION: %s ***", e );
 
     if( oz::logFile.isFile() ) {
-      printf( "EXCEPTION: %s\n", e );
+      printf( "*** EXCEPTION: %s ***\n", e );
     }
   }
   oz::client::main.shutdown();

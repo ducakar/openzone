@@ -366,7 +366,7 @@ namespace oz
       /**
        * @param start first element
        */
-      IteratorBase( Type *start ) : elem( start )
+      explicit IteratorBase( Type *start ) : elem( start )
       {}
 
     public:
@@ -468,7 +468,7 @@ namespace oz
        * @param past_ successor of last element for forward iterator or predecessor of first element
        * for backward iterator
        */
-      Iterator( Type *start, const Type *past_ ) : B( start ), past( past_ )
+      explicit Iterator( Type *start, const Type *past_ ) : B( start ), past( past_ )
       {}
 
       /**

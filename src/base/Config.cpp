@@ -92,7 +92,7 @@ namespace oz
 
     if( reader == null ) {
       xmlCleanupParser();
-      logFile.printRaw( " Cannot open file\n" );
+      logFile.printEnd( " Cannot open file" );
       return false;
     }
 
@@ -124,11 +124,11 @@ namespace oz
     xmlCleanupParser();
 
     if( error != 0 ) {
-      logFile.printRaw( " Parse error\n" );
+      logFile.printEnd( " Parse error" );
       return false;
     }
     else {
-      logFile.printRaw( " OK\n" );
+      logFile.printEnd( " OK" );
       return true;
     }
   }
@@ -154,7 +154,7 @@ namespace oz
 
     if( writer == null ) {
       xmlCleanupParser();
-      logFile.printRaw( " Cannot open file\n" );
+      logFile.printEnd( " Cannot open file" );
       return false;
     }
 
@@ -163,7 +163,7 @@ namespace oz
     {
       xmlFreeTextWriter( writer );
       xmlCleanupParser();
-      logFile.printRaw( " Write error\n" );
+      logFile.printEnd( " Write error" );
       return false;
     }
 
@@ -176,7 +176,7 @@ namespace oz
       {
         xmlFreeTextWriter( writer );
         xmlCleanupParser();
-        logFile.printRaw( " Write error\n" );
+        logFile.printEnd( " Write error" );
         return false;
       }
     }
@@ -186,12 +186,12 @@ namespace oz
     {
       xmlFreeTextWriter( writer );
       xmlCleanupParser();
-      logFile.printRaw( " Write error\n" );
+      logFile.printEnd( " Write error" );
       return false;
     }
     xmlFreeTextWriter( writer );
     xmlCleanupParser();
-    logFile.printRaw( " OK\n" );
+    logFile.printEnd( " OK" );
     return true;
   }
 

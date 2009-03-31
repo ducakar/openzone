@@ -16,12 +16,12 @@ namespace oz
 
   class Physics
   {
-    protected:
+    private:
 
       static const int   MAX_TRACE_SPLITS = 3;
       static const float CLIP_BACKOFF;
-
       static const float STICK_VELOCITY;
+      static const float HIT_VEL_TRESHOLD;
 
       static const float AIR_FRICTION;
       static const float WATER_FRICTION;
@@ -57,8 +57,8 @@ namespace oz
 
     public:
 
-      static const float MAX_VELOCITY2;
       static const float FLOOR_NORMAL_Z;
+      static const float MAX_VELOCITY2;
 
       void init( float gAccel );
 
