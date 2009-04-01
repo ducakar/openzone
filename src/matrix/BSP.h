@@ -20,7 +20,7 @@ namespace oz
     static const int LIGHTMAP_BPP = 3;
     static const int LIGHTMAP_SIZE = LIGHTMAP_DIM * LIGHTMAP_DIM * LIGHTMAP_BPP;
 
-    // collidable flag for simplex side
+    // collidable flag for brush side
     static const int COLLIDABLE_BIT = 0x00000001;
 
     // 1 unit in BSP map = 1 cm (for BSPs made for this engine)
@@ -49,11 +49,11 @@ namespace oz
       int   firstFace;
       int   nFaces;
 
-      int   firstSimplex;
-      int   nSimplexes;
+      int   firstBrush;
+      int   nBrushes;
     };
 
-    struct Simplex
+    struct Brush
     {
       int firstSide;
       int nSides;
@@ -110,10 +110,10 @@ namespace oz
     Node          *nodes;
     Leaf          *leafs;
     int           *leafFaces;
-    int           *leafSimplices;
+    int           *leafBrushes;
 
-    Simplex       *simplices;
-    int           *simplexSides;
+    Brush       *brushes;
+    int           *brushSides;
 
     Vertex        *vertices;
     int           *indices;

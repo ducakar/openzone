@@ -39,9 +39,9 @@ namespace oz
     for( int i = 0; i < iMax; i++ ) {
       DynObject *obj = (DynObject*) objects[i];
 
-      if( obj->flags & Object::CLIMBER_BIT ) {
-        obj->setOnLadder();
-      }
+//       if( obj->flags & Object::CLIMBER_BIT ) {
+//         obj->setOnLadder();
+//       }
     }
   }
 

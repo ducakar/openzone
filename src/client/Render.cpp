@@ -368,7 +368,7 @@ namespace client
                 ( camera.player->flags & Object::ON_FLOOR_BIT ) != 0,
                 ( camera.player->flags & Object::HIT_BIT ) != 0,
                 ( camera.player->flags & Object::FRICTING_BIT ) != 0,
-                ( camera.player->flags & Object::ON_WATER_BIT ) != 0,
+                ( camera.player->flags & Object::IN_WATER_BIT ) != 0,
                 ( camera.player->flags & Object::UNDER_WATER_BIT ) != 0,
                 collider.test( *camera.player ) );
 

@@ -67,11 +67,11 @@ namespace oz
   //*    POINT COLLISION DETECTION     *
   //***********************************
 
-  // checks if AABB and Simplex overlap
-  bool Collider::testPointSimplex( const BSP::Simplex *simplex )
+  // checks if AABB and Brush overlap
+  bool Collider::testPointBrush( const BSP::Brush *brush )
   {
-    for( int i = 0; i < simplex->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->simplexSides[simplex->firstSide + i] ];
+    for( int i = 0; i < brush->nSides; i++ ) {
+      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float dist = globalStartPos * plane.normal - plane.distance;
 
@@ -82,16 +82,16 @@ namespace oz
     return false;
   }
 
-  // recursively check nodes of BSP-tree for AABB-Simplex overlapping
+  // recursively check nodes of BSP-tree for AABB-Brush overlapping
   bool Collider::testPointNode( int nodeIndex )
   {
     if( nodeIndex < 0 ) {
       BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
 
-      for( int i = 0; i < leaf.nSimplexes; i++ ) {
-        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplices[leaf.firstSimplex + i] ];
+      for( int i = 0; i < leaf.nBrushes; i++ ) {
+        BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( ( simplex.flags & BSP::COLLIDABLE_BIT ) && !testPointSimplex( &simplex ) ) {
+        if( ( brush.flags & BSP::COLLIDABLE_BIT ) && !testPointBrush( &brush ) ) {
           return false;
         }
       }
@@ -115,7 +115,7 @@ namespace oz
     }
   }
 
-  // check for AABB-AABB and AABB-Simplex overlapping in the world
+  // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testPointWorld()
   {
     if( !world.includes( point, -EPSILON ) ) {
@@ -179,7 +179,7 @@ namespace oz
     return true;
   }
 
-  // check for AABB-AABB and AABB-Simplex overlapping in the world
+  // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testPointWorldOSO()
   {
     if( !world.includes( point, -EPSILON ) ) {
@@ -250,7 +250,7 @@ namespace oz
       {
         hit.ratio  = ratio;
         hit.normal = quad.normal[0];
-        hit.sObj   = null;
+        hit.obj    = null;
 
         return false;
       }
@@ -275,7 +275,7 @@ namespace oz
       {
         hit.ratio  = ratio;
         hit.normal = quad.normal[1];
-        hit.sObj   = null;
+        hit.obj    = null;
 
         return false;
       }
@@ -301,13 +301,13 @@ namespace oz
           if( ratio < hit.ratio ) {
             hit.ratio  = ratio;
             hit.normal = normal;
-            hit.sObj   = null;
+            hit.obj    = null;
           }
         }
         else {
           hit.ratio  = 0.0f;
           hit.normal = normal;
-          hit.sObj   = null;
+          hit.obj    = null;
         }
       }
     }
@@ -318,8 +318,8 @@ namespace oz
   // finds out if Ray-AABB collision occurs and the time when it occurs
   void Collider::trimPointObj( Object *sObj )
   {
-    float  minRatio   = -1.0f;
-    float  maxRatio   =  1.0f;
+    float  minRatio       = -1.0f;
+    float  maxRatio       =  1.0f;
     const Vec3 *tmpNormal = null;
 
     for( int i = 0; i < 6; i++ ) {
@@ -352,24 +352,24 @@ namespace oz
       }
     }
 
-    if( minRatio < hit.ratio && minRatio < maxRatio && minRatio != -1.0f ) {
+    if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio  = minRatio;
       hit.normal = *tmpNormal;
-      hit.sObj   = sObj;
+      hit.obj    = sObj;
 
       trace.fromPointMove( globalStartPos, move * hit.ratio, EPSILON );
     }
   }
 
-  // finds out if Ray-Simplex collision occurs and the time when it occurs
-  void Collider::trimPointSimplex( const BSP::Simplex *simplex )
+  // finds out if Ray-Brush collision occurs and the time when it occurs
+  void Collider::trimPointBrush( const BSP::Brush *brush )
   {
-    float minRatio   = -1.0f;
-    float maxRatio   =  1.0f;
+    float minRatio        = -1.0f;
+    float maxRatio        =  1.0f;
     const Vec3 *tmpNormal = null;
 
-    for( int i = 0; i < simplex->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->simplexSides[simplex->firstSide + i] ];
+    for( int i = 0; i < brush->nSides; i++ ) {
+      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float startDist = leafStartPos * plane.normal - plane.distance;
       float endDist   = leafEndPos   * plane.normal - plane.distance;
@@ -395,20 +395,20 @@ namespace oz
         maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
       }
     }
-    if( minRatio < maxRatio && minRatio != -1.0f ) {
+    if( minRatio != -1.0f && minRatio < maxRatio ) {
       float newRatio = max( leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio ), 0.0f );
 
       if( newRatio < hit.ratio ) {
         hit.ratio  = newRatio;
         hit.normal = toAbsoluteCS( *tmpNormal );
-        hit.sObj   = null;
+        hit.obj    = null;
 
         trace.fromPointMove( globalStartPos, move * hit.ratio, EPSILON );
       }
     }
   }
 
-  // recursively check nodes of BSP-tree for AABB-Simplex collisions
+  // recursively check nodes of BSP-tree for AABB-Brush collisions
   void Collider::trimPointNode( int nodeIndex, float startRatio, float endRatio,
                                 const Vec3 &startPos, const Vec3 &endPos )
   {
@@ -421,11 +421,11 @@ namespace oz
       leafStartPos = startPos;
       leafEndPos   = endPos;
 
-      for( int i = 0; i < leaf.nSimplexes; i++ ) {
-        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplices[leaf.firstSimplex + i] ];
+      for( int i = 0; i < leaf.nBrushes; i++ ) {
+        BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( simplex.flags & BSP::COLLIDABLE_BIT ) {
-          trimPointSimplex( &simplex );
+        if( brush.flags & BSP::COLLIDABLE_BIT ) {
+          trimPointBrush( &brush );
         }
       }
     }
@@ -529,7 +529,6 @@ namespace oz
   {
     hit.ratio = 1.0f;
     hit.obj   = null;
-    hit.sObj  = null;
 
     globalStartPos = point;
     globalEndPos   = point + move;
@@ -575,11 +574,11 @@ namespace oz
   //*    AABB COLLISION DETECTION     *
   //***********************************
 
-  // checks if AABB and Simplex overlap
-  bool Collider::testAABBSimplex( const BSP::Simplex *simplex )
+  // checks if AABB and Brush overlap
+  bool Collider::testAABBBrush( const BSP::Brush *brush )
   {
-    for( int i = 0; i < simplex->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->simplexSides[simplex->firstSide + i] ];
+    for( int i = 0; i < brush->nSides; i++ ) {
+      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float offset =
           Math::abs( plane.normal.x * aabb.dim.x ) +
@@ -595,16 +594,16 @@ namespace oz
     return false;
   }
 
-  // recursively check nodes of BSP-tree for AABB-Simplex overlapping
+  // recursively check nodes of BSP-tree for AABB-Brush overlapping
   bool Collider::testAABBNode( int nodeIndex )
   {
     if( nodeIndex < 0 ) {
       BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
 
-      for( int i = 0; i < leaf.nSimplexes; i++ ) {
-        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplices[leaf.firstSimplex + i] ];
+      for( int i = 0; i < leaf.nBrushes; i++ ) {
+        BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( ( simplex.flags & BSP::COLLIDABLE_BIT ) && !testAABBSimplex( &simplex ) ) {
+        if( ( brush.flags & BSP::COLLIDABLE_BIT ) && !testAABBBrush( &brush ) ) {
           return false;
         }
       }
@@ -634,7 +633,7 @@ namespace oz
     }
   }
 
-  // check for AABB-AABB, AABB-Simplex and AABB-Terrain overlapping in the world
+  // check for AABB-AABB, AABB-Brush and AABB-Terrain overlapping in the world
   bool Collider::testAABBWorld()
   {
     if( !world.includes( aabb, EPSILON ) ) {
@@ -703,7 +702,7 @@ namespace oz
     return true;
   }
 
-  // check for AABB-AABB and AABB-Simplex overlapping in the world
+  // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testAABBWorldOSO()
   {
     if( !world.includes( aabb, EPSILON ) ) {
@@ -761,13 +760,13 @@ namespace oz
           if( ratio < hit.ratio ) {
             hit.ratio  = ratio;
             hit.normal = normal;
-            hit.sObj   = null;
+            hit.obj    = null;
           }
         }
         else {
           hit.ratio  = 0.0f;
           hit.normal = normal;
-          hit.sObj   = null;
+          hit.obj    = null;
         }
       }
     }
@@ -776,8 +775,8 @@ namespace oz
   // finds out if AABB-AABB collision occurs and the time when it occurs
   void Collider::trimAABBObj( Object *sObj )
   {
-    float minRatio   = -1.0f;
-    float maxRatio   =  1.0f;
+    float minRatio        = -1.0f;
+    float maxRatio        =  1.0f;
     const Vec3 *tmpNormal = null;
 
     for( int i = 0; i < 6; i++ ) {
@@ -809,22 +808,22 @@ namespace oz
       }
     }
 
-    if( minRatio < hit.ratio && minRatio < maxRatio && minRatio != -1.0f ) {
+    if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio  = minRatio;
       hit.normal = *tmpNormal;
-      hit.sObj   = sObj;
+      hit.obj    = sObj;
     }
   }
 
-  // finds out if AABB-Simplex collision occurs and the time when it occurs
-  void Collider::trimAABBSimplex( const BSP::Simplex *simplex )
+  // finds out if AABB-Brush collision occurs and the time when it occurs
+  void Collider::trimAABBBrush( const BSP::Brush *brush )
   {
-    float minRatio   = -1.0f;
-    float maxRatio   =  1.0f;
+    float minRatio        = -1.0f;
+    float maxRatio        =  1.0f;
     const Vec3 *tmpNormal = null;
 
-    for( int i = 0; i < simplex->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->simplexSides[simplex->firstSide + i] ];
+    for( int i = 0; i < brush->nSides; i++ ) {
+      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float offset =
           Math::abs( plane.normal.x * aabb.dim.x ) +
@@ -855,18 +854,47 @@ namespace oz
         maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
       }
     }
-    if( minRatio < maxRatio && minRatio != -1.0f ) {
+    if( minRatio != -1.0f && minRatio < maxRatio ) {
       float newRatio = max( leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio ), 0.0f );
 
       if( newRatio < hit.ratio ) {
         hit.ratio  = newRatio;
         hit.normal = toAbsoluteCS( *tmpNormal );
-        hit.sObj   = null;
+        hit.obj    = null;
       }
     }
   }
 
-  // recursively check nodes of BSP-tree for AABB-Simplex collisions
+  // checks if AABB and Brush overlap and if AABB center is inside a brush
+  void Collider::trimAABBWater( const BSP::Brush *brush )
+  {
+    bool isInside  = true;
+    bool doOverlap = true;
+
+    for( int i = 0; i < brush->nSides; i++ ) {
+      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+
+      float offset =
+          Math::abs( plane.normal.x * aabb.dim.x ) +
+          Math::abs( plane.normal.y * aabb.dim.y ) +
+          Math::abs( plane.normal.z * aabb.dim.z );
+
+      float centerDist = leafEndPos * plane.normal - plane.distance;
+      float outerDist  = centerDist - offset;
+
+      if( outerDist > 0.0f ) {
+        return;
+      }
+      else if( centerDist > 0.0f ) {
+        isInside = false;
+      }
+    }
+
+    hit.inWater    |= doOverlap;
+    hit.underWater |= isInside;
+  }
+
+  // recursively check nodes of BSP-tree for AABB-Brush collisions
   void Collider::trimAABBNode( int nodeIndex, float startRatio, float endRatio,
       const Vec3 &startPos, const Vec3 &endPos )
   {
@@ -879,11 +907,14 @@ namespace oz
       leafStartPos = startPos;
       leafEndPos   = endPos;
 
-      for( int i = 0; i < leaf.nSimplexes; i++ ) {
-        BSP::Simplex &simplex = bsp->simplices[ bsp->leafSimplices[leaf.firstSimplex + i] ];
+      for( int i = 0; i < leaf.nBrushes; i++ ) {
+        BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( simplex.flags & BSP::COLLIDABLE_BIT ) {
-          trimAABBSimplex( &simplex );
+        if( brush.flags & BSP::COLLIDABLE_BIT ) {
+          trimAABBBrush( &brush );
+        }
+        else {
+          trimAABBWater( &brush );
         }
       }
     }
@@ -948,9 +979,10 @@ namespace oz
   // move AABB unil first collisons occurs
   void Collider::trimAABBWorld()
   {
-    hit.ratio = 1.0f;
-    hit.obj   = obj;
-    hit.sObj  = null;
+    hit.ratio      = 1.0f;
+    hit.obj        = null;
+    hit.inWater    = false;
+    hit.underWater = false;
 
     globalStartPos = aabb.p;
     globalEndPos   = aabb.p + move;
@@ -1030,7 +1062,7 @@ namespace oz
 
         if( objects != null ) {
           foreach( sObj, sector.objects.iterator() ) {
-            if( ( sObj->flags & Object::CLIP_BIT ) && sObj->overlaps( aabb ) ) {
+            if( sObj->overlaps( aabb ) ) {
               *objects << &*sObj;
             }
           }
@@ -1051,7 +1083,7 @@ namespace oz
 
         if( objects != null ) {
           for( Object *sObj = sector.objects.first(); sObj != null; sObj = sObj->next[0] ) {
-            if( ( sObj->flags & Object::CLIP_BIT ) && aabb.includes( sObj->p ) ) {
+            if( aabb.includes( sObj->p ) ) {
               *objects << sObj;
             }
           }

@@ -75,11 +75,12 @@ namespace oz
           /**
            * Advance to next element.
            */
-          void operator ++ ( int )
+          Iterator &operator ++ ()
           {
             assert( B::elem != null );
 
             B::elem = B::elem->next[INDEX];
+            return *this;
           }
 
       };

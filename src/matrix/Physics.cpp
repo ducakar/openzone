@@ -37,7 +37,7 @@ namespace oz
     part->velocity -= ( part->rejection * ( part->velocity * collider.hit.normal ) ) *
         collider.hit.normal;
 
-    Object *sObj = collider.hit.sObj;
+    Object *sObj = collider.hit.obj;
 
     if( sObj != null ) {
       if( sObj->flags & Object::DYNAMIC_BIT ) {
@@ -95,7 +95,7 @@ namespace oz
 
   bool Physics::handleObjFriction()
   {
-    obj->flags &= ~Object::ON_WATER_BIT;
+    obj->flags &= ~Object::IN_WATER_BIT;
 
     // in air
     if( obj->flags & Object::HOVER_BIT ) {
@@ -193,10 +193,10 @@ namespace oz
 
   void Physics::handleObjHit()
   {
-    Object *sObj = collider.hit.sObj;
+    Object *sObj = collider.hit.obj;
     Vec3 oldVelocity = obj->newVelocity;
 
-    if( collider.hit.sObj != null && ( collider.hit.sObj->flags & Object::DYNAMIC_BIT ) ) {
+    if( collider.hit.obj != null && ( collider.hit.obj->flags & Object::DYNAMIC_BIT ) ) {
       DynObject *sDynObj = (DynObject*) sObj;
       sDynObj->flags &= ~Object::DISABLED_BIT;
 
@@ -284,10 +284,18 @@ namespace oz
 
     int traceSplits = 0;
     do {
+      collider.hit.underWater = false;
       collider.translate( *obj, move, obj );
       obj->p += collider.hit.ratio * move;
       leftRatio -= leftRatio * collider.hit.ratio;
 
+      if( collider.hit.inWater ) {
+        obj->flags |= Object::IN_WATER_BIT;
+
+        if( collider.hit.underWater ) {
+          obj->flags |= Object::UNDER_WATER_BIT;
+        }
+      }
       if( collider.hit.ratio == 1.0f ) {
         break;
       }

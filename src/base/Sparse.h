@@ -38,12 +38,14 @@ namespace oz
           explicit Iterator( Sparse &s ) : B( s.data, s.data + s.size )
           {}
 
-          void operator ++ ( int )
+          Iterator &operator ++ ()
           {
             do {
               B::elem++;
             }
             while( B::elem != B::past && B::elem->nextSlot != -1 );
+
+            return *this;
           }
 
       };

@@ -34,33 +34,6 @@ namespace oz
       DynObject() : velocity( Vec3::zero() ), newVelocity( Vec3::zero() ), lower( -1 )
       {}
 
-      void setInWater( const AABB &water )
-      {
-        flags |= Object::ON_WATER_BIT;
-
-        if( !( oldFlags & Object::ON_WATER_BIT ) ) {
-          if( newVelocity.z < -4.0f ) {
-            events << new Event( Event::SPLASH_HARD );
-          }
-          else if( newVelocity.z < -2.0f ) {
-            events << new Event( Event::SPLASH_SOFT );
-          }
-        }
-        if( water.includes( p ) ) {
-          flags |= Object::UNDER_WATER_BIT;
-          flags &= ~Object::ON_FLOOR_BIT;
-          lower = -1;
-        }
-      }
-
-      void setOnLadder()
-      {
-        flags |= Object::ON_LADDER_BIT;
-
-        flags &= ~Object::ON_FLOOR_BIT;
-        lower = -1;
-      }
-
       virtual void load( FILE *stream );
       virtual void save( FILE *stream );
   };

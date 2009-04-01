@@ -61,7 +61,8 @@ else( WIN32 )
   find_file( VORBIS_INCLUDE_DIR vorbis )
   find_library( VORBIS_LIBRARY vorbisfile )
 
-  set( CXX_FLAGS -g3 -Wall -Wextra -Winvalid-pch -pipe -I/usr/include/libxml2 )
+  set( CXX_FLAGS -g3 -pipe -I/usr/include/libxml2
+    -Wall -Wextra -Winvalid-pch -Wnon-virtual-dtor -Woverloaded-virtual )
 #  set( CXX_FLAGS -O3 -march=athlon-xp -mtune=athlon-xp -mfpmath=sse -ffast-math -Wall -Wextra -Winvalid-pch -pipe -I/usr/include/libxml2 )
   add_definitions( ${CXX_FLAGS} )
   link_libraries( xml2 SDL SDL_image GL GLU openal alut vorbisfile )

@@ -79,7 +79,7 @@ namespace oz
            * Advance to the next element.
            * @param
            */
-          void operator ++ ( int )
+          Iterator &operator ++ ()
           {
             assert( B::elem != null );
 
@@ -96,6 +96,7 @@ namespace oz
             else {
               B::elem = null;
             }
+            return *this;
           }
 
           /**

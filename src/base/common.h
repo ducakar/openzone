@@ -349,8 +349,8 @@ namespace oz
    * Generalized iterator.
    * It should only be used as a base class. Following functions need to be implemented:<br>
    * <code>bool isPassed()</code><br>
-   * <code>void operator ++ ( int )</code><br>
-   * <code>void operator -- ( int )</code> (optional)<br>
+   * <code>Iterator &operator ++ ()</code><br>
+   * <code>Iterator &operator -- ()</code> (optional)<br>
    * and, of course, a sensible constructor.
    */
   template <class Type>
@@ -484,21 +484,23 @@ namespace oz
       /**
        * Advance to next element.
        */
-      void operator ++ ( int )
+      Iterator &operator ++ ()
       {
         assert( B::elem != past );
 
         B::elem++;
+        return *this;
       }
 
       /**
        * Advance to previous element.
        */
-      void operator -- ( int )
+      Iterator &operator -- ()
       {
         assert( B::elem != past );
 
         B::elem--;
+        return *this;
       }
 
   };
@@ -518,7 +520,7 @@ namespace oz
    * There's no need to add it to Katepart syntax highlighting as it is already there.
    */
 # define foreach( i, startIterator ) \
-  for( typeof( startIterator ) i( startIterator ); !i.isPassed(); i++ )
+  for( typeof( startIterator ) i( startIterator ); !i.isPassed(); ++i )
 
   /**
    * Compare all elements. (Like STL equal)

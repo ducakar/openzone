@@ -125,8 +125,8 @@ namespace oz
     world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.0f, 82.0f ) ) );
     world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.0f, 84.0f ) ) );
 
-//     world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), Mat44::id(), 3 ) );
-    world.add( new Water( Vec3( 40.0f, -60.0f, 75.0f ), Vec3( 3.0f, 3.0f, 3.0f ) ) );
+    world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), Structure::R0, 3 ) );
+//     world.add( new Water( Vec3( 40.0f, -60.0f, 75.0f ), Vec3( 3.0f, 3.0f, 3.0f ) ) );
 
     world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -61.0f, 81.0f ) ) );
     world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -61.0f, 82.0f ) ) );

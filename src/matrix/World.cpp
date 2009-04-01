@@ -188,17 +188,17 @@ namespace oz
     }
 
     while( structures.last() == null ) {
-      structures--;
+      --structures;
     }
     structures.trim( 4 );
 
     while( objects.last() == null ) {
-      objects--;
+      --objects;
     }
     objects.trim( 32 );
 
     while( particles.last() == null ) {
-      particles--;
+      --particles;
     }
     particles.trim( 128 );
 
