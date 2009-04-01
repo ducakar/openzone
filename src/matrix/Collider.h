@@ -56,7 +56,7 @@ namespace oz
       Vec3 toAbsoluteCS( const Vec3 &v ) const;
 
       bool testPointTerraQuad( int x, int y );
-      bool testPointSimplex( const BSP::Simplex *simplex );
+      bool testPointBrush( const BSP::Brush *brush );
       bool testPointNode( int nodeIndex );
       bool testPointTerra();
       bool testPointWorld();
@@ -67,13 +67,13 @@ namespace oz
 
       void trimPointVoid();
       void trimPointObj( Object *sObj );
-      void trimPointSimplex( const BSP::Simplex *simplex );
+      void trimPointBrush( const BSP::Brush *brush );
       void trimPointNode( int nodeIndex, float startRatio, float endRatio,
                           const Vec3 &startPos, const Vec3 &endPos );
       void trimPointTerra();
       void trimPointWorld();
 
-      bool testAABBSimplex( const BSP::Simplex *simplex );
+      bool testAABBBrush( const BSP::Brush *brush );
       bool testAABBNode( int nodeIndex );
       bool testAABBWorld();
       bool testAABBWorldOO();
@@ -81,7 +81,8 @@ namespace oz
 
       void trimAABBVoid();
       void trimAABBObj( Object *sObj );
-      void trimAABBSimplex( const BSP::Simplex *simplex );
+      void trimAABBBrush( const BSP::Brush *brush );
+      void trimAABBWater( const BSP::Brush *brush );
       void trimAABBNode( int nodeIndex, float startRatio, float endRatio,
                          const Vec3 &startPos, const Vec3 &endPos );
       void trimAABBWorld();
@@ -107,9 +108,13 @@ namespace oz
       // if either vector is null, respective test isn't performed
       void getOverlaps( const AABB &aabb, Vector<Object*> *objects, Vector<Structure*> *structs );
 
+      // returns vector of objects, overlapping with given AABB
+      void getIncludes( const AABB &aabb, Vector<Object*> *objects );
+
       void translate( const Vec3 &point, const Vec3 &move );
       void translate( const AABB &aabb, const Vec3 &move, const Object *exclObj );
       void translate( Object *obj, const Vec3 &move );
+
   };
 
   extern Collider collider;
@@ -146,7 +151,7 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    world.getInters( aabb_.toBounds( EPSILON ), AABB::MAX_DIMXY );
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
 
     return testAABBWorld();
   }
@@ -156,7 +161,7 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    world.getInters( aabb_.toBounds( EPSILON ), AABB::MAX_DIMXY );
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
 
     return testAABBWorldOO();
   }
@@ -166,7 +171,7 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    world.getInters( aabb_.toBounds( EPSILON ), AABB::MAX_DIMXY );
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
 
     return testAABBWorldOSO();
   }
@@ -178,9 +183,20 @@ namespace oz
     aabb = aabb_;
     exclObj = null;
 
-    world.getInters( aabb_.toBounds( EPSILON ), AABB::MAX_DIMXY );
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
 
     return getWorldOverlaps( objects, structs );
+  }
+
+  inline void Collider::getIncludes( const AABB &aabb_,
+                                     Vector<Object*> *objects )
+  {
+    aabb = aabb_;
+    exclObj = null;
+
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
+
+    return getWorldIncludes( objects );
   }
 
   inline void Collider::translate( const Vec3 &point_, const Vec3 &move_ )

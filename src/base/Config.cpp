@@ -142,7 +142,7 @@ namespace oz
     Elem sortedVars[size];
 
     HashString<String, SIZE>::Iterator j( vars );
-    for( int i = 0; !j.isPassed(); i++, j++ ) {
+    for( int i = 0; !j.isPassed(); ++i, ++j ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
       size = i;

@@ -84,7 +84,8 @@ namespace oz
     hvsc[5] = hvsc[3] * hvsc[1];
 
     bool isGrounded = lower >= 0 || ( flags & Object::ON_FLOOR_BIT );
-    bool isSwimming = !isGrounded && ( flags & Object::ON_WATER_BIT );
+    bool isSwimming = ( !isGrounded && ( flags & Object::IN_WATER_BIT ) ) ||
+                      ( flags & Object::UNDER_WATER_BIT );
 
     if( ( keys & KEY_RUN ) && !( oldKeys & KEY_RUN ) ) {
       state ^= RUNNING_BIT;
@@ -259,8 +260,8 @@ namespace oz
 
       collider.translate( p + camPos, look * GRAB_DIST );
 
-      if( collider.hit.sObj != null ) {
-        collider.hit.sObj->destroy();
+      if( collider.hit.obj != null ) {
+        collider.hit.obj->destroy();
       }
     }
 

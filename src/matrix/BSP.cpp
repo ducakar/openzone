@@ -83,18 +83,18 @@ namespace oz
     int firstFace;
     int nFaces;
 
-    int firstSimplex;
-    int nSimplexes;
+    int firstBrush;
+    int nBrushes;
   };
 
-  struct QBSPSimplex
+  struct QBSPBrush
   {
     int firstSide;
     int nSides;
     int texture;
   };
 
-  struct QBSPSimplexSide
+  struct QBSPBrushSide
   {
     int plane;
     int texture;
@@ -149,7 +149,7 @@ namespace oz
   }
 
   BSP::BSP() : textures( null ), planes( null ), nodes( null ), leafs( null ), leafFaces( null ),
-    simplices( null ), simplexSides( null ), vertices( null ), indices( null ), faces( null ), lightmaps( null )
+    brushes( null ), brushSides( null ), vertices( null ), indices( null ), faces( null ), lightmaps( null )
   {
   }
 
@@ -256,14 +256,14 @@ namespace oz
       leafs[i].cluster    = leaf.cluster;
       leafs[i].firstFace  = leaf.firstFace;
       leafs[i].nFaces     = leaf.nFaces;
-      leafs[i].firstSimplex = leaf.firstSimplex;
-      leafs[i].nSimplexes   = leaf.nSimplexes;
+      leafs[i].firstBrush = leaf.firstBrush;
+      leafs[i].nBrushes   = leaf.nBrushes;
 
       if( leafs[i].mins.x < -maxDim || leafs[i].maxs.x > maxDim ||
           leafs[i].mins.y < -maxDim || leafs[i].maxs.y > maxDim ||
           leafs[i].mins.z < -maxDim || leafs[i].maxs.z > maxDim )
       {
-        leafs[i].nSimplexes = 0;
+        leafs[i].nBrushes = 0;
       }
       else {
         mins.x = min( mins.x, leafs[i].mins.x );
@@ -281,35 +281,35 @@ namespace oz
     fseek( f, lumps[QBSP_LUMP_LEAFFACES].offset, SEEK_SET );
     fread( leafFaces, sizeof( int ), nLeafFaces, f );
 
-    int nLeafSimplices = lumps[QBSP_LUMP_LEAFBRUSHES].length / sizeof( int );
-    leafSimplices = new int[nLeafSimplices];
+    int nLeafBrushes = lumps[QBSP_LUMP_LEAFBRUSHES].length / sizeof( int );
+    leafBrushes = new int[nLeafBrushes];
     fseek( f, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
-    fread( leafSimplices, sizeof( int ), nLeafSimplices, f );
+    fread( leafBrushes, sizeof( int ), nLeafBrushes, f );
 
-    int nSimplices = lumps[QBSP_LUMP_BRUSHES].length / sizeof( QBSPSimplex );
-    simplices = new BSP::Simplex[nSimplices];
+    int nBrushes = lumps[QBSP_LUMP_BRUSHES].length / sizeof( QBSPBrush );
+    brushes = new BSP::Brush[nBrushes];
     fseek( f, lumps[QBSP_LUMP_BRUSHES].offset, SEEK_SET );
 
-    for( int i = 0; i < nSimplices; i++ ) {
-      QBSPSimplex simplex;
+    for( int i = 0; i < nBrushes; i++ ) {
+      QBSPBrush brush;
 
-      fread( &simplex, sizeof( QBSPSimplex ), 1, f );
+      fread( &brush, sizeof( QBSPBrush ), 1, f );
 
-      simplices[i].firstSide = simplex.firstSide;
-      simplices[i].nSides    = simplex.nSides;
-      simplices[i].flags     = textures[simplex.texture] >= 0 ? BSP::COLLIDABLE_BIT : 0;
+      brushes[i].firstSide = brush.firstSide;
+      brushes[i].nSides    = brush.nSides;
+      brushes[i].flags     = textures[brush.texture] >= 0 ? BSP::COLLIDABLE_BIT : 0;
     }
 
-    int nSimplexSides = lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPSimplexSide );
-    simplexSides = new int[nSimplexSides];
+    int nBrushSides = lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide );
+    brushSides = new int[nBrushSides];
     fseek( f, lumps[QBSP_LUMP_BRUSHSIDES].offset, SEEK_SET );
 
-    for( int i = 0; i < nSimplexSides; i++ ) {
-      QBSPSimplexSide simplexSide;
+    for( int i = 0; i < nBrushSides; i++ ) {
+      QBSPBrushSide brushSide;
 
-      fread( &simplexSide, sizeof( QBSPSimplexSide ), 1, f );
+      fread( &brushSide, sizeof( QBSPBrushSide ), 1, f );
 
-      simplexSides[i] = simplexSide.plane;
+      brushSides[i] = brushSide.plane;
     }
 
     int nVertices = lumps[QBSP_LUMP_VERTICES].length / sizeof( QBSPVertex );
@@ -402,18 +402,18 @@ namespace oz
       delete[] leafFaces;
       leafFaces = null;
     }
-    if( leafSimplices != null ) {
-      delete[] leafSimplices;
-      leafSimplices = null;
+    if( leafBrushes != null ) {
+      delete[] leafBrushes;
+      leafBrushes = null;
     }
 
-    if( simplices != null ) {
-      delete[] simplices;
-      simplices = null;
+    if( brushes != null ) {
+      delete[] brushes;
+      brushes = null;
     }
-    if( simplexSides != null ) {
-      delete[] simplexSides;
-      simplexSides = null;
+    if( brushSides != null ) {
+      delete[] brushSides;
+      brushSides = null;
     }
 
     if( vertices != null ) {

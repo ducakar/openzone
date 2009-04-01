@@ -73,7 +73,7 @@ namespace oz
     // remove unneccessary minds
     for( DList<Mind, 0>::Iterator i( minds ); !i.isPassed(); ) {
       Mind &mind = *i;
-      i++;
+      ++i;
 
       if( !mind.isUpdated ) {
         minds.remove( &mind );
@@ -83,7 +83,7 @@ namespace oz
 
   void Nirvana::think()
   {
-    for( DList<Mind, 0>::Iterator i( minds ); !i.isPassed(); i++ ) {
+    foreach( i, minds.iterator() ) {
       Mind &mind = *i;
 
       mind.update();

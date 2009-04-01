@@ -22,6 +22,18 @@ namespace oz
   // static object abstract class
   class Object : public AABB
   {
+    /*
+     * Here various flag bits are set; the higher bits are used for flags that are internal flags
+     * and should only be hardcoded in the engine and cannot be set in object class's configuration
+     * file. The lower bits are set for object class in the corresponding configuration file. The
+     * lower bits are used for that because of easier calculation.
+     */
+
+    public:
+
+      // which bits are treated as "lower bits", all other are "higher bits"
+      static const int CONFIG_BITS_MASK = 0x00000fff;
+
     protected:
 
       /*
@@ -48,46 +60,56 @@ namespace oz
 
     public:
 
-      // handle collisions for this object
-      static const int CLIP_BIT = 0x00800000;
-
       /*
        *  DYNAMIC OBJECTS' BITS
        */
 
       // if the object is dynamic
-      static const int DYNAMIC_BIT = 0x00400000;
+      static const int DYNAMIC_BIT = 0x00800000;
 
       // if object is still and on a still surface, we won't handle physics for it
-      static const int DISABLED_BIT = 0x00200000;
-
-      // if the object is immune to gravity
-      static const int HOVER_BIT = 0x00100000;
-
-      // if object can push other objects in orthogonal direction of collision normal
-      static const int PUSHING_BIT = 0x00080000;
-
-      // if object is currently fricting
-      static const int FRICTING_BIT = 0x00040000;
+      static const int DISABLED_BIT = 0x00400000;
 
       // if object collided in last step
-      static const int HIT_BIT = 0x00020000;
+      static const int HIT_BIT = 0x00200000;
+
+      // if object is currently fricting
+      static const int FRICTING_BIT = 0x00100000;
 
       // if the object lies or moves on a structure, terrain or non-dynamic object
       // (if on another dynamic object, we determine that with "lower" index)
-      static const int ON_FLOOR_BIT = 0x00010000;
+      static const int ON_FLOOR_BIT = 0x00080000;
 
       // if object intersects with water
-      static const int ON_WATER_BIT = 0x00008000;
+      static const int IN_WATER_BIT = 0x00040000;
 
       // if object center is in water
-      static const int UNDER_WATER_BIT = 0x00004000;
-
-      // if object can climb
-      static const int CLIMBER_BIT = 0x00002000;
+      static const int UNDER_WATER_BIT = 0x00020000;
 
       // if object is on ladder
-      static const int ON_LADDER_BIT = 0x00001000;
+      static const int ON_LADDER_BIT = 0x00010000;
+
+      // handle collisions for this object
+      static const int CLIP_BIT = 0x00000001;
+
+      // if the object is immune to gravity
+      static const int HOVER_BIT = 0x00000002;
+
+      // if object can push other objects in orthogonal direction of collision normal
+      static const int PUSHING_BIT = 0x00000004;
+
+      // if object can climb
+      static const int CLIMBER_BIT = 0x00000008;
+
+      /*
+       *  TYPE FLAGS
+       */
+
+      // object is derived from water
+      static const int WATER_BIT = 0x00008000;
+
+      // object is derived from bot
+      static const int BOT_BIT = 0x00004000;
 
       /*
        *  RENDER FLAGS
@@ -96,19 +118,16 @@ namespace oz
       // released frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
       // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR
-      static const int RELEASED_CULL_BIT = 0x00000800;
+      static const int RELEASED_CULL_BIT = 0x00000010;
 
       // determines visibility of the object for rendering
       // (e.g. ghosts are visible by other spirits, but not by alive units)
-      static const int SPIRIT_BIT = 0x00000400;
+      static const int SPIRIT_BIT = 0x00000020;
 
       // if object is blended (then it should be rendered at the end)
-      static const int BLEND_BIT = 0x00000200;
+      static const int BLEND_BIT = 0x00000040;
 
     public:
-
-      static const int BOT_BIT = 0x00000080;
-      static const int WATER_BIT = 0x00000040;
 
       /*
        *  FIELDS
@@ -155,12 +174,13 @@ namespace oz
 
       void update()
       {
-        flags &= ~( HIT_BIT | FRICTING_BIT );
         events.free();
 
         if( flags & UPDATE_FUNC_BIT ) {
           onUpdate();
         }
+
+        flags &= ~( HIT_BIT | FRICTING_BIT );
       }
 
       void hit( const Hit *hit )

@@ -379,7 +379,7 @@ namespace oz
        * @param
        * @return
        */
-      SVector &operator -- ( int )
+      SVector &operator -- ()
       {
         assert( count != 0 );
 

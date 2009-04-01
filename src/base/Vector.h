@@ -428,7 +428,7 @@ namespace oz
        * @param
        * @return
        */
-      Vector &operator -- ( int )
+      Vector &operator -- ()
       {
         assert( count != 0 );
 

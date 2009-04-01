@@ -10,7 +10,6 @@
 
 #include "Water.h"
 
-#include "matrix/Water.h"
 #include "Context.h"
 
 namespace oz

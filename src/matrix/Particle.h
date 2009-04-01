@@ -62,6 +62,8 @@ namespace oz
                              Math::frand() * MAX_ROTVELOCITY ) )
       {}
 
+      virtual ~Particle() {}
+
       void update()
       {
         rot += rotVelocity * timer.frameTime;

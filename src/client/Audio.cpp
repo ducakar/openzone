@@ -65,10 +65,7 @@ namespace client
     }
     sources.free();
 
-    for( HashIndex<ContSource, HASHTABLE_SIZE>::Iterator i( contSources );
-         !i.isPassed();
-         i++ )
-    {
+    foreach( i, contSources.iterator() ) {
       ContSource &src = *i;
 
       alSourceStop( src.source );

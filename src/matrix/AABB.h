@@ -23,22 +23,20 @@ namespace oz
     Vec3 p;
     Vec3 dim;
 
-    AABB() {}
-    AABB( const Vec3 &p_, const Vec3 &dim_ ) : p( p_ ), dim( dim_ ) {}
+    AABB()
+    {}
+
+    AABB( const Vec3 &p_, const Vec3 &dim_ ) : p( p_ ), dim( dim_ )
+    {}
 
     Bounds toBounds( float eps = 0.0f ) const
     {
-      Bounds t;
-
-      t.mins.x = p.x - dim.x - 2.0f * eps;
-      t.mins.y = p.y - dim.y - 2.0f * eps;
-      t.mins.z = p.z - dim.z - 2.0f * eps;
-
-      t.maxs.x = p.x + dim.x + 2.0f * eps;
-      t.maxs.y = p.y + dim.y + 2.0f * eps;
-      t.maxs.z = p.z + dim.z + 2.0f * eps;
-
-      return t;
+      return Bounds( Vec3( p.x - dim.x - 2.0f * eps,
+                           p.y - dim.y - 2.0f * eps,
+                           p.z - dim.z - 2.0f * eps ),
+                     Vec3( p.x + dim.x + 2.0f * eps,
+                           p.y + dim.y + 2.0f * eps,
+                           p.z + dim.z + 2.0f * eps ) );
     }
 
     Bounds toBounds( const Vec3 &move, float eps = 0.0f ) const

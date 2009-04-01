@@ -29,6 +29,8 @@ namespace oz
     String modelType;
     String modelPath;
 
+    virtual ~ObjectClass() {}
+
     static ObjectClass *init( Config *config );
     virtual Object *create( const Vec3 &pos );
   };
