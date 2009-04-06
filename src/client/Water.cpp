@@ -43,7 +43,7 @@ namespace client
 
   void Water::draw( const Object *obj, bool isInside )
   {
-    assert( obj->flags & Object::WATER_BIT );
+//     assert( obj->flags & Object::WATER_BIT );
 
     float x0 = obj->p.x - obj->dim.x;
     float x1 = obj->p.x + obj->dim.x;

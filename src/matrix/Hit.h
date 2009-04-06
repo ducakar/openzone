@@ -19,8 +19,10 @@ namespace oz
 
     Vec3   normal;
     Object *obj;
+
     bool   inWater;
     bool   underWater;
+    bool   onLadder;
   };
 
 }

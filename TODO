@@ -1,14 +1,10 @@
-- Object: private (sector, index, lower, ...), friends (World, Collider, ...)
 - Context, add Sounds?
 - PHYSFS
-- SoundManager -> Audio
-
-- rotateable structures
-- Object isUpdated, onUpdateSelf, thread-safe update
 
 Matrix/World
   - networking support
   - SparkGen -> Object
+  - reinvent cylinder?
 
 Render
   - weather

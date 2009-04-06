@@ -20,13 +20,17 @@ namespace oz
     static const int LIGHTMAP_BPP = 3;
     static const int LIGHTMAP_SIZE = LIGHTMAP_DIM * LIGHTMAP_DIM * LIGHTMAP_BPP;
 
-    // collidable flag for brush side
-    static const int COLLIDABLE_BIT = 0x00000001;
-
     // 1 unit in BSP map = 1 cm (for BSPs made for this engine)
     static const float BSP_SCALE;
     // 1 unit in BSP map = 1 inch (for BSPs made for quake)
     static const float QBSP_SCALE;
+
+    enum Content
+    {
+      SOLID,
+      WATER,
+      LADDER
+    };
 
     struct Plane
     {
@@ -55,9 +59,9 @@ namespace oz
 
     struct Brush
     {
-      int firstSide;
-      int nSides;
-      int flags;
+      int     firstSide;
+      int     nSides;
+      Content content;
     };
 
     struct Vertex
@@ -112,7 +116,7 @@ namespace oz
     int           *leafFaces;
     int           *leafBrushes;
 
-    Brush       *brushes;
+    Brush         *brushes;
     int           *brushSides;
 
     Vertex        *vertices;

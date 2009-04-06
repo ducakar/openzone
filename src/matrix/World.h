@@ -16,6 +16,7 @@
 
 #include "Structure.h"
 #include "Object.h"
+#include "DynObject.h"
 #include "SparkGen.h"
 #include "Particle.h"
 

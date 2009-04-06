@@ -135,10 +135,10 @@ namespace client
     glTranslatef( obj->p.x, obj->p.y, obj->p.z );
     glRotatef( obj->rotZ, 0.0f, 0.0f, 1.0f );
 
-    if( obj->flags & Object::WATER_BIT ) {
+    /*if( obj->flags & Object::WATER_BIT ) {
       waterObjects << obj;
     }
-    else if( obj->flags & Object::BLEND_BIT ) {
+    else*/ if( obj->flags & Object::BLEND_BIT ) {
       blendedObjects << obj;
     }
     else {
@@ -180,8 +180,8 @@ namespace client
       }
     }
 
-    for( Object *obj = sector.objects.first(); obj != null; obj = obj->next[0] ) {
-      if( obj == camera.player ) {
+    foreach( obj, sector.objects.iterator() ) {
+      if( &*obj == camera.player ) {
         continue;
       }
       bool isVisible =
@@ -190,12 +190,12 @@ namespace client
           frustum.isVisible( *obj );
 
       if( isVisible ) {
-        if( ( obj->flags & Object::WATER_BIT ) && obj->includes( camera.p ) ) {
+        /*if( ( obj->flags & Object::WATER_BIT ) && obj->includes( camera.p ) ) {
           isUnderWater = true;
 
           waterObjects << obj;
         }
-        else if( obj->flags & Object::BLEND_BIT ) {
+        else*/ if( obj->flags & Object::BLEND_BIT ) {
           blendedObjects << obj;
         }
         else {
@@ -204,7 +204,7 @@ namespace client
       }
     }
 
-    for( Particle *part = sector.particles.first(); part != null; part = part->next[0] ) {
+    foreach( part, sector.particles.iterator() ) {
       if( frustum.isVisible( part->p, particleRadius ) ) {
         particles << part;
       }
@@ -323,10 +323,10 @@ namespace client
     blendedObjects.clear();
 
     // draw water
-    for( int i = 0; i < waterObjects.length(); i++ ) {
-      water.draw( waterObjects[i], isUnderWater );
-    }
-    waterObjects.clear();
+//     for( int i = 0; i < waterObjects.length(); i++ ) {
+//       water.draw( waterObjects[i], isUnderWater );
+//     }
+//     waterObjects.clear();
 
     glColor4fv( WHITE );
     glDisable( GL_BLEND );
@@ -363,13 +363,15 @@ namespace client
     font.print( -45, 35, "camera.player.vel ( %.2f %.2f %.2f )",
                 camera.player->velocity.x, camera.player->velocity.y, camera.player->velocity.z );
 
-    font.print( -45, 33, "l %d f %d h %d fr %d ow %d uw %d ovlp %d",
-                camera.player->lower >= 0,
+    font.print( -45, 33, "d %d fl %d lw %d h %d fr %d iw %d uw %d ld %d ovlp %d",
+                ( camera.player->flags & Object::DISABLED_BIT ) != 0,
                 ( camera.player->flags & Object::ON_FLOOR_BIT ) != 0,
+                camera.player->lower >= 0,
                 ( camera.player->flags & Object::HIT_BIT ) != 0,
                 ( camera.player->flags & Object::FRICTING_BIT ) != 0,
                 ( camera.player->flags & Object::IN_WATER_BIT ) != 0,
                 ( camera.player->flags & Object::UNDER_WATER_BIT ) != 0,
+                ( camera.player->flags & Object::ON_LADDER_BIT ) != 0,
                 collider.test( *camera.player ) );
 
     SDL_GL_SwapBuffers();

@@ -12,7 +12,6 @@
 
 #include "Translator.h"
 #include "Physics.h"
-#include "Water.h"
 
 #include "B_Goblin.h"
 
@@ -40,7 +39,7 @@ namespace oz
     world.add( new BSP() );
     world.add( new BSP() );
 
-    world.bsps[0]->loadQBSP( "bsp/center.bsp", BSP::BSP_SCALE, 4.0f );
+    world.bsps[0]->loadQBSP( "bsp/castle.bsp", BSP::BSP_SCALE, 24.0f );
     world.bsps[1]->loadQBSP( "bsp/house.bsp", BSP::BSP_SCALE, 4.0f );
     world.bsps[2]->loadQBSP( "bsp/temple.bsp", BSP::BSP_SCALE, 4.0f );
     world.bsps[3]->loadQBSP( "bsp/pool.bsp", BSP::BSP_SCALE, 4.0f );
@@ -49,11 +48,11 @@ namespace oz
                      Vec3(  0.0f, -1.0f, 0.0f ),
                      Vec3(  0.0f, 0.0f, 1.0f ) );
 
-    world.add( new Structure( Vec3( 47.0f, -33.0f, 75.5f ), Structure::R180, 0 ) );
+    world.add( new Structure( Vec3( 47.0f, -33.0f, 82.5f ), Structure::R0, 0 ) );
 //     world.add( new Structure( Vec3( 33.0f, -34.0f, 75.5f ), Mat44::id(), 1 ) );
 //     world.add( new Structure( Vec3( 40.0f, -40.0f, 75.8f ), Mat44::id(), 2 ) );
 
-    world.add( new B_Goblin( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
+    world.add( new B_Goblin( Vec3( 40, -50, 90 ), 0.0f, 0.0f ) );
     //world.add( new B_Spirit( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
 
 //     world.add( new B_Goblin( Vec3( 40, -35, 85 ) ) );
