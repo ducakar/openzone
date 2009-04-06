@@ -23,7 +23,7 @@ namespace oz
 
       Vec3         point;
       AABB         aabb;
-      Object       *obj;
+      DynObject    *obj;
       Vec3         move;
 
       Bounds       trace;
@@ -83,6 +83,7 @@ namespace oz
       void trimAABBObj( Object *sObj );
       void trimAABBBrush( const BSP::Brush *brush );
       void trimAABBWater( const BSP::Brush *brush );
+      void trimAABBLadder( const BSP::Brush *brush );
       void trimAABBNode( int nodeIndex, float startRatio, float endRatio,
                          const Vec3 &startPos, const Vec3 &endPos );
       void trimAABBWorld();
@@ -113,7 +114,7 @@ namespace oz
 
       void translate( const Vec3 &point, const Vec3 &move );
       void translate( const AABB &aabb, const Vec3 &move, const Object *exclObj );
-      void translate( Object *obj, const Vec3 &move );
+      void translate( DynObject *obj, const Vec3 &move );
 
   };
 
@@ -223,7 +224,7 @@ namespace oz
     trimAABBWorld();
   }
 
-  inline void Collider::translate( Object *obj_, const Vec3 &move_ )
+  inline void Collider::translate( DynObject *obj_, const Vec3 &move_ )
   {
     obj  = obj_;
     aabb = *obj;

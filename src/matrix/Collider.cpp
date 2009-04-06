@@ -91,7 +91,7 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( ( brush.flags & BSP::COLLIDABLE_BIT ) && !testPointBrush( &brush ) ) {
+        if( ( brush.content == BSP::SOLID ) && !testPointBrush( &brush ) ) {
           return false;
         }
       }
@@ -424,7 +424,7 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( brush.flags & BSP::COLLIDABLE_BIT ) {
+        if( brush.content == BSP::SOLID ) {
           trimPointBrush( &brush );
         }
       }
@@ -603,7 +603,7 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( ( brush.flags & BSP::COLLIDABLE_BIT ) && !testAABBBrush( &brush ) ) {
+        if( ( brush.content == BSP::SOLID ) && !testAABBBrush( &brush ) ) {
           return false;
         }
       }
@@ -869,7 +869,6 @@ namespace oz
   void Collider::trimAABBWater( const BSP::Brush *brush )
   {
     bool isInside  = true;
-    bool doOverlap = true;
 
     for( int i = 0; i < brush->nSides; i++ ) {
       BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -889,14 +888,33 @@ namespace oz
         isInside = false;
       }
     }
-
-    hit.inWater    |= doOverlap;
+    hit.inWater    |= true;
     hit.underWater |= isInside;
+  }
+
+  // checks if AABB and Brush overlap and if AABB center is inside a brush
+  void Collider::trimAABBLadder( const BSP::Brush *brush )
+  {
+    for( int i = 0; i < brush->nSides; i++ ) {
+      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+
+      float offset =
+          Math::abs( plane.normal.x * aabb.dim.x ) +
+          Math::abs( plane.normal.y * aabb.dim.y ) +
+          Math::abs( plane.normal.z * aabb.dim.z );
+
+      float dist = leafEndPos * plane.normal - plane.distance - offset;
+
+      if( dist > 0.0f ) {
+        return;
+      }
+    }
+    hit.onLadder |= true;
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush collisions
   void Collider::trimAABBNode( int nodeIndex, float startRatio, float endRatio,
-      const Vec3 &startPos, const Vec3 &endPos )
+                               const Vec3 &startPos, const Vec3 &endPos )
   {
     if( nodeIndex < 0 ) {
       BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
@@ -910,11 +928,16 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( brush.flags & BSP::COLLIDABLE_BIT ) {
+        if( brush.content == BSP::SOLID ) {
           trimAABBBrush( &brush );
         }
-        else {
+        else if( brush.content == BSP::WATER ) {
           trimAABBWater( &brush );
+        }
+        else if( obj != null && ( obj->flags & Object::CLIMBER_BIT ) ) {
+          assert( brush.content == BSP::LADDER );
+
+          trimAABBLadder( &brush );
         }
       }
     }
@@ -983,6 +1006,7 @@ namespace oz
     hit.obj        = null;
     hit.inWater    = false;
     hit.underWater = false;
+    hit.onLadder   = false;
 
     globalStartPos = aabb.p;
     globalEndPos   = aabb.p + move;
@@ -1082,7 +1106,7 @@ namespace oz
         Sector &sector = world.sectors[x][y];
 
         if( objects != null ) {
-          for( Object *sObj = sector.objects.first(); sObj != null; sObj = sObj->next[0] ) {
+          foreach( sObj, sector.objects.iterator() ) {
             if( aabb.includes( sObj->p ) ) {
               *objects << sObj;
             }

@@ -24,7 +24,7 @@ namespace oz
     clazz->dim.y = config->get( "dim.y", 0.5f );
     clazz->dim.z = config->get( "dim.z", 0.5f );
 
-    clazz->flags = config->get( "flags", Object::DYNAMIC_BIT | Object::CLIP_BIT );
+    clazz->flags = config->get( "flags", Object::CLIP_BIT ) | Object::DYNAMIC_BIT;
     clazz->damage = config->get( "damage", 1.0f );
 
     clazz->mass = config->get( "mass", 10.0f );

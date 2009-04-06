@@ -32,7 +32,7 @@ namespace oz
     public:
 
       // which bits are treated as "lower bits", all other are "higher bits"
-      static const int CONFIG_BITS_MASK = 0x00000fff;
+      static const int CONFIG_BITS_MASK = 0x000000ff;
 
     protected:
 
@@ -89,27 +89,28 @@ namespace oz
       // if object is on ladder
       static const int ON_LADDER_BIT = 0x00010000;
 
+      // if object is on ice (slipping surface)
+      static const int SLIPPING_BIT = 0x00008000;
+
       // handle collisions for this object
       static const int CLIP_BIT = 0x00000001;
 
-      // if the object is immune to gravity
-      static const int HOVER_BIT = 0x00000002;
+      // If object is climber it is tested against ladder brushes and gains ON_LADDER_BIT if it
+      // intersects with a ladder brush. Otherwise object is not affected by ladders.
+      static const int CLIMBER_BIT = 0x00000002;
 
       // if object can push other objects in orthogonal direction of collision normal
       static const int PUSHING_BIT = 0x00000004;
 
-      // if object can climb
-      static const int CLIMBER_BIT = 0x00000008;
+      // if the object is immune to gravity
+      static const int HOVER_BIT = 0x00000008;
 
       /*
        *  TYPE FLAGS
        */
 
-      // object is derived from water
-      static const int WATER_BIT = 0x00008000;
-
       // object is derived from bot
-      static const int BOT_BIT = 0x00004000;
+      static const int BOT_BIT = 0x00000800;
 
       /*
        *  RENDER FLAGS
@@ -133,14 +134,14 @@ namespace oz
        *  FIELDS
        */
 
-      int     index;        // position in world.objects vector
-      Sector  *sector;      // parent sector, null if not positioned in the world
+      int    index;        // position in world.objects vector
+      Sector *sector;      // parent sector, null if not positioned in the world
 
-      Object  *prev[1];     // previous object in sector.objects list
-      Object  *next[1];     // next object in sector.objects list
+      Object *prev[1];     // previous object in sector.objects list
+      Object *next[1];     // next object in sector.objects list
 
-      int     flags;
-      int     oldFlags;
+      int    flags;
+      int    oldFlags;
 
       ObjectClass *type;
 
@@ -162,14 +163,14 @@ namespace oz
 
       virtual ~Object();
 
+      void addEvent( int id )
+      {
+        events << new Event( id );
+      }
+
       void addEffect( int id )
       {
         effects << new Effect( id );
-      }
-
-      void cleanEffects()
-      {
-        effects.free();
       }
 
       void update()
@@ -179,14 +180,12 @@ namespace oz
         if( flags & UPDATE_FUNC_BIT ) {
           onUpdate();
         }
-
-        flags &= ~( HIT_BIT | FRICTING_BIT );
       }
 
-      void hit( const Hit *hit )
+      void hit( const Hit *hit, float hitVelocity )
       {
         if( flags & HIT_FUNC_BIT ) {
-          onHit( hit );
+          onHit( hit, hitVelocity );
         }
       }
 
@@ -218,22 +217,12 @@ namespace oz
         }
       }
 
-      /**
-       * Create a proxy object that handles graphic rendering of this object.
-       * This function should be implemented in proxy class implementation in client part of code.
-       * @return
-       */
-      virtual void createModel()
-      {
-        assert( false );
-      }
-
     protected:
 
       virtual void onUpdate()
       {}
 
-      virtual void onHit( const Hit* )
+      virtual void onHit( const Hit*, float )
       {}
 
       virtual void onDestroy()

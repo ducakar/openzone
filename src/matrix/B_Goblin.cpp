@@ -42,7 +42,7 @@ namespace oz
     dim     = DIM;
 
     flags   = Object::UPDATE_FUNC_BIT | Object::HIT_FUNC_BIT | Object::CLIP_BIT |
-        Object::DYNAMIC_BIT | Object::PUSHING_BIT | Object::BOT_BIT;
+        Object::DYNAMIC_BIT | Object::PUSHING_BIT | Object::BOT_BIT | Object::CLIMBER_BIT;
     type    = null;
 
     damage  = 2.0f;
@@ -86,6 +86,7 @@ namespace oz
     bool isGrounded = lower >= 0 || ( flags & Object::ON_FLOOR_BIT );
     bool isSwimming = ( !isGrounded && ( flags & Object::IN_WATER_BIT ) ) ||
                       ( flags & Object::UNDER_WATER_BIT );
+    bool isClimbing = flags & Object::ON_LADDER_BIT;
 
     if( ( keys & KEY_RUN ) && !( oldKeys & KEY_RUN ) ) {
       state ^= RUNNING_BIT;
@@ -108,7 +109,9 @@ namespace oz
       state &= ~GESTURE1_BIT;
     }
 
-    if( ( keys & KEY_JUMP ) && !( oldKeys & KEY_JUMP ) && ( isGrounded || isSwimming ) ) {
+    if( ( keys & KEY_JUMP ) && !( oldKeys & KEY_JUMP ) &&
+        ( isGrounded || ( flags & Object::UNDER_WATER_BIT ) ) )
+    {
       flags &= ~DISABLED_BIT;
       isGrounded = false;
 
@@ -147,7 +150,7 @@ namespace oz
     float velocity = ( state & CROUCHING_BIT ) ? CROUCH_VELOCITY :
         ( state & RUNNING_BIT ) ? RUN_VELOCITY : WALK_VELOCITY;
 
-    if( !isGrounded || isSwimming ) {
+    if( !isGrounded || isSwimming || isClimbing ) {
       velocity *= AIR_CONTROL;
     }
 
@@ -158,7 +161,7 @@ namespace oz
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
-      if( isSwimming ) {
+      if( isSwimming || isClimbing ) {
         move.x -= hvsc[4];
         move.y += hvsc[5];
         move.z += hvsc[2];
@@ -213,19 +216,19 @@ namespace oz
       }
     }
 
-    Vec3 addVelocity = velocity * move;
+    Vec3 desiredVelocity = velocity * move;
 
     if( ( flags & Object::ON_FLOOR_BIT ) && floor.z != 1.0f ) {
-      float dot = addVelocity * floor;
+      float dot = desiredVelocity * floor;
 
       if( dot > 0.0f ) {
-        addVelocity -= dot * floor;
+        desiredVelocity -= dot * floor;
       }
     }
 
-    newVelocity += addVelocity;
+    newVelocity += desiredVelocity;
 
-    if( state & STEPPING_BIT ) {
+    if( ( state & STEPPING_BIT ) && !isClimbing  ) {
       Vec3 desiredMove = newVelocity * timer.frameTime;
 
       collider.translate( *this, desiredMove, this );
@@ -269,16 +272,14 @@ namespace oz
     keys = 0;
   }
 
-  void B_Goblin::onHit( const Hit *hit )
+  void B_Goblin::onHit( const Hit *hit, float hitVelocity )
   {
-    float deltaVel = ( newVelocity - velocity ).sqL();
-
-    if( deltaVel >= 1000.0f ) {
-      damage += deltaVel;
+    if( hitVelocity >= 30.0f ) {
+      damage += hitVelocity;
     }
 
-    if( hit->normal.z >= Physics::FLOOR_NORMAL_Z && deltaVel > 8.0f ) {
-      addEffect( SND_LAND );
+    if( hit->normal.z >= Physics::FLOOR_NORMAL_Z && hitVelocity > 8.0f ) {
+      addEvent( SND_LAND );
     }
   }
 

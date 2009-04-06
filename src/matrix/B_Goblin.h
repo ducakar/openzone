@@ -36,7 +36,7 @@ namespace oz
       static const float STEP_NORMAL_Z_MAX;
 
       void onUpdate();
-      void onHit( const Hit *hit );
+      void onHit( const Hit *hit, float hitVelocity );
       void onDestroy();
 
     public:
@@ -47,8 +47,6 @@ namespace oz
       static const float GRAB_DIST;
 
       explicit B_Goblin( const Vec3 &p, float h = 0.0f, float v = 0.0f, Mind *mind = null );
-
-//       void createModel();
   };
 
 }

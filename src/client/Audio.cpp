@@ -59,7 +59,7 @@ namespace client
 
   void Audio::free()
   {
-    for( Source *src = sources.first(); src != null; src = src->next[0] ) {
+    foreach( src, sources.iterator() ) {
       alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
     }

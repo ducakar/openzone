@@ -11,7 +11,6 @@
 #include "Translator.h"
 
 #include "ObjectClass.h"
-#include "LadderClass.h"
 #include "DynObjectClass.h"
 #include "BotClass.h"
 #include "VehicleClass.h"
@@ -30,7 +29,6 @@ namespace oz
   bool Translator::init()
   {
     OZ_REGISTER_BASECLASS( Object );
-    OZ_REGISTER_BASECLASS( Ladder );
     OZ_REGISTER_BASECLASS( DynObject );
     OZ_REGISTER_BASECLASS( Bot );
     OZ_REGISTER_BASECLASS( Vehicle );
@@ -42,18 +40,18 @@ namespace oz
     DIR *dir;
     struct dirent *file;
 
-    dir = opendir( "tex" );
+    dir = opendir( "textures/oz" );
     if( dir == null ) {
       free();
 
-      logFile.println( "Cannot open tex/" );
+      logFile.println( "Cannot open textures/oz" );
       logFile.unindent();
       logFile.println( "}" );
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
-      String fileName = "tex/" + name;
+      String fileName = "textures/oz/" + name;
 
       if( name.length() <= 4  ) {
         continue;
@@ -82,7 +80,7 @@ namespace oz
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
-      String fileName = "tex/" + name;
+      String fileName = "snd/" + name;
 
       if( name.length() <= 4  ) {
         continue;
