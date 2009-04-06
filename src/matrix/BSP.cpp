@@ -369,16 +369,19 @@ namespace oz
     fseek( f, lumps[QBSP_LUMP_LIGHTMAPS].offset, SEEK_SET );
     fread( lightmaps, sizeof( BSP::Lightmap ), nLightmaps, f );
 
-    fseek( f, lumps[QBSP_LUMP_VISUALDATA].offset, SEEK_SET );
-    fread( &visual.nClusters, sizeof( int ), 1, f );
-    fread( &visual.clusterLength, sizeof( int ), 1, f );
+    if( lumps[QBSP_LUMP_VISUALDATA].length > 0 ) {
+      fseek( f, lumps[QBSP_LUMP_VISUALDATA].offset, SEEK_SET );
+      fread( &visual.nClusters, sizeof( int ), 1, f );
+      fread( &visual.clusterLength, sizeof( int ), 1, f );
 
-    assert( visual.nClusters > 0 );
-
-    visual.bitsets = new Bitset[visual.nClusters];
-    for( int i = 0; i < visual.nClusters; i++ ) {
-      visual.bitsets[i].setSize( visual.clusterLength * 8 );
-      fread( visual.bitsets[i].dataPtr(), sizeof( char ), visual.clusterLength, f );
+      visual.bitsets = new Bitset[visual.nClusters];
+      for( int i = 0; i < visual.nClusters; i++ ) {
+        visual.bitsets[i].setSize( visual.clusterLength * 8 );
+        fread( visual.bitsets[i].dataPtr(), sizeof( char ), visual.clusterLength, f );
+      }
+    }
+    else {
+      visual.bitsets = null;
     }
 
     fclose( f );

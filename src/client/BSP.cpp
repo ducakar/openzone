@@ -118,9 +118,12 @@ namespace client
     }
 
     hiddenFaces.setSize( bsp->nFaces );
-    visibleLeafs.setSize( bsp->visual.bitsets[0].length() );
     drawnFaces.setSize( bsp->nFaces );
     hiddenFaces.clearAll();
+
+    if( bsp->visual.bitsets != null ) {
+      visibleLeafs.setSize( bsp->visual.bitsets[0].length() );
+    }
 
     for( int i = 0; i < bsp->nFaces; i++ ) {
       oz::BSP::Vertex *verts = &bsp->vertices[ bsp->faces[i].firstVertex ];
@@ -148,24 +151,42 @@ namespace client
 
     drawnFaces = hiddenFaces;
 
-    // TODO: rotated BSPs
-//     int    cluster = bsp->leafs[ getLeafIndex( camera.p ) ].cluster;
-//     printf( "%d\n", getLeafIndex( camera.p ) );
-//     Bitset &bitset = bsp->visual.bitsets[cluster];
+    if( bsp->visual.bitsets != null ) {
+      // TODO: rotated BSPs
+//       int    cluster = bsp->leafs[ getLeafIndex( camera.p ) ].cluster;
+//       printf( "%d\n", getLeafIndex( camera.p ) );
+//       Bitset &bitset = bsp->visual.bitsets[cluster];
 
-    for( int i = 0; i < bsp->nLeafs; i++ ) {
-      oz::BSP::Leaf &leaf = bsp->leafs[i];
+      for( int i = 0; i < bsp->nLeafs; i++ ) {
+        oz::BSP::Leaf &leaf = bsp->leafs[i];
 
-//       if( ( cluster < 0 || bitset.get( leaf.cluster ) ) && frustum.isVisible( leaf + t.p() ) ) {
-        for( int j = 0; j < leaf.nFaces; j++ ) {
-          int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+//         if( ( cluster < 0 || bitset.get( leaf.cluster ) ) && frustum.isVisible( leaf + t.p() ) ) {
+          for( int j = 0; j < leaf.nFaces; j++ ) {
+            int faceIndex = bsp->leafFaces[leaf.firstFace + j];
 
-          if( !drawnFaces.get( faceIndex ) ) {
-            drawFace( faceIndex );
-            drawnFaces.set( faceIndex );
+            if( !drawnFaces.get( faceIndex ) ) {
+              drawFace( faceIndex );
+              drawnFaces.set( faceIndex );
+            }
           }
-        }
-//       }
+//         }
+      }
+    }
+    else {
+      for( int i = 0; i < bsp->nLeafs; i++ ) {
+        oz::BSP::Leaf &leaf = bsp->leafs[i];
+
+//         if( frustum.isVisible( leaf + t.p() ) ) {
+          for( int j = 0; j < leaf.nFaces; j++ ) {
+            int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+
+            if( !drawnFaces.get( faceIndex ) ) {
+              drawFace( faceIndex );
+              drawnFaces.set( faceIndex );
+            }
+          }
+//         }
+      }
     }
     glPopMatrix();
   }
