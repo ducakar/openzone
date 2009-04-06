@@ -19,11 +19,11 @@ namespace oz
   const float Physics::STICK_VELOCITY   = 0.015f;
   const float Physics::HIT_VELOCITY     = 4.0f;
 
-  const float Physics::AIR_FRICTION     = 0.05f;
-  const float Physics::WATER_FRICTION   = 0.05f;
-  const float Physics::LADDER_FRICTION  = 0.05f;
-  const float Physics::FLOOR_FRICTION   = 0.20f;
-  const float Physics::OBJ_FRICTION     = 0.20f;
+  const float Physics::AIR_FRICTION     = 0.10f;
+  const float Physics::WATER_FRICTION   = 0.25f;
+  const float Physics::LADDER_FRICTION  = 0.25f;
+  const float Physics::FLOOR_FRICTION   = 0.50f;
+  const float Physics::OBJ_FRICTION     = 0.50f;
 
   // default 10000.0f: 100 m/s
   const float Physics::MAX_VELOCITY2    = 10000.0f;

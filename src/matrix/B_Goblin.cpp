@@ -26,10 +26,10 @@ namespace oz
   const float B_Goblin::BOB_INC            = 0.05f;
   const float B_Goblin::BOB_AMPLITUDE      = 0.05f;
 
-  const float B_Goblin::WALK_VELOCITY      = 0.4f;
-  const float B_Goblin::RUN_VELOCITY       = 1.2f;
+  const float B_Goblin::WALK_VELOCITY      = 1.0f;
+  const float B_Goblin::RUN_VELOCITY       = 3.0f;
   const float B_Goblin::CROUCH_VELOCITY    = 0.4f;
-  const float B_Goblin::JUMP_VELOCITY      = 4.5f;
+  const float B_Goblin::JUMP_VELOCITY      = 4.0f;
   const float B_Goblin::AIR_CONTROL        = 0.15f;
   const float B_Goblin::GRAB_DIST          = 1.0f;
 
@@ -52,7 +52,7 @@ namespace oz
     newVelocity.setZero();
     lower   = -1;
     mass    = 50.0f;
-    lift    = 0.03f;
+    lift    = 0.10f;
 
     h       = h_;
     v       = v_;

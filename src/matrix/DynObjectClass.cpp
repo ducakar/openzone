@@ -27,8 +27,8 @@ namespace oz
     clazz->flags = config->get( "flags", Object::CLIP_BIT ) | Object::DYNAMIC_BIT;
     clazz->damage = config->get( "damage", 1.0f );
 
-    clazz->mass = config->get( "mass", 10.0f );
-    clazz->lift = config->get( "lift", 0.03f );
+    clazz->mass = config->get( "mass", 100.0f );
+    clazz->lift = config->get( "lift", 0.10f );
 
     clazz->modelType = config->get( "model.type", "MD2" );
     clazz->modelPath = config->get( "model.path", "mdl/goblin.md2" );
