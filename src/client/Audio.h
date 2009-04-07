@@ -9,7 +9,6 @@
 #pragma once
 
 #include "matrix/World.h"
-#include "matrix/Effect.h"
 
 #include <vorbis/vorbisfile.h>
 

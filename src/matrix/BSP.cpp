@@ -291,14 +291,16 @@ namespace oz
       brushes[i].firstSide = brush.firstSide;
       brushes[i].nSides    = brush.nSides;
 
-      if( texFlags[brush.texture] & QBSP_LADDER_BIT ) {
-        brushes[i].content = LADDER;
+      int &flags = texFlags[brush.texture];
+
+      if( flags & QBSP_LADDER_BIT ) {
+        brushes[i].content = LADDER_BIT;
       }
-      else if( texFlags[brush.texture] & QBSP_NONSOLID_BIT ) {
-        brushes[i].content = WATER;
+      else if( flags & QBSP_NONSOLID_BIT ) {
+        brushes[i].content = WATER_BIT;
       }
       else {
-        brushes[i].content = SOLID;
+        brushes[i].content = ( flags & QBSP_SLICK_BIT ) ? SOLID_BIT | SLICK_BIT : SOLID_BIT;
       }
     }
 

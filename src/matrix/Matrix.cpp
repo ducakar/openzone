@@ -145,8 +145,6 @@ namespace oz
   void Matrix::free()
   {
     world.free();
-    PoolAlloc<Effect, 0>::pool.free();
-    PoolAlloc<Event, 0>::pool.free();
     translator.free();
 
     SDL_DestroySemaphore( semaphore );

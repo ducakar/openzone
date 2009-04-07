@@ -149,7 +149,7 @@ namespace client
 
     const char *data = config.get( "data", "/usr/share/openzone" );
 
-    logFile.print( "Going to working directory '%s' ...", (const char*) data );
+    logFile.print( "Going to working directory '%s' ...", data );
 
 #ifdef WIN32
     if( _chdir( data ) != 0 ) {

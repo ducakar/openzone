@@ -10,6 +10,8 @@
 
 #include "DynObjectClass.h"
 
+#include "Translator.h"
+
 namespace oz
 {
 
@@ -33,6 +35,12 @@ namespace oz
 
     clazz->modelType = config->get( "model.type", "MD2" );
     clazz->modelPath = config->get( "model.path", "mdl/goblin.md2" );
+
+    const String &sHitSound   = config->get( "sound.hit", "" );
+    const String &sFrictSound = config->get( "sound.friction", "" );
+
+    clazz->hitSound   = sHitSound.length() > 0   ? translator.soundIndex( sHitSound )   : -1;
+    clazz->frictSound = sFrictSound.length() > 0 ? translator.soundIndex( sFrictSound ) : -1;
 
     return clazz;
   }

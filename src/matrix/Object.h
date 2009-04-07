@@ -9,15 +9,13 @@
 #pragma once
 
 #include "bv.h"
-#include "Event.h"
-#include "Effect.h"
-#include "Hit.h"
 
 namespace oz
 {
 
   struct Sector;
   struct ObjectClass;
+  struct Hit;
 
   // static object abstract class
   class Object : public AABB
@@ -55,8 +53,6 @@ namespace oz
 
       // if the onCut method is called when object is removed from 3D world (ie. put into inventory)
       static const int CUT_FUNC_BIT = 0x04000000;
-
-    public:
 
       /*
        *  DYNAMIC OBJECTS' BITS
@@ -126,6 +122,26 @@ namespace oz
       // if object is blended (then it should be rendered at the end)
       static const int BLEND_BIT = 0x00000040;
 
+    private:
+
+      struct Event : PoolAlloc<Event, 0>
+      {
+        int   id;
+        Event *next[1];
+
+        Event() {}
+        explicit Event( int id_ ) : id( id_ ) {}
+      };
+
+      struct Effect : PoolAlloc<Effect, 0>
+      {
+        int    id;
+        Effect *next[1];
+
+        Effect() {}
+        explicit Effect( int id_ ) : id( id_ ) {}
+      };
+
     public:
 
       /*
@@ -151,7 +167,7 @@ namespace oz
 
       // events are cleared at the beginning of next update (used for non-continuous sounds)
       List<Event, 0> events;
-      // effects are similar to events, but must be manually creared (used for continuous sounds)
+      // effects are similar to events, but must be manually cleared (used for continuous sounds)
       List<Effect, 0> effects;
 
     public:

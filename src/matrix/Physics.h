@@ -27,6 +27,7 @@ namespace oz
       static const float LADDER_FRICTION;
       static const float FLOOR_FRICTION;
       static const float OBJ_FRICTION;
+      static const float SLICK_FRICTION;
 
       Vec3      leafStartPos;
       Vec3      leafEndPos;

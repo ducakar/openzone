@@ -25,13 +25,10 @@ namespace oz
     // 1 unit in BSP map = 1 inch (for BSPs made for quake)
     static const float QBSP_SCALE;
 
-    enum Content
-    {
-      SOLID,
-      SLICK,
-      WATER,
-      LADDER
-    };
+    static const int SOLID_BIT  = 0x01;
+    static const int SLICK_BIT  = 0x02;
+    static const int WATER_BIT  = 0x04;
+    static const int LADDER_BIT = 0x08;
 
     struct Plane
     {
@@ -60,9 +57,9 @@ namespace oz
 
     struct Brush
     {
-      int     firstSide;
-      int     nSides;
-      Content content;
+      int firstSide;
+      int nSides;
+      int content;
     };
 
     struct Vertex
