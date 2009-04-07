@@ -31,7 +31,7 @@ namespace oz
 
     public:
 
-      DynObject() : velocity( Vec3::zero() ), newVelocity( Vec3::zero() ), lower( -1 )
+      explicit DynObject() : velocity( Vec3::zero() ), newVelocity( Vec3::zero() ), lower( -1 )
       {}
 
       virtual void load( FILE *stream );

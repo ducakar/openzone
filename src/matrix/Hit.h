@@ -23,6 +23,7 @@ namespace oz
     bool   inWater;
     bool   underWater;
     bool   onLadder;
+    bool   onSlick;
   };
 
 }

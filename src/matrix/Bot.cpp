@@ -1,5 +1,5 @@
 /*
- *  B_Goblin.cpp
+ *  Bot.cpp
  *
  *  [description]
  *
@@ -8,69 +8,23 @@
 
 #include "precompiled.h"
 
-#include "B_Goblin.h"
+#include "Bot.h"
 
+#include "BotClass.h"
 #include "Physics.h"
 
 namespace oz
 {
 
-  const char *B_Goblin::NAME = "B_Goblin";
-  const int B_Goblin::TYPE = String::hash( B_Goblin::NAME );
+  Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f )
+  {}
 
-  const Vec3  B_Goblin::CAM_POS            = Vec3( 0.00f, 0.00f, 0.55f );
-  const Vec3  B_Goblin::CAM_POS_CROUCH     = Vec3( 0.00f, 0.00f, 0.40f );
-  const Vec3  B_Goblin::DIM                = Vec3( 0.24f, 0.24f, 0.64f );
-  const Vec3  B_Goblin::DIM_CROUCH         = Vec3( 0.24f, 0.24f, 0.49f );
-
-  const float B_Goblin::BOB_INC            = 0.05f;
-  const float B_Goblin::BOB_AMPLITUDE      = 0.05f;
-
-  const float B_Goblin::WALK_VELOCITY      = 1.0f;
-  const float B_Goblin::RUN_VELOCITY       = 3.0f;
-  const float B_Goblin::CROUCH_VELOCITY    = 0.4f;
-  const float B_Goblin::JUMP_VELOCITY      = 4.0f;
-  const float B_Goblin::AIR_CONTROL        = 0.15f;
-  const float B_Goblin::GRAB_DIST          = 1.0f;
-
-  const float B_Goblin::STEP_INC           = 0.1f;
-  const float B_Goblin::STEP_MAX           = 0.5f;
-
-  B_Goblin::B_Goblin( const Vec3 &p_, float h_, float v_, Mind *mind_ )
+  void Bot::onUpdate()
   {
-    p       = p_;
-    dim     = DIM;
+    BotClass &clazz = *(BotClass*) type;
 
-    flags   = Object::UPDATE_FUNC_BIT | Object::HIT_FUNC_BIT | Object::CLIP_BIT |
-        Object::DYNAMIC_BIT | Object::PUSHING_BIT | Object::BOT_BIT | Object::CLIMBER_BIT;
-    type    = null;
-
-    damage  = 2.0f;
-
-    anim    = ANIM_STAND;
-
-    newVelocity.setZero();
-    lower   = -1;
-    mass    = 50.0f;
-    lift    = 0.10f;
-
-    h       = h_;
-    v       = v_;
-
-    camPos  = CAM_POS;
-    bob     = 0.0f;
-
-    state   = STEPPING_BIT;
-    keys    = 0;
-    oldKeys = 0;
-
-    mind    = mind_;
-  }
-
-  void B_Goblin::onUpdate()
-  {
     h = Math::mod( h + 360.0f, 360.0f );
-    v = bound( v, -89.0f, 89.0f );
+    v = bound( v, -90.0f, 90.0f );
 
     rotZ = h;
 
@@ -83,10 +37,9 @@ namespace oz
     hvsc[4] = hvsc[3] * hvsc[0];
     hvsc[5] = hvsc[3] * hvsc[1];
 
-    bool isGrounded = lower >= 0 || ( flags & Object::ON_FLOOR_BIT );
-    bool isSwimming = ( !isGrounded && ( flags & Object::IN_WATER_BIT ) ) ||
-                      ( flags & Object::UNDER_WATER_BIT );
-    bool isClimbing = flags & Object::ON_LADDER_BIT;
+    bool isSwimming = ( flags & UNDER_WATER_BIT ) || ( oldFlags & UNDER_WATER_BIT );
+    bool isClimbing = flags & ON_LADDER_BIT;
+    bool isGrounded = ( lower >= 0 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
 
     if( ( keys & KEY_RUN ) && !( oldKeys & KEY_RUN ) ) {
       state ^= RUNNING_BIT;
@@ -115,31 +68,31 @@ namespace oz
       flags &= ~DISABLED_BIT;
       isGrounded = false;
 
-      newVelocity.z = JUMP_VELOCITY;
-      addEffect( SND_JUMP );
+      newVelocity.z = clazz.jumpVelocity;
+      addEvent( SND_JUMP );
     }
     if( ( keys & KEY_CROUCH ) && !( oldKeys & KEY_CROUCH ) ) {
       if( state & CROUCHING_BIT ) {
         float oldZ = p.z;
 
-        p.z += DIM.z - DIM_CROUCH.z;
-        dim = DIM;
+        p.z += clazz.dim.z - clazz.dimCrouch.z;
+        dim = clazz.dim;
 
         if( collider.test( *this, this ) ) {
-          camPos = CAM_POS;
+          camPos = clazz.camPos;
           state  &= ~CROUCHING_BIT;
         }
         else {
-          dim = DIM_CROUCH;
+          dim = clazz.dimCrouch;
           p.z = oldZ;
         }
       }
       else {
         flags &= ~DISABLED_BIT;
 
-        p.z    += dim.z - DIM_CROUCH.z;
-        dim.z  = DIM_CROUCH.z;
-        camPos = CAM_POS_CROUCH;
+        p.z    += dim.z - clazz.dimCrouch.z;
+        dim.z  = clazz.dimCrouch.z;
+        camPos = clazz.camPosCrouch;
 
         lower =  -1;
         flags &= ~Object::ON_FLOOR_BIT;
@@ -147,11 +100,11 @@ namespace oz
       }
     }
 
-    float velocity = ( state & CROUCHING_BIT ) ? CROUCH_VELOCITY :
-        ( state & RUNNING_BIT ) ? RUN_VELOCITY : WALK_VELOCITY;
+    float velocity = ( state & CROUCHING_BIT ) ? clazz.crouchVelocity :
+        ( state & RUNNING_BIT ) ? clazz.runVelociy : clazz.walkVelocity;
 
-    if( !isGrounded || isSwimming || isClimbing ) {
-      velocity *= AIR_CONTROL;
+    if( !isGrounded && !isClimbing ) {
+      velocity *= clazz.airControl;
     }
 
     Vec3 move = Vec3::zero();
@@ -175,7 +128,7 @@ namespace oz
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
-      if( isSwimming ) {
+      if( isSwimming || isClimbing ) {
         move.x += hvsc[4];
         move.y -= hvsc[5];
         move.z -= hvsc[2];
@@ -238,8 +191,8 @@ namespace oz
       if( orgRatio != 1.0f && collider.hit.normal.z == 0.0f ) {
         float orgZ = p.z;
 
-        for( float raise = STEP_INC; raise < STEP_MAX; raise += STEP_INC ) {
-          p.z += STEP_INC;
+        for( float raise = clazz.stepInc; raise < clazz.stepMax; raise += clazz.stepInc ) {
+          p.z += clazz.stepInc;
 
           if( !collider.test( *this, this ) ) {
             break;
@@ -261,7 +214,7 @@ namespace oz
     if( ( keys & KEY_USE ) && !( oldKeys & KEY_USE ) ) {
       Vec3 look( -hvsc[4], hvsc[5], hvsc[2] );
 
-      collider.translate( p + camPos, look * GRAB_DIST );
+      collider.translate( p + camPos, look * clazz.grabDistance );
 
       if( collider.hit.obj != null ) {
         collider.hit.obj->destroy();
@@ -272,7 +225,7 @@ namespace oz
     keys = 0;
   }
 
-  void B_Goblin::onHit( const Hit *hit, float hitVelocity )
+  void Bot::onHit( const Hit *hit, float hitVelocity )
   {
     if( hitVelocity >= 30.0f ) {
       damage += hitVelocity;
@@ -283,9 +236,7 @@ namespace oz
     }
   }
 
-  void B_Goblin::onDestroy()
-  {
-    world.remove( this );
-  }
+  void Bot::onDestroy()
+  {}
 
 }

@@ -13,7 +13,7 @@
 namespace oz
 {
 
-  ObjectClass *VehicleClass::init( Config* )
+  ObjectClass *VehicleClass::init( const String&, Config* )
   {
     assert( false );
     return null;

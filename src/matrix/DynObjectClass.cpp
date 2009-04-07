@@ -13,12 +13,13 @@
 namespace oz
 {
 
-  ObjectClass *DynObjectClass::init( Config *config )
+  ObjectClass *DynObjectClass::init( const String &name, Config *config )
   {
     // TODO add class name
     DynObjectClass *clazz = new DynObjectClass();
 
-    clazz->name = config->get( "name", "NONAME" );
+    clazz->name = name;
+    clazz->description = config->get( "description", "" );
 
     clazz->dim.x = config->get( "dim.x", 0.5f );
     clazz->dim.y = config->get( "dim.y", 0.5f );
@@ -44,6 +45,7 @@ namespace oz
     obj->dim = dim;
 
     obj->flags = flags;
+    obj->oldFlags = flags;
     obj->type = this;
     obj->damage = damage;
 

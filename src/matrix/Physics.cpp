@@ -19,9 +19,9 @@ namespace oz
   const float Physics::STICK_VELOCITY   = 0.015f;
   const float Physics::HIT_VELOCITY     = 4.0f;
 
-  const float Physics::AIR_FRICTION     = 0.10f;
-  const float Physics::WATER_FRICTION   = 0.25f;
-  const float Physics::LADDER_FRICTION  = 0.25f;
+  const float Physics::AIR_FRICTION     = 0.03f;
+  const float Physics::WATER_FRICTION   = 0.08f;
+  const float Physics::LADDER_FRICTION  = 0.65f;
   const float Physics::FLOOR_FRICTION   = 0.50f;
   const float Physics::OBJ_FRICTION     = 0.50f;
 
@@ -112,8 +112,7 @@ namespace oz
           obj->newVelocity *= 1.0f - LADDER_FRICTION;
         }
       }
-      obj->flags &= ~( Object::HOVER_BIT | Object::UNDER_WATER_BIT | Object::ON_LADDER_BIT |
-          Object::ON_FLOOR_BIT );
+      obj->flags &= ~( Object::UNDER_WATER_BIT | Object::ON_LADDER_BIT | Object::ON_FLOOR_BIT );
       obj->lower = -1;
     }
     else {
@@ -402,7 +401,7 @@ namespace oz
       // handle physics
       if( !( obj->flags & Object::DISABLED_BIT ) ) {
         if( handleObjFriction() ) {
-          obj->flags &= ~( Object::IN_WATER_BIT | Object::UNDER_WATER_BIT | Object::SLIPPING_BIT );
+          obj->flags &= ~( Object::IN_WATER_BIT | Object::UNDER_WATER_BIT | Object::ON_SLICK_BIT );
           // if objects is still in movement or not on a still surface after friction changed its
           // velocity, handle physics
           handleObjMove();

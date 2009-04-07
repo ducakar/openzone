@@ -34,6 +34,7 @@ namespace oz
   //*       QUAKE 3 BSP FORMAT        *
   //***********************************
 
+  static const int QBSP_SLICK_BIT  =   0x00000002;
   static const int QBSP_LADDER_BIT =   0x00000008;
   static const int QBSP_NONSOLID_BIT = 0x00004000;
 
@@ -137,19 +138,7 @@ namespace oz
   };
 
   const float BSP::BSP_SCALE = 0.01f;
-  const float BSP::QBSP_SCALE = 0.25f;
-
-  BSP::VisualData::VisualData()
-  {
-    bitsets = null;
-  }
-
-  BSP::VisualData::~VisualData()
-  {
-    if( bitsets != null ) {
-      delete[] bitsets;
-    }
-  }
+  const float BSP::QBSP_SCALE = 0.025f;
 
   BSP::BSP() : textures( null ), planes( null ), nodes( null ), leafs( null ), leafFaces( null ),
     brushes( null ), brushSides( null ), vertices( null ), indices( null ), faces( null ),
@@ -161,7 +150,7 @@ namespace oz
     free();
   }
 
-  void BSP::loadQBSP( const char *fileName, float scale, float maxDim_ )
+  void BSP::loadQBSP( const char *fileName, float maxDim_, float scale )
   {
     maxDim = maxDim_;
 
