@@ -44,7 +44,7 @@ namespace client
     logFile.println( "OpenAL extensions: %s", alGetString( AL_EXTENSIONS ) );
 
     logFile.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
-    logFile.println( "ALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_MEMORY ) );
+    logFile.println( "ALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
 
     alGenSources( 1, &musicSource );
 

@@ -8,11 +8,23 @@
 
 #pragma once
 
-#include "Hit.h"
 #include "World.h"
 
 namespace oz
 {
+
+  struct Hit
+  {
+    float  ratio;
+
+    Vec3   normal;
+    Object *obj;
+
+    bool   inWater;
+    bool   underWater;
+    bool   onLadder;
+    bool   onSlick;
+  };
 
   // FIXME debug collision for VS2008!!!
   class Collider

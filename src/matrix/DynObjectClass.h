@@ -21,6 +21,9 @@ namespace oz
     float mass;
     float lift;
 
+    int   hitSound;
+    int   frictSound;
+
     static ObjectClass *init( const String &name, Config *config );
     virtual Object *create( const Vec3 &pos );
   };

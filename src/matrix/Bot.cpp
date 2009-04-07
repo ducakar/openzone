@@ -103,7 +103,7 @@ namespace oz
     float velocity = ( state & CROUCHING_BIT ) ? clazz.crouchVelocity :
         ( state & RUNNING_BIT ) ? clazz.runVelociy : clazz.walkVelocity;
 
-    if( !isGrounded && !isClimbing ) {
+    if( ( !isGrounded && !isClimbing ) || ( flags & ON_SLICK_BIT ) ) {
       velocity *= clazz.airControl;
     }
 

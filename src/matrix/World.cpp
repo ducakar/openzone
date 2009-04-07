@@ -273,7 +273,8 @@ namespace oz
     }
     particles.clear();
 
-    PoolAlloc<Effect, 0>::pool.free();
+    PoolAlloc<Object::Event, 0>::pool.free();
+    PoolAlloc<Object::Effect, 0>::pool.free();
 
     bsps.free();
     bsps.clear();

@@ -91,7 +91,7 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( ( brush.content == BSP::SOLID ) && !testPointBrush( &brush ) ) {
+        if( ( brush.content & BSP::SOLID_BIT ) && !testPointBrush( &brush ) ) {
           return false;
         }
       }
@@ -248,9 +248,10 @@ namespace oz
           pY0 <= impactY && impactY <= pY1 &&
           ratio < hit.ratio )
       {
-        hit.ratio  = ratio;
-        hit.normal = quad.normal[0];
-        hit.obj    = null;
+        hit.ratio   = ratio;
+        hit.normal  = quad.normal[0];
+        hit.obj     = null;
+        hit.onSlick = false;
 
         return false;
       }
@@ -273,9 +274,10 @@ namespace oz
           pY0 <= impactY && impactY <= pY1 &&
           ratio < hit.ratio )
       {
-        hit.ratio  = ratio;
-        hit.normal = quad.normal[1];
-        hit.obj    = null;
+        hit.ratio   = ratio;
+        hit.normal  = quad.normal[1];
+        hit.obj     = null;
+        hit.onSlick = false;
 
         return false;
       }
@@ -423,7 +425,7 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( brush.content == BSP::SOLID ) {
+        if( brush.content & BSP::SOLID_BIT ) {
           trimPointBrush( &brush );
         }
       }
@@ -602,7 +604,7 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( ( brush.content == BSP::SOLID ) && !testAABBBrush( &brush ) ) {
+        if( ( brush.content & BSP::SOLID_BIT ) && !testAABBBrush( &brush ) ) {
           return false;
         }
       }
@@ -757,15 +759,17 @@ namespace oz
           float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist );
 
           if( ratio < hit.ratio ) {
-            hit.ratio  = ratio;
-            hit.normal = normal;
-            hit.obj    = null;
+            hit.ratio   = ratio;
+            hit.normal  = normal;
+            hit.obj     = null;
+            hit.onSlick = false;
           }
         }
         else {
-          hit.ratio  = 0.0f;
-          hit.normal = normal;
-          hit.obj    = null;
+          hit.ratio   = 0.0f;
+          hit.normal  = normal;
+          hit.obj     = null;
+          hit.onSlick = false;
         }
       }
     }
@@ -808,9 +812,10 @@ namespace oz
     }
 
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio  = minRatio;
-      hit.normal = *tmpNormal;
-      hit.obj    = sObj;
+      hit.ratio   = minRatio;
+      hit.normal  = *tmpNormal;
+      hit.obj     = sObj;
+      hit.onSlick = false;
     }
   }
 
@@ -857,9 +862,10 @@ namespace oz
       float newRatio = max( leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio ), 0.0f );
 
       if( newRatio < hit.ratio ) {
-        hit.ratio  = newRatio;
-        hit.normal = toAbsoluteCS( *tmpNormal );
-        hit.obj    = null;
+        hit.ratio   = newRatio;
+        hit.normal  = toAbsoluteCS( *tmpNormal );
+        hit.obj     = null;
+        hit.onSlick = ( brush->content & BSP::SLICK_BIT ) != 0;
       }
     }
   }
@@ -927,14 +933,14 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( brush.content == BSP::SOLID ) {
+        if( brush.content & BSP::SOLID_BIT ) {
           trimAABBBrush( &brush );
         }
-        else if( brush.content == BSP::WATER ) {
+        else if( brush.content & BSP::WATER_BIT ) {
           trimAABBWater( &brush );
         }
         else if( obj != null && ( obj->flags & Object::CLIMBER_BIT ) ) {
-          assert( brush.content == BSP::LADDER );
+          assert( brush.content & BSP::LADDER_BIT );
 
           trimAABBLadder( &brush );
         }
@@ -1006,6 +1012,7 @@ namespace oz
     hit.inWater    = false;
     hit.underWater = false;
     hit.onLadder   = false;
+    hit.onSlick    = false;
 
     globalStartPos = aabb.p;
     globalEndPos   = aabb.p + move;

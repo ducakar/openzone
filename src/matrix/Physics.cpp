@@ -24,6 +24,7 @@ namespace oz
   const float Physics::LADDER_FRICTION  = 0.65f;
   const float Physics::FLOOR_FRICTION   = 0.50f;
   const float Physics::OBJ_FRICTION     = 0.50f;
+  const float Physics::SLICK_FRICTION   = 0.02f;
 
   // default 10000.0f: 100 m/s
   const float Physics::MAX_VELOCITY2    = 10000.0f;
@@ -155,27 +156,36 @@ namespace oz
         }
       }
       else if( obj->flags & Object::ON_FLOOR_BIT ) {
-        float xyDot = obj->newVelocity.x * obj->newVelocity.x +
-            obj->newVelocity.y * obj->newVelocity.y;
-
-        if( xyDot > STICK_VELOCITY ) {
-          obj->newVelocity.x *= 1.0f - FLOOR_FRICTION;
-          obj->newVelocity.y *= 1.0f - FLOOR_FRICTION;
+        if( obj->flags & Object::ON_SLICK_BIT ) {
+          obj->newVelocity.x *= 1.0f - SLICK_FRICTION;
+          obj->newVelocity.y *= 1.0f - SLICK_FRICTION;
 
           obj->newVelocity += ( gVelocity * obj->floor.z ) * obj->floor;
           obj->flags &= ~Object::ON_FLOOR_BIT;
-          obj->flags |= Object::FRICTING_BIT;
         }
         else {
-          obj->newVelocity.x = 0.0f;
-          obj->newVelocity.y = 0.0f;
+          float xyDot = obj->newVelocity.x * obj->newVelocity.x +
+              obj->newVelocity.y * obj->newVelocity.y;
 
-          if( obj->newVelocity.z <= STICK_VELOCITY ) {
-            obj->newVelocity.z = 0.0f;
-            return false;
+          if( xyDot > STICK_VELOCITY ) {
+            obj->newVelocity.x *= 1.0f - FLOOR_FRICTION;
+            obj->newVelocity.y *= 1.0f - FLOOR_FRICTION;
+
+            obj->newVelocity += ( gVelocity * obj->floor.z ) * obj->floor;
+            obj->flags &= ~Object::ON_FLOOR_BIT;
+            obj->flags |= Object::FRICTING_BIT;
           }
           else {
-            obj->flags &= ~Object::ON_FLOOR_BIT;
+            obj->newVelocity.x = 0.0f;
+            obj->newVelocity.y = 0.0f;
+
+            if( obj->newVelocity.z <= STICK_VELOCITY ) {
+              obj->newVelocity.z = 0.0f;
+              return false;
+            }
+            else {
+              obj->flags &= ~Object::ON_FLOOR_BIT;
+            }
           }
         }
       }
@@ -272,6 +282,7 @@ namespace oz
         obj->lower = -1;
         obj->floor = collider.hit.normal;
         obj->flags |= Object::ON_FLOOR_BIT;
+        obj->flags |= collider.hit.onSlick ? Object::ON_SLICK_BIT : 0;
       }
     }
   }
