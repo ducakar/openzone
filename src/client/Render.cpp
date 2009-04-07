@@ -12,7 +12,6 @@
 
 #include "matrix/Matrix.h"
 #include "matrix/Physics.h"
-#include "matrix/B_Goblin.h"
 
 #include "Frustum.h"
 #include "Shape.h"

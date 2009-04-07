@@ -139,7 +139,7 @@ namespace oz
       }
 
       classConfig.add( "name", name );
-      classes.add( name, baseClasses.cachedValue()( &classConfig ) );
+      classes.add( name, baseClasses.cachedValue()( name, &classConfig ) );
       classConfig.clear();
     }
     closedir( dir );

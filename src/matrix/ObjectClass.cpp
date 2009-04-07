@@ -13,11 +13,12 @@
 namespace oz
 {
 
-  ObjectClass *ObjectClass::init( Config *config )
+  ObjectClass *ObjectClass::init( const String &name, Config *config )
   {
     ObjectClass *clazz = new ObjectClass();
 
-    clazz->name = config->get( "name" );
+    clazz->name = name;
+    clazz->description = config->get( "description", "" );
 
     clazz->dim.x = config->get( "dim.x", 0.5f );
     clazz->dim.y = config->get( "dim.y", 0.5f );
@@ -40,6 +41,7 @@ namespace oz
     obj->dim = dim;
 
     obj->flags = flags;
+    obj->oldFlags = flags;
     obj->type =this;
     obj->damage = damage;
 

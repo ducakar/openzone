@@ -76,6 +76,13 @@ namespace oz
         ANIM_MAX
       };
 
+    protected:
+
+      void onUpdate();
+      void onHit( const Hit *hit, float hitVelocity );
+      void onDestroy();
+
+    public:
 
       Mind    *mind;
 
@@ -93,9 +100,7 @@ namespace oz
 
       Vector<Object*> items;
 
-      void commonUpdate( float *hvsc );
-
-      virtual void onUpdate() = 0;
+      explicit Bot();
   };
 
 }

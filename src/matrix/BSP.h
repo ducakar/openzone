@@ -28,6 +28,7 @@ namespace oz
     enum Content
     {
       SOLID,
+      SLICK,
       WATER,
       LADDER
     };
@@ -97,8 +98,15 @@ namespace oz
       int    clusterLength;
       Bitset *bitsets;
 
-      VisualData();
-      ~VisualData();
+      VisualData() : bitsets( null )
+      {}
+
+      ~VisualData()
+      {
+        if( bitsets != null ) {
+          delete[] bitsets;
+        }
+      }
     };
 
     float         maxDim;
@@ -126,12 +134,10 @@ namespace oz
 
     VisualData    visual;
 
-    BSP();
+    explicit BSP();
     ~BSP();
 
-    void loadQBSP( const char *fileName, float scale = QBSP_SCALE, float maxDim = Math::INF );
-
-    void strip();
+    void loadQBSP( const char *fileName, float maxDim = Math::INF, float scale = QBSP_SCALE );
     void free();
   };
 

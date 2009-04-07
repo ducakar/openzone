@@ -34,8 +34,6 @@ namespace oz
       // which bits are treated as "lower bits", all other are "higher bits"
       static const int CONFIG_BITS_MASK = 0x000000ff;
 
-    protected:
-
       /*
        *  FUNCTION FLAGS
        */
@@ -90,7 +88,7 @@ namespace oz
       static const int ON_LADDER_BIT = 0x00010000;
 
       // if object is on ice (slipping surface)
-      static const int SLIPPING_BIT = 0x00008000;
+      static const int ON_SLICK_BIT = 0x00008000;
 
       // handle collisions for this object
       static const int CLIP_BIT = 0x00000001;
@@ -158,7 +156,7 @@ namespace oz
 
     public:
 
-      Object() : index( -1 ), sector( null ), rotZ( 0.0f )
+      explicit Object() : index( -1 ), sector( null ), rotZ( 0.0f )
       {}
 
       virtual ~Object();
@@ -180,6 +178,7 @@ namespace oz
         if( flags & UPDATE_FUNC_BIT ) {
           onUpdate();
         }
+        oldFlags = flags;
       }
 
       void hit( const Hit *hit, float hitVelocity )

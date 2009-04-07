@@ -18,10 +18,10 @@ namespace oz
     Vec3 mins;
     Vec3 maxs;
 
-    Bounds()
+    explicit Bounds()
     {}
 
-    Bounds( const Vec3 &mins_, const Vec3 &maxs_ ) : mins( mins_ ), maxs( maxs_ )
+    explicit Bounds( const Vec3 &mins_, const Vec3 &maxs_ ) : mins( mins_ ), maxs( maxs_ )
     {}
 
     Bounds &fromPointMove( const Vec3 &p, const Vec3 &move, float eps = 0.0f )

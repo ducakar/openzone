@@ -19,6 +19,10 @@ namespace oz
   // TODO BotClass
   struct BotClass : DynObjectClass
   {
+    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
+        Object::HIT_FUNC_BIT | Object::DESTROY_FUNC_BIT | Object::BOT_BIT;
+    static const int DEFAULT_FLAGS = Object::CLIP_BIT | Object::CLIMBER_BIT | Object::PUSHING_BIT;
+
     Vec3  dimCrouch;
 
     Vec3  camPos;
@@ -38,7 +42,9 @@ namespace oz
     float airControl;
     float grabDistance;
 
-    static ObjectClass *init( Config *config );
+    int   state;
+
+    static ObjectClass *init( const String &name, Config *config );
     virtual Object *create( const Vec3 &pos );
   };
 

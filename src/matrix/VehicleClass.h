@@ -19,7 +19,7 @@ namespace oz
   // TODO VehicleClass
   struct VehicleClass : DynObjectClass
   {
-    static ObjectClass *init( Config *config );
+    static ObjectClass *init( const String &name, Config *config );
     virtual Object *create( const Vec3 &pos );
   };
 

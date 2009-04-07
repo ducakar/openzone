@@ -46,8 +46,34 @@ namespace oz
 
   int World::add( Structure *str )
   {
-    str->mins = bsps[str->bsp]->mins + str->p;
-    str->maxs = bsps[str->bsp]->maxs + str->p;
+    Bounds &bsp = *bsps[str->bsp];
+
+    switch( str->rot ) {
+      case Structure::R0: {
+        str->mins = bsp.mins + str->p;
+        str->maxs = bsp.maxs + str->p;
+        break;
+      }
+      case Structure::R90: {
+        str->mins = Vec3( -bsp.maxs.y + str->p.x, bsp.mins.x + str->p.y, bsp.mins.z + str->p.z );
+        str->maxs = Vec3( -bsp.mins.y + str->p.x, bsp.maxs.x + str->p.y, bsp.maxs.z + str->p.z );
+        break;
+      }
+      case Structure::R180: {
+        str->mins = Vec3( -bsp.maxs.x + str->p.x, -bsp.mins.x + str->p.y, bsp.mins.z + str->p.z );
+        str->maxs = Vec3( -bsp.maxs.y + str->p.x, -bsp.maxs.y + str->p.y, bsp.maxs.z + str->p.z );
+        break;
+      }
+      case Structure::R270: {
+        str->mins = Vec3( bsp.mins.y + str->p.x, -bsp.maxs.x + str->p.y, bsp.mins.z + str->p.z );
+        str->maxs = Vec3( bsp.maxs.y + str->p.x, -bsp.mins.x + str->p.y, bsp.maxs.z + str->p.z );
+        break;
+      }
+      default: {
+        assert( false );
+        break;
+      }
+    }
 
     if( strFreeQueue[freedQueue].isEmpty() ) {
       str->index = structures.length();

@@ -286,7 +286,6 @@ namespace oz
   // finds out if Ray-World bounding box collision occurs and the time when it occurs
   void Collider::trimPointVoid()
   {
-
     for( int i = 0; i < 3; i++ ) {
       int  iPos    = move[i] >= 0.0f;
       const Vec3 &normal = bbNormals[i * 2 + iPos];

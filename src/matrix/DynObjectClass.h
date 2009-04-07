@@ -21,7 +21,7 @@ namespace oz
     float mass;
     float lift;
 
-    static ObjectClass *init( Config *config );
+    static ObjectClass *init( const String &name, Config *config );
     virtual Object *create( const Vec3 &pos );
   };
 

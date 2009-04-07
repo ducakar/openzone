@@ -17,9 +17,10 @@ namespace oz
 
   struct ObjectClass
   {
-    typedef ObjectClass *( *InitFunc )( Config *config );
+    typedef ObjectClass *( *InitFunc )( const String &name, Config *config );
 
     String name;
+    String description;
 
     Vec3   dim;
     int    flags;
@@ -31,7 +32,7 @@ namespace oz
 
     virtual ~ObjectClass() {}
 
-    static ObjectClass *init( Config *config );
+    static ObjectClass *init( const String &name, Config *config );
     virtual Object *create( const Vec3 &pos );
   };
 
