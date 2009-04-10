@@ -181,7 +181,7 @@ namespace oz
 
     newVelocity += desiredVelocity;
 
-    if( ( state & STEPPING_BIT ) && !isClimbing  ) {
+    if( ( state & STEPPING_BIT ) && !isClimbing ) {
       Vec3 desiredMove = newVelocity * timer.frameTime;
 
       collider.translate( *this, desiredMove, this );
@@ -219,6 +219,7 @@ namespace oz
       if( collider.hit.obj != null ) {
         collider.hit.obj->destroy();
       }
+      throw Exception( 0, "drek" );
     }
 
     oldKeys = keys;

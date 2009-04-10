@@ -160,7 +160,7 @@ namespace oz
           obj->newVelocity.x *= 1.0f - SLICK_FRICTION;
           obj->newVelocity.y *= 1.0f - SLICK_FRICTION;
 
-          obj->newVelocity += ( gVelocity * obj->floor.z ) * obj->floor;
+          obj->newVelocity.z += gVelocity;
           obj->flags &= ~Object::ON_FLOOR_BIT;
         }
         else {

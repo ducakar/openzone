@@ -98,7 +98,7 @@ namespace client
 
     vorbis_info *vorbisInfo = ov_info( &oggStream, -1 );
     ALenum format = ( vorbisInfo->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16 );
-    int size = oggStream.end - oggStream.offset;
+    int size = (int) ( oggStream.end - oggStream.offset );
 
     logFile.println( "%d %d", size, vorbisInfo->rate );
 
@@ -112,16 +112,16 @@ namespace client
     logFile.printEnd( " OK" );
     return true;
 
-//     buffers[sample] = alutCreateBufferFromFile( file );
-//
-//     if( buffers[sample] == AL_NONE ) {
-//       logFile.printEnd( " Failed" );
-//       return false;
-//     }
-//     else {
-//       logFile.printEnd( " OK" );
-//       return true;
-//     }
+    buffers[sample] = alutCreateBufferFromFile( file );
+
+    if( buffers[sample] == AL_NONE ) {
+      logFile.printEnd( " Failed" );
+      return false;
+    }
+    else {
+      logFile.printEnd( " OK" );
+      return true;
+    }
   }
 
   void Audio::playSector( int sectorX, int sectorY )
@@ -189,58 +189,56 @@ namespace client
   void Audio::update()
   {
     // add new sounds
-//     alListenerfv( AL_ORIENTATION, camera.at );
-//     alListenerfv( AL_POSITION, camera.p );
-//
-//     world.getInters( camera.p, DMAX );
-//
-//     for( int x = world.minSectX ; x <= world.maxSectX; x++ ) {
-//       for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
-//         playSector( x, y );
-//       }
-//     }
-//
-//     // remove continous sounds that are not played any more
-//     for( HashIndex<ContSource, HASHTABLE_SIZE>::Iterator i( contSources );
-//          !i.isPassed(); )
-//     {
-//       ContSource *src = i;
-//       uint key = i.key();
-//
-//       // we should advance now, so that we don't remove the element the iterator is pointing at
-//       i++;
-//
-//       if( src->state == ContSource::NOT_UPDATED ) {
-//         alSourceStop( src->source );
-//         alDeleteSources( 1, &src->source );
-//         contSources.remove( key );
-//       }
-//       else {
-//         src->state = ContSource::NOT_UPDATED;
-//       }
-//     }
-//
-//     // remove stopped sources of non-continous sounds
-//     if( clearCount >= CLEAR_INTERVAL ) {
-//       Source *src = sources.first();
-//
-//       while( src != null ) {
-//         Source *next = src->next[0];
-//         ALint value = AL_STOPPED;
-//
-//         alGetSourcei( src->source, AL_SOURCE_STATE, &value );
-//
-//         if( value != AL_PLAYING ) {
-//           alDeleteSources( 1, &src->source );
-//
-//           sources.remove( src );
-//           delete src;
-//         }
-//         src = next;
-//       }
-//       clearCount -= CLEAR_INTERVAL;
-//     }
-//     clearCount += timer.frameMillis;
+    alListenerfv( AL_ORIENTATION, camera.at );
+    alListenerfv( AL_POSITION, camera.p );
+
+    world.getInters( camera.p, DMAX );
+
+    for( int x = world.minSectX ; x <= world.maxSectX; x++ ) {
+      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+        playSector( x, y );
+      }
+    }
+
+    // remove continous sounds that are not played any more
+    for( HashIndex<ContSource, HASHTABLE_SIZE>::Iterator i( contSources ); !i.isPassed(); ) {
+      ContSource *src = i;
+      uint key = i.key();
+
+      // we should advance now, so that we don't remove the element the iterator is pointing at
+      ++i;
+
+      if( src->state == ContSource::NOT_UPDATED ) {
+        alSourceStop( src->source );
+        alDeleteSources( 1, &src->source );
+        contSources.remove( key );
+      }
+      else {
+        src->state = ContSource::NOT_UPDATED;
+      }
+    }
+
+    // remove stopped sources of non-continous sounds
+    if( clearCount >= CLEAR_INTERVAL ) {
+      Source *src = sources.first();
+
+      while( src != null ) {
+        Source *next = src->next[0];
+        ALint value = AL_STOPPED;
+
+        alGetSourcei( src->source, AL_SOURCE_STATE, &value );
+
+        if( value != AL_PLAYING ) {
+          alDeleteSources( 1, &src->source );
+
+          sources.remove( src );
+          delete src;
+        }
+        src = next;
+      }
+      clearCount -= CLEAR_INTERVAL;
+    }
+    clearCount += timer.frameMillis;
 
     updateMusic();
   }

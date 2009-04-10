@@ -243,27 +243,27 @@ namespace client
   MD2::Anim MD2::animList[] =
   {
     // first, last, fps
-    {   0,  39,  9 },   // STAND
-    {  40,  45, 10 },   // RUN
-    {  46,  53, 10 },   // ATTACK
-    {  54,  57,  7 },   // PAIN_A
-    {  58,  61,  7 },   // PAIN_B
-    {  62,  65,  7 },   // PAIN_C
-    {  67,  67,  9 },   // JUMP
-    {  72,  83,  7 },   // FLIP
-    {  84,  94,  7 },   // SALUTE
-    {  95, 111, 10 },   // FALLBACK
-    { 112, 122,  7 },   // WAVE
-    { 123, 134,  6 },   // POINT
-    { 135, 153, 10 },   // CROUCH_STAND
-    { 154, 159,  7 },   // CROUCH_WALK
-    { 160, 168, 10 },   // CROUCH_ATTACK
-    { 196, 172,  7 },   // CROUCH_PAIN
-    { 173, 177,  5 },   // CROUCH_DEATH
-    { 178, 183,  7 },   // DEATH_FALLBACK
-    { 184, 189,  7 },   // DEATH_FALLFORWARD
-    { 190, 197,  7 },   // DEATH_FALLBACKSLOW
-    {   0, 197,  7 }    // FULL
+    {   0,  39,  9.0f },   // STAND
+    {  40,  45, 10.0f },   // RUN
+    {  46,  53, 10.0f },   // ATTACK
+    {  54,  57,  7.0f },   // PAIN_A
+    {  58,  61,  7.0f },   // PAIN_B
+    {  62,  65,  7.0f },   // PAIN_C
+    {  67,  67,  9.0f },   // JUMP
+    {  72,  83,  7.0f },   // FLIP
+    {  84,  94,  7.0f },   // SALUTE
+    {  95, 111, 10.0f },   // FALLBACK
+    { 112, 122,  7.0f },   // WAVE
+    { 123, 134,  6.0f },   // POINT
+    { 135, 153, 10.0f },   // CROUCH_STAND
+    { 154, 159,  7.0f },   // CROUCH_WALK
+    { 160, 168, 10.0f },   // CROUCH_ATTACK
+    { 196, 172,  7.0f },   // CROUCH_PAIN
+    { 173, 177,  5.0f },   // CROUCH_DEATH
+    { 178, 183,  7.0f },   // DEATH_FALLBACK
+    { 184, 189,  7.0f },   // DEATH_FALLFORWARD
+    { 190, 197,  7.0f },   // DEATH_FALLBACKSLOW
+    {   0, 197,  7.0f }    // FULL
   };
 
   MD2::MD2() : nFrames( 0 ), nVerts( 0 ), nGlCmds( 0 ),

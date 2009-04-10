@@ -5,6 +5,8 @@ if [ -f Makefile ]; then
   make clean
 fi
 
+echo 'rm -rf *.gcno src/base/*.gcno src/matrix/*.gcno src/nirvana/*.gcno src/client/*.gcno src/server/*.gcno src/test/*.gcno'
+rm -rf *.gcno src/base/*.gcno src/matrix/*.gcno src/nirvana/*.gcno src/client/*.gcno src/server/*.gcno src/test/*.gcno
 echo 'rm -rf CMakeCache.txt'
 rm -rf CMakeCache.txt
 echo 'rm -rf CMakeFiles cmake_install.cmake Makefile'

@@ -20,9 +20,6 @@ class A : public PoolAlloc<A>
 
 int main()
 {
-  Pool<A> pool;
-  A::setPool( &pool );
-
   int max = 10000;
 
   A *array[max];

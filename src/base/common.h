@@ -62,7 +62,7 @@ namespace oz
    * Embed identifier as string
    * E.g. if we have a variable named var return a string "var".
    */
-# define $( s ) #s
+// # define $( s ) #s
 
   /*
    * MISCELLANEOUS TEMPLATES
@@ -139,6 +139,170 @@ namespace oz
       return c;
     }
   }
+
+  /*
+   * ITERATOR TEMPLATES
+   */
+
+  /**
+   * Generalized iterator.
+   * It should only be used as a base class. Following functions need to be implemented:<br>
+   * <code>bool isPassed()</code><br>
+   * <code>Iterator &operator ++ ()</code><br>
+   * <code>Iterator &operator -- ()</code> (optional)<br>
+   * and, of course, a sensible constructor.
+   */
+  template <class Type>
+  class IteratorBase
+  {
+    protected:
+
+      /**
+       * Element which iterator is currently positioned at.
+       */
+      Type *elem;
+
+      /**
+       * @param start first element
+       */
+      explicit IteratorBase( Type *start ) : elem( start )
+      {}
+
+    public:
+
+      /**
+       * Returns true if iterator is on specified element.
+       * @param e
+       * @return
+       */
+      bool operator == ( const Type *e ) const
+      {
+        return elem == e;
+      }
+
+      /**
+       * Returns true if iterator is not on specified element.
+       * @param e
+       * @return
+       */
+      bool operator != ( const Type *e ) const
+      {
+        return elem != e;
+      }
+
+      /**
+       * @return pointer to current element
+       */
+      operator Type* ()
+      {
+        return elem;
+      }
+
+      /**
+       * @return constant pointer to current element
+       */
+      operator const Type* () const
+      {
+        return elem;
+      }
+
+      /**
+       * @return reference to current element
+       */
+      Type &operator * ()
+      {
+        return *elem;
+      }
+
+      /**
+       * @return constant reference to current element
+       */
+      const Type &operator * () const
+      {
+        return *elem;
+      }
+
+      /**
+       * @return non-constant access to member
+       */
+      Type *operator -> ()
+      {
+        return elem;
+      }
+
+      /**
+       * @return constant access to member
+       */
+      const Type *operator -> () const
+      {
+        return elem;
+      }
+
+  };
+
+  /**
+   * Pointer iterator
+   */
+  template <class Type>
+  class Iterator : public IteratorBase<Type>
+  {
+    private:
+
+      // base class
+      typedef IteratorBase<Type> B;
+
+    protected:
+
+      /**
+       * Successor of the last element.
+       * Is is used to determine when iterator becomes invalid.
+       */
+      const Type *past;
+
+    public:
+
+      /**
+       * @param start first element for forward iterator or successor of last element for backward
+       * iterator
+       * @param past_ successor of last element for forward iterator or predecessor of first element
+       * for backward iterator
+       */
+      explicit Iterator( Type *start, const Type *past_ ) : B( start ), past( past_ )
+      {}
+
+      /**
+       * When iterator advances beyond last element, it becomes passed. It points to an invalid
+       * location.
+       * @return true if iterator is passed
+       */
+      bool isPassed() const
+      {
+        return B::elem == past;
+      }
+
+      /**
+       * Advance to next element.
+       */
+      Iterator &operator ++ ()
+      {
+        assert( B::elem != past );
+
+        B::elem++;
+        return *this;
+      }
+
+      /**
+       * Advance to previous element.
+       */
+      Iterator &operator -- ()
+      {
+        assert( B::elem != past );
+
+        B::elem--;
+        return *this;
+      }
+
+  };
 
   /*
    * ARRAY UTILIY TEMPLATES
@@ -345,166 +509,6 @@ namespace oz
     quicksort( array, array + count - 1 );
   }
 
-  /**
-   * Generalized iterator.
-   * It should only be used as a base class. Following functions need to be implemented:<br>
-   * <code>bool isPassed()</code><br>
-   * <code>Iterator &operator ++ ()</code><br>
-   * <code>Iterator &operator -- ()</code> (optional)<br>
-   * and, of course, a sensible constructor.
-   */
-  template <class Type>
-  class IteratorBase
-  {
-    protected:
-
-      /**
-       * Element which iterator is currently positioned at.
-       */
-      Type *elem;
-
-      /**
-       * @param start first element
-       */
-      explicit IteratorBase( Type *start ) : elem( start )
-      {}
-
-    public:
-
-      /**
-       * Returns true if iterator is on specified element.
-       * @param e
-       * @return
-       */
-      bool operator == ( const Type *e ) const
-      {
-        return elem == e;
-      }
-
-      /**
-       * Returns true if iterator is not on specified element.
-       * @param e
-       * @return
-       */
-      bool operator != ( const Type *e ) const
-      {
-        return elem != e;
-      }
-
-      /**
-       * @return pointer to current element
-       */
-      operator Type* ()
-      {
-        return elem;
-      }
-
-      /**
-       * @return constant pointer to current element
-       */
-      operator const Type* () const
-      {
-        return elem;
-      }
-
-      /**
-       * @return reference to current element
-       */
-      Type &operator * ()
-      {
-        return *elem;
-      }
-
-      /**
-       * @return constant reference to current element
-       */
-      const Type &operator * () const
-      {
-        return *elem;
-      }
-
-      /**
-       * @return non-constant access to member
-       */
-      Type *operator -> ()
-      {
-        return elem;
-      }
-
-      /**
-       * @return constant access to member
-       */
-      const Type *operator -> () const
-      {
-        return elem;
-      }
-
-  };
-
-  /**
-   * Pointer iterator
-   */
-  template <class Type>
-  class Iterator : public IteratorBase<Type>
-  {
-    private:
-
-      // base class
-      typedef IteratorBase<Type> B;
-
-    protected:
-
-      /**
-       * Successor of the last element.
-       * Is is used to determine when iterator becomes invalid.
-       */
-      const Type *past;
-
-    public:
-
-      /**
-       * @param start first element for forward iterator or successor of last element for backward
-       * iterator
-       * @param past_ successor of last element for forward iterator or predecessor of first element
-       * for backward iterator
-       */
-      explicit Iterator( Type *start, const Type *past_ ) : B( start ), past( past_ )
-      {}
-
-      /**
-       * When iterator advances beyond last element, it becomes passed. It points to an invalid
-       * location.
-       * @return true if iterator is passed
-       */
-      bool isPassed() const
-      {
-        return B::elem == past;
-      }
-
-      /**
-       * Advance to next element.
-       */
-      Iterator &operator ++ ()
-      {
-        assert( B::elem != past );
-
-        B::elem++;
-        return *this;
-      }
-
-      /**
-       * Advance to previous element.
-       */
-      Iterator &operator -- ()
-      {
-        assert( B::elem != past );
-
-        B::elem--;
-        return *this;
-      }
-
-  };
-
   /*
    * ITERABLE CONTAINER UTILITY TEMPLATES
    */
@@ -634,5 +638,24 @@ namespace oz
       delete p;
     }
   }
+
+  /*
+   * EXCEPTION CLASS
+   */
+
+  struct Exception
+  {
+    const char *message;
+    const char *file;
+    int        line;
+    int        id;
+
+    explicit Exception( int id_, const char *message_, const char *file_, int line_ ) :
+        message( message_ ), file( file_ ), line( line_ ), id( id_ )
+    {}
+  };
+
+#define Exception( id, message ) \
+  Exception( ( id ), ( message ), __FILE__, __LINE__ )
 
 }

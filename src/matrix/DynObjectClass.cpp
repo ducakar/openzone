@@ -10,6 +10,7 @@
 
 #include "DynObjectClass.h"
 
+#include "DynObject.h"
 #include "Translator.h"
 
 namespace oz

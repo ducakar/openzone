@@ -10,6 +10,8 @@
 
 #include "VehicleClass.h"
 
+#include "Vehicle.h"
+
 namespace oz
 {
 

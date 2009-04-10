@@ -149,7 +149,7 @@ namespace oz
        * @param e
        * @return true if the element is found in the vector
        */
-      bool contains( const Type &e )
+      bool contains( const Type &e ) const
       {
         for( int i = 0; i < count; i++ ) {
           if( data[i] == e ) {

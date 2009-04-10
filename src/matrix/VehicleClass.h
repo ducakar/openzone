@@ -11,7 +11,6 @@
 #pragma once
 
 #include "DynObjectClass.h"
-#include "Vehicle.h"
 
 namespace oz
 {

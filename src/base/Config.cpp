@@ -28,7 +28,7 @@ namespace oz
 
   Config config;
 
-  bool Config::get( const char *name, bool defVal )
+  bool Config::get( const char *name, bool defVal ) const
   {
     assert( !vars.contains( name ) ||
             vars.cachedValue() == "true" ||
@@ -46,40 +46,36 @@ namespace oz
       }
     }
     else {
-      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  int Config::get( const char *name, int defVal )
+  int Config::get( const char *name, int defVal ) const
   {
     if( vars.contains( name ) ) {
       return atoi( vars.cachedValue() );
     }
     else {
-      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  float Config::get( const char *name, float defVal )
+  float Config::get( const char *name, float defVal ) const
   {
     if( vars.contains( name ) ) {
       return strtof( vars.cachedValue(), null );
     }
     else {
-      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  const char *Config::get( const char *name, const char *defVal )
+  const char *Config::get( const char *name, const char *defVal ) const
   {
     if( vars.contains( name ) ) {
       return vars.cachedValue();
     }
     else {
-      vars.add( name, defVal );
       return defVal;
     }
   }
@@ -216,7 +212,7 @@ namespace oz
     }
     aSort( sortedVars, size );
 
-    for( int i = 0; i < size; i++ ) {
+    for( i = 0; i < size; i++ ) {
       s = s + indentString + sortedVars[i].key + " = \"" + sortedVars[i].value + "\"\n";
     }
     return s;

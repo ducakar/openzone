@@ -67,7 +67,7 @@ namespace oz
            * location.
            * @return true if iterator is passed
            */
-          bool isPassed()
+          bool isPassed() const
           {
             return B::elem == null;
           }

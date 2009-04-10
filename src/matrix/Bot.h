@@ -37,15 +37,15 @@ namespace oz
       static const int KEY_USE         = 0x00001000;
       static const int KEY_STEP        = 0x00002000;
 
-      static const int GROUNDED_BIT    = 0x00000001;
-      static const int RUNNING_BIT     = 0x00000002;
-      static const int CROUCHING_BIT   = 0x00000004;
-      static const int MOVING_BIT      = 0x00000008;
-      static const int SHOOTING_BIT    = 0x00000010;
-      static const int GESTURE0_BIT    = 0x00000020;
-      static const int GESTURE1_BIT    = 0x00000040;
-      static const int STEPPING_BIT    = 0x00000080;
-      static const int DEATH_BIT       = 0x00000100;
+      static const int STEPPING_BIT    = 0x00000001;
+      static const int CROUCHING_BIT   = 0x00000002;
+      static const int RUNNING_BIT     = 0x00000010;
+      static const int SHOOTING_BIT    = 0x00000020;
+      static const int GROUNDED_BIT    = 0x00000040;
+      static const int MOVING_BIT      = 0x00000080;
+      static const int GESTURE0_BIT    = 0x00000100;
+      static const int GESTURE1_BIT    = 0x00000200;
+      static const int DEATH_BIT       = 0x00000400;
 
       // effects
       static const int SND_LAND        = 8;

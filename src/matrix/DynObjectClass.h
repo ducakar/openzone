@@ -11,7 +11,6 @@
 #pragma once
 
 #include "ObjectClass.h"
-#include "DynObject.h"
 
 namespace oz
 {

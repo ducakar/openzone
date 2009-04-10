@@ -239,7 +239,7 @@ namespace oz
     }
 
     // dot product
-    float operator * ( const Quat &a )
+    float operator * ( const Quat &a ) const
     {
       return x*a.x + y*a.y + z*a.z + w*a.w;
     }

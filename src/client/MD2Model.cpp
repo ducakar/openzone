@@ -23,7 +23,7 @@ namespace client
 
     MD2Model *model = new MD2Model();
 
-    model->bot = (Bot*) object;
+    model->bot = (const Bot*) object;
     model->md2 = context.loadMD2Model( object->type->modelPath );
 
     model->anim.type     = -1;
