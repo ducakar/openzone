@@ -9,6 +9,7 @@
 #pragma once
 
 #include "matrix/World.h"
+#include "matrix/SparkGen.h"
 
 namespace oz
 {
@@ -36,10 +37,10 @@ namespace client
     protected:
 
       oz::SparkGen *sparkGen;
-      Spark          *sparks;
-      float          startMillis;
-      float          sparksPerTick;
-      int            nSparks;
+      Spark        *sparks;
+      float        startMillis;
+      float        sparksPerTick;
+      int          nSparks;
 
       void createSpark( int i );
 

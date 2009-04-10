@@ -222,8 +222,8 @@ namespace oz
   {
     TerraQuad &quad = world.terrain.terra[x][y];
 
-    float pX = (float)( ( x - Terrain::MAX / 2 ) * TerraQuad::SIZE );
-    float pY = (float)( ( y - Terrain::MAX / 2 ) * TerraQuad::SIZE );
+    float pX = (float) ( ( x - Terrain::MAX / 2 ) * TerraQuad::SIZE );
+    float pY = (float) ( ( y - Terrain::MAX / 2 ) * TerraQuad::SIZE );
 
     float pX0 = pX - EPSILON;
     float pY0 = pY - EPSILON;

@@ -18,10 +18,10 @@ namespace oz
   void Timer::update( int frameMillis_ )
   {
     frameMillis = frameMillis_;
-    frameTime   = frameMillis / 1000.0f;
+    frameTime   = (float) ( frameMillis / 1000.0f );
 
     millis      += frameMillis;
-    time        = millis / 1000.0f;
+    time        = (float) ( millis / 1000.0f );
   }
 
 }

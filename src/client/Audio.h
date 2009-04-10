@@ -9,6 +9,7 @@
 #pragma once
 
 #include "matrix/World.h"
+#include "matrix/Translator.h"
 
 #include <vorbis/vorbisfile.h>
 
@@ -27,7 +28,16 @@ namespace client
       // release continous sound if not used for 60 s
       static const int RELEASE_COUNT = 3000;
 
-      struct Source : ReuseAlloc<Source>
+      // size of hashtable for continous sources
+      static const int HASHTABLE_SIZE = 256;
+      static const int MUSIC_BUFFER_SIZE = 64 * 1024;
+      // clear stopped sources each second
+      static const int CLEAR_INTERVAL = 1000;
+
+      // FIXME MAX_BUFFERS
+      static const int MAX_BUFFERS = 1024;
+
+      struct Source : PoolAlloc<Source, 0>
       {
         Source *prev[1];
         Source *next[1];
@@ -35,7 +45,7 @@ namespace client
         ALuint source;
       };
 
-      struct ContSource : ReuseAlloc<ContSource>
+      struct ContSource : PoolAlloc<ContSource, 0>
       {
         enum State
         {
@@ -46,15 +56,6 @@ namespace client
         State  state;
         ALuint source;
       };
-
-      // size of hashtable for continous sources
-      static const int HASHTABLE_SIZE = 256;
-      static const int MUSIC_BUFFER_SIZE = 64 * 1024;
-      // clear stopped sources each second
-      static const int CLEAR_INTERVAL = 1000;
-
-      // FIXME MAX_BUFFERS
-      static const int MAX_BUFFERS = /*SND_MAX (from Translator)*/ 1024;
 
       /*
        * Sound effects

@@ -68,6 +68,13 @@ namespace oz
       {}
 
       /**
+       * Create empty vector with given initial capacity.
+       * @param initSize
+       */
+      explicit Vector( int initSize ) : data( new Type[initSize] ), size( initSize ), count( 0 )
+      {}
+
+      /**
        * Copy constructor.
        * @param v
        */
@@ -75,13 +82,6 @@ namespace oz
       {
         aCopy( data, v.data, count );
       }
-
-      /**
-       * Create empty vector with given initial capacity.
-       * @param initSize
-       */
-      explicit Vector( int initSize ) : data( new Type[initSize] ), size( initSize ), count( 0 )
-      {}
 
       /**
        * Destructor.
@@ -198,7 +198,7 @@ namespace oz
        * @param e
        * @return true if the element is found in the vector
        */
-      bool contains( const Type &e )
+      bool contains( const Type &e ) const
       {
         for( int i = 0; i < count; i++ ) {
           if( data[i] == e ) {

@@ -47,11 +47,11 @@ namespace oz
       Vec3      rot;
       Vec3      rotVelocity;
 
-      Particle()
+      explicit Particle()
       {}
 
-      Particle( const Vec3 &p_, const Vec3 &velocity_, float rejection_, float mass_,
-                float lifeTime_, float size_, const Vec3 &color_ ) :
+      explicit Particle( const Vec3 &p_, const Vec3 &velocity_, float rejection_, float mass_,
+                         float lifeTime_, float size_, const Vec3 &color_ ) :
           p( p_ ), velocity( velocity_ ),
           rejection( rejection_ ),
           mass( mass_ ), lifeTime( lifeTime_ ),
@@ -74,22 +74,13 @@ namespace oz
        */
 
       // serialize whole object
-      virtual void serialize( char *stream ) const
-      {
-        *stream = 0;
-      }
+      virtual void serialize( char* ) const;
 
       // serialize only information necessary for network synchronizing
-      virtual void updateSerialize( char *stream ) const
-      {
-        *stream = 0;
-      }
+      virtual void updateSerialize( char* ) const;
 
       // update object with recieved synchronization information from network
-      virtual void updateDeserialize( const char *stream )
-      {
-        assert( stream != null );
-      }
+      virtual void updateDeserialize( const char* );
   };
 
 }

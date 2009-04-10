@@ -13,10 +13,6 @@ namespace oz
 
   class Timer
   {
-    protected:
-
-      Vector<float*> timers;
-
     public:
 
       int   frameMillis;

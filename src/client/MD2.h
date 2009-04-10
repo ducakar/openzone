@@ -46,9 +46,9 @@ namespace client
 
       struct Anim
       {
-        int firstFrame;
-        int lastFrame;
-        int fps;
+        int  firstFrame;
+        int  lastFrame;
+        float fps;
       };
 
       struct AnimState
@@ -56,7 +56,7 @@ namespace client
         int   startFrame;
         int   endFrame;
 
-        int   fps;
+        float fps;
         float frameTime;
         float currTime;
         float oldTime;

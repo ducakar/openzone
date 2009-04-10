@@ -241,7 +241,7 @@ namespace oz
     }
 
     // mixed product
-    friend float mix( const Vec3 &a, const Vec3 &b, const Vec3 &c )
+    static float mix( const Vec3 &a, const Vec3 &b, const Vec3 &c )
     {
       // 3x3 determinant
       return

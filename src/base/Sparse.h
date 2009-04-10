@@ -96,16 +96,6 @@ namespace oz
       }
 
       /**
-       * Copy constructor.
-       * @param s
-       */
-      Sparse( const Sparse &s ) : data( new Type[s.size] ), size( s.size ), count( s.count ),
-          freeSlot( s.freeSlot )
-      {
-        aCopy( data, s.data, size );
-      }
-
-      /**
        * Create empty sparse vector with given initial capacity.
        * @param initSize
        */
@@ -115,6 +105,16 @@ namespace oz
         for( int i = 0; i < size; i++ ) {
           data[i].nextSlot = i + 1;
         }
+      }
+
+      /**
+       * Copy constructor.
+       * @param s
+       */
+      Sparse( const Sparse &s ) : data( new Type[s.size] ), size( s.size ), count( s.count ),
+          freeSlot( s.freeSlot )
+      {
+        aCopy( data, s.data, size );
       }
 
       /**
@@ -246,7 +246,7 @@ namespace oz
        * @param e
        * @return true if the element is found in the sparse vector
        */
-      bool contains( const Type &e )
+      bool contains( const Type &e ) const
       {
         for( int i = 0; i < capacity; i++ ) {
           if( data[i].nextSlot == -1 && data[i] == e ) {

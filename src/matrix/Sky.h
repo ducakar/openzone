@@ -25,7 +25,7 @@ namespace oz
 
     void update()
     {
-//       time = Math::mod( time + timer.frameTime, period );
+      time = Math::mod( time + timer.frameTime, period );
     }
   };
 

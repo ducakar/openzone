@@ -86,8 +86,8 @@ namespace oz
     world.add( translator.classes["SmallCrate"]->create( Vec3( 42.0f, -40.0f, 82.0f ) ) );
 
     world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.0f, 80.0f ) ) );
-    world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.0f, 82.0f ) ) );
-    world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.0f, 84.0f ) ) );
+    world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.1f, 82.0f ) ) );
+    world.add( translator.classes["BigCrate"]->create( Vec3( 40.0f, -55.2f, 84.0f ) ) );
 
     world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), Structure::R0, 3 ) );
 

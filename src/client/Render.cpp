@@ -106,7 +106,7 @@ namespace client
     camera.init();
     frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
     sky.init();
-    water.init();
+//     water.init();
 
     terra.init();
 

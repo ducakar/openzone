@@ -10,6 +10,8 @@
 
 #include "BotClass.h"
 
+#include "Bot.h"
+
 namespace oz
 {
 
@@ -58,7 +60,6 @@ namespace oz
 
     clazz->airControl     = config->get( "airControl", 0.05f );
     clazz->grabDistance   = config->get( "grabDistance", 1.0f );
-
     clazz->state          = config->get( "state", 0 );
 
     return clazz;
@@ -80,7 +81,7 @@ namespace oz
     obj->lift = lift;
 
     obj->camPos = camPos;
-    obj->state = state;
+    obj->state = state | Bot::STEPPING_BIT;
     obj->mind = null;
 
     return obj;

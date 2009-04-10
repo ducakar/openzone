@@ -16,13 +16,11 @@ namespace oz
     Vec3   p;
     float r;
 
-    Sphere()
-    {
-    }
+    explicit Sphere()
+    {}
 
-    Sphere( const Vec3 &p_, float r_ ) : p( p_ ), r( r_ )
-    {
-    }
+    explicit Sphere( const Vec3 &p_, float r_ ) : p( p_ ), r( r_ )
+    {}
 
     Sphere operator + ( const Vec3 &v ) const
     {

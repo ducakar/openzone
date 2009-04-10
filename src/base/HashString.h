@@ -70,7 +70,7 @@ namespace oz
            * location.
            * @return true if iterator is passed
            */
-          bool isPassed()
+          bool isPassed() const
           {
             return B::elem == null;
           }
@@ -175,17 +175,17 @@ namespace oz
 
     private:
 
-      Elem *data[SIZE];
+      Elem         *data[SIZE];
       // we cache found element since we often want its value after a search
-      Elem *cached;
-      int  count;
+      mutable Elem *cached;
+      int          count;
 
       /**
        * @param chainA
        * @param chainB
        * @return true if chains are equal length and all elements are equal
        */
-      bool areChainsEqual( const Elem *chainA, const Elem *chainB ) const
+      static bool areChainsEqual( const Elem *chainA, const Elem *chainB )
       {
         if( chainA != null && chainB != null ) {
           return
@@ -204,7 +204,7 @@ namespace oz
        * @param chain
        * @return pointer to first element of newly allocated chain
        */
-      Elem *copyChain( const Elem *chain ) const
+      static Elem *copyChain( const Elem *chain )
       {
         if( chain != null ) {
           return new Elem( chain->key, chain->value, copyChain( chain->next[0] ) );
@@ -218,7 +218,7 @@ namespace oz
        * Delete all elements in given chain.
        * @param chain
        */
-      void freeChain( const Elem *chain ) const
+      static void freeChain( const Elem *chain )
       {
         if( chain != null ) {
           freeChain( chain->next[0] );
@@ -231,7 +231,7 @@ namespace oz
        * Delete all elements and their values in given chain.
        * @param chain
        */
-      void freeChainAndValues( const Elem *chain ) const
+      static void freeChainAndValues( const Elem *chain )
       {
         if( chain != null ) {
           freeChain( chain->next[0] );
@@ -394,7 +394,7 @@ namespace oz
        * @param key
        * @return true if found
        */
-      bool contains( const char *key )
+      bool contains( const char *key ) const
       {
         int  i  = String::hash( key ) % SIZE;
         Elem *p = data[i];

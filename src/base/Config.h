@@ -58,7 +58,7 @@ namespace oz
        * @param key variable name
        * @return true if config contains the variable
        */
-      bool contains( const char *key )
+      bool contains( const char *key ) const
       {
         return vars.contains( key );
       }
@@ -68,7 +68,7 @@ namespace oz
        * @param key variable name
        * @return variable value
        */
-      const String &operator [] ( const char *key )
+      const String &operator [] ( const char *key ) const
       {
         return vars[key];
       }
@@ -78,7 +78,7 @@ namespace oz
        * @param key variable name
        * @return variable value
        */
-      const String &get ( const char *key )
+      const String &get ( const char *key ) const
       {
         return vars[key];
       }
@@ -88,28 +88,28 @@ namespace oz
        * @param defVal default value, if variable does not exist in configration
        * @return value of given variable
        */
-      bool get( const char *name, bool defVal );
+      bool get( const char *name, bool defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configration
        * @return value of given variable
        */
-      int get( const char *name, int defVal );
+      int get( const char *name, int defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configration
        * @return value of given variable
        */
-      float get( const char *name, float defVal );
+      float get( const char *name, float defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configration
        * @return value of given variable
        */
-      const char *get( const char *name, const char *defVal );
+      const char *get( const char *name, const char *defVal ) const;
 
       /**
        * Load variables from an XML file. It only reads the nodes named "var" that must have the

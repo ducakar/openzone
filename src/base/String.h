@@ -107,11 +107,11 @@ namespace oz
         buffer[count] = '\0';
 
         // we always write first digit
-        buffer[count - 1] = '0' + ( n % 10 );
+        buffer[count - 1] = (char) ( '0' + ( n % 10 ) );
         n /= 10;
 
         for( int i = count - 2; n != 0; i-- ) {
-          buffer[i] = '0' + ( n % 10 );
+          buffer[i] = (char) ( '0' + ( n % 10 ) );
           n /= 10;
         }
       }

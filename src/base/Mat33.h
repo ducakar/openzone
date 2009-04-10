@@ -165,7 +165,7 @@ namespace oz
     }
 
     // return transposed matrix
-    Mat33 operator ~ ()
+    Mat33 operator ~ () const
     {
       return Mat33( m[0], m[3], m[6],
                     m[1], m[4], m[7],

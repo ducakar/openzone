@@ -8,16 +8,12 @@
 
 #pragma once
 
-#include "Timer.h"
-
-#include "BSP.h"
 #include "Sky.h"
 #include "Terrain.h"
+#include "BSP.h"
 
 #include "Structure.h"
-#include "Object.h"
 #include "DynObject.h"
-#include "SparkGen.h"
 #include "Particle.h"
 
 namespace oz

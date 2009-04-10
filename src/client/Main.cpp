@@ -72,7 +72,7 @@ namespace client
 
     logFile.unindent();
     logFile.println( "}" );
-    logFile.printlnETD( "%s finished on", OZ_APP_NAME );
+    logFile.printlnETD( OZ_APP_NAME " finished at" );
 
     config.clear();
   }
@@ -127,7 +127,7 @@ namespace client
     logFile.println( "Log stream stdout ... OK" );
 #endif
 
-    logFile.printlnETD( "%s started on", OZ_APP_NAME );
+    logFile.printlnETD( OZ_APP_NAME " started at" );
 
     logFile.print( "Initializing SDL ..." );
     if( SDL_Init( SDL_INIT_VIDEO ) ) {
@@ -184,7 +184,7 @@ namespace client
 
 #ifndef WIN32
     if( config.get( "screen.nvVSync", true ) ) {
-      putenv( (char*) "__GL_SYNC_TO_VBLANK=1" );
+      putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
     }
 #endif
     SDL_WM_SetCaption( OZ_WM_TITLE, null );
@@ -227,7 +227,7 @@ namespace client
       shutdown();
       return;
     }
-//     audio.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
+    audio.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
 
     logFile.unindent();
     logFile.println( "}" );
@@ -306,7 +306,7 @@ namespace client
             break;
           }
           case SDL_MOUSEBUTTONDOWN: {
-            input.mouse.b |= event.button.button;
+            input.mouse.b |= (char) event.button.button;
             break;
           }
           case SDL_ACTIVEEVENT: {
@@ -380,12 +380,15 @@ int main( int, char*[] )
   try {
     oz::client::main.main();
   }
-  catch( const char *e ) {
+  catch( oz::Exception e ) {
     oz::logFile.resetIndent();
-    oz::logFile.printEnd( "\n*** EXCEPTION: %s ***", e );
+    oz::logFile.println();
+    oz::logFile.println( "*** EXCEPTION: %s line %d", e.file, e.line );
+    oz::logFile.println( "*** MESSAGE: %s", e.message );
+    oz::logFile.println();
 
     if( oz::logFile.isFile() ) {
-      printf( "*** EXCEPTION: %s ***\n", e );
+      printf( "*** EXCEPTION: %s line %d\n*** MESSAGE: %s\n\n", e.file, e.line, e.message );
     }
   }
   oz::client::main.shutdown();

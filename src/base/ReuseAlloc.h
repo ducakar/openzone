@@ -24,7 +24,7 @@ namespace oz
 
       Type *next;
 
-      void free()
+      void free() const
       {
         if( next != null ) {
           next->ReuseAlloc::free();

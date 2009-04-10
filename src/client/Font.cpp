@@ -67,13 +67,13 @@ namespace client
         glNewList( baseList + ( 15 - y ) * 16 + x, GL_COMPILE );
         glBindTexture( GL_TEXTURE_2D, texture );
         glBegin( GL_QUADS );
-        glTexCoord2f( x / 16.0f      + FONT_BIAS_X,  y / 16.0f      + FONT_BIAS_Y );
+        glTexCoord2f( x / 16.0f         + FONT_BIAS_X,  y / 16.0f        + FONT_BIAS_Y );
         glVertex3f( 0, 0, 0 );
-        glTexCoord2f( ( x + 1 ) / 16.0f - FONT_BIAS_X,  y / 16.0f      + FONT_BIAS_Y );
+        glTexCoord2f( ( x + 1 ) / 16.0f - FONT_BIAS_X,  y / 16.0f        + FONT_BIAS_Y );
         glVertex3f( width, 0, 0 );
         glTexCoord2f( ( x + 1 ) / 16.0f - FONT_BIAS_X, ( y + 1 ) / 16.0f - FONT_BIAS_Y );
         glVertex3f( width, height, 0 );
-        glTexCoord2f( x / 16.0f      + FONT_BIAS_X, ( y + 1 ) / 16.0f - FONT_BIAS_Y );
+        glTexCoord2f( x / 16.0f         + FONT_BIAS_X, ( y + 1 ) / 16.0f - FONT_BIAS_Y );
         glVertex3f( 0, height, 0 );
         glEnd();
         glTranslatef( width, 0, 0 );

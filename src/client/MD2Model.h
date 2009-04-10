@@ -19,7 +19,7 @@ namespace client
 
   struct MD2Model : Model
   {
-    Bot            *bot;
+    const Bot      *bot;
     MD2            *md2;
     MD2::AnimState anim;
 
