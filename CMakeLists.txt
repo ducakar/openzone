@@ -61,7 +61,7 @@ else( WIN32 )
   find_file( VORBIS_INCLUDE_DIR vorbis )
   find_library( VORBIS_LIBRARY vorbisfile )
 
-  set( CXX_FLAGS -I/usr/include/libxml2 -pipe -fno-rtti
+  set( CXX_FLAGS -I/usr/include/libxml2 -I/usr/include/SDL -pipe -fno-rtti
     -Wall -Wextra -Winvalid-pch -Wnon-virtual-dtor -Woverloaded-virtual
 #   flags for debug build
     -g3
@@ -74,7 +74,7 @@ else( WIN32 )
 #    -Wdisabled-optimization -fprofile-use
   )
   add_definitions( ${CXX_FLAGS} )
-  link_libraries( xml2 SDL SDL_image GL GLU openal alut vorbisfile )
+  link_libraries( xml2 SDL SDL_image SDL_net GL GLU openal alut vorbisfile )
 
   install( FILES src/client/dark
            DESTINATION bin/dark

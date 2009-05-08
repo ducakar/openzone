@@ -227,7 +227,7 @@ namespace client
       shutdown();
       return;
     }
-    audio.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
+//     audio.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
 
     logFile.unindent();
     logFile.println( "}" );

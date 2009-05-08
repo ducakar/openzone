@@ -24,6 +24,9 @@ namespace client
   {
     private:
 
+      static const int DEFAULT_MAG_FILTER = GL_LINEAR;
+      static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
+
       struct Lists
       {
         uint base;
@@ -82,8 +85,8 @@ namespace client
                           int height,
                           int bytesPerPixel,
                           bool wrap = true,
-                          int magFilter = GL_LINEAR_MIPMAP_NEAREST,
-                          int minFilter = GL_LINEAR_MIPMAP_NEAREST );
+                          int magFilter = DEFAULT_MAG_FILTER,
+                          int minFilter = DEFAULT_MIN_FILTER );
 
       uint createNormalmap( ubyte *data,
                             const Vec3 &lightNormal,
@@ -91,32 +94,32 @@ namespace client
                             int height,
                             int bytesPerPixel,
                             bool wrap = true,
-                            int magFilter = GL_LINEAR_MIPMAP_NEAREST,
-                            int minFilter = GL_LINEAR_MIPMAP_NEAREST );
+                            int magFilter = DEFAULT_MAG_FILTER,
+                            int minFilter = DEFAULT_MIN_FILTER );
 
       uint requestTexture( int resource,
                            bool wrap = true,
-                           int magFilter = GL_LINEAR_MIPMAP_NEAREST,
-                           int minFilter = GL_LINEAR_MIPMAP_NEAREST );
+                           int magFilter = DEFAULT_MAG_FILTER,
+                           int minFilter = DEFAULT_MIN_FILTER );
 
       uint requestNormalmap( int resource,
                              const Vec3 &lightNormal,
                              bool wrap = true,
-                             int magFilter = GL_LINEAR_MIPMAP_NEAREST,
-                             int minFilter = GL_LINEAR_MIPMAP_NEAREST );
+                             int magFilter = DEFAULT_MAG_FILTER,
+                             int minFilter = DEFAULT_MIN_FILTER );
 
       void releaseTexture( int resource );
 
       uint loadTexture( const char *file,
                         bool wrap = true,
-                        int magFilter = GL_LINEAR_MIPMAP_NEAREST,
-                        int minFilter = GL_LINEAR_MIPMAP_NEAREST );
+                        int magFilter = DEFAULT_MAG_FILTER,
+                        int minFilter = DEFAULT_MIN_FILTER );
 
       uint loadNormalmap( const char *file,
                           const Vec3 &lightNormal,
                           bool wrap = true,
-                          int magFilter = GL_LINEAR_MIPMAP_NEAREST,
-                          int minFilter = GL_LINEAR_MIPMAP_NEAREST );
+                          int magFilter = DEFAULT_MAG_FILTER,
+                          int minFilter = DEFAULT_MIN_FILTER );
 
       void freeTexture( uint texId );
 

@@ -31,7 +31,9 @@ namespace client
       Bitset visibleLeafs;
       Bitset hiddenFaces;
 
-      int  getLeafIndex( const Vec3 &p ) const;
+      const oz::BSP::Leaf *getLeaf( const Vec3 &p ) const;
+      bool isInWaterBrush( const Vec3 &p, const oz::BSP::Leaf *leaf ) const;
+
       void compileFace( int faceIndex ) const;
       void drawFace( int faceIndex ) const;
       void drawNode( int index );
@@ -44,7 +46,7 @@ namespace client
       explicit BSP( oz::BSP *bsp );
 
       void init( oz::BSP *bsp );
-      void draw( const Structure *str );
+      bool draw( const Structure *str );
       uint genList();
 
       static void beginRender();

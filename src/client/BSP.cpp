@@ -36,13 +36,12 @@ namespace client
     free();
   }
 
-  int BSP::getLeafIndex( const Vec3 &p ) const
+  const oz::BSP::Leaf *BSP::getLeaf( const Vec3 &p ) const
   {
     int nodeIndex = 0;
-
     do {
-      const oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
-      const oz::BSP::Plane &plane = bsp->planes[node.plane];
+      oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
+      oz::BSP::Plane &plane = bsp->planes[node.plane];
 
       if( ( p * plane.normal - plane.distance ) < 0.0f ) {
         nodeIndex = node.back;
@@ -53,7 +52,29 @@ namespace client
     }
     while( nodeIndex >= 0 );
 
-    return ~nodeIndex;
+    return &bsp->leafs[~nodeIndex];
+  }
+
+  bool BSP::isInWaterBrush( const Vec3 &p, const oz::BSP::Leaf *leaf ) const
+  {
+    for( int i = 0; i < leaf->nBrushes; i++ ) {
+      oz::BSP::Brush *brush = &bsp->brushes[ bsp->leafBrushes[leaf->firstBrush + i] ];
+
+      if( brush->content & oz::BSP::WATER_BIT ) {
+        for( int i = 0; i < brush->nSides; i++ ) {
+          oz::BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+
+          float dist = p * plane.normal - plane.distance;
+
+          if( dist > EPSILON ) {
+            goto nextBrush;
+          }
+        }
+        return true;
+      }
+      nextBrush:;
+    }
+    return false;
   }
 
   void BSP::drawFace( int faceIndex ) const
@@ -105,12 +126,11 @@ namespace client
 
     lightMaps = new uint[bsp->nLightmaps];
     for( int i = 0; i < bsp->nLightmaps; i++ ) {
-
       ubyte *bits = (ubyte*) bsp->lightmaps[i].bits;
+
       for( int j = 0; j < oz::BSP::LIGHTMAP_SIZE; j++ ) {
         bits[j] += (ubyte) ( ( 255 - bits[j] ) * BSP_GAMMA_CORR );
       }
-
       lightMaps[i] = context.createTexture( bits,
                                             oz::BSP::LIGHTMAP_DIM,
                                             oz::BSP::LIGHTMAP_DIM,
@@ -143,13 +163,17 @@ namespace client
     logFile.println( "}" );
   }
 
-  void BSP::draw( const Structure *str )
+  bool BSP::draw( const Structure *str )
   {
     glPushMatrix();
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
 
     drawnFaces = hiddenFaces;
+
+    Vec3 relPos = camera.p - str->p;
+    const oz::BSP::Leaf *leaf = getLeaf( relPos );
+    bool isInWater = isInWaterBrush( relPos, leaf );
 
     if( bsp->visual.bitsets != null ) {
       // TODO: rotated BSPs
@@ -189,6 +213,8 @@ namespace client
       }
     }
     glPopMatrix();
+
+    return isInWater;
   }
 
   uint BSP::genList()

@@ -10,13 +10,16 @@
 
 namespace oz
 {
+namespace client
+{
 
   class Network
   {
     public:
 
-      void init();
+      void connect();
 
   };
 
+}
 }

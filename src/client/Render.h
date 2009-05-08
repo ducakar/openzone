@@ -49,7 +49,6 @@ namespace client
       Vector<Structure*> structures;
       Vector<Object*>    objects;
       Vector<Object*>    blendedObjects;
-//       Vector<Object*>    waterObjects;
       Vector<Particle*>  particles;
 
       float perspectiveAngle;

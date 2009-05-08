@@ -28,6 +28,8 @@
  * Basic definitons and template functions
  */
 #include "common.h"
+#include "arrays.h"
+#include "iterable.h"
 
 /*
  * Containers 1
@@ -70,6 +72,11 @@
 #include "Quat.h"
 #include "Mat33.h"
 #include "Mat44.h"
+
+/*
+ * Exception
+ */
+#include "Exception.h"
 
 /*
  * Utilities
