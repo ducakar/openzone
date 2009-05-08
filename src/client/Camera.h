@@ -24,19 +24,21 @@ namespace client
 
     public:
 
-      Vec3  p;
-      Vec3  oldP;
-      float h, v, r;
+      Vec3   p;
+      Vec3   oldP;
+      float  h;
+      float  v;
+      float  r;
 
-      Vec3  at;
-      Vec3  up;
+      Vec3   at;
+      Vec3   up;
 
-      Mat44 rotMat;
-      Mat44 rotTMat;
+      Mat44  rotMat;
+      Mat44  rotTMat;
 
-      Bot     *player;
-      World   *world;
-      Matrix  *matrix;
+      Bot    *player;
+      World  *world;
+      Matrix *matrix;
 
       Camera();
 

@@ -56,6 +56,11 @@ namespace oz
       int textureIndex( const char *file );
       int soundIndex( const char *file );
 
+      Object *createObject( const char *name, const Vec3 &p )
+      {
+        return classes[name]->create( p );
+      }
+
       bool init();
       void free();
   };

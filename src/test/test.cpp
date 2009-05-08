@@ -13,5 +13,8 @@ using namespace oz;
 int main()
 {
   Vector<int> v = Vector<int>( 1 );
+
+  Vector<int>::Iterator i = v.iterator();
+  printf( "%d\n", i == v.iterator() );
   return 0;
 }

@@ -50,7 +50,7 @@ namespace client
     at = Vec3( -hSine * vCosine,  hCosine * vCosine, vSine );
     up = Vec3(  hSine * vSine,   -hCosine * vSine,   vCosine );
 
-    rotTMat = Mat44( hCosine, -hSine * vCosine,    hSine * vSine,   0.0f,
+    rotTMat = Mat44( hCosine, -hSine   * vCosine,  hSine   * vSine, 0.0f,
                      hSine,    hCosine * vCosine, -hCosine * vSine, 0.0f,
                      0.0f,     vSine,              vCosine,         0.0f,
                      0.0f,     0.0f,               0.0f,            1.0f );

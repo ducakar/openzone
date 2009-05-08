@@ -10,6 +10,8 @@
 
 #include "Physics.h"
 
+// FIXME: IN_WATER_BIT cleared if standing still in water!
+
 namespace oz
 {
 
@@ -117,11 +119,8 @@ namespace oz
       obj->lower = -1;
     }
     else {
-      if( obj->flags & Object::IN_WATER_BIT ) {
-        obj->flags &= ~Object::IN_WATER_BIT;
+      obj->flags &= ~Object::IN_WATER_BIT;
 
-        obj->newVelocity *= 1.0f - WATER_FRICTION;
-      }
       // on another object
       if( obj->lower >= 0 ) {
         DynObject *sObj = (DynObject*) world.objects[obj->lower];

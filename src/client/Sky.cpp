@@ -41,6 +41,7 @@ namespace client
 
   void Sky::update()
   {
+    world.sky.time = 100;
     float angle = 2.0f * Math::PI * ( world.sky.time / world.sky.period );
     Vec3  dir = Quat::rotAxis( axis, angle ).rotate( originalLightDir );
 

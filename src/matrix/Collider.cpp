@@ -64,7 +64,7 @@ namespace oz
   }
 
   //***********************************
-  //*    POINT COLLISION DETECTION     *
+  //*    POINT COLLISION DETECTION    *
   //***********************************
 
   // checks if AABB and Brush overlap

@@ -15,5 +15,11 @@ namespace oz
 namespace client
 {
 
+
+  void Network::connect()
+  {
+    SDLNet_Init();
+  }
+
 }
 }

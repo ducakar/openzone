@@ -276,10 +276,11 @@ namespace client
     // draw structures
     BSP::beginRender();
 
+    bool isInWaterBrush = false;
     for( int i = 0; i < structures.length(); i++ ) {
       Structure *str = structures[i];
 
-      bsps[str->bsp]->draw( str );
+      isInWaterBrush |= bsps[str->bsp]->draw( str );
     }
     structures.clear();
 
@@ -362,7 +363,7 @@ namespace client
     font.print( -45, 35, "camera.player.vel ( %.2f %.2f %.2f )",
                 camera.player->velocity.x, camera.player->velocity.y, camera.player->velocity.z );
 
-    font.print( -45, 33, "d %d fl %d lw %d h %d fr %d iw %d uw %d ld %d s %d ovlp %d",
+    font.print( -45, 33, "d %d fl %d lw %d h %d fr %d iw %d uw %d ld %d s %d ovlp %d wb %d",
                 ( camera.player->flags & Object::DISABLED_BIT ) != 0,
                 ( camera.player->flags & Object::ON_FLOOR_BIT ) != 0,
                 camera.player->lower >= 0,
@@ -372,7 +373,8 @@ namespace client
                 ( camera.player->flags & Object::UNDER_WATER_BIT ) != 0,
                 ( camera.player->flags & Object::ON_LADDER_BIT ) != 0,
                 ( camera.player->flags & Object::ON_SLICK_BIT ) != 0,
-                collider.test( *camera.player ) );
+                collider.test( *camera.player ),
+                isInWaterBrush );
 
     SDL_GL_SwapBuffers();
 
