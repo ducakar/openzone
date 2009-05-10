@@ -28,24 +28,40 @@ namespace oz
 
   void World::put( Object *obj )
   {
+    if( net.isClient ) {
+      return;
+    }
+
     assert( obj->sector == null );
 
     Sector *sector = getSector( obj->p );
 
     obj->sector = sector;
     sector->objects << obj;
+
+    net.objects << Net::Action( Net::PUT, obj->index );
   }
 
   void World::cut( Object *obj )
   {
+    if( net.isClient ) {
+      return;
+    }
+
     assert( obj->sector != null );
 
     obj->sector->objects.remove( obj );
     obj->sector = null;
+
+    net.objects << Net::Action( Net::CUT, obj->index );
   }
 
-  int World::add( Structure *str )
+  void World::add( Structure *str )
   {
+    if( net.isClient ) {
+      return;
+    }
+
     Bounds &bsp = *bsps[str->bsp];
 
     switch( str->rot ) {
@@ -91,11 +107,16 @@ namespace oz
         sectors[x][y].structures << str->index;
       }
     }
-    return str->index;
+
+    net.structs << Net::Action( Net::ADD, str->index );
   }
 
-  int World::add( Object *obj, bool doPut )
+  void World::add( Object *obj, bool doPut )
   {
+    if( net.isClient ) {
+      return;
+    }
+
     if( objFreeQueue[freedQueue].isEmpty() ) {
       obj->index = objects.length();
       objects << obj;
@@ -111,11 +132,20 @@ namespace oz
     else {
       obj->sector = null;
     }
-    return obj->index;
+
+    net.objects << Net::Action( Net::ADD, obj->index );
+
+    if( !doPut ) {
+      net.objects << Net::Action( Net::CUT, obj->index );
+    }
   }
 
-  int World::add( Particle *part )
+  void World::add( Particle *part )
   {
+    if( net.isClient ) {
+      return;
+    }
+
     if( partFreeQueue[freedQueue].isEmpty() ) {
       part->index = particles.length();
       particles << part;
@@ -130,11 +160,16 @@ namespace oz
     part->sector = sector;
     sector->particles << part;
 
-    return part->index;
+    net.particles << Net::Action( Net::ADD, part->index );
   }
 
   void World::remove( Structure *str )
   {
+    if( net.isClient ) {
+      return;
+    }
+    net.structs << Net::Action( Net::REMOVE, str->index );
+
     getInters( *str, EPSILON );
 
     for( int x = minSectX; x <= maxSectX; x++ ) {
@@ -151,6 +186,11 @@ namespace oz
 
   void World::remove( Object *obj )
   {
+    if( net.isClient ) {
+      return;
+    }
+    net.objects << Net::Action( Net::REMOVE, obj->index );
+
     if( obj->sector != null ) {
       obj->sector->objects.remove( obj );
     }
@@ -163,6 +203,11 @@ namespace oz
 
   void World::remove( Particle *part )
   {
+    if( net.isClient ) {
+      return;
+    }
+    net.particles << Net::Action( Net::REMOVE, part->index );
+
     part->sector->particles.remove( part );
 
     partFreeQueue[addingQueue] << part->index;
@@ -176,6 +221,10 @@ namespace oz
                             float rejection, float mass, float lifeTime,
                             float size, const Vec3 &color, float colorSpread )
   {
+    if( net.isClient ) {
+      return;
+    }
+
     float velocitySpread2 = velocitySpread / 2.0f;
     float colorSpread2 = colorSpread / 2.0f;
 
@@ -233,6 +282,11 @@ namespace oz
 
   void World::add( BSP *bsp )
   {
+    if( net.isClient ) {
+      return;
+    }
+    net.bsps << Net::Action( Net::ADD, bsps.length() );
+
     bsps << bsp;
   }
 
@@ -278,6 +332,8 @@ namespace oz
 
     bsps.free();
     bsps.clear();
+
+    net.world << Net::Action( Net::CLEAR );
   }
 
 }

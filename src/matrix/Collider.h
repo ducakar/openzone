@@ -107,11 +107,11 @@ namespace oz
 
       Hit hit;
 
-      bool test( const Vec3 &point );
+      bool test( const Vec3 &point, const Object *exclObj = null );
       // test for object collisions only (no structures or terrain)
-      bool testOO( const Vec3 &point );
+      bool testOO( const Vec3 &point, const Object *exclObj = null );
       // test for object and structure collisions only (no terain)
-      bool testOSO( const Vec3 &point );
+      bool testOSO( const Vec3 &point, const Object *exclObj = null );
 
       bool test( const AABB &aabb, const Object *exclObj = null );
       bool testOO( const AABB &aabb, const Object *exclObj = null );
@@ -124,35 +124,38 @@ namespace oz
       // returns vector of objects, overlapping with given AABB
       void getIncludes( const AABB &aabb, Vector<Object*> *objects );
 
-      void translate( const Vec3 &point, const Vec3 &move );
-      void translate( const AABB &aabb, const Vec3 &move, const Object *exclObj );
+      void translate( const Vec3 &point, const Vec3 &move, const Object *exclObj = null );
+      void translate( const AABB &aabb, const Vec3 &move, const Object *exclObj = null );
       void translate( DynObject *obj, const Vec3 &move );
 
   };
 
   extern Collider collider;
 
-  inline bool Collider::test( const Vec3 &point_ )
+  inline bool Collider::test( const Vec3 &point_, const Object *exclObj_ )
   {
     point = point_;
+    exclObj = exclObj_;
 
     world.getInters( point, AABB::MAX_DIMXY );
 
     return testPointWorld();
   }
 
-  inline bool Collider::testOO( const Vec3 &point_ )
+  inline bool Collider::testOO( const Vec3 &point_, const Object *exclObj_ )
   {
     point = point_;
+    exclObj = exclObj_;
 
     world.getInters( point, AABB::MAX_DIMXY );
 
     return testPointWorldOO();
   }
 
-  inline bool Collider::testOSO( const Vec3 &point_ )
+  inline bool Collider::testOSO( const Vec3 &point_, const Object *exclObj_ )
   {
     point = point_;
+    exclObj = exclObj_;
 
     world.getInters( point, AABB::MAX_DIMXY );
 
@@ -212,10 +215,11 @@ namespace oz
     return getWorldIncludes( objects );
   }
 
-  inline void Collider::translate( const Vec3 &point_, const Vec3 &move_ )
+  inline void Collider::translate( const Vec3 &point_, const Vec3 &move_, const Object *exclObj_ )
   {
     point = point_;
     move = move_;
+    exclObj = exclObj_;
 
     trace.fromPointMove( point, move, EPSILON );
     world.getInters( trace, AABB::MAX_DIMXY );

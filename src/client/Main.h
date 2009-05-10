@@ -27,9 +27,9 @@ namespace client
       static const int INIT_SDL_VIDEO = 0x02;
       static const int INIT_RENDER_INIT = 0x04;
       static const int INIT_AUDIO = 0x08;
-      static const int INIT_CLIENT_INIT = 0x10;
+      static const int INIT_GAME_INIT = 0x10;
       static const int INIT_RENDER_LOAD = 0x20;
-      static const int INIT_CLIENT_START = 0x40;
+      static const int INIT_GAME_START = 0x40;
 
       int initFlags;
 

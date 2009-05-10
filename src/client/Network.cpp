@@ -15,11 +15,36 @@ namespace oz
 namespace client
 {
 
+  Network network;
 
-  void Network::connect()
+  bool Network::connect()
   {
-    SDLNet_Init();
+    const char *host = config.get( "net.server", "localhost" );
+    int port = config.get( "net.port", 6666 );
+
+    logFile.print( "Connecting to %s:%d ...", host, port );
+
+    IPaddress ip;
+    SDLNet_ResolveHost( &ip, host, port );
+    socket = SDLNet_TCP_Open( &ip );
+
+    if( socket == null ) {
+      logFile.printEnd( " Failed" );
+      return false;
+    }
+
+    logFile.printEnd( " OK" );
+    return true;
   }
+
+  void Network::disconnect()
+  {
+    SDLNet_TCP_Close( socket );
+    socket = null;
+  }
+
+  void Network::update()
+  {}
 
 }
 }

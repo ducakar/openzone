@@ -99,22 +99,19 @@ namespace client
     glEnable( GL_LIGHT0 );
 
     particleRadius = config.get( "render.particleRadius", 0.5f );
-    drawAABBs      = config.get( "render.drawAABBs", false );
-    showAim        = config.get( "render.showAim", false );
-    blendHeaven    = config.get( "render.blendHeaven", false );
+    drawAABBs      = config.get( "render.drawAABBs",      false );
+    showAim        = config.get( "render.showAim",        false );
+    blendHeaven    = config.get( "render.blendHeaven",    false );
 
     camera.init();
     frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
     sky.init();
-//     water.init();
 
     terra.init();
 
     for( int i = 0; i < world.bsps.length(); i++ ) {
       bsps << new BSP( world.bsps[i] );
     }
-
-    // TODO load lists and models
 
     // prepare for first frame
     glEnable( GL_DEPTH_TEST );
@@ -331,21 +328,18 @@ namespace client
     glColor4fv( WHITE );
     glDisable( GL_BLEND );
 
-    // TODO reenable aim dot
-//     if( showAim ) {
-//       Vec3 move = camera.at * 1.0f;
-//       collider.translate( camera.p, move );
-//       move *= collider.hit.ratio;
-//
-//       glTranslatef( camera.p.x + move.x, camera.p.y + move.y, camera.p.z + move.z );
-//
-//       glDisable( GL_TEXTURE_2D );
-//       glDisable( GL_LIGHTING );
-//       glColor3f( 0.0f, 1.0f, 0.0f );
-//       glCallList( lists[LIST_AIM] );
-//       glColor3fv( WHITE );
-//       glEnable( GL_TEXTURE_2D );
-//     }
+    if( showAim ) {
+      Vec3 move = camera.at * 20.0f;
+      collider.translate( camera.p, move, camera.player );
+      move *= collider.hit.ratio;
+
+      glDisable( GL_TEXTURE_2D );
+      glDisable( GL_LIGHTING );
+      glColor3f( 0.0f, 1.0f, 0.0f );
+      shape.drawBox( AABB( camera.p + move, Vec3( 0.03f, 0.03f, 0.03f ) ) );
+      glColor3fv( WHITE );
+      glEnable( GL_TEXTURE_2D );
+    }
 
     glLoadIdentity();
     glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
@@ -401,7 +395,7 @@ namespace client
 
   void Render::free()
   {
-    models.clear();
+    models.free();
     bsps.free();
     context.free();
   }

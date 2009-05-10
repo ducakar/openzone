@@ -31,7 +31,7 @@ namespace oz
     float bobAmplitude;
 
     float walkVelocity;
-    float runVelociy;
+    float runVelocity;
     float crouchVelocity;
     float jumpVelocity;
 

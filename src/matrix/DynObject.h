@@ -19,7 +19,7 @@ namespace oz
     public:
 
       Vec3    velocity;
-      Vec3    newVelocity;  // temporary velocity for the next frame
+      Vec3    momentum;  // desired velocity
 
       float   mass;
       float   lift;
@@ -31,11 +31,11 @@ namespace oz
 
     public:
 
-      explicit DynObject() : velocity( Vec3::zero() ), newVelocity( Vec3::zero() ), lower( -1 )
+      explicit DynObject() : velocity( Vec3::zero() ), momentum( Vec3::zero() ), lower( -1 )
       {}
 
-      virtual void load( FILE *stream );
-      virtual void save( FILE *stream );
+      virtual void load( Net::Packet *stream );
+      virtual void save( Net::Packet *stream );
   };
 
 }

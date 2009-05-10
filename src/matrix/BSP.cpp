@@ -34,8 +34,9 @@ namespace oz
   //*       QUAKE 3 BSP FORMAT        *
   //***********************************
 
-  static const int QBSP_SLICK_BIT  =   0x00000002;
-  static const int QBSP_LADDER_BIT =   0x00000008;
+  static const int QBSP_SLICK_BIT    = 0x00000002;
+  static const int QBSP_LADDER_BIT   = 0x00000008;
+  static const int QBSP_WATER_BIT    = 0x00000020;
   static const int QBSP_NONSOLID_BIT = 0x00004000;
 
   enum QBSPLumpType
@@ -176,6 +177,7 @@ namespace oz
     nTextures = lumps[QBSP_LUMP_TEXTURES].length / sizeof( QBSPTexture );
     textures = new int[nTextures];
     int *texFlags = new int[nTextures];
+    int *texTypes = new int[nTextures];
     fseek( f, lumps[QBSP_LUMP_TEXTURES].offset, SEEK_SET );
 
     for( int i = 0; i < nTextures; i++ ) {
@@ -184,17 +186,15 @@ namespace oz
       fread( &texture, sizeof( QBSPTexture ), 1, f );
       String name = texture.name;
       texFlags[i] = texture.flags;
+      texTypes[i] = texture.type;
 
       if( name.length() <= 9 || name == "textures/NULL" ) {
         textures[i] = -1;
       }
       else {
         textures[i] = translator.textureIndex( name + ".jpg" );
-        logFile.println( "%s 0x%x", name.cstr(), texture.flags );
+        logFile.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
       }
-//       if( texture.flags != 0 ) {
-//         textures[i] = ~textures[i];
-//       }
     }
 
     int nPlanes = lumps[QBSP_LUMP_PLANES].length / sizeof( BSP::Plane );
@@ -290,17 +290,22 @@ namespace oz
 
       brushes[i].firstSide = brush.firstSide;
       brushes[i].nSides    = brush.nSides;
+      brushes[i].content   = 0;
 
       int &flags = texFlags[brush.texture];
+      int &type  = texTypes[brush.texture];
 
       if( flags & QBSP_LADDER_BIT ) {
-        brushes[i].content = LADDER_BIT;
+        brushes[i].content |= LADDER_BIT;
       }
-      else if( flags & QBSP_NONSOLID_BIT ) {
-        brushes[i].content = WATER_BIT;
+      if( !( flags & QBSP_NONSOLID_BIT ) ) {
+        brushes[i].content |= SOLID_BIT;
       }
-      else {
-        brushes[i].content = ( flags & QBSP_SLICK_BIT ) ? SOLID_BIT | SLICK_BIT : SOLID_BIT;
+      if( flags & QBSP_SLICK_BIT ) {
+        brushes[i].content |= SLICK_BIT;
+      }
+      if( type & QBSP_WATER_BIT ) {
+        brushes[i].content |= WATER_BIT;
       }
     }
 
@@ -347,12 +352,13 @@ namespace oz
       fread( &face, sizeof( QBSPFace ), 1, f );
 
       faces[i].texture     = face.texture;
+      faces[i].lightmap    = face.lightmap;
+      faces[i].content     = ( texTypes[face.texture] & QBSP_WATER_BIT ) ? WATER_BIT : 0;
+      faces[i].normal      = face.normal;
       faces[i].firstVertex = face.firstVertex;
       faces[i].nVertices   = face.nVertices;
       faces[i].firstIndex  = face.firstIndex;
       faces[i].nIndices    = face.nIndices;
-      faces[i].lightmap    = face.lightmap;
-      faces[i].normal      = face.normal;
     }
 
     nLightmaps = lumps[QBSP_LUMP_LIGHTMAPS].length / sizeof( BSP::Lightmap );
@@ -378,12 +384,6 @@ namespace oz
     fclose( f );
 
     delete[] texFlags;
-
-//     for( int i = 0; i < nTextures; i++ ) {
-//       if( textures[i] < 0 ) {
-//         textures[i] = ~textures[i];
-//       }
-//     }
 
     logFile.printEnd( " OK" );
   }

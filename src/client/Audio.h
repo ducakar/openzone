@@ -30,7 +30,7 @@ namespace client
 
       // size of hashtable for continous sources
       static const int HASHTABLE_SIZE = 256;
-      static const int MUSIC_BUFFER_SIZE = 64 * 1024;
+      static const int MUSIC_BUFFER_SIZE = 16 * 1024;
       // clear stopped sources each second
       static const int CLEAR_INTERVAL = 1000;
 

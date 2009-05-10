@@ -209,8 +209,8 @@ namespace client
 
   void Shape::drawBox( const AABB &bb )
   {
-    Vec3 v0 = -bb.dim;
-    Vec3 v1 = +bb.dim;
+    Vec3 v0 = bb.p - bb.dim;
+    Vec3 v1 = bb.p + bb.dim;
 
     glBegin( GL_QUADS );
       // top

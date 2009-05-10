@@ -1,7 +1,7 @@
 /*
  *  iterable.h
  *
- *  [description]
+ *  Basic iterator classes and utility templates.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
@@ -316,7 +316,5 @@ namespace oz
       delete p;
     }
   }
-
-
 
 }

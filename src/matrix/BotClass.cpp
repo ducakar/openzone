@@ -51,7 +51,7 @@ namespace oz
     clazz->bobAmplitude   = config->get( "bobAmplitude", 0.0f );
 
     clazz->walkVelocity   = config->get( "walkVelocity", 1.0f );
-    clazz->runVelociy     = config->get( "runVelociy", 4.0f );
+    clazz->runVelocity    = config->get( "runVelocity", 4.0f );
     clazz->crouchVelocity = config->get( "crouchVelocity", 1.0f );
     clazz->jumpVelocity   = config->get( "jumpVelocity", 4.0f );
 

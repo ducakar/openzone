@@ -36,11 +36,13 @@ namespace oz
     world.add( new BSP() );
     world.add( new BSP() );
     world.add( new BSP() );
+    world.add( new BSP() );
 
     world.bsps[0]->loadQBSP( "bsp/castle.bsp", 24.0f, BSP::BSP_SCALE );
     world.bsps[1]->loadQBSP( "bsp/house.bsp", 4.0f, BSP::BSP_SCALE );
     world.bsps[2]->loadQBSP( "bsp/temple.bsp", 4.0f, BSP::BSP_SCALE );
     world.bsps[3]->loadQBSP( "bsp/pool.bsp", 4.0f, BSP::BSP_SCALE );
+    world.bsps[4]->loadQBSP( "bsp/test.bsp", 4.0f, BSP::BSP_SCALE );
 
     Mat33 t = Mat33( Vec3( -1.0f,  0.0f,  0.0f ),
                      Vec3(  0.0f, -1.0f,  0.0f ),
@@ -89,11 +91,13 @@ namespace oz
     world.add( translator.createObject( "BigCrate", Vec3( 40.0f, -55.0f, 82.0f ) ) );
     world.add( translator.createObject( "BigCrate", Vec3( 40.0f, -55.0f, 84.0f ) ) );
 
-    world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), Structure::R0, 3 ) );
-
-    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 80.0f ) ) );
-    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 81.0f ) ) );
-    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 82.0f ) ) );
+//     world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), Structure::R0, 3 ) );
+//
+//     world.add( new Structure( Vec3( 50.0f, -60.0f, 77.0f ), Structure::R0, 4 ) );
+//
+//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 80.0f ) ) );
+//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 81.0f ) ) );
+//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 82.0f ) ) );
   }
 
   void Matrix::update()
@@ -127,13 +131,14 @@ namespace oz
 
           physics.updateObj( dynObj );
 
-          if( dynObj->newVelocity.sqL() > Physics::MAX_VELOCITY2 ) {
+          if( dynObj->velocity.sqL() > Physics::MAX_VELOCITY2 ) {
             world.remove( obj );
             continue;
           }
         }
         if( obj->damage <= 0.0f ) {
           obj->destroy();
+          world.remove( obj );
         }
       }
     }

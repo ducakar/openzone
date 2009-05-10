@@ -68,7 +68,7 @@ namespace oz
       flags &= ~DISABLED_BIT;
       isGrounded = false;
 
-      newVelocity.z = clazz.jumpVelocity;
+      momentum.z = clazz.jumpVelocity;
       addEvent( SND_JUMP );
     }
     if( ( keys & KEY_CROUCH ) && !( oldKeys & KEY_CROUCH ) ) {
@@ -101,7 +101,7 @@ namespace oz
     }
 
     float velocity = ( state & CROUCHING_BIT ) ? clazz.crouchVelocity :
-        ( state & RUNNING_BIT ) ? clazz.runVelociy : clazz.walkVelocity;
+        ( state & RUNNING_BIT ) ? clazz.runVelocity : clazz.walkVelocity;
 
     if( ( !isGrounded && !isClimbing ) || ( flags & ON_SLICK_BIT ) ) {
       velocity *= clazz.airControl;
@@ -179,10 +179,10 @@ namespace oz
       }
     }
 
-    newVelocity += desiredVelocity;
+    momentum += desiredVelocity;
 
     if( ( state & STEPPING_BIT ) && !isClimbing ) {
-      Vec3 desiredMove = newVelocity * timer.frameTime;
+      Vec3 desiredMove = momentum * timer.frameTime;
 
       collider.translate( *this, desiredMove, this );
 

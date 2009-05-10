@@ -174,6 +174,8 @@ namespace client
 
     face->nVerts = vertIndices.length();
 
+    assert( face->nVerts > 0 );
+
     face->vertIndices = new uint[face->nVerts];
     aCopy( face->vertIndices, vertIndices.dataPtr(), face->nVerts );
 
@@ -356,7 +358,6 @@ namespace client
       aCopy( faces, tempFaces.dataPtr(), nFaces );
     }
     else {
-      nFaces = 0;
       return false;
     }
 
@@ -369,28 +370,32 @@ namespace client
       delete[] faces[i].vertIndices;
 
       if( faces[i].normIndices != null ) {
-        delete faces[i].normIndices;
+        delete[] faces[i].normIndices;
       }
       if( faces[i].texCoordIndices != null ) {
-        delete faces[i].texCoordIndices;
+        delete[] faces[i].texCoordIndices;
       }
     }
-
-    nFaces = 0;
-    delete[] faces;
-    faces = null;
-
-    nTexCoords = 0;
-    delete[] texCoords;
-    texCoords = null;
-
-    nNormals = 0;
-    delete[] normals;
-    normals = null;
-
-    nVertices = 0;
-    delete[] vertices;
-    vertices = null;
+    if( nFaces > 0 ) {
+      nFaces = 0;
+      delete[] faces;
+      faces = null;
+    }
+    if( nTexCoords > 0 ) {
+      nTexCoords = 0;
+      delete[] texCoords;
+      texCoords = null;
+    }
+    if( nNormals > 0 ) {
+      nNormals = 0;
+      delete[] normals;
+      normals = null;
+    }
+    if( nVertices > 0 ) {
+      nVertices = 0;
+      delete[] vertices;
+      vertices = null;
+    }
   }
 
   void OBJ::draw() const

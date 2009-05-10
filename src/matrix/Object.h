@@ -9,6 +9,7 @@
 #pragma once
 
 #include "bv.h"
+#include "Net.h"
 
 namespace oz
 {
@@ -61,39 +62,39 @@ namespace oz
       // if the object is dynamic
       static const int DYNAMIC_BIT = 0x00800000;
 
-      // if object is still and on a still surface, we won't handle physics for it
+      // if the object is still and on a still surface, we won't handle physics for it
       static const int DISABLED_BIT = 0x00400000;
 
-      // if object collided in last step
+      // if the object collided in the last step
       static const int HIT_BIT = 0x00200000;
 
-      // if object is currently fricting
+      // if the object is currently fricting
       static const int FRICTING_BIT = 0x00100000;
 
-      // if the object lies or moves on a structure, terrain or non-dynamic object
+      // if the the object lies or moves on a structure, terrain or non-dynamic object
       // (if on another dynamic object, we determine that with "lower" index)
       static const int ON_FLOOR_BIT = 0x00080000;
 
-      // if object intersects with water
+      // if the object intersects with water
       static const int IN_WATER_BIT = 0x00040000;
 
-      // if object center is in water
+      // if the object center is in water
       static const int UNDER_WATER_BIT = 0x00020000;
 
-      // if object is on ladder
+      // if the object is on ladder
       static const int ON_LADDER_BIT = 0x00010000;
 
-      // if object is on ice (slipping surface)
+      // if the object is on ice (slipping surface)
       static const int ON_SLICK_BIT = 0x00008000;
 
       // handle collisions for this object
       static const int CLIP_BIT = 0x00000001;
 
-      // If object is climber it is tested against ladder brushes and gains ON_LADDER_BIT if it
+      // If the object is climber it is tested against ladder brushes and gains ON_LADDER_BIT if it
       // intersects with a ladder brush. Otherwise object is not affected by ladders.
       static const int CLIMBER_BIT = 0x00000002;
 
-      // if object can push other objects in orthogonal direction of collision normal
+      // if the object can push other objects in orthogonal direction of collision normal
       static const int PUSHING_BIT = 0x00000004;
 
       // if the object is immune to gravity
@@ -103,7 +104,7 @@ namespace oz
        *  TYPE FLAGS
        */
 
-      // object is derived from bot
+      // the object is derived from bot
       static const int BOT_BIT = 0x00000800;
 
       /*
@@ -119,7 +120,7 @@ namespace oz
       // (e.g. ghosts are visible by other spirits, but not by alive units)
       static const int SPIRIT_BIT = 0x00000020;
 
-      // if object is blended (then it should be rendered at the end)
+      // if the object is blended (then it should be rendered at the end)
       static const int BLEND_BIT = 0x00000040;
 
     private:
@@ -258,8 +259,9 @@ namespace oz
        *  SERIALIZATION
        */
 
-      virtual void load( FILE *stream );
-      virtual void save( FILE *stream );
+      virtual void readUpdate( Net::Packet *packet );
+      virtual void writeUpdate( Net::Packet *packet );
+
   };
 
 }

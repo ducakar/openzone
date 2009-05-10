@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "Net.h"
+
 #include "Sky.h"
 #include "Terrain.h"
 #include "BSP.h"
@@ -87,9 +89,9 @@ namespace oz
       void put( Object *obj );
       void cut( Object *obj );
 
-      int add( Structure *str );
-      int add( Object *obj, bool doPut = true );
-      int add( Particle *part );
+      void add( Structure *str );
+      void add( Object *obj, bool doPut = true );
+      void add( Particle *part );
 
       void remove( Structure *str );
       void remove( Object *obj );

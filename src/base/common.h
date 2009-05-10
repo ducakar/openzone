@@ -13,7 +13,7 @@
  *
  *  \brief Common types and templates
  *
- *  You may add <code>null</code>, <code>forever</code>, <code>foreach</code> and the types to your
+ *  You may add <code>null</code>, <code>foreach</code> and the types to your
  *  <code>~/.kde/share/apps/katepart/syntax/cpp.xml</code> or global file
  *  <code>$KDEDIR/share/apps/katepart/syntax/cpp.xml</code> to look like reserved words in
  *  Katepart (Kate/KWrite/KDevelop).

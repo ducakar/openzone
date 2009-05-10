@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cat << EOF > CMakeLists.txt
-link_libraries( base matrix nirvana )
+link_libraries( nirvana matrix base )
 
 add_executable( server
 EOF
