@@ -350,8 +350,8 @@ namespace client
     glActiveTexture( GL_TEXTURE0 );
 
     // update water
-    waterPhi = Math::mod( waterPhi + 0.03f, 2.0f * Math::PI );
-    float ratio = ( 1.5f + Math::sin( waterPhi )*Math::sin( waterPhi ) ) / 3.0f;
+    waterPhi = Math::mod( waterPhi + SDL_GetTicks() * 0.000003f , Math::_2_PI );
+    float ratio = ( 2.5f + Math::sin( waterPhi ) ) / 5.0f;
 
     waterAlpha2 = ratio * WATER_ALPHA;
     waterAlpha1 = ( waterAlpha2 * ( 1 - ratio ) ) / ( ratio * ( 1 - waterAlpha2 ) );

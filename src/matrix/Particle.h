@@ -62,7 +62,7 @@ namespace oz
                              Math::frand() * MAX_ROTVELOCITY ) )
       {}
 
-      virtual ~Particle() {}
+      virtual ~Particle();
 
       void update()
       {

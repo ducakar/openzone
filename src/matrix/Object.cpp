@@ -22,6 +22,24 @@ namespace oz
     effects.free();
   }
 
+  void Object::onUpdate()
+  {}
+
+  void Object::onHit( const Hit*, float )
+  {}
+
+  void Object::onDestroy()
+  {}
+
+  void Object::onUse( Object* )
+  {}
+
+  void Object::onPut()
+  {}
+
+  void Object::onCut()
+  {}
+
   void Object::readUpdate( Net::Packet *packet )
   {
 

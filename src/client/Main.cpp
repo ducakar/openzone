@@ -11,7 +11,7 @@
 #include "Main.h"
 
 #include "Game.h"
-#include "Audio.h"
+#include "SoundManager.h"
 #include "Render.h"
 
 #ifdef WIN32
@@ -50,9 +50,9 @@ namespace client
       logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_AUDIO ) {
-      logFile.print( "Shutting down Audio ..." );
+      logFile.print( "Shutting down SoundManager ..." );
       logFile.indent();
-      audio.free();
+      soundManager.free();
       logFile.unindent();
       logFile.printEnd( " OK" );
     }
@@ -78,7 +78,7 @@ namespace client
     config.clear();
   }
 
-  void Main::main()
+  void Main::main( int *argc, char *argv[] )
   {
 #ifdef WIN32
     const char *homeVar = getenv( "HOME" );
@@ -215,14 +215,14 @@ namespace client
 
     initFlags |= INIT_RENDER_INIT;
 
-    logFile.println( "Initializing Audio {" );
+    logFile.println( "Initializing SoundManager {" );
     logFile.indent();
 
-    if( !audio.init() ) {
+    if( !soundManager.init( argc, argv ) ) {
       shutdown();
       return;
     }
-//     audio.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
+//     soundManager.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
 
     logFile.unindent();
     logFile.println( "}" );
@@ -262,10 +262,12 @@ namespace client
 
     Uint32 tick     = config.get( "tick", 20 );
     // time passed form start of the frame
-    Uint32 time;
-    Uint32 timeZero = SDL_GetTicks();
+    Uint32 delta;
+    Uint32 timeNow;
+    Uint32 timeZero       = SDL_GetTicks();
     // time at start of the frame
-    Uint32 timeLast = timeZero;
+    Uint32 timeLast       = timeZero;
+    Uint32 timeLastRender = timeZero;
 
     // set mouse cursor to center of the screen and clear any events (key presses and mouse moves)
     // from before
@@ -316,39 +318,41 @@ namespace client
 
       // waste time when iconified
       if( !isActive ) {
-        time = SDL_GetTicks() - timeLast;
-
-        if( time < tick ) {
-          SDL_Delay( max( tick - time, 1u ) );
-        }
-        else if( time > 10 * tick ) {
-          timeLast += time - tick;
-        }
+        delta = SDL_GetTicks() - timeLast;
         timeLast += tick;
+
+        if( delta < tick ) {
+          SDL_Delay( max( tick - delta, 1u ) );
+        }
+        else if( delta > 16 * tick ) {
+          timeLast = SDL_GetTicks() - tick;
+        }
         continue;
       }
 
       // update world
       isAlive &= game.update( tick );
-      audio.update();
+      soundManager.update();
 
       // render graphics, if we have enough time left
-      time = SDL_GetTicks() - timeLast;
+      timeNow = SDL_GetTicks();
+      delta = timeNow - timeLast;
 
-      if( time < tick ) {
+      if( delta < tick || timeNow - timeLastRender > 32 * tick ) {
         // render
         render.draw();
         nFrames++;
 
         // if there's still some time left, waste it
-        time = SDL_GetTicks() - timeLast;
+        timeLastRender = SDL_GetTicks();
+        delta = timeLastRender - timeLast;
 
-        if( time < tick ) {
-          SDL_Delay( max( tick - time, 1u ) );
+        if( delta < tick ) {
+          SDL_Delay( max( tick - delta, 1u ) );
         }
       }
-      else if( time > 10 * tick ) {
-        timeLast += time - tick;
+      if( delta > 16 * tick ) {
+        timeLast += delta - tick;
       }
       timeLast += tick;
     }
@@ -368,12 +372,12 @@ namespace client
 }
 }
 
-int main( int, char*[] )
+int main( int argc, char *argv[] )
 {
   try {
-    oz::client::main.main();
+    oz::client::main.main( &argc, argv );
   }
-  catch( oz::Exception e ) {
+  catch( const oz::Exception &e ) {
     oz::logFile.resetIndent();
     oz::logFile.println();
     oz::logFile.println( "*** EXCEPTION: %s line %d", e.file, e.line );

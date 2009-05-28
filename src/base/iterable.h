@@ -58,26 +58,6 @@ namespace oz
       }
 
       /**
-       * Returns true if iterator is at specified element.
-       * @param e
-       * @return
-       */
-      bool operator == ( const Type *e ) const
-      {
-        return elem == e;
-      }
-
-      /**
-       * Returns true if iterator is not at specified element.
-       * @param e
-       * @return
-       */
-      bool operator != ( const Type *e ) const
-      {
-        return elem != e;
-      }
-
-      /**
        * @return pointer to current element
        */
       operator Type* ()
