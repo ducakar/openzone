@@ -36,13 +36,13 @@ namespace oz
     world.add( new BSP() );
     world.add( new BSP() );
     world.add( new BSP() );
-    world.add( new BSP() );
+//     world.add( new BSP() );
 
     world.bsps[0]->loadQBSP( "bsp/castle.bsp", 24.0f, BSP::BSP_SCALE );
     world.bsps[1]->loadQBSP( "bsp/house.bsp", 4.0f, BSP::BSP_SCALE );
     world.bsps[2]->loadQBSP( "bsp/temple.bsp", 4.0f, BSP::BSP_SCALE );
     world.bsps[3]->loadQBSP( "bsp/pool.bsp", 4.0f, BSP::BSP_SCALE );
-    world.bsps[4]->loadQBSP( "bsp/test.bsp", 4.0f, BSP::BSP_SCALE );
+//     world.bsps[4]->loadQBSP( "bsp/test.bsp", 4.0f, BSP::BSP_SCALE );
 
     Mat33 t = Mat33( Vec3( -1.0f,  0.0f,  0.0f ),
                      Vec3(  0.0f, -1.0f,  0.0f ),
@@ -105,7 +105,7 @@ namespace oz
     world.beginUpdate();
     physics.beginUpdate();
 
-    const int iMax = world.particles.length();
+    int iMax = world.particles.length();
     for( int i = 0; i < iMax; i++ ) {
       Particle *part = world.particles[i];
 
@@ -119,7 +119,7 @@ namespace oz
       }
     }
 
-    const int jMax = world.objects.length();
+    int jMax = world.objects.length();
     for( int j = 0; j < jMax; j++ ) {
       Object *obj = world.objects[j];
 

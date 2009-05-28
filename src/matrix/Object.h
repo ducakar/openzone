@@ -34,7 +34,7 @@ namespace oz
       static const int CONFIG_BITS_MASK = 0x000000ff;
 
       /*
-       *  FUNCTION FLAGS
+       * FUNCTION FLAGS
        */
 
       // if the update method should be called each step
@@ -56,7 +56,7 @@ namespace oz
       static const int CUT_FUNC_BIT = 0x04000000;
 
       /*
-       *  DYNAMIC OBJECTS' BITS
+       * DYNAMIC OBJECTS' BITS
        */
 
       // if the object is dynamic
@@ -101,14 +101,15 @@ namespace oz
       static const int HOVER_BIT = 0x00000008;
 
       /*
-       *  TYPE FLAGS
+       * TYPE FLAGS
        */
 
-      // the object is derived from bot
       static const int BOT_BIT = 0x00000800;
+      static const int VEHICLE_BIT = 0x00000400;
+      static const int ITEM_BIT = 0x00000200;
 
       /*
-       *  RENDER FLAGS
+       * FRONTEND FLAGS
        */
 
       // released frustum culling: object is represented some times larger to frustum culling
@@ -123,7 +124,8 @@ namespace oz
       // if the object is blended (then it should be rendered at the end)
       static const int BLEND_BIT = 0x00000040;
 
-    private:
+      // if object shoud be preccessed by SoundManager (i.e. it plays sounds)
+      static const int AUDIO_BIT = 0x00000080;
 
       struct Event : PoolAlloc<Event, 0>
       {
@@ -143,10 +145,8 @@ namespace oz
         explicit Effect( int id_ ) : id( id_ ) {}
       };
 
-    public:
-
       /*
-       *  FIELDS
+       * FIELDS
        */
 
       int    index;        // position in world.objects vector
@@ -235,28 +235,17 @@ namespace oz
 
     protected:
 
-      virtual void onUpdate()
-      {}
-
-      virtual void onHit( const Hit*, float )
-      {}
-
-      virtual void onDestroy()
-      {}
-
-      virtual void onUse( Object* )
-      {}
-
-      virtual void onPut()
-      {}
-
-      virtual void onCut()
-      {}
+      virtual void onUpdate();
+      virtual void onHit( const Hit*, float );
+      virtual void onDestroy();
+      virtual void onUse( Object* );
+      virtual void onPut();
+      virtual void onCut();
 
     public:
 
       /*
-       *  SERIALIZATION
+       * SERIALIZATION
        */
 
       virtual void readUpdate( Net::Packet *packet );

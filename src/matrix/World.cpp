@@ -300,7 +300,7 @@ namespace oz
       }
     }
 
-    const int iMax = structures.length();
+    int iMax = structures.length();
     for( int i = 0; i < iMax; i++ ) {
       if( structures[i] != null ) {
         delete structures[i];
@@ -309,7 +309,7 @@ namespace oz
     }
     structures.clear();
 
-    const int jMax = objects.length();
+    int jMax = objects.length();
     for( int j = 0; j < jMax; j++ ) {
       if( objects[j] != null && objects[j]->sector != null ) {
         delete objects[j];
@@ -318,7 +318,7 @@ namespace oz
     }
     objects.clear();
 
-    const int kMax = particles.length();
+    int kMax = particles.length();
     for( int k = 0; k < kMax; k++ ) {
       if( particles[k] != null ) {
         delete particles[k];

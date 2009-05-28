@@ -13,6 +13,9 @@
 namespace oz
 {
 
+  ObjectClass::~ObjectClass()
+  {}
+
   ObjectClass *ObjectClass::init( const String &name, Config *config )
   {
     ObjectClass *clazz = new ObjectClass();
@@ -29,6 +32,18 @@ namespace oz
 
     clazz->modelType = config->get( "model.type", "MD2" );
     clazz->modelPath = config->get( "model.path", "mdl/goblin.md2" );
+
+    clazz->audioType = config->get( "audio.type", "SimpleAudio" );
+
+    char buffer[12] = "audio.arg  ";
+    for( int i = 0; i < AUDIO_ARGS; i++ ) {
+      assert( 0 <= i && i < 100 );
+
+      buffer[10] = i / 10;
+      buffer[11] = i % 10;
+
+      clazz->audioArgs[i] = config->get( buffer, "" );
+    }
 
     return clazz;
   }

@@ -1,5 +1,5 @@
 /*
- *  Mind.cpp
+ *  Model.cpp
  *
  *  [description]
  *
@@ -8,15 +8,15 @@
 
 #include "precompiled.h"
 
-#include "Mind.h"
+#include "Model.h"
 
 namespace oz
 {
+namespace client
+{
 
-  void Mind::onUpdate()
+  Model::~Model()
   {}
 
-  Mind::~Mind()
-  {}
-
+}
 }

@@ -55,12 +55,9 @@ namespace oz
   void Nirvana::synchronize()
   {
     // add minds to new bots
-    const int iMax = world.objects.length();
-    for( int i = 0; i < iMax; i++ ) {
-      Object *obj = world.objects[i];
-
-      if( obj != null && obj->flags == Object::BOT_BIT ) {
-        Bot *bot = (Bot*) obj;
+    foreach( obj, world.objects.iterator() ) {
+      if( *obj != null && ( *obj )->flags == Object::BOT_BIT ) {
+        Bot *bot = (Bot*) *obj;
 
         if( bot->mind == null ) {
           bot->mind = new Mind();

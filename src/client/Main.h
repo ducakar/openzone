@@ -35,7 +35,7 @@ namespace client
 
     public:
 
-      void main();
+      void main( int *argc, char *argv[] );
       void shutdown();
 
   };

@@ -30,7 +30,7 @@ namespace oz
       Mind() : isUpdated( true )
       {}
 
-      virtual ~Mind() {};
+      virtual ~Mind();
 
       void update()
       {

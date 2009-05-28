@@ -27,7 +27,7 @@ namespace client
 
     State state;
 
-    virtual ~Model() {}
+    virtual ~Model();
 
     virtual void draw() = 0;
   };

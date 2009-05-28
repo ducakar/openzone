@@ -15,6 +15,9 @@ namespace oz
 
   const float Particle::MAX_ROTVELOCITY = 1000.0f;
 
+  Particle::~Particle()
+  {}
+
   // serialize whole object
   void Particle::serialize( char* ) const
   {}
