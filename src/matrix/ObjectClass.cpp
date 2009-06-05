@@ -10,6 +10,8 @@
 
 #include "ObjectClass.h"
 
+#include "Translator.h"
+
 namespace oz
 {
 
@@ -35,16 +37,15 @@ namespace oz
 
     clazz->audioType = config->get( "audio.type", "SimpleAudio" );
 
-    char buffer[12] = "audio.arg  ";
-    for( int i = 0; i < AUDIO_ARGS; i++ ) {
+    char buffer[] = "audio.sample  ";
+    for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
       assert( 0 <= i && i < 100 );
 
-      buffer[10] = i / 10;
-      buffer[11] = i % 10;
+      buffer[ sizeof( buffer ) - 2 ] = i / 10;
+      buffer[ sizeof( buffer ) - 1 ] = i % 10;
 
-      clazz->audioArgs[i] = config->get( buffer, "" );
+      clazz->audioSamples[i] = translator.soundIndex( config->get( buffer, "" ) );
     }
-
     return clazz;
   }
 

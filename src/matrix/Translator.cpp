@@ -152,16 +152,24 @@ namespace oz
 
   int Translator::textureIndex( const char *file )
   {
-    return textureIndices.contains( file ) ?
-        textureIndices.cachedValue() :
-        ( assert( false ), -1 );
+    if( textureIndices.contains( file ) ) {
+      return textureIndices.cachedValue();
+    }
+    else {
+      logFile.println( "W: invalid texture file index requested: %s", file );
+      return -1;
+    }
   }
 
   int Translator::soundIndex( const char *file )
   {
-    return soundIndices.contains( file ) ?
-        soundIndices.cachedValue() :
-        ( assert( false ), -1 );
+    if( soundIndices.contains( file ) ) {
+      return soundIndices.cachedValue();
+    }
+    else {
+      logFile.println( "W: invalid sound file index requested: %s", file );
+      return -1;
+    }
   }
 
   void Translator::free()

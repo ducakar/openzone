@@ -20,6 +20,12 @@ namespace oz
     float mass;
     float lift;
 
+    int   sndFriction;
+    int   sndHit;
+    int   sndHitFloor;
+    int   sndSplash;
+    int   sndBigSplash;
+
     static ObjectClass *init( const String &name, Config *config );
     virtual Object *create( const Vec3 &pos );
   };

@@ -17,7 +17,8 @@ namespace oz
 
   struct ObjectClass
   {
-    static const int AUDIO_ARGS = 16;
+    // 00 <= AUDIOARGS <= 99 (two decimal digits)
+    static const int AUDIO_SAMPLES = 16;
 
     typedef ObjectClass *( *InitFunc )( const String &name, Config *config );
 
@@ -33,7 +34,7 @@ namespace oz
     String modelPath;
 
     String audioType;
-    String audioArgs[AUDIO_ARGS];
+    int    audioSamples[AUDIO_SAMPLES];
 
     virtual ~ObjectClass();
 

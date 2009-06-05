@@ -25,6 +25,9 @@ namespace client
 
       const Object *obj;
 
+      void playSoundEvent( const Object::Event *event ) const;
+      void playSoundEffect( const Object::Effect *effect ) const;
+
     public:
 
       Audio( const Object *obj_ ) : obj( obj_ )
