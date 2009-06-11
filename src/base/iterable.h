@@ -179,7 +179,21 @@ namespace oz
    * foreach( i, v.iterator() ) {
    *   printf( "%d ", *i );
    * }</pre>
-   * There's no need to add it to Katepart syntax highlighting as it is already there.
+   * To avoid some strange bugs, try not to use foreach as in following example:
+   * <pre>
+   * Vector&lt;int&gt; v;
+   * foreach( i, Iterator( v ) ) {
+   *   printf( "%d ", *i );
+   * }</pre>
+   * but rather transform it to
+   * <pre>
+   * Vector&lt;int&gt; v;
+   * Vector&lt;int&gt;::Iterator iv( v );
+   * foreach( i, iv ) {
+   *   printf( "%d ", *i );
+   * }</pre>
+   * There's no need to add it to Katepart syntax highlighting as it is already there (Qt has some
+   * similar foreach macro).
    */
 # define foreach( i, startIterator ) \
   for( typeof( startIterator ) i( startIterator ); !i.isPassed(); ++i )
@@ -225,6 +239,8 @@ namespace oz
   template <class IteratorA, class IteratorB>
   inline void iCopy( IteratorA &iDest, IteratorB &iSrc )
   {
+    assert( &*iDest != &*iSrc );
+
     while( !iDest.isPassed() ) {
       *iDest = *iSrc;
       iDest++;
@@ -240,6 +256,8 @@ namespace oz
   template <class BackwardIteratorA, class BackwardIteratorB>
   inline void iReverseCopy( BackwardIteratorA &iDest, BackwardIteratorB &iSrc )
   {
+    assert( &*iDest != &*iSrc );
+
     while( !iDest.isPassed() ) {
       iDest--;
       iSrc--;

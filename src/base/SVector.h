@@ -68,6 +68,8 @@ namespace oz
        */
       SVector &operator = ( const SVector &v )
       {
+        assert( &v != this );
+
         count = v.count;
         aCopy( data, v.data, count );
         return *this;

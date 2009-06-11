@@ -1,6 +1,7 @@
 data
 openzone.kdev*
 doxygen
+openzone.tag
 precompiled.h.gch
 *.gcno
 CMakeCache.txt

@@ -187,16 +187,15 @@ namespace oz
        */
       static bool areChainsEqual( const Elem *chainA, const Elem *chainB )
       {
-        if( chainA != null && chainB != null ) {
-          return
-              chainA->key == chainB->key &&
-              chainA->value == chainB->value &&
-              areChainsEqual( chainA->next[0], chainB->next[0] );
+        while( chainA != null && chainB != null ) {
+          if( chainA->key != chainB->key || chainA->value != chainB->value ) {
+            return false;
+          }
+          chainA = chainA->next[0];
+          chainB = chainB->next[0];
         }
-        else {
-          // at least one is null, so (chainA == chainB) <=> (chainA == null && chainB == null)
-          return chainA == chainB;
-        }
+        // at least one is null, so (chainA == chainB) <=> (chainA == null && chainB == null)
+        return chainA == chainB;
       }
 
       /**
@@ -206,12 +205,13 @@ namespace oz
        */
       static Elem *copyChain( const Elem *chain )
       {
-        if( chain != null ) {
-          return new Elem( chain->key, chain->value, copyChain( chain->next[0] ) );
+        Elem *newChain = null;
+
+        while( chain != null ) {
+          newChain = new Elem( chain->key, chain->value, newChain );
+          chain = chain->next[0];
         }
-        else {
-          return null;
-        }
+        return newChain;
       }
 
       /**
@@ -220,10 +220,11 @@ namespace oz
        */
       static void freeChain( const Elem *chain )
       {
-        if( chain != null ) {
-          freeChain( chain->next[0] );
+        while( chain != null ) {
+          const Elem *next = chain->next[0];
 
           delete chain;
+          chain = next;
         }
       }
 
@@ -233,11 +234,12 @@ namespace oz
        */
       static void freeChainAndValues( const Elem *chain )
       {
-        if( chain != null ) {
-          freeChain( chain->next[0] );
+        while( chain != null ) {
+          const Elem *next = chain->next[0];
 
           delete chain->value;
           delete chain;
+          chain = next;
         }
       }
 
@@ -279,6 +281,7 @@ namespace oz
        */
       HashString &operator = ( const HashString &t )
       {
+        assert( &t != this );
         assert( count == 0 );
 
         for( int i = 0; i < SIZE; i++ ) {
@@ -286,6 +289,8 @@ namespace oz
         }
         cached = t.cached;
         count = t.count;
+
+        return *this;
       }
 
       /**

@@ -78,6 +78,8 @@ namespace oz
        */
       Bitset &operator = ( const Bitset &b )
       {
+        assert( &b != this );
+
         if( size != b.size ) {
           setUnitSize( b.size );
         }
