@@ -90,10 +90,6 @@ namespace oz
       // First element in list.
       Type *firstElem;
 
-      // No copying.
-      List( const List& );
-      List &operator = ( const List& );
-
     public:
 
       /**
@@ -103,12 +99,90 @@ namespace oz
       {}
 
       /**
+       * Copy constructor
+       * Allocate copies of all elements of the original list. Type should implement copy
+       * constructor and for sake of performance the order of elements in the new list is reversed.
+       * @param l the original list
+       */
+      List( const List &l ) : firstElem( null )
+      {
+        foreach( e, l.iterator() ) {
+          pushFirst( new Type( *e ) );
+        }
+      }
+
+      /**
        * Create a list with only one element.
        * @param e the element
        */
       explicit List( Type *e ) : firstElem( e )
       {
         e->next[INDEX] = null;
+      }
+
+      /**
+       * Copy operator.
+       * Allocate copies of all elements of the original list. Type should implement copy
+       * constructor and for sake of performance the order of elements in the new list is reversed.
+       * @param l
+       * @return
+       */
+      List &operator = ( const List &l )
+      {
+        assert( &l != this );
+
+        firstElem = null;
+
+        foreach( e, l.iterator() ) {
+          pushFirst( new Type( *e ) );
+        }
+        return *this;
+      }
+
+      /**
+       * Compare all elements in two lists.
+       * Type should implement operator =, otherwise comparison doesn't make sense (two copies
+       * always differ on next[INDEX] members).
+       * @param l
+       * @return
+       */
+      bool operator == ( const List &l ) const
+      {
+        Type *e1 = firstElem;
+        Type *e2 = l.firstElem;
+
+        while( e1 != null && e2 != null ) {
+          if( *e1 != *e2 ) {
+            return false;
+          }
+          e1 = e1->next[INDEX];
+          e2 = e2->next[INDEX];
+        }
+        // at least one is null, so (e1 == e2) <=> (e1 == null && e2 == null)
+        return e1 == e2;
+      }
+
+      /**
+       * Compare all elements in two lists.
+       * Type should implement operator =, otherwise comparison doesn't make sense (two copies
+       * always differ on next[INDEX] members).
+       * @param l
+       * @return
+       */
+      bool operator != ( const List &l ) const
+      {
+        Type *e1 = firstElem;
+        Type *e2 = l.firstElem;
+
+        while( e1 != null && e2 != null ) {
+          if( *e1 != *e2 ) {
+            return true;
+          }
+          e1 = e1->next[INDEX];
+          e2 = e2->next[INDEX];
+        }
+        // at least one is null, so (e1 == e2) <=> (e1 == null && e2 == null)
+        return e1 != e2;
       }
 
       /**

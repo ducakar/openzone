@@ -56,6 +56,8 @@ namespace oz
   template <class Type>
   inline void aCopy( Type *dest, const Type *src, int count )
   {
+    assert( dest != src );
+
     for( int i = 0; i < count; i++ ) {
       Type t = src[i];
       dest[i] = t;
@@ -72,6 +74,8 @@ namespace oz
   template <class Type>
   inline void aReverseCopy( Type *dest, const Type *src, int count )
   {
+    assert( dest != src );
+
     for( int i = count - 1; i >= 0; i-- ) {
       dest[i] = src[i];
     }

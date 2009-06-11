@@ -98,6 +98,8 @@ namespace oz
        */
       Vector &operator = ( const Vector &v )
       {
+        assert( &v != this );
+
         // create new data array of the new data doesn't fit, keep the old one otherwise
         if( size < v.count ) {
           delete[] data;

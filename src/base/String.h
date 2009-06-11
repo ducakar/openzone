@@ -138,6 +138,8 @@ namespace oz
 
       String &operator = ( const char *s )
       {
+        assert( s != buffer );
+
         count = length( s );
 
         if( buffer != baseBuffer ) {
@@ -151,6 +153,8 @@ namespace oz
 
       String &operator = ( const String &s )
       {
+        assert( &s != this );
+
         count = s.count;
 
         if( buffer != baseBuffer ) {

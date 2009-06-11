@@ -132,6 +132,8 @@ namespace oz
        */
       Sparse &operator = ( const Sparse &s )
       {
+        assert( &s != this );
+
         // create new data array of the new data doesn't fit, keep the old one otherwise
         if( size < s.size ) {
           delete[] data;

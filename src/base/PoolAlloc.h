@@ -33,6 +33,10 @@ namespace oz
 
           static const int BLOCK_SIZE = 1024;
 
+          // no copying
+          Pool( const PoolAlloc& );
+          Pool&operator = ( const PoolAlloc& );
+
           /**
            * Memory block.
            * Block is an array that can hold up to BLOCK_SIZE elements. When we run out of space

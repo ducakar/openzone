@@ -185,16 +185,15 @@ namespace oz
        */
       static bool areChainsEqual( const Elem *chainA, const Elem *chainB )
       {
-        if( chainA != null && chainB != null ) {
-          return
-              chainA->key == chainB->key &&
-              chainA->value == chainB->value &&
-              areChainsEqual( chainA->next[0], chainB->next[0] );
+        while( chainA != null && chainB != null ) {
+          if( chainA->key != chainB->key || chainA->value != chainB->value ) {
+            return false;
+          }
+          chainA = chainA->next[0];
+          chainB = chainB->next[0];
         }
-        else {
-          // at least one is null, so (chainA == chainB) <=> (chainA == null && chainB == null)
-          return chainA == chainB;
-        }
+        // at least one is null, so (chainA == chainB) <=> (chainA == null && chainB == null)
+        return chainA == chainB;
       }
 
       /**
@@ -204,12 +203,13 @@ namespace oz
        */
       static Elem *copyChain( const Elem *chain )
       {
-        if( chain != null ) {
-          return new Elem( chain->key, chain->value, copyChain( chain->next[0] ) );
+        Elem *newChain = null;
+
+        while( chain != null ) {
+          newChain = new Elem( chain->key, chain->value, newChain );
+          chain = chain->next[0];
         }
-        else {
-          return null;
-        }
+        return newChain;
       }
 
       /**
@@ -218,10 +218,12 @@ namespace oz
        */
       static void freeChain( const Elem *chain )
       {
-        if( chain->next[0] != null ) {
-          freeChain( chain->next[0] );
+        while( chain != null ) {
+          const Elem *next = chain->next[0];
+
+          delete chain;
+          chain = next;
         }
-        delete chain;
       }
 
       /**
@@ -230,11 +232,13 @@ namespace oz
        */
       static void freeChainAndValues( const Elem *chain )
       {
-        if( chain->next[0] != null ) {
-          freeChain( chain->next[0] );
+        while( chain != null ) {
+          const Elem *next = chain->next[0];
+
+          delete chain->value;
+          delete chain;
+          chain = next;
         }
-        delete chain->value;
-        delete chain;
       }
 
     public:
@@ -275,6 +279,7 @@ namespace oz
        */
       HashIndex &operator = ( const HashIndex &t )
       {
+        assert( &t != this );
         assert( count == 0 );
 
         for( int i = 0; i < SIZE; i++ ) {
@@ -282,6 +287,8 @@ namespace oz
         }
         cached = t.cached;
         count = t.count;
+
+        return *this;
       }
 
       /**
@@ -295,7 +302,7 @@ namespace oz
           return false;
         }
         for( int i = 0; i < SIZE; i++ ) {
-          if( !qEqualChain( data[i], t.data[i] ) ) {
+          if( !areChainsEqual( data[i], t.data[i] ) ) {
             return false;
           }
         }
@@ -313,7 +320,7 @@ namespace oz
           return true;
         }
         for( int i = 0; i < SIZE; i++ ) {
-          if( !qEqualChain( data[i], t.data[i] ) ) {
+          if( !areChainsEqual( data[i], t.data[i] ) ) {
             return true;
           }
         }
