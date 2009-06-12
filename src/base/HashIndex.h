@@ -415,9 +415,9 @@ namespace oz
       }
 
       /**
-       * If given key exists, return reference to it's value, otherwise create a new element with
-       * the given key and return reference to it's UNINITIALIZED value.
-       * This function caches the found element.
+       * If given key exists, return reference to it's value.
+       * Only use this function if you are certain that the key exists.
+       * This function caches the requested element.
        * @param key
        * @return reference to value associated to the given key
        */
@@ -444,6 +444,7 @@ namespace oz
       /**
        * If given key exists, return constant reference to it's value.
        * Only use this function if you are certain that the key exists.
+       * This function caches the requested element.
        * @param key
        * @return reference to value associated to the given key
        */
@@ -469,6 +470,7 @@ namespace oz
 
       /**
        * Add new element. The key must not yet exist in this HashIndex.
+       * This function caches the added element.
        * @param key
        * @param value
        */

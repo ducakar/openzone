@@ -11,6 +11,7 @@
 #include "SoundManager.h"
 
 #include "Camera.h"
+#include "Context.h"
 
 namespace oz
 {
@@ -22,22 +23,8 @@ namespace client
   const float SoundManager::DMAX = 100.0f;
   const float SoundManager::DMAX_SQ = DMAX * DMAX;
 
-  bool SoundManager::init( int *argc, char *argv[] )
+  void SoundManager::init()
   {
-    logFile.print( "Initializing OpenAL audio device ..." );
-
-    alutInit( argc, argv );
-
-    isMusicPlaying = false;
-
-    if( alutGetError() != ALUT_ERROR_NO_ERROR ) {
-      logFile.printEnd( " Failed" );
-      return false;
-    }
-    else {
-      logFile.printEnd( " OK" );
-    }
-
     logFile.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
     logFile.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
     logFile.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
@@ -46,19 +33,19 @@ namespace client
     logFile.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
     logFile.println( "ALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
 
-    alGenSources( 1, &musicSource );
+    isMusicPlaying = false;
 
+    alGenSources( 1, &musicSource );
     alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
     alSourcei( musicSource, AL_ROLLOFF_FACTOR, 0 );
 
     setVolume( config.get( "sound.volume.effects", 1.0f ) );
     setMusicVolume( config.get( "sound.music.effects", 1.0f ) );
-
-    return true;
   }
 
   void SoundManager::free()
   {
+    // FIXME: pool deallocation issues, crashes because of assertions on exit
     foreach( src, sources.iterator() ) {
       alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
@@ -74,54 +61,10 @@ namespace client
     contSources.clear();
     contSources.deallocate();
 
-    alDeleteBuffers( MAX_BUFFERS, buffers );
+    audios.clear();
+    audios.deallocate();
+
     freeMusic();
-    alutExit();
-  }
-
-  bool SoundManager::load( int sample, const char *file )
-  {
-    logFile.print( "Loading sound '%s' ...", file );
-
-    FILE *oggFile = fopen( file, "rb" );
-    OggVorbis_File oggStream;
-
-    if( oggFile == null ) {
-      logFile.printEnd( " Failed" );
-      return false;
-    }
-    if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
-      fclose( oggFile );
-      logFile.printEnd( " Failed" );
-      return false;
-    }
-
-    vorbis_info *vorbisInfo = ov_info( &oggStream, -1 );
-    ALenum format = ( vorbisInfo->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16 );
-    int size = (int) ( oggStream.end - oggStream.offset );
-
-    logFile.println( "%d %d", size, vorbisInfo->rate );
-
-    char data[size];
-    int section;
-    ov_read( &oggStream, data, size, 0, 2, 1, &section );
-    ov_clear( &oggStream );
-
-    alBufferData( buffers[sample], format, data, size, vorbisInfo->rate );
-
-    logFile.printEnd( " OK" );
-    return true;
-
-    buffers[sample] = alutCreateBufferFromFile( file );
-
-    if( buffers[sample] == AL_NONE ) {
-      logFile.printEnd( " Failed" );
-      return false;
-    }
-    else {
-      logFile.printEnd( " OK" );
-      return true;
-    }
   }
 
   void SoundManager::playSector( int sectorX, int sectorY )
@@ -131,6 +74,10 @@ namespace client
     foreach( obj, sector.objects.iterator() ) {
       // TODO sound player
       if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
+        if( !audios.contains( (uint) &*obj ) ) {
+          audios.add( (uint) &*obj, context.createAudio( &*obj ) );
+        }
+        audios.cachedValue()->update();
       }
     }
   }

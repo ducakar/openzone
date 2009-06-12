@@ -10,12 +10,18 @@
 
 #include "Context.h"
 
+#include <vorbis/vorbisfile.h>
+
 #include "MD2Model.h"
 #include "MD2StaticModel.h"
 #include "OBJModel.h"
+#include "SimpleAudio.h"
 
 #define OZ_REGISTER_MODELCLASS( name ) \
   modelClasses.add( #name, &name##Model::create )
+
+#define OZ_REGISTER_AUDIOCLASS( name ) \
+  audioClasses.add( #name, &name##Audio::create )
 
 namespace oz
 {
@@ -23,9 +29,6 @@ namespace client
 {
 
   Context context;
-
-  Context::Context() : textures( null ), sounds( null )
-  {}
 
   uint Context::buildTexture( const ubyte *data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
@@ -124,45 +127,6 @@ namespace client
       while( glGetError() != GL_NO_ERROR );
     }
     return texNum;
-  }
-
-  void Context::init()
-  {
-    assert( textures == null && sounds == null );
-
-    logFile.println( "Context created" );
-    textures = new Resource<uint>[translator.textures.length()];
-    sounds = new Resource<uint>[translator.sounds.length()];
-
-    for( int i = 0; i < translator.textures.length(); i++ ) {
-      textures[i].nUsers = -1;
-    }
-    for( int i = 0; i < translator.sounds.length(); i++ ) {
-      sounds[i].nUsers = -1;
-    }
-
-    OZ_REGISTER_MODELCLASS( MD2 );
-    OZ_REGISTER_MODELCLASS( MD2Static );
-    OZ_REGISTER_MODELCLASS( OBJ );
-  }
-
-  void Context::free()
-  {
-    assert( textures != null && sounds != null );
-
-    delete[] textures;
-    textures = null;
-    delete[] sounds;
-    sounds = null;
-    lists.clear();
-
-    md2Models.clear();
-    md2StaticModels.clear();
-    md3Models.clear();
-    md3StaticModels.clear();
-    objModels.clear();
-
-    modelClasses.clear();
   }
 
   uint Context::createTexture( const ubyte *data, int width, int height, int bytesPerPixel,
@@ -325,6 +289,110 @@ namespace client
     glDeleteTextures( 1, &id );
   }
 
+  uint Context::requestSound( int resource )
+  {
+    if( sounds[resource].nUsers >= 0 ) {
+      sounds[resource].nUsers++;
+      return sounds[resource].id;
+    }
+
+    const char *file = translator.sounds[resource].cstr();
+    logFile.print( "Loading sound '%s' ...", file );
+
+    const char *ext = strrchr( file, '.' );
+
+    if( String::equals( ext, ".wav" ) ) {
+      sounds[resource].id = alutCreateBufferFromFile( file );
+
+      if( sounds[resource].id == AL_NONE ) {
+        logFile.printEnd( " Failed" );
+        return AL_NONE;
+      }
+      else {
+        logFile.printEnd( " OK" );
+        return sounds[resource].id;
+      }
+    }
+    else if( String::equals( ext, ".ogg" ) || String::equals( ext, ".oga" ) ) {
+      // FIXME: make this loader work
+      FILE *oggFile = fopen( file, "rb" );
+
+      if( oggFile == null ) {
+        logFile.printEnd( " Failed to open file" );
+        return AL_NONE;
+      }
+
+      OggVorbis_File oggStream;
+      if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
+        fclose( oggFile );
+        logFile.printEnd( " Failed to open Ogg stream" );
+        return AL_NONE;
+      }
+
+      vorbis_info *vorbisInfo = ov_info( &oggStream, -1 );
+      if( vorbisInfo == null ) {
+        ov_clear( &oggStream );
+        logFile.printEnd( " Failed to read Vorbis header" );
+        return AL_NONE;
+      }
+
+      ALenum format;
+      if( vorbisInfo->channels == 1 ) {
+        format = AL_FORMAT_MONO16;
+      }
+      else if( vorbisInfo->channels == 2 ) {
+        format = AL_FORMAT_STEREO16;
+      }
+      else {
+        ov_clear( &oggStream );
+        logFile.printEnd( " Invalid number of channels, should be 1 or 2" );
+        return AL_NONE;
+      }
+
+      int  size = (int) ( oggStream.end - oggStream.offset );
+      char data[size];
+      int  section;
+      int  bytesRead = 0;
+      int  result;
+      do {
+        result = ov_read( &oggStream, data + bytesRead, size - bytesRead, 0, 2, 1, &section );
+        if( result <= 0 ) {
+          break;
+//           ov_clear( &oggStream );
+//           fclose( oggFile );
+//           logFile.printEnd( " Failed to decode Vorbis stream, error %d", result );
+//           return AL_NONE;
+        }
+        bytesRead += result;
+      }
+      while( result > 0 && bytesRead < size );
+
+      ov_clear( &oggStream );
+
+      alGenBuffers( 1, &sounds[resource].id );
+      alBufferData( sounds[resource].id, format, data, size, vorbisInfo->rate );
+      if( alGetError() != AL_NO_ERROR ) {
+        logFile.printEnd( " Failed create buffer" );
+        return AL_NONE;
+      }
+      logFile.printEnd( " OK" );
+
+      sounds[resource].nUsers = 1;
+      return sounds[resource].id;
+    }
+    else {
+      logFile.printEnd( " Unknown file extension" );
+      return AL_NONE;
+    }
+  }
+
+  void Context::releaseSound( int resource )
+  {
+    assert( sounds[resource].nUsers > 0 );
+
+    sounds[resource].nUsers--;
+  }
+
   uint Context::genList()
   {
     int index = lists.add();
@@ -339,6 +407,15 @@ namespace client
     lists[index].base = glGenLists( count );
     lists[index].count = count;
     return lists[index].base;
+  }
+
+  void Context::freeLists( uint listId )
+  {
+    for( int i = 0; i < lists.length(); i++ ) {
+      if( lists[i].base == listId ) {
+        glDeleteLists( lists[i].base, lists[i].count );
+      }
+    }
   }
 
   uint Context::loadMD2StaticModel( const char *path )
@@ -384,13 +461,48 @@ namespace client
     }
   }
 
-  void Context::freeLists( uint listId )
+  Context::Context() : textures( null ), sounds( null )
+  {}
+
+  void Context::init()
   {
-    for( int i = 0; i < lists.length(); i++ ) {
-      if( lists[i].base == listId ) {
-        glDeleteLists( lists[i].base, lists[i].count );
-      }
+    assert( textures == null && sounds == null );
+
+    logFile.println( "Context created" );
+    textures = new Resource<uint>[translator.textures.length()];
+    sounds = new Resource<uint>[translator.sounds.length()];
+
+    for( int i = 0; i < translator.textures.length(); i++ ) {
+      textures[i].nUsers = -1;
     }
+    for( int i = 0; i < translator.sounds.length(); i++ ) {
+      sounds[i].nUsers = -1;
+    }
+
+    OZ_REGISTER_MODELCLASS( MD2 );
+    OZ_REGISTER_MODELCLASS( MD2Static );
+    OZ_REGISTER_MODELCLASS( OBJ );
+
+    OZ_REGISTER_AUDIOCLASS( Simple );
+  }
+
+  void Context::free()
+  {
+    assert( textures != null && sounds != null );
+
+    delete[] textures;
+    textures = null;
+    delete[] sounds;
+    sounds = null;
+    lists.clear();
+
+    md2Models.clear();
+    md2StaticModels.clear();
+    md3Models.clear();
+    md3StaticModels.clear();
+    objModels.clear();
+
+    modelClasses.clear();
   }
 
 }

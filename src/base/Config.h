@@ -78,7 +78,7 @@ namespace oz
        * @param key variable name
        * @return variable value
        */
-      const String &get ( const char *key ) const
+      const String &get( const char *key ) const
       {
         return vars[key];
       }

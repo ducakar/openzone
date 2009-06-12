@@ -87,7 +87,7 @@ namespace oz
       }
 
       String extension = name.substring( name.length() - 4 );
-      if( extension != ".wav" && extension != ".ogg" ) {
+      if( extension != ".wav" && extension != ".ogg" && extension != ".oga" ) {
         continue;
       }
 

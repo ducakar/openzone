@@ -17,21 +17,18 @@ namespace client
 
   class Audio
   {
+    public:
+
+      typedef Audio *( *InitFunc )( const Object *object );
+
     protected:
 
-      static const int ENTER_FUNC_BIT = 0x01;
-      static const int EXIT_FUNC_BIT = 0x02;
-      static const int UPDATE_FUNC_BIT = 0x04;
-
-      const Object *obj;
+      const Object *object;
 
       void playSoundEvent( const Object::Event *event ) const;
       void playSoundEffect( const Object::Effect *effect ) const;
 
     public:
-
-      Audio( const Object *obj_ ) : obj( obj_ )
-      {}
 
       virtual ~Audio();
 
