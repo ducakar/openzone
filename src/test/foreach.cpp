@@ -8,7 +8,7 @@
 
 #include "precompiled.h"
 
-using namespace Dark;
+using namespace oz;
 
 struct Elem
 {
@@ -76,7 +76,7 @@ int main()
   hi[105] = 5;
   hs["105"] = 5;
 
-  foreach( i, Iterator<int>( a, a + 5 ) ) {
+  foreach( i, iterator( a, 5 ) ) {
     printf( "%d ", *i );
   }
   printf( "\n" );

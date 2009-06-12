@@ -79,8 +79,6 @@ namespace client
 
   void Render::load()
   {
-    context.init();
-
     glDepthFunc( GL_LEQUAL );
     glEnable( GL_CULL_FACE );
 
@@ -397,7 +395,6 @@ namespace client
   {
     models.free();
     bsps.free();
-    context.free();
   }
 
 }

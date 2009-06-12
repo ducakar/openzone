@@ -23,6 +23,8 @@
 # include <sys/stat.h>
 #endif
 
+#include "Context.h"
+
 namespace oz
 {
 namespace client
@@ -44,16 +46,17 @@ namespace client
     }
     if( initFlags & INIT_RENDER_INIT ) {
       logFile.print( "Shutting down Graphics ..." );
-      logFile.indent();
       render.free();
-      logFile.unindent();
       logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_AUDIO ) {
       logFile.print( "Shutting down SoundManager ..." );
-      logFile.indent();
       soundManager.free();
-      logFile.unindent();
+      logFile.printEnd( " OK" );
+    }
+    if( initFlags & INIT_CONTEXT ) {
+      logFile.print( "Clearing Context ..." );
+      context.free();
       logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_GAME_INIT ) {
@@ -62,6 +65,11 @@ namespace client
       game.free();
       logFile.unindent();
       logFile.println( "}" );
+    }
+    if( initFlags & INIT_AL ) {
+      logFile.print( "Shutting down OpenAL ..." );
+      alutExit();
+      logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_SDL ) {
       logFile.print( "Shutting down SDL ..." );
@@ -204,26 +212,30 @@ namespace client
     else {
       logFile.printEnd( " OK" );
     }
-
     initFlags |= INIT_SDL_VIDEO;
+
+    logFile.print( "Initializing OpenAL ..." );
+    alutInit( argc, argv );
+    if( alutGetError() != ALUT_ERROR_NO_ERROR ) {
+      logFile.printEnd( " Failed" );
+      shutdown();
+      return;
+    }
+    else {
+      logFile.printEnd( " OK" );
+    }
+    initFlags |= INIT_AL;
 
     logFile.println( "Initializing Graphics {" );
     logFile.indent();
     render.init();
     logFile.unindent();
     logFile.println( "}" );
-
     initFlags |= INIT_RENDER_INIT;
 
     logFile.println( "Initializing SoundManager {" );
     logFile.indent();
-
-    if( !soundManager.init( argc, argv ) ) {
-      shutdown();
-      return;
-    }
-//     soundManager.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
-
+    soundManager.init();
     logFile.unindent();
     logFile.println( "}" );
     initFlags |= INIT_AUDIO;
@@ -236,6 +248,11 @@ namespace client
     logFile.unindent();
     logFile.println( "}" );
     initFlags |= INIT_GAME_INIT;
+
+    logFile.print( "Initializing Context ..." );
+    context.init();
+    logFile.printEnd( " OK" );
+    initFlags |= INIT_CONTEXT;
 
     logFile.println( "Loading Graphics {" );
     logFile.indent();
@@ -363,10 +380,6 @@ namespace client
 
     logFile.println( "Average framerate: %g",
                      (float) nFrames / (float) ( timeLast - timeZero ) * 1000.0f );
-
-    logFile.println( "Printing config at exit {" );
-    logFile.print( "%s", config.toString( "  " ).cstr() );
-    logFile.println( "}" );
   }
 
 }

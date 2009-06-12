@@ -12,6 +12,40 @@ namespace oz
 {
 
   /**
+   * Array iterator.
+   * Somehow simplifies construction of array iterators.
+   * Instead of
+   * <code>Iterator&lt;int&gt;( array, array + 10 );</code>
+   * you write
+   * <code>iterator( array, array + 10 );</code>
+   * @param array
+   * @param count
+   * @return
+   */
+  template <class Type>
+  Iterator<Type> iterator( Type *array, const Type *past )
+  {
+    return Iterator<Type>( array, past );
+  }
+
+  /**
+   * Array iterator.
+   * Somehow simplifies construction of array iterators.
+   * Instead of
+   * <code>Iterator&lt;int&gt;( array, array + 10 );</code>
+   * you write
+   * <code>iterator( array, 10 );</code>
+   * @param array
+   * @param count
+   * @return
+   */
+  template <class Type>
+  Iterator<Type> iterator( Type *array, int count )
+  {
+    return Iterator<Type>( array, array + count );
+  }
+
+  /**
    * Set array members to given value (memset).
    * In contrast with memset it calls constructor/destructor/assign operator on objects.
    * @param dest pointer to the first element

@@ -18,14 +18,23 @@ namespace oz
 namespace client
 {
 
+  Audio *SimpleAudio::create( const Object *object )
+  {
+    SimpleAudio *audio = new SimpleAudio();
+
+    audio->object = object;
+
+    return audio;
+  }
+
   void SimpleAudio::update()
   {
     // non-continous
-    foreach( event, Audio::obj->events.iterator() ) {
+    foreach( event, Audio::object->events.iterator() ) {
       playSoundEvent( event );
     }
     // continous
-    foreach( effect, obj->effects.iterator() ) {
+    foreach( effect, object->effects.iterator() ) {
       playSoundEffect( effect );
     }
   }

@@ -35,7 +35,7 @@ namespace oz
     clazz->modelType = config->get( "model.type", "MD2" );
     clazz->modelPath = config->get( "model.path", "mdl/goblin.md2" );
 
-    clazz->audioType = config->get( "audio.type", "SimpleAudio" );
+    clazz->audioType = config->get( "audio.type", "Simple" );
 
     char buffer[] = "audio.sample  ";
     for( int i = 0; i < AUDIO_SAMPLES; i++ ) {

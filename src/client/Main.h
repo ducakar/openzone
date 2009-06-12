@@ -23,13 +23,15 @@ namespace client
   {
     private:
 
-      static const int INIT_SDL = 0x01;
-      static const int INIT_SDL_VIDEO = 0x02;
-      static const int INIT_RENDER_INIT = 0x04;
-      static const int INIT_AUDIO = 0x08;
-      static const int INIT_GAME_INIT = 0x10;
-      static const int INIT_RENDER_LOAD = 0x20;
-      static const int INIT_GAME_START = 0x40;
+      static const int INIT_SDL         = 0x001;
+      static const int INIT_SDL_VIDEO   = 0x002;
+      static const int INIT_AL          = 0x004;
+      static const int INIT_RENDER_INIT = 0x008;
+      static const int INIT_AUDIO       = 0x010;
+      static const int INIT_CONTEXT     = 0x020;
+      static const int INIT_GAME_INIT   = 0x040;
+      static const int INIT_RENDER_LOAD = 0x080;
+      static const int INIT_GAME_START  = 0x100;
 
       int initFlags;
 

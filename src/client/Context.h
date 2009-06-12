@@ -14,6 +14,7 @@
 #include "MD3.h"
 #include "OBJ.h"
 #include "Model.h"
+#include "Audio.h"
 
 namespace oz
 {
@@ -40,7 +41,6 @@ namespace client
       {
         Type id;
         int  nUsers;
-        int  nextSlot;
       };
 
       template <class Type>
@@ -48,7 +48,6 @@ namespace client
       {
         Type *object;
         int  nUsers;
-        int  nextSlot;
 
         ~Resource()
         {
@@ -67,6 +66,7 @@ namespace client
       HashString< Resource<uint>, 253 > objModels;
 
       HashString<Model::InitFunc, 253> modelClasses;
+      HashString<Audio::InitFunc, 253> audioClasses;
 
       static uint buildTexture( const ubyte *data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
@@ -74,11 +74,6 @@ namespace client
                                   int bytesPerPixel, bool wrap, int magFilter, int minFilter );
 
     public:
-
-      Context();
-
-      void init();
-      void free();
 
       uint createTexture( const ubyte *data,
                           int width,
@@ -123,8 +118,8 @@ namespace client
 
       void freeTexture( uint texId );
 
-      uint loadSound( int resource );
-      void freeSound( uint SoundId );
+      uint requestSound( int resource );
+      void releaseSound( int resource );
 
       uint genList();
       uint genLists( int count );
@@ -140,6 +135,16 @@ namespace client
       {
         return modelClasses[obj->type->modelType]( obj );
       }
+
+      Audio *createAudio( const Object *obj )
+      {
+        return audioClasses[obj->type->audioType]( obj );
+      }
+
+      Context();
+
+      void init();
+      void free();
 
   };
 

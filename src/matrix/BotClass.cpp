@@ -11,6 +11,7 @@
 #include "BotClass.h"
 
 #include "Bot.h"
+#include "Translator.h"
 
 namespace oz
 {
@@ -34,6 +35,18 @@ namespace oz
 
     clazz->modelType      = config->get( "model.type", "MD2" );
     clazz->modelPath      = config->get( "model.path", "mdl/goblin.md2" );
+
+    clazz->audioType      = config->get( "audio.type", "Simple" );
+
+    char buffer[] = "audio.sample  ";
+    for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
+      assert( 0 <= i && i < 100 );
+
+      buffer[ sizeof( buffer ) - 2 ] = i / 10;
+      buffer[ sizeof( buffer ) - 1 ] = i % 10;
+
+      clazz->audioSamples[i] = translator.soundIndex( config->get( buffer, "" ) );
+    }
 
     clazz->dimCrouch.x    = config->get( "dimCrouch.x", 0.5f );
     clazz->dimCrouch.y    = config->get( "dimCrouch.y", 0.5f );

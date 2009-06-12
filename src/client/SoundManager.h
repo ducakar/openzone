@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "Audio.h"
 #include "matrix/World.h"
 #include "matrix/Translator.h"
 
@@ -34,13 +35,10 @@ namespace client
       // clear stopped sources each second
       static const int CLEAR_INTERVAL = 1000;
 
-      // FIXME MAX_BUFFERS
-      static const int MAX_BUFFERS = 1024;
-
       /*
        * SFX
        */
-      struct Source : PoolAlloc<Source, 0>
+      struct Source
       {
         Source *prev[1];
         Source *next[1];
@@ -50,7 +48,7 @@ namespace client
         Source( ALuint sourceId ) : source( sourceId ) {}
       };
 
-      struct ContSource : PoolAlloc<ContSource, 0>
+      struct ContSource
       {
         enum State
         {
@@ -65,15 +63,11 @@ namespace client
         ContSource( ALuint sourceId ) : state( UPDATED ), source( sourceId ) {}
       };
 
-    public:
-
-      ALuint buffers[MAX_BUFFERS];
-
     private:
 
+      HashIndex<Audio*, HASHTABLE_SIZE>     audios;
       DList<Source, 0>                      sources;
       HashIndex<ContSource, HASHTABLE_SIZE> contSources;
-
       int clearCount;
 
       bool load( int sample, const char *file );
@@ -98,7 +92,7 @@ namespace client
 
     public:
 
-      bool init( int *argc, char *argv[] );
+      void init();
       void free();
 
       bool loadMusic( const char *file );
