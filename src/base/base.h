@@ -2,8 +2,7 @@
  *  base.h
  *
  *  Common include file.
- *  It is included in "precompiled.h", so include the latter instead of this file for faster
- *  compiling.
+ *  It is included via "precompiled.h" for faster compiling.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
@@ -72,11 +71,6 @@
 #include "Quat.h"
 #include "Mat33.h"
 #include "Mat44.h"
-
-/*
- * Exception
- */
-#include "Exception.h"
 
 /*
  * Utilities

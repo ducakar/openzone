@@ -133,7 +133,7 @@ namespace oz
        * @param file file path
        * @return true if successful
        */
-      bool save( const char *file );
+      bool save( const char *path );
 
       /**
        * Clear variables.

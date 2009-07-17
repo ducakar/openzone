@@ -12,8 +12,8 @@
 
 #include "Translator.h"
 
-#define fourC( a, b, c, d ) \
-  ( ( a ) | ( ( b ) << 8 ) | ( ( c ) <<16 ) | ( ( d ) << 24 ) )
+#define fourCC( a, b, c, d ) \
+  ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
 
 namespace oz
 {
@@ -138,9 +138,6 @@ namespace oz
     int  size[2];
   };
 
-  const float BSP::BSP_SCALE = 0.01f;
-  const float BSP::QBSP_SCALE = 0.025f;
-
   BSP::BSP() : textures( null ), planes( null ), nodes( null ), leafs( null ), leafFaces( null ),
     brushes( null ), brushSides( null ), vertices( null ), indices( null ), faces( null ),
     lightmaps( null )
@@ -151,24 +148,22 @@ namespace oz
     free();
   }
 
-  void BSP::loadQBSP( const char *fileName, float maxDim_, float scale )
+  bool BSP::loadQBSP( const char *path, float scale, float maxDim_ )
   {
     maxDim = maxDim_;
 
-    logFile.print( "Loading Quake 3 BSP structure '%s' ...", fileName );
-
-    FILE *f = fopen( fileName, "rb" );
+    FILE *f = fopen( path, "rb" );
     if( f == null ) {
       logFile.printEnd( " Not found" );
-      return;
+      return false;
     }
 
     Header header;
     fread( &header, sizeof( Header ), 1, f );
 
-    if( header.id != fourC( 'I', 'B', 'S', 'P' ) || header.version != 46 ) {
+    if( header.id != fourCC( 'I', 'B', 'S', 'P' ) || header.version != 46 ) {
       logFile.printEnd( " Wrong format" );
-      return;
+      return false;
     }
 
     Lump lumps[QBSP_LUMPS_NUM];
@@ -188,12 +183,14 @@ namespace oz
       texFlags[i] = texture.flags;
       texTypes[i] = texture.type;
 
-      if( name.length() <= 9 || name == "textures/NULL" ) {
+      // String::length( "textures/oz/" ) == 12
+      if( name.length() <= 12 || name == "textures/NULL" ) {
         textures[i] = -1;
       }
       else {
-        textures[i] = translator.textureIndex( name + ".jpg" );
-        logFile.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
+        name = name.substring( 12 );
+        textures[i] = translator.textureIndex( name );
+//         logFile.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
       }
     }
 
@@ -382,10 +379,35 @@ namespace oz
     }
 
     fclose( f );
-
     delete[] texFlags;
 
     logFile.printEnd( " OK" );
+    return true;
+  }
+
+  bool BSP::load( const char *name )
+  {
+    Config bspConfig;
+    if( !bspConfig.load( String( "bsp/" ) + name + String( ".xml" ) ) ) {
+      return false;
+    }
+
+    logFile.print( "Loading Quake 3 BSP structure '%s' ...", name );
+
+    float scale  = bspConfig.get( "scale", 0.01f );
+    float maxDim = bspConfig.get( "maxDim", Math::INF );
+    bspConfig.clear();
+
+    if( scale == Math::NaN || maxDim == Math::NaN ) {
+      logFile.printEnd( " Invalid config" );
+      return false;
+    }
+
+    if( !loadQBSP( String( "bsp/" ) + name + String( ".bsp" ), scale, maxDim ) ) {
+      free();
+      return false;
+    }
+    return true;
   }
 
   void BSP::free()

@@ -264,15 +264,17 @@ namespace client
     bool isInWater = isInWaterBrush( relPos, leaf );
 
     if( bsp->visual.bitsets != null ) {
-      // TODO: rotated BSPs
 //       int    cluster = bsp->leafs[ getLeafIndex( camera.p ) ].cluster;
 //       printf( "%d\n", getLeafIndex( camera.p ) );
 //       Bitset &bitset = bsp->visual.bitsets[cluster];
 
       for( int i = 0; i < bsp->nLeafs; i++ ) {
         oz::BSP::Leaf &leaf = bsp->leafs[i];
+        Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
-//         if( ( cluster < 0 || bitset.get( leaf.cluster ) ) && frustum.isVisible( leaf + t.p() ) ) {
+//         if( ( cluster < 0 || bitset.get( leaf.cluster ) ) &&
+//             frustum.isVisible( rotetedLeaf + str->p ) )
+        {
           for( int j = 0; j < leaf.nFaces; j++ ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
 
@@ -281,14 +283,15 @@ namespace client
               drawnFaces.set( faceIndex );
             }
           }
-//         }
+        }
       }
     }
     else {
       for( int i = 0; i < bsp->nLeafs; i++ ) {
         oz::BSP::Leaf &leaf = bsp->leafs[i];
+        Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
-//         if( frustum.isVisible( leaf + t.p() ) ) {
+        if( frustum.isVisible( rotatedLeaf + str->p ) ) {
           for( int j = 0; j < leaf.nFaces; j++ ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
 
@@ -297,7 +300,7 @@ namespace client
               drawnFaces.set( faceIndex );
             }
           }
-//         }
+        }
       }
     }
     glPopMatrix();

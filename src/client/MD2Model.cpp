@@ -49,6 +49,8 @@ namespace client
 
   void MD2Model::draw()
   {
+    glRotatef( bot->h, 0.0f, 0.0f, 1.0f );
+
     setAnim( bot->anim );
     md2->draw( &anim );
   }

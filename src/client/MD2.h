@@ -94,7 +94,7 @@ namespace client
       MD2();
       ~MD2();
 
-      bool load( const char *path );
+      bool load( const char *name );
       void free();
 
       void drawFrame( int frame );

@@ -16,17 +16,12 @@
 namespace oz
 {
 
-  Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f )
-  {}
-
   void Bot::onUpdate()
   {
     BotClass &clazz = *(BotClass*) type;
 
     h = Math::mod( h + 360.0f, 360.0f );
     v = bound( v, -90.0f, 90.0f );
-
-    rotZ = h;
 
     // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
     float hvsc[6];
@@ -40,6 +35,10 @@ namespace oz
     bool isSwimming = ( flags & UNDER_WATER_BIT ) || ( oldFlags & UNDER_WATER_BIT );
     bool isClimbing = flags & ON_LADDER_BIT;
     bool isGrounded = ( lower >= 0 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
+
+    if( ( keys & KEY_FREELOOK ) && !( oldKeys & KEY_FREELOOK ) ) {
+      state ^= FREELOOK_BIT;
+    }
 
     if( ( keys & KEY_RUN ) && !( oldKeys & KEY_RUN ) ) {
       state ^= RUNNING_BIT;
@@ -89,13 +88,12 @@ namespace oz
       }
       else {
         flags &= ~DISABLED_BIT;
+        flags &= ~Object::ON_FLOOR_BIT;
+        lower =  -1;
 
         p.z    += dim.z - clazz.dimCrouch.z;
         dim.z  = clazz.dimCrouch.z;
         camPos = clazz.camPosCrouch;
-
-        lower =  -1;
-        flags &= ~Object::ON_FLOOR_BIT;
         state |= CROUCHING_BIT;
       }
     }
@@ -169,18 +167,21 @@ namespace oz
       }
     }
 
-    Vec3 desiredVelocity = velocity * move;
+    if( !move.isZero() ) {
+      Vec3 desiredVelocity = velocity * ~move;
 
-    if( ( flags & Object::ON_FLOOR_BIT ) && floor.z != 1.0f ) {
-      float dot = desiredVelocity * floor;
+      if( ( flags & Object::ON_FLOOR_BIT ) && floor.z != 1.0f ) {
+        float dot = desiredVelocity * floor;
 
-      if( dot > 0.0f ) {
-        desiredVelocity -= dot * floor;
+        if( dot > 0.0f ) {
+          desiredVelocity -= dot * floor;
+        }
       }
+      momentum += desiredVelocity;
     }
 
-    momentum += desiredVelocity;
-
+    // TODO: better stepping algoriths (stepping per time unit limit + vertial surface should not
+    // be required. Should try step up-forward-down. Should hit a floor surface then.)
     if( ( state & STEPPING_BIT ) && !isClimbing ) {
       Vec3 desiredMove = momentum * timer.frameTime;
 
@@ -232,12 +233,111 @@ namespace oz
       damage += hitVelocity;
     }
 
-    if( hit->normal.z >= Physics::FLOOR_NORMAL_Z && hitVelocity > 8.0f ) {
+    if( hit->normal.z >= Physics::FLOOR_NORMAL_Z && hitVelocity < 8.0f ) {
       addEvent( SND_LAND );
     }
   }
 
   void Bot::onDestroy()
   {}
+
+  Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f )
+  {}
+
+  void Bot::readUpdates( InputStream *istream )
+  {
+    p         = istream->readVec3();
+    flags     = istream->readInt();
+    oldFlags  = istream->readInt();
+    damage    = istream->readFloat();
+
+    velocity  = istream->readVec3();
+    momentum  = istream->readVec3();
+
+    state     = istream->readInt();
+    anim      = (AnimEnum) istream->readByte();
+    h         = istream->readFloat();
+
+    int nEvents = istream->readByte();
+    for( int i = 0; i < nEvents; i++ ) {
+      addEvent( istream->readInt() );
+    }
+    int nEffects = istream->readByte();
+    for( int i = 0; i < nEffects; i++ ) {
+      addEffect( istream->readInt() );
+    }
+  }
+
+  void Bot::writeUpdates( OutputStream *ostream )
+  {
+    ostream->writeVec3( p );
+    ostream->writeInt( flags );
+    ostream->writeInt( oldFlags );
+    ostream->writeFloat( damage );
+
+    ostream->writeVec3( velocity );
+    ostream->writeVec3( momentum );
+
+    ostream->writeInt( state );
+    ostream->writeByte( anim );
+    ostream->writeFloat( h );
+
+    ostream->writeByte( events.length() );
+    foreach( event, events.iterator() ) {
+      ostream->writeInt( event->id );
+    }
+    ostream->writeByte( effects.length() );
+    foreach( effect, effects.iterator() ) {
+      ostream->writeInt( effect->id );
+    }
+  }
+
+  void Bot::readFull( InputStream *istream )
+  {
+    p         = istream->readVec3();
+    flags     = istream->readInt();
+    oldFlags  = istream->readInt();
+    damage    = istream->readFloat();
+
+    velocity  = istream->readVec3();
+    momentum  = istream->readVec3();
+
+    state     = istream->readInt();
+    anim      = (AnimEnum) istream->readByte();
+    h         = istream->readFloat();
+
+    int nEvents = istream->readByte();
+    for( int i = 0; i < nEvents; i++ ) {
+      addEvent( istream->readInt() );
+    }
+    int nEffects = istream->readByte();
+    for( int i = 0; i < nEffects; i++ ) {
+      addEffect( istream->readInt() );
+    }
+  }
+
+  void Bot::writeFull( OutputStream *ostream )
+  {
+    ostream->writeVec3( p );
+    ostream->writeInt( flags );
+    ostream->writeInt( oldFlags );
+    ostream->writeFloat( damage );
+
+    ostream->writeVec3( velocity );
+    ostream->writeVec3( momentum );
+
+    ostream->writeInt( state );
+    ostream->writeByte( anim );
+    ostream->writeFloat( h );
+
+    ostream->writeByte( events.length() );
+    foreach( event, events.iterator() ) {
+      ostream->writeInt( event->id );
+    }
+    ostream->writeByte( effects.length() );
+    foreach( effect, effects.iterator() ) {
+      ostream->writeInt( effect->id );
+    }
+  }
 
 }

@@ -122,7 +122,6 @@ namespace oz
       return Vec3( x * r, y * r, z * r );
     }
 
-    // normize
     Vec3 &norm()
     {
       assert( x*x + y*y + z*z > 0.0f );
@@ -178,6 +177,8 @@ namespace oz
 
     Vec3 &operator /= ( float k )
     {
+      assert( k != 0.0f );
+
       k = 1.0f / k;
       x *= k;
       y *= k;
@@ -202,6 +203,8 @@ namespace oz
 
     Vec3 operator / ( float k ) const
     {
+      assert( k != 0.0f );
+
       k = 1.0f / k;
       return Vec3( x * k, y * k, z * k );
     }

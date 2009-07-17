@@ -248,7 +248,7 @@ namespace client
     free();
   }
 
-  bool OBJ::load( const char *path )
+  bool OBJ::load( const char *name )
   {
     FILE *file;
     char buffer[LINE_BUFFER_SIZE];
@@ -256,7 +256,7 @@ namespace client
     // default texture if none loaded
     textureId = 0;
 
-    String sPath = path;
+    String sPath = String( "mdl/" ) + name;
     String modelFile = sPath + "/data.obj";
     String configFile = sPath + "/config.xml";
 
@@ -449,11 +449,10 @@ namespace client
     }
   }
 
-  uint OBJ::genList( const char *file )
+  uint OBJ::genList( const char *name )
   {
     OBJ obj;
-
-    obj.load( file );
+    obj.load( name );
 
     uint list = context.genList();
 

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "io.h"
+
 namespace oz
 {
 
@@ -28,6 +30,7 @@ namespace oz
       enum ActionType
       {
         ADD,
+        ADD_NOPUT,
         REMOVE,
         PUT,
         CUT,
@@ -51,86 +54,17 @@ namespace oz
         {}
       };
 
-      struct Packet
-      {
-        char *pos;
-        char data[BUFFER_SIZE];
-
-        bool readBool()
-        {
-          void *p = pos;
-          pos += sizeof( bool );
-          return *(bool*) p;
-        }
-
-        void writeBool( bool b )
-        {
-          *(bool*) pos = b;
-          pos += sizeof( bool );
-        }
-
-        int readInt()
-        {
-          void *p = pos;
-          pos += sizeof( int );
-          return SDL_SwapBE32( *(int*) p );
-        }
-
-        void writeInt( int i )
-        {
-          *(int*) pos = SDL_SwapBE32( i );
-          pos += sizeof( int );
-        }
-
-        float readFloat()
-        {
-          pos += sizeof( float );
-          return *(float*) ( pos - sizeof( float ) );
-        }
-
-        void writeFloat( float f )
-        {
-          *(float*) pos = f;
-          pos += sizeof( float );
-        }
-
-        String readString()
-        {
-          // check for buffer overruns
-          char *p = pos;
-          char *end = data + BUFFER_SIZE;
-          while( p < end && *p != '\0' ) {
-            p++;
-          }
-          if( p < end ) {
-            return String( pos );
-          }
-          else {
-            return String( "" );
-          }
-        }
-
-        void writeString( const String &s )
-        {
-          //TODO read/write-String
-          strcpy( pos, s );
-        }
-
-        Vec3 readVec3()
-        {
-          pos += sizeof( Vec3 );
-          return Vec3( (float*) ( pos - sizeof( Vec3 ) ) );
-        }
-
-        void writeVec3( const Vec3 &v )
-        {
-          *(Vec3*) pos = v;
-          pos += sizeof( Vec3 );
-        }
-      };
-
     public:
 
+      // isSingle XOR isServer XOR isClient
+
+      // Singleplayer. No need to worry about object creation, deletion, synchronization etc.
+      bool isSingle;
+      // If server, create notification about every object creation/deletion/put/cut/etc. That can
+      // be later serialized and sent to clients.
+      bool isServer;
+      // If client, do not create or delete any objects by yourself. Every creation/deletion must be
+      // ordered by server.
       bool isClient;
 
       Vector<Action> particles;

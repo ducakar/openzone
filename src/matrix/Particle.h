@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "io.h"
 #include "Timer.h"
 
 namespace oz
@@ -15,8 +16,6 @@ namespace oz
 
   struct Sector;
 
-  // should NOT be virtual (offset of .p must be 0 otherwise a hack in Matrix::Collider.test(L)Ray
-  // won't work)
   class Particle
   {
     public:
@@ -37,7 +36,7 @@ namespace oz
 
       Vec3      velocity;
 
-      float     rejection;    // 1.0 < reject < 2.0
+      float     rejection;    // 1.0 < rejection < 2.0
       float     mass;
       float     lifeTime;
 
@@ -62,8 +61,6 @@ namespace oz
                              Math::frand() * MAX_ROTVELOCITY ) )
       {}
 
-      virtual ~Particle();
-
       void update()
       {
         rot += rotVelocity * timer.frameTime;
@@ -73,14 +70,11 @@ namespace oz
        *  SERIALIZATION
        */
 
-      // serialize whole object
-      virtual void serialize( char* ) const;
+      void readFull( InputStream *istream );
+      void writeFull( OutputStream *ostream );
+      void readUpdate( InputStream *istream );
+      void writeUpdate( OutputStream *ostream );
 
-      // serialize only information necessary for network synchronizing
-      virtual void updateSerialize( char* ) const;
-
-      // update object with recieved synchronization information from network
-      virtual void updateDeserialize( const char* );
   };
 
 }

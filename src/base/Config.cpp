@@ -80,15 +80,13 @@ namespace oz
     }
   }
 
-  bool Config::load( const char *file )
+  bool Config::load( const char *path )
   {
-    logFile.print( "Reading variables from '%s' ...", file );
-
-    xmlTextReader *reader = xmlReaderForFile( file, null, 0 );
+    xmlTextReader *reader = xmlReaderForFile( path, null, 0 );
 
     if( reader == null ) {
       xmlCleanupParser();
-      logFile.printEnd( " Cannot open file" );
+      logFile.printEnd( "Error reading variables from '%s' ... Cannot open file", path );
       return false;
     }
 
@@ -120,13 +118,10 @@ namespace oz
     xmlCleanupParser();
 
     if( error != 0 ) {
-      logFile.printEnd( " Parse error" );
+      logFile.printEnd( "Error reading variables from '%s' ... Parse error", path );
       return false;
     }
-    else {
-      logFile.printEnd( " OK" );
-      return true;
-    }
+    return true;
   }
 
   bool Config::save( const char *file )

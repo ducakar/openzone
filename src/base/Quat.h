@@ -196,6 +196,8 @@ namespace oz
 
     Quat &operator /= ( float k )
     {
+      assert( k != 0.0f );
+
       k = 1.0f / k;
       x *= k;
       y *= k;
@@ -234,6 +236,8 @@ namespace oz
 
     Quat operator / ( float k ) const
     {
+      assert( k != 0.0f );
+
       k = 1.0f / k;
       return Quat( x * k, y * k, z * k, w * k );
     }
@@ -305,7 +309,7 @@ namespace oz
     }
 
     // rotZ ^ rotX ^ rotY
-    static Quat rotZXY( float x, float y, float z )
+    static Quat rotZYX( float z, float y, float x )
     {
       float sx, cx, sy, cy, sz, cz;
 

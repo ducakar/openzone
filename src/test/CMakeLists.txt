@@ -1,6 +1,6 @@
 link_libraries( base )
 
 add_executable( test
-  test.cpp )
+  io.cpp )
 
 add_dependencies( test precompile )

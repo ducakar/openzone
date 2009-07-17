@@ -78,9 +78,9 @@ namespace oz
     Sector *newSector = world.getSector( part->p );
 
     if( oldSector != newSector ) {
+      part->sector = newSector;
       oldSector->particles.remove( part );
       newSector->particles << part;
-      part->sector = newSector;
     }
   }
 
@@ -203,7 +203,6 @@ namespace oz
   void Physics::handleObjHit()
   {
     Object *sObj = collider.hit.obj;
-    Vec3 oldVelocity = obj->momentum;
 
     if( collider.hit.obj != null && ( collider.hit.obj->flags & Object::DYNAMIC_BIT ) ) {
       DynObject *sDynObj = (DynObject*) sObj;
@@ -360,9 +359,9 @@ namespace oz
     Sector *newSector = world.getSector( obj->p );
 
     if( oldSector != newSector ) {
+      obj->sector = newSector;
       oldSector->objects.remove( obj );
       newSector->objects << obj;
-      obj->sector = newSector;
     }
   }
 
@@ -407,6 +406,7 @@ namespace oz
           ( (DynObject*) world.objects[obj->lower] )->momentum.isZero() ) ) )
       {
         obj->flags |= Object::DISABLED_BIT;
+        obj->velocity.setZero();
       }
       // handle physics
       if( !( obj->flags & Object::DISABLED_BIT ) ) {

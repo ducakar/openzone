@@ -43,9 +43,18 @@ namespace client
 
   void Render::init()
   {
+    String sExtensions = (const char*) glGetString( GL_EXTENSIONS );
+    Vector<String> extensions = sExtensions.trim().split( ' ' );
+
     logFile.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
     logFile.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
-    logFile.println( "OpenGL extensions: %s", glGetString( GL_EXTENSIONS ) );
+    logFile.println( "OpenGL extensions {" );
+    logFile.indent();
+    foreach( extension, extensions.iterator() ) {
+      logFile.println( "%s", extension->cstr() );
+    }
+    logFile.unindent();
+    logFile.println( "}" );
 
     font.init( "base/font.png", 2.0f );
 
@@ -75,6 +84,8 @@ namespace client
     font.print( -10, 0, "LOADING ..." );
 
     SDL_GL_SwapBuffers();
+
+    assert( glGetError() == GL_NO_ERROR );
   }
 
   void Render::load()
@@ -82,19 +93,26 @@ namespace client
     glDepthFunc( GL_LEQUAL );
     glEnable( GL_CULL_FACE );
 
+    assert( glGetError() == GL_NO_ERROR );
+
     // fog
     glFogi( GL_FOG_MODE, GL_LINEAR );
     glFogf( GL_FOG_START, 0.0f );
     glFogf( GL_FOG_END, perspectiveMax );
 
+    assert( glGetError() == GL_NO_ERROR );
+
     // lighting
     glLightModeli(  GL_LIGHT_MODEL_TWO_SIDE, false );
     glLightModelfv( GL_LIGHT_MODEL_AMBIENT, GLOBAL_AMBIENT );
 
+    assert( glGetError() == GL_NO_ERROR );
+
     glEnable( GL_COLOR_MATERIAL );
     glColor4fv( WHITE );
-
     glEnable( GL_LIGHT0 );
+
+    assert( glGetError() == GL_NO_ERROR );
 
     particleRadius = config.get( "render.particleRadius", 0.5f );
     drawAABBs      = config.get( "render.drawAABBs",      false );
@@ -104,10 +122,11 @@ namespace client
     camera.init();
     frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
     sky.init();
-
     terra.init();
 
-    for( int i = 0; i < world.bsps.length(); i++ ) {
+    assert( glGetError() == GL_NO_ERROR );
+
+    for( int i = 0; i < translator.bsps.length(); i++ ) {
       bsps << new BSP( world.bsps[i] );
     }
 
@@ -120,6 +139,8 @@ namespace client
     glEnable( GL_FOG );
 
     glEnable( GL_LIGHTING );
+
+    assert( glGetError() == GL_NO_ERROR );
   }
 
   void Render::drawObject( Object *obj )
@@ -127,7 +148,6 @@ namespace client
     glPushMatrix();
 
     glTranslatef( obj->p.x, obj->p.y, obj->p.z );
-    glRotatef( obj->rotZ, 0.0f, 0.0f, 1.0f );
 
     /*if( obj->flags & Object::WATER_BIT ) {
       waterObjects << obj;
@@ -144,8 +164,6 @@ namespace client
       models.cachedValue()->state = Model::UPDATED;
     }
     if( drawAABBs ) {
-      glRotatef( -obj->rotZ, 0.0f, 0.0f, 1.0f );
-
       glDisable( GL_LIGHTING );
       glDisable( GL_TEXTURE_2D );
       glEnable( GL_BLEND );
@@ -175,7 +193,7 @@ namespace client
     }
 
     foreach( obj, sector.objects.iterator() ) {
-      if( &*obj == camera.player ) {
+      if( &*obj == camera.bot ) {
         continue;
       }
       bool isVisible =
@@ -207,12 +225,18 @@ namespace client
 
   void Render::draw()
   {
+    assert( glGetError() == GL_NO_ERROR );
+
     // frustum
     frustum.update();
     frustum.getExtrems( camera.p );
 
+    assert( glGetError() == GL_NO_ERROR );
+
     sky.update();
     water.update();
+
+    assert( glGetError() == GL_NO_ERROR );
 
     bool wasUnderWater = isUnderWater;
     isUnderWater = false;
@@ -257,16 +281,23 @@ namespace client
     // clear buffer
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
+    assert( glGetError() == GL_NO_ERROR );
+
     // camera transformation
     glMultMatrixf( camera.rotTMat );
     glTranslatef( -camera.p.x, -camera.p.y, -camera.p.z );
+
+    assert( glGetError() == GL_NO_ERROR );
 
     // lighting
     glLightfv( GL_LIGHT0, GL_POSITION, sky.lightDir );
     glLightfv( GL_LIGHT0, GL_DIFFUSE, sky.diffuseColor );
     glLightfv( GL_LIGHT0, GL_AMBIENT, sky.ambientColor );
 
+    assert( glGetError() == GL_NO_ERROR );
+
     terra.draw();
+    assert( glGetError() == GL_NO_ERROR );
 
     // draw structures
     BSP::beginRender();
@@ -276,6 +307,7 @@ namespace client
       Structure *str = structures[i];
 
       isInWaterBrush |= bsps[str->bsp]->draw( str );
+      assert( glGetError() == GL_NO_ERROR );
     }
     structures.clear();
 
@@ -284,6 +316,7 @@ namespace client
     // draw objects
     for( int i = 0; i < objects.length(); i++ ) {
       drawObject( objects[i] );
+      assert( glGetError() == GL_NO_ERROR );
     }
     objects.clear();
 
@@ -323,12 +356,14 @@ namespace client
 //     }
 //     waterObjects.clear();
 
+    assert( glGetError() == GL_NO_ERROR );
+
     glColor4fv( WHITE );
     glDisable( GL_BLEND );
 
     if( showAim ) {
-      Vec3 move = camera.at * 20.0f;
-      collider.translate( camera.p, move, camera.player );
+      Vec3 move = camera.at * 32.0f;
+      collider.translate( camera.p, move, camera.bot );
       move *= collider.hit.ratio;
 
       glDisable( GL_TEXTURE_2D );
@@ -338,6 +373,8 @@ namespace client
       glColor3fv( WHITE );
       glEnable( GL_TEXTURE_2D );
     }
+
+    assert( glGetError() == GL_NO_ERROR );
 
     glLoadIdentity();
     glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
@@ -349,26 +386,33 @@ namespace client
     glEnable( GL_BLEND );
     glBlendFunc( GL_ONE, GL_ONE );
 
-    font.print( -45, 37, "cam( %.2f %.2f %.2f ) ( %.2f %.2f )",
-                camera.p.x, camera.p.y, camera.p.z,
-                camera.player->h, camera.player->v );
-    font.print( -45, 35, "camera.player.vel ( %.2f %.2f %.2f )",
-                camera.player->velocity.x, camera.player->velocity.y, camera.player->velocity.z );
+    assert( glGetError() == GL_NO_ERROR );
 
-    font.print( -45, 33, "d %d fl %d lw %d h %d fr %d iw %d uw %d ld %d s %d ovlp %d wb %d",
-                ( camera.player->flags & Object::DISABLED_BIT ) != 0,
-                ( camera.player->flags & Object::ON_FLOOR_BIT ) != 0,
-                camera.player->lower >= 0,
-                ( camera.player->flags & Object::HIT_BIT ) != 0,
-                ( camera.player->flags & Object::FRICTING_BIT ) != 0,
-                ( camera.player->flags & Object::IN_WATER_BIT ) != 0,
-                ( camera.player->flags & Object::UNDER_WATER_BIT ) != 0,
-                ( camera.player->flags & Object::ON_LADDER_BIT ) != 0,
-                ( camera.player->flags & Object::ON_SLICK_BIT ) != 0,
-                collider.test( *camera.player ),
-                isInWaterBrush );
+    if( camera.bot != null ) {
+      font.print( -45, 37, "cam.p( %.2f %.2f %.2f ) bot( %.2f %.2f ) rel( %.2f %.2f )",
+                  camera.p.x, camera.p.y, camera.p.z,
+                  camera.bot->h, camera.bot->v, camera.h, camera.v );
+      font.print( -45, 35, "camera.vel ( %.2f %.2f %.2f ) camera.mom ( %.2f %.2f %.2f )",
+                  camera.bot->velocity.x, camera.bot->velocity.y, camera.bot->velocity.z,
+                  camera.bot->momentum.x, camera.bot->momentum.y, camera.bot->momentum.z);
+
+      font.print( -45, 33, "d %d fl %d lw %d h %d fr %d iw %d uw %d ld %d s %d ovlp %d wb %d",
+                  ( camera.bot->flags & Object::DISABLED_BIT ) != 0,
+                  ( camera.bot->flags & Object::ON_FLOOR_BIT ) != 0,
+                  camera.bot->lower >= 0,
+                  ( camera.bot->flags & Object::HIT_BIT ) != 0,
+                  ( camera.bot->flags & Object::FRICTING_BIT ) != 0,
+                  ( camera.bot->flags & Object::IN_WATER_BIT ) != 0,
+                  ( camera.bot->flags & Object::UNDER_WATER_BIT ) != 0,
+                  ( camera.bot->flags & Object::ON_LADDER_BIT ) != 0,
+                  ( camera.bot->flags & Object::ON_SLICK_BIT ) != 0,
+                  collider.test( *camera.bot ),
+                  isInWaterBrush );
+    }
 
     SDL_GL_SwapBuffers();
+
+    assert( glGetError() == GL_NO_ERROR );
 
     // get ready for next frame
     glEnable( GL_DEPTH_TEST );
@@ -379,6 +423,8 @@ namespace client
     glEnable( GL_FOG );
 
     glEnable( GL_LIGHTING );
+
+    assert( glGetError() == GL_NO_ERROR );
 
     // remove droped models
     foreach( model, models.iterator() ) {

@@ -15,7 +15,6 @@
 namespace oz
 {
 
-  // TODO BotClass
   struct BotClass : DynObjectClass
   {
     static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
@@ -43,8 +42,14 @@ namespace oz
 
     int   state;
 
+    float lookLimitHMin;
+    float lookLimitHMax;
+    float lookLimitVMin;
+    float lookLimitVMax;
+
     static ObjectClass *init( const String &name, Config *config );
     virtual Object *create( const Vec3 &pos );
+    virtual Object *create( InputStream *istream );
   };
 
 }

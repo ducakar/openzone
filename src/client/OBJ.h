@@ -66,11 +66,11 @@ namespace client
       OBJ();
       ~OBJ();
 
-      bool load( const char *path );
+      bool load( const char *name );
       void free();
 
       void draw() const;
-      static uint genList( const char *file );
+      static uint genList( const char *name );
 
       void scale( float scale );
       void translate( const Vec3 &t );

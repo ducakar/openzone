@@ -275,7 +275,7 @@ namespace client
     free();
   }
 
-  bool MD2::load( const char *path )
+  bool MD2::load( const char *name )
   {
     FILE      *file;
     MD2Header header;
@@ -284,7 +284,7 @@ namespace client
     Vec3      *pVerts;
     int       *pNormals;
 
-    String sPath = path;
+    String sPath = String( "mdl/" ) + name;
     String modelFile = sPath + "/tris.md2";
     String skinFile = sPath + "/skin.jpg";
     String configFile = sPath + "/config.xml";

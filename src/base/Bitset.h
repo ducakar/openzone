@@ -23,9 +23,6 @@ namespace oz
       // Number of bits per unit.
       static const int ULONG_BITSIZE = sizeof( ulong ) * 8;
 
-      // 0xfff...f
-      static const ulong ULONG_ALLBITS = ~0ul;
-
       // Pointer to unit[] that holds the data.
       ulong *data;
 
@@ -183,7 +180,7 @@ namespace oz
       {
         assert( 0 <= i && i < ( size * ULONG_BITSIZE ) );
 
-        return ( data[i / ULONG_BITSIZE] & ( 1 << ( i % ULONG_BITSIZE ) ) ) != 0;
+        return ( data[i / ULONG_BITSIZE] & ( 1ul << ( i % ULONG_BITSIZE ) ) ) != 0ul;
       }
 
       /**
@@ -194,7 +191,7 @@ namespace oz
       {
         assert( 0 <= i && i < ( size * ULONG_BITSIZE ) );
 
-        data[i / ULONG_BITSIZE] |= 1 << ( i % ULONG_BITSIZE );
+        data[i / ULONG_BITSIZE] |= 1ul << ( i % ULONG_BITSIZE );
       }
 
       /**
@@ -205,7 +202,7 @@ namespace oz
       {
         assert( 0 <= i && i < ( size * ULONG_BITSIZE ) );
 
-        data[i / ULONG_BITSIZE] &= ~( 1 << ( i % ULONG_BITSIZE ) );
+        data[i / ULONG_BITSIZE] &= ~( 1ul << ( i % ULONG_BITSIZE ) );
       }
 
       /**
@@ -214,7 +211,7 @@ namespace oz
       bool isAllSet() const
       {
         for( int i = 0; i < size; i++ ) {
-          if( data[i] != ULONG_ALLBITS ) {
+          if( data[i] != ~0ul ) {
             return false;
           }
         }
@@ -227,7 +224,7 @@ namespace oz
       bool isAllClear() const
       {
         for( int i = 0; i < size; i++ ) {
-          if( data[i] != 0 ) {
+          if( data[i] != 0ul ) {
             return false;
           }
         }
@@ -249,8 +246,8 @@ namespace oz
         int endUnit     = end / ULONG_BITSIZE;
         int endOffset   = end % ULONG_BITSIZE;
 
-        ulong startMask = ULONG_ALLBITS << startOffset;
-        ulong endMask   = ~( ULONG_ALLBITS << endOffset );
+        ulong startMask = ~0ul << startOffset;
+        ulong endMask   = ~( ~0ul << endOffset );
 
         if( startUnit == endUnit ) {
           data[startUnit] |= startMask & endMask;
@@ -260,7 +257,7 @@ namespace oz
           data[endUnit]   |= endMask;
 
           for( int i = startUnit + 1; i < endUnit; i++ ) {
-            data[i] = ULONG_ALLBITS;
+            data[i] = ~0ul;
           }
         }
       }
@@ -280,8 +277,8 @@ namespace oz
         int endUnit     = end / ULONG_BITSIZE;
         int endOffset   = end % ULONG_BITSIZE;
 
-        ulong startMask = ~( ULONG_ALLBITS << startOffset );
-        ulong endMask   = ULONG_ALLBITS << endOffset;
+        ulong startMask = ~( ~0ul << startOffset );
+        ulong endMask   = ~0ul << endOffset;
 
         if( startUnit == endUnit ) {
           data[startUnit] &= startMask | endMask;
@@ -291,7 +288,7 @@ namespace oz
           data[endUnit]   &= endMask;
 
           for( int i = startUnit + 1; i < endUnit; i++ ) {
-            data[i] = 0;
+            data[i] = 0ul;
           }
         }
       }
@@ -301,7 +298,7 @@ namespace oz
        */
       void setAll()
       {
-        aSet( data, ULONG_ALLBITS, size );
+        aSet( data, ~0ul, size );
       }
 
       /**
@@ -309,7 +306,7 @@ namespace oz
        */
       void clearAll()
       {
-        aSet( data, 0, size );
+        aSet( data, 0ul, size );
       }
 
       /**
@@ -394,7 +391,7 @@ namespace oz
         Bitset r( size );
 
         for( int i = 0; i < size; i++ ) {
-          if( ( data[i] & ~b.data[i] ) != 0 ) {
+          if( ( data[i] & ~b.data[i] ) != 0ul ) {
             return false;
           }
         }

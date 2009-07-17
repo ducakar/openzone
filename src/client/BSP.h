@@ -40,6 +40,50 @@ namespace client
       Bitset visibleLeafs;
       Bitset hiddenFaces;
 
+      static Bounds rotateBounds( const Bounds &bounds, Structure::Rotation rotation )
+      {
+        Bounds rotatedBounds;
+
+        switch( rotation ) {
+          case Structure::R0: {
+            rotatedBounds = bounds;
+            break;
+          }
+          case Structure::R90: {
+            rotatedBounds.mins.x = -bounds.maxs.y;
+            rotatedBounds.mins.y =  bounds.mins.x;
+            rotatedBounds.mins.z =  bounds.mins.z;
+
+            rotatedBounds.maxs.x = -bounds.mins.y;
+            rotatedBounds.maxs.y =  bounds.maxs.x;
+            rotatedBounds.maxs.z =  bounds.maxs.z;
+            break;
+          }
+          case Structure::R180: {
+            rotatedBounds.mins.x = -bounds.maxs.x;
+            rotatedBounds.mins.y = -bounds.maxs.y;
+            rotatedBounds.mins.z =  bounds.mins.z;
+
+            rotatedBounds.maxs.x = -bounds.mins.x;
+            rotatedBounds.maxs.y = -bounds.mins.y;
+            rotatedBounds.maxs.z =  bounds.maxs.z;
+            break;
+          }
+          default:
+          case Structure::R270: {
+            rotatedBounds.mins.x =  bounds.mins.y;
+            rotatedBounds.mins.y = -bounds.maxs.x;
+            rotatedBounds.mins.z =  bounds.mins.z;
+
+            rotatedBounds.maxs.x =  bounds.maxs.y;
+            rotatedBounds.maxs.y = -bounds.mins.x;
+            rotatedBounds.maxs.z =  bounds.maxs.z;
+            break;
+          }
+        }
+        return bounds;
+      }
+
       const oz::BSP::Leaf *getLeaf( const Vec3 &p ) const;
       bool isInWaterBrush( const Vec3 &p, const oz::BSP::Leaf *leaf ) const;
 
