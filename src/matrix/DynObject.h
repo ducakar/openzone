@@ -34,8 +34,10 @@ namespace oz
       explicit DynObject() : velocity( Vec3::zero() ), momentum( Vec3::zero() ), lower( -1 )
       {}
 
-      virtual void load( Net::Packet *stream );
-      virtual void save( Net::Packet *stream );
+      virtual void readFull( InputStream *istream );
+      virtual void writeFull( OutputStream *ostream );
+      virtual void readUpdate( InputStream *istream );
+      virtual void writeUpdate( OutputStream *ostream );
   };
 
 }

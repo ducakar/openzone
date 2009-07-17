@@ -95,7 +95,7 @@ namespace client
       void init();
       void free();
 
-      bool loadMusic( const char *file );
+      bool loadMusic( const char *path );
       void update();
 
       void setVolume( float volume );
@@ -106,14 +106,14 @@ namespace client
         sources << new Source( sourceId );
       }
 
-      void addContSource( const Object::Effect *effect, ALuint sourceId  )
+      void addContSource( uint key, ALuint sourceId  )
       {
-        contSources.add( (uint) effect, sourceId );
+        contSources.add( key, sourceId );
       }
 
-      bool updateContSource( const Object::Effect *effect )
+      bool updateContSource( uint key )
       {
-        if( contSources.contains( (uint) effect ) ) {
+        if( contSources.contains( key ) ) {
           contSources.cachedValue().state = ContSource::UPDATED;
           return true;
         }

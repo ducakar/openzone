@@ -14,6 +14,13 @@
 namespace oz
 {
 
+  static const int SND_HIT         = 0;
+  static const int SND_LAND        = 1;
+  static const int SND_FRICT       = 2;
+  static const int SND_SPLASH_SOFT = 3;
+  static const int SND_SPLASH_HARD = 4;
+  static const int SND_JUMP        = 5;
+
   struct Sector;
   struct ObjectClass;
   struct Hit;
@@ -30,8 +37,10 @@ namespace oz
 
     public:
 
-      // which bits are treated as "lower bits", all other are "higher bits"
+      // which bits are can be set in configuration files, other bits are fixed for the given type
       static const int CONFIG_BITS_MASK = 0x000000ff;
+      // which bits are fixed for a type or temporary (~CONFIG_BITS_MASK)
+      static const int TYPE_BITS_MASK = 0xffffff00;
 
       /*
        * FUNCTION FLAGS
@@ -54,6 +63,13 @@ namespace oz
 
       // if the onCut method is called when object is removed from 3D world (ie. put into inventory)
       static const int CUT_FUNC_BIT = 0x04000000;
+
+      /*
+       * NETWORK FLAGS
+       */
+
+      // if the object doesn't need to be updated over network
+      static const int NOSYNC_BIT = 0x02000000;
 
       /*
        * DYNAMIC OBJECTS' BITS
@@ -149,31 +165,28 @@ namespace oz
        * FIELDS
        */
 
-      int    index;        // position in world.objects vector
-      Sector *sector;      // parent sector, null if not positioned in the world
+      int             index;        // position in world.objects vector
+      Sector          *sector;      // parent sector, null if not positioned in the world
 
-      Object *prev[1];     // previous object in sector.objects list
-      Object *next[1];     // next object in sector.objects list
+      Object          *prev[1];     // previous object in sector.objects list
+      Object          *next[1];     // next object in sector.objects list
 
-      int    flags;
-      int    oldFlags;
+      int             flags;
+      int             oldFlags;
 
-      ObjectClass *type;
+      ObjectClass     *type;
 
       // damage
-      float   damage;
-
-      // rotation around z axis
-      float   rotZ;
+      float           damage;
 
       // events are cleared at the beginning of next update (used for non-continuous sounds)
-      List<Event, 0> events;
+      List<Event, 0>  events;
       // effects are similar to events, but must be manually cleared (used for continuous sounds)
       List<Effect, 0> effects;
 
     public:
 
-      explicit Object() : index( -1 ), sector( null ), rotZ( 0.0f )
+      explicit Object() : index( -1 ), sector( null )
       {}
 
       virtual ~Object();
@@ -248,8 +261,10 @@ namespace oz
        * SERIALIZATION
        */
 
-      virtual void readUpdate( Net::Packet *packet );
-      virtual void writeUpdate( Net::Packet *packet );
+      virtual void readFull( InputStream *istream );
+      virtual void writeFull( OutputStream *ostream );
+      virtual void readUpdate( InputStream *istream );
+      virtual void writeUpdate( OutputStream *ostream );
 
   };
 

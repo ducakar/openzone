@@ -31,10 +31,16 @@ namespace client
       struct Lists
       {
         uint base;
-        int count;
-        // TODO union
-        int nextSlot;
+
+        // we can use union here, those two members are never in use at the same time
+        union
+        {
+          int count;
+          int nextSlot;
+        };
       };
+
+    public:
 
       template <class Type>
       struct Resource
@@ -57,6 +63,9 @@ namespace client
 
       Resource<uint> *textures;
       Resource<uint> *sounds;
+
+    private:
+
       Sparse<Lists>  lists;
 
       HashString< Resource<MD2*>, 253 > md2Models;
@@ -105,12 +114,12 @@ namespace client
 
       void releaseTexture( int resource );
 
-      uint loadTexture( const char *file,
+      uint loadTexture( const char *path,
                         bool wrap = true,
                         int magFilter = DEFAULT_MAG_FILTER,
                         int minFilter = DEFAULT_MIN_FILTER );
 
-      uint loadNormalmap( const char *file,
+      uint loadNormalmap( const char *path,
                           const Vec3 &lightNormal,
                           bool wrap = true,
                           int magFilter = DEFAULT_MAG_FILTER,
@@ -125,11 +134,11 @@ namespace client
       uint genLists( int count );
       void freeLists( uint listId );
 
-      MD2  *loadMD2Model( const char *path );
-      uint loadMD2StaticModel( const char *path );
-      MD3  *loadMD3Model( const char *path );
-      uint loadMD3StaticModel( const char *path );
-      uint loadOBJModel( const char *path );
+      MD2  *loadMD2Model( const char *name );
+      uint loadMD2StaticModel( const char *name );
+      MD3  *loadMD3Model( const char *name );
+      uint loadMD3StaticModel( const char *name );
+      uint loadOBJModel( const char *name );
 
       Model *createModel( const Object *obj )
       {

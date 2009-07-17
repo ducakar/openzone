@@ -279,8 +279,6 @@ namespace client
       glTexCoord2f( 0, 1 );
       glVertex3f( v0.x, v0.y, v0.z );
     glEnd();
-
-    glEndList();
   }
 
   void Shape::init()

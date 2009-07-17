@@ -25,8 +25,10 @@ namespace client
 
       const Object *object;
 
-      void playSoundEvent( const Object::Event *event ) const;
-      void playSoundEffect( const Object::Effect *effect ) const;
+      void playSoundEvent( int sample ) const;
+      void playSoundEffect( int sample, uint key ) const;
+      void requestSounds() const;
+      void releaseSounds() const;
 
     public:
 

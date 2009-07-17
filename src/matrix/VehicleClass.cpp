@@ -27,4 +27,10 @@ namespace oz
     return null;
   }
 
+  Object *VehicleClass::create( InputStream* )
+  {
+    assert( false );
+    return null;
+  }
+
 }

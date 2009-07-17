@@ -40,25 +40,44 @@ namespace oz
 
   class Translator
   {
+    public:
+
+      struct Resource
+      {
+        String name;
+        String path;
+
+        Resource() {}
+        Resource( const String &name_, const String &path_ ) : name( name_ ), path( path_ ) {}
+      };
+
     private:
 
       HashString<int, 1021> textureIndices;
       HashString<int, 1021> soundIndices;
+      HashString<int, 1021> bspIndices;
 
     public:
 
-      Vector<String> textures;
-      Vector<String> sounds;
+      Vector<Resource> textures;
+      Vector<Resource> sounds;
+      Vector<Resource> bsps;
 
       HashString<ObjectClass::InitFunc, 31> baseClasses;
       HashString<ObjectClass*, 251> classes;
 
       int textureIndex( const char *file );
       int soundIndex( const char *file );
+      int bspIndex( const char *file );
 
       Object *createObject( const char *name, const Vec3 &p )
       {
         return classes[name]->create( p );
+      }
+
+      Object *createObject( const char *name, InputStream *istream )
+      {
+        return classes[name]->create( istream );
       }
 
       bool init();

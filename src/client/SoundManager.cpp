@@ -25,10 +25,19 @@ namespace client
 
   void SoundManager::init()
   {
+    String sExtensions = (const char*) alGetString( AL_EXTENSIONS );
+    Vector<String> extensions = sExtensions.trim().split( ' ' );
+
     logFile.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
     logFile.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
     logFile.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
-    logFile.println( "OpenAL extensions: %s", alGetString( AL_EXTENSIONS ) );
+    logFile.println( "OpenAL extensions {" );
+    logFile.indent();
+    foreach( extension, extensions.iterator() ) {
+      logFile.println( "%s", extension->cstr() );
+    }
+    logFile.unindent();
+    logFile.println( "}" );
 
     logFile.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
     logFile.println( "ALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
@@ -45,7 +54,6 @@ namespace client
 
   void SoundManager::free()
   {
-    // FIXME: pool deallocation issues, crashes because of assertions on exit
     foreach( src, sources.iterator() ) {
       alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
@@ -59,10 +67,7 @@ namespace client
       alDeleteSources( 1, &src.source );
     }
     contSources.clear();
-    contSources.deallocate();
-
-    audios.clear();
-    audios.deallocate();
+    audios.free();
 
     freeMusic();
   }
@@ -72,7 +77,6 @@ namespace client
     Sector &sector = world.sectors[sectorX][sectorY];
 
     foreach( obj, sector.objects.iterator() ) {
-      // TODO sound player
       if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
         if( !audios.contains( (uint) &*obj ) ) {
           audios.add( (uint) &*obj, context.createAudio( &*obj ) );
@@ -139,26 +143,43 @@ namespace client
     updateMusic();
   }
 
-  bool SoundManager::loadMusic( const char *file )
+  bool SoundManager::loadMusic( const char *path )
   {
-    logFile.print( "Loading music '%s' ...", file );
+    logFile.print( "Loading music '%s' ...", path );
 
-    FILE *oggFile = fopen( file, "rb" );
+    FILE *oggFile = fopen( path, "rb" );
 
     if( oggFile == null ) {
-      logFile.printEnd( " Failed" );
+      logFile.printEnd( " Failed to open file" );
       return false;
     }
     if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
       fclose( oggFile );
-      logFile.printEnd( " Failed" );
+      logFile.printEnd( " Failed to open Ogg stream" );
       return false;
     }
 
     isMusicLoaded = true;
 
     vorbisInfo = ov_info( &oggStream, -1 );
-    musicFormat = vorbisInfo->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+    if( vorbisInfo == null ) {
+      ov_clear( &oggStream );
+      logFile.printEnd( " Failed to read Vorbis header" );
+      return false;
+    }
+
+    if( vorbisInfo->channels == 1 ) {
+      musicFormat = AL_FORMAT_MONO16;
+    }
+    else if( vorbisInfo->channels == 2 ) {
+      musicFormat = AL_FORMAT_STEREO16;
+    }
+    else {
+      ov_clear( &oggStream );
+      logFile.printEnd( " Invalid number of channels, should be 1 or 2" );
+      return AL_NONE;
+    }
+
     isMusicPlaying = true;
 
     alGenBuffers( 2, musicBuffers );
@@ -188,20 +209,21 @@ namespace client
   {
     char data[MUSIC_BUFFER_SIZE];
     int  section;
-    int  size = 0;
+    int  bytesRead = 0;
     int  result;
 
     do {
-      result = ov_read( &oggStream, &data[size], MUSIC_BUFFER_SIZE - size, 0, 2, 1, &section );
-      size += result;
+      result = ov_read( &oggStream, &data[bytesRead], MUSIC_BUFFER_SIZE - bytesRead, 0, 2, 1,
+                        &section );
+      bytesRead += result;
       if( result < 0 ) {
         isMusicPlaying = false;
         return;
       }
     }
-    while( result > 0 && size < MUSIC_BUFFER_SIZE );
+    while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
 
-    alBufferData( buffer, musicFormat, data, size, vorbisInfo->rate );
+    alBufferData( buffer, musicFormat, data, bytesRead, vorbisInfo->rate );
   }
 
   void SoundManager::updateMusic()

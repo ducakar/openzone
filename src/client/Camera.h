@@ -24,26 +24,40 @@ namespace client
 
     public:
 
-      Vec3   p;
-      Vec3   oldP;
-      float  h;
-      float  v;
-      float  r;
+      Vec3  p;
+      Vec3  oldP;
 
-      Vec3   at;
-      Vec3   up;
+      // relative to the object the camera is bound to
+      float h;
+      float v;
 
-      Mat44  rotMat;
-      Mat44  rotTMat;
+      Quat  relRot;
+      Quat  rot;
 
-      Bot    *player;
-      World  *world;
-      Matrix *matrix;
+      // global rotation matrix and it's inverse
+      Mat44 rotMat;
+      Mat44 rotTMat;
+
+      Vec3  right;
+      Vec3  at;
+      Vec3  up;
+
+      int   botIndex;
+      Bot   *bot;
 
       Camera();
 
       void init();
-      void update();
+
+      void preUpdate()
+      {
+        bot = botIndex == -1 ? null : (Bot*) world.objects[botIndex];
+        if( bot == null ) {
+          botIndex = -1;
+        }
+      }
+
+      void postUpdate();
   };
 
   extern Camera camera;

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "bv.h"
+#include "io.h"
 
 namespace oz
 {
@@ -24,16 +25,19 @@ namespace oz
     };
 
     Vec3     p;
-    Rotation rot;
     int      index;
     int      bsp;
+    Rotation rot;
     float    damage;
 
     explicit Structure() {}
 
-    explicit Structure( const Vec3 &p_, Rotation rot_, int bsp_ ) :
-        p( p_ ), rot( rot_ ), bsp( bsp_ )
+    explicit Structure( const Vec3 &p_, int bsp_, Rotation rot_ ) :
+        p( p_ ), bsp( bsp_ ), rot( rot_ )
     {}
+
+    void readFull( InputStream *istream );
+    void writeFull( OutputStream *ostream );
   };
 
 }

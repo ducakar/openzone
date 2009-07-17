@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "Net.h"
-
 #include "Sky.h"
 #include "Terrain.h"
 #include "BSP.h"
@@ -17,6 +15,8 @@
 #include "Structure.h"
 #include "DynObject.h"
 #include "Particle.h"
+
+#include "Translator.h"
 
 namespace oz
 {
@@ -34,40 +34,44 @@ namespace oz
 
   class World : public Bounds
   {
-    private:
-
-      // List of free indices. Indices can be reused after one full world update pass, so that all
-      // references to those indices are removed (object update functions should remove all invalid
-      // references).
-      Vector<int> strFreeQueue[3];
-      Vector<int> objFreeQueue[3];
-      Vector<int> partFreeQueue[3];
-
-      int addingQueue;
-      int standbyQueue;
-      int freedQueue;
-
     public:
 
       // # of sectors on each (x, y) axis
       static const int MAX = 128;
       static const float DIM;
 
-      Sky     sky;
-      Terrain terrain;
-      Sector  sectors[World::MAX][World::MAX];
+      int                 minSectX;
+      int                 minSectY;
+      int                 maxSectX;
+      int                 maxSectY;
 
+      Sky                 sky;
+      Terrain             terrain;
+      Sector              sectors[World::MAX][World::MAX];
+      Vector<BSP*>        bsps;
       Vector<Structure*>  structures;
       Vector<Object*>     objects;
       Vector<Particle*>   particles;
 
-      // bsp list (should not change during world existance)
-      Vector<BSP*>        bsps;
+    private:
 
-      int minSectX, minSectY;
-      int maxSectX, maxSectY;
+      // List of free indices. Indices can be reused after one full world update pass, so that all
+      // references to those indices are removed (object update functions should remove all invalid
+      // references).
+      Vector<int>         strFreeQueue[3];
+      Vector<int>         objFreeQueue[3];
+      Vector<int>         partFreeQueue[3];
+
+      int                 addingQueue;
+      int                 standbyQueue;
+      int                 freedQueue;
+
+    public:
 
       World();
+
+      void init();
+      void free();
 
       // get pointer to the sector the point is in
       Sector* getSector( float x, float y );
@@ -82,6 +86,21 @@ namespace oz
 
       // get indices of min and max sectors which the bounds intersects
       void getInters( const Bounds &bounds, float epsilon = 0.0f );
+
+    private:
+
+      void position( Structure *str );
+      void unposition( Structure *str );
+
+      void position( Object *obj );
+      void unposition( Object *obj );
+      void reposition( Object *obj );
+
+      void position( Particle *part );
+      void unposition( Particle *part );
+      void reposition( Particle *part );
+
+    public:
 
       /**
        * Put the object into the world hashspace
@@ -107,9 +126,11 @@ namespace oz
       // trim vectors to optimize memory usage
       void trim();
 
-      void add( BSP *bsp );
+      void ensureBSPLoaded( int id );
 
-      void free();
+      bool read( InputStream *istream );
+      bool write( OutputStream *ostream );
+
   };
 
   extern World world;

@@ -26,43 +26,64 @@ namespace oz
       addingQueue( 0 ), standbyQueue( 1 ), freedQueue( 2 )
   {}
 
-  void World::put( Object *obj )
+  void World::init()
   {
-    if( net.isClient ) {
-      return;
+    foreach( bsp, translator.bsps.iterator() ) {
+      bsps << new BSP();
+      if( !bsps.last()->load( bsp->name ) ) {
+        throw Exception( 0, "BSP loading failed" );
+      }
     }
-
-    assert( obj->sector == null );
-
-    Sector *sector = getSector( obj->p );
-
-    obj->sector = sector;
-    sector->objects << obj;
-
-    net.objects << Net::Action( Net::PUT, obj->index );
   }
 
-  void World::cut( Object *obj )
+  void World::free()
   {
-    if( net.isClient ) {
-      return;
+    for( int i = 0; i < World::MAX; i++ ) {
+      for( int j = 0; j < World::MAX; j++ ) {
+        sectors[i][j].structures.clear();
+        sectors[i][j].objects.clear();
+        sectors[i][j].particles.clear();
+      }
     }
 
-    assert( obj->sector != null );
+    foreach( str, structures.iterator() ) {
+      if( *str != null ) {
+        delete *str;
+      }
+    }
+    structures.clear();
 
-    obj->sector->objects.remove( obj );
-    obj->sector = null;
+    foreach( obj, objects.iterator() ) {
+      if( *obj != null ) {
+        delete *obj;
+      }
+    }
+    objects.clear();
 
-    net.objects << Net::Action( Net::CUT, obj->index );
+    foreach( part, particles.iterator() ) {
+      if( *part != null ) {
+        delete *part;
+      }
+    }
+    particles.clear();
+
+    foreach( bsp, bsps.iterator() ) {
+      (*bsp)->free();
+      delete *bsp;
+    }
+    bsps.clear();
+
+    PoolAlloc<Object::Event, 0>::pool.free();
+    PoolAlloc<Object::Effect, 0>::pool.free();
+
+    if( net.isServer ) {
+      net.world << Net::Action( Net::CLEAR );
+    }
   }
 
-  void World::add( Structure *str )
+  void World::position( Structure *str )
   {
-    if( net.isClient ) {
-      return;
-    }
-
-    Bounds &bsp = *bsps[str->bsp];
+    const Bounds &bsp = *bsps[str->bsp];
 
     switch( str->rot ) {
       case Structure::R0: {
@@ -91,6 +112,108 @@ namespace oz
       }
     }
 
+    getInters( *str, EPSILON );
+
+    for( int x = minSectX; x <= maxSectX; x++ ) {
+      for( int y = minSectY; y <= maxSectY; y++ ) {
+        sectors[x][y].structures << str->index;
+      }
+    }
+  }
+
+  void World::unposition( Structure *str )
+  {
+    getInters( *str, EPSILON );
+
+    for( int x = minSectX; x <= maxSectX; x++ ) {
+      for( int y = minSectY; y <= maxSectY; y++ ) {
+        sectors[x][y].structures.exclude( str->index );
+      }
+    }
+  }
+
+  inline void World::position( Object *obj )
+  {
+    obj->sector = world.getSector( obj->p );
+    obj->sector->objects << obj;
+  }
+
+  inline void World::unposition( Object *obj )
+  {
+    obj->sector->objects.remove( obj );
+    obj->sector = null;
+  }
+
+  inline void World::reposition( Object *obj )
+  {
+    Sector *oldSector = obj->sector;
+    Sector *newSector = world.getSector( obj->p );
+
+    if( newSector != oldSector ) {
+      oldSector->objects.remove( obj );
+      newSector->objects << obj;
+      obj->sector = newSector;
+    }
+  }
+
+  inline void World::position( Particle *part )
+  {
+    part->sector = world.getSector( part->p );
+    part->sector->particles << part;
+  }
+
+  inline void World::unposition( Particle *part )
+  {
+    part->sector = null;
+    part->sector->particles.remove( part );
+  }
+
+  inline void World::reposition( Particle *part )
+  {
+    Sector *oldSector = part->sector;
+    Sector *newSector = world.getSector( part->p );
+
+    if( newSector != oldSector ) {
+      oldSector->particles.remove( part );
+      newSector->particles << part;
+      part->sector = newSector;
+    }
+  }
+
+  inline void World::put( Object *obj )
+  {
+    if( net.isClient ) {
+      return;
+    }
+
+    assert( obj->sector == null );
+    position( obj );
+
+    if( net.isServer ) {
+      net.objects << Net::Action( Net::PUT, obj->index );
+    }
+  }
+
+  inline void World::cut( Object *obj )
+  {
+    if( net.isClient ) {
+      return;
+    }
+
+    assert( obj->sector != null );
+    unposition( obj );
+
+    if( net.isServer ) {
+      net.objects << Net::Action( Net::CUT, obj->index );
+    }
+  }
+
+  void World::add( Structure *str )
+  {
+    if( net.isClient ) {
+      return;
+    }
+
     if( strFreeQueue[freedQueue].isEmpty() ) {
       str->index = structures.length();
       structures << str;
@@ -100,15 +223,11 @@ namespace oz
       structures[str->index] = str;
     }
 
-    getInters( *str, EPSILON );
+    position( str );
 
-    for( int x = minSectX; x <= maxSectX; x++ ) {
-      for( int y = minSectY; y <= maxSectY; y++ ) {
-        sectors[x][y].structures << str->index;
-      }
+    if( net.isServer ) {
+      net.structs << Net::Action( Net::ADD, str->index );
     }
-
-    net.structs << Net::Action( Net::ADD, str->index );
   }
 
   void World::add( Object *obj, bool doPut )
@@ -133,10 +252,8 @@ namespace oz
       obj->sector = null;
     }
 
-    net.objects << Net::Action( Net::ADD, obj->index );
-
-    if( !doPut ) {
-      net.objects << Net::Action( Net::CUT, obj->index );
+    if( net.isServer ) {
+      net.objects << Net::Action( doPut ? Net::ADD : Net::ADD_NOPUT, obj->index );
     }
   }
 
@@ -145,7 +262,6 @@ namespace oz
     if( net.isClient ) {
       return;
     }
-
     if( partFreeQueue[freedQueue].isEmpty() ) {
       part->index = particles.length();
       particles << part;
@@ -155,12 +271,11 @@ namespace oz
       particles[part->index] = part;
     }
 
-    Sector *sector = getSector( part->p );
+    position( part );
 
-    part->sector = sector;
-    sector->particles << part;
-
-    net.particles << Net::Action( Net::ADD, part->index );
+    if( net.isServer ) {
+      net.particles << Net::Action( Net::ADD, part->index );
+    }
   }
 
   void World::remove( Structure *str )
@@ -168,15 +283,11 @@ namespace oz
     if( net.isClient ) {
       return;
     }
-    net.structs << Net::Action( Net::REMOVE, str->index );
-
-    getInters( *str, EPSILON );
-
-    for( int x = minSectX; x <= maxSectX; x++ ) {
-      for( int y = minSectY; y <= maxSectY; y++ ) {
-        sectors[x][y].structures.exclude( str->index );
-      }
+    else if( net.isServer ) {
+      net.structs << Net::Action( Net::REMOVE, str->index );
     }
+
+    unposition( str );
 
     strFreeQueue[addingQueue] << str->index;
 
@@ -189,10 +300,12 @@ namespace oz
     if( net.isClient ) {
       return;
     }
-    net.objects << Net::Action( Net::REMOVE, obj->index );
+    else if( net.isServer ) {
+      net.objects << Net::Action( Net::REMOVE, obj->index );
+    }
 
     if( obj->sector != null ) {
-      obj->sector->objects.remove( obj );
+      unposition( obj );
     }
 
     objFreeQueue[addingQueue] << obj->index;
@@ -206,9 +319,11 @@ namespace oz
     if( net.isClient ) {
       return;
     }
-    net.particles << Net::Action( Net::REMOVE, part->index );
+    else if( net.isServer ) {
+      net.particles << Net::Action( Net::REMOVE, part->index );
+    }
 
-    part->sector->particles.remove( part );
+    unposition( part );
 
     partFreeQueue[addingQueue] << part->index;
 
@@ -276,64 +391,126 @@ namespace oz
       --particles;
     }
     particles.trim( 128 );
-
-    bsps.trim( 1 );
   }
 
-  void World::add( BSP *bsp )
+  bool World::read( InputStream *istream )
   {
-    if( net.isClient ) {
-      return;
-    }
-    net.bsps << Net::Action( Net::ADD, bsps.length() );
+    assert( structures.length() == 0 && objects.length() == 0 && particles.length() == 0 );
 
-    bsps << bsp;
+    try {
+      int nStructures = istream->readInt();
+      int nObjects    = istream->readInt();
+      int nParticles  = istream->readInt();
+
+      String    bspFile;
+      Structure *str;
+      Object    *obj;
+      String    typeName;
+      Particle  *part;
+
+      for( int i = 0; i < nStructures; i++ ) {
+        istream->readString( bspFile );
+
+        if( bspFile.length() == 0 ) {
+          structures.add( null );
+        }
+        else {
+          int bspIndex = translator.bspIndex( bspFile );
+          if( bspIndex == -1 ) {
+            throw Exception( 0, "BSP not loaded" );
+          }
+          str = new Structure();
+          str->readFull( istream );
+          str->index = i;
+          str->bsp = bspIndex;
+          position( str );
+          structures << str;
+        }
+      }
+      for( int i = 0; i < nObjects; i++ ) {
+        istream->readString( typeName );
+
+        if( typeName.length() == 0 ) {
+          objects.add( null );
+        }
+        else {
+          obj = translator.createObject( typeName.cstr(), istream );
+          obj->index = i;
+          position( obj );
+          objects << obj;
+        }
+      }
+      for( int i = 0; i < nParticles; i++ ) {
+        bool exists = istream->readBool();
+
+        if( !exists ) {
+          particles.add( null );
+        }
+        else {
+          part = new Particle();
+          part->readFull( istream );
+          part->index = i;
+          position( part );
+          particles << part;
+        }
+      }
+    }
+    catch( Exception ) {
+      return false;
+    }
+    return true;
   }
 
-  void World::free()
+  bool World::write( OutputStream *ostream )
   {
-    for( int i = 0; i < World::MAX; i++ ) {
-      for( int j = 0; j < World::MAX; j++ ) {
-        sectors[i][j].structures.clear();
-        sectors[i][j].objects.clear();
-        sectors[i][j].particles.clear();
+    try {
+      ostream->writeInt( structures.length() );
+      ostream->writeInt( objects.length() );
+      ostream->writeInt( particles.length() );
+
+      String    typeName;
+      Structure *str;
+      Object    *obj;
+      Particle  *part;
+
+      for( int i = 0; i < structures.length(); i++ ) {
+        str = structures[i];
+
+        if( str == null ) {
+          ostream->writeString( "" );
+        }
+        else {
+          ostream->writeString( translator.bsps[str->bsp].name );
+          str->writeFull( ostream );
+        }
+      }
+      for( int i = 0; i < objects.length(); i++ ) {
+        obj = objects[i];
+
+        if( obj == null ) {
+          ostream->writeString( "" );
+        }
+        else {
+          ostream->writeString( obj->type->name );
+          obj->writeFull( ostream );
+        }
+      }
+      for( int i = 0; i < particles.length(); i++ ) {
+        part = particles[i];
+
+        if( part == null ) {
+          ostream->writeBool( false );
+        }
+        else {
+          ostream->writeBool( true );
+          part->writeFull( ostream );
+        }
       }
     }
-
-    int iMax = structures.length();
-    for( int i = 0; i < iMax; i++ ) {
-      if( structures[i] != null ) {
-        delete structures[i];
-        structures[i] = null;
-      }
+    catch( Exception ) {
+      return false;
     }
-    structures.clear();
-
-    int jMax = objects.length();
-    for( int j = 0; j < jMax; j++ ) {
-      if( objects[j] != null && objects[j]->sector != null ) {
-        delete objects[j];
-        objects[j] = null;
-      }
-    }
-    objects.clear();
-
-    int kMax = particles.length();
-    for( int k = 0; k < kMax; k++ ) {
-      if( particles[k] != null ) {
-        delete particles[k];
-        particles[k] = null;
-      }
-    }
-    particles.clear();
-
-    PoolAlloc<Object::Event, 0>::pool.free();
-    PoolAlloc<Object::Effect, 0>::pool.free();
-
-    bsps.free();
-    bsps.clear();
-
-    net.world << Net::Action( Net::CLEAR );
+    return true;
   }
 
 }

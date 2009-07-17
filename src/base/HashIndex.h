@@ -20,9 +20,9 @@ namespace oz
 
       struct Elem : PoolAlloc<Elem, 0>
       {
-        uint  key;
-        Type  value;
-        Elem  *next[1];
+        uint key;
+        Type value;
+        Elem *next[1];
 
         explicit Elem( uint key_, const Type &value_, Elem *next_ ) : key( key_ ), value( value_ )
         {

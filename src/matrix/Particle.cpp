@@ -15,19 +15,46 @@ namespace oz
 
   const float Particle::MAX_ROTVELOCITY = 1000.0f;
 
-  Particle::~Particle()
-  {}
+  void Particle::readFull( InputStream *istream )
+  {
+    p           = istream->readVec3();
+    velocity    = istream->readVec3();
 
-  // serialize whole object
-  void Particle::serialize( char* ) const
-  {}
+    rejection   = istream->readFloat();
+    mass        = istream->readFloat();
+    lifeTime    = istream->readFloat();
 
-      // serialize only information necessary for network synchronizing
-  void Particle::updateSerialize( char* ) const
-  {}
+    size        = istream->readFloat();
+    color       = istream->readVec3();
+    rot         = istream->readVec3();
+    rotVelocity = istream->readVec3();
+  }
 
-      // update object with recieved synchronization information from network
-  void Particle::updateDeserialize( const char* )
-  {}
+  void Particle::writeFull( OutputStream *ostream )
+  {
+    ostream->writeVec3( p );
+    ostream->writeVec3( velocity );
+
+    ostream->writeFloat( rejection );
+    ostream->writeFloat( mass );
+    ostream->writeFloat( lifeTime );
+
+    ostream->writeFloat( size );
+    ostream->writeVec3( color );
+    ostream->writeVec3( rot );
+    ostream->writeVec3( rotVelocity );
+  }
+
+  void Particle::readUpdate( InputStream *istream )
+  {
+    p        = istream->readVec3();
+    velocity = istream->readVec3();
+  }
+
+  void Particle::writeUpdate( OutputStream *ostream )
+  {
+    ostream->writeVec3( p );
+    ostream->writeVec3( velocity );
+  }
 
 }

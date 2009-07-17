@@ -40,33 +40,26 @@ namespace oz
   void Object::onCut()
   {}
 
-  void Object::readUpdate( Net::Packet *packet )
+  void Object::readFull( InputStream *istream )
   {
-
-//     fread( &p, sizeof( p ), 1, stream );
-//     fread( &dim, sizeof( dim ), 1, stream );
-//     fread( &index, sizeof( index ), 1, stream );
-//     fread( &flags, sizeof( flags ), 1, stream );
-//     fread( &rotZ, sizeof( rotZ ), 1, stream );
-//
-//     index = SDL_SwapBE32( index );
-//     flags = SDL_SwapBE32( flags );
+    p        = istream->readVec3();
+    flags    = istream->readInt();
+    oldFlags = istream->readInt();
+    damage   = istream->readFloat();
   }
 
-  void Object::writeUpdate( Net::Packet *packet )
+  void Object::writeFull( OutputStream *ostream )
   {
-//     index = SDL_SwapBE32( index );
-//     flags = SDL_SwapBE32( flags );
-//
-//     fwrite( &p, sizeof( p ), 1, stream );
-//     fwrite( &dim, sizeof( dim ), 1, stream );
-//     fwrite( &index, sizeof( index ), 1, stream );
-//     fwrite( &flags, sizeof( flags ), 1, stream );
-//     fwrite( &type, sizeof( type ), 1, stream );
-//     fwrite( &rotZ, sizeof( rotZ ), 1, stream );
-//
-//     index = SDL_SwapBE32( index );
-//     flags = SDL_SwapBE32( flags );
+    ostream->writeVec3( p );
+    ostream->writeInt( flags );
+    ostream->writeInt( oldFlags );
+    ostream->writeFloat( damage );
   }
+
+  void Object::readUpdate( InputStream* )
+  {}
+
+  void Object::writeUpdate( OutputStream* )
+  {}
 
 }

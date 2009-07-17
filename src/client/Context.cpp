@@ -33,7 +33,7 @@ namespace client
   uint Context::buildTexture( const ubyte *data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
-//     assert( glGetError() == GL_NO_ERROR );
+    assert( glGetError() == GL_NO_ERROR );
 
     GLenum format = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
 
@@ -61,14 +61,14 @@ namespace client
 
     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
-//     if( glGetError() != GL_NO_ERROR ) {
-//       glDeleteTextures( 1, &texNum );
-//       texNum = ~0;
-//
-//       do {
-//       }
-//       while( glGetError() != GL_NO_ERROR );
-//     }
+    if( glGetError() != GL_NO_ERROR ) {
+      glDeleteTextures( 1, &texNum );
+      texNum = ~0;
+
+      do {
+      }
+      while( glGetError() != GL_NO_ERROR );
+    }
     return texNum;
   }
 
@@ -132,35 +132,23 @@ namespace client
   uint Context::createTexture( const ubyte *data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
   {
-    logFile.print( "Creating texture from buffer ..." );
-
     int texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
 
     if( texNum == ~0 ) {
-      logFile.printEnd( " Error" );
+      logFile.println( "Error creating texture from buffer" );
     }
-    else {
-      logFile.printEnd( " OK" );
-    }
-
     return texNum;
   }
 
   uint Context::createNormalmap( ubyte *data, const Vec3 &lightNormal, int width, int height,
                                  int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
-    logFile.print( "Creating normalmap texture from buffer ..." );
-
     int texNum = buildNormalmap( data, lightNormal, width, height, bytesPerPixel, wrap,
                                  magFilter, minFilter );
 
     if( texNum == ~0 ) {
-      logFile.printEnd( " Error" );
+      logFile.println( "Error creating normalmap texture from buffer" );
     }
-    else {
-      logFile.printEnd( " OK" );
-    }
-
     return texNum;
   }
 
@@ -170,19 +158,19 @@ namespace client
       textures[resource].nUsers++;
       return textures[resource].id;
     }
+    textures[resource].nUsers = 1;
 
-    String fileName = translator.textures[resource];
+    String &name = translator.textures[resource].name;
+    String &path = translator.textures[resource].path;
 
-    logFile.print( "Loading registered texture '%s' ...", fileName.cstr() );
+    logFile.print( "Loading registered texture '%s' ...", name.cstr() );
 
-    SDL_Surface *image = IMG_Load( fileName.cstr() );
+    SDL_Surface *image = IMG_Load( path.cstr() );
     if( image == null ) {
       logFile.printEnd( " No such file" );
       return 0;
     }
     logFile.printEnd( " OK" );
-
-    assert( image->w == image->h );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createTexture( (const ubyte*) image->pixels, image->w, image->h,
@@ -191,7 +179,6 @@ namespace client
     SDL_FreeSurface( image );
 
     textures[resource].id = texNum;
-    textures[resource].nUsers = 1;
     return texNum;
   }
 
@@ -202,19 +189,19 @@ namespace client
       textures[resource].nUsers++;
       return textures[resource].id;
     }
+    textures[resource].nUsers = 1;
 
-    String fileName = translator.textures[resource];
+    String &name = translator.textures[resource].name;
+    String &path = translator.textures[resource].path;
 
-    logFile.print( "Loading registerded normalmap texture '%s' ...", fileName.cstr() );
+    logFile.print( "Loading registerded normalmap texture '%s' ...", name.cstr() );
 
-    SDL_Surface *image = IMG_Load( fileName.cstr() );
+    SDL_Surface *image = IMG_Load( path.cstr() );
     if( image == null ) {
       logFile.printEnd( " No such file" );
       return 0;
     }
     logFile.printEnd( " OK" );
-
-    assert( image->w == image->h );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createNormalmap( (ubyte*) image->pixels, lightNormal, image->w, image->h,
@@ -223,7 +210,6 @@ namespace client
     SDL_FreeSurface( image );
 
     textures[resource].id = texNum;
-    textures[resource].nUsers = 1;
     return texNum;
   }
 
@@ -239,18 +225,16 @@ namespace client
     }
   }
 
-  uint Context::loadTexture( const char *fileName, bool wrap, int magFilter, int minFilter )
+  uint Context::loadTexture( const char *path, bool wrap, int magFilter, int minFilter )
   {
-    logFile.print( "Loading texture from file '%s' ...", fileName );
+    logFile.print( "Loading texture from file '%s' ...", path );
 
-    SDL_Surface *image = IMG_Load( fileName );
+    SDL_Surface *image = IMG_Load( path );
     if( image == null ) {
       logFile.printEnd( " No such file" );
       return 0;
     }
     logFile.printEnd( " OK" );
-
-//     assert( image->w == image->h );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createTexture( (const ubyte*) image->pixels, image->w, image->h,
@@ -261,19 +245,17 @@ namespace client
     return texNum;
   }
 
-  uint Context::loadNormalmap( const char *fileName, const Vec3 &lightNormal,
+  uint Context::loadNormalmap( const char *path, const Vec3 &lightNormal,
                                bool wrap, int magFilter, int minFilter )
   {
-    logFile.print( "Loading normalmap texture from file '%s' ...", fileName );
+    logFile.print( "Loading normalmap texture from file '%s' ...", path );
 
-    SDL_Surface *image = IMG_Load( fileName );
+    SDL_Surface *image = IMG_Load( path );
     if( image == null ) {
       logFile.printEnd( " No such file" );
       return 0;
     }
     logFile.printEnd( " OK" );
-
-    assert( image->w == image->h );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createNormalmap( (ubyte*) image->pixels, lightNormal, image->w, image->h,
@@ -295,48 +277,50 @@ namespace client
       sounds[resource].nUsers++;
       return sounds[resource].id;
     }
+    sounds[resource].nUsers = 1;
 
-    const char *file = translator.sounds[resource].cstr();
-    logFile.print( "Loading sound '%s' ...", file );
+    const String &path = translator.sounds[resource].path;
+    logFile.print( "Loading sound '%s' ...", translator.sounds[resource].name.cstr() );
 
-    const char *ext = strrchr( file, '.' );
+    int dot = path.lastIndex( '.' );
+    if( dot <= 0 ) {
+      logFile.printEnd( " Extension missing" );
+      return false;
+    }
+    String extension = path.substring( dot );
 
-    if( String::equals( ext, ".wav" ) ) {
-      sounds[resource].id = alutCreateBufferFromFile( file );
+    if( String::equals( extension, ".au" ) || String::equals( extension, ".wav" ) ) {
+      sounds[resource].id = alutCreateBufferFromFile( path );
 
       if( sounds[resource].id == AL_NONE ) {
         logFile.printEnd( " Failed" );
         return AL_NONE;
       }
-      else {
-        logFile.printEnd( " OK" );
-        return sounds[resource].id;
-      }
     }
-    else if( String::equals( ext, ".ogg" ) || String::equals( ext, ".oga" ) ) {
-      // FIXME: make this loader work
-      FILE *oggFile = fopen( file, "rb" );
+    else if( String::equals( extension, ".oga" ) || String::equals( extension, ".ogg" ) ) {
+      // FIXME make this loader work
+      FILE           *oggFile = fopen( path, "rb" );
+      OggVorbis_File oggStream;
+      vorbis_info    *vorbisInfo;
+      ALenum         format;
 
       if( oggFile == null ) {
         logFile.printEnd( " Failed to open file" );
-        return AL_NONE;
+        return false;
       }
-
-      OggVorbis_File oggStream;
       if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
         fclose( oggFile );
         logFile.printEnd( " Failed to open Ogg stream" );
-        return AL_NONE;
+        return false;
       }
 
-      vorbis_info *vorbisInfo = ov_info( &oggStream, -1 );
+      vorbisInfo = ov_info( &oggStream, -1 );
       if( vorbisInfo == null ) {
         ov_clear( &oggStream );
         logFile.printEnd( " Failed to read Vorbis header" );
-        return AL_NONE;
+        return false;
       }
 
-      ALenum format;
       if( vorbisInfo->channels == 1 ) {
         format = AL_FORMAT_MONO16;
       }
@@ -355,35 +339,32 @@ namespace client
       int  bytesRead = 0;
       int  result;
       do {
-        result = ov_read( &oggStream, data + bytesRead, size - bytesRead, 0, 2, 1, &section );
-        if( result <= 0 ) {
-          break;
-//           ov_clear( &oggStream );
-//           fclose( oggFile );
-//           logFile.printEnd( " Failed to decode Vorbis stream, error %d", result );
-//           return AL_NONE;
-        }
+        result = ov_read( &oggStream, &data[bytesRead], size - bytesRead, 0, 2, 1, &section );
         bytesRead += result;
+        if( result < 0 ) {
+          ov_clear( &oggStream );
+          logFile.printEnd( " Failed to decode Vorbis stream, error %d", result );
+          return AL_NONE;
+        }
       }
       while( result > 0 && bytesRead < size );
 
       ov_clear( &oggStream );
 
       alGenBuffers( 1, &sounds[resource].id );
-      alBufferData( sounds[resource].id, format, data, size, vorbisInfo->rate );
+      alBufferData( sounds[resource].id, format, data, bytesRead, vorbisInfo->rate );
       if( alGetError() != AL_NO_ERROR ) {
-        logFile.printEnd( " Failed create buffer" );
+        logFile.printEnd( " Failed to create buffer" );
         return AL_NONE;
       }
-      logFile.printEnd( " OK" );
-
-      sounds[resource].nUsers = 1;
-      return sounds[resource].id;
     }
     else {
-      logFile.printEnd( " Unknown file extension" );
+      logFile.printEnd( " Unknown file extension '%s'", extension.cstr() );
       return AL_NONE;
     }
+
+    logFile.printEnd( " OK" );
+    return sounds[resource].id;
   }
 
   void Context::releaseSound( int resource )
@@ -468,7 +449,6 @@ namespace client
   {
     assert( textures == null && sounds == null );
 
-    logFile.println( "Context created" );
     textures = new Resource<uint>[translator.textures.length()];
     sounds = new Resource<uint>[translator.sounds.length()];
 
@@ -503,6 +483,7 @@ namespace client
     objModels.clear();
 
     modelClasses.clear();
+    audioClasses.clear();
   }
 
 }

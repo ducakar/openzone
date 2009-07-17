@@ -42,10 +42,11 @@ namespace oz
     for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
       assert( 0 <= i && i < 100 );
 
-      buffer[ sizeof( buffer ) - 2 ] = i / 10;
-      buffer[ sizeof( buffer ) - 1 ] = i % 10;
+      buffer[ sizeof( buffer ) - 3 ] = '0' + ( i / 10 );
+      buffer[ sizeof( buffer ) - 2 ] = '0' + ( i % 10 );
 
-      clazz->audioSamples[i] = translator.soundIndex( config->get( buffer, "" ) );
+      String sampleName = config->get( buffer, "" );
+      clazz->audioSamples[i] = sampleName.length() > 0 ? translator.soundIndex( sampleName ) : -1;
     }
 
     clazz->dimCrouch.x    = config->get( "dimCrouch.x", 0.5f );
@@ -75,6 +76,11 @@ namespace oz
     clazz->grabDistance   = config->get( "grabDistance", 1.0f );
     clazz->state          = config->get( "state", 0 );
 
+    clazz->lookLimitHMin  = config->get( "lookLimit.h.min", -90.0f );
+    clazz->lookLimitHMax  = config->get( "lookLimit.h.max", +90.0f );
+    clazz->lookLimitVMin  = config->get( "lookLimit.v.min", -45.0f );
+    clazz->lookLimitVMax  = config->get( "lookLimit.v.max", +45.0f );
+
     return clazz;
   }
 
@@ -82,20 +88,39 @@ namespace oz
   {
     Bot *obj = new Bot();
 
-    obj->p = pos;
-    obj->dim = dim;
+    obj->p        = pos;
+    obj->dim      = dim;
 
-    obj->flags = flags;
+    obj->flags    = flags;
     obj->oldFlags = flags;
-    obj->type = this;
-    obj->damage = damage;
+    obj->type     = this;
+    obj->damage   = damage;
 
-    obj->mass = mass;
-    obj->lift = lift;
+    obj->mass     = mass;
+    obj->lift     = lift;
 
-    obj->camPos = camPos;
-    obj->state = state | Bot::STEPPING_BIT;
-    obj->mind = null;
+    obj->camPos   = camPos;
+    obj->state    = state;
+    obj->mind     = null;
+
+    return obj;
+  }
+
+  Object *BotClass::create( InputStream *istream )
+  {
+    Bot *obj = new Bot();
+
+    obj->dim    = dim;
+    obj->sector = null;
+    obj->type   = this;
+
+    obj->mass   = mass;
+    obj->lift   = lift;
+
+    obj->readFull( istream );
+
+    obj->bob    = 0.0f;
+    obj->camPos = ( obj->state & Bot::CROUCHING_BIT ) ? camPosCrouch : camPos;
 
     return obj;
   }

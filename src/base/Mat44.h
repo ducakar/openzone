@@ -389,6 +389,8 @@ namespace oz
 
     Mat44 &operator /= ( float k )
     {
+      assert( k != 0.0f );
+
       k = 1.0f / k;
       m[ 0] *= k;
       m[ 1] *= k;
@@ -435,6 +437,8 @@ namespace oz
 
     Mat44 operator / ( float k ) const
     {
+      assert( k != 0.0f );
+
       k = 1.0f / k;
       return Mat44( m[ 0] * k, m[ 1] * k, m[ 2] * k, m[ 3] * k,
                     m[ 4] * k, m[ 5] * k, m[ 6] * k, m[ 7] * k,

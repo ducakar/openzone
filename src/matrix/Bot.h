@@ -36,9 +36,11 @@ namespace oz
       static const int KEY_GESTURE1    = 0x00000800;
       static const int KEY_USE         = 0x00001000;
       static const int KEY_STEP        = 0x00002000;
+      static const int KEY_FREELOOK    = 0x00004000;
 
       static const int STEPPING_BIT    = 0x00000001;
       static const int CROUCHING_BIT   = 0x00000002;
+      static const int FREELOOK_BIT    = 0x00000004;
       static const int RUNNING_BIT     = 0x00000010;
       static const int SHOOTING_BIT    = 0x00000020;
       static const int GROUNDED_BIT    = 0x00000040;
@@ -46,10 +48,6 @@ namespace oz
       static const int GESTURE0_BIT    = 0x00000100;
       static const int GESTURE1_BIT    = 0x00000200;
       static const int DEATH_BIT       = 0x00000400;
-
-      // effects
-      static const int SND_LAND        = 8;
-      static const int SND_JUMP        = 9;
 
       enum AnimEnum
       {
@@ -84,23 +82,33 @@ namespace oz
 
     public:
 
-      Mind    *mind;
+      Mind     *mind;
 
-      int     state;
-      int     anim;
+      int      state;
+      AnimEnum anim;
 
-      int     keys, oldKeys;
+      int      keys, oldKeys;
 
-      float   h, v;
-      float   bob;
-      Vec3    camPos;
+      float    h, v;
+      float    bob;
+      Vec3     camPos;
 
-      float   deathTime;
-      Weapon  *weapon;
+      float    deathTime;
+      Weapon   *weapon;
 
       Vector<Object*> items;
 
       explicit Bot();
+
+      Quat getRot() const
+      {
+        return Quat::rotZYX( Math::rad( h ), 0.0f, Math::rad( v ) );
+      }
+
+      virtual void readFull( InputStream *istream );
+      virtual void writeFull( OutputStream *ostream );
+      virtual void readUpdates( InputStream *istream );
+      virtual void writeUpdates( OutputStream *ostream );
   };
 
 }

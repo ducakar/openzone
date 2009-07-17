@@ -33,6 +33,9 @@ namespace client
 
     private:
 
+      static const float FREECAM_SLOW_SPEED;
+      static const float FREECAM_FAST_SPEED;
+
       float mouseXSens;
       float mouseYSens;
 

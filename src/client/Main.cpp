@@ -18,6 +18,7 @@
 # include <direct.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+# define chdir _chdir
 #else
 # include <unistd.h>
 # include <sys/stat.h>
@@ -93,10 +94,10 @@ namespace client
     String home = String( homeVar == null ? OZ_RC_DIR : homeVar + String( "\\" OZ_RC_DIR ) );
 
     struct _stat homeDirStat;
-    if( _stat( home.cstr(), &homeDirStat ) ) {
+    if( _stat( home.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource dir found, creating '%s' ...", home.cstr() );
 
-      if( _mkdir( home.cstr() ) ) {
+      if( _mkdir( home.cstr() ) != 0 ) {
         printf( " Failed\n" );
         return;
       }
@@ -108,10 +109,10 @@ namespace client
     String home = String( homeVar == null ? OZ_RC_DIR "/" : homeVar + String( "/" OZ_RC_DIR "/" ) );
 
     struct stat homeDirStat;
-    if( stat( home.cstr(), &homeDirStat ) ) {
+    if( stat( home.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource dir found, creating '%s' ...", home.cstr() );
 
-      if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) ) {
+      if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
         printf( " Failed\n" );
         return;
       }
@@ -135,6 +136,11 @@ namespace client
 
     logFile.printlnETD( OZ_APP_NAME " started at" );
 
+    String configPath = home + OZ_CONFIG_FILE;
+    if( config.load( configPath ) ) {
+      logFile.printEnd( "Configuration read from '%s'", configPath.cstr() );
+    }
+
     logFile.print( "Initializing SDL ..." );
 
     // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
@@ -157,30 +163,18 @@ namespace client
 
     initFlags |= INIT_SDL;
 
-    String configPath = home + OZ_CONFIG_FILE;
-    config.load( configPath );
-
     const char *data = config.get( "data", "/usr/share/openzone" );
 
-    logFile.print( "Going to working directory '%s' ...", data );
+    logFile.print( "Setting working directory '%s' ...", data );
 
-#ifdef WIN32
-    if( _chdir( data ) != 0 ) {
-      logFile.printEnd( " Failed" );
-      return;
-    }
-    else {
-      logFile.printEnd( " OK" );
-    }
-#else
     if( chdir( data ) != 0 ) {
       logFile.printEnd( " Failed" );
       return;
     }
     else {
+      io.initBlockSize( data );
       logFile.printEnd( " OK" );
     }
-#endif
 
     int screenX    = config.get( "screen.width", 1024 );
     int screenY    = config.get( "screen.height", 768 );
@@ -393,12 +387,10 @@ int main( int argc, char *argv[] )
   catch( const oz::Exception &e ) {
     oz::logFile.resetIndent();
     oz::logFile.println();
-    oz::logFile.println( "*** EXCEPTION: %s line %d", e.file, e.line );
-    oz::logFile.println( "*** MESSAGE: %s", e.message );
-    oz::logFile.println();
+    oz::logFile.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
 
     if( oz::logFile.isFile() ) {
-      printf( "*** EXCEPTION: %s line %d\n*** MESSAGE: %s\n\n", e.file, e.line, e.message );
+      fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
     }
   }
   oz::client::main.shutdown();

@@ -17,14 +17,20 @@ namespace client
 
   Camera camera;
 
-  Camera::Camera() : h( 0.0f ), v( 0.0f ), r( 0.0f )
+  Camera::Camera()
   {
     p.setZero();
-    at = Vec3( 0.0f, 1.0f, 0.0f );
-    up = Vec3( 0.0f, 0.0f, 1.0f );
+    h = 0.0f;
+    v = 0.0f;
 
-    rotMat.setId();
-    rotTMat.setId();
+    rot.setId();
+    relRot.setId();
+
+    rotMat = rot.rotMat44();
+    rotTMat = ~rotTMat;
+
+    at = rotTMat.y();
+    up = rotTMat.z();
   }
 
   void Camera::init()
@@ -33,29 +39,25 @@ namespace client
     smoothCoef_1 = 1.0f - smoothCoef;
   }
 
-  void Camera::update()
+  void Camera::postUpdate()
   {
-    h = player->h;
-    v = player->v;
-    p = ( player->p + player->camPos ) * smoothCoef_1 + oldP * smoothCoef;
     oldP = p;
+    relRot = Quat::rotZYX( Math::rad( h ), 0.0f, Math::rad( v ) );
 
-    float hRad = Math::rad( h );
-    float vRad = Math::rad( v );
-    float hSine, hCosine, vSine, vCosine;
+    if( bot != null ) {
+      p = ( bot->p + bot->camPos ) * smoothCoef_1 + oldP * smoothCoef;
+      rot = Quat::rotZYX( Math::rad( bot->h + h ), 0.0f, Math::rad( bot->v + v ) );
+    }
+    else {
+      rot = relRot;
+    }
 
-    Math::sincos( hRad, &hSine, &hCosine );
-    Math::sincos( vRad, &vSine, &vCosine );
+    rotMat = rot.rotMat44();
+    rotTMat = ~rotMat;
 
-    at = Vec3( -hSine * vCosine,  hCosine * vCosine, vSine );
-    up = Vec3(  hSine * vSine,   -hCosine * vSine,   vCosine );
-
-    rotTMat = Mat44( hCosine, -hSine   * vCosine,  hSine   * vSine, 0.0f,
-                     hSine,    hCosine * vCosine, -hCosine * vSine, 0.0f,
-                     0.0f,     vSine,              vCosine,         0.0f,
-                     0.0f,     0.0f,               0.0f,            1.0f );
-
-    rotMat = ~rotTMat;
+    right = rotMat.x();
+    at = rotMat.y();
+    up = rotMat.z();
   }
 
 }

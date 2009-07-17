@@ -54,6 +54,16 @@ namespace oz
         aCopy( buffer, s, count + 1 );
       }
 
+      String( const char *s, int count_ ) : count( count_ )
+      {
+        assert( s != null );
+        assert( length( s ) >= count );
+
+        ensureCapacity();
+        aCopy( buffer, s, count );
+        buffer[count] = '\0';
+      }
+
       String( bool b ) : buffer( baseBuffer )
       {
         // some protection against too small buffers
@@ -390,6 +400,22 @@ namespace oz
         r.buffer[rCount] = '\0';
 
         return r;
+      }
+
+      String trim() const
+      {
+        char *start = buffer;
+        char *end = buffer + count;
+
+        while( start < end && ( *start == ' ' || *start == '\t' || *start == '\n' ) ) {
+          start++;
+        }
+        do {
+          end--;
+        }
+        while( start < end && ( *end == ' ' || *end == '\t' || *end == '\n' ) );
+
+        return String( start, end - start );
       }
 
       Vector<String> split( char ch ) const

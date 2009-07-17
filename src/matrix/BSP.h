@@ -20,11 +20,6 @@ namespace oz
     static const int LIGHTMAP_BPP = 3;
     static const int LIGHTMAP_SIZE = LIGHTMAP_DIM * LIGHTMAP_DIM * LIGHTMAP_BPP;
 
-    // 1 unit in BSP map = 1 cm (for BSPs made for this engine)
-    static const float BSP_SCALE;
-    // 1 unit in BSP map = 1 inch (for BSPs made for quake)
-    static const float QBSP_SCALE;
-
     static const int SOLID_BIT  = 0x01;
     static const int SLICK_BIT  = 0x02;
     static const int WATER_BIT  = 0x04;
@@ -134,7 +129,8 @@ namespace oz
     explicit BSP();
     ~BSP();
 
-    void loadQBSP( const char *fileName, float maxDim = Math::INF, float scale = QBSP_SCALE );
+    bool loadQBSP( const char *fileName, float scale, float maxDim );
+    bool load( const char *name );
     void free();
   };
 
