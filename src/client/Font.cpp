@@ -23,7 +23,7 @@ namespace client
     free();
   }
 
-  uint Font::loadTexture( const char *fileName )
+  GLuint Font::loadTexture( const char *fileName )
   {
     SDL_Surface *image = IMG_Load( fileName );
     if( image == null ) {
@@ -34,12 +34,12 @@ namespace client
     GLint bytesPerPixel = image->format->BitsPerPixel / 8;
     GLenum format = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
 
-    uint texNum;
+    GLuint texNum;
     glGenTextures( 1, &texNum );
     glBindTexture( GL_TEXTURE_2D, texNum );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
     glTexImage2D( GL_TEXTURE_2D, 0, bytesPerPixel, image->w, image->h, 0, format,
                   GL_UNSIGNED_BYTE, image->pixels );
@@ -49,16 +49,19 @@ namespace client
     return texNum;
   }
 
-  void Font::init( const char *fileName, float scale )
+  void Font::init( const char *fileName, float scale, float screenX_, float screenY_ )
   {
+    screenX = screenX_;
+    screenY = screenY_;
+
     logFile.print( "Loading fonts '%s' ... ", fileName );
     texture = loadTexture( fileName );
     if( texture == 0 ) {
       return;
     }
 
-    float width = FONT_WIDTH * scale;
-    float height = FONT_HEIGHT * scale;
+    int width  = FONT_WIDTH  * scale;
+    int height = FONT_HEIGHT * scale;
 
     baseList = glGenLists( 256 );
 
@@ -67,14 +70,14 @@ namespace client
         glNewList( baseList + ( 15 - y ) * 16 + x, GL_COMPILE );
         glBindTexture( GL_TEXTURE_2D, texture );
         glBegin( GL_QUADS );
-        glTexCoord2f( x / 16.0f         + FONT_BIAS_X,  y / 16.0f        + FONT_BIAS_Y );
-        glVertex3f( 0, 0, 0 );
-        glTexCoord2f( ( x + 1 ) / 16.0f - FONT_BIAS_X,  y / 16.0f        + FONT_BIAS_Y );
-        glVertex3f( width, 0, 0 );
-        glTexCoord2f( ( x + 1 ) / 16.0f - FONT_BIAS_X, ( y + 1 ) / 16.0f - FONT_BIAS_Y );
-        glVertex3f( width, height, 0 );
-        glTexCoord2f( x / 16.0f         + FONT_BIAS_X, ( y + 1 ) / 16.0f - FONT_BIAS_Y );
-        glVertex3f( 0, height, 0 );
+          glTexCoord2f( (float)   x       / width, (float)   y       / height );
+          glVertex2i( 0, 0 );
+          glTexCoord2f( (float) ( x + 1 ) / width, (float)   y       / height );
+          glVertex2i( width, 0 );
+          glTexCoord2f( (float) ( x + 1 ) / width, (float) ( y + 1 ) / height );
+          glVertex2i( width, height );
+          glTexCoord2f( (float)   x       / width, (float) ( y + 1 ) / height );
+          glVertex2i( 0, height );
         glEnd();
         glTranslatef( width, 0, 0 );
         glEndList();
@@ -87,17 +90,20 @@ namespace client
   void Font::print( float x, float y, const char *string, ... ) const
   {
     va_list ap;
-    char buf[256];
+    char buf[1024];
 
     va_start( ap, string );
     vsprintf( buf, string, ap );
     va_end( ap );
 
+    x = x < 0.0f ? screenX + x : x;
+    y = y < 0.0f ? screenY + y : y;
+
     glBindTexture( GL_TEXTURE_2D, texture );
     glPushMatrix();
     glLoadIdentity();
 
-    glTranslatef( x, y, -50.0f );
+    glTranslatef( x, y, 0.0f );
     glListBase( baseList );
     glCallLists( String::length( buf ), GL_BYTE, buf );
 

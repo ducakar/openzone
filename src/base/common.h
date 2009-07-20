@@ -111,7 +111,7 @@ namespace oz
   }
 
   /**
-   * c bounded between a and b. Equals to max( min( c, b ), a ).
+   * Bound c between a and b. Equals to max( min( c, b ), a ).
    * @param c
    * @param a
    * @param b

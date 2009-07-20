@@ -2,7 +2,7 @@
  *  List.h
  *
  *  Linked list
- *  The Type should provide the "next[INDEX]" pointer
+ *  The Type should provide the "next[INDEX]" pointer.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */

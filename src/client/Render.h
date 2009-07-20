@@ -39,6 +39,7 @@ namespace client
       static const float NIGHT_FOG_DIST;
 
       Font         font;
+      int          fontHeight;
       Terrain      terra;
 
       Vector<BSP*> bsps;
@@ -51,10 +52,13 @@ namespace client
       Vector<Object*>    blendedObjects;
       Vector<Particle*>  particles;
 
-      float perspectiveAngle;
-      float perspectiveAspect;
-      float perspectiveMin;
-      float perspectiveMax;
+      int    screenX;
+      int    screenY;
+
+      double perspectiveAngle;
+      double perspectiveAspect;
+      double perspectiveMin;
+      double perspectiveMax;
 
       float particleRadius;
 

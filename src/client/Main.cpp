@@ -39,33 +39,19 @@ namespace client
     logFile.indent();
 
     if( initFlags & INIT_GAME_START ) {
-      logFile.println( "Stopping Game {" );
-      logFile.indent();
       game.stop();
-      logFile.unindent();
-      logFile.println( "}" );
     }
     if( initFlags & INIT_RENDER_INIT ) {
-      logFile.print( "Shutting down Graphics ..." );
       render.free();
-      logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_AUDIO ) {
-      logFile.print( "Shutting down SoundManager ..." );
       soundManager.free();
-      logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_CONTEXT ) {
-      logFile.print( "Clearing Context ..." );
       context.free();
-      logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_GAME_INIT ) {
-      logFile.println( "Shutting down Game {" );
-      logFile.indent();
       game.free();
-      logFile.unindent();
-      logFile.println( "}" );
     }
     if( initFlags & INIT_AL ) {
       logFile.print( "Shutting down OpenAL ..." );
@@ -172,7 +158,6 @@ namespace client
       return;
     }
     else {
-      io.initBlockSize( data );
       logFile.printEnd( " OK" );
     }
 
@@ -220,46 +205,24 @@ namespace client
     }
     initFlags |= INIT_AL;
 
-    logFile.println( "Initializing Graphics {" );
-    logFile.indent();
     render.init();
-    logFile.unindent();
-    logFile.println( "}" );
     initFlags |= INIT_RENDER_INIT;
 
-    logFile.println( "Initializing SoundManager {" );
-    logFile.indent();
     soundManager.init();
-    logFile.unindent();
-    logFile.println( "}" );
     initFlags |= INIT_AUDIO;
 
-    logFile.println( "Initializing Game {" );
-    logFile.indent();
     if( !game.init() ) {
       return;
     }
-    logFile.unindent();
-    logFile.println( "}" );
     initFlags |= INIT_GAME_INIT;
 
-    logFile.print( "Initializing Context ..." );
     context.init();
-    logFile.printEnd( " OK" );
     initFlags |= INIT_CONTEXT;
 
-    logFile.println( "Loading Graphics {" );
-    logFile.indent();
     render.load();
-    logFile.unindent();
-    logFile.println( "}" );
     initFlags |= INIT_RENDER_LOAD;
 
-    logFile.println( "Starting Game {" );
-    logFile.indent();
     game.start();
-    logFile.unindent();
-    logFile.println( "}" );
     initFlags |= INIT_GAME_START;
 
     logFile.println( "MAIN LOOP {" );

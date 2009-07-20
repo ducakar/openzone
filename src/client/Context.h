@@ -142,12 +142,20 @@ namespace client
 
       Model *createModel( const Object *obj )
       {
-        return modelClasses[obj->type->modelType]( obj );
+        if( !modelClasses.contains( obj->type->modelType ) ) {
+          obj->type->flags &= Object::MODEL_BIT;
+          return null;
+        }
+        return modelClasses.cachedValue()( obj );
       }
 
       Audio *createAudio( const Object *obj )
       {
-        return audioClasses[obj->type->audioType]( obj );
+        if( !audioClasses.contains( obj->type->audioType ) ) {
+          obj->type->flags &= Object::AUDIO_BIT;
+          return null;
+        }
+        return audioClasses.cachedValue()( obj );
       }
 
       Context();

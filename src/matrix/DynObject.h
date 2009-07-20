@@ -24,7 +24,7 @@ namespace oz
       float   mass;
       float   lift;
 
-      int     lower;        // index of lower object
+      int     lower;     // index of the lower object
 
       // if on ground, used as floor normal, it is not set if on another object
       Vec3    floor;

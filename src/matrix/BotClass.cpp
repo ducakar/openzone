@@ -36,17 +36,21 @@ namespace oz
     clazz->modelType      = config->get( "model.type", "MD2" );
     clazz->modelPath      = config->get( "model.path", "mdl/goblin.md2" );
 
-    clazz->audioType      = config->get( "audio.type", "Simple" );
+    clazz->audioType      = config->get( "audio.type", "" );
 
-    char buffer[] = "audio.sample  ";
-    for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
-      assert( 0 <= i && i < 100 );
+    if( clazz->audioType.length() > 0 ) {
+      clazz->flags |= Object::AUDIO_BIT;
 
-      buffer[ sizeof( buffer ) - 3 ] = '0' + ( i / 10 );
-      buffer[ sizeof( buffer ) - 2 ] = '0' + ( i % 10 );
+      char buffer[] = "audio.sample  ";
+      for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
+        assert( 0 <= i && i < 100 );
 
-      String sampleName = config->get( buffer, "" );
-      clazz->audioSamples[i] = sampleName.length() > 0 ? translator.soundIndex( sampleName ) : -1;
+        buffer[ sizeof( buffer ) - 3 ] = '0' + ( i / 10 );
+        buffer[ sizeof( buffer ) - 2 ] = '0' + ( i % 10 );
+
+        String sampleName = config->get( buffer, "" );
+        clazz->audioSamples[i] = sampleName.length() > 0 ? translator.soundIndex( sampleName ) : -1;
+      }
     }
 
     clazz->dimCrouch.x    = config->get( "dimCrouch.x", 0.5f );
@@ -64,17 +68,17 @@ namespace oz
     clazz->bobInc         = config->get( "bobInc", 0.0f );
     clazz->bobAmplitude   = config->get( "bobAmplitude", 0.0f );
 
-    clazz->walkVelocity   = config->get( "walkVelocity", 1.0f );
-    clazz->runVelocity    = config->get( "runVelocity", 4.0f );
-    clazz->crouchVelocity = config->get( "crouchVelocity", 1.0f );
-    clazz->jumpVelocity   = config->get( "jumpVelocity", 4.0f );
+    clazz->walkMomentum   = config->get( "walkMomentum", 1.0f );
+    clazz->runMomentum    = config->get( "runMomentum", 4.0f );
+    clazz->crouchMomentum = config->get( "crouchMomentum", 1.0f );
+    clazz->jumpMomentum   = config->get( "jumpMomentum", 4.0f );
 
     clazz->stepInc        = config->get( "stepInc", 1.0f );
     clazz->stepMax        = config->get( "stepMax", 1.0f );
 
     clazz->airControl     = config->get( "airControl", 0.05f );
     clazz->grabDistance   = config->get( "grabDistance", 1.0f );
-    clazz->state          = config->get( "state", 0 );
+    clazz->state          = config->get( "state", Bot::STEPPING_BIT );
 
     clazz->lookLimitHMin  = config->get( "lookLimit.h.min", -90.0f );
     clazz->lookLimitHMax  = config->get( "lookLimit.h.max", +90.0f );

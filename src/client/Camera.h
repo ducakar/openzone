@@ -49,15 +49,7 @@ namespace client
 
       void init();
 
-      void preUpdate()
-      {
-        bot = botIndex == -1 ? null : (Bot*) world.objects[botIndex];
-        if( bot == null ) {
-          botIndex = -1;
-        }
-      }
-
-      void postUpdate();
+      void update();
   };
 
   extern Camera camera;

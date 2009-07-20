@@ -18,8 +18,8 @@ namespace oz
   struct BotClass : DynObjectClass
   {
     static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
-        Object::HIT_FUNC_BIT | Object::DESTROY_FUNC_BIT | Object::BOT_BIT;
-    static const int DEFAULT_FLAGS = Object::CLIP_BIT | Object::CLIMBER_BIT | Object::PUSHING_BIT;
+        Object::HIT_FUNC_BIT | Object::BOT_BIT;
+    static const int DEFAULT_FLAGS = Object::CLIP_BIT | Object::CLIMBER_BIT | Object::PUSHER_BIT;
 
     Vec3  dimCrouch;
 
@@ -29,10 +29,10 @@ namespace oz
     float bobInc;
     float bobAmplitude;
 
-    float walkVelocity;
-    float runVelocity;
-    float crouchVelocity;
-    float jumpVelocity;
+    float walkMomentum;
+    float runMomentum;
+    float crouchMomentum;
+    float jumpMomentum;
 
     float stepInc;
     float stepMax;

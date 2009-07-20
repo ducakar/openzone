@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FILES="src/*/*.h src/*/*.cpp src/*/*.gen *.h *.sh src/CMakeLists.txt CMakeLists.txt"
+FILES="src/*/*.h src/*/*.cpp src/*/*.gen *.h data/*/*.xml src/CMakeLists.txt CMakeLists.txt *.sh"
 
 wc -l $FILES
 

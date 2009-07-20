@@ -38,6 +38,9 @@ namespace oz
       static const int KEY_STEP        = 0x00002000;
       static const int KEY_FREELOOK    = 0x00004000;
 
+      static const int SND_LAND        = 5;
+      static const int SND_JUMP        = 6;
+
       static const int STEPPING_BIT    = 0x00000001;
       static const int CROUCHING_BIT   = 0x00000002;
       static const int FREELOOK_BIT    = 0x00000004;
@@ -77,7 +80,7 @@ namespace oz
     protected:
 
       void onUpdate();
-      void onHit( const Hit *hit, float hitVelocity );
+      void onHit( const Hit *hit, float hitMomentum );
       void onDestroy();
 
     public:

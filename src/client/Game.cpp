@@ -31,43 +31,35 @@ namespace client
 
   bool Game::init()
   {
+    logFile.println( "Initializing Game {" );
+    logFile.indent();
+
     mouseXSens = config.get( "input.mouse.xSens", 0.2f );
     mouseYSens = config.get( "input.mouse.ySens", 0.2f );
     keyXSens   = config.get( "input.keys.xSens", 0.2f );
     keyYSens   = config.get( "input.keys.ySens", 0.2f );
 
     network.connect();
-
-    logFile.println( "Loading Matrix {" );
-    logFile.indent();
     matrix.load();
-    logFile.unindent();
-    logFile.println( "}" );
-
-    logFile.println( "Loading Nirvana {" );
-    logFile.indent();
     nirvana.load();
-    logFile.unindent();
-    logFile.println( "}" );
 
     camera.botIndex = -1;
-    camera.oldP = world.objects[0]->p;
+    camera.bot = null;
+    camera.p = Vec3( 40, -50, 80 );
 
+    logFile.unindent();
+    logFile.println( "}" );
     return true;
   }
 
   void Game::start()
   {
-    logFile.print( "Starting Nirvana thread ..." );
     nirvana.start();
-    logFile.printEnd( " OK" );
   }
 
   bool Game::update( int time )
   {
     nirvana.requestSuspend = true;
-
-    camera.preUpdate();
 
     if( camera.bot == null ) {
       /*
@@ -89,7 +81,7 @@ namespace client
         camera.h += keyYSens * time;
       }
 
-      camera.postUpdate();
+      camera.update();
 
       /*
        * Movement
@@ -224,7 +216,7 @@ namespace client
     network.update();
     matrix.update();
 
-    camera.postUpdate();
+    camera.update();
 
     SDL_SemPost( nirvana.semaphore );
 
@@ -233,30 +225,20 @@ namespace client
 
   void Game::stop()
   {
-    logFile.print( "Stopping Nirvana thread ..." );
     nirvana.stop();
-    logFile.printEnd( " OK" );
   }
 
   void Game::free()
   {
+    logFile.println( "Shutting down Game {" );
+    logFile.indent();
+
     network.disconnect();
-
-    logFile.print( "Shutting down Nirvana ..." );
-    logFile.indent();
-
     nirvana.free();
-
-    logFile.unindent();
-    logFile.printEnd( " OK" );
-
-    logFile.print( "Shutting down Matrix ..." );
-    logFile.indent();
-
     matrix.free();
 
     logFile.unindent();
-    logFile.printEnd( " OK" );
+    logFile.println( "}" );
   }
 
 }

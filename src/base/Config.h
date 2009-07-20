@@ -109,6 +109,13 @@ namespace oz
        * @param defVal default value, if variable does not exist in configration
        * @return value of given variable
        */
+      double get( const char *name, double defVal ) const;
+
+      /**
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configration
+       * @return value of given variable
+       */
       const char *get( const char *name, const char *defVal ) const;
 
       /**

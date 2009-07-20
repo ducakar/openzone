@@ -74,7 +74,7 @@ else( WIN32 )
 #    -Wdisabled-optimization -fprofile-use
   )
   add_definitions( ${CXX_FLAGS} )
-  link_libraries( xml2 SDL SDL_image SDL_net GL GLU openal alut vorbisfile )
+  link_libraries( xml2 SDL SDL_image SDL_net SDL_ttf GL GLU openal alut vorbisfile )
 
   install( FILES src/client/dark
            DESTINATION bin/dark

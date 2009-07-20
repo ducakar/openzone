@@ -1,7 +1,7 @@
 /*
  *  io.h
  *
- *  [description]
+ *  Stream readers/writers and buffer
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */
@@ -11,6 +11,9 @@
 namespace oz
 {
 
+  /**
+   * Read-only nonseekable stream.
+   */
   class InputStream
   {
     private:
@@ -155,6 +158,9 @@ namespace oz
       }
   };
 
+  /**
+   * Write-only nonseekable stream.
+   */
   class OutputStream
   {
     private:
@@ -290,9 +296,17 @@ namespace oz
       }
   };
 
+  /**
+   * Memory buffer.
+   * It can be filled with data from a file or written to a file.
+   */
   class Buffer
   {
     private:
+
+      // Size of block that will be used for block reads from/writes to a file. Optimal size is
+      // the same as filesystem block size, that is 4K by default on Linux filesystems.
+      static const int BLOCK_SIZE = 4096;
 
       char *buffer;
       int  count;
@@ -302,8 +316,10 @@ namespace oz
       Buffer() : buffer( null ), count( 0 )
       {}
 
-      Buffer( int size ) : buffer( new char[size] ), count( size )
-      {}
+      Buffer( int size ) : count( ( size - 1 ) / BLOCK_SIZE + 1 )
+      {
+        buffer = new char[count];
+      }
 
       ~Buffer()
       {
@@ -354,17 +370,5 @@ namespace oz
       bool write( const char *path );
 
   };
-
-  struct IO
-  {
-    int    blockSize;
-    String dataDir;
-
-    IO();
-
-    void initBlockSize( const char *file );
-  };
-
-  extern IO io;
 
 }

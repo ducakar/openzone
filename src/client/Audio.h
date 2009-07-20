@@ -15,6 +15,7 @@ namespace oz
 namespace client
 {
 
+  // TODO buffer clearing
   class Audio
   {
     public:
@@ -23,15 +24,17 @@ namespace client
 
     protected:
 
-      const Object *object;
+      const Object      *obj;
+      const ObjectClass *clazz;
 
-      void playSoundEvent( int sample ) const;
-      void playSoundEffect( int sample, uint key ) const;
+      void playSound( int sample, float volume ) const;
+      void playContSound( int sample, float volume, uint key ) const;
       void requestSounds() const;
       void releaseSounds() const;
 
     public:
 
+      Audio( const Object *obj, const ObjectClass *clazz );
       virtual ~Audio();
 
       virtual void update() = 0;
