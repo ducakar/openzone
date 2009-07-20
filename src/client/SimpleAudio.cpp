@@ -18,30 +18,51 @@ namespace oz
 namespace client
 {
 
-  Audio *SimpleAudio::create( const Object *object )
+  Audio *SimpleAudio::create( const Object *obj )
   {
-    SimpleAudio *audio = new SimpleAudio();
+    assert( obj->flags & Object::DYNAMIC_BIT );
 
-    audio->object = object;
-    audio->requestSounds();
-
-    return audio;
+    return new SimpleAudio( obj, obj->type );
   }
 
   void SimpleAudio::update()
   {
-    int ( &samples )[ObjectClass::AUDIO_SAMPLES] = object->type->audioSamples;
+    DynObject *obj = (DynObject*) this->obj;
+    int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
 
-    if( ( object->flags & Object::HIT_BIT ) && samples[SND_HIT] >= 0 ) {
-      playSoundEvent( samples[SND_HIT] );
+    // friction
+    if( obj->flags & Object::FRICTING_BIT ) {
+      float dv2 = obj->velocity.x*obj->velocity.x + obj->velocity.y*obj->velocity.y;
+      playContSound( samples[SND_FRICTING], dv2, (uint) &*obj );
     }
-    // non-continous
-    foreach( event, Audio::object->events.iterator() ) {
-      playSoundEvent( samples[event->id] );
+
+    // splash
+    if( ( obj->flags & Object::IN_WATER_BIT ) && !( obj->flags & Object::IN_WATER_BIT ) ) {
+      if( obj->velocity.z < -4.0f ) {
+        playSound( samples[SND_SPLASH_HARD], obj->velocity.z*obj->velocity.z );
+      }
+      else {
+        playSound( samples[SND_SPLASH_SOFT], obj->velocity.z*obj->velocity.z );
+      }
     }
-    // continous
-    foreach( effect, object->effects.iterator() ) {
-      playSoundEffect( samples[effect->id], (uint) &*effect );
+
+    // events (non-continous)
+    foreach( event, obj->events.iterator() ) {
+      if( event->id == Object::EVENT_HIT ) {
+        if( event->intensity < -4.0f ) {
+          playSound( samples[SND_HIT_HARD], event->intensity );
+        }
+        else {
+          playSound( samples[SND_HIT_HARD], event->intensity );
+        }
+      }
+      else {
+        playSound( samples[event->id], event->intensity );
+      }
+    }
+    // effects (continous)
+    foreach( effect, obj->effects.iterator() ) {
+      playContSound( samples[effect->id], effect->intensity, (uint) &*effect );
     }
   }
 

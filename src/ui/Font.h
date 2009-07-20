@@ -8,36 +8,59 @@
 
 #pragma once
 
-#define FONT_BIAS_X     0.01f
-#define FONT_BIAS_Y     0
-#define FONT_WIDTH      0.65f
-#define FONT_HEIGHT     1.0f
-#define FONT_DEPTH      -50.0f
-
 namespace oz
 {
 namespace client
 {
+namespace ui
+{
 
   class Font
   {
+    public:
+
+      enum Type
+      {
+        MONO,
+        SANS
+      };
+
     private:
 
-      uint texture;
-      uint baseList;
+      float     screenX;
+      float     screenY;
 
-      uint loadTexture( const char *fileName );
+      TTF_Font  *monoFont;
+      int       monoHeight;
+      TTF_Font  *sansFont;
+      int       sansHeight;
+
+      TTF_Font  *currentFont;
+
+      SDL_Color fgColor;
+      SDL_Color bgColor;
 
     public:
 
-      Font();
-      ~Font();
+      void setFont( Type type )
+      {
+        currentFont = type == MONO ? monoFont : sansFont;
+      }
 
-      void init( const char *fileName, float scale );
-      void print( float x, float y, const char *string, ... ) const;
+      int getHeight() const
+      {
+        return currentFont == monoFont ? monoHeight : sansHeight;
+      }
+
+      void print( float x, float y, const char *string, ... );
+
+      bool init( float screenX, float screenY );
       void free();
 
   };
 
+  extern Font font;
+
+}
 }
 }

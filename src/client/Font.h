@@ -8,11 +8,8 @@
 
 #pragma once
 
-#define FONT_BIAS_X     0.01f
-#define FONT_BIAS_Y     0
-#define FONT_WIDTH      0.65f
-#define FONT_HEIGHT     1.0f
-#define FONT_DEPTH      -50.0f
+#define FONT_WIDTH      16.0f
+#define FONT_HEIGHT     16.0f
 
 namespace oz
 {
@@ -23,8 +20,11 @@ namespace client
   {
     private:
 
-      uint texture;
-      uint baseList;
+      GLuint texture;
+      GLuint baseList;
+
+      float  screenX;
+      float  screenY;
 
       uint loadTexture( const char *fileName );
 
@@ -33,7 +33,7 @@ namespace client
       Font();
       ~Font();
 
-      void init( const char *fileName, float scale );
+      void init( const char *fileName, float scale, float screenX, float screenY );
       void print( float x, float y, const char *string, ... ) const;
       void free();
 

@@ -22,6 +22,9 @@ namespace oz
 
   void Matrix::load()
   {
+    logFile.println( "Loading Matrix {" );
+    logFile.indent();
+
     semaphore = SDL_CreateSemaphore( 0 );
 
     translator.init();
@@ -32,59 +35,64 @@ namespace oz
     world.sky.time = 200.0f;
     world.terrain.loadIMG( "terra/heightmap.png" );
 
-//     world.add( new Structure( Vec3( 47.0f, -33.0f, 82.5f ), translator.bspIndex( "castle" ), Structure::R0 ) );
-//
-//     world.add( translator.createObject( "Goblin", Vec3( 40, -50, 90 ) ) );
-//     //world.add( new B_Spirit( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
-//
+    world.add( new Structure( Vec3( 47.0f, -33.0f, 82.5f ), translator.bspIndex( "castle" ), Structure::R0 ) );
+
+    world.add( translator.createObject( "Knight", Vec3( 40, -45, 90 ) ) );
+    //world.add( new B_Spirit( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
+
 //     world.add( translator.createObject( "Goblin", Vec3( 40, -35, 85 ) ) );
 //     world.add( translator.createObject( "Goblin", Vec3( 41, -35, 85 ) ) );
-//
-// //     world.genParticles( 1000, Vec3( 40, -42, 74 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
-// //                        0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
-// //     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 80.0f ) ) );
-// //     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 82.0f ) ) );
-// //     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 84.0f ) ) );
-// //
-// //     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 80.0f ) ) );
-// //     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 82.0f ) ) );
-// //     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 84.0f ) ) );
-// //
-// //     world.add( new O_Tree1( 0.0f, -30.0f ) );
-// //     world.add( new O_Tree2( 0.0f, -42.0f ) );
-//
-//     world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -42.0f, 80.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -42.0f, 81.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -42.0f, 82.0f ) ) );
-//
-//     world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -41.0f, 80.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -41.0f, 81.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -41.0f, 82.0f ) ) );
-//
-//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -42.0f, 80.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -42.0f, 81.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -42.0f, 82.0f ) ) );
-//
-//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -41.0f, 80.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -41.0f, 81.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -41.0f, 82.0f ) ) );
-//
-//     world.add( translator.createObject( "BigCrate", Vec3( 40.0f, -55.0f, 80.0f ) ) );
-//     world.add( translator.createObject( "BigCrate", Vec3( 40.0f, -55.0f, 82.0f ) ) );
-//     world.add( translator.createObject( "BigCrate", Vec3( 40.0f, -55.0f, 84.0f ) ) );
-//
-//     world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), translator.bspIndex( "pool" ), Structure::R0 ) );
-//     world.add( new Structure( Vec3( 50.0f, -60.0f, 77.0f ), translator.bspIndex( "test" ), Structure::R0 ) );
-//
-//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 80.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 81.0f ) ) );
-//     world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 82.0f ) ) );
 
-    Buffer buffer;
-    buffer.load( "saved.world" );
-    InputStream istream = buffer.inputStream();
-    world.read( &istream );
-    buffer.free();
+//     world.genParticles( 1000, Vec3( 40, -42, 74 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
+//                        0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
+//     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 80.0f ) ) );
+//     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 82.0f ) ) );
+//     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 84.0f ) ) );
+//
+//     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 80.0f ) ) );
+//     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 82.0f ) ) );
+//     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 84.0f ) ) );
+//
+//     world.add( new O_Tree1( 0.0f, -30.0f ) );
+//     world.add( new O_Tree2( 0.0f, -42.0f ) );
+
+    world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -42.0f, 80.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -42.0f, 81.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -42.0f, 82.0f ) ) );
+
+    world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -41.0f, 80.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -41.0f, 81.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -41.0f, 82.0f ) ) );
+
+    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -42.0f, 80.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -42.0f, 81.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -42.0f, 82.0f ) ) );
+
+    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -41.0f, 80.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -41.0f, 81.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -41.0f, 82.0f ) ) );
+
+    world.add( translator.createObject( "BigCrate", Vec3( 44.0f, -43.0f, 80.0f ) ) );
+
+    world.add( translator.createObject( "BigCrate", Vec3( 40.0f, -55.0f, 80.0f ) ) );
+    world.add( translator.createObject( "BigCrate", Vec3( 40.0f, -55.0f, 82.0f ) ) );
+    world.add( translator.createObject( "BigCrate", Vec3( 40.0f, -55.0f, 84.0f ) ) );
+
+    world.add( new Structure( Vec3( 40.0f, -60.0f, 75.0f ), translator.bspIndex( "pool" ), Structure::R0 ) );
+    world.add( new Structure( Vec3( 50.0f, -60.0f, 77.0f ), translator.bspIndex( "test" ), Structure::R0 ) );
+
+    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 80.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 81.0f ) ) );
+    world.add( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 82.0f ) ) );
+
+//     Buffer buffer;
+//     buffer.load( "saved.world" );
+//     InputStream istream = buffer.inputStream();
+//     world.read( &istream );
+//     buffer.free();
+
+    logFile.unindent();
+    logFile.println( "}" );
   }
 
   void Matrix::update()
@@ -125,7 +133,7 @@ namespace oz
         }
         if( obj->damage <= 0.0f ) {
           obj->destroy();
-          world.remove( obj );
+//           world.remove( obj );
         }
       }
     }
@@ -136,6 +144,8 @@ namespace oz
 
   void Matrix::free()
   {
+    logFile.print( "Shutting down Matrix ..." );
+
 //     Buffer buffer( 1024 * 1024 );
 //     OutputStream ostream = buffer.outputStream();
 //     world.write( &ostream );
@@ -145,6 +155,8 @@ namespace oz
     translator.free();
 
     SDL_DestroySemaphore( semaphore );
+
+    logFile.printEnd( " OK" );
   }
 
 }

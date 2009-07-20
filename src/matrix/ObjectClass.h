@@ -20,6 +20,9 @@ namespace oz
     // 00 <= AUDIOARGS <= 99 (two decimal digits)
     static const int AUDIO_SAMPLES = 16;
 
+    static const int BASE_FLAGS = 0;
+    static const int DEFAULT_FLAGS = Object::CLIP_BIT;
+
     typedef ObjectClass *( *InitFunc )( const String &name, Config *config );
 
     String name;

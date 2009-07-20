@@ -70,6 +70,16 @@ namespace oz
     }
   }
 
+  double Config::get( const char *name, double defVal ) const
+  {
+    if( vars.contains( name ) ) {
+      return atof( vars.cachedValue() );
+    }
+    else {
+      return defVal;
+    }
+  }
+
   const char *Config::get( const char *name, const char *defVal ) const
   {
     if( vars.contains( name ) ) {

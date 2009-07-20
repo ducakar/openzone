@@ -59,15 +59,13 @@ namespace client
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
 
-    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+//     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texNum );
       texNum = ~0;
 
-      do {
-      }
-      while( glGetError() != GL_NO_ERROR );
+      assert( glGetError() == GL_NO_ERROR );
     }
     return texNum;
   }
@@ -116,15 +114,13 @@ namespace client
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
 
-    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+//     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texNum );
       texNum = ~0;
 
-      do {
-      }
-      while( glGetError() != GL_NO_ERROR );
+      assert( glGetError() == GL_NO_ERROR );
     }
     return texNum;
   }
@@ -447,6 +443,8 @@ namespace client
 
   void Context::init()
   {
+    logFile.print( "Initializing Context ..." );
+
     assert( textures == null && sounds == null );
 
     textures = new Resource<uint>[translator.textures.length()];
@@ -464,16 +462,23 @@ namespace client
     OZ_REGISTER_MODELCLASS( OBJ );
 
     OZ_REGISTER_AUDIOCLASS( Simple );
+
+    logFile.printEnd( " OK" );
   }
 
   void Context::free()
   {
-    assert( textures != null && sounds != null );
+    logFile.print( "Clearing Context ..." );
 
-    delete[] textures;
-    textures = null;
-    delete[] sounds;
-    sounds = null;
+    if( textures != null ) {
+      delete[] textures;
+      textures = null;
+    }
+    if( sounds != null ) {
+      delete[] sounds;
+      sounds = null;
+    }
+
     lists.clear();
 
     md2Models.clear();
@@ -484,6 +489,8 @@ namespace client
 
     modelClasses.clear();
     audioClasses.clear();
+
+    logFile.printEnd( " OK" );
   }
 
 }

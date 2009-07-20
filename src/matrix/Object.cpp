@@ -34,10 +34,10 @@ namespace oz
   void Object::onUse( Object* )
   {}
 
-  void Object::onPut()
+  void Object::onPut( Object* )
   {}
 
-  void Object::onCut()
+  void Object::onCut( Object* )
   {}
 
   void Object::readFull( InputStream *istream )

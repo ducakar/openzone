@@ -15,10 +15,10 @@ namespace oz
 
   Physics physics;
 
-  const float Physics::CLIP_BACKOFF         = 2.0f * EPSILON;
+  const float Physics::CLIP_BACKOFF         = EPSILON;
   const float Physics::STICK_VELOCITY       = 0.015f;
   const float Physics::SLICK_STICK_VELOCITY = 0.0002f;
-  const float Physics::HIT_VELOCITY         = -2.0f;
+  const float Physics::HIT_MOMENTUM         = -2.2f;
 
   const float Physics::AIR_FRICTION         = 0.02f;
   const float Physics::WATER_FRICTION       = 0.08f;
@@ -37,12 +37,12 @@ namespace oz
 
   void Physics::handlePartHit()
   {
-    float hitVelocity = part->velocity * collider.hit.normal;
-    part->velocity -= ( part->rejection * hitVelocity ) * collider.hit.normal;
+    float hitMomentum = part->velocity * collider.hit.normal;
+    part->velocity -= ( part->rejection * hitMomentum ) * collider.hit.normal;
 
     Object *sObj = collider.hit.obj;
     if( sObj != null ) {
-      sObj->hit( &collider.hit, hitVelocity );
+      sObj->hit( &collider.hit, hitMomentum );
     }
   }
 
@@ -123,12 +123,13 @@ namespace oz
         if( obj->momentum.x != 0.0f || obj->momentum.y != 0.0f ||
             sObj->velocity.x != 0.0f || sObj->velocity.y != 0.0f )
         {
-          float dx = sObj->velocity.x - obj->momentum.x;
-          float dy = sObj->velocity.y - obj->momentum.y;
+          float dx  = sObj->velocity.x - obj->momentum.x;
+          float dy  = sObj->velocity.y - obj->momentum.y;
+          float dv2 = dx*dx + dy*dy;
 
           obj->momentum.z += gVelocity;
 
-          if( ( dx*dx + dy*dy ) > STICK_VELOCITY ) {
+          if( dv2 > STICK_VELOCITY ) {
             obj->momentum.x += dx * OBJ_FRICTION;
             obj->momentum.y += dy * OBJ_FRICTION;
             obj->flags |= Object::FRICTING_BIT;
@@ -149,10 +150,11 @@ namespace oz
       }
       else if( obj->flags & Object::ON_FLOOR_BIT ) {
         if( obj->flags & Object::ON_SLICK_BIT ) {
-          float xyDot = obj->momentum.x * obj->momentum.x +
-              obj->momentum.y * obj->momentum.y;
+          float dx = obj->momentum.x;
+          float dy = obj->momentum.y;
+          float dv2 = dx*dx + dy*dy;
 
-          if( xyDot > SLICK_STICK_VELOCITY ) {
+          if( dv2 > SLICK_STICK_VELOCITY ) {
             obj->momentum.x *= 1.0f - SLICK_FRICTION;
             obj->momentum.y *= 1.0f - SLICK_FRICTION;
 
@@ -170,10 +172,11 @@ namespace oz
           }
         }
         else {
-          float xyDot = obj->momentum.x * obj->momentum.x +
-              obj->momentum.y * obj->momentum.y;
+          float dx = obj->momentum.x;
+          float dy = obj->momentum.y;
+          float dv2 = dx*dx + dy*dy;
 
-          if( xyDot > STICK_VELOCITY ) {
+          if( dv2 > SLICK_STICK_VELOCITY ) {
             obj->momentum.x *= 1.0f - FLOOR_FRICTION;
             obj->momentum.y *= 1.0f - FLOOR_FRICTION;
 
@@ -206,74 +209,86 @@ namespace oz
 
     if( collider.hit.obj != null && ( collider.hit.obj->flags & Object::DYNAMIC_BIT ) ) {
       DynObject *sDynObj = (DynObject*) sObj;
-      sDynObj->flags &= ~Object::DISABLED_BIT;
 
-      Vec3  momentum    = obj->momentum - sDynObj->velocity;
-      Vec3  deltaVel    = obj->velocity - sDynObj->velocity;
-      float massSum     = obj->mass + sDynObj->mass;
-      float hitVelocity = deltaVel * collider.hit.normal;
+      Vec3  momentum    = obj->momentum - sDynObj->momentum;
+      float hitMomentum = momentum * collider.hit.normal;
 
-      if( hitVelocity < HIT_VELOCITY ) {
-        obj->hit( &collider.hit, hitVelocity );
+      if( hitMomentum < HIT_MOMENTUM ) {
+        obj->hit( &collider.hit, hitMomentum );
         obj->flags |= Object::HIT_BIT;
+        obj->addEvent( Object::EVENT_HIT, hitMomentum*hitMomentum );
 
-        sDynObj->hit( &collider.hit, hitVelocity );
+        sDynObj->hit( &collider.hit, hitMomentum );
         sDynObj->flags |= Object::HIT_BIT;
+        sDynObj->addEvent( Object::EVENT_HIT, hitMomentum*hitMomentum );
       }
 
       if( collider.hit.normal.z == 0.0f ) {
-        if( obj->flags & Object::PUSHING_BIT ) {
-          float pushX = momentum.x / massSum;
-          float pushY = momentum.y / massSum;
+        sDynObj->flags &= ~Object::DISABLED_BIT;
 
-          obj->momentum.x -= pushX * sDynObj->mass;
-          obj->momentum.y -= pushY * sDynObj->mass;
+        float ratio = obj->mass / ( obj->mass + sDynObj->mass );
 
-          sDynObj->momentum.x += pushX * obj->mass;
-          sDynObj->momentum.y += pushY * obj->mass;
+        if( obj->flags & Object::PUSHER_BIT ) {
+          obj->momentum.x     = 0.0f;
+          obj->momentum.y     = 0.0f;
+          sDynObj->momentum.x += momentum.x * ratio;
+          sDynObj->momentum.y += momentum.y * ratio;
         }
         else if( collider.hit.normal.y == 0.0f ) {
-          float pushX = momentum.x / massSum;
+          float pushX = momentum.x * ratio;
 
-          obj->momentum.x -= pushX * sDynObj->mass;
-          sDynObj->momentum.x += pushX * obj->mass;
+          obj->momentum.x     -= pushX;
+          sDynObj->momentum.x += pushX;
         }
         else {
-          float pushY = momentum.y / massSum;
+          float pushY = momentum.y * ratio;
 
-          obj->momentum.y -= pushY * sDynObj->mass;
-          sDynObj->momentum.y += pushY * obj->mass;
+          obj->momentum.y     -= pushY;
+          sDynObj->momentum.y += pushY;
         }
       }
       else if( collider.hit.normal.z == -1.0f ) {
-        float pushZ = momentum.z / massSum;
+        float ratio = obj->mass / ( obj->mass + sDynObj->mass );
+        float pushZ = momentum.z * ratio;
 
-        obj->momentum.z -= pushZ * sDynObj->mass;
-        sDynObj->momentum.z += pushZ * obj->mass;
+        obj->momentum.z     -= pushZ;
+        sDynObj->momentum.z += pushZ;
 
-        sDynObj->flags &= ~Object::ON_FLOOR_BIT;
+        sDynObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
         sDynObj->lower = obj->index;
       }
       else {
-        float pushZ = momentum.z / massSum;
-
-        obj->momentum.z = sDynObj->velocity.z;
-        sDynObj->momentum.z += pushZ * obj->mass;
-
-        obj->flags &= ~Object::ON_FLOOR_BIT;
         obj->lower = sDynObj->index;
+
+        // only push down if not on floor or not on still object
+        if( !( sDynObj->flags & Object::ON_FLOOR_BIT ) && !( sDynObj->lower >= 0 &&
+               ( world.objects[sDynObj->lower]->flags & Object::DISABLED_BIT ) ) )
+        {
+          float ratio = obj->mass / ( obj->mass + sDynObj->mass );
+          float pushZ = momentum.z * ratio;
+
+          obj->momentum.z     -= pushZ;
+          sDynObj->momentum.z += pushZ;
+
+          sDynObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
+        }
+        else {
+          obj->momentum.z = 0.0f;
+        }
       }
     }
     else {
-      float hitVelocity = obj->velocity * collider.hit.normal;
+      float hitMomentum = obj->momentum * collider.hit.normal;
 
-      if( hitVelocity < HIT_VELOCITY ) {
-        obj->hit( &collider.hit, hitVelocity );
+      if( hitMomentum < HIT_MOMENTUM ) {
+        obj->hit( &collider.hit, hitMomentum );
         obj->flags |= Object::HIT_BIT;
+        obj->addEvent( Object::EVENT_HIT, hitMomentum*hitMomentum );
 
         if( sObj != null ) {
-          sObj->hit( &collider.hit, hitVelocity );
+          sObj->hit( &collider.hit, hitMomentum );
           sObj->flags |= Object::HIT_BIT;
+          sObj->addEvent( Object::EVENT_HIT, hitMomentum*hitMomentum );
         }
       }
 

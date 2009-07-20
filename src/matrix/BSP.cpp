@@ -34,110 +34,6 @@ namespace oz
   //*       QUAKE 3 BSP FORMAT        *
   //***********************************
 
-  static const int QBSP_SLICK_BIT    = 0x00000002;
-  static const int QBSP_LADDER_BIT   = 0x00000008;
-  static const int QBSP_WATER_BIT    = 0x00000020;
-  static const int QBSP_NONSOLID_BIT = 0x00004000;
-
-  enum QBSPLumpType
-  {
-    QBSP_LUMP_ENTITIES = 0,
-    QBSP_LUMP_TEXTURES,
-    QBSP_LUMP_PLANES,
-    QBSP_LUMP_NODES,
-    QBSP_LUMP_LEAFS,
-    QBSP_LUMP_LEAFFACES,
-    QBSP_LUMP_LEAFBRUSHES,
-    QBSP_LUMP_MODELS,
-    QBSP_LUMP_BRUSHES,
-    QBSP_LUMP_BRUSHSIDES,
-    QBSP_LUMP_VERTICES,
-    QBSP_LUMP_INDICES,
-    QBSP_LUMP_SHADERS,
-    QBSP_LUMP_FACES,
-    QBSP_LUMP_LIGHTMAPS,
-    QBSP_LUMP_LIGHTVOLUMES,
-    QBSP_LUMP_VISUALDATA,
-    QBSP_LUMPS_NUM
-  };
-
-  struct QBSPTexture
-  {
-    char name[64];
-    int  flags;
-    int  type;
-  };
-
-  struct QBSPNode
-  {
-    int plane;
-
-    int front;
-    int back;
-
-    int bb[2][3];
-  };
-
-  struct QBSPLeaf
-  {
-    int cluster;
-    int area;
-
-    int bb[2][3];
-
-    int firstFace;
-    int nFaces;
-
-    int firstBrush;
-    int nBrushes;
-  };
-
-  struct QBSPBrush
-  {
-    int firstSide;
-    int nSides;
-    int texture;
-  };
-
-  struct QBSPBrushSide
-  {
-    int plane;
-    int texture;
-  };
-
-  struct QBSPVertex
-  {
-    Vec3  p;
-    float texCoord[2];
-    float lightmapCoord[2];
-    Vec3  normal;
-    ubyte color[4];
-  };
-
-  struct QBSPFace
-  {
-    int  texture;
-    int  effect;
-    int  type;
-
-    int  firstVertex;
-    int  nVertices;
-
-    int  firstIndex;
-    int  nIndices;
-
-    int  lightmap;
-    int  lightmapCorner[2];
-    int  lightmapSize[2];
-
-    Vec3 lightmapPos;
-    Vec3 lightmapVecs[2];
-
-    Vec3 normal;
-
-    int  size[2];
-  };
-
   BSP::BSP() : textures( null ), planes( null ), nodes( null ), leafs( null ), leafFaces( null ),
     brushes( null ), brushSides( null ), vertices( null ), indices( null ), faces( null ),
     lightmaps( null )
@@ -150,6 +46,110 @@ namespace oz
 
   bool BSP::loadQBSP( const char *path, float scale, float maxDim_ )
   {
+    static const int QBSP_SLICK_BIT    = 0x00000002;
+    static const int QBSP_LADDER_BIT   = 0x00000008;
+    static const int QBSP_WATER_BIT    = 0x00000020;
+    static const int QBSP_NONSOLID_BIT = 0x00004000;
+
+    enum QBSPLumpType
+    {
+      QBSP_LUMP_ENTITIES = 0,
+      QBSP_LUMP_TEXTURES,
+      QBSP_LUMP_PLANES,
+      QBSP_LUMP_NODES,
+      QBSP_LUMP_LEAFS,
+      QBSP_LUMP_LEAFFACES,
+      QBSP_LUMP_LEAFBRUSHES,
+      QBSP_LUMP_MODELS,
+      QBSP_LUMP_BRUSHES,
+      QBSP_LUMP_BRUSHSIDES,
+      QBSP_LUMP_VERTICES,
+      QBSP_LUMP_INDICES,
+      QBSP_LUMP_SHADERS,
+      QBSP_LUMP_FACES,
+      QBSP_LUMP_LIGHTMAPS,
+      QBSP_LUMP_LIGHTVOLUMES,
+      QBSP_LUMP_VISUALDATA,
+      QBSP_LUMPS_NUM
+    };
+
+    struct QBSPTexture
+    {
+      char name[64];
+      int  flags;
+      int  type;
+    };
+
+    struct QBSPNode
+    {
+      int plane;
+
+      int front;
+      int back;
+
+      int bb[2][3];
+    };
+
+    struct QBSPLeaf
+    {
+      int cluster;
+      int area;
+
+      int bb[2][3];
+
+      int firstFace;
+      int nFaces;
+
+      int firstBrush;
+      int nBrushes;
+    };
+
+    struct QBSPBrush
+    {
+      int firstSide;
+      int nSides;
+      int texture;
+    };
+
+    struct QBSPBrushSide
+    {
+      int plane;
+      int texture;
+    };
+
+    struct QBSPVertex
+    {
+      Vec3  p;
+      float texCoord[2];
+      float lightmapCoord[2];
+      Vec3  normal;
+      ubyte color[4];
+    };
+
+    struct QBSPFace
+    {
+      int  texture;
+      int  effect;
+      int  type;
+
+      int  firstVertex;
+      int  nVertices;
+
+      int  firstIndex;
+      int  nIndices;
+
+      int  lightmap;
+      int  lightmapCorner[2];
+      int  lightmapSize[2];
+
+      Vec3 lightmapPos;
+      Vec3 lightmapVecs[2];
+
+      Vec3 normal;
+
+      int  size[2];
+    };
+
     maxDim = maxDim_;
 
     FILE *f = fopen( path, "rb" );

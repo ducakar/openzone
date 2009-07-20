@@ -67,7 +67,7 @@ namespace oz
       flags &= ~DISABLED_BIT;
       isGrounded = false;
 
-      momentum.z = clazz.jumpVelocity;
+      momentum.z = clazz.jumpMomentum;
       addEvent( SND_JUMP );
     }
     if( ( keys & KEY_CROUCH ) && !( oldKeys & KEY_CROUCH ) ) {
@@ -98,8 +98,8 @@ namespace oz
       }
     }
 
-    float velocity = ( state & CROUCHING_BIT ) ? clazz.crouchVelocity :
-        ( state & RUNNING_BIT ) ? clazz.runVelocity : clazz.walkVelocity;
+    float velocity = ( state & CROUCHING_BIT ) ? clazz.crouchMomentum :
+        ( state & RUNNING_BIT ) ? clazz.runMomentum : clazz.walkMomentum;
 
     if( ( !isGrounded && !isClimbing ) || ( flags & ON_SLICK_BIT ) ) {
       velocity *= clazz.airControl;
@@ -168,16 +168,16 @@ namespace oz
     }
 
     if( !move.isZero() ) {
-      Vec3 desiredVelocity = velocity * ~move;
+      Vec3 desiredMomentum = velocity * ~move;
 
       if( ( flags & Object::ON_FLOOR_BIT ) && floor.z != 1.0f ) {
-        float dot = desiredVelocity * floor;
+        float dot = desiredMomentum * floor;
 
         if( dot > 0.0f ) {
-          desiredVelocity -= dot * floor;
+          desiredMomentum -= dot * floor;
         }
       }
-      momentum += desiredVelocity;
+      momentum += desiredMomentum;
     }
 
     // TODO: better stepping algoriths (stepping per time unit limit + vertial surface should not
@@ -227,19 +227,21 @@ namespace oz
     keys = 0;
   }
 
-  void Bot::onHit( const Hit *hit, float hitVelocity )
+  void Bot::onHit( const Hit *hit, float hitMomentum )
   {
-    if( hitVelocity >= 30.0f ) {
-      damage += hitVelocity;
+    if( hitMomentum <= 30.0f ) {
+      damage += hitMomentum;
     }
 
-    if( hit->normal.z >= Physics::FLOOR_NORMAL_Z && hitVelocity < 8.0f ) {
+    if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       addEvent( SND_LAND );
     }
   }
 
   void Bot::onDestroy()
-  {}
+  {
+    anim = ANIM_DEATH_FALLBACK;
+  }
 
   Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f )
   {}

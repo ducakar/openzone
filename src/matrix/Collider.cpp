@@ -336,26 +336,21 @@ namespace oz
       float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
       float endDist   = ( globalEndPos[j]   - sObj->p[j] ) * normal[j] - sObj->dim[j];
 
-      if( startDist >= 0.0f ) {
-        if( endDist > EPSILON ) {
-          return;
-        }
-        else if( startDist > endDist ) {
-          float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist );
-          assert( !Math::isNaN( ratio ) );
-
-          if( ratio > minRatio ) {
-            minRatio  = ratio;
-            tmpNormal = &normal;
-          }
+      if( endDist > EPSILON ) {
+        if( startDist < 0.0f ) {
+          maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
         }
         else {
-          minRatio  = 0.0f;
-          tmpNormal = &normal;
+          return;
         }
       }
-      else if( endDist > EPSILON ) {
-        maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
+      else if( endDist <= startDist ) {
+        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+
+        if( ratio > minRatio ) {
+          minRatio  = ratio;
+          tmpNormal = &normal;
+        }
       }
     }
 
@@ -381,25 +376,21 @@ namespace oz
       float startDist = leafStartPos * plane.normal - plane.distance;
       float endDist   = leafEndPos   * plane.normal - plane.distance;
 
-      if( startDist >= 0.0f ) {
-        if( endDist > EPSILON ) {
-          return;
-        }
-        else if( startDist > endDist ) {
-          float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist );
-
-          if( ratio > minRatio ) {
-            minRatio  = ratio;
-            tmpNormal = &plane.normal;
-          }
+      if( endDist > EPSILON ) {
+        if( startDist < 0.0f ) {
+          maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
         }
         else {
-          minRatio  = 0.0f;
-          tmpNormal = &plane.normal;
+          return;
         }
       }
-      else if( endDist > EPSILON ) {
-        maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
+      else if( endDist <= startDist ) {
+        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+
+        if( ratio > minRatio ) {
+          minRatio  = ratio;
+          tmpNormal = &plane.normal;
+        }
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
@@ -797,25 +788,21 @@ namespace oz
       float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
       float endDist   = ( globalEndPos[j]   - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
 
-      if( startDist >= 0.0f ) {
-        if( endDist > EPSILON ) {
-          return;
-        }
-        else if( startDist > endDist ) {
-          float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist );
-
-          if( ratio > minRatio ) {
-            minRatio  = ratio;
-            tmpNormal = &normal;
-          }
+      if( endDist > EPSILON ) {
+        if( startDist < 0.0f ) {
+          maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
         }
         else {
-          minRatio  = 0.0f;
-          tmpNormal = &normal;
+          return;
         }
       }
-      else if( endDist > EPSILON ) {
-        maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
+      else if( endDist <= startDist ) {
+        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+
+        if( ratio > minRatio ) {
+          minRatio  = ratio;
+          tmpNormal = &normal;
+        }
       }
     }
 
@@ -845,25 +832,21 @@ namespace oz
       float startDist = leafStartPos * plane.normal - plane.distance - offset;
       float endDist   = leafEndPos   * plane.normal - plane.distance - offset;
 
-      if( startDist >= 0.0f ) {
-        if( endDist > EPSILON ) {
-          return;
-        }
-        else if( startDist > endDist ) {
-          float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist );
-
-          if( ratio > minRatio ) {
-            minRatio  = ratio;
-            tmpNormal = &plane.normal;
-          }
+      if( endDist > EPSILON ) {
+        if( startDist < 0.0f ) {
+          maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
         }
         else {
-          minRatio  = 0.0f;
-          tmpNormal = &plane.normal;
+          return;
         }
       }
-      else if( endDist > EPSILON ) {
-        maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
+      else if( endDist <= startDist ) {
+        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+
+        if( ratio > minRatio ) {
+          minRatio  = ratio;
+          tmpNormal = &plane.normal;
+        }
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {

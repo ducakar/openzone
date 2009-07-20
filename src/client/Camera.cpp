@@ -39,17 +39,21 @@ namespace client
     smoothCoef_1 = 1.0f - smoothCoef;
   }
 
-  void Camera::postUpdate()
+  void Camera::update()
   {
     oldP = p;
     relRot = Quat::rotZYX( Math::rad( h ), 0.0f, Math::rad( v ) );
 
-    if( bot != null ) {
-      p = ( bot->p + bot->camPos ) * smoothCoef_1 + oldP * smoothCoef;
-      rot = Quat::rotZYX( Math::rad( bot->h + h ), 0.0f, Math::rad( bot->v + v ) );
+    bot = botIndex == -1 ? null : (Bot*) world.objects[botIndex];
+
+    // world.objects[botIndex] might be null
+    if( bot == null ) {
+      botIndex = -1;
+      rot = relRot;
     }
     else {
-      rot = relRot;
+      p = ( bot->p + bot->camPos ) * smoothCoef_1 + oldP * smoothCoef;
+      rot = Quat::rotZYX( Math::rad( bot->h + h ), 0.0f, Math::rad( bot->v + v ) );
     }
 
     rotMat = rot.rotMat44();

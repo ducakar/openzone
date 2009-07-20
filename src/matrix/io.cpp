@@ -15,8 +15,6 @@
 namespace oz
 {
 
-  IO io;
-
   bool Buffer::load( const char *path )
   {
     if( buffer != null ) {
@@ -42,11 +40,11 @@ namespace oz
     count  = (int) fileStat.st_size;
     buffer = new char[count];
 
-    int blocksToRead = ( count - 1 ) / io.blockSize + 1;
+    int blocksToRead = ( count - 1 ) / BLOCK_SIZE + 1;
     int blocksRead = 1;
 
     while( blocksToRead > 0 && blocksRead > 0 ) {
-      blocksRead = fread( buffer, io.blockSize, blocksToRead, handle );
+      blocksRead = fread( buffer, BLOCK_SIZE, blocksToRead, handle );
       blocksToRead -= blocksRead;
     }
     fclose( handle );
@@ -67,11 +65,11 @@ namespace oz
       return false;
     }
 
-    int blocksToWrite = ( count - 1 ) / io.blockSize + 1;
+    int blocksToWrite = ( count - 1 ) / BLOCK_SIZE + 1;
     int blocksWritten = 1;
 
     while( blocksToWrite > 0 && blocksWritten > 0 ) {
-      blocksWritten = fwrite( buffer, io.blockSize, blocksToWrite, handle );
+      blocksWritten = fwrite( buffer, BLOCK_SIZE, blocksToWrite, handle );
       blocksToWrite -= blocksWritten;
     }
     fclose( handle );
@@ -83,21 +81,6 @@ namespace oz
       return false;
     }
     return true;
-  }
-
-  IO::IO() : blockSize( 4096 )
-  {}
-
-  void IO::initBlockSize( const char *file )
-  {
-    struct stat fileStat;
-#ifdef WIN32
-    if( _stat( file, &fileStat ) ) {
-#else
-    if( stat( file, &fileStat ) ) {
-#endif
-      blockSize = fileStat.st_blksize;
-    }
   }
 
 }

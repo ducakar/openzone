@@ -65,13 +65,13 @@ namespace client
 
     private:
 
+      /*
+       * SFX
+       */
       HashIndex<Audio*, HASHTABLE_SIZE>     audios;
       DList<Source, 0>                      sources;
       HashIndex<ContSource, HASHTABLE_SIZE> contSources;
       int clearCount;
-
-      bool load( int sample, const char *file );
-      void playSector( int sectorX, int sectorY );
 
       /*
        * Music
@@ -86,20 +86,13 @@ namespace client
       ALuint         musicSource;
       ALenum         musicFormat;
 
+      void playSector( int sectorX, int sectorY );
+
       void loadMusicBuffer( ALuint buffer );
       void updateMusic();
       void freeMusic();
 
     public:
-
-      void init();
-      void free();
-
-      bool loadMusic( const char *path );
-      void update();
-
-      void setVolume( float volume );
-      void setMusicVolume( float volume );
 
       void addSource( ALuint sourceId )
       {
@@ -109,6 +102,11 @@ namespace client
       void addContSource( uint key, ALuint sourceId  )
       {
         contSources.add( key, sourceId );
+      }
+
+      ALuint getCachedContSourceId() const
+      {
+        return contSources.cachedValue().source;
       }
 
       bool updateContSource( uint key )
@@ -122,10 +120,21 @@ namespace client
         }
       }
 
-      ALuint getCachedContSourceId() const
+      void setVolume( float volume )
       {
-        return contSources.cachedValue().source;
+        alListenerf( AL_GAIN, volume );
       }
+
+      void setMusicVolume( float volume )
+      {
+        alSourcef( musicSource, AL_GAIN, volume );
+      }
+
+      bool loadMusic( const char *path );
+      void update();
+
+      void init();
+      void free();
 
   };
 

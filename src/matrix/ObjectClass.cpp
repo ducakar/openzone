@@ -29,23 +29,27 @@ namespace oz
     clazz->dim.y       = config->get( "dim.y", 0.5f );
     clazz->dim.z       = config->get( "dim.z", 0.5f );
 
-    clazz->flags       = config->get( "flags", Object::CLIP_BIT ) & Object::CONFIG_BITS_MASK;
+    clazz->flags       = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
     clazz->damage      = config->get( "damage", 1.0f );
 
     clazz->modelType   = config->get( "model.type", "MD2" );
     clazz->modelPath   = config->get( "model.path", "mdl/goblin.md2" );
 
-    clazz->audioType   = config->get( "audio.type", "Simple" );
+    clazz->audioType   = config->get( "audio.type", "" );
 
-    char buffer[] = "audio.sample  ";
-    for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
-      assert( 0 <= i && i < 100 );
+    if( clazz->audioType.length() > 0 ) {
+      clazz->flags |= Object::AUDIO_BIT;
 
-      buffer[ sizeof( buffer ) - 3 ] = '0' + ( i / 10 );
-      buffer[ sizeof( buffer ) - 2 ] = '0' + ( i % 10 );
+      char buffer[] = "audio.sample  ";
+      for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
+        assert( 0 <= i && i < 100 );
 
-      String sampleName = config->get( buffer, "" );
-      clazz->audioSamples[i] = sampleName.length() > 0 ? translator.soundIndex( sampleName ) : -1;
+        buffer[ sizeof( buffer ) - 3 ] = '0' + ( i / 10 );
+        buffer[ sizeof( buffer ) - 2 ] = '0' + ( i % 10 );
+
+        String sampleName = config->get( buffer, "" );
+        clazz->audioSamples[i] = sampleName.length() > 0 ? translator.soundIndex( sampleName ) : -1;
+      }
     }
     return clazz;
   }

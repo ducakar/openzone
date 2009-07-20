@@ -21,7 +21,7 @@ namespace oz
       static const float CLIP_BACKOFF;
       static const float STICK_VELOCITY;
       static const float SLICK_STICK_VELOCITY;
-      static const float HIT_VELOCITY;
+      static const float HIT_MOMENTUM;
 
       static const float AIR_FRICTION;
       static const float WATER_FRICTION;
