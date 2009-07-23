@@ -37,11 +37,11 @@ namespace oz
 
     world.add( new Structure( Vec3( 47.0f, -33.0f, 82.5f ), translator.bspIndex( "castle" ), Structure::R0 ) );
 
-    world.add( translator.createObject( "Knight", Vec3( 40, -45, 90 ) ) );
+    world.add( translator.createObject( "Knight", Vec3( 42, -45, 80 ) ) );
     //world.add( new B_Spirit( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
 
-//     world.add( translator.createObject( "Goblin", Vec3( 40, -35, 85 ) ) );
-//     world.add( translator.createObject( "Goblin", Vec3( 41, -35, 85 ) ) );
+    world.add( translator.createObject( "Knight", Vec3( 40, -35, 85 ) ) );
+    world.add( translator.createObject( "Goblin", Vec3( 41, -35, 85 ) ) );
 
 //     world.genParticles( 1000, Vec3( 40, -42, 74 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
 //                        0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
@@ -114,8 +114,7 @@ namespace oz
       }
     }
 
-    int jMax = world.objects.length();
-    for( int j = 0; j < jMax; j++ ) {
+    for( int j = 0; j < world.objects.length(); j++ ) {
       Object *obj = world.objects[j];
 
       if( obj != null ) {
@@ -133,7 +132,7 @@ namespace oz
         }
         if( obj->damage <= 0.0f ) {
           obj->destroy();
-//           world.remove( obj );
+          world.remove( obj );
         }
       }
     }

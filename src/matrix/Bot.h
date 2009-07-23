@@ -29,13 +29,13 @@ namespace oz
       static const int KEY_JUMP        = 0x00000010;
       static const int KEY_CROUCH      = 0x00000020;
       static const int KEY_RUN         = 0x00000040;
-      static const int KEY_FIRE        = 0x00000080;
-      static const int KEY_NOCLIP      = 0x00000100;
-      static const int KEY_SUICIDE     = 0x00000200;
-      static const int KEY_GESTURE0    = 0x00000400;
-      static const int KEY_GESTURE1    = 0x00000800;
-      static const int KEY_USE         = 0x00001000;
-      static const int KEY_STEP        = 0x00002000;
+      static const int KEY_USE         = 0x00000080;
+      static const int KEY_GRAB        = 0x00000100;
+      static const int KEY_STEP        = 0x00000200;
+      static const int KEY_NOCLIP      = 0x00000400;
+      static const int KEY_SUICIDE     = 0x00000800;
+      static const int KEY_GESTURE0    = 0x00001000;
+      static const int KEY_GESTURE1    = 0x00002000;
       static const int KEY_FREELOOK    = 0x00004000;
 
       static const int SND_LAND        = 5;
@@ -97,6 +97,7 @@ namespace oz
       Vec3     camPos;
 
       float    deathTime;
+      int      grabObjIndex;
       Weapon   *weapon;
 
       Vector<Object*> items;

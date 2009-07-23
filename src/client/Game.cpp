@@ -198,15 +198,15 @@ namespace client
         camera.bot->keys |= Bot::KEY_NOCLIP;
       }
 
-      if( input.mouse.b & SDL_BUTTON_LEFT ) {
-        camera.bot->keys |= Bot::KEY_FIRE;
-      }
-      if( input.keys[SDLK_f] || ( input.mouse.b == SDL_BUTTON_RIGHT ) ) {
+      if( input.mouse.b == SDL_BUTTON_LEFT ) {
         camera.bot->keys |= Bot::KEY_USE;
+      }
+      if( input.mouse.b == SDL_BUTTON_RIGHT ) {
+        camera.bot->keys |= Bot::KEY_GRAB;
       }
     }
 
-    if( input.mouse.b & SDL_BUTTON_LEFT ) {
+    if( input.mouse.b == SDL_BUTTON_LEFT ) {
       camera.botIndex = ~camera.botIndex;
     }
 

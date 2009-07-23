@@ -143,48 +143,6 @@ namespace oz
       return *(const Vec3*) &m[12];
     }
 
-    bool operator == ( const Mat44 &a ) const
-    {
-      return
-          m[ 0] == a.m[ 0] &&
-          m[ 1] == a.m[ 1] &&
-          m[ 2] == a.m[ 2] &&
-          m[ 3] == a.m[ 3] &&
-          m[ 4] == a.m[ 4] &&
-          m[ 5] == a.m[ 5] &&
-          m[ 6] == a.m[ 6] &&
-          m[ 7] == a.m[ 7] &&
-          m[ 8] == a.m[ 8] &&
-          m[ 9] == a.m[ 9] &&
-          m[10] == a.m[10] &&
-          m[11] == a.m[11] &&
-          m[12] == a.m[12] &&
-          m[13] == a.m[13] &&
-          m[14] == a.m[14] &&
-          m[15] == a.m[15];
-    }
-
-    bool operator != ( const Mat44 &a ) const
-    {
-      return
-          m[ 0] != a.m[ 0] ||
-          m[ 1] != a.m[ 1] ||
-          m[ 2] != a.m[ 2] ||
-          m[ 3] != a.m[ 3] ||
-          m[ 4] != a.m[ 4] ||
-          m[ 5] != a.m[ 5] ||
-          m[ 6] != a.m[ 6] ||
-          m[ 7] != a.m[ 7] ||
-          m[ 8] != a.m[ 8] ||
-          m[ 9] != a.m[ 9] ||
-          m[10] != a.m[10] ||
-          m[11] != a.m[11] ||
-          m[12] != a.m[12] ||
-          m[13] != a.m[13] ||
-          m[14] != a.m[14] ||
-          m[15] != a.m[15];
-    }
-
     Mat44 operator + () const
     {
       return *this;

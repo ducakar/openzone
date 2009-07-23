@@ -1,5 +1,5 @@
 /*
- *  ui.h
+ *  HealthArea.h
  *
  *  [description]
  *
@@ -8,10 +8,7 @@
 
 #pragma once
 
-#include "Font.h"
 #include "Area.h"
-#include "DebugArea.h"
-#include "HealthArea.h"
 
 namespace oz
 {
@@ -20,12 +17,15 @@ namespace client
 namespace ui
 {
 
-  extern Area root;
+  class HealthArea : public Area
+  {
+    public:
 
-  void draw();
+      HealthArea() : Area( -260, 10, 250, 50 ) {}
 
-  void init( int screenX, int screenY );
-  void free();
+      virtual void draw();
+
+  };
 
 }
 }

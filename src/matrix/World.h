@@ -17,6 +17,7 @@
 #include "Particle.h"
 
 #include "Translator.h"
+#include "Synapse.h"
 
 namespace oz
 {
@@ -68,7 +69,7 @@ namespace oz
 
     public:
 
-      World();
+      explicit World();
 
       void init();
       void free();

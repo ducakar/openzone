@@ -211,16 +211,46 @@ namespace oz
       }
     }
 
-    // BOT SPECIFIC UPDATE END
     if( ( keys & KEY_USE ) && !( oldKeys & KEY_USE ) ) {
-      Vec3 look( -hvsc[4], hvsc[5], hvsc[2] );
+      if( weapon == null ) {
+        Vec3 eye  = p + camPos;
+        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
 
-      collider.translate( p + camPos, look * clazz.grabDistance );
+        collider.translate( eye, look, this );
 
-      if( collider.hit.obj != null ) {
-        collider.hit.obj->destroy();
+        if( collider.hit.obj != null ) {
+          collider.hit.obj->use( this );
+        }
       }
-      throw Exception( 0, "drek" );
+    }
+    if( ( keys & KEY_GRAB ) && !( oldKeys & KEY_GRAB ) ) {
+      if( weapon == null ) {
+        if( grabObjIndex < 0 ) {
+          Vec3 eye  = p + camPos;
+          Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
+
+          collider.translate( eye, look, this );
+
+          if( collider.hit.obj != null && ( collider.hit.obj->flags & Object::DYNAMIC_BIT ) ) {
+            grabObjIndex = collider.hit.obj->index;
+          }
+        }
+        else {
+          grabObjIndex = -1;
+        }
+      }
+    }
+
+    if( grabObjIndex >= 0 ) {
+      DynObject *obj = (DynObject*) world.objects[grabObjIndex];
+
+      Vec3 eye  = p + camPos;
+      Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
+      Vec3 string = ( eye + look ) - obj->p;
+
+      // FIXME better function for computing force, string breaking
+      obj->momentum += string * Math::pow( string.sqL(), 0.5 ) * 5.1f;
+      obj->flags    &= ~Object::DISABLED_BIT;
     }
 
     oldKeys = keys;
@@ -229,8 +259,8 @@ namespace oz
 
   void Bot::onHit( const Hit *hit, float hitMomentum )
   {
-    if( hitMomentum <= 30.0f ) {
-      damage += hitMomentum;
+    if( hitMomentum <= -30.0f ) {
+//       damage += hitMomentum;
     }
 
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
@@ -244,7 +274,10 @@ namespace oz
   }
 
   Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f )
-  {}
+  {
+    weapon = null;
+    grabObjIndex = -1;
+  }
 
   void Bot::readUpdates( InputStream *istream )
   {

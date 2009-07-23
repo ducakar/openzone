@@ -43,11 +43,11 @@ namespace client
     glBindTexture( GL_TEXTURE_2D, texNum );
 
     if( minFilter >= GL_NEAREST_MIPMAP_NEAREST ) {
-      gluBuild2DMipmaps( GL_TEXTURE_2D, bytesPerPixel, width, height, format,
+      gluBuild2DMipmaps( GL_TEXTURE_2D, format, width, height, format,
                          GL_UNSIGNED_BYTE, data );
     }
     else {
-      glTexImage2D( GL_TEXTURE_2D, 0, bytesPerPixel, width, height, 0, format,
+      glTexImage2D( GL_TEXTURE_2D, 0, format, width, height, 0, format,
                     GL_UNSIGNED_BYTE, data );
     }
 
@@ -98,11 +98,11 @@ namespace client
     glBindTexture( GL_TEXTURE_2D, texNum );
 
     if( minFilter >= GL_NEAREST_MIPMAP_NEAREST ) {
-      gluBuild2DMipmaps( GL_TEXTURE_2D, bytesPerPixel, width, height, format,
+      gluBuild2DMipmaps( GL_TEXTURE_2D, format, width, height, format,
                          GL_UNSIGNED_BYTE, data );
     }
     else {
-      glTexImage2D( GL_TEXTURE_2D, 0, bytesPerPixel, width, height, 0, format,
+      glTexImage2D( GL_TEXTURE_2D, 0, format, width, height, 0, format,
                     GL_UNSIGNED_BYTE, data );
     }
 

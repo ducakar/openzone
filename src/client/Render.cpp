@@ -12,7 +12,6 @@
 
 #include "matrix/Matrix.h"
 #include "matrix/Physics.h"
-#include "ui/ui.h"
 
 #include "Frustum.h"
 #include "Shape.h"
@@ -24,6 +23,8 @@
 
 #include "MD2StaticModel.h"
 
+#include <time.h>
+
 namespace oz
 {
 namespace client
@@ -32,7 +33,6 @@ namespace client
   Render render;
 
   const float Render::RELEASED_CULL_FACTOR = 5.0f;
-  const float Render::INCH = 0.0252f;
 
   const float Render::BLACK[] = { 0.0f, 0.0f, 0.0f, 1.0f };
   const float Render::WHITE[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -73,21 +73,17 @@ namespace client
       perspectiveAspect = (double) screenX / (double) screenY;
     }
 
-    font.init( "base/font.png", 1.0f, screenX, screenY );
-
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
     glOrtho( 0.0, screenX, 0.0, screenY, 0.0, 1.0 );
-
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
 
     glEnable( GL_TEXTURE_2D );
 
-    font.print( 0, -1, "LOADING ..." );
-    ui::font.init( screenX, screenY );
-    ui::font.setFont( ui::Font::MONO );
-    fontHeight = ui::font.getHeight();
+    ui::init( screenX, screenY );
+    ui::root.add( new ui::DebugArea() );
+    ui::root.add( new ui::HealthArea() );
     SDL_GL_SwapBuffers();
 
     assert( glGetError() == GL_NO_ERROR );
@@ -212,7 +208,7 @@ namespace client
     }
   }
 
-  void Render::draw()
+  void Render::draw( bool doScreenshot )
   {
     assert( glGetError() == GL_NO_ERROR );
 
@@ -259,8 +255,11 @@ namespace client
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_FOG );
     glEnable( GL_LIGHTING );
+    glEnable( GL_TEXTURE_2D );
     glDisable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
     // BEGIN RENDER
     if( isUnderWater ) {
@@ -346,34 +345,17 @@ namespace client
 //     }
 //     waterObjects.clear();
 
-    glColor4fv( WHITE );
-    glDisable( GL_BLEND );
-
     if( showAim ) {
       Vec3 move = camera.at * 32.0f;
       collider.translate( camera.p, move, camera.bot );
       move *= collider.hit.ratio;
 
-      glDisable( GL_TEXTURE_2D );
-      glDisable( GL_LIGHTING );
       glColor3f( 0.0f, 1.0f, 0.0f );
       shape.drawBox( AABB( camera.p + move, Vec3( 0.03f, 0.03f, 0.03f ) ) );
-      glColor3fv( WHITE );
-      glEnable( GL_TEXTURE_2D );
     }
 
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho( 0.0, screenX - 1.0, 0.0, screenY - 1.0, -1.0, 1.0 );
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
-
-    glDisable( GL_DEPTH_TEST );
-    glDisable( GL_FOG );
-    glDisable( GL_LIGHTING );
-
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_ONE, GL_ONE );
+//     glEnable( GL_BLEND );
+//     glBlendFunc( GL_ONE, GL_ONE );
 
     if( camera.bot != null ) {
 //       font.print( 0, -16, "cam.p(%.2f %.2f %.2f) bot(%.2f %.2f) rel(%.2f %.2f)",
@@ -400,32 +382,35 @@ namespace client
 //       font.print( 0, -64, "bigcrate.vel (%.2f %.2f %.2f) bigcrate.mom (%.2f %.2f %.2f)",
 //                   o->velocity.x, o->velocity.y, o->velocity.z,
 //                   o->momentum.x, o->momentum.y, o->momentum.z);
+    }
 
-      ui::font.print( 0, -fontHeight * 1, "cam.p(%.2f %.2f %.2f) bot(%.2f %.2f) rel(%.2f %.2f)",
-                      camera.p.x, camera.p.y, camera.p.z,
-                      camera.bot->h, camera.bot->v, camera.h, camera.v );
+    ui::draw();
 
-      ui::font.print( 0, -fontHeight * 2, "camera.vel (%.2f %.2f %.2f) camera.mom (%.2f %.2f %.2f)",
-                      camera.bot->velocity.x, camera.bot->velocity.y, camera.bot->velocity.z,
-                      camera.bot->momentum.x, camera.bot->momentum.y, camera.bot->momentum.z);
+    if( doScreenshot ) {
+      Uint32 *pixels = new Uint32[screenX * screenY * 4];
+      char   fileName[1024];
+      time_t ct;
+      struct tm t;
 
-      ui::font.print( 0, -fontHeight * 3, "d %d fl %d lw %d h %d fr %d iw %d uw %d ld %d s %d ovlp %d wb %d",
-                      ( camera.bot->flags & Object::DISABLED_BIT ) != 0,
-                      ( camera.bot->flags & Object::ON_FLOOR_BIT ) != 0,
-                      camera.bot->lower >= 0,
-                      ( camera.bot->flags & Object::HIT_BIT ) != 0,
-                      ( camera.bot->flags & Object::FRICTING_BIT ) != 0,
-                      ( camera.bot->flags & Object::IN_WATER_BIT ) != 0,
-                      ( camera.bot->flags & Object::UNDER_WATER_BIT ) != 0,
-                      ( camera.bot->flags & Object::ON_LADDER_BIT ) != 0,
-                      ( camera.bot->flags & Object::ON_SLICK_BIT ) != 0,
-                      collider.test( *camera.bot ),
-                      isInWaterBrush );
+      ct = time( null );
+      t = *localtime( &ct );
 
-      DynObject *o = (DynObject*) world.objects[13];
-      ui::font.print( 0, -fontHeight * 4, "bigcrate.vel (%.2f %.2f %.2f) bigcrate.mom (%.2f %.2f %.2f)",
-                      o->velocity.x, o->velocity.y, o->velocity.z,
-                      o->momentum.x, o->momentum.y, o->momentum.z);
+      snprintf( fileName, 1024, "screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
+                1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
+      fileName[1023] = '\0';
+
+      glReadPixels( 0, 0, screenX, screenY, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+      SDL_Surface *surf = SDL_CreateRGBSurfaceFrom( pixels, screenX, screenY, 32, screenX * 4,
+                                                    0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
+      // flip image
+      for( int i = 0; i < screenY / 2; i++ ) {
+        for( int j = 0; j < screenX; j++ ) {
+          swap( pixels[i * screenX + j], pixels[( screenY - i - 1 ) * screenX + j] );
+        }
+      }
+      SDL_SaveBMP( surf, fileName );
+      SDL_FreeSurface( surf );
+      delete[] pixels;
     }
 
     SDL_GL_SwapBuffers();
@@ -445,14 +430,15 @@ namespace client
 
   void Render::free()
   {
-    logFile.print( "Shutting down Graphics ..." );
+    logFile.println( "Shutting down Graphics {" );
+    logFile.indent();
 
-    ui::font.free();
-    font.free();
+    ui::free();
     models.free();
     bsps.free();
 
-    logFile.printEnd( " OK" );
+    logFile.unindent();
+    logFile.println( "}" );
   }
 
 }

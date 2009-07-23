@@ -58,16 +58,6 @@ namespace oz
       return ( (float*) this )[i];
     }
 
-    bool operator == ( const Vec3 &a ) const
-    {
-      return x == a.x && y == a.y && z == a.z;
-    }
-
-    bool operator != ( const Vec3 &a ) const
-    {
-      return x != a.x || y != a.y || z != a.z;
-    }
-
     bool isEqual( const Vec3 &a, float epsilon ) const
     {
       return
@@ -100,12 +90,14 @@ namespace oz
 
     bool isZero() const
     {
-      return 0.0f == x && x == y && y == z;
+      return x == 0.0f && y == 0.0f && z == 0.0f;
     }
 
     Vec3 &setZero()
     {
-      z = y = x = 0.0f;
+      x = 0.0f;
+      y = 0.0f;
+      z = 0.0f;
       return *this;
     }
 

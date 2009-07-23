@@ -66,16 +66,6 @@ namespace oz
       return ( (const float*) this )[i];
     }
 
-    bool operator == ( const Quat &a ) const
-    {
-      return x == a.x && y == a.y && z == a.y && w == a.w;
-    }
-
-    bool operator != ( const Quat &a ) const
-    {
-      return x != a.x || y != a.y || z != a.y || w != a.w;
-    }
-
     Vec3 &vec3()
     {
       return *(Vec3*) this;
@@ -121,23 +111,28 @@ namespace oz
 
     bool isZero() const
     {
-      return 0.0f == x && x == y && y == z && z == w;
+      return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f;
     }
 
     Quat &setZero()
     {
-      w = z = y = x = 0.0f;
+      x = 0.0f;
+      y = 0.0f;
+      z = 0.0f;
+      w = 0.0f;
       return *this;
     }
 
     bool isId() const
     {
-      return 0.0f == x && x == y && y == z && w == 1.0f;
+      return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f;
     }
 
     Quat &setId()
     {
-      z = y = x = 0.0f;
+      x = 0.0f;
+      y = 0.0f;
+      z = 0.0f;
       w = 1.0f;
       return *this;
     }

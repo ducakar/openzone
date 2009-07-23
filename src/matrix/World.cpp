@@ -76,8 +76,8 @@ namespace oz
     PoolAlloc<Object::Event, 0>::pool.free();
     PoolAlloc<Object::Effect, 0>::pool.free();
 
-    if( net.isServer ) {
-      net.world << Net::Action( Net::CLEAR );
+    if( synapse.isServer ) {
+      synapse.world << Synapse::Action( Synapse::CLEAR );
     }
   }
 
@@ -182,35 +182,35 @@ namespace oz
 
   inline void World::put( Object *obj )
   {
-    if( net.isClient ) {
+    if( synapse.isClient ) {
       return;
     }
 
     assert( obj->sector == null );
     position( obj );
 
-    if( net.isServer ) {
-      net.objects << Net::Action( Net::PUT, obj->index );
+    if( synapse.isServer ) {
+      synapse.objects << Synapse::Action( Synapse::PUT, obj->index );
     }
   }
 
   inline void World::cut( Object *obj )
   {
-    if( net.isClient ) {
+    if( synapse.isClient ) {
       return;
     }
 
     assert( obj->sector != null );
     unposition( obj );
 
-    if( net.isServer ) {
-      net.objects << Net::Action( Net::CUT, obj->index );
+    if( synapse.isServer ) {
+      synapse.objects << Synapse::Action( Synapse::CUT, obj->index );
     }
   }
 
   void World::add( Structure *str )
   {
-    if( net.isClient ) {
+    if( synapse.isClient ) {
       return;
     }
 
@@ -225,14 +225,14 @@ namespace oz
 
     position( str );
 
-    if( net.isServer ) {
-      net.structs << Net::Action( Net::ADD, str->index );
+    if( synapse.isServer ) {
+      synapse.structs << Synapse::Action( Synapse::ADD, str->index );
     }
   }
 
   void World::add( Object *obj, bool doPut )
   {
-    if( net.isClient ) {
+    if( synapse.isClient ) {
       return;
     }
 
@@ -252,14 +252,14 @@ namespace oz
       obj->sector = null;
     }
 
-    if( net.isServer ) {
-      net.objects << Net::Action( doPut ? Net::ADD : Net::ADD_NOPUT, obj->index );
+    if( synapse.isServer ) {
+      synapse.objects << Synapse::Action( doPut ? Synapse::ADD : Synapse::ADD_NOPUT, obj->index );
     }
   }
 
   void World::add( Particle *part )
   {
-    if( net.isClient ) {
+    if( synapse.isClient ) {
       return;
     }
     if( partFreeQueue[freedQueue].isEmpty() ) {
@@ -273,18 +273,18 @@ namespace oz
 
     position( part );
 
-    if( net.isServer ) {
-      net.particles << Net::Action( Net::ADD, part->index );
+    if( synapse.isServer ) {
+      synapse.particles << Synapse::Action( Synapse::ADD, part->index );
     }
   }
 
   void World::remove( Structure *str )
   {
-    if( net.isClient ) {
+    if( synapse.isClient ) {
       return;
     }
-    else if( net.isServer ) {
-      net.structs << Net::Action( Net::REMOVE, str->index );
+    else if( synapse.isServer ) {
+      synapse.structs << Synapse::Action( Synapse::REMOVE, str->index );
     }
 
     unposition( str );
@@ -297,11 +297,11 @@ namespace oz
 
   void World::remove( Object *obj )
   {
-    if( net.isClient ) {
+    if( synapse.isClient ) {
       return;
     }
-    else if( net.isServer ) {
-      net.objects << Net::Action( Net::REMOVE, obj->index );
+    else if( synapse.isServer ) {
+      synapse.objects << Synapse::Action( Synapse::REMOVE, obj->index );
     }
 
     if( obj->sector != null ) {
@@ -316,11 +316,11 @@ namespace oz
 
   void World::remove( Particle *part )
   {
-    if( net.isClient ) {
+    if( synapse.isClient ) {
       return;
     }
-    else if( net.isServer ) {
-      net.particles << Net::Action( Net::REMOVE, part->index );
+    else if( synapse.isServer ) {
+      synapse.particles << Synapse::Action( Synapse::REMOVE, part->index );
     }
 
     unposition( part );
@@ -336,7 +336,7 @@ namespace oz
                             float rejection, float mass, float lifeTime,
                             float size, const Vec3 &color, float colorSpread )
   {
-    if( net.isClient ) {
+    if( synapse.isClient ) {
       return;
     }
 
