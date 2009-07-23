@@ -9,7 +9,7 @@
 #pragma once
 
 #include "bv.h"
-#include "Net.h"
+#include "io.h"
 
 namespace oz
 {
@@ -21,6 +21,8 @@ namespace oz
   // static object abstract class
   class Object : public AABB
   {
+    friend class DList<Object, 0>;
+
     /*
      * Here various flag bits are set; the higher bits are used for flags that are internal flags
      * and should only be hardcoded in the engine and cannot be set in object class's configuration
@@ -162,11 +164,15 @@ namespace oz
        * FIELDS
        */
 
-      int             index;        // position in world.objects vector
-      Sector          *sector;      // parent sector, null if not positioned in the world
+    private:
 
       Object          *prev[1];     // previous object in sector.objects list
       Object          *next[1];     // next object in sector.objects list
+
+    public:
+
+      int             index;        // position in world.objects vector
+      Sector          *sector;      // parent sector, null if not positioned in the world
 
       int             flags;
       int             oldFlags;

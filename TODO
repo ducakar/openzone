@@ -1,21 +1,30 @@
 ? PHYSFS
 
 Matrix
+  - improve Bot grab froce function
+  - improve Bot stepping algorithm
+  - proper Synapse support
+  - Vehicle
   - networking support
   ? reinvent cylinder
-  ? forgivable collision
+  - inventory
+  - Weapons
 
 Client
-  - weather
-  ? TTF
-  - free camera
+  - take Synapse messages into account
   - 3rd person
+  - MD3
+  - weather
+  - networking support
 
 Nirvana
   EVERYTHING
 
 UI
-  EVERYTHING
+  - events, callbacks
+  - standard elements
+  - HUD
+  - inventory
 
-Network
-  EVERYTHING
+Server
+  - networking support

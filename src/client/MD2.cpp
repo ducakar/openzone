@@ -287,7 +287,7 @@ namespace client
     String sPath = String( "mdl/" ) + name;
     String modelFile = sPath + "/tris.md2";
     String skinFile = sPath + "/skin.jpg";
-    String configFile = sPath + "/config.xml";
+    String configFile = sPath + "/" + String( name ) + ".xml";
 
     logFile.print( "Loading MD2 model '%s' ... ", modelFile.cstr() );
 
@@ -359,14 +359,12 @@ namespace client
     if( scaling != 1.0f ) {
       scale( scaling );
     }
-    if( !translation.isZero() ) {
-      translate( translation );
-      translate( ANIM_CROUCH_STAND,  crouchTranslation );
-      translate( ANIM_CROUCH_WALK,   crouchTranslation );
-      translate( ANIM_CROUCH_ATTACK, crouchTranslation );
-      translate( ANIM_CROUCH_PAIN,   crouchTranslation );
-      translate( ANIM_CROUCH_DEATH,  crouchTranslation );
-    }
+    translate( translation );
+    translate( ANIM_CROUCH_STAND,  crouchTranslation );
+    translate( ANIM_CROUCH_WALK,   crouchTranslation );
+    translate( ANIM_CROUCH_ATTACK, crouchTranslation );
+    translate( ANIM_CROUCH_PAIN,   crouchTranslation );
+    translate( ANIM_CROUCH_DEATH,  crouchTranslation );
 
     if( texId == 0 ) {
       return false;

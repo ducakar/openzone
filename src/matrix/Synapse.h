@@ -1,5 +1,5 @@
 /*
- *  Net.h
+ *  Synapse.h
  *
  *  [description]
  *
@@ -8,12 +8,10 @@
 
 #pragma once
 
-#include "io.h"
-
 namespace oz
 {
 
-  class Net
+  class Synapse
   {
     public:
 
@@ -51,7 +49,7 @@ namespace oz
         Action( ActionType type_, int index_ ) : type( type_ ), index( index_ ) {}
         Action( ActionType type_, int index_, int param_ ) :
             type( type_ ), index( index_ ), param( param_ )
-        {}
+            {}
       };
 
     public:
@@ -73,10 +71,10 @@ namespace oz
       Vector<Action> bsps;
       Vector<Action> world;
 
-      Net();
+      explicit Synapse();
 
   };
 
-  extern Net net;
+  extern Synapse synapse;
 
 }

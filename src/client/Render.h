@@ -10,6 +10,8 @@
 
 #include "matrix/World.h"
 
+#include "ui/ui.h"
+
 #include "Font.h"
 #include "BSP.h"
 #include "Terrain.h"
@@ -28,7 +30,6 @@ namespace client
     private:
 
       static const float RELEASED_CULL_FACTOR;
-      static const float INCH;
 
       static const float BLACK[];
       static const float WHITE[];
@@ -38,10 +39,7 @@ namespace client
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;
 
-      Font         font;
-      int          fontHeight;
       Terrain      terra;
-
       Vector<BSP*> bsps;
       Bitset       drawnStructures;
 
@@ -69,6 +67,8 @@ namespace client
       bool isSpirit;
       bool isUnderWater;
 
+      ui::Area root;
+
       void drawObject( Object *obj );
       void drawSparkGen( SparkGen *sparkGen );
       void scheduleSector( int sectorX, int sectorY );
@@ -79,7 +79,7 @@ namespace client
       void load();
       void free();
 
-      void draw();
+      void draw( bool doScreenshot );
   };
 
   extern Render render;

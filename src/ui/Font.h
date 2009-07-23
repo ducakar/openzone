@@ -15,46 +15,28 @@ namespace client
 namespace ui
 {
 
+  enum FontType
+  {
+    MONO,
+    SANS
+  };
+
   class Font
   {
-    public:
+    friend class Area;
 
-      enum Type
-      {
-        MONO,
-        SANS
-      };
-
-    private:
-
-      float     screenX;
-      float     screenY;
-
-      TTF_Font  *monoFont;
-      int       monoHeight;
-      TTF_Font  *sansFont;
-      int       sansHeight;
-
-      TTF_Font  *currentFont;
-
-      SDL_Color fgColor;
-      SDL_Color bgColor;
+    friend void init( int screenX, int screenY );
+    friend void free();
 
     public:
 
-      void setFont( Type type )
-      {
-        currentFont = type == MONO ? monoFont : sansFont;
-      }
+      TTF_Font *monoFont;
+      TTF_Font *sansFont;
 
-      int getHeight() const
-      {
-        return currentFont == monoFont ? monoHeight : sansHeight;
-      }
+      int monoHeight;
+      int sansHeight;
 
-      void print( float x, float y, const char *string, ... );
-
-      bool init( float screenX, float screenY );
+      bool init();
       void free();
 
   };

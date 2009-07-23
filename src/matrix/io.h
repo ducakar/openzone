@@ -23,7 +23,7 @@ namespace oz
 
     public:
 
-      InputStream( const char *start, const char *end_ ) : pos( start ), end( end_ )
+      explicit InputStream( const char *start, const char *end_ ) : pos( start ), end( end_ )
       {}
 
       bool isPassed() const
@@ -170,7 +170,7 @@ namespace oz
 
     public:
 
-      OutputStream( char *start, const char *end_ ) : pos( start ), end( end_ )
+      explicit OutputStream( char *start, const char *end_ ) : pos( start ), end( end_ )
       {}
 
       bool isPassed() const
@@ -313,10 +313,10 @@ namespace oz
 
     public:
 
-      Buffer() : buffer( null ), count( 0 )
+      explicit Buffer() : buffer( null ), count( 0 )
       {}
 
-      Buffer( int size ) : count( ( size - 1 ) / BLOCK_SIZE + 1 )
+      explicit Buffer( int size ) : count( ( size - 1 ) / BLOCK_SIZE + 1 )
       {
         buffer = new char[count];
       }

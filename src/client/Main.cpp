@@ -230,11 +230,12 @@ namespace client
 
     SDL_Event event;
 
-    bool isAlive = true;
-    bool isActive = true;
-    int  nFrames = 0;
+    bool isAlive          = true;
+    bool isActive         = true;
+    bool doScreenshot     = false;
+    int  nFrames          = 0;
 
-    Uint32 tick     = config.get( "tick", 20 );
+    Uint32 tick           = config.get( "tick", 20 );
     // time passed form start of the frame
     Uint32 delta;
     Uint32 timeNow;
@@ -272,6 +273,9 @@ namespace client
             if( event.key.keysym.sym == SDLK_F12 ) {
               SDL_WM_IconifyWindow();
               isActive = false;
+            }
+            else if( event.key.keysym.sym == SDLK_F11 ) {
+              doScreenshot = true;
             }
             break;
           }
@@ -314,7 +318,8 @@ namespace client
 
       if( delta < tick || timeNow - timeLastRender > 32 * tick ) {
         // render
-        render.draw();
+        render.draw( doScreenshot );
+        doScreenshot = false;
         nFrames++;
 
         // if there's still some time left, waste it

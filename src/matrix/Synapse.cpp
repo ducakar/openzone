@@ -1,5 +1,5 @@
 /*
- *  Net.cpp
+ *  Synapse.cpp
  *
  *  [description]
  *
@@ -8,14 +8,14 @@
 
 #include "precompiled.h"
 
-#include "Net.h"
+#include "Synapse.h"
 
 namespace oz
 {
 
-  Net net;
+  Synapse synapse;
 
-  Net::Net() : isClient( false )
+  Synapse::Synapse() : isClient( false )
   {}
 
 }

@@ -262,7 +262,7 @@ namespace oz
 
         // only push down if not on floor or not on still object
         if( !( sDynObj->flags & Object::ON_FLOOR_BIT ) && !( sDynObj->lower >= 0 &&
-               ( world.objects[sDynObj->lower]->flags & Object::DISABLED_BIT ) ) )
+            ( world.objects[sDynObj->lower]->flags & Object::DISABLED_BIT ) ) )
         {
           float ratio = obj->mass / ( obj->mass + sDynObj->mass );
           float pushZ = momentum.z * ratio;
@@ -401,9 +401,7 @@ namespace oz
       obj->flags &= ~( Object::HIT_BIT | Object::FRICTING_BIT );
 
       // clear the lower object if doesn't exist any more
-      if( obj->lower >= 0 &&
-          ( obj->lower >= world.objects.length() || world.objects[obj->lower] == null ) )
-      {
+      if( obj->lower >= 0 && world.objects[obj->lower] == null ) {
         obj->lower = -1;
         obj->flags &= ~Object::DISABLED_BIT;
       }

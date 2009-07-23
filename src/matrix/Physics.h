@@ -13,6 +13,7 @@
 namespace oz
 {
 
+  // FIXME pusher-pusher continuous hit
   class Physics
   {
     private:
