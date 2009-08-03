@@ -74,7 +74,6 @@ namespace oz
     bsps.clear();
 
     PoolAlloc<Object::Event, 0>::pool.free();
-    PoolAlloc<Object::Effect, 0>::pool.free();
 
     if( synapse.isServer ) {
       synapse.world << Synapse::Action( Synapse::CLEAR );
@@ -141,7 +140,6 @@ namespace oz
   inline void World::unposition( Object *obj )
   {
     obj->sector->objects.remove( obj );
-    obj->sector = null;
   }
 
   inline void World::reposition( Object *obj )
@@ -164,7 +162,6 @@ namespace oz
 
   inline void World::unposition( Particle *part )
   {
-    part->sector = null;
     part->sector->particles.remove( part );
   }
 
@@ -177,34 +174,6 @@ namespace oz
       oldSector->particles.remove( part );
       newSector->particles << part;
       part->sector = newSector;
-    }
-  }
-
-  inline void World::put( Object *obj )
-  {
-    if( synapse.isClient ) {
-      return;
-    }
-
-    assert( obj->sector == null );
-    position( obj );
-
-    if( synapse.isServer ) {
-      synapse.objects << Synapse::Action( Synapse::PUT, obj->index );
-    }
-  }
-
-  inline void World::cut( Object *obj )
-  {
-    if( synapse.isClient ) {
-      return;
-    }
-
-    assert( obj->sector != null );
-    unposition( obj );
-
-    if( synapse.isServer ) {
-      synapse.objects << Synapse::Action( Synapse::CUT, obj->index );
     }
   }
 
@@ -230,7 +199,7 @@ namespace oz
     }
   }
 
-  void World::add( Object *obj, bool doPut )
+  void World::add( Object *obj )
   {
     if( synapse.isClient ) {
       return;
@@ -245,15 +214,10 @@ namespace oz
       objects[obj->index] = obj;
     }
 
-    if( doPut ) {
-      put( obj );
-    }
-    else {
-      obj->sector = null;
-    }
+    position( obj );
 
     if( synapse.isServer ) {
-      synapse.objects << Synapse::Action( doPut ? Synapse::ADD : Synapse::ADD_NOPUT, obj->index );
+      synapse.objects << Synapse::Action( Synapse::ADD, obj->index );
     }
   }
 
@@ -283,16 +247,13 @@ namespace oz
     if( synapse.isClient ) {
       return;
     }
-    else if( synapse.isServer ) {
-      synapse.structs << Synapse::Action( Synapse::REMOVE, str->index );
-    }
+    synapse.structs << Synapse::Action( Synapse::REMOVE, str->index );
 
     unposition( str );
 
     strFreeQueue[addingQueue] << str->index;
 
     structures[str->index] = null;
-    delete str;
   }
 
   void World::remove( Object *obj )
@@ -300,9 +261,7 @@ namespace oz
     if( synapse.isClient ) {
       return;
     }
-    else if( synapse.isServer ) {
-      synapse.objects << Synapse::Action( Synapse::REMOVE, obj->index );
-    }
+    synapse.objects << Synapse::Action( Synapse::REMOVE, obj->index );
 
     if( obj->sector != null ) {
       unposition( obj );
@@ -311,7 +270,6 @@ namespace oz
     objFreeQueue[addingQueue] << obj->index;
 
     objects[obj->index] = null;
-    delete obj;
   }
 
   void World::remove( Particle *part )
@@ -319,16 +277,13 @@ namespace oz
     if( synapse.isClient ) {
       return;
     }
-    else if( synapse.isServer ) {
-      synapse.particles << Synapse::Action( Synapse::REMOVE, part->index );
-    }
+    synapse.particles << Synapse::Action( Synapse::REMOVE, part->index );
 
     unposition( part );
 
     partFreeQueue[addingQueue] << part->index;
 
     particles[part->index] = null;
-    delete part;
   }
 
   void World::genParticles( int number, const Vec3 &p,

@@ -18,9 +18,19 @@ namespace client
   // TODO buffer clearing
   class Audio
   {
+    friend class List<Audio, 0>;
+
+    private:
+
+      static const float REFERENCE_DISTANCE;
+
     public:
 
       typedef Audio *( *InitFunc )( const Object *object );
+
+    private:
+
+      Audio *next[1];
 
     protected:
 
@@ -33,6 +43,8 @@ namespace client
       void releaseSounds() const;
 
     public:
+
+      bool isUpdated;
 
       Audio( const Object *obj, const ObjectClass *clazz );
       virtual ~Audio();

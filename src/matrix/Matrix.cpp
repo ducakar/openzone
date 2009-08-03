@@ -45,16 +45,18 @@ namespace oz
 
 //     world.genParticles( 1000, Vec3( 40, -42, 74 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
 //                        0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
-//     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 80.0f ) ) );
-//     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 82.0f ) ) );
-//     world.add( new D_MetalBarrel( Vec3( 51.0f, -42.0f, 84.0f ) ) );
+    world.add( translator.createObject( "MetalBarrel", Vec3( 51.0f, -44.0f, 80.0f ) ) );
+    world.add( translator.createObject( "MetalBarrel", Vec3( 51.0f, -44.0f, 82.0f ) ) );
+    world.add( translator.createObject( "MetalBarrel", Vec3( 51.0f, -44.0f, 84.0f ) ) );
 //
 //     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 80.0f ) ) );
 //     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 82.0f ) ) );
 //     world.add( new D_WoodBarrel( Vec3( 51.0f, -38.0f, 84.0f ) ) );
 //
-//     world.add( new O_Tree1( 0.0f, -30.0f ) );
-//     world.add( new O_Tree2( 0.0f, -42.0f ) );
+    world.add( translator.createObject( "Tree1",
+               Vec3( 0.0f, -30.0f, world.terrain.height( 0.0f, -30.0f ) + 5.0f ) ) );
+    world.add( translator.createObject( "Tree3",
+               Vec3( 0.0f, -42.0f, world.terrain.height( 0.0f, -30.0f ) + 5.0f ) ) );
 
     world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -42.0f, 80.0f ) ) );
     world.add( translator.createObject( "SmallCrate", Vec3( 41.0f, -42.0f, 81.0f ) ) );
@@ -97,6 +99,8 @@ namespace oz
 
   void Matrix::update()
   {
+    synapse.clear();
+
     world.beginUpdate();
     physics.beginUpdate();
 
@@ -120,19 +124,21 @@ namespace oz
       if( obj != null ) {
         obj->update();
 
-        if( ( obj->flags & Object::DYNAMIC_BIT ) && obj->sector != null ) {
+        if( obj->flags & Object::DYNAMIC_BIT ) {
           DynObject *dynObj = (DynObject*) obj;
 
           physics.updateObj( dynObj );
 
           if( dynObj->velocity.sqL() > Physics::MAX_VELOCITY2 ) {
             world.remove( obj );
+            delete obj;
             continue;
           }
         }
         if( obj->damage <= 0.0f ) {
           obj->destroy();
           world.remove( obj );
+          delete obj;
         }
       }
     }

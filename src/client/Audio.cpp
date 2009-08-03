@@ -19,13 +19,15 @@ namespace oz
 namespace client
 {
 
+  const float Audio::REFERENCE_DISTANCE = 4.0f;
+
   void Audio::playSound( int sample, float volume ) const
   {
     ALuint srcId;
 
     alGenSources( 1, &srcId );
     alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
-    alSourcef( srcId, AL_REFERENCE_DISTANCE, 2.0f );
+    alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
 
     // If the object moves since source starts playing and source stands still, it's usually
     // not noticable for short-time source. After all, sound source many times does't move
@@ -41,6 +43,7 @@ namespace client
     else {
       alSourcefv( srcId, AL_POSITION, obj->p );
     }
+    alSourcef( srcId, AL_GAIN, volume );
     alSourcePlay( srcId );
 
     soundManager.addSource( srcId );
@@ -49,6 +52,7 @@ namespace client
   void Audio::playContSound( int sample, float volume, uint key ) const
   {
     if( soundManager.updateContSource( key ) ) {
+      alSourcef( soundManager.getCachedContSourceId(), AL_GAIN, volume );
       alSourcefv( soundManager.getCachedContSourceId(), AL_POSITION, obj->p );
     }
     else {
@@ -56,8 +60,10 @@ namespace client
 
       alGenSources( 1, &srcId );
       alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
-      alSourcefv( srcId, AL_POSITION, obj->p );
       alSourcei( srcId, AL_LOOPING, AL_TRUE );
+      alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
+      alSourcefv( srcId, AL_POSITION, obj->p );
+      alSourcef( srcId, AL_GAIN, volume );
       alSourcePlay( srcId );
 
       soundManager.addContSource( key, srcId );

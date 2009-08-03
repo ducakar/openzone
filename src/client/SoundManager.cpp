@@ -30,14 +30,11 @@ namespace client
     foreach( obj, sector.objects.iterator() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
-          if( !audios.contains( (uint) &*obj ) ) {
-            Audio *audio = context.createAudio( &*obj );
-            if( audio == null ) {
-              return;
-            }
-            audios.add( (uint) &*obj, audio );
+          if( !audios.contains( obj->index ) ) {
+            audios.add( obj->index, context.createAudio( &*obj ) );
           }
           audios.cachedValue()->update();
+          audios.cachedValue()->isUpdated = true;
         }
       }
     }
@@ -151,7 +148,18 @@ namespace client
     return true;
   }
 
-  void SoundManager::update()
+  void SoundManager::sync()
+  {
+    // remove Audio objects of removed objects
+    foreach( i, synapse.objects.iterator() ) {
+      if( i->type == Synapse::REMOVE && audios.contains( i->index ) ) {
+        delete audios.cachedValue();
+        audios.remove( i->index );
+      }
+    }
+  }
+
+  void SoundManager::play()
   {
     // add new sounds
     alListenerfv( AL_ORIENTATION, camera.at );
@@ -164,54 +172,87 @@ namespace client
         playSector( x, y );
       }
     }
+  }
 
+  void SoundManager::update()
+  {
     // remove continous sounds that are not played any more
-    for( HashIndex<ContSource, HASHTABLE_SIZE>::Iterator i( contSources ); !i.isPassed(); ) {
+    for( typeof( contSources.iterator() ) i( contSources ); !i.isPassed(); ) {
       ContSource *src = i;
-      uint key = i.key();
+      uint       key  = i.key();
 
       // we should advance now, so that we don't remove the element the iterator is pointing at
       ++i;
 
-      if( src->state == ContSource::NOT_UPDATED ) {
+      if( src->isUpdated ) {
+        src->isUpdated = false;
+      }
+      else {
         alSourceStop( src->source );
         alDeleteSources( 1, &src->source );
         contSources.remove( key );
       }
-      else {
-        src->state = ContSource::NOT_UPDATED;
-      }
     }
 
-    // remove stopped sources of non-continous sounds
+    updateMusic();
+
+    // cleanups
     if( clearCount >= CLEAR_INTERVAL ) {
-      Source *src = sources.first();
+      // remove Audio objects that are not used any more
+      for( typeof( audios.iterator() ) i( audios ); !i.isPassed(); ) {
+        Audio *audio = *i;
+        uint  key    = i.key();
+
+        // we should advance now, so that we don't remove the element the iterator is pointing at
+        ++i;
+
+        if( audio->isUpdated ) {
+          audio->isUpdated = false;
+        }
+        else {
+          audios.remove( key );
+          delete audio;
+        }
+      }
+
+      // remove stopped sources of non-continous sounds
+      Source *prev = null;
+      Source *src  = sources.first();
 
       while( src != null ) {
         Source *next = src->next[0];
-        ALint value = AL_STOPPED;
 
+        ALint value;
         alGetSourcei( src->source, AL_SOURCE_STATE, &value );
 
         if( value != AL_PLAYING ) {
           alDeleteSources( 1, &src->source );
 
-          sources.remove( src );
+          sources.remove( src, prev );
           delete src;
+        }
+        else {
+          prev = src;
         }
         src = next;
       }
-      clearCount -= CLEAR_INTERVAL;
+      clearCount = 0;
     }
     clearCount += timer.frameMillis;
-
-    updateMusic();
   }
 
-  void SoundManager::init()
+  bool SoundManager::init( int *argc, char *argv[] )
   {
     logFile.println( "Initializing SoundManager {" );
     logFile.indent();
+
+    alutInit( argc, argv );
+    if( alutGetError() != ALUT_ERROR_NO_ERROR ) {
+      logFile.printEnd( "Failed to initialize ALUT" );
+      logFile.unindent();
+      logFile.println( "}" );
+      return false;
+    }
 
     String sExtensions = (const char*) alGetString( AL_EXTENSIONS );
     Vector<String> extensions = sExtensions.trim().split( ' ' );
@@ -244,6 +285,8 @@ namespace client
 
     logFile.unindent();
     logFile.println( "}" );
+
+    return true;
   }
 
   void SoundManager::free()
@@ -263,10 +306,12 @@ namespace client
       alDeleteSources( 1, &src.source );
     }
     contSources.clear();
+
     audios.free();
 
     freeMusic();
 
+    alutExit();
     logFile.printEnd( " OK" );
   }
 

@@ -29,38 +29,28 @@ namespace client
       // release continous sound if not used for 60 s
       static const int RELEASE_COUNT = 3000;
 
-      // size of hashtable for continous sources
-      static const int HASHTABLE_SIZE = 256;
       static const int MUSIC_BUFFER_SIZE = 16 * 1024;
-      // clear stopped sources each second
-      static const int CLEAR_INTERVAL = 1000;
+      // cleanup interval (remove stopped sources, unused audios)
+      static const int CLEAR_INTERVAL = 60 * 50;
 
       /*
        * SFX
        */
-      struct Source
+      struct Source : PoolAlloc<Source, 0>
       {
-        Source *prev[1];
-        Source *next[1];
-
         ALuint source;
+        Source *next[1];
 
         Source( ALuint sourceId ) : source( sourceId ) {}
       };
 
       struct ContSource
       {
-        enum State
-        {
-          NOT_UPDATED,
-          UPDATED
-        };
-
-        State  state;
         ALuint source;
+        bool   isUpdated;
 
         ContSource() {}
-        ContSource( ALuint sourceId ) : state( UPDATED ), source( sourceId ) {}
+        ContSource( ALuint sourceId ) : source( sourceId ), isUpdated( true ) {}
       };
 
     private:
@@ -68,23 +58,28 @@ namespace client
       /*
        * SFX
        */
-      HashIndex<Audio*, HASHTABLE_SIZE>     audios;
-      DList<Source, 0>                      sources;
-      HashIndex<ContSource, HASHTABLE_SIZE> contSources;
+      List<Source, 0>            sources;
+      HashIndex<ContSource, 251> contSources;
       int clearCount;
 
       /*
        * Music
        */
-      OggVorbis_File oggStream;
-      vorbis_info    *vorbisInfo;
+      OggVorbis_File             oggStream;
+      vorbis_info                *vorbisInfo;
 
-      bool           isMusicPlaying;
-      bool           isMusicLoaded;
+      bool                       isMusicPlaying;
+      bool                       isMusicLoaded;
 
-      ALuint         musicBuffers[2];
-      ALuint         musicSource;
-      ALenum         musicFormat;
+      ALuint                     musicBuffers[2];
+      ALuint                     musicSource;
+      ALenum                     musicFormat;
+
+      /*
+       * Common
+       */
+
+      HashIndex<Audio*, 1021>    audios;
 
       void playSector( int sectorX, int sectorY );
 
@@ -112,7 +107,7 @@ namespace client
       bool updateContSource( uint key )
       {
         if( contSources.contains( key ) ) {
-          contSources.cachedValue().state = ContSource::UPDATED;
+          contSources.cachedValue().isUpdated = true;
           return true;
         }
         else {
@@ -131,9 +126,11 @@ namespace client
       }
 
       bool loadMusic( const char *path );
+      void sync();
+      void play();
       void update();
 
-      void init();
+      bool init( int *argc, char *argv[] );
       void free();
 
   };

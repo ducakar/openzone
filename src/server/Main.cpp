@@ -21,6 +21,8 @@
 # include <sys/stat.h>
 #endif
 
+#include <SDL_net.h>
+
 namespace oz
 {
 namespace server

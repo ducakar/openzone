@@ -12,8 +12,5 @@
 
 // include SDL, OpenGL and OpenAL as those are commonly used
 #include <SDL.h>
-#include <SDL_image.h>
-#include <SDL_ttf.h>
-#include <SDL_net.h>
 #include <SDL_opengl.h>
 #include <AL/alut.h>

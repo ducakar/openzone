@@ -62,10 +62,12 @@ namespace oz
     }
 
     if( ( keys & KEY_JUMP ) && !( oldKeys & KEY_JUMP ) &&
-        ( isGrounded || ( flags & Object::UNDER_WATER_BIT ) ) )
+        ( isGrounded || ( flags & Object::UNDER_WATER_BIT ) ) &&
+        stamina >= clazz.staminaJumpDrain )
     {
       flags &= ~DISABLED_BIT;
       isGrounded = false;
+      stamina -= clazz.staminaJumpDrain;
 
       momentum.z = clazz.jumpMomentum;
       addEvent( SND_JUMP );
@@ -97,8 +99,12 @@ namespace oz
         state |= CROUCHING_BIT;
       }
     }
+    if( stamina < clazz.staminaRunDrain ) {
+      state &= ~RUNNING_BIT;
+    }
 
-    float velocity = ( state & CROUCHING_BIT ) ? clazz.crouchMomentum :
+    float velocity = ( state & CROUCHING_BIT ) ?
+        clazz.crouchMomentum :
         ( state & RUNNING_BIT ) ? clazz.runMomentum : clazz.walkMomentum;
 
     if( ( !isGrounded && !isClimbing ) || ( flags & ON_SLICK_BIT ) ) {
@@ -178,6 +184,10 @@ namespace oz
         }
       }
       momentum += desiredMomentum;
+
+      if( ( state & RUNNING_BIT ) && ( isGrounded || isSwimming ) ) {
+        stamina -= clazz.staminaRunDrain;
+      }
     }
 
     // TODO: better stepping algoriths (stepping per time unit limit + vertial surface should not
@@ -253,16 +263,18 @@ namespace oz
       obj->flags    &= ~Object::DISABLED_BIT;
     }
 
+    stamina += timer.frameTime;
+    stamina = min( stamina, clazz.stamina );
+
     oldKeys = keys;
     keys = 0;
   }
 
   void Bot::onHit( const Hit *hit, float hitMomentum )
   {
-    if( hitMomentum <= -30.0f ) {
-//       damage += hitMomentum;
+    if( hitMomentum <= -8.0f ) {
+      damage += hitMomentum;
     }
-
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       addEvent( SND_LAND );
     }
@@ -273,33 +285,29 @@ namespace oz
     anim = ANIM_DEATH_FALLBACK;
   }
 
-  Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f )
-  {
-    weapon = null;
-    grabObjIndex = -1;
-  }
+  Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f ),
+      grabObjIndex( -1 ), deathTime( 0.0f ), weapon( null )
+  {}
 
   void Bot::readUpdates( InputStream *istream )
   {
-    p         = istream->readVec3();
-    flags     = istream->readInt();
-    oldFlags  = istream->readInt();
-    damage    = istream->readFloat();
+    p            = istream->readVec3();
+    flags        = istream->readInt();
+    oldFlags     = istream->readInt();
+    damage       = istream->readFloat();
 
-    velocity  = istream->readVec3();
-    momentum  = istream->readVec3();
+    velocity     = istream->readVec3();
+    momentum     = istream->readVec3();
 
-    state     = istream->readInt();
-    anim      = (AnimEnum) istream->readByte();
-    h         = istream->readFloat();
+    state        = istream->readInt();
+    anim         = (AnimEnum) istream->readByte();
+    h            = istream->readFloat();
 
-    int nEvents = istream->readByte();
+    grabObjIndex = istream->readInt();
+
+    int nEvents = istream->readInt();
     for( int i = 0; i < nEvents; i++ ) {
       addEvent( istream->readInt() );
-    }
-    int nEffects = istream->readByte();
-    for( int i = 0; i < nEffects; i++ ) {
-      addEffect( istream->readInt() );
     }
   }
 
@@ -317,37 +325,41 @@ namespace oz
     ostream->writeByte( anim );
     ostream->writeFloat( h );
 
-    ostream->writeByte( events.length() );
+    ostream->writeInt( grabObjIndex );
+
+    ostream->writeInt( events.length() );
     foreach( event, events.iterator() ) {
       ostream->writeInt( event->id );
-    }
-    ostream->writeByte( effects.length() );
-    foreach( effect, effects.iterator() ) {
-      ostream->writeInt( effect->id );
     }
   }
 
   void Bot::readFull( InputStream *istream )
   {
-    p         = istream->readVec3();
-    flags     = istream->readInt();
-    oldFlags  = istream->readInt();
-    damage    = istream->readFloat();
+    p            = istream->readVec3();
+    flags        = istream->readInt();
+    oldFlags     = istream->readInt();
+    damage       = istream->readFloat();
 
-    velocity  = istream->readVec3();
-    momentum  = istream->readVec3();
+    velocity     = istream->readVec3();
+    momentum     = istream->readVec3();
 
-    state     = istream->readInt();
-    anim      = (AnimEnum) istream->readByte();
-    h         = istream->readFloat();
+    state        = istream->readInt();
+    anim         = (AnimEnum) istream->readByte();
+    h            = istream->readFloat();
+    v            = istream->readFloat();
 
-    int nEvents = istream->readByte();
+    stamina      = istream->readFloat();
+    grabObjIndex = istream->readInt();
+
+    int nItems = istream->readInt();
+    for( int i = 0; i < nItems; i++ ) {
+      const String &name = istream->readString();
+      items << translator.createObject( name, istream );
+    }
+
+    int nEvents = istream->readInt();
     for( int i = 0; i < nEvents; i++ ) {
       addEvent( istream->readInt() );
-    }
-    int nEffects = istream->readByte();
-    for( int i = 0; i < nEffects; i++ ) {
-      addEffect( istream->readInt() );
     }
   }
 
@@ -364,14 +376,20 @@ namespace oz
     ostream->writeInt( state );
     ostream->writeByte( anim );
     ostream->writeFloat( h );
+    ostream->writeFloat( v );
 
-    ostream->writeByte( events.length() );
+    ostream->writeFloat( stamina );
+    ostream->writeInt( grabObjIndex );
+
+    ostream->writeInt( items.length() );
+    foreach( item, items.iterator() ) {
+      ostream->writeString( ( *item )->type->name );
+      ( *item )->writeFull( ostream );
+    }
+
+    ostream->writeInt( events.length() );
     foreach( event, events.iterator() ) {
       ostream->writeInt( event->id );
-    }
-    ostream->writeByte( effects.length() );
-    foreach( effect, effects.iterator() ) {
-      ostream->writeInt( effect->id );
     }
   }
 

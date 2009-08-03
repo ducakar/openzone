@@ -92,7 +92,6 @@ namespace client
       static Anim animList[];
 
       MD2();
-      ~MD2();
 
       bool load( const char *name );
       void free();

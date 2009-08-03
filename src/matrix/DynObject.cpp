@@ -27,10 +27,6 @@ namespace oz
     for( int i = 0; i < nEvents; i++ ) {
       addEvent( istream->readInt() );
     }
-    int nEffects = istream->readInt();
-    for( int i = 0; i < nEffects; i++ ) {
-      addEffect( istream->readInt() );
-    }
   }
 
   void DynObject::writeFull( OutputStream *ostream )
@@ -47,10 +43,6 @@ namespace oz
     foreach( event, events.iterator() ) {
       ostream->writeInt( event->id );
     }
-    ostream->writeInt( effects.length() );
-    foreach( effect, effects.iterator() ) {
-      ostream->writeInt( effect->id );
-    }
   }
 
   void DynObject::readUpdate( InputStream *istream )
@@ -64,10 +56,6 @@ namespace oz
     for( int i = 0; i < nEvents; i++ ) {
       addEvent( istream->readInt() );
     }
-    int nEffects = istream->readInt();
-    for( int i = 0; i < nEffects; i++ ) {
-      addEffect( istream->readInt() );
-    }
   }
 
   void DynObject::writeUpdate( OutputStream *ostream )
@@ -80,10 +68,6 @@ namespace oz
     ostream->writeInt( events.length() );
     foreach( event, events.iterator() ) {
       ostream->writeInt( event->id );
-    }
-    ostream->writeInt( effects.length() );
-    foreach( effect, effects.iterator() ) {
-      ostream->writeInt( effect->id );
     }
   }
 

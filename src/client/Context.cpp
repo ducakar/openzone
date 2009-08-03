@@ -10,12 +10,14 @@
 
 #include "Context.h"
 
-#include <vorbis/vorbisfile.h>
-
 #include "MD2Model.h"
 #include "MD2StaticModel.h"
+#include "MD3StaticModel.h"
 #include "OBJModel.h"
 #include "SimpleAudio.h"
+
+#include <SDL_image.h>
+#include <vorbis/vorbisfile.h>
 
 #define OZ_REGISTER_MODELCLASS( name ) \
   modelClasses.add( #name, &name##Model::create )
@@ -58,8 +60,6 @@ namespace client
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
-
-//     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texNum );
@@ -114,8 +114,6 @@ namespace client
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
 
-//     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texNum );
       texNum = ~0;
@@ -150,7 +148,7 @@ namespace client
 
   uint Context::requestTexture( int resource, bool wrap, int magFilter, int minFilter )
   {
-    if( textures[resource].nUsers >= 0 ) {
+    if( textures[resource].nUsers > 0 ) {
       textures[resource].nUsers++;
       return textures[resource].id;
     }
@@ -181,7 +179,7 @@ namespace client
   uint Context::requestNormalmap( int resource, const Vec3 &lightNormal,
                                   bool wrap, int magFilter, int minFilter )
   {
-    if( textures[resource].nUsers >= 0 ) {
+    if( textures[resource].nUsers > 0 ) {
       textures[resource].nUsers++;
       return textures[resource].id;
     }
@@ -211,13 +209,12 @@ namespace client
 
   void Context::releaseTexture( int resource )
   {
+    assert( 0 <= resource && resource < translator.textures.length() );
     assert( textures[resource].nUsers > 0 );
 
     textures[resource].nUsers--;
-
     if( textures[resource].nUsers == 0 ) {
       glDeleteTextures( 1, &textures[resource].id );
-      textures[resource].nUsers = -1;
     }
   }
 
@@ -269,7 +266,7 @@ namespace client
 
   uint Context::requestSound( int resource )
   {
-    if( sounds[resource].nUsers >= 0 ) {
+    if( sounds[resource].nUsers > 0 ) {
       sounds[resource].nUsers++;
       return sounds[resource].id;
     }
@@ -365,9 +362,13 @@ namespace client
 
   void Context::releaseSound( int resource )
   {
+    assert( 0 <= resource && resource < translator.sounds.length() );
     assert( sounds[resource].nUsers > 0 );
 
     sounds[resource].nUsers--;
+    if( sounds[resource].nUsers == 0 ) {
+      alDeleteBuffers( 1, &sounds[resource].id );
+    }
   }
 
   uint Context::genList()
@@ -395,46 +396,127 @@ namespace client
     }
   }
 
-  uint Context::loadMD2StaticModel( const char *path )
-  {
-    if( md2StaticModels.contains( path ) ) {
-      md2StaticModels.cachedValue().nUsers++;
-      return md2StaticModels.cachedValue().id;
-    }
-    else {
-      md2StaticModels.add( path, Resource<uint>() );
-      md2StaticModels.cachedValue().id = MD2::genList( path );
-      md2StaticModels.cachedValue().nUsers = 1;
-      return md2StaticModels.cachedValue().id;
-    }
-  }
-
   MD2 *Context::loadMD2Model( const char *path )
   {
-    if( md2Models.contains( path ) ) {
-      md2Models.cachedValue().nUsers++;
-      return md2Models.cachedValue().object;
-    }
-    else {
+    if( !md2Models.contains( path ) ) {
       md2Models.add( path, Resource<MD2*>() );
       md2Models.cachedValue().object = new MD2();
       md2Models.cachedValue().object->load( path );
-      md2Models.cachedValue().nUsers = 1;
-      return md2Models.cachedValue().object;
+    }
+    md2Models.cachedValue().nUsers++;
+    return md2Models.cachedValue().object;
+  }
+
+  void Context::releaseMD2Model( const char *path )
+  {
+    assert( md2Models.contains( path ) );
+
+    if( md2Models.contains( path ) ) {
+      md2Models.cachedValue().nUsers--;
+
+      if( md2Models.cachedValue().nUsers == 0 ) {
+        md2Models.cachedValue().object->free();
+        delete md2Models.cachedValue().object;
+        md2Models.remove( path );
+      }
+    }
+  }
+
+  uint Context::loadMD2StaticModel( const char *path )
+  {
+    if( !md2StaticModels.contains( path ) ) {
+      md2StaticModels.add( path, Resource<uint>() );
+      md2StaticModels.cachedValue().id = MD2::genList( path );
+    }
+    md2StaticModels.cachedValue().nUsers++;
+    return md2StaticModels.cachedValue().id;
+  }
+
+  void Context::releaseMD2StaticModel( const char *path )
+  {
+    assert( md2StaticModels.contains( path ) );
+
+    if( md2StaticModels.contains( path ) ) {
+      md2StaticModels.cachedValue().nUsers--;
+
+      if( md2StaticModels.cachedValue().nUsers == 0 ) {
+        glDeleteLists( md2StaticModels.cachedValue().id, 1 );
+        md2StaticModels.remove( path );
+      }
+    }
+  }
+
+  MD3 *Context::loadMD3Model( const char *path )
+  {
+    if( !md3Models.contains( path ) ) {
+      md3Models.add( path, Resource<MD3*>() );
+      md3Models.cachedValue().object = new MD3();
+      md3Models.cachedValue().object->load( path );
+    }
+    md3Models.cachedValue().nUsers++;
+    return md3Models.cachedValue().object;
+  }
+
+  void Context::releaseMD3Model( const char *path )
+  {
+    assert( md3Models.contains( path ) );
+
+    if( md3Models.contains( path ) ) {
+      md3Models.cachedValue().nUsers--;
+
+      if( md3Models.cachedValue().nUsers == 0 ) {
+        md3Models.cachedValue().object->free();
+        delete md3Models.cachedValue().object;
+        md3Models.remove( path );
+      }
+    }
+  }
+
+  uint Context::loadMD3StaticModel( const char *path )
+  {
+    if( !md3StaticModels.contains( path ) ) {
+      md3StaticModels.add( path, Resource<uint>() );
+      md3StaticModels.cachedValue().id = MD3::genList( path );
+    }
+    md3StaticModels.cachedValue().nUsers++;
+    return md3StaticModels.cachedValue().id;
+  }
+
+  void Context::releaseMD3StaticModel( const char *path )
+  {
+    assert( md3StaticModels.contains( path ) );
+
+    if( md3StaticModels.contains( path ) ) {
+      md3StaticModels.cachedValue().nUsers--;
+
+      if( md3StaticModels.cachedValue().nUsers == 0 ) {
+        glDeleteLists( md3StaticModels.cachedValue().id, 1 );
+        md3StaticModels.remove( path );
+      }
     }
   }
 
   uint Context::loadOBJModel( const char *path )
   {
-    if( objModels.contains( path ) ) {
-      objModels.cachedValue().nUsers++;
-      return objModels.cachedValue().id;
-    }
-    else {
+    if( !objModels.contains( path ) ) {
       objModels.add( path, Resource<uint>() );
       objModels.cachedValue().id = OBJ::genList( path );
-      objModels.cachedValue().nUsers = 1;
-      return objModels.cachedValue().id;
+    }
+    objModels.cachedValue().nUsers++;
+    return objModels.cachedValue().id;
+  }
+
+  void Context::releaseOBJModel( const char *path )
+  {
+    assert( objModels.contains( path ) );
+
+    if( objModels.contains( path ) ) {
+      objModels.cachedValue().nUsers--;
+
+      if( objModels.cachedValue().nUsers == 0 ) {
+        glDeleteLists( objModels.cachedValue().id, 1 );
+        objModels.remove( path );
+      }
     }
   }
 
@@ -450,15 +532,9 @@ namespace client
     textures = new Resource<uint>[translator.textures.length()];
     sounds = new Resource<uint>[translator.sounds.length()];
 
-    for( int i = 0; i < translator.textures.length(); i++ ) {
-      textures[i].nUsers = -1;
-    }
-    for( int i = 0; i < translator.sounds.length(); i++ ) {
-      sounds[i].nUsers = -1;
-    }
-
     OZ_REGISTER_MODELCLASS( MD2 );
     OZ_REGISTER_MODELCLASS( MD2Static );
+    OZ_REGISTER_MODELCLASS( MD3Static );
     OZ_REGISTER_MODELCLASS( OBJ );
 
     OZ_REGISTER_AUDIOCLASS( Simple );
@@ -478,8 +554,6 @@ namespace client
       delete[] sounds;
       sounds = null;
     }
-
-    lists.clear();
 
     md2Models.clear();
     md2StaticModels.clear();

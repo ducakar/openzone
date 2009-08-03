@@ -25,6 +25,9 @@ namespace oz
     if( Math::rand() % 101 == 0 ) {
       body->h += ( Math::frand() * 120.0f ) - 60.0f;
     }
+    if( Math::rand() % 67 == 0 ) {
+      body->keys |= Bot::KEY_JUMP;
+    }
   }
 
 }

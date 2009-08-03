@@ -216,11 +216,9 @@ namespace oz
       if( hitMomentum < HIT_MOMENTUM ) {
         obj->hit( &collider.hit, hitMomentum );
         obj->flags |= Object::HIT_BIT;
-        obj->addEvent( Object::EVENT_HIT, hitMomentum*hitMomentum );
 
         sDynObj->hit( &collider.hit, hitMomentum );
         sDynObj->flags |= Object::HIT_BIT;
-        sDynObj->addEvent( Object::EVENT_HIT, hitMomentum*hitMomentum );
       }
 
       if( collider.hit.normal.z == 0.0f ) {
@@ -231,6 +229,8 @@ namespace oz
         if( obj->flags & Object::PUSHER_BIT ) {
           obj->momentum.x     = 0.0f;
           obj->momentum.y     = 0.0f;
+//           obj->momentum.x     -= momentum.x * ratio;
+//           obj->momentum.y     -= momentum.y * ratio;
           sDynObj->momentum.x += momentum.x * ratio;
           sDynObj->momentum.y += momentum.y * ratio;
         }
@@ -283,12 +283,10 @@ namespace oz
       if( hitMomentum < HIT_MOMENTUM ) {
         obj->hit( &collider.hit, hitMomentum );
         obj->flags |= Object::HIT_BIT;
-        obj->addEvent( Object::EVENT_HIT, hitMomentum*hitMomentum );
 
         if( sObj != null ) {
           sObj->hit( &collider.hit, hitMomentum );
           sObj->flags |= Object::HIT_BIT;
-          sObj->addEvent( Object::EVENT_HIT, hitMomentum*hitMomentum );
         }
       }
 

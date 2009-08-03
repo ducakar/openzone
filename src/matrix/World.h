@@ -106,11 +106,8 @@ namespace oz
       /**
        * Put the object into the world hashspace
        */
-      void put( Object *obj );
-      void cut( Object *obj );
-
       void add( Structure *str );
-      void add( Object *obj, bool doPut = true );
+      void add( Object *obj );
       void add( Particle *part );
 
       void remove( Structure *str );

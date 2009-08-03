@@ -10,6 +10,7 @@
 
 #include "Main.h"
 
+#include "Context.h"
 #include "Game.h"
 #include "SoundManager.h"
 #include "Render.h"
@@ -24,7 +25,7 @@
 # include <sys/stat.h>
 #endif
 
-#include "Context.h"
+#include <SDL_net.h>
 
 namespace oz
 {
@@ -52,11 +53,6 @@ namespace client
     }
     if( initFlags & INIT_GAME_INIT ) {
       game.free();
-    }
-    if( initFlags & INIT_AL ) {
-      logFile.print( "Shutting down OpenAL ..." );
-      alutExit();
-      logFile.printEnd( " OK" );
     }
     if( initFlags & INIT_SDL ) {
       logFile.print( "Shutting down SDL ..." );
@@ -193,22 +189,12 @@ namespace client
     }
     initFlags |= INIT_SDL_VIDEO;
 
-    logFile.print( "Initializing OpenAL ..." );
-    alutInit( argc, argv );
-    if( alutGetError() != ALUT_ERROR_NO_ERROR ) {
-      logFile.printEnd( " Failed" );
-      shutdown();
-      return;
-    }
-    else {
-      logFile.printEnd( " OK" );
-    }
-    initFlags |= INIT_AL;
-
     render.init();
     initFlags |= INIT_RENDER_INIT;
 
-    soundManager.init();
+    if( !soundManager.init( argc, argv ) ) {
+      return;
+    }
     initFlags |= INIT_AUDIO;
 
     if( !game.init() ) {
@@ -232,7 +218,6 @@ namespace client
 
     bool isAlive          = true;
     bool isActive         = true;
-    bool doScreenshot     = false;
     int  nFrames          = 0;
 
     Uint32 tick           = config.get( "tick", 20 );
@@ -275,7 +260,7 @@ namespace client
               isActive = false;
             }
             else if( event.key.keysym.sym == SDLK_F11 ) {
-              doScreenshot = true;
+              render.doScreenshot = true;
             }
             break;
           }
@@ -310,7 +295,12 @@ namespace client
 
       // update world
       isAlive &= game.update( tick );
-      soundManager.update();
+      // synchronize render and soundManager (remove models and audios of removed objects)
+      render.sync();
+      soundManager.sync();
+
+      // play sounds, but don't do any cleanups
+      soundManager.play();
 
       // render graphics, if we have enough time left
       timeNow = SDL_GetTicks();
@@ -318,8 +308,10 @@ namespace client
 
       if( delta < tick || timeNow - timeLastRender > 32 * tick ) {
         // render
-        render.draw( doScreenshot );
-        doScreenshot = false;
+        render.update();
+        // stop playing stopped continous sounds, do cleanups
+        soundManager.update();
+
         nFrames++;
 
         // if there's still some time left, waste it

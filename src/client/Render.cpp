@@ -44,6 +44,9 @@ namespace client
 
   void Render::init()
   {
+    doScreenshot = false;
+    clearCount   = 0;
+
     logFile.println( "Initializing Graphics {" );
     logFile.indent();
 
@@ -145,12 +148,12 @@ namespace client
       blendedObjects << obj;
     }
     else {
-      if( !models.contains( (uint) obj ) ) {
-        models.add( (uint) obj, context.createModel( obj ) );
+      if( !models.contains( obj->index ) ) {
+        models.add( obj->index, context.createModel( obj ) );
       }
       // draw model
       models.cachedValue()->draw();
-      models.cachedValue()->state = Model::UPDATED;
+      models.cachedValue()->isUpdated = true;
     }
     glPopMatrix();
 
@@ -208,7 +211,17 @@ namespace client
     }
   }
 
-  void Render::draw( bool doScreenshot )
+  void Render::sync()
+  {
+    foreach( i, synapse.objects.iterator() ) {
+      if( i->type == Synapse::REMOVE && models.contains( i->index ) ) {
+        delete models.cachedValue();
+        models.remove( i->index );
+      }
+    }
+  }
+
+  void Render::update()
   {
     assert( glGetError() == GL_NO_ERROR );
 
@@ -296,7 +309,6 @@ namespace client
     bool isInWaterBrush = false;
     for( int i = 0; i < structures.length(); i++ ) {
       Structure *str = structures[i];
-
       isInWaterBrush |= bsps[str->bsp]->draw( str );
     }
     structures.clear();
@@ -345,6 +357,10 @@ namespace client
 //     }
 //     waterObjects.clear();
 
+    glDisable( GL_FOG );
+    glDisable( GL_LIGHTING );
+    glDisable( GL_TEXTURE_2D );
+
     if( showAim ) {
       Vec3 move = camera.at * 32.0f;
       collider.translate( camera.p, move, camera.bot );
@@ -354,35 +370,9 @@ namespace client
       shape.drawBox( AABB( camera.p + move, Vec3( 0.03f, 0.03f, 0.03f ) ) );
     }
 
-//     glEnable( GL_BLEND );
-//     glBlendFunc( GL_ONE, GL_ONE );
+    glDisable( GL_DEPTH_TEST );
 
-    if( camera.bot != null ) {
-//       font.print( 0, -16, "cam.p(%.2f %.2f %.2f) bot(%.2f %.2f) rel(%.2f %.2f)",
-//                   camera.p.x, camera.p.y, camera.p.z,
-//                   camera.bot->h, camera.bot->v, camera.h, camera.v );
-//       font.print( 0, -32, "camera.vel (%.2f %.2f %.2f) camera.mom (%.2f %.2f %.2f)",
-//                   camera.bot->velocity.x, camera.bot->velocity.y, camera.bot->velocity.z,
-//                   camera.bot->momentum.x, camera.bot->momentum.y, camera.bot->momentum.z);
-//
-//       font.print( 0, -48, "d %d fl %d lw %d h %d fr %d iw %d uw %d ld %d s %d ovlp %d wb %d",
-//                   ( camera.bot->flags & Object::DISABLED_BIT ) != 0,
-//                   ( camera.bot->flags & Object::ON_FLOOR_BIT ) != 0,
-//                   camera.bot->lower >= 0,
-//                   ( camera.bot->flags & Object::HIT_BIT ) != 0,
-//                   ( camera.bot->flags & Object::FRICTING_BIT ) != 0,
-//                   ( camera.bot->flags & Object::IN_WATER_BIT ) != 0,
-//                   ( camera.bot->flags & Object::UNDER_WATER_BIT ) != 0,
-//                   ( camera.bot->flags & Object::ON_LADDER_BIT ) != 0,
-//                   ( camera.bot->flags & Object::ON_SLICK_BIT ) != 0,
-//                   collider.test( *camera.bot ),
-//                   isInWaterBrush );
-//
-//       DynObject *o = (DynObject*) world.objects[13];
-//       font.print( 0, -64, "bigcrate.vel (%.2f %.2f %.2f) bigcrate.mom (%.2f %.2f %.2f)",
-//                   o->velocity.x, o->velocity.y, o->velocity.z,
-//                   o->momentum.x, o->momentum.y, o->momentum.z);
-    }
+    glColor4fv( WHITE );
 
     ui::draw();
 
@@ -411,21 +401,35 @@ namespace client
       SDL_SaveBMP( surf, fileName );
       SDL_FreeSurface( surf );
       delete[] pixels;
+
+      doScreenshot = false;
     }
 
     SDL_GL_SwapBuffers();
 
     assert( glGetError() == GL_NO_ERROR );
 
-    // remove droped models
-    foreach( model, models.iterator() ) {
-      if( ( *model )->state == Model::NOT_UPDATED ) {
-        models.remove( (uint) &*model );
+    // cleanups
+    if( clearCount >= CLEAR_INTERVAL ) {
+      // remove unused models
+      for( typeof( models.iterator() ) i( models ); !i.isPassed(); ) {
+        Model *model = *i;
+        uint  key    = i.key();
+
+        // we should advance now, so that we don't remove the element the iterator is pointing at
+        ++i;
+
+        if( model->isUpdated ) {
+          model->isUpdated = false;
+        }
+        else {
+          models.remove( key );
+          delete model;
+        }
       }
-      else {
-        ( *model )->state = Model::NOT_UPDATED;
-      }
+      clearCount = 0;
     }
+    clearCount += timer.frameMillis;
   }
 
   void Render::free()

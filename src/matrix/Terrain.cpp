@@ -10,6 +10,8 @@
 
 #include "Terrain.h"
 
+#include <SDL_image.h>
+
 namespace oz
 {
 

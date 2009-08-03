@@ -21,8 +21,14 @@ namespace client
   {
     MD2StaticModel *model = new MD2StaticModel();
 
-    model->list = context.loadMD2StaticModel( object->type->modelPath );
+    model->object = object;
+    model->list   = context.loadMD2StaticModel( object->type->modelPath );
     return model;
+  }
+
+  MD2StaticModel::~MD2StaticModel()
+  {
+    context.releaseMD2StaticModel( object->type->modelPath );
   }
 
   void MD2StaticModel::draw()

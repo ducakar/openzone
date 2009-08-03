@@ -98,12 +98,13 @@ namespace client
     public:
 
       MD3();
-      ~MD3();
 
       bool load( const char *path );
       void free();
 
       void draw();
+
+      static uint genList( const char *path );
 
   };
 
