@@ -40,6 +40,10 @@ namespace oz
     float airControl;
     float grabDistance;
 
+    float stamina;
+    float staminaRunDrain;
+    float staminaJumpDrain;
+
     int   state;
 
     float lookLimitHMin;

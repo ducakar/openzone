@@ -363,10 +363,18 @@ namespace client
   void BSP::free()
   {
     if( textures != null ) {
+      for( int i = 0; i < bsp->nTextures; i++ ) {
+        if( bsp->textures[i] >= 0 ) {
+          context.releaseTexture( bsp->textures[i] );
+        }
+      }
       delete[] textures;
       textures = null;
     }
     if( lightMaps != null ) {
+      for( int i = 0; i < bsp->nLightmaps; i++ ) {
+        context.freeTexture( lightMaps[i] );
+      }
       delete[] lightMaps;
       lightMaps = null;
     }

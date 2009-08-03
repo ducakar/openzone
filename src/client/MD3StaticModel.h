@@ -1,5 +1,5 @@
 /*
- *  OBJModel.h
+ *  MD3StaticModel.h
  *
  *  [description]
  *
@@ -15,13 +15,13 @@ namespace oz
 namespace client
 {
 
-  struct OBJModel : Model
+  struct MD3StaticModel : Model
   {
     uint list;
 
     static Model *create( const Object *object );
 
-    virtual ~OBJModel();
+    virtual ~MD3StaticModel();
 
     virtual void draw();
   };

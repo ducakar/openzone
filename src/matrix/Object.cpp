@@ -19,7 +19,6 @@ namespace oz
     assert( dim.y <= AABB::REAL_MAX_DIMXY );
 
     events.free();
-    effects.free();
   }
 
   void Object::onUpdate()

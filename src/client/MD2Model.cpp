@@ -23,8 +23,8 @@ namespace client
 
     MD2Model *model = new MD2Model();
 
-    model->bot = (const Bot*) object;
-    model->md2 = context.loadMD2Model( object->type->modelPath );
+    model->object = object;
+    model->md2    = context.loadMD2Model( object->type->modelPath );
 
     model->anim.type     = -1;
     model->anim.currTime = 0.0f;
@@ -32,6 +32,11 @@ namespace client
     model->setAnim( 0 );
 
     return model;
+  }
+
+  MD2Model::~MD2Model()
+  {
+    context.releaseMD2Model( object->type->modelPath );
   }
 
   void MD2Model::setAnim( int type )
@@ -49,6 +54,8 @@ namespace client
 
   void MD2Model::draw()
   {
+    const Bot *bot = (const Bot*) object;
+
     glRotatef( bot->h, 0.0f, 0.0f, 1.0f );
 
     setAnim( bot->anim );

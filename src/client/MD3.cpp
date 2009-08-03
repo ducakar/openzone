@@ -20,13 +20,18 @@ namespace client
   MD3::MD3()
   {}
 
-  MD3::~MD3()
-  {}
-
   bool MD3::load( const char * )
   {
     //FILE *file;
     return true;
+  }
+
+  void MD3::free()
+  {}
+
+  uint MD3::genList( const char* )
+  {
+    return 0;
   }
 
 }

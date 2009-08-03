@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <SDL_net.h>
+
 namespace oz
 {
 namespace server

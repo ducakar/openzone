@@ -12,7 +12,6 @@
 
 #include "ui/ui.h"
 
-#include "Font.h"
 #include "BSP.h"
 #include "Terrain.h"
 #include "OBJ.h"
@@ -39,35 +38,39 @@ namespace client
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;
 
-      Terrain      terra;
-      Vector<BSP*> bsps;
-      Bitset       drawnStructures;
+      // cleanup interval (remove unused models)
+      static const int CLEAR_INTERVAL = 60 * 50;
 
-      HashIndex<Model*, 1024> models;
+      Terrain                 terra;
+      Vector<BSP*>            bsps;
+      Bitset                  drawnStructures;
 
-      Vector<Structure*> structures;
-      Vector<Object*>    objects;
-      Vector<Object*>    blendedObjects;
-      Vector<Particle*>  particles;
+      HashIndex<Model*, 1021> models;
+      int                     clearCount;
 
-      int    screenX;
-      int    screenY;
+      Vector<Structure*>      structures;
+      Vector<Object*>         objects;
+      Vector<Object*>         blendedObjects;
+      Vector<Particle*>       particles;
 
-      double perspectiveAngle;
-      double perspectiveAspect;
-      double perspectiveMin;
-      double perspectiveMax;
+      int                     screenX;
+      int                     screenY;
 
-      float particleRadius;
+      double                  perspectiveAngle;
+      double                  perspectiveAspect;
+      double                  perspectiveMin;
+      double                  perspectiveMax;
 
-      bool  drawAABBs;
-      bool  blendHeaven;
-      bool  showAim;
+      float                   particleRadius;
 
-      bool isSpirit;
-      bool isUnderWater;
+      bool                    drawAABBs;
+      bool                    blendHeaven;
+      bool                    showAim;
 
-      ui::Area root;
+      bool                    isSpirit;
+      bool                    isUnderWater;
+
+      ui::Area                root;
 
       void drawObject( Object *obj );
       void drawSparkGen( SparkGen *sparkGen );
@@ -75,11 +78,14 @@ namespace client
 
     public:
 
+      bool doScreenshot;
+
       void init();
       void load();
       void free();
 
-      void draw( bool doScreenshot );
+      void sync();
+      void update();
   };
 
   extern Render render;

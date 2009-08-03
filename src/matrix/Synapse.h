@@ -15,23 +15,10 @@ namespace oz
   {
     public:
 
-      static const int BUFFER_SIZE = 4096;
-
-      enum ObjectType
-      {
-        PARTICLE,
-        OBJECT,
-        STRUCTURE,
-        BSP
-      };
-
       enum ActionType
       {
         ADD,
-        ADD_NOPUT,
         REMOVE,
-        PUT,
-        CUT,
         CLEAR,
         USE,
         TAKE,
@@ -49,7 +36,7 @@ namespace oz
         Action( ActionType type_, int index_ ) : type( type_ ), index( index_ ) {}
         Action( ActionType type_, int index_, int param_ ) :
             type( type_ ), index( index_ ), param( param_ )
-            {}
+        {}
       };
 
     public:
@@ -65,13 +52,15 @@ namespace oz
       // ordered by server.
       bool isClient;
 
-      Vector<Action> particles;
-      Vector<Action> objects;
-      Vector<Action> structs;
-      Vector<Action> bsps;
       Vector<Action> world;
+      Vector<Action> bsps;
+      Vector<Action> structs;
+      Vector<Action> objects;
+      Vector<Action> particles;
 
       explicit Synapse();
+
+      void clear();
 
   };
 

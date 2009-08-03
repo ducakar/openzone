@@ -270,11 +270,6 @@ namespace client
       verts( null ), glCmds( null ), lightNormals( null )
   {}
 
-  MD2::~MD2()
-  {
-    free();
-  }
-
   bool MD2::load( const char *name )
   {
     FILE      *file;

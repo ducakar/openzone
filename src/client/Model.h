@@ -19,13 +19,8 @@ namespace client
   {
     typedef Model *( *InitFunc )( const Object *object );
 
-    enum State
-    {
-      NOT_UPDATED,
-      UPDATED
-    };
-
-    State state;
+    const Object *object;
+    bool         isUpdated;
 
     virtual ~Model();
 

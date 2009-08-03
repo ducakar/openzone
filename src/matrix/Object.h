@@ -10,6 +10,7 @@
 
 #include "bv.h"
 #include "io.h"
+#include "Synapse.h"
 
 namespace oz
 {
@@ -17,6 +18,12 @@ namespace oz
   struct Sector;
   struct ObjectClass;
   struct Hit;
+
+  namespace client
+  {
+    class Model;
+    class Audio;
+  };
 
   // static object abstract class
   class Object : public AABB
@@ -47,12 +54,11 @@ namespace oz
       // if the onHit function should be called on hit
       static const int HIT_FUNC_BIT       = 0x40000000;
 
-      // if the onPut/onCut method is called when object is added to/removed from 3D world
-      // (ie. taken to/from inventory)
-      static const int PUTCUT_FUNCS_BIT   = 0x20000000;
-
       // if the onUse method is called when we use the object (otherwise, nothing happens)
-      static const int USE_FUNC_BIT       = 0x10000000;
+      static const int USE_FUNC_BIT       = 0x20000000;
+
+      // if the onDestroy method is called when the object is destroyed
+      static const int DESTROY_FUNC_BIT   = 0x10000000;
 
       /*
        * FRONTEND OBJECTS (0x03000000)
@@ -150,46 +156,39 @@ namespace oz
         explicit Event( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ ) {}
       };
 
-      struct Effect : PoolAlloc<Effect, 0>
-      {
-        int    id;
-        float  intensity;
-        Effect *next[1];
-
-        explicit Effect( int id_ ) : id( id_ ) {}
-        explicit Effect( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ ) {}
-      };
-
       /*
        * FIELDS
        */
 
     private:
 
-      Object          *prev[1];     // previous object in sector.objects list
-      Object          *next[1];     // next object in sector.objects list
+      Object         *prev[1];     // previous object in sector.objects list
+      Object         *next[1];     // next object in sector.objects list
 
     public:
 
-      int             index;        // position in world.objects vector
-      Sector          *sector;      // parent sector, null if not positioned in the world
+      int            index;        // position in world.objects vector
+      Sector         *sector;      // parent sector, null if not positioned in the world
 
-      int             flags;
-      int             oldFlags;
+      int            flags;
+      int            oldFlags;
 
-      ObjectClass     *type;
+      ObjectClass    *type;
 
       // damage
-      float           damage;
+      float          damage;
 
-      // events are cleared at the beginning of next update (used for non-continuous sounds)
-      List<Event, 0>  events;
-      // effects are similar to events, but must be manually cleared (used for continuous sounds)
-      List<Effect, 0> effects;
+      // events are used for reporting hits, friction & stuff and are cleared at the beginning of
+      // the frame
+      List<Event, 0> events;
+
+      // client data
+      client::Model  *clientModel;
+      client::Audio  *clientAudio;
 
     public:
 
-      explicit Object() : index( -1 ), sector( null )
+      explicit Object() : index( -1 ), sector( null ), clientModel( null ), clientAudio( null )
       {}
 
       virtual ~Object();
@@ -204,19 +203,11 @@ namespace oz
         events << new Event( id, intensity );
       }
 
-      void addEffect( int id )
-      {
-        effects << new Effect( id );
-      }
-
-      void addEffect( int id, float intensity )
-      {
-        effects << new Effect( id, intensity );
-      }
-
       void destroy()
       {
-        onDestroy();
+        if( flags & DESTROY_FUNC_BIT ) {
+          onDestroy();
+        }
       }
 
       void update()
@@ -231,28 +222,18 @@ namespace oz
 
       void hit( const Hit *hit, float hitMomentum )
       {
+        addEvent( EVENT_HIT, hitMomentum );
+
         if( flags & HIT_FUNC_BIT ) {
           onHit( hit, hitMomentum );
-        }
-      }
-
-      void put( Object *user )
-      {
-        if( flags & PUTCUT_FUNCS_BIT ) {
-          onPut( user );
-        }
-      }
-
-      void cut( Object *user )
-      {
-        if( flags & PUTCUT_FUNCS_BIT ) {
-          onCut( user );
         }
       }
 
       void use( Object *user )
       {
         if( flags & USE_FUNC_BIT ) {
+          synapse.world << Synapse::Action( Synapse::USE, index, user->index );
+
           onUse( user );
         }
       }

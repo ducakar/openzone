@@ -18,4 +18,13 @@ namespace oz
   Synapse::Synapse() : isClient( false )
   {}
 
+  void Synapse::clear()
+  {
+    world.clear();
+    bsps.clear();
+    structs.clear();
+    objects.clear();
+    particles.clear();
+  }
+
 }

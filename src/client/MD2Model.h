@@ -19,11 +19,12 @@ namespace client
 
   struct MD2Model : Model
   {
-    const Bot      *bot;
     MD2            *md2;
     MD2::AnimState anim;
 
     static Model *create( const Object *object );
+
+    virtual ~MD2Model();
 
     void setAnim( int type );
     virtual void draw();

@@ -47,6 +47,8 @@ namespace client
       {
         Type id;
         int  nUsers;
+
+        explicit Resource() : nUsers( 0 ) {}
       };
 
       template <class Type>
@@ -55,10 +57,7 @@ namespace client
         Type *object;
         int  nUsers;
 
-        ~Resource()
-        {
-          delete object;
-        }
+        explicit Resource() : nUsers( 0 ) {}
       };
 
       Resource<uint> *textures;
@@ -135,16 +134,24 @@ namespace client
       void freeLists( uint listId );
 
       MD2  *loadMD2Model( const char *name );
+      void releaseMD2Model( const char *name );
+
       uint loadMD2StaticModel( const char *name );
+      void releaseMD2StaticModel( const char *name );
+
       MD3  *loadMD3Model( const char *name );
+      void releaseMD3Model( const char *name );
+
       uint loadMD3StaticModel( const char *name );
+      void releaseMD3StaticModel( const char *name );
+
       uint loadOBJModel( const char *name );
+      void releaseOBJModel( const char *name );
 
       Model *createModel( const Object *obj )
       {
         if( !modelClasses.contains( obj->type->modelType ) ) {
-          obj->type->flags &= Object::MODEL_BIT;
-          return null;
+          throw Exception( 0, "Invalid Model" );
         }
         return modelClasses.cachedValue()( obj );
       }
@@ -152,8 +159,7 @@ namespace client
       Audio *createAudio( const Object *obj )
       {
         if( !audioClasses.contains( obj->type->audioType ) ) {
-          obj->type->flags &= Object::AUDIO_BIT;
-          return null;
+          throw Exception( 0, "Invalid Audio" );
         }
         return audioClasses.cachedValue()( obj );
       }

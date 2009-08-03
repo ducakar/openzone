@@ -20,6 +20,9 @@ namespace client
     uint list;
 
     static Model *create( const Object *object );
+
+    virtual ~MD2StaticModel();
+
     virtual void draw();
   };
 

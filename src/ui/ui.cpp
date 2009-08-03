@@ -21,15 +21,8 @@ namespace ui
 
   void draw()
   {
-    glDisable( GL_FOG );
-    glDisable( GL_LIGHTING );
-    glDisable( GL_TEXTURE_2D );
-
-    glDisable( GL_DEPTH_TEST );
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();

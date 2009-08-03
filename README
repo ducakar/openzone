@@ -2,13 +2,13 @@ Following programs and libraries/SDKs are required to compile:
 
 - GNU tools (gcc-g++, gmake, binutils) or VC++ 2008
 - cmake
-- iconv (may be included with libxml2)
+- iconv (only for VC++ 2008, on Unix it's part of standard C library)
 - libxml2
 - SDL
 - SDL_image
-- SDL_net (currently not implemented, you don't need it if you erase it from CMakeLists.txt)
-- SDL_mixer (currently disabled, you don't need it if you erase it from CMakeLists.txt)
+- SDL_ttf
+- SDL_net
 - OpenGL (MesaGL recommended, usually included in X11 + graphics driver)
 - OpenGL GLU (MesaGLU recommended, usually included in X11)
-- OpenAL
-- freealut
+- OpenAL (AL Soft recommended)
+- ALUT (FreeALUT recommended)

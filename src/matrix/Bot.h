@@ -96,8 +96,9 @@ namespace oz
       float    bob;
       Vec3     camPos;
 
-      float    deathTime;
+      float    stamina;
       int      grabObjIndex;
+      float    deathTime;
       Weapon   *weapon;
 
       Vector<Object*> items;
