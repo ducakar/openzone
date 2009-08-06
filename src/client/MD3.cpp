@@ -11,6 +11,7 @@
 #include "MD3.h"
 
 #include "matrix/bv.h"
+#include "Context.h"
 
 #define FOURCC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
@@ -82,37 +83,35 @@ namespace client
     ubyte normal[2];
   };
 
-  MD3::Part::Part( const char *path )
+  MD3::Part::Part( MD3 *parent, const String &dir, const char *fileName, MD3Tag **tags )
   {
+    const String &path = dir + fileName;
     FILE *file;
 
     file = fopen( path, "rb" );
     if( file == null ) {
-      throw Exception( 0, "MD3 file not found" );
+      logFile.println( "MD3 model part file '%s' not found", path.cstr() );
+      throw Exception( 0, "MD3 model part file not found" );
     }
 
     MD3Header header;
     fread( &header, sizeof( MD3Header ), 1, file );
     if( header.id != FOURCC( 'I', 'D', 'P', '3' ) || header.version != 15 ) {
       fclose( file );
-      throw Exception( 0, "MD3 invalid format" );
+      logFile.println( "MD3 model part file '%s' invalid format", path.cstr() );
+      throw Exception( 0, "MD3 model part file invalid format" );
     }
+
+    nFrames = header.nFrames;
 
     MD3Frame *frames = new MD3Frame[header.nFrames];
     fread( frames, sizeof( MD3Frame ), header.nFrames, file );
     delete[] frames;
 
-    MD3Tag *tags = new MD3Tag[header.nFrames * header.nTags];
-    fread( tags, sizeof( MD3Tag ), header.nFrames * header.nTags, file );
-    delete[] tags;
-
-    links( header.nTags );
-    aSet<Part*>( links, null, header.nTags );
-
-    fseek( file, header.offSurfaces, SEEK_SET );
+    *tags = new MD3Tag[header.nFrames * header.nTags];
+    fread( *tags, sizeof( MD3Tag ), header.nFrames * header.nTags, file );
 
     meshes( header.nSurfaces );
-
     for( int i = 0; i < header.nSurfaces; i++ ) {
       Mesh *mesh = &meshes[i];
 
@@ -121,19 +120,33 @@ namespace client
 
       mesh->nVertices = surface.nVertices;
 
-      MD3Shader *shaders = new MD3Shader[surface.nShaders];
-      fread( shaders, sizeof( MD3Shader ), surface.nShaders, file );
-      delete[] shaders;
-
       mesh->triangles( surface.nTriangles );
       fread( mesh->triangles, sizeof( Triangle ), surface.nTriangles, file );
+
+      MD3Shader *shaders = new MD3Shader[surface.nShaders];
+      fread( shaders, sizeof( MD3Shader ), surface.nShaders, file );
+
+      const char *shaderBaseName;
+
+      shaderBaseName = String::lastIndex( shaders[0].name, '/' );
+      if( shaderBaseName == null ) {
+        shaderBaseName = String::lastIndex( shaders[0].name, '\\' );
+      }
+      if( shaderBaseName == null ) {
+        logFile.println( "MD3 model file '%s' invalid format", path.cstr() );
+        throw Exception( 0, "MD3 model part file invalid format" );
+      }
+      shaderBaseName++;
+      mesh->texId = context.loadTexture( dir + shaderBaseName );
+      parent->textures.include( mesh->texId );
+      delete[] shaders;
 
       mesh->texCoords( surface.nVertices );
       fread( mesh->texCoords, sizeof( TexCoord ), surface.nVertices, file );
 
       // convert (S,T) -> (U,V) i.e. top-left origin coords to lower-left origin coords
       for( int j = 0; j < mesh->texCoords.length(); j++ ) {
-        mesh->texCoords[j].v = 1.0f - mesh->texCoords[j].v;
+//         mesh->texCoords[j].v = 1.0f - mesh->texCoords[j].v;
       }
 
       mesh->vertices( surface.nFrames * surface.nVertices );
@@ -141,13 +154,13 @@ namespace client
       fread( vertices, sizeof( MD3Vertex ), mesh->vertices.length(), file );
 
       for( int j = 0; j < mesh->vertices.length(); j++ ) {
-        mesh->vertices[j].p.x = vertices[i].p[0] / 64.0f;
-        mesh->vertices[j].p.y = vertices[i].p[1] / 64.0f;
-        mesh->vertices[j].p.z = vertices[i].p[2] / 64.0f;
+        mesh->vertices[j].p.x = -vertices[j].p[1] / 64.0f;
+        mesh->vertices[j].p.y =  vertices[j].p[0] / 64.0f;
+        mesh->vertices[j].p.z =  vertices[j].p[2] / 64.0f;
 
         // convert from zenith/azimuth coords
-        float azimuth = vertices[i].normal[0] * Math::_2_PI / 255.0f;
-        float zenith  = vertices[i].normal[1] * Math::_2_PI / 255.0f;
+        float azimuth = vertices[j].normal[0] * Math::_2_PI / 255.0f;
+        float zenith  = vertices[j].normal[1] * Math::_2_PI / 255.0f;
         float xy      = Math::sin( zenith );
 
         mesh->vertices[j].normal.x = xy * Math::cos( azimuth );
@@ -160,9 +173,6 @@ namespace client
 
   MD3::Part::~Part()
   {
-    if( !links.isEmpty() ) {
-      links.clear();
-    }
     if( !meshes.isEmpty() ) {
       for( int i = 0; i < meshes.length(); i++ ) {
         meshes[i].triangles.clear();
@@ -173,17 +183,34 @@ namespace client
     }
   }
 
+  void MD3::Part::scale( float scale )
+  {
+    foreach( mesh, meshes.iterator() ) {
+      foreach( v, mesh->vertices.iterator() ) {
+        v->p *= scale;
+      }
+    }
+  }
+
+  void MD3::Part::translate( const Vec3 &t )
+  {
+    foreach( mesh, meshes.iterator() ) {
+      foreach( v, mesh->vertices.iterator() ) {
+        v->p += t;
+      }
+    }
+  }
+
   void MD3::Part::drawFrame( int frame ) const
   {
-    foreach( i, meshes.iterator() ) {
-    }
+    assert( 0 <= frame && frame < nFrames );
 
     for( int i = 0; i < meshes.length(); i++ ) {
       const Mesh &mesh = meshes[i];
 
       glBindTexture( GL_TEXTURE_2D, mesh.texId );
 
-      glBegin( GL_QUADS );
+      glBegin( GL_TRIANGLES );
       for( int j = 0; j < mesh.triangles.length(); j++ ) {
         const Triangle &triangle  = mesh.triangles[j];
         const TexCoord &texCoord0 = mesh.texCoords[triangle.indices[0]];
@@ -197,48 +224,128 @@ namespace client
         glNormal3fv( &vertex0.normal.x );
         glVertex3fv( &vertex0.p.x );
 
-        glTexCoord2fv( &texCoord1.u );
-        glNormal3fv( &vertex1.normal.x );
-        glVertex3fv( &vertex1.p.x );
-
         glTexCoord2fv( &texCoord2.u );
         glNormal3fv( &vertex2.normal.x );
         glVertex3fv( &vertex2.p.x );
+
+        glTexCoord2fv( &texCoord1.u );
+        glNormal3fv( &vertex1.normal.x );
+        glVertex3fv( &vertex1.p.x );
       }
       glEnd();
     }
   }
 
+  void MD3::scale( float scale )
+  {
+    head->scale( scale );
+    upper->scale( scale );
+    lower->scale( scale );
+
+    foreach( offset, headOffsets.iterator() ) {
+      offset->p *= scale;
+    }
+    foreach( offset, lowerOffsets.iterator() ) {
+      offset->p *= scale;
+    }
+    foreach( offset, weaponOffsets.iterator() ) {
+      offset->p *= scale;
+    }
+  }
+
+  void MD3::translate( const Vec3 &t )
+  {
+    head->translate( t );
+    upper->translate( t );
+    lower->translate( t );
+  }
+
   MD3::MD3( const char *name_ )
   {
-    String name = name_;
+    String name       = name_;
+    String dir        = "mdl/" + name + "/";
+    String configFile = dir + name + ".xml";
 
-    head  = new Part( "mdl/" + name + "/" + name + "_head.md3" );
-    torso = new Part( "mdl/" + name + "/" + name + "_upper.md3" );
-    legs  = new Part( "mdl/" + name + "/" + name + "_lower.md3" );
+    MD3Tag *headTags;
+    MD3Tag *upperTags;
+    MD3Tag *lowerTags;
+
+    head  = new Part( this, dir, name + "_head.md3", &headTags );
+    upper = new Part( this, dir, name + "_upper.md3", &upperTags );
+    lower = new Part( this, dir, name + "_lower.md3", &lowerTags );
+
+    headOffsets( upper->nFrames );
+    lowerOffsets( upper->nFrames );
+    weaponOffsets( upper->nFrames );
+
+    // assemble the model
+    for( int i = 0; i < upper->nFrames; i++ ) {
+      headOffsets[i].p.x   = -upperTags[3 * i + 1].p.y;
+      headOffsets[i].p.y   =  upperTags[3 * i + 1].p.x;
+      headOffsets[i].p.z   = -upperTags[3 * i + 1].p.z;
+
+      lowerOffsets[i].p.x  = -lowerTags[i].p.y;
+      lowerOffsets[i].p.y  =  lowerTags[i].p.x;
+      lowerOffsets[i].p.z  = -lowerTags[i].p.z;
+
+      weaponOffsets[i].p.x = -upperTags[3 * i].p.y;
+      weaponOffsets[i].p.y =  upperTags[3 * i].p.x;
+      weaponOffsets[i].p.z = -upperTags[3 * i].p.z;
+    }
+
+    delete[] headTags;
+    delete[] upperTags;
+    delete[] lowerTags;
+
+    Config config;
+    config.load( configFile );
+
+    float scaling = config.get( "scale", 1.0f );
+    Vec3 translation( config.get( "translate.x", 0.0f ),
+                      config.get( "translate.y", 0.0f ),
+                      config.get( "translate.z", 0.0f ) );
+    Vec3 crouchTranslation( config.get( "crouchTranslate.x", 0.0f ),
+                            config.get( "crouchTranslate.y", 0.0f ),
+                            config.get( "crouchTranslate.z", 0.0f ) );
+    config.clear();
+
+    if( scaling != 1.0f ) {
+      scale( scaling );
+    }
+    translate( translation );
+
+    if( !crouchTranslation.isZero() ) {
+//       translate( ANIM_CROUCH_STAND,  crouchTranslation );
+//       translate( ANIM_CROUCH_WALK,   crouchTranslation );
+//       translate( ANIM_CROUCH_ATTACK, crouchTranslation );
+//       translate( ANIM_CROUCH_PAIN,   crouchTranslation );
+//       translate( ANIM_CROUCH_DEATH,  crouchTranslation );
+    }
   }
 
   MD3::~MD3()
   {}
 
-  uint MD3::genList( const char *name )
-  {
-    MD3 md3( name );
-
-    uint list = glGenLists( 1 );
-    glNewList( list, GL_COMPILE );
-      md3.drawFrame( 0 );
-    glEndList();
-
-    return list;
-  }
-
   void MD3::drawFrame( int frame ) const
   {
-    head->drawFrame( frame );
-    torso->drawFrame( frame );
-    legs->drawFrame( frame );
+    glPushMatrix();
+
+    upper->drawFrame( frame );
+
+//     glTranslatef( headOffsets[frame].p.x, headOffsets[frame].p.y, headOffsets[frame].p.z );
+//     head->drawFrame( 0 );
+//
+//     glPopMatrix();
+//     glPushMatrix();
+
+    glTranslatef( lowerOffsets[frame].p.x, lowerOffsets[frame].p.y, lowerOffsets[frame].p.z );
+    lower->drawFrame( frame );
+
+    glPopMatrix();
   }
+
+  void MD3::trim()
+  {}
 
 }
 }

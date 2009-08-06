@@ -153,7 +153,6 @@ namespace client
       }
       // draw model
       models.cachedValue()->draw();
-      models.cachedValue()->isUpdated = true;
     }
     glPopMatrix();
 
@@ -188,6 +187,9 @@ namespace client
     foreach( obj, sector.objects.iterator() ) {
       if( &*obj == camera.bot ) {
         continue;
+      }
+      if( models.contains( obj->index ) ) {
+        models.cachedValue()->isUpdated = true;
       }
       bool isVisible =
           ( obj->flags & Object::WIDE_CULL_BIT ) ?

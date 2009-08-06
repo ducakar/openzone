@@ -29,8 +29,8 @@ namespace client
 
     public:
 
-      float cosX2;
       float maxDistance;
+      float radius;
 
       int minX;
       int minY;
@@ -92,8 +92,6 @@ namespace client
       // get min and max index for sectors per each axis, which should be included in pvs
       void getExtrems( const Vec3 &p )
       {
-        float radius = maxDistance / cosX2;
-
         minX = max( 0,               (int) ( ( p.x - radius + World::DIM ) / Sector::DIM ) );
         minY = max( 0,               (int) ( ( p.y - radius + World::DIM ) / Sector::DIM ) );
         maxX = min( World::MAX - 1,  (int) ( ( p.x + radius + World::DIM ) / Sector::DIM ) );

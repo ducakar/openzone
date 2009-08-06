@@ -17,10 +17,11 @@ namespace client
 
   class MD2
   {
+    friend class MD2Model;
+
     private:
 
-      static const int SHADEDOT_QUANT = 8;
-      static const int MAX_VERTS      = 2048;
+      static const int MAX_VERTS = 2048;
 
     public:
 
@@ -50,6 +51,7 @@ namespace client
     private:
 
       static float anorms[][3];
+      static Anim  animList[];
       static Vec3  vertList[MAX_VERTS];
 
       int          nFrames;
@@ -65,9 +67,10 @@ namespace client
 
     public:
 
-      static Anim animList[];
+      uint         list;
 
       MD2( const char *name );
+      ~MD2();
 
       void scale( float scale );
       void translate( const Vec3 &t );
@@ -75,8 +78,8 @@ namespace client
 
       void drawFrame( int frame ) const;
       void draw( AnimState *anim ) const;
-
-      static uint genList( const char *name );
+      // call on static models, to release resources after list has been generated
+      void trim();
 
   };
 

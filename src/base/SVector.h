@@ -32,7 +32,7 @@ namespace oz
            * Make iterator for given vector. After creation it points to first element.
            * @param v
            */
-          explicit Iterator( const SVector &v ) : B( v.data, v.data + v.count )
+          explicit Iterator( SVector &v ) : B( v.data, v.data + v.count )
           {}
 
       };
@@ -98,7 +98,7 @@ namespace oz
       /**
        * @return iterator for this vector
        */
-      Iterator iterator() const
+      Iterator iterator()
       {
         return Iterator( *this );
       }

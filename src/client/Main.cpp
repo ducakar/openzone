@@ -293,11 +293,8 @@ namespace client
         continue;
       }
 
-      // update world
+      // update game
       isAlive &= game.update( tick );
-      // synchronize render and soundManager (remove models and audios of removed objects)
-      render.sync();
-      soundManager.sync();
 
       // play sounds, but don't do any cleanups
       soundManager.play();
@@ -309,7 +306,7 @@ namespace client
       if( delta < tick || timeNow - timeLastRender > 32 * tick ) {
         // render
         render.update();
-        // stop playing stopped continous sounds, do cleanups
+        // stop playing stopped continuous sounds, do cleanups
         soundManager.update();
 
         nFrames++;

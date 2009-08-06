@@ -124,7 +124,7 @@ namespace oz
        * Successor of the last element.
        * Is is used to determine when iterator becomes invalid.
        */
-      const Type *past;
+      const Type *const past;
 
     public:
 
@@ -159,7 +159,7 @@ namespace oz
       }
 
       /**
-       * Advance to previous element.
+       * Go to previous element.
        */
       Iterator &operator -- ()
       {
@@ -196,15 +196,15 @@ namespace oz
    * @param iB
    * @return true if all elements are equal
    */
-  template <class IteratorA, class IteratorB>
-  inline bool iEquals( IteratorA &iDest, IteratorB &iSrc )
+  template <class IterA, class IterB>
+  inline bool iEquals( IterA &iDest, IterB &iSrc )
   {
     while( !iDest.isPassed() ) {
       if( *iDest != *iSrc ) {
         return false;
       }
-      iDest++;
-      iSrc++;
+      ++iDest;
+      ++iSrc;
     }
     return true;
   }
@@ -214,12 +214,12 @@ namespace oz
    * @param i
    * @param value
    */
-  template <class Iterator, class Value>
-  inline void iSet( Iterator &i, Value value )
+  template <class Iter, class Value>
+  inline void iSet( Iter &i, Value value )
   {
     while( !i.isPassed() ) {
       *i = value;
-      i++;
+      ++i;
     }
   }
 
@@ -228,15 +228,15 @@ namespace oz
    * @param iA
    * @param iB
    */
-  template <class IteratorA, class IteratorB>
-  inline void iCopy( IteratorA &iDest, IteratorB &iSrc )
+  template <class IterA, class IterB>
+  inline void iCopy( IterA &iDest, IterB &iSrc )
   {
     assert( &*iDest != &*iSrc );
 
     while( !iDest.isPassed() ) {
       *iDest = *iSrc;
-      iDest++;
-      iSrc++;
+      ++iDest;
+      ++iSrc;
     }
   }
 
@@ -245,14 +245,14 @@ namespace oz
    * @param iA
    * @param iB
    */
-  template <class BackwardIteratorA, class BackwardIteratorB>
-  inline void iReverseCopy( BackwardIteratorA &iDest, BackwardIteratorB &iSrc )
+  template <class BackIterA, class BackIterB>
+  inline void iReverseCopy( BackIterA &iDest, BackIterB &iSrc )
   {
     assert( &*iDest != &*iSrc );
 
     while( !iDest.isPassed() ) {
-      iDest--;
-      iSrc--;
+      ++iDest;
+      ++iSrc;
       *iDest = *iSrc;
     }
   }
@@ -263,14 +263,14 @@ namespace oz
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
-  template <class Iterator, class Value>
-  inline Iterator iIndex( Iterator &i, Value value )
+  template <class Iter, class Value>
+  inline Iter iIndex( Iter &i, Value value )
   {
     while( !i.isPassed() ) {
       if( *i == value ) {
         break;
       }
-      i++;
+      ++i;
     }
     return i;
   }
@@ -281,11 +281,11 @@ namespace oz
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
-  template <class BackwardIterator, class Value>
-  inline BackwardIterator iLastIndex( BackwardIterator &i, Value value )
+  template <class BackIter, class Value>
+  inline BackIter iLastIndex( BackIter &i, Value value )
   {
     while( !i.isPassed() ) {
-      i--;
+      --i;
       if( *i == value ) {
         break;
       }
@@ -297,12 +297,12 @@ namespace oz
    * Call delete on all elements (that have been previously allocated with the new call).
    * @param i
    */
-  template <class Iterator, class Type>
-  inline void iFree( Iterator &i )
+  template <class Iter, class Type>
+  inline void iFree( Iter &i )
   {
     while( !i.isPassed() ) {
       Type *p = *i;
-      i++;
+      ++i;
       delete p;
     }
   }

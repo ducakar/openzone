@@ -175,7 +175,7 @@ namespace oz
        */
       void operator () ( int size )
       {
-        assert( size != 0 && count == 0 );
+        assert( size > 0 && count == 0 );
 
         data = new Type[size];
         count = size;
