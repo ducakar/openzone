@@ -68,9 +68,9 @@ namespace client
       Sparse<Lists>  lists;
 
       HashString< Resource<MD2*>, 253 > md2Models;
-      HashString< Resource<uint>, 253 > md2StaticModels;
+      HashString< Resource<MD2*>, 253 > md2StaticModels;
       HashString< Resource<MD3*>, 253 > md3Models;
-      HashString< Resource<uint>, 253 > md3StaticModels;
+      HashString< Resource<MD3*>, 253 > md3StaticModels;
       HashString< Resource<uint>, 253 > objModels;
 
       HashString<Model::InitFunc, 253> modelClasses;

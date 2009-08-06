@@ -231,8 +231,6 @@ namespace client
     { -0.688191f, -0.587785f, -0.425325f }
   };
 
-  Vec3 MD2::vertList[MAX_VERTS];
-
   MD2::Anim MD2::animList[] =
   {
     // first, last, fps
@@ -259,6 +257,8 @@ namespace client
     {   0, 197,  7.0f }    // FULL
   };
 
+  Vec3 MD2::vertList[MAX_VERTS];
+
   MD2::MD2( const char *name )
   {
     FILE      *file;
@@ -273,23 +273,29 @@ namespace client
     String skinFile = sPath + "/skin.jpg";
     String configFile = sPath + "/" + String( name ) + ".xml";
 
-    logFile.print( "Loading MD2 model '%s' ... ", modelFile.cstr() );
+    logFile.print( "Loading MD2 model '%s' ...", modelFile.cstr() );
 
     file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
-      logFile.printEnd( "No such file" );
+      logFile.printEnd( " No such file" );
       throw Exception( 0, "MD2 model loading error" );
     }
 
     fread( &header, 1, sizeof( header ), file );
     if( header.id != FOURCC( 'I', 'D', 'P', '2' ) || header.version != 8 ) {
       fclose( file );
-      logFile.printEnd( "Invalid file" );
+      logFile.printEnd( " Invalid format" );
       throw Exception( 0, "MD2 model loading error" );
     }
 
     nFrames = header.nFrames;
     nVerts = header.nVerts;
+
+    if( nFrames <= 0 || nVerts <= 0 ) {
+      fclose( file );
+      logFile.printEnd( " Format error" );
+      throw Exception( 0, "MD2 model loading error" );
+    }
 
     verts( nVerts * nFrames );
     glCmds( header.nGlCmds );
@@ -352,6 +358,11 @@ namespace client
     if( texId == 0 ) {
       throw Exception( 0, "MD2 model loading error" );
     }
+  }
+
+  MD2::~MD2()
+  {
+    context.freeTexture( texId );
   }
 
   void MD2::scale( float scale )
@@ -466,16 +477,11 @@ namespace client
     glFrontFace( GL_CCW );
   }
 
-  uint MD2::genList( const char *name )
+  void MD2::trim()
   {
-    MD2 md2( name );
-
-    uint list = glGenLists( 1 );
-    glNewList( list, GL_COMPILE );
-      md2.drawFrame( 0 );
-    glEndList();
-
-    return list;
+    verts.clear();
+    glCmds.clear();
+    lightNormals.clear();
   }
 
 }

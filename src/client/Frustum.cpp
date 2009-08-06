@@ -19,8 +19,6 @@ namespace client
 
   void Frustum::init( float fovY_, float aspect, float maxDistance_ )
   {
-    maxDistance = maxDistance_;
-
     float fovX = Math::atan( Math::tan( Math::rad( fovY_ / 2.0f ) ) * aspect );
     float fovY = Math::atan( Math::tan( Math::rad( fovY_ / 2.0f ) ) );
     float sx, cx, sy, cy;
@@ -33,7 +31,8 @@ namespace client
     nUp0    = Vec3( 0.0f, sy,   -cy );
     nDown0  = Vec3( 0.0f, sy,    cy );
 
-    cosX2 = cx;
+    maxDistance = maxDistance_;
+    radius      = maxDistance / cx;
   }
 
   void Frustum::update()

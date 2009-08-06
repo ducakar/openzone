@@ -109,7 +109,7 @@ namespace oz
                          float rejection, float mass, float lifeTime,
                          float size, const Vec3 &color, float colorSpread );
 
-      void update();
+      void commit();
 
       bool read( InputStream *istream );
       bool write( OutputStream *ostream );

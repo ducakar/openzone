@@ -16,6 +16,8 @@ namespace oz
 namespace client
 {
 
+  struct MD3Tag;
+
   class MD3
   {
     private:
@@ -47,34 +49,55 @@ namespace client
         DArray<Vertex>   vertices;
       };
 
+      struct Offset
+      {
+        Vec3 p;
+        Quat rot;
+      };
+
       class Part
       {
+        friend class MD3;
+
         private:
 
-          DArray<Part*> links;
-          DArray<Mesh>  meshes;
+          DArray<Mesh> meshes;
+          int          nFrames;
 
         public:
 
-          Part( const char *path );
+          Part( MD3 *parent, const String &dir, const char *fileName, MD3Tag **tags );
           ~Part();
 
+          void scale( float scale );
+          void translate( const Vec3 &t );
           void drawFrame( int frame ) const;
 
       };
 
-      Part *head;
-      Part *torso;
-      Part *legs;
+      Vector<uint>   textures;
+
+      Part           *head;
+      Part           *upper;
+      Part           *lower;
+
+      DArray<Offset> headOffsets;
+      DArray<Offset> lowerOffsets;
+      DArray<Offset> weaponOffsets;
+
+      void scale( float scale );
+      void translate( const Vec3 &t );
 
     public:
+
+      uint list;
 
       MD3( const char *name );
       ~MD3();
 
       void drawFrame( int frame ) const;
-
-      static uint genList( const char *path );
+      // call on static models, to release resources after list has been generated
+      void trim();
 
   };
 

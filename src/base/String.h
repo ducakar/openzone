@@ -282,14 +282,35 @@ namespace oz
         return compare( buffer, s.buffer );
       }
 
+      static const char *index( const char *s, char ch )
+      {
+        while( *s != ch && *s != '\0' ) {
+          s++;
+        }
+        return *s == '\0' ? null : s;
+      }
+
       int index( char ch, int start = 0 ) const
       {
         int i = start;
 
-        while( buffer[i] != ch && i < count ) {
+        while( buffer[i] != ch && buffer[i] != '\0' ) {
           i++;
         }
         return i == count ? -1 : i;
+      }
+
+      static const char *lastIndex( const char *s, char ch )
+      {
+        const char *last = null;
+
+        while( *s != '\0' ) {
+          if( *s == ch ) {
+            last = s;
+          }
+          s++;
+        }
+        return last;
       }
 
       int lastIndex( char ch ) const

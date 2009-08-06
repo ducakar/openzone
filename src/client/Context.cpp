@@ -234,7 +234,6 @@ namespace client
                                 bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
-
     return texNum;
   }
 
@@ -255,7 +254,6 @@ namespace client
                                   bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
-
     return texNum;
   }
 
@@ -423,11 +421,20 @@ namespace client
   uint Context::loadMD2StaticModel( const char *path )
   {
     if( !md2StaticModels.contains( path ) ) {
-      md2StaticModels.add( path, Resource<uint>() );
-      md2StaticModels.cachedValue().id = MD2::genList( path );
+      md2StaticModels.add( path, Resource<MD2*>() );
+
+      MD2 *&md2 = md2StaticModels.cachedValue().object;
+      md2 = new MD2( path );
+
+      md2->list = glGenLists( 1 );
+      glNewList( md2->list, GL_COMPILE );
+        md2->drawFrame( 0 );
+      glEndList();
+
+      md2->trim();
     }
     md2StaticModels.cachedValue().nUsers++;
-    return md2StaticModels.cachedValue().id;
+    return md2StaticModels.cachedValue().object->list;
   }
 
   void Context::releaseMD2StaticModel( const char *path )
@@ -438,7 +445,8 @@ namespace client
       md2StaticModels.cachedValue().nUsers--;
 
       if( md2StaticModels.cachedValue().nUsers == 0 ) {
-        glDeleteLists( md2StaticModels.cachedValue().id, 1 );
+        glDeleteLists( md2StaticModels.cachedValue().object->list, 1 );
+        delete md2StaticModels.cachedValue().object;
         md2StaticModels.remove( path );
       }
     }
@@ -471,11 +479,20 @@ namespace client
   uint Context::loadMD3StaticModel( const char *path )
   {
     if( !md3StaticModels.contains( path ) ) {
-      md3StaticModels.add( path, Resource<uint>() );
-      md3StaticModels.cachedValue().id = MD3::genList( path );
+      md3StaticModels.add( path, Resource<MD3*>() );
+
+      MD3 *&md3 = md3StaticModels.cachedValue().object;
+      md3 = new MD3( path );
+
+      md3->list = glGenLists( 1 );
+      glNewList( md3->list, GL_COMPILE );
+        md3->drawFrame( 0 );
+      glEndList();
+
+      md3->trim();
     }
     md3StaticModels.cachedValue().nUsers++;
-    return md3StaticModels.cachedValue().id;
+    return md3StaticModels.cachedValue().object->list;
   }
 
   void Context::releaseMD3StaticModel( const char *path )
@@ -486,7 +503,8 @@ namespace client
       md3StaticModels.cachedValue().nUsers--;
 
       if( md3StaticModels.cachedValue().nUsers == 0 ) {
-        glDeleteLists( md3StaticModels.cachedValue().id, 1 );
+        glDeleteLists( md3StaticModels.cachedValue().object->list, 1 );
+        delete md3StaticModels.cachedValue().object;
         md3StaticModels.remove( path );
       }
     }

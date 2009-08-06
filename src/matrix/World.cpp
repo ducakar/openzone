@@ -264,7 +264,7 @@ namespace oz
     }
   }
 
-  void World::update()
+  void World::commit()
   {
     // put
     foreach( i, synapse.putStructs.iterator() ) {
@@ -276,10 +276,7 @@ namespace oz
     foreach( i, synapse.putParts.iterator() ) {
       put( *i );
     }
-    // actions
-    foreach( i, synapse.useActions.iterator() ) {
-      i->target->onUse( i->user );
-    }
+
     // cut
     foreach( i, synapse.cutStructs.iterator() ) {
       cut( *i );
@@ -290,6 +287,7 @@ namespace oz
     foreach( i, synapse.cutParts.iterator() ) {
       cut( *i );
     }
+
     // remove (cut & delete)
     foreach( i, synapse.removeStructs.iterator() ) {
       cut( *i );

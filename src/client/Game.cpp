@@ -16,6 +16,8 @@
 #include "matrix/Matrix.h"
 #include "nirvana/Nirvana.h"
 #include "Network.h"
+#include "Render.h"
+#include "SoundManager.h"
 
 #include "Camera.h"
 
@@ -41,6 +43,7 @@ namespace client
 
     network.connect();
     matrix.load();
+    world.commit();
     nirvana.load();
 
     camera.botIndex = -1;
@@ -210,15 +213,21 @@ namespace client
       camera.botIndex = ~camera.botIndex;
     }
 
+    timer.update( time );
+    synapse.clear();
+
     SDL_SemWait( matrix.semaphore );
 
-    timer.update( time );
     network.update();
     matrix.update();
 
-    camera.update();
-
     SDL_SemPost( nirvana.semaphore );
+
+    // synchronize render and soundManager (remove models and audios of removed objects)
+    render.sync();
+    soundManager.sync();
+
+    camera.update();
 
     return !input.keys[SDLK_ESCAPE];
   }
