@@ -38,8 +38,8 @@ namespace ui
 
       void drawChildren()
       {
-        foreach( childArea, children.iterator() ) {
-          childArea->draw();
+        foreach( child, children.iterator() ) {
+          child->draw();
         }
       }
 
@@ -60,16 +60,24 @@ namespace ui
       void rect( int x, int y, int width, int height ) const;
       void print( int x, int y, const char *s, ... );
 
+      void onClick( int x, int y );
+
     public:
 
       explicit Area() {}
       explicit Area( int x_, int y_, int width_, int height_ ) :
           x( x_ ), y( y_ ), width( width_ ), height( height_ ),
           textWidth( 0 ), textHeight( font.monoHeight )
-      {
-      }
+      {}
 
       virtual ~Area();
+
+      void add( Area *area, int x_, int y_ )
+      {
+        area->x = x_ < 0 ? x + width  + x_ : x + x_;
+        area->y = y_ < 0 ? y + height + y_ : y + y_;
+        children << area;
+      }
 
       void add( Area *area )
       {
@@ -82,6 +90,19 @@ namespace ui
       {
         children.remove( area );
         delete area;
+      }
+
+      void click( int x, int y )
+      {
+        foreach( child, children.iterator() ) {
+          if( x <= child->x && x < child->x + child->width &&
+              y <= child->y && y < child->y + child->width )
+          {
+            child->click( x, y );
+          }
+          break;
+        }
+        onClick( x - this->x, y - this->y );
       }
 
       virtual void draw();

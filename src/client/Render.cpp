@@ -213,10 +213,16 @@ namespace client
 
   void Render::sync()
   {
-    foreach( i, synapse.objects.iterator() ) {
-      if( i->type == Synapse::REMOVE && models.contains( i->index ) ) {
+    foreach( i, synapse.cutObjects.iterator() ) {
+      if( models.contains( ( *i )->index ) ) {
         delete models.cachedValue();
-        models.remove( i->index );
+        models.remove( ( *i )->index );
+      }
+    }
+    foreach( i, synapse.removeObjects.iterator() ) {
+      if( models.contains( ( *i )->index ) ) {
+        delete models.cachedValue();
+        models.remove( ( *i )->index );
       }
     }
   }
@@ -377,7 +383,7 @@ namespace client
     ui::draw();
 
     if( doScreenshot ) {
-      Uint32 *pixels = new Uint32[screenX * screenY * 4];
+      uint *pixels = new uint[screenX * screenY * 4];
       char   fileName[1024];
       time_t ct;
       struct tm t;

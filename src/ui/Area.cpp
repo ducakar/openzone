@@ -20,7 +20,9 @@ namespace ui
   const SDL_Color Area::SDL_COLOR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
   Area::~Area()
-  {}
+  {
+    children.free();
+  }
 
   void Area::setFont( FontType type )
   {
@@ -80,7 +82,7 @@ namespace ui
     SDL_Surface *text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
 
     // flip
-    Uint32 *pixels = (Uint32*) text->pixels;
+    uint *pixels = (uint*) text->pixels;
     for( int i = 0; i < text->h / 2; i++ ) {
       for( int j = 0; j < text->w; j++ ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
@@ -96,6 +98,9 @@ namespace ui
     textWidth = text->w;
     SDL_FreeSurface( text );
   }
+
+  void Area::onClick( int, int )
+  {}
 
   void Area::draw()
   {

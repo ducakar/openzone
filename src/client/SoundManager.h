@@ -38,19 +38,19 @@ namespace client
        */
       struct Source : PoolAlloc<Source, 0>
       {
-        ALuint source;
+        uint   source;
         Source *next[1];
 
-        Source( ALuint sourceId ) : source( sourceId ) {}
+        Source( uint sourceId ) : source( sourceId ) {}
       };
 
       struct ContSource
       {
-        ALuint source;
-        bool   isUpdated;
+        uint source;
+        bool isUpdated;
 
         ContSource() {}
-        ContSource( ALuint sourceId ) : source( sourceId ), isUpdated( true ) {}
+        ContSource( uint sourceId ) : source( sourceId ), isUpdated( true ) {}
       };
 
     private:
@@ -71,8 +71,8 @@ namespace client
       bool                       isMusicPlaying;
       bool                       isMusicLoaded;
 
-      ALuint                     musicBuffers[2];
-      ALuint                     musicSource;
+      uint                       musicBuffers[2];
+      uint                       musicSource;
       ALenum                     musicFormat;
 
       /*
@@ -83,23 +83,23 @@ namespace client
 
       void playSector( int sectorX, int sectorY );
 
-      void loadMusicBuffer( ALuint buffer );
+      void loadMusicBuffer( uint buffer );
       void updateMusic();
       void freeMusic();
 
     public:
 
-      void addSource( ALuint sourceId )
+      void addSource( uint sourceId )
       {
         sources << new Source( sourceId );
       }
 
-      void addContSource( uint key, ALuint sourceId  )
+      void addContSource( uint key, uint sourceId  )
       {
         contSources.add( key, sourceId );
       }
 
-      ALuint getCachedContSourceId() const
+      uint getCachedContSourceId() const
       {
         return contSources.cachedValue().source;
       }

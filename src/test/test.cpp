@@ -12,13 +12,27 @@ using namespace oz;
 
 int main()
 {
-  int a[] = { 1, 2, 3, 4 };
+  DArray<int> a( 10 );
 
-  foreach( i, iterator( a, 3 ) ) {
+  a[0] = 0;
+  a[1] = 1;
+  a[2] = 2;
+  a[3] = 3;
+  a[4] = 4;
+  a[5] = 5;
+  a[6] = 6;
+  a[7] = 7;
+  a[8] = 8;
+  a[9] = 9;
+//   a[10] = 10;
+
+  DArray<int> b;
+  b = a;
+
+  foreach( i, b.iterator() ) {
     printf( "%d :: ", *i );
   }
   printf( "\n" );
-  getchar();
 
   return 0;
 }

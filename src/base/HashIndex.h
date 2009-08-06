@@ -46,16 +46,16 @@ namespace oz
 
           typedef IteratorBase<Elem> B;
 
-          Elem **data;
-          int  index;
+          Elem *const *const data;
+          int                index;
 
         public:
 
           /**
-           * Make iterator for given HastIndex. After creation it points to first element.
+           * Make iterator for given HashIndex. After creation it points to first element.
            * @param t
            */
-          explicit Iterator( HashIndex &t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          explicit Iterator( const HashIndex &t ) : B( t.data[0] ), data( t.data ), index( 0 )
           {
             while( B::elem == null && index < SIZE - 1 ) {
               index++;
@@ -330,7 +330,7 @@ namespace oz
       /**
        * @return iterator for this HashIndex
        */
-      Iterator iterator()
+      Iterator iterator() const
       {
         return Iterator( *this );
       }
@@ -526,7 +526,7 @@ namespace oz
       }
 
       /**
-       * Remove all elements and delete their values.
+       * Remove all elements and delete their values. Only if values are pointers.
        */
       void free()
       {

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "DynObject.h"
+#include "World.h"
 #include "Weapon.h"
 
 #define BOT_GRAB_DIST         1.0
@@ -81,7 +82,6 @@ namespace oz
 
       void onUpdate();
       void onHit( const Hit *hit, float hitMomentum );
-      void onDestroy();
 
     public:
 

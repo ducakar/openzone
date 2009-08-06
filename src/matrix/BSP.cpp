@@ -12,7 +12,7 @@
 
 #include "Translator.h"
 
-#define fourCC( a, b, c, d ) \
+#define FOURCC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
 
 namespace oz
@@ -161,7 +161,7 @@ namespace oz
     Header header;
     fread( &header, sizeof( Header ), 1, f );
 
-    if( header.id != fourCC( 'I', 'B', 'S', 'P' ) || header.version != 46 ) {
+    if( header.id != FOURCC( 'I', 'B', 'S', 'P' ) || header.version != 46 ) {
       logFile.printEnd( " Wrong format" );
       return false;
     }
@@ -371,15 +371,17 @@ namespace oz
       visual.bitsets = new Bitset[visual.nClusters];
       for( int i = 0; i < visual.nClusters; i++ ) {
         visual.bitsets[i].setSize( visual.clusterLength * 8 );
-        fread( visual.bitsets[i].dataPtr(), sizeof( char ), visual.clusterLength, f );
+        fread( visual.bitsets[i], sizeof( char ), visual.clusterLength, f );
       }
     }
     else {
       visual.bitsets = null;
     }
 
-    fclose( f );
     delete[] texFlags;
+    delete[] texTypes;
+
+    fclose( f );
 
     logFile.printEnd( " OK" );
     return true;

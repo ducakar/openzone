@@ -130,23 +130,20 @@ namespace oz
       }
 
       /**
-       * Copy operator.
+       * Clone list.
        * Allocate copies of all elements of the original list. Type should implement copy
        * constructor and for sake of performance the order of elements in the new list is reversed.
        * @param l
        * @return
        */
-      DList &operator = ( const DList &l )
+      DList clone() const
       {
-        assert( &l != this );
+        DList clone;
 
-        firstElem = null;
-        lastElem  = null;
-
-        foreach( e, l.iterator() ) {
-          pushFirst( new Type( *e ) );
+        foreach( e, Iterator( *this ) ) {
+          clone.pushFirst( new Type( *e ) );
         }
-        return *this;
+        return clone;
       }
 
       /**

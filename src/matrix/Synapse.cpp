@@ -20,11 +20,19 @@ namespace oz
 
   void Synapse::clear()
   {
-    world.clear();
-    bsps.clear();
-    structs.clear();
-    objects.clear();
-    particles.clear();
+    putStructs.clear();
+    putObjects.clear();
+    putParts.clear();
+
+    cutStructs.clear();
+    cutObjects.clear();
+    cutParts.clear();
+
+    removeStructs.clear();
+    removeObjects.clear();
+    removeParts.clear();
+
+    useActions.clear();
   }
 
 }

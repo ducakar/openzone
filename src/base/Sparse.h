@@ -35,7 +35,7 @@ namespace oz
            * Make iterator for given Sparse. After creation it points to first element.
            * @param s
            */
-          explicit Iterator( Sparse &s ) : B( s.data, s.data + s.size )
+          explicit Iterator( const Sparse &s ) : B( s.data, s.data + s.size )
           {}
 
           Iterator &operator ++ ()
@@ -182,9 +182,9 @@ namespace oz
       }
 
       /**
-       * @return iterator for this sparse vector
+       * @return iterator for this vector
        */
-      Iterator iterator()
+      Iterator iterator() const
       {
         return Iterator( *this );
       }
@@ -194,7 +194,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
-      Type *dataPtr()
+      operator Type* ()
       {
         return data;
       }
@@ -204,7 +204,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return constant pointer to data array
        */
-      const Type *dataPtr() const
+      operator const Type* () const
       {
         return data;
       }

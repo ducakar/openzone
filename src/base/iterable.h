@@ -179,17 +179,9 @@ namespace oz
    * foreach( i, v.iterator() ) {
    *   printf( "%d ", *i );
    * }</pre>
-   * To avoid some strange bugs, try not to use foreach as in following example:
-   * <pre>
+   * This replaces much more cryptic and longer pieces of code, like:
    * Vector&lt;int&gt; v;
-   * foreach( i, Iterator( v ) ) {
-   *   printf( "%d ", *i );
-   * }</pre>
-   * but rather transform it to
-   * <pre>
-   * Vector&lt;int&gt; v;
-   * Vector&lt;int&gt;::Iterator iv( v );
-   * foreach( i, iv ) {
+   * for( Vector&lt;int&gt;::Iterator i( v ); !i.isPassed(); ++i )
    *   printf( "%d ", *i );
    * }</pre>
    * There's no need to add it to Katepart syntax highlighting as it is already there (Qt has some

@@ -18,6 +18,13 @@ namespace oz
 
   class Particle
   {
+    friend class DList<Particle, 0>;
+
+    private:
+
+      Particle  *prev[1];
+      Particle  *next[1];
+
     public:
 
       static const float MAX_ROTVELOCITY;
@@ -30,9 +37,6 @@ namespace oz
 
       int       index;        // position in world.objects vector
       Sector    *sector;
-
-      Particle  *prev[1];
-      Particle  *next[1];
 
       Vec3      velocity;
 

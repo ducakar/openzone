@@ -41,38 +41,26 @@ namespace oz
       static const int MAX = 128;
       static const float DIM;
 
-      int                 minSectX;
-      int                 minSectY;
-      int                 maxSectX;
-      int                 maxSectY;
+      int                minSectX;
+      int                minSectY;
+      int                maxSectX;
+      int                maxSectY;
 
-      Sky                 sky;
-      Terrain             terrain;
-      Sector              sectors[World::MAX][World::MAX];
-      Vector<BSP*>        bsps;
-      Vector<Structure*>  structures;
-      Vector<Object*>     objects;
-      Vector<Particle*>   particles;
+      Sky                sky;
+      Terrain            terrain;
+      Sector             sectors[World::MAX][World::MAX];
+      Vector<BSP*>       bsps;
+      Vector<Structure*> structures;
+      Vector<Object*>    objects;
+      Vector<Particle*>  particles;
 
     private:
 
-      // List of free indices. Indices can be reused after one full world update pass, so that all
-      // references to those indices are removed (object update functions should remove all invalid
-      // references).
-      Vector<int>         strFreeQueue[3];
-      Vector<int>         objFreeQueue[3];
-      Vector<int>         partFreeQueue[3];
-
-      int                 addingQueue;
-      int                 standbyQueue;
-      int                 freedQueue;
+      Vector<int>        strFreeIndices;
+      Vector<int>        objFreeIndices;
+      Vector<int>        partFreeIndices;
 
     public:
-
-      explicit World();
-
-      void init();
-      void free();
 
       // get pointer to the sector the point is in
       Sector* getSector( float x, float y );
@@ -101,30 +89,27 @@ namespace oz
       void unposition( Particle *part );
       void reposition( Particle *part );
 
+      void put( Structure *str );
+      void put( Object *obj );
+      void put( Particle *part );
+
+      void cut( Structure *str );
+      void cut( Object *obj );
+      void cut( Particle *part );
+
     public:
 
-      /**
-       * Put the object into the world hashspace
-       */
-      void add( Structure *str );
-      void add( Object *obj );
-      void add( Particle *part );
+      explicit World();
 
-      void remove( Structure *str );
-      void remove( Object *obj );
-      void remove( Particle *part );
+      void init();
+      void free();
 
       void genParticles( int number, const Vec3 &p,
                          const Vec3 &velocity, float velocitySpread,
                          float rejection, float mass, float lifeTime,
                          float size, const Vec3 &color, float colorSpread );
 
-      void beginUpdate();
-      void endUpdate();
-      // trim vectors to optimize memory usage
-      void trim();
-
-      void ensureBSPLoaded( int id );
+      void update();
 
       bool read( InputStream *istream );
       bool write( OutputStream *ostream );

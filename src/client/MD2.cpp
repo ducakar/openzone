@@ -12,11 +12,8 @@
 
 #include "Context.h"
 
-#define MD2_ID                  ( ( '2' << 24 ) | ( 'P' << 16 ) | ( 'D' << 8 ) | 'I' )
-#define MD2_VERSION             8
-
-#define MD2_SHADEDOT_QUANT      16
-#define MD2_MAX_VERTS           2048
+#define FOURCC( a, b, c, d ) \
+  ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
 
 namespace oz
 {
@@ -51,12 +48,6 @@ namespace client
   {
     ubyte v[3];
     ubyte iLightNormal;
-  };
-
-  struct MD2TexCoord
-  {
-    short s;
-    short t;
   };
 
   struct MD2Frame
@@ -240,6 +231,8 @@ namespace client
     { -0.688191f, -0.587785f, -0.425325f }
   };
 
+  Vec3 MD2::vertList[MAX_VERTS];
+
   MD2::Anim MD2::animList[] =
   {
     // first, last, fps
@@ -266,11 +259,7 @@ namespace client
     {   0, 197,  7.0f }    // FULL
   };
 
-  MD2::MD2() : nFrames( 0 ), nVerts( 0 ), nGlCmds( 0 ),
-      verts( null ), glCmds( null ), lightNormals( null )
-  {}
-
-  bool MD2::load( const char *name )
+  MD2::MD2( const char *name )
   {
     FILE      *file;
     MD2Header header;
@@ -289,34 +278,30 @@ namespace client
     file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
       logFile.printEnd( "No such file" );
-
-      assert( false );
-      return false;
+      throw Exception( 0, "MD2 model loading error" );
     }
 
     fread( &header, 1, sizeof( header ), file );
-    if( header.id != MD2_ID || header.version != MD2_VERSION ) {
+    if( header.id != FOURCC( 'I', 'D', 'P', '2' ) || header.version != 8 ) {
       fclose( file );
       logFile.printEnd( "Invalid file" );
-
-      assert( false );
-      return false;
+      throw Exception( 0, "MD2 model loading error" );
     }
 
     nFrames = header.nFrames;
     nVerts = header.nVerts;
-    nGlCmds = header.nGlCmds;
 
-    verts = new Vec3[nVerts * nFrames];
-    glCmds = new int[nGlCmds];
-    lightNormals = new int[nVerts * nFrames];
+    verts( nVerts * nFrames );
+    glCmds( header.nGlCmds );
+    lightNormals( nVerts * nFrames );
+
     buffer = new char[nFrames * header.framesize];
 
     fseek( file, header.offFrames, SEEK_SET );
     fread( buffer, 1, nFrames * header.framesize, file );
 
     fseek( file, header.offGLCmds, SEEK_SET );
-    fread( glCmds, 1, nGlCmds * sizeof( int ), file );
+    fread( glCmds, 1, glCmds.length() * sizeof( int ), file );
 
     for( int i = 0; i < nFrames; i++ ) {
       pFrame = (MD2Frame*) &buffer[header.framesize * i];
@@ -355,16 +340,18 @@ namespace client
       scale( scaling );
     }
     translate( translation );
-    translate( ANIM_CROUCH_STAND,  crouchTranslation );
-    translate( ANIM_CROUCH_WALK,   crouchTranslation );
-    translate( ANIM_CROUCH_ATTACK, crouchTranslation );
-    translate( ANIM_CROUCH_PAIN,   crouchTranslation );
-    translate( ANIM_CROUCH_DEATH,  crouchTranslation );
+
+    if( !crouchTranslation.isZero() ) {
+      translate( ANIM_CROUCH_STAND,  crouchTranslation );
+      translate( ANIM_CROUCH_WALK,   crouchTranslation );
+      translate( ANIM_CROUCH_ATTACK, crouchTranslation );
+      translate( ANIM_CROUCH_PAIN,   crouchTranslation );
+      translate( ANIM_CROUCH_DEATH,  crouchTranslation );
+    }
 
     if( texId == 0 ) {
-      return false;
+      throw Exception( 0, "MD2 model loading error" );
     }
-    return true;
   }
 
   void MD2::scale( float scale )
@@ -395,8 +382,12 @@ namespace client
     }
   }
 
-  void MD2::animate( AnimState *anim, float time )
+  void MD2::interpolate( AnimState *anim, float time ) const
   {
+    const Vec3 *currFrame;
+    const Vec3 *nextFrame;
+    float      animInterpol;
+
     anim->currTime += time;
 
     if( anim->currTime - anim->oldTime > anim->frameTime ) {
@@ -410,14 +401,7 @@ namespace client
       }
       anim->oldTime = anim->currTime;
     }
-
     animInterpol = anim->fps * ( anim->currTime - anim->oldTime );
-  }
-
-  void MD2::interpolate( AnimState *anim, Vec3 *vertList )
-  {
-    Vec3 *currFrame;
-    Vec3 *nextFrame;
 
     currFrame = &verts[nVerts * anim->currFrame];
     nextFrame = &verts[nVerts * anim->nextFrame];
@@ -427,10 +411,10 @@ namespace client
     }
   }
 
-  void MD2::drawFrame( int frame )
+  void MD2::drawFrame( int frame ) const
   {
-    Vec3 *vertList = &verts[nVerts * frame];
-    int *pCmd = glCmds;
+    const Vec3 *vertList = &verts[nVerts * frame];
+    const int  *pCmd     = glCmds;
 
     glFrontFace( GL_CW );
     glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
@@ -454,13 +438,11 @@ namespace client
     glFrontFace( GL_CCW );
   }
 
-  void MD2::draw( AnimState *anim )
+  void MD2::draw( AnimState *anim ) const
   {
-    static Vec3 vertList[MD2_MAX_VERTS];
-    int *pCmd = glCmds;
+    const int *pCmd = glCmds;
 
-    animate( anim, timer.frameTime );
-    interpolate( anim, vertList );
+    interpolate( anim, timer.frameTime );
 
     glFrontFace( GL_CW );
     glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
@@ -484,35 +466,16 @@ namespace client
     glFrontFace( GL_CCW );
   }
 
-  uint MD2::genList( const char *path )
+  uint MD2::genList( const char *name )
   {
-    MD2 md2;
+    MD2 md2( name );
 
-    md2.load( path );
-
-    uint list = context.genList();
-
+    uint list = glGenLists( 1 );
     glNewList( list, GL_COMPILE );
       md2.drawFrame( 0 );
     glEndList();
 
     return list;
-  }
-
-  void MD2::free()
-  {
-    if( verts != null ) {
-      delete[] verts;
-      verts = null;
-    }
-    if( glCmds != null ) {
-      delete[] glCmds;
-      glCmds = null;
-    }
-    if( lightNormals != null ) {
-      delete[] lightNormals;
-      lightNormals = null;
-    }
   }
 
 }

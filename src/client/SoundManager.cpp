@@ -40,7 +40,7 @@ namespace client
     }
   }
 
-  void SoundManager::loadMusicBuffer( ALuint buffer )
+  void SoundManager::loadMusicBuffer( uint buffer )
   {
     char data[MUSIC_BUFFER_SIZE];
     int  section;
@@ -71,7 +71,7 @@ namespace client
     alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &processed );
 
     while( processed > 0 ) {
-      ALuint buffer;
+      uint buffer;
       alSourceUnqueueBuffers( musicSource, 1, &buffer );
       loadMusicBuffer( buffer );
       alSourceQueueBuffers( musicSource, 1, &buffer );
@@ -151,10 +151,16 @@ namespace client
   void SoundManager::sync()
   {
     // remove Audio objects of removed objects
-    foreach( i, synapse.objects.iterator() ) {
-      if( i->type == Synapse::REMOVE && audios.contains( i->index ) ) {
+    foreach( i, synapse.cutObjects.iterator() ) {
+      if( audios.contains( ( *i )->index ) ) {
         delete audios.cachedValue();
-        audios.remove( i->index );
+        audios.remove( ( *i )->index );
+      }
+    }
+    foreach( i, synapse.removeObjects.iterator() ) {
+      if( audios.contains( ( *i )->index ) ) {
+        delete audios.cachedValue();
+        audios.remove( ( *i )->index );
       }
     }
   }
@@ -300,7 +306,7 @@ namespace client
     sources.free();
 
     foreach( i, contSources.iterator() ) {
-      ContSource &src = *i;
+      const ContSource &src = *(const ContSource*)i;
 
       alSourceStop( src.source );
       alDeleteSources( 1, &src.source );

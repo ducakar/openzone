@@ -1,23 +1,19 @@
-? PHYSFS
-
 Matrix
-  - improve Bot grab froce function
+  - improve Bot grab force function
   - improve Bot stepping algorithm
-  - proper Synapse support
   - Vehicle
-  - networking support
-  ? reinvent cylinder
   - inventory
   - Weapons
+  - networking support
+  ? reinvent cylinder
 
 Client
   - 3rd person
   - MD3
+  - water
+  - FireModel
   - weather
   - networking support
-
-Nirvana
-  EVERYTHING
 
 UI
   - events, callbacks
@@ -26,4 +22,12 @@ UI
   - inventory
 
 Server
-  - networking support
+  EVERYTHING
+
+Nirvana
+  EVERYTHING
+
+DROPPED (for v2.0.0)
+- 4 threads update
+- PhysFS
+- Bullet physics engine

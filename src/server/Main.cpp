@@ -142,12 +142,12 @@ namespace server
     logFile.println( "MAIN LOOP {" );
     logFile.indent();
 
-    Uint32 tick     = config.get( "tick", 20 );
+    uint tick     = config.get( "tick", 20 );
     // time passed form start of the frame
-    Uint32 time;
-    Uint32 timeZero = SDL_GetTicks();
+    uint time;
+    uint timeZero = SDL_GetTicks();
     // time at start of the frame
-    Uint32 timeLast = timeZero;
+    uint timeLast = timeZero;
 
     // THE MAGNIFICANT MAIN LOOP
     do {

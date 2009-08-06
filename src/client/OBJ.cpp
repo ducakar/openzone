@@ -174,14 +174,22 @@ namespace client
 
     face->nVerts = vertIndices.length();
 
-    assert( face->nVerts > 0 );
+    if( face->nVerts < 3 ) {
+      return false;
+    }
+    if( normalIndices.length() != 0 && normalIndices.length() != face->nVerts ) {
+      return false;
+    }
+    if( texCoordIndices.length() != 0 && texCoordIndices.length() != face->nVerts ) {
+      return false;
+    }
 
     face->vertIndices = new uint[face->nVerts];
-    aCopy( face->vertIndices, vertIndices.dataPtr(), face->nVerts );
+    aCopy<uint>( face->vertIndices, vertIndices, face->nVerts );
 
     if( !normalIndices.isEmpty() ) {
       face->normIndices = new uint[face->nVerts];
-      aCopy( face->normIndices, normalIndices.dataPtr(), face->nVerts );
+      aCopy<uint>( face->normIndices, normalIndices, face->nVerts );
     }
     else {
       face->normIndices = null;
@@ -189,7 +197,7 @@ namespace client
 
     if( !texCoordIndices.isEmpty() ) {
       face->texCoordIndices = new uint[face->nVerts];
-      aCopy( face->texCoordIndices, texCoordIndices.dataPtr(), face->nVerts );
+      aCopy<uint>( face->texCoordIndices, texCoordIndices, face->nVerts );
     }
     else {
       face->texCoordIndices = null;
@@ -239,16 +247,7 @@ namespace client
     return true;
   }
 
-  OBJ::OBJ() : nVertices( 0 ), vertices( null ), nNormals( 0 ), normals( null ),
-      nTexCoords( 0 ), texCoords( null ), nFaces( 0 ), faces( null )
-  {}
-
-  OBJ::~OBJ()
-  {
-    free();
-  }
-
-  bool OBJ::load( const char *name )
+  OBJ::OBJ( const char *name )
   {
     FILE *file;
     char buffer[LINE_BUFFER_SIZE];
@@ -258,10 +257,12 @@ namespace client
 
     String sPath = String( "mdl/" ) + name;
     String modelFile = sPath + "/data.obj";
-    String configFile = sPath + "/config.xml";
+    String configFile = sPath + "/" + String( name ) + ".xml";
 
     Config config;
     config.load( configFile );
+
+    logFile.println( "Loading OBJ model '%s' ...", modelFile.cstr() );
 
     float scaling = config.get( "scale", 1.0f );
     Vec3 translation( config.get( "translate.x", 0.0f ),
@@ -271,7 +272,8 @@ namespace client
 
     file = fopen( modelFile.cstr(), "r" );
     if( file == null ) {
-      return false;
+      logFile.printEnd( "No such file" );
+      throw Exception( 0, "OBJ model loading error" );
     }
 
     Vector<Vec3>     tempVerts;
@@ -290,7 +292,7 @@ namespace client
           if( !readVertexData( pos + 1, &tempVerts, &tempNormals, &tempTexCoords ) ) {
             fclose( file );
             logFile.println( "invalid vertex line: %s", buffer );
-            return false;
+            throw Exception( 0, "OBJ model loading error" );
           }
           break;
         }
@@ -301,7 +303,7 @@ namespace client
           if( !readFace( pos + 1, &face ) ) {
             fclose( file );
             logFile.println( "invalid face line: %s", buffer );
-            return false;
+            throw Exception( 0, "OBJ model loading error" );
           }
           tempFaces << face;
           break;
@@ -311,7 +313,7 @@ namespace client
           if( aEquals( pos, "mtllib", 6 ) && !loadMaterial( sPath ) ) {
             fclose( file );
             logFile.println( "cannot load material at line: %s", buffer );
-            return false;
+            throw Exception( 0, "OBJ model loading error" );
           }
           break;
         }
@@ -326,47 +328,39 @@ namespace client
 
     // copy everything into arrays for memory optimization
 
-    nVertices = tempVerts.length();
-    if( nVertices > 0 ) {
-      vertices = new Vec3[nVertices];
-
-      for( int i = 0; i < nVertices; i++ ) {
+    vertices( tempVerts.length() );
+    if( !vertices.isEmpty() ) {
+      for( int i = 0; i < vertices.length(); i++ ) {
         vertices[i] = translation + scaling * tempVerts[i];
       }
     }
     else {
-      nVertices = 0;
-      return false;
+      throw Exception( 0, "OBJ model loading error" );
     }
 
-    nNormals = tempNormals.length();
-    if( nNormals > 0 ) {
-      normals = new Vec3[nNormals];
-      aCopy( normals, tempNormals.dataPtr(), nNormals );
+    normals( tempNormals.length() );
+    if( !normals.isEmpty() ) {
+      aCopy<Vec3>( normals, tempNormals, normals.length() );
     }
 
-    nTexCoords = tempTexCoords.length();
-    if( nTexCoords > 0 ) {
-      texCoords = new TexCoord[nTexCoords];
-      aCopy( texCoords, tempTexCoords.dataPtr(), nTexCoords );
+    texCoords( tempTexCoords.length() );
+    if( !texCoords.isEmpty() ) {
+      aCopy<TexCoord>( texCoords, tempTexCoords, texCoords.length() );
     }
 
-    nFaces = tempFaces.length();
-    if( nFaces > 0 ) {
-      faces = new Face[nFaces];
+    faces( tempFaces.length() );
+    if( !faces.isEmpty() ) {
       // we don't copy arrays, pointers in both containers point to the same data
-      aCopy( faces, tempFaces.dataPtr(), nFaces );
+      aCopy<Face>( faces, tempFaces, faces.length() );
     }
     else {
-      return false;
+      throw Exception( 0, "OBJ model loading error" );
     }
-
-    return true;
   }
 
-  void OBJ::free()
+  OBJ::~OBJ()
   {
-    for( int i = 0; i < nFaces; i++ ) {
+    for( int i = 0; i < faces.length(); i++ ) {
       delete[] faces[i].vertIndices;
 
       if( faces[i].normIndices != null ) {
@@ -376,25 +370,19 @@ namespace client
         delete[] faces[i].texCoordIndices;
       }
     }
-    if( nFaces > 0 ) {
-      nFaces = 0;
-      delete[] faces;
-      faces = null;
+  }
+
+  void OBJ::scale( float scale )
+  {
+    for( int i = 0; i < vertices.length(); i++ ) {
+      vertices[i] *= scale;
     }
-    if( nTexCoords > 0 ) {
-      nTexCoords = 0;
-      delete[] texCoords;
-      texCoords = null;
-    }
-    if( nNormals > 0 ) {
-      nNormals = 0;
-      delete[] normals;
-      normals = null;
-    }
-    if( nVertices > 0 ) {
-      nVertices = 0;
-      delete[] vertices;
-      vertices = null;
+  }
+
+  void OBJ::translate( const Vec3 &t )
+  {
+    for( int i = 0; i < vertices.length(); i++ ) {
+      vertices[i] += t;
     }
   }
 
@@ -402,41 +390,17 @@ namespace client
   {
     glBindTexture( GL_TEXTURE_2D, textureId );
 
-    for( int i = 0; i < nFaces; i++ ) {
-      Face &face = faces[i];
+    for( int i = 0; i < faces.length(); i++ ) {
+      const Face &face = faces[i];
 
-//       // draw polygon as a triangle strip
-//       glBegin( GL_TRIANGLE_STRIP );
-//         assert( face.nVerts >= 3 );
-//
-//         int outerMiddle = face.nVerts / 2 + 1;
-//         int innerMiddle = ( face.nVerts - 1 ) / 2;
-//         for( int j = 0; j < outerMiddle; j++ ) {
-//
-//           if( texCoords ) {
-//             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
-//           }
-//           if( normals ) {
-//             glNormal3fv( normals[face.normIndices[j]] );
-//           }
-//           glVertex3fv( vertices[face.vertIndices[j]] );
-//
-//           if( j == 0 || j > innerMiddle ) {
-//             continue;
-//           }
-//
-//           if( texCoords ) {
-//             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[face.nVerts - j]] );
-//           }
-//           if( normals ) {
-//             glNormal3fv( normals[face.normIndices[face.nVerts - j]] );
-//           }
-//           glVertex3fv( vertices[face.vertIndices[face.nVerts - j]] );
-//         }
-//       glEnd();
+      // draw polygon as a triangle strip
+      glBegin( GL_TRIANGLE_STRIP );
+        assert( face.nVerts >= 3 );
 
-      glBegin( GL_POLYGON );
-        for( int j = 0; j < face.nVerts; j++ ) {
+        int outerMiddle = face.nVerts / 2 + 1;
+        int innerMiddle = ( face.nVerts - 1 ) / 2;
+        for( int j = 0; j < outerMiddle; j++ ) {
+
           if( texCoords ) {
             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
           }
@@ -444,37 +408,45 @@ namespace client
             glNormal3fv( normals[face.normIndices[j]] );
           }
           glVertex3fv( vertices[face.vertIndices[j]] );
+
+          if( j == 0 || j > innerMiddle ) {
+            continue;
+          }
+
+          if( texCoords ) {
+            glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[face.nVerts - j]] );
+          }
+          if( normals ) {
+            glNormal3fv( normals[face.normIndices[face.nVerts - j]] );
+          }
+          glVertex3fv( vertices[face.vertIndices[face.nVerts - j]] );
         }
       glEnd();
+
+//       glBegin( GL_POLYGON );
+//         for( int j = 0; j < face.nVerts; j++ ) {
+//           if( texCoords ) {
+//             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
+//           }
+//           if( normals ) {
+//             glNormal3fv( normals[face.normIndices[j]] );
+//           }
+//           glVertex3fv( vertices[face.vertIndices[j]] );
+//         }
+//       glEnd();
     }
   }
 
   uint OBJ::genList( const char *name )
   {
-    OBJ obj;
-    obj.load( name );
+    OBJ obj( name );
 
-    uint list = context.genList();
-
+    uint list = glGenLists( 1 );
     glNewList( list, GL_COMPILE );
       obj.draw();
     glEndList();
 
     return list;
-  }
-
-  void OBJ::scale( float scale )
-  {
-    for( int i = 0; i < nVertices; i++ ) {
-      vertices[i] *= scale;
-    }
-  }
-
-  void OBJ::translate( const Vec3 &t )
-  {
-    for( int i = 0; i < nVertices; i++ ) {
-      vertices[i] += t;
-    }
   }
 
 }

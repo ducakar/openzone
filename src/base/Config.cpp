@@ -111,16 +111,16 @@ namespace oz
 
         // error if "var" tag doesn't has "name" and "value" attributes
         if( key == null || value == null ) {
+          free( key );
+          free( value );
+
           error = -1;
           break;
         }
         add( (const char*) key, (const char*) value );
 
-        // FIXME VC++ has problems with this WTF???
-#ifndef WIN32
         free( key );
         free( value );
-#endif
       }
       error = xmlTextReaderRead( reader );
     }
@@ -142,7 +142,7 @@ namespace oz
     int size = vars.length();
     Elem sortedVars[size];
 
-    HashString<String, SIZE>::Iterator j( vars );
+    typeof( vars.iterator() ) j( vars );
     for( int i = 0; !j.isPassed(); ++i, ++j ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();

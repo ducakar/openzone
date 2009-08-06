@@ -254,12 +254,16 @@ namespace oz
     if( grabObjIndex >= 0 ) {
       DynObject *obj = (DynObject*) world.objects[grabObjIndex];
 
-      Vec3 eye  = p + camPos;
-      Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
-      Vec3 string = ( eye + look ) - obj->p;
+      Vec3  eye       = p + camPos;
+      Vec3  look      = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
+      Vec3  string    = ( eye + look ) - obj->p;
+//       float massRatio = mass
 
       // FIXME better function for computing force, string breaking
-      obj->momentum += string * Math::pow( string.sqL(), 0.5 ) * 5.1f;
+      Vec3 desiredMomentum = string * 10.0f;
+      Vec3 momentumDiff    = desiredMomentum - obj->momentum;
+
+      obj->momentum += momentumDiff;
       obj->flags    &= ~Object::DISABLED_BIT;
     }
 
@@ -272,17 +276,12 @@ namespace oz
 
   void Bot::onHit( const Hit *hit, float hitMomentum )
   {
-    if( hitMomentum <= -8.0f ) {
+//     if( hitMomentum <= -8.0f ) {
       damage += hitMomentum;
-    }
+//     }
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       addEvent( SND_LAND );
     }
-  }
-
-  void Bot::onDestroy()
-  {
-    anim = ANIM_DEATH_FALLBACK;
   }
 
   Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f ),

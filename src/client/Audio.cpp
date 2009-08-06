@@ -23,7 +23,7 @@ namespace client
 
   void Audio::playSound( int sample, float volume ) const
   {
-    ALuint srcId;
+    uint srcId;
 
     alGenSources( 1, &srcId );
     alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
@@ -51,12 +51,14 @@ namespace client
 
   void Audio::playContSound( int sample, float volume, uint key ) const
   {
+    assert( 0 <= sample && sample < translator.sounds.length() );
+
     if( soundManager.updateContSource( key ) ) {
       alSourcef( soundManager.getCachedContSourceId(), AL_GAIN, volume );
       alSourcefv( soundManager.getCachedContSourceId(), AL_POSITION, obj->p );
     }
     else {
-      ALuint srcId;
+      uint srcId;
 
       alGenSources( 1, &srcId );
       alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
