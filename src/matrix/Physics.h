@@ -38,8 +38,8 @@ namespace oz
       float     leafStartRatio;
       float     leafEndRatio;
 
-      float     gVelocity;
       float     gAccel;
+      float     gVelocity;
       Vec3      lastNormals[2];
       float     leftRatio;
 
@@ -62,15 +62,8 @@ namespace oz
       static const float FLOOR_NORMAL_Z;
       static const float MAX_VELOCITY2;
 
-      void init( float gAccel );
-
-      void beginUpdate()
-      {
-        gVelocity = gAccel * timer.frameTime;
-      }
-
-      void endUpdate()
-      {}
+      void setG( float gAccel );
+      void update();
 
       void updatePart( Particle *part_ )
       {

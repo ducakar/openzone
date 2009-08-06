@@ -10,6 +10,7 @@
 
 #include "Font.h"
 #include "Area.h"
+#include "Button.h"
 #include "DebugArea.h"
 #include "HealthArea.h"
 

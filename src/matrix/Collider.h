@@ -33,23 +33,23 @@ namespace oz
 
       static const Vec3 bbNormals[];
 
-      Vec3         point;
-      AABB         aabb;
-      DynObject    *obj;
-      Vec3         move;
+      Vec3            point;
+      AABB            aabb;
+      const DynObject *obj;
+      Vec3            move;
 
-      Bounds       trace;
+      Bounds          trace;
 
-      Vec3         leafStartPos;
-      Vec3         leafEndPos;
-      Vec3         globalStartPos;
-      Vec3         globalEndPos;
-      float        leafStartRatio;
-      float        leafEndRatio;
+      Vec3            leafStartPos;
+      Vec3            leafEndPos;
+      Vec3            globalStartPos;
+      Vec3            globalEndPos;
+      float           leafStartRatio;
+      float           leafEndRatio;
 
-      const BSP    *bsp;
-      Structure    *str;
-      const Object *exclObj;
+      const BSP       *bsp;
+      const Structure *str;
+      const Object    *exclObj;
 
       /**
        * Rotate vector from absolute coordinate system to structure coordinate system. Do not
@@ -100,7 +100,8 @@ namespace oz
                          const Vec3 &startPos, const Vec3 &endPos );
       void trimAABBWorld();
 
-      void getWorldOverlaps( Vector<Object*> *objects, Vector<Structure*> *structs );
+      void getWorldOverlaps( Vector<Object*> *objects,
+                             Vector<const Structure*> *structs );
       void getWorldIncludes( Vector<Object*> *objects );
 
     public:
@@ -119,14 +120,15 @@ namespace oz
 
       // returns vector of objects and vector of structures, overlapping with given AABB
       // if either vector is null, respective test isn't performed
-      void getOverlaps( const AABB &aabb, Vector<Object*> *objects, Vector<Structure*> *structs );
+      void getOverlaps( const AABB &aabb, Vector<Object*> *objects,
+                        Vector<const Structure*> *structs );
 
       // returns vector of objects, overlapping with given AABB
       void getIncludes( const AABB &aabb, Vector<Object*> *objects );
 
       void translate( const Vec3 &point, const Vec3 &move, const Object *exclObj = null );
       void translate( const AABB &aabb, const Vec3 &move, const Object *exclObj = null );
-      void translate( DynObject *obj, const Vec3 &move );
+      void translate( const DynObject *obj, const Vec3 &move );
 
   };
 
@@ -194,7 +196,7 @@ namespace oz
 
   inline void Collider::getOverlaps( const AABB &aabb_,
                                      Vector<Object*> *objects,
-                                     Vector<Structure*> *structs )
+                                     Vector<const Structure*> *structs )
   {
     aabb = aabb_;
     exclObj = null;
@@ -204,8 +206,7 @@ namespace oz
     return getWorldOverlaps( objects, structs );
   }
 
-  inline void Collider::getIncludes( const AABB &aabb_,
-                                     Vector<Object*> *objects )
+  inline void Collider::getIncludes( const AABB &aabb_, Vector<Object*> *objects )
   {
     aabb = aabb_;
     exclObj = null;
@@ -240,7 +241,7 @@ namespace oz
     trimAABBWorld();
   }
 
-  inline void Collider::translate( DynObject *obj_, const Vec3 &move_ )
+  inline void Collider::translate( const DynObject *obj_, const Vec3 &move_ )
   {
     obj  = obj_;
     aabb = *obj;

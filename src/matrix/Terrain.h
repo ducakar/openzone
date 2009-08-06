@@ -13,7 +13,7 @@ namespace oz
 
   struct TerraQuad
   {
-    static const int SIZEI = 16;
+    static const int   SIZEI = 16;
     static const float SIZE;
     static const float DIM;
     static const float STEP;

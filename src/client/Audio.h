@@ -15,7 +15,6 @@ namespace oz
 namespace client
 {
 
-  // TODO buffer clearing
   class Audio
   {
     friend class List<Audio, 0>;

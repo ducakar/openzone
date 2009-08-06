@@ -22,8 +22,7 @@ namespace oz
 
   World::World() :
       Bounds( Vec3( -World::DIM, -World::DIM, -World::DIM ),
-              Vec3( World::DIM, World::DIM, World::DIM ) ),
-      addingQueue( 0 ), standbyQueue( 1 ), freedQueue( 2 )
+              Vec3( World::DIM, World::DIM, World::DIM ) )
   {}
 
   void World::init()
@@ -46,6 +45,12 @@ namespace oz
       }
     }
 
+    foreach( bsp, bsps.iterator() ) {
+      (*bsp)->free();
+      delete *bsp;
+    }
+    bsps.clear();
+
     foreach( str, structures.iterator() ) {
       if( *str != null ) {
         delete *str;
@@ -60,24 +65,14 @@ namespace oz
     }
     objects.clear();
 
+    PoolAlloc<Object::Event, 0>::pool.free();
+
     foreach( part, particles.iterator() ) {
       if( *part != null ) {
         delete *part;
       }
     }
     particles.clear();
-
-    foreach( bsp, bsps.iterator() ) {
-      (*bsp)->free();
-      delete *bsp;
-    }
-    bsps.clear();
-
-    PoolAlloc<Object::Event, 0>::pool.free();
-
-    if( synapse.isServer ) {
-      synapse.world << Synapse::Action( Synapse::CLEAR );
-    }
   }
 
   void World::position( Structure *str )
@@ -177,112 +172,69 @@ namespace oz
     }
   }
 
-  void World::add( Structure *str )
+  void World::put( Structure *str )
   {
-    if( synapse.isClient ) {
-      return;
-    }
-
-    if( strFreeQueue[freedQueue].isEmpty() ) {
+    if( strFreeIndices.isEmpty() ) {
       str->index = structures.length();
       structures << str;
     }
     else {
-      strFreeQueue[freedQueue] >> str->index;
+      strFreeIndices >> str->index;
       structures[str->index] = str;
     }
 
     position( str );
-
-    if( synapse.isServer ) {
-      synapse.structs << Synapse::Action( Synapse::ADD, str->index );
-    }
   }
 
-  void World::add( Object *obj )
+  void World::put( Object *obj )
   {
-    if( synapse.isClient ) {
-      return;
-    }
-
-    if( objFreeQueue[freedQueue].isEmpty() ) {
+    if( objFreeIndices.isEmpty() ) {
       obj->index = objects.length();
       objects << obj;
     }
     else {
-      objFreeQueue[freedQueue] >> obj->index;
+      objFreeIndices >> obj->index;
       objects[obj->index] = obj;
     }
 
     position( obj );
-
-    if( synapse.isServer ) {
-      synapse.objects << Synapse::Action( Synapse::ADD, obj->index );
-    }
   }
 
-  void World::add( Particle *part )
+  void World::put( Particle *part )
   {
-    if( synapse.isClient ) {
-      return;
-    }
-    if( partFreeQueue[freedQueue].isEmpty() ) {
+    if( partFreeIndices.isEmpty() ) {
       part->index = particles.length();
       particles << part;
     }
     else {
-      partFreeQueue[freedQueue] >> part->index;
+      partFreeIndices >> part->index;
       particles[part->index] = part;
     }
 
     position( part );
-
-    if( synapse.isServer ) {
-      synapse.particles << Synapse::Action( Synapse::ADD, part->index );
-    }
   }
 
-  void World::remove( Structure *str )
+  void World::cut( Structure *str )
   {
-    if( synapse.isClient ) {
-      return;
-    }
-    synapse.structs << Synapse::Action( Synapse::REMOVE, str->index );
-
     unposition( str );
 
-    strFreeQueue[addingQueue] << str->index;
-
+    strFreeIndices << str->index;
     structures[str->index] = null;
   }
 
-  void World::remove( Object *obj )
+  void World::cut( Object *obj )
   {
-    if( synapse.isClient ) {
-      return;
-    }
-    synapse.objects << Synapse::Action( Synapse::REMOVE, obj->index );
+    unposition( obj );
 
-    if( obj->sector != null ) {
-      unposition( obj );
-    }
-
-    objFreeQueue[addingQueue] << obj->index;
-
+    objFreeIndices << obj->index;
     objects[obj->index] = null;
   }
 
-  void World::remove( Particle *part )
+  void World::cut( Particle *part )
   {
-    if( synapse.isClient ) {
-      return;
-    }
-    synapse.particles << Synapse::Action( Synapse::REMOVE, part->index );
-
     unposition( part );
 
-    partFreeQueue[addingQueue] << part->index;
-
+    partFreeIndices << part->index;
     particles[part->index] = null;
   }
 
@@ -307,45 +259,50 @@ namespace oz
                                 colorSpread * Math::frand() - colorSpread2 );
       float timeDisturb = lifeTime * Math::frand();
 
-      add( new Particle( p, velocity + velDisturb, rejection, mass, 0.5f * lifeTime + timeDisturb,
+      put( new Particle( p, velocity + velDisturb, rejection, mass, 0.5f * lifeTime + timeDisturb,
                          size, color + colorDisturb ) );
     }
   }
 
-  void World::beginUpdate()
+  void World::update()
   {
-    addingQueue = ( addingQueue + 1 ) % 3;
-    standbyQueue = ( standbyQueue + 1 ) % 3;
-    freedQueue = ( freedQueue + 1 ) % 3;
-
-    world.sky.update();
-  }
-
-  void World::endUpdate()
-  {}
-
-  void World::trim()
-  {
-    for( int i = 0; i < 3; i++ ) {
-      strFreeQueue[i].trim( 4 );
-      objFreeQueue[i].trim( 4 );
-      partFreeQueue[i].trim( 4 );
+    // put
+    foreach( i, synapse.putStructs.iterator() ) {
+      put( *i );
     }
-
-    while( structures.last() == null ) {
-      --structures;
+    foreach( i, synapse.putObjects.iterator() ) {
+      put( *i );
     }
-    structures.trim( 4 );
-
-    while( objects.last() == null ) {
-      --objects;
+    foreach( i, synapse.putParts.iterator() ) {
+      put( *i );
     }
-    objects.trim( 32 );
-
-    while( particles.last() == null ) {
-      --particles;
+    // actions
+    foreach( i, synapse.useActions.iterator() ) {
+      i->target->onUse( i->user );
     }
-    particles.trim( 128 );
+    // cut
+    foreach( i, synapse.cutStructs.iterator() ) {
+      cut( *i );
+    }
+    foreach( i, synapse.cutObjects.iterator() ) {
+      cut( *i );
+    }
+    foreach( i, synapse.cutParts.iterator() ) {
+      cut( *i );
+    }
+    // remove (cut & delete)
+    foreach( i, synapse.removeStructs.iterator() ) {
+      cut( *i );
+      delete *i;
+    }
+    foreach( i, synapse.removeObjects.iterator() ) {
+      cut( *i );
+      delete *i;
+    }
+    foreach( i, synapse.removeParts.iterator() ) {
+      cut( *i );
+      delete *i;
+    }
   }
 
   bool World::read( InputStream *istream )

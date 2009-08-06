@@ -31,11 +31,13 @@
 #include "array.h"
 
 /*
- * Containers 1
+ * Containers, part 1
  */
 #include "List.h"
 #include "DList.h"
 
+#include "Array.h"
+#include "DArray.h"
 #include "Vector.h"
 #include "SVector.h"
 #include "Sparse.h"
@@ -53,7 +55,7 @@
 #include "String.h"
 
 /*
- * Containers 2
+ * Containers, part 2 (those need String and memory management defined)
  */
 #include "HashIndex.h"
 #include "HashString.h"

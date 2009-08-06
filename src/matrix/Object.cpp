@@ -27,16 +27,7 @@ namespace oz
   void Object::onHit( const Hit*, float )
   {}
 
-  void Object::onDestroy()
-  {}
-
-  void Object::onUse( Object* )
-  {}
-
-  void Object::onPut( Object* )
-  {}
-
-  void Object::onCut( Object* )
+  void Object::onUse( Bot* )
   {}
 
   void Object::readFull( InputStream *istream )

@@ -126,7 +126,7 @@ namespace oz
       return false;
     }
 
-    Structure *oldStr = null;
+    const Structure *oldStr = null;
 
     for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
       for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
@@ -190,7 +190,7 @@ namespace oz
       return false;
     }
 
-    Structure *oldStr = null;
+    const Structure *oldStr = null;
 
     for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
       for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
@@ -535,7 +535,7 @@ namespace oz
       trimPointVoid();
     }
 
-    Structure *oldStr = null;
+    const Structure *oldStr = null;
 
     for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
       for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
@@ -644,7 +644,7 @@ namespace oz
       return false;
     }
 
-    Structure *oldStr = null;
+    const Structure *oldStr = null;
 
     for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
       for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
@@ -709,7 +709,7 @@ namespace oz
       return false;
     }
 
-    Structure *oldStr = null;
+    const Structure *oldStr = null;
 
     for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
       for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
@@ -1012,7 +1012,7 @@ namespace oz
       trimAABBVoid();
     }
 
-    Structure *oldStr = null;
+    const Structure *oldStr = null;
 
     for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
       for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
@@ -1056,7 +1056,7 @@ namespace oz
   //***********************************
 
   // get all objects and structures that overlap with our trace
-  void Collider::getWorldOverlaps( Vector<Object*> *objects, Vector<Structure*> *structs )
+  void Collider::getWorldOverlaps( Vector<Object*> *objects, Vector<const Structure*> *structs )
   {
     assert( objects != null || structs != null );
 

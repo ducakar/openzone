@@ -18,17 +18,13 @@ namespace oz
   struct Sector;
   struct ObjectClass;
   struct Hit;
-
-  namespace client
-  {
-    class Model;
-    class Audio;
-  };
+  struct Bot;
 
   // static object abstract class
   class Object : public AABB
   {
     friend class DList<Object, 0>;
+    friend class World;
 
     /*
      * Here various flag bits are set; the higher bits are used for flags that are internal flags
@@ -45,7 +41,7 @@ namespace oz
       static const int INTERNAL_BITS_MASK = 0xffffff00;
 
       /*
-       * FUNCTION FLAGS (0xfc0000000)
+       * FUNCTION FLAGS (0xf0000000)
        */
 
       // if the update method should be called each step
@@ -61,7 +57,7 @@ namespace oz
       static const int DESTROY_FUNC_BIT   = 0x10000000;
 
       /*
-       * FRONTEND OBJECTS (0x03000000)
+       * FRONTEND OBJECTS (0x0c000000)
        */
 
       // if the object has a model object in frontend
@@ -71,7 +67,7 @@ namespace oz
       static const int AUDIO_BIT          = 0x04000000;
 
       /*
-       * NETWORK FLAGS (0x00f00000)
+       * SYNC FLAGS (0x03000000)
        */
 
       // if the object doesn't need to be updated over network
@@ -133,12 +129,13 @@ namespace oz
        * RENDER FLAGS (config 0x0000000f)
        */
 
+      // if the object is blended and should be rendered at the end
+      static const int BLEND_BIT          = 0x00000002;
+
       // wide frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
       // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR (default 5.0f)
       static const int WIDE_CULL_BIT      = 0x00000001;
-
-      static const int BLEND_BIT          = 0x00000002;
 
       /*
        * STANDARD EVENT IDs
@@ -182,13 +179,9 @@ namespace oz
       // the frame
       List<Event, 0> events;
 
-      // client data
-      client::Model  *clientModel;
-      client::Audio  *clientAudio;
-
     public:
 
-      explicit Object() : index( -1 ), sector( null ), clientModel( null ), clientAudio( null )
+      explicit Object() : index( -1 ), sector( null )
       {}
 
       virtual ~Object();
@@ -201,13 +194,6 @@ namespace oz
       void addEvent( int id, float intensity )
       {
         events << new Event( id, intensity );
-      }
-
-      void destroy()
-      {
-        if( flags & DESTROY_FUNC_BIT ) {
-          onDestroy();
-        }
       }
 
       void update()
@@ -229,23 +215,18 @@ namespace oz
         }
       }
 
-      void use( Object *user )
+      void use( Bot *user )
       {
         if( flags & USE_FUNC_BIT ) {
-          synapse.world << Synapse::Action( Synapse::USE, index, user->index );
-
-          onUse( user );
+          synapse.use( user, this );
         }
       }
 
     protected:
 
-      virtual void onDestroy();
       virtual void onUpdate();
       virtual void onHit( const Hit *hit, float momentum );
-      virtual void onPut( Object *user );
-      virtual void onCut( Object *user );
-      virtual void onUse( Object *user );
+      virtual void onUse( Bot *user );
 
     public:
 

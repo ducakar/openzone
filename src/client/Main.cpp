@@ -162,8 +162,8 @@ namespace client
     int screenBpp  = config.get( "screen.bpp", 32 );
     int screenFull = config.get( "screen.full", false ) ? SDL_FULLSCREEN : 0;
 
-    Uint16 screenCenterX = (Uint16) ( screenX / 2 );
-    Uint16 screenCenterY = (Uint16) ( screenY / 2 );
+    ushort screenCenterX = (ushort) ( screenX / 2 );
+    ushort screenCenterY = (ushort) ( screenY / 2 );
 
     logFile.print( "Setting OpenGL surface %dx%d %dbpp %s ...",
                    screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
@@ -220,14 +220,14 @@ namespace client
     bool isActive         = true;
     int  nFrames          = 0;
 
-    Uint32 tick           = config.get( "tick", 20 );
+    uint tick           = config.get( "tick", 20 );
     // time passed form start of the frame
-    Uint32 delta;
-    Uint32 timeNow;
-    Uint32 timeZero       = SDL_GetTicks();
+    uint delta;
+    uint timeNow;
+    uint timeZero       = SDL_GetTicks();
     // time at start of the frame
-    Uint32 timeLast       = timeZero;
-    Uint32 timeLastRender = timeZero;
+    uint timeLast       = timeZero;
+    uint timeLastRender = timeZero;
 
     // set mouse cursor to center of the screen and clear any events (key presses and mouse moves)
     // from before

@@ -400,8 +400,7 @@ namespace client
   {
     if( !md2Models.contains( path ) ) {
       md2Models.add( path, Resource<MD2*>() );
-      md2Models.cachedValue().object = new MD2();
-      md2Models.cachedValue().object->load( path );
+      md2Models.cachedValue().object = new MD2( path );
     }
     md2Models.cachedValue().nUsers++;
     return md2Models.cachedValue().object;
@@ -415,7 +414,6 @@ namespace client
       md2Models.cachedValue().nUsers--;
 
       if( md2Models.cachedValue().nUsers == 0 ) {
-        md2Models.cachedValue().object->free();
         delete md2Models.cachedValue().object;
         md2Models.remove( path );
       }
@@ -450,8 +448,7 @@ namespace client
   {
     if( !md3Models.contains( path ) ) {
       md3Models.add( path, Resource<MD3*>() );
-      md3Models.cachedValue().object = new MD3();
-      md3Models.cachedValue().object->load( path );
+      md3Models.cachedValue().object = new MD3( path );
     }
     md3Models.cachedValue().nUsers++;
     return md3Models.cachedValue().object;
@@ -465,7 +462,6 @@ namespace client
       md3Models.cachedValue().nUsers--;
 
       if( md3Models.cachedValue().nUsers == 0 ) {
-        md3Models.cachedValue().object->free();
         delete md3Models.cachedValue().object;
         md3Models.remove( path );
       }

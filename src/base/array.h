@@ -52,8 +52,8 @@ namespace oz
    * @param value value to be set
    * @param count number of elements to be set
    */
-  template <class Type, class Value>
-  inline void aSet( Type *dest, const Value &value, int count )
+  template <class Type>
+  inline void aSet( Type *dest, const Type &value, int count )
   {
     for( int i = 0; i < count; i++ ) {
       dest[i] = value;
@@ -122,8 +122,8 @@ namespace oz
    * @param value value we look for
    * @return index of the first occurence, -1 if not found
    */
-  template <class Type, class Value>
-  inline int aIndex( const Type *array, int count, const Value &value )
+  template <class Type>
+  inline int aIndex( const Type *array, const Type &value, int count )
   {
     for( int i = 0; i < count; i++ ) {
       if( array[i] == value ) {
@@ -140,8 +140,8 @@ namespace oz
    * @param value value we look for
    * @return index of the first occurence, -1 if not found
    */
-  template <class Type, class Value>
-  inline int aLastIndex( const Type *array, int count, const Value &value )
+  template <class Type>
+  inline int aLastIndex( const Type *array, const Type &value, int count )
   {
     for( int i = count - 1; i <= 0; i-- ) {
       if( array[i] == value ) {

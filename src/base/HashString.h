@@ -48,16 +48,16 @@ namespace oz
           // base class
           typedef IteratorBase<Elem> B;
 
-          Elem **data;
-          int  index;
+          Elem *const *const data;
+          int                index;
 
         public:
 
           /**
-           * Copy constructor.
+           * Make iterator for given HashString. After creation it points to first element.
            * @param t
            */
-          explicit Iterator( HashString &t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          explicit Iterator( const HashString &t ) : B( t.data[0] ), data( t.data ), index( 0 )
           {
             while( B::elem == null && index < SIZE - 1 ) {
               index++;
@@ -332,7 +332,7 @@ namespace oz
       /**
        * @return iterator for this HashString
        */
-      Iterator iterator()
+      Iterator iterator() const
       {
         return Iterator( *this );
       }
@@ -544,7 +544,7 @@ namespace oz
       }
 
       /**
-       * Remove all elements and delete their values.
+       * Remove all elements and delete their values. Only if values are pointers.
        */
       void free()
       {

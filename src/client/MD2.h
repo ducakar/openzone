@@ -17,37 +17,17 @@ namespace client
 
   class MD2
   {
-    public:
+    private:
 
-      enum AnimEnum
-      {
-        ANIM_STAND,
-        ANIM_RUN,
-        ANIM_ATTACK,
-        ANIM_PAIN_A,
-        ANIM_PAIN_B,
-        ANIM_PAIN_C,
-        ANIM_JUMP,
-        ANIM_FLIP,
-        ANIM_SALUTE,
-        ANIM_FALLBACK,
-        ANIM_WAVE,
-        ANIM_POINT,
-        ANIM_CROUCH_STAND,
-        ANIM_CROUCH_WALK,
-        ANIM_CROUCH_ATTACK,
-        ANIM_CROUCH_PAIN,
-        ANIM_CROUCH_DEATH,
-        ANIM_DEATH_FALLBACK,
-        ANIM_DEATH_FALLFORWARD,
-        ANIM_DEATH_FALLBACKSLOW,
-        ANIM_MAX
-      };
+      static const int SHADEDOT_QUANT = 8;
+      static const int MAX_VERTS      = 2048;
+
+    public:
 
       struct Anim
       {
-        int  firstFrame;
-        int  lastFrame;
+        int   firstFrame;
+        int   lastFrame;
         float fps;
       };
 
@@ -70,40 +50,33 @@ namespace client
     private:
 
       static float anorms[][3];
+      static Vec3  vertList[MAX_VERTS];
 
-      int   nFrames;
-      int   nVerts;
-      int   nGlCmds;
+      int          nFrames;
+      int          nVerts;
 
-      Vec3  *verts;
-      int   *glCmds;
-      int   *lightNormals;
+      DArray<Vec3> verts;
+      DArray<int>  glCmds;
+      DArray<int>  lightNormals;
 
-      uint  texId;
+      uint         texId;
 
-      float animInterpol;
-
-      void animate( AnimState *anim, float time );
-      void interpolate( AnimState *anim, Vec3 *vertList );
-      void renderFrame();
+      void interpolate( AnimState *anim, float time ) const;
 
     public:
 
       static Anim animList[];
 
-      MD2();
-
-      bool load( const char *name );
-      void free();
-
-      void drawFrame( int frame );
-      void draw( AnimState *anim );
+      MD2( const char *name );
 
       void scale( float scale );
       void translate( const Vec3 &t );
       void translate( int animType, const Vec3 &t );
 
-      static uint genList( const char *path );
+      void drawFrame( int frame ) const;
+      void draw( AnimState *anim ) const;
+
+      static uint genList( const char *name );
 
   };
 

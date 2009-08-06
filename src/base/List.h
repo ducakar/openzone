@@ -127,16 +127,14 @@ namespace oz
        * @param l
        * @return
        */
-      List &operator = ( const List &l )
+      List clone()
       {
-        assert( &l != this );
+        List clone;
 
-        firstElem = null;
-
-        foreach( e, l.iterator() ) {
-          pushFirst( new Type( *e ) );
+        foreach( e, Iterator( *this ) ) {
+          clone.pushFirst( new Type( *e ) );
         }
-        return *this;
+        return clone;
       }
 
       /**

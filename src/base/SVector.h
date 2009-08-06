@@ -32,7 +32,7 @@ namespace oz
            * Make iterator for given vector. After creation it points to first element.
            * @param v
            */
-          explicit Iterator( SVector &v ) : B( v.data, v.data + v.count )
+          explicit Iterator( const SVector &v ) : B( v.data, v.data + v.count )
           {}
 
       };
@@ -98,7 +98,7 @@ namespace oz
       /**
        * @return iterator for this vector
        */
-      Iterator iterator()
+      Iterator iterator() const
       {
         return Iterator( *this );
       }
@@ -108,7 +108,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
-      Type *dataPtr()
+      operator Type* ()
       {
         return data;
       }
@@ -118,7 +118,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return constant pointer to data array
        */
-      const Type *dataPtr() const
+      operator const Type* () const
       {
         return data;
       }
@@ -190,7 +190,7 @@ namespace oz
        */
       int index( const Type &e ) const
       {
-        return aIndex( data, count, e );
+        return aIndex( data, e, count );
       }
 
       /**
@@ -200,7 +200,7 @@ namespace oz
        */
       int lastIndex( const Type &e ) const
       {
-        return aLastIndex( data, count, e );
+        return aLastIndex( data, e, count );
       }
 
       /**
@@ -408,7 +408,7 @@ namespace oz
        */
       bool exclude( const Type &e )
       {
-        int i = aIndex( data, count, e );
+        int i = aIndex( data, e, count );
 
         if( i != -1 ) {
           count--;
@@ -496,7 +496,7 @@ namespace oz
       }
 
       /**
-       * Empty the list and delete all elements - take care of memory managment. Use this function
+       * Empty the vector and delete all elements - take care of memory managment. Use this function
        * only with vector of pointer that you want to be deleted.
        */
       void free()

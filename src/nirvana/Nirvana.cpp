@@ -25,8 +25,8 @@ namespace oz
     logFile.println( "Loading Nirvana {" );
     logFile.indent();
 
-    add( new M_Walker( (Bot*) world.objects[1] ) );
-    add( new M_Walker( (Bot*) world.objects[2] ) );
+//     add( new M_Walker( (Bot*) world.objects[1] ) );
+//     add( new M_Walker( (Bot*) world.objects[2] ) );
 
     logFile.unindent();
     logFile.println( "}" );

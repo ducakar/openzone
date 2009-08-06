@@ -121,31 +121,35 @@ namespace oz
         DynObject *sObj = (DynObject*) world.objects[obj->lower];
 
         if( obj->momentum.x != 0.0f || obj->momentum.y != 0.0f ||
-            sObj->velocity.x != 0.0f || sObj->velocity.y != 0.0f )
+            !( sObj->flags & Object::DISABLED_BIT ) )
         {
           float dx  = sObj->velocity.x - obj->momentum.x;
           float dy  = sObj->velocity.y - obj->momentum.y;
           float dv2 = dx*dx + dy*dy;
 
-          obj->momentum.z += gVelocity;
-
           if( dv2 > STICK_VELOCITY ) {
             obj->momentum.x += dx * OBJ_FRICTION;
             obj->momentum.y += dy * OBJ_FRICTION;
+
+            obj->momentum.z += gVelocity;
             obj->flags |= Object::FRICTING_BIT;
+          }
+          else if( sObj->flags & Object::DISABLED_BIT ) {
+            obj->momentum.setZero();
+            return false;
           }
           else {
             obj->momentum.x = sObj->velocity.x;
             obj->momentum.y = sObj->velocity.y;
-          }
-        }
-        else {
-          if( obj->momentum.z == 0.0f && sObj->velocity.z == 0.0f ) {
-            return false;
-          }
-          else {
             obj->momentum.z += gVelocity;
           }
+        }
+        else if( obj->momentum.z > 0.0f ) {
+          obj->momentum.z += gVelocity;
+        }
+        else {
+          obj->momentum.z = 0.0f;
+          return false;
         }
       }
       else if( obj->flags & Object::ON_FLOOR_BIT ) {
@@ -161,14 +165,14 @@ namespace oz
             obj->momentum += ( gVelocity * obj->floor.z ) * obj->floor;
             obj->flags |= Object::FRICTING_BIT;
           }
-          else {
+          else if( obj->momentum.z > 0.0f ) {
             obj->momentum.x = 0.0f;
             obj->momentum.y = 0.0f;
-
-            if( obj->momentum.z <= STICK_VELOCITY ) {
-              obj->momentum.z = 0.0f;
-              return false;
-            }
+            obj->momentum.z += gVelocity;
+          }
+          else {
+            obj->momentum.setZero();
+            return false;
           }
         }
         else {
@@ -176,21 +180,21 @@ namespace oz
           float dy = obj->momentum.y;
           float dv2 = dx*dx + dy*dy;
 
-          if( dv2 > SLICK_STICK_VELOCITY ) {
+          if( dv2 > STICK_VELOCITY ) {
             obj->momentum.x *= 1.0f - FLOOR_FRICTION;
             obj->momentum.y *= 1.0f - FLOOR_FRICTION;
 
             obj->momentum += ( gVelocity * obj->floor.z ) * obj->floor;
             obj->flags |= Object::FRICTING_BIT;
           }
-          else {
+          else if( obj->momentum.z > 0.0f ) {
             obj->momentum.x = 0.0f;
             obj->momentum.y = 0.0f;
-
-            if( obj->momentum.z <= STICK_VELOCITY ) {
-              obj->momentum.z = 0.0f;
-              return false;
-            }
+            obj->momentum.z += gVelocity;
+          }
+          else {
+            obj->momentum.setZero();
+            return false;
           }
         }
       }
@@ -200,6 +204,11 @@ namespace oz
         obj->momentum.z += gVelocity;
       }
     }
+
+    obj->flags &= ~( Object::ON_FLOOR_BIT | Object::IN_WATER_BIT | Object::UNDER_WATER_BIT |
+        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
+    obj->lower = -1;
+
     return true;
   }
 
@@ -210,8 +219,11 @@ namespace oz
     if( collider.hit.obj != null && ( collider.hit.obj->flags & Object::DYNAMIC_BIT ) ) {
       DynObject *sDynObj = (DynObject*) sObj;
 
-      Vec3  momentum    = obj->momentum - sDynObj->momentum;
-      float hitMomentum = momentum * collider.hit.normal;
+      Vec3  momentum    = obj->momentum * obj->mass + sDynObj->momentum * sDynObj->mass;
+      float mass        = obj->mass + sDynObj->mass;
+      float hitMomentum = ( obj->momentum - sDynObj->momentum ) * collider.hit.normal;
+
+      momentum          /= mass;
 
       if( hitMomentum < HIT_MOMENTUM ) {
         obj->hit( &collider.hit, hitMomentum );
@@ -224,51 +236,38 @@ namespace oz
       if( collider.hit.normal.z == 0.0f ) {
         sDynObj->flags &= ~Object::DISABLED_BIT;
 
-        float ratio = obj->mass / ( obj->mass + sDynObj->mass );
-
         if( obj->flags & Object::PUSHER_BIT ) {
-          obj->momentum.x     = 0.0f;
-          obj->momentum.y     = 0.0f;
-//           obj->momentum.x     -= momentum.x * ratio;
-//           obj->momentum.y     -= momentum.y * ratio;
-          sDynObj->momentum.x += momentum.x * ratio;
-          sDynObj->momentum.y += momentum.y * ratio;
+          obj->momentum.x     = sDynObj->velocity.x;
+          obj->momentum.y     = sDynObj->velocity.y;
+          sDynObj->momentum.x = momentum.x;
+          sDynObj->momentum.y = momentum.y;
         }
         else if( collider.hit.normal.y == 0.0f ) {
-          float pushX = momentum.x * ratio;
-
-          obj->momentum.x     -= pushX;
-          sDynObj->momentum.x += pushX;
+          obj->momentum.x     = sDynObj->velocity.x;
+          sDynObj->momentum.x = momentum.x;
         }
         else {
-          float pushY = momentum.y * ratio;
-
-          obj->momentum.y     -= pushY;
-          sDynObj->momentum.y += pushY;
+          obj->momentum.y     = sDynObj->velocity.y;
+          sDynObj->momentum.y = momentum.y;
         }
       }
       else if( collider.hit.normal.z == -1.0f ) {
-        float ratio = obj->mass / ( obj->mass + sDynObj->mass );
-        float pushZ = momentum.z * ratio;
-
-        obj->momentum.z     -= pushZ;
-        sDynObj->momentum.z += pushZ;
+        obj->momentum.z     = sDynObj->velocity.z;
+        sDynObj->momentum.z = momentum.z;
 
         sDynObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
         sDynObj->lower = obj->index;
       }
       else {
+        // collider.hit.normal.z == 1.0f
         obj->lower = sDynObj->index;
 
         // only push down if not on floor or not on still object
         if( !( sDynObj->flags & Object::ON_FLOOR_BIT ) && !( sDynObj->lower >= 0 &&
             ( world.objects[sDynObj->lower]->flags & Object::DISABLED_BIT ) ) )
         {
-          float ratio = obj->mass / ( obj->mass + sDynObj->mass );
-          float pushZ = momentum.z * ratio;
-
-          obj->momentum.z     -= pushZ;
-          sDynObj->momentum.z += pushZ;
+          obj->momentum.z     = sDynObj->velocity.z;
+          sDynObj->momentum.z = momentum.z;
 
           sDynObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
         }
@@ -382,9 +381,14 @@ namespace oz
   //*             PUBLIC              *
   //***********************************
 
-  void Physics::init( float gAccel_ )
+  void Physics::setG( float gAccel_ )
   {
     gAccel = gAccel_;
+  }
+
+  void Physics::update()
+  {
+    gVelocity = gAccel * timer.frameTime;
   }
 
   void Physics::updateObj( DynObject *obj_ )
@@ -409,29 +413,21 @@ namespace oz
           obj->flags &= ~Object::DISABLED_BIT;
         }
       }
-      // disable the object if it is still and on still surface
-      else if( obj->momentum.isZero() &&
-          !( obj->flags & Object::UNDER_WATER_BIT ) &&
-          ( ( obj->flags & Object::ON_FLOOR_BIT ) ||
-          ( obj->lower >= 0 &&
-          ( (DynObject*) world.objects[obj->lower] )->momentum.isZero() ) ) )
-      {
-        obj->flags |= Object::DISABLED_BIT;
-        obj->velocity.setZero();
-      }
       // handle physics
       if( !( obj->flags & Object::DISABLED_BIT ) ) {
-        Vec3 oldPos = obj->p;
-
         if( handleObjFriction() ) {
-          obj->flags &= ~( Object::ON_FLOOR_BIT | Object::IN_WATER_BIT | Object::UNDER_WATER_BIT |
-              Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
-          obj->lower = -1;
           // if objects is still in movement or not on a still surface after friction changed its
           // velocity, handle physics
+          Vec3 oldPos = obj->p;
           handleObjMove();
+          obj->velocity = ( obj->p - oldPos ) / timer.frameTime;
         }
-        obj->velocity = ( obj->p - oldPos ) / timer.frameTime;
+        else {
+          assert( obj->momentum.isZero() );
+
+          obj->velocity.setZero();
+          obj->flags |= Object::DISABLED_BIT;
+        }
       }
     }
     else {
