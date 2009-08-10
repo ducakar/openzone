@@ -38,8 +38,16 @@ namespace client
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;
 
+      static const int   DELAYED_LISTS_MAX = 256;
+
       // cleanup interval (remove unused models)
-      static const int CLEAR_INTERVAL = 60 * 50;
+      static const int    CLEAR_INTERVAL = 60 * 50;
+
+      struct DelayedList
+      {
+        float distance;
+        uint  list;
+      };
 
       Terrain                 terra;
       Vector<BSP*>            bsps;
@@ -52,6 +60,8 @@ namespace client
       Vector<Object*>         objects;
       Vector<Object*>         blendedObjects;
       Vector<Particle*>       particles;
+
+      Vector<Structure*>      waterStructures;
 
       int                     screenX;
       int                     screenY;
@@ -69,6 +79,7 @@ namespace client
 
       bool                    isSpirit;
       bool                    isUnderWater;
+      bool                    wasUnderWater;
 
       ui::Area                root;
 
@@ -78,7 +89,7 @@ namespace client
 
     public:
 
-      bool doScreenshot;
+      bool                    doScreenshot;
 
       void init();
       void load();

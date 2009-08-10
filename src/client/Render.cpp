@@ -102,22 +102,6 @@ namespace client
 
     assert( glGetError() == GL_NO_ERROR );
 
-    glDepthFunc( GL_LEQUAL );
-    glEnable( GL_CULL_FACE );
-
-    // fog
-    glFogi( GL_FOG_MODE, GL_LINEAR );
-    glFogf( GL_FOG_START, 0.0f );
-    glFogf( GL_FOG_END, perspectiveMax );
-
-    // lighting
-    glLightModeli(  GL_LIGHT_MODEL_TWO_SIDE, false );
-    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, GLOBAL_AMBIENT );
-
-    glEnable( GL_COLOR_MATERIAL );
-    glColor4fv( WHITE );
-    glEnable( GL_LIGHT0 );
-
     particleRadius = config.get( "render.particleRadius", 0.5f );
     drawAABBs      = config.get( "render.drawAABBs",      false );
     showAim        = config.get( "render.showAim",        false );
@@ -132,7 +116,25 @@ namespace client
       bsps << new BSP( world.bsps[i] );
     }
 
-    assert( glGetError() == GL_NO_ERROR );
+    glDepthFunc( GL_LEQUAL );
+    glEnable( GL_CULL_FACE );
+
+    // fog
+    glFogi( GL_FOG_MODE, GL_LINEAR );
+    glFogf( GL_FOG_START, 0.0f );
+
+    // lighting
+    glLightModeli(  GL_LIGHT_MODEL_TWO_SIDE, false );
+    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, GLOBAL_AMBIENT );
+
+    glEnable( GL_COLOR_MATERIAL );
+    glColor4fv( WHITE );
+    glEnable( GL_LIGHT0 );
+
+    glClearColor( sky.color[0], sky.color[1], sky.color[2], sky.color[3] );
+    glFogfv( GL_FOG_COLOR, sky.color );
+    glFogf( GL_FOG_END,
+            bound( NIGHT_FOG_COEFF * sky.lightDir[2], NIGHT_FOG_DIST, 1.0f ) * perspectiveMax );
 
     logFile.unindent();
     logFile.println( "}" );
@@ -141,7 +143,6 @@ namespace client
   void Render::drawObject( Object *obj )
   {
     glPushMatrix();
-
     glTranslatef( obj->p.x, obj->p.y, obj->p.z );
 
     if( obj->flags & Object::BLEND_BIT ) {
@@ -185,7 +186,7 @@ namespace client
     }
 
     foreach( obj, sector.objects.iterator() ) {
-      if( &*obj == camera.bot ) {
+      if( !camera.isThirdPerson && &*obj == camera.bot ) {
         continue;
       }
       if( models.contains( obj->index ) ) {
@@ -240,9 +241,6 @@ namespace client
     sky.update();
     water.update();
 
-    bool wasUnderWater = isUnderWater;
-    isUnderWater = false;
-
     // drawnStructures
     if( drawnStructures.length() != world.structures.length() ) {
       drawnStructures.setSize( world.structures.length() );
@@ -273,6 +271,7 @@ namespace client
     glLoadIdentity();
     glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
 
+    glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_FOG );
     glEnable( GL_LIGHTING );
@@ -291,12 +290,18 @@ namespace client
       }
     }
     else {
-      // we have to set this every time, since sky color changes all the time
-      glClearColor( sky.color[0], sky.color[1], sky.color[2], sky.color[3] );
-      glFogfv( GL_FOG_COLOR, sky.color );
-      glFogf( GL_FOG_END,
-              bound( NIGHT_FOG_COEFF * sky.lightDir[2], NIGHT_FOG_DIST, 1.0f ) * perspectiveMax );
+      if( wasUnderWater ) {
+        // we have to set this every time, since sky color changes all the time
+        glClearColor( sky.color[0], sky.color[1], sky.color[2], sky.color[3] );
+        glFogfv( GL_FOG_COLOR, sky.color );
+        glFogf( GL_FOG_END,
+                bound( NIGHT_FOG_COEFF * sky.lightDir[2], NIGHT_FOG_DIST, 1.0f ) * perspectiveMax );
+      }
     }
+
+    wasUnderWater = isUnderWater;
+    isUnderWater  = false;
+
     // clear buffer
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
@@ -314,10 +319,16 @@ namespace client
     // draw structures
     BSP::beginRender();
 
-    bool isInWaterBrush = false;
     for( int i = 0; i < structures.length(); i++ ) {
       Structure *str = structures[i];
-      isInWaterBrush |= bsps[str->bsp]->draw( str );
+      int waterFlags = bsps[str->bsp]->draw( str );
+
+      if( waterFlags & BSP::IN_WATER_BRUSH ) {
+        isUnderWater = true;
+      }
+      if( waterFlags & BSP::DRAW_WATER ) {
+        waterStructures << str;
+      }
     }
     structures.clear();
 
@@ -359,11 +370,18 @@ namespace client
     }
     blendedObjects.clear();
 
-    // draw water
-//     for( int i = 0; i < waterObjects.length(); i++ ) {
-//       water.draw( waterObjects[i], isUnderWater );
-//     }
-//     waterObjects.clear();
+    // draw structures' water
+    glDisable( GL_CULL_FACE );
+    glEnable( GL_BLEND );
+    BSP::beginRender();
+
+    for( int i = 0; i < waterStructures.length(); i++ ) {
+      Structure *str = waterStructures[i];
+      bsps[str->bsp]->drawWater( str );
+    }
+    waterStructures.clear();
+
+    BSP::endRender();
 
     glDisable( GL_FOG );
     glDisable( GL_LIGHTING );
@@ -379,7 +397,6 @@ namespace client
     }
 
     glDisable( GL_DEPTH_TEST );
-
     glColor4fv( WHITE );
 
     ui::draw();
@@ -393,7 +410,8 @@ namespace client
       ct = time( null );
       t = *localtime( &ct );
 
-      snprintf( fileName, 1024, "screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
+      snprintf( fileName, 1024, "%sscreenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
+                config.get( "dir.home", "" ),
                 1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
       fileName[1023] = '\0';
 

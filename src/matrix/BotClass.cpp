@@ -77,6 +77,7 @@ namespace oz
     clazz->stepMax          = config->get( "stepMax", 1.0f );
 
     clazz->airControl       = config->get( "airControl", 0.05f );
+    clazz->waterControl     = config->get( "waterControl", 0.15f );
     clazz->grabDistance     = config->get( "grabDistance", 1.0f );
 
     clazz->stamina          = config->get( "stamina", 100.0f );

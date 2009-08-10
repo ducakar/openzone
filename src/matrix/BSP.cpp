@@ -183,14 +183,15 @@ namespace oz
       texFlags[i] = texture.flags;
       texTypes[i] = texture.type;
 
-      // String::length( "textures/oz/" ) == 12
+      logFile.println( "%s", name.cstr() );
+
       if( name.length() <= 12 || name == "textures/NULL" ) {
         textures[i] = -1;
       }
       else {
         name = name.substring( 12 );
         textures[i] = translator.textureIndex( name );
-//         logFile.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
+        logFile.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
       }
     }
 
@@ -202,6 +203,13 @@ namespace oz
     // rescale plane data
     for( int i = 0; i < nPlanes; i++ ) {
       planes[i].distance *= scale;
+
+      if( planes[i].distance < -maxDim ) {
+        planes[i].distance = -Math::INF;
+      }
+      else if( planes[i].distance > maxDim ) {
+        planes[i].distance = Math::INF;
+      }
     }
 
     int nNodes = lumps[QBSP_LUMP_NODES].length / sizeof( QBSPNode );
