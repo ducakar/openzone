@@ -12,6 +12,7 @@
 
 #include "Context.h"
 #include "Frustum.h"
+#include "Render.h"
 
 #ifdef __WIN32__
 static PFNGLACTIVETEXTUREPROC glActiveTexture = null;
@@ -22,6 +23,7 @@ namespace oz
 namespace client
 {
 
+  const float BSP::GAMMA_CORR        = 1.0f;
   const float BSP::WATER_TEX_STRETCH = 8.0f;
   const float BSP::WATER_TEX_BIAS    = 0.5f;
   const float BSP::WATER_ALPHA       = 0.75f;
@@ -30,27 +32,18 @@ namespace client
   float BSP::waterAlpha1;
   float BSP::waterAlpha2;
 
-  BSP::BSP( oz::BSP *bsp )
-  {
-    textures = null;
-    lightMaps = null;
+  const Structure *BSP::str;
+  Vec3  BSP::camPos;
+  int   BSP::waterFlags;
 
-    init( bsp );
-  }
-
-  BSP::~BSP()
-  {
-    free();
-  }
-
-  const oz::BSP::Leaf *BSP::getLeaf( const Vec3 &p ) const
+  int BSP::getLeaf() const
   {
     int nodeIndex = 0;
     do {
       oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
       oz::BSP::Plane &plane = bsp->planes[node.plane];
 
-      if( ( p * plane.normal - plane.distance ) < 0.0f ) {
+      if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
         nodeIndex = node.back;
       }
       else {
@@ -59,10 +52,10 @@ namespace client
     }
     while( nodeIndex >= 0 );
 
-    return &bsp->leafs[~nodeIndex];
+    return ~nodeIndex;
   }
 
-  bool BSP::isInWaterBrush( const Vec3 &p, const oz::BSP::Leaf *leaf ) const
+  void BSP::checkInWaterBrush( const oz::BSP::Leaf *leaf ) const
   {
     for( int i = 0; i < leaf->nBrushes; i++ ) {
       oz::BSP::Brush *brush = &bsp->brushes[ bsp->leafBrushes[leaf->firstBrush + i] ];
@@ -71,110 +64,173 @@ namespace client
         for( int i = 0; i < brush->nSides; i++ ) {
           oz::BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-          float dist = p * plane.normal - plane.distance;
-
-          if( dist > EPSILON ) {
+          if( ( camPos * plane.normal - plane.distance ) >= 0.0f ) {
             goto nextBrush;
           }
         }
-        return true;
+        waterFlags |= IN_WATER_BRUSH;
+        return;
       }
       nextBrush:;
     }
-    return false;
   }
 
-  void BSP::drawFace( int faceIndex ) const
+  void BSP::drawFace( const oz::BSP::Face *face ) const
   {
-    oz::BSP::Face &face = bsp->faces[faceIndex];
+    if( face->content & oz::BSP::WATER_BIT ) {
+      waterFlags |= DRAW_WATER;
+      return;
+    }
 
-    if( face.content & oz::BSP::WATER_BIT ) {
-      glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                       (float*) bsp->vertices[face.firstVertex].p );
+    glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
+                     (float*) bsp->vertices[face->firstVertex].p );
 
-      glBindTexture( GL_TEXTURE_2D, textures[face.texture] );
+    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
+                       bsp->vertices[face->firstVertex].texCoord );
+
+    if( lightMaps != null ) {
+      glActiveTexture( GL_TEXTURE1 );
+
+      glEnable( GL_TEXTURE_2D );
+      glBindTexture( GL_TEXTURE_2D, lightMaps[face->lightmap] );
       glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                         bsp->vertices[face.firstVertex].texCoord );
+                         bsp->vertices[face->firstVertex].lightmapCoord );
+    }
 
-      if( lightMaps != null ) {
-        glActiveTexture( GL_TEXTURE1 );
+    glNormal3fv( face->normal );
+    glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
 
-        glEnable( GL_TEXTURE_2D );
-        glBindTexture( GL_TEXTURE_2D, lightMaps[face.lightmap] );
-        glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                           bsp->vertices[face.firstVertex].lightmapCoord );
-      }
+    if( lightMaps != null ) {
+      glActiveTexture( GL_TEXTURE0 );
+    }
+  }
 
-      glNormal3fv( face.normal );
-      glEnable( GL_BLEND );
-      glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha1 );
-      glDrawElements( GL_TRIANGLES, face.nIndices, GL_UNSIGNED_INT, &bsp->indices[face.firstIndex] );
-      glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+  void BSP::drawFaceWater( const oz::BSP::Face *face ) const
+  {
+    glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
+                     (float*) bsp->vertices[face->firstVertex].p );
 
-      if( lightMaps != null ) {
-        glActiveTexture( GL_TEXTURE0 );
-      }
+    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
+                       bsp->vertices[face->firstVertex].texCoord );
 
-      glBindTexture( GL_TEXTURE_2D, textures[face.texture] );
+    if( lightMaps != null ) {
+      glActiveTexture( GL_TEXTURE1 );
+
+      glEnable( GL_TEXTURE_2D );
+      glBindTexture( GL_TEXTURE_2D, lightMaps[face->lightmap] );
       glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                         bsp->vertices[face.firstVertex].texCoord );
+                         bsp->vertices[face->firstVertex].lightmapCoord );
+    }
 
-      if( lightMaps != null ) {
-        glActiveTexture( GL_TEXTURE1 );
+    glNormal3fv( face->normal );
+    glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha1 );
+    glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
+    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
-        glEnable( GL_TEXTURE_2D );
-        glBindTexture( GL_TEXTURE_2D, lightMaps[face.lightmap] );
-        glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                           bsp->vertices[face.firstVertex].lightmapCoord );
+    if( lightMaps != null ) {
+      glActiveTexture( GL_TEXTURE0 );
+    }
+
+    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
+                       bsp->vertices[face->firstVertex].texCoord );
+
+    if( lightMaps != null ) {
+      glActiveTexture( GL_TEXTURE1 );
+
+      glEnable( GL_TEXTURE_2D );
+      glBindTexture( GL_TEXTURE_2D, lightMaps[face->lightmap] );
+      glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
+                         bsp->vertices[face->firstVertex].lightmapCoord );
+    }
+
+    glMatrixMode( GL_TEXTURE );
+    glLoadMatrixf( Mat44( 1.0f,           0.0f,           0.0f, 0.0f,
+                          0.0f,           1.0f,           0.0f, 0.0f,
+                          0.0f,           0.0f,           1.0f, 0.0f,
+                          WATER_TEX_BIAS, WATER_TEX_BIAS, 0.0f, 1.0f ) );
+
+    glNormal3fv( face->normal );
+
+    glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha2 );
+    glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
+
+    glLoadIdentity();
+    glMatrixMode( GL_MODELVIEW );
+    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+
+    if( lightMaps != null ) {
+      glActiveTexture( GL_TEXTURE0 );
+    }
+  }
+
+  void BSP::drawNode( int nodeIndex )
+  {
+    if( nodeIndex >= 0 ) {
+      oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
+      oz::BSP::Plane &plane = bsp->planes[node.plane];
+
+      if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
+        drawNode( node.back );
+        drawNode( node.front );
       }
-
-      glMatrixMode( GL_TEXTURE );
-      glLoadMatrixf( Mat44( 1.0f,           0.0f,           0.0f, 0.0f,
-                            0.0f,           1.0f,           0.0f, 0.0f,
-                            0.0f,           0.0f,           1.0f, 0.0f,
-                            WATER_TEX_BIAS, WATER_TEX_BIAS, 0.0f, 1.0f ) );
-
-      glNormal3fv( face.normal );
-      glEnable( GL_BLEND );
-
-      glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha2 );
-      glDrawElements( GL_TRIANGLES, face.nIndices, GL_UNSIGNED_INT, &bsp->indices[face.firstIndex] );
-
-      glLoadIdentity();
-      glMatrixMode( GL_MODELVIEW );
-      glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-
-      if( lightMaps != null ) {
-        glActiveTexture( GL_TEXTURE0 );
+      else {
+        drawNode( node.front );
+        drawNode( node.back );
       }
     }
     else {
-      glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                       (float*) bsp->vertices[face.firstVertex].p );
+      oz::BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
-      glBindTexture( GL_TEXTURE_2D, textures[face.texture] );
-      glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                         bsp->vertices[face.firstVertex].texCoord );
+      if( frustum.isVisible( leaf + str->p ) ) {
+        for( int i = 0; i < leaf.nFaces; i++ ) {
+          int faceIndex = bsp->leafFaces[leaf.firstFace + i];
 
-      if( lightMaps != null ) {
-        glActiveTexture( GL_TEXTURE1 );
-
-        glEnable( GL_TEXTURE_2D );
-        glBindTexture( GL_TEXTURE_2D, lightMaps[face.lightmap] );
-        glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                           bsp->vertices[face.firstVertex].lightmapCoord );
-      }
-
-      glNormal3fv( face.normal );
-      glDrawElements( GL_TRIANGLES, face.nIndices, GL_UNSIGNED_INT, &bsp->indices[face.firstIndex] );
-
-      if( lightMaps != null ) {
-        glActiveTexture( GL_TEXTURE0 );
+          if( !drawnFaces.get( faceIndex ) ) {
+            drawFace( &bsp->faces[faceIndex] );
+            drawnFaces.set( faceIndex );
+          }
+        }
       }
     }
   }
 
-  void BSP::init( oz::BSP *bsp_ )
+  void BSP::drawNodeWater( int nodeIndex )
+  {
+    if( nodeIndex >= 0 ) {
+      oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
+      oz::BSP::Plane &plane = bsp->planes[node.plane];
+
+      if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
+        drawNodeWater( node.back );
+        drawNodeWater( node.front );
+      }
+      else {
+        drawNodeWater( node.front );
+        drawNodeWater( node.back );
+      }
+    }
+    else {
+      oz::BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
+
+      if( frustum.isVisible( leaf + str->p ) ) {
+        for( int i = 0; i < leaf.nFaces; i++ ) {
+          int faceIndex = bsp->leafFaces[leaf.firstFace + i];
+
+          if( !drawnFaces.get( faceIndex ) ) {
+            drawFaceWater( &bsp->faces[faceIndex] );
+            drawnFaces.set( faceIndex );
+          }
+        }
+      }
+    }
+  }
+
+  BSP::BSP( oz::BSP *bsp_ )
   {
     bsp = bsp_;
 
@@ -203,7 +259,7 @@ namespace client
         ubyte *bits = (ubyte*) bsp->lightmaps[i].bits;
 
         for( int j = 0; j < oz::BSP::LIGHTMAP_SIZE; j++ ) {
-          bits[j] += (ubyte) ( ( 255 - bits[j] ) * BSP_GAMMA_CORR );
+          bits[j] += (ubyte) ( ( 255 - bits[j] ) * GAMMA_CORR );
         }
         lightMaps[i] = context.createTexture( bits,
                                               oz::BSP::LIGHTMAP_DIM,
@@ -238,11 +294,27 @@ namespace client
     logFile.println( "}" );
   }
 
-  bool BSP::draw( const Structure *str )
+  BSP::~BSP()
   {
-    glPushMatrix();
-    glTranslatef( str->p.x, str->p.y, str->p.z );
-    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
+    for( int i = 0; i < bsp->nTextures; i++ ) {
+      if( bsp->textures[i] >= 0 ) {
+        context.releaseTexture( bsp->textures[i] );
+      }
+    }
+    delete[] textures;
+
+    if( lightMaps != null ) {
+      for( int i = 0; i < bsp->nLightmaps; i++ ) {
+        context.freeTexture( lightMaps[i] );
+      }
+      delete[] lightMaps;
+    }
+  }
+
+  int BSP::draw( const Structure *str_ )
+  {
+    str = str_;
+    camPos = camera.p - str->p;
 
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
@@ -256,30 +328,33 @@ namespace client
 
       glActiveTexture( GL_TEXTURE0 );
     }
+    glPushMatrix();
+    glTranslatef( str->p.x, str->p.y, str->p.z );
+    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
 
+    waterFlags = 0;
     drawnFaces = hiddenFaces;
 
-    Vec3 relPos = camera.p - str->p;
-    const oz::BSP::Leaf *leaf = getLeaf( relPos );
-    bool isInWater = isInWaterBrush( relPos, leaf );
+    int leafIndex = getLeaf();
+    checkInWaterBrush( &bsp->leafs[leafIndex] );
 
     if( bsp->visual.bitsets != null ) {
-//       int    cluster = bsp->leafs[ getLeafIndex( camera.p ) ].cluster;
-//       printf( "%d\n", getLeafIndex( camera.p ) );
-//       Bitset &bitset = bsp->visual.bitsets[cluster];
+      int    cluster = bsp->leafs[leafIndex].cluster;
+      Bitset &bitset = bsp->visual.bitsets[cluster];
 
       for( int i = 0; i < bsp->nLeafs; i++ ) {
         oz::BSP::Leaf &leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
-//         if( ( cluster < 0 || bitset.get( leaf.cluster ) ) &&
-//             frustum.isVisible( rotetedLeaf + str->p ) )
+        if( ( cluster < 0 || bitset.get( cluster ) ) &&
+            frustum.isVisible( rotatedLeaf + str->p ) )
         {
           for( int j = 0; j < leaf.nFaces; j++ ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+            const oz::BSP::Face &face = bsp->faces[faceIndex];
 
             if( !drawnFaces.get( faceIndex ) ) {
-              drawFace( faceIndex );
+              drawFace( &face );
               drawnFaces.set( faceIndex );
             }
           }
@@ -294,20 +369,90 @@ namespace client
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
           for( int j = 0; j < leaf.nFaces; j++ ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+            const oz::BSP::Face &face = bsp->faces[faceIndex];
 
             if( !drawnFaces.get( faceIndex ) ) {
-              drawFace( faceIndex );
+              drawFace( &face );
               drawnFaces.set( faceIndex );
             }
           }
         }
       }
     }
+    glActiveTexture( GL_TEXTURE1 );
     glPopMatrix();
 
-    glActiveTexture( GL_TEXTURE1 );
+    return waterFlags;
+  }
 
-    return isInWater;
+  void BSP::drawWater( const Structure *str_ )
+  {
+    str = str_;
+    camPos = camera.p - str->p;
+
+    if( lightMaps != null ) {
+      glActiveTexture( GL_TEXTURE1 );
+      glEnable( GL_TEXTURE_2D );
+
+      glActiveTexture( GL_TEXTURE0 );
+    }
+    else {
+      glActiveTexture( GL_TEXTURE1 );
+      glDisable( GL_TEXTURE_2D );
+
+      glActiveTexture( GL_TEXTURE0 );
+    }
+    glPushMatrix();
+    glTranslatef( str->p.x, str->p.y, str->p.z );
+    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
+
+    drawnFaces = hiddenFaces;
+
+    int leafIndex = getLeaf();
+
+    if( bsp->visual.bitsets != null ) {
+      int    cluster = bsp->leafs[leafIndex].cluster;
+      Bitset &bitset = bsp->visual.bitsets[cluster];
+
+      for( int i = 0; i < bsp->nLeafs; i++ ) {
+        oz::BSP::Leaf &leaf = bsp->leafs[i];
+        Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
+
+        if( ( cluster < 0 || bitset.get( cluster ) ) &&
+            frustum.isVisible( rotatedLeaf + str->p ) )
+        {
+          for( int j = 0; j < leaf.nFaces; j++ ) {
+            int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+            const oz::BSP::Face &face = bsp->faces[faceIndex];
+
+            if( ( face.content & oz::BSP::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
+              drawFaceWater( &face );
+              drawnFaces.set( faceIndex );
+            }
+          }
+        }
+      }
+    }
+    else {
+      for( int i = 0; i < bsp->nLeafs; i++ ) {
+        oz::BSP::Leaf &leaf = bsp->leafs[i];
+        Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
+
+        if( frustum.isVisible( rotatedLeaf + str->p ) ) {
+          for( int j = 0; j < leaf.nFaces; j++ ) {
+            int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+            const oz::BSP::Face &face = bsp->faces[faceIndex];
+
+            if( ( face.content & oz::BSP::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
+              drawFaceWater( &face );
+              drawnFaces.set( faceIndex );
+            }
+          }
+        }
+      }
+    }
+    glActiveTexture( GL_TEXTURE1 );
+    glPopMatrix();
   }
 
   uint BSP::genList()
@@ -325,7 +470,7 @@ namespace client
         int faceIndex = bsp->leafFaces[leaf.firstFace + j];
 
         if( !drawnFaces.get( faceIndex ) ) {
-          drawFace( faceIndex );
+          drawFace( &bsp->faces[faceIndex] );
           drawnFaces.set( faceIndex );
         }
       }
@@ -338,6 +483,7 @@ namespace client
   void BSP::beginRender()
   {
     glFrontFace( GL_CW );
+
     glEnableClientState( GL_VERTEX_ARRAY );
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
   }
@@ -346,38 +492,19 @@ namespace client
   {
     glDisableClientState( GL_VERTEX_ARRAY );
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-    glFrontFace( GL_CCW );
 
     glActiveTexture( GL_TEXTURE1 );
     glDisable( GL_TEXTURE_2D );
     glActiveTexture( GL_TEXTURE0 );
 
+    glFrontFace( GL_CCW );
+
     // update water
-    waterPhi = Math::mod( waterPhi + SDL_GetTicks() * 0.000003f , Math::_2_PI );
-    float ratio = ( 2.5f + Math::sin( waterPhi ) ) / 5.0f;
+    waterPhi = timer.millis / 1000.0f;
+    float ratio = ( 0.5f + Math::sin( 1.5f * waterPhi ) / 2.0f );
 
     waterAlpha2 = ratio * WATER_ALPHA;
     waterAlpha1 = ( waterAlpha2 * ( 1 - ratio ) ) / ( ratio * ( 1 - waterAlpha2 ) );
-  }
-
-  void BSP::free()
-  {
-    if( textures != null ) {
-      for( int i = 0; i < bsp->nTextures; i++ ) {
-        if( bsp->textures[i] >= 0 ) {
-          context.releaseTexture( bsp->textures[i] );
-        }
-      }
-      delete[] textures;
-      textures = null;
-    }
-    if( lightMaps != null ) {
-      for( int i = 0; i < bsp->nLightmaps; i++ ) {
-        context.freeTexture( lightMaps[i] );
-      }
-      delete[] lightMaps;
-      lightMaps = null;
-    }
   }
 
 }

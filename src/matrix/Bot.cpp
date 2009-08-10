@@ -62,7 +62,7 @@ namespace oz
     }
 
     if( ( keys & KEY_JUMP ) && !( oldKeys & KEY_JUMP ) &&
-        ( isGrounded || ( flags & Object::UNDER_WATER_BIT ) ) &&
+        ( isGrounded || ( ( flags | oldFlags ) & Object::UNDER_WATER_BIT ) ) &&
         stamina >= clazz.staminaJumpDrain )
     {
       flags &= ~DISABLED_BIT;
@@ -108,7 +108,12 @@ namespace oz
         ( state & RUNNING_BIT ) ? clazz.runMomentum : clazz.walkMomentum;
 
     if( ( !isGrounded && !isClimbing ) || ( flags & ON_SLICK_BIT ) ) {
-      velocity *= clazz.airControl;
+      if( isSwimming ) {
+        velocity *= clazz.waterControl;
+      }
+      else {
+        velocity *= clazz.airControl;
+      }
     }
 
     Vec3 move = Vec3::zero();
@@ -192,7 +197,7 @@ namespace oz
 
     // TODO: better stepping algoriths (stepping per time unit limit + vertial surface should not
     // be required. Should try step up-forward-down. Should hit a floor surface then.)
-    if( ( state & STEPPING_BIT ) && !isClimbing ) {
+    if( ( state & STEPPING_BIT ) && !isClimbing && !isSwimming ) {
       Vec3 desiredMove = momentum * timer.frameTime;
 
       collider.translate( *this, desiredMove, this );
@@ -276,9 +281,9 @@ namespace oz
 
   void Bot::onHit( const Hit *hit, float hitMomentum )
   {
-//     if( hitMomentum <= -8.0f ) {
+    if( hitMomentum <= -8.0f ) {
       damage += hitMomentum;
-//     }
+    }
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       addEvent( SND_LAND );
     }

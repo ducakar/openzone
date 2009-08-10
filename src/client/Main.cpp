@@ -88,7 +88,7 @@ namespace client
     home = home + "\\";
 #else
     const char *homeVar = getenv( "HOME" );
-    String home = String( homeVar == null ? OZ_RC_DIR "/" : homeVar + String( "/" OZ_RC_DIR "/" ) );
+    String home = String( homeVar == null ? OZ_RC_DIR "/" : homeVar + String( "/" OZ_RC_DIR ) );
 
     struct stat homeDirStat;
     if( stat( home.cstr(), &homeDirStat ) != 0 ) {
@@ -100,7 +100,10 @@ namespace client
       }
       printf( " OK\n" );
     }
+    home = home + "/";
 #endif
+
+    config.add( "dir.home", home );
 
 #ifdef OZ_LOG_FILE
     String logPath = home + OZ_LOG_FILE;
@@ -145,7 +148,7 @@ namespace client
 
     initFlags |= INIT_SDL;
 
-    const char *data = config.get( "data", "/usr/share/openzone" );
+    const char *data = config.get( "dir.data", "/usr/share/openzone" );
 
     logFile.print( "Setting working directory '%s' ...", data );
 

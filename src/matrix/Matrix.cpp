@@ -37,7 +37,7 @@ namespace oz
 
     synapse.put( new Structure( Vec3( 47.0f, -33.0f, 82.5f ), translator.bspIndex( "castle" ), Structure::R0 ) );
 
-    synapse.put( translator.createObject( "Lara", Vec3( 42, -45, 80 ) ) );
+    synapse.put( translator.createObject( "Knight", Vec3( 42, -45, 80 ) ) );
     //world.add( new B_Spirit( Vec3( 40, -70, 90 ), 0.0f, 0.0f ) );
 
     synapse.put( translator.createObject( "Knight", Vec3( 40, -35, 85 ) ) );

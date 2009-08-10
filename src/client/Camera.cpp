@@ -10,12 +10,17 @@
 
 #include "Camera.h"
 
+#include "matrix/Collider.h"
+
 namespace oz
 {
 namespace client
 {
 
   Camera camera;
+
+  const float Camera::THIRD_PERSON_DIST      = 2.2f;
+  const float Camera::THIRD_PERSON_CLIP_DIST = 0.2f;
 
   Camera::Camera()
   {
@@ -35,6 +40,7 @@ namespace client
 
   void Camera::init()
   {
+    isThirdPerson = config.get( "render.camera.thirdPerson", false );
     smoothCoef = config.get( "render.camera.smoothCoef", 0.3f );
     smoothCoef_1 = 1.0f - smoothCoef;
   }
@@ -50,18 +56,40 @@ namespace client
     if( bot == null ) {
       botIndex = -1;
       rot = relRot;
+
+      rotMat = rot.rotMat44();
+      rotTMat = ~rotMat;
+
+      right = rotMat.x();
+      at = rotMat.y();
+      up = rotMat.z();
     }
     else {
-      p = ( bot->p + bot->camPos ) * smoothCoef_1 + oldP * smoothCoef;
       rot = Quat::rotZYX( Math::rad( bot->h + h ), 0.0f, Math::rad( bot->v + v ) );
+
+      rotMat = rot.rotMat44();
+      rotTMat = ~rotMat;
+
+      right = rotMat.x();
+      at = rotMat.y();
+      up = rotMat.z();
+
+      if( isThirdPerson ) {
+        Vec3 origin = bot->p + bot->camPos;
+        Vec3 offset = -at * THIRD_PERSON_DIST;
+
+        collider.translate( origin, offset, bot );
+        offset *= collider.hit.ratio;
+        offset += at * THIRD_PERSON_CLIP_DIST;
+
+        p.x = origin.x + offset.x;
+        p.y = origin.y + offset.y;
+        p.z = ( origin.z + offset.z ) * smoothCoef_1 + oldP.z * smoothCoef;
+      }
+      else {
+        p = ( bot->p + bot->camPos ) * smoothCoef_1 + oldP * smoothCoef;
+      }
     }
-
-    rotMat = rot.rotMat44();
-    rotTMat = ~rotMat;
-
-    right = rotMat.x();
-    at = rotMat.y();
-    up = rotMat.z();
   }
 
 }
