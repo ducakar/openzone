@@ -29,8 +29,8 @@ namespace oz
 
     Vector<int> structures;
 
-    DList<Object, 0>    objects;
-    DList<Particle, 0>  particles;
+    DList<Object, 0>   objects;
+    DList<Particle, 0> particles;
   };
 
   class World : public Bounds

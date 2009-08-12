@@ -15,8 +15,8 @@ namespace oz
 
   Object::~Object()
   {
-    assert( dim.x <= AABB::REAL_MAX_DIMXY );
-    assert( dim.y <= AABB::REAL_MAX_DIMXY );
+    assert( dim.x <= AABB::REAL_MAX_DIM );
+    assert( dim.y <= AABB::REAL_MAX_DIM );
 
     events.free();
   }
@@ -35,7 +35,12 @@ namespace oz
     p        = istream->readVec3();
     flags    = istream->readInt();
     oldFlags = istream->readInt();
-    damage   = istream->readFloat();
+    life     = istream->readFloat();
+
+    int nEvents = istream->readInt();
+    for( int i = 0; i < nEvents; i++ ) {
+      addEvent( istream->readInt(), istream->readFloat() );
+    }
   }
 
   void Object::writeFull( OutputStream *ostream )
@@ -43,7 +48,13 @@ namespace oz
     ostream->writeVec3( p );
     ostream->writeInt( flags );
     ostream->writeInt( oldFlags );
-    ostream->writeFloat( damage );
+    ostream->writeFloat( life );
+
+    ostream->writeInt( events.length() );
+    foreach( event, events.iterator() ) {
+      ostream->writeInt( event->id );
+      ostream->writeFloat( event->intensity );
+    }
   }
 
   void Object::readUpdate( InputStream* )

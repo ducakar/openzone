@@ -190,7 +190,7 @@ namespace oz
       }
       momentum += desiredMomentum;
 
-      if( ( state & RUNNING_BIT ) && ( isGrounded || isSwimming ) ) {
+      if( ( state & RUNNING_BIT ) && ( isGrounded || isSwimming || isClimbing ) ) {
         stamina -= clazz.staminaRunDrain;
       }
     }
@@ -279,18 +279,15 @@ namespace oz
     keys = 0;
   }
 
-  void Bot::onHit( const Hit *hit, float hitMomentum )
+  void Bot::onHit( const Hit *hit, float )
   {
-    if( hitMomentum <= -8.0f ) {
-      damage += hitMomentum;
-    }
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       addEvent( SND_LAND );
     }
   }
 
   Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f ),
-      grabObjIndex( -1 ), deathTime( 0.0f ), weapon( null )
+      grabObjIndex( -1 ), weapon( null ), deathTime( 0.0f )
   {}
 
   void Bot::readUpdates( InputStream *istream )
@@ -298,7 +295,7 @@ namespace oz
     p            = istream->readVec3();
     flags        = istream->readInt();
     oldFlags     = istream->readInt();
-    damage       = istream->readFloat();
+    life         = istream->readFloat();
 
     velocity     = istream->readVec3();
     momentum     = istream->readVec3();
@@ -320,7 +317,7 @@ namespace oz
     ostream->writeVec3( p );
     ostream->writeInt( flags );
     ostream->writeInt( oldFlags );
-    ostream->writeFloat( damage );
+    ostream->writeFloat( life );
 
     ostream->writeVec3( velocity );
     ostream->writeVec3( momentum );
@@ -339,62 +336,49 @@ namespace oz
 
   void Bot::readFull( InputStream *istream )
   {
-    p            = istream->readVec3();
-    flags        = istream->readInt();
-    oldFlags     = istream->readInt();
-    damage       = istream->readFloat();
-
-    velocity     = istream->readVec3();
-    momentum     = istream->readVec3();
+    DynObject::readFull( istream );
 
     state        = istream->readInt();
-    anim         = (AnimEnum) istream->readByte();
+    anim         = (AnimEnum) istream->readInt();
     h            = istream->readFloat();
     v            = istream->readFloat();
 
-    stamina      = istream->readFloat();
     grabObjIndex = istream->readInt();
 
-    int nItems = istream->readInt();
-    for( int i = 0; i < nItems; i++ ) {
-      const String &name = istream->readString();
-      items << translator.createObject( name, istream );
-    }
+    stamina      = istream->readFloat();
+    waterTime    = istream->readFloat();
+    deathTime    = istream->readFloat();
 
-    int nEvents = istream->readInt();
-    for( int i = 0; i < nEvents; i++ ) {
-      addEvent( istream->readInt() );
-    }
+//     int nItems = istream->readInt();
+//     for( int i = 0; i < nItems; i++ ) {
+//       const String &name = istream->readString();
+//       items << translator.createObject( name, istream );
+//     }
+
+    BotClass *clazz = (BotClass*) type;
+    dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
   }
 
   void Bot::writeFull( OutputStream *ostream )
   {
-    ostream->writeVec3( p );
-    ostream->writeInt( flags );
-    ostream->writeInt( oldFlags );
-    ostream->writeFloat( damage );
-
-    ostream->writeVec3( velocity );
-    ostream->writeVec3( momentum );
+    DynObject::writeFull( ostream );
 
     ostream->writeInt( state );
-    ostream->writeByte( anim );
+    ostream->writeInt( anim );
     ostream->writeFloat( h );
     ostream->writeFloat( v );
 
-    ostream->writeFloat( stamina );
     ostream->writeInt( grabObjIndex );
 
-    ostream->writeInt( items.length() );
-    foreach( item, items.iterator() ) {
-      ostream->writeString( ( *item )->type->name );
-      ( *item )->writeFull( ostream );
-    }
+    ostream->writeFloat( stamina );
+    ostream->writeFloat( waterTime );
+    ostream->writeFloat( deathTime );
 
-    ostream->writeInt( events.length() );
-    foreach( event, events.iterator() ) {
-      ostream->writeInt( event->id );
-    }
+//     ostream->writeInt( items.length() );
+//     foreach( item, items.iterator() ) {
+//       ostream->writeString( ( *item )->type->name );
+//       ( *item )->writeFull( ostream );
+//     }
   }
 
 }

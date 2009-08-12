@@ -13,6 +13,6 @@
 namespace oz
 {
 
-//   const float EPSILON = 0.0009765625;
+  const float EPSILON = 0.0009765625;
 
 }

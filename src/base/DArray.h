@@ -49,7 +49,7 @@ namespace oz
       /**
        * Create null array.
        */
-      explicit DArray() : count( 0 )
+      explicit DArray() : data( null ), count( 0 )
       {}
 
       /**
@@ -299,8 +299,9 @@ namespace oz
       void clear()
       {
         if( count != 0 ) {
-          count = 0;
           delete[] data;
+          data = null;
+          count = 0;
         }
       }
 

@@ -42,7 +42,7 @@ namespace ui
             ( camera.bot->flags & Object::DISABLED_BIT ) != 0,
             ( camera.bot->flags & Object::ON_FLOOR_BIT ) != 0,
             camera.bot->lower >= 0,
-            ( camera.bot->flags & Object::HIT_BIT ) != 0,
+            ( !camera.bot->events.isEmpty() ),
             ( camera.bot->flags & Object::FRICTING_BIT ) != 0,
             ( camera.bot->flags & Object::IN_WATER_BIT ) != 0,
             ( camera.bot->flags & Object::UNDER_WATER_BIT ) != 0,

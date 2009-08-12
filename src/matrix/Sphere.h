@@ -13,7 +13,7 @@ namespace oz
 
   struct Sphere
   {
-    Vec3   p;
+    Vec3  p;
     float r;
 
     explicit Sphere()

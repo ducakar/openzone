@@ -14,7 +14,7 @@ namespace oz
 {
 
   // TODO Vehicle
-  class Vehicle : Bot
+  class Vehicle : public Bot
   {
   };
 

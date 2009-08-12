@@ -10,9 +10,8 @@
 
 namespace oz
 {
-  // 1 mm, should be enough for 8 km x 8 km map (experimentally)
-//   extern const float EPSILON;
-# define EPSILON 0.0009765625f
+  // ~1 mm, should be enough for 8 km x 8 km map (experimentally)
+  extern const float EPSILON;
 
 }
 

@@ -103,10 +103,10 @@ namespace oz
 
       float dist = globalStartPos * plane.normal - plane.distance;
 
-      if( dist > EPSILON ) {
+      if( dist > 2.0f * EPSILON ) {
         return testPointNode( node.front );
       }
-      else if( dist < -EPSILON ) {
+      else if( dist < -2.0f * EPSILON ) {
         return testPointNode( node.back );
       }
       else {
@@ -240,11 +240,8 @@ namespace oz
     float startDist = globalStartPos * quad.normal[0] - quad.distance[0];
     float endDist   = globalEndPos   * quad.normal[0] - quad.distance[0];
 
-    if( startDist >= 0.0f && endDist <= EPSILON ) {
-      float ratio =
-          startDist > endDist ?
-          max( startDist - EPSILON, 0.0f ) / ( startDist - endDist ) :
-          0.0f;
+    if( endDist <= EPSILON && endDist <= startDist ) {
+      float ratio = startDist / ( startDist - endDist + EPSILON );
 
       float impactX = globalStartPos.x + ratio * move.x;
       float impactY = globalStartPos.y + ratio * move.y;
@@ -252,7 +249,7 @@ namespace oz
       if( impactX - pX <= impactY - pY0 &&
           pX0 <= impactX && impactX <= pX1 &&
           pY0 <= impactY && impactY <= pY1 &&
-          ratio < hit.ratio )
+          Math::abs( ratio ) < Math::abs( hit.ratio ) )
       {
         hit.ratio   = ratio;
         hit.normal  = quad.normal[0];
@@ -266,11 +263,8 @@ namespace oz
     startDist = globalStartPos * quad.normal[1] - quad.distance[1];
     endDist   = globalEndPos   * quad.normal[1] - quad.distance[1];
 
-    if( startDist >= 0.0f && endDist <= EPSILON ) {
-      float ratio =
-          startDist > endDist ?
-          max( startDist - EPSILON, 0.0f ) / ( startDist - endDist ) :
-          0.0f;
+    if( endDist <= EPSILON && endDist <= startDist ) {
+      float ratio = startDist / ( startDist - endDist + EPSILON );
 
       float impactX = globalStartPos.x + ratio * move.x;
       float impactY = globalStartPos.y + ratio * move.y;
@@ -278,7 +272,7 @@ namespace oz
       if( impactX - pX0 >= impactY - pY &&
           pX0 <= impactX && impactX <= pX1 &&
           pY0 <= impactY && impactY <= pY1 &&
-          ratio < hit.ratio )
+          Math::abs( ratio ) < Math::abs( hit.ratio ) )
       {
         hit.ratio   = ratio;
         hit.normal  = quad.normal[1];
@@ -294,6 +288,10 @@ namespace oz
   // finds out if Ray-World bounding box collision occurs and the time when it occurs
   void Collider::trimPointVoid()
   {
+    float  minRatio       = -1.0f;
+    float  maxRatio       =  1.0f;
+    const Vec3 *tmpNormal = null;
+
     for( int i = 0; i < 3; i++ ) {
       int  iPos    = move[i] >= 0.0f;
       const Vec3 &normal = bbNormals[i * 2 + iPos];
@@ -301,25 +299,20 @@ namespace oz
       float startDist = world.maxs[i] + globalStartPos[i] * normal[i];
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i];
 
-      if( endDist <= EPSILON ) {
-        if( startDist > endDist ) {
-          float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist );
+      if( endDist <= EPSILON && endDist <= startDist ) {
+        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
-          if( ratio < hit.ratio ) {
-            hit.ratio  = ratio;
-            hit.normal = normal;
-            hit.obj    = null;
-          }
-        }
-        else {
-          hit.ratio  = 0.0f;
-          hit.normal = normal;
-          hit.obj    = null;
+        if( ratio > minRatio ) {
+          minRatio  = ratio;
+          tmpNormal = &normal;
         }
       }
     }
-
-    trace.fromPointMove( globalStartPos, move * hit.ratio, EPSILON );
+    if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
+      hit.ratio   = minRatio;
+      hit.normal  = *tmpNormal;
+      hit.obj     = null;
+    }
   }
 
   // finds out if Ray-AABB collision occurs and the time when it occurs
@@ -344,7 +337,7 @@ namespace oz
           return;
         }
       }
-      else if( endDist <= startDist ) {
+      else if( startDist >= 0.0f && endDist <= startDist ) {
         float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
@@ -353,13 +346,10 @@ namespace oz
         }
       }
     }
-
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio  = minRatio;
       hit.normal = *tmpNormal;
       hit.obj    = sObj;
-
-      trace.fromPointMove( globalStartPos, move * hit.ratio, EPSILON );
     }
   }
 
@@ -384,7 +374,7 @@ namespace oz
           return;
         }
       }
-      else if( endDist <= startDist ) {
+      else if( startDist >= 0.0f && endDist <= startDist ) {
         float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
@@ -394,14 +384,12 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
-      float newRatio = max( leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio ), 0.0f );
+      float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
 
       if( newRatio < hit.ratio ) {
         hit.ratio  = newRatio;
         hit.normal = toAbsoluteCS( *tmpNormal );
         hit.obj    = null;
-
-        trace.fromPointMove( globalStartPos, move * hit.ratio, EPSILON );
       }
     }
   }
@@ -434,18 +422,20 @@ namespace oz
       float startDist = startPos * plane.normal - plane.distance;
       float endDist   = endPos   * plane.normal - plane.distance;
 
-      if( startDist > 0.0f && endDist > 0.0f ) {
+      float offset = 2.0f * EPSILON;
+
+      if( startDist > offset && endDist > offset ) {
         trimPointNode( node.front, startRatio, endRatio, startPos, endPos );
       }
-      else if( startDist < 0.0f && endDist < 0.0f ) {
+      else if( startDist < -offset && endDist < -offset ) {
         trimPointNode( node.back, startRatio, endRatio, startPos, endPos );
       }
       else {
         if( startDist < endDist ) {
           float invDist = 1.0f / ( startDist - endDist );
 
-          float ratio1 = min( ( startDist - 2.0f * EPSILON ) * invDist, 1.0f );
-          float ratio2 = max( ( startDist + 2.0f * EPSILON ) * invDist, 0.0f );
+          float ratio1 = min( ( startDist - offset ) * invDist, 1.0f );
+          float ratio2 = max( ( startDist + offset ) * invDist, 0.0f );
 
           assert( 0.0f <= ratio1 && ratio1 <= 1.0f );
           assert( 0.0f <= ratio2 && ratio2 <= 1.0f );
@@ -462,8 +452,8 @@ namespace oz
         else if( endDist < startDist ) {
           float invDist = 1.0f / ( startDist - endDist );
 
-          float ratio1 = min( ( startDist + 2.0f * EPSILON ) * invDist, 1.0f );
-          float ratio2 = max( ( startDist - 2.0f * EPSILON ) * invDist, 0.0f );
+          float ratio1 = min( ( startDist + offset ) * invDist, 1.0f );
+          float ratio2 = max( ( startDist - offset ) * invDist, 0.0f );
 
           assert( 0.0f <= ratio1 && ratio1 <= 1.0f );
           assert( 0.0f <= ratio2 && ratio2 <= 1.0f );
@@ -617,7 +607,7 @@ namespace oz
           Math::abs( plane.normal.x * aabb.dim.x ) +
           Math::abs( plane.normal.y * aabb.dim.y ) +
           Math::abs( plane.normal.z * aabb.dim.z ) +
-          EPSILON;
+          2.0f * EPSILON;
 
       float dist = globalStartPos * plane.normal - plane.distance;
 
@@ -746,6 +736,10 @@ namespace oz
   // finds out if AABB-World bounding box collision occurs and the time when it occurs
   void Collider::trimAABBVoid()
   {
+    float minRatio        = -1.0f;
+    float maxRatio        =  1.0f;
+    const Vec3 *tmpNormal = null;
+
     for( int i = 0; i < 3; i++ ) {
       int  iPos    = move[i] >= 0.0f;
       const Vec3 &normal = bbNormals[i * 2 + iPos];
@@ -753,24 +747,20 @@ namespace oz
       float startDist = world.maxs[i] + globalStartPos[i] * normal[i] - aabb.dim[i];
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i] - aabb.dim[i];
 
-      if( endDist <= EPSILON ) {
-        if( startDist > endDist ) {
-          float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist );
+      if( endDist <= EPSILON && endDist <= startDist ) {
+        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
-          if( ratio < hit.ratio ) {
-            hit.ratio   = ratio;
-            hit.normal  = normal;
-            hit.obj     = null;
-            hit.onSlick = false;
-          }
-        }
-        else {
-          hit.ratio   = 0.0f;
-          hit.normal  = normal;
-          hit.obj     = null;
-          hit.onSlick = false;
+        if( ratio > minRatio ) {
+          minRatio  = ratio;
+          tmpNormal = &normal;
         }
       }
+    }
+    if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
+      hit.ratio   = minRatio;
+      hit.normal  = *tmpNormal;
+      hit.obj     = null;
+      hit.onSlick = false;
     }
   }
 
@@ -796,7 +786,7 @@ namespace oz
           return;
         }
       }
-      else if( endDist <= startDist ) {
+      else if( startDist >= 0.0f && endDist <= startDist ) {
         float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
@@ -805,7 +795,6 @@ namespace oz
         }
       }
     }
-
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio   = minRatio;
       hit.normal  = *tmpNormal;
@@ -840,7 +829,7 @@ namespace oz
           return;
         }
       }
-      else if( endDist <= startDist ) {
+      else if( startDist >= 0.0f && endDist <= startDist ) {
         float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
@@ -850,7 +839,7 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
-      float newRatio = max( leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio ), 0.0f );
+      float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
 
       if( newRatio < hit.ratio ) {
         hit.ratio   = newRatio;
@@ -1049,6 +1038,8 @@ namespace oz
     globalEndPos.z   -= aabb.dim.z;
 
     trimPointTerra();
+
+    hit.ratio = bound( hit.ratio, 0.0f, 1.0f );
   }
 
   //***********************************

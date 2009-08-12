@@ -28,7 +28,7 @@ namespace oz
     int      index;
     int      bsp;
     Rotation rot;
-    float    damage;
+    float    life;
 
     explicit Structure() {}
 

@@ -26,7 +26,6 @@ namespace oz
     bool   onSlick;
   };
 
-  // FIXME debug collision for VS2008!!!
   class Collider
   {
     private:
@@ -139,7 +138,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    world.getInters( point, AABB::MAX_DIMXY );
+    world.getInters( point, AABB::MAX_DIM );
 
     return testPointWorld();
   }
@@ -149,7 +148,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    world.getInters( point, AABB::MAX_DIMXY );
+    world.getInters( point, AABB::MAX_DIM );
 
     return testPointWorldOO();
   }
@@ -159,7 +158,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    world.getInters( point, AABB::MAX_DIMXY );
+    world.getInters( point, AABB::MAX_DIM );
 
     return testPointWorldOSO();
   }
@@ -169,7 +168,7 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
 
     return testAABBWorld();
   }
@@ -179,7 +178,7 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
 
     return testAABBWorldOO();
   }
@@ -189,7 +188,7 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
 
     return testAABBWorldOSO();
   }
@@ -201,7 +200,7 @@ namespace oz
     aabb = aabb_;
     exclObj = null;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
 
     return getWorldOverlaps( objects, structs );
   }
@@ -211,7 +210,7 @@ namespace oz
     aabb = aabb_;
     exclObj = null;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIMXY );
+    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
 
     return getWorldIncludes( objects );
   }
@@ -223,7 +222,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace.fromPointMove( point, move, EPSILON );
-    world.getInters( trace, AABB::MAX_DIMXY );
+    world.getInters( trace, AABB::MAX_DIM );
 
     trimPointWorld();
   }
@@ -236,7 +235,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( move, EPSILON );
-    world.getInters( trace, AABB::MAX_DIMXY );
+    world.getInters( trace, AABB::MAX_DIM );
 
     trimAABBWorld();
   }
@@ -249,7 +248,7 @@ namespace oz
     exclObj = obj;
 
     trace = aabb.toBounds( move, EPSILON );
-    world.getInters( trace, AABB::MAX_DIMXY );
+    world.getInters( trace, AABB::MAX_DIM );
 
     trimAABBWorld();
   }
