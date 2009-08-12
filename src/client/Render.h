@@ -49,6 +49,8 @@ namespace client
         uint  list;
       };
 
+    private:
+
       Terrain                 terra;
       Vector<BSP*>            bsps;
       Bitset                  drawnStructures;

@@ -31,17 +31,20 @@ namespace ui
     glLoadIdentity();
 
     root.draw();
+    mouse.draw();
   }
 
   void init( int screenX, int screenY )
   {
     root = Area( 0, 0, screenX, screenY );
+    mouse.init( screenX, screenY );
     font.init();
   }
 
   void free()
   {
     font.free();
+    mouse.free();
   }
 
 }

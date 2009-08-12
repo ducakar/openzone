@@ -17,14 +17,14 @@ namespace oz
   {
     p      = istream->readVec3();
     rot    = (Rotation) istream->readByte();
-    damage = istream->readFloat();
+    life   = istream->readFloat();
   }
 
   void Structure::writeFull( OutputStream *ostream )
   {
     ostream->writeVec3( p );
     ostream->writeByte( (int) rot );
-    ostream->writeFloat( damage );
+    ostream->writeFloat( life );
   }
 
 }

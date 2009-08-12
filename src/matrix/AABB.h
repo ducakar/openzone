@@ -16,9 +16,8 @@ namespace oz
   struct AABB
   {
     // max allowed dimension for an object plus 1 cm for epsilon
-    static const float MAX_DIMXY;
-
-    static const float REAL_MAX_DIMXY;
+    static const float MAX_DIM;
+    static const float REAL_MAX_DIM;
 
     Vec3 p;
     Vec3 dim;

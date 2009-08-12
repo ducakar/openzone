@@ -50,7 +50,7 @@ namespace client
       if( nMatches != 3 ) {
         return false;
       }
-      *tempVerts << Vec3( -x, -y, -z );
+      *tempVerts << Vec3( x, y, z );
       return true;
     }
     // vertex normal coords
@@ -327,9 +327,8 @@ namespace client
     fclose( file );
 
     // copy everything into arrays for memory optimization
-
-    vertices( tempVerts.length() );
-    if( !vertices.isEmpty() ) {
+    if( !tempVerts.isEmpty() ) {
+      vertices( tempVerts.length() );
       for( int i = 0; i < vertices.length(); i++ ) {
         vertices[i] = translation + scaling * tempVerts[i];
       }
@@ -338,18 +337,18 @@ namespace client
       throw Exception( 0, "OBJ model loading error" );
     }
 
-    normals( tempNormals.length() );
-    if( !normals.isEmpty() ) {
+    if( !tempNormals.isEmpty() ) {
+      normals( tempNormals.length() );
       aCopy<Vec3>( normals, tempNormals, normals.length() );
     }
 
-    texCoords( tempTexCoords.length() );
-    if( !texCoords.isEmpty() ) {
+    if( !tempTexCoords.isEmpty() ) {
+      texCoords( tempTexCoords.length() );
       aCopy<TexCoord>( texCoords, tempTexCoords, texCoords.length() );
     }
 
-    faces( tempFaces.length() );
-    if( !faces.isEmpty() ) {
+    if( !tempFaces.isEmpty() ) {
+      faces( tempFaces.length() );
       // we don't copy arrays, pointers in both containers point to the same data
       aCopy<Face>( faces, tempFaces, faces.length() );
     }
@@ -393,47 +392,47 @@ namespace client
     for( int i = 0; i < faces.length(); i++ ) {
       const Face &face = faces[i];
 
-      // draw polygon as a triangle strip
-      glBegin( GL_TRIANGLE_STRIP );
-        assert( face.nVerts >= 3 );
-
-        int outerMiddle = face.nVerts / 2 + 1;
-        int innerMiddle = ( face.nVerts - 1 ) / 2;
-        for( int j = 0; j < outerMiddle; j++ ) {
-
-          if( texCoords ) {
-            glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
-          }
-          if( normals ) {
-            glNormal3fv( normals[face.normIndices[j]] );
-          }
-          glVertex3fv( vertices[face.vertIndices[j]] );
-
-          if( j == 0 || j > innerMiddle ) {
-            continue;
-          }
-
-          if( texCoords ) {
-            glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[face.nVerts - j]] );
-          }
-          if( normals ) {
-            glNormal3fv( normals[face.normIndices[face.nVerts - j]] );
-          }
-          glVertex3fv( vertices[face.vertIndices[face.nVerts - j]] );
-        }
-      glEnd();
-
-//       glBegin( GL_POLYGON );
-//         for( int j = 0; j < face.nVerts; j++ ) {
-//           if( texCoords ) {
+//       // draw polygon as a triangle strip
+//       glBegin( GL_TRIANGLE_STRIP );
+//         assert( face.nVerts >= 3 );
+//
+//         int outerMiddle = face.nVerts / 2 + 1;
+//         int innerMiddle = ( face.nVerts - 1 ) / 2;
+//         for( int j = 0; j < outerMiddle; j++ ) {
+//
+//           if( !texCoords.isEmpty() ) {
 //             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
 //           }
-//           if( normals ) {
+//           if( !normals.isEmpty() ) {
 //             glNormal3fv( normals[face.normIndices[j]] );
 //           }
 //           glVertex3fv( vertices[face.vertIndices[j]] );
+//
+//           if( j == 0 || j > innerMiddle ) {
+//             continue;
+//           }
+//
+//           if( !texCoords.isEmpty() ) {
+//             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[face.nVerts - j]] );
+//           }
+//           if( !normals.isEmpty() ) {
+//             glNormal3fv( normals[face.normIndices[face.nVerts - j]] );
+//           }
+//           glVertex3fv( vertices[face.vertIndices[face.nVerts - j]] );
 //         }
 //       glEnd();
+
+      glBegin( GL_POLYGON );
+        for( int j = 0; j < face.nVerts; j++ ) {
+          if( !texCoords.isEmpty() ) {
+            glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
+          }
+          if( !normals.isEmpty() ) {
+            glNormal3fv( normals[face.normIndices[j]] );
+          }
+          glVertex3fv( vertices[face.vertIndices[j]] );
+        }
+      glEnd();
     }
   }
 

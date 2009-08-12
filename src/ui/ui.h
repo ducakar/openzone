@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Font.h"
+#include "Mouse.h"
 #include "Area.h"
 #include "Button.h"
 #include "DebugArea.h"

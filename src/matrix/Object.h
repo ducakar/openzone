@@ -11,12 +11,12 @@
 #include "bv.h"
 #include "io.h"
 #include "Synapse.h"
+#include "ObjectClass.h"
 
 namespace oz
 {
 
   struct Sector;
-  struct ObjectClass;
   struct Hit;
   struct Bot;
 
@@ -173,7 +173,7 @@ namespace oz
       ObjectClass    *type;
 
       // damage
-      float          damage;
+      float          life;
 
       // events are used for reporting hits, friction & stuff and are cleared at the beginning of
       // the frame
@@ -206,9 +206,19 @@ namespace oz
         oldFlags = flags;
       }
 
+      void damage( float momentum )
+      {
+        if( momentum > type->damageTreshold ) {
+          life -= momentum * type->damageRatio;
+        }
+      }
+
       void hit( const Hit *hit, float hitMomentum )
       {
-        addEvent( EVENT_HIT, hitMomentum );
+        events << new Event( EVENT_HIT, hitMomentum );
+        flags |= HIT_BIT;
+
+        damage( -hitMomentum );
 
         if( flags & HIT_FUNC_BIT ) {
           onHit( hit, hitMomentum );

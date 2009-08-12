@@ -31,6 +31,13 @@ namespace client
         mouse;
       };
 
+      enum State
+      {
+        GAME,
+        GAME_INTERFACE,
+        MENU
+      };
+
     private:
 
       static const float FREECAM_SLOW_SPEED;
@@ -45,9 +52,12 @@ namespace client
       float moveStep;
       float runStep;
 
+      bool  wasTabDown;
+
     public:
 
       Input input;
+      State state;
 
       bool init();
       void start();

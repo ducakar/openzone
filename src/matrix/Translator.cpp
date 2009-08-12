@@ -206,6 +206,7 @@ namespace oz
 
       if( classes.contains( baseName ) ) {
         logFile.println( "duplicated class: %s", baseName.cstr() );
+        classConfig.clear();
         return false;
       }
       classConfig.add( "name", baseName );

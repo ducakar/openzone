@@ -18,7 +18,7 @@ namespace oz
   const float Physics::CLIP_BACKOFF         = EPSILON;
   const float Physics::STICK_VELOCITY       = 0.015f;
   const float Physics::SLICK_STICK_VELOCITY = 0.0002f;
-  const float Physics::HIT_MOMENTUM         = -2.2f;
+  const float Physics::HIT_MOMENTUM         = -3.0f;
 
   const float Physics::AIR_FRICTION         = 0.02f;
   const float Physics::WATER_FRICTION       = 0.08f;
@@ -227,10 +227,7 @@ namespace oz
 
       if( hitMomentum < HIT_MOMENTUM ) {
         obj->hit( &collider.hit, hitMomentum );
-        obj->flags |= Object::HIT_BIT;
-
         sDynObj->hit( &collider.hit, hitMomentum );
-        sDynObj->flags |= Object::HIT_BIT;
       }
 
       if( collider.hit.normal.z == 0.0f ) {
@@ -281,11 +278,9 @@ namespace oz
 
       if( hitMomentum < HIT_MOMENTUM ) {
         obj->hit( &collider.hit, hitMomentum );
-        obj->flags |= Object::HIT_BIT;
 
         if( sObj != null ) {
           sObj->hit( &collider.hit, hitMomentum );
-          sObj->flags |= Object::HIT_BIT;
         }
       }
 
@@ -400,7 +395,7 @@ namespace oz
     assert( !( obj->flags & Object::ON_FLOOR_BIT ) || !( obj->lower >= 0 ) );
 
     if( obj->flags & Object::CLIP_BIT ) {
-      obj->flags &= ~( Object::HIT_BIT | Object::FRICTING_BIT );
+      obj->flags &= ~Object::FRICTING_BIT;
 
       // clear the lower object if doesn't exist any more
       if( obj->lower >= 0 && world.objects[obj->lower] == null ) {

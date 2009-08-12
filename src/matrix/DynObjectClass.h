@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include "Object.h"
 #include "ObjectClass.h"
 
 namespace oz

@@ -10,10 +10,12 @@
 
 #pragma once
 
-#include "Object.h"
+#include "io.h"
 
 namespace oz
 {
+
+  class Object;
 
   struct ObjectClass
   {
@@ -21,7 +23,7 @@ namespace oz
     static const int AUDIO_SAMPLES = 16;
 
     static const int BASE_FLAGS = 0;
-    static const int DEFAULT_FLAGS = Object::CLIP_BIT;
+    static const int DEFAULT_FLAGS;
 
     typedef ObjectClass *( *InitFunc )( const String &name, Config *config );
 
@@ -31,7 +33,9 @@ namespace oz
     Vec3   dim;
     int    flags;
     int    type;
-    float  damage;
+    float  life;
+    float  damageTreshold;
+    float  damageRatio;
 
     String modelType;
     String modelPath;

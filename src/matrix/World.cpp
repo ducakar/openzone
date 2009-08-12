@@ -322,7 +322,7 @@ namespace oz
         istream->readString( bspFile );
 
         if( bspFile.length() == 0 ) {
-          structures.add( null );
+          structures << null;
         }
         else {
           int bspIndex = translator.bspIndex( bspFile );
@@ -333,35 +333,35 @@ namespace oz
           str->readFull( istream );
           str->index = i;
           str->bsp = bspIndex;
-          position( str );
           structures << str;
+          position( str );
         }
       }
       for( int i = 0; i < nObjects; i++ ) {
         istream->readString( typeName );
 
         if( typeName.length() == 0 ) {
-          objects.add( null );
+          objects << null;
         }
         else {
-          obj = translator.createObject( typeName.cstr(), istream );
+          obj = translator.createObject( typeName, istream );
           obj->index = i;
-          position( obj );
           objects << obj;
+          position( obj );
         }
       }
       for( int i = 0; i < nParticles; i++ ) {
         bool exists = istream->readBool();
 
         if( !exists ) {
-          particles.add( null );
+          particles << null;
         }
         else {
           part = new Particle();
           part->readFull( istream );
           part->index = i;
-          position( part );
           particles << part;
+          position( part );
         }
       }
     }

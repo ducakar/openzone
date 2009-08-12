@@ -316,9 +316,9 @@ namespace client
 
       for( int j = 0; j < nVerts; j++ ) {
         pVerts[j] = Vec3(
-          ( (float) pFrame->verts[j].v[0] * pFrame->scale.x ) + pFrame->translate.x,
-          ( (float) pFrame->verts[j].v[1] * pFrame->scale.y ) + pFrame->translate.y,
-          ( (float) pFrame->verts[j].v[2] * pFrame->scale.z ) + pFrame->translate.z );
+          ( (float) pFrame->verts[j].v[1] * -pFrame->scale.y ) - pFrame->translate.y,
+          ( (float) pFrame->verts[j].v[0] *  pFrame->scale.x ) + pFrame->translate.x,
+          ( (float) pFrame->verts[j].v[2] *  pFrame->scale.z ) + pFrame->translate.z );
 
         pNormals[j] = pFrame->verts[j].iLightNormal;
       }
@@ -333,7 +333,7 @@ namespace client
     Config config;
     config.load( configFile );
 
-    float scaling = config.get( "scale", 1.0f );
+    float scaling = config.get( "scale", 0.03f );
     Vec3 translation( config.get( "translate.x", 0.0f ),
                       config.get( "translate.y", 0.0f ),
                       config.get( "translate.z", 0.0f ) );
@@ -428,7 +428,6 @@ namespace client
     const int  *pCmd     = glCmds;
 
     glFrontFace( GL_CW );
-    glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, texId );
 
     while( int i = *( pCmd++ ) ) {
@@ -456,7 +455,6 @@ namespace client
     interpolate( anim, timer.frameTime );
 
     glFrontFace( GL_CW );
-    glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
     glBindTexture( GL_TEXTURE_2D, texId );
 
     while( int i = *( pCmd++ ) ) {
