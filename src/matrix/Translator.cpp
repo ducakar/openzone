@@ -33,23 +33,23 @@ namespace oz
     OZ_REGISTER_BASECLASS( Bot );
     OZ_REGISTER_BASECLASS( Vehicle );
 
-    logFile.println( "Translator mapping resources {" );
-    logFile.indent();
+    log.println( "Translator mapping resources {" );
+    log.indent();
 
     Config classConfig;
     DIR *dir;
     struct dirent *file;
 
-    logFile.println( "textures (*.png, *.jpg in 'textures/oz') {" );
-    logFile.indent();
+    log.println( "textures (*.png, *.jpg in 'textures/oz') {" );
+    log.indent();
 
     dir = opendir( "textures/oz" );
     if( dir == null ) {
       free();
 
-      logFile.println( "Cannot open directory 'textures/oz'" );
-      logFile.unindent();
-      logFile.println( "}" );
+      log.println( "Cannot open directory 'textures/oz'" );
+      log.unindent();
+      log.println( "}" );
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
@@ -67,28 +67,28 @@ namespace oz
       String fileName = "textures/oz/" + name;
       String baseName = name.substring( 0, dot );
       if( textureIndices.contains( baseName ) ) {
-        logFile.println( "duplicated texture: %s", baseName.cstr() );
+        log.println( "duplicated texture: %s", baseName.cstr() );
         return false;
       }
       textureIndices.add( baseName, textures.length() );
       textures << Resource( baseName, fileName );
 
-      logFile.println( "%s", baseName.cstr() );
+      log.println( "%s", baseName.cstr() );
     }
     closedir( dir );
 
-    logFile.unindent();
-    logFile.println( "}" );
-    logFile.println( "sounds (*.au, *.wav, *.oga in 'snd') {" );
-    logFile.indent();
+    log.unindent();
+    log.println( "}" );
+    log.println( "sounds (*.au, *.wav, *.oga in 'snd') {" );
+    log.indent();
 
     dir = opendir( "snd" );
     if( dir == null ) {
       free();
 
-      logFile.println( "Cannot open directory 'snd'" );
-      logFile.unindent();
-      logFile.println( "}" );
+      log.println( "Cannot open directory 'snd'" );
+      log.unindent();
+      log.println( "}" );
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
@@ -110,28 +110,28 @@ namespace oz
       String fileName = "snd/" + name;
       String baseName = name.substring( 0, dot );
       if( soundIndices.contains( baseName ) ) {
-        logFile.println( "duplicated sound: %s", baseName.cstr() );
+        log.println( "duplicated sound: %s", baseName.cstr() );
         continue;
       }
       soundIndices.add( baseName, sounds.length() );
       sounds << Resource( baseName, fileName );;
 
-      logFile.println( "%s", baseName.cstr() );
+      log.println( "%s", baseName.cstr() );
     }
     closedir( dir );
 
-    logFile.unindent();
-    logFile.println( "}" );
-    logFile.println( "BSP structures (*.xml in 'bsp') {" );
-    logFile.indent();
+    log.unindent();
+    log.println( "}" );
+    log.println( "BSP structures (*.xml in 'bsp') {" );
+    log.indent();
 
     dir = opendir( "bsp" );
     if( dir == null ) {
       free();
 
-      logFile.println( "Cannot open directory 'bsp'" );
-      logFile.unindent();
-      logFile.println( "}" );
+      log.println( "Cannot open directory 'bsp'" );
+      log.unindent();
+      log.println( "}" );
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
@@ -149,28 +149,28 @@ namespace oz
       String fileName = "bsp/" + name;
       String baseName = name.substring( 0, dot );
       if( bspIndices.contains( baseName ) ) {
-        logFile.println( "duplicated bsp: %s", baseName.cstr() );
+        log.println( "duplicated bsp: %s", baseName.cstr() );
         return false;
       }
       bspIndices.add( baseName, bsps.length() );
       bsps << Resource( baseName, "" );;
 
-      logFile.println( "%s", baseName.cstr() );
+      log.println( "%s", baseName.cstr() );
     }
     closedir( dir );
 
-    logFile.unindent();
-    logFile.println( "}" );
-    logFile.println( "object classes (*.xml in 'class') {" );
-    logFile.indent();
+    log.unindent();
+    log.println( "}" );
+    log.println( "object classes (*.xml in 'class') {" );
+    log.indent();
 
     dir = opendir( "class" );
     if( dir == null ) {
       free();
 
-      logFile.println( "Cannot open directory 'class'" );
-      logFile.unindent();
-      logFile.println( "}" );
+      log.println( "Cannot open directory 'class'" );
+      log.unindent();
+      log.println( "}" );
       return false;
     }
     while( ( file = readdir( dir ) ) != null ) {
@@ -189,23 +189,23 @@ namespace oz
       String baseName = name.substring( 0, dot );
 
       if( !classConfig.load( fileName ) ) {
-        logFile.println( "invalid config file %s", fileName.cstr() );
+        log.println( "invalid config file %s", fileName.cstr() );
         classConfig.clear();
         continue;
       }
       if( !classConfig.contains( "base" ) ) {
-        logFile.println( "missing base variable" );
+        log.println( "missing base variable" );
         classConfig.clear();
         continue;
       }
       if( !baseClasses.contains( classConfig["base"] ) ) {
-        logFile.println( "invalid base %s", classConfig["base"].cstr() );
+        log.println( "invalid base %s", classConfig["base"].cstr() );
         classConfig.clear();
         continue;
       }
 
       if( classes.contains( baseName ) ) {
-        logFile.println( "duplicated class: %s", baseName.cstr() );
+        log.println( "duplicated class: %s", baseName.cstr() );
         classConfig.clear();
         return false;
       }
@@ -213,14 +213,14 @@ namespace oz
       classes.add( baseName, baseClasses.cachedValue()( baseName, &classConfig ) );
       classConfig.clear();
 
-      logFile.println( "%s", baseName.cstr() );
+      log.println( "%s", baseName.cstr() );
     }
     closedir( dir );
 
-    logFile.unindent();
-    logFile.println( "}" );
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
+    log.unindent();
+    log.println( "}" );
 
     return true;
   }
@@ -231,7 +231,7 @@ namespace oz
       return textureIndices.cachedValue();
     }
     else {
-      logFile.println( "W: invalid texture file index requested: %s", file );
+      log.println( "W: invalid texture file index requested: %s", file );
       return -1;
     }
   }
@@ -242,7 +242,7 @@ namespace oz
       return soundIndices.cachedValue();
     }
     else {
-      logFile.println( "W: invalid sound file index requested: %s", file );
+      log.println( "W: invalid sound file index requested: %s", file );
       return -1;
     }
   }
@@ -253,7 +253,7 @@ namespace oz
       return bspIndices.cachedValue();
     }
     else {
-      logFile.println( "W: invalid bsp file index requested: %s", file );
+      log.println( "W: invalid bsp file index requested: %s", file );
       return -1;
     }
   }

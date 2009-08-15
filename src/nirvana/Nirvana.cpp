@@ -22,19 +22,20 @@ namespace oz
 
   void Nirvana::load()
   {
-    logFile.println( "Loading Nirvana {" );
-    logFile.indent();
+    log.println( "Loading Nirvana {" );
+    log.indent();
 
-//     add( new M_Walker( (Bot*) world.objects[1] ) );
-//     add( new M_Walker( (Bot*) world.objects[2] ) );
+    add( new M_Walker( (Bot*) world.objects[0] ) );
+    add( new M_Walker( (Bot*) world.objects[1] ) );
+    add( new M_Walker( (Bot*) world.objects[2] ) );
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Nirvana::start()
   {
-    logFile.print( "Starting Nirvana thread ..." );
+    log.print( "Starting Nirvana thread ..." );
 
     isAlive = true;
     requestSuspend = false;
@@ -42,12 +43,12 @@ namespace oz
     semaphore = SDL_CreateSemaphore( 1 );
     thread = SDL_CreateThread( runThread, null );
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
   }
 
   void Nirvana::stop()
   {
-    logFile.print( "Stopping Nirvana thread ..." );
+    log.print( "Stopping Nirvana thread ..." );
 
     isAlive = false;
     requestSuspend = true;
@@ -58,16 +59,16 @@ namespace oz
 
     thread = null;
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
   }
 
   void Nirvana::free()
   {
-    logFile.print( "Shutting down Nirvana ..." );
+    log.print( "Shutting down Nirvana ..." );
 
     minds.free();
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
   }
 
   void Nirvana::synchronize()

@@ -12,8 +12,6 @@
 #include "World.h"
 #include "Weapon.h"
 
-#define BOT_GRAB_DIST         1.0
-
 namespace oz
 {
 
@@ -33,11 +31,10 @@ namespace oz
       static const int KEY_USE         = 0x00000080;
       static const int KEY_GRAB        = 0x00000100;
       static const int KEY_STEP        = 0x00000200;
-      static const int KEY_NOCLIP      = 0x00000400;
+      static const int KEY_FREELOOK    = 0x00000400;
       static const int KEY_SUICIDE     = 0x00000800;
       static const int KEY_GESTURE0    = 0x00001000;
       static const int KEY_GESTURE1    = 0x00002000;
-      static const int KEY_FREELOOK    = 0x00004000;
 
       static const int SND_LAND        = 5;
       static const int SND_JUMP        = 6;
@@ -45,6 +42,7 @@ namespace oz
       static const int STEPPING_BIT    = 0x00000001;
       static const int CROUCHING_BIT   = 0x00000002;
       static const int FREELOOK_BIT    = 0x00000004;
+      static const int JUMP_SCHED_BIT  = 0x00000008;
       static const int RUNNING_BIT     = 0x00000010;
       static const int SHOOTING_BIT    = 0x00000020;
       static const int GROUNDED_BIT    = 0x00000040;
@@ -85,25 +83,26 @@ namespace oz
 
     public:
 
-      Mind     *mind;
-
       int      state;
-      AnimEnum anim;
-
-      int      keys, oldKeys;
+      float    stamina;
 
       float    h, v;
+      int      keys, oldKeys;
+
       float    bob;
       Vec3     camPos;
 
       int      grabObjIndex;
-      Weapon   *weapon;
 
-      float    stamina;
-      float    waterTime;
+      float    stepRate;
       float    deathTime;
 
       Vector<Object*> items;
+
+      Weapon   *weapon;
+      Mind     *mind;
+
+      AnimEnum anim;
 
       explicit Bot();
 

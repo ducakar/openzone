@@ -96,7 +96,7 @@ namespace oz
 
     if( reader == null ) {
       xmlCleanupParser();
-      logFile.printEnd( "Error reading variables from '%s' ... Cannot open file", path );
+      log.printEnd( "Error reading variables from '%s' ... Cannot open file", path );
       return false;
     }
 
@@ -128,7 +128,7 @@ namespace oz
     xmlCleanupParser();
 
     if( error != 0 ) {
-      logFile.printEnd( "Error reading variables from '%s' ... Parse error", path );
+      log.printEnd( "Error reading variables from '%s' ... Parse error", path );
       return false;
     }
     return true;
@@ -136,7 +136,7 @@ namespace oz
 
   bool Config::save( const char *file )
   {
-    logFile.print( "Writing variables to '%s' ...", file );
+    log.print( "Writing variables to '%s' ...", file );
 
     // first we sort all the variables by key
     int size = vars.length();
@@ -155,7 +155,7 @@ namespace oz
 
     if( writer == null ) {
       xmlCleanupParser();
-      logFile.printEnd( " Cannot open file" );
+      log.printEnd( " Cannot open file" );
       return false;
     }
 
@@ -164,7 +164,7 @@ namespace oz
     {
       xmlFreeTextWriter( writer );
       xmlCleanupParser();
-      logFile.printEnd( " Write error" );
+      log.printEnd( " Write error" );
       return false;
     }
 
@@ -177,7 +177,7 @@ namespace oz
       {
         xmlFreeTextWriter( writer );
         xmlCleanupParser();
-        logFile.printEnd( " Write error" );
+        log.printEnd( " Write error" );
         return false;
       }
     }
@@ -187,12 +187,12 @@ namespace oz
     {
       xmlFreeTextWriter( writer );
       xmlCleanupParser();
-      logFile.printEnd( " Write error" );
+      log.printEnd( " Write error" );
       return false;
     }
     xmlFreeTextWriter( writer );
     xmlCleanupParser();
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
     return true;
   }
 

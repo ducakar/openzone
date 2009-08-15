@@ -20,6 +20,7 @@ namespace oz
 
   void M_Walker::onUpdate()
   {
+    body->keys = 0;
     body->keys |= Bot::KEY_FORWARD;
 
     if( Math::rand() % 101 == 0 ) {

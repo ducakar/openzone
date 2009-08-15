@@ -20,30 +20,31 @@ namespace oz
   {
     DynObjectClass *clazz = new DynObjectClass();
 
-    clazz->name           = name;
-    clazz->description    = config->get( "description", "" );
+    clazz->name             = name;
+    clazz->description      = config->get( "description", "" );
 
-    clazz->dim.x          = config->get( "dim.x", 0.5f );
-    clazz->dim.y          = config->get( "dim.y", 0.5f );
-    clazz->dim.z          = config->get( "dim.z", 0.5f );
+    clazz->dim.x            = config->get( "dim.x", 0.5f );
+    clazz->dim.y            = config->get( "dim.y", 0.5f );
+    clazz->dim.z            = config->get( "dim.z", 0.5f );
 
-    clazz->flags          = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
-    clazz->life           = config->get( "life", 100.0f );
-    clazz->damageTreshold = config->get( "damageTreshold", 8.0f );
-    clazz->damageRatio    = config->get( "damageRatio", 1.0f );
+    clazz->flags            = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
+    clazz->life             = config->get( "life", 100.0f );
+    clazz->damageTreshold   = config->get( "damageTreshold", 100.0f );
+    clazz->damageRatio      = config->get( "damageRatio", 1.0f );
 
-    clazz->mass           = config->get( "mass", 100.0f );
-    clazz->lift           = config->get( "lift", 0.10f );
+    clazz->modelType        = config->get( "modelType", "MD2" );
+    clazz->modelPath        = config->get( "modelPath", "mdl/goblin.md2" );
 
-    clazz->modelType      = config->get( "model.type", "MD2" );
-    clazz->modelPath      = config->get( "model.path", "mdl/goblin.md2" );
+    if( clazz->modelType.length() > 0 ) {
+      clazz->flags |= Object::MODEL_BIT;
+    }
 
-    clazz->audioType      = config->get( "audio.type", "" );
+    clazz->audioType        = config->get( "audioType", "" );
 
     if( clazz->audioType.length() > 0 ) {
       clazz->flags |= Object::AUDIO_BIT;
 
-      char buffer[] = "audio.sample  ";
+      char buffer[] = "audioSample  ";
       for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
         assert( 0 <= i && i < 100 );
 
@@ -54,6 +55,9 @@ namespace oz
         clazz->audioSamples[i] = sampleName.length() > 0 ? translator.soundIndex( sampleName ) : -1;
       }
     }
+
+    clazz->mass             = config->get( "mass", 100.0f );
+    clazz->lift             = config->get( "lift", 0.03f );
 
     if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
         clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||

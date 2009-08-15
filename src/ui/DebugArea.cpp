@@ -38,12 +38,13 @@ namespace ui
              camera.bot->velocity.x, camera.bot->velocity.y, camera.bot->velocity.z,
              camera.bot->momentum.x, camera.bot->momentum.y, camera.bot->momentum.z );
 
-      print( 5, -5 - textHeight * 4, "d %d fl %d lw %d h %d fr %d iw %d uw %d ld %d s %d ovlp %d",
+      print( 5, -5 - textHeight * 4, "d %d fl %d lw %d h %d fr %d ow %d iw %d uw %d ld %d s %d ovlp %d",
             ( camera.bot->flags & Object::DISABLED_BIT ) != 0,
             ( camera.bot->flags & Object::ON_FLOOR_BIT ) != 0,
             camera.bot->lower >= 0,
             ( !camera.bot->events.isEmpty() ),
             ( camera.bot->flags & Object::FRICTING_BIT ) != 0,
+            ( camera.bot->flags & Object::ON_WATER_BIT ) != 0,
             ( camera.bot->flags & Object::IN_WATER_BIT ) != 0,
             ( camera.bot->flags & Object::UNDER_WATER_BIT ) != 0,
             ( camera.bot->flags & Object::ON_LADDER_BIT ) != 0,

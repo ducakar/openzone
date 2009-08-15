@@ -74,7 +74,7 @@ namespace oz
       static const int NOSYNC_BIT         = 0x02000000;
 
       /*
-       * TYPE FLAGS (0x000f0000)
+       * TYPE FLAGS (0x00f00000)
        */
 
       static const int DYNAMIC_BIT        = 0x00800000;
@@ -83,33 +83,36 @@ namespace oz
       static const int VEHICLE_BIT        = 0x00100000;
 
       /*
-       * DYNAMIC OBJECTS' BITS (interal 0x0000ff00, config 0x000000f0)
+       * DYNAMIC OBJECTS' BITS (interal 0x000fff00, config 0x000000f0)
        */
 
       // if the object is still and on a still surface, we won't handle physics for it
-      static const int DISABLED_BIT       = 0x00008000;
+      static const int DISABLED_BIT       = 0x00080000;
 
       // if the object collided in the last step
-      static const int HIT_BIT            = 0x00004000;
+      static const int HIT_BIT            = 0x00040000;
 
       // if the object is currently fricting
-      static const int FRICTING_BIT       = 0x00002000;
+      static const int FRICTING_BIT       = 0x00020000;
 
       // if the the object lies or moves on a structure, terrain or non-dynamic object
       // (if on another dynamic object, we determine that with "lower" index)
-      static const int ON_FLOOR_BIT       = 0x00001000;
+      static const int ON_FLOOR_BIT       = 0x00010000;
 
       // if the object intersects with water
-      static const int IN_WATER_BIT       = 0x00000800;
+      static const int ON_WATER_BIT       = 0x00008000;
 
       // if the object center is in water
-      static const int UNDER_WATER_BIT    = 0x00000400;
+      static const int IN_WATER_BIT       = 0x00004000;
+
+      // if the whole object is inside water
+      static const int UNDER_WATER_BIT    = 0x00002000;
 
       // if the object is on ladder
-      static const int ON_LADDER_BIT      = 0x00000200;
+      static const int ON_LADDER_BIT      = 0x00001000;
 
       // if the object is on ice (slipping surface)
-      static const int ON_SLICK_BIT       = 0x00000100;
+      static const int ON_SLICK_BIT       = 0x00000800;
 
       // handle collisions for this object
       static const int CLIP_BIT           = 0x00000080;
@@ -206,10 +209,12 @@ namespace oz
         oldFlags = flags;
       }
 
-      void damage( float momentum )
+      void damage( float damage )
       {
-        if( momentum > type->damageTreshold ) {
-          life -= momentum * type->damageRatio;
+        damage -= type->damageTreshold;
+
+        if( damage > 0.0f ) {
+          life -= damage * type->damageRatio;
         }
       }
 
@@ -218,7 +223,7 @@ namespace oz
         events << new Event( EVENT_HIT, hitMomentum );
         flags |= HIT_BIT;
 
-        damage( -hitMomentum );
+        damage( hitMomentum * hitMomentum );
 
         if( flags & HIT_FUNC_BIT ) {
           onHit( hit, hitMomentum );

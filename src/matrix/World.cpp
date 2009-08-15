@@ -15,65 +15,11 @@ namespace oz
 
   World world;
 
-  const float Sector::DIM = 16.0f;
+  const int   Sector::DIMI = 16;
+  const float Sector::DIM = (float) Sector::DIMI;
   const float Sector::RADIUS = Sector::DIM * Math::SQRT2;
 
   const float World::DIM = Sector::DIM * World::MAX / 2.0f;
-
-  World::World() :
-      Bounds( Vec3( -World::DIM, -World::DIM, -World::DIM ),
-              Vec3( World::DIM, World::DIM, World::DIM ) )
-  {}
-
-  void World::init()
-  {
-    foreach( bsp, translator.bsps.iterator() ) {
-      bsps << new BSP();
-      if( !bsps.last()->load( bsp->name ) ) {
-        throw Exception( 0, "BSP loading failed" );
-      }
-    }
-  }
-
-  void World::free()
-  {
-    for( int i = 0; i < World::MAX; i++ ) {
-      for( int j = 0; j < World::MAX; j++ ) {
-        sectors[i][j].structures.clear();
-        sectors[i][j].objects.clear();
-        sectors[i][j].particles.clear();
-      }
-    }
-
-    foreach( bsp, bsps.iterator() ) {
-      (*bsp)->free();
-      delete *bsp;
-    }
-    bsps.clear();
-
-    foreach( str, structures.iterator() ) {
-      if( *str != null ) {
-        delete *str;
-      }
-    }
-    structures.clear();
-
-    foreach( obj, objects.iterator() ) {
-      if( *obj != null ) {
-        delete *obj;
-      }
-    }
-    objects.clear();
-
-    PoolAlloc<Object::Event, 0>::pool.free();
-
-    foreach( part, particles.iterator() ) {
-      if( *part != null ) {
-        delete *part;
-      }
-    }
-    particles.clear();
-  }
 
   void World::position( Structure *str )
   {
@@ -108,8 +54,8 @@ namespace oz
 
     getInters( *str, EPSILON );
 
-    for( int x = minSectX; x <= maxSectX; x++ ) {
-      for( int y = minSectY; y <= maxSectY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         sectors[x][y].structures << str->index;
       }
     }
@@ -119,8 +65,8 @@ namespace oz
   {
     getInters( *str, EPSILON );
 
-    for( int x = minSectX; x <= maxSectX; x++ ) {
-      for( int y = minSectY; y <= maxSectY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         sectors[x][y].structures.exclude( str->index );
       }
     }
@@ -238,6 +184,65 @@ namespace oz
     particles[part->index] = null;
   }
 
+  World::World() :
+      Bounds( Vec3( -World::DIM, -World::DIM, -World::DIM ),
+              Vec3(  World::DIM,  World::DIM,  World::DIM ) )
+  {}
+
+  void World::init()
+  {
+    terrain.level( -DIM );
+
+    foreach( bsp, translator.bsps.iterator() ) {
+      bsps << new BSP();
+      if( !bsps.last()->load( bsp->name ) ) {
+        throw Exception( 0, "BSP loading failed" );
+      }
+    }
+  }
+
+  void World::free()
+  {
+    for( int i = 0; i < World::MAX; i++ ) {
+      for( int j = 0; j < World::MAX; j++ ) {
+        sectors[i][j].structures.clear();
+        sectors[i][j].objects.clear();
+        sectors[i][j].particles.clear();
+      }
+    }
+
+    foreach( bsp, bsps.iterator() ) {
+      (*bsp)->free();
+      delete *bsp;
+    }
+    bsps.clear();
+
+    foreach( str, structures.iterator() ) {
+      if( *str != null ) {
+        delete *str;
+      }
+    }
+    structures.clear();
+
+    foreach( obj, objects.iterator() ) {
+      if( *obj != null ) {
+        delete *obj;
+      }
+    }
+    objects.clear();
+
+    PoolAlloc<Object::Event, 0>::pool.free();
+
+    foreach( part, particles.iterator() ) {
+      if( *part != null ) {
+        delete *part;
+      }
+    }
+    particles.clear();
+  }
+
+
+
   void World::genParticles( int number, const Vec3 &p,
                             const Vec3 &velocity, float velocitySpread,
                             float rejection, float mass, float lifeTime,
@@ -266,15 +271,20 @@ namespace oz
 
   void World::commit()
   {
+    synapse.clearTickets();
+
     // put
     foreach( i, synapse.putStructs.iterator() ) {
       put( *i );
+      synapse.putStructsIndices << ( *i )->index;
     }
     foreach( i, synapse.putObjects.iterator() ) {
       put( *i );
+      synapse.putObjectsIndices << ( *i )->index;
     }
     foreach( i, synapse.putParts.iterator() ) {
       put( *i );
+      synapse.putPartsIndices << ( *i )->index;
     }
 
     // cut
@@ -307,6 +317,7 @@ namespace oz
   {
     assert( structures.length() == 0 && objects.length() == 0 && particles.length() == 0 );
 
+    log.print( "Loading world ..." );
     try {
       int nStructures = istream->readInt();
       int nObjects    = istream->readInt();
@@ -365,14 +376,17 @@ namespace oz
         }
       }
     }
-    catch( Exception ) {
+    catch( const Exception &e ) {
+      log.printEnd( " %s", e.message );
       return false;
     }
+    log.printEnd( " OK" );
     return true;
   }
 
   bool World::write( OutputStream *ostream )
   {
+    log.print( "Saving world ..." );
     try {
       ostream->writeInt( structures.length() );
       ostream->writeInt( objects.length() );
@@ -417,9 +431,11 @@ namespace oz
         }
       }
     }
-    catch( Exception ) {
+    catch( const Exception &e ) {
+      log.printEnd( " %s", e.message );
       return false;
     }
+    log.printEnd( " OK" );
     return true;
   }
 

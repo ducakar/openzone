@@ -32,34 +32,34 @@ namespace server
 
   void Main::shutdown()
   {
-    logFile.println( "Shutdown {" );
-    logFile.indent();
+    log.println( "Shutdown {" );
+    log.indent();
 
     if( initFlags & INIT_GAME_START ) {
-      logFile.println( "Stopping Game {" );
-      logFile.indent();
+      log.println( "Stopping Game {" );
+      log.indent();
       game.stop();
-      logFile.unindent();
-      logFile.println( "}" );
+      log.unindent();
+      log.println( "}" );
     }
     if( initFlags & INIT_GAME_INIT ) {
-      logFile.println( "Shutting down Game {" );
-      logFile.indent();
+      log.println( "Shutting down Game {" );
+      log.indent();
       game.free();
-      logFile.unindent();
-      logFile.println( "}" );
+      log.unindent();
+      log.println( "}" );
     }
     if( initFlags & INIT_SDL ) {
-      logFile.print( "Shutting down SDL ..." );
+      log.print( "Shutting down SDL ..." );
       SDL_ShowCursor( true );
       SDLNet_Quit();
       SDL_Quit();
-      logFile.printEnd( " OK" );
+      log.printEnd( " OK" );
     }
 
-    logFile.unindent();
-    logFile.println( "}" );
-    logFile.printlnETD( OZ_APP_NAME " finished at" );
+    log.unindent();
+    log.println( "}" );
+    log.printlnETD( OZ_APP_NAME " finished at" );
 
     config.clear();
   }
@@ -83,25 +83,25 @@ namespace server
 #ifdef OZ_LOG_FILE
     String logPath = home + OZ_LOG_FILE;
 
-    if( !logFile.init( logPath, true, "  " ) ) {
+    if( !log.init( logPath, true, "  " ) ) {
       printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
       return;
     }
-    logFile.println( "Log file '%s'", logPath.cstr() );
+    log.println( "Log file '%s'", logPath.cstr() );
     printf( "Log file '%s'\n", logPath.cstr() );
 #else
-    logFile.init( null, true, "  " );
-    logFile.println( "Log stream stdout ... OK" );
+    log.init( null, true, "  " );
+    log.println( "Log stream stdout ... OK" );
 #endif
 
-    logFile.printlnETD( OZ_APP_NAME " started at" );
+    log.printlnETD( OZ_APP_NAME " started at" );
 
-    logFile.print( "Initializing SDL ..." );
+    log.print( "Initializing SDL ..." );
     if( SDL_Init( 0 ) || SDLNet_Init() ) {
-      logFile.printEnd( " Failed" );
+      log.printEnd( " Failed" );
       return;
     }
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
 
     initFlags |= INIT_SDL;
 
@@ -110,37 +110,37 @@ namespace server
 
     const char *data = config.get( "data", "/usr/share/openzone" );
 
-    logFile.print( "Going to working directory '%s' ...", data );
+    log.print( "Going to working directory '%s' ...", data );
 
     if( chdir( data ) != 0 ) {
-      logFile.printEnd( " Failed" );
+      log.printEnd( " Failed" );
       return;
     }
     else {
-      logFile.printEnd( " OK" );
+      log.printEnd( " OK" );
     }
 
-    logFile.println( "Initializing Game {" );
-    logFile.indent();
+    log.println( "Initializing Game {" );
+    log.indent();
     if( !game.init() ) {
       return;
     }
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
     initFlags |= INIT_GAME_INIT;
 
-    logFile.println( "Starting Game {" );
-    logFile.indent();
+    log.println( "Starting Game {" );
+    log.indent();
     game.start();
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
     initFlags |= INIT_GAME_START;
 
-    logFile.println( "MAIN LOOP {" );
-    logFile.indent();
+    log.println( "MAIN LOOP {" );
+    log.indent();
 
-    logFile.println( "MAIN LOOP {" );
-    logFile.indent();
+    log.println( "MAIN LOOP {" );
+    log.indent();
 
     uint tick     = config.get( "tick", 20 );
     // time passed form start of the frame
@@ -167,12 +167,12 @@ namespace server
     }
     while( true );
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
 
-    logFile.println( "Printing config at exit {" );
-    logFile.print( "%s", config.toString( "  " ).cstr() );
-    logFile.println( "}" );
+    log.println( "Printing config at exit {" );
+    log.print( "%s", config.toString( "  " ).cstr() );
+    log.println( "}" );
   }
 
 }
@@ -184,13 +184,13 @@ int main( int, char*[] )
     oz::server::main.main();
   }
   catch( oz::Exception e ) {
-    oz::logFile.resetIndent();
-    oz::logFile.println();
-    oz::logFile.println( "*** EXCEPTION: %s line %d", e.file, e.line );
-    oz::logFile.println( "*** MESSAGE: %s", e.message );
-    oz::logFile.println();
+    oz::log.resetIndent();
+    oz::log.println();
+    oz::log.println( "*** EXCEPTION: %s line %d", e.file, e.line );
+    oz::log.println( "*** MESSAGE: %s", e.message );
+    oz::log.println();
 
-    if( oz::logFile.isFile() ) {
+    if( oz::log.isFile() ) {
       printf( "*** EXCEPTION: %s line %d\n*** MESSAGE: %s\n\n", e.file, e.line, e.message );
     }
   }

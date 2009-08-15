@@ -19,8 +19,8 @@ namespace client
 
       struct Input
       {
-        ubyte *currKeys;
-        ubyte keys[SDLK_LAST];
+        ubyte *keys;
+        ubyte oldKeys[SDLK_LAST];
 
         struct Mouse
         {
@@ -52,7 +52,8 @@ namespace client
       float moveStep;
       float runStep;
 
-      bool  wasTabDown;
+      bool  fastMove;
+      int   botRequestTicket;
 
     public:
 

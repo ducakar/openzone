@@ -247,22 +247,24 @@ namespace client
     return true;
   }
 
-  OBJ::OBJ( const char *name )
+  OBJ::OBJ( const char *name_ )
   {
     FILE *file;
     char buffer[LINE_BUFFER_SIZE];
 
+    name = name_;
+
     // default texture if none loaded
     textureId = 0;
 
-    String sPath = String( "mdl/" ) + name;
+    String sPath = "mdl/" + name;
     String modelFile = sPath + "/data.obj";
-    String configFile = sPath + "/" + String( name ) + ".xml";
+    String configFile = sPath + "/" + name + ".xml";
 
     Config config;
     config.load( configFile );
 
-    logFile.println( "Loading OBJ model '%s' ...", modelFile.cstr() );
+    log.print( "Loading OBJ model '%s' ...", modelFile.cstr() );
 
     float scaling = config.get( "scale", 1.0f );
     Vec3 translation( config.get( "translate.x", 0.0f ),
@@ -272,7 +274,7 @@ namespace client
 
     file = fopen( modelFile.cstr(), "r" );
     if( file == null ) {
-      logFile.printEnd( "No such file" );
+      log.printEnd( "No such file" );
       throw Exception( 0, "OBJ model loading error" );
     }
 
@@ -291,7 +293,7 @@ namespace client
         case 'v': {
           if( !readVertexData( pos + 1, &tempVerts, &tempNormals, &tempTexCoords ) ) {
             fclose( file );
-            logFile.println( "invalid vertex line: %s", buffer );
+            log.println( "invalid vertex line: %s", buffer );
             throw Exception( 0, "OBJ model loading error" );
           }
           break;
@@ -302,7 +304,7 @@ namespace client
 
           if( !readFace( pos + 1, &face ) ) {
             fclose( file );
-            logFile.println( "invalid face line: %s", buffer );
+            log.println( "invalid face line: %s", buffer );
             throw Exception( 0, "OBJ model loading error" );
           }
           tempFaces << face;
@@ -312,7 +314,7 @@ namespace client
         case 'm': {
           if( aEquals( pos, "mtllib", 6 ) && !loadMaterial( sPath ) ) {
             fclose( file );
-            logFile.println( "cannot load material at line: %s", buffer );
+            log.println( "cannot load material at line: %s", buffer );
             throw Exception( 0, "OBJ model loading error" );
           }
           break;
@@ -355,20 +357,17 @@ namespace client
     else {
       throw Exception( 0, "OBJ model loading error" );
     }
+    log.printEnd( " OK" );
   }
 
   OBJ::~OBJ()
   {
-    for( int i = 0; i < faces.length(); i++ ) {
-      delete[] faces[i].vertIndices;
+    log.print( "Unloading OBJ model '%s' ...", name.cstr() );
+    trim();
+    context.freeTexture( textureId );
+    log.printEnd( " OK" );
 
-      if( faces[i].normIndices != null ) {
-        delete[] faces[i].normIndices;
-      }
-      if( faces[i].texCoordIndices != null ) {
-        delete[] faces[i].texCoordIndices;
-      }
-    }
+    assert( glGetError() == GL_NO_ERROR );
   }
 
   void OBJ::scale( float scale )
@@ -436,16 +435,31 @@ namespace client
     }
   }
 
-  uint OBJ::genList( const char *name )
+  void OBJ::genList()
   {
-    OBJ obj( name );
-
-    uint list = glGenLists( 1 );
+    list = glGenLists( 1 );
     glNewList( list, GL_COMPILE );
-      obj.draw();
+      draw();
     glEndList();
+  }
 
-    return list;
+  void OBJ::trim()
+  {
+    for( int i = 0; i < faces.length(); i++ ) {
+      delete[] faces[i].vertIndices;
+
+      if( faces[i].normIndices != null ) {
+        delete[] faces[i].normIndices;
+      }
+      if( faces[i].texCoordIndices != null ) {
+        delete[] faces[i].texCoordIndices;
+      }
+    }
+
+    vertices.clear();
+    normals.clear();
+    texCoords.clear();
+    faces.clear();
   }
 
 }

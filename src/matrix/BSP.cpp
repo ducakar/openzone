@@ -154,7 +154,7 @@ namespace oz
 
     FILE *f = fopen( path, "rb" );
     if( f == null ) {
-      logFile.printEnd( " Not found" );
+      log.printEnd( " Not found" );
       return false;
     }
 
@@ -162,7 +162,7 @@ namespace oz
     fread( &header, sizeof( Header ), 1, f );
 
     if( header.id != FOURCC( 'I', 'B', 'S', 'P' ) || header.version != 46 ) {
-      logFile.printEnd( " Wrong format" );
+      log.printEnd( " Wrong format" );
       return false;
     }
 
@@ -183,7 +183,7 @@ namespace oz
       texFlags[i] = texture.flags;
       texTypes[i] = texture.type;
 
-      logFile.println( "%s", name.cstr() );
+      log.println( "%s", name.cstr() );
 
       if( name.length() <= 12 || name == "textures/NULL" ) {
         textures[i] = -1;
@@ -191,7 +191,7 @@ namespace oz
       else {
         name = name.substring( 12 );
         textures[i] = translator.textureIndex( name );
-        logFile.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
+        log.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
       }
     }
 
@@ -391,7 +391,7 @@ namespace oz
 
     fclose( f );
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
     return true;
   }
 
@@ -402,14 +402,14 @@ namespace oz
       return false;
     }
 
-    logFile.print( "Loading Quake 3 BSP structure '%s' ...", name );
+    log.print( "Loading Quake 3 BSP structure '%s' ...", name );
 
     float scale  = bspConfig.get( "scale", 0.01f );
     float maxDim = bspConfig.get( "maxDim", Math::INF );
     bspConfig.clear();
 
     if( scale == Math::NaN || maxDim == Math::NaN ) {
-      logFile.printEnd( " Invalid config" );
+      log.printEnd( " Invalid config" );
       return false;
     }
 

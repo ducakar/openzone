@@ -38,6 +38,9 @@ namespace client
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;
 
+      static const float WATER_COLOR[];
+      static const float WATER_VISIBILITY;
+
       static const int   DELAYED_LISTS_MAX = 256;
 
       // cleanup interval (remove unused models)

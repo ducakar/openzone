@@ -79,5 +79,5 @@
  * Utilities
  */
 #include "Exception.h"
-#include "LogFile.h"
+#include "Log.h"
 #include "Config.h"

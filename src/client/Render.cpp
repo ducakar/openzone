@@ -17,7 +17,6 @@
 #include "Shape.h"
 
 #include "Sky.h"
-#include "Water.h"
 #include "Terrain.h"
 #include "BSP.h"
 
@@ -42,27 +41,30 @@ namespace client
   const float Render::NIGHT_FOG_COEFF = 2.0f;
   const float Render::NIGHT_FOG_DIST = 0.3f;
 
+  const float Render::WATER_COLOR[] = { 0.0f, 0.05f, 0.25f, 1.0f };
+  const float Render::WATER_VISIBILITY = 8.0f;
+
   void Render::init()
   {
     doScreenshot = false;
     clearCount   = 0;
 
-    logFile.println( "Initializing Graphics {" );
-    logFile.indent();
+    log.println( "Initializing Graphics {" );
+    log.indent();
 
     String sExtensions = (const char*) glGetString( GL_EXTENSIONS );
     Vector<String> extensions = sExtensions.trim().split( ' ' );
 
-    logFile.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
-    logFile.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );
-    logFile.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
-    logFile.println( "OpenGL extensions {" );
-    logFile.indent();
+    log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
+    log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );
+    log.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
+    log.println( "OpenGL extensions {" );
+    log.indent();
     foreach( extension, extensions.iterator() ) {
-      logFile.println( "%s", extension->cstr() );
+      log.println( "%s", extension->cstr() );
     }
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
 
     screenX = config.get( "screen.width", 1024 );
     screenY = config.get( "screen.height", 768 );
@@ -91,14 +93,14 @@ namespace client
 
     assert( glGetError() == GL_NO_ERROR );
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Render::load()
   {
-    logFile.println( "Loading Graphics {" );
-    logFile.indent();
+    log.println( "Loading Graphics {" );
+    log.indent();
 
     assert( glGetError() == GL_NO_ERROR );
 
@@ -136,8 +138,8 @@ namespace client
     glFogf( GL_FOG_END,
             bound( NIGHT_FOG_COEFF * sky.lightDir[2], NIGHT_FOG_DIST, 1.0f ) * perspectiveMax );
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Render::drawObject( Object *obj )
@@ -239,7 +241,7 @@ namespace client
     frustum.getExtrems( camera.p );
 
     sky.update();
-    water.update();
+//     water.update();
 
     // drawnStructures
     if( drawnStructures.length() != world.structures.length() ) {
@@ -284,9 +286,9 @@ namespace client
     // BEGIN RENDER
     if( isUnderWater ) {
       if( !wasUnderWater ) {
-        glClearColor( water.COLOR[0], water.COLOR[1], water.COLOR[2], water.COLOR[3] );
-        glFogfv( GL_FOG_COLOR, water.COLOR );
-        glFogf( GL_FOG_END, Water::VISIBILITY );
+        glClearColor( WATER_COLOR[0], WATER_COLOR[1], WATER_COLOR[2], WATER_COLOR[3] );
+        glFogfv( GL_FOG_COLOR, WATER_COLOR );
+        glFogf( GL_FOG_END, WATER_VISIBILITY );
       }
     }
     else {
@@ -460,15 +462,15 @@ namespace client
 
   void Render::free()
   {
-    logFile.println( "Shutting down Graphics {" );
-    logFile.indent();
+    log.println( "Shutting down Graphics {" );
+    log.indent();
 
     ui::free();
     models.free();
     bsps.free();
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
   }
 
 }

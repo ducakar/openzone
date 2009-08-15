@@ -36,12 +36,17 @@ namespace oz
 
     float stepInc;
     float stepMax;
+    float stepRate;
+    float stepRateSupp;
 
     float airControl;
+    float climbControl;
     float waterControl;
     float grabDistance;
 
     float stamina;
+    float staminaGain;
+    float staminaWaterDrain;
     float staminaRunDrain;
     float staminaJumpDrain;
 

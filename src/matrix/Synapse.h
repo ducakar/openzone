@@ -68,6 +68,10 @@ namespace oz
 
       Vector<Action>     useActions;
 
+      Vector<int>        putStructsIndices;
+      Vector<int>        putObjectsIndices;
+      Vector<int>        putPartsIndices;
+
     public:
 
       // isSingle XOR isServer XOR isClient
@@ -83,12 +87,10 @@ namespace oz
 
       explicit Synapse();
 
-      void clear();
-
-      // put a created object into the physicsl world
-      void put( Structure *str );
-      void put( Object *obj );
-      void put( Particle *part );
+      // put a created object into the physics world
+      int  put( Structure *str );
+      int  put( Object *obj );
+      int  put( Particle *part );
 
       // remove object from physical world, but don't delete it
       void cut( Structure *str );
@@ -102,23 +104,42 @@ namespace oz
 
       void use( Bot *user, Object *target );
 
+      // indices in World vectors after objects have been added
+      // (ticket is the integer returned by put())
+      int  getStructIndex( int ticket ) const;
+      int  getObjectIndex( int ticket ) const;
+      int  getPartIndex( int ticket ) const;
+
+      // clear puts, cuts, removed & actions
+      void clearPending();
+      // clear tickets
+      void clearTickets();
+      // clear everything
+      void clear();
+
   };
 
   extern Synapse synapse;
 
-  inline void Synapse::put( Structure *str )
+  inline int Synapse::put( Structure *str )
   {
+    int pos = putStructs.length();
     putStructs << str;
+    return pos;
   }
 
-  inline void Synapse::put( Object *obj )
+  inline int Synapse::put( Object *obj )
   {
+    int pos = putObjects.length();
     putObjects << obj;
+    return pos;
   }
 
-  inline void Synapse::put( Particle *part )
+  inline int Synapse::put( Particle *part )
   {
+    int pos = putParts.length();
     putParts << part;
+    return pos;
   }
 
   inline void Synapse::cut( Structure *str )
@@ -154,6 +175,21 @@ namespace oz
   inline void Synapse::use( Bot *user, Object *target )
   {
     useActions << Action( user, target );
+  }
+
+  inline int Synapse::getStructIndex( int ticket ) const
+  {
+    return putStructsIndices[ticket];
+  }
+
+  inline int Synapse::getObjectIndex( int ticket ) const
+  {
+    return putObjectsIndices[ticket];
+  }
+
+  inline int Synapse::getPartIndex( int ticket ) const
+  {
+    return putPartsIndices[ticket];
   }
 
 }

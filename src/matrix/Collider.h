@@ -20,6 +20,8 @@ namespace oz
     Vec3   normal;
     Object *obj;
 
+    // only set for object trim
+    bool   onWater;
     bool   inWater;
     bool   underWater;
     bool   onLadder;

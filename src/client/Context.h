@@ -46,6 +46,9 @@ namespace client
       struct Resource
       {
         Type id;
+        // for sounds:
+        // -1: not loaded
+        // -2: scheduled for removal
         int  nUsers;
 
         explicit Resource() : nUsers( 0 ) {}
@@ -71,7 +74,7 @@ namespace client
       HashString< Resource<MD2*>, 253 > md2StaticModels;
       HashString< Resource<MD3*>, 253 > md3Models;
       HashString< Resource<MD3*>, 253 > md3StaticModels;
-      HashString< Resource<uint>, 253 > objModels;
+      HashString< Resource<OBJ*>, 253 > objModels;
 
       HashString<Model::InitFunc, 253> modelClasses;
       HashString<Audio::InitFunc, 253> audioClasses;
@@ -128,6 +131,7 @@ namespace client
 
       uint requestSound( int resource );
       void releaseSound( int resource );
+      void freeSound( int resource );
 
       uint genList();
       uint genLists( int count );
@@ -150,18 +154,36 @@ namespace client
 
       Model *createModel( const Object *obj )
       {
-        if( !modelClasses.contains( obj->type->modelType ) ) {
-          throw Exception( 0, "Invalid Model" );
+        if( obj->flags & Object::MODEL_BIT ) {
+          assert( obj->type->modelType.length() > 0 );
+
+          if( !modelClasses.contains( obj->type->modelType ) ) {
+            throw Exception( 0, "Invalid Model" );
+          }
+          return modelClasses.cachedValue()( obj );
         }
-        return modelClasses.cachedValue()( obj );
+        else {
+          assert( obj->type->modelType.length() == 0 );
+
+          return null;
+        }
       }
 
       Audio *createAudio( const Object *obj )
       {
-        if( !audioClasses.contains( obj->type->audioType ) ) {
-          throw Exception( 0, "Invalid Audio" );
+        if( obj->flags & Object::AUDIO_BIT ) {
+          assert( obj->type->audioType.length() > 0 );
+
+          if( !audioClasses.contains( obj->type->audioType ) ) {
+            throw Exception( 0, "Invalid Audio" );
+          }
+          return audioClasses.cachedValue()( obj );
         }
-        return audioClasses.cachedValue()( obj );
+        else {
+          assert( obj->type->audioType.length() == 0 );
+
+          return null;
+        }
       }
 
       Context();

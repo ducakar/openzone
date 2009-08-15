@@ -18,7 +18,7 @@ namespace oz
   Synapse::Synapse() : isClient( false )
   {}
 
-  void Synapse::clear()
+  void Synapse::clearPending()
   {
     putStructs.clear();
     putObjects.clear();
@@ -33,6 +33,19 @@ namespace oz
     removeParts.clear();
 
     useActions.clear();
+  }
+
+  void Synapse::clearTickets()
+  {
+    putStructsIndices.clear();
+    putObjectsIndices.clear();
+    putPartsIndices.clear();
+  }
+
+  void Synapse::clear()
+  {
+    clearPending();
+    clearTickets();
   }
 
 }

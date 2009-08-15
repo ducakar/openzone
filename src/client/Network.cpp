@@ -22,18 +22,18 @@ namespace client
     const char *host = config.get( "net.server", "localhost" );
     int port = config.get( "net.port", 6666 );
 
-    logFile.print( "Connecting to %s:%d ...", host, port );
+    log.print( "Connecting to %s:%d ...", host, port );
 
     IPaddress ip;
     SDLNet_ResolveHost( &ip, host, port );
     socket = SDLNet_TCP_Open( &ip );
 
     if( socket == null ) {
-      logFile.printEnd( " Failed" );
+      log.printEnd( " Failed" );
       return false;
     }
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
     return true;
   }
 

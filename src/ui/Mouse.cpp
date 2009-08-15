@@ -26,7 +26,8 @@ namespace ui
     doShow = false;
     setBounds( maxX, maxY );
 
-    ptrTexId = context.loadTexture( "base/cursors/left_ptr.png", false, GL_NEAREST, GL_NEAREST );
+    ptrTexId = context.loadTexture( "base/left_ptr.png",
+                                    false, GL_NEAREST, GL_NEAREST );
   }
 
   void Mouse::free()
