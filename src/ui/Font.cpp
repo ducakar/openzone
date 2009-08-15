@@ -32,10 +32,10 @@ namespace ui
     path = config.get( "ui.font.mono.file", "/usr/share/fonts/TTF/DejaVuSansMono.ttf" );
     monoHeight = config.get( "ui.font.mono.height", 16 );
 
-    logFile.print( "Opening font '%s' %d px ...", path, monoHeight );
+    log.print( "Opening font '%s' %d px ...", path, monoHeight );
     monoFont = TTF_OpenFont( path, monoHeight );
     if( monoFont == null ) {
-      logFile.printEnd( " %s", TTF_GetError() );
+      log.printEnd( " %s", TTF_GetError() );
       return false;
     }
     monoHeight = TTF_FontHeight( monoFont );
@@ -43,26 +43,26 @@ namespace ui
     path = config.get( "ui.font.sans.file", "/usr/share/fonts/TTF/DejaVuSans.ttf" );
     sansHeight = config.get( "ui.font.sans.height", 16 );
 
-    logFile.print( "Opening font '%s' %px ...", path, sansHeight );
+    log.print( "Opening font '%s' %px ...", path, sansHeight );
     sansFont = TTF_OpenFont( path, sansHeight );
     if( sansFont == null ) {
-      logFile.printEnd( " %s", TTF_GetError() );
+      log.printEnd( " %s", TTF_GetError() );
       TTF_CloseFont( monoFont );
       monoFont = null;
       return false;
     }
     sansHeight = TTF_FontHeight( sansFont );
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
     return true;
   }
 
   void Font::free()
   {
-    logFile.print( "Closing font ..." );
+    log.print( "Closing font ..." );
 
     if( TTF_WasInit() == 0 ) {
-      logFile.printEnd( " Not initialized" );
+      log.printEnd( " Not initialized" );
       return;
     }
     if( monoFont != null ) {
@@ -75,7 +75,7 @@ namespace ui
     }
     TTF_Quit();
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
   }
 
 }

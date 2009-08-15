@@ -19,13 +19,15 @@ namespace oz
     public:
 
       static const float G_ACCEL;
+      static const float MAX_VELOCITY2;
 
       // thread synchronization
       SDL_semaphore *semaphore;
 
       void load();
-      void update();
       void free();
+
+      void update();
   };
 
   extern Matrix matrix;

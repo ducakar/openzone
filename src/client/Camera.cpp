@@ -19,7 +19,6 @@ namespace client
 
   Camera camera;
 
-  const float Camera::THIRD_PERSON_DIST      = 2.2f;
   const float Camera::THIRD_PERSON_CLIP_DIST = 0.2f;
 
   Camera::Camera()
@@ -40,9 +39,10 @@ namespace client
 
   void Camera::init()
   {
-    isThirdPerson = config.get( "render.camera.thirdPerson", false );
-    smoothCoef = config.get( "render.camera.smoothCoef", 0.3f );
-    smoothCoef_1 = 1.0f - smoothCoef;
+    isThirdPerson   = config.get( "render.camera.thirdPerson", false );
+    thirdPersonDist = config.get( "render.camera.thirdPersonDistance", 2.5f );
+    smoothCoef      = config.get( "render.camera.smoothCoef", 0.3f );
+    smoothCoef_1    = 1.0f - smoothCoef;
   }
 
   void Camera::update()
@@ -76,7 +76,7 @@ namespace client
 
       if( isThirdPerson ) {
         Vec3 origin = bot->p + bot->camPos;
-        Vec3 offset = -at * THIRD_PERSON_DIST;
+        Vec3 offset = -at * thirdPersonDist;
 
         collider.translate( origin, offset, bot );
         offset *= collider.hit.ratio;

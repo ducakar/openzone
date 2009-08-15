@@ -1,5 +1,5 @@
 /*
- *  LogFile.cpp
+ *  Log.cpp
  *
  *  Utility for writing a log file
  *
@@ -15,11 +15,11 @@
 namespace oz
 {
 
-  LogFile logFile;
+  Log log;
 
   // first parameter is file name, the other tells us if we want to clear its content if
   // the file already exists
-  bool LogFile::init( const char *fileName, bool clearFile, const char *indentStr_ )
+  bool Log::init( const char *fileName, bool clearFile, const char *indentStr_ )
   {
     // initalize ident
     tabs = 0;
@@ -49,12 +49,12 @@ namespace oz
     return true;
   }
 
-  bool LogFile::isFile() const
+  bool Log::isFile() const
   {
     return !isStdout;
   }
 
-  void LogFile::printEnd( const char *s, ... ) const
+  void Log::printEnd( const char *s, ... ) const
   {
     va_list ap;
     FILE *f;
@@ -71,7 +71,7 @@ namespace oz
     }
   }
 
-  void LogFile::print( const char *s, ... ) const
+  void Log::print( const char *s, ... ) const
   {
     va_list ap;
     FILE *f;
@@ -90,7 +90,7 @@ namespace oz
     }
   }
 
-  void LogFile::println( const char *s, ... ) const
+  void Log::println( const char *s, ... ) const
   {
     va_list ap;
     FILE *f;
@@ -110,7 +110,7 @@ namespace oz
     }
   }
 
-  void LogFile::printlnBT( const char *s, ... ) const
+  void Log::printlnBT( const char *s, ... ) const
   {
     va_list ap;
     FILE *f;
@@ -137,7 +137,7 @@ namespace oz
     }
   }
 
-  void LogFile::printlnET( const char *s, ... ) const
+  void Log::printlnET( const char *s, ... ) const
   {
     va_list ap;
     FILE *f;
@@ -162,7 +162,7 @@ namespace oz
     }
   }
 
-  void LogFile::printlnETD( const char *s, ... ) const
+  void Log::printlnETD( const char *s, ... ) const
   {
     va_list ap;
     FILE *f;
@@ -189,7 +189,7 @@ namespace oz
     }
   }
 
-  void LogFile::println() const
+  void Log::println() const
   {
     FILE *f;
 
@@ -202,24 +202,24 @@ namespace oz
     }
   }
 
-  void LogFile::resetIndent()
+  void Log::resetIndent()
   {
     tabs = 0;
   }
 
-  void LogFile::indent()
+  void Log::indent()
   {
     tabs++;
   }
 
-  void LogFile::unindent()
+  void Log::unindent()
   {
     if( tabs ) {
       tabs--;
     }
   }
 
-  void LogFile::clear() const
+  void Log::clear() const
   {
     if( !isStdout ) {
       FILE *f = fopen( logFile, "w" );

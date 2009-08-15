@@ -60,7 +60,6 @@ namespace oz
     public:
 
       static const float FLOOR_NORMAL_Z;
-      static const float MAX_VELOCITY2;
 
       void setG( float gAccel );
       void update();

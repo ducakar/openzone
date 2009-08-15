@@ -19,8 +19,6 @@ namespace client
   {
     private:
 
-      // how far behind the eyes the camera should be
-      static const float THIRD_PERSON_DIST;
       // leave this much space between obstacle and camera, if camera is brought closer to the eyes
       // because of an obstacle
       static const float THIRD_PERSON_CLIP_DIST;
@@ -51,6 +49,8 @@ namespace client
       int   botIndex;
       Bot   *bot;
       bool  isThirdPerson;
+      // how far behind the eyes the camera should be
+      float thirdPersonDist;
 
       Camera();
 

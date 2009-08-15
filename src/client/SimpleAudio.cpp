@@ -32,17 +32,17 @@ namespace client
 
     // friction
     if( ( obj->flags & Object::FRICTING_BIT ) && samples[SND_FRICTING] >= 0 ) {
-//       float dv2 = obj->velocity.x*obj->velocity.x + obj->velocity.y*obj->velocity.y;
-      playContSound( samples[SND_FRICTING], 1.0f, (uint) &*obj );
+      float dv = Math::sqrt( obj->velocity.x*obj->velocity.x + obj->velocity.y*obj->velocity.y );
+      playContSound( samples[SND_FRICTING], dv / 1.0f, (uint) &*obj );
     }
 
     // splash
-    if( ( obj->flags & Object::IN_WATER_BIT ) && !( obj->oldFlags & Object::IN_WATER_BIT ) ) {
+    if( ( obj->flags & Object::ON_WATER_BIT ) && !( obj->oldFlags & Object::ON_WATER_BIT ) ) {
       if( obj->velocity.z < -6.0f && samples[SND_SPLASH_HARD] >= 0 ) {
         playSound( samples[SND_SPLASH_HARD], obj->velocity.z / -8.0f );
       }
       else if( obj->velocity.z < -2.0f && samples[SND_SPLASH_SOFT] >= 0 ) {
-        playSound( samples[SND_SPLASH_SOFT], obj->velocity.z + 2.0f / -8.0f );
+        playSound( samples[SND_SPLASH_SOFT], obj->velocity.z / -8.0f );
       }
     }
 

@@ -24,6 +24,7 @@ namespace oz
 
   struct Sector
   {
+    static const int   DIMI;
     static const float DIM;
     static const float RADIUS;
 
@@ -38,13 +39,14 @@ namespace oz
     public:
 
       // # of sectors on each (x, y) axis
-      static const int MAX = 128;
+      static const int   MAX = 128;
       static const float DIM;
 
-      int                minSectX;
-      int                minSectY;
-      int                maxSectX;
-      int                maxSectY;
+      // for returning getInters sector indices
+      int                minX;
+      int                minY;
+      int                maxX;
+      int                maxY;
 
       Sky                sky;
       Terrain            terrain;
@@ -63,8 +65,8 @@ namespace oz
     public:
 
       // get pointer to the sector the point is in
-      Sector* getSector( float x, float y );
-      Sector* getSector( const Vec3 &p );
+      Sector *getSector( float x, float y );
+      Sector *getSector( const Vec3 &p );
 
       // get indices of the sector the point is in
       void getInters( float x, float y, float epsilon = 0.0f );
@@ -120,8 +122,8 @@ namespace oz
 
   inline Sector *World::getSector( float x, float y )
   {
-    int ix = (int)( ( x + World::DIM ) / Sector::DIM );
-    int iy = (int)( ( y + World::DIM ) / Sector::DIM );
+    int ix = (int) ( x + World::DIM ) / Sector::DIMI;
+    int iy = (int) ( y + World::DIM ) / Sector::DIMI;
 
     ix = bound( ix, 0, World::MAX - 1 );
     iy = bound( iy, 0, World::MAX - 1 );
@@ -131,69 +133,54 @@ namespace oz
 
   inline Sector *World::getSector( const Vec3 &p )
   {
-    int ix = (int)( ( p.x + World::DIM ) / Sector::DIM );
-    int iy = (int)( ( p.y + World::DIM ) / Sector::DIM );
-
-    ix = bound( ix, 0, World::MAX - 1 );
-    iy = bound( iy, 0, World::MAX - 1 );
-
-    return &sectors[ix][iy];
+    return getSector( p.x, p.y );
   }
 
   inline void World::getInters( float x, float y, float epsilon )
   {
-    minSectX = (int)( ( x - epsilon + World::DIM ) / Sector::DIM );
-    minSectY = (int)( ( y - epsilon + World::DIM ) / Sector::DIM );
+    minX = (int) ( x - epsilon + World::DIM ) / Sector::DIMI;
+    minY = (int) ( y - epsilon + World::DIM ) / Sector::DIMI;
 
-    maxSectX = (int)( ( x + epsilon + World::DIM ) + 1 / Sector::DIM );
-    maxSectY = (int)( ( y + epsilon + World::DIM ) + 1 / Sector::DIM );
+    maxX = (int) ( x + epsilon + World::DIM ) / Sector::DIMI;
+    maxY = (int) ( y + epsilon + World::DIM ) / Sector::DIMI;
 
-    minSectX = bound( minSectX, 0, World::MAX - 1 );
-    minSectY = bound( minSectY, 0, World::MAX - 1 );
-    maxSectX = bound( maxSectX, 0, World::MAX - 1 );
-    maxSectY = bound( maxSectY, 0, World::MAX - 1 );
+    minX = bound( minX, 0, World::MAX - 1 );
+    minY = bound( minY, 0, World::MAX - 1 );
+    maxX = bound( maxX, 0, World::MAX - 1 );
+    maxY = bound( maxY, 0, World::MAX - 1 );
   }
 
   inline void World::getInters( const Vec3 &p, float epsilon )
   {
-    minSectX = (int)( ( p.x - epsilon + World::DIM ) / Sector::DIM );
-    minSectY = (int)( ( p.y - epsilon + World::DIM ) / Sector::DIM );
-
-    maxSectX = (int)( ( p.x + epsilon + World::DIM ) / Sector::DIM );
-    maxSectY = (int)( ( p.y + epsilon + World::DIM ) / Sector::DIM );
-
-    minSectX = bound( minSectX, 0, World::MAX - 1 );
-    minSectY = bound( minSectY, 0, World::MAX - 1 );
-    maxSectX = bound( maxSectX, 0, World::MAX - 1 );
-    maxSectY = bound( maxSectY, 0, World::MAX - 1 );
+    return getInters( p.x, p.y, epsilon );
   }
 
   inline void World::getInters( const AABB &bb, float epsilon )
   {
-    minSectX = (int)( ( bb.p.x - bb.dim.x - epsilon + World::DIM ) / Sector::DIM );
-    minSectY = (int)( ( bb.p.y - bb.dim.y - epsilon + World::DIM ) / Sector::DIM );
+    minX = (int) ( bb.p.x - bb.dim.x - epsilon + World::DIM ) / Sector::DIMI;
+    minY = (int) ( bb.p.y - bb.dim.y - epsilon + World::DIM ) / Sector::DIMI;
 
-    maxSectX = (int)( ( bb.p.x + bb.dim.x + epsilon + World::DIM ) / Sector::DIM );
-    maxSectY = (int)( ( bb.p.y + bb.dim.y + epsilon + World::DIM ) / Sector::DIM );
+    maxX = (int) ( bb.p.x + bb.dim.x + epsilon + World::DIM ) / Sector::DIMI;
+    maxY = (int) ( bb.p.y + bb.dim.y + epsilon + World::DIM ) / Sector::DIMI;
 
-    minSectX = bound( minSectX, 0, World::MAX - 1 );
-    minSectY = bound( minSectY, 0, World::MAX - 1 );
-    maxSectX = bound( maxSectX, 0, World::MAX - 1 );
-    maxSectY = bound( maxSectY, 0, World::MAX - 1 );
+    minX = bound( minX, 0, World::MAX - 1 );
+    minY = bound( minY, 0, World::MAX - 1 );
+    maxX = bound( maxX, 0, World::MAX - 1 );
+    maxY = bound( maxY, 0, World::MAX - 1 );
   }
 
   inline void World::getInters( const Bounds &bounds, float epsilon )
   {
-    minSectX = (int)( ( bounds.mins.x - epsilon + World::DIM ) / Sector::DIM );
-    minSectY = (int)( ( bounds.mins.y - epsilon + World::DIM ) / Sector::DIM );
+    minX = (int) ( bounds.mins.x - epsilon + World::DIM ) / Sector::DIMI;
+    minY = (int) ( bounds.mins.y - epsilon + World::DIM ) / Sector::DIMI;
 
-    maxSectX = (int)( ( bounds.maxs.x + epsilon + World::DIM ) / Sector::DIM );
-    maxSectY = (int)( ( bounds.maxs.y + epsilon + World::DIM ) / Sector::DIM );
+    maxX = (int) ( bounds.maxs.x + epsilon + World::DIM ) / Sector::DIMI;
+    maxY = (int) ( bounds.maxs.y + epsilon + World::DIM ) / Sector::DIMI;
 
-    minSectX = bound( minSectX, 0, World::MAX - 1 );
-    minSectY = bound( minSectY, 0, World::MAX - 1 );
-    maxSectX = bound( maxSectX, 0, World::MAX - 1 );
-    maxSectY = bound( maxSectY, 0, World::MAX - 1 );
+    minX = bound( minX, 0, World::MAX - 1 );
+    minY = bound( minY, 0, World::MAX - 1 );
+    maxX = bound( maxX, 0, World::MAX - 1 );
+    maxY = bound( maxY, 0, World::MAX - 1 );
   }
 
 }

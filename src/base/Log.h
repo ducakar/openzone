@@ -1,5 +1,5 @@
 /*
- *  LogFile.h
+ *  Log.h
  *
  *  Utility for writing a log file
  *
@@ -11,7 +11,7 @@
 namespace oz
 {
 
-  class LogFile
+  class Log
   {
     private:
 
@@ -98,6 +98,6 @@ namespace oz
       void clear() const;
   };
 
-  extern LogFile logFile;
+  extern Log log;
 
 }

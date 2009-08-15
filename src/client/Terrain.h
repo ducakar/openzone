@@ -10,48 +10,30 @@
 
 #include "matrix/bv.h"
 
-#define TERRA_DEPTH            2
-#define TERRA_DETAILTEX_SCALE  4
-#define TERRA_GROUNDTEX_SCALE  1
-
 namespace oz
 {
 namespace client
 {
 
-  struct Quadtree : Sphere
-  {
-    union
-    {
-      Quadtree *next[4];
-      uint     list;
-    };
-
-    ~Quadtree();
-  };
-
   class Terrain
   {
     private:
 
-      uint tTerraDetail;
-      uint tTerraMap;
+      static const float DETAILTEX_SCALE;
 
-      Quadtree *qTerra;
+      uint detailTexId;
+      uint mapTexId;
 
-      uint makeQuad( int minX, int minY, int maxX, int maxY, float *minHeight, float *maxHeight );
-      void buildQuadtree( Quadtree *qTree, int minX, int minY, int maxX, int maxY,
-                          float *minHeight, float *maxHeight );
-      void drawQuadtree( const Quadtree *qTree );
+      Vec3  *normals;
+      float ( *texCoords )[2];
+      Vec3  *vertices;
 
     public:
-
-      ~Terrain();
 
       void init();
       void free();
 
-      void draw();
+      void draw() const;
   };
 
 }

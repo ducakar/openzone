@@ -129,7 +129,7 @@ namespace client
     int texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
 
     if( texNum == ~0 ) {
-      logFile.println( "Error creating texture from buffer" );
+      log.println( "Error creating texture from buffer" );
     }
     return texNum;
   }
@@ -141,7 +141,7 @@ namespace client
                                  magFilter, minFilter );
 
     if( texNum == ~0 ) {
-      logFile.println( "Error creating normalmap texture from buffer" );
+      log.println( "Error creating normalmap texture from buffer" );
     }
     return texNum;
   }
@@ -157,14 +157,14 @@ namespace client
     String &name = translator.textures[resource].name;
     String &path = translator.textures[resource].path;
 
-    logFile.print( "Loading registered texture '%s' ...", name.cstr() );
+    log.print( "Loading registered texture '%s' ...", name.cstr() );
 
     SDL_Surface *image = IMG_Load( path.cstr() );
     if( image == null ) {
-      logFile.printEnd( " No such file" );
+      log.printEnd( " No such file" );
       return 0;
     }
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createTexture( (const ubyte*) image->pixels, image->w, image->h,
@@ -188,14 +188,14 @@ namespace client
     String &name = translator.textures[resource].name;
     String &path = translator.textures[resource].path;
 
-    logFile.print( "Loading registerded normalmap texture '%s' ...", name.cstr() );
+    log.print( "Loading registerded normalmap texture '%s' ...", name.cstr() );
 
     SDL_Surface *image = IMG_Load( path.cstr() );
     if( image == null ) {
-      logFile.printEnd( " No such file" );
+      log.printEnd( " No such file" );
       return 0;
     }
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createNormalmap( (ubyte*) image->pixels, lightNormal, image->w, image->h,
@@ -214,20 +214,22 @@ namespace client
 
     textures[resource].nUsers--;
     if( textures[resource].nUsers == 0 ) {
+      log.print( "Unloading texture '%s' ...", translator.textures[resource].name.cstr() );
       glDeleteTextures( 1, &textures[resource].id );
+      log.printEnd( " OK" );
     }
   }
 
   uint Context::loadTexture( const char *path, bool wrap, int magFilter, int minFilter )
   {
-    logFile.print( "Loading texture from file '%s' ...", path );
+//     log.print( "Loading texture from file '%s' ...", path );
 
     SDL_Surface *image = IMG_Load( path );
     if( image == null ) {
-      logFile.printEnd( " No such file" );
+//       log.printEnd( " No such file" );
       return 0;
     }
-    logFile.printEnd( " OK" );
+//     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createTexture( (const ubyte*) image->pixels, image->w, image->h,
@@ -240,14 +242,14 @@ namespace client
   uint Context::loadNormalmap( const char *path, const Vec3 &lightNormal,
                                bool wrap, int magFilter, int minFilter )
   {
-    logFile.print( "Loading normalmap texture from file '%s' ...", path );
+//     log.print( "Loading normalmap texture from file '%s' ...", path );
 
     SDL_Surface *image = IMG_Load( path );
     if( image == null ) {
-      logFile.printEnd( " No such file" );
+//       log.printEnd( " No such file" );
       return 0;
     }
-    logFile.printEnd( " OK" );
+//     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createNormalmap( (ubyte*) image->pixels, lightNormal, image->w, image->h,
@@ -264,19 +266,25 @@ namespace client
 
   uint Context::requestSound( int resource )
   {
-    if( sounds[resource].nUsers > 0 ) {
+    assert( alGetError() == AL_NO_ERROR );
+
+    if( sounds[resource].nUsers == -2 ) {
+      sounds[resource].nUsers = 1;
+      return sounds[resource].id;
+    }
+    if( sounds[resource].nUsers >= 0 ) {
       sounds[resource].nUsers++;
       return sounds[resource].id;
     }
     sounds[resource].nUsers = 1;
 
     const String &path = translator.sounds[resource].path;
-    logFile.print( "Loading sound '%s' ...", translator.sounds[resource].name.cstr() );
+    log.print( "Loading sound '%s' ...", translator.sounds[resource].name.cstr() );
 
     int dot = path.lastIndex( '.' );
     if( dot <= 0 ) {
-      logFile.printEnd( " Extension missing" );
-      return false;
+      log.printEnd( " Extension missing" );
+      return AL_NONE;
     }
     String extension = path.substring( dot );
 
@@ -284,7 +292,7 @@ namespace client
       sounds[resource].id = alutCreateBufferFromFile( path );
 
       if( sounds[resource].id == AL_NONE ) {
-        logFile.printEnd( " Failed" );
+        log.printEnd( " Failed" );
         return AL_NONE;
       }
     }
@@ -296,20 +304,20 @@ namespace client
       ALenum         format;
 
       if( oggFile == null ) {
-        logFile.printEnd( " Failed to open file" );
-        return false;
+        log.printEnd( " Failed to open file" );
+        return AL_NONE;
       }
       if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
         fclose( oggFile );
-        logFile.printEnd( " Failed to open Ogg stream" );
-        return false;
+        log.printEnd( " Failed to open Ogg stream" );
+        return AL_NONE;
       }
 
       vorbisInfo = ov_info( &oggStream, -1 );
       if( vorbisInfo == null ) {
         ov_clear( &oggStream );
-        logFile.printEnd( " Failed to read Vorbis header" );
-        return false;
+        log.printEnd( " Failed to read Vorbis header" );
+        return AL_NONE;
       }
 
       if( vorbisInfo->channels == 1 ) {
@@ -320,7 +328,7 @@ namespace client
       }
       else {
         ov_clear( &oggStream );
-        logFile.printEnd( " Invalid number of channels, should be 1 or 2" );
+        log.printEnd( " Invalid number of channels, should be 1 or 2" );
         return AL_NONE;
       }
 
@@ -334,7 +342,7 @@ namespace client
         bytesRead += result;
         if( result < 0 ) {
           ov_clear( &oggStream );
-          logFile.printEnd( " Failed to decode Vorbis stream, error %d", result );
+          log.printEnd( " Failed to decode Vorbis stream, error %d", result );
           return AL_NONE;
         }
       }
@@ -345,16 +353,18 @@ namespace client
       alGenBuffers( 1, &sounds[resource].id );
       alBufferData( sounds[resource].id, format, data, bytesRead, vorbisInfo->rate );
       if( alGetError() != AL_NO_ERROR ) {
-        logFile.printEnd( " Failed to create buffer" );
+        log.printEnd( " Failed to create buffer" );
         return AL_NONE;
       }
     }
     else {
-      logFile.printEnd( " Unknown file extension '%s'", extension.cstr() );
+      log.printEnd( " Unknown file extension '%s'", extension.cstr() );
       return AL_NONE;
     }
 
-    logFile.printEnd( " OK" );
+    assert( alGetError() == AL_NO_ERROR );
+
+    log.printEnd( " OK" );
     return sounds[resource].id;
   }
 
@@ -364,9 +374,19 @@ namespace client
     assert( sounds[resource].nUsers > 0 );
 
     sounds[resource].nUsers--;
-    if( sounds[resource].nUsers == 0 ) {
-      alDeleteBuffers( 1, &sounds[resource].id );
-    }
+  }
+
+  void Context::freeSound( int resource )
+  {
+    assert( 0 <= resource && resource < translator.sounds.length() );
+    assert( sounds[resource].nUsers == -2 );
+
+    log.print( "Unloading sound '%s' ...", translator.sounds[resource].name.cstr() );
+    alDeleteBuffers( 1, &context.sounds[resource].id );
+    context.sounds[resource].nUsers = -1;
+    log.printEnd( " OK" );
+
+    assert( alGetError() == AL_NO_ERROR );
   }
 
   uint Context::genList()
@@ -425,12 +445,7 @@ namespace client
 
       MD2 *&md2 = md2StaticModels.cachedValue().object;
       md2 = new MD2( path );
-
-      md2->list = glGenLists( 1 );
-      glNewList( md2->list, GL_COMPILE );
-        md2->drawFrame( 0 );
-      glEndList();
-
+      md2->genList();
       md2->trim();
     }
     md2StaticModels.cachedValue().nUsers++;
@@ -483,12 +498,7 @@ namespace client
 
       MD3 *&md3 = md3StaticModels.cachedValue().object;
       md3 = new MD3( path );
-
-      md3->list = glGenLists( 1 );
-      glNewList( md3->list, GL_COMPILE );
-        md3->drawFrame( 0 );
-      glEndList();
-
+      md3->genList();
       md3->trim();
     }
     md3StaticModels.cachedValue().nUsers++;
@@ -513,11 +523,15 @@ namespace client
   uint Context::loadOBJModel( const char *path )
   {
     if( !objModels.contains( path ) ) {
-      objModels.add( path, Resource<uint>() );
-      objModels.cachedValue().id = OBJ::genList( path );
+      objModels.add( path, Resource<OBJ*>() );
+
+      OBJ *&obj = objModels.cachedValue().object;
+      obj = new OBJ( path );
+      obj->genList();
+      obj->trim();
     }
     objModels.cachedValue().nUsers++;
-    return objModels.cachedValue().id;
+    return objModels.cachedValue().object->list;
   }
 
   void Context::releaseOBJModel( const char *path )
@@ -528,7 +542,8 @@ namespace client
       objModels.cachedValue().nUsers--;
 
       if( objModels.cachedValue().nUsers == 0 ) {
-        glDeleteLists( objModels.cachedValue().id, 1 );
+        glDeleteLists( objModels.cachedValue().object->list, 1 );
+        delete objModels.cachedValue().object;
         objModels.remove( path );
       }
     }
@@ -539,12 +554,17 @@ namespace client
 
   void Context::init()
   {
-    logFile.print( "Initializing Context ..." );
+    log.print( "Initializing Context ..." );
 
     assert( textures == null && sounds == null );
 
     textures = new Resource<uint>[translator.textures.length()];
     sounds = new Resource<uint>[translator.sounds.length()];
+
+    for( int i = 0; i < translator.sounds.length(); i++ ) {
+      sounds[i].id = AL_NONE;
+      sounds[i].nUsers = -1;
+    }
 
     OZ_REGISTER_MODELCLASS( MD2 );
     OZ_REGISTER_MODELCLASS( MD2Static );
@@ -553,18 +573,23 @@ namespace client
 
     OZ_REGISTER_AUDIOCLASS( Simple );
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
   }
 
   void Context::free()
   {
-    logFile.print( "Clearing Context ..." );
+    log.print( "Clearing Context ..." );
 
     if( textures != null ) {
       delete[] textures;
       textures = null;
     }
     if( sounds != null ) {
+      for( int i = 0; i < translator.sounds.length(); i++ ) {
+        if( sounds[i].id != AL_NONE ) {
+          alDeleteBuffers( 1, &sounds[i].id );
+        }
+      }
       delete[] sounds;
       sounds = null;
     }
@@ -578,7 +603,7 @@ namespace client
     modelClasses.clear();
     audioClasses.clear();
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
   }
 
 }

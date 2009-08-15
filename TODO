@@ -8,16 +8,14 @@ Matrix
   ? reinvent cylinder
 
 Client
-  - 3rd person
   - MD3 animation
-  - water
   - FireModel
   - weather
   - networking support
 
 UI
   - events, callbacks
-  - standard elements
+  - standard components
   - HUD
   - inventory
 

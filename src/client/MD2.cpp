@@ -259,7 +259,7 @@ namespace client
 
   Vec3 MD2::vertList[MAX_VERTS];
 
-  MD2::MD2( const char *name )
+  MD2::MD2( const char *name_ )
   {
     FILE      *file;
     MD2Header header;
@@ -268,23 +268,25 @@ namespace client
     Vec3      *pVerts;
     int       *pNormals;
 
-    String sPath = String( "mdl/" ) + name;
+    name = name_;
+
+    String sPath = "mdl/" + name;
     String modelFile = sPath + "/tris.md2";
     String skinFile = sPath + "/skin.jpg";
-    String configFile = sPath + "/" + String( name ) + ".xml";
+    String configFile = sPath + "/" + name + ".xml";
 
-    logFile.print( "Loading MD2 model '%s' ...", modelFile.cstr() );
+    log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
     file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
-      logFile.printEnd( " No such file" );
+      log.printEnd( " No such file" );
       throw Exception( 0, "MD2 model loading error" );
     }
 
     fread( &header, 1, sizeof( header ), file );
     if( header.id != FOURCC( 'I', 'D', 'P', '2' ) || header.version != 8 ) {
       fclose( file );
-      logFile.printEnd( " Invalid format" );
+      log.printEnd( " Invalid format" );
       throw Exception( 0, "MD2 model loading error" );
     }
 
@@ -293,7 +295,7 @@ namespace client
 
     if( nFrames <= 0 || nVerts <= 0 ) {
       fclose( file );
-      logFile.printEnd( " Format error" );
+      log.printEnd( " Format error" );
       throw Exception( 0, "MD2 model loading error" );
     }
 
@@ -326,7 +328,7 @@ namespace client
     delete[] buffer;
     fclose( file );
 
-    logFile.printEnd( "OK" );
+    log.printEnd( "OK" );
 
     texId = context.loadTexture( skinFile, true );
 
@@ -362,7 +364,11 @@ namespace client
 
   MD2::~MD2()
   {
+    log.print( "Unloading MD2 model '%s' ...", name.cstr() );
     context.freeTexture( texId );
+    log.printEnd( " OK" );
+
+    assert( glGetError() == GL_NO_ERROR );
   }
 
   void MD2::scale( float scale )
@@ -473,6 +479,14 @@ namespace client
       glEnd();
     }
     glFrontFace( GL_CCW );
+  }
+
+  void MD2::genList()
+  {
+    list = glGenLists( 1 );
+    glNewList( list, GL_COMPILE );
+      drawFrame( 0 );
+    glEndList();
   }
 
   void MD2::trim()

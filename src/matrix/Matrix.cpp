@@ -19,11 +19,13 @@ namespace oz
   Matrix matrix;
 
   const float Matrix::G_ACCEL = -9.81f;
+  // default 10000.0f: 100 m/s
+  const float Matrix::MAX_VELOCITY2 = 10000.0f;
 
   void Matrix::load()
   {
-    logFile.println( "Loading Matrix {" );
-    logFile.indent();
+    log.println( "Loading Matrix {" );
+    log.indent();
 
     semaphore = SDL_CreateSemaphore( 0 );
 
@@ -33,7 +35,7 @@ namespace oz
 
     world.sky.init( 70.0f, 600.0f );
     world.sky.time = 200.0f;
-    world.terrain.loadIMG( "terra/heightmap.png" );
+//     world.terrain.load( "terra/large.png" );
 
     Buffer buffer( 1024 * 1024 * 10 );
     if( buffer.load( config.get( "dir.home", "" ) + String( "/saved.world" ) ) ) {
@@ -43,7 +45,7 @@ namespace oz
     else {
       synapse.put( new Structure( Vec3( 47.0f, -33.0f, 82.5f ), translator.bspIndex( "castle" ), Structure::R0 ) );
 
-      synapse.put( translator.createObject( "Lord",   Vec3( 42, -43, 76 ) ) );
+      synapse.put( translator.createObject( "Lord",   Vec3( 42, -44, 76 ) ) );
       synapse.put( translator.createObject( "Knight", Vec3( 40, -35, 76 ) ) );
       synapse.put( translator.createObject( "Goblin", Vec3( 41, -35, 76 ) ) );
 
@@ -88,11 +90,33 @@ namespace oz
       synapse.put( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 80.0f ) ) );
       synapse.put( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 81.0f ) ) );
       synapse.put( translator.createObject( "SmallCrate", Vec3( 42.0f, -61.0f, 82.0f ) ) );
+
+      world.commit();
+      synapse.clear();
     }
     buffer.free();
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Matrix::free()
+  {
+    log.println( "Shutting down Matrix {" );
+    log.indent();
+
+    Buffer buffer( 1024 * 1024 * 10 );
+    OutputStream ostream = buffer.outputStream();
+    world.write( &ostream );
+    buffer.write( config.get( "dir.home", "" ) + String( "/saved.world" ) );
+
+    world.free();
+    translator.free();
+
+    SDL_DestroySemaphore( semaphore );
+
+    log.unindent();
+    log.println( "}" );
   }
 
   void Matrix::update()
@@ -107,7 +131,7 @@ namespace oz
         part->update();
         physics.updatePart( part );
 
-        if( part->lifeTime <= 0.0f || part->velocity.sqL() > Physics::MAX_VELOCITY2 ) {
+        if( part->lifeTime <= 0.0f || part->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
           synapse.remove( part );
         }
       }
@@ -124,34 +148,17 @@ namespace oz
 
           physics.updateObj( dynObj );
 
-          if( dynObj->velocity.sqL() > Physics::MAX_VELOCITY2 ) {
+          if( dynObj->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
             synapse.remove( obj );
             continue;
           }
         }
-        if( obj->life <= 0.0f ) {
+        if( obj->life <= 0.0f || !world.includes( *obj ) ) {
           synapse.remove( obj );
         }
       }
     }
     world.commit();
-  }
-
-  void Matrix::free()
-  {
-    logFile.print( "Shutting down Matrix ..." );
-
-    Buffer buffer( 1024 * 1024 * 10 );
-    OutputStream ostream = buffer.outputStream();
-    world.write( &ostream );
-    buffer.write( config.get( "dir.home", "" ) + String( "/saved.world" ) );
-
-    world.free();
-    translator.free();
-
-    SDL_DestroySemaphore( semaphore );
-
-    logFile.printEnd( " OK" );
   }
 
 }

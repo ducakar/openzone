@@ -90,7 +90,7 @@ namespace client
 
     file = fopen( path, "rb" );
     if( file == null ) {
-      logFile.println( "MD3 model part file '%s' not found", path.cstr() );
+      log.println( "MD3 model part file '%s' not found", path.cstr() );
       throw Exception( 0, "MD3 model part file not found" );
     }
 
@@ -98,7 +98,7 @@ namespace client
     fread( &header, sizeof( MD3Header ), 1, file );
     if( header.id != FOURCC( 'I', 'D', 'P', '3' ) || header.version != 15 ) {
       fclose( file );
-      logFile.println( "MD3 model part file '%s' invalid format", path.cstr() );
+      log.println( "MD3 model part file '%s' invalid format", path.cstr() );
       throw Exception( 0, "MD3 model part file invalid format" );
     }
 
@@ -133,7 +133,7 @@ namespace client
         shaderBaseName = String::lastIndex( shaders[0].name, '\\' );
       }
       if( shaderBaseName == null ) {
-        logFile.println( "MD3 model file '%s' invalid format", path.cstr() );
+        log.println( "MD3 model file '%s' invalid format", path.cstr() );
         throw Exception( 0, "MD3 model part file invalid format" );
       }
       shaderBaseName++;
@@ -324,7 +324,9 @@ namespace client
   }
 
   MD3::~MD3()
-  {}
+  {
+    assert( glGetError() == GL_NO_ERROR );
+  }
 
   void MD3::drawFrame( int frame ) const
   {
@@ -342,6 +344,14 @@ namespace client
     lower->drawFrame( frame );
 
     glPopMatrix();
+  }
+
+  void MD3::genList()
+  {
+    list = glGenLists( 1 );
+    glNewList( list, GL_COMPILE );
+      drawFrame( 0 );
+    glEndList();
   }
 
   void MD3::trim()

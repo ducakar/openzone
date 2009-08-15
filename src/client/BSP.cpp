@@ -92,7 +92,6 @@ namespace client
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
 
-      glEnable( GL_TEXTURE_2D );
       glBindTexture( GL_TEXTURE_2D, lightMaps[face->lightmap] );
       glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                          bsp->vertices[face->firstVertex].lightmapCoord );
@@ -118,7 +117,6 @@ namespace client
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
 
-      glEnable( GL_TEXTURE_2D );
       glBindTexture( GL_TEXTURE_2D, lightMaps[face->lightmap] );
       glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                          bsp->vertices[face->firstVertex].lightmapCoord );
@@ -140,7 +138,6 @@ namespace client
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
 
-      glEnable( GL_TEXTURE_2D );
       glBindTexture( GL_TEXTURE_2D, lightMaps[face->lightmap] );
       glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                          bsp->vertices[face->firstVertex].lightmapCoord );
@@ -240,8 +237,8 @@ namespace client
     }
 #endif
 
-    logFile.println( "Loading BSP structure {" );
-    logFile.indent();
+    log.println( "Loading BSP structure {" );
+    log.indent();
 
     textures = new uint[bsp->nTextures];
     for( int i = 0; i < bsp->nTextures; i++ ) {
@@ -290,8 +287,8 @@ namespace client
       }
     }
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
   }
 
   BSP::~BSP()

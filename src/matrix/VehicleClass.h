@@ -36,8 +36,10 @@ namespace oz
 
     float stepInc;
     float stepMax;
+    float stepVelocity;
 
     float airControl;
+    float climbControl;
     float waterControl;
     float grabDistance;
 

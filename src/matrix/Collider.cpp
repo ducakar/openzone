@@ -128,8 +128,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         Sector &sector = world.sectors[x][y];
 
@@ -166,8 +166,8 @@ namespace oz
       return false;
     }
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         const Sector &sector = world.sectors[x][y];
 
@@ -192,8 +192,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         Sector &sector = world.sectors[x][y];
 
@@ -498,14 +498,10 @@ namespace oz
       maxPosY = globalStartPos.y;
     }
 
-    int minX = max( (int)( minPosX + Terrain::DIM - EPSILON ) / TerraQuad::SIZEI, 0 );
-    int minY = max( (int)( minPosY + Terrain::DIM - EPSILON ) / TerraQuad::SIZEI, 0 );
+    world.terrain.getInters( minPosX, minPosY, maxPosX, maxPosY, EPSILON );
 
-    int maxX = min( (int)( maxPosX + Terrain::DIM + EPSILON ) / TerraQuad::SIZEI, Terrain::MAX - 1 );
-    int maxY = min( (int)( maxPosY + Terrain::DIM + EPSILON ) / TerraQuad::SIZEI, Terrain::MAX - 1 );
-
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = world.terrain.minX; x <= world.terrain.maxX; x++ ) {
+      for( int y = world.terrain.minY; y <= world.terrain.maxY; y++ ) {
         if( !trimTerraQuad( x, y ) ) {
           return;
         }
@@ -527,8 +523,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         Sector &sector = world.sectors[x][y];
 
@@ -636,8 +632,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         Sector &sector = world.sectors[x][y];
 
@@ -675,8 +671,8 @@ namespace oz
       return false;
     }
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         Sector &sector = world.sectors[x][y];
 
@@ -701,8 +697,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         Sector &sector = world.sectors[x][y];
 
@@ -854,6 +850,7 @@ namespace oz
   void Collider::trimAABBWater( const BSP::Brush *brush )
   {
     bool isInside  = true;
+    bool isUnder   = true;
 
     for( int i = 0; i < brush->nSides; i++ ) {
       BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -865,16 +862,22 @@ namespace oz
 
       float centerDist = leafEndPos * plane.normal - plane.distance;
       float outerDist  = centerDist - offset;
+      float innerDist  = centerDist + offset;
 
       if( outerDist > 0.0f ) {
         return;
       }
       else if( centerDist > 0.0f ) {
         isInside = false;
+        isUnder  = false;
+      }
+      else if( innerDist > 0.0f ) {
+        isUnder = false;
       }
     }
-    hit.inWater    |= true;
-    hit.underWater |= isInside;
+    hit.onWater    |= true;
+    hit.inWater    |= isInside;
+    hit.underWater |= isUnder;
   }
 
   // checks if AABB and Brush overlap and if AABB center is inside a brush
@@ -989,6 +992,7 @@ namespace oz
   {
     hit.ratio      = 1.0f;
     hit.obj        = null;
+    hit.onWater    = false;
     hit.inWater    = false;
     hit.underWater = false;
     hit.onLadder   = false;
@@ -1003,8 +1007,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         Sector &sector = world.sectors[x][y];
 
@@ -1051,8 +1055,8 @@ namespace oz
   {
     assert( objects != null || structs != null );
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         Sector &sector = world.sectors[x][y];
 
@@ -1088,8 +1092,8 @@ namespace oz
   {
     assert( objects != null );
 
-    for( int x = world.minSectX; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
 
         Sector &sector = world.sectors[x][y];
 

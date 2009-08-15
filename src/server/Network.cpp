@@ -21,25 +21,25 @@ namespace server
   {
     int port = config.get( "net.port", 6666 );
 
-    logFile.print( "Opening socket on port %d ...", port );
+    log.print( "Opening socket on port %d ...", port );
 
     IPaddress ip;
     SDLNet_ResolveHost( &ip, null, port );
     serverSocket = SDLNet_TCP_Open( &ip );
 
     if( serverSocket == null ) {
-      logFile.printEnd( " Failed" );
+      log.printEnd( " Failed" );
       return false;
     }
 
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
     return true;
   }
 
   void Network::disconnect()
   {
     SDLNet_TCP_Close( serverSocket );
-    logFile.println( "Socket closed" );
+    log.println( "Socket closed" );
   }
 
   void Network::update()
@@ -51,7 +51,7 @@ namespace server
       client->socket = clientSocket;
       clients << client;
 
-      logFile.println( "Client connected" );
+      log.println( "Client connected" );
     }
 
     foreach( client, clients.iterator() ) {

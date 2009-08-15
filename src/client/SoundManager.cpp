@@ -63,6 +63,8 @@ namespace client
 
   void SoundManager::updateMusic()
   {
+    assert( alGetError() == AL_NO_ERROR );
+
     if( !isMusicPlaying ) {
       return;
     }
@@ -101,17 +103,17 @@ namespace client
 
   bool SoundManager::loadMusic( const char *path )
   {
-    logFile.print( "Loading music '%s' ...", path );
+    log.print( "Loading music '%s' ...", path );
 
     FILE *oggFile = fopen( path, "rb" );
 
     if( oggFile == null ) {
-      logFile.printEnd( " Failed to open file" );
+      log.printEnd( " Failed to open file" );
       return false;
     }
     if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
       fclose( oggFile );
-      logFile.printEnd( " Failed to open Ogg stream" );
+      log.printEnd( " Failed to open Ogg stream" );
       return false;
     }
 
@@ -120,7 +122,7 @@ namespace client
     vorbisInfo = ov_info( &oggStream, -1 );
     if( vorbisInfo == null ) {
       ov_clear( &oggStream );
-      logFile.printEnd( " Failed to read Vorbis header" );
+      log.printEnd( " Failed to read Vorbis header" );
       return false;
     }
 
@@ -132,7 +134,7 @@ namespace client
     }
     else {
       ov_clear( &oggStream );
-      logFile.printEnd( " Invalid number of channels, should be 1 or 2" );
+      log.printEnd( " Invalid number of channels, should be 1 or 2" );
       return AL_NONE;
     }
 
@@ -144,7 +146,9 @@ namespace client
     alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
     alSourcePlay( musicSource );
 
-    logFile.printEnd( " OK" );
+    assert( alGetError() == AL_NO_ERROR );
+
+    log.printEnd( " OK" );
     return true;
   }
 
@@ -173,15 +177,27 @@ namespace client
 
     world.getInters( camera.p, DMAX );
 
-    for( int x = world.minSectX ; x <= world.maxSectX; x++ ) {
-      for( int y = world.minSectY; y <= world.maxSectY; y++ ) {
+    for( int x = world.minX ; x <= world.maxX; x++ ) {
+      for( int y = world.minY; y <= world.maxY; y++ ) {
         playSector( x, y );
       }
     }
+    assert( alGetError() == AL_NO_ERROR );
+
+    if( clearCount % SOURCES_CLEAR_INTERVAL == 0 ) {
+      doSourceClean = true;
+    }
+    if( clearCount >= FULL_CLEAR_INTERVAL ) {
+      doFullClean = true;
+      clearCount = 0;
+    }
+    clearCount++;
   }
 
   void SoundManager::update()
   {
+    assert( alGetError() == AL_NO_ERROR );
+
     // remove continous sounds that are not played any more
     for( typeof( contSources.iterator() ) i( contSources ); !i.isPassed(); ) {
       ContSource *src = i;
@@ -200,27 +216,9 @@ namespace client
       }
     }
 
-    updateMusic();
+    assert( alGetError() == AL_NO_ERROR );
 
-    // cleanups
-    if( clearCount >= CLEAR_INTERVAL ) {
-      // remove Audio objects that are not used any more
-      for( typeof( audios.iterator() ) i( audios ); !i.isPassed(); ) {
-        Audio *audio = *i;
-        uint  key    = i.key();
-
-        // we should advance now, so that we don't remove the element the iterator is pointing at
-        ++i;
-
-        if( audio->isUpdated ) {
-          audio->isUpdated = false;
-        }
-        else {
-          audios.remove( key );
-          delete audio;
-        }
-      }
-
+    if( doSourceClean ) {
       // remove stopped sources of non-continous sounds
       Source *prev = null;
       Source *src  = sources.first();
@@ -242,44 +240,89 @@ namespace client
         }
         src = next;
       }
-      clearCount = 0;
+      doSourceClean = false;
     }
-    clearCount += timer.frameMillis;
+
+    assert( alGetError() == AL_NO_ERROR );
+
+    updateMusic();
+
+    // cleanups
+    if( doFullClean ) {
+      assert( alGetError() == AL_NO_ERROR );
+
+      // remove Audio objects that are not used any more
+      for( typeof( audios.iterator() ) i( audios ); !i.isPassed(); ) {
+        Audio *audio = *i;
+        uint  key    = i.key();
+
+        // we should advance now, so that we don't remove the element the iterator is pointing at
+        ++i;
+
+        if( audio->isUpdated ) {
+          audio->isUpdated = false;
+        }
+        else {
+          audios.remove( key );
+          delete audio;
+        }
+      }
+
+      assert( alGetError() == AL_NO_ERROR );
+
+      // remove unused (no object audio uses it) buffers
+      for( int i = 0; i < translator.sounds.length(); i++ ) {
+        // first, only
+        if( context.sounds[i].nUsers == 0 ) {
+          context.sounds[i].nUsers = -2;
+        }
+        else if( context.sounds[i].nUsers == -2 ) {
+          context.freeSound( i );
+        }
+      }
+      doFullClean = false;
+    }
+
+    assert( alGetError() == AL_NO_ERROR );
   }
 
   bool SoundManager::init( int *argc, char *argv[] )
   {
-    logFile.println( "Initializing SoundManager {" );
-    logFile.indent();
+    log.println( "Initializing SoundManager {" );
+    log.indent();
 
     alutInit( argc, argv );
     if( alutGetError() != ALUT_ERROR_NO_ERROR ) {
-      logFile.printEnd( "Failed to initialize ALUT" );
-      logFile.unindent();
-      logFile.println( "}" );
+      log.printEnd( "Failed to initialize ALUT" );
+      log.unindent();
+      log.println( "}" );
       return false;
     }
+
+    assert( alGetError() == AL_NO_ERROR );
 
     String sExtensions = (const char*) alGetString( AL_EXTENSIONS );
     Vector<String> extensions = sExtensions.trim().split( ' ' );
 
-    logFile.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
-    logFile.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
-    logFile.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
-    logFile.println( "OpenAL extensions {" );
-    logFile.indent();
+    log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
+    log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
+    log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
+    log.println( "OpenAL extensions {" );
+    log.indent();
     foreach( extension, extensions.iterator() ) {
-      logFile.println( "%s", extension->cstr() );
+      log.println( "%s", extension->cstr() );
     }
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
 
-    logFile.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
-    logFile.println( "ALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
+    log.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
+    log.println( "ALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
 
-    clearCount = 0;
+    clearCount     = 0;
+    doSourceClean  = false;
+    doFullClean    = false;
 
-    isMusicLoaded = false;
+    isMusicLoaded  = false;
     isMusicPlaying = false;
 
     alGenSources( 1, &musicSource );
@@ -289,19 +332,24 @@ namespace client
     setVolume( config.get( "sound.volume.effects", 1.0f ) );
     setMusicVolume( config.get( "sound.music.effects", 1.0f ) );
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
+
+    assert( alGetError() == AL_NO_ERROR );
 
     return true;
   }
 
   void SoundManager::free()
   {
-    logFile.print( "Shutting down SoundManager ..." );
+    assert( alGetError() == AL_NO_ERROR );
+
+    log.print( "Shutting down SoundManager ..." );
 
     foreach( src, sources.iterator() ) {
       alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
+      assert( alGetError() == AL_NO_ERROR );
     }
     sources.free();
 
@@ -310,15 +358,18 @@ namespace client
 
       alSourceStop( src.source );
       alDeleteSources( 1, &src.source );
+      assert( alGetError() == AL_NO_ERROR );
     }
     contSources.clear();
 
     audios.free();
+    assert( alGetError() == AL_NO_ERROR );
 
     freeMusic();
+    assert( alGetError() == AL_NO_ERROR );
 
     alutExit();
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
   }
 
 }

@@ -54,6 +54,8 @@ namespace client
       static Anim  animList[];
       static Vec3  vertList[MAX_VERTS];
 
+      String       name;
+
       int          nFrames;
       int          nVerts;
 
@@ -78,6 +80,8 @@ namespace client
 
       void drawFrame( int frame ) const;
       void draw( AnimState *anim ) const;
+      void genList();
+
       // call on static models, to release resources after list has been generated
       void trim();
 

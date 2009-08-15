@@ -24,26 +24,26 @@ namespace server
   {
     network.connect();
 
-    logFile.println( "Loading Matrix {" );
-    logFile.indent();
+    log.println( "Loading Matrix {" );
+    log.indent();
     matrix.load();
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
 
-    logFile.println( "Loading Nirvana {" );
-    logFile.indent();
+    log.println( "Loading Nirvana {" );
+    log.indent();
     nirvana.load();
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
 
     return true;
   }
 
   void Game::start()
   {
-    logFile.print( "Starting Nirvana thread ..." );
+    log.print( "Starting Nirvana thread ..." );
     nirvana.start();
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
   }
 
   void Game::update( int time )
@@ -60,28 +60,28 @@ namespace server
 
   void Game::stop()
   {
-    logFile.print( "Stopping Nirvana thread ..." );
+    log.print( "Stopping Nirvana thread ..." );
     nirvana.stop();
-    logFile.printEnd( " OK" );
+    log.printEnd( " OK" );
   }
 
   void Game::free()
   {
-    logFile.print( "Shutting down Nirvana ..." );
-    logFile.indent();
+    log.print( "Shutting down Nirvana ..." );
+    log.indent();
 
     nirvana.free();
 
-    logFile.unindent();
-    logFile.printEnd( " OK" );
+    log.unindent();
+    log.printEnd( " OK" );
 
-    logFile.print( "Shutting down Matrix ..." );
-    logFile.indent();
+    log.print( "Shutting down Matrix ..." );
+    log.indent();
 
     matrix.free();
 
-    logFile.unindent();
-    logFile.printEnd( " OK" );
+    log.unindent();
+    log.printEnd( " OK" );
   }
 
 }

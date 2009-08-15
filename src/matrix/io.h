@@ -316,7 +316,7 @@ namespace oz
       explicit Buffer() : buffer( null ), count( 0 )
       {}
 
-      explicit Buffer( int size ) : count( ( size - 1 ) / BLOCK_SIZE + 1 )
+      explicit Buffer( int size ) : count( ( ( size - 1 ) / BLOCK_SIZE + 1 ) * BLOCK_SIZE )
       {
         buffer = new char[count];
       }

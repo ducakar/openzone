@@ -23,9 +23,17 @@ namespace client
 
   void Audio::playSound( int sample, float volume ) const
   {
+    assert( 0 <= sample && sample < translator.sounds.length() );
+    assert( alGetError() == AL_NO_ERROR );
+
     uint srcId;
 
     alGenSources( 1, &srcId );
+    if( alGetError() != AL_NO_ERROR ) {
+      log.println( "AL: Too many sources" );
+      return;
+    }
+
     alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
 
@@ -46,12 +54,15 @@ namespace client
     alSourcef( srcId, AL_GAIN, volume );
     alSourcePlay( srcId );
 
+    assert( alGetError() == AL_NO_ERROR );
+
     soundManager.addSource( srcId );
   }
 
   void Audio::playContSound( int sample, float volume, uint key ) const
   {
     assert( 0 <= sample && sample < translator.sounds.length() );
+    assert( alGetError() == AL_NO_ERROR );
 
     if( soundManager.updateContSource( key ) ) {
       alSourcef( soundManager.getCachedContSourceId(), AL_GAIN, volume );
@@ -61,6 +72,11 @@ namespace client
       uint srcId;
 
       alGenSources( 1, &srcId );
+      if( alGetError() != AL_NO_ERROR ) {
+        log.println( "AL: Too many sources" );
+        return;
+      }
+
       alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
       alSourcei( srcId, AL_LOOPING, AL_TRUE );
       alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
@@ -70,6 +86,8 @@ namespace client
 
       soundManager.addContSource( key, srcId );
     }
+
+    assert( alGetError() == AL_NO_ERROR );
   }
 
   Audio::Audio( const Object *obj_, const ObjectClass *clazz_ ) : obj( obj_ ), clazz( clazz_ )
@@ -81,6 +99,7 @@ namespace client
         context.requestSound( samples[i] );
       }
     }
+    assert( alGetError() == AL_NO_ERROR );
   }
 
   Audio::~Audio()
@@ -92,6 +111,7 @@ namespace client
         context.releaseSound( samples[i] );
       }
     }
+    assert( alGetError() == AL_NO_ERROR );
   }
 
 }

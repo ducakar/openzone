@@ -26,12 +26,12 @@ namespace client
       // only play sounds within 100 m range
       static const float DMAX;
       static const float DMAX_SQ;
-      // release continous sound if not used for 60 s
-      static const int RELEASE_COUNT = 3000;
 
       static const int MUSIC_BUFFER_SIZE = 16 * 1024;
-      // cleanup interval (remove stopped sources, unused audios)
-      static const int CLEAR_INTERVAL = 60 * 50;
+      // stopped sources clear interval -- 3.5 s for 50 fps
+      static const int SOURCES_CLEAR_INTERVAL = ( 7 * 50 ) / 2;
+      // cleanup interval (remove unused audios, unload unused sounds) -- 1 min for 50 fps
+      static const int FULL_CLEAR_INTERVAL = 60 * 50;
 
       /*
        * SFX
@@ -60,7 +60,9 @@ namespace client
        */
       List<Source, 0>            sources;
       HashIndex<ContSource, 251> contSources;
-      int clearCount;
+      int  clearCount;
+      bool doSourceClean;
+      bool doFullClean;
 
       /*
        * Music

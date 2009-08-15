@@ -36,8 +36,8 @@ namespace client
 
   void Main::shutdown()
   {
-    logFile.println( "Shutdown {" );
-    logFile.indent();
+    log.println( "Shutdown {" );
+    log.indent();
 
     if( initFlags & INIT_GAME_START ) {
       game.stop();
@@ -55,16 +55,16 @@ namespace client
       game.free();
     }
     if( initFlags & INIT_SDL ) {
-      logFile.print( "Shutting down SDL ..." );
+      log.print( "Shutting down SDL ..." );
       SDL_ShowCursor( true );
       SDLNet_Quit();
       SDL_Quit();
-      logFile.printEnd( " OK" );
+      log.printEnd( " OK" );
     }
 
-    logFile.unindent();
-    logFile.println( "}" );
-    logFile.printlnETD( OZ_APP_NAME " finished at" );
+    log.unindent();
+    log.println( "}" );
+    log.printlnETD( OZ_APP_NAME " finished at" );
 
     config.clear();
   }
@@ -108,25 +108,25 @@ namespace client
 #ifdef OZ_LOG_FILE
     String logPath = home + OZ_LOG_FILE;
 
-    if( !logFile.init( logPath, true, "  " ) ) {
+    if( !log.init( logPath, true, "  " ) ) {
       printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
       return;
     }
-    logFile.println( "Log file '%s'", logPath.cstr() );
+    log.println( "Log file '%s'", logPath.cstr() );
     printf( "Log file '%s'\n", logPath.cstr() );
 #else
-    logFile.init( null, true, "  " );
-    logFile.println( "Log stream stdout ... OK" );
+    log.init( null, true, "  " );
+    log.println( "Log stream stdout ... OK" );
 #endif
 
-    logFile.printlnETD( OZ_APP_NAME " started at" );
+    log.printlnETD( OZ_APP_NAME " started at" );
 
     String configPath = home + OZ_CONFIG_FILE;
     if( config.load( configPath ) ) {
-      logFile.printEnd( "Configuration read from '%s'", configPath.cstr() );
+      log.printEnd( "Configuration read from '%s'", configPath.cstr() );
     }
 
-    logFile.print( "Initializing SDL ..." );
+    log.print( "Initializing SDL ..." );
 
     // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
     // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
@@ -140,24 +140,24 @@ namespace client
       SDL_putenv( (char*) "__GL_SYNC_TO_VBLANK=1" );
     }
     if( SDL_Init( SDL_INIT_VIDEO ) || SDLNet_Init() ) {
-      logFile.printEnd( " Failed" );
+      log.printEnd( " Failed" );
       return;
     }
-    game.input.currKeys = SDL_GetKeyState( null );
-    logFile.printEnd( " OK" );
+    game.input.keys = SDL_GetKeyState( null );
+    log.printEnd( " OK" );
 
     initFlags |= INIT_SDL;
 
     const char *data = config.get( "dir.data", "/usr/share/openzone" );
 
-    logFile.print( "Setting working directory '%s' ...", data );
+    log.print( "Setting working directory '%s' ...", data );
 
     if( chdir( data ) != 0 ) {
-      logFile.printEnd( " Failed" );
+      log.printEnd( " Failed" );
       return;
     }
     else {
-      logFile.printEnd( " OK" );
+      log.printEnd( " OK" );
     }
 
     int screenX    = config.get( "screen.width", 1024 );
@@ -168,7 +168,7 @@ namespace client
     ushort screenCenterX = (ushort) ( screenX / 2 );
     ushort screenCenterY = (ushort) ( screenY / 2 );
 
-    logFile.print( "Setting OpenGL surface %dx%d %dbpp %s ...",
+    log.print( "Setting OpenGL surface %dx%d %dbpp %s ...",
                    screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
 
     SDL_WM_SetCaption( OZ_WM_TITLE, null );
@@ -176,19 +176,19 @@ namespace client
 
     int modeResult = SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
     if( modeResult == 0 ) {
-      logFile.printEnd( " Mode not supported" );
+      log.printEnd( " Mode not supported" );
       return;
     }
     if( SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull ) == null ) {
-      logFile.printEnd( " Failed" );
+      log.printEnd( " Failed" );
       return;
     }
 
     if( modeResult != screenBpp ) {
-      logFile.printEnd( " OK, but at %dbpp", modeResult );
+      log.printEnd( " OK, but at %dbpp", modeResult );
     }
     else {
-      logFile.printEnd( " OK" );
+      log.printEnd( " OK" );
     }
     initFlags |= INIT_SDL_VIDEO;
 
@@ -214,14 +214,14 @@ namespace client
     game.start();
     initFlags |= INIT_GAME_START;
 
-    logFile.println( "MAIN LOOP {" );
-    logFile.indent();
+    log.println( "MAIN LOOP {" );
+    log.indent();
 
     SDL_Event event;
 
-    bool isAlive          = true;
-    bool isActive         = true;
-    int  nFrames          = 0;
+    bool isAlive        = true;
+    bool isActive       = true;
+    int  nFrames        = 0;
 
     uint tick           = config.get( "tick", 20 );
     // time passed form start of the frame
@@ -244,7 +244,7 @@ namespace client
       game.input.mouse.x = 0;
       game.input.mouse.y = 0;
       game.input.mouse.b = 0;
-      aCopy( game.input.keys, game.input.currKeys, SDLK_LAST );
+      aCopy( game.input.oldKeys, game.input.keys, SDLK_LAST );
 
       while( SDL_PollEvent( &event ) ) {
         switch( event.type ) {
@@ -329,10 +329,10 @@ namespace client
     }
     while( isAlive );
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
 
-    logFile.println( "Average framerate: %g",
+    log.println( "Average framerate: %g",
                      (float) nFrames / (float) ( timeLast - timeZero ) * 1000.0f );
   }
 
@@ -345,11 +345,11 @@ int main( int argc, char *argv[] )
     oz::client::main.main( &argc, argv );
   }
   catch( const oz::Exception &e ) {
-    oz::logFile.resetIndent();
-    oz::logFile.println();
-    oz::logFile.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
+    oz::log.resetIndent();
+    oz::log.println();
+    oz::log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
 
-    if( oz::logFile.isFile() ) {
+    if( oz::log.isFile() ) {
       fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
     }
   }

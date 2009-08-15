@@ -37,10 +37,13 @@ namespace client
         TexCoord( float u_, float v_ ) : u( u_ ), v( v_ ) {}
       };
 
+      String           name;
+
       DArray<Vec3>     vertices;
       DArray<Vec3>     normals;
       DArray<TexCoord> texCoords;
       DArray<Face>     faces;
+
       uint             textureId;
 
       static char *skipSpaces( char *pos );
@@ -55,6 +58,8 @@ namespace client
 
     public:
 
+      uint list;
+
       OBJ( const char *name );
       ~OBJ();
 
@@ -62,8 +67,9 @@ namespace client
       void translate( const Vec3 &t );
 
       void draw() const;
+      void genList();
 
-      static uint genList( const char *name );
+      void trim();
 
   };
 

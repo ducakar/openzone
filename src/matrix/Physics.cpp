@@ -17,7 +17,7 @@ namespace oz
 
   const float Physics::CLIP_BACKOFF         = EPSILON;
   const float Physics::STICK_VELOCITY       = 0.015f;
-  const float Physics::SLICK_STICK_VELOCITY = 0.0002f;
+  const float Physics::SLICK_STICK_VELOCITY = 0.0001f;
   const float Physics::HIT_MOMENTUM         = -3.0f;
 
   const float Physics::AIR_FRICTION         = 0.02f;
@@ -27,8 +27,6 @@ namespace oz
   const float Physics::OBJ_FRICTION         = 0.40f;
   const float Physics::SLICK_FRICTION       = 0.02f;
 
-  // default 10000.0f: 100 m/s
-  const float Physics::MAX_VELOCITY2        = 10000.0f;
   const float Physics::FLOOR_NORMAL_Z       = 0.70f;
 
   //***********************************
@@ -90,7 +88,7 @@ namespace oz
 
   bool Physics::handleObjFriction()
   {
-    if( obj->flags & ( Object::HOVER_BIT | Object::UNDER_WATER_BIT | Object::ON_LADDER_BIT ) ) {
+    if( obj->flags & ( Object::HOVER_BIT | Object::IN_WATER_BIT | Object::ON_LADDER_BIT ) ) {
       // in air
       if( obj->flags & Object::HOVER_BIT ) {
         if( obj->momentum.sqL() <= STICK_VELOCITY ) {
@@ -101,7 +99,7 @@ namespace oz
         }
       }
       // swimming
-      else if( obj->flags & Object::UNDER_WATER_BIT ) {
+      else if( obj->flags & Object::IN_WATER_BIT ) {
         obj->momentum *= 1.0f - WATER_FRICTION;
         obj->momentum.z += obj->lift;
       }
@@ -205,8 +203,8 @@ namespace oz
       }
     }
 
-    obj->flags &= ~( Object::ON_FLOOR_BIT | Object::IN_WATER_BIT | Object::UNDER_WATER_BIT |
-        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
+    obj->flags &= ~( Object::ON_FLOOR_BIT | Object::ON_WATER_BIT | Object::IN_WATER_BIT |
+        Object::UNDER_WATER_BIT | Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
     obj->lower = -1;
 
     return true;
@@ -286,7 +284,7 @@ namespace oz
 
       obj->momentum -= ( obj->momentum * collider.hit.normal ) * collider.hit.normal;
 
-      if( !( obj->flags & Object::HOVER_BIT ) && collider.hit.normal.z > FLOOR_NORMAL_Z ) {
+      if( !( obj->flags & Object::HOVER_BIT ) && collider.hit.normal.z >= FLOOR_NORMAL_Z ) {
         obj->lower = -1;
         obj->floor = collider.hit.normal;
         obj->flags |= Object::ON_FLOOR_BIT;
@@ -308,6 +306,7 @@ namespace oz
       obj->p += collider.hit.ratio * move;
       leftRatio -= leftRatio * collider.hit.ratio;
 
+      obj->flags |= collider.hit.onWater    ? Object::ON_WATER_BIT    : 0;
       obj->flags |= collider.hit.inWater    ? Object::IN_WATER_BIT    : 0;
       obj->flags |= collider.hit.underWater ? Object::UNDER_WATER_BIT : 0;
       obj->flags |= collider.hit.onLadder   ? Object::ON_LADDER_BIT   : 0;
@@ -397,7 +396,7 @@ namespace oz
     if( obj->flags & Object::CLIP_BIT ) {
       obj->flags &= ~Object::FRICTING_BIT;
 
-      // clear the lower object if doesn't exist any more
+      // clear the lower object if it doesn't exist any more
       if( obj->lower >= 0 && world.objects[obj->lower] == null ) {
         obj->lower = -1;
         obj->flags &= ~Object::DISABLED_BIT;

@@ -32,9 +32,18 @@ namespace oz
     hvsc[4] = hvsc[3] * hvsc[0];
     hvsc[5] = hvsc[3] * hvsc[1];
 
-    bool isSwimming = ( flags & UNDER_WATER_BIT ) || ( oldFlags & UNDER_WATER_BIT );
+    /*
+     * STATE
+     */
+
+    bool isSwimming = ( flags | oldFlags ) & IN_WATER_BIT;
     bool isClimbing = flags & ON_LADDER_BIT;
     bool isGrounded = ( lower >= 0 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
+
+    stepRate *= clazz.stepRateSupp;
+    stamina += clazz.staminaGain;
+    stamina = min( stamina, clazz.stamina );
+    deathTime = life <= 0 ? deathTime + timer.frameTime : 0.0f;
 
     if( ( keys & KEY_FREELOOK ) && !( oldKeys & KEY_FREELOOK ) ) {
       state ^= FREELOOK_BIT;
@@ -61,17 +70,46 @@ namespace oz
       state &= ~GESTURE1_BIT;
     }
 
-    if( ( keys & KEY_JUMP ) && !( oldKeys & KEY_JUMP ) &&
-        ( isGrounded || ( ( flags | oldFlags ) & Object::UNDER_WATER_BIT ) ) &&
-        stamina >= clazz.staminaJumpDrain )
-    {
-      flags &= ~DISABLED_BIT;
-      isGrounded = false;
-      stamina -= clazz.staminaJumpDrain;
+    if( flags & UNDER_WATER_BIT ) {
+      stamina -= clazz.staminaWaterDrain;
 
-      momentum.z = clazz.jumpMomentum;
-      addEvent( SND_JUMP );
+      if( stamina < 0.0f ) {
+        life += stamina;
+        stamina = 0.0f;
+      }
     }
+
+    /*
+     * JUMP, CROUCH
+     */
+
+    // We want the player to press the key for jump each time, so logical consequence would be to
+    // jump when jump key becomes pressed. But then a jump may be missed if we are in air for just
+    // a brief period of time, e.g. when swimming or runing down the hill (at those occations the
+    // bot is not in water/on floor all the time, but may fly for a few frames in the mean time).
+    // So, if we press the jump key, we schedule for a jump, and when jump conditions are met,
+    // the jump will be commited if we still hold down the jump key.
+    if( keys & KEY_JUMP ) {
+      if( !( oldKeys & KEY_JUMP ) ) {
+        state |= JUMP_SCHED_BIT;
+      }
+      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) &&
+          stamina >= clazz.staminaJumpDrain )
+      {
+        flags &= ~DISABLED_BIT;
+        isGrounded = false;
+        stamina -= clazz.staminaJumpDrain;
+
+        momentum.z = clazz.jumpMomentum;
+        addEvent( SND_JUMP, 1.0f );
+
+        state &= ~JUMP_SCHED_BIT;
+      }
+    }
+    else {
+      state &= ~JUMP_SCHED_BIT;
+    }
+
     if( ( keys & KEY_CROUCH ) && !( oldKeys & KEY_CROUCH ) ) {
       if( state & CROUCHING_BIT ) {
         float oldZ = p.z;
@@ -103,18 +141,32 @@ namespace oz
       state &= ~RUNNING_BIT;
     }
 
-    float velocity = ( state & CROUCHING_BIT ) ?
-        clazz.crouchMomentum :
-        ( state & RUNNING_BIT ) ? clazz.runMomentum : clazz.walkMomentum;
+    /*
+     * ANIMATION
+     */
 
-    if( ( !isGrounded && !isClimbing ) || ( flags & ON_SLICK_BIT ) ) {
-      if( isSwimming ) {
-        velocity *= clazz.waterControl;
+    if( ( keys & ( KEY_FORWARD | KEY_BACKWARD | KEY_LEFT | KEY_RIGHT ) ) &&
+        ( isGrounded || isSwimming || isClimbing ) )
+    {
+      if( state & CROUCHING_BIT ) {
+        anim = ANIM_CROUCH_WALK;
       }
       else {
-        velocity *= clazz.airControl;
+        anim = ANIM_RUN;
       }
     }
+    else {
+      if( state & CROUCHING_BIT ) {
+        anim = ANIM_CROUCH_STAND;
+      }
+      else {
+        anim = ANIM_STAND;
+      }
+    }
+
+    /*
+     * MOVE
+     */
 
     Vec3 move = Vec3::zero();
     state &= ~MOVING_BIT;
@@ -123,10 +175,13 @@ namespace oz
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
-      if( isSwimming || isClimbing ) {
+      if( isSwimming ) {
         move.x -= hvsc[4];
         move.y += hvsc[5];
         move.z += hvsc[2];
+      }
+      else if( isClimbing ) {
+        move.z += v < 0.0f ? -1.0f : 1.0f;
       }
       else {
         move.x -= hvsc[0];
@@ -161,25 +216,33 @@ namespace oz
       move.x -= hvsc[1];
       move.y -= hvsc[0];
     }
-    if( !move.isZero() && isGrounded ) {
-      if( state & CROUCHING_BIT ) {
-        anim = ANIM_CROUCH_WALK;
-      }
-      else {
-        anim = ANIM_RUN;
-      }
-    }
-    else {
-      if( state & CROUCHING_BIT ) {
-        anim = ANIM_CROUCH_STAND;
-      }
-      else {
-        anim = ANIM_STAND;
-      }
-    }
 
     if( !move.isZero() ) {
-      Vec3 desiredMomentum = velocity * ~move;
+      move.norm();
+
+      Vec3 desiredMomentum = move;
+
+      if( state & CROUCHING_BIT ) {
+        desiredMomentum *= clazz.crouchMomentum;
+      }
+      else if( state & RUNNING_BIT ) {
+        desiredMomentum *= clazz.runMomentum;
+      }
+      else {
+        desiredMomentum *= clazz.walkMomentum;
+      }
+
+      if( !isGrounded || ( flags & ON_SLICK_BIT ) ) {
+        if( isClimbing ) {
+          desiredMomentum *= clazz.climbControl;
+        }
+        else if( isSwimming ) {
+          desiredMomentum *= clazz.waterControl;
+        }
+        else {
+          desiredMomentum *= clazz.airControl;
+        }
+      }
 
       if( ( flags & Object::ON_FLOOR_BIT ) && floor.z != 1.0f ) {
         float dot = desiredMomentum * floor;
@@ -193,38 +256,70 @@ namespace oz
       if( ( state & RUNNING_BIT ) && ( isGrounded || isSwimming || isClimbing ) ) {
         stamina -= clazz.staminaRunDrain;
       }
-    }
 
-    // TODO: better stepping algoriths (stepping per time unit limit + vertial surface should not
-    // be required. Should try step up-forward-down. Should hit a floor surface then.)
-    if( ( state & STEPPING_BIT ) && !isClimbing && !isSwimming ) {
-      Vec3 desiredMove = momentum * timer.frameTime;
+      // First, check if bot's gonna hit an obstacle in the next frame. If it does, check whether it
+      // would have moved further if we raised it a bit (over the obstacle). We check different
+      // heights (those are specified in configuration file: stepInc and stepMax).
+      // To prevent that stepping would result in "climbing" high slopes, we must check that we
+      // step over an edge. In other words:
+      //
+      //   end               moveXYLength     We want:
+      //  /                 /
+      // o<------------------>                             moveHeight
+      // --------        ^                      ---------------------------------- < slope tangens
+      //         \       | moveHeight            moveXYLength - moveToHitXYLength
+      //          \      |
+      //           \     |      start         If that condition is not true, we may not have stepped
+      //            \    |     /              over the edge, but merely climbing up the slope.
+      //             \   v    o
+      //              \----------
+      //               <----->
+      //                   |
+      //                   moveToHitXYLength
+      //
+      if( ( state & STEPPING_BIT ) && !isClimbing && stepRate < clazz.stepRate ) {
+        // check if bot's gonna hit a stair in next frame
+        Vec3  desiredMove         = momentum * timer.frameTime;
+        float desiredMoveXYLength =
+            Math::sqrt( desiredMove.x*desiredMove.x + desiredMove.y*desiredMove.y );
 
-      collider.translate( *this, desiredMove, this );
+        collider.translate( *this, desiredMove, this );
+        float normalZ = collider.hit.normal.z;
 
-      float orgRatio = collider.hit.ratio;
+        if( collider.hit.ratio != 1.0f && normalZ < Physics::FLOOR_NORMAL_Z ) {
+          float originalZ = p.z;
+          // slope tangens
+          float slope = Math::sqrt( 1 - normalZ*normalZ ) / normalZ;
+          float moveToHitXYLength = desiredMoveXYLength * collider.hit.ratio;
 
-      if( orgRatio != 1.0f && collider.hit.normal.z == 0.0f ) {
-        float orgZ = p.z;
-
-        for( float raise = clazz.stepInc; raise < clazz.stepMax; raise += clazz.stepInc ) {
-          p.z += clazz.stepInc;
-
-          if( !collider.test( *this, this ) ) {
-            break;
-          }
-          else {
+          for( float raise = clazz.stepInc; raise <= clazz.stepMax; raise += clazz.stepInc ) {
+            p.z += clazz.stepInc;
+            if( !collider.test( *this, this ) ) {
+              break;
+            }
             collider.translate( *this, desiredMove, this );
 
-            if( collider.hit.ratio > orgRatio + EPSILON ) {
+            float moveX = desiredMove.x * collider.hit.ratio;
+            float moveY = desiredMove.y * collider.hit.ratio;
+            float moveXYLength = Math::sqrt( moveX*moveX + moveY*moveY );
+            float moveHeight = raise + desiredMove.z * collider.hit.ratio;
+
+            float xy = moveXYLength - moveToHitXYLength - EPSILON;
+
+            if( xy > EPSILON && moveHeight / xy < slope ) {
+              stepRate += raise;
               goto stepSucceeded;
             }
           }
+          p.z = originalZ;
+          stepSucceeded:;
         }
-        p.z = orgZ;
-        stepSucceeded:;
       }
     }
+
+    /*
+     * USE, GRAB
+     */
 
     if( ( keys & KEY_USE ) && !( oldKeys & KEY_USE ) ) {
       if( weapon == null ) {
@@ -241,7 +336,7 @@ namespace oz
     if( ( keys & KEY_GRAB ) && !( oldKeys & KEY_GRAB ) ) {
       if( weapon == null ) {
         if( grabObjIndex < 0 ) {
-          Vec3 eye  = p + camPos;
+          Vec3 eye  = p;
           Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
 
           collider.translate( eye, look, this );
@@ -259,35 +354,36 @@ namespace oz
     if( grabObjIndex >= 0 ) {
       DynObject *obj = (DynObject*) world.objects[grabObjIndex];
 
-      Vec3  eye       = p + camPos;
-      Vec3  look      = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
-      Vec3  string    = ( eye + look ) - obj->p;
-//       float massRatio = mass
+      if( obj == null ) {
+        grabObjIndex = -1;
+      }
+      else {
+        Vec3  eye       = p;
+        Vec3  look      = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
+        Vec3  string    = ( eye + look ) - obj->p;
+  //       float massRatio = mass
 
-      // FIXME better function for computing force, string breaking
-      Vec3 desiredMomentum = string * 10.0f;
-      Vec3 momentumDiff    = desiredMomentum - obj->momentum;
+        // FIXME better function for computing force, string breaking
+        Vec3 desiredMomentum = string * 10.0f;
+        Vec3 momentumDiff    = desiredMomentum - obj->momentum;
 
-      obj->momentum += momentumDiff;
-      obj->flags    &= ~Object::DISABLED_BIT;
+        obj->momentum += momentumDiff;
+        obj->flags    &= ~Object::DISABLED_BIT;
+      }
     }
-
-    stamina += timer.frameTime;
-    stamina = min( stamina, clazz.stamina );
 
     oldKeys = keys;
-    keys = 0;
   }
 
-  void Bot::onHit( const Hit *hit, float )
+  void Bot::onHit( const Hit *hit, float hitMomentum )
   {
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
-      addEvent( SND_LAND );
+      addEvent( SND_LAND, hitMomentum / -8.0f );
     }
   }
 
-  Bot::Bot() : anim( ANIM_STAND ), keys( 0 ), oldKeys( 0 ), h( 0.0f ), v( 0.0f ), bob( 0.0f ),
-      grabObjIndex( -1 ), weapon( null ), deathTime( 0.0f )
+  Bot::Bot() : h( 0.0f ), v( 0.0f ), keys( 0 ), oldKeys( 0 ), bob( 0.0f ), grabObjIndex( -1 ),
+      stepRate( 0.0f ), deathTime( 0.0f ), weapon( null ), anim( ANIM_STAND )
   {}
 
   void Bot::readUpdates( InputStream *istream )
@@ -342,11 +438,12 @@ namespace oz
     anim         = (AnimEnum) istream->readInt();
     h            = istream->readFloat();
     v            = istream->readFloat();
+    keys         = istream->readInt();
+    oldKeys      = istream->readInt();
 
     grabObjIndex = istream->readInt();
 
     stamina      = istream->readFloat();
-    waterTime    = istream->readFloat();
     deathTime    = istream->readFloat();
 
 //     int nItems = istream->readInt();
@@ -367,11 +464,12 @@ namespace oz
     ostream->writeInt( anim );
     ostream->writeFloat( h );
     ostream->writeFloat( v );
+    ostream->writeInt( keys );
+    ostream->writeInt( oldKeys );
 
     ostream->writeInt( grabObjIndex );
 
     ostream->writeFloat( stamina );
-    ostream->writeFloat( waterTime );
     ostream->writeFloat( deathTime );
 
 //     ostream->writeInt( items.length() );

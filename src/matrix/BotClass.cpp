@@ -23,27 +23,28 @@ namespace oz
     clazz->name             = name;
     clazz->description      = config->get( "description", "" );
 
-    clazz->dim.x            = config->get( "dim.x", 0.5f );
-    clazz->dim.y            = config->get( "dim.y", 0.5f );
-    clazz->dim.z            = config->get( "dim.z", 0.5f );
+    clazz->dim.x            = config->get( "dim.x", 0.39f );
+    clazz->dim.y            = config->get( "dim.y", 0.39f );
+    clazz->dim.z            = config->get( "dim.z", 0.39f );
 
     clazz->flags            = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
     clazz->life             = config->get( "life", 100.0f );
-    clazz->damageTreshold   = config->get( "damage.treshold", 8.0f );
-    clazz->damageRatio      = config->get( "damage.ratio", 1.0f );
+    clazz->damageTreshold   = config->get( "damageTreshold", 100.0f );
+    clazz->damageRatio      = config->get( "damageRatio", 1.0f );
 
-    clazz->mass             = config->get( "mass", 100.0f );
-    clazz->lift             = config->get( "lift", 0.03f );
+    clazz->modelType        = config->get( "modelType", "MD2" );
+    clazz->modelPath        = config->get( "modelPath", "mdl/goblin.md2" );
 
-    clazz->modelType        = config->get( "model.type", "MD2" );
-    clazz->modelPath        = config->get( "model.path", "mdl/goblin.md2" );
+    if( clazz->modelType.length() > 0 ) {
+      clazz->flags |= Object::MODEL_BIT;
+    }
 
-    clazz->audioType        = config->get( "audio.type", "" );
+    clazz->audioType        = config->get( "audioType", "" );
 
     if( clazz->audioType.length() > 0 ) {
       clazz->flags |= Object::AUDIO_BIT;
 
-      char buffer[] = "audio.sample  ";
+      char buffer[] = "audioSample  ";
       for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
         assert( 0 <= i && i < 100 );
 
@@ -55,43 +56,51 @@ namespace oz
       }
     }
 
-    clazz->dimCrouch.x      = config->get( "dimCrouch.x", 0.5f );
-    clazz->dimCrouch.y      = config->get( "dimCrouch.y", 0.5f );
-    clazz->dimCrouch.z      = config->get( "dimCrouch.z", 0.5f );
+    clazz->mass              = config->get( "mass", 100.0f );
+    clazz->lift              = config->get( "lift", 0.03f );
 
-    clazz->camPos.x         = config->get( "camPos.x", 0.0f );
-    clazz->camPos.y         = config->get( "camPos.y", 0.0f );
-    clazz->camPos.z         = config->get( "camPos.z", 0.0f );
+    clazz->dimCrouch.x       = config->get( "dimCrouch.x", 0.39f );
+    clazz->dimCrouch.y       = config->get( "dimCrouch.y", 0.39f );
+    clazz->dimCrouch.z       = config->get( "dimCrouch.z", 0.39f );
 
-    clazz->camPosCrouch.x   = config->get( "camPosCrouch.x", 0.0f );
-    clazz->camPosCrouch.y   = config->get( "camPosCrouch.y", 0.0f );
-    clazz->camPosCrouch.z   = config->get( "camPosCrouch.z", 0.0f );
+    clazz->camPos.x          = config->get( "camPos.x", 0.0f );
+    clazz->camPos.y          = config->get( "camPos.y", 0.0f );
+    clazz->camPos.z          = config->get( "camPos.z", 0.0f );
 
-    clazz->bobInc           = config->get( "bobInc", 0.0f );
-    clazz->bobAmplitude     = config->get( "bobAmplitude", 0.0f );
+    clazz->camPosCrouch.x    = config->get( "camPosCrouch.x", 0.0f );
+    clazz->camPosCrouch.y    = config->get( "camPosCrouch.y", 0.0f );
+    clazz->camPosCrouch.z    = config->get( "camPosCrouch.z", 0.0f );
 
-    clazz->walkMomentum     = config->get( "walkMomentum", 1.0f );
-    clazz->runMomentum      = config->get( "runMomentum", 4.0f );
-    clazz->crouchMomentum   = config->get( "crouchMomentum", 1.0f );
-    clazz->jumpMomentum     = config->get( "jumpMomentum", 4.0f );
+    clazz->bobInc            = config->get( "bobInc", 0.05f );
+    clazz->bobAmplitude      = config->get( "bobAmplitude", 0.05f );
 
-    clazz->stepInc          = config->get( "stepInc", 0.1f );
-    clazz->stepMax          = config->get( "stepMax", 0.5f );
+    clazz->walkMomentum      = config->get( "walkMomentum", 1.0f );
+    clazz->runMomentum       = config->get( "runMomentum", 4.0f );
+    clazz->crouchMomentum    = config->get( "crouchMomentum", 1.0f );
+    clazz->jumpMomentum      = config->get( "jumpMomentum", 4.0f );
 
-    clazz->airControl       = config->get( "airControl", 0.05f );
-    clazz->waterControl     = config->get( "waterControl", 0.05f );
-    clazz->grabDistance     = config->get( "grabDistance", 1.2f );
+    clazz->stepInc           = config->get( "stepInc", 0.10f );
+    clazz->stepMax           = config->get( "stepMax", 0.40f );
+    clazz->stepRate          = config->get( "stepRate", 0.20f );
+    clazz->stepRateSupp      = config->get( "stepRateSupp", 0.85f );
 
-    clazz->stamina          = config->get( "stamina", 100.0f );
-    clazz->staminaRunDrain  = config->get( "staminaRunDrain", 0.05f );
-    clazz->staminaJumpDrain = config->get( "staminaJumpDrain", 5.0f );
+    clazz->airControl        = config->get( "airControl", 0.025f );
+    clazz->climbControl      = config->get( "climbControl", 1.50f );
+    clazz->waterControl      = config->get( "waterControl", 0.05f );
+    clazz->grabDistance      = config->get( "grabDistance", 1.2f );
 
-    clazz->state            = config->get( "state", Bot::STEPPING_BIT );
+    clazz->stamina           = config->get( "stamina", 100.0f );
+    clazz->staminaGain       = config->get( "staminaGain", 0.05f );
+    clazz->staminaWaterDrain = config->get( "staminaWaterDrain", 0.15f );
+    clazz->staminaRunDrain   = config->get( "staminaRunDrain", 0.08f );
+    clazz->staminaJumpDrain  = config->get( "staminaJumpDrain", 5.0f );
 
-    clazz->lookLimitHMin    = config->get( "lookLimit.h.min", -90.0f );
-    clazz->lookLimitHMax    = config->get( "lookLimit.h.max", +90.0f );
-    clazz->lookLimitVMin    = config->get( "lookLimit.v.min", -45.0f );
-    clazz->lookLimitVMax    = config->get( "lookLimit.v.max", +45.0f );
+    clazz->state             = config->get( "state", Bot::STEPPING_BIT );
+
+    clazz->lookLimitHMin     = config->get( "lookLimitHMin", -90.0f );
+    clazz->lookLimitHMax     = config->get( "lookLimitHMax", +90.0f );
+    clazz->lookLimitVMin     = config->get( "lookLimitVMin", -30.0f );
+    clazz->lookLimitVMax     = config->get( "lookLimitVMax", +30.0f );
 
     if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
         clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||

@@ -28,15 +28,16 @@ namespace client
 
   Game game;
 
-  const float Game::FREECAM_SLOW_SPEED = 0.04f;
-  const float Game::FREECAM_FAST_SPEED = 0.40f;
+  const float Game::FREECAM_SLOW_SPEED = 0.05f;
+  const float Game::FREECAM_FAST_SPEED = 0.50f;
 
   bool Game::init()
   {
-    wasTabDown = false;
+    fastMove = false;
+    botRequestTicket = -1;
 
-    logFile.println( "Initializing Game {" );
-    logFile.indent();
+    log.println( "Initializing Game {" );
+    log.indent();
 
     mouseXSens = config.get( "input.mouse.xSens", 0.2f );
     mouseYSens = config.get( "input.mouse.ySens", 0.2f );
@@ -52,8 +53,8 @@ namespace client
     camera.bot = null;
     camera.p = Vec3( 40, -50, 80 );
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
     return true;
   }
 
@@ -64,9 +65,12 @@ namespace client
 
   bool Game::update( int time )
   {
+    synapse.clearPending();
+    timer.update( time );
+
     nirvana.requestSuspend = true;
 
-    if( input.keys[SDLK_TAB] && !wasTabDown ) {
+    if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
       if( state == GAME ) {
         state = GAME_INTERFACE;
         ui::mouse.show();
@@ -76,7 +80,11 @@ namespace client
         ui::mouse.hide();
       }
     }
-    wasTabDown = input.keys[SDLK_TAB] != 0;
+
+    if( botRequestTicket >= 0 ) {
+      camera.botIndex = synapse.getObjectIndex( botRequestTicket );
+      botRequestTicket = -1;
+    }
 
     if( state == GAME ) {
       if( camera.bot == null ) {
@@ -104,7 +112,11 @@ namespace client
         /*
          * Movement
          */
-        float speed = input.keys[SDLK_LSHIFT] ? FREECAM_FAST_SPEED : FREECAM_SLOW_SPEED;
+        if( input.keys[SDLK_LSHIFT] && !input.oldKeys[SDLK_LSHIFT] ) {
+          fastMove = !fastMove;
+        }
+
+        float speed = fastMove ? FREECAM_FAST_SPEED : FREECAM_SLOW_SPEED;
 
         if( input.keys[SDLK_w] ) {
           camera.p += camera.at * speed;
@@ -126,6 +138,8 @@ namespace client
         }
       }
       else {
+        camera.bot->keys = 0;
+
         /*
          * Camera
          */
@@ -212,8 +226,8 @@ namespace client
         if( input.keys[SDLK_p] ) {
           camera.bot->keys |= Bot::KEY_STEP;
         }
-        if( input.keys[SDLK_l] ) {
-          camera.bot->keys |= Bot::KEY_NOCLIP;
+        if( input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
+          camera.isThirdPerson = !camera.isThirdPerson;
         }
 
         if( input.mouse.b == SDL_BUTTON_LEFT ) {
@@ -224,8 +238,20 @@ namespace client
         }
       }
 
-      if( input.mouse.b == SDL_BUTTON_LEFT ) {
-        camera.botIndex = ~camera.botIndex;
+      if( input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
+        if( camera.botIndex < 0 ) {
+          Bot *me = (Bot*) translator.createObject( "Lord", camera.p );
+          me->h = camera.h;
+          me->v = camera.v;
+
+          botRequestTicket = synapse.put( me );
+        }
+        else {
+          camera.h = camera.bot->h;
+          camera.v = camera.bot->v;
+          camera.botIndex = -1;
+          synapse.remove( camera.bot );
+        }
       }
     }
     else {
@@ -233,8 +259,7 @@ namespace client
       ui::mouse.update( input.mouse.x, -input.mouse.y, input.mouse.b );
     }
 
-    timer.update( time );
-    synapse.clear();
+    synapse.clearTickets();
 
     SDL_SemWait( matrix.semaphore );
 
@@ -259,15 +284,21 @@ namespace client
 
   void Game::free()
   {
-    logFile.println( "Shutting down Game {" );
-    logFile.indent();
+    log.println( "Shutting down Game {" );
+    log.indent();
+
+    // remove myself
+    if( camera.botIndex >= 0 ) {
+      synapse.remove( camera.bot );
+    }
+    world.commit();
 
     network.disconnect();
     nirvana.free();
     matrix.free();
 
-    logFile.unindent();
-    logFile.println( "}" );
+    log.unindent();
+    log.println( "}" );
   }
 
 }
