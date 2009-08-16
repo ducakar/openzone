@@ -27,6 +27,7 @@ namespace oz
       void load();
       void free();
 
+      void sync();
       void update();
   };
 

@@ -1,5 +1,5 @@
 /*
- *  HealthArea.h
+ *  BuildMenu.h
  *
  *  [description]
  *
@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "Area.h"
+#include "Frame.h"
 
 namespace oz
 {
@@ -17,15 +17,11 @@ namespace client
 namespace ui
 {
 
-  class HealthArea : public Area
+  class BuildMenu : public Frame
   {
-    protected:
-
-      virtual void draw();
-
     public:
 
-      HealthArea() : Area( -260, 10, 250, 50 ) {}
+      BuildMenu();
 
   };
 

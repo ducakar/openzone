@@ -120,7 +120,7 @@ namespace oz
   template <class ValueC, class ValueA, class ValueB>
   inline const ValueC &bound( const ValueC &c, const ValueA &a, const ValueB &b )
   {
-    assert( a < b );
+    assert( a <= b );
 
     if( a > c ) {
       return a;

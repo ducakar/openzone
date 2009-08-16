@@ -11,9 +11,13 @@
 #include "Font.h"
 #include "Mouse.h"
 #include "Area.h"
+
+#include "Frame.h"
 #include "Button.h"
+
 #include "DebugArea.h"
 #include "HealthArea.h"
+#include "BuildMenu.h"
 
 namespace oz
 {
@@ -24,10 +28,11 @@ namespace ui
 
   extern Area root;
 
-  void draw();
-
   void init( int screenX, int screenY );
   void free();
+
+  void update();
+  void draw();
 
 }
 }

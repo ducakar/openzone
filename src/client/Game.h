@@ -26,7 +26,7 @@ namespace client
         {
           int  x;
           int  y;
-          char b;
+          byte b;
         }
         mouse;
       };

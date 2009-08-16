@@ -257,6 +257,7 @@ namespace client
     else {
       // interface
       ui::mouse.update( input.mouse.x, -input.mouse.y, input.mouse.b );
+      ui::update();
     }
 
     synapse.clearTickets();
@@ -268,11 +269,14 @@ namespace client
 
     SDL_SemPost( nirvana.semaphore );
 
+    camera.update();
+    // play sounds, but don't do any cleanups
+    soundManager.play();
+
     // synchronize render and soundManager (remove models and audios of removed objects)
+    matrix.sync();
     render.sync();
     soundManager.sync();
-
-    camera.update();
 
     return !input.keys[SDLK_ESCAPE];
   }

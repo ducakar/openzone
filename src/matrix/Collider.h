@@ -18,6 +18,7 @@ namespace oz
     float  ratio;
 
     Vec3   normal;
+    int    material;
     Object *obj;
 
     // only set for object trim
@@ -25,7 +26,6 @@ namespace oz
     bool   inWater;
     bool   underWater;
     bool   onLadder;
-    bool   onSlick;
   };
 
   class Collider

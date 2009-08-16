@@ -91,7 +91,7 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( ( brush.content & BSP::SOLID_BIT ) && !testPointBrush( &brush ) ) {
+        if( ( brush.material & Material::STRUCT_BIT ) && !testPointBrush( &brush ) ) {
           return false;
         }
       }
@@ -249,10 +249,10 @@ namespace oz
           minY <= impactY && impactY <= maxY &&
           ratio < hit.ratio )
       {
-        hit.ratio   = ratio;
-        hit.normal  = quad.tri[0].normal;
-        hit.obj     = null;
-        hit.onSlick = false;
+        hit.ratio    = ratio;
+        hit.normal   = quad.tri[0].normal;
+        hit.obj      = null;
+        hit.material = Material::TERRAIN_BIT;
 
         return false;
       }
@@ -272,10 +272,10 @@ namespace oz
           minY <= impactY && impactY <= maxY &&
           ratio < hit.ratio )
       {
-        hit.ratio   = ratio;
-        hit.normal  = quad.tri[1].normal;
-        hit.obj     = null;
-        hit.onSlick = false;
+        hit.ratio    = ratio;
+        hit.normal   = quad.tri[1].normal;
+        hit.obj      = null;
+        hit.material = Material::TERRAIN_BIT;
 
         return false;
       }
@@ -294,9 +294,7 @@ namespace oz
 
     for( int x = world.terrain.minX; x <= world.terrain.maxX; x++ ) {
       for( int y = world.terrain.minY; y <= world.terrain.maxY; y++ ) {
-        if( !trimTerraQuad( x, y ) ) {
-          return;
-        }
+        trimTerraQuad( x, y );
       }
     }
   }
@@ -315,9 +313,10 @@ namespace oz
         float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
         if( ratio < hit.ratio ) {
-          hit.ratio  = ratio;
-          hit.normal = normal;
-          hit.obj    = null;
+          hit.ratio    = ratio;
+          hit.normal   = normal;
+          hit.obj      = null;
+          hit.material = Material::VOID_BIT;
         }
       }
     }
@@ -355,9 +354,10 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio  = minRatio;
-      hit.normal = *tmpNormal;
-      hit.obj    = sObj;
+      hit.ratio    = minRatio;
+      hit.normal   = *tmpNormal;
+      hit.obj      = sObj;
+      hit.material = 0;
     }
   }
 
@@ -395,9 +395,10 @@ namespace oz
       float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
 
       if( newRatio < hit.ratio ) {
-        hit.ratio  = newRatio;
-        hit.normal = toAbsoluteCS( *tmpNormal );
-        hit.obj    = null;
+        hit.ratio    = newRatio;
+        hit.normal   = toAbsoluteCS( *tmpNormal );
+        hit.obj      = null;
+        hit.material = brush->material;
       }
     }
   }
@@ -418,7 +419,7 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( brush.content & BSP::SOLID_BIT ) {
+        if( brush.material & Material::STRUCT_BIT ) {
           trimPointBrush( &brush );
         }
       }
@@ -485,8 +486,9 @@ namespace oz
 
   void Collider::trimPointWorld()
   {
-    hit.ratio = 1.0f;
-    hit.obj   = null;
+    hit.ratio    = 1.0f;
+    hit.obj      = null;
+    hit.material = 0;
 
     globalStartPos = point;
     globalEndPos   = point + move;
@@ -563,7 +565,7 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( ( brush.content & BSP::SOLID_BIT ) && !testAABBBrush( &brush ) ) {
+        if( ( brush.material & Material::STRUCT_BIT ) && !testAABBBrush( &brush ) ) {
           return false;
         }
       }
@@ -717,10 +719,10 @@ namespace oz
         float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
         if( ratio < hit.ratio ) {
-          hit.ratio   = ratio;
-          hit.normal  = normal;
-          hit.obj     = null;
-          hit.onSlick = false;
+          hit.ratio    = ratio;
+          hit.normal   = normal;
+          hit.obj      = null;
+          hit.material = Material::VOID_BIT;
         }
       }
     }
@@ -758,10 +760,10 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio   = minRatio;
-      hit.normal  = *tmpNormal;
-      hit.obj     = sObj;
-      hit.onSlick = false;
+      hit.ratio    = minRatio;
+      hit.normal   = *tmpNormal;
+      hit.obj      = sObj;
+      hit.material = 0;
     }
   }
 
@@ -804,10 +806,10 @@ namespace oz
       float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
 
       if( newRatio < hit.ratio ) {
-        hit.ratio   = newRatio;
-        hit.normal  = toAbsoluteCS( *tmpNormal );
-        hit.obj     = null;
-        hit.onSlick = ( brush->content & BSP::SLICK_BIT ) != 0;
+        hit.ratio    = newRatio;
+        hit.normal   = toAbsoluteCS( *tmpNormal );
+        hit.obj      = null;
+        hit.material = brush->material;
       }
     }
   }
@@ -882,13 +884,13 @@ namespace oz
       for( int i = 0; i < leaf.nBrushes; i++ ) {
         BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
-        if( brush.content & BSP::SOLID_BIT ) {
+        if( brush.material & Material::STRUCT_BIT ) {
           trimAABBBrush( &brush );
         }
-        else if( brush.content & BSP::WATER_BIT ) {
+        else if( brush.material & Material::WATER_BIT ) {
           trimAABBWater( &brush );
         }
-        else if( ( brush.content & BSP::LADDER_BIT ) &&
+        else if( ( brush.material & Material::LADDER_BIT ) &&
                  obj != null && ( obj->flags & Object::CLIMBER_BIT ) )
         {
           trimAABBLadder( &brush );
@@ -958,11 +960,11 @@ namespace oz
   {
     hit.ratio      = 1.0f;
     hit.obj        = null;
+    hit.material   = 0;
     hit.onWater    = false;
     hit.inWater    = false;
     hit.underWater = false;
     hit.onLadder   = false;
-    hit.onSlick    = false;
 
     globalStartPos = aabb.p;
     globalEndPos   = aabb.p + move;

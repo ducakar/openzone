@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Font.h"
+#include "Mouse.h"
 
 namespace oz
 {
@@ -20,6 +21,7 @@ namespace ui
   class Area
   {
     friend class DList<Area, 0>;
+    friend void update();
     friend void draw();
 
     private:
@@ -36,22 +38,22 @@ namespace ui
 
     protected:
 
-      void drawChildren()
-      {
-        foreach( child, children.iterator() ) {
-          child->draw();
-        }
-      }
+      static const int GRAB_BIT = 0x00000001;
 
+      // absolute x and y, not relative to parent
       int x;
       int y;
       int width;
       int height;
 
+      int flags;
+
       // width of the last printed text
       int textWidth;
       // height of the current font
       int textHeight;
+
+      Area *parent;
 
       void setFont( FontType type );
       void setFontColor( ubyte r, ubyte g, ubyte b );
@@ -59,31 +61,81 @@ namespace ui
       void fill( int x, int y, int width, int height ) const;
       void rect( int x, int y, int width, int height ) const;
       void print( int x, int y, const char *s, ... );
+      void printCentered( int baseX, int baseY, const char *s, ... );
 
-      void onClick( int x, int y );
+      void realign( int newX, int newY )
+      {
+        int dx = newX - x;
+        int dy = newY - y;
+
+        x = newX;
+        y = newY;
+
+        foreach( child, children.iterator() ) {
+          child->x += dx;
+          child->y += dy;
+        }
+      }
+
+      void move( int moveX, int moveY )
+      {
+        moveX = bound( moveX, parent->x - x, parent->x + parent->width  - x - width  );
+        moveY = bound( moveY, parent->y - y, parent->y + parent->height - y - height );
+
+        x += moveX;
+        y += moveY;
+
+        foreach( child, children.iterator() ) {
+          child->move( moveX, moveY );
+        }
+      }
+
+      void checkMouse();
+
+      void drawChildren()
+      {
+        foreach( child, children.iterator() ) {
+          child->draw();
+        }
+      }
+
+      virtual void onMouseEvent();
+      virtual void draw();
 
     public:
 
-      explicit Area() {}
+      explicit Area( int width_, int height_ ) :
+        x( 0 ), y( 0 ), width( width_ ), height( height_ ), flags( 0 ),
+        textWidth( 0 ), textHeight( font.monoHeight ), parent( null )
+      {}
+
       explicit Area( int x_, int y_, int width_, int height_ ) :
-          x( x_ ), y( y_ ), width( width_ ), height( height_ ),
-          textWidth( 0 ), textHeight( font.monoHeight )
+          x( x_ ), y( y_ ), width( width_ ), height( height_ ), flags( 0 ),
+          textWidth( 0 ), textHeight( font.monoHeight ), parent( null )
       {}
 
       virtual ~Area();
 
-      void add( Area *area, int x_, int y_ )
+      void add( Area *area, int relativeX, int relativeY )
       {
-        area->x = x_ < 0 ? x + width  + x_ : x + x_;
-        area->y = y_ < 0 ? y + height + y_ : y + y_;
-        children << area;
+        area->width  = bound( area->width,  1, width  );
+        area->height = bound( area->height, 1, height );
+
+        relativeX = relativeX < 0 ? width  + relativeX : relativeX;
+        relativeY = relativeY < 0 ? height + relativeY : relativeY;
+
+        relativeX = bound( relativeX, 0, width  - area->width  );
+        relativeY = bound( relativeY, 0, height - area->height );
+
+        area->realign( x + relativeX, y + relativeY );
+        area->parent = this;
+
+        children.pushLast( area );
       }
 
       void add( Area *area )
       {
-        area->x = area->x < 0 ? x + width  + area->x : x + area->x;
-        area->y = area->y < 0 ? y + height + area->y : y + area->y;
-        children << area;
+        add( area, area->x, area->y );
       }
 
       void remove( Area *area )
@@ -91,21 +143,6 @@ namespace ui
         children.remove( area );
         delete area;
       }
-
-      void click( int x, int y )
-      {
-        foreach( child, children.iterator() ) {
-          if( x <= child->x && x < child->x + child->width &&
-              y <= child->y && y < child->y + child->width )
-          {
-            child->click( x, y );
-          }
-          break;
-        }
-        onClick( x - this->x, y - this->y );
-      }
-
-      virtual void draw();
 
   };
 
