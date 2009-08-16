@@ -15,11 +15,10 @@ namespace oz
 
   World world;
 
-  const int   Sector::DIMI = 16;
-  const float Sector::DIM = (float) Sector::DIMI;
-  const float Sector::RADIUS = Sector::DIM * Math::SQRT2;
+  const float Sector::SIZE = (float) Sector::SIZEI;
+  const float Sector::RADIUS = Sector::SIZE * Math::SQRT2 / 2.0f;
 
-  const float World::DIM = Sector::DIM * World::MAX / 2.0f;
+  const float World::DIM = Sector::SIZE * World::MAX / 2.0f;
 
   void World::position( Structure *str )
   {
@@ -191,7 +190,7 @@ namespace oz
 
   void World::init()
   {
-    terrain.level( -DIM );
+    terrain.init( -DIM );
 
     foreach( bsp, translator.bsps.iterator() ) {
       bsps << new BSP();

@@ -241,7 +241,6 @@ namespace client
     frustum.getExtrems( camera.p );
 
     sky.update();
-//     water.update();
 
     // drawnStructures
     if( drawnStructures.length() != world.structures.length() ) {
@@ -249,41 +248,40 @@ namespace client
     }
     drawnStructures.clearAll();
 
-    float minXCenter = (float) ( ( frustum.minX - World::MAX / 2 ) * Sector::DIM ) +
-        Sector::DIM / 2.0f;
-    float minYCenter = (float) ( ( frustum.minY - World::MAX / 2 ) * Sector::DIM ) +
-        Sector::DIM / 2.0f;
+    float minXCenter = (float) ( ( frustum.minX - World::MAX / 2 ) * Sector::SIZE ) +
+        Sector::SIZE / 2.0f;
+    float minYCenter = (float) ( ( frustum.minY - World::MAX / 2 ) * Sector::SIZE ) +
+        Sector::SIZE / 2.0f;
 
     float x = minXCenter;
-    for( int i = frustum.minX; i <= frustum.maxX; i++, x += Sector::DIM ) {
+    for( int i = frustum.minX; i <= frustum.maxX; i++, x += Sector::SIZE ) {
       float y = minYCenter;
 
-      for( int j = frustum.minY; j <= frustum.maxY; j++, y += Sector::DIM ) {
+      for( int j = frustum.minY; j <= frustum.maxY; j++, y += Sector::SIZE ) {
         if( frustum.isVisible( x, y, Sector::RADIUS ) ) {
           scheduleSector( i, j );
         }
       }
     }
 
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    gluPerspective( perspectiveAngle, perspectiveAspect, perspectiveMin, perspectiveMax );
-
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
-    glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+    // BEGIN RENDER
 
     glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_FOG );
     glEnable( GL_LIGHTING );
-    glEnable( GL_TEXTURE_2D );
     glDisable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
-    // BEGIN RENDER
+    glActiveTexture( GL_TEXTURE0 );
+    glEnable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE1 );
+    glEnable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE0 );
+
+    // fog
     if( isUnderWater ) {
       if( !wasUnderWater ) {
         glClearColor( WATER_COLOR[0], WATER_COLOR[1], WATER_COLOR[2], WATER_COLOR[3] );
@@ -308,6 +306,14 @@ namespace client
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
     // camera transformation
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    gluPerspective( perspectiveAngle, perspectiveAspect, perspectiveMin, perspectiveMax );
+
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
+    glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
+
     glMultMatrixf( camera.rotTMat );
     glTranslatef( -camera.p.x, -camera.p.y, -camera.p.z );
 
@@ -316,6 +322,7 @@ namespace client
     glLightfv( GL_LIGHT0, GL_DIFFUSE, sky.diffuseColor );
     glLightfv( GL_LIGHT0, GL_AMBIENT, sky.ambientColor );
 
+    terra.setRadius( frustum.radius );
     terra.draw();
 
     // draw structures
@@ -335,6 +342,10 @@ namespace client
     structures.clear();
 
     BSP::endRender();
+
+    glActiveTexture( GL_TEXTURE1 );
+    glDisable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE0 );
 
     // draw objects
     for( int i = 0; i < objects.length(); i++ ) {

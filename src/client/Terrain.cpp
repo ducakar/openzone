@@ -11,14 +11,14 @@
 #include "Terrain.h"
 
 #include "matrix/World.h"
+#include "matrix/Terrain.h"
 
+#include "Camera.h"
 #include "Context.h"
 #include "Frustum.h"
 
 #ifdef __WIN32__
-static PFNGLMULTITEXCOORD2IPROC glMultiTexCoord2i = null;
-static PFNGLMULTITEXCOORD2FPROC glMultiTexCoord2f = null;
-static PFNGLACTIVETEXTUREPROC   glActiveTexture = null;
+static PFNGLACTIVETEXTUREPROC glActiveTexture = null;
 #endif
 
 namespace oz
@@ -34,27 +34,43 @@ namespace client
     mapTexId = context.loadTexture( "terra/map.png" );
 
 #ifdef __WIN32__
-    glMultiTexCoord2i = (PFNGLMULTITEXCOORD2IPROC) SDL_GL_GetProcAddress( "glMultiTexCoord2i" );
-    glMultiTexCoord2f = (PFNGLMULTITEXCOORD2FPROC) SDL_GL_GetProcAddress( "glMultiTexCoord2f" );
-    glActiveTexture   = (PFNGLACTIVETEXTUREPROC)   SDL_GL_GetProcAddress( "glActiveTexture" );
+    glActiveTexture = (PFNGLACTIVETEXTUREPROC) SDL_GL_GetProcAddress( "glActiveTexture" );
 #endif
 
-    int lineVerts = oz::Terrain::MAX + 1;
-    int nVertices = lineVerts * lineVerts;
+    int nVertices = oz::Terrain::MAX * oz::Terrain::MAX;
 
-    normals   = new Vec3[nVertices];
-    texCoords = new float[nVertices][2];
-    vertices  = new Vec3[nVertices];
+    normals         = new Vec3[nVertices];
+    detailTexCoords = new TexCoord[nVertices];
+    mapTexCoords    = new TexCoord[nVertices];
 
-    for( int x = 0, i = 0; x <= oz::Terrain::MAX; x++ ) {
-      for( int y = 0; y <= oz::Terrain::MAX; y++, i++ ) {
-        vertices[i] = Vec3( x * oz::TerraQuad::DIM - oz::Terrain::DIM,
-                            y * oz::TerraQuad::DIM - oz::Terrain::DIM,
-                            world.terrain.heightMap[x][y] );
+    for( int x = 0; x < oz::Terrain::MAX; x++ ) {
+      for( int y = 0; y < oz::Terrain::MAX; y++ ) {
+        Vec3 &n = normals[x * oz::Terrain::MAX + y];
+
+        n.setZero();
+        if( x < oz::Terrain::QUADS && y < oz::Terrain::QUADS ) {
+          n += world.terrain.quads[x][y].tri[0].normal;
+          n += world.terrain.quads[x][y].tri[1].normal;
+        }
+        if( x > 0 && y < oz::Terrain::QUADS ) {
+          n += world.terrain.quads[x - 1][y].tri[0].normal;
+        }
+        if( x > 0 && y > 0 ) {
+          n += world.terrain.quads[x - 1][y - 1].tri[0].normal;
+          n += world.terrain.quads[x - 1][y - 1].tri[1].normal;
+        }
+        if( x < oz::Terrain::QUADS && y > 0 ) {
+          n += world.terrain.quads[x][y - 1].tri[1].normal;
+        }
+        n.norm();
+
+        detailTexCoords[x * oz::Terrain::MAX + y].u = (float) ( x & 1 );
+        detailTexCoords[x * oz::Terrain::MAX + y].v = (float) ( y & 1 );
+
+        mapTexCoords[x * oz::Terrain::MAX + y].u = ((float) x) / oz::Terrain::MAX;
+        mapTexCoords[x * oz::Terrain::MAX + y].v = ((float) y) / oz::Terrain::MAX;
       }
     }
-
-
   }
 
   void Terrain::free()
@@ -63,18 +79,63 @@ namespace client
       delete[] normals;
       normals = null;
     }
-    if( texCoords != null ) {
-      delete[] texCoords;
-      texCoords = null;
+    if( detailTexCoords != null ) {
+      delete[] detailTexCoords;
+      detailTexCoords = null;
     }
-    if( vertices != null ) {
-      delete[] vertices;
-      vertices = null;
+    if( mapTexCoords != null ) {
+      delete[] mapTexCoords;
+      mapTexCoords = null;
     }
   }
 
   void Terrain::draw() const
-  {}
+  {
+    world.terrain.getInters( camera.p.x - radius, camera.p.y - radius,
+                             camera.p.x + radius, camera.p.y + radius );
+
+    float minX = world.terrain.minX;
+    float minY = world.terrain.minY;
+    float maxX = world.terrain.maxX + 1;
+    float maxY = world.terrain.maxY + 1;
+
+    glActiveTexture( GL_TEXTURE0 );
+    glBindTexture( GL_TEXTURE_2D, detailTexId );
+
+    glActiveTexture( GL_TEXTURE1 );
+    glEnable( GL_TEXTURE_2D );
+    glBindTexture( GL_TEXTURE_2D, mapTexId );
+
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    glVertexPointer( 3, GL_FLOAT, 0, world.terrain.vertices );
+    glNormalPointer( GL_FLOAT, 0, normals );
+
+    glClientActiveTexture( GL_TEXTURE0 );
+    glTexCoordPointer( 2, GL_FLOAT, 0, detailTexCoords );
+
+    glClientActiveTexture( GL_TEXTURE1 );
+    glTexCoordPointer( 2, GL_FLOAT, 0, mapTexCoords );
+
+    for( int y = minY; y < maxY; y++ ) {
+      glBegin( GL_TRIANGLE_STRIP );
+      for( int x = minX; x <= maxX; x++ ) {
+        glArrayElement( x * oz::Terrain::MAX + y + 1 );
+        glArrayElement( x * oz::Terrain::MAX + y     );
+      }
+      glEnd();
+    }
+
+    glActiveTexture( GL_TEXTURE1 );
+    glDisable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE0 );
+
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
+  }
 
 }
 }

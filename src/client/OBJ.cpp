@@ -391,36 +391,6 @@ namespace client
     for( int i = 0; i < faces.length(); i++ ) {
       const Face &face = faces[i];
 
-//       // draw polygon as a triangle strip
-//       glBegin( GL_TRIANGLE_STRIP );
-//         assert( face.nVerts >= 3 );
-//
-//         int outerMiddle = face.nVerts / 2 + 1;
-//         int innerMiddle = ( face.nVerts - 1 ) / 2;
-//         for( int j = 0; j < outerMiddle; j++ ) {
-//
-//           if( !texCoords.isEmpty() ) {
-//             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
-//           }
-//           if( !normals.isEmpty() ) {
-//             glNormal3fv( normals[face.normIndices[j]] );
-//           }
-//           glVertex3fv( vertices[face.vertIndices[j]] );
-//
-//           if( j == 0 || j > innerMiddle ) {
-//             continue;
-//           }
-//
-//           if( !texCoords.isEmpty() ) {
-//             glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[face.nVerts - j]] );
-//           }
-//           if( !normals.isEmpty() ) {
-//             glNormal3fv( normals[face.normIndices[face.nVerts - j]] );
-//           }
-//           glVertex3fv( vertices[face.vertIndices[face.nVerts - j]] );
-//         }
-//       glEnd();
-
       glBegin( GL_POLYGON );
         for( int j = 0; j < face.nVerts; j++ ) {
           if( !texCoords.isEmpty() ) {

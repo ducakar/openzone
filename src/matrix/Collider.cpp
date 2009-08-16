@@ -226,33 +226,31 @@ namespace oz
 
   bool Collider::trimTerraQuad( int x, int y )
   {
-    TerraQuad &quad = world.terrain.terra[x][y];
+    const Terrain::Quad &quad = world.terrain.quads[x][y];
+    const Vec3 &minVert = world.terrain.vertices[x    ][y    ];
+    const Vec3 &maxVert = world.terrain.vertices[x + 1][y + 1];
 
-    float pX = (float) ( ( x - Terrain::MAX / 2 ) * TerraQuad::SIZE );
-    float pY = (float) ( ( y - Terrain::MAX / 2 ) * TerraQuad::SIZE );
+    float minX = minVert.x - EPSILON;
+    float minY = minVert.y - EPSILON;
+    float maxX = maxVert.x + EPSILON;
+    float maxY = maxVert.y + EPSILON;
 
-    float pX0 = pX - EPSILON;
-    float pY0 = pY - EPSILON;
-
-    float pX1 = pX + TerraQuad::SIZE + EPSILON;
-    float pY1 = pY + TerraQuad::SIZE + EPSILON;
-
-    float startDist = globalStartPos * quad.normal[0] - quad.distance[0];
-    float endDist   = globalEndPos   * quad.normal[0] - quad.distance[0];
+    float startDist = globalStartPos * quad.tri[0].normal - quad.tri[0].distance;
+    float endDist   = globalEndPos   * quad.tri[0].normal - quad.tri[0].distance;
 
     if( endDist <= EPSILON && endDist <= startDist ) {
-      float ratio = startDist / ( startDist - endDist + EPSILON );
+      float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
       float impactX = globalStartPos.x + ratio * move.x;
       float impactY = globalStartPos.y + ratio * move.y;
 
-      if( impactX - pX <= impactY - pY0 &&
-          pX0 <= impactX && impactX <= pX1 &&
-          pY0 <= impactY && impactY <= pY1 &&
-          Math::abs( ratio ) < Math::abs( hit.ratio ) )
+      if( impactX - minX >= impactY - minY &&
+          minX <= impactX && impactX <= maxX &&
+          minY <= impactY && impactY <= maxY &&
+          ratio < hit.ratio )
       {
         hit.ratio   = ratio;
-        hit.normal  = quad.normal[0];
+        hit.normal  = quad.tri[0].normal;
         hit.obj     = null;
         hit.onSlick = false;
 
@@ -260,22 +258,22 @@ namespace oz
       }
     }
 
-    startDist = globalStartPos * quad.normal[1] - quad.distance[1];
-    endDist   = globalEndPos   * quad.normal[1] - quad.distance[1];
+    startDist = globalStartPos * quad.tri[1].normal - quad.tri[1].distance;
+    endDist   = globalEndPos   * quad.tri[1].normal - quad.tri[1].distance;
 
     if( endDist <= EPSILON && endDist <= startDist ) {
-      float ratio = startDist / ( startDist - endDist + EPSILON );
+      float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
       float impactX = globalStartPos.x + ratio * move.x;
       float impactY = globalStartPos.y + ratio * move.y;
 
-      if( impactX - pX0 >= impactY - pY &&
-          pX0 <= impactX && impactX <= pX1 &&
-          pY0 <= impactY && impactY <= pY1 &&
-          Math::abs( ratio ) < Math::abs( hit.ratio ) )
+      if( impactX - minX <= impactY - minY &&
+          minX <= impactX && impactX <= maxX &&
+          minY <= impactY && impactY <= maxY &&
+          ratio < hit.ratio )
       {
         hit.ratio   = ratio;
-        hit.normal  = quad.normal[1];
+        hit.normal  = quad.tri[1].normal;
         hit.obj     = null;
         hit.onSlick = false;
 
@@ -285,16 +283,30 @@ namespace oz
     return true;
   }
 
+  void Collider::trimPointTerra()
+  {
+    float minPosX = min( globalStartPos.x, globalEndPos.x );
+    float minPosY = min( globalStartPos.y, globalEndPos.y );
+    float maxPosX = max( globalStartPos.x, globalEndPos.x );
+    float maxPosY = max( globalStartPos.y, globalEndPos.y );
+
+    world.terrain.getInters( minPosX, minPosY, maxPosX, maxPosY, EPSILON );
+
+    for( int x = world.terrain.minX; x <= world.terrain.maxX; x++ ) {
+      for( int y = world.terrain.minY; y <= world.terrain.maxY; y++ ) {
+        if( !trimTerraQuad( x, y ) ) {
+          return;
+        }
+      }
+    }
+  }
+
   // finds out if Ray-World bounding box collision occurs and the time when it occurs
   void Collider::trimPointVoid()
   {
-    float  minRatio       = -1.0f;
-    float  maxRatio       =  1.0f;
-    const Vec3 *tmpNormal = null;
-
     for( int i = 0; i < 3; i++ ) {
-      int  iPos    = move[i] >= 0.0f;
-      const Vec3 &normal = bbNormals[i * 2 + iPos];
+      int iSide = move[i] >= 0.0f;
+      const Vec3 &normal = bbNormals[i * 2 + iSide];
 
       float startDist = world.maxs[i] + globalStartPos[i] * normal[i];
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i];
@@ -302,16 +314,12 @@ namespace oz
       if( endDist <= EPSILON && endDist <= startDist ) {
         float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
-        if( ratio > minRatio ) {
-          minRatio  = ratio;
-          tmpNormal = &normal;
+        if( ratio < hit.ratio ) {
+          hit.ratio  = ratio;
+          hit.normal = normal;
+          hit.obj    = null;
         }
       }
-    }
-    if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio   = minRatio;
-      hit.normal  = *tmpNormal;
-      hit.obj     = null;
     }
   }
 
@@ -323,7 +331,7 @@ namespace oz
     const Vec3 *tmpNormal = null;
 
     for( int i = 0; i < 6; i++ ) {
-      int  j = i >> 1;
+      int j = i >> 1;
       const Vec3 &normal = bbNormals[i];
 
       float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
@@ -470,40 +478,6 @@ namespace oz
         else {
           trimPointNode( node.front, startRatio, endRatio, startPos, endPos );
           trimPointNode( node.back, startRatio, endRatio, startPos, endPos );
-        }
-      }
-    }
-  }
-
-  void Collider::trimPointTerra()
-  {
-    float minPosX, minPosY;
-    float maxPosX, maxPosY;
-
-    if( globalStartPos.x < globalEndPos.x ) {
-      minPosX = globalStartPos.x;
-      maxPosX = globalEndPos.x;
-    }
-    else {
-      minPosX = globalEndPos.x;
-      maxPosX = globalStartPos.x;
-    }
-
-    if( globalStartPos.y < globalEndPos.y ) {
-      minPosY = globalStartPos.y;
-      maxPosY = globalEndPos.y;
-    }
-    else {
-      minPosY = globalEndPos.y;
-      maxPosY = globalStartPos.y;
-    }
-
-    world.terrain.getInters( minPosX, minPosY, maxPosX, maxPosY, EPSILON );
-
-    for( int x = world.terrain.minX; x <= world.terrain.maxX; x++ ) {
-      for( int y = world.terrain.minY; y <= world.terrain.maxY; y++ ) {
-        if( !trimTerraQuad( x, y ) ) {
-          return;
         }
       }
     }
@@ -732,13 +706,9 @@ namespace oz
   // finds out if AABB-World bounding box collision occurs and the time when it occurs
   void Collider::trimAABBVoid()
   {
-    float minRatio        = -1.0f;
-    float maxRatio        =  1.0f;
-    const Vec3 *tmpNormal = null;
-
     for( int i = 0; i < 3; i++ ) {
-      int  iPos    = move[i] >= 0.0f;
-      const Vec3 &normal = bbNormals[i * 2 + iPos];
+      int iSide = move[i] >= 0.0f;
+      const Vec3 &normal = bbNormals[i * 2 + iSide];
 
       float startDist = world.maxs[i] + globalStartPos[i] * normal[i] - aabb.dim[i];
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i] - aabb.dim[i];
@@ -746,17 +716,13 @@ namespace oz
       if( endDist <= EPSILON && endDist <= startDist ) {
         float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
-        if( ratio > minRatio ) {
-          minRatio  = ratio;
-          tmpNormal = &normal;
+        if( ratio < hit.ratio ) {
+          hit.ratio   = ratio;
+          hit.normal  = normal;
+          hit.obj     = null;
+          hit.onSlick = false;
         }
       }
-    }
-    if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio   = minRatio;
-      hit.normal  = *tmpNormal;
-      hit.obj     = null;
-      hit.onSlick = false;
     }
   }
 
@@ -768,7 +734,7 @@ namespace oz
     const Vec3 *tmpNormal = null;
 
     for( int i = 0; i < 6; i++ ) {
-      int  j = i >> 1;
+      int j = i >> 1;
       const Vec3 &normal = bbNormals[i];
 
       float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];

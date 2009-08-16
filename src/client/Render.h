@@ -44,7 +44,7 @@ namespace client
       static const int   DELAYED_LISTS_MAX = 256;
 
       // cleanup interval (remove unused models)
-      static const int    CLEAR_INTERVAL = 60 * 50;
+      static const int   CLEAR_INTERVAL = 60 * 50;
 
       struct DelayedList
       {

@@ -21,20 +21,34 @@ namespace client
 
       static const float DETAILTEX_SCALE;
 
-      uint detailTexId;
-      uint mapTexId;
+      struct TexCoord
+      {
+        float u;
+        float v;
+      };
 
-      Vec3  *normals;
-      float ( *texCoords )[2];
-      Vec3  *vertices;
+      uint     detailTexId;
+      uint     mapTexId;
+
+      float    radius;
+
+      Vec3     *normals;
+      TexCoord *detailTexCoords;
+      TexCoord *mapTexCoords;
 
     public:
 
       void init();
       void free();
 
+      void setRadius( float radius );
       void draw() const;
   };
+
+  inline void Terrain::setRadius( float radius_ )
+  {
+    radius = radius_;
+  }
 
 }
 }

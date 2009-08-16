@@ -35,7 +35,7 @@ namespace oz
 
     world.sky.init( 70.0f, 600.0f );
     world.sky.time = 200.0f;
-//     world.terrain.load( "terra/large.png" );
+    world.terrain.load( "terra/large.png" );
 
     Buffer buffer( 1024 * 1024 * 10 );
     if( buffer.load( config.get( "dir.home", "" ) + String( "/saved.world" ) ) ) {

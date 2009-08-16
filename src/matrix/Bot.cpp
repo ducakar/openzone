@@ -263,34 +263,28 @@ namespace oz
       // To prevent that stepping would result in "climbing" high slopes, we must check that we
       // step over an edge. In other words:
       //
-      //   end               moveXYLength     We want:
-      //  /                 /
-      // o<------------------>                             moveHeight
-      // --------        ^                      ---------------------------------- < slope tangens
-      //         \       | moveHeight            moveXYLength - moveToHitXYLength
-      //          \      |
-      //           \     |      start         If that condition is not true, we may not have stepped
-      //            \    |     /              over the edge, but merely climbing up the slope.
-      //             \   v    o
-      //              \----------
-      //               <----->
-      //                   |
-      //                   moveToHitXYLength
+      //      .                                  Start and end position must be on different sides
+      //  end  .     end of a failed attempt     of a obstacle side plane we collided to.
+      //     \  .   /
+      //      o  . x
+      // ----------     collision point
+      //           \   |
+      //            \  |         start
+      //             \ |        /
+      //              \x<------o
+      //               \----------
       //
-      if( ( state & STEPPING_BIT ) && !isClimbing && stepRate < clazz.stepRate ) {
+      //
+      if( ( state & STEPPING_BIT ) && !isClimbing /*&& stepRate < clazz.stepRate*/ ) {
         // check if bot's gonna hit a stair in next frame
-        Vec3  desiredMove         = momentum * timer.frameTime;
-        float desiredMoveXYLength =
-            Math::sqrt( desiredMove.x*desiredMove.x + desiredMove.y*desiredMove.y );
+        Vec3 desiredMove = momentum * timer.frameTime;
 
         collider.translate( *this, desiredMove, this );
-        float normalZ = collider.hit.normal.z;
 
-        if( collider.hit.ratio != 1.0f && normalZ < Physics::FLOOR_NORMAL_Z ) {
+        if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
           float originalZ = p.z;
-          // slope tangens
-          float slope = Math::sqrt( 1 - normalZ*normalZ ) / normalZ;
-          float moveToHitXYLength = desiredMoveXYLength * collider.hit.ratio;
+          Vec3  normal = collider.hit.normal;
+          float negStartDist = ( desiredMove * collider.hit.ratio ) * normal - EPSILON;
 
           for( float raise = clazz.stepInc; raise <= clazz.stepMax; raise += clazz.stepInc ) {
             p.z += clazz.stepInc;
@@ -299,14 +293,11 @@ namespace oz
             }
             collider.translate( *this, desiredMove, this );
 
-            float moveX = desiredMove.x * collider.hit.ratio;
-            float moveY = desiredMove.y * collider.hit.ratio;
-            float moveXYLength = Math::sqrt( moveX*moveX + moveY*moveY );
-            float moveHeight = raise + desiredMove.z * collider.hit.ratio;
+            Vec3 move = desiredMove * collider.hit.ratio;
+            move.z += raise;
+            float endDist = move * normal - negStartDist;
 
-            float xy = moveXYLength - moveToHitXYLength - EPSILON;
-
-            if( xy > EPSILON && moveHeight / xy < slope ) {
+            if( endDist < 0.0f ) {
               stepRate += raise;
               goto stepSucceeded;
             }
