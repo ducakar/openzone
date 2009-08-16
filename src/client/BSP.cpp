@@ -84,64 +84,56 @@ namespace client
 
     glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                      (float*) bsp->vertices[face->firstVertex].p );
+    glNormal3fv( face->normal );
 
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
+
     glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                        bsp->vertices[face->firstVertex].texCoord );
 
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
-
       glBindTexture( GL_TEXTURE_2D, lightMaps[face->lightmap] );
+
+      glClientActiveTexture( GL_TEXTURE1 );
       glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                          bsp->vertices[face->firstVertex].lightmapCoord );
-    }
 
-    glNormal3fv( face->normal );
-    glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
-
-    if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE0 );
+      glClientActiveTexture( GL_TEXTURE0 );
     }
+
+    glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
   }
 
   void BSP::drawFaceWater( const oz::BSP::Face *face ) const
   {
+    glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha1 );
+    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
+
     glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                      (float*) bsp->vertices[face->firstVertex].p );
-
-    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                       bsp->vertices[face->firstVertex].texCoord );
-
-    if( lightMaps != null ) {
-      glActiveTexture( GL_TEXTURE1 );
-
-      glBindTexture( GL_TEXTURE_2D, lightMaps[face->lightmap] );
-      glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                         bsp->vertices[face->firstVertex].lightmapCoord );
-    }
-
     glNormal3fv( face->normal );
-    glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha1 );
-    glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
-    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-
-    if( lightMaps != null ) {
-      glActiveTexture( GL_TEXTURE0 );
-    }
-
-    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                        bsp->vertices[face->firstVertex].texCoord );
 
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
-
       glBindTexture( GL_TEXTURE_2D, lightMaps[face->lightmap] );
+
+      glClientActiveTexture( GL_TEXTURE1 );
       glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                          bsp->vertices[face->firstVertex].lightmapCoord );
+
+      glActiveTexture( GL_TEXTURE0 );
+      glClientActiveTexture( GL_TEXTURE0 );
     }
+
+    glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
+
+    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
+
+    glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha2 );
 
     glMatrixMode( GL_TEXTURE );
     glLoadMatrixf( Mat44( 1.0f,           0.0f,           0.0f, 0.0f,
@@ -149,18 +141,12 @@ namespace client
                           0.0f,           0.0f,           1.0f, 0.0f,
                           WATER_TEX_BIAS, WATER_TEX_BIAS, 0.0f, 1.0f ) );
 
-    glNormal3fv( face->normal );
-
-    glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha2 );
     glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
 
     glLoadIdentity();
     glMatrixMode( GL_MODELVIEW );
-    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 
-    if( lightMaps != null ) {
-      glActiveTexture( GL_TEXTURE0 );
-    }
+    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
   }
 
   void BSP::drawNode( int nodeIndex )
@@ -316,15 +302,16 @@ namespace client
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
       glEnable( GL_TEXTURE_2D );
-
       glActiveTexture( GL_TEXTURE0 );
     }
     else {
       glActiveTexture( GL_TEXTURE1 );
       glDisable( GL_TEXTURE_2D );
-
       glActiveTexture( GL_TEXTURE0 );
     }
+
+    glClientActiveTexture( GL_TEXTURE0 );
+
     glPushMatrix();
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
@@ -376,7 +363,6 @@ namespace client
         }
       }
     }
-    glActiveTexture( GL_TEXTURE1 );
     glPopMatrix();
 
     return waterFlags;
@@ -390,13 +376,11 @@ namespace client
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
       glEnable( GL_TEXTURE_2D );
-
       glActiveTexture( GL_TEXTURE0 );
     }
     else {
       glActiveTexture( GL_TEXTURE1 );
       glDisable( GL_TEXTURE_2D );
-
       glActiveTexture( GL_TEXTURE0 );
     }
     glPushMatrix();
@@ -448,7 +432,6 @@ namespace client
         }
       }
     }
-    glActiveTexture( GL_TEXTURE1 );
     glPopMatrix();
   }
 

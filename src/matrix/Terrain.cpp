@@ -15,89 +15,82 @@
 namespace oz
 {
 
-  const float TerraQuad::SIZE = (float) TerraQuad::SIZEI;
-  const float TerraQuad::DIM = TerraQuad::SIZE / 2.0f;
+  const float Terrain::Quad::SIZE = (float) Terrain::Quad::SIZEI;
+  const float Terrain::Quad::DIM = Terrain::Quad::SIZE / 2.0f;
 
-  const float Terrain::DIM = TerraQuad::DIM * Terrain::MAX;
+  const float Terrain::DIM = Terrain::Quad::DIM * Terrain::QUADS;
   const float Terrain::HEIGHT_STEP = 0.5f;
   const float Terrain::HEIGHT_BIAS = 0.0f;
 
   void Terrain::buildTerraFrame()
   {
-    for( int x = 0; x < MAX; x++ ) {
-      for( int y = 0; y < MAX; y++ ) {
+    for( int x = 0; x < QUADS; x++ ) {
+      for( int y = 0; y < QUADS; y++ ) {
         /*
-          0. triangle -- leftmost
-          1. triangle -- rightmost
-          beginning:
+          0. triangle -- upper left
+          1. triangle -- lower right
+
             |  ...  |         D        C
             +---+---+-         o----->o
-            |0 /|0 /|          |      ^
+            |1 /|1 /|          |      ^
             | / | / |          |      |
-            |/ 1|/ 1|          |      |
+            |/ 0|/ 0|          |      |
             +---+---+- ...     v      |
-            |0 /|0 /|          o<-----o
+            |1 /|1 /|          o<-----o
             | / | / |         A        B
-            |/ 1|/ 1|
+            |/ 0|/ 0|
           (0,0)
         */
-        Vec3 a(   x       * TerraQuad::SIZE - DIM,
-                  y       * TerraQuad::SIZE - DIM,
-                heightMap[x    ][y    ] );
-        Vec3 b( ( x + 1 ) * TerraQuad::SIZE - DIM,
-                  y       * TerraQuad::SIZE - DIM,
-                heightMap[x + 1][y    ] );
-        Vec3 c( ( x + 1 ) * TerraQuad::SIZE - DIM,
-                ( y + 1 ) * TerraQuad::SIZE - DIM,
-                heightMap[x + 1][y + 1] );
-        Vec3 d(   x       * TerraQuad::SIZE - DIM,
-                ( y + 1 ) * TerraQuad::SIZE - DIM,
-                heightMap[x    ][y + 1] );
+        const Vec3 &a = vertices[x    ][y    ];
+        const Vec3 &b = vertices[x + 1][y    ];
+        const Vec3 &c = vertices[x + 1][y + 1];
+        const Vec3 &d = vertices[x    ][y + 1];
 
-        terra[x][y].normal[0] = ( ( a - d ) ^ ( c - d ) ).norm();
-        terra[x][y].distance[0] = terra[x][y].normal[0] * a;
+        quads[x][y].tri[0].normal   = ( ( c - b ) ^ ( a - b ) ).norm();
+        quads[x][y].tri[0].distance = quads[x][y].tri[0].normal * a;
 
-        terra[x][y].normal[1] = ( ( c - b ) ^ ( a - b ) ).norm();
-        terra[x][y].distance[1] = terra[x][y].normal[1] * a;
+        quads[x][y].tri[1].normal   = ( ( a - d ) ^ ( c - d ) ).norm();
+        quads[x][y].tri[1].distance = quads[x][y].tri[1].normal * a;
       }
     }
   }
 
-  void Terrain::level( float height )
+  void Terrain::init( float height )
   {
-    for( int y = 0; y <= MAX; y++ ) {
-      for( int x = 0; x <= MAX; x++ ) {
-        heightMap[x][y] = height;
+    for( int x = 0; x < MAX; x++ ) {
+      for( int y = 0; y < MAX; y++ ) {
+        vertices[x][y].x = (float) ( x * Quad::SIZEI ) - DIM;
+        vertices[x][y].y = (float) ( y * Quad::SIZEI ) - DIM;
+        vertices[x][y].z = height;
       }
     }
 
     buildTerraFrame();
   }
 
-  void Terrain::load( const char *heightMapFile )
+  void Terrain::load( const char *verticesFile )
   {
-    log.print( "Loading terrain heightmap image '%s' ...", heightMapFile );
+    log.print( "Loading terrain heightmap image '%s' ...", verticesFile );
 
-    SDL_Surface *image = IMG_Load( heightMapFile );
+    SDL_Surface *image = IMG_Load( verticesFile );
 
     if( image == null ) {
       log.printEnd( " No such file" );
       throw Exception( 0, "Failed to load terrain" );
     }
-    if( image->w != MAX + 1 || image->h != MAX + 1 || image->format->BytesPerPixel != 1 ) {
-      log.println( "Invalid size: %d x %d, should be %d x %d",
-                   image->w, image->h, MAX + 1, MAX + 1 );
+    if( image->w != MAX || image->h != MAX || image->format->BytesPerPixel != 1 ) {
+      log.println( "Invalid size: %d x %d, should be %d x %d", image->w, image->h, MAX, MAX );
       SDL_FreeSurface( image );
       throw Exception( 0, "Failed to load terrain" );
     }
 
     int scanLineLength = image->pitch;
-    const ubyte *p = (const ubyte*) image->pixels;
-    for( int y = MAX; y >= 0; y-- ) {
-      for( int x = 0; x <= MAX; x++ ) {
-        heightMap[x][y] = (float) p[x] * HEIGHT_STEP + HEIGHT_BIAS;
+    const ubyte *line = (const ubyte*) image->pixels;
+    for( int y = MAX - 1; y >= 0; y-- ) {
+      for( int x = 0; x < MAX; x++ ) {
+        vertices[x][y].z = (float) line[x] * HEIGHT_STEP + HEIGHT_BIAS;
       }
-      p += scanLineLength;
+      line += scanLineLength;
     }
 
     buildTerraFrame();

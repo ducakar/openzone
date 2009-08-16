@@ -27,7 +27,7 @@ namespace oz
   const float Physics::OBJ_FRICTION         = 0.40f;
   const float Physics::SLICK_FRICTION       = 0.02f;
 
-  const float Physics::FLOOR_NORMAL_Z       = 0.70f;
+  const float Physics::FLOOR_NORMAL_Z       = 0.60f;
 
   //***********************************
   //*   PARTICLE COLLISION HANDLING   *

@@ -16,26 +16,14 @@ namespace oz
     class Terrain;
   };
 
-  struct TerraQuad
-  {
-    // integer size of terrain quad
-    static const int   SIZEI = 16;
-    // float size of terrain quad
-    static const float SIZE;
-    // dimension of terrain quad (size / 2)
-    static const float DIM;
-
-    Vec3  normal[2];
-    float distance[2];
-  };
-
   class Terrain
   {
     friend class client::Terrain;
 
     public:
 
-      static const int MAX = 256;
+      static const int QUADS = 256;
+      static const int MAX   = QUADS + 1;
 
     private:
 
@@ -45,66 +33,82 @@ namespace oz
       static const float HEIGHT_STEP;
       static const float HEIGHT_BIAS;
 
-      float heightMap[MAX + 1][MAX + 1];
-      bool  isLoaded;
-
-      void  buildTerraFrame();
+      void buildTerraFrame();
 
     public:
 
-      TerraQuad terra[MAX][MAX];
+      struct Triangle
+      {
+        Vec3  normal;
+        float distance;
+      };
 
-      int   ix;
-      int   iy;
-      int   ii;
+      struct Quad
+      {
+        // integer size of a terrain quad
+        static const int   SIZEI = 16;
+        // float size of a terrain quad
+        static const float SIZE;
+        // dimension of a terrain quad (size / 2)
+        static const float DIM;
 
-      int   minX;
-      int   minY;
-      int   maxX;
-      int   maxY;
+        Triangle tri[2];
+      };
 
-      void  level( float height );
-      void  load( const char *heightMapFile );
+      Vec3 vertices[MAX][MAX];
+      Quad quads[QUADS][QUADS];
 
-      void  isEmpty() const;
+      int  minX;
+      int  minY;
+      int  maxX;
+      int  maxY;
 
+      int  ix;
+      int  iy;
+
+      bool isLoaded;
+
+      void init( float height );
+      void load( const char *heightMapFile );
+
+      void isEmpty() const;
+
+      void  getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f );
       // indices of TerraQuad and index of the triangle inside the TerraQuad
       void  getIndices( float x, float y );
-      void  getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f );
       float height( float x, float y );
 
   };
 
-  inline void Terrain::getIndices( float x, float y )
-  {
-    ix = (int) ( x + Terrain::DIM ) / TerraQuad::SIZEI;
-    iy = (int) ( y + Terrain::DIM ) / TerraQuad::SIZEI;
-
-    ix = bound( ix, 0, Terrain::MAX - 1 );
-    iy = bound( iy, 0, Terrain::MAX - 1 );
-  }
-
   inline void Terrain::getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
                                   float epsilon )
   {
-    minX = max( (int) ( minPosX + Terrain::DIM - epsilon ) / TerraQuad::SIZEI, 0 );
-    minY = max( (int) ( minPosY + Terrain::DIM - epsilon ) / TerraQuad::SIZEI, 0 );
-    maxX = min( (int) ( maxPosX + Terrain::DIM + epsilon ) / TerraQuad::SIZEI, Terrain::MAX - 1 );
-    maxY = min( (int) ( maxPosY + Terrain::DIM + epsilon ) / TerraQuad::SIZEI, Terrain::MAX - 1 );
+    minX = max( (int) ( minPosX - epsilon + DIM ) / Quad::SIZEI, 0 );
+    minY = max( (int) ( minPosY - epsilon + DIM ) / Quad::SIZEI, 0 );
+    maxX = min( (int) ( maxPosX + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
+    maxY = min( (int) ( maxPosY + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
+  }
+
+  inline void Terrain::getIndices( float x, float y )
+  {
+    ix = (int) ( x + DIM ) / Quad::SIZEI;
+    iy = (int) ( y + DIM ) / Quad::SIZEI;
+
+    ix = bound( ix, 0, QUADS - 1 );
+    iy = bound( iy, 0, QUADS - 1 );
   }
 
   inline float Terrain::height( float x, float y )
   {
     getIndices( x, y );
 
-    float intraX = Math::mod( x + Terrain::DIM, TerraQuad::SIZE );
-    float intraY = Math::mod( y + Terrain::DIM, TerraQuad::SIZE );
-
-    ii = intraX > intraY;
+    float intraX = Math::mod( x + DIM, Quad::SIZE );
+    float intraY = Math::mod( y + DIM, Quad::SIZE );
+    int   ii = intraX <= intraY;
 
     return
-        ( terra[ix][iy].distance[ii] - terra[ix][iy].normal[ii].x * x -
-        terra[ix][iy].normal[ii].y * y ) / terra[ix][iy].normal[ii].z;
+        ( quads[ix][iy].tri[ii].distance - quads[ix][iy].tri[ii].normal.x * x -
+        quads[ix][iy].tri[ii].normal.y * y ) / quads[ix][iy].tri[ii].normal.z;
   }
 
 }

@@ -77,13 +77,13 @@ namespace oz
       bool testPointWorldOSO();
 
       bool trimTerraQuad( int x, int y );
+      void trimPointTerra();
 
       void trimPointVoid();
       void trimPointObj( Object *sObj );
       void trimPointBrush( const BSP::Brush *brush );
       void trimPointNode( int nodeIndex, float startRatio, float endRatio,
                           const Vec3 &startPos, const Vec3 &endPos );
-      void trimPointTerra();
       void trimPointWorld();
 
       bool testAABBBrush( const BSP::Brush *brush );
