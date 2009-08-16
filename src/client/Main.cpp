@@ -234,6 +234,7 @@ namespace client
 
     // set mouse cursor to center of the screen and clear any events (key presses and mouse moves)
     // from before
+    game.input.mouse.b = 0;
     SDL_WarpMouse( screenCenterX, screenCenterY );
     while( SDL_PollEvent( &event ) ) {
     }
@@ -243,7 +244,7 @@ namespace client
       // read input & events
       game.input.mouse.x = 0;
       game.input.mouse.y = 0;
-      game.input.mouse.b = 0;
+      game.input.mouse.b = SDL_GetRelativeMouseState( null, null );
       aCopy( game.input.oldKeys, game.input.keys, SDLK_LAST );
 
       while( SDL_PollEvent( &event ) ) {
@@ -265,10 +266,6 @@ namespace client
             else if( event.key.keysym.sym == SDLK_F11 ) {
               render.doScreenshot = true;
             }
-            break;
-          }
-          case SDL_MOUSEBUTTONDOWN: {
-            game.input.mouse.b |= (char) event.button.button;
             break;
           }
           case SDL_ACTIVEEVENT: {
@@ -296,11 +293,8 @@ namespace client
         continue;
       }
 
-      // update game
+      // update game & play sounds
       isAlive &= game.update( tick );
-
-      // play sounds, but don't do any cleanups
-      soundManager.play();
 
       // render graphics, if we have enough time left
       timeNow = SDL_GetTicks();

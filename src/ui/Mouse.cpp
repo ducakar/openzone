@@ -26,8 +26,7 @@ namespace ui
     doShow = false;
     setBounds( maxX, maxY );
 
-    ptrTexId = context.loadTexture( "base/left_ptr.png",
-                                    false, GL_NEAREST, GL_NEAREST );
+    ptrTexId = context.loadTexture( "base/left_ptr.png", false, GL_NEAREST, GL_NEAREST );
   }
 
   void Mouse::free()
@@ -53,15 +52,24 @@ namespace ui
     doShow = false;
   }
 
-  void Mouse::update( int moveX, int moveY, byte buttons_ )
+  void Mouse::update( int moveX_, int moveY_, byte buttons )
   {
+    moveX = moveX_;
+    moveY = moveY_;
+
     x += moveX;
     y += moveY;
 
     x = bound( x, 0, maxX - 1 );
     y = bound( y, 0, maxY - 1 );
 
-    buttons = buttons_;
+    leftClick   = !( b & SDL_BUTTON_LMASK ) && ( buttons & SDL_BUTTON_LMASK );
+    middleClick = !( b & SDL_BUTTON_MMASK ) && ( buttons & SDL_BUTTON_MMASK );
+    rightClick  = !( b & SDL_BUTTON_RMASK ) && ( buttons & SDL_BUTTON_RMASK );
+    wheelUp     = buttons & SDL_BUTTON( SDL_BUTTON_WHEELUP   );
+    wheelDown   = buttons & SDL_BUTTON( SDL_BUTTON_WHEELDOWN );
+
+    b = buttons;
   }
 
   void Mouse::draw() const

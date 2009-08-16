@@ -17,7 +17,27 @@ namespace client
 namespace ui
 {
 
-  Area root;
+  Area root( 1, 1 );
+
+  void init( int screenX, int screenY )
+  {
+    root = Area( 0, 0, screenX, screenY );
+    mouse.init( screenX, screenY );
+    font.init();
+  }
+
+  void free()
+  {
+    font.free();
+    mouse.free();
+  }
+
+  void update()
+  {
+    if( mouse.doShow ) {
+      root.checkMouse();
+    }
+  }
 
   void draw()
   {
@@ -32,19 +52,6 @@ namespace ui
 
     root.draw();
     mouse.draw();
-  }
-
-  void init( int screenX, int screenY )
-  {
-    root = Area( 0, 0, screenX, screenY );
-    mouse.init( screenX, screenY );
-    font.init();
-  }
-
-  void free()
-  {
-    font.free();
-    mouse.free();
   }
 
 }

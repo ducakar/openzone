@@ -30,7 +30,7 @@ namespace ui
     }
 
     path = config.get( "ui.font.mono.file", "/usr/share/fonts/TTF/DejaVuSansMono.ttf" );
-    monoHeight = config.get( "ui.font.mono.height", 16 );
+    monoHeight = config.get( "ui.font.mono.height", 14 );
 
     log.print( "Opening font '%s' %d px ...", path, monoHeight );
     monoFont = TTF_OpenFont( path, monoHeight );
@@ -41,7 +41,7 @@ namespace ui
     monoHeight = TTF_FontHeight( monoFont );
 
     path = config.get( "ui.font.sans.file", "/usr/share/fonts/TTF/DejaVuSans.ttf" );
-    sansHeight = config.get( "ui.font.sans.height", 16 );
+    sansHeight = config.get( "ui.font.sans.height", 14 );
 
     log.print( "Opening font '%s' %px ...", path, sansHeight );
     sansFont = TTF_OpenFont( path, sansHeight );

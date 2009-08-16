@@ -1,5 +1,5 @@
 /*
- *  DebugArea.h
+ *  Frame.h
  *
  *  [description]
  *
@@ -17,19 +17,16 @@ namespace client
 namespace ui
 {
 
-  class DebugArea : public Area
+  class Frame : public Area
   {
     protected:
 
+      virtual void onMouseEvent();
       virtual void draw();
 
     public:
 
-      DebugArea() : Area( 5, -15 - font.monoHeight * 4, 600, 10 + font.monoHeight * 4 )
-      {
-        setFont( MONO );
-        setFontColor( 0xff, 0xff, 0xff );
-      }
+      Frame( int width, int height ) : Area( width, height ) {}
 
   };
 

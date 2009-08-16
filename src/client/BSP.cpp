@@ -60,7 +60,7 @@ namespace client
     for( int i = 0; i < leaf->nBrushes; i++ ) {
       oz::BSP::Brush *brush = &bsp->brushes[ bsp->leafBrushes[leaf->firstBrush + i] ];
 
-      if( brush->content & oz::BSP::WATER_BIT ) {
+      if( brush->material & Material::WATER_BIT ) {
         for( int i = 0; i < brush->nSides; i++ ) {
           oz::BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
@@ -77,7 +77,7 @@ namespace client
 
   void BSP::drawFace( const oz::BSP::Face *face ) const
   {
-    if( face->content & oz::BSP::WATER_BIT ) {
+    if( face->material & Material::WATER_BIT ) {
       waterFlags |= DRAW_WATER;
       return;
     }
@@ -406,7 +406,7 @@ namespace client
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
             const oz::BSP::Face &face = bsp->faces[faceIndex];
 
-            if( ( face.content & oz::BSP::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
+            if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
               drawFaceWater( &face );
               drawnFaces.set( faceIndex );
             }
@@ -424,7 +424,7 @@ namespace client
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
             const oz::BSP::Face &face = bsp->faces[faceIndex];
 
-            if( ( face.content & oz::BSP::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
+            if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
               drawFaceWater( &face );
               drawnFaces.set( faceIndex );
             }

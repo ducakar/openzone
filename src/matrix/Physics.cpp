@@ -288,7 +288,7 @@ namespace oz
         obj->lower = -1;
         obj->floor = collider.hit.normal;
         obj->flags |= Object::ON_FLOOR_BIT;
-        obj->flags |= collider.hit.onSlick ? Object::ON_SLICK_BIT : 0;
+        obj->flags |= ( collider.hit.material & Material::SLICK_BIT ) ? Object::ON_SLICK_BIT : 0;
       }
     }
   }

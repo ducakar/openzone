@@ -86,8 +86,6 @@ namespace client
       bool                    isUnderWater;
       bool                    wasUnderWater;
 
-      ui::Area                root;
-
       void drawObject( Object *obj );
       void drawSparkGen( SparkGen *sparkGen );
       void scheduleSector( int sectorX, int sectorY );

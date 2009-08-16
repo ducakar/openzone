@@ -119,6 +119,11 @@ namespace oz
     log.println( "}" );
   }
 
+  void Matrix::sync()
+  {
+    world.commit();
+  }
+
   void Matrix::update()
   {
     physics.update();
@@ -158,7 +163,6 @@ namespace oz
         }
       }
     }
-    world.commit();
   }
 
 }

@@ -89,6 +89,8 @@ namespace client
     ui::init( screenX, screenY );
     ui::root.add( new ui::DebugArea() );
     ui::root.add( new ui::HealthArea() );
+    ui::root.add( new ui::BuildMenu(), -1, -1 );
+
     SDL_GL_SwapBuffers();
 
     assert( glGetError() == GL_NO_ERROR );

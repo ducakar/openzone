@@ -9,6 +9,7 @@
 #pragma once
 
 #include "bv.h"
+#include "Material.h"
 
 namespace oz
 {
@@ -19,11 +20,6 @@ namespace oz
     static const int LIGHTMAP_DIM = 128;
     static const int LIGHTMAP_BPP = 3;
     static const int LIGHTMAP_SIZE = LIGHTMAP_DIM * LIGHTMAP_DIM * LIGHTMAP_BPP;
-
-    static const int SOLID_BIT  = 0x01;
-    static const int SLICK_BIT  = 0x02;
-    static const int WATER_BIT  = 0x04;
-    static const int LADDER_BIT = 0x08;
 
     struct Plane
     {
@@ -54,7 +50,7 @@ namespace oz
     {
       int firstSide;
       int nSides;
-      int content;
+      int material;
     };
 
     struct Vertex
@@ -68,7 +64,7 @@ namespace oz
     {
       int  texture;
       int  lightmap;
-      int  content;
+      int  material;
 
       Vec3 normal;
 

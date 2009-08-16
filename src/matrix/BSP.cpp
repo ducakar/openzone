@@ -295,22 +295,22 @@ namespace oz
 
       brushes[i].firstSide = brush.firstSide;
       brushes[i].nSides    = brush.nSides;
-      brushes[i].content   = 0;
+      brushes[i].material  = 0;
 
       int &flags = texFlags[brush.texture];
       int &type  = texTypes[brush.texture];
 
       if( flags & QBSP_LADDER_BIT ) {
-        brushes[i].content |= LADDER_BIT;
+        brushes[i].material |= Material::LADDER_BIT;
       }
       if( !( flags & QBSP_NONSOLID_BIT ) ) {
-        brushes[i].content |= SOLID_BIT;
+        brushes[i].material |= Material::STRUCT_BIT;
       }
       if( flags & QBSP_SLICK_BIT ) {
-        brushes[i].content |= SLICK_BIT;
+        brushes[i].material |= Material::SLICK_BIT;
       }
       if( type & QBSP_WATER_BIT ) {
-        brushes[i].content |= WATER_BIT;
+        brushes[i].material |= Material::WATER_BIT;
       }
     }
 
@@ -358,7 +358,7 @@ namespace oz
 
       faces[i].texture     = face.texture;
       faces[i].lightmap    = face.lightmap;
-      faces[i].content     = ( texTypes[face.texture] & QBSP_WATER_BIT ) ? WATER_BIT : 0;
+      faces[i].material    = ( texTypes[face.texture] & QBSP_WATER_BIT ) ? Material::WATER_BIT : 0;
       faces[i].normal      = face.normal;
       faces[i].firstVertex = face.firstVertex;
       faces[i].nVertices   = face.nVertices;

@@ -19,19 +19,32 @@ namespace ui
 
   class Button : public Area
   {
+    public:
+
+      typedef void Callback();
+
+    private:
+
+      String   label;
+      bool     isHighlighted;
+      bool     isClicked;
+      Callback *callback;
+
     protected:
 
-      virtual void onClick( int x, int y );
+      virtual void onMouseEvent();
+      virtual void draw();
 
     public:
 
-      Button() : Area( 5, -15 - font.monoHeight * 4, 600, 10 + font.monoHeight * 4 )
-      {
-        setFont( MONO );
-        setFontColor( 0xff, 0xff, 0xff );
-      }
+      Button( const char *label_, int width, int height ) : Area( width, height ), label( label_ ),
+          isHighlighted( false ), isClicked( false ), callback( null )
+      {}
 
-      virtual void draw();
+      void setCallback( Callback *callback_ )
+      {
+        callback = callback_;
+      }
 
   };
 

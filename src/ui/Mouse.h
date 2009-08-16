@@ -29,7 +29,17 @@ namespace ui
 
       int  x;
       int  y;
-      byte buttons;
+      byte b;
+
+      int  moveX;
+      int  moveY;
+
+      bool leftClick;
+      bool rightClick;
+      bool middleClick;
+      bool wheelUp;
+      bool wheelDown;
+
       bool doShow;
 
       void init( int maxX, int maxY );
