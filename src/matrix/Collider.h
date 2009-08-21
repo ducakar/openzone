@@ -18,13 +18,12 @@ namespace oz
     float  ratio;
 
     Vec3   normal;
-    int    material;
     Object *obj;
+    int    material;
+    float  waterDepth;
 
     // only set for object trim
-    bool   onWater;
     bool   inWater;
-    bool   underWater;
     bool   onLadder;
   };
 

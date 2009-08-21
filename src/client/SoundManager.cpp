@@ -175,7 +175,7 @@ namespace client
     alListenerfv( AL_ORIENTATION, camera.at );
     alListenerfv( AL_POSITION, camera.p );
 
-    world.getInters( camera.p, DMAX );
+    world.getInters( camera.p, DMAX + AABB::MAX_DIM );
 
     for( int x = world.minX ; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
@@ -330,7 +330,7 @@ namespace client
     alSourcei( musicSource, AL_ROLLOFF_FACTOR, 0 );
 
     setVolume( config.get( "sound.volume.effects", 1.0f ) );
-    setMusicVolume( config.get( "sound.music.effects", 1.0f ) );
+    setMusicVolume( config.get( "sound.volume.music", 1.0f ) );
 
     log.unindent();
     log.println( "}" );

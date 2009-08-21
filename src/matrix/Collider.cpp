@@ -122,7 +122,7 @@ namespace oz
       return false;
     }
 
-    if( aabb.p.z - aabb.dim.z - world.terrain.height( aabb.p.x, aabb.p.y ) < 0.0f ) {
+    if( aabb.p.z - aabb.dim.z - world.terra.height( aabb.p.x, aabb.p.y ) < 0.0f ) {
       return false;
     }
 
@@ -226,9 +226,9 @@ namespace oz
 
   bool Collider::trimTerraQuad( int x, int y )
   {
-    const Terrain::Quad &quad = world.terrain.quads[x][y];
-    const Vec3 &minVert = world.terrain.vertices[x    ][y    ];
-    const Vec3 &maxVert = world.terrain.vertices[x + 1][y + 1];
+    const Terrain::Quad &quad = world.terra.quads[x][y];
+    const Vec3 &minVert = world.terra.vertices[x    ][y    ];
+    const Vec3 &maxVert = world.terra.vertices[x + 1][y + 1];
 
     float minX = minVert.x - EPSILON;
     float minY = minVert.y - EPSILON;
@@ -285,15 +285,20 @@ namespace oz
 
   void Collider::trimPointTerra()
   {
+    if( globalStartPos.z < 0.0f ) {
+      hit.waterDepth = max( hit.waterDepth, -globalStartPos.z );
+      hit.inWater = true;
+    }
+
     float minPosX = min( globalStartPos.x, globalEndPos.x );
     float minPosY = min( globalStartPos.y, globalEndPos.y );
     float maxPosX = max( globalStartPos.x, globalEndPos.x );
     float maxPosY = max( globalStartPos.y, globalEndPos.y );
 
-    world.terrain.getInters( minPosX, minPosY, maxPosX, maxPosY, EPSILON );
+    world.terra.getInters( minPosX, minPosY, maxPosX, maxPosY, EPSILON );
 
-    for( int x = world.terrain.minX; x <= world.terrain.maxX; x++ ) {
-      for( int y = world.terrain.minY; y <= world.terrain.maxY; y++ ) {
+    for( int x = world.terra.minX; x <= world.terra.maxX; x++ ) {
+      for( int y = world.terra.minY; y <= world.terra.maxY; y++ ) {
         trimTerraQuad( x, y );
       }
     }
@@ -602,7 +607,7 @@ namespace oz
       return false;
     }
 
-    if( aabb.p.z - aabb.dim.z - world.terrain.height( aabb.p.x, aabb.p.y ) < 0.0f ) {
+    if( aabb.p.z - aabb.dim.z - world.terra.height( aabb.p.x, aabb.p.y ) < 0.0f ) {
       return false;
     }
 
@@ -817,35 +822,32 @@ namespace oz
   // checks if AABB and Brush overlap and if AABB center is inside a brush
   void Collider::trimAABBWater( const BSP::Brush *brush )
   {
-    bool isInside  = true;
-    bool isUnder   = true;
+    float depth = Math::INF;
 
     for( int i = 0; i < brush->nSides; i++ ) {
       BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset =
-          Math::abs( plane.normal.x * aabb.dim.x ) +
-          Math::abs( plane.normal.y * aabb.dim.y ) +
-          Math::abs( plane.normal.z * aabb.dim.z );
+      if( plane.normal.z <= 0.0f ) {
+        float centerDist = leafStartPos * plane.normal - plane.distance;
 
-      float centerDist = leafEndPos * plane.normal - plane.distance;
-      float outerDist  = centerDist - offset;
-      float innerDist  = centerDist + offset;
+        if( centerDist > -EPSILON ) {
+          return;
+        }
+      }
+      else {
+        float dist = ( plane.distance - plane.normal.x*leafStartPos.x +
+            plane.normal.y*leafStartPos.y ) / plane.normal.z - leafStartPos.z + aabb.dim.z;
 
-      if( outerDist > 0.0f ) {
-        return;
-      }
-      else if( centerDist > 0.0f ) {
-        isInside = false;
-        isUnder  = false;
-      }
-      else if( innerDist > 0.0f ) {
-        isUnder = false;
+        if( dist <= 0.0f ) {
+          return;
+        }
+        else {
+          depth = min( depth, dist );
+        }
       }
     }
-    hit.onWater    |= true;
-    hit.inWater    |= isInside;
-    hit.underWater |= isUnder;
+    hit.waterDepth = max( hit.waterDepth, depth );
+    hit.inWater    = true;
   }
 
   // checks if AABB and Brush overlap and if AABB center is inside a brush
@@ -865,7 +867,7 @@ namespace oz
         return;
       }
     }
-    hit.onLadder |= true;
+    hit.onLadder = true;
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush collisions
@@ -959,11 +961,10 @@ namespace oz
   void Collider::trimAABBWorld()
   {
     hit.ratio      = 1.0f;
-    hit.obj        = null;
     hit.material   = 0;
-    hit.onWater    = false;
+    hit.waterDepth = 0.0f;
+    hit.obj        = null;
     hit.inWater    = false;
-    hit.underWater = false;
     hit.onLadder   = false;
 
     globalStartPos = aabb.p;

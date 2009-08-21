@@ -24,14 +24,15 @@ namespace oz
       float   mass;
       float   lift;
 
-      int     lower;     // index of the lower object
-
       // if on ground, used as floor normal, it is not set if on another object
       Vec3    floor;
+      int     lower;      // index of the lower object
+      float   waterDepth;
 
     public:
 
-      explicit DynObject() : velocity( Vec3::zero() ), momentum( Vec3::zero() ), lower( -1 )
+      explicit DynObject() : velocity( Vec3::zero() ), momentum( Vec3::zero() ), lower( -1 ),
+        waterDepth( 0.0f )
       {}
 
       virtual void readFull( InputStream *istream );

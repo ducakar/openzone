@@ -10,7 +10,6 @@
 
 #include "bv.h"
 #include "io.h"
-#include "Synapse.h"
 #include "ObjectClass.h"
 
 namespace oz
@@ -83,7 +82,7 @@ namespace oz
       static const int VEHICLE_BIT        = 0x00100000;
 
       /*
-       * DYNAMIC OBJECTS' BITS (interal 0x000fff00, config 0x000000f0)
+       * DYNAMIC OBJECTS' BITS (interal 0x000ff000, config 0x000000f0)
        */
 
       // if the object is still and on a still surface, we won't handle physics for it
@@ -100,19 +99,13 @@ namespace oz
       static const int ON_FLOOR_BIT       = 0x00010000;
 
       // if the object intersects with water
-      static const int ON_WATER_BIT       = 0x00008000;
-
-      // if the object center is in water
-      static const int IN_WATER_BIT       = 0x00004000;
-
-      // if the whole object is inside water
-      static const int UNDER_WATER_BIT    = 0x00002000;
+      static const int IN_WATER_BIT       = 0x00008000;
 
       // if the object is on ladder
-      static const int ON_LADDER_BIT      = 0x00001000;
+      static const int ON_LADDER_BIT      = 0x00004000;
 
       // if the object is on ice (slipping surface)
-      static const int ON_SLICK_BIT       = 0x00000800;
+      static const int ON_SLICK_BIT       = 0x00002000;
 
       // handle collisions for this object
       static const int CLIP_BIT           = 0x00000080;
@@ -227,13 +220,6 @@ namespace oz
 
         if( flags & HIT_FUNC_BIT ) {
           onHit( hit, hitMomentum );
-        }
-      }
-
-      void use( Bot *user )
-      {
-        if( flags & USE_FUNC_BIT ) {
-          synapse.use( user, this );
         }
       }
 

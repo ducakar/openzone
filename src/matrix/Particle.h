@@ -16,8 +16,10 @@ namespace oz
 
   struct Sector;
 
-  class Particle
+  class Particle : public PoolAlloc<Particle, 0>
   {
+    friend class Pool<Particle, 0>;
+    friend class PoolAlloc<Particle, 0>;
     friend class DList<Particle, 0>;
 
     private:

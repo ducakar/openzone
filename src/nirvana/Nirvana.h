@@ -24,10 +24,9 @@ namespace oz
 
       static const int SOULS_MAX = 32;
 
-      Soul souls[SOULS_MAX];
       DList<Mind, 0> minds;
+      Vector<Mind*>  pendingMinds;
 
-      void think();
       void synchronize();
       void run();
 
@@ -35,17 +34,24 @@ namespace oz
 
     public:
 
-      volatile bool isAlive;
-      volatile bool requestSuspend;
       SDL_semaphore *semaphore;
       SDL_Thread    *thread;
 
-      void add( Mind *mind );
+      volatile bool isAlive;
+      volatile bool requestSuspend;
+
+      void add( Mind *mind )
+      {
+        pendingMinds << mind;
+      }
 
       void load();
+      void free();
+
       void start();
       void stop();
-      void free();
+
+      void commit();
   };
 
   extern Nirvana nirvana;

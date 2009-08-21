@@ -21,7 +21,8 @@ namespace oz
   const float Physics::HIT_MOMENTUM         = -3.0f;
 
   const float Physics::AIR_FRICTION         = 0.02f;
-  const float Physics::WATER_FRICTION       = 0.08f;
+  const float Physics::IN_WATER_FRICTION    = 0.08f;
+  const float Physics::ON_WATER_FRICTION    = 0.30f;
   const float Physics::LADDER_FRICTION      = 0.65f;
   const float Physics::FLOOR_FRICTION       = 0.40f;
   const float Physics::OBJ_FRICTION         = 0.40f;
@@ -88,7 +89,9 @@ namespace oz
 
   bool Physics::handleObjFriction()
   {
-    if( obj->flags & ( Object::HOVER_BIT | Object::IN_WATER_BIT | Object::ON_LADDER_BIT ) ) {
+    if( ( obj->flags & ( Object::HOVER_BIT | Object::ON_LADDER_BIT ) )
+        || obj->waterDepth >= obj->dim.z )
+    {
       // in air
       if( obj->flags & Object::HOVER_BIT ) {
         if( obj->momentum.sqL() <= STICK_VELOCITY ) {
@@ -100,8 +103,10 @@ namespace oz
       }
       // swimming
       else if( obj->flags & Object::IN_WATER_BIT ) {
-        obj->momentum *= 1.0f - WATER_FRICTION;
-        obj->momentum.z += obj->lift;
+        float lift = ( 0.5f * obj->waterDepth / obj->dim.z ) * obj->lift * timer.frameTime;
+
+        obj->momentum *= 1.0f - IN_WATER_FRICTION;
+        obj->momentum.z += lift + gVelocity;
       }
       // on ladder
       else if( obj->flags &  Object::ON_LADDER_BIT ) {
@@ -114,6 +119,11 @@ namespace oz
       }
     }
     else {
+      if( obj->flags & Object::IN_WATER_BIT ) {
+        float lift = ( 0.5f * obj->waterDepth / obj->dim.z ) * obj->lift * timer.frameTime;
+
+        obj->momentum.z += lift;
+      }
       // on another object
       if( obj->lower >= 0 ) {
         DynObject *sObj = (DynObject*) world.objects[obj->lower];
@@ -203,8 +213,8 @@ namespace oz
       }
     }
 
-    obj->flags &= ~( Object::ON_FLOOR_BIT | Object::ON_WATER_BIT | Object::IN_WATER_BIT |
-        Object::UNDER_WATER_BIT | Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
+    obj->flags &= ~( Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
+        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
     obj->lower = -1;
 
     return true;
@@ -306,11 +316,6 @@ namespace oz
       obj->p += collider.hit.ratio * move;
       leftRatio -= leftRatio * collider.hit.ratio;
 
-      obj->flags |= collider.hit.onWater    ? Object::ON_WATER_BIT    : 0;
-      obj->flags |= collider.hit.inWater    ? Object::IN_WATER_BIT    : 0;
-      obj->flags |= collider.hit.underWater ? Object::UNDER_WATER_BIT : 0;
-      obj->flags |= collider.hit.onLadder   ? Object::ON_LADDER_BIT   : 0;
-
       if( collider.hit.ratio == 1.0f ) {
         break;
       }
@@ -362,6 +367,10 @@ namespace oz
     }
     while( true );
 
+    obj->flags |= collider.hit.inWater  ? Object::IN_WATER_BIT  : 0;
+    obj->flags |= collider.hit.onLadder ? Object::ON_LADDER_BIT : 0;
+    obj->waterDepth = min( collider.hit.waterDepth, 2.0f * obj->dim.z );
+
     Sector *newSector = world.getSector( obj->p );
 
     if( oldSector != newSector ) {
@@ -394,7 +403,7 @@ namespace oz
     assert( !( obj->flags & Object::ON_FLOOR_BIT ) || !( obj->lower >= 0 ) );
 
     if( obj->flags & Object::CLIP_BIT ) {
-      obj->flags &= ~Object::FRICTING_BIT;
+      obj->flags &= ~( Object::FRICTING_BIT | Object::HIT_BIT );
 
       // clear the lower object if it doesn't exist any more
       if( obj->lower >= 0 && world.objects[obj->lower] == null ) {

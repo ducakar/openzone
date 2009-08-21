@@ -94,7 +94,9 @@ namespace ui
 
       void drawChildren()
       {
-        foreach( child, children.iterator() ) {
+        // render in opposite order; last added child (the first one in the list) should be rendered
+        // last
+        for( Area *child = children.last(); child != null; child = child->prev[0] ) {
           child->draw();
         }
       }
@@ -130,7 +132,7 @@ namespace ui
         area->realign( x + relativeX, y + relativeY );
         area->parent = this;
 
-        children.pushLast( area );
+        children << area;
       }
 
       void add( Area *area )

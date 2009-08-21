@@ -1,9 +1,9 @@
 #!/usr/bin/octave -q
 
-DIM = 16;
-VECTOR_AVG_CAPACITY = 8;
+DIM = 8;
+VECTOR_AVG_CAPACITY = 4;
 
-sectorSize = ( 2 + 2 + 3 ) * 4 + VECTOR_AVG_CAPACITY * 4;
+sectorSize = ( 2 + 2 + 3 + VECTOR_AVG_CAPACITY ) * 4;
 
 if length( argv ) ~= 1
   disp( 'usage: hashspaceUsage sizeInMetres' );

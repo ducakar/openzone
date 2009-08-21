@@ -20,7 +20,8 @@ namespace ui
   enum FontType
   {
     MONO,
-    SANS
+    SANS,
+    TITLE
   };
 
   class Font
@@ -34,9 +35,11 @@ namespace ui
 
       TTF_Font *monoFont;
       TTF_Font *sansFont;
+      TTF_Font *titleFont;
 
       int monoHeight;
       int sansHeight;
+      int titleHeight;
 
       bool init();
       void free();

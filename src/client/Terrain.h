@@ -19,7 +19,8 @@ namespace client
   {
     private:
 
-      static const float DETAILTEX_SCALE;
+      static const float DETAIL_SCALE;
+      static const float WATER_SCALE;
 
       struct TexCoord
       {
@@ -29,8 +30,11 @@ namespace client
 
       uint     detailTexId;
       uint     mapTexId;
+      uint     waterTexId;
 
       float    radius;
+
+      bool     inWater;
 
       Vec3     *normals;
       TexCoord *detailTexCoords;
@@ -43,6 +47,7 @@ namespace client
 
       void setRadius( float radius );
       void draw() const;
+      void drawWater() const;
   };
 
   inline void Terrain::setRadius( float radius_ )

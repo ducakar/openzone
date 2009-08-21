@@ -21,7 +21,8 @@ namespace oz
 
     public:
 
-      M_Walker( Bot *body );
+      M_Walker( Bot *bot ) : Mind( bot ) {}
+
   };
 
 }

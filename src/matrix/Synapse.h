@@ -1,12 +1,12 @@
 /*
  *  Synapse.h
  *
- *  World actions cheduler.
+ *  World actions scheduler.
  *    World should not be touched directly for adding/removing objects. Because objects may have
  *  hold references to each other (by indices), after object removal a full world update must pass,
  *  so that all references to the removed object are cleared. (On each update every reference must
  *  be checked. If it points to a null object slot, the target object has been removed. On order for
- *  this to work, a full world update must pass before another objects occupies freed slot,
+ *  this to work, a full world update must pass before another objects occupies a freed slot or
  *  the reference may point to a new object, that may be of a different type that may result in a
  *  program crash or at least a real mess.)
  *    The second reason is that world update may be multithreaded and adding an object in the middle
@@ -16,7 +16,9 @@
  *  mechanism to deliver object additions/removals would be needed anyway.
  *    For obvious reasons (networking support and the first reason), use and take interactions are
  *  exploiting this mechanism as well.
- *    The world object should process synapse before world update in the matrix.
+ *    When an object addition is scheduled in Synapse, a ticket is returned that can be used in the
+ *  next cycle to retrieve index of added object. The index could also be predicted at schdule time,
+ *  but it's not the case for client adds in a networkin game, so ticket system is mandatory.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  */

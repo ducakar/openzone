@@ -25,7 +25,7 @@ namespace ui
       isClicked = true;
 
       if( callback != null ) {
-        callback();
+        callback( this );
       }
     }
   }

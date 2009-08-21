@@ -15,9 +15,33 @@ namespace oz
 
   Nirvana nirvana;
 
-  void Nirvana::add( Mind *mind )
+  void Nirvana::run()
   {
-    minds << mind;
+    do {
+      SDL_SemPost( matrix.semaphore );
+      SDL_SemWait( semaphore );
+
+//       while( !requestSuspend ) {
+      foreach( i, minds.iterator() ) {
+        if( requestSuspend ) {
+          break;
+        }
+
+        Mind &mind = *i;
+
+        mind.update();
+      }
+//       }
+//       requestSuspend = false;
+    }
+    while( isAlive );
+  }
+
+  int Nirvana::runThread( void* )
+  {
+    nirvana.run();
+
+    return 0;
   }
 
   void Nirvana::load()
@@ -25,12 +49,17 @@ namespace oz
     log.println( "Loading Nirvana {" );
     log.indent();
 
-    add( new M_Walker( (Bot*) world.objects[0] ) );
-    add( new M_Walker( (Bot*) world.objects[1] ) );
-    add( new M_Walker( (Bot*) world.objects[2] ) );
-
     log.unindent();
     log.println( "}" );
+  }
+
+  void Nirvana::free()
+  {
+    log.print( "Shutting down Nirvana ..." );
+
+    minds.free();
+
+    log.printEnd( " OK" );
   }
 
   void Nirvana::start()
@@ -62,75 +91,21 @@ namespace oz
     log.printEnd( " OK" );
   }
 
-  void Nirvana::free()
+  void Nirvana::commit()
   {
-    log.print( "Shutting down Nirvana ..." );
-
-    minds.free();
-
-    log.printEnd( " OK" );
-  }
-
-  void Nirvana::synchronize()
-  {
-    // add minds to new bots
-    foreach( obj, world.objects.iterator() ) {
-      if( *obj != null && ( *obj )->flags == Object::BOT_BIT ) {
-        Bot *bot = (Bot*) *obj;
-
-        if( bot->mind == null ) {
-          bot->mind = new Mind();
-          minds << bot->mind;
-        }
-
-        bot->mind->isUpdated = true;
-      }
-    }
-    // remove unneccessary minds
+    // remove minds of removed bots
     for( DList<Mind, 0>::Iterator i( minds ); !i.isPassed(); ) {
       Mind &mind = *i;
       ++i;
 
-      if( !mind.isUpdated ) {
-        minds.remove( &mind );
-      }
-    }
-  }
-
-  void Nirvana::think()
-  {
-    foreach( i, minds.iterator() ) {
-      Mind &mind = *i;
-
-      mind.update();
-      mind.isUpdated = true;
-    }
-  }
-
-  void Nirvana::run()
-  {
-    do {
-      SDL_SemPost( matrix.semaphore );
-      SDL_SemWait( semaphore );
-
-      synchronize();
-
-//       while( !requestSuspend ) {
-        think();
+//       if( world.objects[mind.botIndex] == null ) {
+//         minds.remove( &mind );
 //       }
-//       requestSuspend = false;
     }
-    while( isAlive );
-  }
-
-  int Nirvana::runThread( void *data )
-  {
-    // shut up, compiler!
-    data = null;
-
-    nirvana.run();
-
-    return 0;
+    foreach( mind, pendingMinds.iterator() ) {
+      minds << *mind;
+    }
+    pendingMinds.clear();
   }
 
 }

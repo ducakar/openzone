@@ -16,6 +16,7 @@
 #include "Frustum.h"
 #include "Shape.h"
 
+#include "Water.h"
 #include "Sky.h"
 #include "Terrain.h"
 #include "BSP.h"
@@ -85,6 +86,7 @@ namespace client
     glLoadIdentity();
 
     glEnable( GL_TEXTURE_2D );
+    glDepthFunc( GL_LEQUAL );
 
     ui::init( screenX, screenY );
     ui::root.add( new ui::DebugArea() );
@@ -119,9 +121,6 @@ namespace client
     for( int i = 0; i < translator.bsps.length(); i++ ) {
       bsps << new BSP( world.bsps[i] );
     }
-
-    glDepthFunc( GL_LEQUAL );
-    glEnable( GL_CULL_FACE );
 
     // fog
     glFogi( GL_FOG_MODE, GL_LINEAR );
@@ -302,7 +301,7 @@ namespace client
     }
 
     wasUnderWater = isUnderWater;
-    isUnderWater  = false;
+    isUnderWater  = camera.p.z < 0.0f;
 
     // clear buffer
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
@@ -386,8 +385,8 @@ namespace client
     blendedObjects.clear();
 
     // draw structures' water
-    glDisable( GL_CULL_FACE );
     glEnable( GL_BLEND );
+
     BSP::beginRender();
 
     for( int i = 0; i < waterStructures.length(); i++ ) {
@@ -397,6 +396,10 @@ namespace client
     waterStructures.clear();
 
     BSP::endRender();
+
+    terra.drawWater();
+
+    water.update();
 
     glDisable( GL_FOG );
     glDisable( GL_LIGHTING );

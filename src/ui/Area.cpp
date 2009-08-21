@@ -30,9 +30,13 @@ namespace ui
       currentFont = font.monoFont;
       textHeight  = font.monoHeight;
     }
-    else {
+    else if( type == SANS ) {
       currentFont = font.sansFont;
       textHeight  = font.sansHeight;
+    }
+    else {
+      currentFont = font.titleFont;
+      textHeight  = font.titleHeight;
     }
   }
 
@@ -146,8 +150,8 @@ namespace ui
           child->y <= mouse.y && mouse.y < child->y + child->height )
       {
         child->checkMouse();
-            // If event is passed to a child, we won't handle in on parent. Of course we assume
-            // children do not overlap, so event can only be passed to one of them.
+        // If event is passed to a child, we won't handle in on parent. Of course we assume
+        // children do not overlap, so event can only be passed to one of them.
         return;
       }
     }

@@ -22,9 +22,11 @@
 namespace oz
 {
 
+  class Synapse;
+
   struct Sector
   {
-    static const int   SIZEI = 16;
+    static const int   SIZEI = 8;
     static const float SIZE;
     static const float RADIUS;
 
@@ -38,7 +40,7 @@ namespace oz
     public:
 
       // # of sectors on each (x, y) axis
-      static const int   MAX = 256;
+      static const int   MAX = 512;
       static const float DIM;
 
       // for returning getInters sector indices
@@ -48,7 +50,7 @@ namespace oz
       int                maxY;
 
       Sky                sky;
-      Terrain            terrain;
+      Terrain            terra;
       Sector             sectors[World::MAX][World::MAX];
       Vector<BSP*>       bsps;
       Vector<Structure*> structures;
@@ -114,7 +116,9 @@ namespace oz
                          float rejection, float mass, float lifeTime,
                          float size, const Vec3 &color, float colorSpread );
 
-      void commit();
+      void commitPlus();
+      void commitMinus();
+      void commitAll();
 
       bool read( InputStream *istream );
       bool write( OutputStream *ostream );

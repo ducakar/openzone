@@ -12,6 +12,7 @@
 
 #include "Context.h"
 #include "Frustum.h"
+#include "Water.h"
 #include "Render.h"
 
 #ifdef __WIN32__
@@ -24,17 +25,12 @@ namespace client
 {
 
   const float BSP::GAMMA_CORR        = 1.0f;
-  const float BSP::WATER_TEX_STRETCH = 8.0f;
-  const float BSP::WATER_TEX_BIAS    = 0.5f;
-  const float BSP::WATER_ALPHA       = 0.75f;
-
-  float BSP::waterPhi = 0.0f;
-  float BSP::waterAlpha1;
-  float BSP::waterAlpha2;
 
   const Structure *BSP::str;
   Vec3  BSP::camPos;
+
   int   BSP::waterFlags;
+  Vector<const oz::BSP::Face*> BSP::waterFaces;
 
   int BSP::getLeaf() const
   {
@@ -108,12 +104,11 @@ namespace client
 
   void BSP::drawFaceWater( const oz::BSP::Face *face ) const
   {
-    glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha1 );
+    glColor4f( 1.0f, 1.0f, 1.0f, water.alpha1 );
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
 
     glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                      (float*) bsp->vertices[face->firstVertex].p );
-    glNormal3fv( face->normal );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                        bsp->vertices[face->firstVertex].texCoord );
 
@@ -129,18 +124,28 @@ namespace client
       glClientActiveTexture( GL_TEXTURE0 );
     }
 
+    glNormal3f( face->normal.x, face->normal.y, face->normal.z );
+    glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
+
+    glFrontFace( GL_CCW );
+    glNormal3f( -face->normal.x, -face->normal.y, -face->normal.z );
     glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
 
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
 
-    glColor4f( 1.0f, 1.0f, 1.0f, waterAlpha2 );
+    glColor4f( 1.0f, 1.0f, 1.0f, water.alpha2 );
 
     glMatrixMode( GL_TEXTURE );
-    glLoadMatrixf( Mat44( 1.0f,           0.0f,           0.0f, 0.0f,
-                          0.0f,           1.0f,           0.0f, 0.0f,
-                          0.0f,           0.0f,           1.0f, 0.0f,
-                          WATER_TEX_BIAS, WATER_TEX_BIAS, 0.0f, 1.0f ) );
+    glLoadMatrixf( Mat44( 1.0f,            0.0f,            0.0f, 0.0f,
+                          0.0f,            1.0f,            0.0f, 0.0f,
+                          0.0f,            0.0f,            1.0f, 0.0f,
+                          Water::TEX_BIAS, Water::TEX_BIAS, 0.0f, 1.0f ) );
 
+
+    glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
+
+    glFrontFace( GL_CW );
+    glNormal3f( face->normal.x, face->normal.y, face->normal.z );
     glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
 
     glLoadIdentity();
@@ -316,7 +321,6 @@ namespace client
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
 
-    waterFlags = 0;
     drawnFaces = hiddenFaces;
 
     int leafIndex = getLeaf();
@@ -462,6 +466,9 @@ namespace client
 
   void BSP::beginRender()
   {
+    waterFlags = 0;
+    waterFaces.clear();
+
     glFrontFace( GL_CW );
 
     glEnableClientState( GL_VERTEX_ARRAY );
@@ -478,13 +485,6 @@ namespace client
     glActiveTexture( GL_TEXTURE0 );
 
     glFrontFace( GL_CCW );
-
-    // update water
-    waterPhi = timer.millis / 1000.0f;
-    float ratio = ( 0.5f + Math::sin( 1.5f * waterPhi ) / 2.0f );
-
-    waterAlpha2 = ratio * WATER_ALPHA;
-    waterAlpha1 = ( waterAlpha2 * ( 1 - ratio ) ) / ( ratio * ( 1 - waterAlpha2 ) );
   }
 
 }

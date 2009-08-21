@@ -25,14 +25,6 @@ namespace client
     private:
 
       static const float GAMMA_CORR;
-      static const float WATER_TEX_STRETCH;
-      static const float WATER_TEX_BIAS;
-      static const float WATER_ALPHA;
-
-      // water
-      static float waterPhi;
-      static float waterAlpha1;
-      static float waterAlpha2;
 
       static const Structure *str;
       static Vec3 camPos;
@@ -48,6 +40,7 @@ namespace client
       Bitset hiddenFaces;
 
       static int waterFlags;
+      static Vector<const oz::BSP::Face*> waterFaces;
 
       static Bounds rotateBounds( const Bounds &bounds, Structure::Rotation rotation );
 
@@ -69,6 +62,7 @@ namespace client
       void init( oz::BSP *bsp );
       int  draw( const Structure *str );
       void drawWater( const Structure *str );
+      static void drawInWater();
       uint genList();
 
       static void beginRender();

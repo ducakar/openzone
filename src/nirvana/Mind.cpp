@@ -13,9 +13,6 @@
 namespace oz
 {
 
-  void Mind::onUpdate()
-  {}
-
   Mind::~Mind()
   {}
 

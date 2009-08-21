@@ -37,7 +37,7 @@ namespace client
     }
 
     // splash
-    if( ( obj->flags & Object::ON_WATER_BIT ) && !( obj->oldFlags & Object::ON_WATER_BIT ) ) {
+    if( ( obj->flags & Object::IN_WATER_BIT ) && !( obj->oldFlags & Object::IN_WATER_BIT ) ) {
       if( obj->velocity.z < -6.0f && samples[SND_SPLASH_HARD] >= 0 ) {
         playSound( samples[SND_SPLASH_HARD], obj->velocity.z / -8.0f );
       }

@@ -57,7 +57,7 @@ namespace oz
     }
 
     clazz->mass              = config->get( "mass", 100.0f );
-    clazz->lift              = config->get( "lift", 0.03f );
+    clazz->lift              = config->get( "lift", 13.0f );
 
     clazz->dimCrouch.x       = config->get( "dimCrouch.x", 0.39f );
     clazz->dimCrouch.y       = config->get( "dimCrouch.y", 0.39f );
