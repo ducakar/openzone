@@ -23,7 +23,10 @@ namespace ui
   {
     root = Area( 0, 0, screenX, screenY );
     mouse.init( screenX, screenY );
-    font.init();
+
+    if( !font.init() ) {
+      throw Exception( 0, "Failed to load font" );
+    }
   }
 
   void free()

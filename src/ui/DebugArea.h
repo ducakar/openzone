@@ -25,7 +25,7 @@ namespace ui
 
     public:
 
-      DebugArea() : Area( 5, -15 - font.monoHeight * 4, 600, 10 + font.monoHeight * 4 )
+      DebugArea() : Area( 5, -15 - 4 * font.monoHeight, 480, 10 + 4 * font.monoHeight )
       {
         setFont( MONO );
         setFontColor( 0xff, 0xff, 0xff );

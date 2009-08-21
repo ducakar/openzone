@@ -190,7 +190,7 @@ namespace oz
 
   void World::init()
   {
-    terrain.init( -DIM );
+    terra.init( -DIM );
 
     foreach( bsp, translator.bsps.iterator() ) {
       bsps << new BSP();
@@ -230,17 +230,16 @@ namespace oz
     }
     objects.clear();
 
-    PoolAlloc<Object::Event, 0>::pool.free();
-
     foreach( part, particles.iterator() ) {
       if( *part != null ) {
         delete *part;
       }
     }
     particles.clear();
+
+    PoolAlloc<Object::Event, 0>::pool.free();
+    PoolAlloc<Particle, 0>::pool.free();
   }
-
-
 
   void World::genParticles( int number, const Vec3 &p,
                             const Vec3 &velocity, float velocitySpread,
@@ -268,10 +267,8 @@ namespace oz
     }
   }
 
-  void World::commit()
+  void World::commitPlus()
   {
-    synapse.clearTickets();
-
     // put
     foreach( i, synapse.putStructs.iterator() ) {
       put( *i );
@@ -285,7 +282,13 @@ namespace oz
       put( *i );
       synapse.putPartsIndices << ( *i )->index;
     }
+    foreach( i, synapse.useActions.iterator() ) {
+      i->target->onUse( i->user );
+    }
+  }
 
+  void World::commitMinus()
+  {
     // cut
     foreach( i, synapse.cutStructs.iterator() ) {
       cut( *i );
@@ -310,6 +313,12 @@ namespace oz
       cut( *i );
       delete *i;
     }
+  }
+
+  void World::commitAll()
+  {
+    commitPlus();
+    commitMinus();
   }
 
   bool World::read( InputStream *istream )

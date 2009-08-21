@@ -15,26 +15,28 @@ namespace oz
 
   class Mind
   {
-    protected:
+    friend class DList<Mind, 0>;
 
-      virtual void onUpdate();
-
-    public:
+    private:
 
       Mind *prev[1];
       Mind *next[1];
 
-      bool isUpdated;
-      Bot  *body;
+    protected:
 
-      Mind() : isUpdated( true )
-      {}
+      virtual void onUpdate() = 0;
+
+    public:
+
+      int  botIndex;
+      Bot  *bot;
+
+      Mind( Bot *bot_ ) : bot( bot_ ) {}
 
       virtual ~Mind();
 
       void update()
       {
-        isUpdated = true;
         onUpdate();
       }
   };

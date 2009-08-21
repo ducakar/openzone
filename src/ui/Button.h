@@ -21,7 +21,7 @@ namespace ui
   {
     public:
 
-      typedef void Callback();
+      typedef void Callback( Button *sender );
 
     private:
 
@@ -37,8 +37,9 @@ namespace ui
 
     public:
 
-      Button( const char *label_, int width, int height ) : Area( width, height ), label( label_ ),
-          isHighlighted( false ), isClicked( false ), callback( null )
+      Button( const char *label_, Callback *callback, int width, int height ) :
+          Area( width, height ), label( label_ ), isHighlighted( false ), isClicked( false ),
+          callback( callback )
       {}
 
       void setCallback( Callback *callback_ )

@@ -11,6 +11,7 @@
 #include "Bot.h"
 
 #include "BotClass.h"
+#include "Synapse.h"
 #include "Physics.h"
 
 namespace oz
@@ -36,9 +37,10 @@ namespace oz
      * STATE
      */
 
-    bool isSwimming = ( flags | oldFlags ) & IN_WATER_BIT;
-    bool isClimbing = flags & ON_LADDER_BIT;
-    bool isGrounded = ( lower >= 0 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
+    bool isSwimming   = waterDepth >= dim.z;
+    bool isUnderWater = waterDepth >= dim.z + camPos.z;
+    bool isClimbing   = flags & ON_LADDER_BIT;
+    bool isGrounded   = ( lower >= 0 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
 
     stepRate *= clazz.stepRateSupp;
     stamina += clazz.staminaGain;
@@ -70,7 +72,7 @@ namespace oz
       state &= ~GESTURE1_BIT;
     }
 
-    if( flags & UNDER_WATER_BIT ) {
+    if( isUnderWater ) {
       stamina -= clazz.staminaWaterDrain;
 
       if( stamina < 0.0f ) {
@@ -181,6 +183,8 @@ namespace oz
         move.z += hvsc[2];
       }
       else if( isClimbing ) {
+        move.x -= hvsc[4];
+        move.y += hvsc[5];
         move.z += v < 0.0f ? -1.0f : 1.0f;
       }
       else {
@@ -320,7 +324,7 @@ namespace oz
         collider.translate( eye, look, this );
 
         if( collider.hit.obj != null ) {
-          collider.hit.obj->use( this );
+          synapse.use( this, collider.hit.obj );
         }
       }
     }

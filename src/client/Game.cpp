@@ -33,8 +33,8 @@ namespace client
 
   bool Game::init()
   {
+    botTicket = -1;
     fastMove = false;
-    botRequestTicket = -1;
 
     log.println( "Initializing Game {" );
     log.indent();
@@ -46,21 +46,44 @@ namespace client
 
     network.connect();
     matrix.load();
-    world.commit();
     nirvana.load();
 
     camera.botIndex = -1;
     camera.bot = null;
-    camera.p = Vec3( 40, -50, 80 );
+    camera.p = Vec3( 50, -50, 30 );
 
     log.unindent();
     log.println( "}" );
     return true;
   }
 
-  void Game::start()
+  void Game::free() const
+  {
+    log.println( "Shutting down Game {" );
+    log.indent();
+
+    // remove myself
+    if( camera.botIndex >= 0 ) {
+      synapse.remove( camera.bot );
+    }
+    world.commitAll();
+
+    network.disconnect();
+    nirvana.free();
+    matrix.free();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Game::start() const
   {
     nirvana.start();
+  }
+
+  void Game::stop() const
+  {
+    nirvana.stop();
   }
 
   bool Game::update( int time )
@@ -69,6 +92,11 @@ namespace client
     timer.update( time );
 
     nirvana.requestSuspend = true;
+
+    if( botTicket != -1 ) {
+      camera.botIndex = synapse.getObjectIndex( botTicket );
+      botTicket = -1;
+    }
 
     if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
       if( state == GAME ) {
@@ -81,18 +109,69 @@ namespace client
       }
     }
 
-    if( botRequestTicket >= 0 ) {
-      camera.botIndex = synapse.getObjectIndex( botRequestTicket );
-      botRequestTicket = -1;
-    }
+    if( camera.bot == null ) {
+      /*
+       * Camera
+       */
+      camera.h -= ui::mouse.overEdgeX * mouseXSens;
+      camera.v += ui::mouse.overEdgeY * mouseYSens;
 
-    if( state == GAME ) {
-      if( camera.bot == null ) {
-        /*
-         * Camera
-         */
-        camera.h -= input.mouse.x * mouseXSens;
-        camera.v -= input.mouse.y * mouseYSens;
+      if( input.keys[SDLK_UP] ) {
+        camera.v += keyXSens * time;
+      }
+      if( input.keys[SDLK_DOWN] ) {
+        camera.v -= keyXSens * time;
+      }
+      if( input.keys[SDLK_RIGHT] ) {
+        camera.h -= keyYSens * time;
+      }
+      if( input.keys[SDLK_LEFT] ) {
+        camera.h += keyYSens * time;
+      }
+
+      camera.update();
+
+      /*
+       * Movement
+       */
+      if( input.keys[SDLK_LSHIFT] && !input.oldKeys[SDLK_LSHIFT] ) {
+        fastMove = !fastMove;
+      }
+
+      float speed = fastMove ? FREECAM_FAST_SPEED : FREECAM_SLOW_SPEED;
+
+      if( input.keys[SDLK_w] ) {
+        camera.p += camera.at * speed;
+      }
+      if( input.keys[SDLK_s] ) {
+        camera.p -= camera.at * speed;
+      }
+      if( input.keys[SDLK_d] ) {
+        camera.p += camera.right * speed;
+      }
+      if( input.keys[SDLK_a] ) {
+        camera.p -= camera.right * speed;
+      }
+      if( input.keys[SDLK_SPACE] ) {
+        camera.p.z += speed;
+      }
+      if( input.keys[SDLK_LCTRL] ) {
+        camera.p.z -= speed;
+      }
+    }
+    else {
+      camera.bot->keys = 0;
+
+      /*
+       * Camera
+       */
+      if( camera.bot->state & Bot::FREELOOK_BIT ) {
+        camera.h -= ui::mouse.overEdgeX * mouseXSens;
+        camera.v += ui::mouse.overEdgeY * mouseYSens;
+
+        BotClass *clazz = (BotClass*) camera.bot->type;
+        camera.h = bound( camera.h, clazz->lookLimitHMin, clazz->lookLimitHMax );
+        camera.v = bound( camera.v, clazz->lookLimitVMin, clazz->lookLimitVMax );
 
         if( input.keys[SDLK_UP] ) {
           camera.v += keyXSens * time;
@@ -106,157 +185,98 @@ namespace client
         if( input.keys[SDLK_LEFT] ) {
           camera.h += keyYSens * time;
         }
-
-        camera.update();
-
-        /*
-         * Movement
-         */
-        if( input.keys[SDLK_LSHIFT] && !input.oldKeys[SDLK_LSHIFT] ) {
-          fastMove = !fastMove;
-        }
-
-        float speed = fastMove ? FREECAM_FAST_SPEED : FREECAM_SLOW_SPEED;
-
-        if( input.keys[SDLK_w] ) {
-          camera.p += camera.at * speed;
-        }
-        if( input.keys[SDLK_s] ) {
-          camera.p -= camera.at * speed;
-        }
-        if( input.keys[SDLK_d] ) {
-          camera.p += camera.right * speed;
-        }
-        if( input.keys[SDLK_a] ) {
-          camera.p -= camera.right * speed;
-        }
-        if( input.keys[SDLK_SPACE] ) {
-          camera.p.z += speed;
-        }
-        if( input.keys[SDLK_LCTRL] ) {
-          camera.p.z -= speed;
-        }
       }
       else {
-        camera.bot->keys = 0;
+        camera.h = 0.0f;
+        camera.v = 0.0f;
 
-        /*
-         * Camera
-         */
-        if( camera.bot->state & Bot::FREELOOK_BIT ) {
-          camera.h -= input.mouse.x * mouseXSens;
-          camera.v -= input.mouse.y * mouseYSens;
+        camera.bot->h -= ui::mouse.overEdgeX * mouseXSens;
+        camera.bot->v += ui::mouse.overEdgeY * mouseYSens;
 
-          BotClass *clazz = (BotClass*) camera.bot->type;
-          camera.h = bound( camera.h, clazz->lookLimitHMin, clazz->lookLimitHMax );
-          camera.v = bound( camera.v, clazz->lookLimitVMin, clazz->lookLimitVMax );
-
-          if( input.keys[SDLK_UP] ) {
-            camera.v += keyXSens * time;
-          }
-          if( input.keys[SDLK_DOWN] ) {
-            camera.v -= keyXSens * time;
-          }
-          if( input.keys[SDLK_RIGHT] ) {
-            camera.h -= keyYSens * time;
-          }
-          if( input.keys[SDLK_LEFT] ) {
-            camera.h += keyYSens * time;
-          }
+        if( input.keys[SDLK_UP] ) {
+          camera.bot->v += keyXSens * time;
         }
-        else {
-          camera.h = 0.0f;
-          camera.v = 0.0f;
-
-          camera.bot->h -= input.mouse.x * mouseXSens;
-          camera.bot->v -= input.mouse.y * mouseYSens;
-
-          if( input.keys[SDLK_UP] ) {
-            camera.bot->v += keyXSens * time;
-          }
-          if( input.keys[SDLK_DOWN] ) {
-            camera.bot->v -= keyXSens * time;
-          }
-          if( input.keys[SDLK_RIGHT] ) {
-            camera.bot->h -= keyYSens * time;
-          }
-          if( input.keys[SDLK_LEFT] ) {
-            camera.bot->h += keyYSens * time;
-          }
+        if( input.keys[SDLK_DOWN] ) {
+          camera.bot->v -= keyXSens * time;
         }
-
-        /*
-         * Movement
-         */
-        if( input.keys[SDLK_w] ) {
-          camera.bot->keys |= Bot::KEY_FORWARD;
+        if( input.keys[SDLK_RIGHT] ) {
+          camera.bot->h -= keyYSens * time;
         }
-        if( input.keys[SDLK_s] ) {
-          camera.bot->keys |= Bot::KEY_BACKWARD;
-        }
-        if( input.keys[SDLK_d] ) {
-          camera.bot->keys |= Bot::KEY_RIGHT;
-        }
-        if( input.keys[SDLK_a] ) {
-          camera.bot->keys |= Bot::KEY_LEFT;
-        }
-
-        /*
-         * Actions
-         */
-        if( input.keys[SDLK_SPACE] ) {
-          camera.bot->keys |= Bot::KEY_JUMP;
-        }
-        if( input.keys[SDLK_LCTRL] ) {
-          camera.bot->keys |= Bot::KEY_CROUCH;
-        }
-        if( input.keys[SDLK_LSHIFT] ) {
-          camera.bot->keys |= Bot::KEY_RUN;
-        }
-        if( input.keys[SDLK_LALT] ) {
-          camera.bot->keys |= Bot::KEY_FREELOOK;
-        }
-
-        if( input.keys[SDLK_g] ) {
-          camera.bot->keys |= Bot::KEY_GESTURE0;
-        }
-        if( input.keys[SDLK_h] ) {
-          camera.bot->keys |= Bot::KEY_GESTURE1;
-        }
-        if( input.keys[SDLK_p] ) {
-          camera.bot->keys |= Bot::KEY_STEP;
-        }
-        if( input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
-          camera.isThirdPerson = !camera.isThirdPerson;
-        }
-
-        if( input.mouse.b == SDL_BUTTON_LEFT ) {
-          camera.bot->keys |= Bot::KEY_USE;
-        }
-        if( input.mouse.b == SDL_BUTTON_RIGHT ) {
-          camera.bot->keys |= Bot::KEY_GRAB;
+        if( input.keys[SDLK_LEFT] ) {
+          camera.bot->h += keyYSens * time;
         }
       }
 
-      if( input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
-        if( camera.botIndex < 0 ) {
-          Bot *me = (Bot*) translator.createObject( "Lord", camera.p );
-          me->h = camera.h;
-          me->v = camera.v;
+      /*
+       * Movement
+       */
+      if( input.keys[SDLK_w] ) {
+        camera.bot->keys |= Bot::KEY_FORWARD;
+      }
+      if( input.keys[SDLK_s] ) {
+        camera.bot->keys |= Bot::KEY_BACKWARD;
+      }
+      if( input.keys[SDLK_d] ) {
+        camera.bot->keys |= Bot::KEY_RIGHT;
+      }
+      if( input.keys[SDLK_a] ) {
+        camera.bot->keys |= Bot::KEY_LEFT;
+      }
 
-          botRequestTicket = synapse.put( me );
-        }
-        else {
-          camera.h = camera.bot->h;
-          camera.v = camera.bot->v;
-          camera.botIndex = -1;
-          synapse.remove( camera.bot );
-        }
+      /*
+       * Actions
+       */
+      if( input.keys[SDLK_SPACE] ) {
+        camera.bot->keys |= Bot::KEY_JUMP;
+      }
+      if( input.keys[SDLK_LCTRL] ) {
+        camera.bot->keys |= Bot::KEY_CROUCH;
+      }
+      if( input.keys[SDLK_LSHIFT] ) {
+        camera.bot->keys |= Bot::KEY_RUN;
+      }
+      if( input.keys[SDLK_LALT] ) {
+        camera.bot->keys |= Bot::KEY_FREELOOK;
+      }
+
+      if( input.keys[SDLK_g] ) {
+        camera.bot->keys |= Bot::KEY_GESTURE0;
+      }
+      if( input.keys[SDLK_h] ) {
+        camera.bot->keys |= Bot::KEY_GESTURE1;
+      }
+      if( input.keys[SDLK_p] ) {
+        camera.bot->keys |= Bot::KEY_STEP;
+      }
+      if( input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
+        camera.isThirdPerson = !camera.isThirdPerson;
+      }
+
+      if( ui::mouse.rightClick ) {
+        camera.bot->keys |= Bot::KEY_USE;
+      }
+      if( ui::mouse.rightClick ) {
+        camera.bot->keys |= Bot::KEY_GRAB;
       }
     }
-    else {
+
+    if( input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
+      if( camera.botIndex < 0 ) {
+        Bot *me = (Bot*) translator.createObject( "Lord", camera.p );
+        me->h = camera.h;
+        me->v = camera.v;
+
+        botTicket = synapse.put( me );
+      }
+      else {
+        camera.h = camera.bot->h;
+        camera.v = camera.bot->v;
+        camera.botIndex = -1;
+        synapse.remove( camera.bot );
+      }
+    }
+    if( state == GAME_INTERFACE ) {
       // interface
-      ui::mouse.update( input.mouse.x, -input.mouse.y, input.mouse.b );
       ui::update();
     }
 
@@ -267,42 +287,20 @@ namespace client
     network.update();
     matrix.update();
 
-    SDL_SemPost( nirvana.semaphore );
-
-    camera.update();
-    // play sounds, but don't do any cleanups
-    soundManager.play();
-
-    // synchronize render and soundManager (remove models and audios of removed objects)
-    matrix.sync();
-    render.sync();
-    soundManager.sync();
-
     return !input.keys[SDLK_ESCAPE];
   }
 
-  void Game::stop()
+  void Game::sync() const
   {
-    nirvana.stop();
-  }
+    matrix.sync();
+    nirvana.commit();
 
-  void Game::free()
-  {
-    log.println( "Shutting down Game {" );
-    log.indent();
+    SDL_SemPost( nirvana.semaphore );
 
-    // remove myself
-    if( camera.botIndex >= 0 ) {
-      synapse.remove( camera.bot );
-    }
-    world.commit();
+    render.sync();
+    soundManager.sync();
 
-    network.disconnect();
-    nirvana.free();
-    matrix.free();
-
-    log.unindent();
-    log.println( "}" );
+    camera.update();
   }
 
 }

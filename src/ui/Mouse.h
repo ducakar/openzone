@@ -19,20 +19,28 @@ namespace ui
   {
     private:
 
-      static const int SIZE = 32;
-
       uint ptrTexId;
+      int  size;
+      int  hotspotX;
+      int  hotspotY;
+
       int  maxX;
       int  maxY;
 
     public:
 
+      // read-write
+      int  moveX;
+      int  moveY;
+      byte newButtons;
+
+      // read-only
       int  x;
       int  y;
       byte b;
 
-      int  moveX;
-      int  moveY;
+      int  overEdgeX;
+      int  overEdgeY;
 
       bool leftClick;
       bool rightClick;
@@ -49,7 +57,7 @@ namespace ui
       void show();
       void hide();
 
-      void update( int moveX, int moveY, byte buttons );
+      void update();
       void draw() const;
 
   };

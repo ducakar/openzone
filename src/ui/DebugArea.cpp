@@ -34,22 +34,21 @@ namespace ui
             camera.bot->p.x, camera.bot->p.y, camera.bot->p.z,
             camera.bot->h, camera.bot->v );
 
-      print( 5, -5 - textHeight * 3, "bot.vel(%.2f %.2f %.2f) bot.mom(%.2f %.2f %.2f)",
+      print( 5, -5 - textHeight * 3, "bot.vel(%.2f %.2f %.2f) bot.mom(%.2f %.2f %.2f) bot.wd %.2f",
              camera.bot->velocity.x, camera.bot->velocity.y, camera.bot->velocity.z,
-             camera.bot->momentum.x, camera.bot->momentum.y, camera.bot->momentum.z );
+             camera.bot->momentum.x, camera.bot->momentum.y, camera.bot->momentum.z,
+             camera.bot->waterDepth );
 
-      print( 5, -5 - textHeight * 4, "d %d fl %d lw %d h %d fr %d ow %d iw %d uw %d ld %d s %d ovlp %d",
+      print( 5, -5 - textHeight * 4, "d %d fl %d lw %d h %d fr %d iw %d ld %d s %d ovlp %d",
             ( camera.bot->flags & Object::DISABLED_BIT ) != 0,
             ( camera.bot->flags & Object::ON_FLOOR_BIT ) != 0,
             camera.bot->lower >= 0,
-            ( !camera.bot->events.isEmpty() ),
+            ( camera.bot->flags & Object::HIT_BIT ) != 0,
             ( camera.bot->flags & Object::FRICTING_BIT ) != 0,
-            ( camera.bot->flags & Object::ON_WATER_BIT ) != 0,
             ( camera.bot->flags & Object::IN_WATER_BIT ) != 0,
-            ( camera.bot->flags & Object::UNDER_WATER_BIT ) != 0,
             ( camera.bot->flags & Object::ON_LADDER_BIT ) != 0,
             ( camera.bot->flags & Object::ON_SLICK_BIT ) != 0,
-            collider.test( *camera.bot ) );
+            !collider.test( *camera.bot, camera.bot ) );
     }
   }
 

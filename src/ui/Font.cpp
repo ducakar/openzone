@@ -30,36 +30,50 @@ namespace ui
     }
 
     path = config.get( "ui.font.mono.file", "/usr/share/fonts/TTF/DejaVuSansMono.ttf" );
-    monoHeight = config.get( "ui.font.mono.height", 14 );
+    monoHeight = config.get( "ui.font.mono.height", 12 );
 
     log.print( "Opening font '%s' %d px ...", path, monoHeight );
     monoFont = TTF_OpenFont( path, monoHeight );
     if( monoFont == null ) {
-      log.printEnd( " %s", TTF_GetError() );
+      log.printEnd( " Error: %s", TTF_GetError() );
       return false;
     }
-    monoHeight = TTF_FontHeight( monoFont );
+    log.printEnd( " OK" );
 
     path = config.get( "ui.font.sans.file", "/usr/share/fonts/TTF/DejaVuSans.ttf" );
-    sansHeight = config.get( "ui.font.sans.height", 14 );
+    sansHeight = config.get( "ui.font.sans.height", 11 );
 
-    log.print( "Opening font '%s' %px ...", path, sansHeight );
+    log.print( "Opening font '%s' %d px ...", path, sansHeight );
     sansFont = TTF_OpenFont( path, sansHeight );
     if( sansFont == null ) {
-      log.printEnd( " %s", TTF_GetError() );
+      log.printEnd( " Error: %s", TTF_GetError() );
       TTF_CloseFont( monoFont );
       monoFont = null;
       return false;
     }
-    sansHeight = TTF_FontHeight( sansFont );
-
     log.printEnd( " OK" );
+
+    path = config.get( "ui.font.title.file", "/usr/share/fonts/TTF/DejaVuSans-Bold.ttf" );
+    titleHeight = config.get( "ui.font.title.height", 14 );
+
+    log.print( "Opening font '%s' %d px ...", path, titleHeight );
+    titleFont = TTF_OpenFont( path, titleHeight );
+    if( titleHeight == null ) {
+      log.printEnd( " Error: %s", TTF_GetError() );
+      TTF_CloseFont( monoFont );
+      monoFont = null;
+      TTF_CloseFont( sansFont );
+      sansFont = null;
+      return false;
+    }
+    log.printEnd( " OK" );
+
     return true;
   }
 
   void Font::free()
   {
-    log.print( "Closing font ..." );
+    log.print( "Closing fonts ..." );
 
     if( TTF_WasInit() == 0 ) {
       log.printEnd( " Not initialized" );
@@ -72,6 +86,10 @@ namespace ui
     if( sansFont != null ) {
       TTF_CloseFont( sansFont );
       sansFont = null;
+    }
+    if( titleFont != null ) {
+      TTF_CloseFont( titleFont );
+      titleFont = null;
     }
     TTF_Quit();
 

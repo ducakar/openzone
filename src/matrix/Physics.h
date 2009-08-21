@@ -24,7 +24,8 @@ namespace oz
       static const float HIT_MOMENTUM;
 
       static const float AIR_FRICTION;
-      static const float WATER_FRICTION;
+      static const float IN_WATER_FRICTION;
+      static const float ON_WATER_FRICTION;
       static const float LADDER_FRICTION;
       static const float FLOOR_FRICTION;
       static const float OBJ_FRICTION;

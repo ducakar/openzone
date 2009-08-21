@@ -19,6 +19,10 @@ namespace ui
 
   class BuildMenu : public Frame
   {
+    protected:
+
+      virtual void draw();
+
     public:
 
       BuildMenu();

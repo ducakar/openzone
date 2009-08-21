@@ -9,6 +9,7 @@
 #pragma once
 
 #include "World.h"
+#include "Synapse.h"
 #include "Bot.h"
 
 namespace oz
@@ -27,8 +28,8 @@ namespace oz
       void load();
       void free();
 
-      void sync();
       void update();
+      void sync();
   };
 
   extern Matrix matrix;

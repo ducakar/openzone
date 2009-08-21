@@ -234,7 +234,6 @@ namespace client
 
     // set mouse cursor to center of the screen and clear any events (key presses and mouse moves)
     // from before
-    game.input.mouse.b = 0;
     SDL_WarpMouse( screenCenterX, screenCenterY );
     while( SDL_PollEvent( &event ) ) {
     }
@@ -242,16 +241,16 @@ namespace client
     // THE MAGNIFICANT MAIN LOOP
     do {
       // read input & events
-      game.input.mouse.x = 0;
-      game.input.mouse.y = 0;
-      game.input.mouse.b = SDL_GetRelativeMouseState( null, null );
+      ui::mouse.moveX = 0;
+      ui::mouse.moveY = 0;
+      ui::mouse.newButtons = SDL_GetRelativeMouseState( null, null );
       aCopy( game.input.oldKeys, game.input.keys, SDLK_LAST );
 
       while( SDL_PollEvent( &event ) ) {
         switch( event.type ) {
           case SDL_MOUSEMOTION: {
-            game.input.mouse.x = -event.motion.xrel;
-            game.input.mouse.y = -event.motion.yrel;
+            ui::mouse.moveX = -event.motion.xrel;
+            ui::mouse.moveY =  event.motion.yrel;
 
             SDL_WarpMouse( screenCenterX, screenCenterY );
             break;
@@ -293,8 +292,16 @@ namespace client
         continue;
       }
 
-      // update game & play sounds
+      ui::mouse.update();
+      // stop nirvana, update matrix, commit all but cut/remove transactions
       isAlive &= game.update( tick );
+      // play sounds, but don't do any cleanups. We must do it before we commit world cut/remove
+      // transactions
+      soundManager.play();
+      // commit world cut/remove transactions (pending objects removals) and synchronize nirvana,
+      // render and soundManager (remove minds, models and audios of removed objects) and unpause
+      // nirvana update tread
+      game.sync();
 
       // render graphics, if we have enough time left
       timeNow = SDL_GetTicks();

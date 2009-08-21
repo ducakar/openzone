@@ -13,21 +13,20 @@
 namespace oz
 {
 
-  M_Walker::M_Walker( Bot *body_ )
-  {
-    body = body_;
-  }
-
   void M_Walker::onUpdate()
   {
-    body->keys = 0;
-    body->keys |= Bot::KEY_FORWARD;
+    assert( world.objects[botIndex]->flags & Object::BOT_BIT );
+
+    Bot *bot = (Bot*) world.objects[botIndex];
+
+    bot->keys = 0;
+    bot->keys |= Bot::KEY_FORWARD;
 
     if( Math::rand() % 101 == 0 ) {
-      body->h += ( Math::frand() * 120.0f ) - 60.0f;
+      bot->h += ( Math::frand() * 120.0f ) - 60.0f;
     }
     if( Math::rand() % 67 == 0 ) {
-      body->keys |= Bot::KEY_JUMP;
+      bot->keys |= Bot::KEY_JUMP;
     }
   }
 

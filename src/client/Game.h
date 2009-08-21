@@ -21,14 +21,6 @@ namespace client
       {
         ubyte *keys;
         ubyte oldKeys[SDLK_LAST];
-
-        struct Mouse
-        {
-          int  x;
-          int  y;
-          byte b;
-        }
-        mouse;
       };
 
       enum State
@@ -52,8 +44,8 @@ namespace client
       float moveStep;
       float runStep;
 
+      int   botTicket;
       bool  fastMove;
-      int   botRequestTicket;
 
     public:
 
@@ -61,12 +53,14 @@ namespace client
       State state;
 
       bool init();
-      void start();
+      void free() const;
+
+      void start() const;
+      void stop() const;
 
       bool update( int time );
+      void sync() const;
 
-      void stop();
-      void free();
   };
 
   extern Game game;

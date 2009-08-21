@@ -57,7 +57,7 @@ namespace oz
     }
 
     clazz->mass             = config->get( "mass", 100.0f );
-    clazz->lift             = config->get( "lift", 0.03f );
+    clazz->lift             = config->get( "lift", 12.0f );
 
     if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
         clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||
