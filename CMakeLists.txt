@@ -47,37 +47,30 @@ else( WIN32 )
 
   # required libraries
   find_package( LibXml2 REQUIRED )
-  find_package( PhysFS REQUIRED )
+  find_package( Lua51 REQUIRED )
   find_package( SDL REQUIRED )
   find_package( SDL_image REQUIRED )
+  find_package( SDL_net REQUIRED )
+  find_package( SDL_ttf REQUIRED )
   find_package( OpenGL REQUIRED )
   find_package( GLU REQUIRED )
   find_package( OpenAL REQUIRED )
 
-  find_file( ALUT_INCLUDE_DIR AL )
   find_library( ALUT_LIBRARY alut )
   find_file( OGG_INCLUDE_DIR ogg )
   find_library( OGG_LIBRARY ogg )
   find_file( VORBIS_INCLUDE_DIR vorbis )
   find_library( VORBIS_LIBRARY vorbisfile )
 
-  set( CXX_FLAGS -I/usr/include/libxml2 -I/usr/include/SDL -pipe -fno-rtti
-    -Wall -Wextra -Winvalid-pch -Wnon-virtual-dtor -Woverloaded-virtual
-#   flags for debug build
-    -g3
-#   flags for optimized build (for profiling)
-#    -O3 -march=pentium4 -mtune=pentium4 -msse2 -mfpmath=sse -ffast-math -DNDEBUG
-#    -Wdisabled-optimization -fprofile-generate
-#   flags for release build (build and extensively test optimized build first to generate good
-#   profiling info)
-#    -O3 -march=pentium4 -mtune=pentium4 -msse2 -mfpmath=sse -ffast-math -DNDEBUG
-#    -Wdisabled-optimization -fprofile-use
-  )
-  add_definitions( ${CXX_FLAGS} )
-  link_libraries( xml2 SDL SDL_image SDL_net SDL_ttf GL GLU openal alut vorbisfile )
+  # generic C++ flags
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/include/libxml2 -I/usr/include/SDL -pipe -fno-rtti" )
+  # C++ warnings
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Winvalid-pch -Wnon-virtual-dtor -Woverloaded-virtual -Wdisabled-optimization" )
+  # linker flags
+  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lxml2 -llua -lSDL -lSDL_image -lSDL_net -lSDL_ttf -lGL -lGLU -lopenal -lalut -lvorbisfile" )
 
-  install( FILES src/client/dark
-           DESTINATION bin/dark
+  install( FILES src/client/openzone
+           DESTINATION bin/openzone
            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                        GROUP_READ GROUP_EXECUTE
                        WORLD_READ WORLD_EXECUTE )
@@ -93,7 +86,7 @@ else( WIN32 )
     DEPENDS base precompiled.h
     COMMAND
       rm -f precompiled.h.gch &&
-      ${CMAKE_CXX_COMPILER} ${CXX_FLAGS} precompiled.h )
+      ${CMAKE_CXX_COMPILER} `echo ${CMAKE_CXX_FLAGS}` precompiled.h )
 
 endif( WIN32 )
 

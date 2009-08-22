@@ -411,7 +411,7 @@ namespace client
       move *= collider.hit.ratio;
 
       glColor3f( 0.0f, 1.0f, 0.0f );
-      shape.drawBox( AABB( camera.p + move, Vec3( 0.03f, 0.03f, 0.03f ) ) );
+      shape.drawBox( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
     }
 
     glDisable( GL_DEPTH_TEST );

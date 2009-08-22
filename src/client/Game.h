@@ -44,7 +44,6 @@ namespace client
       float moveStep;
       float runStep;
 
-      int   botTicket;
       bool  fastMove;
 
     public:

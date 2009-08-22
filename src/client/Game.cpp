@@ -33,7 +33,6 @@ namespace client
 
   bool Game::init()
   {
-    botTicket = -1;
     fastMove = false;
 
     log.println( "Initializing Game {" );
@@ -66,7 +65,7 @@ namespace client
     if( camera.botIndex >= 0 ) {
       synapse.remove( camera.bot );
     }
-    world.commitAll();
+    synapse.commitAll();
 
     network.disconnect();
     nirvana.free();
@@ -88,15 +87,9 @@ namespace client
 
   bool Game::update( int time )
   {
-    synapse.clearPending();
     timer.update( time );
 
     nirvana.requestSuspend = true;
-
-    if( botTicket != -1 ) {
-      camera.botIndex = synapse.getObjectIndex( botTicket );
-      botTicket = -1;
-    }
 
     if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
       if( state == GAME ) {
@@ -266,7 +259,7 @@ namespace client
         me->h = camera.h;
         me->v = camera.v;
 
-        botTicket = synapse.put( me );
+        camera.botIndex = synapse.put( me );
       }
       else {
         camera.h = camera.bot->h;
@@ -286,19 +279,21 @@ namespace client
 
     network.update();
     matrix.update();
+    synapse.commitPlus();
 
     return !input.keys[SDLK_ESCAPE];
   }
 
   void Game::sync() const
   {
-    matrix.sync();
-    nirvana.commit();
-
-    SDL_SemPost( nirvana.semaphore );
-
     render.sync();
     soundManager.sync();
+
+    synapse.commitMinus();
+    synapse.clearPending();
+
+    nirvana.commit();
+    SDL_SemPost( nirvana.semaphore );
 
     camera.update();
   }

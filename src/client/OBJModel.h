@@ -17,6 +17,7 @@ namespace client
 
   struct OBJModel : Model
   {
+    const char *name;
     uint list;
 
     static Model *create( const Object *object );

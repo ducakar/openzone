@@ -19,6 +19,7 @@ namespace client
 
   struct MD2Model : Model
   {
+    const char     *name;
     MD2            *md2;
     MD2::AnimState anim;
 

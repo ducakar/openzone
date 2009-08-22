@@ -1,9 +1,9 @@
-Following programs and libraries/SDKs are required to compile:
+Following programs and libraries are required to build:
 
-- GNU tools (gcc-g++, gmake, binutils) or VC++ 2008
-- cmake
-- iconv (only for VC++ 2008, on Unix it's part of standard C library)
-- libxml2
+- GNU tools (GCC, GNU Make, GNU Binutils)
+- CMake
+- LibXml2
+- Lua
 - SDL
 - SDL_image
 - SDL_ttf

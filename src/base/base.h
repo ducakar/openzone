@@ -15,12 +15,6 @@
 #define OZ_USE_REUSEALLOC
 #define OZ_USE_POOLALLOC
 
-#ifdef WIN32
-# include <boost/typeof/typeof.h>
-# define typeof( x ) BOOST_TYPEOF( x )
-# define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include <assert.h>
 
 /*

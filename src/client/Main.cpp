@@ -15,15 +15,8 @@
 #include "SoundManager.h"
 #include "Render.h"
 
-#ifdef WIN32
-# include <direct.h>
-# include <sys/types.h>
-# include <sys/stat.h>
-# define chdir _chdir
-#else
-# include <unistd.h>
-# include <sys/stat.h>
-#endif
+#include <unistd.h>
+#include <sys/stat.h>
 
 #include <SDL_net.h>
 
@@ -71,39 +64,27 @@ namespace client
 
   void Main::main( int *argc, char *argv[] )
   {
-#ifdef WIN32
-    const char *homeVar = getenv( "HOME" );
-    String home = String( homeVar == null ? OZ_RC_DIR : homeVar + String( "\\" OZ_RC_DIR ) );
+    String home;
 
-    struct _stat homeDirStat;
-    if( _stat( home.cstr(), &homeDirStat ) != 0 ) {
-      printf( "No resource dir found, creating '%s' ...", home.cstr() );
-
-      if( _mkdir( home.cstr() ) != 0 ) {
-        printf( " Failed\n" );
-        return;
-      }
-      printf( " OK\n" );
+    if( config.contains( "dir.home" ) ) {
+      home = config.get( "dir.home", "" );
     }
-    home = home + "\\";
-#else
-    const char *homeVar = getenv( "HOME" );
-    String home = String( homeVar == null ? OZ_RC_DIR "/" : homeVar + String( "/" OZ_RC_DIR ) );
+    else {
+      const char *homeVar = getenv( "HOME" );
+      home = String( homeVar == null ? OZ_RC_DIR : homeVar + String( OZ_RC_DIR ) );
 
-    struct stat homeDirStat;
-    if( stat( home.cstr(), &homeDirStat ) != 0 ) {
-      printf( "No resource dir found, creating '%s' ...", home.cstr() );
+      struct stat homeDirStat;
+      if( stat( home.cstr(), &homeDirStat ) != 0 ) {
+        printf( "No resource dir found, creating '%s' ...", home.cstr() );
 
-      if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
-        printf( " Failed\n" );
-        return;
+        if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
+          printf( " Failed\n" );
+          return;
+        }
+        printf( " OK\n" );
       }
-      printf( " OK\n" );
+      config.add( "dir.home", home );
     }
-    home = home + "/";
-#endif
-
-    config.add( "dir.home", home );
 
 #ifdef OZ_LOG_FILE
     String logPath = home + OZ_LOG_FILE;

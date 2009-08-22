@@ -17,7 +17,6 @@
 #include "Particle.h"
 
 #include "Translator.h"
-#include "Synapse.h"
 
 namespace oz
 {
@@ -37,6 +36,8 @@ namespace oz
 
   class World : public Bounds
   {
+    friend class Synapse;
+
     public:
 
       // # of sectors on each (x, y) axis

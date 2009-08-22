@@ -24,7 +24,8 @@ namespace client
     MD2Model *model = new MD2Model();
 
     model->object = object;
-    model->md2    = context.loadMD2Model( object->type->modelPath );
+    model->name   = object->type->modelName;
+    model->md2    = context.loadMD2Model( object->type->modelName );
 
     model->anim.type     = -1;
     model->anim.currTime = 0.0f;
@@ -36,7 +37,7 @@ namespace client
 
   MD2Model::~MD2Model()
   {
-    context.releaseMD2Model( object->type->modelPath );
+    context.releaseMD2Model( name );
   }
 
   void MD2Model::setAnim( int type )
