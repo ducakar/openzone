@@ -29,7 +29,7 @@ namespace oz
       void free();
 
       void update();
-      void sync();
+
   };
 
   extern Matrix matrix;

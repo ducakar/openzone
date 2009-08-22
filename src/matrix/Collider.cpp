@@ -919,40 +919,43 @@ namespace oz
         trimAABBNode( node.back, startRatio, endRatio, startPos, endPos );
       }
       else {
-        if( startDist < endDist ) {
-          float invDist = 1.0f / ( startDist - endDist );
+        trimAABBNode( node.front, startRatio, endRatio, startPos, endPos );
+        trimAABBNode( node.back, startRatio, endRatio, startPos, endPos );
 
-          float ratio1 = bound( ( startDist - offset ) * invDist, 0.0f, 1.0f );
-          float ratio2 = bound( ( startDist + offset ) * invDist, 0.0f, 1.0f );
-
-          float middleRatio1 = startRatio + ratio1 * ( endRatio - startRatio );
-          float middleRatio2 = startRatio + ratio2 * ( endRatio - startRatio );
-
-          Vec3  middlePos1 = startPos + ratio1 * ( endPos - startPos );
-          Vec3  middlePos2 = startPos + ratio2 * ( endPos - startPos );
-
-          trimAABBNode( node.back, startRatio, middleRatio1, startPos, middlePos1 );
-          trimAABBNode( node.front, middleRatio2, endRatio, middlePos2, endPos );
-        }
-        else if( endDist < startDist ) {
-          float invDist = 1.0f / ( startDist - endDist );
-
-          float ratio1 = bound( ( startDist + offset ) * invDist, 0.0f, 1.0f );
-          float ratio2 = bound( ( startDist - offset ) * invDist, 0.0f, 1.0f );
-
-          float middleRatio1 = startRatio + ratio1 * ( endRatio - startRatio );
-          float middleRatio2 = startRatio + ratio2 * ( endRatio - startRatio );
-
-          Vec3  middlePos1 = startPos + ratio1 * ( endPos - startPos );
-          Vec3  middlePos2 = startPos + ratio2 * ( endPos - startPos );
-
-          trimAABBNode( node.front, startRatio, middleRatio1, startPos, middlePos1 );
-          trimAABBNode( node.back, middleRatio2, endRatio, middlePos2, endPos );
-        }
-        else {
-          trimAABBNode( node.front, startRatio, endRatio, startPos, endPos );
-          trimAABBNode( node.back, startRatio, endRatio, startPos, endPos );
-        }
+//         if( startDist < endDist ) {
+//           float invDist = 1.0f / ( startDist - endDist );
+//
+//           float ratio1 = bound( ( startDist - offset ) * invDist, 0.0f, 1.0f );
+//           float ratio2 = bound( ( startDist + offset ) * invDist, 0.0f, 1.0f );
+//
+//           float middleRatio1 = startRatio + ratio1 * ( endRatio - startRatio );
+//           float middleRatio2 = startRatio + ratio2 * ( endRatio - startRatio );
+//
+//           Vec3  middlePos1 = startPos + ratio1 * ( endPos - startPos );
+//           Vec3  middlePos2 = startPos + ratio2 * ( endPos - startPos );
+//
+//           trimAABBNode( node.back, startRatio, middleRatio1, startPos, middlePos1 );
+//           trimAABBNode( node.front, middleRatio2, endRatio, middlePos2, endPos );
+//         }
+//         else if( endDist < startDist ) {
+//           float invDist = 1.0f / ( startDist - endDist );
+//
+//           float ratio1 = bound( ( startDist + offset ) * invDist, 0.0f, 1.0f );
+//           float ratio2 = bound( ( startDist - offset ) * invDist, 0.0f, 1.0f );
+//
+//           float middleRatio1 = startRatio + ratio1 * ( endRatio - startRatio );
+//           float middleRatio2 = startRatio + ratio2 * ( endRatio - startRatio );
+//
+//           Vec3  middlePos1 = startPos + ratio1 * ( endPos - startPos );
+//           Vec3  middlePos2 = startPos + ratio2 * ( endPos - startPos );
+//
+//           trimAABBNode( node.front, startRatio, middleRatio1, startPos, middlePos1 );
+//           trimAABBNode( node.back, middleRatio2, endRatio, middlePos2, endPos );
+//         }
+//         else {
+//           trimAABBNode( node.front, startRatio, endRatio, startPos, endPos );
+//           trimAABBNode( node.back, startRatio, endRatio, startPos, endPos );
+//         }
       }
     }
   }

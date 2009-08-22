@@ -18,12 +18,13 @@ namespace oz
   struct Sector;
   struct Hit;
   struct Bot;
+  class Synapse;
 
   // static object abstract class
   class Object : public AABB
   {
     friend class DList<Object, 0>;
-    friend class World;
+    friend class Synapse;
 
     /*
      * Here various flag bits are set; the higher bits are used for flags that are internal flags

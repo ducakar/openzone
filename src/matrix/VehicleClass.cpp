@@ -32,8 +32,8 @@ namespace oz
     clazz->damageTreshold   = config->get( "damageTreshold", 200.0f );
     clazz->damageRatio      = config->get( "damageRatio", 1.0f );
 
-    clazz->modelType        = config->get( "modelType", "MD2" );
-    clazz->modelPath        = config->get( "modelPath", "mdl/goblin.md2" );
+    clazz->modelType        = config->get( "modelType", "" );
+    clazz->modelName        = config->get( "modelPath", "" );
 
     if( clazz->modelType.length() > 0 ) {
       clazz->flags |= Object::MODEL_BIT;

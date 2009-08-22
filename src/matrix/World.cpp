@@ -80,6 +80,7 @@ namespace oz
   inline void World::unposition( Object *obj )
   {
     obj->sector->objects.remove( obj );
+    obj->sector = null;
   }
 
   inline void World::reposition( Object *obj )
@@ -103,6 +104,7 @@ namespace oz
   inline void World::unposition( Particle *part )
   {
     part->sector->particles.remove( part );
+    part->sector = null;
   }
 
   inline void World::reposition( Particle *part )
@@ -119,13 +121,27 @@ namespace oz
 
   void World::put( Structure *str )
   {
-    if( strFreeIndices.isEmpty() ) {
-      str->index = structures.length();
-      structures << str;
+    if( str->index == -1 ) {
+      if( strFreeIndices.isEmpty() ) {
+        str->index = structures.length();
+        structures << str;
+      }
+      else {
+        strFreeIndices >> str->index;
+        structures[str->index] = str;
+      }
     }
     else {
-      strFreeIndices >> str->index;
-      structures[str->index] = str;
+      assert( str->index <= structures.length() );
+
+      if( str->index == structures.length() ) {
+        structures << str;
+      }
+      else {
+        assert( structures[str->index] == null );
+
+        structures[str->index] = str;
+      }
     }
 
     position( str );
@@ -133,13 +149,27 @@ namespace oz
 
   void World::put( Object *obj )
   {
-    if( objFreeIndices.isEmpty() ) {
-      obj->index = objects.length();
-      objects << obj;
+    if( obj->index == -1 ) {
+      if( objFreeIndices.isEmpty() ) {
+        obj->index = objects.length();
+        objects << obj;
+      }
+      else {
+        objFreeIndices >> obj->index;
+        objects[obj->index] = obj;
+      }
     }
     else {
-      objFreeIndices >> obj->index;
-      objects[obj->index] = obj;
+      assert( obj->index <= objects.length() );
+
+      if( obj->index == objects.length() ) {
+        objects << obj;
+      }
+      else {
+        assert( objects[obj->index] == null );
+
+        objects[obj->index] = obj;
+      }
     }
 
     position( obj );
@@ -147,13 +177,27 @@ namespace oz
 
   void World::put( Particle *part )
   {
-    if( partFreeIndices.isEmpty() ) {
-      part->index = particles.length();
-      particles << part;
+    if( part->index == -1 ) {
+      if( partFreeIndices.isEmpty() ) {
+        part->index = particles.length();
+        particles << part;
+      }
+      else {
+        partFreeIndices >> part->index;
+        particles[part->index] = part;
+      }
     }
     else {
-      partFreeIndices >> part->index;
-      particles[part->index] = part;
+      assert( part->index <= particles.length() );
+
+      if( part->index == particles.length() ) {
+        particles << part;
+      }
+      else {
+        assert( particles[part->index] == null );
+
+        particles[part->index] = part;
+      }
     }
 
     position( part );
@@ -165,6 +209,7 @@ namespace oz
 
     strFreeIndices << str->index;
     structures[str->index] = null;
+    str->index = -1;
   }
 
   void World::cut( Object *obj )
@@ -173,6 +218,7 @@ namespace oz
 
     objFreeIndices << obj->index;
     objects[obj->index] = null;
+    obj->index = -1;
   }
 
   void World::cut( Particle *part )
@@ -181,6 +227,7 @@ namespace oz
 
     partFreeIndices << part->index;
     particles[part->index] = null;
+    part->index = -1;
   }
 
   World::World() :
@@ -246,10 +293,6 @@ namespace oz
                             float rejection, float mass, float lifeTime,
                             float size, const Vec3 &color, float colorSpread )
   {
-    if( synapse.isClient ) {
-      return;
-    }
-
     float velocitySpread2 = velocitySpread / 2.0f;
     float colorSpread2 = colorSpread / 2.0f;
 
@@ -265,60 +308,6 @@ namespace oz
       put( new Particle( p, velocity + velDisturb, rejection, mass, 0.5f * lifeTime + timeDisturb,
                          size, color + colorDisturb ) );
     }
-  }
-
-  void World::commitPlus()
-  {
-    // put
-    foreach( i, synapse.putStructs.iterator() ) {
-      put( *i );
-      synapse.putStructsIndices << ( *i )->index;
-    }
-    foreach( i, synapse.putObjects.iterator() ) {
-      put( *i );
-      synapse.putObjectsIndices << ( *i )->index;
-    }
-    foreach( i, synapse.putParts.iterator() ) {
-      put( *i );
-      synapse.putPartsIndices << ( *i )->index;
-    }
-    foreach( i, synapse.useActions.iterator() ) {
-      i->target->onUse( i->user );
-    }
-  }
-
-  void World::commitMinus()
-  {
-    // cut
-    foreach( i, synapse.cutStructs.iterator() ) {
-      cut( *i );
-    }
-    foreach( i, synapse.cutObjects.iterator() ) {
-      cut( *i );
-    }
-    foreach( i, synapse.cutParts.iterator() ) {
-      cut( *i );
-    }
-
-    // remove (cut & delete)
-    foreach( i, synapse.removeStructs.iterator() ) {
-      cut( *i );
-      delete *i;
-    }
-    foreach( i, synapse.removeObjects.iterator() ) {
-      cut( *i );
-      delete *i;
-    }
-    foreach( i, synapse.removeParts.iterator() ) {
-      cut( *i );
-      delete *i;
-    }
-  }
-
-  void World::commitAll()
-  {
-    commitPlus();
-    commitMinus();
   }
 
   bool World::read( InputStream *istream )

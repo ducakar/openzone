@@ -4,6 +4,8 @@ doxygen
 openzone.tag
 precompiled.h.gch
 *.gcno
+gmon.out
+gprof
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake

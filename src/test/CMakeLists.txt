@@ -1,6 +1,6 @@
-link_libraries( base )
+link_libraries( base matrix nirvana )
 
 add_executable( test
-  foreach.cpp )
+  script.cpp )
 
 add_dependencies( test precompile )

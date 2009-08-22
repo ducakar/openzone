@@ -22,13 +22,14 @@ namespace client
     MD3StaticModel *model = new MD3StaticModel();
 
     model->object = object;
-    model->list   = context.loadMD3StaticModel( object->type->modelPath );
+    model->name   = object->type->modelName;
+    model->list   = context.loadMD3StaticModel( object->type->modelName );
     return model;
   }
 
   MD3StaticModel::~MD3StaticModel()
   {
-    context.releaseMD3StaticModel( object->type->modelPath );
+    context.releaseMD3StaticModel( name );
   }
 
   void MD3StaticModel::draw()

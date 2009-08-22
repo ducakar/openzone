@@ -43,56 +43,54 @@ namespace oz
       world.read( &istream );
     }
     else {
-      synapse.put( new Structure( Vec3( 57, -33, 33 ), translator.bspIndex( "castle" ), Structure::R0 ) );
+      synapse.addStruct( "castle", Vec3( 57, -33, 33 ), Structure::R0 );
 
-      synapse.put( translator.createObject( "Lord",   Vec3( 52, -44, 27 ) ) );
-      synapse.put( translator.createObject( "Knight", Vec3( 50, -35, 27 ) ) );
-      synapse.put( translator.createObject( "Goblin", Vec3( 51, -35, 27 ) ) );
+      synapse.addObject( "Lord",   Vec3( 52, -44, 27 ) );
+      synapse.addObject( "Knight", Vec3( 50, -35, 27 ) );
+      synapse.addObject( "Goblin", Vec3( 51, -35, 27 ) );
 
-      synapse.put( translator.createObject( "Raptor", Vec3( 70, -60, 30 ) ) );
+      synapse.addObject( "Raptor", Vec3( 70, -60, 30 ) );
 
 //       world.genParticles( 1000, Vec3( 40, -42, 74 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
 //                           0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
-      synapse.put( translator.createObject( "MetalBarrel", Vec3( 61, -44, 26 ) ) );
-      synapse.put( translator.createObject( "MetalBarrel", Vec3( 61, -44, 28 ) ) );
-      synapse.put( translator.createObject( "MetalBarrel", Vec3( 61, -44, 30 ) ) );
+      synapse.addObject( "MetalBarrel", Vec3( 61, -44, 26 ) );
+      synapse.addObject( "MetalBarrel", Vec3( 61, -44, 28 ) );
+      synapse.addObject( "MetalBarrel", Vec3( 61, -44, 30 ) );
 
-      synapse.put( translator.createObject( "Tree1",
-                   Vec3( 0, -30, world.terra.height( 0, -30 ) + 5 ) ) );
-      synapse.put( translator.createObject( "Tree3",
-                   Vec3( 0, -42, world.terra.height( 0, -30 ) + 5 ) ) );
+      synapse.addObject( "Tree2",  Vec3( 0, -30, world.terra.height( 0, -30 ) + 3.5f ) );
+      synapse.addObject( "Tree3", Vec3( 0, -42, world.terra.height( 0, -30 ) + 6.5f ) );
 
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 51, -42, 26 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 51, -42, 27 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 51, -42, 28 ) ) );
+      synapse.addObject( "SmallCrate", Vec3( 51, -42, 26 ) );
+      synapse.addObject( "SmallCrate", Vec3( 51, -42, 27 ) );
+      synapse.addObject( "SmallCrate", Vec3( 51, -42, 28 ) );
 
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 51, -41, 26 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 51, -41, 27 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 51, -41, 28 ) ) );
+      synapse.addObject( "SmallCrate", Vec3( 51, -41, 26 ) );
+      synapse.addObject( "SmallCrate", Vec3( 51, -41, 27 ) );
+      synapse.addObject( "SmallCrate", Vec3( 51, -41, 28 ) );
 
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 52, -42, 26 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 52, -42, 27 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 52, -42, 28 ) ) );
+      synapse.addObject( "SmallCrate", Vec3( 52, -42, 26 ) );
+      synapse.addObject( "SmallCrate", Vec3( 52, -42, 27 ) );
+      synapse.addObject( "SmallCrate", Vec3( 52, -42, 28 ) );
 
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 52, -41, 26 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 52, -41, 27 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 52, -41, 28 ) ) );
+      synapse.addObject( "SmallCrate", Vec3( 52, -41, 26 ) );
+      synapse.addObject( "SmallCrate", Vec3( 52, -41, 27 ) );
+      synapse.addObject( "SmallCrate", Vec3( 52, -41, 28 ) );
 
-      synapse.put( translator.createObject( "BigCrate", Vec3( 54, -43, 26 ) ) );
+      synapse.addObject( "BigCrate", Vec3( 54, -43, 26 ) );
 
-      synapse.put( translator.createObject( "BigCrate", Vec3( 50, -55, 26 ) ) );
-      synapse.put( translator.createObject( "BigCrate", Vec3( 50, -55, 28 ) ) );
-      synapse.put( translator.createObject( "BigCrate", Vec3( 50, -55, 30 ) ) );
+      synapse.addObject( "BigCrate", Vec3( 50, -55, 26 ) );
+      synapse.addObject( "BigCrate", Vec3( 50, -55, 28 ) );
+      synapse.addObject( "BigCrate", Vec3( 50, -55, 30 ) );
 
-      synapse.put( new Structure( Vec3( 50, -60, 25 ), translator.bspIndex( "pool" ), Structure::R0 ) );
-      synapse.put( new Structure( Vec3( 60, -60, 26 ), translator.bspIndex( "test" ), Structure::R0 ) );
+      synapse.addStruct( "pool", Vec3( 50, -60, 25 ), Structure::R0 );
+      synapse.addStruct( "test", Vec3( 60, -60, 26 ), Structure::R0 );
 
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 52, -61, 30 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 52, -61, 31 ) ) );
-      synapse.put( translator.createObject( "SmallCrate", Vec3( 52, -61, 32 ) ) );
+      synapse.addObject( "SmallCrate", Vec3( 52, -61, 30 ) );
+      synapse.addObject( "SmallCrate", Vec3( 52, -61, 31 ) );
+      synapse.addObject( "SmallCrate", Vec3( 52, -61, 32 ) );
 
-      world.commitAll();
-      synapse.clear();
+      synapse.commitAll();
+      synapse.clearAll();
     }
     buffer.free();
 
@@ -158,12 +156,6 @@ namespace oz
         }
       }
     }
-    world.commitPlus();
-  }
-
-  void Matrix::sync()
-  {
-    world.commitMinus();
   }
 
 }

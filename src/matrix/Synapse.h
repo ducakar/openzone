@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include "World.h"
+
 namespace oz
 {
 
@@ -41,7 +43,6 @@ namespace oz
 
   class Synapse
   {
-    friend class World;
     friend class client::Render;
     friend class client::SoundManager;
 
@@ -70,6 +71,10 @@ namespace oz
 
       Vector<Action>     useActions;
 
+      int nStructs;
+      int nObjects;
+      int nParts;
+
       Vector<int>        putStructsIndices;
       Vector<int>        putObjectsIndices;
       Vector<int>        putPartsIndices;
@@ -89,35 +94,61 @@ namespace oz
 
       explicit Synapse();
 
-      // put a created object into the physics world
+      // schedule for addition in the world and return predicted world index
       int  put( Structure *str );
       int  put( Object *obj );
       int  put( Particle *part );
 
-      // remove object from physical world, but don't delete it
+      // schedule for removal from physical world, but don't delete it
       void cut( Structure *str );
       void cut( Object *obj );
       void cut( Particle *part );
 
-      // remove object from physical world and delete it
+      // create an object, schedule for addition in the world and return predicted world index
+      int  addStruct( const char *name, const Vec3 &p, Structure::Rotation rot );
+      int  addObject( const char *name, const Vec3 &p );
+      int  addPart( const Vec3 &p, const Vec3 &velocity, float rejection, float mass,
+                    float lifeTime, float size, const Vec3 &color );
+
+      // schedule for removal from physical world and delete it
       void remove( Structure *str );
       void remove( Object *obj );
       void remove( Particle *part );
 
       void use( Bot *user, Object *target );
 
-      // indices in World vectors after objects have been added
-      // (ticket is the integer returned by put())
+      // client-initiated actions, returns a ticket that can be used to retrieve index of the
+      // added object
+      int  globalPut( Structure *str );
+      int  globalPut( Object *obj );
+      int  globalPut( Particle *part );
+
+      void globalCut( Structure *str );
+      void globalCut( Object *obj );
+      void globalCut( Particle *part );
+
+      void globalRemove( Structure *str );
+      void globalRemove( Object *obj );
+      void globalRemove( Particle *part );
+
+      void globalUse( Bot *user, Object *target );
+
+      // indices in World vectors after objects have been remotely added
+      // (ticket is the integer returned by globalPut())
       int  getStructIndex( int ticket ) const;
       int  getObjectIndex( int ticket ) const;
       int  getPartIndex( int ticket ) const;
+
+      void commitPlus();
+      void commitMinus();
+      void commitAll();
 
       // clear puts, cuts, removed & actions
       void clearPending();
       // clear tickets
       void clearTickets();
       // clear everything
-      void clear();
+      void clearAll();
 
   };
 
@@ -125,23 +156,44 @@ namespace oz
 
   inline int Synapse::put( Structure *str )
   {
-    int pos = putStructs.length();
+    if( world.strFreeIndices.isEmpty() ) {
+      str->index = nStructs;
+      nStructs++;
+    }
+    else {
+      world.strFreeIndices >> str->index;
+    }
     putStructs << str;
-    return pos;
+
+    return str->index;
   }
 
   inline int Synapse::put( Object *obj )
   {
-    int pos = putObjects.length();
+    if( world.objFreeIndices.isEmpty() ) {
+      obj->index = nObjects;
+      nObjects++;
+    }
+    else {
+      world.objFreeIndices >> obj->index;
+    }
     putObjects << obj;
-    return pos;
+
+    return obj->index;
   }
 
   inline int Synapse::put( Particle *part )
   {
-    int pos = putParts.length();
+    if( world.partFreeIndices.isEmpty() ) {
+      part->index = nParts;
+      nParts++;
+    }
+    else {
+      world.partFreeIndices >> part->index;
+    }
     putParts << part;
-    return pos;
+
+    return part->index;
   }
 
   inline void Synapse::cut( Structure *str )
@@ -157,6 +209,25 @@ namespace oz
   inline void Synapse::cut( Particle *part )
   {
     cutParts << part;
+  }
+
+  inline int Synapse::addStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
+  {
+    Structure *str = new Structure( p, translator.bspIndex( name ), rot );
+    return put( str );
+  }
+
+  inline int Synapse::addObject( const char *name, const Vec3 &p )
+  {
+    Object *obj = translator.createObject( name, p );
+    return put( obj );
+  }
+
+  inline int Synapse::addPart( const Vec3 &p, const Vec3 &velocity, float rejection, float mass,
+                               float lifeTime, float size, const Vec3 &color )
+  {
+    Particle *part = new Particle( p, velocity, rejection, mass, lifeTime, size, color );
+    return put( part );
   }
 
   inline void Synapse::remove( Structure *str )

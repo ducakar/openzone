@@ -38,7 +38,7 @@ namespace oz
     float  damageRatio;
 
     String modelType;
-    String modelPath;
+    String modelName;
 
     String audioType;
     int    audioSamples[AUDIO_SAMPLES];

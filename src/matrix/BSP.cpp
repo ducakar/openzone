@@ -408,7 +408,7 @@ namespace oz
     float maxDim = bspConfig.get( "maxDim", Math::INF );
     bspConfig.clear();
 
-    if( scale == Math::NaN || maxDim == Math::NaN ) {
+    if( Math::isNaN( scale ) || Math::isNaN( maxDim ) ) {
       log.printEnd( " Invalid config" );
       return false;
     }
