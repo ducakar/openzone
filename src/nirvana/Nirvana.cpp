@@ -15,24 +15,23 @@ namespace oz
 
   Nirvana nirvana;
 
+  void Nirvana::update()
+  {
+    foreach( mind, minds.iterator() ) {
+      if( requestSuspend ) {
+        break;
+      }
+      mind->update();
+    }
+  }
+
   void Nirvana::run()
   {
     do {
       SDL_SemPost( matrix.semaphore );
       SDL_SemWait( semaphore );
 
-//       while( !requestSuspend ) {
-      foreach( i, minds.iterator() ) {
-        if( requestSuspend ) {
-          break;
-        }
-
-        Mind &mind = *i;
-
-        mind.update();
-      }
-//       }
-//       requestSuspend = false;
+      update();
     }
     while( isAlive );
   }
@@ -40,7 +39,6 @@ namespace oz
   int Nirvana::runThread( void* )
   {
     nirvana.run();
-
     return 0;
   }
 
@@ -91,16 +89,16 @@ namespace oz
     log.printEnd( " OK" );
   }
 
-  void Nirvana::commit()
+  void Nirvana::sync()
   {
     // remove minds of removed bots
     for( DList<Mind, 0>::Iterator i( minds ); !i.isPassed(); ) {
-      Mind &mind = *i;
+      Mind *mind = i;
       ++i;
 
-//       if( world.objects[mind.botIndex] == null ) {
-//         minds.remove( &mind );
-//       }
+      if( world.objects[mind->botIndex] == null ) {
+        minds.remove( mind );
+      }
     }
     foreach( mind, pendingMinds.iterator() ) {
       minds << *mind;

@@ -16,4 +16,14 @@ namespace oz
   Mind::~Mind()
   {}
 
+  void Mind::readFull( InputStream *istream )
+  {
+    botIndex = istream->readInt();
+  }
+
+  void Mind::writeFull( OutputStream *ostream )
+  {
+    ostream->writeInt( botIndex );
+  }
+
 }

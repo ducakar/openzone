@@ -39,7 +39,10 @@ namespace oz
 
     int nEvents = istream->readInt();
     for( int i = 0; i < nEvents; i++ ) {
-      addEvent( istream->readInt(), istream->readFloat() );
+      int id = istream->readInt();
+      float intensity = istream->readFloat();
+
+      addEvent( id, intensity );
     }
   }
 
@@ -57,10 +60,28 @@ namespace oz
     }
   }
 
-  void Object::readUpdate( InputStream* )
-  {}
+  void Object::readUpdate( InputStream *istream )
+  {
+    life = istream->readFloat();
 
-  void Object::writeUpdate( OutputStream* )
-  {}
+    int nEvents = istream->readInt();
+    for( int i = 0; i < nEvents; i++ ) {
+      int   id        = istream->readInt();
+      float intensity = istream->readFloat();
+
+      addEvent( id, intensity );
+    }
+  }
+
+  void Object::writeUpdate( OutputStream *ostream )
+  {
+    ostream->writeFloat( life );
+
+    ostream->writeInt( events.length() );
+    foreach( event, events.iterator() ) {
+      ostream->writeInt( event->id );
+      ostream->writeFloat( event->intensity );
+    }
+  }
 
 }

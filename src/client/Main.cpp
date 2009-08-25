@@ -12,7 +12,7 @@
 
 #include "Context.h"
 #include "Game.h"
-#include "SoundManager.h"
+#include "Sound.h"
 #include "Render.h"
 
 #include <unistd.h>
@@ -39,7 +39,7 @@ namespace client
       render.free();
     }
     if( initFlags & INIT_AUDIO ) {
-      soundManager.free();
+      sound.free();
     }
     if( initFlags & INIT_CONTEXT ) {
       context.free();
@@ -176,7 +176,7 @@ namespace client
     render.init();
     initFlags |= INIT_RENDER_INIT;
 
-    if( !soundManager.init( argc, argv ) ) {
+    if( !sound.init( argc, argv ) ) {
       return;
     }
     initFlags |= INIT_AUDIO;
@@ -278,7 +278,7 @@ namespace client
       isAlive &= game.update( tick );
       // play sounds, but don't do any cleanups. We must do it before we commit world cut/remove
       // transactions
-      soundManager.play();
+      sound.play();
       // commit world cut/remove transactions (pending objects removals) and synchronize nirvana,
       // render and soundManager (remove minds, models and audios of removed objects) and unpause
       // nirvana update tread
@@ -292,7 +292,7 @@ namespace client
         // render
         render.update();
         // stop playing stopped continuous sounds, do cleanups
-        soundManager.update();
+        sound.update();
 
         nFrames++;
 

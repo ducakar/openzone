@@ -37,28 +37,21 @@ namespace oz
 
   void DynObject::readUpdate( InputStream *istream )
   {
+    Object::readUpdate( istream );
+
     p        = istream->readVec3();
-    life     = istream->readFloat();
     velocity = istream->readVec3();
     momentum = istream->readVec3();
-
-    int nEvents = istream->readInt();
-    for( int i = 0; i < nEvents; i++ ) {
-      addEvent( istream->readInt() );
-    }
   }
 
   void DynObject::writeUpdate( OutputStream *ostream )
   {
+    Object::writeUpdate( ostream );
+
     ostream->writeVec3( p );
     ostream->writeFloat( life );
     ostream->writeVec3( velocity );
     ostream->writeVec3( momentum );
-
-    ostream->writeInt( events.length() );
-    foreach( event, events.iterator() ) {
-      ostream->writeInt( event->id );
-    }
   }
 
 }

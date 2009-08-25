@@ -71,19 +71,19 @@ namespace oz
     }
   }
 
-  inline void World::position( Object *obj )
+  void World::position( Object *obj )
   {
     obj->sector = world.getSector( obj->p );
     obj->sector->objects << obj;
   }
 
-  inline void World::unposition( Object *obj )
+  void World::unposition( Object *obj )
   {
     obj->sector->objects.remove( obj );
     obj->sector = null;
   }
 
-  inline void World::reposition( Object *obj )
+  void World::reposition( Object *obj )
   {
     Sector *oldSector = obj->sector;
     Sector *newSector = world.getSector( obj->p );
@@ -95,19 +95,19 @@ namespace oz
     }
   }
 
-  inline void World::position( Particle *part )
+  void World::position( Particle *part )
   {
     part->sector = world.getSector( part->p );
     part->sector->particles << part;
   }
 
-  inline void World::unposition( Particle *part )
+  void World::unposition( Particle *part )
   {
     part->sector->particles.remove( part );
     part->sector = null;
   }
 
-  inline void World::reposition( Particle *part )
+  void World::reposition( Particle *part )
   {
     Sector *oldSector = part->sector;
     Sector *newSector = world.getSector( part->p );
@@ -121,92 +121,43 @@ namespace oz
 
   void World::put( Structure *str )
   {
-    if( str->index == -1 ) {
-      if( strFreeIndices.isEmpty() ) {
-        str->index = structures.length();
-        structures << str;
-      }
-      else {
-        strFreeIndices >> str->index;
-        structures[str->index] = str;
-      }
+    if( strFreeIndices.isEmpty() ) {
+      str->index = structures.length();
+      structures << str;
     }
     else {
-      assert( str->index <= structures.length() );
-
-      if( str->index == structures.length() ) {
-        structures << str;
-      }
-      else {
-        assert( structures[str->index] == null );
-
-        structures[str->index] = str;
-      }
+      strFreeIndices >> str->index;
+      structures[str->index] = str;
     }
-
-    position( str );
   }
 
   void World::put( Object *obj )
   {
-    if( obj->index == -1 ) {
-      if( objFreeIndices.isEmpty() ) {
-        obj->index = objects.length();
-        objects << obj;
-      }
-      else {
-        objFreeIndices >> obj->index;
-        objects[obj->index] = obj;
-      }
+    assert( obj->index != -1 && obj->index <= objects.length() );
+
+    if( obj->index == objects.length() ) {
+      objects << obj;
     }
     else {
-      assert( obj->index <= objects.length() );
-
-      if( obj->index == objects.length() ) {
-        objects << obj;
-      }
-      else {
-        assert( objects[obj->index] == null );
-
-        objects[obj->index] = obj;
-      }
+      objects[obj->index] = obj;
     }
-
-    position( obj );
+    obj->flags |= Object::PUT_BIT;
   }
 
   void World::put( Particle *part )
   {
-    if( part->index == -1 ) {
-      if( partFreeIndices.isEmpty() ) {
-        part->index = particles.length();
-        particles << part;
-      }
-      else {
-        partFreeIndices >> part->index;
-        particles[part->index] = part;
-      }
+    if( partFreeIndices.isEmpty() ) {
+      part->index = particles.length();
+      particles << part;
     }
     else {
-      assert( part->index <= particles.length() );
-
-      if( part->index == particles.length() ) {
-        particles << part;
-      }
-      else {
-        assert( particles[part->index] == null );
-
-        particles[part->index] = part;
-      }
+      partFreeIndices >> part->index;
+      particles[part->index] = part;
     }
-
-    position( part );
   }
 
   void World::cut( Structure *str )
   {
-    unposition( str );
-
     strFreeIndices << str->index;
     structures[str->index] = null;
     str->index = -1;
@@ -214,17 +165,14 @@ namespace oz
 
   void World::cut( Object *obj )
   {
-    unposition( obj );
-
     objFreeIndices << obj->index;
     objects[obj->index] = null;
     obj->index = -1;
+    obj->flags &= ~Object::PUT_BIT;
   }
 
   void World::cut( Particle *part )
   {
-    unposition( part );
-
     partFreeIndices << part->index;
     particles[part->index] = null;
     part->index = -1;

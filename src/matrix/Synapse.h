@@ -30,21 +30,16 @@
 namespace oz
 {
 
-  class Structure;
-  class Object;
-  class Particle;
-  class Bot;
-
   namespace client
   {
     class Render;
-    class SoundManager;
+    class Sound;
   }
 
   class Synapse
   {
     friend class client::Render;
-    friend class client::SoundManager;
+    friend class client::Sound;
 
     private:
 
@@ -57,9 +52,8 @@ namespace oz
         Action( Bot *user_, Object *target_ ) : user( user_ ), target( target_ ) {}
       };
 
-      Vector<Structure*> putStructs;
       Vector<Object*>    putObjects;
-      Vector<Particle*>  putParts;
+      int                nObjects;
 
       Vector<Structure*> cutStructs;
       Vector<Object*>    cutObjects;
@@ -70,10 +64,6 @@ namespace oz
       Vector<Particle*>  removeParts;
 
       Vector<Action>     useActions;
-
-      int nStructs;
-      int nObjects;
-      int nParts;
 
       Vector<int>        putStructsIndices;
       Vector<int>        putObjectsIndices;
@@ -156,15 +146,8 @@ namespace oz
 
   inline int Synapse::put( Structure *str )
   {
-    if( world.strFreeIndices.isEmpty() ) {
-      str->index = nStructs;
-      nStructs++;
-    }
-    else {
-      world.strFreeIndices >> str->index;
-    }
-    putStructs << str;
-
+    world.put( str );
+    world.position( str );
     return str->index;
   }
 
@@ -179,20 +162,15 @@ namespace oz
     }
     putObjects << obj;
 
+    world.position( obj );
+
     return obj->index;
   }
 
   inline int Synapse::put( Particle *part )
   {
-    if( world.partFreeIndices.isEmpty() ) {
-      part->index = nParts;
-      nParts++;
-    }
-    else {
-      world.partFreeIndices >> part->index;
-    }
-    putParts << part;
-
+    world.put( part );
+    world.position( part );
     return part->index;
   }
 

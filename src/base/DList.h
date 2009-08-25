@@ -461,6 +461,32 @@ namespace oz
       }
 
       /**
+       * Transfer elements from given list. The given list is cleared after the operation.
+       * @param l
+       */
+      void transfer( DList &l )
+      {
+        if( l.isEmpty() ) {
+          return;
+        }
+
+        assert( l.firstElem->prev[INDEX] == null );
+        assert( l.lastElem->next[INDEX] == null );
+
+        l.lastElem->next[INDEX] = firstElem;
+
+        if( firstElem == null ) {
+          firstElem = l.firstElem;
+          lastElem = l.lastElem;
+        }
+        else {
+          firstElem->prev[INDEX] = l.lastElem;
+          firstElem = l.firstElem;
+        }
+        l.clear();
+      }
+
+      /**
        * Empty the list but don't delete the elements.
        */
       void clear()

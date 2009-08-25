@@ -113,8 +113,8 @@ namespace oz
 
       virtual void readFull( InputStream *istream );
       virtual void writeFull( OutputStream *ostream );
-      virtual void readUpdates( InputStream *istream );
-      virtual void writeUpdates( OutputStream *ostream );
+      virtual void readUpdate( InputStream *istream );
+      virtual void writeUpdate( OutputStream *ostream );
   };
 
 }

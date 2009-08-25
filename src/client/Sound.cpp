@@ -1,5 +1,5 @@
 /*
- *  SoundManager.cpp
+ *  Sound.cpp
  *
  *  [description]
  *
@@ -8,7 +8,7 @@
 
 #include "precompiled.h"
 
-#include "SoundManager.h"
+#include "Sound.h"
 
 #include "Camera.h"
 #include "Context.h"
@@ -18,12 +18,12 @@ namespace oz
 namespace client
 {
 
-  SoundManager soundManager;
+  Sound sound;
 
-  const float SoundManager::DMAX = 100.0f;
-  const float SoundManager::DMAX_SQ = DMAX * DMAX;
+  const float Sound::DMAX = 100.0f;
+  const float Sound::DMAX_SQ = DMAX * DMAX;
 
-  void SoundManager::playSector( int sectorX, int sectorY )
+  void Sound::playSector( int sectorX, int sectorY )
   {
     Sector &sector = world.sectors[sectorX][sectorY];
 
@@ -40,7 +40,7 @@ namespace client
     }
   }
 
-  void SoundManager::loadMusicBuffer( uint buffer )
+  void Sound::loadMusicBuffer( uint buffer )
   {
     char data[MUSIC_BUFFER_SIZE];
     int  section;
@@ -61,7 +61,7 @@ namespace client
     alBufferData( buffer, musicFormat, data, bytesRead, vorbisInfo->rate );
   }
 
-  void SoundManager::updateMusic()
+  void Sound::updateMusic()
   {
     assert( alGetError() == AL_NO_ERROR );
 
@@ -88,7 +88,7 @@ namespace client
     }
   }
 
-  void SoundManager::freeMusic()
+  void Sound::freeMusic()
   {
     if( isMusicLoaded ) {
       alSourceStop( musicSource );
@@ -101,7 +101,7 @@ namespace client
     }
   }
 
-  bool SoundManager::loadMusic( const char *path )
+  bool Sound::loadMusic( const char *path )
   {
     log.print( "Loading music '%s' ...", path );
 
@@ -152,7 +152,7 @@ namespace client
     return true;
   }
 
-  void SoundManager::sync()
+  void Sound::sync()
   {
     // remove Audio objects of removed objects
     foreach( i, synapse.cutObjects.iterator() ) {
@@ -169,7 +169,7 @@ namespace client
     }
   }
 
-  void SoundManager::play()
+  void Sound::play()
   {
     // add new sounds
     alListenerfv( AL_ORIENTATION, camera.at );
@@ -194,7 +194,7 @@ namespace client
     clearCount++;
   }
 
-  void SoundManager::update()
+  void Sound::update()
   {
     assert( alGetError() == AL_NO_ERROR );
 
@@ -286,7 +286,7 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
   }
 
-  bool SoundManager::init( int *argc, char *argv[] )
+  bool Sound::init( int *argc, char *argv[] )
   {
     log.println( "Initializing SoundManager {" );
     log.indent();
@@ -340,7 +340,7 @@ namespace client
     return true;
   }
 
-  void SoundManager::free()
+  void Sound::free()
   {
     assert( alGetError() == AL_NO_ERROR );
 

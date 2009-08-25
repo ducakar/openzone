@@ -26,7 +26,7 @@ namespace client
     static const int SND_SPLASH_HARD = 3;
     static const int SND_FRICTING    = 4;
 
-    SimpleAudio( const Object *obj, const ObjectClass *clazz ) : Audio( obj, clazz ) {}
+    SimpleAudio( const Object *obj ) : Audio( obj ) {}
 
     static Audio *create( const Object *obj );
 

@@ -1,5 +1,5 @@
 /*
- *  Audio.h
+ *  Sound.h
  *
  *  [description]
  *
@@ -19,7 +19,7 @@ namespace oz
 namespace client
 {
 
-  class SoundManager
+  class Sound
   {
     private:
 
@@ -137,7 +137,7 @@ namespace client
 
   };
 
-  extern SoundManager soundManager;
+  extern Sound sound;
 
 }
 }

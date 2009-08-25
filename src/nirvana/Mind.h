@@ -22,23 +22,18 @@ namespace oz
       Mind *prev[1];
       Mind *next[1];
 
-    protected:
-
-      virtual void onUpdate() = 0;
-
     public:
 
-      int  botIndex;
-      Bot  *bot;
+      int botIndex;
 
-      Mind( Bot *bot_ ) : bot( bot_ ) {}
+      Mind( int botIndex_ ) : botIndex( botIndex_ ) {}
 
       virtual ~Mind();
+      virtual void update() = 0;
 
-      void update()
-      {
-        onUpdate();
-      }
+      virtual void readFull( InputStream *istream );
+      virtual void writeFull( OutputStream *ostream );
+
   };
 
 }

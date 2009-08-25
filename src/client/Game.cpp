@@ -17,7 +17,7 @@
 #include "nirvana/Nirvana.h"
 #include "Network.h"
 #include "Render.h"
-#include "SoundManager.h"
+#include "Sound.h"
 
 #include "Camera.h"
 
@@ -287,12 +287,13 @@ namespace client
   void Game::sync() const
   {
     render.sync();
-    soundManager.sync();
+    sound.sync();
 
     synapse.commitMinus();
     synapse.clearPending();
 
-    nirvana.commit();
+    nirvana.sync();
+    nirvana.requestSuspend = false;
     SDL_SemPost( nirvana.semaphore );
 
     camera.update();

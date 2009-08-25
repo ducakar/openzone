@@ -11,7 +11,7 @@
 #include "SimpleAudio.h"
 
 #include "Camera.h"
-#include "SoundManager.h"
+#include "Sound.h"
 
 namespace oz
 {
@@ -22,7 +22,7 @@ namespace client
   {
     assert( obj->flags & Object::DYNAMIC_BIT );
 
-    return new SimpleAudio( obj, obj->type );
+    return new SimpleAudio( obj );
   }
 
   void SimpleAudio::update()
