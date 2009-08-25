@@ -332,6 +332,27 @@ namespace oz
       }
 
       /**
+       * Transfer elements from given list. The given list is cleared after the operation.
+       * @param l
+       */
+      void transfer( List &l )
+      {
+        if( l.isEmpty() ) {
+          return;
+        }
+
+        Type *end = l.firstElem;
+        while( end->next[INDEX] != null ) {
+          end = end->next[INDEX];
+        }
+
+        end->next[INDEX] = firstElem;
+        firstElem = l.firstElem;
+
+        l.clear();
+      }
+
+      /**
        * Empty the list but don't delete the elements.
        */
       void clear()

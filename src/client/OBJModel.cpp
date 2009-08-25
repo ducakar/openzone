@@ -22,14 +22,13 @@ namespace client
     OBJModel *model = new OBJModel();
 
     model->object = object;
-    model->name   = object->type->modelName;
     model->list   = context.loadOBJModel( object->type->modelName );
     return model;
   }
 
   OBJModel::~OBJModel()
   {
-    context.releaseOBJModel( name );
+    context.releaseOBJModel( object->type->modelName );
   }
 
   void OBJModel::draw()

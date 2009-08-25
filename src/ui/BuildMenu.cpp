@@ -29,7 +29,8 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.p + camera.at * 2.0f;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
@@ -43,7 +44,8 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.p + camera.at * 2.0f;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
@@ -57,7 +59,8 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.p + camera.at * 2.0f;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
@@ -71,14 +74,15 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.p + camera.at * 2.0f;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
       Bot *bot = (Bot*) translator.createObject( "Goblin", p );
 
       synapse.put( bot );
-      nirvana.add( new M_Walker( bot ) );
+      nirvana.add( new RandomMind( bot->index ) );
     }
   }
 
@@ -88,20 +92,22 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.p + camera.at * 2.0f;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
       Bot *bot = (Bot*) translator.createObject( "Knight", p );
 
       synapse.put( bot );
-      nirvana.add( new M_Walker( bot ) );
+      nirvana.add( new RandomMind( bot->index ) );
     }
   }
 
   static void destroy( Button* )
   {
-    collider.translate( camera.p, camera.at * 2.0f, camera.bot );
+    Vec3 p = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    collider.translate( p, camera.at * 2.0f, camera.bot );
 
     if( collider.hit.obj != null ) {
       synapse.remove( collider.hit.obj );

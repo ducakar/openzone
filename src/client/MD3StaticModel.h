@@ -17,7 +17,6 @@ namespace client
 
   struct MD3StaticModel : Model
   {
-    const char *name;
     uint list;
 
     static Model *create( const Object *object );

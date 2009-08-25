@@ -381,50 +381,6 @@ namespace oz
       stepRate( 0.0f ), deathTime( 0.0f ), weapon( null ), anim( ANIM_STAND )
   {}
 
-  void Bot::readUpdates( InputStream *istream )
-  {
-    p            = istream->readVec3();
-    flags        = istream->readInt();
-    oldFlags     = istream->readInt();
-    life         = istream->readFloat();
-
-    velocity     = istream->readVec3();
-    momentum     = istream->readVec3();
-
-    state        = istream->readInt();
-    anim         = (AnimEnum) istream->readByte();
-    h            = istream->readFloat();
-
-    grabObjIndex = istream->readInt();
-
-    int nEvents = istream->readInt();
-    for( int i = 0; i < nEvents; i++ ) {
-      addEvent( istream->readInt() );
-    }
-  }
-
-  void Bot::writeUpdates( OutputStream *ostream )
-  {
-    ostream->writeVec3( p );
-    ostream->writeInt( flags );
-    ostream->writeInt( oldFlags );
-    ostream->writeFloat( life );
-
-    ostream->writeVec3( velocity );
-    ostream->writeVec3( momentum );
-
-    ostream->writeInt( state );
-    ostream->writeByte( anim );
-    ostream->writeFloat( h );
-
-    ostream->writeInt( grabObjIndex );
-
-    ostream->writeInt( events.length() );
-    foreach( event, events.iterator() ) {
-      ostream->writeInt( event->id );
-    }
-  }
-
   void Bot::readFull( InputStream *istream )
   {
     DynObject::readFull( istream );
@@ -472,6 +428,28 @@ namespace oz
 //       ostream->writeString( ( *item )->type->name );
 //       ( *item )->writeFull( ostream );
 //     }
+  }
+
+  void Bot::readUpdate( InputStream *istream )
+  {
+    Object::readUpdate( istream );
+
+    state        = istream->readInt();
+    anim         = (AnimEnum) istream->readByte();
+    h            = istream->readFloat();
+
+    grabObjIndex = istream->readInt();
+  }
+
+  void Bot::writeUpdate( OutputStream *ostream )
+  {
+    DynObject::writeUpdate( ostream );
+
+    ostream->writeInt( state );
+    ostream->writeByte( anim );
+    ostream->writeFloat( h );
+
+    ostream->writeInt( grabObjIndex );
   }
 
 }

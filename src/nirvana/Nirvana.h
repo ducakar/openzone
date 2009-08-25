@@ -13,7 +13,7 @@
 
 #include "matrix/Matrix.h"
 
-#include "M_Walker.h"
+#include "RandomMind.h"
 
 namespace oz
 {
@@ -27,7 +27,7 @@ namespace oz
       DList<Mind, 0> minds;
       Vector<Mind*>  pendingMinds;
 
-      void synchronize();
+      void update();
       void run();
 
       static int runThread( void *data );
@@ -51,7 +51,7 @@ namespace oz
       void start();
       void stop();
 
-      void commit();
+      void sync();
   };
 
   extern Nirvana nirvana;

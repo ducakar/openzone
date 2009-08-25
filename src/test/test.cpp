@@ -10,27 +10,35 @@
 
 using namespace oz;
 
+struct Elem
+{
+  int value;
+  Elem *prev[1];
+  Elem *next[1];
+
+  Elem( int value_ ) : value( value_ ) {}
+};
+
 int main()
 {
-  DArray<int> a( 10 );
+  DList<Elem, 0> a;
+  DList<Elem, 0> b;
 
-  a[0] = 0;
-  a[1] = 1;
-  a[2] = 2;
-  a[3] = 3;
-  a[4] = 4;
-  a[5] = 5;
-  a[6] = 6;
-  a[7] = 7;
-  a[8] = 8;
-  a[9] = 9;
-//   a[10] = 10;
+  a << new Elem( 1 );
+  a << new Elem( 2 );
+  a << new Elem( 3 );
+  a << new Elem( 4 );
 
-  DArray<int> b;
-  b = a;
+  b << new Elem( 5 );
+  b << new Elem( 6 );
+  b << new Elem( 7 );
+  b << new Elem( 8 );
 
-  foreach( i, b.iterator() ) {
-    printf( "%d :: ", *i );
+  a.transfer( b );
+  a.transfer( b );
+
+  foreach( i, a.iterator() ) {
+    printf( "%d :: ", i->value );
   }
   printf( "\n" );
 

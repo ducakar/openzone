@@ -17,7 +17,6 @@ namespace client
 
   struct MD2StaticModel : Model
   {
-    const char *name;
     uint list;
 
     static Model *create( const Object *object );

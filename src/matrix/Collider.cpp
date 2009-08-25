@@ -361,7 +361,7 @@ namespace oz
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio    = minRatio;
       hit.normal   = *tmpNormal;
-      hit.obj      = sObj;
+      hit.obj      = sObj->index < 0 ? null : sObj;
       hit.material = 0;
     }
   }
@@ -767,7 +767,7 @@ namespace oz
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio    = minRatio;
       hit.normal   = *tmpNormal;
-      hit.obj      = sObj;
+      hit.obj      = sObj->index < 0 ? null : sObj;
       hit.material = 0;
     }
   }

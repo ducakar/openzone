@@ -8,7 +8,6 @@
 
 #pragma once
 
-#include "World.h"
 #include "Synapse.h"
 #include "Bot.h"
 

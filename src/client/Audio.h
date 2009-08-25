@@ -34,7 +34,6 @@ namespace client
     protected:
 
       const Object      *obj;
-      const ObjectClass *clazz;
 
       void playSound( int sample, float volume ) const;
       void playContSound( int sample, float volume, uint key ) const;
@@ -45,7 +44,7 @@ namespace client
 
       bool isUpdated;
 
-      Audio( const Object *obj, const ObjectClass *clazz );
+      Audio( const Object *obj );
       virtual ~Audio();
 
       virtual void update() = 0;

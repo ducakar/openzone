@@ -1,5 +1,5 @@
 /*
- *  M_Walker.h
+ *  RandomMind.h
  *
  *  [description]
  *
@@ -13,15 +13,13 @@
 namespace oz
 {
 
-  class M_Walker : public Mind
+  class RandomMind : public Mind
   {
-    protected:
-
-      void onUpdate();
-
     public:
 
-      M_Walker( Bot *bot ) : Mind( bot ) {}
+      RandomMind( int botIndex ) : Mind( botIndex ) {}
+
+      void update();
 
   };
 

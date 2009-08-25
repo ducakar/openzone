@@ -12,7 +12,7 @@
 
 #include "Camera.h"
 #include "Context.h"
-#include "SoundManager.h"
+#include "Sound.h"
 
 namespace oz
 {
@@ -56,7 +56,7 @@ namespace client
 
     assert( alGetError() == AL_NO_ERROR );
 
-    soundManager.addSource( srcId );
+    sound.addSource( srcId );
   }
 
   void Audio::playContSound( int sample, float volume, uint key ) const
@@ -64,9 +64,9 @@ namespace client
     assert( 0 <= sample && sample < translator.sounds.length() );
     assert( alGetError() == AL_NO_ERROR );
 
-    if( soundManager.updateContSource( key ) ) {
-      alSourcef( soundManager.getCachedContSourceId(), AL_GAIN, volume );
-      alSourcefv( soundManager.getCachedContSourceId(), AL_POSITION, obj->p );
+    if( sound.updateContSource( key ) ) {
+      alSourcef( sound.getCachedContSourceId(), AL_GAIN, volume );
+      alSourcefv( sound.getCachedContSourceId(), AL_POSITION, obj->p );
     }
     else {
       uint srcId;
@@ -84,15 +84,15 @@ namespace client
       alSourcef( srcId, AL_GAIN, volume );
       alSourcePlay( srcId );
 
-      soundManager.addContSource( key, srcId );
+      sound.addContSource( key, srcId );
     }
 
     assert( alGetError() == AL_NO_ERROR );
   }
 
-  Audio::Audio( const Object *obj_, const ObjectClass *clazz_ ) : obj( obj_ ), clazz( clazz_ )
+  Audio::Audio( const Object *obj_ ) : obj( obj_ )
   {
-    const int *samples = clazz->audioSamples;
+    const int *samples = obj->type->audioSamples;
 
     for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; i++ ) {
       if( samples[i] >= 0 ) {
@@ -104,7 +104,7 @@ namespace client
 
   Audio::~Audio()
   {
-    const int *samples = clazz->audioSamples;
+    const int *samples = obj->type->audioSamples;
 
     for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; i++ ) {
       if( samples[i] >= 0 ) {

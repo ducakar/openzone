@@ -10,7 +10,6 @@
 
 #include "Matrix.h"
 
-#include "Translator.h"
 #include "Physics.h"
 
 namespace oz
@@ -45,7 +44,9 @@ namespace oz
     else {
       synapse.addStruct( "castle", Vec3( 57, -33, 33 ), Structure::R0 );
 
-      synapse.addObject( "Lord",   Vec3( 52, -44, 27 ) );
+      Bot *lord = (Bot*) translator.createObject( "Lord", Vec3( 52, -44, 27 ) );
+      lord->h = 270;
+      synapse.put( lord );
       synapse.addObject( "Knight", Vec3( 50, -35, 27 ) );
       synapse.addObject( "Goblin", Vec3( 51, -35, 27 ) );
 
@@ -57,8 +58,8 @@ namespace oz
       synapse.addObject( "MetalBarrel", Vec3( 61, -44, 28 ) );
       synapse.addObject( "MetalBarrel", Vec3( 61, -44, 30 ) );
 
-      synapse.addObject( "Tree2",  Vec3( 0, -30, world.terra.height( 0, -30 ) + 3.5f ) );
-      synapse.addObject( "Tree3", Vec3( 0, -42, world.terra.height( 0, -30 ) + 6.5f ) );
+      synapse.addObject( "Tree2",  Vec3( 0, 80, world.terra.height( 0, 80 ) + 3.5f ) );
+      synapse.addObject( "Tree3", Vec3( 10, 85, world.terra.height( 0, 85 ) + 6.5f ) );
 
       synapse.addObject( "SmallCrate", Vec3( 51, -42, 26 ) );
       synapse.addObject( "SmallCrate", Vec3( 51, -42, 27 ) );
@@ -135,8 +136,8 @@ namespace oz
       }
     }
 
-    for( int j = 0; j < world.objects.length(); j++ ) {
-      Object *obj = world.objects[j];
+    for( int i = 0; i < world.objects.length(); i++ ) {
+      Object *obj = world.objects[i];
 
       if( obj != null ) {
         obj->update();

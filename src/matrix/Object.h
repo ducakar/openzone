@@ -40,73 +40,76 @@ namespace oz
       // which bits are fixed for a type or temporary (~CONFIG_BITS_MASK)
       static const int INTERNAL_BITS_MASK = 0xffffff00;
 
+      // object is added into the world, it's not pending any more
+      static const int PUT_BIT            = 0x80000000;
+
       /*
-       * FUNCTION FLAGS (0xf0000000)
+       * FUNCTION FLAGS (0x0f000000)
        */
 
       // if the update method should be called each step
-      static const int UPDATE_FUNC_BIT    = 0x80000000;
+      static const int UPDATE_FUNC_BIT    = 0x08000000;
 
       // if the onHit function should be called on hit
-      static const int HIT_FUNC_BIT       = 0x40000000;
+      static const int HIT_FUNC_BIT       = 0x04000000;
 
       // if the onUse method is called when we use the object (otherwise, nothing happens)
-      static const int USE_FUNC_BIT       = 0x20000000;
+      static const int USE_FUNC_BIT       = 0x02000000;
 
       // if the onDestroy method is called when the object is destroyed
-      static const int DESTROY_FUNC_BIT   = 0x10000000;
+      static const int DESTROY_FUNC_BIT   = 0x01000000;
 
       /*
-       * FRONTEND OBJECTS (0x0c000000)
+       * FRONTEND OBJECTS (0x00c00000)
        */
 
       // if the object has a model object in frontend
-      static const int MODEL_BIT          = 0x08000000;
+      static const int MODEL_BIT          = 0x00800000;
 
       // if the object has an audio object in frontend
-      static const int AUDIO_BIT          = 0x04000000;
+      static const int AUDIO_BIT          = 0x00400000;
 
       /*
-       * SYNC FLAGS (0x03000000)
+       * SYNC FLAGS (0x00300000)
        */
 
       // if the object doesn't need to be updated over network
-      static const int NOSYNC_BIT         = 0x02000000;
+      static const int NOSYNC_BIT         = 0x00200000;
 
       /*
-       * TYPE FLAGS (0x00f00000)
+       * TYPE FLAGS (0x000f0000)
        */
 
-      static const int DYNAMIC_BIT        = 0x00800000;
-      static const int ITEM_BIT           = 0x00400000;
-      static const int BOT_BIT            = 0x00200000;
-      static const int VEHICLE_BIT        = 0x00100000;
+      static const int DYNAMIC_BIT        = 0x00080000;
+      static const int ITEM_BIT           = 0x00040000;
+      static const int BOT_BIT            = 0x00020000;
+      static const int VEHICLE_BIT        = 0x00010000;
 
       /*
-       * DYNAMIC OBJECTS' BITS (interal 0x000ff000, config 0x000000f0)
+       * DYNAMIC OBJECTS' BITS (interal 0x0000ff00, config 0x000000f0)
        */
 
       // if the object is still and on a still surface, we won't handle physics for it
-      static const int DISABLED_BIT       = 0x00080000;
+      static const int DISABLED_BIT       = 0x00008000;
 
       // if the object collided in the last step
-      static const int HIT_BIT            = 0x00040000;
+      static const int HIT_BIT            = 0x00004000;
 
       // if the object is currently fricting
-      static const int FRICTING_BIT       = 0x00020000;
+      static const int FRICTING_BIT       = 0x00002000;
 
       // if the the object lies or moves on a structure, terrain or non-dynamic object
       // (if on another dynamic object, we determine that with "lower" index)
-      static const int ON_FLOOR_BIT       = 0x00010000;
+      static const int ON_FLOOR_BIT       = 0x00001000;
 
       // if the object intersects with water
-      static const int IN_WATER_BIT       = 0x00008000;
+      static const int IN_WATER_BIT       = 0x00000800;
 
       // if the object is on ladder
-      static const int ON_LADDER_BIT      = 0x00004000;
+      static const int ON_LADDER_BIT      = 0x00000400;
 
       // if the object is on ice (slipping surface)
-      static const int ON_SLICK_BIT       = 0x00002000;
+      static const int ON_SLICK_BIT       = 0x00000200;
 
       // handle collisions for this object
       static const int CLIP_BIT           = 0x00000080;
@@ -156,8 +159,8 @@ namespace oz
 
     private:
 
-      Object         *prev[1];     // previous object in sector.objects list
-      Object         *next[1];     // next object in sector.objects list
+      Object         *prev[1];     // the previous object in sector.objects and list
+      Object         *next[1];     // the next object in sector.objects and list
 
     public:
 
