@@ -25,41 +25,41 @@ namespace oz
     Vec3(  0.0f,  0.0f, -1.0f )
   };
 
-  Vec3 Collider::toStructCS( const Vec3 &v ) const
+  inline Vec3 Collider::toStructCS( const Vec3 &v ) const
   {
     switch( str->rot ) {
       case Structure::R0: {
         return v;
       }
       case Structure::R90: {
-        return Vec3( -v.y, v.x, v.z );
+        return Vec3( v.y, -v.x, v.z );
       }
       case Structure::R180: {
         return Vec3( -v.x, -v.y, v.z );
       }
       default:
       case Structure::R270: {
-        return Vec3( v.y, -v.x, v.z );
+        return Vec3( -v.y, v.x, v.z );
       }
     }
   }
 
-  Vec3 Collider::toAbsoluteCS( const Vec3 &v ) const
+  inline Vec3 Collider::toAbsoluteCS( const Vec3 &v ) const
   {
     switch( str->rot ) {
       case Structure::R0: {
         return v;
       }
       case Structure::R90: {
-        return Vec3( v.y, -v.x, v.z );
+        return Vec3( -v.y, v.x, v.z );
       }
       case Structure::R180: {
         return Vec3( -v.x, -v.y, v.z );
       }
       default:
-      case Structure::R270: {
-        return Vec3( -v.y, v.x, v.z );
-      }
+        case Structure::R270: {
+          return Vec3( v.y, -v.x, v.z );
+        }
     }
   }
 

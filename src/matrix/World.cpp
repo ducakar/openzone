@@ -36,8 +36,8 @@ namespace oz
         break;
       }
       case Structure::R180: {
-        str->mins = Vec3( -bsp.maxs.x + str->p.x, -bsp.mins.x + str->p.y, bsp.mins.z + str->p.z );
-        str->maxs = Vec3( -bsp.maxs.y + str->p.x, -bsp.maxs.y + str->p.y, bsp.maxs.z + str->p.z );
+        str->mins = str->p + Vec3( -bsp.maxs.x, -bsp.maxs.y, +bsp.mins.z );
+        str->maxs = str->p + Vec3( -bsp.mins.x, -bsp.mins.y, +bsp.maxs.z );
         break;
       }
       case Structure::R270: {

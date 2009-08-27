@@ -1,0 +1,21 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 0.8.2 ] */
+
+/* [wxMaxima: comment start ]
+test za mimobežnost
+  || rel0 x s || > R
+
+  čas zadetka
+  || rel0 + s*t ||^2 == R^2
+
+  v 2D:
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+e1: (rx + sx*t)^2 + (ry + sy*t)^2 = R^2;
+factor( solve(e1, t) );
+factor( rx^2 * sx^2 - 2*rx*ry*sx*sy + ry^2 * sy^2 );
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$
