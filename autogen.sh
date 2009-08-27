@@ -12,5 +12,3 @@ echo Generating src/client/CMakeLists.txt
 cd src/client  && ./CMakeLists.gen && cd ../..
 echo Generating src/server/CMakeLists.txt
 cd src/server  && ./CMakeLists.gen && cd ../..
-
-cmake .

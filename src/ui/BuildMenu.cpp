@@ -104,6 +104,38 @@ namespace ui
     }
   }
 
+  static void createCenterR0( Button* )
+  {
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
+
+    synapse.addStruct( "center", p, Structure::R0 );
+  }
+
+  static void createCenterR90( Button* )
+  {
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
+
+    synapse.addStruct( "center", p, Structure::R90 );
+  }
+
+  static void createCenterR180( Button* )
+  {
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
+
+    synapse.addStruct( "center", p, Structure::R180 );
+  }
+
+  static void createCenterR270( Button* )
+  {
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
+
+    synapse.addStruct( "center", p, Structure::R270 );
+  }
+
   static void destroy( Button* )
   {
     Vec3 p = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
@@ -114,7 +146,7 @@ namespace ui
     }
   }
 
-  BuildMenu::BuildMenu() : Frame( 100, 200 )
+  BuildMenu::BuildMenu() : Frame( 100, 250 )
   {
     setFont( TITLE );
     setFontColor( 0xff, 0xff, 0xff );
@@ -124,6 +156,11 @@ namespace ui
     add( new Button( "MetalBarrel", createMetalBarrel, 90, 15 ), 5, -75 );
     add( new Button( "Goblin", createGoblin, 90, 15 ), 5, -95 );
     add( new Button( "Knight", createKnight, 90, 15 ), 5, -115 );
+
+    add( new Button( "Center R0",   createCenterR0,   90, 15 ), 5, -135 );
+    add( new Button( "Center R90",  createCenterR90,  90, 15 ), 5, -155 );
+    add( new Button( "Center R180", createCenterR180, 90, 15 ), 5, -175 );
+    add( new Button( "Center R270", createCenterR270, 90, 15 ), 5, -195 );
 
     add( new Button( "DESTROY", destroy, 90, 15 ), 5, 5 );
   }

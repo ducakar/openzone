@@ -1,14 +1,10 @@
-Following programs and libraries are required to build:
-
-- GNU tools (GCC, GNU Make, GNU Binutils)
-- CMake
-- LibXml2
-- Lua
-- SDL
-- SDL_image
-- SDL_ttf
-- SDL_net
-- OpenGL (MesaGL recommended, usually included in X11 + graphics driver)
-- OpenGL GLU (MesaGLU recommended, usually included in X11)
-- OpenAL (AL Soft recommended)
-- ALUT (FreeALUT recommended)
+Controls:
+mouse or arrow keys - look
+WASD                - move
+Shift               - run
+Space               - jump
+Ctrl                - crouck (toggle)
+Alt                 - freelook - turn head only, not the whole body (toggle)
+p                   - step over small obstacles, e.g. walk up the stairs (toggle)
+m                   - 1st/3rd person camera (toggle)
+i                   - reincarnate/suicide
