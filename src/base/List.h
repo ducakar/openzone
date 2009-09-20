@@ -373,6 +373,7 @@ namespace oz
           delete p;
           p = next;
         }
+
         firstElem = null;
       }
 

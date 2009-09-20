@@ -121,59 +121,57 @@ namespace oz
 
   void World::put( Structure *str )
   {
-    if( strFreeIndices.isEmpty() ) {
+    if( strAvailableIndices.isEmpty() ) {
       str->index = structures.length();
       structures << str;
     }
     else {
-      strFreeIndices >> str->index;
+      strAvailableIndices >> str->index;
       structures[str->index] = str;
     }
   }
 
   void World::put( Object *obj )
   {
-    assert( obj->index != -1 && obj->index <= objects.length() );
-
-    if( obj->index == objects.length() ) {
+   if( objAvailableIndices.isEmpty() ) {
+      obj->index = objects.length();
       objects << obj;
     }
     else {
+      objAvailableIndices >> obj->index;
       objects[obj->index] = obj;
     }
-    obj->flags |= Object::PUT_BIT;
   }
 
   void World::put( Particle *part )
   {
-    if( partFreeIndices.isEmpty() ) {
+    if( partAvailableIndices.isEmpty() ) {
       part->index = particles.length();
       particles << part;
     }
     else {
-      partFreeIndices >> part->index;
+      partAvailableIndices >> part->index;
       particles[part->index] = part;
     }
   }
 
   void World::cut( Structure *str )
   {
-    strFreeIndices << str->index;
+    strPendingIndices << str->index;
     structures[str->index] = null;
     str->index = -1;
   }
 
   void World::cut( Object *obj )
   {
-    objFreeIndices << obj->index;
+    objPendingIndices << obj->index;
     objects[obj->index] = null;
     obj->index = -1;
-    obj->flags &= ~Object::PUT_BIT;
   }
 
   void World::cut( Particle *part )
   {
-    partFreeIndices << part->index;
+    partPendingIndices << part->index;
     particles[part->index] = null;
     part->index = -1;
   }
@@ -206,7 +204,7 @@ namespace oz
     }
 
     foreach( bsp, bsps.iterator() ) {
-      (*bsp)->free();
+      ( *bsp )->free();
       delete *bsp;
     }
     bsps.clear();
@@ -234,6 +232,21 @@ namespace oz
 
     PoolAlloc<Object::Event, 0>::pool.free();
     PoolAlloc<Particle, 0>::pool.free();
+  }
+
+  void World::update()
+  {
+    assert( strPendingIndices.isEmpty() );
+
+    strAvailableIndices.addAll( strPendingIndices );
+    objAvailableIndices.addAll( objPendingIndices );
+    partAvailableIndices.addAll( partPendingIndices );
+
+    assert( strAvailableIndices.isEmpty() );
+
+    strPendingIndices.clear();
+    objPendingIndices.clear();
+    partPendingIndices.clear();
   }
 
   void World::genParticles( int number, const Vec3 &p,

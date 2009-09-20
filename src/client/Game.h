@@ -58,7 +58,6 @@ namespace client
       void stop() const;
 
       bool update( int time );
-      void sync() const;
 
   };
 

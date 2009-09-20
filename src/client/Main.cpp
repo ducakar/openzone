@@ -274,15 +274,10 @@ namespace client
       }
 
       ui::mouse.update();
-      // stop nirvana, update matrix, commit all but cut/remove transactions
+      // stop nirvana, commit with cuts/removals, update world, resume nirvana
       isAlive &= game.update( tick );
-      // play sounds, but don't do any cleanups. We must do it before we commit world cut/remove
-      // transactions
+      // play sounds, but don't do any cleanups
       sound.play();
-      // commit world cut/remove transactions (pending objects removals) and synchronize nirvana,
-      // render and soundManager (remove minds, models and audios of removed objects) and unpause
-      // nirvana update tread
-      game.sync();
 
       // render graphics, if we have enough time left
       timeNow = SDL_GetTicks();

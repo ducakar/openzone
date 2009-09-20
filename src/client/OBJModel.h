@@ -19,7 +19,7 @@ namespace client
   {
     uint list;
 
-    static Model *create( const Object *object );
+    static Model *create( const Object *obj );
 
     virtual ~OBJModel();
 

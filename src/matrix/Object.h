@@ -18,7 +18,6 @@ namespace oz
   struct Sector;
   struct Hit;
   struct Bot;
-  class Synapse;
 
   // static object abstract class
   class Object : public AABB
@@ -39,9 +38,6 @@ namespace oz
       static const int CONFIG_BITS_MASK   = 0x000000ff;
       // which bits are fixed for a type or temporary (~CONFIG_BITS_MASK)
       static const int INTERNAL_BITS_MASK = 0xffffff00;
-
-      // object is added into the world, it's not pending any more
-      static const int PUT_BIT            = 0x80000000;
 
       /*
        * FUNCTION FLAGS (0x0f000000)
@@ -224,6 +220,13 @@ namespace oz
 
         if( flags & HIT_FUNC_BIT ) {
           onHit( hit, hitMomentum );
+        }
+      }
+
+      void use( Bot *user )
+      {
+        if( flags & USE_FUNC_BIT ) {
+          onUse( user );
         }
       }
 

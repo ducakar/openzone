@@ -30,18 +30,9 @@
 namespace oz
 {
 
-  namespace client
-  {
-    class Render;
-    class Sound;
-  }
-
   class Synapse
   {
-    friend class client::Render;
-    friend class client::Sound;
-
-    private:
+    public:
 
       struct Action
       {
@@ -52,24 +43,25 @@ namespace oz
         Action( Bot *user_, Object *target_ ) : user( user_ ), target( target_ ) {}
       };
 
-      Vector<Object*>    putObjects;
-      int                nObjects;
-
-      Vector<Structure*> cutStructs;
-      Vector<Object*>    cutObjects;
-      Vector<Particle*>  cutParts;
-
-      Vector<Structure*> removeStructs;
-      Vector<Object*>    removeObjects;
-      Vector<Particle*>  removeParts;
-
-      Vector<Action>     useActions;
+    private:
 
       Vector<int>        putStructsIndices;
       Vector<int>        putObjectsIndices;
       Vector<int>        putPartsIndices;
 
     public:
+
+      Vector<Structure*> putStructs;
+      Vector<Object*>    putObjects;
+      Vector<Particle*>  putParts;
+
+      Vector<Structure*> cutStructs;
+      Vector<Object*>    cutObjects;
+      Vector<Particle*>  cutParts;
+
+      Vector<Structure*> deleteStructs;
+      Vector<Object*>    deleteObjects;
+      Vector<Particle*>  deleteParts;
 
       // isSingle XOR isServer XOR isClient
 
@@ -105,8 +97,6 @@ namespace oz
       void remove( Object *obj );
       void remove( Particle *part );
 
-      void use( Bot *user, Object *target );
-
       // client-initiated actions, returns a ticket that can be used to retrieve index of the
       // added object
       int  globalPut( Structure *str );
@@ -129,16 +119,15 @@ namespace oz
       int  getObjectIndex( int ticket ) const;
       int  getPartIndex( int ticket ) const;
 
-      void commitPlus();
-      void commitMinus();
-      void commitAll();
+      // commit cuts/removals, clear cutXXX vectors
+      void commit();
+      // do deletes, clear deleteXXX vectors
+      void doDeletes();
+      // clear putXXX vectors
+      void clear();
 
-      // clear puts, cuts, removed & actions
-      void clearPending();
       // clear tickets
       void clearTickets();
-      // clear everything
-      void clearAll();
 
   };
 
@@ -146,6 +135,8 @@ namespace oz
 
   inline int Synapse::put( Structure *str )
   {
+    putStructs << str;
+
     world.put( str );
     world.position( str );
     return str->index;
@@ -153,22 +144,17 @@ namespace oz
 
   inline int Synapse::put( Object *obj )
   {
-    if( world.objFreeIndices.isEmpty() ) {
-      obj->index = nObjects;
-      nObjects++;
-    }
-    else {
-      world.objFreeIndices >> obj->index;
-    }
     putObjects << obj;
 
+    world.put( obj );
     world.position( obj );
-
     return obj->index;
   }
 
   inline int Synapse::put( Particle *part )
   {
+    putParts << part;
+
     world.put( part );
     world.position( part );
     return part->index;
@@ -198,7 +184,7 @@ namespace oz
   inline int Synapse::addObject( const char *name, const Vec3 &p )
   {
     Object *obj = translator.createObject( name, p );
-    return put( obj );
+    return put( obj );;
   }
 
   inline int Synapse::addPart( const Vec3 &p, const Vec3 &velocity, float rejection, float mass,
@@ -210,37 +196,20 @@ namespace oz
 
   inline void Synapse::remove( Structure *str )
   {
-    removeStructs << str;
+    cutStructs << str;
+    deleteStructs << str;
   }
 
   inline void Synapse::remove( Object *obj )
   {
-    removeObjects << obj;
+    cutObjects << obj;
+    deleteObjects << obj;
   }
 
   inline void Synapse::remove( Particle *part )
   {
-    removeParts << part;
-  }
-
-  inline void Synapse::use( Bot *user, Object *target )
-  {
-    useActions << Action( user, target );
-  }
-
-  inline int Synapse::getStructIndex( int ticket ) const
-  {
-    return putStructsIndices[ticket];
-  }
-
-  inline int Synapse::getObjectIndex( int ticket ) const
-  {
-    return putObjectsIndices[ticket];
-  }
-
-  inline int Synapse::getPartIndex( int ticket ) const
-  {
-    return putPartsIndices[ticket];
+    cutParts << part;
+    deleteParts << part;
   }
 
 }

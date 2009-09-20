@@ -16,6 +16,10 @@ namespace oz
 
   class Matrix
   {
+    private:
+
+      void loadStressTest();
+
     public:
 
       static const float G_ACCEL;
