@@ -17,18 +17,18 @@ namespace oz
 namespace client
 {
 
-  Model *OBJModel::create( const Object *object )
+  Model *OBJModel::create( const Object *obj )
   {
     OBJModel *model = new OBJModel();
 
-    model->object = object;
-    model->list   = context.loadOBJModel( object->type->modelName );
+    model->obj  = obj;
+    model->list = context.loadOBJModel( obj->type->modelName );
     return model;
   }
 
   OBJModel::~OBJModel()
   {
-    context.releaseOBJModel( object->type->modelName );
+    context.releaseOBJModel( obj->type->modelName );
   }
 
   void OBJModel::draw()

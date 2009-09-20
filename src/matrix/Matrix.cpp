@@ -21,6 +21,20 @@ namespace oz
   // default 10000.0f: 100 m/s
   const float Matrix::MAX_VELOCITY2 = 10000.0f;
 
+  void Matrix::loadStressTest()
+  {
+    static const float DIM = World::DIM;
+//     static const float DIM = 100;
+
+    for( int i = 0; i < 4000; i++ ) {
+      float x = -DIM + 2.0f * DIM * Math::frand();
+      float y = -DIM + 2.0f * DIM * Math::frand();
+      float z = world.terra.height( x, y ) + 400.0f;
+
+      synapse.addObject( "SmallCrate", Vec3( x, y, z ) );
+    }
+  }
+
   void Matrix::load()
   {
     log.println( "Loading Matrix {" );
@@ -47,6 +61,7 @@ namespace oz
       Bot *lord = (Bot*) translator.createObject( "Lord", Vec3( 52, -44, 27 ) );
       lord->h = 270;
       synapse.put( lord );
+
       synapse.addObject( "Knight", Vec3( 50, -35, 27 ) );
       synapse.addObject( "Goblin", Vec3( 51, -35, 27 ) );
 
@@ -90,8 +105,7 @@ namespace oz
       synapse.addObject( "SmallCrate", Vec3( 52, -61, 31 ) );
       synapse.addObject( "SmallCrate", Vec3( 52, -61, 32 ) );
 
-      synapse.commitAll();
-      synapse.clearAll();
+      loadStressTest();
     }
     buffer.free();
 
@@ -107,7 +121,7 @@ namespace oz
     Buffer buffer( 1024 * 1024 * 10 );
     OutputStream ostream = buffer.outputStream();
     world.write( &ostream );
-    buffer.write( config.get( "dir.home", "" ) + String( "/saved.world" ) );
+//     buffer.write( config.get( "dir.home", "" ) + String( "/saved.world" ) );
 
     world.free();
     translator.free();
@@ -157,6 +171,8 @@ namespace oz
         }
       }
     }
+
+    world.update();
   }
 
 }

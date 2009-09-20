@@ -17,18 +17,18 @@ namespace oz
 namespace client
 {
 
-  Model *MD2StaticModel::create( const Object *object )
+  Model *MD2StaticModel::create( const Object *obj )
   {
     MD2StaticModel *model = new MD2StaticModel();
 
-    model->object = object;
-    model->list   = context.loadMD2StaticModel( object->type->modelName );
+    model->obj  = obj;
+    model->list = context.loadMD2StaticModel( obj->type->modelName );
     return model;
   }
 
   MD2StaticModel::~MD2StaticModel()
   {
-    context.releaseMD2StaticModel( object->type->modelName );
+    context.releaseMD2StaticModel( obj->type->modelName );
   }
 
   void MD2StaticModel::draw()

@@ -499,8 +499,8 @@ namespace oz
         while( p != null ) {
           if( p->key == key ) {
             *prev = p->next[0];
-            delete p;
             count--;
+            delete p;
             return;
           }
           else {
@@ -508,6 +508,8 @@ namespace oz
             p = p->next[0];
           }
         }
+
+        assert( false );
       }
 
       /**

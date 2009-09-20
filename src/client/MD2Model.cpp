@@ -17,14 +17,14 @@ namespace oz
 namespace client
 {
 
-  Model *MD2Model::create( const Object *object )
+  Model *MD2Model::create( const Object *obj )
   {
-    assert( object->flags & Object::BOT_BIT );
+    assert( obj->flags & Object::BOT_BIT );
 
     MD2Model *model = new MD2Model();
 
-    model->object = object;
-    model->md2    = context.loadMD2Model( object->type->modelName );
+    model->obj = obj;
+    model->md2 = context.loadMD2Model( obj->type->modelName );
 
     model->anim.type     = -1;
     model->anim.currTime = 0.0f;
@@ -36,7 +36,7 @@ namespace client
 
   MD2Model::~MD2Model()
   {
-    context.releaseMD2Model( object->type->modelName );
+    context.releaseMD2Model( obj->type->modelName );
   }
 
   void MD2Model::setAnim( int type )
@@ -54,7 +54,7 @@ namespace client
 
   void MD2Model::draw()
   {
-    const Bot *bot = (const Bot*) object;
+    const Bot *bot = (const Bot*) obj;
 
     glRotatef( bot->h, 0.0f, 0.0f, 1.0f );
 

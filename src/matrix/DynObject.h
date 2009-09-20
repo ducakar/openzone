@@ -32,7 +32,7 @@ namespace oz
     public:
 
       explicit DynObject() : velocity( Vec3::zero() ), momentum( Vec3::zero() ), lower( -1 ),
-        waterDepth( 0.0f )
+          waterDepth( 0.0f )
       {}
 
       virtual void readFull( InputStream *istream );

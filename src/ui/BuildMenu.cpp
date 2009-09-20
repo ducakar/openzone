@@ -82,7 +82,6 @@ namespace ui
       Bot *bot = (Bot*) translator.createObject( "Goblin", p );
 
       synapse.put( bot );
-      nirvana.add( new RandomMind( bot->index ) );
     }
   }
 
@@ -100,7 +99,6 @@ namespace ui
       Bot *bot = (Bot*) translator.createObject( "Knight", p );
 
       synapse.put( bot );
-      nirvana.add( new RandomMind( bot->index ) );
     }
   }
 

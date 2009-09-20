@@ -60,9 +60,13 @@ namespace oz
 
     private:
 
-      Vector<int>        strFreeIndices;
-      Vector<int>        objFreeIndices;
-      Vector<int>        partFreeIndices;
+      Vector<int>        strAvailableIndices;
+      Vector<int>        objAvailableIndices;
+      Vector<int>        partAvailableIndices;
+
+      Vector<int>        strPendingIndices;
+      Vector<int>        objPendingIndices;
+      Vector<int>        partPendingIndices;
 
     public:
 
@@ -112,14 +116,12 @@ namespace oz
       void init();
       void free();
 
+      void update();
+
       void genParticles( int number, const Vec3 &p,
                          const Vec3 &velocity, float velocitySpread,
                          float rejection, float mass, float lifeTime,
                          float size, const Vec3 &color, float colorSpread );
-
-      void commitPlus();
-      void commitMinus();
-      void commitAll();
 
       bool read( InputStream *istream );
       bool write( OutputStream *ostream );

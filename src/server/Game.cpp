@@ -48,7 +48,6 @@ namespace server
 
   void Game::update( int time )
   {
-    nirvana.requestSuspend = true;
     SDL_SemWait( matrix.semaphore );
 
     timer.update( time );

@@ -26,7 +26,7 @@ namespace ui
     doShow = false;
     setBounds( maxX, maxY );
 
-    const char *file = config.get( "ui.cursor", "base/left_ptr.png" );
+    const char *file = config.get( "ui.cursor", "base/OpenZone/source/left_ptr.png" );
     size = config.get( "ui.cursor.size", 32 );
     hotspotX = config.get( "ui.cursor.hotspot.x", 0 );
     hotspotY = config.get( "ui.cursor.hotspot.y", 0 );

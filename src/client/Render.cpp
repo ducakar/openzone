@@ -219,16 +219,14 @@ namespace client
 
   void Render::sync()
   {
-    foreach( i, synapse.cutObjects.iterator() ) {
-      if( models.contains( ( *i )->index ) ) {
-        delete models.cachedValue();
-        models.remove( ( *i )->index );
-      }
-    }
-    foreach( i, synapse.removeObjects.iterator() ) {
-      if( models.contains( ( *i )->index ) ) {
-        delete models.cachedValue();
-        models.remove( ( *i )->index );
+    for( HashIndex<Model*, 1021>::Iterator i( models ); !i.isPassed(); ) {
+      Model *model = i.value();
+      uint  key    = i.key();
+      ++i;
+
+      if( world.objects[key] == null ) {
+        delete model;
+        models.remove( key );
       }
     }
   }
@@ -456,7 +454,7 @@ namespace client
     // cleanups
     if( clearCount >= CLEAR_INTERVAL ) {
       // remove unused models
-      for( typeof( models.iterator() ) i( models ); !i.isPassed(); ) {
+      for( HashIndex<Model*, 1021>::Iterator i( models ); !i.isPassed(); ) {
         Model *model = *i;
         uint  key    = i.key();
 

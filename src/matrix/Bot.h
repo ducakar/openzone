@@ -39,6 +39,7 @@ namespace oz
       static const int SND_LAND        = 5;
       static const int SND_JUMP        = 6;
 
+      // can step over obstacles, e.g. walk up the stairs
       static const int STEPPING_BIT    = 0x00000001;
       static const int CROUCHING_BIT   = 0x00000002;
       static const int FREELOOK_BIT    = 0x00000004;
@@ -50,6 +51,8 @@ namespace oz
       static const int GESTURE0_BIT    = 0x00000100;
       static const int GESTURE1_BIT    = 0x00000200;
       static const int DEATH_BIT       = 0x00000400;
+      // bot is controlled by a player, nirvana shouldn't bind a mind to it
+      static const int PLAYER_BIT      = 0x00000800;
 
       enum AnimEnum
       {

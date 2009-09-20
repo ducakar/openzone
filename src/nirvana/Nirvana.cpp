@@ -15,31 +15,78 @@ namespace oz
 
   Nirvana nirvana;
 
-  void Nirvana::update()
+  void Nirvana::sync()
   {
-    foreach( mind, minds.iterator() ) {
-      if( requestSuspend ) {
-        break;
+    // remove minds of removed bots
+    for( DList<Mind, 0>::Iterator i( minds ); !i.isPassed(); ) {
+      Mind *mind = i;
+      ++i;
+
+      if( world.objects[mind->botIndex] == null ) {
+        minds.remove( mind );
       }
-      mind->update();
+    }
+      // add minds for new bots
+    foreach( obj, synapse.putObjects.iterator() ) {
+      if( ( *obj )->flags & Object::BOT_BIT ) {
+        Bot *bot = (Bot*) *obj;
+
+        if( !( bot->state & Bot::PLAYER_BIT ) ) {
+          minds << new RandomMind( ( *obj )->index );
+        }
+      }
     }
   }
 
   void Nirvana::run()
   {
-    do {
+    while( isAlive ) {
+      sync();
+
+      // notify matrix we're synchronized
+      SDL_SemPost( matrix.semaphore );
+
+      // update minds
+      foreach( mind, minds.iterator() ) {
+        mind->update();
+      }
+
       SDL_SemPost( matrix.semaphore );
       SDL_SemWait( semaphore );
-
-      update();
     }
-    while( isAlive );
   }
 
   int Nirvana::runThread( void* )
   {
     nirvana.run();
     return 0;
+  }
+
+  void Nirvana::start()
+  {
+    log.print( "Starting Nirvana thread ..." );
+
+    isAlive = true;
+
+    semaphore = SDL_CreateSemaphore( 1 );
+    thread = SDL_CreateThread( runThread, null );
+
+    log.printEnd( " OK" );
+  }
+
+  void Nirvana::stop()
+  {
+    log.print( "Stopping Nirvana thread ..." );
+
+    isAlive = false;
+
+    SDL_SemPost( semaphore );
+    SDL_WaitThread( thread, null );
+    SDL_DestroySemaphore( semaphore );
+
+    thread = null;
+
+    log.printEnd( " OK" );
   }
 
   void Nirvana::load()
@@ -58,52 +105,6 @@ namespace oz
     minds.free();
 
     log.printEnd( " OK" );
-  }
-
-  void Nirvana::start()
-  {
-    log.print( "Starting Nirvana thread ..." );
-
-    isAlive = true;
-    requestSuspend = false;
-
-    semaphore = SDL_CreateSemaphore( 1 );
-    thread = SDL_CreateThread( runThread, null );
-
-    log.printEnd( " OK" );
-  }
-
-  void Nirvana::stop()
-  {
-    log.print( "Stopping Nirvana thread ..." );
-
-    isAlive = false;
-    requestSuspend = true;
-
-    SDL_SemPost( semaphore );
-    SDL_WaitThread( thread, null );
-    SDL_DestroySemaphore( semaphore );
-
-    thread = null;
-
-    log.printEnd( " OK" );
-  }
-
-  void Nirvana::sync()
-  {
-    // remove minds of removed bots
-    for( DList<Mind, 0>::Iterator i( minds ); !i.isPassed(); ) {
-      Mind *mind = i;
-      ++i;
-
-      if( world.objects[mind->botIndex] == null ) {
-        minds.remove( mind );
-      }
-    }
-    foreach( mind, pendingMinds.iterator() ) {
-      minds << *mind;
-    }
-    pendingMinds.clear();
   }
 
 }

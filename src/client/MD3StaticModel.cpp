@@ -17,18 +17,18 @@ namespace oz
 namespace client
 {
 
-  Model *MD3StaticModel::create( const Object *object )
+  Model *MD3StaticModel::create( const Object *obj )
   {
     MD3StaticModel *model = new MD3StaticModel();
 
-    model->object = object;
-    model->list   = context.loadMD3StaticModel( object->type->modelName );
+    model->obj  = obj;
+    model->list = context.loadMD3StaticModel( obj->type->modelName );
     return model;
   }
 
   MD3StaticModel::~MD3StaticModel()
   {
-    context.releaseMD3StaticModel( object->type->modelName );
+    context.releaseMD3StaticModel( obj->type->modelName );
   }
 
   void MD3StaticModel::draw()

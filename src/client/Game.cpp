@@ -65,7 +65,9 @@ namespace client
     if( camera.botIndex >= 0 ) {
       synapse.remove( camera.bot );
     }
-    synapse.commitAll();
+    synapse.commit();
+    synapse.doDeletes();
+    synapse.clear();
 
     network.disconnect();
     nirvana.free();
@@ -87,9 +89,11 @@ namespace client
 
   bool Game::update( int time )
   {
-    timer.update( time );
+    // wait until nirvana has synchronized
+    SDL_SemWait( matrix.semaphore );
+    synapse.clear();
 
-    nirvana.requestSuspend = true;
+    timer.update( time );
 
     if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
       if( state == GAME ) {
@@ -258,6 +262,7 @@ namespace client
         Bot *me = (Bot*) translator.createObject( "Lord", camera.p );
         me->h = camera.h;
         me->v = camera.v;
+        me->state |= Bot::PLAYER_BIT;
 
         camera.botIndex = synapse.put( me );
       }
@@ -275,28 +280,29 @@ namespace client
 
     synapse.clearTickets();
 
+    // wait until nirvana stops
     SDL_SemWait( matrix.semaphore );
 
-    network.update();
-    matrix.update();
-    synapse.commitPlus();
+    // remove/cut objects scheduled for removal
+    synapse.commit();
 
-    return !input.keys[SDLK_ESCAPE];
-  }
-
-  void Game::sync() const
-  {
+    // delete remove models/audios of removed objects
     render.sync();
     sound.sync();
 
-    synapse.commitMinus();
-    synapse.clearPending();
+    // we can finally delete removed object after render and sound are sync'd as model/audio dtors
+    // have references to the objects
+//     synapse.doDeletes();
 
-    nirvana.sync();
-    nirvana.requestSuspend = false;
+    network.update();
+    matrix.update();
+
+    // resume nirvana
     SDL_SemPost( nirvana.semaphore );
 
     camera.update();
+
+    return !input.keys[SDLK_ESCAPE];
   }
 
 }

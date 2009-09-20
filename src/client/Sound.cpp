@@ -49,7 +49,7 @@ namespace client
 
     do {
       result = ov_read( &oggStream, &data[bytesRead], MUSIC_BUFFER_SIZE - bytesRead, 0, 2, 1,
-                         &section );
+                        &section );
       bytesRead += result;
       if( result < 0 ) {
         isMusicPlaying = false;
@@ -155,16 +155,14 @@ namespace client
   void Sound::sync()
   {
     // remove Audio objects of removed objects
-    foreach( i, synapse.cutObjects.iterator() ) {
-      if( audios.contains( ( *i )->index ) ) {
-        delete audios.cachedValue();
-        audios.remove( ( *i )->index );
-      }
-    }
-    foreach( i, synapse.removeObjects.iterator() ) {
-      if( audios.contains( ( *i )->index ) ) {
-        delete audios.cachedValue();
-        audios.remove( ( *i )->index );
+    for( HashIndex<Audio*, 1021>::Iterator i( audios ); !i.isPassed(); ) {
+      Audio *audio = i.value();
+      uint  key    = i.key();
+      ++i;
+
+      if( world.objects[key] == null ) {
+        delete audio;
+        audios.remove( key );
       }
     }
   }

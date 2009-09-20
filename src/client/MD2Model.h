@@ -22,7 +22,7 @@ namespace client
     MD2            *md2;
     MD2::AnimState anim;
 
-    static Model *create( const Object *object );
+    static Model *create( const Object *obj );
 
     virtual ~MD2Model();
 
