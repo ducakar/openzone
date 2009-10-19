@@ -23,7 +23,6 @@ namespace oz
   class Object : public AABB
   {
     friend class DList<Object, 0>;
-    friend class Synapse;
 
     /*
      * Here various flag bits are set; the higher bits are used for flags that are internal flags
@@ -43,34 +42,35 @@ namespace oz
        * FUNCTION FLAGS (0x0f000000)
        */
 
-      // if the update method should be called each step
+      // if the onUpdate method should be called each step
       static const int UPDATE_FUNC_BIT    = 0x08000000;
 
       // if the onHit function should be called on hit
       static const int HIT_FUNC_BIT       = 0x04000000;
 
-      // if the onUse method is called when we use the object (otherwise, nothing happens)
+      // probably we won't get noticable performance boost if we wrap those virtual fuctions
+      /*// if the onUse method is called when we use the object (otherwise, nothing happens)
       static const int USE_FUNC_BIT       = 0x02000000;
 
       // if the onDestroy method is called when the object is destroyed
-      static const int DESTROY_FUNC_BIT   = 0x01000000;
+      static const int DESTROY_FUNC_BIT   = 0x01000000;*/
 
       /*
        * FRONTEND OBJECTS (0x00c00000)
        */
 
       // if the object has a model object in frontend
-      static const int MODEL_BIT          = 0x00800000;
+      static const int MODEL_BIT          = 0x00400000;
 
       // if the object has an audio object in frontend
-      static const int AUDIO_BIT          = 0x00400000;
+      static const int AUDIO_BIT          = 0x00200000;
 
       /*
        * SYNC FLAGS (0x00300000)
        */
 
       // if the object doesn't need to be updated over network
-      static const int NOSYNC_BIT         = 0x00200000;
+      static const int NOSYNC_BIT         = 0x00100000;
 
       /*
        * TYPE FLAGS (0x000f0000)
@@ -182,16 +182,28 @@ namespace oz
 
       virtual ~Object();
 
+      /**
+       * Add an event to the object. Events can be used for reporting collisions, sounds etc.
+       * @param id
+       */
       void addEvent( int id )
       {
         events << new Event( id );
       }
 
+      /**
+       * Add an event to the object. Events can be used for reporting collisions, sounds etc.
+       * @param id
+       * @param intensity
+       */
       void addEvent( int id, float intensity )
       {
         events << new Event( id, intensity );
       }
 
+      /**
+       * Perform object update. One can implement onUpdate function to do some custom stuff.
+       */
       void update()
       {
         events.free();
@@ -202,6 +214,10 @@ namespace oz
         oldFlags = flags;
       }
 
+      /**
+       * Inflict damage to the object.
+       * @param damage
+       */
       void damage( float damage )
       {
         damage -= type->damageTreshold;
@@ -211,6 +227,11 @@ namespace oz
         }
       }
 
+      /**
+       * Called by physics engine when the object hits something.
+       * @param hit Hit struct filled with collision data
+       * @param hitMomentum momentum of the object projected to hit normal
+       */
       void hit( const Hit *hit, float hitMomentum )
       {
         events << new Event( EVENT_HIT, hitMomentum );
@@ -225,9 +246,14 @@ namespace oz
 
       void use( Bot *user )
       {
-        if( flags & USE_FUNC_BIT ) {
-          onUse( user );
-        }
+        assert( sector == null );
+
+        onUse( user );
+      }
+
+      void activate( int action )
+      {
+        onActivate( action );
       }
 
     protected:
@@ -235,6 +261,7 @@ namespace oz
       virtual void onUpdate();
       virtual void onHit( const Hit *hit, float momentum );
       virtual void onUse( Bot *user );
+      virtual void onActivate( int action );
 
     public:
 

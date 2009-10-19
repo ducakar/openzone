@@ -24,6 +24,7 @@ namespace ui
         flags |= GRAB_BIT;
       }
       if( flags & GRAB_BIT ) {
+        mouse.type = Mouse::MOVE;
         move( mouse.moveX, mouse.moveY );
       }
     }

@@ -25,13 +25,13 @@ namespace oz
     const char *type;
     float bias;
 
-    if( z > 10.0f ) {
+    if( z > 20.0f ) {
+      type = "Tree3";
+      bias = 7.5f;
+    }
+    else if( z > 5.0f ) {
       type = "Tree2";
       bias = 3.5f;
-    }
-    else if( z > 50.0f ) {
-      type = "Tree3";
-      bias = 6.5f;
     }
     else {
       return;
@@ -41,6 +41,9 @@ namespace oz
 
     if( collider.testOSO( *tree ) ) {
       synapse.put( tree );
+    }
+    else {
+      delete tree;
     }
   }
 
@@ -65,8 +68,6 @@ namespace oz
   }
 
   void FloraManager::update()
-  {
-
-  }
+  {}
 
 }

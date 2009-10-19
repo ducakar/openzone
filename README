@@ -3,7 +3,7 @@ mouse or arrow keys - look
 WASD                - move
 Shift               - run
 Space               - jump
-Ctrl                - crouck (toggle)
+Ctrl                - crouch (toggle)
 Alt                 - freelook - turn head only, not the whole body (toggle)
 p                   - step over small obstacles, e.g. walk up the stairs (toggle)
 m                   - 1st/3rd person camera (toggle)

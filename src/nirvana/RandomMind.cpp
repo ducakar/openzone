@@ -15,6 +15,7 @@ namespace oz
 
   void RandomMind::update()
   {
+    assert( world.objects[botIndex] != null );
     assert( world.objects[botIndex]->flags & Object::BOT_BIT );
 
     Bot &bot = *(Bot*) world.objects[botIndex];

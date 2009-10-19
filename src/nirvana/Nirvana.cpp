@@ -18,15 +18,16 @@ namespace oz
   void Nirvana::sync()
   {
     // remove minds of removed bots
-    for( DList<Mind, 0>::Iterator i( minds ); !i.isPassed(); ) {
+    for( auto i( minds.iterator() ); !i.isPassed(); ) {
       Mind *mind = i;
       ++i;
 
       if( world.objects[mind->botIndex] == null ) {
         minds.remove( mind );
+        delete mind;
       }
     }
-      // add minds for new bots
+    // add minds for new bots
     foreach( obj, synapse.putObjects.iterator() ) {
       if( ( *obj )->flags & Object::BOT_BIT ) {
         Bot *bot = (Bot*) *obj;
@@ -38,27 +39,26 @@ namespace oz
     }
   }
 
-  void Nirvana::run()
+  void Nirvana::update()
   {
-    while( isAlive ) {
-      sync();
-
-      // notify matrix we're synchronized
-      SDL_SemPost( matrix.semaphore );
-
-      // update minds
-      foreach( mind, minds.iterator() ) {
-        mind->update();
-      }
-
-      SDL_SemPost( matrix.semaphore );
-      SDL_SemWait( semaphore );
+    foreach( mind, minds.iterator() ) {
+      mind->update();
     }
   }
 
-  int Nirvana::runThread( void* )
+  int Nirvana::run( void* )
   {
-    nirvana.run();
+    while( nirvana.isAlive ) {
+      nirvana.sync();
+
+      // update minds
+      nirvana.update();
+
+      // notify matrix it can proceed changing the world
+      SDL_SemPost( matrix.semaphore );
+      // wait until world has changed
+      SDL_SemWait( nirvana.semaphore );
+    }
     return 0;
   }
 
@@ -68,8 +68,8 @@ namespace oz
 
     isAlive = true;
 
-    semaphore = SDL_CreateSemaphore( 1 );
-    thread = SDL_CreateThread( runThread, null );
+    semaphore = SDL_CreateSemaphore( 0 );
+    thread = SDL_CreateThread( run, null );
 
     log.printEnd( " OK" );
   }

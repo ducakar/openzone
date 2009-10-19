@@ -324,7 +324,7 @@ namespace oz
         collider.translate( eye, look, this );
 
         if( collider.hit.obj != null ) {
-          collider.hit.obj->use( this );
+          synapse.activate( collider.hit.obj, 0 );
         }
       }
     }

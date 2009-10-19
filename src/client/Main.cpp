@@ -274,7 +274,8 @@ namespace client
       }
 
       ui::mouse.update();
-      // stop nirvana, commit with cuts/removals, update world, resume nirvana
+      // stop nirvana, commit with cuts/removals, sync Render and Sound, update world,
+      // resume nirvana
       isAlive &= game.update( tick );
       // play sounds, but don't do any cleanups
       sound.play();
@@ -310,7 +311,7 @@ namespace client
     log.println( "}" );
 
     log.println( "Average framerate: %g",
-                     (float) nFrames / (float) ( timeLast - timeZero ) * 1000.0f );
+                 (float) nFrames / (float) ( timeLast - timeZero ) * 1000.0f );
   }
 
 }

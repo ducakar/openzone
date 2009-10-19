@@ -1,7 +1,11 @@
 data*
-tags
+.project
+.cproject
+Debug
+Release
 openzone.kdev*
 doxygen
+tags
 openzone.tag
 precompiled.h.gch
 *.gcno

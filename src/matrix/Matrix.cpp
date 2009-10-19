@@ -11,6 +11,7 @@
 #include "Matrix.h"
 
 #include "Physics.h"
+#include "FloraManager.h"
 
 namespace oz
 {
@@ -26,12 +27,12 @@ namespace oz
     static const float DIM = World::DIM;
 //     static const float DIM = 100;
 
-    for( int i = 0; i < 4000; i++ ) {
+    for( int i = 0; i < 2000; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 400.0f;
 
-      synapse.addObject( "SmallCrate", Vec3( x, y, z ) );
+      synapse.addObject( "Goblin", Vec3( x, y, z ) );
     }
   }
 
@@ -65,7 +66,7 @@ namespace oz
       synapse.addObject( "Knight", Vec3( 50, -35, 27 ) );
       synapse.addObject( "Goblin", Vec3( 51, -35, 27 ) );
 
-      synapse.addObject( "Raptor", Vec3( 70, -60, 30 ) );
+//       synapse.addObject( "Raptor", Vec3( 70, -60, 30 ) );
 
 //       world.genParticles( 1000, Vec3( 40, -42, 74 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
 //                           0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
@@ -73,8 +74,8 @@ namespace oz
       synapse.addObject( "MetalBarrel", Vec3( 61, -44, 28 ) );
       synapse.addObject( "MetalBarrel", Vec3( 61, -44, 30 ) );
 
-      synapse.addObject( "Tree2",  Vec3( 0, 80, world.terra.height( 0, 80 ) + 3.5f ) );
-      synapse.addObject( "Tree3", Vec3( 10, 85, world.terra.height( 0, 85 ) + 6.5f ) );
+//      synapse.addObject( "Tree2",  Vec3( 0, 80, world.terra.height( 0, 80 ) + 3.5f ) );
+//      synapse.addObject( "Tree3", Vec3( 10, 85, world.terra.height( 0, 85 ) + 6.5f ) );
 
       synapse.addObject( "SmallCrate", Vec3( 51, -42, 26 ) );
       synapse.addObject( "SmallCrate", Vec3( 51, -42, 27 ) );
@@ -106,6 +107,7 @@ namespace oz
       synapse.addObject( "SmallCrate", Vec3( 52, -61, 32 ) );
 
       loadStressTest();
+      floraManager.seed();
     }
     buffer.free();
 
@@ -136,8 +138,7 @@ namespace oz
   {
     physics.update();
 
-    int iMax = world.particles.length();
-    for( int i = 0; i < iMax; i++ ) {
+    for( int i = 0; i < world.particles.length(); i++ ) {
       Particle *part = world.particles[i];
 
       if( part != null ) {
