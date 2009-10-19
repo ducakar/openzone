@@ -20,6 +20,11 @@ namespace oz
 
   void Synapse::commit()
   {
+    foreach( i, actions.iterator() ) {
+      i->target->activate( i->action );
+    }
+    actions.clear();
+
     foreach( i, cutStructs.iterator() ) {
       world.unposition( *i );
       world.cut( *i );

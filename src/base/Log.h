@@ -17,7 +17,7 @@ namespace oz
 
       String logFile;                            // name of log file
       String indentStr;                          // indent string
-      int    tabs;                               // amount of indent ( one indent is 3 spaces )
+      int    tabs;                               // amount of indent (one indent is 3 spaces)
       bool   isStdout;
 
     public:

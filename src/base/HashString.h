@@ -519,8 +519,8 @@ namespace oz
         while( p != null ) {
           if( p->key == key ) {
             *prev = p->next[0];
-            count--;
             delete p;
+            count--;
             return;
           }
           else {

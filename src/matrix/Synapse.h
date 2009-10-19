@@ -30,17 +30,22 @@
 namespace oz
 {
 
+  class Nirvana;
+
   class Synapse
   {
+    friend class Nirvana;
+
     public:
 
       struct Action
       {
-        Bot    *user;
         Object *target;
+        int    action;
 
         Action() {}
-        Action( Bot *user_, Object *target_ ) : user( user_ ), target( target_ ) {}
+        Action( Object *target_, int action_ ) : target( target_ ), action( action_ )
+        {}
       };
 
     private:
@@ -49,7 +54,7 @@ namespace oz
       Vector<int>        putObjectsIndices;
       Vector<int>        putPartsIndices;
 
-    public:
+    private:
 
       Vector<Structure*> putStructs;
       Vector<Object*>    putObjects;
@@ -62,6 +67,10 @@ namespace oz
       Vector<Structure*> deleteStructs;
       Vector<Object*>    deleteObjects;
       Vector<Particle*>  deleteParts;
+
+      Vector<Action>     actions;
+
+    public:
 
       // isSingle XOR isServer XOR isClient
 
@@ -97,6 +106,9 @@ namespace oz
       void remove( Object *obj );
       void remove( Particle *part );
 
+      // interactions
+      void activate( Object *target, int action );
+
       // client-initiated actions, returns a ticket that can be used to retrieve index of the
       // added object
       int  globalPut( Structure *str );
@@ -111,7 +123,7 @@ namespace oz
       void globalRemove( Object *obj );
       void globalRemove( Particle *part );
 
-      void globalUse( Bot *user, Object *target );
+      void globalActivate( Object *target, int action );
 
       // indices in World vectors after objects have been remotely added
       // (ticket is the integer returned by globalPut())
@@ -210,6 +222,11 @@ namespace oz
   {
     cutParts << part;
     deleteParts << part;
+  }
+
+  inline void Synapse::activate( Object *target, int action )
+  {
+    actions << Action( target, action );
   }
 
 }

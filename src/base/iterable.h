@@ -188,7 +188,7 @@ namespace oz
    * similar foreach macro).
    */
 # define foreach( i, startIterator ) \
-  for( typeof( startIterator ) i( startIterator ); !i.isPassed(); ++i )
+  for( auto i( startIterator ); !i.isPassed(); ++i )
 
   /**
    * Compare all elements. (Like STL equal)

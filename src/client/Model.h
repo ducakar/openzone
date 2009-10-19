@@ -22,8 +22,6 @@ namespace client
     const Object *obj;
     bool         isUpdated;
 
-    // there should not be any references to object in the destructor as the object may have been
-    // deleted already
     virtual ~Model();
 
     virtual void draw() = 0;

@@ -25,9 +25,9 @@ namespace oz
       DList<Mind, 0> minds;
 
       void sync();
-      void run();
+      void update();
 
-      static int runThread( void *data );
+      static int run( void *data );
 
     public:
 

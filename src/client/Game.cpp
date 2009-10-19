@@ -89,8 +89,10 @@ namespace client
 
   bool Game::update( int time )
   {
-    // wait until nirvana has synchronized
+    // wait until nirvana thread has stopped
     SDL_SemWait( matrix.semaphore );
+    assert( SDL_SemValue( matrix.semaphore ) == 0 );
+
     synapse.clear();
 
     timer.update( time );
@@ -280,21 +282,20 @@ namespace client
 
     synapse.clearTickets();
 
-    // wait until nirvana stops
-    SDL_SemWait( matrix.semaphore );
+    network.update();
 
     // remove/cut objects scheduled for removal
     synapse.commit();
 
-    // delete remove models/audios of removed objects
+    // delete models/audios of removed objects
     render.sync();
     sound.sync();
 
     // we can finally delete removed object after render and sound are sync'd as model/audio dtors
     // have references to the objects
-//     synapse.doDeletes();
+    synapse.doDeletes();
 
-    network.update();
+    // update world
     matrix.update();
 
     // resume nirvana

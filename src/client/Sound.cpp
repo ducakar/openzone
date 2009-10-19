@@ -155,7 +155,7 @@ namespace client
   void Sound::sync()
   {
     // remove Audio objects of removed objects
-    for( HashIndex<Audio*, 1021>::Iterator i( audios ); !i.isPassed(); ) {
+    for( auto i( audios.iterator() ); !i.isPassed(); ) {
       Audio *audio = i.value();
       uint  key    = i.key();
       ++i;
@@ -197,7 +197,7 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
 
     // remove continous sounds that are not played any more
-    for( typeof( contSources.iterator() ) i( contSources ); !i.isPassed(); ) {
+    for( auto i( contSources.iterator() ); !i.isPassed(); ) {
       ContSource *src = i;
       uint       key  = i.key();
 
@@ -250,7 +250,7 @@ namespace client
       assert( alGetError() == AL_NO_ERROR );
 
       // remove Audio objects that are not used any more
-      for( typeof( audios.iterator() ) i( audios ); !i.isPassed(); ) {
+      for( auto i( audios.iterator() ); !i.isPassed(); ) {
         Audio *audio = *i;
         uint  key    = i.key();
 

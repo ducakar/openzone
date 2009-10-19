@@ -133,7 +133,7 @@ namespace oz
 
   void World::put( Object *obj )
   {
-   if( objAvailableIndices.isEmpty() ) {
+    if( objAvailableIndices.isEmpty() ) {
       obj->index = objects.length();
       objects << obj;
     }
@@ -236,16 +236,13 @@ namespace oz
 
   void World::update()
   {
-    assert( strPendingIndices.isEmpty() );
-
     strAvailableIndices.addAll( strPendingIndices );
-    objAvailableIndices.addAll( objPendingIndices );
-    partAvailableIndices.addAll( partPendingIndices );
-
-    assert( strAvailableIndices.isEmpty() );
-
     strPendingIndices.clear();
+
+    objAvailableIndices.addAll( objPendingIndices );
     objPendingIndices.clear();
+
+    partAvailableIndices.addAll( partPendingIndices );
     partPendingIndices.clear();
   }
 

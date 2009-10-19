@@ -219,7 +219,7 @@ namespace client
 
   void Render::sync()
   {
-    for( HashIndex<Model*, 1021>::Iterator i( models ); !i.isPassed(); ) {
+    for( auto i( models.iterator() ); !i.isPassed(); ) {
       Model *model = i.value();
       uint  key    = i.key();
       ++i;
@@ -454,7 +454,7 @@ namespace client
     // cleanups
     if( clearCount >= CLEAR_INTERVAL ) {
       // remove unused models
-      for( HashIndex<Model*, 1021>::Iterator i( models ); !i.isPassed(); ) {
+      for( auto i( models.iterator() ); !i.isPassed(); ) {
         Model *model = *i;
         uint  key    = i.key();
 
