@@ -25,14 +25,28 @@ namespace oz
   void Matrix::loadStressTest()
   {
     static const float DIM = World::DIM;
-//     static const float DIM = 100;
+//    static const float DIM = 100;
 
+    for( int i = 0; i < 1000; i++ ) {
+      float x = -DIM + 2.0f * DIM * Math::frand();
+      float y = -DIM + 2.0f * DIM * Math::frand();
+      float z = world.terra.height( x, y ) + 1.0f;
+
+      synapse.addObject( "Goblin", Vec3( x, y, z ) );
+    }
     for( int i = 0; i < 2000; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
-      float z = world.terra.height( x, y ) + 400.0f;
+      float z = world.terra.height( x, y ) + 1.0f;
 
-      synapse.addObject( "Goblin", Vec3( x, y, z ) );
+      synapse.addObject( "BigCrate", Vec3( x, y, z ) );
+    }
+    for( int i = 0; i < 2000; i++ ) {
+      float x = -DIM + 2.0f * DIM * Math::frand();
+      float y = -DIM + 2.0f * DIM * Math::frand();
+      float z = world.terra.height( x, y ) + 2.0f;
+
+      synapse.addObject( "SmallCrate", Vec3( x, y, z ) );
     }
   }
 
@@ -49,7 +63,7 @@ namespace oz
 
     world.sky.init( 70.0f, 600.0f );
     world.sky.time = 200.0f;
-    world.terra.load( "terra/large.png" );
+    world.terra.load( "terra/heightmap.png" );
 
     Buffer buffer( 1024 * 1024 * 10 );
     if( buffer.load( config.get( "dir.home", "" ) + String( "/saved.world" ) ) ) {
@@ -57,8 +71,6 @@ namespace oz
       world.read( &istream );
     }
     else {
-      synapse.addStruct( "castle", Vec3( 57, -33, 33 ), Structure::R0 );
-
       Bot *lord = (Bot*) translator.createObject( "Lord", Vec3( 52, -44, 27 ) );
       lord->h = 270;
       synapse.put( lord );
@@ -66,7 +78,11 @@ namespace oz
       synapse.addObject( "Knight", Vec3( 50, -35, 27 ) );
       synapse.addObject( "Goblin", Vec3( 51, -35, 27 ) );
 
+      synapse.addObject( "FirstAid", Vec3( 50, -36, 27 ) );
+
 //       synapse.addObject( "Raptor", Vec3( 70, -60, 30 ) );
+
+      synapse.addStruct( "castle", Vec3( 57, -33, 33 ), Structure::R0 );
 
 //       world.genParticles( 1000, Vec3( 40, -42, 74 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
 //                           0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
@@ -75,7 +91,7 @@ namespace oz
       synapse.addObject( "MetalBarrel", Vec3( 61, -44, 30 ) );
 
 //      synapse.addObject( "Tree2",  Vec3( 0, 80, world.terra.height( 0, 80 ) + 3.5f ) );
-//      synapse.addObject( "Tree3", Vec3( 10, 85, world.terra.height( 0, 85 ) + 6.5f ) );
+      synapse.addObject( "Tree3", Vec3( 77.8, -40, world.terra.height( 78, -40 ) + 6.5f ) );
 
       synapse.addObject( "SmallCrate", Vec3( 51, -42, 26 ) );
       synapse.addObject( "SmallCrate", Vec3( 51, -42, 27 ) );
@@ -99,14 +115,14 @@ namespace oz
       synapse.addObject( "BigCrate", Vec3( 50, -55, 28 ) );
       synapse.addObject( "BigCrate", Vec3( 50, -55, 30 ) );
 
-      synapse.addStruct( "pool", Vec3( 50, -60, 25 ), Structure::R0 );
-      synapse.addStruct( "test", Vec3( 60, -60, 26 ), Structure::R0 );
+      synapse.addStruct( "pool", Vec3( 50, -60, 27 ), Structure::R0 );
+      synapse.addStruct( "test", Vec3( 60, -60, 28 ), Structure::R0 );
 
       synapse.addObject( "SmallCrate", Vec3( 52, -61, 30 ) );
       synapse.addObject( "SmallCrate", Vec3( 52, -61, 31 ) );
       synapse.addObject( "SmallCrate", Vec3( 52, -61, 32 ) );
 
-      loadStressTest();
+//      loadStressTest();
       floraManager.seed();
     }
     buffer.free();

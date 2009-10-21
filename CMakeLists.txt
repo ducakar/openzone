@@ -2,49 +2,6 @@ cmake_minimum_required( VERSION 2.6 )
 
 project( openzone C CXX )
 
-if( WIN32 )
-
-  include_directories(
-      ../iconv/include
-      ../libxml2/include
-      ../SDL/include
-      ../SDL_image/include
-      ../ogg/include
-      ../vorbis/include
-      ../OpenAL/include
-      ../freealut/include )
-
-  link_directories(
-      ../../../iconv/lib
-      ../../../libxml2/lib
-      ../../../SDL/lib
-      ../../../SDL_image/lib
-      ../../../SDL_mixer/lib
-      ../../../ogg/lib
-      ../../../vorbis/lib
-      ../../../OpenAL/libs/Win32
-      ../../../freealut/lib )
-
-  link_libraries(
-      iconv.lib
-      libxml2.lib
-      SDLmain.lib
-      SDL.lib
-      SDL_image.lib
-      SDL_mixer.lib
-      opengl32.lib
-      glu32.lib
-      openal32.lib
-      alut.lib
-      vorbisfile.lib )
-
-  add_definitions( /W4 )
-
-  # TODO: precompiled headers for VC++
-  add_custom_target( precompile ALL )
-
-else( WIN32 )
-
   # required libraries
   find_package( LibXml2 REQUIRED )
   find_package( Lua51 REQUIRED )
@@ -87,7 +44,5 @@ else( WIN32 )
     COMMAND
       rm -f precompiled.h.gch &&
       ${CMAKE_CXX_COMPILER} `echo ${CMAKE_CXX_FLAGS}` precompiled.h )
-
-endif( WIN32 )
 
 subdirs( src )

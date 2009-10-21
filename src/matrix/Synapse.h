@@ -40,12 +40,11 @@ namespace oz
 
       struct Action
       {
+        Bot    *user;
         Object *target;
-        int    action;
 
         Action() {}
-        Action( Object *target_, int action_ ) : target( target_ ), action( action_ )
-        {}
+        Action( Bot *user_, Object *target_ ) : user( user_ ), target( target_ ) {}
       };
 
     private:
@@ -107,7 +106,7 @@ namespace oz
       void remove( Particle *part );
 
       // interactions
-      void activate( Object *target, int action );
+      void use( Bot *user, Object *target );
 
       // client-initiated actions, returns a ticket that can be used to retrieve index of the
       // added object
@@ -123,7 +122,7 @@ namespace oz
       void globalRemove( Object *obj );
       void globalRemove( Particle *part );
 
-      void globalActivate( Object *target, int action );
+      void globalUse( Bot *user, Object *target );
 
       // indices in World vectors after objects have been remotely added
       // (ticket is the integer returned by globalPut())
@@ -224,9 +223,9 @@ namespace oz
     deleteParts << part;
   }
 
-  inline void Synapse::activate( Object *target, int action )
+  inline void Synapse::use( Bot *user, Object *target )
   {
-    actions << Action( target, action );
+    actions << Action( user, target );
   }
 
 }

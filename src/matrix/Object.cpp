@@ -30,9 +30,6 @@ namespace oz
   void Object::onUse( Bot* )
   {}
 
-  void Object::onActivate( int )
-  {}
-
   void Object::readFull( InputStream *istream )
   {
     p        = istream->readVec3();

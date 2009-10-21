@@ -12,6 +12,7 @@
 
 #include "matrix/Matrix.h"
 #include "matrix/Physics.h"
+#include "matrix/BotClass.h"
 
 #include "Frustum.h"
 #include "Shape.h"
@@ -34,10 +35,11 @@ namespace client
 
   const float Render::RELEASED_CULL_FACTOR = 5.0f;
 
-  const float Render::BLACK[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-  const float Render::WHITE[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+  const float Render::BLACK_COLOR[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+  const float Render::WHITE_COLOR[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-  const float Render::GLOBAL_AMBIENT[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+  const float Render::TAG_COLOR[] = { 0.85f, 0.90f, 1.0f, 1.0f };
+  const float Render::GLOBAL_AMBIENT_COLOR[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
   const float Render::NIGHT_FOG_COEFF = 2.0f;
   const float Render::NIGHT_FOG_DIST = 0.3f;
@@ -128,10 +130,10 @@ namespace client
 
     // lighting
     glLightModeli(  GL_LIGHT_MODEL_TWO_SIDE, false );
-    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, GLOBAL_AMBIENT );
+    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, GLOBAL_AMBIENT_COLOR );
 
     glEnable( GL_COLOR_MATERIAL );
-    glColor4fv( WHITE );
+    glColor4fv( WHITE_COLOR );
     glEnable( GL_LIGHT0 );
 
     glClearColor( sky.color[0], sky.color[1], sky.color[2], sky.color[3] );
@@ -145,20 +147,26 @@ namespace client
 
   void Render::drawObject( Object *obj )
   {
+    if( obj->index == taggedObj ) {
+      glColor4fv( TAG_COLOR );
+      glDisable( GL_LIGHTING );
+    }
+
     glPushMatrix();
     glTranslatef( obj->p.x, obj->p.y, obj->p.z );
 
-    if( obj->flags & Object::BLEND_BIT ) {
-      blendedObjects << obj;
+    if( !models.contains( obj->index ) ) {
+      models.add( obj->index, context.createModel( obj ) );
     }
-    else {
-      if( !models.contains( obj->index ) ) {
-        models.add( obj->index, context.createModel( obj ) );
-      }
-      // draw model
-      models.cachedValue()->draw();
-    }
+    // draw model
+    models.cachedValue()->draw();
+
     glPopMatrix();
+
+    if( obj->index == taggedObj ) {
+      glEnable( GL_LIGHTING );
+      glColor4fv( WHITE_COLOR );
+    }
 
     if( drawAABBs ) {
       glDisable( GL_LIGHTING );
@@ -168,7 +176,7 @@ namespace client
 
       shape.drawBox( *obj );
 
-      glColor4fv( WHITE );
+      glColor4fv( WHITE_COLOR );
       glDisable( GL_BLEND );
       glEnable( GL_TEXTURE_2D );
       glEnable( GL_LIGHTING );
@@ -321,6 +329,20 @@ namespace client
     glLightfv( GL_LIGHT0, GL_DIFFUSE, sky.diffuseColor );
     glLightfv( GL_LIGHT0, GL_AMBIENT, sky.ambientColor );
 
+    // highlight the object the camera is looking at
+    taggedObj = -1;
+    if( !ui::mouse.doShow ) {
+      if( camera.bot == null ) {
+        collider.translate( camera.p, camera.at * 2.0f );
+        taggedObj = collider.hit.obj == null ? -1 : collider.hit.obj->index;
+      }
+      else {
+        float distance = ( (BotClass*) camera.bot->type )->grabDistance;
+        collider.translate( camera.bot->p + camera.bot->camPos, camera.at * distance, camera.bot );
+        taggedObj = collider.hit.obj == null ? -1 : collider.hit.obj->index;
+      }
+    }
+
     terra.setRadius( frustum.radius );
     terra.draw();
 
@@ -373,12 +395,12 @@ namespace client
     }
     particles.clear();
 
-    glColor4fv( WHITE );
+    glColor4fv( WHITE_COLOR );
     glEnable( GL_TEXTURE_2D );
 
     // draw transparent objects
     for( int i = 0; i < blendedObjects.length(); i++ ) {
-      // TODO blendedObjects[i] draw;
+      drawObject( blendedObjects[i] );
     }
     blendedObjects.clear();
 
@@ -413,7 +435,7 @@ namespace client
     }
 
     glDisable( GL_DEPTH_TEST );
-    glColor4fv( WHITE );
+    glColor4fv( WHITE_COLOR );
 
     ui::draw();
 

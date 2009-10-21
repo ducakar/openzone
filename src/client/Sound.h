@@ -28,10 +28,10 @@ namespace client
       static const float DMAX_SQ;
 
       static const int MUSIC_BUFFER_SIZE = 16 * 1024;
-      // stopped sources clear interval -- 3.5 s for 50 fps
-      static const int SOURCES_CLEAR_INTERVAL = ( 7 * 50 ) / 2;
-      // cleanup interval (remove unused audios, unload unused sounds) -- 1 min for 50 fps
-      static const int FULL_CLEAR_INTERVAL = 60 * 50;
+      // stopped sources clear interval -- 4 s for 50 fps
+      static const int SOURCES_CLEAR_INTERVAL = 4 * 50;
+      // cleanup interval (remove unused audios, unload unused sounds) -- 5 min for 50 fps
+      static const int FULL_CLEAR_INTERVAL = 291 * 50;
 
       /*
        * SFX

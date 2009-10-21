@@ -25,7 +25,7 @@ namespace oz
 
   struct Sector
   {
-    static const int   SIZEI = 8;
+    static const int   SIZEI = 16;
     static const float SIZE;
     static const float RADIUS;
 
@@ -41,7 +41,7 @@ namespace oz
     public:
 
       // # of sectors on each (x, y) axis
-      static const int   MAX = 512;
+      static const int   MAX = 128;
       static const float DIM;
 
       // for returning getInters sector indices

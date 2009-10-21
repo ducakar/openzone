@@ -18,7 +18,6 @@ namespace oz
   const float Physics::CLIP_BACKOFF         = EPSILON;
   const float Physics::STICK_VELOCITY       = 0.015f;
   const float Physics::SLICK_STICK_VELOCITY = 0.0001f;
-  const float Physics::HIT_MOMENTUM         = -3.0f;
 
   const float Physics::AIR_FRICTION         = 0.02f;
   const float Physics::IN_WATER_FRICTION    = 0.08f;
@@ -29,6 +28,7 @@ namespace oz
   const float Physics::SLICK_FRICTION       = 0.02f;
 
   const float Physics::FLOOR_NORMAL_Z       = 0.60f;
+  const float Physics::HIT_MOMENTUM         = -3.0f;
 
   //***********************************
   //*   PARTICLE COLLISION HANDLING   *
@@ -64,7 +64,7 @@ namespace oz
       // collision response
       handlePartHit();
 
-      if( traceSplits >= MAX_TRACE_SPLITS ) {
+      if( traceSplits >= 3 ) {
         break;
       }
       traceSplits++;
@@ -229,9 +229,8 @@ namespace oz
 
       Vec3  momentum    = obj->momentum * obj->mass + sDynObj->momentum * sDynObj->mass;
       float mass        = obj->mass + sDynObj->mass;
-      float hitMomentum = ( obj->momentum - sDynObj->momentum ) * collider.hit.normal;
-
       momentum          /= mass;
+      float hitMomentum = ( obj->momentum - sDynObj->momentum ) * collider.hit.normal;
 
       if( hitMomentum < HIT_MOMENTUM ) {
         obj->hit( &collider.hit, hitMomentum );
@@ -322,7 +321,7 @@ namespace oz
       // collision response
       handleObjHit();
 
-      if( traceSplits >= MAX_TRACE_SPLITS ) {
+      if( traceSplits >= 3 ) {
         break;
       }
       traceSplits++;
@@ -331,38 +330,48 @@ namespace oz
       move -= ( move * collider.hit.normal - CLIP_BACKOFF ) * collider.hit.normal;
 
       // to prevent getting stuck in corners < 90° and to prevent oscillations in corners > 90°
-      if( traceSplits > 1 ) {
+      if( traceSplits == 1 ) {
+        lastNormals[0] = collider.hit.normal;
+      }
+      else {
         float dot = lastNormals[0] * collider.hit.normal;
 
         if( dot < 0.0f ) {
+          Vec3 out   = collider.hit.normal + lastNormals[0];
           Vec3 cross = collider.hit.normal ^ lastNormals[0];
 
           if( !cross.isZero() ) {
             cross.norm();
             move = ( move * cross ) * cross;
-            move += ( collider.hit.normal + lastNormals[0] ) * EPSILON;
+            move += out * EPSILON;
+          }
+          if( !out.isZero() ) {
+            out.norm();
+            obj->momentum -= ( obj->momentum * out ) * out;
           }
         }
-        if( traceSplits > 2 ) {
+        if( traceSplits == 2 ) {
+          lastNormals[1] = lastNormals[0];
+          lastNormals[0] = collider.hit.normal;
+        }
+        else {
           dot = lastNormals[1] * collider.hit.normal;
 
           if( dot < 0.0f ) {
+            Vec3 out   = collider.hit.normal + lastNormals[1];
             Vec3 cross = collider.hit.normal ^ lastNormals[1];
 
             if( !cross.isZero() ) {
               cross.norm();
               move = ( move * cross ) * cross;
-              move += ( collider.hit.normal + lastNormals[1] ) * EPSILON;
+              move += out * EPSILON;
+            }
+            if( !out.isZero() ) {
+              out.norm();
+              obj->momentum -= ( obj->momentum * out ) * out;
             }
           }
         }
-        else {
-          lastNormals[1] = lastNormals[0];
-          lastNormals[0] = collider.hit.normal;
-        }
-      }
-      else {
-        lastNormals[0] = collider.hit.normal;
       }
     }
     while( true );

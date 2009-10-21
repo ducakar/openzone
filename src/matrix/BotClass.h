@@ -12,6 +12,8 @@
 
 #include "DynObjectClass.h"
 
+#include "Object.h"
+
 namespace oz
 {
 
@@ -42,7 +44,10 @@ namespace oz
     float airControl;
     float climbControl;
     float waterControl;
+
     float grabDistance;
+    float grabMass;
+    float throwMomentum;
 
     float stamina;
     float staminaGain;

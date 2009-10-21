@@ -1,22 +1,22 @@
 #!/usr/bin/octave -q
 
-DIM = 8;
 VECTOR_AVG_CAPACITY = 4;
 
 sectorSize = ( 2 + 2 + 3 + VECTOR_AVG_CAPACITY ) * 4;
 
-if length( argv ) ~= 1
-  disp( 'usage: hashspaceUsage sizeInMetres' );
+if length( argv ) ~= 2
+  disp( 'usage: hashspaceUsage sectorDim sizeInMetres' );
   return;
 end
 
-size = str2double( argv()(1) );
+dim = str2double( argv()(1) );
+size = str2double( argv()(2) );
 
 % get
-nFields = floor( ( size - 1 ) / DIM ) + 1;
+nFields = floor( ( size - 1 ) / dim ) + 1;
 nFields = nFields * nFields;
 
 % size
 size = nFields * sectorSize / 1024 / 1024;
 
-printf( '%.3f MiB\n', size );
+printf( '%.3f MiB', size );

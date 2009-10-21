@@ -49,7 +49,8 @@ namespace ui
       // read-write
       int    moveX;
       int    moveY;
-      byte   newButtons;
+      byte   persButtons;
+      byte   currButtons;
 
       // read-only
       int    x;

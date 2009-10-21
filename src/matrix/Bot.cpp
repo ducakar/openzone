@@ -17,6 +17,12 @@
 namespace oz
 {
 
+  const float Bot::GRAB_EPSILON = 0.20f;
+  const float Bot::GRAB_MOMRATIO = 20.0f;
+  const float Bot::GRAB_MAX_HIT = 3.0f;
+  const float Bot::GRAB_STRING_BREAK = 4.0f;
+  const float Bot::GRAB_STRING_MAXLEN = 2.0f;
+
   void Bot::onUpdate()
   {
     BotClass &clazz = *(BotClass*) type;
@@ -39,8 +45,10 @@ namespace oz
 
     bool isSwimming   = waterDepth >= dim.z;
     bool isUnderWater = waterDepth >= dim.z + camPos.z;
-    bool isClimbing   = flags & ON_LADDER_BIT;
+    bool isClimbing   = ( flags & ON_LADDER_BIT ) && grabObjIndex == -1;
     bool isGrounded   = ( lower >= 0 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
+
+    flags |= CLIMBER_BIT;
 
     stepRate *= clazz.stepRateSupp;
     stamina += clazz.staminaGain;
@@ -95,7 +103,7 @@ namespace oz
       if( !( oldKeys & KEY_JUMP ) ) {
         state |= JUMP_SCHED_BIT;
       }
-      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) &&
+      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObjIndex < 0 &&
           stamina >= clazz.staminaJumpDrain )
       {
         flags &= ~DISABLED_BIT;
@@ -229,7 +237,7 @@ namespace oz
       if( state & CROUCHING_BIT ) {
         desiredMomentum *= clazz.crouchMomentum;
       }
-      else if( state & RUNNING_BIT ) {
+      else if( ( state & RUNNING_BIT ) && grabObjIndex < 0 ) {
         desiredMomentum *= clazz.runMomentum;
       }
       else {
@@ -316,54 +324,90 @@ namespace oz
      * USE, GRAB
      */
 
-    if( ( keys & KEY_USE ) && !( oldKeys & KEY_USE ) ) {
-      if( weapon == null ) {
+    if( weapon == null ) {
+      if( ( keys & KEY_USE ) && !( oldKeys & KEY_USE ) ) {
         Vec3 eye  = p + camPos;
         Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
 
         collider.translate( eye, look, this );
 
-        if( collider.hit.obj != null ) {
-          synapse.activate( collider.hit.obj, 0 );
+        Object *obj = collider.hit.obj;
+        if( obj != null ) {
+          synapse.use( this, obj );
         }
       }
-    }
-    if( ( keys & KEY_GRAB ) && !( oldKeys & KEY_GRAB ) ) {
-      if( weapon == null ) {
-        if( grabObjIndex < 0 ) {
-          Vec3 eye  = p;
+      else if( ( keys & KEY_TAKE ) && !( oldKeys & KEY_TAKE ) ) {
+        Vec3 eye  = p + camPos;
+        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
+
+        collider.translate( eye, look, this );
+
+        Object *obj = collider.hit.obj;
+        if( obj != null && ( obj->flags & ITEM_BIT ) ) {
+          items << obj;
+          synapse.remove( obj );
+        }
+      }
+      else if( ( keys & KEY_GRAB ) && !( oldKeys & KEY_GRAB ) ) {
+        if( grabObjIndex >= 0 ) {
+          grabObjIndex = -1;
+        }
+        else {
+          Vec3 eye  = p + camPos;
           Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
 
           collider.translate( eye, look, this );
 
-          if( collider.hit.obj != null && ( collider.hit.obj->flags & Object::DYNAMIC_BIT ) ) {
-            grabObjIndex = collider.hit.obj->index;
+          Object *obj = collider.hit.obj;
+          if( obj != null && ( obj->flags & Object::DYNAMIC_BIT ) ) {
+            float dimX = dim.x + obj->dim.x;
+            float dimY = dim.y + obj->dim.y;
+            float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
+
+            if( dist <= clazz.grabDistance ) {
+              grabObjIndex = collider.hit.obj->index;
+              grabHandle   = dist;
+              flags        &= ~ON_LADDER_BIT;
+            }
           }
         }
-        else {
-          grabObjIndex = -1;
-        }
       }
-    }
+      else if( ( keys & KEY_THROW ) && !( oldKeys & KEY_THROW ) && grabObjIndex >= 0 ) {
+        DynObject *obj = (DynObject*) world.objects[grabObjIndex];
+        Vec3      look = Vec3( -hvsc[4], hvsc[5], hvsc[2] );
 
-    if( grabObjIndex >= 0 ) {
-      DynObject *obj = (DynObject*) world.objects[grabObjIndex];
-
-      if( obj == null ) {
+        obj->momentum = look * clazz.throwMomentum;
         grabObjIndex = -1;
       }
-      else {
-        Vec3  eye       = p;
-        Vec3  look      = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
-        Vec3  string    = ( eye + look ) - obj->p;
-  //       float massRatio = mass
+      if( grabObjIndex >= 0 ) {
+        DynObject *obj = (DynObject*) world.objects[grabObjIndex];
 
-        // FIXME better function for computing force, string breaking
-        Vec3 desiredMomentum = string * 10.0f;
-        Vec3 momentumDiff    = desiredMomentum - obj->momentum;
+        if( obj == null || lower == grabObjIndex ) {
+          grabObjIndex = -1;
+        }
+        else {
+          Vec3  eye       = p + camPos;
+          Vec3  look      = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
+          float xyLength  = Math::sqrt( look.x*look.x + look.y*look.y );
+          float ratio     = grabHandle / xyLength;
+          Vec3  string    = eye + Vec3( look.x * ratio, look.y * ratio, look.z ) - obj->p;
 
-        obj->momentum += momentumDiff;
-        obj->flags    &= ~Object::DISABLED_BIT;
+          if( string.sqL() > GRAB_STRING_BREAK ) {
+            grabObjIndex = -1;
+          }
+          else {
+            obj->momentum   = string * GRAB_MOMRATIO;
+            obj->momentum.z += physics.gVelocity;
+
+            float momentumSqL = obj->momentum.sqL();
+            if( momentumSqL > Physics::HIT_MOMENTUM*Physics::HIT_MOMENTUM ) {
+              obj->momentum *= -Physics::HIT_MOMENTUM / Math::sqrt( momentumSqL );
+            }
+            obj->momentum.z -= physics.gVelocity;
+            obj->flags      &= ~Object::DISABLED_BIT;
+            flags           &= ~CLIMBER_BIT;
+          }
+        }
       }
     }
 

@@ -17,11 +17,9 @@ namespace oz
   {
     private:
 
-      static const int   MAX_TRACE_SPLITS = 3;
       static const float CLIP_BACKOFF;
       static const float STICK_VELOCITY;
       static const float SLICK_STICK_VELOCITY;
-      static const float HIT_MOMENTUM;
 
       static const float AIR_FRICTION;
       static const float IN_WATER_FRICTION;
@@ -39,8 +37,6 @@ namespace oz
       float     leafStartRatio;
       float     leafEndRatio;
 
-      float     gAccel;
-      float     gVelocity;
       Vec3      lastNormals[2];
       float     leftRatio;
 
@@ -61,6 +57,10 @@ namespace oz
     public:
 
       static const float FLOOR_NORMAL_Z;
+      static const float HIT_MOMENTUM;
+
+      float     gAccel;
+      float     gVelocity;
 
       void setG( float gAccel );
       void update();

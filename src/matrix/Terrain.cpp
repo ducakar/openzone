@@ -20,7 +20,7 @@ namespace oz
 
   const float Terrain::DIM = Terrain::Quad::DIM * Terrain::QUADS;
   const float Terrain::HEIGHT_STEP = 0.5f;
-  const float Terrain::HEIGHT_BIAS = -50.0f;
+  const float Terrain::HEIGHT_BIAS = -50.25f;
 
   void Terrain::buildTerraFrame()
   {

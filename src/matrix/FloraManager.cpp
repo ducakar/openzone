@@ -20,30 +20,27 @@ namespace oz
 
   inline void FloraManager::addTree( float x, float y )
   {
-    float z = world.terra.height( x, y );
+    Vec3 pos = Vec3( x, y, world.terra.height( x, y ) );
 
     const char *type;
-    float bias;
 
-    if( z > 20.0f ) {
+    if( pos.z > 20.0f ) {
       type = "Tree3";
-      bias = 7.5f;
+      pos.z += 7.0f;
     }
-    else if( z > 5.0f ) {
+    else if( pos.z > 5.0f ) {
       type = "Tree2";
-      bias = 3.5f;
+      pos.z += 3.0f;
     }
     else {
       return;
     }
 
-    Object *tree = translator.createObject( type, Vec3( x, y, z + bias ) );
+    AABB bounds = AABB( pos, translator.classes[type]->dim );
+    bounds *= SPACING;
 
-    if( collider.testOSO( *tree ) ) {
-      synapse.put( tree );
-    }
-    else {
-      delete tree;
+    if( collider.testOSO( bounds ) ) {
+      synapse.addObject( type, pos );
     }
   }
 

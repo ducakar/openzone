@@ -259,7 +259,7 @@ namespace client
 
     String sPath = "mdl/" + name;
     String modelFile = sPath + "/data.obj";
-    String configFile = sPath + "/" + name + ".xml";
+    String configFile = sPath + "/config.xml";
 
     Config config;
     config.load( configFile );

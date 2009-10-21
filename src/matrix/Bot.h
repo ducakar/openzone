@@ -29,12 +29,14 @@ namespace oz
       static const int KEY_CROUCH      = 0x00000020;
       static const int KEY_RUN         = 0x00000040;
       static const int KEY_USE         = 0x00000080;
-      static const int KEY_GRAB        = 0x00000100;
-      static const int KEY_STEP        = 0x00000200;
-      static const int KEY_FREELOOK    = 0x00000400;
-      static const int KEY_SUICIDE     = 0x00000800;
-      static const int KEY_GESTURE0    = 0x00001000;
-      static const int KEY_GESTURE1    = 0x00002000;
+      static const int KEY_TAKE        = 0x00000100;
+      static const int KEY_GRAB        = 0x00000200;
+      static const int KEY_THROW       = 0x00000400;
+      static const int KEY_STEP        = 0x00000800;
+      static const int KEY_FREELOOK    = 0x00001000;
+      static const int KEY_SUICIDE     = 0x00002000;
+      static const int KEY_GESTURE0    = 0x00004000;
+      static const int KEY_GESTURE1    = 0x00008000;
 
       static const int SND_LAND        = 5;
       static const int SND_JUMP        = 6;
@@ -53,6 +55,12 @@ namespace oz
       static const int DEATH_BIT       = 0x00000400;
       // bot is controlled by a player, nirvana shouldn't bind a mind to it
       static const int PLAYER_BIT      = 0x00000800;
+
+      static const float GRAB_EPSILON;
+      static const float GRAB_MOMRATIO;
+      static const float GRAB_MAX_HIT;
+      static const float GRAB_STRING_BREAK;
+      static const float GRAB_STRING_MAXLEN;
 
       enum AnimEnum
       {
@@ -96,6 +104,7 @@ namespace oz
       Vec3     camPos;
 
       int      grabObjIndex;
+      float    grabHandle;
 
       float    stepRate;
       float    deathTime;
@@ -103,7 +112,6 @@ namespace oz
       Vector<Object*> items;
 
       Weapon   *weapon;
-      Mind     *mind;
 
       AnimEnum anim;
 
