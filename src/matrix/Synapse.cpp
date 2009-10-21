@@ -21,7 +21,7 @@ namespace oz
   void Synapse::commit()
   {
     foreach( i, actions.iterator() ) {
-      i->target->activate( i->action );
+      i->target->use( i->user );
     }
     actions.clear();
 

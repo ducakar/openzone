@@ -202,19 +202,6 @@ namespace oz
       }
 
       /**
-       * Perform object update. One can implement onUpdate function to do some custom stuff.
-       */
-      void update()
-      {
-        events.free();
-
-        if( flags & UPDATE_FUNC_BIT ) {
-          onUpdate();
-        }
-        oldFlags = flags;
-      }
-
-      /**
        * Inflict damage to the object.
        * @param damage
        */
@@ -246,22 +233,27 @@ namespace oz
 
       void use( Bot *user )
       {
-        assert( sector == null );
-
         onUse( user );
       }
 
-      void activate( int action )
+      /**
+       * Perform object update. One can implement onUpdate function to do some custom stuff.
+       */
+      void update()
       {
-        onActivate( action );
+        events.free();
+
+        if( flags & UPDATE_FUNC_BIT ) {
+          onUpdate();
+        }
+        oldFlags = flags;
       }
 
     protected:
 
-      virtual void onUpdate();
       virtual void onHit( const Hit *hit, float momentum );
       virtual void onUse( Bot *user );
-      virtual void onActivate( int action );
+      virtual void onUpdate();
 
     public:
 

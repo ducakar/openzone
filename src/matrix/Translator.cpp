@@ -13,6 +13,7 @@
 #include "ObjectClass.h"
 #include "DynObjectClass.h"
 #include "BotClass.h"
+#include "HealthItemClass.h"
 #include "VehicleClass.h"
 
 #include <dirent.h>
@@ -31,6 +32,8 @@ namespace oz
     OZ_REGISTER_BASECLASS( Object );
     OZ_REGISTER_BASECLASS( DynObject );
     OZ_REGISTER_BASECLASS( Bot );
+    OZ_REGISTER_BASECLASS( HealthItem );
+
     OZ_REGISTER_BASECLASS( Vehicle );
 
     log.println( "Translator mapping resources {" );

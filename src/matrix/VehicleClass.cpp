@@ -154,7 +154,6 @@ namespace oz
     obj->camPos   = camPos;
     obj->state    = state;
     obj->stamina  = stamina;
-    obj->mind     = null;
 
     return obj;
   }

@@ -1,5 +1,5 @@
 /*
- *  DynObjectClass.h
+ *  HealthItemClass.h
  *
  *  [description]
  *
@@ -8,19 +8,18 @@
 
 #pragma once
 
-#include "Object.h"
-#include "ObjectClass.h"
+#include "DynObjectClass.h"
 
 namespace oz
 {
 
-  struct DynObjectClass : ObjectClass
+  struct HealthItemClass : DynObjectClass
   {
-    static const int BASE_FLAGS = Object::DYNAMIC_BIT;
+    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::ITEM_BIT;
     static const int DEFAULT_FLAGS = Object::CLIP_BIT;
 
-    float mass;
-    float lift;
+    float health;
+    float stamina;
 
     static ObjectClass *init( const String &name, Config *config );
     virtual Object *create( const Vec3 &pos );
@@ -28,3 +27,4 @@ namespace oz
   };
 
 }
+

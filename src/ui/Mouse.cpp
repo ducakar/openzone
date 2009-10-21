@@ -12,6 +12,9 @@
 
 #include "client/Context.h"
 
+#define SDL_BUTTON_WUMASK SDL_BUTTON( SDL_BUTTON_WHEELUP )
+#define SDL_BUTTON_WDMASK SDL_BUTTON( SDL_BUTTON_WHEELDOWN )
+
 namespace oz
 {
 namespace client
@@ -104,13 +107,14 @@ namespace ui
       overEdgeY = moveY;
     }
 
-    leftClick   = !( b & SDL_BUTTON_LMASK ) && ( newButtons & SDL_BUTTON_LMASK );
-    middleClick = !( b & SDL_BUTTON_MMASK ) && ( newButtons & SDL_BUTTON_MMASK );
-    rightClick  = !( b & SDL_BUTTON_RMASK ) && ( newButtons & SDL_BUTTON_RMASK );
-    wheelUp     = newButtons & SDL_BUTTON( SDL_BUTTON_WHEELUP   );
-    wheelDown   = newButtons & SDL_BUTTON( SDL_BUTTON_WHEELDOWN );
+    leftClick   = !( b & SDL_BUTTON_LMASK )  && ( persButtons & SDL_BUTTON_LMASK );
+    middleClick = !( b & SDL_BUTTON_MMASK )  && ( persButtons & SDL_BUTTON_MMASK );
+    rightClick  = !( b & SDL_BUTTON_RMASK )  && ( persButtons & SDL_BUTTON_RMASK );
+    wheelUp     = !( b & SDL_BUTTON_WUMASK ) && ( persButtons & SDL_BUTTON_WUMASK );
+    wheelDown   = !( b & SDL_BUTTON_WDMASK ) && ( persButtons & SDL_BUTTON_WDMASK );
 
-    b = newButtons;
+    b = persButtons;
+    persButtons = currButtons;
   }
 
   void Mouse::draw() const

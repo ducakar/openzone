@@ -87,7 +87,10 @@ namespace oz
     clazz->airControl        = config->get( "airControl", 0.025f );
     clazz->climbControl      = config->get( "climbControl", 1.50f );
     clazz->waterControl      = config->get( "waterControl", 0.05f );
+
     clazz->grabDistance      = config->get( "grabDistance", 1.2f );
+    clazz->grabMass          = config->get( "grabMass", 30.0f );
+    clazz->throwMomentum     = config->get( "throwMomentum", 5.0f );
 
     clazz->stamina           = config->get( "stamina", 100.0f );
     clazz->staminaGain       = config->get( "staminaGain", 0.05f );
@@ -157,7 +160,6 @@ namespace oz
     obj->camPos   = camPos;
     obj->state    = state;
     obj->stamina  = stamina;
-    obj->mind     = null;
 
     return obj;
   }

@@ -224,7 +224,6 @@ namespace client
       // read input & events
       ui::mouse.moveX = 0;
       ui::mouse.moveY = 0;
-      ui::mouse.newButtons = SDL_GetRelativeMouseState( null, null );
       aCopy( game.input.oldKeys, game.input.keys, SDLK_LAST );
 
       while( SDL_PollEvent( &event ) ) {
@@ -232,8 +231,16 @@ namespace client
           case SDL_MOUSEMOTION: {
             ui::mouse.moveX = -event.motion.xrel;
             ui::mouse.moveY =  event.motion.yrel;
-
             SDL_WarpMouse( screenCenterX, screenCenterY );
+            break;
+          }
+          case SDL_MOUSEBUTTONUP: {
+            ui::mouse.currButtons &= ~SDL_BUTTON( event.button.button );
+            break;
+          }
+          case SDL_MOUSEBUTTONDOWN: {
+            ui::mouse.currButtons |= SDL_BUTTON( event.button.button );
+            ui::mouse.persButtons |= SDL_BUTTON( event.button.button );
             break;
           }
           case SDL_KEYDOWN: {

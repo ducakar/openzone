@@ -17,6 +17,8 @@ namespace oz
 
       // plants/m2
       static const float DENSITY = 0.03;
+      // dim * SPACING
+      static const float SPACING = 8.0f;
       // plants/m2/s
       static const float GROWTH =  0.0001;
 

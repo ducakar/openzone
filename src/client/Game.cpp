@@ -49,7 +49,7 @@ namespace client
 
     camera.botIndex = -1;
     camera.bot = null;
-    camera.p = Vec3( 50, -50, 30 );
+    camera.p = Vec3( 52, -49, 30 );
 
     log.unindent();
     log.println( "}" );
@@ -251,11 +251,19 @@ namespace client
         camera.isThirdPerson = !camera.isThirdPerson;
       }
 
-      if( ui::mouse.rightClick ) {
-        camera.bot->keys |= Bot::KEY_USE;
-      }
-      if( ui::mouse.rightClick ) {
-        camera.bot->keys |= Bot::KEY_GRAB;
+      if( state == GAME ) {
+        if( ui::mouse.rightClick ) {
+          camera.bot->keys |= Bot::KEY_USE;
+        }
+        if( ui::mouse.wheelDown ) {
+          camera.bot->keys |= Bot::KEY_TAKE;
+        }
+        if( ui::mouse.middleClick ) {
+          camera.bot->keys |= Bot::KEY_GRAB;
+        }
+        if( ui::mouse.wheelUp ) {
+          camera.bot->keys |= Bot::KEY_THROW;
+        }
       }
     }
 

@@ -17,7 +17,6 @@
 #include "OBJ.h"
 #include "MD2.h"
 #include "Model.h"
-#include "SparkGenRender.h"
 
 namespace oz
 {
@@ -30,10 +29,11 @@ namespace client
 
       static const float RELEASED_CULL_FACTOR;
 
-      static const float BLACK[];
-      static const float WHITE[];
+      static const float BLACK_COLOR[];
+      static const float WHITE_COLOR[];
 
-      static const float GLOBAL_AMBIENT[];
+      static const float TAG_COLOR[];
+      static const float GLOBAL_AMBIENT_COLOR[];
 
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;
@@ -44,7 +44,7 @@ namespace client
       static const int   DELAYED_LISTS_MAX = 256;
 
       // cleanup interval (remove unused models)
-      static const int   CLEAR_INTERVAL = 60 * 50;
+      static const int   CLEAR_INTERVAL = 303 * 50;
 
       struct DelayedList
       {
@@ -78,6 +78,8 @@ namespace client
 
       float                   particleRadius;
 
+      int                     taggedObj;
+
       bool                    drawAABBs;
       bool                    blendHeaven;
       bool                    showAim;
@@ -87,7 +89,6 @@ namespace client
       bool                    wasUnderWater;
 
       void drawObject( Object *obj );
-      void drawSparkGen( SparkGen *sparkGen );
       void scheduleSector( int sectorX, int sectorY );
 
     public:
