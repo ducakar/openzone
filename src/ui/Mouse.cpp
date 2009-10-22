@@ -107,11 +107,11 @@ namespace ui
       overEdgeY = moveY;
     }
 
-    leftClick   = !( b & SDL_BUTTON_LMASK )  && ( persButtons & SDL_BUTTON_LMASK );
-    middleClick = !( b & SDL_BUTTON_MMASK )  && ( persButtons & SDL_BUTTON_MMASK );
-    rightClick  = !( b & SDL_BUTTON_RMASK )  && ( persButtons & SDL_BUTTON_RMASK );
-    wheelUp     = !( b & SDL_BUTTON_WUMASK ) && ( persButtons & SDL_BUTTON_WUMASK );
-    wheelDown   = !( b & SDL_BUTTON_WDMASK ) && ( persButtons & SDL_BUTTON_WDMASK );
+    leftClick   = ~b & persButtons & SDL_BUTTON_LMASK;
+    middleClick = ~b & persButtons & SDL_BUTTON_MMASK;
+    rightClick  = ~b & persButtons & SDL_BUTTON_RMASK;
+    wheelUp     = ~b & persButtons & SDL_BUTTON_WUMASK;
+    wheelDown   = ~b & persButtons & SDL_BUTTON_WDMASK;
 
     b = persButtons;
     persButtons = currButtons;

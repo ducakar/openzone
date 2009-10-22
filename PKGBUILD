@@ -1,5 +1,5 @@
 pkgname=openzone-git
-pkgver=20090825
+pkgver=20091021
 pkgrel=1
 pkgdesc="A simple cross-platform 3D engine"
 url="http://github.com/ducakar/openzone/"
@@ -27,6 +27,5 @@ build() {
 
   ./autogen.sh
   make || return 1
-  mkdir -p ${pkgdir}/usr/bin
-  cp ${srcdir}/openzone/src/client/openzone ${pkgdir}/usr/bin
+  install -m 755 -D ${srcdir}/openzone/src/client/openzone ${pkgdir}/usr/bin
 }

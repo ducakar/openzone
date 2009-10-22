@@ -15,11 +15,13 @@ namespace oz
 
   class Physics
   {
-    private:
+    public:
 
       static const float CLIP_BACKOFF;
       static const float STICK_VELOCITY;
       static const float SLICK_STICK_VELOCITY;
+      static const float HIT_MOMENTUM;
+      static const float FLOOR_NORMAL_Z;
 
       static const float AIR_FRICTION;
       static const float IN_WATER_FRICTION;
@@ -28,6 +30,8 @@ namespace oz
       static const float FLOOR_FRICTION;
       static const float OBJ_FRICTION;
       static const float SLICK_FRICTION;
+
+    private:
 
       Vec3      leafStartPos;
       Vec3      leafEndPos;
@@ -55,9 +59,6 @@ namespace oz
       void handleObjMove();
 
     public:
-
-      static const float FLOOR_NORMAL_Z;
-      static const float HIT_MOMENTUM;
 
       float     gAccel;
       float     gVelocity;

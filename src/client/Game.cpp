@@ -29,7 +29,7 @@ namespace client
   Game game;
 
   const float Game::FREECAM_SLOW_SPEED = 0.05f;
-  const float Game::FREECAM_FAST_SPEED = 0.50f;
+  const float Game::FREECAM_FAST_SPEED = 1.50f;
 
   bool Game::init()
   {
@@ -49,7 +49,7 @@ namespace client
 
     camera.botIndex = -1;
     camera.bot = null;
-    camera.p = Vec3( 52, -49, 30 );
+    camera.p = Vec3( 52, -49, 40 );
 
     log.unindent();
     log.println( "}" );

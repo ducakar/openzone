@@ -90,7 +90,7 @@ namespace oz
 
     clazz->grabDistance      = config->get( "grabDistance", 1.2f );
     clazz->grabMass          = config->get( "grabMass", 30.0f );
-    clazz->throwMomentum     = config->get( "throwMomentum", 5.0f );
+    clazz->throwMomentum     = config->get( "throwMomentum", 4.0f );
 
     clazz->stamina           = config->get( "stamina", 100.0f );
     clazz->staminaGain       = config->get( "staminaGain", 0.05f );

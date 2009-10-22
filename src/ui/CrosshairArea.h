@@ -1,5 +1,5 @@
 /*
- *  DebugArea.h
+ *  CrosshairArea.h
  *
  *  [description]
  *
@@ -17,19 +17,22 @@ namespace client
 namespace ui
 {
 
-  class DebugArea : public Area
+  class CrosshairArea : public Area
   {
+    private:
+
+      int crossTexId;
+      int grabTexId;
+      int dim;
+
     protected:
 
       virtual void draw();
 
     public:
 
-      DebugArea() : Area( 5, -15 - 6 * font.monoHeight, 480, 10 + 6 * font.monoHeight )
-      {
-        setFont( MONO );
-        setFontColor( 0xff, 0xff, 0xff );
-      }
+      CrosshairArea( int size );
+      virtual ~CrosshairArea();
 
   };
 

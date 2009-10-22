@@ -21,6 +21,6 @@ namespace oz
     flags = 0;
     type = 0;
 
-    life = Math::INF;
+    life = Math::inf();
   }
 }
