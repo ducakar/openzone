@@ -205,10 +205,10 @@ namespace oz
       planes[i].distance *= scale;
 
       if( planes[i].distance < -maxDim ) {
-        planes[i].distance = -Math::INF;
+        planes[i].distance = -Math::inf();
       }
       else if( planes[i].distance > maxDim ) {
-        planes[i].distance = Math::INF;
+        planes[i].distance = Math::inf();
       }
     }
 
@@ -226,13 +226,13 @@ namespace oz
       nodes[i].back  = node.back;
     }
 
-    mins.x = Math::INF;
-    mins.y = Math::INF;
-    mins.z = Math::INF;
+    mins.x = Math::inf();
+    mins.y = Math::inf();
+    mins.z = Math::inf();
 
-    maxs.x = -Math::INF;
-    maxs.y = -Math::INF;
-    maxs.z = -Math::INF;
+    maxs.x = -Math::inf();
+    maxs.y = -Math::inf();
+    maxs.z = -Math::inf();
 
     nLeafs = lumps[QBSP_LUMP_LEAFS].length / sizeof( QBSPLeaf );
     leafs = new BSP::Leaf[nLeafs];
@@ -303,7 +303,7 @@ namespace oz
       if( flags & QBSP_LADDER_BIT ) {
         brushes[i].material |= Material::LADDER_BIT;
       }
-      if( !( flags & QBSP_NONSOLID_BIT ) ) {
+      if( ~flags & QBSP_NONSOLID_BIT ) {
         brushes[i].material |= Material::STRUCT_BIT;
       }
       if( flags & QBSP_SLICK_BIT ) {
@@ -405,7 +405,7 @@ namespace oz
     log.print( "Loading Quake 3 BSP structure '%s' ...", name );
 
     float scale  = bspConfig.get( "scale", 0.01f );
-    float maxDim = bspConfig.get( "maxDim", Math::INF );
+    float maxDim = bspConfig.get( "maxDim", Math::inf() );
     bspConfig.clear();
 
     if( Math::isNaN( scale ) || Math::isNaN( maxDim ) ) {

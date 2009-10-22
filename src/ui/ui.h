@@ -17,6 +17,7 @@
 
 #include "DebugArea.h"
 #include "HealthArea.h"
+#include "CrosshairArea.h"
 #include "BuildMenu.h"
 
 namespace oz

@@ -23,30 +23,41 @@ namespace oz
 
     public:
 
-      static const float FLOAT_EPS;
-      static const float DOUBLE_EPS;
-      static const float E;
-      static const float LOG2E;
-      static const float LOG10E;
-      static const float LN2;
-      static const float LN10;
-      static const float PI;
-      static const float PI_2;
-      static const float PI_4;
-      static const float _1_PI;
-      static const float _2_PI;
-      static const float _2_SQRTPI;
-      static const float SQRT2;
-      static const float SQRT1_2;
-      static const float NaN;
-      static const float INF;
+      static const float FLOAT_EPS  = 1.1920928955078125e-7f;
+      static const float E          = 2.7182818284590452354f;
+      static const float LOG2E      = 1.4426950408889634074f;
+      static const float LOG10E     = 0.43429448190325182765f;
+      static const float LN2        = 0.69314718055994530942f;
+      static const float LN10       = 2.30258509299404568402f;
+      static const float PI         = 3.14159265358979323846f;
+      static const float PI_2       = 1.57079632679489661923f;
+      static const float PI_4       = 0.78539816339744830962f;
+      static const float _1_PI      = 0.31830988618379067154f;
+      static const float _2_PI      = 0.63661977236758134308f;
+      static const float _2_SQRTPI  = 1.12837916709551257390f;
+      static const float SQRT2      = 1.41421356237309504880f;
+      static const float SQRT1_2    = 0.70710678118654752440f;
 
       static const int  INT_MAX  = ~0u >> 1;
       static const long LONG_MAX = ~0ul >> 1;
 
       /*
+       * Special values
+       */
+      static float nan()
+      {
+        return __builtin_nanf( "0" );
+      }
+
+      static float inf()
+      {
+        return __builtin_inff();
+      }
+
+      /*
        * Standard math functions
        */
+
       static float abs( float x )
       {
         return __builtin_fabsf( x );

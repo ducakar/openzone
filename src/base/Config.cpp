@@ -142,7 +142,7 @@ namespace oz
     int size = vars.length();
     Elem sortedVars[size];
 
-    auto j( vars.iterator() );
+    typeof( vars.iterator() ) j = vars.iterator();
     for( int i = 0; !j.isPassed(); ++i, ++j ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();

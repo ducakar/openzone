@@ -31,13 +31,15 @@ namespace client
     int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
 
     // friction
-    if( ( obj->flags & Object::FRICTING_BIT ) && samples[SND_FRICTING] >= 0 ) {
+    if( ( obj->flags & Object::FRICTING_BIT ) && ( ~obj->flags & Object::ON_SLICK_BIT ) &&
+        samples[SND_FRICTING] >= 0 )
+    {
       float dv = Math::sqrt( obj->velocity.x*obj->velocity.x + obj->velocity.y*obj->velocity.y );
       playContSound( samples[SND_FRICTING], dv / 1.0f, (uint) &*obj );
     }
 
     // splash
-    if( ( obj->flags & Object::IN_WATER_BIT ) && !( obj->oldFlags & Object::IN_WATER_BIT ) ) {
+    if( obj->flags & ~obj->oldFlags & Object::IN_WATER_BIT ) {
       if( obj->velocity.z < -6.0f && samples[SND_SPLASH_HARD] >= 0 ) {
         playSound( samples[SND_SPLASH_HARD], obj->velocity.z / -8.0f );
       }

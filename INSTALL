@@ -23,11 +23,11 @@ More detailed build instructions:
 ---------------------------------
 1. run "./autogen.sh" to generate src/*/CMakeLists.txt
 2. configure project running "cmake-gui ." for Qt interface or "ccmake ." for ncurses interface.
-   It's also possible to do it in command line with cmake and various switches, but highly unpractical,
+   It's also possible to do it in command line with cmake and various switches, but it's inconvenient,
    unless you're writing a script.
 3. run "make -j42" if you have a 42-core cpu, to run make in 42 parallel proccesses.
 
 Data
 ----
-Uncompress data in to /some/dir/data and set that path in ~/.openzone/client.xml if /some/dir/ != /usr/share/
+Uncompress data to /some/dir/data and set that path in ~/.openzone/client.xml if /some/dir/ != /usr/share/
 The sample client.xml is located in the project's root dir.

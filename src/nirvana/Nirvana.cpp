@@ -18,7 +18,7 @@ namespace oz
   void Nirvana::sync()
   {
     // remove minds of removed bots
-    for( auto i( minds.iterator() ); !i.isPassed(); ) {
+    for( typeof( minds.iterator() ) i = minds.iterator(); !i.isPassed(); ) {
       Mind *mind = i;
       ++i;
 
@@ -32,7 +32,7 @@ namespace oz
       if( ( *obj )->flags & Object::BOT_BIT ) {
         Bot *bot = (Bot*) *obj;
 
-        if( !( bot->state & Bot::PLAYER_BIT ) ) {
+        if( ~bot->state & Bot::PLAYER_BIT ) {
           minds << new RandomMind( ( *obj )->index );
         }
       }

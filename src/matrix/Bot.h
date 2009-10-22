@@ -58,9 +58,9 @@ namespace oz
 
       static const float GRAB_EPSILON;
       static const float GRAB_MOMRATIO;
-      static const float GRAB_MAX_HIT;
       static const float GRAB_STRING_BREAK;
-      static const float GRAB_STRING_MAXLEN;
+      static const float GRAB_MOM_BREAK;
+      static const float GRAB_MAX_MOM;
 
       enum AnimEnum
       {

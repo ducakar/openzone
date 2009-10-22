@@ -38,7 +38,7 @@ namespace client
   const float Render::BLACK_COLOR[] = { 0.0f, 0.0f, 0.0f, 1.0f };
   const float Render::WHITE_COLOR[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-  const float Render::TAG_COLOR[] = { 0.85f, 0.90f, 1.0f, 1.0f };
+  const float Render::TAG_COLOR[] = { 0.75f, 0.85f, 1.0f, 1.0f };
   const float Render::GLOBAL_AMBIENT_COLOR[] = { 0.2f, 0.2f, 0.2f, 1.0f };
 
   const float Render::NIGHT_FOG_COEFF = 2.0f;
@@ -107,6 +107,8 @@ namespace client
   {
     log.println( "Loading Graphics {" );
     log.indent();
+
+    ui::root.add( new ui::CrosshairArea( 64 ), screenX / 2 - 32, screenY / 2 - 32 );
 
     assert( glGetError() == GL_NO_ERROR );
 
@@ -227,7 +229,7 @@ namespace client
 
   void Render::sync()
   {
-    for( auto i( models.iterator() ); !i.isPassed(); ) {
+    for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
       Model *model = i.value();
       uint  key    = i.key();
       ++i;
@@ -476,7 +478,7 @@ namespace client
     // cleanups
     if( clearCount >= CLEAR_INTERVAL ) {
       // remove unused models
-      for( auto i( models.iterator() ); !i.isPassed(); ) {
+      for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
         Model *model = *i;
         uint  key    = i.key();
 
