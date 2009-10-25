@@ -25,7 +25,7 @@ namespace client
 
     public:
 
-      typedef Audio *( *InitFunc )( const Object *object );
+      typedef Audio *( *CreateFunc )( const Object *object );
 
     private:
 
@@ -33,7 +33,7 @@ namespace client
 
     protected:
 
-      const Object      *obj;
+      const Object *obj;
 
       void playSound( int sample, float volume ) const;
       void playContSound( int sample, float volume, uint key ) const;

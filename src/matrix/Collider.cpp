@@ -130,7 +130,6 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
@@ -168,7 +167,6 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         const Sector &sector = world.sectors[x][y];
 
         foreach( sObj, sector.objects.iterator() ) {
@@ -194,7 +192,6 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
@@ -498,7 +495,7 @@ namespace oz
     globalStartPos = point;
     globalEndPos   = point + move;
 
-    if( !world.includes( trace, EPSILON ) ) {
+    if( !world.includes( trace ) ) {
       trimPointVoid();
     }
 
@@ -506,7 +503,6 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
@@ -515,7 +511,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            if( str->overlaps( trace, EPSILON ) ) {
+            if( str->overlaps( trace ) ) {
               trimPointNode( 0, 0.0f, 1.0f,
                              toStructCS( globalStartPos - str->p ),
                              toStructCS( globalEndPos - str->p ) );
@@ -526,7 +522,7 @@ namespace oz
 
         foreach( sObj, sector.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( trace, EPSILON ) )
+              sObj->overlaps( trace ) )
           {
             trimPointObj( &*sObj );
           }
@@ -603,7 +599,7 @@ namespace oz
   // check for AABB-AABB, AABB-Brush and AABB-Terrain overlapping in the world
   bool Collider::testAABBWorld()
   {
-    if( !world.includes( aabb, EPSILON ) ) {
+    if( !world.includes( trace ) ) {
       return false;
     }
 
@@ -615,7 +611,6 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
@@ -626,7 +621,7 @@ namespace oz
 
             globalStartPos = toStructCS( aabb.p - str->p );
 
-            if( str->overlaps( aabb, EPSILON ) && !testAABBNode( 0 ) ) {
+            if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
               return false;
             }
             oldStr = str;
@@ -635,7 +630,7 @@ namespace oz
 
         foreach( sObj, sector.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( aabb, EPSILON ) )
+              sObj->overlaps( trace ) )
           {
             return false;
           }
@@ -648,18 +643,17 @@ namespace oz
   // check for AABB-AABB overlapping in the world
   bool Collider::testAABBWorldOO()
   {
-    if( !world.includes( aabb, EPSILON ) ) {
+    if( !world.includes( trace ) ) {
       return false;
     }
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         Sector &sector = world.sectors[x][y];
 
         foreach( sObj, sector.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( aabb, EPSILON ) )
+              sObj->overlaps( trace ) )
           {
             return false;
           }
@@ -672,7 +666,7 @@ namespace oz
   // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testAABBWorldOSO()
   {
-    if( !world.includes( aabb, EPSILON ) ) {
+    if( !world.includes( trace ) ) {
       return false;
     }
 
@@ -680,7 +674,6 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
@@ -691,7 +684,7 @@ namespace oz
 
             globalStartPos = toStructCS( aabb.p - str->p );
 
-            if( str->overlaps( aabb, EPSILON ) && !testAABBNode( 0 ) ) {
+            if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
               return false;
             }
             oldStr = str;
@@ -700,7 +693,7 @@ namespace oz
 
         foreach( sObj, sector.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( aabb, EPSILON ) )
+              sObj->overlaps( trace ) )
           {
             return false;
           }
@@ -970,7 +963,7 @@ namespace oz
     globalStartPos = aabb.p;
     globalEndPos   = aabb.p + move;
 
-    if( !world.includes( trace, EPSILON ) ) {
+    if( !world.includes( trace ) ) {
       trimAABBVoid();
     }
 
@@ -978,7 +971,6 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         Sector &sector = world.sectors[x][y];
 
         foreach( strIndex, sector.structures.iterator() ) {
@@ -988,7 +980,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            if( str->overlaps( trace, EPSILON ) ) {
+            if( str->overlaps( trace ) ) {
               trimAABBNode( 0, 0.0f, 1.0f,
                             toStructCS( globalStartPos - str->p ),
                             toStructCS( globalEndPos - str->p ) );
@@ -999,7 +991,7 @@ namespace oz
 
         foreach( sObj, sector.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( trace, EPSILON ) )
+              sObj->overlaps( trace ) )
           {
             trimAABBObj( &*sObj );
           }
@@ -1026,7 +1018,6 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         Sector &sector = world.sectors[x][y];
 
         if( structs != null ) {
@@ -1038,7 +1029,7 @@ namespace oz
 
               globalStartPos = toStructCS( aabb.p - str->p );
 
-              if( str->overlaps( aabb ) && !testAABBNode( 0 ) ) {
+              if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
                 structs->add( str );
               }
             }
@@ -1047,7 +1038,7 @@ namespace oz
 
         if( objects != null ) {
           foreach( sObj, sector.objects.iterator() ) {
-            if( sObj->overlaps( aabb ) ) {
+            if( sObj->overlaps( trace ) ) {
               *objects << &*sObj;
             }
           }
@@ -1056,19 +1047,18 @@ namespace oz
     }
   }
 
-  // get all objects which centres are included in our trace
+  // get all objects which are included in our trace
   void Collider::getWorldIncludes( Vector<Object*> *objects )
   {
     assert( objects != null );
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-
         Sector &sector = world.sectors[x][y];
 
         if( objects != null ) {
           foreach( sObj, sector.objects.iterator() ) {
-            if( aabb.includes( sObj->p ) ) {
+            if( trace.includes( *sObj ) ) {
               *objects << sObj;
             }
           }

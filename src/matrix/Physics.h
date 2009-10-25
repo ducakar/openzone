@@ -18,11 +18,12 @@ namespace oz
     public:
 
       static const float CLIP_BACKOFF;
-      static const float STICK_VELOCITY;
-      static const float SLICK_STICK_VELOCITY;
       static const float HIT_MOMENTUM;
       static const float FLOOR_NORMAL_Z;
+      static const float G_VELOCITY;
 
+      static const float STICK_VELOCITY;
+      static const float SLICK_STICK_VELOCITY;
       static const float AIR_FRICTION;
       static const float IN_WATER_FRICTION;
       static const float ON_WATER_FRICTION;
@@ -60,20 +61,14 @@ namespace oz
 
     public:
 
-      float     gAccel;
-      float     gVelocity;
-
-      void setG( float gAccel );
-      void update();
-
       void updatePart( Particle *part_ )
       {
         part = part_;
 
-        part->velocity.z += gVelocity;
-        part->lifeTime -= timer.frameTime;
+        part->velocity.z += G_VELOCITY;
+        part->lifeTime -= Timer::TICK_TIME;
 
-        part->rot += part->rotVelocity * timer.frameTime;
+        part->rot += part->rotVelocity * Timer::TICK_TIME;
         handlePartMove();
       }
 

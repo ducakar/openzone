@@ -116,6 +116,9 @@ namespace oz
       void init();
       void free();
 
+      void load();
+      void unload();
+
       void update();
 
       void genParticles( int number, const Vec3 &p,

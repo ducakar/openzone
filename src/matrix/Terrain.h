@@ -68,7 +68,8 @@ namespace oz
 
       bool isLoaded;
 
-      void init( float height );
+      void init();
+      void load( float height );
       void load( const char *heightMapFile );
 
       void isEmpty() const;

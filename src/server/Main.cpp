@@ -152,7 +152,7 @@ namespace server
     // THE MAGNIFICANT MAIN LOOP
     do {
       // update world
-      game.update( tick );
+      game.update();
 
       // render graphics, if we have enough time left
       time = SDL_GetTicks() - timeLast;

@@ -16,5 +16,5 @@ unset nFiles
 unset FILES
 
 if [ -x /usr/bin/sloccount ]; then
-  LANG=C /usr/bin/sloccount src/base src/matrix src/nirvana src/ui src/client src/server src/test *.h *.sh
+  LANG=C /usr/bin/sloccount src *.h *.sh
 fi

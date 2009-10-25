@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "BSP.h"
-
 namespace oz
 {
 

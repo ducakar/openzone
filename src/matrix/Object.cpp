@@ -46,7 +46,7 @@ namespace oz
     }
   }
 
-  void Object::writeFull( OutputStream *ostream )
+  void Object::writeFull( OutputStream *ostream ) const
   {
     ostream->writeVec3( p );
     ostream->writeInt( flags );
@@ -73,7 +73,7 @@ namespace oz
     }
   }
 
-  void Object::writeUpdate( OutputStream *ostream )
+  void Object::writeUpdate( OutputStream *ostream ) const
   {
     ostream->writeFloat( life );
 

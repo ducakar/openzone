@@ -23,44 +23,46 @@ namespace oz
         Object::HIT_FUNC_BIT | Object::BOT_BIT;
     static const int DEFAULT_FLAGS = Object::CLIP_BIT | Object::CLIMBER_BIT | Object::PUSHER_BIT;
 
-    Vec3  dimCrouch;
+    Vec3   dimCrouch;
 
-    Vec3  camPos;
-    Vec3  camPosCrouch;
+    Vec3   camPos;
+    Vec3   camPosCrouch;
 
-    float bobInc;
-    float bobAmplitude;
+    float  bobInc;
+    float  bobAmplitude;
 
-    float walkMomentum;
-    float runMomentum;
-    float crouchMomentum;
-    float jumpMomentum;
+    float  walkMomentum;
+    float  runMomentum;
+    float  crouchMomentum;
+    float  jumpMomentum;
 
-    float stepInc;
-    float stepMax;
-    float stepRate;
-    float stepRateSupp;
+    float  stepInc;
+    float  stepMax;
+    float  stepRate;
+    float  stepRateSupp;
 
-    float airControl;
-    float climbControl;
-    float waterControl;
+    float  airControl;
+    float  climbControl;
+    float  waterControl;
 
-    float grabDistance;
-    float grabMass;
-    float throwMomentum;
+    float  grabDistance;
+    float  grabMass;
+    float  throwMomentum;
 
-    float stamina;
-    float staminaGain;
-    float staminaWaterDrain;
-    float staminaRunDrain;
-    float staminaJumpDrain;
+    float  stamina;
+    float  staminaGain;
+    float  staminaWaterDrain;
+    float  staminaRunDrain;
+    float  staminaJumpDrain;
 
-    int   state;
+    int    state;
 
-    float lookLimitHMin;
-    float lookLimitHMax;
-    float lookLimitVMin;
-    float lookLimitVMax;
+    float  lookLimitHMin;
+    float  lookLimitHMax;
+    float  lookLimitVMin;
+    float  lookLimitVMax;
+
+    String mindType;
 
     static ObjectClass *init( const String &name, Config *config );
     virtual Object *create( const Vec3 &pos );

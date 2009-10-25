@@ -18,62 +18,89 @@ namespace oz
 
   Matrix matrix;
 
-  const float Matrix::G_ACCEL = -9.81f;
   // default 10000.0f: 100 m/s
   const float Matrix::MAX_VELOCITY2 = 10000.0f;
 
   void Matrix::loadStressTest()
   {
     static const float DIM = World::DIM;
-//    static const float DIM = 100;
+    int j = 0;
 
-    for( int i = 0; i < 400; i++ ) {
+    for( int i = 0; i < 1000; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
-      synapse.addObject( "Goblin", Vec3( x, y, z ) );
+      if( z > 0.0f ) {
+        synapse.addObject( "Goblin", Vec3( x, y, z ) );
+        j++;
+      }
     }
     for( int i = 0; i < 1000; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
-      synapse.addObject( "BigCrate", Vec3( x, y, z ) );
+      if( z > 0.0f ) {
+        synapse.addObject( "MetalBarrel", Vec3( x, y, z ) );
+      }
     }
     for( int i = 0; i < 1000; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 2.0f;
 
-      synapse.addObject( "SmallCrate", Vec3( x, y, z ) );
+      if( z > 0.0f ) {
+        synapse.addObject( "SmallCrate", Vec3( x, y, z ) );
+      }
     }
   }
 
-  void Matrix::load()
+  void Matrix::init()
   {
-    log.println( "Loading Matrix {" );
+    log.println( "Initializing Matrix {" );
     log.indent();
 
     semaphore = SDL_CreateSemaphore( 0 );
 
     translator.init();
     world.init();
-    physics.setG( G_ACCEL );
 
-    world.sky.init( 70.0f, 600.0f );
-    world.sky.time = 200.0f;
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Matrix::free()
+  {
+    log.println( "Freeing down Matrix {" );
+    log.indent();
+
+    world.free();
+    translator.free();
+
+    SDL_DestroySemaphore( semaphore );
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Matrix::load( InputStream *istream )
+  {
+    log.println( "Loading Matrix {" );
+    log.indent();
+
     world.terra.load( "terra/heightmap.png" );
+    world.load();
 
-    Buffer buffer( 1024 * 1024 * 10 );
-    if( buffer.load( config.get( "dir.home", "" ) + String( "/saved.world" ) ) ) {
-      InputStream istream = buffer.inputStream();
-      world.read( &istream );
+    if( istream != null ) {
+      world.read( istream );
     }
     else {
-//      Bot *lord = (Bot*) translator.createObject( "Lord", Vec3( 52, -44, 37 ) );
-//      lord->h = 270;
-//      synapse.put( lord );
+      world.sky.set( 205.0f, 144.0f, 0.0f );
+
+      Bot *lord = (Bot*) translator.createObject( "Lord", Vec3( 52, -44, 37 ) );
+      lord->h = 270;
+      synapse.put( lord );
 
       synapse.addObject( "Knight", Vec3( 50, -35, 37 ) );
       synapse.addObject( "Goblin", Vec3( 51, -35, 37 ) );
@@ -125,26 +152,20 @@ namespace oz
       loadStressTest();
       floraManager.seed();
     }
-    buffer.free();
 
     log.unindent();
     log.println( "}" );
   }
 
-  void Matrix::free()
+  void Matrix::unload( OutputStream *ostream )
   {
-    log.println( "Shutting down Matrix {" );
+    log.println( "Unloading Matrix {" );
     log.indent();
 
-    Buffer buffer( 1024 * 1024 * 10 );
-    OutputStream ostream = buffer.outputStream();
-    world.write( &ostream );
-//     buffer.write( config.get( "dir.home", "" ) + String( "/saved.world" ) );
-
-    world.free();
-    translator.free();
-
-    SDL_DestroySemaphore( semaphore );
+    if( ostream != null ) {
+      world.write( ostream );
+    }
+    world.unload();
 
     log.unindent();
     log.println( "}" );
@@ -152,8 +173,6 @@ namespace oz
 
   void Matrix::update()
   {
-    physics.update();
-
     for( int i = 0; i < world.particles.length(); i++ ) {
       Particle *part = world.particles[i];
 

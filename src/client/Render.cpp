@@ -38,120 +38,19 @@ namespace client
   const float Render::BLACK_COLOR[] = { 0.0f, 0.0f, 0.0f, 1.0f };
   const float Render::WHITE_COLOR[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-  const float Render::TAG_COLOR[] = { 0.75f, 0.85f, 1.0f, 1.0f };
-  const float Render::GLOBAL_AMBIENT_COLOR[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+  const float Render::TAG_COLOR[] = { 0.50f, 2.00f, 2.00f, 1.00f };
+  const float Render::GLOBAL_AMBIENT_COLOR[] = { 0.20f, 0.20f, 0.20f, 1.00f };
 
   const float Render::NIGHT_FOG_COEFF = 2.0f;
   const float Render::NIGHT_FOG_DIST = 0.3f;
-
-  const float Render::WATER_COLOR[] = { 0.0f, 0.05f, 0.25f, 1.0f };
   const float Render::WATER_VISIBILITY = 8.0f;
 
-  void Render::init()
-  {
-    doScreenshot = false;
-    clearCount   = 0;
-
-    log.println( "Initializing Graphics {" );
-    log.indent();
-
-    String sExtensions = (const char*) glGetString( GL_EXTENSIONS );
-    Vector<String> extensions = sExtensions.trim().split( ' ' );
-
-    log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
-    log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );
-    log.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
-    log.println( "OpenGL extensions {" );
-    log.indent();
-    foreach( extension, extensions.iterator() ) {
-      log.println( "%s", extension->cstr() );
-    }
-    log.unindent();
-    log.println( "}" );
-
-    screenX = config.get( "screen.width", 1024 );
-    screenY = config.get( "screen.height", 768 );
-
-    perspectiveAngle  = config.get( "render.perspective.angle", 80.0f );
-    perspectiveAspect = config.get( "render.perspective.aspect", 0.0f );
-    perspectiveMin    = config.get( "render.perspective.min", 0.1f );
-    perspectiveMax    = config.get( "render.perspective.max", 300.0f );
-
-    if( perspectiveAspect == 0.0 ) {
-      perspectiveAspect = (double) screenX / (double) screenY;
-    }
-
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho( 0.0, screenX, 0.0, screenY, 0.0, 1.0 );
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
-
-    glEnable( GL_TEXTURE_2D );
-    glDepthFunc( GL_LEQUAL );
-
-    ui::init( screenX, screenY );
-    ui::root.add( new ui::DebugArea() );
-    ui::root.add( new ui::HealthArea() );
-    ui::root.add( new ui::BuildMenu(), -1, -1 );
-
-    SDL_GL_SwapBuffers();
-
-    assert( glGetError() == GL_NO_ERROR );
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void Render::load()
-  {
-    log.println( "Loading Graphics {" );
-    log.indent();
-
-    ui::root.add( new ui::CrosshairArea( 64 ), screenX / 2 - 32, screenY / 2 - 32 );
-
-    assert( glGetError() == GL_NO_ERROR );
-
-    particleRadius = config.get( "render.particleRadius", 0.5f );
-    drawAABBs      = config.get( "render.drawAABBs",      false );
-    showAim        = config.get( "render.showAim",        false );
-    blendHeaven    = config.get( "render.blendHeaven",    false );
-
-    camera.init();
-    frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
-    sky.init();
-    terra.init();
-
-    for( int i = 0; i < translator.bsps.length(); i++ ) {
-      bsps << new BSP( world.bsps[i] );
-    }
-
-    // fog
-    glFogi( GL_FOG_MODE, GL_LINEAR );
-    glFogf( GL_FOG_START, 0.0f );
-
-    // lighting
-    glLightModeli(  GL_LIGHT_MODEL_TWO_SIDE, false );
-    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, GLOBAL_AMBIENT_COLOR );
-
-    glEnable( GL_COLOR_MATERIAL );
-    glColor4fv( WHITE_COLOR );
-    glEnable( GL_LIGHT0 );
-
-    glClearColor( sky.color[0], sky.color[1], sky.color[2], sky.color[3] );
-    glFogfv( GL_FOG_COLOR, sky.color );
-    glFogf( GL_FOG_END,
-            bound( NIGHT_FOG_COEFF * sky.lightDir[2], NIGHT_FOG_DIST, 1.0f ) * perspectiveMax );
-
-    log.unindent();
-    log.println( "}" );
-  }
+  const float Render::STAR_SIZE = 1.0f / 400.0f;
 
   void Render::drawObject( Object *obj )
   {
-    if( obj->index == taggedObj ) {
+    if( obj->index == taggedObjIndex ) {
       glColor4fv( TAG_COLOR );
-      glDisable( GL_LIGHTING );
     }
 
     glPushMatrix();
@@ -163,12 +62,11 @@ namespace client
     // draw model
     models.cachedValue()->draw();
 
-    glPopMatrix();
-
-    if( obj->index == taggedObj ) {
-      glEnable( GL_LIGHTING );
+    if( obj->index == taggedObjIndex ) {
       glColor4fv( WHITE_COLOR );
     }
+
+    glPopMatrix();
 
     if( drawAABBs ) {
       glDisable( GL_LIGHTING );
@@ -257,6 +155,23 @@ namespace client
     }
     drawnStructures.clearAll();
 
+    // highlight the object the camera is looking at
+    taggedObjIndex = -1;
+    if( !ui::mouse.doShow ) {
+      if( camera.bot == null ) {
+        collider.translate( camera.p, camera.at * 2.0f );
+        taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
+      }
+      else if( camera.bot->grabObjIndex >= 0 ) {
+        taggedObjIndex = camera.bot->grabObjIndex;
+      }
+      else {
+        float distance = ( (BotClass*) camera.bot->type )->grabDistance;
+        collider.translate( camera.bot->p + camera.bot->camPos, camera.at * distance, camera.bot );
+        taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
+      }
+    }
+
     float minXCenter = (float) ( ( frustum.minX - World::MAX / 2 ) * Sector::SIZE ) +
         Sector::SIZE / 2.0f;
     float minYCenter = (float) ( ( frustum.minY - World::MAX / 2 ) * Sector::SIZE ) +
@@ -275,41 +190,21 @@ namespace client
 
     // BEGIN RENDER
 
-    glEnable( GL_CULL_FACE );
-    glEnable( GL_DEPTH_TEST );
-    glEnable( GL_FOG );
-    glEnable( GL_LIGHTING );
-    glDisable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-
-    glActiveTexture( GL_TEXTURE0 );
-    glEnable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE1 );
-    glEnable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE0 );
-
-    // fog
+    // clear color, visibility, fog
     if( isUnderWater ) {
-      if( !wasUnderWater ) {
-        glClearColor( WATER_COLOR[0], WATER_COLOR[1], WATER_COLOR[2], WATER_COLOR[3] );
-        glFogfv( GL_FOG_COLOR, WATER_COLOR );
-        glFogf( GL_FOG_END, WATER_VISIBILITY );
-      }
+      visibility = sky.ratio * waterDayVisibility + sky.ratio_1 * waterNightVisibility;
+
+      glClearColor( sky.waterColor[0], sky.waterColor[1], sky.waterColor[2], sky.waterColor[3] );
+      glFogfv( GL_FOG_COLOR, sky.waterColor );
+      glFogf( GL_FOG_END, visibility );
     }
     else {
-      if( wasUnderWater ) {
-        // we have to set this every time, since sky color changes all the time
-        glClearColor( sky.color[0], sky.color[1], sky.color[2], sky.color[3] );
-        glFogfv( GL_FOG_COLOR, sky.color );
-        glFogf( GL_FOG_END,
-                bound( NIGHT_FOG_COEFF * sky.lightDir[2], NIGHT_FOG_DIST, 1.0f ) * perspectiveMax );
-      }
-    }
+      visibility = sky.ratio * dayVisibility + sky.ratio_1 * nightVisibility;
 
-    wasUnderWater = isUnderWater;
-    isUnderWater  = camera.p.z < 0.0f;
+      glClearColor( sky.skyColor[0], sky.skyColor[1], sky.skyColor[2], sky.skyColor[3] );
+      glFogfv( GL_FOG_COLOR, sky.skyColor );
+      glFogf( GL_FOG_END, visibility );
+    }
 
     // clear buffer
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
@@ -317,13 +212,17 @@ namespace client
     // camera transformation
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-    gluPerspective( perspectiveAngle, perspectiveAspect, perspectiveMin, perspectiveMax );
+    gluPerspective( perspectiveAngle, perspectiveAspect, perspectiveMin, visibility );
 
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
     glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
-
     glMultMatrixf( camera.rotTMat );
+
+    if( !isUnderWater ) {
+      sky.draw();
+    }
+
     glTranslatef( -camera.p.x, -camera.p.y, -camera.p.z );
 
     // lighting
@@ -331,19 +230,20 @@ namespace client
     glLightfv( GL_LIGHT0, GL_DIFFUSE, sky.diffuseColor );
     glLightfv( GL_LIGHT0, GL_AMBIENT, sky.ambientColor );
 
-    // highlight the object the camera is looking at
-    taggedObj = -1;
-    if( !ui::mouse.doShow ) {
-      if( camera.bot == null ) {
-        collider.translate( camera.p, camera.at * 2.0f );
-        taggedObj = collider.hit.obj == null ? -1 : collider.hit.obj->index;
-      }
-      else {
-        float distance = ( (BotClass*) camera.bot->type )->grabDistance;
-        collider.translate( camera.bot->p + camera.bot->camPos, camera.at * distance, camera.bot );
-        taggedObj = collider.hit.obj == null ? -1 : collider.hit.obj->index;
-      }
-    }
+    glEnable( GL_CULL_FACE );
+    glEnable( GL_DEPTH_TEST );
+    glEnable( GL_FOG );
+    glEnable( GL_LIGHTING );
+    glDisable( GL_BLEND );
+
+    glActiveTexture( GL_TEXTURE0 );
+    glEnable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE1 );
+    glEnable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE0 );
+
+    // clear buffer
+    glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
     terra.setRadius( frustum.radius );
     terra.draw();
@@ -407,8 +307,6 @@ namespace client
     blendedObjects.clear();
 
     // draw structures' water
-    glEnable( GL_BLEND );
-
     BSP::beginRender();
 
     for( int i = 0; i < waterStructures.length(); i++ ) {
@@ -495,7 +393,68 @@ namespace client
       }
       clearCount = 0;
     }
-    clearCount += timer.frameMillis;
+    else {
+      clearCount += timer.frameMillis;
+    }
+  }
+
+  void Render::init()
+  {
+    doScreenshot = false;
+    clearCount   = 0;
+
+    log.println( "Initializing Graphics {" );
+    log.indent();
+
+    String sExtensions = (const char*) glGetString( GL_EXTENSIONS );
+    Vector<String> extensions = sExtensions.trim().split( ' ' );
+
+    log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
+    log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );
+    log.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
+    log.println( "OpenGL extensions {" );
+    log.indent();
+    foreach( extension, extensions.iterator() ) {
+      log.println( "%s", extension->cstr() );
+    }
+    log.unindent();
+    log.println( "}" );
+
+    screenX = config.get( "screen.width", 1024 );
+    screenY = config.get( "screen.height", 768 );
+
+    perspectiveAngle  = config.get( "render.perspective.angle", 80.0f );
+    perspectiveAspect = config.get( "render.perspective.aspect", 0.0f );
+    perspectiveMin    = config.get( "render.perspective.min", 0.1f );
+    perspectiveMax    = config.get( "render.perspective.max", 400.0f );
+
+    if( perspectiveAspect == 0.0 ) {
+      perspectiveAspect = (double) screenX / (double) screenY;
+    }
+
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    glOrtho( 0.0, screenX, 0.0, screenY, 0.0, 1.0 );
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
+
+    glEnable( GL_TEXTURE_2D );
+    glDepthFunc( GL_LEQUAL );
+
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    ui::init( screenX, screenY );
+    ui::root.add( new ui::DebugArea() );
+    ui::root.add( new ui::HealthArea() );
+    ui::root.add( new ui::BuildMenu(), -1, -1 );
+
+    SDL_GL_SwapBuffers();
+
+    assert( glGetError() == GL_NO_ERROR );
+
+    log.unindent();
+    log.println( "}" );
   }
 
   void Render::free()
@@ -510,6 +469,61 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
+
+  void Render::load()
+  {
+    log.println( "Loading Graphics {" );
+    log.indent();
+
+    ui::root.add( new ui::CrosshairArea( 96 ), screenX / 2 - 48, screenY / 2 - 48 );
+
+    assert( glGetError() == GL_NO_ERROR );
+
+    dayVisibility        = config.get( "render.dayVisibility",        300.0f );
+    nightVisibility      = config.get( "render.nightVisibility",      100.0f );
+    waterDayVisibility   = config.get( "render.waterDayVisibility",   8.0f );
+    waterNightVisibility = config.get( "render.waterNightVisibility", 4.0f );
+    particleRadius       = config.get( "render.particleRadius",       0.5f );
+    drawAABBs            = config.get( "render.drawAABBs",            false );
+    showAim              = config.get( "render.showAim",              false );
+
+    camera.init();
+    frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
+    sky.init();
+    terra.init();
+
+    for( int i = 0; i < translator.bsps.length(); i++ ) {
+      bsps << new BSP( world.bsps[i] );
+    }
+
+    glColor4fv( WHITE_COLOR );
+    glDisable( GL_TEXTURE_2D );
+
+    glEnable( GL_POINT_SMOOTH );
+    glPointSize( screenY * STAR_SIZE );
+
+    // fog
+    glFogi( GL_FOG_MODE, GL_LINEAR );
+    glFogf( GL_FOG_START, 0.0f );
+
+    // lighting
+    glLightModeli(  GL_LIGHT_MODEL_TWO_SIDE, false );
+    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, GLOBAL_AMBIENT_COLOR );
+
+    glEnable( GL_COLOR_MATERIAL );
+    glEnable( GL_LIGHT0 );
+
+    glClearColor( sky.skyColor[0], sky.skyColor[1], sky.skyColor[2], sky.skyColor[3] );
+    glFogfv( GL_FOG_COLOR, sky.skyColor );
+    glFogf( GL_FOG_END,
+            bound( NIGHT_FOG_COEFF * sky.lightDir[2], NIGHT_FOG_DIST, 1.0f ) * perspectiveMax );
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Render::unload()
+  {}
 
 }
 }

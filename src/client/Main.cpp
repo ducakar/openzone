@@ -36,6 +36,7 @@ namespace client
       game.stop();
     }
     if( initFlags & INIT_RENDER_INIT ) {
+      render.unload();
       render.free();
     }
     if( initFlags & INIT_AUDIO ) {
@@ -202,7 +203,6 @@ namespace client
 
     bool isAlive        = true;
     bool isActive       = true;
-    int  nFrames        = 0;
 
     uint tick           = config.get( "tick", 20 );
     // time passed form start of the frame
@@ -213,6 +213,11 @@ namespace client
     uint timeLast       = timeZero;
     uint timeLastRender = timeZero;
 
+    uint gameTime       = 0;
+    uint renderTime     = 0;
+
+    timer.init();
+
     // set mouse cursor to center of the screen and clear any events (key presses and mouse moves)
     // from before
     SDL_WarpMouse( screenCenterX, screenCenterY );
@@ -221,6 +226,8 @@ namespace client
 
     // THE MAGNIFICANT MAIN LOOP
     do {
+      uint timeBegin = SDL_GetTicks();
+
       // read input & events
       ui::mouse.moveX = 0;
       ui::mouse.moveY = 0;
@@ -272,13 +279,14 @@ namespace client
         timeLast += tick;
 
         if( delta < tick ) {
-          SDL_Delay( max( tick - delta, 1u ) );
+          SDL_Delay( tick - delta );
         }
         else if( delta > 16 * tick ) {
           timeLast = SDL_GetTicks() - tick;
         }
         continue;
       }
+
 
       ui::mouse.update();
       // stop nirvana, commit with cuts/removals, sync Render and Sound, update world,
@@ -287,27 +295,29 @@ namespace client
       // play sounds, but don't do any cleanups
       sound.play();
 
-      // render graphics, if we have enough time left
+      timer.tick();
       timeNow = SDL_GetTicks();
       delta = timeNow - timeLast;
+      gameTime += timeNow - timeBegin;
 
+      // render graphics, if we have enough time left
       if( delta < tick || timeNow - timeLastRender > 32 * tick ) {
         // render
         render.update();
         // stop playing stopped continuous sounds, do cleanups
         sound.update();
 
-        nFrames++;
-
+        timer.frame();
         // if there's still some time left, waste it
         timeLastRender = SDL_GetTicks();
+        renderTime += timeLastRender - timeNow;
         delta = timeLastRender - timeLast;
 
         if( delta < tick ) {
-          SDL_Delay( max( tick - delta, 1u ) );
+          SDL_Delay( tick - delta );
         }
       }
-      if( delta > 16 * tick ) {
+      if( delta > 4 * tick ) {
         timeLast += delta - tick;
       }
       timeLast += tick;
@@ -317,8 +327,22 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    log.println( "Average framerate: %g",
-                 (float) nFrames / (float) ( timeLast - timeZero ) * 1000.0f );
+    float allTimeSec = (float) ( timeLast - timeZero ) / 1000.0f;
+    float gameTimeSec = (float) gameTime / 1000.0f;
+    float renderTimeSec = (float) renderTime / 1000.0f;
+    float sleepTimeSec = allTimeSec - gameTimeSec - renderTimeSec;
+
+    log.println( "Time usage {" );
+    log.indent();
+    log.println( "    %.4gs\t%.1f%%\tall time", allTimeSec, 100.0f );
+    log.println( "    %.4gs\t%.1f%%\tsystem + simulation + basic sound update",
+                 gameTimeSec, gameTimeSec / allTimeSec * 100.0f );
+    log.println( "    %.4gs\t%.1f%%\trender + advanced sound update",
+                 renderTimeSec, renderTimeSec / allTimeSec * 100.0f );
+    log.println( "    %.4gs\t%.1f%%\tsleep", sleepTimeSec, sleepTimeSec / allTimeSec * 100.0f );
+    log.unindent();
+    log.println( "}" );
+    log.println( "Rendered frames: %d (%.2f fps)", timer.nFrames, timer.nFrames / allTimeSec );
   }
 
 }

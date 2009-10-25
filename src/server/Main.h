@@ -20,7 +20,7 @@ namespace server
 
   class Main
   {
-    protected:
+    private:
 
       static const int INIT_SDL = 0x01;
       static const int INIT_GAME_INIT = 0x02;

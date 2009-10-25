@@ -66,11 +66,11 @@ namespace oz
       static const int AUDIO_BIT          = 0x00200000;
 
       /*
-       * SYNC FLAGS (0x00300000)
+       * CUT FLAG (0x00100000)
        */
 
-      // if the object doesn't need to be updated over network
-      static const int NOSYNC_BIT         = 0x00100000;
+      // if object is pending for cut/removal; needed to protect against double cuts/removals
+      static const int CUT_BIT            = 0x00100000;
 
       /*
        * TYPE FLAGS (0x000f0000)
@@ -92,20 +92,20 @@ namespace oz
       static const int HIT_BIT            = 0x00004000;
 
       // if the object is currently fricting
-      static const int FRICTING_BIT       = 0x00002000;
+      static const int FRICTING_BIT       = 0x00001000;
 
       // if the the object lies or moves on a structure, terrain or non-dynamic object
       // (if on another dynamic object, we determine that with "lower" index)
-      static const int ON_FLOOR_BIT       = 0x00001000;
+      static const int ON_FLOOR_BIT       = 0x00000800;
 
       // if the object intersects with water
-      static const int IN_WATER_BIT       = 0x00000800;
+      static const int IN_WATER_BIT       = 0x00000400;
 
       // if the object is on ladder
-      static const int ON_LADDER_BIT      = 0x00000400;
+      static const int ON_LADDER_BIT      = 0x00000200;
 
       // if the object is on ice (slipping surface)
-      static const int ON_SLICK_BIT       = 0x00000200;
+      static const int ON_SLICK_BIT       = 0x00000100;
 
       // handle collisions for this object
       static const int CLIP_BIT           = 0x00000080;
@@ -262,9 +262,9 @@ namespace oz
        */
 
       virtual void readFull( InputStream *istream );
-      virtual void writeFull( OutputStream *ostream );
+      virtual void writeFull( OutputStream *ostream ) const;
       virtual void readUpdate( InputStream *istream );
-      virtual void writeUpdate( OutputStream *ostream );
+      virtual void writeUpdate( OutputStream *ostream ) const;
 
   };
 

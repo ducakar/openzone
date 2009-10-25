@@ -173,16 +173,22 @@ namespace oz
 
   inline void Synapse::cut( Structure *str )
   {
-    cutStructs << str;
+    if( !cutStructs.contains( str ) ) {
+      cutStructs << str;
+    }
   }
 
   inline void Synapse::cut( Object *obj )
   {
-    cutObjects << obj;
+    if( ~obj->flags & Object::CUT_BIT ) {
+      cutObjects << obj;
+    }
   }
 
   inline void Synapse::cut( Particle *part )
   {
+    assert( !cutParts.contains( part ) );
+
     cutParts << part;
   }
 
@@ -207,18 +213,24 @@ namespace oz
 
   inline void Synapse::remove( Structure *str )
   {
-    cutStructs << str;
-    deleteStructs << str;
+    if( !cutStructs.contains( str ) ) {
+      cutStructs << str;
+      deleteStructs << str;
+    }
   }
 
   inline void Synapse::remove( Object *obj )
   {
-    cutObjects << obj;
-    deleteObjects << obj;
+    if( ~obj->flags & Object::CUT_BIT ) {
+      cutObjects << obj;
+      deleteObjects << obj;
+    }
   }
 
   inline void Synapse::remove( Particle *part )
   {
+    assert( !cutParts.contains( part ) );
+
     cutParts << part;
     deleteParts << part;
   }

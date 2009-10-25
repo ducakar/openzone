@@ -15,13 +15,33 @@ namespace oz
 
   Timer timer;
 
-  void Timer::update( int frameMillis_ )
+  void Timer::init()
   {
-    frameMillis = frameMillis_;
-    frameTime   = (float) ( frameMillis / 1000.0f );
+    millis      = 0;
+    time        = 0.0f;
+    nFrames     = 0;
+    frameMillis = 0;
+    frameTime   = 0.0f;
+    frameTicks  = 0;
+  }
 
-    millis      += frameMillis;
+  void Timer::tick()
+  {
+    millis      += TICK_MILLIS;
     time        = (float) ( millis / 1000.0f );
+
+    frameMillis += TICK_MILLIS;
+    frameTime   += TICK_TIME;
+    frameTicks++;
+  }
+
+  void Timer::frame()
+  {
+    nFrames++;
+
+    frameMillis = 0;
+    frameTime   = 0.0f;
+    frameTicks  = 0;
   }
 
 }

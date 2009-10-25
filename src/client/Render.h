@@ -37,14 +37,14 @@ namespace client
 
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;
-
-      static const float WATER_COLOR[];
       static const float WATER_VISIBILITY;
+
+      static const float STAR_SIZE;
 
       static const int   DELAYED_LISTS_MAX = 256;
 
       // cleanup interval (remove unused models)
-      static const int   CLEAR_INTERVAL = 303 * 50;
+      static const int   CLEAR_INTERVAL = 303 * 1000;
 
       struct DelayedList
       {
@@ -76,17 +76,19 @@ namespace client
       double                  perspectiveMin;
       double                  perspectiveMax;
 
+      float                   dayVisibility;
+      float                   nightVisibility;
+      float                   waterDayVisibility;
+      float                   waterNightVisibility;
+
       float                   particleRadius;
-
-      int                     taggedObj;
-
       bool                    drawAABBs;
-      bool                    blendHeaven;
       bool                    showAim;
 
-      bool                    isSpirit;
       bool                    isUnderWater;
       bool                    wasUnderWater;
+      float                   visibility;
+      int                     taggedObjIndex;
 
       void drawObject( Object *obj );
       void scheduleSector( int sectorX, int sectorY );
@@ -95,12 +97,14 @@ namespace client
 
       bool                    doScreenshot;
 
-      void init();
-      void load();
-      void free();
-
       void sync();
       void update();
+
+      void init();
+      void free();
+
+      void load();
+      void unload();
   };
 
   extern Render render;

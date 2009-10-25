@@ -16,11 +16,12 @@ namespace oz
   Physics physics;
 
   const float Physics::CLIP_BACKOFF         = EPSILON;
-  const float Physics::STICK_VELOCITY       = 0.015f;
-  const float Physics::SLICK_STICK_VELOCITY = 0.0001f;
   const float Physics::HIT_MOMENTUM         = -3.0f;
   const float Physics::FLOOR_NORMAL_Z       = 0.60f;
+  const float Physics::G_VELOCITY           = -9.81f * Timer::TICK_TIME;
 
+  const float Physics::STICK_VELOCITY       = 0.015f;
+  const float Physics::SLICK_STICK_VELOCITY = 0.0001f;
   const float Physics::AIR_FRICTION         = 0.02f;
   const float Physics::IN_WATER_FRICTION    = 0.08f;
   const float Physics::ON_WATER_FRICTION    = 0.30f;
@@ -47,7 +48,7 @@ namespace oz
   void Physics::handlePartMove()
   {
     leftRatio = 1.0f;
-    move = part->velocity * timer.frameTime;
+    move = part->velocity * Timer::TICK_TIME;
 
     Sector *oldSector = part->sector;
 
@@ -102,10 +103,10 @@ namespace oz
       }
       // swimming
       else if( obj->flags & Object::IN_WATER_BIT ) {
-        float lift = ( 0.5f * obj->waterDepth / obj->dim.z ) * obj->lift * timer.frameTime;
+        float lift = ( 0.5f * obj->waterDepth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
 
         obj->momentum *= 1.0f - IN_WATER_FRICTION;
-        obj->momentum.z += lift + gVelocity;
+        obj->momentum.z += lift + G_VELOCITY;
       }
       // on ladder
       else if( obj->flags & Object::ON_LADDER_BIT ) {
@@ -119,7 +120,7 @@ namespace oz
     }
     else {
       if( obj->flags & Object::IN_WATER_BIT ) {
-        float lift = ( 0.5f * obj->waterDepth / obj->dim.z ) * obj->lift * timer.frameTime;
+        float lift = ( 0.5f * obj->waterDepth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
 
         obj->momentum.z += lift;
       }
@@ -138,13 +139,13 @@ namespace oz
             obj->momentum.x += dx * OBJ_FRICTION;
             obj->momentum.y += dy * OBJ_FRICTION;
 
-            obj->momentum.z += gVelocity;
+            obj->momentum.z += G_VELOCITY;
             obj->flags |= Object::FRICTING_BIT;
           }
           else {
             obj->momentum.x = sObj->velocity.x;
             obj->momentum.y = sObj->velocity.y;
-            obj->momentum.z += gVelocity;
+            obj->momentum.z += G_VELOCITY;
 
             if( ( sObj->flags & Object::DISABLED_BIT ) && obj->momentum.z < 0.0f ) {
               obj->momentum.z = 0.0f;
@@ -153,7 +154,7 @@ namespace oz
           }
         }
         else if( obj->momentum.z > 0.0f ) {
-          obj->momentum.z += gVelocity;
+          obj->momentum.z += G_VELOCITY;
         }
         else {
           obj->momentum.z = 0.0f;
@@ -170,7 +171,7 @@ namespace oz
             obj->momentum.x *= 1.0f - SLICK_FRICTION;
             obj->momentum.y *= 1.0f - SLICK_FRICTION;
 
-            obj->momentum += ( gVelocity * obj->floor.z ) * obj->floor;
+            obj->momentum += ( G_VELOCITY * obj->floor.z ) * obj->floor;
             obj->flags |= Object::FRICTING_BIT;
           }
           else {
@@ -178,7 +179,7 @@ namespace oz
             obj->momentum.y = 0.0f;
 
             if( obj->momentum.z > 0.0f ) {
-              obj->momentum.z += gVelocity;
+              obj->momentum.z += G_VELOCITY;
             }
             else {
               obj->momentum.z = 0.0f;
@@ -195,7 +196,7 @@ namespace oz
             obj->momentum.x *= 1.0f - FLOOR_FRICTION;
             obj->momentum.y *= 1.0f - FLOOR_FRICTION;
 
-            obj->momentum += ( gVelocity * obj->floor.z ) * obj->floor;
+            obj->momentum += ( G_VELOCITY * obj->floor.z ) * obj->floor;
             obj->flags |= Object::FRICTING_BIT;
           }
           else {
@@ -203,7 +204,7 @@ namespace oz
             obj->momentum.y = 0.0f;
 
             if( obj->momentum.z > 0.0f ) {
-              obj->momentum.z += gVelocity;
+              obj->momentum.z += G_VELOCITY;
             }
             else {
               obj->momentum.z = 0.0f;
@@ -215,7 +216,7 @@ namespace oz
       else {
         obj->momentum.x *= 1.0f - AIR_FRICTION;
         obj->momentum.y *= 1.0f - AIR_FRICTION;
-        obj->momentum.z += gVelocity;
+        obj->momentum.z += G_VELOCITY;
       }
     }
 
@@ -306,7 +307,7 @@ namespace oz
   void Physics::handleObjMove()
   {
     leftRatio = 1.0f;
-    move = obj->momentum * timer.frameTime;
+    move = obj->momentum * Timer::TICK_TIME;
 
     Sector *oldSector = obj->sector;
 
@@ -394,16 +395,6 @@ namespace oz
   //*             PUBLIC              *
   //***********************************
 
-  void Physics::setG( float gAccel_ )
-  {
-    gAccel = gAccel_;
-  }
-
-  void Physics::update()
-  {
-    gVelocity = gAccel * timer.frameTime;
-  }
-
   void Physics::updateObj( DynObject *obj_ )
   {
     obj = obj_;
@@ -433,7 +424,7 @@ namespace oz
           // velocity, handle physics
           Vec3 oldPos = obj->p;
           handleObjMove();
-          obj->velocity = ( obj->p - oldPos ) / timer.frameTime;
+          obj->velocity = ( obj->p - oldPos ) / Timer::TICK_TIME;
         }
         else {
           assert( obj->momentum.isZero() );
@@ -453,7 +444,7 @@ namespace oz
           obj->momentum *= 1.0f - AIR_FRICTION;
         }
 
-        obj->p += obj->momentum * timer.frameTime;
+        obj->p += obj->momentum * Timer::TICK_TIME;
         obj->velocity = obj->momentum;
 
         Sector *sector = world.getSector( obj->p );

@@ -17,7 +17,7 @@ namespace oz
    * <code>bool isPassed()</code><br>
    * <code>Iterator &operator ++ ()</code><br>
    * <code>Iterator &operator -- ()</code> (optional)<br>
-   * and, of course, a sensible constructor.
+   * and a constructor of course.
    */
   template <class Type>
   class IteratorBase

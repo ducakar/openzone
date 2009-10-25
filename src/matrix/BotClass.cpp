@@ -81,8 +81,8 @@ namespace oz
 
     clazz->stepInc           = config->get( "stepInc", 0.10f );
     clazz->stepMax           = config->get( "stepMax", 0.50f );
-    clazz->stepRate          = config->get( "stepRate", 0.20f );
-    clazz->stepRateSupp      = config->get( "stepRateSupp", 0.90f );
+    clazz->stepRate          = config->get( "stepRate", 0.60f );
+    clazz->stepRateSupp      = config->get( "stepRateSupp", 0.95f );
 
     clazz->airControl        = config->get( "airControl", 0.025f );
     clazz->climbControl      = config->get( "climbControl", 1.50f );
@@ -104,6 +104,8 @@ namespace oz
     clazz->lookLimitHMax     = config->get( "lookLimitHMax", +90.0f );
     clazz->lookLimitVMin     = config->get( "lookLimitVMin", -30.0f );
     clazz->lookLimitVMax     = config->get( "lookLimitVMax", +30.0f );
+
+    clazz->mindType          = config->get( "mindType", "" );
 
     if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
         clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||

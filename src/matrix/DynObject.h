@@ -36,9 +36,9 @@ namespace oz
       {}
 
       virtual void readFull( InputStream *istream );
-      virtual void writeFull( OutputStream *ostream );
+      virtual void writeFull( OutputStream *ostream ) const;
       virtual void readUpdate( InputStream *istream );
-      virtual void writeUpdate( OutputStream *ostream );
+      virtual void writeUpdate( OutputStream *ostream ) const;
   };
 
 }

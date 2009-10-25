@@ -22,11 +22,14 @@ namespace client
   const float Water::ALPHA = 0.75f;
   const float Water::TEX_BIAS = 0.5f;
 
+  Water::Water() : phi( 0.0f )
+  {}
+
   void Water::update()
   {
     // update water
-    phi = timer.millis / 500.0f;
-    float ratio = ( 0.5f + Math::sin( phi ) / 2.0f );
+    phi = Math::mod( phi + timer.frameTime, 2.0f * Math::PI );;
+    float ratio = ( 0.5f + Math::sin( 2.0f * phi ) / 2.0f );
 
     alpha2 = ratio * ALPHA;
     alpha1 = ( alpha2 * ( 1 - ratio ) ) / ( ratio * ( 1 - alpha2 ) );

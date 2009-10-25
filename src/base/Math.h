@@ -42,19 +42,6 @@ namespace oz
       static const long LONG_MAX = ~0ul >> 1;
 
       /*
-       * Special values
-       */
-      static float nan()
-      {
-        return __builtin_nanf( "0" );
-      }
-
-      static float inf()
-      {
-        return __builtin_inff();
-      }
-
-      /*
        * Standard math functions
        */
 
@@ -115,13 +102,7 @@ namespace oz
 
       static void sincos( float x, float *s, float *c )
       {
-        // FreeBSD libc doesn't have sincos function
-#ifdef HAVE_SINCOS
         __builtin_sincosf( x, s, c );
-#else
-        *s = __builtin_sinf( x );
-        *c = __builtin_cosf( x );
-#endif
       }
 
       static float tan( float x )
@@ -153,10 +134,24 @@ namespace oz
        * Some additional functions
        */
 
-      // returns true, if value is not a number
+      static float nan()
+      {
+        return __builtin_nanf( "0" );
+      }
+
+      static float inf()
+      {
+        return __builtin_inff();
+      }
+
       static bool isNaN( float x )
       {
         return __builtin_isnanf( x );
+      }
+
+      static bool isInf( float x )
+      {
+        return __builtin_isinf( x );
       }
 
       static float sgn( float x )
@@ -185,14 +180,14 @@ namespace oz
         return *(float*) &b;
       }
 
-      /**
-       * Is power of two?
-       */
+      // is power of two?
       template <class Value>
       static bool isPow2( const Value &v )
       {
         return v & ( v - 1 ) == 0;
       }
+
+      static void seed( uint seed );
 
       // random integer from 0 to RAND_MAX == INT_MAX
       // (pointer to rand() function in stdlib.h)

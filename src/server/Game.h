@@ -20,7 +20,7 @@ namespace server
       bool init();
       void start();
 
-      void update( int time );
+      void update();
 
       void stop();
       void free();

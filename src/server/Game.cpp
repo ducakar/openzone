@@ -10,6 +10,7 @@
 
 #include "Game.h"
 
+#include "matrix/Matrix.h"
 #include "nirvana/Nirvana.h"
 #include "Network.h"
 
@@ -26,13 +27,13 @@ namespace server
 
     log.println( "Loading Matrix {" );
     log.indent();
-    matrix.load();
+//    matrix.load();
     log.unindent();
     log.println( "}" );
 
     log.println( "Loading Nirvana {" );
     log.indent();
-    nirvana.load();
+//    nirvana.load();
     log.unindent();
     log.println( "}" );
 
@@ -46,11 +47,11 @@ namespace server
     log.printEnd( " OK" );
   }
 
-  void Game::update( int time )
+  void Game::update()
   {
     SDL_SemWait( matrix.semaphore );
 
-    timer.update( time );
+    timer.tick();
     matrix.update();
     network.update();
 
@@ -69,7 +70,7 @@ namespace server
     log.print( "Shutting down Nirvana ..." );
     log.indent();
 
-    nirvana.free();
+//    nirvana.free();
 
     log.unindent();
     log.printEnd( " OK" );
@@ -77,7 +78,7 @@ namespace server
     log.print( "Shutting down Matrix ..." );
     log.indent();
 
-    matrix.free();
+//    matrix.free();
 
     log.unindent();
     log.printEnd( " OK" );
