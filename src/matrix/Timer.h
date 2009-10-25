@@ -15,13 +15,20 @@ namespace oz
   {
     public:
 
-      int   frameMillis;
+      static const int   TICK_MILLIS = 20;
+      static const float TICK_TIME   = 0.020f;
+
       int   millis;
-
-      float frameTime;
       float time;
+      int   nFrames;
 
-      void update( int frameMillis );
+      int   frameMillis;
+      float frameTime;
+      int   frameTicks;
+
+      void init();
+      void tick();
+      void frame();
   };
 
   extern Timer timer;

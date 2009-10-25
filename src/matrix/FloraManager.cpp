@@ -27,13 +27,17 @@ namespace oz
     if( pos.z > 60.0f ) {
       return;
     }
-    else if( pos.z > 20.0f ) {
+    else if( pos.z > 40.0f ) {
       type = "Tree3";
       pos.z += 7.0f;
     }
-    else if( pos.z > 5.0f ) {
+    else if( pos.z > 20.0f ) {
       type = "Tree2";
       pos.z += 3.0f;
+    }
+    else if( pos.z > 2.0f ) {
+      type = "Tree1";
+      pos.z += 8.0f;
     }
     else {
       return;

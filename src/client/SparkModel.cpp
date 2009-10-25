@@ -97,7 +97,7 @@ namespace client
 //      nSparks = min( desiredNSparks, sparkGen->number );
 //    }
 //    for( int i = 0; i < nSparks; i++ ) {
-//      sparks[i].lifeTime -= timer.frameTime;
+//      sparks[i].lifeTime -= Timer::FRAME_TIME;
 //
 //      if( sparks[i].lifeTime <= 0.0f ) {
 //        createSpark( i );

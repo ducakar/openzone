@@ -8,19 +8,26 @@
 
 #pragma once
 
-#include "Soul.h"
 #include "Mind.h"
-
-#include "matrix/Matrix.h"
-
-#include "RandomMind.h"
 
 namespace oz
 {
 
   class Nirvana
   {
-    protected:
+    private:
+
+      struct MindCtor
+      {
+        Mind::CreateFunc create;
+        Mind::ReadFunc   read;
+
+        MindCtor( Mind::CreateFunc create_, Mind::ReadFunc read_ ) :
+            create( create_ ), read( read_ )
+        {}
+      };
+
+      HashString<MindCtor, 31> mindClasses;
 
       DList<Mind, 0> minds;
 
@@ -29,6 +36,9 @@ namespace oz
 
       static int run( void *data );
 
+      void read( InputStream *istream );
+      void write( OutputStream *ostream ) const;
+
     public:
 
       SDL_semaphore *semaphore;
@@ -36,11 +46,14 @@ namespace oz
 
       volatile bool isAlive;
 
+      void init();
+      void free();
+
+      void load( InputStream *istream );
+      void unload( OutputStream *ostream );
+
       void start();
       void stop();
-
-      void load();
-      void free();
 
   };
 

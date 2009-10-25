@@ -1,8 +1,7 @@
 Matrix
-  - improve Bot grab force function
-  - Vehicle
   - inventory
   - Weapons
+  - Vehicle
   - networking support
   ? reinvent cylinder
 
@@ -17,8 +16,11 @@ UI
   - HUD
   - inventory
 
+Scripting
+  EVERYTHING
+
 Nirvana
-- ALMOST EVERYTHING
+  ALMOST EVERYTHING
 
 Server
   EVERYTHING

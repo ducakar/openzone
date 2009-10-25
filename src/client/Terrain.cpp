@@ -154,8 +154,6 @@ namespace client
     int maxX = world.terra.maxX + 1;
     int maxY = world.terra.maxY + 1;
 
-    glEnable( GL_BLEND );
-
     glBindTexture( GL_TEXTURE_2D, waterTexId );
 
     const Vec3 &v0 = world.terra.vertices[minX][minY];
@@ -227,8 +225,6 @@ namespace client
         glVertex3f( v0.x, v0.y, 0.0f );
       glEnd();
     }
-
-    glDisable( GL_BLEND );
   }
 
 }

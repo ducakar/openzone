@@ -22,6 +22,11 @@ namespace oz
     srand( (uint) time( null ) );
   }
 
+  void Math::seed( uint seed )
+  {
+    srand( seed );
+  }
+
   int ( *const Math::rand )() = ::rand;
 
 }

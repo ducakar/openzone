@@ -17,9 +17,13 @@ namespace oz
   {
     public:
 
+      static Mind *create( int botIndex );
+      static Mind *read( InputStream *istream );
+
       RandomMind( int botIndex ) : Mind( botIndex ) {}
 
-      void update();
+      virtual const char *type() const;
+      virtual void update();
 
   };
 

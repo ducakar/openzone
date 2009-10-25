@@ -17,6 +17,11 @@ namespace oz
   {
     friend class DList<Mind, 0>;
 
+    public:
+
+      typedef Mind *( *CreateFunc )( int botIndex );
+      typedef Mind *( *ReadFunc )( InputStream *istream );
+
     private:
 
       Mind *prev[1];
@@ -26,13 +31,16 @@ namespace oz
 
       int botIndex;
 
+      static Mind *create( int botIndex );
+      static Mind *read( InputStream *istream );
+
       Mind( int botIndex_ ) : botIndex( botIndex_ ) {}
-
       virtual ~Mind();
-      virtual void update() = 0;
 
-      virtual void readFull( InputStream *istream );
-      virtual void writeFull( OutputStream *ostream );
+      virtual const char *type() const;
+      virtual void update();
+
+      virtual void write( OutputStream *ostream ) const;
 
   };
 

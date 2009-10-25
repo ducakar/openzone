@@ -118,12 +118,12 @@ namespace oz
       bool testOO( const AABB &aabb, const Object *exclObj = null );
       bool testOSO( const AABB &aabb, const Object *exclObj = null );
 
-      // returns vector of objects and vector of structures, overlapping with given AABB
-      // if either vector is null, respective test isn't performed
+      // fill given vectors with objects and structures overlapping with the AABB
+      // if either vector is null the respecitve test is not performed
       void getOverlaps( const AABB &aabb, Vector<Object*> *objects,
                         Vector<const Structure*> *structs );
 
-      // returns vector of objects, overlapping with given AABB
+      // fill given vector with objects included in the AABB
       void getIncludes( const AABB &aabb, Vector<Object*> *objects );
 
       void translate( const Vec3 &point, const Vec3 &move, const Object *exclObj = null );
@@ -169,7 +169,8 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
+    trace = aabb.toBounds( EPSILON );
+    world.getInters( trace, AABB::MAX_DIM );
 
     return testAABBWorld();
   }
@@ -179,7 +180,8 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
+    trace = aabb.toBounds( EPSILON );
+    world.getInters( trace, AABB::MAX_DIM );
 
     return testAABBWorldOO();
   }
@@ -189,7 +191,8 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
+    trace = aabb.toBounds( EPSILON );
+    world.getInters( trace, AABB::MAX_DIM );
 
     return testAABBWorldOSO();
   }
@@ -201,7 +204,8 @@ namespace oz
     aabb = aabb_;
     exclObj = null;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
+    trace = aabb.toBounds( EPSILON );
+    world.getInters( trace, AABB::MAX_DIM );
 
     return getWorldOverlaps( objects, structs );
   }
@@ -211,7 +215,8 @@ namespace oz
     aabb = aabb_;
     exclObj = null;
 
-    world.getInters( aabb.toBounds( EPSILON ), AABB::MAX_DIM );
+    trace = aabb.toBounds( EPSILON );
+    world.getInters( trace, AABB::MAX_DIM );
 
     return getWorldIncludes( objects );
   }

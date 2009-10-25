@@ -18,11 +18,11 @@ namespace oz
 {
 
   const float Bot::GRAB_EPSILON = 0.20f;
-  const float Bot::GRAB_MOMRATIO = 10.0f;
-  const float Bot::GRAB_STRING_BREAK = 2.0f;
-  const float Bot::GRAB_MOM_BREAK = 8.0f;
+  const float Bot::GRAB_STRING_RATIO = 10.0f;
+  const float Bot::GRAB_MOM_RATIO = 0.3f;
   // should be smaller than abs( Physics::HIT_MOMENTUM )
-  const float Bot::GRAB_MAX_MOM = 1.0f;
+  const float Bot::GRAB_MOM_MAX = 1.0f;
+  const float Bot::GRAB_MOM_MAX_SQ = 1.0f;
 
   void Bot::onUpdate()
   {
@@ -54,7 +54,7 @@ namespace oz
     stepRate *= clazz.stepRateSupp;
     stamina += clazz.staminaGain;
     stamina = min( stamina, clazz.stamina );
-    deathTime = life <= 0 ? deathTime + timer.frameTime : 0.0f;
+    deathTime = life <= 0 ? deathTime + Timer::TICK_TIME : 0.0f;
 
     if( keys & ~oldKeys & KEY_FREELOOK ) {
       state ^= FREELOOK_BIT;
@@ -104,7 +104,7 @@ namespace oz
       if( ~oldKeys & KEY_JUMP ) {
         state |= JUMP_SCHED_BIT;
       }
-      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && /*grabObjIndex < 0 &&*/
+      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObjIndex < 0 &&
           stamina >= clazz.staminaJumpDrain )
       {
         flags &= ~DISABLED_BIT;
@@ -290,7 +290,7 @@ namespace oz
       //
       if( ( state & STEPPING_BIT ) && !isClimbing && stepRate < clazz.stepRate ) {
         // check if bot's gonna hit a stair in next frame
-        Vec3 desiredMove = momentum * timer.frameTime;
+        Vec3 desiredMove = momentum * Timer::TICK_TIME;
 
         collider.translate( *this, desiredMove, this );
 
@@ -325,8 +325,51 @@ namespace oz
      * USE, GRAB
      */
 
-    if( weapon == null ) {
-      if( keys & ~oldKeys & KEY_USE ) {
+    DynObject *grabObj = null;
+    if( grabObjIndex >= 0 ) {
+      grabObj = (DynObject*) world.objects[grabObjIndex];
+      if( grabObj == null ) {
+        grabObjIndex = -1;
+      }
+    }
+
+    if( grabObjIndex >= 0 ) {
+      if( lower == grabObjIndex || isSwimming ) {
+        grabObjIndex = -1;
+      }
+      else {
+        // keep constant length of xy projection of handle
+        Vec3  handle   = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * grabHandle;
+        // bottom of the object cannot be raised over the player aabb
+        handle.z       = min( handle.z, dim.z - camPos.z + grabObj->dim.z );
+        Vec3  string   = p + camPos + handle - grabObj->p;
+
+        if( string.sqL() > grabHandle*grabHandle ) {
+          grabObjIndex = -1;
+        }
+        else {
+          Vec3 desiredMom   = string * GRAB_STRING_RATIO;
+          Vec3 momDiff      = ( desiredMom - grabObj->momentum ) * GRAB_MOM_RATIO;
+
+          float momDiffSqL  = momDiff.sqL();
+          momDiff.z         += Physics::G_VELOCITY;
+          if( momDiffSqL > GRAB_MOM_MAX_SQ ) {
+            momDiff *= GRAB_MOM_MAX / Math::sqrt( momDiffSqL );
+          }
+          momDiff.z         -= Physics::G_VELOCITY;
+
+          grabObj->momentum += momDiff;
+          grabObj->flags    &= ~Object::DISABLED_BIT;
+          flags             &= ~CLIMBER_BIT;
+        }
+      }
+    }
+
+    if( keys & ~oldKeys & KEY_USE ) {
+      if( grabObjIndex >= 0 ) {
+        synapse.use( this, grabObj );
+      }
+      else {
         Vec3 eye  = p + camPos;
         Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
 
@@ -337,7 +380,15 @@ namespace oz
           synapse.use( this, obj );
         }
       }
-      else if( keys & ~oldKeys & KEY_TAKE ) {
+    }
+    else if( keys & ~oldKeys & KEY_TAKE ) {
+      if( grabObjIndex >= 0 ) {
+        if( grabObj->flags & ITEM_BIT ) {
+          items << grabObj;
+          synapse.remove( grabObj );
+        }
+      }
+      else {
         Vec3 eye  = p + camPos;
         Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
 
@@ -349,72 +400,36 @@ namespace oz
           synapse.remove( obj );
         }
       }
-      else if( keys & ~oldKeys & KEY_GRAB ) {
-        if( grabObjIndex >= 0 || isSwimming ) {
-          grabObjIndex = -1;
-        }
-        else {
-          Vec3 eye  = p + camPos;
-          Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
-
-          collider.translate( eye, look, this );
-
-          Object *obj = collider.hit.obj;
-          if( obj != null && ( obj->flags & Object::DYNAMIC_BIT ) ) {
-            float dimX = dim.x + obj->dim.x;
-            float dimY = dim.y + obj->dim.y;
-            float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
-
-            if( dist <= clazz.grabDistance ) {
-              grabObjIndex = collider.hit.obj->index;
-              grabHandle   = dist;
-              flags        &= ~ON_LADDER_BIT;
-            }
-          }
-        }
-      }
-      else if( ( keys & ~oldKeys & KEY_THROW ) && grabObjIndex >= 0 ) {
-        DynObject *obj   = (DynObject*) world.objects[grabObjIndex];
-        Vec3      handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
-
-        obj->momentum += handle * clazz.throwMomentum;
-        grabObjIndex  = -1;
-      }
+    }
+    else if( keys & ~oldKeys & KEY_THROW ) {
       if( grabObjIndex >= 0 ) {
-        DynObject *obj = (DynObject*) world.objects[grabObjIndex];
+        Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
 
-        if( obj == null || lower == grabObjIndex || isSwimming ) {
-          grabObjIndex = -1;
-        }
-        else {
-          // keep constant length of xy projection of handle
-          Vec3  handle   = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * grabHandle;
-          // bottom of the object cannot be raised over the player aabb
-          handle.z       = min( handle.z, dim.z - camPos.z + obj->dim.z );
-          Vec3  string   = p + camPos + handle - obj->p;
+        grabObj->momentum += handle * clazz.throwMomentum;
+        grabObjIndex      = -1;
+      }
+    }
+    else if( keys & ~oldKeys & KEY_GRAB ) {
+      if( grabObjIndex >= 0 || isSwimming ) {
+        grabObjIndex = -1;
+      }
+      else {
+        Vec3 eye  = p + camPos;
+        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
 
-          if( string.sqL() > GRAB_STRING_BREAK ) {
-            grabObjIndex = -1;
-          }
-          else {
-            Vec3 desiredMom  = string * 5.0f;
-            Vec3 momDiff     = ( desiredMom - obj->momentum ) * 0.3f;
+        collider.translate( eye, look, this );
 
-            float momDiffSqL = momDiff.sqL();
-            if( momDiffSqL > GRAB_MOM_BREAK ) {
-              grabObjIndex = -1;
-            }
-            else {
-              momDiff.z        += physics.gVelocity;
-              if( momDiffSqL > GRAB_MAX_MOM*GRAB_MAX_MOM ) {
-                momDiff *= GRAB_MAX_MOM / Math::sqrt( momDiffSqL );
-              }
-              momDiff.z        -= physics.gVelocity;
+        Object *obj = collider.hit.obj;
+        if( obj != null && ( obj->flags & Object::DYNAMIC_BIT ) ) {
+          float dimX = dim.x + obj->dim.x;
+          float dimY = dim.y + obj->dim.y;
+          float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
-              obj->momentum    += momDiff;
-              obj->flags       &= ~Object::DISABLED_BIT;
-              flags            &= ~CLIMBER_BIT;
-            }
+          if( dist <= clazz.grabDistance ) {
+            grabObjIndex = collider.hit.obj->index;
+            grabObj      = (DynObject*) collider.hit.obj;
+            grabHandle   = dist;
+            flags        &= ~ON_LADDER_BIT;
           }
         }
       }
@@ -460,7 +475,7 @@ namespace oz
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
   }
 
-  void Bot::writeFull( OutputStream *ostream )
+  void Bot::writeFull( OutputStream *ostream ) const
   {
     DynObject::writeFull( ostream );
 
@@ -494,7 +509,7 @@ namespace oz
     grabObjIndex = istream->readInt();
   }
 
-  void Bot::writeUpdate( OutputStream *ostream )
+  void Bot::writeUpdate( OutputStream *ostream ) const
   {
     DynObject::writeUpdate( ostream );
 

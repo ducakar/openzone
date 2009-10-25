@@ -55,7 +55,17 @@ namespace oz
     }
   }
 
-  void Terrain::init( float height )
+  void Terrain::init()
+  {
+    for( int x = 0; x < MAX; x++ ) {
+      for( int y = 0; y < MAX; y++ ) {
+        vertices[x][y].x = (float) ( x * Quad::SIZEI ) - DIM;
+        vertices[x][y].y = (float) ( y * Quad::SIZEI ) - DIM;
+      }
+    }
+  }
+
+  void Terrain::load( float height )
   {
     for( int x = 0; x < MAX; x++ ) {
       for( int y = 0; y < MAX; y++ ) {

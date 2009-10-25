@@ -9,6 +9,7 @@
 #pragma once
 
 #include "matrix/Structure.h"
+#include "matrix/BSP.h"
 
 namespace oz
 {

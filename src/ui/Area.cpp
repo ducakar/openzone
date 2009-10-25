@@ -52,12 +52,7 @@ namespace ui
     x = x < 0 ? this->x + this->width  + x : this->x + x;
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
-    glBegin( GL_QUADS );
-      glVertex2i( x        , y          );
-      glVertex2i( x + width, y          );
-      glVertex2i( x + width, y + height );
-      glVertex2i( x        , y + height );
-    glEnd();
+    glRecti( x, y, x + width, y + height );
   }
 
   void Area::rect( int x, int y, int width, int height ) const

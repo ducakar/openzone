@@ -29,9 +29,9 @@ namespace client
 
       static const int MUSIC_BUFFER_SIZE = 16 * 1024;
       // stopped sources clear interval -- 4 s for 50 fps
-      static const int SOURCES_CLEAR_INTERVAL = 4 * 50;
+      static const int SOURCES_CLEAR_INTERVAL = 4 * 1000;
       // cleanup interval (remove unused audios, unload unused sounds) -- 5 min for 50 fps
-      static const int FULL_CLEAR_INTERVAL = 291 * 50;
+      static const int FULL_CLEAR_INTERVAL = 291 * 1000;
 
       /*
        * SFX
@@ -60,9 +60,9 @@ namespace client
        */
       List<Source, 0>            sources;
       HashIndex<ContSource, 251> contSources;
-      int  clearCount;
-      bool doSourceClean;
-      bool doFullClean;
+
+      int  sourceClearCount;
+      int  fullClearCount;
 
       /*
        * Music
@@ -87,7 +87,6 @@ namespace client
 
       void loadMusicBuffer( uint buffer );
       void updateMusic();
-      void freeMusic();
 
     public:
 
@@ -128,6 +127,8 @@ namespace client
       }
 
       bool loadMusic( const char *path );
+      void unloadMusic();
+
       void sync();
       void play();
       void update();

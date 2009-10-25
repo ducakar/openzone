@@ -69,7 +69,7 @@ namespace oz
 
       void update()
       {
-        rot += rotVelocity * timer.frameTime;
+        rot += rotVelocity * Timer::TICK_TIME;
       }
 
       /*

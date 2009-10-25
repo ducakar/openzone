@@ -76,8 +76,8 @@ namespace client
       HashString< Resource<MD3*>, 253 > md3StaticModels;
       HashString< Resource<OBJ*>, 253 > objModels;
 
-      HashString<Model::InitFunc, 253> modelClasses;
-      HashString<Audio::InitFunc, 253> audioClasses;
+      HashString<Model::CreateFunc, 253> modelClasses;
+      HashString<Audio::CreateFunc, 253> audioClasses;
 
       static uint buildTexture( const ubyte *data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );

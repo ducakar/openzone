@@ -22,14 +22,16 @@ namespace oz
 
     public:
 
-      static const float G_ACCEL;
       static const float MAX_VELOCITY2;
 
       // thread synchronization
       SDL_semaphore *semaphore;
 
-      void load();
+      void init();
       void free();
+
+      void load( InputStream *istream );
+      void unload( OutputStream *ostream );
 
       void update();
 

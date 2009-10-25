@@ -13,15 +13,30 @@
 namespace oz
 {
 
+  Mind *Mind::create( int botIndex )
+  {
+    Mind *mind = new Mind( botIndex );
+    return mind;
+  }
+
+  Mind *Mind::read( InputStream *istream )
+  {
+    Mind *mind = new Mind( istream->readInt() );
+    return mind;
+  }
+
   Mind::~Mind()
   {}
 
-  void Mind::readFull( InputStream *istream )
+  const char *Mind::type() const
   {
-    botIndex = istream->readInt();
+    return "";
   }
 
-  void Mind::writeFull( OutputStream *ostream )
+  void Mind::update()
+  {}
+
+  void Mind::write( OutputStream *ostream ) const
   {
     ostream->writeInt( botIndex );
   }

@@ -183,7 +183,7 @@ namespace oz
       texFlags[i] = texture.flags;
       texTypes[i] = texture.type;
 
-      log.println( "%s", name.cstr() );
+//      log.println( "%s", name.cstr() );
 
       if( name.length() <= 12 || name == "textures/NULL" ) {
         textures[i] = -1;
@@ -191,7 +191,7 @@ namespace oz
       else {
         name = name.substring( 12 );
         textures[i] = translator.textureIndex( name );
-        log.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
+//        log.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
       }
     }
 

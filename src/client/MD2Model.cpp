@@ -44,7 +44,6 @@ namespace client
     if( anim.type != type ) {
       anim.startFrame = MD2::animList[type].firstFrame;
       anim.endFrame   = MD2::animList[type].lastFrame;
-      anim.currFrame  = anim.startFrame;
       anim.nextFrame  = anim.startFrame + 1;
       anim.fps        = MD2::animList[type].fps;
       anim.frameTime  = 1.0f / anim.fps;

@@ -9,24 +9,23 @@
 #pragma once
 
 #include "Timer.h"
+#include "io.h"
 
 namespace oz
 {
 
   struct Sky
   {
-    float time;
-    float period;
-
     float heading;
+    float period;
+    float time;
 
     // heading of sun in degrees and day time in seconds
-    void init( float heading, float period );
+    void set( float heading, float period, float time );
+    void update();
 
-    void update()
-    {
-      time = Math::mod( time + timer.frameTime, period );
-    }
+    void read( InputStream *istream );
+    void write( OutputStream *ostream );
   };
 
 }

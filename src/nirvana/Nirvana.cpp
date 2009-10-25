@@ -10,6 +10,14 @@
 
 #include "Nirvana.h"
 
+#include "matrix/Matrix.h"
+#include "matrix/BotClass.h"
+
+#include "RandomMind.h"
+
+#define OZ_REGISTER_MINDCLASS( name ) \
+  mindClasses.add( #name, MindCtor( &name##Mind::create, &name##Mind::read ) )
+
 namespace oz
 {
 
@@ -33,7 +41,14 @@ namespace oz
         Bot *bot = (Bot*) *obj;
 
         if( ~bot->state & Bot::PLAYER_BIT ) {
-          minds << new RandomMind( ( *obj )->index );
+          BotClass *clazz = (BotClass*) bot->type;
+
+          if( mindClasses.contains( clazz->mindType ) ) {
+            minds << mindClasses.cachedValue().create( bot->index );
+          }
+          else {
+            throw Exception( 0, "Invalid mind type" );
+          }
         }
       }
     }
@@ -62,13 +77,58 @@ namespace oz
     return 0;
   }
 
+  void Nirvana::init()
+  {
+    log.print( "Initializing Nirvana ..." );
+
+    OZ_REGISTER_MINDCLASS();
+    OZ_REGISTER_MINDCLASS( Random );
+
+    semaphore = SDL_CreateSemaphore( 0 );
+
+    log.printEnd( " OK" );
+  }
+
+  void Nirvana::free()
+  {
+    log.print( "Freeing Nirvana ..." );
+
+    SDL_DestroySemaphore( semaphore );
+
+    minds.free();
+    mindClasses.clear();
+
+    log.printEnd( " OK" );
+  }
+
+  void Nirvana::load( InputStream *istream )
+  {
+    log.print( "Loading Nirvana ..." );
+
+    if( istream != null ) {
+      read( istream );
+    }
+
+    log.printEnd( " OK" );
+  }
+
+  void Nirvana::unload( OutputStream *ostream )
+  {
+    log.print( "Unloading Nirvana ..." );
+
+    if( ostream != null ) {
+      write( ostream );
+    }
+    minds.free();
+
+    log.printEnd( " OK" );
+  }
+
   void Nirvana::start()
   {
     log.print( "Starting Nirvana thread ..." );
 
     isAlive = true;
-
-    semaphore = SDL_CreateSemaphore( 0 );
     thread = SDL_CreateThread( run, null );
 
     log.printEnd( " OK" );
@@ -82,29 +142,31 @@ namespace oz
 
     SDL_SemPost( semaphore );
     SDL_WaitThread( thread, null );
-    SDL_DestroySemaphore( semaphore );
 
     thread = null;
 
     log.printEnd( " OK" );
   }
 
-  void Nirvana::load()
+  void Nirvana::read( InputStream *istream )
   {
-    log.println( "Loading Nirvana {" );
-    log.indent();
+    String typeName;
+    int nMinds = istream->readInt();
 
-    log.unindent();
-    log.println( "}" );
+    for( int i = 0; i < nMinds; i++ ) {
+      istream->readString( typeName );
+      minds << mindClasses[typeName].read( istream );
+    }
   }
 
-  void Nirvana::free()
+  void Nirvana::write( OutputStream *ostream ) const
   {
-    log.print( "Shutting down Nirvana ..." );
+    ostream->writeInt( minds.length() );
 
-    minds.free();
-
-    log.printEnd( " OK" );
+    foreach( mind, minds.iterator() ) {
+      ostream->writeString( mind->type() );
+      mind->write( ostream );
+    }
   }
 
 }

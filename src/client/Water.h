@@ -22,6 +22,8 @@ namespace client
     float alpha1;
     float alpha2;
 
+    Water();
+
     void update();
   };
 

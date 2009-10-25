@@ -29,7 +29,7 @@ namespace client
   Game game;
 
   const float Game::FREECAM_SLOW_SPEED = 0.05f;
-  const float Game::FREECAM_FAST_SPEED = 1.50f;
+  const float Game::FREECAM_FAST_SPEED = 0.50f;
 
   bool Game::init()
   {
@@ -43,9 +43,22 @@ namespace client
     keyXSens   = config.get( "input.keys.xSens", 0.2f );
     keyYSens   = config.get( "input.keys.ySens", 0.2f );
 
+    matrix.init();
+    nirvana.init();
+
     network.connect();
-    matrix.load();
-    nirvana.load();
+
+    Buffer buffer( 1024 * 1024 * 10 );
+    if( buffer.load( config.get( "dir.home", "" ) + String( "/default.ozState" ) ) ) {
+      InputStream istream = buffer.inputStream();
+
+      matrix.load( &istream );
+      nirvana.load( &istream );
+    }
+    else {
+      matrix.load( null );
+      nirvana.load( null );
+    }
 
     camera.botIndex = -1;
     camera.bot = null;
@@ -69,7 +82,16 @@ namespace client
     synapse.doDeletes();
     synapse.clear();
 
+    Buffer buffer( 1024 * 1024 * 10 );
+    OutputStream ostream = buffer.outputStream();
+
+    matrix.unload( &ostream );
+    nirvana.unload( &ostream );
+
+    buffer.write( config.get( "dir.home", "" ) + String( "/default.ozState" ) );
+
     network.disconnect();
+
     nirvana.free();
     matrix.free();
 
@@ -94,8 +116,6 @@ namespace client
     assert( SDL_SemValue( matrix.semaphore ) == 0 );
 
     synapse.clear();
-
-    timer.update( time );
 
     if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
       if( state == GAME ) {
@@ -256,13 +276,13 @@ namespace client
           camera.bot->keys |= Bot::KEY_USE;
         }
         if( ui::mouse.wheelDown ) {
-          camera.bot->keys |= Bot::KEY_TAKE;
-        }
-        if( ui::mouse.middleClick ) {
-          camera.bot->keys |= Bot::KEY_GRAB;
+//          camera.bot->keys |= Bot::KEY_TAKE;
         }
         if( ui::mouse.wheelUp ) {
           camera.bot->keys |= Bot::KEY_THROW;
+        }
+        if( ui::mouse.middleClick ) {
+          camera.bot->keys |= Bot::KEY_GRAB;
         }
       }
     }

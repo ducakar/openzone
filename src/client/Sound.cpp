@@ -88,19 +88,6 @@ namespace client
     }
   }
 
-  void Sound::freeMusic()
-  {
-    if( isMusicLoaded ) {
-      alSourceStop( musicSource );
-      alDeleteSources( 1, &musicSource );
-      alDeleteBuffers( 2, musicBuffers );
-
-      ov_clear( &oggStream );
-
-      isMusicLoaded = false;
-    }
-  }
-
   bool Sound::loadMusic( const char *path )
   {
     log.print( "Loading music '%s' ...", path );
@@ -152,6 +139,19 @@ namespace client
     return true;
   }
 
+  void Sound::unloadMusic()
+  {
+    if( isMusicLoaded ) {
+      alSourceStop( musicSource );
+      alDeleteSources( 1, &musicSource );
+      alDeleteBuffers( 2, musicBuffers );
+
+      ov_clear( &oggStream );
+
+      isMusicLoaded = false;
+    }
+  }
+
   void Sound::sync()
   {
     // remove Audio objects of removed objects
@@ -181,15 +181,6 @@ namespace client
       }
     }
     assert( alGetError() == AL_NO_ERROR );
-
-    if( clearCount % SOURCES_CLEAR_INTERVAL == 0 ) {
-      doSourceClean = true;
-    }
-    if( clearCount >= FULL_CLEAR_INTERVAL ) {
-      doFullClean = true;
-      clearCount = 0;
-    }
-    clearCount++;
   }
 
   void Sound::update()
@@ -216,7 +207,7 @@ namespace client
 
     assert( alGetError() == AL_NO_ERROR );
 
-    if( doSourceClean ) {
+    if( sourceClearCount >= SOURCES_CLEAR_INTERVAL ) {
       // remove stopped sources of non-continous sounds
       Source *prev = null;
       Source *src  = sources.first();
@@ -238,7 +229,10 @@ namespace client
         }
         src = next;
       }
-      doSourceClean = false;
+      sourceClearCount = 0;
+    }
+    else {
+      sourceClearCount += timer.frameMillis;
     }
 
     assert( alGetError() == AL_NO_ERROR );
@@ -246,7 +240,7 @@ namespace client
     updateMusic();
 
     // cleanups
-    if( doFullClean ) {
+    if( fullClearCount >= FULL_CLEAR_INTERVAL ) {
       assert( alGetError() == AL_NO_ERROR );
 
       // remove Audio objects that are not used any more
@@ -278,7 +272,10 @@ namespace client
           context.freeSound( i );
         }
       }
-      doFullClean = false;
+      fullClearCount = 0;
+    }
+    else {
+      fullClearCount += timer.frameMillis;
     }
 
     assert( alGetError() == AL_NO_ERROR );
@@ -316,9 +313,8 @@ namespace client
     log.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
     log.println( "ALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
 
-    clearCount     = 0;
-    doSourceClean  = false;
-    doFullClean    = false;
+    sourceClearCount = 0;
+    fullClearCount   = 0;
 
     isMusicLoaded  = false;
     isMusicPlaying = false;
@@ -363,7 +359,7 @@ namespace client
     audios.free();
     assert( alGetError() == AL_NO_ERROR );
 
-    freeMusic();
+    unloadMusic();
     assert( alGetError() == AL_NO_ERROR );
 
     alutExit();

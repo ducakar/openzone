@@ -57,10 +57,10 @@ namespace oz
       static const int PLAYER_BIT      = 0x00000800;
 
       static const float GRAB_EPSILON;
-      static const float GRAB_MOMRATIO;
-      static const float GRAB_STRING_BREAK;
-      static const float GRAB_MOM_BREAK;
-      static const float GRAB_MAX_MOM;
+      static const float GRAB_STRING_RATIO;
+      static const float GRAB_MOM_RATIO;
+      static const float GRAB_MOM_MAX;
+      static const float GRAB_MOM_MAX_SQ;
 
       enum AnimEnum
       {
@@ -123,9 +123,9 @@ namespace oz
       }
 
       virtual void readFull( InputStream *istream );
-      virtual void writeFull( OutputStream *ostream );
+      virtual void writeFull( OutputStream *ostream ) const;
       virtual void readUpdate( InputStream *istream );
-      virtual void writeUpdate( OutputStream *ostream );
+      virtual void writeUpdate( OutputStream *ostream ) const;
   };
 
 }

@@ -318,9 +318,9 @@ namespace client
 
       for( int j = 0; j < nVerts; j++ ) {
         pVerts[j] = Vec3(
-          ( (float) pFrame->verts[j].v[1] * -pFrame->scale.y ) - pFrame->translate.y,
-          ( (float) pFrame->verts[j].v[0] *  pFrame->scale.x ) + pFrame->translate.x,
-          ( (float) pFrame->verts[j].v[2] *  pFrame->scale.z ) + pFrame->translate.z );
+          ( (float) pFrame->verts[j].v[0] * pFrame->scale.x ) + pFrame->translate.x,
+          ( (float) pFrame->verts[j].v[1] * pFrame->scale.y ) + pFrame->translate.y,
+          ( (float) pFrame->verts[j].v[2] * pFrame->scale.z ) + pFrame->translate.z );
 
         pNormals[j] = pFrame->verts[j].iLightNormal;
       }
@@ -436,6 +436,9 @@ namespace client
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
 
+    glPushMatrix();
+    glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
+
     while( int i = *( pCmd++ ) ) {
       if( i < 0 ) {
         glBegin( GL_TRIANGLE_FAN );
@@ -451,6 +454,8 @@ namespace client
       }
       glEnd();
     }
+
+    glPopMatrix();
     glFrontFace( GL_CCW );
   }
 
@@ -463,6 +468,9 @@ namespace client
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
 
+    glPushMatrix();
+    glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
+
     while( int i = *( pCmd++ ) ) {
       if( i < 0 ) {
         glBegin( GL_TRIANGLE_FAN );
@@ -478,6 +486,8 @@ namespace client
       }
       glEnd();
     }
+
+    glPopMatrix();
     glFrontFace( GL_CCW );
   }
 

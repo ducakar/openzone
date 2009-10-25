@@ -22,7 +22,7 @@ namespace ui
 
   CrosshairArea::CrosshairArea( int size ) : Area( size, size )
   {
-    dim = size / 2;
+    dim = size / 3;
     crossTexId = context.loadTexture( "ui/crosshair.png", false, GL_LINEAR, GL_LINEAR );
     grabTexId = context.loadTexture( "ui/grab.png", false, GL_LINEAR, GL_LINEAR );
   }
@@ -30,6 +30,7 @@ namespace ui
   CrosshairArea::~CrosshairArea()
   {
     context.freeTexture( crossTexId );
+    context.freeTexture( grabTexId );
   }
 
   void CrosshairArea::draw()

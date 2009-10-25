@@ -17,7 +17,7 @@ namespace client
 
   struct Model
   {
-    typedef Model *( *InitFunc )( const Object *object );
+    typedef Model *( *CreateFunc )( const Object *object );
 
     const Object *obj;
     bool         isUpdated;

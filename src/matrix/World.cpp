@@ -183,7 +183,24 @@ namespace oz
 
   void World::init()
   {
-    terra.init( -DIM );
+    log.print( "Initializing World ..." );
+
+    sky.set( -180.0f, 1440.0f, 360.0f );
+    terra.init();
+
+    log.printEnd( " OK" );
+  }
+
+  void World::free()
+  {
+    log.print( "Freeing World ..." );
+    log.printEnd( " OK" );
+  }
+
+  void World::load()
+  {
+    log.println( "Loading World {" );
+    log.indent();
 
     foreach( bsp, translator.bsps.iterator() ) {
       bsps << new BSP();
@@ -191,10 +208,15 @@ namespace oz
         throw Exception( 0, "BSP loading failed" );
       }
     }
+
+    log.unindent();
+    log.println( "}" );
   }
 
-  void World::free()
+  void World::unload()
   {
+    log.print( "Unloading World ..." );
+
     for( int i = 0; i < World::MAX; i++ ) {
       for( int j = 0; j < World::MAX; j++ ) {
         sectors[i][j].structures.clear();
@@ -232,6 +254,8 @@ namespace oz
 
     PoolAlloc<Object::Event, 0>::pool.free();
     PoolAlloc<Particle, 0>::pool.free();
+
+    log.printEnd( " OK" );
   }
 
   void World::update()
@@ -244,6 +268,8 @@ namespace oz
 
     partAvailableIndices.addAll( partPendingIndices );
     partPendingIndices.clear();
+
+    sky.update();
   }
 
   void World::genParticles( int number, const Vec3 &p,
@@ -272,8 +298,10 @@ namespace oz
   {
     assert( structures.length() == 0 && objects.length() == 0 && particles.length() == 0 );
 
-    log.print( "Loading world ..." );
+    log.print( "Reading World ..." );
     try {
+      sky.read( istream );
+
       int nStructures = istream->readInt();
       int nObjects    = istream->readInt();
       int nParticles  = istream->readInt();
@@ -341,8 +369,10 @@ namespace oz
 
   bool World::write( OutputStream *ostream )
   {
-    log.print( "Saving world ..." );
+    log.print( "Writing World ..." );
     try {
+      sky.write( ostream );
+
       ostream->writeInt( structures.length() );
       ostream->writeInt( objects.length() );
       ostream->writeInt( particles.length() );
