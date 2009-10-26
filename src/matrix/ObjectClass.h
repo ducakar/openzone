@@ -37,6 +37,15 @@ namespace oz
     float  damageTreshold;
     float  damageRatio;
 
+    int    nDebris;
+    float  debrisVelocitySpread;
+    float  debrisRejection;
+    float  debrisMass;
+    float  debrisLifeTime;
+    float  debrisSize;
+    Vec3   debrisColor;
+    float  debrisColorSpread;
+
     String modelType;
     String modelName;
 

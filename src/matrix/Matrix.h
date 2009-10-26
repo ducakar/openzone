@@ -19,6 +19,7 @@ namespace oz
     private:
 
       void loadStressTest();
+      void loadSample();
 
     public:
 

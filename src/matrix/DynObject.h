@@ -29,6 +29,10 @@ namespace oz
       int     lower;      // index of the lower object
       float   waterDepth;
 
+    protected:
+
+      virtual void onDestroy();
+
     public:
 
       explicit DynObject() : velocity( Vec3::zero() ), momentum( Vec3::zero() ), lower( -1 ),

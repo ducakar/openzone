@@ -121,11 +121,6 @@ namespace oz
 
       void update();
 
-      void genParticles( int number, const Vec3 &p,
-                         const Vec3 &velocity, float velocitySpread,
-                         float rejection, float mass, float lifeTime,
-                         float size, const Vec3 &color, float colorSpread );
-
       bool read( InputStream *istream );
       bool write( OutputStream *ostream );
 

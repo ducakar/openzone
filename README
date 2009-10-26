@@ -1,4 +1,3 @@
-Controls:
 mouse or arrow keys - look
 WASD                - move
 Shift               - run
@@ -8,7 +7,11 @@ Alt                 - freelook - turn head only, not the whole body (toggle)
 p                   - step over small obstacles, e.g. walk up the stairs (toggle)
 m                   - 1st/3rd person camera (toggle)
 i                   - reincarnate/suicide
+
 right click         - use
 wheel down          - take to inventory
 middle click        - grab/drop
 wheel up            - throw (when holding an object)
+
+F11                 - screenshot (saved to ~/.openzone/screenshot-DATE.jpg)
+F12                 - minimize and freeze

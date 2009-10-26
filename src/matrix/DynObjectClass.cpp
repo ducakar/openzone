@@ -20,26 +20,37 @@ namespace oz
   {
     DynObjectClass *clazz = new DynObjectClass();
 
-    clazz->name             = name;
-    clazz->description      = config->get( "description", "" );
+    clazz->name                 = name;
+    clazz->description          = config->get( "description", "" );
 
-    clazz->dim.x            = config->get( "dim.x", 0.5f );
-    clazz->dim.y            = config->get( "dim.y", 0.5f );
-    clazz->dim.z            = config->get( "dim.z", 0.5f );
+    clazz->dim.x                = config->get( "dim.x", 0.5f );
+    clazz->dim.y                = config->get( "dim.y", 0.5f );
+    clazz->dim.z                = config->get( "dim.z", 0.5f );
 
-    clazz->flags            = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
-    clazz->life             = config->get( "life", 100.0f );
-    clazz->damageTreshold   = config->get( "damageTreshold", 100.0f );
-    clazz->damageRatio      = config->get( "damageRatio", 1.0f );
+    clazz->flags                = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
+    clazz->life                 = config->get( "life", 100.0f );
+    clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
+    clazz->damageRatio          = config->get( "damageRatio", 1.0f );
 
-    clazz->modelType        = config->get( "modelType", "" );
-    clazz->modelName        = config->get( "modelPath", "" );
+    clazz->nDebris              = config->get( "nDebris", 8 );
+    clazz->debrisVelocitySpread = config->get( "debrisVelocitySpread", 2.0f );
+    clazz->debrisRejection      = config->get( "debrisRejection", 1.90f );
+    clazz->debrisMass           = config->get( "debrisMass", 0.5f );
+    clazz->debrisLifeTime       = config->get( "debrisLifeTime", 2.0f );
+    clazz->debrisSize           = config->get( "debrisSize", 1.0f );
+    clazz->debrisColor.x        = config->get( "debrisColor.r", 0.5f );
+    clazz->debrisColor.y        = config->get( "debrisColor.g", 0.5f );
+    clazz->debrisColor.z        = config->get( "debrisColor.b", 0.5f );
+    clazz->debrisColorSpread    = config->get( "debrisColorSpread", 0.5f );
+
+    clazz->modelType            = config->get( "modelType", "" );
+    clazz->modelName            = config->get( "modelPath", "" );
 
     if( clazz->modelType.length() > 0 ) {
       clazz->flags |= Object::MODEL_BIT;
     }
 
-    clazz->audioType        = config->get( "audioType", "" );
+    clazz->audioType            = config->get( "audioType", "" );
 
     if( clazz->audioType.length() > 0 ) {
       clazz->flags |= Object::AUDIO_BIT;
@@ -56,8 +67,8 @@ namespace oz
       }
     }
 
-    clazz->mass             = config->get( "mass", 100.0f );
-    clazz->lift             = config->get( "lift", 12.0f );
+    clazz->mass                 = config->get( "mass", 100.0f );
+    clazz->lift                 = config->get( "lift", 12.0f );
 
     if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
         clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||

@@ -242,8 +242,8 @@ namespace client
     glEnable( GL_TEXTURE_2D );
     glActiveTexture( GL_TEXTURE0 );
 
-    // clear buffer
-    glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+    wasUnderWater = isUnderWater;
+    isUnderWater  = camera.p.z < 0.0f;
 
     terra.setRadius( frustum.radius );
     terra.draw();
@@ -284,18 +284,15 @@ namespace client
       Particle *part = particles[i];
 
       glPushMatrix();
-        glTranslatef( part->p.x, part->p.y, part->p.z );
+      glTranslatef( part->p.x, part->p.y, part->p.z );
 
-        glRotatef( part->rot.y, 0.0f, 1.0f, 0.0f );
-        glRotatef( part->rot.x, 1.0f, 0.0f, 0.0f );
-        glRotatef( part->rot.z, 0.0f, 0.0f, 1.0f );
+      shape.draw( part );
 
-        glColor4f( part->color.x, part->color.y, part->color.z, part->lifeTime );
-        // TODO particle render
-        //glCallList( lists[part->model] );
       glPopMatrix();
     }
     particles.clear();
+
+    assert( glGetError() == GL_NO_ERROR );
 
     glColor4fv( WHITE_COLOR );
     glEnable( GL_TEXTURE_2D );
@@ -489,6 +486,7 @@ namespace client
 
     camera.init();
     frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
+    shape.init();
     sky.init();
     terra.init();
 
@@ -513,17 +511,16 @@ namespace client
     glEnable( GL_COLOR_MATERIAL );
     glEnable( GL_LIGHT0 );
 
-    glClearColor( sky.skyColor[0], sky.skyColor[1], sky.skyColor[2], sky.skyColor[3] );
-    glFogfv( GL_FOG_COLOR, sky.skyColor );
-    glFogf( GL_FOG_END,
-            bound( NIGHT_FOG_COEFF * sky.lightDir[2], NIGHT_FOG_DIST, 1.0f ) * perspectiveMax );
-
     log.unindent();
     log.println( "}" );
   }
 
   void Render::unload()
-  {}
+  {
+    terra.free();
+    sky.free();
+    shape.free();
+  }
 
 }
 }

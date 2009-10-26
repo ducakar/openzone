@@ -272,28 +272,6 @@ namespace oz
     sky.update();
   }
 
-  void World::genParticles( int number, const Vec3 &p,
-                            const Vec3 &velocity, float velocitySpread,
-                            float rejection, float mass, float lifeTime,
-                            float size, const Vec3 &color, float colorSpread )
-  {
-    float velocitySpread2 = velocitySpread / 2.0f;
-    float colorSpread2 = colorSpread / 2.0f;
-
-    for( int i = 0; i < number; i++ ) {
-      Vec3 velDisturb = Vec3( velocitySpread * Math::frand() - velocitySpread2,
-                              velocitySpread * Math::frand() - velocitySpread2,
-                              velocitySpread * Math::frand() - velocitySpread2 );
-      Vec3 colorDisturb = Vec3( colorSpread * Math::frand() - colorSpread2,
-                                colorSpread * Math::frand() - colorSpread2,
-                                colorSpread * Math::frand() - colorSpread2 );
-      float timeDisturb = lifeTime * Math::frand();
-
-      put( new Particle( p, velocity + velDisturb, rejection, mass, 0.5f * lifeTime + timeDisturb,
-                         size, color + colorDisturb ) );
-    }
-  }
-
   bool World::read( InputStream *istream )
   {
     assert( structures.length() == 0 && objects.length() == 0 && particles.length() == 0 );
