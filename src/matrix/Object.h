@@ -231,6 +231,11 @@ namespace oz
         }
       }
 
+      void destroy()
+      {
+        onDestroy();
+      }
+
       void use( Bot *user )
       {
         onUse( user );
@@ -252,6 +257,7 @@ namespace oz
     protected:
 
       virtual void onHit( const Hit *hit, float momentum );
+      virtual void onDestroy();
       virtual void onUse( Bot *user );
       virtual void onUpdate();
 

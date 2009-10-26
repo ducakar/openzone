@@ -281,15 +281,26 @@ namespace client
     glEnd();
   }
 
+  void Shape::draw( Particle *part )
+  {
+    glRotatef( part->rot.y, 0.0f, 1.0f, 0.0f );
+    glRotatef( part->rot.x, 1.0f, 0.0f, 0.0f );
+    glRotatef( part->rot.z, 0.0f, 0.0f, 1.0f );
+
+    glColor4f( part->color.x, part->color.y, part->color.z, part->lifeTime );
+    glCallList( spark );
+  }
+
   void Shape::init()
   {
-    uint spark = context.genList();
-
+    spark = context.genList();
     genRandomTetrahedicParticle( spark, 0.5f );
   }
 
-  void free()
-  {}
+  void Shape::free()
+  {
+    glDeleteLists( spark, 1 );
+  }
 
 }
 }

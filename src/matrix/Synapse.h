@@ -57,15 +57,12 @@ namespace oz
 
       Vector<Structure*> putStructs;
       Vector<Object*>    putObjects;
-      Vector<Particle*>  putParts;
 
       Vector<Structure*> cutStructs;
       Vector<Object*>    cutObjects;
-      Vector<Particle*>  cutParts;
 
       Vector<Structure*> deleteStructs;
       Vector<Object*>    deleteObjects;
-      Vector<Particle*>  deleteParts;
 
       Vector<Action>     actions;
 
@@ -130,6 +127,11 @@ namespace oz
       int  getObjectIndex( int ticket ) const;
       int  getPartIndex( int ticket ) const;
 
+      void genParts( int number, const Vec3 &p,
+                     const Vec3 &velocity, float velocitySpread,
+                     float rejection, float mass, float lifeTime,
+                     float size, const Vec3 &color, float colorSpread );
+
       // commit cuts/removals, clear cutXXX vectors
       void commit();
       // do deletes, clear deleteXXX vectors
@@ -164,8 +166,6 @@ namespace oz
 
   inline int Synapse::put( Particle *part )
   {
-    putParts << part;
-
     world.put( part );
     world.position( part );
     return part->index;
@@ -187,9 +187,8 @@ namespace oz
 
   inline void Synapse::cut( Particle *part )
   {
-    assert( !cutParts.contains( part ) );
-
-    cutParts << part;
+    world.unposition( part );
+    world.cut( part );
   }
 
   inline int Synapse::addStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
@@ -229,10 +228,9 @@ namespace oz
 
   inline void Synapse::remove( Particle *part )
   {
-    assert( !cutParts.contains( part ) );
-
-    cutParts << part;
-    deleteParts << part;
+    world.unposition( part );
+    world.cut( part );
+    delete part;
   }
 
   inline void Synapse::use( Bot *user, Object *target )

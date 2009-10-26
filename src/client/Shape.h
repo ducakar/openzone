@@ -9,6 +9,7 @@
 #pragma once
 
 #include "matrix/bv.h"
+#include "matrix/Particle.h"
 #include "Context.h"
 
 namespace oz
@@ -16,17 +17,25 @@ namespace oz
 namespace client
 {
 
-  struct Shape
+  class Shape
   {
-    uint spark;
+    private:
 
-    uint genRandomTetrahedicParticle( uint list, float size );
-    uint genRandomCubicParticle( uint list, float size );
-    uint genBox( uint list, const AABB &bb, uint texture );
-    void drawBox( const AABB &bb );
+      uint partLists[64];
+      uint spark;
 
-    void init();
-    void free();
+    public:
+
+      uint genRandomTetrahedicParticle( uint list, float size );
+      uint genRandomCubicParticle( uint list, float size );
+      uint genBox( uint list, const AABB &bb, uint texture );
+
+      void drawBox( const AABB &bb );
+      void draw( Particle *part );
+
+      void init();
+      void free();
+
   };
 
   extern Shape shape;

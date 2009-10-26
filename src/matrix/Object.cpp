@@ -10,6 +10,8 @@
 
 #include "Object.h"
 
+#include "Synapse.h"
+
 namespace oz
 {
 
@@ -21,13 +23,20 @@ namespace oz
     events.free();
   }
 
-  void Object::onUpdate()
-  {}
-
   void Object::onHit( const Hit*, float )
   {}
 
+  void Object::onDestroy()
+  {
+    synapse.genParts( type->nDebris, p, Vec3::zero(), type->debrisVelocitySpread,
+                      type->debrisRejection, type->debrisMass, type->debrisLifeTime,
+                      type->debrisSize, type->debrisColor, type->debrisColorSpread );
+  }
+
   void Object::onUse( Bot* )
+  {}
+
+  void Object::onUpdate()
   {}
 
   void Object::readFull( InputStream *istream )
