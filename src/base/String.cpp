@@ -8,7 +8,7 @@
 
 #include "base.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 namespace oz
 {

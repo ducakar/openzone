@@ -8,7 +8,7 @@
 
 #include "base.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
 

@@ -83,7 +83,7 @@ namespace client
 
       HashIndex<Audio*, 1021>    audios;
 
-      void playSector( int sectorX, int sectorY );
+      void playCell( int cellX, int cellY );
 
       void loadMusicBuffer( uint buffer );
       void updateMusic();

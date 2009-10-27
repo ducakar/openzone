@@ -86,12 +86,12 @@ namespace oz
 
     if( image == null ) {
       log.printEnd( " No such file" );
-      throw Exception( 0, "Failed to load terrain" );
+      throw Exception( "Failed to load terrain" );
     }
     if( image->w != MAX || image->h != MAX || image->format->BytesPerPixel != 1 ) {
       log.println( "Invalid size: %d x %d, should be %d x %d", image->w, image->h, MAX, MAX );
       SDL_FreeSurface( image );
-      throw Exception( 0, "Failed to load terrain" );
+      throw Exception( "Failed to load terrain" );
     }
 
     int scanLineLength = image->pitch;

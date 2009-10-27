@@ -24,7 +24,7 @@
 
 #include "MD2StaticModel.h"
 
-#include <time.h>
+#include <ctime>
 
 namespace oz
 {
@@ -83,20 +83,20 @@ namespace client
     }
   }
 
-  void Render::scheduleSector( int sectorX, int sectorY )
+  void Render::scheduleCell( int cellX, int cellY )
   {
-    Sector &sector = world.sectors[sectorX][sectorY];
+    Cell &cell = world.cells[cellX][cellY];
 
-    for( int i = 0; i < sector.structures.length(); i++ ) {
-      Structure *str = world.structures[ sector.structures[i] ];
+    for( int i = 0; i < cell.structures.length(); i++ ) {
+      Structure *str = world.structures[ cell.structures[i] ];
 
-      if( !drawnStructures.get( sector.structures[i] ) && frustum.isVisible( *str ) ) {
-        drawnStructures.set( sector.structures[i] );
+      if( !drawnStructures.get( cell.structures[i] ) && frustum.isVisible( *str ) ) {
+        drawnStructures.set( cell.structures[i] );
         structures << str;
       }
     }
 
-    foreach( obj, sector.objects.iterator() ) {
+    foreach( obj, cell.objects.iterator() ) {
       if( !camera.isThirdPerson && &*obj == camera.bot ) {
         continue;
       }
@@ -118,7 +118,7 @@ namespace client
       }
     }
 
-    foreach( part, sector.particles.iterator() ) {
+    foreach( part, cell.particles.iterator() ) {
       if( frustum.isVisible( part->p, particleRadius ) ) {
         particles << part;
       }
@@ -172,18 +172,18 @@ namespace client
       }
     }
 
-    float minXCenter = (float) ( ( frustum.minX - World::MAX / 2 ) * Sector::SIZE ) +
-        Sector::SIZE / 2.0f;
-    float minYCenter = (float) ( ( frustum.minY - World::MAX / 2 ) * Sector::SIZE ) +
-        Sector::SIZE / 2.0f;
+    float minXCenter = (float) ( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
+        Cell::SIZE / 2.0f;
+    float minYCenter = (float) ( ( frustum.minY - World::MAX / 2 ) * Cell::SIZE ) +
+        Cell::SIZE / 2.0f;
 
     float x = minXCenter;
-    for( int i = frustum.minX; i <= frustum.maxX; i++, x += Sector::SIZE ) {
+    for( int i = frustum.minX; i <= frustum.maxX; i++, x += Cell::SIZE ) {
       float y = minYCenter;
 
-      for( int j = frustum.minY; j <= frustum.maxY; j++, y += Sector::SIZE ) {
-        if( frustum.isVisible( x, y, Sector::RADIUS ) ) {
-          scheduleSector( i, j );
+      for( int j = frustum.minY; j <= frustum.maxY; j++, y += Cell::SIZE ) {
+        if( frustum.isVisible( x, y, Cell::RADIUS ) ) {
+          scheduleCell( i, j );
         }
       }
     }
@@ -489,6 +489,7 @@ namespace client
     shape.init();
     sky.init();
     terra.init();
+    MD2::init();
 
     for( int i = 0; i < translator.bsps.length(); i++ ) {
       bsps << new BSP( world.bsps[i] );

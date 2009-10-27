@@ -21,40 +21,50 @@ namespace oz
         Object::HIT_FUNC_BIT | Object::BOT_BIT;
     static const int DEFAULT_FLAGS = Object::CLIP_BIT | Object::CLIMBER_BIT | Object::PUSHER_BIT;
 
-    Vec3  dimCrouch;
+    Vec3   dimCrouch;
 
-    Vec3  camPos;
-    Vec3  camPosCrouch;
+    Vec3   camPos;
+    Vec3   camPosCrouch;
 
-    float bobInc;
-    float bobAmplitude;
+    float  bobInc;
+    float  bobAmplitude;
 
-    float walkMomentum;
-    float runMomentum;
-    float crouchMomentum;
-    float jumpMomentum;
+    float  walkMomentum;
+    float  runMomentum;
+    float  crouchMomentum;
+    float  jumpMomentum;
 
-    float stepInc;
-    float stepMax;
-    float stepVelocity;
+    float  stepInc;
+    float  stepMax;
+    float  stepRate;
+    float  stepRateSupp;
 
-    float airControl;
-    float climbControl;
-    float waterControl;
-    float grabDistance;
+    float  airControl;
+    float  climbControl;
+    float  waterControl;
 
-    float stamina;
-    float staminaRunDrain;
-    float staminaJumpDrain;
+    float  grabDistance;
+    float  grabMass;
+    float  throwMomentum;
 
-    int   state;
+    float  stamina;
+    float  staminaGain;
+    float  staminaWaterDrain;
+    float  staminaRunDrain;
+    float  staminaJumpDrain;
 
-    float lookLimitHMin;
-    float lookLimitHMax;
-    float lookLimitVMin;
-    float lookLimitVMax;
+    int    state;
 
-    static ObjectClass *init( const String &name, Config *config );
+    float  lookLimitHMin;
+    float  lookLimitHMax;
+    float  lookLimitVMin;
+    float  lookLimitVMax;
+
+    String mindType;
+
+    static void fill( VehicleClass *clazz, const Config *config );
+    static ObjectClass *init( const String &name, const Config *config );
+
     virtual Object *create( const Vec3 &pos );
     virtual Object *create( InputStream *istream );
   };

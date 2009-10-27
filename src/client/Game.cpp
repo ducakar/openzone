@@ -179,7 +179,7 @@ namespace client
       }
     }
     else {
-      camera.bot->keys = 0;
+      camera.bot->actions = 0;
 
       /*
        * Camera
@@ -230,59 +230,70 @@ namespace client
        * Movement
        */
       if( input.keys[SDLK_w] ) {
-        camera.bot->keys |= Bot::KEY_FORWARD;
+        camera.bot->actions |= Bot::ACTION_FORWARD;
       }
       if( input.keys[SDLK_s] ) {
-        camera.bot->keys |= Bot::KEY_BACKWARD;
+        camera.bot->actions |= Bot::ACTION_BACKWARD;
       }
       if( input.keys[SDLK_d] ) {
-        camera.bot->keys |= Bot::KEY_RIGHT;
+        camera.bot->actions |= Bot::ACTION_RIGHT;
       }
       if( input.keys[SDLK_a] ) {
-        camera.bot->keys |= Bot::KEY_LEFT;
+        camera.bot->actions |= Bot::ACTION_LEFT;
       }
 
       /*
        * Actions
        */
       if( input.keys[SDLK_SPACE] ) {
-        camera.bot->keys |= Bot::KEY_JUMP;
+        camera.bot->actions |= Bot::ACTION_JUMP;
       }
       if( input.keys[SDLK_LCTRL] ) {
-        camera.bot->keys |= Bot::KEY_CROUCH;
+        camera.bot->actions |= Bot::ACTION_CROUCH;
       }
-      if( input.keys[SDLK_LSHIFT] ) {
-        camera.bot->keys |= Bot::KEY_RUN;
+      if( input.keys[SDLK_LSHIFT] && !input.oldKeys[SDLK_LSHIFT] ) {
+        camera.bot->state ^= Bot::RUNNING_BIT;
       }
-      if( input.keys[SDLK_LALT] ) {
-        camera.bot->keys |= Bot::KEY_FREELOOK;
+      if( input.keys[SDLK_LALT] && !input.oldKeys[SDLK_LALT] ) {
+        camera.bot->state ^= Bot::FREELOOK_BIT;
+      }
+      if( input.keys[SDLK_p] && !input.oldKeys[SDLK_p] ) {
+        camera.bot->state ^= Bot::STEPPING_BIT;
       }
 
+      camera.bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE3_BIT | Bot::GESTURE4_BIT );
+      if( input.keys[SDLK_f] ) {
+        camera.bot->state |= Bot::GESTURE0_BIT;
+      }
       if( input.keys[SDLK_g] ) {
-        camera.bot->keys |= Bot::KEY_GESTURE0;
+        camera.bot->state |= Bot::GESTURE1_BIT;
       }
       if( input.keys[SDLK_h] ) {
-        camera.bot->keys |= Bot::KEY_GESTURE1;
+        camera.bot->state |= Bot::GESTURE2_BIT;
       }
-      if( input.keys[SDLK_p] ) {
-        camera.bot->keys |= Bot::KEY_STEP;
+      if( input.keys[SDLK_j] ) {
+        camera.bot->state |= Bot::GESTURE3_BIT;
       }
+      if( input.keys[SDLK_k] ) {
+        camera.bot->state |= Bot::GESTURE4_BIT;
+      }
+
       if( input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
         camera.isThirdPerson = !camera.isThirdPerson;
       }
 
       if( state == GAME ) {
         if( ui::mouse.rightClick ) {
-          camera.bot->keys |= Bot::KEY_USE;
+          camera.bot->actions |= Bot::ACTION_USE;
         }
         if( ui::mouse.wheelDown ) {
 //          camera.bot->keys |= Bot::KEY_TAKE;
         }
         if( ui::mouse.wheelUp ) {
-          camera.bot->keys |= Bot::KEY_THROW;
+          camera.bot->actions |= Bot::ACTION_THROW;
         }
         if( ui::mouse.middleClick ) {
-          camera.bot->keys |= Bot::KEY_GRAB;
+          camera.bot->actions |= Bot::ACTION_GRAB;
         }
       }
     }

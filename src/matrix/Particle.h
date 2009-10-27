@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  struct Sector;
+  struct Cell;
 
   class Particle : public PoolAlloc<Particle, 0>
   {
@@ -24,12 +24,12 @@ namespace oz
 
     private:
 
+      static const float MAX_ROTVELOCITY;
+
       Particle  *prev[1];
       Particle  *next[1];
 
     public:
-
-      static const float MAX_ROTVELOCITY;
 
       /*
        *  FIELDS
@@ -38,7 +38,7 @@ namespace oz
       Vec3      p;            // position
 
       int       index;        // position in world.objects vector
-      Sector    *sector;
+      Cell      *cell;
 
       Vec3      velocity;
 
@@ -47,7 +47,6 @@ namespace oz
       float     lifeTime;
 
       // graphics data
-      float     size;
       Vec3      color;
       Vec3      rot;
       Vec3      rotVelocity;
@@ -56,11 +55,11 @@ namespace oz
       {}
 
       explicit Particle( const Vec3 &p_, const Vec3 &velocity_, float rejection_, float mass_,
-                         float lifeTime_, float size_, const Vec3 &color_ ) :
+                         float lifeTime_, const Vec3 &color_ ) :
           p( p_ ), velocity( velocity_ ),
           rejection( rejection_ ),
           mass( mass_ ), lifeTime( lifeTime_ ),
-          size( size_ ), color( color_ ),
+          color( color_ ),
           rot( Vec3( Math::frand() * 360.0f, Math::frand() * 360.0f, Math::frand() * 360.0f ) ),
           rotVelocity( Vec3( Math::frand() * MAX_ROTVELOCITY,
                              Math::frand() * MAX_ROTVELOCITY,
@@ -69,7 +68,7 @@ namespace oz
 
       void update()
       {
-        rot += rotVelocity * Timer::TICK_TIME;
+        rot += rotVelocity;
       }
 
       /*

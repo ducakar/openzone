@@ -17,6 +17,7 @@
 
 #include <unistd.h>
 #include <sys/stat.h>
+#include <exception>
 
 #include <SDL_net.h>
 
@@ -353,13 +354,22 @@ int main( int argc, char *argv[] )
   try {
     oz::client::main.main( &argc, argv );
   }
-  catch( const oz::Exception &e ) {
+  catch( oz::Exception &e ) {
     oz::log.resetIndent();
     oz::log.println();
     oz::log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
 
     if( oz::log.isFile() ) {
       fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
+    }
+  }
+  catch( const std::exception &e ) {
+    oz::log.resetIndent();
+    oz::log.println();
+    oz::log.println( "EXCEPTION: %s", e.what() );
+
+    if( oz::log.isFile() ) {
+      fprintf( stderr, "EXCEPTION: %s", e.what() );
     }
   }
   oz::client::main.shutdown();

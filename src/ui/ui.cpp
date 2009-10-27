@@ -25,7 +25,7 @@ namespace ui
     mouse.init( screenX, screenY );
 
     if( !font.init() ) {
-      throw Exception( 0, "Failed to load font" );
+      throw Exception( "Failed to load font" );
     }
   }
 

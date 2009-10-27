@@ -15,10 +15,10 @@ namespace oz
 
   World world;
 
-  const float Sector::SIZE = (float) Sector::SIZEI;
-  const float Sector::RADIUS = Sector::SIZE * Math::SQRT2 / 2.0f;
+  const float Cell::SIZE = (float) Cell::SIZEI;
+  const float Cell::RADIUS = Cell::SIZE * Math::SQRT2 / 2.0f;
 
-  const float World::DIM = Sector::SIZE * World::MAX / 2.0f;
+  const float World::DIM = Cell::SIZE * World::MAX / 2.0f;
 
   void World::position( Structure *str )
   {
@@ -55,7 +55,7 @@ namespace oz
 
     for( int x = minX; x <= maxX; x++ ) {
       for( int y = minY; y <= maxY; y++ ) {
-        sectors[x][y].structures << str->index;
+        cells[x][y].structures << str->index;
       }
     }
   }
@@ -66,56 +66,56 @@ namespace oz
 
     for( int x = minX; x <= maxX; x++ ) {
       for( int y = minY; y <= maxY; y++ ) {
-        sectors[x][y].structures.exclude( str->index );
+        cells[x][y].structures.exclude( str->index );
       }
     }
   }
 
   void World::position( Object *obj )
   {
-    obj->sector = world.getSector( obj->p );
-    obj->sector->objects << obj;
+    obj->cell = world.getCell( obj->p );
+    obj->cell->objects << obj;
   }
 
   void World::unposition( Object *obj )
   {
-    obj->sector->objects.remove( obj );
-    obj->sector = null;
+    obj->cell->objects.remove( obj );
+    obj->cell = null;
   }
 
   void World::reposition( Object *obj )
   {
-    Sector *oldSector = obj->sector;
-    Sector *newSector = world.getSector( obj->p );
+    Cell *oldCell = obj->cell;
+    Cell *newCell = world.getCell( obj->p );
 
-    if( newSector != oldSector ) {
-      oldSector->objects.remove( obj );
-      newSector->objects << obj;
-      obj->sector = newSector;
+    if( newCell != oldCell ) {
+      oldCell->objects.remove( obj );
+      newCell->objects << obj;
+      obj->cell = newCell;
     }
   }
 
   void World::position( Particle *part )
   {
-    part->sector = world.getSector( part->p );
-    part->sector->particles << part;
+    part->cell = world.getCell( part->p );
+    part->cell->particles << part;
   }
 
   void World::unposition( Particle *part )
   {
-    part->sector->particles.remove( part );
-    part->sector = null;
+    part->cell->particles.remove( part );
+    part->cell = null;
   }
 
   void World::reposition( Particle *part )
   {
-    Sector *oldSector = part->sector;
-    Sector *newSector = world.getSector( part->p );
+    Cell *oldCell = part->cell;
+    Cell *newCell = world.getCell( part->p );
 
-    if( newSector != oldSector ) {
-      oldSector->particles.remove( part );
-      newSector->particles << part;
-      part->sector = newSector;
+    if( newCell != oldCell ) {
+      oldCell->particles.remove( part );
+      newCell->particles << part;
+      part->cell = newCell;
     }
   }
 
@@ -205,7 +205,7 @@ namespace oz
     foreach( bsp, translator.bsps.iterator() ) {
       bsps << new BSP();
       if( !bsps.last()->load( bsp->name ) ) {
-        throw Exception( 0, "BSP loading failed" );
+        throw Exception( "BSP loading failed" );
       }
     }
 
@@ -219,9 +219,9 @@ namespace oz
 
     for( int i = 0; i < World::MAX; i++ ) {
       for( int j = 0; j < World::MAX; j++ ) {
-        sectors[i][j].structures.clear();
-        sectors[i][j].objects.clear();
-        sectors[i][j].particles.clear();
+        cells[i][j].structures.clear();
+        cells[i][j].objects.clear();
+        cells[i][j].particles.clear();
       }
     }
 
@@ -299,7 +299,7 @@ namespace oz
         else {
           int bspIndex = translator.bspIndex( bspFile );
           if( bspIndex == -1 ) {
-            throw Exception( 0, "BSP not loaded" );
+            throw Exception( "BSP not loaded" );
           }
           str = new Structure();
           str->readFull( istream );

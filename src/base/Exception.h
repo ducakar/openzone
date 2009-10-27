@@ -16,10 +16,9 @@ namespace oz
     const char *message;
     const char *file;
     int        line;
-    int        id;
 
-    explicit Exception( int id_, const char *message_, const char *file_, int line_ ) :
-        message( message_ ), file( file_ ), line( line_ ), id( id_ )
+    explicit Exception( const char *message_, const char *file_, int line_ ) :
+        message( message_ ), file( file_ ), line( line_ )
     {}
   };
 
@@ -28,7 +27,7 @@ namespace oz
    *
    * Exception constructor wrapper that provides the current file and line.
    */
-# define Exception( id, message ) \
-  Exception( ( id ), ( message ), __FILE__, __LINE__ )
+# define Exception( message ) \
+  oz::Exception( message, __FILE__, __LINE__ )
 
 }

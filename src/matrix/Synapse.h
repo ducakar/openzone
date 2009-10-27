@@ -10,7 +10,7 @@
  *  the reference may point to a new object, that may be of a different type that may result in a
  *  program crash or at least a real mess.)
  *    The second reason is that world update may be multithreaded and adding an object in the middle
- *  of an update may put it in a sector that is handled by some other thread, which may result in
+ *  of an update may put it in a cell that is handled by some other thread, which may result in
  *  a nasty-and-hard-to-discover-and-hard-to-squash bug.
  *    The third reason is networking. In this mode client should not add/remove objects and similar
  *  mechanism to deliver object additions/removals would be needed anyway.
@@ -95,7 +95,7 @@ namespace oz
       int  addStruct( const char *name, const Vec3 &p, Structure::Rotation rot );
       int  addObject( const char *name, const Vec3 &p );
       int  addPart( const Vec3 &p, const Vec3 &velocity, float rejection, float mass,
-                    float lifeTime, float size, const Vec3 &color );
+                    float lifeTime, const Vec3 &color );
 
       // schedule for removal from physical world and delete it
       void remove( Structure *str );
@@ -130,7 +130,7 @@ namespace oz
       void genParts( int number, const Vec3 &p,
                      const Vec3 &velocity, float velocitySpread,
                      float rejection, float mass, float lifeTime,
-                     float size, const Vec3 &color, float colorSpread );
+                     const Vec3 &color, float colorSpread );
 
       // commit cuts/removals, clear cutXXX vectors
       void commit();
@@ -204,9 +204,9 @@ namespace oz
   }
 
   inline int Synapse::addPart( const Vec3 &p, const Vec3 &velocity, float rejection, float mass,
-                               float lifeTime, float size, const Vec3 &color )
+                               float lifeTime, const Vec3 &color )
   {
-    Particle *part = new Particle( p, velocity, rejection, mass, lifeTime, size, color );
+    Particle *part = new Particle( p, velocity, rejection, mass, lifeTime, color );
     return put( part );
   }
 

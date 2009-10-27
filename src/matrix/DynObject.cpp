@@ -19,7 +19,7 @@ namespace oz
   {
     synapse.genParts( type->nDebris, p, Vec3::zero(), type->debrisVelocitySpread,
                       type->debrisRejection, type->debrisMass, type->debrisLifeTime,
-                      type->debrisSize, type->debrisColor, type->debrisColorSpread );
+                      type->debrisColor, type->debrisColorSpread );
   }
 
   void DynObject::readFull( InputStream *istream )

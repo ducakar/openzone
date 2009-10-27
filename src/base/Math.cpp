@@ -8,9 +8,9 @@
 
 #include "base.h"
 
-#include <math.h>
-#include <stdlib.h>
-#include <time.h>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
 
 namespace oz
 {

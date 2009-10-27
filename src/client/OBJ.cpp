@@ -275,7 +275,7 @@ namespace client
     file = fopen( modelFile.cstr(), "r" );
     if( file == null ) {
       log.printEnd( "No such file" );
-      throw Exception( 0, "OBJ model loading error" );
+      throw Exception( "OBJ model loading error" );
     }
 
     Vector<Vec3>     tempVerts;
@@ -294,7 +294,7 @@ namespace client
           if( !readVertexData( pos + 1, &tempVerts, &tempNormals, &tempTexCoords ) ) {
             fclose( file );
             log.println( "invalid vertex line: %s", buffer );
-            throw Exception( 0, "OBJ model loading error" );
+            throw Exception( "OBJ model loading error" );
           }
           break;
         }
@@ -305,7 +305,7 @@ namespace client
           if( !readFace( pos + 1, &face ) ) {
             fclose( file );
             log.println( "invalid face line: %s", buffer );
-            throw Exception( 0, "OBJ model loading error" );
+            throw Exception( "OBJ model loading error" );
           }
           tempFaces << face;
           break;
@@ -315,7 +315,7 @@ namespace client
           if( aEquals( pos, "mtllib", 6 ) && !loadMaterial( sPath ) ) {
             fclose( file );
             log.println( "cannot load material at line: %s", buffer );
-            throw Exception( 0, "OBJ model loading error" );
+            throw Exception( "OBJ model loading error" );
           }
           break;
         }
@@ -336,7 +336,7 @@ namespace client
       }
     }
     else {
-      throw Exception( 0, "OBJ model loading error" );
+      throw Exception( "OBJ model loading error" );
     }
 
     if( !tempNormals.isEmpty() ) {
@@ -355,7 +355,7 @@ namespace client
       aCopy<Face>( faces, tempFaces, faces.length() );
     }
     else {
-      throw Exception( 0, "OBJ model loading error" );
+      throw Exception( "OBJ model loading error" );
     }
     log.printEnd( " OK" );
   }

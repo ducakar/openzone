@@ -47,7 +47,7 @@ namespace oz
             minds << mindClasses.cachedValue().create( bot->index );
           }
           else {
-            throw Exception( 0, "Invalid mind type" );
+            throw Exception( "Invalid mind type" );
           }
         }
       }

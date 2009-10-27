@@ -39,9 +39,8 @@ namespace oz
     float hitMomentum = part->velocity * collider.hit.normal;
     part->velocity -= ( part->rejection * hitMomentum ) * collider.hit.normal;
 
-    Object *sObj = collider.hit.obj;
-    if( sObj != null ) {
-      sObj->hit( &collider.hit, hitMomentum );
+    if( part->mass != 0.0f && collider.hit.obj != null ) {
+      collider.hit.obj->hit( &collider.hit, hitMomentum * part->mass );
     }
   }
 
@@ -50,7 +49,7 @@ namespace oz
     leftRatio = 1.0f;
     move = part->velocity * Timer::TICK_TIME;
 
-    Sector *oldSector = part->sector;
+    Cell *oldCell = part->cell;
 
     int traceSplits = 0;
     do {
@@ -74,12 +73,12 @@ namespace oz
     }
     while( true );
 
-    Sector *newSector = world.getSector( part->p );
+    Cell *newCell = world.getCell( part->p );
 
-    if( oldSector != newSector ) {
-      part->sector = newSector;
-      oldSector->particles.remove( part );
-      newSector->particles << part;
+    if( oldCell != newCell ) {
+      part->cell = newCell;
+      oldCell->particles.remove( part );
+      newCell->particles << part;
     }
   }
 
@@ -309,7 +308,7 @@ namespace oz
     leftRatio = 1.0f;
     move = obj->momentum * Timer::TICK_TIME;
 
-    Sector *oldSector = obj->sector;
+    Cell *oldCell = obj->cell;
 
     int traceSplits = 0;
     do {
@@ -382,12 +381,12 @@ namespace oz
     obj->flags |= collider.hit.onLadder ? Object::ON_LADDER_BIT : 0;
     obj->waterDepth = min( collider.hit.waterDepth, 2.0f * obj->dim.z );
 
-    Sector *newSector = world.getSector( obj->p );
+    Cell *newCell = world.getCell( obj->p );
 
-    if( oldSector != newSector ) {
-      obj->sector = newSector;
-      oldSector->objects.remove( obj );
-      newSector->objects << obj;
+    if( oldCell != newCell ) {
+      obj->cell = newCell;
+      oldCell->objects.remove( obj );
+      newCell->objects << obj;
     }
   }
 
@@ -400,60 +399,36 @@ namespace oz
     obj = obj_;
 
     assert( obj->flags & Object::DYNAMIC_BIT );
-    assert( obj->sector != null );
+    assert( obj->cell != null );
     assert( ( ~obj->flags & Object::ON_FLOOR_BIT ) || ( obj->lower < 0 ) );
 
-    if( obj->flags & Object::CLIP_BIT ) {
-      obj->flags &= ~( Object::FRICTING_BIT | Object::HIT_BIT );
+    obj->flags &= ~( Object::FRICTING_BIT | Object::HIT_BIT );
 
-      // clear the lower object if it doesn't exist any more
-      if( obj->lower >= 0 && world.objects[obj->lower] == null ) {
-        obj->lower = -1;
-        obj->flags &= ~Object::DISABLED_BIT;
-      }
-      // check if the object can remain disabled
-      else if( ( obj->flags & Object::DISABLED_BIT ) &&
-               obj->lower >= 0 && ( ~world.objects[obj->lower]->flags & Object::DISABLED_BIT ) )
-      {
-        obj->flags &= ~Object::DISABLED_BIT;
-      }
-      // handle physics
-      if( ~obj->flags & Object::DISABLED_BIT ) {
-        if( handleObjFriction() ) {
-          // if objects is still in movement or not on a still surface after friction changed its
-          // velocity, handle physics
-          Vec3 oldPos = obj->p;
-          handleObjMove();
-          obj->velocity = ( obj->p - oldPos ) / Timer::TICK_TIME;
-        }
-        else {
-          assert( obj->momentum.isZero() );
-
-          obj->velocity.setZero();
-          obj->flags |= Object::DISABLED_BIT;
-        }
-      }
+    // clear the lower object if it doesn't exist any more
+    if( obj->lower >= 0 && world.objects[obj->lower] == null ) {
+      obj->lower = -1;
+      obj->flags &= ~Object::DISABLED_BIT;
     }
-    else {
-      if( ~obj->flags & Object::DISABLED_BIT ) {
-        if( obj->momentum * obj->momentum <= STICK_VELOCITY ) {
-          obj->momentum.setZero();
-          obj->flags |= Object::DISABLED_BIT;
-        }
-        else {
-          obj->momentum *= 1.0f - AIR_FRICTION;
-        }
+    // check if the object can remain disabled
+    else if( ( obj->flags & Object::DISABLED_BIT ) &&
+             obj->lower >= 0 && ( ~world.objects[obj->lower]->flags & Object::DISABLED_BIT ) )
+    {
+      obj->flags &= ~Object::DISABLED_BIT;
+    }
+    // handle physics
+    if( ~obj->flags & Object::DISABLED_BIT ) {
+      if( handleObjFriction() ) {
+        // if objects is still in movement or not on a still surface after friction changed its
+        // velocity, handle physics
+        Vec3 oldPos = obj->p;
+        handleObjMove();
+        obj->velocity = ( obj->p - oldPos ) / Timer::TICK_TIME;
+      }
+      else {
+        assert( obj->momentum.isZero() );
 
-        obj->p += obj->momentum * Timer::TICK_TIME;
-        obj->velocity = obj->momentum;
-
-        Sector *sector = world.getSector( obj->p );
-
-        if( obj->sector != sector ) {
-          obj->sector->objects.remove( obj );
-          sector->objects << obj;
-          obj->sector = sector;
-        }
+        obj->velocity.setZero();
+        obj->flags |= Object::DISABLED_BIT;
       }
     }
   }

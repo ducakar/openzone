@@ -20,12 +20,12 @@ namespace oz
   struct ObjectClass
   {
     // 00 <= AUDIOARGS <= 99 (two decimal digits)
-    static const int AUDIO_SAMPLES = 16;
+    static const int AUDIO_SAMPLES = 32;
 
     static const int BASE_FLAGS = 0;
     static const int DEFAULT_FLAGS;
 
-    typedef ObjectClass *( *InitFunc )( const String &name, Config *config );
+    typedef ObjectClass *( *InitFunc )( const String &name, const Config *config );
 
     String name;
     String description;
@@ -42,7 +42,6 @@ namespace oz
     float  debrisRejection;
     float  debrisMass;
     float  debrisLifeTime;
-    float  debrisSize;
     Vec3   debrisColor;
     float  debrisColorSpread;
 
@@ -54,7 +53,9 @@ namespace oz
 
     virtual ~ObjectClass();
 
-    static ObjectClass *init( const String &name, Config *config );
+    static void fill( ObjectClass *clazz, const Config *config );
+    static ObjectClass *init( const String &name, const Config *config );
+
     virtual Object *create( const Vec3 &pos );
     virtual Object *create( InputStream *istream );
   };

@@ -15,7 +15,7 @@
 #define OZ_USE_REUSEALLOC
 #define OZ_USE_POOLALLOC
 
-#include <assert.h>
+#include <cassert>
 
 /*
  * Basic definitons and template functions
@@ -70,8 +70,12 @@
 #include "Mat44.h"
 
 /*
- * Utilities
+ * Exception class
  */
 #include "Exception.h"
+
+/*
+ * Utilities
+ */
 #include "Log.h"
 #include "Config.h"

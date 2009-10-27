@@ -1,5 +1,5 @@
 /*
- *  SimpleAudio.cpp
+ *  BasicAudio.cpp
  *
  *  [description]
  *
@@ -8,7 +8,7 @@
 
 #include "precompiled.h"
 
-#include "SimpleAudio.h"
+#include "BasicAudio.h"
 
 #include "Camera.h"
 #include "Sound.h"
@@ -18,14 +18,17 @@ namespace oz
 namespace client
 {
 
-  Audio *SimpleAudio::create( const Object *obj )
+  const float BasicAudio::MOMENTUM_TRESHOLD = -6.0f;
+  const float BasicAudio::MOMENTUM_INTENSITY_RATIO = -1.0f / 8.0f;
+
+  Audio *BasicAudio::create( const Object *obj )
   {
     assert( obj->flags & Object::DYNAMIC_BIT );
 
-    return new SimpleAudio( obj );
+    return new BasicAudio( obj );
   }
 
-  void SimpleAudio::update()
+  void BasicAudio::update()
   {
     DynObject *obj = (DynObject*) this->obj;
     int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
@@ -40,22 +43,22 @@ namespace client
 
     // splash
     if( obj->flags & ~obj->oldFlags & Object::IN_WATER_BIT ) {
-      if( obj->velocity.z < -6.0f && samples[SND_SPLASH_HARD] >= 0 ) {
-        playSound( samples[SND_SPLASH_HARD], obj->velocity.z / -8.0f );
+      if( obj->velocity.z < MOMENTUM_TRESHOLD && samples[SND_SPLASH_HARD] >= 0 ) {
+        playSound( samples[SND_SPLASH_HARD], obj->velocity.z * MOMENTUM_INTENSITY_RATIO );
       }
       else if( obj->velocity.z < -2.0f && samples[SND_SPLASH_SOFT] >= 0 ) {
-        playSound( samples[SND_SPLASH_SOFT], obj->velocity.z / -8.0f );
+        playSound( samples[SND_SPLASH_SOFT], obj->velocity.z * MOMENTUM_INTENSITY_RATIO );
       }
     }
 
     // events
     foreach( event, obj->events.iterator() ) {
       if( event->id == Object::EVENT_HIT ) {
-        if( event->intensity < -6.0f && samples[SND_HIT_HARD] >= 0 ) {
-          playSound( samples[SND_HIT_HARD], event->intensity / -8.0f );
+        if( event->intensity < MOMENTUM_TRESHOLD && samples[SND_HIT_HARD] >= 0 ) {
+          playSound( samples[SND_HIT_HARD], event->intensity * MOMENTUM_INTENSITY_RATIO );
         }
         else if( samples[SND_HIT_SOFT] >= 0 ) {
-          playSound( samples[SND_HIT_SOFT], event->intensity / -8.0f );
+          playSound( samples[SND_HIT_SOFT], event->intensity * MOMENTUM_INTENSITY_RATIO );
         }
       }
       else if( samples[event->id] >= 0 ) {

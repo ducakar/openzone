@@ -13,7 +13,7 @@
 namespace oz
 {
 
-  const float Particle::MAX_ROTVELOCITY = 1000.0f;
+  const float Particle::MAX_ROTVELOCITY = 400.0f * Timer::TICK_TIME;
 
   void Particle::readFull( InputStream *istream )
   {
@@ -24,7 +24,6 @@ namespace oz
     mass        = istream->readFloat();
     lifeTime    = istream->readFloat();
 
-    size        = istream->readFloat();
     color       = istream->readVec3();
     rot         = istream->readVec3();
     rotVelocity = istream->readVec3();
@@ -39,7 +38,6 @@ namespace oz
     ostream->writeFloat( mass );
     ostream->writeFloat( lifeTime );
 
-    ostream->writeFloat( size );
     ostream->writeVec3( color );
     ostream->writeVec3( rot );
     ostream->writeVec3( rotVelocity );
