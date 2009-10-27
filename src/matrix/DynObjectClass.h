@@ -22,7 +22,9 @@ namespace oz
     float mass;
     float lift;
 
-    static ObjectClass *init( const String &name, Config *config );
+    static void fill( DynObjectClass *clazz, const Config *config );
+    static ObjectClass *init( const String &name, const Config *config );
+
     virtual Object *create( const Vec3 &pos );
     virtual Object *create( InputStream *istream );
   };

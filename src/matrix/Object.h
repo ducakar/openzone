@@ -15,7 +15,7 @@
 namespace oz
 {
 
-  struct Sector;
+  struct Cell;
   struct Hit;
   struct Bot;
 
@@ -137,7 +137,7 @@ namespace oz
        * STANDARD EVENT IDs
        */
 
-      static const int EVENT_HIT          = 0;
+      static const int EVENT_HIT          = -1;
 
       struct Event : PoolAlloc<Event, 0>
       {
@@ -155,13 +155,13 @@ namespace oz
 
     private:
 
-      Object         *prev[1];     // the previous object in sector.objects and list
-      Object         *next[1];     // the next object in sector.objects and list
+      Object         *prev[1];     // the previous object in cell.objects and list
+      Object         *next[1];     // the next object in cell.objects and list
 
     public:
 
       int            index;        // position in world.objects vector
-      Sector         *sector;      // parent sector, null if not positioned in the world
+      Cell           *cell;        // parent cell, null if not positioned in the world
 
       int            flags;
       int            oldFlags;
@@ -177,7 +177,7 @@ namespace oz
 
     public:
 
-      explicit Object() : index( -1 ), sector( null )
+      explicit Object() : index( -1 ), cell( null )
       {}
 
       virtual ~Object();

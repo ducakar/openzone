@@ -91,7 +91,7 @@ namespace client
     file = fopen( path, "rb" );
     if( file == null ) {
       log.println( "MD3 model part file '%s' not found", path.cstr() );
-      throw Exception( 0, "MD3 model part file not found" );
+      throw Exception( "MD3 model part file not found" );
     }
 
     MD3Header header;
@@ -99,7 +99,7 @@ namespace client
     if( header.id != FOURCC( 'I', 'D', 'P', '3' ) || header.version != 15 ) {
       fclose( file );
       log.println( "MD3 model part file '%s' invalid format", path.cstr() );
-      throw Exception( 0, "MD3 model part file invalid format" );
+      throw Exception( "MD3 model part file invalid format" );
     }
 
     nFrames = header.nFrames;
@@ -134,7 +134,7 @@ namespace client
       }
       if( shaderBaseName == null ) {
         log.println( "MD3 model file '%s' invalid format", path.cstr() );
-        throw Exception( 0, "MD3 model part file invalid format" );
+        throw Exception( "MD3 model part file invalid format" );
       }
       shaderBaseName++;
       mesh->texId = context.loadTexture( dir + shaderBaseName );

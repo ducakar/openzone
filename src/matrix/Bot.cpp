@@ -28,6 +28,20 @@ namespace oz
   {
     BotClass &clazz = *(BotClass*) type;
 
+    if( life <= type->life * 0.5f ) {
+      if( ( ~state & DEATH_BIT ) && life > 0.0f ) {
+        flags |= WIDE_CULL_BIT | BLEND_BIT;
+        flags &= ~CLIP_BIT;
+        anim = ANIM_DEATH_FALLBACK;
+        life = type->life / 2.0f - EPSILON;
+      }
+      state |= DEATH_BIT;
+    }
+    if( state & DEATH_BIT ) {
+      life = max( 0.0f, life - type->life * BODY_FACEOUT_FACTOR );
+      return;
+    }
+
     h = Math::mod( h + 360.0f, 360.0f );
     v = bound( v, -90.0f, 90.0f );
 
@@ -54,32 +68,6 @@ namespace oz
     stepRate *= clazz.stepRateSupp;
     stamina += clazz.staminaGain;
     stamina = min( stamina, clazz.stamina );
-    deathTime = life <= 0 ? deathTime + Timer::TICK_TIME : 0.0f;
-
-    if( keys & ~oldKeys & KEY_FREELOOK ) {
-      state ^= FREELOOK_BIT;
-    }
-
-    if( keys & ~oldKeys & KEY_RUN ) {
-      state ^= RUNNING_BIT;
-    }
-
-    if( keys & ~oldKeys & KEY_STEP ) {
-      state ^= STEPPING_BIT;
-    }
-
-    if( keys & KEY_GESTURE0 ) {
-      state |= GESTURE0_BIT;
-    }
-    else {
-      state &= ~GESTURE0_BIT;
-    }
-    if( keys & KEY_GESTURE1 ) {
-      state |= GESTURE1_BIT;
-    }
-    else {
-      state &= ~GESTURE1_BIT;
-    }
 
     if( isUnderWater ) {
       stamina -= clazz.staminaWaterDrain;
@@ -100,8 +88,8 @@ namespace oz
     // bot is not in water/on floor all the time, but may fly for a few frames in the mean time).
     // So, if we press the jump key, we schedule for a jump, and when jump conditions are met,
     // the jump will be commited if we still hold down the jump key.
-    if( keys & KEY_JUMP ) {
-      if( ~oldKeys & KEY_JUMP ) {
+    if( actions & ACTION_JUMP ) {
+      if( ~oldActions & ACTION_JUMP ) {
         state |= JUMP_SCHED_BIT;
       }
       if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObjIndex < 0 &&
@@ -112,7 +100,7 @@ namespace oz
         stamina -= clazz.staminaJumpDrain;
 
         momentum.z = clazz.jumpMomentum;
-        addEvent( SND_JUMP, 1.0f );
+        addEvent( EVENT_JUMP, 1.0f );
 
         state &= ~JUMP_SCHED_BIT;
       }
@@ -121,7 +109,7 @@ namespace oz
       state &= ~JUMP_SCHED_BIT;
     }
 
-    if( keys & ~oldKeys & KEY_CROUCH ) {
+    if( actions & ~oldActions & ACTION_CROUCH ) {
       if( state & CROUCHING_BIT ) {
         float oldZ = p.z;
 
@@ -156,23 +144,35 @@ namespace oz
      * ANIMATION
      */
 
-    if( ( keys & ( KEY_FORWARD | KEY_BACKWARD | KEY_LEFT | KEY_RIGHT ) ) &&
-        ( isGrounded || isSwimming || isClimbing ) )
-    {
-      if( state & CROUCHING_BIT ) {
-        anim = ANIM_CROUCH_WALK;
-      }
-      else {
-        anim = ANIM_RUN;
+    if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
+      anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_WALK : ANIM_RUN;
+    }
+    else if( state & CROUCHING_BIT ) {
+      anim = ANIM_CROUCH_STAND;
+    }
+    else if( state & GESTURE0_BIT ) {
+      anim = ANIM_POINT;
+    }
+    else if( state & GESTURE1_BIT ) {
+      anim = ANIM_WAVE;
+    }
+    else if( state & GESTURE2_BIT ) {
+      anim = ANIM_FALLBACK;
+    }
+    else if( state & GESTURE3_BIT ) {
+      anim = ANIM_SALUTE;
+    }
+    else if( state & GESTURE4_BIT ) {
+      anim = ANIM_FLIP;
+      if( ~oldState & GESTURE4_BIT ) {
+        addEvent( EVENT_FLIP, 1.0f );
       }
     }
+    else if( state & DEATH_BIT ) {
+      anim = ANIM_DEATH_FALLBACKSLOW;
+    }
     else {
-      if( state & CROUCHING_BIT ) {
-        anim = ANIM_CROUCH_STAND;
-      }
-      else {
-        anim = ANIM_STAND;
-      }
+      anim = ANIM_STAND;
     }
 
     /*
@@ -182,7 +182,7 @@ namespace oz
     Vec3 move = Vec3::zero();
     state &= ~MOVING_BIT;
 
-    if( keys & KEY_FORWARD ) {
+    if( actions & ACTION_FORWARD ) {
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
@@ -201,7 +201,7 @@ namespace oz
         move.y += hvsc[1];
       }
     }
-    if( keys & KEY_BACKWARD ) {
+    if( actions & ACTION_BACKWARD ) {
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
@@ -215,14 +215,14 @@ namespace oz
         move.y -= hvsc[1];
       }
     }
-    if( keys & KEY_RIGHT ) {
+    if( actions & ACTION_RIGHT ) {
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
       move.x += hvsc[1];
       move.y += hvsc[0];
     }
-    if( keys & KEY_LEFT ) {
+    if( actions & ACTION_LEFT ) {
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
@@ -365,7 +365,7 @@ namespace oz
       }
     }
 
-    if( keys & ~oldKeys & KEY_USE ) {
+    if( actions & ~oldActions & ACTION_USE ) {
       if( grabObjIndex >= 0 ) {
         synapse.use( this, grabObj );
       }
@@ -381,7 +381,7 @@ namespace oz
         }
       }
     }
-    else if( keys & ~oldKeys & KEY_TAKE ) {
+    else if( actions & ~oldActions & ACTION_TAKE ) {
       if( grabObjIndex >= 0 ) {
         if( grabObj->flags & ITEM_BIT ) {
           items << grabObj;
@@ -401,7 +401,7 @@ namespace oz
         }
       }
     }
-    else if( keys & ~oldKeys & KEY_THROW ) {
+    else if( actions & ~oldActions & ACTION_THROW ) {
       if( grabObjIndex >= 0 ) {
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
 
@@ -409,7 +409,7 @@ namespace oz
         grabObjIndex      = -1;
       }
     }
-    else if( keys & ~oldKeys & KEY_GRAB ) {
+    else if( actions & ~oldActions & ACTION_GRAB ) {
       if( grabObjIndex >= 0 || isSwimming ) {
         grabObjIndex = -1;
       }
@@ -435,41 +435,51 @@ namespace oz
       }
     }
 
-    oldKeys = keys;
+    oldState   = state;
+    oldActions = actions;
   }
 
   void Bot::onHit( const Hit *hit, float hitMomentum )
   {
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
-      addEvent( SND_LAND, hitMomentum / -8.0f );
+      addEvent( EVENT_LAND, hitMomentum / -8.0f );
     }
   }
 
-  Bot::Bot() : h( 0.0f ), v( 0.0f ), keys( 0 ), oldKeys( 0 ), bob( 0.0f ), grabObjIndex( -1 ),
-      stepRate( 0.0f ), deathTime( 0.0f ), weapon( null ), anim( ANIM_STAND )
+  void Bot::onDestroy()
+  {
+    if( life < 0.0f ) {
+      Object::onDestroy();
+    }
+  }
+
+  Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), bob( 0.0f ), grabObjIndex( -1 ),
+      stepRate( 0.0f ), anim( ANIM_STAND ), weapon( null )
   {}
 
   void Bot::readFull( InputStream *istream )
   {
     DynObject::readFull( istream );
 
-    state        = istream->readInt();
-    anim         = (AnimEnum) istream->readInt();
     h            = istream->readFloat();
     v            = istream->readFloat();
-    keys         = istream->readInt();
-    oldKeys      = istream->readInt();
+    state        = istream->readInt();
+    oldState     = istream->readInt();
+    actions      = istream->readInt();
+    oldActions   = istream->readInt();
+    stamina      = istream->readFloat();
 
     grabObjIndex = istream->readInt();
+    grabHandle   = istream->readFloat();
 
-    stamina      = istream->readFloat();
-    deathTime    = istream->readFloat();
+    stepRate     = istream->readFloat();
+    anim         = (AnimEnum) istream->readInt();
 
-     int nItems = istream->readInt();
-     for( int i = 0; i < nItems; i++ ) {
-       const String &name = istream->readString();
-       items << translator.createObject( name, istream );
-     }
+    int nItems = istream->readInt();
+    for( int i = 0; i < nItems; i++ ) {
+      const String &name = istream->readString();
+      items << translator.createObject( name, istream );
+    }
 
     BotClass *clazz = (BotClass*) type;
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
@@ -479,23 +489,25 @@ namespace oz
   {
     DynObject::writeFull( ostream );
 
-    ostream->writeInt( state );
-    ostream->writeInt( anim );
     ostream->writeFloat( h );
     ostream->writeFloat( v );
-    ostream->writeInt( keys );
-    ostream->writeInt( oldKeys );
+    ostream->writeInt( state );
+    ostream->writeInt( oldState );
+    ostream->writeInt( actions );
+    ostream->writeInt( oldActions );
+    ostream->writeFloat( stamina );
 
     ostream->writeInt( grabObjIndex );
+    ostream->writeFloat( grabHandle );
 
-    ostream->writeFloat( stamina );
-    ostream->writeFloat( deathTime );
+    ostream->writeFloat( stepRate );
+    ostream->writeInt( anim );
 
-     ostream->writeInt( items.length() );
-     foreach( item, items.iterator() ) {
-       ostream->writeString( ( *item )->type->name );
-       ( *item )->writeFull( ostream );
-     }
+    ostream->writeInt( items.length() );
+    foreach( item, items.iterator() ) {
+      ostream->writeString( ( *item )->type->name );
+      ( *item )->writeFull( ostream );
+    }
   }
 
   void Bot::readUpdate( InputStream *istream )

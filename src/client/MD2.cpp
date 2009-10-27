@@ -233,31 +233,42 @@ namespace client
 
   MD2::Anim MD2::animList[] =
   {
-    // first, last, fps
-    {   0,  39,  9.0f },   // STAND
-    {  40,  45, 10.0f },   // RUN
-    {  46,  53, 10.0f },   // ATTACK
-    {  54,  57,  7.0f },   // PAIN_A
-    {  58,  61,  7.0f },   // PAIN_B
-    {  62,  65,  7.0f },   // PAIN_C
-    {  67,  67,  9.0f },   // JUMP
-    {  72,  83,  7.0f },   // FLIP
-    {  84,  94,  7.0f },   // SALUTE
-    {  95, 111, 10.0f },   // FALLBACK
-    { 112, 122,  7.0f },   // WAVE
-    { 123, 134,  6.0f },   // POINT
-    { 135, 153, 10.0f },   // CROUCH_STAND
-    { 154, 159,  7.0f },   // CROUCH_WALK
-    { 160, 168, 10.0f },   // CROUCH_ATTACK
-    { 196, 172,  7.0f },   // CROUCH_PAIN
-    { 173, 177,  5.0f },   // CROUCH_DEATH
-    { 178, 183,  7.0f },   // DEATH_FALLBACK
-    { 184, 189,  7.0f },   // DEATH_FALLFORWARD
-    { 190, 197,  7.0f },   // DEATH_FALLBACKSLOW
-    {   0, 197,  7.0f }    // FULL
+    // first, last, fps, repeat
+    {   0,  39,  9.0f, 1 },   // STAND
+    {  40,  45, 10.0f, 1 },   // RUN
+    {  46,  53, 10.0f, 1 },   // ATTACK
+    {  54,  57,  7.0f, 1 },   // PAIN_A
+    {  58,  61,  7.0f, 1 },   // PAIN_B
+    {  62,  65,  7.0f, 1 },   // PAIN_C
+    {  67,  67,  9.0f, 0 },   // JUMP
+    {  72,  83,  7.0f, 0 },   // FLIP
+    {  84,  94,  7.0f, 0 },   // SALUTE
+    {  95, 111, 10.0f, 0 },   // FALLBACK
+    { 112, 122,  7.0f, 0 },   // WAVE
+    { 123, 134,  6.0f, 0 },   // POINT
+    { 135, 153, 10.0f, 1 },   // CROUCH_STAND
+    { 154, 159,  7.0f, 1 },   // CROUCH_WALK
+    { 160, 168, 10.0f, 1 },   // CROUCH_ATTACK
+    { 196, 172,  7.0f, 1 },   // CROUCH_PAIN
+    { 173, 177,  5.0f, 1 },   // CROUCH_DEATH
+    { 178, 183,  7.0f, 0 },   // DEATH_FALLBACK
+    { 184, 189,  7.0f, 0 },   // DEATH_FALLFORWARD
+    { 190, 197,  7.0f, 0 },   // DEATH_FALLBACKSLOW
+    {   0, 197,  7.0f, 1 }    // FULL
   };
 
   Vec3 MD2::vertList[MAX_VERTS];
+  
+  void MD2::init()
+  {
+    for( uint i = 0; i < sizeof( anorms ) / sizeof( anorms[0] ); i++ ) {
+      float x = -anorms[i][1];
+      float y =  anorms[i][0];
+
+      anorms[i][0] = x;
+      anorms[i][1] = y;
+    }
+  }
 
   MD2::MD2( const char *name_ )
   {
@@ -280,14 +291,14 @@ namespace client
     file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
       log.printEnd( " No such file" );
-      throw Exception( 0, "MD2 model loading error" );
+      throw Exception( "MD2 model loading error" );
     }
 
     fread( &header, 1, sizeof( header ), file );
     if( header.id != FOURCC( 'I', 'D', 'P', '2' ) || header.version != 8 ) {
       fclose( file );
       log.printEnd( " Invalid format" );
-      throw Exception( 0, "MD2 model loading error" );
+      throw Exception( "MD2 model loading error" );
     }
 
     nFrames = header.nFrames;
@@ -296,7 +307,7 @@ namespace client
     if( nFrames <= 0 || nVerts <= 0 ) {
       fclose( file );
       log.printEnd( " Format error" );
-      throw Exception( 0, "MD2 model loading error" );
+      throw Exception( "MD2 model loading error" );
     }
 
     verts( nVerts * nFrames );
@@ -318,9 +329,9 @@ namespace client
 
       for( int j = 0; j < nVerts; j++ ) {
         pVerts[j] = Vec3(
-          ( (float) pFrame->verts[j].v[0] * pFrame->scale.x ) + pFrame->translate.x,
-          ( (float) pFrame->verts[j].v[1] * pFrame->scale.y ) + pFrame->translate.y,
-          ( (float) pFrame->verts[j].v[2] * pFrame->scale.z ) + pFrame->translate.z );
+          ( (float) pFrame->verts[j].v[1] * -pFrame->scale.y ) - pFrame->translate.y,
+          ( (float) pFrame->verts[j].v[0] *  pFrame->scale.x ) + pFrame->translate.x,
+          ( (float) pFrame->verts[j].v[2] *  pFrame->scale.z ) + pFrame->translate.z );
 
         pNormals[j] = pFrame->verts[j].iLightNormal;
       }
@@ -358,7 +369,7 @@ namespace client
     }
 
     if( texId == 0 ) {
-      throw Exception( 0, "MD2 model loading error" );
+      throw Exception( "MD2 model loading error" );
     }
   }
 
@@ -411,7 +422,9 @@ namespace client
       anim->currFrame = anim->nextFrame;
 
       if( anim->nextFrame >= anim->endFrame ) {
-        anim->nextFrame = anim->startFrame;
+        if( anim->repeat ) {
+          anim->nextFrame = anim->startFrame;
+        }
       }
       else {
         anim->nextFrame++;
@@ -437,7 +450,6 @@ namespace client
     glBindTexture( GL_TEXTURE_2D, texId );
 
     glPushMatrix();
-    glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
 
     while( int i = *( pCmd++ ) ) {
       if( i < 0 ) {
@@ -469,7 +481,6 @@ namespace client
     glBindTexture( GL_TEXTURE_2D, texId );
 
     glPushMatrix();
-    glRotatef( 90.0f, 0.0f, 0.0f, 1.0f );
 
     while( int i = *( pCmd++ ) ) {
       if( i < 0 ) {

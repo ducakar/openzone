@@ -23,11 +23,11 @@ namespace client
   const float Sound::DMAX = 100.0f;
   const float Sound::DMAX_SQ = DMAX * DMAX;
 
-  void Sound::playSector( int sectorX, int sectorY )
+  void Sound::playCell( int cellX, int cellY )
   {
-    Sector &sector = world.sectors[sectorX][sectorY];
+    Cell &cell = world.cells[cellX][cellY];
 
-    foreach( obj, sector.objects.iterator() ) {
+    foreach( obj, cell.objects.iterator() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
           if( !audios.contains( obj->index ) ) {
@@ -177,7 +177,7 @@ namespace client
 
     for( int x = world.minX ; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        playSector( x, y );
+        playCell( x, y );
       }
     }
     assert( alGetError() == AL_NO_ERROR );

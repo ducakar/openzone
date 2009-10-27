@@ -158,7 +158,7 @@ namespace client
           assert( obj->type->modelType.length() > 0 );
 
           if( !modelClasses.contains( obj->type->modelType ) ) {
-            throw Exception( 0, "Invalid Model" );
+            throw Exception( "Invalid Model" );
           }
           return modelClasses.cachedValue()( obj );
         }
@@ -175,7 +175,7 @@ namespace client
           assert( obj->type->audioType.length() > 0 );
 
           if( !audioClasses.contains( obj->type->audioType ) ) {
-            throw Exception( 0, "Invalid Audio" );
+            throw Exception( "Invalid Audio" );
           }
           return audioClasses.cachedValue()( obj );
         }

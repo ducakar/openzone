@@ -23,7 +23,7 @@ namespace oz
 
   class Synapse;
 
-  struct Sector
+  struct Cell
   {
     static const int   SIZEI = 16;
     static const float SIZE;
@@ -40,11 +40,11 @@ namespace oz
 
     public:
 
-      // # of sectors on each (x, y) axis
+      // # of cells on each (x, y) axis
       static const int   MAX = 128;
       static const float DIM;
 
-      // for returning getInters sector indices
+      // for returning getInters cell indices
       int                minX;
       int                minY;
       int                maxX;
@@ -52,7 +52,7 @@ namespace oz
 
       Sky                sky;
       Terrain            terra;
-      Sector             sectors[World::MAX][World::MAX];
+      Cell               cells[World::MAX][World::MAX];
       Vector<BSP*>       bsps;
       Vector<Structure*> structures;
       Vector<Object*>    objects;
@@ -70,22 +70,22 @@ namespace oz
 
     public:
 
-      // get pointer to the sector the point is in
-      Sector *getSector( float x, float y );
-      Sector *getSector( const Vec3 &p );
+      // get pointer to the cell the point is in
+      Cell *getCell( float x, float y );
+      Cell *getCell( const Vec3 &p );
 
-      // get indices of the sector the point is in
+      // get indices of the cell the point is in
       void getInters( float x, float y, float epsilon = 0.0f );
       void getInters( const Vec3 &p, float epsilon = 0.0f );
 
-      // get indices of min and max sectors which the area intersects
+      // get indices of min and max cells which the area intersects
       void getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
                       float epsilon = 0.0f );
 
-      // get indices of min and max sectors which the AABB intersects
+      // get indices of min and max cells which the AABB intersects
       void getInters( const AABB &bb, float epsilon = 0.0f );
 
-      // get indices of min and max sectors which the bounds intersects
+      // get indices of min and max cells which the bounds intersects
       void getInters( const Bounds &bounds, float epsilon = 0.0f );
 
     private:
@@ -128,28 +128,28 @@ namespace oz
 
   extern World world;
 
-  inline Sector *World::getSector( float x, float y )
+  inline Cell *World::getCell( float x, float y )
   {
-    int ix = (int) ( x + World::DIM ) / Sector::SIZEI;
-    int iy = (int) ( y + World::DIM ) / Sector::SIZEI;
+    int ix = (int) ( x + World::DIM ) / Cell::SIZEI;
+    int iy = (int) ( y + World::DIM ) / Cell::SIZEI;
 
     ix = bound( ix, 0, World::MAX - 1 );
     iy = bound( iy, 0, World::MAX - 1 );
 
-    return &sectors[ix][iy];
+    return &cells[ix][iy];
   }
 
-  inline Sector *World::getSector( const Vec3 &p )
+  inline Cell *World::getCell( const Vec3 &p )
   {
-    return getSector( p.x, p.y );
+    return getCell( p.x, p.y );
   }
 
   inline void World::getInters( float x, float y, float epsilon )
   {
-    minX = max( (int) ( x - epsilon + World::DIM ) / Sector::SIZEI, 0 );
-    minY = max( (int) ( y - epsilon + World::DIM ) / Sector::SIZEI, 0 );
-    maxX = min( (int) ( x + epsilon + World::DIM ) / Sector::SIZEI, World::MAX - 1 );
-    maxY = min( (int) ( y + epsilon + World::DIM ) / Sector::SIZEI, World::MAX - 1 );
+    minX = max( (int) ( x - epsilon + World::DIM ) / Cell::SIZEI, 0 );
+    minY = max( (int) ( y - epsilon + World::DIM ) / Cell::SIZEI, 0 );
+    maxX = min( (int) ( x + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+    maxY = min( (int) ( y + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
   }
 
   inline void World::getInters( const Vec3 &p, float epsilon )
@@ -160,10 +160,10 @@ namespace oz
   inline void World::getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
                                 float epsilon )
   {
-    minX = max( (int) ( minPosX - epsilon + World::DIM ) / Sector::SIZEI, 0 );
-    minY = max( (int) ( minPosY - epsilon + World::DIM ) / Sector::SIZEI, 0 );
-    maxX = min( (int) ( maxPosX + epsilon + World::DIM ) / Sector::SIZEI, World::MAX - 1 );
-    maxY = min( (int) ( maxPosY + epsilon + World::DIM ) / Sector::SIZEI, World::MAX - 1 );
+    minX = max( (int) ( minPosX - epsilon + World::DIM ) / Cell::SIZEI, 0 );
+    minY = max( (int) ( minPosY - epsilon + World::DIM ) / Cell::SIZEI, 0 );
+    maxX = min( (int) ( maxPosX + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+    maxY = min( (int) ( maxPosY + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
   }
 
   inline void World::getInters( const AABB &bb, float epsilon )

@@ -130,9 +130,9 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        Sector &sector = world.sectors[x][y];
+        Cell &cell = world.cells[x][y];
 
-        foreach( strIndex, sector.structures.iterator() ) {
+        foreach( strIndex, cell.structures.iterator() ) {
           str = world.structures[*strIndex];
 
           if( str != oldStr ) {
@@ -147,7 +147,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, sector.objects.iterator() ) {
+        foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
               sObj->includes( point, EPSILON ) )
           {
@@ -167,9 +167,9 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        const Sector &sector = world.sectors[x][y];
+        const Cell &cell = world.cells[x][y];
 
-        foreach( sObj, sector.objects.iterator() ) {
+        foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
               sObj->includes( point, EPSILON ) )
           {
@@ -192,9 +192,9 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        Sector &sector = world.sectors[x][y];
+        Cell &cell = world.cells[x][y];
 
-        foreach( strIndex, sector.structures.iterator() ) {
+        foreach( strIndex, cell.structures.iterator() ) {
           str = world.structures[*strIndex];
 
           if( str != oldStr ) {
@@ -209,7 +209,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, sector.objects.iterator() ) {
+        foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
               sObj->includes( point, EPSILON ) )
           {
@@ -503,9 +503,9 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        Sector &sector = world.sectors[x][y];
+        Cell &cell = world.cells[x][y];
 
-        foreach( strIndex, sector.structures.iterator() ) {
+        foreach( strIndex, cell.structures.iterator() ) {
           str = world.structures[*strIndex];
 
           if( str != oldStr ) {
@@ -520,7 +520,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, sector.objects.iterator() ) {
+        foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
               sObj->overlaps( trace ) )
           {
@@ -611,9 +611,9 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        Sector &sector = world.sectors[x][y];
+        Cell &cell = world.cells[x][y];
 
-        foreach( strIndex, sector.structures.iterator() ) {
+        foreach( strIndex, cell.structures.iterator() ) {
           str = world.structures[*strIndex];
 
           if( str != oldStr ) {
@@ -628,7 +628,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, sector.objects.iterator() ) {
+        foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
               sObj->overlaps( trace ) )
           {
@@ -649,9 +649,9 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        Sector &sector = world.sectors[x][y];
+        Cell &cell = world.cells[x][y];
 
-        foreach( sObj, sector.objects.iterator() ) {
+        foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
               sObj->overlaps( trace ) )
           {
@@ -674,9 +674,9 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        Sector &sector = world.sectors[x][y];
+        Cell &cell = world.cells[x][y];
 
-        foreach( strIndex, sector.structures.iterator() ) {
+        foreach( strIndex, cell.structures.iterator() ) {
           str = world.structures[*strIndex];
 
           if( str != oldStr ) {
@@ -691,7 +691,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, sector.objects.iterator() ) {
+        foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
               sObj->overlaps( trace ) )
           {
@@ -971,9 +971,9 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        Sector &sector = world.sectors[x][y];
+        Cell &cell = world.cells[x][y];
 
-        foreach( strIndex, sector.structures.iterator() ) {
+        foreach( strIndex, cell.structures.iterator() ) {
           str = world.structures[*strIndex];
 
           // to prevent some of duplicated structure tests
@@ -989,7 +989,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, sector.objects.iterator() ) {
+        foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
               sObj->overlaps( trace ) )
           {
@@ -1018,10 +1018,10 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        Sector &sector = world.sectors[x][y];
+        Cell &cell = world.cells[x][y];
 
         if( structs != null ) {
-          foreach( strIndex, sector.structures.iterator() ) {
+          foreach( strIndex, cell.structures.iterator() ) {
             str = world.structures[*strIndex];
 
             if( !structs->contains( str ) ) {
@@ -1037,7 +1037,7 @@ namespace oz
         }
 
         if( objects != null ) {
-          foreach( sObj, sector.objects.iterator() ) {
+          foreach( sObj, cell.objects.iterator() ) {
             if( sObj->overlaps( trace ) ) {
               *objects << &*sObj;
             }
@@ -1054,10 +1054,10 @@ namespace oz
 
     for( int x = world.minX; x <= world.maxX; x++ ) {
       for( int y = world.minY; y <= world.maxY; y++ ) {
-        Sector &sector = world.sectors[x][y];
+        Cell &cell = world.cells[x][y];
 
         if( objects != null ) {
-          foreach( sObj, sector.objects.iterator() ) {
+          foreach( sObj, cell.objects.iterator() ) {
             if( trace.includes( *sObj ) ) {
               *objects << sObj;
             }

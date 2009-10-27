@@ -30,22 +30,23 @@ namespace client
         int   firstFrame;
         int   lastFrame;
         float fps;
+        int   repeat;
       };
 
       struct AnimState
       {
+        int   type;
+        int   repeat;
+
         int   startFrame;
         int   endFrame;
+        int   currFrame;
+        int   nextFrame;
 
         float fps;
         float frameTime;
         float currTime;
         float oldTime;
-
-        int   type;
-
-        int   currFrame;
-        int   nextFrame;
       };
 
     private:
@@ -70,6 +71,8 @@ namespace client
     public:
 
       uint         list;
+
+      static void init();
 
       MD2( const char *name );
       ~MD2();

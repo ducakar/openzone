@@ -42,7 +42,7 @@ namespace oz
         pos += sizeof( bool );
 
         if( pos + sizeof( bool ) > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         return *b;
       }
@@ -53,7 +53,7 @@ namespace oz
         pos += sizeof( byte );
 
         if( pos + sizeof( byte ) > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         return *b;
       }
@@ -64,7 +64,7 @@ namespace oz
         pos += sizeof( int );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         return SDL_SwapBE32( *i );
       }
@@ -75,7 +75,7 @@ namespace oz
         pos += sizeof( float );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         return *f;
       }
@@ -88,7 +88,7 @@ namespace oz
           pos++;
         }
         if( pos >= end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         int length = pos - p;
         pos++;
@@ -106,7 +106,7 @@ namespace oz
           pos++;
         }
         if( pos >= end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         int length = pos - p;
         pos++;
@@ -116,7 +116,7 @@ namespace oz
       Vec3 readVec3()
       {
         if( pos + sizeof( Vec3 ) > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
 
         Vec3 *v = (Vec3*) pos;
@@ -127,7 +127,7 @@ namespace oz
       Quat readQuat()
       {
         if( pos + sizeof( Quat ) > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
 
         Quat *q = (Quat*) pos;
@@ -138,7 +138,7 @@ namespace oz
       Mat33 readMat33()
       {
         if( pos + sizeof( Mat33 ) > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
 
         Mat33 *m = (Mat33*) pos;
@@ -149,7 +149,7 @@ namespace oz
       Mat44 readMat44()
       {
         if( pos + sizeof( Mat44 ) > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
 
         Mat44 *m = (Mat44*) pos;
@@ -189,7 +189,7 @@ namespace oz
         pos += sizeof( bool );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         *p = b;
       }
@@ -200,7 +200,7 @@ namespace oz
         pos += sizeof( byte );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         *p = b;
       }
@@ -211,7 +211,7 @@ namespace oz
         pos += sizeof( int );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         *p = SDL_SwapBE32( i );
       }
@@ -222,7 +222,7 @@ namespace oz
         pos += sizeof( float );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         *p = f;
       }
@@ -234,7 +234,7 @@ namespace oz
         pos += length + 1;
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         aCopy( p, s.cstr(), length + 1 );
       }
@@ -246,7 +246,7 @@ namespace oz
         pos += length + 1;
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         aCopy( p, s, length + 1 );
       }
@@ -257,7 +257,7 @@ namespace oz
         pos += sizeof( Vec3 );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         *p = v;
       }
@@ -268,7 +268,7 @@ namespace oz
         pos += sizeof( Quat );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         *p = q;
       }
@@ -279,7 +279,7 @@ namespace oz
         pos += sizeof( Mat33 );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         *p = m;
       }
@@ -290,7 +290,7 @@ namespace oz
         pos += sizeof( Mat44 );
 
         if( pos > end ) {
-          throw Exception( 0, "Buffer overrun" );
+          throw Exception( "Buffer overrun" );
         }
         *p = m;
       }

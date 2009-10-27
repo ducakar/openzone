@@ -21,25 +21,21 @@ namespace oz
   {
     public:
 
-      static const int KEY_FORWARD     = 0x00000001;
-      static const int KEY_BACKWARD    = 0x00000002;
-      static const int KEY_LEFT        = 0x00000004;
-      static const int KEY_RIGHT       = 0x00000008;
-      static const int KEY_JUMP        = 0x00000010;
-      static const int KEY_CROUCH      = 0x00000020;
-      static const int KEY_RUN         = 0x00000040;
-      static const int KEY_USE         = 0x00000080;
-      static const int KEY_TAKE        = 0x00000100;
-      static const int KEY_GRAB        = 0x00000200;
-      static const int KEY_THROW       = 0x00000400;
-      static const int KEY_STEP        = 0x00000800;
-      static const int KEY_FREELOOK    = 0x00001000;
-      static const int KEY_SUICIDE     = 0x00002000;
-      static const int KEY_GESTURE0    = 0x00004000;
-      static const int KEY_GESTURE1    = 0x00008000;
+      static const int ACTION_FORWARD  = 0x00000001;
+      static const int ACTION_BACKWARD = 0x00000002;
+      static const int ACTION_LEFT     = 0x00000004;
+      static const int ACTION_RIGHT    = 0x00000008;
+      static const int ACTION_JUMP     = 0x00000010;
+      static const int ACTION_CROUCH   = 0x00000020;
+      static const int ACTION_USE      = 0x00000040;
+      static const int ACTION_TAKE     = 0x00000080;
+      static const int ACTION_GRAB     = 0x00000100;
+      static const int ACTION_THROW    = 0x00000200;
+      static const int ACTION_SUICIDE  = 0x00000400;
 
-      static const int SND_LAND        = 5;
-      static const int SND_JUMP        = 6;
+      static const int EVENT_LAND      = 0;
+      static const int EVENT_JUMP      = 1;
+      static const int EVENT_FLIP      = 2;
 
       // can step over obstacles, e.g. walk up the stairs
       static const int STEPPING_BIT    = 0x00000001;
@@ -52,9 +48,12 @@ namespace oz
       static const int MOVING_BIT      = 0x00000080;
       static const int GESTURE0_BIT    = 0x00000100;
       static const int GESTURE1_BIT    = 0x00000200;
-      static const int DEATH_BIT       = 0x00000400;
+      static const int GESTURE2_BIT    = 0x00000400;
+      static const int GESTURE3_BIT    = 0x00000800;
+      static const int GESTURE4_BIT    = 0x00001000;
+      static const int DEATH_BIT       = 0x00002000;
       // bot is controlled by a player, nirvana shouldn't bind a mind to it
-      static const int PLAYER_BIT      = 0x00000800;
+      static const int PLAYER_BIT      = 0x00004000;
 
       static const float GRAB_EPSILON;
       static const float GRAB_STRING_RATIO;
@@ -87,18 +86,20 @@ namespace oz
         ANIM_MAX
       };
 
+      static const float BODY_FACEOUT_FACTOR = 0.0005f;
+
     protected:
 
       void onUpdate();
       void onHit( const Hit *hit, float hitMomentum );
+      void onDestroy();
 
     public:
 
-      int      state;
-      float    stamina;
-
       float    h, v;
-      int      keys, oldKeys;
+      int      state, oldState;
+      int      actions, oldActions;
+      float    stamina;
 
       float    bob;
       Vec3     camPos;
@@ -107,13 +108,10 @@ namespace oz
       float    grabHandle;
 
       float    stepRate;
-      float    deathTime;
-
-      Vector<Object*> items;
+      AnimEnum anim;
 
       Weapon   *weapon;
-
-      AnimEnum anim;
+      Vector<Object*> items;
 
       explicit Bot();
 

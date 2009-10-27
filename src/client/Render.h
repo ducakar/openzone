@@ -91,7 +91,7 @@ namespace client
       int                     taggedObjIndex;
 
       void drawObject( Object *obj );
-      void scheduleSector( int sectorX, int sectorY );
+      void scheduleCell( int cellX, int cellY );
 
     public:
 

@@ -89,13 +89,13 @@ namespace client
             ( min * nFront < dFront + radius || max * nFront < dFront + radius );
       }
 
-      // get min and max index for sectors per each axis, which should be included in pvs
+      // get min and max index for cells per each axis, which should be included in pvs
       void getExtrems( const Vec3 &p )
       {
-        minX = max( (int) ( p.x - radius + World::DIM ) / Sector::SIZEI, 0 );
-        minY = max( (int) ( p.y - radius + World::DIM ) / Sector::SIZEI, 0 );
-        maxX = min( (int) ( p.x + radius + World::DIM ) / Sector::SIZEI, World::MAX - 1 );
-        maxY = min( (int) ( p.y + radius + World::DIM ) / Sector::SIZEI, World::MAX - 1 );
+        minX = max( (int) ( p.x - radius + World::DIM ) / Cell::SIZEI, 0 );
+        minY = max( (int) ( p.y - radius + World::DIM ) / Cell::SIZEI, 0 );
+        maxX = min( (int) ( p.x + radius + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+        maxY = min( (int) ( p.y + radius + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
       }
 
   };

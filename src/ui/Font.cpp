@@ -10,7 +10,7 @@
 
 #include "Font.h"
 
-#include <stdarg.h>
+#include <cstdarg>
 
 namespace oz
 {

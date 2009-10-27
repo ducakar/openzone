@@ -21,8 +21,9 @@ namespace client
   {
     private:
 
-      uint partLists[64];
-      uint spark;
+      static const int MAX_PART_LISTS = 64;
+
+      uint partListBase;
 
     public:
 

@@ -21,32 +21,44 @@ namespace oz
   ObjectClass::~ObjectClass()
   {}
 
-  ObjectClass *ObjectClass::init( const String &name, Config *config )
+  void ObjectClass::fill( ObjectClass *clazz, const Config *config )
   {
-    ObjectClass *clazz = new ObjectClass();
-
-    clazz->name                 = name;
     clazz->description          = config->get( "description", "" );
 
     clazz->dim.x                = config->get( "dim.x", 0.5f );
     clazz->dim.y                = config->get( "dim.y", 0.5f );
     clazz->dim.z                = config->get( "dim.z", 0.5f );
 
-    clazz->flags                = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
+    if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
+        clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||
+        clazz->dim.z < 0.0f )
+    {
+      throw Exception( "Invalid object dimensions. Should be >= 0 and <= 3.99." );
+    }
+
     clazz->life                 = config->get( "life", 100.0f );
     clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
     clazz->damageRatio          = config->get( "damageRatio", 1.0f );
 
+    if( clazz->life <= 0.0f ) {
+      throw Exception( "Invalid object life. Should be > 0." );
+    }
+    if( clazz->damageTreshold < 0.0f ) {
+      throw Exception( "Invalid object damageTreshold. Should be >= 0." );
+    }
+    if( clazz->damageRatio < 0.0f ) {
+      throw Exception( "Invalid object damageRatio. Should be >= 0." );
+    }
+
     clazz->nDebris              = config->get( "nDebris", 8 );
-    clazz->debrisVelocitySpread = config->get( "debrisVelocitySpread", 2.0f );
-    clazz->debrisRejection      = config->get( "debrisRejection", 1.90f );
-    clazz->debrisMass           = config->get( "debrisMass", 0.5f );
-    clazz->debrisLifeTime       = config->get( "debrisLifeTime", 2.0f );
-    clazz->debrisSize           = config->get( "debrisSize", 1.0f );
+    clazz->debrisVelocitySpread = config->get( "debrisVelocitySpread", 4.0f );
+    clazz->debrisRejection      = config->get( "debrisRejection", 1.80f );
+    clazz->debrisMass           = config->get( "debrisMass", 0.0f );
+    clazz->debrisLifeTime       = config->get( "debrisLifeTime", 1.5f );
     clazz->debrisColor.x        = config->get( "debrisColor.r", 0.5f );
     clazz->debrisColor.y        = config->get( "debrisColor.g", 0.5f );
     clazz->debrisColor.z        = config->get( "debrisColor.b", 0.5f );
-    clazz->debrisColorSpread    = config->get( "debrisColorSpread", 0.5f );
+    clazz->debrisColorSpread    = config->get( "debrisColorSpread", 0.1f );
 
     clazz->modelType            = config->get( "modelType", "" );
     clazz->modelName            = config->get( "modelPath", "" );
@@ -71,26 +83,16 @@ namespace oz
         clazz->audioSamples[i] = sampleName.length() > 0 ? translator.soundIndex( sampleName ) : -1;
       }
     }
+  }
 
-    if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
-        clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||
-        clazz->dim.z < 0.0f )
-    {
-      assert( false );
-      throw Exception( 0, "Invalid object dimensions. Should be >= 0 and <= 2.99." );
-    }
-    if( clazz->life <= 0.0f ) {
-      assert( false );
-      throw Exception( 0, "Invalid object life. Should be > 0." );
-    }
-    if( clazz->damageTreshold < 0.0f ) {
-      assert( false );
-      throw Exception( 0, "Invalid object damageTreshold. Should be >= 0." );
-    }
-    if( clazz->damageRatio < 0.0f ) {
-      assert( false );
-      throw Exception( 0, "Invalid object damageRatio. Should be >= 0." );
-    }
+  ObjectClass *ObjectClass::init( const String &name, const Config *config )
+  {
+    ObjectClass *clazz = new ObjectClass();
+
+    clazz->name  = name;
+    clazz->flags = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
+    fill( clazz, config );
+
     return clazz;
   }
 
@@ -114,7 +116,7 @@ namespace oz
     Object *obj = new Object();
 
     obj->dim    = dim;
-    obj->sector = null;
+    obj->cell   = null;
     obj->type   = this;
 
     obj->readFull( istream );

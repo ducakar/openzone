@@ -37,14 +37,22 @@ namespace oz
 
     Bot &bot = *(Bot*) world.objects[botIndex];
 
-    bot.keys = 0;
-    bot.keys |= Bot::KEY_FORWARD;
+    bot.actions = 0;
+
+    if( bot.state & Bot::DEATH_BIT ) {
+      return;
+    }
+
+    bot.actions |= Bot::ACTION_FORWARD;
 
     if( Math::rand() % 101 == 0 ) {
       bot.h += ( Math::frand() * 120.0f ) - 60.0f;
     }
     if( Math::rand() % 253 == 0 ) {
-      bot.keys |= Bot::KEY_JUMP;
+      bot.actions |= Bot::ACTION_JUMP;
+    }
+    if( Math::rand() % 253 == 0 ) {
+      bot.state ^= Bot::RUNNING_BIT;
     }
   }
 

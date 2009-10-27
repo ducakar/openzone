@@ -53,8 +53,9 @@ namespace client
     bot = botIndex == -1 ? null : (Bot*) world.objects[botIndex];
 
     // world.objects[botIndex] might be null
-    if( bot == null ) {
+    if( bot == null || ( bot->state & Bot::DEATH_BIT ) ) {
       botIndex = -1;
+      bot = null;
       rot = relRot;
 
       rotMat = rot.rotMat44();

@@ -288,18 +288,21 @@ namespace client
     glRotatef( part->rot.z, 0.0f, 0.0f, 1.0f );
 
     glColor4f( part->color.x, part->color.y, part->color.z, part->lifeTime );
-    glCallList( spark );
+    glCallList( partListBase + ( part->index % MAX_PART_LISTS ) );
   }
 
   void Shape::init()
   {
-    spark = context.genList();
-    genRandomTetrahedicParticle( spark, 0.5f );
+    partListBase = glGenLists( MAX_PART_LISTS );
+
+    for( int i = 0; i < MAX_PART_LISTS; i++ ) {
+      genRandomTetrahedicParticle( partListBase + i, 1.0f );
+    }
   }
 
   void Shape::free()
   {
-    glDeleteLists( spark, 1 );
+    glDeleteLists( partListBase, MAX_PART_LISTS );
   }
 
 }

@@ -36,6 +36,16 @@ namespace oz
         j++;
       }
     }
+    for( int i = 0; i < 1000; i++ ) {
+      float x = -DIM + 2.0f * DIM * Math::frand();
+      float y = -DIM + 2.0f * DIM * Math::frand();
+      float z = world.terra.height( x, y ) + 1.0f;
+
+      if( z > 0.0f ) {
+        synapse.addObject( "Knight", Vec3( x, y, z ) );
+        j++;
+      }
+    }
     for( int i = 0; i < 2000; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
@@ -73,8 +83,8 @@ namespace oz
 
     synapse.addStruct( "castle", Vec3( 57, -33, 43 ), Structure::R0 );
 
-    synapse.genParts( 1000, Vec3( 50, -36, 40 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.1f, 5.0f,
-                      0.1f, Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
+    synapse.genParts( 1000, Vec3( 50, -36, 40 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.0f, 5.0f,
+                      Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
 
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 36 ) );
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 38 ) );
