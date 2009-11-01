@@ -15,8 +15,11 @@
 #include "Water.h"
 #include "Render.h"
 
+#include <GL/glext.h>
+
 #ifdef __WIN32__
-static PFNGLACTIVETEXTUREPROC glActiveTexture = null;
+static PFNGLACTIVETEXTUREPROC glActiveTexture             = null;
+static PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture = null;
 #endif
 
 namespace oz
@@ -247,7 +250,8 @@ namespace client
 
 #ifdef __WIN32__
     if( glActiveTexture == null ) {
-      glActiveTexture = static_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
+      glActiveTexture       = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
+      glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
     }
 #endif
 

@@ -284,7 +284,7 @@ namespace client
     String sPath = "mdl/" + name;
     String modelFile = sPath + "/tris.md2";
     String skinFile = sPath + "/skin.jpg";
-    String configFile = sPath + "/config.xml";
+    String configFile = sPath + "/config.rc";
 
     log.print( "Loading MD2 model '%s' ...", name.cstr() );
 

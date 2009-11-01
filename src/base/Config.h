@@ -24,9 +24,19 @@ namespace oz
       static const int SIZE = 1023;
       // Size of buffer used when loading from file (maximum key/value length).
       static const int BUFFER_SIZE = 1024;
+      // Conf file value alignment
+      static const int ALIGNMENT = 32;
 
       // Hashtable of variables.
       HashString<String, SIZE> vars;
+
+      bool loadConf( const char *file );
+      bool saveConf( const char *file );
+
+#ifdef OZ_XML_CONFIG
+      bool loadXML( const char *file );
+      bool saveXML( const char *file );
+#endif
 
     public:
 
@@ -130,7 +140,7 @@ namespace oz
        * @param file file path
        * @return true if successful
        */
-      bool save( const char *path );
+      bool save( const char *file );
 
       /**
        * Clear variables.

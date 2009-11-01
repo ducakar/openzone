@@ -14,6 +14,8 @@
 #include "Context.h"
 #include "Sound.h"
 
+#include <AL/alut.h>
+
 namespace oz
 {
 namespace client

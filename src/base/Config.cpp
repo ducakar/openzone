@@ -9,8 +9,12 @@
 #include "base.h"
 
 #include <cstdlib>
+#include <cstdio>
+
+#ifdef OZ_XML_CONFIG
 #include <libxml/xmlreader.h>
 #include <libxml/xmlwriter.h>
+#endif
 
 namespace oz
 {
@@ -27,6 +31,230 @@ namespace oz
   };
 
   Config config;
+
+  bool Config::loadConf( const char *file )
+  {
+    char buffer[BUFFER_SIZE];
+    char ch;
+
+    FILE *f = fopen( file, "r" );
+    if( f == null ) {
+      log.printEnd( "Error reading variables from '%s' ... Cannot open file", file );
+      return false;
+    }
+
+    do {
+      ch = fgetc( f );
+
+      // skip initial spaces
+      while( String::isSpace( ch ) ) {
+        ch = fgetc( f );
+      }
+
+      // read variable
+      String name;
+      if( String::isLetter( ch ) ) {
+        buffer[0] = ch;
+        ch = fgetc( f );
+
+        int i = 1;
+        while( i < BUFFER_SIZE - 1 &&
+            ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '.' ) )
+        {
+          buffer[i] = ch;
+          ch = fgetc( f );
+          i++;
+        }
+        buffer[i] = '\0';
+        name = buffer;
+      }
+      else {
+        goto skipLine;
+      }
+
+      // skip spaced between name and value
+      while( String::isSpace( ch ) ) {
+        ch = fgetc( f );
+      }
+
+      if( ch == '"' ) {
+        ch = fgetc( f );
+
+        int i = 0;
+        while( i < BUFFER_SIZE - 1 && ch != '"' && ch != '\n' && ch != EOF ) {
+          buffer[i] = ch;
+          ch = fgetc( f );
+          i++;
+        }
+        if( ch == '"' ) {
+          buffer[i] = '\0';
+          add( name, buffer );
+        }
+      }
+
+      skipLine:;
+      // find end of line/file
+      while( ch != '\n' && ch != EOF ) {
+        ch = fgetc( f );
+      }
+    }
+    while( ch != EOF );
+
+    fclose( f );
+
+    return true;
+  }
+
+  bool Config::saveConf( const char *file )
+  {
+    log.print( "Writing variables to '%s' ...", file );
+
+    // first we sort all the variables by key
+    int size = vars.length();
+    Elem sortedVars[size];
+
+    typeof( vars.iterator() ) j = vars.iterator();
+    for( int i = 0; !j.isPassed(); ++i, ++j ) {
+      sortedVars[i].key = j.key().cstr();
+      sortedVars[i].value = j.value().cstr();
+      size = i;
+    }
+    size++;
+    aSort( sortedVars, size );
+
+    FILE *f = fopen( file, "w" );
+    if( f == null ) {
+      log.printEnd( " Cannot open file" );
+      return false;
+    }
+
+    for( int i = 0; i < size; i++ ) {
+      int chars;
+      fprintf( f, "%s%n", sortedVars[i].key, &chars );
+
+      chars = ALIGNMENT - chars;
+      while( chars > 0 ) {
+        fprintf( f, " " );
+        chars--;
+      }
+      fprintf( f, "\"%s\"\n", sortedVars[i].value );
+    }
+
+    fclose( f );
+
+    log.printEnd( " OK" );
+    return true;
+  }
+
+#ifdef OZ_XML_CONFIG
+  bool Config::loadXML( const char *file )
+  {
+    xmlTextReader *reader = xmlReaderForFile( file, null, 0 );
+
+    if( reader == null ) {
+      xmlCleanupParser();
+      log.printEnd( "Error reading variables from '%s' ... Cannot open file", file );
+      return false;
+    }
+
+    int error = xmlTextReaderRead( reader );
+    while( error == 1 ) {
+      const char *name = reinterpret_cast<const char*>( xmlTextReaderConstName( reader ) );
+
+      // only check "var" nodes, ignore others
+      if( name != null && String::equals( name, "var" ) ) {
+        void *key = xmlTextReaderGetAttribute( reader, reinterpret_cast<const xmlChar*>( "name" ) );
+        void *value = xmlTextReaderGetAttribute( reader, reinterpret_cast<const xmlChar*>( "value" ) );
+
+        // error if "var" tag doesn't has "name" and "value" attributes
+        if( key == null || value == null ) {
+          free( key );
+          free( value );
+
+          error = -1;
+          break;
+        }
+        add( reinterpret_cast<const char*>( key ), reinterpret_cast<const char*>( value ) );
+
+        free( key );
+        free( value );
+      }
+      error = xmlTextReaderRead( reader );
+    }
+    xmlFreeTextReader( reader );
+    xmlCleanupParser();
+
+    if( error != 0 ) {
+      log.printEnd( "Error reading variables from '%s' ... Parse error", file );
+      return false;
+    }
+    return true;
+  }
+
+  bool Config::saveXML( const char *file )
+  {
+    log.print( "Writing variables to '%s' ...", file );
+
+    // first we sort all the variables by key
+    int size = vars.length();
+    Elem sortedVars[size];
+
+    typeof( vars.iterator() ) j = vars.iterator();
+    for( int i = 0; !j.isPassed(); ++i, ++j ) {
+      sortedVars[i].key = j.key().cstr();
+      sortedVars[i].value = j.value().cstr();
+      size = i;
+    }
+    size++;
+    aSort( sortedVars, size );
+
+    xmlTextWriter *writer = xmlNewTextWriterFilename( file, 0 );
+
+    if( writer == null ) {
+      xmlCleanupParser();
+      log.printEnd( " Cannot open file" );
+      return false;
+    }
+
+    if( xmlTextWriterStartDocument( writer, null, "UTF-8", null ) < 0 ||
+        xmlTextWriterStartElement( writer, reinterpret_cast<const xmlChar*>( "config" ) ) < 0 )
+    {
+      xmlFreeTextWriter( writer );
+      xmlCleanupParser();
+      log.printEnd( " Write error" );
+      return false;
+    }
+
+    for( int i = 0; i < size; i++ ) {
+      if( xmlTextWriterWriteString( writer, reinterpret_cast<const xmlChar*>( "\n  " ) ) < 0 ||
+          xmlTextWriterStartElement( writer, reinterpret_cast<const xmlChar*>( "var" ) ) < 0 ||
+          xmlTextWriterWriteAttribute( writer, reinterpret_cast<const xmlChar*>( "name" ),
+                                       reinterpret_cast<const xmlChar*>( sortedVars[i].key ) ) < 0 ||
+          xmlTextWriterWriteAttribute( writer, reinterpret_cast<const xmlChar*>( "value" ),
+                                       reinterpret_cast<const xmlChar*>( sortedVars[i].value ) ) < 0 ||
+          xmlTextWriterEndElement( writer ) < 0 )
+      {
+        xmlFreeTextWriter( writer );
+        xmlCleanupParser();
+        log.printEnd( " Write error" );
+        return false;
+      }
+    }
+    if( xmlTextWriterWriteString( writer, reinterpret_cast<const xmlChar*>( "\n" ) ) < 0 ||
+        xmlTextWriterEndElement( writer ) < 0 ||
+        xmlTextWriterEndDocument( writer ) < 0 )
+    {
+      xmlFreeTextWriter( writer );
+      xmlCleanupParser();
+      log.printEnd( " Write error" );
+      return false;
+    }
+    xmlFreeTextWriter( writer );
+    xmlCleanupParser();
+    log.printEnd( " OK" );
+    return true;
+  }
+#endif
 
   bool Config::get( const char *name, bool defVal )
   {
@@ -94,110 +322,42 @@ namespace oz
     }
   }
 
-  bool Config::load( const char *path )
+  bool Config::load( const char *file )
   {
-    xmlTextReader *reader = xmlReaderForFile( path, null, 0 );
+    const char *suffix = String::lastIndex( file, '.' );
 
-    if( reader == null ) {
-      xmlCleanupParser();
-      log.printEnd( "Error reading variables from '%s' ... Cannot open file", path );
-      return false;
-    }
-
-    int error = xmlTextReaderRead( reader );
-    while( error == 1 ) {
-      const char *name = reinterpret_cast<const char*>( xmlTextReaderConstName( reader ) );
-
-      // only check "var" nodes, ignore others
-      if( name != null && String::equals( name, "var" ) ) {
-        void *key = xmlTextReaderGetAttribute( reader, BAD_CAST "name" );
-        void *value = xmlTextReaderGetAttribute( reader, BAD_CAST "value" );
-
-        // error if "var" tag doesn't has "name" and "value" attributes
-        if( key == null || value == null ) {
-          free( key );
-          free( value );
-
-          error = -1;
-          break;
-        }
-        add( reinterpret_cast<const char*>( key ), reinterpret_cast<const char*>( value ) );
-
-        free( key );
-        free( value );
+    if( suffix != null ) {
+      if( String::equals( suffix, ".rc" ) ) {
+        return loadConf( file );
       }
-      error = xmlTextReaderRead( reader );
+#ifdef OZ_XML_CONFIG
+      else if( String::equals( suffix, ".xml" ) ) {
+        return loadXML( file );
+      }
+#endif
     }
-    xmlFreeTextReader( reader );
-    xmlCleanupParser();
 
-    if( error != 0 ) {
-      log.printEnd( "Error reading variables from '%s' ... Parse error", path );
-      return false;
-    }
-    return true;
+    log.println( "Unknown configuration file %s", file );
+    return false;
   }
 
   bool Config::save( const char *file )
   {
-    log.print( "Writing variables to '%s' ...", file );
+    const char *suffix = String::lastIndex( file, '.' );
 
-    // first we sort all the variables by key
-    int size = vars.length();
-    Elem sortedVars[size];
-
-    typeof( vars.iterator() ) j = vars.iterator();
-    for( int i = 0; !j.isPassed(); ++i, ++j ) {
-      sortedVars[i].key = j.key().cstr();
-      sortedVars[i].value = j.value().cstr();
-      size = i;
-    }
-    size++;
-    aSort( sortedVars, size );
-
-    xmlTextWriter *writer = xmlNewTextWriterFilename( file, 0 );
-
-    if( writer == null ) {
-      xmlCleanupParser();
-      log.printEnd( " Cannot open file" );
-      return false;
-    }
-
-    if( xmlTextWriterStartDocument( writer, null, "UTF-8", null ) < 0 ||
-        xmlTextWriterStartElement( writer, BAD_CAST "config" ) < 0 )
-    {
-      xmlFreeTextWriter( writer );
-      xmlCleanupParser();
-      log.printEnd( " Write error" );
-      return false;
-    }
-
-    for( int i = 0; i < size; i++ ) {
-      if( xmlTextWriterWriteString( writer, BAD_CAST "\n  " ) < 0 ||
-          xmlTextWriterStartElement( writer, BAD_CAST "var" ) < 0 ||
-          xmlTextWriterWriteAttribute( writer, BAD_CAST "name", BAD_CAST sortedVars[i].key ) < 0 ||
-          xmlTextWriterWriteAttribute( writer, BAD_CAST "value", BAD_CAST sortedVars[i].value ) < 0 ||
-          xmlTextWriterEndElement( writer ) < 0 )
-      {
-        xmlFreeTextWriter( writer );
-        xmlCleanupParser();
-        log.printEnd( " Write error" );
-        return false;
+    if( suffix != null ) {
+      if( String::equals( suffix, ".rc" ) ) {
+        return saveConf( file );
       }
+#ifdef OZ_XML_CONFIG
+      else if( String::equals( suffix, ".xml" ) ) {
+        return saveXML( file );
+      }
+#endif
     }
-    if( xmlTextWriterWriteString( writer, BAD_CAST "\n" ) < 0 ||
-        xmlTextWriterEndElement( writer ) < 0 ||
-        xmlTextWriterEndDocument( writer ) < 0 )
-    {
-      xmlFreeTextWriter( writer );
-      xmlCleanupParser();
-      log.printEnd( " Write error" );
-      return false;
-    }
-    xmlFreeTextWriter( writer );
-    xmlCleanupParser();
-    log.printEnd( " OK" );
-    return true;
+
+    log.println( "Unknown configuration file %s", file );
+    return false;
   }
 
   void Config::clear()

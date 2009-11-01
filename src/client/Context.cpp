@@ -17,6 +17,8 @@
 #include "BasicAudio.h"
 
 #include <SDL_image.h>
+#include <GL/glu.h>
+#include <AL/alut.h>
 #include <vorbis/vorbisfile.h>
 
 #define OZ_REGISTER_MODELCLASS( name ) \

@@ -24,11 +24,7 @@ namespace oz
     }
 
     struct stat fileStat;
-#ifdef WIN32
-    if( _stat( path, &fileStat ) != 0 || fileStat.st_size > 0x7fffffffl ) {
-#else
     if( stat( path, &fileStat ) != 0 || fileStat.st_size > 0x7fffffffl ) {
-#endif
       return false;
     }
 

@@ -25,6 +25,12 @@
 #include "MD2StaticModel.h"
 
 #include <ctime>
+#include <GL/glu.h>
+#include <GL/glext.h>
+
+#ifdef __WIN32__
+static PFNGLACTIVETEXTUREPROC glActiveTexture = null;
+#endif
 
 namespace oz
 {
@@ -414,6 +420,13 @@ namespace client
     foreach( extension, extensions.iterator() ) {
       log.println( "%s", extension->cstr() );
     }
+
+#ifdef __WIN32__
+    if( glActiveTexture == null ) {
+      glActiveTexture = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
+    }
+#endif
+
     log.unindent();
     log.println( "}" );
 

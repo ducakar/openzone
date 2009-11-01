@@ -21,7 +21,7 @@ namespace oz
 
       static Pool<Type, INDEX> pool;
 
-#ifdef OZ_USE_POOLALLOC
+#ifdef OZ_POOLALLOC
       /**
        * Get an empty slot from pool.
        * @param

@@ -72,12 +72,22 @@ namespace oz
 
       Object *createObject( const char *name, const Vec3 &p )
       {
-        return classes[name]->create( p );
+        if( classes.contains( name ) ) {
+          return classes.cachedValue()->create( p );
+        }
+        else {
+          throw Exception( "Invalid Object class requested" );
+        }
       }
 
       Object *createObject( const char *name, InputStream *istream )
       {
-        return classes[name]->create( istream );
+        if( classes.contains( name ) ) {
+          return classes.cachedValue()->create( istream );
+        }
+        else {
+          throw Exception( "Invalid Object class requested" );
+        }
       }
 
       bool init();

@@ -9,11 +9,9 @@
 
 #pragma once
 
-// defining NDEBUG disables assert macro
-// #define NDEBUG
-
-#define OZ_USE_REUSEALLOC 1
-#define OZ_USE_POOLALLOC
+#define OZ_POOLALLOC
+#define OZ_REUSEALLOC
+//#define OZ_XML_CONFIG
 
 #include <cassert>
 

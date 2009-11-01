@@ -102,7 +102,12 @@ namespace oz
 
       static void sincos( float x, float *s, float *c )
       {
+#ifdef __WIN32__
+        *s = __builtin_sinf( x );
+        *c = __builtin_cosf( x );
+#else
         __builtin_sincosf( x, s, c );
+#endif
       }
 
       static float tan( float x )

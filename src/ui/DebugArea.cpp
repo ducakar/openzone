@@ -14,6 +14,8 @@
 #include "matrix/Collider.h"
 #include "client/Camera.h"
 
+#include <GL/glu.h>
+
 namespace oz
 {
 namespace client

@@ -1,5 +1,2 @@
 server
 CMakeLists.txt
-CMakeFiles
-cmake_install.cmake
-Makefile

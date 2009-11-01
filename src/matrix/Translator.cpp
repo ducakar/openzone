@@ -125,7 +125,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "BSP structures (*.xml in 'bsp') {" );
+    log.println( "BSP structures (*.rc in 'bsp') {" );
     log.indent();
 
     dir = opendir( "bsp" );
@@ -145,7 +145,7 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".xml" ) {
+      if( extension != ".rc" ) {
         continue;
       }
 
@@ -164,7 +164,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "object classes (*.xml in 'class') {" );
+    log.println( "object classes (*.rc in 'class') {" );
     log.indent();
 
     dir = opendir( "class" );
@@ -184,7 +184,7 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".xml" ) {
+      if( extension != ".rc" ) {
         continue;
       }
 
@@ -256,8 +256,7 @@ namespace oz
       return bspIndices.cachedValue();
     }
     else {
-      log.println( "W: invalid bsp file index requested: %s", file );
-      return -1;
+      throw Exception( "Invalid BSP index requested" );
     }
   }
 

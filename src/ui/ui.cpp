@@ -10,6 +10,8 @@
 
 #include "ui.h"
 
+#include <GL/glu.h>
+
 namespace oz
 {
 namespace client
