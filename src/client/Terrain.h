@@ -42,8 +42,8 @@ namespace client
 
     public:
 
-      void init();
-      void free();
+      void load();
+      void unload();
 
       void setRadius( float radius );
       void draw() const;

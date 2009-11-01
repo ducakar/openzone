@@ -33,9 +33,10 @@ namespace oz
       static const int ACTION_THROW    = 0x00000200;
       static const int ACTION_SUICIDE  = 0x00000400;
 
-      static const int EVENT_LAND      = 0;
-      static const int EVENT_JUMP      = 1;
-      static const int EVENT_FLIP      = 2;
+      static const int EVENT_LAND      = 4;
+      static const int EVENT_JUMP      = 5;
+      static const int EVENT_FLIP      = 6;
+      static const int EVENT_DEATH     = 7;
 
       // can step over obstacles, e.g. walk up the stairs
       static const int STEPPING_BIT    = 0x00000001;

@@ -27,12 +27,12 @@ namespace ui
       rect( 0, 30, 250, 20 );
       rect( 0,  0, 250, 20 );
 
-      BotClass *clazz = (BotClass*) camera.bot->type;
+      const BotClass *clazz = static_cast<const BotClass*>( camera.bot->type );
 
       float life         = ( camera.bot->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
-      int   lifeWidth    = max( (int) ( life * 248.0f ), 0 );
+      int   lifeWidth    = max( static_cast<int>( life * 248.0f ), 0 );
       float stamina      = camera.bot->stamina / clazz->stamina;
-      int   staminaWidth = max( (int) ( stamina * 248.0f ), 0 );
+      int   staminaWidth = max( static_cast<int>( stamina * 248.0f ), 0 );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
       fill( 1, 31, lifeWidth, 18 );

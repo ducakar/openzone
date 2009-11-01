@@ -35,7 +35,7 @@ namespace oz
     assert( world.objects[botIndex] != null );
     assert( world.objects[botIndex]->flags & Object::BOT_BIT );
 
-    Bot &bot = *(Bot*) world.objects[botIndex];
+    Bot &bot = *static_cast<Bot*>( world.objects[botIndex] );
 
     bot.actions = 0;
 

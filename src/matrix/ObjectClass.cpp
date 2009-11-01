@@ -21,7 +21,7 @@ namespace oz
   ObjectClass::~ObjectClass()
   {}
 
-  void ObjectClass::fill( ObjectClass *clazz, const Config *config )
+  void ObjectClass::fill( ObjectClass *clazz, Config *config )
   {
     clazz->description          = config->get( "description", "" );
 
@@ -85,7 +85,7 @@ namespace oz
     }
   }
 
-  ObjectClass *ObjectClass::init( const String &name, const Config *config )
+  ObjectClass *ObjectClass::init( const String &name, Config *config )
   {
     ObjectClass *clazz = new ObjectClass();
 

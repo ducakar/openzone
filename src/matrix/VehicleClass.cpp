@@ -16,7 +16,7 @@
 namespace oz
 {
 
-  void VehicleClass::fill( VehicleClass *clazz, const Config *config )
+  void VehicleClass::fill( VehicleClass *clazz, Config *config )
   {
     DynObjectClass::fill( clazz, config );
 
@@ -76,7 +76,7 @@ namespace oz
     clazz->mindType          = config->get( "mindType", "" );
   }
 
-  ObjectClass *VehicleClass::init( const String &name, const Config *config )
+  ObjectClass *VehicleClass::init( const String &name, Config *config )
   {
     VehicleClass *clazz = new VehicleClass();
 

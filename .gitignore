@@ -9,8 +9,11 @@ precompiled.h.gch
 *.gcno
 gmon.out
 pg.out
+valgrind.supp
 pogon.*
 data
+build
+mingw32
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake

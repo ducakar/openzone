@@ -25,7 +25,7 @@ namespace oz
     static const int BASE_FLAGS = 0;
     static const int DEFAULT_FLAGS;
 
-    typedef ObjectClass *( *InitFunc )( const String &name, const Config *config );
+    typedef ObjectClass *( *InitFunc )( const String &name, Config *config );
 
     String name;
     String description;
@@ -53,8 +53,8 @@ namespace oz
 
     virtual ~ObjectClass();
 
-    static void fill( ObjectClass *clazz, const Config *config );
-    static ObjectClass *init( const String &name, const Config *config );
+    static void fill( ObjectClass *clazz, Config *config );
+    static ObjectClass *init( const String &name, Config *config );
 
     virtual Object *create( const Vec3 &pos );
     virtual Object *create( InputStream *istream );

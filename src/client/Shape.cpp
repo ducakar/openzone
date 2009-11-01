@@ -291,7 +291,7 @@ namespace client
     glCallList( partListBase + ( part->index % MAX_PART_LISTS ) );
   }
 
-  void Shape::init()
+  void Shape::load()
   {
     partListBase = glGenLists( MAX_PART_LISTS );
 
@@ -300,7 +300,7 @@ namespace client
     }
   }
 
-  void Shape::free()
+  void Shape::unload()
   {
     glDeleteLists( partListBase, MAX_PART_LISTS );
   }

@@ -92,10 +92,10 @@ namespace client
       // get min and max index for cells per each axis, which should be included in pvs
       void getExtrems( const Vec3 &p )
       {
-        minX = max( (int) ( p.x - radius + World::DIM ) / Cell::SIZEI, 0 );
-        minY = max( (int) ( p.y - radius + World::DIM ) / Cell::SIZEI, 0 );
-        maxX = min( (int) ( p.x + radius + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
-        maxY = min( (int) ( p.y + radius + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+        minX = max( static_cast<int>( p.x - radius + World::DIM ) / Cell::SIZEI, 0 );
+        minY = max( static_cast<int>( p.y - radius + World::DIM ) / Cell::SIZEI, 0 );
+        maxX = min( static_cast<int>( p.x + radius + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+        maxY = min( static_cast<int>( p.y + radius + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
       }
 
   };

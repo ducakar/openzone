@@ -281,7 +281,7 @@ int main( int, char *[] )
     //TQuickSortInc( array, MAX );
     //aSort<int, 2048>( array, MAX );
   }
-  printf( "%d\n", (int)( clock() - t0 ) / 1000 );
+  printf( "%d\n", static_cast<int>( clock() - t0 ) / 1000 );
   for( int i = 0; i < MAX; i++ ) {
     printf( "%d ", array[i] );
   }

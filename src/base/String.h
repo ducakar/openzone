@@ -92,9 +92,9 @@ namespace oz
 
       String( int n ) : buffer( baseBuffer ), count( 1 )
       {
-        // that should assure enough space, since log10( 2^( 8*sizeof(int) ) ) <= 3*sizeof(int),
+        // that should assure enough space, since log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ),
         // +2 for sign and terminating null char
-        assert( BUFFER_SIZE >= 3 * (int) sizeof( int ) + 2 );
+        assert( BUFFER_SIZE >= 3 * static_cast<int>( sizeof( int ) ) + 2 );
 
         // we have [sign +] first digit + remaining digits
         // since we always count first digit, we assure that we never get 0 digits (if n == 0)
@@ -117,11 +117,11 @@ namespace oz
         buffer[count] = '\0';
 
         // we always write first digit
-        buffer[count - 1] = (char) ( '0' + ( n % 10 ) );
+        buffer[count - 1] = static_cast<char>( '0' + ( n % 10 ) );
         n /= 10;
 
         for( int i = count - 2; n != 0; i-- ) {
-          buffer[i] = (char) ( '0' + ( n % 10 ) );
+          buffer[i] = static_cast<char>( '0' + ( n % 10 ) );
           n /= 10;
         }
       }
@@ -138,12 +138,12 @@ namespace oz
 
       operator const char* () const
       {
-        return (const char*) buffer;
+        return reinterpret_cast<const char*>( buffer );
       }
 
       const char *cstr() const
       {
-        return (const char*) buffer;
+        return reinterpret_cast<const char*>( buffer );
       }
 
       String &operator = ( const char *s )

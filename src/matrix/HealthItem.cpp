@@ -19,7 +19,7 @@ namespace oz
 
   void HealthItem::onUse( Bot *bot )
   {
-    HealthItemClass *clazz = (HealthItemClass*) type;
+    HealthItemClass *clazz = static_cast<HealthItemClass*>( type );
     bot->life = min( bot->type->life, bot->life + clazz->health );
     synapse.remove( this );
   }

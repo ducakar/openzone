@@ -34,8 +34,8 @@ namespace client
       void drawBox( const AABB &bb );
       void draw( Particle *part );
 
-      void init();
-      void free();
+      void load();
+      void unload();
 
   };
 

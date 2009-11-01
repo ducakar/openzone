@@ -66,6 +66,8 @@ namespace client
 
   void Main::main( int *argc, char *argv[] )
   {
+    initFlags = 0;
+
     String home;
 
     if( config.contains( "dir.home" ) ) {
@@ -107,6 +109,10 @@ namespace client
     String configPath = home + OZ_CONFIG_FILE;
     if( config.load( configPath ) ) {
       log.printEnd( "Configuration read from '%s'", configPath.cstr() );
+      initFlags |= INIT_CONFIG;
+    }
+    else {
+      log.println( "No config file, default config will be written on exit" );
     }
 
     log.print( "Initializing SDL ..." );
@@ -117,10 +123,10 @@ namespace client
     // (e.g. IM clients like Pidgin, Kopete, Psi) detect user's inactivity based on screensaver's
     // counter, so they don't detect that you are away if the screensaver is screwed.
     if( config.get( "screen.leaveScreensaver", true ) ) {
-      SDL_putenv( (char*) "SDL_VIDEO_ALLOW_SCREENSAVER=1" );
+      SDL_putenv( const_cast<char*>( "SDL_VIDEO_ALLOW_SCREENSAVER=1" ) );
     }
     if( config.get( "screen.nvVSync", true ) ) {
-      SDL_putenv( (char*) "__GL_SYNC_TO_VBLANK=1" );
+      SDL_putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
     }
     if( SDL_Init( SDL_INIT_VIDEO ) || SDLNet_Init() ) {
       log.printEnd( " Failed" );
@@ -131,7 +137,7 @@ namespace client
 
     initFlags |= INIT_SDL;
 
-    const char *data = config.get( "dir.data", "/usr/share/openzone" );
+    const char *data = config.get( "dir.data", "data" );
 
     log.print( "Setting working directory '%s' ...", data );
 
@@ -148,11 +154,11 @@ namespace client
     int screenBpp  = config.get( "screen.bpp", 32 );
     int screenFull = config.get( "screen.full", false ) ? SDL_FULLSCREEN : 0;
 
-    ushort screenCenterX = (ushort) ( screenX / 2 );
-    ushort screenCenterY = (ushort) ( screenY / 2 );
+    ushort screenCenterX = static_cast<ushort>( screenX / 2 );
+    ushort screenCenterY = static_cast<ushort>( screenY / 2 );
 
     log.print( "Setting OpenGL surface %dx%d %dbpp %s ...",
-                   screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
+               screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
 
     SDL_WM_SetCaption( OZ_WM_TITLE, null );
     SDL_ShowCursor( false );
@@ -328,22 +334,28 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    float allTimeSec = (float) ( timeLast - timeZero ) / 1000.0f;
-    float gameTimeSec = (float) gameTime / 1000.0f;
-    float renderTimeSec = (float) renderTime / 1000.0f;
-    float sleepTimeSec = allTimeSec - gameTimeSec - renderTimeSec;
+    float allTimeSec = static_cast<float>( timeLast - timeZero ) / 1000.0f;
+    float gameTimeSec = static_cast<float>( gameTime ) / 1000.0f;
+    float renderTimeSec = static_cast<float>( renderTime ) / 1000.0f;
+    float sleepTimeSec = max( 0.0f, allTimeSec - gameTimeSec - renderTimeSec );
 
-    log.println( "Time usage {" );
+    log.println( "STATISTICS {" );
     log.indent();
-    log.println( "    %.4gs\t%.1f%%\tall time", allTimeSec, 100.0f );
-    log.println( "    %.4gs\t%.1f%%\tsystem + simulation + basic sound update",
+    log.println( "Ticks: %d (%.2f Hz)", timer.millis / timer.TICK_MILLIS, 1000.0f / timer.TICK_MILLIS );
+    log.println( "Frames: %d (%.2f Hz)", timer.nFrames, timer.nFrames / allTimeSec );
+    log.println( "Time usage:" );
+    log.println( "    %.4g s\t%.1f%%\tall time", allTimeSec, 100.0f );
+    log.println( "    %.4g s\t%.1f%%\tsystem + simulation + basic sound update",
                  gameTimeSec, gameTimeSec / allTimeSec * 100.0f );
-    log.println( "    %.4gs\t%.1f%%\trender + advanced sound update",
+    log.println( "    %.4g s\t%.1f%%\trender + advanced sound update",
                  renderTimeSec, renderTimeSec / allTimeSec * 100.0f );
-    log.println( "    %.4gs\t%.1f%%\tsleep", sleepTimeSec, sleepTimeSec / allTimeSec * 100.0f );
+    log.println( "    %.4g s\t%.1f%%\tsleep", sleepTimeSec, sleepTimeSec / allTimeSec * 100.0f );
     log.unindent();
     log.println( "}" );
-    log.println( "Rendered frames: %d (%.2f fps)", timer.nFrames, timer.nFrames / allTimeSec );
+
+    if( ~initFlags & INIT_CONFIG ) {
+      config.save( configPath );
+    }
   }
 
 }

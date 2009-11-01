@@ -32,16 +32,16 @@ namespace client
   const float Terrain::DETAIL_SCALE = 4.0f;
   const float Terrain::WATER_SCALE  = 2.0f;
 
-  void Terrain::init()
+  void Terrain::load()
   {
     detailTexId = context.loadTexture( "terra/detail.jpg" );
     mapTexId    = context.loadTexture( "terra/map.png" );
     waterTexId  = context.loadTexture( "terra/water.jpg" );
 
 #ifdef __WIN32__
-    glActiveTexture   = (PFNGLACTIVETEXTUREPROC)   SDL_GL_GetProcAddress( "glActiveTexture" );
-    glMultiTexCoord2i = (PFNGLMULTITEXCOORD2IPROC) SDL_GL_GetProcAddress( "glMultiTexCoord2i" );
-    glMultiTexCoord2f = (PFNGLMULTITEXCOORD2FPROC) SDL_GL_GetProcAddress( "glMultiTexCoord2f" );
+    glActiveTexture   = static_cast<PFNGLACTIVETEXTUREPROC>(   SDL_GL_GetProcAddress( "glActiveTexture" ) );
+    glMultiTexCoord2i = static_cast<PFNGLMULTITEXCOORD2IPROC>( SDL_GL_GetProcAddress( "glMultiTexCoord2i" ) );
+    glMultiTexCoord2f = static_cast<PFNGLMULTITEXCOORD2FPROC>( SDL_GL_GetProcAddress( "glMultiTexCoord2f" ) );
 #endif
 
     int nVertices = oz::Terrain::MAX * oz::Terrain::MAX;
@@ -71,16 +71,16 @@ namespace client
         }
         n.norm();
 
-        detailTexCoords[x * oz::Terrain::MAX + y].u = (float) ( x & 1 ) * DETAIL_SCALE;
-        detailTexCoords[x * oz::Terrain::MAX + y].v = (float) ( y & 1 ) * DETAIL_SCALE;
+        detailTexCoords[x * oz::Terrain::MAX + y].u = static_cast<float>( x & 1 ) * DETAIL_SCALE;
+        detailTexCoords[x * oz::Terrain::MAX + y].v = static_cast<float>( y & 1 ) * DETAIL_SCALE;
 
-        mapTexCoords[x * oz::Terrain::MAX + y].u = ((float) x) / oz::Terrain::MAX;
-        mapTexCoords[x * oz::Terrain::MAX + y].v = ((float) y) / oz::Terrain::MAX;
+        mapTexCoords[x * oz::Terrain::MAX + y].u = static_cast<float>( x ) / oz::Terrain::MAX;
+        mapTexCoords[x * oz::Terrain::MAX + y].v = static_cast<float>( y ) / oz::Terrain::MAX;
       }
     }
   }
 
-  void Terrain::free()
+  void Terrain::unload()
   {
     if( normals != null ) {
       delete[] normals;

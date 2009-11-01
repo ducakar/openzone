@@ -264,7 +264,8 @@ namespace client
     Config config;
     config.load( configFile );
 
-    log.print( "Loading OBJ model '%s' ...", modelFile.cstr() );
+    log.println( "Loading OBJ model '%s' {", modelFile.cstr() );
+    log.indent();
 
     float scaling = config.get( "scale", 1.0f );
     Vec3 translation( config.get( "translate.x", 0.0f ),
@@ -274,7 +275,9 @@ namespace client
 
     file = fopen( modelFile.cstr(), "r" );
     if( file == null ) {
-      log.printEnd( "No such file" );
+      log.println( "No such file" );
+      log.unindent();
+      log.println( "}" );
       throw Exception( "OBJ model loading error" );
     }
 
@@ -294,6 +297,8 @@ namespace client
           if( !readVertexData( pos + 1, &tempVerts, &tempNormals, &tempTexCoords ) ) {
             fclose( file );
             log.println( "invalid vertex line: %s", buffer );
+            log.unindent();
+            log.println( "}" );
             throw Exception( "OBJ model loading error" );
           }
           break;
@@ -305,6 +310,8 @@ namespace client
           if( !readFace( pos + 1, &face ) ) {
             fclose( file );
             log.println( "invalid face line: %s", buffer );
+            log.unindent();
+            log.println( "}" );
             throw Exception( "OBJ model loading error" );
           }
           tempFaces << face;
@@ -315,6 +322,8 @@ namespace client
           if( aEquals( pos, "mtllib", 6 ) && !loadMaterial( sPath ) ) {
             fclose( file );
             log.println( "cannot load material at line: %s", buffer );
+            log.unindent();
+            log.println( "}" );
             throw Exception( "OBJ model loading error" );
           }
           break;
@@ -355,9 +364,13 @@ namespace client
       aCopy<Face>( faces, tempFaces, faces.length() );
     }
     else {
+      log.println( "no faces" );
+      log.unindent();
+      log.println( "}" );
       throw Exception( "OBJ model loading error" );
     }
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   OBJ::~OBJ()
@@ -394,7 +407,7 @@ namespace client
       glBegin( GL_POLYGON );
         for( int j = 0; j < face.nVerts; j++ ) {
           if( !texCoords.isEmpty() ) {
-            glTexCoord2fv( (float*) &texCoords[face.texCoordIndices[j]] );
+            glTexCoord2fv( &texCoords[face.texCoordIndices[j]].u );
           }
           if( !normals.isEmpty() ) {
             glNormal3fv( normals[face.normIndices[j]] );

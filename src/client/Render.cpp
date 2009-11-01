@@ -166,15 +166,15 @@ namespace client
         taggedObjIndex = camera.bot->grabObjIndex;
       }
       else {
-        float distance = ( (BotClass*) camera.bot->type )->grabDistance;
+        float distance = static_cast<BotClass*>( camera.bot->type )->grabDistance;
         collider.translate( camera.bot->p + camera.bot->camPos, camera.at * distance, camera.bot );
         taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
       }
     }
 
-    float minXCenter = (float) ( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
+    float minXCenter = static_cast<float>( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
         Cell::SIZE / 2.0f;
-    float minYCenter = (float) ( ( frustum.minY - World::MAX / 2 ) * Cell::SIZE ) +
+    float minYCenter = static_cast<float>( ( frustum.minY - World::MAX / 2 ) * Cell::SIZE ) +
         Cell::SIZE / 2.0f;
 
     float x = minXCenter;
@@ -403,7 +403,7 @@ namespace client
     log.println( "Initializing Graphics {" );
     log.indent();
 
-    String sExtensions = (const char*) glGetString( GL_EXTENSIONS );
+    String sExtensions = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
     Vector<String> extensions = sExtensions.trim().split( ' ' );
 
     log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
@@ -426,7 +426,7 @@ namespace client
     perspectiveMax    = config.get( "render.perspective.max", 400.0f );
 
     if( perspectiveAspect == 0.0 ) {
-      perspectiveAspect = (double) screenX / (double) screenY;
+      perspectiveAspect = static_cast<double>( screenX ) / static_cast<double>( screenY );
     }
 
     glMatrixMode( GL_PROJECTION );
@@ -486,9 +486,9 @@ namespace client
 
     camera.init();
     frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
-    shape.init();
-    sky.init();
-    terra.init();
+    shape.load();
+    sky.load();
+    terra.load();
     MD2::init();
 
     for( int i = 0; i < translator.bsps.length(); i++ ) {
@@ -518,9 +518,9 @@ namespace client
 
   void Render::unload()
   {
-    terra.free();
-    sky.free();
-    shape.free();
+    terra.unload();
+    sky.unload();
+    shape.unload();
   }
 
 }

@@ -20,14 +20,12 @@ namespace client
     /*
      * STANDARD SOUND SLOTS
      */
-    static const int SND_HIT_SOFT    = ObjectClass::AUDIO_SAMPLES - 5;
-    static const int SND_HIT_HARD    = ObjectClass::AUDIO_SAMPLES - 4;
-    static const int SND_SPLASH_SOFT = ObjectClass::AUDIO_SAMPLES - 3;
-    static const int SND_SPLASH_HARD = ObjectClass::AUDIO_SAMPLES - 2;
-    static const int SND_FRICTING    = ObjectClass::AUDIO_SAMPLES - 1;
+    static const int SND_DESTROY  = 0;
+    static const int SND_HIT      = 1;
+    static const int SND_SPLASH   = 2;
+    static const int SND_FRICTING = 3;
 
-    static const float MOMENTUM_TRESHOLD;
-    static const float MOMENTUM_INTENSITY_RATIO;
+    static const float MOMENTUM_INTENSITY_FACTOR;
 
     BasicAudio( const Object *obj ) : Audio( obj ) {}
 

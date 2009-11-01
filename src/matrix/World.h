@@ -130,8 +130,8 @@ namespace oz
 
   inline Cell *World::getCell( float x, float y )
   {
-    int ix = (int) ( x + World::DIM ) / Cell::SIZEI;
-    int iy = (int) ( y + World::DIM ) / Cell::SIZEI;
+    int ix = static_cast<int>( x + World::DIM ) / Cell::SIZEI;
+    int iy = static_cast<int>( y + World::DIM ) / Cell::SIZEI;
 
     ix = bound( ix, 0, World::MAX - 1 );
     iy = bound( iy, 0, World::MAX - 1 );
@@ -146,10 +146,10 @@ namespace oz
 
   inline void World::getInters( float x, float y, float epsilon )
   {
-    minX = max( (int) ( x - epsilon + World::DIM ) / Cell::SIZEI, 0 );
-    minY = max( (int) ( y - epsilon + World::DIM ) / Cell::SIZEI, 0 );
-    maxX = min( (int) ( x + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
-    maxY = min( (int) ( y + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+    minX = max( static_cast<int>( x - epsilon + World::DIM ) / Cell::SIZEI, 0 );
+    minY = max( static_cast<int>( y - epsilon + World::DIM ) / Cell::SIZEI, 0 );
+    maxX = min( static_cast<int>( x + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+    maxY = min( static_cast<int>( y + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
   }
 
   inline void World::getInters( const Vec3 &p, float epsilon )
@@ -160,10 +160,10 @@ namespace oz
   inline void World::getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
                                 float epsilon )
   {
-    minX = max( (int) ( minPosX - epsilon + World::DIM ) / Cell::SIZEI, 0 );
-    minY = max( (int) ( minPosY - epsilon + World::DIM ) / Cell::SIZEI, 0 );
-    maxX = min( (int) ( maxPosX + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
-    maxY = min( (int) ( maxPosY + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+    minX = max( static_cast<int>( minPosX - epsilon + World::DIM ) / Cell::SIZEI, 0 );
+    minY = max( static_cast<int>( minPosY - epsilon + World::DIM ) / Cell::SIZEI, 0 );
+    maxX = min( static_cast<int>( maxPosX + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+    maxY = min( static_cast<int>( maxPosY + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
   }
 
   inline void World::getInters( const AABB &bb, float epsilon )

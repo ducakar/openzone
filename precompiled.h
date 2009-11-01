@@ -14,10 +14,3 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <AL/alut.h>
-
-extern "C"
-{
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-}

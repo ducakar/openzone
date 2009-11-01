@@ -15,7 +15,7 @@
 namespace oz
 {
 
-  const float Terrain::Quad::SIZE = (float) Terrain::Quad::SIZEI;
+  const float Terrain::Quad::SIZE = static_cast<float>( Terrain::Quad::SIZEI );
   const float Terrain::Quad::DIM = Terrain::Quad::SIZE / 2.0f;
 
   const float Terrain::DIM = Terrain::Quad::DIM * Terrain::QUADS;
@@ -59,8 +59,8 @@ namespace oz
   {
     for( int x = 0; x < MAX; x++ ) {
       for( int y = 0; y < MAX; y++ ) {
-        vertices[x][y].x = (float) ( x * Quad::SIZEI ) - DIM;
-        vertices[x][y].y = (float) ( y * Quad::SIZEI ) - DIM;
+        vertices[x][y].x = static_cast<float>( x * Quad::SIZEI ) - DIM;
+        vertices[x][y].y = static_cast<float>( y * Quad::SIZEI ) - DIM;
       }
     }
   }
@@ -69,8 +69,8 @@ namespace oz
   {
     for( int x = 0; x < MAX; x++ ) {
       for( int y = 0; y < MAX; y++ ) {
-        vertices[x][y].x = (float) ( x * Quad::SIZEI ) - DIM;
-        vertices[x][y].y = (float) ( y * Quad::SIZEI ) - DIM;
+        vertices[x][y].x = static_cast<float>( x * Quad::SIZEI ) - DIM;
+        vertices[x][y].y = static_cast<float>( y * Quad::SIZEI ) - DIM;
         vertices[x][y].z = height;
       }
     }
@@ -95,10 +95,10 @@ namespace oz
     }
 
     int scanLineLength = image->pitch;
-    const ubyte *line = (const ubyte*) image->pixels;
+    const ubyte *line = reinterpret_cast<const ubyte*>( image->pixels );
     for( int y = MAX - 1; y >= 0; y-- ) {
       for( int x = 0; x < MAX; x++ ) {
-        vertices[x][y].z = (float) line[x] * HEIGHT_STEP + HEIGHT_BIAS;
+        vertices[x][y].z = static_cast<float>( line[x] ) * HEIGHT_STEP + HEIGHT_BIAS;
       }
       line += scanLineLength;
     }

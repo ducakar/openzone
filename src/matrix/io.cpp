@@ -37,7 +37,7 @@ namespace oz
       return false;
     }
 
-    count  = (int) fileStat.st_size;
+    count  = static_cast<int>( fileStat.st_size );
     buffer = new char[count];
 
     int blocksToRead = ( count - 1 ) / BLOCK_SIZE + 1;

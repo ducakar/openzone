@@ -310,9 +310,9 @@ namespace client
       throw Exception( "MD2 model loading error" );
     }
 
-    verts( nVerts * nFrames );
-    glCmds( header.nGlCmds );
-    lightNormals( nVerts * nFrames );
+    verts = new Vec3[nVerts * nFrames];
+    glCmds = new int[header.nGlCmds];
+    lightNormals = new int[nVerts * nFrames];
 
     buffer = new char[nFrames * header.framesize];
 
@@ -320,18 +320,18 @@ namespace client
     fread( buffer, 1, nFrames * header.framesize, file );
 
     fseek( file, header.offGLCmds, SEEK_SET );
-    fread( glCmds, 1, glCmds.length() * sizeof( int ), file );
+    fread( glCmds, 1, header.nGlCmds * sizeof( int ), file );
 
     for( int i = 0; i < nFrames; i++ ) {
-      pFrame = (MD2Frame*) &buffer[header.framesize * i];
+      pFrame = reinterpret_cast<MD2Frame*>( &buffer[header.framesize * i] );
       pVerts = &verts[nVerts * i];
       pNormals = &lightNormals[nVerts * i];
 
       for( int j = 0; j < nVerts; j++ ) {
         pVerts[j] = Vec3(
-          ( (float) pFrame->verts[j].v[1] * -pFrame->scale.y ) - pFrame->translate.y,
-          ( (float) pFrame->verts[j].v[0] *  pFrame->scale.x ) + pFrame->translate.x,
-          ( (float) pFrame->verts[j].v[2] *  pFrame->scale.z ) + pFrame->translate.z );
+          ( static_cast<float>( pFrame->verts[j].v[1] ) * -pFrame->scale.y ) - pFrame->translate.y,
+          ( static_cast<float>( pFrame->verts[j].v[0] ) *  pFrame->scale.x ) + pFrame->translate.x,
+          ( static_cast<float>( pFrame->verts[j].v[2] ) *  pFrame->scale.z ) + pFrame->translate.z );
 
         pNormals[j] = pFrame->verts[j].iLightNormal;
       }
@@ -376,7 +376,12 @@ namespace client
   MD2::~MD2()
   {
     log.print( "Unloading MD2 model '%s' ...", name.cstr() );
+
     context.freeTexture( texId );
+    delete[] verts;
+    delete[] glCmds;
+    delete[] lightNormals;
+
     log.printEnd( " OK" );
 
     assert( glGetError() == GL_NO_ERROR );
@@ -410,34 +415,30 @@ namespace client
     }
   }
 
-  void MD2::interpolate( AnimState *anim, float time ) const
+  void MD2::interpolate( AnimState *anim, float dt ) const
   {
-    const Vec3 *currFrame;
-    const Vec3 *nextFrame;
-    float      animInterpol;
+    anim->currTime += dt;
 
-    anim->currTime += time;
-
-    if( anim->currTime - anim->oldTime > anim->frameTime ) {
+    while( anim->currTime > anim->frameTime ) {
+      anim->currTime -= anim->frameTime;
       anim->currFrame = anim->nextFrame;
 
-      if( anim->nextFrame >= anim->endFrame ) {
-        if( anim->repeat ) {
-          anim->nextFrame = anim->startFrame;
-        }
-      }
-      else {
+      if( anim->nextFrame < anim->endFrame ) {
         anim->nextFrame++;
       }
-      anim->oldTime = anim->currTime;
+      else if( anim->repeat ) {
+        anim->nextFrame = anim->startFrame;
+      }
     }
-    animInterpol = anim->fps * ( anim->currTime - anim->oldTime );
 
-    currFrame = &verts[nVerts * anim->currFrame];
-    nextFrame = &verts[nVerts * anim->nextFrame];
+    const Vec3 *currFrame = &verts[nVerts * anim->currFrame];
+    const Vec3 *nextFrame = &verts[nVerts * anim->nextFrame];
+
+    float t1 = anim->fps * anim->currTime;
+    float t2 = 1.0f - t1;
 
     for( int i = 0; i < nVerts; i++ ) {
-      vertList[i] = currFrame[i] + animInterpol * ( nextFrame[i] - currFrame[i] );
+      vertList[i] = t2 * currFrame[i] + t1 * nextFrame[i];
     }
   }
 
@@ -461,7 +462,8 @@ namespace client
       }
       for( ; i > 0; i--, pCmd += 3 ) {
         glNormal3fv( anorms[ lightNormals[ pCmd[2]] ] );
-        glTexCoord2f( ( (float*) pCmd )[0], ( (float*) pCmd )[1] );
+        glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],
+                      reinterpret_cast<const float*>( pCmd )[1] );
         glVertex3fv( vertList[pCmd[2]] );
       }
       glEnd();
@@ -492,7 +494,8 @@ namespace client
       }
       for( ; i > 0; i--, pCmd += 3 ) {
         glNormal3fv( anorms[ lightNormals[ pCmd[2]] ] );
-        glTexCoord2f( ( (float*) pCmd )[0], ( (float*) pCmd )[1] );
+        glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],
+                      reinterpret_cast<const float*>( pCmd )[1] );
         glVertex3fv( vertList[pCmd[2]] );
       }
       glEnd();
@@ -508,13 +511,6 @@ namespace client
     glNewList( list, GL_COMPILE );
       drawFrame( 0 );
     glEndList();
-  }
-
-  void MD2::trim()
-  {
-    verts.clear();
-    glCmds.clear();
-    lightNormals.clear();
   }
 
 }

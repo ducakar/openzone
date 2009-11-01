@@ -62,8 +62,8 @@ namespace oz
 
     String mindType;
 
-    static void fill( VehicleClass *clazz, const Config *config );
-    static ObjectClass *init( const String &name, const Config *config );
+    static void fill( VehicleClass *clazz, Config *config );
+    static ObjectClass *init( const String &name, Config *config );
 
     virtual Object *create( const Vec3 &pos );
     virtual Object *create( InputStream *istream );

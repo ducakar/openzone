@@ -84,16 +84,16 @@ namespace oz
   inline void Terrain::getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
                                   float epsilon )
   {
-    minX = max( (int) ( minPosX - epsilon + DIM ) / Quad::SIZEI, 0 );
-    minY = max( (int) ( minPosY - epsilon + DIM ) / Quad::SIZEI, 0 );
-    maxX = min( (int) ( maxPosX + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
-    maxY = min( (int) ( maxPosY + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
+    minX = max( static_cast<int>( minPosX - epsilon + DIM ) / Quad::SIZEI, 0 );
+    minY = max( static_cast<int>( minPosY - epsilon + DIM ) / Quad::SIZEI, 0 );
+    maxX = min( static_cast<int>( maxPosX + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
+    maxY = min( static_cast<int>( maxPosY + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
   }
 
   inline void Terrain::getIndices( float x, float y )
   {
-    ix = (int) ( x + DIM ) / Quad::SIZEI;
-    iy = (int) ( y + DIM ) / Quad::SIZEI;
+    ix = static_cast<int>( x + DIM ) / Quad::SIZEI;
+    iy = static_cast<int>( y + DIM ) / Quad::SIZEI;
 
     ix = bound( ix, 0, QUADS - 1 );
     iy = bound( iy, 0, QUADS - 1 );

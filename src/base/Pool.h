@@ -44,12 +44,12 @@ namespace oz
 
         Type &get( int i )
         {
-          return ( (Type*) data )[i];
+          return reinterpret_cast<Type*>( data )[i];
         }
 
         const Type &get( int i ) const
         {
-          return ( (const Type*) data )[i];
+          return reinterpret_cast<const Type*>( data )[i];
         }
       };
 

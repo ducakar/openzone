@@ -26,7 +26,7 @@ namespace oz
     static const float DIM = World::DIM;
     int j = 0;
 
-    for( int i = 0; i < 1000; i++ ) {
+    for( int i = 0; i < 400; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
@@ -36,7 +36,7 @@ namespace oz
         j++;
       }
     }
-    for( int i = 0; i < 1000; i++ ) {
+    for( int i = 0; i < 400; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
@@ -46,7 +46,7 @@ namespace oz
         j++;
       }
     }
-    for( int i = 0; i < 2000; i++ ) {
+    for( int i = 0; i < 1000; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
@@ -55,7 +55,7 @@ namespace oz
         synapse.addObject( "MetalBarrel", Vec3( x, y, z ) );
       }
     }
-    for( int i = 0; i < 2000; i++ ) {
+    for( int i = 0; i < 1000; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 2.0f;
@@ -70,7 +70,7 @@ namespace oz
   {
     world.sky.set( 205.0f, 144.0f, 0.0f );
 
-    Bot *lord = (Bot*) translator.createObject( "Lord", Vec3( 52, -44, 37 ) );
+    Bot *lord = static_cast<Bot*>( translator.createObject( "Lord", Vec3( 52, -44, 37 ) ) );
     lord->h = 270;
     synapse.put( lord );
 
@@ -208,7 +208,7 @@ namespace oz
         obj->update();
 
         if( obj->flags & Object::DYNAMIC_BIT ) {
-          DynObject *dynObj = (DynObject*) obj;
+          DynObject *dynObj = static_cast<DynObject*>( obj );
 
           physics.updateObj( dynObj );
 
