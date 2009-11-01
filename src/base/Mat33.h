@@ -30,7 +30,7 @@ namespace oz
 
     explicit Mat33( const float *v )
     {
-      *this = *(Mat33*) v;
+      *this = *reinterpret_cast<const Mat33*>( v );
     }
 
     // implemented in Mat44.h

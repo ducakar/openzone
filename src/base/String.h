@@ -138,12 +138,12 @@ namespace oz
 
       operator const char* () const
       {
-        return reinterpret_cast<const char*>( buffer );
+        return buffer;
       }
 
       const char *cstr() const
       {
-        return reinterpret_cast<const char*>( buffer );
+        return buffer;
       }
 
       String &operator = ( const char *s )
@@ -453,6 +453,21 @@ namespace oz
         }
         v << substring( p0 );
         return v;
+      }
+
+      static bool isDigit( char c )
+      {
+        return '0' <= c && c <= '9';
+      }
+
+      static bool isLetter( char c )
+      {
+        return ( 'A' <= c && c <= 'Z' ) || ( 'a' <= c && c <= 'z' );
+      }
+
+      static bool isSpace( char c )
+      {
+        return c == ' ' || c == '\t';
       }
 
   };

@@ -64,7 +64,7 @@ namespace client
     config.clear();
   }
 
-  void Main::main( int *argc, char *argv[] )
+  void Main::main( int *argc, char **argv )
   {
     initFlags = 0;
 
@@ -81,7 +81,11 @@ namespace client
       if( stat( home.cstr(), &homeDirStat ) != 0 ) {
         printf( "No resource dir found, creating '%s' ...", home.cstr() );
 
+#ifdef __WIN32__
+        if( mkdir( home.cstr() ) != 0 ) {
+#else
         if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
+#endif
           printf( " Failed\n" );
           return;
         }
@@ -361,7 +365,7 @@ namespace client
 }
 }
 
-int main( int argc, char *argv[] )
+int main( int argc, char **argv )
 {
   try {
     oz::client::main.main( &argc, argv );

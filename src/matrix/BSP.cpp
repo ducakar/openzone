@@ -398,7 +398,7 @@ namespace oz
   bool BSP::load( const char *name )
   {
     Config bspConfig;
-    if( !bspConfig.load( String( "bsp/" ) + name + String( ".xml" ) ) ) {
+    if( !bspConfig.load( String( "bsp/" ) + name + String( ".rc" ) ) ) {
       return false;
     }
 

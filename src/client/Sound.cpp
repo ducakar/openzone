@@ -288,7 +288,7 @@ namespace client
 
     alutInit( argc, argv );
     if( alutGetError() != ALUT_ERROR_NO_ERROR ) {
-      log.printEnd( "Failed to initialize ALUT" );
+      log.println( "Failed to initialize ALUT" );
       log.unindent();
       log.println( "}" );
       return false;

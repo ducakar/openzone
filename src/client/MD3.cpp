@@ -264,7 +264,7 @@ namespace client
   {
     String name       = name_;
     String dir        = "mdl/" + name + "/";
-    String configFile = dir + "config.xml";
+    String configFile = dir + "config.rc";
 
     MD3Tag *headTags;
     MD3Tag *upperTags;

@@ -10,7 +10,5 @@
 
 #include "src/base/base.h"
 
-// include SDL, OpenGL and OpenAL as those are commonly used
+// include SDL as it is commonly used
 #include <SDL.h>
-#include <SDL_opengl.h>
-#include <AL/alut.h>

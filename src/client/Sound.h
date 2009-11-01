@@ -12,6 +12,7 @@
 #include "matrix/World.h"
 #include "matrix/Translator.h"
 
+#include <AL/alut.h>
 #include <vorbis/vorbisfile.h>
 
 namespace oz

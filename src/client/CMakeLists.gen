@@ -1,8 +1,6 @@
 #!/bin/sh
 
 cat << EOF > CMakeLists.txt
-link_libraries( ui nirvana matrix base )
-
 add_executable( openzone
 EOF
 
@@ -12,4 +10,5 @@ cat << EOF >> CMakeLists.txt
 )
 
 add_dependencies( openzone precompile )
+target_link_libraries( openzone ui nirvana matrix base )
 EOF

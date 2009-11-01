@@ -18,10 +18,11 @@
 #include "Frustum.h"
 #include "Water.h"
 
+#include <GL/glext.h>
+
 #ifdef __WIN32__
-static PFNGLACTIVETEXTUREPROC   glActiveTexture   = null;
-static PFNGLMULTITEXCOORD2IPROC glMultiTexCoord2i = null;
-static PFNGLMULTITEXCOORD2FPROC glMultiTexCoord2f = null;
+static PFNGLACTIVETEXTUREPROC       glActiveTexture       = null;
+static PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture = null;
 #endif
 
 namespace oz
@@ -39,9 +40,8 @@ namespace client
     waterTexId  = context.loadTexture( "terra/water.jpg" );
 
 #ifdef __WIN32__
-    glActiveTexture   = static_cast<PFNGLACTIVETEXTUREPROC>(   SDL_GL_GetProcAddress( "glActiveTexture" ) );
-    glMultiTexCoord2i = static_cast<PFNGLMULTITEXCOORD2IPROC>( SDL_GL_GetProcAddress( "glMultiTexCoord2i" ) );
-    glMultiTexCoord2f = static_cast<PFNGLMULTITEXCOORD2FPROC>( SDL_GL_GetProcAddress( "glMultiTexCoord2f" ) );
+    glActiveTexture       = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
+    glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
 #endif
 
     int nVertices = oz::Terrain::MAX * oz::Terrain::MAX;

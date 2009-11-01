@@ -13,6 +13,8 @@
 #include "client/Context.h"
 #include "client/Camera.h"
 
+#include <GL/gl.h>
+
 namespace oz
 {
 namespace client

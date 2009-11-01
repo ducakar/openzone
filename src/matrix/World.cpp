@@ -298,9 +298,6 @@ namespace oz
         }
         else {
           int bspIndex = translator.bspIndex( bspFile );
-          if( bspIndex == -1 ) {
-            throw Exception( "BSP not loaded" );
-          }
           str = new Structure();
           str->readFull( istream );
           str->index = i;

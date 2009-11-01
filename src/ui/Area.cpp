@@ -10,6 +10,8 @@
 
 #include "Area.h"
 
+#include <GL/gl.h>
+
 namespace oz
 {
 namespace client

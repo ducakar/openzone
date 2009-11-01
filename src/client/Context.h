@@ -16,6 +16,8 @@
 #include "Model.h"
 #include "Audio.h"
 
+#include <GL/gl.h>
+
 namespace oz
 {
 namespace client

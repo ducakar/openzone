@@ -13,6 +13,8 @@
 #include "matrix/BotClass.h"
 #include "client/Camera.h"
 
+#include <GL/glu.h>
+
 namespace oz
 {
 namespace client

@@ -10,6 +10,8 @@
 
 #include "Button.h"
 
+#include <GL/gl.h>
+
 namespace oz
 {
 namespace client

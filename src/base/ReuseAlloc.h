@@ -53,15 +53,10 @@ namespace oz
 
       /**
        * No placement new.
-       * @param
-       * @param
-       * @return
        */
       void *operator new ( uint, void* )
       {
-        assert( false );
-
-        return null;
+        throw Exception( "No placement new" );
       }
 
       // Do not really free memory, add it at the beginning of the list of freed blocks.
@@ -73,6 +68,14 @@ namespace oz
         // note that space for destroyed object is still allocated
         p->ReuseAlloc::next = freeList;
         freeList = p;
+      }
+
+      /**
+       * No placement delete
+       */
+      void operator delete ( void*, void * )
+      {
+        throw Exception( "No placement delete" );
       }
 #endif
 
