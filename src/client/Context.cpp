@@ -78,12 +78,12 @@ namespace client
     ubyte *dataEnd = data + width * height * bytesPerPixel;
 
     for( ubyte *p = data; p < dataEnd; p += bytesPerPixel ) {
-      float x = ( (float) p[0] - 128.0f ) / 128.0f;
-      float y = ( (float) p[1] - 128.0f ) / 128.0f;
-      float z = ( (float) p[2] - 128.0f ) / 128.0f;
+      float x = static_cast<float>( p[0] - 128.0f ) / 128.0f;
+      float y = static_cast<float>( p[1] - 128.0f ) / 128.0f;
+      float z = static_cast<float>( p[2] - 128.0f ) / 128.0f;
 
       float dot = x * lightNormal.x + y * lightNormal.y + z * lightNormal.z;
-      ubyte color = (ubyte) bound( dot * 256.0f, 0.0f, 255.0f );
+      ubyte color = static_cast<ubyte>( bound( dot * 256.0f, 0.0f, 255.0f ) );
 
       p[0] = color;
       p[1] = color;
@@ -167,7 +167,7 @@ namespace client
     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createTexture( (const ubyte*) image->pixels, image->w, image->h,
+    int texNum = createTexture( reinterpret_cast<const ubyte*>( image->pixels ), image->w, image->h,
                                 bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
@@ -198,8 +198,8 @@ namespace client
     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createNormalmap( (ubyte*) image->pixels, lightNormal, image->w, image->h,
-                                  bytesPerPixel, wrap, magFilter, minFilter );
+    int texNum = createNormalmap( reinterpret_cast<ubyte*>( image->pixels ), lightNormal,
+                                  image->w, image->h, bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
 
@@ -222,17 +222,17 @@ namespace client
 
   uint Context::loadTexture( const char *path, bool wrap, int magFilter, int minFilter )
   {
-//     log.print( "Loading texture from file '%s' ...", path );
+    log.print( "Loading texture from file '%s' ...", path );
 
     SDL_Surface *image = IMG_Load( path );
     if( image == null ) {
-//       log.printEnd( " No such file" );
+      log.printEnd( " No such file" );
       return 0;
     }
-//     log.printEnd( " OK" );
+    log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createTexture( (const ubyte*) image->pixels, image->w, image->h,
+    int texNum = createTexture( reinterpret_cast<const ubyte*>( image->pixels ), image->w, image->h,
                                 bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
@@ -242,18 +242,18 @@ namespace client
   uint Context::loadNormalmap( const char *path, const Vec3 &lightNormal,
                                bool wrap, int magFilter, int minFilter )
   {
-//     log.print( "Loading normalmap texture from file '%s' ...", path );
+    log.print( "Loading normalmap texture from file '%s' ...", path );
 
     SDL_Surface *image = IMG_Load( path );
     if( image == null ) {
-//       log.printEnd( " No such file" );
+      log.printEnd( " No such file" );
       return 0;
     }
-//     log.printEnd( " OK" );
+    log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createNormalmap( (ubyte*) image->pixels, lightNormal, image->w, image->h,
-                                  bytesPerPixel, wrap, magFilter, minFilter );
+    int texNum = createNormalmap( reinterpret_cast<ubyte*>( image->pixels ), lightNormal,
+                                  image->w, image->h, bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
     return texNum;
@@ -332,7 +332,7 @@ namespace client
         return AL_NONE;
       }
 
-      int  size = (int) ( oggStream.end - oggStream.offset );
+      int  size = static_cast<int>( oggStream.end - oggStream.offset );
       char data[size];
       int  section;
       int  bytesRead = 0;
@@ -446,7 +446,6 @@ namespace client
       MD2 *&md2 = md2StaticModels.cachedValue().object;
       md2 = new MD2( path );
       md2->genList();
-      md2->trim();
     }
     md2StaticModels.cachedValue().nUsers++;
     return md2StaticModels.cachedValue().object->list;

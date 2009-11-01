@@ -27,7 +27,7 @@ namespace oz
 
     explicit Vec3( float *v )
     {
-      *this = *(Vec3*) v;
+      *this = *reinterpret_cast<Vec3*>( v );
     }
 
     // implemented in Quat.h
@@ -40,22 +40,22 @@ namespace oz
 
     operator float* ()
     {
-      return (float*) this;
+      return reinterpret_cast<float*>( this );
     }
 
     operator const float* () const
     {
-      return (const float*) this;
+      return reinterpret_cast<const float*>( this );
     }
 
     float &operator [] ( int i )
     {
-      return ( (float*) this )[i];
+      return reinterpret_cast<float*>( this )[i];
     }
 
     const float &operator [] ( int i ) const
     {
-      return ( (float*) this )[i];
+      return reinterpret_cast<const float*>( this )[i];
     }
 
     bool isEqual( const Vec3 &a, float epsilon ) const

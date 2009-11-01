@@ -1,3 +1,9 @@
 include_directories( . )
 
-subdirs( base matrix nirvana ui client server test )
+add_subdirectory( base )
+add_subdirectory( matrix )
+add_subdirectory( nirvana )
+add_subdirectory( ui )
+add_subdirectory( client )
+add_subdirectory( server )
+add_subdirectory( test )

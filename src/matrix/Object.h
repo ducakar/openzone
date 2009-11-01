@@ -137,7 +137,11 @@ namespace oz
        * STANDARD EVENT IDs
        */
 
-      static const int EVENT_HIT          = -1;
+      static const int EVENT_DESTROY      = 0;
+      static const int EVENT_HIT          = 1;
+      static const int EVENT_SPLASH       = 2;
+      // not in use, but reserved for more convenient BasicAudio
+      static const int EVENT_FRICTING     = 3;
 
       struct Event : PoolAlloc<Event, 0>
       {
@@ -145,8 +149,15 @@ namespace oz
         float intensity;
         Event *next[1];
 
-        explicit Event( int id_ ) : id( id_ ) {}
-        explicit Event( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ ) {}
+        // exactly events with negative IDs are ignored by BasicAudio, so if ID is nonzero we don't
+        // want to use this ctor as we need to set the intensity
+        explicit Event( int id_ ) : id( id_ )
+        {
+          assert( id < 0 );
+        }
+
+        explicit Event( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ )
+        {}
       };
 
       /*
@@ -214,6 +225,12 @@ namespace oz
         }
       }
 
+      void destroy()
+      {
+        addEvent( EVENT_DESTROY, 1.0f );
+        onDestroy();
+      }
+
       /**
        * Called by physics engine when the object hits something.
        * @param hit Hit struct filled with collision data
@@ -231,16 +248,6 @@ namespace oz
         }
       }
 
-      void destroy()
-      {
-        onDestroy();
-      }
-
-      void use( Bot *user )
-      {
-        onUse( user );
-      }
-
       /**
        * Perform object update. One can implement onUpdate function to do some custom stuff.
        */
@@ -254,12 +261,17 @@ namespace oz
         oldFlags = flags;
       }
 
+      void use( Bot *user )
+      {
+        onUse( user );
+      }
+
     protected:
 
-      virtual void onHit( const Hit *hit, float momentum );
       virtual void onDestroy();
-      virtual void onUse( Bot *user );
+      virtual void onHit( const Hit *hit, float momentum );
       virtual void onUpdate();
+      virtual void onUse( Bot *user );
 
     public:
 

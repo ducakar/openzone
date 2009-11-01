@@ -37,7 +37,7 @@ namespace client
 //  SparkGenRender::SparkGenRender( oz::SparkGen *sparkGen_ ) : sparkGen( sparkGen_ )
 //  {
 //    sparks = new Spark[sparkGen->number];
-//    startMillis = (float) timer.millis;
+//    startMillis = static_cast<float>( timer.millis );
 //    nSparks = 0;
 //
 //    for( int i = 0; i < sparkGen->number; i++ ) {
@@ -92,7 +92,7 @@ namespace client
 //
 //  void SparkGenRender::update() {
 //    if( nSparks != sparkGen->number ) {
-//      int desiredNSparks = (int) ( ( timer.millis - startMillis ) * sparksPerTick );
+//      int desiredNSparks = static_cast<int>( ( timer.millis - startMillis ) * sparksPerTick );
 //
 //      nSparks = min( desiredNSparks, sparkGen->number );
 //    }

@@ -38,7 +38,7 @@ namespace oz
 
       bool readBool()
       {
-        bool *b = (bool*) pos;
+        const bool *b = reinterpret_cast<const bool*>( pos );
         pos += sizeof( bool );
 
         if( pos + sizeof( bool ) > end ) {
@@ -49,7 +49,7 @@ namespace oz
 
       byte readByte()
       {
-        byte *b = (byte*) pos;
+        const byte *b = reinterpret_cast<const byte*>( pos );
         pos += sizeof( byte );
 
         if( pos + sizeof( byte ) > end ) {
@@ -60,7 +60,7 @@ namespace oz
 
       int readInt()
       {
-        int *i = (int*) pos;
+        const int *i = reinterpret_cast<const int*>( pos );
         pos += sizeof( int );
 
         if( pos > end ) {
@@ -71,7 +71,7 @@ namespace oz
 
       float readFloat()
       {
-        float *f = (float*) pos;
+        const float *f = reinterpret_cast<const float*>( pos );
         pos += sizeof( float );
 
         if( pos > end ) {
@@ -119,7 +119,7 @@ namespace oz
           throw Exception( "Buffer overrun" );
         }
 
-        Vec3 *v = (Vec3*) pos;
+        const Vec3 *v = reinterpret_cast<const Vec3*>( pos );
         pos += sizeof( Vec3 );
         return *v;
       }
@@ -130,7 +130,7 @@ namespace oz
           throw Exception( "Buffer overrun" );
         }
 
-        Quat *q = (Quat*) pos;
+        const Quat *q = reinterpret_cast<const Quat*>( pos );
         pos += sizeof( Quat );
         return *q;
       }
@@ -141,7 +141,7 @@ namespace oz
           throw Exception( "Buffer overrun" );
         }
 
-        Mat33 *m = (Mat33*) pos;
+        const Mat33 *m = reinterpret_cast<const Mat33*>( pos );
         pos += sizeof( Mat33 );
         return *m;
       }
@@ -152,7 +152,7 @@ namespace oz
           throw Exception( "Buffer overrun" );
         }
 
-        Mat44 *m = (Mat44*) pos;
+        const Mat44 *m = reinterpret_cast<const Mat44*>( pos );
         pos += sizeof( Mat44 );
         return *m;
       }
@@ -185,7 +185,7 @@ namespace oz
 
       void writeBool( bool b )
       {
-        bool *p = (bool*) pos;
+        bool *p = reinterpret_cast<bool*>( pos );
         pos += sizeof( bool );
 
         if( pos > end ) {
@@ -196,7 +196,7 @@ namespace oz
 
       void writeByte( byte b )
       {
-        byte *p = (byte*) pos;
+        byte *p = reinterpret_cast<byte*>( pos );
         pos += sizeof( byte );
 
         if( pos > end ) {
@@ -207,7 +207,7 @@ namespace oz
 
       void writeInt( int i )
       {
-        int *p = (int*) pos;
+        int *p = reinterpret_cast<int*>( pos );
         pos += sizeof( int );
 
         if( pos > end ) {
@@ -218,7 +218,7 @@ namespace oz
 
       void writeFloat( float f )
       {
-        float *p = (float*) pos;
+        float *p = reinterpret_cast<float*>( pos );
         pos += sizeof( float );
 
         if( pos > end ) {
@@ -253,7 +253,7 @@ namespace oz
 
       void writeVec3( const Vec3 &v )
       {
-        Vec3 *p = (Vec3*) pos;
+        Vec3 *p = reinterpret_cast<Vec3*>( pos );
         pos += sizeof( Vec3 );
 
         if( pos > end ) {
@@ -264,7 +264,7 @@ namespace oz
 
       void writeQuat( const Quat &q )
       {
-        Quat *p = (Quat*) pos;
+        Quat *p = reinterpret_cast<Quat*>( pos );
         pos += sizeof( Quat );
 
         if( pos > end ) {
@@ -275,7 +275,7 @@ namespace oz
 
       void writeMat33( const Mat33 &m )
       {
-        Mat33 *p = (Mat33*) pos;
+        Mat33 *p = reinterpret_cast<Mat33*>( pos );
         pos += sizeof( Mat33 );
 
         if( pos > end ) {
@@ -286,7 +286,7 @@ namespace oz
 
       void writeMat44( const Mat44 &m )
       {
-        Mat44 *p = (Mat44*) pos;
+        Mat44 *p = reinterpret_cast<Mat44*>( pos );
         pos += sizeof( Mat44 );
 
         if( pos > end ) {

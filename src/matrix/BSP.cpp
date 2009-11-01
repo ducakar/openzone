@@ -243,13 +243,13 @@ namespace oz
 
       fread( &leaf, sizeof( QBSPLeaf ), 1, f );
 
-      leafs[i].mins.x = (float) leaf.bb[0][0] * scale;
-      leafs[i].mins.y = (float) leaf.bb[0][1] * scale;
-      leafs[i].mins.z = (float) leaf.bb[0][2] * scale;
+      leafs[i].mins.x = static_cast<float>( leaf.bb[0][0] * scale );
+      leafs[i].mins.y = static_cast<float>( leaf.bb[0][1] * scale );
+      leafs[i].mins.z = static_cast<float>( leaf.bb[0][2] * scale );
 
-      leafs[i].maxs.x = (float) leaf.bb[1][0] * scale;
-      leafs[i].maxs.y = (float) leaf.bb[1][1] * scale;
-      leafs[i].maxs.z = (float) leaf.bb[1][2] * scale;
+      leafs[i].maxs.x = static_cast<float>( leaf.bb[1][0] * scale );
+      leafs[i].maxs.y = static_cast<float>( leaf.bb[1][1] * scale );
+      leafs[i].maxs.z = static_cast<float>( leaf.bb[1][2] * scale );
 
       leafs[i].cluster    = leaf.cluster;
       leafs[i].firstFace  = leaf.firstFace;

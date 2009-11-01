@@ -81,7 +81,7 @@ namespace ui
     SDL_Surface *text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
 
     // flip
-    uint *pixels = (uint*) text->pixels;
+    uint *pixels = reinterpret_cast<uint*>( text->pixels );
     for( int i = 0; i < text->h / 2; i++ ) {
       for( int j = 0; j < text->w; j++ ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
@@ -111,7 +111,7 @@ namespace ui
     SDL_Surface *text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
 
     // flip
-    uint *pixels = (uint*) text->pixels;
+    uint *pixels = reinterpret_cast<uint*>( text->pixels );
     for( int i = 0; i < text->h / 2; i++ ) {
       for( int j = 0; j < text->w; j++ ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );

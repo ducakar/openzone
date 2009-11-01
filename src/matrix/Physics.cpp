@@ -16,7 +16,9 @@ namespace oz
   Physics physics;
 
   const float Physics::CLIP_BACKOFF         = EPSILON;
-  const float Physics::HIT_MOMENTUM         = -3.0f;
+  const float Physics::HIT_TRESHOLD         = -2.0f;
+  const float Physics::HIT_NORMAL_TRESHOLD  = 2.0f;
+  const float Physics::SPLASH_TRESHOLD      = -2.0f;
   const float Physics::FLOOR_NORMAL_Z       = 0.60f;
   const float Physics::G_VELOCITY           = -9.81f * Timer::TICK_TIME;
 
@@ -125,7 +127,7 @@ namespace oz
       }
       // on another object
       if( obj->lower >= 0 ) {
-        DynObject *sObj = (DynObject*) world.objects[obj->lower];
+        DynObject *sObj = static_cast<DynObject*>( world.objects[obj->lower] );
 
         if( obj->momentum.x != 0.0f || obj->momentum.y != 0.0f ||
             ( ~sObj->flags & Object::DISABLED_BIT ) )
@@ -231,13 +233,15 @@ namespace oz
     Object *sObj = collider.hit.obj;
 
     if( collider.hit.obj != null && ( collider.hit.obj->flags & Object::DYNAMIC_BIT ) ) {
-      DynObject *sDynObj = (DynObject*) sObj;
+      DynObject *sDynObj = static_cast<DynObject*>( sObj );
 
       Vec3  momentum    = ( obj->momentum * obj->mass + sDynObj->momentum * sDynObj->mass ) /
           ( obj->mass + sDynObj->mass );
       float hitMomentum = ( obj->momentum - sDynObj->momentum ) * collider.hit.normal;
 
-      if( hitMomentum < HIT_MOMENTUM ) {
+      if( hitMomentum < HIT_TRESHOLD &&
+          Math::abs( obj->velocity * collider.hit.normal ) > HIT_NORMAL_TRESHOLD )
+      {
         obj->hit( &collider.hit, hitMomentum );
         sDynObj->hit( &collider.hit, hitMomentum );
       }
@@ -270,6 +274,7 @@ namespace oz
       else { // collider.hit.normal.z == 1.0f
         assert( collider.hit.normal.z == 1.0f );
 
+        obj->flags &= ~Object::ON_FLOOR_BIT;
         obj->lower = sDynObj->index;
 
         if( ~sDynObj->flags & Object::DISABLED_BIT ) {
@@ -284,7 +289,9 @@ namespace oz
     else {
       float hitMomentum = obj->momentum * collider.hit.normal;
 
-      if( hitMomentum < HIT_MOMENTUM ) {
+      if( hitMomentum < HIT_TRESHOLD &&
+          Math::abs( obj->velocity * collider.hit.normal ) > HIT_NORMAL_TRESHOLD )
+      {
         obj->hit( &collider.hit, hitMomentum );
 
         if( sObj != null ) {
@@ -295,10 +302,10 @@ namespace oz
       obj->momentum -= ( obj->momentum * collider.hit.normal ) * collider.hit.normal;
 
       if( ( ~obj->flags & Object::HOVER_BIT ) && collider.hit.normal.z >= FLOOR_NORMAL_Z ) {
-        obj->lower = -1;
-        obj->floor = collider.hit.normal;
         obj->flags |= Object::ON_FLOOR_BIT;
         obj->flags |= ( collider.hit.material & Material::SLICK_BIT ) ? Object::ON_SLICK_BIT : 0;
+        obj->lower = -1;
+        obj->floor = collider.hit.normal;
       }
     }
   }
@@ -381,6 +388,12 @@ namespace oz
     obj->flags |= collider.hit.onLadder ? Object::ON_LADDER_BIT : 0;
     obj->waterDepth = min( collider.hit.waterDepth, 2.0f * obj->dim.z );
 
+    if( ( obj->flags & ~obj->oldFlags & Object::IN_WATER_BIT ) &&
+        obj->velocity.z < SPLASH_TRESHOLD )
+    {
+      obj->addEvent( Object::EVENT_SPLASH, obj->velocity.z );
+    }
+
     Cell *newCell = world.getCell( obj->p );
 
     if( oldCell != newCell ) {
@@ -406,18 +419,19 @@ namespace oz
 
     // clear the lower object if it doesn't exist any more
     if( obj->lower >= 0 && world.objects[obj->lower] == null ) {
-      obj->lower = -1;
       obj->flags &= ~Object::DISABLED_BIT;
+      obj->lower = -1;
     }
     // check if the object can remain disabled
-    else if( ( obj->flags & Object::DISABLED_BIT ) &&
-             obj->lower >= 0 && ( ~world.objects[obj->lower]->flags & Object::DISABLED_BIT ) )
+    else if( obj->lower >= 0 &&
+        ( obj->flags & ~world.objects[obj->lower]->flags & Object::DISABLED_BIT ) )
     {
       obj->flags &= ~Object::DISABLED_BIT;
     }
     // handle physics
     if( ~obj->flags & Object::DISABLED_BIT ) {
       if( handleObjFriction() ) {
+
         // if objects is still in movement or not on a still surface after friction changed its
         // velocity, handle physics
         Vec3 oldPos = obj->p;

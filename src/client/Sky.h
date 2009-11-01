@@ -34,6 +34,8 @@ namespace client
 
       uint  sunTexId;
       uint  moonTexId;
+      uint  sunList;
+      uint  moonList;
 
       Vec3  stars[MAX_STARS];
 
@@ -52,8 +54,8 @@ namespace client
       float diffuseColor[4];
       float ambientColor[4];
 
-      void init();
-      void free();
+      void load();
+      void unload();
 
       void update();
       void draw();

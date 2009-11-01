@@ -74,49 +74,39 @@ namespace oz
       }
 
       /**
-       * Get value of variable. Only use this function if you are sure the key exists.
-       * @param key variable name
-       * @return variable value
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configuration
+       * @return value of given variable
        */
-      const String &get( const char *key ) const
-      {
-        return vars[key];
-      }
+      bool get( const char *name, bool defVal );
 
       /**
        * @param name variable name
-       * @param defVal default value, if variable does not exist in configration
+       * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      bool get( const char *name, bool defVal ) const;
+      int get( const char *name, int defVal );
 
       /**
        * @param name variable name
-       * @param defVal default value, if variable does not exist in configration
+       * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      int get( const char *name, int defVal ) const;
+      float get( const char *name, float defVal );
 
       /**
        * @param name variable name
-       * @param defVal default value, if variable does not exist in configration
+       * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      float get( const char *name, float defVal ) const;
+      double get( const char *name, double defVal );
 
       /**
        * @param name variable name
-       * @param defVal default value, if variable does not exist in configration
+       * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      double get( const char *name, double defVal ) const;
-
-      /**
-       * @param name variable name
-       * @param defVal default value, if variable does not exist in configration
-       * @return value of given variable
-       */
-      const char *get( const char *name, const char *defVal ) const;
+      const char *get( const char *name, const char *defVal );
 
       /**
        * Load variables from an XML file. It only reads the nodes named "var" that must have the

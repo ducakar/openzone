@@ -34,15 +34,10 @@ namespace oz
 
       /**
        * No placement new.
-       * @param
-       * @param
-       * @return
        */
       void *operator new ( uint, void* )
       {
-        assert( false );
-
-        return null;
+        throw Exception( "No placement new" );
       }
 
       /**
@@ -51,7 +46,15 @@ namespace oz
        */
       void operator delete ( void *ptr )
       {
-        pool.free( (Type*) ptr );
+        pool.free( reinterpret_cast<Type*>( ptr ) );
+      }
+
+      /**
+       * No placement delete
+       */
+      void operator delete ( void*, void * )
+      {
+        throw Exception( "No placement delete" );
       }
 #endif
 

@@ -170,14 +170,21 @@ namespace oz
         return x * ( _1_PI * 180.0f );
       }
 
+      // fast inverse sqrt that appeared in Quake source (google for detailed explanations)
+      static float fInvSqrt( float x )
+      {
+        float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
+        return y * ( 1.5f - 0.5f * x * y*y );
+      }
+
       static const int &toBits( const float &f )
       {
-        return *(int*) &f;
+        return *reinterpret_cast<const int*>( &f );
       }
 
       static const float &fromBits( const int &b )
       {
-        return *(float*) &b;
+        return *reinterpret_cast<const float*>( &b );
       }
 
       // is power of two?
@@ -196,7 +203,7 @@ namespace oz
       // random float from interval [0, 1]
       static float frand()
       {
-        return (float) rand() / (float) INT_MAX;
+        return rand() / static_cast<float>( INT_MAX );
       }
 
   };

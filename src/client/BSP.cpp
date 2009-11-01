@@ -24,13 +24,37 @@ namespace oz
 namespace client
 {
 
-  const float BSP::GAMMA_CORR        = 1.0f;
+  const float BSP::GAMMA_CORR = 1.0f;
 
   const Structure *BSP::str;
   Vec3  BSP::camPos;
 
   int   BSP::waterFlags;
   Vector<const oz::BSP::Face*> BSP::waterFaces;
+
+  inline Bounds BSP::rotateBounds( const Bounds &bounds, Structure::Rotation rotation )
+  {
+    Bounds rotatedBounds;
+
+    switch( rotation ) {
+      default:
+      case Structure::R0: {
+        return bounds;
+      }
+      case Structure::R90: {
+        return Bounds( Vec3( -bounds.maxs.y, bounds.mins.x, bounds.mins.z ),
+                       Vec3( -bounds.mins.y, bounds.maxs.x, bounds.maxs.z ) );
+      }
+      case Structure::R180: {
+        return Bounds( Vec3( -bounds.maxs.x, -bounds.maxs.y, bounds.mins.z ),
+                       Vec3( -bounds.mins.x, -bounds.mins.y, bounds.maxs.z ) );
+      }
+      case Structure::R270: {
+        return Bounds( Vec3( bounds.mins.y, -bounds.maxs.x, bounds.mins.z ),
+                       Vec3( bounds.maxs.y, -bounds.mins.x, bounds.maxs.z ) );
+      }
+    }
+  }
 
   int BSP::getLeaf() const
   {
@@ -79,7 +103,7 @@ namespace client
     }
 
     glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                     (float*) bsp->vertices[face->firstVertex].p );
+                     bsp->vertices[face->firstVertex].p );
     glNormal3fv( face->normal );
 
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
@@ -107,8 +131,7 @@ namespace client
     glColor4f( 1.0f, 1.0f, 1.0f, water.alpha1 );
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
 
-    glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
-                     (float*) bsp->vertices[face->firstVertex].p );
+    glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ), bsp->vertices[face->firstVertex].p );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                        bsp->vertices[face->firstVertex].texCoord );
 
@@ -224,7 +247,7 @@ namespace client
 
 #ifdef __WIN32__
     if( glActiveTexture == null ) {
-      glActiveTexture = (PFNGLACTIVETEXTUREPROC) SDL_GL_GetProcAddress( "glActiveTexture" );
+      glActiveTexture = static_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
     }
 #endif
 
@@ -244,10 +267,10 @@ namespace client
     else {
       lightMaps = new uint[bsp->nLightmaps];
       for( int i = 0; i < bsp->nLightmaps; i++ ) {
-        ubyte *bits = (ubyte*) bsp->lightmaps[i].bits;
+        ubyte *bits = reinterpret_cast<ubyte*>( bsp->lightmaps[i].bits );
 
         for( int j = 0; j < oz::BSP::LIGHTMAP_SIZE; j++ ) {
-          bits[j] += (ubyte) ( ( 255 - bits[j] ) * GAMMA_CORR );
+          bits[j] += static_cast<ubyte>( ( 255 - bits[j] ) * GAMMA_CORR );
         }
         lightMaps[i] = context.createTexture( bits,
                                               oz::BSP::LIGHTMAP_DIM,

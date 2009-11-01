@@ -38,10 +38,10 @@ namespace oz
     // add minds for new bots
     foreach( obj, synapse.putObjects.iterator() ) {
       if( ( *obj )->flags & Object::BOT_BIT ) {
-        Bot *bot = (Bot*) *obj;
+        Bot *bot = static_cast<Bot*>( *obj );
 
         if( ~bot->state & Bot::PLAYER_BIT ) {
-          BotClass *clazz = (BotClass*) bot->type;
+          const BotClass *clazz = static_cast<const BotClass*>( bot->type );
 
           if( mindClasses.contains( clazz->mindType ) ) {
             minds << mindClasses.cachedValue().create( bot->index );

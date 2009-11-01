@@ -18,7 +18,9 @@ namespace oz
     public:
 
       static const float CLIP_BACKOFF;
-      static const float HIT_MOMENTUM;
+      static const float HIT_TRESHOLD;
+      static const float HIT_NORMAL_TRESHOLD;
+      static const float SPLASH_TRESHOLD;
       static const float FLOOR_NORMAL_Z;
       static const float G_VELOCITY;
 

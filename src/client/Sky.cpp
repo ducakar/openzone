@@ -35,32 +35,81 @@ namespace client
   const float Sky::WATER_COLOR[] = { 0.00f, 0.05f, 0.25f, 1.0f };
   const float Sky::STAR_COLOR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
 
-  void Sky::init()
+  void Sky::load()
   {
     float heading = Math::rad( world.sky.heading );
 
     axis = Vec3( -Math::sin( heading ), Math::cos( heading ), 0.0f );
     originalLightDir = Vec3( -Math::cos( heading ), -Math::sin( heading ), 0.0f );
 
+    Quat *tempStars = new Quat[MAX_STARS];
     for( int i = 0; i < MAX_STARS; i++ ) {
       float length;
       do {
-        stars[i].x = 20.0f * Math::frand() - 10.0f;
-        stars[i].y = 20.0f * Math::frand() - 10.0f;
-        stars[i].z = 20.0f * Math::frand() - 10.0f;
-        length = stars[i].sqL();
+        tempStars[i].x = 20.0f * Math::frand() - 10.0f;
+        tempStars[i].y = 20.0f * Math::frand() - 10.0f;
+        tempStars[i].z = 20.0f * Math::frand() - 10.0f;
+        tempStars[i].w = Math::atan2( tempStars[i].z, tempStars[i].x );
+        length = static_cast<Vec3>( tempStars[i] ).sqL();
       }
       while( Math::isNaN( length ) || length < 1.0f || length > 100.0f );
     }
 
+    // sort stars
+    aSort( tempStars, MAX_STARS );
+
+    for( int i = 0; i < MAX_STARS; i++ ) {
+      stars[i] = Vec3( tempStars[i] );
+    }
+
+    delete[] tempStars;
+
     sunTexId  = context.loadTexture( "sky/simplesun.png", false, GL_LINEAR, GL_LINEAR );
     moonTexId = context.loadTexture( "sky/moon18.png", false, GL_LINEAR, GL_LINEAR );
+
+    sunList  = context.genLists( 2 );
+    moonList = sunList + 1;
+
+    glNewList( sunList, GL_COMPILE );
+
+    glBindTexture( GL_TEXTURE_2D, sunTexId );
+    glBegin( GL_QUADS );
+      glTexCoord2f( 0.0f, 1.0f );
+      glVertex3f( 0.0f, -1.0f, +1.0f );
+      glTexCoord2f( 1.0f, 1.0f );
+      glVertex3f( 0.0f, -1.0f, -1.0f );
+      glTexCoord2f( 1.0f, 0.0f );
+      glVertex3f( 0.0f, +1.0f, -1.0f );
+      glTexCoord2f( 0.0f, 0.0f );
+      glVertex3f( 0.0f, +1.0f, +1.0f );
+    glEnd();
+
+    glEndList();
+
+    glNewList( moonList, GL_COMPILE );
+
+    glColor3f( 1.0f, 1.0f, 1.0f );
+    glBindTexture( GL_TEXTURE_2D, moonTexId );
+    glBegin( GL_QUADS );
+      glTexCoord2f( 0.0f, 1.0f );
+      glVertex3f( 0.0f, -1.0f, -1.0f );
+      glTexCoord2f( 1.0f, 1.0f );
+      glVertex3f( 0.0f, -1.0f, +1.0f );
+      glTexCoord2f( 1.0f, 0.0f );
+      glVertex3f( 0.0f, +1.0f, +1.0f );
+      glTexCoord2f( 0.0f, 0.0f );
+      glVertex3f( 0.0f, +1.0f, -1.0f );
+    glEnd();
+
+    glEndList();
 
     update();
   }
 
-  void Sky::free()
+  void Sky::unload()
   {
+    context.freeLists( sunList );
+    context.freeTexture( sunTexId );
     context.freeTexture( moonTexId );
   }
 
@@ -106,55 +155,52 @@ namespace client
       ratio * DAY_COLOR[2] + ratio_1 * STAR_COLOR[0]
     };
 
+    // we need the transformation matrix for occlusion of stars below horizon
+    Mat44 transf = Mat44::rotZ( Math::rad( world.sky.heading ) ) * Mat44::rotY( angle );
+
     glDisable( GL_BLEND );
     glColor3fv( color );
 
     glPushMatrix();
-    glRotatef( world.sky.heading, 0.0f, 0.0f, 1.0f );
-    glRotatef( Math::deg( angle ), 0.0f, 1.0f, 0.0f );
+    glMultMatrixf( transf );
+    transf.trans();
 
-    glBegin( GL_POINTS );
-    for( int i = 0; i < MAX_STARS; i++ ) {
-      glVertex3fv( stars[i] );
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glVertexPointer( 3, GL_FLOAT, 0, stars );
+
+    const Vec3 &tz = static_cast<Vec3>( transf.z );
+    int start, end;
+    if( tz * stars[0] > 0.0f ) {
+      for( end = 1; end < MAX_STARS && tz * stars[end] > 0.0f; end++ );
+      for( start = end + 1; start < MAX_STARS && tz * stars[start] <= 0.0f; start++ );
+
+      glDrawArrays( GL_POINTS, 0, end );
+      glDrawArrays( GL_POINTS, start, MAX_STARS - start );
     }
-    glEnd();
+    else {
+      for( start = 1; start < MAX_STARS && tz * stars[start] <= 0.0f; start++ );
+      for( end = start; end < MAX_STARS && tz * stars[end] > 0.0f; end++ );
+
+      glDrawArrays( GL_POINTS, start, end - start );
+    }
+
+    glDisableClientState( GL_VERTEX_ARRAY );
 
     glEnable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );
 
     glTranslatef( -15.0f, 0.0f, 0.0f );
-
     glColor3f( 2.0f * diffuseColor[0] + ambientColor[0],
                diffuseColor[1] + ambientColor[1],
                diffuseColor[2] + ambientColor[2] );
-    glBindTexture( GL_TEXTURE_2D, sunTexId );
-    glBegin( GL_QUADS );
-      glTexCoord2f( 0.0f, 1.0f );
-      glVertex3f( 0.0f, -1.0f, +1.0f );
-      glTexCoord2f( 1.0f, 1.0f );
-      glVertex3f( 0.0f, -1.0f, -1.0f );
-      glTexCoord2f( 1.0f, 0.0f );
-      glVertex3f( 0.0f, +1.0f, -1.0f );
-      glTexCoord2f( 0.0f, 0.0f );
-      glVertex3f( 0.0f, +1.0f, +1.0f );
-    glEnd();
+    glCallList( sunList );
 
     glTranslatef( 30.0f, 0.0f, 0.0f );
-
-    glColor3f( 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, moonTexId );
-    glBegin( GL_QUADS );
-      glTexCoord2f( 0.0f, 1.0f );
-      glVertex3f( 0.0f, -1.0f, -1.0f );
-      glTexCoord2f( 1.0f, 1.0f );
-      glVertex3f( 0.0f, -1.0f, +1.0f );
-      glTexCoord2f( 1.0f, 0.0f );
-      glVertex3f( 0.0f, +1.0f, +1.0f );
-      glTexCoord2f( 0.0f, 0.0f );
-      glVertex3f( 0.0f, +1.0f, -1.0f );
-    glEnd();
+    glCallList( moonList );
 
     glPopMatrix();
+
+    assert( glGetError() == GL_NO_ERROR );
   }
 
 }

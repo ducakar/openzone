@@ -16,7 +16,7 @@
 namespace oz
 {
 
-  void HealthItemClass::fill( HealthItemClass *clazz, const Config *config )
+  void HealthItemClass::fill( HealthItemClass *clazz, Config *config )
   {
     DynObjectClass::fill( clazz, config );
 
@@ -24,7 +24,7 @@ namespace oz
     clazz->stamina = config->get( "stamina", 50.0f );
   }
 
-  ObjectClass *HealthItemClass::init( const String &name, const Config *config )
+  ObjectClass *HealthItemClass::init( const String &name, Config *config )
   {
     HealthItemClass *clazz = new HealthItemClass();
 

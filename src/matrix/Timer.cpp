@@ -28,7 +28,7 @@ namespace oz
   void Timer::tick()
   {
     millis      += TICK_MILLIS;
-    time        = (float) ( millis / 1000.0f );
+    time        = static_cast<float>( millis / 1000.0f );
 
     frameMillis += TICK_MILLIS;
     frameTime   += TICK_TIME;

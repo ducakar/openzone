@@ -94,7 +94,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      Bot *bot = (Bot*) translator.createObject( "Goblin", p );
+      Bot *bot = static_cast<Bot*>( translator.createObject( "Goblin", p ) );
 
       synapse.put( bot );
     }
@@ -111,7 +111,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      Bot *bot = (Bot*) translator.createObject( "Knight", p );
+      Bot *bot = static_cast<Bot*>( translator.createObject( "Knight", p ) );
 
       synapse.put( bot );
     }
@@ -122,7 +122,7 @@ namespace ui
     Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
     p += camera.at * 2.0f;
 
-    synapse.addStruct( "center", p, Structure::R0 );
+    synapse.addStruct( "house", p, Structure::R0 );
   }
 
   static void createCenterR90( Button* )
@@ -130,7 +130,7 @@ namespace ui
     Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
     p += camera.at * 2.0f;
 
-    synapse.addStruct( "center", p, Structure::R90 );
+    synapse.addStruct( "house", p, Structure::R90 );
   }
 
   static void createCenterR180( Button* )
@@ -138,7 +138,7 @@ namespace ui
     Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
     p += camera.at * 2.0f;
 
-    synapse.addStruct( "center", p, Structure::R180 );
+    synapse.addStruct( "house", p, Structure::R180 );
   }
 
   static void createCenterR270( Button* )
@@ -146,7 +146,7 @@ namespace ui
     Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
     p += camera.at * 2.0f;
 
-    synapse.addStruct( "center", p, Structure::R270 );
+    synapse.addStruct( "house", p, Structure::R270 );
   }
 
   static void destroy( Button* )
@@ -171,10 +171,10 @@ namespace ui
     add( new Button( "Goblin", createGoblin, 90, 15 ), 5, -115 );
     add( new Button( "Knight", createKnight, 90, 15 ), 5, -135 );
 
-    add( new Button( "Center R0",   createCenterR0,   90, 15 ), 5, -155 );
-    add( new Button( "Center R90",  createCenterR90,  90, 15 ), 5, -175 );
-    add( new Button( "Center R180", createCenterR180, 90, 15 ), 5, -195 );
-    add( new Button( "Center R270", createCenterR270, 90, 15 ), 5, -215 );
+    add( new Button( "House R0",   createCenterR0,   90, 15 ), 5, -155 );
+    add( new Button( "House R90",  createCenterR90,  90, 15 ), 5, -175 );
+    add( new Button( "House R180", createCenterR180, 90, 15 ), 5, -195 );
+    add( new Button( "House R270", createCenterR270, 90, 15 ), 5, -215 );
 
     add( new Button( "DESTROY", destroy, 90, 15 ), 5, 5 );
   }

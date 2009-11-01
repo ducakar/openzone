@@ -26,14 +26,15 @@ namespace oz
 
   void Bot::onUpdate()
   {
-    BotClass &clazz = *(BotClass*) type;
+    BotClass &clazz = *static_cast<BotClass*>( type );
 
     if( life <= type->life * 0.5f ) {
       if( ( ~state & DEATH_BIT ) && life > 0.0f ) {
         flags |= WIDE_CULL_BIT | BLEND_BIT;
         flags &= ~CLIP_BIT;
-        anim = ANIM_DEATH_FALLBACK;
+        addEvent( EVENT_DEATH, 1.0f );
         life = type->life / 2.0f - EPSILON;
+        anim = ANIM_DEATH_FALLBACK;
       }
       state |= DEATH_BIT;
     }
@@ -154,22 +155,19 @@ namespace oz
       anim = ANIM_POINT;
     }
     else if( state & GESTURE1_BIT ) {
-      anim = ANIM_WAVE;
-    }
-    else if( state & GESTURE2_BIT ) {
       anim = ANIM_FALLBACK;
     }
-    else if( state & GESTURE3_BIT ) {
+    else if( state & GESTURE2_BIT ) {
       anim = ANIM_SALUTE;
+    }
+    else if( state & GESTURE3_BIT ) {
+      anim = ANIM_WAVE;
     }
     else if( state & GESTURE4_BIT ) {
       anim = ANIM_FLIP;
       if( ~oldState & GESTURE4_BIT ) {
         addEvent( EVENT_FLIP, 1.0f );
       }
-    }
-    else if( state & DEATH_BIT ) {
-      anim = ANIM_DEATH_FALLBACKSLOW;
     }
     else {
       anim = ANIM_STAND;
@@ -327,7 +325,7 @@ namespace oz
 
     DynObject *grabObj = null;
     if( grabObjIndex >= 0 ) {
-      grabObj = (DynObject*) world.objects[grabObjIndex];
+      grabObj = static_cast<DynObject*>( world.objects[grabObjIndex] );
       if( grabObj == null ) {
         grabObjIndex = -1;
       }
@@ -405,7 +403,7 @@ namespace oz
       if( grabObjIndex >= 0 ) {
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
 
-        grabObj->momentum += handle * clazz.throwMomentum;
+        grabObj->momentum = handle * clazz.throwMomentum;
         grabObjIndex      = -1;
       }
     }
@@ -419,15 +417,17 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        Object *obj = collider.hit.obj;
-        if( obj != null && ( obj->flags & Object::DYNAMIC_BIT ) ) {
+        DynObject *obj = static_cast<DynObject*>( collider.hit.obj );
+        if( obj != null && ( obj->flags & Object::DYNAMIC_BIT ) && obj->mass <= clazz.grabMass &&
+            lower != obj->index)
+        {
           float dimX = dim.x + obj->dim.x;
           float dimY = dim.y + obj->dim.y;
           float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
           if( dist <= clazz.grabDistance ) {
             grabObjIndex = collider.hit.obj->index;
-            grabObj      = (DynObject*) collider.hit.obj;
+            grabObj      = static_cast<DynObject*>( collider.hit.obj );
             grabHandle   = dist;
             flags        &= ~ON_LADDER_BIT;
           }
@@ -442,7 +442,9 @@ namespace oz
   void Bot::onHit( const Hit *hit, float hitMomentum )
   {
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
-      addEvent( EVENT_LAND, hitMomentum / -8.0f );
+      assert( hitMomentum <= 0.0f );
+
+      addEvent( EVENT_LAND, hitMomentum );
     }
   }
 
@@ -473,7 +475,7 @@ namespace oz
     grabHandle   = istream->readFloat();
 
     stepRate     = istream->readFloat();
-    anim         = (AnimEnum) istream->readInt();
+    anim         = static_cast<AnimEnum>( istream->readInt() );
 
     int nItems = istream->readInt();
     for( int i = 0; i < nItems; i++ ) {
@@ -481,7 +483,7 @@ namespace oz
       items << translator.createObject( name, istream );
     }
 
-    BotClass *clazz = (BotClass*) type;
+    const BotClass *clazz = static_cast<const BotClass*>( type );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
   }
 
@@ -515,7 +517,7 @@ namespace oz
     Object::readUpdate( istream );
 
     state        = istream->readInt();
-    anim         = (AnimEnum) istream->readByte();
+    anim         = static_cast<AnimEnum>( istream->readByte() );
     h            = istream->readFloat();
 
     grabObjIndex = istream->readInt();

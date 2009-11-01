@@ -33,8 +33,8 @@ namespace client
     rotMat = rot.rotMat44();
     rotTMat = ~rotTMat;
 
-    at = rotTMat.y();
-    up = rotTMat.z();
+    at = rotTMat.y;
+    up = rotTMat.z;
   }
 
   void Camera::init()
@@ -50,7 +50,7 @@ namespace client
     oldP = p;
     relRot = Quat::rotZYX( Math::rad( h ), 0.0f, Math::rad( v ) );
 
-    bot = botIndex == -1 ? null : (Bot*) world.objects[botIndex];
+    bot = botIndex == -1 ? null : static_cast<Bot*>( world.objects[botIndex] );
 
     // world.objects[botIndex] might be null
     if( bot == null || ( bot->state & Bot::DEATH_BIT ) ) {
@@ -61,9 +61,9 @@ namespace client
       rotMat = rot.rotMat44();
       rotTMat = ~rotMat;
 
-      right = rotMat.x();
-      at = rotMat.y();
-      up = rotMat.z();
+      right = rotMat.x;
+      at = rotMat.y;
+      up = rotMat.z;
     }
     else {
       rot = Quat::rotZYX( Math::rad( bot->h + h ), 0.0f, Math::rad( bot->v + v ) );
@@ -71,9 +71,9 @@ namespace client
       rotMat = rot.rotMat44();
       rotTMat = ~rotMat;
 
-      right = rotMat.x();
-      at = rotMat.y();
-      up = rotMat.z();
+      right = rotMat.x;
+      at = rotMat.y;
+      up = rotMat.z;
 
       if( isThirdPerson ) {
         Vec3 origin = bot->p + bot->camPos;

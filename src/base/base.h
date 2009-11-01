@@ -12,7 +12,7 @@
 // defining NDEBUG disables assert macro
 // #define NDEBUG
 
-#define OZ_USE_REUSEALLOC
+#define OZ_USE_REUSEALLOC 1
 #define OZ_USE_POOLALLOC
 
 #include <cassert>
@@ -23,6 +23,11 @@
 #include "common.h"
 #include "iterable.h"
 #include "array.h"
+
+/*
+ * Exception class
+ */
+#include "Exception.h"
 
 /*
  * Containers, part 1
@@ -68,11 +73,6 @@
 #include "Quat.h"
 #include "Mat33.h"
 #include "Mat44.h"
-
-/*
- * Exception class
- */
-#include "Exception.h"
 
 /*
  * Utilities

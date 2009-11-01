@@ -46,7 +46,6 @@ namespace client
         float fps;
         float frameTime;
         float currTime;
-        float oldTime;
       };
 
     private:
@@ -60,13 +59,13 @@ namespace client
       int          nFrames;
       int          nVerts;
 
-      DArray<Vec3> verts;
-      DArray<int>  glCmds;
-      DArray<int>  lightNormals;
+      Vec3         *verts;
+      int          *glCmds;
+      int          *lightNormals;
 
       uint         texId;
 
-      void interpolate( AnimState *anim, float time ) const;
+      void interpolate( AnimState *anim, float dt ) const;
 
     public:
 
@@ -84,9 +83,6 @@ namespace client
       void drawFrame( int frame ) const;
       void draw( AnimState *anim ) const;
       void genList();
-
-      // call on static models, to release resources after list has been generated
-      void trim();
 
   };
 

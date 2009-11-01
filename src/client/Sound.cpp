@@ -296,7 +296,7 @@ namespace client
 
     assert( alGetError() == AL_NO_ERROR );
 
-    String sExtensions = (const char*) alGetString( AL_EXTENSIONS );
+    String sExtensions = reinterpret_cast<const char*>( alGetString( AL_EXTENSIONS ) );
     Vector<String> extensions = sExtensions.trim().split( ' ' );
 
     log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
@@ -348,7 +348,7 @@ namespace client
     sources.free();
 
     foreach( i, contSources.iterator() ) {
-      const ContSource &src = *(const ContSource*)i;
+      const ContSource &src = *static_cast<const ContSource*>( i );
 
       alSourceStop( src.source );
       alDeleteSources( 1, &src.source );

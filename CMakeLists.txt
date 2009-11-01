@@ -45,4 +45,4 @@ project( openzone C CXX )
       rm -f precompiled.h.gch &&
       ${CMAKE_CXX_COMPILER} `echo ${CMAKE_CXX_FLAGS}` precompiled.h )
 
-subdirs( src )
+add_subdirectory( src )

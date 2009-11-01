@@ -19,7 +19,7 @@ namespace oz
 
   Math::Math()
   {
-    srand( (uint) time( null ) );
+    srand( time( null ) );
   }
 
   void Math::seed( uint seed )

@@ -15,7 +15,7 @@ namespace oz
 
   World world;
 
-  const float Cell::SIZE = (float) Cell::SIZEI;
+  const float Cell::SIZE = static_cast<float>( Cell::SIZEI );
   const float Cell::RADIUS = Cell::SIZE * Math::SQRT2 / 2.0f;
 
   const float World::DIM = Cell::SIZE * World::MAX / 2.0f;
@@ -185,7 +185,7 @@ namespace oz
   {
     log.print( "Initializing World ..." );
 
-    sky.set( -180.0f, 1440.0f, 360.0f );
+    sky.set( -180.0f, 1440.0f, 0.0f );
     terra.init();
 
     log.printEnd( " OK" );

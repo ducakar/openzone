@@ -55,8 +55,8 @@ namespace oz
   {
     float area = 4.0f * World::DIM * World::DIM * DENSITY;
 
-    number = (int) ( area * DENSITY );
-    growth = (int) ( area * GROWTH );
+    number = static_cast<int>( area * DENSITY );
+    growth = static_cast<int>( area * GROWTH );
 
     for( int i = 0; i < number; i++ ) {
       float x = Math::frand() * 2.0f * World::DIM - World::DIM;

@@ -28,7 +28,7 @@ namespace oz
 
   Config config;
 
-  bool Config::get( const char *name, bool defVal ) const
+  bool Config::get( const char *name, bool defVal )
   {
     assert( !vars.contains( name ) ||
             vars.cachedValue() == "true" ||
@@ -50,42 +50,46 @@ namespace oz
     }
   }
 
-  int Config::get( const char *name, int defVal ) const
+  int Config::get( const char *name, int defVal )
   {
     if( vars.contains( name ) ) {
       return atoi( vars.cachedValue() );
     }
     else {
+      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  float Config::get( const char *name, float defVal ) const
+  float Config::get( const char *name, float defVal )
   {
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
     }
     else {
+      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  double Config::get( const char *name, double defVal ) const
+  double Config::get( const char *name, double defVal )
   {
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
     }
     else {
+      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  const char *Config::get( const char *name, const char *defVal ) const
+  const char *Config::get( const char *name, const char *defVal )
   {
     if( vars.contains( name ) ) {
       return vars.cachedValue();
     }
     else {
+      vars.add( name, defVal );
       return defVal;
     }
   }
@@ -102,7 +106,7 @@ namespace oz
 
     int error = xmlTextReaderRead( reader );
     while( error == 1 ) {
-      const char *name = (const char*) xmlTextReaderConstName( reader );
+      const char *name = reinterpret_cast<const char*>( xmlTextReaderConstName( reader ) );
 
       // only check "var" nodes, ignore others
       if( name != null && String::equals( name, "var" ) ) {
@@ -117,7 +121,7 @@ namespace oz
           error = -1;
           break;
         }
-        add( (const char*) key, (const char*) value );
+        add( reinterpret_cast<const char*>( key ), reinterpret_cast<const char*>( value ) );
 
         free( key );
         free( value );

@@ -355,7 +355,7 @@ namespace oz
       {
         int n = 0;
         for( int i = 0; i < count; i++ ) {
-          n += (int) include( array[i] );
+          n += static_cast<int>( include( array[i] ) );
         }
         return n;
       }
@@ -440,7 +440,7 @@ namespace oz
       {
         int n = 0;
         for( int i = 0; i < count; i++ ) {
-          n += (int) exclude( array[i] );
+          n += static_cast<int>( exclude( array[i] ) );
         }
         return n;
       }

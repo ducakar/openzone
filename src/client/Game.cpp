@@ -188,7 +188,7 @@ namespace client
         camera.h -= ui::mouse.overEdgeX * mouseXSens;
         camera.v += ui::mouse.overEdgeY * mouseYSens;
 
-        BotClass *clazz = (BotClass*) camera.bot->type;
+        BotClass *clazz = static_cast<BotClass*>( camera.bot->type );
         camera.h = bound( camera.h, clazz->lookLimitHMin, clazz->lookLimitHMax );
         camera.v = bound( camera.v, clazz->lookLimitVMin, clazz->lookLimitVMax );
 
@@ -300,7 +300,7 @@ namespace client
 
     if( input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
       if( camera.botIndex < 0 ) {
-        Bot *me = (Bot*) translator.createObject( "Lord", camera.p );
+        Bot *me = static_cast<Bot*>( translator.createObject( "Lord", camera.p ) );
         me->h = camera.h;
         me->v = camera.v;
         me->state |= Bot::PLAYER_BIT;

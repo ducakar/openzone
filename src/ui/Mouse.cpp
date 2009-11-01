@@ -54,7 +54,7 @@ namespace ui
     cursors[TEXT].hotspotX = config.get( "ui.cursor.text.hotspot.x", 16 );
     cursors[TEXT].hotspotY = config.get( "ui.cursor.text.hotspot.y", 16 );
 
-    const char *hand = config.get( "ui.cursor.text", "cursors/hand2.png" );
+    const char *hand = config.get( "ui.cursor.hand", "cursors/hand2.png" );
     cursors[HAND].texId    = context.loadTexture( hand, false, GL_NEAREST, GL_NEAREST );
     cursors[HAND].size     = config.get( "ui.cursor.hand.size", 32 );
     cursors[HAND].hotspotX = config.get( "ui.cursor.hand.hotspot.x", 16 );

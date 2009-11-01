@@ -68,7 +68,7 @@ namespace oz
       // (Destructor is called automatically.)
       void operator delete ( void *ptr )
       {
-        Type *p = (Type*) ptr;
+        Type *p = reinterpret_cast<Type*>( ptr );
 
         // note that space for destroyed object is still allocated
         p->ReuseAlloc::next = freeList;

@@ -53,7 +53,7 @@ namespace ui
             !collider.test( bot, &bot ) );
 
       if( bot.grabObjIndex >= 0 ) {
-        DynObject &obj = *(DynObject*) world.objects[bot.grabObjIndex];
+        const DynObject &obj = *static_cast<const DynObject*>( world.objects[bot.grabObjIndex] );
 
         print( 5, -5 - textHeight * 5, "gobj.vel(%.2f %.2f %.2f) gobj.mom(%.2f %.2f %.2f)",
                obj.velocity.x, obj.velocity.y, obj.velocity.z,

@@ -1,5 +1,5 @@
-Prerequisites:
---------------
+Build Dependencies:
+-------------------
 - GNU tools (GCC, GNU Make, GNU Binutils)
 - CMake
 - LibXml2
@@ -23,11 +23,11 @@ More detailed build instructions:
 ---------------------------------
 1. run "./autogen.sh" to generate src/*/CMakeLists.txt
 2. configure project running "cmake-gui ." for Qt interface or "ccmake ." for ncurses interface.
-   It's also possible to do it in command line with cmake and various switches, but it's inconvenient,
-   unless you're writing a script.
-3. run "make -j42" if you have a 42-core cpu, to run make in 42 parallel proccesses.
+   It's also possible to do it in command line with cmake and various switches.
+3. run "make -j42" if you have a 42-core CPU, to run make in 42 parallel processes.
 
 Data
 ----
-Uncompress data to /some/dir/data and set that path in ~/.openzone/client.xml if /some/dir/ != /usr/share/
-The sample client.xml is located in the project's root dir.
+Uncompress data. By default data is searched in "data" dir inside working dir. If you put it
+anywhere else, you should set "data.dir" variable in "~/.openzone/client.xml".
+A sample client.xml with default settings can be found in project root.

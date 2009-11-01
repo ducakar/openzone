@@ -11,28 +11,25 @@
 namespace oz
 {
 
-  union Mat33;
-  union Mat44;
+  struct Mat33;
+  struct Mat44;
 
-  struct Quat
+  struct Quat : Vec3
   {
-    float x;
-    float y;
-    float z;
     float w;
 
     explicit Quat()
     {}
 
-    explicit Quat( float x_, float y_, float z_, float w_ ) : x( x_ ), y( y_ ), z( z_ ), w( w_ )
+    explicit Quat( float x_, float y_, float z_, float w_ ) : Vec3( x_, y_, z_ ), w( w_ )
     {}
 
     explicit Quat( float *q )
     {
-      *this = *(Quat*) q;
+      *this = *reinterpret_cast<Quat*>( q );
     }
 
-    explicit Quat( const Vec3 &v ) : x( v.x ), y( v.y ), z( v.z ), w( 0.0f )
+    explicit Quat( const Vec3 &v ) : Vec3( v.x, v.y, v.z ), w( 0.0f )
     {
     }
 
@@ -48,32 +45,27 @@ namespace oz
 
     operator float* ()
     {
-      return (float*) this;
+      return reinterpret_cast<float*>( this );
     }
 
     operator const float* () const
     {
-      return (const float*) this;
+      return reinterpret_cast<const float*>( this );
+    }
+
+    bool operator < ( const Quat &q ) const
+    {
+      return w < q.w;
     }
 
     float &operator [] ( int i )
     {
-      return ( (float*) this )[i];
+      return reinterpret_cast<float*>( this )[i];
     }
 
     const float &operator [] ( int i ) const
     {
-      return ( (const float*) this )[i];
-    }
-
-    Vec3 &vec3()
-    {
-      return *(Vec3*) this;
-    }
-
-    const Vec3 &vec3() const
-    {
-      return *(Vec3*) this;
+      return reinterpret_cast<const float*>( this )[i];
     }
 
     Quat operator + () const
@@ -370,7 +362,7 @@ namespace oz
   // declared in Vec3.h
   inline Vec3::Vec3( const Quat &q )
   {
-    *this = *(Vec3*) &q;
+    *this = *reinterpret_cast<const Vec3*>( &q );
   }
 
 }

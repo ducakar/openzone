@@ -21,8 +21,8 @@ namespace oz
     float health;
     float stamina;
 
-    static void fill( HealthItemClass *clazz, const Config *config );
-    static ObjectClass *init( const String &name, const Config *config );
+    static void fill( HealthItemClass *clazz, Config *config );
+    static ObjectClass *init( const String &name, Config *config );
 
     virtual Object *create( const Vec3 &pos );
     virtual Object *create( InputStream *istream );

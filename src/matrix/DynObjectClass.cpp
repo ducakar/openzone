@@ -16,7 +16,7 @@
 namespace oz
 {
 
-  void DynObjectClass::fill( DynObjectClass *clazz, const Config *config )
+  void DynObjectClass::fill( DynObjectClass *clazz, Config *config )
   {
     ObjectClass::fill( clazz, config );
 
@@ -31,7 +31,7 @@ namespace oz
     }
   }
 
-  ObjectClass *DynObjectClass::init( const String &name, const Config *config )
+  ObjectClass *DynObjectClass::init( const String &name, Config *config )
   {
     DynObjectClass *clazz = new DynObjectClass();
 
