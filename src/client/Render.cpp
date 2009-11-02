@@ -28,7 +28,7 @@
 #include <GL/glu.h>
 #include <GL/glext.h>
 
-#ifdef __WIN32__
+#ifdef OZ_MINGW32
 static PFNGLACTIVETEXTUREPROC glActiveTexture = null;
 #endif
 
@@ -421,7 +421,7 @@ namespace client
       log.println( "%s", extension->cstr() );
     }
 
-#ifdef __WIN32__
+#ifdef OZ_MINGW32
     if( glActiveTexture == null ) {
       glActiveTexture = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
     }

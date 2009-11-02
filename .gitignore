@@ -1,24 +1,25 @@
-precompiled.h.gch
-doxygen
-tags
-openzone.tag
+/precompiled.h.gch
+/configuration.h
+/doxygen
+/tags
+/openzone.tag
 
 *.gcno
 gmon.out
 pg.out
 
-data
-valgrind.supp
-pogon.*
+/data
+/valgrind.supp
+/pogon.*
 
-build
-mingw32
+/build
+/mingw32
 
-.project
-.cproject
+/.project
+/.cproject
 
-*CMakeCache.txt
+/*CMakeCache.txt
+CMakeCache.txt
 CMakeFiles
 cmake_install.cmake
-xmlrc.cpp
 Makefile

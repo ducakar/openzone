@@ -9,5 +9,5 @@ ls *.cpp >> CMakeLists.txt
 cat << EOF >> CMakeLists.txt
 )
 
-add_dependencies( matrix precompile )
+add_dependencies( matrix precompiled )
 EOF

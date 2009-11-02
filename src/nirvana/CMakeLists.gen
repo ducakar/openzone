@@ -9,5 +9,5 @@ ls *.cpp >> CMakeLists.txt
 cat << EOF >> CMakeLists.txt
 )
 
-add_dependencies( nirvana precompile )
+add_dependencies( nirvana precompiled )
 EOF

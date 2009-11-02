@@ -102,11 +102,11 @@ namespace oz
 
       static void sincos( float x, float *s, float *c )
       {
-#ifdef __WIN32__
+#ifdef OZ_HAVE_SINCOSF
+        __builtin_sincosf( x, s, c );
+#else
         *s = __builtin_sinf( x );
         *c = __builtin_cosf( x );
-#else
-        __builtin_sincosf( x, s, c );
 #endif
       }
 
@@ -206,10 +206,7 @@ namespace oz
       static int ( *const rand )();
 
       // random float from interval [0, 1]
-      static float frand()
-      {
-        return rand() / static_cast<float>( INT_MAX );
-      }
+      static float frand();
 
   };
 

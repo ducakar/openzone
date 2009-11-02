@@ -20,7 +20,7 @@
 
 #include <GL/glext.h>
 
-#ifdef __WIN32__
+#ifdef OZ_MINGW32
 static PFNGLACTIVETEXTUREPROC       glActiveTexture       = null;
 static PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture = null;
 #endif
@@ -39,7 +39,7 @@ namespace client
     mapTexId    = context.loadTexture( "terra/map.png" );
     waterTexId  = context.loadTexture( "terra/water.jpg" );
 
-#ifdef __WIN32__
+#ifdef OZ_MINGW32
     glActiveTexture       = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
     glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
 #endif

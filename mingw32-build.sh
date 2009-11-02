@@ -21,7 +21,10 @@ cd libpng-1.2.40
 ./configure --host=i486-mingw32 --prefix=$PREFIX && make -j2 install
 cd ..
 
-# libjpeg!
+tar zxf jpegsrc.v6b.tar.gz
+cd jpeg-6b
+./configure --host=i486-mingw32 --prefix=$PREFIX && make -j2
+cd ..
 
 tar zxf libogg-1.1.4.tar.gz
 cd libogg-1.1.4
@@ -65,17 +68,17 @@ make -j2 INSTALL_TOP=$PREFIX PLAT=mingw CC=$CC CFLAGS="$CFLAGS -DLUA_BUILD_AS_DL
 make -j2 INSTALL_TOP=$PREFIX PLAT=mingw CC=$CC CFLAGS="$CFLAGS -DLUA_BUILD_AS_DLL" AR="$AR rcu" RANLIB="i486-mingw32-ranlib" TO_BIN="lua.exe luac.exe" install
 cd ..
 
-tar jxf openal-soft-1.8.466.bz2
-cd openal-soft-1.8.466
-echo '*************************************************'
-echo '1. set toolchain openzone/Toolchain-mingw32.cmake'
-echo '2. set PREFIX to ""'
-echo '*************************************************'
-cmake-gui .
-make -j2 DESTDIR=$PREFIX install
-cd ..
-
-tar zxf ../freealut-1.1.0.tar.gz
-cd freealut-1.1.0
-./configure --host=i486-mingw32 --prefix=$PREFIX && make -j2 LIBS="-lOpenAL32" install
-cd ..
+# tar jxf openal-soft-1.8.466.bz2
+# cd openal-soft-1.8.466
+# echo '*************************************************'
+# echo '1. set toolchain openzone/Toolchain-mingw32.cmake'
+# echo '2. set PREFIX to ""'
+# echo '*************************************************'
+# cmake-gui .
+# make -j2 DESTDIR=$PREFIX install
+# cd ..
+#
+# tar zxf ../freealut-1.1.0.tar.gz
+# cd freealut-1.1.0
+# ./configure --host=i486-mingw32 --prefix=$PREFIX && make -j2 LIBS="-lOpenAL32" install
+# cd ..

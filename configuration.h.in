@@ -1,0 +1,10 @@
+#pragma once
+
+// has sincosf function
+#cmakedefine OZ_HAVE_SINCOSF
+
+// enable XML configuration files support
+#cmakedefine OZ_XML_CONFIG
+
+// platform
+#cmakedefine OZ_MINGW32

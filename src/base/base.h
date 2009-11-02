@@ -9,9 +9,10 @@
 
 #pragma once
 
+#include "configuration.h"
+
 #define OZ_POOLALLOC
 #define OZ_REUSEALLOC
-//#define OZ_XML_CONFIG
 
 #include <cassert>
 

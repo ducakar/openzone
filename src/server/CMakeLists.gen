@@ -9,6 +9,6 @@ ls *.cpp >> CMakeLists.txt
 cat << EOF >> CMakeLists.txt
 )
 
-add_dependencies( server precompile )
+add_dependencies( server precompiled )
 target_link_libraries( server nirvana matrix base )
 EOF

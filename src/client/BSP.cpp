@@ -17,7 +17,7 @@
 
 #include <GL/glext.h>
 
-#ifdef __WIN32__
+#ifdef OZ_MINGW32
 static PFNGLACTIVETEXTUREPROC glActiveTexture             = null;
 static PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture = null;
 #endif
@@ -248,7 +248,7 @@ namespace client
   {
     bsp = bsp_;
 
-#ifdef __WIN32__
+#ifdef OZ_MINGW32
     if( glActiveTexture == null ) {
       glActiveTexture       = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
       glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
