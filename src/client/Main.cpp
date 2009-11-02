@@ -4,6 +4,7 @@
  *  Game initialization and main loop
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -70,28 +71,30 @@ namespace client
 
     String home;
 
-    if( config.contains( "dir.home" ) ) {
-      home = config.get( "dir.home", "" );
+#ifdef OZ_MINGW32
+    const char *homeVar = getenv( "USERPROFILE" );
+#else
+    const char *homeVar = getenv( "HOME" );
+#endif
+    if( homeVar == null ) {
+      throw Exception( "Cannot determine user home directory from environment" );
     }
-    else {
-      const char *homeVar = getenv( "HOME" );
-      home = String( homeVar == null ? OZ_RC_DIR : homeVar + String( OZ_RC_DIR ) );
 
-      struct stat homeDirStat;
-      if( stat( home.cstr(), &homeDirStat ) != 0 ) {
-        printf( "No resource dir found, creating '%s' ...", home.cstr() );
+    home = homeVar + String( OZ_DIRDEL OZ_RC_DIR );
+
+    struct stat homeDirStat;
+    if( stat( home.cstr(), &homeDirStat ) != 0 ) {
+      printf( "No resource dir found, creating '%s' ...", home.cstr() );
 
 #ifdef OZ_MINGW32
-        if( mkdir( home.cstr() ) != 0 ) {
+      if( mkdir( home.cstr() ) != 0 ) {
 #else
-        if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
+      if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
 #endif
-          printf( " Failed\n" );
-          return;
-        }
-        printf( " OK\n" );
+        printf( " Failed\n" );
+        return;
       }
-      config.add( "dir.home", home );
+      printf( " OK\n" );
     }
 
 #ifdef OZ_LOG_FILE
@@ -110,7 +113,7 @@ namespace client
 
     log.printlnETD( OZ_APP_NAME " started at" );
 
-    String configPath = home + OZ_CONFIG_FILE;
+    String configPath = home + OZ_DIRDEL OZ_CONFIG_FILE;
     if( config.load( configPath ) ) {
       log.printEnd( "Configuration read from '%s'", configPath.cstr() );
       initFlags |= INIT_CONFIG;
@@ -118,6 +121,7 @@ namespace client
     else {
       log.println( "No config file, default config will be written on exit" );
     }
+    config.add( "dir.home", home );
 
     log.print( "Initializing SDL ..." );
 
@@ -357,7 +361,9 @@ namespace client
     log.println( "}" );
 
     if( ~initFlags & INIT_CONFIG ) {
+      config.remove( "dir.home" );
       config.save( configPath );
+      config.add( "dir.home", home );
     }
   }
 
@@ -366,6 +372,11 @@ namespace client
 
 int main( int argc, char **argv )
 {
+  printf( "OpenZone  Copyright (C) 2002-2009  Davorin Učakar <davorin.ucakar@gmail.com>\n"
+      "This program comes with ABSOLUTELY NO WARRANTY.\n"
+      "This is free software, and you are welcome to redistribute it\n"
+      "under certain conditions; See COPYING for details.\n\n" );
+
   try {
     oz::client::main.main( &argc, argv );
   }

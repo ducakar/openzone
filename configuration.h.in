@@ -8,3 +8,10 @@
 
 // platform
 #cmakedefine OZ_MINGW32
+
+// directory delimiter
+#ifdef OZ_MINGW32
+# define OZ_DIRDEL "\\"
+#else
+# define OZ_DIRDEL "/"
+#endif

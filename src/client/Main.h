@@ -4,15 +4,16 @@
  *  Game initialization and main loop
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
 #pragma once
 
 #define OZ_APP_NAME            "OpenZone"
 #define OZ_WM_TITLE            OZ_APP_NAME
-#define OZ_RC_DIR              "/.openzone"
-//#define OZ_LOG_FILE            "/client.log"
-#define OZ_CONFIG_FILE         "/client.rc"
+#define OZ_RC_DIR              ".openzone"
+//#define OZ_LOG_FILE            "client.log"
+#define OZ_CONFIG_FILE         "client.rc"
 
 namespace oz
 {

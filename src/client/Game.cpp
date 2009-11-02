@@ -4,6 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -49,13 +50,20 @@ namespace client
     network.connect();
 
     Buffer buffer( 1024 * 1024 * 10 );
-    if( buffer.load( config.get( "dir.home", "" ) + String( "/default.ozState" ) ) ) {
+    String stateFile = config.get( "dir.home", "" ) + String( OZ_DIRDEL "default.ozState" );
+
+    log.print( "Loading world from %s ...", stateFile.cstr() );
+    if( buffer.load( stateFile ) ) {
       InputStream istream = buffer.inputStream();
 
       matrix.load( &istream );
       nirvana.load( &istream );
+
+      log.printEnd( " OK" );
     }
     else {
+      log.printEnd( " Failed, starting a new world" );
+
       matrix.load( null );
       nirvana.load( null );
     }
@@ -84,11 +92,14 @@ namespace client
 
     Buffer buffer( 1024 * 1024 * 10 );
     OutputStream ostream = buffer.outputStream();
+    String stateFile = config.get( "dir.home", "" ) + String( OZ_DIRDEL "default.ozState" );
 
     matrix.unload( &ostream );
     nirvana.unload( &ostream );
 
-    buffer.write( config.get( "dir.home", "" ) + String( "/default.ozState" ) );
+    log.print( "Writing world to %s ...", stateFile.cstr() );
+    buffer.write( stateFile );
+    log.printEnd( " OK" );
 
     network.disconnect();
 
