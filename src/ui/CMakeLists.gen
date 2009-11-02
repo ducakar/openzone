@@ -9,5 +9,5 @@ ls *.cpp >> CMakeLists.txt
 cat << EOF >> CMakeLists.txt
 )
 
-add_dependencies( ui precompile )
+add_dependencies( ui precompiled )
 EOF

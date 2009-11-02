@@ -29,4 +29,9 @@ namespace oz
 
   int ( *const Math::rand )() = ::rand;
 
+  float Math::frand()
+  {
+    return static_cast<float>( rand() ) / static_cast<float>( RAND_MAX );
+  }
+
 }

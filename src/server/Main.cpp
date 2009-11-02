@@ -12,7 +12,7 @@
 
 #include "Game.h"
 
-#ifdef WIN32
+#ifdef OZ_MINGW32
 # include <direct.h>
 # include <sys/types.h>
 # include <sys/stat.h>

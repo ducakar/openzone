@@ -9,6 +9,6 @@ ls *.cpp >> CMakeLists.txt
 cat << EOF >> CMakeLists.txt
 )
 
-add_dependencies( openzone precompile )
+add_dependencies( openzone precompiled )
 target_link_libraries( openzone ui nirvana matrix base )
 EOF

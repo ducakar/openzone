@@ -81,7 +81,7 @@ namespace client
       if( stat( home.cstr(), &homeDirStat ) != 0 ) {
         printf( "No resource dir found, creating '%s' ...", home.cstr() );
 
-#ifdef __WIN32__
+#ifdef OZ_MINGW32
         if( mkdir( home.cstr() ) != 0 ) {
 #else
         if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
@@ -297,7 +297,6 @@ namespace client
         }
         continue;
       }
-
 
       ui::mouse.update();
       // stop nirvana, commit with cuts/removals, sync Render and Sound, update world,

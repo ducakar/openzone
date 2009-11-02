@@ -1,3 +1,19 @@
+Dependencies:
+-------------
+- SDL
+- SDL_image
+- SDL_ttf
+- SDL_net
+- X11 (including MesaGL and MesaGLU)
+- OpenAL
+- FreeALUT
+- libvorbis
+- LibXml2 (optional)
+- Lua
+
+On Linux you have to install packages that provide those libraries.
+For Windows build, all dependencies are included.
+
 Controls:
 ---------
 mouse or arrow keys - look
@@ -26,22 +42,18 @@ F12                 - minimize and stop
 
 Notes:
 ------
-- On first run ~/.openzone/client.xml configuration file with default settings is generated. Edit
-  it to change the settings.
+
+- On first run ~/.openzone/client.rc (or ~/.openzone/client.xml) configuration file
+  with default settings is generated. Edit it to change the settings.
 - On exit the world is saved to ~/.openzone/default.ozState. Delete this file to start with a
   clean world again.
+- You can jump to higher places with jump-duck (like in Half-Life 1).
 
 Settings:
 ---------
 
-Types:
-bool   - "true" or "false"
-int    - integer (as decimal integer value in C)
-float  - floating point value (as in C)
-string - arbitrary string
-
-File Format:
-A standard XML in format:
+Format:
+- XML, example:
 
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
@@ -51,10 +63,26 @@ A standard XML in format:
   <var name="variableN_name" value="variableN_value"/>
 </config>
 
-Variables:
+- or .rc, example:
 
-name [type] default value
--------------------------
+variable1_name    "variable1_value"
+variable2_name    "variable2_value"
+...
+variableN_name    "variableN_value"
+
+
+
+Types:
+
+bool   - "true" or "false"
+int    - integer (as decimal integer value in C)
+float  - floating point value (as in C)
+string - arbitrary string
+
+
+
+Variables:
+name    [type]    default value
 
 dir.data [string] "data"
   path to static game data directory (textures, sounds, maps, models)
@@ -75,7 +103,7 @@ input.mouse.ySens [float] 0.2
   sensitivity for y mouse axis
 
 net.port [int] 6666
-  server port (network not supported yet) 
+  server port (network not supported yet)
 
 net.server [string] "localhost"
   server hostname (network not supported yet)
