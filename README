@@ -87,7 +87,7 @@ name    [type]    default value
 dir.data [string] "data"
   path to static game data directory (textures, sounds, maps, models)
 
-home.dir [string] "~/.openzone"
+home.dir [string] "~/.openzone" for Linux, "" for Windows ("" = current directory = data directory)
   path to home directory where configuration files, saved states, screenshots and logs reside
 
 input.keys.xSens [float] 0.2
@@ -111,11 +111,17 @@ net.server [string] "localhost"
 render.camera.smoothCoef [float] 0.3
   camera smoothing coefficient
 
+render.camera.thirdPerson [bool] false
+  whether camera should be in 3rd persom mode on startup
+
 render.camera.thirdPersonDistance [float] 2.5
   distance of camera behind model's head when in 3rd person
 
 render.dayVisibility [float] 300.0
   day visibility range in meters
+
+render.drawAABBs [bool] false
+  if AABBs around objects should be drawn
 
 render.nightVisibility [float] 100.0
   night visibility range in meters
@@ -135,6 +141,9 @@ render.perspective.max [float] 400.0
 render.perspective.min [float] 0.1
   minimum distance for perspective matrix
 
+render.showAim [bool] false
+  whether a small green box should be projected to the point the player is aiming
+
 render.waterDayVisibility [float] 8.0
   day visibility under water in meters
 
@@ -144,8 +153,19 @@ render.waterNightVisibility [float] 4.0
 screen.bpp [int] 32
   screen mode bits per pixel
 
+screen.full [bool] false
+  fullscreen mode
+
 screen.height [int] 768
   screen mode vertical resolution
+
+screen.leaveScreensaver [bool] true
+  don't disable screensaver (sometimes it remains disabled after exit, it's a SDL bug; if we don't
+  disable it, it's just OK, since it won't ever start in fullscreen mode)
+
+screen.nvVSync [bool] true
+  set __GL_SYNC_TO_VBLANK=1 environment variable. On X11 it enables VSync on NVidia cards,
+  otherwise it does no harm.
 
 screen.width [int] 1024
   screen mode horizontal resolution

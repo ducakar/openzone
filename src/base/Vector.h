@@ -5,6 +5,7 @@
  *  It can be also used as stack or small set.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
 #pragma once

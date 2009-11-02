@@ -2,8 +2,6 @@ Build Dependencies:
 -------------------
 - GNU tools (GCC, GNU Make, GNU Binutils)
 - CMake
-- LibXml2
-- Lua
 - SDL
 - SDL_image
 - SDL_ttf
@@ -12,6 +10,8 @@ Build Dependencies:
 - OpenGL GLU (MesaGLU recommended, usually included in X11)
 - OpenAL (AL Soft recommended)
 - ALUT (FreeALUT recommended)
+- LibXml2 (optional)
+- Lua
 
 Quick build instructions:
 -------------------------
@@ -29,5 +29,37 @@ More detailed build instructions:
 Data
 ----
 Uncompress data. By default data is searched in "data" dir inside working dir. If you put it
-anywhere else, you should set "data.dir" variable in "~/.openzone/client.xml".
+anywhere else, you should set "data.dir" variable in "$HOME/.openzone/client.rc" or
+"%USERPROFILE%/.openzone/client.rc" on Win32.
 A sample client.xml with default settings can be found in project root.
+
+MinGW32 build (cross-compile):
+------------------------------
+Install MinGW package (mingw32-gcc, mingw32-w32api packages should do it) for Linux.
+Look at mingw32-build.sh script. Download all required source archives and correct the script if
+any versions do not match. As you can see from script you should put the archives into 
+mingw32/build. Run the script. When CMake Qt interface pops up, select cross-compile with toolchain
+(included in Toolchain-mingw32.cmake), set CMAKE_BUILD_TYPE to Release and CMAKE_INSTALL_PREFIX 
+to empty string. Manual interventions will likely be needed. After that, install official OpenAL SDK
+(use Wine). Replace mingw32/lib/libOpenAL32.a you built with OpenAL32.lib from SDK and
+mingw32/bin/OpenAL32.dll with OpenAL32.dll from SDK. Now you can build openzone. Select
+cross-compile toolchain in file Toolchain-mingw32.cmake and build it as you want. It won't build
+completely, linking wil fail because parameters are not in correct order. Run mingw32-linkclient.sh
+to link openzone.exe and move it to mingw32/bin. Edit the mingw32-linkclient.sh script if you need
+to change some linker parameters.
+Currently mingw32 build doesn't support .jpg images, because I'm unable to build libjpeg with MinGW,
+so you need a version of data with only .png images or convert them on your own. Don't forget on
+file names in data.mtl for OBJ models. Source code has appropriate preprocessor directives to
+compile for loading .png images instead of .jpg.
+
+Development tools (my choice):
+------------------------------
+OS: GNU/Linux
+IDE: Eclipse with CDT, egit and CMakeEd plugins
+build system: CMake + GNU make
+compiler: GCC + GNU binutils
+VCS: git (command line tools recommended for committing and other operations, egit is unreliable)
+debugger: GDB, valgrind (a great tool for finding buffer overruns, memory leaks etc.)
+development packages for all libraries from first paragraph
+
+I included .project and .cproject files for Eclipse.

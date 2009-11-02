@@ -4,6 +4,7 @@
  *  Graphics render engine
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -351,7 +352,7 @@ namespace client
       ct = time( null );
       t = *localtime( &ct );
 
-      snprintf( fileName, 1024, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
+      snprintf( fileName, 1024, "%s" OZ_DIRDEL "screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
                 config.get( "dir.home", "" ),
                 1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
       fileName[1023] = '\0';

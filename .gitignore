@@ -15,9 +15,6 @@ pg.out
 /build
 /mingw32
 
-/.project
-/.cproject
-
 /*CMakeCache.txt
 CMakeCache.txt
 CMakeFiles

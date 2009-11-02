@@ -4,6 +4,7 @@
  *  http://www.wikipedia.org/MD3_(file_format)
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -263,7 +264,7 @@ namespace client
   MD3::MD3( const char *name_ )
   {
     String name       = name_;
-    String dir        = "mdl/" + name + "/";
+    String dir        = "mdl" OZ_DIRDEL + name + OZ_DIRDEL;
     String configFile = dir + "config.rc";
 
     MD3Tag *headTags;

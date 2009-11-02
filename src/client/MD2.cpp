@@ -4,6 +4,7 @@
  *  MD2 model class
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -281,10 +282,14 @@ namespace client
 
     name = name_;
 
-    String sPath = "mdl/" + name;
-    String modelFile = sPath + "/tris.md2";
-    String skinFile = sPath + "/skin.jpg";
-    String configFile = sPath + "/config.rc";
+    String sPath = "mdl" OZ_DIRDEL + name;
+    String modelFile = sPath + OZ_DIRDEL "tris.md2";
+#ifdef OZ_MINGW32
+    String skinFile = sPath + OZ_DIRDEL "skin.png";
+#else
+    String skinFile = sPath + OZ_DIRDEL "skin.jpg";
+#endif
+    String configFile = sPath + OZ_DIRDEL "config.rc";
 
     log.print( "Loading MD2 model '%s' ...", name.cstr() );
 

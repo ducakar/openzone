@@ -4,6 +4,7 @@
  *  Data structure for Quake3 BSP level
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -398,7 +399,7 @@ namespace oz
   bool BSP::load( const char *name )
   {
     Config bspConfig;
-    if( !bspConfig.load( String( "bsp/" ) + name + String( ".rc" ) ) ) {
+    if( !bspConfig.load( String( "bsp" OZ_DIRDEL ) + name + String( ".rc" ) ) ) {
       return false;
     }
 
@@ -413,7 +414,7 @@ namespace oz
       return false;
     }
 
-    if( !loadQBSP( String( "bsp/" ) + name + String( ".bsp" ), scale, maxDim ) ) {
+    if( !loadQBSP( String( "bsp" OZ_DIRDEL ) + name + String( ".bsp" ), scale, maxDim ) ) {
       free();
       return false;
     }
