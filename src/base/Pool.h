@@ -27,7 +27,7 @@ namespace oz
       /**
        * Memory block.
        * Block is an array that can hold up to BLOCK_SIZE elements. When we run out of space
-       * we simply allocate another block. Once a block is allocated in cannot be freed any
+       * we simply allocate another block. Once a block is allocated it cannot be freed any
        * more. Anyways, that would be rarely possible due to fragmentation.
        */
       struct Block

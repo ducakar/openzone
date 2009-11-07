@@ -11,7 +11,7 @@
 
 #include "stdio.h"
 
-using namespace Dark;
+using namespace oz;
 
 struct A
 {
@@ -42,7 +42,7 @@ int main()
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, Iterator<A>( sparse.dataPtr(), sparse.dataPtr() + sparse.capacity() ) ) {
+  foreach( i, Iterator<A>( sparse, sparse + sparse.capacity() ) ) {
     printf( "%d,%d ", i->value, i->nextSlot );
   }
   printf( "\n" );
@@ -54,7 +54,7 @@ int main()
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, Iterator<A>( sparse.dataPtr(), sparse.dataPtr() + sparse.capacity() ) ) {
+  foreach( i, Iterator<A>( sparse, sparse + sparse.capacity() ) ) {
     printf( "%d,%d ", i->value, i->nextSlot );
   }
   printf( "\n" );

@@ -18,7 +18,7 @@ namespace oz
   struct DynObjectClass : ObjectClass
   {
     static const int BASE_FLAGS = Object::DYNAMIC_BIT;
-    static const int DEFAULT_FLAGS = Object::CLIP_BIT;
+    static const int DEFAULT_FLAGS = Object::CLIP_BIT | Object::DESTROY_FUNC_BIT;
 
     float mass;
     float lift;

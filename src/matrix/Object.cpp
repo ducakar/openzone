@@ -11,6 +11,8 @@
 
 #include "Object.h"
 
+#include "ObjectClass.h"
+#include "MatrixLua.h"
 #include "Synapse.h"
 
 namespace oz
@@ -24,21 +26,46 @@ namespace oz
     events.free();
   }
 
-  void Object::onHit( const Hit*, float )
-  {}
-
   void Object::onDestroy()
   {
     synapse.genParts( type->nDebris, p, Vec3::zero(), type->debrisVelocitySpread,
                       type->debrisRejection, type->debrisMass, type->debrisLifeTime,
                       type->debrisColor, type->debrisColorSpread );
+
+    if( !type->onDestroy.isEmpty() ) {
+      matrixLua.call( type->onDestroy, this );
+    }
   }
 
-  void Object::onUse( Bot* )
-  {}
+  void Object::onDamage( float damage )
+  {
+    if( !type->onDamage.isEmpty() ) {
+      matrixLua.damage = damage;
+      matrixLua.call( type->onDamage, this );
+    }
+  }
+
+  void Object::onHit( const Hit*, float hitMomentum )
+  {
+    if( !type->onHit.isEmpty() ) {
+      matrixLua.hitMomentum = hitMomentum;
+      matrixLua.call( type->onHit, this );
+    }
+  }
 
   void Object::onUpdate()
-  {}
+  {
+    if( !type->onUpdate.isEmpty() ) {
+      matrixLua.call( type->onUpdate, this );
+    }
+  }
+
+  void Object::onUse( Bot *user )
+  {
+    if( !type->onUse.isEmpty() ) {
+      matrixLua.call( type->onUse, this, user );
+    }
+  }
 
   void Object::readFull( InputStream *istream )
   {

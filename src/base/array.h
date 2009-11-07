@@ -117,11 +117,11 @@ namespace oz
   }
 
   /**
-   * Find the first occurence of an element.
+   * Find the first occurrence of an element.
    * @param array pointer to the first element in the array
    * @param count number of elements to be looked upon
    * @param value value we look for
-   * @return index of the first occurence, -1 if not found
+   * @return index of the first occurrence, -1 if not found
    */
   template <class Type>
   inline int aIndex( const Type *array, const Type &value, int count )
@@ -135,11 +135,11 @@ namespace oz
   }
 
   /**
-   * Find the last occurence of an element.
+   * Find the last occurrence of an element.
    * @param array pointer to the first element in the array
    * @param count number of elements to be looked upon
    * @param value value we look for
-   * @return index of the first occurence, -1 if not found
+   * @return index of the first occurrence, -1 if not found
    */
   template <class Type>
   inline int aLastIndex( const Type *array, const Type &value, int count )
@@ -196,7 +196,7 @@ namespace oz
   template <class Type>
   void quicksort( Type *first, Type *last )
   {
-    // 8-14 seem as optimal tresholds for switching to selection sort
+    // 8-14 seem as optimal thresholds for switching to selection sort
     if( last - first > 10 ) {
       // quicksort
       Type *top = first;

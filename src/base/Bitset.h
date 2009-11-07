@@ -88,7 +88,7 @@ namespace oz
       /**
        * Equality operator.
        * @param b
-       * @return true if all bits up to <code>lenght()</code> are equal.
+       * @return true if all bits up to <code>length()</code> are equal.
        */
       bool operator == ( const Bitset &b )
       {
@@ -106,7 +106,7 @@ namespace oz
       /**
        * Inequality operator.
        * @param b
-       * @return false if all bits up to <code>lenght()</code> are equal.
+       * @return false if all bits up to <code>length()</code> are equal.
        */
       bool operator != ( const Bitset &b )
       {
@@ -233,7 +233,7 @@ namespace oz
       }
 
       /**
-       * Set bits from inclusevly start to non-inclusevly end to true.
+       * Set bits from inclusively start to non-inclusively end to true.
        * @param start start index
        * @param end end index
        */
@@ -264,7 +264,7 @@ namespace oz
       }
 
       /**
-       * Set bits from inclusevly start to non-inclusevly end to false.
+       * Set bits from inclusively start to non-inclusively end to false.
        * @param start start index
        * @param end end index
        */

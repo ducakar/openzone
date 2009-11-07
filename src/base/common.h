@@ -94,7 +94,7 @@ namespace oz
    * @return minimum of a and b
    */
   template <class Value, class ValueB>
-  inline const Value &min( const Value &a, const ValueB &b )
+  inline Value min( const Value &a, const ValueB &b )
   {
     return a < b ? a : b;
   }
@@ -106,7 +106,7 @@ namespace oz
    * @return maximum of a and b
    */
   template <class Value, class ValueB>
-  inline const Value &max( const Value &a, const ValueB &b )
+  inline Value max( const Value &a, const ValueB &b )
   {
     return a > b ? a : b;
   }
@@ -119,7 +119,7 @@ namespace oz
    * @return clamped value of c
    */
   template <class ValueC, class ValueA, class ValueB>
-  inline const ValueC &bound( const ValueC &c, const ValueA &a, const ValueB &b )
+  inline ValueC bound( const ValueC &c, const ValueA &a, const ValueB &b )
   {
     assert( a <= b );
 
@@ -133,5 +133,11 @@ namespace oz
       return c;
     }
   }
+
+  /**
+   * \def $
+   * Return the string with name of given identifier/type/reserved word/...
+   */
+# define $( s ) #s
 
 }

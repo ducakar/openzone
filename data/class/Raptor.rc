@@ -1,0 +1,56 @@
+base "Vehicle"
+
+dim.x "3.99"
+dim.y "3.99"
+dim.z "1.60"
+
+dimCrouch.x "0.44"
+dimCrouch.y "0.44"
+dimCrouch.z "0.79"
+
+life "10000.0f"
+
+mass "5000.0"
+lift "0.04"
+
+modelType "OBJ"
+modelPath "raptor"
+
+audio.type "Basic"
+
+audioSample00 "land1"
+audioSample01 "jump1"
+
+audioSample27 "land1"
+audioSample28 "land1"
+audioSample29 "splash_soft1"
+audioSample30 "splash_hard1"
+audioSample31 ""
+
+camPos.x "0.00"
+camPos.y "0.00"
+camPos.z "0.89"
+
+camPosCrouch.x "0.00"
+camPosCrouch.y "0.00"
+camPosCrouch.z "0.69"
+
+walkMomentum "1.2"
+runMomentum "3.0"
+crouchMomentum "1.0"
+jumpMomentum "4.0"
+
+stepInc "0.1"
+stepMax "0.5"
+
+airControl "0.03"
+grabDistance "1.2"
+
+stamina "100.0"
+staminaRunDrain "0.05"
+staminaJumpDrain "5.0"
+
+lookLimitHMin "-90.0"
+lookLimitHMax "90.0"
+lookLimitVMin "-45.0"
+lookLimitVMax "45.0"

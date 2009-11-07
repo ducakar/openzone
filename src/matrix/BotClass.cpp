@@ -57,9 +57,9 @@ namespace oz
     clazz->climbControl      = config->get( "climbControl", 1.50f );
     clazz->waterControl      = config->get( "waterControl", 0.05f );
 
-    clazz->grabDistance      = config->get( "grabDistance", 1.2f );
+    clazz->grabDistance      = config->get( "grabDistance", 1.5f );
     clazz->grabMass          = config->get( "grabMass", 50.0f );
-    clazz->throwMomentum     = config->get( "throwMomentum", 2.0f );
+    clazz->throwMomentum     = config->get( "throwMomentum", 6.0f );
 
     clazz->stamina           = config->get( "stamina", 100.0f );
     clazz->staminaGain       = config->get( "staminaGain", 0.05f );

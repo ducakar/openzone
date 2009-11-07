@@ -1,0 +1,61 @@
+base                            "Bot"
+
+dim.x                           "0.44"
+dim.y                           "0.44"
+dim.z                           "1.09"
+
+life                            "400.0"
+mass                            "100.0"
+
+dimCrouch.x                     "0.44"
+dimCrouch.y                     "0.44"
+dimCrouch.z                     "0.79"
+
+nDebris                         "8"
+debrisVelocitySpread            "12.0"
+debrisRejection                 "1.95"
+debrisMass                      "0.0"
+debrisLifeTime                  "1.0"
+debrisColor.r                   "0.5"
+debrisColor.g                   "0.0"
+debrisColor.b                   "0.0"
+debrisColorSpread               "0.3"
+
+modelType                       "MD2"
+modelPath                       "hobgoblin"
+
+audioType                       "Basic"
+audioSample00                   ""
+audioSample01                   ""
+audioSample02                   "splash1"
+audioSample03                   ""
+audioSample04                   "hit_bot1"
+audioSample05                   "jump1"
+audioSample06                   "gesture_flip"
+
+camPos.x                        "0.00"
+camPos.y                        "0.00"
+camPos.z                        "0.79"
+
+camPosCrouch.x                  "0.00"
+camPosCrouch.y                  "0.00"
+camPosCrouch.z                  "0.59"
+
+walkMomentum                    "1.2"
+runMomentum                     "4.0"
+crouchMomentum                  "1.0"
+jumpMomentum                    "5.0"
+
+stepRate                        "1.50"
+
+grabDistance                    "2.0"
+throwMomentum                   "10.0"
+
+staminaWaterDrain               "0.07"
+staminaRunDrain                 "0.07"
+staminaJumpDrain                "3.0"
+
+lookLimitHMin                   "-135.0"
+lookLimitHMax                   "135.0"
+lookLimitVMmin                  "-45.0"
+lookLimitVMmax                  "45.0"

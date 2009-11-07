@@ -136,7 +136,7 @@ namespace client
     if( config.get( "screen.nvVSync", true ) ) {
       SDL_putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
     }
-    if( SDL_Init( SDL_INIT_VIDEO ) || SDLNet_Init() ) {
+    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) || SDLNet_Init() ) {
       log.printEnd( " Failed" );
       return;
     }

@@ -1,5 +1,6 @@
 /precompiled.h.gch
 /configuration.h
+/.settings
 /doxygen
 /tags
 /openzone.tag
@@ -8,7 +9,6 @@
 gmon.out
 pg.out
 
-/data
 /valgrind.supp
 /pogon.*
 

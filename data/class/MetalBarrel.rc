@@ -1,0 +1,19 @@
+base "DynObject"
+
+dim.x "0.4032"
+dim.y "0.4032"
+dim.z "0.5922"
+
+life "1.0f"
+
+mass "50.0"
+lift "7.0"
+
+modelType "MD2Static"
+modelPath "barrel1"
+
+audioType "Basic"
+audioSample00 "destroy_metal1"
+audioSample01 "hit_metal1"
+audioSample02 "splash2"
+audioSample03 "friction1"

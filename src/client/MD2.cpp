@@ -351,13 +351,13 @@ namespace client
     Config config;
     config.load( configFile );
 
-    float scaling = config.get( "scale", 0.03f );
-    Vec3 translation( config.get( "translate.x", 0.0f ),
-                      config.get( "translate.y", 0.0f ),
-                      config.get( "translate.z", 0.0f ) );
-    Vec3 crouchTranslation( config.get( "crouchTranslate.x", 0.0f ),
-                            config.get( "crouchTranslate.y", 0.0f ),
-                            config.get( "crouchTranslate.z", 0.0f ) );
+    float scaling = config.get( "scale", 0.042f );
+    Vec3 translation( config.get( "translate.x", 0.00f ),
+                      config.get( "translate.y", 0.00f ),
+                      config.get( "translate.z", 0.00f ) );
+    Vec3 crouchTranslation( config.get( "crouchTranslate.x", 0.00f ),
+                            config.get( "crouchTranslate.y", 0.00f ),
+                            config.get( "crouchTranslate.z", 0.20f ) );
     config.clear();
 
     if( scaling != 1.0f ) {
@@ -365,7 +365,7 @@ namespace client
     }
     translate( translation );
 
-    if( !crouchTranslation.isZero() ) {
+    if( nFrames > animList[ANIM_MAX].lastFrame && !crouchTranslation.isZero() ) {
       translate( ANIM_CROUCH_STAND,  crouchTranslation );
       translate( ANIM_CROUCH_WALK,   crouchTranslation );
       translate( ANIM_CROUCH_ATTACK, crouchTranslation );
@@ -414,6 +414,8 @@ namespace client
   {
     int start = animList[animType].firstFrame * nVerts;
     int max = ( animList[animType].lastFrame + 1 ) * nVerts;
+
+    assert( max < nVerts * nFrames );
 
     for( int i = start; i < max; i++ ) {
       verts[i] += t;

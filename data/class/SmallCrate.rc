@@ -1,0 +1,23 @@
+base "DynObject"
+
+dim.x "0.3"
+dim.y "0.3"
+dim.z "0.3"
+
+life "100.0f"
+
+mass "20.0"
+
+debrisColor.r "0.28"
+debrisColor.g "0.23"
+debrisColor.b "0.19"
+debrisColorSpread "0.05"
+
+modelType "OBJ"
+modelPath "smallCrate"
+
+audioType "Basic"
+audioSample00 "destroy_wood1"
+audioSample01 "hit_wood1"
+audioSample02 "splash1"
+audioSample03 ""

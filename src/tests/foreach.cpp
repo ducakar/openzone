@@ -18,64 +18,88 @@ struct Elem
   Elem *prev[1];
   Elem *next[1];
 
-  Elem( int value_ ) : value( value_ )
-  {}
+  Elem( int value_ ) : value( value_ ) {}
+};
+
+struct SparseElem
+{
+  int value;
+  int nextSlot;
+
+  SparseElem() {}
+  SparseElem( int value_ ) : value( value_ ) {}
 };
 
 int main()
 {
+  List<Elem, 0> l;
+  DList<Elem, 0> dl;
   int a[5];
   Vector<int> v;
   SVector<int, 5> sv;
-  List<Elem, 0> l;
-  DList<Elem, 0> dl;
+  Sparse<SparseElem> s;
   HashIndex<int, 4> hi;
   HashString<int, 4> hs;
 
   // 1
+  l << new Elem( 1 );
+  dl << new Elem( 1 );
   a[0] = 1;
   v << 1;
   sv << 1;
-  l << new Elem( 1 );
-  dl << new Elem( 1 );
+  s << SparseElem( 1 );
   hi.add( 101, 1 );
   hs.add( "101", 1 );
 
   // 2
+  l << new Elem( 2 );
+  dl << new Elem( 2 );
   a[1] = 2;
   v << 2;
   sv << 2;
-  l << new Elem( 2 );
-  dl << new Elem( 2 );
+  s << SparseElem( 2 );
   hi.add( 102, 2 );
   hs.add( "102", 2 );
 
   // 4
+  l << new Elem( 4 );
+  dl << new Elem( 4 );
   a[2] = 4;
   v << 4;
   sv << 4;
-  l << new Elem( 4 );
-  dl << new Elem( 4 );
+  s << SparseElem( 4 );
   hi.add( 104, 4 );
   hs.add( "104", 4 );
 
   // 3
+  l << new Elem( 3 );
+  dl << new Elem( 3 );
   a[3] = 3;
   v << 3;
   sv << 3;
-  l << new Elem( 3 );
-  dl << new Elem( 3 );
+  s << SparseElem( 3 );
   hi.add( 103, 3 );
   hs.add( "103", 3 );
 
   // 5
+  l << new Elem( 5 );
+  dl << new Elem( 5 );
   a[4] = 5;
   v << 5;
   sv << 5;
-  l << new Elem( 5 );
-  dl << new Elem( 5 );
+  s << SparseElem( 5 );
   hi.add( 105, 5 );
   hs.add( "105", 5 );
+
+  foreach( i, l.iterator() ) {
+    printf( "%d ", i->value );
+  }
+  printf( "\n" );
+
+  foreach( i, dl.iterator() ) {
+    printf( "%d ", i->value );
+  }
+  printf( "\n" );
 
   foreach( i, iterator( a, 5 ) ) {
     printf( "%d ", *i );
@@ -92,12 +116,7 @@ int main()
   }
   printf( "\n" );
 
-  foreach( i, l.iterator() ) {
-    printf( "%d ", i->value );
-  }
-  printf( "\n" );
-
-  foreach( i, dl.iterator() ) {
+  foreach( i, s.iterator() ) {
     printf( "%d ", i->value );
   }
   printf( "\n" );
@@ -111,6 +130,9 @@ int main()
     printf( "%d ", *i );
   }
   printf( "\n" );
+
+  hi.clear();
+  hs.clear();
 
   return 0;
 }

@@ -4,13 +4,8 @@ include( CheckLibraryExists )
 
 project( openzone C CXX )
 
-option( OZ_XML_CONFIG "Support for XML configuration files" ON )
-
-if( NOT CMAKE_BUILD_TYPE )
-    set( CMAKE_BUILD_TYPE Debug FORCE )
-endif()
-
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
+option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" ON )
 
 # compiler and linker flags
 set( WARNINGS "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wdisabled-optimization" )
@@ -21,13 +16,13 @@ set( ARCH_FLAGS "-march=i686 -mtune=generic -mmmx -msse -mfpmath=sse" )
 
 # set platform-specific includes and library names
 if( WIN32 )
+    set( LIBS "-lmingw32 -lSDLmain ${LIBS} -lopengl32 -lglu32 -lOpenAL32 -lalut" )
     set( OZ_MINGW32 ON )
     foreach( ROOT ${CMAKE_FIND_ROOT_PATH} )
         set( FLAGS "${FLAGS} -I${ROOT}/include" )
         set( FLAGS "${FLAGS} -I${ROOT}/include/SDL" )
         set( LIBS "${LIBS} -L${ROOT}/lib" )
     endforeach()
-    set( LIBS "-lmingw32 -lSDLmain ${LIBS} -lopengl32 -lglu32 -lOpenAL32 -lalut" )
 else()
     set( FLAGS "${FLAGS} -I/usr/include/SDL" )
     set( LIBS "${LIBS} -lGL -lGLU -lopenal -lalut" )
@@ -41,8 +36,10 @@ endif()
 set( CMAKE_CXX_FLAGS "${WARNINGS} ${FLAGS}" )
 set( CMAKE_EXE_LINKER_FLAGS "${LIBS}" )
 
-set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE "-O3 -fomit-frame-pointer -ffast-math ${ARCH_FLAGS}" CACHE STRING "" FORCE ) 
+set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING ""  )
+set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fomit-frame-pointer -ffast-math ${ARCH_FLAGS}" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -fomit-frame-pointer -ffast-math ${ARCH_FLAGS}" CACHE STRING "" FORCE )
+set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
 
 # write configuration
 configure_file( configuration.h.in configuration.h )
@@ -59,6 +56,8 @@ if( CMAKE_BUILD_TYPE STREQUAL Debug )
     set( FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
 elseif( CMAKE_BUILD_TYPE STREQUAL Release )
     set( FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}" )
+elseif( CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo )
+    set( FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" )
 else()
     set( FLAGS "${CMAKE_CXX_FLAGS}" )
 endif()

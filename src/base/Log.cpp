@@ -22,7 +22,7 @@ namespace oz
   // the file already exists
   bool Log::init( const char *fileName, bool clearFile, const char *indentStr_ )
   {
-    // initalize ident
+    // initialize indent
     tabs = 0;
 
     indentStr = indentStr_ != null ? indentStr_ : "  ";

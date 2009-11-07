@@ -497,7 +497,7 @@ namespace oz
       }
 
       /**
-       * Empty the list and delete all elements - take care of memory managment.
+       * Empty the list and delete all elements - take care of memory management.
        */
       void free()
       {

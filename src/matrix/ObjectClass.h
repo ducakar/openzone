@@ -36,6 +36,12 @@ namespace oz
     float  damageTreshold;
     float  damageRatio;
 
+    String onDestroy;
+    String onDamage;
+    String onHit;
+    String onUpdate;
+    String onUse;
+
     int    nDebris;
     float  debrisVelocitySpread;
     float  debrisRejection;
