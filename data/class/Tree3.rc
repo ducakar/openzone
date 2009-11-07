@@ -1,0 +1,11 @@
+base "Object"
+
+dim.x "0.6"
+dim.y "0.6"
+dim.z "8.0"
+
+flags "129"
+life "100.0f"
+
+modelType "MD2Static"
+modelPath "tree3"

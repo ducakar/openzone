@@ -33,7 +33,7 @@ namespace oz
       bool init( const char *fileName, bool clearFile = true, const char *indentStr = "  " );
 
       /**
-       * @return true, if writting in a file
+       * @return true, if writing in a file
        */
       bool isFile() const;
 
@@ -84,12 +84,12 @@ namespace oz
       void resetIndent();
 
       /**
-       * Increases ident.
+       * Increases indent.
        */
       void indent();
 
       /**
-       * Decreases ident.
+       * Decreases indent.
        */
       void unindent();
 

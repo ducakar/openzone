@@ -20,32 +20,61 @@ extern "C"
 
 using namespace oz;
 
-static const char *scriptName = "/home/davorin/Projects/openzone/src/test/script.lua";
-static lua_State *luaState;
+static lua_State *l;
+static float life = 100.0f;
 
-static int ozPrint( lua_State* )
+static int print( lua_State *l )
 {
-  int n = lua_gettop( luaState );
+  int n = lua_gettop( l );
   if( n != 1 ) {
-    lua_pushstring( luaState, "Lua: incorrect params" );
-    lua_error( luaState );
+    lua_pushstring( l, "ozPrint: incorrect parameters" );
+    lua_error( l );
+    return 0;
   }
+  else if( !lua_isstring( l, 1 ) ) {
+    lua_pushstring( l, "ozPrint: incorrect parameters" );
+    lua_error( l );
+    return 0;
+  }
+  printf( "%s", lua_tostring( l, 1 ) );
+  return 0;
+}
 
+static int addLife( lua_State *l )
+{
+  int n = lua_gettop( l );
+  if( n != 1 ) {
+    lua_pushstring( l, "ozPrint: incorrect parameters" );
+    lua_error( l );
+    return 0;
+  }
+  else if( !lua_isnumber( l, 1 ) ) {
+    lua_pushstring( l, "ozPrint: incorrect parameters" );
+    lua_error( l );
+    return 0;
+  }
+  life += lua_tonumber( l, 1 );
   return 0;
 }
 
 int main()
 {
-  luaState = lua_open();
-  luaL_openlibs( luaState );
+  l = lua_open();
+  luaL_openlibs( l );
 
-  lua_register( luaState, "ozPrint", ozPrint );
+  lua_register( l, "print", print );
+  lua_register( l, "addLife", addLife );
 
-//  lua_getfield( luaState, LUA_GLOBALSINDEX, "ozPrint" );
-//  lua_call( luaState, 0, 0 );
+  lua_pushnumber( l, 42 );
+  lua_setglobal( l, "magic_number" );
+  luaL_dofile( l, "script.lua" );
+  lua_getglobal( l, "onUse" );
+  lua_call( l, 0, 0 );
+  if( lua_gettop( l ) != 0 && lua_isstring( l, 1 ) ) {
+    printf( "Lua: %s\n", lua_tostring( l, 1 ) );
+  }
+  printf( "%f\n", life );
 
-  luaL_dofile( luaState, scriptName );
-
-  lua_close( luaState );
+  lua_close( l );
   return 0;
 }

@@ -9,13 +9,14 @@
 
 #include "precompiled.h"
 
-using namespace Dark;
+using namespace oz;
 
-class A : public PoolAlloc<A>
+class A : public PoolAlloc<A, 0>
 {
   public:
 
     int value;
+    A   *next[1];
 
 };
 

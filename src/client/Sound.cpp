@@ -282,7 +282,7 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
   }
 
-  bool Sound::init( int *argc, char *argv[] )
+  bool Sound::init( int *argc, char **argv )
   {
     log.println( "Initializing SoundManager {" );
     log.indent();

@@ -278,7 +278,7 @@ int main( int, char *[] )
     //sort( array, 0, MAX );
     //quickSort( array, MAX );
     //arSort( array, array + MAX - 1 );
-    Dark::aSort( array, MAX );
+    oz::aSort( array, MAX );
     //TQuickSortInc( array, MAX );
     //aSort<int, 2048>( array, MAX );
   }

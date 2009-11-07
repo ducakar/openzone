@@ -1,0 +1,20 @@
+base "DynObject"
+
+dim.x "0.25"
+dim.y "0.25"
+dim.z "0.15"
+
+life "100.0f"
+
+onUse "heal50"
+
+mass "2.0"
+
+modelType "OBJ"
+modelPath "health"
+
+audioType "Basic"
+audioSample00 ""
+audioSample01 "hit1"
+audioSample02 "splash1"
+audioSample03 ""

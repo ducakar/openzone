@@ -315,7 +315,7 @@ namespace oz
       }
 
       /**
-       * Remove an element from the list. Becouse we don't have double-linked list, you have to
+       * Remove an element from the list. Because we don't have double-linked list, you have to
        * provide pointer to previous element.
        * @param e element to be removed
        * @param prev previous element
@@ -362,7 +362,7 @@ namespace oz
       }
 
       /**
-       * Empty the list and delete all elements - take care of memory managment.
+       * Empty the list and delete all elements - take care of memory management.
        */
       void free()
       {

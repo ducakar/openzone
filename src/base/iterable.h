@@ -216,7 +216,7 @@ namespace oz
    * @param value
    */
   template <class Iter, class Value>
-  inline void iSet( Iter &i, Value value )
+  inline void iSet( Iter &i, const Value &value )
   {
     while( !i.isPassed() ) {
       *i = value;
@@ -259,13 +259,13 @@ namespace oz
   }
 
   /**
-   * Find first occurence of given element. (Like STL find)
+   * Find first occurrence of given element. (Like STL find)
    * @param i
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
   template <class Iter, class Value>
-  inline Iter iIndex( Iter &i, Value value )
+  inline Iter iIndex( Iter &i, const Value &value )
   {
     while( !i.isPassed() ) {
       if( *i == value ) {
@@ -277,13 +277,13 @@ namespace oz
   }
 
   /**
-   * Find last occurence of given element.
+   * Find last occurrence of given element.
    * @param i
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
   template <class BackIter, class Value>
-  inline BackIter iLastIndex( BackIter &i, Value value )
+  inline BackIter iLastIndex( BackIter &i, const Value &value )
   {
     while( !i.isPassed() ) {
       --i;

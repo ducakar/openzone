@@ -17,7 +17,7 @@
 namespace oz
 {
 
-  const int ObjectClass::DEFAULT_FLAGS = Object::CLIP_BIT;
+  const int ObjectClass::DEFAULT_FLAGS = Object::CLIP_BIT | Object::DESTROY_FUNC_BIT;
 
   ObjectClass::~ObjectClass()
   {}
@@ -49,6 +49,28 @@ namespace oz
     }
     if( clazz->damageRatio < 0.0f ) {
       throw Exception( "Invalid object damageRatio. Should be >= 0." );
+    }
+
+    clazz->onDestroy            = config->get( "onDestroy", "" );
+    clazz->onDamage             = config->get( "onDamage", "" );
+    clazz->onHit                = config->get( "onHit", "" );
+    clazz->onUpdate             = config->get( "onUpdate", "" );
+    clazz->onUse                = config->get( "onUse", "" );
+
+    if( String::length( clazz->onDestroy ) != 0 ) {
+      clazz->flags |= Object::DESTROY_FUNC_BIT;
+    }
+    if( String::length( clazz->onDamage ) != 0 ) {
+      clazz->flags |= Object::DAMAGE_FUNC_BIT;
+    }
+    if( String::length( clazz->onHit ) != 0 ) {
+      clazz->flags |= Object::HIT_FUNC_BIT;
+    }
+    if( String::length( clazz->onUpdate ) != 0 ) {
+      clazz->flags |= Object::UPDATE_FUNC_BIT;
+    }
+    if( String::length( clazz->onUse ) != 0 ) {
+      clazz->flags |= Object::USE_FUNC_BIT;
     }
 
     clazz->nDebris              = config->get( "nDebris", 8 );

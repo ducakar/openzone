@@ -30,6 +30,7 @@ right click         - use
 middle click        - grab/drop
 wheel up            - throw (when holding an object)
 wheel down          - put into inventory [currently disabled as there's no inventory interface yet]
+tab                 - interface mode (toggle)
 
 f                   - point gesture
 g                   - fall back gesture
@@ -48,6 +49,8 @@ Notes:
 - On exit the world is saved to ~/.openzone/default.ozState. Delete this file to start with a
   clean world again.
 - You can jump to higher places with jump-duck (like in Half-Life 1).
+- "~" means $HOME on Linux (i.e. /home/username) and $USERPROFILE on Windows (i.e.
+  C:\Documents and Settings\username on Windows XP or C:\Users\username on Windows Vista)
 
 Settings:
 ---------
@@ -112,7 +115,7 @@ render.camera.smoothCoef [float] 0.3
   camera smoothing coefficient
 
 render.camera.thirdPerson [bool] false
-  whether camera should be in 3rd persom mode on startup
+  whether camera should be in 3rd person mode on startup
 
 render.camera.thirdPersonDistance [float] 2.5
   distance of camera behind model's head when in 3rd person

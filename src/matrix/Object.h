@@ -43,18 +43,20 @@ namespace oz
        * FUNCTION FLAGS (0x0f000000)
        */
 
-      // if the onUpdate method should be called each step
-      static const int UPDATE_FUNC_BIT    = 0x08000000;
+      // if the onDamage function should be called on damage received
+      static const int DAMAGE_FUNC_BIT    = 0x08000000;
+
+      // if the onDestroy function should be called on destruction
+      static const int DESTROY_FUNC_BIT   = 0x04000000;
 
       // if the onHit function should be called on hit
-      static const int HIT_FUNC_BIT       = 0x04000000;
+      static const int HIT_FUNC_BIT       = 0x02000000;
 
-      // probably we won't get noticable performance boost if we wrap those virtual fuctions
-      /*// if the onUse method is called when we use the object (otherwise, nothing happens)
-      static const int USE_FUNC_BIT       = 0x02000000;
+      // if the onUpdate method should be called each step
+      static const int UPDATE_FUNC_BIT    = 0x01000000;
 
-      // if the onDestroy method is called when the object is destroyed
-      static const int DESTROY_FUNC_BIT   = 0x01000000;*/
+      // if the onUse function should be called when object is used
+      static const int USE_FUNC_BIT       = 0x00800000;
 
       /*
        * FRONTEND OBJECTS (0x00c00000)
@@ -213,6 +215,15 @@ namespace oz
         events << new Event( id, intensity );
       }
 
+      void destroy()
+      {
+        addEvent( EVENT_DESTROY, 1.0f );
+
+        if( flags & DESTROY_FUNC_BIT ) {
+          onDestroy();
+        }
+      }
+
       /**
        * Inflict damage to the object.
        * @param damage
@@ -224,12 +235,10 @@ namespace oz
         if( damage > 0.0f ) {
           life -= damage * type->damageRatio;
         }
-      }
 
-      void destroy()
-      {
-        addEvent( EVENT_DESTROY, 1.0f );
-        onDestroy();
+        if( flags & DAMAGE_FUNC_BIT ) {
+          onDamage( damage );
+        }
       }
 
       /**
@@ -264,12 +273,15 @@ namespace oz
 
       void use( Bot *user )
       {
-        onUse( user );
+        if( flags & USE_FUNC_BIT ) {
+          onUse( user );
+        }
       }
 
     protected:
 
       virtual void onDestroy();
+      virtual void onDamage( float damage );
       virtual void onHit( const Hit *hit, float momentum );
       virtual void onUpdate();
       virtual void onUse( Bot *user );

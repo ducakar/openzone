@@ -247,6 +247,13 @@ namespace oz
         return buffer[i];
       }
 
+      static bool isEmpty( const char *s )
+      {
+        assert( s != null );
+
+        return s[0] == '\0';
+      }
+
       static int length( const char *s )
       {
         int i = 0;
@@ -255,6 +262,11 @@ namespace oz
           i++;
         }
         return i;
+      }
+
+      bool isEmpty() const
+      {
+        return buffer[0] == '\0';
       }
 
       int length() const

@@ -216,6 +216,7 @@ namespace client
     assert( textures[resource].nUsers > 0 );
 
     textures[resource].nUsers--;
+
     if( textures[resource].nUsers == 0 ) {
       log.print( "Unloading texture '%s' ...", translator.textures[resource].name.cstr() );
       glDeleteTextures( 1, &textures[resource].id );

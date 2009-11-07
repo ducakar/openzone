@@ -40,7 +40,7 @@ namespace oz
 
     FILE *f = fopen( file, "r" );
     if( f == null ) {
-      log.printEnd( "Error reading variables from '%s' ... Cannot open file", file );
+      log.println( "Error reading variables from '%s' ... Cannot open file", file );
       return false;
     }
 
@@ -154,7 +154,7 @@ namespace oz
 
     if( reader == null ) {
       xmlCleanupParser();
-      log.printEnd( "Error reading variables from '%s' ... Cannot open file", file );
+      log.println( "Error reading variables from '%s' ... Cannot open file", file );
       return false;
     }
 
@@ -186,7 +186,7 @@ namespace oz
     xmlCleanupParser();
 
     if( error != 0 ) {
-      log.printEnd( "Error reading variables from '%s' ... Parse error", file );
+      log.println( "Error reading variables from '%s' ... Parse error", file );
       return false;
     }
     return true;

@@ -55,8 +55,6 @@ namespace client
         ContSource( uint sourceId ) : source( sourceId ), isUpdated( true ) {}
       };
 
-    private:
-
       /*
        * SFX
        */
@@ -135,7 +133,7 @@ namespace client
       void play();
       void update();
 
-      bool init( int *argc, char *argv[] );
+      bool init( int *argc, char **argv );
       void free();
 
   };

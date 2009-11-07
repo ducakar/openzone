@@ -205,27 +205,23 @@
 </buildTargets>
 </storageModule>
 <storageModule moduleId="org.eclipse.cdt.core.pathentry">
-<pathentry include="/home/davorin/Projects/openzone" kind="inc" path="" system="true"/>
-<pathentry include="/home/davorin/Projects/openzone/src" kind="inc" path="" system="true"/>
-<pathentry include="/usr/local/include" kind="inc" path="" system="true"/>
-<pathentry include="/usr/lib/gcc/i686-pc-linux-gnu/4.4.1/include" kind="inc" path="" system="true"/>
-<pathentry include="/usr/lib/gcc/i686-pc-linux-gnu/4.4.1/include-fixed" kind="inc" path="" system="true"/>
-<pathentry include="/usr/include" kind="inc" path="" system="true"/>
+<pathentry base-path="openzone" include="" kind="inc" path="" system="true"/>
+<pathentry base-path="openzone" include="src" kind="inc" path="" system="true"/>
 <pathentry include="/usr/include/c++/4.4.1" kind="inc" path="" system="true"/>
-<pathentry include="/usr/include/c++/4.4.1/i686-pc-linux-gnu" kind="inc" path="" system="true"/>
-<pathentry include="/usr/include/c++/4.4.1/backward" kind="inc" path="" system="true"/>
-<pathentry include="/usr/include/libxml2" kind="inc" path="" system="true"/>
+<pathentry include="/usr/include" kind="inc" path="" system="true"/>
 <pathentry include="/usr/include/SDL" kind="inc" path="" system="true"/>
-<pathentry excluding="**/CMakeFiles/" kind="out" path=""/>
+<pathentry include="/usr/include/libxml2" kind="inc" path="" system="true"/>
+<pathentry excluding="build|CMakeFiles|data|doc|mingw32|src" kind="src" path=""/>
 <pathentry excluding="CMakeFiles" kind="src" path="src/base"/>
-<pathentry excluding="CMakeFiles/" kind="src" path="src/tests"/>
-<pathentry excluding="CMakeFiles|src|doc|data|build|mingw32" kind="src" path=""/>
 <pathentry excluding="CMakeFiles" kind="src" path="src/matrix"/>
 <pathentry excluding="CMakeFiles" kind="src" path="src/nirvana"/>
 <pathentry excluding="CMakeFiles" kind="src" path="src/ui"/>
 <pathentry excluding="CMakeFiles" kind="src" path="src/client"/>
 <pathentry excluding="CMakeFiles" kind="src" path="src/server"/>
 <pathentry excluding="CMakeFiles" kind="src" path="src/tools"/>
+<pathentry excluding="CMakeFiles" kind="src" path="src/tests"/>
+<pathentry excluding="base|client|CMakeFiles|matrix|nirvana|server|tests|tools|ui" kind="src" path="src"/>
+<pathentry excluding="**/CMakeFiles/" kind="out" path=""/>
 </storageModule>
 </cconfiguration>
 </storageModule>

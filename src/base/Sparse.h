@@ -282,9 +282,9 @@ namespace oz
       }
 
       /**
-       * Find the first occurence of an element.
+       * Find the first occurrence of an element.
        * @param e
-       * @return index of first occurence, -1 if not found
+       * @return index of first occurrence, -1 if not found
        */
       int index( const Type &e ) const
       {
@@ -297,9 +297,9 @@ namespace oz
       }
 
       /**
-       * Find the last occurence of an element.
+       * Find the last occurrence of an element.
        * @param e
-       * @return index of last occurence, -1 if not found
+       * @return index of last occurrence, -1 if not found
        */
       int lastIndex( const Type &e ) const
       {
