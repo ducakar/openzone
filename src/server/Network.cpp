@@ -20,7 +20,7 @@ namespace server
 
   bool Network::connect()
   {
-    int port = config.get( "net.port", 6666 );
+    int port = config.getSet( "net.port", 6666 );
 
     log.print( "Opening socket on port %d ...", port );
 

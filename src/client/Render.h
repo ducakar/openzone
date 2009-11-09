@@ -28,12 +28,14 @@ namespace client
   {
     private:
 
-      static const float RELEASED_CULL_FACTOR;
+      static const float RELEASED_CULL_FACTOR = 6.0f;
 
       static const float BLACK_COLOR[];
       static const float WHITE_COLOR[];
 
       static const float TAG_COLOR[];
+      static const float AABB_COLOR[];
+
       static const float GLOBAL_AMBIENT_COLOR[];
 
       static const float NIGHT_FOG_COEFF;

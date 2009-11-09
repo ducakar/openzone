@@ -8,37 +8,37 @@ check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" ON )
 
 # compiler and linker flags
-set( WARNINGS "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wdisabled-optimization" )
-set( WARNINGS "${WARNINGS} -Woverloaded-virtual -Wnon-virtual-dtor" ) 
-set( FLAGS "-fno-rtti -pipe" )
-set( LIBS "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
-set( ARCH_FLAGS "-march=i686 -mtune=generic -mmmx -msse -mfpmath=sse" )
+set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wdisabled-optimization" )
+set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor" ) 
+set( flags "-fno-rtti -pipe" )
+set( libs "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
+set( arch_flags "-march=i686 -mtune=generic -mmmx -msse -mfpmath=sse" )
 
 # set platform-specific includes and library names
 if( WIN32 )
-    set( LIBS "-lmingw32 -lSDLmain ${LIBS} -lopengl32 -lglu32 -lOpenAL32 -lalut" )
+    set( libs "-lmingw32 -lSDLmain ${libs} -lopengl32 -lglu32 -lOpenAL32 -lalut" )
     set( OZ_MINGW32 ON )
     foreach( ROOT ${CMAKE_FIND_ROOT_PATH} )
-        set( FLAGS "${FLAGS} -I${ROOT}/include" )
-        set( FLAGS "${FLAGS} -I${ROOT}/include/SDL" )
-        set( LIBS "${LIBS} -L${ROOT}/lib" )
+        set( flags "${flags} -I${ROOT}/include" )
+        set( flags "${flags} -I${ROOT}/include/SDL" )
+        set( libs "${libs} -L${ROOT}/lib" )
     endforeach()
 else()
-    set( FLAGS "${FLAGS} -I/usr/include/SDL" )
-    set( LIBS "${LIBS} -lGL -lGLU -lopenal -lalut" )
+    set( flags "${flags} -I/usr/include/SDL" )
+    set( libs "${libs} -lGL -lGLU -lopenal -lalut" )
     # libxml is only supported on linux 
     if( OZ_XML_CONFIG )
-        set( FLAGS "${FLAGS} -I/usr/include/libxml2" )
-        set( LIBS "${LIBS} -lxml2" )
+        set( flags "${flags} -I/usr/include/libxml2" )
+        set( libs "${libs} -lxml2" )
     endif()
 endif()
 
-set( CMAKE_CXX_FLAGS "${WARNINGS} ${FLAGS}" )
-set( CMAKE_EXE_LINKER_FLAGS "${LIBS}" )
+set( CMAKE_CXX_FLAGS "${warnings} ${flags}" )
+set( CMAKE_EXE_LINKER_FLAGS "${libs}" )
 
 set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING ""  )
-set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fomit-frame-pointer -ffast-math ${ARCH_FLAGS}" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -fomit-frame-pointer -ffast-math ${ARCH_FLAGS}" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fomit-frame-pointer -ffast-math ${arch_flags}" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -fomit-frame-pointer -ffast-math ${arch_flags}" CACHE STRING "" FORCE )
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
 
 # write configuration
@@ -53,22 +53,23 @@ install( FILES src/client/openzone
 
 # precompiled header
 if( CMAKE_BUILD_TYPE STREQUAL Debug )
-    set( FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
+    set( flags "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
 elseif( CMAKE_BUILD_TYPE STREQUAL Release )
-    set( FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}" )
+    set( flags "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}" )
 elseif( CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo )
-    set( FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" )
+    set( flags "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" )
 else()
-    set( FLAGS "${CMAKE_CXX_FLAGS}" )
+    set( flags "${CMAKE_CXX_FLAGS}" )
 endif()
 
-add_custom_target( precompiled ALL DEPENDS precompiled.h.gch )
+add_custom_target( precompiled ALL DEPENDS base precompiled.h.gch )
 add_custom_command( OUTPUT precompiled.h.gch
-                    DEPENDS base precompiled.h
+                    MAIN_DEPENDENCY precompiled.h
                     COMMAND rm -f precompiled.h.gch &&
-                            ${CMAKE_CXX_COMPILER} `echo ${FLAGS}` -I. precompiled.h )
+                            ${CMAKE_CXX_COMPILER} `echo ${flags}` -I. precompiled.h )
 
 # sources
 include_directories( . )
 include_directories( src )
 add_subdirectory( src )
+add_subdirectory( data )

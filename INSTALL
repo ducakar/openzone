@@ -13,11 +13,13 @@ Build Dependencies:
 - LibXml2 (optional)
 - Lua
 
+
 Quick build instructions:
 -------------------------
 ./autogen.sh
 cmake .
 make -j2
+
 
 More detailed build instructions:
 ---------------------------------
@@ -26,12 +28,14 @@ More detailed build instructions:
    It's also possible to do it in command line with cmake and various switches.
 3. run "make -j42" if you have a 42-core CPU, to run make in 42 parallel processes.
 
+
 Data
 ----
 Uncompress data. By default data is searched in "data" dir inside working dir. If you put it
 anywhere else, you should set "data.dir" variable in "$HOME/.openzone/client.rc" or
 "%USERPROFILE%/.openzone/client.rc" on Win32.
 A sample client.xml with default settings can be found in project root.
+
 
 MinGW32 build (cross-compile):
 ------------------------------
@@ -40,17 +44,23 @@ Look at mingw32-build.sh script. Download all required source archives and corre
 any versions do not match. As you can see from script you should put the archives into 
 mingw32/build. Run the script. When CMake Qt interface pops up, select cross-compile with toolchain
 (included in Toolchain-mingw32.cmake), set CMAKE_BUILD_TYPE to Release and CMAKE_INSTALL_PREFIX 
-to empty string. Manual interventions will likely be needed. After that, install official OpenAL SDK
-(use Wine). Replace mingw32/lib/libOpenAL32.a you built with OpenAL32.lib from SDK and
+to an empty string. Manual interventions will likely be needed. After that, install official
+OpenAL SDK (use Wine). Replace mingw32/lib/libOpenAL32.a you built with OpenAL32.lib from SDK and
 mingw32/bin/OpenAL32.dll with OpenAL32.dll from SDK. Now you can build openzone. Select
 cross-compile toolchain in file Toolchain-mingw32.cmake and build it as you want. It won't build
-completely, linking wil fail because parameters are not in correct order. Run mingw32-linkclient.sh
+completely, linking will fail because parameters are not in correct order. Run mingw32-linkclient.sh
 to link openzone.exe and move it to mingw32/bin. Edit the mingw32-linkclient.sh script if you need
 to change some linker parameters.
 Currently mingw32 build doesn't support .jpg images, because I'm unable to build libjpeg with MinGW,
 so you need a version of data with only .png images or convert them on your own. Don't forget on
 file names in data.mtl for OBJ models. Source code has appropriate preprocessor directives to
 compile for loading .png images instead of .jpg.
+
+Building on Windows:
+--------------------
+Who's an optimist?
+- The one who wants to build OpenZone on Windows.
+
 
 Development tools (my choice):
 ------------------------------

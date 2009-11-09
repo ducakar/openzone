@@ -9,8 +9,7 @@
 
 #pragma once
 
-#include "bv.h"
-#include "io.h"
+#include "matrix.h"
 #include "ObjectClass.h"
 
 namespace oz
@@ -43,11 +42,11 @@ namespace oz
        * FUNCTION FLAGS (0x0f000000)
        */
 
-      // if the onDamage function should be called on damage received
-      static const int DAMAGE_FUNC_BIT    = 0x08000000;
-
       // if the onDestroy function should be called on destruction
-      static const int DESTROY_FUNC_BIT   = 0x04000000;
+      static const int DESTROY_FUNC_BIT   = 0x08000000;
+
+      // if the onDamage function should be called on damage received
+      static const int DAMAGE_FUNC_BIT    = 0x04000000;
 
       // if the onHit function should be called on hit
       static const int HIT_FUNC_BIT       = 0x02000000;

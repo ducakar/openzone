@@ -13,6 +13,8 @@
 
 namespace oz
 {
+namespace nirvana
+{
 
   class RandomMind : public Mind
   {
@@ -28,4 +30,5 @@ namespace oz
 
   };
 
+}
 }

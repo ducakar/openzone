@@ -1,0 +1,7 @@
+base "DynObject"
+
+dim.x "0.1"
+dim.y "0.1"
+dim.z "0.2"
+
+flag.item "true"

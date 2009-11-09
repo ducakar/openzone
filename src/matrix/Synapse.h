@@ -31,11 +31,14 @@
 namespace oz
 {
 
-  class Nirvana;
+  namespace nirvana
+  {
+    class Nirvana;
+  }
 
   class Synapse
   {
-    friend class Nirvana;
+    friend class nirvana::Nirvana;
 
     public:
 
@@ -175,6 +178,7 @@ namespace oz
   inline void Synapse::cut( Structure *str )
   {
     if( !cutStructs.contains( str ) ) {
+      str->flags |= Structure::CUT_BIT;
       cutStructs << str;
     }
   }
@@ -182,6 +186,7 @@ namespace oz
   inline void Synapse::cut( Object *obj )
   {
     if( ~obj->flags & Object::CUT_BIT ) {
+      obj->flags |= Object::CUT_BIT;
       cutObjects << obj;
     }
   }
@@ -214,6 +219,7 @@ namespace oz
   inline void Synapse::remove( Structure *str )
   {
     if( !cutStructs.contains( str ) ) {
+      str->flags |= Structure::CUT_BIT;
       cutStructs << str;
       deleteStructs << str;
     }
@@ -222,6 +228,7 @@ namespace oz
   inline void Synapse::remove( Object *obj )
   {
     if( ~obj->flags & Object::CUT_BIT ) {
+      obj->flags |= Object::CUT_BIT;
       cutObjects << obj;
       deleteObjects << obj;
     }

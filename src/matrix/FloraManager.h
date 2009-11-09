@@ -29,6 +29,7 @@ namespace oz
       int growth;
 
       void addTree( float x, float y );
+      void addPlant( const char *type, float x, float y );
 
     public:
 

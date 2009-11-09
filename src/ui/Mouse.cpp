@@ -31,35 +31,35 @@ namespace ui
     doShow = false;
     setBounds( maxX, maxY );
 
-    const char *x = config.get( "ui.cursor.x", "cursors/X_cursor.png" );
+    const char *x = config.getSet( "ui.cursor.x", "cursors/X_cursor.png" );
     cursors[X].texId    = context.loadTexture( x, false, GL_NEAREST, GL_NEAREST );
-    cursors[X].size     = config.get( "ui.cursor.x.size", 32 );
-    cursors[X].hotspotX = config.get( "ui.cursor.x.hotspot.x", 16 );
-    cursors[X].hotspotY = config.get( "ui.cursor.x.hotspot.y", 16 );
+    cursors[X].size     = config.getSet( "ui.cursor.x.size", 32 );
+    cursors[X].hotspotX = config.getSet( "ui.cursor.x.hotspot.x", 16 );
+    cursors[X].hotspotY = config.getSet( "ui.cursor.x.hotspot.y", 16 );
 
-    const char *arrow = config.get( "ui.cursor.arrow", "cursors/left_ptr.png" );
+    const char *arrow = config.getSet( "ui.cursor.arrow", "cursors/left_ptr.png" );
     cursors[ARROW].texId    = context.loadTexture( arrow, false, GL_NEAREST, GL_NEAREST );
-    cursors[ARROW].size     = config.get( "ui.cursor.arrow.size", 32 );
-    cursors[ARROW].hotspotX = config.get( "ui.cursor.arrow.hotspot.x", 1 );
-    cursors[ARROW].hotspotY = config.get( "ui.cursor.arrow.hotspot.y", 1 );
+    cursors[ARROW].size     = config.getSet( "ui.cursor.arrow.size", 32 );
+    cursors[ARROW].hotspotX = config.getSet( "ui.cursor.arrow.hotspot.x", 1 );
+    cursors[ARROW].hotspotY = config.getSet( "ui.cursor.arrow.hotspot.y", 1 );
 
-    const char *move = config.get( "ui.cursor.move", "cursors/fleur.png" );
+    const char *move = config.getSet( "ui.cursor.move", "cursors/fleur.png" );
     cursors[MOVE].texId    = context.loadTexture( move, false, GL_NEAREST, GL_NEAREST );
-    cursors[MOVE].size     = config.get( "ui.cursor.move.size", 32 );
-    cursors[MOVE].hotspotX = config.get( "ui.cursor.move.hotspot.x", 16 );
-    cursors[MOVE].hotspotY = config.get( "ui.cursor.move.hotspot.y", 16 );
+    cursors[MOVE].size     = config.getSet( "ui.cursor.move.size", 32 );
+    cursors[MOVE].hotspotX = config.getSet( "ui.cursor.move.hotspot.x", 16 );
+    cursors[MOVE].hotspotY = config.getSet( "ui.cursor.move.hotspot.y", 16 );
 
-    const char *text = config.get( "ui.cursor.text", "cursors/xterm.png" );
+    const char *text = config.getSet( "ui.cursor.text", "cursors/xterm.png" );
     cursors[TEXT].texId    = context.loadTexture( text, false, GL_NEAREST, GL_NEAREST );
-    cursors[TEXT].size     = config.get( "ui.cursor.text.size", 32 );
-    cursors[TEXT].hotspotX = config.get( "ui.cursor.text.hotspot.x", 16 );
-    cursors[TEXT].hotspotY = config.get( "ui.cursor.text.hotspot.y", 16 );
+    cursors[TEXT].size     = config.getSet( "ui.cursor.text.size", 32 );
+    cursors[TEXT].hotspotX = config.getSet( "ui.cursor.text.hotspot.x", 16 );
+    cursors[TEXT].hotspotY = config.getSet( "ui.cursor.text.hotspot.y", 16 );
 
-    const char *hand = config.get( "ui.cursor.hand", "cursors/hand2.png" );
+    const char *hand = config.getSet( "ui.cursor.hand", "cursors/hand2.png" );
     cursors[HAND].texId    = context.loadTexture( hand, false, GL_NEAREST, GL_NEAREST );
-    cursors[HAND].size     = config.get( "ui.cursor.hand.size", 32 );
-    cursors[HAND].hotspotX = config.get( "ui.cursor.hand.hotspot.x", 16 );
-    cursors[HAND].hotspotY = config.get( "ui.cursor.hand.hotspot.y", 16 );
+    cursors[HAND].size     = config.getSet( "ui.cursor.hand.size", 32 );
+    cursors[HAND].hotspotX = config.getSet( "ui.cursor.hand.hotspot.x", 16 );
+    cursors[HAND].hotspotY = config.getSet( "ui.cursor.hand.hotspot.y", 16 );
   }
 
   void Mouse::free()

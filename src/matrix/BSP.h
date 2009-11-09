@@ -9,8 +9,7 @@
 
 #pragma once
 
-#include "bv.h"
-#include "Material.h"
+#include "matrix.h"
 
 namespace oz
 {

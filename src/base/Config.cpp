@@ -257,7 +257,7 @@ namespace oz
   }
 #endif
 
-  bool Config::get( const char *name, bool defVal )
+  bool Config::get( const char *name, bool defVal ) const
   {
     assert( !vars.contains( name ) ||
             vars.cachedValue() == "true" ||
@@ -270,18 +270,69 @@ namespace oz
       else if( vars.cachedValue() == "false" ) {
         return false;
       }
-      else {
-        vars.add( name, defVal );
-        return defVal;
-      }
+    }
+    return defVal;
+  }
+
+  int Config::get( const char *name, int defVal ) const
+  {
+    if( vars.contains( name ) ) {
+      return atoi( vars.cachedValue() );
     }
     else {
-      vars.add( name, defVal );
       return defVal;
     }
   }
 
-  int Config::get( const char *name, int defVal )
+  float Config::get( const char *name, float defVal ) const
+  {
+    if( vars.contains( name ) ) {
+      return atof( vars.cachedValue() );
+    }
+    else {
+      return defVal;
+    }
+  }
+
+  double Config::get( const char *name, double defVal ) const
+  {
+    if( vars.contains( name ) ) {
+      return atof( vars.cachedValue() );
+    }
+    else {
+      return defVal;
+    }
+  }
+
+  const char *Config::get( const char *name, const char *defVal ) const
+  {
+    if( vars.contains( name ) ) {
+      return vars.cachedValue();
+    }
+    else {
+      return defVal;
+    }
+  }
+
+  bool Config::getSet( const char *name, bool defVal )
+  {
+    assert( !vars.contains( name ) ||
+            vars.cachedValue() == "true" ||
+            vars.cachedValue() == "false" );
+
+    if( vars.contains( name ) ) {
+      if( vars.cachedValue() == "true" ) {
+        return true;
+      }
+      else if( vars.cachedValue() == "false" ) {
+        return false;
+      }
+    }
+    vars.add( name, defVal );
+    return defVal;
+  }
+
+  int Config::getSet( const char *name, int defVal )
   {
     if( vars.contains( name ) ) {
       return atoi( vars.cachedValue() );
@@ -292,7 +343,7 @@ namespace oz
     }
   }
 
-  float Config::get( const char *name, float defVal )
+  float Config::getSet( const char *name, float defVal )
   {
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
@@ -303,7 +354,7 @@ namespace oz
     }
   }
 
-  double Config::get( const char *name, double defVal )
+  double Config::getSet( const char *name, double defVal )
   {
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
@@ -314,7 +365,7 @@ namespace oz
     }
   }
 
-  const char *Config::get( const char *name, const char *defVal )
+  const char *Config::getSet( const char *name, const char *defVal )
   {
     if( vars.contains( name ) ) {
       return vars.cachedValue();

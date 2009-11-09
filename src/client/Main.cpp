@@ -69,7 +69,7 @@ namespace client
   {
     initFlags = 0;
 
-    String home;
+    String rcDir;
 
 #ifdef OZ_MINGW32
     const char *homeVar = getenv( "USERPROFILE" );
@@ -80,16 +80,16 @@ namespace client
       throw Exception( "Cannot determine user home directory from environment" );
     }
 
-    home = homeVar + String( OZ_DIRDEL OZ_RC_DIR );
+    rcDir = homeVar + String( "/" OZ_RC_DIR );
 
     struct stat homeDirStat;
-    if( stat( home.cstr(), &homeDirStat ) != 0 ) {
-      printf( "No resource dir found, creating '%s' ...", home.cstr() );
+    if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
+      printf( "No resource dir found, creating '%s' ...", rcDir.cstr() );
 
 #ifdef OZ_MINGW32
-      if( mkdir( home.cstr() ) != 0 ) {
+      if( mkdir( rcDir.cstr() ) != 0 ) {
 #else
-      if( mkdir( home.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
+      if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
 #endif
         printf( " Failed\n" );
         return;
@@ -98,7 +98,7 @@ namespace client
     }
 
 #ifdef OZ_LOG_FILE
-    String logPath = home + OZ_LOG_FILE;
+    String logPath = rcDir + OZ_LOG_FILE;
 
     if( !log.init( logPath, true, "  " ) ) {
       printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
@@ -113,7 +113,7 @@ namespace client
 
     log.printlnETD( OZ_APP_NAME " started at" );
 
-    String configPath = home + OZ_DIRDEL OZ_CONFIG_FILE;
+    String configPath = rcDir + "/" OZ_CONFIG_FILE;
     if( config.load( configPath ) ) {
       log.printEnd( "Configuration read from '%s'", configPath.cstr() );
       initFlags |= INIT_CONFIG;
@@ -121,7 +121,7 @@ namespace client
     else {
       log.println( "No config file, default config will be written on exit" );
     }
-    config.add( "dir.home", home );
+    config.add( "dir.rc", rcDir );
 
     log.print( "Initializing SDL ..." );
 
@@ -130,10 +130,10 @@ namespace client
     // crashes or exits forcibly, it remains turned off. Besides that, in X11 several programs
     // (e.g. IM clients like Pidgin, Kopete, Psi) detect user's inactivity based on screensaver's
     // counter, so they don't detect that you are away if the screensaver is screwed.
-    if( config.get( "screen.leaveScreensaver", true ) ) {
+    if( config.getSet( "screen.leaveScreensaver", true ) ) {
       SDL_putenv( const_cast<char*>( "SDL_VIDEO_ALLOW_SCREENSAVER=1" ) );
     }
-    if( config.get( "screen.nvVSync", true ) ) {
+    if( config.getSet( "screen.nvVSync", true ) ) {
       SDL_putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
     }
     if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) || SDLNet_Init() ) {
@@ -145,7 +145,7 @@ namespace client
 
     initFlags |= INIT_SDL;
 
-    const char *data = config.get( "dir.data", "data" );
+    const char *data = config.getSet( "dir.data", "data" );
 
     log.print( "Setting working directory '%s' ...", data );
 
@@ -157,10 +157,10 @@ namespace client
       log.printEnd( " OK" );
     }
 
-    int screenX    = config.get( "screen.width", 1024 );
-    int screenY    = config.get( "screen.height", 768 );
-    int screenBpp  = config.get( "screen.bpp", 32 );
-    int screenFull = config.get( "screen.full", false ) ? SDL_FULLSCREEN : 0;
+    int screenX    = config.getSet( "screen.width", 1024 );
+    int screenY    = config.getSet( "screen.height", 768 );
+    int screenBpp  = config.getSet( "screen.bpp", 32 );
+    int screenFull = config.getSet( "screen.full", false ) ? SDL_FULLSCREEN : 0;
 
     ushort screenCenterX = static_cast<ushort>( screenX / 2 );
     ushort screenCenterY = static_cast<ushort>( screenY / 2 );
@@ -219,7 +219,7 @@ namespace client
     bool isAlive        = true;
     bool isActive       = true;
 
-    uint tick           = config.get( "tick", 20 );
+    uint tick           = config.getSet( "tick", 20 );
     // time passed form start of the frame
     uint delta;
     uint timeNow;
@@ -349,7 +349,7 @@ namespace client
     log.println( "STATISTICS {" );
     log.indent();
     log.println( "Ticks: %d (%.2f Hz)", timer.millis / timer.TICK_MILLIS, 1000.0f / timer.TICK_MILLIS );
-    log.println( "Frames: %d (%.2f Hz)", timer.nFrames, timer.nFrames / allTimeSec );
+    log.println( "Frames: %d (%.2f Hz)", timer.nFrames, timer.nFrames / timer.time );
     log.println( "Time usage:" );
     log.println( "    %.4g s\t%.1f%%\tall time", allTimeSec, 100.0f );
     log.println( "    %.4g s\t%.1f%%\tsystem + simulation + basic sound update",
@@ -361,9 +361,9 @@ namespace client
     log.println( "}" );
 
     if( ~initFlags & INIT_CONFIG ) {
-      config.remove( "dir.home" );
+      config.remove( "dir.rc" );
       config.save( configPath );
-      config.add( "dir.home", home );
+      config.add( "dir.rc", rcDir );
     }
   }
 

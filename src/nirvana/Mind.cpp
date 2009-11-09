@@ -13,6 +13,8 @@
 
 namespace oz
 {
+namespace nirvana
+{
 
   Mind *Mind::create( int botIndex )
   {
@@ -42,4 +44,5 @@ namespace oz
     ostream->writeInt( botIndex );
   }
 
+}
 }

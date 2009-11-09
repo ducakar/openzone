@@ -13,6 +13,8 @@
 
 namespace oz
 {
+namespace nirvana
+{
 
   class Nirvana
   {
@@ -60,4 +62,5 @@ namespace oz
 
   extern Nirvana nirvana;
 
+}
 }

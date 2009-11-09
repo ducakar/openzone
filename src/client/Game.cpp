@@ -39,25 +39,25 @@ namespace client
     log.println( "Initializing Game {" );
     log.indent();
 
-    mouseXSens = config.get( "input.mouse.xSens", 0.2f );
-    mouseYSens = config.get( "input.mouse.ySens", 0.2f );
-    keyXSens   = config.get( "input.keys.xSens", 0.2f );
-    keyYSens   = config.get( "input.keys.ySens", 0.2f );
+    mouseXSens = config.getSet( "input.mouse.xSens", 0.2f );
+    mouseYSens = config.getSet( "input.mouse.ySens", 0.2f );
+    keyXSens   = config.getSet( "input.keys.xSens", 0.2f );
+    keyYSens   = config.getSet( "input.keys.ySens", 0.2f );
 
     matrix.init();
-    nirvana.init();
+    nirvana::nirvana.init();
 
     network.connect();
 
     Buffer buffer( 1024 * 1024 * 10 );
-    String stateFile = config.get( "dir.home", "" ) + String( OZ_DIRDEL "default.ozState" );
+    String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
     log.print( "Loading world from %s ...", stateFile.cstr() );
     if( buffer.load( stateFile ) ) {
       InputStream istream = buffer.inputStream();
 
       matrix.load( &istream );
-      nirvana.load( &istream );
+      nirvana::nirvana.load( &istream );
 
       log.printEnd( " OK" );
     }
@@ -65,7 +65,7 @@ namespace client
       log.printEnd( " Failed, starting a new world" );
 
       matrix.load( null );
-      nirvana.load( null );
+      nirvana::nirvana.load( null );
     }
 
     camera.botIndex = -1;
@@ -92,10 +92,10 @@ namespace client
 
     Buffer buffer( 1024 * 1024 * 10 );
     OutputStream ostream = buffer.outputStream();
-    String stateFile = config.get( "dir.home", "" ) + String( OZ_DIRDEL "default.ozState" );
+    String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
     matrix.unload( &ostream );
-    nirvana.unload( &ostream );
+    nirvana::nirvana.unload( &ostream );
 
     log.print( "Writing world to %s ...", stateFile.cstr() );
     buffer.write( stateFile );
@@ -103,7 +103,7 @@ namespace client
 
     network.disconnect();
 
-    nirvana.free();
+    nirvana::nirvana.free();
     matrix.free();
 
     log.unindent();
@@ -112,12 +112,12 @@ namespace client
 
   void Game::start() const
   {
-    nirvana.start();
+    nirvana::nirvana.start();
   }
 
   void Game::stop() const
   {
-    nirvana.stop();
+    nirvana::nirvana.stop();
   }
 
   bool Game::update( int time )
@@ -349,7 +349,7 @@ namespace client
     matrix.update();
 
     // resume nirvana
-    SDL_SemPost( nirvana.semaphore );
+    SDL_SemPost( nirvana::nirvana.semaphore );
 
     camera.update();
 

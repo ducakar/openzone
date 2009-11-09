@@ -62,9 +62,12 @@ namespace client
       ~BSP();
 
       void init( oz::BSP *bsp );
+
       int  draw( const Structure *str );
       void drawWater( const Structure *str );
-      static void drawInWater();
+      int  fullDraw( const Structure *str );
+      void fullDrawWater( const Structure *str );
+
       uint genList();
 
       static void beginRender();

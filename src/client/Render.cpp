@@ -40,12 +40,12 @@ namespace client
 
   Render render;
 
-  const float Render::RELEASED_CULL_FACTOR = 5.0f;
-
   const float Render::BLACK_COLOR[] = { 0.0f, 0.0f, 0.0f, 1.0f };
   const float Render::WHITE_COLOR[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+  const float Render::AABB_COLOR[] = { 1.00f, 1.00f, 0.00f, 0.30f };
   const float Render::TAG_COLOR[] = { 0.50f, 2.00f, 2.00f, 1.00f };
+
   const float Render::GLOBAL_AMBIENT_COLOR[] = { 0.20f, 0.20f, 0.20f, 1.00f };
 
   const float Render::NIGHT_FOG_COEFF = 2.0f;
@@ -69,24 +69,10 @@ namespace client
     // draw model
     models.cachedValue()->draw();
 
-    if( obj->index == taggedObjIndex ) {
-      glColor4fv( WHITE_COLOR );
-    }
-
     glPopMatrix();
 
-    if( drawAABBs ) {
-      glDisable( GL_LIGHTING );
-      glDisable( GL_TEXTURE_2D );
-      glEnable( GL_BLEND );
-      glColor4f( 1.0f, 1.0f, 0.0f, 0.3f );
-
-      shape.drawBox( *obj );
-
+    if( obj->index == taggedObjIndex ) {
       glColor4fv( WHITE_COLOR );
-      glDisable( GL_BLEND );
-      glEnable( GL_TEXTURE_2D );
-      glEnable( GL_LIGHTING );
     }
   }
 
@@ -260,7 +246,9 @@ namespace client
 
     for( int i = 0; i < structures.length(); i++ ) {
       Structure *str = structures[i];
-      int waterFlags = bsps[str->bsp]->draw( str );
+
+//      int waterFlags = bsps[str->bsp]->draw( str );
+      int waterFlags = bsps[str->bsp]->fullDraw( str );
 
       if( waterFlags & BSP::IN_WATER_BRUSH ) {
         isUnderWater = true;
@@ -281,7 +269,6 @@ namespace client
     for( int i = 0; i < objects.length(); i++ ) {
       drawObject( objects[i] );
     }
-    objects.clear();
 
     // draw particles
     glDisable( GL_TEXTURE_2D );
@@ -308,6 +295,26 @@ namespace client
     for( int i = 0; i < blendedObjects.length(); i++ ) {
       drawObject( blendedObjects[i] );
     }
+
+    if( drawAABBs ) {
+      glDisable( GL_LIGHTING );
+      glDisable( GL_TEXTURE_2D );
+      glEnable( GL_BLEND );
+      glColor4fv( AABB_COLOR );
+
+      for( int i = 0; i < objects.length(); i++ ) {
+        shape.drawBox( *objects[i] );
+      }
+      for( int i = 0; i < blendedObjects.length(); i++ ) {
+        shape.drawBox( *blendedObjects[i] );
+      }
+
+      glColor4fv( WHITE_COLOR );
+      glEnable( GL_LIGHTING );
+      glEnable( GL_TEXTURE_2D );
+    }
+
+    objects.clear();
     blendedObjects.clear();
 
     // draw structures' water
@@ -315,7 +322,9 @@ namespace client
 
     for( int i = 0; i < waterStructures.length(); i++ ) {
       Structure *str = waterStructures[i];
-      bsps[str->bsp]->drawWater( str );
+
+//      bsps[str->bsp]->drawWater( str );
+      bsps[str->bsp]->fullDrawWater( str );
     }
     waterStructures.clear();
 
@@ -352,8 +361,8 @@ namespace client
       ct = time( null );
       t = *localtime( &ct );
 
-      snprintf( fileName, 1024, "%s" OZ_DIRDEL "screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
-                config.get( "dir.home", "" ),
+      snprintf( fileName, 1024, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
+                config.get( "dir.rc", "" ),
                 1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
       fileName[1023] = '\0';
 
@@ -431,13 +440,13 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    screenX = config.get( "screen.width", 1024 );
-    screenY = config.get( "screen.height", 768 );
+    screenX = config.getSet( "screen.width", 1024 );
+    screenY = config.getSet( "screen.height", 768 );
 
-    perspectiveAngle  = config.get( "render.perspective.angle", 80.0f );
-    perspectiveAspect = config.get( "render.perspective.aspect", 0.0f );
-    perspectiveMin    = config.get( "render.perspective.min", 0.1f );
-    perspectiveMax    = config.get( "render.perspective.max", 400.0f );
+    perspectiveAngle  = config.getSet( "render.perspective.angle", 80.0f );
+    perspectiveAspect = config.getSet( "render.perspective.aspect", 0.0f );
+    perspectiveMin    = config.getSet( "render.perspective.min", 0.1f );
+    perspectiveMax    = config.getSet( "render.perspective.max", 400.0f );
 
     if( perspectiveAspect == 0.0 ) {
       perspectiveAspect = static_cast<double>( screenX ) / static_cast<double>( screenY );
@@ -490,13 +499,13 @@ namespace client
 
     assert( glGetError() == GL_NO_ERROR );
 
-    dayVisibility        = config.get( "render.dayVisibility",        300.0f );
-    nightVisibility      = config.get( "render.nightVisibility",      100.0f );
-    waterDayVisibility   = config.get( "render.waterDayVisibility",   8.0f );
-    waterNightVisibility = config.get( "render.waterNightVisibility", 4.0f );
-    particleRadius       = config.get( "render.particleRadius",       0.5f );
-    drawAABBs            = config.get( "render.drawAABBs",            false );
-    showAim              = config.get( "render.showAim",              false );
+    dayVisibility        = config.getSet( "render.dayVisibility",        300.0f );
+    nightVisibility      = config.getSet( "render.nightVisibility",      100.0f );
+    waterDayVisibility   = config.getSet( "render.waterDayVisibility",   8.0f );
+    waterNightVisibility = config.getSet( "render.waterNightVisibility", 4.0f );
+    particleRadius       = config.getSet( "render.particleRadius",       0.5f );
+    drawAABBs            = config.getSet( "render.drawAABBs",            false );
+    showAim              = config.getSet( "render.showAim",              false );
 
     camera.init();
     frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );

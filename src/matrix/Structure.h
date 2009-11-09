@@ -9,14 +9,15 @@
 
 #pragma once
 
-#include "bv.h"
-#include "io.h"
+#include "matrix.h"
 
 namespace oz
 {
 
   struct Structure : Bounds
   {
+    static const int CUT_BIT = 0x00000001;
+
     enum Rotation
     {
       R0   = 0,
@@ -27,6 +28,7 @@ namespace oz
 
     Vec3     p;
     int      index;
+    int      flags;
     int      bsp;
     Rotation rot;
     float    life;
@@ -34,7 +36,7 @@ namespace oz
     explicit Structure() {}
 
     explicit Structure( const Vec3 &p_, int bsp_, Rotation rot_ ) :
-        p( p_ ), bsp( bsp_ ), rot( rot_ )
+        p( p_ ), flags( 0 ), bsp( bsp_ ), rot( rot_ )
     {}
 
     void readFull( InputStream *istream );

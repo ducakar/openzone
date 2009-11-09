@@ -467,6 +467,90 @@ namespace client
     glPopMatrix();
   }
 
+  int BSP::fullDraw( const Structure *str_ )
+  {
+    str = str_;
+    camPos = camera.p - str->p;
+
+    if( lightMaps != null ) {
+      glActiveTexture( GL_TEXTURE1 );
+      glEnable( GL_TEXTURE_2D );
+      glActiveTexture( GL_TEXTURE0 );
+    }
+    else {
+      glActiveTexture( GL_TEXTURE1 );
+      glDisable( GL_TEXTURE_2D );
+      glActiveTexture( GL_TEXTURE0 );
+    }
+
+    glClientActiveTexture( GL_TEXTURE0 );
+
+    glPushMatrix();
+    glTranslatef( str->p.x, str->p.y, str->p.z );
+    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
+
+    drawnFaces = hiddenFaces;
+
+    int leafIndex = getLeaf();
+    checkInWaterBrush( &bsp->leafs[leafIndex] );
+
+    for( int i = 0; i < bsp->nLeafs; i++ ) {
+      oz::BSP::Leaf &leaf = bsp->leafs[i];
+      Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
+
+      for( int j = 0; j < leaf.nFaces; j++ ) {
+        int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+        const oz::BSP::Face &face = bsp->faces[faceIndex];
+
+        if( !drawnFaces.get( faceIndex ) ) {
+          drawFace( &face );
+          drawnFaces.set( faceIndex );
+        }
+      }
+    }
+    glPopMatrix();
+
+    return waterFlags;
+  }
+
+  void BSP::fullDrawWater( const Structure *str_ )
+  {
+    str = str_;
+    camPos = camera.p - str->p;
+
+    if( lightMaps != null ) {
+      glActiveTexture( GL_TEXTURE1 );
+      glEnable( GL_TEXTURE_2D );
+      glActiveTexture( GL_TEXTURE0 );
+    }
+    else {
+      glActiveTexture( GL_TEXTURE1 );
+      glDisable( GL_TEXTURE_2D );
+      glActiveTexture( GL_TEXTURE0 );
+    }
+    glPushMatrix();
+    glTranslatef( str->p.x, str->p.y, str->p.z );
+    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
+
+    drawnFaces = hiddenFaces;
+
+    for( int i = 0; i < bsp->nLeafs; i++ ) {
+      oz::BSP::Leaf &leaf = bsp->leafs[i];
+      Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
+
+      for( int j = 0; j < leaf.nFaces; j++ ) {
+        int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+        const oz::BSP::Face &face = bsp->faces[faceIndex];
+
+        if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
+          drawFaceWater( &face );
+          drawnFaces.set( faceIndex );
+        }
+      }
+    }
+    glPopMatrix();
+  }
+
   uint BSP::genList()
   {
     uint list = context.genList();

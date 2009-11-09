@@ -18,13 +18,11 @@ namespace oz
   struct DynObjectClass : ObjectClass
   {
     static const int BASE_FLAGS = Object::DYNAMIC_BIT;
-    static const int DEFAULT_FLAGS = Object::CLIP_BIT | Object::DESTROY_FUNC_BIT;
 
     float mass;
     float lift;
 
-    static void fill( DynObjectClass *clazz, Config *config );
-    static ObjectClass *init( const String &name, Config *config );
+    static ObjectClass *init( const String &name, const Config *config );
 
     virtual Object *create( const Vec3 &pos );
     virtual Object *create( InputStream *istream );
