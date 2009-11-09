@@ -11,7 +11,11 @@
 
 #include "RandomMind.h"
 
+#include "Lua.h"
+
 namespace oz
+{
+namespace nirvana
 {
 
   Mind *RandomMind::create( int botIndex )
@@ -44,17 +48,20 @@ namespace oz
       return;
     }
 
-    bot.actions |= Bot::ACTION_FORWARD;
+//    bot.actions |= Bot::ACTION_FORWARD;
+//
+//    if( Math::rand() % 101 == 0 ) {
+//      bot.h += ( Math::frand() * 120.0f ) - 60.0f;
+//    }
+//    if( Math::rand() % 253 == 0 ) {
+//      bot.actions |= Bot::ACTION_JUMP;
+//    }
+//    if( Math::rand() % 253 == 0 ) {
+//      bot.state ^= Bot::RUNNING_BIT;
+//    }
 
-    if( Math::rand() % 101 == 0 ) {
-      bot.h += ( Math::frand() * 120.0f ) - 60.0f;
-    }
-    if( Math::rand() % 253 == 0 ) {
-      bot.actions |= Bot::ACTION_JUMP;
-    }
-    if( Math::rand() % 253 == 0 ) {
-      bot.state ^= Bot::RUNNING_BIT;
-    }
+    lua.call( "randomWalk", &bot );
   }
 
+}
 }

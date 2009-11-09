@@ -89,35 +89,75 @@ namespace oz
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      bool get( const char *name, bool defVal );
+      bool get( const char *name, bool defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      int get( const char *name, int defVal );
+      int get( const char *name, int defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      float get( const char *name, float defVal );
+      float get( const char *name, float defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      double get( const char *name, double defVal );
+      double get( const char *name, double defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      const char *get( const char *name, const char *defVal );
+      const char *get( const char *name, const char *defVal ) const;
+
+      /**
+       * Like get, but adds variable with default value, if doesn't exist yet
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configuration
+       * @return value of given variable
+       */
+      bool getSet( const char *name, bool defVal );
+
+      /**
+       * Like get, but adds variable with default value, if doesn't exist yet
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configuration
+       * @return value of given variable
+       */
+      int getSet( const char *name, int defVal );
+
+      /**
+       * Like get, but adds variable with default value, if doesn't exist yet
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configuration
+       * @return value of given variable
+       */
+      float getSet( const char *name, float defVal );
+
+      /**
+       * Like get, but adds variable with default value, if doesn't exist yet
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configuration
+       * @return value of given variable
+       */
+      double getSet( const char *name, double defVal );
+
+      /**
+       * Like get, but adds variable with default value, if doesn't exist yet
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configuration
+       * @return value of given variable
+       */
+      const char *getSet( const char *name, const char *defVal );
 
       /**
        * Load variables from an XML file. It only reads the nodes named "var" that must have the

@@ -9,9 +9,11 @@
 
 #pragma once
 
-#include "matrix/Bot.h"
+#include "nirvana.h"
 
 namespace oz
+{
+namespace nirvana
 {
 
   class Mind
@@ -45,4 +47,5 @@ namespace oz
 
   };
 
+}
 }

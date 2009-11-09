@@ -1,11 +1,7 @@
 #!/bin/sh
 
-cat << EOF > CMakeLists.txt
-add_library( base STATIC
-EOF
+echo 'add_library( base STATIC' > CMakeLists.txt
 
 ls *.?pp >> CMakeLists.txt
 
-cat << EOF >> CMakeLists.txt
-)
-EOF
+echo ')' >> CMakeLists.txt

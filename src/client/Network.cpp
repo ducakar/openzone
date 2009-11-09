@@ -20,8 +20,8 @@ namespace client
 
   bool Network::connect()
   {
-//    const char *host = config.get( "net.server", "localhost" );
-//    int port = config.get( "net.port", 6666 );
+//    const char *host = config.getSet( "net.server", "localhost" );
+//    int port = config.getSet( "net.port", 6666 );
 //
 //    log.print( "Connecting to %s:%d ...", host, port );
 //

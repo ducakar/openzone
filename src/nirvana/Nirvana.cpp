@@ -13,6 +13,7 @@
 
 #include "matrix/Matrix.h"
 #include "matrix/BotClass.h"
+#include "Lua.h"
 
 #include "RandomMind.h"
 
@@ -20,6 +21,8 @@
   mindClasses.add( #name, MindCtor( &name##Mind::create, &name##Mind::read ) )
 
 namespace oz
+{
+namespace nirvana
 {
 
   Nirvana nirvana;
@@ -80,26 +83,33 @@ namespace oz
 
   void Nirvana::init()
   {
-    log.print( "Initializing Nirvana ..." );
+    log.println( "Initializing Nirvana {" );
+    log.indent();
+
+    lua.init();
 
     OZ_REGISTER_MINDCLASS();
     OZ_REGISTER_MINDCLASS( Random );
 
     semaphore = SDL_CreateSemaphore( 0 );
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Nirvana::free()
   {
-    log.print( "Freeing Nirvana ..." );
+    log.println( "Freeing Nirvana {" );
+    log.indent();
 
     SDL_DestroySemaphore( semaphore );
 
     minds.free();
     mindClasses.clear();
+    lua.free();
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Nirvana::load( InputStream *istream )
@@ -170,4 +180,5 @@ namespace oz
     }
   }
 
+}
 }

@@ -64,6 +64,9 @@ namespace oz
       Vector<Resource> sounds;
       Vector<Resource> bsps;
 
+      Vector<Resource> matrixScripts;
+      Vector<Resource> nirvanaScripts;
+
       HashString<ObjectClass::InitFunc, 31> baseClasses;
       HashString<ObjectClass*, 251> classes;
 

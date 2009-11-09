@@ -12,7 +12,7 @@
 #include "Object.h"
 
 #include "ObjectClass.h"
-#include "MatrixLua.h"
+#include "Lua.h"
 #include "Synapse.h"
 
 namespace oz
@@ -33,37 +33,37 @@ namespace oz
                       type->debrisColor, type->debrisColorSpread );
 
     if( !type->onDestroy.isEmpty() ) {
-      matrixLua.call( type->onDestroy, this );
+      lua.call( type->onDestroy, this );
     }
   }
 
   void Object::onDamage( float damage )
   {
     if( !type->onDamage.isEmpty() ) {
-      matrixLua.damage = damage;
-      matrixLua.call( type->onDamage, this );
+      lua.damage = damage;
+      lua.call( type->onDamage, this );
     }
   }
 
   void Object::onHit( const Hit*, float hitMomentum )
   {
     if( !type->onHit.isEmpty() ) {
-      matrixLua.hitMomentum = hitMomentum;
-      matrixLua.call( type->onHit, this );
+      lua.hitMomentum = hitMomentum;
+      lua.call( type->onHit, this );
     }
   }
 
   void Object::onUpdate()
   {
     if( !type->onUpdate.isEmpty() ) {
-      matrixLua.call( type->onUpdate, this );
+      lua.call( type->onUpdate, this );
     }
   }
 
   void Object::onUse( Bot *user )
   {
     if( !type->onUse.isEmpty() ) {
-      matrixLua.call( type->onUse, this, user );
+      lua.call( type->onUse, this, user );
     }
   }
 

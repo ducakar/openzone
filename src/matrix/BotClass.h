@@ -20,7 +20,6 @@ namespace oz
   {
     static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
         Object::HIT_FUNC_BIT | Object::BOT_BIT;
-    static const int DEFAULT_FLAGS = Object::CLIP_BIT | Object::CLIMBER_BIT | Object::PUSHER_BIT;
 
     Vec3   dimCrouch;
 
@@ -63,8 +62,7 @@ namespace oz
 
     String mindType;
 
-    static void fill( BotClass *clazz, Config *config );
-    static ObjectClass *init( const String &name, Config *config );
+    static ObjectClass *init( const String &name, const Config *config );
 
     virtual Object *create( const Vec3 &pos );
     virtual Object *create( InputStream *istream );

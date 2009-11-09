@@ -11,7 +11,7 @@
 
 #include "MD3.h"
 
-#include "matrix/bv.h"
+#include "matrix/matrix.h"
 #include "Context.h"
 
 #define FOURCC( a, b, c, d ) \
@@ -264,7 +264,7 @@ namespace client
   MD3::MD3( const char *name_ )
   {
     String name       = name_;
-    String dir        = "mdl" OZ_DIRDEL + name + OZ_DIRDEL;
+    String dir        = "mdl/" + name + "/";
     String configFile = dir + "config.rc";
 
     MD3Tag *headTags;

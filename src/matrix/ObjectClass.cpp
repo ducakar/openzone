@@ -17,40 +17,11 @@
 namespace oz
 {
 
-  const int ObjectClass::DEFAULT_FLAGS = Object::CLIP_BIT | Object::DESTROY_FUNC_BIT;
-
   ObjectClass::~ObjectClass()
   {}
 
-  void ObjectClass::fill( ObjectClass *clazz, Config *config )
+  void ObjectClass::fillCommon( ObjectClass *clazz, const Config *config )
   {
-    clazz->description          = config->get( "description", "" );
-
-    clazz->dim.x                = config->get( "dim.x", 0.5f );
-    clazz->dim.y                = config->get( "dim.y", 0.5f );
-    clazz->dim.z                = config->get( "dim.z", 0.5f );
-
-    if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
-        clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||
-        clazz->dim.z < 0.0f )
-    {
-      throw Exception( "Invalid object dimensions. Should be >= 0 and <= 3.99." );
-    }
-
-    clazz->life                 = config->get( "life", 100.0f );
-    clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
-    clazz->damageRatio          = config->get( "damageRatio", 1.0f );
-
-    if( clazz->life <= 0.0f ) {
-      throw Exception( "Invalid object life. Should be > 0." );
-    }
-    if( clazz->damageTreshold < 0.0f ) {
-      throw Exception( "Invalid object damageTreshold. Should be >= 0." );
-    }
-    if( clazz->damageRatio < 0.0f ) {
-      throw Exception( "Invalid object damageRatio. Should be >= 0." );
-    }
-
     clazz->onDestroy            = config->get( "onDestroy", "" );
     clazz->onDamage             = config->get( "onDamage", "" );
     clazz->onHit                = config->get( "onHit", "" );
@@ -72,16 +43,6 @@ namespace oz
     if( String::length( clazz->onUse ) != 0 ) {
       clazz->flags |= Object::USE_FUNC_BIT;
     }
-
-    clazz->nDebris              = config->get( "nDebris", 8 );
-    clazz->debrisVelocitySpread = config->get( "debrisVelocitySpread", 4.0f );
-    clazz->debrisRejection      = config->get( "debrisRejection", 1.80f );
-    clazz->debrisMass           = config->get( "debrisMass", 0.0f );
-    clazz->debrisLifeTime       = config->get( "debrisLifeTime", 1.5f );
-    clazz->debrisColor.x        = config->get( "debrisColor.r", 0.5f );
-    clazz->debrisColor.y        = config->get( "debrisColor.g", 0.5f );
-    clazz->debrisColor.z        = config->get( "debrisColor.b", 0.5f );
-    clazz->debrisColorSpread    = config->get( "debrisColorSpread", 0.1f );
 
     clazz->modelType            = config->get( "modelType", "" );
     clazz->modelName            = config->get( "modelPath", "" );
@@ -108,13 +69,65 @@ namespace oz
     }
   }
 
-  ObjectClass *ObjectClass::init( const String &name, Config *config )
+  ObjectClass *ObjectClass::init( const String &name, const Config *config )
   {
     ObjectClass *clazz = new ObjectClass();
 
-    clazz->name  = name;
-    clazz->flags = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
-    fill( clazz, config );
+    clazz->name                 = name;
+    clazz->description          = config->get( "description", "" );
+
+    clazz->dim.x                = config->get( "dim.x", 0.50f );
+    clazz->dim.y                = config->get( "dim.y", 0.50f );
+    clazz->dim.z                = config->get( "dim.z", 0.50f );
+
+    if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
+        clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||
+        clazz->dim.z < 0.0f )
+    {
+      throw Exception( "Invalid object dimensions. Should be >= 0 and <= 3.99." );
+    }
+
+    clazz->flags = 0;
+
+    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT, "flag.destroyFunc", true  );
+    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,  "flag.damageFunc",  false );
+    OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,     "flag.hitFunc",     false );
+    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,  "flag.updateFunc",  false );
+    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
+    OZ_CLASS_SET_FLAG( Object::ITEM_BIT,         "flag.item",        false );
+    OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
+    OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,      "flag.climber",     false );
+    OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,       "flag.pusher",      false );
+    OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
+    OZ_CLASS_SET_FLAG( Object::BLEND_BIT,        "flag.blend",       false );
+    OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
+
+    clazz->life                 = config->get( "life", 100.0f );
+    clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
+    clazz->damageRatio          = config->get( "damageRatio", 1.0f );
+
+    if( clazz->life <= 0.0f ) {
+      throw Exception( "Invalid object life. Should be > 0." );
+    }
+    if( clazz->damageTreshold < 0.0f ) {
+      throw Exception( "Invalid object damageTreshold. Should be >= 0." );
+    }
+    if( clazz->damageRatio < 0.0f ) {
+      throw Exception( "Invalid object damageRatio. Should be >= 0." );
+    }
+
+    clazz->nDebris              = config->get( "nDebris", 8 );
+    clazz->debrisVelocitySpread = config->get( "debrisVelocitySpread", 4.0f );
+    clazz->debrisRejection      = config->get( "debrisRejection", 1.80f );
+    clazz->debrisMass           = config->get( "debrisMass", 0.0f );
+    clazz->debrisLifeTime       = config->get( "debrisLifeTime", 1.5f );
+    clazz->debrisColor.x        = config->get( "debrisColor.r", 0.5f );
+    clazz->debrisColor.y        = config->get( "debrisColor.g", 0.5f );
+    clazz->debrisColor.z        = config->get( "debrisColor.b", 0.5f );
+    clazz->debrisColorSpread    = config->get( "debrisColorSpread", 0.1f );
+
+    fillCommon( clazz, config );
+    clazz->flags |= BASE_FLAGS;
 
     return clazz;
   }

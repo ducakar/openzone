@@ -212,7 +212,7 @@ namespace client
     FILE *file;
     char buffer[LINE_BUFFER_SIZE];
 
-    file = fopen( path + OZ_DIRDEL "data.mtl", "r" );
+    file = fopen( path + "/data.mtl", "r" );
     if( file == null ) {
       return false;
     }
@@ -232,7 +232,7 @@ namespace client
             end = readWord( pos );
             *end = '\0';
 
-            textureId = context.loadTexture( path + OZ_DIRDEL + String( pos ), true );
+            textureId = context.loadTexture( path + "/" + String( pos ), true );
           }
           break;
         }
@@ -258,9 +258,9 @@ namespace client
     // default texture if none loaded
     textureId = 0;
 
-    String sPath = "mdl" OZ_DIRDEL + name;
-    String modelFile = sPath + OZ_DIRDEL "data.obj";
-    String configFile = sPath + OZ_DIRDEL "config.rc";
+    String sPath = "mdl/" + name;
+    String modelFile = sPath + "/data.obj";
+    String configFile = sPath + "/config.rc";
 
     Config config;
     config.load( configFile );

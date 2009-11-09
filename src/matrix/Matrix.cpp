@@ -11,7 +11,7 @@
 
 #include "Matrix.h"
 
-#include "MatrixLua.h"
+#include "Lua.h"
 #include "Physics.h"
 #include "FloraManager.h"
 
@@ -54,7 +54,7 @@ namespace oz
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
-        synapse.addObject( "Smiljan", Vec3( x, y, z ) );
+        synapse.addObject( "Beast", Vec3( x, y, z ) );
         j++;
       }
     }
@@ -142,8 +142,8 @@ namespace oz
 
     semaphore = SDL_CreateSemaphore( 0 );
 
-    matrixLua.init();
     translator.init();
+    lua.init();
     world.init();
 
     log.unindent();
@@ -156,8 +156,8 @@ namespace oz
     log.indent();
 
     world.free();
+    lua.free();
     translator.free();
-    matrixLua.free();
 
     SDL_DestroySemaphore( semaphore );
 
@@ -178,8 +178,8 @@ namespace oz
     }
     else {
       loadSample();
-//      loadStressTest();
-//      floraManager.seed();
+      loadStressTest();
+      floraManager.seed();
     }
 
     log.unindent();

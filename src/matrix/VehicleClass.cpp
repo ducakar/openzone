@@ -17,73 +17,75 @@
 namespace oz
 {
 
-  void VehicleClass::fill( VehicleClass *clazz, Config *config )
-  {
-    DynObjectClass::fill( clazz, config );
-
-    clazz->dimCrouch.x       = config->get( "dimCrouch.x", 0.39f );
-    clazz->dimCrouch.y       = config->get( "dimCrouch.y", 0.39f );
-    clazz->dimCrouch.z       = config->get( "dimCrouch.z", 0.39f );
-
-    if( clazz->dimCrouch.x < 0.0f || clazz->dimCrouch.x > AABB::REAL_MAX_DIM ||
-        clazz->dimCrouch.y < 0.0f || clazz->dimCrouch.y > AABB::REAL_MAX_DIM ||
-        clazz->dimCrouch.z < 0.0f )
-    {
-      throw Exception( "Invalid object crouch dimensions. Should be >= 0 and <= 2.99." );
-    }
-
-    clazz->camPos.x          = config->get( "camPos.x", 0.0f );
-    clazz->camPos.y          = config->get( "camPos.y", 0.0f );
-    clazz->camPos.z          = config->get( "camPos.z", 0.0f );
-
-    clazz->camPosCrouch.x    = config->get( "camPosCrouch.x", 0.0f );
-    clazz->camPosCrouch.y    = config->get( "camPosCrouch.y", 0.0f );
-    clazz->camPosCrouch.z    = config->get( "camPosCrouch.z", 0.0f );
-
-    clazz->bobInc            = config->get( "bobInc", 0.05f );
-    clazz->bobAmplitude      = config->get( "bobAmplitude", 0.05f );
-
-    clazz->walkMomentum      = config->get( "walkMomentum", 1.0f );
-    clazz->runMomentum       = config->get( "runMomentum", 4.0f );
-    clazz->crouchMomentum    = config->get( "crouchMomentum", 1.0f );
-    clazz->jumpMomentum      = config->get( "jumpMomentum", 4.0f );
-
-    clazz->stepInc           = config->get( "stepInc", 0.10f );
-    clazz->stepMax           = config->get( "stepMax", 0.50f );
-    clazz->stepRate          = config->get( "stepRate", 0.60f );
-    clazz->stepRateSupp      = config->get( "stepRateSupp", 0.95f );
-
-    clazz->airControl        = config->get( "airControl", 0.025f );
-    clazz->climbControl      = config->get( "climbControl", 1.50f );
-    clazz->waterControl      = config->get( "waterControl", 0.05f );
-
-    clazz->grabDistance      = config->get( "grabDistance", 1.2f );
-    clazz->grabMass          = config->get( "grabMass", 30.0f );
-    clazz->throwMomentum     = config->get( "throwMomentum", 4.0f );
-
-    clazz->stamina           = config->get( "stamina", 100.0f );
-    clazz->staminaGain       = config->get( "staminaGain", 0.05f );
-    clazz->staminaWaterDrain = config->get( "staminaWaterDrain", 0.15f );
-    clazz->staminaRunDrain   = config->get( "staminaRunDrain", 0.08f );
-    clazz->staminaJumpDrain  = config->get( "staminaJumpDrain", 5.0f );
-
-    clazz->state             = config->get( "state", Bot::STEPPING_BIT );
-
-    clazz->lookLimitHMin     = config->get( "lookLimitHMin", -90.0f );
-    clazz->lookLimitHMax     = config->get( "lookLimitHMax", +90.0f );
-    clazz->lookLimitVMin     = config->get( "lookLimitVMin", -30.0f );
-    clazz->lookLimitVMax     = config->get( "lookLimitVMax", +30.0f );
-
-    clazz->mindType          = config->get( "mindType", "" );
-  }
-
-  ObjectClass *VehicleClass::init( const String &name, Config *config )
+  ObjectClass *VehicleClass::init( const String &name, const Config *config )
   {
     VehicleClass *clazz = new VehicleClass();
 
-    clazz->name  = name;
-    clazz->flags = config->get( "flags", DEFAULT_FLAGS ) | BASE_FLAGS;
-    fill( clazz, config );
+    clazz->name                 = name;
+    clazz->description          = config->get( "description", "" );
+
+    clazz->dim.x                = config->get( "dim.x", 0.50f );
+    clazz->dim.y                = config->get( "dim.y", 0.50f );
+    clazz->dim.z                = config->get( "dim.z", 0.50f );
+
+    if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
+        clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||
+        clazz->dim.z < 0.0f )
+    {
+      throw Exception( "Invalid object dimensions. Should be >= 0 and <= 3.99." );
+    }
+
+    clazz->flags = 0;
+
+    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT, "flag.destroyFunc", true  );
+    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,  "flag.damageFunc",  false );
+    OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,     "flag.hitFunc",     false );
+    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,  "flag.updateFunc",  false );
+    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
+    OZ_CLASS_SET_FLAG( Object::ITEM_BIT,         "flag.item",        false );
+    OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
+    OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,      "flag.climber",     false );
+    OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,       "flag.pusher",      false );
+    OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
+    OZ_CLASS_SET_FLAG( Object::BLEND_BIT,        "flag.blend",       false );
+    OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
+
+    clazz->life                 = config->get( "life", 100.0f );
+    clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
+    clazz->damageRatio          = config->get( "damageRatio", 1.0f );
+
+    if( clazz->life <= 0.0f ) {
+      throw Exception( "Invalid object life. Should be > 0." );
+    }
+    if( clazz->damageTreshold < 0.0f ) {
+      throw Exception( "Invalid object damageTreshold. Should be >= 0." );
+    }
+    if( clazz->damageRatio < 0.0f ) {
+      throw Exception( "Invalid object damageRatio. Should be >= 0." );
+    }
+
+    clazz->nDebris              = config->get( "nDebris", 8 );
+    clazz->debrisVelocitySpread = config->get( "debrisVelocitySpread", 4.0f );
+    clazz->debrisRejection      = config->get( "debrisRejection", 1.80f );
+    clazz->debrisMass           = config->get( "debrisMass", 0.0f );
+    clazz->debrisLifeTime       = config->get( "debrisLifeTime", 1.5f );
+    clazz->debrisColor.x        = config->get( "debrisColor.r", 0.5f );
+    clazz->debrisColor.y        = config->get( "debrisColor.g", 0.5f );
+    clazz->debrisColor.z        = config->get( "debrisColor.b", 0.5f );
+    clazz->debrisColorSpread    = config->get( "debrisColorSpread", 0.1f );
+
+    clazz->mass                 = config->get( "mass", 100.0f );
+    clazz->lift                 = config->get( "lift", 12.0f );
+
+    if( clazz->mass < 0.1f ) {
+      throw Exception( "Invalid object mass. Should be >= 0.1." );
+    }
+    if( clazz->lift < 0.0f ) {
+      throw Exception( "Invalid object lift. Should be >= 0." );
+    }
+
+    fillCommon( clazz, config );
+    clazz->flags |= BASE_FLAGS;
 
     return clazz;
   }

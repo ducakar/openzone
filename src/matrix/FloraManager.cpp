@@ -52,6 +52,20 @@ namespace oz
     }
   }
 
+  inline void FloraManager::addPlant( const char *type, float x, float y )
+  {
+    Vec3 pos = Vec3( x, y, world.terra.height( x, y ) );
+    AABB bounds = AABB( pos, translator.classes[type]->dim );
+
+    if( pos.z < 0.0f || 40.0f < pos.z ) {
+      return;
+    }
+
+    if( collider.testOSO( bounds ) ) {
+      synapse.addObject( type, pos );
+    }
+  }
+
   void FloraManager::seed()
   {
     float area = 4.0f * World::DIM * World::DIM * DENSITY;

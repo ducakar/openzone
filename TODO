@@ -1,11 +1,12 @@
 Matrix
-  - inventory
+  - extend scripting
   - Weapons
   - Vehicle
   - networking support
   ? reinvent cylinder
 
 Client
+  - scripting
   - MD3 animation
   - FireModel
   - weather
@@ -15,17 +16,16 @@ UI
   - standard components
   - HUD
   - inventory
-
-Scripting
-  EVERYTHING
+  - scripting
 
 Nirvana
-  ALMOST EVERYTHING
+  - scripting
+  - more minds
 
 Server
   EVERYTHING
 
 DROPPED (for v2.0.0)
-- 4 threads update
+- multithreaded update
 - PhysFS
 - Bullet physics engine

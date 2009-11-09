@@ -44,7 +44,7 @@ namespace server
   void Game::start()
   {
     log.print( "Starting Nirvana thread ..." );
-    nirvana.start();
+    nirvana::nirvana.start();
     log.printEnd( " OK" );
   }
 
@@ -56,13 +56,13 @@ namespace server
     matrix.update();
     network.update();
 
-    SDL_SemPost( nirvana.semaphore );
+    SDL_SemPost( nirvana::nirvana.semaphore );
   }
 
   void Game::stop()
   {
     log.print( "Stopping Nirvana thread ..." );
-    nirvana.stop();
+    nirvana::nirvana.stop();
     log.printEnd( " OK" );
   }
 

@@ -109,7 +109,7 @@ namespace server
     String configPath = home + OZ_CONFIG_FILE;
     config.load( configPath );
 
-    const char *data = config.get( "data", "/usr/share/openzone" );
+    const char *data = config.getSet( "data", "/usr/share/openzone" );
 
     log.print( "Going to working directory '%s' ...", data );
 
@@ -143,7 +143,7 @@ namespace server
     log.println( "MAIN LOOP {" );
     log.indent();
 
-    uint tick     = config.get( "tick", 20 );
+    uint tick     = config.getSet( "tick", 20 );
     // time passed form start of the frame
     uint time;
     uint timeZero = SDL_GetTicks();

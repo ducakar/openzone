@@ -1,14 +1,10 @@
 #!/bin/sh
 
-cat << EOF > CMakeLists.txt
-add_executable( openzone
-EOF
+echo 'add_executable( openzone' > CMakeLists.txt
 
 ls *.cpp >> CMakeLists.txt
 
-cat << EOF >> CMakeLists.txt
-)
-
-add_dependencies( openzone precompiled )
-target_link_libraries( openzone ui nirvana matrix base )
-EOF
+echo ')' >> CMakeLists.txt
+echo '' >> CMakeLists.txt
+echo 'add_dependencies( openzone precompiled )' >> CMakeLists.txt
+echo 'target_link_libraries( openzone ui nirvana matrix base )' >> CMakeLists.txt

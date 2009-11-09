@@ -115,7 +115,7 @@ namespace oz
         continue;
       }
       soundIndices.add( baseName, sounds.length() );
-      sounds << Resource( baseName, fileName );;
+      sounds << Resource( baseName, fileName );
 
       log.println( "%s", baseName.cstr() );
     }
@@ -154,7 +154,7 @@ namespace oz
         return false;
       }
       bspIndices.add( baseName, bsps.length() );
-      bsps << Resource( baseName, "" );;
+      bsps << Resource( baseName, "" );
 
       log.println( "%s", baseName.cstr() );
     }
@@ -213,6 +213,74 @@ namespace oz
       classes.add( baseName, baseClasses.cachedValue()( baseName, &classConfig ) );
       classConfig.clear();
 
+      log.println( "%s", baseName.cstr() );
+    }
+    closedir( dir );
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "matrix scripts (*.luac in 'lua/matrix') {" );
+    log.indent();
+
+    dir = opendir( "lua/matrix" );
+    if( dir == null ) {
+      free();
+
+      log.println( "Cannot open directory 'lua/matrix'" );
+      log.unindent();
+      log.println( "}" );
+      return false;
+    }
+    while( ( file = readdir( dir ) ) != null ) {
+      String name = file->d_name;
+      int dot = name.lastIndex( '.' );
+
+      if( dot <= 0 ) {
+        continue;
+      }
+      String extension = name.substring( dot );
+      if( extension != ".luac" ) {
+        continue;
+      }
+
+      String fileName = "lua/matrix/" + name;
+      String baseName = name.substring( 0, dot );
+
+      matrixScripts << Resource( baseName, fileName );
+      log.println( "%s", baseName.cstr() );
+    }
+    closedir( dir );
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "nirvana scripts (*.luac in 'lua/nirvana') {" );
+    log.indent();
+
+    dir = opendir( "lua/nirvana" );
+    if( dir == null ) {
+      free();
+
+      log.println( "Cannot open directory 'lua/nirvana'" );
+      log.unindent();
+      log.println( "}" );
+      return false;
+    }
+    while( ( file = readdir( dir ) ) != null ) {
+      String name = file->d_name;
+      int dot = name.lastIndex( '.' );
+
+      if( dot <= 0 ) {
+        continue;
+      }
+      String extension = name.substring( dot );
+      if( extension != ".luac" ) {
+        continue;
+      }
+
+      String fileName = "lua/nirvana/" + name;
+      String baseName = name.substring( 0, dot );
+
+      nirvanaScripts << Resource( baseName, fileName );
       log.println( "%s", baseName.cstr() );
     }
     closedir( dir );

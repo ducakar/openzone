@@ -40,9 +40,9 @@ namespace client
 
   void Camera::init()
   {
-    isThirdPerson   = config.get( "render.camera.3rdPerson", false );
-    thirdPersonDist = config.get( "render.camera.3rdPersonDistance", 2.5f );
-    smoothCoef      = config.get( "render.camera.smoothCoef", 0.3f );
+    isThirdPerson   = config.getSet( "render.camera.3rdPerson", false );
+    thirdPersonDist = config.getSet( "render.camera.3rdPersonDistance", 2.5f );
+    smoothCoef      = config.getSet( "render.camera.smoothCoef", 0.3f );
     smoothCoef_1    = 1.0f - smoothCoef;
   }
 
