@@ -61,6 +61,7 @@ namespace oz
     float  lookLimitVMax;
 
     String mindType;
+    String mindFunction;
 
     static ObjectClass *init( const String &name, const Config *config );
 

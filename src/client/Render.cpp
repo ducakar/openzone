@@ -165,6 +165,9 @@ namespace client
       }
     }
 
+    crosshairArea->showUse = taggedObjIndex >= 0 &&
+        ( world.objects[taggedObjIndex]->flags & Object::USE_FUNC_BIT );
+
     float minXCenter = static_cast<float>( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
         Cell::SIZE / 2.0f;
     float minYCenter = static_cast<float>( ( frustum.minY - World::MAX / 2 ) * Cell::SIZE ) +
@@ -464,9 +467,12 @@ namespace client
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
+    crosshairArea = new ui::CrosshairArea( 96 );
+
     ui::init( screenX, screenY );
     ui::root.add( new ui::DebugArea() );
     ui::root.add( new ui::HealthArea() );
+    ui::root.add( crosshairArea, screenX / 2 - 48, screenY / 2 - 48 );
     ui::root.add( new ui::BuildMenu(), -1, -1 );
 
     SDL_GL_SwapBuffers();
@@ -494,8 +500,6 @@ namespace client
   {
     log.println( "Loading Graphics {" );
     log.indent();
-
-    ui::root.add( new ui::CrosshairArea( 96 ), screenX / 2 - 48, screenY / 2 - 48 );
 
     assert( glGetError() == GL_NO_ERROR );
 

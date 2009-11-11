@@ -23,16 +23,17 @@ namespace client
 namespace ui
 {
 
-  CrosshairArea::CrosshairArea( int size ) : Area( size, size )
+  CrosshairArea::CrosshairArea( int size ) : Area( size, size ), dim( size / 3 ), showUse( false )
   {
-    dim = size / 3;
     crossTexId = context.loadTexture( "ui/crosshair.png", false, GL_LINEAR, GL_LINEAR );
-    grabTexId = context.loadTexture( "ui/grab.png", false, GL_LINEAR, GL_LINEAR );
+    useTexId   = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
+    grabTexId  = context.loadTexture( "ui/grab.png", false, GL_LINEAR, GL_LINEAR );
   }
 
   CrosshairArea::~CrosshairArea()
   {
     context.freeTexture( crossTexId );
+    context.freeTexture( useTexId );
     context.freeTexture( grabTexId );
   }
 
@@ -54,17 +55,31 @@ namespace ui
         glVertex2i( x +   dim, y + 2*dim );
       glEnd();
 
+      if( showUse ) {
+        glBindTexture( GL_TEXTURE_2D, useTexId );
+        glBegin( GL_QUADS );
+          glTexCoord2i( 0, 1 );
+          glVertex2i( x + 2*dim, y +   dim );
+          glTexCoord2i( 1, 1 );
+          glVertex2i( x + 3*dim, y +   dim );
+          glTexCoord2i( 1, 0 );
+          glVertex2i( x + 3*dim, y + 2*dim );
+          glTexCoord2i( 0, 0 );
+          glVertex2i( x + 2*dim, y + 2*dim );
+        glEnd();
+      }
+
       if( camera.bot != null && camera.bot->grabObjIndex >= 0 ) {
         glBindTexture( GL_TEXTURE_2D, grabTexId );
         glBegin( GL_QUADS );
           glTexCoord2i( 0, 1 );
-          glVertex2i( x +   dim, y );
+          glVertex2i( x +   dim, y         );
           glTexCoord2i( 1, 1 );
-          glVertex2i( x + 2*dim, y );
+          glVertex2i( x + 2*dim, y         );
           glTexCoord2i( 1, 0 );
-          glVertex2i( x + 2*dim, y + dim );
+          glVertex2i( x + 2*dim, y +   dim );
           glTexCoord2i( 0, 0 );
-          glVertex2i( x +   dim, y + dim );
+          glVertex2i( x +   dim, y +   dim );
         glEnd();
       }
 

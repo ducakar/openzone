@@ -52,14 +52,14 @@ namespace client
     Buffer buffer( 1024 * 1024 * 10 );
     String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
-    log.print( "Loading world from %s ...", stateFile.cstr() );
+    log.print( "Loading world stream from %s ...", stateFile.cstr() );
     if( buffer.load( stateFile ) ) {
+      log.printEnd( " OK" );
+
       InputStream istream = buffer.inputStream();
 
       matrix.load( &istream );
       nirvana::nirvana.load( &istream );
-
-      log.printEnd( " OK" );
     }
     else {
       log.printEnd( " Failed, starting a new world" );
@@ -97,7 +97,7 @@ namespace client
     matrix.unload( &ostream );
     nirvana::nirvana.unload( &ostream );
 
-    log.print( "Writing world to %s ...", stateFile.cstr() );
+    log.print( "Writing world stream to %s ...", stateFile.cstr() );
     buffer.write( stateFile );
     log.printEnd( " OK" );
 
@@ -322,7 +322,7 @@ namespace client
         camera.h = camera.bot->h;
         camera.v = camera.bot->v;
         camera.botIndex = -1;
-        synapse.remove( camera.bot );
+        camera.bot->kill();
       }
     }
     if( state == GAME_INTERFACE ) {

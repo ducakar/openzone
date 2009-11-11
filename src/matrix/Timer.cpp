@@ -18,12 +18,13 @@ namespace oz
 
   void Timer::init()
   {
-    millis      = 0;
-    time        = 0.0f;
-    nFrames     = 0;
-    frameMillis = 0;
-    frameTime   = 0.0f;
-    frameTicks  = 0;
+    millis        = 0;
+    time          = 0.0f;
+    nFrames       = 0;
+    nirvanaMillis = 0;
+    frameMillis   = 0;
+    frameTime     = 0.0f;
+    frameTicks    = 0;
   }
 
   void Timer::tick()

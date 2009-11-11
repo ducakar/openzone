@@ -136,6 +136,7 @@ namespace oz
     clazz->lookLimitVMax        = config->get( "lookLimitVMax", +30.0f );
 
     clazz->mindType             = config->get( "mindType", "" );
+    clazz->mindFunction         = config->get( "mindFunction", "" );
 
     fillCommon( clazz, config );
     clazz->flags |= BASE_FLAGS;

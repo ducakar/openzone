@@ -37,8 +37,8 @@ anywhere else, you should set "data.dir" variable in "$HOME/.openzone/client.rc"
 A sample client.xml with default settings can be found in project root.
 
 
-MinGW32 build (cross-compile):
-------------------------------
+MinGW build (cross-compile):
+----------------------------
 Install MinGW package (mingw32-gcc, mingw32-w32api packages should do it) for Linux.
 Look at mingw32-build.sh script. Download all required source archives and correct the script if
 any versions do not match. As you can see from script you should put the archives into 
@@ -56,10 +56,10 @@ so you need a version of data with only .png images or convert them on your own.
 file names in data.mtl for OBJ models. Source code has appropriate preprocessor directives to
 compile for loading .png images instead of .jpg.
 
+
 Building on Windows:
 --------------------
-Who's an optimist?
-- The one who wants to build OpenZone on Windows.
+Not supported.
 
 
 Development tools (my choice):
@@ -70,6 +70,5 @@ build system: CMake + GNU make
 compiler: GCC + GNU binutils
 VCS: git (command line tools recommended for committing and other operations, egit is unreliable)
 debugger: GDB, valgrind (a great tool for finding buffer overruns, memory leaks etc.)
-development packages for all libraries from first paragraph
 
-I included .project and .cproject files for Eclipse.
+Other tools: Gimp (icons, cursors, textures ...), Blender (OBJ models), NetRadiant (BSP maps)

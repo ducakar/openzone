@@ -88,7 +88,7 @@ namespace oz
         ANIM_MAX
       };
 
-      static const float BODY_FACEOUT_FACTOR = 0.0005f;
+      static const float BODY_FADEOUT_FACTOR = 0.0005f;
 
     protected:
 
@@ -121,6 +121,8 @@ namespace oz
       {
         return Quat::rotZYX( Math::rad( h ), 0.0f, Math::rad( v ) );
       }
+
+      void kill();
 
       virtual void readFull( InputStream *istream );
       virtual void writeFull( OutputStream *ostream ) const;

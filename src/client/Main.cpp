@@ -278,7 +278,7 @@ namespace client
             break;
           }
           case SDL_ACTIVEEVENT: {
-            isActive |= event.active.gain && event.active.state == SDL_APPACTIVE;
+            isActive |= ( event.active.gain && event.active.state == SDL_APPACTIVE );
             break;
           }
           case SDL_QUIT: {
@@ -345,6 +345,7 @@ namespace client
     float gameTimeSec = static_cast<float>( gameTime ) / 1000.0f;
     float renderTimeSec = static_cast<float>( renderTime ) / 1000.0f;
     float sleepTimeSec = max( 0.0f, allTimeSec - gameTimeSec - renderTimeSec );
+    float nirvanaTimeSec = static_cast<float>( timer.nirvanaMillis ) / 1000.0f;
 
     log.println( "STATISTICS {" );
     log.indent();
@@ -357,6 +358,8 @@ namespace client
     log.println( "    %.4g s\t%.1f%%\trender + advanced sound update",
                  renderTimeSec, renderTimeSec / allTimeSec * 100.0f );
     log.println( "    %.4g s\t%.1f%%\tsleep", sleepTimeSec, sleepTimeSec / allTimeSec * 100.0f );
+    log.println( "    %.4g s\t%.1f%%\t[own thread] artificial intelligence",
+                 nirvanaTimeSec, nirvanaTimeSec / allTimeSec * 100.0f );
     log.unindent();
     log.println( "}" );
 
@@ -380,7 +383,7 @@ int main( int argc, char **argv )
   try {
     oz::client::main.main( &argc, argv );
   }
-  catch( oz::Exception &e ) {
+  catch( const oz::Exception &e ) {
     oz::log.resetIndent();
     oz::log.println();
     oz::log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );

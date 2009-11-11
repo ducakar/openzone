@@ -23,6 +23,7 @@ namespace ui
     private:
 
       int crossTexId;
+      int useTexId;
       int grabTexId;
       int dim;
 
@@ -31,6 +32,8 @@ namespace ui
       virtual void draw();
 
     public:
+
+      bool showUse;
 
       CrosshairArea( int size );
       virtual ~CrosshairArea();

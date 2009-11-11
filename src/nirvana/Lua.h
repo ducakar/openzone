@@ -24,7 +24,7 @@ namespace nirvana
 
       lua_State *l;
 
-      void callFunc( const char *functionName );
+      void callFunc( const char *functionName, int botIndex );
 
     public:
 
@@ -34,14 +34,21 @@ namespace nirvana
       // point to either self, user or created
       Object **obj;
 
+      int    index;
+      Vector<Object*> objects;
+
       void call( const char *functionName, Bot *self_ )
       {
         self    = self_;
 
-        callFunc( functionName );
+        callFunc( functionName, self->index );
       }
 
     public:
+
+      // create a table for a mind that can act as mind's local storage, mind's local variables
+      void registerMind( int botIndex );
+      void unregisterMind( int botIndex );
 
       void init();
       void free();

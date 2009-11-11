@@ -219,7 +219,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "matrix scripts (*.luac in 'lua/matrix') {" );
+    log.println( "matrix scripts (*.lua in 'lua/matrix') {" );
     log.indent();
 
     dir = opendir( "lua/matrix" );
@@ -239,7 +239,7 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".luac" ) {
+      if( extension != ".lua" ) {
         continue;
       }
 
@@ -253,7 +253,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "nirvana scripts (*.luac in 'lua/nirvana') {" );
+    log.println( "nirvana scripts (*.lua in 'lua/nirvana') {" );
     log.indent();
 
     dir = opendir( "lua/nirvana" );
@@ -273,7 +273,7 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".luac" ) {
+      if( extension != ".lua" ) {
         continue;
       }
 

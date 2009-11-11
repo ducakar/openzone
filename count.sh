@@ -1,6 +1,9 @@
 #!/bin/sh
 
-FILES="src/*/*.h src/*/*.cpp src/*/*.gen *.h data/lua/*.lua data/*/*.rc src/CMakeLists.txt CMakeLists.txt *.sh"
+FILES="src/*/*.h src/*/*.cpp precompiled.h src/*/CMakeLists.gen src/CMakeLists.txt"
+FILES="$FILES data/CMakeLists.txt data/*/*.rc"
+FILES="$FILES data/lua/*/*.lua data/lua/*/CMakeLists.gen data/lua/CMakeLists.txt"
+FILES="$FILES CMakeLists.txt *.sh"
 
 wc -lc $FILES
 

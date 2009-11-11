@@ -152,7 +152,7 @@ namespace oz
 
   void Matrix::free()
   {
-    log.println( "Freeing down Matrix {" );
+    log.println( "Freeing Matrix {" );
     log.indent();
 
     world.free();

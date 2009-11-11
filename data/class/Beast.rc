@@ -4,7 +4,7 @@ dim.x                           "0.44"
 dim.y                           "0.44"
 dim.z                           "1.09"
 
-life                            "400.0"
+life                            "100.0"
 mass                            "100.0"
 
 dimCrouch.x                     "0.44"
@@ -32,6 +32,7 @@ audioSample03                   ""
 audioSample04                   "hit_bot1"
 audioSample05                   "jump1"
 audioSample06                   "gesture_flip"
+audioSample07                   "gesture_flip"
 
 camPos.x                        "0.00"
 camPos.y                        "0.00"
@@ -59,3 +60,7 @@ lookLimitHMin                   "-135.0"
 lookLimitHMax                   "135.0"
 lookLimitVMmin                  "-45.0"
 lookLimitVMmax                  "45.0"
+
+mindType                        "Lua"
+mindFunction                    "beastie"
+

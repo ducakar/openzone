@@ -38,6 +38,9 @@ namespace oz
       // point to either self, user or created
       Object **obj;
 
+      int    index;
+      Vector<Object*> objects;
+
       float  damage;
       float  hitMomentum;
 

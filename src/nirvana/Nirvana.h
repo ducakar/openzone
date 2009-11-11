@@ -20,6 +20,11 @@ namespace nirvana
   {
     private:
 
+      // mind is only updated once per UPDATE_INTERVAL frames (maybe less, depends on when it was
+      // added to the list)
+      // to force update, set Mind::FORCE_UPDATE_BIT
+      static const int UPDATE_INTERVAL = 64;
+
       struct MindCtor
       {
         Mind::CreateFunc create;
@@ -33,6 +38,7 @@ namespace nirvana
       HashString<MindCtor, 31> mindClasses;
 
       DList<Mind, 0> minds;
+      int updateModulo;
 
       void sync();
       void update();
