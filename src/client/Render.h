@@ -71,6 +71,8 @@ namespace client
 
       Vector<Structure*>      waterStructures;
 
+      ui::CrosshairArea       *crosshairArea;
+
       int                     screenX;
       int                     screenY;
 

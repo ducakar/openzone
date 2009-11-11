@@ -48,19 +48,17 @@ namespace nirvana
       return;
     }
 
-//    bot.actions |= Bot::ACTION_FORWARD;
-//
-//    if( Math::rand() % 101 == 0 ) {
-//      bot.h += ( Math::frand() * 120.0f ) - 60.0f;
-//    }
-//    if( Math::rand() % 253 == 0 ) {
-//      bot.actions |= Bot::ACTION_JUMP;
-//    }
-//    if( Math::rand() % 253 == 0 ) {
-//      bot.state ^= Bot::RUNNING_BIT;
-//    }
+    bot.actions |= Bot::ACTION_FORWARD;
 
-    lua.call( "randomWalk", &bot );
+    if( Math::rand() % 101 == 0 ) {
+      bot.h += ( Math::frand() * 120.0f ) - 60.0f;
+    }
+    if( Math::rand() % 253 == 0 ) {
+      bot.actions |= Bot::ACTION_JUMP;
+    }
+    if( Math::rand() % 253 == 0 ) {
+      bot.state ^= Bot::RUNNING_BIT;
+    }
   }
 
 }

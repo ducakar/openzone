@@ -15,6 +15,7 @@
 #include "matrix/BotClass.h"
 #include "Lua.h"
 
+#include "LuaMind.h"
 #include "RandomMind.h"
 
 #define OZ_REGISTER_MINDCLASS( name ) \
@@ -60,23 +61,45 @@ namespace nirvana
 
   void Nirvana::update()
   {
+    int count = 0;
     foreach( mind, minds.iterator() ) {
-      mind->update();
+      if( ( mind->flags & Mind::FORCE_UPDATE_BIT ) || count % UPDATE_INTERVAL == updateModulo ) {
+        mind->update();
+      }
+      count++;
     }
+    updateModulo = ( updateModulo + 1 ) % UPDATE_INTERVAL;
   }
 
   int Nirvana::run( void* )
   {
-    while( nirvana.isAlive ) {
-      nirvana.sync();
+    try{
+      while( nirvana.isAlive ) {
+        uint timeBegin = SDL_GetTicks();
 
-      // update minds
-      nirvana.update();
+        nirvana.sync();
 
-      // notify matrix it can proceed changing the world
-      SDL_SemPost( matrix.semaphore );
-      // wait until world has changed
-      SDL_SemWait( nirvana.semaphore );
+        // update minds
+        nirvana.update();
+
+        // notify matrix it can proceed changing the world
+        SDL_SemPost( matrix.semaphore );
+
+        timer.nirvanaMillis += SDL_GetTicks() - timeBegin;
+
+        // wait until world has changed
+        SDL_SemWait( nirvana.semaphore );
+      }
+    }
+    catch( const Exception &e ) {
+      log.resetIndent();
+      log.println();
+      log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
+
+      if( log.isFile() ) {
+        fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
+      }
+      abort();
     }
     return 0;
   }
@@ -89,6 +112,7 @@ namespace nirvana
     lua.init();
 
     OZ_REGISTER_MINDCLASS();
+    OZ_REGISTER_MINDCLASS( Lua );
     OZ_REGISTER_MINDCLASS( Random );
 
     semaphore = SDL_CreateSemaphore( 0 );
@@ -139,6 +163,7 @@ namespace nirvana
   {
     log.print( "Starting Nirvana thread ..." );
 
+    updateModulo = 0;
     isAlive = true;
     thread = SDL_CreateThread( run, null );
 

@@ -277,7 +277,7 @@ namespace oz
   {
     assert( structures.length() == 0 && objects.length() == 0 && particles.length() == 0 );
 
-    log.print( "Reading World ..." );
+    log.print( "Reading World from stream ..." );
     try {
       sky.read( istream );
 
@@ -345,7 +345,7 @@ namespace oz
 
   bool World::write( OutputStream *ostream )
   {
-    log.print( "Writing World ..." );
+    log.print( "Writing World to stream ..." );
     try {
       sky.write( ostream );
 

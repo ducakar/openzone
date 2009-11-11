@@ -22,6 +22,7 @@ namespace oz
       int   millis;
       float time;
       int   nFrames;
+      int   nirvanaMillis;
 
       int   frameMillis;
       float frameTime;

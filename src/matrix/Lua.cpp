@@ -63,6 +63,35 @@ namespace oz
     return 0;
   }
 
+  static int ozBindOverlaps( lua_State *l )
+  {
+    AABB aabb = AABB( Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) ),
+                      Vec3( lua_tonumber( l, 4 ), lua_tonumber( l, 5 ), lua_tonumber( l, 6 ) ) );
+    lua.objects.clear();
+    collider.getOverlaps( aabb, &lua.objects, null );
+    lua.index = 0;
+    return 0;
+  }
+
+  static int ozBindNext( lua_State *l )
+  {
+    if( lua.index < lua.objects.length() ) {
+      lua.obj = &lua.objects[lua.index];
+      lua.index++;
+      lua_pushboolean( l, true );
+    }
+    else {
+      lua_pushboolean( l, false );
+    }
+    return 1;
+  }
+
+  static int ozIsSelf( lua_State *l )
+  {
+    lua_pushboolean( l, *lua.obj == lua.self );
+    return 1;
+  }
+
   static int ozIsNull( lua_State *l )
   {
     lua_pushboolean( l, *lua.obj == null );
@@ -136,6 +165,58 @@ namespace oz
     lua_pushnumber( l, ( *lua.obj )->dim.y );
     lua_pushnumber( l, ( *lua.obj )->dim.z );
     return 3;
+  }
+
+  static int ozGetHeadingTo( lua_State *l )
+  {
+    if( *lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( lua.obj == reinterpret_cast<Object**>( &lua.self ) ) {
+      OZ_LUA_ERROR( "selected object is self" );
+    }
+    float dx = lua.self->p.x - ( *lua.obj )->p.x;
+    float dy = ( *lua.obj )->p.y - lua.self->p.y;
+    float angle = Math::deg( Math::atan2( dx, dy ) );
+
+    lua_pushnumber( l, angle );
+    return 1;
+  }
+
+  static int ozGetDistanceTo( lua_State *l )
+  {
+    if( *lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( lua.obj == reinterpret_cast<Object**>( &lua.self ) ) {
+      OZ_LUA_ERROR( "selected object is self" );
+    }
+    float dx = lua.self->p.x - ( *lua.obj )->p.x;
+    float dy = lua.self->p.y - ( *lua.obj )->p.y;
+    float angle = Math::sqrt( dx*dx + dy*dy );
+
+    lua_pushnumber( l, angle );
+    return 1;
+  }
+
+  static int ozGetIndex( lua_State *l )
+  {
+    if( *lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+
+    lua_pushnumber( l, ( *lua.obj )->index );
+    return 1;
+  }
+
+  static int ozGetType( lua_State *l )
+  {
+    if( *lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+
+    lua_pushstring( l, ( *lua.obj )->type->name );
+    return 1;
   }
 
   static int ozGetLife( lua_State *l )
@@ -253,11 +334,11 @@ namespace oz
     lua.created->p = Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) );
 
     if( collider.test( *lua.created ) ) {
-      synapse.put( lua.created );
-      lua_pushboolean( l, true );
+      int index = synapse.put( lua.created );
+      lua_pushnumber( l, index );
     }
     else {
-      lua_pushboolean( l, false );
+      lua_pushnumber( l, -1 );
     }
     return 1;
   }
@@ -272,8 +353,9 @@ namespace oz
     }
 
     lua.created->p = Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) );
-    synapse.put( lua.created );
-    return 0;
+    int index = synapse.put( lua.created );
+    lua_pushnumber( l, index );
+    return 1;
   }
 
   static int ozRemoveObj( lua_State *l )
@@ -304,8 +386,8 @@ namespace oz
       if( lua_isstring( l, 1 ) ) {
         log.println( "M! %s", lua_tostring( l, 1 ) );
       }
-      lua_settop( l, 0 );
     }
+    lua_settop( l, 0 );
 
     if( created != null ) {
       delete created;
@@ -326,6 +408,10 @@ namespace oz
     OZ_LUA_REGISTER( ozBindSelf );
     OZ_LUA_REGISTER( ozBindUser );
     OZ_LUA_REGISTER( ozBindCreated );
+    OZ_LUA_REGISTER( ozBindOverlaps );
+    OZ_LUA_REGISTER( ozBindNext );
+
+    OZ_LUA_REGISTER( ozIsSelf );
     OZ_LUA_REGISTER( ozIsNull );
     OZ_LUA_REGISTER( ozIsPut );
     OZ_LUA_REGISTER( ozIsDynObj );
@@ -335,6 +421,12 @@ namespace oz
     OZ_LUA_REGISTER( ozSetPos );
     OZ_LUA_REGISTER( ozAddPos );
     OZ_LUA_REGISTER( ozGetDim );
+
+    OZ_LUA_REGISTER( ozGetHeadingTo );
+    OZ_LUA_REGISTER( ozGetDistanceTo );
+
+    OZ_LUA_REGISTER( ozGetIndex );
+    OZ_LUA_REGISTER( ozGetType );
 
     OZ_LUA_REGISTER( ozGetLife );
     OZ_LUA_REGISTER( ozSetLife );
@@ -358,6 +450,7 @@ namespace oz
 
       if( luaL_dofile( l, res.path ) != 0 ) {
         log.printEnd( " Failed" );
+        throw Exception( "Matrix Lua script error" );
       }
       else {
         log.printEnd( " OK" );

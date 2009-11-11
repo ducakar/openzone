@@ -55,6 +55,46 @@ namespace nirvana
     return 0;
   }
 
+  static int ozBindAABBOverlaps( lua_State *l )
+  {
+    AABB aabb = AABB( Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) ),
+                      Vec3( lua_tonumber( l, 4 ), lua_tonumber( l, 5 ), lua_tonumber( l, 6 ) ) );
+    lua.objects.clear();
+    collider.getOverlaps( aabb, &lua.objects, null );
+    lua.index = 0;
+    return 0;
+  }
+
+  static int ozBindOverlaps( lua_State *l )
+  {
+    Vec3  p = ( *lua.obj )->p;
+    float dim = lua_tonumber( l, 1 );
+    AABB aabb = AABB( p, Vec3( dim, dim, dim ) );
+    lua.objects.clear();
+    collider.getOverlaps( aabb, &lua.objects, null );
+    lua.index = 0;
+    return 0;
+  }
+
+  static int ozBindNext( lua_State *l )
+  {
+    if( lua.index < lua.objects.length() ) {
+      lua.obj = &lua.objects[lua.index];
+      lua.index++;
+      lua_pushboolean( l, true );
+    }
+    else {
+      lua_pushboolean( l, false );
+    }
+    return 1;
+  }
+
+  static int ozIsSelf( lua_State *l )
+  {
+    lua_pushboolean( l, *lua.obj == lua.self );
+    return 1;
+  }
+
   static int ozIsNull( lua_State *l )
   {
     lua_pushboolean( l, *lua.obj == null );
@@ -104,6 +144,58 @@ namespace nirvana
     lua_pushnumber( l, ( *lua.obj )->dim.y );
     lua_pushnumber( l, ( *lua.obj )->dim.z );
     return 3;
+  }
+
+  static int ozGetHeadingTo( lua_State *l )
+  {
+    if( *lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( lua.obj == reinterpret_cast<Object**>( &lua.self ) ) {
+      OZ_LUA_ERROR( "selected object is self" );
+    }
+    float dx = lua.self->p.x - ( *lua.obj )->p.x;
+    float dy = ( *lua.obj )->p.y - lua.self->p.y;
+    float angle = Math::deg( Math::atan2( dx, dy ) );
+
+    lua_pushnumber( l, angle );
+    return 1;
+  }
+
+  static int ozGetDistanceTo( lua_State *l )
+  {
+    if( *lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( lua.obj == reinterpret_cast<Object**>( &lua.self ) ) {
+      OZ_LUA_ERROR( "selected object is self" );
+    }
+    float dx = lua.self->p.x - ( *lua.obj )->p.x;
+    float dy = lua.self->p.y - ( *lua.obj )->p.y;
+    float angle = Math::sqrt( dx*dx + dy*dy );
+
+    lua_pushnumber( l, angle );
+    return 1;
+  }
+
+  static int ozGetIndex( lua_State *l )
+  {
+    if( *lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+
+    lua_pushnumber( l, ( *lua.obj )->index );
+    return 1;
+  }
+
+  static int ozGetType( lua_State *l )
+  {
+    if( *lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+
+    lua_pushstring( l, ( *lua.obj )->type->name );
+    return 1;
   }
 
   static int ozGetLife( lua_State *l )
@@ -202,9 +294,33 @@ namespace nirvana
     return 0;
   }
 
+  static int ozActionUse( lua_State* )
+  {
+    lua.self->actions |= Bot::ACTION_USE;
+    return 0;
+  }
+
+  static int ozActionTake( lua_State* )
+  {
+    lua.self->actions |= Bot::ACTION_TAKE;
+    return 0;
+  }
+
   static int ozActionGrab( lua_State* )
   {
     lua.self->actions |= Bot::ACTION_GRAB;
+    return 0;
+  }
+
+  static int ozActionThrow( lua_State* )
+  {
+    lua.self->actions |= Bot::ACTION_THROW;
+    return 0;
+  }
+
+  static int ozActionSuicide( lua_State* )
+  {
+    lua.self->actions |= Bot::ACTION_SUICIDE;
     return 0;
   }
 
@@ -231,22 +347,39 @@ namespace nirvana
     return 0;
   }
 
-  void Lua::callFunc( const char *functionName )
+  void Lua::callFunc( const char *functionName, int botIndex )
   {
     assert( self != null );
+    assert( lua_gettop( l ) == 1 );
 
     obj    = reinterpret_cast<Object**>( &self );
     target = null;
 
     lua_getglobal( l, functionName );
-    lua_pcall( l, 0, 0, 0 );
+    lua_rawgeti( l, 1, botIndex );
+    lua_pcall( l, 1, 0, 0 );
 
-    if( lua_gettop( l ) != 0 ) {
-      if( lua_isstring( l, 1 ) ) {
-        log.println( "N! %s", lua_tostring( l, 1 ) );
-      }
+    if( lua_gettop( l ) > 1 && lua_isstring( l, -1 ) ) {
+      log.println( "N! %s", lua_tostring( l, -1 ) );
       lua_settop( l, 0 );
+      lua_getglobal( l, "ozMindData" );
     }
+  }
+
+  void Lua::registerMind( int botIndex )
+  {
+    assert( lua_gettop( l ) == 1 );
+
+    lua_newtable( l );
+    lua_rawseti( l, 1, botIndex );
+  }
+
+  void Lua::unregisterMind( int botIndex )
+  {
+    assert( lua_gettop( l ) == 1 );
+
+    lua_pushnil( l );
+    lua_rawseti( l, 1, botIndex );
   }
 
   void Lua::init()
@@ -262,6 +395,11 @@ namespace nirvana
 
     OZ_LUA_REGISTER( ozBindSelf );
     OZ_LUA_REGISTER( ozBindTarget );
+    OZ_LUA_REGISTER( ozBindOverlaps );
+    OZ_LUA_REGISTER( ozBindAABBOverlaps );
+    OZ_LUA_REGISTER( ozBindNext );
+
+    OZ_LUA_REGISTER( ozIsSelf );
     OZ_LUA_REGISTER( ozIsNull );
     OZ_LUA_REGISTER( ozIsPut );
     OZ_LUA_REGISTER( ozIsDynObj );
@@ -269,6 +407,13 @@ namespace nirvana
 
     OZ_LUA_REGISTER( ozGetPos );
     OZ_LUA_REGISTER( ozGetDim );
+
+    OZ_LUA_REGISTER( ozGetHeadingTo );
+    OZ_LUA_REGISTER( ozGetDistanceTo );
+
+    OZ_LUA_REGISTER( ozGetIndex );
+    OZ_LUA_REGISTER( ozGetType );
+
     OZ_LUA_REGISTER( ozGetLife );
     OZ_LUA_REGISTER( ozGetStamina );
 
@@ -285,11 +430,19 @@ namespace nirvana
     OZ_LUA_REGISTER( ozActionLeft );
     OZ_LUA_REGISTER( ozActionJump );
     OZ_LUA_REGISTER( ozActionCrouch );
+    OZ_LUA_REGISTER( ozActionUse );
+    OZ_LUA_REGISTER( ozActionTake );
     OZ_LUA_REGISTER( ozActionGrab );
+    OZ_LUA_REGISTER( ozActionThrow );
+    OZ_LUA_REGISTER( ozActionSuicide );
 
     OZ_LUA_REGISTER( ozStateIsRunning );
     OZ_LUA_REGISTER( ozStateSetRunning );
     OZ_LUA_REGISTER( ozStateToggleRunning );
+
+    lua_newtable( l );
+    lua_setglobal( l, "ozMindData" );
+    lua_getglobal( l, "ozMindData" );
 
     for( int i = 0; i < translator.nirvanaScripts.length(); i++ ) {
       const Translator::Resource &res = translator.nirvanaScripts[i];
@@ -298,6 +451,7 @@ namespace nirvana
 
       if( luaL_dofile( l, res.path ) != 0 ) {
         log.printEnd( " Failed" );
+        throw Exception( "Nirvana Lua script error" );
       }
       else {
         log.printEnd( " OK" );

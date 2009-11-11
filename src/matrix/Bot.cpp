@@ -40,7 +40,7 @@ namespace oz
       state |= DEATH_BIT;
     }
     if( state & DEATH_BIT ) {
-      life = max( 0.0f, life - type->life * BODY_FACEOUT_FACTOR );
+      life = max( 0.0f, life - type->life * BODY_FADEOUT_FACTOR );
       return;
     }
 
@@ -172,6 +172,9 @@ namespace oz
     }
     else {
       anim = ANIM_STAND;
+    }
+    if( actions & ACTION_SUICIDE ) {
+      life = type->life * 0.5f - EPSILON;
     }
 
     /*
@@ -451,7 +454,7 @@ namespace oz
 
   void Bot::onDestroy()
   {
-    if( life < 0.0f ) {
+    if( ~state & DEATH_BIT ) {
       Object::onDestroy();
     }
   }
@@ -459,6 +462,11 @@ namespace oz
   Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), bob( 0.0f ), grabObjIndex( -1 ),
       stepRate( 0.0f ), anim( ANIM_STAND ), weapon( null )
   {}
+
+  void Bot::kill()
+  {
+    life = type->life * 0.5f - EPSILON;
+  }
 
   void Bot::readFull( InputStream *istream )
   {
