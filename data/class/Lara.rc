@@ -4,15 +4,13 @@ dim.x "0.24"
 dim.y "0.24"
 dim.z "0.89"
 
-dimCrouch.x "0.24"
-dimCrouch.y "0.24"
 dimCrouch.z "0.79"
 
 life "100.0f"
 mass "100.0"
 
 modelType "MD3Static"
-modelPath "lara"
+modelName "lara"
 
 audioType "Basic"
 audioSample00 ""

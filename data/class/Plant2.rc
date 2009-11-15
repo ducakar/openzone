@@ -8,4 +8,4 @@ flag.wideCull "true"
 life "100.0f"
 
 modelType "MD2Static"
-modelPath "smplant"
+modelName "smplant"

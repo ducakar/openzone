@@ -45,7 +45,7 @@ namespace oz
     }
 
     clazz->modelType            = config->get( "modelType", "" );
-    clazz->modelName            = config->get( "modelPath", "" );
+    clazz->modelName            = config->get( "modelName", "" );
 
     if( clazz->modelType.length() > 0 ) {
       clazz->flags |= Object::MODEL_BIT;

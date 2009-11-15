@@ -195,13 +195,9 @@ namespace client
       /*
        * Camera
        */
-      if( camera.bot->state & Bot::FREELOOK_BIT ) {
+      if( camera.isThirdPerson && camera.isFreeLook ) {
         camera.h -= ui::mouse.overEdgeX * mouseXSens;
         camera.v += ui::mouse.overEdgeY * mouseYSens;
-
-        BotClass *clazz = static_cast<BotClass*>( camera.bot->type );
-        camera.h = bound( camera.h, clazz->lookLimitHMin, clazz->lookLimitHMax );
-        camera.v = bound( camera.v, clazz->lookLimitVMin, clazz->lookLimitVMax );
 
         if( input.keys[SDLK_UP] ) {
           camera.v += keyXSens * time;
@@ -217,11 +213,11 @@ namespace client
         }
       }
       else {
-        camera.h = 0.0f;
-        camera.v = 0.0f;
-
         camera.bot->h -= ui::mouse.overEdgeX * mouseXSens;
         camera.bot->v += ui::mouse.overEdgeY * mouseYSens;
+
+        camera.h = camera.bot->h;
+        camera.v = camera.bot->v;
 
         if( input.keys[SDLK_UP] ) {
           camera.bot->v += keyXSens * time;
@@ -265,14 +261,20 @@ namespace client
       if( input.keys[SDLK_LSHIFT] && !input.oldKeys[SDLK_LSHIFT] ) {
         camera.bot->state ^= Bot::RUNNING_BIT;
       }
-      if( input.keys[SDLK_LALT] && !input.oldKeys[SDLK_LALT] ) {
-        camera.bot->state ^= Bot::FREELOOK_BIT;
+      if( input.keys[SDLK_z] ) {
+        camera.bot->actions |= Bot::ACTION_EXIT;
+      }
+      if( input.keys[SDLK_x] ) {
+        camera.bot->actions |= Bot::ACTION_EJECT;
+      }
+      if( camera.isThirdPerson && input.keys[SDLK_LALT] && !input.oldKeys[SDLK_LALT] ) {
+        camera.isFreeLook = !camera.isFreeLook;
       }
       if( input.keys[SDLK_p] && !input.oldKeys[SDLK_p] ) {
         camera.bot->state ^= Bot::STEPPING_BIT;
       }
 
-      camera.bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE3_BIT | Bot::GESTURE4_BIT );
+      camera.bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE3_BIT | Bot::GESTURE4_BIT | Bot::GESTURE_ALL_BIT );
       if( input.keys[SDLK_f] ) {
         camera.bot->state |= Bot::GESTURE0_BIT;
       }
@@ -288,9 +290,14 @@ namespace client
       if( input.keys[SDLK_k] ) {
         camera.bot->state |= Bot::GESTURE4_BIT;
       }
+      if( input.keys[SDLK_l] ) {
+        camera.bot->state |= Bot::GESTURE_ALL_BIT;
+      }
 
-      if( input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
+      if( camera.botIndex >= 0 && input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
         camera.isThirdPerson = !camera.isThirdPerson;
+        camera.h = camera.bot->h;
+        camera.v = camera.bot->v;
       }
 
       if( state == GAME ) {
@@ -311,7 +318,7 @@ namespace client
 
     if( input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
       if( camera.botIndex < 0 ) {
-        Bot *me = static_cast<Bot*>( translator.createObject( "Lord", camera.p ) );
+        Bot *me = static_cast<Bot*>( translator.createObject( "Droid", camera.p ) );
         me->h = camera.h;
         me->v = camera.v;
         me->state |= Bot::PLAYER_BIT;

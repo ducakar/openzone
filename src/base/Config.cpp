@@ -169,16 +169,16 @@ namespace oz
 
         // error if "var" tag doesn't has "name" and "value" attributes
         if( key == null || value == null ) {
-          free( key );
-          free( value );
+          xmlFree( key );
+          xmlFree( value );
 
           error = -1;
           break;
         }
         add( reinterpret_cast<const char*>( key ), reinterpret_cast<const char*>( value ) );
 
-        free( key );
-        free( value );
+        xmlFree( key );
+        xmlFree( value );
       }
       error = xmlTextReaderRead( reader );
     }

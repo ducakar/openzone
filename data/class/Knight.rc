@@ -1,7 +1,7 @@
 base "Bot"
 
 modelType "MD2"
-modelPath "knight"
+modelName "knight"
 
 audioType "Basic"
 audioSample00 ""

@@ -32,36 +32,41 @@ namespace oz
       static const int ACTION_TAKE     = 0x00000080;
       static const int ACTION_GRAB     = 0x00000100;
       static const int ACTION_THROW    = 0x00000200;
-      static const int ACTION_SUICIDE  = 0x00000400;
+      static const int ACTION_EXIT     = 0x00000400;
+      static const int ACTION_EJECT    = 0x00000800;
+      static const int ACTION_SUICIDE  = 0x00001000;
 
       static const int EVENT_LAND      = 4;
       static const int EVENT_JUMP      = 5;
       static const int EVENT_FLIP      = 6;
       static const int EVENT_DEATH     = 7;
 
+      static const int PLAYER_BIT      = 0x00000001;
+      static const int DEATH_BIT       = 0x00000002;
+
       // can step over obstacles, e.g. walk up the stairs
-      static const int STEPPING_BIT    = 0x00000001;
-      static const int CROUCHING_BIT   = 0x00000002;
-      static const int FREELOOK_BIT    = 0x00000004;
-      static const int JUMP_SCHED_BIT  = 0x00000008;
-      static const int RUNNING_BIT     = 0x00000010;
-      static const int SHOOTING_BIT    = 0x00000020;
-      static const int GROUNDED_BIT    = 0x00000040;
-      static const int MOVING_BIT      = 0x00000080;
-      static const int GESTURE0_BIT    = 0x00000100;
-      static const int GESTURE1_BIT    = 0x00000200;
-      static const int GESTURE2_BIT    = 0x00000400;
-      static const int GESTURE3_BIT    = 0x00000800;
-      static const int GESTURE4_BIT    = 0x00001000;
-      static const int DEATH_BIT       = 0x00002000;
+      static const int STEPPING_BIT    = 0x00000004;
+      static const int CROUCHING_BIT   = 0x00000008;
+      static const int JUMP_SCHED_BIT  = 0x00000010;
+      static const int RUNNING_BIT     = 0x00000020;
+      static const int SHOOTING_BIT    = 0x00000040;
+      static const int GROUNDED_BIT    = 0x00000080;
+      static const int MOVING_BIT      = 0x00000100;
+
+      static const int GESTURE0_BIT    = 0x00001000;
+      static const int GESTURE1_BIT    = 0x00002000;
+      static const int GESTURE2_BIT    = 0x00004000;
+      static const int GESTURE3_BIT    = 0x00008000;
+      static const int GESTURE4_BIT    = 0x00010000;
+      static const int GESTURE_ALL_BIT = 0x00020000;
       // bot is controlled by a player, nirvana shouldn't bind a mind to it
-      static const int PLAYER_BIT      = 0x00004000;
 
       static const float GRAB_EPSILON;
       static const float GRAB_STRING_RATIO;
       static const float GRAB_MOM_RATIO;
       static const float GRAB_MOM_MAX;
       static const float GRAB_MOM_MAX_SQ;
+      static const float DEAD_BODY_LIFT;
 
       enum AnimEnum
       {
@@ -92,42 +97,41 @@ namespace oz
 
     protected:
 
-      void onUpdate();
-      void onHit( const Hit *hit, float hitMomentum );
-      void onDestroy();
+      virtual void onDestroy();
+      virtual void onHit( const Hit *hit, float hitMomentum );
+      virtual void onUpdate();
 
     public:
 
       float    h, v;
       int      state, oldState;
       int      actions, oldActions;
-      float    stamina;
 
-      float    bob;
-      Vec3     camPos;
+      float    stamina;
+      float    stepRate;
 
       int      grabObjIndex;
       float    grabHandle;
 
-      float    stepRate;
-      AnimEnum anim;
-
-      Weapon   *weapon;
+      int      vehicleIndex;
       Vector<Object*> items;
+      Weapon   *weapon;
+
+      float    bob;
+      Vec3     camPos;
+      AnimEnum anim;
 
       explicit Bot();
 
-      Quat getRot() const
-      {
-        return Quat::rotZYX( Math::rad( h ), 0.0f, Math::rad( v ) );
-      }
-
+      void enter( int vehicleIndex );
+      void exit();
       void kill();
 
       virtual void readFull( InputStream *istream );
       virtual void writeFull( OutputStream *ostream ) const;
       virtual void readUpdate( InputStream *istream );
       virtual void writeUpdate( OutputStream *ostream ) const;
+
   };
 
 }

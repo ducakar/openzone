@@ -24,7 +24,7 @@ namespace client
 
   Audio *BasicAudio::create( const Object *obj )
   {
-    assert( obj->flags & Object::DYNAMIC_BIT );
+    assert( ( obj->flags & Object::DYNAMIC_BIT ) || ( obj->flags & Object::BOT_BIT ) );
 
     return new BasicAudio( obj );
   }

@@ -150,7 +150,10 @@ namespace client
 
     // highlight the object the camera is looking at
     taggedObjIndex = -1;
-    if( !ui::mouse.doShow ) {
+    crosshairArea->showUse = false;
+    crosshairArea->showMount = false;
+
+    if( !( ui::mouse.doShow || ( camera.isThirdPerson && camera.isFreeLook ) ) ) {
       if( camera.bot == null ) {
         collider.translate( camera.p, camera.at * 2.0f );
         taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
@@ -165,8 +168,16 @@ namespace client
       }
     }
 
-    crosshairArea->showUse = taggedObjIndex >= 0 &&
-        ( world.objects[taggedObjIndex]->flags & Object::USE_FUNC_BIT );
+    if( taggedObjIndex >= 0 ) {
+      Object *obj = world.objects[taggedObjIndex];
+
+      if( obj->flags & Object::VEHICLE_BIT ) {
+        crosshairArea->showMount = true;
+      }
+      else if( obj->flags & Object::USE_FUNC_BIT ) {
+        crosshairArea->showUse = true;
+      }
+    }
 
     float minXCenter = static_cast<float>( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
         Cell::SIZE / 2.0f;

@@ -55,11 +55,6 @@ namespace oz
 
     int    state;
 
-    float  lookLimitHMin;
-    float  lookLimitHMax;
-    float  lookLimitVMin;
-    float  lookLimitVMax;
-
     String mindType;
     String mindFunction;
 

@@ -16,13 +16,6 @@
 namespace oz
 {
 
-  void DynObject::onDestroy()
-  {
-    synapse.genParts( type->nDebris, p, Vec3::zero(), type->debrisVelocitySpread,
-                      type->debrisRejection, type->debrisMass, type->debrisLifeTime,
-                      type->debrisColor, type->debrisColorSpread );
-  }
-
   void DynObject::readFull( InputStream *istream )
   {
     Object::readFull( istream );

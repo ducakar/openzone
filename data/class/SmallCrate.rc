@@ -14,7 +14,7 @@ debrisColor.b "0.19"
 debrisColorSpread "0.05"
 
 modelType "OBJ"
-modelPath "smallCrate"
+modelName "smallCrate"
 
 audioType "Basic"
 audioSample00 "destroy_wood1"

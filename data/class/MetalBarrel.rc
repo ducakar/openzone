@@ -10,7 +10,7 @@ mass "50.0"
 lift "7.0"
 
 modelType "MD2Static"
-modelPath "barrel1"
+modelName "barrel1"
 
 audioType "Basic"
 audioSample00 "destroy_metal1"

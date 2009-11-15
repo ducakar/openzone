@@ -10,56 +10,23 @@
 #pragma once
 
 #include "DynObjectClass.h"
+#include "Vehicle.h"
 
 namespace oz
 {
 
   struct VehicleClass : DynObjectClass
   {
-    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
-        Object::HIT_FUNC_BIT | Object::BOT_BIT;
-    static const int DEFAULT_FLAGS = Object::CLIP_BIT | Object::CLIMBER_BIT | Object::PUSHER_BIT;
+    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT | Object::USE_FUNC_BIT |
+        Object::UPDATE_FUNC_BIT | Object::VEHICLE_BIT;
+    static const int DEFAULT_FLAGS = Object::CLIP_BIT;
 
-    Vec3   dimCrouch;
+    int   state;
 
-    Vec3   camPos;
-    Vec3   camPosCrouch;
+    Vec3  crewPos[Vehicle::CREW_MAX];
+    Quat  crewRot[Vehicle::CREW_MAX];
 
-    float  bobInc;
-    float  bobAmplitude;
-
-    float  walkMomentum;
-    float  runMomentum;
-    float  crouchMomentum;
-    float  jumpMomentum;
-
-    float  stepInc;
-    float  stepMax;
-    float  stepRate;
-    float  stepRateSupp;
-
-    float  airControl;
-    float  climbControl;
-    float  waterControl;
-
-    float  grabDistance;
-    float  grabMass;
-    float  throwMomentum;
-
-    float  stamina;
-    float  staminaGain;
-    float  staminaWaterDrain;
-    float  staminaRunDrain;
-    float  staminaJumpDrain;
-
-    int    state;
-
-    float  lookLimitHMin;
-    float  lookLimitHMax;
-    float  lookLimitVMin;
-    float  lookLimitVMax;
-
-    String mindType;
+    float moveMomentum;
 
     static ObjectClass *init( const String &name, const Config *config );
 

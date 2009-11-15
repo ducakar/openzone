@@ -12,6 +12,7 @@
 #include "Camera.h"
 
 #include "matrix/Collider.h"
+#include "matrix/Vehicle.h"
 
 namespace oz
 {
@@ -48,45 +49,51 @@ namespace client
 
   void Camera::update()
   {
-    oldP = p;
-    relRot = Quat::rotZYX( Math::rad( h ), 0.0f, Math::rad( v ) );
+    h       = Math::mod( h + 360.0f, 360.0f );
+    v       = bound( v, -90.0f, 90.0f );
 
-    bot = botIndex == -1 ? null : static_cast<Bot*>( world.objects[botIndex] );
+    rot     = Quat::rotZYX( Math::rad( h ), 0.0f, Math::rad( v ) );
+    rotMat  = rot.rotMat44();
+    rotTMat = ~rotMat;
+
+    right   = rotMat.x;
+    at      = rotMat.y;
+    up      = rotMat.z;
+
+    oldP    = p;
+
+    bot     = botIndex == -1 ? null : static_cast<Bot*>( world.objects[botIndex] );
 
     // world.objects[botIndex] might be null
     if( bot == null || ( bot->state & Bot::DEATH_BIT ) ) {
       botIndex = -1;
       bot = null;
-      rot = relRot;
+    }
+    else if( isThirdPerson ) {
+      Vec3 origin = bot->p + bot->camPos;
+      Vec3 offset = -at * thirdPersonDist;
 
-      rotMat = rot.rotMat44();
-      rotTMat = ~rotMat;
+      collider.translate( origin, offset, bot );
+      offset *= collider.hit.ratio;
+      offset += at * THIRD_PERSON_CLIP_DIST;
 
-      right = rotMat.x;
-      at = rotMat.y;
-      up = rotMat.z;
+      p.x = origin.x + offset.x;
+      p.y = origin.y + offset.y;
+      p.z = ( origin.z + offset.z ) * smoothCoef_1 + oldP.z * smoothCoef;
     }
     else {
-      rot = Quat::rotZYX( Math::rad( bot->h + h ), 0.0f, Math::rad( bot->v + v ) );
+      if( bot->vehicleIndex >= 0 ) {
+        Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->vehicleIndex] );
 
-      rotMat = rot.rotMat44();
-      rotTMat = ~rotMat;
+        rot     = veh->rot;
+        rotMat  = rot.rotMat44();
+        rotTMat = ~rotMat;
 
-      right = rotMat.x;
-      at = rotMat.y;
-      up = rotMat.z;
+        right   = rotMat.x;
+        at      = rotMat.y;
+        up      = rotMat.z;
 
-      if( isThirdPerson ) {
-        Vec3 origin = bot->p + bot->camPos;
-        Vec3 offset = -at * thirdPersonDist;
-
-        collider.translate( origin, offset, bot );
-        offset *= collider.hit.ratio;
-        offset += at * THIRD_PERSON_CLIP_DIST;
-
-        p.x = origin.x + offset.x;
-        p.y = origin.y + offset.y;
-        p.z = ( origin.z + offset.z ) * smoothCoef_1 + oldP.z * smoothCoef;
+        p = bot->p + rotMat * bot->camPos;
       }
       else {
         p = ( bot->p + bot->camPos ) * smoothCoef_1 + oldP * smoothCoef;

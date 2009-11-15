@@ -399,7 +399,7 @@ namespace oz
   bool BSP::load( const char *name )
   {
     Config bspConfig;
-    if( !bspConfig.load( String( "bsp/" ) + name + String( ".rc" ) ) ) {
+    if( !bspConfig.load( String( "maps/" ) + name + String( ".rc" ) ) ) {
       return false;
     }
 
@@ -414,7 +414,7 @@ namespace oz
       return false;
     }
 
-    if( !loadQBSP( String( "bsp/" ) + name + String( ".bsp" ), scale, maxDim ) ) {
+    if( !loadQBSP( String( "maps/" ) + name + String( ".bsp" ), scale, maxDim ) ) {
       free();
       return false;
     }
