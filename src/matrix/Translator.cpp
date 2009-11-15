@@ -27,7 +27,7 @@ namespace oz
 
   Translator translator;
 
-  bool Translator::init()
+  void Translator::init()
   {
     OZ_REGISTER_BASECLASS( Object );
     OZ_REGISTER_BASECLASS( DynObject );
@@ -51,7 +51,7 @@ namespace oz
       log.println( "Cannot open directory 'textures/oz'" );
       log.unindent();
       log.println( "}" );
-      return false;
+      throw Exception( "Translator initialization failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -69,7 +69,7 @@ namespace oz
       String baseName = name.substring( 0, dot );
       if( textureIndices.contains( baseName ) ) {
         log.println( "duplicated texture: %s", baseName.cstr() );
-        return false;
+        throw Exception( "Translator initialization failure" );
       }
       textureIndices.add( baseName, textures.length() );
       textures << Resource( baseName, fileName );
@@ -90,7 +90,7 @@ namespace oz
       log.println( "Cannot open directory 'snd'" );
       log.unindent();
       log.println( "}" );
-      return false;
+      throw Exception( "Translator initialization failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -126,14 +126,14 @@ namespace oz
     log.println( "BSP structures (*.rc in 'bsp') {" );
     log.indent();
 
-    dir = opendir( "bsp" );
+    dir = opendir( "maps" );
     if( dir == null ) {
       free();
 
-      log.println( "Cannot open directory 'bsp'" );
+      log.println( "Cannot open directory 'maps'" );
       log.unindent();
       log.println( "}" );
-      return false;
+      throw Exception( "Translator initialization failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -147,11 +147,11 @@ namespace oz
         continue;
       }
 
-      String fileName = "bsp/" + name;
+      String fileName = "maps/" + name;
       String baseName = name.substring( 0, dot );
       if( bspIndices.contains( baseName ) ) {
         log.println( "duplicated bsp: %s", baseName.cstr() );
-        return false;
+        throw Exception( "Translator initialization failure" );
       }
       bspIndices.add( baseName, bsps.length() );
       bsps << Resource( baseName, "" );
@@ -172,7 +172,7 @@ namespace oz
       log.println( "Cannot open directory 'class'" );
       log.unindent();
       log.println( "}" );
-      return false;
+      throw Exception( "Translator initialization failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -229,7 +229,7 @@ namespace oz
       log.println( "Cannot open directory 'lua/matrix'" );
       log.unindent();
       log.println( "}" );
-      return false;
+      throw Exception( "Translator initialization failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -263,7 +263,7 @@ namespace oz
       log.println( "Cannot open directory 'lua/nirvana'" );
       log.unindent();
       log.println( "}" );
-      return false;
+      throw Exception( "Translator initialization failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -289,8 +289,6 @@ namespace oz
     log.println( "}" );
     log.unindent();
     log.println( "}" );
-
-    return true;
   }
 
   int Translator::textureIndex( const char *file )

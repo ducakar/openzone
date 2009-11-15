@@ -94,7 +94,7 @@ namespace oz
         }
       }
 
-      bool init();
+      void init();
       void free();
   };
 

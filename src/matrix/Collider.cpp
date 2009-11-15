@@ -129,8 +129,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -166,8 +166,8 @@ namespace oz
       return false;
     }
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         const Cell &cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
@@ -191,8 +191,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -502,8 +502,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -610,8 +610,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -648,8 +648,8 @@ namespace oz
       return false;
     }
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
@@ -673,8 +673,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -970,8 +970,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -1017,8 +1017,8 @@ namespace oz
   {
     assert( objects != null || structs != null );
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         if( structs != null ) {
@@ -1053,8 +1053,8 @@ namespace oz
   {
     assert( objects != null );
 
-    for( int x = world.minX; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = minX; x <= maxX; x++ ) {
+      for( int y = minY; y <= maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         if( objects != null ) {

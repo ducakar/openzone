@@ -24,6 +24,7 @@ namespace ui
 
       int crossTexId;
       int useTexId;
+      int mountTexId;
       int grabTexId;
       int dim;
 
@@ -34,6 +35,7 @@ namespace ui
     public:
 
       bool showUse;
+      bool showMount;
 
       CrosshairArea( int size );
       virtual ~CrosshairArea();

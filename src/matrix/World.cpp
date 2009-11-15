@@ -11,6 +11,8 @@
 
 #include "World.h"
 
+#include "Collider.h"
+
 namespace oz
 {
 
@@ -52,10 +54,10 @@ namespace oz
       }
     }
 
-    getInters( *str, EPSILON );
+    collider.getInters( *str, EPSILON );
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = collider.minX; x <= collider.maxX; x++ ) {
+      for( int y = collider.minY; y <= collider.maxY; y++ ) {
         cells[x][y].structures << str->index;
       }
     }
@@ -63,10 +65,10 @@ namespace oz
 
   void World::unposition( Structure *str )
   {
-    getInters( *str, EPSILON );
+    collider.getInters( *str, EPSILON );
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = collider.minX; x <= collider.maxX; x++ ) {
+      for( int y = collider.minY; y <= collider.maxY; y++ ) {
         cells[x][y].structures.exclude( str->index );
       }
     }
@@ -74,7 +76,7 @@ namespace oz
 
   void World::position( Object *obj )
   {
-    obj->cell = world.getCell( obj->p );
+    obj->cell = collider.getCell( obj->p );
     obj->cell->objects << obj;
   }
 
@@ -87,7 +89,7 @@ namespace oz
   void World::reposition( Object *obj )
   {
     Cell *oldCell = obj->cell;
-    Cell *newCell = world.getCell( obj->p );
+    Cell *newCell = collider.getCell( obj->p );
 
     if( newCell != oldCell ) {
       oldCell->objects.remove( obj );
@@ -98,7 +100,7 @@ namespace oz
 
   void World::position( Particle *part )
   {
-    part->cell = world.getCell( part->p );
+    part->cell = collider.getCell( part->p );
     part->cell->particles << part;
   }
 
@@ -111,7 +113,7 @@ namespace oz
   void World::reposition( Particle *part )
   {
     Cell *oldCell = part->cell;
-    Cell *newCell = world.getCell( part->p );
+    Cell *newCell = collider.getCell( part->p );
 
     if( newCell != oldCell ) {
       oldCell->particles.remove( part );

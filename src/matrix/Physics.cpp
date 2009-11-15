@@ -25,6 +25,7 @@ namespace oz
 
   const float Physics::STICK_VELOCITY       = 0.015f;
   const float Physics::SLICK_STICK_VELOCITY = 0.0001f;
+  const float Physics::AIR_STICK_VELOCITY   = 0.0001f;
   const float Physics::AIR_FRICTION         = 0.02f;
   const float Physics::IN_WATER_FRICTION    = 0.08f;
   const float Physics::ON_WATER_FRICTION    = 0.30f;
@@ -76,7 +77,7 @@ namespace oz
     }
     while( true );
 
-    Cell *newCell = world.getCell( part->p );
+    Cell *newCell = collider.getCell( part->p );
 
     if( oldCell != newCell ) {
       part->cell = newCell;
@@ -96,7 +97,7 @@ namespace oz
     {
       // in air
       if( obj->flags & Object::HOVER_BIT ) {
-        if( obj->momentum.sqL() <= STICK_VELOCITY ) {
+        if( obj->momentum.sqL() <= AIR_STICK_VELOCITY ) {
           obj->momentum.setZero();
         }
         else {
@@ -222,8 +223,8 @@ namespace oz
       }
     }
 
-    obj->flags &= ~( Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
-        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
+    obj->flags &= ~( Object::ON_FLOOR_BIT | Object::IN_WATER_BIT | Object::ON_LADDER_BIT |
+        Object::ON_SLICK_BIT );
     obj->lower = -1;
 
     return true;
@@ -395,7 +396,7 @@ namespace oz
       obj->addEvent( Object::EVENT_SPLASH, obj->velocity.z );
     }
 
-    Cell *newCell = world.getCell( obj->p );
+    Cell *newCell = collider.getCell( obj->p );
 
     if( oldCell != newCell ) {
       obj->cell = newCell;

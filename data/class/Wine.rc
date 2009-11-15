@@ -5,3 +5,6 @@ dim.y "0.1"
 dim.z "0.2"
 
 flag.item "true"
+
+modelType "MD2Static"
+modelName "winebottle"

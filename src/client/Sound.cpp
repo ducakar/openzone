@@ -11,6 +11,7 @@
 
 #include "Sound.h"
 
+#include "matrix/Collider.h"
 #include "Camera.h"
 #include "Context.h"
 
@@ -174,10 +175,10 @@ namespace client
     alListenerfv( AL_ORIENTATION, camera.at );
     alListenerfv( AL_POSITION, camera.p );
 
-    world.getInters( camera.p, DMAX + AABB::MAX_DIM );
+    collider.getInters( camera.p, DMAX + AABB::MAX_DIM );
 
-    for( int x = world.minX ; x <= world.maxX; x++ ) {
-      for( int y = world.minY; y <= world.maxY; y++ ) {
+    for( int x = collider.minX ; x <= collider.maxX; x++ ) {
+      for( int y = collider.minY; y <= collider.maxY; y++ ) {
         playCell( x, y );
       }
     }

@@ -11,7 +11,7 @@ onUse "heal50"
 mass "2.0"
 
 modelType "OBJ"
-modelPath "health"
+modelName "health"
 
 audioType "Basic"
 audioSample00 ""

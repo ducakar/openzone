@@ -91,7 +91,7 @@ namespace oz
 
     synapse.addObject( "FirstAid", Vec3( 50, -36, 37 ) );
 
-//    synapse.addObject( "Raptor", Vec3( 70, -60, 40 ) );
+    synapse.addObject( "Raptor", Vec3( 70, -60, 37 ) );
 
     synapse.addStruct( "castle", Vec3( 57, -33, 43 ), Structure::R0 );
 
@@ -102,8 +102,7 @@ namespace oz
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 38 ) );
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 40 ) );
 
-//    synapse.addObject( "Tree2",  Vec3( 0, 80, world.terra.height( 0, 80 ) + 3.5f ) );
-//    synapse.addObject( "Tree3", Vec3( 77.8, -40, world.terra.height( 78, -40 ) + 6.5f ) );
+    synapse.addObject( "Tree3", Vec3( 77.7, -40, world.terra.height( 78, -40 ) + 6.5f ) );
 
     synapse.addObject( "SmallCrate", Vec3( 51, -42, 36 ) );
     synapse.addObject( "SmallCrate", Vec3( 51, -42, 37 ) );

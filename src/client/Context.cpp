@@ -15,6 +15,7 @@
 #include "MD2StaticModel.h"
 #include "MD3StaticModel.h"
 #include "OBJModel.h"
+#include "OBJVehicleModel.h"
 #include "BasicAudio.h"
 
 #include <SDL_image.h>
@@ -573,6 +574,7 @@ namespace client
     OZ_REGISTER_MODELCLASS( MD2Static );
     OZ_REGISTER_MODELCLASS( MD3Static );
     OZ_REGISTER_MODELCLASS( OBJ );
+    OZ_REGISTER_MODELCLASS( OBJVehicle );
 
     OZ_REGISTER_AUDIOCLASS( Basic );
 

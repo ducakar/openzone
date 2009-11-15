@@ -4,8 +4,6 @@ dim.x "0.24"
 dim.y "0.24"
 dim.z "0.64"
 
-dimCrouch.x "0.24"
-dimCrouch.y "0.24"
 dimCrouch.z "0.49"
 
 life "100.0f"
@@ -22,7 +20,7 @@ debrisColor.z "0.0"
 debrisColorSpread "0.2"
 
 modelType "MD2"
-modelPath "goblin"
+modelName "goblin"
 
 audioType "Basic"
 audioSample00 ""

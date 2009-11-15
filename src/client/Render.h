@@ -44,16 +44,8 @@ namespace client
 
       static const float STAR_SIZE;
 
-      static const int   DELAYED_LISTS_MAX = 256;
-
       // cleanup interval (remove unused models)
       static const int   CLEAR_INTERVAL = 303 * 1000;
-
-      struct DelayedList
-      {
-        float distance;
-        uint  list;
-      };
 
     private:
 

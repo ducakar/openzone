@@ -39,49 +39,55 @@ namespace oz
       static const int INTERNAL_BITS_MASK = 0xffffff00;
 
       /*
-       * FUNCTION FLAGS (0x0f000000)
+       * TYPE FLAGS (0xfc000000)
+       */
+
+      // DynObject
+      static const int DYNAMIC_BIT        = 0x80000000;
+      // can be put into inventory
+      static const int ITEM_BIT           = 0x40000000;
+      // Weapon
+      static const int WEAPON_BIT         = 0x20000000;
+      // Bot
+      static const int BOT_BIT            = 0x10000000;
+      // Vehicle
+      static const int VEHICLE_BIT        = 0x08000000;
+
+      /*
+       * FUNCTION FLAGS (0x03f0000)
        */
 
       // if the onDestroy function should be called on destruction
-      static const int DESTROY_FUNC_BIT   = 0x08000000;
+      static const int DESTROY_FUNC_BIT   = 0x01000000;
 
       // if the onDamage function should be called on damage received
-      static const int DAMAGE_FUNC_BIT    = 0x04000000;
+      static const int DAMAGE_FUNC_BIT    = 0x00800000;
 
       // if the onHit function should be called on hit
-      static const int HIT_FUNC_BIT       = 0x02000000;
+      static const int HIT_FUNC_BIT       = 0x00400000;
 
       // if the onUpdate method should be called each step
-      static const int UPDATE_FUNC_BIT    = 0x01000000;
+      static const int UPDATE_FUNC_BIT    = 0x00200000;
 
       // if the onUse function should be called when object is used
-      static const int USE_FUNC_BIT       = 0x00800000;
+      static const int USE_FUNC_BIT       = 0x00100000;
 
       /*
-       * FRONTEND OBJECTS (0x00c00000)
-       */
-
-      // if the object has a model object in frontend
-      static const int MODEL_BIT          = 0x00400000;
-
-      // if the object has an audio object in frontend
-      static const int AUDIO_BIT          = 0x00200000;
-
-      /*
-       * CUT FLAG (0x00100000)
+       * CUT FLAG (0x00080000)
        */
 
       // if object is pending for cut/removal; needed to protect against double cuts/removals
-      static const int CUT_BIT            = 0x00100000;
+      static const int CUT_BIT            = 0x00080000;
 
       /*
-       * TYPE FLAGS (0x000f0000)
+       * FRONTEND OBJECTS (0x00030000)
        */
 
-      static const int DYNAMIC_BIT        = 0x00080000;
-      static const int ITEM_BIT           = 0x00040000;
-      static const int BOT_BIT            = 0x00020000;
-      static const int VEHICLE_BIT        = 0x00010000;
+      // if the object has a model object in frontend
+      static const int MODEL_BIT          = 0x00020000;
+
+      // if the object has an audio object in frontend
+      static const int AUDIO_BIT          = 0x00010000;
 
       /*
        * DYNAMIC OBJECTS' BITS (interal 0x0000ff00, config 0x000000f0)
@@ -94,7 +100,7 @@ namespace oz
       static const int HIT_BIT            = 0x00004000;
 
       // if the object is currently fricting
-      static const int FRICTING_BIT       = 0x00001000;
+      static const int FRICTING_BIT       = 0x00002000;
 
       // if the the object lies or moves on a structure, terrain or non-dynamic object
       // (if on another dynamic object, we determine that with "lower" index)

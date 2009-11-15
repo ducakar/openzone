@@ -26,6 +26,7 @@ namespace oz
       static const float G_VELOCITY;
 
       static const float STICK_VELOCITY;
+      static const float AIR_STICK_VELOCITY;
       static const float SLICK_STICK_VELOCITY;
       static const float AIR_FRICTION;
       static const float IN_WATER_FRICTION;

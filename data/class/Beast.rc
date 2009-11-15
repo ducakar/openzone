@@ -7,8 +7,6 @@ dim.z                           "1.09"
 life                            "100.0"
 mass                            "100.0"
 
-dimCrouch.x                     "0.44"
-dimCrouch.y                     "0.44"
 dimCrouch.z                     "0.79"
 
 nDebris                         "8"
@@ -22,7 +20,7 @@ debrisColor.b                   "0.0"
 debrisColorSpread               "0.3"
 
 modelType                       "MD2"
-modelPath                       "hobgoblin"
+modelName                       "hobgoblin"
 
 audioType                       "Basic"
 audioSample00                   ""
@@ -55,11 +53,6 @@ throwMomentum                   "10.0"
 staminaWaterDrain               "0.07"
 staminaRunDrain                 "0.07"
 staminaJumpDrain                "3.0"
-
-lookLimitHMin                   "-135.0"
-lookLimitHMax                   "135.0"
-lookLimitVMmin                  "-45.0"
-lookLimitVMmax                  "45.0"
 
 mindType                        "Lua"
 mindFunction                    "beastie"

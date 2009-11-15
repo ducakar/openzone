@@ -82,15 +82,12 @@ namespace oz
       throw Exception( "Invalid object lift. Should be >= 0." );
     }
 
-    clazz->dimCrouch.x          = config->get( "dimCrouch.x", 0.44f );
-    clazz->dimCrouch.y          = config->get( "dimCrouch.y", 0.44f );
+    clazz->dimCrouch.x          = clazz->dim.x;
+    clazz->dimCrouch.y          = clazz->dim.y;
     clazz->dimCrouch.z          = config->get( "dimCrouch.z", 0.79f );
 
-    if( clazz->dimCrouch.x < 0.0f || clazz->dimCrouch.x > AABB::REAL_MAX_DIM ||
-        clazz->dimCrouch.y < 0.0f || clazz->dimCrouch.y > AABB::REAL_MAX_DIM ||
-        clazz->dimCrouch.z < 0.0f )
-    {
-      throw Exception( "Invalid object crouch dimensions. Should be >= 0 and <= 2.99." );
+    if( clazz->dimCrouch.z < 0.0f ) {
+      throw Exception( "Invalid bot crouch dimensions. Should be >= 0." );
     }
 
     clazz->camPos.x             = config->get( "camPos.x", 0.00f );
@@ -130,11 +127,6 @@ namespace oz
 
     clazz->state                = config->get( "state", Bot::STEPPING_BIT );
 
-    clazz->lookLimitHMin        = config->get( "lookLimitHMin", -90.0f );
-    clazz->lookLimitHMax        = config->get( "lookLimitHMax", +90.0f );
-    clazz->lookLimitVMin        = config->get( "lookLimitVMin", -30.0f );
-    clazz->lookLimitVMax        = config->get( "lookLimitVMax", +30.0f );
-
     clazz->mindType             = config->get( "mindType", "" );
     clazz->mindFunction         = config->get( "mindFunction", "" );
 
@@ -161,6 +153,7 @@ namespace oz
 
     obj->camPos   = camPos;
     obj->state    = state;
+    obj->oldState = state;
     obj->stamina  = stamina;
 
     return obj;

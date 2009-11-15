@@ -11,9 +11,10 @@
 
 #include "Bot.h"
 
-#include "BotClass.h"
 #include "Synapse.h"
 #include "Physics.h"
+#include "BotClass.h"
+#include "Vehicle.h"
 
 namespace oz
 {
@@ -24,6 +25,23 @@ namespace oz
   // should be smaller than abs( Physics::HIT_MOMENTUM )
   const float Bot::GRAB_MOM_MAX = 1.0f;
   const float Bot::GRAB_MOM_MAX_SQ = 1.0f;
+  const float Bot::DEAD_BODY_LIFT = 100.0f;
+
+  void Bot::onDestroy()
+  {
+    if( ~state & DEATH_BIT ) {
+      Object::onDestroy();
+    }
+  }
+
+  void Bot::onHit( const Hit *hit, float hitMomentum )
+  {
+    if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
+      assert( hitMomentum <= 0.0f );
+
+      addEvent( EVENT_LAND, hitMomentum );
+    }
+  }
 
   void Bot::onUpdate()
   {
@@ -55,6 +73,17 @@ namespace oz
 
     hvsc[4] = hvsc[3] * hvsc[0];
     hvsc[5] = hvsc[3] * hvsc[1];
+
+    if( vehicleIndex >= 0 ) {
+      Vehicle *vehicle = static_cast<Vehicle*>( world.objects[vehicleIndex] );
+
+      if( vehicle == null || ( actions & ~oldActions & ACTION_EXIT ) ) {
+        exit();
+      }
+      else {
+        return;
+      }
+    }
 
     /*
      * STATE
@@ -146,7 +175,10 @@ namespace oz
      * ANIMATION
      */
 
-    if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
+    if( ( actions & ACTION_JUMP ) && !isGrounded ) {
+      anim = ANIM_JUMP;
+    }
+    else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
       anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_WALK : ANIM_RUN;
     }
     else if( state & CROUCHING_BIT ) {
@@ -169,6 +201,9 @@ namespace oz
       if( ~oldState & GESTURE4_BIT ) {
         addEvent( EVENT_FLIP, 1.0f );
       }
+    }
+    else if( state & GESTURE_ALL_BIT ) {
+      anim = ANIM_MAX;
     }
     else {
       anim = ANIM_STAND;
@@ -443,25 +478,31 @@ namespace oz
     oldActions = actions;
   }
 
-  void Bot::onHit( const Hit *hit, float hitMomentum )
-  {
-    if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
-      assert( hitMomentum <= 0.0f );
-
-      addEvent( EVENT_LAND, hitMomentum );
-    }
-  }
-
-  void Bot::onDestroy()
-  {
-    if( ~state & DEATH_BIT ) {
-      Object::onDestroy();
-    }
-  }
-
-  Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), bob( 0.0f ), grabObjIndex( -1 ),
-      stepRate( 0.0f ), anim( ANIM_STAND ), weapon( null )
+  Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
+      grabObjIndex( -1 ), vehicleIndex( -1 ), weapon( null ), bob( 0.0f ), anim( ANIM_STAND )
   {}
+
+  void Bot::enter( int vehicleIndex_ )
+  {
+    flags &= ~( DYNAMIC_BIT | DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT | ON_LADDER_BIT |
+        ON_SLICK_BIT );
+    lower = -1;
+    h = 0.0f;
+    v = 0.0f;
+    state &= ~( CROUCHING_BIT | JUMP_SCHED_BIT | GROUNDED_BIT | MOVING_BIT );
+    actions = 0;
+    oldActions = 0;
+    grabObjIndex = -1;
+    vehicleIndex = vehicleIndex_;
+  }
+
+  void Bot::exit()
+  {
+    flags |= DYNAMIC_BIT;
+    actions = 0;
+    oldActions = 0;
+    vehicleIndex = -1;
+  }
 
   void Bot::kill()
   {
@@ -525,22 +566,22 @@ namespace oz
   {
     Object::readUpdate( istream );
 
-    state        = istream->readInt();
-    anim         = static_cast<AnimEnum>( istream->readByte() );
     h            = istream->readFloat();
-
+    v            = istream->readFloat();
+    state        = istream->readInt();
     grabObjIndex = istream->readInt();
+    anim         = static_cast<AnimEnum>( istream->readByte() );
   }
 
   void Bot::writeUpdate( OutputStream *ostream ) const
   {
     DynObject::writeUpdate( ostream );
 
-    ostream->writeInt( state );
-    ostream->writeByte( anim );
     ostream->writeFloat( h );
-
+    ostream->writeFloat( v );
+    ostream->writeInt( state );
     ostream->writeInt( grabObjIndex );
+    ostream->writeByte( anim );
   }
 
 }
