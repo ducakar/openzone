@@ -216,9 +216,7 @@ namespace oz
        */
       void free()
       {
-        for( int i = 0; i < SIZE; i++ ) {
-          delete data[i];
-        }
+        aFree( data, SIZE );
       }
 
   };

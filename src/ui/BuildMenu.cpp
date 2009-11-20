@@ -180,9 +180,9 @@ namespace ui
     add( new Button( "DESTROY", destroy, 90, 15 ), 5, 5 );
   }
 
-  void BuildMenu::draw()
+  void BuildMenu::onDraw()
   {
-    Frame::draw();
+    Frame::onDraw();
 
     printCentered( 50, -10, "Create" );
   }

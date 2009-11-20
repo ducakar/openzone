@@ -68,10 +68,6 @@ namespace client
       nirvana::nirvana.load( null );
     }
 
-    camera.botIndex = -1;
-    camera.bot = null;
-    camera.p = Vec3( 52, -49, 40 );
-
     log.unindent();
     log.println( "}" );
     return true;
@@ -113,6 +109,8 @@ namespace client
   void Game::start() const
   {
     nirvana::nirvana.start();
+
+    camera.p = Vec3( 52, -49, 40 );
   }
 
   void Game::stop() const
@@ -195,7 +193,7 @@ namespace client
       /*
        * Camera
        */
-      if( camera.isThirdPerson && camera.isFreeLook ) {
+      if( camera.isExternal && camera.isFreeLook ) {
         camera.h -= ui::mouse.overEdgeX * mouseXSens;
         camera.v += ui::mouse.overEdgeY * mouseYSens;
 
@@ -267,7 +265,7 @@ namespace client
       if( input.keys[SDLK_x] ) {
         camera.bot->actions |= Bot::ACTION_EJECT;
       }
-      if( camera.isThirdPerson && input.keys[SDLK_LALT] && !input.oldKeys[SDLK_LALT] ) {
+      if( camera.isExternal && input.keys[SDLK_LALT] && !input.oldKeys[SDLK_LALT] ) {
         camera.isFreeLook = !camera.isFreeLook;
       }
       if( input.keys[SDLK_p] && !input.oldKeys[SDLK_p] ) {
@@ -295,7 +293,7 @@ namespace client
       }
 
       if( camera.botIndex >= 0 && input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
-        camera.isThirdPerson = !camera.isThirdPerson;
+        camera.isExternal = !camera.isExternal;
         camera.h = camera.bot->h;
         camera.v = camera.bot->v;
       }
@@ -318,7 +316,7 @@ namespace client
 
     if( input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
       if( camera.botIndex < 0 ) {
-        Bot *me = static_cast<Bot*>( translator.createObject( "Droid", camera.p ) );
+        Bot *me = static_cast<Bot*>( translator.createObject( "Lord", camera.p ) );
         me->h = camera.h;
         me->v = camera.v;
         me->state |= Bot::PLAYER_BIT;

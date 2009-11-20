@@ -38,14 +38,21 @@ namespace client
         TexCoord( float u_, float v_ ) : u( u_ ), v( v_ ) {}
       };
 
+      struct Material
+      {
+        Vec3  ambient;
+        Vec3  specular;
+        Quat  diffuse;
+        uint  texId;
+      };
+
       String           name;
 
       DArray<Vec3>     vertices;
       DArray<Vec3>     normals;
       DArray<TexCoord> texCoords;
       DArray<Face>     faces;
-
-      uint             textureId;
+      DArray<Material> materials;
 
       static char *skipSpaces( char *pos );
       static char *readWord( char *pos );
@@ -55,13 +62,13 @@ namespace client
                            Vector<Vec3> *tempNormals,
                            Vector<TexCoord> *tempTexCoords ) const;
       bool readFace( char *pos, Face *face ) const;
-      bool loadMaterial( const String &path );
+      bool loadMaterial( const String &path, HashString<int, 13> *materialIndices );
 
     public:
 
       uint list;
 
-      OBJ( const char *name );
+      explicit OBJ( const char *name );
       ~OBJ();
 
       void scale( float scale );

@@ -48,12 +48,7 @@ namespace client
       Vec3  originalLightDir;
       Vec3  axis;
 
-      float skyColor[4];
-      float waterColor[4];
-
       float lightDir[4];
-      float diffuseColor[4];
-      float ambientColor[4];
 
       void load();
       void unload();

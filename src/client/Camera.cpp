@@ -23,7 +23,7 @@ namespace client
 
   const float Camera::THIRD_PERSON_CLIP_DIST = 0.2f;
 
-  Camera::Camera()
+  void Camera::init()
   {
     p.setZero();
     h = 0.0f;
@@ -35,16 +35,18 @@ namespace client
     rotMat = rot.rotMat44();
     rotTMat = ~rotTMat;
 
+    right = rotMat.x;
     at = rotTMat.y;
     up = rotTMat.z;
-  }
 
-  void Camera::init()
-  {
-    isThirdPerson   = config.getSet( "render.camera.3rdPerson", false );
-    thirdPersonDist = config.getSet( "render.camera.3rdPersonDistance", 2.5f );
-    smoothCoef      = config.getSet( "render.camera.smoothCoef", 0.3f );
-    smoothCoef_1    = 1.0f - smoothCoef;
+    botIndex = -1;
+    bot = null;
+
+    smoothCoef         = config.getSet( "camera.smoothCoef", 0.3f );
+    smoothCoef_1       = 1.0f - smoothCoef;
+    externalDistFactor = config.getSet( "camera.externalDistFactor", 2.75f );
+    isExternal         = config.getSet( "camera.external", false );
+    isFreeLook         = false;
   }
 
   void Camera::update()
@@ -69,9 +71,19 @@ namespace client
       botIndex = -1;
       bot = null;
     }
-    else if( isThirdPerson ) {
+    else if( isExternal ) {
+      float dist;
+      if( bot->vehicleIndex >= 0 ) {
+        Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->vehicleIndex] );
+
+        dist = !veh->dim * externalDistFactor;
+      }
+      else {
+        dist = !bot->dim * externalDistFactor;
+      }
+
       Vec3 origin = bot->p + bot->camPos;
-      Vec3 offset = -at * thirdPersonDist;
+      Vec3 offset = -at * dist;
 
       collider.translate( origin, offset, bot );
       offset *= collider.hit.ratio;

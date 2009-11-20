@@ -1,3 +1,7 @@
+function exception()
+  ozException( "General exception" )
+end
+
 function heal50()
   ozRemoveObj()
   ozBindUser()

@@ -12,6 +12,7 @@
 #include "OBJ.h"
 
 #include "Context.h"
+#include "Colors.h"
 
 namespace oz
 {
@@ -207,7 +208,7 @@ namespace client
     return true;
   }
 
-  bool OBJ::loadMaterial( const String &path )
+  bool OBJ::loadMaterial( const String &path, HashString<int, 13> *materialIndices )
   {
     FILE *file;
     char buffer[LINE_BUFFER_SIZE];
@@ -217,6 +218,10 @@ namespace client
       return false;
     }
 
+    String   mtlName;
+    Material material;
+    Vector<Material> tempMaterials;
+
     char *pos = fgets( buffer, LINE_BUFFER_SIZE, file );
     char *end;
 
@@ -224,7 +229,45 @@ namespace client
     while( pos != null ) {
       pos = skipSpaces( pos );
 
-      switch( *pos ) {
+      switch( pos[0] ) {
+        case 'n': {
+          if( aEquals( pos, "newmtl", 6 ) ) {
+            end = readWord( pos );
+            pos = skipSpaces( end );
+            *end = '\0';
+
+            if( !mtlName.isEmpty() ) {
+              materialIndices->add( mtlName, tempMaterials.length() );
+              tempMaterials << material;
+            }
+
+            end = readWord( pos );
+            *end = '\0';
+
+            mtlName = pos;
+            material.ambient  = Vec3::zero();
+            material.diffuse  = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+            material.specular = Vec3( 0.5f, 0.5f, 0.5f );
+            material.texId    = 0;
+          }
+          break;
+        }
+        case 'K': {
+          if( pos[1] == 'a' ) {
+            sscanf( pos + 2, "%f %f %f", &material.ambient.x, &material.ambient.y, &material.ambient.z );
+          }
+          else if( pos[1] == 'd' ) {
+            sscanf( pos + 2, "%f %f %f", &material.diffuse.x, &material.diffuse.y, &material.diffuse.z );
+          }
+          else if( pos[1] == 's' ) {
+            sscanf( pos + 2, "%f %f %f", &material.specular.x, &material.specular.y, &material.specular.z );
+          }
+          break;
+        }
+        case 'd': {
+          sscanf( pos + 1, "%f", &material.diffuse.w );
+          break;
+        }
         case 'm': {
           if( aEquals( pos, "map_Kd", 6 ) ) {
             end = readWord( pos );
@@ -232,7 +275,7 @@ namespace client
             end = readWord( pos );
             *end = '\0';
 
-            textureId = context.loadTexture( path + "/" + String( pos ), true );
+            material.texId = context.loadTexture( path + "/" + String( pos ), true );
           }
           break;
         }
@@ -244,6 +287,14 @@ namespace client
       pos = fgets( buffer, LINE_BUFFER_SIZE, file );
     }
 
+    if( !mtlName.isEmpty() ) {
+      materialIndices->add( mtlName, tempMaterials.length() );
+      tempMaterials << material;
+    }
+
+    materials( tempMaterials.length() );
+    iCopy( materials.iterator(), tempMaterials.iterator() );
+
     fclose( file );
     return true;
   }
@@ -254,9 +305,6 @@ namespace client
     char buffer[LINE_BUFFER_SIZE];
 
     name = name_;
-
-    // default texture if none loaded
-    textureId = 0;
 
     String sPath = "mdl/" + name;
     String modelFile = sPath + "/data.obj";
@@ -274,6 +322,12 @@ namespace client
                       config.get( "translate.z", 0.0f ) );
     config.clear();
 
+    HashString<int, 13> materialIndices;
+
+    if( !loadMaterial( sPath, &materialIndices ) ) {
+      throw Exception( "OBJ model material loading error" );
+    }
+
     file = fopen( modelFile.cstr(), "r" );
     if( file == null ) {
       log.println( "No such file" );
@@ -288,6 +342,7 @@ namespace client
     Vector<Face>     tempFaces;
 
     char *pos = fgets( buffer, LINE_BUFFER_SIZE, file );
+    char *end;
 
     // until EOF reached
     while( pos != null ) {
@@ -319,13 +374,21 @@ namespace client
           break;
         }
         // usemtl
-        case 'm': {
-          if( aEquals( pos, "mtllib", 6 ) && !loadMaterial( sPath ) ) {
-            fclose( file );
-            log.println( "cannot load material at line: %s", buffer );
-            log.unindent();
-            log.println( "}" );
-            throw Exception( "OBJ model loading error" );
+        case 'u': {
+          if( aEquals( pos, "usemtl", 6 ) ) {
+            pos += 6;
+            pos = skipSpaces( pos );
+            end = readWord( pos );
+            *end = '\0';
+
+            Face materialFace;
+            if( materialIndices.contains( pos ) ) {
+              materialFace.nVerts = ~materialIndices.cachedValue();
+            }
+            else {
+              materialFace.nVerts = 0;
+            }
+            tempFaces << materialFace;
           }
           break;
         }
@@ -370,6 +433,9 @@ namespace client
       log.println( "}" );
       throw Exception( "OBJ model loading error" );
     }
+
+    materialIndices.clear();
+
     log.unindent();
     log.println( "}" );
   }
@@ -378,7 +444,14 @@ namespace client
   {
     log.print( "Unloading OBJ model '%s' ...", name.cstr() );
     trim();
-    context.freeTexture( textureId );
+
+    foreach( material, materials.iterator() ) {
+      if( material->texId != GL_NONE ) {
+        context.freeTexture( material->texId );
+      }
+    }
+    materials.clear();
+
     log.printEnd( " OK" );
 
     assert( glGetError() == GL_NO_ERROR );
@@ -400,10 +473,42 @@ namespace client
 
   void OBJ::draw() const
   {
-    glBindTexture( GL_TEXTURE_2D, textureId );
+    int  currentMaterial = -1;
+    bool isTransfluent = false;
+    bool isTextured = true;
+    bool isBlended = false;
 
     for( int i = 0; i < faces.length(); i++ ) {
       const Face &face = faces[i];
+
+      if( face.nVerts < 0 ) {
+        if( currentMaterial != ~face.nVerts ) {
+          currentMaterial = ~face.nVerts;
+          const Material &material = materials[currentMaterial];
+
+          if( !isTransfluent && material.diffuse.w != 1.0f ) {
+            glEnable( GL_BLEND );
+            isTransfluent = true;
+            isBlended = true;
+          }
+          else if( isTransfluent && material.diffuse.w == 1.0f ) {
+            glDisable( GL_BLEND );
+            isTransfluent = false;
+          }
+          if( isTextured && material.texId == 0 ) {
+            glDisable( GL_TEXTURE_2D );
+            isTextured = false;
+          }
+          else if( !isTextured && material.texId != 0 ) {
+            glEnable( GL_TEXTURE_2D );
+            isTextured = true;
+          }
+          if( material.texId != 0 ) {
+            glBindTexture( GL_TEXTURE_2D, material.texId );
+          }
+          glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, material.diffuse );
+        }
+      }
 
       glBegin( GL_POLYGON );
         for( int j = 0; j < face.nVerts; j++ ) {
@@ -416,6 +521,15 @@ namespace client
           glVertex3fv( vertices[face.vertIndices[j]] );
         }
       glEnd();
+    }
+
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
+
+    if( !isTextured ) {
+      glEnable( GL_TEXTURE_2D );
+    }
+    if( isBlended && !isTransfluent ) {
+      glEnable( GL_BLEND );
     }
   }
 
@@ -430,13 +544,15 @@ namespace client
   void OBJ::trim()
   {
     for( int i = 0; i < faces.length(); i++ ) {
-      delete[] faces[i].vertIndices;
+      if( faces[i].nVerts > 0 ) {
+        delete[] faces[i].vertIndices;
 
-      if( faces[i].normIndices != null ) {
-        delete[] faces[i].normIndices;
-      }
-      if( faces[i].texCoordIndices != null ) {
-        delete[] faces[i].texCoordIndices;
+        if( faces[i].normIndices != null ) {
+          delete[] faces[i].normIndices;
+        }
+        if( faces[i].texCoordIndices != null ) {
+          delete[] faces[i].texCoordIndices;
+        }
       }
     }
 

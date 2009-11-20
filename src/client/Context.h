@@ -11,9 +11,6 @@
 
 #include "matrix/Translator.h"
 
-#include "MD2.h"
-#include "MD3.h"
-#include "OBJ.h"
 #include "Model.h"
 #include "Audio.h"
 
@@ -23,6 +20,10 @@ namespace oz
 {
 namespace client
 {
+
+  class MD2;
+  class MD3;
+  class OBJ;
 
   class Context
   {
@@ -189,7 +190,7 @@ namespace client
         }
       }
 
-      Context();
+      explicit Context();
 
       void init();
       void free();

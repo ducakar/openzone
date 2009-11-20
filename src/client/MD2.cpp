@@ -457,8 +457,6 @@ namespace client
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
 
-    glPushMatrix();
-
     while( int i = *( pCmd++ ) ) {
       if( i < 0 ) {
         glBegin( GL_TRIANGLE_FAN );
@@ -476,7 +474,6 @@ namespace client
       glEnd();
     }
 
-    glPopMatrix();
     glFrontFace( GL_CCW );
   }
 
@@ -489,8 +486,6 @@ namespace client
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
 
-    glPushMatrix();
-
     while( int i = *( pCmd++ ) ) {
       if( i < 0 ) {
         glBegin( GL_TRIANGLE_FAN );
@@ -508,7 +503,6 @@ namespace client
       glEnd();
     }
 
-    glPopMatrix();
     glFrontFace( GL_CCW );
   }
 

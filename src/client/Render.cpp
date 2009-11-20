@@ -16,6 +16,7 @@
 #include "matrix/BotClass.h"
 
 #include "Frustum.h"
+#include "Colors.h"
 #include "Shape.h"
 
 #include "Water.h"
@@ -40,41 +41,11 @@ namespace client
 
   Render render;
 
-  const float Render::BLACK_COLOR[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-  const float Render::WHITE_COLOR[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-
-  const float Render::AABB_COLOR[] = { 1.00f, 1.00f, 0.00f, 0.30f };
-  const float Render::TAG_COLOR[] = { 0.50f, 2.00f, 2.00f, 1.00f };
-
-  const float Render::GLOBAL_AMBIENT_COLOR[] = { 0.20f, 0.20f, 0.20f, 1.00f };
-
   const float Render::NIGHT_FOG_COEFF = 2.0f;
   const float Render::NIGHT_FOG_DIST = 0.3f;
   const float Render::WATER_VISIBILITY = 8.0f;
 
   const float Render::STAR_SIZE = 1.0f / 400.0f;
-
-  void Render::drawObject( Object *obj )
-  {
-    if( obj->index == taggedObjIndex ) {
-      glColor4fv( TAG_COLOR );
-    }
-
-    glPushMatrix();
-    glTranslatef( obj->p.x, obj->p.y, obj->p.z );
-
-    if( !models.contains( obj->index ) ) {
-      models.add( obj->index, context.createModel( obj ) );
-    }
-    // draw model
-    models.cachedValue()->draw();
-
-    glPopMatrix();
-
-    if( obj->index == taggedObjIndex ) {
-      glColor4fv( WHITE_COLOR );
-    }
-  }
 
   void Render::scheduleCell( int cellX, int cellY )
   {
@@ -90,11 +61,8 @@ namespace client
     }
 
     foreach( obj, cell.objects.iterator() ) {
-      if( !camera.isThirdPerson && &*obj == camera.bot ) {
+      if( ( obj->flags & Object::NODRAW_BIT ) || ( &*obj == camera.bot && !camera.isExternal ) ) {
         continue;
-      }
-      if( models.contains( obj->index ) ) {
-        models.cachedValue()->isUpdated = true;
       }
       bool isVisible =
           ( obj->flags & Object::WIDE_CULL_BIT ) ?
@@ -115,6 +83,29 @@ namespace client
       if( frustum.isVisible( part->p, particleRadius ) ) {
         particles << part;
       }
+    }
+  }
+
+  void Render::drawObject( Object *obj )
+  {
+    if( obj->index == taggedObjIndex ) {
+      glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
+    }
+
+    glPushMatrix();
+    glTranslatef( obj->p.x, obj->p.y, obj->p.z );
+
+    if( !models.contains( obj->index ) ) {
+      models.add( obj->index, context.createModel( obj ) );
+    }
+    // draw model
+    models.cachedValue()->draw();
+    models.cachedValue()->isUpdated = true;
+
+    glPopMatrix();
+
+    if( obj->index == taggedObjIndex ) {
+      glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::BLACK );
     }
   }
 
@@ -150,33 +141,28 @@ namespace client
 
     // highlight the object the camera is looking at
     taggedObjIndex = -1;
-    crosshairArea->showUse = false;
-    crosshairArea->showMount = false;
-
-    if( !( ui::mouse.doShow || ( camera.isThirdPerson && camera.isFreeLook ) ) ) {
-      if( camera.bot == null ) {
-        collider.translate( camera.p, camera.at * 2.0f );
-        taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
-      }
-      else if( camera.bot->grabObjIndex >= 0 ) {
-        taggedObjIndex = camera.bot->grabObjIndex;
-      }
-      else {
-        float distance = static_cast<BotClass*>( camera.bot->type )->grabDistance;
-        collider.translate( camera.bot->p + camera.bot->camPos, camera.at * distance, camera.bot );
-        taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
-      }
+    if( camera.bot == null ) {
+      collider.translate( camera.p, camera.at * 2.0f );
+      taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
     }
+    else if( camera.bot->grabObjIndex >= 0 ) {
+      taggedObjIndex = camera.bot->grabObjIndex;
+    }
+    else {
+      // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
+      float hvsc[6];
 
-    if( taggedObjIndex >= 0 ) {
-      Object *obj = world.objects[taggedObjIndex];
+      Math::sincos( Math::rad( camera.bot->h ), &hvsc[0], &hvsc[1] );
+      Math::sincos( Math::rad( camera.bot->v ), &hvsc[2], &hvsc[3] );
 
-      if( obj->flags & Object::VEHICLE_BIT ) {
-        crosshairArea->showMount = true;
-      }
-      else if( obj->flags & Object::USE_FUNC_BIT ) {
-        crosshairArea->showUse = true;
-      }
+      hvsc[4] = hvsc[3] * hvsc[0];
+      hvsc[5] = hvsc[3] * hvsc[1];
+
+      Vec3 at = Vec3( -hvsc[4], hvsc[5], hvsc[2] );
+
+      float distance = static_cast<BotClass*>( camera.bot->type )->grabDistance;
+      collider.translate( camera.bot->p + camera.bot->camPos, at * distance, camera.bot );
+      taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
     }
 
     float minXCenter = static_cast<float>( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
@@ -201,15 +187,15 @@ namespace client
     if( isUnderWater ) {
       visibility = sky.ratio * waterDayVisibility + sky.ratio_1 * waterNightVisibility;
 
-      glClearColor( sky.waterColor[0], sky.waterColor[1], sky.waterColor[2], sky.waterColor[3] );
-      glFogfv( GL_FOG_COLOR, sky.waterColor );
+      glClearColor( Colors::water[0], Colors::water[1], Colors::water[2], Colors::water[3] );
+      glFogfv( GL_FOG_COLOR, Colors::water );
       glFogf( GL_FOG_END, visibility );
     }
     else {
       visibility = sky.ratio * dayVisibility + sky.ratio_1 * nightVisibility;
 
-      glClearColor( sky.skyColor[0], sky.skyColor[1], sky.skyColor[2], sky.skyColor[3] );
-      glFogfv( GL_FOG_COLOR, sky.skyColor );
+      glClearColor( Colors::sky[0], Colors::sky[1], Colors::sky[2], Colors::sky[3] );
+      glFogfv( GL_FOG_COLOR, Colors::sky );
       glFogf( GL_FOG_END, visibility );
     }
 
@@ -234,8 +220,8 @@ namespace client
 
     // lighting
     glLightfv( GL_LIGHT0, GL_POSITION, sky.lightDir );
-    glLightfv( GL_LIGHT0, GL_DIFFUSE, sky.diffuseColor );
-    glLightfv( GL_LIGHT0, GL_AMBIENT, sky.ambientColor );
+    glLightfv( GL_LIGHT0, GL_DIFFUSE, Colors::diffuse );
+    glLightfv( GL_LIGHT0, GL_AMBIENT, Colors::ambient );
 
     glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );
@@ -261,7 +247,6 @@ namespace client
     for( int i = 0; i < structures.length(); i++ ) {
       Structure *str = structures[i];
 
-//      int waterFlags = bsps[str->bsp]->draw( str );
       int waterFlags = bsps[str->bsp]->fullDraw( str );
 
       if( waterFlags & BSP::IN_WATER_BRUSH ) {
@@ -285,6 +270,7 @@ namespace client
     }
 
     // draw particles
+    glEnable( GL_COLOR_MATERIAL );
     glDisable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );
 
@@ -302,19 +288,23 @@ namespace client
 
     assert( glGetError() == GL_NO_ERROR );
 
-    glColor4fv( WHITE_COLOR );
+    glColor4fv( Colors::WHITE );
     glEnable( GL_TEXTURE_2D );
 
     // draw transparent objects
+    glDisable( GL_COLOR_MATERIAL );
+
     for( int i = 0; i < blendedObjects.length(); i++ ) {
       drawObject( blendedObjects[i] );
     }
+
+    glEnable( GL_COLOR_MATERIAL );
 
     if( drawAABBs ) {
       glDisable( GL_LIGHTING );
       glDisable( GL_TEXTURE_2D );
       glEnable( GL_BLEND );
-      glColor4fv( AABB_COLOR );
+      glColor4fv( Colors::AABB );
 
       for( int i = 0; i < objects.length(); i++ ) {
         shape.drawBox( *objects[i] );
@@ -323,10 +313,12 @@ namespace client
         shape.drawBox( *blendedObjects[i] );
       }
 
-      glColor4fv( WHITE_COLOR );
+      glColor4fv( Colors::WHITE );
       glEnable( GL_LIGHTING );
       glEnable( GL_TEXTURE_2D );
     }
+
+    glDisable( GL_COLOR_MATERIAL );
 
     objects.clear();
     blendedObjects.clear();
@@ -337,7 +329,6 @@ namespace client
     for( int i = 0; i < waterStructures.length(); i++ ) {
       Structure *str = waterStructures[i];
 
-//      bsps[str->bsp]->drawWater( str );
       bsps[str->bsp]->fullDrawWater( str );
     }
     waterStructures.clear();
@@ -362,8 +353,9 @@ namespace client
     }
 
     glDisable( GL_DEPTH_TEST );
-    glColor4fv( WHITE_COLOR );
+    glColor4fv( Colors::WHITE );
 
+    ui::hud->taggedObjIndex = taggedObjIndex;
     ui::draw();
 
     if( doScreenshot ) {
@@ -478,13 +470,9 @@ namespace client
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-    crosshairArea = new ui::CrosshairArea( 96 );
-
     ui::init( screenX, screenY );
-    ui::root.add( new ui::DebugArea() );
-    ui::root.add( new ui::HealthArea() );
-    ui::root.add( crosshairArea, screenX / 2 - 48, screenY / 2 - 48 );
-    ui::root.add( new ui::BuildMenu(), -1, -1 );
+    ui::hud->add( new ui::DebugArea() );
+    ui::hud->add( new ui::BuildMenu(), -1, -1 );
 
     SDL_GL_SwapBuffers();
 
@@ -524,6 +512,7 @@ namespace client
 
     camera.init();
     frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
+    water.init();
     shape.load();
     sky.load();
     terra.load();
@@ -533,7 +522,7 @@ namespace client
       bsps << new BSP( world.bsps[i] );
     }
 
-    glColor4fv( WHITE_COLOR );
+    glColor4fv( Colors::WHITE );
     glDisable( GL_TEXTURE_2D );
 
     glEnable( GL_POINT_SMOOTH );
@@ -544,10 +533,11 @@ namespace client
     glFogf( GL_FOG_START, 0.0f );
 
     // lighting
-    glLightModeli(  GL_LIGHT_MODEL_TWO_SIDE, false );
-    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, GLOBAL_AMBIENT_COLOR );
+    glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
+    glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
+    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, Colors::GLOBAL_AMBIENT );
+    glColorMaterial( GL_FRONT, GL_AMBIENT_AND_DIFFUSE );
 
-    glEnable( GL_COLOR_MATERIAL );
     glEnable( GL_LIGHT0 );
 
     log.unindent();

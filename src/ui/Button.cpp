@@ -33,7 +33,7 @@ namespace ui
     }
   }
 
-  void Button::draw()
+  void Button::onDraw()
   {
     if( isClicked ) {
       glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );

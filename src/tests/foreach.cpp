@@ -91,6 +91,8 @@ int main()
   hi.add( 105, 5 );
   hs.add( "105", 5 );
 
+  iSet( v.iterator(), 1 );
+
   foreach( i, l.iterator() ) {
     printf( "%d ", i->value );
   }

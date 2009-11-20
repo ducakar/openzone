@@ -33,13 +33,8 @@ namespace oz
 
     public:
 
-      // which bits are can be set in configuration files, other bits are fixed for the given type
-      static const int CONFIG_BITS_MASK   = 0x000000ff;
-      // which bits are fixed for a type or temporary (~CONFIG_BITS_MASK)
-      static const int INTERNAL_BITS_MASK = 0xffffff00;
-
       /*
-       * TYPE FLAGS (0xfc000000)
+       * TYPE FLAGS
        */
 
       // DynObject
@@ -54,7 +49,7 @@ namespace oz
       static const int VEHICLE_BIT        = 0x08000000;
 
       /*
-       * FUNCTION FLAGS (0x03f0000)
+       * FUNCTION FLAGS
        */
 
       // if the onDestroy function should be called on destruction
@@ -73,14 +68,7 @@ namespace oz
       static const int USE_FUNC_BIT       = 0x00100000;
 
       /*
-       * CUT FLAG (0x00080000)
-       */
-
-      // if object is pending for cut/removal; needed to protect against double cuts/removals
-      static const int CUT_BIT            = 0x00080000;
-
-      /*
-       * FRONTEND OBJECTS (0x00030000)
+       * FRONTEND OBJECTS
        */
 
       // if the object has a model object in frontend
@@ -90,7 +78,14 @@ namespace oz
       static const int AUDIO_BIT          = 0x00010000;
 
       /*
-       * DYNAMIC OBJECTS' BITS (interal 0x0000ff00, config 0x000000f0)
+       * CUT FLAG
+       */
+
+      // if object is pending for cut/removal; needed to protect against double cuts/removals
+      static const int CUT_BIT            = 0x00080000;
+
+      /*
+       * DYNAMIC OBJECTS' BITS
        */
 
       // if the object is still and on a still surface, we won't handle physics for it
@@ -130,16 +125,19 @@ namespace oz
       static const int HOVER_BIT          = 0x00000010;
 
       /*
-       * RENDER FLAGS (config 0x0000000f)
+       * RENDER FLAGS
        */
 
+      // don't render object (it will be rendered via another path, e.g. bots in a vehicle)
+      static const int NODRAW_BIT         = 0x00000008;
+
       // if the object is blended and should be rendered at the end
-      static const int BLEND_BIT          = 0x00000002;
+      static const int BLEND_BIT          = 0x00000004;
 
       // wide frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
       // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR (default 5.0f)
-      static const int WIDE_CULL_BIT      = 0x00000001;
+      static const int WIDE_CULL_BIT      = 0x00000002;
 
       /*
        * STANDARD EVENT IDs
@@ -239,10 +237,10 @@ namespace oz
 
         if( damage > 0.0f ) {
           life -= damage * type->damageRatio;
-        }
 
-        if( flags & DAMAGE_FUNC_BIT ) {
-          onDamage( damage );
+          if( flags & DAMAGE_FUNC_BIT ) {
+            onDamage( damage );
+          }
         }
       }
 

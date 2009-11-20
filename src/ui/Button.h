@@ -34,11 +34,11 @@ namespace ui
     protected:
 
       virtual void onMouseEvent();
-      virtual void draw();
+      virtual void onDraw();
 
     public:
 
-      Button( const char *label_, Callback *callback, int width, int height ) :
+      explicit Button( const char *label_, Callback *callback, int width, int height ) :
           Area( width, height ), label( label_ ), isHighlighted( false ), isClicked( false ),
           callback( callback )
       {}

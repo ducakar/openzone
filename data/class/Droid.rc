@@ -23,7 +23,7 @@ modelType "MD2"
 modelName "bdroid"
 
 audioType "Basic"
-audioSample00 ""
+audioSample00 "destroy_metal1"
 audioSample01 ""
 audioSample02 "splash1"
 audioSample03 ""

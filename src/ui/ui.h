@@ -16,9 +16,8 @@
 #include "Frame.h"
 #include "Button.h"
 
+#include "HudArea.h"
 #include "DebugArea.h"
-#include "HealthArea.h"
-#include "CrosshairArea.h"
 #include "BuildMenu.h"
 
 namespace oz
@@ -28,7 +27,7 @@ namespace client
 namespace ui
 {
 
-  extern Area root;
+  extern HudArea *hud;
 
   void init( int screenX, int screenY );
   void free();

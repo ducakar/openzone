@@ -45,7 +45,7 @@ namespace client
 
       bool isUpdated;
 
-      Audio( const Object *obj );
+      explicit Audio( const Object *obj );
       virtual ~Audio();
 
       virtual void update() = 0;

@@ -15,6 +15,7 @@
 #include "matrix/World.h"
 #include "Context.h"
 #include "Camera.h"
+#include "Colors.h"
 
 namespace oz
 {
@@ -122,30 +123,30 @@ namespace client
     ratio_1 = 1.0f - ratio;
     float ratioDiff = ( 1.0f - abs( ratio - ratio_1 ) );
 
-    skyColor[0] = ratio * DAY_COLOR[0] + ratio_1 * NIGHT_COLOR[0] + RED_COEF * ratioDiff;
-    skyColor[1] = ratio * DAY_COLOR[1] + ratio_1 * NIGHT_COLOR[1] + GREEN_COEF * ratioDiff;
-    skyColor[2] = ratio * DAY_COLOR[2] + ratio_1 * NIGHT_COLOR[2] + BLUE_COEF * ratioDiff;
-    skyColor[3] = 1.0f;
+    Colors::sky[0] = ratio * DAY_COLOR[0] + ratio_1 * NIGHT_COLOR[0] + RED_COEF * ratioDiff;
+    Colors::sky[1] = ratio * DAY_COLOR[1] + ratio_1 * NIGHT_COLOR[1] + GREEN_COEF * ratioDiff;
+    Colors::sky[2] = ratio * DAY_COLOR[2] + ratio_1 * NIGHT_COLOR[2] + BLUE_COEF * ratioDiff;
+    Colors::sky[3] = 1.0f;
 
-    waterColor[0] = ratio * WATER_COLOR[0] + ratio_1 * NIGHT_COLOR[0];
-    waterColor[1] = ratio * WATER_COLOR[1] + ratio_1 * NIGHT_COLOR[1];
-    waterColor[2] = ratio * WATER_COLOR[2] + ratio_1 * NIGHT_COLOR[2];
-    waterColor[3] = ratio * WATER_COLOR[3] + ratio_1 * NIGHT_COLOR[3];
+    Colors::water[0] = ratio * WATER_COLOR[0] + ratio_1 * NIGHT_COLOR[0];
+    Colors::water[1] = ratio * WATER_COLOR[1] + ratio_1 * NIGHT_COLOR[1];
+    Colors::water[2] = ratio * WATER_COLOR[2] + ratio_1 * NIGHT_COLOR[2];
+    Colors::water[3] = ratio * WATER_COLOR[3] + ratio_1 * NIGHT_COLOR[3];
 
     lightDir[0] = dir.x;
     lightDir[1] = dir.y;
     lightDir[2] = dir.z;
     lightDir[3] = 0.0f;
 
-    diffuseColor[0] = ratio + RED_COEF * ratioDiff;
-    diffuseColor[1] = ratio + GREEN_COEF * ratioDiff;
-    diffuseColor[2] = ratio + BLUE_COEF * ratioDiff;
-    diffuseColor[3] = 1.0f;
+    Colors::diffuse[0] = ratio + RED_COEF * ratioDiff;
+    Colors::diffuse[1] = ratio + GREEN_COEF * ratioDiff;
+    Colors::diffuse[2] = ratio + BLUE_COEF * ratioDiff;
+    Colors::diffuse[3] = 1.0f;
 
-    ambientColor[0] = AMBIENT_COEF * diffuseColor[0];
-    ambientColor[1] = AMBIENT_COEF * diffuseColor[1];
-    ambientColor[2] = AMBIENT_COEF * diffuseColor[2];
-    ambientColor[3] = 1.0f;
+    Colors::ambient[0] = AMBIENT_COEF * Colors::diffuse[0];
+    Colors::ambient[1] = AMBIENT_COEF * Colors::diffuse[1];
+    Colors::ambient[2] = AMBIENT_COEF * Colors::diffuse[2];
+    Colors::ambient[3] = 1.0f;
   }
 
   void Sky::draw()
@@ -191,9 +192,9 @@ namespace client
     glEnable( GL_BLEND );
 
     glTranslatef( -15.0f, 0.0f, 0.0f );
-    glColor3f( 2.0f * diffuseColor[0] + ambientColor[0],
-               diffuseColor[1] + ambientColor[1],
-               diffuseColor[2] + ambientColor[2] );
+    glColor3f( 2.0f * Colors::diffuse[0] + Colors::ambient[0],
+               Colors::diffuse[1] + Colors::ambient[1],
+               Colors::diffuse[2] + Colors::ambient[2] );
     glCallList( sunList );
 
     glTranslatef( 30.0f, 0.0f, 0.0f );

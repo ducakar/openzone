@@ -1,11 +1,11 @@
 base "Vehicle"
 
-dim.x "3.99"
-dim.y "3.99"
-dim.z "1.60"
+dim.x "2.99"
+dim.y "2.99"
+dim.z "1.99"
 
 flag.wideCull "true"
-flag.hover "true"
+flag.blend "true"
 
 life "2000.0f"
 
@@ -20,7 +20,7 @@ debrisColor.b "0.3"
 debrisColorSpread "0.1"
 
 mass "5000.0"
-lift "0.04"
+lift "15.00"
 
 modelType "OBJVehicle"
 modelName "raptor"

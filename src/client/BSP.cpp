@@ -13,6 +13,7 @@
 
 #include "Context.h"
 #include "Frustum.h"
+#include "Colors.h"
 #include "Water.h"
 #include "Render.h"
 
@@ -132,7 +133,7 @@ namespace client
 
   void BSP::drawFaceWater( const oz::BSP::Face *face ) const
   {
-    glColor4f( 1.0f, 1.0f, 1.0f, water.alpha1 );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
 
     glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ), bsp->vertices[face->firstVertex].p );
@@ -160,7 +161,7 @@ namespace client
 
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
 
-    glColor4f( 1.0f, 1.0f, 1.0f, water.alpha2 );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
 
     glMatrixMode( GL_TEXTURE );
     glLoadMatrixf( Mat44( 1.0f,            0.0f,            0.0f, 0.0f,
@@ -178,7 +179,7 @@ namespace client
     glLoadIdentity();
     glMatrixMode( GL_MODELVIEW );
 
-    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
   }
 
   void BSP::drawNode( int nodeIndex )
@@ -489,23 +490,14 @@ namespace client
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
 
-    drawnFaces = hiddenFaces;
-
     int leafIndex = getLeaf();
     checkInWaterBrush( &bsp->leafs[leafIndex] );
 
-    for( int i = 0; i < bsp->nLeafs; i++ ) {
-      oz::BSP::Leaf &leaf = bsp->leafs[i];
-      Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
+    for( int i = 0; i < bsp->nFaces; i++ ) {
+      const oz::BSP::Face &face = bsp->faces[i];
 
-      for( int j = 0; j < leaf.nFaces; j++ ) {
-        int faceIndex = bsp->leafFaces[leaf.firstFace + j];
-        const oz::BSP::Face &face = bsp->faces[faceIndex];
-
-        if( !drawnFaces.get( faceIndex ) ) {
-          drawFace( &face );
-          drawnFaces.set( faceIndex );
-        }
+      if( !hiddenFaces.get( i ) ) {
+        drawFace( &face );
       }
     }
     glPopMatrix();
@@ -532,20 +524,11 @@ namespace client
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
 
-    drawnFaces = hiddenFaces;
+    for( int i = 0; i < bsp->nFaces; i++ ) {
+      const oz::BSP::Face &face = bsp->faces[i];
 
-    for( int i = 0; i < bsp->nLeafs; i++ ) {
-      oz::BSP::Leaf &leaf = bsp->leafs[i];
-      Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
-
-      for( int j = 0; j < leaf.nFaces; j++ ) {
-        int faceIndex = bsp->leafFaces[leaf.firstFace + j];
-        const oz::BSP::Face &face = bsp->faces[faceIndex];
-
-        if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
-          drawFaceWater( &face );
-          drawnFaces.set( faceIndex );
-        }
+      if( ( face.material & Material::WATER_BIT ) && !hiddenFaces.get( i ) ) {
+        drawFaceWater( &face );
       }
     }
     glPopMatrix();

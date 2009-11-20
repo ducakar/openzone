@@ -63,12 +63,8 @@ namespace oz
 
   void Synapse::doDeletes()
   {
-    foreach( i, deleteStructs.iterator() ) {
-      delete *i;
-    }
-    foreach( i, deleteObjects.iterator() ) {
-      delete *i;
-    }
+    iFree( deleteStructs.iterator() );
+    iFree( deleteObjects.iterator() );
 
     deleteStructs.clear();
     deleteObjects.clear();

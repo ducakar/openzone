@@ -84,8 +84,6 @@ namespace oz
 
     public:
 
-      explicit World();
-
       void init();
       void free();
 

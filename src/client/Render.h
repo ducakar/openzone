@@ -30,14 +30,6 @@ namespace client
 
       static const float RELEASED_CULL_FACTOR = 6.0f;
 
-      static const float BLACK_COLOR[];
-      static const float WHITE_COLOR[];
-
-      static const float TAG_COLOR[];
-      static const float AABB_COLOR[];
-
-      static const float GLOBAL_AMBIENT_COLOR[];
-
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;
       static const float WATER_VISIBILITY;
@@ -53,7 +45,6 @@ namespace client
       Vector<BSP*>            bsps;
       Bitset                  drawnStructures;
 
-      HashIndex<Model*, 1021> models;
       int                     clearCount;
 
       Vector<Structure*>      structures;
@@ -62,8 +53,6 @@ namespace client
       Vector<Particle*>       particles;
 
       Vector<Structure*>      waterStructures;
-
-      ui::CrosshairArea       *crosshairArea;
 
       int                     screenX;
       int                     screenY;
@@ -87,11 +76,12 @@ namespace client
       float                   visibility;
       int                     taggedObjIndex;
 
-      void drawObject( Object *obj );
       void scheduleCell( int cellX, int cellY );
+      void drawObject( Object *obj );
 
     public:
 
+      HashIndex<Model*, 1021> models;
       bool                    doScreenshot;
 
       void sync();

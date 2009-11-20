@@ -36,7 +36,7 @@ namespace ui
     }
   }
 
-  void Frame::draw()
+  void Frame::onDraw()
   {
     glColor4f( 0.0f, 0.0f, 0.0f, 0.25f );
     fill( 0, 0, width, height );
