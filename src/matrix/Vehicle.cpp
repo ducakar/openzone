@@ -11,12 +11,14 @@
 
 #include "Vehicle.h"
 
+#include "matrix/Collider.h"
 #include "VehicleClass.h"
 #include "Bot.h"
 
 namespace oz
 {
 
+  const float Vehicle::EJECT_MOVE     = 4.0f;
   const float Vehicle::EJECT_MOMENTUM = 20.0f;
 
   void Vehicle::onDestroy()
@@ -38,15 +40,16 @@ namespace oz
   {
     VehicleClass &clazz = *static_cast<VehicleClass*>( type );
 
+    flags &= ~HOVER_BIT;
     actions = 0;
     if( crewIndices[PILOT] >= 0 ) {
       Bot *pilot = static_cast<Bot*>( world.objects[crewIndices[PILOT]] );
 
       if( pilot != null ) {
         rot = Quat::rotZYX( Math::rad( pilot->h ), 0.0f, Math::rad( pilot->v ) );
-//        pilot->h = 0.0f;
-//        pilot->v = 0.0f;
         actions = pilot->actions;
+        flags |= HOVER_BIT;
+        flags &= ~DISABLED_BIT;
       }
     }
 
@@ -87,8 +90,17 @@ namespace oz
           crewIndices[i] = -1;
         }
         else if( bot->actions & Bot::ACTION_EJECT ) {
-          bot->momentum += ( up + 0.5f * at ) * EJECT_MOMENTUM;
-          bot->exit();
+          // move up a bit to prevent colliding with the vehicle
+          bot->p += up * EJECT_MOVE;
+
+          if( collider.test( *bot, this ) ) {
+            bot->momentum += ( up + 0.5f * at ) * EJECT_MOMENTUM;
+            bot->exit();
+          }
+          else {
+            bot->p = p + rot.rotate( clazz.crewPos[0] ) + momentum * timer.TICK_TIME;
+            bot->momentum = velocity;
+          }
         }
         else {
           bot->p = p + rot.rotate( clazz.crewPos[0] ) + momentum * timer.TICK_TIME;

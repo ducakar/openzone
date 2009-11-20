@@ -29,9 +29,7 @@ namespace oz
 
   void Bot::onDestroy()
   {
-    if( ~state & DEATH_BIT ) {
-      Object::onDestroy();
-    }
+    Object::onDestroy();
   }
 
   void Bot::onHit( const Hit *hit, float hitMomentum )
@@ -52,13 +50,22 @@ namespace oz
         flags |= WIDE_CULL_BIT | BLEND_BIT;
         flags &= ~CLIP_BIT;
         addEvent( EVENT_DEATH, 1.0f );
-        life = type->life / 2.0f - EPSILON;
+        life = type->life * 0.5f - EPSILON;
         anim = ANIM_DEATH_FALLBACK;
       }
       state |= DEATH_BIT;
     }
     if( state & DEATH_BIT ) {
-      life = max( 0.0f, life - type->life * BODY_FADEOUT_FACTOR );
+      // if body gets destroyed during fade out, skip this, or Object::destroy() won't be called
+      if( life > 0.0f ) {
+        life -= type->life * BODY_FADEOUT_FACTOR;
+        // we don't want Object::destroy() to be called when body dissolves (destroy() causes sounds
+        // and particles to fly around)
+        if( life <= 0.0f ) {
+          life = EPSILON;
+          synapse.remove( this );
+        }
+      }
       return;
     }
 
@@ -485,7 +492,8 @@ namespace oz
   void Bot::enter( int vehicleIndex_ )
   {
     flags &= ~( DYNAMIC_BIT | DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT | ON_LADDER_BIT |
-        ON_SLICK_BIT );
+        ON_SLICK_BIT | CLIP_BIT );
+    flags |= NODRAW_BIT;
     lower = -1;
     h = 0.0f;
     v = 0.0f;
@@ -494,11 +502,13 @@ namespace oz
     oldActions = 0;
     grabObjIndex = -1;
     vehicleIndex = vehicleIndex_;
+    anim = ANIM_STAND;
   }
 
   void Bot::exit()
   {
-    flags |= DYNAMIC_BIT;
+    flags |= DYNAMIC_BIT | CLIP_BIT;
+    flags &= ~NODRAW_BIT;
     actions = 0;
     oldActions = 0;
     vehicleIndex = -1;

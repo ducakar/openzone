@@ -74,7 +74,7 @@ namespace client
 
       static void init();
 
-      MD2( const char *name );
+      explicit MD2( const char *name );
       ~MD2();
 
       void scale( float scale );

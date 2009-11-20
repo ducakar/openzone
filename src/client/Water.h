@@ -20,11 +20,8 @@ namespace client
     static const float TEX_BIAS;
 
     float phi;
-    float alpha1;
-    float alpha2;
 
-    Water();
-
+    void init();
     void update();
   };
 

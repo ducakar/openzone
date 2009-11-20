@@ -12,7 +12,10 @@
 #include "OBJVehicleModel.h"
 
 #include "matrix/Vehicle.h"
+#include "matrix/VehicleClass.h"
 #include "Context.h"
+#include "Camera.h"
+#include "Render.h"
 
 namespace oz
 {
@@ -38,8 +41,31 @@ namespace client
   void OBJVehicleModel::draw()
   {
     const Vehicle *veh = static_cast<const Vehicle*>( obj );
+    const VehicleClass *clazz = static_cast<const VehicleClass*>( obj->type );
 
     glMultMatrixf( veh->rot.rotMat44() );
+
+    for( int i = 0; i < Vehicle::CREW_MAX; i++ ) {
+      int index = veh->crewIndices[i];
+
+      if( index >= 0 && ( index != camera.botIndex || camera.isExternal ) ) {
+        Bot *bot = static_cast<const Bot*>( world.objects[veh->crewIndices[i]] );
+
+        glPushMatrix();
+        glTranslatef(  clazz->crewPos[i].x,  clazz->crewPos[i].y,  clazz->crewPos[i].z );
+        glRotatef( -bot->h, 0.0f, 0.0f, 1.0f );
+
+        if( !render.models.contains( bot->index ) ) {
+          render.models.add( bot->index, context.createModel( bot ) );
+        }
+        // draw model
+        render.models.cachedValue()->draw();
+        render.models.cachedValue()->isUpdated = true;
+
+        glPopMatrix();
+      }
+    }
+
     glCallList( list );
   }
 

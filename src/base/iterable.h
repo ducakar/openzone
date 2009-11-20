@@ -198,7 +198,7 @@ namespace oz
    * @return true if all elements are equal
    */
   template <class IterA, class IterB>
-  inline bool iEquals( IterA &iDest, IterB &iSrc )
+  inline bool iEquals( IterA iDest, IterB iSrc )
   {
     while( !iDest.isPassed() ) {
       if( *iDest != *iSrc ) {
@@ -216,7 +216,7 @@ namespace oz
    * @param value
    */
   template <class Iter, class Value>
-  inline void iSet( Iter &i, const Value &value )
+  inline void iSet( Iter i, const Value &value )
   {
     while( !i.isPassed() ) {
       *i = value;
@@ -230,7 +230,7 @@ namespace oz
    * @param iB
    */
   template <class IterA, class IterB>
-  inline void iCopy( IterA &iDest, IterB &iSrc )
+  inline void iCopy( IterA iDest, IterB iSrc )
   {
     assert( &*iDest != &*iSrc );
 
@@ -247,7 +247,7 @@ namespace oz
    * @param iB
    */
   template <class BackIterA, class BackIterB>
-  inline void iReverseCopy( BackIterA &iDest, BackIterB &iSrc )
+  inline void iReverseCopy( BackIterA iDest, BackIterB iSrc )
   {
     assert( &*iDest != &*iSrc );
 
@@ -265,7 +265,7 @@ namespace oz
    * @return iterator at the elements found, passed iterator if not found
    */
   template <class Iter, class Value>
-  inline Iter iIndex( Iter &i, const Value &value )
+  inline Iter iIndex( Iter i, const Value &value )
   {
     while( !i.isPassed() ) {
       if( *i == value ) {
@@ -283,7 +283,7 @@ namespace oz
    * @return iterator at the elements found, passed iterator if not found
    */
   template <class BackIter, class Value>
-  inline BackIter iLastIndex( BackIter &i, const Value &value )
+  inline BackIter iLastIndex( BackIter i, const Value &value )
   {
     while( !i.isPassed() ) {
       --i;
@@ -298,11 +298,11 @@ namespace oz
    * Call delete on all elements (that have been previously allocated with the new call).
    * @param i
    */
-  template <class Iter, class Type>
-  inline void iFree( Iter &i )
+  template <class Iter>
+  inline void iFree( Iter i )
   {
     while( !i.isPassed() ) {
-      Type *p = *i;
+      typeof( *i ) p = *i;
       ++i;
       delete p;
     }

@@ -24,7 +24,7 @@ namespace client
 namespace ui
 {
 
-  void DebugArea::draw()
+  void DebugArea::onDraw()
   {
     glColor4f( 0.6f, 0.6f, 0.6f, 0.6f );
     fill( 0, 0, width, height );

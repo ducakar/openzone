@@ -22,11 +22,11 @@ namespace ui
   {
     protected:
 
-      virtual void draw();
+      virtual void onDraw();
 
     public:
 
-      DebugArea() : Area( 5, -15 - 6 * font.monoHeight, 480, 10 + 6 * font.monoHeight )
+      explicit DebugArea() : Area( 5, -15 - 6 * font.monoHeight, 480, 10 + 6 * font.monoHeight )
       {
         setFont( MONO );
         setFontColor( 0xff, 0xff, 0xff );

@@ -67,10 +67,10 @@ namespace oz
    * @param a reference to first variable
    * @param b reference to second variable
    */
-  template <class ValueA, class ValueB>
-  inline void swap( ValueA &a, ValueB &b )
+  template <class Value>
+  inline void swap( Value &a, Value &b )
   {
-    ValueA temp = a;
+    Value temp = a;
 
     a = b;
     b = temp;
@@ -93,8 +93,8 @@ namespace oz
    * @param b
    * @return minimum of a and b
    */
-  template <class Value, class ValueB>
-  inline Value min( const Value &a, const ValueB &b )
+  template <class Value>
+  inline Value min( const Value &a, const Value &b )
   {
     return a < b ? a : b;
   }
@@ -105,8 +105,8 @@ namespace oz
    * @param b
    * @return maximum of a and b
    */
-  template <class Value, class ValueB>
-  inline Value max( const Value &a, const ValueB &b )
+  template <class Value>
+  inline Value max( const Value &a, const Value &b )
   {
     return a > b ? a : b;
   }
@@ -118,25 +118,17 @@ namespace oz
    * @param b
    * @return clamped value of c
    */
-  template <class ValueC, class ValueA, class ValueB>
-  inline ValueC bound( const ValueC &c, const ValueA &a, const ValueB &b )
+  template <class Value>
+  inline Value bound( const Value &c, const Value &a, const Value &b )
   {
     assert( a <= b );
 
-    if( a > c ) {
-      return a;
-    }
-    else if( b < c ) {
-      return b;
-    }
-    else {
-      return c;
-    }
+    return c < a ? a : ( c > b ? b : c );
   }
 
   /**
    * \def $
-   * Return the string with name of given identifier/type/reserved word/...
+   * Stringify the given identifier/type/reserved word/...
    */
 # define $( s ) #s
 

@@ -93,7 +93,7 @@ namespace client
 
       uint list;
 
-      MD3( const char *name );
+      explicit MD3( const char *name );
       ~MD3();
 
       void drawFrame( int frame ) const;

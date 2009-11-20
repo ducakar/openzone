@@ -11,6 +11,10 @@
 
 #include "Context.h"
 
+#include "MD2.h"
+#include "MD3.h"
+#include "OBJ.h"
+
 #include "MD2Model.h"
 #include "MD2StaticModel.h"
 #include "MD3StaticModel.h"

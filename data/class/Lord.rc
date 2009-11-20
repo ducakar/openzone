@@ -23,7 +23,7 @@ modelType "MD2"
 modelName "bauul"
 
 audioType "Basic"
-audioSample00 ""
+audioSample00 "death1"
 audioSample01 ""
 audioSample02 "splash1"
 audioSample03 ""

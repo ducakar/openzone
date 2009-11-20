@@ -54,10 +54,10 @@ namespace oz
    * @param count number of elements to be set
    */
   template <class Type>
-  inline void aSet( Type *dest, const Type &value, int count )
+  inline void aSet( Type *array, const Type &value, int count )
   {
     for( int i = 0; i < count; i++ ) {
-      dest[i] = value;
+      array[i] = value;
     }
   }
 

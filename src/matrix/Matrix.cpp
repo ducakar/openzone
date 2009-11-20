@@ -80,7 +80,7 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    world.sky.set( 205.0f, 144.0f, 0.0f );
+    world.sky.set( 205.0f, 86400.0f, 10000.0f );
 
     Bot *lord = static_cast<Bot*>( translator.createObject( "Lord", Vec3( 52, -44, 37 ) ) );
     lord->h = 270;

@@ -22,6 +22,7 @@ namespace oz
   const float Physics::SPLASH_TRESHOLD      = -2.0f;
   const float Physics::FLOOR_NORMAL_Z       = 0.60f;
   const float Physics::G_VELOCITY           = -9.81f * Timer::TICK_TIME;
+  const float Physics::WEIGHT_FACTOR        = 0.1f;
 
   const float Physics::STICK_VELOCITY       = 0.015f;
   const float Physics::SLICK_STICK_VELOCITY = 0.0001f;
@@ -232,23 +233,24 @@ namespace oz
 
   void Physics::handleObjHit()
   {
-    Object *sObj = collider.hit.obj;
+    const Hit &hit = collider.hit;
+    Object *sObj = hit.obj;
 
-    if( collider.hit.obj != null && ( collider.hit.obj->flags & Object::DYNAMIC_BIT ) ) {
+    if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
       DynObject *sDynObj = static_cast<DynObject*>( sObj );
 
       Vec3  momentum    = ( obj->momentum * obj->mass + sDynObj->momentum * sDynObj->mass ) /
           ( obj->mass + sDynObj->mass );
-      float hitMomentum = ( obj->momentum - sDynObj->momentum ) * collider.hit.normal;
+      float hitMomentum = ( obj->momentum - sDynObj->momentum ) * hit.normal;
 
       if( hitMomentum < HIT_TRESHOLD &&
-          Math::abs( obj->velocity * collider.hit.normal ) > HIT_NORMAL_TRESHOLD )
+          Math::abs( obj->velocity * hit.normal ) > HIT_NORMAL_TRESHOLD )
       {
-        obj->hit( &collider.hit, hitMomentum );
-        sDynObj->hit( &collider.hit, hitMomentum );
+        obj->hit( &hit, hitMomentum );
+        sDynObj->hit( &hit, hitMomentum );
       }
 
-      if( collider.hit.normal.z == 0.0f ) {
+      if( hit.normal.z == 0.0f ) {
         sDynObj->flags &= ~Object::DISABLED_BIT;
 
         if( obj->flags & Object::PUSHER_BIT ) {
@@ -257,7 +259,7 @@ namespace oz
           sDynObj->momentum.x = momentum.x;
           sDynObj->momentum.y = momentum.y;
         }
-        else if( collider.hit.normal.y == 0.0f ) {
+        else if( hit.normal.y == 0.0f ) {
           obj->momentum.x     = sDynObj->velocity.x;
           sDynObj->momentum.x = momentum.x;
         }
@@ -266,15 +268,17 @@ namespace oz
           sDynObj->momentum.y = momentum.y;
         }
       }
-      else if( collider.hit.normal.z == -1.0f ) {
+      else if( hit.normal.z == -1.0f ) {
         sDynObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
         sDynObj->lower = obj->index;
 
         obj->momentum.z     = sDynObj->velocity.z;
         sDynObj->momentum.z = momentum.z;
       }
-      else { // collider.hit.normal.z == 1.0f
-        assert( collider.hit.normal.z == 1.0f );
+      else { // hit.normal.z == 1.0f
+        assert( hit.normal.z == 1.0f );
+
+        sDynObj->damage( obj->mass * WEIGHT_FACTOR );
 
         obj->flags &= ~Object::ON_FLOOR_BIT;
         obj->lower = sDynObj->index;
@@ -289,25 +293,25 @@ namespace oz
       }
     }
     else {
-      float hitMomentum = obj->momentum * collider.hit.normal;
+      float hitMomentum = obj->momentum * hit.normal;
 
       if( hitMomentum < HIT_TRESHOLD &&
-          Math::abs( obj->velocity * collider.hit.normal ) > HIT_NORMAL_TRESHOLD )
+          Math::abs( obj->velocity * hit.normal ) > HIT_NORMAL_TRESHOLD )
       {
-        obj->hit( &collider.hit, hitMomentum );
+        obj->hit( &hit, hitMomentum );
 
         if( sObj != null ) {
-          sObj->hit( &collider.hit, hitMomentum );
+          sObj->hit( &hit, hitMomentum );
         }
       }
 
-      obj->momentum -= ( obj->momentum * collider.hit.normal ) * collider.hit.normal;
+      obj->momentum -= ( obj->momentum * hit.normal ) * hit.normal;
 
-      if( ( ~obj->flags & Object::HOVER_BIT ) && collider.hit.normal.z >= FLOOR_NORMAL_Z ) {
+      if( hit.normal.z >= FLOOR_NORMAL_Z ) {
         obj->flags |= Object::ON_FLOOR_BIT;
-        obj->flags |= ( collider.hit.material & Material::SLICK_BIT ) ? Object::ON_SLICK_BIT : 0;
+        obj->flags |= ( hit.material & Material::SLICK_BIT ) ? Object::ON_SLICK_BIT : 0;
         obj->lower = -1;
-        obj->floor = collider.hit.normal;
+        obj->floor = hit.normal;
       }
     }
   }

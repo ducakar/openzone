@@ -20,11 +20,11 @@ namespace client
 namespace ui
 {
 
-  Area root( 1, 1 );
+  HudArea *hud;
 
   void init( int screenX, int screenY )
   {
-    root = Area( 0, 0, screenX, screenY );
+    hud = new HudArea( screenX, screenY );
     mouse.init( screenX, screenY );
 
     if( !font.init() ) {
@@ -41,7 +41,7 @@ namespace ui
   void update()
   {
     if( mouse.doShow ) {
-      root.checkMouse();
+      hud->checkMouse();
     }
   }
 
@@ -52,11 +52,11 @@ namespace ui
 
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-    glOrtho( 0.0, root.width, 0.0, root.height, 0.0, 1.0 );
+    glOrtho( 0.0, hud->width, 0.0, hud->height, 0.0, 1.0 );
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
 
-    root.draw();
+    hud->onDraw();
     mouse.draw();
   }
 

@@ -22,11 +22,11 @@ namespace ui
   {
     protected:
 
-      virtual void draw();
+      virtual void onDraw();
 
     public:
 
-      BuildMenu();
+      explicit BuildMenu();
 
   };
 

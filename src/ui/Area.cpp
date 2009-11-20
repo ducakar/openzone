@@ -159,7 +159,7 @@ namespace ui
   void Area::onMouseEvent()
   {}
 
-  void Area::draw()
+  void Area::onDraw()
   {
     drawChildren();
   }

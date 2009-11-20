@@ -179,14 +179,12 @@ namespace oz
     part->index = -1;
   }
 
-  World::World() :
-      Bounds( Vec3( -World::DIM, -World::DIM, -World::DIM ),
-              Vec3(  World::DIM,  World::DIM,  World::DIM ) )
-  {}
-
   void World::init()
   {
     log.print( "Initializing World ..." );
+
+    mins = Vec3( -World::DIM, -World::DIM, -World::DIM );
+    maxs = Vec3(  World::DIM,  World::DIM,  World::DIM );
 
     sky.set( -180.0f, 1440.0f, 0.0f );
     terra.init();

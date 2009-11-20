@@ -50,15 +50,12 @@ namespace client
       int   botIndex;
       Bot   *bot;
       // how far behind the eyes the camera should be
-      float thirdPersonDist;
+      float externalDistFactor;
 
-      bool  isThirdPerson;
+      bool  isExternal;
       bool  isFreeLook;
 
-      Camera();
-
       void init();
-
       void update();
   };
 

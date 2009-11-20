@@ -17,6 +17,7 @@
 #include "Camera.h"
 #include "Context.h"
 #include "Frustum.h"
+#include "Colors.h"
 #include "Water.h"
 
 #include <GL/glext.h>
@@ -168,7 +169,7 @@ namespace client
       glNormal3f( 0.0f, 0.0f, 1.0f );
 
       glBegin( GL_QUADS );
-        glColor4f( 1.0f, 1.0f, 1.0f, water.alpha1 );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
 
         glTexCoord2f( minX * WATER_SCALE, minY * WATER_SCALE );
         glVertex3f( v0.x, v0.y, 0.0f );
@@ -182,7 +183,7 @@ namespace client
         glTexCoord2f( minX * WATER_SCALE, maxY * WATER_SCALE );
         glVertex3f( v0.x, v1.y, 0.0f );
 
-        glColor4f( 1.0f, 1.0f, 1.0f, water.alpha2 );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
 
         glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v0.x, v0.y, 0.0f );
@@ -201,7 +202,7 @@ namespace client
       glNormal3f( 0.0f, 0.0f, -1.0f );
 
       glBegin( GL_QUADS );
-        glColor4f( 1.0f, 1.0f, 1.0f, water.alpha1 );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
 
         glTexCoord2f( minX * WATER_SCALE, maxY * WATER_SCALE );
         glVertex3f( v0.x, v1.y, 0.0f );
@@ -215,7 +216,7 @@ namespace client
         glTexCoord2f( minX * WATER_SCALE, minY * WATER_SCALE );
         glVertex3f( v0.x, v0.y, 0.0f );
 
-        glColor4f( 1.0f, 1.0f, 1.0f, water.alpha2 );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
 
         glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v0.x, v1.y, 0.0f );

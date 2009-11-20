@@ -29,6 +29,7 @@ namespace oz
       static const int PASSENGER5 = 8;
       static const int CREW_MAX   = 9;
 
+      static const float EJECT_MOVE;
       static const float EJECT_MOMENTUM;
 
     protected:

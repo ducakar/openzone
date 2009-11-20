@@ -19,7 +19,7 @@ namespace oz
   class  Object;
   class  Bot;
 
-  struct Lua
+  class Lua
   {
     private:
 

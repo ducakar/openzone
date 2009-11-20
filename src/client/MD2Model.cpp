@@ -13,6 +13,7 @@
 
 #include "matrix/BotClass.h"
 #include "Context.h"
+#include "Colors.h"
 
 namespace oz
 {
@@ -60,16 +61,22 @@ namespace client
     const Bot *bot = static_cast<const Bot*>( obj );
     const BotClass *clazz = static_cast<const BotClass*>( bot->type );
 
-    if( bot->state & Bot::DEATH_BIT ) {
-      float alpha = bot->life / clazz->life * 3.0f;
-      glColor4f( 1.0f, 1.0f, 1.0f, alpha );
-    }
     glRotatef( bot->h, 0.0f, 0.0f, 1.0f );
 
     if( bot->anim != anim.type ) {
       setAnim( bot->anim );
     }
-    md2->draw( &anim );
+
+    if( bot->state & Bot::DEATH_BIT ) {
+      float color[] = { 1.0f, 1.0f, 1.0f, bot->life / clazz->life * 3.0f };
+
+      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color );
+      md2->draw( &anim );
+      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
+    }
+    else {
+      md2->draw( &anim );
+    }
   }
 
 }

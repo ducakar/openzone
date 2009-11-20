@@ -62,9 +62,9 @@ else()
     set( flags "${CMAKE_CXX_FLAGS}" )
 endif()
 
-add_custom_target( precompiled ALL DEPENDS base precompiled.h.gch )
+add_custom_target( precompiled DEPENDS precompiled.h.gch )
 add_custom_command( OUTPUT precompiled.h.gch
-                    MAIN_DEPENDENCY precompiled.h
+                    DEPENDS base precompiled.h
                     COMMAND rm -f precompiled.h.gch &&
                             ${CMAKE_CXX_COMPILER} `echo ${flags}` -I. precompiled.h )
 

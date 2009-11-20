@@ -23,11 +23,11 @@ namespace ui
     protected:
 
       virtual void onMouseEvent();
-      virtual void draw();
+      virtual void onDraw();
 
     public:
 
-      Frame( int width, int height ) : Area( width, height ) {}
+      explicit Frame( int width, int height ) : Area( width, height ) {}
 
   };
 
