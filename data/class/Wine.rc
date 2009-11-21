@@ -2,9 +2,25 @@ base "DynObject"
 
 dim.x "0.1"
 dim.y "0.1"
-dim.z "0.2"
+dim.z "0.25"
 
 flag.item "true"
 
+life "10.0f"
+
+mass "1.0f"
+
+nDebris "4"
+debrisColor.r "0.4"
+debrisColor.g "0.0"
+debrisColor.b "0.3"
+debrisColorSpread "0.05"
+
 modelType "MD2Static"
 modelName "winebottle"
+
+audioType "Basic"
+audioSample00 ""
+audioSample01 "hit1"
+audioSample02 "splash1"
+audioSample03 ""

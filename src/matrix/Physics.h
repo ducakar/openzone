@@ -70,6 +70,8 @@ namespace oz
       {
         part = part_;
 
+        assert( part->cell != null );
+
         part->velocity.z += G_VELOCITY;
         part->lifeTime -= Timer::TICK_TIME;
 

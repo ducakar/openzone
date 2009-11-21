@@ -175,10 +175,11 @@ namespace client
     alListenerfv( AL_ORIENTATION, camera.at );
     alListenerfv( AL_POSITION, camera.p );
 
-    collider.getInters( camera.p, DMAX + AABB::MAX_DIM );
+    Area area;
+    world.getInters( area, camera.p, DMAX + AABB::MAX_DIM );
 
-    for( int x = collider.minX ; x <= collider.maxX; x++ ) {
-      for( int y = collider.minY; y <= collider.maxY; y++ ) {
+    for( int x = area.minX ; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         playCell( x, y );
       }
     }

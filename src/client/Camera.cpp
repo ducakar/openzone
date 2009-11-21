@@ -73,8 +73,10 @@ namespace client
     }
     else if( isExternal ) {
       float dist;
-      if( bot->vehicleIndex >= 0 ) {
-        Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->vehicleIndex] );
+      if( bot->parent >= 0 ) {
+        Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->parent] );
+
+        assert( veh->flags & Object::VEHICLE_BIT );
 
         dist = !veh->dim * externalDistFactor;
       }
@@ -94,8 +96,10 @@ namespace client
       p.z = ( origin.z + offset.z ) * smoothCoef_1 + oldP.z * smoothCoef;
     }
     else {
-      if( bot->vehicleIndex >= 0 ) {
-        Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->vehicleIndex] );
+      if( bot->parent >= 0 ) {
+        Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->parent] );
+
+        assert( veh->flags & Object::VEHICLE_BIT );
 
         rot     = veh->rot;
         rotMat  = rot.rotMat44();

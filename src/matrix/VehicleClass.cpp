@@ -178,7 +178,6 @@ namespace oz
     Vehicle *obj = new Vehicle();
 
     obj->dim    = dim;
-    obj->cell   = null;
     obj->type   = this;
 
     obj->mass   = mass;

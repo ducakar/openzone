@@ -103,23 +103,22 @@ namespace oz
 
     public:
 
-      float    h, v;
-      int      state, oldState;
-      int      actions, oldActions;
+      float       h, v;
+      int         state, oldState;
+      int         actions, oldActions;
 
-      float    stamina;
-      float    stepRate;
+      float       stamina;
+      float       stepRate;
 
-      int      grabObjIndex;
-      float    grabHandle;
+      int         grabObjIndex;
+      float       grabHandle;
 
-      int      vehicleIndex;
-      Vector<Object*> items;
-      Weapon   *weapon;
+      Vector<int> items;
+      Weapon      *weapon;
 
-      float    bob;
-      Vec3     camPos;
-      AnimEnum anim;
+      float       bob;
+      Vec3        camPos;
+      AnimEnum    anim;
 
       explicit Bot();
 

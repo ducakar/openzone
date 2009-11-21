@@ -68,10 +68,8 @@ namespace oz
        */
       Vec3 toAbsoluteCS( const Vec3 &v ) const;
 
-      bool testPointTerraQuad( int x, int y );
-      bool testPointBrush( const BSP::Brush *brush );
-      bool testPointNode( int nodeIndex );
-      bool testPointTerra();
+      bool testPointBrush( const BSP::Brush *brush ) const;
+      bool testPointNode( int nodeIndex ) const;
       bool testPointWorld();
       bool testPointWorldOO();
       bool testPointWorldOSO();
@@ -86,8 +84,8 @@ namespace oz
                           const Vec3 &startPos, const Vec3 &endPos );
       void trimPointWorld();
 
-      bool testAABBBrush( const BSP::Brush *brush );
-      bool testAABBNode( int nodeIndex );
+      bool testAABBBrush( const BSP::Brush *brush ) const;
+      bool testAABBNode( int nodeIndex ) const;
       bool testAABBWorld();
       bool testAABBWorldOO();
       bool testAABBWorldOSO();
@@ -101,37 +99,14 @@ namespace oz
                          const Vec3 &startPos, const Vec3 &endPos );
       void trimAABBWorld();
 
-      void getWorldOverlaps( Vector<Object*> *objects,
-                             Vector<const Structure*> *structs );
-      void getWorldIncludes( Vector<Object*> *objects );
+      void getWorldOverlaps( Vector<Object*> *objects, Vector<const Structure*> *structs );
+      void getWorldIncludes( Vector<Object*> *objects ) const;
+      void touchWorldOverlaps() const;
 
     public:
 
-      // for returning getInters cell indices
-      int minX;
-      int minY;
-      int maxX;
-      int maxY;
-
-      Hit hit;
-
-      // get pointer to the cell the point is in
-      Cell *getCell( float x, float y );
-      Cell *getCell( const Vec3 &p );
-
-      // get indices of the cell the point is in
-      void getInters( float x, float y, float epsilon = 0.0f );
-      void getInters( const Vec3 &p, float epsilon = 0.0f );
-
-      // get indices of min and max cells which the area intersects
-      void getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
-                      float epsilon = 0.0f );
-
-      // get indices of min and max cells which the AABB intersects
-      void getInters( const AABB &bb, float epsilon = 0.0f );
-
-      // get indices of min and max cells which the bounds intersects
-      void getInters( const Bounds &bounds, float epsilon = 0.0f );
+      Area area;
+      Hit  hit;
 
       bool test( const Vec3 &point, const Object *exclObj = null );
       // test for object collisions only (no structures or terrain)
@@ -147,6 +122,7 @@ namespace oz
       // if either vector is null the respecitve test is not performed
       void getOverlaps( const AABB &aabb, Vector<Object*> *objects,
                         Vector<const Structure*> *structs );
+      void touchOverlaps( const AABB &aabb );
 
       // fill given vector with objects included in the AABB
       void getIncludes( const AABB &aabb, Vector<Object*> *objects );
@@ -159,61 +135,12 @@ namespace oz
 
   extern Collider collider;
 
-  inline Cell *Collider::getCell( float x, float y )
-  {
-    int ix = static_cast<int>( x + World::DIM ) / Cell::SIZEI;
-    int iy = static_cast<int>( y + World::DIM ) / Cell::SIZEI;
-
-    ix = bound( ix, 0, World::MAX - 1 );
-    iy = bound( iy, 0, World::MAX - 1 );
-
-    return &world.cells[ix][iy];
-  }
-
-  inline Cell *Collider::getCell( const Vec3 &p )
-  {
-    return getCell( p.x, p.y );
-  }
-
-  inline void Collider::getInters( float x, float y, float epsilon )
-  {
-    minX = max( static_cast<int>( x - epsilon + World::DIM ) / Cell::SIZEI, 0 );
-    minY = max( static_cast<int>( y - epsilon + World::DIM ) / Cell::SIZEI, 0 );
-    maxX = min( static_cast<int>( x + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
-    maxY = min( static_cast<int>( y + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
-  }
-
-  inline void Collider::getInters( const Vec3 &p, float epsilon )
-  {
-    getInters( p.x, p.y, epsilon );
-  }
-
-  inline void Collider::getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
-                                float epsilon )
-  {
-    minX = max( static_cast<int>( minPosX - epsilon + World::DIM ) / Cell::SIZEI, 0 );
-    minY = max( static_cast<int>( minPosY - epsilon + World::DIM ) / Cell::SIZEI, 0 );
-    maxX = min( static_cast<int>( maxPosX + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
-    maxY = min( static_cast<int>( maxPosY + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
-  }
-
-  inline void Collider::getInters( const AABB &bb, float epsilon )
-  {
-    getInters( bb.p.x - bb.dim.x, bb.p.y - bb.dim.y, bb.p.x + bb.dim.x, bb.p.y + bb.dim.y,
-               epsilon );
-  }
-
-  inline void Collider::getInters( const Bounds &bounds, float epsilon )
-  {
-    getInters( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
-  }
-
   inline bool Collider::test( const Vec3 &point_, const Object *exclObj_ )
   {
     point = point_;
     exclObj = exclObj_;
 
-    getInters( point, AABB::MAX_DIM );
+    world.getInters( area, point, AABB::MAX_DIM );
 
     return testPointWorld();
   }
@@ -223,7 +150,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    getInters( point, AABB::MAX_DIM );
+    world.getInters( area, point, AABB::MAX_DIM );
 
     return testPointWorldOO();
   }
@@ -233,7 +160,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    getInters( point, AABB::MAX_DIM );
+    world.getInters( area, point, AABB::MAX_DIM );
 
     return testPointWorldOSO();
   }
@@ -244,7 +171,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( EPSILON );
-    getInters( trace, AABB::MAX_DIM );
+    world.getInters( area, trace, AABB::MAX_DIM );
 
     return testAABBWorld();
   }
@@ -255,7 +182,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( EPSILON );
-    getInters( trace, AABB::MAX_DIM );
+    world.getInters( area, trace, AABB::MAX_DIM );
 
     return testAABBWorldOO();
   }
@@ -266,7 +193,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( EPSILON );
-    getInters( trace, AABB::MAX_DIM );
+    world.getInters( area, trace, AABB::MAX_DIM );
 
     return testAABBWorldOSO();
   }
@@ -279,7 +206,7 @@ namespace oz
     exclObj = null;
 
     trace = aabb.toBounds( EPSILON );
-    getInters( trace, AABB::MAX_DIM );
+    world.getInters( area, trace, AABB::MAX_DIM );
 
     return getWorldOverlaps( objects, structs );
   }
@@ -290,9 +217,20 @@ namespace oz
     exclObj = null;
 
     trace = aabb.toBounds( EPSILON );
-    getInters( trace, AABB::MAX_DIM );
+    world.getInters( area, trace, AABB::MAX_DIM );
 
     return getWorldIncludes( objects );
+  }
+
+  inline void Collider::touchOverlaps( const AABB &aabb_ )
+  {
+    aabb = aabb_;
+    exclObj = null;
+
+    trace = aabb.toBounds( EPSILON );
+    world.getInters( area, trace, AABB::MAX_DIM );
+
+    return touchWorldOverlaps();
   }
 
   inline void Collider::translate( const Vec3 &point_, const Vec3 &move_, const Object *exclObj_ )
@@ -302,7 +240,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace.fromPointMove( point, move, EPSILON );
-    getInters( trace, AABB::MAX_DIM );
+    world.getInters( area, trace, AABB::MAX_DIM );
 
     trimPointWorld();
   }
@@ -315,20 +253,22 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( move, EPSILON );
-    getInters( trace, AABB::MAX_DIM );
+    world.getInters( area, trace, AABB::MAX_DIM );
 
     trimAABBWorld();
   }
 
   inline void Collider::translate( const DynObject *obj_, const Vec3 &move_ )
   {
+    assert( obj_->cell != null );
+
     obj  = obj_;
     aabb = *obj;
     move = move_;
     exclObj = obj;
 
     trace = aabb.toBounds( move, EPSILON );
-    getInters( trace, AABB::MAX_DIM );
+    world.getInters( area, trace, AABB::MAX_DIM );
 
     trimAABBWorld();
   }

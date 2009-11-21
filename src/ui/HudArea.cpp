@@ -28,6 +28,7 @@ namespace ui
   {
     crossTexId = context.loadTexture( "ui/crosshair.png", false, GL_LINEAR, GL_LINEAR );
     useTexId   = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
+    takeTexId  = context.loadTexture( "ui/take.png", false, GL_LINEAR, GL_LINEAR );
     mountTexId = context.loadTexture( "ui/mount.png", false, GL_LINEAR, GL_LINEAR );
     grabTexId  = context.loadTexture( "ui/grab.png", false, GL_LINEAR, GL_LINEAR );
 
@@ -35,18 +36,21 @@ namespace ui
     crossIconY = ( height - ICON_SIZE ) / 2;
     useIconX   = crossIconX + ICON_SIZE;
     useIconY   = crossIconY;
+    takeIconX  = crossIconX + ICON_SIZE;
+    takeIconY  = crossIconY - ICON_SIZE;
     mountIconX = crossIconX - ICON_SIZE;
     mountIconY = crossIconY;
     grabIconX  = crossIconX;
     grabIconY  = crossIconY - ICON_SIZE;
-    healthBarX = crossIconX;
-    healthBarY = crossIconY + ICON_SIZE;
+    healthBarX = crossIconX - 8;
+    healthBarY = crossIconY + ICON_SIZE + 8;
   }
 
   HudArea::~HudArea()
   {
     context.freeTexture( crossTexId );
     context.freeTexture( useTexId );
+    context.freeTexture( takeTexId );
     context.freeTexture( mountTexId );
     context.freeTexture( grabTexId );
   }
@@ -63,13 +67,13 @@ namespace ui
       float life = ( obj->flags & Object::BOT_BIT ) ?
           ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
           obj->life / clazz->life;
-      int lifeWidth = life * ICON_SIZE - 2;
+      int lifeWidth = life * ICON_SIZE + 14;
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
       fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
 
       glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
-      rect( healthBarX, healthBarY + 10, ICON_SIZE, 12 );
+      rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
     }
 
     if( camera.botIndex >= 0 ) {
@@ -119,18 +123,33 @@ namespace ui
             glVertex2i( mountIconX, mountIconY + ICON_SIZE );
           glEnd();
         }
-        else if( obj->flags & Object::USE_FUNC_BIT ) {
-          glBindTexture( GL_TEXTURE_2D, useTexId );
-          glBegin( GL_QUADS );
-            glTexCoord2i( 0, 1 );
-            glVertex2i( useIconX, useIconY );
-            glTexCoord2i( 1, 1 );
-            glVertex2i( useIconX + ICON_SIZE, useIconY );
-            glTexCoord2i( 1, 0 );
-            glVertex2i( useIconX + ICON_SIZE, useIconY + ICON_SIZE );
-            glTexCoord2i( 0, 0 );
-            glVertex2i( useIconX, useIconY + ICON_SIZE );
-          glEnd();
+        else {
+          if( obj->flags & Object::USE_FUNC_BIT ) {
+            glBindTexture( GL_TEXTURE_2D, useTexId );
+            glBegin( GL_QUADS );
+              glTexCoord2i( 0, 1 );
+              glVertex2i( useIconX, useIconY );
+              glTexCoord2i( 1, 1 );
+              glVertex2i( useIconX + ICON_SIZE, useIconY );
+              glTexCoord2i( 1, 0 );
+              glVertex2i( useIconX + ICON_SIZE, useIconY + ICON_SIZE );
+              glTexCoord2i( 0, 0 );
+              glVertex2i( useIconX, useIconY + ICON_SIZE );
+            glEnd();
+          }
+          if( obj->flags & Object::ITEM_BIT ) {
+            glBindTexture( GL_TEXTURE_2D, takeTexId );
+            glBegin( GL_QUADS );
+              glTexCoord2i( 0, 1 );
+              glVertex2i( takeIconX, takeIconY );
+              glTexCoord2i( 1, 1 );
+              glVertex2i( takeIconX + ICON_SIZE, takeIconY );
+              glTexCoord2i( 1, 0 );
+              glVertex2i( takeIconX + ICON_SIZE, takeIconY + ICON_SIZE );
+              glTexCoord2i( 0, 0 );
+              glVertex2i( takeIconX, takeIconY + ICON_SIZE );
+            glEnd();
+          }
         }
       }
 

@@ -81,8 +81,10 @@ namespace oz
     hvsc[4] = hvsc[3] * hvsc[0];
     hvsc[5] = hvsc[3] * hvsc[1];
 
-    if( vehicleIndex >= 0 ) {
-      Vehicle *vehicle = static_cast<Vehicle*>( world.objects[vehicleIndex] );
+    if( parent >= 0 ) {
+      Vehicle *vehicle = static_cast<Vehicle*>( world.objects[parent] );
+
+      assert( vehicle->flags & VEHICLE_BIT );
 
       if( vehicle == null || ( actions & ~oldActions & ACTION_EXIT ) ) {
         exit();
@@ -366,7 +368,7 @@ namespace oz
     }
 
     /*
-     * USE, GRAB
+     * GRAB, USE, TAKE, THROW
      */
 
     DynObject *grabObj = null;
@@ -427,9 +429,10 @@ namespace oz
     }
     else if( actions & ~oldActions & ACTION_TAKE ) {
       if( grabObjIndex >= 0 ) {
-        if( grabObj->flags & ITEM_BIT ) {
-          items << grabObj;
-          synapse.remove( grabObj );
+        if( ( grabObj->flags & ITEM_BIT ) && ( ~grabObj->flags & CUT_BIT ) ) {
+          items << grabObj->index;
+          grabObj->parent = index;
+          synapse.cut( grabObj );
         }
       }
       else {
@@ -438,10 +441,13 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        Object *obj = collider.hit.obj;
-        if( obj != null && ( obj->flags & ITEM_BIT ) ) {
-          items << obj;
-          synapse.remove( obj );
+        DynObject *obj = static_cast<DynObject*>( collider.hit.obj );
+        if( obj != null && ( obj->flags & ITEM_BIT ) && ( ~obj->flags & CUT_BIT ) ) {
+          assert( obj->flags & DYNAMIC_BIT );
+
+          items << obj->index;
+          obj->parent = index;
+          synapse.cut( obj );
         }
       }
     }
@@ -464,8 +470,8 @@ namespace oz
         collider.translate( eye, look, this );
 
         DynObject *obj = static_cast<DynObject*>( collider.hit.obj );
-        if( obj != null && ( obj->flags & Object::DYNAMIC_BIT ) && obj->mass <= clazz.grabMass &&
-            lower != obj->index)
+        if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz.grabMass &&
+            lower != obj->index )
         {
           float dimX = dim.x + obj->dim.x;
           float dimY = dim.y + obj->dim.y;
@@ -486,32 +492,26 @@ namespace oz
   }
 
   Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
-      grabObjIndex( -1 ), vehicleIndex( -1 ), weapon( null ), bob( 0.0f ), anim( ANIM_STAND )
+      grabObjIndex( -1 ), weapon( null ), bob( 0.0f ), anim( ANIM_STAND )
   {}
 
   void Bot::enter( int vehicleIndex_ )
   {
-    flags &= ~( DYNAMIC_BIT | DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT | ON_LADDER_BIT |
-        ON_SLICK_BIT | CLIP_BIT );
-    flags |= NODRAW_BIT;
-    lower = -1;
-    h = 0.0f;
-    v = 0.0f;
-    state &= ~( CROUCHING_BIT | JUMP_SCHED_BIT | GROUNDED_BIT | MOVING_BIT );
-    actions = 0;
-    oldActions = 0;
-    grabObjIndex = -1;
-    vehicleIndex = vehicleIndex_;
-    anim = ANIM_STAND;
+    if( ~flags & CUT_BIT ) {
+      parent = vehicleIndex_;
+      grabObjIndex = -1;
+      anim = ANIM_STAND;
+      synapse.cut( this );
+    }
   }
 
   void Bot::exit()
   {
-    flags |= DYNAMIC_BIT | CLIP_BIT;
-    flags &= ~NODRAW_BIT;
-    actions = 0;
-    oldActions = 0;
-    vehicleIndex = -1;
+    assert( parent >= 0 );
+
+    flags &= ~DISABLED_BIT;
+    parent = -1;
+    synapse.put( this );
   }
 
   void Bot::kill()
@@ -539,8 +539,7 @@ namespace oz
 
     int nItems = istream->readInt();
     for( int i = 0; i < nItems; i++ ) {
-      const String &name = istream->readString();
-      items << translator.createObject( name, istream );
+      items << istream->readInt();
     }
 
     const BotClass *clazz = static_cast<const BotClass*>( type );
@@ -567,8 +566,7 @@ namespace oz
 
     ostream->writeInt( items.length() );
     foreach( item, items.iterator() ) {
-      ostream->writeString( ( *item )->type->name );
-      ( *item )->writeFull( ostream );
+      ostream->writeInt( *item );
     }
   }
 

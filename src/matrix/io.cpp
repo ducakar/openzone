@@ -71,13 +71,7 @@ namespace oz
     }
     fclose( handle );
 
-    if( blocksToWrite > 0 ) {
-      delete[] buffer;
-      buffer = null;
-      count = 0;
-      return false;
-    }
-    return true;
+    return blocksToWrite == 0;
   }
 
 }

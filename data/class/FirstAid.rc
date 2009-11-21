@@ -4,7 +4,9 @@ dim.x "0.25"
 dim.y "0.25"
 dim.z "0.15"
 
-life "100.0f"
+flag.item "true"
+
+life "30.0f"
 
 onUse "heal50"
 

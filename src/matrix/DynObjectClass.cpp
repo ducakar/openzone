@@ -44,7 +44,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
     OZ_CLASS_SET_FLAG( Object::ITEM_BIT,         "flag.item",        false );
     OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
-    OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,      "flag.climber",     false );
     OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,       "flag.pusher",      false );
     OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
     OZ_CLASS_SET_FLAG( Object::BLEND_BIT,        "flag.blend",       false );
@@ -113,7 +112,6 @@ namespace oz
     DynObject *obj = new DynObject();
 
     obj->dim    = dim;
-    obj->cell   = null;
     obj->type   = this;
 
     obj->mass   = mass;

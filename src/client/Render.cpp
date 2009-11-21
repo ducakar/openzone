@@ -473,6 +473,7 @@ namespace client
     ui::init( screenX, screenY );
     ui::hud->add( new ui::DebugArea() );
     ui::hud->add( new ui::BuildMenu(), -1, -1 );
+    ui::hud->add( new ui::InventoryMenu(), 0, 0 );
 
     SDL_GL_SwapBuffers();
 

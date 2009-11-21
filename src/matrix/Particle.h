@@ -57,7 +57,7 @@ namespace oz
 
       explicit Particle( const Vec3 &p_, const Vec3 &velocity_, float rejection_, float mass_,
                          float lifeTime_, const Vec3 &color_ ) :
-          p( p_ ), velocity( velocity_ ),
+          p( p_ ), index( -1 ), cell( null ), velocity( velocity_ ),
           rejection( rejection_ ),
           mass( mass_ ), lifeTime( lifeTime_ ),
           color( color_ ),

@@ -11,8 +11,6 @@
 
 #include "World.h"
 
-#include "Collider.h"
-
 namespace oz
 {
 
@@ -22,162 +20,6 @@ namespace oz
   const float Cell::RADIUS = Cell::SIZE * Math::SQRT2 / 2.0f;
 
   const float World::DIM = Cell::SIZE * World::MAX / 2.0f;
-
-  void World::position( Structure *str )
-  {
-    const Bounds &bsp = *bsps[str->bsp];
-
-    switch( str->rot ) {
-      case Structure::R0: {
-        str->mins = bsp.mins + str->p;
-        str->maxs = bsp.maxs + str->p;
-        break;
-      }
-      case Structure::R90: {
-        str->mins = Vec3( -bsp.maxs.y + str->p.x, bsp.mins.x + str->p.y, bsp.mins.z + str->p.z );
-        str->maxs = Vec3( -bsp.mins.y + str->p.x, bsp.maxs.x + str->p.y, bsp.maxs.z + str->p.z );
-        break;
-      }
-      case Structure::R180: {
-        str->mins = str->p + Vec3( -bsp.maxs.x, -bsp.maxs.y, +bsp.mins.z );
-        str->maxs = str->p + Vec3( -bsp.mins.x, -bsp.mins.y, +bsp.maxs.z );
-        break;
-      }
-      case Structure::R270: {
-        str->mins = Vec3( bsp.mins.y + str->p.x, -bsp.maxs.x + str->p.y, bsp.mins.z + str->p.z );
-        str->maxs = Vec3( bsp.maxs.y + str->p.x, -bsp.mins.x + str->p.y, bsp.maxs.z + str->p.z );
-        break;
-      }
-      default: {
-        assert( false );
-        break;
-      }
-    }
-
-    collider.getInters( *str, EPSILON );
-
-    for( int x = collider.minX; x <= collider.maxX; x++ ) {
-      for( int y = collider.minY; y <= collider.maxY; y++ ) {
-        cells[x][y].structures << str->index;
-      }
-    }
-  }
-
-  void World::unposition( Structure *str )
-  {
-    collider.getInters( *str, EPSILON );
-
-    for( int x = collider.minX; x <= collider.maxX; x++ ) {
-      for( int y = collider.minY; y <= collider.maxY; y++ ) {
-        cells[x][y].structures.exclude( str->index );
-      }
-    }
-  }
-
-  void World::position( Object *obj )
-  {
-    obj->cell = collider.getCell( obj->p );
-    obj->cell->objects << obj;
-  }
-
-  void World::unposition( Object *obj )
-  {
-    obj->cell->objects.remove( obj );
-    obj->cell = null;
-  }
-
-  void World::reposition( Object *obj )
-  {
-    Cell *oldCell = obj->cell;
-    Cell *newCell = collider.getCell( obj->p );
-
-    if( newCell != oldCell ) {
-      oldCell->objects.remove( obj );
-      newCell->objects << obj;
-      obj->cell = newCell;
-    }
-  }
-
-  void World::position( Particle *part )
-  {
-    part->cell = collider.getCell( part->p );
-    part->cell->particles << part;
-  }
-
-  void World::unposition( Particle *part )
-  {
-    part->cell->particles.remove( part );
-    part->cell = null;
-  }
-
-  void World::reposition( Particle *part )
-  {
-    Cell *oldCell = part->cell;
-    Cell *newCell = collider.getCell( part->p );
-
-    if( newCell != oldCell ) {
-      oldCell->particles.remove( part );
-      newCell->particles << part;
-      part->cell = newCell;
-    }
-  }
-
-  void World::put( Structure *str )
-  {
-    if( strAvailableIndices.isEmpty() ) {
-      str->index = structures.length();
-      structures << str;
-    }
-    else {
-      strAvailableIndices >> str->index;
-      structures[str->index] = str;
-    }
-  }
-
-  void World::put( Object *obj )
-  {
-    if( objAvailableIndices.isEmpty() ) {
-      obj->index = objects.length();
-      objects << obj;
-    }
-    else {
-      objAvailableIndices >> obj->index;
-      objects[obj->index] = obj;
-    }
-  }
-
-  void World::put( Particle *part )
-  {
-    if( partAvailableIndices.isEmpty() ) {
-      part->index = particles.length();
-      particles << part;
-    }
-    else {
-      partAvailableIndices >> part->index;
-      particles[part->index] = part;
-    }
-  }
-
-  void World::cut( Structure *str )
-  {
-    strPendingIndices << str->index;
-    structures[str->index] = null;
-    str->index = -1;
-  }
-
-  void World::cut( Object *obj )
-  {
-    objPendingIndices << obj->index;
-    objects[obj->index] = null;
-    obj->index = -1;
-  }
-
-  void World::cut( Particle *part )
-  {
-    partPendingIndices << part->index;
-    particles[part->index] = null;
-    part->index = -1;
-  }
 
   void World::init()
   {
@@ -304,7 +146,10 @@ namespace oz
           str->index = i;
           str->bsp = bspIndex;
           structures << str;
-          position( str );
+
+          if( ~str->flags & Structure::REMOVED_BIT ) {
+            position( str );
+          }
         }
       }
       for( int i = 0; i < nObjects; i++ ) {
@@ -317,7 +162,10 @@ namespace oz
           obj = translator.createObject( typeName, istream );
           obj->index = i;
           objects << obj;
-          position( obj );
+
+          if( ~obj->flags & Object::CUT_BIT ) {
+            position( obj );
+          }
         }
       }
       for( int i = 0; i < nParticles; i++ ) {

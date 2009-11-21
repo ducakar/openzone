@@ -219,7 +219,7 @@ namespace client
     bool isAlive        = true;
     bool isActive       = true;
 
-    uint tick           = config.getSet( "tick", 20 );
+    uint tick           = Timer::TICK_MILLIS;
     // time passed form start of the frame
     uint delta;
     uint timeNow;

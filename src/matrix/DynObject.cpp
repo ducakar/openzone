@@ -20,6 +20,7 @@ namespace oz
   {
     Object::readFull( istream );
 
+    parent     = istream->readInt();
     velocity   = istream->readVec3();
     momentum   = istream->readVec3();
     floor      = istream->readVec3();
@@ -31,6 +32,7 @@ namespace oz
   {
     Object::writeFull( ostream );
 
+    ostream->writeInt( parent );
     ostream->writeVec3( velocity );
     ostream->writeVec3( momentum );
     ostream->writeVec3( floor );

@@ -303,7 +303,7 @@ namespace client
           camera.bot->actions |= Bot::ACTION_USE;
         }
         if( ui::mouse.wheelDown ) {
-//          camera.bot->keys |= Bot::KEY_TAKE;
+          camera.bot->actions |= Bot::ACTION_TAKE;
         }
         if( ui::mouse.wheelUp ) {
           camera.bot->actions |= Bot::ACTION_THROW;
@@ -321,7 +321,7 @@ namespace client
         me->v = camera.v;
         me->state |= Bot::PLAYER_BIT;
 
-        camera.botIndex = synapse.put( me );
+        camera.botIndex = synapse.add( me );
       }
       else {
         camera.h = camera.bot->h;

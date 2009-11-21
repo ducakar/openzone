@@ -69,7 +69,7 @@ namespace oz
   //***********************************
 
   // checks if AABB and Brush overlap
-  bool Collider::testPointBrush( const BSP::Brush *brush )
+  bool Collider::testPointBrush( const BSP::Brush *brush ) const
   {
     for( int i = 0; i < brush->nSides; i++ ) {
       BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -84,7 +84,7 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush overlapping
-  bool Collider::testPointNode( int nodeIndex )
+  bool Collider::testPointNode( int nodeIndex ) const
   {
     if( nodeIndex < 0 ) {
       BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
@@ -129,8 +129,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -166,8 +166,8 @@ namespace oz
       return false;
     }
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         const Cell &cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
@@ -191,8 +191,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -502,8 +502,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -539,7 +539,7 @@ namespace oz
   //***********************************
 
   // checks if AABB and Brush overlap
-  bool Collider::testAABBBrush( const BSP::Brush *brush )
+  bool Collider::testAABBBrush( const BSP::Brush *brush ) const
   {
     for( int i = 0; i < brush->nSides; i++ ) {
       BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -559,7 +559,7 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush overlapping
-  bool Collider::testAABBNode( int nodeIndex )
+  bool Collider::testAABBNode( int nodeIndex ) const
   {
     if( nodeIndex < 0 ) {
       BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
@@ -610,8 +610,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -648,8 +648,8 @@ namespace oz
       return false;
     }
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
@@ -673,8 +673,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -970,8 +970,8 @@ namespace oz
 
     const Structure *oldStr = null;
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         foreach( strIndex, cell.structures.iterator() ) {
@@ -1013,12 +1013,13 @@ namespace oz
   //***********************************
 
   // get all objects and structures that overlap with our trace
-  void Collider::getWorldOverlaps( Vector<Object*> *objects, Vector<const Structure*> *structs )
+  void Collider::getWorldOverlaps( Vector<Object*> *objects,
+                                   Vector<const Structure*> *structs )
   {
     assert( objects != null || structs != null );
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
         if( structs != null ) {
@@ -1049,19 +1050,32 @@ namespace oz
   }
 
   // get all objects which are included in our trace
-  void Collider::getWorldIncludes( Vector<Object*> *objects )
+  void Collider::getWorldIncludes( Vector<Object*> *objects ) const
   {
     assert( objects != null );
 
-    for( int x = minX; x <= maxX; x++ ) {
-      for( int y = minY; y <= maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         Cell &cell = world.cells[x][y];
 
-        if( objects != null ) {
-          foreach( sObj, cell.objects.iterator() ) {
-            if( trace.includes( *sObj ) ) {
-              *objects << sObj;
-            }
+        foreach( sObj, cell.objects.iterator() ) {
+          if( trace.includes( *sObj ) ) {
+            *objects << sObj;
+          }
+        }
+      }
+    }
+  }
+
+  void Collider::touchWorldOverlaps() const
+  {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
+        Cell &cell = world.cells[x][y];
+
+        foreach( sObj, cell.objects.iterator() ) {
+          if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
+            sObj->flags &= ~Object::DISABLED_BIT;
           }
         }
       }

@@ -19,6 +19,9 @@ namespace oz
   {
     public:
 
+      int     parent;    // index of container object (if object isn't positioned in the world,
+                         // it has to be contained in another object, otherwise it will be removed)
+
       Vec3    velocity;
       Vec3    momentum;  // desired velocity
 
@@ -32,8 +35,8 @@ namespace oz
 
     public:
 
-      explicit DynObject() : velocity( Vec3::zero() ), momentum( Vec3::zero() ), lower( -1 ),
-          waterDepth( 0.0f )
+      explicit DynObject() : parent( -1 ), velocity( Vec3::zero() ), momentum( Vec3::zero() ),
+          lower( -1 ), waterDepth( 0.0f )
       {}
 
       virtual void readFull( InputStream *istream );

@@ -54,8 +54,6 @@ namespace oz
     leftRatio = 1.0f;
     move = part->velocity * Timer::TICK_TIME;
 
-    Cell *oldCell = part->cell;
-
     int traceSplits = 0;
     do {
       collider.translate( part->p, move );
@@ -78,13 +76,7 @@ namespace oz
     }
     while( true );
 
-    Cell *newCell = collider.getCell( part->p );
-
-    if( oldCell != newCell ) {
-      part->cell = newCell;
-      oldCell->particles.remove( part );
-      newCell->particles << part;
-    }
+    world.reposition( part );
   }
 
   //***********************************
@@ -321,8 +313,6 @@ namespace oz
     leftRatio = 1.0f;
     move = obj->momentum * Timer::TICK_TIME;
 
-    Cell *oldCell = obj->cell;
-
     int traceSplits = 0;
     do {
       collider.translate( obj, move );
@@ -400,13 +390,7 @@ namespace oz
       obj->addEvent( Object::EVENT_SPLASH, obj->velocity.z );
     }
 
-    Cell *newCell = collider.getCell( obj->p );
-
-    if( oldCell != newCell ) {
-      obj->cell = newCell;
-      oldCell->objects.remove( obj );
-      newCell->objects << obj;
-    }
+    world.reposition( obj );
   }
 
   //***********************************
@@ -417,16 +401,19 @@ namespace oz
   {
     obj = obj_;
 
-    assert( obj->flags & Object::DYNAMIC_BIT );
     assert( obj->cell != null );
     assert( ( ~obj->flags & Object::ON_FLOOR_BIT ) || ( obj->lower < 0 ) );
 
     obj->flags &= ~( Object::FRICTING_BIT | Object::HIT_BIT );
 
     // clear the lower object if it doesn't exist any more
-    if( obj->lower >= 0 && world.objects[obj->lower] == null ) {
-      obj->flags &= ~Object::DISABLED_BIT;
-      obj->lower = -1;
+    if( obj->lower >= 0 ) {
+      Object *sObj = world.objects[obj->lower];
+
+      if( sObj == null || sObj->cell == null ) {
+        obj->flags &= ~Object::DISABLED_BIT;
+        obj->lower = -1;
+      }
     }
     // check if the object can remain disabled
     else if( obj->lower >= 0 &&
