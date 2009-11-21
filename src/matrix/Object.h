@@ -72,17 +72,20 @@ namespace oz
        */
 
       // if the object has a model object in frontend
-      static const int MODEL_BIT          = 0x00020000;
+      static const int MODEL_BIT          = 0x00080000;
 
       // if the object has an audio object in frontend
-      static const int AUDIO_BIT          = 0x00010000;
+      static const int AUDIO_BIT          = 0x00040000;
 
       /*
        * CUT FLAG
        */
 
-      // if object is pending for cut/removal; needed to protect against double cuts/removals
-      static const int CUT_BIT            = 0x00080000;
+      // if object is pending for cut or is unpositioned
+      static const int CUT_BIT            = 0x00020000;
+
+      // if object is pending for removal
+      static const int REMOVED_BIT        = 0x00010000;
 
       /*
        * DYNAMIC OBJECTS' BITS

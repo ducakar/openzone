@@ -46,28 +46,30 @@ namespace oz
     foreach( i, actions.iterator() ) {
       i->target->use( i->user );
     }
-    actions.clear();
 
-    foreach( i, cutStructs.iterator() ) {
+    foreach( i, removeStructs.iterator() ) {
       world.unposition( *i );
-      world.cut( *i );
+      world.remove( *i );
     }
     foreach( i, cutObjects.iterator() ) {
       world.unposition( *i );
-      world.cut( *i );
+    }
+    foreach( i, removeObjects.iterator() ) {
+      world.remove( *i );
     }
 
-    cutStructs.clear();
+    actions.clear();
     cutObjects.clear();
   }
 
   void Synapse::doDeletes()
   {
-    iFree( deleteStructs.iterator() );
-    iFree( deleteObjects.iterator() );
+    iFree( removeStructs.iterator() );
+    iFree( removeObjects.iterator() );
 
-    deleteStructs.clear();
-    deleteObjects.clear();
+    actions.clear();
+    removeStructs.clear();
+    removeObjects.clear();
   }
 
   void Synapse::clear()

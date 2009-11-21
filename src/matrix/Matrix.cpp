@@ -80,11 +80,11 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    world.sky.set( 205.0f, 86400.0f, 10000.0f );
+    world.sky.set( 205.0f, 144.0f, 0.0f );
 
     Bot *lord = static_cast<Bot*>( translator.createObject( "Lord", Vec3( 52, -44, 37 ) ) );
     lord->h = 270;
-    synapse.put( lord );
+    synapse.add( lord );
 
     synapse.addObject( "Knight", Vec3( 50, -35, 37 ) );
     synapse.addObject( "Goblin", Vec3( 51, -35, 37 ) );
@@ -223,14 +223,27 @@ namespace oz
         if( obj->flags & Object::DYNAMIC_BIT ) {
           DynObject *dynObj = static_cast<DynObject*>( obj );
 
+          if( dynObj->parent >= 0 ) {
+            assert( dynObj->flags & Object::CUT_BIT );
+
+            // remove if its container has been removed
+            if( world.objects[dynObj->parent] == null ) {
+              dynObj->parent = -1;
+              synapse.removeCut( dynObj );
+            }
+            continue;
+          }
+
           physics.updateObj( dynObj );
 
           if( dynObj->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
-            synapse.remove( obj );
+            synapse.remove( dynObj );
             continue;
           }
         }
-        if( obj->life <= 0.0f || !world.includes( *obj ) ) {
+        // remove if destroyed or misplaced outside world
+        if( obj->life <= 0.0f || !world.includes( *obj ) )
+        {
           if( obj->life <= 0.0f ) {
             obj->destroy();
           }

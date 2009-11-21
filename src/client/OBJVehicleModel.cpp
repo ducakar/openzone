@@ -46,10 +46,10 @@ namespace client
     glMultMatrixf( veh->rot.rotMat44() );
 
     for( int i = 0; i < Vehicle::CREW_MAX; i++ ) {
-      int index = veh->crewIndices[i];
+      int index = veh->crew[i];
 
       if( index >= 0 && ( index != camera.botIndex || camera.isExternal ) ) {
-        Bot *bot = static_cast<const Bot*>( world.objects[veh->crewIndices[i]] );
+        Bot *bot = static_cast<const Bot*>( world.objects[veh->crew[i]] );
 
         glPushMatrix();
         glTranslatef(  clazz->crewPos[i].x,  clazz->crewPos[i].y,  clazz->crewPos[i].z );

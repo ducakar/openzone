@@ -322,7 +322,7 @@ namespace oz
     return 0;
   }
 
-  static int ozPutObj( lua_State *l )
+  static int ozAddObj( lua_State *l )
   {
     if( lua.created == null ) {
       OZ_LUA_ERROR( "created object is null" );
@@ -334,7 +334,7 @@ namespace oz
     lua.created->p = Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) );
 
     if( collider.test( *lua.created ) ) {
-      int index = synapse.put( lua.created );
+      int index = synapse.add( lua.created );
       lua_pushnumber( l, index );
     }
     else {
@@ -343,7 +343,7 @@ namespace oz
     return 1;
   }
 
-  static int ozForcePutObj( lua_State *l )
+  static int ozForceAddObj( lua_State *l )
   {
     if( lua.created == null ) {
       OZ_LUA_ERROR( "created object is null" );
@@ -353,7 +353,7 @@ namespace oz
     }
 
     lua.created->p = Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) );
-    int index = synapse.put( lua.created );
+    int index = synapse.add( lua.created );
     lua_pushnumber( l, index );
     return 1;
   }
@@ -439,8 +439,8 @@ namespace oz
     OZ_LUA_REGISTER( ozCreateObj );
     OZ_LUA_REGISTER( ozDeleteCreatedObj );
 
-    OZ_LUA_REGISTER( ozPutObj );
-    OZ_LUA_REGISTER( ozForcePutObj );
+    OZ_LUA_REGISTER( ozAddObj );
+    OZ_LUA_REGISTER( ozForceAddObj );
     OZ_LUA_REGISTER( ozRemoveObj );
 
     for( int i = 0; i < translator.matrixScripts.length(); i++ ) {

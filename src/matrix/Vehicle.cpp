@@ -24,8 +24,8 @@ namespace oz
   void Vehicle::onDestroy()
   {
     for( int i = 0; i < CREW_MAX; i++ ) {
-      if( crewIndices[i] >= 0 ) {
-        Bot *bot = static_cast<Bot*>( world.objects[crewIndices[i]] );
+      if( crew[i] >= 0 ) {
+        Bot *bot = static_cast<Bot*>( world.objects[crew[i]] );
 
         if( bot != null ) {
           bot->exit();
@@ -42,8 +42,8 @@ namespace oz
 
     flags &= ~HOVER_BIT;
     actions = 0;
-    if( crewIndices[PILOT] >= 0 ) {
-      Bot *pilot = static_cast<Bot*>( world.objects[crewIndices[PILOT]] );
+    if( crew[PILOT] >= 0 ) {
+      Bot *pilot = static_cast<Bot*>( world.objects[crew[PILOT]] );
 
       if( pilot != null ) {
         rot = Quat::rotZYX( Math::rad( pilot->h ), 0.0f, Math::rad( pilot->v ) );
@@ -83,11 +83,15 @@ namespace oz
     }
 
     for( int i = 0; i < CREW_MAX; i++ ) {
-      if( crewIndices[i] >= 0 ) {
-        Bot *bot = static_cast<Bot*>( world.objects[crewIndices[i]] );
+      if( crew[i] >= 0 ) {
+        Bot *bot = static_cast<Bot*>( world.objects[crew[i]] );
 
-        if( bot == null || bot->vehicleIndex != index ) {
-          crewIndices[i] = -1;
+        if( bot == null || bot->parent != index ) {
+          crew[i] = -1;
+        }
+        else if( bot->flags & Bot::DEATH_BIT ) {
+          crew[i] = -1;
+          bot->exit();
         }
         else if( bot->actions & Bot::ACTION_EJECT ) {
           // move up a bit to prevent colliding with the vehicle
@@ -115,15 +119,15 @@ namespace oz
 
   void Vehicle::onUse( Bot *user )
   {
-    if( crewIndices[0] < 0 ) {
-      crewIndices[0] = user->index;
+    if( crew[0] < 0 ) {
+      crew[0] = user->index;
       user->enter( index );
     }
   }
 
   Vehicle::Vehicle() : rot( Quat::id() ), actions( 0 ), oldActions( 0 )
   {
-    aSet( crewIndices, -1, CREW_MAX );
+    aSet( crew, -1, CREW_MAX );
   }
 
   void Vehicle::readFull( InputStream *istream )
@@ -137,7 +141,7 @@ namespace oz
     oldActions   = istream->readInt();
 
     for( int i = 0; i < CREW_MAX; i++ ) {
-      crewIndices[i] = istream->readInt();
+      crew[i] = istream->readInt();
     }
   }
 
@@ -152,7 +156,7 @@ namespace oz
     ostream->writeInt( oldActions );
 
     for( int i = 0; i < CREW_MAX; i++ ) {
-      ostream->writeInt( crewIndices[i] );
+      ostream->writeInt( crew[i] );
     }
   }
 

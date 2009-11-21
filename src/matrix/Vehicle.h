@@ -45,7 +45,7 @@ namespace oz
       int  actions, oldActions;
       Vec3 camPos;
 
-      int  crewIndices[CREW_MAX];
+      int  crew[CREW_MAX];
 
       explicit Vehicle();
 

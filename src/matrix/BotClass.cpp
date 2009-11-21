@@ -163,7 +163,6 @@ namespace oz
   {
     Bot *obj = new Bot();
 
-    obj->cell   = null;
     obj->type   = this;
 
     obj->mass   = mass;

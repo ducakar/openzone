@@ -18,6 +18,7 @@
 
 #include "HudArea.h"
 #include "DebugArea.h"
+#include "InventoryMenu.h"
 #include "BuildMenu.h"
 
 namespace oz

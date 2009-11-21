@@ -16,7 +16,7 @@ namespace oz
 
   struct Structure : Bounds
   {
-    static const int CUT_BIT = 0x00000001;
+    static const int REMOVED_BIT = 0x00000001;
 
     enum Rotation
     {
@@ -36,7 +36,7 @@ namespace oz
     explicit Structure() {}
 
     explicit Structure( const Vec3 &p_, int bsp_, Rotation rot_ ) :
-        p( p_ ), flags( 0 ), bsp( bsp_ ), rot( rot_ )
+        p( p_ ), index( -1 ), flags( 0 ), bsp( bsp_ ), rot( rot_ )
     {}
 
     void readFull( InputStream *istream );
