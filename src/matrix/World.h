@@ -14,7 +14,7 @@
 #include "BSP.h"
 
 #include "Structure.h"
-#include "DynObject.h"
+#include "Bot.h"
 #include "Particle.h"
 
 #include "Translator.h"
@@ -180,8 +180,6 @@ namespace oz
 
   inline void World::position( Structure *str )
   {
-    assert( ~str->flags & Structure::REMOVED_BIT );
-
     const Bounds &bsp = *bsps[str->bsp];
 
     switch( str->rot ) {
@@ -224,8 +222,6 @@ namespace oz
 
   inline void World::unposition( Structure *str )
   {
-    assert( str->flags & Structure::REMOVED_BIT );
-
     getInters( area, *str, EPSILON );
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
@@ -239,7 +235,6 @@ namespace oz
 
   inline void World::position( Object *obj )
   {
-    assert( ~obj->flags & Object::CUT_BIT );
     assert( obj->cell == null );
 
     obj->cell = getCell( obj->p );
@@ -251,7 +246,6 @@ namespace oz
 
   inline void World::unposition( Object *obj )
   {
-    assert( obj->flags & Object::CUT_BIT );
     assert( obj->cell != null );
     assert( obj->cell->objects.contains( obj ) );
 

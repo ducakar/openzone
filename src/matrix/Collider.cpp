@@ -76,7 +76,7 @@ namespace oz
 
       float dist = globalStartPos * plane.normal - plane.distance;
 
-      if( dist > EPSILON ) {
+      if( dist > EPSILON_2 ) {
         return true;
       }
     }
@@ -119,7 +119,7 @@ namespace oz
   // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testPointWorld()
   {
-    if( !world.includes( point, -EPSILON ) ) {
+    if( !world.includes( point, -EPSILON_2 ) ) {
       return false;
     }
 
@@ -150,7 +150,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->includes( point, EPSILON ) )
+              sObj->includes( point, EPSILON_2 ) )
           {
             return false;
           }
@@ -162,7 +162,7 @@ namespace oz
 
   bool Collider::testPointWorldOO()
   {
-    if( !world.includes( point, -EPSILON ) ) {
+    if( !world.includes( point, -EPSILON_2 ) ) {
       return false;
     }
 
@@ -172,7 +172,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->includes( point, EPSILON ) )
+              sObj->includes( point, EPSILON_2 ) )
           {
             return false;
           }
@@ -185,7 +185,7 @@ namespace oz
   // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testPointWorldOSO()
   {
-    if( !world.includes( point, -EPSILON ) ) {
+    if( !world.includes( point, -EPSILON_2 ) ) {
       return false;
     }
 
@@ -212,7 +212,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->includes( point, EPSILON ) )
+              sObj->includes( point, EPSILON_2 ) )
           {
             return false;
           }
@@ -222,16 +222,12 @@ namespace oz
     return true;
   }
 
+  // terrain collision detection is penetration-safe
   bool Collider::trimTerraQuad( int x, int y )
   {
     const Terrain::Quad &quad = world.terra.quads[x][y];
     const Vec3 &minVert = world.terra.vertices[x    ][y    ];
     const Vec3 &maxVert = world.terra.vertices[x + 1][y + 1];
-
-    float minX = minVert.x - EPSILON;
-    float minY = minVert.y - EPSILON;
-    float maxX = maxVert.x + EPSILON;
-    float maxY = maxVert.y + EPSILON;
 
     float startDist = globalStartPos * quad.tri[0].normal - quad.tri[0].distance;
     float endDist   = globalEndPos   * quad.tri[0].normal - quad.tri[0].distance;
@@ -242,9 +238,9 @@ namespace oz
       float impactX = globalStartPos.x + ratio * move.x;
       float impactY = globalStartPos.y + ratio * move.y;
 
-      if( impactX - minX >= impactY - minY &&
-          minX <= impactX && impactX <= maxX &&
-          minY <= impactY && impactY <= maxY &&
+      if( impactX - minVert.x >= impactY - minVert.y &&
+          minVert.x <= impactX && impactX <= maxVert.x &&
+          minVert.y <= impactY && impactY <= maxVert.y &&
           ratio < hit.ratio )
       {
         hit.ratio    = ratio;
@@ -265,9 +261,9 @@ namespace oz
       float impactX = globalStartPos.x + ratio * move.x;
       float impactY = globalStartPos.y + ratio * move.y;
 
-      if( impactX - minX <= impactY - minY &&
-          minX <= impactX && impactX <= maxX &&
-          minY <= impactY && impactY <= maxY &&
+      if( impactX - minVert.x <= impactY - minVert.y &&
+          minVert.x <= impactX && impactX <= maxVert.x &&
+          minVert.y <= impactY && impactY <= maxVert.y &&
           ratio < hit.ratio )
       {
         hit.ratio    = ratio;
@@ -293,7 +289,7 @@ namespace oz
     float maxPosX = max( globalStartPos.x, globalEndPos.x );
     float maxPosY = max( globalStartPos.y, globalEndPos.y );
 
-    world.terra.getInters( minPosX, minPosY, maxPosX, maxPosY, EPSILON );
+    world.terra.getInters( minPosX, minPosY, maxPosX, maxPosY );
 
     for( int x = world.terra.minX; x <= world.terra.maxX; x++ ) {
       for( int y = world.terra.minY; y <= world.terra.maxY; y++ ) {
@@ -359,7 +355,7 @@ namespace oz
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio    = minRatio;
       hit.normal   = *tmpNormal;
-      hit.obj      = sObj->index < 0 ? null : sObj;
+      hit.obj      = sObj;
       hit.material = 0;
     }
   }
@@ -443,46 +439,8 @@ namespace oz
         trimPointNode( node.back, startRatio, endRatio, startPos, endPos );
       }
       else {
-//        if( startDist < endDist ) {
-//          float invDist = 1.0f / ( startDist - endDist );
-//
-//          float ratio1 = min( ( startDist - offset ) * invDist, 1.0f );
-//          float ratio2 = max( ( startDist + offset ) * invDist, 0.0f );
-//
-//          assert( 0.0f <= ratio1 && ratio1 <= 1.0f );
-//          assert( 0.0f <= ratio2 && ratio2 <= 1.0f );
-//
-//          float middleRatio1 = startRatio + ratio1 * ( endRatio - startRatio );
-//          float middleRatio2 = startRatio + ratio2 * ( endRatio - startRatio );
-//
-//          Vec3  middlePos1 = startPos + ratio1 * ( endPos - startPos );
-//          Vec3  middlePos2 = startPos + ratio2 * ( endPos - startPos );
-//
-//          trimPointNode( node.back, startRatio, middleRatio1, startPos, middlePos1 );
-//          trimPointNode( node.front, middleRatio2, endRatio, middlePos2, endPos );
-//        }
-//        else if( endDist < startDist ) {
-//          float invDist = 1.0f / ( startDist - endDist );
-//
-//          float ratio1 = min( ( startDist + offset ) * invDist, 1.0f );
-//          float ratio2 = max( ( startDist - offset ) * invDist, 0.0f );
-//
-//          assert( 0.0f <= ratio1 && ratio1 <= 1.0f );
-//          assert( 0.0f <= ratio2 && ratio2 <= 1.0f );
-//
-//          float middleRatio1 = startRatio + ratio1 * ( endRatio - startRatio );
-//          float middleRatio2 = startRatio + ratio2 * ( endRatio - startRatio );
-//
-//          Vec3  middlePos1 = startPos + ratio1 * ( endPos - startPos );
-//          Vec3  middlePos2 = startPos + ratio2 * ( endPos - startPos );
-//
-//          trimPointNode( node.front, startRatio, middleRatio1, startPos, middlePos1 );
-//          trimPointNode( node.back, middleRatio2, endRatio, middlePos2, endPos );
-//        }
-//        else {
-          trimPointNode( node.front, startRatio, endRatio, startPos, endPos );
-          trimPointNode( node.back, startRatio, endRatio, startPos, endPos );
-//        }
+        trimPointNode( node.front, startRatio, endRatio, startPos, endPos );
+        trimPointNode( node.back, startRatio, endRatio, startPos, endPos );
       }
     }
   }
@@ -551,7 +509,7 @@ namespace oz
 
       float dist = globalStartPos * plane.normal - plane.distance - offset;
 
-      if( dist > EPSILON ) {
+      if( dist > EPSILON_2 ) {
         return true;
       }
     }
@@ -600,7 +558,7 @@ namespace oz
   // check for AABB-AABB, AABB-Brush and AABB-Terrain overlapping in the world
   bool Collider::testAABBWorld()
   {
-    if( !world.includes( trace ) ) {
+    if( !world.includes( aabb, EPSILON_2 ) ) {
       return false;
     }
 
@@ -631,7 +589,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( trace ) )
+              sObj->overlaps( aabb, EPSILON_2 ) )
           {
             return false;
           }
@@ -644,7 +602,7 @@ namespace oz
   // check for AABB-AABB overlapping in the world
   bool Collider::testAABBWorldOO()
   {
-    if( !world.includes( trace ) ) {
+    if( !world.includes( aabb, EPSILON_2 ) ) {
       return false;
     }
 
@@ -654,7 +612,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( trace ) )
+              sObj->overlaps( aabb, EPSILON_2 ) )
           {
             return false;
           }
@@ -667,7 +625,7 @@ namespace oz
   // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testAABBWorldOSO()
   {
-    if( !world.includes( trace ) ) {
+    if( !world.includes( aabb, EPSILON_2 ) ) {
       return false;
     }
 
@@ -694,7 +652,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( trace ) )
+              sObj->overlaps( aabb, EPSILON_2 ) )
           {
             return false;
           }
@@ -761,7 +719,7 @@ namespace oz
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio    = minRatio;
       hit.normal   = *tmpNormal;
-      hit.obj      = sObj->index < 0 ? null : sObj;
+      hit.obj      = sObj;
       hit.material = 0;
     }
   }
@@ -913,40 +871,8 @@ namespace oz
         trimAABBNode( node.back, startRatio, endRatio, startPos, endPos );
       }
       else {
-//        if( startDist < endDist ) {
-//          float invDist = 1.0f / ( startDist - endDist );
-//
-//          float ratio1 = bound( ( startDist - offset ) * invDist, 0.0f, 1.0f );
-//          float ratio2 = bound( ( startDist + offset ) * invDist, 0.0f, 1.0f );
-//
-//          float middleRatio1 = startRatio + ratio1 * ( endRatio - startRatio );
-//          float middleRatio2 = startRatio + ratio2 * ( endRatio - startRatio );
-//
-//          Vec3  middlePos1 = startPos + ratio1 * ( endPos - startPos );
-//          Vec3  middlePos2 = startPos + ratio2 * ( endPos - startPos );
-//
-//          trimAABBNode( node.back, startRatio, middleRatio1, startPos, middlePos1 );
-//          trimAABBNode( node.front, middleRatio2, endRatio, middlePos2, endPos );
-//        }
-//        else if( endDist < startDist ) {
-//          float invDist = 1.0f / ( startDist - endDist );
-//
-//          float ratio1 = bound( ( startDist + offset ) * invDist, 0.0f, 1.0f );
-//          float ratio2 = bound( ( startDist - offset ) * invDist, 0.0f, 1.0f );
-//
-//          float middleRatio1 = startRatio + ratio1 * ( endRatio - startRatio );
-//          float middleRatio2 = startRatio + ratio2 * ( endRatio - startRatio );
-//
-//          Vec3  middlePos1 = startPos + ratio1 * ( endPos - startPos );
-//          Vec3  middlePos2 = startPos + ratio2 * ( endPos - startPos );
-//
-//          trimAABBNode( node.front, startRatio, middleRatio1, startPos, middlePos1 );
-//          trimAABBNode( node.back, middleRatio2, endRatio, middlePos2, endPos );
-//        }
-//        else {
-          trimAABBNode( node.front, startRatio, endRatio, startPos, endPos );
-          trimAABBNode( node.back, startRatio, endRatio, startPos, endPos );
-//        }
+        trimAABBNode( node.front, startRatio, endRatio, startPos, endPos );
+        trimAABBNode( node.back, startRatio, endRatio, startPos, endPos );
       }
     }
   }

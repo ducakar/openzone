@@ -186,7 +186,7 @@ namespace oz
 
 //      log.println( "%s", name.cstr() );
 
-      if( name.length() <= 12 || name == "textures/NULL" ) {
+      if( name.length() <= 12 || name.equals( "textures/NULL" ) ) {
         textures[i] = -1;
       }
       else {

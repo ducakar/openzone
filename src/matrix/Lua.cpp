@@ -103,7 +103,7 @@ namespace oz
     if( *lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    lua_pushboolean( l, ( *lua.obj )->cell != null && ( ~( *lua.obj )->flags & Object::CUT_BIT ) );
+    lua_pushboolean( l, ( *lua.obj )->cell != null );
     return 1;
   }
 
@@ -363,7 +363,7 @@ namespace oz
     if( *lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ( *lua.obj )->cell == null || ( ( *lua.obj )->flags & Object::CUT_BIT ) ) {
+    if( ( *lua.obj )->cell == null ) {
       OZ_LUA_ERROR( "selected object isn't put into the world" );
     }
 

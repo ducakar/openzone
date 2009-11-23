@@ -145,7 +145,7 @@ namespace client
       collider.translate( camera.p, camera.at * 2.0f );
       taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
     }
-    else if( camera.bot->grabObjIndex >= 0 ) {
+    else if( camera.bot->grabObjIndex != -1 ) {
       taggedObjIndex = camera.bot->grabObjIndex;
     }
     else {

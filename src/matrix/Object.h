@@ -78,14 +78,15 @@ namespace oz
       static const int AUDIO_BIT          = 0x00040000;
 
       /*
-       * CUT FLAG
+       * REMOVED FLAG
        */
 
-      // if object is pending for cut or is unpositioned
-      static const int CUT_BIT            = 0x00020000;
-
       // if object is pending for removal
-      static const int REMOVED_BIT        = 0x00010000;
+      static const int REMOVED_BIT        = 0x00020000;
+
+      // if object is not positioned in the world (used only when loading/saving the world and to
+      // distinguish between removed objects and cut objects that have been removed with removeCut)
+      static const int CUT_BIT            = 0x00010000;
 
       /*
        * DYNAMIC OBJECTS' BITS

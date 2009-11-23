@@ -79,12 +79,11 @@ namespace client
     log.indent();
 
     // remove myself
-    if( camera.botIndex >= 0 ) {
+    if( camera.botIndex != -1 ) {
       synapse.remove( camera.bot );
     }
     synapse.commit();
-    synapse.doDeletes();
-    synapse.clear();
+    synapse.clean();
 
     Buffer buffer( 1024 * 1024 * 10 );
     OutputStream ostream = buffer.outputStream();
@@ -124,7 +123,16 @@ namespace client
     SDL_SemWait( matrix.semaphore );
     assert( SDL_SemValue( matrix.semaphore ) == 0 );
 
-    synapse.clear();
+    // remove objects scheduled for removal
+    synapse.commit();
+
+    // delete models and audio objects of removed objects
+    render.sync();
+    sound.sync();
+
+    // we can finally delete removed object after render and sound are sync'd as model/audio dtors
+    // have references to objects
+    synapse.clean();
 
     if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
       if( state == GAME ) {
@@ -292,7 +300,7 @@ namespace client
         camera.bot->state |= Bot::GESTURE_ALL_BIT;
       }
 
-      if( camera.botIndex >= 0 && input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
+      if( camera.botIndex != -1 && input.keys[SDLK_m] && !input.oldKeys[SDLK_m] ) {
         camera.isExternal = !camera.isExternal;
         camera.h = camera.bot->h;
         camera.v = camera.bot->v;
@@ -315,7 +323,7 @@ namespace client
     }
 
     if( input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
-      if( camera.botIndex < 0 ) {
+      if( camera.botIndex == -1 ) {
         Bot *me = static_cast<Bot*>( translator.createObject( "Lord", camera.p ) );
         me->h = camera.h;
         me->v = camera.v;
@@ -339,19 +347,13 @@ namespace client
 
     network.update();
 
-    // remove/cut objects scheduled for removal
-    synapse.commit();
-
-    // delete models/audios of removed objects
-    render.sync();
-    sound.sync();
-
-    // we can finally delete removed object after render and sound are sync'd as model/audio dtors
-    // have references to the objects
-    synapse.doDeletes();
-
     // update world
     matrix.update();
+    // don't add oany bjects until next Game::update call or there will be index collisions in
+    // nirvana
+
+    // re-position removed object that they can be seen by Render and Sound
+    synapse.reposition();
 
     // resume nirvana
     SDL_SemPost( nirvana::nirvana.semaphore );

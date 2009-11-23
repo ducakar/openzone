@@ -106,7 +106,7 @@ namespace nirvana
     if( *lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    lua_pushboolean( l, ( *lua.obj )->cell != null && ( ~( *lua.obj )->flags & Object::CUT_BIT ) );
+    lua_pushboolean( l, ( *lua.obj )->cell != null );
     return 1;
   }
 

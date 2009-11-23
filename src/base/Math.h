@@ -17,7 +17,7 @@ namespace oz
     private:
 
       // static class
-      Math();
+      Math() {}
       Math( const Math& );
 
       static const Math math;

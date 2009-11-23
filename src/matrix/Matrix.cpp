@@ -217,33 +217,39 @@ namespace oz
     for( int i = 0; i < world.objects.length(); i++ ) {
       Object *obj = world.objects[i];
 
-      if( obj != null ) {
+      if( obj != null && ( ~obj->flags & Object::REMOVED_BIT ) ) {
         obj->update();
 
+        // object might have removed itself within onUpdate()
         if( obj->flags & Object::DYNAMIC_BIT ) {
           DynObject *dynObj = static_cast<DynObject*>( obj );
 
-          if( dynObj->parent >= 0 ) {
-            assert( dynObj->flags & Object::CUT_BIT );
-
-            // remove if its container has been removed
-            if( world.objects[dynObj->parent] == null ) {
+          if( dynObj->cell == null ) {
+            // put into world if its container has been removed
+            if( ( ~dynObj->flags & Object::REMOVED_BIT ) &&
+                ( dynObj->parent == -1 || world.objects[dynObj->parent] == null ) )
+            {
               dynObj->parent = -1;
-              synapse.removeCut( dynObj );
+
+              // if there is room in the world, put it, otherwise remove it
+              if( collider.test( *dynObj ) ) {
+                synapse.put( dynObj );
+              }
+              else {
+                synapse.removeCut( dynObj );
+              }
             }
-            continue;
           }
+          else {
+            physics.updateObj( dynObj );
 
-          physics.updateObj( dynObj );
-
-          if( dynObj->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
-            synapse.remove( dynObj );
-            continue;
+            // remove if destroyed or misplaced outside world
+            if( dynObj->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+              synapse.remove( obj );
+            }
           }
         }
-        // remove if destroyed or misplaced outside world
-        if( obj->life <= 0.0f || !world.includes( *obj ) )
-        {
+        if( obj->life <= 0.0f || !world.includes( *obj ) ) {
           if( obj->life <= 0.0f ) {
             obj->destroy();
           }

@@ -59,7 +59,7 @@ namespace oz
       return reinterpret_cast<const float*>( this )[i];
     }
 
-    bool isEqual( const Vec3 &a, float epsilon ) const
+    bool equals( const Vec3 &a, float epsilon ) const
     {
       return
           Math::abs( x - a.x ) <= epsilon &&

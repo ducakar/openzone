@@ -121,7 +121,7 @@ namespace oz
         obj->momentum.z += lift;
       }
       // on another object
-      if( obj->lower >= 0 ) {
+      if( obj->lower != -1 ) {
         DynObject *sObj = static_cast<DynObject*>( world.objects[obj->lower] );
 
         if( obj->momentum.x != 0.0f || obj->momentum.y != 0.0f ||
@@ -402,12 +402,12 @@ namespace oz
     obj = obj_;
 
     assert( obj->cell != null );
-    assert( ( ~obj->flags & Object::ON_FLOOR_BIT ) || ( obj->lower < 0 ) );
+    assert( ( ~obj->flags & Object::ON_FLOOR_BIT ) || ( obj->lower == -1 ) );
 
     obj->flags &= ~( Object::FRICTING_BIT | Object::HIT_BIT );
 
     // clear the lower object if it doesn't exist any more
-    if( obj->lower >= 0 ) {
+    if( obj->lower != -1 ) {
       Object *sObj = world.objects[obj->lower];
 
       if( sObj == null || sObj->cell == null ) {
@@ -416,9 +416,7 @@ namespace oz
       }
     }
     // check if the object can remain disabled
-    else if( obj->lower >= 0 &&
-        ( obj->flags & ~world.objects[obj->lower]->flags & Object::DISABLED_BIT ) )
-    {
+    else if( obj->lower != -1 && ( ~world.objects[obj->lower]->flags & Object::DISABLED_BIT ) ) {
       obj->flags &= ~Object::DISABLED_BIT;
     }
     // handle physics

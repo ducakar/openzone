@@ -27,7 +27,7 @@ int main( int argc, char **argv )
     return -1;
   }
 
-  const char *suffix = String::lastIndex( argv[1], '.' );
+  const char *suffix = String::findLast( argv[1], '.' );
   if( suffix == null ) {
     return -1;
   }

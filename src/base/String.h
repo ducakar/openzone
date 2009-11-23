@@ -22,6 +22,14 @@ namespace oz
       int  count;
       char baseBuffer[BUFFER_SIZE];
 
+      // no equality operators, String::equals functions should be used instead for verbosity
+      bool operator == ( const String& ) const;
+      bool operator != ( const String& ) const;
+      bool operator == ( const char* ) const;
+      bool operator != ( const char* ) const;
+      friend bool operator == ( const char*, const String& );
+      friend bool operator != ( const char*, const String& );
+
       explicit String( int count_, int ) : count( count_ )
       {
         ensureCapacity();
@@ -177,7 +185,7 @@ namespace oz
         return *this;
       }
 
-      bool operator == ( const char *s ) const
+      bool equals( const char *s ) const
       {
         assert( s != null );
 
@@ -189,36 +197,9 @@ namespace oz
         return false;
       }
 
-      bool operator != ( const char *s ) const
+      bool equals( const String &s ) const
       {
-        assert( s != null );
-
-        for( int i = 0; buffer[i] == s[i]; i++ ) {
-          if( buffer[i] == '\0' ) {
-            return false;
-          }
-        }
-        return true;
-      }
-
-      bool operator == ( const String &s ) const
-      {
-        return this->operator == ( s.buffer );
-      }
-
-      bool operator != ( const String &s ) const
-      {
-        return this->operator != ( s.buffer );
-      }
-
-      friend bool operator == ( const char *a, const String &b )
-      {
-        return b.operator == ( a );
-      }
-
-      friend bool operator != ( const char *a, const String &b )
-      {
-        return b.operator != ( a );
+        return equals( s.buffer );
       }
 
       static bool equals( const char *a, const char *b )
@@ -234,13 +215,6 @@ namespace oz
       }
 
       const char &operator [] ( int i ) const
-      {
-        assert( 0 <= i && i < count );
-
-        return buffer[i];
-      }
-
-      const char &charAt( int i ) const
       {
         assert( 0 <= i && i < count );
 
@@ -279,9 +253,11 @@ namespace oz
         assert( a != null && b != null );
 
         int diff = 0;
-        for( int i = 0; ( diff = a[i] - b[i] ) == 0 && a[i] != 0; i++ ) {
-        }
+        int i = 0;
 
+        while( ( diff = a[i] - b[i] ) == 0 && a[i] != 0 ) {
+          i++;
+        }
         return diff;
       }
 
@@ -295,14 +271,6 @@ namespace oz
         return compare( buffer, s.buffer );
       }
 
-      static const char *index( const char *s, char ch )
-      {
-        while( *s != ch && *s != '\0' ) {
-          s++;
-        }
-        return *s == '\0' ? null : s;
-      }
-
       int index( char ch, int start = 0 ) const
       {
         int i = start;
@@ -313,7 +281,48 @@ namespace oz
         return i == count ? -1 : i;
       }
 
-      static const char *lastIndex( const char *s, char ch )
+      int lastIndex( char ch, int end ) const
+      {
+        int i = end;
+
+        while( buffer[i] != ch && i >= 0 ) {
+          i--;
+        }
+        return i;
+      }
+
+      int lastIndex( char ch ) const
+      {
+        return lastIndex( ch, count - 1 );
+      }
+
+      const char *find( char ch, int start = 0 ) const
+      {
+        return &buffer[index( ch, start )];
+      }
+
+      const char *findLast( char ch, int end ) const
+      {
+        return &buffer[lastIndex( ch, end )];
+      }
+
+      const char *findLast( char ch ) const
+      {
+        return findLast( ch, count - 1 );
+      }
+
+      static const char *find( const char *s, char ch )
+      {
+        while( *s != '\0' ) {
+          if( *s == ch ) {
+            return s;
+          }
+          s++;
+        }
+        return null;
+      }
+
+      static const char *findLast( const char *s, char ch )
       {
         const char *last = null;
 
@@ -324,26 +333,6 @@ namespace oz
           s++;
         }
         return last;
-      }
-
-      int lastIndex( char ch ) const
-      {
-        int i = count - 1;
-
-        while( buffer[i] != ch && i >= 0 ) {
-          i--;
-        }
-        return i;
-      }
-
-      int lastIndex( char ch, int end ) const
-      {
-        int i = end;
-
-        while( buffer[i] != ch && i >= 0 ) {
-          i--;
-        }
-        return i;
       }
 
       /**

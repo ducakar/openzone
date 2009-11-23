@@ -24,7 +24,7 @@ namespace oz
   void Vehicle::onDestroy()
   {
     for( int i = 0; i < CREW_MAX; i++ ) {
-      if( crew[i] >= 0 ) {
+      if( crew[i] != -1 ) {
         Bot *bot = static_cast<Bot*>( world.objects[crew[i]] );
 
         if( bot != null ) {
@@ -42,7 +42,7 @@ namespace oz
 
     flags &= ~HOVER_BIT;
     actions = 0;
-    if( crew[PILOT] >= 0 ) {
+    if( crew[PILOT] != -1 ) {
       Bot *pilot = static_cast<Bot*>( world.objects[crew[PILOT]] );
 
       if( pilot != null ) {
@@ -83,7 +83,7 @@ namespace oz
     }
 
     for( int i = 0; i < CREW_MAX; i++ ) {
-      if( crew[i] >= 0 ) {
+      if( crew[i] != -1 ) {
         Bot *bot = static_cast<Bot*>( world.objects[crew[i]] );
 
         if( bot == null || bot->parent != index ) {
@@ -119,7 +119,7 @@ namespace oz
 
   void Vehicle::onUse( Bot *user )
   {
-    if( crew[0] < 0 ) {
+    if( crew[0] == -1 ) {
       crew[0] = user->index;
       user->enter( index );
     }

@@ -61,7 +61,7 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".png" && extension != ".jpg" ) {
+      if( !extension.equals( ".png" ) && !extension.equals( ".jpg" ) ) {
         continue;
       }
 
@@ -100,10 +100,10 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".au" &&
-          extension != ".wav" &&
-          extension != ".oga" &&
-          extension != ".ogg" )
+      if( !extension.equals( ".au" ) &&
+          !extension.equals( ".wav" ) &&
+          !extension.equals( ".oga" ) &&
+          !extension.equals( ".ogg" ) )
       {
         continue;
       }
@@ -143,7 +143,7 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".rc" ) {
+      if( !extension.equals( ".rc" ) ) {
         continue;
       }
 
@@ -182,7 +182,7 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".rc" ) {
+      if( !extension.equals( ".rc" ) ) {
         continue;
       }
 
@@ -239,7 +239,7 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".lua" ) {
+      if( !extension.equals( ".lua" ) ) {
         continue;
       }
 
@@ -273,7 +273,7 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( extension != ".lua" ) {
+      if( !extension.equals( ".lua" ) ) {
         continue;
       }
 

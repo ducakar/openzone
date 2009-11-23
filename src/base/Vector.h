@@ -118,7 +118,7 @@ namespace oz
        */
       bool operator == ( const Vector &v ) const
       {
-        return count == v.count && aEqual( data, v.data, count );
+        return count == v.count && aEquals( data, v.data, count );
       }
 
       /**
@@ -128,7 +128,7 @@ namespace oz
        */
       bool operator != ( const Vector &v ) const
       {
-        return count != v.count || !aEqual( data, v.data, count );
+        return count != v.count || !aEquals( data, v.data, count );
       }
 
       /**
