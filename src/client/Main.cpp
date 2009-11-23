@@ -16,6 +16,7 @@
 #include "Sound.h"
 #include "Render.h"
 
+#include <ctime>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <exception>
@@ -122,6 +123,17 @@ namespace client
       log.println( "No config file, default config will be written on exit" );
     }
     config.add( "dir.rc", rcDir );
+
+    if( config.contains( "seed" ) && config["seed"].equals( "time" ) ) {
+      uint seed = time( null );
+      Math::seed( seed );
+      log.println( "Random generator seed set to current time: %d", seed );
+    }
+    else {
+      uint seed = config.get( "seed", 42 );
+      Math::seed( seed );
+      log.println( "Random generator seed set to: %d", seed );
+    }
 
     log.print( "Initializing SDL ..." );
 

@@ -73,7 +73,7 @@ namespace client
     }
     else if( isExternal ) {
       float dist;
-      if( bot->parent >= 0 ) {
+      if( bot->parent != -1 ) {
         Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->parent] );
 
         assert( veh->flags & Object::VEHICLE_BIT );
@@ -96,7 +96,7 @@ namespace client
       p.z = ( origin.z + offset.z ) * smoothCoef_1 + oldP.z * smoothCoef;
     }
     else {
-      if( bot->parent >= 0 ) {
+      if( bot->parent != -1 ) {
         Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->parent] );
 
         assert( veh->flags & Object::VEHICLE_BIT );

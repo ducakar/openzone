@@ -41,41 +41,32 @@ namespace oz
     }
   }
 
+  void Synapse::reposition()
+  {
+    foreach( i, removedObjects.iterator() ) {
+      if( ~( *i )->flags & Object::CUT_BIT ) {
+        world.position( *i );
+      }
+    }
+  }
+
   void Synapse::commit()
   {
-    foreach( i, actions.iterator() ) {
-      i->target->use( i->user );
-    }
-
-    foreach( i, removeStructs.iterator() ) {
-      world.unposition( *i );
+    foreach( i, removedObjects.iterator() ) {
+      if( ( *i )->cell != null ) {
+        world.unposition( *i );
+      }
       world.remove( *i );
     }
-    foreach( i, cutObjects.iterator() ) {
-      world.unposition( *i );
-    }
-    foreach( i, removeObjects.iterator() ) {
-      world.remove( *i );
-    }
-
-    actions.clear();
-    cutObjects.clear();
   }
 
-  void Synapse::doDeletes()
+  void Synapse::clean()
   {
-    iFree( removeStructs.iterator() );
-    iFree( removeObjects.iterator() );
+    iFree( removedObjects.iterator() );
 
     actions.clear();
-    removeStructs.clear();
-    removeObjects.clear();
-  }
-
-  void Synapse::clear()
-  {
-    putStructs.clear();
-    putObjects.clear();
+    addedObjects.clear();
+    removedObjects.clear();
   }
 
   void Synapse::clearTickets()

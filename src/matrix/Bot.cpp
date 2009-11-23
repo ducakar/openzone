@@ -62,6 +62,9 @@ namespace oz
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes sounds
         // and particles to fly around)
         if( life <= 0.0f ) {
+          foreach( i, items.iterator() ) {
+            synapse.removeCut( static_cast<DynObject*>( world.objects[*i] ) );
+          }
           life = EPSILON;
           synapse.remove( this );
         }
@@ -81,7 +84,7 @@ namespace oz
     hvsc[4] = hvsc[3] * hvsc[0];
     hvsc[5] = hvsc[3] * hvsc[1];
 
-    if( parent >= 0 ) {
+    if( parent != -1 ) {
       Vehicle *vehicle = static_cast<Vehicle*>( world.objects[parent] );
 
       assert( vehicle->flags & VEHICLE_BIT );
@@ -101,7 +104,7 @@ namespace oz
     bool isSwimming   = waterDepth >= dim.z;
     bool isUnderWater = waterDepth >= dim.z + camPos.z;
     bool isClimbing   = ( flags & ON_LADDER_BIT ) && grabObjIndex == -1;
-    bool isGrounded   = ( lower >= 0 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
+    bool isGrounded   = ( lower != -1 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
 
     flags |= CLIMBER_BIT;
 
@@ -132,7 +135,7 @@ namespace oz
       if( ~oldActions & ACTION_JUMP ) {
         state |= JUMP_SCHED_BIT;
       }
-      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObjIndex < 0 &&
+      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObjIndex == -1 &&
           stamina >= clazz.staminaJumpDrain )
       {
         flags &= ~DISABLED_BIT;
@@ -284,7 +287,7 @@ namespace oz
       if( state & CROUCHING_BIT ) {
         desiredMomentum *= clazz.crouchMomentum;
       }
-      else if( ( state & RUNNING_BIT ) && grabObjIndex < 0 ) {
+      else if( ( state & RUNNING_BIT ) && grabObjIndex == -1 ) {
         desiredMomentum *= clazz.runMomentum;
       }
       else {
@@ -372,14 +375,14 @@ namespace oz
      */
 
     DynObject *grabObj = null;
-    if( grabObjIndex >= 0 ) {
+    if( grabObjIndex != -1 ) {
       grabObj = static_cast<DynObject*>( world.objects[grabObjIndex] );
-      if( grabObj == null ) {
+      if( grabObj == null || grabObj->cell == null ) {
         grabObjIndex = -1;
       }
     }
 
-    if( grabObjIndex >= 0 ) {
+    if( grabObjIndex != -1 ) {
       if( lower == grabObjIndex || isSwimming ) {
         grabObjIndex = -1;
       }
@@ -412,7 +415,7 @@ namespace oz
     }
 
     if( actions & ~oldActions & ACTION_USE ) {
-      if( grabObjIndex >= 0 ) {
+      if( grabObjIndex != -1 ) {
         synapse.use( this, grabObj );
       }
       else {
@@ -428,8 +431,8 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_TAKE ) {
-      if( grabObjIndex >= 0 ) {
-        if( ( grabObj->flags & ITEM_BIT ) && ( ~grabObj->flags & CUT_BIT ) ) {
+      if( grabObjIndex != -1 ) {
+        if( grabObj->flags & ITEM_BIT ) {
           items << grabObj->index;
           grabObj->parent = index;
           synapse.cut( grabObj );
@@ -442,7 +445,7 @@ namespace oz
         collider.translate( eye, look, this );
 
         DynObject *obj = static_cast<DynObject*>( collider.hit.obj );
-        if( obj != null && ( obj->flags & ITEM_BIT ) && ( ~obj->flags & CUT_BIT ) ) {
+        if( obj != null && ( obj->flags & ITEM_BIT ) ) {
           assert( obj->flags & DYNAMIC_BIT );
 
           items << obj->index;
@@ -452,7 +455,7 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_THROW ) {
-      if( grabObjIndex >= 0 ) {
+      if( grabObjIndex != -1 ) {
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
 
         grabObj->momentum = handle * clazz.throwMomentum;
@@ -460,7 +463,7 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
-      if( grabObjIndex >= 0 || isSwimming ) {
+      if( grabObjIndex != -1 || isSwimming ) {
         grabObjIndex = -1;
       }
       else {
@@ -497,19 +500,18 @@ namespace oz
 
   void Bot::enter( int vehicleIndex_ )
   {
-    if( ~flags & CUT_BIT ) {
-      parent = vehicleIndex_;
-      grabObjIndex = -1;
-      anim = ANIM_STAND;
-      synapse.cut( this );
-    }
+    assert( cell != null );
+
+    parent = vehicleIndex_;
+    grabObjIndex = -1;
+    anim = ANIM_STAND;
+    synapse.cut( this );
   }
 
   void Bot::exit()
   {
-    assert( parent >= 0 );
+    assert( cell == null && parent != -1 );
 
-    flags &= ~DISABLED_BIT;
     parent = -1;
     synapse.put( this );
   }

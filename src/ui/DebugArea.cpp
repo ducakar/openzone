@@ -55,7 +55,7 @@ namespace ui
             ( bot.flags & Object::ON_LADDER_BIT ) != 0,
             !collider.test( bot, &bot ) );
 
-      if( bot.grabObjIndex >= 0 ) {
+      if( bot.grabObjIndex != -1 ) {
         const DynObject &obj = *static_cast<const DynObject*>( world.objects[bot.grabObjIndex] );
 
         print( 5, -5 - textHeight * 5, "gobj.vel(%.2f %.2f %.2f) gobj.mom(%.2f %.2f %.2f)",

@@ -129,9 +129,9 @@ namespace client
 
       const char *shaderBaseName;
 
-      shaderBaseName = String::lastIndex( shaders[0].name, '/' );
+      shaderBaseName = String::findLast( shaders[0].name, '/' );
       if( shaderBaseName == null ) {
-        shaderBaseName = String::lastIndex( shaders[0].name, '\\' );
+        shaderBaseName = String::findLast( shaders[0].name, '\\' );
       }
       if( shaderBaseName == null ) {
         log.println( "MD3 model file '%s' invalid format", path.cstr() );

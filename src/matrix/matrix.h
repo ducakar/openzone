@@ -12,7 +12,9 @@
 namespace oz
 {
   // ~1 mm, should be enough for 8 km x 8 km map (i guess)
-  const float EPSILON = 0.0009765625;
+  const float EPSILON   = 0.0009765625f;
+  // EPSILON / 2
+  const float EPSILON_2 = 0.00048828125f;
 
   struct Material
   {

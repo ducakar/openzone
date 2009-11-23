@@ -65,7 +65,7 @@ namespace oz
        */
       bool operator == ( const Array &a ) const
       {
-        return aEqual( data, a.data, SIZE );
+        return aEquals( data, a.data, SIZE );
       }
 
       /**
@@ -75,7 +75,7 @@ namespace oz
        */
       bool operator != ( const Array &a ) const
       {
-        return !aEqual( data, a.data, SIZE );
+        return !aEquals( data, a.data, SIZE );
       }
 
       /**

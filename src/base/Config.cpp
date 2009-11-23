@@ -260,14 +260,14 @@ namespace oz
   bool Config::get( const char *name, bool defVal ) const
   {
     assert( !vars.contains( name ) ||
-            vars.cachedValue() == "true" ||
-            vars.cachedValue() == "false" );
+            vars.cachedValue().equals( "true" ) ||
+            vars.cachedValue().equals( "false" ) );
 
     if( vars.contains( name ) ) {
-      if( vars.cachedValue() == "true" ) {
+      if( vars.cachedValue().equals( "true" ) ) {
         return true;
       }
-      else if( vars.cachedValue() == "false" ) {
+      else if( vars.cachedValue().equals( "false" ) ) {
         return false;
       }
     }
@@ -317,14 +317,14 @@ namespace oz
   bool Config::getSet( const char *name, bool defVal )
   {
     assert( !vars.contains( name ) ||
-            vars.cachedValue() == "true" ||
-            vars.cachedValue() == "false" );
+            vars.cachedValue().equals( "true" ) ||
+            vars.cachedValue().equals( "false" ) );
 
     if( vars.contains( name ) ) {
-      if( vars.cachedValue() == "true" ) {
+      if( vars.cachedValue().equals( "true" ) ) {
         return true;
       }
-      else if( vars.cachedValue() == "false" ) {
+      else if( vars.cachedValue().equals( "false" ) ) {
         return false;
       }
     }
@@ -378,7 +378,7 @@ namespace oz
 
   bool Config::load( const char *file )
   {
-    const char *suffix = String::lastIndex( file, '.' );
+    const char *suffix = String::findLast( file, '.' );
 
     if( suffix != null ) {
       if( String::equals( suffix, ".rc" ) ) {
@@ -397,7 +397,7 @@ namespace oz
 
   bool Config::save( const char *file )
   {
-    const char *suffix = String::lastIndex( file, '.' );
+    const char *suffix = String::findLast( file, '.' );
 
     if( suffix != null ) {
       if( String::equals( suffix, ".rc" ) ) {

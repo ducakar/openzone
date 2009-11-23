@@ -147,9 +147,7 @@ namespace oz
           str->bsp = bspIndex;
           structures << str;
 
-          if( ~str->flags & Structure::REMOVED_BIT ) {
-            position( str );
-          }
+          position( str );
         }
       }
       for( int i = 0; i < nObjects; i++ ) {
@@ -163,7 +161,10 @@ namespace oz
           obj->index = i;
           objects << obj;
 
-          if( ~obj->flags & Object::CUT_BIT ) {
+          if( obj->flags & Object::CUT_BIT ) {
+            obj->flags &= ~Object::CUT_BIT;
+          }
+          else {
             position( obj );
           }
         }
@@ -224,6 +225,9 @@ namespace oz
           ostream->writeString( "" );
         }
         else {
+          if( obj->cell == null ) {
+            obj->flags |= obj->CUT_BIT;
+          }
           ostream->writeString( obj->type->name );
           obj->writeFull( ostream );
         }

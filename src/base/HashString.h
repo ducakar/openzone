@@ -406,7 +406,7 @@ namespace oz
         Elem *p = data[i];
 
         while( p != null ) {
-          if( p->key == key ) {
+          if( p->key.equals( key ) ) {
             cached = p;
             return true;
           }
@@ -430,7 +430,7 @@ namespace oz
         Elem *p = data[i];
 
         while( p != null ) {
-          if( p->key == key ) {
+          if( p->key.equals( key ) ) {
             cached = p;
             return p->value;
           }
@@ -457,7 +457,7 @@ namespace oz
         Elem *p = data[i];
 
         while( p != null ) {
-          if( p->key == key ) {
+          if( p->key.equals( key ) ) {
             cached = p;
             return p->value;
           }
@@ -518,7 +518,7 @@ namespace oz
         Elem **prev = &data[i];
 
         while( p != null ) {
-          if( p->key == key ) {
+          if( p->key.equals( key ) ) {
             *prev = p->next[0];
             delete p;
             count--;

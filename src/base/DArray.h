@@ -107,7 +107,7 @@ namespace oz
        */
       bool operator == ( const DArray &a ) const
       {
-        return count == a.count && aEqual( data, a.data, count );
+        return count == a.count && aEquals( data, a.data, count );
       }
 
       /**
@@ -117,7 +117,7 @@ namespace oz
        */
       bool operator != ( const DArray &a ) const
       {
-        return count != a.count || !aEqual( data, a.data, count );
+        return count != a.count || !aEquals( data, a.data, count );
       }
 
       /**

@@ -171,7 +171,7 @@ namespace ui
     collider.translate( p, camera.at * 2.0f, camera.bot );
 
     if( collider.hit.obj != null ) {
-      synapse.remove( collider.hit.obj );
+      collider.hit.obj->life = 0.0f;
     }
   }
 

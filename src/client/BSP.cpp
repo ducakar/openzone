@@ -262,7 +262,7 @@ namespace client
 
     textures = new uint[bsp->nTextures];
     for( int i = 0; i < bsp->nTextures; i++ ) {
-      if( bsp->textures[i] >= 0 ) {
+      if( bsp->textures[i] != -1 ) {
         textures[i] = context.requestTexture( bsp->textures[i] );
       }
     }
@@ -314,7 +314,7 @@ namespace client
   BSP::~BSP()
   {
     for( int i = 0; i < bsp->nTextures; i++ ) {
-      if( bsp->textures[i] >= 0 ) {
+      if( bsp->textures[i] != -1 ) {
         context.releaseTexture( bsp->textures[i] );
       }
     }
@@ -363,7 +363,7 @@ namespace client
         oz::BSP::Leaf &leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
-        if( ( cluster < 0 || bitset.get( cluster ) ) &&
+        if( ( cluster == -1 || bitset.get( cluster ) ) &&
             frustum.isVisible( rotatedLeaf + str->p ) )
         {
           for( int j = 0; j < leaf.nFaces; j++ ) {
@@ -432,7 +432,7 @@ namespace client
         oz::BSP::Leaf &leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
-        if( ( cluster < 0 || bitset.get( cluster ) ) &&
+        if( ( cluster == -1 || bitset.get( cluster ) ) &&
             frustum.isVisible( rotatedLeaf + str->p ) )
         {
           for( int j = 0; j < leaf.nFaces; j++ ) {

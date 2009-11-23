@@ -44,11 +44,11 @@ namespace oz
 
       struct Action
       {
-        Bot    *user;
-        Object *target;
+        int user;
+        int target;
 
         Action() {}
-        Action( Bot *user_, Object *target_ ) : user( user_ ), target( target_ ) {}
+        Action( int user_, int target_ ) : user( user_ ), target( target_ ) {}
       };
 
     private:
@@ -61,13 +61,8 @@ namespace oz
 
       Vector<Action>     actions;
 
-      Vector<Structure*> putStructs;
-      Vector<Object*>    putObjects;
-
-      Vector<Object*>    cutObjects;
-
-      Vector<Structure*> removeStructs;
-      Vector<Object*>    removeObjects;
+      Vector<Object*>    addedObjects;
+      Vector<Object*>    removedObjects;
 
     public:
 
@@ -139,12 +134,12 @@ namespace oz
                      float rejection, float mass, float lifeTime,
                      const Vec3 &color, float colorSpread );
 
-      // commit cuts/removals, clear cutXXX vectors
+      // re-position removed object that they can be seen by Render and Sound
+      void reposition();
+      // commit object removals
       void commit();
-      // do deletes, clear deleteXXX vectors
-      void doDeletes();
-      // clear putXXX vectors
-      void clear();
+      // do deletes and clear lists for actions, additions, removals
+      void clean();
 
       // clear tickets
       void clearTickets();
@@ -155,34 +150,31 @@ namespace oz
 
   inline void Synapse::use( Bot *user, Object *target )
   {
-    actions << Action( user, target );
+    if( target->flags & Object::USE_FUNC_BIT ) {
+      target->use( user );
+      actions << Action( user->index, target->index );
+    }
   }
 
   inline void Synapse::put( DynObject *obj )
   {
     assert( obj->parent == -1 );
 
-    putObjects << obj;
-
-    obj->flags &= ~Object::CUT_BIT;
+    obj->flags &= ~Object::DISABLED_BIT;
     world.position( obj );
   }
 
   inline void Synapse::cut( DynObject *obj )
   {
-    assert( obj->parent >= 0 );
+    assert( obj->parent != -1 );
 
-    if( ~obj->flags & Object::CUT_BIT ) {
-      obj->flags |= Object::CUT_BIT;
-      cutObjects << obj;
-    }
+    world.unposition( obj );
   }
 
   inline int Synapse::add( Structure *str )
   {
     world.add( str );
     world.position( str );
-    putStructs << str;
     return str->index;
   }
 
@@ -190,7 +182,7 @@ namespace oz
   {
     world.add( obj );
     world.position( obj );
-    putObjects << obj;
+    addedObjects << obj;
     return obj->index;
   }
 
@@ -199,40 +191,6 @@ namespace oz
     world.add( part );
     world.position( part );
     return part->index;
-  }
-
-  inline void Synapse::remove( Structure *str )
-  {
-    if( ~str->flags & Structure::REMOVED_BIT ) {
-      str->flags |= Structure::REMOVED_BIT;
-      removeStructs << str;
-    }
-  }
-
-  inline void Synapse::remove( Object *obj )
-  {
-    if( ~obj->flags & Object::CUT_BIT ) {
-      obj->flags |= Object::CUT_BIT | Object::REMOVED_BIT;
-      cutObjects << obj;
-      removeObjects << obj;
-    }
-  }
-
-  inline void Synapse::removeCut( DynObject *obj )
-  {
-    assert( ( obj->flags & Object::CUT_BIT ) && obj->parent == -1 );
-
-    if( ~obj->flags & Object::REMOVED_BIT ) {
-      obj->flags |= Object::REMOVED_BIT;
-      removeObjects << obj;
-    }
-  }
-
-  inline void Synapse::remove( Particle *part )
-  {
-    world.unposition( part );
-    world.remove( part );
-    delete part;
   }
 
   inline int Synapse::addStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
@@ -249,6 +207,37 @@ namespace oz
                                float lifeTime, const Vec3 &color )
   {
     return add( new Particle( p, velocity, rejection, mass, lifeTime, color ) );
+  }
+
+  inline void Synapse::remove( Structure *str )
+  {
+    world.unposition( str );
+    world.remove( str );
+    delete str;
+  }
+
+  inline void Synapse::remove( Object *obj )
+  {
+    world.unposition( obj );
+    obj->flags |= Object::REMOVED_BIT;
+    removedObjects << obj;
+  }
+
+  inline void Synapse::removeCut( DynObject *obj )
+  {
+    assert( obj->cell == null );
+
+    if( ~obj->flags & Object::REMOVED_BIT ) {
+      obj->flags |= Object::REMOVED_BIT | Object::CUT_BIT;
+      removedObjects << obj;
+    }
+  }
+
+  inline void Synapse::remove( Particle *part )
+  {
+    world.unposition( part );
+    world.remove( part );
+    delete part;
   }
 
 }

@@ -47,12 +47,9 @@ namespace ui
 
   void draw()
   {
-//    glEnable( GL_BLEND );
-//    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-    glOrtho( 0.0, hud->width, 0.0, hud->height, 0.0, 1.0 );
+    glOrtho( 0.0, hud->width, 0.0, hud->height, -100.0, 100.0 );
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
 

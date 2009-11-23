@@ -36,7 +36,7 @@ namespace client
 
     // friction
     if( ( obj->flags & Object::FRICTING_BIT ) && ( ~obj->flags & Object::ON_SLICK_BIT ) &&
-        ( obj->waterDepth == 0.0f ) && samples[SND_FRICTING] >= 0 )
+        ( obj->waterDepth == 0.0f ) && samples[SND_FRICTING] != -1 )
     {
       float dv = Math::sqrt( obj->velocity.x*obj->velocity.x + obj->velocity.y*obj->velocity.y );
       playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*obj ) );
@@ -46,7 +46,7 @@ namespace client
     foreach( event, obj->events.iterator() ) {
       assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
-      if( event->id >= 0 && samples[event->id] >= 0 ) {
+      if( event->id >= 0 && samples[event->id] != -1 ) {
         // if intensity field holds intensity of event on interval [0,1]
         if( event->intensity >= 0.0f ) {
           playSound( samples[event->id], event->intensity );
