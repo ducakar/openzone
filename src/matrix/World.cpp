@@ -25,6 +25,9 @@ namespace oz
   {
     log.print( "Initializing World ..." );
 
+    freeing = 0;
+    waiting = 1;
+
     mins = Vec3( -World::DIM, -World::DIM, -World::DIM );
     maxs = Vec3(  World::DIM,  World::DIM,  World::DIM );
 
@@ -103,14 +106,16 @@ namespace oz
 
   void World::update()
   {
-    strAvailableIndices.addAll( strPendingIndices );
-    strPendingIndices.clear();
+    strAvailableIndices.addAll( strFreedIndices[waiting] );
+    strFreedIndices[waiting].clear();
 
-    objAvailableIndices.addAll( objPendingIndices );
-    objPendingIndices.clear();
+    objAvailableIndices.addAll( objFreedIndices[waiting] );
+    objFreedIndices[waiting].clear();
 
-    partAvailableIndices.addAll( partPendingIndices );
-    partPendingIndices.clear();
+    partAvailableIndices.addAll( partFreedIndices[waiting] );
+    partFreedIndices[waiting].clear();
+
+    swap( freeing, waiting );
 
     sky.update();
   }
@@ -119,8 +124,48 @@ namespace oz
   {
     assert( structures.length() == 0 && objects.length() == 0 && particles.length() == 0 );
 
+    int n;
     log.print( "Reading World from stream ..." );
     try {
+      n = istream->readInt();
+      for( int i = 0; i < n; i++ ) {
+        strFreedIndices[freeing] << istream->readInt();
+      }
+      n = istream->readInt();
+      for( int i = 0; i < n; i++ ) {
+        objFreedIndices[freeing] << istream->readInt();
+      }
+      n = istream->readInt();
+      for( int i = 0; i < n; i++ ) {
+        partFreedIndices[freeing] << istream->readInt();
+      }
+
+      n = istream->readInt();
+      for( int i = 0; i < n; i++ ) {
+        strFreedIndices[waiting] << istream->readInt();
+      }
+      n = istream->readInt();
+      for( int i = 0; i < n; i++ ) {
+        objFreedIndices[waiting] << istream->readInt();
+      }
+      n = istream->readInt();
+      for( int i = 0; i < n; i++ ) {
+        partFreedIndices[waiting] << istream->readInt();
+      }
+
+      n = istream->readInt();
+      for( int i = 0; i < n; i++ ) {
+        strAvailableIndices << istream->readInt();
+      }
+      n = istream->readInt();
+      for( int i = 0; i < n; i++ ) {
+        objAvailableIndices << istream->readInt();
+      }
+      n = istream->readInt();
+      for( int i = 0; i < n; i++ ) {
+        partAvailableIndices << istream->readInt();
+      }
+
       sky.read( istream );
 
       int nStructures = istream->readInt();
@@ -196,6 +241,45 @@ namespace oz
   {
     log.print( "Writing World to stream ..." );
     try {
+      ostream->writeInt( strFreedIndices[freeing].length() );
+      foreach( i, strFreedIndices[freeing].iterator() ) {
+        ostream->writeInt( *i );
+      }
+      ostream->writeInt( objFreedIndices[freeing].length() );
+      foreach( i, objFreedIndices[freeing].iterator() ) {
+        ostream->writeInt( *i );
+      }
+      ostream->writeInt( partFreedIndices[freeing].length() );
+      foreach( i, partFreedIndices[freeing].iterator() ) {
+        ostream->writeInt( *i );
+      }
+
+      ostream->writeInt( strFreedIndices[waiting].length() );
+      foreach( i, strFreedIndices[waiting].iterator() ) {
+        ostream->writeInt( *i );
+      }
+      ostream->writeInt( objFreedIndices[waiting].length() );
+      foreach( i, objFreedIndices[waiting].iterator() ) {
+        ostream->writeInt( *i );
+      }
+      ostream->writeInt( partFreedIndices[waiting].length() );
+      foreach( i, partFreedIndices[waiting].iterator() ) {
+        ostream->writeInt( *i );
+      }
+
+      ostream->writeInt( strAvailableIndices.length() );
+      foreach( i, strAvailableIndices.iterator() ) {
+        ostream->writeInt( *i );
+      }
+      ostream->writeInt( objAvailableIndices.length() );
+      foreach( i, objAvailableIndices.iterator() ) {
+        ostream->writeInt( *i );
+      }
+      ostream->writeInt( partAvailableIndices.length() );
+      foreach( i, partAvailableIndices.iterator() ) {
+        ostream->writeInt( *i );
+      }
+
       sky.write( ostream );
 
       ostream->writeInt( structures.length() );

@@ -82,8 +82,7 @@ namespace client
     if( camera.botIndex != -1 ) {
       synapse.remove( camera.bot );
     }
-    synapse.commit();
-    synapse.clean();
+    synapse.update();
 
     Buffer buffer( 1024 * 1024 * 10 );
     OutputStream ostream = buffer.outputStream();
@@ -123,16 +122,9 @@ namespace client
     SDL_SemWait( matrix.semaphore );
     assert( SDL_SemValue( matrix.semaphore ) == 0 );
 
-    // remove objects scheduled for removal
-    synapse.commit();
-
-    // delete models and audio objects of removed objects
-    render.sync();
-    sound.sync();
-
-    // we can finally delete removed object after render and sound are sync'd as model/audio dtors
-    // have references to objects
-    synapse.clean();
+    // we can finally delete removed object after render and sound are sync'd (as model/audio dtors
+    // have pointers to objects) and nirvana has read vector of removed objects and sync'd
+    synapse.update();
 
     if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
       if( state == GAME ) {
@@ -352,8 +344,9 @@ namespace client
     // don't add oany bjects until next Game::update call or there will be index collisions in
     // nirvana
 
-    // re-position removed object that they can be seen by Render and Sound
-    synapse.reposition();
+    // delete models and audio objects of removed objects
+    render.sync();
+    sound.sync();
 
     // resume nirvana
     SDL_SemPost( nirvana::nirvana.semaphore );

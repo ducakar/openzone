@@ -35,6 +35,8 @@ namespace oz
       static const int ACTION_EXIT     = 0x00000400;
       static const int ACTION_EJECT    = 0x00000800;
       static const int ACTION_SUICIDE  = 0x00001000;
+      static const int ACTION_INV_USE  = 0x00002000;
+      static const int ACTION_INV_GRAB = 0x00004000;
 
       static const int EVENT_LAND      = 4;
       static const int EVENT_JUMP      = 5;
@@ -114,6 +116,7 @@ namespace oz
       float       grabHandle;
 
       Vector<int> items;
+      int         taggedItem;
       Weapon      *weapon;
 
       float       bob;

@@ -78,15 +78,17 @@ namespace oz
       static const int AUDIO_BIT          = 0x00040000;
 
       /*
-       * REMOVED FLAG
+       * STATE FLAGS
        */
-
-      // if object is pending for removal
-      static const int REMOVED_BIT        = 0x00020000;
 
       // if object is not positioned in the world (used only when loading/saving the world and to
       // distinguish between removed objects and cut objects that have been removed with removeCut)
-      static const int CUT_BIT            = 0x00010000;
+      static const int CUT_BIT            = 0x00020000;
+
+      // when object's life drops to <= 0.0f it's tagged as destroyed first and kept one more tick
+      // in the world, so destruction effects can be processed by frontend (e.g. destruction sounds)
+      // in the next tick the destroyed objects are actually removed
+      static const int DESTROYED_BIT      = 0x00010000;
 
       /*
        * DYNAMIC OBJECTS' BITS
@@ -224,6 +226,7 @@ namespace oz
 
       void destroy()
       {
+        flags |= Object::DESTROYED_BIT;
         addEvent( EVENT_DESTROY, 1.0f );
 
         if( flags & DESTROY_FUNC_BIT ) {

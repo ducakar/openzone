@@ -45,6 +45,16 @@ namespace oz
   {
     BotClass &clazz = *static_cast<BotClass*>( type );
 
+    // clear invalid references from inventory
+    for( int i = 0; i < items.length(); ) {
+      if( world.objects[items[i]] == null ) {
+        items.remove( i );
+      }
+      else {
+        i++;
+      }
+    }
+
     if( life <= type->life * 0.5f ) {
       if( ( ~state & DEATH_BIT ) && life > 0.0f ) {
         flags |= WIDE_CULL_BIT | BLEND_BIT;
@@ -60,7 +70,7 @@ namespace oz
       if( life > 0.0f ) {
         life -= type->life * BODY_FADEOUT_FACTOR;
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes sounds
-        // and particles to fly around)
+        // and particles to fly around), that's why we remove the object
         if( life <= 0.0f ) {
           foreach( i, items.iterator() ) {
             synapse.removeCut( static_cast<DynObject*>( world.objects[*i] ) );
@@ -371,7 +381,7 @@ namespace oz
     }
 
     /*
-     * GRAB, USE, TAKE, THROW
+     * GRAB MOVEMENT
      */
 
     DynObject *grabObj = null;
@@ -388,10 +398,10 @@ namespace oz
       }
       else {
         // keep constant length of xy projection of handle
-        Vec3  handle   = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * grabHandle;
+        Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * grabHandle;
         // bottom of the object cannot be raised over the player aabb
-        handle.z       = min( handle.z, dim.z - camPos.z + grabObj->dim.z );
-        Vec3  string   = p + camPos + handle - grabObj->p;
+        handle.z    = min( handle.z, dim.z - camPos.z + grabObj->dim.z );
+        Vec3 string = p + camPos + handle - grabObj->p;
 
         if( string.sqL() > grabHandle*grabHandle ) {
           grabObjIndex = -1;
@@ -413,6 +423,10 @@ namespace oz
         }
       }
     }
+
+    /*
+     * USE, TAKE, THROW, GRAB, INVENTORY USE AND INVENTORY GRAB ACTIONS
+     */
 
     if( actions & ~oldActions & ACTION_USE ) {
       if( grabObjIndex != -1 ) {
@@ -482,10 +496,49 @@ namespace oz
 
           if( dist <= clazz.grabDistance ) {
             grabObjIndex = collider.hit.obj->index;
-            grabObj      = static_cast<DynObject*>( collider.hit.obj );
             grabHandle   = dist;
             flags        &= ~ON_LADDER_BIT;
           }
+        }
+      }
+    }
+    else if( actions & ~oldActions & ACTION_INV_USE ) {
+      if( taggedItem != -1 && taggedItem < items.length() && items[taggedItem] != -1 ) {
+        DynObject *item = static_cast<DynObject*>( world.objects[items[taggedItem]] );
+
+        assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+
+        synapse.use( this, item );
+        // the object may have removed itself after use
+        if( item->index == -1 ) {
+          items.remove( taggedItem );
+        }
+      }
+    }
+    else if( actions & ~oldActions & ACTION_INV_GRAB ) {
+      if( grabObjIndex == -1 && taggedItem != -1 && taggedItem < items.length() ) {
+        DynObject *item = static_cast<DynObject*>( world.objects[items[taggedItem]] );
+
+        assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+
+        float dimX = dim.x + item->dim.x;
+        float dimY = dim.y + item->dim.y;
+        float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
+
+        // keep constant length of xy projection of handle
+        Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * dist;
+        // bottom of the object cannot be raised over the player aabb
+        handle.z    = min( handle.z, dim.z - camPos.z + item->dim.z );
+        item->p     = p + camPos + handle;
+
+        if( collider.test( *item ) ) {
+          item->parent = -1;
+          synapse.put( item );
+          items.remove( taggedItem );
+
+          grabObjIndex = item->index;
+          grabHandle   = dist;
+          flags        &= ~ON_LADDER_BIT;
         }
       }
     }

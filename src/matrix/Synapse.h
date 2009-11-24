@@ -1,24 +1,21 @@
 /*
  *  Synapse.h
  *
- *  World actions scheduler.
- *    World should not be touched directly for adding/removing objects. Because objects may have
- *  hold references to each other (by indices), after object removal a full world update must pass,
- *  so that all references to the removed object are cleared. (On each update every reference must
- *  be checked. If it points to a null object slot, the target object has been removed. On order for
- *  this to work, a full world update must pass before another objects occupies a freed slot or
- *  the reference may point to a new object, that may be of a different type that may result in a
- *  program crash or at least a real mess.)
- *    The second reason is that world update may be multithreaded and adding an object in the middle
- *  of an update may put it in a cell that is handled by some other thread, which may result in
- *  a nasty-and-hard-to-discover-and-hard-to-squash bug.
- *    The third reason is networking. In this mode client should not add/remove objects and similar
- *  mechanism to deliver object additions/removals would be needed anyway.
- *    For obvious reasons (networking support and the first reason), use and take interactions are
- *  exploiting this mechanism as well.
- *    When an object addition is scheduled in Synapse, a ticket is returned that can be used in the
- *  next cycle to retrieve index of added object. The index could also be predicted at schdule time,
- *  but it's not the case for client adds in a networkin game, so ticket system is mandatory.
+ *  World manipulation interface.
+ *    World should not be touched directly for adding/removing objects, because objects may have
+ *  hold references to each other (by indices). After an object removal a full world update must
+ *  pass, so that all references to the removed object are cleared. (On each update every reference
+ *  must be checked. If it points to a null object slot, the target object has been removed.
+ *  On order for this to work, a full world update must pass before another objects occupies a freed
+ *  slot or the reference may point to a new object that may be of a different type. That may result
+ *  in a program crash or at least a real mess.)
+ *    The second reason is networking. In this mode client should not add/remove object, and,
+ *  on server, every object addition/removal must be recorded to be later sent to clients. This
+ *  mechanism is also used by nirvana to keep track of added objects.
+ *    Third, the objects should not be deleted when removed as they are pointers to them in models
+ *  and audio objects in render and sound subsystems. That's why delete operator is actually
+ *  called from update(), after render and sound have synchronized and removed models/audio objects
+ *  of removed world objects.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
@@ -53,16 +50,24 @@ namespace oz
 
     private:
 
-      Vector<int>        putStructsIndices;
-      Vector<int>        putObjectsIndices;
-      Vector<int>        putPartsIndices;
+      Vector<Object*> deleteObjects;
 
-    private:
+      Vector<Action>  actions;
 
-      Vector<Action>     actions;
+      Vector<int>     putObjects;
+      Vector<int>     cutObjects;
 
-      Vector<Object*>    addedObjects;
-      Vector<Object*>    removedObjects;
+      Vector<int>     addedStructs;
+      Vector<int>     addedObjects;
+      Vector<int>     addedParts;
+
+      Vector<int>     removedStructs;
+      Vector<int>     removedObjects;
+      Vector<int>     removedParts;
+
+      Vector<int>     putStructsIndices;
+      Vector<int>     putObjectsIndices;
+      Vector<int>     putPartsIndices;
 
     public:
 
@@ -134,12 +139,8 @@ namespace oz
                      float rejection, float mass, float lifeTime,
                      const Vec3 &color, float colorSpread );
 
-      // re-position removed object that they can be seen by Render and Sound
-      void reposition();
-      // commit object removals
-      void commit();
       // do deletes and clear lists for actions, additions, removals
-      void clean();
+      void update();
 
       // clear tickets
       void clearTickets();
@@ -151,23 +152,29 @@ namespace oz
   inline void Synapse::use( Bot *user, Object *target )
   {
     if( target->flags & Object::USE_FUNC_BIT ) {
-      target->use( user );
       actions << Action( user->index, target->index );
+      target->use( user );
     }
   }
 
   inline void Synapse::put( DynObject *obj )
   {
-    assert( obj->parent == -1 );
+    assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
 
-    obj->flags &= ~Object::DISABLED_BIT;
+    putObjects << obj->index;
     world.position( obj );
   }
 
   inline void Synapse::cut( DynObject *obj )
   {
-    assert( obj->parent != -1 );
+    assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
 
+    obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
+        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
+    obj->events.free();
+    obj->lower = -1;
+
+    cutObjects << obj->index;
     world.unposition( obj );
   }
 
@@ -175,6 +182,7 @@ namespace oz
   {
     world.add( str );
     world.position( str );
+    addedStructs << str->index;
     return str->index;
   }
 
@@ -182,7 +190,7 @@ namespace oz
   {
     world.add( obj );
     world.position( obj );
-    addedObjects << obj;
+    addedObjects << obj->index;
     return obj->index;
   }
 
@@ -190,6 +198,7 @@ namespace oz
   {
     world.add( part );
     world.position( part );
+    addedParts << part->index;
     return part->index;
   }
 
@@ -211,6 +220,9 @@ namespace oz
 
   inline void Synapse::remove( Structure *str )
   {
+    assert( str->index != -1 );
+
+    removedStructs << str->index;
     world.unposition( str );
     world.remove( str );
     delete str;
@@ -218,23 +230,28 @@ namespace oz
 
   inline void Synapse::remove( Object *obj )
   {
+    assert( obj->index != -1 );
+
+    deleteObjects << obj;
+    removedObjects << obj->index;
     world.unposition( obj );
-    obj->flags |= Object::REMOVED_BIT;
-    removedObjects << obj;
+    world.remove( obj );
   }
 
   inline void Synapse::removeCut( DynObject *obj )
   {
-    assert( obj->cell == null );
+    assert( obj->index != -1 && obj->cell == null );
 
-    if( ~obj->flags & Object::REMOVED_BIT ) {
-      obj->flags |= Object::REMOVED_BIT | Object::CUT_BIT;
-      removedObjects << obj;
-    }
+    deleteObjects << obj;
+    removedObjects << obj->index;
+    world.remove( obj );
   }
 
   inline void Synapse::remove( Particle *part )
   {
+    assert( part->index != -1 );
+
+    removedParts << part->index;
     world.unposition( part );
     world.remove( part );
     delete part;

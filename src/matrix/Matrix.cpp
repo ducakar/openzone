@@ -217,47 +217,49 @@ namespace oz
     for( int i = 0; i < world.objects.length(); i++ ) {
       Object *obj = world.objects[i];
 
-      if( obj != null && ( ~obj->flags & Object::REMOVED_BIT ) ) {
-        obj->update();
+      if( obj == null ) {
+        continue;
+      }
+      if( obj->flags & Object::DESTROYED_BIT ) {
+        synapse.remove( obj );
+        continue;
+      }
 
-        // object might have removed itself within onUpdate()
-        if( obj->flags & Object::DYNAMIC_BIT ) {
-          DynObject *dynObj = static_cast<DynObject*>( obj );
+      obj->update();
 
-          if( dynObj->cell == null ) {
-            // put into world if its container has been removed
-            if( ( ~dynObj->flags & Object::REMOVED_BIT ) &&
-                ( dynObj->parent == -1 || world.objects[dynObj->parent] == null ) )
-            {
-              dynObj->parent = -1;
+      // object might have removed itself within onUpdate()
+      if( obj->index == -1 ) {
+        continue;
+      }
 
-              // if there is room in the world, put it, otherwise remove it
-              if( collider.test( *dynObj ) ) {
-                synapse.put( dynObj );
-              }
-              else {
-                synapse.removeCut( dynObj );
-              }
-            }
-          }
-          else {
-            physics.updateObj( dynObj );
+      if( obj->flags & Object::DYNAMIC_BIT ) {
+        DynObject *dynObj = static_cast<DynObject*>( obj );
 
-            // remove if destroyed or misplaced outside world
-            if( dynObj->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
-              synapse.remove( obj );
-            }
+        if( dynObj->cell == null ) {
+          assert( dynObj->parent != -1 );
+
+          // put into world if its container has been removed
+          if( world.objects[dynObj->parent] == null ) {
+            dynObj->parent = -1;
+            synapse.removeCut( dynObj );
           }
         }
-        if( obj->life <= 0.0f || !world.includes( *obj ) ) {
-          if( obj->life <= 0.0f ) {
-            obj->destroy();
+        else {
+          physics.updateObj( dynObj );
+
+          // remove if destroyed or misplaced outside world
+          if( dynObj->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+            synapse.remove( obj );
           }
-          synapse.remove( obj );
         }
+      }
+
+      if( obj->life <= 0.0f ) {
+        obj->destroy();
       }
     }
 
+    // rotate freeing/waiting/available indices
     world.update();
   }
 
