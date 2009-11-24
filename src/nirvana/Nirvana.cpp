@@ -41,9 +41,11 @@ namespace nirvana
       }
     }
     // add minds for new bots
-    foreach( obj, synapse.addedObjects.iterator() ) {
-      if( ( *obj )->flags & Object::BOT_BIT ) {
-        Bot *bot = static_cast<Bot*>( *obj );
+    foreach( i, synapse.addedObjects.iterator() ) {
+      Object *obj = world.objects[*i];
+
+      if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
+        Bot *bot = static_cast<Bot*>( obj );
 
         if( ~bot->state & Bot::PLAYER_BIT ) {
           const BotClass *clazz = static_cast<const BotClass*>( bot->type );

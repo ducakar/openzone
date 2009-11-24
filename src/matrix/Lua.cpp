@@ -363,11 +363,18 @@ namespace oz
     if( *lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
+
     if( ( *lua.obj )->cell == null ) {
-      OZ_LUA_ERROR( "selected object isn't put into the world" );
+      DynObject *dynObj = static_cast<DynObject*>( *lua.obj );
+
+      assert( dynObj->flags & Object::DYNAMIC_BIT );
+
+      synapse.removeCut( dynObj );
+    }
+    else {
+      synapse.remove( *lua.obj );
     }
 
-    synapse.remove( *lua.obj );
     *lua.obj = null;
     return 0;
   }

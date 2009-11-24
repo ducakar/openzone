@@ -1,7 +1,8 @@
 /*
  *  World.h
  *
- *  Matrix data structure for world (terrain, all structures and objects in the world)
+ *  Matrix data structure for world (terrain, all structures and objects in the world).
+ *  The world should not be manipulated directly; use Synapse instead.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
@@ -67,13 +68,34 @@ namespace oz
 
       Area               area;
 
+      /*
+       * Index reusing: when an entity is removed, there may still be references to it (from other
+       * entities or from render or audio subsystems); that's why every cycle all references must
+       * be checked if the slot they're pointing at (all references should be indices of a slot
+       * in World::structures/objects/particles vectors). If the target slot is null, the referenced
+       * entity doesn't exist any more, so reference must be cleared. To make sure all references
+       * can be checked that way, a full world update must pass before a slot is reused. Otherwise
+       * an entity may be removed and immediately after that another added into it's slot; when an
+       * another entity would retrieve the target entity via the reference: 1) it wouldn't get the
+       * expected entity but a new one; that may result in program crash if the new one is not of
+       * the same type, 2) it wouldn't detect the old entity has been removed/destroyed/whatever;
+       * that may pose a big problem to rendering and audio subsystems as those must clear
+       * models/audio objects of removed world objects.
+       */
+
+      int freeing;
+      int waiting;
+
+      // [freeing]: vector for indices that are currently being freed
+      // [waiting]: indices that have been freed previous cycle; those can be reused next time
+      Vector<int>        strFreedIndices[2];
+      Vector<int>        objFreedIndices[2];
+      Vector<int>        partFreedIndices[2];
+
+      // indices of slots that can be reused
       Vector<int>        strAvailableIndices;
       Vector<int>        objAvailableIndices;
       Vector<int>        partAvailableIndices;
-
-      Vector<int>        strPendingIndices;
-      Vector<int>        objPendingIndices;
-      Vector<int>        partPendingIndices;
 
       void position( Structure *str );
       void unposition( Structure *str );
@@ -355,7 +377,7 @@ namespace oz
   {
     assert( str->index >= 0 );
 
-    strPendingIndices << str->index;
+    strFreedIndices[freeing] << str->index;
     structures[str->index] = null;
     str->index = -1;
   }
@@ -365,7 +387,7 @@ namespace oz
     assert( obj->index >= 0 );
     assert( obj->cell == null );
 
-    objPendingIndices << obj->index;
+    objFreedIndices[freeing] << obj->index;
     objects[obj->index] = null;
     obj->index = -1;
   }
@@ -375,7 +397,7 @@ namespace oz
     assert( part->index >= 0 );
     assert( part->cell == null );
 
-    partPendingIndices << part->index;
+    partFreedIndices[freeing] << part->index;
     particles[part->index] = null;
     part->index = -1;
   }

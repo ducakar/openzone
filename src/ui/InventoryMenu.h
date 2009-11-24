@@ -20,6 +20,11 @@ namespace ui
 
   class InventoryMenu : public Frame
   {
+    private:
+
+      int   taggedIndex;
+      float taggedRotation;
+
     protected:
 
       virtual void onMouseEvent();

@@ -406,18 +406,18 @@ namespace oz
 
     obj->flags &= ~( Object::FRICTING_BIT | Object::HIT_BIT );
 
-    // clear the lower object if it doesn't exist any more
     if( obj->lower != -1 ) {
       Object *sObj = world.objects[obj->lower];
 
+      // clear the lower object if it doesn't exist any more
       if( sObj == null || sObj->cell == null ) {
         obj->flags &= ~Object::DISABLED_BIT;
         obj->lower = -1;
       }
-    }
-    // check if the object can remain disabled
-    else if( obj->lower != -1 && ( ~world.objects[obj->lower]->flags & Object::DISABLED_BIT ) ) {
-      obj->flags &= ~Object::DISABLED_BIT;
+      // check if the object can remain disabled
+      else if( ~sObj->flags & Object::DISABLED_BIT ) {
+        obj->flags &= ~Object::DISABLED_BIT;
+      }
     }
     // handle physics
     if( ~obj->flags & Object::DISABLED_BIT ) {

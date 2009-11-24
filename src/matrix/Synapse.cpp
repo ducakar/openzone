@@ -1,7 +1,7 @@
 /*
  *  Synapse.cpp
  *
- *  [description]
+ *  World manipulation interface.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
@@ -41,32 +41,20 @@ namespace oz
     }
   }
 
-  void Synapse::reposition()
+  void Synapse::update()
   {
-    foreach( i, removedObjects.iterator() ) {
-      if( ~( *i )->flags & Object::CUT_BIT ) {
-        world.position( *i );
-      }
-    }
-  }
-
-  void Synapse::commit()
-  {
-    foreach( i, removedObjects.iterator() ) {
-      if( ( *i )->cell != null ) {
-        world.unposition( *i );
-      }
-      world.remove( *i );
-    }
-  }
-
-  void Synapse::clean()
-  {
-    iFree( removedObjects.iterator() );
+    iFree( deleteObjects.iterator() );
+    deleteObjects.clear();
 
     actions.clear();
+
+    addedStructs.clear();
     addedObjects.clear();
+    addedParts.clear();
+
+    removedStructs.clear();
     removedObjects.clear();
+    removedParts.clear();
   }
 
   void Synapse::clearTickets()
