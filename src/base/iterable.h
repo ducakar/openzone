@@ -193,41 +193,41 @@ namespace oz
 
   /**
    * Compare all elements. (Like STL equal)
-   * @param iA
-   * @param iB
+   * @param iSrcA
+   * @param iSrcB
    * @return true if all elements are equal
    */
   template <class IterA, class IterB>
-  inline bool iEquals( IterA iDest, IterB iSrc )
+  inline bool iEquals( IterA iSrcA, IterB iSrcB )
   {
-    while( !iDest.isPassed() ) {
-      if( *iDest != *iSrc ) {
+    while( !iSrcA.isPassed() ) {
+      if( *iSrcA != *iSrcB ) {
         return false;
       }
-      ++iDest;
-      ++iSrc;
+      ++iSrcA;
+      ++iSrcB;
     }
     return true;
   }
 
   /**
    * Set all elements. (Like STL fill)
-   * @param i
+   * @param iDest
    * @param value
    */
   template <class Iter, class Value>
-  inline void iSet( Iter i, const Value &value )
+  inline void iSet( Iter iDest, const Value &value )
   {
-    while( !i.isPassed() ) {
-      *i = value;
-      ++i;
+    while( !iDest.isPassed() ) {
+      *iDest = value;
+      ++iDest;
     }
   }
 
   /**
    * Copy elements from first to last. (Like STL copy)
-   * @param iA
-   * @param iB
+   * @param iDest
+   * @param iSrc
    */
   template <class IterA, class IterB>
   inline void iCopy( IterA iDest, IterB iSrc )
@@ -243,8 +243,8 @@ namespace oz
 
   /**
    * Copy elements from last to first.
-   * @param iA
-   * @param iB
+   * @param iDest
+   * @param iSrc
    */
   template <class BackIterA, class BackIterB>
   inline void iReverseCopy( BackIterA iDest, BackIterB iSrc )
@@ -260,50 +260,50 @@ namespace oz
 
   /**
    * Find first occurrence of given element. (Like STL find)
-   * @param i
+   * @param iSrc
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
   template <class Iter, class Value>
-  inline Iter iIndex( Iter i, const Value &value )
+  inline Iter iIndex( Iter iSrc, const Value &value )
   {
-    while( !i.isPassed() ) {
-      if( *i == value ) {
+    while( !iSrc.isPassed() ) {
+      if( *iSrc == value ) {
         break;
       }
-      ++i;
+      ++iSrc;
     }
-    return i;
+    return iSrc;
   }
 
   /**
    * Find last occurrence of given element.
-   * @param i
+   * @param iSrc
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
   template <class BackIter, class Value>
-  inline BackIter iLastIndex( BackIter i, const Value &value )
+  inline BackIter iLastIndex( BackIter iSrc, const Value &value )
   {
-    while( !i.isPassed() ) {
-      --i;
-      if( *i == value ) {
+    while( !iSrc.isPassed() ) {
+      --iSrc;
+      if( *iSrc == value ) {
         break;
       }
     }
-    return i;
+    return iSrc;
   }
 
   /**
    * Call delete on all elements (that have been previously allocated with the new call).
-   * @param i
+   * @param iDest
    */
   template <class Iter>
-  inline void iFree( Iter i )
+  inline void iFree( Iter iDest )
   {
-    while( !i.isPassed() ) {
-      typeof( *i ) p = *i;
-      ++i;
+    while( !iDest.isPassed() ) {
+      typeof( *iDest ) p = *iDest;
+      ++iDest;
       delete p;
     }
   }

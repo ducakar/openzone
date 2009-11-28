@@ -47,33 +47,18 @@ namespace oz
   }
 
   /**
-   * Set array members to given value (memset).
-   * In contrast with memset it calls constructor/destructor/assign operator on objects.
-   * @param dest pointer to the first element
-   * @param value value to be set
-   * @param count number of elements to be set
-   */
-  template <class Type>
-  inline void aSet( Type *array, const Type &value, int count )
-  {
-    for( int i = 0; i < count; i++ ) {
-      array[i] = value;
-    }
-  }
-
-  /**
    * Compare arrays (memcmp).
    * In contrast to memcmp it automagically calls != operator if comparing objects.
-   * @param srcA pointer to the first element in the first array
-   * @param srcB pointer to the first element in the second array
+   * @param aSrcA pointer to the first element in the first array
+   * @param aSrcB pointer to the first element in the second array
    * @param count number of elements to be compared
    * @return
    */
   template <class Type>
-  inline bool aEquals( const Type *srcA, const Type *srcB, int count )
+  inline bool aEquals( const Type *aSrcA, const Type *aSrcB, int count )
   {
     for( int i = 0; i < count; i++ ) {
-      if( srcA[i] != srcB[i] ) {
+      if( aSrcA[i] != aSrcB[i] ) {
         return false;
       }
     }
@@ -81,53 +66,68 @@ namespace oz
   }
 
   /**
+   * Set array members to given value (memset).
+   * In contrast with memset it calls constructor/destructor/assign operator on objects.
+   * @param aDest pointer to the first element
+   * @param value value to be set
+   * @param count number of elements to be set
+   */
+  template <class Type>
+  inline void aSet( Type *aDest, const Type &value, int count )
+  {
+    for( int i = 0; i < count; i++ ) {
+      aDest[i] = value;
+    }
+  }
+
+  /**
    * Copy array from first to last element (memcpy).
    * In contrast with memcpy it calls constructor/destructor/assign when copying objects.
    * On older GCCs it performs better than memcopy on copying types bigger than one byte.
-   * @param dest pointer to the first element in the destination array
-   * @param src pointer to the first element in the source array
+   * @param aDest pointer to the first element in the destination array
+   * @param aSrc pointer to the first element in the source array
    * @param count number of elements to be copied
    */
   template <class Type>
-  inline void aCopy( Type *dest, const Type *src, int count )
+  inline void aCopy( Type *aDest, const Type *aSrc, int count )
   {
-    assert( dest != src );
+    assert( aDest != aSrc );
 
     for( int i = 0; i < count; i++ ) {
-      Type t = src[i];
-      dest[i] = t;
+      Type t = aSrc[i];
+      aDest[i] = t;
     }
   }
 
   /**
    * Copy array from last to first element.
    * It may be used where you cannot use aCopy due to source and destination overlapping.
-   * @param dest pointer to the first element in the destination array
-   * @param src pointer to the first element in the source array
+   * @param aDest pointer to the first element in the destination array
+   * @param aSrc pointer to the first element in the source array
    * @param count number of elements to be copied
    */
   template <class Type>
-  inline void aReverseCopy( Type *dest, const Type *src, int count )
+  inline void aReverseCopy( Type *aDest, const Type *aSrc, int count )
   {
-    assert( dest != src );
+    assert( aDest != aSrc );
 
     for( int i = count - 1; i >= 0; i-- ) {
-      dest[i] = src[i];
+      aDest[i] = aSrc[i];
     }
   }
 
   /**
    * Find the first occurrence of an element.
-   * @param array pointer to the first element in the array
+   * @param aSrc pointer to the first element in the array
    * @param count number of elements to be looked upon
    * @param value value we look for
    * @return index of the first occurrence, -1 if not found
    */
   template <class Type>
-  inline int aIndex( const Type *array, const Type &value, int count )
+  inline int aIndex( const Type *aSrc, const Type &value, int count )
   {
     for( int i = 0; i < count; i++ ) {
-      if( array[i] == value ) {
+      if( aSrc[i] == value ) {
         return i;
       }
     }
@@ -136,16 +136,16 @@ namespace oz
 
   /**
    * Find the last occurrence of an element.
-   * @param array pointer to the first element in the array
+   * @param aSrc pointer to the first element in the array
    * @param count number of elements to be looked upon
    * @param value value we look for
    * @return index of the first occurrence, -1 if not found
    */
   template <class Type>
-  inline int aLastIndex( const Type *array, const Type &value, int count )
+  inline int aLastIndex( const Type *aSrc, const Type &value, int count )
   {
     for( int i = count - 1; i <= 0; i-- ) {
-      if( array[i] == value ) {
+      if( aSrc[i] == value ) {
         return i;
       }
     }
@@ -154,14 +154,14 @@ namespace oz
 
   /**
    * Call delete on array elements (that have been previously allocated with the new call).
-   * @param array pointer to the first element in the array
+   * @param aDest pointer to the first element in the array
    * @param count number of elements
    */
   template <class Type>
-  inline void aFree( const Type *array, int count )
+  inline void aFree( const Type *aDest, int count )
   {
     for( int i = 0; i < count; i++ ) {
-      delete array[i];
+      delete aDest[i];
     }
   }
 
@@ -169,22 +169,22 @@ namespace oz
    * Reallocate array (realloc).
    * Allocates new block of size newSize * typeof( Type ) and copies first "count" elements of
    * source array. newCount should be equal to or greater than count.
-   * @param array pointer to the source array
+   * @param aDest pointer to the source array
    * @param count number of elements to be copied
    * @param newCount number of elements in the new array
    * @return
    */
   template <class Type>
-  inline Type *aRealloc( Type *array, int count, int newCount )
+  inline Type *aRealloc( Type *aDest, int count, int newCount )
   {
     assert( count <= newCount );
 
-    Type *newArray = new Type[newCount];
+    Type *aNew = new Type[newCount];
 
-    aCopy( newArray, array, count );
-    delete[] array;
+    aCopy( aNew, aDest, count );
+    delete[] aDest;
 
-    return newArray;
+    return aNew;
   }
 
   /**
@@ -194,7 +194,7 @@ namespace oz
    * @param last pointer to last element in the array
    */
   template <class Type>
-  void quicksort( Type *first, Type *last )
+  static void quicksort( Type *first, Type *last )
   {
     // 8-14 seem as optimal thresholds for switching to selection sort
     if( last - first > 10 ) {
@@ -246,9 +246,9 @@ namespace oz
    * @param count number of elements to be sorted
    */
   template <class Type>
-  inline void aSort( Type *array, int count )
+  inline void aSort( Type *aSrc, int count )
   {
-    quicksort( array, array + count - 1 );
+    quicksort( aSrc, aSrc + count - 1 );
   }
 
 }

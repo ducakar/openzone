@@ -1,3 +1,5 @@
+description "First aid kit. It can heal up to 50 points of health."
+
 base "DynObject"
 
 dim.x "0.25"

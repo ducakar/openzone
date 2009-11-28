@@ -127,13 +127,11 @@ namespace client
     synapse.update();
 
     if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
-      if( state == GAME ) {
-        state = GAME_INTERFACE;
-        ui::mouse.show();
+      if( ui::mouse.doShow ) {
+        ui::mouse.hide();
       }
       else {
-        state = GAME;
-        ui::mouse.hide();
+        ui::mouse.show();
       }
     }
 
@@ -298,7 +296,7 @@ namespace client
         camera.v = camera.bot->v;
       }
 
-      if( state == GAME ) {
+      if( !ui::mouse.doShow ) {
         if( ui::mouse.rightClick ) {
           camera.bot->actions |= Bot::ACTION_USE;
         }
@@ -330,7 +328,7 @@ namespace client
         camera.bot->kill();
       }
     }
-    if( state == GAME_INTERFACE ) {
+    if( ui::mouse.doShow ) {
       // interface
       ui::update();
     }
@@ -341,7 +339,7 @@ namespace client
 
     // update world
     matrix.update();
-    // don't add oany bjects until next Game::update call or there will be index collisions in
+    // don't add any objects until next Game::update call or there will be index collisions in
     // nirvana
 
     // delete models and audio objects of removed objects

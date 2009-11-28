@@ -18,11 +18,8 @@ struct A
   int nextSlot;
   int value;
 
-  A()
-  {}
-
-  A( int value_ ) : value( value_ )
-  {}
+  A() {}
+  A( int value_ ) : value( value_ ) {}
 };
 
 int main()
@@ -42,7 +39,7 @@ int main()
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, Iterator<A>( sparse, sparse + sparse.capacity() ) ) {
+  foreach( i, iterator( sparse, sparse + sparse.capacity() ) ) {
     printf( "%d,%d ", i->value, i->nextSlot );
   }
   printf( "\n" );
@@ -54,7 +51,7 @@ int main()
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, Iterator<A>( sparse, sparse + sparse.capacity() ) ) {
+  foreach( i, iterator( sparse, sparse + sparse.capacity() ) ) {
     printf( "%d,%d ", i->value, i->nextSlot );
   }
   printf( "\n" );

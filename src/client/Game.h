@@ -27,7 +27,6 @@ namespace client
       enum State
       {
         GAME,
-        GAME_INTERFACE,
         MENU
       };
 
