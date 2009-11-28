@@ -1,7 +1,6 @@
 Matrix
   - extend scripting
   - Weapons
-  - Vehicle
   - networking support
   ? reinvent cylinder
 
@@ -11,15 +10,14 @@ Client
   - FireModel
   - weather
   - networking support
+  - menu support
 
 UI
   - standard components
-  - HUD
-  - inventory
-  - scripting
+  ? scripting
 
 Nirvana
-  - scripting
+  - extend scripting
   - more minds
 
 Server

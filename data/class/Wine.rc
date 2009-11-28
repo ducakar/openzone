@@ -1,3 +1,5 @@
+description "Taprav dolenjski cviček"
+
 base "DynObject"
 
 dim.x "0.1"

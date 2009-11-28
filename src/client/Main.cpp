@@ -73,7 +73,7 @@ namespace client
     String rcDir;
 
 #ifdef OZ_MINGW32
-    const char *homeVar = getenv( "USERPROFILE" );
+    const char *homeVar = "";//getenv( "USERPROFILE" );
 #else
     const char *homeVar = getenv( "HOME" );
 #endif

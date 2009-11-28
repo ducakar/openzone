@@ -63,6 +63,7 @@ namespace ui
       void rect( int x, int y, int width, int height ) const;
       void print( int x, int y, const char *s, ... );
       void printCentered( int baseX, int baseY, const char *s, ... );
+      void printBaseline( int baseX, int baseY, const char *s, ... );
 
       void realign( int newX, int newY )
       {

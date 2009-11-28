@@ -22,6 +22,7 @@ namespace ui
   {
     protected:
 
+      virtual void onMouseEvent();
       virtual void onDraw();
 
     public:

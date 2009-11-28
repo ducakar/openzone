@@ -196,8 +196,21 @@ namespace ui
     add( new Button( "DESTROY", destroy, 90, 15 ), 5, 5 );
   }
 
+  void BuildMenu::onMouseEvent()
+  {
+    if( !mouse.doShow ) {
+      return;
+    }
+
+    Frame::onMouseEvent();
+  }
+
   void BuildMenu::onDraw()
   {
+    if( !mouse.doShow ) {
+      return;
+    }
+
     Frame::onDraw();
 
     printCentered( 50, -10, "Create" );

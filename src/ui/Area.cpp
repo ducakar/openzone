@@ -131,6 +131,36 @@ namespace ui
     SDL_FreeSurface( text );
   }
 
+  void Area::printBaseline( int x, int baseY, const char *s, ... )
+  {
+    char buffer[1024];
+    va_list ap;
+
+    va_start( ap, s );
+    vsnprintf( buffer, 1024, s, ap );
+    va_end( ap );
+    buffer[1023] = '\0';
+
+    SDL_Surface *text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
+
+    // flip
+    uint *pixels = reinterpret_cast<uint*>( text->pixels );
+    for( int i = 0; i < text->h / 2; i++ ) {
+      for( int j = 0; j < text->w; j++ ) {
+        swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
+      }
+    }
+
+    x     = x < 0     ? this->x + this->width  + x     : this->x + x;
+    baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
+
+    glRasterPos2i( x, baseY - text->h / 2 );
+    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, text->pixels );
+
+    textWidth = text->w;
+    SDL_FreeSurface( text );
+  }
+
   void Area::checkMouse()
   {
     if( flags & GRAB_BIT ) {

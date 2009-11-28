@@ -2,7 +2,7 @@
  *  DArray.h
  *
  *  Dynamic array.
- *  The advantage over C++ arrays it that is has bounds checking, iterator and it frees allocated
+ *  The advantage over C++ arrays is it has bounds checking, iterator and it frees allocated
  *  memory when destroyed.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
@@ -88,7 +88,6 @@ namespace oz
       {
         assert( &a != this );
 
-        // create new data array of the new data doesn't fit, keep the old one otherwise
         if( count != a.count ) {
           if( count > 0 ) {
             delete[] data;
