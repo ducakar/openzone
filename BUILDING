@@ -47,10 +47,7 @@ mingw32/build. Run the script. When CMake Qt interface pops up, select cross-com
 to an empty string. Manual interventions will likely be needed. After that, install official
 OpenAL SDK (use Wine). Replace mingw32/lib/libOpenAL32.a you built with OpenAL32.lib from SDK and
 mingw32/bin/OpenAL32.dll with OpenAL32.dll from SDK. Now you can build openzone. Select
-cross-compile toolchain in file Toolchain-mingw32.cmake and build it as you want. It won't build
-completely, linking will fail because parameters are not in correct order. Run mingw32-linkclient.sh
-to link openzone.exe and move it to mingw32/bin. Edit the mingw32-linkclient.sh script if you need
-to change some linker parameters.
+cross-compile toolchain in file Toolchain-mingw32.cmake and build it as you want.
 Currently mingw32 build doesn't support .jpg images, because I'm unable to build libjpeg with MinGW,
 so you need a version of data with only .png images or convert them on your own. Don't forget on
 file names in data.mtl for OBJ models. Source code has appropriate preprocessor directives to

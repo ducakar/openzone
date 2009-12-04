@@ -23,6 +23,7 @@ namespace client
     const Object *obj;
     bool         isUpdated;
 
+    Model() : obj( null ), isUpdated( false ) {}
     virtual ~Model();
 
     virtual void draw() = 0;

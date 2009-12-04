@@ -207,7 +207,7 @@
 <storageModule moduleId="org.eclipse.cdt.core.pathentry">
 <pathentry base-path="openzone" include="" kind="inc" path="" system="true"/>
 <pathentry base-path="openzone" include="src" kind="inc" path="" system="true"/>
-<pathentry include="/usr/include/c++/4.4.1" kind="inc" path="" system="true"/>
+<pathentry include="/usr/include/c++/4.4.2" kind="inc" path="" system="true"/>
 <pathentry include="/usr/include" kind="inc" path="" system="true"/>
 <pathentry include="/usr/include/SDL" kind="inc" path="" system="true"/>
 <pathentry include="/usr/include/libxml2" kind="inc" path="" system="true"/>

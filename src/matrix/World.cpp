@@ -48,11 +48,9 @@ namespace oz
     log.println( "Loading World {" );
     log.indent();
 
-    foreach( bsp, translator.bsps.iterator() ) {
-      bsps << new BSP();
-      if( !bsps.last()->load( bsp->name ) ) {
-        throw Exception( "BSP loading failed" );
-      }
+    for( int i = 0; i < translator.bsps.length(); i++ ) {
+      bsps << null;
+      bspUsers << 0;
     }
 
     log.unindent();
@@ -72,10 +70,16 @@ namespace oz
     }
 
     foreach( bsp, bsps.iterator() ) {
-      ( *bsp )->free();
-      delete *bsp;
+      if( *bsp != null ) {
+        ( *bsp )->free();
+        delete *bsp;
+      }
     }
     bsps.clear();
+    bsps.trim( 0 );
+
+    bspUsers.clear();
+    bspUsers.trim( 0 );
 
     foreach( str, structures.iterator() ) {
       if( *str != null ) {
@@ -83,6 +87,7 @@ namespace oz
       }
     }
     structures.clear();
+    structures.trim( 0 );
 
     foreach( obj, objects.iterator() ) {
       if( *obj != null ) {
@@ -90,6 +95,7 @@ namespace oz
       }
     }
     objects.clear();
+    objects.trim( 0 );
 
     foreach( part, particles.iterator() ) {
       if( *part != null ) {
@@ -97,6 +103,7 @@ namespace oz
       }
     }
     particles.clear();
+    particles.trim( 0 );
 
     PoolAlloc<Object::Event, 0>::pool.free();
     PoolAlloc<Particle, 0>::pool.free();
@@ -191,6 +198,14 @@ namespace oz
           str->index = i;
           str->bsp = bspIndex;
           structures << str;
+
+          if( bspUsers[str->bsp] == 0 ) {
+            bsps[str->bsp] = new BSP();
+            if( !bsps[str->bsp]->load( translator.bsps[str->bsp].name ) ) {
+              throw Exception( "Matrix BSP loading failed" );
+            }
+          }
+          bspUsers[str->bsp]++;
 
           position( str );
         }

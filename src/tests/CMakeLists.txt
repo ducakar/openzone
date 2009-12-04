@@ -1,3 +1,7 @@
+add_executable( alloctest alloctest.cpp )
+add_dependencies( alloctest precompiled matrix )
+target_link_libraries( alloctest matrix base )
+
 add_executable( foreach foreach.cpp )
 add_dependencies( foreach precompiled )
 target_link_libraries( foreach base )

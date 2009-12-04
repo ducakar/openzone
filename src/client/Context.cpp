@@ -172,6 +172,10 @@ namespace client
       log.printEnd( " No such file" );
       return 0;
     }
+    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
+      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
+      return 0;
+    }
     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
@@ -201,6 +205,10 @@ namespace client
     SDL_Surface *image = IMG_Load( path.cstr() );
     if( image == null ) {
       log.printEnd( " No such file" );
+      return 0;
+    }
+    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
+      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
       return 0;
     }
     log.printEnd( " OK" );
@@ -238,6 +246,10 @@ namespace client
       log.printEnd( " No such file" );
       return 0;
     }
+    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
+      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
+      return 0;
+    }
     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
@@ -245,6 +257,7 @@ namespace client
                                 bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
+
     return texNum;
   }
 
@@ -256,6 +269,10 @@ namespace client
     SDL_Surface *image = IMG_Load( path );
     if( image == null ) {
       log.printEnd( " No such file" );
+      return 0;
+    }
+    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
+      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
       return 0;
     }
     log.printEnd( " OK" );

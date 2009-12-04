@@ -39,7 +39,7 @@ int main()
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, iterator( sparse, sparse + sparse.capacity() ) ) {
+  foreach( i, iterator<A>( sparse, sparse + sparse.capacity() ) ) {
     printf( "%d,%d ", i->value, i->nextSlot );
   }
   printf( "\n" );
@@ -51,7 +51,7 @@ int main()
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, iterator( sparse, sparse + sparse.capacity() ) ) {
+  foreach( i, iterator<A>( sparse, sparse + sparse.capacity() ) ) {
     printf( "%d,%d ", i->value, i->nextSlot );
   }
   printf( "\n" );

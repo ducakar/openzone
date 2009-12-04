@@ -60,6 +60,7 @@ namespace oz
       Terrain            terra;
       Cell               cells[World::MAX][World::MAX];
       Vector<BSP*>       bsps;
+      Vector<int>        bspUsers;
       Vector<Structure*> structures;
       Vector<Object*>    objects;
       Vector<Particle*>  particles;
@@ -333,6 +334,14 @@ namespace oz
   {
     assert( str->index == -1 );
 
+    if( bspUsers[str->bsp] == 0 ) {
+      bsps[str->bsp] = new BSP();
+      if( !bsps[str->bsp]->load( translator.bsps[str->bsp].name ) ) {
+        throw Exception( "Matrix BSP loading failed" );
+      }
+    }
+    bspUsers[str->bsp]++;
+
     if( strAvailableIndices.isEmpty() ) {
       str->index = structures.length();
       structures << str;
@@ -380,6 +389,13 @@ namespace oz
     strFreedIndices[freeing] << str->index;
     structures[str->index] = null;
     str->index = -1;
+
+    bspUsers[str->bsp]--;
+    if( bspUsers[str->bsp] == 0 ) {
+      bsps[str->bsp]->free();
+      delete bsps[str->bsp];
+      bsps[str->bsp] = null;
+    }
   }
 
   inline void World::remove( Object *obj )

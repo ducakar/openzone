@@ -247,7 +247,12 @@ namespace client
     for( int i = 0; i < structures.length(); i++ ) {
       Structure *str = structures[i];
 
+      if( bsps[str->bsp] == null ) {
+        bsps[str->bsp] = new BSP( world.bsps[str->bsp] );
+      }
+
       int waterFlags = bsps[str->bsp]->fullDraw( str );
+      bsps[str->bsp]->isUpdated = true;
 
       if( waterFlags & BSP::IN_WATER_BRUSH ) {
         isUnderWater = true;
@@ -394,6 +399,18 @@ namespace client
 
     // cleanups
     if( clearCount >= CLEAR_INTERVAL ) {
+      // remove unused BSPs
+      for( int i = 0; i < bsps.length(); i++ ) {
+        if( bsps[i] != null ) {
+          if( bsps[i]->isUpdated ) {
+            bsps[i]->isUpdated = false;
+          }
+          else {
+            delete bsps[i];
+            bsps[i] = null;
+          }
+        }
+      }
       // remove unused models
       for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
         Model *model = *i;
@@ -489,8 +506,6 @@ namespace client
     log.indent();
 
     ui::free();
-    models.free();
-    bsps.free();
 
     log.unindent();
     log.println( "}" );
@@ -520,7 +535,7 @@ namespace client
     MD2::init();
 
     for( int i = 0; i < translator.bsps.length(); i++ ) {
-      bsps << new BSP( world.bsps[i] );
+      bsps << null;
     }
 
     glColor4fv( Colors::WHITE );
@@ -550,6 +565,16 @@ namespace client
     terra.unload();
     sky.unload();
     shape.unload();
+
+    for( int i = 0; i < bsps.length(); i++ ) {
+      if( bsps[i] != null ) {
+        delete bsps[i];
+      }
+    }
+    bsps.clear();
+    bsps.trim( 0 );
+
+    models.free();
   }
 
 }

@@ -27,6 +27,8 @@ namespace client
         uint *vertIndices;
         uint *normIndices;
         uint *texCoordIndices;
+
+        Face() : nVerts( 0 ), vertIndices( null ), normIndices( null ), texCoordIndices( null ) {}
       };
 
       struct TexCoord

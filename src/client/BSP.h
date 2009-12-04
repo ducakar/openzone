@@ -58,6 +58,8 @@ namespace client
 
     public:
 
+      bool isUpdated;
+
       explicit BSP( oz::BSP *bsp );
       ~BSP();
 
