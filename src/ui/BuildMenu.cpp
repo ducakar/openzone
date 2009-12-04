@@ -141,13 +141,13 @@ namespace ui
 //    synapse.addStruct( "house", p, Structure::R0 );
 //  }
 //
-//  static void createCenterR90( Button* )
-//  {
-//    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
-//    p += camera.at * 2.0f;
-//
-//    synapse.addStruct( "house", p, Structure::R90 );
-//  }
+  static void createCenterR90( Button* )
+  {
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    p += camera.at * 2.0f;
+
+    synapse.addStruct( "house", p, Structure::R90 );
+  }
 //
 //  static void createCenterR180( Button* )
 //  {
@@ -189,7 +189,7 @@ namespace ui
     add( new Button( "Knight", createKnight, 90, 15 ), 5, -155 );
 
 //    add( new Button( "House R0",   createCenterR0,   90, 15 ), 5, -155 );
-//    add( new Button( "House R90",  createCenterR90,  90, 15 ), 5, -175 );
+    add( new Button( "House R90",  createCenterR90,  90, 15 ), 5, -175 );
 //    add( new Button( "House R180", createCenterR180, 90, 15 ), 5, -195 );
 //    add( new Button( "House R270", createCenterR270, 90, 15 ), 5, -215 );
 

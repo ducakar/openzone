@@ -34,7 +34,12 @@ else()
 endif()
 
 set( CMAKE_CXX_FLAGS "${warnings} ${flags}" )
-set( CMAKE_EXE_LINKER_FLAGS "${libs}" )
+
+if( WIN32 )
+    set( CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} ${libs}" )
+else()
+    set( CMAKE_EXE_LINKER_FLAGS "${libs}" )
+endif()
 
 set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING ""  )
 set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fomit-frame-pointer -ffast-math ${arch_flags}" CACHE STRING "" FORCE )

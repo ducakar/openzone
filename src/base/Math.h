@@ -202,9 +202,15 @@ namespace oz
 
       static void seed( uint seed );
 
-      // random integer from 0 to RAND_MAX == INT_MAX
+      // random integer between 0 and RAND_MAX == INT_MAX
       // (pointer to rand() function in stdlib.h)
-      static int ( *const rand )();
+      static int ( *const rand )( void );
+
+      // random integer between 0 and max
+      static int randn( int max )
+      {
+        return rand() % max;
+      }
 
       // random float from interval [0, 1]
       static float frand();

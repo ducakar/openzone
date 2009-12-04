@@ -246,7 +246,7 @@ namespace client
     }
   }
 
-  BSP::BSP( oz::BSP *bsp_ )
+  BSP::BSP( oz::BSP *bsp_ ) : isUpdated( false )
   {
     bsp = bsp_;
 
