@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "io.h"
+#include "matrix.h"
 #include "Timer.h"
 
 namespace oz
@@ -52,7 +52,7 @@ namespace oz
       Vec3      rot;
       Vec3      rotVelocity;
 
-      explicit Particle()
+      explicit Particle() : index( -1 ), cell( null )
       {}
 
       explicit Particle( const Vec3 &p_, const Vec3 &velocity_, float rejection_, float mass_,

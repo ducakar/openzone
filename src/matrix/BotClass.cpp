@@ -12,7 +12,6 @@
 #include "BotClass.h"
 
 #include "Bot.h"
-#include "Translator.h"
 
 namespace oz
 {

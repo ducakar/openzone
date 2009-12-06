@@ -15,7 +15,7 @@
 #include "BSP.h"
 
 #include "Structure.h"
-#include "Bot.h"
+#include "DynObject.h"
 #include "Particle.h"
 
 #include "Translator.h"
@@ -109,6 +109,8 @@ namespace oz
       void unposition( Particle *part );
       void reposition( Particle *part );
 
+      void requestBSP( int bspIndex );
+
       void add( Structure *str );
       void add( Object *obj );
       void add( Particle *part );
@@ -124,18 +126,18 @@ namespace oz
       Cell *getCell( const Vec3 &p );
 
       // get indices of the cell the point is in
-      void getInters( Area &area, float x, float y, float epsilon = 0.0f );
-      void getInters( Area &area, const Vec3 &p, float epsilon = 0.0f );
+      void getInters( Area &area, float x, float y, float epsilon = 0.0f ) const;
+      void getInters( Area &area, const Vec3 &p, float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the area intersects
       void getInters( Area &area, float minPosX, float minPosY, float maxPosX, float maxPosY,
-                      float epsilon = 0.0f );
+                      float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the AABB intersects
-      void getInters( Area &area, const AABB &bb, float epsilon = 0.0f );
+      void getInters( Area &area, const AABB &bb, float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the bounds intersects
-      void getInters( Area &area, const Bounds &bounds, float epsilon = 0.0f );
+      void getInters( Area &area, const Bounds &bounds, float epsilon = 0.0f ) const;
 
       void init();
       void free();
@@ -168,7 +170,7 @@ namespace oz
     return getCell( p.x, p.y );
   }
 
-  inline void World::getInters( Area &area, float x, float y, float epsilon )
+  inline void World::getInters( Area &area, float x, float y, float epsilon ) const
   {
     area.minX = max( static_cast<int>( x - epsilon + World::DIM ) / Cell::SIZEI, 0 );
     area.minY = max( static_cast<int>( y - epsilon + World::DIM ) / Cell::SIZEI, 0 );
@@ -176,13 +178,13 @@ namespace oz
     area.maxY = min( static_cast<int>( y + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
   }
 
-  inline void World::getInters( Area &area, const Vec3 &p, float epsilon )
+  inline void World::getInters( Area &area, const Vec3 &p, float epsilon ) const
   {
     getInters( area, p.x, p.y, epsilon );
   }
 
   inline void World::getInters( Area &area, float minPosX, float minPosY,
-                                float maxPosX, float maxPosY, float epsilon )
+                                float maxPosX, float maxPosY, float epsilon ) const
   {
     area.minX = max( static_cast<int>( minPosX - epsilon + World::DIM ) / Cell::SIZEI, 0 );
     area.minY = max( static_cast<int>( minPosY - epsilon + World::DIM ) / Cell::SIZEI, 0 );
@@ -190,13 +192,13 @@ namespace oz
     area.maxY = min( static_cast<int>( maxPosY + epsilon + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
   }
 
-  inline void World::getInters( Area &area, const AABB &bb, float epsilon )
+  inline void World::getInters( Area &area, const AABB &bb, float epsilon ) const
   {
     getInters( area, bb.p.x - bb.dim.x, bb.p.y - bb.dim.y, bb.p.x + bb.dim.x, bb.p.y + bb.dim.y,
                epsilon );
   }
 
-  inline void World::getInters( Area &area, const Bounds &bounds, float epsilon )
+  inline void World::getInters( Area &area, const Bounds &bounds, float epsilon ) const
   {
     getInters( area, bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
   }
@@ -330,16 +332,18 @@ namespace oz
     }
   }
 
-  inline void World::add( Structure *str )
-  {
-    assert( str->index == -1 );
-
-    if( bsps[str->bsp] == null ) {
-      bsps[str->bsp] = new BSP();
-      if( !bsps[str->bsp]->load( translator.bsps[str->bsp].name ) ) {
+  inline void World::requestBSP( int bspIndex ) {
+    if( bsps[bspIndex] == null ) {
+      bsps[bspIndex] = new BSP();
+      if( !bsps[bspIndex]->load( translator.bsps[bspIndex].name ) ) {
         throw Exception( "Matrix BSP loading failed" );
       }
     }
+  }
+
+  inline void World::add( Structure *str )
+  {
+    assert( str->index == -1 );
 
     if( strAvailableIndices.isEmpty() ) {
       str->index = structures.length();

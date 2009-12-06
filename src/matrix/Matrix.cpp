@@ -177,8 +177,8 @@ namespace oz
     }
     else {
       loadSample();
-//      loadStressTest();
-//      floraManager.seed();
+      loadStressTest();
+      floraManager.seed();
     }
 
     log.unindent();
@@ -220,7 +220,7 @@ namespace oz
       if( obj == null ) {
         continue;
       }
-      if( obj->flags & Object::DESTROYED_BIT ) {
+      if( obj->cell != null && ( obj->flags & Object::DESTROYED_BIT ) ) {
         synapse.remove( obj );
         continue;
       }

@@ -37,11 +37,7 @@ namespace oz
       float    life;
 
       explicit Structure() {}
-
-      explicit Structure( int bsp_, const Vec3 &p_, Rotation rot_ ) :
-          index( -1 ), bsp( bsp_ ), p( p_ ), rot( rot_ )
-      {}
-
+      explicit Structure( int bsp, const Vec3 &p, Rotation rot );
       explicit Structure( int bsp_, InputStream *istream ) : bsp( bsp_ )
       {
         readFull( istream );

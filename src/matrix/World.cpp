@@ -33,6 +33,10 @@ namespace oz
     mins = Vec3( -World::DIM, -World::DIM, -World::DIM );
     maxs = Vec3(  World::DIM,  World::DIM,  World::DIM );
 
+    for( int i = 0; i < translator.bsps.length(); i++ ) {
+      bsps << null;
+    }
+
     sky.set( -180.0f, 1440.0f, 0.0f );
     terra.init();
 
@@ -47,20 +51,14 @@ namespace oz
 
   void World::load()
   {
-    log.println( "Loading World {" );
-    log.indent();
-
-    for( int i = 0; i < translator.bsps.length(); i++ ) {
-      bsps << null;
-    }
-
-    log.unindent();
-    log.println( "}" );
+    log.print( "Loading World ..." );
+    log.printEnd( " OK" );
   }
 
   void World::unload()
   {
-    log.print( "Unloading World ..." );
+    log.println( "Unloading World {" );
+    log.indent();
 
     for( int i = 0; i < World::MAX; i++ ) {
       for( int j = 0; j < World::MAX; j++ ) {
@@ -70,22 +68,13 @@ namespace oz
       }
     }
 
-    foreach( bsp, bsps.iterator() ) {
-      if( *bsp != null ) {
-        ( *bsp )->free();
-        delete *bsp;
+    foreach( part, particles.iterator() ) {
+      if( *part != null ) {
+        delete *part;
       }
     }
-    bsps.clear();
-    bsps.trim( 0 );
-
-    foreach( str, structures.iterator() ) {
-      if( *str != null ) {
-        delete *str;
-      }
-    }
-    structures.clear();
-    structures.trim( 0 );
+    particles.clear();
+    particles.trim( 0 );
 
     foreach( obj, objects.iterator() ) {
       if( *obj != null ) {
@@ -95,18 +84,26 @@ namespace oz
     objects.clear();
     objects.trim( 0 );
 
-    foreach( part, particles.iterator() ) {
-      if( *part != null ) {
-        delete *part;
+    foreach( str, structures.iterator() ) {
+      if( *str != null ) {
+        delete *str;
       }
     }
-    particles.clear();
-    particles.trim( 0 );
+    structures.clear();
+    structures.trim( 0 );
 
     PoolAlloc<Object::Event, 0>::pool.free();
     PoolAlloc<Particle, 0>::pool.free();
 
-    log.printEnd( " OK" );
+    foreach( bsp, bsps.iterator() ) {
+      if( *bsp != null ) {
+        delete *bsp;
+        *bsp = null;
+      }
+    }
+
+    log.unindent();
+    log.println( "}" );
   }
 
   void World::update()

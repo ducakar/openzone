@@ -9,12 +9,12 @@
 
 #pragma once
 
-#include "Object.h"
+#include "DynObject.h"
 
 namespace oz
 {
 
-  struct Weapon : Object
+  struct Weapon : DynObject
   {
     explicit Weapon( const Vec3 &p = Vec3::zero() );
   };

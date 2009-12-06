@@ -11,8 +11,8 @@
 
 #include "FloraManager.h"
 
-#include "Synapse.h"
 #include "Collider.h"
+#include "Synapse.h"
 
 namespace oz
 {

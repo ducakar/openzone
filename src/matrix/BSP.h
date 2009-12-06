@@ -99,6 +99,7 @@ namespace oz
 
     String     name;
     float      maxDim;
+    float      life;
 
     int        nTextures;
     int        nLeafs;

@@ -1,0 +1,15 @@
+base "Object"
+dim.x "3.99"
+dim.y "3.99"
+dim.z "3.99"
+
+flag.destroyFunc "false"
+flag.clip        "false"
+flag.blend       "true"
+flag.wideCull    "true"
+
+life "1000.0f"
+
+onUpdate  "Explosion_onUpdate"
+
+modelType "Explosion"

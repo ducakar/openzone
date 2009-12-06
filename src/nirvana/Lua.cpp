@@ -182,6 +182,66 @@ namespace nirvana
     return 1;
   }
 
+  static int ozStrVectorFromSelf( lua_State *l )
+  {
+    if( lua.str == null ) {
+      OZ_LUA_ERROR( "selected structure is null" );
+    }
+    Vec3 vec = lua.str->p - lua.self->p;
+    lua_pushnumber( l, vec.x );
+    lua_pushnumber( l, vec.y );
+    lua_pushnumber( l, vec.z );
+    return 3;
+  }
+
+  static int ozStrDirectionFromSelf( lua_State *l )
+  {
+    if( lua.str == null ) {
+      OZ_LUA_ERROR( "selected structure is null" );
+    }
+    Vec3 dir = ( lua.str->p - lua.self->p ).norm();
+    lua_pushnumber( l, dir.x );
+    lua_pushnumber( l, dir.y );
+    lua_pushnumber( l, dir.z );
+    return 1;
+  }
+
+  static int ozStrDistanceFromSelf( lua_State *l )
+  {
+    if( lua.str == null ) {
+      OZ_LUA_ERROR( "selected structure is null" );
+    }
+    lua_pushnumber( l, !( lua.str->p - lua.self->p ) );
+    return 1;
+  }
+
+  static int ozStrHeadingFromSelf( lua_State *l )
+  {
+    if( lua.str == null ) {
+      OZ_LUA_ERROR( "selected structure is null" );
+    }
+    float dx = lua.str->p.x - lua.self->p.x;
+    float dy = lua.str->p.y - lua.self->p.y;
+    float angle = Math::deg( Math::atan2( -dx, dy ) );
+
+    lua_pushnumber( l, angle );
+    return 1;
+  }
+
+  static int ozStrPitchFromSelf( lua_State *l )
+  {
+    if( lua.str == null ) {
+      OZ_LUA_ERROR( "selected structure is null" );
+    }
+    float dx = lua.str->p.x - lua.self->p.x;
+    float dy = lua.str->p.y - lua.self->p.y;
+    float dz = lua.str->p.z - lua.self->p.z;
+    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) );
+
+    lua_pushnumber( l, angle );
+    return 1;
+  }
+
   static int ozObjBindIndex( lua_State *l )
   {
     int index = lua_tonumber( l, 1 );
@@ -298,7 +358,7 @@ namespace nirvana
     return 1;
   }
 
-  static int ozObjHeadingToSelf( lua_State *l )
+  static int ozObjVectorFromSelf( lua_State *l )
   {
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
@@ -306,15 +366,57 @@ namespace nirvana
     if( lua.obj == lua.self ) {
       OZ_LUA_ERROR( "selected object is self" );
     }
-    float dx = lua.self->p.x - lua.obj->p.x;
+    Vec3 vec = lua.obj->p - lua.self->p;
+    lua_pushnumber( l, vec.x );
+    lua_pushnumber( l, vec.y );
+    lua_pushnumber( l, vec.z );
+    return 3;
+  }
+
+  static int ozObjDirectionFromSelf( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( lua.obj == lua.self ) {
+      OZ_LUA_ERROR( "selected object is self" );
+    }
+    Vec3 dir = ( lua.obj->p - lua.self->p ).norm();
+    lua_pushnumber( l, dir.x );
+    lua_pushnumber( l, dir.y );
+    lua_pushnumber( l, dir.z );
+    return 1;
+  }
+
+  static int ozObjDistanceFromSelf( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( lua.obj == lua.self ) {
+      OZ_LUA_ERROR( "selected object is self" );
+    }
+    lua_pushnumber( l, !( lua.obj->p - lua.self->p ) );
+    return 1;
+  }
+
+  static int ozObjHeadingFromSelf( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( lua.obj == lua.self ) {
+      OZ_LUA_ERROR( "selected object is self" );
+    }
+    float dx = lua.obj->p.x - lua.self->p.x;
     float dy = lua.obj->p.y - lua.self->p.y;
-    float angle = Math::deg( Math::atan2( dx, dy ) );
+    float angle = Math::deg( Math::atan2( -dx, dy ) );
 
     lua_pushnumber( l, angle );
     return 1;
   }
 
-  static int ozObjDistanceToSelf( lua_State *l )
+  static int ozObjPitchFromSelf( lua_State *l )
   {
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
@@ -322,11 +424,12 @@ namespace nirvana
     if( lua.obj == lua.self ) {
       OZ_LUA_ERROR( "selected object is self" );
     }
-    float dx = lua.self->p.x - lua.obj->p.x;
-    float dy = lua.self->p.y - lua.obj->p.y;
-    float dist = Math::sqrt( dx*dx + dy*dy );
+    float dx = lua.obj->p.x - lua.self->p.x;
+    float dy = lua.obj->p.y - lua.self->p.y;
+    float dz = lua.obj->p.z - lua.self->p.z;
+    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) );
 
-    lua_pushnumber( l, dist );
+    lua_pushnumber( l, angle );
     return 1;
   }
 
@@ -646,6 +749,12 @@ namespace nirvana
     OZ_LUA_REGISTER( ozStrGetPos );
     OZ_LUA_REGISTER( ozStrGetBSP );
 
+    OZ_LUA_REGISTER( ozStrVectorFromSelf );
+    OZ_LUA_REGISTER( ozStrDirectionFromSelf );
+    OZ_LUA_REGISTER( ozStrDistanceFromSelf );
+    OZ_LUA_REGISTER( ozStrHeadingFromSelf );
+    OZ_LUA_REGISTER( ozStrPitchFromSelf );
+
     OZ_LUA_REGISTER( ozObjBindIndex );
     OZ_LUA_REGISTER( ozObjBindSelf );
     OZ_LUA_REGISTER( ozObjBindNext );
@@ -661,8 +770,11 @@ namespace nirvana
     OZ_LUA_REGISTER( ozObjGetTypeName );
     OZ_LUA_REGISTER( ozObjGetLife );
 
-    OZ_LUA_REGISTER( ozObjHeadingToSelf );
-    OZ_LUA_REGISTER( ozObjDistanceToSelf );
+    OZ_LUA_REGISTER( ozObjVectorFromSelf );
+    OZ_LUA_REGISTER( ozObjDirectionFromSelf );
+    OZ_LUA_REGISTER( ozObjDistanceFromSelf );
+    OZ_LUA_REGISTER( ozObjHeadingFromSelf );
+    OZ_LUA_REGISTER( ozObjPitchFromSelf );
 
     OZ_LUA_REGISTER( ozDynGetVelocity );
     OZ_LUA_REGISTER( ozDynGetMomentum );
