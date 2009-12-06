@@ -11,8 +11,16 @@
 
 #include "Structure.h"
 
+#include "Synapse.h"
+
 namespace oz
 {
+
+  void Structure::destroy()
+  {
+    synapse.genParts( 100, p, Vec3::zero(), 10.0f, 1.98f, 0.0f, 2.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f );
+    synapse.remove( this );
+  }
 
   void Structure::readFull( InputStream *istream )
   {

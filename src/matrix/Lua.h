@@ -10,14 +10,15 @@
 #pragma once
 
 #include "Bot.h"
+#include "Structure.h"
 
 struct lua_State;
 
 namespace oz
 {
 
-  class  Object;
-  class  Bot;
+  class Object;
+  class Bot;
 
   class Lua
   {
@@ -27,32 +28,35 @@ namespace oz
 
       lua_State *l;
 
-      void callFunc( const char *functionName );
+      void callFunc( const char *functionName, int index );
 
     public:
 
-      Object *self;
-      Object *user;
-      Object *created;
+      Object    *self;
+      Object    *user;
 
-      // point to either self, user or created
-      Object **obj;
+      Object    *obj;
+      Structure *str;
 
-      int    index;
+      int       objIndex;
+      int       strIndex;
+
+      float     damage;
+      float     hitMomentum;
+
       Vector<Object*> objects;
-
-      float  damage;
-      float  hitMomentum;
+      Vector<Structure*> structs;
 
       void call( const char *functionName, Object *self_, Bot *user_ = null )
       {
         self   = self_;
         user   = user_;
 
-        callFunc( functionName );
+        callFunc( functionName, self->index );
       }
 
-    public:
+      void registerObject( int index );
+      void unregisterObject( int index );
 
       void init();
       void free();

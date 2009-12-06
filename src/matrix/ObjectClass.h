@@ -40,7 +40,6 @@ namespace oz
     int    type;
     float  life;
     float  damageTreshold;
-    float  damageRatio;
 
     String onDestroy;
     String onDamage;

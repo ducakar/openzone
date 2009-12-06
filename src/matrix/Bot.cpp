@@ -111,8 +111,8 @@ namespace oz
      * STATE
      */
 
-    bool isSwimming   = waterDepth >= dim.z;
-    bool isUnderWater = waterDepth >= dim.z + camPos.z;
+    bool isSwimming   = depth >= dim.z;
+    bool isUnderWater = depth >= dim.z + camPos.z;
     bool isClimbing   = ( flags & ON_LADDER_BIT ) && grabObjIndex == -1;
     bool isGrounded   = ( lower != -1 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
 

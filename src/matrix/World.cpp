@@ -11,6 +11,8 @@
 
 #include "World.h"
 
+#include "Lua.h"
+
 namespace oz
 {
 
@@ -50,7 +52,6 @@ namespace oz
 
     for( int i = 0; i < translator.bsps.length(); i++ ) {
       bsps << null;
-      bspUsers << 0;
     }
 
     log.unindent();
@@ -77,9 +78,6 @@ namespace oz
     }
     bsps.clear();
     bsps.trim( 0 );
-
-    bspUsers.clear();
-    bspUsers.trim( 0 );
 
     foreach( str, structures.iterator() ) {
       if( *str != null ) {
@@ -131,9 +129,12 @@ namespace oz
   {
     assert( structures.length() == 0 && objects.length() == 0 && particles.length() == 0 );
 
-    int n;
-    log.print( "Reading World from stream ..." );
+    log.println( "Reading World from stream {" );
+    log.indent();
+
     try {
+      int n;
+
       n = istream->readInt();
       for( int i = 0; i < n; i++ ) {
         strFreedIndices[freeing] << istream->readInt();
@@ -179,33 +180,29 @@ namespace oz
       int nObjects    = istream->readInt();
       int nParticles  = istream->readInt();
 
-      String    bspFile;
+      String    bspName;
       Structure *str;
       Object    *obj;
       String    typeName;
       Particle  *part;
 
       for( int i = 0; i < nStructures; i++ ) {
-        istream->readString( bspFile );
+        istream->readString( bspName );
 
-        if( bspFile.length() == 0 ) {
+        if( bspName.length() == 0 ) {
           structures << null;
         }
         else {
-          int bspIndex = translator.bspIndex( bspFile );
-          str = new Structure();
-          str->readFull( istream );
+          str = translator.createStruct( bspName, istream );
           str->index = i;
-          str->bsp = bspIndex;
           structures << str;
 
-          if( bspUsers[str->bsp] == 0 ) {
+          if( bsps[str->bsp] == null ) {
             bsps[str->bsp] = new BSP();
             if( !bsps[str->bsp]->load( translator.bsps[str->bsp].name ) ) {
               throw Exception( "Matrix BSP loading failed" );
             }
           }
-          bspUsers[str->bsp]++;
 
           position( str );
         }
@@ -221,6 +218,9 @@ namespace oz
           obj->index = i;
           objects << obj;
 
+          if( obj->flags & Object::LUA_BIT ) {
+            lua.registerObject( i );
+          }
           if( obj->flags & Object::CUT_BIT ) {
             obj->flags &= ~Object::CUT_BIT;
           }
@@ -245,10 +245,13 @@ namespace oz
       }
     }
     catch( const Exception &e ) {
-      log.printEnd( " %s", e.message );
+      log.unindent();
+      log.println( "} %s", e.message );
       return false;
     }
-    log.printEnd( " OK" );
+
+    log.unindent();
+    log.println( "}" );
     return true;
   }
 

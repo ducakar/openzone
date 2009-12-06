@@ -108,6 +108,7 @@ namespace oz
     }
 
     // implemented in AABB.h
+    AABB toAABB( float eps = 0.0f ) const;
     bool isInside( const AABB &a, float eps = 0.0f ) const;
     bool includes( const AABB &a, float eps = 0.0f ) const;
     bool overlaps( const AABB &a, float eps = 0.0f ) const;

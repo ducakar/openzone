@@ -177,8 +177,8 @@ namespace oz
     }
     else {
       loadSample();
-      loadStressTest();
-      floraManager.seed();
+//      loadStressTest();
+//      floraManager.seed();
     }
 
     log.unindent();
@@ -238,7 +238,7 @@ namespace oz
         if( dynObj->cell == null ) {
           assert( dynObj->parent != -1 );
 
-          // put into world if its container has been removed
+          // remove if its container has been removed
           if( world.objects[dynObj->parent] == null ) {
             dynObj->parent = -1;
             synapse.removeCut( dynObj );
@@ -247,7 +247,7 @@ namespace oz
         else {
           physics.updateObj( dynObj );
 
-          // remove if destroyed or misplaced outside world
+          // remove on velocity overflow
           if( dynObj->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
             synapse.remove( obj );
           }

@@ -31,13 +31,18 @@ namespace oz
       // if on ground, used as floor normal, it is not set if on another object
       Vec3    floor;
       int     lower;      // index of the lower object
-      float   waterDepth;
-
-    public:
+      float   depth;      // how deep under water the object's lower bound is
 
       explicit DynObject() : parent( -1 ), velocity( Vec3::zero() ), momentum( Vec3::zero() ),
-          lower( -1 ), waterDepth( 0.0f )
+          lower( -1 ), depth( 0.0f )
       {}
+
+      void clearFlags()
+      {
+        flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
+            Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
+        lower = -1;
+      }
 
       virtual void readFull( InputStream *istream );
       virtual void writeFull( OutputStream *ostream ) const;

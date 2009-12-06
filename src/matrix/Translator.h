@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "Structure.h"
 #include "ObjectClass.h"
 
 namespace oz
@@ -73,6 +74,26 @@ namespace oz
       int textureIndex( const char *file );
       int soundIndex( const char *file );
       int bspIndex( const char *file );
+
+      Structure *createStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
+      {
+        if( bspIndices.contains( name ) ) {
+          return new Structure( bspIndices.cachedValue(), p, rot );
+        }
+        else {
+          throw Exception( "Invalid Structure class requested" );
+        }
+      }
+
+      Structure *createStruct( const char *name, InputStream *istream )
+      {
+        if( bspIndices.contains( name ) ) {
+          return new Structure( bspIndices.cachedValue(), istream );
+        }
+        else {
+          throw Exception( "Invalid Structure class requested" );
+        }
+      }
 
       Object *createObject( const char *name, const Vec3 &p )
       {

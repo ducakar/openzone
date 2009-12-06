@@ -396,14 +396,16 @@ namespace oz
     return true;
   }
 
-  bool BSP::load( const char *name )
+  bool BSP::load( const char *name_ )
   {
+    name = name_;
+
     Config bspConfig;
-    if( !bspConfig.load( String( "maps/" ) + name + String( ".rc" ) ) ) {
+    if( !bspConfig.load( "maps/" + name + ".rc" ) ) {
       return false;
     }
 
-    log.print( "Loading Quake 3 BSP structure '%s' ...", name );
+    log.print( "Loading Quake 3 BSP structure '%s' ...", name.cstr() );
 
     float scale  = bspConfig.get( "scale", 0.01f );
     float maxDim = bspConfig.get( "maxDim", Math::inf() );
@@ -414,7 +416,7 @@ namespace oz
       return false;
     }
 
-    if( !loadQBSP( String( "maps/" ) + name + String( ".bsp" ), scale, maxDim ) ) {
+    if( !loadQBSP( "maps/" + name + ".bsp", scale, maxDim ) ) {
       free();
       return false;
     }
@@ -423,6 +425,8 @@ namespace oz
 
   void BSP::free()
   {
+    log.print( "Freeing BSP structure '%s' ...", name.cstr() );
+
     if( textures != null ) {
       delete[] textures;
       textures = null;
@@ -474,6 +478,8 @@ namespace oz
       delete[] lightmaps;
       lightmaps = null;
     }
+
+    log.printEnd( " OK" );
   }
 
 }

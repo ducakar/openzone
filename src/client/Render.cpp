@@ -145,7 +145,7 @@ namespace client
       collider.translate( camera.p, camera.at * 2.0f );
       taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
     }
-    else if( camera.bot->grabObjIndex != -1 ) {
+    else if( camera.bot->grabObjIndex != -1 && world.objects[camera.bot->grabObjIndex] != null ) {
       taggedObjIndex = camera.bot->grabObjIndex;
     }
     else {
@@ -248,7 +248,7 @@ namespace client
       Structure *str = structures[i];
 
       if( bsps[str->bsp] == null ) {
-        bsps[str->bsp] = new BSP( world.bsps[str->bsp] );
+        bsps[str->bsp] = new BSP( str->bsp );
       }
 
       int waterFlags = bsps[str->bsp]->fullDraw( str );

@@ -60,7 +60,7 @@ namespace client
 
       bool isUpdated;
 
-      explicit BSP( oz::BSP *bsp );
+      explicit BSP( int bspIndex );
       ~BSP();
 
       void init( oz::BSP *bsp );

@@ -42,7 +42,7 @@ namespace ui
       print( 5, -5 - textHeight * 3, "bot.vel(%.2f %.2f %.2f) bot.mom(%.2f %.2f %.2f) bot.wd %.2f",
              bot.velocity.x, bot.velocity.y, bot.velocity.z,
              bot.momentum.x, bot.momentum.y, bot.momentum.z,
-             bot.waterDepth );
+             bot.depth );
 
       print( 5, -5 - textHeight * 4, "d %d fl %d lw %d h %d fr %d iw %d s %d ld %d ovlp %d",
             ( bot.flags & Object::DISABLED_BIT ) != 0,
@@ -55,7 +55,7 @@ namespace ui
             ( bot.flags & Object::ON_LADDER_BIT ) != 0,
             !collider.test( bot, &bot ) );
 
-      if( bot.grabObjIndex != -1 ) {
+      if( bot.grabObjIndex != -1 && world.objects[bot.grabObjIndex] != null ) {
         const DynObject &obj = *static_cast<const DynObject*>( world.objects[bot.grabObjIndex] );
 
         print( 5, -5 - textHeight * 5, "gobj.vel(%.2f %.2f %.2f) gobj.mom(%.2f %.2f %.2f)",

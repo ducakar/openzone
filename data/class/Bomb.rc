@@ -1,0 +1,30 @@
+base "DynObject"
+
+dim.x "0.34"
+dim.y "0.34"
+dim.z "0.34"
+
+flag.item "true"
+
+life "100.0f"
+
+mass "50.0"
+lift "11.0"
+
+debrisColor.r "0.28"
+debrisColor.g "0.23"
+debrisColor.b "0.19"
+debrisColorSpread "0.05"
+
+onDestroy "Bomb_onDestroy"
+onUpdate  "Bomb_onUpdate"
+onUse     "Bomb_onUse"
+
+modelType "MD2Static"
+modelName "bombs"
+
+audioType     "Basic"
+audioSample00 ""
+audioSample01 "hit_wood2"
+audioSample02 "splash2"
+audioSample03 "" 

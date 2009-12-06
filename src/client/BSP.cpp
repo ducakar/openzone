@@ -246,9 +246,9 @@ namespace client
     }
   }
 
-  BSP::BSP( oz::BSP *bsp_ ) : isUpdated( false )
+  BSP::BSP( int bspIndex ) : isUpdated( false )
   {
-    bsp = bsp_;
+    bsp = world.bsps[bspIndex];
 
 #ifdef OZ_MINGW32
     if( glActiveTexture == null ) {
@@ -257,7 +257,7 @@ namespace client
     }
 #endif
 
-    log.println( "Loading BSP structure {" );
+    log.println( "Loading BSP model '%s' {", translator.bsps[bspIndex].name.cstr() );
     log.indent();
 
     textures = new uint[bsp->nTextures];

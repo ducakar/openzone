@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Collider.h"
+#include "World.h"
 
 namespace oz
 {
