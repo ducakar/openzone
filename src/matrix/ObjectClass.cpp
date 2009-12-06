@@ -29,19 +29,19 @@ namespace oz
     clazz->onUse                = config->get( "onUse", "" );
 
     if( String::length( clazz->onDestroy ) != 0 ) {
-      clazz->flags |= Object::DESTROY_FUNC_BIT;
+      clazz->flags |= Object::LUA_BIT | Object::DESTROY_FUNC_BIT;
     }
     if( String::length( clazz->onDamage ) != 0 ) {
-      clazz->flags |= Object::DAMAGE_FUNC_BIT;
+      clazz->flags |= Object::LUA_BIT | Object::DAMAGE_FUNC_BIT;
     }
     if( String::length( clazz->onHit ) != 0 ) {
-      clazz->flags |= Object::HIT_FUNC_BIT;
+      clazz->flags |= Object::LUA_BIT | Object::HIT_FUNC_BIT;
     }
     if( String::length( clazz->onUpdate ) != 0 ) {
-      clazz->flags |= Object::UPDATE_FUNC_BIT;
+      clazz->flags |= Object::LUA_BIT | Object::UPDATE_FUNC_BIT;
     }
     if( String::length( clazz->onUse ) != 0 ) {
-      clazz->flags |= Object::USE_FUNC_BIT;
+      clazz->flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
     }
 
     clazz->modelType            = config->get( "modelType", "" );
@@ -100,16 +100,12 @@ namespace oz
 
     clazz->life                 = config->get( "life", 100.0f );
     clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
-    clazz->damageRatio          = config->get( "damageRatio", 1.0f );
 
     if( clazz->life <= 0.0f ) {
       throw Exception( "Invalid object life. Should be > 0." );
     }
     if( clazz->damageTreshold < 0.0f ) {
       throw Exception( "Invalid object damageTreshold. Should be >= 0." );
-    }
-    if( clazz->damageRatio < 0.0f ) {
-      throw Exception( "Invalid object damageRatio. Should be >= 0." );
     }
 
     clazz->nDebris              = config->get( "nDebris", 8 );

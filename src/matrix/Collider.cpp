@@ -939,8 +939,7 @@ namespace oz
   //***********************************
 
   // get all objects and structures that overlap with our trace
-  void Collider::getWorldOverlaps( Vector<Object*> *objects,
-                                   Vector<const Structure*> *structs )
+  void Collider::getWorldOverlaps( Vector<Object*> *objects, Vector<Structure*> *structs )
   {
     assert( objects != null || structs != null );
 
@@ -950,7 +949,7 @@ namespace oz
 
         if( structs != null ) {
           foreach( strIndex, cell.structures.iterator() ) {
-            str = world.structures[*strIndex];
+            Structure *str = world.structures[*strIndex];
 
             if( !structs->contains( str ) ) {
               bsp = world.bsps[str->bsp];
@@ -958,7 +957,7 @@ namespace oz
               globalStartPos = toStructCS( aabb.p - str->p );
 
               if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
-                structs->add( str );
+                *structs << str;
               }
             }
           }
@@ -967,7 +966,7 @@ namespace oz
         if( objects != null ) {
           foreach( sObj, cell.objects.iterator() ) {
             if( sObj->overlaps( trace ) ) {
-              *objects << &*sObj;
+              *objects << sObj;
             }
           }
         }
@@ -1001,7 +1000,9 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
-            sObj->flags &= ~Object::DISABLED_BIT;
+            DynObject *sDynObj = static_cast<DynObject*>( &*sObj );
+
+            sDynObj->clearFlags();
           }
         }
       }

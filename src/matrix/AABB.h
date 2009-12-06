@@ -29,12 +29,12 @@ namespace oz
 
     Bounds toBounds( float eps = 0.0f ) const
     {
-      return Bounds( Vec3( p.x - dim.x - 2.0f * eps,
-                           p.y - dim.y - 2.0f * eps,
-                           p.z - dim.z - 2.0f * eps ),
-                     Vec3( p.x + dim.x + 2.0f * eps,
-                           p.y + dim.y + 2.0f * eps,
-                           p.z + dim.z + 2.0f * eps ) );
+      return Bounds( Vec3( p.x - dim.x - eps,
+                           p.y - dim.y - eps,
+                           p.z - dim.z - eps ),
+                     Vec3( p.x + dim.x + eps,
+                           p.y + dim.y + eps,
+                           p.z + dim.z + eps ) );
     }
 
     Bounds toBounds( const Vec3 &move, float eps = 0.0f ) const
@@ -181,6 +181,16 @@ namespace oz
     }
 
   };
+
+  inline AABB Bounds::toAABB( float eps ) const
+  {
+    return AABB( Vec3( ( mins.x + maxs.x ) * 0.5f,
+                       ( mins.y + maxs.y ) * 0.5f,
+                       ( mins.z + maxs.z ) * 0.5f ),
+                 Vec3( ( maxs.x - mins.x ) * 0.5f + eps,
+                       ( maxs.y - mins.y ) * 0.5f + eps,
+                       ( maxs.z - mins.z ) * 0.5f + eps ) );
+  }
 
   inline bool Bounds::isInside( const AABB &a, float eps ) const
   {

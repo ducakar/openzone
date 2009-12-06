@@ -25,7 +25,7 @@ namespace oz
     momentum   = istream->readVec3();
     floor      = istream->readVec3();
     lower      = istream->readInt();
-    waterDepth = istream->readFloat();
+    depth      = istream->readFloat();
   }
 
   void DynObject::writeFull( OutputStream *ostream ) const
@@ -37,7 +37,7 @@ namespace oz
     ostream->writeVec3( momentum );
     ostream->writeVec3( floor );
     ostream->writeInt( lower );
-    ostream->writeFloat( waterDepth );
+    ostream->writeFloat( depth );
   }
 
   void DynObject::readUpdate( InputStream *istream )

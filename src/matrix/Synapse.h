@@ -24,6 +24,8 @@
 #pragma once
 
 #include "World.h"
+#include "Collider.h"
+#include "Lua.h"
 
 namespace oz
 {
@@ -169,11 +171,7 @@ namespace oz
   {
     assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
 
-    obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
-        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
-    obj->events.free();
-    obj->lower = -1;
-
+    obj->clearFlags();
     cutObjects << obj->index;
     world.unposition( obj );
   }
@@ -204,7 +202,7 @@ namespace oz
 
   inline int Synapse::addStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
   {
-    return add( new Structure( p, translator.bspIndex( name ), rot ) );
+    return add( translator.createStruct( name, p, rot ) );
   }
 
   inline int Synapse::addObject( const char *name, const Vec3 &p )
@@ -222,6 +220,8 @@ namespace oz
   {
     assert( str->index != -1 );
 
+    collider.touchOverlaps( str->toAABB(), 4.0f * EPSILON );
+
     removedStructs << str->index;
     world.unposition( str );
     world.remove( str );
@@ -231,6 +231,10 @@ namespace oz
   inline void Synapse::remove( Object *obj )
   {
     assert( obj->index != -1 );
+
+    if( ~obj->flags & Object::DYNAMIC_BIT ) {
+      collider.touchOverlaps( *obj, 4.0f * EPSILON );
+    }
 
     deleteObjects << obj;
     removedObjects << obj->index;

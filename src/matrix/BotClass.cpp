@@ -50,16 +50,12 @@ namespace oz
 
     clazz->life                 = config->get( "life", 100.0f );
     clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
-    clazz->damageRatio          = config->get( "damageRatio", 1.0f );
 
     if( clazz->life <= 0.0f ) {
       throw Exception( "Invalid object life. Should be > 0." );
     }
     if( clazz->damageTreshold < 0.0f ) {
       throw Exception( "Invalid object damageTreshold. Should be >= 0." );
-    }
-    if( clazz->damageRatio < 0.0f ) {
-      throw Exception( "Invalid object damageRatio. Should be >= 0." );
     }
 
     clazz->nDebris              = config->get( "nDebris", 8 );

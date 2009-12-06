@@ -52,6 +52,9 @@ namespace oz
        * FUNCTION FLAGS
        */
 
+      // if object has Lua handlers
+      static const int LUA_BIT            = 0x02000000;
+
       // if the onDestroy function should be called on destruction
       static const int DESTROY_FUNC_BIT   = 0x01000000;
 
@@ -226,11 +229,14 @@ namespace oz
 
       void destroy()
       {
-        flags |= Object::DESTROYED_BIT;
-        addEvent( EVENT_DESTROY, 1.0f );
+        if( ~flags & DESTROYED_BIT ) {
+          flags |= DESTROYED_BIT;
+          life = 0.0f;
+          addEvent( EVENT_DESTROY, 1.0f );
 
-        if( flags & DESTROY_FUNC_BIT ) {
-          onDestroy();
+          if( flags & DESTROY_FUNC_BIT ) {
+            onDestroy();
+          }
         }
       }
 
@@ -243,7 +249,7 @@ namespace oz
         damage -= type->damageTreshold;
 
         if( damage > 0.0f ) {
-          life -= damage * type->damageRatio;
+          life -= damage;
 
           if( flags & DAMAGE_FUNC_BIT ) {
             onDamage( damage );

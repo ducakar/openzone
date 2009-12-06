@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "matrix/Bot.h"
+#include "nirvana.h"
 
 struct lua_State;
 
@@ -28,14 +28,16 @@ namespace nirvana
 
     public:
 
-      Bot    *self;
-      Object *target;
+      Bot       *self;
 
-      // point to either self, user or created
-      Object **obj;
+      Object    *obj;
+      Structure *str;
 
-      int    index;
+      int       objIndex;
+      int       strIndex;
+
       Vector<Object*> objects;
+      Vector<Structure*> structs;
 
       void call( const char *functionName, Bot *self_ )
       {

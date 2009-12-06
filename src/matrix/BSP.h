@@ -97,6 +97,7 @@ namespace oz
       }
     };
 
+    String     name;
     float      maxDim;
 
     int        nTextures;

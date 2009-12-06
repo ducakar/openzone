@@ -11,6 +11,8 @@
 
 #include "Physics.h"
 
+#include "Collider.h"
+
 namespace oz
 {
 
@@ -86,7 +88,7 @@ namespace oz
   bool Physics::handleObjFriction()
   {
     if( ( obj->flags & ( Object::HOVER_BIT | Object::ON_LADDER_BIT ) ) ||
-        obj->waterDepth >= obj->dim.z )
+        obj->depth >= obj->dim.z )
     {
       // in air
       if( obj->flags & Object::HOVER_BIT ) {
@@ -99,7 +101,7 @@ namespace oz
       }
       // swimming
       else if( obj->flags & Object::IN_WATER_BIT ) {
-        float lift = ( 0.5f * obj->waterDepth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
+        float lift = ( 0.5f * obj->depth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
 
         obj->momentum *= 1.0f - IN_WATER_FRICTION;
         obj->momentum.z += lift + G_VELOCITY;
@@ -116,7 +118,7 @@ namespace oz
     }
     else {
       if( obj->flags & Object::IN_WATER_BIT ) {
-        float lift = ( 0.5f * obj->waterDepth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
+        float lift = ( 0.5f * obj->depth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
 
         obj->momentum.z += lift;
       }
@@ -144,7 +146,7 @@ namespace oz
             obj->momentum.z += G_VELOCITY;
 
             if( ( sObj->flags & Object::DISABLED_BIT ) && obj->momentum.z < 0.0f ) {
-              obj->momentum.z = 0.0f;
+              obj->momentum.setZero();
               return false;
             }
           }
@@ -216,8 +218,8 @@ namespace oz
       }
     }
 
-    obj->flags &= ~( Object::ON_FLOOR_BIT | Object::IN_WATER_BIT | Object::ON_LADDER_BIT |
-        Object::ON_SLICK_BIT );
+    obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
+        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
     obj->lower = -1;
 
     return true;
@@ -382,7 +384,7 @@ namespace oz
 
     obj->flags |= collider.hit.inWater  ? Object::IN_WATER_BIT  : 0;
     obj->flags |= collider.hit.onLadder ? Object::ON_LADDER_BIT : 0;
-    obj->waterDepth = min( collider.hit.waterDepth, 2.0f * obj->dim.z );
+    obj->depth = min( collider.hit.waterDepth, 2.0f * obj->dim.z );
 
     if( ( obj->flags & ~obj->oldFlags & Object::IN_WATER_BIT ) &&
         obj->velocity.z < SPLASH_TRESHOLD )
@@ -422,7 +424,6 @@ namespace oz
     // handle physics
     if( ~obj->flags & Object::DISABLED_BIT ) {
       if( handleObjFriction() ) {
-
         // if objects is still in movement or not on a still surface after friction changed its
         // velocity, handle physics
         Vec3 oldPos = obj->p;
@@ -432,8 +433,8 @@ namespace oz
       else {
         assert( obj->momentum.isZero() );
 
-        obj->velocity.setZero();
         obj->flags |= Object::DISABLED_BIT;
+        obj->velocity.setZero();
       }
     }
   }

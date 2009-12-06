@@ -10,7 +10,6 @@
 #pragma once
 
 #include "DynObject.h"
-#include "World.h"
 #include "Weapon.h"
 
 namespace oz

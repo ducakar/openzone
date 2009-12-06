@@ -1,21 +1,21 @@
 function randomWalk( localData )
-  ozActionForward()
+  ozSelfActionForward()
   
   if math.random( 3 ) == 1 then
-    ozAddH( math.random() * 120.0 - 60.0 )
+    ozSelfAddH( math.random() * 120.0 - 60.0 )
   end
   if math.random( 3 ) == 1 then
-    ozActionJump()
+    ozSelfActionJump()
   end
   if math.random( 3 ) == 1 then
-    ozStateToggleRunning()
+    ozSelfStateToggleRunning()
   end
 end
 
 function randomRampage( localData )
-  ozActionForward()
+  ozSelfActionForward()
   if math.random( 3 ) == 1 then
-    ozAddH( math.random() * 120.0 - 60.0 )
+    ozSelfAddH( math.random() * 120.0 - 60.0 )
   end
 end
 
@@ -23,68 +23,67 @@ function beastie( localData )
   if math.random( 3 ) == 1 then
     if localData.run then
       localData.run = false
-      ozAddH( math.random( 180 ) - 90 )
+      ozSelfAddH( math.random( 180 ) - 90 )
     else
       localData.run = true
-      ozStateSetRunning( true )
+      ozSelfStateSetRunning( true )
       if math.random( 2 ) == 1 then
-	ozActionJump()
+	ozSelfActionJump()
       end
     end
   end
   if localData.run then
-    ozActionForward()
+    ozSelfActionForward()
   end
 end
 
 function prey( localData )
   local minDistance = 100
   local heading
+  local distance
 
-  ozBindOverlaps( 20 )
-  while ozBindNext() do
-    if not ozIsSelf() and ozIsBot() and ozGetType() ~= "Goblin" then
-      local distance = ozGetDistanceTo()
+  ozSelfBindObjOverlaps( 20, 20, 20 )
+  while ozObjBindNext() do
+    if not ozObjIsSelf() and ozObjIsBot() and ozObjGetTypeName() ~= "Goblin" then
+      distance = ozObjDistanceToSelf()
       if distance < minDistance then
 	minDistance = distance
-	heading = ozGetHeadingTo()
+	heading = ozObjHeadingToSelf()
       end
     end
   end
   if heading then
-    ozBindSelf()
-    ozSetH( heading + 180 )
-    ozStateSetRunning( true )
-    ozActionForward()
+    ozSelfSetH( heading + 180 )
+    ozSelfStateSetRunning( true )
+    ozSelfActionForward()
   elseif math.random( 3 ) == 1 then
-    ozBindSelf()
-    ozAddH( math.random( 120 ) - 60 )
+    ozSelfAddH( math.random( 120 ) - 60 )
   end
 end
 
 function predator( localData )
   local minDistance = 100
   local heading
+  local distance
 
-  ozBindOverlaps( 20 )
-  while ozBindNext() do
-    if not ozIsSelf() and ozIsBot() and ozGetType() == "Goblin" then
-      local distance = ozGetDistanceTo()
+  ozSelfBindObjOverlaps( 20, 20, 20 )
+  while ozObjBindNext() do
+    if not ozObjIsSelf() and ozObjIsBot() and ozObjGetTypeName() == "Goblin" then
+      distance = ozObjDistanceToSelf()
       if distance < minDistance then
 	minDistance = distance
-	heading = ozGetHeadingTo()
+	heading = ozObjHeadingToSelf()
       end
     end
   end
-  ozBindSelf()
   if heading then
-    ozSetH( heading )
-    ozStateSetRunning( true )
+    ozSelfSetH( heading )
+    ozSelfStateSetRunning( true )
   else
-    ozStateSetRunning( false )
+    ozSelfStateSetRunning( false )
     if math.random( 100 ) == 1 then
-      ozAddH( math.random( 3 ) - 60 )
+      ozSelfAddH( math.random( 3 ) - 60 )
     end
   end
-  ozActionForward()
+  ozSelfActionForward()
 end

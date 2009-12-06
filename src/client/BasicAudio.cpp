@@ -36,7 +36,7 @@ namespace client
 
     // friction
     if( ( obj->flags & Object::FRICTING_BIT ) && ( ~obj->flags & Object::ON_SLICK_BIT ) &&
-        ( obj->waterDepth == 0.0f ) && samples[SND_FRICTING] != -1 )
+        ( obj->depth == 0.0f ) && samples[SND_FRICTING] != -1 )
     {
       float dv = Math::sqrt( obj->velocity.x*obj->velocity.x + obj->velocity.y*obj->velocity.y );
       playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*obj ) );

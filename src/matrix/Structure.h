@@ -14,30 +14,57 @@
 namespace oz
 {
 
-  struct Structure : Bounds
+  class Structure : public Bounds
   {
-    enum Rotation
-    {
-      R0   = 0,
-      R90  = 1,
-      R180 = 2,
-      R270 = 3
-    };
+    private:
 
-    Vec3     p;
-    int      index;
-    int      bsp;
-    Rotation rot;
-    float    life;
+      static const float DAMAGE_TRESHOLD = 400.0f;
 
-    explicit Structure() {}
+    public:
 
-    explicit Structure( const Vec3 &p_, int bsp_, Rotation rot_ ) :
-        p( p_ ), index( -1 ), bsp( bsp_ ), rot( rot_ )
-    {}
+      enum Rotation
+      {
+        R0   = 0,
+        R90  = 1,
+        R180 = 2,
+        R270 = 3
+      };
 
-    void readFull( InputStream *istream );
-    void writeFull( OutputStream *ostream );
+      int      index;
+      int      bsp;
+      Vec3     p;
+      Rotation rot;
+      float    life;
+
+      explicit Structure() {}
+
+      explicit Structure( int bsp_, const Vec3 &p_, Rotation rot_ ) :
+          index( -1 ), bsp( bsp_ ), p( p_ ), rot( rot_ )
+      {}
+
+      explicit Structure( int bsp_, InputStream *istream ) : bsp( bsp_ )
+      {
+        readFull( istream );
+      }
+
+      void damage( float damage )
+      {
+        damage -= DAMAGE_TRESHOLD;
+
+        if( damage > 0.0f ) {
+          life -= damage;
+
+          if( life <= 0.0f ) {
+            destroy();
+          }
+        }
+      }
+
+      void destroy();
+
+      void readFull( InputStream *istream );
+      void writeFull( OutputStream *ostream );
+
   };
 
 }
