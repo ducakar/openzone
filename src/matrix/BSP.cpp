@@ -409,6 +409,7 @@ namespace oz
 
     float scale  = bspConfig.get( "scale", 0.01f );
     float maxDim = bspConfig.get( "maxDim", Math::inf() );
+    life = bspConfig.get( "life", 1000.0f );
     bspConfig.clear();
 
     if( Math::isNaN( scale ) || Math::isNaN( maxDim ) ) {

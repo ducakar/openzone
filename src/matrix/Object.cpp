@@ -11,7 +11,6 @@
 
 #include "Object.h"
 
-#include "ObjectClass.h"
 #include "Lua.h"
 #include "Synapse.h"
 

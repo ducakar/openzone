@@ -11,8 +11,6 @@
 
 #include "DynObjectClass.h"
 
-#include "Object.h"
-
 namespace oz
 {
 

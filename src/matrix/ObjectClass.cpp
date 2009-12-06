@@ -11,8 +11,8 @@
 
 #include "ObjectClass.h"
 
-#include "Translator.h"
 #include "Object.h"
+#include "Translator.h"
 
 namespace oz
 {
@@ -30,18 +30,43 @@ namespace oz
 
     if( String::length( clazz->onDestroy ) != 0 ) {
       clazz->flags |= Object::LUA_BIT | Object::DESTROY_FUNC_BIT;
+
+      // disable event handler if explicitly set to false
+      if( !config->get( "flag.destroyFunc", true ) ) {
+        clazz->flags &= ~Object::DESTROY_FUNC_BIT;
+      }
     }
     if( String::length( clazz->onDamage ) != 0 ) {
       clazz->flags |= Object::LUA_BIT | Object::DAMAGE_FUNC_BIT;
+
+      // disable event handler if explicitly set to false
+      if( !config->get( "flag.damageFunc", true ) ) {
+        clazz->flags &= ~Object::DAMAGE_FUNC_BIT;
+      }
     }
     if( String::length( clazz->onHit ) != 0 ) {
       clazz->flags |= Object::LUA_BIT | Object::HIT_FUNC_BIT;
+
+      // disable event handler if explicitly set to false
+      if( !config->get( "flag.hitFunc", true ) ) {
+        clazz->flags &= ~Object::HIT_FUNC_BIT;
+      }
     }
     if( String::length( clazz->onUpdate ) != 0 ) {
       clazz->flags |= Object::LUA_BIT | Object::UPDATE_FUNC_BIT;
+
+      // disable event handler if explicitly set to false
+      if( !config->get( "flag.updateFunc", true ) ) {
+        clazz->flags &= ~Object::UPDATE_FUNC_BIT;
+      }
     }
     if( String::length( clazz->onUse ) != 0 ) {
       clazz->flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
+
+      // disable event handler if explicitly set to false
+      if( !config->get( "flag.useFunc", true ) ) {
+        clazz->flags &= ~Object::USE_FUNC_BIT;
+      }
     }
 
     clazz->modelType            = config->get( "modelType", "" );

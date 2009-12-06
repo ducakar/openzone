@@ -11,8 +11,6 @@
 
 #include "Translator.h"
 
-#include "ObjectClass.h"
-#include "DynObjectClass.h"
 #include "BotClass.h"
 #include "VehicleClass.h"
 

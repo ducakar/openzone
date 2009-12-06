@@ -9,14 +9,11 @@
 
 #pragma once
 
-#include "io.h"
+#include "matrix.h"
 
 #define OZ_CLASS_SET_FLAG( flag, varName, defValue ) \
   if( config->get( varName, defValue ) ) { \
     clazz->flags |= flag; \
-  } \
-  else { \
-    clazz->flags &= ~flag; \
   }
 
 namespace oz

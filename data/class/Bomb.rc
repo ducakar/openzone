@@ -24,7 +24,7 @@ modelType "MD2Static"
 modelName "bombs"
 
 audioType     "Basic"
-audioSample00 ""
+audioSample00 "explodemini"
 audioSample01 "hit_wood2"
 audioSample02 "splash2"
 audioSample03 "" 

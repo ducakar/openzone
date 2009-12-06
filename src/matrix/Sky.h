@@ -9,8 +9,8 @@
 
 #pragma once
 
+#include "matrix.h"
 #include "Timer.h"
-#include "io.h"
 
 namespace oz
 {

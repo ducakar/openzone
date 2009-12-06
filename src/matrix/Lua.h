@@ -9,15 +9,14 @@
 
 #pragma once
 
-#include "Bot.h"
-#include "Structure.h"
+#include "Object.h"
 
 struct lua_State;
 
 namespace oz
 {
 
-  class Object;
+  class Structure;
   class Bot;
 
   class Lua
@@ -33,7 +32,7 @@ namespace oz
     public:
 
       Object    *self;
-      Object    *user;
+      Bot       *user;
 
       Object    *obj;
       Structure *str;

@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include "matrix.h"
 #include "ObjectClass.h"
 
 namespace oz

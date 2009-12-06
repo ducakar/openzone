@@ -24,8 +24,8 @@
 #pragma once
 
 #include "World.h"
+#include "Bot.h"
 #include "Collider.h"
-#include "Lua.h"
 
 namespace oz
 {
@@ -202,6 +202,7 @@ namespace oz
 
   inline int Synapse::addStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
   {
+    world.requestBSP( translator.bspIndex( name ) );
     return add( translator.createStruct( name, p, rot ) );
   }
 
@@ -230,7 +231,7 @@ namespace oz
 
   inline void Synapse::remove( Object *obj )
   {
-    assert( obj->index != -1 );
+    assert( obj->index != -1 && obj->cell != null );
 
     if( ~obj->flags & Object::DYNAMIC_BIT ) {
       collider.touchOverlaps( *obj, 4.0f * EPSILON );

@@ -11,8 +11,6 @@
 
 #include "DynObject.h"
 
-#include "Synapse.h"
-
 namespace oz
 {
 
