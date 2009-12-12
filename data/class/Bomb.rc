@@ -23,8 +23,10 @@ onUse     "Bomb_onUse"
 modelType "MD2Static"
 modelName "bombs"
 
-audioType     "Basic"
-audioSample00 "explodemini"
-audioSample01 "hit_wood2"
-audioSample02 "splash2"
-audioSample03 "" 
+audioType                       "Basic"
+audioSample00                   ""                              # create
+audioSample01                   ""                              # destroy
+audioSample02                   "hit1"                          # damage
+audioSample03                   "hit1"                          # hit
+audioSample04                   "splash1"                       # splash
+audioSample05                   ""                              # friction

@@ -20,7 +20,6 @@ namespace oz
 
   const float Physics::CLIP_BACKOFF         = EPSILON;
   const float Physics::HIT_TRESHOLD         = -2.0f;
-  const float Physics::HIT_NORMAL_TRESHOLD  = 2.0f;
   const float Physics::SPLASH_TRESHOLD      = -2.0f;
   const float Physics::FLOOR_NORMAL_Z       = 0.60f;
   const float Physics::G_VELOCITY           = -9.81f * Timer::TICK_TIME;
@@ -236,10 +235,9 @@ namespace oz
       Vec3  momentum    = ( obj->momentum * obj->mass + sDynObj->momentum * sDynObj->mass ) /
           ( obj->mass + sDynObj->mass );
       float hitMomentum = ( obj->momentum - sDynObj->momentum ) * hit.normal;
+      float hitVelocity = obj->velocity * hit.normal;
 
-      if( hitMomentum < HIT_TRESHOLD &&
-          Math::abs( obj->velocity * hit.normal ) > HIT_NORMAL_TRESHOLD )
-      {
+      if( hitMomentum < HIT_TRESHOLD && hitVelocity < HIT_TRESHOLD ) {
         obj->hit( &hit, hitMomentum );
         sDynObj->hit( &hit, hitMomentum );
       }
@@ -288,10 +286,9 @@ namespace oz
     }
     else {
       float hitMomentum = obj->momentum * hit.normal;
+      float hitVelocity = obj->velocity * hit.normal;
 
-      if( hitMomentum < HIT_TRESHOLD &&
-          Math::abs( obj->velocity * hit.normal ) > HIT_NORMAL_TRESHOLD )
-      {
+      if( hitMomentum < HIT_TRESHOLD && hitVelocity < HIT_TRESHOLD ) {
         obj->hit( &hit, hitMomentum );
 
         if( sObj != null ) {
@@ -389,7 +386,7 @@ namespace oz
     if( ( obj->flags & ~obj->oldFlags & Object::IN_WATER_BIT ) &&
         obj->velocity.z < SPLASH_TRESHOLD )
     {
-      obj->addEvent( Object::EVENT_SPLASH, obj->velocity.z );
+      obj->splash( obj->velocity.z );
     }
 
     world.reposition( obj );
@@ -415,10 +412,6 @@ namespace oz
       if( sObj == null || sObj->cell == null ) {
         obj->flags &= ~Object::DISABLED_BIT;
         obj->lower = -1;
-      }
-      // check if the object can remain disabled
-      else if( ~sObj->flags & Object::DISABLED_BIT ) {
-        obj->flags &= ~Object::DISABLED_BIT;
       }
     }
     // handle physics

@@ -13,3 +13,11 @@ life "1000.0f"
 onUpdate  "Explosion_onUpdate"
 
 modelType "Explosion"
+
+audioType                       "Basic"
+audioSample00                   "explosion"                     # create
+audioSample01                   ""                              # destroy
+audioSample02                   ""                              # damage
+audioSample03                   ""                              # hit
+audioSample04                   ""                              # splash
+audioSample05                   ""                              # friction

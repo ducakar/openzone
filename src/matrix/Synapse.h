@@ -171,7 +171,10 @@ namespace oz
   {
     assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
 
-    obj->clearFlags();
+    obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
+        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
+    obj->lower = -1;
+
     cutObjects << obj->index;
     world.unposition( obj );
   }

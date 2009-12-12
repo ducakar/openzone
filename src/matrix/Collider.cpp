@@ -1000,9 +1000,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
-            DynObject *sDynObj = static_cast<DynObject*>( &*sObj );
-
-            sDynObj->clearFlags();
+            sObj->flags &= ~Object::DISABLED_BIT;
           }
         }
       }

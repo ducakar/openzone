@@ -21,8 +21,10 @@ debrisColorSpread "0.05"
 modelType "MD2Static"
 modelName "winebottle"
 
-audioType "Basic"
-audioSample00 ""
-audioSample01 "hit1"
-audioSample02 "splash1"
-audioSample03 ""
+audioType                       "Basic"
+audioSample00                   ""                              # create
+audioSample01                   ""                              # destroy
+audioSample02                   "hit1"                          # damage
+audioSample03                   "hit1"                          # hit
+audioSample04                   "splash1"                       # splash
+audioSample05                   ""                              # friction

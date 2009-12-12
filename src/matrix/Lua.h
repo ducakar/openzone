@@ -31,19 +31,20 @@ namespace oz
 
     public:
 
-      Object    *self;
-      Bot       *user;
+      Object             *self;
+      Bot                *user;
 
-      Object    *obj;
-      Structure *str;
+      Structure          *str;
+      Object             *obj;
+      List<Object::Event, 0>::Iterator event;
 
-      int       objIndex;
-      int       strIndex;
+      int                strIndex;
+      int                objIndex;
 
-      float     damage;
-      float     hitMomentum;
+      float              damage;
+      float              hitMomentum;
 
-      Vector<Object*> objects;
+      Vector<Object*>    objects;
       Vector<Structure*> structs;
 
       void call( const char *functionName, Object *self_, Bot *user_ = null )

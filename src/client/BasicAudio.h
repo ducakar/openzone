@@ -21,12 +21,12 @@ namespace client
     /*
      * STANDARD SOUND SLOTS
      */
-    static const int SND_DESTROY  = 0;
-    static const int SND_HIT      = 1;
-    static const int SND_SPLASH   = 2;
-    static const int SND_FRICTING = 3;
-
-    static const float MOMENTUM_INTENSITY_FACTOR;
+    static const int SND_DESTROY  = Object::EVENT_DESTROY;
+    static const int SND_DAMAGE   = Object::EVENT_DAMAGE;
+    static const int SND_HIT      = Object::EVENT_HIT;
+    static const int SND_SPLASH   = Object::EVENT_SPLASH;
+    static const int SND_FRICTING = Object::EVENT_FRICTING;
+    static const int SND_USE      = Object::EVENT_USE;
 
     BasicAudio( const Object *obj ) : Audio( obj ) {}
 

@@ -24,7 +24,9 @@ namespace oz
     Vec3   camPos;
     Vec3   camPosCrouch;
 
-    float  bobInc;
+    float  bobWalkInc;
+    float  bobRunInc;
+    float  bobRotation;
     float  bobAmplitude;
 
     float  walkMomentum;

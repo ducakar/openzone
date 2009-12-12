@@ -37,10 +37,10 @@ namespace oz
       static const int ACTION_INV_USE  = 0x00002000;
       static const int ACTION_INV_GRAB = 0x00004000;
 
-      static const int EVENT_LAND      = 4;
-      static const int EVENT_JUMP      = 5;
-      static const int EVENT_FLIP      = 6;
-      static const int EVENT_DEATH     = 7;
+      static const int EVENT_LAND      = 7;
+      static const int EVENT_JUMP      = 8;
+      static const int EVENT_FLIP      = 9;
+      static const int EVENT_DEATH     = 10;
 
       static const int PLAYER_BIT      = 0x00000001;
       static const int DEATH_BIT       = 0x00000002;
@@ -118,7 +118,6 @@ namespace oz
       int         taggedItem;
       Weapon      *weapon;
 
-      float       bob;
       Vec3        camPos;
       AnimEnum    anim;
 

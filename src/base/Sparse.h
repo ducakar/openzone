@@ -33,6 +33,13 @@ namespace oz
         public:
 
           /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit Iterator() : B( null, null )
+          {}
+
+          /**
            * Make iterator for given Sparse. After creation it points to first element.
            * @param s
            */
