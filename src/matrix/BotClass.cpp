@@ -93,8 +93,10 @@ namespace oz
     clazz->camPosCrouch.y       = config->get( "camPosCrouch.y", 0.00f );
     clazz->camPosCrouch.z       = config->get( "camPosCrouch.z", 0.69f );
 
-    clazz->bobInc               = config->get( "bobInc", 0.05f );
-    clazz->bobAmplitude         = config->get( "bobAmplitude", 0.05f );
+    clazz->bobWalkInc           = config->get( "bobWalkInc", 10.00f );
+    clazz->bobRunInc            = config->get( "bobRunInc", 15.00f );
+    clazz->bobRotation          = config->get( "bobRotation", 0.3f );
+    clazz->bobAmplitude         = config->get( "bobAmplitude", 0.02f );
 
     clazz->walkMomentum         = config->get( "walkMomentum", 1.2f );
     clazz->runMomentum          = config->get( "runMomentum", 4.0f );
@@ -165,7 +167,6 @@ namespace oz
 
     obj->readFull( istream );
 
-    obj->bob    = 0.0f;
     obj->camPos = ( obj->state & Bot::CROUCHING_BIT ) ? camPosCrouch : camPos;
 
     return obj;

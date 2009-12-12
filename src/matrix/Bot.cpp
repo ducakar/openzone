@@ -29,6 +29,10 @@ namespace oz
 
   void Bot::onDestroy()
   {
+    // only play death sound when an alive bot is destroyed but not when a body is destroyed
+    if( ~state & DEATH_BIT ) {
+      addEvent( EVENT_DEATH, 1.0f );
+    }
     Object::onDestroy();
   }
 
@@ -37,13 +41,13 @@ namespace oz
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       assert( hitMomentum <= 0.0f );
 
-      addEvent( EVENT_LAND, hitMomentum );
+      addEvent( EVENT_LAND, hitMomentum * Object::MOMENTUM_INTENSITY_FACTOR );
     }
   }
 
   void Bot::onUpdate()
   {
-    BotClass &clazz = *static_cast<BotClass*>( type );
+    BotClass *clazz = static_cast<BotClass*>( type );
 
     // clear invalid references from inventory
     for( int i = 0; i < items.length(); ) {
@@ -118,12 +122,12 @@ namespace oz
 
     flags |= CLIMBER_BIT;
 
-    stepRate *= clazz.stepRateSupp;
-    stamina += clazz.staminaGain;
-    stamina = min( stamina, clazz.stamina );
+    stepRate *= clazz->stepRateSupp;
+    stamina += clazz->staminaGain;
+    stamina = min( stamina, clazz->stamina );
 
     if( isUnderWater ) {
-      stamina -= clazz.staminaWaterDrain;
+      stamina -= clazz->staminaWaterDrain;
 
       if( stamina < 0.0f ) {
         life += stamina;
@@ -146,13 +150,13 @@ namespace oz
         state |= JUMP_SCHED_BIT;
       }
       if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObjIndex == -1 &&
-          stamina >= clazz.staminaJumpDrain )
+          stamina >= clazz->staminaJumpDrain )
       {
         flags &= ~DISABLED_BIT;
         isGrounded = false;
-        stamina -= clazz.staminaJumpDrain;
+        stamina -= clazz->staminaJumpDrain;
 
-        momentum.z = clazz.jumpMomentum;
+        momentum.z = clazz->jumpMomentum;
         addEvent( EVENT_JUMP, 1.0f );
 
         state &= ~JUMP_SCHED_BIT;
@@ -166,15 +170,15 @@ namespace oz
       if( state & CROUCHING_BIT ) {
         float oldZ = p.z;
 
-        p.z += clazz.dim.z - clazz.dimCrouch.z;
-        dim = clazz.dim;
+        p.z += clazz->dim.z - clazz->dimCrouch.z;
+        dim = clazz->dim;
 
         if( collider.test( *this, this ) ) {
-          camPos = clazz.camPos;
+          camPos = clazz->camPos;
           state  &= ~CROUCHING_BIT;
         }
         else {
-          dim = clazz.dimCrouch;
+          dim = clazz->dimCrouch;
           p.z = oldZ;
         }
       }
@@ -183,13 +187,13 @@ namespace oz
         flags &= ~Object::ON_FLOOR_BIT;
         lower =  -1;
 
-        p.z    += dim.z - clazz.dimCrouch.z;
-        dim.z  = clazz.dimCrouch.z;
-        camPos = clazz.camPosCrouch;
+        p.z    += dim.z - clazz->dimCrouch.z;
+        dim.z  = clazz->dimCrouch.z;
+        camPos = clazz->camPosCrouch;
         state |= CROUCHING_BIT;
       }
     }
-    if( stamina < clazz.staminaRunDrain ) {
+    if( stamina < clazz->staminaRunDrain ) {
       state &= ~RUNNING_BIT;
     }
 
@@ -295,24 +299,24 @@ namespace oz
       Vec3 desiredMomentum = move;
 
       if( state & CROUCHING_BIT ) {
-        desiredMomentum *= clazz.crouchMomentum;
+        desiredMomentum *= clazz->crouchMomentum;
       }
       else if( ( state & RUNNING_BIT ) && grabObjIndex == -1 ) {
-        desiredMomentum *= clazz.runMomentum;
+        desiredMomentum *= clazz->runMomentum;
       }
       else {
-        desiredMomentum *= clazz.walkMomentum;
+        desiredMomentum *= clazz->walkMomentum;
       }
 
       if( !isGrounded || ( flags & ON_SLICK_BIT ) ) {
         if( isClimbing ) {
-          desiredMomentum *= clazz.climbControl;
+          desiredMomentum *= clazz->climbControl;
         }
         else if( isSwimming ) {
-          desiredMomentum *= clazz.waterControl;
+          desiredMomentum *= clazz->waterControl;
         }
         else {
-          desiredMomentum *= clazz.airControl;
+          desiredMomentum *= clazz->airControl;
         }
       }
 
@@ -326,7 +330,7 @@ namespace oz
       momentum += desiredMomentum;
 
       if( ( state & RUNNING_BIT ) && ( isGrounded || isSwimming || isClimbing ) ) {
-        stamina -= clazz.staminaRunDrain;
+        stamina -= clazz->staminaRunDrain;
       }
 
       // First, check if bot's gonna hit an obstacle in the next frame. If it does, check whether it
@@ -347,7 +351,7 @@ namespace oz
       //               \----------
       //
       //
-      if( ( state & STEPPING_BIT ) && !isClimbing && stepRate < clazz.stepRate ) {
+      if( ( state & STEPPING_BIT ) && !isClimbing && stepRate < clazz->stepRate ) {
         // check if bot's gonna hit a stair in next frame
         Vec3 desiredMove = momentum * Timer::TICK_TIME;
 
@@ -358,8 +362,8 @@ namespace oz
           Vec3  normal = collider.hit.normal;
           float negStartDist = ( desiredMove * collider.hit.ratio ) * normal - EPSILON;
 
-          for( float raise = clazz.stepInc; raise <= clazz.stepMax; raise += clazz.stepInc ) {
-            p.z += clazz.stepInc;
+          for( float raise = clazz->stepInc; raise <= clazz->stepMax; raise += clazz->stepInc ) {
+            p.z += clazz->stepInc;
             if( !collider.test( *this, this ) ) {
               break;
             }
@@ -434,7 +438,7 @@ namespace oz
       }
       else {
         Vec3 eye  = p + camPos;
-        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
+        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -454,7 +458,7 @@ namespace oz
       }
       else {
         Vec3 eye  = p + camPos;
-        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
+        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -472,7 +476,7 @@ namespace oz
       if( grabObjIndex != -1 ) {
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
 
-        grabObj->momentum = handle * clazz.throwMomentum;
+        grabObj->momentum = handle * clazz->throwMomentum;
         grabObjIndex      = -1;
       }
     }
@@ -482,19 +486,19 @@ namespace oz
       }
       else {
         Vec3 eye  = p + camPos;
-        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz.grabDistance;
+        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
         DynObject *obj = static_cast<DynObject*>( collider.hit.obj );
-        if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz.grabMass &&
+        if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
             lower != obj->index )
         {
           float dimX = dim.x + obj->dim.x;
           float dimY = dim.y + obj->dim.y;
           float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
-          if( dist <= clazz.grabDistance ) {
+          if( dist <= clazz->grabDistance ) {
             grabObjIndex = collider.hit.obj->index;
             grabHandle   = dist;
             flags        &= ~ON_LADDER_BIT;
@@ -548,7 +552,7 @@ namespace oz
   }
 
   Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
-      grabObjIndex( -1 ), weapon( null ), bob( 0.0f ), anim( ANIM_STAND )
+      grabObjIndex( -1 ), weapon( null ), anim( ANIM_STAND )
   {}
 
   void Bot::enter( int vehicleIndex_ )

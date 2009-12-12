@@ -61,7 +61,7 @@ namespace client
     }
 
     foreach( obj, cell.objects.iterator() ) {
-      if( ( obj->flags & Object::NODRAW_BIT ) || ( &*obj == camera.bot && !camera.isExternal ) ) {
+      if( ( obj->flags & Object::NO_DRAW_BIT ) || ( &*obj == camera.bot && !camera.isExternal ) ) {
         continue;
       }
       bool isVisible =

@@ -28,15 +28,16 @@ namespace nirvana
 
     public:
 
-      Bot       *self;
+      Bot                *self;
 
-      Object    *obj;
-      Structure *str;
+      Structure          *str;
+      Object             *obj;
+      List<Object::Event, 0>::Iterator event;
 
-      int       objIndex;
-      int       strIndex;
+      int                strIndex;
+      int                objIndex;
 
-      Vector<Object*> objects;
+      Vector<Object*>    objects;
       Vector<Structure*> structs;
 
       void call( const char *functionName, Bot *self_ )

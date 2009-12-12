@@ -24,7 +24,10 @@ extern "C"
 }
 
 #define OZ_LUA_ERROR( message ) luaL_error( l, "[%s] %s", __FUNCTION__, message );
-#define OZ_LUA_REGISTER( func ) lua_register( l, #func, func )
+#define OZ_LUA_FUNCTION( func ) lua_register( l, #func, func )
+#define OZ_LUA_INT_CONST( name, value ) lua_pushinteger( l, value ); lua_setglobal( l, name )
+#define OZ_LUA_FLOAT_CONST( name, value ) lua_pushnumber( l, value ); lua_setglobal( l, name )
+#define OZ_LUA_STRING_CONST( name, value ) lua_pushstring( l, value ); lua_setglobal( l, name )
 
 namespace oz
 {
@@ -111,7 +114,7 @@ namespace oz
 
   static int ozStrBindIndex( lua_State *l )
   {
-    int index = lua_tonumber( l, 1 );
+    int index = lua_tointeger( l, 1 );
     if( index < 0 || world.structures.length() <= index ) {
       OZ_LUA_ERROR( "invalid index" );
     }
@@ -171,7 +174,7 @@ namespace oz
       OZ_LUA_ERROR( "selected structure is null" );
     }
 
-    lua_pushnumber( l, lua.str->index );
+    lua_pushinteger( l, lua.str->index );
     return 1;
   }
 
@@ -181,7 +184,7 @@ namespace oz
       OZ_LUA_ERROR( "selected structure is null" );
     }
 
-    lua_pushnumber( l, lua.str->bsp );
+    lua_pushinteger( l, lua.str->bsp );
     return 1;
   }
 
@@ -267,7 +270,7 @@ namespace oz
 
   static int ozObjBindIndex( lua_State *l )
   {
-    int index = lua_tonumber( l, 1 );
+    int index = lua_tointeger( l, 1 );
     if( index < 0 || world.objects.length() <= index ) {
       OZ_LUA_ERROR( "invalid index" );
     }
@@ -410,7 +413,27 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua_pushnumber( l, lua.obj->index );
+    lua_pushinteger( l, lua.obj->index );
+    return 1;
+  }
+
+  static int ozObjGetFlags( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+
+    lua_pushinteger( l, lua.obj->flags );
+    return 1;
+  }
+
+  static int ozObjGetOldFlags( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+
+    lua_pushinteger( l, lua.obj->oldFlags );
     return 1;
   }
 
@@ -453,6 +476,21 @@ namespace oz
     lua.obj->life = bound<double>( lua.obj->life + lua_tonumber( l, 1 ),
                                    0,
                                    lua.obj->type->life );
+    return 0;
+  }
+
+  static int ozObjAddEvent( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    int   id        = lua_tointeger( l, 1 );
+    float intensity = lua_tonumber( l, 2 );
+
+    if( id >= 0 && intensity < 0.0f ) {
+      OZ_LUA_ERROR( "event intensity for sounds (id >= 0) has to be > 0.0" );
+    }
+    lua.obj->addEvent( id, intensity );
     return 0;
   }
 
@@ -549,6 +587,37 @@ namespace oz
 
     lua_pushnumber( l, angle );
     return 1;
+  }
+
+  static int ozObjBindEvent( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    lua.event = lua.obj->events.iterator();
+    return 0;
+  }
+
+  static int ozEventBindNext( lua_State *l )
+  {
+    if( !lua.event.isPassed() ) {
+      ++lua.event;
+      lua_pushboolean( l, true );
+    }
+    else {
+      lua_pushboolean( l, false );
+    }
+    return 1;
+  }
+
+  static int ozEventGet( lua_State *l )
+  {
+    if( lua.event.isPassed() ) {
+      OZ_LUA_ERROR( "event is null" );
+    }
+    lua_pushinteger( l, lua.event->id );
+    lua_pushnumber( l, lua.event->intensity );
+    return 2;
   }
 
   static int ozDynGetVelocity( lua_State *l )
@@ -1099,17 +1168,17 @@ namespace oz
   {
     const char *name = lua_tostring( l, 1 );
     Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
-    Structure::Rotation rot = static_cast<Structure::Rotation>( lua_tonumber( l, 5 ) );
+    Structure::Rotation rot = static_cast<Structure::Rotation>( lua_tointeger( l, 5 ) );
     lua.str = translator.createStruct( name, p, rot );
 
     if( collider.test( lua.str->toAABB() ) ) {
       int index = synapse.add( lua.str );
-      lua_pushnumber( l, index );
+      lua_pushinteger( l, index );
     }
     else {
       delete lua.str;
       lua.str = null;
-      lua_pushnumber( l, -1 );
+      lua_pushinteger( l, -1 );
     }
     return 1;
   }
@@ -1122,12 +1191,12 @@ namespace oz
 
     if( collider.test( *lua.obj ) ) {
       int index = synapse.add( lua.obj );
-      lua_pushnumber( l, index );
+      lua_pushinteger( l, index );
     }
     else {
       delete lua.obj;
       lua.obj = null;
-      lua_pushnumber( l, -1 );
+      lua_pushinteger( l, -1 );
     }
     return 1;
   }
@@ -1136,10 +1205,10 @@ namespace oz
   {
     const char *name = lua_tostring( l, 1 );
     Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
-    Structure::Rotation rot = static_cast<Structure::Rotation>( lua_tonumber( l, 5 ) );
+    Structure::Rotation rot = static_cast<Structure::Rotation>( lua_tointeger( l, 5 ) );
 
     int index = synapse.addStruct( name, p, rot );
-    lua_pushnumber( l, index );
+    lua_pushinteger( l, index );
     return 1;
   }
 
@@ -1149,7 +1218,7 @@ namespace oz
     Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
 
     int index = synapse.addObject( name, p );
-    lua_pushnumber( l, index );
+    lua_pushinteger( l, index );
     return 1;
   }
 
@@ -1235,105 +1304,159 @@ namespace oz
     l = lua_open();
     luaL_openlibs( l );
 
-    OZ_LUA_REGISTER( ozPrintln );
-    OZ_LUA_REGISTER( ozException );
+    OZ_LUA_FUNCTION( ozPrintln );
+    OZ_LUA_FUNCTION( ozException );
 
-    OZ_LUA_REGISTER( ozBindAllOverlaps );
-    OZ_LUA_REGISTER( ozBindStrOverlaps );
-    OZ_LUA_REGISTER( ozBindObjOverlaps );
-    OZ_LUA_REGISTER( ozSelfBindAllOverlaps );
-    OZ_LUA_REGISTER( ozSelfBindStrOverlaps );
-    OZ_LUA_REGISTER( ozSelfBindObjOverlaps );
+    OZ_LUA_FUNCTION( ozBindAllOverlaps );
+    OZ_LUA_FUNCTION( ozBindStrOverlaps );
+    OZ_LUA_FUNCTION( ozBindObjOverlaps );
+    OZ_LUA_FUNCTION( ozSelfBindAllOverlaps );
+    OZ_LUA_FUNCTION( ozSelfBindStrOverlaps );
+    OZ_LUA_FUNCTION( ozSelfBindObjOverlaps );
 
-    OZ_LUA_REGISTER( ozStrBindIndex );
-    OZ_LUA_REGISTER( ozStrBindNext );
+    OZ_LUA_FUNCTION( ozStrBindIndex );
+    OZ_LUA_FUNCTION( ozStrBindNext );
 
-    OZ_LUA_REGISTER( ozStrIsNull );
-    OZ_LUA_REGISTER( ozStrGetBounds );
-    OZ_LUA_REGISTER( ozStrGetIndex );
-    OZ_LUA_REGISTER( ozStrGetPos );
-    OZ_LUA_REGISTER( ozStrGetBSP );
-    OZ_LUA_REGISTER( ozStrDamage );
-    OZ_LUA_REGISTER( ozStrDestroy );
+    OZ_LUA_FUNCTION( ozStrIsNull );
+    OZ_LUA_FUNCTION( ozStrGetBounds );
+    OZ_LUA_FUNCTION( ozStrGetIndex );
+    OZ_LUA_FUNCTION( ozStrGetPos );
+    OZ_LUA_FUNCTION( ozStrGetBSP );
+    OZ_LUA_FUNCTION( ozStrDamage );
+    OZ_LUA_FUNCTION( ozStrDestroy );
 
-    OZ_LUA_REGISTER( ozStrVectorFromSelf );
-    OZ_LUA_REGISTER( ozStrDirectionFromSelf );
-    OZ_LUA_REGISTER( ozStrDistanceFromSelf );
-    OZ_LUA_REGISTER( ozStrHeadingFromSelf );
-    OZ_LUA_REGISTER( ozStrPitchFromSelf );
+    OZ_LUA_FUNCTION( ozStrVectorFromSelf );
+    OZ_LUA_FUNCTION( ozStrDirectionFromSelf );
+    OZ_LUA_FUNCTION( ozStrDistanceFromSelf );
+    OZ_LUA_FUNCTION( ozStrHeadingFromSelf );
+    OZ_LUA_FUNCTION( ozStrPitchFromSelf );
 
-    OZ_LUA_REGISTER( ozObjBindIndex );
-    OZ_LUA_REGISTER( ozObjBindSelf );
-    OZ_LUA_REGISTER( ozObjBindUser );
-    OZ_LUA_REGISTER( ozObjBindNext );
+    OZ_LUA_FUNCTION( ozObjBindIndex );
+    OZ_LUA_FUNCTION( ozObjBindSelf );
+    OZ_LUA_FUNCTION( ozObjBindUser );
+    OZ_LUA_FUNCTION( ozObjBindNext );
 
-    OZ_LUA_REGISTER( ozObjIsNull );
-    OZ_LUA_REGISTER( ozObjIsSelf );
-    OZ_LUA_REGISTER( ozObjIsUser );
-    OZ_LUA_REGISTER( ozObjIsPut );
-    OZ_LUA_REGISTER( ozObjIsDynamic );
-    OZ_LUA_REGISTER( ozObjIsBot );
-    OZ_LUA_REGISTER( ozObjGetPos );
-    OZ_LUA_REGISTER( ozObjSetPos );
-    OZ_LUA_REGISTER( ozObjAddPos );
-    OZ_LUA_REGISTER( ozObjGetDim );
-    OZ_LUA_REGISTER( ozObjGetIndex );
-    OZ_LUA_REGISTER( ozObjGetTypeName );
-    OZ_LUA_REGISTER( ozObjGetLife );
-    OZ_LUA_REGISTER( ozObjSetLife );
-    OZ_LUA_REGISTER( ozObjAddLife );
-    OZ_LUA_REGISTER( ozObjDamage );
-    OZ_LUA_REGISTER( ozObjDestroy );
+    OZ_LUA_FUNCTION( ozObjIsNull );
+    OZ_LUA_FUNCTION( ozObjIsSelf );
+    OZ_LUA_FUNCTION( ozObjIsUser );
+    OZ_LUA_FUNCTION( ozObjIsPut );
+    OZ_LUA_FUNCTION( ozObjIsDynamic );
+    OZ_LUA_FUNCTION( ozObjIsBot );
+    OZ_LUA_FUNCTION( ozObjGetPos );
+    OZ_LUA_FUNCTION( ozObjSetPos );
+    OZ_LUA_FUNCTION( ozObjAddPos );
+    OZ_LUA_FUNCTION( ozObjGetDim );
+    OZ_LUA_FUNCTION( ozObjGetIndex );
+    OZ_LUA_FUNCTION( ozObjGetFlags );
+    OZ_LUA_FUNCTION( ozObjGetOldFlags );
+    OZ_LUA_FUNCTION( ozObjGetTypeName );
+    OZ_LUA_FUNCTION( ozObjGetLife );
+    OZ_LUA_FUNCTION( ozObjSetLife );
+    OZ_LUA_FUNCTION( ozObjAddLife );
+    OZ_LUA_FUNCTION( ozObjAddEvent );
+    OZ_LUA_FUNCTION( ozObjDamage );
+    OZ_LUA_FUNCTION( ozObjDestroy );
 
-    OZ_LUA_REGISTER( ozObjVectorFromSelf );
-    OZ_LUA_REGISTER( ozObjDirectionFromSelf );
-    OZ_LUA_REGISTER( ozObjDistanceFromSelf );
-    OZ_LUA_REGISTER( ozObjHeadingFromSelf );
-    OZ_LUA_REGISTER( ozObjPitchFromSelf );
+    OZ_LUA_FUNCTION( ozObjVectorFromSelf );
+    OZ_LUA_FUNCTION( ozObjDirectionFromSelf );
+    OZ_LUA_FUNCTION( ozObjDistanceFromSelf );
+    OZ_LUA_FUNCTION( ozObjHeadingFromSelf );
+    OZ_LUA_FUNCTION( ozObjPitchFromSelf );
 
-    OZ_LUA_REGISTER( ozDynGetVelocity );
-    OZ_LUA_REGISTER( ozDynGetMomentum );
-    OZ_LUA_REGISTER( ozDynSetMomentum );
-    OZ_LUA_REGISTER( ozDynAddMomentum );
-    OZ_LUA_REGISTER( ozDynGetMass );
-    OZ_LUA_REGISTER( ozDynSetMass );
-    OZ_LUA_REGISTER( ozDynAddMass );
-    OZ_LUA_REGISTER( ozDynResetMass );
-    OZ_LUA_REGISTER( ozDynGetLift );
-    OZ_LUA_REGISTER( ozDynSetLift );
-    OZ_LUA_REGISTER( ozDynAddLift );
-    OZ_LUA_REGISTER( ozDynResetLift );
+    OZ_LUA_FUNCTION( ozObjBindEvent );
+    OZ_LUA_FUNCTION( ozEventBindNext );
+    OZ_LUA_FUNCTION( ozEventGet );
 
-    OZ_LUA_REGISTER( ozBotGetH );
-    OZ_LUA_REGISTER( ozBotSetH );
-    OZ_LUA_REGISTER( ozBotAddH );
-    OZ_LUA_REGISTER( ozBotGetV );
-    OZ_LUA_REGISTER( ozBotSetV );
-    OZ_LUA_REGISTER( ozBotAddV );
-    OZ_LUA_REGISTER( ozBotActionForward );
-    OZ_LUA_REGISTER( ozBotActionBackward );
-    OZ_LUA_REGISTER( ozBotActionRight );
-    OZ_LUA_REGISTER( ozBotActionLeft );
-    OZ_LUA_REGISTER( ozBotActionJump );
-    OZ_LUA_REGISTER( ozBotActionCrouch );
-    OZ_LUA_REGISTER( ozBotActionUse );
-    OZ_LUA_REGISTER( ozBotActionTake );
-    OZ_LUA_REGISTER( ozBotActionGrab );
-    OZ_LUA_REGISTER( ozBotActionThrow );
-    OZ_LUA_REGISTER( ozBotActionSuicide );
-    OZ_LUA_REGISTER( ozBotStateIsRunning );
-    OZ_LUA_REGISTER( ozBotStateSetRunning );
-    OZ_LUA_REGISTER( ozBotStateToggleRunning );
-    OZ_LUA_REGISTER( ozBotGetStamina );
-    OZ_LUA_REGISTER( ozBotSetStamina );
-    OZ_LUA_REGISTER( ozBotAddStamina );
+    OZ_LUA_FUNCTION( ozDynGetVelocity );
+    OZ_LUA_FUNCTION( ozDynGetMomentum );
+    OZ_LUA_FUNCTION( ozDynSetMomentum );
+    OZ_LUA_FUNCTION( ozDynAddMomentum );
+    OZ_LUA_FUNCTION( ozDynGetMass );
+    OZ_LUA_FUNCTION( ozDynSetMass );
+    OZ_LUA_FUNCTION( ozDynAddMass );
+    OZ_LUA_FUNCTION( ozDynResetMass );
+    OZ_LUA_FUNCTION( ozDynGetLift );
+    OZ_LUA_FUNCTION( ozDynSetLift );
+    OZ_LUA_FUNCTION( ozDynAddLift );
+    OZ_LUA_FUNCTION( ozDynResetLift );
 
-    OZ_LUA_REGISTER( ozWorldAddStr );
-    OZ_LUA_REGISTER( ozWorldAddObj );
-    OZ_LUA_REGISTER( ozWorldForceAddStr );
-    OZ_LUA_REGISTER( ozWorldForceAddObj );
-    OZ_LUA_REGISTER( ozWorldRemoveStr );
-    OZ_LUA_REGISTER( ozWorldRemoveObj );
+    OZ_LUA_FUNCTION( ozBotGetH );
+    OZ_LUA_FUNCTION( ozBotSetH );
+    OZ_LUA_FUNCTION( ozBotAddH );
+    OZ_LUA_FUNCTION( ozBotGetV );
+    OZ_LUA_FUNCTION( ozBotSetV );
+    OZ_LUA_FUNCTION( ozBotAddV );
+    OZ_LUA_FUNCTION( ozBotActionForward );
+    OZ_LUA_FUNCTION( ozBotActionBackward );
+    OZ_LUA_FUNCTION( ozBotActionRight );
+    OZ_LUA_FUNCTION( ozBotActionLeft );
+    OZ_LUA_FUNCTION( ozBotActionJump );
+    OZ_LUA_FUNCTION( ozBotActionCrouch );
+    OZ_LUA_FUNCTION( ozBotActionUse );
+    OZ_LUA_FUNCTION( ozBotActionTake );
+    OZ_LUA_FUNCTION( ozBotActionGrab );
+    OZ_LUA_FUNCTION( ozBotActionThrow );
+    OZ_LUA_FUNCTION( ozBotActionSuicide );
+    OZ_LUA_FUNCTION( ozBotStateIsRunning );
+    OZ_LUA_FUNCTION( ozBotStateSetRunning );
+    OZ_LUA_FUNCTION( ozBotStateToggleRunning );
+    OZ_LUA_FUNCTION( ozBotGetStamina );
+    OZ_LUA_FUNCTION( ozBotSetStamina );
+    OZ_LUA_FUNCTION( ozBotAddStamina );
+
+    OZ_LUA_FUNCTION( ozWorldAddStr );
+    OZ_LUA_FUNCTION( ozWorldAddObj );
+    OZ_LUA_FUNCTION( ozWorldForceAddStr );
+    OZ_LUA_FUNCTION( ozWorldForceAddObj );
+    OZ_LUA_FUNCTION( ozWorldRemoveStr );
+    OZ_LUA_FUNCTION( ozWorldRemoveObj );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DAMAGE_FUNC_BIT",      Object::DAMAGE_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_HIT_FUNC_BIT",         Object::HIT_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_MODEL_BIT",            Object::MODEL_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_CUT_BIT",              Object::CUT_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_HIT_BIT",              Object::HIT_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_IN_WATER_BIT",         Object::IN_WATER_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_CLIP_BIT",             Object::CLIP_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_HOVER_BIT",            Object::HOVER_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_BLEND_BIT",            Object::BLEND_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
+    OZ_LUA_INT_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
+    OZ_LUA_INT_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
+    OZ_LUA_INT_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
+    OZ_LUA_INT_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
+    OZ_LUA_INT_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
+    OZ_LUA_INT_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
 
     lua_newtable( l );
     lua_setglobal( l, "ozLocalData" );

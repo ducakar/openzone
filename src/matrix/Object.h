@@ -52,7 +52,7 @@ namespace oz
        */
 
       // if object has Lua handlers
-      static const int LUA_BIT            = 0x02000000;
+      static const int LUA_BIT            = 0x04000000;
 
       // if the onDestroy function should be called on destruction
       static const int DESTROY_FUNC_BIT   = 0x01000000;
@@ -109,14 +109,14 @@ namespace oz
       // (if on another dynamic object, we determine that with "lower" index)
       static const int ON_FLOOR_BIT       = 0x00000800;
 
+      // if the object is on ice (slipping surface)
+      static const int ON_SLICK_BIT       = 0x00000400;
+
       // if the object intersects with water
-      static const int IN_WATER_BIT       = 0x00000400;
+      static const int IN_WATER_BIT       = 0x00000200;
 
       // if the object is on ladder
-      static const int ON_LADDER_BIT      = 0x00000200;
-
-      // if the object is on ice (slipping surface)
-      static const int ON_SLICK_BIT       = 0x00000100;
+      static const int ON_LADDER_BIT      = 0x00000100;
 
       // handle collisions for this object
       static const int CLIP_BIT           = 0x00000080;
@@ -137,7 +137,7 @@ namespace oz
        */
 
       // don't render object (it will be rendered via another path, e.g. bots in a vehicle)
-      static const int NODRAW_BIT         = 0x00000008;
+      static const int NO_DRAW_BIT        = 0x00000008;
 
       // if the object is blended and should be rendered at the end
       static const int BLEND_BIT          = 0x00000004;
@@ -151,11 +151,16 @@ namespace oz
        * STANDARD EVENT IDs
        */
 
-      static const int EVENT_DESTROY      = 0;
-      static const int EVENT_HIT          = 1;
-      static const int EVENT_SPLASH       = 2;
-      // not in use, but reserved for more convenient BasicAudio
-      static const int EVENT_FRICTING     = 3;
+      static const int EVENT_DESTROY      = 1;
+      static const int EVENT_DAMAGE       = 2;
+      static const int EVENT_HIT          = 3;
+      static const int EVENT_SPLASH       = 4;
+      // EVENT_FRICTING not in use, but reserved for more convenient BasicAudio (reserves a slot for
+      // friction sound)
+      static const int EVENT_FRICTING     = 5;
+      static const int EVENT_USE          = 6;
+
+      static const float MOMENTUM_INTENSITY_FACTOR = -0.125f;
 
       struct Event : PoolAlloc<Event, 0>
       {
@@ -171,7 +176,9 @@ namespace oz
         }
 
         explicit Event( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ )
-        {}
+        {
+          assert( id < 0 || intensity >= 0.0f );
+        }
       };
 
       /*
@@ -229,9 +236,10 @@ namespace oz
       void destroy()
       {
         if( ~flags & DESTROYED_BIT ) {
+          addEvent( EVENT_DESTROY, 1.0f );
+
           flags |= DESTROYED_BIT;
           life = 0.0f;
-          addEvent( EVENT_DESTROY, 1.0f );
 
           if( flags & DESTROY_FUNC_BIT ) {
             onDestroy();
@@ -248,6 +256,8 @@ namespace oz
         damage -= type->damageTreshold;
 
         if( damage > 0.0f ) {
+          addEvent( EVENT_DAMAGE, damage );
+
           life -= damage;
 
           if( flags & DAMAGE_FUNC_BIT ) {
@@ -263,14 +273,19 @@ namespace oz
        */
       void hit( const Hit *hit, float hitMomentum )
       {
-        events << new Event( EVENT_HIT, hitMomentum );
-        flags |= HIT_BIT;
-
+        addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_FACTOR );
         damage( hitMomentum * hitMomentum );
+
+        flags |= HIT_BIT;
 
         if( flags & HIT_FUNC_BIT ) {
           onHit( hit, hitMomentum );
         }
+      }
+
+      void splash( float momentum )
+      {
+        addEvent( EVENT_SPLASH, momentum * MOMENTUM_INTENSITY_FACTOR );
       }
 
       /**
@@ -289,6 +304,7 @@ namespace oz
       void use( Bot *user )
       {
         if( flags & USE_FUNC_BIT ) {
+          addEvent( EVENT_USE, 1.0f );
           onUse( user );
         }
       }

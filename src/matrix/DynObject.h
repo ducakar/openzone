@@ -37,13 +37,6 @@ namespace oz
           lower( -1 ), depth( 0.0f )
       {}
 
-      void clearFlags()
-      {
-        flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
-            Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
-        lower = -1;
-      }
-
       virtual void readFull( InputStream *istream );
       virtual void writeFull( OutputStream *ostream ) const;
       virtual void readUpdate( InputStream *istream );

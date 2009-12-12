@@ -31,6 +31,13 @@ namespace oz
         public:
 
           /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit Iterator() : B( null, null )
+          {}
+
+          /**
            * Make iterator for given array. After creation it points to first element.
            * @param v
            */

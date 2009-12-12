@@ -22,6 +22,7 @@ function Explosion_onUpdate( l )
     end
   else
     l.ticks = 50
+    ozObjAddEvent( 0, 1.0 )
 
     local distance
     local dirX, dirY, dirZ

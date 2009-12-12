@@ -57,6 +57,13 @@ namespace oz
         public:
 
           /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit Iterator() : B( null )
+          {}
+
+          /**
            * Make iterator for given list. After creation it points to first element.
            * @param l
            */

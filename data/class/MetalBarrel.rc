@@ -12,8 +12,10 @@ lift "7.0"
 modelType "MD2Static"
 modelName "barrel1"
 
-audioType "Basic"
-audioSample00 "destroy_metal1"
-audioSample01 "hit_metal1"
-audioSample02 "splash2"
-audioSample03 "friction1"
+audioType                       "Basic"
+audioSample00                   ""                              # create
+audioSample01                   "destroy_metal1"                # destroy
+audioSample02                   "hit_metal1"                    # damage
+audioSample03                   "hit_metal1"                    # hit
+audioSample04                   "splash2"                       # splash
+audioSample05                   "friction1"                     # friction

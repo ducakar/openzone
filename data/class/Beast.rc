@@ -23,14 +23,17 @@ modelType                       "MD2"
 modelName                       "hobgoblin"
 
 audioType                       "Basic"
-audioSample00                   ""
-audioSample01                   ""
-audioSample02                   "splash1"
-audioSample03                   ""
-audioSample04                   "hit_bot1"
-audioSample05                   "jump1"
-audioSample06                   "gesture_flip"
-audioSample07                   "gesture_flip"
+audioSample00                   ""                              # create
+audioSample01                   ""                              # destroy
+audioSample02                   "damage_bot1"                   # damage
+audioSample03                   ""                              # hit
+audioSample04                   "splash1"                       # splash
+audioSample05                   ""                              # friction
+audioSample06                   ""                              # use
+audioSample07                   "hit_bot1"                      # land
+audioSample08                   "jump1"                         # jump
+audioSample09                   "gesture_flip"                  # flip
+audioSample10                   "gesture_flip"                  # death
 
 camPos.x                        "0.00"
 camPos.y                        "0.00"

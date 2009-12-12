@@ -55,6 +55,13 @@ namespace oz
         public:
 
           /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit Iterator() : B( null )
+          {}
+
+          /**
            * Make iterator for given HashString. After creation it points to first element.
            * @param t
            */

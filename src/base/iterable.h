@@ -130,6 +130,13 @@ namespace oz
     public:
 
       /**
+       * Default constructor returns a dummy passed iterator
+       * @return
+       */
+      explicit Iterator() : B( null ), past( null )
+      {}
+
+      /**
        * @param start first element for forward iterator or successor of last element for backward
        * iterator
        * @param past_ successor of last element for forward iterator or predecessor of first element

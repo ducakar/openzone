@@ -12,8 +12,10 @@ lift "0.03"
 modelType "MD2Static"
 modelName "woodBarrel"
 
-audioType "Basic"
-audioSample00 "destroy_wood1"
-audioSample01 "hit_wood2"
-audioSample02 "splash2"
-audioSample03 "friction1"
+audioType                       "Basic"
+audioSample00                   ""                              # create
+audioSample01                   "destroy_wood1"                 # destroy
+audioSample02                   "hit_wood1"                     # damage
+audioSample03                   "hit_wood1"                     # hit
+audioSample04                   "splash2"                       # splash
+audioSample05                   "friction1"                     # friction
