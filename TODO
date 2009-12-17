@@ -1,8 +1,7 @@
 Matrix
-  - extend scripting
+  - triggers
   - Weapons
   - networking support
-  ? reinvent cylinder
 
 Client
   - scripting
@@ -13,12 +12,7 @@ Client
   - menu support
 
 UI
-  - standard components
   ? scripting
-
-Nirvana
-  - extend scripting
-  - more minds
 
 Server
   EVERYTHING

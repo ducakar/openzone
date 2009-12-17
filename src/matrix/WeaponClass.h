@@ -1,5 +1,5 @@
 /*
- *  VehicleClass.h
+ *  WeaponClass.h
  *
  *  [description]
  *
@@ -10,23 +10,13 @@
 #pragma once
 
 #include "DynamicClass.h"
-#include "Vehicle.h"
 
 namespace oz
 {
 
-  struct VehicleClass : DynamicClass
+  struct WeaponClass : DynamicClass
   {
-    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT | Object::USE_FUNC_BIT |
-        Object::UPDATE_FUNC_BIT | Object::VEHICLE_BIT;
-    static const int DEFAULT_FLAGS = Object::CLIP_BIT;
-
-    int   state;
-
-    Vec3  crewPos[Vehicle::CREW_MAX];
-    Quat  crewRot[Vehicle::CREW_MAX];
-
-    float moveMomentum;
+    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::USE_FUNC_BIT;
 
     static ObjectClass *init( const String &name, const Config *config );
 

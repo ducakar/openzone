@@ -108,10 +108,10 @@ namespace ui
 
     int minIndex = row * COLS;
     int maxIndex = min( minIndex + COLS * ROWS, items.length() );
-    DynObject *taggedItem = null;
+    Dynamic *taggedItem = null;
 
     for( int i = minIndex; i < maxIndex; i++ ) {
-      DynObject *item = static_cast<DynObject*>( world.objects[items[i]] );
+      Dynamic *item = static_cast<Dynamic*>( world.objects[items[i]] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 

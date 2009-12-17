@@ -1,21 +1,19 @@
-description "First aid kit. It can heal up to 50 points of health."
+description "Standard Droid rifle."
 
 base "Dynamic"
 
-dim.x "0.25"
-dim.y "0.25"
+dim.x "0.30"
+dim.y "0.30"
 dim.z "0.15"
 
 flag.item "true"
 
-life "30.0f"
+life "100.0f"
 
-onUse "heal50"
+mass "10.0"
 
-mass "2.0"
-
-modelType "OBJ"
-modelName "health"
+modelType "MD2Weapon"
+modelName "rifle"
 
 audioType                       "Basic"
 audioSample00                   ""                              # create

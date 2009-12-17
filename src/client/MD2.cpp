@@ -355,23 +355,12 @@ namespace client
     Vec3 translation( config.get( "translate.x", 0.00f ),
                       config.get( "translate.y", 0.00f ),
                       config.get( "translate.z", 0.00f ) );
-    Vec3 crouchTranslation( config.get( "crouchTranslate.x", 0.00f ),
-                            config.get( "crouchTranslate.y", 0.00f ),
-                            config.get( "crouchTranslate.z", 0.20f ) );
     config.clear();
 
     if( scaling != 1.0f ) {
       scale( scaling );
     }
     translate( translation );
-
-    if( nFrames > animList[ANIM_MAX].lastFrame && !crouchTranslation.isZero() ) {
-      translate( ANIM_CROUCH_STAND,  crouchTranslation );
-      translate( ANIM_CROUCH_WALK,   crouchTranslation );
-      translate( ANIM_CROUCH_ATTACK, crouchTranslation );
-      translate( ANIM_CROUCH_PAIN,   crouchTranslation );
-      translate( ANIM_CROUCH_DEATH,  crouchTranslation );
-    }
 
     if( texId == 0 ) {
       throw Exception( "MD2 model loading error" );

@@ -24,7 +24,7 @@ modelName "bdroid"
 
 audioType                       "Basic"
 audioSample00                   ""                              # create
-audioSample01                   "destroy_metal"                 # destroy
+audioSample01                   "destroy_metal1"                # destroy
 audioSample02                   "damage_bot1"                   # damage
 audioSample03                   ""                              # hit
 audioSample04                   "splash1"                       # splash
@@ -33,7 +33,7 @@ audioSample06                   ""                              # use
 audioSample07                   "hit_bot1"                      # land
 audioSample08                   "jump1"                         # jump
 audioSample09                   "gesture_flip"                  # flip
-audioSample10                   "deaath1"                       # death
+audioSample10                   "death1"                        # death
 
 camPos.x "0.00"
 camPos.y "0.00"

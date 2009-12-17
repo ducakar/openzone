@@ -36,7 +36,7 @@ namespace oz
 
       Vec3            point;
       AABB            aabb;
-      const DynObject *obj;
+      const Dynamic   *obj;
       Vec3            move;
 
       Bounds          trace;
@@ -123,7 +123,7 @@ namespace oz
       void getOverlaps( const AABB &aabb,
                         Vector<Object*> *objects,
                         Vector<Structure*> *structs,
-                        float eps = 0.0f);
+                        float eps = 0.0f );
       void touchOverlaps( const AABB &aabb, float eps = 0.0f );
 
       // fill given vector with objects included in the AABB
@@ -131,7 +131,7 @@ namespace oz
 
       void translate( const Vec3 &point, const Vec3 &move, const Object *exclObj = null );
       void translate( const AABB &aabb, const Vec3 &move, const Object *exclObj = null );
-      void translate( const DynObject *obj, const Vec3 &move );
+      void translate( const Dynamic *obj, const Vec3 &move );
 
   };
 
@@ -261,7 +261,7 @@ namespace oz
     trimAABBWorld();
   }
 
-  inline void Collider::translate( const DynObject *obj_, const Vec3 &move_ )
+  inline void Collider::translate( const Dynamic *obj_, const Vec3 &move_ )
   {
     assert( obj_->cell != null );
 

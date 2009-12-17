@@ -11,6 +11,7 @@
 
 #include "Translator.h"
 
+#include "WeaponClass.h"
 #include "BotClass.h"
 #include "VehicleClass.h"
 
@@ -28,7 +29,8 @@ namespace oz
   void Translator::init()
   {
     OZ_REGISTER_BASECLASS( Object );
-    OZ_REGISTER_BASECLASS( DynObject );
+    OZ_REGISTER_BASECLASS( Dynamic );
+    OZ_REGISTER_BASECLASS( Weapon );
     OZ_REGISTER_BASECLASS( Bot );
     OZ_REGISTER_BASECLASS( Vehicle );
 

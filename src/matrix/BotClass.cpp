@@ -44,7 +44,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,      "flag.climber",     true  );
     OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,       "flag.pusher",      true  );
     OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
-    OZ_CLASS_SET_FLAG( Object::BLEND_BIT,        "flag.blend",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
 
     clazz->life                 = config->get( "life", 100.0f );
@@ -93,10 +92,13 @@ namespace oz
     clazz->camPosCrouch.y       = config->get( "camPosCrouch.y", 0.00f );
     clazz->camPosCrouch.z       = config->get( "camPosCrouch.z", 0.69f );
 
-    clazz->bobWalkInc           = config->get( "bobWalkInc", 10.00f );
-    clazz->bobRunInc            = config->get( "bobRunInc", 15.00f );
-    clazz->bobRotation          = config->get( "bobRotation", 0.3f );
+    clazz->bobWalkInc           = config->get( "bobWalkInc", 8.00f );
+    clazz->bobRunInc            = config->get( "bobRunInc", 16.00f );
+    clazz->bobSwimInc           = config->get( "bobSwimInc", 2.00f );
+    clazz->bobSwimRunInc        = config->get( "bobSwimRunInc", 4.00f );
+    clazz->bobRotation          = config->get( "bobRotation", 0.25f );
     clazz->bobAmplitude         = config->get( "bobAmplitude", 0.02f );
+    clazz->bobSwimAmplitude     = config->get( "bobSwimAmplitude", 0.05f );
 
     clazz->walkMomentum         = config->get( "walkMomentum", 1.2f );
     clazz->runMomentum          = config->get( "runMomentum", 4.0f );

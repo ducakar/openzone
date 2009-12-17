@@ -27,17 +27,17 @@ namespace client
 
   void BasicAudio::update()
   {
-    const DynObject *dynObj = static_cast<const DynObject*>( obj );
+    const Dynamic *dyn = static_cast<const Dynamic*>( obj );
     int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
 
     // friction
     if( ( obj->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
         ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) &&
-        samples[SND_FRICTING] != -1 && dynObj->depth == 0.0f )
+        samples[SND_FRICTING] != -1 && dyn->depth == 0.0f )
     {
-      float dv = Math::sqrt( dynObj->velocity.x*dynObj->velocity.x +
-                             dynObj->velocity.y*dynObj->velocity.y );
-      playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*dynObj ) );
+      float dv = Math::sqrt( dyn->velocity.x*dyn->velocity.x +
+                             dyn->velocity.y*dyn->velocity.y );
+      playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*dyn ) );
     }
 
     // events

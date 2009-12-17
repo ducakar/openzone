@@ -282,7 +282,7 @@ namespace client
     glEnd();
   }
 
-  void Shape::draw( Particle *part )
+  void Shape::draw( const Particle *part )
   {
     glRotatef( part->rot.y, 0.0f, 1.0f, 0.0f );
     glRotatef( part->rot.x, 1.0f, 0.0f, 0.0f );

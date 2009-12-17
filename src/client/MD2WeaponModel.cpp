@@ -1,5 +1,5 @@
 /*
- *  MD2Model.cpp
+ *  MD2Weapon.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "precompiled.h"
 
-#include "MD2Model.h"
+#include "MD2WeaponModel.h"
 
 #include "matrix/BotClass.h"
 #include "Context.h"
@@ -20,12 +20,12 @@ namespace oz
 namespace client
 {
 
-  Model *MD2Model::create( const Object *obj )
+  Model *MD2WeaponModel::create( const Object *obj )
   {
     assert( obj->flags & Object::BOT_BIT );
 
     const Bot *bot = static_cast<const Bot*>( obj );
-    MD2Model *model = new MD2Model();
+    MD2WeaponModel *model = new MD2WeaponModel();
 
     model->obj = obj;
     model->md2 = context.loadMD2( obj->type->modelName );
@@ -37,12 +37,12 @@ namespace client
     return model;
   }
 
-  MD2Model::~MD2Model()
+  MD2WeaponModel::~MD2WeaponModel()
   {
     context.releaseMD2( obj->type->modelName );
   }
 
-  void MD2Model::setAnim( int type )
+  void MD2WeaponModel::setAnim( int type )
   {
     anim.type       = type;
     anim.repeat     = MD2::animList[type].repeat;
@@ -56,7 +56,7 @@ namespace client
     anim.currTime   = 0.0f;
   }
 
-  void MD2Model::draw()
+  void MD2WeaponModel::draw()
   {
     const Bot *bot = static_cast<const Bot*>( obj );
     const BotClass *clazz = static_cast<const BotClass*>( bot->type );
@@ -75,9 +75,6 @@ namespace client
       glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
     }
     else {
-      if( bot->state & Bot::CROUCHING_BIT ) {
-        glTranslatef( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z );
-      }
       md2->draw( &anim );
     }
   }

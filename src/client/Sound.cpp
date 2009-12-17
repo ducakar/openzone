@@ -27,7 +27,7 @@ namespace client
 
   void Sound::playCell( int cellX, int cellY )
   {
-    Cell &cell = world.cells[cellX][cellY];
+    const Cell &cell = world.cells[cellX][cellY];
 
     foreach( obj, cell.objects.iterator() ) {
       if( obj->flags & Object::AUDIO_BIT ) {

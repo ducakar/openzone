@@ -31,7 +31,7 @@ namespace client
       static const Structure *str;
       static Vec3 camPos;
 
-      oz::BSP *bsp;
+      const oz::BSP *bsp;
 
       uint baseList;
       uint *textures;
@@ -42,7 +42,6 @@ namespace client
       Bitset hiddenFaces;
 
       static int waterFlags;
-      static Vector<const oz::BSP::Face*> waterFaces;
 
       static Bounds rotateBounds( const Bounds &bounds, Structure::Rotation rotation );
 

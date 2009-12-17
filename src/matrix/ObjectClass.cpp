@@ -99,7 +99,7 @@ namespace oz
     ObjectClass *clazz = new ObjectClass();
 
     clazz->name                 = name;
-    clazz->description          = config->get( "description", "" );
+    clazz->description          = config->get( "description", "An Object (static object)" );
 
     clazz->dim.x                = config->get( "dim.x", 0.50f );
     clazz->dim.y                = config->get( "dim.y", 0.50f );
@@ -120,7 +120,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,  "flag.updateFunc",  false );
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
     OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
-    OZ_CLASS_SET_FLAG( Object::BLEND_BIT,        "flag.blend",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
 
     clazz->life                 = config->get( "life", 100.0f );

@@ -298,7 +298,7 @@ namespace oz
     }
   }
 
-  // finds out if Ray-World bounding box collision occurs and the time when it occurs
+  // finds out if Point-World bounding box collision occurs and the time when it occurs
   void Collider::trimPointVoid()
   {
     for( int i = 0; i < 3; i++ ) {
@@ -321,11 +321,11 @@ namespace oz
     }
   }
 
-  // finds out if Ray-AABB collision occurs and the time when it occurs
+  // finds out if Point-AABB collision occurs and the time when it occurs
   void Collider::trimPointObj( Object *sObj )
   {
-    float  minRatio       = -1.0f;
-    float  maxRatio       =  1.0f;
+    float minRatio        = -1.0f;
+    float maxRatio        =  1.0f;
     const Vec3 *tmpNormal = null;
 
     for( int i = 0; i < 6; i++ ) {
@@ -344,7 +344,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
           minRatio  = ratio;
@@ -353,10 +353,10 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio    = minRatio;
+      hit.ratio    = max( 0.0f, minRatio );
       hit.normal   = *tmpNormal;
       hit.obj      = sObj;
-      hit.material = 0;
+      hit.material = Material::OBJECT_BIT;
     }
   }
 
@@ -382,7 +382,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
           minRatio  = ratio;
@@ -394,7 +394,7 @@ namespace oz
       float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
 
       if( newRatio < hit.ratio ) {
-        hit.ratio    = newRatio;
+        hit.ratio    = max( 0.0f, newRatio );
         hit.normal   = toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
         hit.material = brush->material;
@@ -402,7 +402,7 @@ namespace oz
     }
   }
 
-  // recursively check nodes of BSP-tree for AABB-Brush collisions
+  // recursively check nodes of BSP-tree for Point-Brush collisions
   void Collider::trimPointNode( int nodeIndex, float startRatio, float endRatio,
                                 const Vec3 &startPos, const Vec3 &endPos )
   {
@@ -490,6 +490,9 @@ namespace oz
     }
 
     trimPointTerra();
+
+    assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
+    assert( static_cast<bool>( hit.material & Material::OBJECT_BIT ) == ( hit.obj != null ) );
   }
 
   //***********************************
@@ -708,7 +711,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
           minRatio  = ratio;
@@ -717,10 +720,10 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio    = minRatio;
+      hit.ratio    = max( 0.0f, minRatio );
       hit.normal   = *tmpNormal;
       hit.obj      = sObj;
-      hit.material = 0;
+      hit.material = Material::OBJECT_BIT;
     }
   }
 
@@ -751,7 +754,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
           minRatio  = ratio;
@@ -763,7 +766,7 @@ namespace oz
       float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
 
       if( newRatio < hit.ratio ) {
-        hit.ratio    = newRatio;
+        hit.ratio    = max( 0.0f, newRatio );
         hit.normal   = toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
         hit.material = brush->material;
@@ -931,7 +934,8 @@ namespace oz
 
     trimPointTerra();
 
-    hit.ratio = bound( hit.ratio, 0.0f, 1.0f );
+    assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
+    assert( static_cast<bool>( hit.material & Material::OBJECT_BIT ) == ( hit.obj != null ) );
   }
 
   //***********************************
@@ -1000,7 +1004,8 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
-            sObj->flags &= ~Object::DISABLED_BIT;
+            // clearing these two bits should do
+            sObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
           }
         }
       }

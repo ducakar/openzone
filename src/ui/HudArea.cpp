@@ -154,7 +154,7 @@ namespace ui
           }
         }
 
-        if( camera.bot->grabObjIndex != -1 ) {
+        if( camera.bot->grabObj != -1 ) {
           glBindTexture( GL_TEXTURE_2D, grabTexId );
           glBegin( GL_QUADS );
             glTexCoord2i( 0, 1 );

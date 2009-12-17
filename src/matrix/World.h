@@ -15,7 +15,7 @@
 #include "BSP.h"
 
 #include "Structure.h"
-#include "DynObject.h"
+#include "Dynamic.h"
 #include "Particle.h"
 
 #include "Translator.h"

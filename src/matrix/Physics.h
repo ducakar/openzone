@@ -39,23 +39,11 @@ namespace oz
 
     private:
 
-      Vec3      leafStartPos;
-      Vec3      leafEndPos;
-      Vec3      globalStartPos;
-      Vec3      globalEndPos;
-
-      float     leafStartRatio;
-      float     leafEndRatio;
-
-      Vec3      lastNormals[2];
-      float     leftRatio;
-
-      Vec3      move;
-      Bounds    trace;
-
-      Particle  *part;
-      DynObject *obj;
-      BSP       *bsp;
+      Dynamic  *obj;
+      Particle *part;
+      Bounds   trace;
+      Vec3     move;
+      float    leftRatio;
 
       void handlePartHit();
       void handlePartMove();
@@ -79,7 +67,7 @@ namespace oz
         handlePartMove();
       }
 
-      void updateObj( DynObject *obj );
+      void updateObj( Dynamic *obj );
 
   };
 

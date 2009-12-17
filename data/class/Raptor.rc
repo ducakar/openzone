@@ -5,7 +5,6 @@ dim.y "2.99"
 dim.z "1.99"
 
 flag.wideCull "true"
-flag.blend "true"
 
 life "2000.0f"
 

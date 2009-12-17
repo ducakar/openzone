@@ -1,7 +1,7 @@
 /*
  *  Object.h
  *
- *  [description]
+ *  Base object class, can be used for static objects
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
@@ -52,7 +52,7 @@ namespace oz
        */
 
       // if object has Lua handlers
-      static const int LUA_BIT            = 0x04000000;
+      static const int LUA_BIT            = 0x02000000;
 
       // if the onDestroy function should be called on destruction
       static const int DESTROY_FUNC_BIT   = 0x01000000;
@@ -139,13 +139,10 @@ namespace oz
       // don't render object (it will be rendered via another path, e.g. bots in a vehicle)
       static const int NO_DRAW_BIT        = 0x00000008;
 
-      // if the object is blended and should be rendered at the end
-      static const int BLEND_BIT          = 0x00000004;
-
       // wide frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
       // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR (default 5.0f)
-      static const int WIDE_CULL_BIT      = 0x00000002;
+      static const int WIDE_CULL_BIT      = 0x00000004;
 
       /*
        * STANDARD EVENT IDs
@@ -160,7 +157,8 @@ namespace oz
       static const int EVENT_FRICTING     = 5;
       static const int EVENT_USE          = 6;
 
-      static const float MOMENTUM_INTENSITY_FACTOR = -0.125f;
+      static const float MOMENTUM_INTENSITY_COEF = -0.125f;
+      static const float DAMAGE_INTENSITY_COEF   = 0.02f;
 
       struct Event : PoolAlloc<Event, 0>
       {
@@ -236,10 +234,9 @@ namespace oz
       void destroy()
       {
         if( ~flags & DESTROYED_BIT ) {
-          addEvent( EVENT_DESTROY, 1.0f );
-
-          flags |= DESTROYED_BIT;
           life = 0.0f;
+          flags |= DESTROYED_BIT;
+          addEvent( EVENT_DESTROY, 1.0f );
 
           if( flags & DESTROY_FUNC_BIT ) {
             onDestroy();
@@ -256,9 +253,8 @@ namespace oz
         damage -= type->damageTreshold;
 
         if( damage > 0.0f ) {
-          addEvent( EVENT_DAMAGE, damage );
-
           life -= damage;
+          addEvent( EVENT_DAMAGE, damage * DAMAGE_INTENSITY_COEF );
 
           if( flags & DAMAGE_FUNC_BIT ) {
             onDamage( damage );
@@ -273,10 +269,9 @@ namespace oz
        */
       void hit( const Hit *hit, float hitMomentum )
       {
-        addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_FACTOR );
-        damage( hitMomentum * hitMomentum );
-
         flags |= HIT_BIT;
+        addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_COEF );
+        damage( hitMomentum * hitMomentum );
 
         if( flags & HIT_FUNC_BIT ) {
           onHit( hit, hitMomentum );
@@ -285,7 +280,7 @@ namespace oz
 
       void splash( float momentum )
       {
-        addEvent( EVENT_SPLASH, momentum * MOMENTUM_INTENSITY_FACTOR );
+        addEvent( EVENT_SPLASH, momentum * MOMENTUM_INTENSITY_COEF );
       }
 
       /**

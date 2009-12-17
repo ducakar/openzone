@@ -351,10 +351,10 @@ namespace oz
     if( lua.obj->cell == null ) {
       assert( lua.obj->flags & Object::DYNAMIC_BIT );
 
-      DynObject *dynObj = static_cast<DynObject*>( lua.obj );
+      Dynamic *dyn = static_cast<Dynamic*>( lua.obj );
 
-      if( dynObj->parent != -1 ) {
-        Object *parent = world.objects[dynObj->parent];
+      if( dyn->parent != -1 ) {
+        Object *parent = world.objects[dyn->parent];
 
         if( parent != null ) {
           lua_pushnumber( l, parent->p.x );
@@ -629,7 +629,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->velocity.x );
     lua_pushnumber( l, obj->velocity.y );
@@ -646,7 +646,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->momentum.x );
     lua_pushnumber( l, obj->momentum.y );
@@ -663,7 +663,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     obj->flags &= ~Object::DISABLED_BIT;
     obj->momentum.x = lua_tonumber( l, 1 );
@@ -681,7 +681,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     obj->flags &= ~Object::DISABLED_BIT;
     obj->momentum.x += lua_tonumber( l, 1 );
@@ -699,7 +699,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->mass );
     return 1;
@@ -714,7 +714,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     obj->mass = lua_tonumber( l, 1 );
     return 0;
@@ -729,7 +729,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     obj->mass += lua_tonumber( l, 1 );
     return 0;
@@ -744,8 +744,8 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
-    DynObjectClass *clazz = static_cast<DynObjectClass*>( lua.obj->type );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
+    DynamicClass *clazz = static_cast<DynamicClass*>( lua.obj->type );
 
     obj->mass = clazz->mass;
     return 0;
@@ -760,7 +760,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->lift );
     return 1;
@@ -775,7 +775,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     obj->lift = lua_tonumber( l, 1 );
     return 0;
@@ -790,7 +790,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     obj->lift += lua_tonumber( l, 1 );
     return 0;
@@ -805,8 +805,8 @@ namespace oz
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
-    DynObjectClass *clazz = static_cast<DynObjectClass*>( lua.obj->type );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
+    DynamicClass *clazz = static_cast<DynamicClass*>( lua.obj->type );
 
     obj->lift = clazz->lift;
     return 0;
@@ -1240,11 +1240,11 @@ namespace oz
     }
 
     if( lua.obj->cell == null ) {
-      DynObject *dynObj = static_cast<DynObject*>( lua.obj );
+      Dynamic *dyn = static_cast<Dynamic*>( lua.obj );
 
-      assert( dynObj->flags & Object::DYNAMIC_BIT );
+      assert( dyn->flags & Object::DYNAMIC_BIT );
 
-      synapse.removeCut( dynObj );
+      synapse.removeCut( dyn );
     }
     else {
       synapse.remove( lua.obj );
@@ -1444,7 +1444,6 @@ namespace oz
     OZ_LUA_INT_CONST( "OZ_OBJECT_HOVER_BIT",            Object::HOVER_BIT );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_BLEND_BIT",            Object::BLEND_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
 
     OZ_LUA_INT_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );

@@ -44,7 +44,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
     OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
     OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
-    OZ_CLASS_SET_FLAG( Object::BLEND_BIT,        "flag.blend",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
 
     clazz->life                 = config->get( "life", 100.0f );
