@@ -74,11 +74,11 @@ namespace client
 
       Sparse<Lists>  lists;
 
-      HashString< Resource<MD2*>, 253 > md2Models;
-      HashString< Resource<MD2*>, 253 > md2StaticModels;
-      HashString< Resource<MD3*>, 253 > md3Models;
-      HashString< Resource<MD3*>, 253 > md3StaticModels;
-      HashString< Resource<OBJ*>, 253 > objModels;
+      HashString< Resource<OBJ*>, 253 > objs;
+      HashString< Resource<MD2*>, 253 > staticMd2s;
+      HashString< Resource<MD2*>, 253 > md2s;
+      HashString< Resource<MD3*>, 253 > staticMd3s;
+      HashString< Resource<MD3*>, 253 > md3s;
 
       HashString<Model::CreateFunc, 253> modelClasses;
       HashString<Audio::CreateFunc, 253> audioClasses;
@@ -141,20 +141,20 @@ namespace client
       uint genLists( int count );
       void freeLists( uint listId );
 
-      MD2  *loadMD2Model( const char *name );
-      void releaseMD2Model( const char *name );
+      uint loadOBJ( const char *name );
+      void releaseOBJ( const char *name );
 
-      uint loadMD2StaticModel( const char *name );
-      void releaseMD2StaticModel( const char *name );
+      uint loadStaticMD2( const char *name );
+      void releaseStaticMD2( const char *name );
 
-      MD3  *loadMD3Model( const char *name );
-      void releaseMD3Model( const char *name );
+      MD2  *loadMD2( const char *name );
+      void releaseMD2( const char *name );
 
-      uint loadMD3StaticModel( const char *name );
-      void releaseMD3StaticModel( const char *name );
+      uint loadStaticMD3( const char *name );
+      void releaseStaticMD3( const char *name );
 
-      uint loadOBJModel( const char *name );
-      void releaseOBJModel( const char *name );
+      MD3  *loadMD3( const char *name );
+      void releaseMD3( const char *name );
 
       Model *createModel( const Object *obj )
       {

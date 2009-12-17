@@ -1,5 +1,5 @@
 /*
- *  DynObject.cpp
+ *  Dynamic.cpp
  *
  *  [description]
  *
@@ -9,12 +9,12 @@
 
 #include "precompiled.h"
 
-#include "DynObject.h"
+#include "Dynamic.h"
 
 namespace oz
 {
 
-  void DynObject::readFull( InputStream *istream )
+  void Dynamic::readFull( InputStream *istream )
   {
     Object::readFull( istream );
 
@@ -26,7 +26,7 @@ namespace oz
     depth      = istream->readFloat();
   }
 
-  void DynObject::writeFull( OutputStream *ostream ) const
+  void Dynamic::writeFull( OutputStream *ostream ) const
   {
     Object::writeFull( ostream );
 
@@ -38,7 +38,7 @@ namespace oz
     ostream->writeFloat( depth );
   }
 
-  void DynObject::readUpdate( InputStream *istream )
+  void Dynamic::readUpdate( InputStream *istream )
   {
     Object::readUpdate( istream );
 
@@ -47,7 +47,7 @@ namespace oz
     momentum = istream->readVec3();
   }
 
-  void DynObject::writeUpdate( OutputStream *ostream ) const
+  void Dynamic::writeUpdate( OutputStream *ostream ) const
   {
     Object::writeUpdate( ostream );
 

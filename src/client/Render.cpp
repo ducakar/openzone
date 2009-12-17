@@ -70,12 +70,7 @@ namespace client
           frustum.isVisible( *obj );
 
       if( isVisible ) {
-        if( obj->flags & Object::BLEND_BIT ) {
-          blendedObjects << obj;
-        }
-        else {
-          objects << obj;
-        }
+        objects << ObjectEntry( ( obj->p - camera.p ).sqL(), obj );
       }
     }
 
@@ -86,7 +81,7 @@ namespace client
     }
   }
 
-  void Render::drawObject( Object *obj )
+  void Render::drawObject( const Object *obj )
   {
     if( obj->index == taggedObjIndex ) {
       glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
@@ -145,8 +140,8 @@ namespace client
       collider.translate( camera.p, camera.at * 2.0f );
       taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
     }
-    else if( camera.bot->grabObjIndex != -1 && world.objects[camera.bot->grabObjIndex] != null ) {
-      taggedObjIndex = camera.bot->grabObjIndex;
+    else if( camera.bot->grabObj != -1 && world.objects[camera.bot->grabObj] != null ) {
+      taggedObjIndex = camera.bot->grabObj;
     }
     else {
       // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
@@ -245,7 +240,7 @@ namespace client
     BSP::beginRender();
 
     for( int i = 0; i < structures.length(); i++ ) {
-      Structure *str = structures[i];
+      const Structure *str = structures[i];
 
       if( bsps[str->bsp] == null ) {
         bsps[str->bsp] = new BSP( str->bsp );
@@ -270,8 +265,10 @@ namespace client
     glActiveTexture( GL_TEXTURE0 );
 
     // draw objects
+    objects.sort();
+
     for( int i = 0; i < objects.length(); i++ ) {
-      drawObject( objects[i] );
+      drawObject( objects[i].obj );
     }
 
     // draw particles
@@ -280,7 +277,7 @@ namespace client
     glEnable( GL_BLEND );
 
     for( int i = 0; i < particles.length(); i++ ) {
-      Particle *part = particles[i];
+      const Particle *part = particles[i];
 
       glPushMatrix();
       glTranslatef( part->p.x, part->p.y, part->p.z );
@@ -299,40 +296,11 @@ namespace client
     // draw transparent objects
     glDisable( GL_COLOR_MATERIAL );
 
-    for( int i = 0; i < blendedObjects.length(); i++ ) {
-      drawObject( blendedObjects[i] );
-    }
-
-    glEnable( GL_COLOR_MATERIAL );
-
-    if( drawAABBs ) {
-      glDisable( GL_LIGHTING );
-      glDisable( GL_TEXTURE_2D );
-      glEnable( GL_BLEND );
-      glColor4fv( Colors::AABB );
-
-      for( int i = 0; i < objects.length(); i++ ) {
-        shape.drawBox( *objects[i] );
-      }
-      for( int i = 0; i < blendedObjects.length(); i++ ) {
-        shape.drawBox( *blendedObjects[i] );
-      }
-
-      glColor4fv( Colors::WHITE );
-      glEnable( GL_LIGHTING );
-      glEnable( GL_TEXTURE_2D );
-    }
-
-    glDisable( GL_COLOR_MATERIAL );
-
-    objects.clear();
-    blendedObjects.clear();
-
     // draw structures' water
     BSP::beginRender();
 
     for( int i = 0; i < waterStructures.length(); i++ ) {
-      Structure *str = waterStructures[i];
+      const Structure *str = waterStructures[i];
 
       bsps[str->bsp]->fullDrawWater( str );
     }
@@ -343,6 +311,28 @@ namespace client
     terra.drawWater();
 
     water.update();
+
+    glEnable( GL_COLOR_MATERIAL );
+
+    if( drawAABBs ) {
+      glDisable( GL_LIGHTING );
+      glDisable( GL_TEXTURE_2D );
+      glEnable( GL_BLEND );
+
+      for( int i = 0; i < objects.length(); i++ ) {
+        glColor4fv( ( objects[i].obj->flags & Object::CLIP_BIT ) ?
+            Colors::CLIP_AABB : Colors::NOCLIP_AABB );
+        shape.drawBox( *objects[i].obj );
+      }
+
+      glColor4fv( Colors::WHITE );
+      glEnable( GL_LIGHTING );
+      glEnable( GL_TEXTURE_2D );
+    }
+
+    glDisable( GL_COLOR_MATERIAL );
+
+    objects.clear();
 
     glDisable( GL_FOG );
     glDisable( GL_LIGHTING );

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "DynObject.h"
+#include "Dynamic.h"
 #include "Weapon.h"
 
 namespace oz
@@ -17,7 +17,7 @@ namespace oz
 
   class Mind;
 
-  class Bot : public DynObject
+  class Bot : public Dynamic
   {
     public:
 
@@ -51,15 +51,14 @@ namespace oz
       static const int JUMP_SCHED_BIT  = 0x00000010;
       static const int RUNNING_BIT     = 0x00000020;
       static const int SHOOTING_BIT    = 0x00000040;
-      static const int GROUNDED_BIT    = 0x00000080;
-      static const int MOVING_BIT      = 0x00000100;
+      static const int MOVING_BIT      = 0x00000080;
 
-      static const int GESTURE0_BIT    = 0x00001000;
-      static const int GESTURE1_BIT    = 0x00002000;
-      static const int GESTURE2_BIT    = 0x00004000;
-      static const int GESTURE3_BIT    = 0x00008000;
-      static const int GESTURE4_BIT    = 0x00010000;
-      static const int GESTURE_ALL_BIT = 0x00020000;
+      static const int GESTURE0_BIT    = 0x00000100;
+      static const int GESTURE1_BIT    = 0x00000200;
+      static const int GESTURE2_BIT    = 0x00000400;
+      static const int GESTURE3_BIT    = 0x00000800;
+      static const int GESTURE4_BIT    = 0x00001000;
+      static const int GESTURE_ALL_BIT = 0x00002000;
       // bot is controlled by a player, nirvana shouldn't bind a mind to it
 
       static const float GRAB_EPSILON;
@@ -111,12 +110,12 @@ namespace oz
       float       stamina;
       float       stepRate;
 
-      int         grabObjIndex;
+      int         grabObj;
       float       grabHandle;
 
       Vector<int> items;
       int         taggedItem;
-      Weapon      *weapon;
+      int         weaponItem;
 
       Vec3        camPos;
       AnimEnum    anim;

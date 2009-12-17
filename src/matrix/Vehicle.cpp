@@ -132,7 +132,7 @@ namespace oz
 
   void Vehicle::readFull( InputStream *istream )
   {
-    DynObject::readFull( istream );
+    Dynamic::readFull( istream );
 
     rot          = istream->readQuat();
     state        = istream->readInt();
@@ -147,7 +147,7 @@ namespace oz
 
   void Vehicle::writeFull( OutputStream *ostream ) const
   {
-    DynObject::writeFull( ostream );
+    Dynamic::writeFull( ostream );
 
     ostream->writeQuat( rot );
     ostream->writeInt( state );
@@ -164,13 +164,13 @@ namespace oz
   {
     Object::readUpdate( istream );
 
-    rot          = istream->readQuat();
-    state        = istream->readInt();
+    rot   = istream->readQuat();
+    state = istream->readInt();
   }
 
   void Vehicle::writeUpdate( OutputStream *ostream ) const
   {
-    DynObject::writeUpdate( ostream );
+    Dynamic::writeUpdate( ostream );
 
     ostream->writeQuat( rot );
     ostream->writeInt( state );

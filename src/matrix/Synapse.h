@@ -90,10 +90,10 @@ namespace oz
       void use( Bot *user, Object *target );
 
       // schedule for position in the world
-      void put( DynObject *obj );
+      void put( Dynamic *obj );
 
       // schedule for unposition from world
-      void cut( DynObject *obj );
+      void cut( Dynamic *obj );
 
       // create an object, schedule for addition in the world and return predicted world index
       int  add( Structure *str );
@@ -112,7 +112,7 @@ namespace oz
       void remove( Particle *part );
 
       // for removing inventory (cut) objects
-      void removeCut( DynObject *obj );
+      void removeCut( Dynamic *obj );
 
       // client-initiated actions, returns a ticket that can be used to retrieve index of the
       // added object
@@ -159,7 +159,7 @@ namespace oz
     }
   }
 
-  inline void Synapse::put( DynObject *obj )
+  inline void Synapse::put( Dynamic *obj )
   {
     assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
 
@@ -167,7 +167,7 @@ namespace oz
     world.position( obj );
   }
 
-  inline void Synapse::cut( DynObject *obj )
+  inline void Synapse::cut( Dynamic *obj )
   {
     assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
 
@@ -246,7 +246,7 @@ namespace oz
     world.remove( obj );
   }
 
-  inline void Synapse::removeCut( DynObject *obj )
+  inline void Synapse::removeCut( Dynamic *obj )
   {
     assert( obj->index != -1 && obj->cell == null );
 

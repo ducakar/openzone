@@ -19,13 +19,13 @@
 namespace oz
 {
 
-  const float Bot::GRAB_EPSILON = 0.20f;
+  const float Bot::GRAB_EPSILON      = 0.20f;
   const float Bot::GRAB_STRING_RATIO = 10.0f;
-  const float Bot::GRAB_MOM_RATIO = 0.3f;
+  const float Bot::GRAB_MOM_RATIO    = 0.3f;
   // should be smaller than abs( Physics::HIT_MOMENTUM )
-  const float Bot::GRAB_MOM_MAX = 1.0f;
-  const float Bot::GRAB_MOM_MAX_SQ = 1.0f;
-  const float Bot::DEAD_BODY_LIFT = 100.0f;
+  const float Bot::GRAB_MOM_MAX      = 1.0f;
+  const float Bot::GRAB_MOM_MAX_SQ   = 1.0f;
+  const float Bot::DEAD_BODY_LIFT    = 100.0f;
 
   void Bot::onDestroy()
   {
@@ -41,7 +41,7 @@ namespace oz
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       assert( hitMomentum <= 0.0f );
 
-      addEvent( EVENT_LAND, hitMomentum * Object::MOMENTUM_INTENSITY_FACTOR );
+      addEvent( EVENT_LAND, hitMomentum * Object::MOMENTUM_INTENSITY_COEF );
     }
   }
 
@@ -61,7 +61,7 @@ namespace oz
 
     if( life <= type->life * 0.5f ) {
       if( ( ~state & DEATH_BIT ) && life > 0.0f ) {
-        flags |= WIDE_CULL_BIT | BLEND_BIT;
+        flags |= WIDE_CULL_BIT;
         flags &= ~CLIP_BIT;
         addEvent( EVENT_DEATH, 1.0f );
         life = type->life * 0.5f - EPSILON;
@@ -77,7 +77,7 @@ namespace oz
         // and particles to fly around), that's why we remove the object
         if( life <= 0.0f ) {
           foreach( i, items.iterator() ) {
-            synapse.removeCut( static_cast<DynObject*>( world.objects[*i] ) );
+            synapse.removeCut( static_cast<Dynamic*>( world.objects[*i] ) );
           }
           life = EPSILON;
           synapse.remove( this );
@@ -117,7 +117,7 @@ namespace oz
 
     bool isSwimming   = depth >= dim.z;
     bool isUnderWater = depth >= dim.z + camPos.z;
-    bool isClimbing   = ( flags & ON_LADDER_BIT ) && grabObjIndex == -1;
+    bool isClimbing   = ( flags & ON_LADDER_BIT ) && grabObj == -1;
     bool isGrounded   = ( lower != -1 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
 
     flags |= CLIMBER_BIT;
@@ -149,7 +149,7 @@ namespace oz
       if( ~oldActions & ACTION_JUMP ) {
         state |= JUMP_SCHED_BIT;
       }
-      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObjIndex == -1 &&
+      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObj == -1 &&
           stamina >= clazz->staminaJumpDrain )
       {
         flags &= ~DISABLED_BIT;
@@ -301,7 +301,7 @@ namespace oz
       if( state & CROUCHING_BIT ) {
         desiredMomentum *= clazz->crouchMomentum;
       }
-      else if( ( state & RUNNING_BIT ) && grabObjIndex == -1 ) {
+      else if( ( state & RUNNING_BIT ) && grabObj == -1 ) {
         desiredMomentum *= clazz->runMomentum;
       }
       else {
@@ -388,31 +388,32 @@ namespace oz
      * GRAB MOVEMENT
      */
 
-    DynObject *grabObj = null;
-    if( grabObjIndex != -1 ) {
-      grabObj = static_cast<DynObject*>( world.objects[grabObjIndex] );
-      if( grabObj == null || grabObj->cell == null ) {
-        grabObjIndex = -1;
+    Dynamic *obj = null;
+    if( grabObj != -1 ) {
+      obj = static_cast<Dynamic*>( world.objects[grabObj] );
+
+      if( obj == null || obj->cell == null ) {
+        grabObj = -1;
       }
     }
 
-    if( grabObjIndex != -1 ) {
-      if( lower == grabObjIndex || isSwimming ) {
-        grabObjIndex = -1;
+    if( grabObj != -1 ) {
+      if( lower == grabObj || isSwimming ) {
+        grabObj = -1;
       }
       else {
         // keep constant length of xy projection of handle
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * grabHandle;
         // bottom of the object cannot be raised over the player aabb
-        handle.z    = min( handle.z, dim.z - camPos.z + grabObj->dim.z );
-        Vec3 string = p + camPos + handle - grabObj->p;
+        handle.z    = min( handle.z, dim.z - camPos.z + obj->dim.z );
+        Vec3 string = p + camPos + handle - obj->p;
 
         if( string.sqL() > grabHandle*grabHandle ) {
-          grabObjIndex = -1;
+          grabObj = -1;
         }
         else {
           Vec3 desiredMom   = string * GRAB_STRING_RATIO;
-          Vec3 momDiff      = ( desiredMom - grabObj->momentum ) * GRAB_MOM_RATIO;
+          Vec3 momDiff      = ( desiredMom - obj->momentum ) * GRAB_MOM_RATIO;
 
           float momDiffSqL  = momDiff.sqL();
           momDiff.z         += Physics::G_VELOCITY;
@@ -421,9 +422,9 @@ namespace oz
           }
           momDiff.z         -= Physics::G_VELOCITY;
 
-          grabObj->momentum += momDiff;
-          grabObj->flags    &= ~Object::DISABLED_BIT;
-          flags             &= ~CLIMBER_BIT;
+          obj->momentum += momDiff;
+          obj->flags    &= ~Object::DISABLED_BIT;
+          flags         &= ~CLIMBER_BIT;
         }
       }
     }
@@ -433,8 +434,8 @@ namespace oz
      */
 
     if( actions & ~oldActions & ACTION_USE ) {
-      if( grabObjIndex != -1 ) {
-        synapse.use( this, grabObj );
+      if( grabObj != -1 ) {
+        synapse.use( this, obj );
       }
       else {
         Vec3 eye  = p + camPos;
@@ -449,11 +450,11 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_TAKE ) {
-      if( grabObjIndex != -1 ) {
-        if( grabObj->flags & ITEM_BIT ) {
-          items << grabObj->index;
-          grabObj->parent = index;
-          synapse.cut( grabObj );
+      if( grabObj != -1 ) {
+        if( obj->flags & ITEM_BIT ) {
+          items << obj->index;
+          obj->parent = index;
+          synapse.cut( obj );
         }
       }
       else {
@@ -462,7 +463,7 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        DynObject *obj = static_cast<DynObject*>( collider.hit.obj );
+        Dynamic *obj = static_cast<Dynamic*>( collider.hit.obj );
         if( obj != null && ( obj->flags & ITEM_BIT ) ) {
           assert( obj->flags & DYNAMIC_BIT );
 
@@ -473,16 +474,16 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_THROW ) {
-      if( grabObjIndex != -1 ) {
+      if( grabObj != -1 ) {
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
 
-        grabObj->momentum = handle * clazz->throwMomentum;
-        grabObjIndex      = -1;
+        obj->momentum = handle * clazz->throwMomentum;
+        grabObj = -1;
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
-      if( grabObjIndex != -1 || isSwimming ) {
-        grabObjIndex = -1;
+      if( grabObj != -1 || isSwimming ) {
+        grabObj = -1;
       }
       else {
         Vec3 eye  = p + camPos;
@@ -490,7 +491,7 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        DynObject *obj = static_cast<DynObject*>( collider.hit.obj );
+        Dynamic *obj = static_cast<Dynamic*>( collider.hit.obj );
         if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
             lower != obj->index )
         {
@@ -499,16 +500,16 @@ namespace oz
           float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
           if( dist <= clazz->grabDistance ) {
-            grabObjIndex = collider.hit.obj->index;
-            grabHandle   = dist;
-            flags        &= ~ON_LADDER_BIT;
+            grabObj    = collider.hit.obj->index;
+            grabHandle = dist;
+            flags      &= ~ON_LADDER_BIT;
           }
         }
       }
     }
     else if( actions & ~oldActions & ACTION_INV_USE ) {
       if( taggedItem != -1 && taggedItem < items.length() && items[taggedItem] != -1 ) {
-        DynObject *item = static_cast<DynObject*>( world.objects[items[taggedItem]] );
+        Dynamic *item = static_cast<Dynamic*>( world.objects[items[taggedItem]] );
 
         assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -520,8 +521,8 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_INV_GRAB ) {
-      if( grabObjIndex == -1 && taggedItem != -1 && taggedItem < items.length() ) {
-        DynObject *item = static_cast<DynObject*>( world.objects[items[taggedItem]] );
+      if( grabObj == -1 && taggedItem != -1 && taggedItem < items.length() ) {
+        Dynamic *item = static_cast<Dynamic*>( world.objects[items[taggedItem]] );
 
         assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -540,10 +541,23 @@ namespace oz
           synapse.put( item );
           items.remove( taggedItem );
 
-          grabObjIndex = item->index;
-          grabHandle   = dist;
-          flags        &= ~ON_LADDER_BIT;
+          grabObj    = item->index;
+          grabHandle = dist;
+          flags      &= ~ON_LADDER_BIT;
         }
+      }
+    }
+
+    /*
+     * WEAPON
+     */
+    if( weaponItem != -1 ) {
+      Dynamic *obj = static_cast<Dynamic*>( world.objects[weaponItem] );
+
+      assert( ( obj->flags & DYNAMIC_BIT ) && ( obj->flags & ITEM_BIT ) && ( obj->flags & WEAPON_BIT ) );
+
+      if( obj == null || obj->parent != index ) {
+        weaponItem = -1;
       }
     }
 
@@ -552,16 +566,16 @@ namespace oz
   }
 
   Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
-      grabObjIndex( -1 ), weapon( null ), anim( ANIM_STAND )
+      grabObj( -1 ), weaponItem( -1 ), anim( ANIM_STAND )
   {}
 
   void Bot::enter( int vehicleIndex_ )
   {
     assert( cell != null );
 
-    parent = vehicleIndex_;
-    grabObjIndex = -1;
-    anim = ANIM_STAND;
+    parent  = vehicleIndex_;
+    grabObj = -1;
+    anim    = ANIM_STAND;
     synapse.cut( this );
   }
 
@@ -580,7 +594,7 @@ namespace oz
 
   void Bot::readFull( InputStream *istream )
   {
-    DynObject::readFull( istream );
+    Dynamic::readFull( istream );
 
     h            = istream->readFloat();
     v            = istream->readFloat();
@@ -590,7 +604,7 @@ namespace oz
     oldActions   = istream->readInt();
     stamina      = istream->readFloat();
 
-    grabObjIndex = istream->readInt();
+    grabObj      = istream->readInt();
     grabHandle   = istream->readFloat();
 
     stepRate     = istream->readFloat();
@@ -607,7 +621,7 @@ namespace oz
 
   void Bot::writeFull( OutputStream *ostream ) const
   {
-    DynObject::writeFull( ostream );
+    Dynamic::writeFull( ostream );
 
     ostream->writeFloat( h );
     ostream->writeFloat( v );
@@ -617,7 +631,7 @@ namespace oz
     ostream->writeInt( oldActions );
     ostream->writeFloat( stamina );
 
-    ostream->writeInt( grabObjIndex );
+    ostream->writeInt( grabObj );
     ostream->writeFloat( grabHandle );
 
     ostream->writeFloat( stepRate );
@@ -636,18 +650,18 @@ namespace oz
     h            = istream->readFloat();
     v            = istream->readFloat();
     state        = istream->readInt();
-    grabObjIndex = istream->readInt();
+    grabObj      = istream->readInt();
     anim         = static_cast<AnimEnum>( istream->readByte() );
   }
 
   void Bot::writeUpdate( OutputStream *ostream ) const
   {
-    DynObject::writeUpdate( ostream );
+    Dynamic::writeUpdate( ostream );
 
     ostream->writeFloat( h );
     ostream->writeFloat( v );
     ostream->writeInt( state );
-    ostream->writeInt( grabObjIndex );
+    ostream->writeInt( grabObj );
     ostream->writeByte( anim );
   }
 

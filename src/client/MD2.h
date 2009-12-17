@@ -18,8 +18,6 @@ namespace client
 
   class MD2
   {
-    friend class MD2Model;
-
     private:
 
       static const int MAX_VERTS = 2048;
@@ -49,10 +47,11 @@ namespace client
         float currTime;
       };
 
+      static Anim  animList[];
+
     private:
 
       static float anorms[][3];
-      static Anim  animList[];
       static Vec3  vertList[MAX_VERTS];
 
       String       name;

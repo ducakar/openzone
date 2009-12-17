@@ -9,14 +9,23 @@
 
 #pragma once
 
-#include "DynObject.h"
+#include "Dynamic.h"
 
 namespace oz
 {
 
-  struct Weapon : DynObject
+  class Weapon : public Dynamic
   {
-    explicit Weapon( const Vec3 &p = Vec3::zero() );
+    friend class Bot;
+
+    protected:
+
+      virtual void onUse( Bot *user );
+
+    public:
+
+      explicit Weapon() : Dynamic() {}
+
   };
 
 }

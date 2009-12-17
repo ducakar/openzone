@@ -123,7 +123,7 @@ namespace oz
       }
       // on another object
       if( obj->lower != -1 ) {
-        DynObject *sObj = static_cast<DynObject*>( world.objects[obj->lower] );
+        Dynamic *sObj = static_cast<Dynamic*>( world.objects[obj->lower] );
 
         if( obj->momentum.x != 0.0f || obj->momentum.y != 0.0f ||
             ( ~sObj->flags & Object::DISABLED_BIT ) )
@@ -230,7 +230,7 @@ namespace oz
     Object *sObj = hit.obj;
 
     if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
-      DynObject *sDynObj = static_cast<DynObject*>( sObj );
+      Dynamic *sDynObj = static_cast<Dynamic*>( sObj );
 
       Vec3  momentum    = ( obj->momentum * obj->mass + sDynObj->momentum * sDynObj->mass ) /
           ( obj->mass + sDynObj->mass );
@@ -309,9 +309,10 @@ namespace oz
 
   void Physics::handleObjMove()
   {
-    leftRatio = 1.0f;
     move = obj->momentum * Timer::TICK_TIME;
+    leftRatio = 1.0f;
 
+    Vec3 lastNormals[2];
     int traceSplits = 0;
     do {
       collider.translate( obj, move );
@@ -396,7 +397,7 @@ namespace oz
   //*             PUBLIC              *
   //***********************************
 
-  void Physics::updateObj( DynObject *obj_ )
+  void Physics::updateObj( Dynamic *obj_ )
   {
     obj = obj_;
 

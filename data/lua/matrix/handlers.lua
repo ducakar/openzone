@@ -34,11 +34,11 @@ function Explosion_onUpdate( l )
     while ozObjBindNext() do
       if not ozObjIsSelf() then
 	distance = ozObjDistanceFromSelf()
-	if 0 < distance and distance < 20 then
+	if distance < 20 then
 	  distance = 20 - distance
 	  ozObjDamage( distance*distance )
 
-	  if ozObjIsDynamic() then
+	  if distance < 20 and ozObjIsDynamic() then
 	    dirX, dirY, dirZ = ozObjDirectionFromSelf()
 	    ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
 	  end

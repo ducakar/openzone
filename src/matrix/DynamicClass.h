@@ -1,5 +1,5 @@
 /*
- *  DynObjectClass.h
+ *  DynamicClass.h
  *
  *  [description]
  *
@@ -15,7 +15,7 @@
 namespace oz
 {
 
-  struct DynObjectClass : ObjectClass
+  struct DynamicClass : ObjectClass
   {
     static const int BASE_FLAGS = Object::DYNAMIC_BIT;
 

@@ -131,16 +131,30 @@ namespace client
       p = ( bot->p + bot->camPos ) * smoothCoef_1 + oldP * smoothCoef;
 
       if( bot->state & Bot::MOVING_BIT ) {
-        float bobInc = ( bot->state & Bot::RUNNING_BIT ) && bot->grabObjIndex == -1 ?
+        if( bot->flags & Object::IN_WATER_BIT ) {
+          float bobInc = ( bot->state & Bot::RUNNING_BIT ) && bot->grabObj == -1 ?
+            clazz->bobSwimRunInc : clazz->bobSwimInc;
+
+          bobPhi   = Math::mod( bobPhi + bobInc, 360.0f );
+          bobTheta = 0.0f;
+          bobBias  = Math::sin( Math::rad( -2.0f * bobPhi ) ) * clazz->bobSwimAmplitude;
+        }
+        else if( ( bot->flags & Object::ON_FLOOR_BIT ) || bot->lower != -1 ) {
+          float bobInc = ( bot->state & Bot::RUNNING_BIT ) && bot->grabObj == -1 ?
             clazz->bobRunInc : clazz->bobWalkInc;
 
-        bobPhi   = Math::mod( bobPhi + bobInc, 360.0f );
-        bobTheta = Math::sin( Math::rad( bobPhi ) ) * clazz->bobRotation;
-        bobBias  = Math::sin( Math::rad( 2.0f * bobPhi ) ) * clazz->bobAmplitude;
+          bobPhi   = Math::mod( bobPhi + bobInc, 360.0f );
+          bobTheta = Math::sin( Math::rad( bobPhi ) ) * clazz->bobRotation;
+          bobBias  = Math::sin( Math::rad( 2.0f * bobPhi ) ) * clazz->bobAmplitude;
+        }
       }
       else {
+        bobPhi   = 0.0f;
         bobTheta *= BOB_SUPPRESSION_COEF;
         bobBias  *= BOB_SUPPRESSION_COEF;
+      }
+      if( bot->flags & Object::IN_WATER_BIT ) {
+        bobTheta = 0.0f;
       }
       p.z += bobBias;
     }

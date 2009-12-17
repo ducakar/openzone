@@ -9,12 +9,12 @@
 
 #pragma once
 
-#include "DynObjectClass.h"
+#include "DynamicClass.h"
 
 namespace oz
 {
 
-  struct BotClass : DynObjectClass
+  struct BotClass : DynamicClass
   {
     static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
         Object::HIT_FUNC_BIT | Object::BOT_BIT;
@@ -26,8 +26,11 @@ namespace oz
 
     float  bobWalkInc;
     float  bobRunInc;
+    float  bobSwimInc;
+    float  bobSwimRunInc;
     float  bobRotation;
     float  bobAmplitude;
+    float  bobSwimAmplitude;
 
     float  walkMomentum;
     float  runMomentum;

@@ -1,7 +1,7 @@
 /*
- *  DynObject.h
+ *  Dynamic.h
  *
- *  [description]
+ *  Dynamic object
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
@@ -15,7 +15,7 @@ namespace oz
 {
 
   // dynamic object abstract class
-  class DynObject : public Object
+  class Dynamic : public Object
   {
     public:
 
@@ -33,7 +33,7 @@ namespace oz
       int     lower;      // index of the lower object
       float   depth;      // how deep under water the object's lower bound is
 
-      explicit DynObject() : parent( -1 ), velocity( Vec3::zero() ), momentum( Vec3::zero() ),
+      explicit Dynamic() : parent( -1 ), velocity( Vec3::zero() ), momentum( Vec3::zero() ),
           lower( -1 ), depth( 0.0f )
       {}
 

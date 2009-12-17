@@ -15,12 +15,14 @@
 #include "MD3.h"
 #include "OBJ.h"
 
-#include "MD2Model.h"
-#include "MD2StaticModel.h"
-#include "MD3StaticModel.h"
 #include "OBJModel.h"
-#include "OBJVehicleModel.h"
 #include "ExplosionModel.h"
+#include "MD2StaticModel.h"
+#include "MD2Model.h"
+#include "MD2WeaponModel.h"
+#include "MD3StaticModel.h"
+#include "OBJVehicleModel.h"
+
 #include "BasicAudio.h"
 
 #include <SDL_image.h>
@@ -441,136 +443,136 @@ namespace client
     }
   }
 
-  MD2 *Context::loadMD2Model( const char *path )
+  uint Context::loadOBJ( const char *path )
   {
-    if( !md2Models.contains( path ) ) {
-      md2Models.add( path, Resource<MD2*>() );
-      md2Models.cachedValue().object = new MD2( path );
-    }
-    md2Models.cachedValue().nUsers++;
-    return md2Models.cachedValue().object;
-  }
+    if( !objs.contains( path ) ) {
+      objs.add( path, Resource<OBJ*>() );
 
-  void Context::releaseMD2Model( const char *path )
-  {
-    assert( md2Models.contains( path ) );
-
-    if( md2Models.contains( path ) ) {
-      md2Models.cachedValue().nUsers--;
-
-      if( md2Models.cachedValue().nUsers == 0 ) {
-        delete md2Models.cachedValue().object;
-        md2Models.remove( path );
-      }
-    }
-  }
-
-  uint Context::loadMD2StaticModel( const char *path )
-  {
-    if( !md2StaticModels.contains( path ) ) {
-      md2StaticModels.add( path, Resource<MD2*>() );
-
-      MD2 *&md2 = md2StaticModels.cachedValue().object;
-      md2 = new MD2( path );
-      md2->genList();
-    }
-    md2StaticModels.cachedValue().nUsers++;
-    return md2StaticModels.cachedValue().object->list;
-  }
-
-  void Context::releaseMD2StaticModel( const char *path )
-  {
-    assert( md2StaticModels.contains( path ) );
-
-    if( md2StaticModels.contains( path ) ) {
-      md2StaticModels.cachedValue().nUsers--;
-
-      if( md2StaticModels.cachedValue().nUsers == 0 ) {
-        glDeleteLists( md2StaticModels.cachedValue().object->list, 1 );
-        delete md2StaticModels.cachedValue().object;
-        md2StaticModels.remove( path );
-      }
-    }
-  }
-
-  MD3 *Context::loadMD3Model( const char *path )
-  {
-    if( !md3Models.contains( path ) ) {
-      md3Models.add( path, Resource<MD3*>() );
-      md3Models.cachedValue().object = new MD3( path );
-    }
-    md3Models.cachedValue().nUsers++;
-    return md3Models.cachedValue().object;
-  }
-
-  void Context::releaseMD3Model( const char *path )
-  {
-    assert( md3Models.contains( path ) );
-
-    if( md3Models.contains( path ) ) {
-      md3Models.cachedValue().nUsers--;
-
-      if( md3Models.cachedValue().nUsers == 0 ) {
-        delete md3Models.cachedValue().object;
-        md3Models.remove( path );
-      }
-    }
-  }
-
-  uint Context::loadMD3StaticModel( const char *path )
-  {
-    if( !md3StaticModels.contains( path ) ) {
-      md3StaticModels.add( path, Resource<MD3*>() );
-
-      MD3 *&md3 = md3StaticModels.cachedValue().object;
-      md3 = new MD3( path );
-      md3->genList();
-      md3->trim();
-    }
-    md3StaticModels.cachedValue().nUsers++;
-    return md3StaticModels.cachedValue().object->list;
-  }
-
-  void Context::releaseMD3StaticModel( const char *path )
-  {
-    assert( md3StaticModels.contains( path ) );
-
-    if( md3StaticModels.contains( path ) ) {
-      md3StaticModels.cachedValue().nUsers--;
-
-      if( md3StaticModels.cachedValue().nUsers == 0 ) {
-        glDeleteLists( md3StaticModels.cachedValue().object->list, 1 );
-        delete md3StaticModels.cachedValue().object;
-        md3StaticModels.remove( path );
-      }
-    }
-  }
-
-  uint Context::loadOBJModel( const char *path )
-  {
-    if( !objModels.contains( path ) ) {
-      objModels.add( path, Resource<OBJ*>() );
-
-      OBJ *&obj = objModels.cachedValue().object;
+      OBJ *&obj = objs.cachedValue().object;
       obj = new OBJ( path );
       obj->genList();
       obj->trim();
     }
-    objModels.cachedValue().nUsers++;
-    return objModels.cachedValue().object->list;
+    objs.cachedValue().nUsers++;
+    return objs.cachedValue().object->list;
   }
 
-  void Context::releaseOBJModel( const char *path )
+  void Context::releaseOBJ( const char *path )
   {
-    assert( objModels.contains( path ) );
+    assert( objs.contains( path ) );
 
-    if( objModels.contains( path ) ) {
-      objModels.cachedValue().nUsers--;
+    if( objs.contains( path ) ) {
+      objs.cachedValue().nUsers--;
 
-      if( objModels.cachedValue().nUsers == 0 ) {
-        glDeleteLists( objModels.cachedValue().object->list, 1 );
-        delete objModels.cachedValue().object;
-        objModels.remove( path );
+      if( objs.cachedValue().nUsers == 0 ) {
+        glDeleteLists( objs.cachedValue().object->list, 1 );
+        delete objs.cachedValue().object;
+        objs.remove( path );
+      }
+    }
+  }
+
+  uint Context::loadStaticMD2( const char *path )
+  {
+    if( !staticMd2s.contains( path ) ) {
+      staticMd2s.add( path, Resource<MD2*>() );
+
+      MD2 *&md2 = staticMd2s.cachedValue().object;
+      md2 = new MD2( path );
+      md2->genList();
+    }
+    staticMd2s.cachedValue().nUsers++;
+    return staticMd2s.cachedValue().object->list;
+  }
+
+  void Context::releaseStaticMD2( const char *path )
+  {
+    assert( staticMd2s.contains( path ) );
+
+    if( staticMd2s.contains( path ) ) {
+      staticMd2s.cachedValue().nUsers--;
+
+      if( staticMd2s.cachedValue().nUsers == 0 ) {
+        glDeleteLists( staticMd2s.cachedValue().object->list, 1 );
+        delete staticMd2s.cachedValue().object;
+        staticMd2s.remove( path );
+      }
+    }
+  }
+
+  MD2 *Context::loadMD2( const char *path )
+  {
+    if( !md2s.contains( path ) ) {
+      md2s.add( path, Resource<MD2*>() );
+      md2s.cachedValue().object = new MD2( path );
+    }
+    md2s.cachedValue().nUsers++;
+    return md2s.cachedValue().object;
+  }
+
+  void Context::releaseMD2( const char *path )
+  {
+    assert( md2s.contains( path ) );
+
+    if( md2s.contains( path ) ) {
+      md2s.cachedValue().nUsers--;
+
+      if( md2s.cachedValue().nUsers == 0 ) {
+        delete md2s.cachedValue().object;
+        md2s.remove( path );
+      }
+    }
+  }
+
+  uint Context::loadStaticMD3( const char *path )
+  {
+    if( !staticMd3s.contains( path ) ) {
+      staticMd3s.add( path, Resource<MD3*>() );
+
+      MD3 *&md3 = staticMd3s.cachedValue().object;
+      md3 = new MD3( path );
+      md3->genList();
+      md3->trim();
+    }
+    staticMd3s.cachedValue().nUsers++;
+    return staticMd3s.cachedValue().object->list;
+  }
+
+  void Context::releaseStaticMD3( const char *path )
+  {
+    assert( staticMd3s.contains( path ) );
+
+    if( staticMd3s.contains( path ) ) {
+      staticMd3s.cachedValue().nUsers--;
+
+      if( staticMd3s.cachedValue().nUsers == 0 ) {
+        glDeleteLists( staticMd3s.cachedValue().object->list, 1 );
+        delete staticMd3s.cachedValue().object;
+        staticMd3s.remove( path );
+      }
+    }
+  }
+
+  MD3 *Context::loadMD3( const char *path )
+  {
+    if( !md3s.contains( path ) ) {
+      md3s.add( path, Resource<MD3*>() );
+      md3s.cachedValue().object = new MD3( path );
+    }
+    md3s.cachedValue().nUsers++;
+    return md3s.cachedValue().object;
+  }
+
+  void Context::releaseMD3( const char *path )
+  {
+    assert( md3s.contains( path ) );
+
+    if( md3s.contains( path ) ) {
+      md3s.cachedValue().nUsers--;
+
+      if( md3s.cachedValue().nUsers == 0 ) {
+        delete md3s.cachedValue().object;
+        md3s.remove( path );
       }
     }
   }
@@ -592,12 +594,13 @@ namespace client
       sounds[i].nUsers = -1;
     }
 
-    OZ_REGISTER_MODELCLASS( MD2 );
-    OZ_REGISTER_MODELCLASS( MD2Static );
-    OZ_REGISTER_MODELCLASS( MD3Static );
     OZ_REGISTER_MODELCLASS( OBJ );
-    OZ_REGISTER_MODELCLASS( OBJVehicle );
     OZ_REGISTER_MODELCLASS( Explosion );
+    OZ_REGISTER_MODELCLASS( MD2Static );
+    OZ_REGISTER_MODELCLASS( MD2 );
+    OZ_REGISTER_MODELCLASS( MD2Weapon );
+    OZ_REGISTER_MODELCLASS( MD3Static );
+    OZ_REGISTER_MODELCLASS( OBJVehicle );
 
     OZ_REGISTER_AUDIOCLASS( Basic );
 
@@ -622,11 +625,11 @@ namespace client
       sounds = null;
     }
 
-    md2Models.clear();
-    md2StaticModels.clear();
-    md3Models.clear();
-    md3StaticModels.clear();
-    objModels.clear();
+    md2s.clear();
+    staticMd2s.clear();
+    md3s.clear();
+    staticMd3s.clear();
+    objs.clear();
 
     modelClasses.clear();
     audioClasses.clear();

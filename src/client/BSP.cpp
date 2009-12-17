@@ -33,9 +33,7 @@ namespace client
 
   const Structure *BSP::str;
   Vec3  BSP::camPos;
-
   int   BSP::waterFlags;
-  Vector<const oz::BSP::Face*> BSP::waterFaces;
 
   inline Bounds BSP::rotateBounds( const Bounds &bounds, Structure::Rotation rotation )
   {
@@ -65,8 +63,8 @@ namespace client
   {
     int nodeIndex = 0;
     do {
-      oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
-      oz::BSP::Plane &plane = bsp->planes[node.plane];
+      const oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
+      const oz::BSP::Plane &plane = bsp->planes[node.plane];
 
       if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
         nodeIndex = node.back;
@@ -83,11 +81,11 @@ namespace client
   void BSP::checkInWaterBrush( const oz::BSP::Leaf *leaf ) const
   {
     for( int i = 0; i < leaf->nBrushes; i++ ) {
-      oz::BSP::Brush *brush = &bsp->brushes[ bsp->leafBrushes[leaf->firstBrush + i] ];
+      const oz::BSP::Brush *brush = &bsp->brushes[ bsp->leafBrushes[leaf->firstBrush + i] ];
 
       if( brush->material & Material::WATER_BIT ) {
         for( int i = 0; i < brush->nSides; i++ ) {
-          oz::BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+          const oz::BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
           if( ( camPos * plane.normal - plane.distance ) >= 0.0f ) {
             goto nextBrush;
@@ -185,8 +183,8 @@ namespace client
   void BSP::drawNode( int nodeIndex )
   {
     if( nodeIndex >= 0 ) {
-      oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
-      oz::BSP::Plane &plane = bsp->planes[node.plane];
+      const oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
+      const oz::BSP::Plane &plane = bsp->planes[node.plane];
 
       if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
         drawNode( node.back );
@@ -198,7 +196,7 @@ namespace client
       }
     }
     else {
-      oz::BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      const oz::BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
@@ -217,8 +215,8 @@ namespace client
   void BSP::drawNodeWater( int nodeIndex )
   {
     if( nodeIndex >= 0 ) {
-      oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
-      oz::BSP::Plane &plane = bsp->planes[node.plane];
+      const oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
+      const oz::BSP::Plane &plane = bsp->planes[node.plane];
 
       if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
         drawNodeWater( node.back );
@@ -230,7 +228,7 @@ namespace client
       }
     }
     else {
-      oz::BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      const oz::BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
@@ -294,7 +292,7 @@ namespace client
     }
 
     for( int i = 0; i < bsp->nFaces; i++ ) {
-      oz::BSP::Vertex *verts = &bsp->vertices[ bsp->faces[i].firstVertex ];
+      const oz::BSP::Vertex *verts = &bsp->vertices[ bsp->faces[i].firstVertex ];
 
       for( int j = 0; j < bsp->faces[i].nVertices; j++ ) {
         if( verts[j].p.x < -bsp->maxDim || verts[j].p.x > bsp->maxDim ||
@@ -360,7 +358,7 @@ namespace client
       Bitset &bitset = bsp->visual.bitsets[cluster];
 
       for( int i = 0; i < bsp->nLeafs; i++ ) {
-        oz::BSP::Leaf &leaf = bsp->leafs[i];
+        const oz::BSP::Leaf &leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
@@ -380,7 +378,7 @@ namespace client
     }
     else {
       for( int i = 0; i < bsp->nLeafs; i++ ) {
-        oz::BSP::Leaf &leaf = bsp->leafs[i];
+        const oz::BSP::Leaf &leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
@@ -429,7 +427,7 @@ namespace client
       Bitset &bitset = bsp->visual.bitsets[cluster];
 
       for( int i = 0; i < bsp->nLeafs; i++ ) {
-        oz::BSP::Leaf &leaf = bsp->leafs[i];
+        const oz::BSP::Leaf &leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
@@ -449,7 +447,7 @@ namespace client
     }
     else {
       for( int i = 0; i < bsp->nLeafs; i++ ) {
-        oz::BSP::Leaf &leaf = bsp->leafs[i];
+        const oz::BSP::Leaf &leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
@@ -543,7 +541,7 @@ namespace client
     drawnFaces = hiddenFaces;
 
     for( int i = 0; i < bsp->nLeafs; i++ ) {
-      oz::BSP::Leaf &leaf = bsp->leafs[i];
+      const oz::BSP::Leaf &leaf = bsp->leafs[i];
 
       for( int j = 0; j < leaf.nFaces; j++ ) {
         int faceIndex = bsp->leafFaces[leaf.firstFace + j];
@@ -562,7 +560,6 @@ namespace client
   void BSP::beginRender()
   {
     waterFlags = 0;
-    waterFaces.clear();
 
     glFrontFace( GL_CW );
 

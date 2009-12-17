@@ -271,9 +271,9 @@ namespace client
     MD3Tag *upperTags;
     MD3Tag *lowerTags;
 
-    head  = new Part( this, dir, name + "_head.md3", &headTags );
-    upper = new Part( this, dir, name + "_upper.md3", &upperTags );
-    lower = new Part( this, dir, name + "_lower.md3", &lowerTags );
+    head  = new Part( this, dir, "head.md3", &headTags );
+    upper = new Part( this, dir, "upper.md3", &upperTags );
+    lower = new Part( this, dir, "lower.md3", &lowerTags );
 
     headOffsets( upper->nFrames );
     lowerOffsets( upper->nFrames );
@@ -301,27 +301,16 @@ namespace client
     Config config;
     config.load( configFile );
 
-    float scaling = config.get( "scale", 1.0f );
-    Vec3 translation( config.get( "translate.x", 0.0f ),
-                      config.get( "translate.y", 0.0f ),
-                      config.get( "translate.z", 0.0f ) );
-    Vec3 crouchTranslation( config.get( "crouchTranslate.x", 0.0f ),
-                            config.get( "crouchTranslate.y", 0.0f ),
-                            config.get( "crouchTranslate.z", 0.0f ) );
+    float scaling = config.get( "scale", 0.042f );
+    Vec3 translation( config.get( "translate.x", 0.00f ),
+                      config.get( "translate.y", 0.00f ),
+                      config.get( "translate.z", 0.00f ) );
     config.clear();
 
     if( scaling != 1.0f ) {
       scale( scaling );
     }
     translate( translation );
-
-    if( !crouchTranslation.isZero() ) {
-//       translate( ANIM_CROUCH_STAND,  crouchTranslation );
-//       translate( ANIM_CROUCH_WALK,   crouchTranslation );
-//       translate( ANIM_CROUCH_ATTACK, crouchTranslation );
-//       translate( ANIM_CROUCH_PAIN,   crouchTranslation );
-//       translate( ANIM_CROUCH_DEATH,  crouchTranslation );
-    }
   }
 
   MD3::~MD3()

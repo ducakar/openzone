@@ -11,17 +11,16 @@
 
 #include "Weapon.h"
 
+#include "Bot.h"
+
 namespace oz
 {
 
-  Weapon::Weapon( const Vec3 &p_ )
+  void Weapon::onUse( Bot *user )
   {
-    p = p_,
-    dim = Vec3( 0.3f, 0.3f, 0.3f );
+    assert( parent == -1 || parent == user->index );
 
-    flags = 0;
-    type = 0;
-
-    life = Math::inf();
+    user->weaponItem = user->weaponItem == index ? -1 : index;
   }
+
 }

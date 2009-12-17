@@ -496,7 +496,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->velocity.x );
     lua_pushnumber( l, obj->velocity.y );
@@ -513,7 +513,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->momentum.x );
     lua_pushnumber( l, obj->momentum.y );
@@ -530,7 +530,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->mass );
     return 1;
@@ -545,7 +545,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    DynObject *obj = static_cast<DynObject*>( lua.obj );
+    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->lift );
     return 1;
@@ -900,7 +900,6 @@ namespace nirvana
     OZ_LUA_INT_CONST( "OZ_OBJECT_HOVER_BIT",            Object::HOVER_BIT );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_BLEND_BIT",            Object::BLEND_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
 
     OZ_LUA_INT_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );

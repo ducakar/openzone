@@ -1,4 +1,4 @@
-base "DynObject"
+base "Dynamic"
 
 dim.x "0.3"
 dim.y "0.3"

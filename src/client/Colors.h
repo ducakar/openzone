@@ -19,8 +19,9 @@ namespace client
     static const float BLACK[];
     static const float WHITE[];
 
+    static const float CLIP_AABB[];
+    static const float NOCLIP_AABB[];
     static const float TAG[];
-    static const float AABB[];
 
     static const float GLOBAL_AMBIENT[];
 

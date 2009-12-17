@@ -233,22 +233,22 @@ namespace oz
       }
 
       if( obj->flags & Object::DYNAMIC_BIT ) {
-        DynObject *dynObj = static_cast<DynObject*>( obj );
+        Dynamic *dyn = static_cast<Dynamic*>( obj );
 
-        if( dynObj->cell == null ) {
-          assert( dynObj->parent != -1 );
+        if( dyn->cell == null ) {
+          assert( dyn->parent != -1 );
 
           // remove if its container has been removed
-          if( world.objects[dynObj->parent] == null ) {
-            dynObj->parent = -1;
-            synapse.removeCut( dynObj );
+          if( world.objects[dyn->parent] == null ) {
+            dyn->parent = -1;
+            synapse.removeCut( dyn );
           }
         }
         else {
-          physics.updateObj( dynObj );
+          physics.updateObj( dyn );
 
           // remove on velocity overflow
-          if( dynObj->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+          if( dyn->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
             synapse.remove( obj );
           }
         }

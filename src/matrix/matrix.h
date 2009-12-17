@@ -24,6 +24,7 @@ namespace oz
     static const int STRUCT_BIT  = 0x00000008;
     static const int SLICK_BIT   = 0x00000010;
     static const int LADDER_BIT  = 0x00000020;
+    static const int OBJECT_BIT  = 0x00000040;
   };
 
 }

@@ -1,5 +1,5 @@
 /*
- *  DynObjectClass.cpp
+ *  DynamicClass.cpp
  *
  *  [description]
  *
@@ -9,19 +9,19 @@
 
 #include "precompiled.h"
 
-#include "DynObjectClass.h"
+#include "DynamicClass.h"
 
-#include "DynObject.h"
+#include "Dynamic.h"
 
 namespace oz
 {
 
-  ObjectClass *DynObjectClass::init( const String &name, const Config *config )
+  ObjectClass *DynamicClass::init( const String &name, const Config *config )
   {
-    DynObjectClass *clazz = new DynObjectClass();
+    DynamicClass *clazz = new DynamicClass();
 
     clazz->name                 = name;
-    clazz->description          = config->get( "description", "A DynObject" );
+    clazz->description          = config->get( "description", "A Dynamic (dynamic object)" );
 
     clazz->dim.x                = config->get( "dim.x", 0.50f );
     clazz->dim.y                = config->get( "dim.y", 0.50f );
@@ -45,7 +45,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
     OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,       "flag.pusher",      false );
     OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
-    OZ_CLASS_SET_FLAG( Object::BLEND_BIT,        "flag.blend",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
 
     clazz->life                 = config->get( "life", 100.0f );
@@ -84,9 +83,9 @@ namespace oz
     return clazz;
   }
 
-  Object *DynObjectClass::create( const Vec3 &pos )
+  Object *DynamicClass::create( const Vec3 &pos )
   {
-    DynObject *obj = new DynObject();
+    Dynamic *obj = new Dynamic();
 
     obj->p        = pos;
     obj->dim      = dim;
@@ -102,9 +101,9 @@ namespace oz
     return obj;
   }
 
-  Object *DynObjectClass::create( InputStream *istream )
+  Object *DynamicClass::create( InputStream *istream )
   {
-    DynObject *obj = new DynObject();
+    Dynamic *obj = new Dynamic();
 
     obj->dim    = dim;
     obj->type   = this;

@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  class Vehicle : public DynObject
+  class Vehicle : public Dynamic
   {
     public:
 

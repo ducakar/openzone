@@ -28,7 +28,7 @@ namespace client
   {
     private:
 
-      static const float RELEASED_CULL_FACTOR = 6.0f;
+      static const float RELEASED_CULL_FACTOR = 8.0f;
 
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;
@@ -39,45 +39,57 @@ namespace client
       // cleanup interval (remove unused models)
       static const int   CLEAR_INTERVAL = 303 * 1000;
 
-    private:
+      struct ObjectEntry
+      {
+        float distance;
+        const Object *obj;
 
-      Terrain                 terra;
-      Vector<BSP*>            bsps;
-      Bitset                  drawnStructures;
+        ObjectEntry() {}
+        ObjectEntry( float distance_, const Object *obj_ ) : distance( distance_ ), obj( obj_ ) {}
 
-      int                     clearCount;
+        // sort in reverse order (farest to nearest)
+        bool operator < ( const ObjectEntry &be ) const
+        {
+          return distance > be.distance;
+        }
+      };
 
-      Vector<Structure*>      structures;
-      Vector<Object*>         objects;
-      Vector<Object*>         blendedObjects;
-      Vector<Particle*>       particles;
+      Terrain                  terra;
+      Vector<BSP*>             bsps;
+      Bitset                   drawnStructures;
 
-      Vector<Structure*>      waterStructures;
+      int                      clearCount;
 
-      int                     screenX;
-      int                     screenY;
+      Vector<const Structure*> structures;
+      Vector<ObjectEntry>      objects;
+      Vector<const Particle*>  particles;
 
-      double                  perspectiveAngle;
-      double                  perspectiveAspect;
-      double                  perspectiveMin;
-      double                  perspectiveMax;
+      Vector<const Structure*> waterStructures;
 
-      float                   dayVisibility;
-      float                   nightVisibility;
-      float                   waterDayVisibility;
-      float                   waterNightVisibility;
+      int                      screenX;
+      int                      screenY;
 
-      float                   particleRadius;
-      bool                    drawAABBs;
-      bool                    showAim;
+      double                   perspectiveAngle;
+      double                   perspectiveAspect;
+      double                   perspectiveMin;
+      double                   perspectiveMax;
 
-      bool                    isUnderWater;
-      bool                    wasUnderWater;
-      float                   visibility;
-      int                     taggedObjIndex;
+      float                    dayVisibility;
+      float                    nightVisibility;
+      float                    waterDayVisibility;
+      float                    waterNightVisibility;
+
+      float                    particleRadius;
+      bool                     drawAABBs;
+      bool                     showAim;
+
+      bool                     isUnderWater;
+      bool                     wasUnderWater;
+      float                    visibility;
+      int                      taggedObjIndex;
 
       void scheduleCell( int cellX, int cellY );
-      void drawObject( Object *obj );
+      void drawObject( const Object *obj );
 
     public:
 

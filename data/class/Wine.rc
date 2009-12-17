@@ -1,6 +1,6 @@
 description "Taprav dolenjski cviček"
 
-base "DynObject"
+base "Dynamic"
 
 dim.x "0.1"
 dim.y "0.1"
