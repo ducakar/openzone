@@ -21,13 +21,13 @@ namespace oz
     p           = istream->readVec3();
     velocity    = istream->readVec3();
 
-    rejection   = istream->readFloat();
-    mass        = istream->readFloat();
-    lifeTime    = istream->readFloat();
-
     color       = istream->readVec3();
     rot         = istream->readVec3();
     rotVelocity = istream->readVec3();
+
+    rejection   = istream->readFloat();
+    mass        = istream->readFloat();
+    lifeTime    = istream->readFloat();
   }
 
   void Particle::writeFull( OutputStream *ostream )
@@ -35,13 +35,13 @@ namespace oz
     ostream->writeVec3( p );
     ostream->writeVec3( velocity );
 
-    ostream->writeFloat( rejection );
-    ostream->writeFloat( mass );
-    ostream->writeFloat( lifeTime );
-
     ostream->writeVec3( color );
     ostream->writeVec3( rot );
     ostream->writeVec3( rotVelocity );
+
+    ostream->writeFloat( rejection );
+    ostream->writeFloat( mass );
+    ostream->writeFloat( lifeTime );
   }
 
   void Particle::readUpdate( InputStream *istream )

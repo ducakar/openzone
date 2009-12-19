@@ -1,11 +1,5 @@
 base "Bot"
 
-dim.x "0.34"
-dim.y "0.34"
-dim.z "1.19"
-
-dimCrouch.z "0.99"
-
 life "200.0"
 mass "100.0"
 
@@ -22,37 +16,21 @@ debrisColorSpread "0.2"
 modelType "MD2"
 modelName "bdroid"
 
-audioType                       "Basic"
+audioType                       "Bot"
 audioSample00                   ""                              # create
 audioSample01                   "destroy_metal1"                # destroy
 audioSample02                   "damage_bot1"                   # damage
-audioSample03                   ""                              # hit
+audioSample03                   ""                      	# hit
 audioSample04                   "splash1"                       # splash
 audioSample05                   ""                              # friction
 audioSample06                   ""                              # use
-audioSample07                   "hit_bot1"                      # land
-audioSample08                   "jump1"                         # jump
-audioSample09                   "gesture_flip"                  # flip
-audioSample10                   "death1"                        # death
+audioSample07                   "hit_bot2"                      # hit_hard
+audioSample08                   "land2"                         # land
+audioSample09                   "jump1"                         # jump
+audioSample10                   "gesture_flip"                  # flip
+audioSample11                   "death1"                        # death
 
-camPos.x "0.00"
-camPos.y "0.00"
-camPos.z "1.09"
-
-camPosCrouch.x "0.00"
-camPosCrouch.y "0.00"
-camPosCrouch.z "0.89"
-
-walkMomentum "1.2"
-runMomentum "4.0"
-crouchMomentum "1.2"
-jumpMomentum "5.0"
-
-stepRate "1.50"
-
-grabDistance "2.0"
 grabMass "100.0"
-throwMomentum "10.0"
 
 staminaWaterDrain "0.07"
 staminaRunDrain "0.07"

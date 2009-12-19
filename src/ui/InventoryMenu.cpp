@@ -115,10 +115,6 @@ namespace ui
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
-      if( !render.models.contains( item->index ) ) {
-        render.models.add( item->index, context.createModel( item ) );
-      }
-
       float size = !item->dim;
       float scale = SLOT_DIMF / size;
 
@@ -136,9 +132,7 @@ namespace ui
         taggedItem = item;
       }
 
-      // draw model
-      render.models.cachedValue()->draw();
-      render.models.cachedValue()->isUpdated = true;
+      render.drawModel( item );
 
       if( i == taggedIndex ) {
         glColor4fv( Colors::WHITE );

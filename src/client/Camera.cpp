@@ -91,7 +91,7 @@ namespace client
         dist = !bot->dim * externalDistFactor;
       }
 
-      Vec3 origin = bot->p + bot->camPos;
+      Vec3 origin = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
       Vec3 offset = -at * dist;
 
       collider.translate( origin, offset, bot );
@@ -119,16 +119,18 @@ namespace client
       at      = rotMat.y;
       up      = rotMat.z;
 
-      p = bot->p + rotMat * bot->camPos;
+      p = bot->p + Vec3( rotMat.y ) * bot->camZ;
 
       bobPhi   = 0.0f;
       bobTheta = 0.0f;
       bobBias  = 0.0f;
     }
     else {
-      BotClass *clazz = static_cast<BotClass*>( bot->type );
+      const BotClass *clazz = static_cast<const BotClass*>( bot->type );
 
-      p = ( bot->p + bot->camPos ) * smoothCoef_1 + oldP * smoothCoef;
+      p.x = bot->p.x;
+      p.y = bot->p.y;
+      p.z = ( bot->p.z + bot->camZ ) * smoothCoef_1 + oldP.z * smoothCoef;
 
       if( bot->state & Bot::MOVING_BIT ) {
         if( bot->flags & Object::IN_WATER_BIT ) {
@@ -140,8 +142,9 @@ namespace client
           bobBias  = Math::sin( Math::rad( -2.0f * bobPhi ) ) * clazz->bobSwimAmplitude;
         }
         else if( ( bot->flags & Object::ON_FLOOR_BIT ) || bot->lower != -1 ) {
-          float bobInc = ( bot->state & Bot::RUNNING_BIT ) && bot->grabObj == -1 ?
-            clazz->bobRunInc : clazz->bobWalkInc;
+          float bobInc =
+              ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT &&
+              bot->grabObj == -1 ? clazz->bobRunInc : clazz->bobWalkInc;
 
           bobPhi   = Math::mod( bobPhi + bobInc, 360.0f );
           bobTheta = Math::sin( Math::rad( bobPhi ) ) * clazz->bobRotation;

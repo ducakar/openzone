@@ -44,16 +44,18 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,      "flag.climber",     true  );
     OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,       "flag.pusher",      true  );
     OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
+    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,      "flag.noDraw",      false );
+    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT, "flag.delayedDraw", false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
 
     clazz->life                 = config->get( "life", 100.0f );
-    clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
+    clazz->damageThreshold      = config->get( "damageThreshold", 100.0f );
 
     if( clazz->life <= 0.0f ) {
       throw Exception( "Invalid object life. Should be > 0." );
     }
-    if( clazz->damageTreshold < 0.0f ) {
-      throw Exception( "Invalid object damageTreshold. Should be >= 0." );
+    if( clazz->damageThreshold < 0.0f ) {
+      throw Exception( "Invalid object damageThreshold. Should be >= 0." );
     }
 
     clazz->nDebris              = config->get( "nDebris", 8 );
@@ -84,37 +86,32 @@ namespace oz
       throw Exception( "Invalid bot crouch dimensions. Should be >= 0." );
     }
 
-    clazz->camPos.x             = config->get( "camPos.x", 0.00f );
-    clazz->camPos.y             = config->get( "camPos.y", 0.00f );
-    clazz->camPos.z             = config->get( "camPos.z", 0.89f );
-
-    clazz->camPosCrouch.x       = config->get( "camPosCrouch.x", 0.00f );
-    clazz->camPosCrouch.y       = config->get( "camPosCrouch.y", 0.00f );
-    clazz->camPosCrouch.z       = config->get( "camPosCrouch.z", 0.69f );
+    clazz->camZ                 = config->get( "camZ", 0.89f );
+    clazz->crouchCamZ           = config->get( "crouchCamZ", 0.69f );
 
     clazz->bobWalkInc           = config->get( "bobWalkInc", 8.00f );
     clazz->bobRunInc            = config->get( "bobRunInc", 16.00f );
     clazz->bobSwimInc           = config->get( "bobSwimInc", 2.00f );
     clazz->bobSwimRunInc        = config->get( "bobSwimRunInc", 4.00f );
-    clazz->bobRotation          = config->get( "bobRotation", 0.25f );
+    clazz->bobRotation          = config->get( "bobRotation", 0.20f );
     clazz->bobAmplitude         = config->get( "bobAmplitude", 0.02f );
     clazz->bobSwimAmplitude     = config->get( "bobSwimAmplitude", 0.05f );
 
     clazz->walkMomentum         = config->get( "walkMomentum", 1.2f );
     clazz->runMomentum          = config->get( "runMomentum", 4.0f );
-    clazz->crouchMomentum       = config->get( "crouchMomentum", 1.0f );
-    clazz->jumpMomentum         = config->get( "jumpMomentum", 4.0f );
+    clazz->crouchMomentum       = config->get( "crouchMomentum", 1.2f );
+    clazz->jumpMomentum         = config->get( "jumpMomentum", 5.0f );
 
     clazz->stepInc              = config->get( "stepInc", 0.10f );
     clazz->stepMax              = config->get( "stepMax", 0.50f );
-    clazz->stepRate             = config->get( "stepRate", 0.60f );
+    clazz->stepRate             = config->get( "stepRate", 1.00f );
     clazz->stepRateSupp         = config->get( "stepRateSupp", 0.95f );
 
     clazz->airControl           = config->get( "airControl", 0.025f );
     clazz->climbControl         = config->get( "climbControl", 1.50f );
     clazz->waterControl         = config->get( "waterControl", 0.05f );
 
-    clazz->grabDistance         = config->get( "grabDistance", 1.5f );
+    clazz->grabDistance         = config->get( "grabDistance", 2.0f );
     clazz->grabMass             = config->get( "grabMass", 50.0f );
     clazz->throwMomentum        = config->get( "throwMomentum", 6.0f );
 
@@ -150,7 +147,7 @@ namespace oz
     obj->mass     = mass;
     obj->lift     = lift;
 
-    obj->camPos   = camPos;
+    obj->camZ     = camZ;
     obj->state    = state;
     obj->oldState = state;
     obj->stamina  = stamina;
@@ -169,7 +166,7 @@ namespace oz
 
     obj->readFull( istream );
 
-    obj->camPos = ( obj->state & Bot::CROUCHING_BIT ) ? camPosCrouch : camPos;
+    obj->camZ = ( obj->state & Bot::CROUCHING_BIT ) ? crouchCamZ : camZ;
 
     return obj;
   }

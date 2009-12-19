@@ -11,8 +11,6 @@
 
 #include "ui.h"
 
-#include <GL/glu.h>
-
 namespace oz
 {
 namespace client
@@ -20,42 +18,7 @@ namespace client
 namespace ui
 {
 
-  HudArea *hud;
-
-  void init( int screenX, int screenY )
-  {
-    hud = new HudArea( screenX, screenY );
-    mouse.init( screenX, screenY );
-
-    if( !font.init() ) {
-      throw Exception( "Failed to load font" );
-    }
-  }
-
-  void free()
-  {
-    font.free();
-    mouse.free();
-  }
-
-  void update()
-  {
-    if( mouse.doShow ) {
-      hud->checkMouse();
-    }
-  }
-
-  void draw()
-  {
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho( 0.0, hud->width, 0.0, hud->height, -100.0, 100.0 );
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
-
-    hud->onDraw();
-    mouse.draw();
-  }
+  int taggedObj;
 
 }
 }

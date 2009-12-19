@@ -16,6 +16,7 @@ namespace oz
 {
 
   struct Cell;
+  struct Hit;
 
   class Particle : public PoolAlloc<Particle, 0>
   {
@@ -26,6 +27,7 @@ namespace oz
     private:
 
       static const float MAX_ROTVELOCITY;
+      static const float DAMAGE_THRESHOLD = 50.0f;
 
       Particle  *prev[1];
       Particle  *next[1];
@@ -43,29 +45,40 @@ namespace oz
 
       Vec3      velocity;
 
-      float     rejection;    // 1.0 < rejection < 2.0
-      float     mass;
-      float     lifeTime;
-
       // graphics data
       Vec3      color;
       Vec3      rot;
       Vec3      rotVelocity;
 
+      float     rejection;    // 1.0 < rejection < 2.0
+      float     mass;
+      float     lifeTime;
+
       explicit Particle() : index( -1 ), cell( null )
       {}
 
-      explicit Particle( const Vec3 &p_, const Vec3 &velocity_, float rejection_, float mass_,
-                         float lifeTime_, const Vec3 &color_ ) :
-          p( p_ ), index( -1 ), cell( null ), velocity( velocity_ ),
-          rejection( rejection_ ),
-          mass( mass_ ), lifeTime( lifeTime_ ),
-          color( color_ ),
+      explicit Particle( const Vec3 &p_, const Vec3 &velocity_, const Vec3 &color_,
+                         float rejection_, float mass_, float lifeTime_ ) :
+          p( p_ ), index( -1 ), cell( null ), velocity( velocity_ ), color( color_ ),
           rot( Vec3( Math::frand() * 360.0f, Math::frand() * 360.0f, Math::frand() * 360.0f ) ),
           rotVelocity( Vec3( Math::frand() * MAX_ROTVELOCITY,
                              Math::frand() * MAX_ROTVELOCITY,
-                             Math::frand() * MAX_ROTVELOCITY ) )
-      {}
+                             Math::frand() * MAX_ROTVELOCITY ) ),
+          rejection( rejection_ ), mass( mass_ ), lifeTime( lifeTime_ )
+      {
+        assert( 1.0f + EPSILON < rejection && rejection < 2.0f - EPSILON );
+        assert( mass >= 0.0f );
+        assert( lifeTime > 0.0f );
+      }
+
+      void damage( float damage )
+      {
+        damage -= DAMAGE_THRESHOLD;
+
+        if( damage > 0.0f ) {
+          lifeTime = 0.0f;
+        }
+      }
 
       void update()
       {

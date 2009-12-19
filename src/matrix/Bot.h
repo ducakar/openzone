@@ -31,16 +31,18 @@ namespace oz
       static const int ACTION_TAKE     = 0x00000080;
       static const int ACTION_GRAB     = 0x00000100;
       static const int ACTION_THROW    = 0x00000200;
-      static const int ACTION_EXIT     = 0x00000400;
-      static const int ACTION_EJECT    = 0x00000800;
-      static const int ACTION_SUICIDE  = 0x00001000;
-      static const int ACTION_INV_USE  = 0x00002000;
-      static const int ACTION_INV_GRAB = 0x00004000;
+      static const int ACTION_ATTACK   = 0x00000400;
+      static const int ACTION_EXIT     = 0x00000800;
+      static const int ACTION_EJECT    = 0x00001000;
+      static const int ACTION_SUICIDE  = 0x00002000;
+      static const int ACTION_INV_USE  = 0x00004000;
+      static const int ACTION_INV_GRAB = 0x00008000;
 
-      static const int EVENT_LAND      = 7;
-      static const int EVENT_JUMP      = 8;
-      static const int EVENT_FLIP      = 9;
-      static const int EVENT_DEATH     = 10;
+      static const int EVENT_HIT_HARD  = 7;
+      static const int EVENT_LAND      = 8;
+      static const int EVENT_JUMP      = 9;
+      static const int EVENT_FLIP      = 10;
+      static const int EVENT_DEATH     = 11;
 
       static const int PLAYER_BIT      = 0x00000001;
       static const int DEATH_BIT       = 0x00000002;
@@ -61,6 +63,7 @@ namespace oz
       static const int GESTURE_ALL_BIT = 0x00002000;
       // bot is controlled by a player, nirvana shouldn't bind a mind to it
 
+      static const float HIT_HARD_THRESHOLD;
       static const float GRAB_EPSILON;
       static const float GRAB_STRING_RATIO;
       static const float GRAB_MOM_RATIO;
@@ -117,7 +120,7 @@ namespace oz
       int         taggedItem;
       int         weaponItem;
 
-      Vec3        camPos;
+      float       camZ;
       AnimEnum    anim;
 
       explicit Bot();

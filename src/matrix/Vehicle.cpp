@@ -38,7 +38,7 @@ namespace oz
 
   void Vehicle::onUpdate()
   {
-    VehicleClass &clazz = *static_cast<VehicleClass*>( type );
+    const VehicleClass *clazz = static_cast<const VehicleClass*>( type );
 
     flags &= ~HOVER_BIT;
     actions = 0;
@@ -79,7 +79,7 @@ namespace oz
       move -= up;
     }
     if( !move.isZero() ) {
-      momentum += move * clazz.moveMomentum;
+      momentum += move * clazz->moveMomentum;
     }
 
     for( int i = 0; i < CREW_MAX; i++ ) {
@@ -102,12 +102,12 @@ namespace oz
             bot->exit();
           }
           else {
-            bot->p = p + rot.rotate( clazz.crewPos[0] ) + momentum * timer.TICK_TIME;
+            bot->p = p + rot.rotate( clazz->crewPos[0] ) + momentum * timer.TICK_TIME;
             bot->momentum = velocity;
           }
         }
         else {
-          bot->p = p + rot.rotate( clazz.crewPos[0] ) + momentum * timer.TICK_TIME;
+          bot->p = p + rot.rotate( clazz->crewPos[0] ) + momentum * timer.TICK_TIME;
           bot->momentum = velocity;
         }
       }
@@ -162,7 +162,7 @@ namespace oz
 
   void Vehicle::readUpdate( InputStream *istream )
   {
-    Object::readUpdate( istream );
+    Dynamic::readUpdate( istream );
 
     rot   = istream->readQuat();
     state = istream->readInt();

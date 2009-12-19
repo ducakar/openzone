@@ -1,22 +1,23 @@
 #!/bin/sh
 
-FILES="src/*/*.h src/*/*.cpp precompiled.h src/*/CMakeLists.gen src/CMakeLists.txt"
-FILES="$FILES data/CMakeLists.txt data/*/*.rc"
-FILES="$FILES data/lua/*/*.lua data/lua/*/CMakeLists.gen data/lua/CMakeLists.txt"
-FILES="$FILES CMakeLists.txt *.sh"
+source=`echo src/*/*.{h,cpp} precompiled.h`
+data=`echo data/*/*.rc data/lua/*/*.lua`
+build=`echo src/**/CMakeLists.gen {src,data}/**/CMakeLists.txt CMakeLists.txt *.in *.sh`
 
-wc -lc $FILES
+function count()
+{
+  printf '%s (' "$1"
+  shift
+  (( nFiles = 0 ))
+  for file in $@; do (( nFiles++ )); done
+  printf '%d files):\n' $nFiles
+  wc -lc $@
+  echo
+}
 
-(( nFiles = 0 ))
-for file in $FILES; do
-  (( nFiles++ ));
-done
-
-echo
-echo $nFiles files
-
-unset nFiles
-unset FILES
+count 'C++ Source' $source
+count 'Data config & Lua scripts' $data
+count 'Build system etc.' $build
 
 if [ -x /usr/bin/sloccount ]; then
   LANG=C /usr/bin/sloccount src *.h *.sh data/lua

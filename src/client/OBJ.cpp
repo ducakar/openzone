@@ -528,8 +528,8 @@ namespace client
     if( !isTextured ) {
       glEnable( GL_TEXTURE_2D );
     }
-    if( isBlended && !isTransfluent ) {
-      glEnable( GL_BLEND );
+    if( isTransfluent ) {
+      glDisable( GL_BLEND );
     }
   }
 

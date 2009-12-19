@@ -55,12 +55,7 @@ namespace client
         glTranslatef(  clazz->crewPos[i].x,  clazz->crewPos[i].y,  clazz->crewPos[i].z );
         glRotatef( -bot->h, 0.0f, 0.0f, 1.0f );
 
-        if( !render.models.contains( bot->index ) ) {
-          render.models.add( bot->index, context.createModel( bot ) );
-        }
-        // draw model
-        render.models.cachedValue()->draw();
-        render.models.cachedValue()->isUpdated = true;
+        render.drawModel( bot );
 
         glPopMatrix();
       }

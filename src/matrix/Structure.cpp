@@ -22,7 +22,8 @@ namespace oz
 
   void Structure::destroy()
   {
-    synapse.genParts( 100, p, Vec3::zero(), 10.0f, 1.98f, 0.0f, 2.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f );
+    synapse.genParts( 100, p, Vec3::zero(), 10.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f,
+                      1.98f, 0.0f, 2.0f );
     synapse.remove( this );
   }
 

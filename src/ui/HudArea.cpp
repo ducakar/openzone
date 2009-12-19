@@ -60,8 +60,8 @@ namespace ui
     // tagged object pointer
     Object *obj = null;
 
-    if( taggedObjIndex != -1 ) {
-      obj = world.objects[taggedObjIndex];
+    if( taggedObj != -1 ) {
+      obj = world.objects[taggedObj];
 
       const ObjectClass *clazz = obj->type;
       float life = ( obj->flags & Object::BOT_BIT ) ?
@@ -174,7 +174,7 @@ namespace ui
     else {
       glEnable( GL_TEXTURE_2D );
 
-      if( taggedObjIndex == -1 ) {
+      if( taggedObj == -1 ) {
         glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
       }
 

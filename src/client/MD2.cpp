@@ -237,7 +237,7 @@ namespace client
     // first, last, fps, repeat
     {   0,  39,  9.0f, 1 },   // STAND
     {  40,  45, 10.0f, 1 },   // RUN
-    {  46,  53, 10.0f, 1 },   // ATTACK
+    {  46,  53, 16.0f, 1 },   // ATTACK
     {  54,  57,  7.0f, 1 },   // PAIN_A
     {  58,  61,  7.0f, 1 },   // PAIN_B
     {  62,  65,  7.0f, 1 },   // PAIN_C
@@ -249,8 +249,8 @@ namespace client
     { 123, 134,  6.0f, 0 },   // POINT
     { 135, 153, 10.0f, 1 },   // CROUCH_STAND
     { 154, 159,  7.0f, 1 },   // CROUCH_WALK
-    { 160, 168, 10.0f, 1 },   // CROUCH_ATTACK
-    { 196, 172,  7.0f, 1 },   // CROUCH_PAIN
+    { 160, 168, 18.0f, 1 },   // CROUCH_ATTACK
+    { 169, 172,  7.0f, 1 },   // CROUCH_PAIN
     { 173, 177,  5.0f, 1 },   // CROUCH_DEATH
     { 178, 183,  7.0f, 0 },   // DEATH_FALLBACK
     { 184, 189,  7.0f, 0 },   // DEATH_FALLFORWARD
@@ -260,6 +260,19 @@ namespace client
 
   Vec3 MD2::vertList[MAX_VERTS];
   
+  void MD2::interpolate( const AnimState *anim ) const
+  {
+    const Vec3 *currFrame = &verts[nVerts * anim->currFrame];
+    const Vec3 *nextFrame = &verts[nVerts * anim->nextFrame];
+
+    float t1 = anim->fps * anim->currTime;
+    float t2 = 1.0f - t1;
+
+    for( int i = 0; i < nVerts; i++ ) {
+      vertList[i] = t2 * currFrame[i] + t1 * nextFrame[i];
+    }
+  }
+
   void MD2::init()
   {
     for( uint i = 0; i < sizeof( anorms ) / sizeof( anorms[0] ); i++ ) {
@@ -411,33 +424,6 @@ namespace client
     }
   }
 
-  void MD2::interpolate( AnimState *anim, float dt ) const
-  {
-    anim->currTime += dt;
-
-    while( anim->currTime > anim->frameTime ) {
-      anim->currTime -= anim->frameTime;
-      anim->currFrame = anim->nextFrame;
-
-      if( anim->nextFrame < anim->endFrame ) {
-        anim->nextFrame++;
-      }
-      else if( anim->repeat ) {
-        anim->nextFrame = anim->startFrame;
-      }
-    }
-
-    const Vec3 *currFrame = &verts[nVerts * anim->currFrame];
-    const Vec3 *nextFrame = &verts[nVerts * anim->nextFrame];
-
-    float t1 = anim->fps * anim->currTime;
-    float t2 = 1.0f - t1;
-
-    for( int i = 0; i < nVerts; i++ ) {
-      vertList[i] = t2 * currFrame[i] + t1 * nextFrame[i];
-    }
-  }
-
   void MD2::drawFrame( int frame ) const
   {
     const Vec3 *vertList = &verts[nVerts * frame];
@@ -466,11 +452,11 @@ namespace client
     glFrontFace( GL_CCW );
   }
 
-  void MD2::draw( AnimState *anim ) const
+  void MD2::draw( const AnimState *anim ) const
   {
     const int *pCmd = glCmds;
 
-    interpolate( anim, timer.frameTime );
+    interpolate( anim );
 
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );

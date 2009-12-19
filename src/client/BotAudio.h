@@ -1,5 +1,5 @@
 /*
- *  BasicAudio.h
+ *  BotAudio.h
  *
  *  [description]
  *
@@ -16,11 +16,11 @@ namespace oz
 namespace client
 {
 
-  struct BasicAudio : Audio
+  struct BotAudio : Audio
   {
     static const int SND_FRICTING = Object::EVENT_FRICTING;
 
-    BasicAudio( const Object *obj ) : Audio( obj ) {}
+    BotAudio( const Object *obj ) : Audio( obj ) {}
 
     static Audio *create( const Object *obj );
 

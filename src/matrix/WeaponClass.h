@@ -16,7 +16,13 @@ namespace oz
 
   struct WeaponClass : DynamicClass
   {
-    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::USE_FUNC_BIT;
+    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
+        Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
+
+    String onShot;
+
+    int    nShots;
+    float  shotInterval;
 
     static ObjectClass *init( const String &name, const Config *config );
 

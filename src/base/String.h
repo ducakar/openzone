@@ -240,7 +240,7 @@ namespace oz
 
       bool isEmpty() const
       {
-        return buffer[0] == '\0';
+        return count == 0;
       }
 
       int length() const

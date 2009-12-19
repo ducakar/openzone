@@ -25,11 +25,18 @@ namespace oz
     events.free();
   }
 
+  void Object::onCreate()
+  {
+    if( !type->onCreate.isEmpty() ) {
+      lua.call( type->onCreate, this );
+    }
+  }
+
   void Object::onDestroy()
   {
     synapse.genParts( type->nDebris, p, Vec3::zero(), type->debrisVelocitySpread,
-                      type->debrisRejection, type->debrisMass, type->debrisLifeTime,
-                      type->debrisColor, type->debrisColorSpread );
+                      type->debrisColor, type->debrisColorSpread,
+                      type->debrisRejection, type->debrisMass, type->debrisLifeTime );
 
     if( !type->onDestroy.isEmpty() ) {
       lua.call( type->onDestroy, this );

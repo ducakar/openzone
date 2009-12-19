@@ -12,7 +12,7 @@ mass "100.0"
 modelType "MD3Static"
 modelName "lara"
 
-audioType "Basic"
+audioType "Bot"
 audioSample00 ""
 audioSample01 ""
 audioSample02 "splash1"

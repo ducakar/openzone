@@ -21,8 +21,8 @@ function Explosion_onUpdate( l )
       ozWorldRemoveObj()
     end
   else
-    l.ticks = 50
-    ozObjAddEvent( 0, 1.0 )
+    l.ticks = 150 -- 3s
+    --ozObjAddEvent( 0, 1.0 )
 
     local distance
     local dirX, dirY, dirZ
@@ -36,7 +36,7 @@ function Explosion_onUpdate( l )
 	distance = ozObjDistanceFromSelf()
 	if distance < 20 then
 	  distance = 20 - distance
-	  ozObjDamage( distance*distance )
+	  --ozObjDamage( distance*distance )
 
 	  if distance < 20 and ozObjIsDynamic() then
 	    dirX, dirY, dirZ = ozObjDirectionFromSelf()
@@ -66,6 +66,16 @@ function Bomb_onUpdate( l )
   end
 end
 
-function Bomb_onDestroy( index )
+function Bomb_onDestroy( l )
   ozWorldForceAddObj( "Explosion", ozObjGetPos() )
+end
+
+function Rifle_onShot( l )
+  ozObjBindUser()
+  
+  local pX, pY, pZ = ozBotGetEyePos()
+  local vX, vY, vZ = ozBotGetDir()
+
+  ozWorldAddPart( pX, pY, pZ, vX * 200.0, vY * 200.0, vZ * 200.0, 
+		  1.0, 1.0, 0.0, 1.9, 0.0035, 5.0 );
 end

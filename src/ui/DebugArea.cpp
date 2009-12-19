@@ -14,6 +14,7 @@
 #include "matrix/World.h"
 #include "matrix/Collider.h"
 #include "client/Camera.h"
+#include "ui.h"
 
 #include <GL/glu.h>
 
@@ -44,10 +45,11 @@ namespace ui
              bot.momentum.x, bot.momentum.y, bot.momentum.z,
              bot.depth );
 
-      print( 5, -5 - textHeight * 4, "d %d fl %d lw %d h %d fr %d iw %d s %d ld %d ovlp %d",
+      print( 5, -5 - textHeight * 4, "d %d fl %d lw %d up %d h %d fr %d iw %d s %d ld %d ovlp %d",
             ( bot.flags & Object::DISABLED_BIT ) != 0,
             ( bot.flags & Object::ON_FLOOR_BIT ) != 0,
             bot.lower,
+            ( bot.flags & Object::UPPER_BIT ) != 0,
             ( bot.flags & Object::HIT_BIT ) != 0,
             ( bot.flags & Object::FRICTING_BIT ) != 0,
             ( bot.flags & Object::IN_WATER_BIT ) != 0,
@@ -55,17 +57,18 @@ namespace ui
             ( bot.flags & Object::ON_LADDER_BIT ) != 0,
             !collider.test( bot, &bot ) );
 
-      if( bot.grabObj != -1 && world.objects[bot.grabObj] != null ) {
-        const Dynamic &obj = *static_cast<const Dynamic*>( world.objects[bot.grabObj] );
+      if( taggedObj != -1 && world.objects[taggedObj] != null ) {
+        const Dynamic &obj = *static_cast<const Dynamic*>( world.objects[taggedObj] );
 
         print( 5, -5 - textHeight * 5, "gobj.vel(%.2f %.2f %.2f) gobj.mom(%.2f %.2f %.2f)",
                obj.velocity.x, obj.velocity.y, obj.velocity.z,
                obj.momentum.x, obj.momentum.y, obj.momentum.z );
 
-        print( 5, -5 - textHeight * 6, "d %d fl %d lw %d h %d fr %d iw %d s %d",
+        print( 5, -5 - textHeight * 6, "d %d fl %d lw %d up %d h %d fr %d iw %d s %d",
                ( obj.flags & Object::DISABLED_BIT ) != 0,
                ( obj.flags & Object::ON_FLOOR_BIT ) != 0,
                obj.lower,
+               ( obj.flags & Object::UPPER_BIT ) != 0,
                ( obj.flags & Object::HIT_BIT ) != 0,
                ( obj.flags & Object::FRICTING_BIT ) != 0,
                ( bot.flags & Object::IN_WATER_BIT ) != 0,

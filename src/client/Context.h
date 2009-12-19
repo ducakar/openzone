@@ -159,7 +159,7 @@ namespace client
       Model *createModel( const Object *obj )
       {
         if( obj->flags & Object::MODEL_BIT ) {
-          assert( obj->type->modelType.length() > 0 );
+          assert( !obj->type->modelType.isEmpty() );
 
           if( !modelClasses.contains( obj->type->modelType ) ) {
             throw Exception( "Invalid Model" );
@@ -176,7 +176,7 @@ namespace client
       Audio *createAudio( const Object *obj )
       {
         if( obj->flags & Object::AUDIO_BIT ) {
-          assert( obj->type->audioType.length() > 0 );
+          assert( !obj->type->audioType.isEmpty() );
 
           if( !audioClasses.contains( obj->type->audioType ) ) {
             throw Exception( "Invalid Audio" );

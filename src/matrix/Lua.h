@@ -18,6 +18,7 @@ namespace oz
 
   class Structure;
   class Bot;
+  class Particle;
 
   class Lua
   {
@@ -36,6 +37,7 @@ namespace oz
 
       Structure          *str;
       Object             *obj;
+      Particle           *part;
       List<Object::Event, 0>::Iterator event;
 
       int                strIndex;

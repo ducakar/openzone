@@ -19,8 +19,9 @@ namespace oz
   Physics physics;
 
   const float Physics::CLIP_BACKOFF         = EPSILON;
-  const float Physics::HIT_TRESHOLD         = -2.0f;
-  const float Physics::SPLASH_TRESHOLD      = -2.0f;
+  const float Physics::HIT_THRESHOLD        = -2.0f;
+  const float Physics::PART_HIT_THRESHOLD   = 100.0f;
+  const float Physics::SPLASH_THRESHOLD     = -2.0f;
   const float Physics::FLOOR_NORMAL_Z       = 0.60f;
   const float Physics::G_VELOCITY           = -9.81f * Timer::TICK_TIME;
   const float Physics::WEIGHT_FACTOR        = 0.1f;
@@ -42,12 +43,19 @@ namespace oz
 
   void Physics::handlePartHit()
   {
+    float velocity2 = part->velocity * part->velocity;
+    // warning: hitMomentum may be > 0 because of difference between directions of move and velocity
+    // vectors
+    if( velocity2 > PART_HIT_THRESHOLD ) {
+      part->damage( velocity2 );
+
+      if( collider.hit.obj != null && part->mass != 0.0f ) {
+        collider.hit.obj->damage( velocity2 * part->mass );
+      }
+    }
+
     float hitMomentum = part->velocity * collider.hit.normal;
     part->velocity -= ( part->rejection * hitMomentum ) * collider.hit.normal;
-
-    if( part->mass != 0.0f && collider.hit.obj != null ) {
-      collider.hit.obj->hit( &collider.hit, hitMomentum * part->mass );
-    }
   }
 
   void Physics::handlePartMove()
@@ -67,7 +75,11 @@ namespace oz
       // collision response
       handlePartHit();
 
-      if( traceSplits >= 3 ) {
+      // we must check lifeTime <= 0.0f to prevent an already destroyed particle to bounce off a
+      // surface and hit something (e.g. if we shoot into something with a rifle, a bullet is not
+      // destroyed immediately after it hits something, but bounces off and damages the shooter if
+      // he stays to close to the hit surface
+      if( traceSplits >= 3 || part->lifeTime <= 0.0f ) {
         break;
       }
       traceSplits++;
@@ -217,8 +229,8 @@ namespace oz
       }
     }
 
-    obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
-        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
+    obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT |
+        Object::IN_WATER_BIT | Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
     obj->lower = -1;
 
     return true;
@@ -230,54 +242,58 @@ namespace oz
     Object *sObj = hit.obj;
 
     if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
-      Dynamic *sDynObj = static_cast<Dynamic*>( sObj );
+      Dynamic *sDyn = static_cast<Dynamic*>( sObj );
 
-      Vec3  momentum    = ( obj->momentum * obj->mass + sDynObj->momentum * sDynObj->mass ) /
-          ( obj->mass + sDynObj->mass );
-      float hitMomentum = ( obj->momentum - sDynObj->momentum ) * hit.normal;
+      // warning: hitMomentum may be > 0 because of difference between directions of move and
+      // velocity vectors
+      Vec3  momentum    = ( obj->momentum * obj->mass + sDyn->momentum * sDyn->mass ) /
+          ( obj->mass + sDyn->mass );
+      float hitMomentum = ( obj->momentum - sDyn->momentum ) * hit.normal;
       float hitVelocity = obj->velocity * hit.normal;
 
-      if( hitMomentum < HIT_TRESHOLD && hitVelocity < HIT_TRESHOLD ) {
+      if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
         obj->hit( &hit, hitMomentum );
-        sDynObj->hit( &hit, hitMomentum );
+        sDyn->hit( &hit, hitMomentum );
       }
 
       if( hit.normal.z == 0.0f ) {
-        sDynObj->flags &= ~Object::DISABLED_BIT;
+        sDyn->flags &= ~Object::DISABLED_BIT;
 
         if( obj->flags & Object::PUSHER_BIT ) {
-          obj->momentum.x     = sDynObj->velocity.x;
-          obj->momentum.y     = sDynObj->velocity.y;
-          sDynObj->momentum.x = momentum.x;
-          sDynObj->momentum.y = momentum.y;
+          obj->momentum.x  = sDyn->velocity.x;
+          obj->momentum.y  = sDyn->velocity.y;
+          sDyn->momentum.x = momentum.x;
+          sDyn->momentum.y = momentum.y;
         }
         else if( hit.normal.y == 0.0f ) {
-          obj->momentum.x     = sDynObj->velocity.x;
-          sDynObj->momentum.x = momentum.x;
+          obj->momentum.x  = sDyn->velocity.x;
+          sDyn->momentum.x = momentum.x;
         }
         else {
-          obj->momentum.y     = sDynObj->velocity.y;
-          sDynObj->momentum.y = momentum.y;
+          obj->momentum.y  = sDyn->velocity.y;
+          sDyn->momentum.y = momentum.y;
         }
       }
       else if( hit.normal.z == -1.0f ) {
-        sDynObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
-        sDynObj->lower = obj->index;
+        obj->flags  |= Object::UPPER_BIT;
+        sDyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
+        sDyn->lower = obj->index;
 
-        obj->momentum.z     = sDynObj->velocity.z;
-        sDynObj->momentum.z = momentum.z;
+        obj->momentum.z  = sDyn->velocity.z;
+        sDyn->momentum.z = momentum.z;
       }
       else { // hit.normal.z == 1.0f
         assert( hit.normal.z == 1.0f );
 
-        sDynObj->damage( obj->mass * WEIGHT_FACTOR );
+        sDyn->damage( obj->mass * WEIGHT_FACTOR );
 
-        obj->flags &= ~Object::ON_FLOOR_BIT;
-        obj->lower = sDynObj->index;
+        obj->flags  &= ~Object::ON_FLOOR_BIT;
+        obj->lower  = sDyn->index;
+        sObj->flags |= Object::UPPER_BIT;
 
-        if( ~sDynObj->flags & Object::DISABLED_BIT ) {
-          obj->momentum.z     = sDynObj->velocity.z;
-          sDynObj->momentum.z = momentum.z;
+        if( ~sDyn->flags & Object::DISABLED_BIT ) {
+          obj->momentum.z  = sDyn->velocity.z;
+          sDyn->momentum.z = momentum.z;
         }
         else {
           obj->momentum.z = 0.0f;
@@ -285,10 +301,12 @@ namespace oz
       }
     }
     else {
+      // warning: hitMomentum may be > 0 because of difference between directions of move and
+      // velocity vectors
       float hitMomentum = obj->momentum * hit.normal;
       float hitVelocity = obj->velocity * hit.normal;
 
-      if( hitMomentum < HIT_TRESHOLD && hitVelocity < HIT_TRESHOLD ) {
+      if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
         obj->hit( &hit, hitMomentum );
 
         if( sObj != null ) {
@@ -385,7 +403,7 @@ namespace oz
     obj->depth = min( collider.hit.waterDepth, 2.0f * obj->dim.z );
 
     if( ( obj->flags & ~obj->oldFlags & Object::IN_WATER_BIT ) &&
-        obj->velocity.z < SPLASH_TRESHOLD )
+        obj->velocity.z < SPLASH_THRESHOLD )
     {
       obj->splash( obj->velocity.z );
     }
@@ -404,7 +422,7 @@ namespace oz
     assert( obj->cell != null );
     assert( ( ~obj->flags & Object::ON_FLOOR_BIT ) || ( obj->lower == -1 ) );
 
-    obj->flags &= ~( Object::FRICTING_BIT | Object::HIT_BIT );
+    obj->flags &= ~( Object::HIT_BIT | Object::FRICTING_BIT | Object::UPPER_BIT );
 
     if( obj->lower != -1 ) {
       Object *sObj = world.objects[obj->lower];
@@ -413,6 +431,9 @@ namespace oz
       if( sObj == null || sObj->cell == null ) {
         obj->flags &= ~Object::DISABLED_BIT;
         obj->lower = -1;
+      }
+      else if( ~sObj->flags & Object::DISABLED_BIT ) {
+        obj->flags &= ~Object::DISABLED_BIT;
       }
     }
     // handle physics

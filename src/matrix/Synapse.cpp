@@ -21,8 +21,8 @@ namespace oz
 
   void Synapse::genParts( int number, const Vec3 &p,
                           const Vec3 &velocity, float velocitySpread,
-                          float rejection, float mass, float lifeTime,
-                          const Vec3 &color, float colorSpread )
+                          const Vec3 &color, float colorSpread,
+                          float rejection, float mass, float lifeTime )
   {
     float velocitySpread2 = velocitySpread / 2.0f;
     float colorSpread2 = colorSpread / 2.0f;
@@ -36,8 +36,8 @@ namespace oz
                                 colorSpread * Math::frand() - colorSpread2 );
       float timeDisturb = lifeTime * Math::frand();
 
-      addPart( p, velocity + velDisturb, rejection, mass, 0.5f * lifeTime + timeDisturb,
-               color + colorDisturb );
+      addPart( p, velocity + velDisturb, color + colorDisturb,
+               rejection, mass, 0.5f * lifeTime + timeDisturb );
     }
   }
 

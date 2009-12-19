@@ -18,7 +18,7 @@ namespace oz
   {
     private:
 
-      static const float DAMAGE_TRESHOLD = 400.0f;
+      static const float DAMAGE_THRESHOLD = 400.0f;
 
     public:
 
@@ -45,7 +45,7 @@ namespace oz
 
       void damage( float damage )
       {
-        damage -= DAMAGE_TRESHOLD;
+        damage -= DAMAGE_THRESHOLD;
 
         if( damage > 0.0f ) {
           life -= damage;

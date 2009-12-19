@@ -11,7 +11,8 @@
 
 #include "MD2WeaponModel.h"
 
-#include "matrix/BotClass.h"
+#include "matrix/Bot.h"
+#include "matrix/World.h"
 #include "Context.h"
 #include "Colors.h"
 
@@ -22,15 +23,15 @@ namespace client
 
   Model *MD2WeaponModel::create( const Object *obj )
   {
-    assert( obj->flags & Object::BOT_BIT );
+    assert( obj->flags & Object::DYNAMIC_BIT );
+    assert( obj->flags & Object::WEAPON_BIT );
 
-    const Bot *bot = static_cast<const Bot*>( obj );
     MD2WeaponModel *model = new MD2WeaponModel();
 
     model->obj = obj;
     model->md2 = context.loadMD2( obj->type->modelName );
 
-    model->setAnim( bot->anim );
+    model->setAnim( Bot::ANIM_STAND );
     model->anim.nextFrame = model->anim.endFrame;
     model->anim.currFrame = model->anim.endFrame;
 
@@ -58,25 +59,21 @@ namespace client
 
   void MD2WeaponModel::draw()
   {
-    const Bot *bot = static_cast<const Bot*>( obj );
-    const BotClass *clazz = static_cast<const BotClass*>( bot->type );
+    md2->drawFrame( 0 );
+  }
 
-    glRotatef( bot->h, 0.0f, 0.0f, 1.0f );
+  void MD2WeaponModel::drawMounted()
+  {
+    const Dynamic *dyn = static_cast<const Dynamic*>( obj );
+    const Bot *bot = static_cast<const Bot*>( world.objects[dyn->parent] );
+
+    assert( bot->flags & Object::BOT_BIT );
 
     if( bot->anim != anim.type ) {
       setAnim( bot->anim );
     }
-
-    if( bot->state & Bot::DEATH_BIT ) {
-      float color[] = { 1.0f, 1.0f, 1.0f, bot->life / clazz->life * 3.0f };
-
-      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color );
-      md2->draw( &anim );
-      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
-    }
-    else {
-      md2->draw( &anim );
-    }
+    md2->advance( &anim, timer.frameTime );
+    md2->draw( &anim );
   }
 
 }

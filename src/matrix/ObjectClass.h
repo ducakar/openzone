@@ -36,8 +36,9 @@ namespace oz
     int    flags;
     int    type;
     float  life;
-    float  damageTreshold;
+    float  damageThreshold;
 
+    String onCreate;
     String onDestroy;
     String onDamage;
     String onHit;
