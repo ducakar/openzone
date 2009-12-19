@@ -24,6 +24,7 @@
 #include "OBJVehicleModel.h"
 
 #include "BasicAudio.h"
+#include "BotAudio.h"
 
 #include <SDL_image.h>
 #include <GL/glu.h>
@@ -603,6 +604,7 @@ namespace client
     OZ_REGISTER_MODELCLASS( OBJVehicle );
 
     OZ_REGISTER_AUDIOCLASS( Basic );
+    OZ_REGISTER_AUDIOCLASS( Bot );
 
     log.printEnd( " OK" );
   }

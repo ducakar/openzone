@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "matrix/Timer.h"
-
 namespace oz
 {
 namespace client
@@ -65,7 +63,7 @@ namespace client
 
       uint         texId;
 
-      void interpolate( AnimState *anim, float dt ) const;
+      void interpolate( const AnimState *anim ) const;
 
     public:
 
@@ -80,11 +78,30 @@ namespace client
       void translate( const Vec3 &t );
       void translate( int animType, const Vec3 &t );
 
+      void advance( AnimState *anim, float dt ) const;
+
       void drawFrame( int frame ) const;
-      void draw( AnimState *anim ) const;
+      void draw( const AnimState *anim ) const;
       void genList();
 
   };
+
+  inline void MD2::advance( AnimState *anim, float dt ) const
+  {
+    anim->currTime += dt;
+
+    while( anim->currTime > anim->frameTime ) {
+      anim->currTime -= anim->frameTime;
+      anim->currFrame = anim->nextFrame;
+
+      if( anim->nextFrame < anim->endFrame ) {
+        anim->nextFrame++;
+      }
+      else if( anim->repeat ) {
+        anim->nextFrame = anim->startFrame;
+      }
+    }
+  }
 
 }
 }

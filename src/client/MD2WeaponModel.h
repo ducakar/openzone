@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include "matrix/Bot.h"
 #include "Model.h"
 #include "MD2.h"
 
@@ -28,7 +27,9 @@ namespace client
     virtual ~MD2WeaponModel();
 
     void setAnim( int type );
+
     virtual void draw();
+    virtual void drawMounted();
   };
 
 }

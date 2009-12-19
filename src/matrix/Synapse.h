@@ -2,20 +2,6 @@
  *  Synapse.h
  *
  *  World manipulation interface.
- *    World should not be touched directly for adding/removing objects, because objects may have
- *  hold references to each other (by indices). After an object removal a full world update must
- *  pass, so that all references to the removed object are cleared. (On each update every reference
- *  must be checked. If it points to a null object slot, the target object has been removed.
- *  On order for this to work, a full world update must pass before another objects occupies a freed
- *  slot or the reference may point to a new object that may be of a different type. That may result
- *  in a program crash or at least a real mess.)
- *    The second reason is networking. In this mode client should not add/remove object, and,
- *  on server, every object addition/removal must be recorded to be later sent to clients. This
- *  mechanism is also used by nirvana to keep track of added objects.
- *    Third, the objects should not be deleted when removed as they are pointers to them in models
- *  and audio objects in render and sound subsystems. That's why delete operator is actually
- *  called from update(), after render and sound have synchronized and removed models/audio objects
- *  of removed world objects.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
@@ -103,8 +89,8 @@ namespace oz
       // create an object, schedule for addition in the world and return predicted world index
       int  addStruct( const char *name, const Vec3 &p, Structure::Rotation rot );
       int  addObject( const char *name, const Vec3 &p );
-      int  addPart( const Vec3 &p, const Vec3 &velocity, float rejection, float mass,
-                    float lifeTime, const Vec3 &color );
+      int  addPart( const Vec3 &p, const Vec3 &velocity, const Vec3 &color,
+                    float rejection, float mass, float lifeTime );
 
       // schedule for removal from physical world and delete it
       void remove( Structure *str );
@@ -138,8 +124,8 @@ namespace oz
 
       void genParts( int number, const Vec3 &p,
                      const Vec3 &velocity, float velocitySpread,
-                     float rejection, float mass, float lifeTime,
-                     const Vec3 &color, float colorSpread );
+                     const Vec3 &color, float colorSpread,
+                     float rejection, float mass, float lifeTime );
 
       // do deletes and clear lists for actions, additions, removals
       void update();
@@ -191,6 +177,7 @@ namespace oz
   {
     world.add( obj );
     world.position( obj );
+    obj->addEvent( Object::EVENT_CREATE, 1.0f );
     addedObjects << obj->index;
     return obj->index;
   }
@@ -214,10 +201,10 @@ namespace oz
     return add( translator.createObject( name, p ) );
   }
 
-  inline int Synapse::addPart( const Vec3 &p, const Vec3 &velocity, float rejection, float mass,
-                               float lifeTime, const Vec3 &color )
+  inline int Synapse::addPart( const Vec3 &p, const Vec3 &velocity, const Vec3 &color,
+                               float rejection, float mass, float lifeTime )
   {
-    return add( new Particle( p, velocity, rejection, mass, lifeTime, color ) );
+    return add( new Particle( p, velocity, color, rejection, mass, lifeTime ) );
   }
 
   inline void Synapse::remove( Structure *str )

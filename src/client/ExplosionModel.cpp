@@ -48,11 +48,13 @@ namespace client
     float alpha  = 1.0f - 0.001f * millis;
     float color[] = { 1.0f, 1.0f, 1.0f, alpha*alpha };
 
+    glEnable( GL_BLEND );
     glDisable( GL_CULL_FACE );
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color );
     glBindTexture( GL_TEXTURE_2D, texId );
     gluSphere( quadric, radius, 32, 32 );
     glEnable( GL_CULL_FACE );
+    glDisable( GL_BLEND );
   }
 
 }

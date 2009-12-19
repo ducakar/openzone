@@ -20,8 +20,7 @@ namespace ui
 
   class HudArea : public Area
   {
-    friend void update();
-    friend void draw();
+    friend class UI;
 
     private:
 
@@ -51,8 +50,6 @@ namespace ui
       virtual void onDraw();
 
     public:
-
-      int taggedObjIndex;
 
       explicit HudArea( int width, int height );
       virtual ~HudArea();

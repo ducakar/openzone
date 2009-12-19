@@ -126,6 +126,9 @@ namespace client
     // have pointers to objects) and nirvana has read vector of removed objects and sync'd
     synapse.update();
 
+    // clean events and remove destroyed objects
+    matrix.cleanObjects();
+
     if( input.keys[SDLK_TAB] && !input.oldKeys[SDLK_TAB] ) {
       if( ui::mouse.doShow ) {
         ui::mouse.hide();
@@ -297,6 +300,9 @@ namespace client
       }
 
       if( !ui::mouse.doShow ) {
+        if( ui::mouse.b & SDL_BUTTON_LMASK ) {
+          camera.bot->actions |= Bot::ACTION_ATTACK;
+        }
         if( ui::mouse.rightClick ) {
           camera.bot->actions |= Bot::ACTION_USE;
         }
@@ -314,7 +320,7 @@ namespace client
 
     if( input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
       if( camera.botIndex == -1 ) {
-        Bot *me = static_cast<Bot*>( translator.createObject( "Lord", camera.p ) );
+        Bot *me = static_cast<Bot*>( translator.createObject( "Droid", camera.p ) );
         me->h = camera.h;
         me->v = camera.v;
         me->state |= Bot::PLAYER_BIT;
@@ -330,7 +336,7 @@ namespace client
     }
     if( ui::mouse.doShow ) {
       // interface
-      ui::update();
+      ui::ui.update();
     }
 
     synapse.clearTickets();

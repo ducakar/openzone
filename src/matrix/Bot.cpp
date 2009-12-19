@@ -13,19 +13,21 @@
 
 #include "Synapse.h"
 #include "Physics.h"
+#include "Weapon.h"
 #include "BotClass.h"
 #include "Vehicle.h"
 
 namespace oz
 {
 
-  const float Bot::GRAB_EPSILON      = 0.20f;
-  const float Bot::GRAB_STRING_RATIO = 10.0f;
-  const float Bot::GRAB_MOM_RATIO    = 0.3f;
-  // should be smaller than abs( Physics::HIT_MOMENTUM )
-  const float Bot::GRAB_MOM_MAX      = 1.0f;
-  const float Bot::GRAB_MOM_MAX_SQ   = 1.0f;
-  const float Bot::DEAD_BODY_LIFT    = 100.0f;
+  const float Bot::HIT_HARD_THRESHOLD = -8.00f;
+  const float Bot::GRAB_EPSILON       = 0.20f;
+  const float Bot::GRAB_STRING_RATIO  = 10.0f;
+  const float Bot::GRAB_MOM_RATIO     = 0.3f;
+  // should be smaller than abs( Physics::HIT_THRESHOLD )
+  const float Bot::GRAB_MOM_MAX       = 1.0f;
+  const float Bot::GRAB_MOM_MAX_SQ    = 1.0f;
+  const float Bot::DEAD_BODY_LIFT     = 100.0f;
 
   void Bot::onDestroy()
   {
@@ -43,11 +45,14 @@ namespace oz
 
       addEvent( EVENT_LAND, hitMomentum * Object::MOMENTUM_INTENSITY_COEF );
     }
+    else if( hitMomentum < HIT_HARD_THRESHOLD ) {
+      addEvent( EVENT_HIT_HARD, hitMomentum * Object::MOMENTUM_INTENSITY_COEF );
+    }
   }
 
   void Bot::onUpdate()
   {
-    BotClass *clazz = static_cast<BotClass*>( type );
+    const BotClass *clazz = static_cast<const BotClass*>( type );
 
     // clear invalid references from inventory
     for( int i = 0; i < items.length(); ) {
@@ -116,7 +121,7 @@ namespace oz
      */
 
     bool isSwimming   = depth >= dim.z;
-    bool isUnderWater = depth >= dim.z + camPos.z;
+    bool isUnderWater = depth >= dim.z + camZ;
     bool isClimbing   = ( flags & ON_LADDER_BIT ) && grabObj == -1;
     bool isGrounded   = ( lower != -1 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
 
@@ -174,8 +179,8 @@ namespace oz
         dim = clazz->dim;
 
         if( collider.test( *this, this ) ) {
-          camPos = clazz->camPos;
-          state  &= ~CROUCHING_BIT;
+          camZ  = clazz->camZ;
+          state &= ~CROUCHING_BIT;
         }
         else {
           dim = clazz->dimCrouch;
@@ -187,9 +192,9 @@ namespace oz
         flags &= ~Object::ON_FLOOR_BIT;
         lower =  -1;
 
-        p.z    += dim.z - clazz->dimCrouch.z;
-        dim.z  = clazz->dimCrouch.z;
-        camPos = clazz->camPosCrouch;
+        p.z   += dim.z - clazz->dimCrouch.z;
+        dim.z = clazz->dimCrouch.z;
+        camZ  = clazz->crouchCamZ;
         state |= CROUCHING_BIT;
       }
     }
@@ -206,6 +211,14 @@ namespace oz
     }
     else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
       anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_WALK : ANIM_RUN;
+    }
+    else if( ( actions & ACTION_ATTACK ) && weaponItem != -1 ) {
+      Weapon *weapon = static_cast<Weapon*>( world.objects[weaponItem] );
+
+      if( weapon != null && weapon->shotTime == 0.0f ) {
+        anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
+        weapon->trigger( this );
+      }
     }
     else if( state & CROUCHING_BIT ) {
       anim = ANIM_CROUCH_STAND;
@@ -392,8 +405,9 @@ namespace oz
     if( grabObj != -1 ) {
       obj = static_cast<Dynamic*>( world.objects[grabObj] );
 
-      if( obj == null || obj->cell == null ) {
+      if( obj == null || obj->cell == null || ( obj->flags & Object::UPPER_BIT ) ) {
         grabObj = -1;
+        obj = null;
       }
     }
 
@@ -405,8 +419,8 @@ namespace oz
         // keep constant length of xy projection of handle
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * grabHandle;
         // bottom of the object cannot be raised over the player aabb
-        handle.z    = min( handle.z, dim.z - camPos.z + obj->dim.z );
-        Vec3 string = p + camPos + handle - obj->p;
+        handle.z    = min( handle.z, dim.z - camZ + obj->dim.z );
+        Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - obj->p;
 
         if( string.sqL() > grabHandle*grabHandle ) {
           grabObj = -1;
@@ -438,7 +452,7 @@ namespace oz
         synapse.use( this, obj );
       }
       else {
-        Vec3 eye  = p + camPos;
+        Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
         Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
@@ -458,7 +472,7 @@ namespace oz
         }
       }
       else {
-        Vec3 eye  = p + camPos;
+        Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
         Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
@@ -486,7 +500,7 @@ namespace oz
         grabObj = -1;
       }
       else {
-        Vec3 eye  = p + camPos;
+        Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
         Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
@@ -533,8 +547,8 @@ namespace oz
         // keep constant length of xy projection of handle
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * dist;
         // bottom of the object cannot be raised over the player aabb
-        handle.z    = min( handle.z, dim.z - camPos.z + item->dim.z );
-        item->p     = p + camPos + handle;
+        handle.z    = min( handle.z, dim.z - camZ + item->dim.z );
+        item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
 
         if( collider.test( *item ) ) {
           item->parent = -1;
@@ -645,7 +659,7 @@ namespace oz
 
   void Bot::readUpdate( InputStream *istream )
   {
-    Object::readUpdate( istream );
+    Dynamic::readUpdate( istream );
 
     h            = istream->readFloat();
     v            = istream->readFloat();

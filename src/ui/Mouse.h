@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "ui.h"
+
 namespace oz
 {
 namespace client

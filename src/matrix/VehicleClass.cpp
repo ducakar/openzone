@@ -44,16 +44,18 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
     OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
     OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
+    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,      "flag.noDraw",      false );
+    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT, "flag.delayedDraw", false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
 
     clazz->life                 = config->get( "life", 100.0f );
-    clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
+    clazz->damageThreshold      = config->get( "damageThreshold", 100.0f );
 
     if( clazz->life <= 0.0f ) {
       throw Exception( "Invalid object life. Should be > 0." );
     }
-    if( clazz->damageTreshold < 0.0f ) {
-      throw Exception( "Invalid object damageTreshold. Should be >= 0." );
+    if( clazz->damageThreshold < 0.0f ) {
+      throw Exception( "Invalid object damageThreshold. Should be >= 0." );
     }
 
     clazz->nDebris              = config->get( "nDebris", 8 );

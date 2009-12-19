@@ -22,8 +22,7 @@ namespace ui
   class Area
   {
     friend class DList<Area, 0>;
-    friend void update();
-    friend void draw();
+    friend class UI;
 
     private:
 

@@ -25,7 +25,7 @@ namespace ui
       static const int   ICON_SIZE   = 32;
       static const int   SLOT_SIZE   = 64;
       static const float SLOT_DIMF   = 32.0f;
-      static const int   COLS        = 10;
+      static const int   COLS        = 8;
       static const int   ROWS        = 4;
       static const int   HEADER_SIZE = 20;
       static const int   FOOTER_SIZE = 40;

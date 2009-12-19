@@ -24,17 +24,6 @@ lift "15.00"
 modelType "OBJVehicle"
 modelName "raptor"
 
-audio.type "Basic"
-
-audioSample00 "land1"
-audioSample01 "jump1"
-
-audioSample27 "land1"
-audioSample28 "land1"
-audioSample29 "splash_soft1"
-audioSample30 "splash_hard1"
-audioSample31 ""
-
 lookLimitHMin "-90.0"
 lookLimitHMax "90.0"
 lookLimitVMin "-45.0"

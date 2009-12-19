@@ -35,6 +35,7 @@ namespace oz
       void load( InputStream *istream );
       void unload( OutputStream *ostream );
 
+      void cleanObjects();
       void update();
 
   };

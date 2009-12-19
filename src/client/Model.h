@@ -27,6 +27,7 @@ namespace client
     virtual ~Model();
 
     virtual void draw() = 0;
+    virtual void drawMounted();
   };
 
 }

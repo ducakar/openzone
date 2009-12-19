@@ -301,9 +301,27 @@ namespace nirvana
     return 1;
   }
 
+  static int ozObjIsItem( lua_State *l )
+  {
+    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::ITEM_BIT ) );
+    return 1;
+  }
+
+  static int ozObjIsWeapon( lua_State *l )
+  {
+    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::WEAPON_BIT ) );
+    return 1;
+  }
+
   static int ozObjIsBot( lua_State *l )
   {
     lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::BOT_BIT ) );
+    return 1;
+  }
+
+  static int ozObjIsVehicle( lua_State *l )
+  {
+    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::VEHICLE_BIT ) );
     return 1;
   }
 
@@ -496,7 +514,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
+    const Dynamic *obj = static_cast<const Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->velocity.x );
     lua_pushnumber( l, obj->velocity.y );
@@ -513,7 +531,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
+    const Dynamic *obj = static_cast<const Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->momentum.x );
     lua_pushnumber( l, obj->momentum.y );
@@ -530,7 +548,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
+    const Dynamic *obj = static_cast<const Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->mass );
     return 1;
@@ -545,10 +563,27 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
-    Dynamic *obj = static_cast<Dynamic*>( lua.obj );
+    const Dynamic *obj = static_cast<const Dynamic*>( lua.obj );
 
     lua_pushnumber( l, obj->lift );
     return 1;
+  }
+
+  static int ozBotGetEyePos( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( ~lua.obj->flags & Object::BOT_BIT ) {
+      OZ_LUA_ERROR( "selected object is not a bot" );
+    }
+
+    const Bot *bot = static_cast<const Bot*>( lua.obj );
+
+    lua_pushnumber( l, bot->p.x );
+    lua_pushnumber( l, bot->p.y );
+    lua_pushnumber( l, bot->p.z + bot->camZ );
+    return 3;
   }
 
   static int ozBotGetH( lua_State *l )
@@ -560,7 +595,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not a bot" );
     }
 
-    Bot *bot = static_cast<Bot*>( lua.obj );
+    const Bot *bot = static_cast<const Bot*>( lua.obj );
 
     lua_pushnumber( l, bot->h );
     return 1;
@@ -575,9 +610,51 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not a bot" );
     }
 
-    Bot *bot = static_cast<Bot*>( lua.obj );
+    const Bot *bot = static_cast<const Bot*>( lua.obj );
 
     lua_pushnumber( l, bot->v );
+    return 1;
+  }
+
+  static int ozBotGetDir( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( ~lua.obj->flags & Object::BOT_BIT ) {
+      OZ_LUA_ERROR( "selected object is not a bot" );
+    }
+
+    const Bot *bot = static_cast<const Bot*>( lua.obj );
+
+    // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
+    float hvsc[6];
+
+    Math::sincos( Math::rad( bot->h ), &hvsc[0], &hvsc[1] );
+    Math::sincos( Math::rad( bot->v ), &hvsc[2], &hvsc[3] );
+
+    hvsc[4] = hvsc[3] * hvsc[0];
+    hvsc[5] = hvsc[3] * hvsc[1];
+
+    lua_pushnumber( l, -hvsc[4] );
+    lua_pushnumber( l,  hvsc[5] );
+    lua_pushnumber( l,  hvsc[2] );
+
+    return 3;
+  }
+
+  static int ozBotStateIsRunning( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( ~lua.obj->flags & Object::BOT_BIT ) {
+      OZ_LUA_ERROR( "selected object is not a bot" );
+    }
+
+    const Bot *bot = static_cast<const Bot*>( lua.obj );
+
+    lua_pushboolean( l, bot->state & Bot::RUNNING_BIT );
     return 1;
   }
 
@@ -590,25 +667,18 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is not a bot" );
     }
 
-    Bot *bot = static_cast<Bot*>( lua.obj );
+    const Bot *bot = static_cast<const Bot*>( lua.obj );
 
     lua_pushnumber( l, bot->stamina );
     return 1;
   }
 
-  static int ozBotStateIsRunning( lua_State *l )
+  static int ozSelfGetEyePos( lua_State *l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
-    if( ~lua.obj->flags & Object::BOT_BIT ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
-    }
-
-    Bot *bot = static_cast<Bot*>( lua.obj );
-
-    lua_pushboolean( l, bot->state & Bot::RUNNING_BIT );
-    return 1;
+    lua_pushnumber( l, lua.self->p.x );
+    lua_pushnumber( l, lua.self->p.y );
+    lua_pushnumber( l, lua.self->p.z + lua.self->camZ );
+    return 3;
   }
 
   static int ozSelfGetH( lua_State *l )
@@ -736,6 +806,66 @@ namespace nirvana
     return 0;
   }
 
+  static int ozPartBindIndex( lua_State *l )
+  {
+    int index = lua_tointeger( l, 1 );
+    if( index < 0 || world.particles.length() <= index ) {
+      OZ_LUA_ERROR( "invalid particle index" );
+    }
+    lua.part = world.particles[index];
+    return 0;
+  }
+
+  static int ozPartIsNull( lua_State *l )
+  {
+    lua_pushboolean( l, lua.part == null );
+    return 1;
+  }
+
+  static int ozPartGetPos( lua_State *l )
+  {
+    if( lua.part == null ) {
+      OZ_LUA_ERROR( "selected particle is null" );
+    }
+
+    lua_pushnumber( l, lua.part->p.x );
+    lua_pushnumber( l, lua.part->p.y );
+    lua_pushnumber( l, lua.part->p.z );
+    return 3;
+  }
+
+  static int ozPartGetIndex( lua_State *l )
+  {
+    if( lua.part == null ) {
+      OZ_LUA_ERROR( "selected particle is null" );
+    }
+
+    lua_pushinteger( l, lua.part->index );
+    return 1;
+  }
+
+  static int ozPartGetVelocity( lua_State *l )
+  {
+    if( lua.part == null ) {
+      OZ_LUA_ERROR( "selected particle is null" );
+    }
+
+    lua_pushnumber( l, lua.part->velocity.x );
+    lua_pushnumber( l, lua.part->velocity.y );
+    lua_pushnumber( l, lua.part->velocity.z );
+    return 3;
+  }
+
+  static int ozPartGetLife( lua_State *l )
+  {
+    if( lua.part == null ) {
+      OZ_LUA_ERROR( "selected particle is null" );
+    }
+
+    lua_pushnumber( l, lua.part->lifeTime );
+    return 1;
+  }
+
   void Lua::callFunc( const char *functionName, int botIndex )
   {
     assert( self != null );
@@ -743,6 +873,7 @@ namespace nirvana
 
     obj      = self;
     str      = null;
+    part     = null;
 
     objIndex = 0;
     strIndex = 0;
@@ -817,7 +948,10 @@ namespace nirvana
     OZ_LUA_FUNCTION( ozObjIsSelf );
     OZ_LUA_FUNCTION( ozObjIsPut );
     OZ_LUA_FUNCTION( ozObjIsDynamic );
+    OZ_LUA_FUNCTION( ozObjIsItem );
+    OZ_LUA_FUNCTION( ozObjIsWeapon );
     OZ_LUA_FUNCTION( ozObjIsBot );
+    OZ_LUA_FUNCTION( ozObjIsVehicle );
     OZ_LUA_FUNCTION( ozObjGetPos );
     OZ_LUA_FUNCTION( ozObjGetDim );
     OZ_LUA_FUNCTION( ozObjGetIndex );
@@ -841,11 +975,14 @@ namespace nirvana
     OZ_LUA_FUNCTION( ozDynGetMass );
     OZ_LUA_FUNCTION( ozDynGetLift );
 
+    OZ_LUA_FUNCTION( ozBotGetEyePos );
     OZ_LUA_FUNCTION( ozBotGetH );
     OZ_LUA_FUNCTION( ozBotGetV );
+    OZ_LUA_FUNCTION( ozBotGetDir );
     OZ_LUA_FUNCTION( ozBotStateIsRunning );
     OZ_LUA_FUNCTION( ozBotGetStamina );
 
+    OZ_LUA_FUNCTION( ozSelfGetEyePos );
     OZ_LUA_FUNCTION( ozSelfGetH );
     OZ_LUA_FUNCTION( ozSelfSetH );
     OZ_LUA_FUNCTION( ozSelfAddH );
@@ -866,6 +1003,13 @@ namespace nirvana
     OZ_LUA_FUNCTION( ozSelfStateIsRunning );
     OZ_LUA_FUNCTION( ozSelfStateSetRunning );
     OZ_LUA_FUNCTION( ozSelfStateToggleRunning );
+
+    OZ_LUA_FUNCTION( ozPartBindIndex );
+    OZ_LUA_FUNCTION( ozPartIsNull );
+    OZ_LUA_FUNCTION( ozPartGetPos );
+    OZ_LUA_FUNCTION( ozPartGetIndex );
+    OZ_LUA_FUNCTION( ozPartGetVelocity );
+    OZ_LUA_FUNCTION( ozPartGetLife );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
@@ -908,6 +1052,8 @@ namespace nirvana
     OZ_LUA_INT_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
     OZ_LUA_INT_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
     OZ_LUA_INT_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
     OZ_LUA_INT_CONST( "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
     OZ_LUA_INT_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
     OZ_LUA_INT_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );

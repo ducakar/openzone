@@ -28,7 +28,7 @@ namespace client
   void BasicAudio::update()
   {
     const Dynamic *dyn = static_cast<const Dynamic*>( obj );
-    int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
+    const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
 
     // friction
     if( ( obj->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==

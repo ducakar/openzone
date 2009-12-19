@@ -30,7 +30,7 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
@@ -45,7 +45,7 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
@@ -60,7 +60,7 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
@@ -75,7 +75,7 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
@@ -90,7 +90,7 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
@@ -105,12 +105,27 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
       synapse.add( translator.createObject( "Bomb", p ) );
+    }
+  }
+
+  static void createRifle( Button* )
+  {
+    if( !translator.classes.contains( "Rifle" ) ) {
+      return;
+    }
+
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
+    p += camera.at * 2.0f;
+    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
+
+    if( collider.test( bb ) ) {
+      synapse.add( translator.createObject( "Rifle", p ) );
     }
   }
 
@@ -120,7 +135,7 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
@@ -137,7 +152,7 @@ namespace ui
       return;
     }
 
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
@@ -158,7 +173,7 @@ namespace ui
 //
   static void createCenterR90( Button* )
   {
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     p += camera.at * 2.0f;
 
     synapse.addStruct( "house", p, Structure::R90 );
@@ -182,7 +197,7 @@ namespace ui
 
   static void destroy( Button* )
   {
-    Vec3 p = camera.bot == null ? camera.p : camera.bot->p + camera.bot->camPos;
+    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
     collider.translate( p, camera.at * 2.0f, camera.bot );
 
     if( collider.hit.obj != null ) {
@@ -201,11 +216,12 @@ namespace ui
     add( new Button( "FirstAid", createFirstAid, 90, 15 ), 5, -95 );
     add( new Button( "Wine", createWine, 90, 15 ), 5, -115 );
     add( new Button( "Bomb", createBomb, 90, 15 ), 5, -135 );
-    add( new Button( "Goblin", createGoblin, 90, 15 ), 5, -155 );
-    add( new Button( "Knight", createKnight, 90, 15 ), 5, -175 );
+    add( new Button( "Rifle", createRifle, 90, 15 ), 5, -155 );
+    add( new Button( "Goblin", createGoblin, 90, 15 ), 5, -175 );
+    add( new Button( "Knight", createKnight, 90, 15 ), 5, -195 );
 
 //    add( new Button( "House R0",   createCenterR0,   90, 15 ), 5, -155 );
-    add( new Button( "House R90",  createCenterR90,  90, 15 ), 5, -195 );
+    add( new Button( "House R90",  createCenterR90,  90, 15 ), 5, -215 );
 //    add( new Button( "House R180", createCenterR180, 90, 15 ), 5, -195 );
 //    add( new Button( "House R270", createCenterR270, 90, 15 ), 5, -215 );
 

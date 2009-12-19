@@ -52,7 +52,10 @@ namespace oz
        */
 
       // if object has Lua handlers
-      static const int LUA_BIT            = 0x02000000;
+      static const int LUA_BIT            = 0x04000000;
+
+      // if the onCreate function should be called when object is added into world
+      static const int CREATE_FUNC_BIT    = 0x02000000;
 
       // if the onDestroy function should be called on destruction
       static const int DESTROY_FUNC_BIT   = 0x01000000;
@@ -105,6 +108,9 @@ namespace oz
       // if the object is currently fricting
       static const int FRICTING_BIT       = 0x00002000;
 
+      // if an another dynamic object has set it for lower object in last step
+      static const int UPPER_BIT          = 0x00001000;
+
       // if the the object lies or moves on a structure, terrain or non-dynamic object
       // (if on another dynamic object, we determine that with "lower" index)
       static const int ON_FLOOR_BIT       = 0x00000800;
@@ -139,15 +145,19 @@ namespace oz
       // don't render object (it will be rendered via another path, e.g. bots in a vehicle)
       static const int NO_DRAW_BIT        = 0x00000008;
 
+      // render after other objects (for large blended objects, e.g. explosions)
+      static const int DELAYED_DRAW_BIT   = 0x00000004;
+
       // wide frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
       // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR (default 5.0f)
-      static const int WIDE_CULL_BIT      = 0x00000004;
+      static const int WIDE_CULL_BIT      = 0x00000002;
 
       /*
        * STANDARD EVENT IDs
        */
 
+      static const int EVENT_CREATE       = 0;
       static const int EVENT_DESTROY      = 1;
       static const int EVENT_DAMAGE       = 2;
       static const int EVENT_HIT          = 3;
@@ -157,7 +167,7 @@ namespace oz
       static const int EVENT_FRICTING     = 5;
       static const int EVENT_USE          = 6;
 
-      static const float MOMENTUM_INTENSITY_COEF = -0.125f;
+      static const float MOMENTUM_INTENSITY_COEF = -0.1f;
       static const float DAMAGE_INTENSITY_COEF   = 0.02f;
 
       struct Event : PoolAlloc<Event, 0>
@@ -185,25 +195,25 @@ namespace oz
 
     private:
 
-      Object         *prev[1];     // the previous object in cell.objects and list
-      Object         *next[1];     // the next object in cell.objects and list
+      Object            *prev[1];     // the previous object in cell.objects and list
+      Object            *next[1];     // the next object in cell.objects and list
 
     public:
 
-      int            index;        // position in world.objects vector
-      Cell           *cell;        // parent cell, null if not positioned in the world
+      int               index;        // position in world.objects vector
+      Cell              *cell;        // parent cell, null if not positioned in the world
 
-      int            flags;
-      int            oldFlags;
+      int               flags;
+      int               oldFlags;
 
-      ObjectClass    *type;
+      const ObjectClass *type;
 
       // damage
-      float          life;
+      float             life;
 
       // events are used for reporting hits, friction & stuff and are cleared at the beginning of
       // the frame
-      List<Event, 0> events;
+      List<Event, 0>    events;
 
     public:
 
@@ -250,7 +260,7 @@ namespace oz
        */
       void damage( float damage )
       {
-        damage -= type->damageTreshold;
+        damage -= type->damageThreshold;
 
         if( damage > 0.0f ) {
           life -= damage;
@@ -288,8 +298,6 @@ namespace oz
        */
       void update()
       {
-        events.free();
-
         if( flags & UPDATE_FUNC_BIT ) {
           onUpdate();
         }
@@ -306,6 +314,7 @@ namespace oz
 
     protected:
 
+      virtual void onCreate();
       virtual void onDestroy();
       virtual void onDamage( float damage );
       virtual void onHit( const Hit *hit, float momentum );

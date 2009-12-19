@@ -61,7 +61,7 @@ namespace client
     }
 
     foreach( obj, cell.objects.iterator() ) {
-      if( ( obj->flags & Object::NO_DRAW_BIT ) || ( &*obj == camera.bot && !camera.isExternal ) ) {
+      if( obj->flags & Object::NO_DRAW_BIT ) {
         continue;
       }
       bool isVisible =
@@ -70,7 +70,12 @@ namespace client
           frustum.isVisible( *obj );
 
       if( isVisible ) {
-        objects << ObjectEntry( ( obj->p - camera.p ).sqL(), obj );
+        if( obj->flags & Object::DELAYED_DRAW_BIT ) {
+          delayedObjects << ObjectEntry( ( obj->p - camera.p ).sqL(), obj );
+        }
+        else {
+          objects << ObjectEntry( ( obj->p - camera.p ).sqL(), obj );
+        }
       }
     }
 
@@ -81,27 +86,24 @@ namespace client
     }
   }
 
-  void Render::drawObject( const Object *obj )
+  void Render::drawModel( const Object *obj )
   {
-    if( obj->index == taggedObjIndex ) {
-      glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
-    }
-
-    glPushMatrix();
-    glTranslatef( obj->p.x, obj->p.y, obj->p.z );
-
-    if( !models.contains( obj->index ) ) {
-      models.add( obj->index, context.createModel( obj ) );
+    if( !render.models.contains( obj->index ) ) {
+      render.models.add( obj->index, context.createModel( obj ) );
     }
     // draw model
-    models.cachedValue()->draw();
-    models.cachedValue()->isUpdated = true;
+    render.models.cachedValue()->draw();
+    render.models.cachedValue()->isUpdated = true;
+  }
 
-    glPopMatrix();
-
-    if( obj->index == taggedObjIndex ) {
-      glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::BLACK );
+  void Render::drawMountedModel( const Object *obj )
+  {
+    if( !render.models.contains( obj->index ) ) {
+      render.models.add( obj->index, context.createModel( obj ) );
     }
+    // draw model
+    render.models.cachedValue()->drawMounted();
+    render.models.cachedValue()->isUpdated = true;
   }
 
   void Render::sync()
@@ -135,13 +137,13 @@ namespace client
     drawnStructures.clearAll();
 
     // highlight the object the camera is looking at
-    taggedObjIndex = -1;
+    taggedObj = -1;
     if( camera.bot == null ) {
       collider.translate( camera.p, camera.at * 2.0f );
-      taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
+      taggedObj = collider.hit.obj == null ? -1 : collider.hit.obj->index;
     }
     else if( camera.bot->grabObj != -1 && world.objects[camera.bot->grabObj] != null ) {
-      taggedObjIndex = camera.bot->grabObj;
+      taggedObj = camera.bot->grabObj;
     }
     else {
       // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
@@ -155,9 +157,11 @@ namespace client
 
       Vec3 at = Vec3( -hvsc[4], hvsc[5], hvsc[2] );
 
-      float distance = static_cast<BotClass*>( camera.bot->type )->grabDistance;
-      collider.translate( camera.bot->p + camera.bot->camPos, at * distance, camera.bot );
-      taggedObjIndex = collider.hit.obj == null ? -1 : collider.hit.obj->index;
+      float distance = static_cast<const BotClass*>( camera.bot->type )->grabDistance;
+      collider.translate( camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ ),
+                          at * distance,
+                          camera.bot );
+      taggedObj = collider.hit.obj == null ? -1 : collider.hit.obj->index;
     }
 
     float minXCenter = static_cast<float>( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
@@ -264,12 +268,29 @@ namespace client
     glDisable( GL_TEXTURE_2D );
     glActiveTexture( GL_TEXTURE0 );
 
-    // draw objects
+    // draw (non-delayed) objects
     objects.sort();
 
     for( int i = 0; i < objects.length(); i++ ) {
-      drawObject( objects[i].obj );
+      const Object *obj = objects[i].obj;
+
+      if( obj->index == taggedObj ) {
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
+      }
+
+      glPushMatrix();
+      glTranslatef( obj->p.x, obj->p.y, obj->p.z );
+
+      drawModel( obj );
+
+      glPopMatrix();
+
+      if( obj->index == taggedObj ) {
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::BLACK );
+      }
     }
+
+    assert( !glIsEnabled( GL_BLEND ) );
 
     // draw particles
     glEnable( GL_COLOR_MATERIAL );
@@ -292,9 +313,32 @@ namespace client
 
     glColor4fv( Colors::WHITE );
     glEnable( GL_TEXTURE_2D );
+    glDisable( GL_BLEND );
 
-    // draw transparent objects
+    // draw delayed objects
     glDisable( GL_COLOR_MATERIAL );
+
+    for( int i = 0; i < delayedObjects.length(); i++ ) {
+      const Object *obj = delayedObjects[i].obj;
+
+      if( obj->index == taggedObj ) {
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
+      }
+
+      glPushMatrix();
+      glTranslatef( obj->p.x, obj->p.y, obj->p.z );
+
+      drawModel( obj );
+
+      glPopMatrix();
+
+      if( obj->index == taggedObj ) {
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::BLACK );
+      }
+    }
+
+    assert( !glIsEnabled( GL_BLEND ) );
+    glEnable( GL_BLEND );
 
     // draw structures' water
     BSP::beginRender();
@@ -333,6 +377,7 @@ namespace client
     glDisable( GL_COLOR_MATERIAL );
 
     objects.clear();
+    delayedObjects.clear();
 
     glDisable( GL_FOG );
     glDisable( GL_LIGHTING );
@@ -350,8 +395,8 @@ namespace client
     glDisable( GL_DEPTH_TEST );
     glColor4fv( Colors::WHITE );
 
-    ui::hud->taggedObjIndex = taggedObjIndex;
-    ui::draw();
+    ui::taggedObj = taggedObj;
+    ui::ui.draw();
 
     if( doScreenshot ) {
       uint *pixels = new uint[screenX * screenY * 4];
@@ -477,10 +522,10 @@ namespace client
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-    ui::init( screenX, screenY );
-    ui::hud->add( new ui::DebugArea() );
-    ui::hud->add( new ui::BuildMenu(), -1, -1 );
-    ui::hud->add( new ui::InventoryMenu(), 0, 0 );
+    ui::ui.init( screenX, screenY );
+    ui::ui.hud->add( new ui::DebugArea() );
+    ui::ui.hud->add( new ui::BuildMenu(), -1, -1 );
+    ui::ui.hud->add( new ui::InventoryMenu(), 0, 0 );
 
     SDL_GL_SwapBuffers();
 
@@ -495,7 +540,7 @@ namespace client
     log.println( "Shutting down Graphics {" );
     log.indent();
 
-    ui::free();
+    ui::ui.free();
 
     log.unindent();
     log.println( "}" );

@@ -55,7 +55,7 @@ namespace nirvana
     Bot *bot = static_cast<Bot*>( world.objects[botIndex] );
 
     if( ~bot->state & Bot::DEATH_BIT ) {
-      BotClass *clazz = static_cast<BotClass*>( bot->type );
+      const BotClass *clazz = static_cast<const BotClass*>( bot->type );
 
       bot->actions = 0;
       lua.call( clazz->mindFunction, bot );

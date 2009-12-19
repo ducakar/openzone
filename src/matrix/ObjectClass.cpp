@@ -22,13 +22,22 @@ namespace oz
 
   void ObjectClass::fillCommon( ObjectClass *clazz, const Config *config )
   {
+    clazz->onCreate             = config->get( "onCreate", "" );
     clazz->onDestroy            = config->get( "onDestroy", "" );
     clazz->onDamage             = config->get( "onDamage", "" );
     clazz->onHit                = config->get( "onHit", "" );
     clazz->onUpdate             = config->get( "onUpdate", "" );
     clazz->onUse                = config->get( "onUse", "" );
 
-    if( String::length( clazz->onDestroy ) != 0 ) {
+    if( !String::isEmpty( clazz->onCreate ) ) {
+      clazz->flags |= Object::LUA_BIT | Object::CREATE_FUNC_BIT;
+
+      // disable event handler if explicitly set to false
+      if( !config->get( "flag.createFunc", true ) ) {
+        clazz->flags &= ~Object::CREATE_FUNC_BIT;
+      }
+    }
+    if( !String::isEmpty( clazz->onDestroy ) ) {
       clazz->flags |= Object::LUA_BIT | Object::DESTROY_FUNC_BIT;
 
       // disable event handler if explicitly set to false
@@ -36,7 +45,7 @@ namespace oz
         clazz->flags &= ~Object::DESTROY_FUNC_BIT;
       }
     }
-    if( String::length( clazz->onDamage ) != 0 ) {
+    if( !String::isEmpty( clazz->onDamage ) ) {
       clazz->flags |= Object::LUA_BIT | Object::DAMAGE_FUNC_BIT;
 
       // disable event handler if explicitly set to false
@@ -44,7 +53,7 @@ namespace oz
         clazz->flags &= ~Object::DAMAGE_FUNC_BIT;
       }
     }
-    if( String::length( clazz->onHit ) != 0 ) {
+    if( !String::isEmpty( clazz->onHit ) ) {
       clazz->flags |= Object::LUA_BIT | Object::HIT_FUNC_BIT;
 
       // disable event handler if explicitly set to false
@@ -52,7 +61,7 @@ namespace oz
         clazz->flags &= ~Object::HIT_FUNC_BIT;
       }
     }
-    if( String::length( clazz->onUpdate ) != 0 ) {
+    if( !String::isEmpty( clazz->onUpdate ) ) {
       clazz->flags |= Object::LUA_BIT | Object::UPDATE_FUNC_BIT;
 
       // disable event handler if explicitly set to false
@@ -60,7 +69,7 @@ namespace oz
         clazz->flags &= ~Object::UPDATE_FUNC_BIT;
       }
     }
-    if( String::length( clazz->onUse ) != 0 ) {
+    if( !String::isEmpty( clazz->onUse ) ) {
       clazz->flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
 
       // disable event handler if explicitly set to false
@@ -72,13 +81,13 @@ namespace oz
     clazz->modelType            = config->get( "modelType", "" );
     clazz->modelName            = config->get( "modelName", "" );
 
-    if( clazz->modelType.length() > 0 ) {
+    if( !clazz->modelType.isEmpty() ) {
       clazz->flags |= Object::MODEL_BIT;
     }
 
     clazz->audioType            = config->get( "audioType", "" );
 
-    if( clazz->audioType.length() > 0 ) {
+    if( !clazz->audioType.isEmpty() ) {
       clazz->flags |= Object::AUDIO_BIT;
 
       char buffer[] = "audioSample  ";
@@ -120,16 +129,18 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,  "flag.updateFunc",  false );
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
     OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
+    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,      "flag.noDraw",      false );
+    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT, "flag.delayedDraw", false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
 
     clazz->life                 = config->get( "life", 100.0f );
-    clazz->damageTreshold       = config->get( "damageTreshold", 100.0f );
+    clazz->damageThreshold      = config->get( "damageThreshold", 100.0f );
 
     if( clazz->life <= 0.0f ) {
       throw Exception( "Invalid object life. Should be > 0." );
     }
-    if( clazz->damageTreshold < 0.0f ) {
-      throw Exception( "Invalid object damageTreshold. Should be >= 0." );
+    if( clazz->damageThreshold < 0.0f ) {
+      throw Exception( "Invalid object damageThreshold. Should be >= 0." );
     }
 
     clazz->nDebris              = config->get( "nDebris", 8 );

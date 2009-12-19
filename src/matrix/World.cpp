@@ -117,7 +117,8 @@ namespace oz
     partAvailableIndices.addAll( partFreedIndices[waiting] );
     partFreedIndices[waiting].clear();
 
-    swap( freeing, waiting );
+    freeing = !freeing;
+    waiting = !waiting;
 
     sky.update();
   }
@@ -186,7 +187,7 @@ namespace oz
       for( int i = 0; i < nStructures; i++ ) {
         istream->readString( bspName );
 
-        if( bspName.length() == 0 ) {
+        if( bspName.isEmpty() ) {
           structures << null;
         }
         else {
@@ -207,7 +208,7 @@ namespace oz
       for( int i = 0; i < nObjects; i++ ) {
         istream->readString( typeName );
 
-        if( typeName.length() == 0 ) {
+        if( typeName.isEmpty() ) {
           objects << null;
         }
         else {

@@ -9,18 +9,6 @@
 
 #pragma once
 
-#include "Font.h"
-#include "Mouse.h"
-#include "Area.h"
-
-#include "Frame.h"
-#include "Button.h"
-
-#include "HudArea.h"
-#include "DebugArea.h"
-#include "InventoryMenu.h"
-#include "BuildMenu.h"
-
 namespace oz
 {
 namespace client
@@ -28,13 +16,7 @@ namespace client
 namespace ui
 {
 
-  extern HudArea *hud;
-
-  void init( int screenX, int screenY );
-  void free();
-
-  void update();
-  void draw();
+  extern int taggedObj;
 
 }
 }

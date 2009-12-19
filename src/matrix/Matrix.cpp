@@ -21,7 +21,7 @@ namespace oz
   Matrix matrix;
 
   // default 10000.0f: 100 m/s
-  const float Matrix::MAX_VELOCITY2 = 10000.0f;
+  const float Matrix::MAX_VELOCITY2 = 100000.0f;
 
   void Matrix::loadStressTest()
   {
@@ -82,21 +82,23 @@ namespace oz
   {
     world.sky.set( 205.0f, 144.0f, 0.0f );
 
-    Bot *lord = static_cast<Bot*>( translator.createObject( "Lord", Vec3( 52, -44, 37 ) ) );
+    Bot *lord = static_cast<Bot*>( translator.createObject( "Droid", Vec3( 52, -44, 37 ) ) );
     lord->h = 270;
     synapse.add( lord );
 
     synapse.addObject( "Knight", Vec3( 50, -35, 37 ) );
     synapse.addObject( "Goblin", Vec3( 51, -35, 37 ) );
 
+    synapse.addObject( "Wine", Vec3( 49, -36, 37 ) );
     synapse.addObject( "FirstAid", Vec3( 50, -36, 37 ) );
+    synapse.addObject( "Rifle", Vec3( 51, -36, 37 ) );
 
     synapse.addObject( "Raptor", Vec3( 70, -60, 37 ) );
 
     synapse.addStruct( "castle", Vec3( 57, -33, 43 ), Structure::R0 );
 
-    synapse.genParts( 1000, Vec3( 50, -36, 40 ), Vec3( 0, 0, 10 ), 15.0f, 1.95f, 0.0f, 5.0f,
-                      Vec3( 0.4f, 0.4f, 0.4f ), 0.2f );
+//    synapse.genParts( 1000, Vec3( 50, -36, 40 ), Vec3( 0, 0, 10 ), 15.0f,
+//                      Vec3( 0.4f, 0.4f, 0.4f ), 0.2f, 1.95f, 0.0f, 5.0f );
 
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 36 ) );
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 38 ) );
@@ -199,6 +201,24 @@ namespace oz
     log.println( "}" );
   }
 
+  void Matrix::cleanObjects()
+  {
+    for( int i = 0; i < world.objects.length(); i++ ) {
+      Object *obj = world.objects[i];
+
+      if( obj != null ) {
+        obj->events.free();
+
+        if( obj->cell != null && ( obj->flags & Object::DESTROYED_BIT ) ) {
+          synapse.remove( obj );
+        }
+        else if( obj->life <= 0.0f ) {
+          obj->destroy();
+        }
+      }
+    }
+  }
+
   void Matrix::update()
   {
     for( int i = 0; i < world.particles.length(); i++ ) {
@@ -218,10 +238,6 @@ namespace oz
       Object *obj = world.objects[i];
 
       if( obj == null ) {
-        continue;
-      }
-      if( obj->cell != null && ( obj->flags & Object::DESTROYED_BIT ) ) {
-        synapse.remove( obj );
         continue;
       }
 
@@ -252,10 +268,6 @@ namespace oz
             synapse.remove( obj );
           }
         }
-      }
-
-      if( obj->life <= 0.0f ) {
-        obj->destroy();
       }
     }
 

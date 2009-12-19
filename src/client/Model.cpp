@@ -19,5 +19,10 @@ namespace client
   Model::~Model()
   {}
 
+  void Model::drawMounted()
+  {
+    draw();
+  }
+
 }
 }

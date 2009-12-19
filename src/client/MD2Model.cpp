@@ -12,8 +12,10 @@
 #include "MD2Model.h"
 
 #include "matrix/BotClass.h"
-#include "Context.h"
 #include "Colors.h"
+#include "Context.h"
+#include "Camera.h"
+#include "Render.h"
 
 namespace oz
 {
@@ -70,15 +72,24 @@ namespace client
     if( bot->state & Bot::DEATH_BIT ) {
       float color[] = { 1.0f, 1.0f, 1.0f, bot->life / clazz->life * 3.0f };
 
+      glEnable( GL_BLEND );
       glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color );
+      md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
       glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
+      glDisable( GL_BLEND );
     }
     else {
       if( bot->state & Bot::CROUCHING_BIT ) {
         glTranslatef( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z );
       }
-      md2->draw( &anim );
+      if( bot->weaponItem != -1 && world.objects[bot->weaponItem] != null ) {
+        render.drawMountedModel( world.objects[bot->weaponItem] );
+      }
+      md2->advance( &anim, timer.frameTime );
+      if( bot != camera.bot || camera.isExternal ) {
+        md2->draw( &anim );
+      }
     }
   }
 

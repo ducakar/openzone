@@ -11,7 +11,7 @@
 
 #include "matrix/World.h"
 
-#include "ui/ui.h"
+#include "ui/UI.h"
 
 #include "BSP.h"
 #include "Terrain.h"
@@ -62,9 +62,11 @@ namespace client
 
       Vector<const Structure*> structures;
       Vector<ObjectEntry>      objects;
+      Vector<ObjectEntry>      delayedObjects;
       Vector<const Particle*>  particles;
 
       Vector<const Structure*> waterStructures;
+      HashIndex<Model*, 1021>  models;
 
       int                      screenX;
       int                      screenY;
@@ -86,15 +88,16 @@ namespace client
       bool                     isUnderWater;
       bool                     wasUnderWater;
       float                    visibility;
-      int                      taggedObjIndex;
+      int                      taggedObj;
 
       void scheduleCell( int cellX, int cellY );
-      void drawObject( const Object *obj );
 
     public:
 
-      HashIndex<Model*, 1021> models;
-      bool                    doScreenshot;
+      bool doScreenshot;
+
+      void drawModel( const Object *obj );
+      void drawMountedModel( const Object *obj );
 
       void sync();
       void update();
