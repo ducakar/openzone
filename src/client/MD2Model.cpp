@@ -74,12 +74,14 @@ namespace client
 
       glEnable( GL_BLEND );
       glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color );
+
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
+
       glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
       glDisable( GL_BLEND );
     }
-    else {
+    else if( bot != camera.bot || camera.isExternal ) {
       if( bot->state & Bot::CROUCHING_BIT ) {
         glTranslatef( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z );
       }
@@ -87,9 +89,14 @@ namespace client
         render.drawMountedModel( world.objects[bot->weaponItem] );
       }
       md2->advance( &anim, timer.frameTime );
-      if( bot != camera.bot || camera.isExternal ) {
-        md2->draw( &anim );
-      }
+      md2->draw( &anim );
+    }
+    else if( bot->weaponItem != -1 && world.objects[bot->weaponItem] != null ) {
+      glTranslatef( 0.0f, 0.0f,  camera.bot->camZ );
+      glRotatef( bot->v, 1.0f, 0.0f, 0.0f );
+      glTranslatef( 0.0f, 0.0f, -camera.bot->camZ );
+
+      render.drawMountedModel( world.objects[bot->weaponItem] );
     }
   }
 

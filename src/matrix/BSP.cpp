@@ -184,7 +184,7 @@ namespace oz
       texFlags[i] = texture.flags;
       texTypes[i] = texture.type;
 
-      log.println( "%s", name.cstr() );
+//      log.println( "%s", name.cstr() );
 
       if( name.length() <= 12 || name.equals( "textures/NULL" ) ||
           ( texture.flags & QBSP_LADDER_BIT ) )

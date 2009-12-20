@@ -1359,14 +1359,21 @@ namespace oz
     const char *name = lua_tostring( l, 1 );
     Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
     Structure::Rotation rot = static_cast<Structure::Rotation>( lua_tointeger( l, 5 ) );
-    lua.str = translator.createStruct( name, p, rot );
 
-    if( collider.test( lua.str->toAABB() ) ) {
-      int index = synapse.add( lua.str );
+    int bsp = translator.bspIndex( name );
+    if( bsp == -1 ) {
+      OZ_LUA_ERROR( "invalid bsp name" );
+    }
+
+    world.requestBSP( bsp );
+    Bounds bounds = Structure::rotate( *world.bsps[bsp], rot );
+
+    if( collider.test( bounds.toAABB() + p ) ) {
+      int index = synapse.addStruct( name, p, rot );
+      lua.str = world.structures[index];
       lua_pushinteger( l, index );
     }
     else {
-      delete lua.str;
       lua.str = null;
       lua_pushinteger( l, -1 );
     }
@@ -1380,6 +1387,7 @@ namespace oz
     Structure::Rotation rot = static_cast<Structure::Rotation>( lua_tointeger( l, 5 ) );
 
     int index = synapse.addStruct( name, p, rot );
+    lua.str = world.structures[index];
     lua_pushinteger( l, index );
     return 1;
   }
@@ -1388,14 +1396,19 @@ namespace oz
   {
     const char *name = lua_tostring( l, 1 );
     Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
-    lua.obj = translator.createObject( name, p );
 
-    if( collider.test( *lua.obj ) ) {
-      int index = synapse.add( lua.obj );
+    if( !translator.classes.contains( name ) ) {
+      OZ_LUA_ERROR( "invalid object class" );
+    }
+
+    AABB aabb = AABB( p, translator.classes.cachedValue()->dim );
+
+    if( collider.test( aabb ) ) {
+      int index = synapse.addObject( name, p );
+      lua.obj = world.objects[index];
       lua_pushinteger( l, index );
     }
     else {
-      delete lua.obj;
       lua.obj = null;
       lua_pushinteger( l, -1 );
     }
@@ -1408,6 +1421,7 @@ namespace oz
     Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
 
     int index = synapse.addObject( name, p );
+    lua.obj = world.objects[index];
     lua_pushinteger( l, index );
     return 1;
   }
@@ -1421,9 +1435,8 @@ namespace oz
     float mass      = lua_tonumber( l, 11 );
     float lifeTime  = lua_tonumber( l, 12 );
 
-    lua.part = new Particle( p, velocity, color, rejection, mass, lifeTime );
-
-    int index = synapse.add( lua.part );
+    int index = synapse.addPart( p, velocity, color, rejection, mass, lifeTime );
+    lua.part = world.particles[index];
     lua_pushinteger( l, index );
     return 1;
   }

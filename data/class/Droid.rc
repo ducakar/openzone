@@ -35,3 +35,11 @@ grabMass "100.0"
 staminaWaterDrain "0.07"
 staminaRunDrain "0.07"
 staminaJumpDrain "3.0"
+
+inventoryItem00 "Rifle"
+inventoryItem01 "FirstAid"
+inventoryItem02 "FirstAid"
+inventoryItem03 "Bomb"
+inventoryItem04 "Bomb"
+
+weaponItem "0"

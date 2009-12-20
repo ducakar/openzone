@@ -82,11 +82,6 @@ namespace oz
       void cut( Dynamic *obj );
 
       // create an object, schedule for addition in the world and return predicted world index
-      int  add( Structure *str );
-      int  add( Object *obj );
-      int  add( Particle *part );
-
-      // create an object, schedule for addition in the world and return predicted world index
       int  addStruct( const char *name, const Vec3 &p, Structure::Rotation rot );
       int  addObject( const char *name, const Vec3 &p );
       int  addPart( const Vec3 &p, const Vec3 &velocity, const Vec3 &color,
@@ -165,46 +160,42 @@ namespace oz
     world.unposition( obj );
   }
 
-  inline int Synapse::add( Structure *str )
-  {
-    world.add( str );
-    world.position( str );
-    addedStructs << str->index;
-    return str->index;
-  }
-
-  inline int Synapse::add( Object *obj )
-  {
-    world.add( obj );
-    world.position( obj );
-    obj->addEvent( Object::EVENT_CREATE, 1.0f );
-    addedObjects << obj->index;
-    return obj->index;
-  }
-
-  inline int Synapse::add( Particle *part )
-  {
-    world.add( part );
-    world.position( part );
-    addedParts << part->index;
-    return part->index;
-  }
-
   inline int Synapse::addStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
   {
     world.requestBSP( translator.bspIndex( name ) );
-    return add( translator.createStruct( name, p, rot ) );
+
+    int index = world.addStruct( name, p, rot );
+    Structure *str = world.structures[index];
+
+    world.position( str );
+
+    addedStructs << index;
+    return index;
   }
 
   inline int Synapse::addObject( const char *name, const Vec3 &p )
   {
-    return add( translator.createObject( name, p ) );
+    int index = world.addObject( name, p );
+    Object *obj = world.objects[index];
+    assert( obj->cell == null );
+
+    world.position( obj );
+    obj->addEvent( Object::EVENT_CREATE, 1.0f );
+
+    addedObjects << index;
+    return index;
   }
 
   inline int Synapse::addPart( const Vec3 &p, const Vec3 &velocity, const Vec3 &color,
                                float rejection, float mass, float lifeTime )
   {
-    return add( new Particle( p, velocity, color, rejection, mass, lifeTime ) );
+    int index = world.addPart( p, velocity, color, rejection, mass, lifeTime );
+    Particle *part = world.particles[index];
+
+    world.position( part );
+
+    addedParts << index;
+    return index;
   }
 
   inline void Synapse::remove( Structure *str )

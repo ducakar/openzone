@@ -149,13 +149,14 @@ namespace oz
     return clazz;
   }
 
-  Object *VehicleClass::create( const Vec3 &pos )
+  Object *VehicleClass::create( int index, const Vec3 &pos )
   {
     Vehicle *obj = new Vehicle();
 
     obj->p        = pos;
     obj->dim      = dim;
 
+    obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
     obj->type     = this;
@@ -170,11 +171,13 @@ namespace oz
     return obj;
   }
 
-  Object *VehicleClass::create( InputStream *istream )
+  Object *VehicleClass::create( int index, InputStream *istream )
   {
     Vehicle *obj = new Vehicle();
 
     obj->dim    = dim;
+
+    obj->index  = index;
     obj->type   = this;
 
     obj->mass   = mass;

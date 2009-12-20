@@ -11,9 +11,9 @@
 
 #include "matrix.h"
 
-#define OZ_CLASS_SET_FLAG( flag, varName, defValue ) \
+#define OZ_CLASS_SET_FLAG( flagBit, varName, defValue ) \
   if( config->get( varName, defValue ) ) { \
-    clazz->flags |= flag; \
+    clazz->flags |= flagBit; \
   }
 
 namespace oz
@@ -64,8 +64,8 @@ namespace oz
     static void fillCommon( ObjectClass *clazz, const Config *config );
     static ObjectClass *init( const String &name, const Config *config );
 
-    virtual Object *create( const Vec3 &pos );
-    virtual Object *create( InputStream *istream );
+    virtual Object *create( int index, const Vec3 &pos );
+    virtual Object *create( int index, InputStream *istream );
   };
 
 }

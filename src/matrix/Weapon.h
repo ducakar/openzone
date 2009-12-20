@@ -39,17 +39,18 @@ namespace oz
         assert( user != null );
 
         if( shotTime == 0.0f ) {
+          const WeaponClass *clazz = static_cast<const WeaponClass*>( type );
+
+          shotTime = clazz->shotInterval;
+
           if( nShots == 0 ) {
             addEvent( EVENT_SHOT_EMPTY, 1.0f );
           }
           else {
-            const WeaponClass *clazz = static_cast<const WeaponClass*>( type );
+            nShots = max( -1, nShots - 1 );
 
             addEvent( EVENT_SHOT, 1.0f );
             onShot( user );
-
-            nShots = max( -1, nShots - 1 );
-            shotTime = clazz->shotInterval;
           }
         }
       }

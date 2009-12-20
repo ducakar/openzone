@@ -330,7 +330,6 @@ namespace oz
     move = obj->momentum * Timer::TICK_TIME;
     leftRatio = 1.0f;
 
-    Vec3 lastNormals[2];
     int traceSplits = 0;
     do {
       collider.translate( obj, move );

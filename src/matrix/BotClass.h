@@ -16,6 +16,7 @@ namespace oz
 
   struct BotClass : DynamicClass
   {
+    static const int INVENTORY_ITEMS = 16;
     static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
         Object::HIT_FUNC_BIT | Object::BOT_BIT;
 
@@ -58,13 +59,16 @@ namespace oz
 
     int    state;
 
+    SVector<String, INVENTORY_ITEMS> inventoryItems;
+    int    weaponItem;
+
     String mindType;
     String mindFunction;
 
     static ObjectClass *init( const String &name, const Config *config );
 
-    virtual Object *create( const Vec3 &pos );
-    virtual Object *create( InputStream *istream );
+    virtual Object *create( int index, const Vec3 &pos );
+    virtual Object *create( int index, InputStream *istream );
   };
 
 }

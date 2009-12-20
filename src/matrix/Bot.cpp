@@ -466,9 +466,7 @@ namespace oz
     else if( actions & ~oldActions & ACTION_TAKE ) {
       if( grabObj != -1 ) {
         if( obj->flags & ITEM_BIT ) {
-          items << obj->index;
-          obj->parent = index;
-          synapse.cut( obj );
+          take( obj );
         }
       }
       else {
@@ -481,9 +479,7 @@ namespace oz
         if( obj != null && ( obj->flags & ITEM_BIT ) ) {
           assert( obj->flags & DYNAMIC_BIT );
 
-          items << obj->index;
-          obj->parent = index;
-          synapse.cut( obj );
+          take( obj );
         }
       }
     }
@@ -558,6 +554,10 @@ namespace oz
           grabObj    = item->index;
           grabHandle = dist;
           flags      &= ~ON_LADDER_BIT;
+
+          if( item->index == weaponItem ) {
+            weaponItem = -1;
+          }
         }
       }
     }
@@ -566,11 +566,12 @@ namespace oz
      * WEAPON
      */
     if( weaponItem != -1 ) {
-      Dynamic *obj = static_cast<Dynamic*>( world.objects[weaponItem] );
+      Dynamic *weapon = static_cast<Dynamic*>( world.objects[weaponItem] );
 
-      assert( ( obj->flags & DYNAMIC_BIT ) && ( obj->flags & ITEM_BIT ) && ( obj->flags & WEAPON_BIT ) );
+      assert( ( weapon->flags & DYNAMIC_BIT ) && ( weapon->flags & ITEM_BIT ) &&
+              ( weapon->flags & WEAPON_BIT ) );
 
-      if( obj == null || obj->parent != index ) {
+      if( weapon == null ) {
         weaponItem = -1;
       }
     }
@@ -582,6 +583,15 @@ namespace oz
   Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
       grabObj( -1 ), weaponItem( -1 ), anim( ANIM_STAND )
   {}
+
+  void Bot::take( Dynamic *item )
+  {
+    assert( index != -1 && item->flags & Object::ITEM_BIT );
+
+    items << item->index;
+    item->parent = index;
+    synapse.cut( item );
+  }
 
   void Bot::enter( int vehicleIndex_ )
   {

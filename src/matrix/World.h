@@ -98,6 +98,12 @@ namespace oz
       Vector<int>        objAvailableIndices;
       Vector<int>        partAvailableIndices;
 
+    public:
+
+      void requestBSP( int bspIndex );
+
+    private:
+
       void position( Structure *str );
       void unposition( Structure *str );
 
@@ -109,11 +115,10 @@ namespace oz
       void unposition( Particle *part );
       void reposition( Particle *part );
 
-      void requestBSP( int bspIndex );
-
-      void add( Structure *str );
-      void add( Object *obj );
-      void add( Particle *part );
+      int  addStruct( const char *name, const Vec3 &p, Structure::Rotation rot );
+      int  addObject( const char *name, const Vec3 &p );
+      int  addPart( const Vec3 &p, const Vec3 &velocity, const Vec3 &color,
+                    float rejection, float mass, float lifeTime );
 
       void remove( Structure *str );
       void remove( Object *obj );
@@ -205,34 +210,7 @@ namespace oz
 
   inline void World::position( Structure *str )
   {
-    const Bounds &bsp = *bsps[str->bsp];
-
-    switch( str->rot ) {
-      case Structure::R0: {
-        str->mins = bsp.mins + str->p;
-        str->maxs = bsp.maxs + str->p;
-        break;
-      }
-      case Structure::R90: {
-        str->mins = Vec3( -bsp.maxs.y + str->p.x, bsp.mins.x + str->p.y, bsp.mins.z + str->p.z );
-        str->maxs = Vec3( -bsp.mins.y + str->p.x, bsp.maxs.x + str->p.y, bsp.maxs.z + str->p.z );
-        break;
-      }
-      case Structure::R180: {
-        str->mins = str->p + Vec3( -bsp.maxs.x, -bsp.maxs.y, +bsp.mins.z );
-        str->maxs = str->p + Vec3( -bsp.mins.x, -bsp.mins.y, +bsp.maxs.z );
-        break;
-      }
-      case Structure::R270: {
-        str->mins = Vec3( bsp.mins.y + str->p.x, -bsp.maxs.x + str->p.y, bsp.mins.z + str->p.z );
-        str->maxs = Vec3( bsp.maxs.y + str->p.x, -bsp.mins.x + str->p.y, bsp.maxs.z + str->p.z );
-        break;
-      }
-      default: {
-        assert( false );
-        break;
-      }
-    }
+    str->setRotation( *bsps[str->bsp], str->rot );
 
     getInters( area, *str, EPSILON );
 
@@ -341,51 +319,55 @@ namespace oz
     }
   }
 
-  inline void World::add( Structure *str )
+  inline int World::addStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
   {
-    assert( str->index == -1 );
+    int index;
 
     if( strAvailableIndices.isEmpty() ) {
-      str->index = structures.length();
-      structures << str;
+      index = structures.length();
+      structures << translator.createStruct( index, name, p, rot );
     }
     else {
-      strAvailableIndices >> str->index;
-      structures[str->index] = str;
+      strAvailableIndices >> index;
+      structures[index] = translator.createStruct( index, name, p, rot );
     }
+    return index;
   }
 
-  inline void World::add( Object *obj )
+  inline int World::addObject( const char *name, const Vec3 &p )
   {
-    assert( obj->index == -1 );
-    assert( obj->cell == null );
+    int index;
 
     if( objAvailableIndices.isEmpty() ) {
-      obj->index = objects.length();
-      objects << obj;
+      index = objects.length();
+      // workaround to ensure reentrancy
+      objects << null;
+      objects.last() = translator.createObject( index, name, p );
     }
     else {
-      objAvailableIndices >> obj->index;
-      objects[obj->index] = obj;
+      objAvailableIndices >> index;
+      objects[index] = translator.createObject( index, name, p );
     }
-    if( obj->flags & Object::LUA_BIT ) {
-      lua.registerObject( obj->index );
+    if( objects[index]->flags & Object::LUA_BIT ) {
+      lua.registerObject( index );
     }
+    return index;
   }
 
-  inline void World::add( Particle *part )
+  inline int World::addPart( const Vec3 &p, const Vec3 &velocity, const Vec3 &color,
+                              float rejection, float mass, float lifeTime )
   {
-    assert( part->index == -1 );
-    assert( part->cell == null );
+    int index;
 
     if( partAvailableIndices.isEmpty() ) {
-      part->index = particles.length();
-      particles << part;
+      index = particles.length();
+      particles << new Particle( index, p, velocity, color, rejection, mass, lifeTime );
     }
     else {
-      partAvailableIndices >> part->index;
-      particles[part->index] = part;
+      partAvailableIndices >> index;
+      particles[index] = new Particle( index, p, velocity, color, rejection, mass, lifeTime );
     }
+    return index;
   }
 
   inline void World::remove( Structure *str )

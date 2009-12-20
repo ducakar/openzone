@@ -16,9 +16,14 @@
 namespace oz
 {
 
-  Structure::Structure( int bsp_, const Vec3 &p_, Rotation rot_ ) :
-      index( -1 ), bsp( bsp_ ), p( p_ ), rot( rot_ ), life( world.bsps[bsp]->life )
+  Structure::Structure( int index_, int bsp_, const Vec3 &p_, Rotation rot_ ) :
+      index( index_ ), bsp( bsp_ ), p( p_ ), rot( rot_ ), life( world.bsps[bsp]->life )
   {}
+
+  Structure::Structure( int index_, int bsp_, InputStream *istream ) : index( index_ ), bsp( bsp_ )
+  {
+    readFull( istream );
+  }
 
   void Structure::destroy()
   {

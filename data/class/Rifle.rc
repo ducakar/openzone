@@ -2,9 +2,9 @@ description "Standard Droid rifle."
 
 base "Weapon"
 
-dim.x "0.30"
-dim.y "0.30"
-dim.z "0.15"
+dim.x "0.24"
+dim.y "0.24"
+dim.z "0.10"
 
 life "100.0f"
 
@@ -25,3 +25,5 @@ audioSample07                   "cg2"                           # trigger
 audioSample08                   "outofammo"                     # trigger_empty
 
 onShot "Rifle_onShot"
+nShots "-1"
+shotInterval "0.5"

@@ -191,8 +191,7 @@ namespace oz
           structures << null;
         }
         else {
-          str = translator.createStruct( bspName, istream );
-          str->index = i;
+          str = translator.createStruct( i, bspName, istream );
           structures << str;
 
           if( bsps[str->bsp] == null ) {
@@ -212,8 +211,7 @@ namespace oz
           objects << null;
         }
         else {
-          obj = translator.createObject( typeName, istream );
-          obj->index = i;
+          obj = translator.createObject( i, typeName, istream );
           objects << obj;
 
           if( obj->flags & Object::LUA_BIT ) {

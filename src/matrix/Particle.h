@@ -57,9 +57,9 @@ namespace oz
       explicit Particle() : index( -1 ), cell( null )
       {}
 
-      explicit Particle( const Vec3 &p_, const Vec3 &velocity_, const Vec3 &color_,
+      explicit Particle( int index_, const Vec3 &p_, const Vec3 &velocity_, const Vec3 &color_,
                          float rejection_, float mass_, float lifeTime_ ) :
-          p( p_ ), index( -1 ), cell( null ), velocity( velocity_ ), color( color_ ),
+          p( p_ ), index( index_ ), cell( null ), velocity( velocity_ ), color( color_ ),
           rot( Vec3( Math::frand() * 360.0f, Math::frand() * 360.0f, Math::frand() * 360.0f ) ),
           rotVelocity( Vec3( Math::frand() * MAX_ROTVELOCITY,
                              Math::frand() * MAX_ROTVELOCITY,

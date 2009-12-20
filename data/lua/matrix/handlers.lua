@@ -1,7 +1,3 @@
-function exception( l )
-  ozException( "General exception" )
-end
-
 function heal50( l )
   ozWorldRemoveObj()
   ozObjBindUser()
@@ -21,8 +17,7 @@ function Explosion_onUpdate( l )
       ozWorldRemoveObj()
     end
   else
-    l.ticks = 150 -- 3s
-    --ozObjAddEvent( 0, 1.0 )
+    l.ticks = 50
 
     local distance
     local dirX, dirY, dirZ
@@ -36,7 +31,7 @@ function Explosion_onUpdate( l )
 	distance = ozObjDistanceFromSelf()
 	if distance < 20 then
 	  distance = 20 - distance
-	  --ozObjDamage( distance*distance )
+	  ozObjDamage( distance*distance )
 
 	  if distance < 20 and ozObjIsDynamic() then
 	    dirX, dirY, dirZ = ozObjDirectionFromSelf()
@@ -52,7 +47,7 @@ function Bomb_onUse( l )
   if l.time then
     l.time = nil
   else
-    l.time = 100
+    l.time = 150 -- 3s
   end
 end
 
@@ -72,10 +67,13 @@ end
 
 function Rifle_onShot( l )
   ozObjBindUser()
-  
+
   local pX, pY, pZ = ozBotGetEyePos()
   local vX, vY, vZ = ozBotGetDir()
+  local dX, dY, dZ = 3 - math.random() * 6,
+		     3 - math.random() * 6,
+		     3 - math.random() * 6
 
-  ozWorldAddPart( pX, pY, pZ, vX * 200.0, vY * 200.0, vZ * 200.0, 
+  ozWorldAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
 		  1.0, 1.0, 0.0, 1.9, 0.0035, 5.0 );
 end

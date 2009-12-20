@@ -33,7 +33,7 @@ namespace client
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
 
     // friction
-    if( ( obj->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
+    if( ( bot->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
         ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) &&
         samples[SND_FRICTING] != -1 && bot->depth == 0.0f )
     {
@@ -43,7 +43,7 @@ namespace client
     }
 
     // events
-    foreach( event, obj->events.iterator() ) {
+    foreach( event, bot->events.iterator() ) {
       assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
       if( event->id >= 0 && samples[event->id] != -1 ) {
