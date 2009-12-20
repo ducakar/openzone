@@ -71,44 +71,72 @@ namespace oz
       HashString<ObjectClass::InitFunc, 31> baseClasses;
       HashString<ObjectClass*, 251> classes;
 
-      int textureIndex( const char *file );
-      int soundIndex( const char *file );
-      int bspIndex( const char *file );
+      int textureIndex( const char *file )
+      {
+        if( textureIndices.contains( file ) ) {
+          return textureIndices.cachedValue();
+        }
+        else {
+          log.println( "W: invalid texture file index requested: %s", file );
+          return -1;
+        }
+      }
 
-      Structure *createStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
+      int soundIndex( const char *file )
+      {
+        if( soundIndices.contains( file ) ) {
+          return soundIndices.cachedValue();
+        }
+        else {
+          log.println( "W: invalid sound file index requested: %s", file );
+          return -1;
+        }
+      }
+
+      int bspIndex( const char *file )
+      {
+        if( bspIndices.contains( file ) ) {
+          return bspIndices.cachedValue();
+        }
+        else {
+          throw Exception( "Invalid BSP index requested" );
+        }
+      }
+
+      Structure *createStruct( int index, const char *name, const Vec3 &p, Structure::Rotation rot )
       {
         if( bspIndices.contains( name ) ) {
-          return new Structure( bspIndices.cachedValue(), p, rot );
+          return new Structure( index, bspIndices.cachedValue(), p, rot );
         }
         else {
           throw Exception( "Invalid Structure class requested" );
         }
       }
 
-      Structure *createStruct( const char *name, InputStream *istream )
+      Structure *createStruct( int index, const char *name, InputStream *istream )
       {
         if( bspIndices.contains( name ) ) {
-          return new Structure( bspIndices.cachedValue(), istream );
+          return new Structure( index, bspIndices.cachedValue(), istream );
         }
         else {
           throw Exception( "Invalid Structure class requested" );
         }
       }
 
-      Object *createObject( const char *name, const Vec3 &p )
+      Object *createObject( int index, const char *name, const Vec3 &p )
       {
         if( classes.contains( name ) ) {
-          return classes.cachedValue()->create( p );
+          return classes.cachedValue()->create( index, p );
         }
         else {
           throw Exception( "Invalid Object class requested" );
         }
       }
 
-      Object *createObject( const char *name, InputStream *istream )
+      Object *createObject( int index, const char *name, InputStream *istream )
       {
         if( classes.contains( name ) ) {
-          return classes.cachedValue()->create( istream );
+          return classes.cachedValue()->create( index, istream );
         }
         else {
           throw Exception( "Invalid Object class requested" );

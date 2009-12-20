@@ -85,13 +85,16 @@ namespace oz
     return clazz;
   }
 
-  Object *DynamicClass::create( const Vec3 &pos )
+  Object *DynamicClass::create( int index, const Vec3 &pos )
   {
     Dynamic *obj = new Dynamic();
+
+    assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
     obj->p        = pos;
     obj->dim      = dim;
 
+    obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
     obj->type     = this;
@@ -103,11 +106,13 @@ namespace oz
     return obj;
   }
 
-  Object *DynamicClass::create( InputStream *istream )
+  Object *DynamicClass::create( int index, InputStream *istream )
   {
     Dynamic *obj = new Dynamic();
 
     obj->dim    = dim;
+
+    obj->index  = index;
     obj->type   = this;
 
     obj->mass   = mass;

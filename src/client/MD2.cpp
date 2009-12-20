@@ -365,9 +365,12 @@ namespace client
     config.load( configFile );
 
     float scaling = config.get( "scale", 0.042f );
-    Vec3 translation( config.get( "translate.x", 0.00f ),
-                      config.get( "translate.y", 0.00f ),
-                      config.get( "translate.z", 0.00f ) );
+    Vec3 translation = Vec3( config.get( "translate.x", 0.00f ),
+                             config.get( "translate.y", 0.00f ),
+                             config.get( "translate.z", 0.00f ) );
+    weaponTransl     = Vec3( config.get( "weaponTranslate.x", 0.00f ),
+                             config.get( "weaponTranslate.y", 0.00f ),
+                             config.get( "weaponTranslate.z", 0.00f ) );
     config.clear();
 
     if( scaling != 1.0f ) {

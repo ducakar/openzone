@@ -45,6 +45,8 @@ namespace oz
       Vec3     move;
       float    leftRatio;
 
+      Vec3     lastNormals[2];
+
       void handlePartHit();
       void handlePartMove();
 

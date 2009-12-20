@@ -30,7 +30,9 @@ namespace oz
   {
     assert( parent == -1 || parent == user->index );
 
-    user->weaponItem = user->weaponItem == index ? -1 : index;
+    if( parent == user->index ) {
+      user->weaponItem = user->weaponItem == index  ? -1 : index;
+    }
   }
 
   void Weapon::onShot( Bot *user )

@@ -35,7 +35,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      synapse.add( translator.createObject( "SmallCrate", p ) );
+      synapse.addObject( "SmallCrate", p );
     }
   }
 
@@ -50,7 +50,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      synapse.add( translator.createObject( "BigCrate", p ) );
+      synapse.addObject( "BigCrate", p );
     }
   }
 
@@ -65,7 +65,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      synapse.add( translator.createObject( "MetalBarrel", p ) );
+      synapse.addObject( "MetalBarrel", p );
     }
   }
 
@@ -80,7 +80,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      synapse.add( translator.createObject( "FirstAid", p ) );
+      synapse.addObject( "FirstAid", p );
     }
   }
 
@@ -95,7 +95,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      synapse.add( translator.createObject( "Wine", p ) );
+      synapse.addObject( "Wine", p );
     }
   }
 
@@ -110,7 +110,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      synapse.add( translator.createObject( "Bomb", p ) );
+      synapse.addObject( "Bomb", p );
     }
   }
 
@@ -125,7 +125,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      synapse.add( translator.createObject( "Rifle", p ) );
+      synapse.addObject( "Rifle", p );
     }
   }
 
@@ -140,9 +140,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      Bot *bot = static_cast<Bot*>( translator.createObject( "Goblin", p ) );
-
-      synapse.add( bot );
+      synapse.addObject( "Goblin", p );
     }
   }
 
@@ -157,9 +155,7 @@ namespace ui
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      Bot *bot = static_cast<Bot*>( translator.createObject( "Knight", p ) );
-
-      synapse.add( bot );
+      synapse.addObject( "Knight", p );
     }
   }
 

@@ -273,7 +273,9 @@ namespace client
         camera.bot->state ^= Bot::STEPPING_BIT;
       }
 
-      camera.bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE3_BIT | Bot::GESTURE4_BIT | Bot::GESTURE_ALL_BIT );
+      camera.bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT |
+          Bot::GESTURE3_BIT | Bot::GESTURE4_BIT | Bot::GESTURE_ALL_BIT );
+
       if( input.keys[SDLK_f] ) {
         camera.bot->state |= Bot::GESTURE0_BIT;
       }
@@ -320,12 +322,12 @@ namespace client
 
     if( input.keys[SDLK_i] && !input.oldKeys[SDLK_i] ) {
       if( camera.botIndex == -1 ) {
-        Bot *me = static_cast<Bot*>( translator.createObject( "Droid", camera.p ) );
+        camera.botIndex = synapse.addObject( "Droid", camera.p );
+
+        Bot *me = static_cast<Bot*>( world.objects[camera.botIndex] );
         me->h = camera.h;
         me->v = camera.v;
         me->state |= Bot::PLAYER_BIT;
-
-        camera.botIndex = synapse.add( me );
       }
       else {
         camera.h = camera.bot->h;

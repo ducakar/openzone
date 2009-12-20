@@ -80,11 +80,10 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    world.sky.set( 205.0f, 144.0f, 0.0f );
+    world.sky.set( 205.0f, 1440.0f, 0.0f );
 
-    Bot *lord = static_cast<Bot*>( translator.createObject( "Droid", Vec3( 52, -44, 37 ) ) );
-    lord->h = 270;
-    synapse.add( lord );
+    int index = synapse.addObject( "Droid", Vec3( 52, -44, 37 ) );
+    static_cast<Bot*>( world.objects[index] )->h = 270.0f;
 
     synapse.addObject( "Knight", Vec3( 50, -35, 37 ) );
     synapse.addObject( "Goblin", Vec3( 51, -35, 37 ) );
@@ -209,11 +208,8 @@ namespace oz
       if( obj != null ) {
         obj->events.free();
 
-        if( obj->cell != null && ( obj->flags & Object::DESTROYED_BIT ) ) {
+        if( ( obj->flags & Object::DESTROYED_BIT ) && obj->cell != null ) {
           synapse.remove( obj );
-        }
-        else if( obj->life <= 0.0f ) {
-          obj->destroy();
         }
       }
     }
@@ -268,6 +264,10 @@ namespace oz
             synapse.remove( obj );
           }
         }
+      }
+
+      if( obj->life <= 0.0f ) {
+        obj->destroy();
       }
     }
 

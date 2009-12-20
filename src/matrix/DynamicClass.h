@@ -24,8 +24,8 @@ namespace oz
 
     static ObjectClass *init( const String &name, const Config *config );
 
-    virtual Object *create( const Vec3 &pos );
-    virtual Object *create( InputStream *istream );
+    virtual Object *create( int index, const Vec3 &pos );
+    virtual Object *create( int index, InputStream *istream );
   };
 
 }

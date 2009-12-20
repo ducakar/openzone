@@ -291,38 +291,6 @@ namespace oz
     log.println( "}" );
   }
 
-  int Translator::textureIndex( const char *file )
-  {
-    if( textureIndices.contains( file ) ) {
-      return textureIndices.cachedValue();
-    }
-    else {
-      log.println( "W: invalid texture file index requested: %s", file );
-      return -1;
-    }
-  }
-
-  int Translator::soundIndex( const char *file )
-  {
-    if( soundIndices.contains( file ) ) {
-      return soundIndices.cachedValue();
-    }
-    else {
-      log.println( "W: invalid sound file index requested: %s", file );
-      return -1;
-    }
-  }
-
-  int Translator::bspIndex( const char *file )
-  {
-    if( bspIndices.contains( file ) ) {
-      return bspIndices.cachedValue();
-    }
-    else {
-      throw Exception( "Invalid BSP index requested" );
-    }
-  }
-
   void Translator::free()
   {
     textureIndices.clear();

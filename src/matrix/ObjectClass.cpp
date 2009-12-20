@@ -98,7 +98,7 @@ namespace oz
         buffer[ sizeof( buffer ) - 2 ] = '0' + ( i % 10 );
 
         String sampleName = config->get( buffer, "" );
-        clazz->audioSamples[i] = sampleName.length() > 0 ? translator.soundIndex( sampleName ) : -1;
+        clazz->audioSamples[i] = sampleName.isEmpty() ? -1 : translator.soundIndex( sampleName );
       }
     }
   }
@@ -159,13 +159,16 @@ namespace oz
     return clazz;
   }
 
-  Object *ObjectClass::create( const Vec3 &pos )
+  Object *ObjectClass::create( int index, const Vec3 &pos )
   {
     Object *obj = new Object();
+
+    assert( obj->index == -1 && obj->cell == null );
 
     obj->p        = pos;
     obj->dim      = dim;
 
+    obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
     obj->type     = this;
@@ -174,11 +177,13 @@ namespace oz
     return obj;
   }
 
-  Object *ObjectClass::create( InputStream *istream )
+  Object *ObjectClass::create( int index, InputStream *istream )
   {
     Object *obj = new Object();
 
     obj->dim    = dim;
+
+    obj->index  = index;
     obj->type   = this;
 
     obj->readFull( istream );

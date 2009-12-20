@@ -125,6 +125,7 @@ namespace oz
 
       explicit Bot();
 
+      void take( Dynamic *item );
       void enter( int vehicleIndex );
       void exit();
       void kill();

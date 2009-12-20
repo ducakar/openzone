@@ -68,6 +68,7 @@ namespace client
     public:
 
       uint         list;
+      Vec3         weaponTransl;
 
       static void init();
 

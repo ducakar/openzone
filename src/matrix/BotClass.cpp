@@ -11,7 +11,12 @@
 
 #include "BotClass.h"
 
-#include "Bot.h"
+#include "Synapse.h"
+
+#define OZ_CLASS_SET_STATE( stateBit, varName, defValue ) \
+  if( config->get( varName, defValue ) ) { \
+    clazz->state |= stateBit; \
+  }
 
 namespace oz
 {
@@ -121,7 +126,27 @@ namespace oz
     clazz->staminaRunDrain      = config->get( "staminaRunDrain", 0.08f );
     clazz->staminaJumpDrain     = config->get( "staminaJumpDrain", 4.0f );
 
-    clazz->state                = config->get( "state", Bot::STEPPING_BIT );
+    clazz->state = 0;
+
+    OZ_CLASS_SET_STATE( Bot::STEPPING_BIT,  "state.stepping",  true );
+    OZ_CLASS_SET_STATE( Bot::CROUCHING_BIT, "state.crouching", false );
+    OZ_CLASS_SET_STATE( Bot::RUNNING_BIT,   "state.running",   true );
+
+    // default inventory
+    char buffer[] = "inventoryItem  ";
+    for( int i = 0; i < INVENTORY_ITEMS; i++ ) {
+      assert( 0 <= i && i < 100 );
+
+      buffer[ sizeof( buffer ) - 3 ] = '0' + ( i / 10 );
+      buffer[ sizeof( buffer ) - 2 ] = '0' + ( i % 10 );
+
+      String itemName = config->get( buffer, "" );
+      if( !itemName.isEmpty() ) {
+        clazz->inventoryItems << itemName;
+      }
+    }
+
+    clazz->weaponItem           = config->get( "weaponItem", -1 );
 
     clazz->mindType             = config->get( "mindType", "" );
     clazz->mindFunction         = config->get( "mindFunction", "" );
@@ -132,13 +157,16 @@ namespace oz
     return clazz;
   }
 
-  Object *BotClass::create( const Vec3 &pos )
+  Object *BotClass::create( int index, const Vec3 &pos )
   {
     Bot *obj = new Bot();
+
+    assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
     obj->p        = pos;
     obj->dim      = dim;
 
+    obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
     obj->type     = this;
@@ -152,13 +180,26 @@ namespace oz
     obj->oldState = state;
     obj->stamina  = stamina;
 
+    for( int i = 0; i < inventoryItems.length(); i++ ) {
+      int index = synapse.addObject( inventoryItems[i], Vec3::zero() );
+      Dynamic *item = static_cast<Dynamic*>( world.objects[index] );
+
+      assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
+
+      if( weaponItem == i ) {
+        obj->weaponItem = item->index;
+      }
+      obj->take( item );
+    }
+
     return obj;
   }
 
-  Object *BotClass::create( InputStream *istream )
+  Object *BotClass::create( int index, InputStream *istream )
   {
     Bot *obj = new Bot();
 
+    obj->index  = index;
     obj->type   = this;
 
     obj->mass   = mass;

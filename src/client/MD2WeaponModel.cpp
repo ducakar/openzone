@@ -59,6 +59,8 @@ namespace client
 
   void MD2WeaponModel::draw()
   {
+    glTranslatef( md2->weaponTransl.x, md2->weaponTransl.y, md2->weaponTransl.z );
+
     md2->drawFrame( 0 );
   }
 

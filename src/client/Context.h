@@ -167,7 +167,7 @@ namespace client
           return modelClasses.cachedValue()( obj );
         }
         else {
-          assert( obj->type->modelType.length() == 0 );
+          assert( obj->type->modelType.isEmpty() );
 
           return null;
         }
@@ -184,7 +184,7 @@ namespace client
           return audioClasses.cachedValue()( obj );
         }
         else {
-          assert( obj->type->audioType.length() == 0 );
+          assert( obj->type->audioType.isEmpty() );
 
           return null;
         }

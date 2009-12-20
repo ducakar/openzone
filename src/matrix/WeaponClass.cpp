@@ -91,13 +91,14 @@ namespace oz
     return clazz;
   }
 
-  Object *WeaponClass::create( const Vec3 &pos )
+  Object *WeaponClass::create( int index, const Vec3 &pos )
   {
     Weapon *obj = new Weapon();
 
     obj->p        = pos;
     obj->dim      = dim;
 
+    obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
     obj->type     = this;
@@ -112,11 +113,13 @@ namespace oz
     return obj;
   }
 
-  Object *WeaponClass::create( InputStream *istream )
+  Object *WeaponClass::create( int index, InputStream *istream )
   {
     Weapon *obj = new Weapon();
 
     obj->dim    = dim;
+
+    obj->index  = index;
     obj->type   = this;
 
     obj->mass   = mass;
