@@ -25,10 +25,12 @@ namespace client
     return new BasicAudio( obj );
   }
 
-  void BasicAudio::update()
+  void BasicAudio::play( const Audio *parent )
   {
     const Dynamic *dyn = static_cast<const Dynamic*>( obj );
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
+
+    parent = parent == null ? this : parent;
 
     // friction
     if( ( obj->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
@@ -37,7 +39,7 @@ namespace client
     {
       float dv = Math::sqrt( dyn->velocity.x*dyn->velocity.x +
                              dyn->velocity.y*dyn->velocity.y );
-      playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*dyn ) );
+      playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*dyn ), parent->obj );
     }
 
     // events
@@ -47,7 +49,7 @@ namespace client
       if( event->id >= 0 && samples[event->id] != -1 ) {
         assert( 0.0f <= event->intensity );
 
-        playSound( samples[event->id], event->intensity );
+        playSound( samples[event->id], event->intensity, parent->obj );
       }
     }
   }

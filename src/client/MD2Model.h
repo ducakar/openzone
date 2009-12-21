@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include "matrix/Bot.h"
 #include "Model.h"
 #include "MD2.h"
 
@@ -18,17 +17,22 @@ namespace oz
 namespace client
 {
 
-  struct MD2Model : Model
+  class MD2Model : public Model
   {
-    MD2            *md2;
-    MD2::AnimState anim;
+    public:
 
-    static Model *create( const Object *obj );
+      MD2            *md2;
+      MD2::AnimState anim;
 
-    virtual ~MD2Model();
+      virtual ~MD2Model();
 
-    void setAnim( int type );
-    virtual void draw();
+    public:
+
+      static Model *create( const Object *obj );
+
+      void setAnim( int type );
+      virtual void draw( const Model *parent );
+
   };
 
 }

@@ -21,7 +21,7 @@ namespace oz
     DynamicClass *clazz = new DynamicClass();
 
     clazz->name                 = name;
-    clazz->description          = config->get( "description", "A Dynamic (dynamic object)" );
+    clazz->description          = config->get( "description", name );
 
     clazz->dim.x                = config->get( "dim.x", 0.50f );
     clazz->dim.y                = config->get( "dim.y", 0.50f );

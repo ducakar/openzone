@@ -32,7 +32,7 @@ namespace client
     context.releaseOBJ( obj->type->modelName );
   }
 
-  void OBJModel::draw()
+  void OBJModel::draw( const Model* )
   {
     glCallList( list );
   }

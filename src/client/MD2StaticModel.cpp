@@ -32,7 +32,7 @@ namespace client
     context.releaseStaticMD2( obj->type->modelName );
   }
 
-  void MD2StaticModel::draw()
+  void MD2StaticModel::draw( const Model* )
   {
     glCallList( list );
   }

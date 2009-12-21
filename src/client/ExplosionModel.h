@@ -18,17 +18,22 @@ namespace oz
 namespace client
 {
 
-  struct ExplosionModel : Model
+  class ExplosionModel : public Model
   {
-    uint       texId;
-    GLUquadric *quadric;
-    int        startMillis;
+    protected:
 
-    static Model *create( const Object *obj );
+      uint       texId;
+      GLUquadric *quadric;
+      int        startMillis;
 
-    virtual ~ExplosionModel();
+      virtual ~ExplosionModel();
 
-    virtual void draw();
+    public:
+
+      static Model *create( const Object *obj );
+
+      virtual void draw( const Model *parent );
+
   };
 
 }

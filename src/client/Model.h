@@ -16,18 +16,25 @@ namespace oz
 namespace client
 {
 
-  struct Model
+  class Model
   {
-    typedef Model *( *CreateFunc )( const Object *object );
+    public:
 
-    const Object *obj;
-    bool         isUpdated;
+      typedef Model *( *CreateFunc )( const Object *object );
 
-    Model() : obj( null ), isUpdated( false ) {}
-    virtual ~Model();
+    protected:
 
-    virtual void draw() = 0;
-    virtual void drawMounted();
+      Model() : obj( null ), isUpdated( false ) {}
+
+    public:
+
+      const Object *obj;
+      bint         isUpdated;
+
+      virtual ~Model();
+
+      virtual void draw( const Model *parent ) = 0;
+
   };
 
 }

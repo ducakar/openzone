@@ -44,6 +44,8 @@ namespace ui
       int grabIconY;
       int healthBarX;
       int healthBarY;
+      int descTextX;
+      int descTextY;
 
     protected:
 

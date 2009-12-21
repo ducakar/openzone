@@ -58,7 +58,7 @@ namespace client
     anim.currTime   = 0.0f;
   }
 
-  void MD2Model::draw()
+  void MD2Model::draw( const Model* )
   {
     const Bot *bot = static_cast<const Bot*>( obj );
     const BotClass *clazz = static_cast<const BotClass*>( bot->type );
@@ -85,18 +85,21 @@ namespace client
       if( bot->state & Bot::CROUCHING_BIT ) {
         glTranslatef( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z );
       }
-      if( bot->weaponItem != -1 && world.objects[bot->weaponItem] != null ) {
-        render.drawMountedModel( world.objects[bot->weaponItem] );
-      }
+
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
+
+      if( bot->weaponItem != -1 && world.objects[bot->weaponItem] != null ) {
+        render.drawModel( world.objects[bot->weaponItem], this );
+      }
     }
     else if( bot->weaponItem != -1 && world.objects[bot->weaponItem] != null ) {
       glTranslatef( 0.0f, 0.0f,  camera.bot->camZ );
       glRotatef( bot->v, 1.0f, 0.0f, 0.0f );
       glTranslatef( 0.0f, 0.0f, -camera.bot->camZ );
 
-      render.drawMountedModel( world.objects[bot->weaponItem] );
+      md2->advance( &anim, timer.frameTime );
+      render.drawModel( world.objects[bot->weaponItem], this );
     }
   }
 

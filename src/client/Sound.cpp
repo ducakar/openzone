@@ -13,7 +13,6 @@
 
 #include "matrix/Collider.h"
 #include "Camera.h"
-#include "Context.h"
 
 namespace oz
 {
@@ -32,11 +31,7 @@ namespace client
     foreach( obj, cell.objects.iterator() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
-          if( !audios.contains( obj->index ) ) {
-            audios.add( obj->index, context.createAudio( &*obj ) );
-          }
-          audios.cachedValue()->update();
-          audios.cachedValue()->isUpdated = true;
+          playAudio( obj, null );
         }
       }
     }

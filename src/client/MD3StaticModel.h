@@ -16,15 +16,20 @@ namespace oz
 namespace client
 {
 
-  struct MD3StaticModel : Model
+  class MD3StaticModel : public Model
   {
-    uint list;
+    protected:
 
-    static Model *create( const Object *obj );
+      uint list;
 
-    virtual ~MD3StaticModel();
+      virtual ~MD3StaticModel();
 
-    virtual void draw();
+    public:
+
+      static Model *create( const Object *obj );
+
+      virtual void draw( const Model *parent );
+
   };
 
 }

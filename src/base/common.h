@@ -30,6 +30,12 @@ namespace oz
 # define null 0
 
   /**
+   * boolean represented as int type
+   * It should be used where alignment matters
+   */
+  typedef signed   int   bint;
+
+  /**
    * signed byte
    * It should be used where char must be signed (otherwise char may be either signed or unsigned
    * depeneding on the platform).

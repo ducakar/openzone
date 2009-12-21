@@ -68,7 +68,7 @@ namespace ui
                ( obj.flags & Object::DISABLED_BIT ) != 0,
                ( obj.flags & Object::ON_FLOOR_BIT ) != 0,
                obj.lower,
-               ( obj.flags & Object::UPPER_BIT ) != 0,
+               ( bot.flags & Object::UPPER_BIT ) != 0,
                ( obj.flags & Object::HIT_BIT ) != 0,
                ( obj.flags & Object::FRICTING_BIT ) != 0,
                ( bot.flags & Object::IN_WATER_BIT ) != 0,

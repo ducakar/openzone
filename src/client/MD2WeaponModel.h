@@ -9,27 +9,21 @@
 
 #pragma once
 
-#include "Model.h"
-#include "MD2.h"
+#include "MD2Model.h"
 
 namespace oz
 {
 namespace client
 {
 
-  struct MD2WeaponModel : Model
+  class MD2WeaponModel : public MD2Model
   {
-    MD2            *md2;
-    MD2::AnimState anim;
+    public:
 
-    static Model *create( const Object *obj );
+      static Model *create( const Object *obj );
 
-    virtual ~MD2WeaponModel();
+      virtual void draw( const Model *parent );
 
-    void setAnim( int type );
-
-    virtual void draw();
-    virtual void drawMounted();
   };
 
 }

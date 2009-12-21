@@ -27,7 +27,7 @@ namespace client
     return new BotAudio( obj );
   }
 
-  void BotAudio::update()
+  void BotAudio::play( const Audio* )
   {
     const Bot *bot = static_cast<const Bot*>( obj );
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
@@ -39,7 +39,7 @@ namespace client
     {
       float dv = Math::sqrt( bot->velocity.x*bot->velocity.x +
                              bot->velocity.y*bot->velocity.y );
-      playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*bot ) );
+      playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*bot ), obj );
     }
 
     // events
@@ -49,24 +49,13 @@ namespace client
       if( event->id >= 0 && samples[event->id] != -1 ) {
         assert( 0.0f <= event->intensity );
 
-        playSound( samples[event->id], event->intensity );
+        playSound( samples[event->id], event->intensity, obj );
       }
     }
 
     // weapon events
     if( bot->weaponItem != -1 && world.objects[bot->weaponItem] != null ) {
-      const Weapon *weapon = static_cast<const Weapon*>( world.objects[bot->weaponItem] );
-      const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = weapon->type->audioSamples;
-
-      foreach( event, weapon->events.iterator() ) {
-        assert( event->id < ObjectClass::AUDIO_SAMPLES );
-
-        if( event->id >= 0 && samples[event->id] != -1 ) {
-          assert( 0.0f <= event->intensity );
-
-          playSound( samples[event->id], event->intensity );
-        }
-      }
+      sound.playAudio( world.objects[bot->weaponItem], this );
     }
   }
 

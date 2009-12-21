@@ -86,26 +86,6 @@ namespace client
     }
   }
 
-  void Render::drawModel( const Object *obj )
-  {
-    if( !render.models.contains( obj->index ) ) {
-      render.models.add( obj->index, context.createModel( obj ) );
-    }
-    // draw model
-    render.models.cachedValue()->draw();
-    render.models.cachedValue()->isUpdated = true;
-  }
-
-  void Render::drawMountedModel( const Object *obj )
-  {
-    if( !render.models.contains( obj->index ) ) {
-      render.models.add( obj->index, context.createModel( obj ) );
-    }
-    // draw model
-    render.models.cachedValue()->drawMounted();
-    render.models.cachedValue()->isUpdated = true;
-  }
-
   void Render::sync()
   {
     for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
@@ -281,7 +261,7 @@ namespace client
       glPushMatrix();
       glTranslatef( obj->p.x, obj->p.y, obj->p.z );
 
-      drawModel( obj );
+      drawModel( obj, null );
 
       glPopMatrix();
 
@@ -328,7 +308,7 @@ namespace client
       glPushMatrix();
       glTranslatef( obj->p.x, obj->p.y, obj->p.z );
 
-      drawModel( obj );
+      drawModel( obj, null );
 
       glPopMatrix();
 

@@ -1,20 +1,15 @@
 Matrix
   - triggers
-  - Weapons
-  - networking support
 
 Client
-  - scripting
-  - MD3 animation
   - FireModel
   - weather
-  - networking support
   - menu support
 
 UI
   ? scripting
-
-Server
+  
+Networking
   EVERYTHING
 
 DROPPED (for v2.0.0)

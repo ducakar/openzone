@@ -18,24 +18,26 @@ namespace oz
 
   Physics physics;
 
-  const float Physics::CLIP_BACKOFF         = EPSILON;
-  const float Physics::HIT_THRESHOLD        = -2.0f;
-  const float Physics::PART_HIT_THRESHOLD   = 100.0f;
-  const float Physics::SPLASH_THRESHOLD     = -2.0f;
-  const float Physics::FLOOR_NORMAL_Z       = 0.60f;
-  const float Physics::G_VELOCITY           = -9.81f * Timer::TICK_TIME;
-  const float Physics::WEIGHT_FACTOR        = 0.1f;
+  const float Physics::CLIP_BACKOFF           = EPSILON;
+  const float Physics::HIT_THRESHOLD          = -2.0f;
+  const float Physics::SPLASH_THRESHOLD       = -2.0f;
+  const float Physics::FLOOR_NORMAL_Z         = 0.60f;
+  const float Physics::G_VELOCITY             = -9.81f * Timer::TICK_TIME;
+  const float Physics::WEIGHT_FACTOR          = 0.1f;
 
-  const float Physics::STICK_VELOCITY       = 0.015f;
-  const float Physics::SLICK_STICK_VELOCITY = 0.0001f;
-  const float Physics::AIR_STICK_VELOCITY   = 0.0001f;
-  const float Physics::AIR_FRICTION         = 0.02f;
-  const float Physics::IN_WATER_FRICTION    = 0.08f;
-  const float Physics::ON_WATER_FRICTION    = 0.30f;
-  const float Physics::LADDER_FRICTION      = 0.65f;
-  const float Physics::FLOOR_FRICTION       = 0.40f;
-  const float Physics::OBJ_FRICTION         = 0.40f;
-  const float Physics::SLICK_FRICTION       = 0.02f;
+  const float Physics::STICK_VELOCITY         = 0.015f;
+  const float Physics::SLICK_STICK_VELOCITY   = 0.0001f;
+  const float Physics::AIR_STICK_VELOCITY     = 0.0001f;
+  const float Physics::AIR_FRICTION           = 0.02f;
+  const float Physics::IN_WATER_FRICTION      = 0.08f;
+  const float Physics::ON_WATER_FRICTION      = 0.30f;
+  const float Physics::LADDER_FRICTION        = 0.65f;
+  const float Physics::FLOOR_FRICTION         = 0.40f;
+  const float Physics::OBJ_FRICTION           = 0.40f;
+  const float Physics::SLICK_FRICTION         = 0.02f;
+
+  const float Physics::PART_HIT_VELOCITY2     = 100.0f;
+  const float Physics::PART_DESTROY_VELOCITY2 = 900.0f;
 
   //***********************************
   //*   PARTICLE COLLISION HANDLING   *
@@ -44,11 +46,10 @@ namespace oz
   void Physics::handlePartHit()
   {
     float velocity2 = part->velocity * part->velocity;
-    // warning: hitMomentum may be > 0 because of difference between directions of move and velocity
-    // vectors
-    if( velocity2 > PART_HIT_THRESHOLD ) {
-      part->damage( velocity2 );
-
+    if( velocity2 >= PART_HIT_VELOCITY2 ) {
+      if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
+        part->lifeTime = 0.0f;
+      }
       if( collider.hit.obj != null && part->mass != 0.0f ) {
         collider.hit.obj->damage( velocity2 * part->mass );
       }
@@ -244,14 +245,12 @@ namespace oz
     if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
       Dynamic *sDyn = static_cast<Dynamic*>( sObj );
 
-      // warning: hitMomentum may be > 0 because of difference between directions of move and
-      // velocity vectors
       Vec3  momentum    = ( obj->momentum * obj->mass + sDyn->momentum * sDyn->mass ) /
           ( obj->mass + sDyn->mass );
       float hitMomentum = ( obj->momentum - sDyn->momentum ) * hit.normal;
       float hitVelocity = obj->velocity * hit.normal;
 
-      if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
+      if( hitMomentum <= HIT_THRESHOLD && hitVelocity <= HIT_THRESHOLD ) {
         obj->hit( &hit, hitMomentum );
         sDyn->hit( &hit, hitMomentum );
       }
@@ -289,7 +288,6 @@ namespace oz
 
         obj->flags  &= ~Object::ON_FLOOR_BIT;
         obj->lower  = sDyn->index;
-        sObj->flags |= Object::UPPER_BIT;
 
         if( ~sDyn->flags & Object::DISABLED_BIT ) {
           obj->momentum.z  = sDyn->velocity.z;
@@ -301,12 +299,10 @@ namespace oz
       }
     }
     else {
-      // warning: hitMomentum may be > 0 because of difference between directions of move and
-      // velocity vectors
       float hitMomentum = obj->momentum * hit.normal;
       float hitVelocity = obj->velocity * hit.normal;
 
-      if( hitMomentum < HIT_THRESHOLD && hitVelocity < HIT_THRESHOLD ) {
+      if( hitMomentum <= HIT_THRESHOLD && hitVelocity <= HIT_THRESHOLD ) {
         obj->hit( &hit, hitMomentum );
 
         if( sObj != null ) {
@@ -402,7 +398,7 @@ namespace oz
     obj->depth = min( collider.hit.waterDepth, 2.0f * obj->dim.z );
 
     if( ( obj->flags & ~obj->oldFlags & Object::IN_WATER_BIT ) &&
-        obj->velocity.z < SPLASH_THRESHOLD )
+        obj->velocity.z <= SPLASH_THRESHOLD )
     {
       obj->splash( obj->velocity.z );
     }

@@ -18,6 +18,7 @@
 #include "OBJ.h"
 #include "MD2.h"
 #include "Model.h"
+#include "Context.h"
 
 namespace oz
 {
@@ -96,8 +97,16 @@ namespace client
 
       bool doScreenshot;
 
-      void drawModel( const Object *obj );
-      void drawMountedModel( const Object *obj );
+      void drawModel( const Object *obj, const Model *parent )
+      {
+        if( !models.contains( obj->index ) ) {
+          models.add( obj->index, context.createModel( obj ) );
+        }
+        Model *model = models.cachedValue();
+
+        model->isUpdated = true;
+        model->draw( parent );
+      }
 
       void sync();
       void update();

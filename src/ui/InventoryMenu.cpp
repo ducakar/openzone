@@ -27,7 +27,6 @@ namespace ui
   InventoryMenu::InventoryMenu() :
       Frame( SLOT_SIZE * COLS, SLOT_SIZE * ROWS + HEADER_SIZE + FOOTER_SIZE )
   {
-    setFont( TITLE );
     setFontColor( 0xff, 0xff, 0xff );
 
     useTexId = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
@@ -96,7 +95,9 @@ namespace ui
 
     Frame::onDraw();
 
+    setFont( TITLE );
     printCentered( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, "Inventory" );
+    setFont( SANS );
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     glEnable( GL_TEXTURE_2D );
@@ -132,7 +133,7 @@ namespace ui
         taggedItem = item;
       }
 
-      render.drawModel( item );
+      render.drawModel( item, null );
 
       if( i == taggedIndex ) {
         glColor4fv( Colors::WHITE );

@@ -20,7 +20,7 @@ namespace client
   {
     friend class List<Audio, 0>;
 
-    private:
+    protected:
 
       static const float REFERENCE_DISTANCE;
 
@@ -34,21 +34,21 @@ namespace client
 
     protected:
 
-      const Object *obj;
-
-      void playSound( int sample, float volume ) const;
-      void playContSound( int sample, float volume, uint key ) const;
+      void playSound( int sample, float volume, const Object *obj ) const;
+      void playContSound( int sample, float volume, uint key, const Object *obj ) const;
       void requestSounds() const;
       void releaseSounds() const;
 
+      explicit Audio( const Object *obj );
+
     public:
 
-      bool isUpdated;
+      const Object *obj;
+      bint  isUpdated;
 
-      explicit Audio( const Object *obj );
       virtual ~Audio();
 
-      virtual void update() = 0;
+      virtual void play( const Audio *parent ) = 0;
 
   };
 

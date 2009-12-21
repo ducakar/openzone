@@ -21,7 +21,6 @@ namespace oz
       static const float CLIP_BACKOFF;
       static const float HIT_THRESHOLD;
       static const float SPLASH_THRESHOLD;
-      static const float PART_HIT_THRESHOLD;
       static const float FLOOR_NORMAL_Z;
       static const float G_VELOCITY;
       static const float WEIGHT_FACTOR;
@@ -36,6 +35,9 @@ namespace oz
       static const float FLOOR_FRICTION;
       static const float OBJ_FRICTION;
       static const float SLICK_FRICTION;
+
+      static const float PART_HIT_VELOCITY2;
+      static const float PART_DESTROY_VELOCITY2;
 
     private:
 

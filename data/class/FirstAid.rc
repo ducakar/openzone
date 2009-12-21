@@ -1,4 +1,4 @@
-description "First aid kit. It can heal up to 50 points of health."
+description "+100 health"
 
 base "Dynamic"
 
@@ -10,7 +10,7 @@ flag.item "true"
 
 life "30.0f"
 
-onUse "heal50"
+onUse "heal100"
 
 mass "2.0"
 
