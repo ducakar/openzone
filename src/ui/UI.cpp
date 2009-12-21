@@ -24,16 +24,19 @@ namespace ui
 
   void UI::init( int screenX, int screenY )
   {
-    hud = new HudArea( screenX, screenY );
     mouse.init( screenX, screenY );
 
     if( !font.init() ) {
       throw Exception( "Failed to load font" );
     }
+
+    hud = new HudArea( screenX, screenY );
   }
 
   void UI::free()
   {
+    delete hud;
+
     font.free();
     mouse.free();
   }

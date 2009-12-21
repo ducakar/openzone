@@ -38,7 +38,7 @@ namespace client
     context.releaseOBJ( obj->type->modelName );
   }
 
-  void OBJVehicleModel::draw()
+  void OBJVehicleModel::draw( const Model* )
   {
     const Vehicle *veh = static_cast<const Vehicle*>( obj );
     const VehicleClass *clazz = static_cast<const VehicleClass*>( obj->type );
@@ -55,7 +55,7 @@ namespace client
         glTranslatef(  clazz->crewPos[i].x,  clazz->crewPos[i].y,  clazz->crewPos[i].z );
         glRotatef( -bot->h, 0.0f, 0.0f, 1.0f );
 
-        render.drawModel( bot );
+        render.drawModel( bot, null );
 
         glPopMatrix();
       }

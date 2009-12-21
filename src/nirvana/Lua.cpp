@@ -315,7 +315,9 @@ namespace nirvana
 
   static int ozObjIsBot( lua_State *l )
   {
-    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::BOT_BIT ) );
+    const Bot *bot = static_cast<const Bot*>( lua.obj );
+    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::BOT_BIT ) &&
+                     ( ~bot->state & Bot::DEATH_BIT ) );
     return 1;
   }
 
@@ -468,6 +470,24 @@ namespace nirvana
     float dx = lua.obj->p.x - lua.self->p.x;
     float dy = lua.obj->p.y - lua.self->p.y;
     float dz = lua.obj->p.z - lua.self->p.z;
+    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) );
+
+    lua_pushnumber( l, angle );
+    return 1;
+  }
+
+  static int ozObjPitchFromSelfEye( lua_State *l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( lua.obj == lua.self ) {
+      OZ_LUA_ERROR( "selected object is self" );
+    }
+
+    float dx = lua.obj->p.x - lua.self->p.x;
+    float dy = lua.obj->p.y - lua.self->p.y;
+    float dz = lua.obj->p.z - lua.self->p.z - lua.self->camZ;
     float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) );
 
     lua_pushnumber( l, angle );
@@ -777,6 +797,24 @@ namespace nirvana
     return 0;
   }
 
+  static int ozSelfActionAttack( lua_State* )
+  {
+    lua.self->actions |= Bot::ACTION_ATTACK;
+    return 0;
+  }
+
+  static int ozSelfActionExit( lua_State* )
+  {
+    lua.self->actions |= Bot::ACTION_EXIT;
+    return 0;
+  }
+
+  static int ozSelfActionEject( lua_State* )
+  {
+    lua.self->actions |= Bot::ACTION_EJECT;
+    return 0;
+  }
+
   static int ozSelfActionSuicide( lua_State* )
   {
     lua.self->actions |= Bot::ACTION_SUICIDE;
@@ -965,6 +1003,7 @@ namespace nirvana
     OZ_LUA_FUNCTION( ozObjDistanceFromSelf );
     OZ_LUA_FUNCTION( ozObjHeadingFromSelf );
     OZ_LUA_FUNCTION( ozObjPitchFromSelf );
+    OZ_LUA_FUNCTION( ozObjPitchFromSelfEye );
 
     OZ_LUA_FUNCTION( ozObjBindEvent );
     OZ_LUA_FUNCTION( ozEventBindNext );
@@ -999,6 +1038,9 @@ namespace nirvana
     OZ_LUA_FUNCTION( ozSelfActionTake );
     OZ_LUA_FUNCTION( ozSelfActionGrab );
     OZ_LUA_FUNCTION( ozSelfActionThrow );
+    OZ_LUA_FUNCTION( ozSelfActionAttack );
+    OZ_LUA_FUNCTION( ozSelfActionExit );
+    OZ_LUA_FUNCTION( ozSelfActionEject );
     OZ_LUA_FUNCTION( ozSelfActionSuicide );
     OZ_LUA_FUNCTION( ozSelfStateIsRunning );
     OZ_LUA_FUNCTION( ozSelfStateSetRunning );

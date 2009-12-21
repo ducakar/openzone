@@ -38,44 +38,19 @@ namespace client
     return model;
   }
 
-  MD2WeaponModel::~MD2WeaponModel()
+  void MD2WeaponModel::draw( const Model *parent )
   {
-    context.releaseMD2( obj->type->modelName );
-  }
+    if( parent == null ) {
+      glTranslatef( md2->weaponTransl.x, md2->weaponTransl.y, md2->weaponTransl.z );
 
-  void MD2WeaponModel::setAnim( int type )
-  {
-    anim.type       = type;
-    anim.repeat     = MD2::animList[type].repeat;
-
-    anim.startFrame = MD2::animList[type].firstFrame;
-    anim.endFrame   = MD2::animList[type].lastFrame;
-    anim.nextFrame  = anim.startFrame + 1;
-
-    anim.fps        = MD2::animList[type].fps;
-    anim.frameTime  = 1.0f / anim.fps;
-    anim.currTime   = 0.0f;
-  }
-
-  void MD2WeaponModel::draw()
-  {
-    glTranslatef( md2->weaponTransl.x, md2->weaponTransl.y, md2->weaponTransl.z );
-
-    md2->drawFrame( 0 );
-  }
-
-  void MD2WeaponModel::drawMounted()
-  {
-    const Dynamic *dyn = static_cast<const Dynamic*>( obj );
-    const Bot *bot = static_cast<const Bot*>( world.objects[dyn->parent] );
-
-    assert( bot->flags & Object::BOT_BIT );
-
-    if( bot->anim != anim.type ) {
-      setAnim( bot->anim );
+      md2->drawFrame( 0 );
     }
-    md2->advance( &anim, timer.frameTime );
-    md2->draw( &anim );
+    else {
+      // FIXME: typesafety?
+      const MD2Model *parentModel = static_cast<const MD2Model*>( parent );
+
+      md2->draw( &parentModel->anim );
+    }
   }
 
 }

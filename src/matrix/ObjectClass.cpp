@@ -108,7 +108,7 @@ namespace oz
     ObjectClass *clazz = new ObjectClass();
 
     clazz->name                 = name;
-    clazz->description          = config->get( "description", "An Object (static object)" );
+    clazz->description          = config->get( "description", name );
 
     clazz->dim.x                = config->get( "dim.x", 0.50f );
     clazz->dim.y                = config->get( "dim.y", 0.50f );

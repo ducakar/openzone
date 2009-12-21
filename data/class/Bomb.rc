@@ -1,3 +1,5 @@
+description "Dynamite"
+
 base "Dynamic"
 
 dim.x "0.34"

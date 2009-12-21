@@ -41,7 +41,7 @@ namespace client
     context.releaseTexture( translator.textureIndex( "explosion" ) );
   }
 
-  void ExplosionModel::draw()
+  void ExplosionModel::draw( const Model* )
   {
     float millis = timer.millis - startMillis;
     float radius = millis * obj->dim.z * 0.006f;

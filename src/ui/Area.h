@@ -24,7 +24,7 @@ namespace ui
     friend class DList<Area, 0>;
     friend class UI;
 
-    private:
+    protected:
 
       static const SDL_Color SDL_COLOR_WHITE;
 
@@ -108,12 +108,12 @@ namespace ui
     public:
 
       explicit Area( int width_, int height_ ) :
-        x( 0 ), y( 0 ), width( width_ ), height( height_ ), flags( 0 ),
+        currentFont( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ), flags( 0 ),
         textWidth( 0 ), textHeight( font.monoHeight ), parent( null )
       {}
 
       explicit Area( int x_, int y_, int width_, int height_ ) :
-          x( x_ ), y( y_ ), width( width_ ), height( height_ ), flags( 0 ),
+          currentFont( null ), x( x_ ), y( y_ ), width( width_ ), height( height_ ), flags( 0 ),
           textWidth( 0 ), textHeight( font.monoHeight ), parent( null )
       {}
 

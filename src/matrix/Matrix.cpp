@@ -80,7 +80,7 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    world.sky.set( 205.0f, 1440.0f, 0.0f );
+    world.sky.set( 205.0f, 1440.0f, 300.0f );
 
     int index = synapse.addObject( "Droid", Vec3( 52, -44, 37 ) );
     static_cast<Bot*>( world.objects[index] )->h = 270.0f;
@@ -96,8 +96,8 @@ namespace oz
 
     synapse.addStruct( "castle", Vec3( 57, -33, 43 ), Structure::R0 );
 
-//    synapse.genParts( 1000, Vec3( 50, -36, 40 ), Vec3( 0, 0, 10 ), 15.0f,
-//                      Vec3( 0.4f, 0.4f, 0.4f ), 0.2f, 1.95f, 0.0f, 5.0f );
+    synapse.genParts( 1000, Vec3( 50, -36, 40 ), Vec3( 0, 0, 10 ), 15.0f,
+                      Vec3( 0.4f, 0.4f, 0.4f ), 0.2f, 1.95f, 0.1f, 5.0f );
 
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 36 ) );
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 38 ) );

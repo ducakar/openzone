@@ -9,9 +9,10 @@
 
 #pragma once
 
-#include "Audio.h"
 #include "matrix/World.h"
 #include "matrix/Translator.h"
+#include "Audio.h"
+#include "Context.h"
 
 #include <AL/alut.h>
 #include <vorbis/vorbisfile.h>
@@ -48,8 +49,8 @@ namespace client
 
       struct ContSource
       {
-        uint source;
-        bool isUpdated;
+        uint   source;
+        bint   isUpdated;
 
         ContSource() {}
         ContSource( uint sourceId ) : source( sourceId ), isUpdated( true ) {}
@@ -64,29 +65,25 @@ namespace client
       int  sourceClearCount;
       int  fullClearCount;
 
-      /*
-       * Music
-       */
-      OggVorbis_File             oggStream;
-      vorbis_info                *vorbisInfo;
-
-      bool                       isMusicPlaying;
-      bool                       isMusicLoaded;
-
-      uint                       musicBuffers[2];
-      uint                       musicSource;
-      ALenum                     musicFormat;
-
-      /*
-       * Common
-       */
-
       HashIndex<Audio*, 1021>    audios;
 
       void playCell( int cellX, int cellY );
 
       void loadMusicBuffer( uint buffer );
       void updateMusic();
+
+      /*
+       * Music
+       */
+      OggVorbis_File             oggStream;
+      vorbis_info                *vorbisInfo;
+
+      uint                       musicBuffers[2];
+      uint                       musicSource;
+      ALenum                     musicFormat;
+
+      bool                       isMusicPlaying;
+      bool                       isMusicLoaded;
 
     public:
 
@@ -114,6 +111,17 @@ namespace client
         else {
           return false;
         }
+      }
+
+      void playAudio( const Object *obj, const Audio *parent )
+      {
+        if( !audios.contains( obj->index ) ) {
+          audios.add( obj->index, context.createAudio( &*obj ) );
+        }
+        Audio *audio = audios.cachedValue();
+
+        audio->isUpdated = true;
+        audio->play( parent );
       }
 
       void setVolume( float volume )

@@ -1,4 +1,4 @@
-description "Standard Droid rifle."
+description "Standard Droid rifle"
 
 base "Weapon"
 
@@ -9,6 +9,7 @@ dim.z "0.10"
 life "100.0f"
 
 mass "10.0"
+lift "8.0"
 
 modelType "MD2Weapon"
 modelName "rifle"

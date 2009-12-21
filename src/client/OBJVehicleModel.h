@@ -18,13 +18,18 @@ namespace client
 
   struct OBJVehicleModel : Model
   {
-    uint list;
+    protected:
 
-    static Model *create( const Object *obj );
+      uint list;
 
-    virtual ~OBJVehicleModel();
+    public:
 
-    virtual void draw();
+      static Model *create( const Object *obj );
+
+      virtual ~OBJVehicleModel();
+
+      virtual void draw( const Model *parent );
+
   };
 
 }

@@ -9,22 +9,25 @@
 
 #pragma once
 
-#include "Audio.h"
+#include "BasicAudio.h"
 
 namespace oz
 {
 namespace client
 {
 
-  struct BotAudio : Audio
+  struct BotAudio : public BasicAudio
   {
-    static const int SND_FRICTING = Object::EVENT_FRICTING;
+    protected:
 
-    BotAudio( const Object *obj ) : Audio( obj ) {}
+      BotAudio( const Object *obj ) : BasicAudio( obj ) {}
 
-    static Audio *create( const Object *obj );
+    public:
 
-    void update();
+      static Audio *create( const Object *obj );
+
+      void play( const Audio *parent );
+
   };
 
 }

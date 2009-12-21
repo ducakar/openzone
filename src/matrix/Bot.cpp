@@ -405,14 +405,14 @@ namespace oz
     if( grabObj != -1 ) {
       obj = static_cast<Dynamic*>( world.objects[grabObj] );
 
-      if( obj == null || obj->cell == null || ( obj->flags & Object::UPPER_BIT ) ) {
+      if( obj == null || obj->cell == null ) {
         grabObj = -1;
         obj = null;
       }
     }
 
     if( grabObj != -1 ) {
-      if( lower == grabObj || isSwimming ) {
+      if( lower == grabObj || isSwimming || ( obj->flags & Object::UPPER_BIT ) ) {
         grabObj = -1;
       }
       else {
@@ -510,7 +510,7 @@ namespace oz
           float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
           if( dist <= clazz->grabDistance ) {
-            grabObj    = collider.hit.obj->index;
+            grabObj    = obj->index;
             grabHandle = dist;
             flags      &= ~ON_LADDER_BIT;
           }
@@ -639,6 +639,8 @@ namespace oz
       items << istream->readInt();
     }
 
+    weaponItem   = istream->readInt();
+
     const BotClass *clazz = static_cast<const BotClass*>( type );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
   }
@@ -665,6 +667,8 @@ namespace oz
     foreach( item, items.iterator() ) {
       ostream->writeInt( *item );
     }
+
+    ostream->writeInt( weaponItem );
   }
 
   void Bot::readUpdate( InputStream *istream )

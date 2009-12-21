@@ -16,15 +16,20 @@ namespace oz
 namespace client
 {
 
-  struct OBJModel : Model
+  class OBJModel : public Model
   {
-    uint list;
+    protected:
 
-    static Model *create( const Object *obj );
+      uint list;
 
-    virtual ~OBJModel();
+      virtual ~OBJModel();
 
-    virtual void draw();
+    public:
+
+      static Model *create( const Object *obj );
+
+      virtual void draw( const Model *parent );
+
   };
 
 }

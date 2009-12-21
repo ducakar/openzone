@@ -21,15 +21,15 @@ WASD                - move
 Shift               - run
 Space               - jump
 Ctrl                - crouch (toggle)
-Alt                 - freelook - turn head only, not the whole body (toggle)
+Alt                 - freelon (3rd person only) (toggle)
 p                   - step over small obstacles, e.g. walk up the stairs (toggle)
 m                   - 1st/3rd person camera (toggle)
 i                   - reincarnate/disappear
 
 right click         - use
-middle click        - grab/drop
+middle click        - grab/drop when holding an object or take from inventory
 wheel up            - throw (when holding an object)
-wheel down          - put into inventory [currently disabled as there's no inventory interface yet]
+wheel down          - put into inventory
 tab                 - interface mode (toggle)
 
 f                   - point gesture
@@ -37,9 +37,10 @@ g                   - fall back gesture
 h                   - salute gesture
 j                   - wave gesture
 k                   - flip out gesture
+l                   - all animations
 
 F11                 - screenshot (saved to ~/.openzone/screenshot-DATE.bmp)
-F12                 - minimize and stop
+F12                 - minimize and freeze
 
 Notes:
 ------

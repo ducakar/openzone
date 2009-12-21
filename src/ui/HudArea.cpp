@@ -26,6 +26,8 @@ namespace ui
 
   HudArea::HudArea( int width, int height ) : Area( width, height )
   {
+    setFont( SANS );
+
     crossTexId = context.loadTexture( "ui/crosshair.png", false, GL_LINEAR, GL_LINEAR );
     useTexId   = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
     takeTexId  = context.loadTexture( "ui/take.png", false, GL_LINEAR, GL_LINEAR );
@@ -43,7 +45,9 @@ namespace ui
     grabIconX  = crossIconX;
     grabIconY  = crossIconY - ICON_SIZE;
     healthBarX = crossIconX - 8;
-    healthBarY = crossIconY + ICON_SIZE + 8;
+    healthBarY = crossIconY + ICON_SIZE;
+    descTextX  = width / 2;
+    descTextY  = crossIconY + ICON_SIZE + 36;
   }
 
   HudArea::~HudArea()
@@ -74,6 +78,11 @@ namespace ui
 
       glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
       rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
+
+      setFontColor( 0x00, 0x00, 0x00 );
+      printCentered( descTextX + 1, descTextY - 1, clazz->description.cstr() );
+      setFontColor( 0xff, 0xff, 0xff );
+      printCentered( descTextX + 0, descTextY + 0, clazz->description.cstr() );
     }
 
     if( camera.botIndex != -1 ) {

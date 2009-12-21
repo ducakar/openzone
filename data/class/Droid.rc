@@ -43,3 +43,6 @@ inventoryItem03 "Bomb"
 inventoryItem04 "Bomb"
 
 weaponItem "0"
+
+mindType "Lua"
+mindFunction "droidDestroyer"

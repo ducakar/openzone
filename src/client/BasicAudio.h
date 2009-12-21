@@ -16,15 +16,20 @@ namespace oz
 namespace client
 {
 
-  struct BasicAudio : Audio
+  class BasicAudio : public Audio
   {
-    static const int SND_FRICTING = Object::EVENT_FRICTING;
+    protected:
 
-    BasicAudio( const Object *obj ) : Audio( obj ) {}
+      static const int SND_FRICTING = Object::EVENT_FRICTING;
 
-    static Audio *create( const Object *obj );
+      BasicAudio( const Object *obj ) : Audio( obj ) {}
 
-    void update();
+    public:
+
+      static Audio *create( const Object *obj );
+
+      void play( const Audio *parent );
+
   };
 
 }

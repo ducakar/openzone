@@ -26,7 +26,7 @@ namespace oz
     BotClass *clazz = new BotClass();
 
     clazz->name                 = name;
-    clazz->description          = config->get( "description", "A Bot" );
+    clazz->description          = config->get( "description", name );
 
     clazz->dim.x                = config->get( "dim.x", 0.44f );
     clazz->dim.y                = config->get( "dim.y", 0.44f );
@@ -53,7 +53,7 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT, "flag.delayedDraw", false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
 
-    clazz->life                 = config->get( "life", 100.0f );
+    clazz->life                 = 2.0f * config->get( "life", 100.0f );
     clazz->damageThreshold      = config->get( "damageThreshold", 100.0f );
 
     if( clazz->life <= 0.0f ) {
