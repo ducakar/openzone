@@ -64,8 +64,8 @@ cd ..
 tar zxf lua-5.1.4.tar.gz
 cd lua-5.1.4
 sed -i -e 's/RANLIB=strip/RANLIB=i486-mingw32-strip/' src/Makefile
-make -j2 INSTALL_TOP=$PREFIX PLAT=mingw CC=$CC CFLAGS="$CFLAGS -DLUA_BUILD_AS_DLL" AR="$AR rcu" RANLIB="i486-mingw32-ranlib" TO_BIN="lua.exe luac.exe"
-make -j2 INSTALL_TOP=$PREFIX PLAT=mingw CC=$CC CFLAGS="$CFLAGS -DLUA_BUILD_AS_DLL" AR="$AR rcu" RANLIB="i486-mingw32-ranlib" TO_BIN="lua.exe luac.exe" install
+make -j2 INSTALL_TOP=$PREFIX PLAT=mingw CC=$CC CFLAGS="$CFLAGS" AR="$AR rcu" RANLIB="i486-mingw32-ranlib" TO_BIN="lua.exe luac.exe"
+make -j2 INSTALL_TOP=$PREFIX PLAT=mingw CC=$CC CFLAGS="$CFLAGS" AR="$AR rcu" RANLIB="i486-mingw32-ranlib" TO_BIN="lua.exe luac.exe" install
 cd ..
 
 # tar jxf openal-soft-1.8.466.bz2

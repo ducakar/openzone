@@ -176,8 +176,6 @@ namespace client
 
     glLoadIdentity();
     glMatrixMode( GL_MODELVIEW );
-
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
   }
 
   void BSP::drawNode( int nodeIndex )
@@ -463,6 +461,7 @@ namespace client
         }
       }
     }
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
     glPopMatrix();
   }
 
@@ -529,6 +528,7 @@ namespace client
         drawFaceWater( &face );
       }
     }
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
     glPopMatrix();
   }
 

@@ -41,17 +41,18 @@ namespace oz
 
     clazz->flags = 0;
 
-    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT, "flag.destroyFunc", true  );
-    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,  "flag.damageFunc",  false );
-    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
-    OZ_CLASS_SET_FLAG( Object::ITEM_BIT,         "flag.item",        false );
-    OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
-    OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,      "flag.climber",     true  );
-    OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,       "flag.pusher",      true  );
-    OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
-    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,      "flag.noDraw",      false );
-    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT, "flag.delayedDraw", false );
-    OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
+    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.destroyFunc",  true  );
+    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.damageFunc",   false );
+    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",      false );
+    OZ_CLASS_SET_FLAG( Object::ITEM_BIT,           "flag.item",         false );
+    OZ_CLASS_SET_FLAG( Object::CLIP_BIT,           "flag.clip",         true  );
+    OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,        "flag.climber",      true  );
+    OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,         "flag.pusher",       true  );
+    OZ_CLASS_SET_FLAG( Object::HOVER_BIT,          "flag.hover",        false );
+    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
+    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT,   "flag.delayedDraw",  false );
+    OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
+    OZ_CLASS_SET_FLAG( Object::WIDE_WIDE_CULL_BIT, "flag.wideWideCull", false );
 
     clazz->life                 = 2.0f * config->get( "life", 100.0f );
     clazz->damageThreshold      = config->get( "damageThreshold", 100.0f );
@@ -103,7 +104,7 @@ namespace oz
     clazz->bobSwimAmplitude     = config->get( "bobSwimAmplitude", 0.05f );
 
     clazz->walkMomentum         = config->get( "walkMomentum", 1.2f );
-    clazz->runMomentum          = config->get( "runMomentum", 4.0f );
+    clazz->runMomentum          = config->get( "runMomentum", 3.0f );
     clazz->crouchMomentum       = config->get( "crouchMomentum", 1.2f );
     clazz->jumpMomentum         = config->get( "jumpMomentum", 5.0f );
 

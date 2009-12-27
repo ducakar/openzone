@@ -53,7 +53,7 @@ namespace oz
       /**
        * No placement delete
        */
-      void operator delete ( void*, void * )
+      void operator delete ( void*, void* )
       {
         throw Exception( "No placement delete" );
       }

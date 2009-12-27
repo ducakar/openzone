@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "matrix.h"
+
 namespace oz
 {
 
@@ -59,58 +61,52 @@ namespace oz
       Vec3 vertices[MAX][MAX];
       Quad quads[QUADS][QUADS];
 
-      int  minX;
-      int  minY;
-      int  maxX;
-      int  maxY;
-
-      int  ix;
-      int  iy;
-
-      bool isLoaded;
-
       void init();
       void load( float height );
       void load( const char *heightMapFile );
 
       void isEmpty() const;
 
-      void  getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f );
+      void  getInters( Area &area, float minX, float minY, float maxX, float maxY,
+                       float epsilon = 0.0f ) const;
       // indices of TerraQuad and index of the triangle inside the TerraQuad
-      void  getIndices( float x, float y );
-      float height( float x, float y );
+      void  getIndices( Area &area, float x, float y ) const;
+      float height( float x, float y ) const;
 
   };
 
-  inline void Terrain::getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
-                                  float epsilon )
+  inline void Terrain::getInters( Area &area, float minPosX, float minPosY,
+                                  float maxPosX, float maxPosY, float epsilon ) const
   {
-    minX = max( static_cast<int>( minPosX - epsilon + DIM ) / Quad::SIZEI, 0 );
-    minY = max( static_cast<int>( minPosY - epsilon + DIM ) / Quad::SIZEI, 0 );
-    maxX = min( static_cast<int>( maxPosX + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
-    maxY = min( static_cast<int>( maxPosY + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
+    area.minX = max( static_cast<int>( minPosX - epsilon + DIM ) / Quad::SIZEI, 0 );
+    area.minY = max( static_cast<int>( minPosY - epsilon + DIM ) / Quad::SIZEI, 0 );
+    area.maxX = min( static_cast<int>( maxPosX + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
+    area.maxY = min( static_cast<int>( maxPosY + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
   }
 
-  inline void Terrain::getIndices( float x, float y )
+  inline void Terrain::getIndices( Area &area, float x, float y ) const
   {
-    ix = static_cast<int>( x + DIM ) / Quad::SIZEI;
-    iy = static_cast<int>( y + DIM ) / Quad::SIZEI;
+    area.minX = static_cast<int>( x + DIM ) / Quad::SIZEI;
+    area.minY = static_cast<int>( y + DIM ) / Quad::SIZEI;
 
-    ix = bound( ix, 0, QUADS - 1 );
-    iy = bound( iy, 0, QUADS - 1 );
+    area.minX = bound( area.minX, 0, QUADS - 1 );
+    area.minY = bound( area.minY, 0, QUADS - 1 );
   }
 
-  inline float Terrain::height( float x, float y )
+  inline float Terrain::height( float x, float y ) const
   {
-    getIndices( x, y );
+    Area area;
+    getIndices( area, x, y );
 
     float intraX = Math::mod( x + DIM, Quad::SIZE );
     float intraY = Math::mod( y + DIM, Quad::SIZE );
     int   ii = intraX <= intraY;
 
     return
-        ( quads[ix][iy].tri[ii].distance - quads[ix][iy].tri[ii].normal.x * x -
-        quads[ix][iy].tri[ii].normal.y * y ) / quads[ix][iy].tri[ii].normal.z;
+        ( quads[area.minX][area.minY].tri[ii].distance -
+            quads[area.minX][area.minY].tri[ii].normal.x * x -
+            quads[area.minX][area.minY].tri[ii].normal.y * y ) /
+            quads[area.minX][area.minY].tri[ii].normal.z;
   }
 
 }

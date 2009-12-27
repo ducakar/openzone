@@ -38,14 +38,6 @@ namespace oz
     DList<Particle, 0> particles;
   };
 
-  struct Area
-  {
-    int minX;
-    int maxX;
-    int minY;
-    int maxY;
-  };
-
   class World : public Bounds
   {
     friend class Synapse;
@@ -334,20 +326,23 @@ namespace oz
     return index;
   }
 
+  // has to be reentrant, can be called again from translator.createObject
   inline int World::addObject( const char *name, const Vec3 &p )
   {
     int index;
 
     if( objAvailableIndices.isEmpty() ) {
       index = objects.length();
-      // workaround to ensure reentrancy
+      // reserve slot so reentrant calls cannot occupy it again
       objects << null;
-      objects.last() = translator.createObject( index, name, p );
     }
     else {
       objAvailableIndices >> index;
-      objects[index] = translator.createObject( index, name, p );
     }
+    // objects vector may relocate during createObject call, we must use this workaround
+    Object *obj = translator.createObject( index, name, p );
+    objects[index] = obj;
+
     if( objects[index]->flags & Object::LUA_BIT ) {
       lua.registerObject( index );
     }

@@ -16,6 +16,8 @@
 #include "Context.h"
 #include "Colors.h"
 
+#include <typeinfo>
+
 namespace oz
 {
 namespace client
@@ -45,8 +47,7 @@ namespace client
 
       md2->drawFrame( 0 );
     }
-    else {
-      // FIXME: typesafety?
+    else if( parent->flags & Model::MD2MODEL_BIT ) {
       const MD2Model *parentModel = static_cast<const MD2Model*>( parent );
 
       md2->draw( &parentModel->anim );

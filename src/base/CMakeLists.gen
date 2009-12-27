@@ -2,6 +2,6 @@
 
 echo 'add_library( base STATIC' > CMakeLists.txt
 
-ls *.?pp >> CMakeLists.txt
+ls *.{h,cpp} >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt

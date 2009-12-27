@@ -64,12 +64,12 @@ namespace oz
       }
     }
 
-    if( life <= type->life * 0.5f ) {
+    if( life <= type->life / 2.0f ) {
       if( ( ~state & DEATH_BIT ) && life > 0.0f ) {
         flags |= WIDE_CULL_BIT;
         flags &= ~CLIP_BIT;
         addEvent( EVENT_DEATH, 1.0f );
-        life = type->life * 0.5f - EPSILON;
+        life = type->life / 2.0f - EPSILON;
         anim = ANIM_DEATH_FALLBACK;
       }
       state |= DEATH_BIT;
@@ -212,7 +212,7 @@ namespace oz
     else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
       anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_WALK : ANIM_RUN;
     }
-    else if( ( actions & ACTION_ATTACK ) && weaponItem != -1 ) {
+    else if( ( actions & ACTION_ATTACK ) && weaponItem != -1 && grabObj == -1 ) {
       Weapon *weapon = static_cast<Weapon*>( world.objects[weaponItem] );
 
       if( weapon != null && weapon->shotTime == 0.0f ) {
@@ -248,7 +248,7 @@ namespace oz
       anim = ANIM_STAND;
     }
     if( actions & ACTION_SUICIDE ) {
-      life = type->life * 0.5f - EPSILON;
+      life = type->life / 2.0f - EPSILON;
     }
 
     /*
@@ -405,7 +405,7 @@ namespace oz
     if( grabObj != -1 ) {
       obj = static_cast<Dynamic*>( world.objects[grabObj] );
 
-      if( obj == null || obj->cell == null ) {
+      if( obj == null || obj->cell == null || weaponItem != -1 ) {
         grabObj = -1;
         obj = null;
       }
@@ -492,7 +492,7 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
-      if( grabObj != -1 || isSwimming ) {
+      if( grabObj != -1 || isSwimming || weaponItem != -1 ) {
         grabObj = -1;
       }
       else {
@@ -613,7 +613,7 @@ namespace oz
 
   void Bot::kill()
   {
-    life = type->life * 0.5f - EPSILON;
+    life = type->life / 2.0f - EPSILON;
   }
 
   void Bot::readFull( InputStream *istream )

@@ -302,16 +302,31 @@ namespace oz
   }
 
   /**
-   * Call delete on all elements (that have been previously allocated with the new call).
+   * Call delete on each element of a container of pointers.
    * @param iDest
    */
   template <class Iter>
   inline void iFree( Iter iDest )
   {
     while( !iDest.isPassed() ) {
-      typeof( *iDest ) p = *iDest;
+      const typeof( *iDest ) &elem = *iDest;
       ++iDest;
-      delete p;
+      delete elem;
+    }
+  }
+
+  /**
+   * Call delete on each element of an array of pointers and set all elements to null.
+   * @param iDest
+   */
+  template <class Iter>
+  inline void iFreeAndClear( Iter iDest )
+  {
+    while( !iDest.isPassed() ) {
+      typeof( *iDest ) &elem = *iDest;
+      ++iDest;
+      delete elem;
+      elem = null;
     }
   }
 

@@ -3,6 +3,9 @@
 // has sincosf function
 #cmakedefine OZ_HAVE_SINCOSF
 
+// enable overloaded new and delete to count allocated memory
+#cmakedefine OZ_ALLOC
+
 // enable XML configuration files support
 #cmakedefine OZ_XML_CONFIG
 

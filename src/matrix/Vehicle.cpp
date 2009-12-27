@@ -102,12 +102,12 @@ namespace oz
             bot->exit();
           }
           else {
-            bot->p = p + rot.rotate( clazz->crewPos[0] ) + momentum * timer.TICK_TIME;
+            bot->p = p + rot.rotate( clazz->crewPos[0] ) + momentum * Timer::TICK_TIME;
             bot->momentum = velocity;
           }
         }
         else {
-          bot->p = p + rot.rotate( clazz->crewPos[0] ) + momentum * timer.TICK_TIME;
+          bot->p = p + rot.rotate( clazz->crewPos[0] ) + momentum * Timer::TICK_TIME;
           bot->momentum = velocity;
         }
       }

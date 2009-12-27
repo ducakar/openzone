@@ -29,7 +29,8 @@ namespace client
   {
     private:
 
-      static const float RELEASED_CULL_FACTOR = 8.0f;
+      static const float WIDE_CULL_FACTOR = 16.0f;
+      static const float WIDE_WIDE_CULL_FACTOR = 16.0f;
 
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;
@@ -69,14 +70,6 @@ namespace client
       Vector<const Structure*> waterStructures;
       HashIndex<Model*, 1021>  models;
 
-      int                      screenX;
-      int                      screenY;
-
-      double                   perspectiveAngle;
-      double                   perspectiveAspect;
-      double                   perspectiveMin;
-      double                   perspectiveMax;
-
       float                    dayVisibility;
       float                    nightVisibility;
       float                    waterDayVisibility;
@@ -89,9 +82,13 @@ namespace client
       bool                     isUnderWater;
       bool                     wasUnderWater;
       float                    visibility;
-      int                      taggedObj;
 
       void scheduleCell( int cellX, int cellY );
+
+      // render world
+      void drawWorld();
+      // UI, swap buffers, cleanup models
+      void drawCommon();
 
     public:
 
@@ -104,7 +101,7 @@ namespace client
         }
         Model *model = models.cachedValue();
 
-        model->isUpdated = true;
+        model->flags |= Model::UPDATED_BIT;
         model->draw( parent );
       }
 
@@ -116,6 +113,7 @@ namespace client
 
       void load();
       void unload();
+
   };
 
   extern Render render;

@@ -58,6 +58,16 @@ namespace oz
         j++;
       }
     }
+    for( int i = 0; i < 100; i++ ) {
+      float x = -DIM + 2.0f * DIM * Math::frand();
+      float y = -DIM + 2.0f * DIM * Math::frand();
+      float z = world.terra.height( x, y ) + 1.0f;
+
+      if( z > 0.0f ) {
+        synapse.addObject( "Droid", Vec3( x, y, z ) );
+        j++;
+      }
+    }
     for( int i = 0; i < 1000; i++ ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
@@ -80,9 +90,9 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    world.sky.set( 205.0f, 1440.0f, 300.0f );
+    world.sky.set( 205.0f, 1440.0f, 180.0f );
 
-    int index = synapse.addObject( "Droid", Vec3( 52, -44, 37 ) );
+    int index = synapse.addObject( "Lord", Vec3( 52, -44, 37 ) );
     static_cast<Bot*>( world.objects[index] )->h = 270.0f;
 
     synapse.addObject( "Knight", Vec3( 50, -35, 37 ) );

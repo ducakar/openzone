@@ -41,9 +41,12 @@ namespace nirvana
       Vector<Object*>    objects;
       Vector<Structure*> structs;
 
+      bool               forceUpdate;
+
       void call( const char *functionName, Bot *self_ )
       {
-        self    = self_;
+        forceUpdate = false;
+        self        = self_;
 
         callFunc( functionName, self->index );
       }

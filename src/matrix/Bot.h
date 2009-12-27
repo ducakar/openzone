@@ -120,6 +120,8 @@ namespace oz
       int         taggedItem;
       int         weaponItem;
 
+      String      name;
+
       float       camZ;
       AnimEnum    anim;
 

@@ -24,138 +24,18 @@ namespace client
 namespace ui
 {
 
-  static void createSmallCrate( Button* )
+  static void createObject( Button *button )
   {
-    if( !translator.classes.contains( "SmallCrate" ) ) {
+    if( !translator.classes.contains( button->label ) ) {
       return;
     }
 
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
+    Vec3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, translator.classes.cachedValue()->dim );
 
     if( collider.test( bb ) ) {
-      synapse.addObject( "SmallCrate", p );
-    }
-  }
-
-  static void createBigCrate( Button* )
-  {
-    if( !translator.classes.contains( "BigCrate" ) ) {
-      return;
-    }
-
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    p += camera.at * 2.0f;
-    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
-
-    if( collider.test( bb ) ) {
-      synapse.addObject( "BigCrate", p );
-    }
-  }
-
-  static void createMetalBarrel( Button* )
-  {
-    if( !translator.classes.contains( "MetalBarrel" ) ) {
-      return;
-    }
-
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    p += camera.at * 2.0f;
-    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
-
-    if( collider.test( bb ) ) {
-      synapse.addObject( "MetalBarrel", p );
-    }
-  }
-
-  static void createFirstAid( Button* )
-  {
-    if( !translator.classes.contains( "FirstAid" ) ) {
-      return;
-    }
-
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    p += camera.at * 2.0f;
-    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
-
-    if( collider.test( bb ) ) {
-      synapse.addObject( "FirstAid", p );
-    }
-  }
-
-  static void createWine( Button* )
-  {
-    if( !translator.classes.contains( "Wine" ) ) {
-      return;
-    }
-
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    p += camera.at * 2.0f;
-    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
-
-    if( collider.test( bb ) ) {
-      synapse.addObject( "Wine", p );
-    }
-  }
-
-  static void createBomb( Button* )
-  {
-    if( !translator.classes.contains( "Bomb" ) ) {
-      return;
-    }
-
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    p += camera.at * 2.0f;
-    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
-
-    if( collider.test( bb ) ) {
-      synapse.addObject( "Bomb", p );
-    }
-  }
-
-  static void createRifle( Button* )
-  {
-    if( !translator.classes.contains( "Rifle" ) ) {
-      return;
-    }
-
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    p += camera.at * 2.0f;
-    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
-
-    if( collider.test( bb ) ) {
-      synapse.addObject( "Rifle", p );
-    }
-  }
-
-  static void createGoblin( Button* )
-  {
-    if( !translator.classes.contains( "Goblin" ) ) {
-      return;
-    }
-
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    p += camera.at * 2.0f;
-    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
-
-    if( collider.test( bb ) ) {
-      synapse.addObject( "Goblin", p );
-    }
-  }
-
-  static void createKnight( Button* )
-  {
-    if( !translator.classes.contains( "Knight" ) ) {
-      return;
-    }
-
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    p += camera.at * 2.0f;
-    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
-
-    if( collider.test( bb ) ) {
-      synapse.addObject( "Knight", p );
+      synapse.addObject( button->label, p );
     }
   }
 
@@ -167,13 +47,13 @@ namespace ui
 //    synapse.addStruct( "house", p, Structure::R0 );
 //  }
 //
-  static void createCenterR90( Button* )
-  {
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    p += camera.at * 2.0f;
-
-    synapse.addStruct( "house", p, Structure::R90 );
-  }
+//  static void createCenterR90( Button* )
+//  {
+//    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
+//    p += camera.at * 2.0f;
+//
+//    synapse.addStruct( "house", p, Structure::R90 );
+//  }
 //
 //  static void createCenterR180( Button* )
 //  {
@@ -193,8 +73,8 @@ namespace ui
 
   static void destroy( Button* )
   {
-    Vec3 p  = camera.bot == null ? camera.p : camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ );
-    collider.translate( p, camera.at * 2.0f, camera.bot );
+    Vec3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
+    collider.translate( p, camera.at * 2.0f, camera.botObj );
 
     if( collider.hit.obj != null ) {
       collider.hit.obj->life = 0.0f;
@@ -206,18 +86,19 @@ namespace ui
     setFont( TITLE );
     setFontColor( 0xff, 0xff, 0xff );
 
-    add( new Button( "SmallCrate", createSmallCrate, 90, 15 ), 5, -35 );
-    add( new Button( "BigCrate", createBigCrate, 90, 15 ), 5, -55 );
-    add( new Button( "MetalBarrel", createMetalBarrel, 90, 15 ), 5, -75 );
-    add( new Button( "FirstAid", createFirstAid, 90, 15 ), 5, -95 );
-    add( new Button( "Wine", createWine, 90, 15 ), 5, -115 );
-    add( new Button( "Bomb", createBomb, 90, 15 ), 5, -135 );
-    add( new Button( "Rifle", createRifle, 90, 15 ), 5, -155 );
-    add( new Button( "Goblin", createGoblin, 90, 15 ), 5, -175 );
-    add( new Button( "Knight", createKnight, 90, 15 ), 5, -195 );
+    add( new Button( "SmallCrate", createObject, 90, 15 ), 5, -35 );
+    add( new Button( "BigCrate", createObject, 90, 15 ), 5, -55 );
+    add( new Button( "MetalBarrel", createObject, 90, 15 ), 5, -75 );
+    add( new Button( "FirstAid", createObject, 90, 15 ), 5, -95 );
+    add( new Button( "Wine", createObject, 90, 15 ), 5, -115 );
+    add( new Button( "Bomb", createObject, 90, 15 ), 5, -135 );
+    add( new Button( "Rifle", createObject, 90, 15 ), 5, -155 );
+    add( new Button( "Goblin", createObject, 90, 15 ), 5, -175 );
+    add( new Button( "Knight", createObject, 90, 15 ), 5, -195 );
+    add( new Button( "Droid", createObject, 90, 15 ), 5, -215 );
 
 //    add( new Button( "House R0",   createCenterR0,   90, 15 ), 5, -155 );
-    add( new Button( "House R90",  createCenterR90,  90, 15 ), 5, -215 );
+//    add( new Button( "House R90",  createCenterR90,  90, 15 ), 5, -215 );
 //    add( new Button( "House R180", createCenterR180, 90, 15 ), 5, -195 );
 //    add( new Button( "House R270", createCenterR270, 90, 15 ), 5, -215 );
 

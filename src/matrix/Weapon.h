@@ -32,7 +32,7 @@ namespace oz
       int   nShots;
       float shotTime;
 
-      explicit Weapon() : Dynamic() {}
+      explicit Weapon() {}
 
       void trigger( Bot *user )
       {

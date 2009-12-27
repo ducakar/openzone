@@ -16,6 +16,14 @@ namespace oz
   // EPSILON / 2
   const float EPSILON_2 = 0.00048828125f;
 
+  struct Area
+  {
+    int minX;
+    int maxX;
+    int minY;
+    int maxY;
+  };
+
   struct Material
   {
     static const int VOID_BIT    = 0x00000001;

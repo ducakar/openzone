@@ -22,13 +22,13 @@ namespace ui
 
   void Frame::onMouseEvent()
   {
-    if( mouse.b & SDL_BUTTON_LMASK ) {
+    if( mouse.buttons & SDL_BUTTON_LMASK ) {
       if( mouse.leftClick ) {
         flags |= GRAB_BIT;
       }
       if( flags & GRAB_BIT ) {
         mouse.type = Mouse::MOVE;
-        move( mouse.moveX, mouse.moveY );
+        move( mouse.relX, mouse.relY );
       }
     }
     else {

@@ -12,7 +12,7 @@
 #include "Main.h"
 
 #include "Context.h"
-#include "Game.h"
+#include "GameStage.h"
 #include "Sound.h"
 #include "Render.h"
 
@@ -36,7 +36,7 @@ namespace client
     log.indent();
 
     if( initFlags & INIT_GAME_START ) {
-      game.stop();
+      stage->end();
     }
     if( initFlags & INIT_RENDER_INIT ) {
       render.unload();
@@ -49,7 +49,7 @@ namespace client
       context.free();
     }
     if( initFlags & INIT_GAME_INIT ) {
-      game.free();
+      stage->unload();
     }
     if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
@@ -57,6 +57,10 @@ namespace client
       SDLNet_Quit();
       SDL_Quit();
       log.printEnd( " OK" );
+    }
+
+    if( Alloc::max != -1 ) {
+      log.println( "Maximum allocated memory: %.2f MiB", Alloc::max / ( 1024.0f * 1024.0f ) );
     }
 
     log.unindent();
@@ -152,7 +156,7 @@ namespace client
       log.printEnd( " Failed" );
       return;
     }
-    game.input.keys = SDL_GetKeyState( null );
+    ui::keyboard.init();
     log.printEnd( " OK" );
 
     initFlags |= INIT_SDL;
@@ -209,9 +213,9 @@ namespace client
     }
     initFlags |= INIT_AUDIO;
 
-    if( !game.init() ) {
-      return;
-    }
+    stage = &gameStage;
+
+    stage->load();
     initFlags |= INIT_GAME_INIT;
 
     context.init();
@@ -220,7 +224,7 @@ namespace client
     render.load();
     initFlags |= INIT_RENDER_LOAD;
 
-    game.start();
+    stage->begin();
     initFlags |= INIT_GAME_START;
 
     log.println( "MAIN LOOP {" );
@@ -256,16 +260,19 @@ namespace client
       uint timeBegin = SDL_GetTicks();
 
       // read input & events
-      ui::mouse.moveX = 0;
-      ui::mouse.moveY = 0;
-      aCopy( game.input.oldKeys, game.input.keys, SDLK_LAST );
+      ui::keyboard.prepare();
+      ui::mouse.prepare();
 
       while( SDL_PollEvent( &event ) ) {
         switch( event.type ) {
           case SDL_MOUSEMOTION: {
-            ui::mouse.moveX = -event.motion.xrel;
-            ui::mouse.moveY =  event.motion.yrel;
+            ui::mouse.relX = -event.motion.xrel;
+            ui::mouse.relY =  event.motion.yrel;
             SDL_WarpMouse( screenCenterX, screenCenterY );
+            break;
+          }
+          case SDL_KEYDOWN: {
+            ui::keyboard.keys[event.key.keysym.sym] |= SDL_PRESSED;
             break;
           }
           case SDL_MOUSEBUTTONUP: {
@@ -273,20 +280,8 @@ namespace client
             break;
           }
           case SDL_MOUSEBUTTONDOWN: {
+            ui::mouse.buttons |= SDL_BUTTON( event.button.button );
             ui::mouse.currButtons |= SDL_BUTTON( event.button.button );
-            ui::mouse.persButtons |= SDL_BUTTON( event.button.button );
-            break;
-          }
-          case SDL_KEYDOWN: {
-            game.input.keys[event.key.keysym.sym] |= SDL_PRESSED;
-
-            if( event.key.keysym.sym == SDLK_F12 ) {
-              SDL_WM_IconifyWindow();
-              isActive = false;
-            }
-            else if( event.key.keysym.sym == SDLK_F11 ) {
-              render.doScreenshot = true;
-            }
             break;
           }
           case SDL_ACTIVEEVENT: {
@@ -298,6 +293,14 @@ namespace client
             break;
           }
         }
+      }
+
+      if( ui::keyboard.keys[SDLK_F12] ) {
+        SDL_WM_IconifyWindow();
+        isActive = false;
+      }
+      else if( ui::keyboard.keys[SDLK_F11] ) {
+        render.doScreenshot = true;
       }
 
       // waste time when iconified
@@ -315,11 +318,10 @@ namespace client
       }
 
       ui::mouse.update();
+
       // stop nirvana, commit with cuts/removals, sync Render and Sound, update world,
       // resume nirvana
-      isAlive &= game.update( tick );
-      // play sounds, but don't do any cleanups
-      sound.play();
+      isAlive &= stage->update();
 
       timer.tick();
       timeNow = SDL_GetTicks();
@@ -328,10 +330,7 @@ namespace client
 
       // render graphics, if we have enough time left
       if( delta < tick || timeNow - timeLastRender > 32 * tick ) {
-        // render
-        render.update();
-        // stop playing stopped continuous sounds, do cleanups
-        sound.update();
+        stage->render();
 
         timer.frame();
         // if there's still some time left, waste it
@@ -361,7 +360,7 @@ namespace client
 
     log.println( "STATISTICS {" );
     log.indent();
-    log.println( "Ticks: %d (%.2f Hz)", timer.millis / timer.TICK_MILLIS, 1000.0f / timer.TICK_MILLIS );
+    log.println( "Ticks: %d (%.2f Hz)", timer.millis / Timer::TICK_MILLIS, 1000.0f / Timer::TICK_MILLIS );
     log.println( "Frames: %d (%.2f Hz)", timer.nFrames, timer.nFrames / timer.time );
     log.println( "Time usage:" );
     log.println( "    %.4g s\t%.1f%%\tall time", allTimeSec, 100.0f );

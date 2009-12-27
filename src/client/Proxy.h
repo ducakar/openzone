@@ -1,5 +1,5 @@
 /*
- *  ui.h
+ *  Proxy.h
  *
  *  [description]
  *
@@ -13,11 +13,18 @@ namespace oz
 {
 namespace client
 {
-namespace ui
-{
 
-  extern int taggedObj;
+  class Proxy
+  {
+    public:
 
-}
+      virtual ~Proxy() {}
+
+      virtual void begin()   = 0;
+      virtual void update()  = 0;
+      virtual void prepare() = 0;
+
+  };
+
 }
 }

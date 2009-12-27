@@ -38,7 +38,6 @@ namespace oz
     float  life;
     float  damageThreshold;
 
-    String onCreate;
     String onDestroy;
     String onDamage;
     String onHit;

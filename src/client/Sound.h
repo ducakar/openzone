@@ -120,7 +120,7 @@ namespace client
         }
         Audio *audio = audios.cachedValue();
 
-        audio->isUpdated = true;
+        audio->flags |= Audio::UPDATED_BIT;
         audio->play( parent );
       }
 

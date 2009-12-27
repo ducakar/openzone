@@ -9,9 +9,8 @@
 
 #pragma once
 
-#include "ui.h"
-
 #include "Font.h"
+#include "Keyboard.h"
 #include "Mouse.h"
 #include "Area.h"
 
@@ -36,7 +35,7 @@ namespace ui
 
       HudArea *hud;
 
-      void init( int screenX, int screenY );
+      void init();
       void free();
 
       void update();

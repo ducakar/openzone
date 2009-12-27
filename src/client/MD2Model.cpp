@@ -29,8 +29,9 @@ namespace client
     const Bot *bot = static_cast<const Bot*>( obj );
     MD2Model *model = new MD2Model();
 
-    model->obj = obj;
-    model->md2 = context.loadMD2( obj->type->modelName );
+    model->obj   = obj;
+    model->flags = Model::MD2MODEL_BIT;
+    model->md2   = context.loadMD2( obj->type->modelName );
 
     model->setAnim( bot->anim );
     model->anim.nextFrame = model->anim.endFrame;
@@ -81,7 +82,7 @@ namespace client
       glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
       glDisable( GL_BLEND );
     }
-    else if( bot != camera.bot || camera.isExternal ) {
+    else if( bot->index != camera.bot || camera.state == Camera::EXTERNAL ) {
       if( bot->state & Bot::CROUCHING_BIT ) {
         glTranslatef( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z );
       }
@@ -94,9 +95,9 @@ namespace client
       }
     }
     else if( bot->weaponItem != -1 && world.objects[bot->weaponItem] != null ) {
-      glTranslatef( 0.0f, 0.0f,  camera.bot->camZ );
+      glTranslatef( 0.0f, 0.0f,  bot->camZ );
       glRotatef( bot->v, 1.0f, 0.0f, 0.0f );
-      glTranslatef( 0.0f, 0.0f, -camera.bot->camZ );
+      glTranslatef( 0.0f, 0.0f, -bot->camZ );
 
       md2->advance( &anim, timer.frameTime );
       render.drawModel( world.objects[bot->weaponItem], this );

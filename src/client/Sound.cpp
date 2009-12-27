@@ -249,8 +249,8 @@ namespace client
         // we should advance now, so that we don't remove the element the iterator is pointing at
         ++i;
 
-        if( audio->isUpdated ) {
-          audio->isUpdated = false;
+        if( audio->flags & Audio::UPDATED_BIT ) {
+          audio->flags &= ~Audio::UPDATED_BIT ;
         }
         else {
           audios.remove( key );

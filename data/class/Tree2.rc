@@ -4,7 +4,7 @@ dim.x "0.7"
 dim.y "0.7"
 dim.z "3.8"
 
-flag.wideCull "true"
+flag.wideWideCull "true"
 life "100.0f"
 
 modelType "MD2Static"

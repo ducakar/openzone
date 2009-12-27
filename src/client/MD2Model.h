@@ -24,6 +24,13 @@ namespace client
       MD2            *md2;
       MD2::AnimState anim;
 
+    protected:
+
+      MD2Model()
+      {
+        flags |= Model::MD2MODEL_BIT;
+      }
+
       virtual ~MD2Model();
 
     public:

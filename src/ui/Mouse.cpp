@@ -29,7 +29,17 @@ namespace ui
   {
     type = ARROW;
     doShow = false;
+
     setBounds( maxX, maxY );
+
+    x = centerX;
+    y = centerY;
+    relX = 0;
+    relY = 0;
+
+    buttons = 0;
+    oldButtons = 0;
+    currButtons = 0;
 
     const char *x = config.getSet( "ui.cursor.x", "cursors/X_cursor.png" );
     cursors[X].texId    = context.loadTexture( x, false, GL_NEAREST, GL_NEAREST );
@@ -72,8 +82,10 @@ namespace ui
 
   void Mouse::setBounds( int maxX_, int maxY_ )
   {
-    maxX = maxX_;
-    maxY = maxY_;
+    maxX    = maxX_;
+    maxY    = maxY_;
+    centerX = maxX_ / 2;
+    centerY = maxY_ / 2;
   }
 
   void Mouse::show()
@@ -86,13 +98,22 @@ namespace ui
     doShow = false;
   }
 
+  void Mouse::prepare()
+  {
+    relX = 0;
+    relY = 0;
+
+    oldButtons = buttons;
+    buttons = currButtons;
+  }
+
   void Mouse::update()
   {
     if( doShow ) {
       type = ARROW;
 
-      int desiredX = x + moveX;
-      int desiredY = y + moveY;
+      int desiredX = x + relX;
+      int desiredY = y + relY;
 
       x = bound( desiredX, 0, maxX - 1 );
       y = bound( desiredY, 0, maxY - 1 );
@@ -101,21 +122,18 @@ namespace ui
       overEdgeY = y != desiredY ? desiredY - y : 0;
     }
     else {
-      x = maxX / 2;
-      y = maxY / 2;
+      x = centerX;
+      y = centerY;
 
-      overEdgeX = moveX;
-      overEdgeY = moveY;
+      overEdgeX = relX;
+      overEdgeY = relY;
     }
 
-    leftClick   = ~b & persButtons & SDL_BUTTON_LMASK;
-    middleClick = ~b & persButtons & SDL_BUTTON_MMASK;
-    rightClick  = ~b & persButtons & SDL_BUTTON_RMASK;
-    wheelUp     = ~b & persButtons & SDL_BUTTON_WUMASK;
-    wheelDown   = ~b & persButtons & SDL_BUTTON_WDMASK;
-
-    b = persButtons;
-    persButtons = currButtons;
+    leftClick   = buttons & ~oldButtons & SDL_BUTTON_LMASK;
+    middleClick = buttons & ~oldButtons & SDL_BUTTON_MMASK;
+    rightClick  = buttons & ~oldButtons & SDL_BUTTON_RMASK;
+    wheelUp     = buttons & ~oldButtons & SDL_BUTTON_WUMASK;
+    wheelDown   = buttons & ~oldButtons & SDL_BUTTON_WDMASK;
   }
 
   void Mouse::draw() const

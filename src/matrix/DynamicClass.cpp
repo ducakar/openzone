@@ -36,18 +36,19 @@ namespace oz
 
     clazz->flags = 0;
 
-    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT, "flag.destroyFunc", true  );
-    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,  "flag.damageFunc",  false );
-    OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,     "flag.hitFunc",     false );
-    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,  "flag.updateFunc",  false );
-    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
-    OZ_CLASS_SET_FLAG( Object::ITEM_BIT,         "flag.item",        false );
-    OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
-    OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,       "flag.pusher",      false );
-    OZ_CLASS_SET_FLAG( Object::HOVER_BIT,        "flag.hover",       false );
-    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,      "flag.noDraw",      false );
-    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT, "flag.delayedDraw", false );
-    OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
+    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.destroyFunc",  true  );
+    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.damageFunc",   false );
+    OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.hitFunc",      false );
+    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.updateFunc",   false );
+    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",      false );
+    OZ_CLASS_SET_FLAG( Object::ITEM_BIT,           "flag.item",         false );
+    OZ_CLASS_SET_FLAG( Object::CLIP_BIT,           "flag.clip",         true  );
+    OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,         "flag.pusher",       false );
+    OZ_CLASS_SET_FLAG( Object::HOVER_BIT,          "flag.hover",        false );
+    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
+    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT,   "flag.delayedDraw",  false );
+    OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
+    OZ_CLASS_SET_FLAG( Object::WIDE_WIDE_CULL_BIT, "flag.wideWideCull", false );
 
     clazz->life                 = config->get( "life", 100.0f );
     clazz->damageThreshold      = config->get( "damageThreshold", 100.0f );
