@@ -48,7 +48,7 @@ namespace client
     for( int i = 0; i < Vehicle::CREW_MAX; i++ ) {
       int index = veh->crew[i];
 
-      if( index != -1 && ( index != camera.botIndex || camera.isExternal ) ) {
+      if( index != -1 && ( index != camera.bot || camera.state == Camera::EXTERNAL ) ) {
         Bot *bot = static_cast<const Bot*>( world.objects[veh->crew[i]] );
 
         glPushMatrix();

@@ -22,21 +22,12 @@ namespace oz
 
   void ObjectClass::fillCommon( ObjectClass *clazz, const Config *config )
   {
-    clazz->onCreate             = config->get( "onCreate", "" );
     clazz->onDestroy            = config->get( "onDestroy", "" );
     clazz->onDamage             = config->get( "onDamage", "" );
     clazz->onHit                = config->get( "onHit", "" );
     clazz->onUpdate             = config->get( "onUpdate", "" );
     clazz->onUse                = config->get( "onUse", "" );
 
-    if( !String::isEmpty( clazz->onCreate ) ) {
-      clazz->flags |= Object::LUA_BIT | Object::CREATE_FUNC_BIT;
-
-      // disable event handler if explicitly set to false
-      if( !config->get( "flag.createFunc", true ) ) {
-        clazz->flags &= ~Object::CREATE_FUNC_BIT;
-      }
-    }
     if( !String::isEmpty( clazz->onDestroy ) ) {
       clazz->flags |= Object::LUA_BIT | Object::DESTROY_FUNC_BIT;
 
@@ -123,15 +114,16 @@ namespace oz
 
     clazz->flags = 0;
 
-    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT, "flag.destroyFunc", true  );
-    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,  "flag.damageFunc",  false );
-    OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,     "flag.hitFunc",     false );
-    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,  "flag.updateFunc",  false );
-    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,     "flag.useFunc",     false );
-    OZ_CLASS_SET_FLAG( Object::CLIP_BIT,         "flag.clip",        true  );
-    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,      "flag.noDraw",      false );
-    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT, "flag.delayedDraw", false );
-    OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,    "flag.wideCull",    false );
+    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.destroyFunc",  true  );
+    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.damageFunc",   false );
+    OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.hitFunc",      false );
+    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.updateFunc",   false );
+    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",      false );
+    OZ_CLASS_SET_FLAG( Object::CLIP_BIT,           "flag.clip",         true  );
+    OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
+    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT,   "flag.delayedDraw",  false );
+    OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
+    OZ_CLASS_SET_FLAG( Object::WIDE_WIDE_CULL_BIT, "flag.wideWideCull", false );
 
     clazz->life                 = config->get( "life", 100.0f );
     clazz->damageThreshold      = config->get( "damageThreshold", 100.0f );

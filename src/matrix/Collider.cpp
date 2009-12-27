@@ -289,10 +289,11 @@ namespace oz
     float maxPosX = max( globalStartPos.x, globalEndPos.x );
     float maxPosY = max( globalStartPos.y, globalEndPos.y );
 
-    world.terra.getInters( minPosX, minPosY, maxPosX, maxPosY );
+    Area area;
+    world.terra.getInters( area, minPosX, minPosY, maxPosX, maxPosY );
 
-    for( int x = world.terra.minX; x <= world.terra.maxX; x++ ) {
-      for( int y = world.terra.minY; y <= world.terra.maxY; y++ ) {
+    for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int y = area.minY; y <= area.maxY; y++ ) {
         trimTerraQuad( x, y );
       }
     }

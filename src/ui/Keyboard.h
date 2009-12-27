@@ -1,5 +1,5 @@
 /*
- *  ui.cpp
+ *  Keyboard.h
  *
  *  [description]
  *
@@ -7,9 +7,7 @@
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
-#include "precompiled.h"
-
-#include "ui.h"
+#pragma once
 
 namespace oz
 {
@@ -18,7 +16,23 @@ namespace client
 namespace ui
 {
 
-  int taggedObj;
+  class Keyboard
+  {
+    private:
+
+      ubyte *currKeys;
+
+    public:
+
+      ubyte keys[SDLK_LAST];
+      ubyte oldKeys[SDLK_LAST];
+
+      void init();
+      void prepare();
+
+  };
+
+  extern Keyboard keyboard;
 
 }
 }

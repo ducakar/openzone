@@ -57,8 +57,13 @@ namespace nirvana
     if( ~bot->state & Bot::DEATH_BIT ) {
       const BotClass *clazz = static_cast<const BotClass*>( bot->type );
 
+      flags &= ~FORCE_UPDATE_BIT;
       bot->actions = 0;
       lua.call( clazz->mindFunction, bot );
+
+      if( lua.forceUpdate ) {
+        flags |= FORCE_UPDATE_BIT;
+      }
     }
   }
 

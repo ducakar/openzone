@@ -104,13 +104,11 @@ namespace client
 
   void Terrain::draw() const
   {
-    world.terra.getInters( camera.p.x - radius, camera.p.y - radius,
+    Area area;
+    world.terra.getInters( area, camera.p.x - radius, camera.p.y - radius,
                            camera.p.x + radius, camera.p.y + radius );
-
-    int minX = world.terra.minX;
-    int minY = world.terra.minY;
-    int maxX = world.terra.maxX + 1;
-    int maxY = world.terra.maxY + 1;
+    area.maxX++;
+    area.maxY++;
 
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, detailTexId );
@@ -132,9 +130,9 @@ namespace client
     glClientActiveTexture( GL_TEXTURE1 );
     glTexCoordPointer( 2, GL_FLOAT, 0, mapTexCoords );
 
-    for( int y = minY; y < maxY; y++ ) {
+    for( int y = area.minY; y < area.maxY; y++ ) {
       glBegin( GL_TRIANGLE_STRIP );
-      for( int x = minX; x <= maxX; x++ ) {
+      for( int x = area.minX; x <= area.maxX; x++ ) {
         glArrayElement( x * oz::Terrain::MAX + y + 1 );
         glArrayElement( x * oz::Terrain::MAX + y     );
       }
@@ -152,18 +150,16 @@ namespace client
 
   void Terrain::drawWater() const
   {
-    world.terra.getInters( camera.p.x - radius, camera.p.y - radius,
+    Area area;
+    world.terra.getInters( area, camera.p.x - radius, camera.p.y - radius,
                            camera.p.x + radius, camera.p.y + radius );
-
-    int minX = world.terra.minX;
-    int minY = world.terra.minY;
-    int maxX = world.terra.maxX + 1;
-    int maxY = world.terra.maxY + 1;
+    area.maxX++;
+    area.maxY++;
 
     glBindTexture( GL_TEXTURE_2D, waterTexId );
 
-    const Vec3 &v0 = world.terra.vertices[minX][minY];
-    const Vec3 &v1 = world.terra.vertices[maxX][maxY];
+    const Vec3 &v0 = world.terra.vertices[area.minX][area.minY];
+    const Vec3 &v1 = world.terra.vertices[area.maxX][area.maxY];
 
     if( camera.p.z >= 0 ) {
       glNormal3f( 0.0f, 0.0f, 1.0f );
@@ -171,30 +167,30 @@ namespace client
       glBegin( GL_QUADS );
         glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
 
-        glTexCoord2f( minX * WATER_SCALE, minY * WATER_SCALE );
+        glTexCoord2f( area.minX * WATER_SCALE, area.minY * WATER_SCALE );
         glVertex3f( v0.x, v0.y, 0.0f );
 
-        glTexCoord2f( maxX * WATER_SCALE, minY * WATER_SCALE );
+        glTexCoord2f( area.maxX * WATER_SCALE, area.minY * WATER_SCALE );
         glVertex3f( v1.x, v0.y, 0.0f );
 
-        glTexCoord2f( maxX * WATER_SCALE, maxY * WATER_SCALE );
+        glTexCoord2f( area.maxX * WATER_SCALE, area.maxY * WATER_SCALE );
         glVertex3f( v1.x, v1.y, 0.0f );
 
-        glTexCoord2f( minX * WATER_SCALE, maxY * WATER_SCALE );
+        glTexCoord2f( area.minX * WATER_SCALE, area.maxY * WATER_SCALE );
         glVertex3f( v0.x, v1.y, 0.0f );
 
         glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
 
-        glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
+        glTexCoord2f( area.minX * WATER_SCALE + Water::TEX_BIAS, area.minY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v0.x, v0.y, 0.0f );
 
-        glTexCoord2f( maxX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
+        glTexCoord2f( area.maxX * WATER_SCALE + Water::TEX_BIAS, area.minY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v1.x, v0.y, 0.0f );
 
-        glTexCoord2f( maxX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
+        glTexCoord2f( area.maxX * WATER_SCALE + Water::TEX_BIAS, area.maxY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v1.x, v1.y, 0.0f );
 
-        glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
+        glTexCoord2f( area.minX * WATER_SCALE + Water::TEX_BIAS, area.maxY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v0.x, v1.y, 0.0f );
       glEnd();
     }
@@ -204,30 +200,30 @@ namespace client
       glBegin( GL_QUADS );
         glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
 
-        glTexCoord2f( minX * WATER_SCALE, maxY * WATER_SCALE );
+        glTexCoord2f( area.minX * WATER_SCALE, area.maxY * WATER_SCALE );
         glVertex3f( v0.x, v1.y, 0.0f );
 
-        glTexCoord2f( maxX * WATER_SCALE, maxY * WATER_SCALE );
+        glTexCoord2f( area.maxX * WATER_SCALE, area.maxY * WATER_SCALE );
         glVertex3f( v1.x, v1.y, 0.0f );
 
-        glTexCoord2f( maxX * WATER_SCALE, minY * WATER_SCALE );
+        glTexCoord2f( area.maxX * WATER_SCALE, area.minY * WATER_SCALE );
         glVertex3f( v1.x, v0.y, 0.0f );
 
-        glTexCoord2f( minX * WATER_SCALE, minY * WATER_SCALE );
+        glTexCoord2f( area.minX * WATER_SCALE, area.minY * WATER_SCALE );
         glVertex3f( v0.x, v0.y, 0.0f );
 
         glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
 
-        glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
+        glTexCoord2f( area.minX * WATER_SCALE + Water::TEX_BIAS, area.maxY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v0.x, v1.y, 0.0f );
 
-        glTexCoord2f( maxX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
+        glTexCoord2f( area.maxX * WATER_SCALE + Water::TEX_BIAS, area.maxY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v1.x, v1.y, 0.0f );
 
-        glTexCoord2f( maxX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
+        glTexCoord2f( area.maxX * WATER_SCALE + Water::TEX_BIAS, area.minY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v1.x, v0.y, 0.0f );
 
-        glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
+        glTexCoord2f( area.minX * WATER_SCALE + Water::TEX_BIAS, area.minY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v0.x, v0.y, 0.0f );
       glEnd();
     }

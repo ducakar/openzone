@@ -11,6 +11,8 @@
 
 #include "UI.h"
 
+#include "client/Camera.h"
+
 #include <GL/glu.h>
 
 namespace oz
@@ -22,15 +24,15 @@ namespace ui
 
   UI ui;
 
-  void UI::init( int screenX, int screenY )
+  void UI::init()
   {
-    mouse.init( screenX, screenY );
+    mouse.init( camera.width, camera.height );
 
     if( !font.init() ) {
       throw Exception( "Failed to load font" );
     }
 
-    hud = new HudArea( screenX, screenY );
+    hud = new HudArea( camera.width, camera.height );
   }
 
   void UI::free()

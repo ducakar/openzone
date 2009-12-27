@@ -43,9 +43,11 @@ namespace ui
   {
     Frame::onMouseEvent();
 
-    if( camera.botIndex == -1 ) {
+    if( camera.bot == -1 ) {
       return;
     }
+
+    Bot *bot = static_cast<Bot*>( world.objects[camera.bot] );
 
     taggedIndex = -1;
 
@@ -60,12 +62,12 @@ namespace ui
         taggedIndex = row * COLS + i;
 
         if( mouse.rightClick ) {
-          camera.bot->taggedItem = taggedIndex;
-          camera.bot->actions |= Bot::ACTION_INV_USE;
+          bot->taggedItem = taggedIndex;
+          bot->actions |= Bot::ACTION_INV_USE;
         }
         else if( mouse.middleClick ) {
-          camera.bot->taggedItem = taggedIndex;
-          camera.bot->actions |= Bot::ACTION_INV_GRAB;
+          bot->taggedItem = taggedIndex;
+          bot->actions |= Bot::ACTION_INV_GRAB;
 
           mouse.doShow = false;
         }
@@ -81,13 +83,13 @@ namespace ui
     }
 
     // works fine if there's no items (then nRows == 1)
-    int nRows = ( camera.bot->items.length() - 1 ) / COLS + 1;
+    int nRows = ( bot->items.length() - 1 ) / COLS + 1;
     row = ( row + nRows ) % nRows;
   }
 
   void InventoryMenu::onDraw()
   {
-    if( !mouse.doShow || camera.bot == null ) {
+    if( !mouse.doShow || camera.bot == -1 ) {
       taggedIndex = -1;
       row = 0;
       return;
@@ -105,7 +107,7 @@ namespace ui
     glTranslatef( x + SLOT_SIZE / 2, y + SLOT_SIZE / 2 + FOOTER_SIZE, 0.0f );
     glTranslatef( COLS * SLOT_SIZE, ROWS * SLOT_SIZE, 0.0f );
 
-    const Vector<int> &items = camera.bot->items;
+    const Vector<int> &items = camera.botObj->items;
 
     int minIndex = row * COLS;
     int maxIndex = min( minIndex + COLS * ROWS, items.length() );

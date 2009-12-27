@@ -10,6 +10,9 @@
 #pragma once
 
 #include "matrix/Matrix.h"
+#include "FreeCamProxy.h"
+#include "StrategicProxy.h"
+#include "BotProxy.h"
 
 namespace oz
 {
@@ -18,24 +21,42 @@ namespace client
 
   class Camera
   {
+    public:
+
+      enum State
+      {
+        FREECAM,
+        STRATEGIC,
+        INTERNAL,
+        EXTERNAL
+      };
+
     private:
 
-      // leave this much space between obstacle and camera, if camera is brought closer to the eyes
-      // because of an obstacle
-      static const float THIRD_PERSON_CLIP_DIST = 0.20f;
-      static const float BOB_SUPPRESSION_COEF   = 0.80f;
-
+      float mouseXSens;
+      float mouseYSens;
+      float keyXSens;
+      float keyYSens;
       float smoothCoef;
       float smoothCoef_1;
+
+      Vec3  newP;
+      Vec3  oldP;
+
+      static FreeCamProxy   freeCamProxy;
+      static StrategicProxy strategicProxy;
+      static BotProxy       botProxy;
+
+      Proxy *proxy;
 
     public:
 
       Vec3  p;
-      Vec3  oldP;
 
       // relative to the object the camera is bound to
       float h;
       float v;
+      float w;
 
       Quat  relRot;
       Quat  rot;
@@ -48,20 +69,73 @@ namespace client
       Vec3  at;
       Vec3  up;
 
-      int   botIndex;
-      Bot   *bot;
-      // how far behind the eyes the camera should be
-      float externalDistFactor;
+      int   tagged;
+      const Object *taggedObj;
 
-      float bobPhi;
-      float bobTheta;
-      float bobBias;
+      int   bot;
+      const Bot *botObj;
+
+      State state;
+
+      int   width;
+      int   height;
+      int   centerX;
+      int   centerY;
+
+      float angle;
+      float aspect;
+      float minDist;
+      float maxDist;
 
       bool  isExternal;
-      bool  isFreeLook;
+      bool  fastMove;
+
+      void setState( State state );
+
+      void setTagged( const Object *obj )
+      {
+        tagged    = obj == null ? -1 : obj->index;
+        taggedObj = obj;
+      }
+
+      void setBot( const Bot *bot_ )
+      {
+        bot    = bot_ == null ? -1 : bot_->index;
+        botObj = bot_;
+
+        assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
+      }
+
+      void move( const Vec3 &pos )
+      {
+        p    = pos * smoothCoef_1 + oldP * smoothCoef;
+        newP = pos;
+        oldP = p;
+      }
+
+      void wrapMoveZ( const Vec3 &pos )
+      {
+        p.x  = pos.x;
+        p.y  = pos.y;
+        p.z  = pos.z * smoothCoef_1 + oldP.z * smoothCoef;
+        newP = pos;
+        oldP = p;
+      }
+
+      void warp( const Vec3 &pos )
+      {
+        oldP = pos;
+        newP = pos;
+        p    = pos;
+      }
+
+      void align();
+
+      void update();
+      void prepare();
 
       void init();
-      void update();
+
   };
 
   extern Camera camera;

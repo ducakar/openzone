@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "ui.h"
-
 namespace oz
 {
 namespace client
@@ -44,21 +42,21 @@ namespace ui
 
       Cursor cursors[MAX];
 
-      int    maxX;
-      int    maxY;
-
     public:
 
-      // read-write
-      int    moveX;
-      int    moveY;
-      byte   persButtons;
-      byte   currButtons;
+      int    maxX;
+      int    maxY;
+      int    centerX;
+      int    centerY;
 
-      // read-only
       int    x;
       int    y;
-      byte   b;
+      int    relX;
+      int    relY;
+
+      ubyte  buttons;
+      ubyte  oldButtons;
+      ubyte  currButtons;
 
       int    overEdgeX;
       int    overEdgeY;
@@ -79,7 +77,9 @@ namespace ui
       void   show();
       void   hide();
 
+      void   prepare();
       void   update();
+
       void   draw() const;
 
   };

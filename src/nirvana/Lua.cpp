@@ -45,6 +45,12 @@ namespace nirvana
     throw Exception( message );
   }
 
+  static int ozForceUpdate( lua_State* )
+  {
+    lua.forceUpdate = true;
+    return 0;
+  }
+
   static int ozBindAllOverlaps( lua_State *l )
   {
     AABB aabb = AABB( Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) ),
@@ -955,6 +961,7 @@ namespace nirvana
 
     OZ_LUA_FUNCTION( ozPrintln );
     OZ_LUA_FUNCTION( ozException );
+    OZ_LUA_FUNCTION( ozForceUpdate );
 
     OZ_LUA_FUNCTION( ozBindAllOverlaps );
     OZ_LUA_FUNCTION( ozBindStrOverlaps );

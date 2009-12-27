@@ -44,6 +44,7 @@
 /*
  * Memory managment
  */
+#include "Alloc.h"
 #include "Pool.h"
 #include "PoolAlloc.h"
 #include "ReuseAlloc.h"

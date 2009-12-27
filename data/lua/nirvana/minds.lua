@@ -82,57 +82,8 @@ function predator( localData )
   else
     ozSelfStateSetRunning( false )
     if math.random( 100 ) == 1 then
-      ozSelfAddH( math.random( 3 ) - 60 )
+      ozSelfAddH( math.random( 120 ) - 60 )
     end
   end
   ozSelfActionForward()
-end
-
-function droidDestroyer( l )
-  if not l.target then
-    print( "looking for target ..." )
-    local minDistance = 100
-    ozSelfBindObjOverlaps( 30, 30, 30 )
-    while ozObjBindNext() do
-      if ozObjIsBot() and not ozObjIsSelf() and ozObjGetTypeName() ~= "Droid" then
-	local distance = ozObjDistanceFromSelf()
-	if distance < minDistance then
-	  l.target = ozObjGetIndex()
-	  minDistance = distance
-
-	  print( "new target:" .. ozObjGetTypeName() )
-	end
-      end
-    end
-  end
-  if not l.target then
-    if math.random( 10 ) == 1 then
-      print( "changing direction" )
-      ozSelfAddH( math.random( 120 ) - 60 )
-    end
-    ozSelfActionForward()
-    ozSelfStateSetRunning( false )
-  else
-    print( "following target ..." )
-    ozObjBindIndex( l.target )
-    if not ozObjIsNull() and ozObjIsBot() then
-      local distance = ozObjDistanceFromSelf()
-
-      if distance < 40 then
-        ozSelfSetH( ozObjHeadingFromSelf() )
-        ozSelfSetV( ozObjPitchFromSelfEye() )
-
-	if distance < 15 then
-	  ozSelfActionAttack()
-	else
-	  ozSelfStateSetRunning( true )
-	  ozSelfActionForward()
-	end
-      else
-	l.target = nil
-      end
-    else
-      l.target = nil
-    end
-  end
 end

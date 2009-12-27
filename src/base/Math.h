@@ -20,8 +20,6 @@ namespace oz
       Math() {}
       Math( const Math& );
 
-      static const Math math;
-
     public:
 
       static const float FLOAT_EPS  = 1.1920928955078125e-7f;

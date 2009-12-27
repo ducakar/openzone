@@ -54,9 +54,6 @@ namespace oz
       // if object has Lua handlers
       static const int LUA_BIT            = 0x04000000;
 
-      // if the onCreate function should be called when object is added into world
-      static const int CREATE_FUNC_BIT    = 0x02000000;
-
       // if the onDestroy function should be called on destruction
       static const int DESTROY_FUNC_BIT   = 0x01000000;
 
@@ -154,6 +151,9 @@ namespace oz
       // system than it really is;
       // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR (default 5.0f)
       static const int WIDE_CULL_BIT      = 0x00000002;
+
+      // event more culling
+      static const int WIDE_WIDE_CULL_BIT = 0x00000003;
 
       /*
        * STANDARD EVENT IDs
@@ -316,7 +316,6 @@ namespace oz
 
     protected:
 
-      virtual void onCreate();
       virtual void onDestroy();
       virtual void onDamage( float damage );
       virtual void onHit( const Hit *hit, float momentum );

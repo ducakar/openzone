@@ -153,7 +153,7 @@ namespace oz
   }
 
   /**
-   * Call delete on array elements (that have been previously allocated with the new call).
+   * Call delete on each element of an array of pointers.
    * @param aDest pointer to the first element in the array
    * @param count number of elements
    */
@@ -162,6 +162,20 @@ namespace oz
   {
     for( int i = 0; i < count; i++ ) {
       delete aDest[i];
+    }
+  }
+
+  /**
+   * Call delete on each element of an array of pointers and set all elements to null.
+   * @param aDest pointer to the first element in the array
+   * @param count number of elements
+   */
+  template <class Type>
+  inline void aFreeAndClear( const Type *aDest, int count )
+  {
+    for( int i = 0; i < count; i++ ) {
+      delete aDest[i];
+      aDest[i] = null;
     }
   }
 

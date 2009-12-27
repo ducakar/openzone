@@ -15,6 +15,8 @@
 //#define OZ_LOG_FILE            "client.log"
 #define OZ_CONFIG_FILE         "client.rc"
 
+#include "Stage.h"
+
 namespace oz
 {
 namespace client
@@ -34,7 +36,8 @@ namespace client
       static const int INIT_RENDER_LOAD = 0x080;
       static const int INIT_GAME_START  = 0x100;
 
-      int initFlags;
+      Stage *stage;
+      int   initFlags;
 
     public:
 

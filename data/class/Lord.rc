@@ -54,8 +54,3 @@ throwMomentum "10.0"
 staminaWaterDrain "0.07"
 staminaRunDrain "0.07"
 staminaJumpDrain "3.0"
-
-lookLimitHMin "-135.0"
-lookLimitHMax "135.0"
-lookLimitVMmin "-45.0"
-lookLimitVMmax "45.0"

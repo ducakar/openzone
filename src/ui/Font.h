@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "ui.h"
-
 #include <SDL_ttf.h>
 
 namespace oz

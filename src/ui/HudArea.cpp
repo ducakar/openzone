@@ -61,16 +61,11 @@ namespace ui
 
   void HudArea::onDraw()
   {
-    // tagged object pointer
-    Object *obj = null;
-
-    if( taggedObj != -1 ) {
-      obj = world.objects[taggedObj];
-
-      const ObjectClass *clazz = obj->type;
-      float life = ( obj->flags & Object::BOT_BIT ) ?
-          ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
-          obj->life / clazz->life;
+    if( camera.tagged != -1 ) {
+      const ObjectClass *clazz = camera.taggedObj->type;
+      float life = ( camera.taggedObj->flags & Object::BOT_BIT ) ?
+          ( camera.taggedObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
+          camera.taggedObj->life / clazz->life;
       int lifeWidth = life * ( ICON_SIZE + 14 );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
@@ -85,12 +80,12 @@ namespace ui
       printCentered( descTextX + 0, descTextY + 0, clazz->description.cstr() );
     }
 
-    if( camera.botIndex != -1 ) {
-      const BotClass *clazz = static_cast<const BotClass*>( camera.bot->type );
+    if( camera.bot != -1 ) {
+      const BotClass *clazz = static_cast<const BotClass*>( camera.botObj->type );
 
-      float life         = ( camera.bot->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
+      float life         = ( camera.botObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
       int   lifeWidth    = max<int>( life * 188.0f, 0 );
-      float stamina      = camera.bot->stamina / clazz->stamina;
+      float stamina      = camera.botObj->stamina / clazz->stamina;
       int   staminaWidth = max<int>( stamina * 188.0f, 0 );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
@@ -102,9 +97,10 @@ namespace ui
       rect( -200, 34, 190, 16 );
       rect( -200, 10, 190, 16 );
 
+      glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
       glEnable( GL_TEXTURE_2D );
 
-      if( !camera.isExternal ) {
+      if( camera.state != Camera::EXTERNAL ) {
         glBindTexture( GL_TEXTURE_2D, crossTexId );
         glBegin( GL_QUADS );
           glTexCoord2i( 0, 1 );
@@ -118,9 +114,9 @@ namespace ui
         glEnd();
       }
 
-      if( camera.bot->parent == -1 ) {
-        if( obj != null ) {
-          if( obj->flags & Object::VEHICLE_BIT ) {
+      if( camera.botObj->parent == -1 ) {
+        if( camera.tagged != -1 ) {
+          if( camera.taggedObj->flags & Object::VEHICLE_BIT ) {
             glBindTexture( GL_TEXTURE_2D, mountTexId );
             glBegin( GL_QUADS );
               glTexCoord2i( 0, 1 );
@@ -134,7 +130,7 @@ namespace ui
             glEnd();
           }
           else {
-            if( obj->flags & Object::USE_FUNC_BIT ) {
+            if( camera.taggedObj->flags & Object::USE_FUNC_BIT ) {
               glBindTexture( GL_TEXTURE_2D, useTexId );
               glBegin( GL_QUADS );
                 glTexCoord2i( 0, 1 );
@@ -147,7 +143,7 @@ namespace ui
                 glVertex2i( useIconX, useIconY + ICON_SIZE );
               glEnd();
             }
-            if( obj->flags & Object::ITEM_BIT ) {
+            if( camera.taggedObj->flags & Object::ITEM_BIT ) {
               glBindTexture( GL_TEXTURE_2D, takeTexId );
               glBegin( GL_QUADS );
                 glTexCoord2i( 0, 1 );
@@ -163,7 +159,7 @@ namespace ui
           }
         }
 
-        if( camera.bot->grabObj != -1 ) {
+        if( camera.botObj->grabObj != -1 ) {
           glBindTexture( GL_TEXTURE_2D, grabTexId );
           glBegin( GL_QUADS );
             glTexCoord2i( 0, 1 );
@@ -180,12 +176,9 @@ namespace ui
 
       glDisable( GL_TEXTURE_2D );
     }
-    else {
+    else if( camera.state != Camera::STRATEGIC ) {
+      glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
       glEnable( GL_TEXTURE_2D );
-
-      if( taggedObj == -1 ) {
-        glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
-      }
 
       glBindTexture( GL_TEXTURE_2D, crossTexId );
       glBegin( GL_QUADS );

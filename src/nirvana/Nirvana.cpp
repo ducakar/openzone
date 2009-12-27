@@ -80,12 +80,12 @@ namespace nirvana
         uint timeBegin = SDL_GetTicks();
 
         // FIXME freezes on Windows, works fine on Wine?
-#ifndef OZ_MINGW32
+//#ifndef OZ_MINGW32
         nirvana.sync();
 
         // update minds
         nirvana.update();
-#endif
+//#endif
 
         // notify matrix it can proceed changing the world
         SDL_SemPost( matrix.semaphore );

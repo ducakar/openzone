@@ -21,6 +21,8 @@ namespace client
   {
     private:
 
+      float fovX, fovY;
+      float sx, cx, sy, cy;
       Vec3  nLeft0, nRight0, nDown0, nUp0;
       Vec3  nLeft, nRight, nDown, nUp, nFront;
       float dLeft, dRight, dDown, dUp, dFront;
@@ -39,7 +41,7 @@ namespace client
       int maxY;
 
       void init( float fovY, float aspect, float maxDistance );
-      void update();
+      void update( float maxDistance );
 
       bool isVisible( const Vec3 &p )
       {

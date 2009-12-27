@@ -16,8 +16,6 @@
 namespace oz
 {
 
-  const Math Math::math;
-
   void Math::seed( uint seed )
   {
     srand( seed );

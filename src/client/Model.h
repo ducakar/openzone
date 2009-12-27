@@ -22,14 +22,17 @@ namespace client
 
       typedef Model *( *CreateFunc )( const Object *object );
 
+      static const int UPDATED_BIT  = 0x00000001;
+      static const int MD2MODEL_BIT = 0x00000002;
+
     protected:
 
-      Model() : obj( null ), isUpdated( false ) {}
+      Model() : obj( null ), flags( 0 ) {}
 
     public:
 
       const Object *obj;
-      bint         isUpdated;
+      int flags;
 
       virtual ~Model();
 

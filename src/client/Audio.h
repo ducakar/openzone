@@ -20,9 +20,13 @@ namespace client
   {
     friend class List<Audio, 0>;
 
+    public:
+
+      static const int   UPDATED_BIT = 0x00000001;
+
     protected:
 
-      static const float REFERENCE_DISTANCE;
+      static const float REFERENCE_DISTANCE = 4.0f;
 
     public:
 
@@ -44,7 +48,7 @@ namespace client
     public:
 
       const Object *obj;
-      bint  isUpdated;
+      int flags;
 
       virtual ~Audio();
 

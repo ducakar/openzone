@@ -66,15 +66,19 @@ namespace client
       }
       bool isVisible =
           ( obj->flags & Object::WIDE_CULL_BIT ) ?
-          frustum.isVisible( *obj * RELEASED_CULL_FACTOR ) :
-          frustum.isVisible( *obj );
+          ( obj->flags & Object::WIDE_WIDE_CULL_BIT ) ?
+              frustum.isVisible( *obj * WIDE_WIDE_CULL_FACTOR ) :
+              frustum.isVisible( *obj * WIDE_CULL_FACTOR ) :
+              frustum.isVisible( *obj );
 
       if( isVisible ) {
+        ObjectEntry entry( ( obj->p - camera.p ).sqL(), obj );
+
         if( obj->flags & Object::DELAYED_DRAW_BIT ) {
-          delayedObjects << ObjectEntry( ( obj->p - camera.p ).sqL(), obj );
+          delayedObjects << entry;
         }
         else {
-          objects << ObjectEntry( ( obj->p - camera.p ).sqL(), obj );
+          objects << entry;
         }
       }
     }
@@ -86,81 +90,10 @@ namespace client
     }
   }
 
-  void Render::sync()
+  void Render::drawWorld()
   {
-    for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
-      Model *model = i.value();
-      uint  key    = i.key();
-      ++i;
-
-      if( world.objects[key] == null ) {
-        delete model;
-        models.remove( key );
-      }
-    }
-  }
-
-  void Render::update()
-  {
+    // FIXME: prvi frame terrain map texture ni renderirana, voda samo en textura, neprozorna
     assert( glGetError() == GL_NO_ERROR );
-
-    // frustum
-    frustum.update();
-    frustum.getExtrems( camera.p );
-
-    sky.update();
-
-    // drawnStructures
-    if( drawnStructures.length() != world.structures.length() ) {
-      drawnStructures.setSize( world.structures.length() );
-    }
-    drawnStructures.clearAll();
-
-    // highlight the object the camera is looking at
-    taggedObj = -1;
-    if( camera.bot == null ) {
-      collider.translate( camera.p, camera.at * 2.0f );
-      taggedObj = collider.hit.obj == null ? -1 : collider.hit.obj->index;
-    }
-    else if( camera.bot->grabObj != -1 && world.objects[camera.bot->grabObj] != null ) {
-      taggedObj = camera.bot->grabObj;
-    }
-    else {
-      // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
-      float hvsc[6];
-
-      Math::sincos( Math::rad( camera.bot->h ), &hvsc[0], &hvsc[1] );
-      Math::sincos( Math::rad( camera.bot->v ), &hvsc[2], &hvsc[3] );
-
-      hvsc[4] = hvsc[3] * hvsc[0];
-      hvsc[5] = hvsc[3] * hvsc[1];
-
-      Vec3 at = Vec3( -hvsc[4], hvsc[5], hvsc[2] );
-
-      float distance = static_cast<const BotClass*>( camera.bot->type )->grabDistance;
-      collider.translate( camera.bot->p + Vec3( 0.0f, 0.0f, camera.bot->camZ ),
-                          at * distance,
-                          camera.bot );
-      taggedObj = collider.hit.obj == null ? -1 : collider.hit.obj->index;
-    }
-
-    float minXCenter = static_cast<float>( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
-        Cell::SIZE / 2.0f;
-    float minYCenter = static_cast<float>( ( frustum.minY - World::MAX / 2 ) * Cell::SIZE ) +
-        Cell::SIZE / 2.0f;
-
-    float x = minXCenter;
-    for( int i = frustum.minX; i <= frustum.maxX; i++, x += Cell::SIZE ) {
-      float y = minYCenter;
-
-      for( int j = frustum.minY; j <= frustum.maxY; j++, y += Cell::SIZE ) {
-        if( frustum.isVisible( x, y, Cell::RADIUS ) ) {
-          scheduleCell( i, j );
-        }
-      }
-    }
-
-    // BEGIN RENDER
 
     // clear color, visibility, fog
     if( isUnderWater ) {
@@ -178,13 +111,41 @@ namespace client
       glFogf( GL_FOG_END, visibility );
     }
 
+    // frustum
+    frustum.update( visibility );
+    frustum.getExtrems( camera.p );
+
+    sky.update();
+
+    // drawnStructures
+    if( drawnStructures.length() != world.structures.length() ) {
+      drawnStructures.setSize( world.structures.length() );
+    }
+    drawnStructures.clearAll();
+
+    float minXCenter = static_cast<float>( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
+        Cell::SIZE / 2.0f;
+    float minYCenter = static_cast<float>( ( frustum.minY - World::MAX / 2 ) * Cell::SIZE ) +
+        Cell::SIZE / 2.0f;
+
+    float x = minXCenter;
+    for( int i = frustum.minX; i <= frustum.maxX; i++, x += Cell::SIZE ) {
+      float y = minYCenter;
+
+      for( int j = frustum.minY; j <= frustum.maxY; j++, y += Cell::SIZE ) {
+        if( frustum.isVisible( x, y, Cell::RADIUS ) ) {
+          scheduleCell( i, j );
+        }
+      }
+    }
+
     // clear buffer
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
     // camera transformation
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-    gluPerspective( perspectiveAngle, perspectiveAspect, perspectiveMin, visibility );
+    gluPerspective( camera.angle, camera.aspect, camera.minDist, visibility );
 
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
@@ -207,12 +168,6 @@ namespace client
     glEnable( GL_FOG );
     glEnable( GL_LIGHTING );
     glDisable( GL_BLEND );
-
-    glActiveTexture( GL_TEXTURE0 );
-    glEnable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE1 );
-    glEnable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE0 );
 
     wasUnderWater = isUnderWater;
     isUnderWater  = camera.p.z < 0.0f;
@@ -254,7 +209,7 @@ namespace client
     for( int i = 0; i < objects.length(); i++ ) {
       const Object *obj = objects[i].obj;
 
-      if( obj->index == taggedObj ) {
+      if( obj->index == camera.tagged ) {
         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
       }
 
@@ -265,7 +220,7 @@ namespace client
 
       glPopMatrix();
 
-      if( obj->index == taggedObj ) {
+      if( obj->index == camera.tagged ) {
         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::BLACK );
       }
     }
@@ -301,7 +256,7 @@ namespace client
     for( int i = 0; i < delayedObjects.length(); i++ ) {
       const Object *obj = delayedObjects[i].obj;
 
-      if( obj->index == taggedObj ) {
+      if( obj->index == camera.tagged ) {
         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
       }
 
@@ -312,7 +267,7 @@ namespace client
 
       glPopMatrix();
 
-      if( obj->index == taggedObj ) {
+      if( obj->index == camera.tagged ) {
         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::BLACK );
       }
     }
@@ -336,9 +291,8 @@ namespace client
 
     water.update();
 
-    glEnable( GL_COLOR_MATERIAL );
-
     if( drawAABBs ) {
+      glEnable( GL_COLOR_MATERIAL );
       glDisable( GL_LIGHTING );
       glDisable( GL_TEXTURE_2D );
       glEnable( GL_BLEND );
@@ -352,9 +306,8 @@ namespace client
       glColor4fv( Colors::WHITE );
       glEnable( GL_LIGHTING );
       glEnable( GL_TEXTURE_2D );
+      glDisable( GL_COLOR_MATERIAL );
     }
-
-    glDisable( GL_COLOR_MATERIAL );
 
     objects.clear();
     delayedObjects.clear();
@@ -365,7 +318,7 @@ namespace client
 
     if( showAim ) {
       Vec3 move = camera.at * 32.0f;
-      collider.translate( camera.p, move, camera.bot );
+      collider.translate( camera.p, move, camera.botObj );
       move *= collider.hit.ratio;
 
       glColor3f( 0.0f, 1.0f, 0.0f );
@@ -375,11 +328,15 @@ namespace client
     glDisable( GL_DEPTH_TEST );
     glColor4fv( Colors::WHITE );
 
-    ui::taggedObj = taggedObj;
+    assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void Render::drawCommon()
+  {
     ui::ui.draw();
 
     if( doScreenshot ) {
-      uint *pixels = new uint[screenX * screenY * 4];
+      uint *pixels = new uint[camera.width * camera.height * 4];
       char fileName[1024];
       time_t ct;
       struct tm t;
@@ -392,13 +349,15 @@ namespace client
                 1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
       fileName[1023] = '\0';
 
-      glReadPixels( 0, 0, screenX, screenY, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
-      SDL_Surface *surf = SDL_CreateRGBSurfaceFrom( pixels, screenX, screenY, 32, screenX * 4,
+      glReadPixels( 0, 0, camera.width, camera.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+      SDL_Surface *surf = SDL_CreateRGBSurfaceFrom( pixels, camera.width, camera.height, 32,
+                                                    camera.width * 4,
                                                     0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
       // flip image
-      for( int i = 0; i < screenY / 2; i++ ) {
-        for( int j = 0; j < screenX; j++ ) {
-          swap( pixels[i * screenX + j], pixels[( screenY - i - 1 ) * screenX + j] );
+      for( int i = 0; i < camera.height / 2; i++ ) {
+        for( int j = 0; j < camera.width; j++ ) {
+          swap( pixels[i * camera.width + j],
+                pixels[( camera.height - i - 1 ) * camera.width + j] );
         }
       }
       SDL_SaveBMP( surf, fileName );
@@ -409,8 +368,6 @@ namespace client
     }
 
     SDL_GL_SwapBuffers();
-
-    assert( glGetError() == GL_NO_ERROR );
 
     // cleanups
     if( clearCount >= CLEAR_INTERVAL ) {
@@ -434,8 +391,8 @@ namespace client
         // we should advance now, so that we don't remove the element the iterator is pointing at
         ++i;
 
-        if( model->isUpdated ) {
-          model->isUpdated = false;
+        if( model->flags & Model::UPDATED_BIT ) {
+          model->flags &= ~Model::UPDATED_BIT;
         }
         else {
           models.remove( key );
@@ -447,6 +404,26 @@ namespace client
     else {
       clearCount += timer.frameMillis;
     }
+  }
+
+  void Render::sync()
+  {
+    for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
+      Model *model = i.value();
+      uint  key    = i.key();
+      ++i;
+
+      if( world.objects[key] == null ) {
+        delete model;
+        models.remove( key );
+      }
+    }
+  }
+
+  void Render::update()
+  {
+    drawWorld();
+    drawCommon();
   }
 
   void Render::init()
@@ -478,31 +455,14 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    screenX = config.getSet( "screen.width", 1024 );
-    screenY = config.getSet( "screen.height", 768 );
-
-    perspectiveAngle  = config.getSet( "render.perspective.angle", 80.0f );
-    perspectiveAspect = config.getSet( "render.perspective.aspect", 0.0f );
-    perspectiveMin    = config.getSet( "render.perspective.min", 0.1f );
-    perspectiveMax    = config.getSet( "render.perspective.max", 400.0f );
-
-    if( perspectiveAspect == 0.0 ) {
-      perspectiveAspect = static_cast<double>( screenX ) / static_cast<double>( screenY );
-    }
-
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho( 0.0, screenX, 0.0, screenY, 0.0, 1.0 );
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
-
     glEnable( GL_TEXTURE_2D );
     glDepthFunc( GL_LEQUAL );
 
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-    ui::ui.init( screenX, screenY );
+    camera.init();
+    ui::ui.init();
     ui::ui.hud->add( new ui::DebugArea() );
     ui::ui.hud->add( new ui::BuildMenu(), -1, -1 );
     ui::ui.hud->add( new ui::InventoryMenu(), 0, 0 );
@@ -541,8 +501,7 @@ namespace client
     drawAABBs            = config.getSet( "render.drawAABBs",            false );
     showAim              = config.getSet( "render.showAim",              false );
 
-    camera.init();
-    frustum.init( perspectiveAngle, perspectiveAspect, perspectiveMax );
+    frustum.init( camera.angle, camera.aspect, camera.maxDist );
     water.init();
     shape.load();
     sky.load();
@@ -553,11 +512,8 @@ namespace client
       bsps << null;
     }
 
-    glColor4fv( Colors::WHITE );
-    glDisable( GL_TEXTURE_2D );
-
     glEnable( GL_POINT_SMOOTH );
-    glPointSize( screenY * STAR_SIZE );
+    glPointSize( camera.height * STAR_SIZE );
 
     // fog
     glFogi( GL_FOG_MODE, GL_LINEAR );
@@ -567,8 +523,8 @@ namespace client
     glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
     glLightModelfv( GL_LIGHT_MODEL_AMBIENT, Colors::GLOBAL_AMBIENT );
-    glColorMaterial( GL_FRONT, GL_AMBIENT_AND_DIFFUSE );
-
+    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
     glEnable( GL_LIGHT0 );
 
     log.unindent();

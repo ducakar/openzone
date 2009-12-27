@@ -5,6 +5,7 @@ include( CheckLibraryExists )
 project( openzone C CXX )
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
+option( OZ_ALLOC "Overloaded new and delete to count allocated memory" OFF )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 
 # compiler and linker flags
