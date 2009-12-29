@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -26,7 +26,7 @@ namespace oz
     Vec3(  0.0f,  0.0f, -1.0f )
   };
 
-  inline Vec3 Collider::toStructCS( const Vec3 &v ) const
+  inline Vec3 Collider::toStructCS( const Vec3& v ) const
   {
     switch( str->rot ) {
       case Structure::R0: {
@@ -45,7 +45,7 @@ namespace oz
     }
   }
 
-  inline Vec3 Collider::toAbsoluteCS( const Vec3 &v ) const
+  inline Vec3 Collider::toAbsoluteCS( const Vec3& v ) const
   {
     switch( str->rot ) {
       case Structure::R0: {
@@ -69,10 +69,10 @@ namespace oz
   //***********************************
 
   // checks if AABB and Brush overlap
-  bool Collider::testPointBrush( const BSP::Brush *brush ) const
+  bool Collider::testPointBrush( const BSP::Brush* brush ) const
   {
     for( int i = 0; i < brush->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float dist = globalStartPos * plane.normal - plane.distance;
 
@@ -87,10 +87,10 @@ namespace oz
   bool Collider::testPointNode( int nodeIndex ) const
   {
     if( nodeIndex < 0 ) {
-      BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
 
       for( int i = 0; i < leaf.nBrushes; i++ ) {
-        BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
+        BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
         if( ( brush.material & Material::STRUCT_BIT ) && !testPointBrush( &brush ) ) {
           return false;
@@ -99,8 +99,8 @@ namespace oz
       return true;
     }
     else {
-      BSP::Node  &node  = bsp->nodes[nodeIndex];
-      BSP::Plane &plane = bsp->planes[node.plane];
+      BSP::Node&  node  = bsp->nodes[nodeIndex];
+      BSP::Plane& plane = bsp->planes[node.plane];
 
       float dist = globalStartPos * plane.normal - plane.distance;
 
@@ -127,14 +127,14 @@ namespace oz
       return false;
     }
 
-    const Structure *oldStr = null;
+    const Structure* oldStr = null;
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structures.iterator() ) {
-          str = world.structures[*strIndex];
+        foreach( strIndex, cell.structs.iterator() ) {
+          str = world.structs[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
@@ -168,7 +168,7 @@ namespace oz
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        const Cell &cell = world.cells[x][y];
+        const Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
@@ -189,14 +189,14 @@ namespace oz
       return false;
     }
 
-    const Structure *oldStr = null;
+    const Structure* oldStr = null;
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structures.iterator() ) {
-          str = world.structures[*strIndex];
+        foreach( strIndex, cell.structs.iterator() ) {
+          str = world.structs[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
@@ -225,9 +225,9 @@ namespace oz
   // terrain collision detection is penetration-safe
   bool Collider::trimTerraQuad( int x, int y )
   {
-    const Terrain::Quad &quad = world.terra.quads[x][y];
-    const Vec3 &minVert = world.terra.vertices[x    ][y    ];
-    const Vec3 &maxVert = world.terra.vertices[x + 1][y + 1];
+    const Terrain::Quad& quad = world.terra.quads[x][y];
+    const Vec3& minVert = world.terra.vertices[x    ][y    ];
+    const Vec3& maxVert = world.terra.vertices[x + 1][y + 1];
 
     float startDist = globalStartPos * quad.tri[0].normal - quad.tri[0].distance;
     float endDist   = globalEndPos   * quad.tri[0].normal - quad.tri[0].distance;
@@ -304,7 +304,7 @@ namespace oz
   {
     for( int i = 0; i < 3; i++ ) {
       int iSide = move[i] >= 0.0f;
-      const Vec3 &normal = bbNormals[i * 2 + iSide];
+      const Vec3& normal = bbNormals[i * 2 + iSide];
 
       float startDist = world.maxs[i] + globalStartPos[i] * normal[i];
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i];
@@ -323,15 +323,15 @@ namespace oz
   }
 
   // finds out if Point-AABB collision occurs and the time when it occurs
-  void Collider::trimPointObj( Object *sObj )
+  void Collider::trimPointObj( Object* sObj )
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
-    const Vec3 *tmpNormal = null;
+    const Vec3* tmpNormal = null;
 
     for( int i = 0; i < 6; i++ ) {
       int j = i >> 1;
-      const Vec3 &normal = bbNormals[i];
+      const Vec3& normal = bbNormals[i];
 
       float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
       float endDist   = ( globalEndPos[j]   - sObj->p[j] ) * normal[j] - sObj->dim[j];
@@ -362,14 +362,14 @@ namespace oz
   }
 
   // finds out if Ray-Brush collision occurs and the time when it occurs
-  void Collider::trimPointBrush( const BSP::Brush *brush )
+  void Collider::trimPointBrush( const BSP::Brush* brush )
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
-    const Vec3 *tmpNormal = null;
+    const Vec3* tmpNormal = null;
 
     for( int i = 0; i < brush->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float startDist = leafStartPos * plane.normal - plane.distance;
       float endDist   = leafEndPos   * plane.normal - plane.distance;
@@ -405,10 +405,10 @@ namespace oz
 
   // recursively check nodes of BSP-tree for Point-Brush collisions
   void Collider::trimPointNode( int nodeIndex, float startRatio, float endRatio,
-                                const Vec3 &startPos, const Vec3 &endPos )
+                                const Vec3& startPos, const Vec3& endPos )
   {
     if( nodeIndex < 0 ) {
-      BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
 
       leafStartRatio = startRatio;
       leafEndRatio   = endRatio;
@@ -417,7 +417,7 @@ namespace oz
       leafEndPos   = endPos;
 
       for( int i = 0; i < leaf.nBrushes; i++ ) {
-        BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
+        BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
         if( brush.material & Material::STRUCT_BIT ) {
           trimPointBrush( &brush );
@@ -425,8 +425,8 @@ namespace oz
       }
     }
     else {
-      BSP::Node  &node  = bsp->nodes[nodeIndex];
-      BSP::Plane &plane = bsp->planes[node.plane];
+      BSP::Node&  node  = bsp->nodes[nodeIndex];
+      BSP::Plane& plane = bsp->planes[node.plane];
 
       float startDist = startPos * plane.normal - plane.distance;
       float endDist   = endPos   * plane.normal - plane.distance;
@@ -459,14 +459,14 @@ namespace oz
       trimPointVoid();
     }
 
-    const Structure *oldStr = null;
+    const Structure* oldStr = null;
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structures.iterator() ) {
-          str = world.structures[*strIndex];
+        foreach( strIndex, cell.structs.iterator() ) {
+          str = world.structs[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
@@ -493,7 +493,7 @@ namespace oz
     trimPointTerra();
 
     assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
-    assert( static_cast<bool>( hit.material & Material::OBJECT_BIT ) == ( hit.obj != null ) );
+    assert( bool( hit.material & Material::OBJECT_BIT ) == ( hit.obj != null ) );
   }
 
   //***********************************
@@ -501,10 +501,10 @@ namespace oz
   //***********************************
 
   // checks if AABB and Brush overlap
-  bool Collider::testAABBBrush( const BSP::Brush *brush ) const
+  bool Collider::testAABBBrush( const BSP::Brush* brush ) const
   {
     for( int i = 0; i < brush->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float offset =
           Math::abs( plane.normal.x * aabb.dim.x ) +
@@ -524,10 +524,10 @@ namespace oz
   bool Collider::testAABBNode( int nodeIndex ) const
   {
     if( nodeIndex < 0 ) {
-      BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
 
       for( int i = 0; i < leaf.nBrushes; i++ ) {
-        BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
+        BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
         if( ( brush.material & Material::STRUCT_BIT ) && !testAABBBrush( &brush ) ) {
           return false;
@@ -536,8 +536,8 @@ namespace oz
       return true;
     }
     else {
-      BSP::Node  &node  = bsp->nodes[nodeIndex];
-      BSP::Plane &plane = bsp->planes[node.plane];
+      BSP::Node&  node  = bsp->nodes[nodeIndex];
+      BSP::Plane& plane = bsp->planes[node.plane];
 
       float offset =
           Math::abs( plane.normal.x * aabb.dim.x ) +
@@ -570,14 +570,14 @@ namespace oz
       return false;
     }
 
-    const Structure *oldStr = null;
+    const Structure* oldStr = null;
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structures.iterator() ) {
-          str = world.structures[*strIndex];
+        foreach( strIndex, cell.structs.iterator() ) {
+          str = world.structs[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
@@ -612,7 +612,7 @@ namespace oz
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
@@ -633,14 +633,14 @@ namespace oz
       return false;
     }
 
-    const Structure *oldStr = null;
+    const Structure* oldStr = null;
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structures.iterator() ) {
-          str = world.structures[*strIndex];
+        foreach( strIndex, cell.structs.iterator() ) {
+          str = world.structs[*strIndex];
 
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
@@ -671,7 +671,7 @@ namespace oz
   {
     for( int i = 0; i < 3; i++ ) {
       int iSide = move[i] >= 0.0f;
-      const Vec3 &normal = bbNormals[i * 2 + iSide];
+      const Vec3& normal = bbNormals[i * 2 + iSide];
 
       float startDist = world.maxs[i] + globalStartPos[i] * normal[i] - aabb.dim[i];
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i] - aabb.dim[i];
@@ -690,15 +690,15 @@ namespace oz
   }
 
   // finds out if AABB-AABB collision occurs and the time when it occurs
-  void Collider::trimAABBObj( Object *sObj )
+  void Collider::trimAABBObj( Object* sObj )
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
-    const Vec3 *tmpNormal = null;
+    const Vec3* tmpNormal = null;
 
     for( int i = 0; i < 6; i++ ) {
       int j = i >> 1;
-      const Vec3 &normal = bbNormals[i];
+      const Vec3& normal = bbNormals[i];
 
       float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
       float endDist   = ( globalEndPos[j]   - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
@@ -729,14 +729,14 @@ namespace oz
   }
 
   // finds out if AABB-Brush collision occurs and the time when it occurs
-  void Collider::trimAABBBrush( const BSP::Brush *brush )
+  void Collider::trimAABBBrush( const BSP::Brush* brush )
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
-    const Vec3 *tmpNormal = null;
+    const Vec3* tmpNormal = null;
 
     for( int i = 0; i < brush->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float offset =
           Math::abs( plane.normal.x * aabb.dim.x ) +
@@ -776,12 +776,12 @@ namespace oz
   }
 
   // checks if AABB and Brush overlap and if AABB center is inside a brush
-  void Collider::trimAABBWater( const BSP::Brush *brush )
+  void Collider::trimAABBWater( const BSP::Brush* brush )
   {
     float depth = Math::inf();
 
     for( int i = 0; i < brush->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       if( plane.normal.z <= 0.0f ) {
         float centerDist = leafStartPos * plane.normal - plane.distance;
@@ -807,10 +807,10 @@ namespace oz
   }
 
   // checks if AABB and Brush overlap and if AABB center is inside a brush
-  void Collider::trimAABBLadder( const BSP::Brush *brush )
+  void Collider::trimAABBLadder( const BSP::Brush* brush )
   {
     for( int i = 0; i < brush->nSides; i++ ) {
-      BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float offset =
           Math::abs( plane.normal.x * aabb.dim.x ) +
@@ -828,10 +828,10 @@ namespace oz
 
   // recursively check nodes of BSP-tree for AABB-Brush collisions
   void Collider::trimAABBNode( int nodeIndex, float startRatio, float endRatio,
-                               const Vec3 &startPos, const Vec3 &endPos )
+                               const Vec3& startPos, const Vec3& endPos )
   {
     if( nodeIndex < 0 ) {
-      BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
 
       leafStartRatio = startRatio;
       leafEndRatio   = endRatio;
@@ -840,7 +840,7 @@ namespace oz
       leafEndPos   = endPos;
 
       for( int i = 0; i < leaf.nBrushes; i++ ) {
-        BSP::Brush &brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
+        BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
         if( brush.material & Material::STRUCT_BIT ) {
           trimAABBBrush( &brush );
@@ -856,8 +856,8 @@ namespace oz
       }
     }
     else {
-      BSP::Node  &node  = bsp->nodes[nodeIndex];
-      BSP::Plane &plane = bsp->planes[node.plane];
+      BSP::Node&  node  = bsp->nodes[nodeIndex];
+      BSP::Plane& plane = bsp->planes[node.plane];
 
       float offset =
           Math::abs( plane.normal.x * aabb.dim.x ) +
@@ -898,14 +898,14 @@ namespace oz
       trimAABBVoid();
     }
 
-    const Structure *oldStr = null;
+    const Structure* oldStr = null;
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structures.iterator() ) {
-          str = world.structures[*strIndex];
+        foreach( strIndex, cell.structs.iterator() ) {
+          str = world.structs[*strIndex];
 
           // to prevent some of duplicated structure tests
           if( str != oldStr ) {
@@ -936,7 +936,7 @@ namespace oz
     trimPointTerra();
 
     assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
-    assert( static_cast<bool>( hit.material & Material::OBJECT_BIT ) == ( hit.obj != null ) );
+    assert( bool( hit.material & Material::OBJECT_BIT ) == ( hit.obj != null ) );
   }
 
   //***********************************
@@ -950,11 +950,11 @@ namespace oz
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
         if( structs != null ) {
-          foreach( strIndex, cell.structures.iterator() ) {
-            Structure *str = world.structures[*strIndex];
+          foreach( strIndex, cell.structs.iterator() ) {
+            Structure* str = world.structs[*strIndex];
 
             if( !structs->contains( str ) ) {
               bsp = world.bsps[str->bsp];
@@ -986,7 +986,7 @@ namespace oz
 
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
           if( trace.includes( *sObj ) ) {
@@ -1001,7 +1001,7 @@ namespace oz
   {
     for( int x = area.minX; x <= area.maxX; x++ ) {
       for( int y = area.minY; y <= area.maxY; y++ ) {
-        Cell &cell = world.cells[x][y];
+        Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {

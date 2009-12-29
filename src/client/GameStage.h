@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -17,7 +17,7 @@ namespace oz
 namespace client
 {
 
-  class GameStage : public Stage
+  struct GameStage : public Stage
   {
     public:
 
@@ -34,17 +34,14 @@ namespace client
 
     public:
 
-      State state;
-      Proxy *proxy;
+      State  state;
+      Proxy* proxy;
 
       bool update();
       void render();
 
       virtual void load();
       virtual void unload();
-
-      virtual void begin();
-      virtual void end();
 
   };
 

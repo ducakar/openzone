@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -47,7 +47,7 @@ namespace server
   {
     TCPsocket clientSocket = SDLNet_TCP_Accept( serverSocket );
     if( clientSocket != null ) {
-      Client *client = new Client();
+      Client* client = new Client();
 
       client->socket = clientSocket;
       clients << client;

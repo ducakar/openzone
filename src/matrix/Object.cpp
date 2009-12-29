@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -16,6 +16,9 @@
 
 namespace oz
 {
+
+  Pool<Object::Event> Object::Event::pool;
+  Pool<Object> Object::pool;
 
   Object::~Object()
   {
@@ -59,14 +62,14 @@ namespace oz
     }
   }
 
-  void Object::onUse( Bot *user )
+  void Object::onUse( Bot* user )
   {
     if( !type->onUse.isEmpty() ) {
       lua.call( type->onUse, this, user );
     }
   }
 
-  void Object::readFull( InputStream *istream )
+  void Object::readFull( InputStream* istream )
   {
     p        = istream->readVec3();
     flags    = istream->readInt();
@@ -82,7 +85,7 @@ namespace oz
     }
   }
 
-  void Object::writeFull( OutputStream *ostream ) const
+  void Object::writeFull( OutputStream* ostream ) const
   {
     ostream->writeVec3( p );
     ostream->writeInt( flags );
@@ -96,7 +99,7 @@ namespace oz
     }
   }
 
-  void Object::readUpdate( InputStream *istream )
+  void Object::readUpdate( InputStream* istream )
   {
     life = istream->readFloat();
 
@@ -109,7 +112,7 @@ namespace oz
     }
   }
 
-  void Object::writeUpdate( OutputStream *ostream ) const
+  void Object::writeUpdate( OutputStream* ostream ) const
   {
     ostream->writeFloat( life );
 

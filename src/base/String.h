@@ -4,7 +4,7 @@
  *  Immutable string object (similar to Java String)
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -12,15 +12,15 @@
 namespace oz
 {
 
-  class String
+  struct String
   {
     private:
 
       static const int BUFFER_SIZE = 64;
 
-      char *buffer;
-      int  count;
-      char baseBuffer[BUFFER_SIZE];
+      char* buffer;
+      int   count;
+      char  baseBuffer[BUFFER_SIZE];
 
       // no equality operators, String::equals functions should be used instead for verbosity
       bool operator == ( const String& ) const;
@@ -48,13 +48,13 @@ namespace oz
         buffer[0] = '\0';
       }
 
-      String( const String &s ) : count( s.count )
+      String( const String& s ) : count( s.count )
       {
         ensureCapacity();
         aCopy( buffer, s.buffer, count + 1 );
       }
 
-      String( const char *s )
+      String( const char* s )
       {
         assert( s != null );
 
@@ -63,7 +63,7 @@ namespace oz
         aCopy( buffer, s, count + 1 );
       }
 
-      String( const char *s, int count_ ) : count( count_ )
+      String( const char* s, int count_ ) : count( count_ )
       {
         assert( s != null );
         assert( length( s ) >= count );
@@ -103,7 +103,7 @@ namespace oz
       {
         // that should assure enough space, since log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ),
         // +2 for sign and terminating null char
-        assert( BUFFER_SIZE >= 3 * static_cast<int>( sizeof( int ) ) + 2 );
+        assert( BUFFER_SIZE >= 3 * int( sizeof( int ) ) + 2 );
 
         // we have [sign +] first digit + remaining digits
         // since we always count first digit, we assure that we never get 0 digits (if n == 0)
@@ -126,11 +126,11 @@ namespace oz
         buffer[count] = '\0';
 
         // we always write first digit
-        buffer[count - 1] = static_cast<char>( '0' + ( n % 10 ) );
+        buffer[count - 1] = char( '0' + ( n % 10 ) );
         n /= 10;
 
         for( int i = count - 2; n != 0; i-- ) {
-          buffer[i] = static_cast<char>( '0' + ( n % 10 ) );
+          buffer[i] = char( '0' + ( n % 10 ) );
           n /= 10;
         }
       }
@@ -150,12 +150,12 @@ namespace oz
         return buffer;
       }
 
-      const char *cstr() const
+      const char* cstr() const
       {
         return buffer;
       }
 
-      String &operator = ( const char *s )
+      String& operator = ( const char* s )
       {
         assert( s != buffer );
 
@@ -170,7 +170,7 @@ namespace oz
         return *this;
       }
 
-      String &operator = ( const String &s )
+      String& operator = ( const String& s )
       {
         assert( &s != this );
 
@@ -185,7 +185,7 @@ namespace oz
         return *this;
       }
 
-      bool equals( const char *s ) const
+      bool equals( const char* s ) const
       {
         assert( s != null );
 
@@ -197,12 +197,12 @@ namespace oz
         return false;
       }
 
-      bool equals( const String &s ) const
+      bool equals( const String& s ) const
       {
         return equals( s.buffer );
       }
 
-      static bool equals( const char *a, const char *b )
+      static bool equals( const char* a, const char* b )
       {
         assert( a != null && b != null );
 
@@ -214,21 +214,21 @@ namespace oz
         return false;
       }
 
-      const char &operator [] ( int i ) const
+      const char& operator [] ( int i ) const
       {
         assert( 0 <= i && i < count );
 
         return buffer[i];
       }
 
-      static bool isEmpty( const char *s )
+      static bool isEmpty( const char* s )
       {
         assert( s != null );
 
         return s[0] == '\0';
       }
 
-      static int length( const char *s )
+      static int length( const char* s )
       {
         int i = 0;
 
@@ -248,7 +248,7 @@ namespace oz
         return count;
       }
 
-      static int compare( const char *a, const char *b )
+      static int compare( const char* a, const char* b )
       {
         assert( a != null && b != null );
 
@@ -261,12 +261,12 @@ namespace oz
         return diff;
       }
 
-      int compare( const char *s ) const
+      int compare( const char* s ) const
       {
         return compare( buffer, s );
       }
 
-      int compare( const String &s ) const
+      int compare( const String& s ) const
       {
         return compare( buffer, s.buffer );
       }
@@ -296,22 +296,22 @@ namespace oz
         return lastIndex( ch, count - 1 );
       }
 
-      const char *find( char ch, int start = 0 ) const
+      const char* find( char ch, int start = 0 ) const
       {
         return &buffer[index( ch, start )];
       }
 
-      const char *findLast( char ch, int end ) const
+      const char* findLast( char ch, int end ) const
       {
         return &buffer[lastIndex( ch, end )];
       }
 
-      const char *findLast( char ch ) const
+      const char* findLast( char ch ) const
       {
         return findLast( ch, count - 1 );
       }
 
-      static const char *find( const char *s, char ch )
+      static const char* find( const char* s, char ch )
       {
         while( *s != '\0' ) {
           if( *s == ch ) {
@@ -322,9 +322,9 @@ namespace oz
         return null;
       }
 
-      static const char *findLast( const char *s, char ch )
+      static const char* findLast( const char* s, char ch )
       {
-        const char *last = null;
+        const char* last = null;
 
         while( *s != '\0' ) {
           if( *s == ch ) {
@@ -340,7 +340,7 @@ namespace oz
        * @param s
        * @return absolute value of hash
        */
-      static uint hash( const char *s )
+      static uint hash( const char* s )
       {
         uint hash = 5381;
         int count = length( s );
@@ -361,7 +361,7 @@ namespace oz
         return hash( buffer );
       }
 
-      String operator + ( const char *s ) const
+      String operator + ( const char* s ) const
       {
         assert( s != null );
 
@@ -375,7 +375,7 @@ namespace oz
         return r;
       }
 
-      String operator + ( const String &s ) const
+      String operator + ( const String& s ) const
       {
         int    rCount = count + s.count;
         String r      = String( rCount, 0 );
@@ -386,7 +386,7 @@ namespace oz
         return r;
       }
 
-      friend String operator + ( const char *s, const String &t )
+      friend String operator + ( const char* s, const String& t )
       {
         assert( s != null );
 
@@ -427,8 +427,8 @@ namespace oz
 
       String trim() const
       {
-        char *start = buffer;
-        char *end = buffer + count;
+        char* start = buffer;
+        char* end = buffer + count;
 
         while( start < end && ( *start == ' ' || *start == '\t' || *start == '\n' ) ) {
           start++;

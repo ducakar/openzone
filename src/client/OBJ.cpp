@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -19,7 +19,7 @@ namespace oz
 namespace client
 {
 
-  char *OBJ::skipSpaces( char *pos )
+  char* OBJ::skipSpaces( char* pos )
   {
     while( *pos == ' ' || *pos == '\t' ) {
       pos++;
@@ -27,7 +27,7 @@ namespace client
     return pos;
   }
 
-  char *OBJ::readWord( char *pos )
+  char* OBJ::readWord( char* pos )
   {
     while( *pos != ' ' && *pos != '\t' && *pos != '\n' && *pos != EOF ) {
       pos++;
@@ -35,7 +35,7 @@ namespace client
     return pos;
   }
 
-  bool OBJ::readVertexData( char *pos,
+  bool OBJ::readVertexData( char* pos,
                             Vector<Vec3> *tempVerts,
                             Vector<Vec3> *tempNormals,
                             Vector<TexCoord> *tempTexCoords ) const
@@ -84,9 +84,9 @@ namespace client
     return false;
   }
 
-  bool OBJ::readFace( char *pos, Face *face ) const
+  bool OBJ::readFace( char* pos, Face* face ) const
   {
-    char *end;
+    char* end;
 
     Vector<uint> vertIndices;
     Vector<uint> normalIndices;
@@ -208,9 +208,9 @@ namespace client
     return true;
   }
 
-  bool OBJ::loadMaterial( const String &path, HashString<int, 13> *materialIndices )
+  bool OBJ::loadMaterial( const String& path, HashString<int, 13> *materialIndices )
   {
-    FILE *file;
+    FILE* file;
     char buffer[LINE_BUFFER_SIZE];
 
     file = fopen( path + "/data.mtl", "r" );
@@ -222,8 +222,8 @@ namespace client
     Material material;
     Vector<Material> tempMaterials;
 
-    char *pos = fgets( buffer, LINE_BUFFER_SIZE, file );
-    char *end;
+    char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
+    char* end;
 
     // until EOF reached
     while( pos != null ) {
@@ -299,9 +299,9 @@ namespace client
     return true;
   }
 
-  OBJ::OBJ( const char *name_ )
+  OBJ::OBJ( const char* name_ )
   {
-    FILE *file;
+    FILE* file;
     char buffer[LINE_BUFFER_SIZE];
 
     name = name_;
@@ -320,7 +320,6 @@ namespace client
     Vec3 translation( config.get( "translate.x", 0.0f ),
                       config.get( "translate.y", 0.0f ),
                       config.get( "translate.z", 0.0f ) );
-    config.clear();
 
     HashString<int, 13> materialIndices;
 
@@ -341,8 +340,8 @@ namespace client
     Vector<TexCoord> tempTexCoords;
     Vector<Face>     tempFaces;
 
-    char *pos = fgets( buffer, LINE_BUFFER_SIZE, file );
-    char *end;
+    char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
+    char* end;
 
     // until EOF reached
     while( pos != null ) {
@@ -464,7 +463,7 @@ namespace client
     }
   }
 
-  void OBJ::translate( const Vec3 &t )
+  void OBJ::translate( const Vec3& t )
   {
     for( int i = 0; i < vertices.length(); i++ ) {
       vertices[i] += t;
@@ -479,12 +478,12 @@ namespace client
     bool isBlended = false;
 
     for( int i = 0; i < faces.length(); i++ ) {
-      const Face &face = faces[i];
+      const Face& face = faces[i];
 
       if( face.nVerts < 0 ) {
         if( currentMaterial != ~face.nVerts ) {
           currentMaterial = ~face.nVerts;
-          const Material &material = materials[currentMaterial];
+          const Material& material = materials[currentMaterial];
 
           if( !isTransfluent && material.diffuse.w != 1.0f ) {
             glEnable( GL_BLEND );

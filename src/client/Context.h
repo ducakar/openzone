@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -21,11 +21,11 @@ namespace oz
 namespace client
 {
 
-  class MD2;
-  class MD3;
-  class OBJ;
+  struct MD2;
+  struct MD3;
+  struct OBJ;
 
-  class Context
+  struct Context
   {
     private:
 
@@ -61,8 +61,8 @@ namespace client
       template <class Type>
       struct Resource<Type*>
       {
-        Type *object;
-        int  nUsers;
+        Type* object;
+        int   nUsers;
 
         explicit Resource() : nUsers( 0 ) {}
       };
@@ -83,14 +83,14 @@ namespace client
       HashString<Model::CreateFunc, 253> modelClasses;
       HashString<Audio::CreateFunc, 253> audioClasses;
 
-      static uint buildTexture( const ubyte *data, int width, int height, int bytesPerPixel,
+      static uint buildTexture( const ubyte* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
-      static uint buildNormalmap( ubyte *data, const Vec3 &lightNormal, int width,int height,
+      static uint buildNormalmap( ubyte* data, const Vec3& lightNormal, int width,int height,
                                   int bytesPerPixel, bool wrap, int magFilter, int minFilter );
 
     public:
 
-      uint createTexture( const ubyte *data,
+      uint createTexture( const ubyte* data,
                           int width,
                           int height,
                           int bytesPerPixel,
@@ -98,8 +98,8 @@ namespace client
                           int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
 
-      uint createNormalmap( ubyte *data,
-                            const Vec3 &lightNormal,
+      uint createNormalmap( ubyte* data,
+                            const Vec3& lightNormal,
                             int width,
                             int height,
                             int bytesPerPixel,
@@ -113,20 +113,20 @@ namespace client
                            int minFilter = DEFAULT_MIN_FILTER );
 
       uint requestNormalmap( int resource,
-                             const Vec3 &lightNormal,
+                             const Vec3& lightNormal,
                              bool wrap = true,
                              int magFilter = DEFAULT_MAG_FILTER,
                              int minFilter = DEFAULT_MIN_FILTER );
 
       void releaseTexture( int resource );
 
-      uint loadTexture( const char *path,
+      uint loadTexture( const char* path,
                         bool wrap = true,
                         int magFilter = DEFAULT_MAG_FILTER,
                         int minFilter = DEFAULT_MIN_FILTER );
 
-      uint loadNormalmap( const char *path,
-                          const Vec3 &lightNormal,
+      uint loadNormalmap( const char* path,
+                          const Vec3& lightNormal,
                           bool wrap = true,
                           int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
@@ -141,22 +141,22 @@ namespace client
       uint genLists( int count );
       void freeLists( uint listId );
 
-      uint loadOBJ( const char *name );
-      void releaseOBJ( const char *name );
+      uint loadOBJ( const char* name );
+      void releaseOBJ( const char* name );
 
-      uint loadStaticMD2( const char *name );
-      void releaseStaticMD2( const char *name );
+      uint loadStaticMD2( const char* name );
+      void releaseStaticMD2( const char* name );
 
-      MD2  *loadMD2( const char *name );
-      void releaseMD2( const char *name );
+      MD2*  loadMD2( const char* name );
+      void releaseMD2( const char* name );
 
-      uint loadStaticMD3( const char *name );
-      void releaseStaticMD3( const char *name );
+      uint loadStaticMD3( const char* name );
+      void releaseStaticMD3( const char* name );
 
-      MD3  *loadMD3( const char *name );
-      void releaseMD3( const char *name );
+      MD3*  loadMD3( const char* name );
+      void releaseMD3( const char* name );
 
-      Model *createModel( const Object *obj )
+      Model* createModel( const Object* obj )
       {
         if( obj->flags & Object::MODEL_BIT ) {
           assert( !obj->type->modelType.isEmpty() );
@@ -173,7 +173,7 @@ namespace client
         }
       }
 
-      Audio *createAudio( const Object *obj )
+      Audio* createAudio( const Object* obj )
       {
         if( obj->flags & Object::AUDIO_BIT ) {
           assert( !obj->type->audioType.isEmpty() );

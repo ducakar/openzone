@@ -4,7 +4,7 @@
  *  Bot class
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -15,9 +15,9 @@
 namespace oz
 {
 
-  class Mind;
+  struct Mind;
 
-  class Bot : public Dynamic
+  struct Bot : public Dynamic
   {
     public:
 
@@ -71,6 +71,8 @@ namespace oz
       static const float GRAB_MOM_MAX_SQ;
       static const float DEAD_BODY_LIFT;
 
+      static const float BODY_FADEOUT_FACTOR = 0.0005f;
+
       enum AnimEnum
       {
         ANIM_STAND,
@@ -96,12 +98,12 @@ namespace oz
         ANIM_MAX
       };
 
-      static const float BODY_FADEOUT_FACTOR = 0.0005f;
+      static Pool<Bot> pool;
 
     protected:
 
       virtual void onDestroy();
-      virtual void onHit( const Hit *hit, float hitMomentum );
+      virtual void onHit( const Hit* hit, float hitMomentum );
       virtual void onUpdate();
 
     public:
@@ -127,15 +129,17 @@ namespace oz
 
       explicit Bot();
 
-      void take( Dynamic *item );
+      void take( Dynamic* item );
       void enter( int vehicleIndex );
       void exit();
       void kill();
 
-      virtual void readFull( InputStream *istream );
-      virtual void writeFull( OutputStream *ostream ) const;
-      virtual void readUpdate( InputStream *istream );
-      virtual void writeUpdate( OutputStream *ostream ) const;
+      virtual void readFull( InputStream* istream );
+      virtual void writeFull( OutputStream* ostream ) const;
+      virtual void readUpdate( InputStream* istream );
+      virtual void writeUpdate( OutputStream* ostream ) const;
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

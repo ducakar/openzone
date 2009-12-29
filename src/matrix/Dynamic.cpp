@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -14,7 +14,9 @@
 namespace oz
 {
 
-  void Dynamic::readFull( InputStream *istream )
+  Pool<Dynamic> Dynamic::pool;
+
+  void Dynamic::readFull( InputStream* istream )
   {
     Object::readFull( istream );
 
@@ -26,7 +28,7 @@ namespace oz
     depth      = istream->readFloat();
   }
 
-  void Dynamic::writeFull( OutputStream *ostream ) const
+  void Dynamic::writeFull( OutputStream* ostream ) const
   {
     Object::writeFull( ostream );
 
@@ -38,7 +40,7 @@ namespace oz
     ostream->writeFloat( depth );
   }
 
-  void Dynamic::readUpdate( InputStream *istream )
+  void Dynamic::readUpdate( InputStream* istream )
   {
     Object::readUpdate( istream );
 
@@ -47,7 +49,7 @@ namespace oz
     momentum = istream->readVec3();
   }
 
-  void Dynamic::writeUpdate( OutputStream *ostream ) const
+  void Dynamic::writeUpdate( OutputStream* ostream ) const
   {
     Object::writeUpdate( ostream );
 

@@ -4,7 +4,7 @@
  *  List that reads configuration file
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "base.h"
@@ -22,10 +22,10 @@ namespace oz
 
   struct Elem
   {
-    const char *key;
-    const char *value;
+    const char* key;
+    const char* value;
 
-    bool operator < ( const Elem &e ) const
+    bool operator < ( const Elem& e ) const
     {
       return String::compare( key, e.key ) < 0;
     }
@@ -33,12 +33,17 @@ namespace oz
 
   Config config;
 
-  bool Config::loadConf( const char *file )
+  Config::~Config()
+  {
+    vars.clear();
+  }
+
+  bool Config::loadConf( const char* file )
   {
     char buffer[BUFFER_SIZE];
     char ch;
 
-    FILE *f = fopen( file, "r" );
+    FILE* f = fopen( file, "r" );
     if( f == null ) {
       log.println( "Error reading variables from '%s' ... Cannot open file", file );
       return false;
@@ -106,7 +111,7 @@ namespace oz
     return true;
   }
 
-  bool Config::saveConf( const char *file )
+  bool Config::saveConf( const char* file )
   {
     log.print( "Writing variables to '%s' ...", file );
 
@@ -123,7 +128,7 @@ namespace oz
     size++;
     aSort( sortedVars, size );
 
-    FILE *f = fopen( file, "w" );
+    FILE* f = fopen( file, "w" );
     if( f == null ) {
       log.printEnd( " Cannot open file" );
       return false;
@@ -148,9 +153,9 @@ namespace oz
   }
 
 #ifdef OZ_XML_CONFIG
-  bool Config::loadXML( const char *file )
+  bool Config::loadXML( const char* file )
   {
-    xmlTextReader *reader = xmlReaderForFile( file, null, 0 );
+    xmlTextReader* reader = xmlReaderForFile( file, null, 0 );
 
     if( reader == null ) {
       xmlCleanupParser();
@@ -160,12 +165,12 @@ namespace oz
 
     int error = xmlTextReaderRead( reader );
     while( error == 1 ) {
-      const char *name = reinterpret_cast<const char*>( xmlTextReaderConstName( reader ) );
+      const char* name = reinterpret_cast<const char*>( xmlTextReaderConstName( reader ) );
 
       // only check "var" nodes, ignore others
       if( name != null && String::equals( name, "var" ) ) {
-        void *key = xmlTextReaderGetAttribute( reader, reinterpret_cast<const xmlChar*>( "name" ) );
-        void *value = xmlTextReaderGetAttribute( reader, reinterpret_cast<const xmlChar*>( "value" ) );
+        void* key = xmlTextReaderGetAttribute( reader, reinterpret_cast<const xmlChar*>( "name" ) );
+        void* value = xmlTextReaderGetAttribute( reader, reinterpret_cast<const xmlChar*>( "value" ) );
 
         // error if "var" tag doesn't has "name" and "value" attributes
         if( key == null || value == null ) {
@@ -192,7 +197,7 @@ namespace oz
     return true;
   }
 
-  bool Config::saveXML( const char *file )
+  bool Config::saveXML( const char* file )
   {
     log.print( "Writing variables to '%s' ...", file );
 
@@ -209,7 +214,7 @@ namespace oz
     size++;
     aSort( sortedVars, size );
 
-    xmlTextWriter *writer = xmlNewTextWriterFilename( file, 0 );
+    xmlTextWriter* writer = xmlNewTextWriterFilename( file, 0 );
 
     if( writer == null ) {
       xmlCleanupParser();
@@ -257,7 +262,7 @@ namespace oz
   }
 #endif
 
-  bool Config::get( const char *name, bool defVal ) const
+  bool Config::get( const char* name, bool defVal ) const
   {
     assert( !vars.contains( name ) ||
             vars.cachedValue().equals( "true" ) ||
@@ -274,7 +279,7 @@ namespace oz
     return defVal;
   }
 
-  int Config::get( const char *name, int defVal ) const
+  int Config::get( const char* name, int defVal ) const
   {
     if( vars.contains( name ) ) {
       return atoi( vars.cachedValue() );
@@ -284,7 +289,7 @@ namespace oz
     }
   }
 
-  float Config::get( const char *name, float defVal ) const
+  float Config::get( const char* name, float defVal ) const
   {
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
@@ -294,7 +299,7 @@ namespace oz
     }
   }
 
-  double Config::get( const char *name, double defVal ) const
+  double Config::get( const char* name, double defVal ) const
   {
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
@@ -304,7 +309,7 @@ namespace oz
     }
   }
 
-  const char *Config::get( const char *name, const char *defVal ) const
+  const char* Config::get( const char* name, const char* defVal ) const
   {
     if( vars.contains( name ) ) {
       return vars.cachedValue();
@@ -314,7 +319,7 @@ namespace oz
     }
   }
 
-  bool Config::getSet( const char *name, bool defVal )
+  bool Config::getSet( const char* name, bool defVal )
   {
     assert( !vars.contains( name ) ||
             vars.cachedValue().equals( "true" ) ||
@@ -332,7 +337,7 @@ namespace oz
     return defVal;
   }
 
-  int Config::getSet( const char *name, int defVal )
+  int Config::getSet( const char* name, int defVal )
   {
     if( vars.contains( name ) ) {
       return atoi( vars.cachedValue() );
@@ -343,7 +348,7 @@ namespace oz
     }
   }
 
-  float Config::getSet( const char *name, float defVal )
+  float Config::getSet( const char* name, float defVal )
   {
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
@@ -354,7 +359,7 @@ namespace oz
     }
   }
 
-  double Config::getSet( const char *name, double defVal )
+  double Config::getSet( const char* name, double defVal )
   {
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
@@ -365,7 +370,7 @@ namespace oz
     }
   }
 
-  const char *Config::getSet( const char *name, const char *defVal )
+  const char* Config::getSet( const char* name, const char* defVal )
   {
     if( vars.contains( name ) ) {
       return vars.cachedValue();
@@ -376,9 +381,9 @@ namespace oz
     }
   }
 
-  bool Config::load( const char *file )
+  bool Config::load( const char* file )
   {
-    const char *suffix = String::findLast( file, '.' );
+    const char* suffix = String::findLast( file, '.' );
 
     if( suffix != null ) {
       if( String::equals( suffix, ".rc" ) ) {
@@ -395,9 +400,9 @@ namespace oz
     return false;
   }
 
-  bool Config::save( const char *file )
+  bool Config::save( const char* file )
   {
-    const char *suffix = String::findLast( file, '.' );
+    const char* suffix = String::findLast( file, '.' );
 
     if( suffix != null ) {
       if( String::equals( suffix, ".rc" ) ) {
@@ -419,7 +424,12 @@ namespace oz
     vars.clear();
   }
 
-  String Config::toString( const String &indentString )
+  void Config::deallocate()
+  {
+    vars.deallocate();
+  }
+
+  String Config::toString( const String& indentString )
   {
     String s = "";
 

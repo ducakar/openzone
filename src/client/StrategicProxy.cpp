@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -30,7 +30,7 @@ namespace client
   {
     height   = DEFAULT_HEIGHT;
     fastMove = false;
-
+    camera.w = 0.0f;
     camera.setTagged( null );
   }
 

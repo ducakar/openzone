@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -20,15 +20,15 @@ namespace oz
 namespace nirvana
 {
 
-  Mind *LuaMind::create( int botIndex )
+  Mind* LuaMind::create( int botIndex )
   {
-    LuaMind *mind = new LuaMind( botIndex );
+    LuaMind* mind = new LuaMind( botIndex );
     return mind;
   }
 
-  Mind *LuaMind::read( InputStream *istream )
+  Mind* LuaMind::read( InputStream* istream )
   {
-    LuaMind *mind = new LuaMind( istream->readInt() );
+    LuaMind* mind = new LuaMind( istream->readInt() );
     return mind;
   }
 
@@ -42,7 +42,7 @@ namespace nirvana
     lua.unregisterMind( botIndex );
   }
 
-  const char *LuaMind::type() const
+  const char* LuaMind::type() const
   {
     return "Lua";
   }
@@ -52,10 +52,10 @@ namespace nirvana
     assert( world.objects[botIndex] != null );
     assert( world.objects[botIndex]->flags & Object::BOT_BIT );
 
-    Bot *bot = static_cast<Bot*>( world.objects[botIndex] );
+    Bot* bot = static_cast<Bot*>( world.objects[botIndex] );
 
     if( ~bot->state & Bot::DEATH_BIT ) {
-      const BotClass *clazz = static_cast<const BotClass*>( bot->type );
+      const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
       flags &= ~FORCE_UPDATE_BIT;
       bot->actions = 0;

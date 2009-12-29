@@ -4,7 +4,7 @@
  *  Game initialization and main loop
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -19,8 +19,6 @@
 #include <ctime>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <exception>
-
 #include <SDL_net.h>
 
 namespace oz
@@ -35,9 +33,6 @@ namespace client
     log.println( "Shutdown {" );
     log.indent();
 
-    if( initFlags & INIT_GAME_START ) {
-      stage->end();
-    }
     if( initFlags & INIT_RENDER_INIT ) {
       render.unload();
       render.free();
@@ -59,27 +54,35 @@ namespace client
       log.printEnd( " OK" );
     }
 
-    if( Alloc::max != -1 ) {
-      log.println( "Maximum allocated memory: %.2f MiB", Alloc::max / ( 1024.0f * 1024.0f ) );
-    }
+    config.clear();
+    config.deallocate();
+
+#ifdef OZ_ALLOC_STATISTICS
+    log.println( "Heap usage summary {" );
+    log.println( "  current chunks     %d", Alloc::count  );
+    log.println( "  current amount     %.2f MiB", Alloc::amount / ( 1024.0f * 1024.0f ) );
+    log.println( "  cumulative chunks  %d", Alloc::sumCount );
+    log.println( "  cumulative amount  %.2f MiB", Alloc::sumAmount / ( 1024.0f * 1024.0f ) );
+    log.println( "  maximum chunks     %d", Alloc::maxCount );
+    log.println( "  maximum amount     %.2f MiB", Alloc::maxAmount / ( 1024.0f * 1024.0f ) );
+    log.println( "}" );
+#endif
 
     log.unindent();
     log.println( "}" );
     log.printlnETD( OZ_APP_NAME " finished at" );
-
-    config.clear();
   }
 
-  void Main::main( int *argc, char **argv )
+  void Main::main( int* argc, char** argv )
   {
     initFlags = 0;
 
     String rcDir;
 
 #ifdef OZ_MINGW32
-    const char *homeVar = getenv( "USERPROFILE" );
+    const char* homeVar = getenv( "USERPROFILE" );
 #else
-    const char *homeVar = getenv( "HOME" );
+    const char* homeVar = getenv( "HOME" );
 #endif
     if( homeVar == null ) {
       throw Exception( "Cannot determine user home directory from environment" );
@@ -161,7 +164,7 @@ namespace client
 
     initFlags |= INIT_SDL;
 
-    const char *data = config.getSet( "dir.data", "data" );
+    const char* data = config.getSet( "dir.data", "data" );
 
     log.print( "Setting working directory '%s' ...", data );
 
@@ -178,8 +181,8 @@ namespace client
     int screenBpp  = config.getSet( "screen.bpp", 32 );
     int screenFull = config.getSet( "screen.full", false ) ? SDL_FULLSCREEN : 0;
 
-    ushort screenCenterX = static_cast<ushort>( screenX / 2 );
-    ushort screenCenterY = static_cast<ushort>( screenY / 2 );
+    ushort screenCenterX = ushort( screenX / 2 );
+    ushort screenCenterY = ushort( screenY / 2 );
 
     log.print( "Setting OpenGL surface %dx%d %dbpp %s ...",
                screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
@@ -223,9 +226,6 @@ namespace client
 
     render.load();
     initFlags |= INIT_RENDER_LOAD;
-
-    stage->begin();
-    initFlags |= INIT_GAME_START;
 
     log.println( "MAIN LOOP {" );
     log.indent();
@@ -352,11 +352,11 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    float allTimeSec = static_cast<float>( timeLast - timeZero ) / 1000.0f;
-    float gameTimeSec = static_cast<float>( gameTime ) / 1000.0f;
-    float renderTimeSec = static_cast<float>( renderTime ) / 1000.0f;
-    float sleepTimeSec = max( 0.0f, allTimeSec - gameTimeSec - renderTimeSec );
-    float nirvanaTimeSec = static_cast<float>( timer.nirvanaMillis ) / 1000.0f;
+    float allTimeSec     = float( timeLast - timeZero ) / 1000.0f;
+    float gameTimeSec    = float( gameTime ) / 1000.0f;
+    float renderTimeSec  = float( renderTime ) / 1000.0f;
+    float sleepTimeSec   = max( 0.0f, allTimeSec - gameTimeSec - renderTimeSec );
+    float nirvanaTimeSec = float( timer.nirvanaMillis ) / 1000.0f;
 
     log.println( "STATISTICS {" );
     log.indent();
@@ -384,7 +384,9 @@ namespace client
 }
 }
 
-int main( int argc, char **argv )
+using namespace oz;
+
+int main( int argc, char** argv )
 {
   printf( "OpenZone  Copyright (C) 2002-2009  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
@@ -392,27 +394,18 @@ int main( int argc, char **argv )
       "under certain conditions; See COPYING for details.\n\n" );
 
   try {
-    oz::client::main.main( &argc, argv );
+    client::main.main( &argc, argv );
   }
-  catch( const oz::Exception &e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
+  catch( const Exception& e ) {
+    log.resetIndent();
+    log.println();
+    log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
 
-    if( oz::log.isFile() ) {
+    if( log.isFile() ) {
       fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
     }
   }
-  catch( const std::exception &e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println( "EXCEPTION: %s", e.what() );
-
-    if( oz::log.isFile() ) {
-      fprintf( stderr, "EXCEPTION: %s", e.what() );
-    }
-  }
-  oz::client::main.shutdown();
+  client::main.shutdown();
 
   return 0;
 }

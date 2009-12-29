@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -26,14 +26,14 @@ namespace oz
     time = Math::mod( time + Timer::TICK_TIME, period );
   }
 
-  void Sky::read( InputStream *istream )
+  void Sky::read( InputStream* istream )
   {
     heading = istream->readFloat();
     period  = istream->readFloat();
     time    = istream->readFloat();
   }
 
-  void Sky::write( OutputStream *ostream )
+  void Sky::write( OutputStream* ostream )
   {
     ostream->writeFloat( heading );
     ostream->writeFloat( period );

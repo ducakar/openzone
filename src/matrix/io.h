@@ -4,7 +4,7 @@
  *  Stream readers/writers and buffer
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -15,16 +15,16 @@ namespace oz
   /**
    * Read-only nonseekable stream.
    */
-  class InputStream
+  struct InputStream
   {
     private:
 
-      const char *pos;
-      const char *end;
+      const char* pos;
+      const char* end;
 
     public:
 
-      explicit InputStream( const char *start, const char *end_ ) : pos( start ), end( end_ )
+      explicit InputStream( const char* start, const char* end_ ) : pos( start ), end( end_ )
       {}
 
       bool isPassed() const
@@ -32,14 +32,14 @@ namespace oz
         return pos >= end;
       }
 
-      const char *getPos() const
+      const char* getPos() const
       {
         return pos;
       }
 
       bool readBool()
       {
-        const bool *b = reinterpret_cast<const bool*>( pos );
+        const bool* b = reinterpret_cast<const bool*>( pos );
         pos += sizeof( bool );
 
         if( pos + sizeof( bool ) > end ) {
@@ -50,7 +50,7 @@ namespace oz
 
       byte readByte()
       {
-        const byte *b = reinterpret_cast<const byte*>( pos );
+        const byte* b = reinterpret_cast<const byte*>( pos );
         pos += sizeof( byte );
 
         if( pos + sizeof( byte ) > end ) {
@@ -61,7 +61,7 @@ namespace oz
 
       int readInt()
       {
-        const int *i = reinterpret_cast<const int*>( pos );
+        const int* i = reinterpret_cast<const int*>( pos );
         pos += sizeof( int );
 
         if( pos > end ) {
@@ -72,7 +72,7 @@ namespace oz
 
       float readFloat()
       {
-        const float *f = reinterpret_cast<const float*>( pos );
+        const float* f = reinterpret_cast<const float*>( pos );
         pos += sizeof( float );
 
         if( pos > end ) {
@@ -84,7 +84,7 @@ namespace oz
       String readString()
       {
         // check for buffer overruns
-        const char *p = pos;
+        const char* p = pos;
         while( pos < end && *pos != '\0' ) {
           pos++;
         }
@@ -99,10 +99,10 @@ namespace oz
       /**
        * Read a string from input stream (optimized version, omits one string copy).
        */
-      void readString( String &s )
+      void readString( String& s )
       {
         // check for buffer overruns
-        const char *p = pos;
+        const char* p = pos;
         while( pos < end && *pos != '\0' ) {
           pos++;
         }
@@ -120,7 +120,7 @@ namespace oz
           throw Exception( "Buffer overrun" );
         }
 
-        const Vec3 *v = reinterpret_cast<const Vec3*>( pos );
+        const Vec3* v = reinterpret_cast<const Vec3*>( pos );
         pos += sizeof( Vec3 );
         return *v;
       }
@@ -131,7 +131,7 @@ namespace oz
           throw Exception( "Buffer overrun" );
         }
 
-        const Quat *q = reinterpret_cast<const Quat*>( pos );
+        const Quat* q = reinterpret_cast<const Quat*>( pos );
         pos += sizeof( Quat );
         return *q;
       }
@@ -142,7 +142,7 @@ namespace oz
           throw Exception( "Buffer overrun" );
         }
 
-        const Mat33 *m = reinterpret_cast<const Mat33*>( pos );
+        const Mat33* m = reinterpret_cast<const Mat33*>( pos );
         pos += sizeof( Mat33 );
         return *m;
       }
@@ -153,7 +153,7 @@ namespace oz
           throw Exception( "Buffer overrun" );
         }
 
-        const Mat44 *m = reinterpret_cast<const Mat44*>( pos );
+        const Mat44* m = reinterpret_cast<const Mat44*>( pos );
         pos += sizeof( Mat44 );
         return *m;
       }
@@ -162,16 +162,16 @@ namespace oz
   /**
    * Write-only nonseekable stream.
    */
-  class OutputStream
+  struct OutputStream
   {
     private:
 
-      char       *pos;
-      const char *end;
+      char*       pos;
+      const char* end;
 
     public:
 
-      explicit OutputStream( char *start, const char *end_ ) : pos( start ), end( end_ )
+      explicit OutputStream( char* start, const char* end_ ) : pos( start ), end( end_ )
       {}
 
       bool isPassed() const
@@ -179,14 +179,14 @@ namespace oz
         return pos == end;
       }
 
-      char *getPos() const
+      char* getPos() const
       {
         return pos;
       }
 
       void writeBool( bool b )
       {
-        bool *p = reinterpret_cast<bool*>( pos );
+        bool* p = reinterpret_cast<bool*>( pos );
         pos += sizeof( bool );
 
         if( pos > end ) {
@@ -197,7 +197,7 @@ namespace oz
 
       void writeByte( byte b )
       {
-        byte *p = reinterpret_cast<byte*>( pos );
+        byte* p = reinterpret_cast<byte*>( pos );
         pos += sizeof( byte );
 
         if( pos > end ) {
@@ -208,7 +208,7 @@ namespace oz
 
       void writeInt( int i )
       {
-        int *p = reinterpret_cast<int*>( pos );
+        int* p = reinterpret_cast<int*>( pos );
         pos += sizeof( int );
 
         if( pos > end ) {
@@ -219,7 +219,7 @@ namespace oz
 
       void writeFloat( float f )
       {
-        float *p = reinterpret_cast<float*>( pos );
+        float* p = reinterpret_cast<float*>( pos );
         pos += sizeof( float );
 
         if( pos > end ) {
@@ -228,10 +228,10 @@ namespace oz
         *p = f;
       }
 
-      void writeString( const String &s )
+      void writeString( const String& s )
       {
         int  length = s.length();
-        char *p = pos;
+        char* p = pos;
         pos += length + 1;
 
         if( pos > end ) {
@@ -240,10 +240,10 @@ namespace oz
         aCopy( p, s.cstr(), length + 1 );
       }
 
-      void writeString( const char *s )
+      void writeString( const char* s )
       {
         int  length = String::length( s );
-        char *p = pos;
+        char* p = pos;
         pos += length + 1;
 
         if( pos > end ) {
@@ -252,9 +252,9 @@ namespace oz
         aCopy( p, s, length + 1 );
       }
 
-      void writeVec3( const Vec3 &v )
+      void writeVec3( const Vec3& v )
       {
-        Vec3 *p = reinterpret_cast<Vec3*>( pos );
+        Vec3* p = reinterpret_cast<Vec3*>( pos );
         pos += sizeof( Vec3 );
 
         if( pos > end ) {
@@ -263,9 +263,9 @@ namespace oz
         *p = v;
       }
 
-      void writeQuat( const Quat &q )
+      void writeQuat( const Quat& q )
       {
-        Quat *p = reinterpret_cast<Quat*>( pos );
+        Quat* p = reinterpret_cast<Quat*>( pos );
         pos += sizeof( Quat );
 
         if( pos > end ) {
@@ -274,9 +274,9 @@ namespace oz
         *p = q;
       }
 
-      void writeMat33( const Mat33 &m )
+      void writeMat33( const Mat33& m )
       {
-        Mat33 *p = reinterpret_cast<Mat33*>( pos );
+        Mat33* p = reinterpret_cast<Mat33*>( pos );
         pos += sizeof( Mat33 );
 
         if( pos > end ) {
@@ -285,9 +285,9 @@ namespace oz
         *p = m;
       }
 
-      void writeMat44( const Mat44 &m )
+      void writeMat44( const Mat44& m )
       {
-        Mat44 *p = reinterpret_cast<Mat44*>( pos );
+        Mat44* p = reinterpret_cast<Mat44*>( pos );
         pos += sizeof( Mat44 );
 
         if( pos > end ) {
@@ -301,7 +301,7 @@ namespace oz
    * Memory buffer.
    * It can be filled with data from a file or written to a file.
    */
-  class Buffer
+  struct Buffer
   {
     private:
 
@@ -309,7 +309,7 @@ namespace oz
       // the same as filesystem block size, that is 4K by default on Linux filesystems.
       static const int BLOCK_SIZE = 4096;
 
-      char *buffer;
+      char* buffer;
       int  count;
 
     public:
@@ -366,9 +366,9 @@ namespace oz
         return OutputStream( buffer, buffer + count );
       }
 
-      bool load( const char *path );
+      bool load( const char* path );
 
-      bool write( const char *path );
+      bool write( const char* path );
 
   };
 

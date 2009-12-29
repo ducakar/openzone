@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  class Vehicle : public Dynamic
+  struct Vehicle : public Dynamic
   {
     public:
 
@@ -32,11 +32,13 @@ namespace oz
       static const float EJECT_MOVE;
       static const float EJECT_MOMENTUM;
 
+      static Pool<Vehicle> pool;
+
     protected:
 
       virtual void onDestroy();
       virtual void onUpdate();
-      virtual void onUse( Bot *user );
+      virtual void onUse( Bot* user );
 
     public:
 
@@ -49,12 +51,14 @@ namespace oz
 
       explicit Vehicle();
 
-      void exit( Bot *bot );
+      void exit( Bot* bot );
 
-      virtual void readFull( InputStream *istream );
-      virtual void writeFull( OutputStream *ostream ) const;
-      virtual void readUpdate( InputStream *istream );
-      virtual void writeUpdate( OutputStream *ostream ) const;
+      virtual void readFull( InputStream* istream );
+      virtual void writeFull( OutputStream* ostream ) const;
+      virtual void readUpdate( InputStream* istream );
+      virtual void writeUpdate( OutputStream* ostream ) const;
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

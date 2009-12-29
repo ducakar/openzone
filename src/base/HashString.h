@@ -6,7 +6,7 @@
  *  http://www.bigprimes.net/.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -14,27 +14,29 @@
 namespace oz
 {
 
-  template <class Type, int SIZE>
-  class HashString
+  template <class Type, int SIZE = 1021>
+  struct HashString
   {
     private:
 
-      struct Elem : PoolAlloc<Elem, 0>
+      struct Elem
       {
         String key;
         Type   value;
-        Elem   *next[1];
+        Elem*  next[1];
 
-        explicit Elem( const String &key_, const Type &value_, Elem *next_ ) :
+        explicit Elem( const String& key_, const Type& value_, Elem* next_ ) :
             key( key_ ), value( value_ )
         {
           next[0] = next_;
         }
 
-        explicit Elem( const String &key_, Elem *next_ ) : key( key_ )
+        explicit Elem( const String& key_, Elem* next_ ) : key( key_ )
         {
           next[0] = next_;
         }
+
+        OZ_PLACEMENT_POOL_ALLOC( Elem, 0 );
       };
 
     public:
@@ -42,15 +44,15 @@ namespace oz
       /**
        * HashString iterator.
        */
-      class Iterator : public IteratorBase<Elem>
+      struct Iterator : public IteratorBase<Elem>
       {
         private:
 
           // base class
           typedef IteratorBase<Elem> B;
 
-          Elem *const *const data;
-          int                index;
+          Elem* const* const data;
+          int index;
 
         public:
 
@@ -65,7 +67,7 @@ namespace oz
            * Make iterator for given HashString. After creation it points to first element.
            * @param t
            */
-          explicit Iterator( const HashString &t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          explicit Iterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
           {
             while( B::elem == null && index < SIZE - 1 ) {
               index++;
@@ -87,7 +89,7 @@ namespace oz
            * Advance to the next element.
            * @param
            */
-          Iterator &operator ++ ()
+          Iterator& operator ++ ()
           {
             assert( B::elem != null );
 
@@ -110,7 +112,7 @@ namespace oz
           /**
            * @return current element's key
            */
-          const String &key() const
+          const String& key() const
           {
             return B::elem->key;
           }
@@ -118,7 +120,7 @@ namespace oz
           /**
            * @return pointer to current element's value
            */
-          Type &value()
+          Type& value()
           {
             return B::elem->value;
           }
@@ -126,7 +128,7 @@ namespace oz
           /**
            * @return constant pointer to current element's value
            */
-          const Type &value() const
+          const Type& value() const
           {
             return B::elem->value;
           }
@@ -150,7 +152,7 @@ namespace oz
           /**
            * @return reference to current element
            */
-          Type &operator * ()
+          Type& operator * ()
           {
             return B::elem->value;
           }
@@ -158,7 +160,7 @@ namespace oz
           /**
            * @return constant reference to current element
            */
-          const Type &operator * () const
+          const Type& operator * () const
           {
             return B::elem->value;
           }
@@ -166,7 +168,7 @@ namespace oz
           /**
            * @return non-constant access to member
            */
-          Type *operator -> ()
+          Type* operator -> ()
           {
             return &B::elem->value;
           }
@@ -174,7 +176,7 @@ namespace oz
           /**
            * @return constant access to member
            */
-          const Type *operator -> () const
+          const Type* operator -> () const
           {
             return &B::elem->value;
           }
@@ -183,17 +185,18 @@ namespace oz
 
     private:
 
-      Elem         *data[SIZE];
+      Pool<Elem>    pool;
+      Elem*         data[SIZE];
       // we cache found element since we often want its value after a search
-      mutable Elem *cached;
-      int          count;
+      mutable Elem* cached;
+      int           count;
 
       /**
        * @param chainA
        * @param chainB
        * @return true if chains are equal length and all elements are equal
        */
-      static bool areChainsEqual( const Elem *chainA, const Elem *chainB )
+      static bool areChainsEqual( const Elem* chainA, const Elem* chainB )
       {
         while( chainA != null && chainB != null ) {
           if( chainA->key != chainB->key || chainA->value != chainB->value ) {
@@ -211,12 +214,12 @@ namespace oz
        * @param chain
        * @return pointer to first element of newly allocated chain
        */
-      static Elem *copyChain( const Elem *chain )
+      Elem* copyChain( const Elem* chain )
       {
-        Elem *newChain = null;
+        Elem* newChain = null;
 
         while( chain != null ) {
-          newChain = new Elem( chain->key, chain->value, newChain );
+          newChain = new( pool ) Elem( chain->key, chain->value, newChain );
           chain = chain->next[0];
         }
         return newChain;
@@ -226,12 +229,12 @@ namespace oz
        * Delete all elements in given chain.
        * @param chain
        */
-      static void freeChain( const Elem *chain )
+      void freeChain( Elem* chain )
       {
         while( chain != null ) {
-          const Elem *next = chain->next[0];
+          Elem* next = chain->next[0];
 
-          delete chain;
+          pool.free( chain );
           chain = next;
         }
       }
@@ -240,13 +243,13 @@ namespace oz
        * Delete all elements and their values in given chain.
        * @param chain
        */
-      static void freeChainAndValues( const Elem *chain )
+      void freeChainAndValues( Elem* chain )
       {
         while( chain != null ) {
-          const Elem *next = chain->next[0];
+          Elem* next = chain->next[0];
 
           delete chain->value;
-          delete chain;
+          pool.free( chain );
           chain = next;
         }
       }
@@ -267,7 +270,7 @@ namespace oz
        * Copy constructor.
        * @param t
        */
-      HashString( const HashString &t ) : cached( t.cached ), count( t.count )
+      HashString( const HashString& t ) : cached( t.cached ), count( t.count )
       {
         for( int i = 0; i < SIZE; i++ ) {
           data[i] = copyChain( t.data[i] );
@@ -287,7 +290,7 @@ namespace oz
        * @param t
        * @return
        */
-      HashString &operator = ( const HashString &t )
+      HashString& operator = ( const HashString& t )
       {
         assert( &t != this );
         assert( count == 0 );
@@ -306,7 +309,7 @@ namespace oz
        * @param t
        * @return
        */
-      bool operator == ( const HashString &t ) const
+      bool operator == ( const HashString& t ) const
       {
         if( count != t.count ) {
           return false;
@@ -324,7 +327,7 @@ namespace oz
        * @param t
        * @return
        */
-      bool operator != ( const HashString &t ) const
+      bool operator != ( const HashString& t ) const
       {
         if( count != t.count ) {
           return false;
@@ -372,7 +375,7 @@ namespace oz
       /**
        * @return cached element's key
        */
-      String &cachedKey()
+      String& cachedKey()
       {
         return cached->key;
       }
@@ -380,7 +383,7 @@ namespace oz
       /**
        * @return cached element's key
        */
-      const String &cachedKey() const
+      const String& cachedKey() const
       {
         return cached->key;
       }
@@ -388,7 +391,7 @@ namespace oz
       /**
        * @return cached element's value
        */
-      Type &cachedValue()
+      Type& cachedValue()
       {
         return cached->value;
       }
@@ -396,7 +399,7 @@ namespace oz
       /**
        * @return cached element's value
        */
-      const Type &cachedValue() const
+      const Type& cachedValue() const
       {
         return cached->value;
       }
@@ -407,10 +410,10 @@ namespace oz
        * @param key
        * @return true if found
        */
-      bool contains( const char *key ) const
+      bool contains( const char* key ) const
       {
-        int  i  = String::hash( key ) % SIZE;
-        Elem *p = data[i];
+        int   i = String::hash( key ) % SIZE;
+        Elem* p = data[i];
 
         while( p != null ) {
           if( p->key.equals( key ) ) {
@@ -431,10 +434,10 @@ namespace oz
        * @param key
        * @return reference to value associated to the given key
        */
-      Type &operator [] ( const char *key )
+      Type& operator [] ( const char* key )
       {
-        int  i  = String::hash( key ) % SIZE;
-        Elem *p = data[i];
+        int   i = String::hash( key ) % SIZE;
+        Elem* p = data[i];
 
         while( p != null ) {
           if( p->key.equals( key ) ) {
@@ -458,10 +461,10 @@ namespace oz
        * @param key
        * @return reference to value associated to the given key
        */
-      const Type &operator [] ( const char *key ) const
+      const Type& operator [] ( const char* key ) const
       {
-        int  i  = String::hash( key ) % SIZE;
-        Elem *p = data[i];
+        int   i = String::hash( key ) % SIZE;
+        Elem* p = data[i];
 
         while( p != null ) {
           if( p->key.equals( key ) ) {
@@ -484,12 +487,12 @@ namespace oz
        * @param key
        * @param value
        */
-      void add( const char *key, const Type &value )
+      void add( const char* key, const Type& value )
       {
         assert( !contains( key ) );
 
-        int  i = String::hash( key ) % SIZE;
-        Elem *elem = new Elem( key, value, data[i] );
+        int   i = String::hash( key ) % SIZE;
+        Elem* elem = new( pool ) Elem( key, value, data[i] );
 
         data[i] = elem;
         cached = elem;
@@ -502,12 +505,12 @@ namespace oz
        * @param key
        * @param value
        */
-      void add( const String &key, const Type &value )
+      void add( const String& key, const Type& value )
       {
         assert( !contains( key ) );
 
-        int  i = key.hash() % SIZE;
-        Elem *elem = new Elem( key, value, data[i] );
+        int   i = key.hash() % SIZE;
+        Elem* elem = new( pool ) Elem( key, value, data[i] );
 
         data[i] = elem;
         cached = elem;
@@ -518,16 +521,16 @@ namespace oz
        * Remove element with given key.
        * @param key
        */
-      void remove( const char *key )
+      void remove( const char* key )
       {
-        int  i  = String::hash( key ) % SIZE;
-        Elem *p = data[i];
-        Elem **prev = &data[i];
+        int    i = String::hash( key ) % SIZE;
+        Elem*  p = data[i];
+        Elem** prev = &data[i];
 
         while( p != null ) {
           if( p->key.equals( key ) ) {
             *prev = p->next[0];
-            delete p;
+            pool.free( p );
             count--;
             return;
           }
@@ -567,11 +570,13 @@ namespace oz
       }
 
       /**
-       * Deallocate memory from PoolAlloc.
+       * Deallocate memory from Pool.
        */
-      static void deallocate()
+      void deallocate()
       {
-        PoolAlloc<Elem, 0>::pool.free();
+        assert( count == 0 );
+
+        pool.free();
       }
 
   };

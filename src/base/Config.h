@@ -4,7 +4,7 @@
  *  List that reads configuration file
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -17,7 +17,7 @@ namespace oz
    *
    * Variables are key-value pairs. They can be loaded from or saved to an XML file.
    */
-  class Config
+  struct Config
   {
     private:
 
@@ -31,22 +31,24 @@ namespace oz
       // Hashtable of variables.
       HashString<String, SIZE> vars;
 
-      bool loadConf( const char *file );
-      bool saveConf( const char *file );
+      bool loadConf( const char* file );
+      bool saveConf( const char* file );
 
 #ifdef OZ_XML_CONFIG
-      bool loadXML( const char *file );
-      bool saveXML( const char *file );
+      bool loadXML( const char* file );
+      bool saveXML( const char* file );
 #endif
 
     public:
+
+      ~Config();
 
       /**
        * Add variable.
        * @param key variable name
        * @param value variable value
        */
-      void add( const char *key, const char *value )
+      void add( const char* key, const char* value )
       {
         if( vars.contains( key ) ) {
           vars.cachedValue() = value;
@@ -60,7 +62,7 @@ namespace oz
        * Remove variable.
        * @param key variable name
        */
-      void remove( const char *key )
+      void remove( const char* key )
       {
         vars.remove( key );
       }
@@ -69,7 +71,7 @@ namespace oz
        * @param key variable name
        * @return true if config contains the variable
        */
-      bool contains( const char *key ) const
+      bool contains( const char* key ) const
       {
         return vars.contains( key );
       }
@@ -79,7 +81,7 @@ namespace oz
        * @param key variable name
        * @return variable value
        */
-      const String &operator [] ( const char *key ) const
+      const String& operator [] ( const char* key ) const
       {
         return vars[key];
       }
@@ -89,43 +91,35 @@ namespace oz
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      bool get( const char *name, bool defVal ) const;
+      bool get( const char* name, bool defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      int get( const char *name, int defVal ) const;
+      int get( const char* name, int defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      float get( const char *name, float defVal ) const;
+      float get( const char* name, float defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      double get( const char *name, double defVal ) const;
+      double get( const char* name, double defVal ) const;
 
       /**
        * @param name variable name
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      const char *get( const char *name, const char *defVal ) const;
-
-      /**
-       * Like get, but adds variable with default value, if doesn't exist yet
-       * @param name variable name
-       * @param defVal default value, if variable does not exist in configuration
-       * @return value of given variable
-       */
-      bool getSet( const char *name, bool defVal );
+      const char* get( const char* name, const char* defVal ) const;
 
       /**
        * Like get, but adds variable with default value, if doesn't exist yet
@@ -133,7 +127,7 @@ namespace oz
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      int getSet( const char *name, int defVal );
+      bool getSet( const char* name, bool defVal );
 
       /**
        * Like get, but adds variable with default value, if doesn't exist yet
@@ -141,7 +135,7 @@ namespace oz
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      float getSet( const char *name, float defVal );
+      int getSet( const char* name, int defVal );
 
       /**
        * Like get, but adds variable with default value, if doesn't exist yet
@@ -149,7 +143,7 @@ namespace oz
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      double getSet( const char *name, double defVal );
+      float getSet( const char* name, float defVal );
 
       /**
        * Like get, but adds variable with default value, if doesn't exist yet
@@ -157,7 +151,15 @@ namespace oz
        * @param defVal default value, if variable does not exist in configuration
        * @return value of given variable
        */
-      const char *getSet( const char *name, const char *defVal );
+      double getSet( const char* name, double defVal );
+
+      /**
+       * Like get, but adds variable with default value, if doesn't exist yet
+       * @param name variable name
+       * @param defVal default value, if variable does not exist in configuration
+       * @return value of given variable
+       */
+      const char* getSet( const char* name, const char* defVal );
 
       /**
        * Load variables from an XML file. It only reads the nodes named "var" that must have the
@@ -167,7 +169,7 @@ namespace oz
        * @param file file path
        * @return true if successful
        */
-      bool load( const char *file );
+      bool load( const char* file );
 
       /**
        * Write variables to an XML file. The XML file will have the following format:
@@ -181,12 +183,17 @@ namespace oz
        * @param file file path
        * @return true if successful
        */
-      bool save( const char *file );
+      bool save( const char* file );
 
       /**
        * Clear variables.
        */
       void clear();
+
+      /**
+       * Free all allocated memory by all instances
+       */
+      void deallocate();
 
       /**
        * Print variables to a formatted String. It's formatted like
@@ -195,7 +202,7 @@ namespace oz
        * key2 = "value2"</pre>
        * @return formatted String
        */
-      String toString( const String &indentString = "" );
+      String toString( const String& indentString = "" );
 
   };
 

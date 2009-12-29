@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -19,7 +19,7 @@ namespace oz
 namespace client
 {
 
-  class Camera
+  struct Camera
   {
     public:
 
@@ -47,7 +47,7 @@ namespace client
       static StrategicProxy strategicProxy;
       static BotProxy       botProxy;
 
-      Proxy *proxy;
+      Proxy* proxy;
 
     public:
 
@@ -70,10 +70,10 @@ namespace client
       Vec3  up;
 
       int   tagged;
-      const Object *taggedObj;
+      const Object* taggedObj;
 
       int   bot;
-      const Bot *botObj;
+      const Bot* botObj;
 
       State state;
 
@@ -87,18 +87,15 @@ namespace client
       float minDist;
       float maxDist;
 
-      bool  isExternal;
-      bool  fastMove;
-
       void setState( State state );
 
-      void setTagged( const Object *obj )
+      void setTagged( const Object* obj )
       {
         tagged    = obj == null ? -1 : obj->index;
         taggedObj = obj;
       }
 
-      void setBot( const Bot *bot_ )
+      void setBot( const Bot* bot_ )
       {
         bot    = bot_ == null ? -1 : bot_->index;
         botObj = bot_;
@@ -106,14 +103,14 @@ namespace client
         assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
       }
 
-      void move( const Vec3 &pos )
+      void move( const Vec3& pos )
       {
         p    = pos * smoothCoef_1 + oldP * smoothCoef;
         newP = pos;
         oldP = p;
       }
 
-      void wrapMoveZ( const Vec3 &pos )
+      void wrapMoveZ( const Vec3& pos )
       {
         p.x  = pos.x;
         p.y  = pos.y;
@@ -122,7 +119,7 @@ namespace client
         oldP = p;
       }
 
-      void warp( const Vec3 &pos )
+      void warp( const Vec3& pos )
       {
         oldP = pos;
         newP = pos;

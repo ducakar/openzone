@@ -4,7 +4,7 @@
  *  World model
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -15,7 +15,7 @@
 namespace oz
 {
 
-  class Matrix
+  struct Matrix
   {
     private:
 
@@ -27,13 +27,13 @@ namespace oz
       static const float MAX_VELOCITY2;
 
       // thread synchronization
-      SDL_semaphore *semaphore;
+      SDL_semaphore* semaphore;
 
       void init();
       void free();
 
-      void load( InputStream *istream );
-      void unload( OutputStream *ostream );
+      void load( InputStream* istream );
+      void unload( OutputStream* ostream );
 
       void cleanObjects();
       void update();

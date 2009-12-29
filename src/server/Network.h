@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ namespace oz
 namespace server
 {
 
-  class Network
+  struct Network
   {
     private:
 
@@ -24,11 +24,11 @@ namespace server
       {
         String    name;
         TCPsocket socket;
-        Client    *next[1];
+        Client*    next[1];
       };
 
       TCPsocket serverSocket;
-      List<Client, 0> clients;
+      List<Client> clients;
 
     public:
 

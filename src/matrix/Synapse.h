@@ -4,7 +4,7 @@
  *  World manipulation interface.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -18,10 +18,10 @@ namespace oz
 
   namespace nirvana
   {
-    class Nirvana;
+    struct Nirvana;
   }
 
-  class Synapse
+  struct Synapse
   {
     friend class nirvana::Nirvana;
 
@@ -73,43 +73,43 @@ namespace oz
       explicit Synapse();
 
       // interactions
-      void use( Bot *user, Object *target );
+      void use( Bot* user, Object* target );
 
       // schedule for position in the world
-      void put( Dynamic *obj );
+      void put( Dynamic* obj );
 
       // schedule for unposition from world
-      void cut( Dynamic *obj );
+      void cut( Dynamic* obj );
 
       // create an object, schedule for addition in the world and return predicted world index
-      int  addStruct( const char *name, const Vec3 &p, Structure::Rotation rot );
-      int  addObject( const char *name, const Vec3 &p );
-      int  addPart( const Vec3 &p, const Vec3 &velocity, const Vec3 &color,
+      int  addStruct( const char* name, const Vec3& p, Structure::Rotation rot );
+      int  addObject( const char* name, const Vec3& p );
+      int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
                     float rejection, float mass, float lifeTime );
 
       // schedule for removal from physical world and delete it
-      void remove( Structure *str );
-      void remove( Object *obj );
-      void remove( Particle *part );
+      void remove( Structure* str );
+      void remove( Object* obj );
+      void remove( Particle* part );
 
       // for removing inventory (cut) objects
-      void removeCut( Dynamic *obj );
+      void removeCut( Dynamic* obj );
 
       // client-initiated actions, returns a ticket that can be used to retrieve index of the
       // added object
-      int  globalPut( Structure *str );
-      int  globalPut( Object *obj );
-      int  globalPut( Particle *part );
+      int  globalPut( Structure* str );
+      int  globalPut( Object* obj );
+      int  globalPut( Particle* part );
 
-      void globalCut( Structure *str );
-      void globalCut( Object *obj );
-      void globalCut( Particle *part );
+      void globalCut( Structure* str );
+      void globalCut( Object* obj );
+      void globalCut( Particle* part );
 
-      void globalRemove( Structure *str );
-      void globalRemove( Object *obj );
-      void globalRemove( Particle *part );
+      void globalRemove( Structure* str );
+      void globalRemove( Object* obj );
+      void globalRemove( Particle* part );
 
-      void globalUse( Bot *user, Object *target );
+      void globalUse( Bot* user, Object* target );
 
       // indices in World vectors after objects have been remotely added
       // (ticket is the integer returned by globalPut())
@@ -117,9 +117,9 @@ namespace oz
       int  getObjectIndex( int ticket ) const;
       int  getPartIndex( int ticket ) const;
 
-      void genParts( int number, const Vec3 &p,
-                     const Vec3 &velocity, float velocitySpread,
-                     const Vec3 &color, float colorSpread,
+      void genParts( int number, const Vec3& p,
+                     const Vec3& velocity, float velocitySpread,
+                     const Vec3& color, float colorSpread,
                      float rejection, float mass, float lifeTime );
 
       // do deletes and clear lists for actions, additions, removals
@@ -132,7 +132,7 @@ namespace oz
 
   extern Synapse synapse;
 
-  inline void Synapse::use( Bot *user, Object *target )
+  inline void Synapse::use( Bot* user, Object* target )
   {
     if( target->flags & Object::USE_FUNC_BIT ) {
       actions << Action( user->index, target->index );
@@ -140,7 +140,7 @@ namespace oz
     }
   }
 
-  inline void Synapse::put( Dynamic *obj )
+  inline void Synapse::put( Dynamic* obj )
   {
     assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
 
@@ -148,7 +148,7 @@ namespace oz
     world.position( obj );
   }
 
-  inline void Synapse::cut( Dynamic *obj )
+  inline void Synapse::cut( Dynamic* obj )
   {
     assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
 
@@ -160,23 +160,27 @@ namespace oz
     world.unposition( obj );
   }
 
-  inline int Synapse::addStruct( const char *name, const Vec3 &p, Structure::Rotation rot )
+  inline int Synapse::addStruct( const char* name, const Vec3& p, Structure::Rotation rot )
   {
     world.requestBSP( translator.bspIndex( name ) );
 
     int index = world.addStruct( name, p, rot );
-    Structure *str = world.structures[index];
+    Structure* str = world.structs[index];
 
-    world.position( str );
+    if( !world.position( str ) ) {
+      world.remove( str );
+      delete str;
+      return -1;
+    }
 
     addedStructs << index;
     return index;
   }
 
-  inline int Synapse::addObject( const char *name, const Vec3 &p )
+  inline int Synapse::addObject( const char* name, const Vec3& p )
   {
     int index = world.addObject( name, p );
-    Object *obj = world.objects[index];
+    Object* obj = world.objects[index];
     assert( obj->cell == null );
 
     world.position( obj );
@@ -186,11 +190,11 @@ namespace oz
     return index;
   }
 
-  inline int Synapse::addPart( const Vec3 &p, const Vec3 &velocity, const Vec3 &color,
+  inline int Synapse::addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
                                float rejection, float mass, float lifeTime )
   {
     int index = world.addPart( p, velocity, color, rejection, mass, lifeTime );
-    Particle *part = world.particles[index];
+    Particle* part = world.parts[index];
 
     world.position( part );
 
@@ -198,7 +202,7 @@ namespace oz
     return index;
   }
 
-  inline void Synapse::remove( Structure *str )
+  inline void Synapse::remove( Structure* str )
   {
     assert( str->index != -1 );
 
@@ -210,7 +214,7 @@ namespace oz
     delete str;
   }
 
-  inline void Synapse::remove( Object *obj )
+  inline void Synapse::remove( Object* obj )
   {
     assert( obj->index != -1 && obj->cell != null );
 
@@ -224,7 +228,7 @@ namespace oz
     world.remove( obj );
   }
 
-  inline void Synapse::removeCut( Dynamic *obj )
+  inline void Synapse::removeCut( Dynamic* obj )
   {
     assert( obj->index != -1 && obj->cell == null );
 
@@ -233,7 +237,7 @@ namespace oz
     world.remove( obj );
   }
 
-  inline void Synapse::remove( Particle *part )
+  inline void Synapse::remove( Particle* part )
   {
     assert( part->index != -1 );
 

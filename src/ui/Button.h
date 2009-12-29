@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -18,17 +18,17 @@ namespace client
 namespace ui
 {
 
-  class Button : public Area
+  struct Button : public Area
   {
     public:
 
-      typedef void Callback( Button *sender );
+      typedef void Callback( Button* sender );
 
     private:
 
-      bool     isHighlighted;
-      bool     isClicked;
-      Callback *callback;
+      bool      isHighlighted;
+      bool      isClicked;
+      Callback* callback;
 
     protected:
 
@@ -39,12 +39,12 @@ namespace ui
 
       String   label;
 
-      explicit Button( const char *label_, Callback *callback, int width, int height ) :
+      explicit Button( const char* label_, Callback* callback, int width, int height ) :
           Area( width, height ), isHighlighted( false ), isClicked( false ), callback( callback ),
           label( label_ )
       {}
 
-      void setCallback( Callback *callback_ )
+      void setCallback( Callback* callback_ )
       {
         callback = callback_;
       }

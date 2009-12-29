@@ -1,14 +1,14 @@
 /*
  *  ReuseAlloc.h
  *
- *  Reuse allocator
+ *  Reuse allocator base class
  *  Base class for memory reusing. All classes which inherit from ReuseAlloc will have overloaded
- *  new and delete (BUT NOT new[] and delete[]) operators. The new operator will try to reuse
- *  memory from deleted objects form that class. At least the end of the program you should call
- *  Class::deallocate() for all Reuser-derived classes. Performance can increase up to 100%.
+ *  new and delete operators. The new operator will try to reuse memory from deleted objects form
+ *  that class. At least the end of the program you should call Class::deallocate() for all
+ *  ReuseAlloc-derived classes. Performance can increase up to 100%.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,83 +16,57 @@
 namespace oz
 {
 
-  template <class Type>
-  class ReuseAlloc
+  template <class Type, int INDEX = 0>
+  struct ReuseAlloc
   {
     private:
 
-      static Type *freeList;
-
-      Type *next;
-
-      void free() const
-      {
-        if( next != null ) {
-          next->ReuseAlloc::free();
-        }
-        ::delete this;
-      }
+      static Type* freeList;
 
     public:
 
-      ReuseAlloc() : next( null )
-      {}
-
-#ifdef OZ_REUSEALLOC
       // If the list of freed blocks isn't empty, reuse the last freed block (at the beginning of
       // the list), otherwise allocate new block. (Constructor is called automatically.)
-      void *operator new ( uint size )
+      void* operator new ( uint size )
       {
         if( freeList != null ) {
-          ReuseAlloc *p = freeList;
-          freeList = freeList->ReuseAlloc::next;
+          ReuseAlloc* p = freeList;
+          freeList = freeList->next[INDEX];
 
           return p;
         }
         return ::new byte[size];
       }
 
-      /**
-       * No placement new.
-       */
-      void *operator new ( uint, void* )
-      {
-        throw Exception( "No placement new" );
-      }
-
       // Do not really free memory, add it at the beginning of the list of freed blocks.
       // (Destructor is called automatically.)
-      void operator delete ( void *ptr )
+      void operator delete ( void* ptr )
       {
-        Type *p = reinterpret_cast<Type*>( ptr );
+        Type* object = reinterpret_cast<Type*>( ptr );
 
         // note that space for destroyed object is still allocated
-        p->ReuseAlloc::next = freeList;
-        freeList = p;
+        object->next[INDEX] = freeList;
+        freeList = object;
       }
-
-      /**
-       * No placement delete
-       */
-      void operator delete ( void*, void* )
-      {
-        throw Exception( "No placement delete" );
-      }
-#endif
 
       // It's good idea to call that function from time to time and at the end of the program to
       // free some memory and to prevent memory leaks.
       static void deallocate()
       {
-        if( freeList != null ) {
-          freeList->ReuseAlloc::free();
-          freeList = null;
+        Type* object = freeList;
+        Type* nextObject;
+
+        while( object != null ) {
+          nextObject = object->next[INDEX];
+          ::delete object;
+          object = nextObject;
         }
+        freeList = null;
       }
 
   };
 
-  template <class Type>
-  Type *ReuseAlloc<Type>::freeList = null;
+  template <class Type, int INDEX>
+  Type* ReuseAlloc<Type, INDEX>::freeList = null;
 
 }

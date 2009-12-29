@@ -4,7 +4,7 @@
  *  Utility for writing a log file
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "base.h"
@@ -20,7 +20,7 @@ namespace oz
 
   // first parameter is file name, the other tells us if we want to clear its content if
   // the file already exists
-  bool Log::init( const char *fileName, bool clearFile, const char *indentStr_ )
+  bool Log::init( const char* fileName, bool clearFile, const char* indentStr_ )
   {
     // initialize indent
     tabs = 0;
@@ -33,7 +33,7 @@ namespace oz
 
       // clear the file if necessary
       if( clearFile ) {
-        FILE *f = fopen( logFile, "w" );
+        FILE* f = fopen( logFile, "w" );
 
         if( f != null ) {
           fclose( f );
@@ -55,10 +55,10 @@ namespace oz
     return !isStdout;
   }
 
-  void Log::printEnd( const char *s, ... ) const
+  void Log::printEnd( const char* s, ... ) const
   {
     va_list ap;
-    FILE *f;
+    FILE* f;
 
     f = isStdout ? stdout : fopen( logFile, "a" );
 
@@ -72,10 +72,10 @@ namespace oz
     }
   }
 
-  void Log::print( const char *s, ... ) const
+  void Log::print( const char* s, ... ) const
   {
     va_list ap;
-    FILE *f;
+    FILE* f;
 
     f = isStdout ? stdout : fopen( logFile, "a" );
 
@@ -91,10 +91,10 @@ namespace oz
     }
   }
 
-  void Log::println( const char *s, ... ) const
+  void Log::println( const char* s, ... ) const
   {
     va_list ap;
-    FILE *f;
+    FILE* f;
 
     f = isStdout ? stdout : fopen( logFile, "a" );
 
@@ -111,10 +111,10 @@ namespace oz
     }
   }
 
-  void Log::printlnBT( const char *s, ... ) const
+  void Log::printlnBT( const char* s, ... ) const
   {
     va_list ap;
-    FILE *f;
+    FILE* f;
     time_t ct;                 // current time
     struct tm t;
 
@@ -138,10 +138,10 @@ namespace oz
     }
   }
 
-  void Log::printlnET( const char *s, ... ) const
+  void Log::printlnET( const char* s, ... ) const
   {
     va_list ap;
-    FILE *f;
+    FILE* f;
     time_t ct;
     struct tm t;
 
@@ -163,10 +163,10 @@ namespace oz
     }
   }
 
-  void Log::printlnETD( const char *s, ... ) const
+  void Log::printlnETD( const char* s, ... ) const
   {
     va_list ap;
-    FILE *f;
+    FILE* f;
     time_t ct;
     struct tm t;
 
@@ -192,7 +192,7 @@ namespace oz
 
   void Log::println() const
   {
-    FILE *f;
+    FILE* f;
 
     f = isStdout ? stdout : fopen( logFile, "a" );
 
@@ -223,7 +223,7 @@ namespace oz
   void Log::clear() const
   {
     if( !isStdout ) {
-      FILE *f = fopen( logFile, "w" );
+      FILE* f = fopen( logFile, "w" );
       fclose( f );
     }
   }

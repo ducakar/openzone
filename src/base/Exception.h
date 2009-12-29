@@ -4,7 +4,7 @@
  *  Exception class
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -14,11 +14,11 @@ namespace oz
 
   struct Exception
   {
-    const char *message;
-    const char *file;
+    const char* message;
+    const char* file;
     int        line;
 
-    explicit Exception( const char *message_, const char *file_, int line_ ) :
+    explicit Exception( const char* message_, const char* file_, int line_ ) :
         message( message_ ), file( file_ ), line( line_ )
     {}
   };

@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -24,8 +24,8 @@ namespace client
 
   void BotProxy::begin()
   {
-    externalDistFactor = config.getSet( "camera.externalDistFactor", 2.75f );
-    isExternal         = false;
+    externalDistFactor = config.getSet( "camera.botProxy.externalDistFactor", 2.75f );
+    isExternal         = camera.state == Camera::EXTERNAL;
     isFreelook         = false;
 
     bobPhi   = 0.0f;
@@ -39,7 +39,7 @@ namespace client
       return;
     }
 
-    Bot *bot = static_cast<Bot*>( world.objects[camera.bot] );
+    Bot* bot = static_cast<Bot*>( world.objects[camera.bot] );
 
     /*
      * Camera
@@ -85,7 +85,7 @@ namespace client
     if( ui::keyboard.keys[SDLK_x] ) {
       bot->actions |= Bot::ACTION_EJECT;
     }
-    if( camera.isExternal && ui::keyboard.keys[SDLK_LALT] && !ui::keyboard.oldKeys[SDLK_LALT] ) {
+    if( isExternal && ui::keyboard.keys[SDLK_LALT] && !ui::keyboard.oldKeys[SDLK_LALT] ) {
       isFreelook = !isFreelook;
     }
     if( ui::keyboard.keys[SDLK_p] && !ui::keyboard.oldKeys[SDLK_p] ) {
@@ -118,8 +118,8 @@ namespace client
       camera.h = bot->h;
       camera.v = bot->v;
 
-      camera.isExternal = !camera.isExternal;
-      camera.setState( camera.isExternal ? Camera::EXTERNAL : Camera::INTERNAL );
+      isExternal = !isExternal;
+      camera.setState( isExternal ? Camera::EXTERNAL : Camera::INTERNAL );
     }
 
     if( !ui::mouse.doShow ) {
@@ -148,11 +148,11 @@ namespace client
       return;
     }
 
-    const Bot *bot = camera.botObj;
+    const Bot* bot = camera.botObj;
 
     if( !isExternal ) {
-      if( bot->parent != -1 ) {
-        Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->parent] );
+      if( bot->parent != -1 ) { // inside vehicle
+        Vehicle* veh = static_cast<Vehicle*>( world.objects[bot->parent] );
 
         assert( veh->flags & Object::VEHICLE_BIT );
 
@@ -164,8 +164,8 @@ namespace client
         bobTheta = 0.0f;
         bobBias  = 0.0f;
       }
-      else {
-        const BotClass *clazz = static_cast<const BotClass*>( bot->type );
+      else { // 1st person, not in vehicle
+        const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
         if( bot->state & Bot::MOVING_BIT ) {
           if( bot->flags & Object::IN_WATER_BIT ) {
@@ -185,6 +185,11 @@ namespace client
             bobTheta = Math::sin( Math::rad( bobPhi ) ) * clazz->bobRotation;
             bobBias  = Math::sin( Math::rad( 2.0f * bobPhi ) ) * clazz->bobAmplitude;
           }
+          else {
+            bobPhi   = 0.0f;
+            bobTheta *= BOB_SUPPRESSION_COEF;
+            bobBias  *= BOB_SUPPRESSION_COEF;
+          }
         }
         else {
           bobPhi   = 0.0f;
@@ -203,13 +208,13 @@ namespace client
         camera.wrapMoveZ( p );
       }
     }
-    else {
+    else { // external
       camera.w = 0.0f;
       camera.align();
 
       float dist;
       if( bot->parent != -1 ) {
-        Vehicle *veh = static_cast<Vehicle*>( world.objects[bot->parent] );
+        Vehicle* veh = static_cast<Vehicle*>( world.objects[bot->parent] );
 
         assert( veh->flags & Object::VEHICLE_BIT );
 
@@ -233,7 +238,7 @@ namespace client
       bobBias  = 0.0f;
     }
 
-    if( bot->grabObj != -1 && world.objects[camera.botObj->grabObj] != null ) {
+    if( bot->grabObj != -1 ) {
       camera.setTagged( world.objects[camera.botObj->grabObj] );
     }
     else if( isExternal && isFreelook ) {
@@ -246,6 +251,7 @@ namespace client
       hvsc[4] = hvsc[3] * hvsc[0];
       hvsc[5] = hvsc[3] * hvsc[1];
 
+      // at vector must be based on bot's orientation, not on camera's
       Vec3 at = Vec3( -hvsc[4], hvsc[5], hvsc[2] );
 
       float distance = static_cast<const BotClass*>( camera.botObj->type )->grabDistance;

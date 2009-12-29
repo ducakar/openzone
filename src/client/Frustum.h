@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -17,7 +17,7 @@ namespace oz
 namespace client
 {
 
-  class Frustum
+  struct Frustum
   {
     private:
 
@@ -27,8 +27,8 @@ namespace client
       Vec3  nLeft, nRight, nDown, nUp, nFront;
       float dLeft, dRight, dDown, dUp, dFront;
 
-      uint visibility( const Vec3 &p );
-      uint visibility( const Vec3 &p, float radius );
+      uint visibility( const Vec3& p );
+      uint visibility( const Vec3& p, float radius );
 
     public:
 
@@ -43,7 +43,7 @@ namespace client
       void init( float fovY, float aspect, float maxDistance );
       void update( float maxDistance );
 
-      bool isVisible( const Vec3 &p )
+      bool isVisible( const Vec3& p )
       {
         return
             p * nLeft  > dLeft  &&
@@ -53,7 +53,7 @@ namespace client
             p * nFront < dFront;
       }
 
-      bool isVisible( const Vec3 &p, float radius )
+      bool isVisible( const Vec3& p, float radius )
       {
         return
             p * nLeft  > dLeft  - radius &&
@@ -63,17 +63,17 @@ namespace client
             p * nFront < dFront + radius;
       }
 
-      bool isVisible( const Sphere &s )
+      bool isVisible( const Sphere& s )
       {
         return isVisible( s.p, s.r );
       }
 
-      bool isVisible( const AABB &bb )
+      bool isVisible( const AABB& bb )
       {
         return isVisible( bb.p, Math::sqrt( bb.dim * bb.dim ) );
       }
 
-      bool isVisible( const Bounds &b )
+      bool isVisible( const Bounds& b )
       {
         Vec3 dim = b.maxs - b.mins;
         return isVisible( ( b.mins + b.maxs ) * 0.5f, Math::sqrt( dim * dim ) );
@@ -93,12 +93,12 @@ namespace client
       }
 
       // get min and max index for cells per each axis, which should be included in pvs
-      void getExtrems( const Vec3 &p )
+      void getExtrems( const Vec3& p )
       {
-        minX = max( static_cast<int>( p.x - radius + World::DIM ) / Cell::SIZEI, 0 );
-        minY = max( static_cast<int>( p.y - radius + World::DIM ) / Cell::SIZEI, 0 );
-        maxX = min( static_cast<int>( p.x + radius + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
-        maxY = min( static_cast<int>( p.y + radius + World::DIM ) / Cell::SIZEI, World::MAX - 1 );
+        minX = max( int( ( p.x - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
+        minY = max( int( ( p.y - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
+        maxX = min( int( ( p.x + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+        maxY = min( int( ( p.y + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
       }
 
   };

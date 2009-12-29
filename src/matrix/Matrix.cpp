@@ -4,7 +4,7 @@
  *  World model
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -175,7 +175,7 @@ namespace oz
     log.println( "}" );
   }
 
-  void Matrix::load( InputStream *istream )
+  void Matrix::load( InputStream* istream )
   {
     log.println( "Loading Matrix {" );
     log.indent();
@@ -196,7 +196,7 @@ namespace oz
     log.println( "}" );
   }
 
-  void Matrix::unload( OutputStream *ostream )
+  void Matrix::unload( OutputStream* ostream )
   {
     log.println( "Unloading Matrix {" );
     log.indent();
@@ -213,7 +213,7 @@ namespace oz
   void Matrix::cleanObjects()
   {
     for( int i = 0; i < world.objects.length(); i++ ) {
-      Object *obj = world.objects[i];
+      Object* obj = world.objects[i];
 
       if( obj != null ) {
         obj->events.free();
@@ -227,8 +227,8 @@ namespace oz
 
   void Matrix::update()
   {
-    for( int i = 0; i < world.particles.length(); i++ ) {
-      Particle *part = world.particles[i];
+    for( int i = 0; i < world.parts.length(); i++ ) {
+      Particle* part = world.parts[i];
 
       if( part != null ) {
         part->update();
@@ -241,7 +241,7 @@ namespace oz
     }
 
     for( int i = 0; i < world.objects.length(); i++ ) {
-      Object *obj = world.objects[i];
+      Object* obj = world.objects[i];
 
       if( obj == null ) {
         continue;
@@ -255,7 +255,7 @@ namespace oz
       }
 
       if( obj->flags & Object::DYNAMIC_BIT ) {
-        Dynamic *dyn = static_cast<Dynamic*>( obj );
+        Dynamic* dyn = static_cast<Dynamic*>( obj );
 
         if( dyn->cell == null ) {
           assert( dyn->parent != -1 );

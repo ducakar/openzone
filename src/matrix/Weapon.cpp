@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -19,6 +19,8 @@
 namespace oz
 {
 
+  Pool<Weapon> Weapon::pool;
+
   void Weapon::onUpdate()
   {
     if( shotTime > 0.0f ) {
@@ -26,7 +28,7 @@ namespace oz
     }
   }
 
-  void Weapon::onUse( Bot *user )
+  void Weapon::onUse( Bot* user )
   {
     assert( parent == -1 || parent == user->index );
 
@@ -35,16 +37,16 @@ namespace oz
     }
   }
 
-  void Weapon::onShot( Bot *user )
+  void Weapon::onShot( Bot* user )
   {
-    const WeaponClass *clazz = static_cast<const WeaponClass*>( type );
+    const WeaponClass* clazz = static_cast<const WeaponClass*>( type );
 
     if( !clazz->onShot.isEmpty() ) {
       lua.call( clazz->onShot, this, user );
     }
   }
 
-  void Weapon::readFull( InputStream *istream )
+  void Weapon::readFull( InputStream* istream )
   {
     Dynamic::readFull( istream );
 
@@ -52,7 +54,7 @@ namespace oz
     shotTime = istream->readFloat();
   }
 
-  void Weapon::writeFull( OutputStream *ostream ) const
+  void Weapon::writeFull( OutputStream* ostream ) const
   {
     Dynamic::writeFull( ostream );
 
@@ -60,14 +62,14 @@ namespace oz
     ostream->writeFloat( shotTime );
   }
 
-  void Weapon::readUpdate( InputStream *istream )
+  void Weapon::readUpdate( InputStream* istream )
   {
     Dynamic::readUpdate( istream );
 
     nShots = istream->readInt();
   }
 
-  void Weapon::writeUpdate( OutputStream *ostream ) const
+  void Weapon::writeUpdate( OutputStream* ostream ) const
   {
     Dynamic::writeUpdate( ostream );
 

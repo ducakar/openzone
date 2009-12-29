@@ -5,7 +5,7 @@
  *  The Type should provide the "prev[INDEX]" and "next[INDEX]" pointers.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -19,10 +19,10 @@ namespace oz
    * It can only be applied on classes that have <code>next[]</code> and <code>prev[]</code>
    * members.
    * Example:
-   * <pre>class C
+   * <pre>struct C
    * {
-   *   C *prev[2];
-   *   C *next[2];
+   *   C* prev[2];
+   *   C* next[2];
    *   int value;
    * };
    * ...
@@ -45,15 +45,15 @@ namespace oz
    */
 
 
-  template <class Type, int INDEX>
-  class DList
+  template <class Type, int INDEX = 0>
+  struct DList
   {
     public:
 
       /**
        * DList iterator.
        */
-      class Iterator : public IteratorBase<Type>
+      struct Iterator : public IteratorBase<Type>
       {
         private:
 
@@ -73,7 +73,7 @@ namespace oz
            * Make iterator for given list. After creation it points to first element.
            * @param l
            */
-          explicit Iterator( const DList &l ) : B( l.firstElem )
+          explicit Iterator( const DList& l ) : B( l.firstElem )
           {}
 
           /**
@@ -89,7 +89,7 @@ namespace oz
           /**
            * Advance to next element.
            */
-          Iterator &operator ++ ()
+          Iterator& operator ++ ()
           {
             assert( B::elem != null );
 
@@ -102,9 +102,9 @@ namespace oz
     private:
 
       // First element in list.
-      Type *firstElem;
+      Type* firstElem;
       // Last element in list.
-      Type *lastElem;
+      Type* lastElem;
 
     public:
 
@@ -120,7 +120,7 @@ namespace oz
        * constructor and for sake of performance the order of elements in the new list is reversed.
        * @param l the original list
        */
-      DList( const DList &l ) : firstElem( null ), lastElem( null )
+      DList( const DList& l ) : firstElem( null ), lastElem( null )
       {
         foreach( e, l.iterator() ) {
           pushFirst( new Type( *e ) );
@@ -131,7 +131,7 @@ namespace oz
        * Create a list with only one element.
        * @param e the element
        */
-      explicit DList( Type *e ) : firstElem( e ), lastElem( e )
+      explicit DList( Type* e ) : firstElem( e ), lastElem( e )
       {
         e->prev[INDEX] = null;
         e->next[INDEX] = null;
@@ -161,10 +161,10 @@ namespace oz
        * @param l
        * @return
        */
-      bool operator == ( const DList &l ) const
+      bool operator == ( const DList& l ) const
       {
-        Type *e1 = firstElem;
-        Type *e2 = l.firstElem;
+        Type* e1 = firstElem;
+        Type* e2 = l.firstElem;
 
         while( e1 != null && e2 != null ) {
           if( *e1 != *e2 ) {
@@ -184,10 +184,10 @@ namespace oz
        * @param l
        * @return
        */
-      bool operator != ( const DList &l ) const
+      bool operator != ( const DList& l ) const
       {
-        Type *e1 = firstElem;
-        Type *e2 = l.firstElem;
+        Type* e1 = firstElem;
+        Type* e2 = l.firstElem;
 
         while( e1 != null && e2 != null ) {
           if( *e1 != *e2 ) {
@@ -214,10 +214,10 @@ namespace oz
        */
       int length() const
       {
-        int i = 1;
-        Type *p = firstElem;
+        int i = 0;
+        Type* p = firstElem;
 
-        while( p != lastElem ) {
+        while( p != null ) {
           p = p->next[INDEX];
           i++;
         }
@@ -238,11 +238,11 @@ namespace oz
        * @param e requested element
        * @return true if some element in the list points to the requested element
        */
-      bool contains( const Type *e ) const
+      bool contains( const Type* e ) const
       {
         assert( e != null );
 
-        Type *p = firstElem;
+        Type* p = firstElem;
 
         while( p != null ) {
           if( p == e ) {
@@ -256,7 +256,7 @@ namespace oz
       /**
        * @return pointer to first element in the list
        */
-      Type *first()
+      Type* first()
       {
         return firstElem;
       }
@@ -264,7 +264,7 @@ namespace oz
       /**
        * @return constant pointer to first element in the list
        */
-      const Type *first() const
+      const Type* first() const
       {
         return firstElem;
       }
@@ -272,7 +272,7 @@ namespace oz
       /**
        * @return pointer to last element in the list
        */
-      Type *last()
+      Type* last()
       {
         return lastElem;
       }
@@ -280,7 +280,7 @@ namespace oz
       /**
        * @return constant pointer to last element in the list
        */
-      const Type *last() const
+      const Type* last() const
       {
         return lastElem;
       }
@@ -289,7 +289,7 @@ namespace oz
        * Add element to the beginning of the list.
        * @param e element to be added
        */
-      void operator << ( Type *e )
+      void operator << ( Type* e )
       {
         pushFirst( e );
       }
@@ -298,7 +298,7 @@ namespace oz
        * Add element to the beginning of the list.
        * @param e element to be added
        */
-      void add( Type *e )
+      void add( Type* e )
       {
         pushFirst( e );
       }
@@ -307,7 +307,7 @@ namespace oz
        * Add element to the beginning of the list.
        * @param e element to be added
        */
-      void pushFirst( Type *e )
+      void pushFirst( Type* e )
       {
         assert( e != null );
 
@@ -328,7 +328,7 @@ namespace oz
        * Add element to the end of the list.
        * @param e element to be added
        */
-      void pushLast( Type *e )
+      void pushLast( Type* e )
       {
         assert( e != null );
 
@@ -358,11 +358,11 @@ namespace oz
        * Pop first element from the list.
        * @param e pointer to the first element
        */
-      Type *popFirst()
+      Type* popFirst()
       {
         assert( firstElem != null );
 
-        Type *p = firstElem;
+        Type* p = firstElem;
 
         firstElem = p->next[INDEX];
 
@@ -379,11 +379,11 @@ namespace oz
        * Pop last element from the list.
        * @param e pointer to the last element
        */
-      Type *popLast()
+      Type* popLast()
       {
         assert( lastElem != null );
 
-        Type *p = lastElem;
+        Type* p = lastElem;
 
         lastElem = p->prev[INDEX];
 
@@ -401,7 +401,7 @@ namespace oz
        * @param e element to be inserted
        * @param p pointer to element after which we want to insert
        */
-      void insertAfter( Type *e, Type *p )
+      void insertAfter( Type* e, Type* p )
       {
         assert( e != null );
         assert( p != null );
@@ -414,7 +414,7 @@ namespace oz
           lastElem = e;
         }
         else {
-          Type *next = p->next[INDEX];
+          Type* next = p->next[INDEX];
 
           next->prev[INDEX] = e;
           e->next[INDEX] = next;
@@ -427,7 +427,7 @@ namespace oz
        * @param e element to be inserted
        * @param p pointer to element before which we want to insert
        */
-      void insertBefore( Type *e, Type *p )
+      void insertBefore( Type* e, Type* p )
       {
         assert( e != null );
         assert( p != null );
@@ -440,7 +440,7 @@ namespace oz
           firstElem = e;
         }
         else {
-          Type *prev = p->prev[INDEX];
+          Type* prev = p->prev[INDEX];
 
           prev->next[INDEX] = e;
           e->prev[INDEX] = prev;
@@ -452,7 +452,7 @@ namespace oz
        * Remove an element from the list.
        * @param e element to be removed
        */
-      void remove( Type *e )
+      void remove( Type* e )
       {
         if( e == firstElem ) {
           firstElem = e->next[INDEX];
@@ -472,7 +472,7 @@ namespace oz
        * Transfer elements from given list. The given list is cleared after the operation.
        * @param l
        */
-      void transfer( DList &l )
+      void transfer( DList& l )
       {
         if( l.isEmpty() ) {
           return;
@@ -508,10 +508,10 @@ namespace oz
        */
       void free()
       {
-        Type *p = firstElem;
+        Type* p = firstElem;
 
         while( p != null ) {
-          Type *next = p->next[INDEX];
+          Type* next = p->next[INDEX];
 
           delete p;
           p = next;

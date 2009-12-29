@@ -4,7 +4,7 @@
  *  Quaternion library
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -25,12 +25,12 @@ namespace oz
     explicit Quat( float x_, float y_, float z_, float w_ ) : Vec3( x_, y_, z_ ), w( w_ )
     {}
 
-    explicit Quat( float *q )
+    explicit Quat( float* q )
     {
       *this = *reinterpret_cast<Quat*>( q );
     }
 
-    explicit Quat( const Vec3 &v ) : Vec3( v.x, v.y, v.z ), w( 0.0f )
+    explicit Quat( const Vec3& v ) : Vec3( v.x, v.y, v.z ), w( 0.0f )
     {
     }
 
@@ -54,17 +54,17 @@ namespace oz
       return reinterpret_cast<const float*>( this );
     }
 
-    bool operator < ( const Quat &q ) const
+    bool operator < ( const Quat& q ) const
     {
       return w < q.w;
     }
 
-    float &operator [] ( int i )
+    float& operator [] ( int i )
     {
       return reinterpret_cast<float*>( this )[i];
     }
 
-    const float &operator [] ( int i ) const
+    const float& operator [] ( int i ) const
     {
       return reinterpret_cast<const float*>( this )[i];
     }
@@ -94,7 +94,7 @@ namespace oz
       return Quat( -x, -y, -z, -w );
     }
 
-    Quat &conj()
+    Quat& conj()
     {
       x = -x;
       y = -y;
@@ -107,7 +107,7 @@ namespace oz
       return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f;
     }
 
-    Quat &setZero()
+    Quat& setZero()
     {
       x = 0.0f;
       y = 0.0f;
@@ -121,7 +121,7 @@ namespace oz
       return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f;
     }
 
-    Quat &setId()
+    Quat& setId()
     {
       x = 0.0f;
       y = 0.0f;
@@ -143,7 +143,7 @@ namespace oz
       return Quat( x * r, y * r, z * r, w * r );
     }
 
-    Quat &norm()
+    Quat& norm()
     {
       assert( x*x + y*y + z*z + w*w > 0.0f );
 
@@ -155,7 +155,7 @@ namespace oz
       return *this;
     }
 
-    Quat &operator += ( const Quat &a )
+    Quat& operator += ( const Quat& a )
     {
       x += a.x;
       y += a.y;
@@ -164,7 +164,7 @@ namespace oz
       return *this;
     }
 
-    Quat &operator -= ( const Quat &a )
+    Quat& operator -= ( const Quat& a )
     {
       x -= a.x;
       y -= a.y;
@@ -173,7 +173,7 @@ namespace oz
       return *this;
     }
 
-    Quat &operator *= ( float k )
+    Quat& operator *= ( float k )
     {
       x *= k;
       y *= k;
@@ -182,7 +182,7 @@ namespace oz
       return *this;
     }
 
-    Quat &operator /= ( float k )
+    Quat& operator /= ( float k )
     {
       assert( k != 0.0f );
 
@@ -195,7 +195,7 @@ namespace oz
     }
 
     // quaternion multiplication
-    Quat &operator ^= ( const Quat &a )
+    Quat& operator ^= ( const Quat& a )
     {
       float tx = x, ty = y, tz = z;
 
@@ -207,12 +207,12 @@ namespace oz
       return *this;
     }
 
-    Quat operator + ( const Quat &a ) const
+    Quat operator + ( const Quat& a ) const
     {
       return Quat( x + a.x, y + a.y, z + a.z, w + a.w );
     }
 
-    Quat operator - ( const Quat &a ) const
+    Quat operator - ( const Quat& a ) const
     {
       return Quat( x - a.x, y - a.y, z - a.z, w - a.w );
     }
@@ -231,13 +231,13 @@ namespace oz
     }
 
     // dot product
-    float operator * ( const Quat &a ) const
+    float operator * ( const Quat& a ) const
     {
       return x*a.x + y*a.y + z*a.z + w*a.w;
     }
 
     // product of quaternions
-    Quat operator ^ ( const Quat &a ) const
+    Quat operator ^ ( const Quat& a ) const
     {
 
       return Quat( w*a.x + x*a.w + y*a.z - z*a.y,
@@ -246,7 +246,7 @@ namespace oz
                    w*a.w - x*a.x - y*a.y - z*a.z );
     }
 
-    friend Quat operator * ( float k, const Quat &a )
+    friend Quat operator * ( float k, const Quat& a )
     {
       return Quat( a.x * k, a.y * k, a.z * k, a.w * k );
     }
@@ -264,7 +264,7 @@ namespace oz
     Mat44 invRotMat44() const;
 
     // make quaternion for rotation around given axis
-    static Quat rotAxis( const Vec3 &axis, float theta )
+    static Quat rotAxis( const Vec3& axis, float theta )
     {
       float s, c;
       Math::sincos( theta * 0.5f, &s, &c );
@@ -316,7 +316,7 @@ namespace oz
                    cxcy * cz - sxsy * sz );
     }
 
-    Vec3 rotate( const Vec3 &v ) const
+    Vec3 rotate( const Vec3& v ) const
     {
       float a11 = x*x;
       float a22 = y*y;
@@ -337,7 +337,7 @@ namespace oz
                    ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
     }
 
-    Vec3 rotateInv( const Vec3 &v ) const
+    Vec3 rotateInv( const Vec3& v ) const
     {
       float a11 = x*x;
       float a22 = y*y;
@@ -359,11 +359,5 @@ namespace oz
     }
 
   };
-
-  // declared in Vec3.h
-  inline Vec3::Vec3( const Quat &q )
-  {
-    *this = *reinterpret_cast<const Vec3*>( &q );
-  }
 
 }

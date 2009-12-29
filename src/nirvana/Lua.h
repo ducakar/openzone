@@ -4,7 +4,7 @@
  *  Lua scripting engine for Nirvana
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -22,18 +22,18 @@ namespace nirvana
   {
     private:
 
-      lua_State *l;
+      lua_State* l;
 
-      void callFunc( const char *functionName, int botIndex );
+      void callFunc( const char* functionName, int botIndex );
 
     public:
 
-      Bot                *self;
+      Bot*               self;
 
-      Structure          *str;
-      Object             *obj;
-      Particle           *part;
-      List<Object::Event, 0>::Iterator event;
+      Structure*         str;
+      Object*            obj;
+      Particle*          part;
+      List<Object::Event>::Iterator event;
 
       int                strIndex;
       int                objIndex;
@@ -43,7 +43,7 @@ namespace nirvana
 
       bool               forceUpdate;
 
-      void call( const char *functionName, Bot *self_ )
+      void call( const char* functionName, Bot* self_ )
       {
         forceUpdate = false;
         self        = self_;

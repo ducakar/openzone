@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -32,7 +32,7 @@ namespace nirvana
   {
     // remove minds of removed bots
     for( typeof( minds.iterator() ) i = minds.iterator(); !i.isPassed(); ) {
-      Mind *mind = i;
+      Mind* mind = i;
       ++i;
 
       if( world.objects[mind->botIndex] == null ) {
@@ -42,13 +42,13 @@ namespace nirvana
     }
     // add minds for new bots
     foreach( i, synapse.addedObjects.iterator() ) {
-      Object *obj = world.objects[*i];
+      Object* obj = world.objects[*i];
 
       if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
-        Bot *bot = static_cast<Bot*>( obj );
+        Bot* bot = static_cast<Bot*>( obj );
 
         if( ~bot->state & Bot::PLAYER_BIT ) {
-          const BotClass *clazz = static_cast<const BotClass*>( bot->type );
+          const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
           if( mindClasses.contains( clazz->mindType ) ) {
             minds << mindClasses.cachedValue().create( bot->index );
@@ -75,28 +75,33 @@ namespace nirvana
 
   int Nirvana::run( void* )
   {
+    uint timeBegin;
+
     try{
+      nirvana.sync();
+
+      // prepare semaphores for the first world update
+      SDL_SemPost( matrix.semaphore );
+      SDL_SemWait( nirvana.semaphore );
+
       while( nirvana.isAlive ) {
-        uint timeBegin = SDL_GetTicks();
+        timeBegin = SDL_GetTicks();
 
         // FIXME freezes on Windows, works fine on Wine?
-//#ifndef OZ_MINGW32
         nirvana.sync();
 
         // update minds
         nirvana.update();
-//#endif
-
-        // notify matrix it can proceed changing the world
-        SDL_SemPost( matrix.semaphore );
 
         timer.nirvanaMillis += SDL_GetTicks() - timeBegin;
 
+        // notify matrix it can proceed changing the world
+        SDL_SemPost( matrix.semaphore );
         // wait until world has changed
         SDL_SemWait( nirvana.semaphore );
       }
     }
-    catch( const Exception &e ) {
+    catch( const Exception& e ) {
       log.resetIndent();
       log.println();
       log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
@@ -141,7 +146,7 @@ namespace nirvana
     log.println( "}" );
   }
 
-  void Nirvana::load( InputStream *istream )
+  void Nirvana::load( InputStream* istream )
   {
     log.print( "Loading Nirvana ..." );
 
@@ -152,7 +157,7 @@ namespace nirvana
     log.printEnd( " OK" );
   }
 
-  void Nirvana::unload( OutputStream *ostream )
+  void Nirvana::unload( OutputStream* ostream )
   {
     log.print( "Unloading Nirvana ..." );
 
@@ -189,7 +194,7 @@ namespace nirvana
     log.printEnd( " OK" );
   }
 
-  void Nirvana::read( InputStream *istream )
+  void Nirvana::read( InputStream* istream )
   {
     String typeName;
     int nMinds = istream->readInt();
@@ -200,7 +205,7 @@ namespace nirvana
     }
   }
 
-  void Nirvana::write( OutputStream *ostream ) const
+  void Nirvana::write( OutputStream* ostream ) const
   {
     ostream->writeInt( minds.length() );
 

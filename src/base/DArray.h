@@ -6,7 +6,7 @@
  *  memory when destroyed.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -15,14 +15,14 @@ namespace oz
 {
 
   template <class Type>
-  class DArray
+  struct DArray
   {
     public:
 
       /**
        * DArray iterator.
        */
-      class Iterator : public oz::Iterator<Type>
+      struct Iterator : public oz::Iterator<Type>
       {
         private:
 
@@ -42,15 +42,15 @@ namespace oz
            * Make iterator for given array. After creation it points to first element.
            * @param v
            */
-          explicit Iterator( const DArray &a ) : B( a.data, a.data + a.count )
+          explicit Iterator( const DArray& a ) : B( a.data, a.data + a.count )
           {}
 
       };
 
     private:
 
-      Type *data;
-      int  count;
+      Type* data;
+      int   count;
 
     public:
 
@@ -71,7 +71,7 @@ namespace oz
        * Copy constructor.
        * @param v
        */
-      DArray( const DArray &a ) : data( new Type[a.count] ), count( a.count )
+      DArray( const DArray& a ) : data( new Type[a.count] ), count( a.count )
       {
         aCopy( data, a.data, count );
       }
@@ -91,7 +91,7 @@ namespace oz
        * @param a
        * @return
        */
-      DArray &operator = ( const DArray &a )
+      DArray& operator = ( const DArray& a )
       {
         assert( &a != this );
 
@@ -111,7 +111,7 @@ namespace oz
        * @param a
        * @return true if all elements in both arrays are equal
        */
-      bool operator == ( const DArray &a ) const
+      bool operator == ( const DArray& a ) const
       {
         return count == a.count && aEquals( data, a.data, count );
       }
@@ -121,7 +121,7 @@ namespace oz
        * @param a
        * @return false if all elements in both arrays are equal
        */
-      bool operator != ( const DArray &a ) const
+      bool operator != ( const DArray& a ) const
       {
         return count != a.count || !aEquals( data, a.data, count );
       }
@@ -192,7 +192,7 @@ namespace oz
        * @param e
        * @return true if the element is found in the array
        */
-      bool contains( const Type &e ) const
+      bool contains( const Type& e ) const
       {
         assert( count > 0 );
 
@@ -208,7 +208,7 @@ namespace oz
        * @param i
        * @return reference i-th element
        */
-      Type &operator [] ( int i )
+      Type& operator [] ( int i )
       {
         assert( 0 <= i && i < count );
 
@@ -219,7 +219,7 @@ namespace oz
        * @param i
        * @return constant reference i-th element
        */
-      const Type &operator [] ( int i ) const
+      const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < count );
 
@@ -231,7 +231,7 @@ namespace oz
        * @param e
        * @return index of first occurrence, -1 if not found
        */
-      int index( const Type &e ) const
+      int index( const Type& e ) const
       {
         assert( count > 0 );
 
@@ -243,7 +243,7 @@ namespace oz
        * @param e
        * @return index of last occurrence, -1 if not found
        */
-      int lastIndex( const Type &e ) const
+      int lastIndex( const Type& e ) const
       {
         assert( count > 0 );
 
@@ -253,7 +253,7 @@ namespace oz
       /**
        * @return reference to first element
        */
-      Type &first()
+      Type& first()
       {
         assert( count > 0 );
 
@@ -263,7 +263,7 @@ namespace oz
       /**
        * @return constant reference to first element
        */
-      const Type &first() const
+      const Type& first() const
       {
         assert( count > 0 );
 
@@ -273,7 +273,7 @@ namespace oz
       /**
        * @return reference to last element
        */
-      Type &last()
+      Type& last()
       {
         assert( count > 0 );
 
@@ -283,7 +283,7 @@ namespace oz
       /**
        * @return constant reference to last element
        */
-      const Type &last() const
+      const Type& last() const
       {
         assert( count > 0 );
 

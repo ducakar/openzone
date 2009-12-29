@@ -4,7 +4,7 @@
  *  Utility for writing a log file
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -12,7 +12,7 @@
 namespace oz
 {
 
-  class Log
+  struct Log
   {
     private:
 
@@ -30,7 +30,7 @@ namespace oz
        * @param indentStr
        * @return
        */
-      bool init( const char *fileName, bool clearFile = true, const char *indentStr = "  " );
+      bool init( const char* fileName, bool clearFile = true, const char* indentStr = "  " );
 
       /**
        * @return true, if writing in a file
@@ -41,37 +41,37 @@ namespace oz
        * Indents and prints the text.
        * @param s
        */
-      void print( const char *s, ... ) const;
+      void print( const char* s, ... ) const;
 
       /**
        * Print rest of the line. (Do not indent and put '\n' at the end.)
        * @param s
        */
-      void printEnd( const char *s, ... ) const;
+      void printEnd( const char* s, ... ) const;
 
       /**
        * Indents, prints the text and terminates the line.
        * @param s
        */
-      void println( const char *s, ... ) const;
+      void println( const char* s, ... ) const;
 
       /**
        * Adds the current time at the beginning of a line.
        * @param s
        */
-      void printlnBT( const char *s, ... ) const;
+      void printlnBT( const char* s, ... ) const;
 
       /**
        * Adds the current time at the end of a line.
        * @param s
        */
-      void printlnET( const char *s, ... ) const;
+      void printlnET( const char* s, ... ) const;
 
       /**
        * Adds the current time and date at the end.
        * @param s
        */
-      void printlnETD( const char *s, ... ) const;
+      void printlnETD( const char* s, ... ) const;
 
       /**
        * Write a blank line.

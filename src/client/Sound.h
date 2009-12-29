@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -22,7 +22,7 @@ namespace oz
 namespace client
 {
 
-  class Sound
+  struct Sound
   {
     private:
 
@@ -39,18 +39,22 @@ namespace client
       /*
        * SFX
        */
-      struct Source : PoolAlloc<Source, 0>
+      struct Source
       {
-        uint   source;
-        Source *next[1];
+        uint    source;
+        Source* next[1];
 
         Source( uint sourceId ) : source( sourceId ) {}
+
+        static Pool<Source> pool;
+
+        OZ_STATIC_POOL_ALLOC( pool );
       };
 
       struct ContSource
       {
-        uint   source;
-        bint   isUpdated;
+        uint source;
+        bint isUpdated;
 
         ContSource() {}
         ContSource( uint sourceId ) : source( sourceId ), isUpdated( true ) {}
@@ -59,13 +63,13 @@ namespace client
       /*
        * SFX
        */
-      List<Source, 0>            sources;
-      HashIndex<ContSource, 251> contSources;
+      List<Source>          sources;
+      HashIndex<ContSource> contSources;
 
       int  sourceClearCount;
       int  fullClearCount;
 
-      HashIndex<Audio*, 1021>    audios;
+      HashIndex<Audio*>     audios;
 
       void playCell( int cellX, int cellY );
 
@@ -76,7 +80,7 @@ namespace client
        * Music
        */
       OggVorbis_File             oggStream;
-      vorbis_info                *vorbisInfo;
+      vorbis_info*               vorbisInfo;
 
       uint                       musicBuffers[2];
       uint                       musicSource;
@@ -113,12 +117,12 @@ namespace client
         }
       }
 
-      void playAudio( const Object *obj, const Audio *parent )
+      void playAudio( const Object* obj, const Audio* parent )
       {
         if( !audios.contains( obj->index ) ) {
           audios.add( obj->index, context.createAudio( &*obj ) );
         }
-        Audio *audio = audios.cachedValue();
+        Audio* audio = audios.cachedValue();
 
         audio->flags |= Audio::UPDATED_BIT;
         audio->play( parent );
@@ -134,14 +138,14 @@ namespace client
         alSourcef( musicSource, AL_GAIN, volume );
       }
 
-      bool loadMusic( const char *path );
+      bool loadMusic( const char* path );
       void unloadMusic();
 
       void sync();
       void play();
       void update();
 
-      bool init( int *argc, char **argv );
+      bool init( int* argc, char** argv );
       void free();
 
   };

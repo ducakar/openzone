@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -16,7 +16,9 @@ namespace oz
 
   const float Particle::MAX_ROTVELOCITY = 400.0f * Timer::TICK_TIME;
 
-  void Particle::readFull( InputStream *istream )
+  Pool<Particle> Particle::pool;
+
+  void Particle::readFull( InputStream* istream )
   {
     p           = istream->readVec3();
     velocity    = istream->readVec3();
@@ -30,7 +32,7 @@ namespace oz
     lifeTime    = istream->readFloat();
   }
 
-  void Particle::writeFull( OutputStream *ostream )
+  void Particle::writeFull( OutputStream* ostream )
   {
     ostream->writeVec3( p );
     ostream->writeVec3( velocity );
@@ -44,13 +46,13 @@ namespace oz
     ostream->writeFloat( lifeTime );
   }
 
-  void Particle::readUpdate( InputStream *istream )
+  void Particle::readUpdate( InputStream* istream )
   {
     p        = istream->readVec3();
     velocity = istream->readVec3();
   }
 
-  void Particle::writeUpdate( OutputStream *ostream )
+  void Particle::writeUpdate( OutputStream* ostream )
   {
     ostream->writeVec3( p );
     ostream->writeVec3( velocity );

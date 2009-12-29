@@ -6,7 +6,7 @@
  *  http://www.bigprimes.net/.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -14,26 +14,28 @@
 namespace oz
 {
 
-  template <class Type, int SIZE>
-  class HashIndex
+  template <class Type, int SIZE = 1021>
+  struct HashIndex
   {
     private:
 
-      struct Elem : PoolAlloc<Elem, 0>
+      struct Elem
       {
-        uint key;
-        Type value;
-        Elem *next[1];
+        uint  key;
+        Type  value;
+        Elem* next[1];
 
-        explicit Elem( uint key_, const Type &value_, Elem *next_ ) : key( key_ ), value( value_ )
+        explicit Elem( uint key_, const Type& value_, Elem* next_ ) : key( key_ ), value( value_ )
         {
           next[0] = next_;
         }
 
-        explicit Elem( uint key_, Elem *next_ ) : key( key_ )
+        explicit Elem( uint key_, Elem* next_ ) : key( key_ )
         {
           next[0] = next_;
         }
+
+        OZ_PLACEMENT_POOL_ALLOC( Elem, 0 );
       };
 
     public:
@@ -41,14 +43,14 @@ namespace oz
       /**
        * HashIndex iterator.
        */
-      class Iterator : public IteratorBase<Elem>
+      struct Iterator : public IteratorBase<Elem>
       {
         private:
 
           typedef IteratorBase<Elem> B;
 
-          Elem *const *const data;
-          int                index;
+          Elem* const* const data;
+          int index;
 
         public:
 
@@ -63,7 +65,7 @@ namespace oz
            * Make iterator for given HashIndex. After creation it points to first element.
            * @param t
            */
-          explicit Iterator( const HashIndex &t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          explicit Iterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
           {
             while( B::elem == null && index < SIZE - 1 ) {
               index++;
@@ -85,7 +87,7 @@ namespace oz
            * Advance to the next element.
            * @param
            */
-          Iterator &operator ++ ()
+          Iterator& operator ++ ()
           {
             assert( B::elem != null );
 
@@ -108,7 +110,7 @@ namespace oz
           /**
            * @return current element's key
            */
-          const uint &key() const
+          const uint& key() const
           {
             return B::elem->key;
           }
@@ -116,7 +118,7 @@ namespace oz
           /**
            * @return pointer to current element's value
            */
-          Type &value()
+          Type& value()
           {
             return B::elem->value;
           }
@@ -124,7 +126,7 @@ namespace oz
           /**
            * @return constant pointer to current element's value
            */
-          const Type &value() const
+          const Type& value() const
           {
             return B::elem->value;
           }
@@ -148,7 +150,7 @@ namespace oz
           /**
            * @return reference to current element
            */
-          Type &operator * ()
+          Type& operator * ()
           {
             return B::elem->value;
           }
@@ -156,7 +158,7 @@ namespace oz
           /**
            * @return constant reference to current element
            */
-          const Type &operator * () const
+          const Type& operator * () const
           {
             return B::elem->value;
           }
@@ -164,7 +166,7 @@ namespace oz
           /**
            * @return non-constant access to member
            */
-          Type *operator -> ()
+          Type* operator -> ()
           {
             return &B::elem->value;
           }
@@ -172,7 +174,7 @@ namespace oz
           /**
            * @return constant access to member
            */
-          const Type *operator -> () const
+          const Type* operator -> () const
           {
             return &B::elem->value;
           }
@@ -181,17 +183,18 @@ namespace oz
 
     private:
 
-      Elem         *data[SIZE];
+      Pool<Elem>    pool;
+      Elem*         data[SIZE];
       // we cache found element since we often want its value after a search
-      mutable Elem *cached;
-      int          count;
+      mutable Elem* cached;
+      int           count;
 
       /**
        * @param chainA
        * @param chainB
        * @return true if chains are equal length and all elements are equal
        */
-      static bool areChainsEqual( const Elem *chainA, const Elem *chainB )
+      static bool areChainsEqual( const Elem* chainA, const Elem* chainB )
       {
         while( chainA != null && chainB != null ) {
           if( chainA->key != chainB->key || chainA->value != chainB->value ) {
@@ -209,12 +212,12 @@ namespace oz
        * @param chain
        * @return pointer to first element of newly allocated chain
        */
-      static Elem *copyChain( const Elem *chain )
+      Elem* copyChain( const Elem* chain )
       {
-        Elem *newChain = null;
+        Elem* newChain = null;
 
         while( chain != null ) {
-          newChain = new Elem( chain->key, chain->value, newChain );
+          newChain = new( pool ) Elem( chain->key, chain->value, newChain );
           chain = chain->next[0];
         }
         return newChain;
@@ -224,12 +227,12 @@ namespace oz
        * Delete all elements in given chain.
        * @param chain
        */
-      static void freeChain( const Elem *chain )
+      void freeChain( Elem* chain )
       {
         while( chain != null ) {
-          const Elem *next = chain->next[0];
+          Elem* next = chain->next[0];
 
-          delete chain;
+          pool.free( chain );
           chain = next;
         }
       }
@@ -238,13 +241,13 @@ namespace oz
        * Delete all elements and their values in given chain.
        * @param chain
        */
-      static void freeChainAndValues( const Elem *chain )
+      void freeChainAndValues( Elem* chain )
       {
         while( chain != null ) {
-          const Elem *next = chain->next[0];
+          Elem* next = chain->next[0];
 
           delete chain->value;
-          delete chain;
+          pool.free( chain );
           chain = next;
         }
       }
@@ -265,7 +268,7 @@ namespace oz
        * Copy constructor.
        * @param t
        */
-      HashIndex( const HashIndex &t ) : cached( t.cached ), count( t.count )
+      HashIndex( const HashIndex& t ) : cached( t.cached ), count( t.count )
       {
         for( int i = 0; i < SIZE; i++ ) {
           data[i] = copyChain( t.data[i] );
@@ -285,7 +288,7 @@ namespace oz
        * @param t
        * @return
        */
-      HashIndex &operator = ( const HashIndex &t )
+      HashIndex& operator = ( const HashIndex& t )
       {
         assert( &t != this );
         assert( count == 0 );
@@ -304,7 +307,7 @@ namespace oz
        * @param t
        * @return
        */
-      bool operator == ( const HashIndex &t ) const
+      bool operator == ( const HashIndex& t ) const
       {
         if( count != t.count ) {
           return false;
@@ -322,7 +325,7 @@ namespace oz
        * @param t
        * @return
        */
-      bool operator != ( const HashIndex &t ) const
+      bool operator != ( const HashIndex& t ) const
       {
         if( count != t.count ) {
           return true;
@@ -370,7 +373,7 @@ namespace oz
       /**
        * @return cached element's key
        */
-      uint &cachedKey()
+      uint& cachedKey()
       {
         return cached->key;
       }
@@ -378,7 +381,7 @@ namespace oz
       /**
        * @return cached element's key
        */
-      const uint &cachedKey() const
+      const uint& cachedKey() const
       {
         return cached->key;
       }
@@ -386,7 +389,7 @@ namespace oz
       /**
        * @return cached element's value
        */
-      Type &cachedValue()
+      Type& cachedValue()
       {
         return cached->value;
       }
@@ -394,7 +397,7 @@ namespace oz
       /**
        * @return cached element's value
        */
-      const Type &cachedValue() const
+      const Type& cachedValue() const
       {
         return cached->value;
       }
@@ -407,8 +410,8 @@ namespace oz
        */
       bool contains( uint key ) const
       {
-        int  i = key % SIZE;
-        Elem *p = data[i];
+        int   i = key % SIZE;
+        Elem* p = data[i];
 
         while( p != null ) {
           if( p->key == key ) {
@@ -429,10 +432,10 @@ namespace oz
        * @param key
        * @return reference to value associated to the given key
        */
-      Type &operator [] ( uint key )
+      Type& operator [] ( uint key )
       {
-        int  i = key % SIZE;
-        Elem *p = data[i];
+        int   i = key % SIZE;
+        Elem* p = data[i];
 
         while( p != null ) {
           if( p->key == key ) {
@@ -456,10 +459,10 @@ namespace oz
        * @param key
        * @return reference to value associated to the given key
        */
-      const Type &operator [] ( uint key ) const
+      const Type& operator [] ( uint key ) const
       {
-        int  i = key % SIZE;
-        Elem *p = data[i];
+        int   i = key % SIZE;
+        Elem* p = data[i];
 
         while( p != null ) {
           if( p->key == key ) {
@@ -482,12 +485,12 @@ namespace oz
        * @param key
        * @param value
        */
-      void add( uint key, const Type &value )
+      void add( uint key, const Type& value )
       {
         assert( !contains( key ) );
 
         int  i = key % SIZE;
-        Elem *elem = new Elem( key, value, data[i] );
+        Elem* elem = new( pool ) Elem( key, value, data[i] );
 
         data[i] = elem;
         cached = elem;
@@ -500,14 +503,14 @@ namespace oz
        */
       void remove( uint key )
       {
-        int  i = key % SIZE;
-        Elem *p = data[i];
-        Elem **prev = &data[i];
+        int    i = key % SIZE;
+        Elem*  p = data[i];
+        Elem** prev = &data[i];
 
         while( p != null ) {
           if( p->key == key ) {
             *prev = p->next[0];
-            delete p;
+            pool.free( p );
             count--;
             return;
           }
@@ -551,11 +554,13 @@ namespace oz
       }
 
       /**
-       * Deallocate memory from PoolAlloc.
+       * Deallocate memory from Pool.
        */
-      static void deallocate()
+      void deallocate()
       {
-        PoolAlloc<Elem, 0>::pool.free();
+        assert( count == 0 );
+
+        pool.free();
       }
 
   };

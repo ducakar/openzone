@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -127,7 +127,7 @@ namespace client
     return list;
   }
 
-  uint Shape::genBox( uint list, const AABB &bb, uint texture )
+  uint Shape::genBox( uint list, const AABB& bb, uint texture )
   {
     Vec3 v0 = -bb.dim;
     Vec3 v1 = +bb.dim;
@@ -208,7 +208,7 @@ namespace client
     return list;
   }
 
-  void Shape::drawBox( const AABB &bb )
+  void Shape::drawBox( const AABB& bb )
   {
     Vec3 v0 = bb.p - bb.dim;
     Vec3 v1 = bb.p + bb.dim;
@@ -282,7 +282,7 @@ namespace client
     glEnd();
   }
 
-  void Shape::draw( const Particle *part )
+  void Shape::draw( const Particle* part )
   {
     glRotatef( part->rot.y, 0.0f, 1.0f, 0.0f );
     glRotatef( part->rot.x, 1.0f, 0.0f, 0.0f );

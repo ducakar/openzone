@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -16,9 +16,9 @@
 namespace oz
 {
 
-  ObjectClass *WeaponClass::init( const String &name, const Config *config )
+  ObjectClass* WeaponClass::init( const String& name, const Config* config )
   {
-    WeaponClass *clazz = new WeaponClass();
+    WeaponClass* clazz = new WeaponClass();
 
     clazz->name                 = name;
     clazz->description          = config->get( "description", name );
@@ -92,9 +92,9 @@ namespace oz
     return clazz;
   }
 
-  Object *WeaponClass::create( int index, const Vec3 &pos )
+  Object* WeaponClass::create( int index, const Vec3& pos )
   {
-    Weapon *obj = new Weapon();
+    Weapon* obj = new Weapon();
 
     obj->p        = pos;
     obj->dim      = dim;
@@ -114,9 +114,9 @@ namespace oz
     return obj;
   }
 
-  Object *WeaponClass::create( int index, InputStream *istream )
+  Object* WeaponClass::create( int index, InputStream* istream )
   {
-    Weapon *obj = new Weapon();
+    Weapon* obj = new Weapon();
 
     obj->dim    = dim;
 

@@ -4,14 +4,14 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
 
 using namespace oz;
 
-int main( int argc, char **argv )
+int main( int argc, char** argv )
 {
   log.init( null, false, "  " );
 
@@ -27,7 +27,7 @@ int main( int argc, char **argv )
     return -1;
   }
 
-  const char *suffix = String::findLast( argv[1], '.' );
+  const char* suffix = String::findLast( argv[1], '.' );
   if( suffix == null ) {
     return -1;
   }
@@ -41,10 +41,7 @@ int main( int argc, char **argv )
     config.save( newFile );
   }
   else {
-    config.clear();
     return -1;
   }
-
-  config.clear();
   return 0;
 }

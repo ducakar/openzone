@@ -4,7 +4,7 @@
  *  Static size vector
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -13,14 +13,14 @@ namespace oz
 {
 
   template <class Type, int SIZE>
-  class SVector
+  struct SVector
   {
     public:
 
       /**
        * Vector iterator.
        */
-      class Iterator : public oz::Iterator<Type>
+      struct Iterator : public oz::Iterator<Type>
       {
         private:
 
@@ -40,7 +40,7 @@ namespace oz
            * Make iterator for given vector. After creation it points to first element.
            * @param v
            */
-          explicit Iterator( SVector &v ) : B( v.data, v.data + v.count )
+          explicit Iterator( SVector& v ) : B( v.data, v.data + v.count )
           {}
 
       };
@@ -50,7 +50,7 @@ namespace oz
       // Pointer to data array
       Type data[SIZE];
       // Number of elements in vector
-      int count;
+      int  count;
 
     public:
 
@@ -64,7 +64,7 @@ namespace oz
        * Copy constructor.
        * @param v
        */
-      SVector( const SVector &v ) : count( v.count )
+      SVector( const SVector& v ) : count( v.count )
       {
         aCopy( data, v.data, count );
       }
@@ -74,7 +74,7 @@ namespace oz
        * @param v
        * @return
        */
-      SVector &operator = ( const SVector &v )
+      SVector& operator = ( const SVector& v )
       {
         assert( &v != this );
 
@@ -88,7 +88,7 @@ namespace oz
        * @param v
        * @return true if all elements in both vectors are equal
        */
-      bool operator == ( const SVector &v ) const
+      bool operator == ( const SVector& v ) const
       {
         return count == v.count && aEquals( data, v.data, count );
       }
@@ -98,7 +98,7 @@ namespace oz
        * @param v
        * @return false if all elements in both vectors are equal
        */
-      bool operator != ( const SVector &v ) const
+      bool operator != ( const SVector& v ) const
       {
         return count != v.count || !aEquals( data, v.data, count );
       }
@@ -159,7 +159,7 @@ namespace oz
        * @param e
        * @return true if the element is found in the vector
        */
-      bool contains( const Type &e ) const
+      bool contains( const Type& e ) const
       {
         for( int i = 0; i < count; i++ ) {
           if( data[i] == e ) {
@@ -173,7 +173,7 @@ namespace oz
        * @param i
        * @return reference i-th element
        */
-      Type &operator [] ( int i )
+      Type& operator [] ( int i )
       {
         assert( 0 <= i && i < count );
 
@@ -184,7 +184,7 @@ namespace oz
        * @param i
        * @return constant reference i-th element
        */
-      const Type &operator [] ( int i ) const
+      const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < count );
 
@@ -196,7 +196,7 @@ namespace oz
        * @param e
        * @return index of first occurrence, -1 if not found
        */
-      int index( const Type &e ) const
+      int index( const Type& e ) const
       {
         return aIndex( data, e, count );
       }
@@ -206,7 +206,7 @@ namespace oz
        * @param e
        * @return index of last occurrence, -1 if not found
        */
-      int lastIndex( const Type &e ) const
+      int lastIndex( const Type& e ) const
       {
         return aLastIndex( data, e, count );
       }
@@ -214,7 +214,7 @@ namespace oz
       /**
        * @return reference to first element
        */
-      Type &first()
+      Type& first()
       {
         assert( count != 0 );
 
@@ -224,7 +224,7 @@ namespace oz
       /**
        * @return constant reference to first element
        */
-      const Type &first() const
+      const Type& first() const
       {
         assert( count != 0 );
 
@@ -234,7 +234,7 @@ namespace oz
       /**
        * @return reference to last element
        */
-      Type &last()
+      Type& last()
       {
         assert( count != 0 );
 
@@ -244,7 +244,7 @@ namespace oz
       /**
        * @return constant reference to last element
        */
-      const Type &last() const
+      const Type& last() const
       {
         assert( count != 0 );
 
@@ -265,7 +265,7 @@ namespace oz
        * Add an element to the end.
        * @param e
        */
-      void operator << ( const Type &e )
+      void operator << ( const Type& e )
       {
         pushLast( e );
       }
@@ -274,7 +274,7 @@ namespace oz
        * Add an element to the end.
        * @param e element to be added
        */
-      void add( const Type &e )
+      void add( const Type& e )
       {
         pushLast( e );
       }
@@ -283,7 +283,7 @@ namespace oz
        * Add an element to the beginning.
        * @param e
        */
-      void pushFirst( const Type &e )
+      void pushFirst( const Type& e )
       {
         return insert( e, 0 );
       }
@@ -292,7 +292,7 @@ namespace oz
        * Add an element to the end.
        * @param e
        */
-      void pushLast( const Type &e )
+      void pushLast( const Type& e )
       {
         assert( count < SIZE );
 
@@ -304,7 +304,7 @@ namespace oz
        * Add all elements from a vector to the end.
        * @param v
        */
-      void addAll( const SVector &v )
+      void addAll( const SVector& v )
       {
         addAll( v.data, v.count );
       }
@@ -314,7 +314,7 @@ namespace oz
        * @param array
        * @param arrayCount
        */
-      void addAll( const Type *array, int arrayCount )
+      void addAll( const Type* array, int arrayCount )
       {
         int newCount = count + arrayCount;
 
@@ -332,7 +332,7 @@ namespace oz
        * @param e
        * @return true if element has been added
        */
-      bool include( const Type &e )
+      bool include( const Type& e )
       {
         if( !contains( e ) ) {
           add( e );
@@ -348,7 +348,7 @@ namespace oz
        * @param v
        * @return number of elements that have been added
        */
-      int includeAll( const SVector &v )
+      int includeAll( const SVector& v )
       {
         return includeAll( v.data, v.count );
       }
@@ -359,11 +359,11 @@ namespace oz
        * @param count
        * @return number of elements that have been added
        */
-      int includeAll( const Type *array, int count )
+      int includeAll( const Type* array, int count )
       {
         int n = 0;
         for( int i = 0; i < count; i++ ) {
-          n += static_cast<int>( include( array[i] ) );
+          n += int( include( array[i] ) );
         }
         return n;
       }
@@ -374,7 +374,7 @@ namespace oz
        * @param e
        * @param index
        */
-      void insert( int index, const Type &e )
+      void insert( int index, const Type& e )
       {
         assert( 0 <= index && index <= count );
         assert( count < SIZE );
@@ -389,7 +389,7 @@ namespace oz
        * @param
        * @return
        */
-      SVector &operator -- ()
+      SVector& operator -- ()
       {
         assert( count != 0 );
 
@@ -414,7 +414,7 @@ namespace oz
        * @param e
        * @return
        */
-      bool exclude( const Type &e )
+      bool exclude( const Type& e )
       {
         int i = aIndex( data, e, count );
 
@@ -434,7 +434,7 @@ namespace oz
        * @param v
        * @return
        */
-      int excludeAll( const SVector &v )
+      int excludeAll( const SVector& v )
       {
         return excludeAll( v.data, v.count );
       }
@@ -444,11 +444,11 @@ namespace oz
        * @param v
        * @return
        */
-      int excludeAll( const Type *array, int count )
+      int excludeAll( const Type* array, int count )
       {
         int n = 0;
         for( int i = 0; i < count; i++ ) {
-          n += static_cast<int>( exclude( array[i] ) );
+          n += int( exclude( array[i] ) );
         }
         return n;
       }
@@ -471,7 +471,7 @@ namespace oz
        * Remove last element
        * @param e reference to variable to be overwritten with value of removed element
        */
-      void operator >> ( Type &e )
+      void operator >> ( Type& e )
       {
         e = popLast();
       }

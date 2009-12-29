@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -22,11 +22,11 @@ namespace oz
 namespace client
 {
 
-  Model *OBJVehicleModel::create( const Object *obj )
+  Model* OBJVehicleModel::create( const Object* obj )
   {
     assert( obj->flags & Object::VEHICLE_BIT );
 
-    OBJVehicleModel *model = new OBJVehicleModel();
+    OBJVehicleModel* model = new OBJVehicleModel();
 
     model->obj  = obj;
     model->list = context.loadOBJ( obj->type->modelName );
@@ -40,8 +40,8 @@ namespace client
 
   void OBJVehicleModel::draw( const Model* )
   {
-    const Vehicle *veh = static_cast<const Vehicle*>( obj );
-    const VehicleClass *clazz = static_cast<const VehicleClass*>( obj->type );
+    const Vehicle* veh = static_cast<const Vehicle*>( obj );
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->type );
 
     glMultMatrixf( veh->rot.rotMat44() );
 
@@ -49,7 +49,7 @@ namespace client
       int index = veh->crew[i];
 
       if( index != -1 && ( index != camera.bot || camera.state == Camera::EXTERNAL ) ) {
-        Bot *bot = static_cast<const Bot*>( world.objects[veh->crew[i]] );
+        Bot* bot = static_cast<const Bot*>( world.objects[veh->crew[i]] );
 
         glPushMatrix();
         glTranslatef(  clazz->crewPos[i].x,  clazz->crewPos[i].y,  clazz->crewPos[i].z );

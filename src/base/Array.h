@@ -5,7 +5,7 @@
  *  The advantage over C++ arrays it that is has bounds checking and an iterator.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -14,14 +14,14 @@ namespace oz
 {
 
   template <class Type, int SIZE>
-  class Array
+  struct Array
   {
     public:
 
       /**
        * Array iterator.
        */
-      class Iterator : public oz::Iterator<Type>
+      struct Iterator : public oz::Iterator<Type>
       {
         private:
 
@@ -41,7 +41,7 @@ namespace oz
            * Make iterator for given array. After creation it points to first element.
            * @param v
            */
-          explicit Iterator( Array &a ) : B( a.data, a.data + SIZE )
+          explicit Iterator( Array& a ) : B( a.data, a.data + SIZE )
           {}
 
       };
@@ -57,7 +57,7 @@ namespace oz
        * @param a
        * @return
        */
-      Array &operator = ( const Array &a )
+      Array& operator = ( const Array& a )
       {
         assert( &a != this );
 
@@ -70,7 +70,7 @@ namespace oz
        * @param a
        * @return true if all elements in both arrays are equal
        */
-      bool operator == ( const Array &a ) const
+      bool operator == ( const Array& a ) const
       {
         return aEquals( data, a.data, SIZE );
       }
@@ -80,7 +80,7 @@ namespace oz
        * @param a
        * @return false if all elements in both arrays are equal
        */
-      bool operator != ( const Array &a ) const
+      bool operator != ( const Array& a ) const
       {
         return !aEquals( data, a.data, SIZE );
       }
@@ -125,7 +125,7 @@ namespace oz
        * @param e
        * @return true if the element is found in the array
        */
-      bool contains( const Type &e ) const
+      bool contains( const Type& e ) const
       {
         for( int i = 0; i < SIZE; i++ ) {
           if( data[i] == e ) {
@@ -139,7 +139,7 @@ namespace oz
        * @param i
        * @return reference i-th element
        */
-      Type &operator [] ( int i )
+      Type& operator [] ( int i )
       {
         assert( 0 <= i && i < SIZE );
 
@@ -150,7 +150,7 @@ namespace oz
        * @param i
        * @return constant reference i-th element
        */
-      const Type &operator [] ( int i ) const
+      const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < SIZE );
 
@@ -162,7 +162,7 @@ namespace oz
        * @param e
        * @return index of first occurrence, -1 if not found
        */
-      int index( const Type &e ) const
+      int index( const Type& e ) const
       {
         return aIndex( data, e, SIZE );
       }
@@ -172,7 +172,7 @@ namespace oz
        * @param e
        * @return index of last occurrence, -1 if not found
        */
-      int lastIndex( const Type &e ) const
+      int lastIndex( const Type& e ) const
       {
         return aLastIndex( data, e, SIZE );
       }
@@ -180,7 +180,7 @@ namespace oz
       /**
        * @return reference to first element
        */
-      Type &first()
+      Type& first()
       {
         return data[0];
       }
@@ -188,7 +188,7 @@ namespace oz
       /**
        * @return constant reference to first element
        */
-      const Type &first() const
+      const Type& first() const
       {
         return data[0];
       }
@@ -196,7 +196,7 @@ namespace oz
       /**
        * @return reference to last element
        */
-      Type &last()
+      Type& last()
       {
         return data[SIZE - 1];
       }
@@ -204,7 +204,7 @@ namespace oz
       /**
        * @return constant reference to last element
        */
-      const Type &last() const
+      const Type& last() const
       {
         return data[SIZE - 1];
       }

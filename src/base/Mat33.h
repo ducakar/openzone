@@ -4,7 +4,7 @@
  *  Column-major 3x3 matrix
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -29,15 +29,15 @@ namespace oz
         z( zx, zy, zz )
     {}
 
-    explicit Mat33( const float *v )
+    explicit Mat33( const float* v )
     {
       *this = *reinterpret_cast<const Mat33*>( v );
     }
 
     // implemented in Mat44.h
-    explicit Mat33( const Mat44 &m );
+    explicit Mat33( const Mat44& m );
 
-    explicit Mat33( const Vec3 &a, const Vec3 &b, const Vec3 &c ) :
+    explicit Mat33( const Vec3& a, const Vec3& b, const Vec3& c ) :
         x( a ), y( b ), z( c )
     {}
 
@@ -65,12 +65,12 @@ namespace oz
       return reinterpret_cast<const float*>( this );
     }
 
-    float &operator [] ( int i )
+    float& operator [] ( int i )
     {
       return reinterpret_cast<float*>( this )[i];
     }
 
-    const float &operator [] ( int i ) const
+    const float& operator [] ( int i ) const
     {
       return reinterpret_cast<const float*>( this )[i];
     }
@@ -105,7 +105,7 @@ namespace oz
     }
 
     // transpose
-    Mat33 &trans()
+    Mat33& trans()
     {
       swap( x.y, y.x );
       swap( x.z, z.x );
@@ -127,7 +127,7 @@ namespace oz
           z.z == 0.0f;
     }
 
-    Mat33 &setZero()
+    Mat33& setZero()
     {
       x.x = 0.0f;
       x.y = 0.0f;
@@ -155,7 +155,7 @@ namespace oz
           z.z == 1.0f;
     }
 
-    Mat33 &setId()
+    Mat33& setId()
     {
       x.x = 1.0f;
       x.y = 0.0f;
@@ -170,7 +170,7 @@ namespace oz
     }
 
     // assignment operators
-    Mat33 &operator += ( const Mat33 &a )
+    Mat33& operator += ( const Mat33& a )
     {
       x.x += a.x.x;
       x.y += a.x.y;
@@ -184,7 +184,7 @@ namespace oz
       return *this;
     }
 
-    Mat33 &operator -= ( const Mat33 &a )
+    Mat33& operator -= ( const Mat33& a )
     {
       x.x -= a.x.x;
       x.y -= a.x.y;
@@ -198,7 +198,7 @@ namespace oz
       return *this;
     }
 
-    Mat33 &operator *= ( float k )
+    Mat33& operator *= ( float k )
     {
       x.x *= k;
       x.y *= k;
@@ -212,7 +212,7 @@ namespace oz
       return *this;
     }
 
-    Mat33 &operator /= ( float k )
+    Mat33& operator /= ( float k )
     {
       assert( k != 0.0f );
 
@@ -230,14 +230,14 @@ namespace oz
     }
 
     // binary operators
-    Mat33 operator + ( const Mat33 &a ) const
+    Mat33 operator + ( const Mat33& a ) const
     {
       return Mat33( x.x + a.x.x, x.y + a.x.y, x.z + a.x.z,
                     y.x + a.y.x, y.y + a.y.y, y.z + a.y.z,
                     z.x + a.z.x, z.y + a.z.y, z.z + a.z.z );
     }
 
-    Mat33 operator - ( const Mat33 &a ) const
+    Mat33 operator - ( const Mat33& a ) const
     {
       return Mat33( x.x - a.x.x, x.y - a.x.y, x.z - a.x.z,
                     y.x - a.y.x, y.y - a.y.y, y.z - a.y.z,
@@ -261,7 +261,7 @@ namespace oz
                     z.x * k, z.y * k, z.z * k );
     }
 
-    Mat33 operator * ( const Mat33 &a ) const
+    Mat33 operator * ( const Mat33& a ) const
     {
       return Mat33( x.x * a.x.x + y.x * a.x.y + z.x * a.x.z,
                     x.y * a.x.x + y.y * a.x.y + z.y * a.x.z,
@@ -276,21 +276,21 @@ namespace oz
                     x.z * a.z.x + y.z * a.z.y + z.z * a.z.z );
     }
 
-    Vec3 operator * ( const Vec3 &v ) const
+    Vec3 operator * ( const Vec3& v ) const
     {
       return Vec3( v.x * x.x + v.y * y.x + v.z * z.x,
                    v.x * x.y + v.y * y.y + v.z * z.y,
                    v.x * x.z + v.y * y.z + v.z * z.z );
     }
 
-    Vec3 invMultiply( const Vec3 &v ) const
+    Vec3 invMultiply( const Vec3& v ) const
     {
       return Vec3( v.x * x.x + v.y * x.y + v.z * x.z,
                    v.x * y.x + v.y * y.y + v.z * y.z,
                    v.x * z.x + v.y * z.y + v.z * z.z );
     }
 
-    friend Mat33 operator * ( float k, const Mat33 &a )
+    friend Mat33 operator * ( float k, const Mat33& a )
     {
       return Mat33( a.x.x * k, a.x.y * k, a.x.z * k,
                     a.y.x * k, a.y.y * k, a.y.z * k,

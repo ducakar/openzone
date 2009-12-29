@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -23,7 +23,7 @@ namespace oz
   {
     Vec3 pos = Vec3( x, y, world.terra.height( x, y ) );
 
-    const char *type;
+    const char* type;
 
     if( pos.z > 60.0f ) {
       return;
@@ -52,7 +52,7 @@ namespace oz
     }
   }
 
-  inline void FloraManager::addPlant( const char *type, float x, float y )
+  inline void FloraManager::addPlant( const char* type, float x, float y )
   {
     Vec3 pos = Vec3( x, y, world.terra.height( x, y ) );
     AABB bounds = AABB( pos, translator.classes[type]->dim );
@@ -70,8 +70,8 @@ namespace oz
   {
     float area = 4.0f * World::DIM * World::DIM * DENSITY;
 
-    number = static_cast<int>( area * DENSITY );
-    growth = static_cast<int>( area * GROWTH );
+    number = int( area * DENSITY );
+    growth = int( area * GROWTH );
 
     for( int i = 0; i < number; i++ ) {
       float x = Math::frand() * 2.0f * World::DIM - World::DIM;

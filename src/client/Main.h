@@ -4,7 +4,7 @@
  *  Game initialization and main loop
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -22,7 +22,7 @@ namespace oz
 namespace client
 {
 
-  class Main
+  struct Main
   {
     private:
 
@@ -34,14 +34,13 @@ namespace client
       static const int INIT_CONTEXT     = 0x020;
       static const int INIT_GAME_INIT   = 0x040;
       static const int INIT_RENDER_LOAD = 0x080;
-      static const int INIT_GAME_START  = 0x100;
 
-      Stage *stage;
-      int   initFlags;
+      Stage* stage;
+      int    initFlags;
 
     public:
 
-      void main( int *argc, char *argv[] );
+      void main( int* argc, char* argv[] );
       void shutdown();
 
   };
@@ -51,4 +50,4 @@ namespace client
 }
 }
 
-int main( int argc, char *argv[] );
+int main( int argc, char* argv[] );

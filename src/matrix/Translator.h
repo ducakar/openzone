@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -40,7 +40,7 @@ namespace oz
     ANIM_MAX
   };
 
-  class Translator
+  struct Translator
   {
     public:
 
@@ -50,7 +50,7 @@ namespace oz
         String path;
 
         Resource() {}
-        Resource( const String &name_, const String &path_ ) : name( name_ ), path( path_ ) {}
+        Resource( const String& name_, const String& path_ ) : name( name_ ), path( path_ ) {}
       };
 
     private:
@@ -71,7 +71,7 @@ namespace oz
       HashString<ObjectClass::InitFunc, 31> baseClasses;
       HashString<ObjectClass*, 251> classes;
 
-      int textureIndex( const char *file )
+      int textureIndex( const char* file )
       {
         if( textureIndices.contains( file ) ) {
           return textureIndices.cachedValue();
@@ -82,7 +82,7 @@ namespace oz
         }
       }
 
-      int soundIndex( const char *file )
+      int soundIndex( const char* file )
       {
         if( soundIndices.contains( file ) ) {
           return soundIndices.cachedValue();
@@ -93,7 +93,7 @@ namespace oz
         }
       }
 
-      int bspIndex( const char *file )
+      int bspIndex( const char* file )
       {
         if( bspIndices.contains( file ) ) {
           return bspIndices.cachedValue();
@@ -103,7 +103,7 @@ namespace oz
         }
       }
 
-      Structure *createStruct( int index, const char *name, const Vec3 &p, Structure::Rotation rot )
+      Structure* createStruct( int index, const char* name, const Vec3& p, Structure::Rotation rot )
       {
         if( bspIndices.contains( name ) ) {
           return new Structure( index, bspIndices.cachedValue(), p, rot );
@@ -113,7 +113,7 @@ namespace oz
         }
       }
 
-      Structure *createStruct( int index, const char *name, InputStream *istream )
+      Structure* createStruct( int index, const char* name, InputStream* istream )
       {
         if( bspIndices.contains( name ) ) {
           return new Structure( index, bspIndices.cachedValue(), istream );
@@ -123,7 +123,7 @@ namespace oz
         }
       }
 
-      Object *createObject( int index, const char *name, const Vec3 &p )
+      Object* createObject( int index, const char* name, const Vec3& p )
       {
         if( classes.contains( name ) ) {
           return classes.cachedValue()->create( index, p );
@@ -133,7 +133,7 @@ namespace oz
         }
       }
 
-      Object *createObject( int index, const char *name, InputStream *istream )
+      Object* createObject( int index, const char* name, InputStream* istream )
       {
         if( classes.contains( name ) ) {
           return classes.cachedValue()->create( index, istream );

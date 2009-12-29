@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -36,7 +36,7 @@ struct Object
 
 struct Human : Object
 {
-  static Object *build();
+  static Object* build();
 
   string name()
   {
@@ -48,7 +48,7 @@ struct Human : Object
 
 struct Vehicle : Object
 {
-  static Object *build();
+  static Object* build();
 
   string name()
   {
@@ -58,25 +58,25 @@ struct Vehicle : Object
   virtual ~Vehicle() {}
 };
 
-map<string, Object *(*)()> registry;
+map<string, Object* (*)()> registry;
 
 REGISTER( Human );
 
-Object *Human::build()
+Object* Human::build()
 {
   return new Human;
 }
 
 REGISTER( Vehicle );
 
-Object *Vehicle::build()
+Object* Vehicle::build()
 {
   return new Vehicle;
 }
 
 int main()
 {
-  Object *o = registry["Vehicle"]();
+  Object* o = registry["Vehicle"]();
   cout << o->name() << endl;
   return 0;
 }

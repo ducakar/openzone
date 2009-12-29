@@ -4,7 +4,7 @@
  *  BSP level rendering class
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -31,11 +31,11 @@ namespace client
 
   const float BSP::GAMMA_CORR = 1.0f;
 
-  const Structure *BSP::str;
+  const Structure* BSP::str;
   Vec3  BSP::camPos;
   int   BSP::waterFlags;
 
-  inline Bounds BSP::rotateBounds( const Bounds &bounds, Structure::Rotation rotation )
+  inline Bounds BSP::rotateBounds( const Bounds& bounds, Structure::Rotation rotation )
   {
     Bounds rotatedBounds;
 
@@ -63,8 +63,8 @@ namespace client
   {
     int nodeIndex = 0;
     do {
-      const oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
-      const oz::BSP::Plane &plane = bsp->planes[node.plane];
+      const oz::BSP::Node&  node  = bsp->nodes[nodeIndex];
+      const oz::BSP::Plane& plane = bsp->planes[node.plane];
 
       if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
         nodeIndex = node.back;
@@ -78,14 +78,14 @@ namespace client
     return ~nodeIndex;
   }
 
-  void BSP::checkInWaterBrush( const oz::BSP::Leaf *leaf ) const
+  void BSP::checkInWaterBrush( const oz::BSP::Leaf* leaf ) const
   {
     for( int i = 0; i < leaf->nBrushes; i++ ) {
-      const oz::BSP::Brush *brush = &bsp->brushes[ bsp->leafBrushes[leaf->firstBrush + i] ];
+      const oz::BSP::Brush* brush = &bsp->brushes[ bsp->leafBrushes[leaf->firstBrush + i] ];
 
       if( brush->material & Material::WATER_BIT ) {
         for( int i = 0; i < brush->nSides; i++ ) {
-          const oz::BSP::Plane &plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+          const oz::BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
           if( ( camPos * plane.normal - plane.distance ) >= 0.0f ) {
             goto nextBrush;
@@ -98,7 +98,7 @@ namespace client
     }
   }
 
-  void BSP::drawFace( const oz::BSP::Face *face ) const
+  void BSP::drawFace( const oz::BSP::Face* face ) const
   {
     if( face->material & Material::WATER_BIT ) {
       waterFlags |= DRAW_WATER;
@@ -129,7 +129,7 @@ namespace client
     glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
   }
 
-  void BSP::drawFaceWater( const oz::BSP::Face *face ) const
+  void BSP::drawFaceWater( const oz::BSP::Face* face ) const
   {
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
@@ -181,8 +181,8 @@ namespace client
   void BSP::drawNode( int nodeIndex )
   {
     if( nodeIndex >= 0 ) {
-      const oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
-      const oz::BSP::Plane &plane = bsp->planes[node.plane];
+      const oz::BSP::Node&  node  = bsp->nodes[nodeIndex];
+      const oz::BSP::Plane& plane = bsp->planes[node.plane];
 
       if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
         drawNode( node.back );
@@ -194,7 +194,7 @@ namespace client
       }
     }
     else {
-      const oz::BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      const oz::BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
@@ -213,8 +213,8 @@ namespace client
   void BSP::drawNodeWater( int nodeIndex )
   {
     if( nodeIndex >= 0 ) {
-      const oz::BSP::Node  &node  = bsp->nodes[nodeIndex];
-      const oz::BSP::Plane &plane = bsp->planes[node.plane];
+      const oz::BSP::Node&  node  = bsp->nodes[nodeIndex];
+      const oz::BSP::Plane& plane = bsp->planes[node.plane];
 
       if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
         drawNodeWater( node.back );
@@ -226,7 +226,7 @@ namespace client
       }
     }
     else {
-      const oz::BSP::Leaf &leaf = bsp->leafs[~nodeIndex];
+      const oz::BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
@@ -269,10 +269,10 @@ namespace client
     else {
       lightMaps = new uint[bsp->nLightmaps];
       for( int i = 0; i < bsp->nLightmaps; i++ ) {
-        ubyte *bits = reinterpret_cast<ubyte*>( bsp->lightmaps[i].bits );
+        ubyte* bits = reinterpret_cast<ubyte*>( bsp->lightmaps[i].bits );
 
         for( int j = 0; j < oz::BSP::LIGHTMAP_SIZE; j++ ) {
-          bits[j] += static_cast<ubyte>( ( 255 - bits[j] ) * GAMMA_CORR );
+          bits[j] += ubyte( ( 255 - bits[j] ) * GAMMA_CORR );
         }
         lightMaps[i] = context.createTexture( bits,
                                               oz::BSP::LIGHTMAP_DIM,
@@ -290,7 +290,7 @@ namespace client
     }
 
     for( int i = 0; i < bsp->nFaces; i++ ) {
-      const oz::BSP::Vertex *verts = &bsp->vertices[ bsp->faces[i].firstVertex ];
+      const oz::BSP::Vertex* verts = &bsp->vertices[ bsp->faces[i].firstVertex ];
 
       for( int j = 0; j < bsp->faces[i].nVertices; j++ ) {
         if( verts[j].p.x < -bsp->maxDim || verts[j].p.x > bsp->maxDim ||
@@ -324,7 +324,7 @@ namespace client
     }
   }
 
-  int BSP::draw( const Structure *str_ )
+  int BSP::draw( const Structure* str_ )
   {
     str = str_;
     camPos = camera.p - str->p;
@@ -352,11 +352,11 @@ namespace client
     checkInWaterBrush( &bsp->leafs[leafIndex] );
 
     if( bsp->visual.bitsets != null ) {
-      int    cluster = bsp->leafs[leafIndex].cluster;
-      Bitset &bitset = bsp->visual.bitsets[cluster];
+      int     cluster = bsp->leafs[leafIndex].cluster;
+      Bitset& bitset  = bsp->visual.bitsets[cluster];
 
       for( int i = 0; i < bsp->nLeafs; i++ ) {
-        const oz::BSP::Leaf &leaf = bsp->leafs[i];
+        const oz::BSP::Leaf& leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
@@ -364,7 +364,7 @@ namespace client
         {
           for( int j = 0; j < leaf.nFaces; j++ ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
-            const oz::BSP::Face &face = bsp->faces[faceIndex];
+            const oz::BSP::Face& face = bsp->faces[faceIndex];
 
             if( !drawnFaces.get( faceIndex ) ) {
               drawFace( &face );
@@ -376,13 +376,13 @@ namespace client
     }
     else {
       for( int i = 0; i < bsp->nLeafs; i++ ) {
-        const oz::BSP::Leaf &leaf = bsp->leafs[i];
+        const oz::BSP::Leaf& leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
           for( int j = 0; j < leaf.nFaces; j++ ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
-            const oz::BSP::Face &face = bsp->faces[faceIndex];
+            const oz::BSP::Face& face = bsp->faces[faceIndex];
 
             if( !drawnFaces.get( faceIndex ) ) {
               drawFace( &face );
@@ -397,7 +397,7 @@ namespace client
     return waterFlags;
   }
 
-  void BSP::drawWater( const Structure *str_ )
+  void BSP::drawWater( const Structure* str_ )
   {
     str = str_;
     camPos = camera.p - str->p;
@@ -421,11 +421,11 @@ namespace client
     int leafIndex = getLeaf();
 
     if( bsp->visual.bitsets != null ) {
-      int    cluster = bsp->leafs[leafIndex].cluster;
-      Bitset &bitset = bsp->visual.bitsets[cluster];
+      int     cluster = bsp->leafs[leafIndex].cluster;
+      Bitset& bitset  = bsp->visual.bitsets[cluster];
 
       for( int i = 0; i < bsp->nLeafs; i++ ) {
-        const oz::BSP::Leaf &leaf = bsp->leafs[i];
+        const oz::BSP::Leaf& leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
@@ -433,7 +433,7 @@ namespace client
         {
           for( int j = 0; j < leaf.nFaces; j++ ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
-            const oz::BSP::Face &face = bsp->faces[faceIndex];
+            const oz::BSP::Face& face = bsp->faces[faceIndex];
 
             if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
               drawFaceWater( &face );
@@ -445,13 +445,13 @@ namespace client
     }
     else {
       for( int i = 0; i < bsp->nLeafs; i++ ) {
-        const oz::BSP::Leaf &leaf = bsp->leafs[i];
+        const oz::BSP::Leaf& leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
           for( int j = 0; j < leaf.nFaces; j++ ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
-            const oz::BSP::Face &face = bsp->faces[faceIndex];
+            const oz::BSP::Face& face = bsp->faces[faceIndex];
 
             if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
               drawFaceWater( &face );
@@ -465,7 +465,7 @@ namespace client
     glPopMatrix();
   }
 
-  int BSP::fullDraw( const Structure *str_ )
+  int BSP::fullDraw( const Structure* str_ )
   {
     str = str_;
     camPos = camera.p - str->p;
@@ -491,7 +491,7 @@ namespace client
     checkInWaterBrush( &bsp->leafs[leafIndex] );
 
     for( int i = 0; i < bsp->nFaces; i++ ) {
-      const oz::BSP::Face &face = bsp->faces[i];
+      const oz::BSP::Face& face = bsp->faces[i];
 
       if( !hiddenFaces.get( i ) ) {
         drawFace( &face );
@@ -502,7 +502,7 @@ namespace client
     return waterFlags;
   }
 
-  void BSP::fullDrawWater( const Structure *str_ )
+  void BSP::fullDrawWater( const Structure* str_ )
   {
     str = str_;
     camPos = camera.p - str->p;
@@ -522,7 +522,7 @@ namespace client
     glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
 
     for( int i = 0; i < bsp->nFaces; i++ ) {
-      const oz::BSP::Face &face = bsp->faces[i];
+      const oz::BSP::Face& face = bsp->faces[i];
 
       if( ( face.material & Material::WATER_BIT ) && !hiddenFaces.get( i ) ) {
         drawFaceWater( &face );
@@ -541,7 +541,7 @@ namespace client
     drawnFaces = hiddenFaces;
 
     for( int i = 0; i < bsp->nLeafs; i++ ) {
-      const oz::BSP::Leaf &leaf = bsp->leafs[i];
+      const oz::BSP::Leaf& leaf = bsp->leafs[i];
 
       for( int j = 0; j < leaf.nFaces; j++ ) {
         int faceIndex = bsp->leafFaces[leaf.firstFace + j];

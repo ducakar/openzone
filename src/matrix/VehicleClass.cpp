@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -17,9 +17,9 @@
 namespace oz
 {
 
-  ObjectClass *VehicleClass::init( const String &name, const Config *config )
+  ObjectClass* VehicleClass::init( const String& name, const Config* config )
   {
-    VehicleClass *clazz = new VehicleClass();
+    VehicleClass* clazz = new VehicleClass();
 
     clazz->name                 = name;
     clazz->description          = config->get( "description", name );
@@ -150,9 +150,9 @@ namespace oz
     return clazz;
   }
 
-  Object *VehicleClass::create( int index, const Vec3 &pos )
+  Object* VehicleClass::create( int index, const Vec3& pos )
   {
-    Vehicle *obj = new Vehicle();
+    Vehicle* obj = new Vehicle();
 
     obj->p        = pos;
     obj->dim      = dim;
@@ -172,9 +172,9 @@ namespace oz
     return obj;
   }
 
-  Object *VehicleClass::create( int index, InputStream *istream )
+  Object* VehicleClass::create( int index, InputStream* istream )
   {
-    Vehicle *obj = new Vehicle();
+    Vehicle* obj = new Vehicle();
 
     obj->dim    = dim;
 

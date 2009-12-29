@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -22,10 +22,10 @@ namespace oz
     explicit Bounds()
     {}
 
-    explicit Bounds( const Vec3 &mins_, const Vec3 &maxs_ ) : mins( mins_ ), maxs( maxs_ )
+    explicit Bounds( const Vec3& mins_, const Vec3& maxs_ ) : mins( mins_ ), maxs( maxs_ )
     {}
 
-    Bounds &fromPointMove( const Vec3 &p, const Vec3 &move, float eps = 0.0f )
+    Bounds& fromPointMove( const Vec3& p, const Vec3& move, float eps = 0.0f )
     {
       if( move.x < 0.0f ) {
         mins.x = p.x - 2.0f * eps + move.x;
@@ -54,31 +54,31 @@ namespace oz
       return *this;
     }
 
-    Bounds operator + ( const Vec3 &v ) const
+    Bounds operator + ( const Vec3& v ) const
     {
       return Bounds( mins + v, maxs + v );
     }
 
-    Bounds operator - ( const Vec3 &v ) const
+    Bounds operator - ( const Vec3& v ) const
     {
       return Bounds( mins - v, maxs - v );
     }
 
-    Bounds &operator += ( const Vec3 &v )
+    Bounds& operator += ( const Vec3& v )
     {
       mins += v;
       maxs += v;
       return *this;
     }
 
-    Bounds &operator -= ( const Vec3 &v )
+    Bounds& operator -= ( const Vec3& v )
     {
       mins -= v;
       maxs -= v;
       return *this;
     }
 
-    bool includes( const Vec3 &v, float eps = 0.0f ) const
+    bool includes( const Vec3& v, float eps = 0.0f ) const
     {
       return
           mins.x - eps <= v.x && v.x <= maxs.x + eps &&
@@ -86,7 +86,7 @@ namespace oz
           mins.z - eps <= v.z && v.z <= maxs.z + eps;
     }
 
-    bool isInside( const Bounds &b, float eps = 0.0f ) const
+    bool isInside( const Bounds& b, float eps = 0.0f ) const
     {
       return
           b.mins.x - eps <= mins.x && maxs.x <= b.maxs.x + eps &&
@@ -94,12 +94,12 @@ namespace oz
           b.mins.z - eps <= mins.z && maxs.z <= b.maxs.z + eps;
     }
 
-    bool includes( const Bounds &b, float eps = 0.0f ) const
+    bool includes( const Bounds& b, float eps = 0.0f ) const
     {
       return b.isInside( *this, eps );
     }
 
-    bool overlaps( const Bounds &b, float eps = 0.0f ) const
+    bool overlaps( const Bounds& b, float eps = 0.0f ) const
     {
       return
           b.mins.x - eps <= maxs.x && mins.x <= b.maxs.x + eps &&
@@ -109,9 +109,9 @@ namespace oz
 
     // implemented in AABB.h
     AABB toAABB( float eps = 0.0f ) const;
-    bool isInside( const AABB &a, float eps = 0.0f ) const;
-    bool includes( const AABB &a, float eps = 0.0f ) const;
-    bool overlaps( const AABB &a, float eps = 0.0f ) const;
+    bool isInside( const AABB& a, float eps = 0.0f ) const;
+    bool includes( const AABB& a, float eps = 0.0f ) const;
+    bool overlaps( const AABB& a, float eps = 0.0f ) const;
 
   };
 

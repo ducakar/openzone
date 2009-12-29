@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -20,26 +20,26 @@ namespace oz
     explicit Sphere()
     {}
 
-    explicit Sphere( const Vec3 &p_, float r_ ) : p( p_ ), r( r_ )
+    explicit Sphere( const Vec3& p_, float r_ ) : p( p_ ), r( r_ )
     {}
 
-    Sphere operator + ( const Vec3 &v ) const
+    Sphere operator + ( const Vec3& v ) const
     {
       return Sphere( p + v, r );
     }
 
-    Sphere operator - ( const Vec3 &v ) const
+    Sphere operator - ( const Vec3& v ) const
     {
       return Sphere( p - v, r );
     }
 
-    Sphere &operator += ( const Vec3 &v )
+    Sphere& operator += ( const Vec3& v )
     {
       p += v;
       return *this;
     }
 
-    Sphere &operator -= ( const Vec3 &v )
+    Sphere& operator -= ( const Vec3& v )
     {
       p -= v;
       return *this;

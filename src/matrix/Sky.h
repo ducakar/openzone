@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -25,8 +25,8 @@ namespace oz
     void set( float heading, float period, float time );
     void update();
 
-    void read( InputStream *istream );
-    void write( OutputStream *ostream );
+    void read( InputStream* istream );
+    void write( OutputStream* ostream );
   };
 
 }

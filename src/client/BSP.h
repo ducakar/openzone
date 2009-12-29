@@ -4,7 +4,7 @@
  *  BSP level rendering class
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -17,7 +17,7 @@ namespace oz
 namespace client
 {
 
-  class BSP
+  struct BSP
   {
     public:
 
@@ -28,14 +28,14 @@ namespace client
 
       static const float GAMMA_CORR;
 
-      static const Structure *str;
+      static const Structure* str;
       static Vec3 camPos;
 
-      const oz::BSP *bsp;
+      const oz::BSP* bsp;
 
-      uint baseList;
-      uint *textures;
-      uint *lightMaps;
+      uint  baseList;
+      uint* textures;
+      uint* lightMaps;
 
       Bitset drawnFaces;
       Bitset visibleLeafs;
@@ -43,13 +43,13 @@ namespace client
 
       static int waterFlags;
 
-      static Bounds rotateBounds( const Bounds &bounds, Structure::Rotation rotation );
+      static Bounds rotateBounds( const Bounds& bounds, Structure::Rotation rotation );
 
       int  getLeaf() const;
-      void checkInWaterBrush( const oz::BSP::Leaf *leaf ) const;
+      void checkInWaterBrush( const oz::BSP::Leaf* leaf ) const;
 
-      void drawFace( const oz::BSP::Face *face ) const;
-      void drawFaceWater( const oz::BSP::Face *face ) const;
+      void drawFace( const oz::BSP::Face* face ) const;
+      void drawFaceWater( const oz::BSP::Face* face ) const;
       // This function  _should_ draw a BSP without depth testing if only OpenGL supported some kind
       // of depth func that would draw pixel only if it hasn't been drawn yet.
       void drawNode( int nodeIndex );
@@ -62,12 +62,12 @@ namespace client
       explicit BSP( int bspIndex );
       ~BSP();
 
-      void init( oz::BSP *bsp );
+      void init( oz::BSP* bsp );
 
-      int  draw( const Structure *str );
-      void drawWater( const Structure *str );
-      int  fullDraw( const Structure *str );
-      void fullDrawWater( const Structure *str );
+      int  draw( const Structure* str );
+      void drawWater( const Structure* str );
+      int  fullDraw( const Structure* str );
+      void fullDrawWater( const Structure* str );
 
       uint genList();
 

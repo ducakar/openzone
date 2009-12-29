@@ -4,7 +4,7 @@
  *  Matrix structure for terrain
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,10 +16,10 @@ namespace oz
 
   namespace client
   {
-    class Terrain;
+    struct Terrain;
   };
 
-  class Terrain
+  struct Terrain
   {
     friend class client::Terrain;
 
@@ -52,6 +52,7 @@ namespace oz
         static const int   SIZEI = 16;
         // float size of a terrain quad
         static const float SIZE;
+        static const float INV_SIZE;
         // dimension of a terrain quad (size / 2)
         static const float DIM;
 
@@ -63,31 +64,31 @@ namespace oz
 
       void init();
       void load( float height );
-      void load( const char *heightMapFile );
+      void load( const char* heightMapFile );
 
       void isEmpty() const;
 
-      void  getInters( Area &area, float minX, float minY, float maxX, float maxY,
+      void  getInters( Area& area, float minX, float minY, float maxX, float maxY,
                        float epsilon = 0.0f ) const;
       // indices of TerraQuad and index of the triangle inside the TerraQuad
-      void  getIndices( Area &area, float x, float y ) const;
+      void  getIndices( Area& area, float x, float y ) const;
       float height( float x, float y ) const;
 
   };
 
-  inline void Terrain::getInters( Area &area, float minPosX, float minPosY,
+  inline void Terrain::getInters( Area& area, float minPosX, float minPosY,
                                   float maxPosX, float maxPosY, float epsilon ) const
   {
-    area.minX = max( static_cast<int>( minPosX - epsilon + DIM ) / Quad::SIZEI, 0 );
-    area.minY = max( static_cast<int>( minPosY - epsilon + DIM ) / Quad::SIZEI, 0 );
-    area.maxX = min( static_cast<int>( maxPosX + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
-    area.maxY = min( static_cast<int>( maxPosY + epsilon + DIM ) / Quad::SIZEI, QUADS - 1 );
+    area.minX = max( int( ( minPosX - epsilon + DIM ) * Quad::INV_SIZE ), 0 );
+    area.minY = max( int( ( minPosY - epsilon + DIM ) * Quad::INV_SIZE ), 0 );
+    area.maxX = min( int( ( maxPosX + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 );
+    area.maxY = min( int( ( maxPosY + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 );
   }
 
-  inline void Terrain::getIndices( Area &area, float x, float y ) const
+  inline void Terrain::getIndices( Area& area, float x, float y ) const
   {
-    area.minX = static_cast<int>( x + DIM ) / Quad::SIZEI;
-    area.minY = static_cast<int>( y + DIM ) / Quad::SIZEI;
+    area.minX = int( ( x + DIM ) * Quad::INV_SIZE );
+    area.minY = int( ( y + DIM ) * Quad::INV_SIZE );
 
     area.minX = bound( area.minX, 0, QUADS - 1 );
     area.minY = bound( area.minY, 0, QUADS - 1 );

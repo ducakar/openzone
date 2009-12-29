@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -23,12 +23,12 @@ namespace oz
 namespace client
 {
 
-  Model *MD2WeaponModel::create( const Object *obj )
+  Model* MD2WeaponModel::create( const Object* obj )
   {
     assert( obj->flags & Object::DYNAMIC_BIT );
     assert( obj->flags & Object::WEAPON_BIT );
 
-    MD2WeaponModel *model = new MD2WeaponModel();
+    MD2WeaponModel* model = new MD2WeaponModel();
 
     model->obj = obj;
     model->md2 = context.loadMD2( obj->type->modelName );
@@ -40,7 +40,7 @@ namespace client
     return model;
   }
 
-  void MD2WeaponModel::draw( const Model *parent )
+  void MD2WeaponModel::draw( const Model* parent )
   {
     if( parent == null ) {
       glTranslatef( md2->weaponTransl.x, md2->weaponTransl.y, md2->weaponTransl.z );
@@ -48,7 +48,7 @@ namespace client
       md2->drawFrame( 0 );
     }
     else if( parent->flags & Model::MD2MODEL_BIT ) {
-      const MD2Model *parentModel = static_cast<const MD2Model*>( parent );
+      const MD2Model* parentModel = static_cast<const MD2Model*>( parent );
 
       md2->draw( &parentModel->anim );
     }

@@ -4,7 +4,7 @@
  *  Basic iterator classes and utility templates.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,24 +16,24 @@ namespace oz
    * Generalized iterator.
    * It should only be used as a base class. Following functions need to be implemented:<br>
    * <code>bool isPassed()</code><br>
-   * <code>Iterator &operator ++ ()</code><br>
-   * <code>Iterator &operator -- ()</code> (optional)<br>
+   * <code>Iterator& operator ++ ()</code><br>
+   * <code>Iterator& operator -- ()</code> (optional)<br>
    * and a constructor of course.
    */
   template <class Type>
-  class IteratorBase
+  struct IteratorBase
   {
     protected:
 
       /**
        * Element which iterator is currently positioned at.
        */
-      Type *elem;
+      Type* elem;
 
       /**
        * @param start first element
        */
-      explicit IteratorBase( Type *start ) : elem( start )
+      explicit IteratorBase( Type* start ) : elem( start )
       {}
 
     public:
@@ -43,7 +43,7 @@ namespace oz
        * @param e
        * @return
        */
-      bool operator == ( const IteratorBase &i ) const
+      bool operator == ( const IteratorBase& i ) const
       {
         return elem == i.elem;
       }
@@ -53,7 +53,7 @@ namespace oz
        * @param e
        * @return
        */
-      bool operator != ( const IteratorBase &i ) const
+      bool operator != ( const IteratorBase& i ) const
       {
         return elem != i.elem;
       }
@@ -77,7 +77,7 @@ namespace oz
       /**
        * @return reference to current element
        */
-      Type &operator * ()
+      Type& operator * ()
       {
         return *elem;
       }
@@ -85,7 +85,7 @@ namespace oz
       /**
        * @return constant reference to current element
        */
-      const Type &operator * () const
+      const Type& operator * () const
       {
         return *elem;
       }
@@ -93,7 +93,7 @@ namespace oz
       /**
        * @return non-constant access to member
        */
-      Type *operator -> ()
+      Type* operator -> ()
       {
         return elem;
       }
@@ -101,7 +101,7 @@ namespace oz
       /**
        * @return constant access to member
        */
-      const Type *operator -> () const
+      const Type* operator -> () const
       {
         return elem;
       }
@@ -112,7 +112,7 @@ namespace oz
    * Pointer iterator
    */
   template <class Type>
-  class Iterator : public IteratorBase<Type>
+  struct Iterator : public IteratorBase<Type>
   {
     private:
 
@@ -125,7 +125,7 @@ namespace oz
        * Successor of the last element.
        * Is is used to determine when iterator becomes invalid.
        */
-      const Type *const past;
+      const Type* const past;
 
     public:
 
@@ -142,7 +142,7 @@ namespace oz
        * @param past_ successor of last element for forward iterator or predecessor of first element
        * for backward iterator
        */
-      explicit Iterator( Type *start, const Type *past_ ) : B( start ), past( past_ )
+      explicit Iterator( Type* start, const Type* past_ ) : B( start ), past( past_ )
       {}
 
       /**
@@ -158,7 +158,7 @@ namespace oz
       /**
        * Advance to next element.
        */
-      Iterator &operator ++ ()
+      Iterator& operator ++ ()
       {
         assert( B::elem != past );
 
@@ -169,7 +169,7 @@ namespace oz
       /**
        * Go to previous element.
        */
-      Iterator &operator -- ()
+      Iterator& operator -- ()
       {
         assert( B::elem != past );
 
@@ -223,7 +223,7 @@ namespace oz
    * @param value
    */
   template <class Iter, class Value>
-  inline void iSet( Iter iDest, const Value &value )
+  inline void iSet( Iter iDest, const Value& value )
   {
     while( !iDest.isPassed() ) {
       *iDest = value;
@@ -272,7 +272,7 @@ namespace oz
    * @return iterator at the elements found, passed iterator if not found
    */
   template <class Iter, class Value>
-  inline Iter iIndex( Iter iSrc, const Value &value )
+  inline Iter iIndex( Iter iSrc, const Value& value )
   {
     while( !iSrc.isPassed() ) {
       if( *iSrc == value ) {
@@ -290,7 +290,7 @@ namespace oz
    * @return iterator at the elements found, passed iterator if not found
    */
   template <class BackIter, class Value>
-  inline BackIter iLastIndex( BackIter iSrc, const Value &value )
+  inline BackIter iLastIndex( BackIter iSrc, const Value& value )
   {
     while( !iSrc.isPassed() ) {
       --iSrc;
@@ -302,31 +302,20 @@ namespace oz
   }
 
   /**
-   * Call delete on each element of a container of pointers.
+   * Call delete on each non-null element of an container of pointers and set all elements to null.
    * @param iDest
    */
   template <class Iter>
   inline void iFree( Iter iDest )
   {
     while( !iDest.isPassed() ) {
-      const typeof( *iDest ) &elem = *iDest;
-      ++iDest;
-      delete elem;
-    }
-  }
-
-  /**
-   * Call delete on each element of an array of pointers and set all elements to null.
-   * @param iDest
-   */
-  template <class Iter>
-  inline void iFreeAndClear( Iter iDest )
-  {
-    while( !iDest.isPassed() ) {
       typeof( *iDest ) &elem = *iDest;
       ++iDest;
-      delete elem;
-      elem = null;
+
+      if( elem != null ) {
+        delete elem;
+        elem = null;
+      }
     }
   }
 
