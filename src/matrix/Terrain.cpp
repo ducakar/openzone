@@ -4,7 +4,7 @@
  *  Matrix structure for terrain
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -16,10 +16,11 @@
 namespace oz
 {
 
-  const float Terrain::Quad::SIZE = static_cast<float>( Terrain::Quad::SIZEI );
-  const float Terrain::Quad::DIM = Terrain::Quad::SIZE / 2.0f;
+  const float Terrain::Quad::SIZE     = float( Terrain::Quad::SIZEI );
+  const float Terrain::Quad::INV_SIZE = 1.0f / float( Terrain::Quad::SIZEI );
+  const float Terrain::Quad::DIM      = Terrain::Quad::SIZE / 2.0f;
 
-  const float Terrain::DIM = Terrain::Quad::DIM * Terrain::QUADS;
+  const float Terrain::DIM         = Terrain::Quad::DIM * Terrain::QUADS;
   const float Terrain::HEIGHT_STEP = 0.5f;
   const float Terrain::HEIGHT_BIAS = -40.25f;
 
@@ -42,10 +43,10 @@ namespace oz
             |/ 0|/ 0|
           (0,0)
         */
-        const Vec3 &a = vertices[x    ][y    ];
-        const Vec3 &b = vertices[x + 1][y    ];
-        const Vec3 &c = vertices[x + 1][y + 1];
-        const Vec3 &d = vertices[x    ][y + 1];
+        const Vec3& a = vertices[x    ][y    ];
+        const Vec3& b = vertices[x + 1][y    ];
+        const Vec3& c = vertices[x + 1][y + 1];
+        const Vec3& d = vertices[x    ][y + 1];
 
         quads[x][y].tri[0].normal   = ( ( c - b ) ^ ( a - b ) ).norm();
         quads[x][y].tri[0].distance = quads[x][y].tri[0].normal * a;
@@ -60,8 +61,8 @@ namespace oz
   {
     for( int x = 0; x < MAX; x++ ) {
       for( int y = 0; y < MAX; y++ ) {
-        vertices[x][y].x = static_cast<float>( x * Quad::SIZEI ) - DIM;
-        vertices[x][y].y = static_cast<float>( y * Quad::SIZEI ) - DIM;
+        vertices[x][y].x = float( x * Quad::SIZEI ) - DIM;
+        vertices[x][y].y = float( y * Quad::SIZEI ) - DIM;
       }
     }
   }
@@ -70,8 +71,8 @@ namespace oz
   {
     for( int x = 0; x < MAX; x++ ) {
       for( int y = 0; y < MAX; y++ ) {
-        vertices[x][y].x = static_cast<float>( x * Quad::SIZEI ) - DIM;
-        vertices[x][y].y = static_cast<float>( y * Quad::SIZEI ) - DIM;
+        vertices[x][y].x = float( x * Quad::SIZEI ) - DIM;
+        vertices[x][y].y = float( y * Quad::SIZEI ) - DIM;
         vertices[x][y].z = height;
       }
     }
@@ -79,11 +80,11 @@ namespace oz
     buildTerraFrame();
   }
 
-  void Terrain::load( const char *verticesFile )
+  void Terrain::load( const char* verticesFile )
   {
     log.print( "Loading terrain heightmap image '%s' ...", verticesFile );
 
-    SDL_Surface *image = IMG_Load( verticesFile );
+    SDL_Surface* image = IMG_Load( verticesFile );
 
     if( image == null ) {
       log.printEnd( " No such file" );
@@ -96,10 +97,10 @@ namespace oz
     }
 
     int scanLineLength = image->pitch;
-    const ubyte *line = reinterpret_cast<const ubyte*>( image->pixels );
+    const ubyte* line = reinterpret_cast<const ubyte*>( image->pixels );
     for( int y = MAX - 1; y >= 0; y-- ) {
       for( int x = 0; x < MAX; x++ ) {
-        vertices[x][y].z = static_cast<float>( line[x] ) * HEIGHT_STEP + HEIGHT_BIAS;
+        vertices[x][y].z = float( line[x] ) * HEIGHT_STEP + HEIGHT_BIAS;
       }
       line += scanLineLength;
     }

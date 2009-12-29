@@ -4,7 +4,7 @@
  *  Visual particle generator
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -35,10 +35,10 @@ namespace client
 //    sparks[i].lifeTime = sparkGen->lifeTime;
 //  }
 //
-//  SparkGenRender::SparkGenRender( oz::SparkGen *sparkGen_ ) : sparkGen( sparkGen_ )
+//  SparkGenRender::SparkGenRender( oz::SparkGen* sparkGen_ ) : sparkGen( sparkGen_ )
 //  {
 //    sparks = new Spark[sparkGen->number];
-//    startMillis = static_cast<float>( timer.millis );
+//    startMillis = float( timer.millis );
 //    nSparks = 0;
 //
 //    for( int i = 0; i < sparkGen->number; i++ ) {
@@ -46,7 +46,7 @@ namespace client
 //    }
 //  }
 //
-//  SparkGenRender::SparkGenRender( const SparkGenRender &sparkGenRender ) :
+//  SparkGenRender::SparkGenRender( const SparkGenRender& sparkGenRender ) :
 //      sparkGen( sparkGenRender.sparkGen ),
 //      startMillis( sparkGenRender.startMillis ),
 //      sparksPerTick( sparkGenRender.sparksPerTick ),
@@ -70,7 +70,7 @@ namespace client
 //    glMultMatrixf( camera.rotMat );
 //
 //    for( int i = 0; i < nSparks; i++ ) {
-//      Vec3 &p = sparks[i].p;
+//      Vec3& p = sparks[i].p;
 //
 //      glTranslatef( p.x, p.y, p.z );
 //
@@ -93,7 +93,7 @@ namespace client
 //
 //  void SparkGenRender::update() {
 //    if( nSparks != sparkGen->number ) {
-//      int desiredNSparks = static_cast<int>( ( timer.millis - startMillis ) * sparksPerTick );
+//      int desiredNSparks = int( ( timer.millis - startMillis ) * sparksPerTick );
 //
 //      nSparks = min( desiredNSparks, sparkGen->number );
 //    }

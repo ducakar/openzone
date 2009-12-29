@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -58,7 +58,7 @@ namespace client
 
     for( int x = 0; x < oz::Terrain::MAX; x++ ) {
       for( int y = 0; y < oz::Terrain::MAX; y++ ) {
-        Vec3 &n = normals[x * oz::Terrain::MAX + y];
+        Vec3& n = normals[x * oz::Terrain::MAX + y];
 
         n.setZero();
         if( x < oz::Terrain::QUADS && y < oz::Terrain::QUADS ) {
@@ -77,11 +77,11 @@ namespace client
         }
         n.norm();
 
-        detailTexCoords[x * oz::Terrain::MAX + y].u = static_cast<float>( x & 1 ) * DETAIL_SCALE;
-        detailTexCoords[x * oz::Terrain::MAX + y].v = static_cast<float>( y & 1 ) * DETAIL_SCALE;
+        detailTexCoords[x * oz::Terrain::MAX + y].u = float( x & 1 ) * DETAIL_SCALE;
+        detailTexCoords[x * oz::Terrain::MAX + y].v = float( y & 1 ) * DETAIL_SCALE;
 
-        mapTexCoords[x * oz::Terrain::MAX + y].u = static_cast<float>( x ) / oz::Terrain::MAX;
-        mapTexCoords[x * oz::Terrain::MAX + y].v = static_cast<float>( y ) / oz::Terrain::MAX;
+        mapTexCoords[x * oz::Terrain::MAX + y].u = float( x ) / oz::Terrain::MAX;
+        mapTexCoords[x * oz::Terrain::MAX + y].v = float( y ) / oz::Terrain::MAX;
       }
     }
   }
@@ -158,8 +158,8 @@ namespace client
 
     glBindTexture( GL_TEXTURE_2D, waterTexId );
 
-    const Vec3 &v0 = world.terra.vertices[area.minX][area.minY];
-    const Vec3 &v1 = world.terra.vertices[area.maxX][area.maxY];
+    const Vec3& v0 = world.terra.vertices[area.minX][area.minY];
+    const Vec3& v1 = world.terra.vertices[area.maxX][area.maxY];
 
     if( camera.p.z >= 0 ) {
       glNormal3f( 0.0f, 0.0f, 1.0f );

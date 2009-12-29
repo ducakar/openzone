@@ -1,10 +1,11 @@
 /*
  *  Alloc.h
  *
- *  [description]
+ *  Overload default new and delete operators for slightly better performance (ifndef OZ_ALLOC) or
+ *  provide heap allocation statistics (ifdef OZ_ALLOC).
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -12,30 +13,29 @@
 namespace oz
 {
 
-  class Alloc
+  struct Alloc
   {
     private:
 
-      Alloc() {};
+      // static class
+      Alloc() {}
       Alloc( const Alloc& ) {};
 
     public:
 
       static int  count;
-      static long max;
-      static long current;
+      static long amount;
+
+      static int  sumCount;
+      static long sumAmount;
+
+      static int  maxCount;
+      static long maxAmount;
+
+      static void* ( *const malloc )( uint size );
+      static void  ( *const free )( void* ptr );
+      static void* ( *const realloc )( void* ptr, uint size );
 
   };
 
 }
-
-void *operator new ( oz::uint size );
-void *operator new[] ( oz::uint size );
-void operator delete ( void *ptr );
-void operator delete[] ( void *ptr );
-
-// placement operators
-inline void *operator new ( oz::uint, void *pos ) { return pos; }
-inline void *operator new[] ( oz::uint, void *pos ) { return pos; }
-inline void operator delete ( void*, void* ) {}
-inline void operator delete[] ( void*, void* ) {}

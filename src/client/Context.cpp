@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -44,7 +44,7 @@ namespace client
 
   Context context;
 
-  uint Context::buildTexture( const ubyte *data, int width, int height, int bytesPerPixel,
+  uint Context::buildTexture( const ubyte* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
     assert( glGetError() == GL_NO_ERROR );
@@ -82,20 +82,20 @@ namespace client
     return texNum;
   }
 
-  uint Context::buildNormalmap( ubyte *data, const Vec3 &lightNormal, int width, int height,
+  uint Context::buildNormalmap( ubyte* data, const Vec3& lightNormal, int width, int height,
                                 int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
     assert( glGetError() == GL_NO_ERROR );
 
-    ubyte *dataEnd = data + width * height * bytesPerPixel;
+    ubyte* dataEnd = data + width * height * bytesPerPixel;
 
-    for( ubyte *p = data; p < dataEnd; p += bytesPerPixel ) {
-      float x = static_cast<float>( p[0] - 128.0f ) / 128.0f;
-      float y = static_cast<float>( p[1] - 128.0f ) / 128.0f;
-      float z = static_cast<float>( p[2] - 128.0f ) / 128.0f;
+    for( ubyte* p = data; p < dataEnd; p += bytesPerPixel ) {
+      float x = float( p[0] - 128.0f ) / 128.0f;
+      float y = float( p[1] - 128.0f ) / 128.0f;
+      float z = float( p[2] - 128.0f ) / 128.0f;
 
       float dot = x * lightNormal.x + y * lightNormal.y + z * lightNormal.z;
-      ubyte color = static_cast<ubyte>( bound( dot * 256.0f, 0.0f, 255.0f ) );
+      ubyte color = ubyte( bound( dot * 256.0f, 0.0f, 255.0f ) );
 
       p[0] = color;
       p[1] = color;
@@ -135,7 +135,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::createTexture( const ubyte *data, int width, int height, int bytesPerPixel,
+  uint Context::createTexture( const ubyte* data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
   {
     int texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
@@ -146,7 +146,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::createNormalmap( ubyte *data, const Vec3 &lightNormal, int width, int height,
+  uint Context::createNormalmap( ubyte* data, const Vec3& lightNormal, int width, int height,
                                  int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
     int texNum = buildNormalmap( data, lightNormal, width, height, bytesPerPixel, wrap,
@@ -166,12 +166,12 @@ namespace client
     }
     textures[resource].nUsers = 1;
 
-    String &name = translator.textures[resource].name;
-    String &path = translator.textures[resource].path;
+    String& name = translator.textures[resource].name;
+    String& path = translator.textures[resource].path;
 
     log.print( "Loading registered texture '%s' ...", name.cstr() );
 
-    SDL_Surface *image = IMG_Load( path.cstr() );
+    SDL_Surface* image = IMG_Load( path.cstr() );
     if( image == null ) {
       log.printEnd( " No such file" );
       return 0;
@@ -192,7 +192,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::requestNormalmap( int resource, const Vec3 &lightNormal,
+  uint Context::requestNormalmap( int resource, const Vec3& lightNormal,
                                   bool wrap, int magFilter, int minFilter )
   {
     if( textures[resource].nUsers > 0 ) {
@@ -201,12 +201,12 @@ namespace client
     }
     textures[resource].nUsers = 1;
 
-    String &name = translator.textures[resource].name;
-    String &path = translator.textures[resource].path;
+    String& name = translator.textures[resource].name;
+    String& path = translator.textures[resource].path;
 
     log.print( "Loading registerded normalmap texture '%s' ...", name.cstr() );
 
-    SDL_Surface *image = IMG_Load( path.cstr() );
+    SDL_Surface* image = IMG_Load( path.cstr() );
     if( image == null ) {
       log.printEnd( " No such file" );
       return 0;
@@ -241,11 +241,11 @@ namespace client
     }
   }
 
-  uint Context::loadTexture( const char *path, bool wrap, int magFilter, int minFilter )
+  uint Context::loadTexture( const char* path, bool wrap, int magFilter, int minFilter )
   {
     log.print( "Loading texture from file '%s' ...", path );
 
-    SDL_Surface *image = IMG_Load( path );
+    SDL_Surface* image = IMG_Load( path );
     if( image == null ) {
       log.printEnd( " No such file" );
       return 0;
@@ -265,12 +265,12 @@ namespace client
     return texNum;
   }
 
-  uint Context::loadNormalmap( const char *path, const Vec3 &lightNormal,
+  uint Context::loadNormalmap( const char* path, const Vec3& lightNormal,
                                bool wrap, int magFilter, int minFilter )
   {
     log.print( "Loading normalmap texture from file '%s' ...", path );
 
-    SDL_Surface *image = IMG_Load( path );
+    SDL_Surface* image = IMG_Load( path );
     if( image == null ) {
       log.printEnd( " No such file" );
       return 0;
@@ -308,7 +308,7 @@ namespace client
     }
     sounds[resource].nUsers = 1;
 
-    const String &path = translator.sounds[resource].path;
+    const String& path = translator.sounds[resource].path;
     log.print( "Loading sound '%s' ...", translator.sounds[resource].name.cstr() );
 
     int dot = path.lastIndex( '.' );
@@ -328,9 +328,9 @@ namespace client
     }
     else if( String::equals( extension, ".oga" ) || String::equals( extension, ".ogg" ) ) {
       // FIXME make this loader work
-      FILE           *oggFile = fopen( path, "rb" );
+      FILE*           oggFile = fopen( path, "rb" );
       OggVorbis_File oggStream;
-      vorbis_info    *vorbisInfo;
+      vorbis_info*    vorbisInfo;
       ALenum         format;
 
       if( oggFile == null ) {
@@ -362,7 +362,7 @@ namespace client
         return AL_NONE;
       }
 
-      int  size = static_cast<int>( oggStream.end - oggStream.offset );
+      int  size = int( oggStream.end - oggStream.offset );
       char data[size];
       int  section;
       int  bytesRead = 0;
@@ -444,7 +444,7 @@ namespace client
     }
   }
 
-  uint Context::loadOBJ( const char *path )
+  uint Context::loadOBJ( const char* path )
   {
     if( !objs.contains( path ) ) {
       objs.add( path, Resource<OBJ*>() );
@@ -458,7 +458,7 @@ namespace client
     return objs.cachedValue().object->list;
   }
 
-  void Context::releaseOBJ( const char *path )
+  void Context::releaseOBJ( const char* path )
   {
     assert( objs.contains( path ) );
 
@@ -473,7 +473,7 @@ namespace client
     }
   }
 
-  uint Context::loadStaticMD2( const char *path )
+  uint Context::loadStaticMD2( const char* path )
   {
     if( !staticMd2s.contains( path ) ) {
       staticMd2s.add( path, Resource<MD2*>() );
@@ -486,7 +486,7 @@ namespace client
     return staticMd2s.cachedValue().object->list;
   }
 
-  void Context::releaseStaticMD2( const char *path )
+  void Context::releaseStaticMD2( const char* path )
   {
     assert( staticMd2s.contains( path ) );
 
@@ -501,7 +501,7 @@ namespace client
     }
   }
 
-  MD2 *Context::loadMD2( const char *path )
+  MD2* Context::loadMD2( const char* path )
   {
     if( !md2s.contains( path ) ) {
       md2s.add( path, Resource<MD2*>() );
@@ -511,7 +511,7 @@ namespace client
     return md2s.cachedValue().object;
   }
 
-  void Context::releaseMD2( const char *path )
+  void Context::releaseMD2( const char* path )
   {
     assert( md2s.contains( path ) );
 
@@ -525,7 +525,7 @@ namespace client
     }
   }
 
-  uint Context::loadStaticMD3( const char *path )
+  uint Context::loadStaticMD3( const char* path )
   {
     if( !staticMd3s.contains( path ) ) {
       staticMd3s.add( path, Resource<MD3*>() );
@@ -539,7 +539,7 @@ namespace client
     return staticMd3s.cachedValue().object->list;
   }
 
-  void Context::releaseStaticMD3( const char *path )
+  void Context::releaseStaticMD3( const char* path )
   {
     assert( staticMd3s.contains( path ) );
 
@@ -554,7 +554,7 @@ namespace client
     }
   }
 
-  MD3 *Context::loadMD3( const char *path )
+  MD3* Context::loadMD3( const char* path )
   {
     if( !md3s.contains( path ) ) {
       md3s.add( path, Resource<MD3*>() );
@@ -564,7 +564,7 @@ namespace client
     return md3s.cachedValue().object;
   }
 
-  void Context::releaseMD3( const char *path )
+  void Context::releaseMD3( const char* path )
   {
     assert( md3s.contains( path ) );
 

@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -44,7 +44,7 @@ namespace client
     axis = Vec3( -Math::sin( heading ), Math::cos( heading ), 0.0f );
     originalLightDir = Vec3( -Math::cos( heading ), -Math::sin( heading ), 0.0f );
 
-    Quat *tempStars = new Quat[MAX_STARS];
+    Quat* tempStars = new Quat[MAX_STARS];
     for( int i = 0; i < MAX_STARS; i++ ) {
       float length;
       do {
@@ -52,7 +52,7 @@ namespace client
         tempStars[i].y = 20.0f * Math::frand() - 10.0f;
         tempStars[i].z = 20.0f * Math::frand() - 10.0f;
         tempStars[i].w = Math::atan2( tempStars[i].z, tempStars[i].x );
-        length = static_cast<Vec3>( tempStars[i] ).sqL();
+        length = Vec3( tempStars[i] ).sqL();
       }
       while( Math::isNaN( length ) || length < 1.0f || length > 100.0f );
     }
@@ -170,7 +170,7 @@ namespace client
     glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer( 3, GL_FLOAT, 0, stars );
 
-    const Vec3 &tz = static_cast<Vec3>( transf.z );
+    const Vec3& tz = Vec3( transf.z );
     int start, end;
     if( tz * stars[0] > 0.0f ) {
       for( end = 1; end < MAX_STARS && tz * stars[end] > 0.0f; end++ );

@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -21,11 +21,13 @@ namespace oz
   const float Vehicle::EJECT_MOVE     = 4.0f;
   const float Vehicle::EJECT_MOMENTUM = 20.0f;
 
+  Pool<Vehicle> Vehicle::pool;
+
   void Vehicle::onDestroy()
   {
     for( int i = 0; i < CREW_MAX; i++ ) {
       if( crew[i] != -1 ) {
-        Bot *bot = static_cast<Bot*>( world.objects[crew[i]] );
+        Bot* bot = static_cast<Bot*>( world.objects[crew[i]] );
 
         if( bot != null ) {
           bot->exit();
@@ -38,12 +40,12 @@ namespace oz
 
   void Vehicle::onUpdate()
   {
-    const VehicleClass *clazz = static_cast<const VehicleClass*>( type );
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( type );
 
     flags &= ~HOVER_BIT;
     actions = 0;
     if( crew[PILOT] != -1 ) {
-      Bot *pilot = static_cast<Bot*>( world.objects[crew[PILOT]] );
+      Bot* pilot = static_cast<Bot*>( world.objects[crew[PILOT]] );
 
       if( pilot != null ) {
         rot = Quat::rotZYX( Math::rad( pilot->h ), 0.0f, Math::rad( pilot->v ) );
@@ -84,7 +86,7 @@ namespace oz
 
     for( int i = 0; i < CREW_MAX; i++ ) {
       if( crew[i] != -1 ) {
-        Bot *bot = static_cast<Bot*>( world.objects[crew[i]] );
+        Bot* bot = static_cast<Bot*>( world.objects[crew[i]] );
 
         if( bot == null || bot->parent != index ) {
           crew[i] = -1;
@@ -117,7 +119,7 @@ namespace oz
     oldState   = state;
   }
 
-  void Vehicle::onUse( Bot *user )
+  void Vehicle::onUse( Bot* user )
   {
     if( crew[0] == -1 ) {
       crew[0] = user->index;
@@ -130,7 +132,7 @@ namespace oz
     aSet( crew, -1, CREW_MAX );
   }
 
-  void Vehicle::readFull( InputStream *istream )
+  void Vehicle::readFull( InputStream* istream )
   {
     Dynamic::readFull( istream );
 
@@ -145,7 +147,7 @@ namespace oz
     }
   }
 
-  void Vehicle::writeFull( OutputStream *ostream ) const
+  void Vehicle::writeFull( OutputStream* ostream ) const
   {
     Dynamic::writeFull( ostream );
 
@@ -160,7 +162,7 @@ namespace oz
     }
   }
 
-  void Vehicle::readUpdate( InputStream *istream )
+  void Vehicle::readUpdate( InputStream* istream )
   {
     Dynamic::readUpdate( istream );
 
@@ -168,7 +170,7 @@ namespace oz
     state = istream->readInt();
   }
 
-  void Vehicle::writeUpdate( OutputStream *ostream ) const
+  void Vehicle::writeUpdate( OutputStream* ostream ) const
   {
     Dynamic::writeUpdate( ostream );
 

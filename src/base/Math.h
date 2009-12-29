@@ -4,7 +4,7 @@
  *  Replacement for math.h and some other utility functions
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -12,7 +12,7 @@
 namespace oz
 {
 
-  class Math
+  struct Math
   {
     private:
 
@@ -39,6 +39,8 @@ namespace oz
 
       static const int  INT_MAX  = ~0u >> 1;
       static const long LONG_MAX = ~0ul >> 1;
+
+      static const float MAX_RAND;
 
       /*
        * Standard math functions
@@ -99,7 +101,7 @@ namespace oz
         return __builtin_cosf( x );
       }
 
-      static void sincos( float x, float *s, float *c )
+      static void sincos( float x, float* s, float* c )
       {
 #ifdef OZ_HAVE_SINCOSF
         __builtin_sincosf( x, s, c );
@@ -181,19 +183,19 @@ namespace oz
         return y * ( 1.5f - 0.5f * x * y*y );
       }
 
-      static const int &toBits( const float &f )
+      static const int& toBits( const float& f )
       {
         return *reinterpret_cast<const int*>( &f );
       }
 
-      static const float &fromBits( const int &b )
+      static const float& fromBits( const int& b )
       {
         return *reinterpret_cast<const float*>( &b );
       }
 
       // is power of two?
       template <class Value>
-      static bool isPow2( const Value &v )
+      static bool isPow2( const Value& v )
       {
         return v & ( v - 1 ) == 0;
       }
@@ -202,7 +204,7 @@ namespace oz
 
       // random integer between 0 and RAND_MAX == INT_MAX
       // (pointer to rand() function in stdlib.h)
-      static int ( *const rand )( void );
+      static int ( *const rand )();
 
       // random integer between 0 and max
       static int randn( int max )

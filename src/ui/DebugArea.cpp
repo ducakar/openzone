@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -56,7 +56,7 @@ namespace ui
 
       if( camera.tagged != -1 ) {
         if( camera.tagged != -1 && ( camera.taggedObj->flags & Object::DYNAMIC_BIT ) ) {
-          const Dynamic *dyn = static_cast<const Dynamic*>( camera.taggedObj );
+          const Dynamic* dyn = static_cast<const Dynamic*>( camera.taggedObj );
 
           print( 5, -5 - textHeight * 5, "tagDyn.vel(%.2f %.2f %.2f) tagDyn.mom(%.2f %.2f %.2f)",
                  dyn->velocity.x, dyn->velocity.y, dyn->velocity.z,

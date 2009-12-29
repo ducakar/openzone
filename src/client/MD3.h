@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -19,7 +19,7 @@ namespace client
 
   struct MD3Tag;
 
-  class MD3
+  struct MD3
   {
     private:
 
@@ -56,7 +56,7 @@ namespace client
         Quat rot;
       };
 
-      class Part
+      struct Part
       {
         friend class MD3;
 
@@ -67,33 +67,33 @@ namespace client
 
         public:
 
-          Part( MD3 *parent, const String &dir, const char *fileName, MD3Tag **tags );
+          Part( MD3* parent, const String& dir, const char* fileName, MD3Tag** tags );
           ~Part();
 
           void scale( float scale );
-          void translate( const Vec3 &t );
+          void translate( const Vec3& t );
           void drawFrame( int frame ) const;
 
       };
 
       Vector<uint>   textures;
 
-      Part           *head;
-      Part           *upper;
-      Part           *lower;
+      Part*          head;
+      Part*          upper;
+      Part*          lower;
 
       DArray<Offset> headOffsets;
       DArray<Offset> lowerOffsets;
       DArray<Offset> weaponOffsets;
 
       void scale( float scale );
-      void translate( const Vec3 &t );
+      void translate( const Vec3& t );
 
     public:
 
       uint list;
 
-      explicit MD3( const char *name );
+      explicit MD3( const char* name );
       ~MD3();
 
       void drawFrame( int frame ) const;

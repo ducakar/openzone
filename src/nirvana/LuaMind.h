@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,17 +16,17 @@ namespace oz
 namespace nirvana
 {
 
-  class LuaMind : public Mind
+  struct LuaMind : public Mind
   {
     public:
 
-      static Mind *create( int botIndex );
-      static Mind *read( InputStream *istream );
+      static Mind* create( int botIndex );
+      static Mind* read( InputStream* istream );
 
       LuaMind( int botIndex );
       virtual ~LuaMind();
 
-      virtual const char *type() const;
+      virtual const char* type() const;
       virtual void update();
 
   };

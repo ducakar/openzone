@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -16,9 +16,9 @@
 namespace oz
 {
 
-  ObjectClass *DynamicClass::init( const String &name, const Config *config )
+  ObjectClass* DynamicClass::init( const String& name, const Config* config )
   {
-    DynamicClass *clazz = new DynamicClass();
+    DynamicClass* clazz = new DynamicClass();
 
     clazz->name                 = name;
     clazz->description          = config->get( "description", name );
@@ -86,9 +86,9 @@ namespace oz
     return clazz;
   }
 
-  Object *DynamicClass::create( int index, const Vec3 &pos )
+  Object* DynamicClass::create( int index, const Vec3& pos )
   {
-    Dynamic *obj = new Dynamic();
+    Dynamic* obj = new Dynamic();
 
     assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
@@ -107,9 +107,9 @@ namespace oz
     return obj;
   }
 
-  Object *DynamicClass::create( int index, InputStream *istream )
+  Object* DynamicClass::create( int index, InputStream* istream )
   {
-    Dynamic *obj = new Dynamic();
+    Dynamic* obj = new Dynamic();
 
     obj->dim    = dim;
 

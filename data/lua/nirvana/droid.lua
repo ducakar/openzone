@@ -59,7 +59,7 @@ function droid_huntTarget( l )
       ozSelfSetV( ozObjPitchFromSelfEye() )
 
       if distance < 20 then
-	ozSelfActionAttack()
+	--ozSelfActionAttack()
 	ozForceUpdate()
       else
 	ozSelfStateSetRunning( true )
@@ -77,7 +77,7 @@ function droid( l )
     ozSelfBindObjOverlaps( 100, 100, 100 )
     while ozObjBindNext() do
       local typeName = ozObjGetTypeName()
-      if ozObjIsBot() and not ozObjIsSelf() and typeName ~= "DroidCommander" then
+      if ozObjIsBot() and not ozObjIsSelf() and string.sub( typeName, 1, 5 ) ~= "Droid" then
 	local distance = ozObjDistanceFromSelf()
 	if distance < minDistance then
 	  l.target = ozObjGetIndex()

@@ -4,7 +4,7 @@
  *  http://www.wikipedia.org/MD3_(file_format)
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -84,10 +84,10 @@ namespace client
     ubyte normal[2];
   };
 
-  MD3::Part::Part( MD3 *parent, const String &dir, const char *fileName, MD3Tag **tags )
+  MD3::Part::Part( MD3* parent, const String& dir, const char* fileName, MD3Tag** tags )
   {
-    const String &path = dir + fileName;
-    FILE *file;
+    const String& path = dir + fileName;
+    FILE* file;
 
     file = fopen( path, "rb" );
     if( file == null ) {
@@ -105,7 +105,7 @@ namespace client
 
     nFrames = header.nFrames;
 
-    MD3Frame *frames = new MD3Frame[header.nFrames];
+    MD3Frame* frames = new MD3Frame[header.nFrames];
     fread( frames, sizeof( MD3Frame ), header.nFrames, file );
     delete[] frames;
 
@@ -114,7 +114,7 @@ namespace client
 
     meshes( header.nSurfaces );
     for( int i = 0; i < header.nSurfaces; i++ ) {
-      Mesh *mesh = &meshes[i];
+      Mesh* mesh = &meshes[i];
 
       MD3Surface surface;
       fread( &surface, sizeof( MD3Surface ), 1, file );
@@ -124,10 +124,10 @@ namespace client
       mesh->triangles( surface.nTriangles );
       fread( mesh->triangles, sizeof( Triangle ), surface.nTriangles, file );
 
-      MD3Shader *shaders = new MD3Shader[surface.nShaders];
+      MD3Shader* shaders = new MD3Shader[surface.nShaders];
       fread( shaders, sizeof( MD3Shader ), surface.nShaders, file );
 
-      const char *shaderBaseName;
+      const char* shaderBaseName;
 
       shaderBaseName = String::findLast( shaders[0].name, '/' );
       if( shaderBaseName == null ) {
@@ -151,7 +151,7 @@ namespace client
       }
 
       mesh->vertices( surface.nFrames * surface.nVertices );
-      MD3Vertex *vertices = new MD3Vertex[mesh->vertices.length()];
+      MD3Vertex* vertices = new MD3Vertex[mesh->vertices.length()];
       fread( vertices, sizeof( MD3Vertex ), mesh->vertices.length(), file );
 
       for( int j = 0; j < mesh->vertices.length(); j++ ) {
@@ -193,7 +193,7 @@ namespace client
     }
   }
 
-  void MD3::Part::translate( const Vec3 &t )
+  void MD3::Part::translate( const Vec3& t )
   {
     foreach( mesh, meshes.iterator() ) {
       foreach( v, mesh->vertices.iterator() ) {
@@ -207,19 +207,19 @@ namespace client
     assert( 0 <= frame && frame < nFrames );
 
     for( int i = 0; i < meshes.length(); i++ ) {
-      const Mesh &mesh = meshes[i];
+      const Mesh& mesh = meshes[i];
 
       glBindTexture( GL_TEXTURE_2D, mesh.texId );
 
       glBegin( GL_TRIANGLES );
       for( int j = 0; j < mesh.triangles.length(); j++ ) {
-        const Triangle &triangle  = mesh.triangles[j];
-        const TexCoord &texCoord0 = mesh.texCoords[triangle.indices[0]];
-        const TexCoord &texCoord1 = mesh.texCoords[triangle.indices[1]];
-        const TexCoord &texCoord2 = mesh.texCoords[triangle.indices[2]];
-        const Vertex   &vertex0   = mesh.vertices[frame * mesh.nVertices + triangle.indices[0]];
-        const Vertex   &vertex1   = mesh.vertices[frame * mesh.nVertices + triangle.indices[1]];
-        const Vertex   &vertex2   = mesh.vertices[frame * mesh.nVertices + triangle.indices[2]];
+        const Triangle& triangle  = mesh.triangles[j];
+        const TexCoord& texCoord0 = mesh.texCoords[triangle.indices[0]];
+        const TexCoord& texCoord1 = mesh.texCoords[triangle.indices[1]];
+        const TexCoord& texCoord2 = mesh.texCoords[triangle.indices[2]];
+        const Vertex&   vertex0   = mesh.vertices[frame * mesh.nVertices + triangle.indices[0]];
+        const Vertex&   vertex1   = mesh.vertices[frame * mesh.nVertices + triangle.indices[1]];
+        const Vertex&   vertex2   = mesh.vertices[frame * mesh.nVertices + triangle.indices[2]];
 
         glTexCoord2fv( &texCoord0.u );
         glNormal3fv( &vertex0.normal.x );
@@ -254,22 +254,22 @@ namespace client
     }
   }
 
-  void MD3::translate( const Vec3 &t )
+  void MD3::translate( const Vec3& t )
   {
     head->translate( t );
     upper->translate( t );
     lower->translate( t );
   }
 
-  MD3::MD3( const char *name_ )
+  MD3::MD3( const char* name_ )
   {
     String name       = name_;
     String dir        = "mdl/" + name + "/";
     String configFile = dir + "config.rc";
 
-    MD3Tag *headTags;
-    MD3Tag *upperTags;
-    MD3Tag *lowerTags;
+    MD3Tag* headTags;
+    MD3Tag* upperTags;
+    MD3Tag* lowerTags;
 
     head  = new Part( this, dir, "head.md3", &headTags );
     upper = new Part( this, dir, "upper.md3", &upperTags );
@@ -305,7 +305,6 @@ namespace client
     Vec3 translation( config.get( "translate.x", 0.00f ),
                       config.get( "translate.y", 0.00f ),
                       config.get( "translate.z", 0.00f ) );
-    config.clear();
 
     if( scaling != 1.0f ) {
       scale( scaling );

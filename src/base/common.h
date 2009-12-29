@@ -4,7 +4,7 @@
  *  Common types and templates
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -74,7 +74,7 @@ namespace oz
    * @param b reference to second variable
    */
   template <class Value>
-  inline void swap( Value &a, Value &b )
+  inline void swap( Value& a, Value& b )
   {
     Value temp = a;
 
@@ -88,7 +88,7 @@ namespace oz
    * @return absolute value
    */
   template <class Value>
-  inline Value abs( const Value &a )
+  inline Value abs( const Value& a )
   {
     return a < 0 ? -a : a;
   }
@@ -100,7 +100,7 @@ namespace oz
    * @return minimum of a and b
    */
   template <class Value>
-  inline Value min( const Value &a, const Value &b )
+  inline Value min( const Value& a, const Value& b )
   {
     return a < b ? a : b;
   }
@@ -112,7 +112,7 @@ namespace oz
    * @return maximum of a and b
    */
   template <class Value>
-  inline Value max( const Value &a, const Value &b )
+  inline Value max( const Value& a, const Value& b )
   {
     return a > b ? a : b;
   }
@@ -125,7 +125,7 @@ namespace oz
    * @return clamped value of c
    */
   template <class Value>
-  inline Value bound( const Value &c, const Value &a, const Value &b )
+  inline Value bound( const Value& c, const Value& a, const Value& b )
   {
     assert( a <= b );
 

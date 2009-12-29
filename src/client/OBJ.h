@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ namespace oz
 namespace client
 {
 
-  class OBJ
+  struct OBJ
   {
     private:
 
@@ -24,9 +24,9 @@ namespace client
       {
         int nVerts;
 
-        uint *vertIndices;
-        uint *normIndices;
-        uint *texCoordIndices;
+        uint* vertIndices;
+        uint* normIndices;
+        uint* texCoordIndices;
 
         Face() : nVerts( 0 ), vertIndices( null ), normIndices( null ), texCoordIndices( null ) {}
       };
@@ -42,10 +42,10 @@ namespace client
 
       struct Material
       {
-        Vec3  ambient;
-        Vec3  specular;
-        Quat  diffuse;
-        uint  texId;
+        Vec3 ambient;
+        Vec3 specular;
+        Quat diffuse;
+        uint texId;
       };
 
       String           name;
@@ -56,25 +56,25 @@ namespace client
       DArray<Face>     faces;
       DArray<Material> materials;
 
-      static char *skipSpaces( char *pos );
-      static char *readWord( char *pos );
+      static char* skipSpaces( char* pos );
+      static char* readWord( char* pos );
 
-      bool readVertexData( char *pos,
+      bool readVertexData( char* pos,
                            Vector<Vec3> *tempVerts,
                            Vector<Vec3> *tempNormals,
                            Vector<TexCoord> *tempTexCoords ) const;
-      bool readFace( char *pos, Face *face ) const;
-      bool loadMaterial( const String &path, HashString<int, 13> *materialIndices );
+      bool readFace( char* pos, Face* face ) const;
+      bool loadMaterial( const String& path, HashString<int, 13> *materialIndices );
 
     public:
 
       uint list;
 
-      explicit OBJ( const char *name );
+      explicit OBJ( const char* name );
       ~OBJ();
 
       void scale( float scale );
-      void translate( const Vec3 &t );
+      void translate( const Vec3& t );
 
       void draw() const;
       void genList();

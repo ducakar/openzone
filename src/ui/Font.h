@@ -4,7 +4,7 @@
  *  Bitmap font loader and print function
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -25,7 +25,7 @@ namespace ui
     TITLE
   };
 
-  class Font
+  struct Font
   {
     friend class Area;
 
@@ -34,9 +34,9 @@ namespace ui
 
     public:
 
-      TTF_Font *monoFont;
-      TTF_Font *sansFont;
-      TTF_Font *titleFont;
+      TTF_Font* monoFont;
+      TTF_Font* sansFont;
+      TTF_Font* titleFont;
 
       int monoHeight;
       int sansHeight;

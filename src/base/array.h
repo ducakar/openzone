@@ -4,7 +4,7 @@
  *  Array utility templates.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -24,7 +24,7 @@ namespace oz
    * @return
    */
   template <class Type>
-  Iterator<Type> iterator( Type *array, const Type *past )
+  Iterator<Type> iterator( Type* array, const Type* past )
   {
     return Iterator<Type>( array, past );
   }
@@ -41,7 +41,7 @@ namespace oz
    * @return
    */
   template <class Type>
-  Iterator<Type> iterator( Type *array, int count )
+  Iterator<Type> iterator( Type* array, int count )
   {
     return Iterator<Type>( array, array + count );
   }
@@ -55,7 +55,7 @@ namespace oz
    * @return
    */
   template <class Type>
-  inline bool aEquals( const Type *aSrcA, const Type *aSrcB, int count )
+  inline bool aEquals( const Type* aSrcA, const Type* aSrcB, int count )
   {
     for( int i = 0; i < count; i++ ) {
       if( aSrcA[i] != aSrcB[i] ) {
@@ -73,7 +73,7 @@ namespace oz
    * @param count number of elements to be set
    */
   template <class Type>
-  inline void aSet( Type *aDest, const Type &value, int count )
+  inline void aSet( Type* aDest, const Type& value, int count )
   {
     for( int i = 0; i < count; i++ ) {
       aDest[i] = value;
@@ -89,7 +89,7 @@ namespace oz
    * @param count number of elements to be copied
    */
   template <class Type>
-  inline void aCopy( Type *aDest, const Type *aSrc, int count )
+  inline void aCopy( Type* aDest, const Type* aSrc, int count )
   {
     assert( aDest != aSrc );
 
@@ -107,7 +107,7 @@ namespace oz
    * @param count number of elements to be copied
    */
   template <class Type>
-  inline void aReverseCopy( Type *aDest, const Type *aSrc, int count )
+  inline void aReverseCopy( Type* aDest, const Type* aSrc, int count )
   {
     assert( aDest != aSrc );
 
@@ -124,7 +124,7 @@ namespace oz
    * @return index of the first occurrence, -1 if not found
    */
   template <class Type>
-  inline int aIndex( const Type *aSrc, const Type &value, int count )
+  inline int aIndex( const Type* aSrc, const Type& value, int count )
   {
     for( int i = 0; i < count; i++ ) {
       if( aSrc[i] == value ) {
@@ -142,7 +142,7 @@ namespace oz
    * @return index of the first occurrence, -1 if not found
    */
   template <class Type>
-  inline int aLastIndex( const Type *aSrc, const Type &value, int count )
+  inline int aLastIndex( const Type* aSrc, const Type& value, int count )
   {
     for( int i = count - 1; i <= 0; i-- ) {
       if( aSrc[i] == value ) {
@@ -153,29 +153,18 @@ namespace oz
   }
 
   /**
-   * Call delete on each element of an array of pointers.
+   * Call delete on each non-null element of an array of pointers and set all elements to null.
    * @param aDest pointer to the first element in the array
    * @param count number of elements
    */
   template <class Type>
-  inline void aFree( const Type *aDest, int count )
+  inline void aFree( Type* aDest, int count )
   {
     for( int i = 0; i < count; i++ ) {
-      delete aDest[i];
-    }
-  }
-
-  /**
-   * Call delete on each element of an array of pointers and set all elements to null.
-   * @param aDest pointer to the first element in the array
-   * @param count number of elements
-   */
-  template <class Type>
-  inline void aFreeAndClear( const Type *aDest, int count )
-  {
-    for( int i = 0; i < count; i++ ) {
-      delete aDest[i];
-      aDest[i] = null;
+      if( aDest[i] != null ) {
+        delete aDest[i];
+        aDest[i] = null;
+      }
     }
   }
 
@@ -189,11 +178,11 @@ namespace oz
    * @return
    */
   template <class Type>
-  inline Type *aRealloc( Type *aDest, int count, int newCount )
+  inline Type* aRealloc( Type* aDest, int count, int newCount )
   {
     assert( count <= newCount );
 
-    Type *aNew = new Type[newCount];
+    Type* aNew = new Type[newCount];
 
     aCopy( aNew, aDest, count );
     delete[] aDest;
@@ -202,19 +191,19 @@ namespace oz
   }
 
   /**
-   * Utility function for aSort. It could also be called directly. Type must have operator &lt;
+   * Utility function for aSort. It could also be called directly. Type must have operator& lt;
    * defined.
    * @param first pointer to first element in the array to be sorted
    * @param last pointer to last element in the array
    */
   template <class Type>
-  static void quicksort( Type *first, Type *last )
+  static void quicksort( Type* first, Type* last )
   {
     // 8-14 seem as optimal thresholds for switching to selection sort
     if( last - first > 10 ) {
       // quicksort
-      Type *top = first;
-      Type *bottom = last - 1;
+      Type* top = first;
+      Type* bottom = last - 1;
 
       do {
         while( top <= bottom && !( *last < *top ) ) {
@@ -237,12 +226,12 @@ namespace oz
     }
     else {
       // selection sort
-      for( Type *i = first; i < last; ) {
-        Type *pivot = i;
-        Type *min = i;
+      for( Type* i = first; i < last; ) {
+        Type* pivot = i;
+        Type* min = i;
         i++;
 
-        for( Type *j = i; j <= last; j++ ) {
+        for( Type* j = i; j <= last; j++ ) {
           if( *j < *min ) {
             min = j;
           }
@@ -255,12 +244,12 @@ namespace oz
   /**
    * Perform quicksort on the array. Recursive quicksort algorithm is used which takes first
    * element in partition as a pivot so sorting a sorted or nearly sorted array will take O(n^2)
-   * time instead of O(n log n) as in general case. Type must have operator &lt; defined.
+   * time instead of O(n log n) as in general case. Type must have operator& lt; defined.
    * @param array pointer to the first element in the array
    * @param count number of elements to be sorted
    */
   template <class Type>
-  inline void aSort( Type *aSrc, int count )
+  inline void aSort( Type* aSrc, int count )
   {
     quicksort( aSrc, aSrc + count - 1 );
   }

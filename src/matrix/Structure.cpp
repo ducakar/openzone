@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -16,11 +16,11 @@
 namespace oz
 {
 
-  Structure::Structure( int index_, int bsp_, const Vec3 &p_, Rotation rot_ ) :
+  Structure::Structure( int index_, int bsp_, const Vec3& p_, Rotation rot_ ) :
       index( index_ ), bsp( bsp_ ), p( p_ ), rot( rot_ ), life( world.bsps[bsp]->life )
   {}
 
-  Structure::Structure( int index_, int bsp_, InputStream *istream ) : index( index_ ), bsp( bsp_ )
+  Structure::Structure( int index_, int bsp_, InputStream* istream ) : index( index_ ), bsp( bsp_ )
   {
     readFull( istream );
   }
@@ -32,17 +32,17 @@ namespace oz
     synapse.remove( this );
   }
 
-  void Structure::readFull( InputStream *istream )
+  void Structure::readFull( InputStream* istream )
   {
     p      = istream->readVec3();
-    rot    = static_cast<Rotation>( istream->readByte() );
+    rot    = Rotation( istream->readByte() );
     life   = istream->readFloat();
   }
 
-  void Structure::writeFull( OutputStream *ostream )
+  void Structure::writeFull( OutputStream* ostream )
   {
     ostream->writeVec3( p );
-    ostream->writeByte( static_cast<int>( rot ) );
+    ostream->writeByte( int( rot ) );
     ostream->writeFloat( life );
   }
 

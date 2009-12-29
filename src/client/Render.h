@@ -4,7 +4,7 @@
  *  Graphics render engine
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -25,7 +25,7 @@ namespace oz
 namespace client
 {
 
-  class Render
+  struct Render
   {
     private:
 
@@ -44,13 +44,13 @@ namespace client
       struct ObjectEntry
       {
         float distance;
-        const Object *obj;
+        const Object* obj;
 
         ObjectEntry() {}
-        ObjectEntry( float distance_, const Object *obj_ ) : distance( distance_ ), obj( obj_ ) {}
+        ObjectEntry( float distance_, const Object* obj_ ) : distance( distance_ ), obj( obj_ ) {}
 
         // sort in reverse order (farest to nearest)
-        bool operator < ( const ObjectEntry &be ) const
+        bool operator < ( const ObjectEntry& be ) const
         {
           return distance > be.distance;
         }
@@ -94,12 +94,12 @@ namespace client
 
       bool doScreenshot;
 
-      void drawModel( const Object *obj, const Model *parent )
+      void drawModel( const Object* obj, const Model* parent )
       {
         if( !models.contains( obj->index ) ) {
           models.add( obj->index, context.createModel( obj ) );
         }
-        Model *model = models.cachedValue();
+        Model* model = models.cachedValue();
 
         model->flags |= Model::UPDATED_BIT;
         model->draw( parent );

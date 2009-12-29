@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -29,6 +29,8 @@ namespace oz
   const float Bot::GRAB_MOM_MAX_SQ    = 1.0f;
   const float Bot::DEAD_BODY_LIFT     = 100.0f;
 
+  Pool<Bot> Bot::pool;
+
   void Bot::onDestroy()
   {
     // only play death sound when an alive bot is destroyed but not when a body is destroyed
@@ -38,7 +40,7 @@ namespace oz
     Object::onDestroy();
   }
 
-  void Bot::onHit( const Hit *hit, float hitMomentum )
+  void Bot::onHit( const Hit* hit, float hitMomentum )
   {
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       assert( hitMomentum <= 0.0f );
@@ -52,7 +54,7 @@ namespace oz
 
   void Bot::onUpdate()
   {
-    const BotClass *clazz = static_cast<const BotClass*>( type );
+    const BotClass* clazz = static_cast<const BotClass*>( type );
 
     // clear invalid references from inventory
     for( int i = 0; i < items.length(); ) {
@@ -104,7 +106,7 @@ namespace oz
     hvsc[5] = hvsc[3] * hvsc[1];
 
     if( parent != -1 ) {
-      Vehicle *vehicle = static_cast<Vehicle*>( world.objects[parent] );
+      Vehicle* vehicle = static_cast<Vehicle*>( world.objects[parent] );
 
       assert( vehicle->flags & VEHICLE_BIT );
 
@@ -213,7 +215,7 @@ namespace oz
       anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_WALK : ANIM_RUN;
     }
     else if( ( actions & ACTION_ATTACK ) && weaponItem != -1 && grabObj == -1 ) {
-      Weapon *weapon = static_cast<Weapon*>( world.objects[weaponItem] );
+      Weapon* weapon = static_cast<Weapon*>( world.objects[weaponItem] );
 
       if( weapon != null && weapon->shotTime == 0.0f ) {
         anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
@@ -401,7 +403,7 @@ namespace oz
      * GRAB MOVEMENT
      */
 
-    Dynamic *obj = null;
+    Dynamic* obj = null;
     if( grabObj != -1 ) {
       obj = static_cast<Dynamic*>( world.objects[grabObj] );
 
@@ -457,7 +459,7 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        Object *obj = collider.hit.obj;
+        Object* obj = collider.hit.obj;
         if( obj != null ) {
           synapse.use( this, obj );
         }
@@ -475,7 +477,7 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        Dynamic *obj = static_cast<Dynamic*>( collider.hit.obj );
+        Dynamic* obj = static_cast<Dynamic*>( collider.hit.obj );
         if( obj != null && ( obj->flags & ITEM_BIT ) ) {
           assert( obj->flags & DYNAMIC_BIT );
 
@@ -501,7 +503,7 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        Dynamic *obj = static_cast<Dynamic*>( collider.hit.obj );
+        Dynamic* obj = static_cast<Dynamic*>( collider.hit.obj );
         if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
             lower != obj->index )
         {
@@ -519,7 +521,7 @@ namespace oz
     }
     else if( actions & ~oldActions & ACTION_INV_USE ) {
       if( taggedItem != -1 && taggedItem < items.length() && items[taggedItem] != -1 ) {
-        Dynamic *item = static_cast<Dynamic*>( world.objects[items[taggedItem]] );
+        Dynamic* item = static_cast<Dynamic*>( world.objects[items[taggedItem]] );
 
         assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -532,7 +534,7 @@ namespace oz
     }
     else if( actions & ~oldActions & ACTION_INV_GRAB ) {
       if( grabObj == -1 && taggedItem != -1 && taggedItem < items.length() ) {
-        Dynamic *item = static_cast<Dynamic*>( world.objects[items[taggedItem]] );
+        Dynamic* item = static_cast<Dynamic*>( world.objects[items[taggedItem]] );
 
         assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -566,7 +568,7 @@ namespace oz
      * WEAPON
      */
     if( weaponItem != -1 ) {
-      Dynamic *weapon = static_cast<Dynamic*>( world.objects[weaponItem] );
+      Dynamic* weapon = static_cast<Dynamic*>( world.objects[weaponItem] );
 
       assert( ( weapon->flags & DYNAMIC_BIT ) && ( weapon->flags & ITEM_BIT ) &&
               ( weapon->flags & WEAPON_BIT ) );
@@ -584,7 +586,7 @@ namespace oz
       grabObj( -1 ), weaponItem( -1 ), anim( ANIM_STAND )
   {}
 
-  void Bot::take( Dynamic *item )
+  void Bot::take( Dynamic* item )
   {
     assert( index != -1 && item->flags & Object::ITEM_BIT );
 
@@ -616,7 +618,7 @@ namespace oz
     life = type->life / 2.0f - EPSILON;
   }
 
-  void Bot::readFull( InputStream *istream )
+  void Bot::readFull( InputStream* istream )
   {
     Dynamic::readFull( istream );
 
@@ -632,7 +634,7 @@ namespace oz
     grabHandle   = istream->readFloat();
 
     stepRate     = istream->readFloat();
-    anim         = static_cast<AnimEnum>( istream->readInt() );
+    anim         = AnimEnum( istream->readInt() );
 
     int nItems = istream->readInt();
     for( int i = 0; i < nItems; i++ ) {
@@ -641,11 +643,11 @@ namespace oz
 
     weaponItem   = istream->readInt();
 
-    const BotClass *clazz = static_cast<const BotClass*>( type );
+    const BotClass* clazz = static_cast<const BotClass*>( type );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
   }
 
-  void Bot::writeFull( OutputStream *ostream ) const
+  void Bot::writeFull( OutputStream* ostream ) const
   {
     Dynamic::writeFull( ostream );
 
@@ -671,7 +673,7 @@ namespace oz
     ostream->writeInt( weaponItem );
   }
 
-  void Bot::readUpdate( InputStream *istream )
+  void Bot::readUpdate( InputStream* istream )
   {
     Dynamic::readUpdate( istream );
 
@@ -679,10 +681,10 @@ namespace oz
     v            = istream->readFloat();
     state        = istream->readInt();
     grabObj      = istream->readInt();
-    anim         = static_cast<AnimEnum>( istream->readByte() );
+    anim         = AnimEnum( istream->readByte() );
   }
 
-  void Bot::writeUpdate( OutputStream *ostream ) const
+  void Bot::writeUpdate( OutputStream* ostream ) const
   {
     Dynamic::writeUpdate( ostream );
 

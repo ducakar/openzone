@@ -4,7 +4,7 @@
  *  Column-major 4x4 matrix
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -36,26 +36,26 @@ namespace oz
         w( wx, wy, wz, ww )
     {}
 
-    explicit Mat44( const float *v )
+    explicit Mat44( const float* v )
     {
       *this = *reinterpret_cast<const Mat44*>( v );
     }
 
-    explicit Mat44( const Mat33 &m ) :
+    explicit Mat44( const Mat33& m ) :
         x( m.x.x, m.x.y, m.x.z, 0.0f ),
         y( m.y.x, m.y.y, m.y.z, 0.0f ),
         z( m.z.x, m.z.y, m.z.z, 0.0f ),
         w( 0.0f, 0.0f, 0.0f, 1.0f )
     {}
 
-    explicit Mat44( const Vec3 &a, const Vec3 &b, const Vec3 &c, const Vec3 &d ) :
+    explicit Mat44( const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d ) :
         x( a.x, a.y, a.z, 0.0f ),
         y( b.x, b.y, b.z, 0.0f ),
         z( c.x, c.y, c.z, 0.0f ),
         w( d.x, d.y, d.z, 1.0f )
     {}
 
-    explicit Mat44( const Quat &a, const Quat &b, const Quat &c, const Quat &d ) :
+    explicit Mat44( const Quat& a, const Quat& b, const Quat& c, const Quat& d ) :
         x( a ), y( b ), z( c ), w( d )
     {}
 
@@ -85,12 +85,12 @@ namespace oz
       return reinterpret_cast<const float*>( this );
     }
 
-    float &operator [] ( int i )
+    float& operator [] ( int i )
     {
       return reinterpret_cast<float*>( this )[i];
     }
 
-    const float &operator [] ( int i ) const
+    const float& operator [] ( int i ) const
     {
       return reinterpret_cast<const float*>( this )[i];
     }
@@ -139,7 +139,7 @@ namespace oz
                     x.w, y.w, z.w, w.w );
     }
 
-    Mat44 &trans()
+    Mat44& trans()
     {
       swap( x.y, y.x );
       swap( x.z, z.x );
@@ -171,7 +171,7 @@ namespace oz
           w.w == 0.0f;
     }
 
-    Mat44 &setZero()
+    Mat44& setZero()
     {
       x.x = 0.0f;
       x.y = 0.0f;
@@ -213,7 +213,7 @@ namespace oz
           w.w == 1.0f;
     }
 
-    Mat44 &setId()
+    Mat44& setId()
     {
       x.x = 1.0f;
       x.y = 0.0f;
@@ -234,7 +234,7 @@ namespace oz
       return *this;
     }
 
-    Mat44 &operator += ( const Mat44 &a )
+    Mat44& operator += ( const Mat44& a )
     {
       x.x += a.x.x;
       x.y += a.x.y;
@@ -255,7 +255,7 @@ namespace oz
       return *this;
     }
 
-    Mat44 &operator -= ( const Mat44 &a )
+    Mat44& operator -= ( const Mat44& a )
     {
       x.x -= a.x.x;
       x.y -= a.x.y;
@@ -276,7 +276,7 @@ namespace oz
       return *this;
     }
 
-    Mat44 &operator *= ( float k )
+    Mat44& operator *= ( float k )
     {
       x.x *= k;
       x.y *= k;
@@ -297,7 +297,7 @@ namespace oz
       return *this;
     }
 
-    Mat44 &operator /= ( float k )
+    Mat44& operator /= ( float k )
     {
       assert( k != 0.0f );
 
@@ -321,7 +321,7 @@ namespace oz
       return *this;
     }
 
-    Mat44 operator + ( const Mat44 &a ) const
+    Mat44 operator + ( const Mat44& a ) const
     {
       return Mat44( x.x + a.x.x, x.y + a.x.y, x.z + a.x.z, x.w + a.x.w,
                     y.x + a.y.x, y.y + a.y.y, y.z + a.y.z, y.w + a.y.w,
@@ -329,7 +329,7 @@ namespace oz
                     w.x + a.w.x, w.y + a.w.y, w.z + a.w.z, w.w + a.w.w );
     }
 
-    Mat44 operator - ( const Mat44 &a ) const
+    Mat44 operator - ( const Mat44& a ) const
     {
       return Mat44( x.x - a.x.x, x.y - a.x.y, x.z - a.x.z, x.w - a.x.w,
                     y.x - a.y.x, y.y - a.y.y, y.z - a.y.z, y.w - a.y.w,
@@ -356,7 +356,7 @@ namespace oz
                     w.x * k, w.y * k, w.z * k, w.w * k );
     }
 
-    Mat44 operator * ( const Mat44 &a ) const
+    Mat44 operator * ( const Mat44& a ) const
     {
       return Mat44( x.x * a.x.x + y.x * a.x.y + z.x * a.x.z + w.x * a.x.w,
                     x.y * a.x.x + y.y * a.x.y + z.y * a.x.z + w.y * a.x.w,
@@ -379,21 +379,21 @@ namespace oz
                     x.w * a.w.x + y.w * a.w.y + z.w * a.w.z + w.w * a.w.w );
     }
 
-    Vec3 operator * ( const Vec3 &v ) const
+    Vec3 operator * ( const Vec3& v ) const
     {
       return Vec3( v.x * x.x + v.y * y.x + v.z * z.x + w.x,
                    v.x * x.y + v.y * y.y + v.z * z.y + w.y,
                    v.x * x.z + v.y * y.z + v.z * z.z + w.z );
     }
 
-    Vec3 invMultiply( const Vec3 &v ) const
+    Vec3 invMultiply( const Vec3& v ) const
     {
       return Vec3( v.x * x.x + v.y * x.y + v.z * x.z + x.w,
                    v.x * y.x + v.y * y.y + v.z * y.z + y.w,
                    v.x * z.x + v.y * z.y + v.z * z.z + z.w );
     }
 
-    friend Mat44 operator * ( float k, const Mat44 &a )
+    friend Mat44 operator * ( float k, const Mat44& a )
     {
       return Mat44( a.x.x * k, a.x.y * k, a.x.z * k, a.x.w * k,
                     a.y.x * k, a.y.y * k, a.y.z * k, a.y.w * k,
@@ -410,7 +410,7 @@ namespace oz
                       dx,   dy,   dz, 1.0f );
     }
 
-    static Mat44 transl( const Vec3 &v )
+    static Mat44 transl( const Vec3& v )
     {
       return Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
                     0.0f, 1.0f, 0.0f, 0.0f,
@@ -456,7 +456,7 @@ namespace oz
 
   };
 
-  inline Mat33::Mat33( const Mat44 &m ) :
+  inline Mat33::Mat33( const Mat44& m ) :
       x( m.x ), y( m.y ), z( m.z )
   {}
 

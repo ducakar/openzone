@@ -4,7 +4,7 @@
  *  Data structure for Quake3 BSP level
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -149,11 +149,11 @@ namespace oz
     free();
   }
 
-  bool BSP::loadQBSP( const char *path, float scale, float maxDim_ )
+  bool BSP::loadQBSP( const char* path, float scale, float maxDim_ )
   {
     maxDim = maxDim_;
 
-    FILE *f = fopen( path, "rb" );
+    FILE* f = fopen( path, "rb" );
     if( f == null ) {
       log.printEnd( " Not found" );
       return false;
@@ -172,8 +172,8 @@ namespace oz
 
     nTextures = lumps[QBSP_LUMP_TEXTURES].length / sizeof( QBSPTexture );
     textures = new int[nTextures];
-    int *texFlags = new int[nTextures];
-    int *texTypes = new int[nTextures];
+    int* texFlags = new int[nTextures];
+    int* texTypes = new int[nTextures];
     fseek( f, lumps[QBSP_LUMP_TEXTURES].offset, SEEK_SET );
 
     for( int i = 0; i < nTextures; i++ ) {
@@ -246,13 +246,13 @@ namespace oz
 
       fread( &leaf, sizeof( QBSPLeaf ), 1, f );
 
-      leafs[i].mins.x = static_cast<float>( leaf.bb[0][0] * scale );
-      leafs[i].mins.y = static_cast<float>( leaf.bb[0][1] * scale );
-      leafs[i].mins.z = static_cast<float>( leaf.bb[0][2] * scale );
+      leafs[i].mins.x = float( leaf.bb[0][0] * scale );
+      leafs[i].mins.y = float( leaf.bb[0][1] * scale );
+      leafs[i].mins.z = float( leaf.bb[0][2] * scale );
 
-      leafs[i].maxs.x = static_cast<float>( leaf.bb[1][0] * scale );
-      leafs[i].maxs.y = static_cast<float>( leaf.bb[1][1] * scale );
-      leafs[i].maxs.z = static_cast<float>( leaf.bb[1][2] * scale );
+      leafs[i].maxs.x = float( leaf.bb[1][0] * scale );
+      leafs[i].maxs.y = float( leaf.bb[1][1] * scale );
+      leafs[i].maxs.z = float( leaf.bb[1][2] * scale );
 
       leafs[i].cluster    = leaf.cluster;
       leafs[i].firstFace  = leaf.firstFace;
@@ -300,8 +300,8 @@ namespace oz
       brushes[i].nSides    = brush.nSides;
       brushes[i].material  = 0;
 
-      int &flags = texFlags[brush.texture];
-      int &type  = texTypes[brush.texture];
+      int& flags = texFlags[brush.texture];
+      int& type  = texTypes[brush.texture];
 
       if( flags & QBSP_LADDER_BIT ) {
         brushes[i].material |= Material::LADDER_BIT;
@@ -398,7 +398,7 @@ namespace oz
     return true;
   }
 
-  bool BSP::load( const char *name_ )
+  bool BSP::load( const char* name_ )
   {
     name = name_;
 
@@ -412,7 +412,6 @@ namespace oz
     float scale  = bspConfig.get( "scale", 0.01f );
     float maxDim = bspConfig.get( "maxDim", Math::inf() );
     life = bspConfig.get( "life", 1000.0f );
-    bspConfig.clear();
 
     if( Math::isNaN( scale ) || Math::isNaN( maxDim ) ) {
       log.printEnd( " Invalid config" );

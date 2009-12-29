@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -24,9 +24,11 @@ namespace client
   const float Sound::DMAX = 100.0f;
   const float Sound::DMAX_SQ = DMAX * DMAX;
 
+  Pool<Sound::Source> Sound::Source::pool;
+
   void Sound::playCell( int cellX, int cellY )
   {
-    const Cell &cell = world.cells[cellX][cellY];
+    const Cell& cell = world.cells[cellX][cellY];
 
     foreach( obj, cell.objects.iterator() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
@@ -85,11 +87,11 @@ namespace client
     }
   }
 
-  bool Sound::loadMusic( const char *path )
+  bool Sound::loadMusic( const char* path )
   {
     log.print( "Loading music '%s' ...", path );
 
-    FILE *oggFile = fopen( path, "rb" );
+    FILE* oggFile = fopen( path, "rb" );
 
     if( oggFile == null ) {
       log.printEnd( " Failed to open file" );
@@ -153,8 +155,8 @@ namespace client
   {
     // remove Audio objects of removed objects
     for( typeof( audios.iterator() ) i = audios.iterator(); !i.isPassed(); ) {
-      Audio *audio = i.value();
-      uint  key    = i.key();
+      Audio* audio = i.value();
+      uint key = i.key();
       ++i;
 
       if( world.objects[key] == null ) {
@@ -187,8 +189,8 @@ namespace client
 
     // remove continous sounds that are not played any more
     for( typeof( contSources.iterator() ) i = contSources.iterator(); !i.isPassed(); ) {
-      ContSource *src = i;
-      uint       key  = i.key();
+      ContSource* src = i;
+      uint key = i.key();
 
       // we should advance now, so that we don't remove the element the iterator is pointing at
       ++i;
@@ -207,11 +209,11 @@ namespace client
 
     if( sourceClearCount >= SOURCES_CLEAR_INTERVAL ) {
       // remove stopped sources of non-continous sounds
-      Source *prev = null;
-      Source *src  = sources.first();
+      Source* prev = null;
+      Source* src  = sources.first();
 
       while( src != null ) {
-        Source *next = src->next[0];
+        Source* next = src->next[0];
 
         ALint value;
         alGetSourcei( src->source, AL_SOURCE_STATE, &value );
@@ -243,8 +245,8 @@ namespace client
 
       // remove Audio objects that are not used any more
       for( typeof( audios.iterator() ) i = audios.iterator(); !i.isPassed(); ) {
-        Audio *audio = *i;
-        uint  key    = i.key();
+        Audio* audio = *i;
+        uint key = i.key();
 
         // we should advance now, so that we don't remove the element the iterator is pointing at
         ++i;
@@ -279,7 +281,7 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
   }
 
-  bool Sound::init( int *argc, char **argv )
+  bool Sound::init( int* argc, char** argv )
   {
     log.println( "Initializing SoundManager {" );
     log.indent();
@@ -344,17 +346,20 @@ namespace client
       assert( alGetError() == AL_NO_ERROR );
     }
     sources.free();
+    Source::pool.free();
 
     foreach( i, contSources.iterator() ) {
-      const ContSource &src = *static_cast<const ContSource*>( i );
+      const ContSource& src = *static_cast<const ContSource*>( i );
 
       alSourceStop( src.source );
       alDeleteSources( 1, &src.source );
       assert( alGetError() == AL_NO_ERROR );
     }
     contSources.clear();
+    contSources.deallocate();
 
     audios.free();
+    audios.deallocate();
     assert( alGetError() == AL_NO_ERROR );
 
     unloadMusic();

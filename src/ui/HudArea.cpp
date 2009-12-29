@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -62,7 +62,7 @@ namespace ui
   void HudArea::onDraw()
   {
     if( camera.tagged != -1 ) {
-      const ObjectClass *clazz = camera.taggedObj->type;
+      const ObjectClass* clazz = camera.taggedObj->type;
       float life = ( camera.taggedObj->flags & Object::BOT_BIT ) ?
           ( camera.taggedObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
           camera.taggedObj->life / clazz->life;
@@ -81,7 +81,7 @@ namespace ui
     }
 
     if( camera.bot != -1 ) {
-      const BotClass *clazz = static_cast<const BotClass*>( camera.botObj->type );
+      const BotClass* clazz = static_cast<const BotClass*>( camera.botObj->type );
 
       float life         = ( camera.botObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
       int   lifeWidth    = max<int>( life * 188.0f, 0 );

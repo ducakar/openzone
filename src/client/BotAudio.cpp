@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -20,7 +20,7 @@ namespace oz
 namespace client
 {
 
-  Audio *BotAudio::create( const Object *obj )
+  Audio* BotAudio::create( const Object* obj )
   {
     assert( obj->flags & Object::BOT_BIT );
 
@@ -29,7 +29,7 @@ namespace client
 
   void BotAudio::play( const Audio* )
   {
-    const Bot *bot = static_cast<const Bot*>( obj );
+    const Bot* bot = static_cast<const Bot*>( obj );
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
 
     // friction

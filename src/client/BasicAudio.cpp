@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -20,14 +20,14 @@ namespace oz
 namespace client
 {
 
-  Audio *BasicAudio::create( const Object *obj )
+  Audio* BasicAudio::create( const Object* obj )
   {
     return new BasicAudio( obj );
   }
 
-  void BasicAudio::play( const Audio *parent )
+  void BasicAudio::play( const Audio* parent )
   {
-    const Dynamic *dyn = static_cast<const Dynamic*>( obj );
+    const Dynamic* dyn = static_cast<const Dynamic*>( obj );
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
 
     parent = parent == null ? this : parent;

@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -47,7 +47,7 @@ namespace ui
       return;
     }
 
-    Bot *bot = static_cast<Bot*>( world.objects[camera.bot] );
+    Bot* bot = static_cast<Bot*>( world.objects[camera.bot] );
 
     taggedIndex = -1;
 
@@ -111,10 +111,10 @@ namespace ui
 
     int minIndex = row * COLS;
     int maxIndex = min( minIndex + COLS * ROWS, items.length() );
-    Dynamic *taggedItem = null;
+    Dynamic* taggedItem = null;
 
     for( int i = minIndex; i < maxIndex; i++ ) {
-      Dynamic *item = static_cast<Dynamic*>( world.objects[items[i]] );
+      Dynamic* item = static_cast<Dynamic*>( world.objects[items[i]] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 

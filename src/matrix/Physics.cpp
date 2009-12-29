@@ -4,7 +4,7 @@
  *  Physics engine
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -136,7 +136,7 @@ namespace oz
       }
       // on another object
       if( obj->lower != -1 ) {
-        Dynamic *sObj = static_cast<Dynamic*>( world.objects[obj->lower] );
+        Dynamic* sObj = static_cast<Dynamic*>( world.objects[obj->lower] );
 
         if( obj->momentum.x != 0.0f || obj->momentum.y != 0.0f ||
             ( ~sObj->flags & Object::DISABLED_BIT ) )
@@ -239,11 +239,11 @@ namespace oz
 
   void Physics::handleObjHit()
   {
-    const Hit &hit = collider.hit;
-    Object *sObj = hit.obj;
+    const Hit& hit = collider.hit;
+    Object* sObj = hit.obj;
 
     if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
-      Dynamic *sDyn = static_cast<Dynamic*>( sObj );
+      Dynamic* sDyn = static_cast<Dynamic*>( sObj );
 
       Vec3  momentum    = ( obj->momentum * obj->mass + sDyn->momentum * sDyn->mass ) /
           ( obj->mass + sDyn->mass );
@@ -410,7 +410,7 @@ namespace oz
   //*             PUBLIC              *
   //***********************************
 
-  void Physics::updateObj( Dynamic *obj_ )
+  void Physics::updateObj( Dynamic* obj_ )
   {
     obj = obj_;
 
@@ -420,7 +420,7 @@ namespace oz
     obj->flags &= ~( Object::HIT_BIT | Object::FRICTING_BIT | Object::UPPER_BIT );
 
     if( obj->lower != -1 ) {
-      Object *sObj = world.objects[obj->lower];
+      Object* sObj = world.objects[obj->lower];
 
       // clear the lower object if it doesn't exist any more
       if( sObj == null || sObj->cell == null ) {

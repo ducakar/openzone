@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,9 +16,9 @@ namespace oz
 namespace client
 {
 
-  class Audio
+  struct Audio
   {
-    friend class List<Audio, 0>;
+    friend class List<Audio>;
 
     public:
 
@@ -30,29 +30,29 @@ namespace client
 
     public:
 
-      typedef Audio *( *CreateFunc )( const Object *object );
+      typedef Audio* ( *CreateFunc )( const Object* object );
 
     private:
 
-      Audio *next[1];
+      Audio* next[1];
 
     protected:
 
-      void playSound( int sample, float volume, const Object *obj ) const;
-      void playContSound( int sample, float volume, uint key, const Object *obj ) const;
+      void playSound( int sample, float volume, const Object* obj ) const;
+      void playContSound( int sample, float volume, uint key, const Object* obj ) const;
       void requestSounds() const;
       void releaseSounds() const;
 
-      explicit Audio( const Object *obj );
+      explicit Audio( const Object* obj );
 
     public:
 
-      const Object *obj;
+      const Object* obj;
       int flags;
 
       virtual ~Audio();
 
-      virtual void play( const Audio *parent ) = 0;
+      virtual void play( const Audio* parent ) = 0;
 
   };
 

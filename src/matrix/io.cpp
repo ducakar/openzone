@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -16,7 +16,7 @@
 namespace oz
 {
 
-  bool Buffer::load( const char *path )
+  bool Buffer::load( const char* path )
   {
     if( buffer != null ) {
       delete[] buffer;
@@ -29,12 +29,12 @@ namespace oz
       return false;
     }
 
-    FILE *handle = fopen( path, "rb" );
+    FILE* handle = fopen( path, "rb" );
     if( handle == null ) {
       return false;
     }
 
-    count  = static_cast<int>( fileStat.st_size );
+    count  = int( fileStat.st_size );
     buffer = new char[count];
 
     int blocksToRead = ( count - 1 ) / BLOCK_SIZE + 1;
@@ -55,9 +55,9 @@ namespace oz
     return true;
   }
 
-  bool Buffer::write( const char *path )
+  bool Buffer::write( const char* path )
   {
-    FILE *handle = fopen( path, "wb" );
+    FILE* handle = fopen( path, "wb" );
     if( handle == null ) {
       return false;
     }

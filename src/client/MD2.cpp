@@ -4,7 +4,7 @@
  *  MD2 model class
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -260,10 +260,10 @@ namespace client
 
   Vec3 MD2::vertList[MAX_VERTS];
   
-  void MD2::interpolate( const AnimState *anim ) const
+  void MD2::interpolate( const AnimState* anim ) const
   {
-    const Vec3 *currFrame = &verts[nVerts * anim->currFrame];
-    const Vec3 *nextFrame = &verts[nVerts * anim->nextFrame];
+    const Vec3* currFrame = &verts[nVerts * anim->currFrame];
+    const Vec3* nextFrame = &verts[nVerts * anim->nextFrame];
 
     float t1 = anim->fps * anim->currTime;
     float t2 = 1.0f - t1;
@@ -284,14 +284,14 @@ namespace client
     }
   }
 
-  MD2::MD2( const char *name_ )
+  MD2::MD2( const char* name_ )
   {
-    FILE      *file;
+    FILE*     file;
     MD2Header header;
-    char      *buffer;
-    MD2Frame  *pFrame;
-    Vec3      *pVerts;
-    int       *pNormals;
+    char*     buffer;
+    MD2Frame* pFrame;
+    Vec3*     pVerts;
+    int*      pNormals;
 
     name = name_;
 
@@ -347,9 +347,9 @@ namespace client
 
       for( int j = 0; j < nVerts; j++ ) {
         pVerts[j] = Vec3(
-          ( static_cast<float>( pFrame->verts[j].v[1] ) * -pFrame->scale.y ) - pFrame->translate.y,
-          ( static_cast<float>( pFrame->verts[j].v[0] ) *  pFrame->scale.x ) + pFrame->translate.x,
-          ( static_cast<float>( pFrame->verts[j].v[2] ) *  pFrame->scale.z ) + pFrame->translate.z );
+          ( float( pFrame->verts[j].v[1] ) * -pFrame->scale.y ) - pFrame->translate.y,
+          ( float( pFrame->verts[j].v[0] ) *  pFrame->scale.x ) + pFrame->translate.x,
+          ( float( pFrame->verts[j].v[2] ) *  pFrame->scale.z ) + pFrame->translate.z );
 
         pNormals[j] = pFrame->verts[j].iLightNormal;
       }
@@ -371,7 +371,6 @@ namespace client
     weaponTransl     = Vec3( config.get( "weaponTranslate.x", 0.00f ),
                              config.get( "weaponTranslate.y", 0.00f ),
                              config.get( "weaponTranslate.z", 0.00f ) );
-    config.clear();
 
     if( scaling != 1.0f ) {
       scale( scaling );
@@ -406,7 +405,7 @@ namespace client
     }
   }
 
-  void MD2::translate( const Vec3 &t )
+  void MD2::translate( const Vec3& t )
   {
     int max = nVerts * nFrames;
 
@@ -415,7 +414,7 @@ namespace client
     }
   }
 
-  void MD2::translate( int animType, const Vec3 &t )
+  void MD2::translate( int animType, const Vec3& t )
   {
     int start = animList[animType].firstFrame * nVerts;
     int max = ( animList[animType].lastFrame + 1 ) * nVerts;
@@ -429,8 +428,8 @@ namespace client
 
   void MD2::drawFrame( int frame ) const
   {
-    const Vec3 *vertList = &verts[nVerts * frame];
-    const int  *pCmd     = glCmds;
+    const Vec3* vertList = &verts[nVerts * frame];
+    const int*  pCmd     = glCmds;
 
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
@@ -455,9 +454,9 @@ namespace client
     glFrontFace( GL_CCW );
   }
 
-  void MD2::draw( const AnimState *anim ) const
+  void MD2::draw( const AnimState* anim ) const
   {
-    const int *pCmd = glCmds;
+    const int* pCmd = glCmds;
 
     interpolate( anim );
 

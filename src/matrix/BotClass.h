@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -65,10 +65,10 @@ namespace oz
     String mindType;
     String mindFunction;
 
-    static ObjectClass *init( const String &name, const Config *config );
+    static ObjectClass* init( const String& name, const Config* config );
 
-    virtual Object *create( int index, const Vec3 &pos );
-    virtual Object *create( int index, InputStream *istream );
+    virtual Object* create( int index, const Vec3& pos );
+    virtual Object* create( int index, InputStream* istream );
   };
 
 }

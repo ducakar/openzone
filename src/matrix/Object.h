@@ -4,7 +4,7 @@
  *  Base object class, can be used for static objects
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,12 +16,20 @@ namespace oz
 
   struct Cell;
   struct Hit;
+  struct Dynamic;
+  struct Weapon;
   struct Bot;
+  struct Vehicle;
 
   // static object abstract class
-  class Object : public AABB
+  struct Object : public AABB
   {
-    friend class DList<Object, 0>;
+    friend class Pool<Object>;
+    friend class Pool<Dynamic>;
+    friend class Pool<Weapon>;
+    friend class Pool<Bot>;
+    friend class Pool<Vehicle>;
+    friend class DList<Object>;
 
     /*
      * Here various flag bits are set; the higher bits are used for flags that are internal flags
@@ -172,11 +180,13 @@ namespace oz
       static const float MOMENTUM_INTENSITY_COEF = -0.1f;
       static const float DAMAGE_INTENSITY_COEF   = 0.02f;
 
-      struct Event : PoolAlloc<Event, 0>
+      struct Event
       {
-        int   id;
-        float intensity;
-        Event *next[1];
+        int    id;
+        float  intensity;
+        Event* next[1];
+
+        static Pool<Event> pool;
 
         // exactly events with negative IDs are ignored by BasicAudio, so if ID is nonzero we don't
         // want to use this ctor as we need to set the intensity
@@ -189,7 +199,11 @@ namespace oz
         {
           assert( id < 0 || intensity >= 0.0f );
         }
+
+        OZ_STATIC_POOL_ALLOC( pool );
       };
+
+      static Pool<Object> pool;
 
       /*
        * FIELDS
@@ -197,25 +211,25 @@ namespace oz
 
     private:
 
-      Object            *prev[1];     // the previous object in cell.objects and list
-      Object            *next[1];     // the next object in cell.objects and list
+      Object*            prev[1];     // the previous object in cell.objects and list
+      Object*            next[1];     // the next object in cell.objects and list
 
     public:
 
-      int               index;        // position in world.objects vector
-      Cell              *cell;        // parent cell, null if not positioned in the world
+      int                index;        // position in world.objects vector
+      Cell*              cell;        // parent cell, null if not positioned in the world
 
-      int               flags;
-      int               oldFlags;
+      int                flags;
+      int                oldFlags;
 
-      const ObjectClass *type;
+      const ObjectClass* type;
 
       // damage
-      float             life;
+      float              life;
 
       // events are used for reporting hits, friction & stuff and are cleared at the beginning of
       // the frame
-      List<Event, 0>    events;
+      List<Event>        events;
 
     public:
 
@@ -279,7 +293,7 @@ namespace oz
        * @param hit Hit struct filled with collision data
        * @param hitMomentum momentum of the object projected to hit normal
        */
-      void hit( const Hit *hit, float hitMomentum )
+      void hit( const Hit* hit, float hitMomentum )
       {
         flags |= HIT_BIT;
         addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_COEF );
@@ -306,7 +320,7 @@ namespace oz
         oldFlags = flags;
       }
 
-      void use( Bot *user )
+      void use( Bot* user )
       {
         if( flags & USE_FUNC_BIT ) {
           addEvent( EVENT_USE, 1.0f );
@@ -318,9 +332,9 @@ namespace oz
 
       virtual void onDestroy();
       virtual void onDamage( float damage );
-      virtual void onHit( const Hit *hit, float momentum );
+      virtual void onHit( const Hit* hit, float momentum );
       virtual void onUpdate();
-      virtual void onUse( Bot *user );
+      virtual void onUse( Bot* user );
 
     public:
 
@@ -328,10 +342,12 @@ namespace oz
        * SERIALIZATION
        */
 
-      virtual void readFull( InputStream *istream );
-      virtual void writeFull( OutputStream *ostream ) const;
-      virtual void readUpdate( InputStream *istream );
-      virtual void writeUpdate( OutputStream *ostream ) const;
+      virtual void readFull( InputStream* istream );
+      virtual void writeFull( OutputStream* ostream ) const;
+      virtual void readUpdate( InputStream* istream );
+      virtual void writeUpdate( OutputStream* ostream ) const;
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

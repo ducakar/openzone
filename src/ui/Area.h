@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -19,22 +19,22 @@ namespace client
 namespace ui
 {
 
-  class Area
+  struct Area
   {
-    friend class DList<Area, 0>;
+    friend class DList<Area>;
     friend class UI;
 
     protected:
 
       static const SDL_Color SDL_COLOR_WHITE;
 
-      Area  *prev[1];
-      Area  *next[1];
+      Area*  prev[1];
+      Area*  next[1];
 
-      TTF_Font  *currentFont;
+      TTF_Font* currentFont;
       SDL_Color fontColor;
 
-      DList<Area, 0> children;
+      DList<Area> children;
 
     protected:
 
@@ -53,16 +53,16 @@ namespace ui
       // height of the current font
       int textHeight;
 
-      Area *parent;
+      Area* parent;
 
       void setFont( FontType type );
       void setFontColor( ubyte r, ubyte g, ubyte b );
 
       void fill( int x, int y, int width, int height ) const;
       void rect( int x, int y, int width, int height ) const;
-      void print( int x, int y, const char *s, ... );
-      void printCentered( int baseX, int baseY, const char *s, ... );
-      void printBaseline( int baseX, int baseY, const char *s, ... );
+      void print( int x, int y, const char* s, ... );
+      void printCentered( int baseX, int baseY, const char* s, ... );
+      void printBaseline( int baseX, int baseY, const char* s, ... );
 
       void realign( int newX, int newY )
       {
@@ -97,7 +97,7 @@ namespace ui
       {
         // render in opposite order; last added child (the first one in the list) should be rendered
         // last
-        for( Area *child = children.last(); child != null; child = child->prev[0] ) {
+        for( Area* child = children.last(); child != null; child = child->prev[0] ) {
           child->onDraw();
         }
       }
@@ -119,7 +119,7 @@ namespace ui
 
       virtual ~Area();
 
-      void add( Area *area, int relativeX, int relativeY )
+      void add( Area* area, int relativeX, int relativeY )
       {
         area->width  = bound( area->width,  1, width  );
         area->height = bound( area->height, 1, height );
@@ -136,12 +136,12 @@ namespace ui
         children << area;
       }
 
-      void add( Area *area )
+      void add( Area* area )
       {
         add( area, area->x, area->y );
       }
 
-      void remove( Area *area )
+      void remove( Area* area )
       {
         children.remove( area );
         delete area;

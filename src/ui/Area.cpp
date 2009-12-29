@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -71,7 +71,7 @@ namespace ui
     glEnd();
   }
 
-  void Area::print( int x, int y, const char *s, ... )
+  void Area::print( int x, int y, const char* s, ... )
   {
     char buffer[1024];
     va_list ap;
@@ -81,10 +81,10 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    SDL_Surface *text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
 
     // flip
-    uint *pixels = reinterpret_cast<uint*>( text->pixels );
+    uint* pixels = reinterpret_cast<uint*>( text->pixels );
     for( int i = 0; i < text->h / 2; i++ ) {
       for( int j = 0; j < text->w; j++ ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
@@ -101,7 +101,7 @@ namespace ui
     SDL_FreeSurface( text );
   }
 
-  void Area::printCentered( int baseX, int baseY, const char *s, ... )
+  void Area::printCentered( int baseX, int baseY, const char* s, ... )
   {
     char buffer[1024];
     va_list ap;
@@ -111,10 +111,10 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    SDL_Surface *text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
 
     // flip
-    uint *pixels = reinterpret_cast<uint*>( text->pixels );
+    uint* pixels = reinterpret_cast<uint*>( text->pixels );
     for( int i = 0; i < text->h / 2; i++ ) {
       for( int j = 0; j < text->w; j++ ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
@@ -131,7 +131,7 @@ namespace ui
     SDL_FreeSurface( text );
   }
 
-  void Area::printBaseline( int x, int baseY, const char *s, ... )
+  void Area::printBaseline( int x, int baseY, const char* s, ... )
   {
     char buffer[1024];
     va_list ap;
@@ -141,10 +141,10 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    SDL_Surface *text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
 
     // flip
-    uint *pixels = reinterpret_cast<uint*>( text->pixels );
+    uint* pixels = reinterpret_cast<uint*>( text->pixels );
     for( int i = 0; i < text->h / 2; i++ ) {
       for( int j = 0; j < text->w; j++ ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );

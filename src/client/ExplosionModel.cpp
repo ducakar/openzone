@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -21,9 +21,9 @@ namespace oz
 namespace client
 {
 
-  Model *ExplosionModel::create( const Object *obj )
+  Model* ExplosionModel::create( const Object* obj )
   {
-    ExplosionModel *model = new ExplosionModel();
+    ExplosionModel* model = new ExplosionModel();
 
     model->obj = obj;
     model->texId = context.requestTexture( translator.textureIndex( "explosion" ) );

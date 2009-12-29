@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -55,7 +55,7 @@ namespace client
       if( camera.bot == -1 ) {
         camera.bot = synapse.addObject( "DroidCommander", camera.p );
 
-        Bot *me = static_cast<Bot*>( world.objects[camera.bot] );
+        Bot* me = static_cast<Bot*>( world.objects[camera.bot] );
         me->h = camera.h;
         me->v = camera.v;
         me->state |= Bot::PLAYER_BIT;
@@ -64,13 +64,14 @@ namespace client
         camera.setState( Camera::INTERNAL );
       }
       else {
-        Bot *me = static_cast<Bot*>( world.objects[camera.bot] );
+        Bot* me = static_cast<Bot*>( world.objects[camera.bot] );
         me->kill();
       }
     }
     if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
       world.sky.time += world.sky.period * 0.25f;
     }
+    bool doQuit = ui::keyboard.keys[SDLK_ESCAPE];
 
     if( ui::mouse.doShow ) {
       // interface
@@ -90,15 +91,17 @@ namespace client
     oz::client::render.sync();
     sound.sync();
 
-    // resume nirvana
-    SDL_SemPost( nirvana::nirvana.semaphore );
+    if( !doQuit ) {
+      // resume nirvana
+      SDL_SemPost( nirvana::nirvana.semaphore );
+    }
 
     camera.prepare();
 
     // play sounds, but don't do any cleanups
     sound.play();
 
-    return !ui::keyboard.keys[SDLK_ESCAPE];
+    return !doQuit;
   }
 
   void GameStage::render()
@@ -111,7 +114,7 @@ namespace client
 
   void GameStage::load()
   {
-    log.println( "Initializing Game {" );
+    log.println( "Loading GameStage {" );
     log.indent();
 
     matrix.init();
@@ -138,14 +141,20 @@ namespace client
       nirvana::nirvana.load( null );
     }
 
+    nirvana::nirvana.start();
+
+    camera.warp( Vec3( 52, -49, 40 ) );
+
     log.unindent();
     log.println( "}" );
   }
 
   void GameStage::unload()
   {
-    log.println( "Shutting down Game {" );
+    log.println( "Unloading GameStage {" );
     log.indent();
+
+    nirvana::nirvana.stop();
 
     // remove myself
     if( camera.bot != -1 ) {
@@ -171,18 +180,6 @@ namespace client
 
     log.unindent();
     log.println( "}" );
-  }
-
-  void GameStage::begin()
-  {
-    nirvana::nirvana.start();
-
-    camera.warp( Vec3( 52, -49, 40 ) );
-  }
-
-  void GameStage::end()
-  {
-    nirvana::nirvana.stop();
   }
 
 }

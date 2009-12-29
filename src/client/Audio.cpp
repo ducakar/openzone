@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -22,7 +22,7 @@ namespace oz
 namespace client
 {
 
-  void Audio::playSound( int sample, float volume, const Object *obj ) const
+  void Audio::playSound( int sample, float volume, const Object* obj ) const
   {
     assert( 0 <= sample && sample < translator.sounds.length() );
     assert( alGetError() == AL_NO_ERROR );
@@ -60,7 +60,7 @@ namespace client
     sound.addSource( srcId );
   }
 
-  void Audio::playContSound( int sample, float volume, uint key, const Object *obj ) const
+  void Audio::playContSound( int sample, float volume, uint key, const Object* obj ) const
   {
     assert( 0 <= sample && sample < translator.sounds.length() );
     assert( alGetError() == AL_NO_ERROR );
@@ -91,9 +91,9 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
   }
 
-  Audio::Audio( const Object *obj_ ) : obj( obj_ ), flags( 0 )
+  Audio::Audio( const Object* obj_ ) : obj( obj_ ), flags( 0 )
   {
-    const int *samples = obj->type->audioSamples;
+    const int* samples = obj->type->audioSamples;
 
     for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; i++ ) {
       if( samples[i] != -1 ) {
@@ -105,7 +105,7 @@ namespace client
 
   Audio::~Audio()
   {
-    const int *samples = obj->type->audioSamples;
+    const int* samples = obj->type->audioSamples;
 
     for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; i++ ) {
       if( samples[i] != -1 ) {

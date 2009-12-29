@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -18,19 +18,19 @@ namespace oz
 namespace nirvana
 {
 
-  Mind *RandomMind::create( int botIndex )
+  Mind* RandomMind::create( int botIndex )
   {
-    RandomMind *mind = new RandomMind( botIndex );
+    RandomMind* mind = new RandomMind( botIndex );
     return mind;
   }
 
-  Mind *RandomMind::read( InputStream *istream )
+  Mind* RandomMind::read( InputStream* istream )
   {
-    RandomMind *mind = new RandomMind( istream->readInt() );
+    RandomMind* mind = new RandomMind( istream->readInt() );
     return mind;
   }
 
-  const char *RandomMind::type() const
+  const char* RandomMind::type() const
   {
     return "Random";
   }
@@ -40,7 +40,7 @@ namespace nirvana
     assert( world.objects[botIndex] != null );
     assert( world.objects[botIndex]->flags & Object::BOT_BIT );
 
-    Bot &bot = *static_cast<Bot*>( world.objects[botIndex] );
+    Bot& bot = *static_cast<Bot*>( world.objects[botIndex] );
 
     bot.actions = 0;
 

@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -32,7 +32,6 @@ namespace client
   {
     h = Math::mod( h + 360.0f, 360.0f );
     v = bound( v, -90.0f, 90.0f );
-    w = 0.0f;
 
     rot     = Quat::rotZYX( Math::rad( h ), Math::rad( w ), Math::rad( v ) );
     rotMat  = rot.rotMat44();
@@ -51,20 +50,15 @@ namespace client
     centerY            = height / 2;
     angle              = config.getSet( "camera.angle",      80.0f );
     aspect             = config.getSet( "camera.aspect",     0.0f );
+    aspect             = aspect != 0.0f ? aspect : float( width ) / float( height );
     minDist            = config.getSet( "camera.minDist",    0.1f );
     maxDist            = config.getSet( "camera.maxDist",    400.0f );
-
-    aspect             = aspect != 0.0f ?
-        aspect : static_cast<float>( width ) / static_cast<float>( height );
-
     mouseXSens         = config.getSet( "camera.mouseXSens", 0.20f );
     mouseYSens         = config.getSet( "camera.mouseYSens", 0.20f );
     keyXSens           = config.getSet( "camera.keysXSens",  100.0f );
     keyYSens           = config.getSet( "camera.keysYSens",  100.0f );
     smoothCoef         = config.getSet( "camera.smoothCoef", 0.3f );
     smoothCoef_1       = 1.0f - smoothCoef;
-    isExternal         = config.getSet( "camera.external", false );
-    fastMove           = false;
 
     p.setZero();
     oldP.setZero();

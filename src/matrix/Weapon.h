@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -15,18 +15,20 @@
 namespace oz
 {
 
-  class Weapon : public Dynamic
+  struct Weapon : public Dynamic
   {
     protected:
 
       virtual void onUpdate();
-      virtual void onUse( Bot *user );
-      virtual void onShot( Bot *user );
+      virtual void onUse( Bot* user );
+      virtual void onShot( Bot* user );
 
     public:
 
       static const int EVENT_SHOT       = 7;
       static const int EVENT_SHOT_EMPTY = 8;
+
+      static Pool<Weapon> pool;
 
       // -1: unlimited
       int   nShots;
@@ -34,12 +36,12 @@ namespace oz
 
       explicit Weapon() {}
 
-      void trigger( Bot *user )
+      void trigger( Bot* user )
       {
         assert( user != null );
 
         if( shotTime == 0.0f ) {
-          const WeaponClass *clazz = static_cast<const WeaponClass*>( type );
+          const WeaponClass* clazz = static_cast<const WeaponClass*>( type );
 
           shotTime = clazz->shotInterval;
 
@@ -55,10 +57,12 @@ namespace oz
         }
       }
 
-      virtual void readFull( InputStream *istream );
-      virtual void writeFull( OutputStream *ostream ) const;
-      virtual void readUpdate( InputStream *istream );
-      virtual void writeUpdate( OutputStream *ostream ) const;
+      virtual void readFull( InputStream* istream );
+      virtual void writeFull( OutputStream* ostream ) const;
+      virtual void readUpdate( InputStream* istream );
+      virtual void writeUpdate( OutputStream* ostream ) const;
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

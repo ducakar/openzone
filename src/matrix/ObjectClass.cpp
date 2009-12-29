@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -20,7 +20,7 @@ namespace oz
   ObjectClass::~ObjectClass()
   {}
 
-  void ObjectClass::fillCommon( ObjectClass *clazz, const Config *config )
+  void ObjectClass::fillCommon( ObjectClass* clazz, const Config* config )
   {
     clazz->onDestroy            = config->get( "onDestroy", "" );
     clazz->onDamage             = config->get( "onDamage", "" );
@@ -94,9 +94,9 @@ namespace oz
     }
   }
 
-  ObjectClass *ObjectClass::init( const String &name, const Config *config )
+  ObjectClass* ObjectClass::init( const String& name, const Config* config )
   {
-    ObjectClass *clazz = new ObjectClass();
+    ObjectClass* clazz = new ObjectClass();
 
     clazz->name                 = name;
     clazz->description          = config->get( "description", name );
@@ -151,9 +151,9 @@ namespace oz
     return clazz;
   }
 
-  Object *ObjectClass::create( int index, const Vec3 &pos )
+  Object* ObjectClass::create( int index, const Vec3& pos )
   {
-    Object *obj = new Object();
+    Object* obj = new Object();
 
     assert( obj->index == -1 && obj->cell == null );
 
@@ -169,9 +169,9 @@ namespace oz
     return obj;
   }
 
-  Object *ObjectClass::create( int index, InputStream *istream )
+  Object* ObjectClass::create( int index, InputStream* istream )
   {
-    Object *obj = new Object();
+    Object* obj = new Object();
 
     obj->dim    = dim;
 

@@ -4,7 +4,7 @@
  *  Bitmap font loader and print function
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -24,7 +24,7 @@ namespace ui
 
   bool Font::init()
   {
-    const char *path;
+    const char* path;
 
     if( TTF_Init() == -1 ) {
       return false;

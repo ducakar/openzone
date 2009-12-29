@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -24,7 +24,7 @@ namespace oz
     explicit AABB()
     {}
 
-    explicit AABB( const Vec3 &p_, const Vec3 &dim_ ) : p( p_ ), dim( dim_ )
+    explicit AABB( const Vec3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )
     {}
 
     Bounds toBounds( float eps = 0.0f ) const
@@ -37,7 +37,7 @@ namespace oz
                            p.z + dim.z + eps ) );
     }
 
-    Bounds toBounds( const Vec3 &move, float eps = 0.0f ) const
+    Bounds toBounds( const Vec3& move, float eps = 0.0f ) const
     {
       Bounds t;
 
@@ -68,23 +68,23 @@ namespace oz
       return t;
     }
 
-    AABB operator + ( const Vec3 &v ) const
+    AABB operator + ( const Vec3& v ) const
     {
       return AABB( p + v, dim );
     }
 
-    AABB operator - ( const Vec3 &v ) const
+    AABB operator - ( const Vec3& v ) const
     {
       return AABB( p - v, dim );
     }
 
-    AABB &operator += ( const Vec3 &v )
+    AABB& operator += ( const Vec3& v )
     {
       p += v;
       return *this;
     }
 
-    AABB &operator -= ( const Vec3 &v )
+    AABB& operator -= ( const Vec3& v )
     {
       p -= v;
       return *this;
@@ -100,19 +100,19 @@ namespace oz
       return AABB( p, dim / k );
     }
 
-    AABB &operator *= ( float k )
+    AABB& operator *= ( float k )
     {
       dim *= k;
       return *this;
     }
 
-    AABB &operator /= ( float k )
+    AABB& operator /= ( float k )
     {
       dim /= k;
       return *this;
     }
 
-    bool includes( const Vec3 &v, float eps = 0.0f ) const
+    bool includes( const Vec3& v, float eps = 0.0f ) const
     {
       Vec3 relPos = v - p;
       Vec3 d( dim.x + eps,
@@ -125,7 +125,7 @@ namespace oz
           -d.z <= relPos.z && relPos.z <= d.z;
     }
 
-    bool isInside( const AABB &a, float eps = 0.0f ) const
+    bool isInside( const AABB& a, float eps = 0.0f ) const
     {
       Vec3 relPos = p - a.p;
       Vec3 d( a.dim.x - dim.x + eps,
@@ -138,12 +138,12 @@ namespace oz
           -d.z <= relPos.z && relPos.z <= d.z;
     }
 
-    bool includes( const AABB &a, float eps = 0.0f ) const
+    bool includes( const AABB& a, float eps = 0.0f ) const
     {
       return a.isInside( *this, eps );
     }
 
-    bool overlaps( const AABB &a, float eps = 0.0f ) const
+    bool overlaps( const AABB& a, float eps = 0.0f ) const
     {
       Vec3 relPos = a.p - p;
       Vec3 d( a.dim.x + dim.x + eps,
@@ -156,7 +156,7 @@ namespace oz
           -d.z < relPos.z && relPos.z < d.z;
     }
 
-    bool isInside( const Bounds &b, float eps = 0.0f ) const
+    bool isInside( const Bounds& b, float eps = 0.0f ) const
     {
       return
           b.mins.x - eps <= p.x - dim.x && p.x + dim.x <= b.maxs.x + eps &&
@@ -164,7 +164,7 @@ namespace oz
           b.mins.z - eps <= p.z - dim.z && p.z + dim.z <= b.maxs.z + eps;
     }
 
-    bool includes( const Bounds &b, float eps = 0.0f ) const
+    bool includes( const Bounds& b, float eps = 0.0f ) const
     {
       return
           b.mins.x + eps >= p.x - dim.x && p.x + dim.x >= b.maxs.x - eps &&
@@ -172,7 +172,7 @@ namespace oz
           b.mins.z + eps >= p.z - dim.z && p.z + dim.z >= b.maxs.z - eps;
     }
 
-    bool overlaps( const Bounds &b, float eps = 0.0f ) const
+    bool overlaps( const Bounds& b, float eps = 0.0f ) const
     {
       return
           b.mins.x - eps <= p.x + dim.x && p.x - dim.x <= b.maxs.x + eps &&
@@ -192,17 +192,17 @@ namespace oz
                        ( maxs.z - mins.z ) * 0.5f + eps ) );
   }
 
-  inline bool Bounds::isInside( const AABB &a, float eps ) const
+  inline bool Bounds::isInside( const AABB& a, float eps ) const
   {
     return a.includes( *this, eps );
   }
 
-  inline bool Bounds::includes( const AABB &a, float eps ) const
+  inline bool Bounds::includes( const AABB& a, float eps ) const
   {
     return a.isInside( *this, eps );
   }
 
-  inline bool Bounds::overlaps( const AABB &a, float eps ) const
+  inline bool Bounds::overlaps( const AABB& a, float eps ) const
   {
     return a.overlaps( *this, eps );
   }

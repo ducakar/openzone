@@ -8,7 +8,7 @@
  *  Type should provide int nextSlot field.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,14 +16,14 @@
 namespace oz
 {
   template <class Type>
-  class Sparse
+  struct Sparse
   {
     public:
 
       /**
        * Sparse iterator.
        */
-      class Iterator : public oz::Iterator<Type>
+      struct Iterator : public oz::Iterator<Type>
       {
         private:
 
@@ -43,10 +43,10 @@ namespace oz
            * Make iterator for given Sparse. After creation it points to first element.
            * @param s
            */
-          explicit Iterator( const Sparse &s ) : B( s.data, s.data + s.size )
+          explicit Iterator( const Sparse& s ) : B( s.data, s.data + s.size )
           {}
 
-          Iterator &operator ++ ()
+          Iterator& operator ++ ()
           {
             do {
               B::elem++;
@@ -61,13 +61,13 @@ namespace oz
     private:
 
       // Pointer to data array
-      Type *data;
+      Type* data;
       // Size of data array
-      int  size;
+      int   size;
       // Number of used slots in the sparse sparse vector
-      int  count;
+      int   count;
       // List of free slots (by indices in data array, not by pointers)
-      int  freeSlot;
+      int   freeSlot;
 
       /**
        * Enlarge capacity by two times if there's not enough space to add another element.
@@ -119,7 +119,7 @@ namespace oz
        * Copy constructor.
        * @param s
        */
-      Sparse( const Sparse &s ) : data( new Type[s.size] ), size( s.size ), count( s.count ),
+      Sparse( const Sparse& s ) : data( new Type[s.size] ), size( s.size ), count( s.count ),
           freeSlot( s.freeSlot )
       {
         aCopy( data, s.data, size );
@@ -138,7 +138,7 @@ namespace oz
        * @param s
        * @return
        */
-      Sparse &operator = ( const Sparse &s )
+      Sparse& operator = ( const Sparse& s )
       {
         assert( &s != this );
 
@@ -158,7 +158,7 @@ namespace oz
        * @param s
        * @return true if all elements in both sparse vectors are equal
        */
-      bool operator == ( const Sparse &s ) const
+      bool operator == ( const Sparse& s ) const
       {
         if( count != s. count ) {
           return false;
@@ -176,7 +176,7 @@ namespace oz
        * @param s
        * @return false if all elements in both sparse vectors are equal
        */
-      bool operator != ( const Sparse &s ) const
+      bool operator != ( const Sparse& s ) const
       {
         if( count != s. count ) {
           return true;
@@ -256,7 +256,7 @@ namespace oz
        * @param e
        * @return true if the element is found in the sparse vector
        */
-      bool contains( const Type &e ) const
+      bool contains( const Type& e ) const
       {
         for( int i = 0; i < capacity; i++ ) {
           if( data[i].nextSlot == -1 && data[i] == e ) {
@@ -270,7 +270,7 @@ namespace oz
        * @param i
        * @return reference i-th element
        */
-      Type &operator [] ( int i )
+      Type& operator [] ( int i )
       {
         assert( 0 <= i && i < size );
 
@@ -281,7 +281,7 @@ namespace oz
        * @param i
        * @return constant reference i-th element
        */
-      const Type &operator [] ( int i ) const
+      const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < size );
 
@@ -293,7 +293,7 @@ namespace oz
        * @param e
        * @return index of first occurrence, -1 if not found
        */
-      int index( const Type &e ) const
+      int index( const Type& e ) const
       {
         for( int i = 0; i < capacity; i++ ) {
           if( data[i].nextSlot == -1 && data[i] == e ) {
@@ -308,7 +308,7 @@ namespace oz
        * @param e
        * @return index of last occurrence, -1 if not found
        */
-      int lastIndex( const Type &e ) const
+      int lastIndex( const Type& e ) const
       {
         for( int i = size - 1; i >= 0; i-- ) {
           if( data[i].nextSlot == -1 && data[i] == e ) {
@@ -322,7 +322,7 @@ namespace oz
        * Add an element to the end.
        * @param e
        */
-      int operator << ( const Type &e )
+      int operator << ( const Type& e )
       {
         return add( e );
       }
@@ -349,7 +349,7 @@ namespace oz
        * @param e
        * @return index at which the element was inserted
        */
-      int add( const Type &e )
+      int add( const Type& e )
       {
         ensureCapacity();
 

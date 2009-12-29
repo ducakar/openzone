@@ -4,7 +4,7 @@
  *  Graphics render engine
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -49,13 +49,13 @@ namespace client
 
   void Render::scheduleCell( int cellX, int cellY )
   {
-    Cell &cell = world.cells[cellX][cellY];
+    Cell& cell = world.cells[cellX][cellY];
 
-    for( int i = 0; i < cell.structures.length(); i++ ) {
-      Structure *str = world.structures[ cell.structures[i] ];
+    for( int i = 0; i < cell.structs.length(); i++ ) {
+      Structure* str = world.structs[ cell.structs[i] ];
 
-      if( !drawnStructures.get( cell.structures[i] ) && frustum.isVisible( *str ) ) {
-        drawnStructures.set( cell.structures[i] );
+      if( !drawnStructures.get( cell.structs[i] ) && frustum.isVisible( *str ) ) {
+        drawnStructures.set( cell.structs[i] );
         structures << str;
       }
     }
@@ -83,7 +83,7 @@ namespace client
       }
     }
 
-    foreach( part, cell.particles.iterator() ) {
+    foreach( part, cell.parts.iterator() ) {
       if( frustum.isVisible( part->p, particleRadius ) ) {
         particles << part;
       }
@@ -118,14 +118,14 @@ namespace client
     sky.update();
 
     // drawnStructures
-    if( drawnStructures.length() != world.structures.length() ) {
-      drawnStructures.setSize( world.structures.length() );
+    if( drawnStructures.length() != world.structs.length() ) {
+      drawnStructures.setSize( world.structs.length() );
     }
     drawnStructures.clearAll();
 
-    float minXCenter = static_cast<float>( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
+    float minXCenter = float( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
         Cell::SIZE / 2.0f;
-    float minYCenter = static_cast<float>( ( frustum.minY - World::MAX / 2 ) * Cell::SIZE ) +
+    float minYCenter = float( ( frustum.minY - World::MAX / 2 ) * Cell::SIZE ) +
         Cell::SIZE / 2.0f;
 
     float x = minXCenter;
@@ -179,7 +179,7 @@ namespace client
     BSP::beginRender();
 
     for( int i = 0; i < structures.length(); i++ ) {
-      const Structure *str = structures[i];
+      const Structure* str = structures[i];
 
       if( bsps[str->bsp] == null ) {
         bsps[str->bsp] = new BSP( str->bsp );
@@ -207,7 +207,7 @@ namespace client
     objects.sort();
 
     for( int i = 0; i < objects.length(); i++ ) {
-      const Object *obj = objects[i].obj;
+      const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
@@ -233,7 +233,7 @@ namespace client
     glEnable( GL_BLEND );
 
     for( int i = 0; i < particles.length(); i++ ) {
-      const Particle *part = particles[i];
+      const Particle* part = particles[i];
 
       glPushMatrix();
       glTranslatef( part->p.x, part->p.y, part->p.z );
@@ -254,7 +254,7 @@ namespace client
     glDisable( GL_COLOR_MATERIAL );
 
     for( int i = 0; i < delayedObjects.length(); i++ ) {
-      const Object *obj = delayedObjects[i].obj;
+      const Object* obj = delayedObjects[i].obj;
 
       if( obj->index == camera.tagged ) {
         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
@@ -279,7 +279,7 @@ namespace client
     BSP::beginRender();
 
     for( int i = 0; i < waterStructures.length(); i++ ) {
-      const Structure *str = waterStructures[i];
+      const Structure* str = waterStructures[i];
 
       bsps[str->bsp]->fullDrawWater( str );
     }
@@ -336,7 +336,7 @@ namespace client
     ui::ui.draw();
 
     if( doScreenshot ) {
-      uint *pixels = new uint[camera.width * camera.height * 4];
+      uint* pixels = new uint[camera.width * camera.height * 4];
       char fileName[1024];
       time_t ct;
       struct tm t;
@@ -350,7 +350,7 @@ namespace client
       fileName[1023] = '\0';
 
       glReadPixels( 0, 0, camera.width, camera.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
-      SDL_Surface *surf = SDL_CreateRGBSurfaceFrom( pixels, camera.width, camera.height, 32,
+      SDL_Surface* surf = SDL_CreateRGBSurfaceFrom( pixels, camera.width, camera.height, 32,
                                                     camera.width * 4,
                                                     0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
       // flip image
@@ -385,8 +385,8 @@ namespace client
       }
       // remove unused models
       for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
-        Model *model = *i;
-        uint  key    = i.key();
+        Model* model = *i;
+        uint   key   = i.key();
 
         // we should advance now, so that we don't remove the element the iterator is pointing at
         ++i;
@@ -409,8 +409,8 @@ namespace client
   void Render::sync()
   {
     for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
-      Model *model = i.value();
-      uint  key    = i.key();
+      Model* model = i.value();
+      uint   key   = i.key();
       ++i;
 
       if( world.objects[key] == null ) {
@@ -533,19 +533,21 @@ namespace client
 
   void Render::unload()
   {
+    log.println( "Unloading Graphics {" );
+    log.indent();
+
     terra.unload();
     sky.unload();
     shape.unload();
 
-    for( int i = 0; i < bsps.length(); i++ ) {
-      if( bsps[i] != null ) {
-        delete bsps[i];
-      }
-    }
-    bsps.clear();
+    bsps.free();
     bsps.trim( 0 );
 
     models.free();
+    models.deallocate();
+
+    log.unindent();
+    log.println( "}" );
   }
 
 }

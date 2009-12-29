@@ -4,7 +4,7 @@
  *  MD2 model class
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -14,7 +14,7 @@ namespace oz
 namespace client
 {
 
-  class MD2
+  struct MD2
   {
     private:
 
@@ -57,13 +57,13 @@ namespace client
       int          nFrames;
       int          nVerts;
 
-      Vec3         *verts;
-      int          *glCmds;
-      int          *lightNormals;
+      Vec3*        verts;
+      int*         glCmds;
+      int*         lightNormals;
 
       uint         texId;
 
-      void interpolate( const AnimState *anim ) const;
+      void interpolate( const AnimState* anim ) const;
 
     public:
 
@@ -72,22 +72,22 @@ namespace client
 
       static void init();
 
-      explicit MD2( const char *name );
+      explicit MD2( const char* name );
       ~MD2();
 
       void scale( float scale );
-      void translate( const Vec3 &t );
-      void translate( int animType, const Vec3 &t );
+      void translate( const Vec3& t );
+      void translate( int animType, const Vec3& t );
 
-      void advance( AnimState *anim, float dt ) const;
+      void advance( AnimState* anim, float dt ) const;
 
       void drawFrame( int frame ) const;
-      void draw( const AnimState *anim ) const;
+      void draw( const AnimState* anim ) const;
       void genList();
 
   };
 
-  inline void MD2::advance( AnimState *anim, float dt ) const
+  inline void MD2::advance( AnimState* anim, float dt ) const
   {
     anim->currTime += dt;
 

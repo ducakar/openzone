@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -14,8 +14,8 @@ using namespace oz;
 struct Elem
 {
   int value;
-  Elem *prev[1];
-  Elem *next[1];
+  Elem* prev[1];
+  Elem* next[1];
 
   Elem( int value_ ) : value( value_ ) {}
 };

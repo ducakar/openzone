@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -19,7 +19,7 @@
 namespace oz
 {
 
-  class Object;
+  struct Object;
 
   struct ObjectClass
   {
@@ -27,7 +27,7 @@ namespace oz
     static const int AUDIO_SAMPLES = 32;
     static const int BASE_FLAGS = 0;
 
-    typedef ObjectClass *( *InitFunc )( const String &name, const Config *config );
+    typedef ObjectClass* ( *InitFunc )( const String& name, const Config* config );
 
     String name;
     String description;
@@ -60,11 +60,11 @@ namespace oz
 
     virtual ~ObjectClass();
 
-    static void fillCommon( ObjectClass *clazz, const Config *config );
-    static ObjectClass *init( const String &name, const Config *config );
+    static void fillCommon( ObjectClass* clazz, const Config* config );
+    static ObjectClass* init( const String& name, const Config* config );
 
-    virtual Object *create( int index, const Vec3 &pos );
-    virtual Object *create( int index, InputStream *istream );
+    virtual Object* create( int index, const Vec3& pos );
+    virtual Object* create( int index, InputStream* istream );
   };
 
 }

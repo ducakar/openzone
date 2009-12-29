@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -18,9 +18,9 @@ namespace oz
 namespace client
 {
 
-  Model *MD2StaticModel::create( const Object *obj )
+  Model* MD2StaticModel::create( const Object* obj )
   {
-    MD2StaticModel *model = new MD2StaticModel();
+    MD2StaticModel* model = new MD2StaticModel();
 
     model->obj  = obj;
     model->list = context.loadStaticMD2( obj->type->modelName );

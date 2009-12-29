@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -21,9 +21,9 @@
 namespace oz
 {
 
-  ObjectClass *BotClass::init( const String &name, const Config *config )
+  ObjectClass* BotClass::init( const String& name, const Config* config )
   {
-    BotClass *clazz = new BotClass();
+    BotClass* clazz = new BotClass();
 
     clazz->name                 = name;
     clazz->description          = config->get( "description", name );
@@ -99,7 +99,7 @@ namespace oz
     clazz->bobRunInc            = config->get( "bobRunInc", 16.00f );
     clazz->bobSwimInc           = config->get( "bobSwimInc", 2.00f );
     clazz->bobSwimRunInc        = config->get( "bobSwimRunInc", 4.00f );
-    clazz->bobRotation          = config->get( "bobRotation", 0.20f );
+    clazz->bobRotation          = config->get( "bobRotation", 0.25f );
     clazz->bobAmplitude         = config->get( "bobAmplitude", 0.02f );
     clazz->bobSwimAmplitude     = config->get( "bobSwimAmplitude", 0.05f );
 
@@ -158,9 +158,9 @@ namespace oz
     return clazz;
   }
 
-  Object *BotClass::create( int index, const Vec3 &pos )
+  Object* BotClass::create( int index, const Vec3& pos )
   {
-    Bot *obj = new Bot();
+    Bot* obj = new Bot();
 
     assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
@@ -183,7 +183,7 @@ namespace oz
 
     for( int i = 0; i < inventoryItems.length(); i++ ) {
       int index = synapse.addObject( inventoryItems[i], Vec3::zero() );
-      Dynamic *item = static_cast<Dynamic*>( world.objects[index] );
+      Dynamic* item = static_cast<Dynamic*>( world.objects[index] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
@@ -196,9 +196,9 @@ namespace oz
     return obj;
   }
 
-  Object *BotClass::create( int index, InputStream *istream )
+  Object* BotClass::create( int index, InputStream* istream )
   {
-    Bot *obj = new Bot();
+    Bot* obj = new Bot();
 
     obj->index  = index;
     obj->type   = this;

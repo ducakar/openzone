@@ -4,7 +4,7 @@
  *  World manipulation interface.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -19,9 +19,9 @@ namespace oz
   Synapse::Synapse() : isSingle( true ), isServer( false ), isClient( false )
   {}
 
-  void Synapse::genParts( int number, const Vec3 &p,
-                          const Vec3 &velocity, float velocitySpread,
-                          const Vec3 &color, float colorSpread,
+  void Synapse::genParts( int number, const Vec3& p,
+                          const Vec3& velocity, float velocitySpread,
+                          const Vec3& color, float colorSpread,
                           float rejection, float mass, float lifeTime )
   {
     float velocitySpread2 = velocitySpread / 2.0f;
@@ -43,8 +43,7 @@ namespace oz
 
   void Synapse::update()
   {
-    iFree( deleteObjects.iterator() );
-    deleteObjects.clear();
+    deleteObjects.free();
 
     actions.clear();
 

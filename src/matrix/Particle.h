@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -18,21 +18,22 @@ namespace oz
   struct Cell;
   struct Hit;
 
-  class Particle : public PoolAlloc<Particle, 0>
+  struct Particle
   {
-    friend class Pool<Particle, 0>;
-    friend class PoolAlloc<Particle, 0>;
-    friend class DList<Particle, 0>;
+    friend class Pool<Particle>;
+    friend class DList<Particle>;
 
     private:
 
       static const float MAX_ROTVELOCITY;
       static const float DAMAGE_THRESHOLD = 50.0f;
 
-      Particle  *prev[1];
-      Particle  *next[1];
+      Particle* prev[1];
+      Particle* next[1];
 
     public:
+
+      static Pool<Particle> pool;
 
       /*
        *  FIELDS
@@ -41,7 +42,7 @@ namespace oz
       Vec3      p;            // position
 
       int       index;        // position in world.objects vector
-      Cell      *cell;
+      Cell*     cell;
 
       Vec3      velocity;
 
@@ -57,7 +58,7 @@ namespace oz
       explicit Particle() : index( -1 ), cell( null )
       {}
 
-      explicit Particle( int index_, const Vec3 &p_, const Vec3 &velocity_, const Vec3 &color_,
+      explicit Particle( int index_, const Vec3& p_, const Vec3& velocity_, const Vec3& color_,
                          float rejection_, float mass_, float lifeTime_ ) :
           p( p_ ), index( index_ ), cell( null ), velocity( velocity_ ), color( color_ ),
           rot( Vec3( Math::frand() * 360.0f, Math::frand() * 360.0f, Math::frand() * 360.0f ) ),
@@ -89,10 +90,13 @@ namespace oz
        *  SERIALIZATION
        */
 
-      void readFull( InputStream *istream );
-      void writeFull( OutputStream *ostream );
-      void readUpdate( InputStream *istream );
-      void writeUpdate( OutputStream *ostream );
+      void readFull( InputStream* istream );
+      void writeFull( OutputStream* ostream );
+      void readUpdate( InputStream* istream );
+      void writeUpdate( OutputStream* ostream );
+
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

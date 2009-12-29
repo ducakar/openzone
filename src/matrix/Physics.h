@@ -4,7 +4,7 @@
  *  Physics engine
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  class Physics
+  struct Physics
   {
     public:
 
@@ -41,13 +41,13 @@ namespace oz
 
     private:
 
-      Dynamic  *obj;
-      Particle *part;
-      Bounds   trace;
-      Vec3     move;
-      float    leftRatio;
+      Dynamic*  obj;
+      Particle* part;
+      Bounds    trace;
+      Vec3      move;
+      float     leftRatio;
 
-      Vec3     lastNormals[2];
+      Vec3      lastNormals[2];
 
       void handlePartHit();
       void handlePartMove();
@@ -58,7 +58,7 @@ namespace oz
 
     public:
 
-      void updatePart( Particle *part_ )
+      void updatePart( Particle* part_ )
       {
         part = part_;
 
@@ -71,7 +71,7 @@ namespace oz
         handlePartMove();
       }
 
-      void updateObj( Dynamic *obj );
+      void updateObj( Dynamic* obj );
 
   };
 

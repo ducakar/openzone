@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -22,12 +22,12 @@ namespace oz
 namespace client
 {
 
-  Model *MD2Model::create( const Object *obj )
+  Model* MD2Model::create( const Object* obj )
   {
     assert( obj->flags & Object::BOT_BIT );
 
-    const Bot *bot = static_cast<const Bot*>( obj );
-    MD2Model *model = new MD2Model();
+    const Bot* bot = static_cast<const Bot*>( obj );
+    MD2Model* model = new MD2Model();
 
     model->obj   = obj;
     model->flags = Model::MD2MODEL_BIT;
@@ -61,8 +61,8 @@ namespace client
 
   void MD2Model::draw( const Model* )
   {
-    const Bot *bot = static_cast<const Bot*>( obj );
-    const BotClass *clazz = static_cast<const BotClass*>( bot->type );
+    const Bot* bot = static_cast<const Bot*>( obj );
+    const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
     glRotatef( bot->h, 0.0f, 0.0f, 1.0f );
 

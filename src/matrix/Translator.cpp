@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -38,8 +38,8 @@ namespace oz
     log.indent();
 
     Config classConfig;
-    DIR *dir;
-    struct dirent *file;
+    DIR* dir;
+    dirent* file;
 
     log.println( "textures (*.png, *.jpg in 'textures/oz') {" );
     log.indent();

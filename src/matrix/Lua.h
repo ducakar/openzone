@@ -4,7 +4,7 @@
  *  Lua scripting engine for Matrix
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,29 +16,29 @@ struct lua_State;
 namespace oz
 {
 
-  class Structure;
-  class Bot;
-  class Particle;
+  struct Structure;
+  struct Bot;
+  struct Particle;
 
-  class Lua
+  struct Lua
   {
     private:
 
-      static const char *HANDLERS_FILE;
+      static const char* HANDLERS_FILE;
 
-      lua_State *l;
+      lua_State* l;
 
-      void callFunc( const char *functionName, int index );
+      void callFunc( const char* functionName, int index );
 
     public:
 
-      Object             *self;
-      Bot                *user;
+      Object*            self;
+      Bot*               user;
 
-      Structure          *str;
-      Object             *obj;
-      Particle           *part;
-      List<Object::Event, 0>::Iterator event;
+      Structure*         str;
+      Object*            obj;
+      Particle*          part;
+      List<Object::Event>::Iterator event;
 
       int                strIndex;
       int                objIndex;
@@ -49,7 +49,7 @@ namespace oz
       Vector<Object*>    objects;
       Vector<Structure*> structs;
 
-      void call( const char *functionName, Object *self_, Bot *user_ = null )
+      void call( const char* functionName, Object* self_, Bot* user_ = null )
       {
         self   = self_;
         user   = user_;

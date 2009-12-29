@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ namespace oz
 namespace nirvana
 {
 
-  class Nirvana
+  struct Nirvana
   {
     private:
 
@@ -37,29 +37,29 @@ namespace nirvana
 
       HashString<MindCtor, 31> mindClasses;
 
-      DList<Mind, 0> minds;
+      DList<Mind> minds;
       int updateModulo;
 
       void sync();
       void update();
 
-      static int run( void *data );
+      static int run( void* data );
 
-      void read( InputStream *istream );
-      void write( OutputStream *ostream ) const;
+      void read( InputStream* istream );
+      void write( OutputStream* ostream ) const;
 
     public:
 
-      SDL_semaphore *semaphore;
-      SDL_Thread    *thread;
+      SDL_semaphore* semaphore;
+      SDL_Thread*    thread;
 
-      volatile bool isAlive;
+      volatile bool  isAlive;
 
       void init();
       void free();
 
-      void load( InputStream *istream );
-      void unload( OutputStream *ostream );
+      void load( InputStream* istream );
+      void unload( OutputStream* ostream );
 
       void start();
       void stop();

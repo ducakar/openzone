@@ -4,7 +4,7 @@
  *  Server initialization and main loop
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "precompiled.h"
@@ -61,13 +61,11 @@ namespace server
     log.unindent();
     log.println( "}" );
     log.printlnETD( OZ_APP_NAME " finished at" );
-
-    config.clear();
   }
 
   void Main::main()
   {
-    const char *homeVar = getenv( "HOME" );
+    const char* homeVar = getenv( "HOME" );
     String home = String( homeVar == null ? OZ_RC_DIR "/" : homeVar + String( "/" OZ_RC_DIR "/" ) );
 
     struct stat homeDirStat;
@@ -109,7 +107,7 @@ namespace server
     String configPath = home + OZ_CONFIG_FILE;
     config.load( configPath );
 
-    const char *data = config.getSet( "data", "/usr/share/openzone" );
+    const char* data = config.getSet( "data", "/usr/share/openzone" );
 
     log.print( "Going to working directory '%s' ...", data );
 

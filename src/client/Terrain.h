@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  class Terrain
+  struct Terrain
   {
     private:
 
@@ -29,17 +29,17 @@ namespace client
         float v;
       };
 
-      uint     detailTexId;
-      uint     mapTexId;
-      uint     waterTexId;
+      uint      detailTexId;
+      uint      mapTexId;
+      uint      waterTexId;
 
-      float    radius;
+      float     radius;
 
-      bool     inWater;
+      bool      inWater;
 
-      Vec3     *normals;
-      TexCoord *detailTexCoords;
-      TexCoord *mapTexCoords;
+      Vec3*     normals;
+      TexCoord* detailTexCoords;
+      TexCoord* mapTexCoords;
 
     public:
 

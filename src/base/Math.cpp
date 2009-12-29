@@ -4,7 +4,7 @@
  *  Math constants
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "base.h"
@@ -16,6 +16,8 @@
 namespace oz
 {
 
+  const float Math::MAX_RAND = float( RAND_MAX );
+
   void Math::seed( uint seed )
   {
     srand( seed );
@@ -25,7 +27,7 @@ namespace oz
 
   float Math::frand()
   {
-    return static_cast<float>( rand() ) / static_cast<float>( RAND_MAX );
+    return float( rand() ) / MAX_RAND;
   }
 
 }

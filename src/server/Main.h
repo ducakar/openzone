@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -19,7 +19,7 @@ namespace oz
 namespace server
 {
 
-  class Main
+  struct Main
   {
     private:
 
@@ -41,4 +41,4 @@ namespace server
 }
 }
 
-int main( int argc, char *argv[] );
+int main( int argc, char* argv[] );

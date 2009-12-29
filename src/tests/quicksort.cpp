@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "../base/base.h"
@@ -17,12 +17,12 @@
 using namespace std;
 
 template <class Type, int STACK_SIZE>
-inline void aSort( Type *array, int count )
+inline void aSort( Type* array, int count )
 {
-  Type *stack[STACK_SIZE];
-  Type **sp = stack;
-  Type *first = array;
-  Type *last = array + count - 1;
+  Type*  stack[STACK_SIZE];
+  Type** sp = stack;
+  Type*  first = array;
+  Type*  last = array + count - 1;
 
   *( sp++ ) = first;
   *( sp++ ) = last;
@@ -34,8 +34,8 @@ inline void aSort( Type *array, int count )
     if( first < last ) {
       if( last - first > 10 ) {
         int pivotValue = *last;
-        Type *top = first;
-        Type *bottom = last - 1;
+        Type* top = first;
+        Type* bottom = last - 1;
 
         do {
           while( top <= bottom && *top <= pivotValue ) {
@@ -60,12 +60,12 @@ inline void aSort( Type *array, int count )
       }
       else {
         // selection sort
-        for( Type *i = first; i < last; ) {
-          Type *pivot = i;
-          Type *min = i;
+        for( Type* i = first; i < last; ) {
+          Type* pivot = i;
+          Type* min = i;
           i++;
 
-          for( Type *j = i; j <= last; j++ ) {
+          for( Type* j = i; j <= last; j++ ) {
             if( *j < *min ) {
               min = j;
             }
@@ -79,13 +79,13 @@ inline void aSort( Type *array, int count )
 }
 
 template <class Type>
-inline void arSort( Type *first, Type *last )
+inline void arSort( Type* first, Type* last )
 {
   if( first < last ) {
     if( last - first > 1 ) {
       int pivotValue = *last;
-      Type *top = first;
-      Type *bottom = last - 1;
+      Type* top = first;
+      Type* bottom = last - 1;
 
       do {
         while( top <= bottom && *top <= pivotValue ) {
@@ -113,7 +113,7 @@ inline void arSort( Type *first, Type *last )
 }
 
 template <class Type>
-static void oaSort( Type *array, int begin, int end )
+static void oaSort( Type* array, int begin, int end )
 {
   int first = begin;
   int last = end - 1;
@@ -282,7 +282,7 @@ int main( int, char *[] )
     //TQuickSortInc( array, MAX );
     //aSort<int, 2048>( array, MAX );
   }
-  printf( "%d\n", static_cast<int>( clock() - t0 ) / 1000 );
+  printf( "%d\n", int( clock() - t0 ) / 1000 );
   for( int i = 0; i < MAX; i++ ) {
     printf( "%d ", array[i] );
   }

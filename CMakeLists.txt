@@ -5,13 +5,15 @@ include( CheckLibraryExists )
 project( openzone C CXX )
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
-option( OZ_ALLOC "Overloaded new and delete to count allocated memory" OFF )
+option( OZ_ALLOC_STATISTICS 
+    "Use overloads for default new and delete that make heap usage statistics" OFF )
+option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 
 # compiler and linker flags
 set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wdisabled-optimization" )
 set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor" ) 
-set( flags "-fno-rtti -pipe" )
+set( flags "-fno-rtti -fmessage-length=0 -pipe" )
 set( libs "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
 set( arch_flags "-march=i686 -mtune=generic -mmmx -msse -mfpmath=sse" )
 

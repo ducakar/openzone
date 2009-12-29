@@ -4,7 +4,7 @@
  *  Bitset
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -17,7 +17,7 @@ namespace oz
    *
    * unit = ulong
    */
-  class Bitset
+  struct Bitset
   {
     private:
 
@@ -25,7 +25,7 @@ namespace oz
       static const int ULONG_BITSIZE = sizeof( ulong ) * 8;
 
       // Pointer to unit[] that holds the data.
-      ulong *data;
+      ulong* data;
 
       // Size of data array (in units, not in bits).
       int    size;
@@ -42,7 +42,7 @@ namespace oz
        * Copy construstor.
        * @param b the original Bitset
        */
-      Bitset( const Bitset &b ) : data( new ulong[b.size] ), size( b.size )
+      Bitset( const Bitset& b ) : data( new ulong[b.size] ), size( b.size )
       {
         aCopy( data, b.data, size );
       }
@@ -74,7 +74,7 @@ namespace oz
        * @param b the original Bitset
        * @return copy
        */
-      Bitset &operator = ( const Bitset &b )
+      Bitset& operator = ( const Bitset& b )
       {
         assert( &b != this );
 
@@ -90,7 +90,7 @@ namespace oz
        * @param b
        * @return true if all bits up to <code>length()</code> are equal.
        */
-      bool operator == ( const Bitset &b )
+      bool operator == ( const Bitset& b )
       {
         if( size != b.size ) {
           return false;
@@ -108,7 +108,7 @@ namespace oz
        * @param b
        * @return false if all bits up to <code>length()</code> are equal.
        */
-      bool operator != ( const Bitset &b )
+      bool operator != ( const Bitset& b )
       {
         if( size != b.size ) {
           return true;
@@ -329,7 +329,7 @@ namespace oz
        * @param b the other bitset
        * @return AND of bitsets
        */
-      Bitset operator & ( const Bitset &b ) const
+      Bitset operator & ( const Bitset& b ) const
       {
         assert( size == b.size );
 
@@ -346,7 +346,7 @@ namespace oz
        * @param b the other bitset
        * @return OR of bitsets
        */
-      Bitset operator | ( const Bitset &b ) const
+      Bitset operator | ( const Bitset& b ) const
       {
         assert( size == b.size );
 
@@ -363,7 +363,7 @@ namespace oz
        * @param b the other bitset
        * @return XOR of bitsets
        */
-      Bitset operator ^ ( const Bitset &b ) const
+      Bitset operator ^ ( const Bitset& b ) const
       {
         assert( size == b.size );
 
@@ -385,7 +385,7 @@ namespace oz
        * @param b the other bitset
        * @return implication of bitsets
        */
-      bool isSubset( const Bitset &b ) const
+      bool isSubset( const Bitset& b ) const
       {
         assert( size == b.size );
 

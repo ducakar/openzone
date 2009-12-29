@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  class MD3StaticModel : public Model
+  struct MD3StaticModel : public Model
   {
     protected:
 
@@ -26,9 +26,9 @@ namespace client
 
     public:
 
-      static Model *create( const Object *obj );
+      static Model* create( const Object* obj );
 
-      virtual void draw( const Model *parent );
+      virtual void draw( const Model* parent );
 
   };
 

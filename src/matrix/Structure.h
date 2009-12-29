@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  class Structure : public Bounds
+  struct Structure : public Bounds
   {
     private:
 
@@ -37,10 +37,10 @@ namespace oz
       float    life;
 
       explicit Structure() {}
-      explicit Structure( int index, int bsp, const Vec3 &p, Rotation rot );
-      explicit Structure( int index, int bsp_, InputStream *istream );
+      explicit Structure( int index, int bsp, const Vec3& p, Rotation rot );
+      explicit Structure( int index, int bsp_, InputStream* istream );
 
-      static Bounds rotate( const Bounds &in, Rotation rot )
+      static Bounds rotate( const Bounds& in, Rotation rot )
       {
         Bounds out;
         Vec3 p = ( in.maxs - in.mins ) * 0.5f;
@@ -74,7 +74,7 @@ namespace oz
         return out;
       }
 
-      void setRotation( const Bounds &in, Rotation rot )
+      void setRotation( const Bounds& in, Rotation rot )
       {
         switch( rot ) {
           case Structure::R0: {
@@ -119,8 +119,8 @@ namespace oz
 
       void destroy();
 
-      void readFull( InputStream *istream );
-      void writeFull( OutputStream *ostream );
+      void readFull( InputStream* istream );
+      void writeFull( OutputStream* ostream );
 
   };
 
