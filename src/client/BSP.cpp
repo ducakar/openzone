@@ -272,7 +272,7 @@ namespace client
         ubyte* bits = reinterpret_cast<ubyte*>( bsp->lightmaps[i].bits );
 
         for( int j = 0; j < oz::BSP::LIGHTMAP_SIZE; j++ ) {
-          bits[j] += ubyte( ( 255 - bits[j] ) * GAMMA_CORR );
+          bits[j] = ubyte( bits[j] + ubyte( float( 255 - bits[j] ) * GAMMA_CORR ) );
         }
         lightMaps[i] = context.createTexture( bits,
                                               oz::BSP::LIGHTMAP_DIM,
@@ -344,7 +344,7 @@ namespace client
 
     glPushMatrix();
     glTranslatef( str->p.x, str->p.y, str->p.z );
-    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
+    glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
 
     drawnFaces = hiddenFaces;
 
@@ -414,7 +414,7 @@ namespace client
     }
     glPushMatrix();
     glTranslatef( str->p.x, str->p.y, str->p.z );
-    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
+    glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
 
     drawnFaces = hiddenFaces;
 
@@ -485,7 +485,7 @@ namespace client
 
     glPushMatrix();
     glTranslatef( str->p.x, str->p.y, str->p.z );
-    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
+    glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
 
     int leafIndex = getLeaf();
     checkInWaterBrush( &bsp->leafs[leafIndex] );
@@ -519,7 +519,7 @@ namespace client
     }
     glPushMatrix();
     glTranslatef( str->p.x, str->p.y, str->p.z );
-    glRotatef( 90.0f * str->rot, 0.0f, 0.0f, 1.0f );
+    glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
 
     for( int i = 0; i < bsp->nFaces; i++ ) {
       const oz::BSP::Face& face = bsp->faces[i];

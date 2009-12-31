@@ -85,8 +85,8 @@ namespace oz
       for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
         assert( 0 <= i && i < 100 );
 
-        buffer[ sizeof( buffer ) - 3 ] = '0' + ( i / 10 );
-        buffer[ sizeof( buffer ) - 2 ] = '0' + ( i % 10 );
+        buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
+        buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
 
         String sampleName = config->get( buffer, "" );
         clazz->audioSamples[i] = sampleName.isEmpty() ? -1 : translator.soundIndex( sampleName );

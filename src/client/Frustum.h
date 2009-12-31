@@ -35,11 +35,6 @@ namespace client
       float maxDistance;
       float radius;
 
-      int minX;
-      int minY;
-      int maxX;
-      int maxY;
-
       void init( float fovY, float aspect, float maxDistance );
       void update( float maxDistance );
 
@@ -93,12 +88,12 @@ namespace client
       }
 
       // get min and max index for cells per each axis, which should be included in pvs
-      void getExtrems( const Vec3& p )
+      void getExtrems( Area& area, const Vec3& p )
       {
-        minX = max( int( ( p.x - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
-        minY = max( int( ( p.y - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
-        maxX = min( int( ( p.x + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
-        maxY = min( int( ( p.y + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+        area.minX = max( int( ( p.x - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
+        area.minY = max( int( ( p.y - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
+        area.maxX = min( int( ( p.x + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+        area.maxY = min( int( ( p.y + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
       }
 
   };

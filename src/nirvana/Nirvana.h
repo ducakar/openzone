@@ -35,7 +35,7 @@ namespace nirvana
         {}
       };
 
-      HashString<MindCtor, 31> mindClasses;
+      HashString<MindCtor, 8> mindClasses;
 
       DList<Mind> minds;
       int updateModulo;

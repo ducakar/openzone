@@ -14,6 +14,9 @@
 #include "matrix/Collider.h"
 #include "Camera.h"
 
+#include "BasicAudio.h"
+#include "BotAudio.h"
+
 namespace oz
 {
 namespace client
@@ -360,6 +363,8 @@ namespace client
 
     audios.free();
     audios.deallocate();
+    BasicAudio::pool.free();
+    BotAudio::pool.free();
     assert( alGetError() == AL_NO_ERROR );
 
     unloadMusic();

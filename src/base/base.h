@@ -22,13 +22,10 @@
 #include "array.h"
 
 /*
- * Exception class
- */
-#include "Exception.h"
-
-/*
  * Containers, part 1
  */
+#include "Pair.h"
+
 #include "List.h"
 #include "DList.h"
 
@@ -39,11 +36,15 @@
 #include "Sparse.h"
 
 /*
+ * Exception class
+ */
+#include "Exception.h"
+
+/*
  * Memory managment
  */
 #include "Alloc.h"
 #include "Pool.h"
-#include "ReuseAlloc.h"
 
 /*
  * String

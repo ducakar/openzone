@@ -64,7 +64,7 @@ namespace client
                            Vector<Vec3> *tempNormals,
                            Vector<TexCoord> *tempTexCoords ) const;
       bool readFace( char* pos, Face* face ) const;
-      bool loadMaterial( const String& path, HashString<int, 13> *materialIndices );
+      bool loadMaterial( const String& path, HashString<int, 32> *materialIndices );
 
     public:
 

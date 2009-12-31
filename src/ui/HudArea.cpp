@@ -24,8 +24,9 @@ namespace client
 namespace ui
 {
 
-  HudArea::HudArea( int width, int height ) : Area( width, height )
+  HudArea::HudArea() : Area( camera.width, camera.height )
   {
+    flags |= IGNORE_BIT;
     setFont( SANS );
 
     crossTexId = context.loadTexture( "ui/crosshair.png", false, GL_LINEAR, GL_LINEAR );
@@ -61,12 +62,13 @@ namespace ui
 
   void HudArea::onDraw()
   {
-    if( camera.tagged != -1 ) {
-      const ObjectClass* clazz = camera.taggedObj->type;
-      float life = ( camera.taggedObj->flags & Object::BOT_BIT ) ?
-          ( camera.taggedObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
-          camera.taggedObj->life / clazz->life;
-      int lifeWidth = life * ( ICON_SIZE + 14 );
+    if( camera.tagged != -1 && camera.state != Camera::STRATEGIC ) {
+      const Object* obj = camera.taggedObj;
+      const ObjectClass* clazz = obj->type;
+      float life = ( obj->flags & Object::BOT_BIT ) ?
+          ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
+          obj->life / clazz->life;
+      int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
       fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
@@ -74,19 +76,31 @@ namespace ui
       glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
       rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
 
+      String description;
+      if( obj->flags & Object::BOT_BIT ) {
+        const Bot* bot = static_cast<const Bot*>( obj );
+
+        description = bot->name.isEmpty() ?
+            clazz->description :
+            bot->name + " (" + clazz->description + ")";
+      }
+      else {
+        description = clazz->description;
+      }
+
       setFontColor( 0x00, 0x00, 0x00 );
-      printCentered( descTextX + 1, descTextY - 1, clazz->description.cstr() );
+      printCentered( descTextX + 1, descTextY - 1, "%s", description.cstr() );
       setFontColor( 0xff, 0xff, 0xff );
-      printCentered( descTextX + 0, descTextY + 0, clazz->description.cstr() );
+      printCentered( descTextX + 0, descTextY + 0, "%s", description.cstr() );
     }
 
     if( camera.bot != -1 ) {
       const BotClass* clazz = static_cast<const BotClass*>( camera.botObj->type );
 
       float life         = ( camera.botObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
-      int   lifeWidth    = max<int>( life * 188.0f, 0 );
+      int   lifeWidth    = max( int( life * 188.0f ), 0 );
       float stamina      = camera.botObj->stamina / clazz->stamina;
-      int   staminaWidth = max<int>( stamina * 188.0f, 0 );
+      int   staminaWidth = max( int( stamina * 188.0f ), 0 );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
       fill( -199, 35, lifeWidth, 14 );

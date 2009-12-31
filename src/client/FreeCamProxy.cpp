@@ -30,7 +30,11 @@ namespace client
   }
 
   void FreeCamProxy::update()
-  {}
+  {
+    if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
+      ui::mouse.doShow = !ui::mouse.doShow;
+    }
+  }
 
   void FreeCamProxy::prepare()
   {
@@ -62,7 +66,6 @@ namespace client
 
     if( ui::keyboard.keys[SDLK_m] && !ui::keyboard.oldKeys[SDLK_m] ) {
       camera.setState( Camera::STRATEGIC );
-      return;
     }
 
     camera.align();

@@ -25,7 +25,7 @@ namespace ui
 {
 
   InventoryMenu::InventoryMenu() :
-      Frame( SLOT_SIZE * COLS, SLOT_SIZE * ROWS + HEADER_SIZE + FOOTER_SIZE )
+      Frame( 5, 5, SLOT_SIZE * COLS, SLOT_SIZE * ROWS + HEADER_SIZE + FOOTER_SIZE )
   {
     setFontColor( 0xff, 0xff, 0xff );
 
@@ -39,13 +39,13 @@ namespace ui
     context.freeTexture( useTexId );
   }
 
-  void InventoryMenu::onMouseEvent()
+  bool InventoryMenu::onMouseEvent()
   {
-    Frame::onMouseEvent();
-
     if( camera.bot == -1 ) {
-      return;
+      return false;
     }
+
+    Frame::onMouseEvent();
 
     Bot* bot = static_cast<Bot*>( world.objects[camera.bot] );
 
@@ -85,6 +85,8 @@ namespace ui
     // works fine if there's no items (then nRows == 1)
     int nRows = ( bot->items.length() - 1 ) / COLS + 1;
     row = ( row + nRows ) % nRows;
+
+    return true;
   }
 
   void InventoryMenu::onDraw()
@@ -104,8 +106,8 @@ namespace ui
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     glEnable( GL_TEXTURE_2D );
     glPushMatrix();
-    glTranslatef( x + SLOT_SIZE / 2, y + SLOT_SIZE / 2 + FOOTER_SIZE, 0.0f );
-    glTranslatef( COLS * SLOT_SIZE, ROWS * SLOT_SIZE, 0.0f );
+    glTranslatef( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0 );
+    glTranslatef( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f );
 
     const Vector<int> &items = camera.botObj->items;
 
@@ -152,7 +154,7 @@ namespace ui
 
     if( taggedItem != null ) {
       float life = taggedItem->life / taggedItem->type->life;
-      int lifeWidth = life * 46.0f;
+      int lifeWidth = int( life * 46.0f );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
       fill( -51, -15, lifeWidth, 10 );

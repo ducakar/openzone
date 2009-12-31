@@ -11,14 +11,14 @@
 
 #include "Model.h"
 
-class GLUquadric;
+struct GLUquadric;
 
 namespace oz
 {
 namespace client
 {
 
-  struct ExplosionModel : public Model
+  struct ExplosionModel : Model
   {
     protected:
 
@@ -30,9 +30,13 @@ namespace client
 
     public:
 
+      static Pool<ExplosionModel, 0, 256> pool;
+
       static Model* create( const Object* obj );
 
       virtual void draw( const Model* parent );
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

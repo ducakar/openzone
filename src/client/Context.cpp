@@ -90,9 +90,9 @@ namespace client
     ubyte* dataEnd = data + width * height * bytesPerPixel;
 
     for( ubyte* p = data; p < dataEnd; p += bytesPerPixel ) {
-      float x = float( p[0] - 128.0f ) / 128.0f;
-      float y = float( p[1] - 128.0f ) / 128.0f;
-      float z = float( p[2] - 128.0f ) / 128.0f;
+      float x = ( float( p[0] ) - 128.0f ) / 128.0f;
+      float y = ( float( p[1] ) - 128.0f ) / 128.0f;
+      float z = ( float( p[2] ) - 128.0f ) / 128.0f;
 
       float dot = x * lightNormal.x + y * lightNormal.y + z * lightNormal.z;
       ubyte color = ubyte( bound( dot * 256.0f, 0.0f, 255.0f ) );

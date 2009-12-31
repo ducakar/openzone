@@ -18,16 +18,17 @@ namespace client
 namespace ui
 {
 
-  struct Frame : public Area
+  struct Frame : Area
   {
     protected:
 
-      virtual void onMouseEvent();
+      virtual bool onMouseEvent();
       virtual void onDraw();
 
     public:
 
       explicit Frame( int width, int height ) : Area( width, height ) {}
+      explicit Frame( int x, int y, int width, int height ) : Area( x, y, width, height ) {}
 
   };
 

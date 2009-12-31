@@ -17,7 +17,7 @@ namespace oz
 namespace client
 {
 
-  struct GameStage : public Stage
+  struct GameStage : Stage
   {
     public:
 
@@ -39,6 +39,9 @@ namespace client
 
       bool update();
       void render();
+
+      virtual void init();
+      virtual void free();
 
       virtual void load();
       virtual void unload();

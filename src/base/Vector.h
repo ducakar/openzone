@@ -21,7 +21,7 @@ namespace oz
       /**
        * Vector iterator.
        */
-      struct Iterator : public oz::Iterator<Type>
+      struct Iterator : oz::Iterator<Type>
       {
         private:
 
@@ -306,7 +306,9 @@ namespace oz
        */
       void operator << ( const Type& e )
       {
-        pushLast( e );
+        ensureCapacity();
+        data[count] = e;
+        count++;
       }
 
       /**
@@ -324,7 +326,9 @@ namespace oz
        */
       void add( const Type& e )
       {
-        pushLast( e );
+        ensureCapacity();
+        data[count] = e;
+        count++;
       }
 
       /**

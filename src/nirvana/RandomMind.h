@@ -16,7 +16,7 @@ namespace oz
 namespace nirvana
 {
 
-  struct RandomMind : public Mind
+  struct RandomMind : Mind
   {
     public:
 

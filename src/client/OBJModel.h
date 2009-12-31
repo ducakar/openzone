@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  struct OBJModel : public Model
+  struct OBJModel : Model
   {
     protected:
 
@@ -26,9 +26,13 @@ namespace client
 
     public:
 
+      static Pool<OBJModel, 0, 256> pool;
+
       static Model* create( const Object* obj );
 
       virtual void draw( const Model* parent );
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

@@ -76,6 +76,7 @@ namespace client
       const Bot* botObj;
 
       State state;
+      State newState;
 
       int   width;
       int   height;
@@ -87,7 +88,10 @@ namespace client
       float minDist;
       float maxDist;
 
-      void setState( State state );
+      void setState( State state )
+      {
+        newState = state;
+      }
 
       void setTagged( const Object* obj )
       {

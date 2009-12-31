@@ -87,25 +87,16 @@ namespace oz
 
     float& operator [] ( int i )
     {
+      assert( 0 <= i && i < 16 );
+
       return reinterpret_cast<float*>( this )[i];
     }
 
     const float& operator [] ( int i ) const
     {
+      assert( 0 <= i && i < 16 );
+
       return reinterpret_cast<const float*>( this )[i];
-    }
-
-    Mat44 operator + () const
-    {
-      return *this;
-    }
-
-    Mat44 operator - () const
-    {
-      return Mat44( -x.x, -x.y, -x.z, -x.w,
-                    -y.x, -y.y, -y.z, -y.w,
-                    -z.x, -z.y, -z.z, -z.w,
-                    -w.x, -w.y, -w.z, -w.w );
     }
 
     float det() const
@@ -139,7 +130,7 @@ namespace oz
                     x.w, y.w, z.w, w.w );
     }
 
-    Mat44& trans()
+    const Mat44& trans()
     {
       swap( x.y, y.x );
       swap( x.z, z.x );
@@ -171,7 +162,7 @@ namespace oz
           w.w == 0.0f;
     }
 
-    Mat44& setZero()
+    const Mat44& setZero()
     {
       x.x = 0.0f;
       x.y = 0.0f;
@@ -213,7 +204,7 @@ namespace oz
           w.w == 1.0f;
     }
 
-    Mat44& setId()
+    const Mat44& setId()
     {
       x.x = 1.0f;
       x.y = 0.0f;
@@ -234,7 +225,20 @@ namespace oz
       return *this;
     }
 
-    Mat44& operator += ( const Mat44& a )
+    const Mat44& operator + () const
+    {
+      return *this;
+    }
+
+    Mat44 operator - () const
+    {
+      return Mat44( -x.x, -x.y, -x.z, -x.w,
+                    -y.x, -y.y, -y.z, -y.w,
+                    -z.x, -z.y, -z.z, -z.w,
+                    -w.x, -w.y, -w.z, -w.w );
+    }
+
+    const Mat44& operator += ( const Mat44& a )
     {
       x.x += a.x.x;
       x.y += a.x.y;
@@ -255,7 +259,7 @@ namespace oz
       return *this;
     }
 
-    Mat44& operator -= ( const Mat44& a )
+    const Mat44& operator -= ( const Mat44& a )
     {
       x.x -= a.x.x;
       x.y -= a.x.y;
@@ -276,7 +280,7 @@ namespace oz
       return *this;
     }
 
-    Mat44& operator *= ( float k )
+    const Mat44& operator *= ( float k )
     {
       x.x *= k;
       x.y *= k;
@@ -297,7 +301,7 @@ namespace oz
       return *this;
     }
 
-    Mat44& operator /= ( float k )
+    const Mat44& operator /= ( float k )
     {
       assert( k != 0.0f );
 
@@ -453,7 +457,6 @@ namespace oz
                     0.0f, 0.0f, 1.0f, 0.0f,
                     0.0f, 0.0f, 0.0f, 1.0f );
     }
-
   };
 
   inline Mat33::Mat33( const Mat44& m ) :

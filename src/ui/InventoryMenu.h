@@ -18,7 +18,7 @@ namespace client
 namespace ui
 {
 
-  struct InventoryMenu : public Frame
+  struct InventoryMenu : Frame
   {
     private:
 
@@ -36,7 +36,7 @@ namespace ui
 
     protected:
 
-      virtual void onMouseEvent();
+      virtual bool onMouseEvent();
       virtual void onDraw();
 
     public:

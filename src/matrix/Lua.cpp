@@ -50,8 +50,8 @@ namespace oz
 
   static int ozBindAllOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) ),
-                      Vec3( lua_tonumber( l, 4 ), lua_tonumber( l, 5 ), lua_tonumber( l, 6 ) ) );
+    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+                      Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.objects.clear();
     lua.structs.clear();
     collider.getOverlaps( aabb, &lua.objects, &lua.structs );
@@ -62,8 +62,8 @@ namespace oz
 
   static int ozBindStrOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) ),
-                      Vec3( lua_tonumber( l, 4 ), lua_tonumber( l, 5 ), lua_tonumber( l, 6 ) ) );
+    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+                      Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.structs.clear();
     collider.getOverlaps( aabb, null, &lua.structs );
     lua.strIndex = 0;
@@ -72,8 +72,8 @@ namespace oz
 
   static int ozBindObjOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) ),
-                      Vec3( lua_tonumber( l, 4 ), lua_tonumber( l, 5 ), lua_tonumber( l, 6 ) ) );
+    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+                      Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.objects.clear();
     collider.getOverlaps( aabb, &lua.objects, null );
     lua.objIndex = 0;
@@ -83,7 +83,7 @@ namespace oz
   static int ozSelfBindAllOverlaps( lua_State* l )
   {
     AABB aabb = AABB( lua.self->p,
-                      Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) ) );
+                      Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
     lua.objects.clear();
     lua.structs.clear();
     collider.getOverlaps( aabb, &lua.objects, &lua.structs );
@@ -95,7 +95,7 @@ namespace oz
   static int ozSelfBindStrOverlaps( lua_State* l )
   {
     AABB aabb = AABB( lua.self->p,
-                      Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) ) );
+                      Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
     lua.structs.clear();
     collider.getOverlaps( aabb, null, &lua.structs );
     lua.strIndex = 0;
@@ -105,7 +105,7 @@ namespace oz
   static int ozSelfBindObjOverlaps( lua_State* l )
   {
     AABB aabb = AABB( lua.self->p,
-                      Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) ) );
+                      Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
     lua.objects.clear();
     collider.getOverlaps( aabb, &lua.objects, null );
     lua.objIndex = 0;
@@ -194,7 +194,7 @@ namespace oz
       OZ_LUA_ERROR( "selected structure is null" );
     }
 
-    lua.str->damage( lua_tonumber( l, 1 ) );
+    lua.str->damage( float( lua_tonumber( l, 1 ) ) );
     return 0;
   }
 
@@ -397,9 +397,9 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->p.x = lua_tonumber( l, 1 );
-    lua.obj->p.y = lua_tonumber( l, 2 );
-    lua.obj->p.z = lua_tonumber( l, 3 );
+    lua.obj->p.x = float( lua_tonumber( l, 1 ) );
+    lua.obj->p.y = float( lua_tonumber( l, 2 ) );
+    lua.obj->p.z = float( lua_tonumber( l, 3 ) );
     return 0;
   }
 
@@ -409,9 +409,9 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->p.x += lua_tonumber( l, 1 );
-    lua.obj->p.y += lua_tonumber( l, 2 );
-    lua.obj->p.z += lua_tonumber( l, 3 );
+    lua.obj->p.x += float( lua_tonumber( l, 1 ) );
+    lua.obj->p.y += float( lua_tonumber( l, 2 ) );
+    lua.obj->p.z += float( lua_tonumber( l, 3 ) );
     return 0;
   }
 
@@ -483,7 +483,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->life = bound<double>( lua_tonumber( l, 1 ), 0, lua.obj->type->life );
+    lua.obj->life = bound( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->type->life );
     return 0;
   }
 
@@ -493,9 +493,9 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->life = bound<double>( lua.obj->life + lua_tonumber( l, 1 ),
-                                   0,
-                                   lua.obj->type->life );
+    lua.obj->life = bound( lua.obj->life + float( lua_tonumber( l, 1 ) ),
+                           0.0f,
+                           lua.obj->type->life );
     return 0;
   }
 
@@ -505,7 +505,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
     int   id        = lua_tointeger( l, 1 );
-    float intensity = lua_tonumber( l, 2 );
+    float intensity = float( lua_tonumber( l, 2 ) );
 
     if( id >= 0 && intensity < 0.0f ) {
       OZ_LUA_ERROR( "event intensity for sounds (id >= 0) has to be > 0.0" );
@@ -520,7 +520,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->damage( lua_tonumber( l, 1 ) );
+    lua.obj->damage( float( lua_tonumber( l, 1 ) ) );
     return 0;
   }
 
@@ -709,9 +709,9 @@ namespace oz
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
     obj->flags &= ~Object::DISABLED_BIT;
-    obj->momentum.x = lua_tonumber( l, 1 );
-    obj->momentum.y = lua_tonumber( l, 2 );
-    obj->momentum.z = lua_tonumber( l, 3 );
+    obj->momentum.x = float( lua_tonumber( l, 1 ) );
+    obj->momentum.y = float( lua_tonumber( l, 2 ) );
+    obj->momentum.z = float( lua_tonumber( l, 3 ) );
     return 0;
   }
 
@@ -727,9 +727,9 @@ namespace oz
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
     obj->flags &= ~Object::DISABLED_BIT;
-    obj->momentum.x += lua_tonumber( l, 1 );
-    obj->momentum.y += lua_tonumber( l, 2 );
-    obj->momentum.z += lua_tonumber( l, 3 );
+    obj->momentum.x += float( lua_tonumber( l, 1 ) );
+    obj->momentum.y += float( lua_tonumber( l, 2 ) );
+    obj->momentum.z += float( lua_tonumber( l, 3 ) );
     return 0;
   }
 
@@ -759,7 +759,7 @@ namespace oz
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
-    obj->mass = lua_tonumber( l, 1 );
+    obj->mass = float( lua_tonumber( l, 1 ) );
     return 0;
   }
 
@@ -774,7 +774,7 @@ namespace oz
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
-    obj->mass += lua_tonumber( l, 1 );
+    obj->mass += float( lua_tonumber( l, 1 ) );
     return 0;
   }
 
@@ -820,7 +820,7 @@ namespace oz
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
-    obj->lift = lua_tonumber( l, 1 );
+    obj->lift = float( lua_tonumber( l, 1 ) );
     return 0;
   }
 
@@ -835,7 +835,7 @@ namespace oz
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
-    obj->lift += lua_tonumber( l, 1 );
+    obj->lift += float( lua_tonumber( l, 1 ) );
     return 0;
   }
 
@@ -898,7 +898,7 @@ namespace oz
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->h = lua_tonumber( l, 1 );
+    bot->h = float( lua_tonumber( l, 1 ) );
     return 1;
   }
 
@@ -913,7 +913,7 @@ namespace oz
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->h += lua_tonumber( l, 1 );
+    bot->h += float( lua_tonumber( l, 1 ) );
     return 1;
   }
 
@@ -943,7 +943,7 @@ namespace oz
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->v = lua_tonumber( l, 1 );
+    bot->v = float( lua_tonumber( l, 1 ) );
     return 1;
   }
 
@@ -958,7 +958,7 @@ namespace oz
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->v += lua_tonumber( l, 1 );
+    bot->v += float( lua_tonumber( l, 1 ) );
     return 1;
   }
 
@@ -1276,7 +1276,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
-    bot->stamina = bound<double>( lua_tonumber( l, 1 ), 0, clazz->stamina );
+    bot->stamina = bound( float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;
   }
 
@@ -1292,7 +1292,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
-    bot->stamina = bound<double>( bot->stamina + lua_tonumber( l, 1 ), 0, clazz->stamina );
+    bot->stamina = bound( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;
   }
 
@@ -1330,9 +1330,9 @@ namespace oz
       OZ_LUA_ERROR( "selected particle is null" );
     }
 
-    lua.part->p.x = lua_tonumber( l, 1 );
-    lua.part->p.y = lua_tonumber( l, 2 );
-    lua.part->p.z = lua_tonumber( l, 3 );
+    lua.part->p.x = float( lua_tonumber( l, 1 ) );
+    lua.part->p.y = float( lua_tonumber( l, 2 ) );
+    lua.part->p.z = float( lua_tonumber( l, 3 ) );
     return 0;
   }
 
@@ -1342,9 +1342,9 @@ namespace oz
       OZ_LUA_ERROR( "selected particle is null" );
     }
 
-    lua.part->p.x += lua_tonumber( l, 1 );
-    lua.part->p.y += lua_tonumber( l, 2 );
-    lua.part->p.z += lua_tonumber( l, 3 );
+    lua.part->p.x += float( lua_tonumber( l, 1 ) );
+    lua.part->p.y += float( lua_tonumber( l, 2 ) );
+    lua.part->p.z += float( lua_tonumber( l, 3 ) );
     return 0;
   }
 
@@ -1376,9 +1376,9 @@ namespace oz
       OZ_LUA_ERROR( "selected particle is null" );
     }
 
-    lua.part->velocity.x = lua_tonumber( l, 1 );
-    lua.part->velocity.y = lua_tonumber( l, 2 );
-    lua.part->velocity.z = lua_tonumber( l, 3 );
+    lua.part->velocity.x = float( lua_tonumber( l, 1 ) );
+    lua.part->velocity.y = float( lua_tonumber( l, 2 ) );
+    lua.part->velocity.z = float( lua_tonumber( l, 3 ) );
     return 0;
   }
 
@@ -1388,9 +1388,9 @@ namespace oz
       OZ_LUA_ERROR( "selected particle is null" );
     }
 
-    lua.part->velocity.x += lua_tonumber( l, 1 );
-    lua.part->velocity.y += lua_tonumber( l, 2 );
-    lua.part->velocity.z += lua_tonumber( l, 3 );
+    lua.part->velocity.x += float( lua_tonumber( l, 1 ) );
+    lua.part->velocity.y += float( lua_tonumber( l, 2 ) );
+    lua.part->velocity.z += float( lua_tonumber( l, 3 ) );
     return 0;
   }
 
@@ -1410,7 +1410,7 @@ namespace oz
       OZ_LUA_ERROR( "selected particle is null" );
     }
 
-    lua.part->lifeTime = lua_tonumber( l, 1 );
+    lua.part->lifeTime = float( lua_tonumber( l, 1 ) );
     return 0;
   }
 
@@ -1420,14 +1420,14 @@ namespace oz
       OZ_LUA_ERROR( "selected particle is null" );
     }
 
-    lua.part->lifeTime += lua_tonumber( l, 1 );
+    lua.part->lifeTime += float( lua_tonumber( l, 1 ) );
     return 0;
   }
 
   static int ozWorldAddStr( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
+    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
     Structure::Rotation rot = Structure::Rotation( lua_tointeger( l, 5 ) );
 
     int bsp = translator.bspIndex( name );
@@ -1453,7 +1453,7 @@ namespace oz
   static int ozWorldForceAddStr( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
+    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
     Structure::Rotation rot = Structure::Rotation( lua_tointeger( l, 5 ) );
 
     int index = synapse.addStruct( name, p, rot );
@@ -1465,7 +1465,7 @@ namespace oz
   static int ozWorldAddObj( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
+    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
 
     if( !translator.classes.contains( name ) ) {
       OZ_LUA_ERROR( "invalid object class" );
@@ -1488,7 +1488,7 @@ namespace oz
   static int ozWorldForceAddObj( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( lua_tonumber( l, 2 ), lua_tonumber( l, 3 ), lua_tonumber( l, 4 ) );
+    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
 
     int index = synapse.addObject( name, p );
     lua.obj = world.objects[index];
@@ -1498,12 +1498,12 @@ namespace oz
 
   static int ozWorldAddPart( lua_State* l )
   {
-    Vec3  p         = Vec3( lua_tonumber( l, 1 ), lua_tonumber( l, 2 ), lua_tonumber( l, 3 ) );
-    Vec3  velocity  = Vec3( lua_tonumber( l, 4 ), lua_tonumber( l, 5 ), lua_tonumber( l, 6 ) );
-    Vec3  color     = Vec3( lua_tonumber( l, 7 ), lua_tonumber( l, 8 ), lua_tonumber( l, 9 ) );
-    float rejection = lua_tonumber( l, 10 );
-    float mass      = lua_tonumber( l, 11 );
-    float lifeTime  = lua_tonumber( l, 12 );
+    Vec3  p         = Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) );
+    Vec3  velocity  = Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) );
+    Vec3  color     = Vec3( float( lua_tonumber( l, 7 ) ), float( lua_tonumber( l, 8 ) ), float( lua_tonumber( l, 9 ) ) );
+    float rejection = float( lua_tonumber( l, 10 ) );
+    float mass      = float( lua_tonumber( l, 11 ) );
+    float lifeTime  = float( lua_tonumber( l, 12 ) );
 
     int index = synapse.addPart( p, velocity, color, rejection, mass, lifeTime );
     lua.part = world.parts[index];

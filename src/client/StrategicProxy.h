@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  struct StrategicProxy : public Proxy
+  struct StrategicProxy : Proxy
   {
     private:
 

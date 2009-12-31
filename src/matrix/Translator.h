@@ -55,9 +55,9 @@ namespace oz
 
     private:
 
-      HashString<int, 1021> textureIndices;
-      HashString<int, 1021> soundIndices;
-      HashString<int, 1021> bspIndices;
+      HashString<int, 512> textureIndices;
+      HashString<int, 512> soundIndices;
+      HashString<int, 128>  bspIndices;
 
     public:
 
@@ -68,8 +68,8 @@ namespace oz
       Vector<Resource> matrixScripts;
       Vector<Resource> nirvanaScripts;
 
-      HashString<ObjectClass::InitFunc, 31> baseClasses;
-      HashString<ObjectClass*, 251> classes;
+      HashString<ObjectClass::InitFunc, 8> baseClasses;
+      HashString<ObjectClass*, 64> classes;
 
       int textureIndex( const char* file )
       {

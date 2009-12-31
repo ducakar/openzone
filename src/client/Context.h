@@ -74,14 +74,14 @@ namespace client
 
       Sparse<Lists>  lists;
 
-      HashString< Resource<OBJ*>, 253 > objs;
-      HashString< Resource<MD2*>, 253 > staticMd2s;
-      HashString< Resource<MD2*>, 253 > md2s;
-      HashString< Resource<MD3*>, 253 > staticMd3s;
-      HashString< Resource<MD3*>, 253 > md3s;
+      HashString< Resource<OBJ*>, 64 > objs;
+      HashString< Resource<MD2*>, 64 > staticMd2s;
+      HashString< Resource<MD2*>, 64 > md2s;
+      HashString< Resource<MD3*>, 64 > staticMd3s;
+      HashString< Resource<MD3*>, 64 > md3s;
 
-      HashString<Model::CreateFunc, 253> modelClasses;
-      HashString<Audio::CreateFunc, 253> audioClasses;
+      HashString<Model::CreateFunc, 16> modelClasses;
+      HashString<Audio::CreateFunc, 8> audioClasses;
 
       static uint buildTexture( const ubyte* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );

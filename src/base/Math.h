@@ -206,7 +206,7 @@ namespace oz
       // (pointer to rand() function in stdlib.h)
       static int ( *const rand )();
 
-      // random integer between 0 and max
+      // random integer between 0 and max - 1
       static int randn( int max )
       {
         return rand() % max;

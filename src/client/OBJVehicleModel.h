@@ -24,11 +24,15 @@ namespace client
 
     public:
 
+      static Pool<OBJVehicleModel, 0, 256> pool;
+
       static Model* create( const Object* obj );
 
       virtual ~OBJVehicleModel();
 
       virtual void draw( const Model* parent );
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

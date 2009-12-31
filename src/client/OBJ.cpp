@@ -208,7 +208,7 @@ namespace client
     return true;
   }
 
-  bool OBJ::loadMaterial( const String& path, HashString<int, 13> *materialIndices )
+  bool OBJ::loadMaterial( const String& path, HashString<int, 32> *materialIndices )
   {
     FILE* file;
     char buffer[LINE_BUFFER_SIZE];
@@ -321,7 +321,7 @@ namespace client
                       config.get( "translate.y", 0.0f ),
                       config.get( "translate.z", 0.0f ) );
 
-    HashString<int, 13> materialIndices;
+    HashString<int, 32> materialIndices;
 
     if( !loadMaterial( sPath, &materialIndices ) ) {
       throw Exception( "OBJ model material loading error" );

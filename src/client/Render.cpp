@@ -24,7 +24,13 @@
 #include "Terrain.h"
 #include "BSP.h"
 
+#include "OBJModel.h"
+#include "OBJVehicleModel.h"
 #include "MD2StaticModel.h"
+#include "MD2Model.h"
+#include "MD2WeaponModel.h"
+#include "MD3StaticModel.h"
+#include "ExplosionModel.h"
 
 #include <ctime>
 #include <GL/glu.h>
@@ -92,8 +98,8 @@ namespace client
 
   void Render::drawWorld()
   {
-    // FIXME: prvi frame terrain map texture ni renderirana, voda samo en textura, neprozorna
     assert( glGetError() == GL_NO_ERROR );
+    assert( !glIsEnabled( GL_TEXTURE_2D ) );
 
     // clear color, visibility, fog
     if( isUnderWater ) {
@@ -112,10 +118,12 @@ namespace client
     }
 
     // frustum
+    Area area;
     frustum.update( visibility );
-    frustum.getExtrems( camera.p );
+    frustum.getExtrems( area, camera.p );
 
     sky.update();
+    water.update();
 
     // drawnStructures
     if( drawnStructures.length() != world.structs.length() ) {
@@ -123,16 +131,14 @@ namespace client
     }
     drawnStructures.clearAll();
 
-    float minXCenter = float( ( frustum.minX - World::MAX / 2 ) * Cell::SIZE ) +
-        Cell::SIZE / 2.0f;
-    float minYCenter = float( ( frustum.minY - World::MAX / 2 ) * Cell::SIZE ) +
-        Cell::SIZE / 2.0f;
+    float minXCenter = float( area.minX - World::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+    float minYCenter = float( area.minY - World::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
 
     float x = minXCenter;
-    for( int i = frustum.minX; i <= frustum.maxX; i++, x += Cell::SIZE ) {
+    for( int i = area.minX; i <= area.maxX; i++, x += Cell::SIZE ) {
       float y = minYCenter;
 
-      for( int j = frustum.minY; j <= frustum.maxY; j++, y += Cell::SIZE ) {
+      for( int j = area.minY; j <= area.maxY; j++, y += Cell::SIZE ) {
         if( frustum.isVisible( x, y, Cell::RADIUS ) ) {
           scheduleCell( i, j );
         }
@@ -141,6 +147,9 @@ namespace client
 
     // clear buffer
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
+
+    assert( !glIsEnabled( GL_TEXTURE_2D ) );
+    assert( glIsEnabled( GL_BLEND ) );
 
     // camera transformation
     glMatrixMode( GL_PROJECTION );
@@ -168,6 +177,7 @@ namespace client
     glEnable( GL_FOG );
     glEnable( GL_LIGHTING );
     glDisable( GL_BLEND );
+    glEnable( GL_TEXTURE_2D );
 
     wasUnderWater = isUnderWater;
     isUnderWater  = camera.p.z < 0.0f;
@@ -273,6 +283,7 @@ namespace client
     }
 
     assert( !glIsEnabled( GL_BLEND ) );
+    assert( glIsEnabled( GL_TEXTURE_2D ) );
     glEnable( GL_BLEND );
 
     // draw structures' water
@@ -289,32 +300,8 @@ namespace client
 
     terra.drawWater();
 
-    water.update();
-
-    if( drawAABBs ) {
-      glEnable( GL_COLOR_MATERIAL );
-      glDisable( GL_LIGHTING );
-      glDisable( GL_TEXTURE_2D );
-      glEnable( GL_BLEND );
-
-      for( int i = 0; i < objects.length(); i++ ) {
-        glColor4fv( ( objects[i].obj->flags & Object::CLIP_BIT ) ?
-            Colors::CLIP_AABB : Colors::NOCLIP_AABB );
-        shape.drawBox( *objects[i].obj );
-      }
-
-      glColor4fv( Colors::WHITE );
-      glEnable( GL_LIGHTING );
-      glEnable( GL_TEXTURE_2D );
-      glDisable( GL_COLOR_MATERIAL );
-    }
-
-    objects.clear();
-    delayedObjects.clear();
-
-    glDisable( GL_FOG );
-    glDisable( GL_LIGHTING );
     glDisable( GL_TEXTURE_2D );
+    glDisable( GL_LIGHTING );
 
     if( showAim ) {
       Vec3 move = camera.at * 32.0f;
@@ -325,6 +312,26 @@ namespace client
       shape.drawBox( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
     }
 
+    glEnable( GL_BLEND );
+
+    if( drawAABBs ) {
+      glEnable( GL_COLOR_MATERIAL );
+
+      for( int i = 0; i < objects.length(); i++ ) {
+        glColor4fv( ( objects[i].obj->flags & Object::CLIP_BIT ) ?
+            Colors::CLIP_AABB : Colors::NOCLIP_AABB );
+        shape.drawBox( *objects[i].obj );
+      }
+
+      glColor4fv( Colors::WHITE );
+      glDisable( GL_COLOR_MATERIAL );
+    }
+
+    objects.clear();
+    delayedObjects.clear();
+
+    glDisable( GL_FOG );
+
     glDisable( GL_DEPTH_TEST );
     glColor4fv( Colors::WHITE );
 
@@ -334,6 +341,8 @@ namespace client
   void Render::drawCommon()
   {
     ui::ui.draw();
+
+    assert( !glIsEnabled( GL_TEXTURE_2D ) );
 
     if( doScreenshot ) {
       uint* pixels = new uint[camera.width * camera.height * 4];
@@ -455,7 +464,6 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    glEnable( GL_TEXTURE_2D );
     glDepthFunc( GL_LEQUAL );
 
     glEnable( GL_BLEND );
@@ -463,9 +471,6 @@ namespace client
 
     camera.init();
     ui::ui.init();
-    ui::ui.hud->add( new ui::DebugArea() );
-    ui::ui.hud->add( new ui::BuildMenu(), -1, -1 );
-    ui::ui.hud->add( new ui::InventoryMenu(), 0, 0 );
 
     SDL_GL_SwapBuffers();
 
@@ -513,7 +518,7 @@ namespace client
     }
 
     glEnable( GL_POINT_SMOOTH );
-    glPointSize( camera.height * STAR_SIZE );
+    glPointSize( float( camera.height ) * STAR_SIZE );
 
     // fog
     glFogi( GL_FOG_MODE, GL_LINEAR );
@@ -526,6 +531,8 @@ namespace client
     glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
     glEnable( GL_LIGHT0 );
+
+    glEnable( GL_BLEND );
 
     log.unindent();
     log.println( "}" );
@@ -545,6 +552,14 @@ namespace client
 
     models.free();
     models.deallocate();
+
+    OBJModel::pool.free();
+    OBJVehicleModel::pool.free();
+    MD2StaticModel::pool.free();
+    MD2Model::pool.free();
+    MD2WeaponModel::pool.free();
+    MD3StaticModel::pool.free();
+    ExplosionModel::pool.free();
 
     log.unindent();
     log.println( "}" );

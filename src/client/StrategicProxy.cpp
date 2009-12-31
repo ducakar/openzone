@@ -32,6 +32,10 @@ namespace client
     fastMove = false;
     camera.w = 0.0f;
     camera.setTagged( null );
+
+    ui::ui.strategic->begin();
+
+    ui::mouse.doShow = true;
   }
 
   void StrategicProxy::update()
@@ -71,8 +75,8 @@ namespace client
     }
 
     if( ui::keyboard.keys[SDLK_m] && !ui::keyboard.oldKeys[SDLK_m] ) {
+      ui::mouse.doShow = false;
       camera.setState( Camera::FREECAM );
-      return;
     }
 
     p.z = max( 0.0f, world.terra.height( p.x, p.y ) ) + height;

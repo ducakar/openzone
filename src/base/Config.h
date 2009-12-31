@@ -22,10 +22,10 @@ namespace oz
     private:
 
       // Hashtable size.
-      static const int SIZE = 1023;
+      static const int SIZE = 256;
       // Size of buffer used when loading from file (maximum key/value length).
       static const int BUFFER_SIZE = 1024;
-      // Conf file value alignment
+      // column for value alignment when writing .rc configuration files
       static const int ALIGNMENT = 32;
 
       // Hashtable of variables.

@@ -17,12 +17,14 @@ namespace oz
 namespace client
 {
 
-  struct MD2Model : public Model
+  struct MD2Model : Model
   {
     public:
 
       MD2*           md2;
       MD2::AnimState anim;
+
+      static Pool<MD2Model, 0, 256> pool;
 
     protected:
 
@@ -39,6 +41,8 @@ namespace client
 
       void setAnim( int type );
       virtual void draw( const Model* parent );
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

@@ -15,9 +15,9 @@ namespace oz
 {
 
   // dynamic object abstract class
-  struct Dynamic : public Object
+  struct Dynamic : Object
   {
-    friend class Pool<Dynamic>;
+    friend struct Pool<Dynamic>;
 
     public:
 

@@ -425,19 +425,32 @@ namespace oz
         return r;
       }
 
-      String trim() const
+      const String trim() const
       {
-        char* start = buffer;
-        char* end = buffer + count;
+        const char* start = buffer;
+        const char* end = buffer + count;
 
-        while( start < end && ( *start == ' ' || *start == '\t' || *start == '\n' ) ) {
+        while( start < end && isWhiteSpace( *start ) ) {
           start++;
         }
-        do {
+        while( start < end && isWhiteSpace( *( end - 1 ) ) ) {
           end--;
         }
-        while( start < end && ( *end == ' ' || *end == '\t' || *end == '\n' ) );
+        return String( start, end - start );
+      }
 
+      static String trim( const char* s )
+      {
+        int count = length( s );
+        const char* start = s;
+        const char* end = s + count;
+
+        while( start < end && isWhiteSpace( *start ) ) {
+          start++;
+        }
+        while( start < end && isWhiteSpace( *( end - 1 ) ) ) {
+          end--;
+        }
         return String( start, end - start );
       }
 
@@ -470,6 +483,11 @@ namespace oz
       static bool isSpace( char c )
       {
         return c == ' ' || c == '\t';
+      }
+
+      static bool isWhiteSpace( char c )
+      {
+        return c == ' ' || c == '\t' || c == '\n';
       }
 
   };

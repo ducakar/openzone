@@ -20,7 +20,7 @@ namespace client
 namespace ui
 {
 
-  void Button::onMouseEvent()
+  bool Button::onMouseEvent()
   {
     isHighlighted = true;
 
@@ -31,6 +31,7 @@ namespace ui
         callback( this );
       }
     }
+    return true;
   }
 
   void Button::onDraw()
@@ -47,7 +48,7 @@ namespace ui
     fill( 0, 0, width, height );
     setFont( SANS );
     setFontColor( 200, 200, 200 );
-    printCentered( width / 2, height / 2, label.cstr() );
+    printCentered( width / 2, height / 2, "%s", label.cstr() );
 
     isHighlighted = false;
     isClicked = false;

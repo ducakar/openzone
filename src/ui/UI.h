@@ -18,7 +18,8 @@
 #include "Button.h"
 
 #include "HudArea.h"
-#include "DebugArea.h"
+#include "StrategicArea.h"
+#include "DebugFrame.h"
 #include "InventoryMenu.h"
 #include "BuildMenu.h"
 
@@ -33,7 +34,9 @@ namespace ui
   {
     public:
 
-      HudArea* hud;
+      Area*          root;
+      HudArea*       hud;
+      StrategicArea* strategic;
 
       void init();
       void free();

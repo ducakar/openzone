@@ -20,6 +20,8 @@ namespace oz
 namespace client
 {
 
+  Pool<BotAudio> BotAudio::pool;
+
   Audio* BotAudio::create( const Object* obj )
   {
     assert( obj->flags & Object::BOT_BIT );
@@ -39,7 +41,7 @@ namespace client
     {
       float dv = Math::sqrt( bot->velocity.x*bot->velocity.x +
                              bot->velocity.y*bot->velocity.y );
-      playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*bot ), obj );
+      playContSound( samples[SND_FRICTING], dv, uint( &*bot ), obj );
     }
 
     // events
@@ -53,9 +55,11 @@ namespace client
       }
     }
 
-    // weapon events
-    if( bot->weaponItem != -1 && world.objects[bot->weaponItem] != null ) {
-      sound.playAudio( world.objects[bot->weaponItem], this );
+    // inventory items' events
+    foreach( item, bot->items.iterator() ) {
+      if( world.objects[*item] != null ) {
+        sound.playAudio( world.objects[*item], this );
+      }
     }
   }
 

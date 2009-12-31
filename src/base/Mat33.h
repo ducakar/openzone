@@ -67,24 +67,16 @@ namespace oz
 
     float& operator [] ( int i )
     {
+      assert( 0 <= i && i < 9 );
+
       return reinterpret_cast<float*>( this )[i];
     }
 
     const float& operator [] ( int i ) const
     {
+      assert( 0 <= i && i < 9 );
+
       return reinterpret_cast<const float*>( this )[i];
-    }
-
-    Mat33 operator + () const
-    {
-      return *this;
-    }
-
-    Mat33 operator - () const
-    {
-      return Mat33( -x.x, -x.y, -x.z,
-                    -y.x, -y.y, -y.z,
-                    -z.x, -z.y, -z.z );
     }
 
     // determinant
@@ -105,7 +97,7 @@ namespace oz
     }
 
     // transpose
-    Mat33& trans()
+    const Mat33& trans()
     {
       swap( x.y, y.x );
       swap( x.z, z.x );
@@ -127,7 +119,7 @@ namespace oz
           z.z == 0.0f;
     }
 
-    Mat33& setZero()
+    const Mat33& setZero()
     {
       x.x = 0.0f;
       x.y = 0.0f;
@@ -155,7 +147,7 @@ namespace oz
           z.z == 1.0f;
     }
 
-    Mat33& setId()
+    const Mat33& setId()
     {
       x.x = 1.0f;
       x.y = 0.0f;
@@ -169,8 +161,20 @@ namespace oz
       return *this;
     }
 
+    const Mat33& operator + () const
+    {
+      return *this;
+    }
+
+    Mat33 operator - () const
+    {
+      return Mat33( -x.x, -x.y, -x.z,
+                    -y.x, -y.y, -y.z,
+                    -z.x, -z.y, -z.z );
+    }
+
     // assignment operators
-    Mat33& operator += ( const Mat33& a )
+    const Mat33& operator += ( const Mat33& a )
     {
       x.x += a.x.x;
       x.y += a.x.y;
@@ -184,7 +188,7 @@ namespace oz
       return *this;
     }
 
-    Mat33& operator -= ( const Mat33& a )
+    const Mat33& operator -= ( const Mat33& a )
     {
       x.x -= a.x.x;
       x.y -= a.x.y;
@@ -198,7 +202,7 @@ namespace oz
       return *this;
     }
 
-    Mat33& operator *= ( float k )
+    const Mat33& operator *= ( float k )
     {
       x.x *= k;
       x.y *= k;
@@ -212,7 +216,7 @@ namespace oz
       return *this;
     }
 
-    Mat33& operator /= ( float k )
+    const Mat33& operator /= ( float k )
     {
       assert( k != 0.0f );
 
@@ -332,7 +336,6 @@ namespace oz
                       -s,    c, 0.0f,
                     0.0f, 0.0f, 1.0f );
     }
-
   };
 
   // declared in Quat.h

@@ -22,6 +22,7 @@ namespace oz
 {
 namespace client
 {
+  Pool<MD2WeaponModel, 0, 256> MD2WeaponModel::pool;
 
   Model* MD2WeaponModel::create( const Object* obj )
   {

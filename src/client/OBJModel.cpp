@@ -18,6 +18,8 @@ namespace oz
 namespace client
 {
 
+  Pool<OBJModel, 0, 256> OBJModel::pool;
+
   Model* OBJModel::create( const Object* obj )
   {
     OBJModel* model = new OBJModel();

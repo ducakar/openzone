@@ -18,8 +18,6 @@ namespace client
 
   struct Audio
   {
-    friend class List<Audio>;
-
     public:
 
       static const int   UPDATED_BIT = 0x00000001;
@@ -31,8 +29,6 @@ namespace client
     public:
 
       typedef Audio* ( *CreateFunc )( const Object* object );
-
-    private:
 
       Audio* next[1];
 

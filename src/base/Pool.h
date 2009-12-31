@@ -2,7 +2,6 @@
  *  Pool.h
  *
  *  Pool memory allocator
- *  The Type should provide the "next[INDEX]" pointer.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
@@ -37,22 +36,20 @@ void operator delete ( void* ptr ) { pool.free( ptr ); }
  * object should be freed via <code>pool.free( object)</code> and a destructor should be called
  * manually before freeing.
  */
-#define OZ_PLACEMENT_POOL_ALLOC( Type, INDEX ) \
+#define OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE ) \
 private: \
 void* operator new ( uint ); \
 public: \
-void* operator new ( uint, Pool<Type, INDEX> &pool ) { return pool.malloc(); } \
+void* operator new ( uint, Pool<Type, INDEX, SIZE> &pool ) { return pool.malloc(); } \
 void operator delete ( void* );
 
 namespace oz
 {
 
-  template <class Type, int INDEX = 0>
+  template <class Type, int INDEX = 0, int BLOCK_SIZE = 256>
   struct Pool
   {
     private:
-
-      static const int BLOCK_SIZE = 1024;
 
       // no copying
       Pool( const Pool& );
@@ -72,19 +69,19 @@ namespace oz
         explicit Block()
         {
           for( int i = 0; i < BLOCK_SIZE - 1; i++ ) {
-            get( i ).next[INDEX] = &get( i + 1 );
+            get( i )->next[INDEX] = get( i + 1 );
           }
-          get( BLOCK_SIZE - 1 ).next[INDEX] = null;
+          get( BLOCK_SIZE - 1 )->next[INDEX] = null;
         }
 
-        Type& get( int i )
+        Type* get( int i )
         {
-          return reinterpret_cast<Type*>( data )[i];
+          return reinterpret_cast<Type*>( data ) + i;
         }
 
-        const Type& get( int i ) const
+        const Type* get( int i ) const
         {
-          return reinterpret_cast<const Type*>( data )[i];
+          return reinterpret_cast<const Type*>( data ) + i;
         }
       };
 
@@ -127,9 +124,9 @@ namespace oz
 
         if( freeSlot == null ) {
           blocks << new Block();
-          freeSlot = &blocks.first()->get( 1 );
+          freeSlot = blocks.first()->get( 1 );
           size += BLOCK_SIZE;
-          return &blocks.first()->get( 0 );
+          return blocks.first()->get( 0 );
         }
         else {
           Type* slot = freeSlot;
@@ -146,12 +143,12 @@ namespace oz
        * Free given element.
        * @param index
        */
-      void free( void *ptr )
+      void free( void* ptr )
       {
 #ifdef OZ_POOL_ALLOC
         assert( count != 0 );
 
-        Type *elem = reinterpret_cast<Type*>( ptr );
+        Type* elem = reinterpret_cast<Type*>( ptr );
         elem->next[INDEX] = freeSlot;
         freeSlot = elem;
         count--;

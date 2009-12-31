@@ -184,7 +184,9 @@ namespace oz
 
     Type* aNew = new Type[newCount];
 
-    aCopy( aNew, aDest, count );
+    for( int i = 0; i < count; i++ ) {
+      aNew[i] = aDest[i];
+    }
     delete[] aDest;
 
     return aNew;

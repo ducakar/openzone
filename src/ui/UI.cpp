@@ -32,7 +32,15 @@ namespace ui
       throw Exception( "Failed to load font" );
     }
 
-    hud = new HudArea( camera.width, camera.height );
+    root = new Area( camera.width, camera.height );
+    hud = new HudArea();
+    strategic = new StrategicArea();
+
+    root->add( hud );
+    root->add( strategic );
+    root->add( new DebugFrame() );
+    root->add( new BuildMenu() );
+    root->add( new InventoryMenu() );
   }
 
   void UI::free()
@@ -46,19 +54,20 @@ namespace ui
   void UI::update()
   {
     if( mouse.doShow ) {
-      hud->checkMouse();
+      root->passMouseEvents();
     }
+    Area::update();
   }
 
   void UI::draw()
   {
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-    glOrtho( 0.0, hud->width, 0.0, hud->height, -100.0, 100.0 );
+    glOrtho( 0.0, root->width, 0.0, root->height, -100.0, 100.0 );
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
 
-    hud->onDraw();
+    root->drawChildren();
     mouse.draw();
   }
 

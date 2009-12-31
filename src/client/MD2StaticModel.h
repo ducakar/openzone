@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  struct MD2StaticModel : public Model
+  struct MD2StaticModel : Model
   {
     protected:
 
@@ -26,9 +26,13 @@ namespace client
 
     public:
 
+      static Pool<MD2StaticModel, 0, 256> pool;
+
       static Model* create( const Object* obj );
 
       virtual void draw( const Model* parent );
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 
