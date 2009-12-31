@@ -11,6 +11,7 @@
 
 #include "Mouse.h"
 
+#include "client/Camera.h"
 #include "client/Context.h"
 
 #define SDL_BUTTON_WUMASK SDL_BUTTON( SDL_BUTTON_WHEELUP )
@@ -25,15 +26,13 @@ namespace ui
 
   Mouse mouse;
 
-  void Mouse::init( int maxX, int maxY )
+  void Mouse::init()
   {
     type = ARROW;
     doShow = false;
 
-    setBounds( maxX, maxY );
-
-    x = centerX;
-    y = centerY;
+    x = camera.centerX;
+    y = camera.centerY;
     relX = 0;
     relY = 0;
 
@@ -80,14 +79,6 @@ namespace ui
     context.freeTexture( cursors[TEXT].texId );
   }
 
-  void Mouse::setBounds( int maxX_, int maxY_ )
-  {
-    maxX    = maxX_;
-    maxY    = maxY_;
-    centerX = maxX_ / 2;
-    centerY = maxY_ / 2;
-  }
-
   void Mouse::prepare()
   {
     relX = 0;
@@ -105,15 +96,15 @@ namespace ui
       int desiredX = x + relX;
       int desiredY = y + relY;
 
-      x = bound( desiredX, 0, maxX - 1 );
-      y = bound( desiredY, 0, maxY - 1 );
+      x = bound( desiredX, 0, camera.width - 1 );
+      y = bound( desiredY, 0, camera.height - 1 );
 
       overEdgeX = x != desiredX ? desiredX - x : 0;
       overEdgeY = y != desiredY ? desiredY - y : 0;
     }
     else {
-      x = centerX;
-      y = centerY;
+      x = camera.centerX;
+      y = camera.centerY;
 
       overEdgeX = relX;
       overEdgeY = relY;

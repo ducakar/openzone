@@ -88,12 +88,12 @@ namespace client
       }
 
       // get min and max index for cells per each axis, which should be included in pvs
-      void getExtrems( Area& area, const Vec3& p )
+      void getExtrems( Span& span, const Vec3& p )
       {
-        area.minX = max( int( ( p.x - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
-        area.minY = max( int( ( p.y - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
-        area.maxX = min( int( ( p.x + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
-        area.maxY = min( int( ( p.y + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+        span.minX = max( int( ( p.x - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
+        span.minY = max( int( ( p.y - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
+        span.maxX = min( int( ( p.x + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+        span.maxY = min( int( ( p.y + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
       }
 
   };

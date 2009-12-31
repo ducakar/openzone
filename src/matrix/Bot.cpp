@@ -129,7 +129,9 @@ namespace oz
 
     flags |= CLIMBER_BIT;
 
+    stepRate -= ( velocity.x*velocity.x + velocity.y*velocity.y );
     stepRate *= clazz->stepRateSupp;
+
     stamina += clazz->staminaGain;
     stamina = min( stamina, clazz->stamina );
 
@@ -148,7 +150,7 @@ namespace oz
 
     // We want the player to press the key for jump each time, so logical consequence would be to
     // jump when jump key becomes pressed. But then a jump may be missed if we are in air for just
-    // a brief period of time, e.g. when swimming or runing down the hill (at those occations the
+    // a brief period of time, e.g. when swimming or running down the hill (at those occasions the
     // bot is not in water/on floor all the time, but may fly for a few frames in the mean time).
     // So, if we press the jump key, we schedule for a jump, and when jump conditions are met,
     // the jump will be commited if we still hold down the jump key.
@@ -366,7 +368,7 @@ namespace oz
       //               \----------
       //
       //
-      if( ( state & STEPPING_BIT ) && !isClimbing && stepRate < clazz->stepRate ) {
+      if( ( state & STEPPING_BIT ) && !isClimbing && stepRate <= clazz->stepRateLimit ) {
         // check if bot's gonna hit a stair in next frame
         Vec3 desiredMove = momentum * Timer::TICK_TIME;
 
@@ -379,6 +381,7 @@ namespace oz
 
           for( float raise = clazz->stepInc; raise <= clazz->stepMax; raise += clazz->stepInc ) {
             p.z += clazz->stepInc;
+
             if( !collider.test( *this, this ) ) {
               break;
             }
@@ -389,7 +392,7 @@ namespace oz
             float endDist = move * normal - negStartDist;
 
             if( endDist < 0.0f ) {
-              stepRate += raise;
+              stepRate += raise*raise * clazz->stepRateCoeff;
               goto stepSucceeded;
             }
           }
@@ -459,9 +462,8 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        Object* obj = collider.hit.obj;
-        if( obj != null ) {
-          synapse.use( this, obj );
+        if( collider.hit.obj != null ) {
+          synapse.use( this, const_cast<Object*>( collider.hit.obj ) );
         }
       }
     }
@@ -477,11 +479,11 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        Dynamic* obj = static_cast<Dynamic*>( collider.hit.obj );
+        const Dynamic* obj = static_cast<const Dynamic*>( world.objects[collider.hit.obj->index] );
         if( obj != null && ( obj->flags & ITEM_BIT ) ) {
           assert( obj->flags & DYNAMIC_BIT );
 
-          take( obj );
+          take( const_cast<Dynamic*>( obj ) );
         }
       }
     }
@@ -503,7 +505,7 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        Dynamic* obj = static_cast<Dynamic*>( collider.hit.obj );
+        const Dynamic* obj = static_cast<const Dynamic*>( collider.hit.obj );
         if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
             lower != obj->index )
         {

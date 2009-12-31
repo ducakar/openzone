@@ -81,6 +81,8 @@ namespace client
 
     state              = FREECAM;
     proxy              = &freeCamProxy;
+
+    botProxy.init();
   }
 
   void Camera::update()

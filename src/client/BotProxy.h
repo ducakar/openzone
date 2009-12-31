@@ -41,6 +41,8 @@ namespace client
       virtual void update();
       virtual void prepare();
 
+      void init();
+
   };
 
 }

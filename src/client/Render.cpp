@@ -118,9 +118,9 @@ namespace client
     }
 
     // frustum
-    Area area;
+    Span span;
     frustum.update( visibility );
-    frustum.getExtrems( area, camera.p );
+    frustum.getExtrems( span, camera.p );
 
     sky.update();
     water.update();
@@ -131,14 +131,14 @@ namespace client
     }
     drawnStructures.clearAll();
 
-    float minXCenter = float( area.minX - World::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
-    float minYCenter = float( area.minY - World::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+    float minXCenter = float( span.minX - World::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+    float minYCenter = float( span.minY - World::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
 
     float x = minXCenter;
-    for( int i = area.minX; i <= area.maxX; i++, x += Cell::SIZE ) {
+    for( int i = span.minX; i <= span.maxX; i++, x += Cell::SIZE ) {
       float y = minYCenter;
 
-      for( int j = area.minY; j <= area.maxY; j++, y += Cell::SIZE ) {
+      for( int j = span.minY; j <= span.maxY; j++, y += Cell::SIZE ) {
         if( frustum.isVisible( x, y, Cell::RADIUS ) ) {
           scheduleCell( i, j );
         }

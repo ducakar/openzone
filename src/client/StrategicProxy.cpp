@@ -33,8 +33,7 @@ namespace client
     camera.w = 0.0f;
     camera.setTagged( null );
 
-    ui::ui.strategic->begin();
-
+    ui::ui.strategic->show( true );
     ui::mouse.doShow = true;
   }
 

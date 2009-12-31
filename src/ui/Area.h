@@ -137,6 +137,21 @@ namespace ui
 
     public:
 
+      void show( bool doShow )
+      {
+        if( doShow ) {
+          flags &= ~( IGNORE_BIT | HIDDEN_BIT );
+
+          if( flags & UPDATE_FUNC_BIT ) {
+            flags |= UPDATE_BIT;
+          }
+        }
+        else {
+          flags |= IGNORE_BIT | HIDDEN_BIT;
+          flags &= ~UPDATE_BIT;
+        }
+      }
+
       void add( Area* area, int relativeX, int relativeY )
       {
         area->width  = bound( area->width,  1, width  );

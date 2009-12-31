@@ -26,7 +26,7 @@ namespace ui
 
   void UI::init()
   {
-    mouse.init( camera.width, camera.height );
+    mouse.init();
 
     if( !font.init() ) {
       throw Exception( "Failed to load font" );

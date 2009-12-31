@@ -24,16 +24,20 @@ namespace ui
   {
     private:
 
-      float       pixelStep;
-      float       stepPixel;
+      float         pixelStep;
+      float         stepPixel;
 
-      int         hover;
-      Vector<int> tagged;
+      const Object* hovered;
+      Vector<int>   tagged;
 
       Pair<int> project( const Vec3& p ) const;
-      void projectBounds( oz::Area& area, const Object* obj ) const;
+      void projectBounds( Span& span, const Object* obj ) const;
 
-      void end();
+      static void fillRect( float x, float y, float width, float height );
+      static void drawRect( float x, float y, float width, float height );
+
+      void drawHoveredRect( const Span& span );
+      void drawTaggedRect( const Object* obj, const Span& span );
 
     protected:
 
@@ -44,8 +48,6 @@ namespace ui
 
       explicit StrategicArea();
       virtual ~StrategicArea();
-
-      void begin();
 
   };
 

@@ -60,8 +60,6 @@ namespace oz
 
     private:
 
-      Area               area;
-
       /*
        * Index reusing: when an entity is removed, there may still be references to it (from other
        * entities or from render or audio subsystems); that's why every cycle all references must
@@ -124,18 +122,18 @@ namespace oz
       Cell* getCell( const Vec3& p );
 
       // get indices of the cell the point is in
-      void getInters( Area& area, float x, float y, float epsilon = 0.0f ) const;
-      void getInters( Area& area, const Vec3& p, float epsilon = 0.0f ) const;
+      void getInters( Span& span, float x, float y, float epsilon = 0.0f ) const;
+      void getInters( Span& span, const Vec3& p, float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the area intersects
-      void getInters( Area& area, float minPosX, float minPosY, float maxPosX, float maxPosY,
+      void getInters( Span& span, float minPosX, float minPosY, float maxPosX, float maxPosY,
                       float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the AABB intersects
-      void getInters( Area& area, const AABB& bb, float epsilon = 0.0f ) const;
+      void getInters( Span& span, const AABB& bb, float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the bounds intersects
-      void getInters( Area& area, const Bounds& bounds, float epsilon = 0.0f ) const;
+      void getInters( Span& span, const Bounds& bounds, float epsilon = 0.0f ) const;
 
       World();
 
@@ -170,55 +168,56 @@ namespace oz
     return getCell( p.x, p.y );
   }
 
-  inline void World::getInters( Area& area, float x, float y, float epsilon ) const
+  inline void World::getInters( Span& span, float x, float y, float epsilon ) const
   {
-    area.minX = max( int( ( x - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
-    area.minY = max( int( ( y - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
-    area.maxX = min( int( ( x + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
-    area.maxY = min( int( ( y + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+    span.minX = max( int( ( x - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
+    span.minY = max( int( ( y - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
+    span.maxX = min( int( ( x + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+    span.maxY = min( int( ( y + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
   }
 
-  inline void World::getInters( Area& area, const Vec3& p, float epsilon ) const
+  inline void World::getInters( Span& span, const Vec3& p, float epsilon ) const
   {
-    getInters( area, p.x, p.y, epsilon );
+    getInters( span, p.x, p.y, epsilon );
   }
 
-  inline void World::getInters( Area& area, float minPosX, float minPosY,
+  inline void World::getInters( Span& span, float minPosX, float minPosY,
                                 float maxPosX, float maxPosY, float epsilon ) const
   {
-    area.minX = max( int( ( minPosX - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
-    area.minY = max( int( ( minPosY - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
-    area.maxX = min( int( ( maxPosX + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
-    area.maxY = min( int( ( maxPosY + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+    span.minX = max( int( ( minPosX - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
+    span.minY = max( int( ( minPosY - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
+    span.maxX = min( int( ( maxPosX + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+    span.maxY = min( int( ( maxPosY + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
   }
 
-  inline void World::getInters( Area& area, const AABB& bb, float epsilon ) const
+  inline void World::getInters( Span& span, const AABB& bb, float epsilon ) const
   {
-    getInters( area, bb.p.x - bb.dim.x, bb.p.y - bb.dim.y, bb.p.x + bb.dim.x, bb.p.y + bb.dim.y,
+    getInters( span, bb.p.x - bb.dim.x, bb.p.y - bb.dim.y, bb.p.x + bb.dim.x, bb.p.y + bb.dim.y,
                epsilon );
   }
 
-  inline void World::getInters( Area& area, const Bounds& bounds, float epsilon ) const
+  inline void World::getInters( Span& span, const Bounds& bounds, float epsilon ) const
   {
-    getInters( area, bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
+    getInters( span, bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
   }
 
   inline bool World::position( Structure* str )
   {
     str->setRotation( *bsps[str->bsp], str->rot );
 
-    getInters( area, *str, EPSILON );
+    Span span;
+    getInters( span, *str, EPSILON );
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         if( cells[x][y].structs.length() == cells[x][y].structs.capacity() ) {
           return false;
         }
       }
     }
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         assert( !cells[x][y].structs.contains( str->index ) );
 
         cells[x][y].structs << str->index;
@@ -229,10 +228,11 @@ namespace oz
 
   inline void World::unposition( Structure* str )
   {
-    getInters( area, *str, EPSILON );
+    Span span;
+    getInters( span, *str, EPSILON );
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         assert( cells[x][y].structs.contains( str->index ) );
 
         cells[x][y].structs.exclude( str->index );

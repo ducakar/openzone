@@ -16,16 +16,18 @@ namespace oz
 
   struct Hit
   {
-    float  ratio;
+    float ratio;
+    Vec3  normal;
 
-    Vec3    normal;
-    Object* obj;
-    int     material;
-    float   waterDepth;
+    const Object* obj;
+    const Structure* str;
 
-    // only set for object trim
-    bool    inWater;
-    bool    onLadder;
+    int   material;
+
+    // only set for object translate
+    float waterDepth;
+    bool  inWater;
+    bool  onLadder;
   };
 
   struct Collider
@@ -78,7 +80,7 @@ namespace oz
       void trimPointTerra();
 
       void trimPointVoid();
-      void trimPointObj( Object* sObj );
+      void trimPointObj( const Object* sObj );
       void trimPointBrush( const BSP::Brush* brush );
       void trimPointNode( int nodeIndex, float startRatio, float endRatio,
                           const Vec3& startPos, const Vec3& endPos );
@@ -91,7 +93,7 @@ namespace oz
       bool testAABBWorldOSO();
 
       void trimAABBVoid();
-      void trimAABBObj( Object* sObj );
+      void trimAABBObj( const Object* sObj );
       void trimAABBBrush( const BSP::Brush* brush );
       void trimAABBWater( const BSP::Brush* brush );
       void trimAABBLadder( const BSP::Brush* brush );
@@ -105,7 +107,7 @@ namespace oz
 
     public:
 
-      Area area;
+      Span span;
       Hit  hit;
 
       bool test( const Vec3& point, const Object* exclObj = null );
@@ -142,7 +144,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    world.getInters( area, point, AABB::MAX_DIM );
+    world.getInters( span, point, AABB::MAX_DIM );
 
     return testPointWorld();
   }
@@ -152,7 +154,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    world.getInters( area, point, AABB::MAX_DIM );
+    world.getInters( span, point, AABB::MAX_DIM );
 
     return testPointWorldOO();
   }
@@ -162,7 +164,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    world.getInters( area, point, AABB::MAX_DIM );
+    world.getInters( span, point, AABB::MAX_DIM );
 
     return testPointWorldOSO();
   }
@@ -173,7 +175,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( EPSILON );
-    world.getInters( area, trace, AABB::MAX_DIM );
+    world.getInters( span, trace, AABB::MAX_DIM );
 
     return testAABBWorld();
   }
@@ -184,7 +186,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( EPSILON );
-    world.getInters( area, trace, AABB::MAX_DIM );
+    world.getInters( span, trace, AABB::MAX_DIM );
 
     return testAABBWorldOO();
   }
@@ -195,7 +197,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( EPSILON );
-    world.getInters( area, trace, AABB::MAX_DIM );
+    world.getInters( span, trace, AABB::MAX_DIM );
 
     return testAABBWorldOSO();
   }
@@ -209,7 +211,7 @@ namespace oz
     exclObj = null;
 
     trace = aabb.toBounds( eps );
-    world.getInters( area, trace, AABB::MAX_DIM );
+    world.getInters( span, trace, AABB::MAX_DIM );
 
     getWorldOverlaps( objects, structs );
   }
@@ -220,7 +222,7 @@ namespace oz
     exclObj = null;
 
     trace = aabb.toBounds( eps );
-    world.getInters( area, trace, AABB::MAX_DIM );
+    world.getInters( span, trace, AABB::MAX_DIM );
 
     getWorldIncludes( objects );
   }
@@ -231,7 +233,7 @@ namespace oz
     exclObj = null;
 
     trace = aabb.toBounds( eps );
-    world.getInters( area, trace, AABB::MAX_DIM );
+    world.getInters( span, trace, AABB::MAX_DIM );
 
     return touchWorldOverlaps();
   }
@@ -243,7 +245,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace.fromPointMove( point, move, EPSILON );
-    world.getInters( area, trace, AABB::MAX_DIM );
+    world.getInters( span, trace, AABB::MAX_DIM );
 
     trimPointWorld();
   }
@@ -256,7 +258,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( move, EPSILON );
-    world.getInters( area, trace, AABB::MAX_DIM );
+    world.getInters( span, trace, AABB::MAX_DIM );
 
     trimAABBWorld();
   }
@@ -271,7 +273,7 @@ namespace oz
     exclObj = obj;
 
     trace = aabb.toBounds( move, EPSILON );
-    world.getInters( area, trace, AABB::MAX_DIM );
+    world.getInters( span, trace, AABB::MAX_DIM );
 
     trimAABBWorld();
   }

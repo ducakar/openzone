@@ -16,7 +16,7 @@ namespace oz
   // EPSILON / 2
   const float EPSILON_2 = 0.00048828125f;
 
-  struct Area
+  struct Span
   {
     int minX;
     int maxX;

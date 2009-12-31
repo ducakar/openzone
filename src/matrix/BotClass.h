@@ -40,7 +40,8 @@ namespace oz
 
     float  stepInc;
     float  stepMax;
-    float  stepRate;
+    float  stepRateLimit;
+    float  stepRateCoeff;
     float  stepRateSupp;
 
     float  airControl;

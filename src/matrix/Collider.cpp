@@ -129,8 +129,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -166,8 +166,8 @@ namespace oz
       return false;
     }
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         const Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
@@ -191,8 +191,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -246,6 +246,7 @@ namespace oz
         hit.ratio    = ratio;
         hit.normal   = quad.tri[0].normal;
         hit.obj      = null;
+        hit.str      = null;
         hit.material = Material::TERRAIN_BIT;
 
         return false;
@@ -269,6 +270,7 @@ namespace oz
         hit.ratio    = ratio;
         hit.normal   = quad.tri[1].normal;
         hit.obj      = null;
+        hit.str      = null;
         hit.material = Material::TERRAIN_BIT;
 
         return false;
@@ -289,11 +291,11 @@ namespace oz
     float maxPosX = max( globalStartPos.x, globalEndPos.x );
     float maxPosY = max( globalStartPos.y, globalEndPos.y );
 
-    Area area;
-    world.terra.getInters( area, minPosX, minPosY, maxPosX, maxPosY );
+    Span terraSpan;
+    world.terra.getInters( terraSpan, minPosX, minPosY, maxPosX, maxPosY );
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = terraSpan.minX; x <= terraSpan.maxX; x++ ) {
+      for( int y = terraSpan.minY; y <= terraSpan.maxY; y++ ) {
         trimTerraQuad( x, y );
       }
     }
@@ -316,6 +318,7 @@ namespace oz
           hit.ratio    = ratio;
           hit.normal   = normal;
           hit.obj      = null;
+          hit.str      = null;
           hit.material = Material::VOID_BIT;
         }
       }
@@ -323,7 +326,7 @@ namespace oz
   }
 
   // finds out if Point-AABB collision occurs and the time when it occurs
-  void Collider::trimPointObj( Object* sObj )
+  void Collider::trimPointObj( const Object* sObj )
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
@@ -357,6 +360,7 @@ namespace oz
       hit.ratio    = max( 0.0f, minRatio );
       hit.normal   = *tmpNormal;
       hit.obj      = sObj;
+      hit.str      = null;
       hit.material = Material::OBJECT_BIT;
     }
   }
@@ -398,6 +402,7 @@ namespace oz
         hit.ratio    = max( 0.0f, newRatio );
         hit.normal   = toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
+        hit.str      = str;
         hit.material = brush->material;
       }
     }
@@ -450,6 +455,7 @@ namespace oz
   {
     hit.ratio    = 1.0f;
     hit.obj      = null;
+    hit.str      = null;
     hit.material = 0;
 
     globalStartPos = point;
@@ -461,8 +467,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -572,8 +578,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -610,8 +616,8 @@ namespace oz
       return false;
     }
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
@@ -635,8 +641,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -683,6 +689,7 @@ namespace oz
           hit.ratio    = ratio;
           hit.normal   = normal;
           hit.obj      = null;
+          hit.str      = null;
           hit.material = Material::VOID_BIT;
         }
       }
@@ -690,7 +697,7 @@ namespace oz
   }
 
   // finds out if AABB-AABB collision occurs and the time when it occurs
-  void Collider::trimAABBObj( Object* sObj )
+  void Collider::trimAABBObj( const Object* sObj )
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
@@ -724,6 +731,7 @@ namespace oz
       hit.ratio    = max( 0.0f, minRatio );
       hit.normal   = *tmpNormal;
       hit.obj      = sObj;
+      hit.str      = null;
       hit.material = Material::OBJECT_BIT;
     }
   }
@@ -770,6 +778,7 @@ namespace oz
         hit.ratio    = max( 0.0f, newRatio );
         hit.normal   = toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
+        hit.str      = str;
         hit.material = brush->material;
       }
     }
@@ -885,9 +894,10 @@ namespace oz
   void Collider::trimAABBWorld()
   {
     hit.ratio      = 1.0f;
+    hit.obj        = null;
+    hit.str        = null;
     hit.material   = 0;
     hit.waterDepth = 0.0f;
-    hit.obj        = null;
     hit.inWater    = false;
     hit.onLadder   = false;
 
@@ -900,8 +910,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -948,8 +958,8 @@ namespace oz
   {
     assert( objects != null || structs != null );
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         if( structs != null ) {
@@ -984,8 +994,8 @@ namespace oz
   {
     assert( objects != null );
 
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
@@ -999,8 +1009,8 @@ namespace oz
 
   void Collider::touchWorldOverlaps() const
   {
-    for( int x = area.minX; x <= area.maxX; x++ ) {
-      for( int y = area.minY; y <= area.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int y = span.minY; y <= span.maxY; y++ ) {
         Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
