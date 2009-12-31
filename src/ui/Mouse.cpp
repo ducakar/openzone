@@ -88,16 +88,6 @@ namespace ui
     centerY = maxY_ / 2;
   }
 
-  void Mouse::show()
-  {
-    doShow = true;
-  }
-
-  void Mouse::hide()
-  {
-    doShow = false;
-  }
-
   void Mouse::prepare()
   {
     relX = 0;

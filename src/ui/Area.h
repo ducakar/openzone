@@ -21,15 +21,17 @@ namespace ui
 
   struct Area
   {
-    friend class DList<Area>;
-    friend class UI;
+    friend struct DList<Area>;
+    friend struct UI;
 
     protected:
 
       static const SDL_Color SDL_COLOR_WHITE;
 
-      Area*  prev[1];
-      Area*  next[1];
+      static Vector<Area*> updateAreas;
+
+      Area* prev[1];
+      Area* next[1];
 
       TTF_Font* currentFont;
       SDL_Color fontColor;
@@ -38,7 +40,16 @@ namespace ui
 
     protected:
 
-      static const int GRAB_BIT = 0x00000001;
+      static const int UPDATE_FUNC_BIT = 0x00000001;
+      // if onUpdate should be called
+      static const int UPDATE_BIT      = 0x00000002;
+      // ignore when passing events
+      static const int IGNORE_BIT      = 0x00000004;
+      // a child with GRAB_BIT get exclusive focus for events
+      static const int GRAB_BIT        = 0x00000008;
+      // do not draw
+      static const int HIDDEN_BIT      = 0x00000010;
+      // element has onUpdate handler implemented
 
       // absolute x and y, not relative to parent
       int x;
@@ -91,21 +102,26 @@ namespace ui
         }
       }
 
-      void checkMouse();
+      // return true if event has been caught
+      bool passMouseEvents();
+
+      static void update();
 
       void drawChildren()
       {
         // render in opposite order; last added child (the first one in the list) should be rendered
         // last
         for( Area* child = children.last(); child != null; child = child->prev[0] ) {
-          child->onDraw();
+          if( ~child->flags & HIDDEN_BIT ) {
+            child->onDraw();
+          }
         }
       }
 
-      virtual void onMouseEvent();
+      // return true if event has been caught
+      virtual bool onMouseEvent();
+      virtual void onUpdate();
       virtual void onDraw();
-
-    public:
 
       explicit Area( int width_, int height_ ) :
         currentFont( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ), flags( 0 ),
@@ -118,6 +134,8 @@ namespace ui
       {}
 
       virtual ~Area();
+
+    public:
 
       void add( Area* area, int relativeX, int relativeY )
       {
@@ -134,6 +152,9 @@ namespace ui
         area->parent = this;
 
         children << area;
+        if( area->flags & UPDATE_FUNC_BIT ) {
+          updateAreas << area;
+        }
       }
 
       void add( Area* area )
@@ -143,6 +164,9 @@ namespace ui
 
       void remove( Area* area )
       {
+        if( area->flags & UPDATE_FUNC_BIT ) {
+          updateAreas.exclude( area );
+        }
         children.remove( area );
         delete area;
       }

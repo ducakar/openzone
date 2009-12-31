@@ -22,6 +22,8 @@ namespace ui
 
   const SDL_Color Area::SDL_COLOR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
+  Vector<Area*> Area::updateAreas;
+
   Area::~Area()
   {
     children.free();
@@ -64,10 +66,10 @@ namespace ui
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
     glBegin( GL_LINE_LOOP );
-      glVertex2f( x         + 0.5f, y          + 0.5f );
-      glVertex2f( x + width - 0.5f, y          + 0.5f );
-      glVertex2f( x + width - 0.5f, y + height - 0.5f );
-      glVertex2f( x         + 0.5f, y + height - 0.5f );
+      glVertex2f( float( x         ) + 0.5f, float( y          ) + 0.5f );
+      glVertex2f( float( x + width ) - 0.5f, float( y          ) + 0.5f );
+      glVertex2f( float( x + width ) - 0.5f, float( y + height ) - 0.5f );
+      glVertex2f( float( x         ) + 0.5f, float( y + height ) - 0.5f );
     glEnd();
   }
 
@@ -161,38 +163,51 @@ namespace ui
     SDL_FreeSurface( text );
   }
 
-  void Area::checkMouse()
+  bool Area::passMouseEvents()
   {
-    if( flags & GRAB_BIT ) {
-      onMouseEvent();
-      return;
-    }
     foreach( child, children.iterator() ) {
       if( child->flags & GRAB_BIT ) {
-        child->checkMouse();
-        return;
+        child->onMouseEvent();
+        return true;
       }
     }
     foreach( child, children.iterator() ) {
       if( child->x <= mouse.x && mouse.x < child->x + child->width &&
           child->y <= mouse.y && mouse.y < child->y + child->height )
       {
-        child->checkMouse();
-        // If event is passed to a child, we won't handle in on parent. Of course we assume
+        // If event is passed to a child, we won't handle it on parent. Of course we assume
         // children do not overlap, so event can only be passed to one of them.
-        return;
+        if( ( ~child->flags & IGNORE_BIT ) && child->onMouseEvent() ) {
+          return true;
+        }
       }
     }
-    onMouseEvent();
+    return false;
   }
 
-  void Area::onMouseEvent()
-  {}
+  void Area::update()
+  {
+    for( int i = 0; i < updateAreas.length(); i++ ) {
+      if( updateAreas[i]->flags & UPDATE_BIT ) {
+        assert( updateAreas[i]->flags & UPDATE_FUNC_BIT );
+
+        updateAreas[i]->onUpdate();
+      }
+    }
+  }
+
+  bool Area::onMouseEvent()
+  {
+    return false;
+  }
+
+  void Area::onUpdate()
+  {
+    assert( false );
+  }
 
   void Area::onDraw()
-  {
-    drawChildren();
-  }
+  {}
 
 }
 }

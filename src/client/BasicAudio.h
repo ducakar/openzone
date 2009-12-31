@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  struct BasicAudio : public Audio
+  struct BasicAudio : Audio
   {
     protected:
 
@@ -26,9 +26,13 @@ namespace client
 
     public:
 
+      static Pool<BasicAudio> pool;
+
       static Audio* create( const Object* obj );
 
       void play( const Audio* parent );
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

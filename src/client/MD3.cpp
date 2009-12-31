@@ -155,13 +155,13 @@ namespace client
       fread( vertices, sizeof( MD3Vertex ), mesh->vertices.length(), file );
 
       for( int j = 0; j < mesh->vertices.length(); j++ ) {
-        mesh->vertices[j].p.x = -vertices[j].p[1] / 64.0f;
-        mesh->vertices[j].p.y =  vertices[j].p[0] / 64.0f;
-        mesh->vertices[j].p.z =  vertices[j].p[2] / 64.0f;
+        mesh->vertices[j].p.x = -float( vertices[j].p[1] ) / 64.0f;
+        mesh->vertices[j].p.y =  float( vertices[j].p[0] ) / 64.0f;
+        mesh->vertices[j].p.z =  float( vertices[j].p[2] ) / 64.0f;
 
         // convert from zenith/azimuth coords
-        float azimuth = vertices[j].normal[0] * Math::_2_PI / 255.0f;
-        float zenith  = vertices[j].normal[1] * Math::_2_PI / 255.0f;
+        float azimuth = float( vertices[j].normal[0] ) * Math::_2_PI / 255.0f;
+        float zenith  = float( vertices[j].normal[1] ) * Math::_2_PI / 255.0f;
         float xy      = Math::sin( zenith );
 
         mesh->vertices[j].normal.x = xy * Math::cos( azimuth );

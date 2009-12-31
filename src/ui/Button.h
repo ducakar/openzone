@@ -18,7 +18,7 @@ namespace client
 namespace ui
 {
 
-  struct Button : public Area
+  struct Button : Area
   {
     public:
 
@@ -32,7 +32,7 @@ namespace ui
 
     protected:
 
-      virtual void onMouseEvent();
+      virtual bool onMouseEvent();
       virtual void onDraw();
 
     public:

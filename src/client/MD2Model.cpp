@@ -22,6 +22,8 @@ namespace oz
 namespace client
 {
 
+  Pool<MD2Model, 0, 256> MD2Model::pool;
+
   Model* MD2Model::create( const Object* obj )
   {
     assert( obj->flags & Object::BOT_BIT );

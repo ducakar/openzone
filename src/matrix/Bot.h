@@ -17,7 +17,7 @@ namespace oz
 
   struct Mind;
 
-  struct Bot : public Dynamic
+  struct Bot : Dynamic
   {
     public:
 

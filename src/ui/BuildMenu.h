@@ -18,11 +18,11 @@ namespace client
 namespace ui
 {
 
-  struct BuildMenu : public Frame
+  struct BuildMenu : Frame
   {
     protected:
 
-      virtual void onMouseEvent();
+      virtual bool onMouseEvent();
       virtual void onDraw();
 
     public:

@@ -21,6 +21,8 @@ namespace oz
 namespace client
 {
 
+  Pool<ExplosionModel, 0, 256> ExplosionModel::pool;
+
   Model* ExplosionModel::create( const Object* obj )
   {
     ExplosionModel* model = new ExplosionModel();
@@ -43,7 +45,7 @@ namespace client
 
   void ExplosionModel::draw( const Model* )
   {
-    float millis = timer.millis - startMillis;
+    float millis = float( timer.millis - startMillis );
     float radius = millis * obj->dim.z * 0.006f;
     float alpha  = 1.0f - 0.001f * millis;
     float color[] = { 1.0f, 1.0f, 1.0f, alpha*alpha };

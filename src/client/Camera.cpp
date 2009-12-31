@@ -83,10 +83,33 @@ namespace client
     proxy              = &freeCamProxy;
   }
 
-  void Camera::setState( State state_ )
+  void Camera::update()
   {
-    if( state_ != state ) {
-      state = state_;
+    h -= float( ui::mouse.overEdgeX ) * mouseXSens;
+    v += float( ui::mouse.overEdgeY ) * mouseYSens;
+
+    if( ui::keyboard.keys[SDLK_UP] ) {
+      v += keyXSens * Timer::TICK_TIME;
+    }
+    if( ui::keyboard.keys[SDLK_DOWN] ) {
+      v -= keyXSens * Timer::TICK_TIME;
+    }
+    if( ui::keyboard.keys[SDLK_RIGHT] ) {
+      h -= keyYSens * Timer::TICK_TIME;
+    }
+    if( ui::keyboard.keys[SDLK_LEFT] ) {
+      h += keyYSens * Timer::TICK_TIME;
+    }
+
+    botObj = bot == -1 ? null : static_cast<const Bot*>( world.objects[bot] );
+
+    if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
+      bot = -1;
+      botObj = null;
+    }
+
+    if( newState != state ) {
+      state = newState;
 
       switch( state ) {
         default: {
@@ -107,32 +130,6 @@ namespace client
         }
       }
       proxy->begin();
-    }
-  }
-
-  void Camera::update()
-  {
-    h -= ui::mouse.overEdgeX * mouseXSens;
-    v += ui::mouse.overEdgeY * mouseYSens;
-
-    if( ui::keyboard.keys[SDLK_UP] ) {
-      v += keyXSens * Timer::TICK_TIME;
-    }
-    if( ui::keyboard.keys[SDLK_DOWN] ) {
-      v -= keyXSens * Timer::TICK_TIME;
-    }
-    if( ui::keyboard.keys[SDLK_RIGHT] ) {
-      h -= keyYSens * Timer::TICK_TIME;
-    }
-    if( ui::keyboard.keys[SDLK_LEFT] ) {
-      h += keyYSens * Timer::TICK_TIME;
-    }
-
-    botObj = bot == -1 ? null : static_cast<const Bot*>( world.objects[bot] );
-
-    if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
-      bot = -1;
-      botObj = null;
     }
 
     proxy->update();

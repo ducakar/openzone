@@ -14,8 +14,10 @@
 namespace oz
 {
 
-  struct Structure : public Bounds
+  struct Structure : Bounds
   {
+    friend struct Pool<Structure, 0, 256>;
+
     private:
 
       static const float DAMAGE_THRESHOLD = 400.0f;
@@ -30,11 +32,19 @@ namespace oz
         R270 = 3
       };
 
-      int      index;
-      int      bsp;
-      Vec3     p;
-      Rotation rot;
-      float    life;
+      static Pool<Structure, 0, 256> pool;
+
+    private:
+
+      Structure* next[1];
+
+    public:
+
+      int        index;
+      int        bsp;
+      Vec3       p;
+      Rotation   rot;
+      float      life;
 
       explicit Structure() {}
       explicit Structure( int index, int bsp, const Vec3& p, Rotation rot );
@@ -121,6 +131,8 @@ namespace oz
 
       void readFull( InputStream* istream );
       void writeFull( OutputStream* ostream );
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

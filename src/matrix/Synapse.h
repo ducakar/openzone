@@ -23,7 +23,7 @@ namespace oz
 
   struct Synapse
   {
-    friend class nirvana::Nirvana;
+    friend struct nirvana::Nirvana;
 
     public:
 

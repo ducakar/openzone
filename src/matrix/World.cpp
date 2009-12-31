@@ -24,7 +24,7 @@ namespace oz
 
   const float World::DIM   = Cell::SIZE * World::MAX / 2.0f;
 
-  World::World() : bsps( 128 ), structs( 1024 ), objects( 8192 ), parts( 8192 )
+  World::World() : bsps( 32 ), structs( 128 ), objects( 1024 ), parts( 1024 )
   {}
 
   void World::init()
@@ -72,23 +72,16 @@ namespace oz
       }
     }
 
-    for( int i = 0; i < parts.length(); i++ ) {
-      if( parts[i] != null ) {
-        Particle::pool.free( parts[i] );
-      }
-    }
-    parts.trim( 8192 );
-    Particle::pool.free();
+    parts.free();
+    parts.trim( 1024 );
 
     objects.free();
-    objects.trim( 8192 );
-    Object::Event::pool.free();
+    objects.trim( 1024 );
 
     structs.free();
-    structs.trim( 1024 );
+    structs.trim( 128 );
 
     bsps.free();
-    bsps.trim( 128 );
 
     log.unindent();
     log.println( "}" );

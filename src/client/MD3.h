@@ -58,7 +58,7 @@ namespace client
 
       struct Part
       {
-        friend class MD3;
+        friend struct MD3;
 
         private:
 

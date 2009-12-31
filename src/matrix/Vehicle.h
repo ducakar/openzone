@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  struct Vehicle : public Dynamic
+  struct Vehicle : Dynamic
   {
     public:
 

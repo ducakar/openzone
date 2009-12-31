@@ -20,6 +20,8 @@ namespace oz
 namespace client
 {
 
+  Pool<BasicAudio> BasicAudio::pool;
+
   Audio* BasicAudio::create( const Object* obj )
   {
     return new BasicAudio( obj );
@@ -39,7 +41,7 @@ namespace client
     {
       float dv = Math::sqrt( dyn->velocity.x*dyn->velocity.x +
                              dyn->velocity.y*dyn->velocity.y );
-      playContSound( samples[SND_FRICTING], dv, reinterpret_cast<uint>( &*dyn ), parent->obj );
+      playContSound( samples[SND_FRICTING], dv, uint( &*dyn ), parent->obj );
     }
 
     // events

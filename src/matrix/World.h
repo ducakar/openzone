@@ -39,10 +39,10 @@ namespace oz
     DList<Particle> parts;
   };
 
-  struct World : public Bounds
+  struct World : Bounds
   {
-    friend class Synapse;
-    friend class Physics;
+    friend struct Synapse;
+    friend struct Physics;
 
     public:
 

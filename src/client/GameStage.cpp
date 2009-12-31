@@ -29,6 +29,8 @@ namespace client
 
   bool GameStage::update()
   {
+    camera.update();
+
     // wait until nirvana thread has stopped
     SDL_SemWait( matrix.semaphore );
     assert( SDL_SemValue( matrix.semaphore ) == 0 );
@@ -40,16 +42,8 @@ namespace client
     // clean events and remove destroyed objects
     matrix.cleanObjects();
 
-    if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
-      if( ui::mouse.doShow ) {
-        ui::mouse.hide();
-      }
-      else {
-        ui::mouse.show();
-      }
-    }
-
-    camera.update();
+    // interface
+    ui::ui.update();
 
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
       if( camera.bot == -1 ) {
@@ -72,11 +66,6 @@ namespace client
       world.sky.time += world.sky.period * 0.25f;
     }
     bool doQuit = ui::keyboard.keys[SDLK_ESCAPE];
-
-    if( ui::mouse.doShow ) {
-      // interface
-      ui::ui.update();
-    }
 
     synapse.clearTickets();
 
@@ -116,9 +105,6 @@ namespace client
   {
     log.println( "Loading GameStage {" );
     log.indent();
-
-    matrix.init();
-    nirvana::nirvana.init();
 
     network.connect();
 
@@ -174,6 +160,27 @@ namespace client
     log.printEnd( " OK" );
 
     network.disconnect();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void GameStage::init()
+  {
+    log.println( "Initializing GameStage {" );
+    log.indent();
+
+    matrix.init();
+    nirvana::nirvana.init();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void GameStage::free()
+  {
+    log.println( "Freeing GameStage {" );
+    log.indent();
 
     nirvana::nirvana.free();
     matrix.free();

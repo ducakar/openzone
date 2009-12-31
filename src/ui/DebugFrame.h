@@ -1,5 +1,5 @@
 /*
- *  DebugArea.h
+ *  DebugFrame.h
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Area.h"
+#include "Frame.h"
 
 namespace oz
 {
@@ -18,7 +18,7 @@ namespace client
 namespace ui
 {
 
-  struct DebugArea : public Area
+  struct DebugFrame : Frame
   {
     protected:
 
@@ -26,11 +26,7 @@ namespace ui
 
     public:
 
-      explicit DebugArea() : Area( 5, -15 - 6 * font.monoHeight, 480, 10 + 6 * font.monoHeight )
-      {
-        setFont( MONO );
-        setFontColor( 0xff, 0xff, 0xff );
-      }
+      explicit DebugFrame();
 
   };
 

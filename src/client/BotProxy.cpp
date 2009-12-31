@@ -41,6 +41,10 @@ namespace client
 
     Bot* bot = static_cast<Bot*>( world.objects[camera.bot] );
 
+    if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
+      ui::mouse.doShow = !ui::mouse.doShow;
+    }
+
     /*
      * Camera
      */

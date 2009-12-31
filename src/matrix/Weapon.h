@@ -15,7 +15,7 @@
 namespace oz
 {
 
-  struct Weapon : public Dynamic
+  struct Weapon : Dynamic
   {
     protected:
 

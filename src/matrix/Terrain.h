@@ -21,7 +21,7 @@ namespace oz
 
   struct Terrain
   {
-    friend class client::Terrain;
+    friend struct client::Terrain;
 
     public:
 
@@ -71,7 +71,7 @@ namespace oz
       void  getInters( Area& area, float minX, float minY, float maxX, float maxY,
                        float epsilon = 0.0f ) const;
       // indices of TerraQuad and index of the triangle inside the TerraQuad
-      void  getIndices( Area& area, float x, float y ) const;
+      Pair<int> getIndices( float x, float y ) const;
       float height( float x, float y ) const;
 
   };
@@ -85,29 +85,25 @@ namespace oz
     area.maxY = min( int( ( maxPosY + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 );
   }
 
-  inline void Terrain::getIndices( Area& area, float x, float y ) const
+  inline Pair<int> Terrain::getIndices( float x, float y ) const
   {
-    area.minX = int( ( x + DIM ) * Quad::INV_SIZE );
-    area.minY = int( ( y + DIM ) * Quad::INV_SIZE );
+    int ix = int( ( x + DIM ) * Quad::INV_SIZE );
+    int iy = int( ( y + DIM ) * Quad::INV_SIZE );
 
-    area.minX = bound( area.minX, 0, QUADS - 1 );
-    area.minY = bound( area.minY, 0, QUADS - 1 );
+    return Pair<int>( bound( ix, 0, QUADS - 1 ), bound( iy, 0, QUADS - 1 ) );
   }
 
   inline float Terrain::height( float x, float y ) const
   {
-    Area area;
-    getIndices( area, x, y );
+    Pair<int> i = getIndices( x, y );
 
     float intraX = Math::mod( x + DIM, Quad::SIZE );
     float intraY = Math::mod( y + DIM, Quad::SIZE );
     int   ii = intraX <= intraY;
 
     return
-        ( quads[area.minX][area.minY].tri[ii].distance -
-            quads[area.minX][area.minY].tri[ii].normal.x * x -
-            quads[area.minX][area.minY].tri[ii].normal.y * y ) /
-            quads[area.minX][area.minY].tri[ii].normal.z;
+        ( quads[i.x][i.y].tri[ii].distance - quads[i.x][i.y].tri[ii].normal.x * x -
+            quads[i.x][i.y].tri[ii].normal.y * y ) / quads[i.x][i.y].tri[ii].normal.z;
   }
 
 }

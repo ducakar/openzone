@@ -11,8 +11,10 @@
 
 #include "Matrix.h"
 
+#include "Names.h"
 #include "Lua.h"
 #include "Physics.h"
+#include "Vehicle.h"
 #include "FloraManager.h"
 
 namespace oz
@@ -113,7 +115,7 @@ namespace oz
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 38 ) );
     synapse.addObject( "MetalBarrel", Vec3( 61, -44, 40 ) );
 
-    synapse.addObject( "Tree3", Vec3( 77.7, -40, world.terra.height( 78, -40 ) + 6.5f ) );
+    synapse.addObject( "Tree3", Vec3( 77.7f, -40.0f, world.terra.height( 78.0f, -40.0f ) + 6.5f ) );
 
     synapse.addObject( "SmallCrate", Vec3( 51, -42, 36 ) );
     synapse.addObject( "SmallCrate", Vec3( 51, -42, 37 ) );
@@ -153,6 +155,7 @@ namespace oz
     semaphore = SDL_CreateSemaphore( 0 );
 
     translator.init();
+    names.init();
     lua.init();
     world.init();
 
@@ -167,6 +170,7 @@ namespace oz
 
     world.free();
     lua.free();
+    names.free();
     translator.free();
 
     SDL_DestroySemaphore( semaphore );
@@ -205,6 +209,17 @@ namespace oz
       world.write( ostream );
     }
     world.unload();
+
+    Particle::pool.free();
+
+    Object::Event::pool.free();
+    Object::pool.free();
+    Dynamic::pool.free();
+    Weapon::pool.free();
+    Bot::pool.free();
+    Vehicle::pool.free();
+
+    Structure::pool.free();
 
     log.unindent();
     log.println( "}" );

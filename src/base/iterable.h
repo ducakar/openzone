@@ -112,7 +112,7 @@ namespace oz
    * Pointer iterator
    */
   template <class Type>
-  struct Iterator : public IteratorBase<Type>
+  struct Iterator : IteratorBase<Type>
   {
     private:
 

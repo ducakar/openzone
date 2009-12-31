@@ -18,6 +18,8 @@ namespace oz
 namespace client
 {
 
+  Pool<MD3StaticModel, 0, 256> MD3StaticModel::pool;
+
   Model* MD3StaticModel::create( const Object* obj )
   {
     MD3StaticModel* model = new MD3StaticModel();

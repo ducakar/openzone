@@ -18,9 +18,9 @@ namespace client
 namespace ui
 {
 
-  struct HudArea : public Area
+  struct HudArea : Area
   {
-    friend class UI;
+    friend struct UI;
 
     private:
 
@@ -53,7 +53,7 @@ namespace ui
 
     public:
 
-      explicit HudArea( int width, int height );
+      explicit HudArea();
       virtual ~HudArea();
 
   };

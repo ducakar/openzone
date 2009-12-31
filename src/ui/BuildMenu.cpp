@@ -81,7 +81,7 @@ namespace ui
     }
   }
 
-  BuildMenu::BuildMenu() : Frame( 100, 250 )
+  BuildMenu::BuildMenu() : Frame( -105, -255, 100, 250 )
   {
     setFont( TITLE );
     setFontColor( 0xff, 0xff, 0xff );
@@ -105,24 +105,20 @@ namespace ui
     add( new Button( "DESTROY", destroy, 90, 15 ), 5, 5 );
   }
 
-  void BuildMenu::onMouseEvent()
+  bool BuildMenu::onMouseEvent()
   {
-    if( !mouse.doShow ) {
-      return;
+    if( mouse.doShow ) {
+      return Frame::onMouseEvent();
     }
-
-    Frame::onMouseEvent();
+    return false;
   }
 
   void BuildMenu::onDraw()
   {
-    if( !mouse.doShow ) {
-      return;
+    if( mouse.doShow ) {
+      Frame::onDraw();
+      printCentered( 50, -10, "Create" );
     }
-
-    Frame::onDraw();
-
-    printCentered( 50, -10, "Create" );
   }
 
 }

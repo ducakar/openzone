@@ -16,21 +16,11 @@ namespace oz
 
   struct Cell;
   struct Hit;
-  struct Dynamic;
-  struct Weapon;
   struct Bot;
-  struct Vehicle;
 
   // static object abstract class
-  struct Object : public AABB
+  struct Object : AABB
   {
-    friend class Pool<Object>;
-    friend class Pool<Dynamic>;
-    friend class Pool<Weapon>;
-    friend class Pool<Bot>;
-    friend class Pool<Vehicle>;
-    friend class DList<Object>;
-
     /*
      * Here various flag bits are set; the higher bits are used for flags that are internal flags
      * and should only be hardcoded in the engine and cannot be set in object class's configuration
@@ -209,14 +199,10 @@ namespace oz
        * FIELDS
        */
 
-    private:
-
       Object*            prev[1];     // the previous object in cell.objects and list
       Object*            next[1];     // the next object in cell.objects and list
 
-    public:
-
-      int                index;        // position in world.objects vector
+      int                index;       // position in world.objects vector
       Cell*              cell;        // parent cell, null if not positioned in the world
 
       int                flags;

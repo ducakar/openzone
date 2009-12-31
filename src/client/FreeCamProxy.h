@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  struct FreeCamProxy : public Proxy
+  struct FreeCamProxy : Proxy
   {
     private:
 

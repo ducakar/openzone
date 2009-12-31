@@ -20,8 +20,8 @@ namespace oz
 
   struct Particle
   {
-    friend class Pool<Particle>;
-    friend class DList<Particle>;
+    friend struct DList<Particle>;
+    friend struct Pool<Particle>;
 
     private:
 

@@ -16,6 +16,8 @@
 namespace oz
 {
 
+  Pool<Structure, 0, 256> Structure::pool;
+
   Structure::Structure( int index_, int bsp_, const Vec3& p_, Rotation rot_ ) :
       index( index_ ), bsp( bsp_ ), p( p_ ), rot( rot_ ), life( world.bsps[bsp]->life )
   {}
@@ -42,7 +44,7 @@ namespace oz
   void Structure::writeFull( OutputStream* ostream )
   {
     ostream->writeVec3( p );
-    ostream->writeByte( int( rot ) );
+    ostream->writeByte( byte( rot ) );
     ostream->writeFloat( life );
   }
 

@@ -53,7 +53,7 @@ namespace oz
       /**
        * DList iterator.
        */
-      struct Iterator : public IteratorBase<Type>
+      struct Iterator : IteratorBase<Type>
       {
         private:
 
@@ -122,7 +122,7 @@ namespace oz
        */
       DList( const DList& l ) : firstElem( null ), lastElem( null )
       {
-        foreach( e, l.iterator() ) {
+        foreach( e, Iterator( l ) ) {
           pushFirst( new Type( *e ) );
         }
       }
@@ -491,7 +491,9 @@ namespace oz
           firstElem->prev[INDEX] = l.lastElem;
           firstElem = l.firstElem;
         }
-        l.clear();
+
+        firstElem = null;
+        lastElem = null;
       }
 
       /**

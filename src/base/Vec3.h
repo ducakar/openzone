@@ -26,9 +26,9 @@ namespace oz
     explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
     {}
 
-    explicit Vec3( float* v )
+    explicit Vec3( const float* v )
     {
-      *this = *reinterpret_cast<Vec3*>( v );
+      *this = *reinterpret_cast<const Vec3*>( v );
     }
 
     static Vec3 zero()
@@ -48,11 +48,15 @@ namespace oz
 
     float& operator [] ( int i )
     {
+      assert( 0 <= i && i < 3 );
+
       return reinterpret_cast<float*>( this )[i];
     }
 
     const float& operator [] ( int i ) const
     {
+      assert( 0 <= i && i < 3 );
+
       return reinterpret_cast<const float*>( this )[i];
     }
 
@@ -62,16 +66,6 @@ namespace oz
           Math::abs( x - a.x ) <= epsilon &&
           Math::abs( y - a.y ) <= epsilon &&
           Math::abs( z - a.z ) <= epsilon;
-    }
-
-    Vec3 operator + () const
-    {
-      return *this;
-    }
-
-    Vec3 operator - () const
-    {
-      return Vec3( -x, -y, -z );
     }
 
     // length
@@ -91,7 +85,7 @@ namespace oz
       return x == 0.0f && y == 0.0f && z == 0.0f;
     }
 
-    Vec3& setZero()
+    const Vec3& setZero()
     {
       x = 0.0f;
       y = 0.0f;
@@ -112,7 +106,7 @@ namespace oz
       return Vec3( x * r, y * r, z * r );
     }
 
-    Vec3& norm()
+    const Vec3& norm()
     {
       assert( x*x + y*y + z*z > 0.0f );
 
@@ -141,6 +135,16 @@ namespace oz
       return Math::abs( p1 - p2 ) <= epsilon && Math::abs( p1 - p3 ) <= epsilon;
     }
 
+    const Vec3& operator + () const
+    {
+      return *this;
+    }
+
+    Vec3 operator - () const
+    {
+      return Vec3( -x, -y, -z );
+    }
+
     Vec3& operator += ( const Vec3& a )
     {
       x += a.x;
@@ -149,7 +153,7 @@ namespace oz
       return *this;
     }
 
-    Vec3& operator -= ( const Vec3& a )
+    const Vec3& operator -= ( const Vec3& a )
     {
       x -= a.x;
       y -= a.y;
@@ -157,7 +161,7 @@ namespace oz
       return *this;
     }
 
-    Vec3& operator *= ( float k )
+    const Vec3& operator *= ( float k )
     {
       x *= k;
       y *= k;
@@ -165,7 +169,7 @@ namespace oz
       return *this;
     }
 
-    Vec3& operator /= ( float k )
+    const Vec3& operator /= ( float k )
     {
       assert( k != 0.0f );
 
@@ -242,7 +246,6 @@ namespace oz
           a.y * ( b.x * c.z - b.z * c.x ) +
           a.z * ( b.x * c.y - b.y * c.x );
     }
-
   };
 
 }

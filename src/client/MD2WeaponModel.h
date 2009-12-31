@@ -16,13 +16,17 @@ namespace oz
 namespace client
 {
 
-  struct MD2WeaponModel : public MD2Model
+  struct MD2WeaponModel : MD2Model
   {
     public:
+
+      static Pool<MD2WeaponModel, 0, 256> pool;
 
       static Model* create( const Object* obj );
 
       virtual void draw( const Model* parent );
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 

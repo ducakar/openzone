@@ -23,7 +23,7 @@ namespace oz
       /**
        * Sparse iterator.
        */
-      struct Iterator : public oz::Iterator<Type>
+      struct Iterator : oz::Iterator<Type>
       {
         private:
 
@@ -258,7 +258,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        for( int i = 0; i < capacity; i++ ) {
+        for( int i = 0; i < size; i++ ) {
           if( data[i].nextSlot == -1 && data[i] == e ) {
             return true;
           }
@@ -295,7 +295,7 @@ namespace oz
        */
       int index( const Type& e ) const
       {
-        for( int i = 0; i < capacity; i++ ) {
+        for( int i = 0; i < size; i++ ) {
           if( data[i].nextSlot == -1 && data[i] == e ) {
             return i;
           }
@@ -324,7 +324,16 @@ namespace oz
        */
       int operator << ( const Type& e )
       {
-        return add( e );
+        ensureCapacity();
+
+        int index = freeSlot;
+
+        freeSlot = data[index].nextSlot;
+        data[index] = e;
+        data[index].nextSlot = -1;
+        count++;
+
+        return index;
       }
 
       /**

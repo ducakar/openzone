@@ -68,7 +68,7 @@ namespace client
       Vector<const Particle*>  particles;
 
       Vector<const Structure*> waterStructures;
-      HashIndex<Model*, 1021>  models;
+      HashIndex<Model*, 4093>  models;
 
       float                    dayVisibility;
       float                    nightVisibility;

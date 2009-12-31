@@ -27,7 +27,7 @@ namespace ui
 
   struct Font
   {
-    friend class Area;
+    friend struct Area;
 
     friend void init( int screenX, int screenY );
     friend void free();

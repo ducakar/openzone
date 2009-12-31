@@ -45,6 +45,7 @@ namespace client
     }
     if( initFlags & INIT_GAME_INIT ) {
       stage->unload();
+      stage->free();
     }
     if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
@@ -60,11 +61,11 @@ namespace client
 #ifdef OZ_ALLOC_STATISTICS
     log.println( "Heap usage summary {" );
     log.println( "  current chunks     %d", Alloc::count  );
-    log.println( "  current amount     %.2f MiB", Alloc::amount / ( 1024.0f * 1024.0f ) );
+    log.println( "  current amount     %.2f MiB", float( Alloc::amount ) / ( 1024.0f * 1024.0f ) );
     log.println( "  cumulative chunks  %d", Alloc::sumCount );
-    log.println( "  cumulative amount  %.2f MiB", Alloc::sumAmount / ( 1024.0f * 1024.0f ) );
+    log.println( "  cumulative amount  %.2f MiB", float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ) );
     log.println( "  maximum chunks     %d", Alloc::maxCount );
-    log.println( "  maximum amount     %.2f MiB", Alloc::maxAmount / ( 1024.0f * 1024.0f ) );
+    log.println( "  maximum amount     %.2f MiB", float( Alloc::maxAmount ) / ( 1024.0f * 1024.0f ) );
     log.println( "}" );
 #endif
 
@@ -137,7 +138,7 @@ namespace client
       log.println( "Random generator seed set to current time: %d", seed );
     }
     else {
-      uint seed = config.get( "seed", 42 );
+      uint seed = config.getSet( "seed", 42 );
       Math::seed( seed );
       log.println( "Random generator seed set to: %d", seed );
     }
@@ -218,6 +219,7 @@ namespace client
 
     stage = &gameStage;
 
+    stage->init();
     stage->load();
     initFlags |= INIT_GAME_INIT;
 
@@ -276,12 +278,12 @@ namespace client
             break;
           }
           case SDL_MOUSEBUTTONUP: {
-            ui::mouse.currButtons &= ~SDL_BUTTON( event.button.button );
+            ui::mouse.currButtons &= ubyte( ~SDL_BUTTON( event.button.button ) );
             break;
           }
           case SDL_MOUSEBUTTONDOWN: {
-            ui::mouse.buttons |= SDL_BUTTON( event.button.button );
-            ui::mouse.currButtons |= SDL_BUTTON( event.button.button );
+            ui::mouse.buttons |= ubyte( SDL_BUTTON( event.button.button ) );
+            ui::mouse.currButtons |= ubyte( SDL_BUTTON( event.button.button ) );
             break;
           }
           case SDL_ACTIVEEVENT: {
@@ -361,15 +363,15 @@ namespace client
     log.println( "STATISTICS {" );
     log.indent();
     log.println( "Ticks: %d (%.2f Hz)", timer.millis / Timer::TICK_MILLIS, 1000.0f / Timer::TICK_MILLIS );
-    log.println( "Frames: %d (%.2f Hz)", timer.nFrames, timer.nFrames / timer.time );
+    log.println( "Frames: %d (%.2f Hz)", timer.nFrames, float( timer.nFrames ) / timer.time );
     log.println( "Time usage:" );
-    log.println( "    %.4g s\t%.1f%%\tall time", allTimeSec, 100.0f );
-    log.println( "    %.4g s\t%.1f%%\tsystem + simulation + basic sound update",
+    log.println( "   %.4g s\t%.1f%%\tall time", allTimeSec, 100.0f );
+    log.println( "   %.4g s\t%.1f%%\tsystem + simulation + basic sound update",
                  gameTimeSec, gameTimeSec / allTimeSec * 100.0f );
-    log.println( "    %.4g s\t%.1f%%\trender + advanced sound update",
+    log.println( "   %.4g s\t%.1f%%\trender + advanced sound update",
                  renderTimeSec, renderTimeSec / allTimeSec * 100.0f );
-    log.println( "    %.4g s\t%.1f%%\tsleep", sleepTimeSec, sleepTimeSec / allTimeSec * 100.0f );
-    log.println( "    %.4g s\t%.1f%%\t[own thread] artificial intelligence",
+    log.println( "   %.4g s\t%.1f%%\tsleep", sleepTimeSec, sleepTimeSec / allTimeSec * 100.0f );
+    log.println( "   %.4g s\t%.1f%%\t[own thread] artificial intelligence",
                  nirvanaTimeSec, nirvanaTimeSec / allTimeSec * 100.0f );
     log.unindent();
     log.println( "}" );

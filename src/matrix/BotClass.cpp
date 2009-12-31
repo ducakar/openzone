@@ -11,6 +11,7 @@
 
 #include "BotClass.h"
 
+#include "Names.h"
 #include "Synapse.h"
 
 #define OZ_CLASS_SET_STATE( stateBit, varName, defValue ) \
@@ -138,8 +139,8 @@ namespace oz
     for( int i = 0; i < INVENTORY_ITEMS; i++ ) {
       assert( 0 <= i && i < 100 );
 
-      buffer[ sizeof( buffer ) - 3 ] = '0' + ( i / 10 );
-      buffer[ sizeof( buffer ) - 2 ] = '0' + ( i % 10 );
+      buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
+      buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
 
       String itemName = config->get( buffer, "" );
       if( !itemName.isEmpty() ) {
@@ -180,6 +181,8 @@ namespace oz
     obj->state    = state;
     obj->oldState = state;
     obj->stamina  = stamina;
+
+    obj->name     = names.genName();
 
     for( int i = 0; i < inventoryItems.length(); i++ ) {
       int index = synapse.addObject( inventoryItems[i], Vec3::zero() );

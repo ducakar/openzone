@@ -20,8 +20,11 @@ namespace client
 namespace ui
 {
 
-  void Frame::onMouseEvent()
+  bool Frame::onMouseEvent()
   {
+    if( ( ~flags & GRAB_BIT ) && passMouseEvents() ) {
+      return true;
+    }
     if( mouse.buttons & SDL_BUTTON_LMASK ) {
       if( mouse.leftClick ) {
         flags |= GRAB_BIT;
@@ -34,6 +37,7 @@ namespace ui
     else {
       flags &= ~GRAB_BIT;
     }
+    return true;
   }
 
   void Frame::onDraw()

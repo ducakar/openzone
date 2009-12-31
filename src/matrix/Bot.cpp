@@ -634,14 +634,15 @@ namespace oz
     grabHandle   = istream->readFloat();
 
     stepRate     = istream->readFloat();
-    anim         = AnimEnum( istream->readInt() );
 
     int nItems = istream->readInt();
     for( int i = 0; i < nItems; i++ ) {
       items << istream->readInt();
     }
-
     weaponItem   = istream->readInt();
+
+    anim         = AnimEnum( istream->readInt() );
+    istream->readString( name );
 
     const BotClass* clazz = static_cast<const BotClass*>( type );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
@@ -663,14 +664,15 @@ namespace oz
     ostream->writeFloat( grabHandle );
 
     ostream->writeFloat( stepRate );
-    ostream->writeInt( anim );
 
     ostream->writeInt( items.length() );
     foreach( item, items.iterator() ) {
       ostream->writeInt( *item );
     }
-
     ostream->writeInt( weaponItem );
+
+    ostream->writeInt( anim );
+    ostream->writeString( name );
   }
 
   void Bot::readUpdate( InputStream* istream )

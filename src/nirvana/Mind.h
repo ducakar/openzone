@@ -18,7 +18,7 @@ namespace nirvana
 
   struct Mind
   {
-    friend class DList<Mind>;
+    friend struct DList<Mind>;
 
     public:
 

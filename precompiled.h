@@ -11,5 +11,10 @@
 
 #include "src/base/base.h"
 
+// we want to use C++ wrapped C headers, not vanilla ones that are included via SDL
+#include <cstdarg>
+#include <cstdlib>
+#include <cstdio>
+#include <cctype>
 // include SDL as it is commonly used
 #include <SDL.h>

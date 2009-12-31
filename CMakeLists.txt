@@ -11,9 +11,9 @@ option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Ot
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 
 # compiler and linker flags
-set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wdisabled-optimization" )
-set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor" ) 
-set( flags "-fno-rtti -fmessage-length=0 -pipe" )
+set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wconversion -Wdisabled-optimization" )
+set( warnings "${warnings} -Wredundant-decls -Woverloaded-virtual -Wnon-virtual-dtor" )
+set( flags "-fmessage-length=0 -pipe" )
 set( libs "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
 set( arch_flags "-march=i686 -mtune=generic -mmmx -msse -mfpmath=sse" )
 
@@ -44,7 +44,7 @@ else()
     set( CMAKE_EXE_LINKER_FLAGS "${libs}" )
 endif()
 
-set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING ""  )
+set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fomit-frame-pointer -ffast-math ${arch_flags}" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -fomit-frame-pointer -ffast-math ${arch_flags}" CACHE STRING "" FORCE )
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )

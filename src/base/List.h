@@ -18,7 +18,7 @@ namespace oz
    *
    * It can only be applied on classes that have <code>next[]</code> member.
    * Example:
-   * <pre>class C
+   * <pre>struct C
    * {
    *   C* next[2];
    *   int value;
@@ -47,7 +47,7 @@ namespace oz
       /**
        * List iterator.
        */
-      struct Iterator : public IteratorBase<Type>
+      struct Iterator : IteratorBase<Type>
       {
         private:
 
@@ -114,7 +114,7 @@ namespace oz
        */
       List( const List& l ) : firstElem( null )
       {
-        foreach( e, l.iterator() ) {
+        foreach( e, Iterator( l ) ) {
           pushFirst( new Type( *e ) );
         }
       }
@@ -378,7 +378,7 @@ namespace oz
         l.last()->next[INDEX] = firstElem;
         firstElem = l.firstElem;
 
-        l.clear();
+        firstElem = null;
       }
 
       /**

@@ -2,8 +2,6 @@
  *  HashString.h
  *
  *  Chaining hashtable implementation with String key type
- *  A prime number is recommended as hashtable size. You can find a list of millions of primes at
- *  http://www.bigprimes.net/.
  *
  *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
@@ -14,7 +12,7 @@
 namespace oz
 {
 
-  template <class Type, int SIZE = 1021>
+  template <class Type, int SIZE = 256>
   struct HashString
   {
     private:
@@ -36,7 +34,7 @@ namespace oz
           next[0] = next_;
         }
 
-        OZ_PLACEMENT_POOL_ALLOC( Elem, 0 );
+        OZ_PLACEMENT_POOL_ALLOC( Elem, 0, SIZE );
       };
 
     public:
@@ -44,7 +42,7 @@ namespace oz
       /**
        * HashString iterator.
        */
-      struct Iterator : public IteratorBase<Elem>
+      struct Iterator : IteratorBase<Elem>
       {
         private:
 
@@ -185,11 +183,11 @@ namespace oz
 
     private:
 
-      Pool<Elem>    pool;
-      Elem*         data[SIZE];
+      Pool<Elem, 0, SIZE> pool;
+      Elem*               data[SIZE];
+      int                 count;
       // we cache found element since we often want its value after a search
-      mutable Elem* cached;
-      int           count;
+      mutable Elem*       cached;
 
       /**
        * @param chainA
@@ -259,7 +257,7 @@ namespace oz
       /**
        * Constructor.
        */
-      explicit HashString() : cached( null ), count( 0 )
+      explicit HashString() : count( 0 ), cached( null )
       {
         for( int i = 0; i < SIZE; i++ ) {
           data[i] = null;
@@ -270,7 +268,7 @@ namespace oz
        * Copy constructor.
        * @param t
        */
-      HashString( const HashString& t ) : cached( t.cached ), count( t.count )
+      HashString( const HashString& t ) : count( t.count ), cached( t.cached )
       {
         for( int i = 0; i < SIZE; i++ ) {
           data[i] = copyChain( t.data[i] );
@@ -283,6 +281,8 @@ namespace oz
       ~HashString()
       {
         assert( count == 0 );
+
+        pool.free();
       }
 
       /**
@@ -362,6 +362,14 @@ namespace oz
       int capacity() const
       {
         return SIZE;
+      }
+
+      /**
+       * @return load factor of hashtable (number of elements / capacity)
+       */
+      float loadFactor() const
+      {
+        return float( count ) / float( SIZE );
       }
 
       /**
@@ -482,7 +490,7 @@ namespace oz
       }
 
       /**
-       * Add new element. The key must not yet exist in this HashIndex.
+       * Add new element. The key must not yet exist in this HashString.
        * This function caches the added element.
        * @param key
        * @param value
@@ -497,10 +505,12 @@ namespace oz
         data[i] = elem;
         cached = elem;
         count++;
+
+        assert( loadFactor() < 0.75f );
       }
 
       /**
-       * Add new element. The key must not yet exist in this HashIndex.
+       * Add new element. The key must not yet exist in this HashString.
        * This function caches the added element.
        * @param key
        * @param value

@@ -63,13 +63,13 @@ namespace client
       /*
        * SFX
        */
-      List<Source>          sources;
-      HashIndex<ContSource> contSources;
+      List<Source> sources;
+      HashIndex<ContSource, 512> contSources;
 
       int  sourceClearCount;
       int  fullClearCount;
 
-      HashIndex<Audio*>     audios;
+      HashIndex<Audio*, 1021> audios;
 
       void playCell( int cellX, int cellY );
 

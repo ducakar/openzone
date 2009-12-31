@@ -21,7 +21,7 @@ namespace oz
       /**
        * Array iterator.
        */
-      struct Iterator : public oz::Iterator<Type>
+      struct Iterator : oz::Iterator<Type>
       {
         private:
 

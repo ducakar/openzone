@@ -116,7 +116,7 @@ namespace oz
     va_list ap;
     FILE* f;
     time_t ct;                 // current time
-    struct tm t;
+    tm t;
 
     ct = time( null );         // get current time
     t = *localtime( &ct );
@@ -143,7 +143,7 @@ namespace oz
     va_list ap;
     FILE* f;
     time_t ct;
-    struct tm t;
+    tm t;
 
     ct = time( null );
     t = *localtime( &ct );
@@ -168,7 +168,7 @@ namespace oz
     va_list ap;
     FILE* f;
     time_t ct;
-    struct tm t;
+    tm t;
 
     ct = time( null );
     // transformation to years, months and days is too complicated, using function localtime

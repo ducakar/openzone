@@ -50,25 +50,25 @@ namespace oz
     }
 
     do {
-      ch = fgetc( f );
+      ch = char( fgetc( f ) );
 
       // skip initial spaces
       while( String::isSpace( ch ) ) {
-        ch = fgetc( f );
+        ch = char( fgetc( f ) );
       }
 
       // read variable
       String name;
       if( String::isLetter( ch ) ) {
         buffer[0] = ch;
-        ch = fgetc( f );
+        ch = char( fgetc( f ) );
 
         int i = 1;
         while( i < BUFFER_SIZE - 1 &&
             ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '.' ) )
         {
           buffer[i] = ch;
-          ch = fgetc( f );
+          ch = char( fgetc( f ) );
           i++;
         }
         buffer[i] = '\0';
@@ -80,16 +80,16 @@ namespace oz
 
       // skip spaced between name and value
       while( String::isSpace( ch ) ) {
-        ch = fgetc( f );
+        ch = char( fgetc( f ) );
       }
 
       if( ch == '"' ) {
-        ch = fgetc( f );
+        ch = char( fgetc( f ) );
 
         int i = 0;
         while( i < BUFFER_SIZE - 1 && ch != '"' && ch != '\n' && ch != EOF ) {
           buffer[i] = ch;
-          ch = fgetc( f );
+          ch = char( fgetc( f ) );
           i++;
         }
         if( ch == '"' ) {
@@ -101,7 +101,7 @@ namespace oz
       skipLine:;
       // find end of line/file
       while( ch != '\n' && ch != EOF ) {
-        ch = fgetc( f );
+        ch = char( fgetc( f ) );
       }
     }
     while( ch != EOF );
@@ -275,6 +275,9 @@ namespace oz
       else if( vars.cachedValue().equals( "false" ) ) {
         return false;
       }
+      else {
+        throw Exception( "Invalid boolean value" );
+      }
     }
     return defVal;
   }
@@ -292,7 +295,7 @@ namespace oz
   float Config::get( const char* name, float defVal ) const
   {
     if( vars.contains( name ) ) {
-      return atof( vars.cachedValue() );
+      return float( atof( vars.cachedValue() ) );
     }
     else {
       return defVal;
@@ -332,6 +335,9 @@ namespace oz
       else if( vars.cachedValue().equals( "false" ) ) {
         return false;
       }
+      else {
+        throw Exception( "Invalid boolean value" );
+      }
     }
     vars.add( name, defVal );
     return defVal;
@@ -351,7 +357,7 @@ namespace oz
   float Config::getSet( const char* name, float defVal )
   {
     if( vars.contains( name ) ) {
-      return atof( vars.cachedValue() );
+      return float( atof( vars.cachedValue() ) );
     }
     else {
       vars.add( name, defVal );
