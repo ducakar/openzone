@@ -49,7 +49,7 @@ namespace ui
              bot->momentum.x, bot->momentum.y, bot->momentum.z,
              bot->depth );
 
-      print( 5, -5 - textHeight * 4, "d %d fl %d lw %d up %d h %d fr %d iw %d s %d ld %d ovlp %d",
+      print( 5, -5 - textHeight * 4, "d %d fl %d lw %d up %d h %d fr %d iw %d s %d ld %d ovlp %d sR %.3f",
             ( bot->flags & Object::DISABLED_BIT ) != 0,
             ( bot->flags & Object::ON_FLOOR_BIT ) != 0,
             bot->lower,
@@ -59,7 +59,8 @@ namespace ui
             ( bot->flags & Object::IN_WATER_BIT ) != 0,
             ( bot->flags & Object::ON_SLICK_BIT ) != 0,
             ( bot->flags & Object::ON_LADDER_BIT ) != 0,
-            !collider.test( *bot, bot ) );
+            !collider.test( *bot, bot ),
+            bot->stepRate * 10.0f );
     }
 
     if( camera.tagged != -1 && ( camera.taggedObj->flags & Object::DYNAMIC_BIT ) ) {

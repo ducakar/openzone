@@ -117,21 +117,29 @@ namespace oz
 
     synapse.addObject( "Tree3", Vec3( 77.7f, -40.0f, world.terra.height( 78.0f, -40.0f ) + 6.5f ) );
 
-    synapse.addObject( "SmallCrate", Vec3( 51, -42, 36 ) );
-    synapse.addObject( "SmallCrate", Vec3( 51, -42, 37 ) );
-    synapse.addObject( "SmallCrate", Vec3( 51, -42, 38 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -22, 36 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -22, 37 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -22, 38 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -22, 39 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -22, 40 ) );
 
-    synapse.addObject( "SmallCrate", Vec3( 51, -41, 36 ) );
-    synapse.addObject( "SmallCrate", Vec3( 51, -41, 37 ) );
-    synapse.addObject( "SmallCrate", Vec3( 51, -41, 38 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -21, 36 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -21, 37 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -21, 38 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -21, 39 ) );
+    synapse.addObject( "SmallCrate", Vec3( 61, -21, 40 ) );
 
-    synapse.addObject( "SmallCrate", Vec3( 52, -42, 36 ) );
-    synapse.addObject( "SmallCrate", Vec3( 52, -42, 37 ) );
-    synapse.addObject( "SmallCrate", Vec3( 52, -42, 38 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -22, 36 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -22, 37 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -22, 38 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -22, 39 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -22, 40 ) );
 
-    synapse.addObject( "SmallCrate", Vec3( 52, -41, 36 ) );
-    synapse.addObject( "SmallCrate", Vec3( 52, -41, 37 ) );
-    synapse.addObject( "SmallCrate", Vec3( 52, -41, 38 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -21, 36 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -21, 37 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -21, 38 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -21, 39 ) );
+    synapse.addObject( "SmallCrate", Vec3( 62, -21, 40 ) );
 
     synapse.addObject( "BigCrate", Vec3( 54, -43, 36 ) );
 

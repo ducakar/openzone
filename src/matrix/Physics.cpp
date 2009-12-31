@@ -50,8 +50,11 @@ namespace oz
       if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
         part->lifeTime = 0.0f;
       }
+
       if( collider.hit.obj != null && part->mass != 0.0f ) {
-        collider.hit.obj->damage( velocity2 * part->mass );
+        Object* sObj = const_cast<Object*>( collider.hit.obj );
+
+        sObj->damage( velocity2 * part->mass );
       }
     }
 
@@ -240,10 +243,9 @@ namespace oz
   void Physics::handleObjHit()
   {
     const Hit& hit = collider.hit;
-    Object* sObj = hit.obj;
 
     if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
-      Dynamic* sDyn = static_cast<Dynamic*>( sObj );
+      Dynamic* sDyn = static_cast<Dynamic*>( const_cast<Object*>( hit.obj ) );
 
       Vec3  momentum    = ( obj->momentum * obj->mass + sDyn->momentum * sDyn->mass ) /
           ( obj->mass + sDyn->mass );
@@ -305,7 +307,9 @@ namespace oz
       if( hitMomentum <= HIT_THRESHOLD && hitVelocity <= HIT_THRESHOLD ) {
         obj->hit( &hit, hitMomentum );
 
-        if( sObj != null ) {
+        if( hit.obj != null ) {
+          Object* sObj = const_cast<Object*>( hit.obj );
+
           sObj->hit( &hit, hitMomentum );
         }
       }

@@ -104,11 +104,11 @@ namespace client
 
   void Terrain::draw() const
   {
-    Area area;
-    world.terra.getInters( area, camera.p.x - radius, camera.p.y - radius,
+    Span span;
+    world.terra.getInters( span, camera.p.x - radius, camera.p.y - radius,
                            camera.p.x + radius, camera.p.y + radius );
-    area.maxX++;
-    area.maxY++;
+    span.maxX++;
+    span.maxY++;
 
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, detailTexId );
@@ -130,9 +130,9 @@ namespace client
     glClientActiveTexture( GL_TEXTURE1 );
     glTexCoordPointer( 2, GL_FLOAT, 0, mapTexCoords );
 
-    for( int y = area.minY; y < area.maxY; y++ ) {
+    for( int y = span.minY; y < span.maxY; y++ ) {
       glBegin( GL_TRIANGLE_STRIP );
-      for( int x = area.minX; x <= area.maxX; x++ ) {
+      for( int x = span.minX; x <= span.maxX; x++ ) {
         glArrayElement( x * oz::Terrain::MAX + y + 1 );
         glArrayElement( x * oz::Terrain::MAX + y     );
       }
@@ -150,21 +150,21 @@ namespace client
 
   void Terrain::drawWater() const
   {
-    Area area;
-    world.terra.getInters( area, camera.p.x - radius, camera.p.y - radius,
+    Span span;
+    world.terra.getInters( span, camera.p.x - radius, camera.p.y - radius,
                            camera.p.x + radius, camera.p.y + radius );
-    area.maxX++;
-    area.maxY++;
+    span.maxX++;
+    span.maxY++;
 
-    float minX = float( area.minX );
-    float maxX = float( area.maxX );
-    float minY = float( area.minY );
-    float maxY = float( area.maxY );
+    float minX = float( span.minX );
+    float maxX = float( span.maxX );
+    float minY = float( span.minY );
+    float maxY = float( span.maxY );
 
     glBindTexture( GL_TEXTURE_2D, waterTexId );
 
-    const Vec3& v0 = world.terra.vertices[area.minX][area.minY];
-    const Vec3& v1 = world.terra.vertices[area.maxX][area.maxY];
+    const Vec3& v0 = world.terra.vertices[span.minX][span.minY];
+    const Vec3& v1 = world.terra.vertices[span.maxX][span.maxY];
 
     if( camera.p.z >= 0 ) {
       glNormal3f( 0.0f, 0.0f, 1.0f );

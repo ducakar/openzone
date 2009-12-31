@@ -109,10 +109,11 @@ namespace oz
     clazz->crouchMomentum       = config->get( "crouchMomentum", 1.2f );
     clazz->jumpMomentum         = config->get( "jumpMomentum", 5.0f );
 
-    clazz->stepInc              = config->get( "stepInc", 0.10f );
+    clazz->stepInc              = config->get( "stepInc", 0.25f );
     clazz->stepMax              = config->get( "stepMax", 0.50f );
-    clazz->stepRate             = config->get( "stepRate", 1.00f );
-    clazz->stepRateSupp         = config->get( "stepRateSupp", 0.95f );
+    clazz->stepRateLimit        = config->get( "stepRateLimit", 0.00f );
+    clazz->stepRateCoeff        = config->get( "stepRateCoeff", 200.0f );
+    clazz->stepRateSupp         = config->get( "stepRatesupp", 0.50f );
 
     clazz->airControl           = config->get( "airControl", 0.025f );
     clazz->climbControl         = config->get( "climbControl", 1.50f );

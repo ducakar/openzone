@@ -68,7 +68,7 @@ namespace oz
 
       void isEmpty() const;
 
-      void  getInters( Area& area, float minX, float minY, float maxX, float maxY,
+      void  getInters( Span& span, float minX, float minY, float maxX, float maxY,
                        float epsilon = 0.0f ) const;
       // indices of TerraQuad and index of the triangle inside the TerraQuad
       Pair<int> getIndices( float x, float y ) const;
@@ -76,13 +76,13 @@ namespace oz
 
   };
 
-  inline void Terrain::getInters( Area& area, float minPosX, float minPosY,
+  inline void Terrain::getInters( Span& span, float minPosX, float minPosY,
                                   float maxPosX, float maxPosY, float epsilon ) const
   {
-    area.minX = max( int( ( minPosX - epsilon + DIM ) * Quad::INV_SIZE ), 0 );
-    area.minY = max( int( ( minPosY - epsilon + DIM ) * Quad::INV_SIZE ), 0 );
-    area.maxX = min( int( ( maxPosX + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 );
-    area.maxY = min( int( ( maxPosY + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 );
+    span.minX = max( int( ( minPosX - epsilon + DIM ) * Quad::INV_SIZE ), 0 );
+    span.minY = max( int( ( minPosY - epsilon + DIM ) * Quad::INV_SIZE ), 0 );
+    span.maxX = min( int( ( maxPosX + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 );
+    span.maxY = min( int( ( maxPosY + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 );
   }
 
   inline Pair<int> Terrain::getIndices( float x, float y ) const

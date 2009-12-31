@@ -24,9 +24,10 @@ namespace client
 
   void BotProxy::begin()
   {
-    externalDistFactor = config.getSet( "camera.botProxy.externalDistFactor", 2.75f );
-    isExternal         = camera.state == Camera::EXTERNAL;
-    isFreelook         = false;
+    camera.state = isExternal ? Camera::EXTERNAL : Camera::INTERNAL;
+    isFreelook = false;
+
+    ui::mouse.doShow = false;
 
     bobPhi   = 0.0f;
     bobTheta = 0.0f;
@@ -273,6 +274,12 @@ namespace client
 
       camera.setTagged( collider.hit.obj );
     }
+  }
+
+  void BotProxy::init()
+  {
+    externalDistFactor = config.getSet( "camera.botProxy.externalDistFactor", 2.75f );
+    isExternal         = config.getSet( "camera.isExternal", false );
   }
 
 }

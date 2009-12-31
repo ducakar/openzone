@@ -77,7 +77,8 @@ namespace ui
     collider.translate( p, camera.at * 2.0f, camera.botObj );
 
     if( collider.hit.obj != null ) {
-      collider.hit.obj->life = 0.0f;
+      Object *obj = const_cast<Object*>( collider.hit.obj );
+      obj->life = 0.0f;
     }
   }
 

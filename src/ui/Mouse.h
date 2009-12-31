@@ -44,11 +44,6 @@ namespace ui
 
     public:
 
-      int    maxX;
-      int    maxY;
-      int    centerX;
-      int    centerY;
-
       int    x;
       int    y;
       int    relX;
@@ -70,10 +65,9 @@ namespace ui
       int    type;
       bool   doShow;
 
-      void   init( int maxX, int maxY );
+      void   init();
       void   free();
 
-      void   setBounds( int maxX, int maxY );
       void   show();
       void   hide();
 

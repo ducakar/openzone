@@ -25,10 +25,10 @@ namespace oz
 
     const char* type;
 
-    if( pos.z > 60.0f ) {
+    if( pos.z > 65.0f ) {
       return;
     }
-    else if( pos.z > 40.0f ) {
+    else if( pos.z > 45.0f ) {
       type = "Tree3";
       pos.z += 7.0f;
     }
