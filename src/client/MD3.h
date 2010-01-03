@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -17,9 +17,9 @@ namespace oz
 namespace client
 {
 
-  struct MD3Tag;
+  class MD3Tag;
 
-  struct MD3
+  class MD3
   {
     private:
 
@@ -56,9 +56,9 @@ namespace client
         Quat rot;
       };
 
-      struct Part
+      class Part
       {
-        friend struct MD3;
+        friend class MD3;
 
         private:
 

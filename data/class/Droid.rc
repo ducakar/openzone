@@ -4,10 +4,6 @@ life "200.0"
 mass "100.0"
 
 nDebris "12"
-debrisVelocitySpread "4.0"
-debrisRejection "1.95"
-debrisMass "0.0"
-debrisLifeTime "1.0"
 debrisColor.r "0.3"
 debrisColor.g "0.3"
 debrisColor.b "0.3"
@@ -31,9 +27,6 @@ audioSample10                   "gesture_flip"                  # flip
 audioSample11                   "death2"                        # death
 
 grabMass "100.0"
-
-jumpMomentum "5.0"
-runMomentum "4.0"
 
 staminaWaterDrain "0.07"
 staminaRunDrain "0.07"

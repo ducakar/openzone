@@ -3,7 +3,7 @@
  *
  *  Chaining hashtable implementation with String key type
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -13,28 +13,31 @@ namespace oz
 {
 
   template <class Type, int SIZE = 256>
-  struct HashString
+  class HashString
   {
     private:
 
-      struct Elem
+      class Elem
       {
-        String key;
-        Type   value;
-        Elem*  next[1];
+        public:
 
-        explicit Elem( const String& key_, const Type& value_, Elem* next_ ) :
-            key( key_ ), value( value_ )
-        {
-          next[0] = next_;
-        }
+          String key;
+          Type   value;
+          Elem*  next[1];
 
-        explicit Elem( const String& key_, Elem* next_ ) : key( key_ )
-        {
-          next[0] = next_;
-        }
+          explicit Elem( const String& key_, const Type& value_, Elem* next_ ) :
+              key( key_ ), value( value_ )
+          {
+            next[0] = next_;
+          }
+
+          explicit Elem( const String& key_, Elem* next_ ) : key( key_ )
+          {
+            next[0] = next_;
+          }
 
         OZ_PLACEMENT_POOL_ALLOC( Elem, 0, SIZE );
+
       };
 
     public:
@@ -42,7 +45,7 @@ namespace oz
       /**
        * HashString iterator.
        */
-      struct Iterator : IteratorBase<Elem>
+      class Iterator : public IteratorBase<Elem>
       {
         private:
 

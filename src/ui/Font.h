@@ -3,7 +3,7 @@
  *
  *  Bitmap font loader and print function
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -25,9 +25,9 @@ namespace ui
     TITLE
   };
 
-  struct Font
+  class Font
   {
-    friend struct Area;
+    friend class Area;
 
     friend void init( int screenX, int screenY );
     friend void free();

@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -16,11 +16,11 @@ namespace oz
 namespace server
 {
 
-  struct Network
+  class Network
   {
     private:
 
-      struct Client
+      class Client
       {
         String    name;
         TCPsocket socket;

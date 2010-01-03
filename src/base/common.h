@@ -3,7 +3,7 @@
  *
  *  Common types and templates
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -100,7 +100,7 @@ namespace oz
    * @return minimum of a and b
    */
   template <class Value>
-  inline Value min( const Value& a, const Value& b )
+  inline const Value& min( const Value& a, const Value& b )
   {
     return a < b ? a : b;
   }
@@ -112,7 +112,7 @@ namespace oz
    * @return maximum of a and b
    */
   template <class Value>
-  inline Value max( const Value& a, const Value& b )
+  inline const Value& max( const Value& a, const Value& b )
   {
     return a > b ? a : b;
   }
@@ -125,7 +125,7 @@ namespace oz
    * @return clamped value of c
    */
   template <class Value>
-  inline Value bound( const Value& c, const Value& a, const Value& b )
+  inline const Value& bound( const Value& c, const Value& a, const Value& b )
   {
     assert( a <= b );
 
@@ -134,7 +134,7 @@ namespace oz
 
   /**
    * \def $
-   * Stringify the given identifier/type/reserved word/...
+   * "Stringify" the given identifier/type/reserved word/...
    */
 # define $( s ) #s
 

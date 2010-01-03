@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -14,7 +14,7 @@
 #include <string>
 
 #define REGISTER( t ) \
-  struct Register_##t { \
+  class Register_##t { \
     Register_##t() { \
       registry[#t] = &t::build; \
     } \
@@ -25,7 +25,7 @@ using namespace std;
 
 class Object;
 
-struct Object
+class Object
 {
   float x, y, z;
 
@@ -34,7 +34,7 @@ struct Object
   virtual ~Object() {}
 };
 
-struct Human : Object
+class Human : Object
 {
   static Object* build();
 
@@ -46,7 +46,7 @@ struct Human : Object
   virtual ~Human() {}
 };
 
-struct Vehicle : Object
+class Vehicle : Object
 {
   static Object* build();
 

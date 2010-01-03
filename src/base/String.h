@@ -3,7 +3,7 @@
  *
  *  Immutable string object (similar to Java String)
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -12,7 +12,7 @@
 namespace oz
 {
 
-  struct String
+  class String
   {
     private:
 
@@ -430,10 +430,10 @@ namespace oz
         const char* start = buffer;
         const char* end = buffer + count;
 
-        while( start < end && isWhiteSpace( *start ) ) {
+        while( start < end && isBlank( *start ) ) {
           start++;
         }
-        while( start < end && isWhiteSpace( *( end - 1 ) ) ) {
+        while( start < end && isBlank( *( end - 1 ) ) ) {
           end--;
         }
         return String( start, end - start );
@@ -445,10 +445,10 @@ namespace oz
         const char* start = s;
         const char* end = s + count;
 
-        while( start < end && isWhiteSpace( *start ) ) {
+        while( start < end && isBlank( *start ) ) {
           start++;
         }
-        while( start < end && isWhiteSpace( *( end - 1 ) ) ) {
+        while( start < end && isBlank( *( end - 1 ) ) ) {
           end--;
         }
         return String( start, end - start );
@@ -485,7 +485,7 @@ namespace oz
         return c == ' ' || c == '\t';
       }
 
-      static bool isWhiteSpace( char c )
+      static bool isBlank( char c )
       {
         return c == ' ' || c == '\t' || c == '\n';
       }

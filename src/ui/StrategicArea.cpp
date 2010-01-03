@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -15,6 +15,7 @@
 #include "client/Camera.h"
 #include "client/Colors.h"
 #include "client/Context.h"
+#include "Keyboard.h"
 
 #include <GL/glu.h>
 
@@ -27,7 +28,7 @@ namespace ui
 
   Pair<int> StrategicArea::project( const Vec3& p ) const
   {
-    Vec3 t = camera.rotTMat * ( p - camera.p );
+    Vec3 t = camera.rotTMat * p;
 
     t.x = Math::round( ( t.x / t.y ) * stepPixel );
     t.z = Math::round( ( t.z / t.y ) * stepPixel );
@@ -35,18 +36,18 @@ namespace ui
     return Pair<int>( camera.centerX + int( t.x ), camera.centerY + int( t.z ) );
   }
 
-  void StrategicArea::projectBounds( Span& span, const Object* obj ) const
+  void StrategicArea::projectBounds( Span& span, const AABB& bb ) const
   {
     Pair<int> t[8];
 
-    t[0] = project( obj->p + Vec3( -obj->dim.x, -obj->dim.y, -obj->dim.z ) );
-    t[1] = project( obj->p + Vec3( +obj->dim.x, -obj->dim.y, -obj->dim.z ) );
-    t[2] = project( obj->p + Vec3( -obj->dim.x, +obj->dim.y, -obj->dim.z ) );
-    t[3] = project( obj->p + Vec3( +obj->dim.x, +obj->dim.y, -obj->dim.z ) );
-    t[4] = project( obj->p + Vec3( -obj->dim.x, -obj->dim.y, +obj->dim.z ) );
-    t[5] = project( obj->p + Vec3( +obj->dim.x, -obj->dim.y, +obj->dim.z ) );
-    t[6] = project( obj->p + Vec3( -obj->dim.x, +obj->dim.y, +obj->dim.z ) );
-    t[7] = project( obj->p + Vec3( +obj->dim.x, +obj->dim.y, +obj->dim.z ) );
+    t[0] = project( bb.p + Vec3( -bb.dim.x, -bb.dim.y, -bb.dim.z ) );
+    t[1] = project( bb.p + Vec3( +bb.dim.x, -bb.dim.y, -bb.dim.z ) );
+    t[2] = project( bb.p + Vec3( -bb.dim.x, +bb.dim.y, -bb.dim.z ) );
+    t[3] = project( bb.p + Vec3( +bb.dim.x, +bb.dim.y, -bb.dim.z ) );
+    t[4] = project( bb.p + Vec3( -bb.dim.x, -bb.dim.y, +bb.dim.z ) );
+    t[5] = project( bb.p + Vec3( +bb.dim.x, -bb.dim.y, +bb.dim.z ) );
+    t[6] = project( bb.p + Vec3( -bb.dim.x, +bb.dim.y, +bb.dim.z ) );
+    t[7] = project( bb.p + Vec3( +bb.dim.x, +bb.dim.y, +bb.dim.z ) );
 
     span.minX = t[0].x;
     span.maxX = t[0].x;
@@ -76,6 +77,52 @@ namespace ui
     glEnd();
   }
 
+  void StrategicArea::printName( int baseX, int baseY, const char* s, ... )
+  {
+    char buffer[1024];
+    va_list ap;
+
+    va_start( ap, s );
+    vsnprintf( buffer, 1024, s, ap );
+    va_end( ap );
+    buffer[1023] = '\0';
+
+    setFontColor( 0x00, 0x00, 0x00 );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
+
+    // flip
+    uint* pixels = reinterpret_cast<uint*>( text->pixels );
+    for( int i = 0; i < text->h / 2; i++ ) {
+      for( int j = 0; j < text->w; j++ ) {
+        swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
+      }
+    }
+
+    int x = baseX - text->w / 2;
+    int y = baseY - text->h / 2;
+
+    if( x < 0 || x + text->w >= camera.width - 1 || y < 1 || y + text->h >= camera.height ) {
+      textWidth = 0;
+      SDL_FreeSurface( text );
+      return;
+    }
+
+    glRasterPos2i( x + 1, y - 1 );
+    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+
+    // make white
+    int size = text->w * text->h;
+    for( int i = 0; i < size; i++ ) {
+      pixels[i] |= 0x00ffffff;
+    }
+
+    glRasterPos2i( x, y );
+    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+
+    textWidth = text->w;
+    SDL_FreeSurface( text );
+  }
+
   void StrategicArea::drawHoveredRect( const Span& span )
   {
     const ObjectClass *clazz = hovered->type;
@@ -96,31 +143,22 @@ namespace ui
       description = clazz->description;
     }
 
-    setFontColor( 0x00, 0x00, 0x00 );
-    printCentered( ( span.minX + span.maxX ) / 2 + 1,
-                   ( span.maxY + 16 ) - 1,
-                   "%s",
-                   description.cstr() );
-    setFontColor( 0xff, 0xff, 0xff );
-    printCentered( ( span.minX + span.maxX ) / 2,
-                   ( span.maxY + 16 ),
-                   "%s",
-                   description.cstr() );
+    printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", description.cstr() );
 
     float life = ( hovered->flags & Object::BOT_BIT ) ?
         ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
         hovered->life / clazz->life;
-    float barWidth = maxX - minX - 2;
+    float barWidth = maxX - minX + 2.0f;
     float lifeWidth = life * barWidth;
     float lifeWidthLeft = barWidth - lifeWidth;
 
     glColor4f( 1.0f - life, life, 0.0f, 1.0f );
-    fillRect( minX + 1.0f, maxY + 1.0f, lifeWidth, 6.0f );
+    fillRect( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
     glColor4f( 0.0f, 0.0f, 0.0f, 0.2f );
-    fillRect( minX + 1.0f + lifeWidth, maxY + 1.0f, lifeWidthLeft, 6.0f );
+    fillRect( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
     glColor4fv( Colors::WHITE );
-    drawRect( minX, maxY, maxX - minX, 8.0f );
+    drawRect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
   }
 
   void StrategicArea::drawTaggedRect( const Object* obj, const Span& span )
@@ -135,17 +173,17 @@ namespace ui
       float life = ( obj->flags & Object::BOT_BIT ) ?
           ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
           obj->life / clazz->life;
-      float barWidth = maxX - minX - 2.0f;
+      float barWidth = maxX - minX + 2.0f;
       float lifeWidth = life * barWidth;
       float lifeWidthLeft = barWidth - lifeWidth;
 
       glColor4f( 1.0f - life, life, 0.0f, 0.5f );
-      fillRect( minX + 1, maxY + 1.0f, lifeWidth, 6.0f );
+      fillRect( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
       glColor4f( 0.0f, 0.0f, 0.0f, 0.2f );
-      fillRect( minX + 1.0f + lifeWidth, maxY + 1.0f, lifeWidthLeft, 6.0f );
+      fillRect( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
       glColor4f( 1.0f, 1.0f, 1.0f, 0.5f );
-      drawRect( minX, maxY, barWidth + 2.0f, 8.0f );
+      drawRect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
 
       String description;
       if( obj->flags & Object::BOT_BIT ) {
@@ -162,25 +200,25 @@ namespace ui
 
     glColor4fv( Colors::WHITE );
     glBegin( GL_LINES );
-      glVertex2f( minX + 0.5f, minY + 0.5f );
-      glVertex2f( minX + 0.5f, minY + 5.5f );
-      glVertex2f( minX + 1.5f, minY + 0.5f );
-      glVertex2f( minX + 5.5f, minY + 0.5f );
+      glVertex2f( minX - 1.5f, minY - 1.5f );
+      glVertex2f( minX - 1.5f, minY + 3.5f );
+      glVertex2f( minX - 0.5f, minY - 1.5f );
+      glVertex2f( minX + 3.5f, minY - 1.5f );
 
-      glVertex2f( maxX - 0.5f, minY + 0.5f );
-      glVertex2f( maxX - 5.5f, minY + 0.5f );
-      glVertex2f( maxX - 0.5f, minY + 1.5f );
-      glVertex2f( maxX - 0.5f, minY + 5.5f );
+      glVertex2f( maxX + 1.5f, minY - 1.5f );
+      glVertex2f( maxX - 3.5f, minY - 1.5f );
+      glVertex2f( maxX + 1.5f, minY - 0.5f );
+      glVertex2f( maxX + 1.5f, minY + 3.5f );
 
-      glVertex2f( maxX - 0.5f, maxY - 0.5f );
-      glVertex2f( maxX - 5.5f, maxY - 0.5f );
-      glVertex2f( maxX - 0.5f, maxY - 1.5f );
-      glVertex2f( maxX - 0.5f, maxY - 5.5f );
+      glVertex2f( maxX + 1.5f, maxY + 1.5f );
+      glVertex2f( maxX - 3.5f, maxY + 1.5f );
+      glVertex2f( maxX + 1.5f, maxY + 0.5f );
+      glVertex2f( maxX + 1.5f, maxY - 3.5f );
 
-      glVertex2f( minX + 0.5f, maxY - 0.5f );
-      glVertex2f( minX + 5.5f, maxY - 0.5f );
-      glVertex2f( minX + 0.5f, maxY - 1.5f );
-      glVertex2f( minX + 0.5f, maxY - 5.5f );
+      glVertex2f( minX - 1.5f, maxY + 1.5f );
+      glVertex2f( minX + 3.5f, maxY + 1.5f );
+      glVertex2f( minX - 1.5f, maxY + 0.5f );
+      glVertex2f( minX - 1.5f, maxY - 3.5f );
     glEnd();
   }
 
@@ -200,8 +238,16 @@ namespace ui
   {
     if( camera.state != Camera::STRATEGIC ) {
       show( false );
+      tagged.clear();
+      leftClick = false;
       return;
     }
+  }
+
+  bool StrategicArea::onMouseEvent()
+  {
+    leftClick |= mouse.leftClick;
+    return true;
   }
 
   void StrategicArea::onDraw()
@@ -214,13 +260,13 @@ namespace ui
     collider.translate( camera.p, at );
     hovered = collider.hit.obj;
 
-    if( hovered != null && ( hovered->flags & ( Object::BOT_BIT | Object::VEHICLE_BIT ) ) ) {
+    if( hovered != null ) {
       Span span;
-      projectBounds( span, hovered );
+      projectBounds( span, *hovered - camera.p );
       drawHoveredRect( span );
       camera.setTagged( hovered );
 
-      if( mouse.leftClick ) {
+      if( leftClick ) {
         tagged.clear();
         tagged << hovered->index;
       }
@@ -228,23 +274,29 @@ namespace ui
     else {
       camera.setTagged( null );
 
-      if( mouse.leftClick ) {
+      if( leftClick ) {
         tagged.clear();
       }
     }
+    leftClick = false;
 
     for( int i = 0; i < tagged.length(); ) {
       const Object* obj = world.objects[tagged[i]];
 
-      if( obj == null ) {
+      if( obj == null ||
+          ( ( obj->flags & Object::BOT_BIT ) && obj->life <= obj->type->life / 2.0f ) )
+      {
         tagged.remove( i );
+        continue;
       }
-      else {
-        i++;
+
+      AABB bb = *obj - camera.p;
+      if( bb.p * camera.at > 0.0f ) {
         Span span;
-        projectBounds( span, obj );
+        projectBounds( span, bb );
         drawTaggedRect( obj, span );
       }
+      i++;
     }
   }
 

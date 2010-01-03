@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -24,8 +24,8 @@ namespace client
 
   void BotProxy::begin()
   {
-    camera.state = isExternal ? Camera::EXTERNAL : Camera::INTERNAL;
-    isFreelook = false;
+    camera.v          = 0.0f;
+    camera.isExternal = isExternal;
 
     ui::mouse.doShow = false;
 
@@ -45,13 +45,29 @@ namespace client
     if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
       ui::mouse.doShow = !ui::mouse.doShow;
     }
+    if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
+      bot->state &= ~Bot::PLAYER_BIT;
+      camera.setBot( null );
+      return;
+    }
 
     /*
      * Camera
      */
-    if( !isExternal || !isFreelook ) {
+    if( !isExternal ) {
       bot->h = camera.h;
       bot->v = camera.v;
+    }
+    else if( !isFreelook ) {
+      if( camera.h - bot->h > 180.0f ) {
+        bot->h += 360.0f;
+      }
+      else if( bot->h - camera.h > 180.0f ) {
+        bot->h -= 360.0f;
+      }
+
+      bot->h = ( 1.0f - TURN_SMOOTHING_COEF ) * camera.h + TURN_SMOOTHING_COEF * bot->h;
+      bot->v = ( 1.0f - TURN_SMOOTHING_COEF ) * camera.v + TURN_SMOOTHING_COEF * bot->v;
     }
 
     bot->actions = 0;
@@ -124,7 +140,7 @@ namespace client
       camera.v = bot->v;
 
       isExternal = !isExternal;
-      camera.setState( isExternal ? Camera::EXTERNAL : Camera::INTERNAL );
+      camera.isExternal = isExternal;
     }
 
     if( !ui::mouse.doShow ) {
@@ -149,7 +165,7 @@ namespace client
   void BotProxy::prepare()
   {
     if( camera.bot == -1 ) {
-      camera.setState( Camera::FREECAM );
+      camera.setState( Camera::STRATEGIC );
       return;
     }
 
@@ -280,6 +296,7 @@ namespace client
   {
     externalDistFactor = config.getSet( "camera.botProxy.externalDistFactor", 2.75f );
     isExternal         = config.getSet( "camera.isExternal", false );
+    isFreelook         = false;
   }
 
 }

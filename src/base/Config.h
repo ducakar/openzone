@@ -1,9 +1,9 @@
 /*
  *  Config.h
  *
- *  List that reads configuration file
+ *  Class to hold configuration variables and to read or write them to a configuration file
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -17,7 +17,7 @@ namespace oz
    *
    * Variables are key-value pairs. They can be loaded from or saved to an XML file.
    */
-  struct Config
+  class Config
   {
     private:
 

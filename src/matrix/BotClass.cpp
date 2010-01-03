@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -53,7 +53,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
     OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT,   "flag.delayedDraw",  false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
-    OZ_CLASS_SET_FLAG( Object::WIDE_WIDE_CULL_BIT, "flag.wideWideCull", false );
 
     clazz->life                 = 2.0f * config->get( "life", 100.0f );
     clazz->damageThreshold      = config->get( "damageThreshold", 100.0f );
@@ -67,13 +66,13 @@ namespace oz
 
     clazz->nDebris              = config->get( "nDebris", 8 );
     clazz->debrisVelocitySpread = config->get( "debrisVelocitySpread", 4.0f );
-    clazz->debrisRejection      = config->get( "debrisRejection", 1.90f );
+    clazz->debrisRejection      = config->get( "debrisRejection", 1.95f );
     clazz->debrisMass           = config->get( "debrisMass", 0.0f );
     clazz->debrisLifeTime       = config->get( "debrisLifeTime", 2.5f );
-    clazz->debrisColor.x        = config->get( "debrisColor.r", 1.0f );
+    clazz->debrisColor.x        = config->get( "debrisColor.r", 0.5f );
     clazz->debrisColor.y        = config->get( "debrisColor.g", 0.0f );
     clazz->debrisColor.z        = config->get( "debrisColor.b", 0.0f );
-    clazz->debrisColorSpread    = config->get( "debrisColorSpread", 0.2f );
+    clazz->debrisColorSpread    = config->get( "debrisColorSpread", 0.1f );
 
     clazz->mass                 = config->get( "mass", 100.0f );
     clazz->lift                 = config->get( "lift", 12.0f );
@@ -104,15 +103,15 @@ namespace oz
     clazz->bobAmplitude         = config->get( "bobAmplitude", 0.02f );
     clazz->bobSwimAmplitude     = config->get( "bobSwimAmplitude", 0.05f );
 
-    clazz->walkMomentum         = config->get( "walkMomentum", 1.2f );
-    clazz->runMomentum          = config->get( "runMomentum", 3.0f );
+    clazz->walkMomentum         = config->get( "walkMomentum", 1.5f );
+    clazz->runMomentum          = config->get( "runMomentum", 4.0f );
     clazz->crouchMomentum       = config->get( "crouchMomentum", 1.2f );
     clazz->jumpMomentum         = config->get( "jumpMomentum", 5.0f );
 
     clazz->stepInc              = config->get( "stepInc", 0.25f );
     clazz->stepMax              = config->get( "stepMax", 0.50f );
     clazz->stepRateLimit        = config->get( "stepRateLimit", 0.00f );
-    clazz->stepRateCoeff        = config->get( "stepRateCoeff", 200.0f );
+    clazz->stepRateCoeff        = config->get( "stepRateCoeff", 500.0f );
     clazz->stepRateSupp         = config->get( "stepRatesupp", 0.50f );
 
     clazz->airControl           = config->get( "airControl", 0.025f );
@@ -125,7 +124,7 @@ namespace oz
 
     clazz->stamina              = config->get( "stamina", 100.0f );
     clazz->staminaGain          = config->get( "staminaGain", 0.05f );
-    clazz->staminaWaterDrain    = config->get( "staminaWaterDrain", 0.12f );
+    clazz->staminaWaterDrain    = config->get( "staminaWaterDrain", 0.10f );
     clazz->staminaRunDrain      = config->get( "staminaRunDrain", 0.08f );
     clazz->staminaJumpDrain     = config->get( "staminaJumpDrain", 4.0f );
 

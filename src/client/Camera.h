@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -19,16 +19,16 @@ namespace oz
 namespace client
 {
 
-  struct Camera
+  class Camera
   {
     public:
 
       enum State
       {
+        NONE,
         FREECAM,
         STRATEGIC,
-        INTERNAL,
-        EXTERNAL
+        BOT
       };
 
     private:
@@ -87,6 +87,8 @@ namespace client
       float aspect;
       float minDist;
       float maxDist;
+
+      bool  isExternal;
 
       void setState( State state )
       {

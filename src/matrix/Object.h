@@ -3,7 +3,7 @@
  *
  *  Base object class, can be used for static objects
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -16,10 +16,10 @@ namespace oz
 
   struct Cell;
   struct Hit;
-  struct Bot;
+  class Bot;
 
   // static object abstract class
-  struct Object : AABB
+  class Object : public AABB
   {
     /*
      * Here various flag bits are set; the higher bits are used for flags that are internal flags
@@ -147,11 +147,8 @@ namespace oz
 
       // wide frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
-      // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR (default 5.0f)
+      // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR
       static const int WIDE_CULL_BIT      = 0x00000002;
-
-      // event more culling
-      static const int WIDE_WIDE_CULL_BIT = 0x00000003;
 
       /*
        * STANDARD EVENT IDs
@@ -276,7 +273,7 @@ namespace oz
 
       /**
        * Called by physics engine when the object hits something.
-       * @param hit Hit struct filled with collision data
+       * @param hit Hit class filled with collision data
        * @param hitMomentum momentum of the object projected to hit normal
        */
       void hit( const Hit* hit, float hitMomentum )

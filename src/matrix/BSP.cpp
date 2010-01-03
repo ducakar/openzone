@@ -3,7 +3,7 @@
  *
  *  Data structure for Quake3 BSP level
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -370,15 +370,21 @@ namespace oz
     }
 
     nLightmaps = lumps[QBSP_LUMP_LIGHTMAPS].length / sizeof( BSP::Lightmap );
-    lightmaps = new BSP::Lightmap[nLightmaps];
-    fseek( f, lumps[QBSP_LUMP_LIGHTMAPS].offset, SEEK_SET );
-    fread( lightmaps, sizeof( BSP::Lightmap ), nLightmaps, f );
 
-    if( lumps[QBSP_LUMP_VISUALDATA].length > 0 ) {
+    if( nLightmaps != 0 ) {
+      lightmaps = new BSP::Lightmap[nLightmaps];
+      fseek( f, lumps[QBSP_LUMP_LIGHTMAPS].offset, SEEK_SET );
+      fread( lightmaps, sizeof( BSP::Lightmap ), nLightmaps, f );
+
       fseek( f, lumps[QBSP_LUMP_VISUALDATA].offset, SEEK_SET );
       fread( &visual.nClusters, sizeof( int ), 1, f );
       fread( &visual.clusterLength, sizeof( int ), 1, f );
+    }
+    else {
+      lightmaps = null;
+    }
 
+    if( lumps[QBSP_LUMP_VISUALDATA].length != 0 ) {
       visual.bitsets = new Bitset[visual.nClusters];
       for( int i = 0; i < visual.nClusters; i++ ) {
         visual.bitsets[i].setSize( visual.clusterLength * 8 );

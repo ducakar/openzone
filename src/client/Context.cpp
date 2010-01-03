@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -318,7 +318,7 @@ namespace client
     }
     String extension = path.substring( dot );
 
-    if( String::equals( extension, ".au" ) || String::equals( extension, ".wav" ) ) {
+    if( extension.equals( ".au" ) || extension.equals( ".wav" ) ) {
       sounds[resource].id = alutCreateBufferFromFile( path );
 
       if( sounds[resource].id == AL_NONE ) {
@@ -326,11 +326,10 @@ namespace client
         return AL_NONE;
       }
     }
-    else if( String::equals( extension, ".oga" ) || String::equals( extension, ".ogg" ) ) {
-      // FIXME make this loader work
-      FILE*           oggFile = fopen( path, "rb" );
+    else if( extension.equals( ".oga" ) || extension.equals( ".ogg" ) ) {
+      FILE*          oggFile = fopen( path, "rb" );
       OggVorbis_File oggStream;
-      vorbis_info*    vorbisInfo;
+      vorbis_info*   vorbisInfo;
       ALenum         format;
 
       if( oggFile == null ) {
@@ -362,13 +361,12 @@ namespace client
         return AL_NONE;
       }
 
-      int  size = int( oggStream.end - oggStream.offset );
-      char data[size];
       int  section;
       int  bytesRead = 0;
       int  result;
       do {
-        result = ov_read( &oggStream, &data[bytesRead], size - bytesRead, 0, 2, 1, &section );
+        result = ov_read( &oggStream, &vorbisBuffer[bytesRead], VORBIS_BUFFER_SIZE - bytesRead,
+                          0, 2, 1, &section );
         bytesRead += result;
         if( result < 0 ) {
           ov_clear( &oggStream );
@@ -376,12 +374,18 @@ namespace client
           return AL_NONE;
         }
       }
-      while( result > 0 && bytesRead < size );
+      while( result > 0 && bytesRead < VORBIS_BUFFER_SIZE );
 
-      ov_clear( &oggStream );
+      if( bytesRead == VORBIS_BUFFER_SIZE ) {
+        ov_clear( &oggStream );
+        log.printEnd( " Temporary buffer (%d bytes) too small to load sample", VORBIS_BUFFER_SIZE );
+        return AL_NONE;
+      }
 
       alGenBuffers( 1, &sounds[resource].id );
-      alBufferData( sounds[resource].id, format, data, bytesRead, vorbisInfo->rate );
+      alBufferData( sounds[resource].id, format, vorbisBuffer, bytesRead, vorbisInfo->rate );
+      ov_clear( &oggStream );
+
       if( alGetError() != AL_NO_ERROR ) {
         log.printEnd( " Failed to create buffer" );
         return AL_NONE;
@@ -449,7 +453,7 @@ namespace client
     if( !objs.contains( path ) ) {
       objs.add( path, Resource<OBJ*>() );
 
-      OBJ *&obj = objs.cachedValue().object;
+      OBJ*& obj = objs.cachedValue().object;
       obj = new OBJ( path );
       obj->genList();
       obj->trim();
@@ -478,7 +482,7 @@ namespace client
     if( !staticMd2s.contains( path ) ) {
       staticMd2s.add( path, Resource<MD2*>() );
 
-      MD2 *&md2 = staticMd2s.cachedValue().object;
+      MD2*& md2 = staticMd2s.cachedValue().object;
       md2 = new MD2( path );
       md2->genList();
     }
@@ -530,7 +534,7 @@ namespace client
     if( !staticMd3s.contains( path ) ) {
       staticMd3s.add( path, Resource<MD3*>() );
 
-      MD3 *&md3 = staticMd3s.cachedValue().object;
+      MD3*& md3 = staticMd3s.cachedValue().object;
       md3 = new MD3( path );
       md3->genList();
       md3->trim();

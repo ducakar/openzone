@@ -3,7 +3,7 @@
  *
  *  MD2 model class
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -14,7 +14,7 @@ namespace oz
 namespace client
 {
 
-  struct MD2
+  class MD2
   {
     private:
 
@@ -94,12 +94,10 @@ namespace client
     while( anim->currTime > anim->frameTime ) {
       anim->currTime -= anim->frameTime;
       anim->currFrame = anim->nextFrame;
+      anim->nextFrame++;
 
-      if( anim->nextFrame < anim->endFrame ) {
-        anim->nextFrame++;
-      }
-      else if( anim->repeat ) {
-        anim->nextFrame = anim->startFrame;
+      if( anim->nextFrame > anim->endFrame ) {
+        anim->nextFrame = anim->repeat ? anim->startFrame : anim->endFrame;
       }
     }
   }

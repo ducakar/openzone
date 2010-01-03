@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -14,20 +14,24 @@
 namespace oz
 {
 
-  struct WeaponClass : DynamicClass
+  class WeaponClass : public DynamicClass
   {
-    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
-        Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
+    private:
 
-    String onShot;
+      static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
+          Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
 
-    int    nShots;
-    float  shotInterval;
+    public:
 
-    static ObjectClass* init( const String& name, const Config* config );
+      String onShot;
 
-    virtual Object* create( int index, const Vec3& pos );
-    virtual Object* create( int index, InputStream* istream );
+      int    nShots;
+      float  shotInterval;
+
+      static ObjectClass* init( const String& name, const Config* config );
+
+      virtual Object* create( int index, const Vec3& pos );
+      virtual Object* create( int index, InputStream* istream );
   };
 
 }

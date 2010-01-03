@@ -4,7 +4,7 @@
  *  Linked list
  *  The Type should provide the "next[INDEX]" pointer.
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -18,7 +18,7 @@ namespace oz
    *
    * It can only be applied on classes that have <code>next[]</code> member.
    * Example:
-   * <pre>struct C
+   * <pre>class C
    * {
    *   C* next[2];
    *   int value;
@@ -40,14 +40,14 @@ namespace oz
    * <code>free()</code> are O(n).
    */
   template <class Type, int INDEX = 0>
-  struct List
+  class List
   {
     public:
 
       /**
        * List iterator.
        */
-      struct Iterator : IteratorBase<Type>
+      class Iterator : public IteratorBase<Type>
       {
         private:
 
@@ -314,7 +314,7 @@ namespace oz
         firstElem = e;
       }
 
-      void operator >> ( Type *&e )
+      void operator >> ( Type*& e )
       {
         e = popFirst();
       }

@@ -4,7 +4,7 @@
  *  Matrix data structure for world (terrain, all structures and objects in the world).
  *  The world should not be manipulated directly; use Synapse instead.
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -24,8 +24,8 @@
 namespace oz
 {
 
-  struct Synapse;
-  struct Physics;
+  class Synapse;
+  class Physics;
 
   struct Cell
   {
@@ -39,10 +39,10 @@ namespace oz
     DList<Particle> parts;
   };
 
-  struct World : Bounds
+  class World : public Bounds
   {
-    friend struct Synapse;
-    friend struct Physics;
+    friend class Synapse;
+    friend class Physics;
 
     public:
 

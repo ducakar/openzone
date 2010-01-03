@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -17,7 +17,7 @@ namespace oz
 namespace client
 {
 
-  struct Frustum
+  class Frustum
   {
     private:
 
@@ -65,13 +65,13 @@ namespace client
 
       bool isVisible( const AABB& bb )
       {
-        return isVisible( bb.p, Math::sqrt( bb.dim * bb.dim ) );
+        return isVisible( bb.p, !bb.dim );
       }
 
       bool isVisible( const Bounds& b )
       {
         Vec3 dim = b.maxs - b.mins;
-        return isVisible( ( b.mins + b.maxs ) * 0.5f, Math::sqrt( dim * dim ) );
+        return isVisible( ( b.mins + b.maxs ) * 0.5f, !dim );
       }
 
       bool isVisible( float x, float y, float radius )

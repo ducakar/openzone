@@ -3,22 +3,27 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
 
 #include "nirvana.h"
+#include "Task.h"
 
 namespace oz
 {
 namespace nirvana
 {
 
-  struct Mind
+  class RandomMind;
+  class LuaMind;
+
+  class Mind
   {
-    friend struct DList<Mind>;
+    friend class DList<Mind>;
+    friend class Pool<Mind>;
 
     public:
 
@@ -27,26 +32,26 @@ namespace nirvana
       typedef Mind* ( *CreateFunc )( int bot );
       typedef Mind* ( *ReadFunc )( InputStream* istream );
 
-    private:
+      static Pool<Mind> pool;
 
       Mind* prev[1];
       Mind* next[1];
 
-    public:
-
-      int botIndex;
-      int flags;
+      int   flags;
+      int   botIndex;
 
       static Mind* create( int botIndex );
       static Mind* read( InputStream* istream );
 
-      Mind( int botIndex_ ) : botIndex( botIndex_ ), flags( 0 ) {}
+      Mind( int botIndex_ ) : flags( 0 ), botIndex( botIndex_ ) {}
       virtual ~Mind();
 
       virtual const char* type() const;
       virtual void update();
 
       virtual void write( OutputStream* ostream ) const;
+
+    OZ_STATIC_POOL_ALLOC( pool );
 
   };
 
