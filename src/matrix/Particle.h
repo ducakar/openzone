@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -18,26 +18,24 @@ namespace oz
   struct Cell;
   struct Hit;
 
-  struct Particle
+  class Particle
   {
-    friend struct DList<Particle>;
-    friend struct Pool<Particle>;
+    friend class DList<Particle>;
+    friend class Pool<Particle>;
 
-    private:
+    public:
 
       static const float MAX_ROTVELOCITY;
       static const float DAMAGE_THRESHOLD = 50.0f;
-
-      Particle* prev[1];
-      Particle* next[1];
-
-    public:
 
       static Pool<Particle> pool;
 
       /*
        *  FIELDS
        */
+
+      Particle* prev[1];
+      Particle* next[1];
 
       Vec3      p;            // position
 

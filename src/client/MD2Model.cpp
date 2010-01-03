@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -54,7 +54,7 @@ namespace client
 
     anim.startFrame = MD2::animList[type].firstFrame;
     anim.endFrame   = MD2::animList[type].lastFrame;
-    anim.nextFrame  = anim.startFrame + 1;
+    anim.nextFrame  = anim.startFrame == anim.endFrame ? anim.endFrame : anim.startFrame + 1;
 
     anim.fps        = MD2::animList[type].fps;
     anim.frameTime  = 1.0f / anim.fps;
@@ -84,7 +84,7 @@ namespace client
       glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
       glDisable( GL_BLEND );
     }
-    else if( bot->index != camera.bot || camera.state == Camera::EXTERNAL ) {
+    else if( bot->index != camera.bot || camera.isExternal ) {
       if( bot->state & Bot::CROUCHING_BIT ) {
         glTranslatef( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z );
       }

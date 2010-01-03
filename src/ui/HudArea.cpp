@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -27,7 +27,7 @@ namespace ui
   HudArea::HudArea() : Area( camera.width, camera.height )
   {
     flags |= IGNORE_BIT;
-    setFont( SANS );
+    setFont( TITLE );
 
     crossTexId = context.loadTexture( "ui/crosshair.png", false, GL_LINEAR, GL_LINEAR );
     useTexId   = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
@@ -114,7 +114,7 @@ namespace ui
       glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
       glEnable( GL_TEXTURE_2D );
 
-      if( camera.state != Camera::EXTERNAL ) {
+      if( !camera.isExternal ) {
         glBindTexture( GL_TEXTURE_2D, crossTexId );
         glBegin( GL_QUADS );
           glTexCoord2i( 0, 1 );

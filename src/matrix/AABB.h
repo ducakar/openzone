@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -12,173 +12,175 @@
 namespace oz
 {
 
-  struct AABB
+  class AABB
   {
-    // max allowed dimension for an object plus 1 cm for epsilon
-    static const float MAX_DIM      = 4.00f;
-    static const float REAL_MAX_DIM = 3.99f;
+    public:
 
-    Vec3 p;
-    Vec3 dim;
+      // max allowed dimension for an object plus 1 cm for epsilon
+      static const float MAX_DIM      = 4.00f;
+      static const float REAL_MAX_DIM = 3.99f;
 
-    explicit AABB()
-    {}
+      Vec3 p;
+      Vec3 dim;
 
-    explicit AABB( const Vec3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )
-    {}
+      explicit AABB()
+      {}
 
-    Bounds toBounds( float eps = 0.0f ) const
-    {
-      return Bounds( Vec3( p.x - dim.x - eps,
-                           p.y - dim.y - eps,
-                           p.z - dim.z - eps ),
-                     Vec3( p.x + dim.x + eps,
-                           p.y + dim.y + eps,
-                           p.z + dim.z + eps ) );
-    }
+      explicit AABB( const Vec3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )
+      {}
 
-    Bounds toBounds( const Vec3& move, float eps = 0.0f ) const
-    {
-      Bounds t;
-
-      if( move.x < 0.0f ) {
-        t.mins.x = p.x - dim.x - 2.0f * eps + move.x;
-        t.maxs.x = p.x + dim.x + 2.0f * eps;
+      Bounds toBounds( float eps = 0.0f ) const
+      {
+        return Bounds( Vec3( p.x - dim.x - eps,
+                             p.y - dim.y - eps,
+                             p.z - dim.z - eps ),
+                       Vec3( p.x + dim.x + eps,
+                             p.y + dim.y + eps,
+                             p.z + dim.z + eps ) );
       }
-      else {
-        t.mins.x = p.x - dim.x - 2.0f * eps;
-        t.maxs.x = p.x + dim.x + 2.0f * eps + move.x;
+
+      Bounds toBounds( const Vec3& move, float eps = 0.0f ) const
+      {
+        Bounds t;
+
+        if( move.x < 0.0f ) {
+          t.mins.x = p.x - dim.x - 2.0f * eps + move.x;
+          t.maxs.x = p.x + dim.x + 2.0f * eps;
+        }
+        else {
+          t.mins.x = p.x - dim.x - 2.0f * eps;
+          t.maxs.x = p.x + dim.x + 2.0f * eps + move.x;
+        }
+        if( move.y < 0.0f ) {
+          t.mins.y = p.y - dim.y - 2.0f * eps + move.y;
+          t.maxs.y = p.y + dim.y + 2.0f * eps;
+        }
+        else {
+          t.mins.y = p.y - dim.y - 2.0f * eps;
+          t.maxs.y = p.y + dim.y + 2.0f * eps + move.y;
+        }
+        if( move.z < 0.0f ) {
+          t.mins.z = p.z - dim.z - 2.0f * eps + move.z;
+          t.maxs.z = p.z + dim.z + 2.0f * eps;
+        }
+        else {
+          t.mins.z = p.z - dim.z - 2.0f * eps;
+          t.maxs.z = p.z + dim.z + 2.0f * eps + move.z;
+        }
+        return t;
       }
-      if( move.y < 0.0f ) {
-        t.mins.y = p.y - dim.y - 2.0f * eps + move.y;
-        t.maxs.y = p.y + dim.y + 2.0f * eps;
+
+      AABB operator + ( const Vec3& v ) const
+      {
+        return AABB( p + v, dim );
       }
-      else {
-        t.mins.y = p.y - dim.y - 2.0f * eps;
-        t.maxs.y = p.y + dim.y + 2.0f * eps + move.y;
+
+      AABB operator - ( const Vec3& v ) const
+      {
+        return AABB( p - v, dim );
       }
-      if( move.z < 0.0f ) {
-        t.mins.z = p.z - dim.z - 2.0f * eps + move.z;
-        t.maxs.z = p.z + dim.z + 2.0f * eps;
+
+      AABB& operator += ( const Vec3& v )
+      {
+        p += v;
+        return *this;
       }
-      else {
-        t.mins.z = p.z - dim.z - 2.0f * eps;
-        t.maxs.z = p.z + dim.z + 2.0f * eps + move.z;
+
+      AABB& operator -= ( const Vec3& v )
+      {
+        p -= v;
+        return *this;
       }
-      return t;
-    }
 
-    AABB operator + ( const Vec3& v ) const
-    {
-      return AABB( p + v, dim );
-    }
+      AABB operator * ( float k ) const
+      {
+        return AABB( p, dim * k );
+      }
 
-    AABB operator - ( const Vec3& v ) const
-    {
-      return AABB( p - v, dim );
-    }
+      AABB operator / ( float k ) const
+      {
+        return AABB( p, dim / k );
+      }
 
-    AABB& operator += ( const Vec3& v )
-    {
-      p += v;
-      return *this;
-    }
+      AABB& operator *= ( float k )
+      {
+        dim *= k;
+        return *this;
+      }
 
-    AABB& operator -= ( const Vec3& v )
-    {
-      p -= v;
-      return *this;
-    }
+      AABB& operator /= ( float k )
+      {
+        dim /= k;
+        return *this;
+      }
 
-    AABB operator * ( float k ) const
-    {
-      return AABB( p, dim * k );
-    }
+      bool includes( const Vec3& v, float eps = 0.0f ) const
+      {
+        Vec3 relPos = v - p;
+        Vec3 d( dim.x + eps,
+                dim.y + eps,
+                dim.z + eps );
 
-    AABB operator / ( float k ) const
-    {
-      return AABB( p, dim / k );
-    }
+        return
+            -d.x <= relPos.x && relPos.x <= d.x &&
+            -d.y <= relPos.y && relPos.y <= d.y &&
+            -d.z <= relPos.z && relPos.z <= d.z;
+      }
 
-    AABB& operator *= ( float k )
-    {
-      dim *= k;
-      return *this;
-    }
+      bool isInside( const AABB& a, float eps = 0.0f ) const
+      {
+        Vec3 relPos = p - a.p;
+        Vec3 d( a.dim.x - dim.x + eps,
+                a.dim.y - dim.y + eps,
+                a.dim.z - dim.z + eps );
 
-    AABB& operator /= ( float k )
-    {
-      dim /= k;
-      return *this;
-    }
+        return
+            -d.x <= relPos.x && relPos.x <= d.x &&
+            -d.y <= relPos.y && relPos.y <= d.y &&
+            -d.z <= relPos.z && relPos.z <= d.z;
+      }
 
-    bool includes( const Vec3& v, float eps = 0.0f ) const
-    {
-      Vec3 relPos = v - p;
-      Vec3 d( dim.x + eps,
-              dim.y + eps,
-              dim.z + eps );
+      bool includes( const AABB& a, float eps = 0.0f ) const
+      {
+        return a.isInside( *this, eps );
+      }
 
-      return
-          -d.x <= relPos.x && relPos.x <= d.x &&
-          -d.y <= relPos.y && relPos.y <= d.y &&
-          -d.z <= relPos.z && relPos.z <= d.z;
-    }
+      bool overlaps( const AABB& a, float eps = 0.0f ) const
+      {
+        Vec3 relPos = a.p - p;
+        Vec3 d( a.dim.x + dim.x + eps,
+                a.dim.y + dim.y + eps,
+                a.dim.z + dim.z + eps );
 
-    bool isInside( const AABB& a, float eps = 0.0f ) const
-    {
-      Vec3 relPos = p - a.p;
-      Vec3 d( a.dim.x - dim.x + eps,
-              a.dim.y - dim.y + eps,
-              a.dim.z - dim.z + eps );
+        return
+            -d.x < relPos.x && relPos.x < d.x &&
+            -d.y < relPos.y && relPos.y < d.y &&
+            -d.z < relPos.z && relPos.z < d.z;
+      }
 
-      return
-          -d.x <= relPos.x && relPos.x <= d.x &&
-          -d.y <= relPos.y && relPos.y <= d.y &&
-          -d.z <= relPos.z && relPos.z <= d.z;
-    }
+      bool isInside( const Bounds& b, float eps = 0.0f ) const
+      {
+        return
+            b.mins.x - eps <= p.x - dim.x && p.x + dim.x <= b.maxs.x + eps &&
+            b.mins.y - eps <= p.y - dim.y && p.y + dim.y <= b.maxs.y + eps &&
+            b.mins.z - eps <= p.z - dim.z && p.z + dim.z <= b.maxs.z + eps;
+      }
 
-    bool includes( const AABB& a, float eps = 0.0f ) const
-    {
-      return a.isInside( *this, eps );
-    }
+      bool includes( const Bounds& b, float eps = 0.0f ) const
+      {
+        return
+            b.mins.x + eps >= p.x - dim.x && p.x + dim.x >= b.maxs.x - eps &&
+            b.mins.y + eps >= p.y - dim.y && p.y + dim.y >= b.maxs.y - eps &&
+            b.mins.z + eps >= p.z - dim.z && p.z + dim.z >= b.maxs.z - eps;
+      }
 
-    bool overlaps( const AABB& a, float eps = 0.0f ) const
-    {
-      Vec3 relPos = a.p - p;
-      Vec3 d( a.dim.x + dim.x + eps,
-              a.dim.y + dim.y + eps,
-              a.dim.z + dim.z + eps );
-
-      return
-          -d.x < relPos.x && relPos.x < d.x &&
-          -d.y < relPos.y && relPos.y < d.y &&
-          -d.z < relPos.z && relPos.z < d.z;
-    }
-
-    bool isInside( const Bounds& b, float eps = 0.0f ) const
-    {
-      return
-          b.mins.x - eps <= p.x - dim.x && p.x + dim.x <= b.maxs.x + eps &&
-          b.mins.y - eps <= p.y - dim.y && p.y + dim.y <= b.maxs.y + eps &&
-          b.mins.z - eps <= p.z - dim.z && p.z + dim.z <= b.maxs.z + eps;
-    }
-
-    bool includes( const Bounds& b, float eps = 0.0f ) const
-    {
-      return
-          b.mins.x + eps >= p.x - dim.x && p.x + dim.x >= b.maxs.x - eps &&
-          b.mins.y + eps >= p.y - dim.y && p.y + dim.y >= b.maxs.y - eps &&
-          b.mins.z + eps >= p.z - dim.z && p.z + dim.z >= b.maxs.z - eps;
-    }
-
-    bool overlaps( const Bounds& b, float eps = 0.0f ) const
-    {
-      return
-          b.mins.x - eps <= p.x + dim.x && p.x - dim.x <= b.maxs.x + eps &&
-          b.mins.y - eps <= p.y + dim.y && p.y - dim.y <= b.maxs.y + eps &&
-          b.mins.z - eps <= p.z + dim.z && p.z - dim.z <= b.maxs.z + eps;
-    }
+      bool overlaps( const Bounds& b, float eps = 0.0f ) const
+      {
+        return
+            b.mins.x - eps <= p.x + dim.x && p.x - dim.x <= b.maxs.x + eps &&
+            b.mins.y - eps <= p.y + dim.y && p.y - dim.y <= b.maxs.y + eps &&
+            b.mins.z - eps <= p.z + dim.z && p.z - dim.z <= b.maxs.z + eps;
+      }
 
   };
 

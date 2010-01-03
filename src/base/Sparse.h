@@ -2,12 +2,12 @@
  *  Sparse.h
  *
  *  Sparse vector
- *  Similar to Vector, but it can have holes in the middle. When a new element is added it first
+ *  Similar to Vector, but it can have holes in the middle. When a new elements are added it first
  *  tries to occupy all free slots, new element is added to the end only if there is no holes in
  *  the middle.
- *  Type should provide int nextSlot field.
+ *  Type should provide int nextSlot[INDEX] field.
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -15,15 +15,15 @@
 
 namespace oz
 {
-  template <class Type>
-  struct Sparse
+  template <class Type, int INDEX = 0>
+  class Sparse
   {
     public:
 
       /**
        * Sparse iterator.
        */
-      struct Iterator : oz::Iterator<Type>
+      class Iterator : public oz::Iterator<Type>
       {
         private:
 
@@ -51,7 +51,7 @@ namespace oz
             do {
               B::elem++;
             }
-            while( B::elem != B::past && B::elem->nextSlot != -1 );
+            while( B::elem != B::past && B::elem->nextSlot[INDEX] != -1 );
 
             return *this;
           }
@@ -84,7 +84,7 @@ namespace oz
           freeSlot = count;
 
           for( int i = count; i < size; i++ ) {
-            data[i].nextSlot = i + 1;
+            data[i].nextSlot[INDEX] = i + 1;
           }
         }
 
@@ -99,7 +99,7 @@ namespace oz
       explicit Sparse() : data( new Type[8] ), size( 8 ), count( 0 ), freeSlot( 0 )
       {
         for( int i = 0; i < size; i++ ) {
-          data[i].nextSlot = i + 1;
+          data[i].nextSlot[INDEX] = i + 1;
         }
       }
 
@@ -111,7 +111,7 @@ namespace oz
           freeSlot( 0 )
       {
         for( int i = 0; i < size; i++ ) {
-          data[i].nextSlot = i + 1;
+          data[i].nextSlot[INDEX] = i + 1;
         }
       }
 
@@ -164,7 +164,7 @@ namespace oz
           return false;
         }
         for( int i = 0; i < size; i++ ) {
-          if( data[i].nextSlot == -1 && data[i] != s.data[i] ) {
+          if( data[i].nextSlot[INDEX] == -1 && data[i] != s.data[i] ) {
             return false;
           }
         }
@@ -182,7 +182,7 @@ namespace oz
           return true;
         }
         for( int i = 0; i < size; i++ ) {
-          if( data[i].nextSlot == -1 && data[i] != s.data[i] ) {
+          if( data[i].nextSlot[INDEX] == -1 && data[i] != s.data[i] ) {
             return true;
           }
         }
@@ -249,7 +249,7 @@ namespace oz
       {
         assert( 0 <= index && index < size );
 
-        return data[index].nextSlot != -1;
+        return data[index].nextSlot[INDEX] != -1;
       }
 
       /**
@@ -259,7 +259,7 @@ namespace oz
       bool contains( const Type& e ) const
       {
         for( int i = 0; i < size; i++ ) {
-          if( data[i].nextSlot == -1 && data[i] == e ) {
+          if( data[i].nextSlot[INDEX] == -1 && data[i] == e ) {
             return true;
           }
         }
@@ -296,7 +296,7 @@ namespace oz
       int index( const Type& e ) const
       {
         for( int i = 0; i < size; i++ ) {
-          if( data[i].nextSlot == -1 && data[i] == e ) {
+          if( data[i].nextSlot[INDEX] == -1 && data[i] == e ) {
             return i;
           }
         }
@@ -311,7 +311,7 @@ namespace oz
       int lastIndex( const Type& e ) const
       {
         for( int i = size - 1; i >= 0; i-- ) {
-          if( data[i].nextSlot == -1 && data[i] == e ) {
+          if( data[i].nextSlot[INDEX] == -1 && data[i] == e ) {
             return i;
           }
         }
@@ -328,9 +328,9 @@ namespace oz
 
         int index = freeSlot;
 
-        freeSlot = data[index].nextSlot;
+        freeSlot = data[index].nextSlot[INDEX];
         data[index] = e;
-        data[index].nextSlot = -1;
+        data[index].nextSlot[INDEX] = -1;
         count++;
 
         return index;
@@ -346,8 +346,8 @@ namespace oz
 
         int index = freeSlot;
 
-        freeSlot = data[index].nextSlot;
-        data[index].nextSlot = -1;
+        freeSlot = data[index].nextSlot[INDEX];
+        data[index].nextSlot[INDEX] = -1;
         count++;
 
         return index;
@@ -364,9 +364,9 @@ namespace oz
 
         int index = freeSlot;
 
-        freeSlot = data[index].nextSlot;
+        freeSlot = data[index].nextSlot[INDEX];
         data[index] = e;
-        data[index].nextSlot = -1;
+        data[index].nextSlot[INDEX] = -1;
         count++;
 
         return index;
@@ -380,7 +380,7 @@ namespace oz
       {
         assert( 0 <= index && index < size );
 
-        data[index].nextSlot = freeSlot;
+        data[index].nextSlot[INDEX] = freeSlot;
         freeSlot = index;
         count--;
       }
@@ -394,7 +394,7 @@ namespace oz
         freeSlot = 0;
 
         for( int i = 0; i < size; i++ ) {
-          data[i].nextSlot = i + 1;
+          data[i].nextSlot[INDEX] = i + 1;
         }
       }
 

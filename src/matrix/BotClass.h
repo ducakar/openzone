@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -14,62 +14,67 @@
 namespace oz
 {
 
-  struct BotClass : DynamicClass
+  class BotClass : public DynamicClass
   {
-    static const int INVENTORY_ITEMS = 16;
-    static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
-        Object::HIT_FUNC_BIT | Object::BOT_BIT;
+    private:
 
-    Vec3   dimCrouch;
+      static const int INVENTORY_ITEMS = 16;
+      static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
+          Object::HIT_FUNC_BIT | Object::BOT_BIT;
 
-    float  camZ;
-    float  crouchCamZ;
+    public:
 
-    float  bobWalkInc;
-    float  bobRunInc;
-    float  bobSwimInc;
-    float  bobSwimRunInc;
-    float  bobRotation;
-    float  bobAmplitude;
-    float  bobSwimAmplitude;
+      Vec3   dimCrouch;
 
-    float  walkMomentum;
-    float  runMomentum;
-    float  crouchMomentum;
-    float  jumpMomentum;
+      float  camZ;
+      float  crouchCamZ;
 
-    float  stepInc;
-    float  stepMax;
-    float  stepRateLimit;
-    float  stepRateCoeff;
-    float  stepRateSupp;
+      float  bobWalkInc;
+      float  bobRunInc;
+      float  bobSwimInc;
+      float  bobSwimRunInc;
+      float  bobRotation;
+      float  bobAmplitude;
+      float  bobSwimAmplitude;
 
-    float  airControl;
-    float  climbControl;
-    float  waterControl;
+      float  walkMomentum;
+      float  runMomentum;
+      float  crouchMomentum;
+      float  jumpMomentum;
 
-    float  grabDistance;
-    float  grabMass;
-    float  throwMomentum;
+      float  stepInc;
+      float  stepMax;
+      float  stepRateLimit;
+      float  stepRateCoeff;
+      float  stepRateSupp;
 
-    float  stamina;
-    float  staminaGain;
-    float  staminaWaterDrain;
-    float  staminaRunDrain;
-    float  staminaJumpDrain;
+      float  airControl;
+      float  climbControl;
+      float  waterControl;
 
-    int    state;
+      float  grabDistance;
+      float  grabMass;
+      float  throwMomentum;
 
-    SVector<String, INVENTORY_ITEMS> inventoryItems;
-    int    weaponItem;
+      float  stamina;
+      float  staminaGain;
+      float  staminaWaterDrain;
+      float  staminaRunDrain;
+      float  staminaJumpDrain;
 
-    String mindType;
-    String mindFunction;
+      int    state;
 
-    static ObjectClass* init( const String& name, const Config* config );
+      SVector<String, INVENTORY_ITEMS> inventoryItems;
+      int    weaponItem;
 
-    virtual Object* create( int index, const Vec3& pos );
-    virtual Object* create( int index, InputStream* istream );
+      String mindType;
+      String mindFunction;
+
+      static ObjectClass* init( const String& name, const Config* config );
+
+      virtual Object* create( int index, const Vec3& pos );
+      virtual Object* create( int index, InputStream* istream );
+
   };
 
 }

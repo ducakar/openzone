@@ -4,13 +4,14 @@
  *  Overload default new and delete operators for slightly better performance (ifndef OZ_ALLOC) or
  *  provide heap allocation statistics (ifdef OZ_ALLOC).
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #include "base.h"
 
 #include <cstdlib>
+#include <cstdio>
 
 namespace oz
 {
@@ -59,6 +60,7 @@ void operator delete ( void* ptr )
 using oz::uint;
 using oz::max;
 using oz::Alloc;
+using oz::log;
 
 void* operator new ( uint size )
 {

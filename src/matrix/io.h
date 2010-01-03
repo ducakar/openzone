@@ -3,7 +3,7 @@
  *
  *  Stream readers/writers and buffer
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -15,7 +15,7 @@ namespace oz
   /**
    * Read-only nonseekable stream.
    */
-  struct InputStream
+  class InputStream
   {
     private:
 
@@ -162,7 +162,7 @@ namespace oz
   /**
    * Write-only nonseekable stream.
    */
-  struct OutputStream
+  class OutputStream
   {
     private:
 
@@ -301,7 +301,7 @@ namespace oz
    * Memory buffer.
    * It can be filled with data from a file or written to a file.
    */
-  struct Buffer
+  class Buffer
   {
     private:
 

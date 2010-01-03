@@ -3,7 +3,7 @@
  *
  *  Graphics render engine
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -47,6 +47,8 @@ namespace client
 
   Render render;
 
+  const float Render::CELL_WIDE_RADIUS = Cell::RADIUS + AABB::MAX_DIM * WIDE_CULL_FACTOR;
+
   const float Render::NIGHT_FOG_COEFF = 2.0f;
   const float Render::NIGHT_FOG_DIST = 0.3f;
   const float Render::WATER_VISIBILITY = 8.0f;
@@ -72,8 +74,6 @@ namespace client
       }
       bool isVisible =
           ( obj->flags & Object::WIDE_CULL_BIT ) ?
-          ( obj->flags & Object::WIDE_WIDE_CULL_BIT ) ?
-              frustum.isVisible( *obj * WIDE_WIDE_CULL_FACTOR ) :
               frustum.isVisible( *obj * WIDE_CULL_FACTOR ) :
               frustum.isVisible( *obj );
 
@@ -122,11 +122,16 @@ namespace client
     frustum.update( visibility );
     frustum.getExtrems( span, camera.p );
 
+    span.minX = max( span.minX - 2, 0 );
+    span.maxX = min( span.maxX + 2, World::MAX - 1 );
+    span.minY = max( span.minY - 2, 0 );
+    span.maxY = min( span.maxY + 2, World::MAX - 1 );
+
     sky.update();
     water.update();
 
     // drawnStructures
-    if( drawnStructures.length() != world.structs.length() ) {
+    if( drawnStructures.length() < world.structs.length() ) {
       drawnStructures.setSize( world.structs.length() );
     }
     drawnStructures.clearAll();
@@ -139,7 +144,7 @@ namespace client
       float y = minYCenter;
 
       for( int j = span.minY; j <= span.maxY; j++, y += Cell::SIZE ) {
-        if( frustum.isVisible( x, y, Cell::RADIUS ) ) {
+        if( frustum.isVisible( x, y, CELL_WIDE_RADIUS  ) ) {
           scheduleCell( i, j );
         }
       }
@@ -348,7 +353,7 @@ namespace client
       uint* pixels = new uint[camera.width * camera.height * 4];
       char fileName[1024];
       time_t ct;
-      struct tm t;
+      class tm t;
 
       ct = time( null );
       t = *localtime( &ct );
@@ -548,7 +553,8 @@ namespace client
     shape.unload();
 
     bsps.free();
-    bsps.trim( 0 );
+    bsps.trim();
+    drawnStructures.setSize( 0 );
 
     models.free();
     models.deallocate();

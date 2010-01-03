@@ -3,7 +3,7 @@
  *
  *  Pool memory allocator
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -47,7 +47,7 @@ namespace oz
 {
 
   template <class Type, int INDEX = 0, int BLOCK_SIZE = 256>
-  struct Pool
+  class Pool
   {
     private:
 
@@ -61,28 +61,34 @@ namespace oz
        * we simply allocate another block. Once a block is allocated it cannot be freed any
        * more unless Pool is empty. Anyways, that would be rarely possible due to fragmentation.
        */
-      struct Block
+      class Block
       {
-        byte   data[BLOCK_SIZE * sizeof( Type )];
-        Block* next[1];
+        private:
 
-        explicit Block()
-        {
-          for( int i = 0; i < BLOCK_SIZE - 1; i++ ) {
-            get( i )->next[INDEX] = get( i + 1 );
+          byte   data[BLOCK_SIZE * sizeof( Type )];
+
+        public:
+
+          Block* next[1];
+
+          explicit Block()
+          {
+            for( int i = 0; i < BLOCK_SIZE - 1; i++ ) {
+              get( i )->next[INDEX] = get( i + 1 );
+            }
+            get( BLOCK_SIZE - 1 )->next[INDEX] = null;
           }
-          get( BLOCK_SIZE - 1 )->next[INDEX] = null;
-        }
 
-        Type* get( int i )
-        {
-          return reinterpret_cast<Type*>( data ) + i;
-        }
+          Type* get( int i )
+          {
+            return reinterpret_cast<Type*>( data ) + i;
+          }
 
-        const Type* get( int i ) const
-        {
-          return reinterpret_cast<const Type*>( data ) + i;
-        }
+          const Type* get( int i ) const
+          {
+            return reinterpret_cast<const Type*>( data ) + i;
+          }
+
       };
 
       // List of allocated blocks

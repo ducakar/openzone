@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -25,7 +25,6 @@ namespace client
 
   void FreeCamProxy::begin()
   {
-    fastMove = false;
     camera.w = 0.0f;
   }
 
@@ -33,6 +32,15 @@ namespace client
   {
     if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
       ui::mouse.doShow = !ui::mouse.doShow;
+    }
+    if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
+      if( camera.tagged != -1 && ( camera.taggedObj->flags & Object::BOT_BIT ) ) {
+        Bot *me = const_cast<Bot*>( static_cast<const Bot*>( camera.taggedObj ) );
+
+        me->state |= Bot::PLAYER_BIT;
+        camera.setBot( me );
+        camera.setState( Camera::BOT );
+      }
     }
   }
 
@@ -73,6 +81,11 @@ namespace client
 
     collider.translate( camera.p, camera.at * 2.0f );
     camera.setTagged( collider.hit.obj );
+  }
+
+  void FreeCamProxy::init()
+  {
+    fastMove = false;
   }
 
 }

@@ -3,7 +3,7 @@
  *
  *  Server initialization and main loop
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -68,7 +68,7 @@ namespace server
     const char* homeVar = getenv( "HOME" );
     String home = String( homeVar == null ? OZ_RC_DIR "/" : homeVar + String( "/" OZ_RC_DIR "/" ) );
 
-    struct stat homeDirStat;
+    class stat homeDirStat;
     if( stat( home.cstr(), &homeDirStat ) ) {
       printf( "No resource dir found, creating '%s' ...", home.cstr() );
 

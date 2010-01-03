@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -24,7 +24,7 @@ namespace oz
       count = 0;
     }
 
-    struct stat fileStat;
+    class stat fileStat;
     if( stat( path, &fileStat ) != 0 || fileStat.st_size > 0x7fffffffl ) {
       return false;
     }

@@ -3,7 +3,7 @@
  *
  *  Bitset
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -17,7 +17,7 @@ namespace oz
    *
    * unit = ulong
    */
-  struct Bitset
+  class Bitset
   {
     private:
 
@@ -147,11 +147,13 @@ namespace oz
        */
       void setUnitSize( int nUnits )
       {
+        assert( size != nUnits );
+
         if( data != null ) {
           delete[] data;
         }
         size = nUnits;
-        data = new ulong[size];
+        data = size == 0 ? null : new ulong[size];
       }
 
       /**
@@ -160,7 +162,7 @@ namespace oz
        */
       void setSize( int nBits )
       {
-        setUnitSize( ( nBits - 1 ) / ULONG_BITSIZE + 1 );
+        setUnitSize( nBits == 0 ? 0 : ( nBits - 1 ) / ULONG_BITSIZE + 1 );
       }
 
       /**

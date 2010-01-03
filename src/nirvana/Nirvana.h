@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -16,14 +16,14 @@ namespace oz
 namespace nirvana
 {
 
-  struct Nirvana
+  class Nirvana
   {
     private:
 
       // mind is only updated once per UPDATE_INTERVAL frames (maybe less, depends on when it was
       // added to the list)
       // to force update, set Mind::FORCE_UPDATE_BIT
-      static const int UPDATE_INTERVAL = 64;
+      static const int UPDATE_INTERVAL = 32;
 
       struct MindCtor
       {

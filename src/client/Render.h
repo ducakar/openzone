@@ -3,7 +3,7 @@
  *
  *  Graphics render engine
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -25,12 +25,12 @@ namespace oz
 namespace client
 {
 
-  struct Render
+  class Render
   {
     private:
 
-      static const float WIDE_CULL_FACTOR = 16.0f;
-      static const float WIDE_WIDE_CULL_FACTOR = 16.0f;
+      static const float WIDE_CULL_FACTOR = 6.0f;
+      static const float CELL_WIDE_RADIUS;
 
       static const float NIGHT_FOG_COEFF;
       static const float NIGHT_FOG_DIST;

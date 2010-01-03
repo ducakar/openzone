@@ -3,7 +3,7 @@
  *
  *  MD2 model class
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -365,17 +365,25 @@ namespace client
     config.load( configFile );
 
     float scaling = config.get( "scale", 0.042f );
-    Vec3 translation = Vec3( config.get( "translate.x", 0.00f ),
-                             config.get( "translate.y", 0.00f ),
-                             config.get( "translate.z", 0.00f ) );
-    weaponTransl     = Vec3( config.get( "weaponTranslate.x", 0.00f ),
-                             config.get( "weaponTranslate.y", 0.00f ),
-                             config.get( "weaponTranslate.z", 0.00f ) );
+    Vec3 translation   = Vec3( config.get( "translate.x", 0.00f ),
+                               config.get( "translate.y", 0.00f ),
+                               config.get( "translate.z", 0.00f ) );
+    Vec3 jumpTranslate = Vec3( config.get( "jumpTranslate.x", 0.00f ),
+                               config.get( "jumpTranslate.y", 0.00f ),
+                               config.get( "jumpTranslate.z", 0.00f ) );
+    weaponTransl       = Vec3( config.get( "weaponTranslate.x", 0.00f ),
+                               config.get( "weaponTranslate.y", 0.00f ),
+                               config.get( "weaponTranslate.z", 0.00f ) );
 
     if( scaling != 1.0f ) {
       scale( scaling );
     }
+
     translate( translation );
+
+    if( !jumpTranslate.isZero() && animList[ANIM_JUMP].lastFrame < nFrames ) {
+      translate( ANIM_JUMP, jumpTranslate );
+    }
 
     if( texId == 0 ) {
       throw Exception( "MD2 model loading error" );
@@ -407,9 +415,9 @@ namespace client
 
   void MD2::translate( const Vec3& t )
   {
-    int max = nVerts * nFrames;
+    int end = nVerts * nFrames;
 
-    for( int i = 0; i < max; i++ ) {
+    for( int i = 0; i < end; i++ ) {
       verts[i] += t;
     }
   }
@@ -417,11 +425,11 @@ namespace client
   void MD2::translate( int animType, const Vec3& t )
   {
     int start = animList[animType].firstFrame * nVerts;
-    int max = ( animList[animType].lastFrame + 1 ) * nVerts;
+    int end = ( animList[animType].lastFrame + 1 ) * nVerts - 1;
 
-    assert( max < nVerts * nFrames );
+    assert( end < nVerts * nFrames );
 
-    for( int i = start; i < max; i++ ) {
+    for( int i = start; i <= end; i++ ) {
       verts[i] += t;
     }
   }

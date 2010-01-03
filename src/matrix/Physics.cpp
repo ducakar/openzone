@@ -3,7 +3,7 @@
  *
  *  Physics engine
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -50,11 +50,15 @@ namespace oz
       if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
         part->lifeTime = 0.0f;
       }
-
       if( collider.hit.obj != null && part->mass != 0.0f ) {
         Object* sObj = const_cast<Object*>( collider.hit.obj );
+        float damage = velocity2 * part->mass;
 
-        sObj->damage( velocity2 * part->mass );
+        if( damage > sObj->type->damageThreshold ) {
+          damage -= sObj->type->damageThreshold;
+          damage *= Math::frand();
+          sObj->damage( sObj->type->damageThreshold + damage );
+        }
       }
     }
 

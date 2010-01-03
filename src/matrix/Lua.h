@@ -3,7 +3,7 @@
  *
  *  Lua scripting engine for Matrix
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -11,16 +11,16 @@
 
 #include "Object.h"
 
-struct lua_State;
+class lua_State;
 
 namespace oz
 {
 
-  struct Structure;
-  struct Bot;
-  struct Particle;
+  class Structure;
+  class Bot;
+  class Particle;
 
-  struct Lua
+  class Lua
   {
     private:
 

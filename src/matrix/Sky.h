@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -15,18 +15,21 @@
 namespace oz
 {
 
-  struct Sky
+  class Sky
   {
-    float heading;
-    float period;
-    float time;
+    public:
 
-    // heading of sun in degrees and day time in seconds
-    void set( float heading, float period, float time );
-    void update();
+      float heading;
+      float period;
+      float time;
 
-    void read( InputStream* istream );
-    void write( OutputStream* ostream );
+      // heading of sun in degrees and day time in seconds
+      void set( float heading, float period, float time );
+      void update();
+
+      void read( InputStream* istream );
+      void write( OutputStream* ostream );
+
   };
 
 }

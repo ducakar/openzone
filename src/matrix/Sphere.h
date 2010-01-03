@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -12,38 +12,40 @@
 namespace oz
 {
 
-  struct Sphere
+  class Sphere
   {
-    Vec3  p;
-    float r;
+    public:
 
-    explicit Sphere()
-    {}
+      Vec3  p;
+      float r;
 
-    explicit Sphere( const Vec3& p_, float r_ ) : p( p_ ), r( r_ )
-    {}
+      explicit Sphere()
+      {}
 
-    Sphere operator + ( const Vec3& v ) const
-    {
-      return Sphere( p + v, r );
-    }
+      explicit Sphere( const Vec3& p_, float r_ ) : p( p_ ), r( r_ )
+      {}
 
-    Sphere operator - ( const Vec3& v ) const
-    {
-      return Sphere( p - v, r );
-    }
+      Sphere operator + ( const Vec3& v ) const
+      {
+        return Sphere( p + v, r );
+      }
 
-    Sphere& operator += ( const Vec3& v )
-    {
-      p += v;
-      return *this;
-    }
+      Sphere operator - ( const Vec3& v ) const
+      {
+        return Sphere( p - v, r );
+      }
 
-    Sphere& operator -= ( const Vec3& v )
-    {
-      p -= v;
-      return *this;
-    }
+      Sphere& operator += ( const Vec3& v )
+      {
+        p += v;
+        return *this;
+      }
+
+      Sphere& operator -= ( const Vec3& v )
+      {
+        p -= v;
+        return *this;
+      }
 
   };
 

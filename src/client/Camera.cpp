@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -57,8 +57,9 @@ namespace client
     mouseYSens         = config.getSet( "camera.mouseYSens", 0.20f );
     keyXSens           = config.getSet( "camera.keysXSens",  100.0f );
     keyYSens           = config.getSet( "camera.keysYSens",  100.0f );
-    smoothCoef         = config.getSet( "camera.smoothCoef", 0.3f );
+    smoothCoef         = config.getSet( "camera.smoothCoef", 0.50f );
     smoothCoef_1       = 1.0f - smoothCoef;
+    isExternal         = true;
 
     p.setZero();
     oldP.setZero();
@@ -79,10 +80,12 @@ namespace client
 
     bot                = -1;
 
-    state              = FREECAM;
-    proxy              = &freeCamProxy;
-
+    freeCamProxy.init();
+    strategicProxy.init();
     botProxy.init();
+
+    state              = NONE;
+    newState           = STRATEGIC;
   }
 
   void Camera::update()
@@ -111,9 +114,7 @@ namespace client
     }
 
     if( newState != state ) {
-      state = newState;
-
-      switch( state ) {
+      switch( newState ) {
         default: {
           assert( false );
         }
@@ -125,13 +126,14 @@ namespace client
           proxy = &strategicProxy;
           break;
         }
-        case INTERNAL:
-        case EXTERNAL: {
+        case BOT: {
           proxy = &botProxy;
           break;
         }
       }
+      isExternal = true;
       proxy->begin();
+      state = newState;
     }
 
     proxy->update();

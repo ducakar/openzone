@@ -3,7 +3,7 @@
  *
  *  Basic iterator classes and utility templates.
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -21,7 +21,7 @@ namespace oz
    * and a constructor of course.
    */
   template <class Type>
-  struct IteratorBase
+  class IteratorBase
   {
     protected:
 
@@ -112,7 +112,7 @@ namespace oz
    * Pointer iterator
    */
   template <class Type>
-  struct Iterator : IteratorBase<Type>
+  class Iterator : public IteratorBase<Type>
   {
     private:
 

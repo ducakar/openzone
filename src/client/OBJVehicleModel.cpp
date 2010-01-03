@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -50,7 +50,7 @@ namespace client
     for( int i = 0; i < Vehicle::CREW_MAX; i++ ) {
       int index = veh->crew[i];
 
-      if( index != -1 && ( index != camera.bot || camera.state == Camera::EXTERNAL ) ) {
+      if( index != -1 && ( index != camera.bot || camera.isExternal ) ) {
         Bot* bot = static_cast<const Bot*>( world.objects[veh->crew[i]] );
 
         glPushMatrix();

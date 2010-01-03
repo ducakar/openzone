@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  struct BotProxy : Proxy
+  class BotProxy : public Proxy
   {
     private:
 
@@ -24,6 +24,7 @@ namespace client
       // because of an obstacle
       static const float THIRD_PERSON_CLIP_DIST = 0.20f;
       static const float BOB_SUPPRESSION_COEF   = 0.80f;
+      static const float TURN_SMOOTHING_COEF    = 0.60f;
 
       // how far behind the eyes the camera should be
       float externalDistFactor;

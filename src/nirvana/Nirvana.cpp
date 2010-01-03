@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -42,20 +42,17 @@ namespace nirvana
     }
     // add minds for new bots
     foreach( i, synapse.addedObjects.iterator() ) {
-      Object* obj = world.objects[*i];
+      const Object* obj = world.objects[*i];
 
       if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
-        Bot* bot = static_cast<Bot*>( obj );
+        const Bot* bot = static_cast<const Bot*>( obj );
+        const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
-        if( ~bot->state & Bot::PLAYER_BIT ) {
-          const BotClass* clazz = static_cast<const BotClass*>( bot->type );
-
-          if( mindClasses.contains( clazz->mindType ) ) {
-            minds << mindClasses.cachedValue().create( bot->index );
-          }
-          else {
-            throw Exception( "Invalid mind type" );
-          }
+        if( mindClasses.contains( clazz->mindType ) ) {
+          minds << mindClasses.cachedValue().create( bot->index );
+        }
+        else {
+          throw Exception( "Invalid mind type" );
         }
       }
     }
@@ -65,7 +62,12 @@ namespace nirvana
   {
     int count = 0;
     foreach( mind, minds.iterator() ) {
-      if( ( mind->flags & Mind::FORCE_UPDATE_BIT ) || count % UPDATE_INTERVAL == updateModulo ) {
+      const Bot* bot = static_cast<const Bot*>( world.objects[mind->botIndex] );
+      assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
+
+      if( ( ~bot->state & Bot::PLAYER_BIT ) &&
+          ( ( mind->flags & Mind::FORCE_UPDATE_BIT ) || count % UPDATE_INTERVAL == updateModulo ) )
+      {
         mind->update();
       }
       count++;

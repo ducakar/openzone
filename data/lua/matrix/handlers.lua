@@ -75,5 +75,5 @@ function Rifle_onShot( l )
 		     3 - math.random() * 6
 
   ozWorldAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
-		  1.0, 1.0, 0.0, 1.9, 0.004, 5.0 );
+		  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
 end

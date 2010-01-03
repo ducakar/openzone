@@ -1,9 +1,9 @@
 /*
  *  SVector.h
  *
- *  Static size vector
+ *  Static-size vector
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -13,14 +13,14 @@ namespace oz
 {
 
   template <class Type, int SIZE>
-  struct SVector
+  class SVector
   {
     public:
 
       /**
        * Vector iterator.
        */
-      struct Iterator : oz::Iterator<Type>
+      class Iterator : public oz::Iterator<Type>
       {
         private:
 

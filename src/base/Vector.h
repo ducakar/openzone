@@ -2,9 +2,9 @@
  *  Vector.h
  *
  *  Vector
- *  It can be also used as stack or small set.
+ *  It can also be used as a stack or a small set.
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -14,14 +14,14 @@ namespace oz
 {
 
   template <class Type>
-  struct Vector
+  class Vector
   {
     public:
 
       /**
        * Vector iterator.
        */
-      struct Iterator : oz::Iterator<Type>
+      class Iterator : public oz::Iterator<Type>
       {
         private:
 
@@ -194,8 +194,10 @@ namespace oz
        * Trim vector, leave at most <code>left</code> elements/capacity.
        * @param left
        */
-      void trim( int left )
+      void trim( int left = 8 )
       {
+        assert( left >= 8 );
+
         int newCapacity = count + left;
 
         if( newCapacity < size ) {

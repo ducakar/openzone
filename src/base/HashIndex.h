@@ -5,7 +5,7 @@
  *  A prime number is recommended as hashtable size unless key distribution is "random".
  *  You can find a list of millions of primes at http://www.bigprimes.net/.
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -15,27 +15,30 @@ namespace oz
 {
 
   template <class Type, int SIZE = 253>
-  struct HashIndex
+  class HashIndex
   {
     private:
 
-      struct Elem
+      class Elem
       {
-        uint  key;
-        Type  value;
-        Elem* next[1];
+        public:
 
-        explicit Elem( uint key_, const Type& value_, Elem* next_ ) : key( key_ ), value( value_ )
-        {
-          next[0] = next_;
-        }
+          uint  key;
+          Type  value;
+          Elem* next[1];
 
-        explicit Elem( uint key_, Elem* next_ ) : key( key_ )
-        {
-          next[0] = next_;
-        }
+          explicit Elem( uint key_, const Type& value_, Elem* next_ ) : key( key_ ), value( value_ )
+          {
+            next[0] = next_;
+          }
+
+          explicit Elem( uint key_, Elem* next_ ) : key( key_ )
+          {
+            next[0] = next_;
+          }
 
         OZ_PLACEMENT_POOL_ALLOC( Elem, 0, SIZE );
+
       };
 
     public:
@@ -43,7 +46,7 @@ namespace oz
       /**
        * HashIndex iterator.
        */
-      struct Iterator : IteratorBase<Elem>
+      class Iterator : public IteratorBase<Elem>
       {
         private:
 

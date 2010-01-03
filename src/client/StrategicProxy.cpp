@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -29,7 +29,7 @@ namespace client
   void StrategicProxy::begin()
   {
     height   = DEFAULT_HEIGHT;
-    fastMove = false;
+    camera.v = -75.0f;
     camera.w = 0.0f;
     camera.setTagged( null );
 
@@ -38,7 +38,19 @@ namespace client
   }
 
   void StrategicProxy::update()
-  {}
+  {
+    if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
+      if( ui::ui.strategic->tagged.length() == 1 ) {
+        Bot *me = static_cast<Bot*>( world.objects[ui::ui.strategic->tagged[0]] );
+
+        if( me != null && ( me->flags & Object::BOT_BIT ) ) {
+          me->state |= Bot::PLAYER_BIT;
+          camera.setBot( me );
+          camera.setState( Camera::BOT );
+        }
+      }
+    }
+  }
 
   void StrategicProxy::prepare()
   {
@@ -80,6 +92,11 @@ namespace client
 
     p.z = max( 0.0f, world.terra.height( p.x, p.y ) ) + height;
     camera.move( p );
+  }
+
+  void StrategicProxy::init()
+  {
+    fastMove = false;
   }
 
 }

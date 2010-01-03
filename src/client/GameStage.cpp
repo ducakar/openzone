@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -29,8 +29,6 @@ namespace client
 
   bool GameStage::update()
   {
-    camera.update();
-
     // wait until nirvana thread has stopped
     SDL_SemWait( matrix.semaphore );
     assert( SDL_SemValue( matrix.semaphore ) == 0 );
@@ -42,29 +40,13 @@ namespace client
     // clean events and remove destroyed objects
     matrix.cleanObjects();
 
-    // interface
-    ui::ui.update();
-
-    if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
-      if( camera.bot == -1 ) {
-        camera.bot = synapse.addObject( "DroidCommander", camera.p );
-
-        Bot* me = static_cast<Bot*>( world.objects[camera.bot] );
-        me->h = camera.h;
-        me->v = camera.v;
-        me->state |= Bot::PLAYER_BIT;
-
-        camera.setBot( me );
-        camera.setState( Camera::INTERNAL );
-      }
-      else {
-        Bot* me = static_cast<Bot*>( world.objects[camera.bot] );
-        me->kill();
-      }
-    }
     if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
       world.sky.time += world.sky.period * 0.25f;
     }
+
+    camera.update();
+    ui::ui.update();
+
     bool doQuit = ui::keyboard.keys[SDLK_ESCAPE];
 
     synapse.clearTickets();
@@ -142,15 +124,16 @@ namespace client
 
     nirvana::nirvana.stop();
 
-    // remove myself
     if( camera.bot != -1 ) {
-      synapse.remove( world.objects[camera.bot] );
+      const_cast<Bot*>( camera.botObj )->state &= ~Bot::PLAYER_BIT;
     }
-    synapse.update();
 
     Buffer buffer( 1024 * 1024 * 10 );
     OutputStream ostream = buffer.outputStream();
     String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
+
+    // to delete removed objects, world.unload only deletes those that haven't been removed yet
+    synapse.update();
 
     matrix.unload( &ostream );
     nirvana::nirvana.unload( &ostream );

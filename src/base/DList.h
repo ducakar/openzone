@@ -4,7 +4,7 @@
  *  Double-linked list
  *  The Type should provide the "prev[INDEX]" and "next[INDEX]" pointers.
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -19,7 +19,7 @@ namespace oz
    * It can only be applied on classes that have <code>next[]</code> and <code>prev[]</code>
    * members.
    * Example:
-   * <pre>struct C
+   * <pre>class C
    * {
    *   C* prev[2];
    *   C* next[2];
@@ -46,14 +46,14 @@ namespace oz
 
 
   template <class Type, int INDEX = 0>
-  struct DList
+  class DList
   {
     public:
 
       /**
        * DList iterator.
        */
-      struct Iterator : IteratorBase<Type>
+      class Iterator : public IteratorBase<Type>
       {
         private:
 
@@ -349,7 +349,7 @@ namespace oz
        * Pop first element from the list.
        * @param e reference to pointer where the pointer to the first element is to be saved
        */
-      void operator >> ( Type *&e )
+      void operator >> ( Type*& e )
       {
         e = popFirst();
       }

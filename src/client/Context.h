@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -21,16 +21,17 @@ namespace oz
 namespace client
 {
 
-  struct MD2;
-  struct MD3;
-  struct OBJ;
+  class MD2;
+  class MD3;
+  class OBJ;
 
-  struct Context
+  class Context
   {
     private:
 
       static const int DEFAULT_MAG_FILTER = GL_LINEAR;
       static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
+      static const int VORBIS_BUFFER_SIZE = 1024 * 1024;
 
       struct Lists
       {
@@ -40,7 +41,7 @@ namespace client
         union
         {
           int count;
-          int nextSlot;
+          int nextSlot[1];
         };
       };
 
@@ -72,6 +73,7 @@ namespace client
 
     private:
 
+      char           vorbisBuffer[VORBIS_BUFFER_SIZE];
       Sparse<Lists>  lists;
 
       HashString< Resource<OBJ*>, 64 > objs;

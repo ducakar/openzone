@@ -3,7 +3,7 @@
  *
  *  Game initialization and main loop
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -49,7 +49,7 @@ namespace client
     }
     if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
-      SDL_ShowCursor( true );
+      SDL_ShowCursor( SDL_TRUE );
       SDLNet_Quit();
       SDL_Quit();
       log.printEnd( " OK" );
@@ -59,7 +59,7 @@ namespace client
     config.deallocate();
 
 #ifdef OZ_ALLOC_STATISTICS
-    log.println( "Heap usage summary {" );
+    log.println( "Heap usage {" );
     log.println( "  current chunks     %d", Alloc::count  );
     log.println( "  current amount     %.2f MiB", float( Alloc::amount ) / ( 1024.0f * 1024.0f ) );
     log.println( "  cumulative chunks  %d", Alloc::sumCount );
@@ -91,7 +91,7 @@ namespace client
 
     rcDir = homeVar + String( "/" OZ_RC_DIR );
 
-    struct stat homeDirStat;
+    class stat homeDirStat;
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource dir found, creating '%s' ...", rcDir.cstr() );
 
@@ -189,7 +189,7 @@ namespace client
                screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
 
     SDL_WM_SetCaption( OZ_WM_TITLE, null );
-    SDL_ShowCursor( false );
+    SDL_ShowCursor( SDL_FALSE );
 
     int modeResult = SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
     if( modeResult == 0 ) {

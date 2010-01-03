@@ -3,7 +3,7 @@
  *
  *  3D vector library
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -12,240 +12,243 @@
 namespace oz
 {
 
-  struct Quat;
+  class Quat;
 
-  struct Vec3
+  class Vec3
   {
-    float x;
-    float y;
-    float z;
+    public:
 
-    explicit Vec3()
-    {}
+      float x;
+      float y;
+      float z;
 
-    explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
-    {}
+      explicit Vec3()
+      {}
 
-    explicit Vec3( const float* v )
-    {
-      *this = *reinterpret_cast<const Vec3*>( v );
-    }
+      explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
+      {}
 
-    static Vec3 zero()
-    {
-      return Vec3( 0.0f, 0.0f, 0.0f );
-    }
+      explicit Vec3( const float* v )
+      {
+        *this = *reinterpret_cast<const Vec3*>( v );
+      }
 
-    operator float* ()
-    {
-      return reinterpret_cast<float*>( this );
-    }
+      static Vec3 zero()
+      {
+        return Vec3( 0.0f, 0.0f, 0.0f );
+      }
 
-    operator const float* () const
-    {
-      return reinterpret_cast<const float*>( this );
-    }
+      operator float* ()
+      {
+        return reinterpret_cast<float*>( this );
+      }
 
-    float& operator [] ( int i )
-    {
-      assert( 0 <= i && i < 3 );
+      operator const float* () const
+      {
+        return reinterpret_cast<const float*>( this );
+      }
 
-      return reinterpret_cast<float*>( this )[i];
-    }
+      float& operator [] ( int i )
+      {
+        assert( 0 <= i && i < 3 );
 
-    const float& operator [] ( int i ) const
-    {
-      assert( 0 <= i && i < 3 );
+        return reinterpret_cast<float*>( this )[i];
+      }
 
-      return reinterpret_cast<const float*>( this )[i];
-    }
+      const float& operator [] ( int i ) const
+      {
+        assert( 0 <= i && i < 3 );
 
-    bool equals( const Vec3& a, float epsilon ) const
-    {
-      return
-          Math::abs( x - a.x ) <= epsilon &&
-          Math::abs( y - a.y ) <= epsilon &&
-          Math::abs( z - a.z ) <= epsilon;
-    }
+        return reinterpret_cast<const float*>( this )[i];
+      }
 
-    // length
-    float operator ! () const
-    {
-      return Math::sqrt( x*x + y*y + z*z );
-    }
+      bool equals( const Vec3& a, float epsilon ) const
+      {
+        return
+            Math::abs( x - a.x ) <= epsilon &&
+            Math::abs( y - a.y ) <= epsilon &&
+            Math::abs( z - a.z ) <= epsilon;
+      }
 
-    // square length
-    float sqL() const
-    {
-      return x*x + y*y + z*z;
-    }
+      // length
+      float operator ! () const
+      {
+        return Math::sqrt( x*x + y*y + z*z );
+      }
 
-    bool isZero() const
-    {
-      return x == 0.0f && y == 0.0f && z == 0.0f;
-    }
+      // square length
+      float sqL() const
+      {
+        return x*x + y*y + z*z;
+      }
 
-    const Vec3& setZero()
-    {
-      x = 0.0f;
-      y = 0.0f;
-      z = 0.0f;
-      return *this;
-    }
+      bool isZero() const
+      {
+        return x == 0.0f && y == 0.0f && z == 0.0f;
+      }
 
-    bool isUnit() const
-    {
-      return x*x + y*y + z*z == 1.0f;
-    }
+      const Vec3& setZero()
+      {
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+        return *this;
+      }
 
-    Vec3 operator ~ () const
-    {
-      assert( x*x + y*y + z*z > 0.0f );
+      bool isUnit() const
+      {
+        return x*x + y*y + z*z == 1.0f;
+      }
 
-      float r = 1.0f / Math::sqrt( x*x + y*y + z*z );
-      return Vec3( x * r, y * r, z * r );
-    }
+      Vec3 operator ~ () const
+      {
+        assert( x*x + y*y + z*z > 0.0f );
 
-    const Vec3& norm()
-    {
-      assert( x*x + y*y + z*z > 0.0f );
+        float r = 1.0f / Math::sqrt( x*x + y*y + z*z );
+        return Vec3( x * r, y * r, z * r );
+      }
 
-      float r = 1.0f / Math::sqrt( x*x + y*y + z*z );
-      x *= r;
-      y *= r;
-      z *= r;
-      return *this;
-    }
+      const Vec3& norm()
+      {
+        assert( x*x + y*y + z*z > 0.0f );
 
-    bool isColinear( const Vec3& v ) const
-    {
-      float p1 = v.x * y * z;
-      float p2 = v.y * x * z;
-      float p3 = v.z * x * y;
+        float r = 1.0f / Math::sqrt( x*x + y*y + z*z );
+        x *= r;
+        y *= r;
+        z *= r;
+        return *this;
+      }
 
-      return p1 == p2 && p1 == p3;
-    }
+      bool isColinear( const Vec3& v ) const
+      {
+        float p1 = v.x * y * z;
+        float p2 = v.y * x * z;
+        float p3 = v.z * x * y;
 
-    bool isColinear( const Vec3& v, float epsilon ) const
-    {
-      float p1 = v.x * y * z;
-      float p2 = v.y * x * z;
-      float p3 = v.z * x * y;
+        return p1 == p2 && p1 == p3;
+      }
 
-      return Math::abs( p1 - p2 ) <= epsilon && Math::abs( p1 - p3 ) <= epsilon;
-    }
+      bool isColinear( const Vec3& v, float epsilon ) const
+      {
+        float p1 = v.x * y * z;
+        float p2 = v.y * x * z;
+        float p3 = v.z * x * y;
 
-    const Vec3& operator + () const
-    {
-      return *this;
-    }
+        return Math::abs( p1 - p2 ) <= epsilon && Math::abs( p1 - p3 ) <= epsilon;
+      }
 
-    Vec3 operator - () const
-    {
-      return Vec3( -x, -y, -z );
-    }
+      const Vec3& operator + () const
+      {
+        return *this;
+      }
 
-    Vec3& operator += ( const Vec3& a )
-    {
-      x += a.x;
-      y += a.y;
-      z += a.z;
-      return *this;
-    }
+      Vec3 operator - () const
+      {
+        return Vec3( -x, -y, -z );
+      }
 
-    const Vec3& operator -= ( const Vec3& a )
-    {
-      x -= a.x;
-      y -= a.y;
-      z -= a.z;
-      return *this;
-    }
+      Vec3& operator += ( const Vec3& a )
+      {
+        x += a.x;
+        y += a.y;
+        z += a.z;
+        return *this;
+      }
 
-    const Vec3& operator *= ( float k )
-    {
-      x *= k;
-      y *= k;
-      z *= k;
-      return *this;
-    }
+      const Vec3& operator -= ( const Vec3& a )
+      {
+        x -= a.x;
+        y -= a.y;
+        z -= a.z;
+        return *this;
+      }
 
-    const Vec3& operator /= ( float k )
-    {
-      assert( k != 0.0f );
+      const Vec3& operator *= ( float k )
+      {
+        x *= k;
+        y *= k;
+        z *= k;
+        return *this;
+      }
 
-      k = 1.0f / k;
-      x *= k;
-      y *= k;
-      z *= k;
-      return *this;
-    }
+      const Vec3& operator /= ( float k )
+      {
+        assert( k != 0.0f );
 
-    Vec3 operator + ( const Vec3& a ) const
-    {
-      return Vec3( x + a.x, y + a.y, z + a.z );
-    }
+        k = 1.0f / k;
+        x *= k;
+        y *= k;
+        z *= k;
+        return *this;
+      }
 
-    Vec3 operator - ( const Vec3& a ) const
-    {
-      return Vec3( x - a.x, y - a.y, z - a.z );
-    }
+      Vec3 operator + ( const Vec3& a ) const
+      {
+        return Vec3( x + a.x, y + a.y, z + a.z );
+      }
 
-    Vec3 operator * ( float k ) const
-    {
-      return Vec3( x * k, y * k, z * k );
-    }
+      Vec3 operator - ( const Vec3& a ) const
+      {
+        return Vec3( x - a.x, y - a.y, z - a.z );
+      }
 
-    Vec3 operator / ( float k ) const
-    {
-      assert( k != 0.0f );
+      Vec3 operator * ( float k ) const
+      {
+        return Vec3( x * k, y * k, z * k );
+      }
 
-      k = 1.0f / k;
-      return Vec3( x * k, y * k, z * k );
-    }
+      Vec3 operator / ( float k ) const
+      {
+        assert( k != 0.0f );
 
-    // dot product
-    float operator * ( const Vec3& a ) const
-    {
-      return x*a.x + y*a.y + z*a.z;
-    }
+        k = 1.0f / k;
+        return Vec3( x * k, y * k, z * k );
+      }
 
-    // cross product
-    Vec3 operator ^ ( const Vec3& a ) const
-    {
-      return Vec3( y*a.z - z*a.y, z*a.x - x*a.z, x*a.y - y*a.x );
-    }
+      // dot product
+      float operator * ( const Vec3& a ) const
+      {
+        return x*a.x + y*a.y + z*a.z;
+      }
 
-    // vector which lies in plane defined by given vectors and is perpendicular to first one
-    Vec3 operator % ( const Vec3& a ) const
-    {
-      // this is actually -( u x v ) x u, where u is* this vector
-      // This equals to:
-      // ( u . u )v - ( u . v )u = |u|^2 * ( v - ( u . v )/( |u|^2 ) * u )
-      // ( the length doesn't matter )
+      // cross product
+      Vec3 operator ^ ( const Vec3& a ) const
+      {
+        return Vec3( y*a.z - z*a.y, z*a.x - x*a.z, x*a.y - y*a.x );
+      }
 
-      // |u|^2, assume it's not 0
-      float k = x*x + y*y + z*z;
+      // vector which lies in plane defined by given vectors and is perpendicular to first one
+      Vec3 operator % ( const Vec3& a ) const
+      {
+        // this is actually -( u x v ) x u, where u is* this vector
+        // This equals to:
+        // ( u . u )v - ( u . v )u = |u|^2 * ( v - ( u . v )/( |u|^2 ) * u )
+        // ( the length doesn't matter )
 
-      assert( k != 0.0f );
+        // |u|^2, assume it's not 0
+        float k = x*x + y*y + z*z;
 
-      k = ( x * a.x + y * a.y + z * a.z ) / k;
-      return a - k * ( *this );
-    }
+        assert( k != 0.0f );
 
-    friend Vec3 operator * ( float k, const Vec3& a )
-    {
-      return Vec3( a.x * k, a.y * k, a.z * k );
-    }
+        k = ( x * a.x + y * a.y + z * a.z ) / k;
+        return a - k * ( *this );
+      }
 
-    // mixed product
-    static float mix( const Vec3& a, const Vec3& b, const Vec3& c )
-    {
-      // 3x3 determinant
-      return
-          a.x * ( b.y * c.z - b.z * c.y ) -
-          a.y * ( b.x * c.z - b.z * c.x ) +
-          a.z * ( b.x * c.y - b.y * c.x );
-    }
+      friend Vec3 operator * ( float k, const Vec3& a )
+      {
+        return Vec3( a.x * k, a.y * k, a.z * k );
+      }
+
+      // mixed product
+      static float mix( const Vec3& a, const Vec3& b, const Vec3& c )
+      {
+        // 3x3 determinant
+        return
+            a.x * ( b.y * c.z - b.z * c.y ) -
+            a.y * ( b.x * c.z - b.z * c.x ) +
+            a.z * ( b.x * c.y - b.y * c.x );
+      }
+
   };
 
 }

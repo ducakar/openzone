@@ -3,7 +3,7 @@
  *
  *  Exception class
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -12,15 +12,18 @@
 namespace oz
 {
 
-  struct Exception
+  class Exception
   {
-    const char* message;
-    const char* file;
-    int        line;
+    public:
 
-    explicit Exception( const char* message_, const char* file_, int line_ ) :
-        message( message_ ), file( file_ ), line( line_ )
-    {}
+      const char* message;
+      const char* file;
+      int        line;
+
+      explicit Exception( const char* message_, const char* file_, int line_ ) :
+          message( message_ ), file( file_ ), line( line_ )
+      {}
+
   };
 
   /**

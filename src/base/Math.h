@@ -3,7 +3,7 @@
  *
  *  Replacement for math.h and some other utility functions
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -12,7 +12,7 @@
 namespace oz
 {
 
-  struct Math
+  class Math
   {
     private:
 
@@ -200,7 +200,8 @@ namespace oz
         return v & ( v - 1 ) == 0;
       }
 
-      static void seed( uint seed );
+      // ponter to srand in stdlib.h
+      static void ( *const seed )( uint seed );
 
       // random integer between 0 and RAND_MAX == INT_MAX
       // (pointer to rand() function in stdlib.h)

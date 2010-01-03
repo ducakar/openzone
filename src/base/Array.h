@@ -4,7 +4,7 @@
  *  Static-size array.
  *  The advantage over C++ arrays it that is has bounds checking and an iterator.
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -14,14 +14,14 @@ namespace oz
 {
 
   template <class Type, int SIZE>
-  struct Array
+  class Array
   {
     public:
 
       /**
        * Array iterator.
        */
-      struct Iterator : oz::Iterator<Type>
+      class Iterator : oz::Iterator<Type>
       {
         private:
 

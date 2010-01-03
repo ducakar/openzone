@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -97,7 +97,7 @@ namespace ui
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
     glRasterPos2i( x, y );
-    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, text->pixels );
+    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
 
     textWidth = text->w;
     SDL_FreeSurface( text );
@@ -127,7 +127,7 @@ namespace ui
     baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
 
     glRasterPos2i( baseX - text->w / 2, baseY - text->h / 2 );
-    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, text->pixels );
+    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
 
     textWidth = text->w;
     SDL_FreeSurface( text );
@@ -157,7 +157,7 @@ namespace ui
     baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
 
     glRasterPos2i( x, baseY - text->h / 2 );
-    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, text->pixels );
+    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
 
     textWidth = text->w;
     SDL_FreeSurface( text );

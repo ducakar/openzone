@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2009, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
@@ -479,7 +479,7 @@ namespace oz
 
         collider.translate( eye, look, this );
 
-        const Dynamic* obj = static_cast<const Dynamic*>( world.objects[collider.hit.obj->index] );
+        const Dynamic* obj = static_cast<const Dynamic*>( collider.hit.obj );
         if( obj != null && ( obj->flags & ITEM_BIT ) ) {
           assert( obj->flags & DYNAMIC_BIT );
 
