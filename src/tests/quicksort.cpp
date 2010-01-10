@@ -16,7 +16,7 @@
 
 using namespace std;
 
-template <class Type, int STACK_SIZE>
+template <typename Type, int STACK_SIZE>
 inline void aSort( Type* array, int count )
 {
   Type*  stack[STACK_SIZE];
@@ -78,7 +78,7 @@ inline void aSort( Type* array, int count )
   while( sp != stack );
 }
 
-template <class Type>
+template <typename Type>
 inline void arSort( Type* first, Type* last )
 {
   if( first < last ) {
@@ -112,7 +112,7 @@ inline void arSort( Type* first, Type* last )
   }
 }
 
-template <class Type>
+template <typename Type>
 static void oaSort( Type* array, int begin, int end )
 {
   int first = begin;

@@ -19,7 +19,7 @@ namespace oz
    * It can only be applied on classes that have <code>next[]</code> and <code>prev[]</code>
    * members.
    * Example:
-   * <pre>class C
+   * <pre>struct C
    * {
    *   C* prev[2];
    *   C* next[2];
@@ -57,7 +57,6 @@ namespace oz
       {
         private:
 
-          // base class
           typedef IteratorBase<Type> B;
 
         public:

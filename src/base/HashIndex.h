@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  template <class Type, int SIZE = 253>
+  template <typename Type, int SIZE = 253>
   class HashIndex
   {
     private:

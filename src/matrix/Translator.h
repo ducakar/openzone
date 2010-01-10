@@ -49,7 +49,6 @@ namespace oz
         String name;
         String path;
 
-        Resource() {}
         Resource( const String& name_, const String& path_ ) : name( name_ ), path( path_ ) {}
       };
 

@@ -41,7 +41,7 @@ namespace client
   {
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
       if( ui::ui.strategic->tagged.length() == 1 ) {
-        Bot *me = static_cast<Bot*>( world.objects[ui::ui.strategic->tagged[0]] );
+        Bot* me = static_cast<Bot*>( world.objects[ui::ui.strategic->tagged[0]] );
 
         if( me != null && ( me->flags & Object::BOT_BIT ) ) {
           me->state |= Bot::PLAYER_BIT;

@@ -25,10 +25,6 @@ namespace oz
   int  Alloc::maxCount  = 0;
   long Alloc::maxAmount = 0;
 
-  void* ( *const Alloc::malloc )( uint )         = ::malloc;
-  void  ( *const Alloc::free )( void* )          = ::free;
-  void* ( *const Alloc::realloc )( void*, uint ) = ::realloc;
-
 }
 
 #ifndef OZ_ALLOC_STATISTICS
@@ -45,12 +41,12 @@ void* operator new[] ( uint size )
   return malloc( size );
 }
 
-void operator delete[] ( void* ptr )
+void operator delete ( void* ptr )
 {
   free( ptr );
 }
 
-void operator delete ( void* ptr )
+void operator delete[] ( void* ptr )
 {
   free( ptr );
 }

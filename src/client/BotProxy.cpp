@@ -294,8 +294,8 @@ namespace client
 
   void BotProxy::init()
   {
-    externalDistFactor = config.getSet( "camera.botProxy.externalDistFactor", 2.75f );
-    isExternal         = config.getSet( "camera.isExternal", false );
+    externalDistFactor = config.getSet( "botProxy.externalDistFactor", 2.75f );
+    isExternal         = config.getSet( "botProxy.isExternal", false );
     isFreelook         = false;
   }
 

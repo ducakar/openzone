@@ -12,7 +12,8 @@ option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 
 # compiler and linker flags
 set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wconversion -Wdisabled-optimization" )
-set( warnings "${warnings} -Wredundant-decls -Woverloaded-virtual -Wnon-virtual-dtor" )
+set( warnings "${warnings} -Wredundant-decls -Woverloaded-virtual -Wnon-virtual-dtor -Wsign-promo" )
+set( warnings "${warnings} -Wctor-dtor-privacy -Wstrict-overflow" )
 set( flags "-fmessage-length=0 -pipe" )
 set( libs "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
 set( arch_flags "-march=i686 -mtune=generic -mmmx -msse -mfpmath=sse" )

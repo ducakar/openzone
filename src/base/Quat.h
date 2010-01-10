@@ -90,7 +90,7 @@ namespace oz
         return Quat( -x, -y, -z, -w );
       }
 
-      const Quat& conj()
+      Quat& conj()
       {
         x = -x;
         y = -y;
@@ -103,7 +103,7 @@ namespace oz
         return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f;
       }
 
-      const Quat& setZero()
+      Quat& setZero()
       {
         x = 0.0f;
         y = 0.0f;
@@ -117,7 +117,7 @@ namespace oz
         return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f;
       }
 
-      const Quat& setId()
+      Quat& setId()
       {
         x = 0.0f;
         y = 0.0f;
@@ -139,7 +139,7 @@ namespace oz
         return Quat( x * r, y * r, z * r, w * r );
       }
 
-      const Quat& norm()
+      Quat& norm()
       {
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
@@ -151,7 +151,7 @@ namespace oz
         return *this;
       }
 
-      const Quat& operator + () const
+      Quat operator + () const
       {
         return *this;
       }
@@ -161,7 +161,7 @@ namespace oz
         return Quat( -x, -y, -z, -w );
       }
 
-      const Quat& operator += ( const Quat& a )
+      Quat& operator += ( const Quat& a )
       {
         x += a.x;
         y += a.y;
@@ -170,7 +170,7 @@ namespace oz
         return *this;
       }
 
-      const Quat& operator -= ( const Quat& a )
+      Quat& operator -= ( const Quat& a )
       {
         x -= a.x;
         y -= a.y;
@@ -179,7 +179,7 @@ namespace oz
         return *this;
       }
 
-      const Quat& operator *= ( float k )
+      Quat& operator *= ( float k )
       {
         x *= k;
         y *= k;
@@ -188,7 +188,7 @@ namespace oz
         return *this;
       }
 
-      const Quat& operator /= ( float k )
+      Quat& operator /= ( float k )
       {
         assert( k != 0.0f );
 
@@ -201,7 +201,7 @@ namespace oz
       }
 
       // quaternion multiplication
-      const Quat& operator ^= ( const Quat& a )
+      Quat& operator ^= ( const Quat& a )
       {
         float tx = x, ty = y, tz = z;
 

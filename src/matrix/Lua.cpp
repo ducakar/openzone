@@ -34,8 +34,6 @@ namespace oz
 
   Lua lua;
 
-  const char* Lua::HANDLERS_FILE = "lua/handlers.luac";
-
   static int ozPrintln( lua_State* l )
   {
     log.println( "M> %s", lua_tostring( l, 1 ) );
@@ -1563,6 +1561,7 @@ namespace oz
     obj      = self;
     str      = null;
     part     = null;
+    event    = List<Object::Event>::Iterator();
 
     objIndex = 0;
     strIndex = 0;

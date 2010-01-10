@@ -78,7 +78,7 @@ namespace oz
 
       struct Lightmap
       {
-        char bits[LIGHTMAP_SIZE];
+        ubyte bits[LIGHTMAP_SIZE];
       };
 
       struct VisualData
@@ -87,8 +87,7 @@ namespace oz
         int     clusterLength;
         Bitset* bitsets;
 
-        VisualData() : bitsets( null )
-        {}
+        VisualData() : bitsets( null ) {}
 
         ~VisualData()
         {

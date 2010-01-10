@@ -35,7 +35,7 @@ namespace client
     }
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
       if( camera.tagged != -1 && ( camera.taggedObj->flags & Object::BOT_BIT ) ) {
-        Bot *me = const_cast<Bot*>( static_cast<const Bot*>( camera.taggedObj ) );
+        Bot* me = const_cast<Bot*>( static_cast<const Bot*>( camera.taggedObj ) );
 
         me->state |= Bot::PLAYER_BIT;
         camera.setBot( me );

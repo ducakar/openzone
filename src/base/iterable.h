@@ -20,7 +20,7 @@ namespace oz
    * <code>Iterator& operator -- ()</code> (optional)<br>
    * and a constructor of course.
    */
-  template <class Type>
+  template <typename Type>
   class IteratorBase
   {
     protected:
@@ -111,12 +111,11 @@ namespace oz
   /**
    * Pointer iterator
    */
-  template <class Type>
+  template <typename Type>
   class Iterator : public IteratorBase<Type>
   {
     private:
 
-      // base class
       typedef IteratorBase<Type> B;
 
     protected:
@@ -157,6 +156,7 @@ namespace oz
 
       /**
        * Advance to next element.
+       * @return
        */
       Iterator& operator ++ ()
       {
@@ -168,6 +168,7 @@ namespace oz
 
       /**
        * Go to previous element.
+       * @return
        */
       Iterator& operator -- ()
       {
@@ -222,7 +223,7 @@ namespace oz
    * @param iDest
    * @param value
    */
-  template <class Iter, class Value>
+  template <class Iter, typename Value>
   inline void iSet( Iter iDest, const Value& value )
   {
     while( !iDest.isPassed() ) {
@@ -271,7 +272,7 @@ namespace oz
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
-  template <class Iter, class Value>
+  template <class Iter, typename Value>
   inline Iter iIndex( Iter iSrc, const Value& value )
   {
     while( !iSrc.isPassed() ) {
@@ -289,7 +290,7 @@ namespace oz
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
-  template <class BackIter, class Value>
+  template <class BackIter, typename Value>
   inline BackIter iLastIndex( BackIter iSrc, const Value& value )
   {
     while( !iSrc.isPassed() ) {

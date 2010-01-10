@@ -12,19 +12,18 @@
 namespace oz
 {
 
-  template <class Type, int SIZE>
+  template <typename Type, int SIZE>
   class SVector
   {
     public:
 
       /**
-       * Vector iterator.
+       * SVector iterator.
        */
       class Iterator : public oz::Iterator<Type>
       {
         private:
 
-          // base class
           typedef oz::Iterator<Type> B;
 
         public:
@@ -47,8 +46,41 @@ namespace oz
 
     private:
 
+      /**
+       * Uninitialized data.
+       */
+      class Block
+      {
+        public:
+
+          char data[SIZE * sizeof( Type )];
+
+          operator Type* ()
+          {
+            return reinterpret_cast<Type*>( data );
+          }
+
+          operator const Type* () const
+          {
+            return reinterpret_cast<const Type*>( data );
+          }
+
+          Type& operator [] ( int i )
+          {
+            return reinterpret_cast<Type*>( data )[i];
+          }
+
+          const Type& operator [] ( int i ) const
+          {
+            return reinterpret_cast<const Type*>( data )[i];
+          }
+
+      };
+
+    private:
+
       // Pointer to data array
-      Type data[SIZE];
+      Block data;
       // Number of elements in vector
       int  count;
 
@@ -66,7 +98,7 @@ namespace oz
        */
       SVector( const SVector& v ) : count( v.count )
       {
-        aCopy( data, v.data, count );
+        aConstruct<Type>( data, v.data, count );
       }
 
       /**
@@ -78,8 +110,11 @@ namespace oz
       {
         assert( &v != this );
 
+        for( int i = 0; i < count; i++ ) {
+          destruct<Type>( data + i );
+          construct<Type>( data + i, v.data );
+        }
         count = v.count;
-        aCopy( data, v.data, count );
         return *this;
       }
 
@@ -90,7 +125,7 @@ namespace oz
        */
       bool operator == ( const SVector& v ) const
       {
-        return count == v.count && aEquals( data, v.data, count );
+        return count == v.count && aEquals<Type>( data, v.data, count );
       }
 
       /**
@@ -100,7 +135,7 @@ namespace oz
        */
       bool operator != ( const SVector& v ) const
       {
-        return count != v.count || !aEquals( data, v.data, count );
+        return count != v.count || !aEquals<Type>( data, v.data, count );
       }
 
       /**
@@ -198,7 +233,7 @@ namespace oz
        */
       int index( const Type& e ) const
       {
-        return aIndex( data, e, count );
+        return aIndex<Type>( data, e, count );
       }
 
       /**
@@ -208,7 +243,7 @@ namespace oz
        */
       int lastIndex( const Type& e ) const
       {
-        return aLastIndex( data, e, count );
+        return aLastIndex<Type>( data, e, count );
       }
 
       /**
@@ -258,6 +293,7 @@ namespace oz
       {
         assert( count < SIZE );
 
+        construct<Type>( data + count );
         count++;
       }
 
@@ -269,7 +305,7 @@ namespace oz
       {
         assert( count < SIZE );
 
-        data[count] = e;
+        construct<Type>( data + count, e );
         count++;
       }
 
@@ -281,7 +317,7 @@ namespace oz
       {
         assert( count < SIZE );
 
-        data[count] = e;
+        construct<Type>( data + count, e );
         count++;
       }
 
@@ -302,7 +338,7 @@ namespace oz
       {
         assert( count < SIZE );
 
-        data[count] = e;
+        construct<Type>( data + count, e );
         count++;
       }
 
@@ -327,7 +363,7 @@ namespace oz
         assert( SIZE >= newCount );
 
         for( int i = 0; i < arrayCount; i++ ) {
-          data[count + i] = array[i];
+          aConstruct<Type>( data + count, array, arrayCount );
         }
         count = newCount;
       }
@@ -385,7 +421,8 @@ namespace oz
         assert( 0 <= index && index <= count );
         assert( count < SIZE );
 
-        aRCopy( data + index + 1, data + index, count - index );
+        construct<Type>( data + count );
+        aReverseCopy<Type>( data + index + 1, data + index, count - index );
         data[index] = e;
         count++;
       }
@@ -400,6 +437,7 @@ namespace oz
         assert( count != 0 );
 
         count--;
+        destruct<Type>( data + count );
         return *this;
       }
 
@@ -412,7 +450,8 @@ namespace oz
         assert( 0 <= index && index < count );
 
         count--;
-        aCopy( data + index, data + index + 1, count - index );
+        aCopy<Type>( data + index, data + index + 1, count - index );
+        destruct<Type>( data + count );
       }
 
       /**
@@ -422,11 +461,12 @@ namespace oz
        */
       bool exclude( const Type& e )
       {
-        int i = aIndex( data, e, count );
+        int i = aIndex<Type>( data, e, count );
 
         if( i != -1 ) {
           count--;
-          aCopy( data + i, data + i + 1, count - i );
+          aCopy<Type>( data + i, data + i + 1, count - i );
+          destruct<Type>( data + count );
 
           return true;
         }
@@ -468,7 +508,8 @@ namespace oz
         Type e = data[0];
 
         count--;
-        aCopy( data, data + 1, count );
+        aCopy<Type>( data, data + 1, count );
+        destruct<Type>( data + count );
 
         return e;
       }
@@ -491,8 +532,10 @@ namespace oz
         assert( count != 0 );
 
         count--;
+        Type e = data[count];
+        destruct( data + count );
 
-        return data[count];
+        return e;
       }
 
       /**
@@ -506,6 +549,7 @@ namespace oz
       // remove all elements
       void clear()
       {
+        aDestruct<Type>( data, count );
         count = 0;
       }
 
@@ -515,7 +559,7 @@ namespace oz
        */
       void free()
       {
-        aFree( data, count );
+        aFree<Type>( data, count );
         clear();
       }
 

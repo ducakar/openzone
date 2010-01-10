@@ -269,10 +269,10 @@ namespace client
     else {
       lightMaps = new uint[bsp->nLightmaps];
       for( int i = 0; i < bsp->nLightmaps; i++ ) {
-        ubyte* bits = reinterpret_cast<ubyte*>( bsp->lightmaps[i].bits );
+        ubyte* bits = bsp->lightmaps[i].bits;
 
         for( int j = 0; j < oz::BSP::LIGHTMAP_SIZE; j++ ) {
-          bits[j] = ubyte( bits[j] + ubyte( float( 255 - bits[j] ) * GAMMA_CORR ) );
+          bits[j] = ubyte( bits[j] + int( float( 255 - bits[j] ) * GAMMA_CORR ) );
         }
         lightMaps[i] = context.createTexture( bits,
                                               oz::BSP::LIGHTMAP_DIM,

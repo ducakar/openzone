@@ -80,7 +80,9 @@ namespace nirvana
     uint timeBegin;
 
     try{
+#ifndef OZ_MINGW32
       nirvana.sync();
+#endif
 
       // prepare semaphores for the first world update
       SDL_SemPost( matrix.semaphore );
@@ -89,11 +91,13 @@ namespace nirvana
       while( nirvana.isAlive ) {
         timeBegin = SDL_GetTicks();
 
+#ifndef OZ_MINGW32
         // FIXME freezes on Windows, works fine on Wine?
         nirvana.sync();
 
         // update minds
         nirvana.update();
+#endif
 
         timer.nirvanaMillis += SDL_GetTicks() - timeBegin;
 
