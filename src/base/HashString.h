@@ -12,7 +12,7 @@
 namespace oz
 {
 
-  template <class Type, int SIZE = 256>
+  template <typename Type, int SIZE = 256>
   class HashString
   {
     private:
@@ -49,7 +49,6 @@ namespace oz
       {
         private:
 
-          // base class
           typedef IteratorBase<Elem> B;
 
           Elem* const* const data;

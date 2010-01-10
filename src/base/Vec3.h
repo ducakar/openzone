@@ -108,7 +108,7 @@ namespace oz
         return Vec3( x * r, y * r, z * r );
       }
 
-      const Vec3& norm()
+      Vec3& norm()
       {
         assert( x*x + y*y + z*z > 0.0f );
 
@@ -137,7 +137,7 @@ namespace oz
         return Math::abs( p1 - p2 ) <= epsilon && Math::abs( p1 - p3 ) <= epsilon;
       }
 
-      const Vec3& operator + () const
+      Vec3 operator + () const
       {
         return *this;
       }
@@ -155,7 +155,7 @@ namespace oz
         return *this;
       }
 
-      const Vec3& operator -= ( const Vec3& a )
+      Vec3& operator -= ( const Vec3& a )
       {
         x -= a.x;
         y -= a.y;
@@ -163,7 +163,7 @@ namespace oz
         return *this;
       }
 
-      const Vec3& operator *= ( float k )
+      Vec3& operator *= ( float k )
       {
         x *= k;
         y *= k;
@@ -171,7 +171,7 @@ namespace oz
         return *this;
       }
 
-      const Vec3& operator /= ( float k )
+      Vec3& operator /= ( float k )
       {
         assert( k != 0.0f );
 

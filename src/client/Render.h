@@ -46,7 +46,6 @@ namespace client
         float distance;
         const Object* obj;
 
-        ObjectEntry() {}
         ObjectEntry( float distance_, const Object* obj_ ) : distance( distance_ ), obj( obj_ ) {}
 
         // sort in reverse order (farest to nearest)

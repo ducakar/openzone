@@ -48,29 +48,27 @@ namespace oz
         buffer[0] = '\0';
       }
 
-      String( const String& s ) : count( s.count )
-      {
-        ensureCapacity();
-        aCopy( buffer, s.buffer, count + 1 );
-      }
-
-      String( const char* s )
-      {
-        assert( s != null );
-
-        count = length( s );
-        ensureCapacity();
-        aCopy( buffer, s, count + 1 );
-      }
-
       String( const char* s, int count_ ) : count( count_ )
       {
-        assert( s != null );
+        assert( s != null && s != baseBuffer );
         assert( length( s ) >= count );
 
         ensureCapacity();
         aCopy( buffer, s, count );
         buffer[count] = '\0';
+
+        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+      }
+
+      String( const char* s )
+      {
+        assert( s != null && s != baseBuffer );
+
+        count = length( s );
+        ensureCapacity();
+        aCopy( buffer, s, count + 1 );
+
+        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
       String( bool b ) : buffer( baseBuffer )
@@ -97,6 +95,8 @@ namespace oz
           buffer[4] = 'e';
           buffer[5] = '\0';
         }
+
+        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
       String( int n ) : buffer( baseBuffer ), count( 1 )
@@ -133,13 +133,27 @@ namespace oz
           buffer[i] = char( '0' + ( n % 10 ) );
           n /= 10;
         }
+
+        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
       String( float f );
       String( double d );
 
+      String( const String& s ) : count( s.count )
+      {
+        assert( &s != this );
+
+        ensureCapacity();
+        aCopy( buffer, s.buffer, count + 1 );
+
+        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+      }
+
       ~String()
       {
+        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+
         if( buffer != baseBuffer ) {
           delete[] buffer;
         }
@@ -167,6 +181,8 @@ namespace oz
         ensureCapacity();
         aCopy( buffer, s, count + 1 );
 
+        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+
         return *this;
       }
 
@@ -181,6 +197,8 @@ namespace oz
         }
         ensureCapacity();
         aCopy( buffer, s.buffer, count + 1 );
+
+        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 
         return *this;
       }

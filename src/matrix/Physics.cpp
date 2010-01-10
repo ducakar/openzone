@@ -27,10 +27,10 @@ namespace oz
 
   const float Physics::STICK_VELOCITY         = 0.015f;
   const float Physics::SLICK_STICK_VELOCITY   = 0.0001f;
+  const float Physics::BOTTOM_STICK_VELOCITY  = 0.005f;
   const float Physics::AIR_STICK_VELOCITY     = 0.0001f;
   const float Physics::AIR_FRICTION           = 0.02f;
-  const float Physics::IN_WATER_FRICTION      = 0.08f;
-  const float Physics::ON_WATER_FRICTION      = 0.30f;
+  const float Physics::WATER_FRICTION         = 0.08f;
   const float Physics::LADDER_FRICTION        = 0.65f;
   const float Physics::FLOOR_FRICTION         = 0.40f;
   const float Physics::OBJ_FRICTION           = 0.40f;
@@ -122,8 +122,31 @@ namespace oz
       else if( obj->flags & Object::IN_WATER_BIT ) {
         float lift = ( 0.5f * obj->depth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
 
-        obj->momentum *= 1.0f - IN_WATER_FRICTION;
-        obj->momentum.z += lift + G_VELOCITY;
+        obj->momentum *= 1.0f - WATER_FRICTION;
+        obj->momentum.z += lift;
+
+        // (partial)underwaterwalk
+        if( ( obj->flags & Object::ON_FLOOR_BIT ) || obj->lower != -1 ) {
+          float dx = obj->momentum.x;
+          float dy = obj->momentum.y;
+          float dv2 = dx*dx + dy*dy;
+
+          if( dv2 <= BOTTOM_STICK_VELOCITY ) {
+            obj->momentum.x = 0.0f;
+            obj->momentum.y = 0.0f;
+
+            if( obj->momentum.z > 0.0f ) {
+              obj->momentum.z += G_VELOCITY;
+            }
+            else {
+              obj->momentum.z = 0.0f;
+              return false;
+            }
+          }
+        }
+        else {
+          obj->momentum.z += G_VELOCITY;
+        }
       }
       // on ladder
       else if( obj->flags & Object::ON_LADDER_BIT ) {

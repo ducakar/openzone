@@ -47,7 +47,7 @@ namespace client
 
     public:
 
-      template <class Type>
+      template <typename Type>
       struct Resource
       {
         Type id;
@@ -59,7 +59,7 @@ namespace client
         explicit Resource() : nUsers( 0 ) {}
       };
 
-      template <class Type>
+      template <typename Type>
       struct Resource<Type*>
       {
         Type* object;

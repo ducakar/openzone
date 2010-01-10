@@ -918,6 +918,7 @@ namespace nirvana
     obj      = self;
     str      = null;
     part     = null;
+    event    = List<Object::Event>::Iterator();
 
     objIndex = 0;
     strIndex = 0;

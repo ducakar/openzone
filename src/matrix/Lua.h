@@ -24,8 +24,6 @@ namespace oz
   {
     private:
 
-      static const char* HANDLERS_FILE;
-
       lua_State* l;
 
       void callFunc( const char* functionName, int index );

@@ -13,7 +13,7 @@
 namespace oz
 {
 
-  template <class Type>
+  template <typename Type, int GRANULARITY = 8>
   class Vector
   {
     public:
@@ -25,7 +25,6 @@ namespace oz
       {
         private:
 
-          // base class
           typedef oz::Iterator<Type> B;
 
         public:
@@ -62,8 +61,7 @@ namespace oz
       {
         if( size == count ) {
           size *= 2;
-          assert( size <= 1024*1024*10 );
-          data = aRealloc( data, count, size );
+          data = Alloc::reallocate( data, count, size );
         }
       }
 
@@ -72,23 +70,25 @@ namespace oz
       /**
        * Create empty vector with initial capacity 8.
        */
-      explicit Vector() : data( new Type[8] ), size( 8 ), count( 0 )
+      explicit Vector() : data( Alloc::allocate<Type>( 8 ) ), size( 8 ), count( 0 )
       {}
 
       /**
        * Create empty vector with given initial capacity.
        * @param initSize
        */
-      explicit Vector( int initSize ) : data( new Type[initSize] ), size( initSize ), count( 0 )
+      explicit Vector( int initSize ) : data( Alloc::allocate<Type>( initSize ) ),
+          size( initSize ), count( 0 )
       {}
 
       /**
        * Copy constructor.
        * @param v
        */
-      Vector( const Vector& v ) : data( new Type[v.size] ), size( v.size ), count( v.count )
+      Vector( const Vector& v ) : data( Alloc::allocate<Type>( v.size ) ),
+          size( v.size ), count( v.count )
       {
-        aCopy( data, v.data, count );
+        aConstruct( data, v.data, count );
       }
 
       /**
@@ -96,7 +96,8 @@ namespace oz
        */
       ~Vector()
       {
-        delete[] data;
+        aDestruct( data, count );
+        Alloc::deallocate( data );
       }
 
       /**
@@ -108,13 +109,14 @@ namespace oz
       {
         assert( &v != this );
 
+        aDestruct( data, count );
         // create new data array of the new data doesn't fit, keep the old one otherwise
         if( size < v.count ) {
-          delete[] data;
-          data = new Type[v.size];
+          Alloc::deallocate( data );
+          data = Alloc::allocate<Type>( v.size );
         }
+        aConstruct( data, v.data, v.count );
         count = v.count;
-        aCopy( data, v.data, count );
         return *this;
       }
 
@@ -194,15 +196,15 @@ namespace oz
        * Trim vector, leave at most <code>left</code> elements/capacity.
        * @param left
        */
-      void trim( int left = 8 )
+      void trim( int granularity = GRANULARITY )
       {
-        assert( left >= 8 );
+        assert( granularity >= 8 );
 
-        int newCapacity = count + left;
+        int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
 
-        if( newCapacity < size ) {
-          size = newCapacity;
-          data = aRealloc( data, count, size );
+        if( newSize < size ) {
+          size = newSize;
+          data = Alloc::reallocate( data, count, size );
         }
       }
 
@@ -309,7 +311,7 @@ namespace oz
       void operator << ( const Type& e )
       {
         ensureCapacity();
-        data[count] = e;
+        construct( data + count, e );
         count++;
       }
 
@@ -319,6 +321,7 @@ namespace oz
       void add()
       {
         ensureCapacity();
+        construct( data + count );
         count++;
       }
 
@@ -329,7 +332,7 @@ namespace oz
       void add( const Type& e )
       {
         ensureCapacity();
-        data[count] = e;
+        construct( data + count, e );
         count++;
       }
 
@@ -349,7 +352,7 @@ namespace oz
       void pushLast( const Type& e )
       {
         ensureCapacity();
-        data[count] = e;
+        construct( data + count, e );
         count++;
       }
 
@@ -372,12 +375,10 @@ namespace oz
         int newCount = count + arrayCount;
 
         if( size < newCount ) {
-          size = max( size * 2, newCount );
-          data = aRealloc( data, count, size );
+          size = ( ( newCount - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
+          data = Alloc::reallocate( data, count, size );
         }
-        for( int i = 0; i < arrayCount; i++ ) {
-          data[count + i] = array[i];
-        }
+        aConstruct( data + count, array, arrayCount );
         count = newCount;
       }
 
@@ -434,7 +435,8 @@ namespace oz
         assert( 0 <= index && index < count );
 
         ensureCapacity();
-        aRCopy( data + index + 1, data + index, count - index );
+        construct( data + count );
+        aReverseCopy( data + index + 1, data + index, count - index );
         data[index] = e;
         count++;
       }
@@ -449,6 +451,7 @@ namespace oz
         assert( count != 0 );
 
         count--;
+        destruct( data + count );
         return *this;
       }
 
@@ -462,6 +465,7 @@ namespace oz
 
         count--;
         aCopy( data + index, data + index + 1, count - index );
+        destruct( data + count );
       }
 
       /**
@@ -475,7 +479,6 @@ namespace oz
 
         if( index != -1 ) {
           remove( index );
-
           return true;
         }
         else {
@@ -517,6 +520,7 @@ namespace oz
 
         count--;
         aCopy( data, data + 1, count );
+        destruct( data + count );
 
         return e;
       }
@@ -539,8 +543,10 @@ namespace oz
         assert( count != 0 );
 
         count--;
+        Type e = data[count];
+        destruct( data + count );
 
-        return data[count];
+        return e;
       }
 
       /**
@@ -556,6 +562,7 @@ namespace oz
        */
       void clear()
       {
+        aDestruct( data, count );
         count = 0;
       }
 

@@ -27,7 +27,6 @@ namespace oz
       {
         private:
 
-          // base class
           typedef oz::Iterator<Type> B;
 
         public:
@@ -46,6 +45,10 @@ namespace oz
           explicit Iterator( const Sparse& s ) : B( s.data, s.data + s.size )
           {}
 
+          /**
+           * Advance to next element.
+           * @return
+           */
           Iterator& operator ++ ()
           {
             do {
@@ -55,6 +58,14 @@ namespace oz
 
             return *this;
           }
+
+        private:
+
+          /**
+           * No iterating backwards.
+           * @return
+           */
+          Iterator& operator -- ();
 
       };
 

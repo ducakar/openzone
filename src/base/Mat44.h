@@ -131,7 +131,7 @@ namespace oz
                       x.w, y.w, z.w, w.w );
       }
 
-      const Mat44& trans()
+      Mat44& trans()
       {
         swap( x.y, y.x );
         swap( x.z, z.x );
@@ -163,7 +163,7 @@ namespace oz
             w.w == 0.0f;
       }
 
-      const Mat44& setZero()
+      Mat44& setZero()
       {
         x.x = 0.0f;
         x.y = 0.0f;
@@ -205,7 +205,7 @@ namespace oz
             w.w == 1.0f;
       }
 
-      const Mat44& setId()
+      Mat44& setId()
       {
         x.x = 1.0f;
         x.y = 0.0f;
@@ -226,7 +226,7 @@ namespace oz
         return *this;
       }
 
-      const Mat44& operator + () const
+      Mat44 operator + () const
       {
         return *this;
       }
@@ -239,7 +239,7 @@ namespace oz
                       -w.x, -w.y, -w.z, -w.w );
       }
 
-      const Mat44& operator += ( const Mat44& a )
+      Mat44& operator += ( const Mat44& a )
       {
         x.x += a.x.x;
         x.y += a.x.y;
@@ -260,7 +260,7 @@ namespace oz
         return *this;
       }
 
-      const Mat44& operator -= ( const Mat44& a )
+      Mat44& operator -= ( const Mat44& a )
       {
         x.x -= a.x.x;
         x.y -= a.x.y;
@@ -281,7 +281,7 @@ namespace oz
         return *this;
       }
 
-      const Mat44& operator *= ( float k )
+      Mat44& operator *= ( float k )
       {
         x.x *= k;
         x.y *= k;
@@ -302,7 +302,7 @@ namespace oz
         return *this;
       }
 
-      const Mat44& operator /= ( float k )
+      Mat44& operator /= ( float k )
       {
         assert( k != 0.0f );
 

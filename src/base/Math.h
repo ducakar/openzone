@@ -176,13 +176,6 @@ namespace oz
         return x * ( _1_PI * 180.0f );
       }
 
-      // fast inverse sqrt that appeared in Quake source (google for detailed explanations)
-      static float fInvSqrt( float x )
-      {
-        float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
-        return y * ( 1.5f - 0.5f * x * y*y );
-      }
-
       static const int& toBits( const float& f )
       {
         return *reinterpret_cast<const int*>( &f );
@@ -193,8 +186,15 @@ namespace oz
         return *reinterpret_cast<const float*>( &b );
       }
 
+      // fast inverse sqrt that appeared in Quake source (google for detailed explanations)
+      static float fInvSqrt( float x )
+      {
+        float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
+        return y * ( 1.5f - 0.5f * x * y*y );
+      }
+
       // is power of two?
-      template <class Value>
+      template <typename Value>
       static bool isPow2( const Value& v )
       {
         return v & ( v - 1 ) == 0;

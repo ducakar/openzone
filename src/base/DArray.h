@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  template <class Type>
+  template <typename Type>
   class DArray
   {
     public:
@@ -26,7 +26,6 @@ namespace oz
       {
         private:
 
-          // base class
           typedef oz::Iterator<Type> B;
 
         public:

@@ -99,7 +99,7 @@ namespace oz
       }
 
       // transpose
-      const Mat33& trans()
+      Mat33& trans()
       {
         swap( x.y, y.x );
         swap( x.z, z.x );
@@ -121,7 +121,7 @@ namespace oz
             z.z == 0.0f;
       }
 
-      const Mat33& setZero()
+      Mat33& setZero()
       {
         x.x = 0.0f;
         x.y = 0.0f;
@@ -149,7 +149,7 @@ namespace oz
             z.z == 1.0f;
       }
 
-      const Mat33& setId()
+      Mat33& setId()
       {
         x.x = 1.0f;
         x.y = 0.0f;
@@ -163,7 +163,7 @@ namespace oz
         return *this;
       }
 
-      const Mat33& operator + () const
+      Mat33 operator + () const
       {
         return *this;
       }
@@ -176,7 +176,7 @@ namespace oz
       }
 
       // assignment operators
-      const Mat33& operator += ( const Mat33& a )
+      Mat33& operator += ( const Mat33& a )
       {
         x.x += a.x.x;
         x.y += a.x.y;
@@ -190,7 +190,7 @@ namespace oz
         return *this;
       }
 
-      const Mat33& operator -= ( const Mat33& a )
+      Mat33& operator -= ( const Mat33& a )
       {
         x.x -= a.x.x;
         x.y -= a.x.y;
@@ -204,7 +204,7 @@ namespace oz
         return *this;
       }
 
-      const Mat33& operator *= ( float k )
+      Mat33& operator *= ( float k )
       {
         x.x *= k;
         x.y *= k;
@@ -218,7 +218,7 @@ namespace oz
         return *this;
       }
 
-      const Mat33& operator /= ( float k )
+      Mat33& operator /= ( float k )
       {
         assert( k != 0.0f );
 

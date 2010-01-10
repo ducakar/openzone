@@ -13,7 +13,7 @@
 namespace oz
 {
 
-  template <class Type, int SIZE>
+  template <typename Type, int SIZE>
   class Array
   {
     public:
@@ -21,11 +21,10 @@ namespace oz
       /**
        * Array iterator.
        */
-      class Iterator : oz::Iterator<Type>
+      class Iterator : public oz::Iterator<Type>
       {
         private:
 
-          // base class
           typedef oz::Iterator<Type> B;
 
         public:

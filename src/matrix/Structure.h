@@ -46,7 +46,6 @@ namespace oz
       Rotation   rot;
       float      life;
 
-      explicit Structure() {}
       explicit Structure( int index, int bsp, const Vec3& p, Rotation rot );
       explicit Structure( int index, int bsp_, InputStream* istream );
 

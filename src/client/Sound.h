@@ -54,9 +54,8 @@ namespace client
       struct ContSource
       {
         uint source;
-        bint isUpdated;
+        bool isUpdated;
 
-        ContSource() {}
         ContSource( uint sourceId ) : source( sourceId ), isUpdated( true ) {}
       };
 
