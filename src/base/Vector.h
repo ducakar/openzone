@@ -214,7 +214,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           if( data[i] == e ) {
             return true;
           }
@@ -312,7 +312,7 @@ namespace oz
       {
         ensureCapacity();
         construct( data + count, e );
-        count++;
+        ++count;
       }
 
       /**
@@ -322,7 +322,7 @@ namespace oz
       {
         ensureCapacity();
         construct( data + count );
-        count++;
+        ++count;
       }
 
       /**
@@ -333,7 +333,7 @@ namespace oz
       {
         ensureCapacity();
         construct( data + count, e );
-        count++;
+        ++count;
       }
 
       /**
@@ -353,7 +353,7 @@ namespace oz
       {
         ensureCapacity();
         construct( data + count, e );
-        count++;
+        ++count;
       }
 
       /**
@@ -418,7 +418,7 @@ namespace oz
       int includeAll( const Type* array, int count )
       {
         int n = 0;
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           n += int( include( array[i] ) );
         }
         return n;
@@ -438,7 +438,7 @@ namespace oz
         construct( data + count );
         aReverseCopy( data + index + 1, data + index, count - index );
         data[index] = e;
-        count++;
+        ++count;
       }
 
       /**
@@ -450,7 +450,7 @@ namespace oz
       {
         assert( count != 0 );
 
-        count--;
+        --count;
         destruct( data + count );
         return *this;
       }
@@ -463,7 +463,7 @@ namespace oz
       {
         assert( 0 <= index && index < count );
 
-        count--;
+        --count;
         aCopy( data + index, data + index + 1, count - index );
         destruct( data + count );
       }
@@ -504,7 +504,7 @@ namespace oz
       int excludeAll( const Type* array, int count )
       {
         int n = 0;
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           n += int( exclude( array[i] ) );
         }
         return n;
@@ -518,7 +518,7 @@ namespace oz
       {
         Type e = data[0];
 
-        count--;
+        --count;
         aCopy( data, data + 1, count );
         destruct( data + count );
 
@@ -542,7 +542,7 @@ namespace oz
       {
         assert( count != 0 );
 
-        count--;
+        --count;
         Type e = data[count];
         destruct( data + count );
 

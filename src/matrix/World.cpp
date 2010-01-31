@@ -52,7 +52,7 @@ namespace oz
   {
     log.print( "Loading World ..." );
 
-    for( int i = 0; i < translator.bsps.length(); i++ ) {
+    for( int i = 0; i < translator.bsps.length(); ++i ) {
       bsps << null;
     }
 
@@ -64,8 +64,8 @@ namespace oz
     log.println( "Unloading World {" );
     log.indent();
 
-    for( int i = 0; i < World::MAX; i++ ) {
-      for( int j = 0; j < World::MAX; j++ ) {
+    for( int i = 0; i < World::MAX; ++i ) {
+      for( int j = 0; j < World::MAX; ++j ) {
         cells[i][j].structs.clear();
         cells[i][j].objects.clear();
         cells[i][j].parts.clear();
@@ -114,41 +114,41 @@ namespace oz
     int n;
 
     n = istream->readInt();
-    for( int i = 0; i < n; i++ ) {
+    for( int i = 0; i < n; ++i ) {
       strFreedIndices[freeing] << istream->readInt();
     }
     n = istream->readInt();
-    for( int i = 0; i < n; i++ ) {
+    for( int i = 0; i < n; ++i ) {
       objFreedIndices[freeing] << istream->readInt();
     }
     n = istream->readInt();
-    for( int i = 0; i < n; i++ ) {
+    for( int i = 0; i < n; ++i ) {
       partFreedIndices[freeing] << istream->readInt();
     }
 
     n = istream->readInt();
-    for( int i = 0; i < n; i++ ) {
+    for( int i = 0; i < n; ++i ) {
       strFreedIndices[waiting] << istream->readInt();
     }
     n = istream->readInt();
-    for( int i = 0; i < n; i++ ) {
+    for( int i = 0; i < n; ++i ) {
       objFreedIndices[waiting] << istream->readInt();
     }
     n = istream->readInt();
-    for( int i = 0; i < n; i++ ) {
+    for( int i = 0; i < n; ++i ) {
       partFreedIndices[waiting] << istream->readInt();
     }
 
     n = istream->readInt();
-    for( int i = 0; i < n; i++ ) {
+    for( int i = 0; i < n; ++i ) {
       strAvailableIndices << istream->readInt();
     }
     n = istream->readInt();
-    for( int i = 0; i < n; i++ ) {
+    for( int i = 0; i < n; ++i ) {
       objAvailableIndices << istream->readInt();
     }
     n = istream->readInt();
-    for( int i = 0; i < n; i++ ) {
+    for( int i = 0; i < n; ++i ) {
       partAvailableIndices << istream->readInt();
     }
 
@@ -164,7 +164,7 @@ namespace oz
     String    typeName;
     Particle*  part;
 
-    for( int i = 0; i < nStructures; i++ ) {
+    for( int i = 0; i < nStructures; ++i ) {
       istream->readString( bspName );
 
       if( bspName.isEmpty() ) {
@@ -186,7 +186,7 @@ namespace oz
         }
       }
     }
-    for( int i = 0; i < nObjects; i++ ) {
+    for( int i = 0; i < nObjects; ++i ) {
       istream->readString( typeName );
 
       if( typeName.isEmpty() ) {
@@ -207,7 +207,7 @@ namespace oz
         }
       }
     }
-    for( int i = 0; i < nParticles; i++ ) {
+    for( int i = 0; i < nParticles; ++i ) {
       bool exists = istream->readBool();
 
       if( !exists ) {
@@ -281,7 +281,7 @@ namespace oz
     Object*    obj;
     Particle*  part;
 
-    for( int i = 0; i < structs.length(); i++ ) {
+    for( int i = 0; i < structs.length(); ++i ) {
       str = structs[i];
 
       if( str == null ) {
@@ -292,7 +292,7 @@ namespace oz
         str->writeFull( ostream );
       }
     }
-    for( int i = 0; i < objects.length(); i++ ) {
+    for( int i = 0; i < objects.length(); ++i ) {
       obj = objects[i];
 
       if( obj == null ) {
@@ -306,7 +306,7 @@ namespace oz
         obj->writeFull( ostream );
       }
     }
-    for( int i = 0; i < parts.length(); i++ ) {
+    for( int i = 0; i < parts.length(); ++i ) {
       part = parts[i];
 
       if( part == null ) {

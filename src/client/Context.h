@@ -68,8 +68,8 @@ namespace client
         explicit Resource() : nUsers( 0 ) {}
       };
 
-      Resource<uint> *textures;
-      Resource<uint> *sounds;
+      Resource<uint>* textures;
+      Resource<uint>* sounds;
 
     private:
 

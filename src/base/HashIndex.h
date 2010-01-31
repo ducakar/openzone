@@ -71,7 +71,7 @@ namespace oz
           explicit Iterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
           {
             while( B::elem == null && index < SIZE - 1 ) {
-              index++;
+              ++index;
               B::elem = data[index];
             }
           }
@@ -99,7 +99,7 @@ namespace oz
             }
             else if( index < SIZE - 1 ) {
               do {
-                index++;
+                ++index;
                 B::elem = data[index];
               }
               while( B::elem == null && index < SIZE - 1 );
@@ -262,7 +262,7 @@ namespace oz
        */
       explicit HashIndex() : count( 0 ), cached( null )
       {
-        for( int i = 0; i < SIZE; i++ ) {
+        for( int i = 0; i < SIZE; ++i ) {
           data[i] = null;
         }
       }
@@ -273,7 +273,7 @@ namespace oz
        */
       HashIndex( const HashIndex& t ) : count( t.count ), cached( t.cached )
       {
-        for( int i = 0; i < SIZE; i++ ) {
+        for( int i = 0; i < SIZE; ++i ) {
           data[i] = copyChain( t.data[i] );
         }
       }
@@ -298,7 +298,7 @@ namespace oz
         assert( &t != this );
         assert( count == 0 );
 
-        for( int i = 0; i < SIZE; i++ ) {
+        for( int i = 0; i < SIZE; ++i ) {
           data[i] = copyChain( t.data[i] );
         }
         cached = t.cached;
@@ -317,7 +317,7 @@ namespace oz
         if( count != t.count ) {
           return false;
         }
-        for( int i = 0; i < SIZE; i++ ) {
+        for( int i = 0; i < SIZE; ++i ) {
           if( !areChainsEqual( data[i], t.data[i] ) ) {
             return false;
           }
@@ -335,7 +335,7 @@ namespace oz
         if( count != t.count ) {
           return true;
         }
-        for( int i = 0; i < SIZE; i++ ) {
+        for( int i = 0; i < SIZE; ++i ) {
           if( !areChainsEqual( data[i], t.data[i] ) ) {
             return true;
           }
@@ -507,7 +507,7 @@ namespace oz
 
         data[i] = elem;
         cached = elem;
-        count++;
+        ++count;
 
         assert( loadFactor() < 0.75f );
       }
@@ -526,7 +526,7 @@ namespace oz
           if( p->key == key ) {
             *prev = p->next[0];
             pool.free( p );
-            count--;
+            --count;
             return;
           }
           else {
@@ -543,7 +543,7 @@ namespace oz
        */
       void clear()
       {
-        for( int i = 0; i < SIZE; i++ ) {
+        for( int i = 0; i < SIZE; ++i ) {
           if( data[i] != null ) {
             freeChain( data[i] );
             data[i] = null;
@@ -558,7 +558,7 @@ namespace oz
        */
       void free()
       {
-        for( int i = 0; i < SIZE; i++ ) {
+        for( int i = 0; i < SIZE; ++i ) {
           if( data[i] != null ) {
             freeChainAndValues( data[i] );
             data[i] = null;

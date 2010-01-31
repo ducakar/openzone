@@ -32,11 +32,11 @@ int main()
   int max = 10000;
 
   A* array[max];
-  for( int i = 0; i < max; i++ ) {
+  for( int i = 0; i < max; ++i ) {
     array[i] = new A();
     array[i]->value = 10;
   }
-  for( int i = 0; i < max; i++ ) {
+  for( int i = 0; i < max; ++i ) {
     delete array[i];
   }
 

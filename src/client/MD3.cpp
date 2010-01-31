@@ -113,7 +113,7 @@ namespace client
     fread( *tags, sizeof( MD3Tag ), header.nFrames * header.nTags, file );
 
     meshes( header.nSurfaces );
-    for( int i = 0; i < header.nSurfaces; i++ ) {
+    for( int i = 0; i < header.nSurfaces; ++i ) {
       Mesh* mesh = &meshes[i];
 
       MD3Surface surface;
@@ -137,7 +137,7 @@ namespace client
         log.println( "MD3 model file '%s' invalid format", path.cstr() );
         throw Exception( "MD3 model part file invalid format" );
       }
-      shaderBaseName++;
+      ++shaderBaseName;
       mesh->texId = context.loadTexture( dir + shaderBaseName );
       parent->textures.include( mesh->texId );
       delete[] shaders;
@@ -146,7 +146,7 @@ namespace client
       fread( mesh->texCoords, sizeof( TexCoord ), surface.nVertices, file );
 
       // convert (S,T) -> (U,V) i.e. top-left origin coords to lower-left origin coords
-      for( int j = 0; j < mesh->texCoords.length(); j++ ) {
+      for( int j = 0; j < mesh->texCoords.length(); ++j ) {
 //         mesh->texCoords[j].v = 1.0f - mesh->texCoords[j].v;
       }
 
@@ -154,7 +154,7 @@ namespace client
       MD3Vertex* vertices = new MD3Vertex[mesh->vertices.length()];
       fread( vertices, sizeof( MD3Vertex ), mesh->vertices.length(), file );
 
-      for( int j = 0; j < mesh->vertices.length(); j++ ) {
+      for( int j = 0; j < mesh->vertices.length(); ++j ) {
         mesh->vertices[j].p.x = -float( vertices[j].p[1] ) / 64.0f;
         mesh->vertices[j].p.y =  float( vertices[j].p[0] ) / 64.0f;
         mesh->vertices[j].p.z =  float( vertices[j].p[2] ) / 64.0f;
@@ -175,7 +175,7 @@ namespace client
   MD3::Part::~Part()
   {
     if( !meshes.isEmpty() ) {
-      for( int i = 0; i < meshes.length(); i++ ) {
+      for( int i = 0; i < meshes.length(); ++i ) {
         meshes[i].triangles.clear();
         meshes[i].texCoords.clear();
         meshes[i].vertices.clear();
@@ -206,13 +206,13 @@ namespace client
   {
     assert( 0 <= frame && frame < nFrames );
 
-    for( int i = 0; i < meshes.length(); i++ ) {
+    for( int i = 0; i < meshes.length(); ++i ) {
       const Mesh& mesh = meshes[i];
 
       glBindTexture( GL_TEXTURE_2D, mesh.texId );
 
       glBegin( GL_TRIANGLES );
-      for( int j = 0; j < mesh.triangles.length(); j++ ) {
+      for( int j = 0; j < mesh.triangles.length(); ++j ) {
         const Triangle& triangle  = mesh.triangles[j];
         const TexCoord& texCoord0 = mesh.texCoords[triangle.indices[0]];
         const TexCoord& texCoord1 = mesh.texCoords[triangle.indices[1]];
@@ -280,7 +280,7 @@ namespace client
     weaponOffsets( upper->nFrames );
 
     // assemble the model
-    for( int i = 0; i < upper->nFrames; i++ ) {
+    for( int i = 0; i < upper->nFrames; ++i ) {
       headOffsets[i].p.x   = -upperTags[3 * i + 1].p.y;
       headOffsets[i].p.y   =  upperTags[3 * i + 1].p.x;
       headOffsets[i].p.z   = -upperTags[3 * i + 1].p.z;

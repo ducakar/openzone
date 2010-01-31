@@ -25,7 +25,7 @@ namespace oz
 
   void Vehicle::onDestroy()
   {
-    for( int i = 0; i < CREW_MAX; i++ ) {
+    for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {
         Bot* bot = static_cast<Bot*>( world.objects[crew[i]] );
 
@@ -84,7 +84,7 @@ namespace oz
       momentum += move * clazz->moveMomentum;
     }
 
-    for( int i = 0; i < CREW_MAX; i++ ) {
+    for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {
         Bot* bot = static_cast<Bot*>( world.objects[crew[i]] );
 
@@ -142,7 +142,7 @@ namespace oz
     actions      = istream->readInt();
     oldActions   = istream->readInt();
 
-    for( int i = 0; i < CREW_MAX; i++ ) {
+    for( int i = 0; i < CREW_MAX; ++i ) {
       crew[i] = istream->readInt();
     }
   }
@@ -157,7 +157,7 @@ namespace oz
     ostream->writeInt( actions );
     ostream->writeInt( oldActions );
 
-    for( int i = 0; i < CREW_MAX; i++ ) {
+    for( int i = 0; i < CREW_MAX; ++i ) {
       ostream->writeInt( crew[i] );
     }
   }

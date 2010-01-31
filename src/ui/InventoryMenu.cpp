@@ -76,10 +76,10 @@ namespace ui
 
     // scroll
     if( mouse.wheelDown ) {
-      row++;
+      ++row;
     }
     if( mouse.wheelUp ) {
-      row--;
+      --row;
     }
 
     // works fine if there's no items (then nRows == 1)
@@ -109,13 +109,13 @@ namespace ui
     glTranslatef( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0 );
     glTranslatef( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f );
 
-    const Vector<int> &items = camera.botObj->items;
+    const Vector<int>& items = camera.botObj->items;
 
     int minIndex = row * COLS;
     int maxIndex = min( minIndex + COLS * ROWS, items.length() );
     Dynamic* taggedItem = null;
 
-    for( int i = minIndex; i < maxIndex; i++ ) {
+    for( int i = minIndex; i < maxIndex; ++i ) {
       Dynamic* item = static_cast<Dynamic*>( world.objects[items[i]] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );

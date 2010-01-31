@@ -11,7 +11,7 @@
 
 using namespace oz;
 
-class Elem
+struct Elem
 {
   int value;
 
@@ -21,10 +21,10 @@ class Elem
   Elem( int value_ ) : value( value_ ) {}
 };
 
-class SparseElem
+struct SparseElem
 {
   int value;
-  int nextSlot;
+  int nextSlot[1];
 
   SparseElem() {}
   SparseElem( int value_ ) : value( value_ ) {}

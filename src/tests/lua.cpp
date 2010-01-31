@@ -53,7 +53,7 @@ static int addLife( lua_State* l )
     lua_error( l );
     return 0;
   }
-  life += lua_tonumber( l, 1 );
+  life += float( lua_tonumber( l, 1 ) );
   return 0;
 }
 

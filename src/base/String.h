@@ -112,13 +112,13 @@ namespace oz
         int nn = n / 10;
         while( nn != 0 ) {
           nn /= 10;
-          count++;
+          ++count;
         }
 
         // check if we have a negative sign
         if( n < 0 ) {
           n = -n;
-          count++;
+          ++count;
           buffer[0] = '-';
         }
 
@@ -129,7 +129,7 @@ namespace oz
         buffer[count - 1] = char( '0' + ( n % 10 ) );
         n /= 10;
 
-        for( int i = count - 2; n != 0; i-- ) {
+        for( int i = count - 2; n != 0; --i ) {
           buffer[i] = char( '0' + ( n % 10 ) );
           n /= 10;
         }
@@ -207,7 +207,7 @@ namespace oz
       {
         assert( s != null );
 
-        for( int i = 0; buffer[i] == s[i]; i++ ) {
+        for( int i = 0; buffer[i] == s[i]; ++i ) {
           if( buffer[i] == '\0' ) {
             return true;
           }
@@ -224,7 +224,7 @@ namespace oz
       {
         assert( a != null && b != null );
 
-        for( int i = 0; a[i] == b[i]; i++ ) {
+        for( int i = 0; a[i] == b[i]; ++i ) {
           if( a[i] == '\0' ) {
             return true;
           }
@@ -251,7 +251,7 @@ namespace oz
         int i = 0;
 
         while( s[i] != '\0' ) {
-          i++;
+          ++i;
         }
         return i;
       }
@@ -274,7 +274,7 @@ namespace oz
         int i = 0;
 
         while( ( diff = a[i] - b[i] ) == 0 && a[i] != 0 ) {
-          i++;
+          ++i;
         }
         return diff;
       }
@@ -294,7 +294,7 @@ namespace oz
         int i = start;
 
         while( buffer[i] != ch && buffer[i] != '\0' ) {
-          i++;
+          ++i;
         }
         return i == count ? -1 : i;
       }
@@ -304,7 +304,7 @@ namespace oz
         int i = end;
 
         while( buffer[i] != ch && i >= 0 ) {
-          i--;
+          --i;
         }
         return i;
       }
@@ -335,7 +335,7 @@ namespace oz
           if( *s == ch ) {
             return s;
           }
-          s++;
+          ++s;
         }
         return null;
       }
@@ -348,7 +348,7 @@ namespace oz
           if( *s == ch ) {
             last = s;
           }
-          s++;
+          ++s;
         }
         return last;
       }
@@ -363,7 +363,7 @@ namespace oz
         uint hash = 5381;
         int count = length( s );
 
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           hash = hash * 33 + s[i];
         }
         // absolute value
@@ -449,10 +449,10 @@ namespace oz
         const char* end = buffer + count;
 
         while( start < end && isBlank( *start ) ) {
-          start++;
+          ++start;
         }
         while( start < end && isBlank( *( end - 1 ) ) ) {
-          end--;
+          --end;
         }
         return String( start, end - start );
       }
@@ -464,10 +464,10 @@ namespace oz
         const char* end = s + count;
 
         while( start < end && isBlank( *start ) ) {
-          start++;
+          ++start;
         }
         while( start < end && isBlank( *( end - 1 ) ) ) {
-          end--;
+          --end;
         }
         return String( start, end - start );
       }

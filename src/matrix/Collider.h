@@ -101,8 +101,8 @@ namespace oz
                          const Vec3& startPos, const Vec3& endPos );
       void trimAABBWorld();
 
-      void getWorldOverlaps( Vector<Object*> *objects, Vector<Structure*> *structs );
-      void getWorldIncludes( Vector<Object*> *objects ) const;
+      void getWorldOverlaps( Vector<Object*>* objects, Vector<Structure*>* structs );
+      void getWorldIncludes( Vector<Object*>* objects ) const;
       void touchWorldOverlaps() const;
 
     public:
@@ -123,13 +123,13 @@ namespace oz
       // fill given vectors with objects and structures overlapping with the AABB
       // if either vector is null the respecitve test is not performed
       void getOverlaps( const AABB& aabb,
-                        Vector<Object*> *objects,
-                        Vector<Structure*> *structs,
+                        Vector<Object*>* objects,
+                        Vector<Structure*>* structs,
                         float eps = 0.0f );
       void touchOverlaps( const AABB& aabb, float eps = 0.0f );
 
       // fill given vector with objects included in the AABB
-      void getIncludes( const AABB& aabb, Vector<Object*> *objects, float eps = 0.0f );
+      void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = 0.0f );
 
       void translate( const Vec3& point, const Vec3& move, const Object* exclObj = null );
       void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );
@@ -203,8 +203,8 @@ namespace oz
   }
 
   inline void Collider::getOverlaps( const AABB& aabb_,
-                                     Vector<Object*> *objects,
-                                     Vector<Structure*> *structs,
+                                     Vector<Object*>* objects,
+                                     Vector<Structure*>* structs,
                                      float eps )
   {
     aabb = aabb_;
@@ -216,7 +216,7 @@ namespace oz
     getWorldOverlaps( objects, structs );
   }
 
-  inline void Collider::getIncludes( const AABB& aabb_, Vector<Object*> *objects, float eps )
+  inline void Collider::getIncludes( const AABB& aabb_, Vector<Object*>* objects, float eps )
   {
     aabb = aabb_;
     exclObj = null;

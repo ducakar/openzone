@@ -94,7 +94,7 @@ namespace client
     while( anim->currTime > anim->frameTime ) {
       anim->currTime -= anim->frameTime;
       anim->currFrame = anim->nextFrame;
-      anim->nextFrame++;
+      ++anim->nextFrame;
 
       if( anim->nextFrame > anim->endFrame ) {
         anim->nextFrame = anim->repeat ? anim->startFrame : anim->endFrame;

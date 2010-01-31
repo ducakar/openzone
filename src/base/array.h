@@ -57,7 +57,7 @@ namespace oz
   template <typename Type>
   inline bool aEquals( const Type* aSrcA, const Type* aSrcB, int count )
   {
-    for( int i = 0; i < count; i++ ) {
+    for( int i = 0; i < count; ++i ) {
       if( aSrcA[i] != aSrcB[i] ) {
         return false;
       }
@@ -75,7 +75,7 @@ namespace oz
   template <typename Type>
   inline void aSet( Type* aDest, const Type& value, int count )
   {
-    for( int i = 0; i < count; i++ ) {
+    for( int i = 0; i < count; ++i ) {
       aDest[i] = value;
     }
   }
@@ -93,7 +93,7 @@ namespace oz
   {
     assert( aDest != aSrc );
 
-    for( int i = 0; i < count; i++ ) {
+    for( int i = 0; i < count; ++i ) {
       Type t = aSrc[i];
       aDest[i] = t;
     }
@@ -111,7 +111,7 @@ namespace oz
   {
     assert( aDest != aSrc );
 
-    for( int i = count - 1; i >= 0; i-- ) {
+    for( int i = count - 1; i >= 0; --i ) {
       aDest[i] = aSrc[i];
     }
   }
@@ -126,7 +126,7 @@ namespace oz
   template <typename Type>
   inline int aIndex( const Type* aSrc, const Type& value, int count )
   {
-    for( int i = 0; i < count; i++ ) {
+    for( int i = 0; i < count; ++i ) {
       if( aSrc[i] == value ) {
         return i;
       }
@@ -144,7 +144,7 @@ namespace oz
   template <typename Type>
   inline int aLastIndex( const Type* aSrc, const Type& value, int count )
   {
-    for( int i = count - 1; i <= 0; i-- ) {
+    for( int i = count - 1; i <= 0; --i ) {
       if( aSrc[i] == value ) {
         return i;
       }
@@ -160,7 +160,7 @@ namespace oz
   template <typename Type>
   inline void aConstruct( Type* aDest, int count )
   {
-    for( int i = 0; i < count; i++ ) {
+    for( int i = 0; i < count; ++i ) {
       new( &aDest[i] ) Type();
     }
   }
@@ -173,7 +173,7 @@ namespace oz
   template <typename Type>
   inline void aConstruct( Type* aDest, const Type* aSrc, int count )
   {
-    for( int i = 0; i < count; i++ ) {
+    for( int i = 0; i < count; ++i ) {
       new( &aDest[i] ) Type( aSrc[i] );
     }
   }
@@ -186,7 +186,7 @@ namespace oz
   template <typename Type>
   inline void aDestruct( Type* aDest, int count )
   {
-    for( int i = 0; i < count; i++ ) {
+    for( int i = 0; i < count; ++i ) {
       aDest[i].~Type();
     }
   }
@@ -199,7 +199,7 @@ namespace oz
   template <typename Type>
   inline void aFree( Type* aDest, int count )
   {
-    for( int i = 0; i < count; i++ ) {
+    for( int i = 0; i < count; ++i ) {
       if( aDest[i] != null ) {
         delete aDest[i];
         aDest[i] = null;
@@ -223,7 +223,7 @@ namespace oz
 
     Type* aNew = new Type[newCount];
 
-    for( int i = 0; i < count; i++ ) {
+    for( int i = 0; i < count; ++i ) {
       aNew[i] = aDest[i];
     }
     delete[] aDest;
@@ -241,17 +241,17 @@ namespace oz
   static void quicksort( Type* first, Type* last )
   {
     // 8-14 seem as optimal thresholds for switching to selection sort
-    if( last - first > 10 ) {
+    if( last - first > 8 ) {
       // quicksort
       Type* top = first;
       Type* bottom = last - 1;
 
       do {
         while( top <= bottom && !( *last < *top ) ) {
-          top++;
+          ++top;
         }
         while( top < bottom && *last < *bottom ) {
-          bottom--;
+          --bottom;
         }
         if( top >= bottom ) {
           break;
@@ -270,9 +270,9 @@ namespace oz
       for( Type* i = first; i < last; ) {
         Type* pivot = i;
         Type* min = i;
-        i++;
+        ++i;
 
-        for( Type* j = i; j <= last; j++ ) {
+        for( Type* j = i; j <= last; ++j ) {
           if( *j < *min ) {
             min = j;
           }

@@ -9,13 +9,13 @@
 
 #include "precompiled.h"
 
-#include "stdio.h"
+#include <cstdio>
 
 using namespace oz;
 
-class A
+struct A
 {
-  int nextSlot;
+  int nextSlot[1];
   int value;
 
   A() {}
@@ -40,7 +40,7 @@ int main()
   }
   printf( "\n" );
   foreach( i, iterator<A>( sparse, sparse + sparse.capacity() ) ) {
-    printf( "%d,%d ", i->value, i->nextSlot );
+    printf( "%d,%d ", i->value, i->nextSlot[0] );
   }
   printf( "\n" );
 
@@ -52,7 +52,7 @@ int main()
   }
   printf( "\n" );
   foreach( i, iterator<A>( sparse, sparse + sparse.capacity() ) ) {
-    printf( "%d,%d ", i->value, i->nextSlot );
+    printf( "%d,%d ", i->value, i->nextSlot[0] );
   }
   printf( "\n" );
 

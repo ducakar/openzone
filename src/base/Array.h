@@ -126,7 +126,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        for( int i = 0; i < SIZE; i++ ) {
+        for( int i = 0; i < SIZE; ++i ) {
           if( data[i] == e ) {
             return true;
           }

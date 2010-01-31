@@ -73,7 +73,7 @@ namespace oz
     number = int( area * DENSITY );
     growth = int( area * GROWTH );
 
-    for( int i = 0; i < number; i++ ) {
+    for( int i = 0; i < number; ++i ) {
       float x = Math::frand() * 2.0f * World::DIM - World::DIM;
       float y = Math::frand() * 2.0f * World::DIM - World::DIM;
 

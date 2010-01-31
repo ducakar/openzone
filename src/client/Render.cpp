@@ -59,7 +59,7 @@ namespace client
   {
     Cell& cell = world.cells[cellX][cellY];
 
-    for( int i = 0; i < cell.structs.length(); i++ ) {
+    for( int i = 0; i < cell.structs.length(); ++i ) {
       Structure* str = world.structs[ cell.structs[i] ];
 
       if( !drawnStructures.get( cell.structs[i] ) && frustum.isVisible( *str ) ) {
@@ -140,10 +140,10 @@ namespace client
     float minYCenter = float( span.minY - World::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
 
     float x = minXCenter;
-    for( int i = span.minX; i <= span.maxX; i++, x += Cell::SIZE ) {
+    for( int i = span.minX; i <= span.maxX; ++i, x += Cell::SIZE ) {
       float y = minYCenter;
 
-      for( int j = span.minY; j <= span.maxY; j++, y += Cell::SIZE ) {
+      for( int j = span.minY; j <= span.maxY; ++j, y += Cell::SIZE ) {
         if( frustum.isVisible( x, y, CELL_WIDE_RADIUS  ) ) {
           scheduleCell( i, j );
         }
@@ -193,7 +193,7 @@ namespace client
     // draw structures
     BSP::beginRender();
 
-    for( int i = 0; i < structures.length(); i++ ) {
+    for( int i = 0; i < structures.length(); ++i ) {
       const Structure* str = structures[i];
 
       if( bsps[str->bsp] == null ) {
@@ -221,7 +221,7 @@ namespace client
     // draw (non-delayed) objects
     objects.sort();
 
-    for( int i = 0; i < objects.length(); i++ ) {
+    for( int i = 0; i < objects.length(); ++i ) {
       const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
@@ -247,7 +247,7 @@ namespace client
     glDisable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );
 
-    for( int i = 0; i < particles.length(); i++ ) {
+    for( int i = 0; i < particles.length(); ++i ) {
       const Particle* part = particles[i];
 
       glPushMatrix();
@@ -268,7 +268,7 @@ namespace client
     // draw delayed objects
     glDisable( GL_COLOR_MATERIAL );
 
-    for( int i = 0; i < delayedObjects.length(); i++ ) {
+    for( int i = 0; i < delayedObjects.length(); ++i ) {
       const Object* obj = delayedObjects[i].obj;
 
       if( obj->index == camera.tagged ) {
@@ -294,7 +294,7 @@ namespace client
     // draw structures' water
     BSP::beginRender();
 
-    for( int i = 0; i < waterStructures.length(); i++ ) {
+    for( int i = 0; i < waterStructures.length(); ++i ) {
       const Structure* str = waterStructures[i];
 
       bsps[str->bsp]->fullDrawWater( str );
@@ -322,7 +322,7 @@ namespace client
     if( drawAABBs ) {
       glEnable( GL_COLOR_MATERIAL );
 
-      for( int i = 0; i < objects.length(); i++ ) {
+      for( int i = 0; i < objects.length(); ++i ) {
         glColor4fv( ( objects[i].obj->flags & Object::CLIP_BIT ) ?
             Colors::CLIP_AABB : Colors::NOCLIP_AABB );
         shape.drawBox( *objects[i].obj );
@@ -368,8 +368,8 @@ namespace client
                                                     camera.width * 4,
                                                     0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
       // flip image
-      for( int i = 0; i < camera.height / 2; i++ ) {
-        for( int j = 0; j < camera.width; j++ ) {
+      for( int i = 0; i < camera.height / 2; ++i ) {
+        for( int j = 0; j < camera.width; ++j ) {
           swap( pixels[i * camera.width + j],
                 pixels[( camera.height - i - 1 ) * camera.width + j] );
         }
@@ -386,7 +386,7 @@ namespace client
     // cleanups
     if( clearCount >= CLEAR_INTERVAL ) {
       // remove unused BSPs
-      for( int i = 0; i < bsps.length(); i++ ) {
+      for( int i = 0; i < bsps.length(); ++i ) {
         if( bsps[i] != null ) {
           if( bsps[i]->isUpdated ) {
             bsps[i]->isUpdated = false;
@@ -518,7 +518,7 @@ namespace client
     terra.load();
     MD2::init();
 
-    for( int i = 0; i < translator.bsps.length(); i++ ) {
+    for( int i = 0; i < translator.bsps.length(); ++i ) {
       bsps << null;
     }
 

@@ -82,7 +82,7 @@ namespace oz
       clazz->flags |= Object::AUDIO_BIT;
 
       char buffer[] = "audioSample  ";
-      for( int i = 0; i < AUDIO_SAMPLES; i++ ) {
+      for( int i = 0; i < AUDIO_SAMPLES; ++i ) {
         assert( 0 <= i && i < 100 );
 
         buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );

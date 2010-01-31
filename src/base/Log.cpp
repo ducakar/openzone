@@ -79,7 +79,7 @@ namespace oz
 
     f = isStdout ? stdout : fopen( logFile, "a" );
 
-    for( int i = 0; i < tabs; i++ ) {
+    for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
     va_start( ap, s );
@@ -98,7 +98,7 @@ namespace oz
 
     f = isStdout ? stdout : fopen( logFile, "a" );
 
-    for( int i = 0; i < tabs; i++ ) {
+    for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
     va_start( ap, s );
@@ -123,7 +123,7 @@ namespace oz
 
     f = isStdout ? stdout : fopen( logFile, "a" );
 
-    for( int i = 0; i < tabs; i++ ) {
+    for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
     fprintf( f, "%02d:%02d:%02d ", t.tm_hour, t.tm_min, t.tm_sec );
@@ -150,7 +150,7 @@ namespace oz
 
     f = isStdout ? stdout : fopen( logFile, "a" );
 
-    for( int i = 0; i < tabs; i++ ) {
+    for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
     va_start( ap, s );
@@ -176,7 +176,7 @@ namespace oz
 
     f = isStdout ? stdout : fopen( logFile, "a" );
 
-    for( int i = 0; i < tabs; i++ ) {
+    for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
     va_start( ap, s );
@@ -210,13 +210,13 @@ namespace oz
 
   void Log::indent()
   {
-    tabs++;
+    ++tabs;
   }
 
   void Log::unindent()
   {
     if( tabs ) {
-      tabs--;
+      --tabs;
     }
   }
 

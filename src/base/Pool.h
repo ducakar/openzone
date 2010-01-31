@@ -40,9 +40,10 @@ void operator delete ( void* ptr ) { pool.free( ptr ); }
 #define OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE ) \
 private: \
 void* operator new ( uint ); \
+void operator delete ( void* ); \
 public: \
-void* operator new ( uint, Pool<Type, INDEX, SIZE> &pool ) { return pool.malloc(); } \
-void operator delete ( void* );
+void* operator new ( uint, Pool<Type, INDEX, SIZE>& pool ) { return pool.malloc(); } \
+void operator delete ( void*, Pool<Type, INDEX, SIZE>& ) {}
 
 namespace oz
 {
@@ -66,7 +67,7 @@ namespace oz
       {
         private:
 
-          char   data[BLOCK_SIZE * sizeof( Type )];
+          char data[BLOCK_SIZE * sizeof( Type )];
 
         public:
 
@@ -74,7 +75,7 @@ namespace oz
 
           explicit Block()
           {
-            for( int i = 0; i < BLOCK_SIZE - 1; i++ ) {
+            for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
               get( i )->next[INDEX] = get( i + 1 );
             }
             get( BLOCK_SIZE - 1 )->next[INDEX] = null;
@@ -127,7 +128,7 @@ namespace oz
       void* malloc()
       {
 #ifdef OZ_POOL_ALLOC
-        count++;
+        ++count;
 
         if( freeSlot == null ) {
           blocks << new Block();
@@ -142,7 +143,7 @@ namespace oz
           return slot;
         }
 #else
-        return Alloc::malloc( sizeof( Type ) );
+        return new char[sizeof( Type )];
 #endif
       }
 
@@ -158,9 +159,9 @@ namespace oz
         Type* elem = reinterpret_cast<Type*>( ptr );
         elem->next[INDEX] = freeSlot;
         freeSlot = elem;
-        count--;
+        --count;
 #else
-        Alloc::free( ptr );
+        delete ptr;
 #endif
       }
 

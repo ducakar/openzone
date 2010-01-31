@@ -20,44 +20,36 @@ namespace oz
       Type x;
       Type y;
 
-      Pair()
-      {}
+      Pair() {}
+      Pair( const Type& x_, const Type& y_ ) : x( x_ ), y( y_ ) {}
 
-      Pair( const Type& x_, const Type& y_ ) : x( x_ ), y( y_ )
-      {}
-
-      Pair( const Type* p )
+      Pair& operator = ( const Pair<typename Mod<Type>::Plain>& p )
       {
-        *this = reinterpret_cast<const Type*>( p );
+        x = p.x;
+        y = p.y;
+        return *this;
+      }
+
+      Pair& operator = ( const Pair<typename Mod<Type>::Ref>& p )
+      {
+        x = p.x;
+        y = p.y;
+        return *this;
+      }
+
+      bool operator == ( const Pair& p ) const
+      {
+        return x == p.x && y == p.y;
+      }
+
+      bool operator != ( const Pair& p ) const
+      {
+        return x != p.x || y != p.y;
       }
 
       static Pair zero()
       {
         return Pair( Type( 0 ), Type( 0 ) );
-      }
-
-      operator Type* ()
-      {
-        return reinterpret_cast<Type*>( this );
-      }
-
-      operator const Type* () const
-      {
-        return reinterpret_cast<const Type*>( this );
-      }
-
-      Type& operator [] ( int i )
-      {
-        assert( 0 <= i && i < 2 );
-
-        return reinterpret_cast<Type*>( this )[i];
-      }
-
-      const Type& operator [] ( int i ) const
-      {
-        assert( 0 <= i && i < 2 );
-
-        return reinterpret_cast<const Type*>( this )[i];
       }
 
       bool isZero() const
@@ -190,5 +182,17 @@ namespace oz
       }
 
   };
+
+  template <typename Type>
+  inline Pair<Type> pair( const Type& x, const Type& y )
+  {
+    return Pair<Type>( x, y );
+  }
+
+  template <typename Type>
+  inline Pair<Type&> tiePair( Type& x, Type& y )
+  {
+    return Pair<Type&>( x, y );
+  }
 
 }

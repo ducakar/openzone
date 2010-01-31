@@ -176,7 +176,7 @@ namespace oz
     int* texTypes = new int[nTextures];
     fseek( f, lumps[QBSP_LUMP_TEXTURES].offset, SEEK_SET );
 
-    for( int i = 0; i < nTextures; i++ ) {
+    for( int i = 0; i < nTextures; ++i ) {
       QBSPTexture texture;
 
       fread( &texture, sizeof( QBSPTexture ), 1, f );
@@ -204,7 +204,7 @@ namespace oz
     fread( planes, sizeof( BSP::Plane ), nPlanes, f );
 
     // rescale plane data
-    for( int i = 0; i < nPlanes; i++ ) {
+    for( int i = 0; i < nPlanes; ++i ) {
       planes[i].distance *= scale;
 
       if( planes[i].distance < -maxDim ) {
@@ -219,7 +219,7 @@ namespace oz
     nodes = new BSP::Node[nNodes];
     fseek( f, lumps[QBSP_LUMP_NODES].offset, SEEK_SET );
 
-    for( int i = 0; i < nNodes; i++ ) {
+    for( int i = 0; i < nNodes; ++i ) {
       QBSPNode node;
 
       fread( &node, sizeof( QBSPNode ), 1, f );
@@ -241,7 +241,7 @@ namespace oz
     leafs = new BSP::Leaf[nLeafs];
     fseek( f, lumps[QBSP_LUMP_LEAFS].offset, SEEK_SET );
 
-    for( int i = 0; i < nLeafs; i++ ) {
+    for( int i = 0; i < nLeafs; ++i ) {
       QBSPLeaf leaf;
 
       fread( &leaf, sizeof( QBSPLeaf ), 1, f );
@@ -291,7 +291,7 @@ namespace oz
     brushes = new BSP::Brush[nBrushes];
     fseek( f, lumps[QBSP_LUMP_BRUSHES].offset, SEEK_SET );
 
-    for( int i = 0; i < nBrushes; i++ ) {
+    for( int i = 0; i < nBrushes; ++i ) {
       QBSPBrush brush;
 
       fread( &brush, sizeof( QBSPBrush ), 1, f );
@@ -321,7 +321,7 @@ namespace oz
     brushSides = new int[nBrushSides];
     fseek( f, lumps[QBSP_LUMP_BRUSHSIDES].offset, SEEK_SET );
 
-    for( int i = 0; i < nBrushSides; i++ ) {
+    for( int i = 0; i < nBrushSides; ++i ) {
       QBSPBrushSide brushSide;
 
       fread( &brushSide, sizeof( QBSPBrushSide ), 1, f );
@@ -333,7 +333,7 @@ namespace oz
     vertices = new BSP::Vertex[nVertices];
     fseek( f, lumps[QBSP_LUMP_VERTICES].offset, SEEK_SET );
 
-    for( int i = 0; i < nVertices; i++ ) {
+    for( int i = 0; i < nVertices; ++i ) {
       QBSPVertex vertex;
 
       fread( &vertex, sizeof( QBSPVertex ), 1, f );
@@ -354,7 +354,7 @@ namespace oz
     faces = new BSP::Face[nFaces];
     fseek( f, lumps[QBSP_LUMP_FACES].offset, SEEK_SET );
 
-    for( int i = 0; i < nFaces; i++ ) {
+    for( int i = 0; i < nFaces; ++i ) {
       QBSPFace face;
 
       fread( &face, sizeof( QBSPFace ), 1, f );
@@ -386,7 +386,7 @@ namespace oz
 
     if( lumps[QBSP_LUMP_VISUALDATA].length != 0 ) {
       visual.bitsets = new Bitset[visual.nClusters];
-      for( int i = 0; i < visual.nClusters; i++ ) {
+      for( int i = 0; i < visual.nClusters; ++i ) {
         visual.bitsets[i].setSize( visual.clusterLength * 8 );
         fread( visual.bitsets[i], sizeof( char ), visual.clusterLength, f );
       }
