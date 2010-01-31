@@ -21,7 +21,7 @@ int main()
   matrix.init();
   world.load();
 
-  for( int i = 0; i < 1000000; i++ ) {
+  for( int i = 0; i < 1000000; ++i ) {
     float x = -World::DIM + Math::frand() * 2.0f * World::DIM;
     float y = -World::DIM + Math::frand() * 2.0f * World::DIM;
     float z = -World::DIM + Math::frand() * 2.0f * World::DIM;

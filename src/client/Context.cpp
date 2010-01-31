@@ -161,7 +161,7 @@ namespace client
   uint Context::requestTexture( int resource, bool wrap, int magFilter, int minFilter )
   {
     if( textures[resource].nUsers > 0 ) {
-      textures[resource].nUsers++;
+      ++textures[resource].nUsers;
       return textures[resource].id;
     }
     textures[resource].nUsers = 1;
@@ -196,7 +196,7 @@ namespace client
                                   bool wrap, int magFilter, int minFilter )
   {
     if( textures[resource].nUsers > 0 ) {
-      textures[resource].nUsers++;
+      ++textures[resource].nUsers;
       return textures[resource].id;
     }
     textures[resource].nUsers = 1;
@@ -232,7 +232,7 @@ namespace client
     assert( 0 <= resource && resource < translator.textures.length() );
     assert( textures[resource].nUsers > 0 );
 
-    textures[resource].nUsers--;
+    --textures[resource].nUsers;
 
     if( textures[resource].nUsers == 0 ) {
       log.print( "Unloading texture '%s' ...", translator.textures[resource].name.cstr() );
@@ -303,7 +303,7 @@ namespace client
       return sounds[resource].id;
     }
     if( sounds[resource].nUsers >= 0 ) {
-      sounds[resource].nUsers++;
+      ++sounds[resource].nUsers;
       return sounds[resource].id;
     }
     sounds[resource].nUsers = 1;
@@ -407,7 +407,7 @@ namespace client
     assert( 0 <= resource && resource < translator.sounds.length() );
     assert( sounds[resource].nUsers > 0 );
 
-    sounds[resource].nUsers--;
+    --sounds[resource].nUsers;
   }
 
   void Context::freeSound( int resource )
@@ -441,7 +441,7 @@ namespace client
 
   void Context::freeLists( uint listId )
   {
-    for( int i = 0; i < lists.length(); i++ ) {
+    for( int i = 0; i < lists.length(); ++i ) {
       if( lists[i].base == listId ) {
         glDeleteLists( lists[i].base, lists[i].count );
       }
@@ -458,7 +458,7 @@ namespace client
       obj->genList();
       obj->trim();
     }
-    objs.cachedValue().nUsers++;
+    ++objs.cachedValue().nUsers;
     return objs.cachedValue().object->list;
   }
 
@@ -467,7 +467,7 @@ namespace client
     assert( objs.contains( path ) );
 
     if( objs.contains( path ) ) {
-      objs.cachedValue().nUsers--;
+      --objs.cachedValue().nUsers;
 
       if( objs.cachedValue().nUsers == 0 ) {
         glDeleteLists( objs.cachedValue().object->list, 1 );
@@ -486,7 +486,7 @@ namespace client
       md2 = new MD2( path );
       md2->genList();
     }
-    staticMd2s.cachedValue().nUsers++;
+    ++staticMd2s.cachedValue().nUsers;
     return staticMd2s.cachedValue().object->list;
   }
 
@@ -495,7 +495,7 @@ namespace client
     assert( staticMd2s.contains( path ) );
 
     if( staticMd2s.contains( path ) ) {
-      staticMd2s.cachedValue().nUsers--;
+      --staticMd2s.cachedValue().nUsers;
 
       if( staticMd2s.cachedValue().nUsers == 0 ) {
         glDeleteLists( staticMd2s.cachedValue().object->list, 1 );
@@ -511,7 +511,7 @@ namespace client
       md2s.add( path, Resource<MD2*>() );
       md2s.cachedValue().object = new MD2( path );
     }
-    md2s.cachedValue().nUsers++;
+    ++md2s.cachedValue().nUsers;
     return md2s.cachedValue().object;
   }
 
@@ -520,7 +520,7 @@ namespace client
     assert( md2s.contains( path ) );
 
     if( md2s.contains( path ) ) {
-      md2s.cachedValue().nUsers--;
+      --md2s.cachedValue().nUsers;
 
       if( md2s.cachedValue().nUsers == 0 ) {
         delete md2s.cachedValue().object;
@@ -539,7 +539,7 @@ namespace client
       md3->genList();
       md3->trim();
     }
-    staticMd3s.cachedValue().nUsers++;
+    ++staticMd3s.cachedValue().nUsers;
     return staticMd3s.cachedValue().object->list;
   }
 
@@ -548,7 +548,7 @@ namespace client
     assert( staticMd3s.contains( path ) );
 
     if( staticMd3s.contains( path ) ) {
-      staticMd3s.cachedValue().nUsers--;
+      --staticMd3s.cachedValue().nUsers;
 
       if( staticMd3s.cachedValue().nUsers == 0 ) {
         glDeleteLists( staticMd3s.cachedValue().object->list, 1 );
@@ -564,7 +564,7 @@ namespace client
       md3s.add( path, Resource<MD3*>() );
       md3s.cachedValue().object = new MD3( path );
     }
-    md3s.cachedValue().nUsers++;
+    ++md3s.cachedValue().nUsers;
     return md3s.cachedValue().object;
   }
 
@@ -573,7 +573,7 @@ namespace client
     assert( md3s.contains( path ) );
 
     if( md3s.contains( path ) ) {
-      md3s.cachedValue().nUsers--;
+      --md3s.cachedValue().nUsers;
 
       if( md3s.cachedValue().nUsers == 0 ) {
         delete md3s.cachedValue().object;
@@ -594,7 +594,7 @@ namespace client
     textures = new Resource<uint>[translator.textures.length()];
     sounds = new Resource<uint>[translator.sounds.length()];
 
-    for( int i = 0; i < translator.sounds.length(); i++ ) {
+    for( int i = 0; i < translator.sounds.length(); ++i ) {
       sounds[i].id = AL_NONE;
       sounds[i].nUsers = -1;
     }
@@ -622,7 +622,7 @@ namespace client
       textures = null;
     }
     if( sounds != null ) {
-      for( int i = 0; i < translator.sounds.length(); i++ ) {
+      for( int i = 0; i < translator.sounds.length(); ++i ) {
         if( sounds[i].id != AL_NONE ) {
           alDeleteBuffers( 1, &sounds[i].id );
         }

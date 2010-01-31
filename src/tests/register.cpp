@@ -9,12 +9,14 @@
 
 #include "precompiled.h"
 
+#define _NEW
+
 #include <iostream>
 #include <map>
 #include <string>
 
 #define REGISTER( t ) \
-  class Register_##t { \
+  struct Register_##t { \
     Register_##t() { \
       registry[#t] = &t::build; \
     } \
@@ -25,7 +27,7 @@ using namespace std;
 
 class Object;
 
-class Object
+struct Object
 {
   float x, y, z;
 
@@ -34,7 +36,7 @@ class Object
   virtual ~Object() {}
 };
 
-class Human : Object
+struct Human : Object
 {
   static Object* build();
 
@@ -46,7 +48,7 @@ class Human : Object
   virtual ~Human() {}
 };
 
-class Vehicle : Object
+struct Vehicle : Object
 {
   static Object* build();
 

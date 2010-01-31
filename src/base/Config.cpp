@@ -69,7 +69,7 @@ namespace oz
         {
           buffer[i] = ch;
           ch = char( fgetc( f ) );
-          i++;
+          ++i;
         }
         buffer[i] = '\0';
         name = buffer;
@@ -90,7 +90,7 @@ namespace oz
         while( i < BUFFER_SIZE - 1 && ch != '"' && ch != '\n' && ch != EOF ) {
           buffer[i] = ch;
           ch = char( fgetc( f ) );
-          i++;
+          ++i;
         }
         if( ch == '"' ) {
           buffer[i] = '\0';
@@ -125,7 +125,7 @@ namespace oz
       sortedVars[i].value = j.value().cstr();
       size = i;
     }
-    size++;
+    ++size;
     aSort( sortedVars, size );
 
     FILE* f = fopen( file, "w" );
@@ -134,14 +134,14 @@ namespace oz
       return false;
     }
 
-    for( int i = 0; i < size; i++ ) {
+    for( int i = 0; i < size; ++i ) {
       int chars;
       fprintf( f, "%s%n", sortedVars[i].key, &chars );
 
       chars = ALIGNMENT - chars;
       while( chars > 0 ) {
         fprintf( f, " " );
-        chars--;
+        --chars;
       }
       fprintf( f, "\"%s\"\n", sortedVars[i].value );
     }
@@ -211,7 +211,7 @@ namespace oz
       sortedVars[i].value = j.value().cstr();
       size = i;
     }
-    size++;
+    ++size;
     aSort( sortedVars, size );
 
     xmlTextWriter* writer = xmlNewTextWriterFilename( file, 0 );
@@ -231,7 +231,7 @@ namespace oz
       return false;
     }
 
-    for( int i = 0; i < size; i++ ) {
+    for( int i = 0; i < size; ++i ) {
       if( xmlTextWriterWriteString( writer, reinterpret_cast<const xmlChar*>( "\n  " ) ) < 0 ||
           xmlTextWriterStartElement( writer, reinterpret_cast<const xmlChar*>( "var" ) ) < 0 ||
           xmlTextWriterWriteAttribute( writer, reinterpret_cast<const xmlChar*>( "name" ),
@@ -451,7 +451,7 @@ namespace oz
     }
     aSort( sortedVars, size );
 
-    for( i = 0; i < size; i++ ) {
+    for( i = 0; i < size; ++i ) {
       s = s + indentString + sortedVars[i].key + " = \"" + sortedVars[i].value + "\"\n";
     }
     return s;

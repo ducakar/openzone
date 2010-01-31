@@ -218,7 +218,7 @@ namespace oz
 
         while( p != null ) {
           p = p->next[INDEX];
-          i++;
+          ++i;
         }
         return i;
       }

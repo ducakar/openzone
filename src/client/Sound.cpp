@@ -79,7 +79,7 @@ namespace client
       alSourceUnqueueBuffers( musicSource, 1, &buffer );
       loadMusicBuffer( buffer );
       alSourceQueueBuffers( musicSource, 1, &buffer );
-      processed--;
+      --processed;
     }
 
     ALint value;
@@ -178,8 +178,8 @@ namespace client
     Span span;
     world.getInters( span, camera.p, DMAX + AABB::MAX_DIM );
 
-    for( int x = span.minX ; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX ; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         playCell( x, y );
       }
     }
@@ -266,7 +266,7 @@ namespace client
       assert( alGetError() == AL_NO_ERROR );
 
       // remove unused (no object audio uses it) buffers
-      for( int i = 0; i < translator.sounds.length(); i++ ) {
+      for( int i = 0; i < translator.sounds.length(); ++i ) {
         // first, only
         if( context.sounds[i].nUsers == 0 ) {
           context.sounds[i].nUsers = -2;

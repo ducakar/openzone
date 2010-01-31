@@ -95,7 +95,7 @@ namespace oz
         if( size != b.size ) {
           return false;
         }
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           if( data[i] != b.data[i] ) {
             return false;
           }
@@ -113,7 +113,7 @@ namespace oz
         if( size != b.size ) {
           return true;
         }
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           if( data[i] != b.data[i] ) {
             return true;
           }
@@ -213,7 +213,7 @@ namespace oz
        */
       bool isAllSet() const
       {
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           if( data[i] != ~0ul ) {
             return false;
           }
@@ -226,7 +226,7 @@ namespace oz
        */
       bool isAllClear() const
       {
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           if( data[i] != 0ul ) {
             return false;
           }
@@ -259,7 +259,7 @@ namespace oz
           data[startUnit] |= startMask;
           data[endUnit]   |= endMask;
 
-          for( int i = startUnit + 1; i < endUnit; i++ ) {
+          for( int i = startUnit + 1; i < endUnit; ++i ) {
             data[i] = ~0ul;
           }
         }
@@ -290,7 +290,7 @@ namespace oz
           data[startUnit] &= startMask;
           data[endUnit]   &= endMask;
 
-          for( int i = startUnit + 1; i < endUnit; i++ ) {
+          for( int i = startUnit + 1; i < endUnit; ++i ) {
             data[i] = 0ul;
           }
         }
@@ -320,7 +320,7 @@ namespace oz
       {
         Bitset r( size );
 
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           r.data[i] = ~data[i];
         }
         return r;
@@ -337,7 +337,7 @@ namespace oz
 
         Bitset r( size );
 
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           r.data[i] = data[i] & b.data[i];
         }
         return r;
@@ -354,7 +354,7 @@ namespace oz
 
         Bitset r( size );
 
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           r.data[i] = data[i] | b.data[i];
         }
         return r;
@@ -371,7 +371,7 @@ namespace oz
 
         Bitset r( size );
 
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           r.data[i] = data[i] ^ b.data[i];
         }
         return r;
@@ -393,7 +393,7 @@ namespace oz
 
         Bitset r( size );
 
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           if( ( data[i] & ~b.data[i] ) != 0ul ) {
             return false;
           }

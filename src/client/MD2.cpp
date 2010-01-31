@@ -268,14 +268,14 @@ namespace client
     float t1 = anim->fps * anim->currTime;
     float t2 = 1.0f - t1;
 
-    for( int i = 0; i < nVerts; i++ ) {
+    for( int i = 0; i < nVerts; ++i ) {
       vertList[i] = t2 * currFrame[i] + t1 * nextFrame[i];
     }
   }
 
   void MD2::init()
   {
-    for( uint i = 0; i < sizeof( anorms ) / sizeof( anorms[0] ); i++ ) {
+    for( uint i = 0; i < sizeof( anorms ) / sizeof( anorms[0] ); ++i ) {
       float x = -anorms[i][1];
       float y =  anorms[i][0];
 
@@ -340,12 +340,12 @@ namespace client
     fseek( file, header.offGLCmds, SEEK_SET );
     fread( glCmds, 1, header.nGlCmds * sizeof( int ), file );
 
-    for( int i = 0; i < nFrames; i++ ) {
+    for( int i = 0; i < nFrames; ++i ) {
       pFrame = reinterpret_cast<MD2Frame*>( &buffer[header.framesize * i] );
       pVerts = &verts[nVerts * i];
       pNormals = &lightNormals[nVerts * i];
 
-      for( int j = 0; j < nVerts; j++ ) {
+      for( int j = 0; j < nVerts; ++j ) {
         pVerts[j] = Vec3(
           ( float( pFrame->verts[j].v[1] ) * -pFrame->scale.y ) - pFrame->translate.y,
           ( float( pFrame->verts[j].v[0] ) *  pFrame->scale.x ) + pFrame->translate.x,
@@ -408,7 +408,7 @@ namespace client
   {
     int max = nVerts * nFrames;
 
-    for( int i = 0; i < max; i++ ) {
+    for( int i = 0; i < max; ++i ) {
       verts[i] *= scale;
     }
   }
@@ -417,7 +417,7 @@ namespace client
   {
     int end = nVerts * nFrames;
 
-    for( int i = 0; i < end; i++ ) {
+    for( int i = 0; i < end; ++i ) {
       verts[i] += t;
     }
   }
@@ -429,7 +429,7 @@ namespace client
 
     assert( end < nVerts * nFrames );
 
-    for( int i = start; i <= end; i++ ) {
+    for( int i = start; i <= end; ++i ) {
       verts[i] += t;
     }
   }
@@ -442,7 +442,7 @@ namespace client
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
 
-    while( int i = *( pCmd++ ) ) {
+    while( int i = *( ++pCmd ) ) {
       if( i < 0 ) {
         glBegin( GL_TRIANGLE_FAN );
         i = -i;
@@ -450,7 +450,7 @@ namespace client
       else {
         glBegin( GL_TRIANGLE_STRIP );
       }
-      for( ; i > 0; i--, pCmd += 3 ) {
+      for( ; i > 0; --i, pCmd += 3 ) {
         glNormal3fv( anorms[ lightNormals[ pCmd[2]] ] );
         glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],
                       reinterpret_cast<const float*>( pCmd )[1] );
@@ -471,7 +471,7 @@ namespace client
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
 
-    while( int i = *( pCmd++ ) ) {
+    while( int i = *( ++pCmd ) ) {
       if( i < 0 ) {
         glBegin( GL_TRIANGLE_FAN );
         i = -i;
@@ -479,7 +479,7 @@ namespace client
       else {
         glBegin( GL_TRIANGLE_STRIP );
       }
-      for( ; i > 0; i--, pCmd += 3 ) {
+      for( ; i > 0; --i, pCmd += 3 ) {
         glNormal3fv( anorms[ lightNormals[ pCmd[2]] ] );
         glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],
                       reinterpret_cast<const float*>( pCmd )[1] );

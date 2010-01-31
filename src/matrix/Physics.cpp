@@ -90,7 +90,7 @@ namespace oz
       if( traceSplits >= 3 || part->lifeTime <= 0.0f ) {
         break;
       }
-      traceSplits++;
+      ++traceSplits;
 
       move *= 1.0f - collider.hit.ratio;
       move -= ( move * collider.hit.normal - CLIP_BACKOFF ) * collider.hit.normal;
@@ -372,7 +372,7 @@ namespace oz
       if( traceSplits >= 3 ) {
         break;
       }
-      traceSplits++;
+      ++traceSplits;
 
       move *= 1.0f - collider.hit.ratio;
       move -= ( move * collider.hit.normal - CLIP_BACKOFF ) * collider.hit.normal;

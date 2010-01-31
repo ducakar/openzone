@@ -86,13 +86,13 @@ namespace oz
         // check for buffer overruns
         const char* p = pos;
         while( pos < end && *pos != '\0' ) {
-          pos++;
+          ++pos;
         }
         if( pos >= end ) {
           throw Exception( "Buffer overrun" );
         }
         int length = pos - p;
-        pos++;
+        ++pos;
         return String( p, length );
       }
 
@@ -104,13 +104,13 @@ namespace oz
         // check for buffer overruns
         const char* p = pos;
         while( pos < end && *pos != '\0' ) {
-          pos++;
+          ++pos;
         }
         if( pos >= end ) {
           throw Exception( "Buffer overrun" );
         }
         int length = pos - p;
-        pos++;
+        ++pos;
         s = String( p, length );
       }
 

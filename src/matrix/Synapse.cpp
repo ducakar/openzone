@@ -27,7 +27,7 @@ namespace oz
     float velocitySpread2 = velocitySpread / 2.0f;
     float colorSpread2 = colorSpread / 2.0f;
 
-    for( int i = 0; i < number; i++ ) {
+    for( int i = 0; i < number; ++i ) {
       Vec3 velDisturb = Vec3( velocitySpread * Math::frand() - velocitySpread2,
                               velocitySpread * Math::frand() - velocitySpread2,
                               velocitySpread * Math::frand() - velocitySpread2 );

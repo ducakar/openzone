@@ -47,7 +47,7 @@ namespace client
 
     glMultMatrixf( veh->rot.rotMat44() );
 
-    for( int i = 0; i < Vehicle::CREW_MAX; i++ ) {
+    for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
       int index = veh->crew[i];
 
       if( index != -1 && ( index != camera.bot || camera.isExternal ) ) {

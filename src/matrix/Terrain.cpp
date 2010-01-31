@@ -26,14 +26,14 @@ namespace oz
 
   void Terrain::buildTerraFrame()
   {
-    for( int x = 0; x < QUADS; x++ ) {
-      for( int y = 0; y < QUADS; y++ ) {
+    for( int x = 0; x < QUADS; ++x ) {
+      for( int y = 0; y < QUADS; ++y ) {
         /*
           0. triangle -- upper left
           1. triangle -- lower right
 
             |  ...  |         D        C
-            +---+---+-         o----->o
+            +---+---+-         --o--->o
             |1 /|1 /|          |      ^
             | / | / |          |      |
             |/ 0|/ 0|          |      |
@@ -59,8 +59,8 @@ namespace oz
 
   void Terrain::init()
   {
-    for( int x = 0; x < MAX; x++ ) {
-      for( int y = 0; y < MAX; y++ ) {
+    for( int x = 0; x < MAX; ++x ) {
+      for( int y = 0; y < MAX; ++y ) {
         vertices[x][y].x = float( x * Quad::SIZEI ) - DIM;
         vertices[x][y].y = float( y * Quad::SIZEI ) - DIM;
       }
@@ -69,8 +69,8 @@ namespace oz
 
   void Terrain::load( float height )
   {
-    for( int x = 0; x < MAX; x++ ) {
-      for( int y = 0; y < MAX; y++ ) {
+    for( int x = 0; x < MAX; ++x ) {
+      for( int y = 0; y < MAX; ++y ) {
         vertices[x][y].x = float( x * Quad::SIZEI ) - DIM;
         vertices[x][y].y = float( y * Quad::SIZEI ) - DIM;
         vertices[x][y].z = height;
@@ -98,8 +98,8 @@ namespace oz
 
     int scanLineLength = image->pitch;
     const ubyte* line = reinterpret_cast<const ubyte*>( image->pixels );
-    for( int y = MAX - 1; y >= 0; y-- ) {
-      for( int x = 0; x < MAX; x++ ) {
+    for( int y = MAX - 1; y >= 0; --y ) {
+      for( int x = 0; x < MAX; ++x ) {
         vertices[x][y].z = float( line[x] ) * HEIGHT_STEP + HEIGHT_BIAS;
       }
       line += scanLineLength;

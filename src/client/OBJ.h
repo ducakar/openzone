@@ -60,11 +60,11 @@ namespace client
       static char* readWord( char* pos );
 
       bool readVertexData( char* pos,
-                           Vector<Vec3> *tempVerts,
-                           Vector<Vec3> *tempNormals,
-                           Vector<TexCoord> *tempTexCoords ) const;
+                           Vector<Vec3>* tempVerts,
+                           Vector<Vec3>* tempNormals,
+                           Vector<TexCoord>* tempTexCoords ) const;
       bool readFace( char* pos, Face* face ) const;
-      bool loadMaterial( const String& path, HashString<int, 32> *materialIndices );
+      bool loadMaterial( const String& path, HashString<int, 32>* materialIndices );
 
     public:
 

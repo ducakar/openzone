@@ -71,12 +71,12 @@ namespace oz
   // checks if AABB and Brush overlap
   bool Collider::testPointBrush( const BSP::Brush* brush ) const
   {
-    for( int i = 0; i < brush->nSides; i++ ) {
+    for( int i = 0; i < brush->nSides; ++i ) {
       BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float dist = globalStartPos * plane.normal - plane.distance;
 
-      if( dist > EPSILON_2 ) {
+      if( dist > EPSILON ) {
         return true;
       }
     }
@@ -89,7 +89,7 @@ namespace oz
     if( nodeIndex < 0 ) {
       BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
 
-      for( int i = 0; i < leaf.nBrushes; i++ ) {
+      for( int i = 0; i < leaf.nBrushes; ++i ) {
         BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
         if( ( brush.material & Material::STRUCT_BIT ) && !testPointBrush( &brush ) ) {
@@ -119,7 +119,7 @@ namespace oz
   // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testPointWorld()
   {
-    if( !world.includes( point, -EPSILON_2 ) ) {
+    if( !world.includes( point, -EPSILON ) ) {
       return false;
     }
 
@@ -129,8 +129,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -150,7 +150,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->includes( point, EPSILON_2 ) )
+              sObj->includes( point, EPSILON ) )
           {
             return false;
           }
@@ -162,17 +162,17 @@ namespace oz
 
   bool Collider::testPointWorldOO()
   {
-    if( !world.includes( point, -EPSILON_2 ) ) {
+    if( !world.includes( point, -EPSILON ) ) {
       return false;
     }
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->includes( point, EPSILON_2 ) )
+              sObj->includes( point, EPSILON ) )
           {
             return false;
           }
@@ -185,14 +185,14 @@ namespace oz
   // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testPointWorldOSO()
   {
-    if( !world.includes( point, -EPSILON_2 ) ) {
+    if( !world.includes( point, -EPSILON ) ) {
       return false;
     }
 
     const Structure* oldStr = null;
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -212,7 +212,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->includes( point, EPSILON_2 ) )
+              sObj->includes( point, EPSILON ) )
           {
             return false;
           }
@@ -294,8 +294,8 @@ namespace oz
     Span terraSpan;
     world.terra.getInters( terraSpan, minPosX, minPosY, maxPosX, maxPosY );
 
-    for( int x = terraSpan.minX; x <= terraSpan.maxX; x++ ) {
-      for( int y = terraSpan.minY; y <= terraSpan.maxY; y++ ) {
+    for( int x = terraSpan.minX; x <= terraSpan.maxX; ++x ) {
+      for( int y = terraSpan.minY; y <= terraSpan.maxY; ++y ) {
         trimTerraQuad( x, y );
       }
     }
@@ -304,7 +304,7 @@ namespace oz
   // finds out if Point-World bounding box collision occurs and the time when it occurs
   void Collider::trimPointVoid()
   {
-    for( int i = 0; i < 3; i++ ) {
+    for( int i = 0; i < 3; ++i ) {
       int iSide = move[i] >= 0.0f;
       const Vec3& normal = bbNormals[i * 2 + iSide];
 
@@ -332,7 +332,7 @@ namespace oz
     float maxRatio        =  1.0f;
     const Vec3* tmpNormal = null;
 
-    for( int i = 0; i < 6; i++ ) {
+    for( int i = 0; i < 6; ++i ) {
       int j = i >> 1;
       const Vec3& normal = bbNormals[i];
 
@@ -372,7 +372,7 @@ namespace oz
     float maxRatio        =  1.0f;
     const Vec3* tmpNormal = null;
 
-    for( int i = 0; i < brush->nSides; i++ ) {
+    for( int i = 0; i < brush->nSides; ++i ) {
       BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float startDist = leafStartPos * plane.normal - plane.distance;
@@ -421,7 +421,7 @@ namespace oz
       leafStartPos = startPos;
       leafEndPos   = endPos;
 
-      for( int i = 0; i < leaf.nBrushes; i++ ) {
+      for( int i = 0; i < leaf.nBrushes; ++i ) {
         BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
         if( brush.material & Material::STRUCT_BIT ) {
@@ -467,8 +467,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -509,7 +509,7 @@ namespace oz
   // checks if AABB and Brush overlap
   bool Collider::testAABBBrush( const BSP::Brush* brush ) const
   {
-    for( int i = 0; i < brush->nSides; i++ ) {
+    for( int i = 0; i < brush->nSides; ++i ) {
       BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float offset =
@@ -519,7 +519,7 @@ namespace oz
 
       float dist = globalStartPos * plane.normal - plane.distance - offset;
 
-      if( dist > EPSILON_2 ) {
+      if( dist > EPSILON ) {
         return true;
       }
     }
@@ -532,7 +532,7 @@ namespace oz
     if( nodeIndex < 0 ) {
       BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
 
-      for( int i = 0; i < leaf.nBrushes; i++ ) {
+      for( int i = 0; i < leaf.nBrushes; ++i ) {
         BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
         if( ( brush.material & Material::STRUCT_BIT ) && !testAABBBrush( &brush ) ) {
@@ -568,7 +568,7 @@ namespace oz
   // check for AABB-AABB, AABB-Brush and AABB-Terrain overlapping in the world
   bool Collider::testAABBWorld()
   {
-    if( !world.includes( aabb, EPSILON_2 ) ) {
+    if( !world.includes( aabb, EPSILON ) ) {
       return false;
     }
 
@@ -578,8 +578,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -599,7 +599,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( aabb, EPSILON_2 ) )
+              sObj->overlaps( aabb, EPSILON ) )
           {
             return false;
           }
@@ -612,17 +612,17 @@ namespace oz
   // check for AABB-AABB overlapping in the world
   bool Collider::testAABBWorldOO()
   {
-    if( !world.includes( aabb, EPSILON_2 ) ) {
+    if( !world.includes( aabb, EPSILON ) ) {
       return false;
     }
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( aabb, EPSILON_2 ) )
+              sObj->overlaps( aabb, EPSILON ) )
           {
             return false;
           }
@@ -635,14 +635,14 @@ namespace oz
   // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testAABBWorldOSO()
   {
-    if( !world.includes( aabb, EPSILON_2 ) ) {
+    if( !world.includes( aabb, EPSILON ) ) {
       return false;
     }
 
     const Structure* oldStr = null;
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -662,7 +662,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iterator() ) {
           if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
-              sObj->overlaps( aabb, EPSILON_2 ) )
+              sObj->overlaps( aabb, EPSILON ) )
           {
             return false;
           }
@@ -675,7 +675,7 @@ namespace oz
   // finds out if AABB-World bounding box collision occurs and the time when it occurs
   void Collider::trimAABBVoid()
   {
-    for( int i = 0; i < 3; i++ ) {
+    for( int i = 0; i < 3; ++i ) {
       int iSide = move[i] >= 0.0f;
       const Vec3& normal = bbNormals[i * 2 + iSide];
 
@@ -703,7 +703,7 @@ namespace oz
     float maxRatio        =  1.0f;
     const Vec3* tmpNormal = null;
 
-    for( int i = 0; i < 6; i++ ) {
+    for( int i = 0; i < 6; ++i ) {
       int j = i >> 1;
       const Vec3& normal = bbNormals[i];
 
@@ -743,7 +743,7 @@ namespace oz
     float maxRatio        =  1.0f;
     const Vec3* tmpNormal = null;
 
-    for( int i = 0; i < brush->nSides; i++ ) {
+    for( int i = 0; i < brush->nSides; ++i ) {
       BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float offset =
@@ -789,7 +789,7 @@ namespace oz
   {
     float depth = Math::inf();
 
-    for( int i = 0; i < brush->nSides; i++ ) {
+    for( int i = 0; i < brush->nSides; ++i ) {
       BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       if( plane.normal.z <= 0.0f ) {
@@ -818,7 +818,7 @@ namespace oz
   // checks if AABB and Brush overlap and if AABB center is inside a brush
   void Collider::trimAABBLadder( const BSP::Brush* brush )
   {
-    for( int i = 0; i < brush->nSides; i++ ) {
+    for( int i = 0; i < brush->nSides; ++i ) {
       BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float offset =
@@ -848,7 +848,7 @@ namespace oz
       leafStartPos = startPos;
       leafEndPos   = endPos;
 
-      for( int i = 0; i < leaf.nBrushes; i++ ) {
+      for( int i = 0; i < leaf.nBrushes; ++i ) {
         BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
 
         if( brush.material & Material::STRUCT_BIT ) {
@@ -910,8 +910,8 @@ namespace oz
 
     const Structure* oldStr = null;
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         foreach( strIndex, cell.structs.iterator() ) {
@@ -954,12 +954,12 @@ namespace oz
   //***********************************
 
   // get all objects and structures that overlap with our trace
-  void Collider::getWorldOverlaps( Vector<Object*> *objects, Vector<Structure*> *structs )
+  void Collider::getWorldOverlaps( Vector<Object*>* objects, Vector<Structure*>* structs )
   {
     assert( objects != null || structs != null );
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         if( structs != null ) {
@@ -990,12 +990,12 @@ namespace oz
   }
 
   // get all objects which are included in our trace
-  void Collider::getWorldIncludes( Vector<Object*> *objects ) const
+  void Collider::getWorldIncludes( Vector<Object*>* objects ) const
   {
     assert( objects != null );
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {
@@ -1009,8 +1009,8 @@ namespace oz
 
   void Collider::touchWorldOverlaps() const
   {
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.iterator() ) {

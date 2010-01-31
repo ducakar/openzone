@@ -62,7 +62,7 @@ namespace oz
         items.remove( i );
       }
       else {
-        i++;
+        ++i;
       }
     }
 
@@ -380,11 +380,12 @@ namespace oz
           float negStartDist = ( desiredMove * collider.hit.ratio ) * normal - EPSILON;
 
           for( float raise = clazz->stepInc; raise <= clazz->stepMax; raise += clazz->stepInc ) {
-            p.z += clazz->stepInc;
+            collider.translate( *this, Vec3( 0.0f, 0.0f, clazz->stepInc ) );
 
-            if( !collider.test( *this, this ) ) {
+            if( collider.hit.ratio != 1.0f ) {
               break;
             }
+            p.z += clazz->stepInc;
             collider.translate( *this, desiredMove, this );
 
             Vec3 move = desiredMove * collider.hit.ratio;
@@ -638,7 +639,7 @@ namespace oz
     stepRate     = istream->readFloat();
 
     int nItems = istream->readInt();
-    for( int i = 0; i < nItems; i++ ) {
+    for( int i = 0; i < nItems; ++i ) {
       items << istream->readInt();
     }
     weaponItem   = istream->readInt();

@@ -80,11 +80,11 @@ namespace client
 
   void BSP::checkInWaterBrush( const oz::BSP::Leaf* leaf ) const
   {
-    for( int i = 0; i < leaf->nBrushes; i++ ) {
+    for( int i = 0; i < leaf->nBrushes; ++i ) {
       const oz::BSP::Brush* brush = &bsp->brushes[ bsp->leafBrushes[leaf->firstBrush + i] ];
 
       if( brush->material & Material::WATER_BIT ) {
-        for( int i = 0; i < brush->nSides; i++ ) {
+        for( int i = 0; i < brush->nSides; ++i ) {
           const oz::BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
           if( ( camPos * plane.normal - plane.distance ) >= 0.0f ) {
@@ -198,7 +198,7 @@ namespace client
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
-        for( int i = 0; i < leaf.nFaces; i++ ) {
+        for( int i = 0; i < leaf.nFaces; ++i ) {
           int faceIndex = bsp->leafFaces[leaf.firstFace + i];
 
           if( !drawnFaces.get( faceIndex ) ) {
@@ -230,7 +230,7 @@ namespace client
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
-        for( int i = 0; i < leaf.nFaces; i++ ) {
+        for( int i = 0; i < leaf.nFaces; ++i ) {
           int faceIndex = bsp->leafFaces[leaf.firstFace + i];
 
           if( !drawnFaces.get( faceIndex ) ) {
@@ -257,7 +257,7 @@ namespace client
     log.indent();
 
     textures = new uint[bsp->nTextures];
-    for( int i = 0; i < bsp->nTextures; i++ ) {
+    for( int i = 0; i < bsp->nTextures; ++i ) {
       if( bsp->textures[i] != -1 ) {
         textures[i] = context.requestTexture( bsp->textures[i] );
       }
@@ -268,10 +268,10 @@ namespace client
     }
     else {
       lightMaps = new uint[bsp->nLightmaps];
-      for( int i = 0; i < bsp->nLightmaps; i++ ) {
+      for( int i = 0; i < bsp->nLightmaps; ++i ) {
         ubyte* bits = bsp->lightmaps[i].bits;
 
-        for( int j = 0; j < oz::BSP::LIGHTMAP_SIZE; j++ ) {
+        for( int j = 0; j < oz::BSP::LIGHTMAP_SIZE; ++j ) {
           bits[j] = ubyte( bits[j] + int( float( 255 - bits[j] ) * GAMMA_CORR ) );
         }
         lightMaps[i] = context.createTexture( bits,
@@ -289,10 +289,10 @@ namespace client
       visibleLeafs.setSize( bsp->visual.bitsets[0].length() );
     }
 
-    for( int i = 0; i < bsp->nFaces; i++ ) {
+    for( int i = 0; i < bsp->nFaces; ++i ) {
       const oz::BSP::Vertex* verts = &bsp->vertices[ bsp->faces[i].firstVertex ];
 
-      for( int j = 0; j < bsp->faces[i].nVertices; j++ ) {
+      for( int j = 0; j < bsp->faces[i].nVertices; ++j ) {
         if( verts[j].p.x < -bsp->maxDim || verts[j].p.x > bsp->maxDim ||
             verts[j].p.y < -bsp->maxDim || verts[j].p.y > bsp->maxDim ||
             verts[j].p.z < -bsp->maxDim || verts[j].p.z > bsp->maxDim )
@@ -309,7 +309,7 @@ namespace client
 
   BSP::~BSP()
   {
-    for( int i = 0; i < bsp->nTextures; i++ ) {
+    for( int i = 0; i < bsp->nTextures; ++i ) {
       if( bsp->textures[i] != -1 ) {
         context.releaseTexture( bsp->textures[i] );
       }
@@ -317,7 +317,7 @@ namespace client
     delete[] textures;
 
     if( lightMaps != null ) {
-      for( int i = 0; i < bsp->nLightmaps; i++ ) {
+      for( int i = 0; i < bsp->nLightmaps; ++i ) {
         context.freeTexture( lightMaps[i] );
       }
       delete[] lightMaps;
@@ -355,14 +355,14 @@ namespace client
       int     cluster = bsp->leafs[leafIndex].cluster;
       Bitset& bitset  = bsp->visual.bitsets[cluster];
 
-      for( int i = 0; i < bsp->nLeafs; i++ ) {
+      for( int i = 0; i < bsp->nLeafs; ++i ) {
         const oz::BSP::Leaf& leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
             frustum.isVisible( rotatedLeaf + str->p ) )
         {
-          for( int j = 0; j < leaf.nFaces; j++ ) {
+          for( int j = 0; j < leaf.nFaces; ++j ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
             const oz::BSP::Face& face = bsp->faces[faceIndex];
 
@@ -375,12 +375,12 @@ namespace client
       }
     }
     else {
-      for( int i = 0; i < bsp->nLeafs; i++ ) {
+      for( int i = 0; i < bsp->nLeafs; ++i ) {
         const oz::BSP::Leaf& leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
-          for( int j = 0; j < leaf.nFaces; j++ ) {
+          for( int j = 0; j < leaf.nFaces; ++j ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
             const oz::BSP::Face& face = bsp->faces[faceIndex];
 
@@ -424,14 +424,14 @@ namespace client
       int     cluster = bsp->leafs[leafIndex].cluster;
       Bitset& bitset  = bsp->visual.bitsets[cluster];
 
-      for( int i = 0; i < bsp->nLeafs; i++ ) {
+      for( int i = 0; i < bsp->nLeafs; ++i ) {
         const oz::BSP::Leaf& leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
             frustum.isVisible( rotatedLeaf + str->p ) )
         {
-          for( int j = 0; j < leaf.nFaces; j++ ) {
+          for( int j = 0; j < leaf.nFaces; ++j ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
             const oz::BSP::Face& face = bsp->faces[faceIndex];
 
@@ -444,12 +444,12 @@ namespace client
       }
     }
     else {
-      for( int i = 0; i < bsp->nLeafs; i++ ) {
+      for( int i = 0; i < bsp->nLeafs; ++i ) {
         const oz::BSP::Leaf& leaf = bsp->leafs[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
-          for( int j = 0; j < leaf.nFaces; j++ ) {
+          for( int j = 0; j < leaf.nFaces; ++j ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
             const oz::BSP::Face& face = bsp->faces[faceIndex];
 
@@ -490,7 +490,7 @@ namespace client
     int leafIndex = getLeaf();
     checkInWaterBrush( &bsp->leafs[leafIndex] );
 
-    for( int i = 0; i < bsp->nFaces; i++ ) {
+    for( int i = 0; i < bsp->nFaces; ++i ) {
       const oz::BSP::Face& face = bsp->faces[i];
 
       if( !hiddenFaces.get( i ) ) {
@@ -521,7 +521,7 @@ namespace client
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
 
-    for( int i = 0; i < bsp->nFaces; i++ ) {
+    for( int i = 0; i < bsp->nFaces; ++i ) {
       const oz::BSP::Face& face = bsp->faces[i];
 
       if( ( face.material & Material::WATER_BIT ) && !hiddenFaces.get( i ) ) {
@@ -540,10 +540,10 @@ namespace client
 
     drawnFaces = hiddenFaces;
 
-    for( int i = 0; i < bsp->nLeafs; i++ ) {
+    for( int i = 0; i < bsp->nLeafs; ++i ) {
       const oz::BSP::Leaf& leaf = bsp->leafs[i];
 
-      for( int j = 0; j < leaf.nFaces; j++ ) {
+      for( int j = 0; j < leaf.nFaces; ++j ) {
         int faceIndex = bsp->leafFaces[leaf.firstFace + j];
 
         if( !drawnFaces.get( faceIndex ) ) {

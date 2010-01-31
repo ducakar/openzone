@@ -208,16 +208,16 @@ namespace oz
     Span span;
     getInters( span, *str, EPSILON );
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         if( cells[x][y].structs.length() == cells[x][y].structs.capacity() ) {
           return false;
         }
       }
     }
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         assert( !cells[x][y].structs.contains( str->index ) );
 
         cells[x][y].structs << str->index;
@@ -231,8 +231,8 @@ namespace oz
     Span span;
     getInters( span, *str, EPSILON );
 
-    for( int x = span.minX; x <= span.maxX; x++ ) {
-      for( int y = span.minY; y <= span.maxY; y++ ) {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
         assert( cells[x][y].structs.contains( str->index ) );
 
         cells[x][y].structs.exclude( str->index );

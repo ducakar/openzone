@@ -296,7 +296,7 @@ namespace client
   {
     partListBase = glGenLists( MAX_PART_LISTS );
 
-    for( int i = 0; i < MAX_PART_LISTS; i++ ) {
+    for( int i = 0; i < MAX_PART_LISTS; ++i ) {
       genRandomTetrahedicParticle( partListBase + i, 1.0f );
     }
   }

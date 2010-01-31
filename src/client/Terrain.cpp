@@ -56,8 +56,8 @@ namespace client
     detailTexCoords = new TexCoord[nVertices];
     mapTexCoords    = new TexCoord[nVertices];
 
-    for( int x = 0; x < oz::Terrain::MAX; x++ ) {
-      for( int y = 0; y < oz::Terrain::MAX; y++ ) {
+    for( int x = 0; x < oz::Terrain::MAX; ++x ) {
+      for( int y = 0; y < oz::Terrain::MAX; ++y ) {
         Vec3& n = normals[x * oz::Terrain::MAX + y];
 
         n.setZero();
@@ -107,8 +107,8 @@ namespace client
     Span span;
     world.terra.getInters( span, camera.p.x - radius, camera.p.y - radius,
                            camera.p.x + radius, camera.p.y + radius );
-    span.maxX++;
-    span.maxY++;
+    ++span.maxX;
+    ++span.maxY;
 
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, detailTexId );
@@ -130,9 +130,9 @@ namespace client
     glClientActiveTexture( GL_TEXTURE1 );
     glTexCoordPointer( 2, GL_FLOAT, 0, mapTexCoords );
 
-    for( int y = span.minY; y < span.maxY; y++ ) {
+    for( int y = span.minY; y < span.maxY; ++y ) {
       glBegin( GL_TRIANGLE_STRIP );
-      for( int x = span.minX; x <= span.maxX; x++ ) {
+      for( int x = span.minX; x <= span.maxX; ++x ) {
         glArrayElement( x * oz::Terrain::MAX + y + 1 );
         glArrayElement( x * oz::Terrain::MAX + y     );
       }
@@ -153,8 +153,8 @@ namespace client
     Span span;
     world.terra.getInters( span, camera.p.x - radius, camera.p.y - radius,
                            camera.p.x + radius, camera.p.y + radius );
-    span.maxX++;
-    span.maxY++;
+    ++span.maxX;
+    ++span.maxY;
 
     float minX = float( span.minX );
     float maxX = float( span.maxX );

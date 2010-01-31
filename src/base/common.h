@@ -58,6 +58,85 @@ namespace oz
    */
   typedef unsigned long  ulong;
 
+  /**
+   * Dummy class.
+   * Can be useful for some advanced templates e.g. Tuple.
+   */
+  struct Nil
+  {
+    bool operator == ( const Nil& ) const { return true; }
+    bool operator != ( const Nil& ) const { return true; }
+  };
+
+  /**
+   * Type modify templates (add or remove pointer/reference/constness)
+   */
+  template <typename Type>
+  struct Mod
+  {
+    typedef Type        Plain;
+    typedef const Type  Const;
+    typedef       Type& Ref;
+    typedef const Type& ConstRef;
+    typedef       Type* Ptr;
+    typedef const Type* ConstPtr;
+  };
+
+  template <typename Type>
+  struct Mod<const Type>
+  {
+    typedef Type        Plain;
+    typedef const Type  Const;
+    typedef       Type& Ref;
+    typedef const Type& ConstRef;
+    typedef       Type* Ptr;
+    typedef const Type* ConstPtr;
+  };
+
+  template <typename Type>
+  struct Mod<Type&>
+  {
+    typedef Type        Plain;
+    typedef const Type  Const;
+    typedef       Type& Ref;
+    typedef const Type& ConstRef;
+    typedef       Type* Ptr;
+    typedef const Type* ConstPtr;
+  };
+
+  template <typename Type>
+  struct Mod<const Type&>
+  {
+    typedef Type        Plain;
+    typedef const Type  Const;
+    typedef       Type& Ref;
+    typedef const Type& ConstRef;
+    typedef       Type* Ptr;
+    typedef const Type* ConstPtr;
+  };
+
+  template <typename Type>
+  struct Mod<Type*>
+  {
+    typedef Type        Plain;
+    typedef const Type  Const;
+    typedef       Type& Ref;
+    typedef const Type& ConstRef;
+    typedef       Type* Ptr;
+    typedef const Type* ConstPtr;
+  };
+
+  template <typename Type>
+  struct Mod<const Type*>
+  {
+    typedef Type        Plain;
+    typedef const Type  Const;
+    typedef       Type& Ref;
+    typedef const Type& ConstRef;
+    typedef       Type* Ptr;
+    typedef const Type* ConstPtr;
+  };
+
   //***********************************
   //*     MISCELLANEOUS TEMPLATES     *
   //***********************************
@@ -143,7 +222,22 @@ namespace oz
    * @return clamped value of c
    */
   template <typename Value>
-  inline Value bound( const Value& c, const Value& a, const Value& b )
+  inline Value& bound( Value& c, Value& a, Value& b )
+  {
+    assert( a <= b );
+
+    return c < a ? a : ( c > b ? b : c );
+  }
+
+  /**
+   * Bound c between a and b. Equals to max( min( c, b ), a ).
+   * @param c
+   * @param a
+   * @param b
+   * @return clamped value of c
+   */
+  template <typename Value>
+  inline const Value& bound( const Value& c, const Value& a, const Value& b )
   {
     assert( a <= b );
 

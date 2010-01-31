@@ -54,7 +54,7 @@ namespace ui
     span.minY = t[0].y;
     span.maxY = t[0].y;
 
-    for( int i = 0; i < 8; i++ ) {
+    for( int i = 0; i < 8; ++i ) {
       span.minX = min( t[i].x, span.minX );
       span.maxX = max( t[i].x, span.maxX );
       span.minY = min( t[i].y, span.minY );
@@ -92,8 +92,8 @@ namespace ui
 
     // flip
     uint* pixels = reinterpret_cast<uint*>( text->pixels );
-    for( int i = 0; i < text->h / 2; i++ ) {
-      for( int j = 0; j < text->w; j++ ) {
+    for( int i = 0; i < text->h / 2; ++i ) {
+      for( int j = 0; j < text->w; ++j ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
       }
     }
@@ -112,7 +112,7 @@ namespace ui
 
     // make white
     int size = text->w * text->h;
-    for( int i = 0; i < size; i++ ) {
+    for( int i = 0; i < size; ++i ) {
       pixels[i] |= 0x00ffffff;
     }
 
@@ -296,7 +296,7 @@ namespace ui
         projectBounds( span, bb );
         drawTaggedRect( obj, span );
       }
-      i++;
+      ++i;
     }
   }
 

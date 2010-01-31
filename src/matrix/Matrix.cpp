@@ -30,47 +30,47 @@ namespace oz
     static const float DIM = World::DIM;
     int j = 0;
 
-    for( int i = 0; i < 400; i++ ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
         synapse.addObject( "Goblin", Vec3( x, y, z ) );
-        j++;
+        ++j;
       }
     }
-    for( int i = 0; i < 400; i++ ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
         synapse.addObject( "Knight", Vec3( x, y, z ) );
-        j++;
+        ++j;
       }
     }
-    for( int i = 0; i < 400; i++ ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
         synapse.addObject( "Beast", Vec3( x, y, z ) );
-        j++;
+        ++j;
       }
     }
-    for( int i = 0; i < 100; i++ ) {
+    for( int i = 0; i < 100; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
         synapse.addObject( "Droid", Vec3( x, y, z ) );
-        j++;
+        ++j;
       }
     }
-    for( int i = 0; i < 1000; i++ ) {
+    for( int i = 0; i < 1000; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
@@ -79,7 +79,7 @@ namespace oz
         synapse.addObject( "MetalBarrel", Vec3( x, y, z ) );
       }
     }
-    for( int i = 0; i < 1000; i++ ) {
+    for( int i = 0; i < 1000; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 2.0f;
@@ -235,7 +235,7 @@ namespace oz
 
   void Matrix::cleanObjects()
   {
-    for( int i = 0; i < world.objects.length(); i++ ) {
+    for( int i = 0; i < world.objects.length(); ++i ) {
       Object* obj = world.objects[i];
 
       if( obj != null ) {
@@ -250,7 +250,7 @@ namespace oz
 
   void Matrix::update()
   {
-    for( int i = 0; i < world.parts.length(); i++ ) {
+    for( int i = 0; i < world.parts.length(); ++i ) {
       Particle* part = world.parts[i];
 
       if( part != null ) {
@@ -263,7 +263,7 @@ namespace oz
       }
     }
 
-    for( int i = 0; i < world.objects.length(); i++ ) {
+    for( int i = 0; i < world.objects.length(); ++i ) {
       Object* obj = world.objects[i];
 
       if( obj == null ) {

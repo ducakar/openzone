@@ -13,19 +13,18 @@
 /*
  * Standard new and delete declarations (may be omitted as already built into C++ language)
  */
-void* operator new ( oz::uint size );
-void* operator new[] ( oz::uint size );
-void operator delete ( void* ptr );
-void operator delete[] ( void* ptr );
+//void* operator new ( oz::uint size );
+//void* operator new[] ( oz::uint size );
+//void operator delete ( void* ptr );
+//void operator delete[] ( void* ptr );
 
 /*
  * Placement new and delete
  */
-inline void* operator new ( oz::uint, void* place ) { return place; }
-inline void* operator new[] ( oz::uint, void* place ) { return place; }
-inline void operator delete ( void*, void* ) {}
-inline void operator delete[] ( void*, void* ) {}
-
+inline void* operator new ( oz::uint, void* place ) throw() { return place; }
+inline void* operator new[] ( oz::uint, void* place ) throw() { return place; }
+inline void operator delete ( void*, void* ) throw() {}
+inline void operator delete[] ( void*, void* ) throw() {}
 
 namespace oz
 {
@@ -97,7 +96,7 @@ namespace oz
       static Type* reallocate( Type* array, int count, int newSize )
       {
         Type* newArray = reinterpret_cast<Type*>( operator new ( newSize * sizeof( Type ) ) );
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           new( newArray + i ) Type( array[i] );
           array[i].~Type();
         }

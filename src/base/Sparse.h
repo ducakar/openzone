@@ -52,7 +52,7 @@ namespace oz
           Iterator& operator ++ ()
           {
             do {
-              B::elem++;
+              ++B::elem;
             }
             while( B::elem != B::past && B::elem->nextSlot[INDEX] != -1 );
 
@@ -94,7 +94,7 @@ namespace oz
           data = aRealloc( data, count, size );
           freeSlot = count;
 
-          for( int i = count; i < size; i++ ) {
+          for( int i = count; i < size; ++i ) {
             data[i].nextSlot[INDEX] = i + 1;
           }
         }
@@ -109,7 +109,7 @@ namespace oz
        */
       explicit Sparse() : data( new Type[8] ), size( 8 ), count( 0 ), freeSlot( 0 )
       {
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           data[i].nextSlot[INDEX] = i + 1;
         }
       }
@@ -121,7 +121,7 @@ namespace oz
       explicit Sparse( int initSize ) : data( new Type[initSize] ), size( initSize ), count( 0 ),
           freeSlot( 0 )
       {
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           data[i].nextSlot[INDEX] = i + 1;
         }
       }
@@ -174,7 +174,7 @@ namespace oz
         if( count != s. count ) {
           return false;
         }
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           if( data[i].nextSlot[INDEX] == -1 && data[i] != s.data[i] ) {
             return false;
           }
@@ -192,7 +192,7 @@ namespace oz
         if( count != s. count ) {
           return true;
         }
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           if( data[i].nextSlot[INDEX] == -1 && data[i] != s.data[i] ) {
             return true;
           }
@@ -269,7 +269,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           if( data[i].nextSlot[INDEX] == -1 && data[i] == e ) {
             return true;
           }
@@ -306,7 +306,7 @@ namespace oz
        */
       int index( const Type& e ) const
       {
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           if( data[i].nextSlot[INDEX] == -1 && data[i] == e ) {
             return i;
           }
@@ -321,7 +321,7 @@ namespace oz
        */
       int lastIndex( const Type& e ) const
       {
-        for( int i = size - 1; i >= 0; i-- ) {
+        for( int i = size - 1; i >= 0; --i ) {
           if( data[i].nextSlot[INDEX] == -1 && data[i] == e ) {
             return i;
           }
@@ -342,7 +342,7 @@ namespace oz
         freeSlot = data[index].nextSlot[INDEX];
         data[index] = e;
         data[index].nextSlot[INDEX] = -1;
-        count++;
+        ++count;
 
         return index;
       }
@@ -359,7 +359,7 @@ namespace oz
 
         freeSlot = data[index].nextSlot[INDEX];
         data[index].nextSlot[INDEX] = -1;
-        count++;
+        ++count;
 
         return index;
       }
@@ -378,7 +378,7 @@ namespace oz
         freeSlot = data[index].nextSlot[INDEX];
         data[index] = e;
         data[index].nextSlot[INDEX] = -1;
-        count++;
+        ++count;
 
         return index;
       }
@@ -393,7 +393,7 @@ namespace oz
 
         data[index].nextSlot[INDEX] = freeSlot;
         freeSlot = index;
-        count--;
+        --count;
       }
 
       /**
@@ -404,7 +404,7 @@ namespace oz
         count = 0;
         freeSlot = 0;
 
-        for( int i = 0; i < size; i++ ) {
+        for( int i = 0; i < size; ++i ) {
           data[i].nextSlot[INDEX] = i + 1;
         }
       }

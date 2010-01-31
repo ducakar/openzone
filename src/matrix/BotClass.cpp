@@ -136,7 +136,7 @@ namespace oz
 
     // default inventory
     char buffer[] = "inventoryItem  ";
-    for( int i = 0; i < INVENTORY_ITEMS; i++ ) {
+    for( int i = 0; i < INVENTORY_ITEMS; ++i ) {
       assert( 0 <= i && i < 100 );
 
       buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
@@ -184,7 +184,7 @@ namespace oz
 
     obj->name     = names.genName();
 
-    for( int i = 0; i < inventoryItems.length(); i++ ) {
+    for( int i = 0; i < inventoryItems.length(); ++i ) {
       int index = synapse.addObject( inventoryItems[i], Vec3::zero() );
       Dynamic* item = static_cast<Dynamic*>( world.objects[index] );
 

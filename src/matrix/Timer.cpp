@@ -34,12 +34,12 @@ namespace oz
 
     frameMillis += TICK_MILLIS;
     frameTime   += TICK_TIME;
-    frameTicks++;
+    ++frameTicks;
   }
 
   void Timer::frame()
   {
-    nFrames++;
+    ++nFrames;
 
     frameMillis = 0;
     frameTime   = 0.0f;

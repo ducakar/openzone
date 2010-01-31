@@ -195,7 +195,7 @@ namespace oz
       {
         assert( count > 0 );
 
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           if( data[i] == e ) {
             return true;
           }

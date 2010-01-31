@@ -11,7 +11,7 @@
 
 using namespace oz;
 
-class Elem
+struct Elem
 {
   int value;
   Elem* prev[1];
@@ -44,6 +44,11 @@ int main()
   printf( "\n" );
 
   printf( "%f %f", 1.0f / Math::sqrt( 2.0f ), Math::fInvSqrt( 2.0f ) );
+
+  Tuple<int, int> p( 1, 2 );
+  Tuple<int, int> r( 1, 2 );
+
+  printf( "%d\n", p == r );
 
   return 0;
 }

@@ -129,7 +129,7 @@ namespace nirvana
   {
     if( lua.strIndex < lua.structs.length() ) {
       lua.str = lua.structs[lua.strIndex];
-      lua.strIndex++;
+      ++lua.strIndex;
       lua_pushboolean( l, true );
     }
     else {
@@ -271,7 +271,7 @@ namespace nirvana
   {
     if( lua.objIndex < lua.objects.length() ) {
       lua.obj = lua.objects[lua.objIndex];
-      lua.objIndex++;
+      ++lua.objIndex;
       lua_pushboolean( l, true );
     }
     else {
@@ -1113,7 +1113,7 @@ namespace nirvana
     lua_setglobal( l, "ozLocalData" );
     lua_getglobal( l, "ozLocalData" );
 
-    for( int i = 0; i < translator.nirvanaScripts.length(); i++ ) {
+    for( int i = 0; i < translator.nirvanaScripts.length(); ++i ) {
       const Translator::Resource& res = translator.nirvanaScripts[i];
 
       log.print( "Processing '%s' ...", res.path.cstr() );

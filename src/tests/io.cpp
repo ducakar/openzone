@@ -19,13 +19,13 @@ int main()
   OutputStream os = buffer.outputStream();
   InputStream is = buffer.inputStream();
 
-  os.writeVec3( Vec3( 1.5, 0.7, 4.9 ) );
+  os.writeVec3( Vec3( 1.5f, 0.7f, 4.9f ) );
   os.writeInt( 42 );
-  os.writeFloat( 1.7 );
+  os.writeFloat( 1.7f );
   os.writeString( "drek" );
   os.writeInt( 43 );
-  os.writeVec3( Vec3( 1.51, 0.71, 4.91 ) );
-  os.writeFloat( 1.71 );
+  os.writeVec3( Vec3( 1.51f, 0.71f, 4.91f ) );
+  os.writeFloat( 1.71f );
 
   Vec3 v1 = is.readVec3();
   int i1 = is.readInt();

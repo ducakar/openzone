@@ -95,7 +95,7 @@ namespace client
   {
     const int* samples = obj->type->audioSamples;
 
-    for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; i++ ) {
+    for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; ++i ) {
       if( samples[i] != -1 ) {
         context.requestSound( samples[i] );
       }
@@ -107,7 +107,7 @@ namespace client
   {
     const int* samples = obj->type->audioSamples;
 
-    for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; i++ ) {
+    for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; ++i ) {
       if( samples[i] != -1 ) {
         context.releaseSound( samples[i] );
       }

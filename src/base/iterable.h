@@ -162,7 +162,7 @@ namespace oz
       {
         assert( B::elem != past );
 
-        B::elem++;
+        ++B::elem;
         return *this;
       }
 
@@ -174,7 +174,7 @@ namespace oz
       {
         assert( B::elem != past );
 
-        B::elem--;
+        --B::elem;
         return *this;
       }
 
@@ -196,8 +196,8 @@ namespace oz
    * There's no need to add it to Katepart syntax highlighting as it is already there (Qt has some
    * similar foreach macro).
    */
-# define foreach( i, startIterator ) \
-  for( typeof( startIterator ) i = startIterator; !i.isPassed(); ++i )
+# define foreach( i, iterator ) \
+  for( typeof( iterator ) i = iterator; !i.isPassed(); ++i )
 
   /**
    * Compare all elements. (Like STL equal)
@@ -205,8 +205,8 @@ namespace oz
    * @param iSrcB
    * @return true if all elements are equal
    */
-  template <class IterA, class IterB>
-  inline bool iEquals( IterA iSrcA, IterB iSrcB )
+  template <class IteratorA, class IteratorB>
+  inline bool iEquals( IteratorA iSrcA, IteratorB iSrcB )
   {
     while( !iSrcA.isPassed() ) {
       if( *iSrcA != *iSrcB ) {
@@ -223,8 +223,8 @@ namespace oz
    * @param iDest
    * @param value
    */
-  template <class Iter, typename Value>
-  inline void iSet( Iter iDest, const Value& value )
+  template <class Iterator, typename Value>
+  inline void iSet( Iterator iDest, const Value& value )
   {
     while( !iDest.isPassed() ) {
       *iDest = value;
@@ -237,8 +237,8 @@ namespace oz
    * @param iDest
    * @param iSrc
    */
-  template <class IterA, class IterB>
-  inline void iCopy( IterA iDest, IterB iSrc )
+  template <class IteratorA, class IteratorB>
+  inline void iCopy( IteratorA iDest, IteratorB iSrc )
   {
     assert( &*iDest != &*iSrc );
 
@@ -254,8 +254,8 @@ namespace oz
    * @param iDest
    * @param iSrc
    */
-  template <class BackIterA, class BackIterB>
-  inline void iReverseCopy( BackIterA iDest, BackIterB iSrc )
+  template <class ReverseIteratorA, class ReverseIteratorB>
+  inline void iReverseCopy( ReverseIteratorA iDest, ReverseIteratorB iSrc )
   {
     assert( &*iDest != &*iSrc );
 
@@ -272,8 +272,8 @@ namespace oz
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
-  template <class Iter, typename Value>
-  inline Iter iIndex( Iter iSrc, const Value& value )
+  template <class Iterator, typename Value>
+  inline Iterator iIndex( Iterator iSrc, const Value& value )
   {
     while( !iSrc.isPassed() ) {
       if( *iSrc == value ) {
@@ -290,8 +290,8 @@ namespace oz
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
-  template <class BackIter, typename Value>
-  inline BackIter iLastIndex( BackIter iSrc, const Value& value )
+  template <class ReverseIterator, typename Value>
+  inline ReverseIterator iLastIndex( ReverseIterator iSrc, const Value& value )
   {
     while( !iSrc.isPassed() ) {
       --iSrc;
@@ -306,11 +306,11 @@ namespace oz
    * Call delete on each non-null element of an container of pointers and set all elements to null.
    * @param iDest
    */
-  template <class Iter>
-  inline void iFree( Iter iDest )
+  template <class Iterator>
+  inline void iFree( Iterator iDest )
   {
     while( !iDest.isPassed() ) {
-      typeof( *iDest ) &elem = *iDest;
+      typeof( *iDest )& elem = *iDest;
       ++iDest;
 
       if( elem != null ) {

@@ -77,7 +77,7 @@ namespace oz
     life     = istream->readFloat();
 
     int nEvents = istream->readInt();
-    for( int i = 0; i < nEvents; i++ ) {
+    for( int i = 0; i < nEvents; ++i ) {
       int id = istream->readInt();
       float intensity = istream->readFloat();
 
@@ -104,7 +104,7 @@ namespace oz
     life = istream->readFloat();
 
     int nEvents = istream->readInt();
-    for( int i = 0; i < nEvents; i++ ) {
+    for( int i = 0; i < nEvents; ++i ) {
       int   id        = istream->readInt();
       float intensity = istream->readFloat();
 

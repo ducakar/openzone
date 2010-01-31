@@ -66,10 +66,10 @@ void* operator new ( uint size )
     throw Exception( "Bad allocation" );
   }
 
-  Alloc::count++;
+  ++Alloc::count;
   Alloc::amount += size;
 
-  Alloc::sumCount++;
+  ++Alloc::sumCount;
   Alloc::sumAmount += size;
 
   Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
@@ -87,10 +87,10 @@ void* operator new[] ( uint size )
     throw Exception( "Bad allocation" );
   }
 
-  Alloc::count++;
+  ++Alloc::count;
   Alloc::amount += size;
 
-  Alloc::sumCount++;
+  ++Alloc::sumCount;
   Alloc::sumAmount += size;
 
   Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
@@ -104,7 +104,7 @@ void operator delete ( void* ptr )
 {
   uint* chunk = reinterpret_cast<uint*>( ptr ) - 1;
 
-  Alloc::count--;
+  --Alloc::count;
   Alloc::amount -= chunk[0];
 
   free( chunk );
@@ -114,7 +114,7 @@ void operator delete[] ( void* ptr )
 {
   uint* chunk = reinterpret_cast<uint*>( ptr ) - 1;
 
-  Alloc::count--;
+  --Alloc::count;
   Alloc::amount -= chunk[0];
 
   free( chunk );

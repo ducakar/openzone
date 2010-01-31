@@ -82,7 +82,7 @@ namespace oz
       // Pointer to data array
       Block data;
       // Number of elements in vector
-      int  count;
+      int   count;
 
     public:
 
@@ -110,7 +110,7 @@ namespace oz
       {
         assert( &v != this );
 
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           destruct<Type>( data + i );
           construct<Type>( data + i, v.data );
         }
@@ -196,7 +196,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           if( data[i] == e ) {
             return true;
           }
@@ -294,7 +294,7 @@ namespace oz
         assert( count < SIZE );
 
         construct<Type>( data + count );
-        count++;
+        ++count;
       }
 
       /**
@@ -306,7 +306,7 @@ namespace oz
         assert( count < SIZE );
 
         construct<Type>( data + count, e );
-        count++;
+        ++count;
       }
 
       /**
@@ -318,7 +318,7 @@ namespace oz
         assert( count < SIZE );
 
         construct<Type>( data + count, e );
-        count++;
+        ++count;
       }
 
       /**
@@ -339,7 +339,7 @@ namespace oz
         assert( count < SIZE );
 
         construct<Type>( data + count, e );
-        count++;
+        ++count;
       }
 
       /**
@@ -362,7 +362,7 @@ namespace oz
 
         assert( SIZE >= newCount );
 
-        for( int i = 0; i < arrayCount; i++ ) {
+        for( int i = 0; i < arrayCount; ++i ) {
           aConstruct<Type>( data + count, array, arrayCount );
         }
         count = newCount;
@@ -404,7 +404,7 @@ namespace oz
       int includeAll( const Type* array, int count )
       {
         int n = 0;
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           n += int( include( array[i] ) );
         }
         return n;
@@ -424,7 +424,7 @@ namespace oz
         construct<Type>( data + count );
         aReverseCopy<Type>( data + index + 1, data + index, count - index );
         data[index] = e;
-        count++;
+        ++count;
       }
 
       /**
@@ -436,7 +436,7 @@ namespace oz
       {
         assert( count != 0 );
 
-        count--;
+        --count;
         destruct<Type>( data + count );
         return *this;
       }
@@ -449,7 +449,7 @@ namespace oz
       {
         assert( 0 <= index && index < count );
 
-        count--;
+        --count;
         aCopy<Type>( data + index, data + index + 1, count - index );
         destruct<Type>( data + count );
       }
@@ -464,7 +464,7 @@ namespace oz
         int i = aIndex<Type>( data, e, count );
 
         if( i != -1 ) {
-          count--;
+          --count;
           aCopy<Type>( data + i, data + i + 1, count - i );
           destruct<Type>( data + count );
 
@@ -493,7 +493,7 @@ namespace oz
       int excludeAll( const Type* array, int count )
       {
         int n = 0;
-        for( int i = 0; i < count; i++ ) {
+        for( int i = 0; i < count; ++i ) {
           n += int( exclude( array[i] ) );
         }
         return n;
@@ -507,7 +507,7 @@ namespace oz
       {
         Type e = data[0];
 
-        count--;
+        --count;
         aCopy<Type>( data, data + 1, count );
         destruct<Type>( data + count );
 
@@ -531,7 +531,7 @@ namespace oz
       {
         assert( count != 0 );
 
-        count--;
+        --count;
         Type e = data[count];
         destruct( data + count );
 

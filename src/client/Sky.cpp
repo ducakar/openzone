@@ -45,7 +45,7 @@ namespace client
     originalLightDir = Vec3( -Math::cos( heading ), -Math::sin( heading ), 0.0f );
 
     Quat* tempStars = new Quat[MAX_STARS];
-    for( int i = 0; i < MAX_STARS; i++ ) {
+    for( int i = 0; i < MAX_STARS; ++i ) {
       float length;
       do {
         tempStars[i].x = 20.0f * Math::frand() - 10.0f;
@@ -60,7 +60,7 @@ namespace client
     // sort stars
     aSort( tempStars, MAX_STARS );
 
-    for( int i = 0; i < MAX_STARS; i++ ) {
+    for( int i = 0; i < MAX_STARS; ++i ) {
       stars[i] = Vec3( tempStars[i] );
     }
 
@@ -173,15 +173,15 @@ namespace client
     const Vec3& tz = Vec3( transf.z );
     int start, end;
     if( tz * stars[0] > 0.0f ) {
-      for( end = 1; end < MAX_STARS && tz * stars[end] > 0.0f; end++ );
-      for( start = end + 1; start < MAX_STARS && tz * stars[start] <= 0.0f; start++ );
+      for( end = 1; end < MAX_STARS && tz * stars[end] > 0.0f; ++end );
+      for( start = end + 1; start < MAX_STARS && tz * stars[start] <= 0.0f; ++start );
 
       glDrawArrays( GL_POINTS, 0, end );
       glDrawArrays( GL_POINTS, start, MAX_STARS - start );
     }
     else {
-      for( start = 1; start < MAX_STARS && tz * stars[start] <= 0.0f; start++ );
-      for( end = start; end < MAX_STARS && tz * stars[end] > 0.0f; end++ );
+      for( start = 1; start < MAX_STARS && tz * stars[start] <= 0.0f; ++start );
+      for( end = start; end < MAX_STARS && tz * stars[end] > 0.0f; ++end );
 
       glDrawArrays( GL_POINTS, start, end - start );
     }

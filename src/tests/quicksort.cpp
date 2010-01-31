@@ -12,7 +12,6 @@
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>
-#include <algorithm>
 
 using namespace std;
 
@@ -24,8 +23,8 @@ inline void aSort( Type* array, int count )
   Type*  first = array;
   Type*  last = array + count - 1;
 
-  *( sp++ ) = first;
-  *( sp++ ) = last;
+  *( ++sp ) = first;
+  *( ++sp ) = last;
 
   do {
     last = *( --sp );
@@ -39,10 +38,10 @@ inline void aSort( Type* array, int count )
 
         do {
           while( top <= bottom && *top <= pivotValue ) {
-            top++;
+            ++top;
           }
           while( top < bottom && *bottom > pivotValue ) {
-            bottom--;
+            --bottom;
           }
           if( top >= bottom ) {
             break;
@@ -53,19 +52,19 @@ inline void aSort( Type* array, int count )
 
         swap( *top, *last );
 
-        *( sp++ ) = first;
-        *( sp++ ) = top - 1;
-        *( sp++ ) = top + 1;
-        *( sp++ ) = last;
+        *( ++sp ) = first;
+        *( ++sp ) = top - 1;
+        *( ++sp ) = top + 1;
+        *( ++sp ) = last;
       }
       else {
         // selection sort
         for( Type* i = first; i < last; ) {
           Type* pivot = i;
           Type* min = i;
-          i++;
+          ++i;
 
-          for( Type* j = i; j <= last; j++ ) {
+          for( Type* j = i; j <= last; ++j ) {
             if( *j < *min ) {
               min = j;
             }
@@ -89,10 +88,10 @@ inline void arSort( Type* first, Type* last )
 
       do {
         while( top <= bottom && *top <= pivotValue ) {
-          top++;
+          ++top;
         }
         while( top < bottom && *bottom > pivotValue ) {
-          bottom--;
+          --bottom;
         }
         if( top >= bottom ) {
           break;
@@ -131,10 +130,10 @@ static void oaSort( Type* array, int begin, int end )
 
       do {
         while( top <= bottom && array[top] <= pivotValue ) {
-          top++;
+          ++top;
         }
         while( top < bottom && array[bottom] > pivotValue ) {
-          bottom--;
+          --bottom;
         }
         if( top < bottom ) {
           swap( array[top], array[bottom] );
@@ -174,13 +173,13 @@ void TQuickSortInc( T *a, int num_el )
          while(hi > lo)
          {
             T *max = lo;
-            for( T *p = lo+1; p <= hi; p++ )
+            for( T *p = lo+1; p <= hi; ++p )
             {
                if(!(p[0] < max[0])) max = p;
             }
             temp = max[0]; max[0] = hi[0];  hi[0] = temp;
 
-            hi--;
+            --hi;
          }
 
          break;
@@ -201,13 +200,13 @@ void TQuickSortInc( T *a, int num_el )
          {
             do
             {
-               cfirst++;
+               ++cfirst;
             }
             while( cfirst <= last && cfirst[0] < first[0] );
 
             do
             {
-               clast--;
+               --clast;
             }
             while( clast > first && !(clast[0] < first[0] ));
 
@@ -271,8 +270,8 @@ int main( int, char *[] )
   srand( 32 );
 
   long t0 = clock();
-  for( int i = 0; i < TESTS; i++ ) {
-    for( int j = 0; j < MAX; j++ ) {
+  for( int i = 0; i < TESTS; ++i ) {
+    for( int j = 0; j < MAX; ++j ) {
       array[j] = rand() % MAX;
     }
     //sort( array, 0, MAX );
@@ -283,7 +282,7 @@ int main( int, char *[] )
     //aSort<int, 2048>( array, MAX );
   }
   printf( "%d\n", int( clock() - t0 ) / 1000 );
-  for( int i = 0; i < MAX; i++ ) {
+  for( int i = 0; i < MAX; ++i ) {
     printf( "%d ", array[i] );
   }
   return 0;

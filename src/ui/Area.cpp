@@ -87,8 +87,8 @@ namespace ui
 
     // flip
     uint* pixels = reinterpret_cast<uint*>( text->pixels );
-    for( int i = 0; i < text->h / 2; i++ ) {
-      for( int j = 0; j < text->w; j++ ) {
+    for( int i = 0; i < text->h / 2; ++i ) {
+      for( int j = 0; j < text->w; ++j ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
       }
     }
@@ -117,8 +117,8 @@ namespace ui
 
     // flip
     uint* pixels = reinterpret_cast<uint*>( text->pixels );
-    for( int i = 0; i < text->h / 2; i++ ) {
-      for( int j = 0; j < text->w; j++ ) {
+    for( int i = 0; i < text->h / 2; ++i ) {
+      for( int j = 0; j < text->w; ++j ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
       }
     }
@@ -147,8 +147,8 @@ namespace ui
 
     // flip
     uint* pixels = reinterpret_cast<uint*>( text->pixels );
-    for( int i = 0; i < text->h / 2; i++ ) {
-      for( int j = 0; j < text->w; j++ ) {
+    for( int i = 0; i < text->h / 2; ++i ) {
+      for( int j = 0; j < text->w; ++j ) {
         swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
       }
     }
@@ -187,7 +187,7 @@ namespace ui
 
   void Area::update()
   {
-    for( int i = 0; i < updateAreas.length(); i++ ) {
+    for( int i = 0; i < updateAreas.length(); ++i ) {
       if( updateAreas[i]->flags & UPDATE_BIT ) {
         assert( updateAreas[i]->flags & UPDATE_FUNC_BIT );
 

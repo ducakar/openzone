@@ -22,7 +22,7 @@ namespace client
   char* OBJ::skipSpaces( char* pos )
   {
     while( *pos == ' ' || *pos == '\t' ) {
-      pos++;
+      ++pos;
     }
     return pos;
   }
@@ -30,21 +30,21 @@ namespace client
   char* OBJ::readWord( char* pos )
   {
     while( *pos != ' ' && *pos != '\t' && *pos != '\n' && *pos != EOF ) {
-      pos++;
+      ++pos;
     }
     return pos;
   }
 
   bool OBJ::readVertexData( char* pos,
-                            Vector<Vec3> *tempVerts,
-                            Vector<Vec3> *tempNormals,
-                            Vector<TexCoord> *tempTexCoords ) const
+                            Vector<Vec3>* tempVerts,
+                            Vector<Vec3>* tempNormals,
+                            Vector<TexCoord>* tempTexCoords ) const
   {
     // pos should be at position just after 'v'
 
     // vertex coords
     if( *pos == ' ' ) {
-      pos++;
+      ++pos;
 
       float x, y, z;
       int nMatches = sscanf( pos, "%f %f %f", &x, &y, &z );
@@ -106,7 +106,7 @@ namespace client
     int lastSlash = -1;
 
     // find slashes and determine whether we have vert, vert/tex, vert//norm or vert/tex/norm
-    for( int i = 0; i < wordLength; i++ ) {
+    for( int i = 0; i < wordLength; ++i ) {
       if( pos[i] == '/' ) {
         if( firstSlash == -1 ) {
           firstSlash = i;
@@ -208,7 +208,7 @@ namespace client
     return true;
   }
 
-  bool OBJ::loadMaterial( const String& path, HashString<int, 32> *materialIndices )
+  bool OBJ::loadMaterial( const String& path, HashString<int, 32>* materialIndices )
   {
     FILE* file;
     char buffer[LINE_BUFFER_SIZE];
@@ -403,7 +403,7 @@ namespace client
     // copy everything into arrays for memory optimization
     if( !tempVerts.isEmpty() ) {
       vertices( tempVerts.length() );
-      for( int i = 0; i < vertices.length(); i++ ) {
+      for( int i = 0; i < vertices.length(); ++i ) {
         vertices[i] = translation + scaling * tempVerts[i];
       }
     }
@@ -458,14 +458,14 @@ namespace client
 
   void OBJ::scale( float scale )
   {
-    for( int i = 0; i < vertices.length(); i++ ) {
+    for( int i = 0; i < vertices.length(); ++i ) {
       vertices[i] *= scale;
     }
   }
 
   void OBJ::translate( const Vec3& t )
   {
-    for( int i = 0; i < vertices.length(); i++ ) {
+    for( int i = 0; i < vertices.length(); ++i ) {
       vertices[i] += t;
     }
   }
@@ -477,7 +477,7 @@ namespace client
     bool isTextured = true;
     bool isBlended = false;
 
-    for( int i = 0; i < faces.length(); i++ ) {
+    for( int i = 0; i < faces.length(); ++i ) {
       const Face& face = faces[i];
 
       if( face.nVerts < 0 ) {
@@ -510,7 +510,7 @@ namespace client
       }
 
       glBegin( GL_POLYGON );
-        for( int j = 0; j < face.nVerts; j++ ) {
+        for( int j = 0; j < face.nVerts; ++j ) {
           if( !texCoords.isEmpty() ) {
             glTexCoord2fv( &texCoords[face.texCoordIndices[j]].u );
           }
@@ -542,7 +542,7 @@ namespace client
 
   void OBJ::trim()
   {
-    for( int i = 0; i < faces.length(); i++ ) {
+    for( int i = 0; i < faces.length(); ++i ) {
       if( faces[i].nVerts > 0 ) {
         delete[] faces[i].vertIndices;
 

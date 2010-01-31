@@ -70,7 +70,7 @@ namespace nirvana
       {
         mind->update();
       }
-      count++;
+      ++count;
     }
     updateModulo = ( updateModulo + 1 ) % UPDATE_INTERVAL;
   }
@@ -205,7 +205,7 @@ namespace nirvana
     String typeName;
     int nMinds = istream->readInt();
 
-    for( int i = 0; i < nMinds; i++ ) {
+    for( int i = 0; i < nMinds; ++i ) {
       istream->readString( typeName );
       minds << mindClasses[typeName].read( istream );
     }

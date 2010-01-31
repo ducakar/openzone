@@ -24,6 +24,7 @@
 /*
  * Containers, part 1
  */
+#include "Tuple.h"
 #include "Pair.h"
 #include "List.h"
 #include "DList.h"
