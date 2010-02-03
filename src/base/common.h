@@ -64,77 +64,15 @@ namespace oz
    */
   struct Nil
   {
-    bool operator == ( const Nil& ) const { return true; }
-    bool operator != ( const Nil& ) const { return true; }
-  };
+    bool operator == ( const Nil& ) const
+    {
+      return true;
+    }
 
-  /**
-   * Type modify templates (add or remove pointer/reference/constness)
-   */
-  template <typename Type>
-  struct Mod
-  {
-    typedef Type        Plain;
-    typedef const Type  Const;
-    typedef       Type& Ref;
-    typedef const Type& ConstRef;
-    typedef       Type* Ptr;
-    typedef const Type* ConstPtr;
-  };
-
-  template <typename Type>
-  struct Mod<const Type>
-  {
-    typedef Type        Plain;
-    typedef const Type  Const;
-    typedef       Type& Ref;
-    typedef const Type& ConstRef;
-    typedef       Type* Ptr;
-    typedef const Type* ConstPtr;
-  };
-
-  template <typename Type>
-  struct Mod<Type&>
-  {
-    typedef Type        Plain;
-    typedef const Type  Const;
-    typedef       Type& Ref;
-    typedef const Type& ConstRef;
-    typedef       Type* Ptr;
-    typedef const Type* ConstPtr;
-  };
-
-  template <typename Type>
-  struct Mod<const Type&>
-  {
-    typedef Type        Plain;
-    typedef const Type  Const;
-    typedef       Type& Ref;
-    typedef const Type& ConstRef;
-    typedef       Type* Ptr;
-    typedef const Type* ConstPtr;
-  };
-
-  template <typename Type>
-  struct Mod<Type*>
-  {
-    typedef Type        Plain;
-    typedef const Type  Const;
-    typedef       Type& Ref;
-    typedef const Type& ConstRef;
-    typedef       Type* Ptr;
-    typedef const Type* ConstPtr;
-  };
-
-  template <typename Type>
-  struct Mod<const Type*>
-  {
-    typedef Type        Plain;
-    typedef const Type  Const;
-    typedef       Type& Ref;
-    typedef const Type& ConstRef;
-    typedef       Type* Ptr;
-    typedef const Type* ConstPtr;
+    bool operator != ( const Nil& ) const
+    {
+      return false;
+    }
   };
 
   //***********************************
