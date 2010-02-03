@@ -12,25 +12,18 @@
 namespace oz
 {
 
-  template <typename Type>
+  template <typename TypeA, typename TypeB = TypeA>
   class Pair
   {
     public:
 
-      Type x;
-      Type y;
+      TypeA x;
+      TypeB y;
 
       Pair() {}
-      Pair( const Type& x_, const Type& y_ ) : x( x_ ), y( y_ ) {}
+      Pair( const TypeA& x_, const TypeB& y_ ) : x( x_ ), y( y_ ) {}
 
-      Pair& operator = ( const Pair<typename Mod<Type>::Plain>& p )
-      {
-        x = p.x;
-        y = p.y;
-        return *this;
-      }
-
-      Pair& operator = ( const Pair<typename Mod<Type>::Ref>& p )
+      Pair& operator = ( const Pair& p )
       {
         x = p.x;
         y = p.y;
@@ -49,18 +42,18 @@ namespace oz
 
       static Pair zero()
       {
-        return Pair( Type( 0 ), Type( 0 ) );
+        return Pair( TypeA( 0 ), TypeB( 0 ) );
       }
 
       bool isZero() const
       {
-        return x == Type( 0 ) && y == Type( 0 );
+        return x == TypeA( 0 ) && y == TypeB( 0 );
       }
 
       const Pair& setZeto()
       {
-        x = Type( 0 );
-        y = Type( 0 );
+        x = TypeA( 0 );
+        y = TypeB( 0 );
       }
 
       const Pair& operator + () const
@@ -96,21 +89,21 @@ namespace oz
 
       const Pair& operator /= ( const Pair& p )
       {
-        assert( p.x != Type( 0 ) && p.y != Type( 0 ) );
+        assert( p.x != TypeA( 0 ) && p.y != TypeB( 0 ) );
 
         x /= p.x;
         y /= p.y;
         return *this;
       }
 
-      const Pair& operator *= ( const Type& k )
+      const Pair& operator *= ( const TypeA& k )
       {
         x *= k;
         y *= k;
         return *this;
       }
 
-      const Pair& operator /= ( const Type& k )
+      const Pair& operator /= ( const TypeA& k )
       {
         assert( k != Type( 0 ) );
 
@@ -119,7 +112,7 @@ namespace oz
         return *this;
       }
 
-      const Pair& operator %= ( const Type& k )
+      const Pair& operator %= ( const TypeA& k )
       {
         assert( k != Type( 0 ) );
 
@@ -157,42 +150,42 @@ namespace oz
         return Pair( x % p.x, y % p.y );
       }
 
-      Pair operator * ( const Type& k ) const
+      Pair operator * ( const TypeA& k ) const
       {
         return Pair( x * k, y * k );
       }
 
-      Pair operator / ( const Type& k ) const
+      Pair operator / ( const TypeA& k ) const
       {
-        assert( k != Type( 0 ) );
+        assert( k != TypeA( 0 ) );
 
         return Pair( x / k, y / k );
       }
 
-      Pair operator % ( const Type& k ) const
+      Pair operator % ( const TypeA& k ) const
       {
-        assert( k != Type( 0 ) );
+        assert( k != TypeA( 0 ) );
 
         return Pair( x % k, y % k );
       }
 
-      friend Pair operator * ( const Type& k, const Pair& p )
+      friend Pair operator * ( const TypeA& k, const Pair& p )
       {
         return Pair( p.x * k, p.y * k );
       }
 
   };
 
-  template <typename Type>
-  inline Pair<Type> pair( const Type& x, const Type& y )
+  template <typename TypeA, typename TypeB>
+  inline Pair<TypeA, TypeB> pair( const TypeA& x, const TypeB& y )
   {
     return Pair<Type>( x, y );
   }
 
-  template <typename Type>
-  inline Pair<Type&> tiePair( Type& x, Type& y )
+  template <typename TypeA, typename TypeB>
+  inline Pair<TypeA&, TypeB&> tiePair( TypeA& x, TypeB& y )
   {
-    return Pair<Type&>( x, y );
+    return Pair<TypeA&, TypeB&>( x, y );
   }
 
 }

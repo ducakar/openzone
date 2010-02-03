@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3.0. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
 #pragma once
@@ -12,130 +12,241 @@
 namespace oz
 {
 
-  template <typename Head, typename Tail = Nil>
-  class TupleBase
+  template <typename Head, class Tail = Nil>
+  struct TupleList
   {
-    public:
+    Head head;
+    Tail tail;
 
-      /**
-       * Recursive templates to resolve type of N-th element of Tuple:
-       * ResolveType&lt;N, Tuple&lt;Head, Tail&gt;&gt; -&gt; ResolveType&lt;N - 1, Tail&gt;
-       * ResolveType&lt;0, Tuple&lt;Head, Tail&gt;&gt; -&gt; Head
-       * ResolveType&lt;N, Nil&gt; -&gt; void
-       * The last rule is used to print out less confusing error message if requested INDEX is out
-       * of bounds.
-       */
-      template <int INDEX, class TupleBase = void>
-      struct ResolveType;
+    TupleList() : head(), tail()
+    {}
 
-      template <int INDEX, typename HeadType, class TailType>
-      struct ResolveType<INDEX, TupleBase<HeadType, TailType> >
-      {
-        typedef typename ResolveType<INDEX - 1, TailType>::Type Type;
-      };
+    template <typename Type0, typename Type1, typename Type2, typename Type3>
+    TupleList( Type0& t0, Type1& t1, Type2& t2, Type3& t3 ) :
+	head( t0 ), tail( t1, t2, t3, Nil() )
+    {}
 
-      template <typename HeadType, class TailType>
-      struct ResolveType<0, TupleBase<HeadType, TailType> >
-      {
-        typedef HeadType Type;
-      };
+    template <typename Type0>
+    TupleList( Type0& t0, const Nil&, const Nil&, const Nil& ) : head( t0 )
+    {}
 
-      template <int INDEX>
-      struct ResolveType<INDEX, Nil>
-      {
-        typedef void Type;
-      };
+    template <typename Head_, class Tail_>
+    TupleList( const TupleList<Head_, Tail_>& tl ) : head( tl.head ), tail( tl.tail )
+    {}
 
-      template <int INDEX, typename Dummy = void>
-      struct GetHelper
-      {
-        static typename ResolveType<INDEX, TupleBase>::Type&
-        get( TupleBase& tb )
-        {
-          return Tail::template GetHelper<INDEX - 1>::get( tb.tail );
-        }
-      };
+    template <typename Head_, class Tail_>
+    TupleList& operator = ( const TupleList<Head_, Tail_>& tl )
+    {
+      head = tl.head;
+      tail = tl.tail;
+      return *this;
+    }
 
-      template <typename Dummy>
-      struct GetHelper<0, Dummy>
-      {
-        static typename ResolveType<0, TupleBase>::Type&
-        get( TupleBase& tb )
-        {
-          return tb.head;
-        }
-      };
+    TupleList& operator = ( const TupleList& tl )
+    {
+      head = tl.head;
+      tail = tl.tail;
+      return *this;
+    }
 
-      Head head;
-      Tail tail;
+    template <typename Head_, class Tail_>
+    bool operator == ( const TupleList<Head_, Tail_>& tl ) const
+    {
+      return head == tl.head && tail == tl.tail;
+    }
 
-      TupleBase() {}
-      TupleBase( const Head& head_ ) : head( head_ ) {}
-      TupleBase( const Head& head_, const Tail& tail_ ) : head( head_ ), tail( tail_ ) {}
+    template <typename Head_, class Tail_>
+    bool operator != ( const TupleList<Head_, Tail_>& tl ) const
+    {
+      return head != tl.head || tail != tl.tail;
+    }
 
-      bool operator == ( const TupleBase& tb ) const
-      {
-        return head == tb.head && tail == tb.tail;
-      }
-
-      bool operator != ( const TupleBase& tb ) const
-      {
-        return head != tb.head || tail != tb.tail;
-      }
   };
 
-  template <typename TypeA, typename TypeB = void, typename TypeC = void, typename TypeD = void>
-  struct Tuple : TupleBase<TypeA, TupleBase<TypeB, TupleBase<TypeC, TupleBase<TypeD> > > >
+  template <typename Type0, typename Type1, typename Type2, typename Type3>
+  struct ConstructTupleList
   {
-    Tuple() {}
-    Tuple( const TypeA& a, const TypeB& b, const TypeC& c, const TypeD& d ) :
-        TupleBase<TypeA, TupleBase<TypeB, TupleBase<TypeC, TupleBase<TypeD> > > >
-        ( a, TupleBase<TypeB, TupleBase<TypeC, TupleBase<TypeD> > >
-        ( b, TupleBase<TypeC, TupleBase<TypeD> >
-        ( c, TupleBase<TypeD>
-        ( d ) ) ) ) {}
+    typedef TupleList<Type0, typename ConstructTupleList<Type1, Type2, Type3, Nil>::Type> Type;
   };
 
-  template <typename TypeA, typename TypeB, typename TypeC>
-  struct Tuple<TypeA, TypeB, TypeC> : TupleBase<TypeA, TupleBase<TypeB, TupleBase<TypeC> > >
+  template <typename Type0>
+  struct ConstructTupleList<Type0, Nil, Nil, Nil>
   {
-    Tuple() {}
-    Tuple( const TypeA& a, const TypeB& b, const TypeC &c ) :
-        TupleBase<TypeA, TupleBase<TypeB, TupleBase<TypeC> > >
-        ( a, TupleBase<TypeB, TupleBase<TypeC> >
-        ( b, TupleBase<TypeC>
-        ( c ) ) ) {}
+    typedef TupleList<Type0> Type;
   };
 
-  template <typename TypeA, typename TypeB>
-  struct Tuple<TypeA, TypeB> : TupleBase<TypeA, TupleBase<TypeB> >
+  template <typename Type>
+  struct TupleTypeCtor
+  {
+    static Type ctor()
+    {
+      return Type();
+    }
+  };
+
+  template <typename Type>
+  struct TupleTypeConvert
+  {
+    typedef	  Type  Plain;
+    typedef	  Type& Ref;
+    typedef const Type& CRef;
+  };
+
+  template <typename Type>
+  struct TupleTypeConvert<Type&>
+  {
+    typedef       Type  Plain;
+    typedef	  Type& Ref;
+    typedef const Type& CRef;
+  };
+
+  template <typename Type0, typename Type1 = Nil, typename Type2 = Nil, typename Type3 = Nil>
+  struct Tuple : ConstructTupleList<Type0, Type1, Type2, Type3>::Type
   {
     Tuple() {}
-    Tuple( const TypeA& a, const TypeB& b ) :
-        TupleBase<TypeA, TupleBase<TypeB> >( a, TupleBase<TypeB>( b ) ) {}
+    Tuple( const Type0& t0 = TupleTypeCtor<Type0>::ctor(),
+	   const Type1& t1 = TupleTypeCtor<Type1>::ctor(),
+	   const Type2& t2 = TupleTypeCtor<Type2>::ctor(),
+	   const Type3& t3 = TupleTypeCtor<Type3>::ctor() ) :
+        ConstructTupleList<Type0, Type1, Type2, Type3>::Type( t0, t1, t2, t3 )
+    {}
+
+    template <typename Type0_, typename Type1_, typename Type2_, typename Type3_>
+    Tuple( const Tuple<Type0_, Type1_, Type2_, Type3_>& t ) :
+        ConstructTupleList<Type0, Type1, Type2, Type3>::Type( t )
+    {}
+
+    template <typename Type0_, typename Type1_, typename Type2_, typename Type3_>
+    Tuple& operator = ( const Tuple<Type0_, Type1_, Type2_, Type3_>& t )
+    {
+      ConstructTupleList<Type0, Type1, Type2, Type3>::Type::operator = ( t );
+      return *this;
+    }
   };
 
-  template <typename TypeA>
-  struct Tuple<TypeA> : TupleBase<TypeA>
-  {
-    Tuple() {}
-    Tuple( const TypeA& a ) : TupleBase<TypeA>( a ) {}
-  };
+  template <int INDEX, class TupleList>
+  struct ResolveTupleElemType;
 
-  /**
-   * Get INDEX-th element of Tuple.
-   * Use as:
-   * <code>
-   * Tuple&lt;int, char&gt; t( 1, 2 );
-   * get&lt;1&gt;( t );
-   * @param t
-   * @return
-   */
   template <int INDEX, typename Head, class Tail>
-  inline typename TupleBase<Head, Tail>::template ResolveType<INDEX, TupleBase<Head, Tail> >::Type&
-  get( TupleBase<Head, Tail>& t )
+  struct ResolveTupleElemType<INDEX, TupleList<Head, Tail> >
   {
-    return TupleBase<Head, Tail>::template GetHelper<INDEX>::get( t );
+    typedef typename ResolveTupleElemType<INDEX - 1, Tail>::Type Type;
+  };
+
+  template <typename Head, class Tail>
+  struct ResolveTupleElemType<0, TupleList<Head, Tail> >
+  {
+    typedef Head Type;
+  };
+
+  template <int INDEX>
+  struct TupleGetHelper
+  {
+    template <typename Head, class Tail>
+    static const typename ResolveTupleElemType<INDEX, TupleList<Head, Tail> >::Type&
+    get( const TupleList<Head, Tail>& tl )
+    {
+      return TupleGetHelper<INDEX - 1>::get( tl.tail );
+    }
+    template <typename Head, class Tail>
+    static typename ResolveTupleElemType<INDEX, TupleList<Head, Tail> >::Type&
+    get( TupleList<Head, Tail>& tl )
+    {
+      return TupleGetHelper<INDEX - 1>::get( tl.tail );
+    }
+  };
+
+  template <>
+  struct TupleGetHelper<0>
+  {
+    template <typename Head, class Tail>
+    static const typename ResolveTupleElemType<0, TupleList<Head, Tail> >::Type&
+    get( const TupleList<Head, Tail>& tl )
+    {
+      return tl.head;
+    }
+
+    template <typename Head, class Tail>
+    static typename ResolveTupleElemType<0, TupleList<Head, Tail> >::Type&
+    get( TupleList<Head, Tail>& tl )
+    {
+      return tl.head;
+    }
+  };
+
+  template <int INDEX, typename Head, class Tail>
+  const typename ResolveTupleElemType<INDEX, TupleList<Head, Tail> >::Type&
+  get( const TupleList<Head, Tail>& tb )
+  {
+    return TupleGetHelper<INDEX>::get( tb );
   }
 
+  template <int INDEX, typename Head, class Tail>
+  typename ResolveTupleElemType<INDEX, TupleList<Head, Tail> >::Type&
+  get( TupleList<Head, Tail>& tb )
+  {
+    return TupleGetHelper<INDEX>::get( tb );
+  }
+
+  template <typename Type0, typename Type1, typename Type2, typename Type3>
+  inline Tuple<Type0, Type1, Type2, Type3>
+  tuple( const Type0& e0 = TupleTypeCtor<Type0>::ctor(),
+	 const Type1& e1 = TupleTypeCtor<Type1>::ctor(),
+	 const Type2& e2 = TupleTypeCtor<Type2>::ctor(),
+	 const Type3& e3 = TupleTypeCtor<Type3>::ctor() )
+  {
+    return Tuple<Type0, Type1, Type2, Type3>( e0, e1, e2, e3 );
+  }
+
+  template <typename Type0, typename Type1, typename Type2>
+  inline Tuple<Type0, Type1, Type2>
+  tuple( const Type0& e0 = TupleTypeCtor<Type0>::ctor(),
+	 const Type1& e1 = TupleTypeCtor<Type1>::ctor(),
+	 const Type2& e2 = TupleTypeCtor<Type2>::ctor() )
+  {
+    return Tuple<Type0, Type1, Type2>( e0, e1, e2 );
+  }
+
+  template <typename Type0, typename Type1>
+  inline Tuple<Type0, Type1>
+  tuple( const Type0& e0 = TupleTypeCtor<Type0>::ctor(),
+	 const Type1& e1 = TupleTypeCtor<Type1>::ctor() )
+  {
+    return Tuple<Type0, Type1>( e0, e1 );
+  }
+
+  template <typename Type0>
+  inline Tuple<Type0>
+  tuple( const Type0& e0 = TupleTypeCtor<Type0>::ctor() )
+  {
+    return Tuple<Type0>( e0 );
+  }
+
+  template <typename Type0, typename Type1, typename Type2, typename Type3>
+  inline Tuple<Type0&, Type1&, Type2&, Type3&>
+  tie( Type0& e0, Type1& e1, Type2& e2, Type3& e3 )
+  {
+    return Tuple<Type0&, Type1&, Type2&, Type3&>( e0, e1, e2, e3 );
+  }
+
+  template <typename Type0, typename Type1, typename Type2>
+  inline Tuple<Type0&, Type1&, Type2&>
+  tie( Type0& e0, Type1& e1, Type2& e2 )
+  {
+    return Tuple<Type0&, Type1&, Type2&>( e0, e1, e2 );
+  }
+
+  template <typename Type0, typename Type1>
+  inline Tuple<Type0&, Type1&>
+  tie( Type0& e0, Type1& e1 )
+  {
+    return Tuple<Type0&, Type1&>( e0, e1 );
+  }
+
+  template <typename Type0>
+  inline Tuple<Type0&>
+  tie( Type0& e0 )
+  {
+    return Tuple<Type0&>( e0 );
+  }
 }
