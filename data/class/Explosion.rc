@@ -4,7 +4,7 @@ dim.y "3.99"
 dim.z "3.99"
 
 flag.destroyFunc "false"
-flag.clip        "false"
+flag.solid       "false"
 flag.wideCull    "true"
 
 life "1000.0f"

@@ -69,6 +69,55 @@ namespace oz
 
       };
 
+      /**
+       * Sparse constant iterator.
+       */
+      class CIterator : public oz::CIterator<Type>
+      {
+        private:
+
+          typedef oz::CIterator<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null, null )
+          {}
+
+          /**
+           * Make iterator for given Sparse. After creation it points to first element.
+           * @param s
+           */
+          explicit CIterator( const Sparse& s ) : B( s.data, s.data + s.size )
+          {}
+
+          /**
+           * Advance to next element.
+           * @return
+           */
+          CIterator& operator ++ ()
+          {
+            do {
+              ++B::elem;
+            }
+            while( B::elem != B::past && B::elem->nextSlot[INDEX] != -1 );
+
+            return *this;
+          }
+
+        private:
+
+          /**
+           * No iterating backwards.
+           * @return
+           */
+          CIterator& operator -- ();
+
+      };
+
     private:
 
       // Pointer to data array
@@ -203,17 +252,17 @@ namespace oz
       /**
        * @return iterator for this vector
        */
-      Iterator begin() const
+      Iterator iter() const
       {
         return Iterator( *this );
       }
 
       /**
-       * @return pointer that matches the passed iterator
+       * @return constant iterator for this vector
        */
-      const Type* end() const
+      CIterator citer() const
       {
-        return data + size;
+        return CIterator( *this );
       }
 
       /**

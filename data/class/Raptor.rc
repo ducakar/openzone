@@ -24,11 +24,6 @@ lift "15.00"
 modelType "OBJVehicle"
 modelName "raptor"
 
-lookLimitHMin "-90.0"
-lookLimitHMax "90.0"
-lookLimitVMin "-45.0"
-lookLimitVMax "45.0"
-
 crew.pilot.pos.y "2.5"
 crew.pilot.pos.z "-0.5"
 

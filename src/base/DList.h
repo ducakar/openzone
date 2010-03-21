@@ -80,7 +80,7 @@ namespace oz
            * location.
            * @return true if iterator is passed
            */
-          bool isPast() const
+          bool isPassed() const
           {
             return B::elem == null;
           }
@@ -89,6 +89,54 @@ namespace oz
            * Advance to next element.
            */
           Iterator& operator ++ ()
+          {
+            assert( B::elem != null );
+
+            B::elem = B::elem->next[INDEX];
+            return *this;
+          }
+
+      };
+
+      /**
+       * DList constant iterator.
+       */
+      class CIterator : public CIteratorBase<Type>
+      {
+        private:
+
+          typedef CIteratorBase<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null )
+          {}
+
+          /**
+           * Make iterator for given list. After creation it points to first element.
+           * @param l
+           */
+          explicit CIterator( const DList& l ) : B( l.firstElem )
+          {}
+
+          /**
+           * When iterator advances beyond last element, it becomes passed. It points to an invalid
+           * location.
+           * @return true if iterator is passed
+           */
+          bool isPassed() const
+          {
+            return B::elem == null;
+          }
+
+          /**
+           * Advance to next element.
+           */
+          CIterator& operator ++ ()
           {
             assert( B::elem != null );
 
@@ -121,7 +169,7 @@ namespace oz
        */
       DList( const DList& l ) : firstElem( null ), lastElem( null )
       {
-        foreach( e, Iterator( l ) ) {
+        foreach( e, CIterator( l ) ) {
           pushFirst( new Type( *e ) );
         }
       }
@@ -147,7 +195,7 @@ namespace oz
       {
         DList clone;
 
-        foreach( e, Iterator( *this ) ) {
+        foreach( e, CIterator( *this ) ) {
           clone.pushFirst( new Type( *e ) );
         }
         return clone;
@@ -202,17 +250,17 @@ namespace oz
       /**
        * @return iterator for this list
        */
-      Iterator begin() const
+      Iterator iter() const
       {
         return Iterator( *this );
       }
 
       /**
-       * @return pointer that matches the passed iterator
+       * @return constant iterator for this list
        */
-      const Type* end() const
+      CIterator citer() const
       {
-        return null;
+        return CIterator( *this );
       }
 
       /**

@@ -452,7 +452,7 @@ namespace client
       }
       ++pCmd;
       for( ; i > 0; --i, pCmd += 3 ) {
-        glNormal3fv( anorms[ lightNormals[ pCmd[2]] ] );
+        glNormal3fv( anorms[ lightNormals[ pCmd[2] ] ] );
         glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],
                       reinterpret_cast<const float*>( pCmd )[1] );
         glVertex3fv( vertList[pCmd[2]] );
@@ -482,7 +482,7 @@ namespace client
       }
       ++pCmd;
       for( ; i > 0; --i, pCmd += 3 ) {
-        glNormal3fv( anorms[ lightNormals[ pCmd[2]] ] );
+        glNormal3fv( anorms[ lightNormals[ pCmd[2] ] ] );
         glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],
                       reinterpret_cast<const float*>( pCmd )[1] );
         glVertex3fv( vertList[pCmd[2]] );

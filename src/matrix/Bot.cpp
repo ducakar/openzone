@@ -83,7 +83,7 @@ namespace oz
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes sounds
         // and particles to fly around), that's why we remove the object
         if( life <= 0.0f ) {
-          foreach( i, items.begin() ) {
+          foreach( i, items.citer() ) {
             synapse.removeCut( static_cast<Dynamic*>( world.objects[*i] ) );
           }
           life = EPSILON;
@@ -669,7 +669,7 @@ namespace oz
     ostream->writeFloat( stepRate );
 
     ostream->writeInt( items.length() );
-    foreach( item, items.begin() ) {
+    foreach( item, items.citer() ) {
       ostream->writeInt( *item );
     }
     ostream->writeInt( weaponItem );

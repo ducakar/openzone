@@ -52,7 +52,7 @@ namespace oz
        * Return true while iterator has not passed the last element.
        * @return true if iterator is passed
        */
-      bool isPast() const
+      bool isPassed() const
       {
         return B::elem == past;
       }
@@ -84,6 +84,77 @@ namespace oz
   };
 
   /**
+   * Array constant iterator
+   */
+  template <typename Type>
+  class CIterator : public CIteratorBase<Type>
+  {
+    private:
+
+      typedef CIteratorBase<Type> B;
+
+    protected:
+
+      /**
+       * Successor of the last element.
+       * Is is used to determine when iterator becomes invalid.
+       */
+      const Type* const past;
+
+    public:
+
+      /**
+       * Default constructor returns a dummy passed iterator
+       * @return
+       */
+      explicit CIterator() : B( null ), past( null )
+      {}
+
+      /**
+       * @param start first element for forward iterator or successor of last element for backward
+       * iterator
+       * @param past_ successor of last element for forward iterator or predecessor of first element
+       * for backward iterator
+       */
+      explicit CIterator( const Type* start, const Type* past_ ) : B( start ), past( past_ )
+      {}
+
+      /**
+       * Return true while iterator has not passed the last element.
+       * @return true if iterator is passed
+       */
+      bool isPassed() const
+      {
+        return B::elem == past;
+      }
+
+      /**
+       * Advance to next element.
+       * @return
+       */
+      CIterator& operator ++ ()
+      {
+        assert( B::elem != past );
+
+        ++B::elem;
+        return *this;
+      }
+
+      /**
+       * Go to previous element.
+       * @return
+       */
+      CIterator& operator -- ()
+      {
+        assert( B::elem != past );
+
+        --B::elem;
+        return *this;
+      }
+
+  };
+
+  /**
    * Make array iterator
    * Simplifies construction of array iterators.
    * Instead of
@@ -95,9 +166,26 @@ namespace oz
    * @return
    */
   template <typename Type>
-  inline Iterator<Type> begin( Type* array, int count )
+  inline Iterator<Type> iter( Type* array, int count )
   {
     return Iterator<Type>( array, array + count );
+  }
+
+  /**
+   * Make array constant iterator
+   * Simplifies construction of array iterators.
+   * Instead of
+   * <code>Iterator&lt;int&gt;( array, array + 10 );</code>
+   * you write
+   * <code>begin( array, 10 );</code>
+   * @param array
+   * @param count
+   * @return
+   */
+  template <typename Type>
+  inline CIterator<Type> citer( const Type* array, int count )
+  {
+    return CIterator<Type>( array, array + count );
   }
 
   /**

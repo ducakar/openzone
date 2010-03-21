@@ -68,7 +68,7 @@ namespace client
       }
     }
 
-    foreach( obj, cell.objects.begin() ) {
+    foreach( obj, cell.objects.citer() ) {
       if( obj->flags & Object::NO_DRAW_BIT ) {
         continue;
       }
@@ -89,7 +89,7 @@ namespace client
       }
     }
 
-    foreach( part, cell.parts.begin() ) {
+    foreach( part, cell.parts.citer() ) {
       if( frustum.isVisible( part->p, particleRadius ) ) {
         particles << part;
       }
@@ -401,7 +401,7 @@ namespace client
         }
       }
       // remove unused models
-      for( typeof( models.begin() ) i = models.begin(); !i.isPast(); ) {
+      for( typeof( models.citer() ) i = models.citer(); !i.isPassed(); ) {
         Model* model = *i;
         uint   key   = i.key();
 
@@ -425,7 +425,7 @@ namespace client
 
   void Render::sync()
   {
-    for( typeof( models.begin() ) i = models.begin(); !i.isPast(); ) {
+    for( typeof( models.citer() ) i = models.citer(); !i.isPassed(); ) {
       Model* model = i.value();
       uint   key   = i.key();
       ++i;
@@ -459,7 +459,7 @@ namespace client
     log.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
     log.println( "OpenGL extensions {" );
     log.indent();
-    foreach( extension, extensions.begin() ) {
+    foreach( extension, extensions.citer() ) {
       log.println( "%s", extension->cstr() );
     }
 

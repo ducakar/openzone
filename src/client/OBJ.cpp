@@ -293,7 +293,7 @@ namespace client
     }
 
     materials( tempMaterials.length() );
-    iCopy( materials.begin(), tempMaterials.begin() );
+    iCopy( materials.iter(), tempMaterials.citer() );
 
     fclose( file );
     return true;
@@ -444,7 +444,7 @@ namespace client
     log.print( "Unloading OBJ model '%s' ...", name.cstr() );
     trim();
 
-    foreach( material, materials.begin() ) {
+    foreach( material, materials.citer() ) {
       if( material->texId != GL_NONE ) {
         context.freeTexture( material->texId );
       }

@@ -45,6 +45,33 @@ namespace oz
 
       };
 
+      /**
+       * Vector constant iterator.
+       */
+      class CIterator : public oz::CIterator<Type>
+      {
+        private:
+
+          typedef oz::CIterator<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null, null )
+          {}
+
+          /**
+           * Make iterator for given vector. After creation it points to first element.
+           * @param v
+           */
+          explicit CIterator( const Vector& v ) : B( v.data, v.data + v.count )
+          {}
+
+      };
+
     private:
 
       // Pointer to data array
@@ -143,17 +170,17 @@ namespace oz
       /**
        * @return iterator for this vector
        */
-      Iterator begin() const
+      Iterator iter() const
       {
         return Iterator( *this );
       }
 
       /**
-       * @return pointer that matches the passed iterator
+       * @return constant iterator for this vector
        */
-      const Type* end() const
+      CIterator citer() const
       {
-        return data + count;
+        return CIterator( *this );
       }
 
       /**

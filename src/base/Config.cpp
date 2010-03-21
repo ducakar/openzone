@@ -24,6 +24,11 @@ namespace oz
   {
     const char* key;
     const char* value;
+#ifdef OZ_VERBOSE_CONFIG
+    bool isUsed;
+
+    Elem() : isUsed( false ) {}
+#endif
 
     bool operator < ( const Elem& e ) const
     {
@@ -35,7 +40,7 @@ namespace oz
 
   Config::~Config()
   {
-    vars.clear();
+    clear();
   }
 
   bool Config::loadConf( const char* file )
@@ -119,8 +124,8 @@ namespace oz
     int size = vars.length();
     Elem sortedVars[size];
 
-    typeof( vars.begin() ) j = vars.begin();
-    for( int i = 0; !j.isPast(); ++i, ++j ) {
+    typeof( vars.citer() ) j = vars.citer();
+    for( int i = 0; !j.isPassed(); ++i, ++j ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
       size = i;
@@ -205,8 +210,8 @@ namespace oz
     int size = vars.length();
     Elem sortedVars[size];
 
-    typeof( vars.iterator() ) j = vars.iterator();
-    for( int i = 0; !j.isPast(); ++i, ++j ) {
+    typeof( vars.citer() ) j = vars.citer();
+    for( int i = 0; !j.isPassed(); ++i, ++j ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
       size = i;
@@ -268,6 +273,12 @@ namespace oz
             vars.cachedValue().equals( "true" ) ||
             vars.cachedValue().equals( "false" ) );
 
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       if( vars.cachedValue().equals( "true" ) ) {
         return true;
@@ -279,11 +290,19 @@ namespace oz
         throw Exception( "Invalid boolean value" );
       }
     }
-    return defVal;
+    else {
+      return defVal;
+    }
   }
 
   int Config::get( const char* name, int defVal ) const
   {
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       return atoi( vars.cachedValue() );
     }
@@ -294,6 +313,12 @@ namespace oz
 
   float Config::get( const char* name, float defVal ) const
   {
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       return float( atof( vars.cachedValue() ) );
     }
@@ -304,6 +329,12 @@ namespace oz
 
   double Config::get( const char* name, double defVal ) const
   {
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
     }
@@ -314,6 +345,12 @@ namespace oz
 
   const char* Config::get( const char* name, const char* defVal ) const
   {
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       return vars.cachedValue();
     }
@@ -328,6 +365,12 @@ namespace oz
             vars.cachedValue().equals( "true" ) ||
             vars.cachedValue().equals( "false" ) );
 
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       if( vars.cachedValue().equals( "true" ) ) {
         return true;
@@ -339,12 +382,20 @@ namespace oz
         throw Exception( "Invalid boolean value" );
       }
     }
-    vars.add( name, defVal );
-    return defVal;
+    else {
+      vars.add( name, defVal );
+      return defVal;
+    }
   }
 
   int Config::getSet( const char* name, int defVal )
   {
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       return atoi( vars.cachedValue() );
     }
@@ -356,6 +407,12 @@ namespace oz
 
   float Config::getSet( const char* name, float defVal )
   {
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       return float( atof( vars.cachedValue() ) );
     }
@@ -367,6 +424,12 @@ namespace oz
 
   double Config::getSet( const char* name, double defVal )
   {
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       return atof( vars.cachedValue() );
     }
@@ -378,6 +441,12 @@ namespace oz
 
   const char* Config::getSet( const char* name, const char* defVal )
   {
+#ifdef OZ_VERBOSE_CONFIG
+    if( !usedVars.contains( name ) ) {
+      usedVars.add( name, true );
+    }
+#endif
+
     if( vars.contains( name ) ) {
       return vars.cachedValue();
     }
@@ -427,6 +496,14 @@ namespace oz
 
   void Config::clear()
   {
+#ifdef OZ_VERBOSE_CONFIG
+    foreach( var, vars.citer() ) {
+      if( !usedVars.contains( var.key() ) ) {
+        log.println( "config: unused variable '%s'", var.key().cstr() );
+      }
+    }
+    usedVars.clear();
+#endif
     vars.clear();
   }
 
@@ -444,7 +521,7 @@ namespace oz
     Elem sortedVars[size];
 
     int i = 0;
-    foreach( j, vars.begin() ) {
+    foreach( j, vars.citer() ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
       size = ++i;

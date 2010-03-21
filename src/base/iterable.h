@@ -44,7 +44,7 @@ namespace oz
        * Should be overridden in derivative classes
        * @return
        */
-      bool isPast() const;
+      bool isPassed() const;
 
       /**
        * Advance to next element
@@ -133,6 +133,102 @@ namespace oz
   };
 
   /**
+   * Generalized constant iterator.
+   * It should only be used as a base class. Following functions need to be implemented:<br>
+   * <code>bool isPassed()</code><br>
+   * <code>Iterator& operator ++ ()</code><br>
+   * <code>Iterator& operator -- ()</code> (optional)<br>
+   * and a constructor of course.
+   */
+  template <typename Type>
+  class CIteratorBase
+  {
+    protected:
+
+      /**
+       * Element which iterator is currently positioned at.
+       */
+      const Type* elem;
+
+      /**
+       * @param start first element
+       */
+      explicit CIteratorBase( const Type* start ) : elem( start )
+      {}
+
+    private:
+
+      /**
+       * Returns true when iterator goes past last element.
+       * the last element.
+       * Should be overridden in derivative classes
+       * @return
+       */
+      bool isPassed() const;
+
+      /**
+       * Advance to next element
+       * Should be overridden in derivative classes
+       * @return
+       */
+      CIteratorBase& operator ++ ();
+
+      /**
+       * Go to previous element
+       * May be overridden in derivative classes (optional)
+       * @return
+       */
+      CIteratorBase& operator -- ();
+
+    public:
+
+      /**
+       * Returns true if the iterator is at the given element.
+       * @param e
+       * @return
+       */
+      bool operator == ( const Type* e ) const
+      {
+        return elem == e;
+      }
+
+      /**
+       * Returns true if the iterator is not at the given element.
+       * @param e
+       * @return
+       */
+      bool operator != ( const Type* e ) const
+      {
+        return elem != e;
+      }
+
+      /**
+       * @return constant pointer to current element
+       */
+      operator const Type* () const
+      {
+        return elem;
+      }
+
+      /**
+       * @return constant reference to current element
+       */
+      const Type& operator * () const
+      {
+        return *elem;
+      }
+
+      /**
+       * @return constant access to member
+       */
+      const Type* operator -> () const
+      {
+        return elem;
+      }
+
+  };
+
+  /**
    * \def foreach
    * Foreach macro can be used as in following example:
    * <pre>
@@ -142,14 +238,14 @@ namespace oz
    * }</pre>
    * This replaces much more cryptic and longer pieces of code, like:
    * Vector&lt;int&gt; v;
-   * for( Vector&lt;int&gt;::Iterator i( v ); !i.isPast(); ++i )
+   * for( Vector&lt;int&gt;::Iterator i( v ); !i.isPassed(); ++i )
    *   printf( "%d ", *i );
    * }</pre>
    * There's no need to add it to Katepart syntax highlighting as it is already there (Qt has some
    * similar foreach macro).
    */
 # define foreach( i, iterator ) \
-  for( typeof( iterator ) i = iterator; !i.isPast(); ++i )
+  for( typeof( iterator ) i = iterator; !i.isPassed(); ++i )
 
   /**
    * Compare all elements. (Like STL equal)
@@ -160,7 +256,7 @@ namespace oz
   template <class IteratorA, class IteratorB>
   inline bool iEquals( IteratorA iSrcA, IteratorB iSrcB )
   {
-    while( !iSrcA.isPast() ) {
+    while( !iSrcA.isPassed() ) {
       if( *iSrcA != *iSrcB ) {
         return false;
       }
@@ -178,7 +274,7 @@ namespace oz
   template <class Iterator, typename Value>
   inline void iSet( Iterator iDest, const Value& value )
   {
-    while( !iDest.isPast() ) {
+    while( !iDest.isPassed() ) {
       *iDest = value;
       ++iDest;
     }
@@ -194,7 +290,7 @@ namespace oz
   {
     assert( &*iDest != &*iSrc );
 
-    while( !iDest.isPast() ) {
+    while( !iDest.isPassed() ) {
       *iDest = *iSrc;
       ++iDest;
       ++iSrc;
@@ -211,7 +307,7 @@ namespace oz
   {
     assert( &*iDest != &*iSrc );
 
-    while( !iDest.isPast() ) {
+    while( !iDest.isPassed() ) {
       ++iDest;
       ++iSrc;
       *iDest = *iSrc;
@@ -227,7 +323,7 @@ namespace oz
   template <class Iterator, typename Value>
   inline Iterator iIndex( Iterator iSrc, const Value& value )
   {
-    while( !iSrc.isPast() ) {
+    while( !iSrc.isPassed() ) {
       if( *iSrc == value ) {
         break;
       }
@@ -245,7 +341,7 @@ namespace oz
   template <class ReverseIterator, typename Value>
   inline ReverseIterator iLastIndex( ReverseIterator iSrc, const Value& value )
   {
-    while( !iSrc.isPast() ) {
+    while( !iSrc.isPassed() ) {
       --iSrc;
       if( *iSrc == value ) {
         break;
@@ -261,7 +357,7 @@ namespace oz
   template <class Iterator>
   inline void iFree( Iterator iDest )
   {
-    while( !iDest.isPast() ) {
+    while( !iDest.isPassed() ) {
       typeof( *iDest )& elem = *iDest;
       ++iDest;
 
