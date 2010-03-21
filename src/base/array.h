@@ -13,35 +13,89 @@ namespace oz
 {
 
   /**
-   * Array iterator.
-   * Somehow simplifies construction of array iterators.
-   * Instead of
-   * <code>Iterator&lt;int&gt;( array, array + 10 );</code>
-   * you write
-   * <code>iterator( array, array + 10 );</code>
-   * @param array
-   * @param count
-   * @return
+   * Array iterator
    */
   template <typename Type>
-  Iterator<Type> iterator( Type* array, const Type* past )
+  class Iterator : public IteratorBase<Type>
   {
-    return Iterator<Type>( array, past );
-  }
+    private:
+
+      typedef IteratorBase<Type> B;
+
+    protected:
+
+      /**
+       * Successor of the last element.
+       * Is is used to determine when iterator becomes invalid.
+       */
+      const Type* const past;
+
+    public:
+
+      /**
+       * Default constructor returns a dummy passed iterator
+       * @return
+       */
+      explicit Iterator() : B( null ), past( null )
+      {}
+
+      /**
+       * @param start first element for forward iterator or successor of last element for backward
+       * iterator
+       * @param past_ successor of last element for forward iterator or predecessor of first element
+       * for backward iterator
+       */
+      explicit Iterator( Type* start, const Type* past_ ) : B( start ), past( past_ )
+      {}
+
+      /**
+       * Return true while iterator has not passed the last element.
+       * @return true if iterator is passed
+       */
+      bool isPast() const
+      {
+        return B::elem == past;
+      }
+
+      /**
+       * Advance to next element.
+       * @return
+       */
+      Iterator& operator ++ ()
+      {
+        assert( B::elem != past );
+
+        ++B::elem;
+        return *this;
+      }
+
+      /**
+       * Go to previous element.
+       * @return
+       */
+      Iterator& operator -- ()
+      {
+        assert( B::elem != past );
+
+        --B::elem;
+        return *this;
+      }
+
+  };
 
   /**
-   * Array iterator.
-   * Somehow simplifies construction of array iterators.
+   * Make array iterator
+   * Simplifies construction of array iterators.
    * Instead of
    * <code>Iterator&lt;int&gt;( array, array + 10 );</code>
    * you write
-   * <code>iterator( array, 10 );</code>
+   * <code>begin( array, 10 );</code>
    * @param array
    * @param count
    * @return
    */
   template <typename Type>
-  Iterator<Type> iterator( Type* array, int count )
+  inline Iterator<Type> begin( Type* array, int count )
   {
     return Iterator<Type>( array, array + count );
   }

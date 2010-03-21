@@ -36,23 +36,24 @@ namespace oz
 
       static const Vec3 bbNormals[];
 
-      Vec3             point;
-      AABB             aabb;
-      const Dynamic*   obj;
+      Span             span;
+      Bounds           trace;
       Vec3             move;
 
-      Bounds           trace;
+      Vec3             point;
+      AABB             aabb;
 
-      Vec3             leafStartPos;
-      Vec3             leafEndPos;
       Vec3             globalStartPos;
       Vec3             globalEndPos;
+      Vec3             leafStartPos;
+      Vec3             leafEndPos;
       float            leafStartRatio;
       float            leafEndRatio;
 
+      const Dynamic*   obj;
+      const Object*    exclObj;
       const BSP*       bsp;
       const Structure* str;
-      const Object*    exclObj;
 
       /**
        * Rotate vector from absolute coordinate system to structure coordinate system. Do not
@@ -107,8 +108,16 @@ namespace oz
 
     public:
 
-      Span span;
+      /**
+       * Collision feedback data
+       */
       Hit  hit;
+      /**
+       * Collision bitmask for Object::flags
+       */
+      int  mask;
+
+      Collider();
 
       bool test( const Vec3& point, const Object* exclObj = null );
       // test for object collisions only (no structures or terrain)
@@ -144,7 +153,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    world.getInters( span, point, AABB::MAX_DIM );
+    span = world.getInters( point, AABB::MAX_DIM );
 
     return testPointWorld();
   }
@@ -154,7 +163,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    world.getInters( span, point, AABB::MAX_DIM );
+    span = world.getInters( point, AABB::MAX_DIM );
 
     return testPointWorldOO();
   }
@@ -164,7 +173,7 @@ namespace oz
     point = point_;
     exclObj = exclObj_;
 
-    world.getInters( span, point, AABB::MAX_DIM );
+    span = world.getInters( point, AABB::MAX_DIM );
 
     return testPointWorldOSO();
   }
@@ -175,7 +184,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( EPSILON );
-    world.getInters( span, trace, AABB::MAX_DIM );
+    span = world.getInters( trace, AABB::MAX_DIM );
 
     return testAABBWorld();
   }
@@ -186,7 +195,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( EPSILON );
-    world.getInters( span, trace, AABB::MAX_DIM );
+    span = world.getInters( trace, AABB::MAX_DIM );
 
     return testAABBWorldOO();
   }
@@ -197,7 +206,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( EPSILON );
-    world.getInters( span, trace, AABB::MAX_DIM );
+    span = world.getInters( trace, AABB::MAX_DIM );
 
     return testAABBWorldOSO();
   }
@@ -211,7 +220,7 @@ namespace oz
     exclObj = null;
 
     trace = aabb.toBounds( eps );
-    world.getInters( span, trace, AABB::MAX_DIM );
+    span = world.getInters( trace, AABB::MAX_DIM );
 
     getWorldOverlaps( objects, structs );
   }
@@ -222,7 +231,7 @@ namespace oz
     exclObj = null;
 
     trace = aabb.toBounds( eps );
-    world.getInters( span, trace, AABB::MAX_DIM );
+    span = world.getInters( trace, AABB::MAX_DIM );
 
     getWorldIncludes( objects );
   }
@@ -233,7 +242,7 @@ namespace oz
     exclObj = null;
 
     trace = aabb.toBounds( eps );
-    world.getInters( span, trace, AABB::MAX_DIM );
+    span = world.getInters( trace, AABB::MAX_DIM );
 
     return touchWorldOverlaps();
   }
@@ -245,7 +254,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace.fromPointMove( point, move, EPSILON );
-    world.getInters( span, trace, AABB::MAX_DIM );
+    span = world.getInters( trace, AABB::MAX_DIM );
 
     trimPointWorld();
   }
@@ -258,7 +267,7 @@ namespace oz
     exclObj = exclObj_;
 
     trace = aabb.toBounds( move, EPSILON );
-    world.getInters( span, trace, AABB::MAX_DIM );
+    span = world.getInters( trace, AABB::MAX_DIM );
 
     trimAABBWorld();
   }
@@ -273,7 +282,7 @@ namespace oz
     exclObj = obj;
 
     trace = aabb.toBounds( move, EPSILON );
-    world.getInters( span, trace, AABB::MAX_DIM );
+    span = world.getInters( trace, AABB::MAX_DIM );
 
     trimAABBWorld();
   }

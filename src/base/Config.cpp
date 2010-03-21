@@ -119,8 +119,8 @@ namespace oz
     int size = vars.length();
     Elem sortedVars[size];
 
-    typeof( vars.iterator() ) j = vars.iterator();
-    for( int i = 0; !j.isPassed(); ++i, ++j ) {
+    typeof( vars.begin() ) j = vars.begin();
+    for( int i = 0; !j.isPast(); ++i, ++j ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
       size = i;
@@ -206,7 +206,7 @@ namespace oz
     Elem sortedVars[size];
 
     typeof( vars.iterator() ) j = vars.iterator();
-    for( int i = 0; !j.isPassed(); ++i, ++j ) {
+    for( int i = 0; !j.isPast(); ++i, ++j ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
       size = i;
@@ -444,7 +444,7 @@ namespace oz
     Elem sortedVars[size];
 
     int i = 0;
-    foreach( j, vars.iterator() ) {
+    foreach( j, vars.begin() ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
       size = ++i;

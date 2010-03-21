@@ -26,6 +26,9 @@ namespace oz
     Vec3(  0.0f,  0.0f, -1.0f )
   };
 
+  Collider::Collider() : mask( Object::SOLID_BIT )
+  {}
+
   inline Vec3 Collider::toStructCS( const Vec3& v ) const
   {
     switch( str->rot ) {
@@ -133,7 +136,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structs.iterator() ) {
+        foreach( strIndex, cell.structs.begin() ) {
           str = world.structs[*strIndex];
 
           if( str != oldStr ) {
@@ -148,8 +151,8 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.iterator() ) {
-          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+        foreach( sObj, cell.objects.begin() ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->includes( point, EPSILON ) )
           {
             return false;
@@ -170,8 +173,8 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = world.cells[x][y];
 
-        foreach( sObj, cell.objects.iterator() ) {
-          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+        foreach( sObj, cell.objects.begin() ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->includes( point, EPSILON ) )
           {
             return false;
@@ -195,7 +198,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structs.iterator() ) {
+        foreach( strIndex, cell.structs.begin() ) {
           str = world.structs[*strIndex];
 
           if( str != oldStr ) {
@@ -210,8 +213,8 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.iterator() ) {
-          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+        foreach( sObj, cell.objects.begin() ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->includes( point, EPSILON ) )
           {
             return false;
@@ -471,7 +474,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structs.iterator() ) {
+        foreach( strIndex, cell.structs.begin() ) {
           str = world.structs[*strIndex];
 
           if( str != oldStr ) {
@@ -486,8 +489,8 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.iterator() ) {
-          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+        foreach( sObj, cell.objects.begin() ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->overlaps( trace ) )
           {
             trimPointObj( &*sObj );
@@ -582,7 +585,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structs.iterator() ) {
+        foreach( strIndex, cell.structs.begin() ) {
           str = world.structs[*strIndex];
 
           if( str != oldStr ) {
@@ -597,8 +600,8 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.iterator() ) {
-          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+        foreach( sObj, cell.objects.begin() ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->overlaps( aabb, EPSILON ) )
           {
             return false;
@@ -620,8 +623,8 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
-        foreach( sObj, cell.objects.iterator() ) {
-          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+        foreach( sObj, cell.objects.begin() ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->overlaps( aabb, EPSILON ) )
           {
             return false;
@@ -645,7 +648,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structs.iterator() ) {
+        foreach( strIndex, cell.structs.begin() ) {
           str = world.structs[*strIndex];
 
           if( str != oldStr ) {
@@ -660,8 +663,8 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.iterator() ) {
-          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+        foreach( sObj, cell.objects.begin() ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->overlaps( aabb, EPSILON ) )
           {
             return false;
@@ -914,7 +917,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
-        foreach( strIndex, cell.structs.iterator() ) {
+        foreach( strIndex, cell.structs.begin() ) {
           str = world.structs[*strIndex];
 
           // to prevent some of duplicated structure tests
@@ -930,8 +933,8 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.iterator() ) {
-          if( sObj != exclObj && ( sObj->flags & Object::CLIP_BIT ) &&
+        foreach( sObj, cell.objects.begin() ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->overlaps( trace ) )
           {
             trimAABBObj( &*sObj );
@@ -963,7 +966,7 @@ namespace oz
         Cell& cell = world.cells[x][y];
 
         if( structs != null ) {
-          foreach( strIndex, cell.structs.iterator() ) {
+          foreach( strIndex, cell.structs.begin() ) {
             Structure* str = world.structs[*strIndex];
 
             if( !structs->contains( str ) ) {
@@ -979,7 +982,7 @@ namespace oz
         }
 
         if( objects != null ) {
-          foreach( sObj, cell.objects.iterator() ) {
+          foreach( sObj, cell.objects.begin() ) {
             if( sObj->overlaps( trace ) ) {
               *objects << sObj;
             }
@@ -998,7 +1001,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
-        foreach( sObj, cell.objects.iterator() ) {
+        foreach( sObj, cell.objects.begin() ) {
           if( trace.includes( *sObj ) ) {
             *objects << sObj;
           }
@@ -1013,7 +1016,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         Cell& cell = world.cells[x][y];
 
-        foreach( sObj, cell.objects.iterator() ) {
+        foreach( sObj, cell.objects.begin() ) {
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
             // clearing these two bits should do
             sObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );

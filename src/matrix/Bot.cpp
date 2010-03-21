@@ -69,7 +69,7 @@ namespace oz
     if( life <= type->life / 2.0f ) {
       if( ( ~state & DEATH_BIT ) && life > 0.0f ) {
         flags |= WIDE_CULL_BIT;
-        flags &= ~CLIP_BIT;
+        flags &= ~SOLID_BIT;
         addEvent( EVENT_DEATH, 1.0f );
         life = type->life / 2.0f - EPSILON;
         anim = ANIM_DEATH_FALLBACK;
@@ -83,7 +83,7 @@ namespace oz
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes sounds
         // and particles to fly around), that's why we remove the object
         if( life <= 0.0f ) {
-          foreach( i, items.iterator() ) {
+          foreach( i, items.begin() ) {
             synapse.removeCut( static_cast<Dynamic*>( world.objects[*i] ) );
           }
           life = EPSILON;
@@ -669,7 +669,7 @@ namespace oz
     ostream->writeFloat( stepRate );
 
     ostream->writeInt( items.length() );
-    foreach( item, items.iterator() ) {
+    foreach( item, items.begin() ) {
       ostream->writeInt( *item );
     }
     ostream->writeInt( weaponItem );

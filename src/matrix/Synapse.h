@@ -84,7 +84,7 @@ namespace oz
       int  addStruct( const char* name, const Vec3& p, Structure::Rotation rot );
       int  addObject( const char* name, const Vec3& p );
       int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
-                    float rejection, float mass, float lifeTime );
+                    float restitution, float mass, float lifeTime );
 
       // schedule for removal from physical world and delete it
       void remove( Structure* str );
@@ -119,7 +119,7 @@ namespace oz
       void genParts( int number, const Vec3& p,
                      const Vec3& velocity, float velocitySpread,
                      const Vec3& color, float colorSpread,
-                     float rejection, float mass, float lifeTime );
+                     float restitution, float mass, float lifeTime );
 
       // do deletes and clear lists for actions, additions, removals
       void update();
@@ -190,9 +190,9 @@ namespace oz
   }
 
   inline int Synapse::addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
-                               float rejection, float mass, float lifeTime )
+                               float restitution, float mass, float lifeTime )
   {
-    int index = world.addPart( p, velocity, color, rejection, mass, lifeTime );
+    int index = world.addPart( p, velocity, color, restitution, mass, lifeTime );
     Particle* part = world.parts[index];
 
     world.position( part );

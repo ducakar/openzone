@@ -68,7 +68,7 @@ namespace client
       }
     }
 
-    foreach( obj, cell.objects.iterator() ) {
+    foreach( obj, cell.objects.begin() ) {
       if( obj->flags & Object::NO_DRAW_BIT ) {
         continue;
       }
@@ -89,7 +89,7 @@ namespace client
       }
     }
 
-    foreach( part, cell.parts.iterator() ) {
+    foreach( part, cell.parts.begin() ) {
       if( frustum.isVisible( part->p, particleRadius ) ) {
         particles << part;
       }
@@ -323,7 +323,7 @@ namespace client
       glEnable( GL_COLOR_MATERIAL );
 
       for( int i = 0; i < objects.length(); ++i ) {
-        glColor4fv( ( objects[i].obj->flags & Object::CLIP_BIT ) ?
+        glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
             Colors::CLIP_AABB : Colors::NOCLIP_AABB );
         shape.drawBox( *objects[i].obj );
       }
@@ -363,6 +363,8 @@ namespace client
                 1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
       fileName[1023] = '\0';
 
+      log.print( "Saving screenshot to '%s' ...", fileName );
+
       glReadPixels( 0, 0, camera.width, camera.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
       SDL_Surface* surf = SDL_CreateRGBSurfaceFrom( pixels, camera.width, camera.height, 32,
                                                     camera.width * 4,
@@ -379,6 +381,7 @@ namespace client
       delete[] pixels;
 
       doScreenshot = false;
+      log.printEnd( "OK" );
     }
 
     SDL_GL_SwapBuffers();
@@ -398,7 +401,7 @@ namespace client
         }
       }
       // remove unused models
-      for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
+      for( typeof( models.begin() ) i = models.begin(); !i.isPast(); ) {
         Model* model = *i;
         uint   key   = i.key();
 
@@ -422,7 +425,7 @@ namespace client
 
   void Render::sync()
   {
-    for( typeof( models.iterator() ) i = models.iterator(); !i.isPassed(); ) {
+    for( typeof( models.begin() ) i = models.begin(); !i.isPast(); ) {
       Model* model = i.value();
       uint   key   = i.key();
       ++i;
@@ -456,7 +459,7 @@ namespace client
     log.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
     log.println( "OpenGL extensions {" );
     log.indent();
-    foreach( extension, extensions.iterator() ) {
+    foreach( extension, extensions.begin() ) {
       log.println( "%s", extension->cstr() );
     }
 

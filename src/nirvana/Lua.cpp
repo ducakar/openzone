@@ -505,13 +505,13 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    lua.event = lua.obj->events.iterator();
+    lua.event = lua.obj->events.begin();
     return 0;
   }
 
   static int ozEventBindNext( lua_State* l )
   {
-    if( !lua.event.isPassed() ) {
+    if( !lua.event.isPast() ) {
       ++lua.event;
       lua_pushboolean( l, true );
     }
@@ -523,7 +523,7 @@ namespace nirvana
 
   static int ozEventGet( lua_State* l )
   {
-    if( lua.event.isPassed() ) {
+    if( lua.event.isPast() ) {
       OZ_LUA_ERROR( "event is null" );
     }
     lua_pushinteger( l, lua.event->id );
@@ -1088,7 +1088,8 @@ namespace nirvana
     OZ_LUA_INT_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_IN_WATER_BIT",         Object::IN_WATER_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_CLIP_BIT",             Object::CLIP_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_SOLID_BIT",            Object::SOLID_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DETECT_BIT",           Object::DETECT_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_HOVER_BIT",            Object::HOVER_BIT );

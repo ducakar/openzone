@@ -63,7 +63,7 @@ namespace oz
     }
 
     float hitMomentum = part->velocity * collider.hit.normal;
-    part->velocity -= ( part->rejection * hitMomentum ) * collider.hit.normal;
+    part->velocity -= ( part->restitution * hitMomentum ) * collider.hit.normal;
   }
 
   void Physics::handlePartMove()

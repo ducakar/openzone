@@ -21,8 +21,6 @@ namespace oz
   const float Terrain::Quad::DIM      = Terrain::Quad::SIZE / 2.0f;
 
   const float Terrain::DIM         = Terrain::Quad::DIM * Terrain::QUADS;
-  const float Terrain::HEIGHT_STEP = 0.5f;
-  const float Terrain::HEIGHT_BIAS = -40.25f;
 
   void Terrain::buildTerraFrame()
   {
@@ -80,7 +78,7 @@ namespace oz
     buildTerraFrame();
   }
 
-  void Terrain::load( const char* verticesFile )
+  void Terrain::load( const char* verticesFile, float heightStep, float heightBias )
   {
     log.print( "Loading terrain heightmap image '%s' ...", verticesFile );
 
@@ -100,7 +98,7 @@ namespace oz
     const ubyte* line = reinterpret_cast<const ubyte*>( image->pixels );
     for( int y = MAX - 1; y >= 0; --y ) {
       for( int x = 0; x < MAX; ++x ) {
-        vertices[x][y].z = float( line[x] ) * HEIGHT_STEP + HEIGHT_BIAS;
+        vertices[x][y].z = float( line[x] ) * heightStep + heightBias;
       }
       line += scanLineLength;
     }

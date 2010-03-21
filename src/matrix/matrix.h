@@ -17,9 +17,14 @@ namespace oz
   struct Span
   {
     int minX;
-    int maxX;
     int minY;
+    int maxX;
     int maxY;
+
+    Span() {}
+    Span( int minX_, int minY_, int maxX_, int maxY_ ) :
+        minX( minX_ ), minY( minY_ ), maxX( maxX_ ), maxY( maxY_ )
+    {}
   };
 
   struct Material

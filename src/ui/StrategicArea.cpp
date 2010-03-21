@@ -257,7 +257,9 @@ namespace ui
              float( mouse.y - camera.centerY ) * pixelStep * 100.0f );
 
     at = camera.rotMat * at;
+    collider.mask = ~0;
     collider.translate( camera.p, at );
+    collider.mask = Object::SOLID_BIT;
     hovered = collider.hit.obj;
 
     if( hovered != null ) {

@@ -21,7 +21,7 @@ namespace oz
 
       static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT | Object::USE_FUNC_BIT |
           Object::UPDATE_FUNC_BIT | Object::VEHICLE_BIT;
-      static const int DEFAULT_FLAGS = Object::CLIP_BIT;
+      static const int DEFAULT_FLAGS = Object::SOLID_BIT;
 
     public:
 

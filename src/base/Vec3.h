@@ -1,7 +1,7 @@
 /*
  *  Vec3.h
  *
- *  3D vector library
+ *  3D vector
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
@@ -117,15 +117,6 @@ namespace oz
         y *= r;
         z *= r;
         return *this;
-      }
-
-      bool isColinear( const Vec3& v ) const
-      {
-        float p1 = v.x * y * z;
-        float p2 = v.y * x * z;
-        float p3 = v.z * x * y;
-
-        return p1 == p2 && p1 == p3;
       }
 
       bool isColinear( const Vec3& v, float epsilon ) const
