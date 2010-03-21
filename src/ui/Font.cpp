@@ -59,7 +59,7 @@ namespace ui
 
     log.print( "Opening font '%s' %d px ...", path, titleHeight );
     titleFont = TTF_OpenFont( path, titleHeight );
-    if( titleHeight == null ) {
+    if( titleHeight == 0 ) {
       log.printEnd( " Error: %s", TTF_GetError() );
       TTF_CloseFont( monoFont );
       monoFont = null;

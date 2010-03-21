@@ -32,9 +32,6 @@ namespace oz
 
       // World::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
       static const float DIM;
-      // height step for 1 unit in integer format, read from image
-      static const float HEIGHT_STEP;
-      static const float HEIGHT_BIAS;
 
       void buildTerraFrame();
 
@@ -64,7 +61,7 @@ namespace oz
 
       void init();
       void load( float height );
-      void load( const char* heightMapFile );
+      void load( const char* heightMapFile, float heightStep, float heightBias );
 
       void isEmpty() const;
 

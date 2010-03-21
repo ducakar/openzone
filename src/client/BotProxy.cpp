@@ -276,17 +276,21 @@ namespace client
       Vec3 at = Vec3( -hvsc[4], hvsc[5], hvsc[2] );
 
       float distance = static_cast<const BotClass*>( camera.botObj->type )->grabDistance;
+      collider.mask = ~0;
       collider.translate( camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ ),
                           at * distance,
                           camera.botObj );
+      collider.mask = Object::SOLID_BIT;
 
       camera.setTagged( collider.hit.obj );
     }
     else {
       float distance = static_cast<const BotClass*>( camera.botObj->type )->grabDistance;
+      collider.mask = ~0;
       collider.translate( camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ ),
                           camera.at * distance,
                           camera.botObj );
+      collider.mask = Object::SOLID_BIT;
 
       camera.setTagged( collider.hit.obj );
     }

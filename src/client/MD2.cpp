@@ -442,7 +442,7 @@ namespace client
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
 
-    while( int i = *( ++pCmd ) ) {
+    while( int i = *( pCmd ) ) {
       if( i < 0 ) {
         glBegin( GL_TRIANGLE_FAN );
         i = -i;
@@ -450,6 +450,7 @@ namespace client
       else {
         glBegin( GL_TRIANGLE_STRIP );
       }
+      ++pCmd;
       for( ; i > 0; --i, pCmd += 3 ) {
         glNormal3fv( anorms[ lightNormals[ pCmd[2]] ] );
         glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],
@@ -471,7 +472,7 @@ namespace client
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
 
-    while( int i = *( ++pCmd ) ) {
+    while( int i = *( pCmd ) ) {
       if( i < 0 ) {
         glBegin( GL_TRIANGLE_FAN );
         i = -i;
@@ -479,6 +480,7 @@ namespace client
       else {
         glBegin( GL_TRIANGLE_STRIP );
       }
+      ++pCmd;
       for( ; i > 0; --i, pCmd += 3 ) {
         glNormal3fv( anorms[ lightNormals[ pCmd[2]] ] );
         glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],

@@ -165,6 +165,11 @@ namespace oz
         return x < 0.0f ? -1.0f : x > 0.0f ? 1.0f : 0.0f;
       }
 
+      static float lerp( float t, float a, float b )
+      {
+        return a + t * ( b - a );
+      }
+
       // deg-to-rad and rad-to-deg conversion
       static float rad( float x )
       {

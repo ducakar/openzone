@@ -81,8 +81,7 @@ namespace oz
        * STATE FLAGS
        */
 
-      // if object is not positioned in the world (used only when loading/saving the world and to
-      // distinguish between removed objects and cut objects that have been removed with removeCut)
+      // if object is not positioned in the world (used only when loading/saving the world)
       static const int CUT_BIT            = 0x00020000;
 
       // when object's life drops to <= 0.0f it's tagged as destroyed first and kept one more tick
@@ -121,34 +120,37 @@ namespace oz
       // if the object is on ladder (not cleared if disabled)
       static const int ON_LADDER_BIT      = 0x00000100;
 
-      // handle collisions for this object
-      static const int CLIP_BIT           = 0x00000080;
+      // other object collide with the object
+      static const int SOLID_BIT          = 0x00000080;
+
+      // object is non-collidable, but can still be detected by the interface (when we point on it)
+      static const int DETECT_BIT         = 0x00000040;
 
       // If the object is climber it is tested against ladder brushes and gains ON_LADDER_BIT if it
       // intersects with a ladder brush. Otherwise object is not affected by ladders.
-      static const int CLIMBER_BIT        = 0x00000040;
+      static const int CLIMBER_BIT        = 0x00000020;
 
       // if the object is meant to push itself and other objects around  (e.g. Bot), turn on
       // some physics hacks (to prevent continuous hits) and enable pushing to side directions
-      static const int PUSHER_BIT         = 0x00000020;
+      static const int PUSHER_BIT         = 0x00000010;
 
       // if the object is immune to gravity
-      static const int HOVER_BIT          = 0x00000010;
+      static const int HOVER_BIT          = 0x00000008;
 
       /*
        * RENDER FLAGS
        */
 
       // don't render object (it will be rendered via another path, e.g. bots in a vehicle)
-      static const int NO_DRAW_BIT        = 0x00000008;
+      static const int NO_DRAW_BIT        = 0x00000004;
 
       // render after other objects (for large blended objects, e.g. explosions)
-      static const int DELAYED_DRAW_BIT   = 0x00000004;
+      static const int DELAYED_DRAW_BIT   = 0x00000002;
 
       // wide frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
       // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR
-      static const int WIDE_CULL_BIT      = 0x00000002;
+      static const int WIDE_CULL_BIT      = 0x00000001;
 
       /*
        * STANDARD EVENT IDs

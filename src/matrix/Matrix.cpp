@@ -192,7 +192,10 @@ namespace oz
     log.println( "Loading Matrix {" );
     log.indent();
 
-    world.terra.load( "terra/heightmap.png" );
+    Config config;
+    config.load( "terra/terra.rc" );
+
+    world.terra.load( "terra/heightmap.png", config.get( "step", 0.5f ), config.get( "bias", 0.0f ) );
     world.load();
 
     if( istream != null ) {

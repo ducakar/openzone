@@ -42,7 +42,8 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.hitFunc",      false );
     OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.updateFunc",   false );
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",      false );
-    OZ_CLASS_SET_FLAG( Object::CLIP_BIT,           "flag.clip",         true  );
+    OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
+    OZ_CLASS_SET_FLAG( Object::DETECT_BIT,         "flag.detect",       true  );
     OZ_CLASS_SET_FLAG( Object::HOVER_BIT,          "flag.hover",        false );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
     OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT,   "flag.delayedDraw",  false );

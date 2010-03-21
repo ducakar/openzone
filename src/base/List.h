@@ -74,7 +74,7 @@ namespace oz
            * location.
            * @return true if iterator is passed
            */
-          bool isPassed() const
+          bool isPast() const
           {
             return B::elem == null;
           }
@@ -193,9 +193,17 @@ namespace oz
       /**
        * @return iterator for this list
        */
-      Iterator iterator() const
+      Iterator begin() const
       {
         return Iterator( *this );
+      }
+
+      /**
+       * @return pointer that matches the passed iterator
+       */
+      const Type* end() const
+      {
+        return null;
       }
 
       /**

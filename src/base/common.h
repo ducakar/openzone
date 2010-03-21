@@ -27,7 +27,7 @@ namespace oz
    * \def null
    * It is equivalent to NULL macro but it looks prettier.
    */
-# define null 0
+# define null __null
 
   /**
    * signed byte
@@ -111,7 +111,7 @@ namespace oz
    * @return minimum of a and b
    */
   template <typename Value>
-  inline Value& min( Value& a, Value& b )
+  inline const Value& min( const Value& a, const Value& b )
   {
     return a < b ? a : b;
   }
@@ -123,21 +123,9 @@ namespace oz
    * @return minimum of a and b
    */
   template <typename Value>
-  inline const Value& min( const Value& a, const Value& b )
+  inline Value& min( Value& a, Value& b )
   {
     return a < b ? a : b;
-  }
-
-  /**
-   * Maximum.
-   * @param a
-   * @param b
-   * @return maximum of a and b
-   */
-  template <typename Value>
-  inline Value& max( Value& a, Value& b )
-  {
-    return a > b ? a : b;
   }
 
   /**
@@ -153,6 +141,18 @@ namespace oz
   }
 
   /**
+   * Maximum.
+   * @param a
+   * @param b
+   * @return maximum of a and b
+   */
+  template <typename Value>
+  inline Value& max( Value& a, Value& b )
+  {
+    return a > b ? a : b;
+  }
+
+  /**
    * Bound c between a and b. Equals to max( min( c, b ), a ).
    * @param c
    * @param a
@@ -160,7 +160,7 @@ namespace oz
    * @return clamped value of c
    */
   template <typename Value>
-  inline Value& bound( Value& c, Value& a, Value& b )
+  inline const Value& bound( const Value& c, const Value& a, const Value& b )
   {
     assert( a <= b );
 
@@ -175,7 +175,7 @@ namespace oz
    * @return clamped value of c
    */
   template <typename Value>
-  inline const Value& bound( const Value& c, const Value& a, const Value& b )
+  inline Value& bound( Value& c, Value& a, Value& b )
   {
     assert( a <= b );
 

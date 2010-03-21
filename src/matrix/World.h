@@ -109,7 +109,7 @@ namespace oz
       int  addStruct( const char* name, const Vec3& p, Structure::Rotation rot );
       int  addObject( const char* name, const Vec3& p );
       int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
-                    float rejection, float mass, float lifeTime );
+                    float restitution, float mass, float lifeTime );
 
       void remove( Structure* str );
       void remove( Object* obj );
@@ -122,18 +122,18 @@ namespace oz
       Cell* getCell( const Vec3& p );
 
       // get indices of the cell the point is in
-      void getInters( Span& span, float x, float y, float epsilon = 0.0f ) const;
-      void getInters( Span& span, const Vec3& p, float epsilon = 0.0f ) const;
+      Span getInters( float x, float y, float epsilon = 0.0f ) const;
+      Span getInters( const Vec3& p, float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the area intersects
-      void getInters( Span& span, float minPosX, float minPosY, float maxPosX, float maxPosY,
+      Span getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
                       float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the AABB intersects
-      void getInters( Span& span, const AABB& bb, float epsilon = 0.0f ) const;
+      Span getInters( const AABB& bb, float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the bounds intersects
-      void getInters( Span& span, const Bounds& bounds, float epsilon = 0.0f ) const;
+      Span getInters( const Bounds& bounds, float epsilon = 0.0f ) const;
 
       World();
 
@@ -168,45 +168,45 @@ namespace oz
     return getCell( p.x, p.y );
   }
 
-  inline void World::getInters( Span& span, float x, float y, float epsilon ) const
+  inline Span World::getInters( float x, float y, float epsilon ) const
   {
-    span.minX = max( int( ( x - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
-    span.minY = max( int( ( y - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
-    span.maxX = min( int( ( x + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
-    span.maxY = min( int( ( y + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+    return Span( max( int( ( x - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 ),
+                 max( int( ( y - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 ),
+                 min( int( ( x + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 ),
+                 min( int( ( y + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 ) );
   }
 
-  inline void World::getInters( Span& span, const Vec3& p, float epsilon ) const
+  inline Span World::getInters( const Vec3& p, float epsilon ) const
   {
-    getInters( span, p.x, p.y, epsilon );
+    return getInters( p.x, p.y, epsilon );
   }
 
-  inline void World::getInters( Span& span, float minPosX, float minPosY,
+  inline Span World::getInters( float minPosX, float minPosY,
                                 float maxPosX, float maxPosY, float epsilon ) const
   {
-    span.minX = max( int( ( minPosX - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
-    span.minY = max( int( ( minPosY - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 );
-    span.maxX = min( int( ( maxPosX + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
-    span.maxY = min( int( ( maxPosY + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+    return Span( max( int( ( minPosX - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 ),
+                 max( int( ( minPosY - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 ),
+                 min( int( ( maxPosX + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 ),
+                 min( int( ( maxPosY + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 ) );
   }
 
-  inline void World::getInters( Span& span, const AABB& bb, float epsilon ) const
+  inline Span World::getInters( const AABB& bb, float epsilon ) const
   {
-    getInters( span, bb.p.x - bb.dim.x, bb.p.y - bb.dim.y, bb.p.x + bb.dim.x, bb.p.y + bb.dim.y,
-               epsilon );
+    return getInters( bb.p.x - bb.dim.x, bb.p.y - bb.dim.y,
+                      bb.p.x + bb.dim.x, bb.p.y + bb.dim.y,
+                      epsilon );
   }
 
-  inline void World::getInters( Span& span, const Bounds& bounds, float epsilon ) const
+  inline Span World::getInters( const Bounds& bounds, float epsilon ) const
   {
-    getInters( span, bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
+    return getInters( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
   }
 
   inline bool World::position( Structure* str )
   {
     str->setRotation( *bsps[str->bsp], str->rot );
 
-    Span span;
-    getInters( span, *str, EPSILON );
+    Span span = getInters( *str, EPSILON );
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -228,8 +228,7 @@ namespace oz
 
   inline void World::unposition( Structure* str )
   {
-    Span span;
-    getInters( span, *str, EPSILON );
+    Span span = getInters( *str, EPSILON );
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -362,17 +361,17 @@ namespace oz
   }
 
   inline int World::addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
-                             float rejection, float mass, float lifeTime )
+                             float restitution, float mass, float lifeTime )
   {
     int index;
 
     if( partAvailableIndices.isEmpty() ) {
       index = parts.length();
-      parts << new Particle( index, p, velocity, color, rejection, mass, lifeTime );
+      parts << new Particle( index, p, velocity, color, restitution, mass, lifeTime );
     }
     else {
       partAvailableIndices >> index;
-      parts[index] = new Particle( index, p, velocity, color, rejection, mass, lifeTime );
+      parts[index] = new Particle( index, p, velocity, color, restitution, mass, lifeTime );
     }
     return index;
   }

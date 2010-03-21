@@ -38,17 +38,11 @@ int main()
   a.transfer( b );
   a.transfer( b );
 
-  foreach( i, a.iterator() ) {
+  foreach( i, a.begin() ) {
     printf( "%d :: ", i->value );
   }
   printf( "\n" );
 
   printf( "%f %f", 1.0f / Math::sqrt( 2.0f ), Math::fInvSqrt( 2.0f ) );
-
-  Tuple<int, int> p( 1, 2 );
-  Tuple<int, int> r( 1, 2 );
-
-  printf( "%d\n", p == r );
-
   return 0;
 }

@@ -45,7 +45,7 @@ namespace client
     }
 
     // events
-    foreach( event, bot->events.iterator() ) {
+    foreach( event, bot->events.begin() ) {
       assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
       if( event->id >= 0 && samples[event->id] != -1 ) {
@@ -56,7 +56,7 @@ namespace client
     }
 
     // inventory items' events
-    foreach( item, bot->items.iterator() ) {
+    foreach( item, bot->items.begin() ) {
       if( world.objects[*item] != null ) {
         sound.playAudio( world.objects[*item], this );
       }

@@ -143,9 +143,17 @@ namespace oz
       /**
        * @return iterator for this vector
        */
-      Iterator iterator() const
+      Iterator begin() const
       {
         return Iterator( *this );
+      }
+
+      /**
+       * @return pointer that matches the passed iterator
+       */
+      const Type* end() const
+      {
+        return data + count;
       }
 
       /**

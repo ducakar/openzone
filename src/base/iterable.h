@@ -36,26 +36,50 @@ namespace oz
       explicit IteratorBase( Type* start ) : elem( start )
       {}
 
+    private:
+
+      /**
+       * Returns true when iterator goes past last element.
+       * the last element.
+       * Should be overridden in derivative classes
+       * @return
+       */
+      bool isPast() const;
+
+      /**
+       * Advance to next element
+       * Should be overridden in derivative classes
+       * @return
+       */
+      IteratorBase& operator ++ ();
+
+      /**
+       * Go to previous element
+       * May be overridden in derivative classes (optional)
+       * @return
+       */
+      IteratorBase& operator -- ();
+
     public:
 
       /**
-       * Returns true if iterators are at the same element. (That should do in most cases.)
+       * Returns true if the iterator is at the given element.
        * @param e
        * @return
        */
-      bool operator == ( const IteratorBase& i ) const
+      bool operator == ( const Type* e ) const
       {
-        return elem == i.elem;
+        return elem == e;
       }
 
       /**
-       * Returns true if iterators are not at the same element. (That should do in most cases.)
+       * Returns true if the iterator is not at the given element.
        * @param e
        * @return
        */
-      bool operator != ( const IteratorBase& i ) const
+      bool operator != ( const Type* e ) const
       {
-        return elem != i.elem;
+        return elem != e;
       }
 
       /**
@@ -109,78 +133,6 @@ namespace oz
   };
 
   /**
-   * Pointer iterator
-   */
-  template <typename Type>
-  class Iterator : public IteratorBase<Type>
-  {
-    private:
-
-      typedef IteratorBase<Type> B;
-
-    protected:
-
-      /**
-       * Successor of the last element.
-       * Is is used to determine when iterator becomes invalid.
-       */
-      const Type* const past;
-
-    public:
-
-      /**
-       * Default constructor returns a dummy passed iterator
-       * @return
-       */
-      explicit Iterator() : B( null ), past( null )
-      {}
-
-      /**
-       * @param start first element for forward iterator or successor of last element for backward
-       * iterator
-       * @param past_ successor of last element for forward iterator or predecessor of first element
-       * for backward iterator
-       */
-      explicit Iterator( Type* start, const Type* past_ ) : B( start ), past( past_ )
-      {}
-
-      /**
-       * When iterator advances beyond last element, it becomes passed. It points to an invalid
-       * location.
-       * @return true if iterator is passed
-       */
-      bool isPassed() const
-      {
-        return B::elem == past;
-      }
-
-      /**
-       * Advance to next element.
-       * @return
-       */
-      Iterator& operator ++ ()
-      {
-        assert( B::elem != past );
-
-        ++B::elem;
-        return *this;
-      }
-
-      /**
-       * Go to previous element.
-       * @return
-       */
-      Iterator& operator -- ()
-      {
-        assert( B::elem != past );
-
-        --B::elem;
-        return *this;
-      }
-
-  };
-
-  /**
    * \def foreach
    * Foreach macro can be used as in following example:
    * <pre>
@@ -190,14 +142,14 @@ namespace oz
    * }</pre>
    * This replaces much more cryptic and longer pieces of code, like:
    * Vector&lt;int&gt; v;
-   * for( Vector&lt;int&gt;::Iterator i( v ); !i.isPassed(); ++i )
+   * for( Vector&lt;int&gt;::Iterator i( v ); !i.isPast(); ++i )
    *   printf( "%d ", *i );
    * }</pre>
    * There's no need to add it to Katepart syntax highlighting as it is already there (Qt has some
    * similar foreach macro).
    */
 # define foreach( i, iterator ) \
-  for( typeof( iterator ) i = iterator; !i.isPassed(); ++i )
+  for( typeof( iterator ) i = iterator; !i.isPast(); ++i )
 
   /**
    * Compare all elements. (Like STL equal)
@@ -208,7 +160,7 @@ namespace oz
   template <class IteratorA, class IteratorB>
   inline bool iEquals( IteratorA iSrcA, IteratorB iSrcB )
   {
-    while( !iSrcA.isPassed() ) {
+    while( !iSrcA.isPast() ) {
       if( *iSrcA != *iSrcB ) {
         return false;
       }
@@ -226,7 +178,7 @@ namespace oz
   template <class Iterator, typename Value>
   inline void iSet( Iterator iDest, const Value& value )
   {
-    while( !iDest.isPassed() ) {
+    while( !iDest.isPast() ) {
       *iDest = value;
       ++iDest;
     }
@@ -242,7 +194,7 @@ namespace oz
   {
     assert( &*iDest != &*iSrc );
 
-    while( !iDest.isPassed() ) {
+    while( !iDest.isPast() ) {
       *iDest = *iSrc;
       ++iDest;
       ++iSrc;
@@ -259,7 +211,7 @@ namespace oz
   {
     assert( &*iDest != &*iSrc );
 
-    while( !iDest.isPassed() ) {
+    while( !iDest.isPast() ) {
       ++iDest;
       ++iSrc;
       *iDest = *iSrc;
@@ -275,7 +227,7 @@ namespace oz
   template <class Iterator, typename Value>
   inline Iterator iIndex( Iterator iSrc, const Value& value )
   {
-    while( !iSrc.isPassed() ) {
+    while( !iSrc.isPast() ) {
       if( *iSrc == value ) {
         break;
       }
@@ -293,7 +245,7 @@ namespace oz
   template <class ReverseIterator, typename Value>
   inline ReverseIterator iLastIndex( ReverseIterator iSrc, const Value& value )
   {
-    while( !iSrc.isPassed() ) {
+    while( !iSrc.isPast() ) {
       --iSrc;
       if( *iSrc == value ) {
         break;
@@ -309,7 +261,7 @@ namespace oz
   template <class Iterator>
   inline void iFree( Iterator iDest )
   {
-    while( !iDest.isPassed() ) {
+    while( !iDest.isPast() ) {
       typeof( *iDest )& elem = *iDest;
       ++iDest;
 

@@ -33,7 +33,7 @@ namespace client
   {
     const Cell& cell = world.cells[cellX][cellY];
 
-    foreach( obj, cell.objects.iterator() ) {
+    foreach( obj, cell.objects.begin() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
           playAudio( obj, null );
@@ -157,7 +157,7 @@ namespace client
   void Sound::sync()
   {
     // remove Audio objects of removed objects
-    for( typeof( audios.iterator() ) i = audios.iterator(); !i.isPassed(); ) {
+    for( typeof( audios.begin() ) i = audios.begin(); !i.isPast(); ) {
       Audio* audio = i.value();
       uint key = i.key();
       ++i;
@@ -175,8 +175,7 @@ namespace client
     alListenerfv( AL_ORIENTATION, camera.at );
     alListenerfv( AL_POSITION, camera.p );
 
-    Span span;
-    world.getInters( span, camera.p, DMAX + AABB::MAX_DIM );
+    Span span = world.getInters( camera.p, DMAX + AABB::MAX_DIM );
 
     for( int x = span.minX ; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -191,7 +190,7 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
 
     // remove continous sounds that are not played any more
-    for( typeof( contSources.iterator() ) i = contSources.iterator(); !i.isPassed(); ) {
+    for( typeof( contSources.begin() ) i = contSources.begin(); !i.isPast(); ) {
       ContSource* src = i;
       uint key = i.key();
 
@@ -247,7 +246,7 @@ namespace client
       assert( alGetError() == AL_NO_ERROR );
 
       // remove Audio objects that are not used any more
-      for( typeof( audios.iterator() ) i = audios.iterator(); !i.isPassed(); ) {
+      for( typeof( audios.begin() ) i = audios.begin(); !i.isPast(); ) {
         Audio* audio = *i;
         uint key = i.key();
 
@@ -307,7 +306,7 @@ namespace client
     log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
     log.println( "OpenAL extensions {" );
     log.indent();
-    foreach( extension, extensions.iterator() ) {
+    foreach( extension, extensions.begin() ) {
       log.println( "%s", extension->cstr() );
     }
     log.unindent();
@@ -343,7 +342,7 @@ namespace client
 
     log.print( "Shutting down SoundManager ..." );
 
-    foreach( src, sources.iterator() ) {
+    foreach( src, sources.begin() ) {
       alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
       assert( alGetError() == AL_NO_ERROR );
@@ -351,7 +350,7 @@ namespace client
     sources.free();
     Source::pool.free();
 
-    foreach( i, contSources.iterator() ) {
+    foreach( i, contSources.begin() ) {
       const ContSource& src = *static_cast<const ContSource*>( i );
 
       alSourceStop( src.source );

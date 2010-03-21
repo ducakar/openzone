@@ -87,9 +87,17 @@ namespace oz
       /**
        * @return iterator for this array
        */
-      Iterator iterator()
+      Iterator begin()
       {
         return Iterator( *this );
+      }
+
+      /**
+       * @return pointer that matches the passed iterator
+       */
+      const Type* end() const
+      {
+        return data + SIZE;
       }
 
       /**
