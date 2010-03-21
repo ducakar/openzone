@@ -186,8 +186,8 @@ namespace client
 
   void MD3::Part::scale( float scale )
   {
-    foreach( mesh, meshes.begin() ) {
-      foreach( v, mesh->vertices.begin() ) {
+    foreach( mesh, meshes.citer() ) {
+      foreach( v, mesh->vertices.iter() ) {
         v->p *= scale;
       }
     }
@@ -195,8 +195,8 @@ namespace client
 
   void MD3::Part::translate( const Vec3& t )
   {
-    foreach( mesh, meshes.begin() ) {
-      foreach( v, mesh->vertices.begin() ) {
+    foreach( mesh, meshes.citer() ) {
+      foreach( v, mesh->vertices.iter() ) {
         v->p += t;
       }
     }
@@ -243,13 +243,13 @@ namespace client
     upper->scale( scale );
     lower->scale( scale );
 
-    foreach( offset, headOffsets.begin() ) {
+    foreach( offset, headOffsets.iter() ) {
       offset->p *= scale;
     }
-    foreach( offset, lowerOffsets.begin() ) {
+    foreach( offset, lowerOffsets.iter() ) {
       offset->p *= scale;
     }
-    foreach( offset, weaponOffsets.begin() ) {
+    foreach( offset, weaponOffsets.iter() ) {
       offset->p *= scale;
     }
   }

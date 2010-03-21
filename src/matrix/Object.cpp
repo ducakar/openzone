@@ -93,7 +93,7 @@ namespace oz
     ostream->writeFloat( life );
 
     ostream->writeInt( events.length() );
-    foreach( event, events.begin() ) {
+    foreach( event, events.citer() ) {
       ostream->writeInt( event->id );
       ostream->writeFloat( event->intensity );
     }
@@ -117,7 +117,7 @@ namespace oz
     ostream->writeFloat( life );
 
     ostream->writeInt( events.length() );
-    foreach( event, events.begin() ) {
+    foreach( event, events.citer() ) {
       ostream->writeInt( event->id );
       ostream->writeFloat( event->intensity );
     }

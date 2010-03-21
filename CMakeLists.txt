@@ -9,6 +9,7 @@ option( OZ_ALLOC_STATISTICS
     "Use overloads for default new and delete that make heap usage statistics" OFF )
 option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
+option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in config files" OFF )
 
 # compiler and linker flags
 set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wconversion -Wdisabled-optimization" )

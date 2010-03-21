@@ -31,7 +31,7 @@ namespace nirvana
   void Nirvana::sync()
   {
     // remove minds of removed bots
-    for( typeof( minds.begin() ) i = minds.begin(); !i.isPast(); ) {
+    for( typeof( minds.iter() ) i = minds.iter(); !i.isPassed(); ) {
       Mind* mind = i;
       ++i;
 
@@ -41,7 +41,7 @@ namespace nirvana
       }
     }
     // add minds for new bots
-    foreach( i, synapse.addedObjects.begin() ) {
+    foreach( i, synapse.addedObjects.citer() ) {
       const Object* obj = world.objects[*i];
 
       if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
@@ -61,7 +61,7 @@ namespace nirvana
   void Nirvana::update()
   {
     int count = 0;
-    foreach( mind, minds.begin() ) {
+    foreach( mind, minds.iter() ) {
       const Bot* bot = static_cast<const Bot*>( world.objects[mind->botIndex] );
       assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
 
@@ -215,7 +215,7 @@ namespace nirvana
   {
     ostream->writeInt( minds.length() );
 
-    foreach( mind, minds.begin() ) {
+    foreach( mind, minds.citer() ) {
       ostream->writeString( mind->type() );
       mind->write( ostream );
     }

@@ -30,6 +30,9 @@ namespace oz
 
       // Hashtable of variables.
       HashString<String, SIZE> vars;
+#ifdef OZ_VERBOSE_CONFIG
+      mutable HashString<bool, SIZE> usedVars;
+#endif
 
       bool loadConf( const char* file );
       bool saveConf( const char* file );

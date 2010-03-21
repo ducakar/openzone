@@ -38,7 +38,7 @@ int main()
   a.transfer( b );
   a.transfer( b );
 
-  foreach( i, a.begin() ) {
+  foreach( i, a.citer() ) {
     printf( "%d :: ", i->value );
   }
   printf( "\n" );

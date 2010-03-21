@@ -45,6 +45,33 @@ namespace oz
 
       };
 
+      /**
+       * Array constant iterator.
+       */
+      class CIterator : public oz::CIterator<Type>
+      {
+        private:
+
+          typedef oz::CIterator<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null, null )
+          {}
+
+          /**
+           * Make iterator for given array. After creation it points to first element.
+           * @param v
+           */
+          explicit CIterator( const Array& a ) : B( a.data, a.data + SIZE )
+          {}
+
+      };
+
     private:
 
       Type data[SIZE];
@@ -87,17 +114,17 @@ namespace oz
       /**
        * @return iterator for this array
        */
-      Iterator begin()
+      Iterator iter()
       {
         return Iterator( *this );
       }
 
       /**
-       * @return pointer that matches the passed iterator
+       * @return iterator for this array
        */
-      const Type* end() const
+      CIterator citer()
       {
-        return data + SIZE;
+        return CIterator( *this );
       }
 
       /**

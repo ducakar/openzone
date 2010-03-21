@@ -91,44 +91,44 @@ int main()
   hi.add( 105, 5 );
   hs.add( "105", 5 );
 
-  iSet( v.begin(), 1 );
+  iSet( v.iter(), 1 );
 
-  foreach( i, l.begin() ) {
+  foreach( i, l.citer() ) {
     printf( "%d ", i->value );
   }
   printf( "\n" );
 
-  foreach( i, dl.begin() ) {
+  foreach( i, dl.citer() ) {
     printf( "%d ", i->value );
   }
   printf( "\n" );
 
-  foreach( i, begin( a, 5 ) ) {
+  foreach( i, citer( a, 5 ) ) {
     printf( "%d ", *i );
   }
   printf( "\n" );
 
-  foreach( i, v.begin() ) {
+  foreach( i, v.citer() ) {
     printf( "%d ", *i );
   }
   printf( "\n" );
 
-  foreach( i, sv.begin() ) {
+  foreach( i, sv.citer() ) {
     printf( "%d ", *i );
   }
   printf( "\n" );
 
-  foreach( i, s.begin() ) {
+  foreach( i, s.citer() ) {
     printf( "%d ", i->value );
   }
   printf( "\n" );
 
-  foreach( i, hi.begin() ) {
+  foreach( i, hi.citer() ) {
     printf( "%d ", *i );
   }
   printf( "\n" );
 
-  foreach( i, hs.begin() ) {
+  foreach( i, hs.citer() ) {
     printf( "%d ", *i );
   }
   printf( "\n" );

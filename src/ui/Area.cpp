@@ -165,13 +165,13 @@ namespace ui
 
   bool Area::passMouseEvents()
   {
-    foreach( child, children.begin() ) {
+    foreach( child, children.iter() ) {
       if( child->flags & GRAB_BIT ) {
         child->onMouseEvent();
         return true;
       }
     }
-    foreach( child, children.begin() ) {
+    foreach( child, children.iter() ) {
       if( child->x <= mouse.x && mouse.x < child->x + child->width &&
           child->y <= mouse.y && mouse.y < child->y + child->height )
       {

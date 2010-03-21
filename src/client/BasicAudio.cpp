@@ -45,7 +45,7 @@ namespace client
     }
 
     // events
-    foreach( event, obj->events.begin() ) {
+    foreach( event, obj->events.citer() ) {
       assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
       if( event->id >= 0 && samples[event->id] != -1 ) {

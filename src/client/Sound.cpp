@@ -33,7 +33,7 @@ namespace client
   {
     const Cell& cell = world.cells[cellX][cellY];
 
-    foreach( obj, cell.objects.begin() ) {
+    foreach( obj, cell.objects.citer() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
           playAudio( obj, null );
@@ -157,7 +157,7 @@ namespace client
   void Sound::sync()
   {
     // remove Audio objects of removed objects
-    for( typeof( audios.begin() ) i = audios.begin(); !i.isPast(); ) {
+    for( typeof( audios.citer() ) i = audios.citer(); !i.isPassed(); ) {
       Audio* audio = i.value();
       uint key = i.key();
       ++i;
@@ -190,7 +190,7 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
 
     // remove continous sounds that are not played any more
-    for( typeof( contSources.begin() ) i = contSources.begin(); !i.isPast(); ) {
+    for( typeof( contSources.iter() ) i = contSources.iter(); !i.isPassed(); ) {
       ContSource* src = i;
       uint key = i.key();
 
@@ -246,7 +246,7 @@ namespace client
       assert( alGetError() == AL_NO_ERROR );
 
       // remove Audio objects that are not used any more
-      for( typeof( audios.begin() ) i = audios.begin(); !i.isPast(); ) {
+      for( typeof( audios.citer() ) i = audios.citer(); !i.isPassed(); ) {
         Audio* audio = *i;
         uint key = i.key();
 
@@ -306,7 +306,7 @@ namespace client
     log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
     log.println( "OpenAL extensions {" );
     log.indent();
-    foreach( extension, extensions.begin() ) {
+    foreach( extension, extensions.citer() ) {
       log.println( "%s", extension->cstr() );
     }
     log.unindent();
@@ -342,7 +342,7 @@ namespace client
 
     log.print( "Shutting down SoundManager ..." );
 
-    foreach( src, sources.begin() ) {
+    foreach( src, sources.citer() ) {
       alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
       assert( alGetError() == AL_NO_ERROR );
@@ -350,7 +350,7 @@ namespace client
     sources.free();
     Source::pool.free();
 
-    foreach( i, contSources.begin() ) {
+    foreach( i, contSources.citer() ) {
       const ContSource& src = *static_cast<const ContSource*>( i );
 
       alSourceStop( src.source );

@@ -45,8 +45,6 @@ runMomentum "4.0"
 crouchMomentum "1.0"
 jumpMomentum "5.0"
 
-stepRate "1.50"
-
 grabDistance "2.0"
 grabMass "100.0"
 throwMomentum "10.0"

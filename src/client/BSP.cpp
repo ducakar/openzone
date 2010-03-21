@@ -107,7 +107,6 @@ namespace client
 
     glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                      bsp->vertices[face->firstVertex].p );
-    glNormal3fv( face->normal );
 
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
 
@@ -126,6 +125,7 @@ namespace client
       glClientActiveTexture( GL_TEXTURE0 );
     }
 
+    glNormal3fv( face->normal );
     glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
   }
 
@@ -137,6 +137,10 @@ namespace client
     glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ), bsp->vertices[face->firstVertex].p );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                        bsp->vertices[face->firstVertex].texCoord );
+
+    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ), bsp->vertices[0].texCoord );
+    glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ), bsp->vertices[0].p );
 
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );

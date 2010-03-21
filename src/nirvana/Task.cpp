@@ -18,7 +18,7 @@ namespace nirvana
 
   void Task::write( OutputStream* ostream ) const
   {
-    foreach( child, children.begin() ) {
+    foreach( child, children.citer() ) {
       ostream->writeString( child->type() );
       child->write( ostream );
     }

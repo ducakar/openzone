@@ -35,11 +35,11 @@ int main()
   sparse.remove( 2 );
   sparse.remove( 4 );
 
-  foreach( i, sparse.begin() ) {
+  foreach( i, sparse.citer() ) {
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, begin<A>( sparse, sparse.capacity() ) ) {
+  foreach( i, citer<A>( sparse, sparse.capacity() ) ) {
     printf( "%d,%d ", i->value, i->nextSlot[0] );
   }
   printf( "\n" );
@@ -47,11 +47,11 @@ int main()
   sparse << A( 4 );
   sparse << A( 2 );
 
-  foreach( i, sparse.begin() ) {
+  foreach( i, sparse.citer() ) {
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, begin<A>( sparse, sparse.capacity() ) ) {
+  foreach( i, citer<A>( sparse, sparse.capacity() ) ) {
     printf( "%d,%d ", i->value, i->nextSlot[0] );
   }
   printf( "\n" );

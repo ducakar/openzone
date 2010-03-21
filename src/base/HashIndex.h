@@ -81,7 +81,7 @@ namespace oz
            * location.
            * @return true if iterator is passed
            */
-          bool isPast() const
+          bool isPassed() const
           {
             return B::elem == null;
           }
@@ -172,6 +172,115 @@ namespace oz
           Type* operator -> ()
           {
             return &B::elem->value;
+          }
+
+          /**
+           * @return constant access to member
+           */
+          const Type* operator -> () const
+          {
+            return &B::elem->value;
+          }
+
+      };
+
+      /**
+       * HashIndex constant iterator.
+       */
+      class CIterator : public CIteratorBase<Elem>
+      {
+        private:
+
+          typedef CIteratorBase<Elem> B;
+
+          const Elem* const* const data;
+          int index;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null )
+          {}
+
+          /**
+           * Make iterator for given HashIndex. After creation it points to first element.
+           * @param t
+           */
+          explicit CIterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          {
+            while( B::elem == null && index < SIZE - 1 ) {
+              ++index;
+              B::elem = data[index];
+            }
+          }
+
+          /**
+           * When iterator advances beyond last element, it becomes passed. It points to an invalid
+           * location.
+           * @return true if iterator is passed
+           */
+          bool isPassed() const
+          {
+            return B::elem == null;
+          }
+
+          /**
+           * Advance to the next element.
+           * @param
+           */
+          CIterator& operator ++ ()
+          {
+            assert( B::elem != null );
+
+            if( B::elem->next[0] != null ) {
+              B::elem = B::elem->next[0];
+            }
+            else if( index < SIZE - 1 ) {
+              do {
+                ++index;
+                B::elem = data[index];
+              }
+              while( B::elem == null && index < SIZE - 1 );
+            }
+            else {
+              B::elem = null;
+            }
+            return *this;
+          }
+
+          /**
+           * @return current element's key
+           */
+          const uint& key() const
+          {
+            return B::elem->key;
+          }
+
+          /**
+           * @return constant pointer to current element's value
+           */
+          const Type& value() const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return constant pointer to current element
+           */
+          operator const Type* () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return constant reference to current element
+           */
+          const Type& operator * () const
+          {
+            return B::elem->value;
           }
 
           /**
@@ -346,17 +455,17 @@ namespace oz
       /**
        * @return iterator for this HashIndex
        */
-      Iterator begin() const
+      Iterator iter() const
       {
         return Iterator( *this );
       }
 
       /**
-       * @return pointer that matches the passed iterator
+       * @return constant iterator for this HashIndex
        */
-      const Type* end() const
+      CIterator citer() const
       {
-        return null;
+        return CIterator( *this );
       }
 
       /**

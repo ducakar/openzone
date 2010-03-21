@@ -232,41 +232,41 @@ namespace oz
     log.print( "Writing World to stream ..." );
 
     ostream->writeInt( strFreedIndices[freeing].length() );
-    foreach( i, strFreedIndices[freeing].begin() ) {
+    foreach( i, strFreedIndices[freeing].citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( objFreedIndices[freeing].length() );
-    foreach( i, objFreedIndices[freeing].begin() ) {
+    foreach( i, objFreedIndices[freeing].citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( partFreedIndices[freeing].length() );
-    foreach( i, partFreedIndices[freeing].begin() ) {
+    foreach( i, partFreedIndices[freeing].citer() ) {
       ostream->writeInt( *i );
     }
 
     ostream->writeInt( strFreedIndices[waiting].length() );
-    foreach( i, strFreedIndices[waiting].begin() ) {
+    foreach( i, strFreedIndices[waiting].citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( objFreedIndices[waiting].length() );
-    foreach( i, objFreedIndices[waiting].begin() ) {
+    foreach( i, objFreedIndices[waiting].citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( partFreedIndices[waiting].length() );
-    foreach( i, partFreedIndices[waiting].begin() ) {
+    foreach( i, partFreedIndices[waiting].citer() ) {
       ostream->writeInt( *i );
     }
 
     ostream->writeInt( strAvailableIndices.length() );
-    foreach( i, strAvailableIndices.begin() ) {
+    foreach( i, strAvailableIndices.citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( objAvailableIndices.length() );
-    foreach( i, objAvailableIndices.begin() ) {
+    foreach( i, objAvailableIndices.citer() ) {
       ostream->writeInt( *i );
     }
     ostream->writeInt( partAvailableIndices.length() );
-    foreach( i, partAvailableIndices.begin() ) {
+    foreach( i, partAvailableIndices.citer() ) {
       ostream->writeInt( *i );
     }
 

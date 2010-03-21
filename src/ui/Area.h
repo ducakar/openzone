@@ -83,7 +83,7 @@ namespace ui
         x = newX;
         y = newY;
 
-        foreach( child, children.begin() ) {
+        foreach( child, children.iter() ) {
           child->x += dx;
           child->y += dy;
         }
@@ -97,7 +97,7 @@ namespace ui
         x += moveX;
         y += moveY;
 
-        foreach( child, children.begin() ) {
+        foreach( child, children.iter() ) {
           child->move( moveX, moveY );
         }
       }
