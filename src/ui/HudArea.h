@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Area.h"
+#include "ui/Area.h"
 
 namespace oz
 {

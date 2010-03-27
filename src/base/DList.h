@@ -76,16 +76,6 @@ namespace oz
           {}
 
           /**
-           * When iterator advances beyond last element, it becomes passed. It points to an invalid
-           * location.
-           * @return true if iterator is passed
-           */
-          bool isPassed() const
-          {
-            return B::elem == null;
-          }
-
-          /**
            * Advance to next element.
            */
           Iterator& operator ++ ()
@@ -122,16 +112,6 @@ namespace oz
            */
           explicit CIterator( const DList& l ) : B( l.firstElem )
           {}
-
-          /**
-           * When iterator advances beyond last element, it becomes passed. It points to an invalid
-           * location.
-           * @return true if iterator is passed
-           */
-          bool isPassed() const
-          {
-            return B::elem == null;
-          }
 
           /**
            * Advance to next element.

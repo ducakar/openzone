@@ -2,7 +2,7 @@
  *  base.h
  *
  *  Common include file.
- *  It is included via "precompiled.h" for faster compiling.
+ *  It is included via precompiled header "stable.h" for faster compiling.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
@@ -10,21 +10,23 @@
 
 #pragma once
 
-#include "configuration.h"
-
 #include <cassert>
+
+/*
+ * Configuration
+ */
+#include "config.h"
 
 /*
  * Basic definitions and template functions
  */
 #include "common.h"
-#include "iterable.h"
-#include "array.h"
+#include "iterators.h"
+#include "arrays.h"
 
 /*
  * Containers, part 1
  */
-//#include "Tuple.h"
 #include "Pair.h"
 #include "List.h"
 #include "DList.h"

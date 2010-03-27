@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include "World.h"
-#include "Bot.h"
-#include "Collider.h"
+#include "matrix/World.h"
+#include "matrix/Bot.h"
+#include "matrix/Collider.h"
 
 namespace oz
 {

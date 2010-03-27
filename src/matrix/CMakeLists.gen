@@ -6,4 +6,4 @@ ls *.{h,cpp} >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt
-echo 'add_dependencies( matrix precompiled )' >> CMakeLists.txt
+echo 'add_dependencies( matrix pch )' >> CMakeLists.txt

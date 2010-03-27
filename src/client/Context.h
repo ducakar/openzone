@@ -11,8 +11,8 @@
 
 #include "matrix/Translator.h"
 
-#include "Model.h"
-#include "Audio.h"
+#include "client/Model.h"
+#include "client/Audio.h"
 
 #include <GL/gl.h>
 

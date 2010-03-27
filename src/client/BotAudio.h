@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "BasicAudio.h"
+#include "client/BasicAudio.h"
 
 namespace oz
 {

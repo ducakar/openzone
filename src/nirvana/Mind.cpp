@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Mind.h"
+#include "nirvana/Mind.h"
 
 namespace oz
 {

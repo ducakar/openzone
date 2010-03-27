@@ -1,5 +1,3 @@
-/precompiled.h.gch
-/configuration.h
 /.settings
 /doxygen
 /tags
@@ -14,6 +12,7 @@ pg.out
 
 /build
 /mingw32
+/msvc9
 
 /*CMakeCache.txt
 CMakeCache.txt

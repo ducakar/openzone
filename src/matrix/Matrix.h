@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "Synapse.h"
-#include "Bot.h"
+#include "matrix/Synapse.h"
+#include "matrix/Bot.h"
 
 namespace oz
 {

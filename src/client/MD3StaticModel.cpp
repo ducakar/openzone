@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "MD3StaticModel.h"
+#include "client/MD3StaticModel.h"
 
-#include "Context.h"
+#include "client/Context.h"
 
 namespace oz
 {

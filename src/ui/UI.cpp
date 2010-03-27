@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "UI.h"
+#include "ui/UI.h"
 
 #include "client/Camera.h"
 

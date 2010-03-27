@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "MD2Model.h"
+#include "client/MD2Model.h"
 
 namespace oz
 {

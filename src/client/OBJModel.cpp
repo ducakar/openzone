@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "OBJModel.h"
+#include "client/OBJModel.h"
 
-#include "Context.h"
+#include "client/Context.h"
 
 namespace oz
 {

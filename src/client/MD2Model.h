@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "Model.h"
-#include "MD2.h"
+#include "client/Model.h"
+#include "client/MD2.h"
 
 namespace oz
 {
