@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "DynamicClass.h"
+#include "matrix/DynamicClass.h"
 
 namespace oz
 {

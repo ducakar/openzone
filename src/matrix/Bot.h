@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "Dynamic.h"
-#include "Weapon.h"
+#include "matrix/Dynamic.h"
+#include "matrix/Weapon.h"
 
 namespace oz
 {

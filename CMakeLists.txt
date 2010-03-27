@@ -51,9 +51,6 @@ set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fomit-frame-pointer -ffast-math ${ar
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -fomit-frame-pointer -ffast-math ${arch_flags}" CACHE STRING "" FORCE )
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
 
-# write configuration
-configure_file( configuration.h.in configuration.h )
-
 # installation
 install( FILES src/client/openzone
          DESTINATION bin/openzone
@@ -61,25 +58,6 @@ install( FILES src/client/openzone
                      GROUP_READ GROUP_EXECUTE
                      WORLD_READ WORLD_EXECUTE )
 
-# precompiled header
-if( CMAKE_BUILD_TYPE STREQUAL Debug )
-    set( flags "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}" )
-elseif( CMAKE_BUILD_TYPE STREQUAL Release )
-    set( flags "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}" )
-elseif( CMAKE_BUILD_TYPE STREQUAL RelWithDebInfo )
-    set( flags "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}" )
-else()
-    set( flags "${CMAKE_CXX_FLAGS}" )
-endif()
-
-add_custom_target( precompiled DEPENDS precompiled.h.gch )
-add_custom_command( OUTPUT precompiled.h.gch
-                    DEPENDS base precompiled.h
-                    COMMAND rm -f precompiled.h.gch &&
-                            ${CMAKE_CXX_COMPILER} `echo ${flags}` -I. precompiled.h )
-
 # sources
-include_directories( . )
-include_directories( src )
 add_subdirectory( src )
 add_subdirectory( data )

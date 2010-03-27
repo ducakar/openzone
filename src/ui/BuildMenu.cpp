@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "BuildMenu.h"
+#include "ui/BuildMenu.h"
 
 #include "matrix/Collider.h"
 #include "matrix/Synapse.h"
 #include "nirvana/Nirvana.h"
 #include "client/Camera.h"
-#include "Button.h"
+#include "ui/Button.h"
 
 namespace oz
 {

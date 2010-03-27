@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "Object.h"
-#include "ObjectClass.h"
+#include "matrix/Object.h"
+#include "matrix/ObjectClass.h"
 
 namespace oz
 {

@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "World.h"
+#include "matrix/World.h"
 
-#include "Lua.h"
+#include "matrix/Lua.h"
 
 namespace oz
 {

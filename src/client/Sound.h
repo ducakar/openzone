@@ -11,8 +11,8 @@
 
 #include "matrix/World.h"
 #include "matrix/Translator.h"
-#include "Audio.h"
-#include "Context.h"
+#include "client/Audio.h"
+#include "client/Context.h"
 
 #include <AL/alut.h>
 #include <vorbis/vorbisfile.h>

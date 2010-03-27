@@ -1,5 +1,5 @@
 /*
- *  matrix.h
+ *  common.h
  *
  *  Common matrix includes and definitions
  *
@@ -40,8 +40,8 @@ namespace oz
 
 }
 
-#include "Bounds.h"
-#include "AABB.h"
-#include "Sphere.h"
+#include "matrix/Bounds.h"
+#include "matrix/AABB.h"
+#include "matrix/Sphere.h"
 
-#include "io.h"
+#include "matrix/io.h"

@@ -7,13 +7,13 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Vehicle.h"
+#include "matrix/Vehicle.h"
 
 #include "matrix/Collider.h"
-#include "VehicleClass.h"
-#include "Bot.h"
+#include "matrix/VehicleClass.h"
+#include "matrix/Bot.h"
 
 namespace oz
 {

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Bot.h"
+#include "matrix/Bot.h"
 
 namespace oz
 {

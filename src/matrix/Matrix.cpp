@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Matrix.h"
+#include "matrix/Matrix.h"
 
-#include "Names.h"
-#include "Lua.h"
-#include "Physics.h"
-#include "Vehicle.h"
-#include "FloraManager.h"
+#include "matrix/Names.h"
+#include "matrix/Lua.h"
+#include "matrix/Physics.h"
+#include "matrix/Vehicle.h"
+#include "matrix/FloraManager.h"
 
 namespace oz
 {

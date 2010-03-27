@@ -10,9 +10,9 @@
 #pragma once
 
 #include "matrix/Matrix.h"
-#include "FreeCamProxy.h"
-#include "StrategicProxy.h"
-#include "BotProxy.h"
+#include "client/FreeCamProxy.h"
+#include "client/StrategicProxy.h"
+#include "client/BotProxy.h"
 
 namespace oz
 {

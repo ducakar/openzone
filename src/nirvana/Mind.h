@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "nirvana.h"
-#include "Task.h"
+#include "nirvana/common.h"
+#include "nirvana/Task.h"
 
 namespace oz
 {

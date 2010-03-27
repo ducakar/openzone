@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Proxy.h"
+#include "client/Proxy.h"
 
 namespace oz
 {

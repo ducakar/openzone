@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "RandomMind.h"
+#include "nirvana/RandomMind.h"
 
-#include "Lua.h"
+#include "nirvana/Lua.h"
 
 namespace oz
 {

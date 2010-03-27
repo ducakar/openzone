@@ -1,5 +1,5 @@
 /*
- *  precompiled.h
+ *  stable.h
  *
  *  Precompiled header.
  *  It should be included in all ".cpp" source files in the project. Do not include it via another
@@ -9,7 +9,8 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "src/base/base.h"
+#include "config.h"
+#include "base/base.h"
 
 // we want to use C++ wrapped C headers, not vanilla ones that are included via SDL
 #include <cstdarg>

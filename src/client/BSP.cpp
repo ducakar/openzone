@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "BSP.h"
+#include "client/BSP.h"
 
-#include "Context.h"
-#include "Frustum.h"
-#include "Colors.h"
-#include "Water.h"
-#include "Render.h"
+#include "client/Context.h"
+#include "client/Frustum.h"
+#include "client/Colors.h"
+#include "client/Water.h"
+#include "client/Render.h"
 
 #include <GL/glext.h>
 

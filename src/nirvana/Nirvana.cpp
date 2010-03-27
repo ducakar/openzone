@@ -7,16 +7,16 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Nirvana.h"
+#include "nirvana/Nirvana.h"
 
 #include "matrix/Matrix.h"
 #include "matrix/BotClass.h"
-#include "Lua.h"
+#include "nirvana/Lua.h"
 
-#include "LuaMind.h"
-#include "RandomMind.h"
+#include "nirvana/LuaMind.h"
+#include "nirvana/RandomMind.h"
 
 #define OZ_REGISTER_MINDCLASS( name ) \
   mindClasses.add( #name, MindCtor( &name##Mind::create, &name##Mind::read ) )

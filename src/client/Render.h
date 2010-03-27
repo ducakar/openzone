@@ -13,12 +13,12 @@
 
 #include "ui/UI.h"
 
-#include "BSP.h"
-#include "Terrain.h"
-#include "OBJ.h"
-#include "MD2.h"
-#include "Model.h"
-#include "Context.h"
+#include "client/BSP.h"
+#include "client/Terrain.h"
+#include "client/OBJ.h"
+#include "client/MD2.h"
+#include "client/Model.h"
+#include "client/Context.h"
 
 namespace oz
 {

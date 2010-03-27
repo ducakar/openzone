@@ -7,18 +7,18 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Terrain.h"
+#include "client/Terrain.h"
 
 #include "matrix/World.h"
 #include "matrix/Terrain.h"
 
-#include "Camera.h"
-#include "Context.h"
-#include "Frustum.h"
-#include "Colors.h"
-#include "Water.h"
+#include "client/Camera.h"
+#include "client/Context.h"
+#include "client/Frustum.h"
+#include "client/Colors.h"
+#include "client/Water.h"
 
 #include <GL/glext.h>
 

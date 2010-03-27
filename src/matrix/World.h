@@ -10,16 +10,16 @@
 
 #pragma once
 
-#include "Sky.h"
-#include "Terrain.h"
-#include "BSP.h"
+#include "matrix/Sky.h"
+#include "matrix/Terrain.h"
+#include "matrix/BSP.h"
 
-#include "Structure.h"
-#include "Dynamic.h"
-#include "Particle.h"
+#include "matrix/Structure.h"
+#include "matrix/Dynamic.h"
+#include "matrix/Particle.h"
 
-#include "Translator.h"
-#include "Lua.h"
+#include "matrix/Translator.h"
+#include "matrix/Lua.h"
 
 namespace oz
 {

@@ -1,5 +1,5 @@
 /*
- *  array.h
+ *  arrays.h
  *
  *  Array utility templates.
  *

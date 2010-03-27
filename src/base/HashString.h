@@ -76,16 +76,6 @@ namespace oz
           }
 
           /**
-           * When iterator advances beyond last element, it becomes passed. It points to an invalid
-           * location.
-           * @return true if iterator is passed
-           */
-          bool isPassed() const
-          {
-            return B::elem == null;
-          }
-
-          /**
            * Advance to the next element.
            * @param
            */
@@ -214,16 +204,6 @@ namespace oz
               ++index;
               B::elem = data[index];
             }
-          }
-
-          /**
-           * When iterator advances beyond last element, it becomes passed. It points to an invalid
-           * location.
-           * @return true if iterator is passed
-           */
-          bool isPassed() const
-          {
-            return B::elem == null;
           }
 
           /**

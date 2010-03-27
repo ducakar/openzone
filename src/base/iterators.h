@@ -1,5 +1,5 @@
 /*
- *  iterable.h
+ *  iterators.h
  *
  *  Basic iterator classes and utility templates.
  *
@@ -15,7 +15,7 @@ namespace oz
   /**
    * Generalized iterator.
    * It should only be used as a base class. Following functions need to be implemented:<br>
-   * <code>bool isPassed()</code><br>
+   * <code>bool isPassed()</code> if neccesary<br>
    * <code>Iterator& operator ++ ()</code><br>
    * <code>Iterator& operator -- ()</code> (optional)<br>
    * and a constructor of course.
@@ -39,14 +39,6 @@ namespace oz
     private:
 
       /**
-       * Returns true when iterator goes past last element.
-       * the last element.
-       * Should be overridden in derivative classes
-       * @return
-       */
-      bool isPassed() const;
-
-      /**
        * Advance to next element
        * Should be overridden in derivative classes
        * @return
@@ -61,6 +53,16 @@ namespace oz
       IteratorBase& operator -- ();
 
     public:
+
+      /**
+       * Returns true when iterator goes past last element.
+       * Should be overridden in derivative classes if neccesary
+       * @return
+       */
+      bool isPassed() const
+      {
+	return elem == null;
+      }
 
       /**
        * Returns true if the iterator is at the given element.
@@ -159,14 +161,6 @@ namespace oz
     private:
 
       /**
-       * Returns true when iterator goes past last element.
-       * the last element.
-       * Should be overridden in derivative classes
-       * @return
-       */
-      bool isPassed() const;
-
-      /**
        * Advance to next element
        * Should be overridden in derivative classes
        * @return
@@ -181,6 +175,16 @@ namespace oz
       CIteratorBase& operator -- ();
 
     public:
+
+      /**
+       * Returns true when iterator goes past last element.
+       * Should be overridden in derivative classes if neccesary
+       * @return
+       */
+      bool isPassed() const
+      {
+	return elem == null;
+      }
 
       /**
        * Returns true if the iterator is at the given element.

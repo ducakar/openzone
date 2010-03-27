@@ -6,5 +6,5 @@ ls *.{h,cpp} >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt
-echo 'add_dependencies( server precompiled )' >> CMakeLists.txt
+echo 'add_dependencies( server pch )' >> CMakeLists.txt
 echo 'target_link_libraries( server nirvana matrix base )' >> CMakeLists.txt

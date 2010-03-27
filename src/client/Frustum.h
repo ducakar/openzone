@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "matrix/matrix.h"
-#include "Camera.h"
+#include "matrix/common.h"
+#include "client/Camera.h"
 
 namespace oz
 {

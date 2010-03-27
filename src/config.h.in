@@ -17,3 +17,4 @@
 
 // platform
 #cmakedefine OZ_MINGW32
+#cmakedefine OZ_MSVC
