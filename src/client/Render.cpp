@@ -7,30 +7,30 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Render.h"
+#include "client/Render.h"
 
 #include "matrix/Matrix.h"
 #include "matrix/Physics.h"
 #include "matrix/BotClass.h"
 
-#include "Frustum.h"
-#include "Colors.h"
-#include "Shape.h"
+#include "client/Frustum.h"
+#include "client/Colors.h"
+#include "client/Shape.h"
 
-#include "Water.h"
-#include "Sky.h"
-#include "Terrain.h"
-#include "BSP.h"
+#include "client/Water.h"
+#include "client/Sky.h"
+#include "client/Terrain.h"
+#include "client/BSP.h"
 
-#include "OBJModel.h"
-#include "OBJVehicleModel.h"
-#include "MD2StaticModel.h"
-#include "MD2Model.h"
-#include "MD2WeaponModel.h"
-#include "MD3StaticModel.h"
-#include "ExplosionModel.h"
+#include "client/OBJModel.h"
+#include "client/OBJVehicleModel.h"
+#include "client/MD2StaticModel.h"
+#include "client/MD2Model.h"
+#include "client/MD2WeaponModel.h"
+#include "client/MD3StaticModel.h"
+#include "client/ExplosionModel.h"
 
 #include <ctime>
 #include <GL/glu.h>
@@ -451,8 +451,9 @@ namespace client
     log.println( "Initializing Graphics {" );
     log.indent();
 
+    DArray<String> extensions;
     String sExtensions = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
-    Vector<String> extensions = sExtensions.trim().split( ' ' );
+    sExtensions.trim().split( ' ', extensions );
 
     log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
     log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );

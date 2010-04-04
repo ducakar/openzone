@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Task.h"
+#include "nirvana/Task.h"
 
 namespace oz
 {

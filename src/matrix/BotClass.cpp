@@ -7,12 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "BotClass.h"
+#include "matrix/BotClass.h"
 
-#include "Names.h"
-#include "Synapse.h"
+#include "matrix/Names.h"
+#include "matrix/Synapse.h"
 
 #define OZ_CLASS_SET_STATE( stateBit, varName, defValue ) \
   if( config->get( varName, defValue ) ) { \

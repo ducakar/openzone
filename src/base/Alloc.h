@@ -13,10 +13,10 @@
 /*
  * Standard new and delete declarations (may be omitted as already built into C++ language)
  */
-//void* operator new ( oz::uint size );
-//void* operator new[] ( oz::uint size );
-//void operator delete ( void* ptr );
-//void operator delete[] ( void* ptr );
+void* operator new ( oz::uint size );
+void* operator new[] ( oz::uint size );
+void operator delete ( void* ptr );
+void operator delete[] ( void* ptr );
 
 /*
  * Placement new and delete
@@ -28,24 +28,6 @@ inline void operator delete[] ( void*, void* ) throw() {}
 
 namespace oz
 {
-
-  template <typename Type>
-  inline void construct( Type* ptr )
-  {
-    ::new( ptr ) Type();
-  }
-
-  template <typename Type>
-  inline void construct( Type* ptr, const Type& src )
-  {
-    ::new( ptr ) Type( src );
-  }
-
-  template <typename Type>
-  inline void destruct( Type* ptr )
-  {
-    ptr->~Type();
-  }
 
   class Alloc
   {

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "matrix.h"
+#include "matrix/common.h"
 
 #define OZ_CLASS_SET_FLAG( flagBit, varName, defValue ) \
   if( config->get( varName, defValue ) ) { \

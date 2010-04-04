@@ -6,5 +6,5 @@ ls *.{h,cpp} >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt
-echo 'add_dependencies( openzone precompiled )' >> CMakeLists.txt
+echo 'add_dependencies( openzone pch )' >> CMakeLists.txt
 echo 'target_link_libraries( openzone ui nirvana matrix base )' >> CMakeLists.txt

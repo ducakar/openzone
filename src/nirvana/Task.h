@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "nirvana.h"
+#include "nirvana/common.h"
 
 namespace oz
 {

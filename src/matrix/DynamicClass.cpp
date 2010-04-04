@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "DynamicClass.h"
+#include "matrix/DynamicClass.h"
 
-#include "Dynamic.h"
+#include "matrix/Dynamic.h"
 
 namespace oz
 {

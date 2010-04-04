@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "MD2Model.h"
+#include "client/MD2Model.h"
 
 #include "matrix/BotClass.h"
-#include "Colors.h"
-#include "Context.h"
-#include "Camera.h"
-#include "Render.h"
+#include "client/Colors.h"
+#include "client/Context.h"
+#include "client/Camera.h"
+#include "client/Render.h"
 
 namespace oz
 {

@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Collider.h"
+#include "matrix/Collider.h"
 
 namespace oz
 {
@@ -502,7 +502,7 @@ namespace oz
     trimPointTerra();
 
     assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
-    assert( bool( hit.material & Material::OBJECT_BIT ) == ( hit.obj != null ) );
+    assert( ( ( hit.material & Material::OBJECT_BIT ) != 0 ) == ( hit.obj != null ) );
   }
 
   //***********************************
@@ -949,7 +949,7 @@ namespace oz
     trimPointTerra();
 
     assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
-    assert( bool( hit.material & Material::OBJECT_BIT ) == ( hit.obj != null ) );
+    assert( ( ( hit.material & Material::OBJECT_BIT ) != 0 ) == ( hit.obj != null ) );
   }
 
   //***********************************

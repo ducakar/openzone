@@ -11,7 +11,7 @@
 #pragma once
 
 #include "matrix/Object.h"
-#include "Area.h"
+#include "ui/Area.h"
 
 namespace oz
 {

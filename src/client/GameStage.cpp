@@ -7,18 +7,18 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "GameStage.h"
+#include "client/GameStage.h"
 
 #include "matrix/Bot.h"
 #include "matrix/Matrix.h"
 #include "nirvana/Nirvana.h"
-#include "Network.h"
-#include "Render.h"
-#include "Sound.h"
+#include "client/Network.h"
+#include "client/Render.h"
+#include "client/Sound.h"
 
-#include "Camera.h"
+#include "client/Camera.h"
 
 namespace oz
 {

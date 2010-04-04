@@ -193,19 +193,19 @@ namespace oz
       }
 
       /**
-       * @return true if memory is NOT allocated (i.e. count == 0)
-       */
-      bool isEmpty() const
-      {
-        return count == 0;
-      }
-
-      /**
        * @return number of elements in the array
        */
       int length() const
       {
         return count;
+      }
+
+      /**
+       * @return true if memory is NOT allocated (i.e. count == 0)
+       */
+      bool isEmpty() const
+      {
+        return count == 0;
       }
 
       /**

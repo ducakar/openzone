@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "nirvana.h"
+#include "nirvana/common.h"
 
 class lua_State;
 

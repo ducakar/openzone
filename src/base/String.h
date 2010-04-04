@@ -472,20 +472,36 @@ namespace oz
         return String( start, end - start );
       }
 
-      Vector<String> split( char ch ) const
+      /**
+       * Returns array of substrings between occurrences of given character
+       * @param ch split at that characket
+       * @return
+       */
+      void split( char ch, DArray<String>& array ) const
       {
-        Vector<String> v;
+        int p0    = 0;
+        int p1    = index( ch );
+        int i     = 0;
+        int count = 1;
 
-        int p0 = 0;
-        int p1 = index( ch );
-
+        // count substrings first
         while( p1 >= 0 ) {
-          v << substring( p0, p1 );
           p0 = p1 + 1;
           p1 = index( ch, p0 );
+          ++count;
         }
-        v << substring( p0 );
-        return v;
+
+        array( count );
+        p0 = 0;
+        p1 = index( ch );
+
+        while( p1 >= 0 ) {
+          array[i] = substring( p0, p1 );
+          p0 = p1 + 1;
+          p1 = index( ch, p0 );
+          ++i;
+        }
+        array[i] = substring( p0 );
       }
 
       static bool isDigit( char c )

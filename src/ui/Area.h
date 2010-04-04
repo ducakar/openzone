@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "Font.h"
-#include "Mouse.h"
+#include "ui/Font.h"
+#include "ui/Mouse.h"
 
 namespace oz
 {

@@ -1,5 +1,5 @@
 /*
- *  iterable.h
+ *  iterables.h
  *
  *  Basic iterator classes and utility templates.
  *
@@ -15,7 +15,7 @@ namespace oz
   /**
    * Generalized iterator.
    * It should only be used as a base class. Following functions need to be implemented:<br>
-   * <code>bool isPassed()</code><br>
+   * <code>bool isPassed()</code> (if necessary)<br>
    * <code>Iterator& operator ++ ()</code><br>
    * <code>Iterator& operator -- ()</code> (optional)<br>
    * and a constructor of course.
@@ -35,30 +35,6 @@ namespace oz
        */
       explicit IteratorBase( Type* start ) : elem( start )
       {}
-
-    private:
-
-      /**
-       * Returns true when iterator goes past last element.
-       * the last element.
-       * Should be overridden in derivative classes
-       * @return
-       */
-      bool isPassed() const;
-
-      /**
-       * Advance to next element
-       * Should be overridden in derivative classes
-       * @return
-       */
-      IteratorBase& operator ++ ();
-
-      /**
-       * Go to previous element
-       * May be overridden in derivative classes (optional)
-       * @return
-       */
-      IteratorBase& operator -- ();
 
     public:
 
@@ -130,6 +106,32 @@ namespace oz
         return elem;
       }
 
+      /**
+       * Returns true when iterator goes past the last element.
+       * Should be overridden in derivative classes
+       * @return
+       */
+      bool isPassed() const
+      {
+        return elem == null;
+      }
+
+      private:
+
+      /**
+       * Advance to next element
+       * Should be overridden in derivative classes
+       * @return
+       */
+      IteratorBase& operator ++ ();
+
+      /**
+       * Go to previous element
+       * May be overridden in derivative classes (optional)
+       * @return
+       */
+      IteratorBase& operator -- ();
+
   };
 
   /**
@@ -155,30 +157,6 @@ namespace oz
        */
       explicit CIteratorBase( const Type* start ) : elem( start )
       {}
-
-    private:
-
-      /**
-       * Returns true when iterator goes past last element.
-       * the last element.
-       * Should be overridden in derivative classes
-       * @return
-       */
-      bool isPassed() const;
-
-      /**
-       * Advance to next element
-       * Should be overridden in derivative classes
-       * @return
-       */
-      CIteratorBase& operator ++ ();
-
-      /**
-       * Go to previous element
-       * May be overridden in derivative classes (optional)
-       * @return
-       */
-      CIteratorBase& operator -- ();
 
     public:
 
@@ -226,6 +204,32 @@ namespace oz
         return elem;
       }
 
+      /**
+       * Returns true when iterator goes past the last element.
+       * Should be overridden in derivative classes
+       * @return
+       */
+      bool isPassed() const
+      {
+        return elem == null;
+      }
+
+      private:
+
+      /**
+       * Advance to next element
+       * Should be overridden in derivative classes
+       * @return
+       */
+      CIteratorBase& operator ++ ();
+
+      /**
+       * Go to previous element
+       * May be overridden in derivative classes (optional)
+       * @return
+       */
+      CIteratorBase& operator -- ();
+
   };
 
   /**
@@ -253,8 +257,8 @@ namespace oz
    * @param iSrcB
    * @return true if all elements are equal
    */
-  template <class IteratorA, class IteratorB>
-  inline bool iEquals( IteratorA iSrcA, IteratorB iSrcB )
+  template <class CIteratorA, class CIteratorB>
+  inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
   {
     while( !iSrcA.isPassed() ) {
       if( *iSrcA != *iSrcB ) {
@@ -285,8 +289,8 @@ namespace oz
    * @param iDest
    * @param iSrc
    */
-  template <class IteratorA, class IteratorB>
-  inline void iCopy( IteratorA iDest, IteratorB iSrc )
+  template <class IteratorA, class CIteratorB>
+  inline void iCopy( IteratorA iDest, CIteratorB iSrc )
   {
     assert( &*iDest != &*iSrc );
 
@@ -302,8 +306,8 @@ namespace oz
    * @param iDest
    * @param iSrc
    */
-  template <class ReverseIteratorA, class ReverseIteratorB>
-  inline void iReverseCopy( ReverseIteratorA iDest, ReverseIteratorB iSrc )
+  template <class ReverseIteratorA, class CReverseIteratorB>
+  inline void iReverseCopy( ReverseIteratorA iDest, CReverseIteratorB iSrc )
   {
     assert( &*iDest != &*iSrc );
 
@@ -320,8 +324,8 @@ namespace oz
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
-  template <class Iterator, typename Value>
-  inline Iterator iIndex( Iterator iSrc, const Value& value )
+  template <class CIterator, typename Value>
+  inline CIterator iIndex( CIterator iSrc, const Value& value )
   {
     while( !iSrc.isPassed() ) {
       if( *iSrc == value ) {
@@ -338,8 +342,8 @@ namespace oz
    * @param value
    * @return iterator at the elements found, passed iterator if not found
    */
-  template <class ReverseIterator, typename Value>
-  inline ReverseIterator iLastIndex( ReverseIterator iSrc, const Value& value )
+  template <class CReverseIterator, typename Value>
+  inline CReverseIterator iLastIndex( CReverseIterator iSrc, const Value& value )
   {
     while( !iSrc.isPassed() ) {
       --iSrc;

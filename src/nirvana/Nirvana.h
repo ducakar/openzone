@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Mind.h"
+#include "nirvana/Mind.h"
 
 namespace oz
 {

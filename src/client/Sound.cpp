@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Sound.h"
+#include "client/Sound.h"
 
 #include "matrix/Collider.h"
-#include "Camera.h"
+#include "client/Camera.h"
 
-#include "BasicAudio.h"
-#include "BotAudio.h"
+#include "client/BasicAudio.h"
+#include "client/BotAudio.h"
 
 namespace oz
 {
@@ -298,8 +298,9 @@ namespace client
 
     assert( alGetError() == AL_NO_ERROR );
 
+    DArray<String> extensions;
     String sExtensions = reinterpret_cast<const char*>( alGetString( AL_EXTENSIONS ) );
-    Vector<String> extensions = sExtensions.trim().split( ' ' );
+    sExtensions.trim().split( ' ', extensions );
 
     log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
     log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );

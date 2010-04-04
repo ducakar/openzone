@@ -7,14 +7,14 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Main.h"
+#include "client/Main.h"
 
-#include "Context.h"
-#include "GameStage.h"
-#include "Sound.h"
-#include "Render.h"
+#include "client/Context.h"
+#include "client/GameStage.h"
+#include "client/Sound.h"
+#include "client/Render.h"
 
 #include <ctime>
 #include <unistd.h>

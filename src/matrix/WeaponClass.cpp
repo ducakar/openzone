@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "WeaponClass.h"
+#include "matrix/WeaponClass.h"
 
-#include "Weapon.h"
+#include "matrix/Weapon.h"
 
 namespace oz
 {

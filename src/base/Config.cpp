@@ -122,7 +122,7 @@ namespace oz
 
     // first we sort all the variables by key
     int size = vars.length();
-    Elem sortedVars[size];
+    DArray<Elem> sortedVars( size );
 
     typeof( vars.citer() ) j = vars.citer();
     for( int i = 0; !j.isPassed(); ++i, ++j ) {
@@ -131,7 +131,7 @@ namespace oz
       size = i;
     }
     ++size;
-    aSort( sortedVars, size );
+    sortedVars.sort();
 
     FILE* f = fopen( file, "w" );
     if( f == null ) {
@@ -518,7 +518,7 @@ namespace oz
 
     // first we sort all the variables by key
     int size = vars.length();
-    Elem sortedVars[size];
+    DArray<Elem> sortedVars( size );
 
     int i = 0;
     foreach( j, vars.citer() ) {
@@ -526,7 +526,7 @@ namespace oz
       sortedVars[i].value = j.value().cstr();
       size = ++i;
     }
-    aSort( sortedVars, size );
+    sortedVars.sort();
 
     for( i = 0; i < size; ++i ) {
       s = s + indentString + sortedVars[i].key + " = \"" + sortedVars[i].value + "\"\n";

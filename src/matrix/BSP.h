@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "matrix.h"
+#include "matrix/common.h"
 
 namespace oz
 {
@@ -52,6 +52,8 @@ namespace oz
         int firstSide;
         int nSides;
         int material;
+
+        bool overlaps( const Bounds& bb );
       };
 
       struct Vertex
@@ -126,6 +128,8 @@ namespace oz
 
       explicit BSP();
       ~BSP();
+
+      bool includes( const AABB& bb, const Brush& brush ) const;
 
       bool loadQBSP( const char* fileName, float scale, float maxDim );
       bool load( const char* name );

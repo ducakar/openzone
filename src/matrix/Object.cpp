@@ -7,12 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Object.h"
+#include "matrix/Object.h"
 
-#include "Lua.h"
-#include "Synapse.h"
+#include "matrix/Lua.h"
+#include "matrix/Synapse.h"
 
 namespace oz
 {

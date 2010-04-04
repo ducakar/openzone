@@ -15,7 +15,7 @@
 //#define OZ_LOG_FILE            "client.log"
 #define OZ_CONFIG_FILE         "client.rc"
 
-#include "Stage.h"
+#include "client/Stage.h"
 
 namespace oz
 {

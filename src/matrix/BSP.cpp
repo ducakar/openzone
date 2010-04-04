@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "BSP.h"
+#include "matrix/BSP.h"
 
-#include "Translator.h"
+#include "matrix/Translator.h"
 
 #define FOURCC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
@@ -147,6 +147,25 @@ namespace oz
   BSP::~BSP()
   {
     free();
+  }
+
+  inline bool BSP::includes( const AABB& bb, const BSP::Brush& brush ) const
+  {
+    for( int i = 0; i < brush.nSides; ++i ) {
+      const Plane& plane = planes[ brushSides[brush.firstSide + i] ];
+
+      float offset =
+          Math::abs( plane.normal.x * bb.dim.x ) +
+          Math::abs( plane.normal.y * bb.dim.y ) +
+          Math::abs( plane.normal.z * bb.dim.z );
+
+      float dist = bb.p * plane.normal - plane.distance + offset;
+
+      if( dist > 0.0f ) {
+        return false;
+      }
+    }
+    return true;
   }
 
   bool BSP::loadQBSP( const char* path, float scale, float maxDim_ )

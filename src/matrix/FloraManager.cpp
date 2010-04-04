@@ -7,12 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "FloraManager.h"
+#include "matrix/FloraManager.h"
 
-#include "Collider.h"
-#include "Synapse.h"
+#include "matrix/Collider.h"
+#include "matrix/Synapse.h"
 
 namespace oz
 {

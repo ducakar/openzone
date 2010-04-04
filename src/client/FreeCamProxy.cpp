@@ -7,13 +7,13 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "FreeCamProxy.h"
+#include "client/FreeCamProxy.h"
 
 #include "matrix/Collider.h"
 #include "ui/UI.h"
-#include "Camera.h"
+#include "client/Camera.h"
 
 namespace oz
 {

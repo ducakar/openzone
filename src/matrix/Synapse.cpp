@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "Synapse.h"
+#include "matrix/Synapse.h"
 
 namespace oz
 {

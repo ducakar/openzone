@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "OBJVehicleModel.h"
+#include "client/OBJVehicleModel.h"
 
 #include "matrix/Vehicle.h"
 #include "matrix/VehicleClass.h"
-#include "Context.h"
-#include "Camera.h"
-#include "Render.h"
+#include "client/Context.h"
+#include "client/Camera.h"
+#include "client/Render.h"
 
 namespace oz
 {

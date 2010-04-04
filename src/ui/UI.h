@@ -9,19 +9,19 @@
 
 #pragma once
 
-#include "Font.h"
-#include "Keyboard.h"
-#include "Mouse.h"
-#include "Area.h"
+#include "ui/Font.h"
+#include "ui/Keyboard.h"
+#include "ui/Mouse.h"
+#include "ui/Area.h"
 
-#include "Frame.h"
-#include "Button.h"
+#include "ui/Frame.h"
+#include "ui/Button.h"
 
-#include "HudArea.h"
-#include "StrategicArea.h"
-#include "DebugFrame.h"
-#include "InventoryMenu.h"
-#include "BuildMenu.h"
+#include "ui/HudArea.h"
+#include "ui/StrategicArea.h"
+#include "ui/DebugFrame.h"
+#include "ui/InventoryMenu.h"
+#include "ui/BuildMenu.h"
 
 namespace oz
 {

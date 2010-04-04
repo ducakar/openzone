@@ -84,10 +84,12 @@ namespace oz
       /**
        * Enlarge capacity by two times if there's not enough space to add another element.
        */
-      void ensureCapacity()
+      void ensureCapacity( int desiredSize )
       {
-        if( size == count ) {
-          size *= 2;
+        if( size < desiredSize ) {
+          while( size == count ) {
+            size *= 2;
+          }
           data = Alloc::reallocate( data, count, size );
         }
       }
@@ -345,8 +347,8 @@ namespace oz
        */
       void operator << ( const Type& e )
       {
-        ensureCapacity();
-        construct( data + count, e );
+        ensureCapacity( count + 1 );
+        new( data + count ) Type( e );
         ++count;
       }
 
@@ -355,8 +357,8 @@ namespace oz
        */
       void add()
       {
-        ensureCapacity();
-        construct( data + count );
+        ensureCapacity( count + 1 );
+        new( data + count ) Type();
         ++count;
       }
 
@@ -366,8 +368,8 @@ namespace oz
        */
       void add( const Type& e )
       {
-        ensureCapacity();
-        construct( data + count, e );
+        ensureCapacity( count + 1 );
+        new( data + count ) Type( e );
         ++count;
       }
 
@@ -386,18 +388,25 @@ namespace oz
        */
       void pushLast( const Type& e )
       {
-        ensureCapacity();
-        construct( data + count, e );
+        ensureCapacity( count + 1 );
+        new( data + count ) Type( e );
         ++count;
       }
 
       /**
-       * Add all elements from a vector to the end.
-       * @param v
+       * Add all elements from a container to the end.
+       * @param c
        */
-      void addAll( const Vector& v )
+      template <class Container>
+      void addAll( const Container& c )
       {
-        addAll( v.data, v.count );
+        ensureCapacity( count + c.length() );
+
+        int i = count;
+        foreach( e, c.citer() ) {
+          new( data + i ) Type( *e );
+          ++i;
+        }
       }
 
       /**
@@ -409,10 +418,7 @@ namespace oz
       {
         int newCount = count + arrayCount;
 
-        if( size < newCount ) {
-          size = ( ( newCount - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-          data = Alloc::reallocate( data, count, size );
-        }
+        ensureCapacity( newCount );
         aConstruct( data + count, array, arrayCount );
         count = newCount;
       }
@@ -435,28 +441,27 @@ namespace oz
       }
 
       /**
-       * Add all elements from given vector which are not yet included in this vector.
-       * @param v
-       * @return number of elements that have been added
+       * Add all elements from given container which are not yet included in this vector.
+       * @param c
        */
-      int includeAll( const Vector& v )
+      template <class Container>
+      void includeAll( const Container& c )
       {
-        return includeAll( v.data, v.count );
+        foreach( e, c.citer() ) {
+          include( *e );
+        }
       }
 
       /**
        * Add all elements from given array which are not yet included in this vector.
        * @param array
        * @param count
-       * @return number of elements that have been added
        */
-      int includeAll( const Type* array, int count )
+      void includeAll( const Type* array, int count )
       {
-        int n = 0;
         for( int i = 0; i < count; ++i ) {
-          n += int( include( array[i] ) );
+          include( array[i] );
         }
-        return n;
       }
 
       /**
@@ -465,12 +470,12 @@ namespace oz
        * @param e
        * @param index
        */
-      void insert( const Type& e, int index )
+      void insert( int index, const Type& e )
       {
-        assert( 0 <= index && index < count );
+        assert( 0 <= index && index <= count );
 
-        ensureCapacity();
-        construct( data + count );
+        ensureCapacity( count + 1 );
+        new( data + count ) Type();
         aReverseCopy( data + index + 1, data + index, count - index );
         data[index] = e;
         ++count;
@@ -486,7 +491,7 @@ namespace oz
         assert( count != 0 );
 
         --count;
-        destruct( data + count );
+        data[count].~Type();
         return *this;
       }
 
@@ -500,7 +505,7 @@ namespace oz
 
         --count;
         aCopy( data + index, data + index + 1, count - index );
-        destruct( data + count );
+        data[count].~Type();
       }
 
       /**
@@ -522,27 +527,27 @@ namespace oz
       }
 
       /**
-       * Remove intersection of vectors from this vector.
-       * @param v
-       * @return
+       * Remove intersection from this vector.
+       * @param c
        */
-      int excludeAll( const Vector& v )
+      template <class Container>
+      void excludeAll( const Container& c )
       {
-        return excludeAll( v.data, v.count );
+        foreach( e, c.citer() ) {
+          exclude( *e );
+        }
       }
 
       /**
        * Remove intersection of this vector and given array from this vector.
-       * @param v
-       * @return
+       * @param array
+       * @param count
        */
-      int excludeAll( const Type* array, int count )
+      void excludeAll( const Type* array, int count )
       {
-        int n = 0;
         for( int i = 0; i < count; ++i ) {
-          n += int( exclude( array[i] ) );
+          exclude( array[i] );
         }
-        return n;
       }
 
       /**
@@ -555,7 +560,7 @@ namespace oz
 
         --count;
         aCopy( data, data + 1, count );
-        destruct( data + count );
+        data[count].~Type();
 
         return e;
       }
@@ -579,7 +584,7 @@ namespace oz
 
         --count;
         Type e = data[count];
-        destruct( data + count );
+        data[count].~Type();
 
         return e;
       }

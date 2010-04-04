@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include "matrix/matrix.h"
+#include "matrix/common.h"
 #include "matrix/Particle.h"
-#include "Context.h"
+#include "client/Context.h"
 
 namespace oz
 {

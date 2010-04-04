@@ -138,8 +138,8 @@ namespace oz
         assert( &v != this );
 
         for( int i = 0; i < count; ++i ) {
-          destruct<Type>( data + i );
-          construct<Type>( data + i, v.data );
+          data[i]->~Type();
+          new( data + i ) Type( v.data[i] );
         }
         count = v.count;
         return *this;
@@ -328,7 +328,7 @@ namespace oz
       {
         assert( count < SIZE );
 
-        construct<Type>( data + count );
+        new( data + count ) Type();
         ++count;
       }
 
@@ -340,7 +340,7 @@ namespace oz
       {
         assert( count < SIZE );
 
-        construct<Type>( data + count, e );
+        new( data + count ) Type( e );
         ++count;
       }
 
@@ -352,7 +352,7 @@ namespace oz
       {
         assert( count < SIZE );
 
-        construct<Type>( data + count, e );
+        new( data + count ) Type( e );
         ++count;
       }
 
@@ -373,17 +373,24 @@ namespace oz
       {
         assert( count < SIZE );
 
-        construct<Type>( data + count, e );
+        new( data + count ) Type( e );
         ++count;
       }
 
       /**
        * Add all elements from a vector to the end.
-       * @param v
+       * @param c
        */
-      void addAll( const SVector& v )
+      template <class Container>
+      void addAll( const Container& c )
       {
-        addAll( v.data, v.count );
+        assert( count + c.length() <= SIZE );
+
+        int i = count;
+        foreach( e, c.citer() ) {
+          new( data + i ) Type( *e );
+          ++i;
+        }
       }
 
       /**
@@ -422,27 +429,26 @@ namespace oz
 
       /**
        * Add all elements from given vector which are not yet included in this vector.
-       * @param v
-       * @return number of elements that have been added
+       * @param c
        */
-      int includeAll( const SVector& v )
+      template <class Container>
+      void includeAll( const Container& c )
       {
-        return includeAll( v.data, v.count );
+        foreach( e, c.citer() ) {
+          include( *e );
+        }
       }
 
       /**
        * Add all elements from given array which are not yet included in this vector.
        * @param array
        * @param count
-       * @return number of elements that have been added
        */
-      int includeAll( const Type* array, int count )
+      void includeAll( const Type* array, int count )
       {
-        int n = 0;
         for( int i = 0; i < count; ++i ) {
-          n += int( include( array[i] ) );
+          include( array[i] );
         }
-        return n;
       }
 
       /**
@@ -456,7 +462,7 @@ namespace oz
         assert( 0 <= index && index <= count );
         assert( count < SIZE );
 
-        construct<Type>( data + count );
+        new( data + count ) Type();
         aReverseCopy<Type>( data + index + 1, data + index, count - index );
         data[index] = e;
         ++count;
@@ -472,7 +478,8 @@ namespace oz
         assert( count != 0 );
 
         --count;
-        destruct<Type>( data + count );
+        data[count].~Type();
+
         return *this;
       }
 
@@ -486,7 +493,7 @@ namespace oz
 
         --count;
         aCopy<Type>( data + index, data + index + 1, count - index );
-        destruct<Type>( data + count );
+        data[count].~Type();
       }
 
       /**
@@ -501,7 +508,7 @@ namespace oz
         if( i != -1 ) {
           --count;
           aCopy<Type>( data + i, data + i + 1, count - i );
-          destruct<Type>( data + count );
+          data[count].~Type();
 
           return true;
         }
@@ -512,26 +519,26 @@ namespace oz
 
       /**
        * Remove intersection of vectors from this vector.
-       * @param v
-       * @return
+       * @param c
        */
-      int excludeAll( const SVector& v )
+      template <class Container>
+      void excludeAll( const Container& c )
       {
-        return excludeAll( v.data, v.count );
+        foreach( e, c.citer() ) {
+          exclude( *e );
+        }
       }
 
       /**
        * Remove intersection of this vector and given array from this vector.
-       * @param v
-       * @return
+       * @param array
+       * @param count
        */
-      int excludeAll( const Type* array, int count )
+      void excludeAll( const Type* array, int count )
       {
-        int n = 0;
         for( int i = 0; i < count; ++i ) {
-          n += int( exclude( array[i] ) );
+          exclude( array[i] );
         }
-        return n;
       }
 
       /**
@@ -544,7 +551,7 @@ namespace oz
 
         --count;
         aCopy<Type>( data, data + 1, count );
-        destruct<Type>( data + count );
+        data[count].~Type();
 
         return e;
       }
@@ -581,7 +588,9 @@ namespace oz
         aSort( data, count );
       }
 
-      // remove all elements
+      /**
+       * Empty the vector but don't delete the elements.
+       */
       void clear()
       {
         aDestruct<Type>( data, count );

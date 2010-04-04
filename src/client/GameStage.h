@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "Stage.h"
-#include "Proxy.h"
+#include "client/Stage.h"
+#include "client/Proxy.h"
 
 namespace oz
 {

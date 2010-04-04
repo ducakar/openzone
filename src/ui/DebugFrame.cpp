@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "precompiled.h"
+#include "stable.h"
 
-#include "DebugFrame.h"
+#include "ui/DebugFrame.h"
 
 #include "matrix/World.h"
 #include "matrix/Collider.h"
