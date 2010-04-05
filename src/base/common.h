@@ -187,6 +187,6 @@ namespace oz
    * \def $
    * "Stringify" the given identifier/type/reserved word/...
    */
-# define $( s ) #s
+# define S( s ) #s
 
 }

@@ -22,6 +22,8 @@ namespace oz
 namespace client
 {
 
+  const float Audio::REFERENCE_DISTANCE = 4.0f;
+
   void Audio::playSound( int sample, float volume, const Object* obj ) const
   {
     assert( 0 <= sample && sample < translator.sounds.length() );

@@ -51,7 +51,7 @@ namespace nirvana
         if( mindClasses.contains( clazz->mindType ) ) {
           minds << mindClasses.cachedValue().create( bot->index );
         }
-        else {
+        else if( !clazz->mindType.isEmpty() ) {
           throw Exception( "Invalid mind type" );
         }
       }
@@ -127,7 +127,6 @@ namespace nirvana
 
     lua.init();
 
-    OZ_REGISTER_MINDCLASS();
     OZ_REGISTER_MINDCLASS( Lua );
     OZ_REGISTER_MINDCLASS( Random );
 
@@ -207,7 +206,9 @@ namespace nirvana
 
     for( int i = 0; i < nMinds; ++i ) {
       istream->readString( typeName );
-      minds << mindClasses[typeName].read( istream );
+      if( !typeName.isEmpty() ) {
+        minds << mindClasses[typeName].read( istream );
+      }
     }
   }
 

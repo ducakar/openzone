@@ -4,10 +4,11 @@ include( CheckLibraryExists )
 
 project( openzone C CXX )
 
-check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 option( OZ_ALLOC_STATISTICS 
     "Use overloads for default new and delete that make heap usage statistics" OFF )
 option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
+check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
+option( OZ_GNU_MATH "Use GNU GCC math extensions" ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in config files" OFF )
 
@@ -15,7 +16,7 @@ option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in c
 set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wconversion -Wdisabled-optimization" )
 set( warnings "${warnings} -Wredundant-decls -Woverloaded-virtual -Wnon-virtual-dtor -Wsign-promo" )
 set( warnings "${warnings} -Wctor-dtor-privacy -Wstrict-overflow" )
-set( flags "-fmessage-length=0 -pipe" )
+set( flags "-fmessage-length=0 -pedantic -pipe" )
 set( libs "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
 set( arch_flags "-march=i686 -mtune=generic -mmmx -msse -mfpmath=sse" )
 

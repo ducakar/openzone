@@ -17,11 +17,11 @@ namespace oz
     private:
 
       // plants/m2
-      static const float DENSITY = 0.04f;
+      static const float DENSITY;
       // dim * SPACING
-      static const float SPACING = 8.0f;
+      static const float SPACING;
       // plants/m2/s
-      static const float GROWTH =  0.0001f;
+      static const float GROWTH;
 
       Vector<int> plants;
 

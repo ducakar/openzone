@@ -24,6 +24,8 @@ namespace client
 namespace ui
 {
 
+  const float InventoryMenu::SLOT_DIMF = float( InventoryMenu::SLOT_SIZE ) / 2.0f;
+
   InventoryMenu::InventoryMenu() :
       Frame( 5, 5, SLOT_SIZE * COLS, SLOT_SIZE * ROWS + HEADER_SIZE + FOOTER_SIZE )
   {

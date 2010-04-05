@@ -109,7 +109,6 @@ namespace client
                      bsp->vertices[face->firstVertex].p );
 
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
-
     glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                        bsp->vertices[face->firstVertex].texCoord );
 
@@ -131,16 +130,13 @@ namespace client
 
   void BSP::drawFaceWater( const oz::BSP::Face* face ) const
   {
+    glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
+                     bsp->vertices[face->firstVertex].p );
+
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
-
-    glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ), bsp->vertices[face->firstVertex].p );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                        bsp->vertices[face->firstVertex].texCoord );
-
-    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ), bsp->vertices[0].texCoord );
-    glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ), bsp->vertices[0].p );
 
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
@@ -161,16 +157,14 @@ namespace client
     glNormal3f( -face->normal.x, -face->normal.y, -face->normal.z );
     glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
 
-    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
-
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
-
     glMatrixMode( GL_TEXTURE );
     glLoadMatrixf( Mat44( 1.0f,            0.0f,            0.0f, 0.0f,
                           0.0f,            1.0f,            0.0f, 0.0f,
                           0.0f,            0.0f,            1.0f, 0.0f,
                           Water::TEX_BIAS, Water::TEX_BIAS, 0.0f, 1.0f ) );
 
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
+    glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
 
     glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
 

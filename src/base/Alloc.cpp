@@ -56,7 +56,6 @@ void operator delete[] ( void* ptr )
 using oz::uint;
 using oz::max;
 using oz::Alloc;
-using oz::log;
 
 void* operator new ( uint size )
 {

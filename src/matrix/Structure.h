@@ -20,7 +20,7 @@ namespace oz
 
     private:
 
-      static const float DAMAGE_THRESHOLD = 400.0f;
+      static const float DAMAGE_THRESHOLD;
 
     public:
 

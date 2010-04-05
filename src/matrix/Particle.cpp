@@ -15,6 +15,7 @@ namespace oz
 {
 
   const float Particle::MAX_ROTVELOCITY = 400.0f * Timer::TICK_TIME;
+  const float Particle::DAMAGE_THRESHOLD = 50.0f;
 
   Pool<Particle> Particle::pool;
 

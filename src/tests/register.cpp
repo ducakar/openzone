@@ -42,7 +42,7 @@ struct Human : Object
 
   string name()
   {
-    return $( Human );
+    return S( Human );
   }
 
   virtual ~Human() {}
@@ -54,7 +54,7 @@ struct Vehicle : Object
 
   string name()
   {
-    return $( Vehicle );
+    return S( Vehicle );
   }
 
   virtual ~Vehicle() {}
@@ -62,14 +62,14 @@ struct Vehicle : Object
 
 map<string, Object* (*)()> registry;
 
-REGISTER( Human );
+REGISTER( Human )
 
 Object* Human::build()
 {
   return new Human;
 }
 
-REGISTER( Vehicle );
+REGISTER( Vehicle )
 
 Object* Vehicle::build()
 {

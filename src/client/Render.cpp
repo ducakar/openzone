@@ -47,6 +47,7 @@ namespace client
 
   Render render;
 
+  const float Render::WIDE_CULL_FACTOR = 6.0f;
   const float Render::CELL_WIDE_RADIUS = Cell::RADIUS + AABB::MAX_DIM * WIDE_CULL_FACTOR;
 
   const float Render::NIGHT_FOG_COEFF = 2.0f;

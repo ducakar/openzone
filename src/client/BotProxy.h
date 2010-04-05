@@ -22,9 +22,9 @@ namespace client
 
       // leave this much space between obstacle and camera, if camera is brought closer to the eyes
       // because of an obstacle
-      static const float THIRD_PERSON_CLIP_DIST = 0.20f;
-      static const float BOB_SUPPRESSION_COEF   = 0.80f;
-      static const float TURN_SMOOTHING_COEF    = 0.60f;
+      static const float THIRD_PERSON_CLIP_DIST;
+      static const float BOB_SUPPRESSION_COEF;
+      static const float TURN_SMOOTHING_COEF;
 
       // how far behind the eyes the camera should be
       float externalDistFactor;

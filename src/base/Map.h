@@ -211,14 +211,12 @@ namespace oz
       int   count;
 
       /**
-       * Enlarge capacity by two times if there's not enough space.
+       * Enlarge capacity by two times if there's not enough space to add another element.
        */
-      void ensureCapacity( int desiredSize )
+      void ensureCapacity()
       {
-        if( size < desiredSize ) {
-          while( size == count ) {
-            size *= 2;
-          }
+        if( size == count ) {
+          size *= 2;
           data = Alloc::reallocate( data, count, size );
         }
       }
@@ -549,7 +547,7 @@ namespace oz
       {
         assert( 0 <= index && index <= count );
 
-        ensureCapacity( count + 1 );
+        ensureCapacity();
 
         if( index == count ) {
           // just add to the end, no need for moving elements
