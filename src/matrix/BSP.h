@@ -127,6 +127,8 @@ namespace oz
       explicit BSP();
       ~BSP();
 
+      bool includes( const Brush& brush ) const;
+
       bool loadQBSP( const char* fileName, float scale, float maxDim );
       bool load( const char* name );
       void free();

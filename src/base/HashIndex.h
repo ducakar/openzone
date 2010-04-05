@@ -19,26 +19,23 @@ namespace oz
   {
     private:
 
-      class Elem
+      struct Elem
       {
-        public:
+        uint  key;
+        Type  value;
+        Elem* next[1];
 
-          uint  key;
-          Type  value;
-          Elem* next[1];
+        explicit Elem( uint key_, const Type& value_, Elem* next_ ) : key( key_ ), value( value_ )
+        {
+          next[0] = next_;
+        }
 
-          explicit Elem( uint key_, const Type& value_, Elem* next_ ) : key( key_ ), value( value_ )
-          {
-            next[0] = next_;
-          }
-
-          explicit Elem( uint key_, Elem* next_ ) : key( key_ )
-          {
-            next[0] = next_;
-          }
+        explicit Elem( uint key_, Elem* next_ ) : key( key_ )
+        {
+          next[0] = next_;
+        }
 
         OZ_PLACEMENT_POOL_ALLOC( Elem, 0, SIZE );
-
       };
 
     public:
@@ -109,7 +106,7 @@ namespace oz
           }
 
           /**
-           * @return pointer to current element's value
+           * @return reference to current element's value
            */
           Type& value()
           {
@@ -117,7 +114,7 @@ namespace oz
           }
 
           /**
-           * @return constant pointer to current element's value
+           * @return constant reference to current element's value
            */
           const Type& value() const
           {
@@ -240,7 +237,7 @@ namespace oz
           }
 
           /**
-           * @return constant pointer to current element's value
+           * @return constant reference to current element's value
            */
           const Type& value() const
           {

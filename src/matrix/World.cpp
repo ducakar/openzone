@@ -73,13 +73,13 @@ namespace oz
     }
 
     parts.free();
-    parts.trim( 1024 );
+    parts.trim();
 
     objects.free();
-    objects.trim( 1024 );
+    objects.trim();
 
     structs.free();
-    structs.trim( 128 );
+    structs.trim();
 
     bsps.free();
 

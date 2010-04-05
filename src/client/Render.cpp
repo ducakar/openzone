@@ -47,6 +47,7 @@ namespace client
 
   Render render;
 
+  const float Render::WIDE_CULL_FACTOR = 6.0f;
   const float Render::CELL_WIDE_RADIUS = Cell::RADIUS + AABB::MAX_DIM * WIDE_CULL_FACTOR;
 
   const float Render::NIGHT_FOG_COEFF = 2.0f;
@@ -74,7 +75,7 @@ namespace client
       }
       bool isVisible =
           ( obj->flags & Object::WIDE_CULL_BIT ) ?
-              frustum.isVisible( *obj * WIDE_CULL_FACTOR ) :
+              frustum.isVisible( *obj, WIDE_CULL_FACTOR ) :
               frustum.isVisible( *obj );
 
       if( isVisible ) {
@@ -451,8 +452,9 @@ namespace client
     log.println( "Initializing Graphics {" );
     log.indent();
 
+    DArray<String> extensions;
     String sExtensions = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
-    Vector<String> extensions = sExtensions.trim().split( ' ' );
+    sExtensions.trim().split( ' ', extensions );
 
     log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
     log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );

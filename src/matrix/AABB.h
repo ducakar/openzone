@@ -17,11 +17,22 @@ namespace oz
     public:
 
       // max allowed dimension for an object plus 1 cm for epsilon
-      static const float MAX_DIM      = 4.00f;
-      static const float REAL_MAX_DIM = 3.99f;
+      static const float MAX_DIM;
+      static const float REAL_MAX_DIM;
 
-      Vec3 p;
-      Vec3 dim;
+      /**
+       * Position
+       */
+      Vec3  p;
+      /**
+       * Radius of a bounding sphere (only used in frustum culling, so no need to set it when the
+       * AABB won't be used in a frusum test)
+       */
+      float radius;
+      /**
+       * Extents
+       */
+      Vec3  dim;
 
       explicit AABB()
       {}

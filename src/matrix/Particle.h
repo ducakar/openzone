@@ -26,7 +26,7 @@ namespace oz
     public:
 
       static const float MAX_ROTVELOCITY;
-      static const float DAMAGE_THRESHOLD = 50.0f;
+      static const float DAMAGE_THRESHOLD;
 
       static Pool<Particle> pool;
 

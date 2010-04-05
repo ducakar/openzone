@@ -166,8 +166,8 @@ namespace oz
       static const int EVENT_FRICTING     = 5;
       static const int EVENT_USE          = 6;
 
-      static const float MOMENTUM_INTENSITY_COEF = -0.1f;
-      static const float DAMAGE_INTENSITY_COEF   = 0.02f;
+      static const float MOMENTUM_INTENSITY_COEF;
+      static const float DAMAGE_INTENSITY_COEF;
 
       struct Event
       {

@@ -20,14 +20,15 @@
 namespace oz
 {
 
-  const float Bot::HIT_HARD_THRESHOLD = -8.00f;
-  const float Bot::GRAB_EPSILON       = 0.20f;
-  const float Bot::GRAB_STRING_RATIO  = 10.0f;
-  const float Bot::GRAB_MOM_RATIO     = 0.3f;
+  const float Bot::HIT_HARD_THRESHOLD  = -8.00f;
+  const float Bot::GRAB_EPSILON        = 0.20f;
+  const float Bot::GRAB_STRING_RATIO   = 10.0f;
+  const float Bot::GRAB_MOM_RATIO      = 0.3f;
   // should be smaller than abs( Physics::HIT_THRESHOLD )
-  const float Bot::GRAB_MOM_MAX       = 1.0f;
-  const float Bot::GRAB_MOM_MAX_SQ    = 1.0f;
-  const float Bot::DEAD_BODY_LIFT     = 100.0f;
+  const float Bot::GRAB_MOM_MAX        = 1.0f;
+  const float Bot::GRAB_MOM_MAX_SQ     = 1.0f;
+  const float Bot::DEAD_BODY_LIFT      = 100.0f;
+  const float Bot::BODY_FADEOUT_FACTOR = 0.0005f;
 
   Pool<Bot> Bot::pool;
 
@@ -183,8 +184,9 @@ namespace oz
         dim = clazz->dim;
 
         if( collider.test( *this, this ) ) {
-          camZ  = clazz->camZ;
-          state &= ~CROUCHING_BIT;
+          radius = !dim;
+          camZ   = clazz->camZ;
+          state  &= ~CROUCHING_BIT;
         }
         else {
           dim = clazz->dimCrouch;
@@ -196,10 +198,11 @@ namespace oz
         flags &= ~Object::ON_FLOOR_BIT;
         lower =  -1;
 
-        p.z   += dim.z - clazz->dimCrouch.z;
-        dim.z = clazz->dimCrouch.z;
-        camZ  = clazz->crouchCamZ;
-        state |= CROUCHING_BIT;
+        p.z    += dim.z - clazz->dimCrouch.z;
+        dim.z  = clazz->dimCrouch.z;
+        radius = !dim;
+        camZ   = clazz->crouchCamZ;
+        state  |= CROUCHING_BIT;
       }
     }
     if( stamina < clazz->staminaRunDrain ) {
@@ -649,6 +652,7 @@ namespace oz
 
     const BotClass* clazz = static_cast<const BotClass*>( type );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
+    radius = !dim;
   }
 
   void Bot::writeFull( OutputStream* ostream ) const

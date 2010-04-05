@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <cassert>
 
 /*
@@ -21,30 +23,23 @@
  * Basic definitions and template functions
  */
 #include "common.h"
-#include "iterators.h"
+#include "iterables.h"
 #include "arrays.h"
 
 /*
- * Containers, part 1
+ * Simple containers
  */
 #include "Pair.h"
 #include "List.h"
 #include "DList.h"
+#include "Array.h"
+#include "DArray.h"
 
 /*
- * Memory managment
+ * Memory management
  */
 #include "Alloc.h"
 #include "Pool.h"
-
-/*
- * Containers, part 2 (need memory allocation)
- */
-#include "Array.h"
-#include "DArray.h"
-#include "Vector.h"
-#include "SVector.h"
-#include "Sparse.h"
 
 /*
  * String
@@ -52,8 +47,12 @@
 #include "String.h"
 
 /*
- * Containers, part 3 (need memory allocation + String)
+ * Advanced containers (need memory management and String defined)
  */
+#include "Vector.h"
+#include "SVector.h"
+#include "Sparse.h"
+#include "Map.h"
 #include "HashIndex.h"
 #include "HashString.h"
 

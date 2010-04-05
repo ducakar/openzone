@@ -122,16 +122,15 @@ namespace oz
 
     // first we sort all the variables by key
     int size = vars.length();
-    Elem sortedVars[size];
+    DArray<Elem> sortedVars( size );
 
-    typeof( vars.citer() ) j = vars.citer();
-    for( int i = 0; !j.isPassed(); ++i, ++j ) {
+    int i = 0;
+    foreach( j, vars.citer() ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
-      size = i;
+      ++i;
     }
-    ++size;
-    aSort( sortedVars, size );
+    sortedVars.sort();
 
     FILE* f = fopen( file, "w" );
     if( f == null ) {
@@ -208,16 +207,15 @@ namespace oz
 
     // first we sort all the variables by key
     int size = vars.length();
-    Elem sortedVars[size];
+    DArray<Elem> sortedVars( size );
 
-    typeof( vars.citer() ) j = vars.citer();
-    for( int i = 0; !j.isPassed(); ++i, ++j ) {
+    int i = 0;
+    foreach( j, vars.citer() ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
-      size = i;
+      ++i;
     }
-    ++size;
-    aSort( sortedVars, size );
+    sortedVars.sort();
 
     xmlTextWriter* writer = xmlNewTextWriterFilename( file, 0 );
 
@@ -518,17 +516,18 @@ namespace oz
 
     // first we sort all the variables by key
     int size = vars.length();
-    Elem sortedVars[size];
+    DArray<Elem> sortedVars( size );
 
     int i = 0;
     foreach( j, vars.citer() ) {
       sortedVars[i].key = j.key().cstr();
       sortedVars[i].value = j.value().cstr();
-      size = ++i;
+      ++i;
     }
-    aSort( sortedVars, size );
+    //sortedVars.sort();
+    sortedVars.sort();
 
-    for( i = 0; i < size; ++i ) {
+    for( int i = 0; i < size; ++i ) {
       s = s + indentString + sortedVars[i].key + " = \"" + sortedVars[i].value + "\"\n";
     }
     return s;

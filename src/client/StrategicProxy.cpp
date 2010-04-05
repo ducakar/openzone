@@ -21,10 +21,10 @@ namespace client
 
   const float StrategicProxy::MIN_HEIGHT     = 5.00f;
   const float StrategicProxy::MAX_HEIGHT     = 50.0f;
-  const float StrategicProxy::DEFAULT_HEIGHT = 20.0f;
-  const float StrategicProxy::LOW_SPEED      = 0.20f;
-  const float StrategicProxy::HIGH_SPEED     = 0.40f;
-  const float StrategicProxy::ZOOM_FACTOR    = 0.10f;
+  const float StrategicProxy::DEFAULT_HEIGHT = 15.0f;
+  const float StrategicProxy::LOW_SPEED      = 0.25f;
+  const float StrategicProxy::HIGH_SPEED     = 0.75f;
+  const float StrategicProxy::ZOOM_FACTOR    = 0.15f;
 
   void StrategicProxy::begin()
   {

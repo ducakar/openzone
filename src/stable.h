@@ -9,7 +9,6 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "config.h"
 #include "base/base.h"
 
 // we want to use C++ wrapped C headers, not vanilla ones that are included via SDL

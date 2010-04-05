@@ -17,7 +17,7 @@ namespace oz
   namespace client
   {
     class Terrain;
-  };
+  }
 
   class Terrain
   {

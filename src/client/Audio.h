@@ -24,7 +24,7 @@ namespace client
 
     protected:
 
-      static const float REFERENCE_DISTANCE = 4.0f;
+      static const float REFERENCE_DISTANCE;
 
     public:
 

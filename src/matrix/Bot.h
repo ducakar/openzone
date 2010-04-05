@@ -70,8 +70,7 @@ namespace oz
       static const float GRAB_MOM_MAX;
       static const float GRAB_MOM_MAX_SQ;
       static const float DEAD_BODY_LIFT;
-
-      static const float BODY_FADEOUT_FACTOR = 0.0005f;
+      static const float BODY_FADEOUT_FACTOR;
 
       enum AnimEnum
       {

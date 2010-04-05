@@ -22,6 +22,10 @@ namespace oz
 namespace client
 {
 
+  const float BotProxy::THIRD_PERSON_CLIP_DIST = 0.20f;
+  const float BotProxy::BOB_SUPPRESSION_COEF   = 0.80f;
+  const float BotProxy::TURN_SMOOTHING_COEF    = 0.60f;
+
   void BotProxy::begin()
   {
     camera.v          = 0.0f;
@@ -173,9 +177,7 @@ namespace client
 
     if( !isExternal ) {
       if( bot->parent != -1 ) { // inside vehicle
-        Vehicle* veh = static_cast<Vehicle*>( world.objects[bot->parent] );
-
-        assert( veh->flags & Object::VEHICLE_BIT );
+        assert( world.objects[bot->parent]->flags & Object::VEHICLE_BIT );
 
         camera.w = 0.0f;
         camera.align();

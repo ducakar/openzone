@@ -29,7 +29,7 @@ namespace client
   {
     private:
 
-      static const float WIDE_CULL_FACTOR = 6.0f;
+      static const float WIDE_CULL_FACTOR;
       static const float CELL_WIDE_RADIUS;
 
       static const float NIGHT_FOG_COEFF;

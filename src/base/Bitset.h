@@ -95,12 +95,7 @@ namespace oz
         if( size != b.size ) {
           return false;
         }
-        for( int i = 0; i < size; ++i ) {
-          if( data[i] != b.data[i] ) {
-            return false;
-          }
-        }
-        return true;
+        return aEquals( data, b.data, size );
       }
 
       /**
@@ -113,12 +108,7 @@ namespace oz
         if( size != b.size ) {
           return true;
         }
-        for( int i = 0; i < size; ++i ) {
-          if( data[i] != b.data[i] ) {
-            return true;
-          }
-        }
-        return false;
+        return !aEquals( data, b.data, size );
       }
 
       /**

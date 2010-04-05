@@ -10,7 +10,7 @@
 #pragma once
 
 /**
- *  \file common.h
+ *  \file base/common.h
  *
  *  \brief Common types and templates
  *
@@ -59,21 +59,32 @@ namespace oz
   typedef unsigned long  ulong;
 
   /**
-   * Dummy class.
-   * Can be useful for some advanced templates e.g. Tuple.
+   * Dummy type
    */
   struct Nil
   {
+    /**
+     * Dummy ==. Always return true as all instances of this type are the same.
+     * @param
+     * @return
+     */
     bool operator == ( const Nil& ) const
     {
       return true;
     }
 
+    /**
+     * Dummy !=. Always return false as all instances of this type are the same.
+     * @param
+     * @return
+     */
     bool operator != ( const Nil& ) const
     {
       return false;
     }
   };
+
+# define nil static_cast<const oz::Nil&>( oz::Nil() )
 
   //***********************************
   //*     MISCELLANEOUS TEMPLATES     *
@@ -183,9 +194,9 @@ namespace oz
   }
 
   /**
-   * \def $
+   * \def S
    * "Stringify" the given identifier/type/reserved word/...
    */
-# define $( s ) #s
+# define S( s ) #s
 
 }

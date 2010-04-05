@@ -126,7 +126,8 @@ namespace oz
       int   size;
       // Number of used slots in the sparse sparse vector
       int   count;
-      // List of free slots (by indices in data array, not by pointers)
+      // List of free slots (by indices in data array, not by pointers), freeSlot == size if out of
+      // free slots
       int   freeSlot;
 
       /**
@@ -138,17 +139,13 @@ namespace oz
 
         if( freeSlot == size ) {
           size *= 2;
-          assert( size <= 1024*1024*10 );
-
           data = aRealloc( data, count, size );
-          freeSlot = count;
 
+          freeSlot = count;
           for( int i = count; i < size; ++i ) {
             data[i].nextSlot[INDEX] = i + 1;
           }
         }
-
-        assert( freeSlot < size );
       }
 
     public:
