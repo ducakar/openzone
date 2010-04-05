@@ -402,10 +402,8 @@ namespace oz
        * Trim map, leave at most <code>left</code> elements/capacity.
        * @param left
        */
-      void trim( int granularity = GRANULARITY )
+      void trim()
       {
-        assert( granularity >= 8 );
-
         int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
 
         if( newSize < size ) {

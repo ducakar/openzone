@@ -75,7 +75,7 @@ namespace client
       }
       bool isVisible =
           ( obj->flags & Object::WIDE_CULL_BIT ) ?
-              frustum.isVisible( *obj * WIDE_CULL_FACTOR ) :
+              frustum.isVisible( *obj, WIDE_CULL_FACTOR ) :
               frustum.isVisible( *obj );
 
       if( isVisible ) {

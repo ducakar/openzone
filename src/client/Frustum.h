@@ -38,17 +38,7 @@ namespace client
       void init( float fovY, float aspect, float maxDistance );
       void update( float maxDistance );
 
-      bool isVisible( const Vec3& p )
-      {
-        return
-            p * nLeft  > dLeft  &&
-            p * nRight > dRight &&
-            p * nUp    > dUp    &&
-            p * nDown  > dDown  &&
-            p * nFront < dFront;
-      }
-
-      bool isVisible( const Vec3& p, float radius )
+      bool isVisible( const Vec3& p, float radius = 0.0f )
       {
         return
             p * nLeft  > dLeft  - radius &&
@@ -58,20 +48,20 @@ namespace client
             p * nFront < dFront + radius;
       }
 
-      bool isVisible( const Sphere& s )
+      bool isVisible( const Sphere& s, float factor = 1.0f )
       {
-        return isVisible( s.p, s.r );
+        return isVisible( s.p, s.r * factor );
       }
 
-      bool isVisible( const AABB& bb )
+      bool isVisible( const AABB& bb, float factor = 1.0f )
       {
-        return isVisible( bb.p, !bb.dim );
+        return isVisible( bb.p, bb.radius * factor );
       }
 
       bool isVisible( const Bounds& b )
       {
         Vec3 dim = b.maxs - b.mins;
-        return isVisible( ( b.mins + b.maxs ) * 0.5f, !dim );
+        return isVisible( ( b.mins + b.maxs ) / 2.0f, !dim );
       }
 
       bool isVisible( float x, float y, float radius )

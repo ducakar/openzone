@@ -209,7 +209,6 @@ namespace oz
         classConfig.clear();
         continue;
       }
-      classConfig.add( "name", baseName );
       classes.add( baseName, baseClasses.cachedValue()( baseName, &classConfig ) );
       classConfig.clear();
 

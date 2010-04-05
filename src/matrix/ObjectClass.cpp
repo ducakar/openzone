@@ -158,6 +158,7 @@ namespace oz
     assert( obj->index == -1 && obj->cell == null );
 
     obj->p        = pos;
+    obj->radius   = !dim;
     obj->dim      = dim;
 
     obj->index    = index;
@@ -173,6 +174,7 @@ namespace oz
   {
     Object* obj = new Object();
 
+    obj->radius = !dim;
     obj->dim    = dim;
 
     obj->index  = index;

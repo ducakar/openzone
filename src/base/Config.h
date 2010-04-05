@@ -86,6 +86,9 @@ namespace oz
        */
       const String& operator [] ( const char* key ) const
       {
+#ifdef OZ_VERBOSE_CONFIG
+        usedVars.add( key, true );
+#endif
         return vars[key];
       }
 

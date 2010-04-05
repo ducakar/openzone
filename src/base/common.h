@@ -10,7 +10,7 @@
 #pragma once
 
 /**
- *  \file common.h
+ *  \file base/common.h
  *
  *  \brief Common types and templates
  *
@@ -63,11 +63,21 @@ namespace oz
    */
   struct Nil
   {
+    /**
+     * Dummy ==. Always return true as all instances of this type are the same.
+     * @param
+     * @return
+     */
     bool operator == ( const Nil& ) const
     {
       return true;
     }
 
+    /**
+     * Dummy !=. Always return false as all instances of this type are the same.
+     * @param
+     * @return
+     */
     bool operator != ( const Nil& ) const
     {
       return false;
@@ -184,7 +194,7 @@ namespace oz
   }
 
   /**
-   * \def $
+   * \def S
    * "Stringify" the given identifier/type/reserved word/...
    */
 # define S( s ) #s
