@@ -184,8 +184,9 @@ namespace oz
         dim = clazz->dim;
 
         if( collider.test( *this, this ) ) {
-          camZ  = clazz->camZ;
-          state &= ~CROUCHING_BIT;
+          radius = !dim;
+          camZ   = clazz->camZ;
+          state  &= ~CROUCHING_BIT;
         }
         else {
           dim = clazz->dimCrouch;
@@ -197,10 +198,11 @@ namespace oz
         flags &= ~Object::ON_FLOOR_BIT;
         lower =  -1;
 
-        p.z   += dim.z - clazz->dimCrouch.z;
-        dim.z = clazz->dimCrouch.z;
-        camZ  = clazz->crouchCamZ;
-        state |= CROUCHING_BIT;
+        p.z    += dim.z - clazz->dimCrouch.z;
+        dim.z  = clazz->dimCrouch.z;
+        radius = !dim;
+        camZ   = clazz->crouchCamZ;
+        state  |= CROUCHING_BIT;
       }
     }
     if( stamina < clazz->staminaRunDrain ) {
@@ -650,6 +652,7 @@ namespace oz
 
     const BotClass* clazz = static_cast<const BotClass*>( type );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
+    radius = !dim;
   }
 
   void Bot::writeFull( OutputStream* ostream ) const

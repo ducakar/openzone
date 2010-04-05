@@ -177,9 +177,7 @@ namespace client
 
     if( !isExternal ) {
       if( bot->parent != -1 ) { // inside vehicle
-        Vehicle* veh = static_cast<Vehicle*>( world.objects[bot->parent] );
-
-        assert( veh->flags & Object::VEHICLE_BIT );
+        assert( world.objects[bot->parent]->flags & Object::VEHICLE_BIT );
 
         camera.w = 0.0f;
         camera.align();

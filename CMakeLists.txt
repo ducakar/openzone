@@ -18,7 +18,7 @@ set( warnings "${warnings} -Wredundant-decls -Woverloaded-virtual -Wnon-virtual-
 set( warnings "${warnings} -Wctor-dtor-privacy -Wstrict-overflow" )
 set( flags "-fmessage-length=0 -pedantic -pipe" )
 set( libs "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
-set( arch_flags "-march=i686 -mtune=generic -mmmx -msse -mfpmath=sse" )
+set( arch_flags "-march=i686 -mtune=generic -mmmx -msse -mfpmath=both" )
 
 # set platform-specific includes and library names
 if( WIN32 )
