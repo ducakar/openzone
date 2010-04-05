@@ -298,8 +298,9 @@ namespace client
 
     assert( alGetError() == AL_NO_ERROR );
 
+    DArray<String> extensions;
     String sExtensions = reinterpret_cast<const char*>( alGetString( AL_EXTENSIONS ) );
-    Vector<String> extensions = sExtensions.trim().split( ' ' );
+    sExtensions.trim().split( ' ', extensions );
 
     log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
     log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );

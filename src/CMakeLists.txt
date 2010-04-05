@@ -15,8 +15,6 @@ add_custom_command( OUTPUT stable.h.gch
                     COMMAND rm -f stable.h.gch &&
                             ${CMAKE_CXX_COMPILER} `echo ${flags}` -I. stable.h )
 
-configure_file( config.h.in config.h )
-
 include_directories( . )
 
 add_subdirectory( base )

@@ -157,7 +157,7 @@ namespace oz
 
       static bool isInf( float x )
       {
-        return __builtin_isinf( x );
+        return __builtin_isinff( x );
       }
 
       static float sgn( float x )
@@ -181,14 +181,26 @@ namespace oz
         return x * ( _1_PI * 180.0f );
       }
 
-      static const int& toBits( const float& f )
+      static int toBits( float x )
       {
-        return *reinterpret_cast<const int*>( &f );
+        union FloatBits
+        {
+          float f;
+          int   b;
+        };
+        FloatBits fb = { x };
+        return fb.b;
       }
 
-      static const float& fromBits( const int& b )
+      static float fromBits( int i )
       {
-        return *reinterpret_cast<const float*>( &b );
+        union BitsFloat
+        {
+          int   b;
+          float f;
+        };
+        BitsFloat fb = { i };
+        return fb.f;
       }
 
       // fast inverse sqrt that appeared in Quake source (google for detailed explanations)

@@ -451,8 +451,9 @@ namespace client
     log.println( "Initializing Graphics {" );
     log.indent();
 
+    DArray<String> extensions;
     String sExtensions = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
-    Vector<String> extensions = sExtensions.trim().split( ' ' );
+    sExtensions.trim().split( ' ', extensions );
 
     log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
     log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );

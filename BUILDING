@@ -16,15 +16,17 @@ Build Dependencies:
 
 Quick build instructions:
 -------------------------
+./autogen.sh
 cmake .
 make -j2
 
 
 More detailed build instructions:
 ---------------------------------
-1. configure project running "cmake-gui ." for Qt interface or "ccmake ." for ncurses interface.
+1. run "./autogen.sh" to generate src/*/CMakeLists.txt
+2. configure project running "cmake-gui ." for Qt interface or "ccmake ." for ncurses interface.
    It's also possible to do it in command line with cmake and various switches.
-2. run "make -j4" if you have a 4-core CPU, to run make in 4 parallel processes.
+3. run "make -j42" if you have a 42-core CPU, to run make in 42 parallel processes.
 
 
 Data

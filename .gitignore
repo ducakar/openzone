@@ -12,7 +12,6 @@ pg.out
 
 /build
 /mingw32
-/msvc9
 
 /*CMakeCache.txt
 CMakeCache.txt

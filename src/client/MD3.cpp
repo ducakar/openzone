@@ -11,7 +11,6 @@
 
 #include "client/MD3.h"
 
-#include "matrix/common.h"
 #include "client/Context.h"
 
 #define FOURCC( a, b, c, d ) \

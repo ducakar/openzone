@@ -13,10 +13,11 @@ DList.h
 Exception.h
 HashIndex.h
 HashString.h
-iterators.h
+iterables.h
 List.h
 Log.cpp
 Log.h
+Map.h
 Mat33.h
 Mat44.h
 Math.cpp

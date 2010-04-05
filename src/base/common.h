@@ -59,8 +59,7 @@ namespace oz
   typedef unsigned long  ulong;
 
   /**
-   * Dummy class.
-   * Can be useful for some advanced templates e.g. Tuple.
+   * Dummy type
    */
   struct Nil
   {
@@ -74,6 +73,8 @@ namespace oz
       return false;
     }
   };
+
+# define nil static_cast<const oz::Nil&>( oz::Nil() )
 
   //***********************************
   //*     MISCELLANEOUS TEMPLATES     *

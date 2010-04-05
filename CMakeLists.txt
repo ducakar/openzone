@@ -51,6 +51,9 @@ set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fomit-frame-pointer -ffast-math ${ar
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -fomit-frame-pointer -ffast-math ${arch_flags}" CACHE STRING "" FORCE )
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
 
+# write configuration
+configure_file( src/config.h.in src/config.h )
+
 # installation
 install( FILES src/client/openzone
          DESTINATION bin/openzone
@@ -59,5 +62,6 @@ install( FILES src/client/openzone
                      WORLD_READ WORLD_EXECUTE )
 
 # sources
+include_directories( src )
 add_subdirectory( src )
 add_subdirectory( data )
