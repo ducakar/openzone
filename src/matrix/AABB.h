@@ -17,8 +17,8 @@ namespace oz
     public:
 
       // max allowed dimension for an object plus 1 cm for epsilon
-      static const float MAX_DIM      = 4.00f;
-      static const float REAL_MAX_DIM = 3.99f;
+      static const float MAX_DIM;
+      static const float REAL_MAX_DIM;
 
       Vec3 p;
       Vec3 dim;

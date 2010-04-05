@@ -84,12 +84,25 @@ namespace oz
       /**
        * Enlarge capacity by two times if there's not enough space to add another element.
        */
+      void ensureCapacity()
+      {
+        if( size == count ) {
+          size *= 2;
+          data = Alloc::reallocate( data, count, size );
+        }
+      }
+
+      /**
+       * Enlarge capacity to the smallest power of two greater or equal to desired capacity.
+       */
       void ensureCapacity( int desiredSize )
       {
         if( size < desiredSize ) {
-          while( size == count ) {
+          do {
             size *= 2;
           }
+          while( size < desiredSize );
+
           data = Alloc::reallocate( data, count, size );
         }
       }
@@ -347,7 +360,7 @@ namespace oz
        */
       void operator << ( const Type& e )
       {
-        ensureCapacity( count + 1 );
+        ensureCapacity();
         new( data + count ) Type( e );
         ++count;
       }
@@ -357,7 +370,7 @@ namespace oz
        */
       void add()
       {
-        ensureCapacity( count + 1 );
+        ensureCapacity();
         new( data + count ) Type();
         ++count;
       }
@@ -368,7 +381,7 @@ namespace oz
        */
       void add( const Type& e )
       {
-        ensureCapacity( count + 1 );
+        ensureCapacity();
         new( data + count ) Type( e );
         ++count;
       }
@@ -388,7 +401,7 @@ namespace oz
        */
       void pushLast( const Type& e )
       {
-        ensureCapacity( count + 1 );
+        ensureCapacity();
         new( data + count ) Type( e );
         ++count;
       }
@@ -474,7 +487,7 @@ namespace oz
       {
         assert( 0 <= index && index <= count );
 
-        ensureCapacity( count + 1 );
+        ensureCapacity();
         new( data + count ) Type();
         aReverseCopy( data + index + 1, data + index, count - index );
         data[index] = e;

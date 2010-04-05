@@ -9,6 +9,44 @@
 
 #pragma once
 
+#ifndef OZ_GNU_MATH
+
+#include <cmath>
+
+#define __builtin_fabsf( x )            fabsf( x )
+#define __builtin_floorf( x )           floorf( x )
+#define __builtin_ceilf( x )            ceilf( x )
+#define __builtin_roundf( x )           roundf( x )
+#define __builtin_fmodf( x, y )         fmodf( x, y )
+#define __builtin_sqrtf( x )            sqrtf( x )
+#define __builtin_expf( x )             expf( x )
+#define __builtin_logf( x )             logf( x )
+#define __builtin_powf( x, y )          powf( x, y )
+#define __builtin_sinf( x )             sinf( x )
+#define __builtin_cosf( x )             cosf( x )
+#define __builtin_sincosf( x, s, c )    sincosf( x, s, c )
+#define __builtin_tanf( x )             tanf( x )
+#define __builtin_asinf( x )            asinf( x )
+#define __builtin_acosf( x )            acosf( x )
+#define __builtin_atanf( x )            atanf( x )
+#define __builtin_atan2f( x, y )        atan2f( x, y )
+#define __builtin_nanf( x )             nanf( x )
+#define __builtin_inff()                INFINITY
+#define __builtin_isnanf( x )           isnanf( x )
+#define __builtin_isinff( x )           isinff( x )
+
+#ifdef OZ_MSVC
+
+#define roundf( x )     ( ( x ) < 0.0f ? ceilf( ( x ) - 0.5f ) : floorf( ( x ) + 0.5f ) )
+#define nanf( x )       ( HUGE_VAL * 0.0f )
+#define INFINITY        HUGE_VAL
+#define isnanf( x )     _isnanf( x )
+#define isinff( x )     ( !_isnanf( x ) && !_finite( x ) )
+
+#endif
+
+#endif
+
 namespace oz
 {
 
@@ -22,20 +60,20 @@ namespace oz
 
     public:
 
-      static const float FLOAT_EPS  = 1.1920928955078125e-7f;
-      static const float E          = 2.7182818284590452354f;
-      static const float LOG2E      = 1.4426950408889634074f;
-      static const float LOG10E     = 0.43429448190325182765f;
-      static const float LN2        = 0.69314718055994530942f;
-      static const float LN10       = 2.30258509299404568402f;
-      static const float PI         = 3.14159265358979323846f;
-      static const float PI_2       = 1.57079632679489661923f;
-      static const float PI_4       = 0.78539816339744830962f;
-      static const float _1_PI      = 0.31830988618379067154f;
-      static const float _2_PI      = 0.63661977236758134308f;
-      static const float _2_SQRTPI  = 1.12837916709551257390f;
-      static const float SQRT2      = 1.41421356237309504880f;
-      static const float SQRT1_2    = 0.70710678118654752440f;
+      static const float FLOAT_EPS;
+      static const float E;
+      static const float LOG2E;
+      static const float LOG10E;
+      static const float LN2;
+      static const float LN10;
+      static const float PI;
+      static const float PI_2;
+      static const float PI_4;
+      static const float _1_PI;
+      static const float _2_PI;
+      static const float _2_SQRTPI;
+      static const float SQRT2;
+      static const float SQRT1_2;
 
       static const int  INT_MAX  = ~0u >> 1;
       static const long LONG_MAX = ~0ul >> 1;

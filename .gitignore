@@ -1,4 +1,6 @@
 /.settings
+/openzone.kdev4
+/.kdev4
 /doxygen
 /tags
 /openzone.tag

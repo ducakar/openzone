@@ -399,11 +399,11 @@ int main( int argc, char** argv )
     client::main.main( &argc, argv );
   }
   catch( const Exception& e ) {
-    log.resetIndent();
-    log.println();
-    log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
+    oz::log.resetIndent();
+    oz::log.println();
+    oz::log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
 
-    if( log.isFile() ) {
+    if( oz::log.isFile() ) {
       fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
     }
   }

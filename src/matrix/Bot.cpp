@@ -20,14 +20,15 @@
 namespace oz
 {
 
-  const float Bot::HIT_HARD_THRESHOLD = -8.00f;
-  const float Bot::GRAB_EPSILON       = 0.20f;
-  const float Bot::GRAB_STRING_RATIO  = 10.0f;
-  const float Bot::GRAB_MOM_RATIO     = 0.3f;
+  const float Bot::HIT_HARD_THRESHOLD  = -8.00f;
+  const float Bot::GRAB_EPSILON        = 0.20f;
+  const float Bot::GRAB_STRING_RATIO   = 10.0f;
+  const float Bot::GRAB_MOM_RATIO      = 0.3f;
   // should be smaller than abs( Physics::HIT_THRESHOLD )
-  const float Bot::GRAB_MOM_MAX       = 1.0f;
-  const float Bot::GRAB_MOM_MAX_SQ    = 1.0f;
-  const float Bot::DEAD_BODY_LIFT     = 100.0f;
+  const float Bot::GRAB_MOM_MAX        = 1.0f;
+  const float Bot::GRAB_MOM_MAX_SQ     = 1.0f;
+  const float Bot::DEAD_BODY_LIFT      = 100.0f;
+  const float Bot::BODY_FADEOUT_FACTOR = 0.0005f;
 
   Pool<Bot> Bot::pool;
 

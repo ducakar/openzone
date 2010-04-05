@@ -17,6 +17,13 @@
 namespace oz
 {
 
+  // plants/m2
+  const float FloraManager::DENSITY = 0.04f;
+  // dim * SPACING
+  const float FloraManager::SPACING = 8.0f;
+  // plants/m2/s
+  const float FloraManager::GROWTH =  0.0001f;
+
   FloraManager floraManager;
 
   inline void FloraManager::addTree( float x, float y )

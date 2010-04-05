@@ -222,7 +222,7 @@ namespace ui
     glEnd();
   }
 
-  StrategicArea::StrategicArea() : Area( camera.width, camera.height )
+  StrategicArea::StrategicArea() : Area( camera.width, camera.height ), leftClick( false )
   {
     flags |= IGNORE_BIT | HIDDEN_BIT | UPDATE_FUNC_BIT;
     setFont( SANS );

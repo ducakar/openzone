@@ -16,6 +16,8 @@
 namespace oz
 {
 
+  const float Structure::DAMAGE_THRESHOLD = 400.0f;
+
   Pool<Structure, 0, 256> Structure::pool;
 
   Structure::Structure( int index_, int bsp_, const Vec3& p_, Rotation rot_ ) :

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-source=`echo src/*/*.{h,cpp} precompiled.h`
+source=`echo src/*/*.{h,cpp} src/stable.h`
 data=`echo data/*/*.rc data/lua/*/*.lua`
-build=`echo src/**/CMakeLists.gen {src,data}/**/CMakeLists.txt CMakeLists.txt *.in *.sh`
+build=`echo src/**/CMakeLists.gen {src,data}/**/CMakeLists.txt CMakeLists.txt src/*.in *.sh`
 
 function count()
 {
@@ -20,5 +20,5 @@ count 'Data config & Lua scripts' $data
 count 'Build system etc.' $build
 
 if [ -x /usr/bin/sloccount ]; then
-  LANG=C /usr/bin/sloccount src *.h *.sh data/lua
+  LANG=C /usr/bin/sloccount src *.sh data/lua
 fi

@@ -35,7 +35,7 @@ int main()
   b << new Elem( 7 );
   b << new Elem( 8 );
 
-  a.transfer( b );
+  a.clear();
   a.transfer( b );
 
   foreach( i, a.citer() ) {

@@ -14,6 +14,8 @@
 namespace oz
 {
 
+  const float Timer::TICK_TIME = 0.020f;
+
   Timer timer;
 
   void Timer::init()

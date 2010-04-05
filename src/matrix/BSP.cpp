@@ -149,19 +149,17 @@ namespace oz
     free();
   }
 
-  inline bool BSP::includes( const AABB& bb, const BSP::Brush& brush ) const
+  inline bool BSP::includes( const BSP::Brush& brush ) const
   {
     for( int i = 0; i < brush.nSides; ++i ) {
       const Plane& plane = planes[ brushSides[brush.firstSide + i] ];
 
       float offset =
-          Math::abs( plane.normal.x * bb.dim.x ) +
-          Math::abs( plane.normal.y * bb.dim.y ) +
-          Math::abs( plane.normal.z * bb.dim.z );
+          Math::abs( plane.normal.x * maxDim ) +
+          Math::abs( plane.normal.y * maxDim ) +
+          Math::abs( plane.normal.z * maxDim );
 
-      float dist = bb.p * plane.normal - plane.distance + offset;
-
-      if( dist > 0.0f ) {
+      if( offset < plane.distance ) {
         return false;
       }
     }
@@ -226,10 +224,15 @@ namespace oz
     for( int i = 0; i < nPlanes; ++i ) {
       planes[i].distance *= scale;
 
-      if( planes[i].distance < -maxDim ) {
+      float offset =
+          Math::abs( planes[i].normal.x * maxDim ) +
+          Math::abs( planes[i].normal.y * maxDim ) +
+          Math::abs( planes[i].normal.z * maxDim );
+
+      if( planes[i].distance < -offset ) {
         planes[i].distance = -Math::inf();
       }
-      else if( planes[i].distance > maxDim ) {
+      else if( planes[i].distance > offset ) {
         planes[i].distance = Math::inf();
       }
     }
@@ -283,7 +286,7 @@ namespace oz
           leafs[i].mins.y < -maxDim || leafs[i].maxs.y > maxDim ||
           leafs[i].mins.z < -maxDim || leafs[i].maxs.z > maxDim )
       {
-        leafs[i].nBrushes = 0;
+//        leafs[i].nBrushes = 0;
       }
       else {
         mins.x = min( mins.x, leafs[i].mins.x );
@@ -305,6 +308,18 @@ namespace oz
     leafBrushes = new int[nLeafBrushes];
     fseek( f, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
     fread( leafBrushes, sizeof( int ), nLeafBrushes, f );
+
+    int nBrushSides = lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide );
+    brushSides = new int[nBrushSides];
+    fseek( f, lumps[QBSP_LUMP_BRUSHSIDES].offset, SEEK_SET );
+
+    for( int i = 0; i < nBrushSides; ++i ) {
+      QBSPBrushSide brushSide;
+
+      fread( &brushSide, sizeof( QBSPBrushSide ), 1, f );
+
+      brushSides[i] = brushSide.plane;
+    }
 
     int nBrushes = lumps[QBSP_LUMP_BRUSHES].length / sizeof( QBSPBrush );
     brushes = new BSP::Brush[nBrushes];
@@ -334,18 +349,10 @@ namespace oz
       if( type & QBSP_WATER_BIT ) {
         brushes[i].material |= Material::WATER_BIT;
       }
-    }
 
-    int nBrushSides = lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide );
-    brushSides = new int[nBrushSides];
-    fseek( f, lumps[QBSP_LUMP_BRUSHSIDES].offset, SEEK_SET );
-
-    for( int i = 0; i < nBrushSides; ++i ) {
-      QBSPBrushSide brushSide;
-
-      fread( &brushSide, sizeof( QBSPBrushSide ), 1, f );
-
-      brushSides[i] = brushSide.plane;
+      if( !includes( brushes[i] ) ) {
+        brushes[i].nSides = 0;
+      }
     }
 
     int nVertices = lumps[QBSP_LUMP_VERTICES].length / sizeof( QBSPVertex );

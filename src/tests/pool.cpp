@@ -29,7 +29,7 @@ Pool<A, 0> A::pool;
 
 int main()
 {
-  int max = 10000;
+  const int max = 10000;
 
   A* array[max];
   for( int i = 0; i < max; ++i ) {
