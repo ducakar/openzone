@@ -63,5 +63,7 @@ namespace client
     radius = radius_;
   }
 
+  extern Terrain terra;
+
 }
 }

@@ -55,7 +55,6 @@ namespace client
         }
       };
 
-      Terrain                  terra;
       Vector<BSP*>             bsps;
       Bitset                   drawnStructures;
 
