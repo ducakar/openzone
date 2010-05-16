@@ -236,7 +236,7 @@ namespace oz
     float endDist   = globalEndPos   * quad.tri[0].normal - quad.tri[0].distance;
 
     if( endDist <= EPSILON && endDist <= startDist ) {
-      float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+      float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
       float impactX = globalStartPos.x + ratio * move.x;
       float impactY = globalStartPos.y + ratio * move.y;
@@ -260,7 +260,7 @@ namespace oz
     endDist   = globalEndPos   * quad.tri[1].normal - quad.tri[1].distance;
 
     if( endDist <= EPSILON && endDist <= startDist ) {
-      float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+      float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
       float impactX = globalStartPos.x + ratio * move.x;
       float impactY = globalStartPos.y + ratio * move.y;
@@ -285,14 +285,14 @@ namespace oz
   void Collider::trimPointTerra()
   {
     if( globalStartPos.z < 0.0f ) {
-      hit.waterDepth = max( hit.waterDepth, -globalStartPos.z );
+      hit.waterDepth = Math::max( hit.waterDepth, -globalStartPos.z );
       hit.inWater = true;
     }
 
-    float minPosX = min( globalStartPos.x, globalEndPos.x );
-    float minPosY = min( globalStartPos.y, globalEndPos.y );
-    float maxPosX = max( globalStartPos.x, globalEndPos.x );
-    float maxPosY = max( globalStartPos.y, globalEndPos.y );
+    float minPosX = Math::min( globalStartPos.x, globalEndPos.x );
+    float minPosY = Math::min( globalStartPos.y, globalEndPos.y );
+    float maxPosX = Math::max( globalStartPos.x, globalEndPos.x );
+    float maxPosY = Math::max( globalStartPos.y, globalEndPos.y );
 
     Span terraSpan;
     world.terra.getInters( terraSpan, minPosX, minPosY, maxPosX, maxPosY );
@@ -315,7 +315,7 @@ namespace oz
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i];
 
       if( endDist <= EPSILON && endDist <= startDist ) {
-        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+        float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
         if( ratio < hit.ratio ) {
           hit.ratio    = ratio;
@@ -360,7 +360,7 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio    = max( 0.0f, minRatio );
+      hit.ratio    = Math::max( 0.0f, minRatio );
       hit.normal   = *tmpNormal;
       hit.obj      = sObj;
       hit.str      = null;
@@ -402,7 +402,7 @@ namespace oz
       float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
 
       if( newRatio < hit.ratio ) {
-        hit.ratio    = max( 0.0f, newRatio );
+        hit.ratio    = Math::max( 0.0f, newRatio );
         hit.normal   = toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
         hit.str      = str;
@@ -686,7 +686,7 @@ namespace oz
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i] - aabb.dim[i];
 
       if( endDist <= EPSILON && endDist <= startDist ) {
-        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+        float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
         if( ratio < hit.ratio ) {
           hit.ratio    = ratio;
@@ -731,7 +731,7 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio    = max( 0.0f, minRatio );
+      hit.ratio    = Math::max( 0.0f, minRatio );
       hit.normal   = *tmpNormal;
       hit.obj      = sObj;
       hit.str      = null;
@@ -778,7 +778,7 @@ namespace oz
       float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
 
       if( newRatio < hit.ratio ) {
-        hit.ratio    = max( 0.0f, newRatio );
+        hit.ratio    = Math::max( 0.0f, newRatio );
         hit.normal   = toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
         hit.str      = str;
@@ -810,11 +810,11 @@ namespace oz
           return;
         }
         else {
-          depth = min( depth, dist );
+          depth = Math::min( depth, dist );
         }
       }
     }
-    hit.waterDepth = max( hit.waterDepth, depth );
+    hit.waterDepth = Math::max( hit.waterDepth, depth );
     hit.inWater    = true;
   }
 

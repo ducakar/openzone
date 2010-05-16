@@ -70,18 +70,6 @@ namespace oz
             Math::abs( z - a.z ) <= epsilon;
       }
 
-      // length
-      float operator ! () const
-      {
-        return Math::sqrt( x*x + y*y + z*z );
-      }
-
-      // square length
-      float sqL() const
-      {
-        return x*x + y*y + z*z;
-      }
-
       bool isZero() const
       {
         return x == 0.0f && y == 0.0f && z == 0.0f;
@@ -93,6 +81,16 @@ namespace oz
         y = 0.0f;
         z = 0.0f;
         return *this;
+      }
+
+      float operator ! () const
+      {
+        return Math::sqrt( x*x + y*y + z*z );
+      }
+
+      float sqL() const
+      {
+        return x*x + y*y + z*z;
       }
 
       bool isUnit() const
@@ -108,11 +106,30 @@ namespace oz
         return Vec3( x * r, y * r, z * r );
       }
 
+      Vec3 fastUnit() const
+      {
+        assert( x*x + y*y + z*z > 0.0f );
+
+        float r = Math::fastInvSqrt( x*x + y*y + z*z );
+        return Vec3( x * r, y * r, z * r );
+      }
+
       Vec3& norm()
       {
         assert( x*x + y*y + z*z > 0.0f );
 
         float r = 1.0f / Math::sqrt( x*x + y*y + z*z );
+        x *= r;
+        y *= r;
+        z *= r;
+        return *this;
+      }
+
+      Vec3& fastNorm()
+      {
+        assert( x*x + y*y + z*z > 0.0f );
+
+        float r = Math::fastInvSqrt( x*x + y*y + z*z );
         x *= r;
         y *= r;
         z *= r;

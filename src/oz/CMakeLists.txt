@@ -1,9 +1,8 @@
-add_library( base STATIC
+add_library( oz STATIC
 Alloc.cpp
 Alloc.h
 Array.h
 arrays.h
-base.h
 Bitset.h
 common.h
 Config.cpp
@@ -22,6 +21,7 @@ Mat33.h
 Mat44.h
 Math.cpp
 Math.h
+oz.h
 Pair.h
 Pool.h
 Quat.h

@@ -95,7 +95,7 @@ namespace oz
     }
 
     h = Math::mod( h + 360.0f, 360.0f );
-    v = bound( v, -90.0f, 90.0f );
+    v = Math::bound( v, -90.0f, 90.0f );
 
     // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
     float hvsc[6];
@@ -588,6 +588,9 @@ namespace oz
     oldActions = actions;
   }
 
+  void Bot::onAct()
+  {}
+
   Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
       grabObj( -1 ), weaponItem( -1 ), anim( ANIM_STAND )
   {}
@@ -701,7 +704,7 @@ namespace oz
     ostream->writeFloat( v );
     ostream->writeInt( state );
     ostream->writeInt( grabObj );
-    ostream->writeByte( anim );
+    ostream->writeByte( byte( anim ) );
   }
 
 }

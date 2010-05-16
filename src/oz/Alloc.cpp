@@ -8,7 +8,7 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "base.h"
+#include "oz.h"
 
 #include <cstdlib>
 #include <cstdio>
@@ -29,14 +29,12 @@ namespace oz
 
 #ifndef OZ_ALLOC_STATISTICS
 
-using oz::uint;
-
-void* operator new ( uint size )
+void* operator new ( oz::uint size )
 {
   return malloc( size );
 }
 
-void* operator new[] ( uint size )
+void* operator new[] ( oz::uint size )
 {
   return malloc( size );
 }
@@ -53,47 +51,43 @@ void operator delete[] ( void* ptr )
 
 #else
 
-using oz::uint;
-using oz::max;
-using oz::Alloc;
-
-void* operator new ( uint size )
+void* operator new ( oz::uint size )
 {
-  uint* p = reinterpret_cast<uint*>( malloc( size + sizeof( uint ) ) );
+  oz::uint* p = reinterpret_cast<oz::uint*>( malloc( size + sizeof( oz::uint ) ) );
 
   if( p == null ) {
     throw Exception( "Bad allocation" );
   }
 
-  ++Alloc::count;
-  Alloc::amount += size;
+  ++oz::Alloc::count;
+  oz::Alloc::amount += size;
 
-  ++Alloc::sumCount;
-  Alloc::sumAmount += size;
+  ++oz::Alloc::sumCount;
+  oz::Alloc::sumAmount += size;
 
-  Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
-  Alloc::maxAmount = max( Alloc::amount, Alloc::maxAmount );
+  oz::Alloc::maxCount = oz::max( oz::Alloc::count, oz::Alloc::maxCount );
+  oz::Alloc::maxAmount = oz::max( oz::Alloc::amount, oz::Alloc::maxAmount );
 
   p[0] = size;
   return p + 1;
 }
 
-void* operator new[] ( uint size )
+void* operator new[] ( oz::uint size )
 {
-  uint* p = reinterpret_cast<uint*>( malloc( size + sizeof( uint ) ) );
+  oz::uint* p = reinterpret_cast<oz::uint*>( malloc( size + sizeof( oz::uint ) ) );
 
   if( p == null ) {
     throw Exception( "Bad allocation" );
   }
 
-  ++Alloc::count;
-  Alloc::amount += size;
+  ++oz::Alloc::count;
+  oz::Alloc::amount += size;
 
-  ++Alloc::sumCount;
-  Alloc::sumAmount += size;
+  ++oz::Alloc::sumCount;
+  oz::Alloc::sumAmount += size;
 
-  Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
-  Alloc::maxAmount = max( Alloc::amount, Alloc::maxAmount );
+  oz::Alloc::maxCount = oz::max( oz::Alloc::count, oz::Alloc::maxCount );
+  oz::Alloc::maxAmount = oz::max( oz::Alloc::amount, oz::Alloc::maxAmount );
 
   p[0] = size;
   return p + 1;
@@ -101,20 +95,20 @@ void* operator new[] ( uint size )
 
 void operator delete ( void* ptr )
 {
-  uint* chunk = reinterpret_cast<uint*>( ptr ) - 1;
+  oz::uint* chunk = reinterpret_cast<oz::uint*>( ptr ) - 1;
 
-  --Alloc::count;
-  Alloc::amount -= chunk[0];
+  --oz::Alloc::count;
+  oz::Alloc::amount -= chunk[0];
 
   free( chunk );
 }
 
 void operator delete[] ( void* ptr )
 {
-  uint* chunk = reinterpret_cast<uint*>( ptr ) - 1;
+  oz::uint* chunk = reinterpret_cast<oz::uint*>( ptr ) - 1;
 
-  --Alloc::count;
-  Alloc::amount -= chunk[0];
+  --oz::Alloc::count;
+  oz::Alloc::amount -= chunk[0];
 
   free( chunk );
 }

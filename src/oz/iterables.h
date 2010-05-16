@@ -249,7 +249,7 @@ namespace oz
    * similar foreach macro).
    */
 # define foreach( i, iterator ) \
-  for( typeof( iterator ) i = iterator; !i.isPassed(); ++i )
+  for( auto i = iterator; !i.isPassed(); ++i )
 
   /**
    * Compare all elements. (Like STL equal)
@@ -362,7 +362,7 @@ namespace oz
   inline void iFree( Iterator iDest )
   {
     while( !iDest.isPassed() ) {
-      typeof( *iDest )& elem = *iDest;
+      auto& elem = *iDest;
       ++iDest;
 
       if( elem != null ) {

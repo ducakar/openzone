@@ -43,6 +43,6 @@ int main()
   }
   printf( "\n" );
 
-  printf( "%f %f", 1.0f / Math::sqrt( 2.0f ), Math::fInvSqrt( 2.0f ) );
+  printf( "%f %f", 1.0f / Math::sqrt( 2.0f ), Math::fastInvSqrt( 2.0f ) );
   return 0;
 }

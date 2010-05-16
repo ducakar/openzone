@@ -26,13 +26,14 @@ namespace ui
 
   static void createObject( Button* button )
   {
-    if( !translator.classes.contains( button->label ) ) {
+    const ObjectClass* const* clazz = translator.classes.find( button->label );
+    if( clazz == null ) {
       return;
     }
 
     Vec3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
-    AABB bb = AABB( p, translator.classes.cachedValue()->dim );
+    AABB bb = AABB( p, ( *clazz )->dim );
 
     if( collider.test( bb ) ) {
       synapse.addObject( button->label, p );

@@ -68,4 +68,4 @@ Water.h
 )
 
 add_dependencies( openzone pch )
-target_link_libraries( openzone ui nirvana matrix base )
+target_link_libraries( openzone ui nirvana matrix oz )

@@ -28,46 +28,41 @@ namespace oz
   void Matrix::loadStressTest()
   {
     static const float DIM = World::DIM;
-    int j = 0;
 
-    for( int i = 0; i < 400; ++i ) {
+    for( int i = 0; i < 1000; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
         synapse.addObject( "Goblin", Vec3( x, y, z ) );
-        ++j;
       }
     }
-    for( int i = 0; i < 400; ++i ) {
+    for( int i = 0; i < 1000; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
         synapse.addObject( "Knight", Vec3( x, y, z ) );
-        ++j;
       }
     }
-    for( int i = 0; i < 400; ++i ) {
+    for( int i = 0; i < 1000; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
         synapse.addObject( "Beast", Vec3( x, y, z ) );
-        ++j;
       }
     }
-    for( int i = 0; i < 100; ++i ) {
+    for( int i = 0; i < 1000; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
         synapse.addObject( "Droid", Vec3( x, y, z ) );
-        ++j;
       }
     }
     for( int i = 0; i < 1000; ++i ) {

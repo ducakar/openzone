@@ -146,7 +146,7 @@ namespace ui
       }
 
       glPopMatrix();
-      glTranslatef( SLOT_SIZE, 0.0f, 0.0f );
+      glTranslatef( float( SLOT_SIZE ), 0.0f, 0.0f );
     }
 
     glPopMatrix();

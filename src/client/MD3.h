@@ -17,7 +17,7 @@ namespace oz
 namespace client
 {
 
-  class MD3Tag;
+  struct MD3Tag;
 
   class MD3
   {

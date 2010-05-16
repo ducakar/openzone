@@ -11,6 +11,8 @@
 
 #include "matrix/ObjectClass.h"
 
+#include "client/common.h"
+
 namespace oz
 {
 namespace client

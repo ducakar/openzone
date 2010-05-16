@@ -82,7 +82,7 @@ namespace client
       height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
     }
     if( ui::keyboard.keys[SDLK_LCTRL] ) {
-      height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
+      height = Math::max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
     }
 
     if( ui::keyboard.keys[SDLK_m] && !ui::keyboard.oldKeys[SDLK_m] ) {
@@ -90,7 +90,7 @@ namespace client
       camera.setState( Camera::FREECAM );
     }
 
-    p.z = max( 0.0f, world.terra.height( p.x, p.y ) ) + height;
+    p.z = Math::max( 0.0f, world.terra.height( p.x, p.y ) ) + height;
     camera.move( p );
   }
 

@@ -62,13 +62,14 @@ namespace client
       /*
        * SFX
        */
+      ContSource* cachedSource;
       List<Source> sources;
       HashIndex<ContSource, 512> contSources;
 
       int  sourceClearCount;
       int  fullClearCount;
 
-      HashIndex<Audio*, 1021> audios;
+      HashIndex<Audio*, 2039> audios;
 
       void playCell( int cellX, int cellY );
 
@@ -97,18 +98,19 @@ namespace client
 
       void addContSource( uint key, uint sourceId  )
       {
-        contSources.add( key, sourceId );
+        cachedSource = contSources.add( key, sourceId );
       }
 
       uint getCachedContSourceId() const
       {
-        return contSources.cachedValue().source;
+        return cachedSource->source;
       }
 
       bool updateContSource( uint key )
       {
-        if( contSources.contains( key ) ) {
-          contSources.cachedValue().isUpdated = true;
+        cachedSource = contSources.find( key );
+        if( cachedSource != null ) {
+          cachedSource->isUpdated = true;
           return true;
         }
         else {
@@ -118,10 +120,11 @@ namespace client
 
       void playAudio( const Object* obj, const Audio* parent )
       {
-        if( !audios.contains( obj->index ) ) {
-          audios.add( obj->index, context.createAudio( &*obj ) );
+        Audio* const* value = audios.find( obj->index );
+        if( value == null ) {
+          value = audios.add( obj->index, context.createAudio( &*obj ) );
         }
-        Audio* audio = audios.cachedValue();
+        Audio* audio = *value;
 
         audio->flags |= Audio::UPDATED_BIT;
         audio->play( parent );

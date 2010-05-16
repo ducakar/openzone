@@ -58,6 +58,13 @@ namespace oz
     }
   }
 
+  void Object::onUse( Bot* user )
+  {
+    if( !type->onUse.isEmpty() ) {
+      lua.call( type->onUse, this, user );
+    }
+  }
+
   void Object::onUpdate()
   {
     if( !type->onUpdate.isEmpty() ) {
@@ -65,10 +72,10 @@ namespace oz
     }
   }
 
-  void Object::onUse( Bot* user )
+  void Object::onAct()
   {
-    if( !type->onUse.isEmpty() ) {
-      lua.call( type->onUse, this, user );
+    if( !type->onAct.isEmpty() ) {
+      lua.call( type->onAct, this );
     }
   }
 

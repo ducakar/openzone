@@ -1,5 +1,5 @@
 . mingw32-vars.sh
-cd mingw32/build
+cd ../openzone-build/mingw32/build
 
 tar jxf zlib-1.2.3.tar.bz2
 cd zlib-1.2.3

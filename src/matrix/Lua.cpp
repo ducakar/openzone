@@ -481,7 +481,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->life = bound( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->type->life );
+    lua.obj->life = Math::bound( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->type->life );
     return 0;
   }
 
@@ -491,9 +491,9 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->life = bound( lua.obj->life + float( lua_tonumber( l, 1 ) ),
-                           0.0f,
-                           lua.obj->type->life );
+    lua.obj->life = Math::bound( lua.obj->life + float( lua_tonumber( l, 1 ) ),
+                                 0.0f,
+                                 lua.obj->type->life );
     return 0;
   }
 
@@ -1274,7 +1274,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
-    bot->stamina = bound( float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
+    bot->stamina = Math::bound( float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;
   }
 
@@ -1290,7 +1290,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
-    bot->stamina = bound( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
+    bot->stamina = Math::bound( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;
   }
 
@@ -1465,11 +1465,12 @@ namespace oz
     const char* name = lua_tostring( l, 1 );
     Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
 
-    if( !translator.classes.contains( name ) ) {
+    const ObjectClass* const* value = translator.classes.find( name );
+    if( value == null ) {
       OZ_LUA_ERROR( "invalid object class" );
     }
 
-    AABB aabb = AABB( p, translator.classes.cachedValue()->dim );
+    AABB aabb = AABB( p, ( *value )->dim );
 
     if( collider.test( aabb ) ) {
       int index = synapse.addObject( name, p );

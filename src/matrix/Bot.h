@@ -104,6 +104,7 @@ namespace oz
       virtual void onDestroy();
       virtual void onHit( const Hit* hit, float hitMomentum );
       virtual void onUpdate();
+      virtual void onAct();
 
     public:
 
@@ -138,7 +139,7 @@ namespace oz
       virtual void readUpdate( InputStream* istream );
       virtual void writeUpdate( OutputStream* ostream ) const;
 
-    OZ_STATIC_POOL_ALLOC( pool );
+    OZ_STATIC_POOL_ALLOC( pool )
 
   };
 

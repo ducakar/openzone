@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  const float Timer::TICK_TIME = 0.020f;
+  const float Timer::TICK_TIME = float( Timer::TICK_MILLIS ) / 1000.0f;
 
   Timer timer;
 

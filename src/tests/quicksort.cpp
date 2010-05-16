@@ -7,7 +7,7 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "../base/base.h"
+#include "stable.h"
 
 #include <cstdlib>
 #include <cstdio>

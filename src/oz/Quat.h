@@ -75,16 +75,6 @@ namespace oz
         return reinterpret_cast<const float*>( this )[i];
       }
 
-      float operator ! () const
-      {
-        return Math::sqrt( x*x + y*y + z*z + w*w );
-      }
-
-      float sqL() const
-      {
-        return x*x + y*y + z*z + w*w;
-      }
-
       Quat operator * () const
       {
         return Quat( -x, -y, -z, -w );
@@ -126,6 +116,16 @@ namespace oz
         return *this;
       }
 
+      float operator ! () const
+      {
+        return Math::sqrt( x*x + y*y + z*z + w*w );
+      }
+
+      float sqL() const
+      {
+        return x*x + y*y + z*z + w*w;
+      }
+
       bool isUnit() const
       {
         return x*x + y*y + z*z + w*w == 1.0f;
@@ -139,11 +139,31 @@ namespace oz
         return Quat( x * r, y * r, z * r, w * r );
       }
 
+      Quat fastUnit() const
+      {
+        assert( x*x + y*y + z*z + w*w > 0.0f );
+
+        float r = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
+        return Quat( x * r, y * r, z * r, w * r );
+      }
+
       Quat& norm()
       {
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
         float r = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
+        x *= r;
+        z *= r;
+        z *= r;
+        w *= r;
+        return *this;
+      }
+
+      Quat& fastNorm()
+      {
+        assert( x*x + y*y + z*z + w*w > 0.0f );
+
+        float r = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
         x *= r;
         z *= r;
         z *= r;

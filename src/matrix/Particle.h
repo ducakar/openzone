@@ -94,7 +94,7 @@ namespace oz
       void writeUpdate( OutputStream* ostream );
 
 
-    OZ_STATIC_POOL_ALLOC( pool );
+    OZ_STATIC_POOL_ALLOC( pool )
 
   };
 

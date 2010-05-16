@@ -52,8 +52,6 @@ namespace oz
         int firstSide;
         int nSides;
         int material;
-
-        bool overlaps( const Bounds& bb );
       };
 
       struct Vertex

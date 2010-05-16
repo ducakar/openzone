@@ -95,7 +95,7 @@ namespace client
       float z = ( float( p[2] ) - 128.0f ) / 128.0f;
 
       float dot = x * lightNormal.x + y * lightNormal.y + z * lightNormal.z;
-      ubyte color = ubyte( bound( dot * 256.0f, 0.0f, 255.0f ) );
+      ubyte color = ubyte( Math::bound( dot * 256.0f, 0.0f, 255.0f ) );
 
       p[0] = color;
       p[1] = color;
@@ -450,28 +450,28 @@ namespace client
 
   uint Context::loadOBJ( const char* path )
   {
-    if( !objs.contains( path ) ) {
-      objs.add( path, Resource<OBJ*>() );
-
-      OBJ*& obj = objs.cachedValue().object;
-      obj = new OBJ( path );
-      obj->genList();
-      obj->trim();
+    Resource<OBJ*>* resource = objs.find( path );
+    if( resource == null ) {
+      resource = objs.add( path, Resource<OBJ*>() );
+      resource->object = new OBJ( path );
+      resource->object->genList();
+      resource->object->trim();
     }
-    ++objs.cachedValue().nUsers;
-    return objs.cachedValue().object->list;
+    ++resource->nUsers;
+    return resource->object->list;
   }
 
   void Context::releaseOBJ( const char* path )
   {
     assert( objs.contains( path ) );
 
-    if( objs.contains( path ) ) {
-      --objs.cachedValue().nUsers;
+    Resource<OBJ*>* resource = objs.find( path );
+    if( resource != null ) {
+      --resource->nUsers;
 
-      if( objs.cachedValue().nUsers == 0 ) {
-        glDeleteLists( objs.cachedValue().object->list, 1 );
-        delete objs.cachedValue().object;
+      if( resource->nUsers == 0 ) {
+        glDeleteLists( resource->object->list, 1 );
+        delete resource->object;
         objs.remove( path );
       }
     }
@@ -479,27 +479,27 @@ namespace client
 
   uint Context::loadStaticMD2( const char* path )
   {
-    if( !staticMd2s.contains( path ) ) {
-      staticMd2s.add( path, Resource<MD2*>() );
-
-      MD2*& md2 = staticMd2s.cachedValue().object;
-      md2 = new MD2( path );
-      md2->genList();
+    Resource<MD2*>* resource = staticMd2s.find( path );
+    if( resource == null ) {
+      resource = staticMd2s.add( path, Resource<MD2*>() );
+      resource->object = new MD2( path );
+      resource->object->genList();
     }
-    ++staticMd2s.cachedValue().nUsers;
-    return staticMd2s.cachedValue().object->list;
+    ++resource->nUsers;
+    return resource->object->list;
   }
 
   void Context::releaseStaticMD2( const char* path )
   {
     assert( staticMd2s.contains( path ) );
 
-    if( staticMd2s.contains( path ) ) {
-      --staticMd2s.cachedValue().nUsers;
+    Resource<MD2*>* resource = staticMd2s.find( path );
+    if( resource == null ) {
+      --resource->nUsers;
 
-      if( staticMd2s.cachedValue().nUsers == 0 ) {
-        glDeleteLists( staticMd2s.cachedValue().object->list, 1 );
-        delete staticMd2s.cachedValue().object;
+      if( resource->nUsers == 0 ) {
+        glDeleteLists( resource->object->list, 1 );
+        delete resource->object;
         staticMd2s.remove( path );
       }
     }
@@ -507,23 +507,25 @@ namespace client
 
   MD2* Context::loadMD2( const char* path )
   {
-    if( !md2s.contains( path ) ) {
-      md2s.add( path, Resource<MD2*>() );
-      md2s.cachedValue().object = new MD2( path );
+    Resource<MD2*>* resource = md2s.find( path );
+    if( resource == null ) {
+      resource = md2s.add( path, Resource<MD2*>() );
+      resource->object = new MD2( path );
     }
-    ++md2s.cachedValue().nUsers;
-    return md2s.cachedValue().object;
+    ++resource->nUsers;
+    return resource->object;
   }
 
   void Context::releaseMD2( const char* path )
   {
     assert( md2s.contains( path ) );
 
-    if( md2s.contains( path ) ) {
-      --md2s.cachedValue().nUsers;
+    Resource<MD2*>* resource = md2s.find( path );
+    if( resource != null ) {
+      --resource->nUsers;
 
-      if( md2s.cachedValue().nUsers == 0 ) {
-        delete md2s.cachedValue().object;
+      if( resource->nUsers == 0 ) {
+        delete resource->object;
         md2s.remove( path );
       }
     }
@@ -531,28 +533,28 @@ namespace client
 
   uint Context::loadStaticMD3( const char* path )
   {
-    if( !staticMd3s.contains( path ) ) {
-      staticMd3s.add( path, Resource<MD3*>() );
-
-      MD3*& md3 = staticMd3s.cachedValue().object;
-      md3 = new MD3( path );
-      md3->genList();
-      md3->trim();
+    Resource<MD3*>* resource = staticMd3s.find( path );
+    if( resource == null ) {
+      resource = staticMd3s.add( path, Resource<MD3*>() );
+      resource->object = new MD3( path );
+      resource->object->genList();
+      resource->object->trim();
     }
-    ++staticMd3s.cachedValue().nUsers;
-    return staticMd3s.cachedValue().object->list;
+    ++resource->nUsers;
+    return resource->object->list;
   }
 
   void Context::releaseStaticMD3( const char* path )
   {
     assert( staticMd3s.contains( path ) );
 
-    if( staticMd3s.contains( path ) ) {
-      --staticMd3s.cachedValue().nUsers;
+    Resource<MD3*>* resource = staticMd3s.find( path );
+    if( resource != null ) {
+      --resource->nUsers;
 
-      if( staticMd3s.cachedValue().nUsers == 0 ) {
-        glDeleteLists( staticMd3s.cachedValue().object->list, 1 );
-        delete staticMd3s.cachedValue().object;
+      if( resource->nUsers == 0 ) {
+        glDeleteLists( resource->object->list, 1 );
+        delete resource->object;
         staticMd3s.remove( path );
       }
     }
@@ -560,23 +562,25 @@ namespace client
 
   MD3* Context::loadMD3( const char* path )
   {
-    if( !md3s.contains( path ) ) {
-      md3s.add( path, Resource<MD3*>() );
-      md3s.cachedValue().object = new MD3( path );
+    Resource<MD3*>* resource = md3s.find( path );
+    if( resource == null ) {
+      resource = md3s.add( path, Resource<MD3*>() );
+      resource->object = new MD3( path );
     }
-    ++md3s.cachedValue().nUsers;
-    return md3s.cachedValue().object;
+    ++resource->nUsers;
+    return resource->object;
   }
 
   void Context::releaseMD3( const char* path )
   {
     assert( md3s.contains( path ) );
 
-    if( md3s.contains( path ) ) {
-      --md3s.cachedValue().nUsers;
+    Resource<MD3*>* resource = md3s.find( path );
+    if( resource != null ) {
+      --resource->nUsers;
 
-      if( md3s.cachedValue().nUsers == 0 ) {
-        delete md3s.cachedValue().object;
+      if( resource->nUsers == 0 ) {
+        delete resource->object;
         md3s.remove( path );
       }
     }

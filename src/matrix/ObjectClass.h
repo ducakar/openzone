@@ -46,8 +46,9 @@ namespace oz
       String onDestroy;
       String onDamage;
       String onHit;
-      String onUpdate;
       String onUse;
+      String onUpdate;
+      String onAct;
 
       int    nDebris;
       float  debrisVelocitySpread;
@@ -68,8 +69,8 @@ namespace oz
       static void fillCommon( ObjectClass* clazz, const Config* config );
       static ObjectClass* init( const String& name, const Config* config );
 
-      virtual Object* create( int index, const Vec3& pos );
-      virtual Object* create( int index, InputStream* istream );
+      virtual Object* create( int index, const Vec3& pos ) const;
+      virtual Object* create( int index, InputStream* istream ) const;
 
   };
 

@@ -381,8 +381,9 @@ namespace client
             *end = '\0';
 
             Face materialFace;
-            if( materialIndices.contains( pos ) ) {
-              materialFace.nVerts = ~materialIndices.cachedValue();
+            const int* value = materialIndices.find( pos );
+            if( value != null ) {
+              materialFace.nVerts = ~*value;
             }
             else {
               materialFace.nVerts = 0;
@@ -475,7 +476,6 @@ namespace client
     int  currentMaterial = -1;
     bool isTransfluent = false;
     bool isTextured = true;
-    bool isBlended = false;
 
     for( int i = 0; i < faces.length(); ++i ) {
       const Face& face = faces[i];
@@ -488,7 +488,6 @@ namespace client
           if( !isTransfluent && material.diffuse.w != 1.0f ) {
             glEnable( GL_BLEND );
             isTransfluent = true;
-            isBlended = true;
           }
           else if( isTransfluent && material.diffuse.w == 1.0f ) {
             glDisable( GL_BLEND );

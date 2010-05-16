@@ -163,10 +163,11 @@ namespace client
         if( obj->flags & Object::MODEL_BIT ) {
           assert( !obj->type->modelType.isEmpty() );
 
-          if( !modelClasses.contains( obj->type->modelType ) ) {
+          const Model::CreateFunc* value = modelClasses.find( obj->type->modelType );
+          if( value == null ) {
             throw Exception( "Invalid Model" );
           }
-          return modelClasses.cachedValue()( obj );
+          return ( *value )( obj );
         }
         else {
           assert( obj->type->modelType.isEmpty() );
@@ -180,10 +181,11 @@ namespace client
         if( obj->flags & Object::AUDIO_BIT ) {
           assert( !obj->type->audioType.isEmpty() );
 
-          if( !audioClasses.contains( obj->type->audioType ) ) {
+          const Audio::CreateFunc* value = audioClasses.find( obj->type->audioType );
+          if( value == null ) {
             throw Exception( "Invalid Audio" );
           }
-          return audioClasses.cachedValue()( obj );
+          return ( *value )( obj );
         }
         else {
           assert( obj->type->audioType.isEmpty() );

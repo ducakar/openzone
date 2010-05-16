@@ -1,7 +1,7 @@
 #!/bin/sh
 
-echo Generating src/base/CMakeLists.txt
-cd src/base    && ./CMakeLists.gen && cd ../..
+echo Generating src/oz/CMakeLists.txt
+cd src/oz      && ./CMakeLists.gen && cd ../..
 echo Generating src/matrix/CMakeLists.txt
 cd src/matrix  && ./CMakeLists.gen && cd ../..
 echo Generating src/nirvana/CMakeLists.txt

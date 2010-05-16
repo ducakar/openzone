@@ -354,7 +354,7 @@ namespace client
       uint* pixels = new uint[camera.width * camera.height * 4];
       char fileName[1024];
       time_t ct;
-      class tm t;
+      struct tm t;
 
       ct = time( null );
       t = *localtime( &ct );
@@ -402,7 +402,7 @@ namespace client
         }
       }
       // remove unused models
-      for( typeof( models.citer() ) i = models.citer(); !i.isPassed(); ) {
+      for( auto i = models.citer(); !i.isPassed(); ) {
         Model* model = *i;
         uint   key   = i.key();
 
@@ -426,7 +426,7 @@ namespace client
 
   void Render::sync()
   {
-    for( typeof( models.citer() ) i = models.citer(); !i.isPassed(); ) {
+    for( auto i = models.citer(); !i.isPassed(); ) {
       Model* model = i.value();
       uint   key   = i.key();
       ++i;

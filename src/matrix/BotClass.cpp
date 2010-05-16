@@ -160,7 +160,7 @@ namespace oz
     return clazz;
   }
 
-  Object* BotClass::create( int index, const Vec3& pos )
+  Object* BotClass::create( int index, const Vec3& pos ) const
   {
     Bot* obj = new Bot();
 
@@ -201,7 +201,7 @@ namespace oz
     return obj;
   }
 
-  Object* BotClass::create( int index, InputStream* istream )
+  Object* BotClass::create( int index, InputStream* istream ) const
   {
     Bot* obj = new Bot();
 

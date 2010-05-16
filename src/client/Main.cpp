@@ -91,7 +91,7 @@ namespace client
 
     rcDir = homeVar + String( "/" OZ_RC_DIR );
 
-    class stat homeDirStat;
+    struct stat homeDirStat;
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource dir found, creating '%s' ...", rcDir.cstr() );
 
@@ -357,7 +357,7 @@ namespace client
     float allTimeSec     = float( timeLast - timeZero ) / 1000.0f;
     float gameTimeSec    = float( gameTime ) / 1000.0f;
     float renderTimeSec  = float( renderTime ) / 1000.0f;
-    float sleepTimeSec   = max( 0.0f, allTimeSec - gameTimeSec - renderTimeSec );
+    float sleepTimeSec   = Math::max( 0.0f, allTimeSec - gameTimeSec - renderTimeSec );
     float nirvanaTimeSec = float( timer.nirvanaMillis ) / 1000.0f;
 
     log.println( "STATISTICS {" );

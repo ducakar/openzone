@@ -11,7 +11,7 @@
 
 #include "matrix/Object.h"
 
-class lua_State;
+struct lua_State;
 
 namespace oz
 {

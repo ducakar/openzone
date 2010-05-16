@@ -25,8 +25,9 @@ namespace oz
     clazz->onDestroy            = config->get( "onDestroy", "" );
     clazz->onDamage             = config->get( "onDamage", "" );
     clazz->onHit                = config->get( "onHit", "" );
-    clazz->onUpdate             = config->get( "onUpdate", "" );
     clazz->onUse                = config->get( "onUse", "" );
+    clazz->onUpdate             = config->get( "onUpdate", "" );
+    clazz->onAct                = config->get( "onAct", "" );
 
     if( !String::isEmpty( clazz->onDestroy ) ) {
       clazz->flags |= Object::LUA_BIT | Object::DESTROY_FUNC_BIT;
@@ -52,6 +53,14 @@ namespace oz
         clazz->flags &= ~Object::HIT_FUNC_BIT;
       }
     }
+    if( !String::isEmpty( clazz->onUse ) ) {
+      clazz->flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
+
+      // disable event handler if explicitly set to false
+      if( !config->get( "flag.useFunc", true ) ) {
+        clazz->flags &= ~Object::USE_FUNC_BIT;
+      }
+    }
     if( !String::isEmpty( clazz->onUpdate ) ) {
       clazz->flags |= Object::LUA_BIT | Object::UPDATE_FUNC_BIT;
 
@@ -60,12 +69,12 @@ namespace oz
         clazz->flags &= ~Object::UPDATE_FUNC_BIT;
       }
     }
-    if( !String::isEmpty( clazz->onUse ) ) {
-      clazz->flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
+    if( !String::isEmpty( clazz->onAct ) ) {
+      clazz->flags |= Object::LUA_BIT | Object::ACT_FUNC_BIT;
 
       // disable event handler if explicitly set to false
-      if( !config->get( "flag.useFunc", true ) ) {
-        clazz->flags &= ~Object::USE_FUNC_BIT;
+      if( !config->get( "flag.actFunc", true ) ) {
+        clazz->flags &= ~Object::ACT_FUNC_BIT;
       }
     }
 
@@ -117,8 +126,9 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.destroyFunc",  true  );
     OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.damageFunc",   false );
     OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.hitFunc",      false );
-    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.updateFunc",   false );
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",      false );
+    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.updateFunc",   false );
+    OZ_CLASS_SET_FLAG( Object::ACT_FUNC_BIT,       "flag.actFunc",      false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
     OZ_CLASS_SET_FLAG( Object::DETECT_BIT,         "flag.detect",       true  );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
@@ -151,7 +161,7 @@ namespace oz
     return clazz;
   }
 
-  Object* ObjectClass::create( int index, const Vec3& pos )
+  Object* ObjectClass::create( int index, const Vec3& pos ) const
   {
     Object* obj = new Object();
 
@@ -170,7 +180,7 @@ namespace oz
     return obj;
   }
 
-  Object* ObjectClass::create( int index, InputStream* istream )
+  Object* ObjectClass::create( int index, InputStream* istream ) const
   {
     Object* obj = new Object();
 

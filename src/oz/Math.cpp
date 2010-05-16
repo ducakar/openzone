@@ -7,7 +7,7 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "base.h"
+#include "oz.h"
 
 #include <cmath>
 #include <cstdlib>
