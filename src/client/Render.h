@@ -55,7 +55,6 @@ namespace client
         }
       };
 
-      Terrain                  terra;
       Vector<BSP*>             bsps;
       Bitset                   drawnStructures;
 
@@ -74,6 +73,7 @@ namespace client
       float                    waterDayVisibility;
       float                    waterNightVisibility;
 
+      float                    fogMinDistance;
       float                    particleRadius;
       bool                     drawAABBs;
       bool                     showAim;

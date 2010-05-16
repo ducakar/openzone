@@ -33,6 +33,8 @@ namespace client
   const float Terrain::DETAIL_SCALE = 4.0f;
   const float Terrain::WATER_SCALE  = 2.0f;
 
+  Terrain terra;
+
   void Terrain::load()
   {
 #ifdef OZ_MINGW32
@@ -49,8 +51,10 @@ namespace client
 #endif
 
     int nVertices = oz::Terrain::MAX * oz::Terrain::MAX;
+    int nIndices = oz::Terrain::MAX * ( oz::Terrain::MAX - 1 ) * 2;
 
     VertexData* arrayData = new VertexData[nVertices];
+    uint* indexData = new uint[nIndices];
 
     for( int x = 0; x < oz::Terrain::MAX; ++x ) {
       for( int y = 0; y < oz::Terrain::MAX; ++y ) {
@@ -80,21 +84,24 @@ namespace client
 
         vertex.mapTexCoord.u = float( x ) / oz::Terrain::MAX;
         vertex.mapTexCoord.v = float( y ) / oz::Terrain::MAX;
+
+        if( x != oz::Terrain::MAX - 1 ) {
+          indexData[ 2 * ( x * oz::Terrain::MAX + y ) ] = ( x + 1 ) * oz::Terrain::MAX + y;
+          indexData[ 2 * ( x * oz::Terrain::MAX + y ) + 1 ] = x * oz::Terrain::MAX + y;
+        }
       }
     }
 
     glGenBuffers( 1, &arrayBuffer );
     glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * ( 2 * sizeof( Vec3 ) + 2 * sizeof( TexCoord ) ),
-                  arrayData, GL_STATIC_DRAW );
-    delete[] arrayData;
+    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( VertexData ), arrayData, GL_STATIC_DRAW );
 
-    uint* indexData = new uint[nVertices];
     glGenBuffers( 1, &indexBuffer );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, 2 * ( nVertices - oz::Terrain::MAX ) * sizeof( uint ),
-                  indexData, GL_STREAM_DRAW );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( uint ), indexData, GL_STATIC_DRAW );
+
     delete[] indexData;
+    delete[] arrayData;
   }
 
   void Terrain::unload()
@@ -114,6 +121,10 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
 
+    // to match strip triangles with matrix terrain we have to make them clockwise since
+    // we draw column-major (strips along y axis) for better cache performance
+    glFrontFace( GL_CW );
+
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, detailTexId );
 
@@ -125,33 +136,23 @@ namespace client
     glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-    glVertexPointer( 3, GL_FLOAT, sizeof( VertexData ), OZ_VBO_OFFSET( VertexData, position ) );
-    glNormalPointer( GL_FLOAT, sizeof( VertexData ), OZ_VBO_OFFSET( VertexData, normal ) );
+    glVertexPointer( 3, GL_FLOAT, sizeof( VertexData ),
+                     OZ_VBO_OFFSETOF( 0, VertexData, position ) );
+    glNormalPointer( GL_FLOAT, sizeof( VertexData ),
+                     OZ_VBO_OFFSETOF( 0, VertexData, normal ) );
 
     glClientActiveTexture( GL_TEXTURE0 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( VertexData ), OZ_VBO_OFFSET( VertexData, detailTexCoord ) );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( VertexData ),
+                       OZ_VBO_OFFSETOF( 0, VertexData, detailTexCoord ) );
 
     glClientActiveTexture( GL_TEXTURE1 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( VertexData ), OZ_VBO_OFFSET( VertexData, mapTexCoord ) );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( VertexData ),
+                       OZ_VBO_OFFSETOF( 0, VertexData, mapTexCoord ) );
 
-    uint* indexData = reinterpret_cast<uint*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
-
-    int count = 0;
+    int count = ( span.maxY - span.minY + 1 ) * 2;
     for( int x = span.minX; x < span.maxX; ++x ) {
-      for( int y = span.minY; y <= span.maxY; ++y ) {
-        indexData[count++] = x * oz::Terrain::MAX + y;
-        indexData[count++] = ( x + 1 ) * oz::Terrain::MAX + y;
-      }
-    }
-
-    glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
-
-    int stripOffset = 0;
-    int stripCount = ( span.maxY - span.minY + 1 ) * 2;
-    for( int x = span.minX; x < span.maxX; ++x ) {
-      glDrawElements( GL_TRIANGLE_STRIP, stripCount, GL_UNSIGNED_INT,
-                      reinterpret_cast<void*>( stripOffset * sizeof( uint ) ) );
-      stripOffset += stripCount;
+      int offset = ( x * oz::Terrain::MAX + span.minY ) * 2;
+      glDrawElements( GL_TRIANGLE_STRIP, count, GL_UNSIGNED_INT, OZ_VBO_OFFSET( offset, uint ) );
     }
 
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -161,6 +162,8 @@ namespace client
     glActiveTexture( GL_TEXTURE1 );
     glDisable( GL_TEXTURE_2D );
     glActiveTexture( GL_TEXTURE0 );
+
+    glFrontFace( GL_CCW );
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
