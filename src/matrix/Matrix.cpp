@@ -29,7 +29,7 @@ namespace oz
   {
     static const float DIM = World::DIM;
 
-    for( int i = 0; i < 1000; ++i ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
@@ -38,7 +38,7 @@ namespace oz
         synapse.addObject( "Goblin", Vec3( x, y, z ) );
       }
     }
-    for( int i = 0; i < 1000; ++i ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
@@ -47,7 +47,7 @@ namespace oz
         synapse.addObject( "Knight", Vec3( x, y, z ) );
       }
     }
-    for( int i = 0; i < 1000; ++i ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
@@ -56,7 +56,7 @@ namespace oz
         synapse.addObject( "Beast", Vec3( x, y, z ) );
       }
     }
-    for( int i = 0; i < 1000; ++i ) {
+    for( int i = 0; i < 200; ++i ) {
       float x = -DIM + 2.0f * DIM * Math::frand();
       float y = -DIM + 2.0f * DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
