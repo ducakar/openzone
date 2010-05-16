@@ -351,7 +351,7 @@ namespace oz
 
   /**
    * Reallocate array (realloc).
-   * Allocates new block of size newSize * typeof( Type ) and copies first "count" elements of
+   * Allocates new block of size newSize * decltype( Type ) and copies first "count" elements of
    * source array. newCount should be equal to or greater than count.
    * @param aDest pointer to the source array
    * @param count number of elements to be copied

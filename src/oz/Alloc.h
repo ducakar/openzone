@@ -51,7 +51,7 @@ namespace oz
       template <typename Type>
       static Type* allocate( int size )
       {
-        return reinterpret_cast<Type*>( operator new ( size * sizeof( Type ) ) );
+        return reinterpret_cast<Type*>( new char[size * sizeof( Type )] );
       }
 
       /**
@@ -61,7 +61,7 @@ namespace oz
       template <typename Type>
       static void deallocate( Type* ptr )
       {
-        operator delete ( ptr );
+        delete[] reinterpret_cast<char*>( ptr );
       }
 
       /**
@@ -77,12 +77,12 @@ namespace oz
       template <typename Type>
       static Type* reallocate( Type* array, int count, int newSize )
       {
-        Type* newArray = reinterpret_cast<Type*>( operator new ( newSize * sizeof( Type ) ) );
+        Type* newArray = reinterpret_cast<Type*>( new char[newSize * sizeof( Type )] );
         for( int i = 0; i < count; ++i ) {
           new( newArray + i ) Type( array[i] );
           array[i].~Type();
         }
-        operator delete ( array );
+        delete[] reinterpret_cast<char*>( array );
         return newArray;
       }
 

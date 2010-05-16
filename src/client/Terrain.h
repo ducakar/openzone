@@ -29,6 +29,17 @@ namespace client
         float v;
       };
 
+      struct VertexData
+      {
+        Vec3     position;
+        Vec3     normal;
+        TexCoord detailTexCoord;
+        TexCoord mapTexCoord;
+      };
+
+      uint      arrayBuffer;
+      uint      indexBuffer;
+
       uint      detailTexId;
       uint      mapTexId;
       uint      waterTexId;
@@ -36,10 +47,6 @@ namespace client
       float     radius;
 
       bool      inWater;
-
-      Vec3*     normals;
-      TexCoord* detailTexCoords;
-      TexCoord* mapTexCoords;
 
     public:
 

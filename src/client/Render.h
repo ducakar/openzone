@@ -95,10 +95,11 @@ namespace client
 
       void drawModel( const Object* obj, const Model* parent )
       {
-        if( !models.contains( obj->index ) ) {
-          models.add( obj->index, context.createModel( obj ) );
+        Model* const* value = models.find( obj->index );
+        if( value == null ) {
+          value = models.add( obj->index, context.createModel( obj ) );
         }
-        Model* model = models.cachedValue();
+        Model* model = *value;
 
         model->flags |= Model::UPDATED_BIT;
         model->draw( parent );

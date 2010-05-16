@@ -1,9 +1,7 @@
 /*
- *  HashIndex.h
+ *  HashString.h
  *
- *  Chaining hashtable implementation with uint key type.
- *  A prime number is recommended as hashtable size unless key distribution is "random".
- *  You can find a list of millions of primes at http://www.bigprimes.net/.
+ *  Chaining hashtable implementation with String key type
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
@@ -14,34 +12,35 @@
 namespace oz
 {
 
-  template <typename Type, int SIZE = 253>
-  class HashIndex
+  template <typename Type, int SIZE = 256>
+  class HashString
   {
     private:
 
       struct Elem
       {
-        uint  key;
-        Type  value;
-        Elem* next[1];
+        String key;
+        Type   value;
+        Elem*  next[1];
 
-        explicit Elem( uint key_, const Type& value_, Elem* next_ ) : key( key_ ), value( value_ )
+        explicit Elem( const String& key_, const Type& value_, Elem* next_ ) :
+            key( key_ ), value( value_ )
         {
           next[0] = next_;
         }
 
-        explicit Elem( uint key_, Elem* next_ ) : key( key_ )
+        explicit Elem( const String& key_, Elem* next_ ) : key( key_ )
         {
           next[0] = next_;
         }
 
-        OZ_PLACEMENT_POOL_ALLOC( Elem, 0, SIZE );
+        OZ_PLACEMENT_POOL_ALLOC( Elem, 0, SIZE )
       };
 
     public:
 
       /**
-       * HashIndex iterator.
+       * HashString iterator.
        */
       class Iterator : public IteratorBase<Elem>
       {
@@ -62,10 +61,10 @@ namespace oz
           {}
 
           /**
-           * Make iterator for given HashIndex. After creation it points to first element.
+           * Make iterator for given HashString. After creation it points to first element.
            * @param t
            */
-          explicit Iterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          explicit Iterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
           {
             while( B::elem == null && index < SIZE - 1 ) {
               ++index;
@@ -100,7 +99,7 @@ namespace oz
           /**
            * @return current element's key
            */
-          const uint& key() const
+          const String& key() const
           {
             return B::elem->key;
           }
@@ -172,7 +171,7 @@ namespace oz
       };
 
       /**
-       * HashIndex constant iterator.
+       * HashString constant iterator.
        */
       class CIterator : public CIteratorBase<Elem>
       {
@@ -180,7 +179,7 @@ namespace oz
 
           typedef CIteratorBase<Elem> B;
 
-          const Elem* const* const data;
+          Elem* const* const data;
           int index;
 
         public:
@@ -193,10 +192,10 @@ namespace oz
           {}
 
           /**
-           * Make iterator for given HashIndex. After creation it points to first element.
+           * Make iterator for given HashString. After creation it points to first element.
            * @param t
            */
-          explicit CIterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          explicit CIterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
           {
             while( B::elem == null && index < SIZE - 1 ) {
               ++index;
@@ -231,7 +230,7 @@ namespace oz
           /**
            * @return current element's key
            */
-          const uint& key() const
+          const String& key() const
           {
             return B::elem->key;
           }
@@ -275,8 +274,6 @@ namespace oz
       Pool<Elem, 0, SIZE> pool;
       Elem*               data[SIZE];
       int                 count;
-      // we cache found element since we often want its value after a search
-      mutable Elem*       cached;
 
       /**
        * @param chainA
@@ -346,7 +343,7 @@ namespace oz
       /**
        * Constructor.
        */
-      explicit HashIndex() : count( 0 ), cached( null )
+      explicit HashString() : count( 0 )
       {
         for( int i = 0; i < SIZE; ++i ) {
           data[i] = null;
@@ -357,7 +354,7 @@ namespace oz
        * Copy constructor.
        * @param t
        */
-      HashIndex( const HashIndex& t ) : count( t.count ), cached( t.cached )
+      HashString( const HashString& t ) : count( t.count )
       {
         for( int i = 0; i < SIZE; ++i ) {
           data[i] = copyChain( t.data[i] );
@@ -367,7 +364,7 @@ namespace oz
       /**
        * Default destructor.
        */
-      ~HashIndex()
+      ~HashString()
       {
         assert( count == 0 );
 
@@ -379,7 +376,7 @@ namespace oz
        * @param t
        * @return
        */
-      HashIndex& operator = ( const HashIndex& t )
+      HashString& operator = ( const HashString& t )
       {
         assert( &t != this );
         assert( count == 0 );
@@ -387,7 +384,6 @@ namespace oz
         for( int i = 0; i < SIZE; ++i ) {
           data[i] = copyChain( t.data[i] );
         }
-        cached = t.cached;
         count = t.count;
 
         return *this;
@@ -398,7 +394,7 @@ namespace oz
        * @param t
        * @return
        */
-      bool operator == ( const HashIndex& t ) const
+      bool operator == ( const HashString& t ) const
       {
         if( count != t.count ) {
           return false;
@@ -416,10 +412,10 @@ namespace oz
        * @param t
        * @return
        */
-      bool operator != ( const HashIndex& t ) const
+      bool operator != ( const HashString& t ) const
       {
         if( count != t.count ) {
-          return true;
+          return false;
         }
         for( int i = 0; i < SIZE; ++i ) {
           if( !areChainsEqual( data[i], t.data[i] ) ) {
@@ -430,7 +426,7 @@ namespace oz
       }
 
       /**
-       * @return iterator for this HashIndex
+       * @return iterator for this HashString
        */
       Iterator iter() const
       {
@@ -438,7 +434,7 @@ namespace oz
       }
 
       /**
-       * @return constant iterator for this HashIndex
+       * @return constant iterator for this HashString
        */
       CIterator citer() const
       {
@@ -470,7 +466,7 @@ namespace oz
       }
 
       /**
-       * @return true if HashIndex has no elements
+       * @return true if HashString has no elements
        */
       bool isEmpty() const
       {
@@ -478,51 +474,17 @@ namespace oz
       }
 
       /**
-       * @return cached element's key
-       */
-      uint& cachedKey()
-      {
-        return cached->key;
-      }
-
-      /**
-       * @return cached element's key
-       */
-      const uint& cachedKey() const
-      {
-        return cached->key;
-      }
-
-      /**
-       * @return cached element's value
-       */
-      Type& cachedValue()
-      {
-        return cached->value;
-      }
-
-      /**
-       * @return cached element's value
-       */
-      const Type& cachedValue() const
-      {
-        return cached->value;
-      }
-
-      /**
        * Find element with given value.
-       * This function caches the found element.
        * @param key
        * @return true if found
        */
-      bool contains( uint key ) const
+      bool contains( const char* key ) const
       {
-        int   i = key % SIZE;
+        int   i = String::hash( key ) % SIZE;
         Elem* p = data[i];
 
         while( p != null ) {
-          if( p->key == key ) {
-            cached = p;
+          if( p->key.equals( key ) ) {
             return true;
           }
           else {
@@ -533,20 +495,60 @@ namespace oz
       }
 
       /**
-       * If given key exists, return reference to it's value.
-       * Only use this function if you are certain that the key exists.
-       * This function caches the requested element.
+       * Find element with given value
        * @param key
-       * @return reference to value associated to the given key
+       * @return pointer to value of given key
        */
-      Type& operator [] ( uint key )
+      Type* find( const char* key )
       {
-        int   i = key % SIZE;
+        int   i = String::hash( key ) % SIZE;
         Elem* p = data[i];
 
         while( p != null ) {
-          if( p->key == key ) {
-            cached = p;
+          if( p->key.equals( key ) ) {
+            return &p->value;
+          }
+          else {
+            p = p->next[0];
+          }
+        }
+        return null;
+      }
+
+      /**
+       * Find element with given value
+       * @param key
+       * @return constant pointer to value of given key
+       */
+      const Type* find( const char* key ) const
+      {
+        int   i = String::hash( key ) % SIZE;
+        Elem* p = data[i];
+
+        while( p != null ) {
+          if( p->key.equals( key ) ) {
+            return &p->value;
+          }
+          else {
+            p = p->next[0];
+          }
+        }
+        return null;
+      }
+
+      /**
+       * If given key exists, return reference to it's value.
+       * Only use this function if you are certain that the key exists.
+       * @param key
+       * @return reference to value associated to the given key
+       */
+      Type& operator [] ( const char* key )
+      {
+        int   i = String::hash( key ) % SIZE;
+        Elem* p = data[i];
+
+        while( p != null ) {
+          if( p->key.equals( key ) ) {
             return p->value;
           }
           else {
@@ -556,24 +558,22 @@ namespace oz
 
         assert( false );
 
-        return cached->value;
+        return data[0]->value;
       }
 
       /**
        * If given key exists, return constant reference to it's value.
        * Only use this function if you are certain that the key exists.
-       * This function caches the requested element.
        * @param key
        * @return reference to value associated to the given key
        */
-      const Type& operator [] ( uint key ) const
+      const Type& operator [] ( const char* key ) const
       {
-        int   i = key % SIZE;
+        int   i = String::hash( key ) % SIZE;
         Elem* p = data[i];
 
         while( p != null ) {
-          if( p->key == key ) {
-            cached = p;
+          if( p->key.equals( key ) ) {
             return p->value;
           }
           else {
@@ -583,41 +583,61 @@ namespace oz
 
         assert( false );
 
-        return cached->value;
+        return data[0]->value;
       }
 
       /**
-       * Add new element. The key must not yet exist in this HashIndex.
-       * This function caches the added element.
+       * Add new element. The key must not yet exist in this HashString.
        * @param key
        * @param value
        */
-      void add( uint key, const Type& value )
+      Type* add( const char* key, const Type& value )
       {
         assert( !contains( key ) );
 
-        int  i = key % SIZE;
+        int   i = String::hash( key ) % SIZE;
         Elem* elem = new( pool ) Elem( key, value, data[i] );
 
         data[i] = elem;
-        cached = elem;
         ++count;
 
         assert( loadFactor() < 0.75f );
+
+        return &data[i]->value;
+      }
+
+      /**
+       * Add new element. The key must not yet exist in this HashString.
+       * @param key
+       * @param value
+       */
+      Type* add( const String& key, const Type& value )
+      {
+        assert( !contains( key ) );
+
+        int   i = key.hash() % SIZE;
+        Elem* elem = new( pool ) Elem( key, value, data[i] );
+
+        data[i] = elem;
+        ++count;
+
+        assert( loadFactor() < 0.75f );
+
+        return &data[i]->value;
       }
 
       /**
        * Remove element with given key.
        * @param key
        */
-      void remove( uint key )
+      void remove( const char* key )
       {
-        int    i = key % SIZE;
+        int    i = String::hash( key ) % SIZE;
         Elem*  p = data[i];
         Elem** prev = &data[i];
 
         while( p != null ) {
-          if( p->key == key ) {
+          if( p->key.equals( key ) ) {
             *prev = p->next[0];
             pool.free( p );
             --count;
@@ -638,12 +658,9 @@ namespace oz
       void clear()
       {
         for( int i = 0; i < SIZE; ++i ) {
-          if( data[i] != null ) {
-            freeChain( data[i] );
-            data[i] = null;
-          }
+          freeChain( data[i] );
+          data[i] = null;
         }
-        cached = null;
         count = 0;
       }
 
@@ -653,12 +670,9 @@ namespace oz
       void free()
       {
         for( int i = 0; i < SIZE; ++i ) {
-          if( data[i] != null ) {
-            freeChainAndValues( data[i] );
-            data[i] = null;
-          }
+          freeChainAndValues( data[i] );
+          data[i] = null;
         }
-        cached = null;
         count = 0;
       }
 

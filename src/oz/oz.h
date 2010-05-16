@@ -1,8 +1,7 @@
 /*
- *  base.h
+ *  oz.h
  *
- *  Common include file.
- *  It is included via precompiled header "stable.h" for faster compiling.
+ *  Common include file for oz library.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING for details.
@@ -10,12 +9,12 @@
 
 #pragma once
 
-#include <cassert>
-
 /*
  * Configuration
  */
-#include "config.h"
+#include "configuration.h"
+
+#include <cassert>
 
 /*
  * Basic definitions and template functions

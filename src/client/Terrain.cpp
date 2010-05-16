@@ -20,8 +20,6 @@
 #include "client/Colors.h"
 #include "client/Water.h"
 
-#include <GL/glext.h>
-
 #ifdef OZ_MINGW32
 static PFNGLACTIVETEXTUREPROC       glActiveTexture       = null;
 static PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture = null;
@@ -52,54 +50,57 @@ namespace client
 
     int nVertices = oz::Terrain::MAX * oz::Terrain::MAX;
 
-    normals         = new Vec3[nVertices];
-    detailTexCoords = new TexCoord[nVertices];
-    mapTexCoords    = new TexCoord[nVertices];
+    VertexData* arrayData = new VertexData[nVertices];
 
     for( int x = 0; x < oz::Terrain::MAX; ++x ) {
       for( int y = 0; y < oz::Terrain::MAX; ++y ) {
-        Vec3& n = normals[x * oz::Terrain::MAX + y];
+        VertexData& vertex = arrayData[x * oz::Terrain::MAX + y];
 
-        n.setZero();
+        vertex.position = world.terra.vertices[x][y];
+
+        vertex.normal.setZero();
         if( x < oz::Terrain::QUADS && y < oz::Terrain::QUADS ) {
-          n += world.terra.quads[x][y].tri[0].normal;
-          n += world.terra.quads[x][y].tri[1].normal;
+          vertex.normal += world.terra.quads[x][y].tri[0].normal;
+          vertex.normal += world.terra.quads[x][y].tri[1].normal;
         }
         if( x > 0 && y < oz::Terrain::QUADS ) {
-          n += world.terra.quads[x - 1][y].tri[0].normal;
+          vertex.normal += world.terra.quads[x - 1][y].tri[0].normal;
         }
         if( x > 0 && y > 0 ) {
-          n += world.terra.quads[x - 1][y - 1].tri[0].normal;
-          n += world.terra.quads[x - 1][y - 1].tri[1].normal;
+          vertex.normal += world.terra.quads[x - 1][y - 1].tri[0].normal;
+          vertex.normal += world.terra.quads[x - 1][y - 1].tri[1].normal;
         }
         if( x < oz::Terrain::QUADS && y > 0 ) {
-          n += world.terra.quads[x][y - 1].tri[1].normal;
+          vertex.normal += world.terra.quads[x][y - 1].tri[1].normal;
         }
-        n.norm();
+        vertex.normal.norm();
 
-        detailTexCoords[x * oz::Terrain::MAX + y].u = float( x & 1 ) * DETAIL_SCALE;
-        detailTexCoords[x * oz::Terrain::MAX + y].v = float( y & 1 ) * DETAIL_SCALE;
+        vertex.detailTexCoord.u = float( x & 1 ) * DETAIL_SCALE;
+        vertex.detailTexCoord.v = float( y & 1 ) * DETAIL_SCALE;
 
-        mapTexCoords[x * oz::Terrain::MAX + y].u = float( x ) / oz::Terrain::MAX;
-        mapTexCoords[x * oz::Terrain::MAX + y].v = float( y ) / oz::Terrain::MAX;
+        vertex.mapTexCoord.u = float( x ) / oz::Terrain::MAX;
+        vertex.mapTexCoord.v = float( y ) / oz::Terrain::MAX;
       }
     }
+
+    glGenBuffers( 1, &arrayBuffer );
+    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * ( 2 * sizeof( Vec3 ) + 2 * sizeof( TexCoord ) ),
+                  arrayData, GL_STATIC_DRAW );
+    delete[] arrayData;
+
+    uint* indexData = new uint[nVertices];
+    glGenBuffers( 1, &indexBuffer );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, 2 * ( nVertices - oz::Terrain::MAX ) * sizeof( uint ),
+                  indexData, GL_STREAM_DRAW );
+    delete[] indexData;
   }
 
   void Terrain::unload()
   {
-    if( normals != null ) {
-      delete[] normals;
-      normals = null;
-    }
-    if( detailTexCoords != null ) {
-      delete[] detailTexCoords;
-      detailTexCoords = null;
-    }
-    if( mapTexCoords != null ) {
-      delete[] mapTexCoords;
-      mapTexCoords = null;
-    }
+    glDeleteBuffers( 1, &indexBuffer );
+    glDeleteBuffers( 1, &arrayBuffer );
   }
 
   void Terrain::draw() const
@@ -109,6 +110,9 @@ namespace client
                            camera.p.x + radius, camera.p.y + radius );
     ++span.maxX;
     ++span.maxY;
+
+    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
 
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, detailTexId );
@@ -121,22 +125,33 @@ namespace client
     glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-    glVertexPointer( 3, GL_FLOAT, 0, world.terra.vertices );
-    glNormalPointer( GL_FLOAT, 0, normals );
+    glVertexPointer( 3, GL_FLOAT, sizeof( VertexData ), OZ_VBO_OFFSET( VertexData, position ) );
+    glNormalPointer( GL_FLOAT, sizeof( VertexData ), OZ_VBO_OFFSET( VertexData, normal ) );
 
     glClientActiveTexture( GL_TEXTURE0 );
-    glTexCoordPointer( 2, GL_FLOAT, 0, detailTexCoords );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( VertexData ), OZ_VBO_OFFSET( VertexData, detailTexCoord ) );
 
     glClientActiveTexture( GL_TEXTURE1 );
-    glTexCoordPointer( 2, GL_FLOAT, 0, mapTexCoords );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( VertexData ), OZ_VBO_OFFSET( VertexData, mapTexCoord ) );
 
-    for( int y = span.minY; y < span.maxY; ++y ) {
-      glBegin( GL_TRIANGLE_STRIP );
-      for( int x = span.minX; x <= span.maxX; ++x ) {
-        glArrayElement( x * oz::Terrain::MAX + y + 1 );
-        glArrayElement( x * oz::Terrain::MAX + y     );
+    uint* indexData = reinterpret_cast<uint*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+
+    int count = 0;
+    for( int x = span.minX; x < span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
+        indexData[count++] = x * oz::Terrain::MAX + y;
+        indexData[count++] = ( x + 1 ) * oz::Terrain::MAX + y;
       }
-      glEnd();
+    }
+
+    glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
+
+    int stripOffset = 0;
+    int stripCount = ( span.maxY - span.minY + 1 ) * 2;
+    for( int x = span.minX; x < span.maxX; ++x ) {
+      glDrawElements( GL_TRIANGLE_STRIP, stripCount, GL_UNSIGNED_INT,
+                      reinterpret_cast<void*>( stripOffset * sizeof( uint ) ) );
+      stripOffset += stripCount;
     }
 
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -146,6 +161,9 @@ namespace client
     glActiveTexture( GL_TEXTURE1 );
     glDisable( GL_TEXTURE_2D );
     glActiveTexture( GL_TEXTURE0 );
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
   }
 
   void Terrain::drawWater() const

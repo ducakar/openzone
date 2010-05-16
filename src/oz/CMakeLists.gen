@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo 'add_library( base STATIC' > CMakeLists.txt
+echo 'add_library( oz STATIC' > CMakeLists.txt
 
 ls *.{h,cpp} >> CMakeLists.txt
 

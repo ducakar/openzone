@@ -12,16 +12,16 @@
 namespace oz
 {
 
-  template <typename Type0, typename Type1 = Type0>
+  template <typename TypeX, typename TypeY = TypeX>
   class Pair
   {
     public:
 
-      Type0 x;
-      Type1 y;
+      TypeX x;
+      TypeY y;
 
       Pair() {}
-      Pair( const Type0& x_, const Type1& y_ ) : x( x_ ), y( y_ ) {}
+      Pair( const TypeX& x_, const TypeY& y_ ) : x( x_ ), y( y_ ) {}
 
       template <typename Type0_, typename Type1_>
       Pair( const Pair<Type0_, Type1_>& p ) : x( p.x ), y( p.y ) {}
@@ -46,7 +46,7 @@ namespace oz
         return x != p.x || y != p.y;
       }
 
-      void set( const Type0& x_, const Type1& y_ )
+      void set( const TypeX& x_, const TypeY& y_ )
       {
         x = x_;
         y = y_;
@@ -54,16 +54,16 @@ namespace oz
 
   };
 
-  template <typename Type0, typename Type1>
-  inline Pair<Type0, Type1> pair( const Type0& x, const Type1& y )
+  template <typename TypeX, typename TypeY>
+  inline Pair<TypeX, TypeY> pair( const TypeX& x, const TypeY& y )
   {
-    return Pair<Type0, Type1>( x, y );
+    return Pair<TypeX, TypeY>( x, y );
   }
 
-  template <typename Type0, typename Type1>
-  inline Pair<Type0&, Type1&> tie( Type0& x, Type1& y )
+  template <typename TypeX, typename TypeY>
+  inline Pair<TypeX&, TypeY&> tie( TypeX& x, TypeY& y )
   {
-    return Pair<Type0&, Type1&>( x, y );
+    return Pair<TypeX&, TypeY&>( x, y );
   }
 
 }

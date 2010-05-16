@@ -119,9 +119,9 @@ namespace client
   {
     angle = 2.0f * Math::PI * ( world.sky.time / world.sky.period );
     Vec3  dir = Quat::rotAxis( axis, angle ).rotate( originalLightDir );
-    ratio = bound( dir.z + DAY_BIAS, 0.0f, 1.0f );
+    ratio = Math::bound( dir.z + DAY_BIAS, 0.0f, 1.0f );
     ratio_1 = 1.0f - ratio;
-    float ratioDiff = ( 1.0f - abs( ratio - ratio_1 ) );
+    float ratioDiff = ( 1.0f - Math::abs( ratio - ratio_1 ) );
 
     Colors::sky[0] = ratio * DAY_COLOR[0] + ratio_1 * NIGHT_COLOR[0] + RED_COEF * ratioDiff;
     Colors::sky[1] = ratio * DAY_COLOR[1] + ratio_1 * NIGHT_COLOR[1] + GREEN_COEF * ratioDiff;

@@ -53,19 +53,22 @@ namespace oz
       static const int LUA_BIT            = 0x04000000;
 
       // if the onDestroy function should be called on destruction
-      static const int DESTROY_FUNC_BIT   = 0x01000000;
+      static const int DESTROY_FUNC_BIT   = 0x02000000;
 
       // if the onDamage function should be called on damage received
-      static const int DAMAGE_FUNC_BIT    = 0x00800000;
+      static const int DAMAGE_FUNC_BIT    = 0x01000000;
 
       // if the onHit function should be called on hit
-      static const int HIT_FUNC_BIT       = 0x00400000;
-
-      // if the onUpdate method should be called each step
-      static const int UPDATE_FUNC_BIT    = 0x00200000;
+      static const int HIT_FUNC_BIT       = 0x00800000;
 
       // if the onUse function should be called when object is used
-      static const int USE_FUNC_BIT       = 0x00100000;
+      static const int USE_FUNC_BIT       = 0x00400000;
+
+      // if the onUpdate (asynchronous self update) method should be called each step
+      static const int UPDATE_FUNC_BIT    = 0x00200000;
+
+      // if the onAct (synchronous update, can change world) method should be called each step
+      static const int ACT_FUNC_BIT       = 0x00100000;
 
       /*
        * FRONTEND OBJECTS
@@ -189,7 +192,7 @@ namespace oz
           assert( id < 0 || intensity >= 0.0f );
         }
 
-        OZ_STATIC_POOL_ALLOC( pool );
+        OZ_STATIC_POOL_ALLOC( pool )
       };
 
       static Pool<Object> pool;
@@ -318,8 +321,9 @@ namespace oz
       virtual void onDestroy();
       virtual void onDamage( float damage );
       virtual void onHit( const Hit* hit, float momentum );
-      virtual void onUpdate();
       virtual void onUse( Bot* user );
+      virtual void onUpdate();
+      virtual void onAct();
 
     public:
 
@@ -332,7 +336,7 @@ namespace oz
       virtual void readUpdate( InputStream* istream );
       virtual void writeUpdate( OutputStream* ostream ) const;
 
-    OZ_STATIC_POOL_ALLOC( pool );
+    OZ_STATIC_POOL_ALLOC( pool )
 
   };
 

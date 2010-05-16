@@ -38,12 +38,12 @@ void operator delete ( void* ptr ) { pool.free( ptr ); }
  * manually before freeing.
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE ) \
-private: \
-void* operator new ( uint ); \
-void operator delete ( void* ); \
 public: \
 void* operator new ( uint, Pool<Type, INDEX, SIZE>& pool ) { return pool.malloc(); } \
-void operator delete ( void*, Pool<Type, INDEX, SIZE>& ) {}
+void operator delete ( void*, Pool<Type, INDEX, SIZE>& ) {} \
+private: \
+void* operator new ( uint ); \
+void operator delete ( void* );
 
 namespace oz
 {
@@ -161,7 +161,7 @@ namespace oz
         freeSlot = elem;
         --count;
 #else
-        delete ptr;
+        delete[] reinterpret_cast<char*>( ptr );
 #endif
       }
 

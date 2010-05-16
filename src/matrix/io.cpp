@@ -24,7 +24,7 @@ namespace oz
       count = 0;
     }
 
-    class stat fileStat;
+    struct stat fileStat;
     if( stat( path, &fileStat ) != 0 || fileStat.st_size > 0x7fffffffl ) {
       return false;
     }

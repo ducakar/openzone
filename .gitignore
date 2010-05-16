@@ -10,11 +10,6 @@ gmon.out
 pg.out
 
 /valgrind.supp
-/pogon.*
-
-/build
-/mingw32
-/msvc9
 
 /*CMakeCache.txt
 CMakeCache.txt

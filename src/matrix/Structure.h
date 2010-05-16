@@ -131,7 +131,7 @@ namespace oz
       void readFull( InputStream* istream );
       void writeFull( OutputStream* ostream );
 
-    OZ_STATIC_POOL_ALLOC( pool );
+    OZ_STATIC_POOL_ALLOC( pool )
 
   };
 

@@ -48,7 +48,7 @@ namespace oz
         buffer[0] = '\0';
       }
 
-      String( const char* s, int count_ ) : count( count_ )
+      explicit String( const char* s, int count_ ) : count( count_ )
       {
         assert( s != null && s != baseBuffer );
         assert( length( s ) >= count );
@@ -71,7 +71,7 @@ namespace oz
         assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
-      String( bool b ) : buffer( baseBuffer )
+      explicit String( bool b ) : buffer( baseBuffer )
       {
         // some protection against too small buffers
         assert( BUFFER_SIZE >= 6 );
@@ -99,7 +99,7 @@ namespace oz
         assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
-      String( int n ) : buffer( baseBuffer ), count( 1 )
+      explicit String( int n ) : buffer( baseBuffer ), count( 1 )
       {
         // that should assure enough space, since log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ),
         // +2 for sign and terminating null char
@@ -137,8 +137,8 @@ namespace oz
         assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
-      String( float f );
-      String( double d );
+      explicit String( float f );
+      explicit String( double d );
 
       String( const String& s ) : count( s.count )
       {

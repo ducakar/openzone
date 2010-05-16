@@ -31,7 +31,7 @@ namespace client
   void Camera::align()
   {
     h = Math::mod( h + 360.0f, 360.0f );
-    v = bound( v, -90.0f, 90.0f );
+    v = Math::bound( v, -90.0f, 90.0f );
 
     rot     = Quat::rotZYX( Math::rad( h ), Math::rad( w ), Math::rad( v ) );
     rotMat  = rot.rotMat44();

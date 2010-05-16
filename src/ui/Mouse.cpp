@@ -110,11 +110,11 @@ namespace ui
       overEdgeY = relY;
     }
 
-    leftClick   = buttons & ~oldButtons & SDL_BUTTON_LMASK;
-    middleClick = buttons & ~oldButtons & SDL_BUTTON_MMASK;
-    rightClick  = buttons & ~oldButtons & SDL_BUTTON_RMASK;
-    wheelUp     = buttons & ~oldButtons & SDL_BUTTON_WUMASK;
-    wheelDown   = buttons & ~oldButtons & SDL_BUTTON_WDMASK;
+    leftClick   = ( buttons & ~oldButtons & SDL_BUTTON_LMASK ) != 0;
+    middleClick = ( buttons & ~oldButtons & SDL_BUTTON_MMASK ) != 0;
+    rightClick  = ( buttons & ~oldButtons & SDL_BUTTON_RMASK ) != 0;
+    wheelUp     = ( buttons & ~oldButtons & SDL_BUTTON_WUMASK ) != 0;
+    wheelDown   = ( buttons & ~oldButtons & SDL_BUTTON_WDMASK ) != 0;
   }
 
   void Mouse::draw() const

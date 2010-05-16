@@ -51,13 +51,14 @@ namespace oz
        * @param key variable name
        * @param value variable value
        */
-      void add( const char* key, const char* value )
+      void add( const char* key, const char* value_ )
       {
-        if( vars.contains( key ) ) {
-          vars.cachedValue() = value;
+        String* value = vars.find( key );
+        if( value != null ) {
+          *value = value_;
         }
         else {
-          vars.add( key, value );
+          vars.add( key, value_ );
         }
       }
 

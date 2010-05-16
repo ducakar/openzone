@@ -9,9 +9,10 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "base/base.h"
+#include "oz/oz.h"
 
 // we want to use C++ wrapped C headers, not vanilla ones that are included via SDL
+#include <cstddef>
 #include <cstdarg>
 #include <cstdlib>
 #include <cstdio>

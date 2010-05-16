@@ -67,13 +67,14 @@ namespace oz
       Vector<Resource> matrixScripts;
       Vector<Resource> nirvanaScripts;
 
-      HashString<ObjectClass::InitFunc, 8> baseClasses;
-      HashString<ObjectClass*, 64> classes;
+      HashString<const ObjectClass::InitFunc, 8> baseClasses;
+      HashString<const ObjectClass*, 64> classes;
 
-      int textureIndex( const char* file )
+      int textureIndex( const char* file ) const
       {
-        if( textureIndices.contains( file ) ) {
-          return textureIndices.cachedValue();
+        const int* value = textureIndices.find( file );
+        if( value != null ) {
+          return *value;
         }
         else {
           log.println( "W: invalid texture file index requested: %s", file );
@@ -81,10 +82,11 @@ namespace oz
         }
       }
 
-      int soundIndex( const char* file )
+      int soundIndex( const char* file ) const
       {
-        if( soundIndices.contains( file ) ) {
-          return soundIndices.cachedValue();
+        const int* value = soundIndices.find( file );
+        if( value != null ) {
+          return *value;
         }
         else {
           log.println( "W: invalid sound file index requested: %s", file );
@@ -92,50 +94,56 @@ namespace oz
         }
       }
 
-      int bspIndex( const char* file )
+      int bspIndex( const char* file ) const
       {
-        if( bspIndices.contains( file ) ) {
-          return bspIndices.cachedValue();
+        const int* value = bspIndices.find( file );
+        if( value != null ) {
+          return *value;
         }
         else {
           throw Exception( "Invalid BSP index requested" );
         }
       }
 
-      Structure* createStruct( int index, const char* name, const Vec3& p, Structure::Rotation rot )
+      Structure* createStruct( int index, const char* name, const Vec3& p,
+                               Structure::Rotation rot ) const
       {
-        if( bspIndices.contains( name ) ) {
-          return new Structure( index, bspIndices.cachedValue(), p, rot );
+        const int* value = bspIndices.find( name );
+        if( value != null ) {
+          return new Structure( index, *value, p, rot );
         }
         else {
           throw Exception( "Invalid Structure class requested" );
         }
       }
 
-      Structure* createStruct( int index, const char* name, InputStream* istream )
+      Structure* createStruct( int index, const char* name, InputStream* istream ) const
       {
-        if( bspIndices.contains( name ) ) {
-          return new Structure( index, bspIndices.cachedValue(), istream );
+        const int* value = bspIndices.find( name );
+        if( value != null ) {
+          return new Structure( index, *value, istream );
         }
         else {
           throw Exception( "Invalid Structure class requested" );
         }
       }
 
-      Object* createObject( int index, const char* name, const Vec3& p )
+      Object* createObject( int index, const char* name, const Vec3& p ) const
       {
-        if( classes.contains( name ) ) {
-          return classes.cachedValue()->create( index, p );
+        const ObjectClass* const* value = classes.find( name );
+        if( value != null ) {
+          return ( *value )->create( index, p );
         }
         else {
           throw Exception( "Invalid Object class requested" );
         }
       }
 
-      Object* createObject( int index, const char* name, InputStream* istream )
+      Object* createObject( int index, const char* name, InputStream* istream ) const
       {
-        if( classes.contains( name ) ) {
-          return classes.cachedValue()->create( index, istream );
+        const ObjectClass* const* value = classes.find( name );
+        if( value != null ) {
+          return ( *value )->create( index, istream );
         }
         else {
           throw Exception( "Invalid Object class requested" );

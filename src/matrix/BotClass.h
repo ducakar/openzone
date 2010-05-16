@@ -19,8 +19,8 @@ namespace oz
     private:
 
       static const int INVENTORY_ITEMS = 16;
-      static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::UPDATE_FUNC_BIT |
-          Object::HIT_FUNC_BIT | Object::BOT_BIT;
+      static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT |
+          Object::UPDATE_FUNC_BIT | Object::ACT_FUNC_BIT | Object::BOT_BIT;
 
     public:
 
@@ -72,8 +72,8 @@ namespace oz
 
       static ObjectClass* init( const String& name, const Config* config );
 
-      virtual Object* create( int index, const Vec3& pos );
-      virtual Object* create( int index, InputStream* istream );
+      virtual Object* create( int index, const Vec3& pos ) const;
+      virtual Object* create( int index, InputStream* istream ) const;
 
   };
 

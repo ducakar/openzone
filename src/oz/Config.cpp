@@ -7,7 +7,7 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "base.h"
+#include "oz.h"
 
 #include <cstdlib>
 #include <cstdio>
@@ -139,10 +139,9 @@ namespace oz
     }
 
     for( int i = 0; i < size; ++i ) {
-      int chars;
-      fprintf( f, "%s%n", sortedVars[i].key, &chars );
+      fprintf( f, "%s", sortedVars[i].key );
 
-      chars = ALIGNMENT - chars;
+      int chars = ALIGNMENT - String::length( sortedVars[i].key );
       while( chars > 0 ) {
         fprintf( f, " " );
         --chars;
@@ -268,8 +267,8 @@ namespace oz
   bool Config::get( const char* name, bool defVal ) const
   {
     assert( !vars.contains( name ) ||
-            vars.cachedValue().equals( "true" ) ||
-            vars.cachedValue().equals( "false" ) );
+            vars[name].equals( "true" ) ||
+            vars[name].equals( "false" ) );
 
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
@@ -277,11 +276,12 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      if( vars.cachedValue().equals( "true" ) ) {
+    const String* value = vars.find( name );
+    if( value != null ) {
+      if( value->equals( "true" ) ) {
         return true;
       }
-      else if( vars.cachedValue().equals( "false" ) ) {
+      else if( value->equals( "false" ) ) {
         return false;
       }
       else {
@@ -301,8 +301,9 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      return atoi( vars.cachedValue() );
+    const String* value = vars.find( name );
+    if( value != null ) {
+      return atoi( *value );
     }
     else {
       return defVal;
@@ -317,8 +318,9 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      return float( atof( vars.cachedValue() ) );
+    const String* value = vars.find( name );
+    if( value != null ) {
+      return float( atof( *value ) );
     }
     else {
       return defVal;
@@ -333,8 +335,9 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      return atof( vars.cachedValue() );
+    const String* value = vars.find( name );
+    if( value != null ) {
+      return atof( *value );
     }
     else {
       return defVal;
@@ -349,8 +352,9 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      return vars.cachedValue();
+    const String* value = vars.find( name );
+    if( value != null ) {
+      return *value;
     }
     else {
       return defVal;
@@ -360,8 +364,8 @@ namespace oz
   bool Config::getSet( const char* name, bool defVal )
   {
     assert( !vars.contains( name ) ||
-            vars.cachedValue().equals( "true" ) ||
-            vars.cachedValue().equals( "false" ) );
+            vars[name].equals( "true" ) ||
+            vars[name].equals( "false" ) );
 
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
@@ -369,11 +373,12 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      if( vars.cachedValue().equals( "true" ) ) {
+    const String* value = vars.find( name );
+    if( value != null ) {
+      if( value->equals( "true" ) ) {
         return true;
       }
-      else if( vars.cachedValue().equals( "false" ) ) {
+      else if( value->equals( "false" ) ) {
         return false;
       }
       else {
@@ -381,7 +386,7 @@ namespace oz
       }
     }
     else {
-      vars.add( name, defVal );
+      vars.add( name, String( defVal ) );
       return defVal;
     }
   }
@@ -394,11 +399,12 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      return atoi( vars.cachedValue() );
+    const String* value = vars.find( name );
+    if( value != null ) {
+      return atoi( *value );
     }
     else {
-      vars.add( name, defVal );
+      vars.add( name, String( defVal ) );
       return defVal;
     }
   }
@@ -411,11 +417,12 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      return float( atof( vars.cachedValue() ) );
+    const String* value = vars.find( name );
+    if( value != null ) {
+      return float( atof( *value ) );
     }
     else {
-      vars.add( name, defVal );
+      vars.add( name, String( defVal ) );
       return defVal;
     }
   }
@@ -428,11 +435,12 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      return atof( vars.cachedValue() );
+    const String* value = vars.find( name );
+    if( value != null ) {
+      return atof( *value );
     }
     else {
-      vars.add( name, defVal );
+      vars.add( name, String( defVal ) );
       return defVal;
     }
   }
@@ -445,8 +453,9 @@ namespace oz
     }
 #endif
 
-    if( vars.contains( name ) ) {
-      return vars.cachedValue();
+    const String* value = vars.find( name );
+    if( value != null ) {
+      return *value;
     }
     else {
       vars.add( name, defVal );

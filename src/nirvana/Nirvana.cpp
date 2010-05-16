@@ -31,7 +31,7 @@ namespace nirvana
   void Nirvana::sync()
   {
     // remove minds of removed bots
-    for( typeof( minds.iter() ) i = minds.iter(); !i.isPassed(); ) {
+    for( auto i = minds.iter(); !i.isPassed(); ) {
       Mind* mind = i;
       ++i;
 
@@ -48,8 +48,9 @@ namespace nirvana
         const Bot* bot = static_cast<const Bot*>( obj );
         const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
-        if( mindClasses.contains( clazz->mindType ) ) {
-          minds << mindClasses.cachedValue().create( bot->index );
+        MindCtor* value = mindClasses.find( clazz->mindType );
+        if( value != null ) {
+          minds << value->create( bot->index );
         }
         else if( !clazz->mindType.isEmpty() ) {
           throw Exception( "Invalid mind type" );

@@ -289,13 +289,13 @@ namespace oz
 //        leafs[i].nBrushes = 0;
       }
       else {
-        mins.x = min( mins.x, leafs[i].mins.x );
-        mins.y = min( mins.y, leafs[i].mins.y );
-        mins.z = min( mins.z, leafs[i].mins.z );
+        mins.x = Math::min( mins.x, leafs[i].mins.x );
+        mins.y = Math::min( mins.y, leafs[i].mins.y );
+        mins.z = Math::min( mins.z, leafs[i].mins.z );
 
-        maxs.x = max( maxs.x, leafs[i].maxs.x );
-        maxs.y = max( maxs.y, leafs[i].maxs.y );
-        maxs.z = max( maxs.z, leafs[i].maxs.z );
+        maxs.x = Math::max( maxs.x, leafs[i].maxs.x );
+        maxs.y = Math::max( maxs.y, leafs[i].maxs.y );
+        maxs.z = Math::max( maxs.z, leafs[i].maxs.z );
       }
     }
 

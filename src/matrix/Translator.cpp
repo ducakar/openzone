@@ -199,7 +199,8 @@ namespace oz
         classConfig.clear();
         continue;
       }
-      if( !baseClasses.contains( classConfig["base"] ) ) {
+      const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
+      if( initFunc == null ) {
         log.println( "invalid base %s", classConfig["base"].cstr() );
         classConfig.clear();
         continue;
@@ -209,7 +210,7 @@ namespace oz
         classConfig.clear();
         continue;
       }
-      classes.add( baseName, baseClasses.cachedValue()( baseName, &classConfig ) );
+      classes.add( baseName, ( *initFunc )( baseName, &classConfig ) );
       classConfig.clear();
 
       log.println( "%s", baseName.cstr() );

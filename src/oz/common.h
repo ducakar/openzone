@@ -27,13 +27,14 @@ namespace oz
    * \def null
    * It is equivalent to NULL macro but it looks prettier.
    */
-# define null __null
+# define null nullptr
 
   /**
    * signed byte
    * It should be used where char must be signed (otherwise char may be either signed or unsigned
    * depeneding on the platform).
    */
+# define byte byte
   typedef signed   char  byte;
 
   /**
@@ -41,21 +42,25 @@ namespace oz
    * It should be used where char must be unsigned (otherwise char may be either signed or unsigned
    * depeneding on the platform).
    */
+# define ubyte ubyte
   typedef unsigned char  ubyte;
 
   /**
    * unsigned short integer
    */
+# define ushort ushort
   typedef unsigned short ushort;
 
   /**
    * unsigned integer
    */
+# define uint uint
   typedef unsigned int   uint;
 
   /**
    * unsigned long integer
    */
+# define ulong ulong
   typedef unsigned long  ulong;
 
   /**
@@ -105,17 +110,6 @@ namespace oz
   }
 
   /**
-   * Absolute value.
-   * @param a
-   * @return absolute value
-   */
-  template <typename Value>
-  inline Value abs( const Value& a )
-  {
-    return a < 0 ? -a : a;
-  }
-
-  /**
    * Minimum.
    * @param a
    * @param b
@@ -123,18 +117,6 @@ namespace oz
    */
   template <typename Value>
   inline const Value& min( const Value& a, const Value& b )
-  {
-    return a < b ? a : b;
-  }
-
-  /**
-   * Minimum.
-   * @param a
-   * @param b
-   * @return minimum of a and b
-   */
-  template <typename Value>
-  inline Value& min( Value& a, Value& b )
   {
     return a < b ? a : b;
   }
@@ -152,18 +134,6 @@ namespace oz
   }
 
   /**
-   * Maximum.
-   * @param a
-   * @param b
-   * @return maximum of a and b
-   */
-  template <typename Value>
-  inline Value& max( Value& a, Value& b )
-  {
-    return a > b ? a : b;
-  }
-
-  /**
    * Bound c between a and b. Equals to max( min( c, b ), a ).
    * @param c
    * @param a
@@ -172,21 +142,6 @@ namespace oz
    */
   template <typename Value>
   inline const Value& bound( const Value& c, const Value& a, const Value& b )
-  {
-    assert( a <= b );
-
-    return c < a ? a : ( c > b ? b : c );
-  }
-
-  /**
-   * Bound c between a and b. Equals to max( min( c, b ), a ).
-   * @param c
-   * @param a
-   * @param b
-   * @return clamped value of c
-   */
-  template <typename Value>
-  inline Value& bound( Value& c, Value& a, Value& b )
   {
     assert( a <= b );
 
