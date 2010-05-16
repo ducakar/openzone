@@ -73,7 +73,6 @@ namespace client
       float                    waterDayVisibility;
       float                    waterNightVisibility;
 
-      float                    fogMinDistance;
       float                    particleRadius;
       bool                     drawAABBs;
       bool                     showAim;

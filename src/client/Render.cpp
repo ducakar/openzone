@@ -512,7 +512,6 @@ namespace client
     nightVisibility      = config.getSet( "render.nightVisibility",      100.0f );
     waterDayVisibility   = config.getSet( "render.waterDayVisibility",   8.0f );
     waterNightVisibility = config.getSet( "render.waterNightVisibility", 4.0f );
-    fogMinDistance       = config.getSet( "render.fog.minDistance",      0.0f );
     particleRadius       = config.getSet( "render.particleRadius",       0.5f );
     drawAABBs            = config.getSet( "render.drawAABBs",            false );
     showAim              = config.getSet( "render.showAim",              false );
@@ -533,7 +532,7 @@ namespace client
 
     // fog
     glFogi( GL_FOG_MODE, GL_LINEAR );
-    glFogf( GL_FOG_START, fogMinDistance );
+    glFogf( GL_FOG_START, 0.0f );
 
     // lighting
     glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
