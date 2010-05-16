@@ -11,5 +11,9 @@
 
 #define GL_GLEXT_PROTOTYPES
 
-#define OZ_VBO_OFFSET( VertexStruct, member ) \
-  reinterpret_cast<const void*>( offsetof( VertexStruct, member ) )
+#define OZ_VBO_OFFSET( index, Type ) \
+  reinterpret_cast<const void*>( ( index ) * sizeof( Type ) )
+
+#define OZ_VBO_OFFSETOF( index, VertexStruct, member ) \
+  reinterpret_cast<const void*> \
+  ( ( index ) * sizeof( VertexStruct ) + offsetof( VertexStruct, member ) )
