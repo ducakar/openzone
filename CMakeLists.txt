@@ -4,11 +4,12 @@ include( CheckLibraryExists )
 
 project( openzone C CXX )
 
+option( OZ_ENABLE_ASSERT "Enable assertions (lots of sanity checks, for debug purpuses)" ON )
 option( OZ_GNU_MATH "Use GCC math builtins (no need to include <cmath> and faster calls in debug mode)" ON )
-option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make heap usage statistics" OFF )
-option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
+option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make heap usage statistics" ON )
+option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." OFF )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
-option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in config files" OFF )
+option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in config files" ON )
 
 # compiler and linker flags
 set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wconversion -Wdisabled-optimization" )
@@ -51,7 +52,7 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -fomit-frame-pointer -ffast-math ${arch
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
 
 if( NOT CMAKE_BUILD_TYPE )
-	set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE )
+    set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE )
 endif()
 
 if( CMAKE_BUILD_TYPE STREQUAL Debug )

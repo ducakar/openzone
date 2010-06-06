@@ -12,7 +12,7 @@
 namespace oz
 {
 
-  template <typename Type, int SIZE = 256>
+  template <typename Type = nil, int SIZE = 256>
   class HashString
   {
     private:
@@ -40,138 +40,7 @@ namespace oz
     public:
 
       /**
-       * HashString iterator.
-       */
-      class Iterator : public IteratorBase<Elem>
-      {
-        private:
-
-          typedef IteratorBase<Elem> B;
-
-          Elem* const* const data;
-          int index;
-
-        public:
-
-          /**
-           * Default constructor returns a dummy passed iterator
-           * @return
-           */
-          explicit Iterator() : B( null )
-          {}
-
-          /**
-           * Make iterator for given HashString. After creation it points to first element.
-           * @param t
-           */
-          explicit Iterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
-          {
-            while( B::elem == null && index < SIZE - 1 ) {
-              ++index;
-              B::elem = data[index];
-            }
-          }
-
-          /**
-           * Advance to the next element.
-           * @param
-           */
-          Iterator& operator ++ ()
-          {
-            assert( B::elem != null );
-
-            if( B::elem->next[0] != null ) {
-              B::elem = B::elem->next[0];
-            }
-            else if( index < SIZE - 1 ) {
-              do {
-                ++index;
-                B::elem = data[index];
-              }
-              while( B::elem == null && index < SIZE - 1 );
-            }
-            else {
-              B::elem = null;
-            }
-            return *this;
-          }
-
-          /**
-           * @return current element's key
-           */
-          const String& key() const
-          {
-            return B::elem->key;
-          }
-
-          /**
-           * @return reference to current element's value
-           */
-          Type& value()
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return constant reference to current element's value
-           */
-          const Type& value() const
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return pointer to current element
-           */
-          operator Type* ()
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return constant pointer to current element
-           */
-          operator const Type* () const
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return reference to current element
-           */
-          Type& operator * ()
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return constant reference to current element
-           */
-          const Type& operator * () const
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return non-constant access to member
-           */
-          Type* operator -> ()
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return constant access to member
-           */
-          const Type* operator -> () const
-          {
-            return &B::elem->value;
-          }
-
-      };
-
-      /**
-       * HashString constant iterator.
+       * Constant HashString iterator.
        */
       class CIterator : public CIteratorBase<Elem>
       {
@@ -269,6 +138,137 @@ namespace oz
 
       };
 
+      /**
+       * HashString iterator.
+       */
+      class Iterator : public IteratorBase<Elem>
+      {
+        private:
+
+          typedef IteratorBase<Elem> B;
+
+          Elem* const* const data;
+          int index;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit Iterator() : B( null )
+          {}
+
+          /**
+           * Make iterator for given HashString. After creation it points to first element.
+           * @param t
+           */
+          explicit Iterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          {
+            while( B::elem == null && index < SIZE - 1 ) {
+              ++index;
+              B::elem = data[index];
+            }
+          }
+
+          /**
+           * Advance to the next element.
+           * @param
+           */
+          Iterator& operator ++ ()
+          {
+            assert( B::elem != null );
+
+            if( B::elem->next[0] != null ) {
+              B::elem = B::elem->next[0];
+            }
+            else if( index < SIZE - 1 ) {
+              do {
+                ++index;
+                B::elem = data[index];
+              }
+              while( B::elem == null && index < SIZE - 1 );
+            }
+            else {
+              B::elem = null;
+            }
+            return *this;
+          }
+
+          /**
+           * @return current element's key
+           */
+          const String& key() const
+          {
+            return B::elem->key;
+          }
+
+          /**
+           * @return constant reference to current element's value
+           */
+          const Type& value() const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return reference to current element's value
+           */
+          Type& value()
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return constant pointer to current element
+           */
+          operator const Type* () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return pointer to current element
+           */
+          operator Type* ()
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return constant reference to current element
+           */
+          const Type& operator * () const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return reference to current element
+           */
+          Type& operator * ()
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return constant access to member
+           */
+          const Type* operator -> () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return non-constant access to member
+           */
+          Type* operator -> ()
+          {
+            return &B::elem->value;
+          }
+
+      };
+
     private:
 
       Pool<Elem, 0, SIZE> pool;
@@ -318,7 +318,7 @@ namespace oz
         while( chain != null ) {
           Elem* next = chain->next[0];
 
-          pool.free( chain );
+          pool.dealloc( chain );
           chain = next;
         }
       }
@@ -333,7 +333,7 @@ namespace oz
           Elem* next = chain->next[0];
 
           delete chain->value;
-          pool.free( chain );
+          pool.dealloc( chain );
           chain = next;
         }
       }
@@ -426,19 +426,19 @@ namespace oz
       }
 
       /**
-       * @return iterator for this HashString
-       */
-      Iterator iter() const
-      {
-        return Iterator( *this );
-      }
-
-      /**
        * @return constant iterator for this HashString
        */
       CIterator citer() const
       {
         return CIterator( *this );
+      }
+
+      /**
+       * @return iterator for this HashString
+       */
+      Iterator iter() const
+      {
+        return Iterator( *this );
       }
 
       /**
@@ -497,27 +497,6 @@ namespace oz
       /**
        * Find element with given value
        * @param key
-       * @return pointer to value of given key
-       */
-      Type* find( const char* key )
-      {
-        int   i = String::hash( key ) % SIZE;
-        Elem* p = data[i];
-
-        while( p != null ) {
-          if( p->key.equals( key ) ) {
-            return &p->value;
-          }
-          else {
-            p = p->next[0];
-          }
-        }
-        return null;
-      }
-
-      /**
-       * Find element with given value
-       * @param key
        * @return constant pointer to value of given key
        */
       const Type* find( const char* key ) const
@@ -537,28 +516,24 @@ namespace oz
       }
 
       /**
-       * If given key exists, return reference to it's value.
-       * Only use this function if you are certain that the key exists.
+       * Find element with given value
        * @param key
-       * @return reference to value associated to the given key
+       * @return pointer to value of given key
        */
-      Type& operator [] ( const char* key )
+      Type* find( const char* key )
       {
         int   i = String::hash( key ) % SIZE;
         Elem* p = data[i];
 
         while( p != null ) {
           if( p->key.equals( key ) ) {
-            return p->value;
+            return &p->value;
           }
           else {
             p = p->next[0];
           }
         }
-
-        assert( false );
-
-        return data[0]->value;
+        return null;
       }
 
       /**
@@ -587,11 +562,36 @@ namespace oz
       }
 
       /**
+       * If given key exists, return reference to it's value.
+       * Only use this function if you are certain that the key exists.
+       * @param key
+       * @return reference to value associated to the given key
+       */
+      Type& operator [] ( const char* key )
+      {
+        int   i = String::hash( key ) % SIZE;
+        Elem* p = data[i];
+
+        while( p != null ) {
+          if( p->key.equals( key ) ) {
+            return p->value;
+          }
+          else {
+            p = p->next[0];
+          }
+        }
+
+        assert( false );
+
+        return data[0]->value;
+      }
+
+      /**
        * Add new element. The key must not yet exist in this HashString.
        * @param key
        * @param value
        */
-      Type* add( const char* key, const Type& value )
+      Type* add( const char* key, const Type& value = Type() )
       {
         assert( !contains( key ) );
 
@@ -611,7 +611,7 @@ namespace oz
        * @param key
        * @param value
        */
-      Type* add( const String& key, const Type& value )
+      Type* add( const String& key, const Type& value = Type() )
       {
         assert( !contains( key ) );
 
@@ -639,7 +639,7 @@ namespace oz
         while( p != null ) {
           if( p->key.equals( key ) ) {
             *prev = p->next[0];
-            pool.free( p );
+            pool.dealloc( p );
             --count;
             return;
           }

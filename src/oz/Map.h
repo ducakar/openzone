@@ -15,7 +15,7 @@
 namespace oz
 {
 
-  template <typename Key, typename Value = Nil, int GRANULARITY = 8>
+  template <typename Key, typename Value = nil, int GRANULARITY = 8>
   class Map
   {
     private:
@@ -36,106 +36,7 @@ namespace oz
     public:
 
       /**
-       * Vector iterator.
-       */
-      class Iterator : public oz::Iterator<Elem>
-      {
-        private:
-
-          typedef oz::Iterator<Elem> B;
-
-        public:
-
-          /**
-           * Default constructor returns a dummy passed iterator
-           * @return
-           */
-          explicit Iterator() : B( null, null )
-          {}
-
-          /**
-           * Make iterator for given vector. After creation it points to first element.
-           * @param m
-           */
-          explicit Iterator( const Map& m ) : B( m.data, m.data + m.count )
-          {}
-
-          /**
-           * @return current element's key
-           */
-          const Key& key() const
-          {
-            return B::elem->key;
-          }
-
-          /**
-           * @return reference to current element's value
-           */
-          Value& value()
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return constant reference to current element's value
-           */
-          const Value& value() const
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return pointer to current element
-           */
-          operator Value* ()
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return constant pointer to current element
-           */
-          operator const Value* () const
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return reference to current element
-           */
-          Value& operator * ()
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return constant reference to current element
-           */
-          const Value& operator * () const
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return non-constant access to member
-           */
-          Value* operator -> ()
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return constant access to member
-           */
-          const Value* operator -> () const
-          {
-            return &B::elem->value;
-          }
-
-      };
-
-      /**
-       * Vector constant iterator.
+       * Constant Map iterator.
        */
       class CIterator : public oz::CIterator<Elem>
       {
@@ -201,6 +102,105 @@ namespace oz
 
       };
 
+      /**
+       * Map iterator.
+       */
+      class Iterator : public oz::Iterator<Elem>
+      {
+        private:
+
+          typedef oz::Iterator<Elem> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit Iterator() : B( null, null )
+          {}
+
+          /**
+           * Make iterator for given vector. After creation it points to first element.
+           * @param m
+           */
+          explicit Iterator( const Map& m ) : B( m.data, m.data + m.count )
+          {}
+
+          /**
+           * @return current element's key
+           */
+          const Key& key() const
+          {
+            return B::elem->key;
+          }
+
+          /**
+           * @return constant reference to current element's value
+           */
+          const Value& value() const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return reference to current element's value
+           */
+          Value& value()
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return constant pointer to current element
+           */
+          operator const Value* () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return pointer to current element
+           */
+          operator Value* ()
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return constant reference to current element
+           */
+          const Value& operator * () const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return reference to current element
+           */
+          Value& operator * ()
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return constant access to member
+           */
+          const Value* operator -> () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return non-constant access to member
+           */
+          Value* operator -> ()
+          {
+            return &B::elem->value;
+          }
+
+      };
+
     private:
 
       // Pointer to data array
@@ -217,7 +217,7 @@ namespace oz
       {
         if( size == count ) {
           size *= 2;
-          data = Alloc::reallocate( data, count, size );
+          data = Alloc::realloc( data, count, size );
         }
       }
 
@@ -288,14 +288,14 @@ namespace oz
       /**
        * Create empty map with initial capacity 8.
        */
-      explicit Map() : data( Alloc::allocate<Elem>( 8 ) ), size( 8 ), count( 0 )
+      explicit Map() : data( Alloc::alloc<Elem>( 8 ) ), size( 8 ), count( 0 )
       {}
 
       /**
        * Create empty map with given initial capacity.
        * @param initSize
        */
-      explicit Map( int initSize ) : data( Alloc::allocate<Elem>( initSize ) ),
+      explicit Map( int initSize ) : data( Alloc::alloc<Elem>( initSize ) ),
           size( initSize ), count( 0 )
       {}
 
@@ -303,7 +303,7 @@ namespace oz
        * Copy constructor.
        * @param m
        */
-      Map( const Map& m ) : data( Alloc::allocate<Elem>( m.size ) ),
+      Map( const Map& m ) : data( Alloc::alloc<Elem>( m.size ) ),
           size( m.size ), count( m.count )
       {
         aConstruct( data, m.data, count );
@@ -315,7 +315,7 @@ namespace oz
       ~Map()
       {
         aDestruct( data, count );
-        Alloc::deallocate( data );
+        Alloc::dealloc( data );
       }
 
       /**
@@ -330,8 +330,8 @@ namespace oz
         aDestruct( data, count );
         // create new data array of the new data doesn't fit, keep the old one otherwise
         if( size < m.count ) {
-          Alloc::deallocate( data );
-          data = Alloc::allocate<Elem>( m.size );
+          Alloc::dealloc( data );
+          data = Alloc::alloc<Elem>( m.size );
         }
         aConstruct( data, m.data, m.count );
         count = m.count;
@@ -408,7 +408,7 @@ namespace oz
 
         if( newSize < size ) {
           size = newSize;
-          data = Alloc::reallocate( data, count, size );
+          data = Alloc::realloc( data, count, size );
         }
       }
 
@@ -476,16 +476,6 @@ namespace oz
       }
 
       /**
-       * @return reference to first element
-       */
-      Value& first()
-      {
-        assert( count != 0 );
-
-        return data[0];
-      }
-
-      /**
        * @return constant reference to first element
        */
       const Value& first() const
@@ -496,9 +486,19 @@ namespace oz
       }
 
       /**
-       * @return reference to last element
+       * @return reference to first element
        */
-      Value& last()
+      Value& first()
+      {
+        assert( count != 0 );
+
+        return data[0];
+      }
+
+      /**
+       * @return constant reference to last element
+       */
+      const Value& last() const
       {
         assert( count != 0 );
 
@@ -506,9 +506,9 @@ namespace oz
       }
 
       /**
-       * @return constant reference to last element
+       * @return reference to last element
        */
-      const Value& last() const
+      Value& last()
       {
         assert( count != 0 );
 
@@ -548,14 +548,12 @@ namespace oz
         ensureCapacity();
 
         if( index == count ) {
-          // just add to the end, no need for moving elements
           new( data + count ) Elem( k, v );
         }
         else {
-          new( data + count ) Elem();
-          aReverseCopy( data + index + 1, data + index, count - index );
-          data[index].key = k;
-          data[index].value = v;
+          new( data + count ) Elem( data[count - 1] );
+          aReverseCopy( data + index + 1, data + index, count - index - 1 );
+          data[index] = Elem( k, v );
         }
         ++count;
       }

@@ -116,7 +116,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
-      operator ulong* ()
+      operator const ulong* () const
       {
         return data;
       }
@@ -126,7 +126,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
-      operator const ulong* () const
+      operator ulong* ()
       {
         return data;
       }
@@ -137,8 +137,11 @@ namespace oz
        */
       void setUnitSize( int nUnits )
       {
-        assert( size != nUnits );
+        soft_assert( size != nUnits );
 
+        if( nUnits != size ) {
+          return;
+        }
         if( data != null ) {
           delete[] data;
         }

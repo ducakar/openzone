@@ -19,6 +19,33 @@ namespace oz
     public:
 
       /**
+       * Constant Vector iterator.
+       */
+      class CIterator : public oz::CIterator<Type>
+      {
+        private:
+
+          typedef oz::CIterator<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null, null )
+          {}
+
+          /**
+           * Make iterator for given vector. After creation it points to first element.
+           * @param v
+           */
+          explicit CIterator( const Vector& v ) : B( v.data, v.data + v.count )
+          {}
+
+      };
+
+      /**
        * Vector iterator.
        */
       class Iterator : public oz::Iterator<Type>
@@ -45,33 +72,6 @@ namespace oz
 
       };
 
-      /**
-       * Vector constant iterator.
-       */
-      class CIterator : public oz::CIterator<Type>
-      {
-        private:
-
-          typedef oz::CIterator<Type> B;
-
-        public:
-
-          /**
-           * Default constructor returns a dummy passed iterator
-           * @return
-           */
-          explicit CIterator() : B( null, null )
-          {}
-
-          /**
-           * Make iterator for given vector. After creation it points to first element.
-           * @param v
-           */
-          explicit CIterator( const Vector& v ) : B( v.data, v.data + v.count )
-          {}
-
-      };
-
     private:
 
       // Pointer to data array
@@ -88,7 +88,7 @@ namespace oz
       {
         if( size == count ) {
           size *= 2;
-          data = Alloc::reallocate( data, count, size );
+          data = Alloc::realloc( data, count, size );
         }
       }
 
@@ -103,7 +103,7 @@ namespace oz
           }
           while( size < desiredSize );
 
-          data = Alloc::reallocate( data, count, size );
+          data = Alloc::realloc( data, count, size );
         }
       }
 
@@ -112,14 +112,14 @@ namespace oz
       /**
        * Create empty vector with initial capacity 8.
        */
-      explicit Vector() : data( Alloc::allocate<Type>( 8 ) ), size( 8 ), count( 0 )
+      explicit Vector() : data( Alloc::alloc<Type>( 8 ) ), size( 8 ), count( 0 )
       {}
 
       /**
        * Create empty vector with given initial capacity.
        * @param initSize
        */
-      explicit Vector( int initSize ) : data( Alloc::allocate<Type>( initSize ) ),
+      explicit Vector( int initSize ) : data( Alloc::alloc<Type>( initSize ) ),
           size( initSize ), count( 0 )
       {}
 
@@ -127,7 +127,7 @@ namespace oz
        * Copy constructor.
        * @param v
        */
-      Vector( const Vector& v ) : data( Alloc::allocate<Type>( v.size ) ),
+      Vector( const Vector& v ) : data( Alloc::alloc<Type>( v.size ) ),
           size( v.size ), count( v.count )
       {
         aConstruct( data, v.data, count );
@@ -139,7 +139,7 @@ namespace oz
       ~Vector()
       {
         aDestruct( data, count );
-        Alloc::deallocate( data );
+        Alloc::dealloc( data );
       }
 
       /**
@@ -154,8 +154,8 @@ namespace oz
         aDestruct( data, count );
         // create new data array of the new data doesn't fit, keep the old one otherwise
         if( size < v.count ) {
-          Alloc::deallocate( data );
-          data = Alloc::allocate<Type>( v.size );
+          Alloc::dealloc( data );
+          data = Alloc::alloc<Type>( v.size );
         }
         aConstruct( data, v.data, v.count );
         count = v.count;
@@ -183,14 +183,6 @@ namespace oz
       }
 
       /**
-       * @return iterator for this vector
-       */
-      Iterator iter() const
-      {
-        return Iterator( *this );
-      }
-
-      /**
        * @return constant iterator for this vector
        */
       CIterator citer() const
@@ -199,13 +191,11 @@ namespace oz
       }
 
       /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return non-constant pointer to data array
+       * @return iterator for this vector
        */
-      operator Type* ()
+      Iterator iter() const
       {
-        return data;
+        return Iterator( *this );
       }
 
       /**
@@ -214,6 +204,16 @@ namespace oz
        * @return constant pointer to data array
        */
       operator const Type* () const
+      {
+        return data;
+      }
+
+      /**
+       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
+       * overflows if you don't check the size of <code>data</code> array.
+       * @return non-constant pointer to data array
+       */
+      operator Type* ()
       {
         return data;
       }
@@ -252,7 +252,7 @@ namespace oz
 
         if( newSize < size ) {
           size = newSize;
-          data = Alloc::reallocate( data, count, size );
+          data = Alloc::realloc( data, count, size );
         }
       }
 
@@ -272,9 +272,9 @@ namespace oz
 
       /**
        * @param i
-       * @return reference i-th element
+       * @return constant reference i-th element
        */
-      Type& operator [] ( int i )
+      const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < count );
 
@@ -283,9 +283,9 @@ namespace oz
 
       /**
        * @param i
-       * @return constant reference i-th element
+       * @return reference i-th element
        */
-      const Type& operator [] ( int i ) const
+      Type& operator [] ( int i )
       {
         assert( 0 <= i && i < count );
 
@@ -313,16 +313,6 @@ namespace oz
       }
 
       /**
-       * @return reference to first element
-       */
-      Type& first()
-      {
-        assert( count != 0 );
-
-        return data[0];
-      }
-
-      /**
        * @return constant reference to first element
        */
       const Type& first() const
@@ -333,9 +323,19 @@ namespace oz
       }
 
       /**
-       * @return reference to last element
+       * @return reference to first element
        */
-      Type& last()
+      Type& first()
+      {
+        assert( count != 0 );
+
+        return data[0];
+      }
+
+      /**
+       * @return constant reference to last element
+       */
+      const Type& last() const
       {
         assert( count != 0 );
 
@@ -343,9 +343,9 @@ namespace oz
       }
 
       /**
-       * @return constant reference to last element
+       * @return reference to last element
        */
-      const Type& last() const
+      Type& last()
       {
         assert( count != 0 );
 
@@ -369,7 +369,7 @@ namespace oz
       void add()
       {
         ensureCapacity();
-        new( data + count ) Type();
+        new( data + count ) Type;
         ++count;
       }
 
@@ -486,9 +486,15 @@ namespace oz
         assert( 0 <= index && index <= count );
 
         ensureCapacity();
-        new( data + count ) Type();
-        aReverseCopy( data + index + 1, data + index, count - index );
-        data[index] = e;
+        if( index == count ) {
+          new( data + count ) Type( e );
+        }
+        else {
+          new( data + count ) Type( data[count - 1] );
+          aReverseCopy( data + index + 1, data + index, count - index - 1 );
+          data[index] = e;
+        }
+
         ++count;
       }
 

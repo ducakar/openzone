@@ -45,6 +45,44 @@ namespace oz
     public:
 
       /**
+       * Constant List iterator.
+       */
+      class CIterator : public CIteratorBase<Type>
+      {
+        private:
+
+          typedef CIteratorBase<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null )
+          {}
+
+          /**
+           * Make iterator for given list. After creation it points to first element.
+           * @param l
+           */
+          explicit CIterator( const List& l ) : B( l.firstElem )
+          {}
+
+          /**
+           * Advance to next element.
+           */
+          CIterator& operator ++ ()
+          {
+            assert( B::elem != null );
+
+            B::elem = B::elem->next[INDEX];
+            return *this;
+          }
+
+      };
+
+      /**
        * List iterator.
        */
       class Iterator : public IteratorBase<Type>
@@ -73,44 +111,6 @@ namespace oz
            * Advance to next element.
            */
           Iterator& operator ++ ()
-          {
-            assert( B::elem != null );
-
-            B::elem = B::elem->next[INDEX];
-            return *this;
-          }
-
-      };
-
-      /**
-       * List constant iterator.
-       */
-      class CIterator : public CIteratorBase<Type>
-      {
-        private:
-
-          typedef CIteratorBase<Type> B;
-
-        public:
-
-          /**
-           * Default constructor returns a dummy passed iterator
-           * @return
-           */
-          explicit CIterator() : B( null )
-          {}
-
-          /**
-           * Make iterator for given list. After creation it points to first element.
-           * @param l
-           */
-          explicit CIterator( const List& l ) : B( l.firstElem )
-          {}
-
-          /**
-           * Advance to next element.
-           */
-          CIterator& operator ++ ()
           {
             assert( B::elem != null );
 
@@ -219,14 +219,6 @@ namespace oz
       }
 
       /**
-       * @return iterator for this list
-       */
-      Iterator iter() const
-      {
-        return Iterator( *this );
-      }
-
-      /**
        * @return constant iterator for this list
        */
       CIterator citer() const
@@ -235,11 +227,11 @@ namespace oz
       }
 
       /**
-       * @return pointer that matches the passed iterator
+       * @return iterator for this list
        */
-      const Type* end() const
+      Iterator iter() const
       {
-        return null;
+        return Iterator( *this );
       }
 
       /**
@@ -286,14 +278,6 @@ namespace oz
       }
 
       /**
-       * @return pointer to first element in the list
-       */
-      Type* first()
-      {
-        return firstElem;
-      }
-
-      /**
        * @return constant pointer to first element in the list
        */
       const Type* first() const
@@ -302,16 +286,11 @@ namespace oz
       }
 
       /**
-       * @return pointer to last element in the list (linear time complexity)
+       * @return pointer to first element in the list
        */
-      Type* last()
+      Type* first()
       {
-        Type* last = firstElem;
-
-        while( last != null ) {
-          last = last->next[INDEX];
-        }
-        return last;
+        return firstElem;
       }
 
       /**
@@ -320,6 +299,19 @@ namespace oz
       const Type* last() const
       {
         const Type* last = firstElem;
+
+        while( last != null ) {
+          last = last->next[INDEX];
+        }
+        return last;
+      }
+
+      /**
+       * @return pointer to last element in the list (linear time complexity)
+       */
+      Type* last()
+      {
+        Type* last = firstElem;
 
         while( last != null ) {
           last = last->next[INDEX];

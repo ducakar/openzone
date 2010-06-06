@@ -37,7 +37,22 @@
 
 #else
 
-# include <cmath>
+# include <math.h>
+
+# ifdef _MSC_VER
+
+#  include <cfloat>
+
+#  define fminf( x, y )		( ( x ) < ( y ) ? ( x ) : ( y ) )
+#  define fmaxf( x, y )		( ( x ) > ( y ) ? ( x ) : ( y ) )
+#  define roundf( x )		( ( x ) < 0.0f ? ceilf( ( x ) - 0.5f ) : floorf( ( x ) + 0.5f ) )
+#  define sincosf( x, s, c )	( *( s ) = sinf( x ), *( c ) = cosf( x ) )
+#  define nanf( x )		float( 0.0f * HUGE_VAL )
+#  define INFINITY		float( HUGE_VAL )
+#  define isnanf( x )		_isnan( x )
+#  define isinff( x )		( !_isnan( x ) && !_finite( x ) )
+
+# endif
 
 #endif
 
@@ -304,5 +319,20 @@ namespace oz
 # undef INFINITY
 # undef isnanf
 # undef isinff
+
+#else
+
+# ifdef _MSC_VER
+
+#  undef fminf
+#  undef fmaxf
+#  undef roundf
+#  undef sincosf
+#  undef nanf
+#  undef INFINITY
+#  undef isnanf
+#  undef isinff
+
+# endif
 
 #endif

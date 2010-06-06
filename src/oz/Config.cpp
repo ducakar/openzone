@@ -272,7 +272,7 @@ namespace oz
 
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 
@@ -297,7 +297,7 @@ namespace oz
   {
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 
@@ -314,7 +314,7 @@ namespace oz
   {
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 
@@ -331,7 +331,7 @@ namespace oz
   {
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 
@@ -348,7 +348,7 @@ namespace oz
   {
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 
@@ -369,7 +369,7 @@ namespace oz
 
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 
@@ -395,7 +395,7 @@ namespace oz
   {
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 
@@ -413,7 +413,7 @@ namespace oz
   {
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 
@@ -431,7 +431,7 @@ namespace oz
   {
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 
@@ -449,7 +449,7 @@ namespace oz
   {
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
-      usedVars.add( name, true );
+      usedVars.add( name );
     }
 #endif
 

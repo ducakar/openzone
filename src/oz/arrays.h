@@ -13,6 +13,77 @@ namespace oz
 {
 
   /**
+   * Constant array iterator
+   */
+  template <typename Type>
+  class CIterator : public CIteratorBase<Type>
+  {
+    private:
+
+      typedef CIteratorBase<Type> B;
+
+    protected:
+
+      /**
+       * Successor of the last element.
+       * Is is used to determine when iterator becomes invalid.
+       */
+      const Type* const past;
+
+    public:
+
+      /**
+       * Default constructor returns a dummy passed iterator
+       * @return
+       */
+      explicit CIterator() : B( null ), past( null )
+      {}
+
+      /**
+       * @param start first element for forward iterator or successor of last element for backward
+       * iterator
+       * @param past_ successor of last element for forward iterator or predecessor of first element
+       * for backward iterator
+       */
+      explicit CIterator( const Type* start, const Type* past_ ) : B( start ), past( past_ )
+      {}
+
+      /**
+       * Return true while iterator has not passed the last element.
+       * @return true if iterator is passed
+       */
+      bool isPassed() const
+      {
+        return B::elem == past;
+      }
+
+      /**
+       * Advance to next element.
+       * @return
+       */
+      CIterator& operator ++ ()
+      {
+        assert( B::elem != past );
+
+        ++B::elem;
+        return *this;
+      }
+
+      /**
+       * Go to previous element.
+       * @return
+       */
+      CIterator& operator -- ()
+      {
+        assert( B::elem != past );
+
+        --B::elem;
+        return *this;
+      }
+
+  };
+
+  /**
    * Array iterator
    */
   template <typename Type>
@@ -84,77 +155,6 @@ namespace oz
   };
 
   /**
-   * Array constant iterator
-   */
-  template <typename Type>
-  class CIterator : public CIteratorBase<Type>
-  {
-    private:
-
-      typedef CIteratorBase<Type> B;
-
-    protected:
-
-      /**
-       * Successor of the last element.
-       * Is is used to determine when iterator becomes invalid.
-       */
-      const Type* const past;
-
-    public:
-
-      /**
-       * Default constructor returns a dummy passed iterator
-       * @return
-       */
-      explicit CIterator() : B( null ), past( null )
-      {}
-
-      /**
-       * @param start first element for forward iterator or successor of last element for backward
-       * iterator
-       * @param past_ successor of last element for forward iterator or predecessor of first element
-       * for backward iterator
-       */
-      explicit CIterator( const Type* start, const Type* past_ ) : B( start ), past( past_ )
-      {}
-
-      /**
-       * Return true while iterator has not passed the last element.
-       * @return true if iterator is passed
-       */
-      bool isPassed() const
-      {
-        return B::elem == past;
-      }
-
-      /**
-       * Advance to next element.
-       * @return
-       */
-      CIterator& operator ++ ()
-      {
-        assert( B::elem != past );
-
-        ++B::elem;
-        return *this;
-      }
-
-      /**
-       * Go to previous element.
-       * @return
-       */
-      CIterator& operator -- ()
-      {
-        assert( B::elem != past );
-
-        --B::elem;
-        return *this;
-      }
-
-  };
-
-  /**
    * Make array iterator
    * Simplifies construction of array iterators.
    * Instead of
@@ -199,12 +199,11 @@ namespace oz
   template <typename Type>
   inline bool aEquals( const Type* aSrcA, const Type* aSrcB, int count )
   {
-    for( int i = 0; i < count; ++i ) {
-      if( aSrcA[i] != aSrcB[i] ) {
-        return false;
-      }
+    int i = 0;
+    while( i < count && aSrcA[i] == aSrcB[i] ) {
+      ++i;
     }
-    return true;
+    return i == count;
   }
 
   /**
@@ -225,7 +224,7 @@ namespace oz
   /**
    * Copy array from first to last element (memcpy).
    * In contrast with memcpy it calls constructor/destructor/assign when copying objects.
-   * On older GCCs it performs better than memopy on copying types bigger than one byte.
+   * On older GCCs it performs better than memcpy on copying types bigger than one byte.
    * @param aDest pointer to the first element in the destination array
    * @param aSrc pointer to the first element in the source array
    * @param count number of elements to be copied
@@ -236,8 +235,7 @@ namespace oz
     assert( aDest != aSrc );
 
     for( int i = 0; i < count; ++i ) {
-      Type t = aSrc[i];
-      aDest[i] = t;
+      aDest[i] = aSrc[i];
     }
   }
 
@@ -303,7 +301,7 @@ namespace oz
   inline void aConstruct( Type* aDest, int count )
   {
     for( int i = 0; i < count; ++i ) {
-      new( &aDest[i] ) Type();
+      new( &aDest[i] ) Type;
     }
   }
 
@@ -316,6 +314,19 @@ namespace oz
   inline void aConstruct( Type* aDest, const Type* aSrc, int count )
   {
     for( int i = 0; i < count; ++i ) {
+      new( &aDest[i] ) Type( aSrc[i] );
+    }
+  }
+
+  /**
+   * Construct elements in reverse direction via copy constructor from an already constructed array.
+   * @param aDest
+   * @param count
+   */
+  template <typename Type>
+  inline void aReverseConstruct( Type* aDest, const Type* aSrc, int count )
+  {
+    for( int i = count - 1; i >= 0; --i ) {
       new( &aDest[i] ) Type( aSrc[i] );
     }
   }

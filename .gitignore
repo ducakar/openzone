@@ -4,6 +4,7 @@
 /doxygen
 /tags
 /openzone.tag
+/deps
 
 *.gcno
 gmon.out

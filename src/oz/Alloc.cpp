@@ -11,7 +11,6 @@
 #include "oz.h"
 
 #include <cstdlib>
-#include <cstdio>
 
 namespace oz
 {
@@ -29,12 +28,12 @@ namespace oz
 
 #ifndef OZ_ALLOC_STATISTICS
 
-void* operator new ( oz::uint size )
+void* operator new ( oz::size_t size )
 {
   return malloc( size );
 }
 
-void* operator new[] ( oz::uint size )
+void* operator new[] ( oz::size_t size )
 {
   return malloc( size );
 }
@@ -51,9 +50,9 @@ void operator delete[] ( void* ptr )
 
 #else
 
-void* operator new ( oz::uint size )
+void* operator new ( oz::size_t size )
 {
-  oz::uint* p = reinterpret_cast<oz::uint*>( malloc( size + sizeof( oz::uint ) ) );
+  oz::size_t* p = reinterpret_cast<oz::size_t*>( malloc( size + sizeof( oz::size_t ) ) );
 
   if( p == null ) {
     throw Exception( "Bad allocation" );
@@ -72,9 +71,9 @@ void* operator new ( oz::uint size )
   return p + 1;
 }
 
-void* operator new[] ( oz::uint size )
+void* operator new[] ( oz::size_t size )
 {
-  oz::uint* p = reinterpret_cast<oz::uint*>( malloc( size + sizeof( oz::uint ) ) );
+  oz::size_t* p = reinterpret_cast<oz::size_t*>( malloc( size + sizeof( oz::size_t ) ) );
 
   if( p == null ) {
     throw Exception( "Bad allocation" );
@@ -95,7 +94,7 @@ void* operator new[] ( oz::uint size )
 
 void operator delete ( void* ptr )
 {
-  oz::uint* chunk = reinterpret_cast<oz::uint*>( ptr ) - 1;
+  oz::size_t* chunk = reinterpret_cast<oz::size_t*>( ptr ) - 1;
 
   --oz::Alloc::count;
   oz::Alloc::amount -= chunk[0];
@@ -105,7 +104,7 @@ void operator delete ( void* ptr )
 
 void operator delete[] ( void* ptr )
 {
-  oz::uint* chunk = reinterpret_cast<oz::uint*>( ptr ) - 1;
+  oz::size_t* chunk = reinterpret_cast<oz::size_t*>( ptr ) - 1;
 
   --oz::Alloc::count;
   oz::Alloc::amount -= chunk[0];

@@ -19,6 +19,33 @@ namespace oz
     public:
 
       /**
+       * Constant Array iterator.
+       */
+      class CIterator : public oz::CIterator<Type>
+      {
+        private:
+
+          typedef oz::CIterator<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null, null )
+          {}
+
+          /**
+           * Make iterator for given array. After creation it points to first element.
+           * @param v
+           */
+          explicit CIterator( const Array& a ) : B( a.data, a.data + SIZE )
+          {}
+
+      };
+
+      /**
        * Array iterator.
        */
       class Iterator : public oz::Iterator<Type>
@@ -41,33 +68,6 @@ namespace oz
            * @param v
            */
           explicit Iterator( Array& a ) : B( a.data, a.data + SIZE )
-          {}
-
-      };
-
-      /**
-       * Array constant iterator.
-       */
-      class CIterator : public oz::CIterator<Type>
-      {
-        private:
-
-          typedef oz::CIterator<Type> B;
-
-        public:
-
-          /**
-           * Default constructor returns a dummy passed iterator
-           * @return
-           */
-          explicit CIterator() : B( null, null )
-          {}
-
-          /**
-           * Make iterator for given array. After creation it points to first element.
-           * @param v
-           */
-          explicit CIterator( const Array& a ) : B( a.data, a.data + SIZE )
           {}
 
       };
@@ -114,27 +114,17 @@ namespace oz
       /**
        * @return iterator for this array
        */
-      Iterator iter()
-      {
-        return Iterator( *this );
-      }
-
-      /**
-       * @return iterator for this array
-       */
       CIterator citer()
       {
         return CIterator( *this );
       }
 
       /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return non-constant pointer to data array
+       * @return iterator for this array
        */
-      operator Type* ()
+      Iterator iter()
       {
-        return data;
+        return Iterator( *this );
       }
 
       /**
@@ -143,6 +133,16 @@ namespace oz
        * @return constant pointer to data array
        */
       operator const Type* () const
+      {
+        return data;
+      }
+
+      /**
+       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
+       * overflows if you don't check the size of <code>data</code> array.
+       * @return non-constant pointer to data array
+       */
+      operator Type* ()
       {
         return data;
       }
@@ -171,9 +171,9 @@ namespace oz
 
       /**
        * @param i
-       * @return reference i-th element
+       * @return constant reference i-th element
        */
-      Type& operator [] ( int i )
+      const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < SIZE );
 
@@ -182,9 +182,9 @@ namespace oz
 
       /**
        * @param i
-       * @return constant reference i-th element
+       * @return reference i-th element
        */
-      const Type& operator [] ( int i ) const
+      Type& operator [] ( int i )
       {
         assert( 0 <= i && i < SIZE );
 
@@ -212,14 +212,6 @@ namespace oz
       }
 
       /**
-       * @return reference to first element
-       */
-      Type& first()
-      {
-        return data[0];
-      }
-
-      /**
        * @return constant reference to first element
        */
       const Type& first() const
@@ -228,17 +220,25 @@ namespace oz
       }
 
       /**
-       * @return reference to last element
+       * @return reference to first element
        */
-      Type& last()
+      Type& first()
       {
-        return data[SIZE - 1];
+        return data[0];
       }
 
       /**
        * @return constant reference to last element
        */
       const Type& last() const
+      {
+        return data[SIZE - 1];
+      }
+
+      /**
+       * @return reference to last element
+       */
+      Type& last()
       {
         return data[SIZE - 1];
       }

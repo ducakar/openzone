@@ -21,6 +21,55 @@ namespace oz
     public:
 
       /**
+       * Constant Sparse iterator.
+       */
+      class CIterator : public oz::CIterator<Type>
+      {
+        private:
+
+          typedef oz::CIterator<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null, null )
+          {}
+
+          /**
+           * Make iterator for given Sparse. After creation it points to first element.
+           * @param s
+           */
+          explicit CIterator( const Sparse& s ) : B( s.data, s.data + s.size )
+          {}
+
+          /**
+           * Advance to next element.
+           * @return
+           */
+          CIterator& operator ++ ()
+          {
+            do {
+              ++B::elem;
+            }
+            while( B::elem != B::past && B::elem->nextSlot[INDEX] != -1 );
+
+            return *this;
+          }
+
+        private:
+
+          /**
+           * No iterating backwards.
+           * @return
+           */
+          CIterator& operator -- ();
+
+      };
+
+      /**
        * Sparse iterator.
        */
       class Iterator : public oz::Iterator<Type>
@@ -66,55 +115,6 @@ namespace oz
            * @return
            */
           Iterator& operator -- ();
-
-      };
-
-      /**
-       * Sparse constant iterator.
-       */
-      class CIterator : public oz::CIterator<Type>
-      {
-        private:
-
-          typedef oz::CIterator<Type> B;
-
-        public:
-
-          /**
-           * Default constructor returns a dummy passed iterator
-           * @return
-           */
-          explicit CIterator() : B( null, null )
-          {}
-
-          /**
-           * Make iterator for given Sparse. After creation it points to first element.
-           * @param s
-           */
-          explicit CIterator( const Sparse& s ) : B( s.data, s.data + s.size )
-          {}
-
-          /**
-           * Advance to next element.
-           * @return
-           */
-          CIterator& operator ++ ()
-          {
-            do {
-              ++B::elem;
-            }
-            while( B::elem != B::past && B::elem->nextSlot[INDEX] != -1 );
-
-            return *this;
-          }
-
-        private:
-
-          /**
-           * No iterating backwards.
-           * @return
-           */
-          CIterator& operator -- ();
 
       };
 
@@ -247,14 +247,6 @@ namespace oz
       }
 
       /**
-       * @return iterator for this vector
-       */
-      Iterator iter() const
-      {
-        return Iterator( *this );
-      }
-
-      /**
        * @return constant iterator for this vector
        */
       CIterator citer() const
@@ -263,13 +255,11 @@ namespace oz
       }
 
       /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return non-constant pointer to data array
+       * @return iterator for this vector
        */
-      operator Type* ()
+      Iterator iter() const
       {
-        return data;
+        return Iterator( *this );
       }
 
       /**
@@ -278,6 +268,16 @@ namespace oz
        * @return constant pointer to data array
        */
       operator const Type* () const
+      {
+        return data;
+      }
+
+      /**
+       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
+       * overflows if you don't check the size of <code>data</code> array.
+       * @return non-constant pointer to data array
+       */
+      operator Type* ()
       {
         return data;
       }
@@ -333,9 +333,9 @@ namespace oz
 
       /**
        * @param i
-       * @return reference i-th element
+       * @return constant reference i-th element
        */
-      Type& operator [] ( int i )
+      const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < size );
 
@@ -344,9 +344,9 @@ namespace oz
 
       /**
        * @param i
-       * @return constant reference i-th element
+       * @return reference i-th element
        */
-      const Type& operator [] ( int i ) const
+      Type& operator [] ( int i )
       {
         assert( 0 <= i && i < size );
 

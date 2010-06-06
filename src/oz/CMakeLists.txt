@@ -3,6 +3,8 @@ Alloc.cpp
 Alloc.h
 Array.h
 arrays.h
+assert.cpp
+assert.h
 Bitset.h
 common.h
 Config.cpp
