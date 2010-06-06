@@ -21,8 +21,8 @@
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
 public:\
-void* operator new ( uint ) { return pool.malloc(); } \
-void operator delete ( void* ptr ) { pool.free( ptr ); }
+void* operator new ( size_t ) { return pool.alloc(); } \
+void operator delete ( void* ptr ) { pool.dealloc( ptr ); }
 
 #else
 
@@ -34,15 +34,15 @@ void operator delete ( void* ptr ) { pool.free( ptr ); }
  * \def OZ_PLACEMENT_POOL_ALLOC( Type, INDEX )
  * Implement placement new operator, while non-placement new and delete are disabled.
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
- * object should be freed via <code>pool.free( object)</code> and a destructor should be called
+ * object should be freed via <code>pool.dealloc( object)</code> and a destructor should be called
  * manually before freeing.
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE ) \
 public: \
-void* operator new ( uint, Pool<Type, INDEX, SIZE>& pool ) { return pool.malloc(); } \
-void operator delete ( void*, Pool<Type, INDEX, SIZE>& ) {} \
+void* operator new ( size_t, Pool<Type, INDEX, SIZE>& pool ) { return pool.alloc(); } \
+void operator delete ( void* ptr, Pool<Type, INDEX, SIZE>& pool ) { pool.dealloc( ptr ); } \
 private: \
-void* operator new ( uint ); \
+void* operator new ( size_t ); \
 void operator delete ( void* );
 
 namespace oz
@@ -52,10 +52,6 @@ namespace oz
   class Pool
   {
     private:
-
-      // no copying
-      Pool( const Pool& );
-      Pool& operator = ( const Pool& );
 
       /**
        * Memory block.
@@ -71,9 +67,9 @@ namespace oz
 
         public:
 
-          Block* next[1];
+          Block* next;
 
-          explicit Block()
+          explicit Block( Block* next_ ) : next( next_ )
           {
             for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
               get( i )->next[INDEX] = get( i + 1 );
@@ -81,20 +77,20 @@ namespace oz
             get( BLOCK_SIZE - 1 )->next[INDEX] = null;
           }
 
-          Type* get( int i )
-          {
-            return reinterpret_cast<Type*>( data ) + i;
-          }
-
           const Type* get( int i ) const
           {
             return reinterpret_cast<const Type*>( data ) + i;
           }
 
+          Type* get( int i )
+          {
+            return reinterpret_cast<Type*>( data ) + i;
+          }
+
       };
 
       // List of allocated blocks
-      List<Block> blocks;
+      Block*      firstBlock;
       // Last freed block, null if none
       Type*       freeSlot;
       // Size of data blocks
@@ -102,13 +98,17 @@ namespace oz
       // Number of used slots in the pool
       int         count;
 
+      // no copying
+      Pool( const Pool& );
+      Pool& operator = ( const Pool& );
+
     public:
 
       /**
        * Create empty pool with initial capacity BLOCK_SIZE.
        * @param initSize
        */
-      explicit Pool() : freeSlot( null ), size( 0 ), count( 0 )
+      explicit Pool() : firstBlock( null ), freeSlot( null ), size( 0 ), count( 0 )
       {}
 
       /**
@@ -116,29 +116,27 @@ namespace oz
        */
       ~Pool()
       {
-        assert( count == 0 );
-
-        blocks.free();
+        free();
       }
 
       /**
        * Allocate a new element.
        * @param e
        */
-      void* malloc()
+      void* alloc()
       {
 #ifdef OZ_POOL_ALLOC
         ++count;
 
         if( freeSlot == null ) {
-          blocks << new Block();
-          freeSlot = blocks.first()->get( 1 );
+          firstBlock = new Block( firstBlock );
+          freeSlot = firstBlock->get( 1 );
           size += BLOCK_SIZE;
-          return blocks.first()->get( 0 );
+          return firstBlock->get( 0 );
         }
         else {
           Type* slot = freeSlot;
-          // static_cast to make it work with derived objects
+          // static_cast to make it with on derived classes
           freeSlot = static_cast<Type*>( slot->next[INDEX] );
           return slot;
         }
@@ -151,7 +149,7 @@ namespace oz
        * Free given element.
        * @param index
        */
-      void free( void* ptr )
+      void dealloc( void* ptr )
       {
 #ifdef OZ_POOL_ALLOC
         assert( count != 0 );
@@ -198,10 +196,19 @@ namespace oz
       {
         assert( count == 0 );
 
-        blocks.free();
+        Block* p = firstBlock;
+
+        while( p != null ) {
+          Block* next = p->next;
+
+          delete p;
+          p = next;
+        }
+
+        firstBlock = null;
+        freeSlot = null;
         size = 0;
         count = 0;
-        freeSlot = null;
       }
 
   };

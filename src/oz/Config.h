@@ -31,7 +31,7 @@ namespace oz
       // Hashtable of variables.
       HashString<String, SIZE> vars;
 #ifdef OZ_VERBOSE_CONFIG
-      mutable HashString<bool, SIZE> usedVars;
+      mutable HashString<nil, SIZE> usedVars;
 #endif
 
       bool loadConf( const char* file );
@@ -88,7 +88,7 @@ namespace oz
       const String& operator [] ( const char* key ) const
       {
 #ifdef OZ_VERBOSE_CONFIG
-        usedVars.add( key, true );
+        usedVars.add( key );
 #endif
         return vars[key];
       }

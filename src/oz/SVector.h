@@ -18,6 +18,33 @@ namespace oz
     public:
 
       /**
+       * Constant SVector iterator.
+       */
+      class CIterator : public oz::CIterator<Type>
+      {
+        private:
+
+          typedef oz::CIterator<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null, null )
+          {}
+
+          /**
+           * Make iterator for given vector. After creation it points to first element.
+           * @param v
+           */
+          explicit CIterator( const SVector& v ) : B( v.data, v.data + v.count )
+          {}
+
+      };
+
+      /**
        * SVector iterator.
        */
       class Iterator : public oz::Iterator<Type>
@@ -44,33 +71,6 @@ namespace oz
 
       };
 
-      /**
-       * SVector constant iterator.
-       */
-      class CIterator : public oz::CIterator<Type>
-      {
-        private:
-
-          typedef oz::CIterator<Type> B;
-
-        public:
-
-          /**
-           * Default constructor returns a dummy passed iterator
-           * @return
-           */
-          explicit CIterator() : B( null, null )
-          {}
-
-          /**
-           * Make iterator for given vector. After creation it points to first element.
-           * @param v
-           */
-          explicit CIterator( const SVector& v ) : B( v.data, v.data + v.count )
-          {}
-
-      };
-
     private:
 
       /**
@@ -82,24 +82,24 @@ namespace oz
 
           char data[SIZE * sizeof( Type )];
 
-          operator Type* ()
-          {
-            return reinterpret_cast<Type*>( data );
-          }
-
           operator const Type* () const
           {
             return reinterpret_cast<const Type*>( data );
           }
 
-          Type& operator [] ( int i )
+          operator Type* ()
           {
-            return reinterpret_cast<Type*>( data )[i];
+            return reinterpret_cast<Type*>( data );
           }
 
           const Type& operator [] ( int i ) const
           {
             return reinterpret_cast<const Type*>( data )[i];
+          }
+
+          Type& operator [] ( int i )
+          {
+            return reinterpret_cast<Type*>( data )[i];
           }
 
       };
@@ -166,14 +166,6 @@ namespace oz
       }
 
       /**
-       * @return iterator for this vector
-       */
-      Iterator iter()
-      {
-        return Iterator( *this );
-      }
-
-      /**
        * @return constant iterator for this vector
        */
       CIterator citer() const
@@ -182,13 +174,11 @@ namespace oz
       }
 
       /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return non-constant pointer to data array
+       * @return iterator for this vector
        */
-      operator Type* ()
+      Iterator iter()
       {
-        return data;
+        return Iterator( *this );
       }
 
       /**
@@ -197,6 +187,16 @@ namespace oz
        * @return constant pointer to data array
        */
       operator const Type* () const
+      {
+        return data;
+      }
+
+      /**
+       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
+       * overflows if you don't check the size of <code>data</code> array.
+       * @return non-constant pointer to data array
+       */
+      operator Type* ()
       {
         return data;
       }
@@ -241,9 +241,9 @@ namespace oz
 
       /**
        * @param i
-       * @return reference i-th element
+       * @return constant reference i-th element
        */
-      Type& operator [] ( int i )
+      const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < count );
 
@@ -252,9 +252,9 @@ namespace oz
 
       /**
        * @param i
-       * @return constant reference i-th element
+       * @return reference i-th element
        */
-      const Type& operator [] ( int i ) const
+      Type& operator [] ( int i )
       {
         assert( 0 <= i && i < count );
 
@@ -282,16 +282,6 @@ namespace oz
       }
 
       /**
-       * @return reference to first element
-       */
-      Type& first()
-      {
-        assert( count != 0 );
-
-        return data[0];
-      }
-
-      /**
        * @return constant reference to first element
        */
       const Type& first() const
@@ -302,13 +292,13 @@ namespace oz
       }
 
       /**
-       * @return reference to last element
+       * @return reference to first element
        */
-      Type& last()
+      Type& first()
       {
         assert( count != 0 );
 
-        return data[count - 1];
+        return data[0];
       }
 
       /**
@@ -322,13 +312,23 @@ namespace oz
       }
 
       /**
+       * @return reference to last element
+       */
+      Type& last()
+      {
+        assert( count != 0 );
+
+        return data[count - 1];
+      }
+
+      /**
        * Create slot for a new element at the end.
        */
       void add()
       {
         assert( count < SIZE );
 
-        new( data + count ) Type();
+        new( data + count ) Type;
         ++count;
       }
 
@@ -462,9 +462,15 @@ namespace oz
         assert( 0 <= index && index <= count );
         assert( count < SIZE );
 
-        new( data + count ) Type();
-        aReverseCopy<Type>( data + index + 1, data + index, count - index );
-        data[index] = e;
+        if( index == count ) {
+          new( data + count ) Type( e );
+        }
+        else {
+          new( data + count ) Type( data[count - 1] );
+          aReverseCopy<Type>( data + index + 1, data + index, count - index - 1 );
+          data[index] = e;
+        }
+
         ++count;
       }
 

@@ -13,6 +13,7 @@ Camera.cpp
 Camera.h
 Colors.cpp
 Colors.h
+common.h
 Context.cpp
 Context.h
 ExplosionModel.cpp

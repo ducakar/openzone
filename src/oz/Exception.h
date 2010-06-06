@@ -18,7 +18,7 @@ namespace oz
 
       const char* message;
       const char* file;
-      int        line;
+      int         line;
 
       explicit Exception( const char* message_, const char* file_, int line_ ) :
           message( message_ ), file( file_ ), line( line_ )

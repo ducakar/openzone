@@ -20,6 +20,33 @@ namespace oz
     public:
 
       /**
+       * Constant DArray iterator.
+       */
+      class CIterator : public oz::CIterator<Type>
+      {
+        private:
+
+          typedef oz::CIterator<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null, null )
+          {}
+
+          /**
+           * Make iterator for given array. After creation it points to first element.
+           * @param v
+           */
+          explicit CIterator( const DArray& a ) : B( a.data, a.data + a.count )
+          {}
+
+      };
+
+      /**
        * DArray iterator.
        */
       class Iterator : public oz::Iterator<Type>
@@ -42,33 +69,6 @@ namespace oz
            * @param v
            */
           explicit Iterator( const DArray& a ) : B( a.data, a.data + a.count )
-          {}
-
-      };
-
-      /**
-       * DArray constant iterator.
-       */
-      class CIterator : public oz::CIterator<Type>
-      {
-        private:
-
-          typedef oz::CIterator<Type> B;
-
-        public:
-
-          /**
-           * Default constructor returns a dummy passed iterator
-           * @return
-           */
-          explicit CIterator() : B( null, null )
-          {}
-
-          /**
-           * Make iterator for given array. After creation it points to first element.
-           * @param v
-           */
-          explicit CIterator( const DArray& a ) : B( a.data, a.data + a.count )
           {}
 
       };
@@ -153,14 +153,6 @@ namespace oz
       }
 
       /**
-       * @return iterator for this array
-       */
-      Iterator iter() const
-      {
-        return Iterator( *this );
-      }
-
-      /**
        * @return constant iterator for this array
        */
       CIterator citer() const
@@ -169,11 +161,19 @@ namespace oz
       }
 
       /**
+       * @return iterator for this array
+       */
+      Iterator iter() const
+      {
+        return Iterator( *this );
+      }
+
+      /**
        * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
        * overflows if you don't check the size of <code>data</code> array.
-       * @return non-constant pointer to data array
+       * @return constant pointer to data array
        */
-      operator Type* ()
+      operator const Type* () const
       {
         assert( count > 0 );
 
@@ -183,9 +183,9 @@ namespace oz
       /**
        * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
        * overflows if you don't check the size of <code>data</code> array.
-       * @return constant pointer to data array
+       * @return non-constant pointer to data array
        */
-      operator const Type* () const
+      operator Type* ()
       {
         assert( count > 0 );
 
@@ -240,9 +240,9 @@ namespace oz
 
       /**
        * @param i
-       * @return reference i-th element
+       * @return constant reference i-th element
        */
-      Type& operator [] ( int i )
+      const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < count );
 
@@ -251,9 +251,9 @@ namespace oz
 
       /**
        * @param i
-       * @return constant reference i-th element
+       * @return reference i-th element
        */
-      const Type& operator [] ( int i ) const
+      Type& operator [] ( int i )
       {
         assert( 0 <= i && i < count );
 
@@ -285,16 +285,6 @@ namespace oz
       }
 
       /**
-       * @return reference to first element
-       */
-      Type& first()
-      {
-        assert( count > 0 );
-
-        return data[0];
-      }
-
-      /**
        * @return constant reference to first element
        */
       const Type& first() const
@@ -305,9 +295,19 @@ namespace oz
       }
 
       /**
-       * @return reference to last element
+       * @return reference to first element
        */
-      Type& last()
+      Type& first()
+      {
+        assert( count > 0 );
+
+        return data[0];
+      }
+
+      /**
+       * @return constant reference to last element
+       */
+      const Type& last() const
       {
         assert( count > 0 );
 
@@ -315,9 +315,9 @@ namespace oz
       }
 
       /**
-       * @return constant reference to last element
+       * @return reference to last element
        */
-      const Type& last() const
+      Type& last()
       {
         assert( count > 0 );
 

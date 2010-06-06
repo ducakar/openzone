@@ -43,12 +43,59 @@ namespace oz
    * In general all operations are O(1) except <code>contains()</code>, <code>length()</code> and
    * <code>free()</code> are O(n).
    */
-
-
   template <class Type, int INDEX = 0>
   class DList
   {
     public:
+
+      /**
+       * Constant DList iterator.
+       */
+      class CIterator : public CIteratorBase<Type>
+      {
+        private:
+
+          typedef CIteratorBase<Type> B;
+
+        public:
+
+          /**
+           * Default constructor returns a dummy passed iterator
+           * @return
+           */
+          explicit CIterator() : B( null )
+          {}
+
+          /**
+           * Make iterator for given list. After creation it points to first element.
+           * @param l
+           */
+          explicit CIterator( const DList& l ) : B( l.firstElem )
+          {}
+
+          /**
+           * Advance to next element.
+           */
+          CIterator& operator ++ ()
+          {
+            assert( B::elem != null );
+
+            B::elem = B::elem->next[INDEX];
+            return *this;
+          }
+
+          /**
+           * Go to to previous element.
+           */
+          CIterator& operator -- ()
+          {
+            assert( B::elem != null );
+
+            B::elem = B::elem->prev[INDEX];
+            return *this;
+          }
+
+      };
 
       /**
        * DList iterator.
@@ -86,41 +133,14 @@ namespace oz
             return *this;
           }
 
-      };
-
-      /**
-       * DList constant iterator.
-       */
-      class CIterator : public CIteratorBase<Type>
-      {
-        private:
-
-          typedef CIteratorBase<Type> B;
-
-        public:
-
           /**
-           * Default constructor returns a dummy passed iterator
-           * @return
+           * Go to to previous element.
            */
-          explicit CIterator() : B( null )
-          {}
-
-          /**
-           * Make iterator for given list. After creation it points to first element.
-           * @param l
-           */
-          explicit CIterator( const DList& l ) : B( l.firstElem )
-          {}
-
-          /**
-           * Advance to next element.
-           */
-          CIterator& operator ++ ()
+          Iterator& operator -- ()
           {
             assert( B::elem != null );
 
-            B::elem = B::elem->next[INDEX];
+            B::elem = B::elem->prev[INDEX];
             return *this;
           }
 
@@ -228,19 +248,19 @@ namespace oz
       }
 
       /**
-       * @return iterator for this list
-       */
-      Iterator iter() const
-      {
-        return Iterator( *this );
-      }
-
-      /**
        * @return constant iterator for this list
        */
       CIterator citer() const
       {
         return CIterator( *this );
+      }
+
+      /**
+       * @return iterator for this list
+       */
+      Iterator iter() const
+      {
+        return Iterator( *this );
       }
 
       /**
@@ -289,14 +309,6 @@ namespace oz
       }
 
       /**
-       * @return pointer to first element in the list
-       */
-      Type* first()
-      {
-        return firstElem;
-      }
-
-      /**
        * @return constant pointer to first element in the list
        */
       const Type* first() const
@@ -305,17 +317,25 @@ namespace oz
       }
 
       /**
-       * @return pointer to last element in the list
+       * @return pointer to first element in the list
        */
-      Type* last()
+      Type* first()
       {
-        return lastElem;
+        return firstElem;
       }
 
       /**
        * @return constant pointer to last element in the list
        */
       const Type* last() const
+      {
+        return lastElem;
+      }
+
+      /**
+       * @return pointer to last element in the list
+       */
+      Type* last()
       {
         return lastElem;
       }

@@ -9,130 +9,10 @@
 
 #pragma once
 
+#include "common.h"
+
 namespace oz
 {
-
-  /**
-   * Generalized iterator.
-   * It should only be used as a base class. Following functions need to be implemented:<br>
-   * <code>bool isPassed()</code> (if necessary)<br>
-   * <code>Iterator& operator ++ ()</code><br>
-   * <code>Iterator& operator -- ()</code> (optional)<br>
-   * and a constructor of course.
-   */
-  template <typename Type>
-  class IteratorBase
-  {
-    protected:
-
-      /**
-       * Element which iterator is currently positioned at.
-       */
-      Type* elem;
-
-      /**
-       * @param start first element
-       */
-      explicit IteratorBase( Type* start ) : elem( start )
-      {}
-
-    public:
-
-      /**
-       * Returns true if the iterator is at the given element.
-       * @param e
-       * @return
-       */
-      bool operator == ( const Type* e ) const
-      {
-        return elem == e;
-      }
-
-      /**
-       * Returns true if the iterator is not at the given element.
-       * @param e
-       * @return
-       */
-      bool operator != ( const Type* e ) const
-      {
-        return elem != e;
-      }
-
-      /**
-       * @return pointer to current element
-       */
-      operator Type* ()
-      {
-        return elem;
-      }
-
-      /**
-       * @return constant pointer to current element
-       */
-      operator const Type* () const
-      {
-        return elem;
-      }
-
-      /**
-       * @return reference to current element
-       */
-      Type& operator * ()
-      {
-        return *elem;
-      }
-
-      /**
-       * @return constant reference to current element
-       */
-      const Type& operator * () const
-      {
-        return *elem;
-      }
-
-      /**
-       * @return non-constant access to member
-       */
-      Type* operator -> ()
-      {
-        return elem;
-      }
-
-      /**
-       * @return constant access to member
-       */
-      const Type* operator -> () const
-      {
-        return elem;
-      }
-
-      /**
-       * Returns true when iterator goes past the last element.
-       * Should be overridden in derivative classes
-       * @return
-       */
-      bool isPassed() const
-      {
-        return elem == null;
-      }
-
-      private:
-
-      /**
-       * Advance to next element
-       * Should be overridden in derivative classes
-       * @return
-       */
-      IteratorBase& operator ++ ();
-
-      /**
-       * Go to previous element
-       * May be overridden in derivative classes (optional)
-       * @return
-       */
-      IteratorBase& operator -- ();
-
-  };
 
   /**
    * Generalized constant iterator.
@@ -181,6 +61,16 @@ namespace oz
       }
 
       /**
+       * Returns true when iterator goes past the last element.
+       * Should be overridden in derivative classes
+       * @return
+       */
+      bool isPassed() const
+      {
+        return elem == null;
+      }
+
+      /**
        * @return constant pointer to current element
        */
       operator const Type* () const
@@ -204,17 +94,7 @@ namespace oz
         return elem;
       }
 
-      /**
-       * Returns true when iterator goes past the last element.
-       * Should be overridden in derivative classes
-       * @return
-       */
-      bool isPassed() const
-      {
-        return elem == null;
-      }
-
-      private:
+    private:
 
       /**
        * Advance to next element
@@ -229,6 +109,128 @@ namespace oz
        * @return
        */
       CIteratorBase& operator -- ();
+
+  };
+
+  /**
+   * Generalized iterator.
+   * It should only be used as a base class. Following functions need to be implemented:<br>
+   * <code>bool isPassed()</code> (if necessary)<br>
+   * <code>Iterator& operator ++ ()</code><br>
+   * <code>Iterator& operator -- ()</code> (optional)<br>
+   * and a constructor of course.
+   */
+  template <typename Type>
+  class IteratorBase
+  {
+    protected:
+
+      /**
+       * Element which iterator is currently positioned at.
+       */
+      Type* elem;
+
+      /**
+       * @param start first element
+       */
+      explicit IteratorBase( Type* start ) : elem( start )
+      {}
+
+    public:
+
+      /**
+       * Returns true if the iterator is at the given element.
+       * @param e
+       * @return
+       */
+      bool operator == ( const Type* e ) const
+      {
+        return elem == e;
+      }
+
+      /**
+       * Returns true if the iterator is not at the given element.
+       * @param e
+       * @return
+       */
+      bool operator != ( const Type* e ) const
+      {
+        return elem != e;
+      }
+
+      /**
+       * Returns true when iterator goes past the last element.
+       * Should be overridden in derivative classes
+       * @return
+       */
+      bool isPassed() const
+      {
+        return elem == null;
+      }
+
+      /**
+       * @return constant pointer to current element
+       */
+      operator const Type* () const
+      {
+        return elem;
+      }
+
+      /**
+       * @return pointer to current element
+       */
+      operator Type* ()
+      {
+        return elem;
+      }
+
+      /**
+       * @return constant reference to current element
+       */
+      const Type& operator * () const
+      {
+        return *elem;
+      }
+
+      /**
+       * @return reference to current element
+       */
+      Type& operator * ()
+      {
+        return *elem;
+      }
+
+      /**
+       * @return constant access to member
+       */
+      const Type* operator -> () const
+      {
+        return elem;
+      }
+
+      /**
+       * @return non-constant access to member
+       */
+      Type* operator -> ()
+      {
+        return elem;
+      }
+
+    private:
+
+      /**
+       * Advance to next element
+       * Should be overridden in derivative classes
+       * @return
+       */
+      IteratorBase& operator ++ ();
+
+      /**
+       * Go to previous element
+       * May be overridden in derivative classes (optional)
+       * @return
+       */
+      IteratorBase& operator -- ();
 
   };
 
@@ -260,14 +262,11 @@ namespace oz
   template <class CIteratorA, class CIteratorB>
   inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
   {
-    while( !iSrcA.isPassed() ) {
-      if( *iSrcA != *iSrcB ) {
-        return false;
-      }
+    while( !iSrcA.isPassed() && !iSrcB.isPassed() && *iSrcA == *iSrcB ) {
       ++iSrcA;
       ++iSrcB;
     }
-    return true;
+    return iSrcA.isPassed() && iSrcB.isPassed();
   }
 
   /**
@@ -295,6 +294,8 @@ namespace oz
     assert( &*iDest != &*iSrc );
 
     while( !iDest.isPassed() ) {
+      assert( !iSrc.isPassed() );
+
       *iDest = *iSrc;
       ++iDest;
       ++iSrc;
@@ -312,9 +313,11 @@ namespace oz
     assert( &*iDest != &*iSrc );
 
     while( !iDest.isPassed() ) {
-      ++iDest;
-      ++iSrc;
+      assert( !iSrc.isPassed() );
+
       *iDest = *iSrc;
+      --iDest;
+      --iSrc;
     }
   }
 
@@ -327,10 +330,7 @@ namespace oz
   template <class CIterator, typename Value>
   inline CIterator iIndex( CIterator iSrc, const Value& value )
   {
-    while( !iSrc.isPassed() ) {
-      if( *iSrc == value ) {
-        break;
-      }
+    while( !iSrc.isPassed() && *iSrc != value ) {
       ++iSrc;
     }
     return iSrc;
@@ -345,11 +345,8 @@ namespace oz
   template <class CReverseIterator, typename Value>
   inline CReverseIterator iLastIndex( CReverseIterator iSrc, const Value& value )
   {
-    while( !iSrc.isPassed() ) {
+    while( !iSrc.isPassed() && *iSrc != value ) {
       --iSrc;
-      if( *iSrc == value ) {
-        break;
-      }
     }
     return iSrc;
   }
@@ -362,7 +359,7 @@ namespace oz
   inline void iFree( Iterator iDest )
   {
     while( !iDest.isPassed() ) {
-      auto& elem = *iDest;
+      decltype( *iDest )& elem = *iDest;
       ++iDest;
 
       if( elem != null ) {

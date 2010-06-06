@@ -27,11 +27,9 @@ namespace oz
 
   void Matrix::loadStressTest()
   {
-    static const float DIM = World::DIM;
-
     for( int i = 0; i < 400; ++i ) {
-      float x = -DIM + 2.0f * DIM * Math::frand();
-      float y = -DIM + 2.0f * DIM * Math::frand();
+      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -39,8 +37,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 400; ++i ) {
-      float x = -DIM + 2.0f * DIM * Math::frand();
-      float y = -DIM + 2.0f * DIM * Math::frand();
+      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -48,8 +46,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 400; ++i ) {
-      float x = -DIM + 2.0f * DIM * Math::frand();
-      float y = -DIM + 2.0f * DIM * Math::frand();
+      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -57,8 +55,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 200; ++i ) {
-      float x = -DIM + 2.0f * DIM * Math::frand();
-      float y = -DIM + 2.0f * DIM * Math::frand();
+      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -66,8 +64,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 1000; ++i ) {
-      float x = -DIM + 2.0f * DIM * Math::frand();
-      float y = -DIM + 2.0f * DIM * Math::frand();
+      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -75,8 +73,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 1000; ++i ) {
-      float x = -DIM + 2.0f * DIM * Math::frand();
-      float y = -DIM + 2.0f * DIM * Math::frand();
+      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 2.0f;
 
       if( z > 0.0f ) {

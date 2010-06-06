@@ -14,12 +14,29 @@
  */
 #include "configuration.h"
 
-#include <cassert>
+#include <cstddef>
+
+#include "assert.h"
 
 /*
  * Basic definitions and template functions
  */
 #include "common.h"
+
+/*
+ * Exception class
+ */
+#include "Exception.h"
+
+/*
+ * Memory management
+ */
+#include "Alloc.h"
+#include "Pool.h"
+
+/*
+ * Iterators and utilities for iterable containers and arrays
+ */
 #include "iterables.h"
 #include "arrays.h"
 
@@ -33,18 +50,12 @@
 #include "DArray.h"
 
 /*
- * Memory management
- */
-#include "Alloc.h"
-#include "Pool.h"
-
-/*
  * String
  */
 #include "String.h"
 
 /*
- * Advanced containers (need memory management and String defined)
+ * Advanced containers (need String defined)
  */
 #include "Vector.h"
 #include "SVector.h"
@@ -73,8 +84,3 @@
  */
 #include "Log.h"
 #include "Config.h"
-
-/*
- * Exception class
- */
-#include "Exception.h"

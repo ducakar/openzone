@@ -11,20 +11,31 @@
 #pragma once
 
 /*
- * Standard new and delete declarations (may be omitted as already built into C++ language)
- */
-void* operator new ( oz::uint size );
-void* operator new[] ( oz::uint size );
-void operator delete ( void* ptr );
-void operator delete[] ( void* ptr );
-
-/*
  * Placement new and delete
  */
-inline void* operator new ( oz::uint, void* place ) throw() { return place; }
-inline void* operator new[] ( oz::uint, void* place ) throw() { return place; }
-inline void operator delete ( void*, void* ) throw() {}
-inline void operator delete[] ( void*, void* ) throw() {}
+inline void* operator new ( oz::size_t, void* place )
+{
+  return place;
+}
+
+inline void operator delete ( void*, void* )
+{}
+
+inline void* operator new[] ( oz::size_t, void* place )
+{
+  return place;
+}
+
+inline void operator delete[] ( void*, void* )
+{}
+
+/*
+ * Standard new and delete declarations
+ */
+void* operator new ( oz::size_t size );
+void* operator new[] ( oz::size_t size );
+void operator delete ( void* ptr );
+void operator delete[] ( void* ptr );
 
 namespace oz
 {
@@ -44,22 +55,22 @@ namespace oz
 
       /**
        * Allocate memory without constructing the elements. Memory has to be freed via
-       * Alloc::deallocate.
+       * Alloc::dealloc.
        * @param size
        * @return
        */
       template <typename Type>
-      static Type* allocate( int size )
+      static Type* alloc( int size )
       {
         return reinterpret_cast<Type*>( new char[size * sizeof( Type )] );
       }
 
       /**
-       * Free memory allocated with Alloc::allocate function without destructing the elements.
+       * Free memory allocated with Alloc::alloc function without destructing the elements.
        * @param ptr
        */
       template <typename Type>
-      static void deallocate( Type* ptr )
+      static void dealloc( Type* ptr )
       {
         delete[] reinterpret_cast<char*>( ptr );
       }
@@ -67,15 +78,15 @@ namespace oz
       /**
        * Allocates new memory for the array for newSize elements to fit in. Elements are constructed
        * with copy constructor in the new copy of the array and destructed in the old copy before it
-       * is freed. The memory has to be allocated with Alloc::allocate function and freed with
-       * Alloc::deallocate.
+       * is freed. The memory has to be allocated with Alloc::alloc function and freed with
+       * Alloc::dealloc.
        * @param array
        * @param count number of elements from the beginning of the array that are constructed
        * @param newSize new size of the array
        * @return
        */
       template <typename Type>
-      static Type* reallocate( Type* array, int count, int newSize )
+      static Type* realloc( Type* array, int count, int newSize )
       {
         Type* newArray = reinterpret_cast<Type*>( new char[newSize * sizeof( Type )] );
         for( int i = 0; i < count; ++i ) {
