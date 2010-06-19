@@ -75,7 +75,7 @@ namespace client
 
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texNum );
-      texNum = ~0;
+      texNum = ~0u;
 
       assert( glGetError() == GL_NO_ERROR );
     }
@@ -128,7 +128,7 @@ namespace client
 
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texNum );
-      texNum = ~0;
+      texNum = ~0u;
 
       assert( glGetError() == GL_NO_ERROR );
     }
@@ -138,9 +138,9 @@ namespace client
   uint Context::createTexture( const ubyte* data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
   {
-    int texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
+    uint texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
 
-    if( texNum == ~0 ) {
+    if( texNum == ~0u ) {
       log.println( "Error creating texture from buffer" );
     }
     return texNum;
@@ -149,10 +149,10 @@ namespace client
   uint Context::createNormalmap( ubyte* data, const Vec3& lightNormal, int width, int height,
                                  int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
-    int texNum = buildNormalmap( data, lightNormal, width, height, bytesPerPixel, wrap,
-                                 magFilter, minFilter );
+    uint texNum = buildNormalmap( data, lightNormal, width, height, bytesPerPixel, wrap,
+                                  magFilter, minFilter );
 
-    if( texNum == ~0 ) {
+    if( texNum == ~0u ) {
       log.println( "Error creating normalmap texture from buffer" );
     }
     return texNum;

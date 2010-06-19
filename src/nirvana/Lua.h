@@ -11,7 +11,7 @@
 
 #include "nirvana/common.h"
 
-class lua_State;
+struct lua_State;
 
 namespace oz
 {

@@ -9,7 +9,22 @@
 
 #pragma once
 
-#define GL_GLEXT_PROTOTYPES
+#if defined( OZ_MINGW32 ) || defined( OZ_MSVC )
+
+# include <SDL_opengl.h>
+
+extern PFNGLACTIVETEXTUREPROC	     glActiveTexture;;
+extern PFNGLCLIENTACTIVETEXTUREPROC  glClientActiveTexture;
+extern PFNGLGENBUFFERSPROC	     glGenBuffers;
+extern PFNGLDELETEBUFFERSPROC	     glDeleteBuffers;
+extern PFNGLBINDBUFFERPROC	     glBindBuffer;
+extern PFNGLBUFFERDATAPROC	     glBufferData;
+
+#else
+
+# define GL_GLEXT_PROTOTYPES
+
+#endif
 
 #define OZ_VBO_OFFSET( index, Type ) \
   reinterpret_cast<const void*>( ( index ) * sizeof( Type ) )

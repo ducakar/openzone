@@ -17,7 +17,11 @@
 #include "client/Render.h"
 
 #include <ctime>
-#include <unistd.h>
+#ifdef OZ_MSVC
+# include <direct.h>
+#else
+# include <unistd.h>
+#endif
 #include <sys/stat.h>
 #include <SDL_net.h>
 
@@ -80,7 +84,7 @@ namespace client
 
     String rcDir;
 
-#ifdef OZ_MINGW32
+#if defined( OZ_MINGW32 ) || defined( OZ_MSVC )
     const char* homeVar = getenv( "USERPROFILE" );
 #else
     const char* homeVar = getenv( "HOME" );
@@ -95,7 +99,9 @@ namespace client
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource dir found, creating '%s' ...", rcDir.cstr() );
 
-#ifdef OZ_MINGW32
+#if defined( OZ_MSVC )
+      if( _mkdir( rcDir.cstr() ) != 0 ) {
+#elif defined( OZ_MINGW32 )
       if( mkdir( rcDir.cstr() ) != 0 ) {
 #else
       if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
@@ -133,7 +139,7 @@ namespace client
     config.add( "dir.rc", rcDir );
 
     if( config.contains( "seed" ) && config["seed"].equals( "time" ) ) {
-      uint seed = time( null );
+      uint seed = uint( time( null ) );
       Math::seed( seed );
       log.println( "Random generator seed set to current time: %d", seed );
     }
@@ -388,7 +394,11 @@ namespace client
 
 using namespace oz;
 
+#ifdef OZ_MSVC
+int SDL_main( int argc, char** argv )
+#else
 int main( int argc, char** argv )
+#endif
 {
   printf( "OpenZone  Copyright (C) 2002-2009  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"

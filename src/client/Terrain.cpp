@@ -20,11 +20,6 @@
 #include "client/Colors.h"
 #include "client/Water.h"
 
-#ifdef OZ_MINGW32
-static PFNGLACTIVETEXTUREPROC       glActiveTexture       = null;
-static PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture = null;
-#endif
-
 namespace oz
 {
 namespace client
@@ -37,18 +32,9 @@ namespace client
 
   void Terrain::load()
   {
-#ifdef OZ_MINGW32
-    glActiveTexture       = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
-    glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
-
-    detailTexId = context.loadTexture( "terra/detail.png" );
-    mapTexId    = context.loadTexture( "terra/map.png" );
-    waterTexId  = context.loadTexture( "terra/water.png" );
-#else
     detailTexId = context.loadTexture( "terra/detail.jpg" );
     mapTexId    = context.loadTexture( "terra/map.png" );
     waterTexId  = context.loadTexture( "terra/water.jpg" );
-#endif
 
     int nVertices = oz::Terrain::MAX * oz::Terrain::MAX;
     int nIndices = oz::Terrain::MAX * ( oz::Terrain::MAX - 1 ) * 2;

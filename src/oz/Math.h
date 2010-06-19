@@ -49,8 +49,8 @@
 #  define sincosf( x, s, c )	( *( s ) = sinf( x ), *( c ) = cosf( x ) )
 #  define nanf( x )		float( 0.0f * HUGE_VAL )
 #  define INFINITY		float( HUGE_VAL )
-#  define isnanf( x )		_isnan( x )
-#  define isinff( x )		( !_isnan( x ) && !_finite( x ) )
+#  define isnanf( x )		( _isnan( x ) != 0 )
+#  define isinff( x )		( _isnan( x ) != 0 && !_finite( x ) != 0 )
 
 # endif
 

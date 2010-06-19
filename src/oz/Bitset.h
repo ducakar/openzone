@@ -139,7 +139,7 @@ namespace oz
       {
         soft_assert( size != nUnits );
 
-        if( nUnits != size ) {
+        if( nUnits == size ) {
           return;
         }
         if( data != null ) {
