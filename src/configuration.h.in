@@ -17,7 +17,17 @@
 
 // platform
 #cmakedefine OZ_MINGW32
+#cmakedefine OZ_MSVC
 
 #ifdef __GNUG__
 # define nullptr __null
+# define OZ_SIZE_T __SIZE_TYPE__
+#else
+# define OZ_SIZE_T unsigned int
+#endif
+
+#ifdef OZ_MSVC
+# define _CRT_SECURE_NO_WARNINGS 1
+# define snprintf sprintf_s
+# define chdir _chdir
 #endif

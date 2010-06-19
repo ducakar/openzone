@@ -11,7 +11,7 @@
 
 #include "ui/Button.h"
 
-#include <GL/gl.h>
+#include <SDL_opengl.h>
 
 namespace oz
 {

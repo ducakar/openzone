@@ -36,10 +36,6 @@
 #include <GL/glu.h>
 #include <GL/glext.h>
 
-#ifdef OZ_MINGW32
-static PFNGLACTIVETEXTUREPROC glActiveTexture = null;
-#endif
-
 namespace oz
 {
 namespace client
@@ -465,10 +461,13 @@ namespace client
       log.println( "%s", extension->cstr() );
     }
 
-#ifdef OZ_MINGW32
-    if( glActiveTexture == null ) {
-      glActiveTexture = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
-    }
+#if defined( OZ_MINGW32 ) || defined( OZ_MSVC )
+    glActiveTexture = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
+    glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
+    glGenBuffers = reinterpret_cast<PFNGLGENBUFFERSPROC>( SDL_GL_GetProcAddress( "glGenBuffers" ) );
+    glDeleteBuffers = reinterpret_cast<PFNGLDELETEBUFFERSPROC>( SDL_GL_GetProcAddress( "glDeleteBuffers" ) );
+    glBindBuffer = reinterpret_cast<PFNGLBINDBUFFERPROC>( SDL_GL_GetProcAddress( "glBindBuffer" ) );
+    glBufferData = reinterpret_cast<PFNGLBUFFERDATAPROC>( SDL_GL_GetProcAddress( "glBufferData" ) );
 #endif
 
     log.unindent();

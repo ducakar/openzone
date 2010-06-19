@@ -19,3 +19,11 @@
 #include <cctype>
 // include SDL as it is commonly used
 #include <SDL.h>
+
+#ifdef OZ_MSVC
+# define WIN32_LEAN_AND_MEAN 1
+# include <windows.h>
+# undef WIN32_LEAN_AND_MEAN
+# undef min
+# undef max
+#endif

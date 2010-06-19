@@ -11,7 +11,7 @@
 
 #include "ui/Frame.h"
 
-#include <GL/glu.h>
+#include <SDL_opengl.h>
 
 namespace oz
 {

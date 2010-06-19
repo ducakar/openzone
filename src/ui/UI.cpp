@@ -13,7 +13,7 @@
 
 #include "client/Camera.h"
 
-#include <GL/glu.h>
+#include <SDL_opengl.h>
 
 namespace oz
 {
@@ -45,7 +45,9 @@ namespace ui
 
   void UI::free()
   {
+    delete root;
     delete hud;
+    delete strategic;
 
     font.free();
     mouse.free();

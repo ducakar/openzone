@@ -47,7 +47,7 @@ namespace client
     camera.update();
     ui::ui.update();
 
-    bool doQuit = ui::keyboard.keys[SDLK_ESCAPE];
+    bool doQuit = ui::keyboard.keys[SDLK_ESCAPE] != 0;
 
     synapse.clearTickets();
 

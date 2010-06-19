@@ -17,7 +17,7 @@
 #include "client/Context.h"
 #include "ui/Keyboard.h"
 
-#include <GL/glu.h>
+#include <SDL_opengl.h>
 
 namespace oz
 {

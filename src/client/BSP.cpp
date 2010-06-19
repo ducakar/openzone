@@ -19,11 +19,6 @@
 
 #include <GL/glext.h>
 
-#ifdef OZ_MINGW32
-static PFNGLACTIVETEXTUREPROC glActiveTexture             = null;
-static PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture = null;
-#endif
-
 namespace oz
 {
 namespace client
@@ -243,13 +238,6 @@ namespace client
   BSP::BSP( int bspIndex ) : isUpdated( false )
   {
     bsp = world.bsps[bspIndex];
-
-#ifdef OZ_MINGW32
-    if( glActiveTexture == null ) {
-      glActiveTexture       = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
-      glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
-    }
-#endif
 
     log.println( "Loading BSP model '%s' {", translator.bsps[bspIndex].name.cstr() );
     log.indent();

@@ -297,11 +297,7 @@ namespace client
 
     String sPath = "mdl/" + name;
     String modelFile = sPath + "/tris.md2";
-#ifdef OZ_MINGW32
-    String skinFile = sPath + "/skin.png";
-#else
     String skinFile = sPath + "/skin.jpg";
-#endif
     String configFile = sPath + "/config.rc";
 
     log.print( "Loading MD2 model '%s' ...", name.cstr() );

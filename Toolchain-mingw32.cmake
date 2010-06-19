@@ -6,7 +6,7 @@ SET( CMAKE_C_COMPILER i486-mingw32-gcc )
 SET( CMAKE_CXX_COMPILER i486-mingw32-g++ )
 
 # here is the target environment located
-SET( CMAKE_FIND_ROOT_PATH /usr/i486-mingw32 /home/davorin/Projects/openzone/mingw32 )
+SET( CMAKE_FIND_ROOT_PATH /usr/i486-mingw32 /home/davorin/Projects/openzone-build/mingw32 )
 
 # adjust the default behaviour of the FIND_XXX() commands:
 # search headers and libraries in the target environment, search
