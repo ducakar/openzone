@@ -2,7 +2,7 @@
 
 echo 'add_executable( server' > CMakeLists.txt
 
-ls *.{h,cpp} >> CMakeLists.txt
+ls *.{hpp,cpp} >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt

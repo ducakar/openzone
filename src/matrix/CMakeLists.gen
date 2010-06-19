@@ -2,7 +2,7 @@
 
 echo 'add_library( matrix STATIC' > CMakeLists.txt
 
-ls *.{h,cpp} >> CMakeLists.txt
+ls *.{hpp,cpp} >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt

@@ -7,7 +7,10 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
+
+#include <SDL.h>
+#include <SDL_main.h>
 
 using namespace oz;
 
@@ -30,7 +33,7 @@ struct SparseElem
   SparseElem( int value_ ) : value( value_ ) {}
 };
 
-int main()
+int main( int, char** )
 {
   List<Elem, 0> l;
   DList<Elem, 0> dl;
@@ -38,8 +41,16 @@ int main()
   Vector<int> v;
   SVector<int, 5> sv;
   Sparse<SparseElem> s;
-  HashIndex<int, 4> hi;
-  HashString<int, 4> hs;
+  HashIndex<int, 10> hi;
+  HashString<int, 10> hs;
+
+  List<Elem, 0> l1;
+  DList<Elem, 0> dl1;
+  Vector<int> v1;
+  SVector<int, 5> sv1;
+  Sparse<SparseElem> s1;
+  HashIndex<int, 10> hi1;
+  HashString<int, 10> hs1;
 
   // 1
   l << new Elem( 1 );
@@ -91,7 +102,23 @@ int main()
   hi.add( 105, 5 );
   hs.add( "105", 5 );
 
-  iSet( v.iter(), 1 );
+  swap( l, l1 );
+  swap( dl, dl1 );
+//  swap( a, a1 );
+  swap( v, v1 );
+  swap( sv, sv1 );
+  swap( s, s1 );
+  swap( hi, hi1 );
+  swap( hs, hs1 );
+
+  swap( l, l1 );
+  swap( dl, dl1 );
+//  swap( a, a1 );
+  swap( v, v1 );
+  swap( sv, sv1 );
+  swap( s, s1 );
+  swap( hi, hi1 );
+  swap( hs, hs1 );
 
   foreach( i, l.citer() ) {
     printf( "%d ", i->value );

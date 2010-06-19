@@ -1,12 +1,12 @@
 add_executable( server
 Game.cpp
-Game.h
+Game.hpp
 Main.cpp
-Main.h
+Main.hpp
 Network.cpp
-Network.h
+Network.hpp
 Server.cpp
-Server.h
+Server.hpp
 )
 
 add_dependencies( server pch )

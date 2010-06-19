@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/SparkModel.h"
+#include "client/SparkModel.hpp"
 
-#include "client/Frustum.h"
+#include "client/Frustum.hpp"
 
 namespace oz
 {

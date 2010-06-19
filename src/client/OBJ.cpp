@@ -7,12 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/OBJ.h"
+#include "client/OBJ.hpp"
 
-#include "client/Context.h"
-#include "client/Colors.h"
+#include "client/Context.hpp"
+#include "client/Colors.hpp"
 
 namespace oz
 {

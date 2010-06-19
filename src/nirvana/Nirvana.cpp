@@ -7,16 +7,16 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "nirvana/Nirvana.h"
+#include "nirvana/Nirvana.hpp"
 
-#include "matrix/Matrix.h"
-#include "matrix/BotClass.h"
-#include "nirvana/Lua.h"
+#include "matrix/Matrix.hpp"
+#include "matrix/BotClass.hpp"
+#include "nirvana/Lua.hpp"
 
-#include "nirvana/LuaMind.h"
-#include "nirvana/RandomMind.h"
+#include "nirvana/LuaMind.hpp"
+#include "nirvana/RandomMind.hpp"
 
 #define OZ_REGISTER_MINDCLASS( name ) \
   mindClasses.add( #name, MindCtor( &name##Mind::create, &name##Mind::read ) )
@@ -81,7 +81,7 @@ namespace nirvana
     uint timeBegin;
 
     try{
-#ifndef OZ_MINGW32
+#ifndef OZ_MINGW
       nirvana.sync();
 #endif
 
@@ -92,7 +92,7 @@ namespace nirvana
       while( nirvana.isAlive ) {
         timeBegin = SDL_GetTicks();
 
-#ifndef OZ_MINGW32
+#ifndef OZ_MINGW
         // FIXME freezes on Windows, works fine on Wine?
         nirvana.sync();
 

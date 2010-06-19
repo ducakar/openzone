@@ -7,13 +7,13 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "ui/DebugFrame.h"
+#include "ui/DebugFrame.hpp"
 
-#include "matrix/World.h"
-#include "matrix/Collider.h"
-#include "client/Camera.h"
+#include "matrix/World.hpp"
+#include "matrix/Collider.hpp"
+#include "client/Camera.hpp"
 
 #include <SDL_opengl.h>
 

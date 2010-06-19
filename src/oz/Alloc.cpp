@@ -8,7 +8,7 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "oz.h"
+#include "oz.hpp"
 
 #include <cstdlib>
 
@@ -28,12 +28,12 @@ namespace oz
 
 #ifndef OZ_ALLOC_STATISTICS
 
-void* operator new ( oz::size_t size )
+void* operator new ( oz::msize size )
 {
   return malloc( size );
 }
 
-void* operator new[] ( oz::size_t size )
+void* operator new[] ( oz::msize size )
 {
   return malloc( size );
 }
@@ -50,9 +50,9 @@ void operator delete[] ( void* ptr )
 
 #else
 
-void* operator new ( oz::size_t size )
+void* operator new ( oz::msize size )
 {
-  oz::size_t* p = reinterpret_cast<oz::size_t*>( malloc( size + sizeof( oz::size_t ) ) );
+  oz::msize* p = reinterpret_cast<oz::msize*>( malloc( size + sizeof( oz::msize ) ) );
 
   if( p == null ) {
     throw Exception( "Bad allocation" );
@@ -71,9 +71,9 @@ void* operator new ( oz::size_t size )
   return p + 1;
 }
 
-void* operator new[] ( oz::size_t size )
+void* operator new[] ( oz::msize size )
 {
-  oz::size_t* p = reinterpret_cast<oz::size_t*>( malloc( size + sizeof( oz::size_t ) ) );
+  oz::msize* p = reinterpret_cast<oz::msize*>( malloc( size + sizeof( oz::msize ) ) );
 
   if( p == null ) {
     throw Exception( "Bad allocation" );
@@ -94,7 +94,7 @@ void* operator new[] ( oz::size_t size )
 
 void operator delete ( void* ptr )
 {
-  oz::size_t* chunk = reinterpret_cast<oz::size_t*>( ptr ) - 1;
+  oz::msize* chunk = reinterpret_cast<oz::msize*>( ptr ) - 1;
 
   --oz::Alloc::count;
   oz::Alloc::amount -= chunk[0];
@@ -104,7 +104,7 @@ void operator delete ( void* ptr )
 
 void operator delete[] ( void* ptr )
 {
-  oz::size_t* chunk = reinterpret_cast<oz::size_t*>( ptr ) - 1;
+  oz::msize* chunk = reinterpret_cast<oz::msize*>( ptr ) - 1;
 
   --oz::Alloc::count;
   oz::Alloc::amount -= chunk[0];

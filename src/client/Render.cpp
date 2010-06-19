@@ -7,30 +7,30 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/Render.h"
+#include "client/Render.hpp"
 
-#include "matrix/Matrix.h"
-#include "matrix/Physics.h"
-#include "matrix/BotClass.h"
+#include "matrix/Matrix.hpp"
+#include "matrix/Physics.hpp"
+#include "matrix/BotClass.hpp"
 
-#include "client/Frustum.h"
-#include "client/Colors.h"
-#include "client/Shape.h"
+#include "client/Frustum.hpp"
+#include "client/Colors.hpp"
+#include "client/Shape.hpp"
 
-#include "client/Water.h"
-#include "client/Sky.h"
-#include "client/Terrain.h"
-#include "client/BSP.h"
+#include "client/Water.hpp"
+#include "client/Sky.hpp"
+#include "client/Terrain.hpp"
+#include "client/BSP.hpp"
 
-#include "client/OBJModel.h"
-#include "client/OBJVehicleModel.h"
-#include "client/MD2StaticModel.h"
-#include "client/MD2Model.h"
-#include "client/MD2WeaponModel.h"
-#include "client/MD3StaticModel.h"
-#include "client/ExplosionModel.h"
+#include "client/OBJModel.hpp"
+#include "client/OBJVehicleModel.hpp"
+#include "client/MD2StaticModel.hpp"
+#include "client/MD2Model.hpp"
+#include "client/MD2WeaponModel.hpp"
+#include "client/MD3StaticModel.hpp"
+#include "client/ExplosionModel.hpp"
 
 #include <ctime>
 #include <GL/glu.h>

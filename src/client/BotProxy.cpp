@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/BotProxy.h"
+#include "client/BotProxy.hpp"
 
-#include "matrix/BotClass.h"
-#include "matrix/VehicleClass.h"
-#include "ui/Keyboard.h"
-#include "ui/Mouse.h"
-#include "client/Camera.h"
+#include "matrix/BotClass.hpp"
+#include "matrix/VehicleClass.hpp"
+#include "ui/Keyboard.hpp"
+#include "ui/Mouse.hpp"
+#include "client/Camera.hpp"
 
 namespace oz
 {

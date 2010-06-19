@@ -1,14 +1,14 @@
 include_directories( . )
-configure_file( configuration.h.in configuration.h )
+configure_file( configuration.hpp.in configuration.hpp )
 
 add_subdirectory( oz )
 
 # precompiled header
 if( UNIX )
-    add_custom_target( pch DEPENDS stable.h.gch )
-    add_custom_command( OUTPUT stable.h.gch
-                        DEPENDS oz stable.h
-                        COMMAND rm -f stable.h.gch && ${CMAKE_CXX_COMPILER} `echo ${flags}` -I. stable.h )
+    add_custom_target( pch DEPENDS stable.hpp.gch )
+    add_custom_command( OUTPUT stable.hpp.gch
+                        DEPENDS oz stable.hpp
+                        COMMAND rm -f stable.hpp.gch && ${CMAKE_CXX_COMPILER} `echo ${flags}` -I. stable.hpp )
 endif( UNIX )
 
 add_subdirectory( matrix )

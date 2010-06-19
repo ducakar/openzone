@@ -7,24 +7,24 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/Context.h"
+#include "client/Context.hpp"
 
-#include "client/MD2.h"
-#include "client/MD3.h"
-#include "client/OBJ.h"
+#include "client/MD2.hpp"
+#include "client/MD3.hpp"
+#include "client/OBJ.hpp"
 
-#include "client/OBJModel.h"
-#include "client/ExplosionModel.h"
-#include "client/MD2StaticModel.h"
-#include "client/MD2Model.h"
-#include "client/MD2WeaponModel.h"
-#include "client/MD3StaticModel.h"
-#include "client/OBJVehicleModel.h"
+#include "client/OBJModel.hpp"
+#include "client/ExplosionModel.hpp"
+#include "client/MD2StaticModel.hpp"
+#include "client/MD2Model.hpp"
+#include "client/MD2WeaponModel.hpp"
+#include "client/MD3StaticModel.hpp"
+#include "client/OBJVehicleModel.hpp"
 
-#include "client/BasicAudio.h"
-#include "client/BotAudio.h"
+#include "client/BasicAudio.hpp"
+#include "client/BotAudio.hpp"
 
 #include <SDL_image.h>
 #include <GL/glu.h>

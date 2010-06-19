@@ -7,16 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/io.h"
+#include "matrix/io.hpp"
 
-extern "C"
-{
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-}
+#include <lua.hpp>
+#include <SDL_main.h>
 
 using namespace oz;
 
@@ -57,7 +53,7 @@ static int addLife( lua_State* l )
   return 0;
 }
 
-int main()
+int main( int, char** )
 {
   l = lua_open();
   luaL_openlibs( l );

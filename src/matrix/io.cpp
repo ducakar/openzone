@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/io.h"
+#include "matrix/io.hpp"
 
 #include <sys/stat.h>
 

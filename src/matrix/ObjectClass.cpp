@@ -7,12 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/ObjectClass.h"
+#include "matrix/ObjectClass.hpp"
 
-#include "matrix/Object.h"
-#include "matrix/Translator.h"
+#include "matrix/Object.hpp"
+#include "matrix/Translator.hpp"
 
 namespace oz
 {

@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "ui/InventoryMenu.h"
+#include "ui/InventoryMenu.hpp"
 
-#include "client/Camera.h"
-#include "client/Context.h"
-#include "client/Shape.h"
-#include "client/Colors.h"
-#include "client/Render.h"
+#include "client/Camera.hpp"
+#include "client/Context.hpp"
+#include "client/Shape.hpp"
+#include "client/Colors.hpp"
+#include "client/Render.hpp"
 
 namespace oz
 {

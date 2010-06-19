@@ -1,28 +1,28 @@
 add_library( ui STATIC
 Area.cpp
-Area.h
+Area.hpp
 BuildMenu.cpp
-BuildMenu.h
+BuildMenu.hpp
 Button.cpp
-Button.h
+Button.hpp
 DebugFrame.cpp
-DebugFrame.h
+DebugFrame.hpp
 Font.cpp
-Font.h
+Font.hpp
 Frame.cpp
-Frame.h
+Frame.hpp
 HudArea.cpp
-HudArea.h
+HudArea.hpp
 InventoryMenu.cpp
-InventoryMenu.h
+InventoryMenu.hpp
 Keyboard.cpp
-Keyboard.h
+Keyboard.hpp
 Mouse.cpp
-Mouse.h
+Mouse.hpp
 StrategicArea.cpp
-StrategicArea.h
+StrategicArea.hpp
 UI.cpp
-UI.h
+UI.hpp
 )
 
 add_dependencies( ui pch )

@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
 #if defined( OZ_MINGW32 ) || defined( OZ_MSVC )
 
-#include "client/common.h"
+#include "client/common.hpp"
 
 PFNGLACTIVETEXTUREPROC        glActiveTexture;;
 PFNGLCLIENTACTIVETEXTUREPROC  glClientActiveTexture;

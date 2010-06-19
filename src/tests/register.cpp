@@ -7,7 +7,7 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
 #define _NEW
 
@@ -22,6 +22,8 @@
     } \
   }; \
   Register_##t register_##t;
+
+#include <SDL_main.h>
 
 using namespace std;
 
@@ -76,7 +78,7 @@ Object* Vehicle::build()
   return new Vehicle;
 }
 
-int main()
+int main( int, char** )
 {
   Object* o = registry["Vehicle"]();
   cout << o->name() << endl;

@@ -7,12 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/Water.h"
+#include "client/Water.hpp"
 
-#include "matrix/Timer.h"
-#include "client/Colors.h"
+#include "matrix/Timer.hpp"
+#include "client/Colors.hpp"
 
 namespace oz
 {

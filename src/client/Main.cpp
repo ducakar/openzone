@@ -7,14 +7,14 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/Main.h"
+#include "client/Main.hpp"
 
-#include "client/Context.h"
-#include "client/GameStage.h"
-#include "client/Sound.h"
-#include "client/Render.h"
+#include "client/Context.hpp"
+#include "client/GameStage.hpp"
+#include "client/Sound.hpp"
+#include "client/Render.hpp"
 
 #include <ctime>
 #ifdef OZ_MSVC
@@ -82,9 +82,15 @@ namespace client
   {
     initFlags = 0;
 
+#if defined( OZ_MINGW ) || defined( OZ_MSVC )
+    // print directly to the console, do not use SDL's stdout.txt and stderr.txt
+    freopen( "CON", "wt", stdout );
+    freopen( "CON", "wt", stderr );
+#endif
+
     String rcDir;
 
-#if defined( OZ_MINGW32 ) || defined( OZ_MSVC )
+#if defined( OZ_MINGW ) || defined( OZ_MSVC )
     const char* homeVar = getenv( "USERPROFILE" );
 #else
     const char* homeVar = getenv( "HOME" );
@@ -101,7 +107,7 @@ namespace client
 
 #if defined( OZ_MSVC )
       if( _mkdir( rcDir.cstr() ) != 0 ) {
-#elif defined( OZ_MINGW32 )
+#elif defined( OZ_MINGW )
       if( mkdir( rcDir.cstr() ) != 0 ) {
 #else
       if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
@@ -392,13 +398,7 @@ namespace client
 }
 }
 
-using namespace oz;
-
-#ifdef OZ_MSVC
-int SDL_main( int argc, char** argv )
-#else
 int main( int argc, char** argv )
-#endif
 {
   printf( "OpenZone  Copyright (C) 2002-2009  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
@@ -406,9 +406,9 @@ int main( int argc, char** argv )
       "under certain conditions; See COPYING for details.\n\n" );
 
   try {
-    client::main.main( &argc, argv );
+    oz::client::main.main( &argc, argv );
   }
-  catch( const Exception& e ) {
+  catch( const oz::Exception& e ) {
     oz::log.resetIndent();
     oz::log.println();
     oz::log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
@@ -417,7 +417,7 @@ int main( int argc, char** argv )
       fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
     }
   }
-  client::main.shutdown();
+  oz::client::main.shutdown();
 
   return 0;
 }

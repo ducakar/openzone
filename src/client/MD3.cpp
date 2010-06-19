@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/MD3.h"
+#include "client/MD3.hpp"
 
-#include "client/Context.h"
+#include "client/Context.hpp"
 
 #define FOURCC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )

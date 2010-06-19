@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/Network.h"
+#include "client/Network.hpp"
 
 namespace oz
 {

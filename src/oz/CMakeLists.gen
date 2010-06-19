@@ -2,6 +2,6 @@
 
 echo 'add_library( oz STATIC' > CMakeLists.txt
 
-ls *.{h,cpp} >> CMakeLists.txt
+ls *.{hpp,cpp} >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt

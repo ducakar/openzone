@@ -7,13 +7,13 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "Game.h"
+#include "Game.hpp"
 
-#include "matrix/Matrix.h"
-#include "nirvana/Nirvana.h"
-#include "Network.h"
+#include "matrix/Matrix.hpp"
+#include "nirvana/Nirvana.hpp"
+#include "Network.hpp"
 
 namespace oz
 {

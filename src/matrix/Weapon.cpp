@@ -7,14 +7,14 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/Weapon.h"
+#include "matrix/Weapon.hpp"
 
-#include "matrix/Timer.h"
-#include "matrix/Lua.h"
-#include "matrix/Bot.h"
-#include "matrix/WeaponClass.h"
+#include "matrix/Timer.hpp"
+#include "matrix/Lua.hpp"
+#include "matrix/Bot.hpp"
+#include "matrix/WeaponClass.hpp"
 
 namespace oz
 {

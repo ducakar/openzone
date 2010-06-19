@@ -7,13 +7,13 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "Main.h"
+#include "Main.hpp"
 
-#include "Game.h"
+#include "Game.hpp"
 
-#ifdef OZ_MINGW32
+#ifdef OZ_MINGW
 # include <direct.h>
 # include <sys/types.h>
 # include <sys/stat.h>
@@ -177,7 +177,7 @@ namespace server
 }
 }
 
-int main( int, char*[] )
+int main( int, char** )
 {
   try {
     oz::server::main.main();

@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "ui/StrategicArea.h"
+#include "ui/StrategicArea.hpp"
 
-#include "matrix/BotClass.h"
-#include "client/Camera.h"
-#include "client/Colors.h"
-#include "client/Context.h"
-#include "ui/Keyboard.h"
+#include "matrix/BotClass.hpp"
+#include "client/Camera.hpp"
+#include "client/Colors.hpp"
+#include "client/Context.hpp"
+#include "ui/Keyboard.hpp"
 
 #include <SDL_opengl.h>
 

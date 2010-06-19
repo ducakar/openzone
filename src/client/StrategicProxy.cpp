@@ -7,12 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/StrategicProxy.h"
+#include "client/StrategicProxy.hpp"
 
-#include "ui/UI.h"
-#include "client/Camera.h"
+#include "ui/UI.hpp"
+#include "client/Camera.hpp"
 
 namespace oz
 {

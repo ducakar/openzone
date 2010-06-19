@@ -7,17 +7,19 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/Matrix.h"
+#include "matrix/Matrix.hpp"
+
+#include <SDL_main.h>
 
 using namespace oz;
 
-int main()
+int main( int, char** )
 {
   SDL_Init( 0 );
 
-  log.init( "", false, "  " );
+  oz::log.init( "", false, "  " );
   matrix.init();
   world.load();
 

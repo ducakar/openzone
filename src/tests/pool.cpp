@@ -7,7 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
+
+#include <SDL_main.h>
 
 using namespace oz;
 using oz::uint;
@@ -21,13 +23,13 @@ class A
 
     static Pool<A, 0> pool;
 
-  OZ_STATIC_POOL_ALLOC( pool );
+  OZ_STATIC_POOL_ALLOC( pool )
 
 };
 
 Pool<A, 0> A::pool;
 
-int main()
+int main( int, char** )
 {
   const int max = 10000;
 
