@@ -7,9 +7,10 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
 #include <cstdio>
+#include <SDL_main.h>
 
 using namespace oz;
 
@@ -22,7 +23,7 @@ struct A
   A( int value_ ) : value( value_ ) {}
 };
 
-int main()
+int main( int, char** )
 {
   Sparse<A> sparse( 1 );
 

@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/Bot.h"
+#include "matrix/Bot.hpp"
 
-#include "matrix/Synapse.h"
-#include "matrix/Physics.h"
-#include "matrix/Weapon.h"
-#include "matrix/BotClass.h"
-#include "matrix/Vehicle.h"
+#include "matrix/Synapse.hpp"
+#include "matrix/Physics.hpp"
+#include "matrix/Weapon.hpp"
+#include "matrix/BotClass.hpp"
+#include "matrix/Vehicle.hpp"
 
 namespace oz
 {

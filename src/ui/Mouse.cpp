@@ -7,12 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "ui/Mouse.h"
+#include "ui/Mouse.hpp"
 
-#include "client/Camera.h"
-#include "client/Context.h"
+#include "client/Camera.hpp"
+#include "client/Context.hpp"
 
 #define SDL_BUTTON_WUMASK SDL_BUTTON( SDL_BUTTON_WHEELUP )
 #define SDL_BUTTON_WDMASK SDL_BUTTON( SDL_BUTTON_WHEELDOWN )

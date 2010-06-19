@@ -7,13 +7,13 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/Translator.h"
+#include "matrix/Translator.hpp"
 
-#include "matrix/WeaponClass.h"
-#include "matrix/BotClass.h"
-#include "matrix/VehicleClass.h"
+#include "matrix/WeaponClass.hpp"
+#include "matrix/BotClass.hpp"
+#include "matrix/VehicleClass.hpp"
 
 #include <dirent.h>
 #include <sys/types.h>

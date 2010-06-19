@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/World.h"
+#include "matrix/World.hpp"
 
-#include "matrix/Lua.h"
+#include "matrix/Lua.hpp"
 
 namespace oz
 {
@@ -22,7 +22,7 @@ namespace oz
   const float Cell::INV_SIZE = 1.0f / float( Cell::SIZEI );
   const float Cell::RADIUS   = Cell::SIZE * Math::SQRT2 / 2.0f;
 
-  const float World::DIM   = Cell::SIZE * World::MAX / 2.0f;
+  const float World::DIM     = Cell::SIZE * World::MAX / 2.0f;
 
   World::World() : bsps( 32 ), structs( 128 ), objects( 1024 ), parts( 1024 )
   {}
@@ -89,13 +89,13 @@ namespace oz
 
   void World::update()
   {
-    strAvailableIndices.addAll( strFreedIndices[waiting] );
+    strAvailableIndices.addAll( strFreedIndices[waiting], strFreedIndices[waiting].length() );
     strFreedIndices[waiting].clear();
 
-    objAvailableIndices.addAll( objFreedIndices[waiting] );
+    objAvailableIndices.addAll( objFreedIndices[waiting], objFreedIndices[waiting].length() );
     objFreedIndices[waiting].clear();
 
-    partAvailableIndices.addAll( partFreedIndices[waiting] );
+    partAvailableIndices.addAll( partFreedIndices[waiting], objFreedIndices[waiting].length() );
     partFreedIndices[waiting].clear();
 
     freeing = !freeing;

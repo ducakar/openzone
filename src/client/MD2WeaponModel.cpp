@@ -7,14 +7,14 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/MD2WeaponModel.h"
+#include "client/MD2WeaponModel.hpp"
 
-#include "matrix/Bot.h"
-#include "matrix/World.h"
-#include "client/Context.h"
-#include "client/Colors.h"
+#include "matrix/Bot.hpp"
+#include "matrix/World.hpp"
+#include "client/Context.hpp"
+#include "client/Colors.hpp"
 
 #include <typeinfo>
 

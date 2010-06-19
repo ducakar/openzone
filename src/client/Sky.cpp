@@ -7,15 +7,15 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/Sky.h"
+#include "client/Sky.hpp"
 
-#include "matrix/Timer.h"
-#include "matrix/World.h"
-#include "client/Context.h"
-#include "client/Camera.h"
-#include "client/Colors.h"
+#include "matrix/Timer.hpp"
+#include "matrix/World.hpp"
+#include "client/Context.hpp"
+#include "client/Camera.hpp"
+#include "client/Colors.hpp"
 
 namespace oz
 {

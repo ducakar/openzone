@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/Collider.h"
+#include "matrix/Collider.hpp"
 
 namespace oz
 {
@@ -26,45 +26,25 @@ namespace oz
     Vec3(  0.0f,  0.0f, -1.0f )
   };
 
+  const Mat33 Collider::structRotations[] =
+  {
+    Mat33::id(),
+    Mat33::rotZ(  Math::PI_2 ),
+    Mat33::rotZ(  Math::PI ),
+    Mat33::rotZ( -Math::PI_2 )
+  };
+
   Collider::Collider() : mask( Object::SOLID_BIT )
   {}
 
   inline Vec3 Collider::toStructCS( const Vec3& v ) const
   {
-    switch( str->rot ) {
-      case Structure::R0: {
-        return v;
-      }
-      case Structure::R90: {
-        return Vec3( v.y, -v.x, v.z );
-      }
-      case Structure::R180: {
-        return Vec3( -v.x, -v.y, v.z );
-      }
-      default:
-      case Structure::R270: {
-        return Vec3( -v.y, v.x, v.z );
-      }
-    }
+    return structRotations[ int( str->rot ) ] * v;
   }
 
   inline Vec3 Collider::toAbsoluteCS( const Vec3& v ) const
   {
-    switch( str->rot ) {
-      case Structure::R0: {
-        return v;
-      }
-      case Structure::R90: {
-        return Vec3( -v.y, v.x, v.z );
-      }
-      case Structure::R180: {
-        return Vec3( -v.x, -v.y, v.z );
-      }
-      default:
-        case Structure::R270: {
-          return Vec3( v.y, -v.x, v.z );
-        }
-    }
+    return structRotations[ int( str->rot ) ^ 1 ] * v;
   }
 
   //***********************************
@@ -74,16 +54,15 @@ namespace oz
   // checks if AABB and Brush overlap
   bool Collider::testPointBrush( const BSP::Brush* brush ) const
   {
+    bool result = false;
+
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float dist = globalStartPos * plane.normal - plane.distance;
-
-      if( dist > EPSILON ) {
-        return true;
-      }
+      result |= dist > EPSILON;
     }
-    return false;
+    return result;
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush overlapping

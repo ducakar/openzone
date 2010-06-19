@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/Names.h"
+#include "matrix/Names.hpp"
 
 namespace oz
 {

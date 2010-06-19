@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "oz.h"
+#include "oz.hpp"
 
-#include <math.h>
+#include <cmath>
 #include <cstdlib>
 #include <ctime>
 

@@ -7,18 +7,18 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/GameStage.h"
+#include "client/GameStage.hpp"
 
-#include "matrix/Bot.h"
-#include "matrix/Matrix.h"
-#include "nirvana/Nirvana.h"
-#include "client/Network.h"
-#include "client/Render.h"
-#include "client/Sound.h"
+#include "matrix/Bot.hpp"
+#include "matrix/Matrix.hpp"
+#include "nirvana/Nirvana.hpp"
+#include "client/Network.hpp"
+#include "client/Render.hpp"
+#include "client/Sound.hpp"
 
-#include "client/Camera.h"
+#include "client/Camera.hpp"
 
 namespace oz
 {

@@ -7,11 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>
+#include <SDL_main.h>
 
 using namespace std;
 
@@ -263,7 +264,7 @@ void TQuickSortInc( T *a, int num_el )
 #define MAX 200
 #define TESTS 500
 
-int main( int, char *[] )
+int main( int, char** )
 {
   int array[MAX];
 

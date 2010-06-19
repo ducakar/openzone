@@ -7,21 +7,16 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/Lua.h"
+#include "matrix/Lua.hpp"
 
-#include "matrix/BotClass.h"
-#include "matrix/Bot.h"
-#include "matrix/Collider.h"
-#include "matrix/Synapse.h"
+#include "matrix/BotClass.hpp"
+#include "matrix/Bot.hpp"
+#include "matrix/Collider.hpp"
+#include "matrix/Synapse.hpp"
 
-extern "C"
-{
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-}
+#include <lua.hpp>
 
 #define OZ_LUA_ERROR( message ) luaL_error( l, "[%s] %s", __FUNCTION__, message );
 #define OZ_LUA_FUNCTION( func ) lua_register( l, #func, func )

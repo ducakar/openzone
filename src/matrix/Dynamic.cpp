@@ -7,9 +7,9 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/Dynamic.h"
+#include "matrix/Dynamic.hpp"
 
 namespace oz
 {

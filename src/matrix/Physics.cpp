@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "matrix/Physics.h"
+#include "matrix/Physics.hpp"
 
-#include "matrix/Collider.h"
+#include "matrix/Collider.hpp"
 
 namespace oz
 {

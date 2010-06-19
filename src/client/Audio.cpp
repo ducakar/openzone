@@ -7,13 +7,13 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/Audio.h"
+#include "client/Audio.hpp"
 
-#include "client/Camera.h"
-#include "client/Context.h"
-#include "client/Sound.h"
+#include "client/Camera.hpp"
+#include "client/Context.hpp"
+#include "client/Sound.hpp"
 
 #include <AL/alut.h>
 

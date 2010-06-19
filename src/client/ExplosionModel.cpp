@@ -7,12 +7,12 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/ExplosionModel.h"
+#include "client/ExplosionModel.hpp"
 
-#include "matrix/Timer.h"
-#include "client/Context.h"
+#include "matrix/Timer.hpp"
+#include "client/Context.hpp"
 
 #include <GL/glu.h>
 

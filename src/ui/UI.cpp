@@ -7,11 +7,11 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "ui/UI.h"
+#include "ui/UI.hpp"
 
-#include "client/Camera.h"
+#include "client/Camera.hpp"
 
 #include <SDL_opengl.h>
 
@@ -46,8 +46,6 @@ namespace ui
   void UI::free()
   {
     delete root;
-    delete hud;
-    delete strategic;
 
     font.free();
     mouse.free();

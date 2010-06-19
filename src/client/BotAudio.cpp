@@ -7,13 +7,13 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "client/BotAudio.h"
+#include "client/BotAudio.hpp"
 
-#include "matrix/Physics.h"
-#include "client/Camera.h"
-#include "client/Sound.h"
+#include "matrix/Physics.hpp"
+#include "client/Camera.hpp"
+#include "client/Sound.hpp"
 
 namespace oz
 {

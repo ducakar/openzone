@@ -7,17 +7,17 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
 using namespace oz;
 
 int main( int argc, char** argv )
 {
-  log.init( null, false, "  " );
+  oz::log.init( null, false, "  " );
 
   if( argc != 2 ) {
-    log.println( "usage: ozXmlrc file_to_convert" );
-    log.println( "  if `file.xml' file is given, a new converted file `file.xml.rc' is created and "
+    oz::log.println( "usage: ozXmlrc file_to_convert" );
+    oz::log.println( "  if `file.xml' file is given, a new converted file `file.xml.rc' is created and "
         "vice versa" );
     return -1;
   }

@@ -7,13 +7,13 @@
  *  This software is covered by GNU General Public License v3. See COPYING for details.
  */
 
-#include "stable.h"
+#include "stable.hpp"
 
-#include "nirvana/LuaMind.h"
+#include "nirvana/LuaMind.hpp"
 
-#include "nirvana/Lua.h"
-#include "matrix/Bot.h"
-#include "matrix/BotClass.h"
+#include "nirvana/Lua.hpp"
+#include "matrix/Bot.hpp"
+#include "matrix/BotClass.hpp"
 
 namespace oz
 {
