@@ -1,5 +1,5 @@
 /*
- *  Terrain.h
+ *  Terrain.hpp
  *
  *  Matrix structure for terrain
  *
@@ -39,7 +39,7 @@ namespace oz
 
       struct Triangle
       {
-        Vec3  normal;
+        Vec4  normal;
         float distance;
       };
 
@@ -56,7 +56,7 @@ namespace oz
         Triangle tri[2];
       };
 
-      Vec3 vertices[MAX][MAX];
+      Vec4 vertices[MAX][MAX];
       Quad quads[QUADS][QUADS];
 
       void init();

@@ -1,5 +1,5 @@
 /*
- *  SVector.h
+ *  SVector.hpp
  *
  *  Static-size vector
  *  Type should be a POD type as C++0x is not yet fully supported by GCC.

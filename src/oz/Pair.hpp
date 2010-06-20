@@ -1,5 +1,5 @@
 /*
- *  Pair.h
+ *  Pair.hpp
  *
  *  Generic pair template, also provide vector-like functionality.
  *

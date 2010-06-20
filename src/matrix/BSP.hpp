@@ -1,5 +1,5 @@
 /*
- *  BSP.h
+ *  BSP.hpp
  *
  *  Data structure and loaders for Internal BSP, Quake3 BSP and OpenBSP formats
  *
@@ -24,7 +24,7 @@ namespace oz
 
       struct Plane
       {
-        Vec3  normal;
+        Vec4  normal;
         float distance;
       };
 
@@ -56,7 +56,7 @@ namespace oz
 
       struct Vertex
       {
-        Vec3  p;
+        Vec4  p;
         float texCoord[2];
         float lightmapCoord[2];
       };
@@ -67,7 +67,7 @@ namespace oz
         int  lightmap;
         int  material;
 
-        Vec3 normal;
+        Vec4 normal;
 
         int  firstVertex;
         int  nVertices;

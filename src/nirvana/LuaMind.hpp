@@ -1,5 +1,5 @@
 /*
- *  LuaMind.h
+ *  LuaMind.hpp
  *
  *  [description]
  *

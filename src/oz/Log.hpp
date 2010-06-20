@@ -1,5 +1,5 @@
 /*
- *  Log.h
+ *  Log.hpp
  *
  *  Utility for writing a log file
  *

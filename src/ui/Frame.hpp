@@ -1,5 +1,5 @@
 /*
- *  Frame.h
+ *  Frame.hpp
  *
  *  [description]
  *

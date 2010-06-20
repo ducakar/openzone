@@ -1,5 +1,5 @@
 /*
- *  Physics.h
+ *  Physics.hpp
  *
  *  Physics engine
  *
@@ -44,10 +44,10 @@ namespace oz
       Dynamic*  obj;
       Particle* part;
       Bounds    trace;
-      Vec3      move;
+      Vec4      move;
       float     leftRatio;
 
-      Vec3      lastNormals[2];
+      Vec4      lastNormals[2];
 
       void handlePartHit();
       void handlePartMove();

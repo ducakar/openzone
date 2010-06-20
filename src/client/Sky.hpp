@@ -1,5 +1,5 @@
 /*
- *  Sky.h
+ *  Sky.hpp
  *
  *  [description]
  *
@@ -38,15 +38,15 @@ namespace client
       uint  sunList;
       uint  moonList;
 
-      Vec3  stars[MAX_STARS];
+      Vec4  stars[MAX_STARS];
 
     public:
 
       float angle;
       float ratio;
       float ratio_1;
-      Vec3  originalLightDir;
-      Vec3  axis;
+      Vec4  originalLightDir;
+      Vec4  axis;
 
       float lightDir[4];
 

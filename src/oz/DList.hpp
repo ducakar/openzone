@@ -1,5 +1,5 @@
 /*
- *  DList.h
+ *  DList.hpp
  *
  *  Double-linked list
  *  The Type should provide the "prev[INDEX]" and "next[INDEX]" pointers.
@@ -195,10 +195,10 @@ namespace oz
       DList& operator = ( DList&& l )
       {
         firstElem = l.firstElem;
-        lastElem = l.lastElem;
+        lastElem  = l.lastElem;
 
         l.firstElem = null;
-        l.lastElem = null;
+        l.lastElem  = null;
         return *this;
       }
 

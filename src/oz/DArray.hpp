@@ -1,5 +1,5 @@
 /*
- *  DArray.h
+ *  DArray.hpp
  *
  *  Dynamic array.
  *  The advantage over C++ arrays is it has bounds checking, iterator and it frees allocated

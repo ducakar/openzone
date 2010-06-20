@@ -1,5 +1,5 @@
 /*
- *  Array.h
+ *  Array.hpp
  *
  *  Static-size array.
  *  The advantage over C++ arrays it that is has bounds checking and an iterator.

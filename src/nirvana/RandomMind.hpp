@@ -1,5 +1,5 @@
 /*
- *  RandomMind.h
+ *  RandomMind.hpp
  *
  *  [description]
  *

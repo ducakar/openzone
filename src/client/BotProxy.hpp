@@ -1,5 +1,5 @@
 /*
- *  BotProxy.h
+ *  BotProxy.hpp
  *
  *  [description]
  *

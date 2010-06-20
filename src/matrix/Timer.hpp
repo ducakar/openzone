@@ -1,5 +1,5 @@
 /*
- *  Timer.h
+ *  Timer.hpp
  *
  *  Timer utility
  *

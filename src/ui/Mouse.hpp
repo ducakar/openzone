@@ -1,5 +1,5 @@
 /*
- *  Mouse.h
+ *  Mouse.hpp
  *
  *  [description]
  *

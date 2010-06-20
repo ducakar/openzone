@@ -1,5 +1,5 @@
 /*
- *  OBJModel.h
+ *  OBJModel.hpp
  *
  *  [description]
  *

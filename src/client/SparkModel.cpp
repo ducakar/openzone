@@ -21,11 +21,11 @@ namespace client
 //  void SparkGenRender::createSpark( int i )
 //  {
 //    float velocitySpread2 = sparkGen->velocitySpread * 0.5f;
-//    Vec3 velDisturb = Vec3( sparkGen->velocitySpread * Math::frand() - velocitySpread2,
+//    Vec4 velDisturb = Vec4( sparkGen->velocitySpread * Math::frand() - velocitySpread2,
 //                            sparkGen->velocitySpread * Math::frand() - velocitySpread2,
 //                            sparkGen->velocitySpread * Math::frand() - velocitySpread2 );
 //
-//    Vec3 colorDisturb = Vec3( sparkGen->colorSpread.x * Math::frand(),
+//    Vec4 colorDisturb = Vec4( sparkGen->colorSpread.x * Math::frand(),
 //                              sparkGen->colorSpread.y * Math::frand(),
 //                              sparkGen->colorSpread.z * Math::frand() );
 //
@@ -70,7 +70,7 @@ namespace client
 //    glMultMatrixf( camera.rotMat );
 //
 //    for( int i = 0; i < nSparks; ++i ) {
-//      Vec3& p = sparks[i].p;
+//      Vec4& p = sparks[i].p;
 //
 //      glTranslatef( p.x, p.y, p.z );
 //

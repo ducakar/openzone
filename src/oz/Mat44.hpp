@@ -1,5 +1,5 @@
 /*
- *  Mat44.h
+ *  Mat44.hpp
  *
  *  Column-major 4x4 matrix
  *
@@ -16,13 +16,13 @@ namespace oz
   {
     public:
       // first column (i base vector)
-      Quat x;
+      Vec4 x;
       // second column (j base vector)
-      Quat y;
+      Vec4 y;
       // third column (k base vector)
-      Quat z;
+      Vec4 z;
       // last column (usually used for position)
-      Quat w;
+      Vec4 w;
 
       explicit Mat44()
       {}
@@ -37,16 +37,14 @@ namespace oz
           w( wx, wy, wz, ww )
       {}
 
-      explicit Mat44( const float* v )
-      {
-        *this = *reinterpret_cast<const Mat44*>( v );
-      }
+      explicit Mat44( const float* v ) : x( &v[0] ), y( &v[4] ), z( &v[8] ), w( &v[12] )
+      {}
 
       explicit Mat44( const Mat33& m ) :
           x( m.x.x, m.x.y, m.x.z, 0.0f ),
           y( m.y.x, m.y.y, m.y.z, 0.0f ),
           z( m.z.x, m.z.y, m.z.z, 0.0f ),
-          w( 0.0f, 0.0f, 0.0f, 1.0f )
+          w(  0.0f,  0.0f,  0.0f, 1.0f )
       {}
 
       explicit Mat44( const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d ) :
@@ -56,9 +54,33 @@ namespace oz
           w( d.x, d.y, d.z, 1.0f )
       {}
 
-      explicit Mat44( const Quat& a, const Quat& b, const Quat& c, const Quat& d ) :
+      explicit Mat44( const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d ) :
           x( a ), y( b ), z( c ), w( d )
       {}
+
+      operator const float* () const
+      {
+        return &x.x;
+      }
+
+      operator float* ()
+      {
+        return &x.x;
+      }
+
+      const float& operator [] ( int i ) const
+      {
+        assert( 0 <= i && i < 16 );
+
+        return ( &x.x )[i];
+      }
+
+      float& operator [] ( int i )
+      {
+        assert( 0 <= i && i < 16 );
+
+        return ( &x.x )[i];
+      }
 
       static Mat44 zero()
       {
@@ -66,80 +88,6 @@ namespace oz
                       0.0f, 0.0f, 0.0f, 0.0f,
                       0.0f, 0.0f, 0.0f, 0.0f,
                       0.0f, 0.0f, 0.0f, 0.0f );
-      }
-
-      static Mat44 id()
-      {
-        return Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
-                      0.0f, 1.0f, 0.0f, 0.0f,
-                      0.0f, 0.0f, 1.0f, 0.0f,
-                      0.0f, 0.0f, 0.0f, 1.0f );
-      }
-
-      operator float* ()
-      {
-        return reinterpret_cast<float*>( this );
-      }
-
-      operator const float* () const
-      {
-        return reinterpret_cast<const float*>( this );
-      }
-
-      float& operator [] ( int i )
-      {
-        assert( 0 <= i && i < 16 );
-
-        return reinterpret_cast<float*>( this )[i];
-      }
-
-      const float& operator [] ( int i ) const
-      {
-        assert( 0 <= i && i < 16 );
-
-        return reinterpret_cast<const float*>( this )[i];
-      }
-
-      float det() const
-      {
-        float klop = z.z * w.w - w.z * z.w;
-        float jlnp = y.z * w.w - w.z * y.w;
-        float jkno = y.z * z.w - z.z * y.w;
-        float ilmp = x.z * w.w - w.z * x.w;
-        float ikmo = x.z * z.w - z.z * x.w;
-        float ijmn = x.z * y.w - y.z * x.w;
-        return
-            x.x * y.y * klop -
-            x.x * z.y * jlnp +
-            x.x * w.y * jkno -
-            y.x * x.y * klop +
-            y.x * z.y * ilmp -
-            y.x * w.y * ikmo +
-            z.x * x.y * jlnp -
-            z.x * y.y * ilmp +
-            z.x * w.y * ijmn -
-            w.x * x.y * jkno +
-            w.x * y.y * ikmo -
-            w.x * z.y * ijmn;
-      }
-
-      Mat44 operator ~ () const
-      {
-        return Mat44( x.x, y.x, z.x, w.x,
-                      x.y, y.y, z.y, w.y,
-                      x.z, y.z, z.z, w.z,
-                      x.w, y.w, z.w, w.w );
-      }
-
-      Mat44& trans()
-      {
-        swap( x.y, y.x );
-        swap( x.z, z.x );
-        swap( x.w, w.x );
-        swap( y.z, z.y );
-        swap( y.w, w.y );
-        swap( z.w, w.z );
-        return *this;
       }
 
       bool isZero() const
@@ -184,6 +132,14 @@ namespace oz
         return *this;
       }
 
+      static Mat44 id()
+      {
+        return Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
+                      0.0f, 1.0f, 0.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f,
+                      0.0f, 0.0f, 0.0f, 1.0f );
+      }
+
       bool isId() const
       {
         return
@@ -226,6 +182,48 @@ namespace oz
         return *this;
       }
 
+      Mat44 operator ~ () const
+      {
+        return Mat44( x.x, y.x, z.x, w.x,
+                      x.y, y.y, z.y, w.y,
+                      x.z, y.z, z.z, w.z,
+                      x.w, y.w, z.w, w.w );
+      }
+
+      Mat44& trans()
+      {
+        swap( x.y, y.x );
+        swap( x.z, z.x );
+        swap( x.w, w.x );
+        swap( y.z, z.y );
+        swap( y.w, w.y );
+        swap( z.w, w.z );
+        return *this;
+      }
+
+      float det() const
+      {
+        float klop = z.z * w.w - w.z * z.w;
+        float jlnp = y.z * w.w - w.z * y.w;
+        float jkno = y.z * z.w - z.z * y.w;
+        float ilmp = x.z * w.w - w.z * x.w;
+        float ikmo = x.z * z.w - z.z * x.w;
+        float ijmn = x.z * y.w - y.z * x.w;
+        return
+            x.x * y.y * klop -
+            x.x * z.y * jlnp +
+            x.x * w.y * jkno -
+            y.x * x.y * klop +
+            y.x * z.y * ilmp -
+            y.x * w.y * ikmo +
+            z.x * x.y * jlnp -
+            z.x * y.y * ilmp +
+            z.x * w.y * ijmn -
+            w.x * x.y * jkno +
+            w.x * y.y * ikmo -
+            w.x * z.y * ijmn;
+      }
+
       Mat44 operator + () const
       {
         return *this;
@@ -237,6 +235,41 @@ namespace oz
                       -y.x, -y.y, -y.z, -y.w,
                       -z.x, -z.y, -z.z, -z.w,
                       -w.x, -w.y, -w.z, -w.w );
+      }
+
+      Mat44 operator + ( const Mat44& a ) const
+      {
+        return Mat44( x.x + a.x.x, x.y + a.x.y, x.z + a.x.z, x.w + a.x.w,
+                      y.x + a.y.x, y.y + a.y.y, y.z + a.y.z, y.w + a.y.w,
+                      z.x + a.z.x, z.y + a.z.y, z.z + a.z.z, z.w + a.z.w,
+                      w.x + a.w.x, w.y + a.w.y, w.z + a.w.z, w.w + a.w.w );
+      }
+
+      Mat44 operator - ( const Mat44& a ) const
+      {
+        return Mat44( x.x - a.x.x, x.y - a.x.y, x.z - a.x.z, x.w - a.x.w,
+                      y.x - a.y.x, y.y - a.y.y, y.z - a.y.z, y.w - a.y.w,
+                      z.x - a.z.x, z.y - a.z.y, z.z - a.z.z, z.w - a.z.w,
+                      w.x - a.w.x, w.y - a.w.y, w.z - a.w.z, w.w - a.w.w );
+      }
+
+      Mat44 operator * ( float k ) const
+      {
+        return Mat44( x.x * k, x.y * k, x.z * k, x.w * k,
+                      y.x * k, y.y * k, y.z * k, y.w * k,
+                      z.x * k, z.y * k, z.z * k, z.w * k,
+                      w.x * k, w.y * k, w.z * k, w.w * k );
+      }
+
+      Mat44 operator / ( float k ) const
+      {
+        assert( k != 0.0f );
+
+        k = 1.0f / k;
+        return Mat44( x.x * k, x.y * k, x.z * k, x.w * k,
+                      y.x * k, y.y * k, y.z * k, y.w * k,
+                      z.x * k, z.y * k, z.z * k, z.w * k,
+                      w.x * k, w.y * k, w.z * k, w.w * k );
       }
 
       Mat44& operator += ( const Mat44& a )
@@ -326,41 +359,6 @@ namespace oz
         return *this;
       }
 
-      Mat44 operator + ( const Mat44& a ) const
-      {
-        return Mat44( x.x + a.x.x, x.y + a.x.y, x.z + a.x.z, x.w + a.x.w,
-                      y.x + a.y.x, y.y + a.y.y, y.z + a.y.z, y.w + a.y.w,
-                      z.x + a.z.x, z.y + a.z.y, z.z + a.z.z, z.w + a.z.w,
-                      w.x + a.w.x, w.y + a.w.y, w.z + a.w.z, w.w + a.w.w );
-      }
-
-      Mat44 operator - ( const Mat44& a ) const
-      {
-        return Mat44( x.x - a.x.x, x.y - a.x.y, x.z - a.x.z, x.w - a.x.w,
-                      y.x - a.y.x, y.y - a.y.y, y.z - a.y.z, y.w - a.y.w,
-                      z.x - a.z.x, z.y - a.z.y, z.z - a.z.z, z.w - a.z.w,
-                      w.x - a.w.x, w.y - a.w.y, w.z - a.w.z, w.w - a.w.w );
-      }
-
-      Mat44 operator * ( float k ) const
-      {
-        return Mat44( x.x * k, x.y * k, x.z * k, x.w * k,
-                      y.x * k, y.y * k, y.z * k, y.w * k,
-                      z.x * k, z.y * k, z.z * k, z.w * k,
-                      w.x * k, w.y * k, w.z * k, w.w * k );
-      }
-
-      Mat44 operator / ( float k ) const
-      {
-        assert( k != 0.0f );
-
-        k = 1.0f / k;
-        return Mat44( x.x * k, x.y * k, x.z * k, x.w * k,
-                      y.x * k, y.y * k, y.z * k, y.w * k,
-                      z.x * k, z.y * k, z.z * k, z.w * k,
-                      w.x * k, w.y * k, w.z * k, w.w * k );
-      }
-
       Mat44 operator * ( const Mat44& a ) const
       {
         return Mat44( x.x * a.x.x + y.x * a.x.y + z.x * a.x.z + w.x * a.x.w,
@@ -386,16 +384,30 @@ namespace oz
 
       Vec3 operator * ( const Vec3& v ) const
       {
-        return Vec3( v.x * x.x + v.y * y.x + v.z * z.x + w.x,
-                     v.x * x.y + v.y * y.y + v.z * z.y + w.y,
-                     v.x * x.z + v.y * y.z + v.z * z.z + w.z );
+        return Vec3( x.x * v.x + y.x * v.y + z.x * v.z + w.x,
+                     x.y * v.x + y.y * v.y + z.y * v.z + w.y,
+                     x.z * v.x + y.z * v.y + z.z * v.z + w.z );
       }
 
-      Vec3 invMultiply( const Vec3& v ) const
+      Vec4 operator * ( const Vec4& v ) const
       {
-        return Vec3( v.x * x.x + v.y * x.y + v.z * x.z + x.w,
-                     v.x * y.x + v.y * y.y + v.z * y.z + y.w,
-                     v.x * z.x + v.y * z.y + v.z * z.z + z.w );
+        return Vec4( x.x * v.x + y.x * v.y + z.x * v.z + w.x * v.w,
+                     x.y * v.x + y.y * v.y + z.y * v.z + w.y * v.w,
+                     x.z * v.x + y.z * v.y + z.z * v.z + w.z * v.w );
+      }
+
+      Vec3 operator / ( const Vec3& v ) const
+      {
+        return Vec3( x.x * v.x + x.y * v.y + x.z * v.z + x.w,
+                     y.x * v.x + y.y * v.y + y.z * v.z + y.w,
+                     z.x * v.x + z.y * v.y + z.z * v.z + z.w );
+      }
+
+      Vec4 operator / ( const Vec4& v ) const
+      {
+        return Vec4( x.x * v.x + x.y * v.y + x.z * v.z + x.w * v.w,
+                     y.x * v.x + y.y * v.y + y.z * v.z + y.w * v.w,
+                     z.x * v.x + z.y * v.y + z.z * v.z + z.w * v.w );
       }
 
       friend Mat44 operator * ( float k, const Mat44& a )
@@ -461,11 +473,12 @@ namespace oz
 
   };
 
+  // declared in Mat33.hpp
   inline Mat33::Mat33( const Mat44& m ) :
       x( m.x ), y( m.y ), z( m.z )
   {}
 
-  // declared in Quat.h
+  // declared in Quat.hpp
   inline Mat44 Quat::rotMat44() const
   {
     // this matrix is in column major format in implementation
@@ -495,7 +508,7 @@ namespace oz
                   0.0f,           0.0f,     0.0f,     1.0f );
   }
 
-  // declared in Quat.h
+  // declared in Quat.hpp
   inline Mat44 Quat::invRotMat44() const
   {
     // this matrix is in column major format in implementation

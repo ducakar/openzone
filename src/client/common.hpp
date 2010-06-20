@@ -1,5 +1,5 @@
 /*
- *  common.h
+ *  common.hpp
  *
  *  [description]
  *
@@ -31,4 +31,4 @@ extern PFNGLBUFFERDATAPROC           glBufferData;
 
 #define OZ_VBO_OFFSETOF( index, VertexStruct, member ) \
   reinterpret_cast<const void*> \
-  ( ( index ) * sizeof( VertexStruct ) + moffset( VertexStruct, member ) )
+  ( ( index ) * sizeof( VertexStruct ) + offsetof( VertexStruct, member ) )

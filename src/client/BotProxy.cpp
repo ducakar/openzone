@@ -181,7 +181,7 @@ namespace client
 
         camera.w = 0.0f;
         camera.align();
-        camera.warp( bot->p + Vec3( camera.rotMat.y ) * bot->camZ );
+        camera.warp( bot->p + Vec4( camera.rotMat.y ) * bot->camZ );
 
         bobPhi   = 0.0f;
         bobTheta = 0.0f;
@@ -223,7 +223,7 @@ namespace client
           bobTheta = 0.0f;
         }
 
-        Vec3 p = bot->p;
+        Vec4 p = bot->p;
         p.z += bot->camZ + bobBias;
 
         camera.w = bobTheta;
@@ -247,8 +247,8 @@ namespace client
         dist = !bot->dim * externalDistFactor;
       }
 
-      Vec3 origin = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
-      Vec3 offset = -camera.at * dist;
+      Vec4 origin = bot->p + Vec4( 0.0f, 0.0f, bot->camZ );
+      Vec4 offset = -camera.at * dist;
 
       collider.translate( origin, offset, bot );
       offset *= collider.hit.ratio;
@@ -275,11 +275,11 @@ namespace client
       hvsc[5] = hvsc[3] * hvsc[1];
 
       // at vector must be based on bot's orientation, not on camera's
-      Vec3 at = Vec3( -hvsc[4], hvsc[5], hvsc[2] );
+      Vec4 at = Vec4( -hvsc[4], hvsc[5], hvsc[2] );
 
       float distance = static_cast<const BotClass*>( camera.botObj->type )->grabDistance;
       collider.mask = ~0;
-      collider.translate( camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ ),
+      collider.translate( camera.botObj->p + Vec4( 0.0f, 0.0f, camera.botObj->camZ ),
                           at * distance,
                           camera.botObj );
       collider.mask = Object::SOLID_BIT;
@@ -289,7 +289,7 @@ namespace client
     else {
       float distance = static_cast<const BotClass*>( camera.botObj->type )->grabDistance;
       collider.mask = ~0;
-      collider.translate( camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ ),
+      collider.translate( camera.botObj->p + Vec4( 0.0f, 0.0f, camera.botObj->camZ ),
                           camera.at * distance,
                           camera.botObj );
       collider.mask = Object::SOLID_BIT;

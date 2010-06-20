@@ -1,5 +1,5 @@
 /*
- *  HudArea.h
+ *  HudArea.hpp
  *
  *  [description]
  *

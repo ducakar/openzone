@@ -1,5 +1,5 @@
 /*
- *  Mat33.h
+ *  Mat33.hpp
  *
  *  Column-major 3x3 matrix
  *
@@ -31,80 +31,45 @@ namespace oz
           z( zx, zy, zz )
       {}
 
-      explicit Mat33( const float* v )
-      {
-        *this = *reinterpret_cast<const Mat33*>( v );
-      }
+      explicit Mat33( const float* v ) : x( &v[0] ), y( &v[3] ), z( &v[6] )
+      {}
 
-      // implemented in Mat44.h
+      // implemented in Mat44.hpp
       explicit Mat33( const Mat44& m );
 
       explicit Mat33( const Vec3& a, const Vec3& b, const Vec3& c ) :
           x( a ), y( b ), z( c )
       {}
 
-      static Mat33 zero()
+      operator const float* () const
       {
-        return Mat33( 0.0f, 0.0f, 0.0f,
-                      0.0f, 0.0f, 0.0f,
-                      0.0f, 0.0f, 0.0f );
-      }
-
-      static Mat33 id()
-      {
-        return Mat33( 1.0f, 0.0f, 0.0f,
-                      0.0f, 1.0f, 0.0f,
-                      0.0f, 0.0f, 1.0f );
+        return &x.x;
       }
 
       operator float* ()
       {
-        return reinterpret_cast<float*>( this );
-      }
-
-      operator const float* () const
-      {
-        return reinterpret_cast<const float*>( this );
-      }
-
-      float& operator [] ( int i )
-      {
-        assert( 0 <= i && i < 9 );
-
-        return reinterpret_cast<float*>( this )[i];
+        return &x.x;
       }
 
       const float& operator [] ( int i ) const
       {
         assert( 0 <= i && i < 9 );
 
-        return reinterpret_cast<const float*>( this )[i];
+        return ( &x.x )[i];
       }
 
-      // determinant
-      float det() const
+      float& operator [] ( int i )
       {
-        return
-            x.x * ( y.y*z.z - y.z*z.y ) -
-            y.x * ( x.y*z.z - x.z*z.y ) +
-            z.x * ( x.y*y.z - x.z*y.y );
+        assert( 0 <= i && i < 9 );
+
+        return ( &x.x )[i];
       }
 
-      // return transposed matrix
-      Mat33 operator ~ () const
+      static Mat33 zero()
       {
-        return Mat33( x.x, y.x, z.x,
-                      x.y, y.y, z.y,
-                      x.z, y.z, z.z );
-      }
-
-      // transpose
-      Mat33& trans()
-      {
-        swap( x.y, y.x );
-        swap( x.z, z.x );
-        swap( y.z, z.y );
-        return *this;
+        return Mat33( 0.0f, 0.0f, 0.0f,
+                      0.0f, 0.0f, 0.0f,
+                      0.0f, 0.0f, 0.0f );
       }
 
       bool isZero() const
@@ -135,6 +100,13 @@ namespace oz
         return *this;
       }
 
+      static Mat33 id()
+      {
+        return Mat33( 1.0f, 0.0f, 0.0f,
+                      0.0f, 1.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f );
+      }
+
       bool isId() const
       {
         return
@@ -163,6 +135,32 @@ namespace oz
         return *this;
       }
 
+      // return transposed matrix
+      Mat33 operator ~ () const
+      {
+        return Mat33( x.x, y.x, z.x,
+                      x.y, y.y, z.y,
+                      x.z, y.z, z.z );
+      }
+
+      // transpose
+      Mat33& trans()
+      {
+        swap( x.y, y.x );
+        swap( x.z, z.x );
+        swap( y.z, z.y );
+        return *this;
+      }
+
+      // determinant
+      float det() const
+      {
+        return
+            x.x * ( y.y*z.z - y.z*z.y ) -
+            y.x * ( x.y*z.z - x.z*z.y ) +
+            z.x * ( x.y*y.z - x.z*y.y );
+      }
+
       Mat33 operator + () const
       {
         return *this;
@@ -175,7 +173,37 @@ namespace oz
                       -z.x, -z.y, -z.z );
       }
 
-      // assignment operators
+      Mat33 operator + ( const Mat33& a ) const
+      {
+        return Mat33( x.x + a.x.x, x.y + a.x.y, x.z + a.x.z,
+                      y.x + a.y.x, y.y + a.y.y, y.z + a.y.z,
+                      z.x + a.z.x, z.y + a.z.y, z.z + a.z.z );
+      }
+
+      Mat33 operator - ( const Mat33& a ) const
+      {
+        return Mat33( x.x - a.x.x, x.y - a.x.y, x.z - a.x.z,
+                      y.x - a.y.x, y.y - a.y.y, y.z - a.y.z,
+                      z.x - a.z.x, z.y - a.z.y, z.z - a.z.z );
+      }
+
+      Mat33 operator * ( float k ) const
+      {
+        return Mat33( x.x * k, x.y * k, x.z * k,
+                      y.x * k, y.y * k, y.z * k,
+                      z.x * k, z.y * k, z.z * k );
+      }
+
+      Mat33 operator / ( float k ) const
+      {
+        assert( k != 0.0f );
+
+        k = 1.0f / k;
+        return Mat33( x.x * k, x.y * k, x.z * k,
+                      y.x * k, y.y * k, y.z * k,
+                      z.x * k, z.y * k, z.z * k );
+      }
+
       Mat33& operator += ( const Mat33& a )
       {
         x.x += a.x.x;
@@ -235,38 +263,6 @@ namespace oz
         return *this;
       }
 
-      // binary operators
-      Mat33 operator + ( const Mat33& a ) const
-      {
-        return Mat33( x.x + a.x.x, x.y + a.x.y, x.z + a.x.z,
-                      y.x + a.y.x, y.y + a.y.y, y.z + a.y.z,
-                      z.x + a.z.x, z.y + a.z.y, z.z + a.z.z );
-      }
-
-      Mat33 operator - ( const Mat33& a ) const
-      {
-        return Mat33( x.x - a.x.x, x.y - a.x.y, x.z - a.x.z,
-                      y.x - a.y.x, y.y - a.y.y, y.z - a.y.z,
-                      z.x - a.z.x, z.y - a.z.y, z.z - a.z.z );
-      }
-
-      Mat33 operator * ( float k ) const
-      {
-        return Mat33( x.x * k, x.y * k, x.z * k,
-                      y.x * k, y.y * k, y.z * k,
-                      z.x * k, z.y * k, z.z * k );
-      }
-
-      Mat33 operator / ( float k ) const
-      {
-        assert( k != 0.0f );
-
-        k = 1.0f / k;
-        return Mat33( x.x * k, x.y * k, x.z * k,
-                      y.x * k, y.y * k, y.z * k,
-                      z.x * k, z.y * k, z.z * k );
-      }
-
       Mat33 operator * ( const Mat33& a ) const
       {
         return Mat33( x.x * a.x.x + y.x * a.x.y + z.x * a.x.z,
@@ -284,16 +280,30 @@ namespace oz
 
       Vec3 operator * ( const Vec3& v ) const
       {
-        return Vec3( v.x * x.x + v.y * y.x + v.z * z.x,
-                     v.x * x.y + v.y * y.y + v.z * z.y,
-                     v.x * x.z + v.y * y.z + v.z * z.z );
+        return Vec3( x.x * v.x + y.x * v.y + z.x * v.z,
+                     x.y * v.x + y.y * v.y + z.y * v.z,
+                     x.z * v.x + y.z * v.y + z.z * v.z );
       }
 
-      Vec3 invMultiply( const Vec3& v ) const
+      Vec4 operator * ( const Vec4& v ) const
       {
-        return Vec3( v.x * x.x + v.y * x.y + v.z * x.z,
-                     v.x * y.x + v.y * y.y + v.z * y.z,
-                     v.x * z.x + v.y * z.y + v.z * z.z );
+        return Vec4( x.x * v.x + y.x * v.y + z.x * v.z,
+                     x.y * v.x + y.y * v.y + z.y * v.z,
+                     x.z * v.x + y.z * v.y + z.z * v.z );
+      }
+
+      Vec3 operator / ( const Vec3& v ) const
+      {
+        return Vec3( x.x * v.x + x.y * v.y + x.z * v.z,
+                     y.x * v.x + y.y * v.y + y.z * v.z,
+                     z.x * v.x + z.y * v.y + z.z * v.z );
+      }
+
+      Vec4 operator / ( const Vec4& v ) const
+      {
+        return Vec4( x.x * v.x + x.y * v.y + x.z * v.z,
+                     y.x * v.x + y.y * v.y + y.z * v.z,
+                     z.x * v.x + z.y * v.y + z.z * v.z );
       }
 
       friend Mat33 operator * ( float k, const Mat33& a )
@@ -341,7 +351,7 @@ namespace oz
 
   };
 
-  // declared in Quat.h
+  // declared in Quat.hpp
   inline Mat33 Quat::rotMat33() const
   {
     // this matrix is in column major format in implementation
@@ -369,7 +379,7 @@ namespace oz
                   xz + yw,        yz - xw,  xx1 - yy );
   }
 
-  // declared in Quat.h
+  // declared in Quat.hpp
   inline Mat33 Quat::invRotMat33() const
   {
     // this matrix is in column major format in implementation

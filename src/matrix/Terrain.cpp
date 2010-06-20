@@ -41,10 +41,10 @@ namespace oz
             |/ 0|/ 0|
           (0,0)
         */
-        const Vec3& a = vertices[x    ][y    ];
-        const Vec3& b = vertices[x + 1][y    ];
-        const Vec3& c = vertices[x + 1][y + 1];
-        const Vec3& d = vertices[x    ][y + 1];
+        const Vec4& a = vertices[x    ][y    ];
+        const Vec4& b = vertices[x + 1][y    ];
+        const Vec4& c = vertices[x + 1][y + 1];
+        const Vec4& d = vertices[x    ][y + 1];
 
         quads[x][y].tri[0].normal   = ( ( c - b ) ^ ( a - b ) ).norm();
         quads[x][y].tri[0].distance = quads[x][y].tri[0].normal * a;

@@ -82,7 +82,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::buildNormalmap( ubyte* data, const Vec3& lightNormal, int width, int height,
+  uint Context::buildNormalmap( ubyte* data, const Vec4& lightNormal, int width, int height,
                                 int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
     assert( glGetError() == GL_NO_ERROR );
@@ -146,7 +146,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::createNormalmap( ubyte* data, const Vec3& lightNormal, int width, int height,
+  uint Context::createNormalmap( ubyte* data, const Vec4& lightNormal, int width, int height,
                                  int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
     uint texNum = buildNormalmap( data, lightNormal, width, height, bytesPerPixel, wrap,
@@ -192,7 +192,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::requestNormalmap( int resource, const Vec3& lightNormal,
+  uint Context::requestNormalmap( int resource, const Vec4& lightNormal,
                                   bool wrap, int magFilter, int minFilter )
   {
     if( textures[resource].nUsers > 0 ) {
@@ -265,7 +265,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::loadNormalmap( const char* path, const Vec3& lightNormal,
+  uint Context::loadNormalmap( const char* path, const Vec4& lightNormal,
                                bool wrap, int magFilter, int minFilter )
   {
     log.print( "Loading normalmap texture from file '%s' ...", path );

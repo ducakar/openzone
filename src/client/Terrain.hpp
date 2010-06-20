@@ -1,5 +1,5 @@
 /*
- *  Terrain.h
+ *  Terrain.hpp
  *
  *  [description]
  *

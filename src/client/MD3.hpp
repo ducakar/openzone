@@ -1,5 +1,5 @@
 /*
- *  MD3.h
+ *  MD3.hpp
  *
  *  [description]
  *
@@ -36,8 +36,8 @@ namespace client
 
       struct Vertex
       {
-        Vec3 p;
-        Vec3 normal;
+        Vec4 p;
+        Vec4 normal;
       };
 
       struct Mesh
@@ -52,7 +52,7 @@ namespace client
 
       struct Offset
       {
-        Vec3 p;
+        Vec4 p;
         Quat rot;
       };
 
@@ -71,7 +71,7 @@ namespace client
           ~Part();
 
           void scale( float scale );
-          void translate( const Vec3& t );
+          void translate( const Vec4& t );
           void drawFrame( int frame ) const;
 
       };
@@ -87,7 +87,7 @@ namespace client
       DArray<Offset> weaponOffsets;
 
       void scale( float scale );
-      void translate( const Vec3& t );
+      void translate( const Vec4& t );
 
     public:
 

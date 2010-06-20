@@ -1,5 +1,5 @@
 /*
- *  Vehicle.h
+ *  Vehicle.hpp
  *
  *  [description]
  *
@@ -45,7 +45,7 @@ namespace oz
       Quat rot;
       int  state, oldState;
       int  actions, oldActions;
-      Vec3 camPos;
+      Vec4 camPos;
 
       int  crew[CREW_MAX];
 

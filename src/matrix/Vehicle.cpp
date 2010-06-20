@@ -55,12 +55,12 @@ namespace oz
       }
     }
 
-    Vec3 at   = rot.rotate( Vec3( 0.0f, 1.0f, 0.0f ) );
-    Vec3 side = rot.rotate( Vec3( 1.0f, 0.0f, 0.0f ) );
-    Vec3 up   = rot.rotate( Vec3( 0.0f, 0.0f, 1.0f ) );
+    Vec4 at   = rot.rotate( Vec4( 0.0f, 1.0f, 0.0f ) );
+    Vec4 side = rot.rotate( Vec4( 1.0f, 0.0f, 0.0f ) );
+    Vec4 up   = rot.rotate( Vec4( 0.0f, 0.0f, 1.0f ) );
 
     // controls
-    Vec3 move = Vec3::zero();
+    Vec4 move = Vec4::zero();
 
     if( actions & Bot::ACTION_FORWARD ) {
       move += at;

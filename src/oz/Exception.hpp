@@ -1,5 +1,5 @@
 /*
- *  Exception.h
+ *  Exception.hpp
  *
  *  Exception class
  *

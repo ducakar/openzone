@@ -1,5 +1,5 @@
 /*
- *  VehicleClass.h
+ *  VehicleClass.hpp
  *
  *  [description]
  *
@@ -28,14 +28,14 @@ namespace oz
 
       int   state;
 
-      Vec3  crewPos[Vehicle::CREW_MAX];
+      Vec4  crewPos[Vehicle::CREW_MAX];
       Quat  crewRot[Vehicle::CREW_MAX];
 
       float moveMomentum;
 
       static ObjectClass* init( const String& name, const Config* config );
 
-      virtual Object* create( int index, const Vec3& pos ) const;
+      virtual Object* create( int index, const Vec4& pos ) const;
       virtual Object* create( int index, InputStream* istream ) const;
 
   };

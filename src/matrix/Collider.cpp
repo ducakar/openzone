@@ -16,33 +16,33 @@ namespace oz
 
   Collider collider;
 
-  const Vec3 Collider::bbNormals[] =
+  const Vec4 Collider::bbNormals[] =
   {
-    Vec3(  1.0f,  0.0f,  0.0f ),
-    Vec3( -1.0f,  0.0f,  0.0f ),
-    Vec3(  0.0f,  1.0f,  0.0f ),
-    Vec3(  0.0f, -1.0f,  0.0f ),
-    Vec3(  0.0f,  0.0f,  1.0f ),
-    Vec3(  0.0f,  0.0f, -1.0f )
+    Vec4(  1.0f,  0.0f,  0.0f ),
+    Vec4( -1.0f,  0.0f,  0.0f ),
+    Vec4(  0.0f,  1.0f,  0.0f ),
+    Vec4(  0.0f, -1.0f,  0.0f ),
+    Vec4(  0.0f,  0.0f,  1.0f ),
+    Vec4(  0.0f,  0.0f, -1.0f )
   };
 
-  const Mat33 Collider::structRotations[] =
+  const Mat44 Collider::structRotations[] =
   {
-    Mat33::id(),
-    Mat33::rotZ(  Math::PI_2 ),
-    Mat33::rotZ(  Math::PI ),
-    Mat33::rotZ( -Math::PI_2 )
+    Mat44::id(),
+    Mat44::rotZ(  Math::PI_2 ),
+    Mat44::rotZ(  Math::PI ),
+    Mat44::rotZ( -Math::PI_2 )
   };
 
   Collider::Collider() : mask( Object::SOLID_BIT )
   {}
 
-  inline Vec3 Collider::toStructCS( const Vec3& v ) const
+  inline Vec4 Collider::toStructCS( const Vec4& v ) const
   {
     return structRotations[ int( str->rot ) ] * v;
   }
 
-  inline Vec3 Collider::toAbsoluteCS( const Vec3& v ) const
+  inline Vec4 Collider::toAbsoluteCS( const Vec4& v ) const
   {
     return structRotations[ int( str->rot ) ^ 1 ] * v;
   }
@@ -208,8 +208,8 @@ namespace oz
   bool Collider::trimTerraQuad( int x, int y )
   {
     const Terrain::Quad& quad = world.terra.quads[x][y];
-    const Vec3& minVert = world.terra.vertices[x    ][y    ];
-    const Vec3& maxVert = world.terra.vertices[x + 1][y + 1];
+    const Vec4& minVert = world.terra.vertices[x    ][y    ];
+    const Vec4& maxVert = world.terra.vertices[x + 1][y + 1];
 
     float startDist = globalStartPos * quad.tri[0].normal - quad.tri[0].distance;
     float endDist   = globalEndPos   * quad.tri[0].normal - quad.tri[0].distance;
@@ -288,7 +288,7 @@ namespace oz
   {
     for( int i = 0; i < 3; ++i ) {
       int iSide = move[i] >= 0.0f;
-      const Vec3& normal = bbNormals[i * 2 + iSide];
+      const Vec4& normal = bbNormals[i * 2 + iSide];
 
       float startDist = world.maxs[i] + globalStartPos[i] * normal[i];
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i];
@@ -312,11 +312,11 @@ namespace oz
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
-    const Vec3* tmpNormal = null;
+    const Vec4* tmpNormal = null;
 
     for( int i = 0; i < 6; ++i ) {
       int j = i >> 1;
-      const Vec3& normal = bbNormals[i];
+      const Vec4& normal = bbNormals[i];
 
       float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
       float endDist   = ( globalEndPos[j]   - sObj->p[j] ) * normal[j] - sObj->dim[j];
@@ -352,7 +352,7 @@ namespace oz
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
-    const Vec3* tmpNormal = null;
+    const Vec4* tmpNormal = null;
 
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -392,7 +392,7 @@ namespace oz
 
   // recursively check nodes of BSP-tree for Point-Brush collisions
   void Collider::trimPointNode( int nodeIndex, float startRatio, float endRatio,
-                                const Vec3& startPos, const Vec3& endPos )
+                                const Vec4& startPos, const Vec4& endPos )
   {
     if( nodeIndex < 0 ) {
       const BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
@@ -659,7 +659,7 @@ namespace oz
   {
     for( int i = 0; i < 3; ++i ) {
       int iSide = move[i] >= 0.0f;
-      const Vec3& normal = bbNormals[i * 2 + iSide];
+      const Vec4& normal = bbNormals[i * 2 + iSide];
 
       float startDist = world.maxs[i] + globalStartPos[i] * normal[i] - aabb.dim[i];
       float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i] - aabb.dim[i];
@@ -683,11 +683,11 @@ namespace oz
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
-    const Vec3* tmpNormal = null;
+    const Vec4* tmpNormal = null;
 
     for( int i = 0; i < 6; ++i ) {
       int j = i >> 1;
-      const Vec3& normal = bbNormals[i];
+      const Vec4& normal = bbNormals[i];
 
       float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
       float endDist   = ( globalEndPos[j]   - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
@@ -723,7 +723,7 @@ namespace oz
   {
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
-    const Vec3* tmpNormal = null;
+    const Vec4* tmpNormal = null;
 
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -819,7 +819,7 @@ namespace oz
 
   // recursively check nodes of BSP-tree for AABB-Brush collisions
   void Collider::trimAABBNode( int nodeIndex, float startRatio, float endRatio,
-                               const Vec3& startPos, const Vec3& endPos )
+                               const Vec4& startPos, const Vec4& endPos )
   {
     if( nodeIndex < 0 ) {
       const BSP::Leaf& leaf = bsp->leafs[~nodeIndex];

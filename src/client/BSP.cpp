@@ -27,7 +27,7 @@ namespace client
   const float BSP::GAMMA_CORR = 1.0f;
 
   const Structure* BSP::str;
-  Vec3  BSP::camPos;
+  Vec4  BSP::camPos;
   int   BSP::waterFlags;
 
   inline Bounds BSP::rotateBounds( const Bounds& bounds, Structure::Rotation rotation )
@@ -40,16 +40,16 @@ namespace client
         return bounds;
       }
       case Structure::R90: {
-        return Bounds( Vec3( -bounds.maxs.y, bounds.mins.x, bounds.mins.z ),
-                       Vec3( -bounds.mins.y, bounds.maxs.x, bounds.maxs.z ) );
+        return Bounds( Vec4( -bounds.maxs.y, bounds.mins.x, bounds.mins.z ),
+                       Vec4( -bounds.mins.y, bounds.maxs.x, bounds.maxs.z ) );
       }
       case Structure::R180: {
-        return Bounds( Vec3( -bounds.maxs.x, -bounds.maxs.y, bounds.mins.z ),
-                       Vec3( -bounds.mins.x, -bounds.mins.y, bounds.maxs.z ) );
+        return Bounds( Vec4( -bounds.maxs.x, -bounds.maxs.y, bounds.mins.z ),
+                       Vec4( -bounds.mins.x, -bounds.mins.y, bounds.maxs.z ) );
       }
       case Structure::R270: {
-        return Bounds( Vec3( bounds.mins.y, -bounds.maxs.x, bounds.mins.z ),
-                       Vec3( bounds.maxs.y, -bounds.mins.x, bounds.maxs.z ) );
+        return Bounds( Vec4( bounds.mins.y, -bounds.maxs.x, bounds.mins.z ),
+                       Vec4( bounds.maxs.y, -bounds.mins.x, bounds.maxs.z ) );
       }
     }
   }

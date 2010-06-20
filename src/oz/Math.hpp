@@ -1,5 +1,5 @@
 /*
- *  Math.h
+ *  Math.hpp
  *
  *  Replacement for math.h and some other utility functions
  *
@@ -282,11 +282,11 @@ namespace oz
         return ( v & ( v - 1 ) ) == 0;
       }
 
-      // ponter to srand in stdlib.h
+      // pointer to srand in cstdlib
       static void ( *const seed )( uint seed );
 
       // random integer between 0 and RAND_MAX == INT_MAX
-      // (pointer to rand() function in stdlib.h)
+      // (pointer to rand() function in cstdlib)
       static int ( *const rand )();
 
       // random integer between 0 and max - 1

@@ -41,8 +41,8 @@ namespace client
   {
     float heading = Math::rad( world.sky.heading );
 
-    axis = Vec3( -Math::sin( heading ), Math::cos( heading ), 0.0f );
-    originalLightDir = Vec3( -Math::cos( heading ), -Math::sin( heading ), 0.0f );
+    axis = Vec4( -Math::sin( heading ), Math::cos( heading ), 0.0f );
+    originalLightDir = Vec4( -Math::cos( heading ), -Math::sin( heading ), 0.0f );
 
     Quat* tempStars = new Quat[MAX_STARS];
     for( int i = 0; i < MAX_STARS; ++i ) {
@@ -52,7 +52,7 @@ namespace client
         tempStars[i].y = 20.0f * Math::frand() - 10.0f;
         tempStars[i].z = 20.0f * Math::frand() - 10.0f;
         tempStars[i].w = Math::atan2( tempStars[i].z, tempStars[i].x );
-        length = Vec3( tempStars[i] ).sqL();
+        length = Vec4( tempStars[i] ).sqL();
       }
       while( Math::isNaN( length ) || length < 1.0f || length > 100.0f );
     }
@@ -61,7 +61,7 @@ namespace client
     aSort( tempStars, MAX_STARS );
 
     for( int i = 0; i < MAX_STARS; ++i ) {
-      stars[i] = Vec3( tempStars[i] );
+      stars[i] = Vec4( tempStars[i] );
     }
 
     delete[] tempStars;
@@ -118,7 +118,7 @@ namespace client
   void Sky::update()
   {
     angle = 2.0f * Math::PI * ( world.sky.time / world.sky.period );
-    Vec3  dir = Quat::rotAxis( axis, angle ).rotate( originalLightDir );
+    Vec4  dir = Quat::rotAxis( axis, angle ).rotate( originalLightDir );
     ratio = Math::bound( dir.z + DAY_BIAS, 0.0f, 1.0f );
     ratio_1 = 1.0f - ratio;
     float ratioDiff = ( 1.0f - Math::abs( ratio - ratio_1 ) );
@@ -170,7 +170,7 @@ namespace client
     glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer( 3, GL_FLOAT, 0, stars );
 
-    const Vec3& tz = Vec3( transf.z );
+    const Vec4& tz = Vec4( transf.z );
     int start, end;
     if( tz * stars[0] > 0.0f ) {
       for( end = 1; end < MAX_STARS && tz * stars[end] > 0.0f; ++end );

@@ -1,5 +1,5 @@
 /*
- *  GameStage.h
+ *  GameStage.hpp
  *
  *  [description]
  *

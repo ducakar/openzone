@@ -1,5 +1,5 @@
 /*
- *  SparkModel.h
+ *  SparkModel.hpp
  *
  *  Visual particle generator
  *
@@ -18,9 +18,9 @@ namespace client
 
 //  class Spark
 //  {
-//    Vec3  p;
-//    Vec3  velocity;
-//    Vec3  color;
+//    Vec4  p;
+//    Vec4  velocity;
+//    Vec4  color;
 //    float lifeTime;
 //  };
 //

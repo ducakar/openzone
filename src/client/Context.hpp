@@ -1,5 +1,5 @@
 /*
- *  Context.h
+ *  Context.hpp
  *
  *  [description]
  *
@@ -87,7 +87,7 @@ namespace client
 
       static uint buildTexture( const ubyte* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
-      static uint buildNormalmap( ubyte* data, const Vec3& lightNormal, int width,int height,
+      static uint buildNormalmap( ubyte* data, const Vec4& lightNormal, int width,int height,
                                   int bytesPerPixel, bool wrap, int magFilter, int minFilter );
 
     public:
@@ -101,7 +101,7 @@ namespace client
                           int minFilter = DEFAULT_MIN_FILTER );
 
       uint createNormalmap( ubyte* data,
-                            const Vec3& lightNormal,
+                            const Vec4& lightNormal,
                             int width,
                             int height,
                             int bytesPerPixel,
@@ -115,7 +115,7 @@ namespace client
                            int minFilter = DEFAULT_MIN_FILTER );
 
       uint requestNormalmap( int resource,
-                             const Vec3& lightNormal,
+                             const Vec4& lightNormal,
                              bool wrap = true,
                              int magFilter = DEFAULT_MAG_FILTER,
                              int minFilter = DEFAULT_MIN_FILTER );
@@ -128,7 +128,7 @@ namespace client
                         int minFilter = DEFAULT_MIN_FILTER );
 
       uint loadNormalmap( const char* path,
-                          const Vec3& lightNormal,
+                          const Vec4& lightNormal,
                           bool wrap = true,
                           int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );

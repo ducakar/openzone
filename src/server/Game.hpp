@@ -1,5 +1,5 @@
 /*
- *  Game.h
+ *  Game.hpp
  *
  *  [description]
  *

@@ -1,5 +1,5 @@
 /*
- *  MD2.h
+ *  MD2.hpp
  *
  *  MD2 model class
  *
@@ -50,7 +50,7 @@ namespace client
     private:
 
       static float anorms[][3];
-      static Vec3  vertList[MAX_VERTS];
+      static Vec4  vertList[MAX_VERTS];
 
       String       name;
 
@@ -68,7 +68,7 @@ namespace client
     public:
 
       uint         list;
-      Vec3         weaponTransl;
+      Vec4         weaponTransl;
 
       static void init();
 
@@ -76,8 +76,8 @@ namespace client
       ~MD2();
 
       void scale( float scale );
-      void translate( const Vec3& t );
-      void translate( int animType, const Vec3& t );
+      void translate( const Vec4& t );
+      void translate( int animType, const Vec4& t );
 
       void advance( AnimState* anim, float dt ) const;
 

@@ -1,5 +1,5 @@
 /*
- *  assert.h
+ *  assert.hpp
  *
  *  [description]
  *
@@ -11,7 +11,14 @@
 
 #include <cassert>
 
-#define soft_assert( cond ) \
+#ifdef NDEBUG
+
+# define soft_assert( cond ) \
+  static_cast<void>( 0 )
+
+#else
+
+# define soft_assert( cond ) \
   ( ( cond ) ? static_cast<void>( 0 ) : oz::_softAssert( #cond, __FILE__, __LINE__ ) )
 
 namespace oz
@@ -20,3 +27,5 @@ namespace oz
   void _softAssert( const char* message, const char* file, int line );
 
 }
+
+#endif

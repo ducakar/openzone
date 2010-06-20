@@ -1,5 +1,5 @@
 /*
- *  HashString.h
+ *  HashString.hpp
  *
  *  Chaining hashtable implementation with String key type
  *

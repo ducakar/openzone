@@ -1,5 +1,5 @@
 /*
- *  Frustum.h
+ *  Frustum.hpp
  *
  *  [description]
  *
@@ -23,12 +23,12 @@ namespace client
 
       float fovX, fovY;
       float sx, cx, sy, cy;
-      Vec3  nLeft0, nRight0, nDown0, nUp0;
-      Vec3  nLeft, nRight, nDown, nUp, nFront;
+      Vec4  nLeft0, nRight0, nDown0, nUp0;
+      Vec4  nLeft, nRight, nDown, nUp, nFront;
       float dLeft, dRight, dDown, dUp, dFront;
 
-      uint visibility( const Vec3& p );
-      uint visibility( const Vec3& p, float radius );
+      uint visibility( const Vec4& p );
+      uint visibility( const Vec4& p, float radius );
 
     public:
 
@@ -38,7 +38,7 @@ namespace client
       void init( float fovY, float aspect, float maxDistance );
       void update( float maxDistance );
 
-      bool isVisible( const Vec3& p, float radius = 0.0f )
+      bool isVisible( const Vec4& p, float radius = 0.0f )
       {
         return
             p * nLeft  > dLeft  - radius &&
@@ -60,14 +60,14 @@ namespace client
 
       bool isVisible( const Bounds& b )
       {
-        Vec3 dim = b.maxs - b.mins;
+        Vec4 dim = b.maxs - b.mins;
         return isVisible( ( b.mins + b.maxs ) / 2.0f, !dim );
       }
 
       bool isVisible( float x, float y, float radius )
       {
-        Vec3 min = Vec3( x, y, -World::DIM );
-        Vec3 max = Vec3( x, y,  World::DIM );
+        Vec4 min = Vec4( x, y, -World::DIM );
+        Vec4 max = Vec4( x, y,  World::DIM );
 
         return
             ( min * nLeft  > dLeft  - radius || max * nLeft  > dLeft  - radius ) &&
@@ -78,7 +78,7 @@ namespace client
       }
 
       // get min and max index for cells per each axis, which should be included in pvs
-      void getExtrems( Span& span, const Vec3& p )
+      void getExtrems( Span& span, const Vec4& p )
       {
         span.minX = max( int( ( p.x - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
         span.minY = max( int( ( p.y - radius + World::DIM ) * Cell::INV_SIZE ), 0 );

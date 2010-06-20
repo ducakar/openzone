@@ -262,7 +262,7 @@ namespace oz
      * MOVE
      */
 
-    Vec3 move = Vec3::zero();
+    Vec4 move = Vec4::zero();
     state &= ~MOVING_BIT;
 
     if( actions & ACTION_FORWARD ) {
@@ -316,7 +316,7 @@ namespace oz
     if( !move.isZero() ) {
       move.norm();
 
-      Vec3 desiredMomentum = move;
+      Vec4 desiredMomentum = move;
 
       if( state & CROUCHING_BIT ) {
         desiredMomentum *= clazz->crouchMomentum;
@@ -373,17 +373,17 @@ namespace oz
       //
       if( ( state & STEPPING_BIT ) && !isClimbing && stepRate <= clazz->stepRateLimit ) {
         // check if bot's gonna hit a stair in next frame
-        Vec3 desiredMove = momentum * Timer::TICK_TIME;
+        Vec4 desiredMove = momentum * Timer::TICK_TIME;
 
         collider.translate( *this, desiredMove, this );
 
         if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
           float originalZ = p.z;
-          Vec3  normal = collider.hit.normal;
+          Vec4  normal = collider.hit.normal;
           float negStartDist = ( desiredMove * collider.hit.ratio ) * normal - EPSILON;
 
           for( float raise = clazz->stepInc; raise <= clazz->stepMax; raise += clazz->stepInc ) {
-            collider.translate( *this, Vec3( 0.0f, 0.0f, clazz->stepInc ) );
+            collider.translate( *this, Vec4( 0.0f, 0.0f, clazz->stepInc ) );
 
             if( collider.hit.ratio != 1.0f ) {
               break;
@@ -391,7 +391,7 @@ namespace oz
             p.z += clazz->stepInc;
             collider.translate( *this, desiredMove, this );
 
-            Vec3 move = desiredMove * collider.hit.ratio;
+            Vec4 move = desiredMove * collider.hit.ratio;
             move.z += raise;
             float endDist = move * normal - negStartDist;
 
@@ -426,17 +426,17 @@ namespace oz
       }
       else {
         // keep constant length of xy projection of handle
-        Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * grabHandle;
+        Vec4 handle = Vec4( -hvsc[0], hvsc[1], hvsc[2] ) * grabHandle;
         // bottom of the object cannot be raised over the player aabb
         handle.z    = min( handle.z, dim.z - camZ + obj->dim.z );
-        Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - obj->p;
+        Vec4 string = p + Vec4( 0.0f, 0.0f, camZ ) + handle - obj->p;
 
         if( string.sqL() > grabHandle*grabHandle ) {
           grabObj = -1;
         }
         else {
-          Vec3 desiredMom   = string * GRAB_STRING_RATIO;
-          Vec3 momDiff      = ( desiredMom - obj->momentum ) * GRAB_MOM_RATIO;
+          Vec4 desiredMom   = string * GRAB_STRING_RATIO;
+          Vec4 momDiff      = ( desiredMom - obj->momentum ) * GRAB_MOM_RATIO;
 
           float momDiffSqL  = momDiff.sqL();
           momDiff.z         += Physics::G_VELOCITY;
@@ -461,8 +461,8 @@ namespace oz
         synapse.use( this, obj );
       }
       else {
-        Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
+        Vec4 eye  = p + Vec4( 0.0f, 0.0f, camZ );
+        Vec4 look = Vec4( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -478,8 +478,8 @@ namespace oz
         }
       }
       else {
-        Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
+        Vec4 eye  = p + Vec4( 0.0f, 0.0f, camZ );
+        Vec4 look = Vec4( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -493,7 +493,7 @@ namespace oz
     }
     else if( actions & ~oldActions & ACTION_THROW ) {
       if( grabObj != -1 ) {
-        Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
+        Vec4 handle = Vec4( -hvsc[0], hvsc[1], hvsc[2] );
 
         obj->momentum = handle * clazz->throwMomentum;
         grabObj = -1;
@@ -504,8 +504,8 @@ namespace oz
         grabObj = -1;
       }
       else {
-        Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
+        Vec4 eye  = p + Vec4( 0.0f, 0.0f, camZ );
+        Vec4 look = Vec4( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -549,10 +549,10 @@ namespace oz
         float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
         // keep constant length of xy projection of handle
-        Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * dist;
+        Vec4 handle = Vec4( -hvsc[0], hvsc[1], hvsc[2] ) * dist;
         // bottom of the object cannot be raised over the player aabb
         handle.z    = min( handle.z, dim.z - camZ + item->dim.z );
-        item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
+        item->p     = p + Vec4( 0.0f, 0.0f, camZ ) + handle;
 
         if( collider.test( *item ) ) {
           item->parent = -1;

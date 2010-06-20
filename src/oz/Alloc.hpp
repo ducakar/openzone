@@ -1,5 +1,5 @@
 /*
- *  Alloc.h
+ *  Alloc.hpp
  *
  *  Overload default new and delete operators for slightly better performance (ifndef OZ_ALLOC) or
  *  provide heap allocation statistics (ifdef OZ_ALLOC).

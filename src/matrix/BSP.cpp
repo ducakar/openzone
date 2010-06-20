@@ -69,6 +69,12 @@ namespace oz
     int  type;
   };
 
+  struct QBSPPlane
+  {
+    Vec3  normal;
+    float distance;
+  };
+
   struct QBSPNode
   {
     int plane;
@@ -215,14 +221,18 @@ namespace oz
       }
     }
 
-    int nPlanes = lumps[QBSP_LUMP_PLANES].length / sizeof( BSP::Plane );
+    int nPlanes = lumps[QBSP_LUMP_PLANES].length / sizeof( QBSPPlane );
     planes = new BSP::Plane[nPlanes];
     fseek( f, lumps[QBSP_LUMP_PLANES].offset, SEEK_SET );
-    fread( planes, sizeof( BSP::Plane ), nPlanes, f );
 
     // rescale plane data
     for( int i = 0; i < nPlanes; ++i ) {
-      planes[i].distance *= scale;
+      QBSPPlane plane;
+
+      fread( &plane, sizeof( QBSPPlane ), 1, f );
+
+      planes[i].normal   = plane.normal;
+      planes[i].distance = plane.distance * scale;
 
       float offset =
           Math::abs( planes[i].normal.x * maxDim ) +
