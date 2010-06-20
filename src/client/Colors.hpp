@@ -1,5 +1,5 @@
 /*
- *  Colors.h
+ *  Colors.hpp
  *
  *  [description]
  *

@@ -1,5 +1,5 @@
 /*
- *  BotClass.h
+ *  BotClass.hpp
  *
  *  [description]
  *
@@ -24,7 +24,7 @@ namespace oz
 
     public:
 
-      Vec3   dimCrouch;
+      Vec4   dimCrouch;
 
       float  camZ;
       float  crouchCamZ;
@@ -72,7 +72,7 @@ namespace oz
 
       static ObjectClass* init( const String& name, const Config* config );
 
-      virtual Object* create( int index, const Vec3& pos ) const;
+      virtual Object* create( int index, const Vec4& pos ) const;
       virtual Object* create( int index, InputStream* istream ) const;
 
   };

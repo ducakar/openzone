@@ -1,5 +1,5 @@
 /*
- *  Bot.h
+ *  Bot.hpp
  *
  *  Bot class
  *

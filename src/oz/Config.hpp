@@ -1,5 +1,5 @@
 /*
- *  Config.h
+ *  Config.hpp
  *
  *  Class to hold configuration variables and to read or write them to a configuration file
  *

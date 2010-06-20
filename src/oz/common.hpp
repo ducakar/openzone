@@ -1,5 +1,5 @@
 /*
- *  common.h
+ *  common.hpp
  *
  *  Common types and templates
  *
@@ -10,7 +10,7 @@
 #pragma once
 
 /**
- *  \file base/common.h
+ *  \file base/common.hpp
  *
  *  \brief Common types and templates
  *

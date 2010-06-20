@@ -306,12 +306,12 @@ namespace client
     glDisable( GL_LIGHTING );
 
     if( showAim ) {
-      Vec3 move = camera.at * 32.0f;
+      Vec4 move = camera.at * 32.0f;
       collider.translate( camera.p, move, camera.botObj );
       move *= collider.hit.ratio;
 
       glColor3f( 0.0f, 1.0f, 0.0f );
-      shape.drawBox( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
+      shape.drawBox( AABB( camera.p + move, Vec4( 0.05f, 0.05f, 0.05f ) ) );
     }
 
     glEnable( GL_BLEND );

@@ -1,5 +1,5 @@
 /*
- *  oz.h
+ *  oz.hpp
  *
  *  Common include file for oz library.
  *
@@ -76,6 +76,7 @@
 #include "Math.hpp"
 
 #include "Vec3.hpp"
+#include "Vec4.hpp"
 #include "Quat.hpp"
 #include "Mat33.hpp"
 #include "Mat44.hpp"

@@ -1,5 +1,5 @@
 /*
- *  Synapse.h
+ *  Synapse.hpp
  *
  *  World manipulation interface.
  *
@@ -81,9 +81,9 @@ namespace oz
       void cut( Dynamic* obj );
 
       // create an object, schedule for addition in the world and return predicted world index
-      int  addStruct( const char* name, const Vec3& p, Structure::Rotation rot );
-      int  addObject( const char* name, const Vec3& p );
-      int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
+      int  addStruct( const char* name, const Vec4& p, Structure::Rotation rot );
+      int  addObject( const char* name, const Vec4& p );
+      int  addPart( const Vec4& p, const Vec4& velocity, const Vec4& color,
                     float restitution, float mass, float lifeTime );
 
       // schedule for removal from physical world and delete it
@@ -116,9 +116,9 @@ namespace oz
       int  getObjectIndex( int ticket ) const;
       int  getPartIndex( int ticket ) const;
 
-      void genParts( int number, const Vec3& p,
-                     const Vec3& velocity, float velocitySpread,
-                     const Vec3& color, float colorSpread,
+      void genParts( int number, const Vec4& p,
+                     const Vec4& velocity, float velocitySpread,
+                     const Vec4& color, float colorSpread,
                      float restitution, float mass, float lifeTime );
 
       // do deletes and clear lists for actions, additions, removals
@@ -159,7 +159,7 @@ namespace oz
     world.unposition( obj );
   }
 
-  inline int Synapse::addStruct( const char* name, const Vec3& p, Structure::Rotation rot )
+  inline int Synapse::addStruct( const char* name, const Vec4& p, Structure::Rotation rot )
   {
     world.requestBSP( translator.bspIndex( name ) );
 
@@ -176,7 +176,7 @@ namespace oz
     return index;
   }
 
-  inline int Synapse::addObject( const char* name, const Vec3& p )
+  inline int Synapse::addObject( const char* name, const Vec4& p )
   {
     int index = world.addObject( name, p );
     Object* obj = world.objects[index];
@@ -189,7 +189,7 @@ namespace oz
     return index;
   }
 
-  inline int Synapse::addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
+  inline int Synapse::addPart( const Vec4& p, const Vec4& velocity, const Vec4& color,
                                float restitution, float mass, float lifeTime )
   {
     int index = world.addPart( p, velocity, color, restitution, mass, lifeTime );

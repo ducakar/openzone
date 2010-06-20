@@ -43,8 +43,8 @@ namespace oz
 
   static int ozBindAllOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
-                      Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
+    AABB aabb = AABB( Vec4( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+                      Vec4( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.objects.clear();
     lua.structs.clear();
     collider.getOverlaps( aabb, &lua.objects, &lua.structs );
@@ -55,8 +55,8 @@ namespace oz
 
   static int ozBindStrOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
-                      Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
+    AABB aabb = AABB( Vec4( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+                      Vec4( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.structs.clear();
     collider.getOverlaps( aabb, null, &lua.structs );
     lua.strIndex = 0;
@@ -65,8 +65,8 @@ namespace oz
 
   static int ozBindObjOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
-                      Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
+    AABB aabb = AABB( Vec4( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+                      Vec4( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.objects.clear();
     collider.getOverlaps( aabb, &lua.objects, null );
     lua.objIndex = 0;
@@ -76,7 +76,7 @@ namespace oz
   static int ozSelfBindAllOverlaps( lua_State* l )
   {
     AABB aabb = AABB( lua.self->p,
-                      Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
+                      Vec4( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
     lua.objects.clear();
     lua.structs.clear();
     collider.getOverlaps( aabb, &lua.objects, &lua.structs );
@@ -88,7 +88,7 @@ namespace oz
   static int ozSelfBindStrOverlaps( lua_State* l )
   {
     AABB aabb = AABB( lua.self->p,
-                      Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
+                      Vec4( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
     lua.structs.clear();
     collider.getOverlaps( aabb, null, &lua.structs );
     lua.strIndex = 0;
@@ -98,7 +98,7 @@ namespace oz
   static int ozSelfBindObjOverlaps( lua_State* l )
   {
     AABB aabb = AABB( lua.self->p,
-                      Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
+                      Vec4( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
     lua.objects.clear();
     collider.getOverlaps( aabb, &lua.objects, null );
     lua.objIndex = 0;
@@ -206,7 +206,7 @@ namespace oz
     if( lua.str == null ) {
       OZ_LUA_ERROR( "selected structure is null" );
     }
-    Vec3 vec = lua.str->p - lua.self->p;
+    Vec4 vec = lua.str->p - lua.self->p;
     lua_pushnumber( l, vec.x );
     lua_pushnumber( l, vec.y );
     lua_pushnumber( l, vec.z );
@@ -218,7 +218,7 @@ namespace oz
     if( lua.str == null ) {
       OZ_LUA_ERROR( "selected structure is null" );
     }
-    Vec3 dir = ( lua.str->p - lua.self->p ).norm();
+    Vec4 dir = ( lua.str->p - lua.self->p ).norm();
     lua_pushnumber( l, dir.x );
     lua_pushnumber( l, dir.y );
     lua_pushnumber( l, dir.z );
@@ -535,7 +535,7 @@ namespace oz
     if( lua.obj == lua.self ) {
       OZ_LUA_ERROR( "selected object is self" );
     }
-    Vec3 vec = lua.obj->p - lua.self->p;
+    Vec4 vec = lua.obj->p - lua.self->p;
     lua_pushnumber( l, vec.x );
     lua_pushnumber( l, vec.y );
     lua_pushnumber( l, vec.z );
@@ -550,7 +550,7 @@ namespace oz
     if( lua.obj == lua.self ) {
       OZ_LUA_ERROR( "selected object is self" );
     }
-    Vec3 dir = ( lua.obj->p - lua.self->p ).norm();
+    Vec4 dir = ( lua.obj->p - lua.self->p ).norm();
     lua_pushnumber( l, dir.x );
     lua_pushnumber( l, dir.y );
     lua_pushnumber( l, dir.z );
@@ -1420,7 +1420,7 @@ namespace oz
   static int ozWorldAddStr( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    Vec4 p = Vec4( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
     Structure::Rotation rot = Structure::Rotation( lua_tointeger( l, 5 ) );
 
     int bsp = translator.bspIndex( name );
@@ -1446,7 +1446,7 @@ namespace oz
   static int ozWorldForceAddStr( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    Vec4 p = Vec4( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
     Structure::Rotation rot = Structure::Rotation( lua_tointeger( l, 5 ) );
 
     int index = synapse.addStruct( name, p, rot );
@@ -1458,7 +1458,7 @@ namespace oz
   static int ozWorldAddObj( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    Vec4 p = Vec4( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
 
     const ObjectClass* const* value = translator.classes.find( name );
     if( value == null ) {
@@ -1482,7 +1482,7 @@ namespace oz
   static int ozWorldForceAddObj( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    Vec4 p = Vec4( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
 
     int index = synapse.addObject( name, p );
     lua.obj = world.objects[index];
@@ -1492,9 +1492,9 @@ namespace oz
 
   static int ozWorldAddPart( lua_State* l )
   {
-    Vec3  p           = Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) );
-    Vec3  velocity    = Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) );
-    Vec3  color       = Vec3( float( lua_tonumber( l, 7 ) ), float( lua_tonumber( l, 8 ) ), float( lua_tonumber( l, 9 ) ) );
+    Vec4  p           = Vec4( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) );
+    Vec4  velocity    = Vec4( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) );
+    Vec4  color       = Vec4( float( lua_tonumber( l, 7 ) ), float( lua_tonumber( l, 8 ) ), float( lua_tonumber( l, 9 ) ) );
     float restitution = float( lua_tonumber( l, 10 ) );
     float mass        = float( lua_tonumber( l, 11 ) );
     float lifeTime    = float( lua_tonumber( l, 12 ) );

@@ -1,5 +1,5 @@
 /*
- *  StrategicInput.h
+ *  StrategicInput.hpp
  *
  *  [description]
  *

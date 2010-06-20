@@ -160,7 +160,7 @@ namespace oz
     return clazz;
   }
 
-  Object* BotClass::create( int index, const Vec3& pos ) const
+  Object* BotClass::create( int index, const Vec4& pos ) const
   {
     Bot* obj = new Bot();
 
@@ -187,7 +187,7 @@ namespace oz
     obj->name     = names.genName();
 
     for( int i = 0; i < inventoryItems.length(); ++i ) {
-      int index = synapse.addObject( inventoryItems[i], Vec3::zero() );
+      int index = synapse.addObject( inventoryItems[i], Vec4::zero() );
       Dynamic* item = static_cast<Dynamic*>( world.objects[index] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );

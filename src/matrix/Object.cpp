@@ -33,7 +33,7 @@ namespace oz
 
   void Object::onDestroy()
   {
-    synapse.genParts( type->nDebris, p, Vec3::zero(), type->debrisVelocitySpread,
+    synapse.genParts( type->nDebris, p, Vec4::zero(), type->debrisVelocitySpread,
                       type->debrisColor, type->debrisColorSpread,
                       type->debrisRejection, type->debrisMass, type->debrisLifeTime );
 
@@ -81,7 +81,7 @@ namespace oz
 
   void Object::readFull( InputStream* istream )
   {
-    p        = istream->readVec3();
+    p        = istream->readVec4();
     flags    = istream->readInt();
     oldFlags = istream->readInt();
     life     = istream->readFloat();
@@ -97,7 +97,7 @@ namespace oz
 
   void Object::writeFull( OutputStream* ostream ) const
   {
-    ostream->writeVec3( p );
+    ostream->writeVec4( p );
     ostream->writeInt( flags );
     ostream->writeInt( oldFlags );
     ostream->writeFloat( life );

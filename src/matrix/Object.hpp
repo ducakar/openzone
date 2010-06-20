@@ -1,5 +1,5 @@
 /*
- *  Object.h
+ *  Object.hpp
  *
  *  Base object class, can be used for static objects
  *

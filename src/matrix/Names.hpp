@@ -1,5 +1,5 @@
 /*
- *  Names.h
+ *  Names.hpp
  *
  *  [description]
  *

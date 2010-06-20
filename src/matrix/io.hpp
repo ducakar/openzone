@@ -1,5 +1,5 @@
 /*
- *  io.h
+ *  io.hpp
  *
  *  Stream readers/writers and buffer
  *
@@ -114,14 +114,14 @@ namespace oz
         s = String( p, length );
       }
 
-      Vec3 readVec3()
+      Vec4 readVec4()
       {
-        if( pos + sizeof( Vec3 ) > end ) {
+        if( pos + sizeof( Vec4 ) > end ) {
           throw Exception( "Buffer overrun" );
         }
 
-        const Vec3* v = reinterpret_cast<const Vec3*>( pos );
-        pos += sizeof( Vec3 );
+        const Vec4* v = reinterpret_cast<const Vec4*>( pos );
+        pos += sizeof( Vec4 );
         return *v;
       }
 
@@ -252,10 +252,10 @@ namespace oz
         aCopy( p, s, length + 1 );
       }
 
-      void writeVec3( const Vec3& v )
+      void writeVec4( const Vec4& v )
       {
-        Vec3* p = reinterpret_cast<Vec3*>( pos );
-        pos += sizeof( Vec3 );
+        Vec4* p = reinterpret_cast<Vec4*>( pos );
+        pos += sizeof( Vec4 );
 
         if( pos > end ) {
           throw Exception( "Buffer overrun" );

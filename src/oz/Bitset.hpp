@@ -1,5 +1,5 @@
 /*
- *  Bitset.h
+ *  Bitset.hpp
  *
  *  Bitset
  *

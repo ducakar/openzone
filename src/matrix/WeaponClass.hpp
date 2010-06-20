@@ -1,5 +1,5 @@
 /*
- *  WeaponClass.h
+ *  WeaponClass.hpp
  *
  *  [description]
  *
@@ -30,7 +30,7 @@ namespace oz
 
       static ObjectClass* init( const String& name, const Config* config );
 
-      virtual Object* create( int index, const Vec3& pos ) const;
+      virtual Object* create( int index, const Vec4& pos ) const;
       virtual Object* create( int index, InputStream* istream ) const;
   };
 

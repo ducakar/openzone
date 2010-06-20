@@ -1,5 +1,5 @@
 /*
- *  Sound.h
+ *  Sound.hpp
  *
  *  [description]
  *

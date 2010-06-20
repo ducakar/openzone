@@ -24,10 +24,10 @@ namespace client
 
     float dim = size / 2.0f;
 
-    Vec3 v0 = Math::frand() * dim * Vec3( 0.0f,            0.0f,        1.0f );
-    Vec3 v1 = Math::frand() * dim * Vec3( 0.0f,            2.0f / 3.0f, 0.0f );
-    Vec3 v2 = Math::frand() * dim * Vec3( -SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
-    Vec3 v3 = Math::frand() * dim * Vec3(  SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
+    Vec4 v0 = Math::frand() * dim * Vec4( 0.0f,            0.0f,        1.0f );
+    Vec4 v1 = Math::frand() * dim * Vec4( 0.0f,            2.0f / 3.0f, 0.0f );
+    Vec4 v2 = Math::frand() * dim * Vec4( -SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
+    Vec4 v3 = Math::frand() * dim * Vec4(  SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
 
     glNewList( list, GL_COMPILE );
 
@@ -66,15 +66,15 @@ namespace client
   {
     float dim = size / 2.0f;
 
-    Vec3 v0( -dim * Math::frand(), -dim * Math::frand(), -dim );
-    Vec3 v1(  dim * Math::frand(), -dim * Math::frand(), -dim );
-    Vec3 v2(  dim * Math::frand(),  dim * Math::frand(), -dim );
-    Vec3 v3( -dim * Math::frand(),  dim * Math::frand(), -dim );
+    Vec4 v0( -dim * Math::frand(), -dim * Math::frand(), -dim );
+    Vec4 v1(  dim * Math::frand(), -dim * Math::frand(), -dim );
+    Vec4 v2(  dim * Math::frand(),  dim * Math::frand(), -dim );
+    Vec4 v3( -dim * Math::frand(),  dim * Math::frand(), -dim );
 
-    Vec3 v4( v0.x, v0.y,  dim );
-    Vec3 v5( v1.x, v1.y,  dim );
-    Vec3 v6( v2.x, v2.y,  dim );
-    Vec3 v7( v3.x, v3.y,  dim );
+    Vec4 v4( v0.x, v0.y,  dim );
+    Vec4 v5( v1.x, v1.y,  dim );
+    Vec4 v6( v2.x, v2.y,  dim );
+    Vec4 v7( v3.x, v3.y,  dim );
 
     glNewList( list, GL_COMPILE );
 
@@ -129,8 +129,8 @@ namespace client
 
   uint Shape::genBox( uint list, const AABB& bb, uint texture )
   {
-    Vec3 v0 = -bb.dim;
-    Vec3 v1 = +bb.dim;
+    Vec4 v0 = -bb.dim;
+    Vec4 v1 = +bb.dim;
 
     glNewList( list, GL_COMPILE );
 
@@ -210,8 +210,8 @@ namespace client
 
   void Shape::drawBox( const AABB& bb )
   {
-    Vec3 v0 = bb.p - bb.dim;
-    Vec3 v1 = bb.p + bb.dim;
+    Vec4 v0 = bb.p - bb.dim;
+    Vec4 v1 = bb.p + bb.dim;
 
     glBegin( GL_QUADS );
       // top

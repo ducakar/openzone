@@ -1,5 +1,5 @@
 /*
- *  Pool.h
+ *  Pool.hpp
  *
  *  Pool memory allocator
  *  The Type should provide next[] pointer.
@@ -121,9 +121,9 @@ namespace oz
          count( p.count )
       {
         p.firstBlock = null;
-        p.freeSlot = null;
-        p.size = 0;
-        p.count = 0;
+        p.freeSlot   = null;
+        p.size       = 0;
+        p.count      = 0;
       }
 
       /**
@@ -143,14 +143,14 @@ namespace oz
       Pool& operator = ( Pool&& p )
       {
         firstBlock = p.firstBlock;
-        freeSlot = p.freeSlot;
-        size = p.size;
-        count = p.count;
+        freeSlot   = p.freeSlot;
+        size       = p.size;
+        count      = p.count;
 
         p.firstBlock = null;
-        p.freeSlot = null;
-        p.size = 0;
-        p.count = 0;
+        p.freeSlot   = null;
+        p.size       = 0;
+        p.count      = 0;
         return *this;
       }
 
@@ -241,9 +241,9 @@ namespace oz
         }
 
         firstBlock = null;
-        freeSlot = null;
-        size = 0;
-        count = 0;
+        freeSlot   = null;
+        size       = 0;
+        count      = 0;
       }
 
   };

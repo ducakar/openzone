@@ -1,5 +1,5 @@
 /*
- *  Stage.h
+ *  Stage.hpp
  *
  *  [description]
  *

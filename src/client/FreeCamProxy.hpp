@@ -1,5 +1,5 @@
 /*
- *  FreeCamProxy.h
+ *  FreeCamProxy.hpp
  *
  *  [description]
  *

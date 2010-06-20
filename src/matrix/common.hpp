@@ -1,5 +1,5 @@
 /*
- *  common.h
+ *  common.hpp
  *
  *  Common matrix includes and definitions
  *

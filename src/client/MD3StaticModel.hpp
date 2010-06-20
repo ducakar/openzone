@@ -1,5 +1,5 @@
 /*
- *  MD3StaticModel.h
+ *  MD3StaticModel.hpp
  *
  *  [description]
  *

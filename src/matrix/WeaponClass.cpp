@@ -93,7 +93,7 @@ namespace oz
     return clazz;
   }
 
-  Object* WeaponClass::create( int index, const Vec3& pos ) const
+  Object* WeaponClass::create( int index, const Vec4& pos ) const
   {
     Weapon* obj = new Weapon();
 

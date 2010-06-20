@@ -21,12 +21,12 @@ namespace oz
 
   void Particle::readFull( InputStream* istream )
   {
-    p           = istream->readVec3();
-    velocity    = istream->readVec3();
+    p           = istream->readVec4();
+    velocity    = istream->readVec4();
 
-    color       = istream->readVec3();
-    rot         = istream->readVec3();
-    rotVelocity = istream->readVec3();
+    color       = istream->readVec4();
+    rot         = istream->readVec4();
+    rotVelocity = istream->readVec4();
 
     restitution   = istream->readFloat();
     mass        = istream->readFloat();
@@ -35,12 +35,12 @@ namespace oz
 
   void Particle::writeFull( OutputStream* ostream )
   {
-    ostream->writeVec3( p );
-    ostream->writeVec3( velocity );
+    ostream->writeVec4( p );
+    ostream->writeVec4( velocity );
 
-    ostream->writeVec3( color );
-    ostream->writeVec3( rot );
-    ostream->writeVec3( rotVelocity );
+    ostream->writeVec4( color );
+    ostream->writeVec4( rot );
+    ostream->writeVec4( rotVelocity );
 
     ostream->writeFloat( restitution );
     ostream->writeFloat( mass );
@@ -49,14 +49,14 @@ namespace oz
 
   void Particle::readUpdate( InputStream* istream )
   {
-    p        = istream->readVec3();
-    velocity = istream->readVec3();
+    p        = istream->readVec4();
+    velocity = istream->readVec4();
   }
 
   void Particle::writeUpdate( OutputStream* ostream )
   {
-    ostream->writeVec3( p );
-    ostream->writeVec3( velocity );
+    ostream->writeVec4( p );
+    ostream->writeVec4( velocity );
   }
 
 }

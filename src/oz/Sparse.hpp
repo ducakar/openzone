@@ -1,5 +1,5 @@
 /*
- *  Sparse.h
+ *  Sparse.hpp
  *
  *  Sparse vector
  *  Similar to Vector, but it can have holes in the middle. When a new elements are added it first

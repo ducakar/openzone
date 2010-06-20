@@ -1,5 +1,5 @@
 /*
- *  BSP.h
+ *  BSP.hpp
  *
  *  BSP level rendering class
  *
@@ -29,7 +29,7 @@ namespace client
       static const float GAMMA_CORR;
 
       static const Structure* str;
-      static Vec3 camPos;
+      static Vec4 camPos;
 
       const oz::BSP* bsp;
 

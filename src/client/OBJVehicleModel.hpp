@@ -1,5 +1,5 @@
 /*
- *  OBJVehicleModel.h
+ *  OBJVehicleModel.hpp
  *
  *  [description]
  *

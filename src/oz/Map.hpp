@@ -1,5 +1,5 @@
 /*
- *  Map.h
+ *  Map.hpp
  *
  *  Map, implemented as sorted vector. Better worst case performance than hashtable and it can use
  *  arbitrary type as a key. For large maps HashIndex/HashString is preferred as it is much faster

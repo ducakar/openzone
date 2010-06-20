@@ -1,5 +1,5 @@
 /*
- *  Camera.h
+ *  Camera.hpp
  *
  *  [description]
  *
@@ -40,8 +40,8 @@ namespace client
       float smoothCoef;
       float smoothCoef_1;
 
-      Vec3  newP;
-      Vec3  oldP;
+      Vec4  newP;
+      Vec4  oldP;
 
       static FreeCamProxy   freeCamProxy;
       static StrategicProxy strategicProxy;
@@ -51,7 +51,7 @@ namespace client
 
     public:
 
-      Vec3  p;
+      Vec4  p;
 
       // relative to the object the camera is bound to
       float h;
@@ -65,9 +65,9 @@ namespace client
       Mat44 rotMat;
       Mat44 rotTMat;
 
-      Vec3  right;
-      Vec3  at;
-      Vec3  up;
+      Vec4  right;
+      Vec4  at;
+      Vec4  up;
 
       int   tagged;
       const Object* taggedObj;
@@ -109,14 +109,14 @@ namespace client
         assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
       }
 
-      void move( const Vec3& pos )
+      void move( const Vec4& pos )
       {
         p    = pos * smoothCoef_1 + oldP * smoothCoef;
         newP = pos;
         oldP = p;
       }
 
-      void wrapMoveZ( const Vec3& pos )
+      void wrapMoveZ( const Vec4& pos )
       {
         p.x  = pos.x;
         p.y  = pos.y;
@@ -125,7 +125,7 @@ namespace client
         oldP = p;
       }
 
-      void warp( const Vec3& pos )
+      void warp( const Vec4& pos )
       {
         oldP = pos;
         newP = pos;

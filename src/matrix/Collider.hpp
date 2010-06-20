@@ -1,5 +1,5 @@
 /*
- *  Collider.h
+ *  Collider.hpp
  *
  *  [description]
  *
@@ -16,8 +16,8 @@ namespace oz
 
   struct Hit
   {
+    Vec4  normal;
     float ratio;
-    Vec3  normal;
 
     const Object* obj;
     const Structure* str;
@@ -34,20 +34,20 @@ namespace oz
   {
     private:
 
-      static const Vec3  bbNormals[];
-      static const Mat33 structRotations[];
+      static const Vec4  bbNormals[];
+      static const Mat44 structRotations[];
 
       Span             span;
       Bounds           trace;
-      Vec3             move;
+      Vec4             move;
 
-      Vec3             point;
+      Vec4             point;
       AABB             aabb;
 
-      Vec3             globalStartPos;
-      Vec3             globalEndPos;
-      Vec3             leafStartPos;
-      Vec3             leafEndPos;
+      Vec4             globalStartPos;
+      Vec4             globalEndPos;
+      Vec4             leafStartPos;
+      Vec4             leafEndPos;
       float            leafStartRatio;
       float            leafEndRatio;
 
@@ -62,7 +62,7 @@ namespace oz
        * @param v
        * @return
        */
-      Vec3 toStructCS( const Vec3& v ) const;
+      Vec4 toStructCS( const Vec4& v ) const;
 
       /**
        * Rotate vector from structure coordinate system to absolute coordinate system. Do not
@@ -70,7 +70,7 @@ namespace oz
        * @param v
        * @return
        */
-      Vec3 toAbsoluteCS( const Vec3& v ) const;
+      Vec4 toAbsoluteCS( const Vec4& v ) const;
 
       bool testPointBrush( const BSP::Brush* brush ) const;
       bool testPointNode( int nodeIndex ) const;
@@ -85,7 +85,7 @@ namespace oz
       void trimPointObj( const Object* sObj );
       void trimPointBrush( const BSP::Brush* brush );
       void trimPointNode( int nodeIndex, float startRatio, float endRatio,
-                          const Vec3& startPos, const Vec3& endPos );
+                          const Vec4& startPos, const Vec4& endPos );
       void trimPointWorld();
 
       bool testAABBBrush( const BSP::Brush* brush ) const;
@@ -100,7 +100,7 @@ namespace oz
       void trimAABBWater( const BSP::Brush* brush );
       void trimAABBLadder( const BSP::Brush* brush );
       void trimAABBNode( int nodeIndex, float startRatio, float endRatio,
-                         const Vec3& startPos, const Vec3& endPos );
+                         const Vec4& startPos, const Vec4& endPos );
       void trimAABBWorld();
 
       void getWorldOverlaps( Vector<Object*>* objects, Vector<Structure*>* structs );
@@ -120,11 +120,11 @@ namespace oz
 
       Collider();
 
-      bool test( const Vec3& point, const Object* exclObj = null );
+      bool test( const Vec4& point, const Object* exclObj = null );
       // test for object collisions only (no structures or terrain)
-      bool testOO( const Vec3& point, const Object* exclObj = null );
+      bool testOO( const Vec4& point, const Object* exclObj = null );
       // test for object and structure collisions only (no terain)
-      bool testOSO( const Vec3& point, const Object* exclObj = null );
+      bool testOSO( const Vec4& point, const Object* exclObj = null );
 
       bool test( const AABB& aabb, const Object* exclObj = null );
       bool testOO( const AABB& aabb, const Object* exclObj = null );
@@ -141,15 +141,15 @@ namespace oz
       // fill given vector with objects included in the AABB
       void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = 0.0f );
 
-      void translate( const Vec3& point, const Vec3& move, const Object* exclObj = null );
-      void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );
-      void translate( const Dynamic* obj, const Vec3& move );
+      void translate( const Vec4& point, const Vec4& move, const Object* exclObj = null );
+      void translate( const AABB& aabb, const Vec4& move, const Object* exclObj = null );
+      void translate( const Dynamic* obj, const Vec4& move );
 
   };
 
   extern Collider collider;
 
-  inline bool Collider::test( const Vec3& point_, const Object* exclObj_ )
+  inline bool Collider::test( const Vec4& point_, const Object* exclObj_ )
   {
     point = point_;
     exclObj = exclObj_;
@@ -159,7 +159,7 @@ namespace oz
     return testPointWorld();
   }
 
-  inline bool Collider::testOO( const Vec3& point_, const Object* exclObj_ )
+  inline bool Collider::testOO( const Vec4& point_, const Object* exclObj_ )
   {
     point = point_;
     exclObj = exclObj_;
@@ -169,7 +169,7 @@ namespace oz
     return testPointWorldOO();
   }
 
-  inline bool Collider::testOSO( const Vec3& point_, const Object* exclObj_ )
+  inline bool Collider::testOSO( const Vec4& point_, const Object* exclObj_ )
   {
     point = point_;
     exclObj = exclObj_;
@@ -248,7 +248,7 @@ namespace oz
     touchWorldOverlaps();
   }
 
-  inline void Collider::translate( const Vec3& point_, const Vec3& move_, const Object* exclObj_ )
+  inline void Collider::translate( const Vec4& point_, const Vec4& move_, const Object* exclObj_ )
   {
     point = point_;
     move = move_;
@@ -260,7 +260,7 @@ namespace oz
     trimPointWorld();
   }
 
-  inline void Collider::translate( const AABB& aabb_, const Vec3& move_, const Object* exclObj_ )
+  inline void Collider::translate( const AABB& aabb_, const Vec4& move_, const Object* exclObj_ )
   {
     obj  = null;
     aabb = aabb_;
@@ -273,7 +273,7 @@ namespace oz
     trimAABBWorld();
   }
 
-  inline void Collider::translate( const Dynamic* obj_, const Vec3& move_ )
+  inline void Collider::translate( const Dynamic* obj_, const Vec4& move_ )
   {
     assert( obj_->cell != null );
 

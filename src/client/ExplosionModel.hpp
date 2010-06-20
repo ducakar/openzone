@@ -1,5 +1,5 @@
 /*
- *  ExplosionModel.h
+ *  ExplosionModel.hpp
  *
  *  [description]
  *

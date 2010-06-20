@@ -1,5 +1,5 @@
 /*
- *  DebugFrame.h
+ *  DebugFrame.hpp
  *
  *  [description]
  *

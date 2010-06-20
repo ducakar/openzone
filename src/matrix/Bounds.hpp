@@ -1,5 +1,5 @@
 /*
- *  Bounds.h
+ *  Bounds.hpp
  *
  *  [description]
  *
@@ -18,16 +18,16 @@ namespace oz
   {
     public:
 
-      Vec3 mins;
-      Vec3 maxs;
+      Vec4 mins;
+      Vec4 maxs;
 
       explicit Bounds()
       {}
 
-      explicit Bounds( const Vec3& mins_, const Vec3& maxs_ ) : mins( mins_ ), maxs( maxs_ )
+      explicit Bounds( const Vec4& mins_, const Vec4& maxs_ ) : mins( mins_ ), maxs( maxs_ )
       {}
 
-      Bounds& fromPointMove( const Vec3& p, const Vec3& move, float eps = 0.0f )
+      Bounds& fromPointMove( const Vec4& p, const Vec4& move, float eps = 0.0f )
       {
         if( move.x < 0.0f ) {
           mins.x = p.x - 2.0f * eps + move.x;
@@ -56,31 +56,31 @@ namespace oz
         return *this;
       }
 
-      Bounds operator + ( const Vec3& v ) const
+      Bounds operator + ( const Vec4& v ) const
       {
         return Bounds( mins + v, maxs + v );
       }
 
-      Bounds operator - ( const Vec3& v ) const
+      Bounds operator - ( const Vec4& v ) const
       {
         return Bounds( mins - v, maxs - v );
       }
 
-      Bounds& operator += ( const Vec3& v )
+      Bounds& operator += ( const Vec4& v )
       {
         mins += v;
         maxs += v;
         return *this;
       }
 
-      Bounds& operator -= ( const Vec3& v )
+      Bounds& operator -= ( const Vec4& v )
       {
         mins -= v;
         maxs -= v;
         return *this;
       }
 
-      bool includes( const Vec3& v, float eps = 0.0f ) const
+      bool includes( const Vec4& v, float eps = 0.0f ) const
       {
         return
             mins.x - eps <= v.x && v.x <= maxs.x + eps &&
@@ -109,7 +109,7 @@ namespace oz
             b.mins.z - eps <= maxs.z && mins.z <= b.maxs.z + eps;
       }
 
-      // implemented in AABB.h
+      // implemented in AABB.hpp
       AABB toAABB( float eps = 0.0f ) const;
       bool isInside( const AABB& a, float eps = 0.0f ) const;
       bool includes( const AABB& a, float eps = 0.0f ) const;

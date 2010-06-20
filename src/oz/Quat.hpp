@@ -1,5 +1,5 @@
 /*
- *  Quat.h
+ *  Quat.hpp
  *
  *  Quaternion library
  *
@@ -15,77 +15,70 @@ namespace oz
   class Mat33;
   class Mat44;
 
-  class Quat : public Vec3
+  class Quat : public Vec4
   {
     public:
-
-      float w;
 
       explicit Quat()
       {}
 
-      explicit Quat( float x_, float y_, float z_, float w_ ) : Vec3( x_, y_, z_ ), w( w_ )
+      explicit Quat( float x_, float y_, float z_, float w_ ) : Vec4( x_, y_, z_, w_ )
       {}
 
-      explicit Quat( const float* q )
+      explicit Quat( const float* q ) : Vec4( q[0], q[1], q[2], q[3] )
+      {}
+
+      explicit Quat( const Vec3& v ) : Vec4( v.x, v.y, v.z, 0.0f )
+      {}
+
+      explicit Quat( const Vec4& v ) : Vec4( v )
+      {}
+
+      Quat& operator = ( const Vec3& v )
       {
-        *this = *reinterpret_cast<const Quat*>( q );
+        x = v.x;
+        y = v.y;
+        z = v.z;
+        w = 0.0f;
+        return *this;
       }
 
-      explicit Quat( const Vec3& v ) : Vec3( v.x, v.y, v.z ), w( 0.0f )
+      Quat& operator = ( const Vec4& v )
       {
-      }
-
-      static Quat zero()
-      {
-        return Quat( 0.0f, 0.0f, 0.0f, 0.0f );
-      }
-
-      static Quat id()
-      {
-        return Quat( 0.0f, 0.0f, 0.0f, 1.0f );
-      }
-
-      operator float* ()
-      {
-        return reinterpret_cast<float*>( this );
+        x = v.x;
+        y = v.y;
+        z = v.z;
+        w = v.w;
+        return *this;
       }
 
       operator const float* () const
       {
-        return reinterpret_cast<const float*>( this );
+        return &x;
       }
 
-      bool operator < ( const Quat& q ) const
+      operator float* ()
       {
-        return w < q.w;
-      }
-
-      float& operator [] ( int i )
-      {
-        assert( 0 <= i && i < 4 );
-
-        return reinterpret_cast<float*>( this )[i];
+        return &x;
       }
 
       const float& operator [] ( int i ) const
       {
         assert( 0 <= i && i < 4 );
 
-        return reinterpret_cast<const float*>( this )[i];
+        return ( &x )[i];
       }
 
-      Quat operator * () const
+      float& operator [] ( int i )
       {
-        return Quat( -x, -y, -z, -w );
+        assert( 0 <= i && i < 4 );
+
+        return ( &x )[i];
       }
 
-      Quat& conj()
+      static Quat zero()
       {
-        x = -x;
-        y = -y;
-        z = -z;
-        return *this;
+        return Quat( 0.0f, 0.0f, 0.0f, 0.0f );
       }
 
       bool isZero() const
@@ -102,6 +95,11 @@ namespace oz
         return *this;
       }
 
+      static Quat id()
+      {
+        return Quat( 0.0f, 0.0f, 0.0f, 1.0f );
+      }
+
       bool isId() const
       {
         return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f;
@@ -113,6 +111,19 @@ namespace oz
         y = 0.0f;
         z = 0.0f;
         w = 1.0f;
+        return *this;
+      }
+
+      Quat operator * () const
+      {
+        return Quat( -x, -y, -z, -w );
+      }
+
+      Quat& conj()
+      {
+        x = -x;
+        y = -y;
+        z = -z;
         return *this;
       }
 
@@ -135,27 +146,27 @@ namespace oz
       {
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
-        float r = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
-        return Quat( x * r, y * r, z * r, w * r );
+        float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
+        return Quat( x * k, y * k, z * k, w * k );
       }
 
       Quat fastUnit() const
       {
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
-        float r = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
-        return Quat( x * r, y * r, z * r, w * r );
+        float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
+        return Quat( x * k, y * k, z * k, w * k );
       }
 
       Quat& norm()
       {
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
-        float r = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
-        x *= r;
-        z *= r;
-        z *= r;
-        w *= r;
+        float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
+        x *= k;
+        z *= k;
+        z *= k;
+        w *= k;
         return *this;
       }
 
@@ -163,11 +174,11 @@ namespace oz
       {
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
-        float r = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
-        x *= r;
-        z *= r;
-        z *= r;
-        w *= r;
+        float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
+        x *= k;
+        z *= k;
+        z *= k;
+        w *= k;
         return *this;
       }
 
@@ -179,6 +190,39 @@ namespace oz
       Quat operator - () const
       {
         return Quat( -x, -y, -z, -w );
+      }
+
+      Quat operator + ( const Quat& a ) const
+      {
+        return Quat( x + a.x, y + a.y, z + a.z, w + a.w );
+      }
+
+      Quat operator - ( const Quat& a ) const
+      {
+        return Quat( x - a.x, y - a.y, z - a.z, w - a.w );
+      }
+
+      Quat operator * ( float k ) const
+      {
+        return Quat( x * k, y * k, z * k, w * k );
+      }
+
+      Quat operator / ( float k ) const
+      {
+        assert( k != 0.0f );
+
+        k = 1.0f / k;
+        return Quat( x * k, y * k, z * k, w * k );
+      }
+
+      // quaternion multiplication
+      Quat operator ^ ( const Quat& a ) const
+      {
+
+        return Quat( w*a.x + x*a.w + y*a.z - z*a.y,
+                     w*a.y + y*a.w + z*a.x - x*a.z,
+                     w*a.z + z*a.w + x*a.y - y*a.x,
+                     w*a.w - x*a.x - y*a.y - z*a.z );
       }
 
       Quat& operator += ( const Quat& a )
@@ -233,60 +277,21 @@ namespace oz
         return *this;
       }
 
-      Quat operator + ( const Quat& a ) const
-      {
-        return Quat( x + a.x, y + a.y, z + a.z, w + a.w );
-      }
-
-      Quat operator - ( const Quat& a ) const
-      {
-        return Quat( x - a.x, y - a.y, z - a.z, w - a.w );
-      }
-
-      Quat operator * ( float k ) const
-      {
-        return Quat( x * k, y * k, z * k, w * k );
-      }
-
-      Quat operator / ( float k ) const
-      {
-        assert( k != 0.0f );
-
-        k = 1.0f / k;
-        return Quat( x * k, y * k, z * k, w * k );
-      }
-
-      // dot product
-      float operator * ( const Quat& a ) const
-      {
-        return x*a.x + y*a.y + z*a.z + w*a.w;
-      }
-
-      // product of quaternions
-      Quat operator ^ ( const Quat& a ) const
-      {
-
-        return Quat( w*a.x + x*a.w + y*a.z - z*a.y,
-                     w*a.y + y*a.w + z*a.x - x*a.z,
-                     w*a.z + z*a.w + x*a.y - y*a.x,
-                     w*a.w - x*a.x - y*a.y - z*a.z );
-      }
-
       friend Quat operator * ( float k, const Quat& a )
       {
         return Quat( a.x * k, a.y * k, a.z * k, a.w * k );
       }
 
-      // make rotation matrix (implemented in Mat33.h)
+      // make rotation matrix (implemented in Mat33.hpp)
       Mat33 rotMat33() const;
 
-      // make transposed (inverse) rotation matrix (implemented in Mat33.h)
+      // make transposed (inverse) rotation matrix (implemented in Mat33.hpp)
       Mat33 invRotMat33() const;
 
-      // make rotation matrix (implemented in Mat44.h)
+      // make rotation matrix (implemented in Mat44.hpp)
       Mat44 rotMat44() const;
 
-      // make transposed (inverse) rotation matrix (implemented in Mat44.h)
+      // make transposed (inverse) rotation matrix (implemented in Mat44.hpp)
       Mat44 invRotMat44() const;
 
       // make quaternion for rotation around given axis
@@ -295,6 +300,15 @@ namespace oz
         float s, c;
         Math::sincos( theta * 0.5f, &s, &c );
         Vec3 qv = s * axis;
+        return Quat( qv.x, qv.y, qv.z, c );
+      }
+
+      // make quaternion for rotation around given axis
+      static Quat rotAxis( const Vec4& axis, float theta )
+      {
+        float s, c;
+        Math::sincos( theta * 0.5f, &s, &c );
+        Vec4 qv = s * axis;
         return Quat( qv.x, qv.y, qv.z, c );
       }
 
@@ -363,6 +377,27 @@ namespace oz
                      ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
       }
 
+      Vec4 rotate( const Vec4& v ) const
+      {
+        float a11 = x*x;
+        float a22 = y*y;
+        float a33 = z*z;
+        float a44 = w*w;
+
+        float a12 =  2.0f * x*y;
+        float a13 =  2.0f * x*z;
+        float a14 =  2.0f * x*w;
+        float a23 =  2.0f * y*z;
+        float a24 =  2.0f * y*w;
+        float a34 =  2.0f * z*w;
+
+        float a4433 = a44 - a33;
+
+        return Vec4( ( a4433 - a22 + a11 ) * v.x + ( a12 - a34 ) * v.y + ( a24 + a13 ) * v.z,
+                     ( a34 + a12 ) * v.x + ( a4433 + a22 - a11 ) * v.y + ( a23 - a14 ) * v.z,
+                     ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
+      }
+
       Vec3 rotateInv( const Vec3& v ) const
       {
         float a11 = x*x;
@@ -380,6 +415,27 @@ namespace oz
         float a4433 = a44 - a33;
 
         return Vec3( ( a4433 - a22 + a11 ) * v.x + ( a12 - a34 ) * v.y + ( a24 + a13 ) * v.z,
+                     ( a34 + a12 ) * v.x + ( a4433 + a22 - a11 ) * v.y + ( a23 - a14 ) * v.z,
+                     ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
+      }
+
+      Vec4 rotateInv( const Vec4& v ) const
+      {
+        float a11 = x*x;
+        float a22 = y*y;
+        float a33 = z*z;
+        float a44 = w*w;
+
+        float a12 =  2.0f * x*y;
+        float a13 =  2.0f * x*z;
+        float a14 = -2.0f * x*w;
+        float a23 =  2.0f * y*z;
+        float a24 = -2.0f * y*w;
+        float a34 = -2.0f * z*w;
+
+        float a4433 = a44 - a33;
+
+        return Vec4( ( a4433 - a22 + a11 ) * v.x + ( a12 - a34 ) * v.y + ( a24 + a13 ) * v.z,
                      ( a34 + a12 ) * v.x + ( a4433 + a22 - a11 ) * v.y + ( a23 - a14 ) * v.z,
                      ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
       }

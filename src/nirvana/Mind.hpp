@@ -1,5 +1,5 @@
 /*
- *  Mind.h
+ *  Mind.hpp
  *
  *  [description]
  *

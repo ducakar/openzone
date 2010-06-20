@@ -1,5 +1,5 @@
 /*
- *  Lua.h
+ *  Lua.hpp
  *
  *  Lua scripting engine for Matrix
  *

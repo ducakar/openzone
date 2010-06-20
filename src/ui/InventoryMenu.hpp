@@ -1,5 +1,5 @@
 /*
- *  InventoryMenu.h
+ *  InventoryMenu.hpp
  *
  *  [description]
  *

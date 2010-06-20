@@ -274,7 +274,7 @@ namespace oz
     if( hit.obj != null && ( hit.obj->flags & Object::DYNAMIC_BIT ) ) {
       Dynamic* sDyn = static_cast<Dynamic*>( const_cast<Object*>( hit.obj ) );
 
-      Vec3  momentum    = ( obj->momentum * obj->mass + sDyn->momentum * sDyn->mass ) /
+      Vec4  momentum    = ( obj->momentum * obj->mass + sDyn->momentum * sDyn->mass ) /
           ( obj->mass + sDyn->mass );
       float hitMomentum = ( obj->momentum - sDyn->momentum ) * hit.normal;
       float hitVelocity = obj->velocity * hit.normal;
@@ -385,8 +385,8 @@ namespace oz
         float dot = lastNormals[0] * collider.hit.normal;
 
         if( dot < 0.0f ) {
-          Vec3 out   = collider.hit.normal + lastNormals[0];
-          Vec3 cross = collider.hit.normal ^ lastNormals[0];
+          Vec4 out   = collider.hit.normal + lastNormals[0];
+          Vec4 cross = collider.hit.normal ^ lastNormals[0];
 
           if( !cross.isZero() ) {
             cross.norm();
@@ -406,8 +406,8 @@ namespace oz
           dot = lastNormals[1] * collider.hit.normal;
 
           if( dot < 0.0f ) {
-            Vec3 out   = collider.hit.normal + lastNormals[1];
-            Vec3 cross = collider.hit.normal ^ lastNormals[1];
+            Vec4 out   = collider.hit.normal + lastNormals[1];
+            Vec4 cross = collider.hit.normal ^ lastNormals[1];
 
             if( !cross.isZero() ) {
               cross.norm();
@@ -467,7 +467,7 @@ namespace oz
       if( handleObjFriction() ) {
         // if objects is still in movement or not on a still surface after friction changed its
         // velocity, handle physics
-        Vec3 oldPos = obj->p;
+        Vec4 oldPos = obj->p;
         handleObjMove();
         obj->velocity = ( obj->p - oldPos ) / Timer::TICK_TIME;
       }

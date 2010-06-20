@@ -1,5 +1,5 @@
 /*
- *  MD2WeaponModel.h
+ *  MD2WeaponModel.hpp
  *
  *  [description]
  *

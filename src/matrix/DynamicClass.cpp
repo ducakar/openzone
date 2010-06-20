@@ -87,7 +87,7 @@ namespace oz
     return clazz;
   }
 
-  Object* DynamicClass::create( int index, const Vec3& pos ) const
+  Object* DynamicClass::create( int index, const Vec4& pos ) const
   {
     Dynamic* obj = new Dynamic();
 

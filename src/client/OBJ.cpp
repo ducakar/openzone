@@ -36,8 +36,8 @@ namespace client
   }
 
   bool OBJ::readVertexData( char* pos,
-                            Vector<Vec3>* tempVerts,
-                            Vector<Vec3>* tempNormals,
+                            Vector<Vec4>* tempVerts,
+                            Vector<Vec4>* tempNormals,
                             Vector<TexCoord>* tempTexCoords ) const
   {
     // pos should be at position just after 'v'
@@ -52,7 +52,7 @@ namespace client
       if( nMatches != 3 ) {
         return false;
       }
-      *tempVerts << Vec3( x, y, z );
+      *tempVerts << Vec4( x, y, z );
       return true;
     }
     // vertex normal coords
@@ -65,7 +65,7 @@ namespace client
       if( nMatches != 3 ) {
         return false;
       }
-      *tempNormals << Vec3( x, y, z );
+      *tempNormals << Vec4( x, y, z );
       return true;
     }
     // vertex texture coords
@@ -245,9 +245,9 @@ namespace client
             *end = '\0';
 
             mtlName = pos;
-            material.ambient  = Vec3::zero();
+            material.ambient  = Vec4::zero();
             material.diffuse  = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
-            material.specular = Vec3( 0.5f, 0.5f, 0.5f );
+            material.specular = Vec4( 0.5f, 0.5f, 0.5f );
             material.texId    = 0;
           }
           break;
@@ -317,7 +317,7 @@ namespace client
     log.indent();
 
     float scaling = config.get( "scale", 1.0f );
-    Vec3 translation( config.get( "translate.x", 0.0f ),
+    Vec4 translation( config.get( "translate.x", 0.0f ),
                       config.get( "translate.y", 0.0f ),
                       config.get( "translate.z", 0.0f ) );
 
@@ -335,8 +335,8 @@ namespace client
       throw Exception( "OBJ model loading error" );
     }
 
-    Vector<Vec3>     tempVerts;
-    Vector<Vec3>     tempNormals;
+    Vector<Vec4>     tempVerts;
+    Vector<Vec4>     tempNormals;
     Vector<TexCoord> tempTexCoords;
     Vector<Face>     tempFaces;
 
@@ -414,7 +414,7 @@ namespace client
 
     if( !tempNormals.isEmpty() ) {
       normals( tempNormals.length() );
-      aCopy<Vec3>( normals, tempNormals, normals.length() );
+      aCopy<Vec4>( normals, tempNormals, normals.length() );
     }
 
     if( !tempTexCoords.isEmpty() ) {
@@ -464,7 +464,7 @@ namespace client
     }
   }
 
-  void OBJ::translate( const Vec3& t )
+  void OBJ::translate( const Vec4& t )
   {
     for( int i = 0; i < vertices.length(); ++i ) {
       vertices[i] += t;

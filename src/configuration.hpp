@@ -1,19 +1,22 @@
 #pragma once
 
-// enable GNU math builtins
-#define OZ_GNU_MATH
-
 // enable overloaded new and delete to count allocated memory
 #define OZ_ALLOC_STATISTICS
 
 // enable PoolAlloc allocator; otherwise use a dummy class that calls malloc/free
 #define OZ_POOL_ALLOC
 
-// enable XML configuration files support
-#define OZ_XML_CONFIG
+// enable GNU math builtins
+#define OZ_GNU_MATH
+
+// whether math library has sincosf function
+#define OZ_HAVE_SINCOSF
 
 // enable warnings about missing and unused variables in config files
 #define OZ_VERBOSE_CONFIG
+
+// enable XML configuration files support
+/* #undef OZ_XML_CONFIG */
 
 // platform
 /* #undef OZ_MINGW */
