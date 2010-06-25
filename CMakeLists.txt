@@ -7,10 +7,11 @@ project( openzone C CXX )
 option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make heap usage statistics" ON )
 option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." OFF )
 option( OZ_GNU_MATH "Use GCC math builtins (no need to include <cmath> and faster calls in debug mode)" ON )
-check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in config files" ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
-option( OZ_CROSS_MINGW "MinGW is not used natively from Windows, but from Unix for cross-compiling." OFF )
+option( OZ_CROSS_MINGW "If MinGW is not used natively on Windows, but on Unix for cross-compiling." OFF )
+
+check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 
 Find_Package( SDL REQUIRED )
 Find_Package( SDL_image REQUIRED )
@@ -23,7 +24,7 @@ Find_Package( OpenAL REQUIRED )
 
 if( MSVC )
 
-  	set( OZ_MSVC ON )
+	set( OZ_MSVC ON )
 
 	# compiler and linker flags
 	set( warnings "/W3 /D _CRT_SECURE_NO_WARNINGS" )
@@ -38,12 +39,11 @@ if( MSVC )
 	set( libs "${libs} /LIBPATH:deps/lib" )
 	
 else( MSVC )
- 
+
 	# compiler and linker flags
 	set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wconversion -Wdisabled-optimization" )
 	set( warnings "${warnings} -Wredundant-decls -Woverloaded-virtual -Wnon-virtual-dtor -Wsign-promo" )
-	set( warnings "${warnings} -Wctor-dtor-privacy -Wstrict-overflow" )
-	set( flags "-pedantic -std=gnu++0x -fmessage-length=0 -pipe" )
+	set( warnings "${warnings} -Wctor-dtor-privacy -Wstrict-overflow -Wlogical-op -Wpacked" )
 	set( libs "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
 	set( arch_flags "-march=i686 -mtune=generic -mmmx -msse -mfpmath=both" )
 
@@ -53,6 +53,7 @@ else( MSVC )
 
 	# set platform-specific includes and library names
 	if( WIN32 )
+		set( flags "-pedantic -std=gnu++0x -fmessage-length=0 -pipe" )
 		set( libs "-lmingw32 -lSDLmain ${libs} -lopengl32 -lglu32 -lOpenAL32 -lalut" )
 		set( OZ_MINGW ON )
 		foreach( ROOT ${CMAKE_FIND_ROOT_PATH} )
@@ -61,6 +62,7 @@ else( MSVC )
 			set( libs "${libs} -L${ROOT}/lib" )
 		endforeach()
 	else()
+		set( flags "-pedantic -std=c++0x -fmessage-length=0 -pipe" )
 		set( flags "${flags} -I/usr/include/SDL" )
 		set( libs "${libs} -lGL -lGLU -lopenal -lalut" )
 		# libxml is only supported on linux

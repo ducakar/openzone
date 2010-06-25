@@ -170,8 +170,8 @@ namespace client
 
     glBindTexture( GL_TEXTURE_2D, waterTexId );
 
-    const Vec4& v0 = world.terra.vertices[span.minX][span.minY];
-    const Vec4& v1 = world.terra.vertices[span.maxX][span.maxY];
+    const Vec3& v0 = world.terra.vertices[span.minX][span.minY];
+    const Vec3& v1 = world.terra.vertices[span.maxX][span.maxY];
 
     if( camera.p.z >= 0 ) {
       glNormal3f( 0.0f, 0.0f, 1.0f );

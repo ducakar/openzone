@@ -23,7 +23,7 @@ namespace oz
       /**
        * Position
        */
-      Vec4  p;
+      Vec3  p;
       /**
        * Radius of a bounding sphere (only used in frustum culling, so no need to set it when the
        * AABB won't be used in a frusum test)
@@ -32,25 +32,25 @@ namespace oz
       /**
        * Extents
        */
-      Vec4  dim;
+      Vec3  dim;
 
       explicit AABB()
       {}
 
-      explicit AABB( const Vec4& p_, const Vec4& dim_ ) : p( p_ ), dim( dim_ )
+      explicit AABB( const Vec3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )
       {}
 
       Bounds toBounds( float eps = 0.0f ) const
       {
-        return Bounds( Vec4( p.x - dim.x - eps,
+        return Bounds( Vec3( p.x - dim.x - eps,
                              p.y - dim.y - eps,
                              p.z - dim.z - eps ),
-                       Vec4( p.x + dim.x + eps,
+                       Vec3( p.x + dim.x + eps,
                              p.y + dim.y + eps,
                              p.z + dim.z + eps ) );
       }
 
-      Bounds toBounds( const Vec4& move, float eps = 0.0f ) const
+      Bounds toBounds( const Vec3& move, float eps = 0.0f ) const
       {
         Bounds t;
 
@@ -81,23 +81,23 @@ namespace oz
         return t;
       }
 
-      AABB operator + ( const Vec4& v ) const
+      AABB operator + ( const Vec3& v ) const
       {
         return AABB( p + v, dim );
       }
 
-      AABB operator - ( const Vec4& v ) const
+      AABB operator - ( const Vec3& v ) const
       {
         return AABB( p - v, dim );
       }
 
-      AABB& operator += ( const Vec4& v )
+      AABB& operator += ( const Vec3& v )
       {
         p += v;
         return *this;
       }
 
-      AABB& operator -= ( const Vec4& v )
+      AABB& operator -= ( const Vec3& v )
       {
         p -= v;
         return *this;
@@ -125,10 +125,10 @@ namespace oz
         return *this;
       }
 
-      bool includes( const Vec4& v, float eps = 0.0f ) const
+      bool includes( const Vec3& v, float eps = 0.0f ) const
       {
-        Vec4 relPos = v - p;
-        Vec4 d( dim.x + eps,
+        Vec3 relPos = v - p;
+        Vec3 d( dim.x + eps,
                 dim.y + eps,
                 dim.z + eps );
 
@@ -140,8 +140,8 @@ namespace oz
 
       bool isInside( const AABB& a, float eps = 0.0f ) const
       {
-        Vec4 relPos = p - a.p;
-        Vec4 d( a.dim.x - dim.x + eps,
+        Vec3 relPos = p - a.p;
+        Vec3 d( a.dim.x - dim.x + eps,
                 a.dim.y - dim.y + eps,
                 a.dim.z - dim.z + eps );
 
@@ -158,8 +158,8 @@ namespace oz
 
       bool overlaps( const AABB& a, float eps = 0.0f ) const
       {
-        Vec4 relPos = a.p - p;
-        Vec4 d( a.dim.x + dim.x + eps,
+        Vec3 relPos = a.p - p;
+        Vec3 d( a.dim.x + dim.x + eps,
                 a.dim.y + dim.y + eps,
                 a.dim.z + dim.z + eps );
 
@@ -197,10 +197,10 @@ namespace oz
 
   inline AABB Bounds::toAABB( float eps ) const
   {
-    return AABB( Vec4( ( mins.x + maxs.x ) * 0.5f,
+    return AABB( Vec3( ( mins.x + maxs.x ) * 0.5f,
                        ( mins.y + maxs.y ) * 0.5f,
                        ( mins.z + maxs.z ) * 0.5f ),
-                 Vec4( ( maxs.x - mins.x ) * 0.5f + eps,
+                 Vec3( ( maxs.x - mins.x ) * 0.5f + eps,
                        ( maxs.y - mins.y ) * 0.5f + eps,
                        ( maxs.z - mins.z ) * 0.5f + eps ) );
   }

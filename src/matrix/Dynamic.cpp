@@ -21,9 +21,9 @@ namespace oz
     Object::readFull( istream );
 
     parent     = istream->readInt();
-    velocity   = istream->readVec4();
-    momentum   = istream->readVec4();
-    floor      = istream->readVec4();
+    velocity   = istream->readVec3();
+    momentum   = istream->readVec3();
+    floor      = istream->readVec3();
     lower      = istream->readInt();
     depth      = istream->readFloat();
   }
@@ -33,9 +33,9 @@ namespace oz
     Object::writeFull( ostream );
 
     ostream->writeInt( parent );
-    ostream->writeVec4( velocity );
-    ostream->writeVec4( momentum );
-    ostream->writeVec4( floor );
+    ostream->writeVec3( velocity );
+    ostream->writeVec3( momentum );
+    ostream->writeVec3( floor );
     ostream->writeInt( lower );
     ostream->writeFloat( depth );
   }
@@ -44,19 +44,19 @@ namespace oz
   {
     Object::readUpdate( istream );
 
-    p        = istream->readVec4();
-    velocity = istream->readVec4();
-    momentum = istream->readVec4();
+    p        = istream->readVec3();
+    velocity = istream->readVec3();
+    momentum = istream->readVec3();
   }
 
   void Dynamic::writeUpdate( OutputStream* ostream ) const
   {
     Object::writeUpdate( ostream );
 
-    ostream->writeVec4( p );
+    ostream->writeVec3( p );
     ostream->writeFloat( life );
-    ostream->writeVec4( velocity );
-    ostream->writeVec4( momentum );
+    ostream->writeVec3( velocity );
+    ostream->writeVec3( momentum );
   }
 
 }

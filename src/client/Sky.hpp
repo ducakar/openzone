@@ -38,15 +38,15 @@ namespace client
       uint  sunList;
       uint  moonList;
 
-      Vec4  stars[MAX_STARS];
+      Vec3  stars[MAX_STARS];
 
     public:
 
       float angle;
       float ratio;
       float ratio_1;
-      Vec4  originalLightDir;
-      Vec4  axis;
+      Vec3  originalLightDir;
+      Vec3  axis;
 
       float lightDir[4];
 

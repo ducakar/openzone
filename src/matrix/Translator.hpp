@@ -105,7 +105,7 @@ namespace oz
         }
       }
 
-      Structure* createStruct( int index, const char* name, const Vec4& p,
+      Structure* createStruct( int index, const char* name, const Vec3& p,
                                Structure::Rotation rot ) const
       {
         const int* value = bspIndices.find( name );
@@ -128,7 +128,7 @@ namespace oz
         }
       }
 
-      Object* createObject( int index, const char* name, const Vec4& p ) const
+      Object* createObject( int index, const char* name, const Vec3& p ) const
       {
         const ObjectClass* const* value = classes.find( name );
         if( value != null ) {

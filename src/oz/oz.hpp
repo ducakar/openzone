@@ -15,19 +15,29 @@
 #include "configuration.hpp"
 
 /*
+ * Base C/C++ definitions (size_t, ptrdiff_t, NULL and offsetof)
+ */
+#include <cstddef>
+
+/*
+ * Standard C++ new/delete operator and exception definitions
+ */
+#include <new>
+
+/*
  * assert and soft_assert macros
  */
 #include "assert.hpp"
 
 /*
- * Basic definitions and template functions
- */
-#include "common.hpp"
-
-/*
  * Exception class
  */
 #include "Exception.hpp"
+
+/*
+ * Basic definitions and template functions
+ */
+#include "common.hpp"
 
 /*
  * Memory management
@@ -76,7 +86,6 @@
 #include "Math.hpp"
 
 #include "Vec3.hpp"
-#include "Vec4.hpp"
 #include "Quat.hpp"
 #include "Mat33.hpp"
 #include "Mat44.hpp"

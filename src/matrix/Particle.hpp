@@ -37,17 +37,17 @@ namespace oz
       Particle* prev[1];
       Particle* next[1];
 
-      Vec4      p;            // position
+      Vec3      p;            // position
 
       int       index;        // position in world.objects vector
       Cell*     cell;
 
-      Vec4      velocity;
+      Vec3      velocity;
 
       // graphics data
-      Vec4      color;
-      Vec4      rot;
-      Vec4      rotVelocity;
+      Vec3      color;
+      Vec3      rot;
+      Vec3      rotVelocity;
 
       float     restitution;    // 1.0 < restitution < 2.0
       float     mass;
@@ -56,11 +56,11 @@ namespace oz
       explicit Particle() : index( -1 ), cell( null )
       {}
 
-      explicit Particle( int index_, const Vec4& p_, const Vec4& velocity_, const Vec4& color_,
+      explicit Particle( int index_, const Vec3& p_, const Vec3& velocity_, const Vec3& color_,
                          float restitution_, float mass_, float lifeTime_ ) :
           p( p_ ), index( index_ ), cell( null ), velocity( velocity_ ), color( color_ ),
-          rot( Vec4( Math::frand() * 360.0f, Math::frand() * 360.0f, Math::frand() * 360.0f ) ),
-          rotVelocity( Vec4( Math::frand() * MAX_ROTVELOCITY,
+          rot( Vec3( Math::frand() * 360.0f, Math::frand() * 360.0f, Math::frand() * 360.0f ) ),
+          rotVelocity( Vec3( Math::frand() * MAX_ROTVELOCITY,
                              Math::frand() * MAX_ROTVELOCITY,
                              Math::frand() * MAX_ROTVELOCITY ) ),
           restitution( restitution_ ), mass( mass_ ), lifeTime( lifeTime_ )

@@ -258,7 +258,7 @@ namespace client
     {   0, 197,  7.0f, 1 }    // FULL
   };
 
-  Vec4 MD2::vertList[MAX_VERTS];
+  Vec3 MD2::vertList[MAX_VERTS];
 
   void MD2::interpolate( const AnimState* anim ) const
   {
@@ -361,13 +361,13 @@ namespace client
     config.load( configFile );
 
     float scaling = config.get( "scale", 0.042f );
-    Vec4 translation   = Vec4( config.get( "translate.x", 0.00f ),
+    Vec3 translation   = Vec3( config.get( "translate.x", 0.00f ),
                                config.get( "translate.y", 0.00f ),
                                config.get( "translate.z", 0.00f ) );
-    Vec4 jumpTranslate = Vec4( config.get( "jumpTranslate.x", 0.00f ),
+    Vec3 jumpTranslate = Vec3( config.get( "jumpTranslate.x", 0.00f ),
                                config.get( "jumpTranslate.y", 0.00f ),
                                config.get( "jumpTranslate.z", 0.00f ) );
-    weaponTransl       = Vec4( config.get( "weaponTranslate.x", 0.00f ),
+    weaponTransl       = Vec3( config.get( "weaponTranslate.x", 0.00f ),
                                config.get( "weaponTranslate.y", 0.00f ),
                                config.get( "weaponTranslate.z", 0.00f ) );
 
@@ -409,7 +409,7 @@ namespace client
     }
   }
 
-  void MD2::translate( const Vec4& t )
+  void MD2::translate( const Vec3& t )
   {
     int end = nVerts * nFrames;
 
@@ -418,7 +418,7 @@ namespace client
     }
   }
 
-  void MD2::translate( int animType, const Vec4& t )
+  void MD2::translate( int animType, const Vec3& t )
   {
     int start = animList[animType].firstFrame * nVerts;
     int end = ( animList[animType].lastFrame + 1 ) * nVerts - 1;

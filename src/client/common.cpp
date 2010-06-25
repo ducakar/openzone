@@ -9,11 +9,11 @@
 
 #include "stable.hpp"
 
-#if defined( OZ_MINGW32 ) || defined( OZ_MSVC )
+#if defined( OZ_MINGW ) || defined( OZ_MSVC )
 
 #include "client/common.hpp"
 
-PFNGLACTIVETEXTUREPROC        glActiveTexture;;
+PFNGLACTIVETEXTUREPROC        glActiveTexture;
 PFNGLCLIENTACTIVETEXTUREPROC  glClientActiveTexture;
 PFNGLGENBUFFERSPROC           glGenBuffers;
 PFNGLDELETEBUFFERSPROC        glDeleteBuffers;

@@ -33,6 +33,7 @@ namespace client
       uint genBox( uint list, const AABB& bb, uint texture );
 
       void drawBox( const AABB& bb );
+      void drawWireBox( const AABB& bb );
       void draw( const Particle* part );
 
       void load();

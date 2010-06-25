@@ -37,7 +37,7 @@ namespace oz
       String name;
       String description;
 
-      Vec4   dim;
+      Vec3   dim;
       int    flags;
       int    type;
       float  life;
@@ -55,7 +55,7 @@ namespace oz
       float  debrisRejection;
       float  debrisMass;
       float  debrisLifeTime;
-      Vec4   debrisColor;
+      Vec3   debrisColor;
       float  debrisColorSpread;
 
       String modelType;
@@ -69,7 +69,7 @@ namespace oz
       static void fillCommon( ObjectClass* clazz, const Config* config );
       static ObjectClass* init( const String& name, const Config* config );
 
-      virtual Object* create( int index, const Vec4& pos ) const;
+      virtual Object* create( int index, const Vec3& pos ) const;
       virtual Object* create( int index, InputStream* istream ) const;
 
   };

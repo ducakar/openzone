@@ -42,7 +42,7 @@ namespace client
   struct MD3Tag
   {
     char  name[64];
-    Vec4  p;
+    Vec3  p;
     Mat33 rot;
   };
 
@@ -66,7 +66,7 @@ namespace client
 
   struct MD3Frame : Bounds
   {
-    Vec4  p;
+    Vec3  p;
     float radius;
     char  name[16];
   };
@@ -192,7 +192,7 @@ namespace client
     }
   }
 
-  void MD3::Part::translate( const Vec4& t )
+  void MD3::Part::translate( const Vec3& t )
   {
     foreach( mesh, meshes.citer() ) {
       foreach( v, mesh->vertices.iter() ) {
@@ -253,7 +253,7 @@ namespace client
     }
   }
 
-  void MD3::translate( const Vec4& t )
+  void MD3::translate( const Vec3& t )
   {
     head->translate( t );
     upper->translate( t );
@@ -301,7 +301,7 @@ namespace client
     config.load( configFile );
 
     float scaling = config.get( "scale", 0.042f );
-    Vec4 translation( config.get( "translate.x", 0.00f ),
+    Vec3 translation( config.get( "translate.x", 0.00f ),
                       config.get( "translate.y", 0.00f ),
                       config.get( "translate.z", 0.00f ) );
 

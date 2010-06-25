@@ -28,34 +28,34 @@ namespace oz
 
 #ifndef OZ_ALLOC_STATISTICS
 
-void* operator new ( oz::msize size )
+void* operator new ( size_t size ) throw( std::bad_alloc )
 {
   return malloc( size );
 }
 
-void* operator new[] ( oz::msize size )
+void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
   return malloc( size );
 }
 
-void operator delete ( void* ptr )
+void operator delete ( void* ptr ) throw()
 {
   free( ptr );
 }
 
-void operator delete[] ( void* ptr )
+void operator delete[] ( void* ptr ) throw()
 {
   free( ptr );
 }
 
 #else
 
-void* operator new ( oz::msize size )
+void* operator new ( size_t size ) throw( std::bad_alloc )
 {
-  oz::msize* p = reinterpret_cast<oz::msize*>( malloc( size + sizeof( oz::msize ) ) );
+  size_t* p = reinterpret_cast<size_t*>( malloc( size + sizeof( size_t ) ) );
 
   if( p == null ) {
-    throw Exception( "Bad allocation" );
+    throw std::bad_alloc();
   }
 
   ++oz::Alloc::count;
@@ -71,12 +71,12 @@ void* operator new ( oz::msize size )
   return p + 1;
 }
 
-void* operator new[] ( oz::msize size )
+void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
-  oz::msize* p = reinterpret_cast<oz::msize*>( malloc( size + sizeof( oz::msize ) ) );
+  size_t* p = reinterpret_cast<size_t*>( malloc( size + sizeof( size_t ) ) );
 
   if( p == null ) {
-    throw Exception( "Bad allocation" );
+    throw std::bad_alloc();
   }
 
   ++oz::Alloc::count;
@@ -92,9 +92,9 @@ void* operator new[] ( oz::msize size )
   return p + 1;
 }
 
-void operator delete ( void* ptr )
+void operator delete ( void* ptr ) throw()
 {
-  oz::msize* chunk = reinterpret_cast<oz::msize*>( ptr ) - 1;
+  size_t* chunk = reinterpret_cast<size_t*>( ptr ) - 1;
 
   --oz::Alloc::count;
   oz::Alloc::amount -= chunk[0];
@@ -102,9 +102,9 @@ void operator delete ( void* ptr )
   free( chunk );
 }
 
-void operator delete[] ( void* ptr )
+void operator delete[] ( void* ptr ) throw()
 {
-  oz::msize* chunk = reinterpret_cast<oz::msize*>( ptr ) - 1;
+  size_t* chunk = reinterpret_cast<size_t*>( ptr ) - 1;
 
   --oz::Alloc::count;
   oz::Alloc::amount -= chunk[0];

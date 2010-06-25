@@ -26,10 +26,10 @@ namespace client
     Math::sincos( fovX, &sx, &cx );
     Math::sincos( fovY, &sy, &cy );
 
-    nLeft0  = Vec4(   cx, sx,  0.0f );
-    nRight0 = Vec4(  -cx, sx,  0.0f );
-    nUp0    = Vec4( 0.0f, sy,   -cy );
-    nDown0  = Vec4( 0.0f, sy,    cy );
+    nLeft0  = Vec3(   cx, sx,  0.0f );
+    nRight0 = Vec3(  -cx, sx,  0.0f );
+    nUp0    = Vec3( 0.0f, sy,   -cy );
+    nDown0  = Vec3( 0.0f, sy,    cy );
 
     maxDistance = maxDistance_;
     radius      = maxDistance / cx;

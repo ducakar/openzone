@@ -18,9 +18,9 @@ namespace client
 
 //  class Spark
 //  {
-//    Vec4  p;
-//    Vec4  velocity;
-//    Vec4  color;
+//    Vec3  p;
+//    Vec3  velocity;
+//    Vec3  color;
 //    float lifeTime;
 //  };
 //

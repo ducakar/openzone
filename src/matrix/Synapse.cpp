@@ -19,19 +19,19 @@ namespace oz
   Synapse::Synapse() : isSingle( true ), isServer( false ), isClient( false )
   {}
 
-  void Synapse::genParts( int number, const Vec4& p,
-                          const Vec4& velocity, float velocitySpread,
-                          const Vec4& color, float colorSpread,
+  void Synapse::genParts( int number, const Vec3& p,
+                          const Vec3& velocity, float velocitySpread,
+                          const Vec3& color, float colorSpread,
                           float restitution, float mass, float lifeTime )
   {
     float velocitySpread2 = velocitySpread / 2.0f;
     float colorSpread2 = colorSpread / 2.0f;
 
     for( int i = 0; i < number; ++i ) {
-      Vec4 velDisturb = Vec4( velocitySpread * Math::frand() - velocitySpread2,
+      Vec3 velDisturb = Vec3( velocitySpread * Math::frand() - velocitySpread2,
                               velocitySpread * Math::frand() - velocitySpread2,
                               velocitySpread * Math::frand() - velocitySpread2 );
-      Vec4 colorDisturb = Vec4( colorSpread * Math::frand() - colorSpread2,
+      Vec3 colorDisturb = Vec3( colorSpread * Math::frand() - colorSpread2,
                                 colorSpread * Math::frand() - colorSpread2,
                                 colorSpread * Math::frand() - colorSpread2 );
       float timeDisturb = lifeTime * Math::frand();

@@ -106,9 +106,9 @@ namespace oz
       void unposition( Particle* part );
       void reposition( Particle* part );
 
-      int  addStruct( const char* name, const Vec4& p, Structure::Rotation rot );
-      int  addObject( const char* name, const Vec4& p );
-      int  addPart( const Vec4& p, const Vec4& velocity, const Vec4& color,
+      int  addStruct( const char* name, const Vec3& p, Structure::Rotation rot );
+      int  addObject( const char* name, const Vec3& p );
+      int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
                     float restitution, float mass, float lifeTime );
 
       void remove( Structure* str );
@@ -119,11 +119,11 @@ namespace oz
 
       // get pointer to the cell the point is in
       Cell* getCell( float x, float y );
-      Cell* getCell( const Vec4& p );
+      Cell* getCell( const Vec3& p );
 
       // get indices of the cell the point is in
       Span getInters( float x, float y, float epsilon = 0.0f ) const;
-      Span getInters( const Vec4& p, float epsilon = 0.0f ) const;
+      Span getInters( const Vec3& p, float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the area intersects
       Span getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
@@ -163,7 +163,7 @@ namespace oz
     return &cells[ix][iy];
   }
 
-  inline Cell* World::getCell( const Vec4& p )
+  inline Cell* World::getCell( const Vec3& p )
   {
     return getCell( p.x, p.y );
   }
@@ -176,7 +176,7 @@ namespace oz
                  min( int( ( y + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 ) );
   }
 
-  inline Span World::getInters( const Vec4& p, float epsilon ) const
+  inline Span World::getInters( const Vec3& p, float epsilon ) const
   {
     return getInters( p.x, p.y, epsilon );
   }
@@ -322,7 +322,7 @@ namespace oz
     }
   }
 
-  inline int World::addStruct( const char* name, const Vec4& p, Structure::Rotation rot )
+  inline int World::addStruct( const char* name, const Vec3& p, Structure::Rotation rot )
   {
     int index;
 
@@ -338,7 +338,7 @@ namespace oz
   }
 
   // has to be reentrant, can be called again from translator.createObject
-  inline int World::addObject( const char* name, const Vec4& p )
+  inline int World::addObject( const char* name, const Vec3& p )
   {
     int index;
 
@@ -360,7 +360,7 @@ namespace oz
     return index;
   }
 
-  inline int World::addPart( const Vec4& p, const Vec4& velocity, const Vec4& color,
+  inline int World::addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
                              float restitution, float mass, float lifeTime )
   {
     int index;

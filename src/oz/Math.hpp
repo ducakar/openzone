@@ -42,7 +42,11 @@
 
 #else
 
-# include <cmath>
+# ifdef OZ_MINGW
+#  include <math.h>
+# else
+#  include <cmath>
+# endif
 
 # define sincosf( x, s, c )     ( *( s ) = sinf( x ), *( c ) = cosf( x ) )
 # define isnanf( x )            isnan( x )
@@ -248,24 +252,29 @@ namespace oz
 
       static int toBits( float x )
       {
-        union FloatBits
+        union FloatToBits
         {
           float f;
           int   b;
         };
-        FloatBits fb = { x };
+        FloatToBits fb = { x };
         return fb.b;
       }
 
       static float fromBits( int i )
       {
-        union BitsFloat
+        union BitsToFloat
         {
           int   b;
           float f;
         };
-        BitsFloat fb = { i };
+        BitsToFloat fb = { i };
         return fb.f;
+      }
+
+      static float fastSqrt( float x )
+      {
+         return x * fastInvSqrt( x );
       }
 
       // fast inverse sqrt that appeared in Quake source (google for detailed explanations)

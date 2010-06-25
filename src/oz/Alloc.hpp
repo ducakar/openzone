@@ -10,34 +10,6 @@
 
 #pragma once
 
-/*
- * Placement new and delete declarations
- */
-inline void* operator new ( oz::msize, void* place )
-{
-  return place;
-}
-
-inline void operator delete ( void*, void* )
-{}
-
-inline void* operator new[] ( oz::msize, void* place )
-{
-  return place;
-}
-
-inline void operator delete[] ( void*, void* )
-{}
-
-/*
- * Standard new and delete declarations
- */
-void* operator new ( oz::msize size );
-void operator delete ( void* ptr );
-
-void* operator new[] ( oz::msize size );
-void operator delete[] ( void* ptr );
-
 namespace oz
 {
 

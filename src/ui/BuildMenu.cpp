@@ -31,7 +31,7 @@ namespace ui
       return;
     }
 
-    Vec4 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec4( 0.0f, 0.0f, camera.botObj->camZ );
+    Vec3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
     AABB bb = AABB( p, ( *clazz )->dim );
 
@@ -42,7 +42,7 @@ namespace ui
 
   static void createCenterR0( Button* )
   {
-    Vec4 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec4( 0.0f, 0.0f, camera.botObj->camZ );
+    Vec3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
 
     synapse.addStruct( "house", p, Structure::R0 );
@@ -50,7 +50,7 @@ namespace ui
 
   static void createCenterR90( Button* )
   {
-    Vec4 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec4( 0.0f, 0.0f, camera.botObj->camZ );
+    Vec3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
 
     synapse.addStruct( "house", p, Structure::R90 );
@@ -58,7 +58,7 @@ namespace ui
 
   static void createCenterR180( Button* )
   {
-    Vec4 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec4( 0.0f, 0.0f, camera.botObj->camZ );
+    Vec3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
 
     synapse.addStruct( "house", p, Structure::R180 );
@@ -66,7 +66,7 @@ namespace ui
 
   static void createCenterR270( Button* )
   {
-    Vec4 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec4( 0.0f, 0.0f, camera.botObj->camZ );
+    Vec3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
 
     synapse.addStruct( "house", p, Structure::R270 );
@@ -74,7 +74,7 @@ namespace ui
 
   static void destroy( Button* )
   {
-    Vec4 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec4( 0.0f, 0.0f, camera.botObj->camZ );
+    Vec3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     collider.translate( p, camera.at * 2.0f, camera.botObj );
 
     if( collider.hit.obj != null ) {

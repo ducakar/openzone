@@ -16,13 +16,13 @@ namespace oz
   {
     public:
       // first column (i base vector)
-      Vec4 x;
+      Quat x;
       // second column (j base vector)
-      Vec4 y;
+      Quat y;
       // third column (k base vector)
-      Vec4 z;
+      Quat z;
       // last column (usually used for position)
-      Vec4 w;
+      Quat w;
 
       explicit Mat44()
       {}
@@ -52,10 +52,6 @@ namespace oz
           y( b.x, b.y, b.z, 0.0f ),
           z( c.x, c.y, c.z, 0.0f ),
           w( d.x, d.y, d.z, 1.0f )
-      {}
-
-      explicit Mat44( const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d ) :
-          x( a ), y( b ), z( c ), w( d )
       {}
 
       operator const float* () const
@@ -389,25 +385,11 @@ namespace oz
                      x.z * v.x + y.z * v.y + z.z * v.z + w.z );
       }
 
-      Vec4 operator * ( const Vec4& v ) const
-      {
-        return Vec4( x.x * v.x + y.x * v.y + z.x * v.z + w.x * v.w,
-                     x.y * v.x + y.y * v.y + z.y * v.z + w.y * v.w,
-                     x.z * v.x + y.z * v.y + z.z * v.z + w.z * v.w );
-      }
-
       Vec3 operator / ( const Vec3& v ) const
       {
         return Vec3( x.x * v.x + x.y * v.y + x.z * v.z + x.w,
                      y.x * v.x + y.y * v.y + y.z * v.z + y.w,
                      z.x * v.x + z.y * v.y + z.z * v.z + z.w );
-      }
-
-      Vec4 operator / ( const Vec4& v ) const
-      {
-        return Vec4( x.x * v.x + x.y * v.y + x.z * v.z + x.w * v.w,
-                     y.x * v.x + y.y * v.y + y.z * v.z + y.w * v.w,
-                     z.x * v.x + z.y * v.y + z.z * v.z + z.w * v.w );
       }
 
       friend Mat44 operator * ( float k, const Mat44& a )

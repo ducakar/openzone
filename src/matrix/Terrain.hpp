@@ -39,7 +39,7 @@ namespace oz
 
       struct Triangle
       {
-        Vec4  normal;
+        Vec3  normal;
         float distance;
       };
 
@@ -56,7 +56,7 @@ namespace oz
         Triangle tri[2];
       };
 
-      Vec4 vertices[MAX][MAX];
+      Vec3 vertices[MAX][MAX];
       Quad quads[QUADS][QUADS];
 
       void init();

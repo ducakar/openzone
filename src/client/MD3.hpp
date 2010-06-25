@@ -36,8 +36,8 @@ namespace client
 
       struct Vertex
       {
-        Vec4 p;
-        Vec4 normal;
+        Vec3 p;
+        Vec3 normal;
       };
 
       struct Mesh
@@ -52,7 +52,7 @@ namespace client
 
       struct Offset
       {
-        Vec4 p;
+        Vec3 p;
         Quat rot;
       };
 
@@ -71,7 +71,7 @@ namespace client
           ~Part();
 
           void scale( float scale );
-          void translate( const Vec4& t );
+          void translate( const Vec3& t );
           void drawFrame( int frame ) const;
 
       };
@@ -87,7 +87,7 @@ namespace client
       DArray<Offset> weaponOffsets;
 
       void scale( float scale );
-      void translate( const Vec4& t );
+      void translate( const Vec3& t );
 
     public:
 

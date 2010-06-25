@@ -56,8 +56,8 @@ namespace client
   {
     camera.align();
 
-    Vec4 up = Vec4( -camera.rotMat.x.y, camera.rotMat.x.x, 0.0f );
-    Vec4 p  = camera.p;
+    Vec3 up = Vec3( -camera.rotMat.x.y, camera.rotMat.x.x, 0.0f );
+    Vec3 p  = camera.p;
 
     if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
       fastMove = !fastMove;

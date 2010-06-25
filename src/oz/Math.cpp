@@ -9,7 +9,11 @@
 
 #include "oz.hpp"
 
-#include <cmath>
+#ifdef OZ_MINGW
+# include <math.h>
+#else
+# include <cmath>
+#endif
 #include <cstdlib>
 #include <ctime>
 

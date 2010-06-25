@@ -161,7 +161,7 @@ namespace oz
     return clazz;
   }
 
-  Object* ObjectClass::create( int index, const Vec4& pos ) const
+  Object* ObjectClass::create( int index, const Vec3& pos ) const
   {
     Object* obj = new Object();
 

@@ -50,7 +50,7 @@ namespace client
       fastMove = !fastMove;
     }
 
-    Vec4  p = camera.p;
+    Vec3  p = camera.p;
     float speed = fastMove ? HIGH_SPEED : LOW_SPEED;
 
     if( ui::keyboard.keys[SDLK_w] ) {

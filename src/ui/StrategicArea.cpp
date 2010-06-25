@@ -26,9 +26,9 @@ namespace client
 namespace ui
 {
 
-  Pair<int> StrategicArea::project( const Vec4& p ) const
+  Pair<int> StrategicArea::project( const Vec3& p ) const
   {
-    Vec4 t = camera.rotTMat * p;
+    Vec3 t = camera.rotTMat * p;
 
     t.x = Math::round( ( t.x / t.y ) * stepPixel );
     t.z = Math::round( ( t.z / t.y ) * stepPixel );
@@ -40,14 +40,14 @@ namespace ui
   {
     Pair<int> t[8];
 
-    t[0] = project( bb.p + Vec4( -bb.dim.x, -bb.dim.y, -bb.dim.z ) );
-    t[1] = project( bb.p + Vec4( +bb.dim.x, -bb.dim.y, -bb.dim.z ) );
-    t[2] = project( bb.p + Vec4( -bb.dim.x, +bb.dim.y, -bb.dim.z ) );
-    t[3] = project( bb.p + Vec4( +bb.dim.x, +bb.dim.y, -bb.dim.z ) );
-    t[4] = project( bb.p + Vec4( -bb.dim.x, -bb.dim.y, +bb.dim.z ) );
-    t[5] = project( bb.p + Vec4( +bb.dim.x, -bb.dim.y, +bb.dim.z ) );
-    t[6] = project( bb.p + Vec4( -bb.dim.x, +bb.dim.y, +bb.dim.z ) );
-    t[7] = project( bb.p + Vec4( +bb.dim.x, +bb.dim.y, +bb.dim.z ) );
+    t[0] = project( bb.p + Vec3( -bb.dim.x, -bb.dim.y, -bb.dim.z ) );
+    t[1] = project( bb.p + Vec3( +bb.dim.x, -bb.dim.y, -bb.dim.z ) );
+    t[2] = project( bb.p + Vec3( -bb.dim.x, +bb.dim.y, -bb.dim.z ) );
+    t[3] = project( bb.p + Vec3( +bb.dim.x, +bb.dim.y, -bb.dim.z ) );
+    t[4] = project( bb.p + Vec3( -bb.dim.x, -bb.dim.y, +bb.dim.z ) );
+    t[5] = project( bb.p + Vec3( +bb.dim.x, -bb.dim.y, +bb.dim.z ) );
+    t[6] = project( bb.p + Vec3( -bb.dim.x, +bb.dim.y, +bb.dim.z ) );
+    t[7] = project( bb.p + Vec3( +bb.dim.x, +bb.dim.y, +bb.dim.z ) );
 
     span.minX = t[0].x;
     span.maxX = t[0].x;
@@ -252,7 +252,7 @@ namespace ui
 
   void StrategicArea::onDraw()
   {
-    Vec4 at( float( mouse.x - camera.centerX ) * pixelStep * 100.0f,
+    Vec3 at( float( mouse.x - camera.centerX ) * pixelStep * 100.0f,
              100.0f,
              float( mouse.y - camera.centerY ) * pixelStep * 100.0f );
 
