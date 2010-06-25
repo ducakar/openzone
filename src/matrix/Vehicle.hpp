@@ -45,7 +45,7 @@ namespace oz
       Quat rot;
       int  state, oldState;
       int  actions, oldActions;
-      Vec4 camPos;
+      Vec3 camPos;
 
       int  crew[CREW_MAX];
 

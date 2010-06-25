@@ -16,32 +16,32 @@ namespace oz
   {
     public:
 
-      Vec4  p;
+      Vec3  p;
       float r;
 
       explicit Sphere()
       {}
 
-      explicit Sphere( const Vec4& p_, float r_ ) : p( p_ ), r( r_ )
+      explicit Sphere( const Vec3& p_, float r_ ) : p( p_ ), r( r_ )
       {}
 
-      Sphere operator + ( const Vec4& v ) const
+      Sphere operator + ( const Vec3& v ) const
       {
         return Sphere( p + v, r );
       }
 
-      Sphere operator - ( const Vec4& v ) const
+      Sphere operator - ( const Vec3& v ) const
       {
         return Sphere( p - v, r );
       }
 
-      Sphere& operator += ( const Vec4& v )
+      Sphere& operator += ( const Vec3& v )
       {
         p += v;
         return *this;
       }
 
-      Sphere& operator -= ( const Vec4& v )
+      Sphere& operator -= ( const Vec3& v )
       {
         p -= v;
         return *this;

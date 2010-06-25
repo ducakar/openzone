@@ -285,23 +285,9 @@ namespace oz
                      x.z * v.x + y.z * v.y + z.z * v.z );
       }
 
-      Vec4 operator * ( const Vec4& v ) const
-      {
-        return Vec4( x.x * v.x + y.x * v.y + z.x * v.z,
-                     x.y * v.x + y.y * v.y + z.y * v.z,
-                     x.z * v.x + y.z * v.y + z.z * v.z );
-      }
-
       Vec3 operator / ( const Vec3& v ) const
       {
         return Vec3( x.x * v.x + x.y * v.y + x.z * v.z,
-                     y.x * v.x + y.y * v.y + y.z * v.z,
-                     z.x * v.x + z.y * v.y + z.z * v.z );
-      }
-
-      Vec4 operator / ( const Vec4& v ) const
-      {
-        return Vec4( x.x * v.x + x.y * v.y + x.z * v.z,
                      y.x * v.x + y.y * v.y + y.z * v.z,
                      z.x * v.x + z.y * v.y + z.z * v.z );
       }

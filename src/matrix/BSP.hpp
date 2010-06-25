@@ -24,7 +24,7 @@ namespace oz
 
       struct Plane
       {
-        Vec4  normal;
+        Vec3  normal;
         float distance;
       };
 
@@ -56,7 +56,7 @@ namespace oz
 
       struct Vertex
       {
-        Vec4  p;
+        Vec3  p;
         float texCoord[2];
         float lightmapCoord[2];
       };
@@ -67,7 +67,7 @@ namespace oz
         int  lightmap;
         int  material;
 
-        Vec4 normal;
+        Vec3 normal;
 
         int  firstVertex;
         int  nVertices;

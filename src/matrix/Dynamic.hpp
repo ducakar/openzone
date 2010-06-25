@@ -26,18 +26,18 @@ namespace oz
       int   parent;    // index of container object (if object isn't positioned in the world,
                        // it has to be contained in another object, otherwise it will be removed)
 
-      Vec4  velocity;
-      Vec4  momentum;  // desired velocity
+      Vec3  velocity;
+      Vec3  momentum;  // desired velocity
 
       float mass;
       float lift;
 
       // if on ground, used as floor normal, it is not set if on another object
-      Vec4  floor;
+      Vec3  floor;
       int   lower;      // index of the lower object
       float depth;      // how deep under water the object's lower bound is
 
-      explicit Dynamic() : parent( -1 ), velocity( Vec4::zero() ), momentum( Vec4::zero() ),
+      explicit Dynamic() : parent( -1 ), velocity( Vec3::zero() ), momentum( Vec3::zero() ),
           lower( -1 ), depth( 0.0f )
       {}
 

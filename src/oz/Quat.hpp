@@ -15,23 +15,22 @@ namespace oz
   class Mat33;
   class Mat44;
 
-  class Quat : public Vec4
+  class Quat : public Vec3
   {
     public:
+
+      float w;
 
       explicit Quat()
       {}
 
-      explicit Quat( float x_, float y_, float z_, float w_ ) : Vec4( x_, y_, z_, w_ )
+      explicit Quat( float x_, float y_, float z_, float w_ ) : Vec3( x_, y_, z_ ), w( w_ )
       {}
 
-      explicit Quat( const float* q ) : Vec4( q[0], q[1], q[2], q[3] )
+      explicit Quat( const float* q ) : Vec3( q[0], q[1], q[2] ), w( q[3] )
       {}
 
-      explicit Quat( const Vec3& v ) : Vec4( v.x, v.y, v.z, 0.0f )
-      {}
-
-      explicit Quat( const Vec4& v ) : Vec4( v )
+      explicit Quat( const Vec3& v ) : Vec3( v ), w( 0.0f )
       {}
 
       Quat& operator = ( const Vec3& v )
@@ -40,15 +39,6 @@ namespace oz
         y = v.y;
         z = v.z;
         w = 0.0f;
-        return *this;
-      }
-
-      Quat& operator = ( const Vec4& v )
-      {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-        w = v.w;
         return *this;
       }
 
@@ -303,15 +293,6 @@ namespace oz
         return Quat( qv.x, qv.y, qv.z, c );
       }
 
-      // make quaternion for rotation around given axis
-      static Quat rotAxis( const Vec4& axis, float theta )
-      {
-        float s, c;
-        Math::sincos( theta * 0.5f, &s, &c );
-        Vec4 qv = s * axis;
-        return Quat( qv.x, qv.y, qv.z, c );
-      }
-
       // make quaternion for rotation around x axis
       static Quat rotX( float theta )
       {
@@ -377,27 +358,6 @@ namespace oz
                      ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
       }
 
-      Vec4 rotate( const Vec4& v ) const
-      {
-        float a11 = x*x;
-        float a22 = y*y;
-        float a33 = z*z;
-        float a44 = w*w;
-
-        float a12 =  2.0f * x*y;
-        float a13 =  2.0f * x*z;
-        float a14 =  2.0f * x*w;
-        float a23 =  2.0f * y*z;
-        float a24 =  2.0f * y*w;
-        float a34 =  2.0f * z*w;
-
-        float a4433 = a44 - a33;
-
-        return Vec4( ( a4433 - a22 + a11 ) * v.x + ( a12 - a34 ) * v.y + ( a24 + a13 ) * v.z,
-                     ( a34 + a12 ) * v.x + ( a4433 + a22 - a11 ) * v.y + ( a23 - a14 ) * v.z,
-                     ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
-      }
-
       Vec3 rotateInv( const Vec3& v ) const
       {
         float a11 = x*x;
@@ -415,27 +375,6 @@ namespace oz
         float a4433 = a44 - a33;
 
         return Vec3( ( a4433 - a22 + a11 ) * v.x + ( a12 - a34 ) * v.y + ( a24 + a13 ) * v.z,
-                     ( a34 + a12 ) * v.x + ( a4433 + a22 - a11 ) * v.y + ( a23 - a14 ) * v.z,
-                     ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
-      }
-
-      Vec4 rotateInv( const Vec4& v ) const
-      {
-        float a11 = x*x;
-        float a22 = y*y;
-        float a33 = z*z;
-        float a44 = w*w;
-
-        float a12 =  2.0f * x*y;
-        float a13 =  2.0f * x*z;
-        float a14 = -2.0f * x*w;
-        float a23 =  2.0f * y*z;
-        float a24 = -2.0f * y*w;
-        float a34 = -2.0f * z*w;
-
-        float a4433 = a44 - a33;
-
-        return Vec4( ( a4433 - a22 + a11 ) * v.x + ( a12 - a34 ) * v.y + ( a24 + a13 ) * v.z,
                      ( a34 + a12 ) * v.x + ( a4433 + a22 - a11 ) * v.y + ( a23 - a14 ) * v.z,
                      ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
       }

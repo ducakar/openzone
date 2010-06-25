@@ -111,7 +111,7 @@ namespace client
 
     nirvana::nirvana.start();
 
-    camera.warp( Vec4( 62, -29, 40 ) );
+    camera.warp( Vec3( 62, -29, 40 ) );
 
     log.unindent();
     log.println( "}" );

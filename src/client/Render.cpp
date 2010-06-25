@@ -207,7 +207,6 @@ namespace client
         waterStructures << str;
       }
     }
-    structures.clear();
 
     BSP::endRender();
 
@@ -254,7 +253,6 @@ namespace client
 
       glPopMatrix();
     }
-    particles.clear();
 
     assert( glGetError() == GL_NO_ERROR );
 
@@ -296,7 +294,6 @@ namespace client
 
       bsps[str->bsp]->fullDrawWater( str );
     }
-    waterStructures.clear();
 
     BSP::endRender();
 
@@ -306,18 +303,24 @@ namespace client
     glDisable( GL_LIGHTING );
 
     if( showAim ) {
-      Vec4 move = camera.at * 32.0f;
+      Vec3 move = camera.at * 32.0f;
       collider.translate( camera.p, move, camera.botObj );
       move *= collider.hit.ratio;
 
       glColor3f( 0.0f, 1.0f, 0.0f );
-      shape.drawBox( AABB( camera.p + move, Vec4( 0.05f, 0.05f, 0.05f ) ) );
+      shape.drawBox( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
     }
 
     glEnable( GL_BLEND );
 
     if( drawAABBs ) {
       glEnable( GL_COLOR_MATERIAL );
+
+      glColor4fv( Colors::STRUCTURE_AABB );
+
+      for( int i = 0; i < structures.length(); ++i ) {
+        shape.drawBox( structures[i]->toAABB() );
+      }
 
       for( int i = 0; i < objects.length(); ++i ) {
         glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
@@ -329,8 +332,11 @@ namespace client
       glDisable( GL_COLOR_MATERIAL );
     }
 
+    structures.clear();
+    waterStructures.clear();
     objects.clear();
     delayedObjects.clear();
+    particles.clear();
 
     glDisable( GL_FOG );
 

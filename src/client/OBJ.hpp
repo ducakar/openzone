@@ -42,16 +42,16 @@ namespace client
 
       struct Material
       {
-        Vec4 ambient;
-        Vec4 specular;
+        Vec3 ambient;
+        Vec3 specular;
         Quat diffuse;
         uint texId;
       };
 
       String           name;
 
-      DArray<Vec4>     vertices;
-      DArray<Vec4>     normals;
+      DArray<Vec3>     vertices;
+      DArray<Vec3>     normals;
       DArray<TexCoord> texCoords;
       DArray<Face>     faces;
       DArray<Material> materials;
@@ -60,8 +60,8 @@ namespace client
       static char* readWord( char* pos );
 
       bool readVertexData( char* pos,
-                           Vector<Vec4>* tempVerts,
-                           Vector<Vec4>* tempNormals,
+                           Vector<Vec3>* tempVerts,
+                           Vector<Vec3>* tempNormals,
                            Vector<TexCoord>* tempTexCoords ) const;
       bool readFace( char* pos, Face* face ) const;
       bool loadMaterial( const String& path, HashString<int, 32>* materialIndices );
@@ -74,7 +74,7 @@ namespace client
       ~OBJ();
 
       void scale( float scale );
-      void translate( const Vec4& t );
+      void translate( const Vec3& t );
 
       void draw() const;
       void genList();

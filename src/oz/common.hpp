@@ -88,12 +88,6 @@ namespace oz
 # define ulong ulong
   typedef unsigned long  ulong;
 
-  /**
-   * Type for memory sizes, should match with msize definition
-   */
-# define msize msize
-  typedef OZ_SIZE_T msize;
-
   /*
    * TYPE UTILITIES
    */
@@ -124,16 +118,6 @@ namespace oz
 # define null __null
 #else
 # define null nullptr
-#endif
-
-  /**
-   * \def moffset
-   * offsetof macro
-   */
-#ifdef __GNUG__
-# define moffset( Type, member ) __builtin_offsetof( Type, member )
-#else
-# define moffset( Type, member ) oz::msize( &reinterpret_cast<Type*>( null )->member )
 #endif
 
   /**

@@ -1,7 +1,7 @@
 /*
  *  Pair.hpp
  *
- *  Generic pair template, also provide vector-like functionality.
+ *  Generic pair template
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3.0. See COPYING for details.

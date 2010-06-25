@@ -44,10 +44,10 @@ namespace oz
       Dynamic*  obj;
       Particle* part;
       Bounds    trace;
-      Vec4      move;
+      Vec3      move;
       float     leftRatio;
 
-      Vec4      lastNormals[2];
+      Vec3      lastNormals[2];
 
       void handlePartHit();
       void handlePartMove();

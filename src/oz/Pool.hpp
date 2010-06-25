@@ -21,7 +21,7 @@
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
 public:\
-void* operator new ( oz::msize ) { return pool.alloc(); } \
+void* operator new ( size_t ) { return pool.alloc(); } \
 void operator delete ( void* ptr ) { pool.dealloc( ptr ); }
 
 #else
@@ -39,10 +39,10 @@ void operator delete ( void* ptr ) { pool.dealloc( ptr ); }
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE ) \
 public: \
-void* operator new ( oz::msize, Pool<Type, INDEX, SIZE>& pool ) { return pool.alloc(); } \
+void* operator new ( size_t, Pool<Type, INDEX, SIZE>& pool ) { return pool.alloc(); } \
 void operator delete ( void* ptr, Pool<Type, INDEX, SIZE>& pool ) { pool.dealloc( ptr ); } \
 private: \
-void* operator new ( oz::msize ); \
+void* operator new ( size_t ); \
 void operator delete ( void* );
 
 namespace oz

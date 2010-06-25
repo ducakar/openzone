@@ -84,6 +84,11 @@ namespace oz
         return Math::sqrt( x*x + y*y + z*z );
       }
 
+      float fastL() const
+      {
+         return Math::fastSqrt( x*x + y*y + z*z );
+      }
+
       float sqL() const
       {
         return x*x + y*y + z*z;

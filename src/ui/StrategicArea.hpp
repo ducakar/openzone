@@ -35,7 +35,7 @@ namespace ui
 
     private:
 
-      Pair<int> project( const Vec4& p ) const;
+      Pair<int> project( const Vec3& p ) const;
       void projectBounds( Span& span, const AABB& bb ) const;
 
       void printName( int baseX, int baseY, const char* s, ... );

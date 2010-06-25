@@ -29,7 +29,7 @@ namespace client
       static const float GAMMA_CORR;
 
       static const Structure* str;
-      static Vec4 camPos;
+      static Vec3 camPos;
 
       const oz::BSP* bsp;
 

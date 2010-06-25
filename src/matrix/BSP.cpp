@@ -13,23 +13,8 @@
 
 #include "matrix/Translator.hpp"
 
-#define FOURCC( a, b, c, d ) \
-  ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
-
 namespace oz
 {
-
-  struct Header
-  {
-    int id;
-    int version;
-  };
-
-  struct Lump
-  {
-    int offset;
-    int length;
-  };
 
   //***********************************
   //*       QUAKE 3 BSP FORMAT        *
@@ -39,6 +24,18 @@ namespace oz
   static const int QBSP_LADDER_BIT   = 0x00000008;
   static const int QBSP_WATER_BIT    = 0x00000020;
   static const int QBSP_NONSOLID_BIT = 0x00004000;
+
+  struct QBSPHeader
+  {
+     char id[4];
+     int  version;
+  };
+
+  struct QBSPLump
+  {
+     int offset;
+     int length;
+  };
 
   enum QBSPLumpType
   {
@@ -182,16 +179,18 @@ namespace oz
       return false;
     }
 
-    Header header;
-    fread( &header, sizeof( Header ), 1, f );
+    QBSPHeader header;
+    fread( &header, sizeof( QBSPHeader ), 1, f );
 
-    if( header.id != FOURCC( 'I', 'B', 'S', 'P' ) || header.version != 46 ) {
+    if( header.id[0] != 'I' || header.id[1] != 'B' || header.id[2] != 'S' || header.id[3] != 'P' ||
+        header.version != 46 )
+    {
       log.printEnd( " Wrong format" );
       return false;
     }
 
-    Lump lumps[QBSP_LUMPS_NUM];
-    fread( lumps, sizeof( Lump ), QBSP_LUMPS_NUM, f );
+    QBSPLump lumps[QBSP_LUMPS_NUM];
+    fread( lumps, sizeof( QBSPLump ), QBSP_LUMPS_NUM, f );
 
     nTextures = lumps[QBSP_LUMP_TEXTURES].length / sizeof( QBSPTexture );
     textures = new int[nTextures];
