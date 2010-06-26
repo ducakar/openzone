@@ -4,7 +4,7 @@
  *  BSP level rendering class
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -13,7 +13,7 @@
 
 #include "client/Context.hpp"
 #include "client/Frustum.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 #include "client/Water.hpp"
 #include "client/Render.hpp"
 
@@ -35,7 +35,6 @@ namespace client
     Bounds rotatedBounds;
 
     switch( rotation ) {
-      default:
       case Structure::R0: {
         return bounds;
       }
@@ -50,6 +49,10 @@ namespace client
       case Structure::R270: {
         return Bounds( Vec3( bounds.mins.y, -bounds.maxs.x, bounds.mins.z ),
                        Vec3( bounds.maxs.y, -bounds.mins.x, bounds.maxs.z ) );
+      }
+      default: {
+        assert( false );
+        break;
       }
     }
   }
@@ -67,6 +70,8 @@ namespace client
       else {
         nodeIndex = node.front;
       }
+
+      assert( nodeIndex != 0 );
     }
     while( nodeIndex >= 0 );
 
@@ -128,7 +133,7 @@ namespace client
     glVertexPointer( 3, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                      bsp->vertices[face->firstVertex].p );
 
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend1 );
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( oz::BSP::Vertex ),
                        bsp->vertices[face->firstVertex].texCoord );
@@ -158,7 +163,7 @@ namespace client
                           0.0f,            0.0f,            1.0f, 0.0f,
                           Water::TEX_BIAS, Water::TEX_BIAS, 0.0f, 1.0f ) );
 
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend2 );
     glBindTexture( GL_TEXTURE_2D, textures[face->texture] );
 
     glDrawElements( GL_TRIANGLES, face->nIndices, GL_UNSIGNED_INT, &bsp->indices[face->firstIndex] );
@@ -187,7 +192,7 @@ namespace client
       }
     }
     else {
-      const oz::BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
+      const oz::BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
@@ -219,7 +224,7 @@ namespace client
       }
     }
     else {
-      const oz::BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
+      const oz::BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
@@ -335,14 +340,14 @@ namespace client
     drawnFaces = hiddenFaces;
 
     int leafIndex = getLeaf();
-    checkInWaterBrush( &bsp->leafs[leafIndex] );
+    checkInWaterBrush( &bsp->leaves[leafIndex] );
 
     if( bsp->visual.bitsets != null ) {
-      int     cluster = bsp->leafs[leafIndex].cluster;
+      int     cluster = bsp->leaves[leafIndex].cluster;
       Bitset& bitset  = bsp->visual.bitsets[cluster];
 
-      for( int i = 0; i < bsp->nLeafs; ++i ) {
-        const oz::BSP::Leaf& leaf = bsp->leafs[i];
+      for( int i = 0; i < bsp->nLeaves; ++i ) {
+        const oz::BSP::Leaf& leaf = bsp->leaves[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
@@ -361,8 +366,8 @@ namespace client
       }
     }
     else {
-      for( int i = 0; i < bsp->nLeafs; ++i ) {
-        const oz::BSP::Leaf& leaf = bsp->leafs[i];
+      for( int i = 0; i < bsp->nLeaves; ++i ) {
+        const oz::BSP::Leaf& leaf = bsp->leaves[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
@@ -407,11 +412,11 @@ namespace client
     int leafIndex = getLeaf();
 
     if( bsp->visual.bitsets != null ) {
-      int     cluster = bsp->leafs[leafIndex].cluster;
+      int     cluster = bsp->leaves[leafIndex].cluster;
       Bitset& bitset  = bsp->visual.bitsets[cluster];
 
-      for( int i = 0; i < bsp->nLeafs; ++i ) {
-        const oz::BSP::Leaf& leaf = bsp->leafs[i];
+      for( int i = 0; i < bsp->nLeaves; ++i ) {
+        const oz::BSP::Leaf& leaf = bsp->leaves[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
@@ -430,8 +435,8 @@ namespace client
       }
     }
     else {
-      for( int i = 0; i < bsp->nLeafs; ++i ) {
-        const oz::BSP::Leaf& leaf = bsp->leafs[i];
+      for( int i = 0; i < bsp->nLeaves; ++i ) {
+        const oz::BSP::Leaf& leaf = bsp->leaves[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
@@ -447,7 +452,7 @@ namespace client
         }
       }
     }
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
     glPopMatrix();
   }
 
@@ -474,7 +479,7 @@ namespace client
     glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
 
     int leafIndex = getLeaf();
-    checkInWaterBrush( &bsp->leafs[leafIndex] );
+    checkInWaterBrush( &bsp->leaves[leafIndex] );
 
     for( int i = 0; i < bsp->nFaces; ++i ) {
       const oz::BSP::Face& face = bsp->faces[i];
@@ -514,7 +519,7 @@ namespace client
         drawFaceWater( &face );
       }
     }
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
     glPopMatrix();
   }
 
@@ -526,8 +531,8 @@ namespace client
 
     drawnFaces = hiddenFaces;
 
-    for( int i = 0; i < bsp->nLeafs; ++i ) {
-      const oz::BSP::Leaf& leaf = bsp->leafs[i];
+    for( int i = 0; i < bsp->nLeaves; ++i ) {
+      const oz::BSP::Leaf& leaf = bsp->leaves[i];
 
       for( int j = 0; j < leaf.nFaces; ++j ) {
         int faceIndex = bsp->leafFaces[leaf.firstFace + j];

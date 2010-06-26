@@ -4,7 +4,7 @@
  *  World manipulation interface.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -60,10 +60,10 @@ namespace oz
 
       // isSingle XOR isServer XOR isClient
 
-      // Singleplayer. No need to worry about object creation, deletion, synchronization etc.
+      // Singleplayer. No need to worry about object creation, deletion, synchronisation etc.
       bool isSingle;
       // If server, create notification about every object creation/deletion/put/cut/etc. That can
-      // be later serialized and sent to clients.
+      // be later serialised and sent to clients.
       bool isServer;
       // If client, do not create or delete any objects by yourself. Every creation/deletion must be
       // ordered by server.
@@ -83,7 +83,7 @@ namespace oz
       // create an object, schedule for addition in the world and return predicted world index
       int  addStruct( const char* name, const Vec3& p, Structure::Rotation rot );
       int  addObject( const char* name, const Vec3& p );
-      int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
+      int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
                     float restitution, float mass, float lifeTime );
 
       // schedule for removal from physical world and delete it
@@ -118,7 +118,7 @@ namespace oz
 
       void genParts( int number, const Vec3& p,
                      const Vec3& velocity, float velocitySpread,
-                     const Vec3& color, float colorSpread,
+                     const Vec3& colour, float colourSpread,
                      float restitution, float mass, float lifeTime );
 
       // do deletes and clear lists for actions, additions, removals
@@ -189,10 +189,10 @@ namespace oz
     return index;
   }
 
-  inline int Synapse::addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
+  inline int Synapse::addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
                                float restitution, float mass, float lifeTime )
   {
-    int index = world.addPart( p, velocity, color, restitution, mass, lifeTime );
+    int index = world.addPart( p, velocity, colour, restitution, mass, lifeTime );
     Particle* part = world.parts[index];
 
     world.position( part );

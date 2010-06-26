@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -48,11 +48,11 @@ namespace client
     float millis = float( timer.millis - startMillis );
     float radius = millis * obj->dim.z * 0.006f;
     float alpha  = 1.0f - 0.001f * millis;
-    float color[] = { 1.0f, 1.0f, 1.0f, alpha*alpha };
+    float colour[] = { 1.0f, 1.0f, 1.0f, alpha*alpha };
 
     glEnable( GL_BLEND );
     glDisable( GL_CULL_FACE );
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colour );
     glBindTexture( GL_TEXTURE_2D, texId );
     gluSphere( quadric, radius, 32, 32 );
     glEnable( GL_CULL_FACE );

@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -51,7 +51,7 @@ namespace oz
       log.println( "Cannot open directory 'textures/oz'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialization failure" );
+      throw Exception( "Translator initialisation failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -69,7 +69,7 @@ namespace oz
       String baseName = name.substring( 0, dot );
       if( textureIndices.contains( baseName ) ) {
         log.println( "duplicated texture: %s", baseName.cstr() );
-        throw Exception( "Translator initialization failure" );
+        throw Exception( "Translator initialisation failure" );
       }
       textureIndices.add( baseName, textures.length() );
       textures << Resource( baseName, fileName );
@@ -90,7 +90,7 @@ namespace oz
       log.println( "Cannot open directory 'snd'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialization failure" );
+      throw Exception( "Translator initialisation failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -133,7 +133,7 @@ namespace oz
       log.println( "Cannot open directory 'maps'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialization failure" );
+      throw Exception( "Translator initialisation failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -151,7 +151,7 @@ namespace oz
       String baseName = name.substring( 0, dot );
       if( bspIndices.contains( baseName ) ) {
         log.println( "duplicated bsp: %s", baseName.cstr() );
-        throw Exception( "Translator initialization failure" );
+        throw Exception( "Translator initialisation failure" );
       }
       bspIndices.add( baseName, bsps.length() );
       bsps << Resource( baseName, "" );
@@ -172,7 +172,7 @@ namespace oz
       log.println( "Cannot open directory 'class'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialization failure" );
+      throw Exception( "Translator initialisation failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -229,7 +229,7 @@ namespace oz
       log.println( "Cannot open directory 'lua/matrix'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialization failure" );
+      throw Exception( "Translator initialisation failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
@@ -263,7 +263,7 @@ namespace oz
       log.println( "Cannot open directory 'lua/nirvana'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialization failure" );
+      throw Exception( "Translator initialisation failure" );
     }
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;

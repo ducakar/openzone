@@ -4,7 +4,7 @@
  *  Data structure for Quake3 BSP level
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -115,7 +115,7 @@ namespace oz
     float texCoord[2];
     float lightmapCoord[2];
     Vec3  normal;
-    ubyte color[4];
+    ubyte colour[4];
   };
 
   struct QBSPFace
@@ -142,15 +142,7 @@ namespace oz
     int  size[2];
   };
 
-  BSP::BSP() : textures( null ), planes( null ), nodes( null ), leafs( null ), leafFaces( null ),
-    brushes( null ), brushSides( null ), vertices( null ), indices( null ), faces( null ),
-    lightmaps( null )
-  {}
-
-  BSP::~BSP()
-  {
-    free();
-  }
+#ifndef OZ_PREBUILT
 
   inline bool BSP::includes( const BSP::Brush& brush ) const
   {
@@ -169,44 +161,47 @@ namespace oz
     return true;
   }
 
-  bool BSP::loadQBSP( const char* path, float scale, float maxDim_ )
+  bool BSP::loadQBSP( const char* fileName, float scale, float maxDim_ )
   {
     maxDim = maxDim_;
 
-    FILE* f = fopen( path, "rb" );
-    if( f == null ) {
-      log.printEnd( " Not found" );
+    FILE* file = fopen( fileName, "rb" );
+    if( file == null ) {
+      log.println( "File not found" );
       return false;
     }
 
     QBSPHeader header;
-    fread( &header, sizeof( QBSPHeader ), 1, f );
+    fread( &header, sizeof( QBSPHeader ), 1, file );
 
     if( header.id[0] != 'I' || header.id[1] != 'B' || header.id[2] != 'S' || header.id[3] != 'P' ||
         header.version != 46 )
     {
-      log.printEnd( " Wrong format" );
+      log.println( "Wrong format" );
       return false;
     }
 
     QBSPLump lumps[QBSP_LUMPS_NUM];
-    fread( lumps, sizeof( QBSPLump ), QBSP_LUMPS_NUM, f );
+    fread( lumps, sizeof( QBSPLump ), QBSP_LUMPS_NUM, file );
 
     nTextures = lumps[QBSP_LUMP_TEXTURES].length / sizeof( QBSPTexture );
     textures = new int[nTextures];
     int* texFlags = new int[nTextures];
     int* texTypes = new int[nTextures];
-    fseek( f, lumps[QBSP_LUMP_TEXTURES].offset, SEEK_SET );
+    fseek( file, lumps[QBSP_LUMP_TEXTURES].offset, SEEK_SET );
+
+    log.println( "Loading texture descriptions {" );
+    log.indent();
 
     for( int i = 0; i < nTextures; ++i ) {
       QBSPTexture texture;
 
-      fread( &texture, sizeof( QBSPTexture ), 1, f );
+      fread( &texture, sizeof( QBSPTexture ), 1, file );
       String name = texture.name;
       texFlags[i] = texture.flags;
       texTypes[i] = texture.type;
 
-//      log.println( "%s", name.cstr() );
+      log.println( "%s", name.cstr() );
 
       if( name.length() <= 12 || name.equals( "textures/NULL" ) ||
           ( texture.flags & QBSP_LADDER_BIT ) )
@@ -216,19 +211,22 @@ namespace oz
       else {
         name = name.substring( 12 );
         textures[i] = translator.textureIndex( name );
-//        log.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
+        log.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
       }
     }
 
-    int nPlanes = lumps[QBSP_LUMP_PLANES].length / sizeof( QBSPPlane );
+    log.unindent();
+    log.println( "}" );
+
+    nPlanes = lumps[QBSP_LUMP_PLANES].length / sizeof( QBSPPlane );
     planes = new BSP::Plane[nPlanes];
-    fseek( f, lumps[QBSP_LUMP_PLANES].offset, SEEK_SET );
+    fseek( file, lumps[QBSP_LUMP_PLANES].offset, SEEK_SET );
 
     // rescale plane data
     for( int i = 0; i < nPlanes; ++i ) {
       QBSPPlane plane;
 
-      fread( &plane, sizeof( QBSPPlane ), 1, f );
+      fread( &plane, sizeof( QBSPPlane ), 1, file );
 
       planes[i].normal   = plane.normal;
       planes[i].distance = plane.distance * scale;
@@ -246,14 +244,14 @@ namespace oz
       }
     }
 
-    int nNodes = lumps[QBSP_LUMP_NODES].length / sizeof( QBSPNode );
+    nNodes = lumps[QBSP_LUMP_NODES].length / sizeof( QBSPNode );
     nodes = new BSP::Node[nNodes];
-    fseek( f, lumps[QBSP_LUMP_NODES].offset, SEEK_SET );
+    fseek( file, lumps[QBSP_LUMP_NODES].offset, SEEK_SET );
 
     for( int i = 0; i < nNodes; ++i ) {
       QBSPNode node;
 
-      fread( &node, sizeof( QBSPNode ), 1, f );
+      fread( &node, sizeof( QBSPNode ), 1, file );
 
       nodes[i].plane = node.plane;
       nodes[i].front = node.front;
@@ -268,76 +266,73 @@ namespace oz
     maxs.y = -Math::inf();
     maxs.z = -Math::inf();
 
-    nLeafs = lumps[QBSP_LUMP_LEAFS].length / sizeof( QBSPLeaf );
-    leafs = new BSP::Leaf[nLeafs];
-    fseek( f, lumps[QBSP_LUMP_LEAFS].offset, SEEK_SET );
+    nLeaves = lumps[QBSP_LUMP_LEAFS].length / sizeof( QBSPLeaf );
+    leaves = new BSP::Leaf[nLeaves];
+    fseek( file, lumps[QBSP_LUMP_LEAFS].offset, SEEK_SET );
 
-    for( int i = 0; i < nLeafs; ++i ) {
+    for( int i = 0; i < nLeaves; ++i ) {
       QBSPLeaf leaf;
 
-      fread( &leaf, sizeof( QBSPLeaf ), 1, f );
+      fread( &leaf, sizeof( QBSPLeaf ), 1, file );
 
-      leafs[i].mins.x = float( leaf.bb[0][0] ) * scale;
-      leafs[i].mins.y = float( leaf.bb[0][1] ) * scale;
-      leafs[i].mins.z = float( leaf.bb[0][2] ) * scale;
+      leaves[i].mins.x = float( leaf.bb[0][0] ) * scale;
+      leaves[i].mins.y = float( leaf.bb[0][1] ) * scale;
+      leaves[i].mins.z = float( leaf.bb[0][2] ) * scale;
 
-      leafs[i].maxs.x = float( leaf.bb[1][0] ) * scale;
-      leafs[i].maxs.y = float( leaf.bb[1][1] ) * scale;
-      leafs[i].maxs.z = float( leaf.bb[1][2] ) * scale;
+      leaves[i].maxs.x = float( leaf.bb[1][0] ) * scale;
+      leaves[i].maxs.y = float( leaf.bb[1][1] ) * scale;
+      leaves[i].maxs.z = float( leaf.bb[1][2] ) * scale;
 
-      leafs[i].cluster    = leaf.cluster;
-      leafs[i].firstFace  = leaf.firstFace;
-      leafs[i].nFaces     = leaf.nFaces;
-      leafs[i].firstBrush = leaf.firstBrush;
-      leafs[i].nBrushes   = leaf.nBrushes;
+      leaves[i].cluster    = leaf.cluster;
+      leaves[i].firstFace  = leaf.firstFace;
+      leaves[i].nFaces     = leaf.nFaces;
+      leaves[i].firstBrush = leaf.firstBrush;
+      leaves[i].nBrushes   = leaf.nBrushes;
 
-      if( leafs[i].mins.x < -maxDim || leafs[i].maxs.x > maxDim ||
-          leafs[i].mins.y < -maxDim || leafs[i].maxs.y > maxDim ||
-          leafs[i].mins.z < -maxDim || leafs[i].maxs.z > maxDim )
+      if( -maxDim <= leaves[i].mins.x && leaves[i].maxs.x <= maxDim &&
+          -maxDim <= leaves[i].mins.y && leaves[i].maxs.y <= maxDim &&
+          -maxDim <= leaves[i].mins.z && leaves[i].maxs.z <= maxDim )
       {
-//        leafs[i].nBrushes = 0;
-      }
-      else {
-        mins.x = Math::min( mins.x, leafs[i].mins.x );
-        mins.y = Math::min( mins.y, leafs[i].mins.y );
-        mins.z = Math::min( mins.z, leafs[i].mins.z );
+        mins.x = Math::min( mins.x, leaves[i].mins.x );
+        mins.y = Math::min( mins.y, leaves[i].mins.y );
+        mins.z = Math::min( mins.z, leaves[i].mins.z );
 
-        maxs.x = Math::max( maxs.x, leafs[i].maxs.x );
-        maxs.y = Math::max( maxs.y, leafs[i].maxs.y );
-        maxs.z = Math::max( maxs.z, leafs[i].maxs.z );
+        maxs.x = Math::max( maxs.x, leaves[i].maxs.x );
+        maxs.y = Math::max( maxs.y, leaves[i].maxs.y );
+        maxs.z = Math::max( maxs.z, leaves[i].maxs.z );
       }
     }
 
-    int nLeafFaces = lumps[QBSP_LUMP_LEAFFACES].length / sizeof( int );
+    nLeafFaces = lumps[QBSP_LUMP_LEAFFACES].length / sizeof( int );
     leafFaces = new int[nLeafFaces];
-    fseek( f, lumps[QBSP_LUMP_LEAFFACES].offset, SEEK_SET );
-    fread( leafFaces, sizeof( int ), nLeafFaces, f );
+    fseek( file, lumps[QBSP_LUMP_LEAFFACES].offset, SEEK_SET );
+    fread( leafFaces, sizeof( int ), nLeafFaces, file );
 
-    int nLeafBrushes = lumps[QBSP_LUMP_LEAFBRUSHES].length / sizeof( int );
+    nLeafBrushes = lumps[QBSP_LUMP_LEAFBRUSHES].length / sizeof( int );
     leafBrushes = new int[nLeafBrushes];
-    fseek( f, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
-    fread( leafBrushes, sizeof( int ), nLeafBrushes, f );
+    fseek( file, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
+    fread( leafBrushes, sizeof( int ), nLeafBrushes, file );
 
-    int nBrushSides = lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide );
+    nBrushSides = lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide );
     brushSides = new int[nBrushSides];
-    fseek( f, lumps[QBSP_LUMP_BRUSHSIDES].offset, SEEK_SET );
+    fseek( file, lumps[QBSP_LUMP_BRUSHSIDES].offset, SEEK_SET );
 
     for( int i = 0; i < nBrushSides; ++i ) {
       QBSPBrushSide brushSide;
 
-      fread( &brushSide, sizeof( QBSPBrushSide ), 1, f );
+      fread( &brushSide, sizeof( QBSPBrushSide ), 1, file );
 
       brushSides[i] = brushSide.plane;
     }
 
-    int nBrushes = lumps[QBSP_LUMP_BRUSHES].length / sizeof( QBSPBrush );
+    nBrushes = lumps[QBSP_LUMP_BRUSHES].length / sizeof( QBSPBrush );
     brushes = new BSP::Brush[nBrushes];
-    fseek( f, lumps[QBSP_LUMP_BRUSHES].offset, SEEK_SET );
+    fseek( file, lumps[QBSP_LUMP_BRUSHES].offset, SEEK_SET );
 
     for( int i = 0; i < nBrushes; ++i ) {
       QBSPBrush brush;
 
-      fread( &brush, sizeof( QBSPBrush ), 1, f );
+      fread( &brush, sizeof( QBSPBrush ), 1, file );
 
       brushes[i].firstSide = brush.firstSide;
       brushes[i].nSides    = brush.nSides;
@@ -360,18 +355,18 @@ namespace oz
       }
 
       if( !includes( brushes[i] ) ) {
-        brushes[i].nSides = 0;
+        brushes[i].nSides = ~brush.nSides;
       }
     }
 
-    int nVertices = lumps[QBSP_LUMP_VERTICES].length / sizeof( QBSPVertex );
+    nVertices = lumps[QBSP_LUMP_VERTICES].length / sizeof( QBSPVertex );
     vertices = new BSP::Vertex[nVertices];
-    fseek( f, lumps[QBSP_LUMP_VERTICES].offset, SEEK_SET );
+    fseek( file, lumps[QBSP_LUMP_VERTICES].offset, SEEK_SET );
 
     for( int i = 0; i < nVertices; ++i ) {
       QBSPVertex vertex;
 
-      fread( &vertex, sizeof( QBSPVertex ), 1, f );
+      fread( &vertex, sizeof( QBSPVertex ), 1, file );
 
       vertices[i].p                = vertex.p * scale;
       vertices[i].texCoord[0]      = vertex.texCoord[0];
@@ -380,19 +375,19 @@ namespace oz
       vertices[i].lightmapCoord[1] = vertex.lightmapCoord[1];
     }
 
-    int nIndices = lumps[QBSP_LUMP_INDICES].length / sizeof( int );
+    nIndices = lumps[QBSP_LUMP_INDICES].length / sizeof( int );
     indices = new int[nIndices];
-    fseek( f, lumps[QBSP_LUMP_INDICES].offset, SEEK_SET );
-    fread( indices, sizeof( int ), nIndices, f );
+    fseek( file, lumps[QBSP_LUMP_INDICES].offset, SEEK_SET );
+    fread( indices, sizeof( int ), nIndices, file );
 
     nFaces = lumps[QBSP_LUMP_FACES].length / sizeof( QBSPFace );
     faces = new BSP::Face[nFaces];
-    fseek( f, lumps[QBSP_LUMP_FACES].offset, SEEK_SET );
+    fseek( file, lumps[QBSP_LUMP_FACES].offset, SEEK_SET );
 
     for( int i = 0; i < nFaces; ++i ) {
       QBSPFace face;
 
-      fread( &face, sizeof( QBSPFace ), 1, f );
+      fread( &face, sizeof( QBSPFace ), 1, file );
 
       faces[i].texture     = face.texture;
       faces[i].lightmap    = face.lightmap;
@@ -408,12 +403,12 @@ namespace oz
 
     if( nLightmaps != 0 ) {
       lightmaps = new BSP::Lightmap[nLightmaps];
-      fseek( f, lumps[QBSP_LUMP_LIGHTMAPS].offset, SEEK_SET );
-      fread( lightmaps, sizeof( BSP::Lightmap ), nLightmaps, f );
+      fseek( file, lumps[QBSP_LUMP_LIGHTMAPS].offset, SEEK_SET );
+      fread( lightmaps, sizeof( BSP::Lightmap ), nLightmaps, file );
 
-      fseek( f, lumps[QBSP_LUMP_VISUALDATA].offset, SEEK_SET );
-      fread( &visual.nClusters, sizeof( int ), 1, f );
-      fread( &visual.clusterLength, sizeof( int ), 1, f );
+      fseek( file, lumps[QBSP_LUMP_VISUALDATA].offset, SEEK_SET );
+      fread( &visual.nClusters, sizeof( int ), 1, file );
+      fread( &visual.clusterLength, sizeof( int ), 1, file );
     }
     else {
       lightmaps = null;
@@ -423,7 +418,7 @@ namespace oz
       visual.bitsets = new Bitset[visual.nClusters];
       for( int i = 0; i < visual.nClusters; ++i ) {
         visual.bitsets[i].setSize( visual.clusterLength * 8 );
-        fread( visual.bitsets[i], sizeof( char ), visual.clusterLength, f );
+        fread( visual.bitsets[i], sizeof( char ), visual.clusterLength, file );
       }
     }
     else {
@@ -433,36 +428,648 @@ namespace oz
     delete[] texFlags;
     delete[] texTypes;
 
-    fclose( f );
+    fclose( file );
+
+    return true;
+  }
+
+  void BSP::optimise()
+  {
+    // optimise
+    log.println( "Optimising BSP {" );
+    log.indent();
+
+    // remove unnecessary brushes
+    for( int i = 0; i < nBrushes; ) {
+      if( brushes[i].nSides > 0 ) {
+        ++i;
+        continue;
+      }
+
+      aRemove( brushes, i, nBrushes );
+      --nBrushes;
+      log.print( "brush removed " );
+
+      // adjust brush references
+      for( int j = 0; j < nLeafBrushes; ) {
+        if( leafBrushes[j] < i ) {
+          ++j;
+        }
+        else if( leafBrushes[j] > i ) {
+          leafBrushes[j]--;
+          ++j;
+        }
+        else {
+          aRemove( leafBrushes, j, nLeafBrushes );
+          --nLeafBrushes;
+          log.printRaw( "." );
+
+          for( int k = 0; k < nLeaves; ++k ) {
+            if( j < leaves[k].firstBrush ) {
+              --leaves[k].firstBrush;
+            }
+            else if( j < leaves[k].firstBrush + leaves[k].nBrushes ) {
+              assert( leaves[k].nBrushes > 0 );
+
+              --leaves[k].nBrushes;
+            }
+          }
+        }
+      }
+      log.printEnd();
+    }
+
+    brushes = aRealloc( brushes, nBrushes, nBrushes );
+    brushSides = aRealloc( brushSides, nBrushSides, nBrushSides );
+
+    // remove unnecessary leaves
+    log.print( "removing leaves " );
+
+    for( int i = 0; i < nLeaves; ) {
+      if( leaves[i].nBrushes != 0 || leaves[i].nFaces != 0 ) {
+        ++i;
+        continue;
+      }
+
+      aRemove( leaves, i, nLeaves );
+      --nLeaves;
+      log.printRaw( "." );
+
+      // update references and tag unnecessary nodes, will be removed in the next pass (index 0 is
+      // invalid as the root cannot be referenced)
+      for( int j = 0; j < nNodes; ++j ) {
+        if( nodes[j].front == ~i ) {
+          nodes[j].front = 0;
+        }
+        else if( nodes[j].front < ~i ) {
+          ++nodes[j].front;
+        }
+
+        if( nodes[j].back == ~i ) {
+          nodes[j].back = 0;
+        }
+        else if( nodes[j].back < ~i ) {
+          ++nodes[j].back;
+        }
+      }
+    }
+
+    leaves = aRealloc( leaves, nLeaves, nLeaves );
+
+    log.printEnd( " OK" );
+
+    // collapse unnecessary nodes
+    log.print( "collapsing nodes " );
+
+    bool hasCollapsed;
+    do {
+      hasCollapsed = false;
+
+      for( int i = 0; i < nNodes; ++i ) {
+        if( nodes[i].front == 0 ) {
+          hasCollapsed = true;
+
+          // find parent and bind the remaining leaf to the parent
+          int j;
+          for( j = 0; j < nNodes; ++j ) {
+            if( nodes[j].front == i ) {
+              nodes[j].front = nodes[i].back;
+              break;
+            }
+            else if( nodes[j].back == i ) {
+              nodes[j].back = nodes[i].back;
+              break;
+            }
+          }
+          assert( j < nNodes );
+
+          log.printRaw( "." );
+        }
+
+        if( nodes[i].back == 0 ) {
+          hasCollapsed = true;
+
+          // find parent and bind the remaining leaf to the parent
+          int j;
+          for( j = 0; j < nNodes; ++j ) {
+            if( nodes[j].front == i ) {
+              nodes[j].front = nodes[i].front;
+              break;
+            }
+            else if( nodes[j].back == i ) {
+              nodes[j].back = nodes[i].front;
+              break;
+            }
+          }
+          assert( j < nNodes );
+
+          log.printRaw( "." );
+        }
+
+        // remove node and adjust references
+        if( nodes[i].front == 0 || nodes[i].back == 0 ) {
+          aRemove( nodes, i, nNodes );
+          --nNodes;
+
+          for( int j = 0; j < nNodes; ++j ) {
+            assert( nodes[j].front != i && nodes[j].back != i );
+
+            if( nodes[j].front > i && nodes[j].front != 0 ) {
+              --nodes[j].front;
+            }
+            if( nodes[j].back > i && nodes[j].back != 0 ) {
+              --nodes[j].back;
+            }
+          }
+        }
+      }
+    }
+    while( hasCollapsed );
+
+    nodes = aRealloc( nodes, nNodes, nNodes );
+
+    log.printEnd( " OK" );
+
+    // integrity check
+    Bitset usedNodes( nNodes );
+    Bitset usedLeaves( nLeaves );
+
+    usedNodes.clearAll();
+    usedLeaves.clearAll();
+
+    // integrity check
+    for( int i = 0; i < nNodes; ++i ) {
+      if( nodes[i].front < 0 ) {
+        usedLeaves.set( ~nodes[i].front );
+      }
+      else if( nodes[i].front != 0 ) {
+        usedNodes.set( nodes[i].front );
+      }
+
+      if( nodes[i].back < 0 ) {
+        usedLeaves.set( ~nodes[i].back );
+      }
+      else if( nodes[i].back != 0 ) {
+        usedNodes.set( nodes[i].back );
+      }
+    }
+
+    for( int i = 0; i < nLeaves; ++i ) {
+      assert( usedLeaves.get( i ) );
+    }
+    for( int i = 1; i < nNodes; ++i ) {
+      assert( usedNodes.get( i ) );
+    }
+
+    // remove brush sides and planes
+    log.print( "removing brush sides " );
+
+    bool* usedBrushSides = new bool[nBrushSides];
+    bool* usedPlanes = new bool[nPlanes];
+
+    aSet( usedBrushSides, false, nBrushSides );
+    aSet( usedPlanes, false, nPlanes );
+
+    for( int i = 0; i < nBrushes; ++i ) {
+      for( int j = 0; j < brushes[i].nSides; ++j ) {
+        usedBrushSides[ brushes[i].firstSide + j ] = true;
+      }
+    }
+
+    for( int i = 0; i < nBrushSides; ) {
+      if( usedBrushSides[i] ) {
+        ++i;
+        continue;
+      }
+
+      aRemove( brushSides, i, nBrushSides );
+      aRemove( usedBrushSides, i, nBrushSides );
+      --nBrushSides;
+      log.printRaw( "." );
+
+      for( int j = 0; j < nBrushes; ++j ) {
+        if( i < brushes[j].firstSide ) {
+          --brushes[j].firstSide;
+        }
+        else if( i < brushes[j].firstSide + brushes[j].nSides ) {
+          // removed brush side shouldn't be referenced by any brush
+          assert( false );
+        }
+      }
+    }
+
+    log.printEnd( " OK" );
+    log.print( "removing planes " );
+
+    for( int i = 0; i < nNodes; ++i ) {
+      usedPlanes[ nodes[i].plane ] = true;
+    }
+    for( int i = 0; i < nBrushSides; ++i ) {
+      usedPlanes[ brushSides[i] ] = true;
+    }
+
+    for( int i = 0; i < nPlanes; ) {
+      if( usedPlanes[i] ) {
+        ++i;
+        continue;
+      }
+
+      aRemove( planes, i, nPlanes );
+      aRemove( usedPlanes, i, nPlanes );
+      --nPlanes;
+      log.printRaw( "." );
+
+      // adjust plane references
+      for( int j = 0; j < nNodes; ++j ) {
+        assert( nodes[j].plane != i );
+
+        if( nodes[j].plane > i ) {
+          --nodes[j].plane;
+        }
+      }
+      for( int j = 0; j < nBrushSides; ++j ) {
+        assert( brushSides[j] != i );
+
+        if( brushSides[j] > i ) {
+          --brushSides[j];
+        }
+      }
+    }
+
+    delete[] usedBrushSides;
+    delete[] usedPlanes;
+
+    brushSides = aRealloc( brushSides, nBrushSides, nBrushSides );
+    planes = aRealloc( planes, nPlanes, nPlanes );
+
+    log.printEnd( " OK" );
+
+    // optimise bounds
+    log.print( "Optimising bounds: " );
+
+    mins = Vec3( +Math::inf(), +Math::inf(), +Math::inf() );
+    maxs = Vec3( -Math::inf(), -Math::inf(), -Math::inf() );
+
+    for( int i = 0; i < nBrushSides; ++i ) {
+      Plane& plane = planes[ brushSides[i] ];
+
+      if( plane.normal.x == -1.0f ) {
+        mins.x = min( -plane.distance, mins.x );
+      }
+      else if( plane.normal.x == 1.0f ) {
+        maxs.x = max( +plane.distance, maxs.x );
+      }
+      else if( plane.normal.y == -1.0f ) {
+        mins.y = min( -plane.distance, mins.y );
+      }
+      else if( plane.normal.y == 1.0f ) {
+        maxs.y = max( +plane.distance, maxs.y );
+      }
+      else if( plane.normal.z == -1.0f ) {
+        mins.z = min( -plane.distance, mins.z );
+      }
+      else if( plane.normal.z == 1.0f ) {
+        maxs.z = max( +plane.distance, maxs.z );
+      }
+    }
+
+    log.printEnd( "(%g %g %g) (%g %g %g)", mins.x, mins.y, mins.z, maxs.x, maxs.y, maxs.z );
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  bool BSP::save( const char* fileName )
+  {
+    log.print( "Dumping BSP structure to '%s' ...", fileName );
+
+    int size = 0;
+
+    size += 1            * sizeof( Bounds );
+    size += 2            * sizeof( float );
+    size += 12           * sizeof( int );
+    size += nTextures    * sizeof( int );
+    size += nPlanes      * sizeof( Plane );
+    size += nNodes       * sizeof( Node );
+    size += nLeaves      * sizeof( Leaf );
+    size += nLeafFaces   * sizeof( int );
+    size += nLeafBrushes * sizeof( int );
+    size += nBrushes     * sizeof( Brush );
+    size += nBrushSides  * sizeof( int );
+    size += nVertices    * sizeof( Vertex );
+    size += nIndices     * sizeof( int );
+    size += nFaces       * sizeof( Face );
+    size += nLightmaps   * sizeof( Lightmap );
+
+    Buffer buffer( size );
+    OutputStream os = buffer.outputStream();
+
+    os.writeVec3( mins );
+    os.writeVec3( maxs );
+    os.writeFloat( maxDim );
+    os.writeFloat( life );
+    os.writeInt( nTextures );
+    os.writeInt( nPlanes );
+    os.writeInt( nNodes );
+    os.writeInt( nLeaves );
+    os.writeInt( nLeafFaces );
+    os.writeInt( nLeafBrushes );
+    os.writeInt( nBrushes );
+    os.writeInt( nBrushSides );
+    os.writeInt( nVertices );
+    os.writeInt( nIndices );
+    os.writeInt( nFaces );
+    os.writeInt( nLightmaps );
+
+    for( int i = 0; i < nTextures; ++i ) {
+      os.writeInt( textures[i] );
+    }
+
+    for( int i = 0; i < nPlanes; ++i ) {
+      os.writeVec3( planes[i].normal );
+      os.writeFloat( planes[i].distance );
+    }
+
+    for( int i = 0; i < nNodes; ++i ) {
+      os.writeInt( nodes[i].plane );
+      os.writeInt( nodes[i].front );
+      os.writeInt( nodes[i].back );
+    }
+
+    for( int i = 0; i < nLeaves; ++i ) {
+      os.writeVec3( leaves[i].mins );
+      os.writeVec3( leaves[i].maxs );
+      os.writeInt( leaves[i].cluster );
+      os.writeInt( leaves[i].firstFace );
+      os.writeInt( leaves[i].nFaces );
+      os.writeInt( leaves[i].firstBrush );
+      os.writeInt( leaves[i].nBrushes );
+    }
+
+    for( int i = 0; i < nLeafFaces; ++i ) {
+      os.writeInt( leafFaces[i] );
+    }
+
+    for( int i = 0; i < nLeafBrushes; ++i ) {
+      os.writeInt( leafBrushes[i] );
+    }
+
+    for( int i = 0; i < nBrushes; ++i ) {
+      os.writeInt( brushes[i].firstSide );
+      os.writeInt( brushes[i].nSides );
+      os.writeInt( brushes[i].material );
+    }
+
+    for( int i = 0; i < nBrushSides; ++i ) {
+      os.writeInt( brushSides[i] );
+    }
+
+    for( int i = 0; i < nVertices; ++i ) {
+      os.writeVec3( vertices[i].p );
+      os.writeFloat( vertices[i].texCoord[0] );
+      os.writeFloat( vertices[i].texCoord[1] );
+      os.writeFloat( vertices[i].lightmapCoord[0] );
+      os.writeFloat( vertices[i].lightmapCoord[0] );
+    }
+
+    for( int i = 0; i < nIndices; ++i ) {
+      os.writeInt( indices[i] );
+    }
+
+    for( int i = 0; i < nFaces; ++i ) {
+      os.writeVec3( faces[i].normal );
+      os.writeInt( faces[i].texture );
+      os.writeInt( faces[i].lightmap );
+      os.writeInt( faces[i].material );
+      os.writeInt( faces[i].firstVertex );
+      os.writeInt( faces[i].nVertices );
+      os.writeInt( faces[i].firstIndex );
+      os.writeInt( faces[i].nIndices );
+    }
+
+    for( int i = 0; i < nLightmaps; ++i ) {
+      for( int j = 0; j < LIGHTMAP_SIZE; ++j ) {
+        os.writeByte( lightmaps[i].bits[j] );
+      }
+    }
+
+    buffer.write( fileName );
 
     log.printEnd( " OK" );
     return true;
+  }
+
+#endif
+
+  bool BSP::loadOZBSP( const char* fileName )
+  {
+    Buffer buffer;
+
+    buffer.load( fileName );
+    InputStream is = buffer.inputStream();
+
+    mins         = is.readVec3();
+    maxs         = is.readVec3();
+    maxDim       = is.readFloat();
+    life         = is.readFloat();
+    nTextures    = is.readInt();
+    nPlanes      = is.readInt();
+    nNodes       = is.readInt();
+    nLeaves      = is.readInt();
+    nLeafFaces   = is.readInt();
+    nLeafBrushes = is.readInt();
+    nBrushes     = is.readInt();
+    nBrushSides  = is.readInt();
+    nVertices    = is.readInt();
+    nIndices     = is.readInt();
+    nFaces       = is.readInt();
+    nLightmaps   = is.readInt();
+
+    int size = 0;
+
+    size += nTextures    * sizeof( int );
+    size += nPlanes      * sizeof( Plane );
+    size += nNodes       * sizeof( Node );
+    size += nLeaves      * sizeof( Leaf );
+    size += nLeafFaces   * sizeof( int );
+    size += nLeafBrushes * sizeof( int );
+    size += nBrushes     * sizeof( Brush );
+    size += nBrushSides  * sizeof( int );
+    size += nVertices    * sizeof( Vertex );
+    size += nIndices     * sizeof( int );
+    size += nFaces       * sizeof( Face );
+    size += nLightmaps   * sizeof( Lightmap );
+
+    char* data = Alloc::alloc<char>( size );
+
+    textures = reinterpret_cast<int*>( data );
+    for( int i = 0; i < nTextures; ++i ) {
+      textures[i] = is.readInt();
+    }
+    data += nTextures * sizeof( int );
+
+    planes = reinterpret_cast<Plane*>( data );
+    for( int i = 0; i < nPlanes; ++i ) {
+      planes[i].normal = is.readVec3();
+      planes[i].distance = is.readFloat();
+    }
+    data += nPlanes * sizeof( Plane );
+
+    nodes = reinterpret_cast<Node*>( data );
+    for( int i = 0; i < nNodes; ++i ) {
+      nodes[i].plane = is.readInt();
+      nodes[i].front = is.readInt();
+      nodes[i].back = is.readInt();
+    }
+    data += nNodes * sizeof( Node );
+
+    leaves = reinterpret_cast<Leaf*>( data );
+    for( int i = 0; i < nLeaves; ++i ) {
+      leaves[i].mins = is.readVec3();
+      leaves[i].maxs = is.readVec3();
+      leaves[i].cluster = is.readInt();
+      leaves[i].firstFace = is.readInt();
+      leaves[i].nFaces = is.readInt();
+      leaves[i].firstBrush = is.readInt();
+      leaves[i].nBrushes = is.readInt();
+    }
+    data += nLeaves * sizeof( Leaf );
+
+    leafFaces = reinterpret_cast<int*>( data );
+    for( int i = 0; i < nLeafFaces; ++i ) {
+      leafFaces[i] = is.readInt();
+    }
+    data += nLeafFaces * sizeof( int );
+
+    leafBrushes = reinterpret_cast<int*>( data );
+    for( int i = 0; i < nLeafBrushes; ++i ) {
+      leafBrushes[i] = is.readInt();
+    }
+    data += nLeafBrushes * sizeof( int );
+
+    brushes = reinterpret_cast<Brush*>( data );
+    for( int i = 0; i < nBrushes; ++i ) {
+      brushes[i].firstSide = is.readInt();
+      brushes[i].nSides = is.readInt();
+      brushes[i].material = is.readInt();
+    }
+    data += nBrushes * sizeof( Brush );
+
+    brushSides = reinterpret_cast<int*>( data );
+    for( int i = 0; i < nBrushSides; ++i ) {
+      brushSides[i] = is.readInt();
+    }
+    data += nBrushSides * sizeof( int );
+
+    vertices = reinterpret_cast<Vertex*>( data );
+    for( int i = 0; i < nVertices; ++i ) {
+      vertices[i].p = is.readVec3();
+      vertices[i].texCoord[0] = is.readFloat();
+      vertices[i].texCoord[1] = is.readFloat();
+      vertices[i].lightmapCoord[0] = is.readFloat();
+      vertices[i].lightmapCoord[0] = is.readFloat();
+    }
+    data += nVertices * sizeof( Vertex );
+
+    indices = reinterpret_cast<int*>( data );
+    for( int i = 0; i < nIndices; ++i ) {
+      indices[i] = is.readInt();
+    }
+    data += nIndices * sizeof( int );
+
+    faces = reinterpret_cast<Face*>( data );
+    for( int i = 0; i < nFaces; ++i ) {
+      faces[i].normal = is.readVec3();
+      faces[i].texture = is.readInt();
+      faces[i].lightmap = is.readInt();
+      faces[i].material = is.readInt();
+      faces[i].firstVertex = is.readInt();
+      faces[i].nVertices = is.readInt();
+      faces[i].firstIndex = is.readInt();
+      faces[i].nIndices = is.readInt();
+    }
+    data += nFaces * sizeof( Face );
+
+    lightmaps = reinterpret_cast<Lightmap*>( data );
+    for( int i = 0; i < nLightmaps; ++i ) {
+      for( int j = 0; j < LIGHTMAP_SIZE; ++j ) {
+        lightmaps[i].bits[j] = is.readByte();
+      }
+    }
+
+    visual.nClusters = 0;
+    visual.clusterLength = 0;
+    visual.bitsets = null;
+
+    return true;
+  }
+
+  BSP::BSP() : textures( null ), planes( null ), nodes( null ), leaves( null ), leafFaces( null ),
+    brushes( null ), brushSides( null ), vertices( null ), indices( null ), faces( null ),
+    lightmaps( null )
+  {}
+
+  BSP::~BSP()
+  {
+    free();
   }
 
   bool BSP::load( const char* name_ )
   {
     name = name_;
 
+#ifdef OZ_PREBUILT
+
+    log.println( "Loading OpenZone BSP structure '%s' {", name.cstr() );
+    log.indent();
+
+    if( !loadOZBSP( "maps/" + name + ".ozBSP" ) ) {
+      free();
+      log.unindent();
+      log.println();
+    }
+
+    log.unindent();
+    log.println( "}" );
+
+#else
+
     Config bspConfig;
     if( !bspConfig.load( "maps/" + name + ".rc" ) ) {
       return false;
     }
 
-    log.print( "Loading Quake 3 BSP structure '%s' ...", name.cstr() );
+    log.println( "Loading Quake 3 BSP structure '%s' {", name.cstr() );
+    log.indent();
 
     float scale  = bspConfig.get( "scale", 0.01f );
     float maxDim = bspConfig.get( "maxDim", Math::inf() );
     life = bspConfig.get( "life", 1000.0f );
 
     if( Math::isNaN( scale ) || Math::isNaN( maxDim ) ) {
-      log.printEnd( " Invalid config" );
+      log.println( " Invalid config" );
+      log.unindent();
+      log.println( "}" );
       return false;
     }
 
     if( !loadQBSP( "maps/" + name + ".bsp", scale, maxDim ) ) {
       free();
+      log.unindent();
+      log.println( "}" );
       return false;
     }
+
+#ifdef OZ_BUILD
+    optimise();
+    save( "maps/" + name + ".ozBSP" );
+#endif
+
+    log.unindent();
+    log.println( "}" );
+
+#endif
+
     return true;
   }
 
@@ -470,57 +1077,102 @@ namespace oz
   {
     log.print( "Freeing BSP structure '%s' ...", name.cstr() );
 
+#ifdef OZ_PREBUILT
+
+    if( textures != null ) {
+      Alloc::dealloc( textures );
+
+      nTextures    = 0;
+      nPlanes      = 0;
+      nNodes       = 0;
+      nLeaves      = 0;
+      nLeafFaces   = 0;
+      nLeafBrushes = 0;
+      nBrushes     = 0;
+      nBrushSides  = 0;
+      nVertices    = 0;
+      nIndices     = 0;
+      nFaces       = 0;
+      nLightmaps   = 0;
+
+      textures    = null;
+      planes      = null;
+      nodes       = null;
+      leaves      = null;
+      leafFaces   = null;
+      leafBrushes = null;
+      brushes     = null;
+      brushSides  = null;
+      vertices    = null;
+      indices     = null;
+      faces       = null;
+      lightmaps   = null;
+    }
+
+#else
+
     if( textures != null ) {
       delete[] textures;
+      nTextures = 0;
       textures = null;
     }
     if( planes != null ) {
       delete[] planes;
+      nPlanes = 0;
       planes = null;
     }
-
     if( nodes != null ) {
       delete[] nodes;
+      nNodes = 0;
       nodes = null;
     }
-    if( leafs != null ) {
-      delete[] leafs;
-      leafs = null;
+    if( leaves != null ) {
+      delete[] leaves;
+      nLeaves = 0;
+      leaves = null;
     }
     if( leafFaces != null ) {
       delete[] leafFaces;
+      nLeafFaces = 0;
       leafFaces = null;
     }
     if( leafBrushes != null ) {
       delete[] leafBrushes;
+      nLeafBrushes = 0;
       leafBrushes = null;
     }
-
     if( brushes != null ) {
       delete[] brushes;
+      nBrushes = 0;
       brushes = null;
     }
     if( brushSides != null ) {
       delete[] brushSides;
+      nBrushSides = 0;
       brushSides = null;
     }
-
     if( vertices != null ) {
       delete[] vertices;
+      nVertices = 0;
       vertices = null;
     }
     if( indices != null ) {
       delete[] indices;
+      nIndices = 0;
       indices = null;
     }
     if( faces != null ) {
       delete[] faces;
+      nFaces = 0;
       faces = null;
     }
     if( lightmaps != null ) {
       delete[] lightmaps;
+      nLightmaps = 0;
       lightmaps = null;
     }
+
+#endif
 
     log.printEnd( " OK" );
   }

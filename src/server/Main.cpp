@@ -1,10 +1,10 @@
 /*
  *  Main.cpp
  *
- *  Server initialization and main loop
+ *  Server initialisation and main loop
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -95,7 +95,7 @@ namespace server
 
     log.printlnETD( OZ_APP_NAME " started at" );
 
-    log.print( "Initializing SDL ..." );
+    log.print( "Initialising SDL ..." );
     if( SDL_Init( 0 ) || SDLNet_Init() ) {
       log.printEnd( " Failed" );
       return;
@@ -119,7 +119,7 @@ namespace server
       log.printEnd( " OK" );
     }
 
-    log.println( "Initializing Game {" );
+    log.println( "Initialising Game {" );
     log.indent();
     if( !game.init() ) {
       return;
@@ -177,23 +177,25 @@ namespace server
 }
 }
 
+OZ_IMPORT()
+
 int main( int, char** )
 {
   try {
-    oz::server::main.main();
+    server::main.main();
   }
-  catch( oz::Exception e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println( "*** EXCEPTION: %s line %d", e.file, e.line );
-    oz::log.println( "*** MESSAGE: %s", e.message );
-    oz::log.println();
+  catch( Exception e ) {
+    log.resetIndent();
+    log.println();
+    log.println( "*** EXCEPTION: %s line %d", e.file, e.line );
+    log.println( "*** MESSAGE: %s", e.message );
+    log.println();
 
-    if( oz::log.isFile() ) {
+    if( log.isFile() ) {
       printf( "*** EXCEPTION: %s line %d\n*** MESSAGE: %s\n\n", e.file, e.line, e.message );
     }
   }
-  oz::server::main.shutdown();
+  server::main.shutdown();
 
   return 0;
 }

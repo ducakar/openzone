@@ -4,7 +4,7 @@
  *  Data structure and loaders for Internal BSP, Quake3 BSP and OpenBSP formats
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -63,11 +63,11 @@ namespace oz
 
       struct Face
       {
+        Vec3 normal;
+
         int  texture;
         int  lightmap;
         int  material;
-
-        Vec3 normal;
 
         int  firstVertex;
         int  nVertices;
@@ -102,21 +102,26 @@ namespace oz
       float      life;
 
       int        nTextures;
-      int        nLeafs;
+      int        nPlanes;
+      int        nNodes;
+      int        nLeaves;
+      int        nLeafFaces;
+      int        nLeafBrushes;
+      int        nBrushes;
+      int        nBrushSides;
+      int        nVertices;
+      int        nIndices;
       int        nFaces;
       int        nLightmaps;
 
       int*       textures;
       Plane*     planes;
-
       Node*      nodes;
-      Leaf*      leafs;
+      Leaf*      leaves;
       int*       leafFaces;
       int*       leafBrushes;
-
       Brush*     brushes;
       int*       brushSides;
-
       Vertex*    vertices;
       int*       indices;
       Face*      faces;
@@ -124,12 +129,23 @@ namespace oz
 
       VisualData visual;
 
-      explicit BSP();
-      ~BSP();
+    private:
 
+#ifndef OZ_PREBUILT
       bool includes( const Brush& brush ) const;
 
       bool loadQBSP( const char* fileName, float scale, float maxDim );
+      void optimise();
+      bool save( const char* fileName );
+#endif
+
+      bool loadOZBSP( const char* fileName );
+
+    public:
+
+      explicit BSP();
+      ~BSP();
+
       bool load( const char* name );
       void free();
 

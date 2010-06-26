@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -36,6 +36,7 @@ namespace oz
 
       static const Vec3  bbNormals[];
       static const Mat44 structRotations[];
+      static const Mat44 structInvRotations[];
 
       Span             span;
       Bounds           trace;

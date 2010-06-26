@@ -1,36 +1,8 @@
 add_library( oz STATIC
-Alloc.cpp
-Alloc.hpp
-Array.hpp
-arrays.hpp
-assert.cpp
-assert.hpp
-Bitset.hpp
-common.hpp
-Config.cpp
-Config.hpp
-DArray.hpp
-DList.hpp
-Exception.hpp
-HashIndex.hpp
-HashString.hpp
-iterables.hpp
-List.hpp
-Log.cpp
-Log.hpp
-Map.hpp
-Mat33.hpp
-Mat44.hpp
-Math.cpp
-Math.hpp
-oz.hpp
-Pair.hpp
-Pool.hpp
-Quat.hpp
-Sparse.hpp
-String.cpp
-String.hpp
-SVector.hpp
-Vec3.hpp
-Vector.hpp
+	Alloc.cpp
+	assert.cpp
+	Config.cpp
+	Log.cpp
+	Math.cpp
+	String.cpp
 )

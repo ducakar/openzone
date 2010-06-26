@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -13,7 +13,7 @@
 
 #include "matrix/BotClass.hpp"
 #include "client/Camera.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 #include "client/Context.hpp"
 #include "ui/Keyboard.hpp"
 
@@ -157,7 +157,7 @@ namespace ui
     glColor4f( 0.0f, 0.0f, 0.0f, 0.2f );
     fillRect( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-    glColor4fv( Colors::WHITE );
+    glColor4fv( Colours::WHITE );
     drawRect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
   }
 
@@ -198,7 +198,7 @@ namespace ui
       }
     }
 
-    glColor4fv( Colors::WHITE );
+    glColor4fv( Colours::WHITE );
     glBegin( GL_LINES );
       glVertex2f( minX - 1.5f, minY - 1.5f );
       glVertex2f( minX - 1.5f, minY + 3.5f );

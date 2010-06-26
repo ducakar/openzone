@@ -4,20 +4,22 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
 
-using namespace oz;
+#include <SDL_main.h>
+
+OZ_IMPORT()
 
 int main( int argc, char** argv )
 {
-  oz::log.init( null, false, "  " );
+  log.init();
 
   if( argc != 2 ) {
-    oz::log.println( "usage: ozXmlrc file_to_convert" );
-    oz::log.println( "  if `file.xml' file is given, a new converted file `file.xml.rc' is created and "
+    log.println( "usage: ozXmlrc file_to_convert" );
+    log.println( "  if `file.xml' file is given, a new converted file `file.xml.rc' is created and "
         "vice versa" );
     return -1;
   }

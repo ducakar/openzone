@@ -5,7 +5,7 @@
  *  Type should be a POD type as C++0x is not yet fully supported by GCC.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once

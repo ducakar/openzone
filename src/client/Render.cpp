@@ -4,7 +4,7 @@
  *  Graphics render engine
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -16,7 +16,7 @@
 #include "matrix/BotClass.hpp"
 
 #include "client/Frustum.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 #include "client/Shape.hpp"
 
 #include "client/Water.hpp"
@@ -98,19 +98,19 @@ namespace client
     assert( glGetError() == GL_NO_ERROR );
     assert( !glIsEnabled( GL_TEXTURE_2D ) );
 
-    // clear color, visibility, fog
+    // clear colour, visibility, fog
     if( isUnderWater ) {
       visibility = sky.ratio * waterDayVisibility + sky.ratio_1 * waterNightVisibility;
 
-      glClearColor( Colors::water[0], Colors::water[1], Colors::water[2], Colors::water[3] );
-      glFogfv( GL_FOG_COLOR, Colors::water );
+      glClearColor( Colours::water[0], Colours::water[1], Colours::water[2], Colours::water[3] );
+      glFogfv( GL_FOG_COLOR, Colours::water );
       glFogf( GL_FOG_END, visibility );
     }
     else {
       visibility = sky.ratio * dayVisibility + sky.ratio_1 * nightVisibility;
 
-      glClearColor( Colors::sky[0], Colors::sky[1], Colors::sky[2], Colors::sky[3] );
-      glFogfv( GL_FOG_COLOR, Colors::sky );
+      glClearColor( Colours::sky[0], Colours::sky[1], Colours::sky[2], Colours::sky[3] );
+      glFogfv( GL_FOG_COLOR, Colours::sky );
       glFogf( GL_FOG_END, visibility );
     }
 
@@ -171,8 +171,8 @@ namespace client
 
     // lighting
     glLightfv( GL_LIGHT0, GL_POSITION, sky.lightDir );
-    glLightfv( GL_LIGHT0, GL_DIFFUSE, Colors::diffuse );
-    glLightfv( GL_LIGHT0, GL_AMBIENT, Colors::ambient );
+    glLightfv( GL_LIGHT0, GL_DIFFUSE, Colours::diffuse );
+    glLightfv( GL_LIGHT0, GL_AMBIENT, Colours::ambient );
 
     glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );
@@ -221,7 +221,7 @@ namespace client
       const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
-        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::TAG );
       }
 
       glPushMatrix();
@@ -232,7 +232,7 @@ namespace client
       glPopMatrix();
 
       if( obj->index == camera.tagged ) {
-        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::BLACK );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::BLACK );
       }
     }
 
@@ -256,7 +256,7 @@ namespace client
 
     assert( glGetError() == GL_NO_ERROR );
 
-    glColor4fv( Colors::WHITE );
+    glColor4fv( Colours::WHITE );
     glEnable( GL_TEXTURE_2D );
     glDisable( GL_BLEND );
 
@@ -267,7 +267,7 @@ namespace client
       const Object* obj = delayedObjects[i].obj;
 
       if( obj->index == camera.tagged ) {
-        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::TAG );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::TAG );
       }
 
       glPushMatrix();
@@ -278,7 +278,7 @@ namespace client
       glPopMatrix();
 
       if( obj->index == camera.tagged ) {
-        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colors::BLACK );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::BLACK );
       }
     }
 
@@ -316,19 +316,19 @@ namespace client
     if( drawAABBs ) {
       glEnable( GL_COLOR_MATERIAL );
 
-      glColor4fv( Colors::STRUCTURE_AABB );
+      for( int i = 0; i < objects.length(); ++i ) {
+        glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
+            Colours::CLIP_AABB : Colours::NOCLIP_AABB );
+        shape.drawBox( *objects[i].obj );
+      }
+
+      glColor4fv( Colours::STRUCTURE_AABB );
 
       for( int i = 0; i < structures.length(); ++i ) {
         shape.drawBox( structures[i]->toAABB() );
       }
 
-      for( int i = 0; i < objects.length(); ++i ) {
-        glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
-            Colors::CLIP_AABB : Colors::NOCLIP_AABB );
-        shape.drawBox( *objects[i].obj );
-      }
-
-      glColor4fv( Colors::WHITE );
+      glColor4fv( Colours::WHITE );
       glDisable( GL_COLOR_MATERIAL );
     }
 
@@ -341,7 +341,7 @@ namespace client
     glDisable( GL_FOG );
 
     glDisable( GL_DEPTH_TEST );
-    glColor4fv( Colors::WHITE );
+    glColor4fv( Colours::WHITE );
 
     assert( glGetError() == GL_NO_ERROR );
   }
@@ -451,7 +451,7 @@ namespace client
     doScreenshot = false;
     clearCount   = 0;
 
-    log.println( "Initializing Graphics {" );
+    log.println( "Initialising Graphics {" );
     log.indent();
 
     DArray<String> extensions;
@@ -542,9 +542,9 @@ namespace client
     // lighting
     glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
-    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, Colors::GLOBAL_AMBIENT );
+    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, Colours::GLOBAL_AMBIENT );
     glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
     glEnable( GL_LIGHT0 );
 
     glEnable( GL_BLEND );

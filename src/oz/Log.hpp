@@ -4,7 +4,7 @@
  *  Utility for writing a log file
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -30,12 +30,18 @@ namespace oz
        * @param indentStr
        * @return
        */
-      bool init( const char* fileName, bool clearFile = true, const char* indentStr = "  " );
+      bool init( const char* fileName = null, bool clearFile = true, const char* indentStr = "  " );
 
       /**
        * @return true, if writing in a file
        */
       bool isFile() const;
+
+      /**
+       * Prints the text.
+       * @param s
+       */
+      void printRaw( const char* s, ... ) const;
 
       /**
        * Indents and prints the text.
@@ -44,16 +50,27 @@ namespace oz
       void print( const char* s, ... ) const;
 
       /**
+       * Indents, prints the text and terminates the line.
+       * @param s
+       */
+      void println( const char* s, ... ) const;
+
+      /**
+       * Write a blank line.
+       */
+      void println() const;
+
+      /**
        * Print rest of the line. (Do not indent and put '\n' at the end.)
        * @param s
        */
       void printEnd( const char* s, ... ) const;
 
       /**
-       * Indents, prints the text and terminates the line.
+       * Terminate line. (Do not indent and put '\n' at the end.)
        * @param s
        */
-      void println( const char* s, ... ) const;
+      void printEnd() const;
 
       /**
        * Adds the current time at the beginning of a line.
@@ -72,11 +89,6 @@ namespace oz
        * @param s
        */
       void printlnETD( const char* s, ... ) const;
-
-      /**
-       * Write a blank line.
-       */
-      void println() const;
 
       /**
        * Sets indent to none.

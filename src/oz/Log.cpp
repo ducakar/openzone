@@ -4,7 +4,7 @@
  *  Utility for writing a log file
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "oz.hpp"
@@ -22,12 +22,12 @@ namespace oz
   // the file already exists
   bool Log::init( const char* fileName, bool clearFile, const char* indentStr_ )
   {
-    // initialize indent
+    // initialise indent
     tabs = 0;
 
     indentStr = indentStr_ != null ? indentStr_ : "  ";
 
-    if( fileName && fileName[0] != '\0' ) {
+    if( fileName != null && fileName[0] != '\0' ) {
       isStdout = false;
       logFile = fileName;
 
@@ -55,7 +55,7 @@ namespace oz
     return !isStdout;
   }
 
-  void Log::printEnd( const char* s, ... ) const
+  void Log::printRaw( const char* s, ... ) const
   {
     va_list ap;
     FILE* f;
@@ -64,7 +64,6 @@ namespace oz
 
     va_start( ap, s );
     vfprintf( f, s, ap );
-    fprintf( f, "\n" );
     va_end( ap );
 
     if( !isStdout ) {
@@ -105,6 +104,49 @@ namespace oz
     vfprintf( f, s, ap );
     fprintf( f, "\n" );
     va_end( ap );
+
+    if( !isStdout ) {
+      fclose( f );
+    }
+  }
+
+  void Log::println() const
+  {
+    FILE* f;
+
+    f = isStdout ? stdout : fopen( logFile, "a" );
+
+    fprintf( f, "\n" );
+
+    if( !isStdout ) {
+      fclose( f );
+    }
+  }
+
+  void Log::printEnd( const char* s, ... ) const
+  {
+    va_list ap;
+    FILE* f;
+
+    f = isStdout ? stdout : fopen( logFile, "a" );
+
+    va_start( ap, s );
+    vfprintf( f, s, ap );
+    fprintf( f, "\n" );
+    va_end( ap );
+
+    if( !isStdout ) {
+      fclose( f );
+    }
+  }
+
+  void Log::printEnd() const
+  {
+    FILE* f;
+
+    f = isStdout ? stdout : fopen( logFile, "a" );
+
+    fprintf( f, "\n" );
 
     if( !isStdout ) {
       fclose( f );
@@ -184,19 +226,6 @@ namespace oz
     fprintf( f, " %02d.%02d.%04d %02d:%02d:%02d\n", t.tm_mday, t.tm_mon + 1, t.tm_year + 1900,
              t.tm_hour, t.tm_min, t.tm_sec );
     va_end( ap );
-
-    if( !isStdout ) {
-      fclose( f );
-    }
-  }
-
-  void Log::println() const
-  {
-    FILE* f;
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
-
-    fprintf( f, "\n" );
 
     if( !isStdout ) {
       fclose( f );

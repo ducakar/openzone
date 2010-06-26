@@ -2,7 +2,7 @@
 
 echo 'add_library( nirvana STATIC' > CMakeLists.txt
 
-ls *.{hpp,cpp} >> CMakeLists.txt
+ls *.cpp | sed -e 's/.*/\t\0/' >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt

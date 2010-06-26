@@ -1,18 +1,11 @@
 add_library( nirvana STATIC
-common.cpp
-common.hpp
-Lua.cpp
-Lua.hpp
-LuaMind.cpp
-LuaMind.hpp
-Mind.cpp
-Mind.hpp
-Nirvana.cpp
-Nirvana.hpp
-RandomMind.cpp
-RandomMind.hpp
-Task.cpp
-Task.hpp
+	common.cpp
+	Lua.cpp
+	LuaMind.cpp
+	Mind.cpp
+	Nirvana.cpp
+	RandomMind.cpp
+	Task.cpp
 )
 
 add_dependencies( nirvana pch )

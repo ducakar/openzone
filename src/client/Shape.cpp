@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -324,7 +324,7 @@ namespace client
     glRotatef( part->rot.x, 1.0f, 0.0f, 0.0f );
     glRotatef( part->rot.z, 0.0f, 0.0f, 1.0f );
 
-    glColor4f( part->color.x, part->color.y, part->color.z, part->lifeTime );
+    glColor4f( part->colour.x, part->colour.y, part->colour.z, part->lifeTime );
     glCallList( partListBase + ( part->index % MAX_PART_LISTS ) );
   }
 

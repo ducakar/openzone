@@ -4,7 +4,7 @@
  *  Basic iterator classes and utility templates.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -15,7 +15,7 @@ namespace oz
 {
 
   /**
-   * Generalized constant iterator.
+   * Generalised constant iterator.
    * It should only be used as a base class. Following functions need to be implemented:<br>
    * <code>bool isPassed()</code><br>
    * <code>Iterator& operator ++ ()</code><br>
@@ -113,7 +113,7 @@ namespace oz
   };
 
   /**
-   * Generalized iterator.
+   * Generalised iterator.
    * It should only be used as a base class. Following functions need to be implemented:<br>
    * <code>bool isPassed()</code> (if necessary)<br>
    * <code>Iterator& operator ++ ()</code><br>

@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -45,7 +45,7 @@ namespace oz
       Vec3      velocity;
 
       // graphics data
-      Vec3      color;
+      Vec3      colour;
       Vec3      rot;
       Vec3      rotVelocity;
 
@@ -58,7 +58,7 @@ namespace oz
 
       explicit Particle( int index_, const Vec3& p_, const Vec3& velocity_, const Vec3& color_,
                          float restitution_, float mass_, float lifeTime_ ) :
-          p( p_ ), index( index_ ), cell( null ), velocity( velocity_ ), color( color_ ),
+          p( p_ ), index( index_ ), cell( null ), velocity( velocity_ ), colour( color_ ),
           rot( Vec3( Math::frand() * 360.0f, Math::frand() * 360.0f, Math::frand() * 360.0f ) ),
           rotVelocity( Vec3( Math::frand() * MAX_ROTVELOCITY,
                              Math::frand() * MAX_ROTVELOCITY,

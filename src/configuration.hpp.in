@@ -22,14 +22,15 @@
 #cmakedefine OZ_MINGW
 #cmakedefine OZ_MSVC
 
-#ifdef __GNUG__
-# define OZ_SIZE_T __SIZE_TYPE__
-#else
-# define OZ_SIZE_T unsigned int
-#endif
+// prebuild resources 
+#cmakedefine OZ_BUILD
+
+// whether to use prebuilt resources
+#cmakedefine OZ_PREBUILT
 
 #ifdef OZ_MSVC
 # define _CRT_SECURE_NO_WARNINGS 1
 # define snprintf sprintf_s
 # define chdir _chdir
+# define mkdir _mkdir
 #endif

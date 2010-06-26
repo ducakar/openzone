@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -12,7 +12,7 @@
 #include "client/Water.hpp"
 
 #include "matrix/Timer.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 
 namespace oz
 {
@@ -38,8 +38,8 @@ namespace client
     float alpha2 = ratio * ALPHA;
     float alpha1 = ( alpha2 * ( 1 - ratio ) ) / ( ratio * ( 1 - alpha2 ) );
 
-    Colors::waterBlend1[3] = alpha1;
-    Colors::waterBlend2[3] = alpha2;
+    Colours::waterBlend1[3] = alpha1;
+    Colours::waterBlend2[3] = alpha2;
   }
 
 }

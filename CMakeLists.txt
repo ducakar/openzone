@@ -10,6 +10,8 @@ option( OZ_GNU_MATH "Use GCC math builtins (no need to include <cmath> and faste
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in config files" ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 option( OZ_CROSS_MINGW "If MinGW is not used natively on Windows, but on Unix for cross-compiling." OFF )
+option( OZ_BUILD "Optimise and dump resources where possible. Those can be used by a OZ_PREBUILT enabled build." OFF )
+option( OZ_PREBUILT "If OpenZone optimized resources should be loaded instead of generic ones" OFF )
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 
@@ -101,13 +103,13 @@ else()
 	set( flags "${CMAKE_CXX_FLAGS}" )
 endif()
 
-# installation
-install( FILES src/client/openzone
-	DESTINATION bin/openzone
-	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-				GROUP_READ GROUP_EXECUTE
-				WORLD_READ WORLD_EXECUTE )
-
 # sources
 add_subdirectory( src )
 add_subdirectory( data )
+
+# installation
+install( FILES src/client/openzone
+		 DESTINATION bin/openzone
+		 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+					 GROUP_READ GROUP_EXECUTE
+					 WORLD_READ WORLD_EXECUTE )

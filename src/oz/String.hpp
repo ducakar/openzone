@@ -4,7 +4,7 @@
  *  Immutable string object (similar to Java String)
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -108,7 +108,7 @@ namespace oz
         // we have [sign +] first digit + remaining digits
         // since we always count first digit, we assure that we never get 0 digits (if n == 0)
 
-        // first, we count first digit + remaining digits (count has been set to 1 in initialization)
+        // first, we count first digit + remaining digits (count has been set to 1 in initialisation)
         int nn = n / 10;
         while( nn != 0 ) {
           nn /= 10;
