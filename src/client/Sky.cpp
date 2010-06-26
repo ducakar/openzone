@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -15,7 +15,7 @@
 #include "matrix/World.hpp"
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 
 namespace oz
 {
@@ -123,35 +123,35 @@ namespace client
     ratio_1 = 1.0f - ratio;
     float ratioDiff = ( 1.0f - Math::abs( ratio - ratio_1 ) );
 
-    Colors::sky[0] = ratio * DAY_COLOR[0] + ratio_1 * NIGHT_COLOR[0] + RED_COEF * ratioDiff;
-    Colors::sky[1] = ratio * DAY_COLOR[1] + ratio_1 * NIGHT_COLOR[1] + GREEN_COEF * ratioDiff;
-    Colors::sky[2] = ratio * DAY_COLOR[2] + ratio_1 * NIGHT_COLOR[2] + BLUE_COEF * ratioDiff;
-    Colors::sky[3] = 1.0f;
+    Colours::sky[0] = ratio * DAY_COLOR[0] + ratio_1 * NIGHT_COLOR[0] + RED_COEF * ratioDiff;
+    Colours::sky[1] = ratio * DAY_COLOR[1] + ratio_1 * NIGHT_COLOR[1] + GREEN_COEF * ratioDiff;
+    Colours::sky[2] = ratio * DAY_COLOR[2] + ratio_1 * NIGHT_COLOR[2] + BLUE_COEF * ratioDiff;
+    Colours::sky[3] = 1.0f;
 
-    Colors::water[0] = ratio * WATER_COLOR[0] + ratio_1 * NIGHT_COLOR[0];
-    Colors::water[1] = ratio * WATER_COLOR[1] + ratio_1 * NIGHT_COLOR[1];
-    Colors::water[2] = ratio * WATER_COLOR[2] + ratio_1 * NIGHT_COLOR[2];
-    Colors::water[3] = ratio * WATER_COLOR[3] + ratio_1 * NIGHT_COLOR[3];
+    Colours::water[0] = ratio * WATER_COLOR[0] + ratio_1 * NIGHT_COLOR[0];
+    Colours::water[1] = ratio * WATER_COLOR[1] + ratio_1 * NIGHT_COLOR[1];
+    Colours::water[2] = ratio * WATER_COLOR[2] + ratio_1 * NIGHT_COLOR[2];
+    Colours::water[3] = ratio * WATER_COLOR[3] + ratio_1 * NIGHT_COLOR[3];
 
     lightDir[0] = dir.x;
     lightDir[1] = dir.y;
     lightDir[2] = dir.z;
     lightDir[3] = 0.0f;
 
-    Colors::diffuse[0] = ratio + RED_COEF * ratioDiff;
-    Colors::diffuse[1] = ratio + GREEN_COEF * ratioDiff;
-    Colors::diffuse[2] = ratio + BLUE_COEF * ratioDiff;
-    Colors::diffuse[3] = 1.0f;
+    Colours::diffuse[0] = ratio + RED_COEF * ratioDiff;
+    Colours::diffuse[1] = ratio + GREEN_COEF * ratioDiff;
+    Colours::diffuse[2] = ratio + BLUE_COEF * ratioDiff;
+    Colours::diffuse[3] = 1.0f;
 
-    Colors::ambient[0] = AMBIENT_COEF * Colors::diffuse[0];
-    Colors::ambient[1] = AMBIENT_COEF * Colors::diffuse[1];
-    Colors::ambient[2] = AMBIENT_COEF * Colors::diffuse[2];
-    Colors::ambient[3] = 1.0f;
+    Colours::ambient[0] = AMBIENT_COEF * Colours::diffuse[0];
+    Colours::ambient[1] = AMBIENT_COEF * Colours::diffuse[1];
+    Colours::ambient[2] = AMBIENT_COEF * Colours::diffuse[2];
+    Colours::ambient[3] = 1.0f;
   }
 
   void Sky::draw()
   {
-    float color[3] = {
+    float colour[3] = {
       ratio * DAY_COLOR[0] + ratio_1 * STAR_COLOR[0],
       ratio * DAY_COLOR[1] + ratio_1 * STAR_COLOR[0],
       ratio * DAY_COLOR[2] + ratio_1 * STAR_COLOR[0]
@@ -161,7 +161,7 @@ namespace client
     Mat44 transf = Mat44::rotZ( Math::rad( world.sky.heading ) ) * Mat44::rotY( angle );
 
     glDisable( GL_BLEND );
-    glColor3fv( color );
+    glColor3fv( colour );
 
     glPushMatrix();
     glMultMatrixf( transf );
@@ -192,9 +192,9 @@ namespace client
     glEnable( GL_BLEND );
 
     glTranslatef( -15.0f, 0.0f, 0.0f );
-    glColor3f( 2.0f * Colors::diffuse[0] + Colors::ambient[0],
-               Colors::diffuse[1] + Colors::ambient[1],
-               Colors::diffuse[2] + Colors::ambient[2] );
+    glColor3f( 2.0f * Colours::diffuse[0] + Colours::ambient[0],
+               Colours::diffuse[1] + Colours::ambient[1],
+               Colours::diffuse[2] + Colours::ambient[2] );
     glCallList( sunList );
 
     glTranslatef( 30.0f, 0.0f, 0.0f );

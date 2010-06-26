@@ -4,7 +4,7 @@
  *  Common include file for oz library.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -95,3 +95,13 @@
  */
 #include "Log.hpp"
 #include "Config.hpp"
+
+/*
+ * Imports oz namespace and explicitly imports all symbols from oz that may be ambiguous
+ */
+#define OZ_IMPORT() \
+  using namespace oz; \
+  using oz::min; \
+  using oz::max; \
+  using oz::abs; \
+  using oz::log;

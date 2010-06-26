@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -285,12 +285,12 @@ namespace client
 
   bool Sound::init( int* argc, char** argv )
   {
-    log.println( "Initializing SoundManager {" );
+    log.println( "Initialising SoundManager {" );
     log.indent();
 
     alutInit( argc, argv );
     if( alutGetError() != ALUT_ERROR_NO_ERROR ) {
-      log.println( "Failed to initialize ALUT" );
+      log.println( "Failed to initialise ALUT" );
       log.unindent();
       log.println( "}" );
       return false;
@@ -314,7 +314,7 @@ namespace client
     log.println( "}" );
 
     log.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
-    log.println( "ALUT suppored formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
+    log.println( "ALUT supported formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
 
     sourceClearCount = 0;
     fullClearCount   = 0;

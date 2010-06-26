@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -34,6 +34,14 @@ namespace oz
     Mat44::rotZ( -Math::PI_2 )
   };
 
+  const Mat44 Collider::structInvRotations[] =
+  {
+    Mat44::id(),
+    Mat44::rotZ( -Math::PI_2 ),
+    Mat44::rotZ(  Math::PI ),
+    Mat44::rotZ(  Math::PI_2 )
+  };
+
   Collider::Collider() : mask( Object::SOLID_BIT )
   {}
 
@@ -44,7 +52,7 @@ namespace oz
 
   inline Vec3 Collider::toAbsoluteCS( const Vec3& v ) const
   {
-    return structRotations[ int( str->rot ) ^ 1 ] * v;
+    return structInvRotations[ int( str->rot ) ] * v;
   }
 
   //***********************************
@@ -69,7 +77,7 @@ namespace oz
   bool Collider::testPointNode( int nodeIndex ) const
   {
     if( nodeIndex < 0 ) {
-      const BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
+      const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
         const BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
@@ -395,7 +403,7 @@ namespace oz
                                 const Vec3& startPos, const Vec3& endPos )
   {
     if( nodeIndex < 0 ) {
-      const BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
+      const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
 
       leafStartRatio = startRatio;
       leafEndRatio   = endRatio;
@@ -512,7 +520,7 @@ namespace oz
   bool Collider::testAABBNode( int nodeIndex ) const
   {
     if( nodeIndex < 0 ) {
-      const BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
+      const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
         const BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
@@ -822,7 +830,7 @@ namespace oz
                                const Vec3& startPos, const Vec3& endPos )
   {
     if( nodeIndex < 0 ) {
-      const BSP::Leaf& leaf = bsp->leafs[~nodeIndex];
+      const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
 
       leafStartRatio = startRatio;
       leafEndRatio   = endRatio;

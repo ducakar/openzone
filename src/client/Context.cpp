@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -95,11 +95,11 @@ namespace client
       float z = ( float( p[2] ) - 128.0f ) / 128.0f;
 
       float dot = x * lightNormal.x + y * lightNormal.y + z * lightNormal.z;
-      ubyte color = ubyte( Math::bound( dot * 256.0f, 0.0f, 255.0f ) );
+      ubyte colour = ubyte( Math::bound( dot * 256.0f, 0.0f, 255.0f ) );
 
-      p[0] = color;
-      p[1] = color;
-      p[2] = color;
+      p[0] = colour;
+      p[1] = colour;
+      p[2] = colour;
     }
 
     GLenum format = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
@@ -591,7 +591,7 @@ namespace client
 
   void Context::init()
   {
-    log.print( "Initializing Context ..." );
+    log.print( "Initialising Context ..." );
 
     assert( textures == null && sounds == null );
 

@@ -4,7 +4,7 @@
  *  World model
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -26,7 +26,7 @@ namespace oz
 
       static const float MAX_VELOCITY2;
 
-      // thread synchronization
+      // thread synchronisation
       SDL_semaphore* semaphore;
 
       void init();

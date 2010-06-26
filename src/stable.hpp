@@ -6,10 +6,11 @@
  *  header, it will not work in GCC and VC++.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "oz/oz.hpp"
+#include "configuration.hpp"
 
 // we want to use C++ wrapped C headers, not vanilla ones that are included via SDL
 #include <cstddef>

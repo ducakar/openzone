@@ -4,7 +4,7 @@
  *  Visual particle generator
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -31,7 +31,7 @@ namespace client
 //
 //    sparks[i].p = sparkGen->p;
 //    sparks[i].velocity = sparkGen->velocity + velDisturb;
-//    sparks[i].color = sparkGen->color + colorDisturb;
+//    sparks[i].colour = sparkGen->colour + colorDisturb;
 //    sparks[i].lifeTime = sparkGen->lifeTime;
 //  }
 //

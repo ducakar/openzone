@@ -1,5 +1,6 @@
-include_directories( . )
 configure_file( configuration.hpp.in configuration.hpp )
+
+include_directories( . )
 
 add_subdirectory( oz )
 
@@ -18,5 +19,5 @@ add_subdirectory( nirvana )
 add_subdirectory( ui )
 add_subdirectory( client )
 #add_subdirectory( server )
-add_subdirectory( tools )
-add_subdirectory( tests )
+#add_subdirectory( tools )
+#add_subdirectory( tests )

@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -24,7 +24,7 @@ namespace oz
     p           = istream->readVec3();
     velocity    = istream->readVec3();
 
-    color       = istream->readVec3();
+    colour      = istream->readVec3();
     rot         = istream->readVec3();
     rotVelocity = istream->readVec3();
 
@@ -38,7 +38,7 @@ namespace oz
     ostream->writeVec3( p );
     ostream->writeVec3( velocity );
 
-    ostream->writeVec3( color );
+    ostream->writeVec3( colour );
     ostream->writeVec3( rot );
     ostream->writeVec3( rotVelocity );
 

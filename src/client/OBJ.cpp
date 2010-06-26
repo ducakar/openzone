@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -12,7 +12,7 @@
 #include "client/OBJ.hpp"
 
 #include "client/Context.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 
 namespace oz
 {
@@ -401,7 +401,7 @@ namespace client
     }
     fclose( file );
 
-    // copy everything into arrays for memory optimization
+    // copy everything into arrays for memory optimisation
     if( !tempVerts.isEmpty() ) {
       vertices( tempVerts.length() );
       for( int i = 0; i < vertices.length(); ++i ) {
@@ -521,7 +521,7 @@ namespace client
       glEnd();
     }
 
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
 
     if( !isTextured ) {
       glEnable( GL_TEXTURE_2D );

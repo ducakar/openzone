@@ -1,10 +1,10 @@
 /*
  *  Main.cpp
  *
- *  Game initialization and main loop
+ *  Game initialisation and main loop
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -105,9 +105,7 @@ namespace client
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource dir found, creating '%s' ...", rcDir.cstr() );
 
-#if defined( OZ_MSVC )
-      if( _mkdir( rcDir.cstr() ) != 0 ) {
-#elif defined( OZ_MINGW )
+#if defined( OZ_MINGW ) || defined( OZ_MSVC )
       if( mkdir( rcDir.cstr() ) != 0 ) {
 #else
       if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
@@ -155,7 +153,7 @@ namespace client
       log.println( "Random generator seed set to: %d", seed );
     }
 
-    log.print( "Initializing SDL ..." );
+    log.print( "Initialising SDL ..." );
 
     // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
     // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
@@ -398,26 +396,37 @@ namespace client
 }
 }
 
+OZ_IMPORT()
+
 int main( int argc, char** argv )
 {
   printf( "OpenZone  Copyright (C) 2002-2009  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
       "This is free software, and you are welcome to redistribute it\n"
-      "under certain conditions; See COPYING for details.\n\n" );
+      "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    oz::client::main.main( &argc, argv );
+    client::main.main( &argc, argv );
   }
-  catch( const oz::Exception& e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
+  catch( const Exception& e ) {
+    log.resetIndent();
+    log.println();
+    log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
 
-    if( oz::log.isFile() ) {
+    if( log.isFile() ) {
       fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
     }
   }
-  oz::client::main.shutdown();
+  catch( const std::bad_alloc& e ) {
+    log.resetIndent();
+    log.println();
+    log.println( "EXCEPTION: %s", e.what() );
+
+    if( log.isFile() ) {
+      fprintf( stderr, "EXCEPTION: %s\n", e.what() );
+    }
+  }
+  client::main.shutdown();
 
   return 0;
 }

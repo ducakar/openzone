@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -14,7 +14,7 @@
 #include "matrix/Bot.hpp"
 #include "matrix/World.hpp"
 #include "client/Context.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 
 #include <typeinfo>
 

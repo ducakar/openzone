@@ -1,61 +1,31 @@
 add_library( matrix STATIC
-AABB.cpp
-AABB.hpp
-BotClass.cpp
-BotClass.hpp
-Bot.cpp
-Bot.hpp
-Bounds.hpp
-BSP.cpp
-BSP.hpp
-Collider.cpp
-Collider.hpp
-common.hpp
-DynamicClass.cpp
-DynamicClass.hpp
-Dynamic.cpp
-Dynamic.hpp
-FloraManager.cpp
-FloraManager.hpp
-io.cpp
-io.hpp
-Lua.cpp
-Lua.hpp
-Matrix.cpp
-Matrix.hpp
-Names.cpp
-Names.hpp
-ObjectClass.cpp
-ObjectClass.hpp
-Object.cpp
-Object.hpp
-Particle.cpp
-Particle.hpp
-Physics.cpp
-Physics.hpp
-Sky.cpp
-Sky.hpp
-Sphere.hpp
-Structure.cpp
-Structure.hpp
-Synapse.cpp
-Synapse.hpp
-Terrain.cpp
-Terrain.hpp
-Timer.cpp
-Timer.hpp
-Translator.cpp
-Translator.hpp
-VehicleClass.cpp
-VehicleClass.hpp
-Vehicle.cpp
-Vehicle.hpp
-WeaponClass.cpp
-WeaponClass.hpp
-Weapon.cpp
-Weapon.hpp
-World.cpp
-World.hpp
+	AABB.cpp
+	BotClass.cpp
+	Bot.cpp
+	BSP.cpp
+	Collider.cpp
+	DynamicClass.cpp
+	Dynamic.cpp
+	FloraManager.cpp
+	io.cpp
+	Lua.cpp
+	Matrix.cpp
+	Names.cpp
+	ObjectClass.cpp
+	Object.cpp
+	Particle.cpp
+	Physics.cpp
+	Sky.cpp
+	Structure.cpp
+	Synapse.cpp
+	Terrain.cpp
+	Timer.cpp
+	Translator.cpp
+	VehicleClass.cpp
+	Vehicle.cpp
+	WeaponClass.cpp
+	Weapon.cpp
+	World.cpp
 )
 
 add_dependencies( matrix pch )

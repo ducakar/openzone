@@ -4,7 +4,7 @@
  *  Visual particle generator
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -20,7 +20,7 @@ namespace client
 //  {
 //    Vec3  p;
 //    Vec3  velocity;
-//    Vec3  color;
+//    Vec3  colour;
 //    float lifeTime;
 //  };
 //
@@ -38,15 +38,15 @@ namespace client
 //
 //      oz::SparkGen* sparkGen;
 //      Spark*        sparks;
-//      float        startMillis;
-//      float        sparksPerTick;
-//      int          nSparks;
+//      float         startMillis;
+//      float         sparksPerTick;
+//      int           nSparks;
 //
 //      void createSpark( int i );
 //
 //    public:
 //
-//      State          state;
+//      State         state;
 //
 //      explicit SparkGenRender( oz::SparkGen* sparkGen );
 //      SparkGenRender( const SparkGenRender& sparkGenRender );

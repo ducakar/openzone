@@ -1,72 +1,37 @@
 add_executable( openzone
-Audio.cpp
-Audio.hpp
-BasicAudio.cpp
-BasicAudio.hpp
-BotAudio.cpp
-BotAudio.hpp
-BotProxy.cpp
-BotProxy.hpp
-BSP.cpp
-BSP.hpp
-Camera.cpp
-Camera.hpp
-Colors.cpp
-Colors.hpp
-common.cpp
-common.hpp
-Context.cpp
-Context.hpp
-ExplosionModel.cpp
-ExplosionModel.hpp
-FreeCamProxy.cpp
-FreeCamProxy.hpp
-Frustum.cpp
-Frustum.hpp
-GameStage.cpp
-GameStage.hpp
-Main.cpp
-Main.hpp
-MD2.cpp
-MD2.hpp
-MD2Model.cpp
-MD2Model.hpp
-MD2StaticModel.cpp
-MD2StaticModel.hpp
-MD2WeaponModel.cpp
-MD2WeaponModel.hpp
-MD3.cpp
-MD3.hpp
-MD3StaticModel.cpp
-MD3StaticModel.hpp
-Model.cpp
-Model.hpp
-Network.cpp
-Network.hpp
-OBJ.cpp
-OBJ.hpp
-OBJModel.cpp
-OBJModel.hpp
-OBJVehicleModel.cpp
-OBJVehicleModel.hpp
-Proxy.hpp
-Render.cpp
-Render.hpp
-Shape.cpp
-Shape.hpp
-Sky.cpp
-Sky.hpp
-Sound.cpp
-Sound.hpp
-SparkModel.cpp
-SparkModel.hpp
-Stage.hpp
-StrategicProxy.cpp
-StrategicProxy.hpp
-Terrain.cpp
-Terrain.hpp
-Water.cpp
-Water.hpp
+	Audio.cpp
+	BasicAudio.cpp
+	BotAudio.cpp
+	BotProxy.cpp
+	BSP.cpp
+	Camera.cpp
+	Colours.cpp
+	common.cpp
+	Context.cpp
+	ExplosionModel.cpp
+	FreeCamProxy.cpp
+	Frustum.cpp
+	GameStage.cpp
+	Main.cpp
+	MD2.cpp
+	MD2Model.cpp
+	MD2StaticModel.cpp
+	MD2WeaponModel.cpp
+	MD3.cpp
+	MD3StaticModel.cpp
+	Model.cpp
+	Network.cpp
+	OBJ.cpp
+	OBJModel.cpp
+	OBJVehicleModel.cpp
+	Render.cpp
+	Shape.cpp
+	Sky.cpp
+	Sound.cpp
+	SparkModel.cpp
+	StrategicProxy.cpp
+	Terrain.cpp
+	Water.cpp
 )
 
 add_dependencies( openzone pch )

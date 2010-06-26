@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -14,7 +14,7 @@
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
 #include "client/Shape.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 #include "client/Render.hpp"
 
 namespace oz
@@ -135,14 +135,14 @@ namespace ui
       glScalef( scale, scale, scale );
 
       if( i == taggedIndex ) {
-        glColor4fv( Colors::TAG );
+        glColor4fv( Colours::TAG );
         taggedItem = item;
       }
 
       render.drawModel( item, null );
 
       if( i == taggedIndex ) {
-        glColor4fv( Colors::WHITE );
+        glColor4fv( Colours::WHITE );
       }
 
       glPopMatrix();
@@ -164,7 +164,7 @@ namespace ui
       glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
       rect( -52, -16, 48, 12 );
 
-      glColor4fv( Colors::WHITE );
+      glColor4fv( Colours::WHITE );
       if( taggedItem->flags & Object::USE_FUNC_BIT ) {
         glEnable( GL_TEXTURE_2D );
 

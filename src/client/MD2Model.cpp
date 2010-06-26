@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -12,7 +12,7 @@
 #include "client/MD2Model.hpp"
 
 #include "matrix/BotClass.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
 #include "client/Render.hpp"
@@ -73,15 +73,15 @@ namespace client
     }
 
     if( bot->state & Bot::DEATH_BIT ) {
-      float color[] = { 1.0f, 1.0f, 1.0f, bot->life / clazz->life * 3.0f };
+      float colour[] = { 1.0f, 1.0f, 1.0f, bot->life / clazz->life * 3.0f };
 
       glEnable( GL_BLEND );
-      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color );
+      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colour );
 
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
 
-      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::WHITE );
+      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
       glDisable( GL_BLEND );
     }
     else if( bot->index != camera.bot || camera.isExternal ) {

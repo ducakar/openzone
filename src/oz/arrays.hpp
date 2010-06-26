@@ -4,7 +4,7 @@
  *  Array utility templates.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -273,6 +273,22 @@ namespace oz
   }
 
   /**
+   * Remove element at the specified index.
+   * @param aDest pointer to the first element in the array
+   * @param index position of the element to be removed
+   * @param count number of elements in the array
+   */
+  template <typename Type>
+  inline void aRemove( Type* aDest, int index, int count )
+  {
+    assert( 0 <= index && index < count );
+
+    for( int i = index + 1; i < count; ++i ) {
+      aDest[i - 1] = aDest[i];
+    }
+  }
+
+  /**
    * Find the first occurrence of an element.
    * @param aSrc pointer to the first element in the array
    * @param count number of elements to be looked upon
@@ -309,7 +325,7 @@ namespace oz
   }
 
   /**
-   * Construct elements of an uninitialized array.
+   * Construct elements of an uninitialised array.
    * @param aDest
    * @param count
    */
@@ -348,7 +364,7 @@ namespace oz
   }
 
   /**
-   * Destruct elements of an initialized array.
+   * Destruct elements of an initialised array.
    * @param aDest
    * @param count
    */
@@ -388,8 +404,6 @@ namespace oz
   template <typename Type>
   inline Type* aRealloc( Type* aDest, int count, int newCount )
   {
-    assert( count <= newCount );
-
     Type* aNew = new Type[newCount];
     for( int i = 0; i < count; ++i ) {
       aNew[i] = aDest[i];

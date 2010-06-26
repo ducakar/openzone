@@ -5,7 +5,7 @@
  *  The world should not be manipulated directly; use Synapse instead.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #pragma once
@@ -108,7 +108,7 @@ namespace oz
 
       int  addStruct( const char* name, const Vec3& p, Structure::Rotation rot );
       int  addObject( const char* name, const Vec3& p );
-      int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
+      int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
                     float restitution, float mass, float lifeTime );
 
       void remove( Structure* str );
@@ -360,18 +360,18 @@ namespace oz
     return index;
   }
 
-  inline int World::addPart( const Vec3& p, const Vec3& velocity, const Vec3& color,
+  inline int World::addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
                              float restitution, float mass, float lifeTime )
   {
     int index;
 
     if( partAvailableIndices.isEmpty() ) {
       index = parts.length();
-      parts << new Particle( index, p, velocity, color, restitution, mass, lifeTime );
+      parts << new Particle( index, p, velocity, colour, restitution, mass, lifeTime );
     }
     else {
       partAvailableIndices >> index;
-      parts[index] = new Particle( index, p, velocity, color, restitution, mass, lifeTime );
+      parts[index] = new Particle( index, p, velocity, colour, restitution, mass, lifeTime );
     }
     return index;
   }

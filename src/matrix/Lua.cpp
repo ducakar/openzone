@@ -4,7 +4,7 @@
  *  Lua scripting engine for Matrix
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -1494,12 +1494,12 @@ namespace oz
   {
     Vec3  p           = Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) );
     Vec3  velocity    = Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) );
-    Vec3  color       = Vec3( float( lua_tonumber( l, 7 ) ), float( lua_tonumber( l, 8 ) ), float( lua_tonumber( l, 9 ) ) );
+    Vec3  colour      = Vec3( float( lua_tonumber( l, 7 ) ), float( lua_tonumber( l, 8 ) ), float( lua_tonumber( l, 9 ) ) );
     float restitution = float( lua_tonumber( l, 10 ) );
     float mass        = float( lua_tonumber( l, 11 ) );
     float lifeTime    = float( lua_tonumber( l, 12 ) );
 
-    int index = synapse.addPart( p, velocity, color, restitution, mass, lifeTime );
+    int index = synapse.addPart( p, velocity, colour, restitution, mass, lifeTime );
     lua.part = world.parts[index];
     lua_pushinteger( l, index );
     return 1;
@@ -1594,7 +1594,7 @@ namespace oz
 
   void Lua::init()
   {
-    log.println( "Initializing Matrix Lua {" );
+    log.println( "Initialising Matrix Lua {" );
     log.indent();
 
     l = lua_open();

@@ -4,7 +4,7 @@
  *  Bitmap font loader and print function
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -77,7 +77,7 @@ namespace ui
     log.print( "Closing fonts ..." );
 
     if( TTF_WasInit() == 0 ) {
-      log.printEnd( " Not initialized" );
+      log.printEnd( " Not initialised" );
       return;
     }
     if( monoFont != null ) {

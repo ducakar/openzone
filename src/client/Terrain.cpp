@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING for details.
+ *  This software is covered by GNU General Public License v3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -17,7 +17,7 @@
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
 #include "client/Frustum.hpp"
-#include "client/Colors.hpp"
+#include "client/Colours.hpp"
 #include "client/Water.hpp"
 
 namespace oz
@@ -177,7 +177,7 @@ namespace client
       glNormal3f( 0.0f, 0.0f, 1.0f );
 
       glBegin( GL_QUADS );
-        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend1 );
 
         glTexCoord2f( minX * WATER_SCALE, minY * WATER_SCALE );
         glVertex3f( v0.x, v0.y, 0.0f );
@@ -191,7 +191,7 @@ namespace client
         glTexCoord2f( minX * WATER_SCALE, maxY * WATER_SCALE );
         glVertex3f( v0.x, v1.y, 0.0f );
 
-        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend2 );
 
         glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v0.x, v0.y, 0.0f );
@@ -210,7 +210,7 @@ namespace client
       glNormal3f( 0.0f, 0.0f, -1.0f );
 
       glBegin( GL_QUADS );
-        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend1 );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend1 );
 
         glTexCoord2f( minX * WATER_SCALE, maxY * WATER_SCALE );
         glVertex3f( v0.x, v1.y, 0.0f );
@@ -224,7 +224,7 @@ namespace client
         glTexCoord2f( minX * WATER_SCALE, minY * WATER_SCALE );
         glVertex3f( v0.x, v0.y, 0.0f );
 
-        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colors::waterBlend2 );
+        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend2 );
 
         glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
         glVertex3f( v0.x, v1.y, 0.0f );
