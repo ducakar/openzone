@@ -1,8 +1,8 @@
 add_executable( server
-	Game.cpp
-	Main.cpp
-	Network.cpp
-	Server.cpp
+	Game.cc
+	Main.cc
+	Network.cc
+	Server.cc
 )
 
 add_dependencies( server pch )

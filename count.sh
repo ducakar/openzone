@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source=`echo src/*/*.{hpp,cpp} src/stable.hpp`
+source=`echo src/*/*.{hh,cc} src/stable.hh`
 data=`echo data/*/*.rc data/lua/*/*.lua`
 build=`echo src/**/CMakeLists.gen {src,data}/**/CMakeLists.txt CMakeLists.txt src/*.in *.sh`
 
