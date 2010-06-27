@@ -1,8 +1,8 @@
 add_library( oz STATIC
-	Alloc.cc
-	assert.cc
-	Config.cc
-	Log.cc
-	Math.cc
-	String.cc
+	Alloc.cpp
+	assert.cpp
+	Config.cpp
+	Log.cpp
+	Math.cpp
+	String.cpp
 )
