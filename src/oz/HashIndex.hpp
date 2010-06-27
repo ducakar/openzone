@@ -631,7 +631,7 @@ namespace oz
         data[i] = elem;
         ++count;
 
-        assert( loadFactor() < 0.75f );
+        soft_assert( loadFactor() < 0.75f );
 
         return &data[i]->value;
       }

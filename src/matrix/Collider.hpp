@@ -57,6 +57,15 @@ namespace oz
       const BSP*       bsp;
       const Structure* str;
 
+      Bitset           visitedBrushes;
+
+      /**
+       * Return if brush was already visited and mark it visited.
+       * @param index
+       * @return
+       */
+      bool visitBrush( int index );
+
       /**
        * Rotate vector from absolute coordinate system to structure coordinate system. Do not
        * translate (because of normals).
@@ -74,7 +83,7 @@ namespace oz
       Vec3 toAbsoluteCS( const Vec3& v ) const;
 
       bool testPointBrush( const BSP::Brush* brush ) const;
-      bool testPointNode( int nodeIndex ) const;
+      bool testPointNode( int nodeIndex );
       bool testPointWorld();
       bool testPointWorldOO();
       bool testPointWorldOSO();
@@ -90,7 +99,7 @@ namespace oz
       void trimPointWorld();
 
       bool testAABBBrush( const BSP::Brush* brush ) const;
-      bool testAABBNode( int nodeIndex ) const;
+      bool testAABBNode( int nodeIndex );
       bool testAABBWorld();
       bool testAABBWorldOO();
       bool testAABBWorldOSO();

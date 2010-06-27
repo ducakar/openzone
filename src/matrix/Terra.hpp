@@ -25,7 +25,7 @@ namespace oz
 
     public:
 
-      static const int QUADS = 128;
+      static const int QUADS = 256;
       static const int MAX   = QUADS + 1;
 
     private:
@@ -48,7 +48,7 @@ namespace oz
       struct Quad
       {
         // integer size of a terrain quad
-        static const int   SIZEI = 16;
+        static const int   SIZEI = 8;
         // float size of a terrain quad
         static const float SIZE;
         static const float INV_SIZE;
@@ -60,6 +60,10 @@ namespace oz
 
       Vec3 vertices[MAX][MAX];
       Quad quads[QUADS][QUADS];
+
+      String detailTexture;
+      String mapTexture;
+      String waterTexture;
 
       void init();
 #ifndef OZ_PREBUILT

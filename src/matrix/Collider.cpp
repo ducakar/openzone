@@ -42,8 +42,15 @@ namespace oz
     Mat44::rotZ(  Math::PI_2 )
   };
 
-  Collider::Collider() : mask( Object::SOLID_BIT )
+  Collider::Collider() : visitedBrushes( BSP::MAX_BRUSHES ), mask( Object::SOLID_BIT )
   {}
+
+  inline bool Collider::visitBrush( int index )
+  {
+    bool isTested = visitedBrushes.get( index );
+    visitedBrushes.set( index );
+    return isTested;
+  }
 
   inline Vec3 Collider::toStructCS( const Vec3& v ) const
   {
@@ -74,15 +81,18 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush overlapping
-  bool Collider::testPointNode( int nodeIndex ) const
+  bool Collider::testPointNode( int nodeIndex )
   {
     if( nodeIndex < 0 ) {
       const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
-        const BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
+        int index = bsp->leafBrushes[leaf.firstBrush + i];
+        const BSP::Brush& brush = bsp->brushes[index];
 
-        if( ( brush.material & Material::STRUCT_BIT ) && !testPointBrush( &brush ) ) {
+        if( !visitBrush( index ) && ( brush.material & Material::STRUCT_BIT ) &&
+            !testPointBrush( &brush ) )
+        {
           return false;
         }
       }
@@ -130,6 +140,7 @@ namespace oz
             bsp = world.bsps[str->bsp];
 
             globalStartPos = toStructCS( aabb.p - str->p );
+            visitedBrushes.clearAll();
 
             if( str->includes( point, EPSILON ) && !testPointNode( 0 ) ) {
               return false;
@@ -192,6 +203,7 @@ namespace oz
             bsp = world.bsps[str->bsp];
 
             globalStartPos = toStructCS( aabb.p - str->p );
+            visitedBrushes.clearAll();
 
             if( str->includes( point, EPSILON ) && !testPointNode( 0 ) ) {
               return false;
@@ -411,9 +423,10 @@ namespace oz
       leafEndPos   = endPos;
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
-        const BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
+        int index = bsp->leafBrushes[leaf.firstBrush + i];
+        const BSP::Brush& brush = bsp->brushes[index];
 
-        if( brush.material & Material::STRUCT_BIT ) {
+        if( !visitBrush( index ) && brush.material & Material::STRUCT_BIT ) {
           trimPointBrush( &brush );
         }
       }
@@ -467,6 +480,7 @@ namespace oz
             bsp = world.bsps[str->bsp];
 
             if( str->overlaps( trace ) ) {
+              visitedBrushes.clearAll();
               trimPointNode( 0, 0.0f, 1.0f,
                              toStructCS( globalStartPos - str->p ),
                              toStructCS( globalEndPos - str->p ) );
@@ -516,15 +530,18 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush overlapping
-  bool Collider::testAABBNode( int nodeIndex ) const
+  bool Collider::testAABBNode( int nodeIndex )
   {
     if( nodeIndex < 0 ) {
       const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
-        const BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
+        int index = bsp->leafBrushes[leaf.firstBrush + i];
+        const BSP::Brush& brush = bsp->brushes[index];
 
-        if( ( brush.material & Material::STRUCT_BIT ) && !testAABBBrush( &brush ) ) {
+        if( !visitBrush( index ) && ( brush.material & Material::STRUCT_BIT ) &&
+            !testAABBBrush( &brush ) )
+        {
           return false;
         }
       }
@@ -578,6 +595,7 @@ namespace oz
             bsp = world.bsps[str->bsp];
 
             globalStartPos = toStructCS( aabb.p - str->p );
+            visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
               return false;
@@ -641,6 +659,7 @@ namespace oz
             bsp = world.bsps[str->bsp];
 
             globalStartPos = toStructCS( aabb.p - str->p );
+            visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
               return false;
@@ -838,18 +857,21 @@ namespace oz
       leafEndPos   = endPos;
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
-        const BSP::Brush& brush = bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
+        int index = bsp->leafBrushes[leaf.firstBrush + i];
+        const BSP::Brush& brush = bsp->brushes[index];
 
-        if( brush.material & Material::STRUCT_BIT ) {
-          trimAABBBrush( &brush );
-        }
-        else if( brush.material & Material::WATER_BIT ) {
-          trimAABBWater( &brush );
-        }
-        else if( ( brush.material & Material::LADDER_BIT ) &&
-                 obj != null && ( obj->flags & Object::CLIMBER_BIT ) )
-        {
-          trimAABBLadder( &brush );
+        if( !visitBrush( index ) ) {
+          if( brush.material & Material::STRUCT_BIT ) {
+            trimAABBBrush( &brush );
+          }
+          else if( brush.material & Material::WATER_BIT ) {
+            trimAABBWater( &brush );
+          }
+          else if( ( brush.material & Material::LADDER_BIT ) &&
+                   obj != null && ( obj->flags & Object::CLIMBER_BIT ) )
+          {
+            trimAABBLadder( &brush );
+          }
         }
       }
     }
@@ -911,6 +933,7 @@ namespace oz
             bsp = world.bsps[str->bsp];
 
             if( str->overlaps( trace ) ) {
+              visitedBrushes.clearAll();
               trimAABBNode( 0, 0.0f, 1.0f,
                             toStructCS( globalStartPos - str->p ),
                             toStructCS( globalEndPos - str->p ) );
