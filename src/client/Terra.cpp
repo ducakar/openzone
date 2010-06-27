@@ -1,5 +1,5 @@
 /*
- *  Terrain.cpp
+ *  Terra.cpp
  *
  *  [description]
  *
@@ -9,10 +9,10 @@
 
 #include "stable.hpp"
 
-#include "client/Terrain.hpp"
+#include "client/Terra.hpp"
 
 #include "matrix/World.hpp"
-#include "matrix/Terrain.hpp"
+#include "matrix/Terra.hpp"
 
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
@@ -25,42 +25,42 @@ namespace oz
 namespace client
 {
 
-  const float Terrain::DETAIL_SCALE = 4.0f;
-  const float Terrain::WATER_SCALE  = 2.0f;
+  const float Terra::DETAIL_SCALE = 4.0f;
+  const float Terra::WATER_SCALE  = 2.0f;
 
-  Terrain terra;
+  Terra terra;
 
-  void Terrain::load()
+  void Terra::load()
   {
     detailTexId = context.loadTexture( "terra/detail.jpg" );
     mapTexId    = context.loadTexture( "terra/map.png" );
     waterTexId  = context.loadTexture( "terra/water.jpg" );
 
-    int nVertices = oz::Terrain::MAX * oz::Terrain::MAX;
-    int nIndices = oz::Terrain::MAX * ( oz::Terrain::MAX - 1 ) * 2;
+    int nVertices = oz::Terra::MAX * oz::Terra::MAX;
+    int nIndices = oz::Terra::MAX * ( oz::Terra::MAX - 1 ) * 2;
 
     VertexData* arrayData = new VertexData[nVertices];
     uint* indexData = new uint[nIndices];
 
-    for( int x = 0; x < oz::Terrain::MAX; ++x ) {
-      for( int y = 0; y < oz::Terrain::MAX; ++y ) {
-        VertexData& vertex = arrayData[x * oz::Terrain::MAX + y];
+    for( int x = 0; x < oz::Terra::MAX; ++x ) {
+      for( int y = 0; y < oz::Terra::MAX; ++y ) {
+        VertexData& vertex = arrayData[x * oz::Terra::MAX + y];
 
         vertex.position = world.terra.vertices[x][y];
 
         vertex.normal.setZero();
-        if( x < oz::Terrain::QUADS && y < oz::Terrain::QUADS ) {
+        if( x < oz::Terra::QUADS && y < oz::Terra::QUADS ) {
           vertex.normal += world.terra.quads[x][y].tri[0].normal;
           vertex.normal += world.terra.quads[x][y].tri[1].normal;
         }
-        if( x > 0 && y < oz::Terrain::QUADS ) {
+        if( x > 0 && y < oz::Terra::QUADS ) {
           vertex.normal += world.terra.quads[x - 1][y].tri[0].normal;
         }
         if( x > 0 && y > 0 ) {
           vertex.normal += world.terra.quads[x - 1][y - 1].tri[0].normal;
           vertex.normal += world.terra.quads[x - 1][y - 1].tri[1].normal;
         }
-        if( x < oz::Terrain::QUADS && y > 0 ) {
+        if( x < oz::Terra::QUADS && y > 0 ) {
           vertex.normal += world.terra.quads[x][y - 1].tri[1].normal;
         }
         vertex.normal.norm();
@@ -68,12 +68,12 @@ namespace client
         vertex.detailTexCoord.u = float( x & 1 ) * DETAIL_SCALE;
         vertex.detailTexCoord.v = float( y & 1 ) * DETAIL_SCALE;
 
-        vertex.mapTexCoord.u = float( x ) / oz::Terrain::MAX;
-        vertex.mapTexCoord.v = float( y ) / oz::Terrain::MAX;
+        vertex.mapTexCoord.u = float( x ) / oz::Terra::MAX;
+        vertex.mapTexCoord.v = float( y ) / oz::Terra::MAX;
 
-        if( x != oz::Terrain::MAX - 1 ) {
-          indexData[ 2 * ( x * oz::Terrain::MAX + y ) ] = ( x + 1 ) * oz::Terrain::MAX + y;
-          indexData[ 2 * ( x * oz::Terrain::MAX + y ) + 1 ] = x * oz::Terrain::MAX + y;
+        if( x != oz::Terra::MAX - 1 ) {
+          indexData[ 2 * ( x * oz::Terra::MAX + y ) ] = ( x + 1 ) * oz::Terra::MAX + y;
+          indexData[ 2 * ( x * oz::Terra::MAX + y ) + 1 ] = x * oz::Terra::MAX + y;
         }
       }
     }
@@ -90,17 +90,16 @@ namespace client
     delete[] arrayData;
   }
 
-  void Terrain::unload()
+  void Terra::unload()
   {
     glDeleteBuffers( 1, &indexBuffer );
     glDeleteBuffers( 1, &arrayBuffer );
   }
 
-  void Terrain::draw() const
+  void Terra::draw() const
   {
-    Span span;
-    world.terra.getInters( span, camera.p.x - radius, camera.p.y - radius,
-                           camera.p.x + radius, camera.p.y + radius );
+    Span span = world.terra.getInters( camera.p.x - radius, camera.p.y - radius,
+                                       camera.p.x + radius, camera.p.y + radius );
     ++span.maxX;
     ++span.maxY;
 
@@ -137,7 +136,7 @@ namespace client
 
     int count = ( span.maxY - span.minY + 1 ) * 2;
     for( int x = span.minX; x < span.maxX; ++x ) {
-      int offset = ( x * oz::Terrain::MAX + span.minY ) * 2;
+      int offset = ( x * oz::Terra::MAX + span.minY ) * 2;
       glDrawElements( GL_TRIANGLE_STRIP, count, GL_UNSIGNED_INT, OZ_VBO_OFFSET( offset, uint ) );
     }
 
@@ -155,11 +154,10 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
   }
 
-  void Terrain::drawWater() const
+  void Terra::drawWater() const
   {
-    Span span;
-    world.terra.getInters( span, camera.p.x - radius, camera.p.y - radius,
-                           camera.p.x + radius, camera.p.y + radius );
+    Span span = world.terra.getInters( camera.p.x - radius, camera.p.y - radius,
+                                       camera.p.x + radius, camera.p.y + radius );
     ++span.maxX;
     ++span.maxY;
 

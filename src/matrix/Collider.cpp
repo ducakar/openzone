@@ -215,7 +215,7 @@ namespace oz
   // terrain collision detection is penetration-safe
   bool Collider::trimTerraQuad( int x, int y )
   {
-    const Terrain::Quad& quad = world.terra.quads[x][y];
+    const Terra::Quad& quad = world.terra.quads[x][y];
     const Vec3& minVert = world.terra.vertices[x    ][y    ];
     const Vec3& maxVert = world.terra.vertices[x + 1][y + 1];
 
@@ -281,8 +281,7 @@ namespace oz
     float maxPosX = Math::max( globalStartPos.x, globalEndPos.x );
     float maxPosY = Math::max( globalStartPos.y, globalEndPos.y );
 
-    Span terraSpan;
-    world.terra.getInters( terraSpan, minPosX, minPosY, maxPosX, maxPosY );
+    Span terraSpan = world.terra.getInters( minPosX, minPosY, maxPosX, maxPosY );
 
     for( int x = terraSpan.minX; x <= terraSpan.maxX; ++x ) {
       for( int y = terraSpan.minY; y <= terraSpan.maxY; ++y ) {

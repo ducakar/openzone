@@ -864,8 +864,13 @@ namespace oz
   bool BSP::loadOZBSP( const char* fileName )
   {
     Buffer buffer;
-
     buffer.load( fileName );
+
+    if( buffer.isEmpty() ) {
+      log.println( "Cannot read file" );
+      return false;
+    }
+
     InputStream is = buffer.inputStream();
 
     mins         = is.readVec3();

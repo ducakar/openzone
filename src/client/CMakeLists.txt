@@ -30,7 +30,7 @@ add_executable( openzone
 	Sound.cpp
 	SparkModel.cpp
 	StrategicProxy.cpp
-	Terrain.cpp
+	Terra.cpp
 	Water.cpp
 )
 

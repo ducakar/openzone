@@ -14,7 +14,7 @@
 #include "ui/UI.hpp"
 
 #include "client/BSP.hpp"
-#include "client/Terrain.hpp"
+#include "client/Terra.hpp"
 #include "client/OBJ.hpp"
 #include "client/MD2.hpp"
 #include "client/Model.hpp"
