@@ -359,6 +359,11 @@ namespace oz
       }
     }
 
+    if( nBrushes > MAX_BRUSHES ) {
+      log.println( "Too many brushes %d, maximum is %d", nBrushes, MAX_BRUSHES );
+      return false;
+    }
+
     nVertices = lumps[QBSP_LUMP_VERTICES].length / sizeof( QBSPVertex );
     vertices = new BSP::Vertex[nVertices];
     fseek( file, lumps[QBSP_LUMP_VERTICES].offset, SEEK_SET );

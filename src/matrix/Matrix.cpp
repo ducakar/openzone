@@ -63,7 +63,7 @@ namespace oz
         synapse.addObject( "Droid", Vec3( x, y, z ) );
       }
     }
-    for( int i = 0; i < 2000; ++i ) {
+    for( int i = 0; i < 5000; ++i ) {
       float x = -World::DIM + 2.0f * World::DIM * Math::frand();
       float y = -World::DIM + 2.0f * World::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
@@ -72,7 +72,7 @@ namespace oz
         synapse.addObject( "MetalBarrel", Vec3( x, y, z ) );
       }
     }
-    for( int i = 0; i < 2000; ++i ) {
+    for( int i = 0; i < 5000; ++i ) {
       float x = -World::DIM + 2.0f * World::DIM * Math::frand();
       float y = -World::DIM + 2.0f * World::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 2.0f;
@@ -97,7 +97,7 @@ namespace oz
     synapse.addObject( "FirstAid", Vec3( 50, -36, 37 ) );
     synapse.addObject( "Rifle", Vec3( 51, -36, 37 ) );
 
-    synapse.addObject( "Raptor", Vec3( 70, -60, 37 ) );
+    synapse.addObject( "Raptor", Vec3( 70, -60, 38 ) );
 
     synapse.addStruct( "castle", Vec3( 57, -33, 43 ), Structure::R0 );
 

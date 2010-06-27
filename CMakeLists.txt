@@ -47,7 +47,7 @@ else( MSVC )
 	set( warnings "${warnings} -Wredundant-decls -Woverloaded-virtual -Wnon-virtual-dtor -Wsign-promo" )
 	set( warnings "${warnings} -Wctor-dtor-privacy -Wstrict-overflow -Wlogical-op -Wpacked" )
 	set( libs "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
-	set( arch_flags "-march=i686 -mtune=generic -mmmx -msse -mfpmath=both" )
+	set( arch_flags "-march=prescott -mtune=generic -mmmx -msse3 -mfpmath=sse" )
 
 	if( NOT OZ_CROSS_MINGW )
 		set( CMAKE_FIND_ROOT_PATH "C:/MinGW" )

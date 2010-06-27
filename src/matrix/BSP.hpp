@@ -18,6 +18,8 @@ namespace oz
   {
     public:
 
+      static const int MAX_BRUSHES = 256;
+
       static const int LIGHTMAP_DIM = 128;
       static const int LIGHTMAP_BPP = 3;
       static const int LIGHTMAP_SIZE = LIGHTMAP_DIM * LIGHTMAP_DIM * LIGHTMAP_BPP;

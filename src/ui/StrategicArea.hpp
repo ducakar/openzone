@@ -24,6 +24,8 @@ namespace ui
   {
     private:
 
+      static const float TAG_CLIP_DIST;
+
       float         pixelStep;
       float         stepPixel;
       bool          leftClick;
@@ -36,7 +38,7 @@ namespace ui
     private:
 
       Pair<int> project( const Vec3& p ) const;
-      void projectBounds( Span& span, const AABB& bb ) const;
+      Span projectBounds( const AABB& bb ) const;
 
       void printName( int baseX, int baseY, const char* s, ... );
       static void fillRect( float x, float y, float width, float height );

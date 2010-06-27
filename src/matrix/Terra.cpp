@@ -108,6 +108,10 @@ namespace oz
       throw Exception( "Failed to load terrain" );
     }
 
+    is.readString( detailTexture );
+    is.readString( mapTexture );
+    is.readString( waterTexture );
+
     for( int x = 0; x < MAX; ++x ) {
       for( int y = 0; y < MAX; ++y ) {
         vertices[x][y] = is.readVec3();
@@ -137,6 +141,11 @@ namespace oz
     float heightStep = terraConfig.get( "step", 0.5f );
     float heightBias = terraConfig.get( "bias", 0.0f );
 
+    String terraString = "terra/";
+    detailTexture = terraString + terraConfig.get( "detailTexture", "" );
+    mapTexture = terraString + terraConfig.get( "mapTexture", "" );
+    waterTexture = terraString + terraConfig.get( "waterTexture", "" );
+
     log.print( "Loading terrain heightmap image '%s' ...", name.cstr() );
 
     SDL_Surface* image = IMG_Load( imageFile );
@@ -146,7 +155,8 @@ namespace oz
       throw Exception( "Failed to load terrain" );
     }
     if( image->w != MAX || image->h != MAX || image->format->BytesPerPixel != 1 ) {
-      log.println( "Invalid size: %d x %d, should be %d x %d", image->w, image->h, MAX, MAX );
+      log.printEnd( " Invalid format: %d x %d %d bpp, should be %d x %d 8 bpp", image->w, image->h,
+                   image->format->BytesPerPixel * 8, MAX, MAX );
       SDL_FreeSurface( image );
       throw Exception( "Failed to load terrain" );
     }
@@ -180,14 +190,20 @@ namespace oz
 
     int size = 0;
 
-    size += 1             * sizeof( int );
-    size += MAX * MAX     * sizeof( Vec3 );
+    size += 1 * sizeof( int );
+    size += detailTexture.length() + 1;
+    size += mapTexture.length() + 1;
+    size += waterTexture.length() + 1;
+    size += MAX * MAX * sizeof( Vec3 );
     size += QUADS * QUADS * sizeof( Quad );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     os.writeInt( MAX );
+    os.writeString( detailTexture );
+    os.writeString( mapTexture );
+    os.writeString( waterTexture );
 
     for( int x = 0; x < MAX; ++x ) {
       for( int y = 0; y < MAX; ++y ) {

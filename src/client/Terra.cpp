@@ -32,9 +32,9 @@ namespace client
 
   void Terra::load()
   {
-    detailTexId = context.loadTexture( "terra/detail.jpg" );
-    mapTexId    = context.loadTexture( "terra/map.png" );
-    waterTexId  = context.loadTexture( "terra/water.jpg" );
+    detailTexId = context.loadTexture( world.terra.detailTexture );
+    mapTexId    = context.loadTexture( world.terra.mapTexture );
+    waterTexId  = context.loadTexture( world.terra.waterTexture );
 
     int nVertices = oz::Terra::MAX * oz::Terra::MAX;
     int nIndices = oz::Terra::MAX * ( oz::Terra::MAX - 1 ) * 2;

@@ -29,7 +29,7 @@ namespace oz
 
   struct Cell
   {
-    static const int   SIZEI = 16;
+    static const int   SIZEI = 8;
     static const float SIZE;
     static const float INV_SIZE;
     static const float RADIUS;
@@ -47,11 +47,11 @@ namespace oz
     public:
 
       // # of cells on each (x, y) axis
-      static const int   MAX = 128;
+      static const int   MAX = 256;
       static const float DIM;
 
       Sky                sky;
-      Terra            terra;
+      Terra              terra;
       Cell               cells[World::MAX][World::MAX];
       Vector<BSP*>       bsps;
       Vector<Structure*> structs;
