@@ -445,8 +445,17 @@ namespace oz
         }
       }
 
+      bool isEmpty() const
+      {
+        assert( ( count == 0 ) == ( buffer == null ) );
+
+        return count == 0;
+      }
+
       int length() const
       {
+        assert( ( count == 0 ) == ( buffer == null ) );
+
         return count;
       }
 

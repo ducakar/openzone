@@ -1,5 +1,5 @@
 /*
- *  Terrain.hpp
+ *  Terra.hpp
  *
  *  Matrix structure for terrain
  *
@@ -16,12 +16,12 @@ namespace oz
 
   namespace client
   {
-    class Terrain;
+    class Terra;
   }
 
-  class Terrain
+  class Terra
   {
-    friend class client::Terrain;
+    friend class client::Terra;
 
     public:
 
@@ -33,7 +33,9 @@ namespace oz
       // World::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
       static const float DIM;
 
+#ifndef OZ_PREBUILT
       void buildTerraFrame();
+#endif
 
     public:
 
@@ -60,29 +62,33 @@ namespace oz
       Quad quads[QUADS][QUADS];
 
       void init();
+#ifndef OZ_PREBUILT
       void load( float height );
-      void load( const char* heightMapFile, float heightStep, float heightBias );
+#endif
+      void load( const char* name );
+#ifndef OZ_PREBUILT
+      void save( const char* name );
+#endif
 
       void isEmpty() const;
 
-      void  getInters( Span& span, float minX, float minY, float maxX, float maxY,
-                       float epsilon = 0.0f ) const;
+      Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;
       // indices of TerraQuad and index of the triangle inside the TerraQuad
       Pair<int> getIndices( float x, float y ) const;
       float height( float x, float y ) const;
 
   };
 
-  inline void Terrain::getInters( Span& span, float minPosX, float minPosY,
+  inline Span Terra::getInters( float minPosX, float minPosY,
                                   float maxPosX, float maxPosY, float epsilon ) const
   {
-    span.minX = max( int( ( minPosX - epsilon + DIM ) * Quad::INV_SIZE ), 0 );
-    span.minY = max( int( ( minPosY - epsilon + DIM ) * Quad::INV_SIZE ), 0 );
-    span.maxX = min( int( ( maxPosX + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 );
-    span.maxY = min( int( ( maxPosY + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 );
+    return Span( max( int( ( minPosX - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),
+                 max( int( ( minPosY - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),
+                 min( int( ( maxPosX + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 ),
+                 min( int( ( maxPosY + epsilon + DIM ) * Quad::INV_SIZE ), QUADS - 1 ) );
   }
 
-  inline Pair<int> Terrain::getIndices( float x, float y ) const
+  inline Pair<int> Terra::getIndices( float x, float y ) const
   {
     int ix = int( ( x + DIM ) * Quad::INV_SIZE );
     int iy = int( ( y + DIM ) * Quad::INV_SIZE );
@@ -90,7 +96,7 @@ namespace oz
     return Pair<int>( bound( ix, 0, QUADS - 1 ), bound( iy, 0, QUADS - 1 ) );
   }
 
-  inline float Terrain::height( float x, float y ) const
+  inline float Terra::height( float x, float y ) const
   {
     Pair<int> i = getIndices( x, y );
 

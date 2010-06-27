@@ -18,7 +18,7 @@ add_library( matrix STATIC
 	Sky.cpp
 	Structure.cpp
 	Synapse.cpp
-	Terrain.cpp
+	Terra.cpp
 	Timer.cpp
 	Translator.cpp
 	VehicleClass.cpp

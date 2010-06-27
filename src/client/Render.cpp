@@ -21,7 +21,7 @@
 
 #include "client/Water.hpp"
 #include "client/Sky.hpp"
-#include "client/Terrain.hpp"
+#include "client/Terra.hpp"
 #include "client/BSP.hpp"
 
 #include "client/OBJModel.hpp"

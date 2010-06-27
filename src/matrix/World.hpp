@@ -11,7 +11,7 @@
 #pragma once
 
 #include "matrix/Sky.hpp"
-#include "matrix/Terrain.hpp"
+#include "matrix/Terra.hpp"
 #include "matrix/BSP.hpp"
 
 #include "matrix/Structure.hpp"
@@ -51,7 +51,7 @@ namespace oz
       static const float DIM;
 
       Sky                sky;
-      Terrain            terra;
+      Terra            terra;
       Cell               cells[World::MAX][World::MAX];
       Vector<BSP*>       bsps;
       Vector<Structure*> structs;

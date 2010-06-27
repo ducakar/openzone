@@ -1,5 +1,5 @@
 /*
- *  Terrain.hpp
+ *  Terra.hpp
  *
  *  [description]
  *
@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  class Terrain
+  class Terra
   {
     private:
 
@@ -58,12 +58,12 @@ namespace client
       void drawWater() const;
   };
 
-  inline void Terrain::setRadius( float radius_ )
+  inline void Terra::setRadius( float radius_ )
   {
     radius = radius_;
   }
 
-  extern Terrain terra;
+  extern Terra terra;
 
 }
 }

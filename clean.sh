@@ -5,6 +5,8 @@ if [ -f Makefile ]; then
   make clean
 fi
 
+echo 'rm -rf src/configuration.hpp'
+rm -rf src/configuration.hpp
 echo 'rm -rf *.gcno src/*/*.gcno'
 rm -rf *.gcno src/*/*.gcno
 echo 'rm -rf CMakeCache.txt'
