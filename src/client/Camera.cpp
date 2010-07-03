@@ -61,6 +61,19 @@ namespace client
     smoothCoef_1       = 1.0f - smoothCoef;
     isExternal         = true;
 
+    String sDefaultState = config.getSet( "camera.defaultState", "FREECAM" );
+    if( sDefaultState.equals( "FREECAM" ) ) {
+      defaultState = FREECAM;
+    }
+    else if( sDefaultState.equals( "STRATEGIC" ) ) {
+      defaultState = STRATEGIC;
+    }
+    else {
+      log.println( "WARNING: invalid camera enum %s, must be euther FREECAM or STRATEGIC",
+                   sDefaultState.cstr() );
+      defaultState = FREECAM;
+    }
+
     p.setZero();
     oldP.setZero();
     newP.setZero();
@@ -85,7 +98,7 @@ namespace client
     botProxy.init();
 
     state              = NONE;
-    newState           = STRATEGIC;
+    newState           = defaultState;
   }
 
   void Camera::update()

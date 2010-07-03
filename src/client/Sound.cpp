@@ -159,7 +159,7 @@ namespace client
     // remove Audio objects of removed objects
     for( auto i = audios.citer(); !i.isPassed(); ) {
       Audio* audio = i.value();
-      uint key = i.key();
+      uint key     = i.key();
       ++i;
 
       if( world.objects[key] == null ) {

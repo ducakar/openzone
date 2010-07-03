@@ -19,12 +19,12 @@ namespace oz
     Vec3  normal;
     float ratio;
 
-    const Object* obj;
-    const Structure* str;
+    const Object*     obj;
+    const Structure*  str;
+    const BSP::Model* model;
 
     int   material;
 
-    // only set for object translate
     float waterDepth;
     bool  inWater;
     bool  onLadder;
@@ -38,26 +38,23 @@ namespace oz
       static const Mat44 structRotations[];
       static const Mat44 structInvRotations[];
 
-      Span             span;
-      Bounds           trace;
-      Vec3             move;
+      Span              span;
+      Bounds            trace;
+      Vec3              move;
 
-      Vec3             point;
-      AABB             aabb;
+      Vec3              point;
+      AABB              aabb;
 
-      Vec3             globalStartPos;
-      Vec3             globalEndPos;
-      Vec3             leafStartPos;
-      Vec3             leafEndPos;
-      float            leafStartRatio;
-      float            leafEndRatio;
+      Vec3              startPos;
+      Vec3              endPos;
 
-      const Dynamic*   obj;
-      const Object*    exclObj;
-      const BSP*       bsp;
-      const Structure* str;
+      const Dynamic*    obj;
+      const Object*     exclObj;
+      const Structure*  str;
+      const BSP::Model* model;
+      const BSP*        bsp;
 
-      Bitset           visitedBrushes;
+      Bitset            visitedBrushes;
 
       /**
        * Return if brush was already visited and mark it visited.
@@ -84,6 +81,7 @@ namespace oz
 
       bool testPointBrush( const BSP::Brush* brush ) const;
       bool testPointNode( int nodeIndex );
+      bool testPointModels() const;
       bool testPointWorld();
       bool testPointWorldOO();
       bool testPointWorldOSO();
@@ -94,12 +92,13 @@ namespace oz
       void trimPointVoid();
       void trimPointObj( const Object* sObj );
       void trimPointBrush( const BSP::Brush* brush );
-      void trimPointNode( int nodeIndex, float startRatio, float endRatio,
-                          const Vec3& startPos, const Vec3& endPos );
+      void trimPointNode( int nodeIndex );
+      void trimPointModels();
       void trimPointWorld();
 
       bool testAABBBrush( const BSP::Brush* brush ) const;
       bool testAABBNode( int nodeIndex );
+      bool testAABBModels() const;
       bool testAABBWorld();
       bool testAABBWorldOO();
       bool testAABBWorldOSO();
@@ -109,9 +108,12 @@ namespace oz
       void trimAABBBrush( const BSP::Brush* brush );
       void trimAABBWater( const BSP::Brush* brush );
       void trimAABBLadder( const BSP::Brush* brush );
-      void trimAABBNode( int nodeIndex, float startRatio, float endRatio,
-                         const Vec3& startPos, const Vec3& endPos );
+      void trimAABBNode( int nodeIndex );
+      void trimAABBModels();
       void trimAABBWorld();
+
+      bool testModelAABB( const Object* sObj );
+      bool testModelWorldOO();
 
       void getWorldOverlaps( Vector<Object*>* objects, Vector<Structure*>* structs );
       void getWorldIncludes( Vector<Object*>* objects ) const;
@@ -140,11 +142,11 @@ namespace oz
       bool testOO( const AABB& aabb, const Object* exclObj = null );
       bool testOSO( const AABB& aabb, const Object* exclObj = null );
 
+      bool testOO( const BSP* bsp, const BSP::Model* model );
+
       // fill given vectors with objects and structures overlapping with the AABB
       // if either vector is null the respecitve test is not performed
-      void getOverlaps( const AABB& aabb,
-                        Vector<Object*>* objects,
-                        Vector<Structure*>* structs,
+      void getOverlaps( const AABB& aabb, Vector<Object*>* objects, Vector<Structure*>* structs,
                         float eps = 0.0f );
       void touchOverlaps( const AABB& aabb, float eps = 0.0f );
 
@@ -194,7 +196,7 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    trace = aabb.toBounds( EPSILON );
+    trace = aabb.toBounds( 2.0f * EPSILON );
     span = world.getInters( trace, AABB::MAX_DIM );
 
     return testAABBWorld();
@@ -205,7 +207,7 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    trace = aabb.toBounds( EPSILON );
+    trace = aabb.toBounds( 2.0f * EPSILON );
     span = world.getInters( trace, AABB::MAX_DIM );
 
     return testAABBWorldOO();
@@ -216,16 +218,25 @@ namespace oz
     aabb = aabb_;
     exclObj = exclObj_;
 
-    trace = aabb.toBounds( EPSILON );
+    trace = aabb.toBounds( 2.0f * EPSILON );
     span = world.getInters( trace, AABB::MAX_DIM );
 
     return testAABBWorldOSO();
   }
 
-  inline void Collider::getOverlaps( const AABB& aabb_,
-                                     Vector<Object*>* objects,
-                                     Vector<Structure*>* structs,
-                                     float eps )
+  inline bool Collider::testOO( const BSP* bsp_, const BSP::Model* model_ )
+  {
+     bsp_ = bsp;
+     model = model_;
+
+     trace = model->toBounds( 2.0f * EPSILON );
+     span = world.getInters( trace, AABB::MAX_DIM );
+
+     return testModelWorldOO();
+  }
+
+  inline void Collider::getOverlaps( const AABB& aabb_, Vector<Object*>* objects,
+                                     Vector<Structure*>* structs, float eps )
   {
     aabb = aabb_;
     exclObj = null;
@@ -264,7 +275,7 @@ namespace oz
     move = move_;
     exclObj = exclObj_;
 
-    trace.fromPointMove( point, move, EPSILON );
+    trace.fromPointMove( point, move, 2.0f * EPSILON );
     span = world.getInters( trace, AABB::MAX_DIM );
 
     trimPointWorld();
@@ -277,7 +288,7 @@ namespace oz
     move = move_;
     exclObj = exclObj_;
 
-    trace = aabb.toBounds( move, EPSILON );
+    trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
     span = world.getInters( trace, AABB::MAX_DIM );
 
     trimAABBWorld();
@@ -292,7 +303,7 @@ namespace oz
     move = move_;
     exclObj = obj;
 
-    trace = aabb.toBounds( move, EPSILON );
+    trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
     span = world.getInters( trace, AABB::MAX_DIM );
 
     trimAABBWorld();

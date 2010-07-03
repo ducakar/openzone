@@ -31,11 +31,11 @@ void operator delete ( void* ptr ) { pool.dealloc( ptr ); }
 #endif
 
 /**
- * \def OZ_PLACEMENT_POOL_ALLOC( Type, INDEX )
+ * \def OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE )
  * Implement placement new operator, while non-placement new and delete are disabled.
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
- * object should be freed via <code>pool.dealloc( object)</code> and a destructor should be called
- * manually before freeing.
+ * object should be freed via <code>pool.dealloc( object)</code> and the destructor should be
+ * called manually before freeing.
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE ) \
 public: \

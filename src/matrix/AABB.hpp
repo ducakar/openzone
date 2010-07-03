@@ -50,35 +50,9 @@ namespace oz
                              p.z + dim.z + eps ) );
       }
 
-      Bounds toBounds( const Vec3& move, float eps = 0.0f ) const
+      AABB toAABB( float eps ) const
       {
-        Bounds t;
-
-        if( move.x < 0.0f ) {
-          t.mins.x = p.x - dim.x - 2.0f * eps + move.x;
-          t.maxs.x = p.x + dim.x + 2.0f * eps;
-        }
-        else {
-          t.mins.x = p.x - dim.x - 2.0f * eps;
-          t.maxs.x = p.x + dim.x + 2.0f * eps + move.x;
-        }
-        if( move.y < 0.0f ) {
-          t.mins.y = p.y - dim.y - 2.0f * eps + move.y;
-          t.maxs.y = p.y + dim.y + 2.0f * eps;
-        }
-        else {
-          t.mins.y = p.y - dim.y - 2.0f * eps;
-          t.maxs.y = p.y + dim.y + 2.0f * eps + move.y;
-        }
-        if( move.z < 0.0f ) {
-          t.mins.z = p.z - dim.z - 2.0f * eps + move.z;
-          t.maxs.z = p.z + dim.z + 2.0f * eps;
-        }
-        else {
-          t.mins.z = p.z - dim.z - 2.0f * eps;
-          t.maxs.z = p.z + dim.z + 2.0f * eps + move.z;
-        }
-        return t;
+        return AABB( p, dim + Vec3( eps, eps, eps ) );
       }
 
       AABB operator + ( const Vec3& v ) const
@@ -203,6 +177,35 @@ namespace oz
                  Vec3( ( maxs.x - mins.x ) * 0.5f + eps,
                        ( maxs.y - mins.y ) * 0.5f + eps,
                        ( maxs.z - mins.z ) * 0.5f + eps ) );
+  }
+
+  inline Bounds& Bounds::fromAABBMove( const AABB& a, const Vec3& move, float eps )
+  {
+    if( move.x < 0.0f ) {
+      mins.x = a.p.x - a.dim.x - 2.0f * eps + move.x;
+      maxs.x = a.p.x + a.dim.x + 2.0f * eps;
+    }
+    else {
+      mins.x = a.p.x - a.dim.x - 2.0f * eps;
+      maxs.x = a.p.x + a.dim.x + 2.0f * eps + move.x;
+    }
+    if( move.y < 0.0f ) {
+      mins.y = a.p.y - a.dim.y - 2.0f * eps + move.y;
+      maxs.y = a.p.y + a.dim.y + 2.0f * eps;
+    }
+    else {
+      mins.y = a.p.y - a.dim.y - 2.0f * eps;
+      maxs.y = a.p.y + a.dim.y + 2.0f * eps + move.y;
+    }
+    if( move.z < 0.0f ) {
+      mins.z = a.p.z - a.dim.z - 2.0f * eps + move.z;
+      maxs.z = a.p.z + a.dim.z + 2.0f * eps;
+    }
+    else {
+      mins.z = a.p.z - a.dim.z - 2.0f * eps;
+      maxs.z = a.p.z + a.dim.z + 2.0f * eps + move.z;
+    }
+    return *this;
   }
 
   inline bool Bounds::isInside( const AABB& a, float eps ) const

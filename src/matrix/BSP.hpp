@@ -49,16 +49,29 @@ namespace oz
         int nBrushes;
       };
 
+      struct Model : Bounds
+      {
+        Vec3 offset;
+
+        int  firstFace;
+        int  nFaces;
+
+        int  firstBrush;
+        int  nBrushes;
+      };
+
       struct Brush
       {
         int firstSide;
         int nSides;
+
         int material;
       };
 
       struct Vertex
       {
         Vec3  p;
+
         float texCoord[2];
         float lightmapCoord[2];
       };
@@ -109,6 +122,7 @@ namespace oz
       int        nLeaves;
       int        nLeafFaces;
       int        nLeafBrushes;
+      int        nModels;
       int        nBrushes;
       int        nBrushSides;
       int        nVertices;
@@ -122,6 +136,7 @@ namespace oz
       Leaf*      leaves;
       int*       leafFaces;
       int*       leafBrushes;
+      Model*     models;
       Brush*     brushes;
       int*       brushSides;
       Vertex*    vertices;

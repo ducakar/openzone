@@ -169,7 +169,7 @@ namespace client
   void BotProxy::prepare()
   {
     if( camera.bot == -1 ) {
-      camera.setState( Camera::STRATEGIC );
+      camera.setState( camera.defaultState );
       return;
     }
 

@@ -541,6 +541,41 @@ namespace oz
       }
 
       /**
+       * Remove the last element from the list.
+       * @return
+       */
+      DList& operator -- ()
+      {
+        assert( lastElem != null );
+
+        lastElem = lastElem->prev[INDEX];
+
+        if( lastElem == null ) {
+          firstElem = null;
+        }
+        else {
+          lastElem->next[INDEX] = null;
+        }
+      }
+
+      /**
+       * Remove the last element from the list.
+       */
+      void remove()
+      {
+        assert( lastElem != null );
+
+        lastElem = lastElem->prev[INDEX];
+
+        if( lastElem == null ) {
+          firstElem = null;
+        }
+        else {
+          lastElem->next[INDEX] = null;
+        }
+      }
+
+      /**
        * Transfer elements from given list. The given list is cleared after the operation.
        * @param l
        */
