@@ -32,6 +32,14 @@ namespace oz
         R270 = 3
       };
 
+      struct Door
+      {
+        Vec3  offset;
+        int   model;
+
+        float timer;
+      };
+
       static Pool<Structure, 0, 256> pool;
 
     private:
@@ -45,6 +53,8 @@ namespace oz
       Vec3       p;
       Rotation   rot;
       float      life;
+
+      Vector<int> models;
 
       explicit Structure( int index, int bsp, const Vec3& p, Rotation rot );
       explicit Structure( int index, int bsp_, InputStream* istream );

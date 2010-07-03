@@ -1,36 +1,10 @@
 #pragma once
 
-// enable overloaded new and delete to count allocated memory
-#cmakedefine OZ_ALLOC_STATISTICS
-
-// enable PoolAlloc allocator; otherwise use a dummy class that calls malloc/free
-#cmakedefine OZ_POOL_ALLOC
-
-// enable GNU math builtins
-#cmakedefine OZ_GNU_MATH
-
-// whether math library has sincosf function
-#cmakedefine OZ_HAVE_SINCOSF
-
-// enable warnings about missing and unused variables in config files
-#cmakedefine OZ_VERBOSE_CONFIG
-
-// enable XML configuration files support
-#cmakedefine OZ_XML_CONFIG
-
-// platform
-#cmakedefine OZ_MINGW
-#cmakedefine OZ_MSVC
-
 // prebuild resources 
 #cmakedefine OZ_BUILD
 
 // whether to use prebuilt resources
 #cmakedefine OZ_PREBUILT
 
-#ifdef OZ_MSVC
-# define _CRT_SECURE_NO_WARNINGS 1
-# define snprintf sprintf_s
-# define chdir _chdir
-# define mkdir _mkdir
-#endif
+// cylinder collision and physics support
+#cmakedefine OZ_ENABLE_CYLINDER

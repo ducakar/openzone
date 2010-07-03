@@ -116,6 +116,25 @@ namespace oz
     }
   }
 
+  bool Collider::testPointModels() const
+  {
+    for( int i = 1; i < bsp->nModels; ++i ) {
+      const BSP::Model& model = bsp->models[i];
+
+      for( int j = 0; j < model.nBrushes; ++j ) {
+        int index = model.firstBrush + j;
+        const BSP::Brush& brush = bsp->brushes[index];
+
+        assert( !visitedBrushes.get( index ) );
+
+        if( ( brush.material & Material::STRUCT_BIT ) && !testPointBrush( &brush ) ) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   // check for AABB-AABB and AABB-Brush overlapping in the world
   bool Collider::testPointWorld()
   {
@@ -142,7 +161,7 @@ namespace oz
             startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
-            if( str->includes( point, EPSILON ) && !testPointNode( 0 ) ) {
+            if( str->overlaps( trace ) && ( !testPointNode( 0 ) || !testPointModels() ) ) {
               return false;
             }
             oldStr = str;
@@ -205,7 +224,7 @@ namespace oz
             startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
-            if( str->includes( point, EPSILON ) && !testPointNode( 0 ) ) {
+            if( str->overlaps( trace ) && ( !testPointModels() || !testPointNode( 0 ) ) ) {
               return false;
             }
             oldStr = str;
@@ -329,6 +348,8 @@ namespace oz
   // finds out if Point-AABB collision occurs and the time when it occurs
   void Collider::trimPointObj( const Object* sObj )
   {
+#ifdef OZ_ENABLE_CYLINDER
+
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
     const Vec3* tmpNormal = null;
@@ -364,6 +385,46 @@ namespace oz
       hit.str      = null;
       hit.material = Material::OBJECT_BIT;
     }
+
+#else
+
+    float minRatio        = -1.0f;
+    float maxRatio        =  1.0f;
+    const Vec3* tmpNormal = null;
+
+    for( int i = 0; i < 6; ++i ) {
+      int j = i >> 1;
+      const Vec3& normal = bbNormals[i];
+
+      float startDist = ( startPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
+      float endDist   = ( endPos[j]   - sObj->p[j] ) * normal[j] - sObj->dim[j];
+
+      if( endDist > EPSILON ) {
+        if( startDist < 0.0f ) {
+          maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
+        }
+        else {
+          return;
+        }
+      }
+      else if( startDist >= 0.0f && endDist <= startDist ) {
+        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
+
+        if( ratio > minRatio ) {
+          minRatio  = ratio;
+          tmpNormal = &normal;
+        }
+      }
+    }
+    if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
+      hit.ratio    = Math::max( 0.0f, minRatio );
+      hit.normal   = *tmpNormal;
+      hit.obj      = sObj;
+      hit.str      = null;
+      hit.material = Material::OBJECT_BIT;
+    }
+
+#endif
   }
 
   // finds out if Ray-Brush collision occurs and the time when it occurs
@@ -444,6 +505,22 @@ namespace oz
     }
   }
 
+  void Collider::trimPointModels()
+  {
+    for( int i = 1; i < bsp->nModels; ++i ) {
+      const BSP::Model& model = bsp->models[i];
+
+      for( int j = 0; j < model.nBrushes; ++j ) {
+        int index = model.firstBrush + j;
+        const BSP::Brush& brush = bsp->brushes[index];
+
+        assert( !visitBrush( index ) );
+
+        trimPointBrush( &brush );
+      }
+    }
+  }
+
   void Collider::trimPointWorld()
   {
     hit.ratio    = 1.0f;
@@ -480,6 +557,7 @@ namespace oz
               endPos   = toStructCS( originalEndPos - str->p );
 
               trimPointNode( 0 );
+              trimPointModels();
             }
             oldStr = str;
           }
@@ -570,6 +648,25 @@ namespace oz
     }
   }
 
+  bool Collider::testAABBModels() const
+  {
+    for( int i = 1; i < bsp->nModels; ++i ) {
+      const BSP::Model& model = bsp->models[i];
+
+      for( int j = 0; j < model.nBrushes; ++j ) {
+        int index = model.firstBrush + j;
+        const BSP::Brush& brush = bsp->brushes[index];
+
+        assert( !visitedBrushes.get( index ) );
+
+        if( ( brush.material & Material::STRUCT_BIT ) && !testAABBBrush( &brush ) ) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   // check for AABB-AABB, AABB-Brush and AABB-Terrain overlapping in the world
   bool Collider::testAABBWorld()
   {
@@ -596,7 +693,7 @@ namespace oz
             startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
-            if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
+            if( str->overlaps( trace ) && ( !testAABBNode( 0 ) || !testAABBModels() ) ) {
               return false;
             }
             oldStr = str;
@@ -660,7 +757,7 @@ namespace oz
             startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
-            if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
+            if( str->overlaps( trace ) && ( !testAABBModels() || !testAABBNode( 0 ) ) ) {
               return false;
             }
             oldStr = str;
@@ -897,7 +994,7 @@ namespace oz
       const BSP::Model& model = bsp->models[i];
 
       for( int j = 0; j < model.nBrushes; ++j ) {
-        int index = bsp->leafBrushes[model.firstBrush + j];
+        int index = model.firstBrush + j;
         const BSP::Brush& brush = bsp->brushes[index];
 
         assert( !visitBrush( index ) );
@@ -947,8 +1044,8 @@ namespace oz
               startPos = toStructCS( originalStartPos - str->p );
               endPos   = toStructCS( originalEndPos - str->p );
 
-              trimAABBModels();
               trimAABBNode( 0 );
+              trimAABBModels();
             }
             oldStr = str;
           }
@@ -1044,6 +1141,32 @@ namespace oz
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
             // clearing these two bits should do
             sObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
+          }
+        }
+      }
+    }
+  }
+
+  void Collider::getModelOverlaps( Vector<Object*>* objects )
+  {
+    assert( objects != null );
+
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
+        const Cell& cell = world.cells[x][y];
+
+        if( objects != null ) {
+          foreach( sObj, cell.objects.iter() ) {
+            aabb = *sObj;
+
+            for( int i = 0; i < model->nBrushes; ++i ) {
+              int index = bsp->leafBrushes[model->firstBrush + i];
+              const BSP::Brush& brush = bsp->brushes[index];
+
+              if( !testAABBBrush( &brush ) ) {
+                *objects << sObj;
+              }
+            }
           }
         }
       }

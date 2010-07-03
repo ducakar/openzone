@@ -12,6 +12,7 @@ pg.out
 /valgrind.supp
 
 /*CMakeCache.txt
+/install_manifest.txt
 CMakeCache.txt
 CMakeFiles
 cmake_install.cmake

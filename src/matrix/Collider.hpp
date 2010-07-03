@@ -54,7 +54,7 @@ namespace oz
       const BSP::Model* model;
       const BSP*        bsp;
 
-      Bitset            visitedBrushes;
+      mutable Bitset    visitedBrushes;
 
       /**
        * Return if brush was already visited and mark it visited.
@@ -112,12 +112,10 @@ namespace oz
       void trimAABBModels();
       void trimAABBWorld();
 
-      bool testModelAABB( const Object* sObj );
-      bool testModelWorldOO();
-
       void getWorldOverlaps( Vector<Object*>* objects, Vector<Structure*>* structs );
       void getWorldIncludes( Vector<Object*>* objects ) const;
       void touchWorldOverlaps() const;
+      void getModelOverlaps( Vector<Object*>* objects );
 
     public:
 
@@ -142,16 +140,15 @@ namespace oz
       bool testOO( const AABB& aabb, const Object* exclObj = null );
       bool testOSO( const AABB& aabb, const Object* exclObj = null );
 
-      bool testOO( const BSP* bsp, const BSP::Model* model );
-
       // fill given vectors with objects and structures overlapping with the AABB
       // if either vector is null the respecitve test is not performed
       void getOverlaps( const AABB& aabb, Vector<Object*>* objects, Vector<Structure*>* structs,
                         float eps = 0.0f );
-      void touchOverlaps( const AABB& aabb, float eps = 0.0f );
-
       // fill given vector with objects included in the AABB
       void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = 0.0f );
+      void touchOverlaps( const AABB& aabb, float eps = 0.0f );
+      void getOverlaps( const BSP* bsp, const BSP::Model* model, Vector<Object*>* objects,
+                        float eps = 0.0f );
 
       void translate( const Vec3& point, const Vec3& move, const Object* exclObj = null );
       void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );
@@ -224,17 +221,6 @@ namespace oz
     return testAABBWorldOSO();
   }
 
-  inline bool Collider::testOO( const BSP* bsp_, const BSP::Model* model_ )
-  {
-     bsp_ = bsp;
-     model = model_;
-
-     trace = model->toBounds( 2.0f * EPSILON );
-     span = world.getInters( trace, AABB::MAX_DIM );
-
-     return testModelWorldOO();
-  }
-
   inline void Collider::getOverlaps( const AABB& aabb_, Vector<Object*>* objects,
                                      Vector<Structure*>* structs, float eps )
   {
@@ -267,6 +253,18 @@ namespace oz
     span = world.getInters( trace, AABB::MAX_DIM );
 
     touchWorldOverlaps();
+  }
+
+  inline void Collider::getOverlaps( const BSP* bsp_, const BSP::Model* model_,
+                                     Vector<Object*>* objects, float eps )
+  {
+    bsp = bsp_;
+    model = model_;
+
+    trace = model->toBounds( eps );
+    span = world.getInters( trace, AABB::MAX_DIM );
+
+    getModelOverlaps( objects );
   }
 
   inline void Collider::translate( const Vec3& point_, const Vec3& move_, const Object* exclObj_ )

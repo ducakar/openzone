@@ -99,7 +99,7 @@ namespace oz
 
     synapse.addObject( "Raptor", Vec3( 70, -60, 38 ) );
 
-    synapse.addStruct( "castle", Vec3( 57, -33, 43 ), Structure::R0 );
+//    synapse.addStruct( "castle", Vec3( 57, -33, 43 ), Structure::R0 );
 
     synapse.genParts( 1000, Vec3( 50, -36, 40 ), Vec3( 0, 0, 10 ), 15.0f,
                       Vec3( 0.4f, 0.4f, 0.4f ), 0.2f, 1.95f, 0.1f, 5.0f );
@@ -140,8 +140,8 @@ namespace oz
     synapse.addObject( "BigCrate", Vec3( 50, -55, 38 ) );
     synapse.addObject( "BigCrate", Vec3( 50, -55, 40 ) );
 
-    synapse.addStruct( "pool", Vec3( 50, -60, 37 ), Structure::R0 );
-    synapse.addStruct( "test", Vec3( 60, -60, 38 ), Structure::R0 );
+//    synapse.addStruct( "pool", Vec3( 50, -60, 37 ), Structure::R0 );
+//    synapse.addStruct( "test", Vec3( 60, -60, 38 ), Structure::R0 );
     synapse.addStruct( "door", Vec3( 60, -60, 40 ), Structure::R0 );
 
     synapse.addObject( "SmallCrate", Vec3( 52, -61, 40 ) );
@@ -194,8 +194,8 @@ namespace oz
     }
     else {
       loadSample();
-      loadStressTest();
-      floraManager.seed();
+//      loadStressTest();
+//      floraManager.seed();
     }
 
     log.unindent();

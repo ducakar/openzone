@@ -12,7 +12,7 @@
 /*
  * Configuration
  */
-#include "configuration.hpp"
+#include "ozconfig.hpp"
 
 /*
  * Base C/C++ definitions (size_t, ptrdiff_t, NULL and offsetof)
@@ -20,24 +20,24 @@
 #include <cstddef>
 
 /*
+ * assert macro
+ */
+#include <cassert>
+
+/*
  * Standard C++ new/delete operator and exception definitions
  */
 #include <new>
 
 /*
- * assert and soft_assert macros
+ * Base definitions and templates
  */
-#include "assert.hpp"
+#include "common.hpp"
 
 /*
  * Exception class
  */
 #include "Exception.hpp"
-
-/*
- * Basic definitions and template functions
- */
-#include "common.hpp"
 
 /*
  * Memory management

@@ -1,6 +1,6 @@
 add_library( oz STATIC
 	Alloc.cpp
-	assert.cpp
+	common.cpp
 	Config.cpp
 	Log.cpp
 	Math.cpp

@@ -1,7 +1,7 @@
 /*
  *  common.hpp
  *
- *  Common types and templates
+ *  Common macros, types and templates
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING file for details.
@@ -22,6 +22,44 @@
 
 namespace oz
 {
+
+  //***********************************
+  //*          BASIC MACROS           *
+  //***********************************
+
+  /**
+   * \def null
+   * It is equivalent to nullptr/NULL macro but it looks prettier.
+   */
+#ifdef __GNUG__
+# define null __null
+#else
+# define null nullptr
+#endif
+
+  /**
+   * \def S
+   * "Stringify" the given identifier/type/reserved word/...
+   */
+# define S( s ) #s
+
+  /**
+   * \def soft_assert
+   * Resembles output of assert macro (on GNU/Linux) but does not abort.
+   */
+#ifdef NDEBUG
+
+# define soft_assert( cond ) \
+  static_cast<void>( 0 )
+
+#else
+
+# define soft_assert( cond ) \
+  ( ( cond ) ? static_cast<void>( 0 ) : oz::_softAssert( #cond, __FILE__, __LINE__ ) )
+
+  void _softAssert( const char* message, const char* file, int line );
+
+#endif
 
   //***********************************
   //*             TYPES               *
@@ -105,22 +143,6 @@ namespace oz
       typedef Type_ Type;
     };
   };
-
-  /**
-   * \def null
-   * It is equivalent to nullptr/NULL macro but it looks prettier.
-   */
-#ifdef __GNUG__
-# define null __null
-#else
-# define null nullptr
-#endif
-
-  /**
-   * \def S
-   * "Stringify" the given identifier/type/reserved word/...
-   */
-# define S( s ) #s
 
   //***********************************
   //*        BASIC ALGORITHMS         *
