@@ -34,7 +34,7 @@ namespace oz
     static const float INV_SIZE;
     static const float RADIUS;
 
-    SVector<int, 7> structs;
+    SVector<int, 5> structs;
     DList<Object>   objects;
     DList<Particle> parts;
   };

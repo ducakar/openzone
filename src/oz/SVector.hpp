@@ -443,14 +443,24 @@ namespace oz
       /**
        * Remove last element.
        */
+      SVector& operator -- ()
+      {
+        assert( count != 0 );
+
+        --count;
+        data[count].~Type();
+        return *this;
+      }
+
+      /**
+       * Remove last element.
+       */
       void remove()
       {
         assert( count != 0 );
 
         --count;
         data[count].~Type();
-
-        return *this;
       }
 
       /**

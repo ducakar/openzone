@@ -334,6 +334,21 @@ namespace oz
       }
 
       /**
+       * @return element before the given one
+       */
+      Type* before( const Type* e )
+      {
+        Type* elem = firstElem;
+        Type* beforeElem = null;
+
+        while( last != e ) {
+          beforeElem = elem;
+          elem = elem->next[INDEX];
+        }
+        return beforeElem;
+      }
+
+      /**
        * Add element to the beginning of the list.
        * @param e element to be added
        */
@@ -398,7 +413,7 @@ namespace oz
 
       /**
        * Remove an element from the list. Because we don't have double-linked list, you have to
-       * provide pointer to previous element.
+       * provide pointer to the previous element.
        * @param e element to be removed
        * @param prev previous element
        */

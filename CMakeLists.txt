@@ -21,7 +21,6 @@ Find_Package( SDL_net REQUIRED )
 Find_Package( SDL_ttf REQUIRED )
 Find_Package( Lua51 REQUIRED )
 Find_Package( OpenGL REQUIRED )
-Find_Package( GLU REQUIRED )
 Find_Package( OpenAL REQUIRED )
 
 if( MSVC )

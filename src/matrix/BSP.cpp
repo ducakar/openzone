@@ -96,6 +96,17 @@ namespace oz
     int nBrushes;
   };
 
+  struct QBSPModel
+  {
+    float bb[2][3];
+
+    int firstFace;
+    int nFaces;
+
+    int firstBrush;
+    int nBrushes;
+  };
+
   struct QBSPBrush
   {
     int firstSide;
@@ -313,6 +324,31 @@ namespace oz
     fseek( file, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
     fread( leafBrushes, sizeof( int ), nLeafBrushes, file );
 
+    nModels = lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel );
+    models = new BSP::Model[nModels];
+    fseek( file, lumps[QBSP_LUMP_MODELS].offset, SEEK_SET );
+
+    for( int i = 0; i < nModels; ++i ) {
+      QBSPModel model;
+
+      fread( &model, sizeof( QBSPModel ), 1, file );
+
+      models[i].mins.x = model.bb[0][0] * scale;
+      models[i].mins.y = model.bb[0][1] * scale;
+      models[i].mins.z = model.bb[0][2] * scale;
+
+      models[i].maxs.x = model.bb[1][0] * scale;
+      models[i].maxs.y = model.bb[1][1] * scale;
+      models[i].maxs.z = model.bb[1][2] * scale;
+
+      models[i].offset.setZero();
+
+      models[i].firstFace  = model.firstFace;
+      models[i].nFaces     = model.nFaces;
+      models[i].firstBrush = model.firstBrush;
+      models[i].nBrushes   = model.nBrushes;
+    }
+
     nBrushSides = lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide );
     brushSides = new int[nBrushSides];
     fseek( file, lumps[QBSP_LUMP_BRUSHSIDES].offset, SEEK_SET );
@@ -491,7 +527,15 @@ namespace oz
     log.print( "removing leaves " );
 
     for( int i = 0; i < nLeaves; ) {
-      if( leaves[i].nBrushes != 0 || leaves[i].nFaces != 0 ) {
+      bool isReferenced = false;
+
+      for( int j = 0; j < nNodes; ++j ) {
+        if( nodes[j].front == ~i || nodes[j].back == ~i ) {
+          isReferenced = true;
+        }
+      }
+
+      if( isReferenced && ( leaves[i].nBrushes != 0 || leaves[i].nFaces != 0 ) ) {
         ++i;
         continue;
       }
@@ -710,7 +754,7 @@ namespace oz
     log.printEnd( " OK" );
 
     // optimise bounds
-    log.print( "Optimising bounds: " );
+    log.print( "Fitting bounds: " );
 
     mins = Vec3( +Math::inf(), +Math::inf(), +Math::inf() );
     maxs = Vec3( -Math::inf(), -Math::inf(), -Math::inf() );
@@ -912,20 +956,20 @@ namespace oz
 
     char* data = Alloc::alloc<char>( size );
 
-    textures = reinterpret_cast<int*>( data );
+    textures = new( data ) int[nTextures];
     for( int i = 0; i < nTextures; ++i ) {
       textures[i] = is.readInt();
     }
     data += nTextures * sizeof( int );
 
-    planes = reinterpret_cast<Plane*>( data );
+    planes = new( data ) Plane[nPlanes];
     for( int i = 0; i < nPlanes; ++i ) {
       planes[i].normal = is.readVec3();
       planes[i].distance = is.readFloat();
     }
     data += nPlanes * sizeof( Plane );
 
-    nodes = reinterpret_cast<Node*>( data );
+    nodes = new( data ) Node[nNodes];
     for( int i = 0; i < nNodes; ++i ) {
       nodes[i].plane = is.readInt();
       nodes[i].front = is.readInt();
@@ -933,7 +977,7 @@ namespace oz
     }
     data += nNodes * sizeof( Node );
 
-    leaves = reinterpret_cast<Leaf*>( data );
+    leaves = new( data ) Leaf[nLeaves];
     for( int i = 0; i < nLeaves; ++i ) {
       leaves[i].mins = is.readVec3();
       leaves[i].maxs = is.readVec3();
@@ -945,19 +989,19 @@ namespace oz
     }
     data += nLeaves * sizeof( Leaf );
 
-    leafFaces = reinterpret_cast<int*>( data );
+    leafFaces = new( data ) int[nLeafFaces];
     for( int i = 0; i < nLeafFaces; ++i ) {
       leafFaces[i] = is.readInt();
     }
     data += nLeafFaces * sizeof( int );
 
-    leafBrushes = reinterpret_cast<int*>( data );
+    leafBrushes = new( data ) int[nLeafBrushes];
     for( int i = 0; i < nLeafBrushes; ++i ) {
       leafBrushes[i] = is.readInt();
     }
     data += nLeafBrushes * sizeof( int );
 
-    brushes = reinterpret_cast<Brush*>( data );
+    brushes = new( data ) Brush[nBrushes];
     for( int i = 0; i < nBrushes; ++i ) {
       brushes[i].firstSide = is.readInt();
       brushes[i].nSides = is.readInt();
@@ -965,13 +1009,13 @@ namespace oz
     }
     data += nBrushes * sizeof( Brush );
 
-    brushSides = reinterpret_cast<int*>( data );
+    brushSides = new( data ) int[nBrushSides];
     for( int i = 0; i < nBrushSides; ++i ) {
       brushSides[i] = is.readInt();
     }
     data += nBrushSides * sizeof( int );
 
-    vertices = reinterpret_cast<Vertex*>( data );
+    vertices = new( data ) Vertex[nVertices];
     for( int i = 0; i < nVertices; ++i ) {
       vertices[i].p = is.readVec3();
       vertices[i].texCoord[0] = is.readFloat();
@@ -981,13 +1025,13 @@ namespace oz
     }
     data += nVertices * sizeof( Vertex );
 
-    indices = reinterpret_cast<int*>( data );
+    indices = new( data ) int[nIndices];
     for( int i = 0; i < nIndices; ++i ) {
       indices[i] = is.readInt();
     }
     data += nIndices * sizeof( int );
 
-    faces = reinterpret_cast<Face*>( data );
+    faces = new( data ) Face[nFaces];
     for( int i = 0; i < nFaces; ++i ) {
       faces[i].normal = is.readVec3();
       faces[i].texture = is.readInt();
@@ -1000,7 +1044,7 @@ namespace oz
     }
     data += nFaces * sizeof( Face );
 
-    lightmaps = reinterpret_cast<Lightmap*>( data );
+    lightmaps = new( data ) Lightmap[nLightmaps];
     for( int i = 0; i < nLightmaps; ++i ) {
       for( int j = 0; j < LIGHTMAP_SIZE; ++j ) {
         lightmaps[i].bits[j] = is.readByte();
@@ -1014,9 +1058,12 @@ namespace oz
     return true;
   }
 
-  BSP::BSP() : textures( null ), planes( null ), nodes( null ), leaves( null ), leafFaces( null ),
-    brushes( null ), brushSides( null ), vertices( null ), indices( null ), faces( null ),
-    lightmaps( null )
+  BSP::BSP() : nTextures( 0 ), nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafFaces( 0 ),
+      nModels( 0 ), nBrushes( 0 ), nBrushSides( 0 ), nVertices( 0 ), nIndices( 0 ),
+      nFaces( 0 ), nLightmaps( 0 ),
+      textures( null ), planes( null ), nodes( null ), leaves( null ), leafFaces( null ),
+      models( null ), brushes( null ), brushSides( null ), vertices( null ), indices( null ),
+      faces( null ), lightmaps( null )
   {}
 
   BSP::~BSP()
@@ -1090,6 +1137,20 @@ namespace oz
 #ifdef OZ_PREBUILT
 
     if( textures != null ) {
+      aDestruct( textures, nTextures );
+      aDestruct( planes, nPlanes );
+      aDestruct( nodes, nNodes );
+      aDestruct( leaves, nLeaves );
+      aDestruct( leafFaces, nLeafFaces );
+      aDestruct( leafBrushes, nLeafBrushes );
+      aDestruct( models, nModels );
+      aDestruct( brushes, nBrushes );
+      aDestruct( brushSides, nBrushSides );
+      aDestruct( vertices, nVertices );
+      aDestruct( indices, nIndices );
+      aDestruct( faces, nFaces );
+      aDestruct( lightmaps, nLightmaps );
+
       Alloc::dealloc( textures );
 
       nTextures    = 0;
@@ -1098,6 +1159,7 @@ namespace oz
       nLeaves      = 0;
       nLeafFaces   = 0;
       nLeafBrushes = 0;
+      nModels      = 0;
       nBrushes     = 0;
       nBrushSides  = 0;
       nVertices    = 0;
@@ -1111,6 +1173,7 @@ namespace oz
       leaves      = null;
       leafFaces   = null;
       leafBrushes = null;
+      models      = null;
       brushes     = null;
       brushSides  = null;
       vertices    = null;
@@ -1150,6 +1213,11 @@ namespace oz
       delete[] leafBrushes;
       nLeafBrushes = 0;
       leafBrushes = null;
+    }
+    if( models != null ) {
+      delete[] models;
+      nModels = 0;
+      models = null;
     }
     if( brushes != null ) {
       delete[] brushes;

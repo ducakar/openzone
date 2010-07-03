@@ -50,7 +50,7 @@ namespace oz
 
       /**
        * Allocates new memory for the array for newSize elements to fit in. Elements are constructed
-       * with copy constructor in the new copy of the array and destructed in the old copy before it
+       * via move constructor in the new copy of the array and destructed in the old copy before it
        * is freed. The memory has to be allocated with Alloc::alloc function and freed with
        * Alloc::dealloc.
        * @param array
@@ -63,10 +63,11 @@ namespace oz
       {
         Type* newArray = reinterpret_cast<Type*>( new char[newSize * sizeof( Type )] );
         for( int i = 0; i < count; ++i ) {
-          new( newArray + i ) Type( array[i] );
+          new( newArray + i ) Type( static_cast<Type&&>( array[i] ) );
           array[i].~Type();
         }
         delete[] reinterpret_cast<char*>( array );
+
         return newArray;
       }
 

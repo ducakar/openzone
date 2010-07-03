@@ -85,7 +85,7 @@ namespace client
 
   void FreeCamProxy::init()
   {
-    fastMove = false;
+    fastMove = true;
   }
 
 }

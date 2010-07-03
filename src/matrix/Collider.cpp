@@ -74,7 +74,7 @@ namespace oz
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float dist = globalStartPos * plane.normal - plane.distance;
+      float dist = startPos * plane.normal - plane.distance;
       result |= dist > EPSILON;
     }
     return result;
@@ -102,7 +102,7 @@ namespace oz
       const BSP::Node&  node  = bsp->nodes[nodeIndex];
       const BSP::Plane& plane = bsp->planes[node.plane];
 
-      float dist = globalStartPos * plane.normal - plane.distance;
+      float dist = startPos * plane.normal - plane.distance;
 
       if( dist > 2.0f * EPSILON ) {
         return testPointNode( node.front );
@@ -139,7 +139,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            globalStartPos = toStructCS( aabb.p - str->p );
+            startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
             if( str->includes( point, EPSILON ) && !testPointNode( 0 ) ) {
@@ -202,7 +202,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            globalStartPos = toStructCS( aabb.p - str->p );
+            startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
             if( str->includes( point, EPSILON ) && !testPointNode( 0 ) ) {
@@ -231,14 +231,14 @@ namespace oz
     const Vec3& minVert = world.terra.vertices[x    ][y    ];
     const Vec3& maxVert = world.terra.vertices[x + 1][y + 1];
 
-    float startDist = globalStartPos * quad.tri[0].normal - quad.tri[0].distance;
-    float endDist   = globalEndPos   * quad.tri[0].normal - quad.tri[0].distance;
+    float startDist = startPos * quad.tri[0].normal - quad.tri[0].distance;
+    float endDist   = endPos   * quad.tri[0].normal - quad.tri[0].distance;
 
     if( endDist <= EPSILON && endDist <= startDist ) {
       float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
-      float impactX = globalStartPos.x + ratio * move.x;
-      float impactY = globalStartPos.y + ratio * move.y;
+      float impactX = startPos.x + ratio * move.x;
+      float impactY = startPos.y + ratio * move.y;
 
       if( impactX - minVert.x >= impactY - minVert.y &&
           minVert.x <= impactX && impactX <= maxVert.x &&
@@ -255,14 +255,14 @@ namespace oz
       }
     }
 
-    startDist = globalStartPos * quad.tri[1].normal - quad.tri[1].distance;
-    endDist   = globalEndPos   * quad.tri[1].normal - quad.tri[1].distance;
+    startDist = startPos * quad.tri[1].normal - quad.tri[1].distance;
+    endDist   = endPos   * quad.tri[1].normal - quad.tri[1].distance;
 
     if( endDist <= EPSILON && endDist <= startDist ) {
       float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
-      float impactX = globalStartPos.x + ratio * move.x;
-      float impactY = globalStartPos.y + ratio * move.y;
+      float impactX = startPos.x + ratio * move.x;
+      float impactY = startPos.y + ratio * move.y;
 
       if( impactX - minVert.x <= impactY - minVert.y &&
           minVert.x <= impactX && impactX <= maxVert.x &&
@@ -283,15 +283,15 @@ namespace oz
 
   void Collider::trimPointTerra()
   {
-    if( globalStartPos.z < 0.0f ) {
-      hit.waterDepth = Math::max( hit.waterDepth, -globalStartPos.z );
+    if( startPos.z < 0.0f ) {
+      hit.waterDepth = Math::max( hit.waterDepth, -startPos.z );
       hit.inWater = true;
     }
 
-    float minPosX = Math::min( globalStartPos.x, globalEndPos.x );
-    float minPosY = Math::min( globalStartPos.y, globalEndPos.y );
-    float maxPosX = Math::max( globalStartPos.x, globalEndPos.x );
-    float maxPosY = Math::max( globalStartPos.y, globalEndPos.y );
+    float minPosX = Math::min( startPos.x, endPos.x );
+    float minPosY = Math::min( startPos.y, endPos.y );
+    float maxPosX = Math::max( startPos.x, endPos.x );
+    float maxPosY = Math::max( startPos.y, endPos.y );
 
     Span terraSpan = world.terra.getInters( minPosX, minPosY, maxPosX, maxPosY );
 
@@ -309,8 +309,8 @@ namespace oz
       int iSide = move[i] >= 0.0f;
       const Vec3& normal = bbNormals[i * 2 + iSide];
 
-      float startDist = world.maxs[i] + globalStartPos[i] * normal[i];
-      float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i];
+      float startDist = world.maxs[i] + startPos[i] * normal[i];
+      float endDist   = world.maxs[i] + endPos[i]   * normal[i];
 
       if( endDist <= EPSILON && endDist <= startDist ) {
         float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
@@ -337,8 +337,8 @@ namespace oz
       int j = i >> 1;
       const Vec3& normal = bbNormals[i];
 
-      float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
-      float endDist   = ( globalEndPos[j]   - sObj->p[j] ) * normal[j] - sObj->dim[j];
+      float startDist = ( startPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
+      float endDist   = ( endPos[j]   - sObj->p[j] ) * normal[j] - sObj->dim[j];
 
       if( endDist > EPSILON ) {
         if( startDist < 0.0f ) {
@@ -376,8 +376,8 @@ namespace oz
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float startDist = leafStartPos * plane.normal - plane.distance;
-      float endDist   = leafEndPos   * plane.normal - plane.distance;
+      float startDist = startPos * plane.normal - plane.distance;
+      float endDist   = endPos   * plane.normal - plane.distance;
 
       if( endDist > EPSILON ) {
         if( startDist < 0.0f ) {
@@ -397,10 +397,8 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
-      float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
-
-      if( newRatio < hit.ratio ) {
-        hit.ratio    = Math::max( 0.0f, newRatio );
+      if( minRatio < hit.ratio ) {
+        hit.ratio    = Math::max( 0.0f, minRatio );
         hit.normal   = toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
         hit.str      = str;
@@ -410,17 +408,10 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for Point-Brush collisions
-  void Collider::trimPointNode( int nodeIndex, float startRatio, float endRatio,
-                                const Vec3& startPos, const Vec3& endPos )
+  void Collider::trimPointNode( int nodeIndex )
   {
     if( nodeIndex < 0 ) {
       const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
-
-      leafStartRatio = startRatio;
-      leafEndRatio   = endRatio;
-
-      leafStartPos = startPos;
-      leafEndPos   = endPos;
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
         int index = bsp->leafBrushes[leaf.firstBrush + i];
@@ -441,14 +432,14 @@ namespace oz
       float offset = 2.0f * EPSILON;
 
       if( startDist > offset && endDist > offset ) {
-        trimPointNode( node.front, startRatio, endRatio, startPos, endPos );
+        trimPointNode( node.front );
       }
       else if( startDist < -offset && endDist < -offset ) {
-        trimPointNode( node.back, startRatio, endRatio, startPos, endPos );
+        trimPointNode( node.back );
       }
       else {
-        trimPointNode( node.front, startRatio, endRatio, startPos, endPos );
-        trimPointNode( node.back, startRatio, endRatio, startPos, endPos );
+        trimPointNode( node.front );
+        trimPointNode( node.back );
       }
     }
   }
@@ -460,8 +451,11 @@ namespace oz
     hit.str      = null;
     hit.material = 0;
 
-    globalStartPos = point;
-    globalEndPos   = point + move;
+    Vec3 originalStartPos = point;
+    Vec3 originalEndPos   = point + move;
+
+    startPos = originalStartPos;
+    endPos   = originalEndPos;
 
     if( !world.includes( trace ) ) {
       trimPointVoid();
@@ -481,13 +475,18 @@ namespace oz
 
             if( str->overlaps( trace ) ) {
               visitedBrushes.clearAll();
-              trimPointNode( 0, 0.0f, 1.0f,
-                             toStructCS( globalStartPos - str->p ),
-                             toStructCS( globalEndPos - str->p ) );
+
+              startPos = toStructCS( originalStartPos - str->p );
+              endPos   = toStructCS( originalEndPos - str->p );
+
+              trimPointNode( 0 );
             }
             oldStr = str;
           }
         }
+
+        startPos = originalStartPos;
+        endPos   = originalEndPos;
 
         foreach( sObj, cell.objects.citer() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) &&
@@ -520,7 +519,7 @@ namespace oz
           Math::abs( plane.normal.y * aabb.dim.y ) +
           Math::abs( plane.normal.z * aabb.dim.z );
 
-      float dist = globalStartPos * plane.normal - plane.distance - offset;
+      float dist = startPos * plane.normal - plane.distance - offset;
 
       if( dist > EPSILON ) {
         return true;
@@ -557,7 +556,7 @@ namespace oz
           Math::abs( plane.normal.z * aabb.dim.z ) +
           2.0f * EPSILON;
 
-      float dist = globalStartPos * plane.normal - plane.distance;
+      float dist = startPos * plane.normal - plane.distance;
 
       if( dist > offset ) {
         return testAABBNode( node.front );
@@ -594,7 +593,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            globalStartPos = toStructCS( aabb.p - str->p );
+            startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
@@ -658,7 +657,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = world.bsps[str->bsp];
 
-            globalStartPos = toStructCS( aabb.p - str->p );
+            startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
@@ -687,8 +686,8 @@ namespace oz
       int iSide = move[i] >= 0.0f;
       const Vec3& normal = bbNormals[i * 2 + iSide];
 
-      float startDist = world.maxs[i] + globalStartPos[i] * normal[i] - aabb.dim[i];
-      float endDist   = world.maxs[i] + globalEndPos[i]   * normal[i] - aabb.dim[i];
+      float startDist = world.maxs[i] + startPos[i] * normal[i] - aabb.dim[i];
+      float endDist   = world.maxs[i] + endPos[i]   * normal[i] - aabb.dim[i];
 
       if( endDist <= EPSILON && endDist <= startDist ) {
         float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
@@ -715,8 +714,8 @@ namespace oz
       int j = i >> 1;
       const Vec3& normal = bbNormals[i];
 
-      float startDist = ( globalStartPos[j] - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
-      float endDist   = ( globalEndPos[j]   - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
+      float startDist = ( startPos[j] - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
+      float endDist   = ( endPos[j]   - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
 
       if( endDist > EPSILON ) {
         if( startDist < 0.0f ) {
@@ -759,8 +758,8 @@ namespace oz
           Math::abs( plane.normal.y * aabb.dim.y ) +
           Math::abs( plane.normal.z * aabb.dim.z );
 
-      float startDist = leafStartPos * plane.normal - plane.distance - offset;
-      float endDist   = leafEndPos   * plane.normal - plane.distance - offset;
+      float startDist = startPos * plane.normal - plane.distance - offset;
+      float endDist   = endPos   * plane.normal - plane.distance - offset;
 
       if( endDist > EPSILON ) {
         if( startDist < 0.0f ) {
@@ -780,10 +779,8 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
-      float newRatio = leafStartRatio + minRatio * ( leafEndRatio - leafStartRatio );
-
-      if( newRatio < hit.ratio ) {
-        hit.ratio    = Math::max( 0.0f, newRatio );
+      if( minRatio < hit.ratio ) {
+        hit.ratio    = Math::max( 0.0f, minRatio );
         hit.normal   = toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
         hit.str      = str;
@@ -801,15 +798,15 @@ namespace oz
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       if( plane.normal.z <= 0.0f ) {
-        float centerDist = leafStartPos * plane.normal - plane.distance;
+        float centerDist = startPos * plane.normal - plane.distance;
 
         if( centerDist > -EPSILON ) {
           return;
         }
       }
       else {
-        float dist = ( plane.distance - plane.normal.x*leafStartPos.x +
-            plane.normal.y*leafStartPos.y ) / plane.normal.z - leafStartPos.z + aabb.dim.z;
+        float dist = ( plane.distance - plane.normal.x*startPos.x + plane.normal.y*startPos.y ) /
+            plane.normal.z - startPos.z + aabb.dim.z;
 
         if( dist <= 0.0f ) {
           return;
@@ -834,7 +831,7 @@ namespace oz
           Math::abs( plane.normal.y * aabb.dim.y ) +
           Math::abs( plane.normal.z * aabb.dim.z );
 
-      float dist = leafStartPos * plane.normal - plane.distance - offset;
+      float dist = startPos * plane.normal - plane.distance - offset;
 
       if( dist > 0.0f ) {
         return;
@@ -844,17 +841,10 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush collisions
-  void Collider::trimAABBNode( int nodeIndex, float startRatio, float endRatio,
-                               const Vec3& startPos, const Vec3& endPos )
+  void Collider::trimAABBNode( int nodeIndex )
   {
     if( nodeIndex < 0 ) {
       const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
-
-      leafStartRatio = startRatio;
-      leafEndRatio   = endRatio;
-
-      leafStartPos = startPos;
-      leafEndPos   = endPos;
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
         int index = bsp->leafBrushes[leaf.firstBrush + i];
@@ -889,14 +879,30 @@ namespace oz
       float endDist   = endPos   * plane.normal - plane.distance;
 
       if( startDist > offset && endDist > offset ) {
-        trimAABBNode( node.front, startRatio, endRatio, startPos, endPos );
+        trimAABBNode( node.front );
       }
       else if( startDist < -offset && endDist < -offset ) {
-        trimAABBNode( node.back, startRatio, endRatio, startPos, endPos );
+        trimAABBNode( node.back );
       }
       else {
-        trimAABBNode( node.front, startRatio, endRatio, startPos, endPos );
-        trimAABBNode( node.back, startRatio, endRatio, startPos, endPos );
+        trimAABBNode( node.front );
+        trimAABBNode( node.back );
+      }
+    }
+  }
+
+  void Collider::trimAABBModels()
+  {
+    for( int i = 1; i < bsp->nModels; ++i ) {
+      const BSP::Model& model = bsp->models[i];
+
+      for( int j = 0; j < model.nBrushes; ++j ) {
+        int index = bsp->leafBrushes[model.firstBrush + j];
+        const BSP::Brush& brush = bsp->brushes[index];
+
+        assert( !visitBrush( index ) );
+
+        trimAABBBrush( &brush );
       }
     }
   }
@@ -912,8 +918,11 @@ namespace oz
     hit.inWater    = false;
     hit.onLadder   = false;
 
-    globalStartPos = aabb.p;
-    globalEndPos   = aabb.p + move;
+    Vec3 originalStartPos = aabb.p;
+    Vec3 originalEndPos   = aabb.p + move;
+
+    startPos = originalStartPos;
+    endPos   = originalEndPos;
 
     if( !world.includes( trace ) ) {
       trimAABBVoid();
@@ -934,13 +943,19 @@ namespace oz
 
             if( str->overlaps( trace ) ) {
               visitedBrushes.clearAll();
-              trimAABBNode( 0, 0.0f, 1.0f,
-                            toStructCS( globalStartPos - str->p ),
-                            toStructCS( globalEndPos - str->p ) );
+
+              startPos = toStructCS( originalStartPos - str->p );
+              endPos   = toStructCS( originalEndPos - str->p );
+
+              trimAABBModels();
+              trimAABBNode( 0 );
             }
             oldStr = str;
           }
         }
+
+        startPos = originalStartPos;
+        endPos   = originalEndPos;
 
         foreach( sObj, cell.objects.citer() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) &&
@@ -952,8 +967,8 @@ namespace oz
       }
     }
 
-    globalStartPos.z -= aabb.dim.z;
-    globalEndPos.z   -= aabb.dim.z;
+    startPos.z -= aabb.dim.z;
+    endPos.z   -= aabb.dim.z;
 
     trimPointTerra();
 
@@ -981,7 +996,7 @@ namespace oz
             if( !structs->contains( str ) ) {
               bsp = world.bsps[str->bsp];
 
-              globalStartPos = toStructCS( aabb.p - str->p );
+              startPos = toStructCS( aabb.p - str->p );
 
               if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
                 *structs << str;

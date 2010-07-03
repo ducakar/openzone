@@ -27,6 +27,11 @@ namespace oz
       explicit Bounds( const Vec3& mins_, const Vec3& maxs_ ) : mins( mins_ ), maxs( maxs_ )
       {}
 
+      Bounds toBounds( float eps ) const
+      {
+        return Bounds( mins - Vec3( eps, eps, eps ), maxs + Vec3( eps, eps, eps ) );
+      }
+
       Bounds& fromPointMove( const Vec3& p, const Vec3& move, float eps = 0.0f )
       {
         if( move.x < 0.0f ) {
@@ -110,10 +115,11 @@ namespace oz
       }
 
       // implemented in AABB.hpp
-      AABB toAABB( float eps = 0.0f ) const;
-      bool isInside( const AABB& a, float eps = 0.0f ) const;
-      bool includes( const AABB& a, float eps = 0.0f ) const;
-      bool overlaps( const AABB& a, float eps = 0.0f ) const;
+      AABB    toAABB( float eps = 0.0f ) const;
+      Bounds& fromAABBMove( const AABB& a, const Vec3& move, float eps = 0.0f );
+      bool    isInside( const AABB& a, float eps = 0.0f ) const;
+      bool    includes( const AABB& a, float eps = 0.0f ) const;
+      bool    overlaps( const AABB& a, float eps = 0.0f ) const;
 
   };
 

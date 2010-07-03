@@ -23,9 +23,9 @@
 namespace oz
 {
 
-  /*
-   * TYPES
-   */
+  //***********************************
+  //*             TYPES               *
+  //***********************************
 
   /**
    * Unit type
@@ -88,10 +88,6 @@ namespace oz
 # define ulong ulong
   typedef unsigned long  ulong;
 
-  /*
-   * TYPE UTILITIES
-   */
-
   /**
    * Type manipulations
    */
@@ -126,9 +122,9 @@ namespace oz
    */
 # define S( s ) #s
 
-  /*
-   * BASIC ALGORITHMS
-   */
+  //***********************************
+  //*        BASIC ALGORITHMS         *
+  //***********************************
 
   /**
    * Swap values of a and b with move semantics.
