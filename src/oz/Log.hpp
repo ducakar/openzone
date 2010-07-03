@@ -22,6 +22,14 @@ namespace oz
       bool   isStdout;
 
     public:
+
+      /**
+       * Default contructor.
+       * Initialises Log with default parameters to init() (look declaration).
+       * @return
+       */
+      Log();
+
       /**
        * First parameter is file name (if NULL or "", it writes to stdout), the other tells us
        * if we want to clear its content if the file already exists.

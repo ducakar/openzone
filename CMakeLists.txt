@@ -12,6 +12,7 @@ option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 option( OZ_CROSS_MINGW "If MinGW is not used natively on Windows, but on Unix for cross-compiling." OFF )
 option( OZ_BUILD "Optimise and dump resources where possible. Those can be used by a OZ_PREBUILT enabled build." OFF )
 option( OZ_PREBUILT "If OpenZone optimized resources should be loaded instead of generic ones" OFF )
+option( OZ_ENABLE_CYLINDER "Enable cylinder collision shape and physics" ON )
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 
@@ -107,8 +108,42 @@ add_subdirectory( src )
 add_subdirectory( data )
 
 # installation
+install( FILES
+	src/oz/oz.hpp
+	src/oz/ozconfig.hpp
+	src/oz/common.hpp
+	src/oz/Exception.hpp
+	src/oz/Alloc.hpp
+	src/oz/Pool.hpp
+	src/oz/iterables.hpp
+	src/oz/arrays.hpp
+	src/oz/Pair.hpp
+	src/oz/List.hpp
+	src/oz/DList.hpp
+	src/oz/Array.hpp
+	src/oz/DArray.hpp
+	src/oz/String.hpp
+	src/oz/Vector.hpp
+	src/oz/SVector.hpp
+	src/oz/Sparse.hpp
+	src/oz/HashIndex.hpp
+	src/oz/HashString.hpp
+	src/oz/Bitset.hpp
+	src/oz/Math.hpp
+	src/oz/Vec3.hpp
+	src/oz/Quat.hpp
+	src/oz/Mat33.hpp
+	src/oz/Mat44.hpp
+	src/oz/Log.hpp
+	src/oz/Config.hpp
+	DESTINATION include/oz )
+	
+install( FILES src/oz/liboz.a
+	DESTINATION lib )
+	
 install( FILES src/client/openzone
-		 DESTINATION bin/openzone
-		 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-					 GROUP_READ GROUP_EXECUTE
-					 WORLD_READ WORLD_EXECUTE )
+	DESTINATION bin
+	PERMISSIONS
+	OWNER_READ OWNER_WRITE OWNER_EXECUTE
+	GROUP_READ GROUP_EXECUTE
+	WORLD_READ WORLD_EXECUTE )

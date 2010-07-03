@@ -23,7 +23,7 @@ namespace oz
       /**
        * Position
        */
-      Vec3  p;
+      Vec3 p;
       /**
        * Radius of a bounding sphere (only used in frustum culling, so no need to set it when the
        * AABB won't be used in a frusum test)
@@ -32,7 +32,7 @@ namespace oz
       /**
        * Extents
        */
-      Vec3  dim;
+      Vec3 dim;
 
       explicit AABB()
       {}

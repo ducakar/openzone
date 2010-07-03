@@ -11,8 +11,8 @@
 
 namespace oz
 {
-  // ~1 mm, should be enough for 8 km x 8 km map (i guess)
-  const float EPSILON   = 0.0009765625f;
+  // ~1 mm, should be enough for 8 km x 8 km map (I guess)
+  const float EPSILON = 0.0009765625f;
 
   struct Span
   {
@@ -21,7 +21,9 @@ namespace oz
     int maxX;
     int maxY;
 
-    Span() {}
+    Span()
+    {}
+
     Span( int minX_, int minY_, int maxX_, int maxY_ ) :
         minX( minX_ ), minY( minY_ ), maxX( maxX_ ), maxY( maxY_ )
     {}
@@ -40,8 +42,8 @@ namespace oz
 
 }
 
+#include "matrix/Sphere.hpp"
 #include "matrix/Bounds.hpp"
 #include "matrix/AABB.hpp"
-#include "matrix/Sphere.hpp"
 
 #include "matrix/io.hpp"

@@ -18,6 +18,11 @@ namespace oz
 
   Log log;
 
+  Log::Log()
+  {
+    init();
+  }
+
   // first parameter is file name, the other tells us if we want to clear its content if
   // the file already exists
   bool Log::init( const char* fileName, bool clearFile, const char* indentStr_ )

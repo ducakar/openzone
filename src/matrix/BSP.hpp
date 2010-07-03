@@ -40,24 +40,39 @@ namespace oz
 
       struct Leaf : Bounds
       {
-        int cluster;
+        int firstBrush;
+        int nBrushes;
 
         int firstFace;
         int nFaces;
 
-        int firstBrush;
-        int nBrushes;
+        int cluster;
       };
 
       struct Model : Bounds
       {
-        Vec3 offset;
-
         int  firstFace;
         int  nFaces;
 
         int  firstBrush;
         int  nBrushes;
+      };
+
+      struct Entity
+      {
+        static const int AUTOMATIC_BIT = 0x00000001;
+        static const int PUSHING_BIT   = 0x00000002;
+        static const int CRUSHING_BIT  = 0x00000004;
+
+        Vec3  startPos;
+        Vec3  endPos;
+
+        int   flags;
+
+        int   model;
+
+        float slideTime;
+        float timeout;
       };
 
       struct Brush
@@ -116,29 +131,31 @@ namespace oz
       float      maxDim;
       float      life;
 
-      int        nTextures;
       int        nPlanes;
       int        nNodes;
       int        nLeaves;
       int        nLeafFaces;
       int        nLeafBrushes;
       int        nModels;
+      int        nEntities;
       int        nBrushes;
       int        nBrushSides;
+      int        nTextures;
       int        nVertices;
       int        nIndices;
       int        nFaces;
       int        nLightmaps;
 
-      int*       textures;
       Plane*     planes;
       Node*      nodes;
       Leaf*      leaves;
-      int*       leafFaces;
       int*       leafBrushes;
+      int*       leafFaces;
       Model*     models;
+      Entity*    entities;
       Brush*     brushes;
       int*       brushSides;
+      int*       textures;
       Vertex*    vertices;
       int*       indices;
       Face*      faces;
@@ -151,7 +168,7 @@ namespace oz
 #ifndef OZ_PREBUILT
       bool includes( const Brush& brush ) const;
 
-      bool loadQBSP( const char* fileName, float scale, float maxDim );
+      bool loadQBSP( const char* fileName );
       void optimise();
       bool save( const char* fileName );
 #endif
