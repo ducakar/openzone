@@ -1,7 +1,7 @@
 /*
- *  Bitset.hpp
+ *  SBitset.hpp
  *
- *  Bitset
+ *  SBitset with static storage
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU General Public License v3. See COPYING file for details.
@@ -13,85 +13,50 @@ namespace oz
 {
 
   /**
-   * Bitset data type.
+   * SBitset data type.
    *
    * unit = ulong
    */
-  class Bitset
+  template <int BITSIZE>
+  class SBitset
   {
     private:
 
       // Number of bits per unit.
       static const int ULONG_BITSIZE = sizeof( ulong ) * 8;
 
-      // Pointer to unit[] that holds the data.
-      ulong* data;
+      static const int SIZE = ( BITSIZE - 1 ) / ULONG_BITSIZE + 1;
 
-      // Size of data array (in units, not in bits).
-      int    size;
+      // Pointer to unit[] that holds the data.
+      ulong data[SIZE];
 
     public:
 
       /**
        * Create a new bitset without allocating any space.
        */
-      explicit Bitset() : data( null ), size( 0 )
+      explicit SBitset()
       {}
 
       /**
        * Copy construstor.
-       * @param b the original Bitset
+       * @param b the original SBitset
        */
-      Bitset( const Bitset& b ) : data( new ulong[b.size] ), size( b.size )
+      SBitset( const SBitset& b )
       {
-        aCopy( data, b.data, size );
-      }
-
-      /**
-       * Move construstor.
-       * @param b the original Bitset
-       */
-      Bitset( Bitset&& b ) : data( b.data ), size( b.size )
-      {
-        b.data = null;
-        b.size = 0;
-      }
-
-      /**
-       * Allocate a new bitset that holds at least <code>nBits</code> bits. The size of
-       * <code>data</code> array is adjusted to least multiplier of unit size that can hold the
-       * requested number of bits.
-       * @param nBits the number of bits the bitset should hold
-       */
-      explicit Bitset( int nBits )
-      {
-        size = ( nBits - 1 ) / ULONG_BITSIZE + 1;
-        data = new ulong[size];
-      }
-
-      /**
-       * Destructor.
-       */
-      ~Bitset()
-      {
-        if( data != null ) {
-          delete[] data;
-        }
+        aCopy( data, b.data, SIZE );
       }
 
       /**
        * Copy operator.
-       * @param b the original Bitset
+       * @param b the original SBitset
        * @return copy
        */
-      Bitset& operator = ( const Bitset& b )
+      SBitset& operator = ( const SBitset& b )
       {
         assert( &b != this );
 
-        if( size != b.size ) {
-          setUnitSize( b.size );
-        }
-        aCopy( data, b.data, size );
+        aCopy( data, b.data, SIZE );
         return *this;
       }
 
@@ -100,12 +65,9 @@ namespace oz
        * @param b
        * @return true if all bits up to <code>length()</code> are equal.
        */
-      bool operator == ( const Bitset& b ) const
+      bool operator == ( const SBitset& b ) const
       {
-        if( size != b.size ) {
-          return false;
-        }
-        return aEquals( data, b.data, size );
+        return aEquals( data, b.data, SIZE );
       }
 
       /**
@@ -113,12 +75,9 @@ namespace oz
        * @param b
        * @return false if all bits up to <code>length()</code> are equal.
        */
-      bool operator != ( const Bitset& b ) const
+      bool operator != ( const SBitset& b ) const
       {
-        if( size != b.size ) {
-          return true;
-        }
-        return !aEquals( data, b.data, size );
+        return !aEquals( data, b.data, SIZE );
       }
 
       /**
@@ -142,39 +101,12 @@ namespace oz
       }
 
       /**
-       * Resize the <code>data</code> array. New size if specified in units.
-       * @param nUnits
-       */
-      void setUnitSize( int nUnits )
-      {
-        soft_assert( size != nUnits );
-
-        if( nUnits == size ) {
-          return;
-        }
-        if( data != null ) {
-          delete[] data;
-        }
-        size = nUnits;
-        data = size == 0 ? null : new ulong[size];
-      }
-
-      /**
-       * Resize the <code>data</code> array. New size if specified in bits.
-       * @param nBits
-       */
-      void setSize( int nBits )
-      {
-        setUnitSize( nBits == 0 ? 0 : ( nBits - 1 ) / ULONG_BITSIZE + 1 );
-      }
-
-      /**
        * Size of bitset in bits.
        * @return number of bits the bitset can hold
        */
       int length() const
       {
-        return size * ULONG_BITSIZE;
+        return SIZE * ULONG_BITSIZE;
       }
 
       /**
@@ -184,7 +116,7 @@ namespace oz
        */
       bool get( int i ) const
       {
-        assert( 0 <= i && i < ( size * ULONG_BITSIZE ) );
+        assert( 0 <= i && i < ( SIZE * ULONG_BITSIZE ) );
 
         return ( data[i / ULONG_BITSIZE] & ( 1ul << ( i % ULONG_BITSIZE ) ) ) != 0ul;
       }
@@ -194,18 +126,15 @@ namespace oz
        * subset of the second one. Other explanation: the result is true iff the following statement
        * is true: if first bitset has true on i-th position then the second bitset also has true on
        * i-th position.
-       * Bitsets must be the same size.
        *
        * @param b the other bitset
        * @return implication of bitsets
        */
-      bool isSubset( const Bitset& b ) const
+      bool isSubset( const SBitset& b ) const
       {
-        assert( size == b.size );
+        SBitset r;
 
-        Bitset r( size );
-
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           if( ( data[i] & ~b.data[i] ) != 0ul ) {
             return false;
           }
@@ -219,7 +148,7 @@ namespace oz
        */
       void set( int i )
       {
-        assert( 0 <= i && i < ( size * ULONG_BITSIZE ) );
+        assert( 0 <= i && i < ( SIZE * ULONG_BITSIZE ) );
 
         data[i / ULONG_BITSIZE] |= 1ul << ( i % ULONG_BITSIZE );
       }
@@ -230,7 +159,7 @@ namespace oz
        */
       void clear( int i )
       {
-        assert( 0 <= i && i < ( size * ULONG_BITSIZE ) );
+        assert( 0 <= i && i < ( SIZE * ULONG_BITSIZE ) );
 
         data[i / ULONG_BITSIZE] &= ~( 1ul << ( i % ULONG_BITSIZE ) );
       }
@@ -240,7 +169,7 @@ namespace oz
        */
       bool isAllSet() const
       {
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           if( data[i] != ~0ul ) {
             return false;
           }
@@ -253,7 +182,7 @@ namespace oz
        */
       bool isAllClear() const
       {
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           if( data[i] != 0ul ) {
             return false;
           }
@@ -268,7 +197,7 @@ namespace oz
        */
       void set( int start, int end )
       {
-        assert( 0 <= start && start <= end && end <= ( size * ULONG_BITSIZE ) );
+        assert( 0 <= start && start <= end && end <= ( SIZE * ULONG_BITSIZE ) );
 
         int startUnit   = start / ULONG_BITSIZE;
         int startOffset = start % ULONG_BITSIZE;
@@ -299,7 +228,7 @@ namespace oz
        */
       void clear( int start, int end )
       {
-        assert( 0 <= start && start <= end && end <= ( size * ULONG_BITSIZE ) );
+        assert( 0 <= start && start <= end && end <= ( SIZE * ULONG_BITSIZE ) );
 
         int startUnit   = start / ULONG_BITSIZE;
         int startOffset = start % ULONG_BITSIZE;
@@ -328,7 +257,7 @@ namespace oz
        */
       void setAll()
       {
-        aSet( data, ~0ul, size );
+        aSet( data, ~0ul, SIZE );
       }
 
       /**
@@ -336,18 +265,18 @@ namespace oz
        */
       void clearAll()
       {
-        aSet( data, 0ul, size );
+        aSet( data, 0ul, SIZE );
       }
 
       /**
        * Return bitset that has all bits inverted.
        * @return inverted bitset
        */
-      Bitset operator ~ () const
+      SBitset operator ~ () const
       {
-        Bitset r( size );
+        SBitset r;
 
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           r.data[i] = ~data[i];
         }
         return r;
@@ -358,9 +287,9 @@ namespace oz
        * @param b the other bitset
        * @return
        */
-      Bitset& operator &= ( const Bitset& b )
+      SBitset& operator &= ( const SBitset& b )
       {
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           data[i] &= b.data[i];
         }
         return *this;
@@ -371,9 +300,9 @@ namespace oz
        * @param b the other bitset
        * @return
        */
-      Bitset& operator |= ( const Bitset& b )
+      SBitset& operator |= ( const SBitset& b )
       {
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           data[i] |= b.data[i];
         }
         return *this;
@@ -384,60 +313,54 @@ namespace oz
        * @param b the other bitset
        * @return
        */
-      Bitset& operator ^= ( const Bitset& b )
+      SBitset& operator ^= ( const SBitset& b )
       {
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           data[i] ^= b.data[i];
         }
         return *this;
       }
 
       /**
-       * Return AND of two bitsets. Bitsets must be the same size.
+       * Return AND of two bitsets.
        * @param b the other bitset
        * @return AND of bitsets
        */
-      Bitset operator & ( const Bitset& b ) const
+      SBitset operator & ( const SBitset& b ) const
       {
-        assert( size == b.size );
+        SBitset r;
 
-        Bitset r( size );
-
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           r.data[i] = data[i] & b.data[i];
         }
         return r;
       }
 
       /**
-       * Return OR of two bitsets. Bitsets must be the same size.
+       * Return OR of two bitsets.
        * @param b the other bitset
        * @return OR of bitsets
        */
-      Bitset operator | ( const Bitset& b ) const
+      SBitset operator | ( const SBitset& b ) const
       {
-        assert( size == b.size );
+        SBitset r;
 
-        Bitset r( size );
-
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           r.data[i] = data[i] | b.data[i];
         }
         return r;
       }
 
       /**
-       * Return XOR of two bitsets. Bitsets must be the same size.
+       * Return XOR of two bitsets.
        * @param b the other bitset
        * @return XOR of bitsets
        */
-      Bitset operator ^ ( const Bitset& b ) const
+      SBitset operator ^ ( const SBitset& b ) const
       {
-        assert( size == b.size );
+        SBitset r;
 
-        Bitset r( size );
-
-        for( int i = 0; i < size; ++i ) {
+        for( int i = 0; i < SIZE; ++i ) {
           r.data[i] = data[i] ^ b.data[i];
         }
         return r;

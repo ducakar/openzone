@@ -54,7 +54,7 @@ namespace oz
     AABB bounds = AABB( pos, translator.classes[type]->dim );
     bounds *= SPACING;
 
-    if( collider.testOSO( bounds ) ) {
+    if( !collider.overlapsOSO( bounds ) ) {
       synapse.addObject( type, pos );
     }
   }
@@ -68,7 +68,7 @@ namespace oz
       return;
     }
 
-    if( collider.testOSO( bounds ) ) {
+    if( !collider.overlapsOSO( bounds ) ) {
       synapse.addObject( type, pos );
     }
   }

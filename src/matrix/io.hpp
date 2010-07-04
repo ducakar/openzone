@@ -13,7 +13,7 @@ namespace oz
 {
 
   /**
-   * Read-only nonseekable stream.
+   * Read-only non-seekable stream.
    */
   class InputStream
   {
@@ -220,7 +220,7 @@ namespace oz
   };
 
   /**
-   * Write-only nonseekable stream.
+   * Write-only non-seekable stream.
    */
   class OutputStream
   {

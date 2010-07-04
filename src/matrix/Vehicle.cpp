@@ -99,14 +99,8 @@ namespace oz
           // move up a bit to prevent colliding with the vehicle
           bot->p += up * EJECT_MOVE;
 
-          if( collider.test( *bot, this ) ) {
-            bot->momentum += ( up + 0.5f * at ) * EJECT_MOMENTUM;
-            bot->exit();
-          }
-          else {
-            bot->p = p + rot.rotate( clazz->crewPos[0] ) + momentum * Timer::TICK_TIME;
-            bot->momentum = velocity;
-          }
+          bot->momentum += ( up + 0.5f * at ) * EJECT_MOMENTUM;
+          bot->exit();
         }
         else {
           bot->p = p + rot.rotate( clazz->crewPos[0] ) + momentum * Timer::TICK_TIME;

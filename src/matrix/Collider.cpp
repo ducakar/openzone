@@ -42,7 +42,7 @@ namespace oz
     Mat44::rotZ(  Math::PI_2 )
   };
 
-  Collider::Collider() : visitedBrushes( BSP::MAX_BRUSHES ), mask( Object::SOLID_BIT )
+  Collider::Collider() : mask( Object::SOLID_BIT )
   {}
 
   inline bool Collider::visitBrush( int index )
@@ -67,21 +67,22 @@ namespace oz
   //***********************************
 
   // checks if AABB and Brush overlap
-  bool Collider::testPointBrush( const BSP::Brush* brush ) const
+  bool Collider::overlapsPointBrush( const BSP::Brush* brush ) const
   {
-    bool result = false;
+    bool result = true;
 
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       float dist = startPos * plane.normal - plane.distance;
-      result |= dist > EPSILON;
+
+      result &= dist <= EPSILON;
     }
     return result;
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush overlapping
-  bool Collider::testPointNode( int nodeIndex )
+  bool Collider::overlapsPointNode( int nodeIndex )
   {
     if( nodeIndex < 0 ) {
       const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
@@ -91,12 +92,12 @@ namespace oz
         const BSP::Brush& brush = bsp->brushes[index];
 
         if( !visitBrush( index ) && ( brush.material & Material::STRUCT_BIT ) &&
-            !testPointBrush( &brush ) )
+            overlapsPointBrush( &brush ) )
         {
-          return false;
+          return true;
         }
       }
-      return true;
+      return false;
     }
     else {
       const BSP::Node&  node  = bsp->nodes[nodeIndex];
@@ -105,18 +106,18 @@ namespace oz
       float dist = startPos * plane.normal - plane.distance;
 
       if( dist > 2.0f * EPSILON ) {
-        return testPointNode( node.front );
+        return overlapsPointNode( node.front );
       }
       else if( dist < -2.0f * EPSILON ) {
-        return testPointNode( node.back );
+        return overlapsPointNode( node.back );
       }
       else {
-        return testPointNode( node.front ) && testPointNode( node.back );
+        return overlapsPointNode( node.front ) || overlapsPointNode( node.back );
       }
     }
   }
 
-  bool Collider::testPointModels() const
+  bool Collider::overlapsPointModels() const
   {
     for( int i = 1; i < bsp->nModels; ++i ) {
       const BSP::Model& model = bsp->models[i];
@@ -127,23 +128,23 @@ namespace oz
 
         assert( !visitedBrushes.get( index ) );
 
-        if( ( brush.material & Material::STRUCT_BIT ) && !testPointBrush( &brush ) ) {
-          return false;
+        if( ( brush.material & Material::STRUCT_BIT ) && overlapsPointBrush( &brush ) ) {
+          return true;
         }
       }
     }
-    return true;
+    return false;
   }
 
   // check for AABB-AABB and AABB-Brush overlapping in the world
-  bool Collider::testPointWorld()
+  bool Collider::overlapsPointWorld()
   {
     if( !world.includes( point, -EPSILON ) ) {
-      return false;
+      return true;
     }
 
-    if( aabb.p.z - aabb.dim.z - world.terra.height( aabb.p.x, aabb.p.y ) < 0.0f ) {
-      return false;
+    if( aabb.p.z - aabb.dim.z - world.terra.height( aabb.p.x, aabb.p.y ) <= 0.0f ) {
+      return true;
     }
 
     const Structure* oldStr = null;
@@ -161,29 +162,27 @@ namespace oz
             startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
-            if( str->overlaps( trace ) && ( !testPointNode( 0 ) || !testPointModels() ) ) {
-              return false;
+            if( str->overlaps( trace ) && ( overlapsPointNode( 0 ) || overlapsPointModels() ) ) {
+              return true;
             }
             oldStr = str;
           }
         }
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) &&
-              sObj->includes( point, EPSILON ) )
-          {
-            return false;
+          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->includes( point, EPSILON ) ) {
+            return true;
           }
         }
       }
     }
-    return true;
+    return false;
   }
 
-  bool Collider::testPointWorldOO()
+  bool Collider::overlapsPointWorldOO()
   {
     if( !world.includes( point, -EPSILON ) ) {
-      return false;
+      return true;
     }
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
@@ -191,22 +190,20 @@ namespace oz
         const Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) &&
-              sObj->includes( point, EPSILON ) )
-          {
-            return false;
+          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->includes( point, EPSILON ) ) {
+            return true;
           }
         }
       }
     }
-    return true;
+    return false;
   }
 
   // check for AABB-AABB and AABB-Brush overlapping in the world
-  bool Collider::testPointWorldOSO()
+  bool Collider::overlapsPointWorldOSO()
   {
     if( !world.includes( point, -EPSILON ) ) {
-      return false;
+      return true;
     }
 
     const Structure* oldStr = null;
@@ -224,23 +221,21 @@ namespace oz
             startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
-            if( str->overlaps( trace ) && ( !testPointModels() || !testPointNode( 0 ) ) ) {
-              return false;
+            if( str->overlaps( trace ) && ( overlapsPointNode( 0 ) || overlapsPointModels() ) ) {
+              return true;
             }
             oldStr = str;
           }
         }
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) &&
-              sObj->includes( point, EPSILON ) )
-          {
-            return false;
+          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->includes( point, EPSILON ) ) {
+            return true;
           }
         }
       }
     }
-    return true;
+    return false;
   }
 
   // terrain collision detection is penetration-safe
@@ -587,8 +582,10 @@ namespace oz
   //***********************************
 
   // checks if AABB and Brush overlap
-  bool Collider::testAABBBrush( const BSP::Brush* brush ) const
+  bool Collider::overlapsAABBBrush( const BSP::Brush* brush ) const
   {
+    bool result = true;
+
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
@@ -599,15 +596,13 @@ namespace oz
 
       float dist = startPos * plane.normal - plane.distance - offset;
 
-      if( dist > EPSILON ) {
-        return true;
-      }
+      result &= dist <= EPSILON;
     }
-    return false;
+    return result;
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush overlapping
-  bool Collider::testAABBNode( int nodeIndex )
+  bool Collider::overlapsAABBNode( int nodeIndex )
   {
     if( nodeIndex < 0 ) {
       const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
@@ -617,12 +612,12 @@ namespace oz
         const BSP::Brush& brush = bsp->brushes[index];
 
         if( !visitBrush( index ) && ( brush.material & Material::STRUCT_BIT ) &&
-            !testAABBBrush( &brush ) )
+            overlapsAABBBrush( &brush ) )
         {
-          return false;
+          return true;
         }
       }
-      return true;
+      return false;
     }
     else {
       const BSP::Node&  node  = bsp->nodes[nodeIndex];
@@ -637,18 +632,18 @@ namespace oz
       float dist = startPos * plane.normal - plane.distance;
 
       if( dist > offset ) {
-        return testAABBNode( node.front );
+        return overlapsAABBNode( node.front );
       }
       else if( dist < -offset ) {
-        return testAABBNode( node.back );
+        return overlapsAABBNode( node.back );
       }
       else {
-        return testAABBNode( node.front ) && testAABBNode( node.back );
+        return overlapsAABBNode( node.front ) || overlapsAABBNode( node.back );
       }
     }
   }
 
-  bool Collider::testAABBModels() const
+  bool Collider::overlapsAABBModels() const
   {
     for( int i = 1; i < bsp->nModels; ++i ) {
       const BSP::Model& model = bsp->models[i];
@@ -659,23 +654,23 @@ namespace oz
 
         assert( !visitedBrushes.get( index ) );
 
-        if( ( brush.material & Material::STRUCT_BIT ) && !testAABBBrush( &brush ) ) {
-          return false;
+        if( ( brush.material & Material::STRUCT_BIT ) && overlapsAABBBrush( &brush ) ) {
+          return true;
         }
       }
     }
-    return true;
+    return false;
   }
 
   // check for AABB-AABB, AABB-Brush and AABB-Terrain overlapping in the world
-  bool Collider::testAABBWorld()
+  bool Collider::overlapsAABBWorld()
   {
-    if( !world.includes( aabb, EPSILON ) ) {
-      return false;
+    if( !world.includes( aabb, -EPSILON ) ) {
+      return true;
     }
 
-    if( aabb.p.z - aabb.dim.z - world.terra.height( aabb.p.x, aabb.p.y ) < 0.0f ) {
-      return false;
+    if( aabb.p.z - aabb.dim.z - world.terra.height( aabb.p.x, aabb.p.y ) <= 0.0f ) {
+      return true;
     }
 
     const Structure* oldStr = null;
@@ -693,30 +688,28 @@ namespace oz
             startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
-            if( str->overlaps( trace ) && ( !testAABBNode( 0 ) || !testAABBModels() ) ) {
-              return false;
+            if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBModels() ) ) {
+              return true;
             }
             oldStr = str;
           }
         }
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) &&
-              sObj->overlaps( aabb, EPSILON ) )
-          {
-            return false;
+          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
+            return true;
           }
         }
       }
     }
-    return true;
+    return false;
   }
 
   // check for AABB-AABB overlapping in the world
-  bool Collider::testAABBWorldOO()
+  bool Collider::overlapsAABBWorldOO()
   {
-    if( !world.includes( aabb, EPSILON ) ) {
-      return false;
+    if( !world.includes( aabb, -EPSILON ) ) {
+      return true;
     }
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
@@ -724,22 +717,20 @@ namespace oz
         const Cell& cell = world.cells[x][y];
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) &&
-              sObj->overlaps( aabb, EPSILON ) )
-          {
-            return false;
+          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
+            return true;
           }
         }
       }
     }
-    return true;
+    return false;
   }
 
   // check for AABB-AABB and AABB-Brush overlapping in the world
-  bool Collider::testAABBWorldOSO()
+  bool Collider::overlapsAABBWorldOSO()
   {
-    if( !world.includes( aabb, EPSILON ) ) {
-      return false;
+    if( !world.includes( aabb, -EPSILON ) ) {
+      return true;
     }
 
     const Structure* oldStr = null;
@@ -757,23 +748,21 @@ namespace oz
             startPos = toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
-            if( str->overlaps( trace ) && ( !testAABBModels() || !testAABBNode( 0 ) ) ) {
-              return false;
+            if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBModels() ) ) {
+              return true;
             }
             oldStr = str;
           }
         }
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) &&
-              sObj->overlaps( aabb, EPSILON ) )
-          {
-            return false;
+          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
+            return true;
           }
         }
       }
     }
-    return true;
+    return false;
   }
 
   // finds out if AABB-World bounding box collision occurs and the time when it occurs
@@ -1095,7 +1084,7 @@ namespace oz
 
               startPos = toStructCS( aabb.p - str->p );
 
-              if( str->overlaps( trace ) && !testAABBNode( 0 ) ) {
+              if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBModels() ) ) {
                 *structs << str;
               }
             }
@@ -1160,10 +1149,10 @@ namespace oz
             aabb = *sObj;
 
             for( int i = 0; i < model->nBrushes; ++i ) {
-              int index = bsp->leafBrushes[model->firstBrush + i];
+              int index = model->firstBrush + i;
               const BSP::Brush& brush = bsp->brushes[index];
 
-              if( !testAABBBrush( &brush ) ) {
+              if( overlapsAABBBrush( &brush ) ) {
                 *objects << sObj;
               }
             }

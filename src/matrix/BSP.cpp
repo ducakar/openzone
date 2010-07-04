@@ -161,7 +161,7 @@ namespace oz
           Math::abs( plane.normal.y * maxDim ) +
           Math::abs( plane.normal.z * maxDim );
 
-      if( offset < plane.distance ) {
+      if( offset <= plane.distance ) {
         return false;
       }
     }
