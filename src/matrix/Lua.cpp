@@ -1431,7 +1431,7 @@ namespace oz
     world.requestBSP( bsp );
     Bounds bounds = Structure::rotate( *world.bsps[bsp], rot );
 
-    if( collider.test( bounds.toAABB() + p ) ) {
+    if( !collider.overlaps( bounds.toAABB() + p ) ) {
       int index = synapse.addStruct( name, p, rot );
       lua.str = world.structs[index];
       lua_pushinteger( l, index );
@@ -1467,7 +1467,7 @@ namespace oz
 
     AABB aabb = AABB( p, ( *value )->dim );
 
-    if( collider.test( aabb ) ) {
+    if( collider.overlaps( aabb ) ) {
       int index = synapse.addObject( name, p );
       lua.obj = world.objects[index];
       lua_pushinteger( l, index );

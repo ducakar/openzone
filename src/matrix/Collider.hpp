@@ -19,9 +19,9 @@ namespace oz
     Vec3  normal;
     float ratio;
 
-    const Object*     obj;
-    const Structure*  str;
-    const BSP::Model* model;
+    const Object*      obj;
+    const Structure*   str;
+    const BSP::Entity* entity;
 
     int   material;
 
@@ -54,7 +54,7 @@ namespace oz
       const BSP::Model* model;
       const BSP*        bsp;
 
-      mutable Bitset    visitedBrushes;
+      SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
       /**
        * Return if brush was already visited and mark it visited.
@@ -79,12 +79,12 @@ namespace oz
        */
       Vec3 toAbsoluteCS( const Vec3& v ) const;
 
-      bool testPointBrush( const BSP::Brush* brush ) const;
-      bool testPointNode( int nodeIndex );
-      bool testPointModels() const;
-      bool testPointWorld();
-      bool testPointWorldOO();
-      bool testPointWorldOSO();
+      bool overlapsPointBrush( const BSP::Brush* brush ) const;
+      bool overlapsPointNode( int nodeIndex );
+      bool overlapsPointModels() const;
+      bool overlapsPointWorld();
+      bool overlapsPointWorldOO();
+      bool overlapsPointWorldOSO();
 
       bool trimTerraQuad( int x, int y );
       void trimPointTerra();
@@ -96,12 +96,12 @@ namespace oz
       void trimPointModels();
       void trimPointWorld();
 
-      bool testAABBBrush( const BSP::Brush* brush ) const;
-      bool testAABBNode( int nodeIndex );
-      bool testAABBModels() const;
-      bool testAABBWorld();
-      bool testAABBWorldOO();
-      bool testAABBWorldOSO();
+      bool overlapsAABBBrush( const BSP::Brush* brush ) const;
+      bool overlapsAABBNode( int nodeIndex );
+      bool overlapsAABBModels() const;
+      bool overlapsAABBWorld();
+      bool overlapsAABBWorldOO();
+      bool overlapsAABBWorldOSO();
 
       void trimAABBVoid();
       void trimAABBObj( const Object* sObj );
@@ -130,15 +130,15 @@ namespace oz
 
       Collider();
 
-      bool test( const Vec3& point, const Object* exclObj = null );
+      bool overlaps( const Vec3& point, const Object* exclObj = null );
       // test for object collisions only (no structures or terrain)
-      bool testOO( const Vec3& point, const Object* exclObj = null );
+      bool overlapsOO( const Vec3& point, const Object* exclObj = null );
       // test for object and structure collisions only (no terain)
-      bool testOSO( const Vec3& point, const Object* exclObj = null );
+      bool overlapsOSO( const Vec3& point, const Object* exclObj = null );
 
-      bool test( const AABB& aabb, const Object* exclObj = null );
-      bool testOO( const AABB& aabb, const Object* exclObj = null );
-      bool testOSO( const AABB& aabb, const Object* exclObj = null );
+      bool overlaps( const AABB& aabb, const Object* exclObj = null );
+      bool overlapsOO( const AABB& aabb, const Object* exclObj = null );
+      bool overlapsOSO( const AABB& aabb, const Object* exclObj = null );
 
       // fill given vectors with objects and structures overlapping with the AABB
       // if either vector is null the respecitve test is not performed
@@ -158,37 +158,37 @@ namespace oz
 
   extern Collider collider;
 
-  inline bool Collider::test( const Vec3& point_, const Object* exclObj_ )
+  inline bool Collider::overlaps( const Vec3& point_, const Object* exclObj_ )
   {
     point = point_;
     exclObj = exclObj_;
 
     span = world.getInters( point, AABB::MAX_DIM );
 
-    return testPointWorld();
+    return overlapsPointWorld();
   }
 
-  inline bool Collider::testOO( const Vec3& point_, const Object* exclObj_ )
+  inline bool Collider::overlapsOO( const Vec3& point_, const Object* exclObj_ )
   {
     point = point_;
     exclObj = exclObj_;
 
     span = world.getInters( point, AABB::MAX_DIM );
 
-    return testPointWorldOO();
+    return overlapsPointWorldOO();
   }
 
-  inline bool Collider::testOSO( const Vec3& point_, const Object* exclObj_ )
+  inline bool Collider::overlapsOSO( const Vec3& point_, const Object* exclObj_ )
   {
     point = point_;
     exclObj = exclObj_;
 
     span = world.getInters( point, AABB::MAX_DIM );
 
-    return testPointWorldOSO();
+    return overlapsPointWorldOSO();
   }
 
-  inline bool Collider::test( const AABB& aabb_, const Object* exclObj_ )
+  inline bool Collider::overlaps( const AABB& aabb_, const Object* exclObj_ )
   {
     aabb = aabb_;
     exclObj = exclObj_;
@@ -196,10 +196,10 @@ namespace oz
     trace = aabb.toBounds( 2.0f * EPSILON );
     span = world.getInters( trace, AABB::MAX_DIM );
 
-    return testAABBWorld();
+    return overlapsAABBWorld();
   }
 
-  inline bool Collider::testOO( const AABB& aabb_, const Object* exclObj_ )
+  inline bool Collider::overlapsOO( const AABB& aabb_, const Object* exclObj_ )
   {
     aabb = aabb_;
     exclObj = exclObj_;
@@ -207,10 +207,10 @@ namespace oz
     trace = aabb.toBounds( 2.0f * EPSILON );
     span = world.getInters( trace, AABB::MAX_DIM );
 
-    return testAABBWorldOO();
+    return overlapsAABBWorldOO();
   }
 
-  inline bool Collider::testOSO( const AABB& aabb_, const Object* exclObj_ )
+  inline bool Collider::overlapsOSO( const AABB& aabb_, const Object* exclObj_ )
   {
     aabb = aabb_;
     exclObj = exclObj_;
@@ -218,7 +218,7 @@ namespace oz
     trace = aabb.toBounds( 2.0f * EPSILON );
     span = world.getInters( trace, AABB::MAX_DIM );
 
-    return testAABBWorldOSO();
+    return overlapsAABBWorldOSO();
   }
 
   inline void Collider::getOverlaps( const AABB& aabb_, Vector<Object*>* objects,

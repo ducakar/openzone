@@ -35,7 +35,7 @@ namespace ui
     p += camera.at * 2.0f;
     AABB bb = AABB( p, ( *clazz )->dim );
 
-    if( collider.test( bb ) ) {
+    if( !collider.overlaps( bb ) ) {
       synapse.addObject( button->label, p );
     }
   }

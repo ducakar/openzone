@@ -138,9 +138,9 @@ namespace oz
                 a.dim.z + dim.z + eps );
 
         return
-            -d.x < relPos.x && relPos.x < d.x &&
-            -d.y < relPos.y && relPos.y < d.y &&
-            -d.z < relPos.z && relPos.z < d.z;
+            -d.x <= relPos.x && relPos.x <= d.x &&
+            -d.y <= relPos.y && relPos.y <= d.y &&
+            -d.z <= relPos.z && relPos.z <= d.z;
       }
 
       bool isInside( const Bounds& b, float eps = 0.0f ) const

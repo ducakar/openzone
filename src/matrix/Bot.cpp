@@ -183,7 +183,7 @@ namespace oz
         p.z += clazz->dim.z - clazz->dimCrouch.z;
         dim = clazz->dim;
 
-        if( collider.test( *this, this ) ) {
+        if( !collider.overlaps( *this, this ) ) {
           radius = !dim;
           camZ   = clazz->camZ;
           state  &= ~CROUCHING_BIT;
@@ -554,7 +554,7 @@ namespace oz
         handle.z    = min( handle.z, dim.z - camZ + item->dim.z );
         item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
 
-        if( collider.test( *item ) ) {
+        if( !collider.overlaps( *item ) ) {
           item->parent = -1;
           synapse.put( item );
           items.remove( taggedItem );

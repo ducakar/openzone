@@ -59,7 +59,7 @@ namespace ui
             ( bot->flags & Object::IN_WATER_BIT ) != 0,
             ( bot->flags & Object::ON_SLICK_BIT ) != 0,
             ( bot->flags & Object::ON_LADDER_BIT ) != 0,
-            !collider.test( *bot, bot ),
+            collider.overlaps( *bot, bot ),
             bot->stepRate * 10.0f );
     }
 

@@ -79,6 +79,7 @@
  * Bitset
  */
 #include "Bitset.hpp"
+#include "SBitset.hpp"
 
 /*
  * Math
