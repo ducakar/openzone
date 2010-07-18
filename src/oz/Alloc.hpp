@@ -1,11 +1,11 @@
 /*
  *  Alloc.hpp
  *
- *  Overload default new and delete operators for slightly better performance (ifndef OZ_ALLOC) or
- *  provide heap allocation statistics (ifdef OZ_ALLOC).
+ *  Overload default new and delete operators for slightly better performance
+ *  (ifndef OZ_ALLOC_STATISTICS) or provide heap allocation statistics (ifdef OZ_ALLOC_STATISTICS).
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -62,8 +62,9 @@ namespace oz
       static Type* realloc( Type* array, int count, int newSize )
       {
         Type* newArray = reinterpret_cast<Type*>( new char[newSize * sizeof( Type )] );
+
         for( int i = 0; i < count; ++i ) {
-          new( newArray + i ) Type( static_cast<Type&&>( array[i] ) );
+          new( newArray + i ) Type( array[i] );
           array[i].~Type();
         }
         delete[] reinterpret_cast<char*>( array );

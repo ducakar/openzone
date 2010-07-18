@@ -5,7 +5,7 @@
  *  The Type should provide the "next[INDEX]" pointer.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -35,9 +35,6 @@ namespace oz
    *
    * <code>List</code> class doesn't take care of memory management except for the
    * <code>free()</code> method.
-   *
-   * In general all operations are O(1) except <code>contains()</code>, <code>length()</code> and
-   * <code>free()</code> are O(n).
    */
   template <class Type, int INDEX = 0>
   class List
@@ -57,7 +54,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit CIterator() : B( null )
           {}
@@ -95,7 +91,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit Iterator() : B( null )
           {}
@@ -125,10 +120,6 @@ namespace oz
       // First element in list.
       Type* firstElem;
 
-      // no copying, use clone() + move instead
-      List( const List& );
-      List& operator = ( const List& );
-
     public:
 
       /**
@@ -138,32 +129,23 @@ namespace oz
       {}
 
       /**
-       * Move constructor
-       * Clears the source list as having two lists with the same elements makes no sense.
-       * @param l the original list
+       * Move constructor.
+       * @param l
        */
-      List( List&& l ) : firstElem( l.firstElem )
+      List( List& l ) : firstElem( l.firstElem )
       {
         l.firstElem = null;
       }
 
       /**
-       * Create a list with only one element.
-       * @param e the element
-       */
-      explicit List( Type* e ) : firstElem( e )
-      {
-        e->next[INDEX] = null;
-      }
-
-      /**
        * Move operator.
-       * Clears the source list as having two lists with the same elements makes no sense.
        * @param l
        * @return
        */
-      List& operator = ( List&& l )
+      List& operator = ( List& l )
       {
+        assert( &l != this );
+
         firstElem = l.firstElem;
 
         l.firstElem = null;
@@ -172,23 +154,33 @@ namespace oz
 
       /**
        * Clone list.
-       * Allocate copies of all elements of the original list. Type should implement copy
-       * constructor and for sake of performance the order of elements in the new list is reversed.
+       * Create a new list from copies of all elements of the original list.
        * @return
        */
-      List clone()
+      List clone() const
       {
         List clone;
+        Type* prev = null;
+        Type* elem = firstElem;
 
-        foreach( e, CIterator( *this ) ) {
-          clone.pushFirst( new Type( *e ) );
+        while( elem != null ) {
+          Type* last = new Type( *elem );
+
+          if( prev == null ) {
+            clone.firstElem = last;
+          }
+          else {
+            prev->next[INDEX] = last;
+          }
+          prev = last;
         }
+
         return clone;
       }
 
       /**
        * Compare all elements in two lists.
-       * Type should implement operator =, otherwise comparison doesn't make sense (two copies
+       * Type should implement operator ==, otherwise comparison doesn't make sense (two copies
        * always differ on next[INDEX] members).
        * @param l
        * @return
@@ -198,20 +190,16 @@ namespace oz
         Type* e1 = firstElem;
         Type* e2 = l.firstElem;
 
-        while( e1 != null && e2 != null ) {
-          if( *e1 != *e2 ) {
-            return false;
-          }
+        while( e1 != null && e2 != null && *e1 == *e2 ) {
           e1 = e1->next[INDEX];
           e2 = e2->next[INDEX];
         }
-        // at least one is null, so (e1 == e2) <=> (e1 == null && e2 == null)
         return e1 == e2;
       }
 
       /**
        * Compare all elements in two lists.
-       * Type should implement operator =, otherwise comparison doesn't make sense (two copies
+       * Type should implement operator ==, otherwise comparison doesn't make sense (two copies
        * always differ on next[INDEX] members).
        * @param l
        * @return
@@ -221,14 +209,10 @@ namespace oz
         Type* e1 = firstElem;
         Type* e2 = l.firstElem;
 
-        while( e1 != null && e2 != null ) {
-          if( *e1 != *e2 ) {
-            return true;
-          }
+        while( e1 != null && e2 != null && *e1 == *e2 ) {
           e1 = e1->next[INDEX];
           e2 = e2->next[INDEX];
         }
-        // at least one is null, so (e1 == e2) <=> (e1 == null && e2 == null)
         return e1 != e2;
       }
 
@@ -282,13 +266,10 @@ namespace oz
 
         Type* p = firstElem;
 
-        while( p != null ) {
-          if( p == e ) {
-            return true;
-          }
+        while( p != null && p != e ) {
           p = p->next[INDEX];
         }
-        return false;
+        return p != null;
       }
 
       /**
@@ -354,16 +335,10 @@ namespace oz
        */
       void operator << ( Type* e )
       {
-        pushFirst( e );
-      }
+        assert( e != null );
 
-      /**
-       * Add element to the beginning of the list.
-       * @param e element to be added
-       */
-      void add( Type* e )
-      {
-        pushFirst( e );
+        e->next[INDEX] = firstElem;
+        firstElem = e;
       }
 
       /**
@@ -378,14 +353,23 @@ namespace oz
         firstElem = e;
       }
 
+      /**
+       * Pop first element from the list.
+       * @param e reference to pointer where the pointer to the first element is to be saved
+       */
       void operator >> ( Type*& e )
       {
-        e = popFirst();
+        assert( firstElem != null );
+
+        Type* p = firstElem;
+
+        firstElem = p->next[INDEX];
+        return p;
       }
 
       /**
        * Pop first element from the list.
-       * @param e reference to pointer where the pointer to the first element is to be saved
+       * @return the pointer to the first element
        */
       Type* popFirst()
       {

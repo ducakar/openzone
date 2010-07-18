@@ -4,7 +4,7 @@
  *  Column-major 4x4 matrix
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -53,6 +53,16 @@ namespace oz
           z( c.x, c.y, c.z, 0.0f ),
           w( d.x, d.y, d.z, 1.0f )
       {}
+
+      bool operator == ( const Mat44& m ) const
+      {
+        return x == m.x && y == m.y && z == m.z && w == m.w;
+      }
+
+      bool operator != ( const Mat44& m ) const
+      {
+        return x != m.x || y != m.y || z != m.z || w != m.w;
+      }
 
       operator const float* () const
       {

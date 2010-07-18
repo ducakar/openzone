@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -41,16 +41,16 @@ int main( int, char** )
   Vector<int> v;
   SVector<int, 5> sv;
   Sparse<SparseElem> s;
-  HashIndex<int, 10> hi;
-  HashString<int, 10> hs;
+  HashIndex<int, 4> hi;
+  HashString<int, 4> hs;
 
   List<Elem, 0> l1;
   DList<Elem, 0> dl1;
   Vector<int> v1;
   SVector<int, 5> sv1;
   Sparse<SparseElem> s1;
-  HashIndex<int, 10> hi1;
-  HashString<int, 10> hs1;
+  HashIndex<int, 4> hi1;
+  HashString<int, 4> hs1;
 
   // 1
   l << new Elem( 1 );
@@ -160,8 +160,14 @@ int main( int, char** )
   }
   printf( "\n" );
 
+  l.free();
+  dl.free();
   hi.clear();
   hs.clear();
+
+  assert( false );
+
+  printf( "end\n" );
 
   return 0;
 }

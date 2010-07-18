@@ -4,7 +4,7 @@
  *  Generic pair template
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -12,6 +12,10 @@
 namespace oz
 {
 
+  /**
+   * Pair container.
+   * It can hold two elements of different type.
+   */
   template <typename TypeX, typename TypeY = TypeX>
   class Pair
   {
@@ -20,32 +24,96 @@ namespace oz
       TypeX x;
       TypeY y;
 
-      Pair() {}
-      Pair( const TypeX& x_, const TypeY& y_ ) : x( x_ ), y( y_ ) {}
+      /**
+       * Default constructor.
+       */
+      explicit Pair()
+      {}
 
-      template <typename Type0_, typename Type1_>
-      Pair( const Pair<Type0_, Type1_>& p ) : x( p.x ), y( p.y ) {}
+      /**
+       *
+       * @param x_
+       * @param y_
+       * @return
+       */
+      explicit Pair( const TypeX& x_, const TypeY& y_ ) : x( x_ ), y( y_ )
+      {}
 
-      template <typename Type0_, typename Type1_>
-      Pair& operator = ( const Pair<Type0_, Type1_>& p )
+
+      /**
+       * Copy constructor.
+       * It allows constructing from pairs of different types.
+       * @param p
+       */
+      template <typename TypeX_, typename TypeY_>
+      Pair( const Pair<TypeX_, TypeY_>& p ) : x( p.x ), y( p.y )
+      {}
+
+      /**
+       * Copy operator.
+       * It allows copying pairs of different types.
+       * @param p
+       * @return
+       */
+      template <typename TypeX_, typename TypeY_>
+      Pair& operator = ( const Pair<TypeX_, TypeY_>& p )
       {
+        assert( &p != this );
+
         x = p.x;
         y = p.y;
         return *this;
       }
 
-      template <typename Type0_, typename Type1_>
-      bool operator == ( const Pair<Type0_, Type1_>& p ) const
+      /**
+       * Equality operator.
+       * @param p
+       * @return
+       */
+      bool operator == ( const Pair& p ) const
       {
         return x == p.x && y == p.y;
       }
 
-      template <typename Type0_, typename Type1_>
-      bool operator != ( const Pair<Type0_, Type1_>& p ) const
+      /**
+       * Equality operator.
+       * It allows comparing pairs of different types.
+       * @param p
+       * @return
+       */
+      template <typename TypeX_, typename TypeY_>
+      bool operator == ( const Pair<TypeX_, TypeY_>& p ) const
+      {
+        return x == p.x && y == p.y;
+      }
+
+      /**
+       * Inequality operator.
+       * @param p
+       * @return
+       */
+      bool operator != ( const Pair& p ) const
       {
         return x != p.x || y != p.y;
       }
 
+      /**
+       * Inequality operator.
+       * It allows comparing pairs of different types.
+       * @param p
+       * @return
+       */
+      template <typename TypeX_, typename TypeY_>
+      bool operator != ( const Pair<TypeX_, TypeY_>& p ) const
+      {
+        return x != p.x || y != p.y;
+      }
+
+      /**
+       * Set both values at once.
+       * @param x_
+       * @param y_
+       */
       void set( const TypeX& x_, const TypeY& y_ )
       {
         x = x_;
@@ -54,12 +122,28 @@ namespace oz
 
   };
 
+  /**
+   * Utility for constructing a pair.
+   * @param x
+   * @param y
+   * @return
+   */
   template <typename TypeX, typename TypeY>
   inline Pair<TypeX, TypeY> pair( const TypeX& x, const TypeY& y )
   {
     return Pair<TypeX, TypeY>( x, y );
   }
 
+  /**
+   * Utility for constructing pair of references to given variables.
+   * It can be used to assign both variables at once, like this example implementation of swap:
+   * <pre>
+   * int a = 1, b = 2;
+   * tie( a, b ) = pair( b, a );</pre>
+   * @param x
+   * @param y
+   * @return
+   */
   template <typename TypeX, typename TypeY>
   inline Pair<TypeX&, TypeY&> tie( TypeX& x, TypeY& y )
   {

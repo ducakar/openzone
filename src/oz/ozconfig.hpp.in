@@ -1,5 +1,8 @@
 #pragma once
 
+// enable assert and soft_assert macros
+#cmakedefine OZ_ENABLE_ASSERT
+
 // enable overloaded new and delete to count allocated memory
 #cmakedefine OZ_ALLOC_STATISTICS
 

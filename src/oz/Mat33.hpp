@@ -4,7 +4,7 @@
  *  Column-major 3x3 matrix
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -40,6 +40,16 @@ namespace oz
       explicit Mat33( const Vec3& a, const Vec3& b, const Vec3& c ) :
           x( a ), y( b ), z( c )
       {}
+
+      bool operator == ( const Mat33& m ) const
+      {
+        return x == m.x && y == m.y && z == m.z;
+      }
+
+      bool operator != ( const Mat33& m ) const
+      {
+        return x != m.x || y != m.y || z != m.z;
+      }
 
       operator const float* () const
       {

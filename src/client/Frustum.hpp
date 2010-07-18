@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -66,8 +66,8 @@ namespace client
 
       bool isVisible( float x, float y, float radius )
       {
-        Vec3 min = Vec3( x, y, -World::DIM );
-        Vec3 max = Vec3( x, y,  World::DIM );
+        Vec3 min = Vec3( x, y, -Orbis::DIM );
+        Vec3 max = Vec3( x, y,  Orbis::DIM );
 
         return
             ( min * nLeft  > dLeft  - radius || max * nLeft  > dLeft  - radius ) &&
@@ -80,10 +80,10 @@ namespace client
       // get min and max index for cells per each axis, which should be included in pvs
       void getExtrems( Span& span, const Vec3& p )
       {
-        span.minX = max( int( ( p.x - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
-        span.minY = max( int( ( p.y - radius + World::DIM ) * Cell::INV_SIZE ), 0 );
-        span.maxX = min( int( ( p.x + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
-        span.maxY = min( int( ( p.y + radius + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 );
+        span.minX = max( int( ( p.x - radius + Orbis::DIM ) * Cell::INV_SIZE ), 0 );
+        span.minY = max( int( ( p.y - radius + Orbis::DIM ) * Cell::INV_SIZE ), 0 );
+        span.maxX = min( int( ( p.x + radius + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 );
+        span.maxY = min( int( ( p.y + radius + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 );
       }
 
   };

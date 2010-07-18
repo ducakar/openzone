@@ -1,15 +1,15 @@
 /*
  *  Synapse.hpp
  *
- *  World manipulation interface.
+ *  Orbis manipulation interface.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
-#include "matrix/World.hpp"
+#include "matrix/Orbis.hpp"
 #include "matrix/Bot.hpp"
 #include "matrix/Collider.hpp"
 
@@ -110,7 +110,7 @@ namespace oz
 
       void globalUse( Bot* user, Object* target );
 
-      // indices in World vectors after objects have been remotely added
+      // indices in Orbis vectors after objects have been remotely added
       // (ticket is the integer returned by globalPut())
       int  getStructIndex( int ticket ) const;
       int  getObjectIndex( int ticket ) const;

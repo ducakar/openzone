@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -137,7 +137,7 @@ namespace oz
   }
 
   // check for AABB-AABB and AABB-Brush overlapping in the world
-  bool Collider::overlapsPointWorld()
+  bool Collider::overlapsPointOrbis()
   {
     if( !world.includes( point, -EPSILON ) ) {
       return true;
@@ -179,7 +179,7 @@ namespace oz
     return false;
   }
 
-  bool Collider::overlapsPointWorldOO()
+  bool Collider::overlapsPointOrbisOO()
   {
     if( !world.includes( point, -EPSILON ) ) {
       return true;
@@ -200,7 +200,7 @@ namespace oz
   }
 
   // check for AABB-AABB and AABB-Brush overlapping in the world
-  bool Collider::overlapsPointWorldOSO()
+  bool Collider::overlapsPointOrbisOSO()
   {
     if( !world.includes( point, -EPSILON ) ) {
       return true;
@@ -316,7 +316,7 @@ namespace oz
     }
   }
 
-  // finds out if Point-World bounding box collision occurs and the time when it occurs
+  // finds out if Point-Orbis bounding box collision occurs and the time when it occurs
   void Collider::trimPointVoid()
   {
     for( int i = 0; i < 3; ++i ) {
@@ -473,7 +473,7 @@ namespace oz
         int index = bsp->leafBrushes[leaf.firstBrush + i];
         const BSP::Brush& brush = bsp->brushes[index];
 
-        if( !visitBrush( index ) && brush.material & Material::STRUCT_BIT ) {
+        if( !visitBrush( index ) && ( brush.material & Material::STRUCT_BIT ) ) {
           trimPointBrush( &brush );
         }
       }
@@ -516,7 +516,7 @@ namespace oz
     }
   }
 
-  void Collider::trimPointWorld()
+  void Collider::trimPointOrbis()
   {
     hit.ratio    = 1.0f;
     hit.obj      = null;
@@ -663,7 +663,7 @@ namespace oz
   }
 
   // check for AABB-AABB, AABB-Brush and AABB-Terrain overlapping in the world
-  bool Collider::overlapsAABBWorld()
+  bool Collider::overlapsAABBOrbis()
   {
     if( !world.includes( aabb, -EPSILON ) ) {
       return true;
@@ -706,7 +706,7 @@ namespace oz
   }
 
   // check for AABB-AABB overlapping in the world
-  bool Collider::overlapsAABBWorldOO()
+  bool Collider::overlapsAABBOrbisOO()
   {
     if( !world.includes( aabb, -EPSILON ) ) {
       return true;
@@ -727,7 +727,7 @@ namespace oz
   }
 
   // check for AABB-AABB and AABB-Brush overlapping in the world
-  bool Collider::overlapsAABBWorldOSO()
+  bool Collider::overlapsAABBOrbisOSO()
   {
     if( !world.includes( aabb, -EPSILON ) ) {
       return true;
@@ -765,7 +765,7 @@ namespace oz
     return false;
   }
 
-  // finds out if AABB-World bounding box collision occurs and the time when it occurs
+  // finds out if AABB-Orbis bounding box collision occurs and the time when it occurs
   void Collider::trimAABBVoid()
   {
     for( int i = 0; i < 3; ++i ) {
@@ -994,7 +994,7 @@ namespace oz
   }
 
   // move AABB unil first collisons occurs
-  void Collider::trimAABBWorld()
+  void Collider::trimAABBOrbis()
   {
     hit.ratio      = 1.0f;
     hit.obj        = null;
@@ -1067,7 +1067,7 @@ namespace oz
   //***********************************
 
   // get all objects and structures that overlap with our trace
-  void Collider::getWorldOverlaps( Vector<Object*>* objects, Vector<Structure*>* structs )
+  void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Structure*>* structs )
   {
     assert( objects != null || structs != null );
 
@@ -1103,7 +1103,7 @@ namespace oz
   }
 
   // get all objects which are included in our trace
-  void Collider::getWorldIncludes( Vector<Object*>* objects ) const
+  void Collider::getOrbisIncludes( Vector<Object*>* objects ) const
   {
     assert( objects != null );
 
@@ -1120,7 +1120,7 @@ namespace oz
     }
   }
 
-  void Collider::touchWorldOverlaps() const
+  void Collider::touchOrbisOverlaps() const
   {
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {

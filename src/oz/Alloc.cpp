@@ -5,7 +5,7 @@
  *  provide heap allocation statistics (ifdef OZ_ALLOC).
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "oz.hpp"
@@ -15,14 +15,14 @@
 namespace oz
 {
 
-  int  Alloc::count     = 0;
-  long Alloc::amount    = 0;
+int  Alloc::count     = 0;
+long Alloc::amount    = 0;
 
-  int  Alloc::sumCount  = 0;
-  long Alloc::sumAmount = 0;
+int  Alloc::sumCount  = 0;
+long Alloc::sumAmount = 0;
 
-  int  Alloc::maxCount  = 0;
-  long Alloc::maxAmount = 0;
+int  Alloc::maxCount  = 0;
+long Alloc::maxAmount = 0;
 
 }
 
@@ -95,9 +95,10 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 void operator delete ( void* ptr ) throw()
 {
   size_t* chunk = reinterpret_cast<size_t*>( ptr ) - 1;
+  size_t size = chunk[0];
 
   --oz::Alloc::count;
-  oz::Alloc::amount -= chunk[0];
+  oz::Alloc::amount -= size;
 
   free( chunk );
 }
@@ -105,9 +106,10 @@ void operator delete ( void* ptr ) throw()
 void operator delete[] ( void* ptr ) throw()
 {
   size_t* chunk = reinterpret_cast<size_t*>( ptr ) - 1;
+  size_t size = chunk[0];
 
   --oz::Alloc::count;
-  oz::Alloc::amount -= chunk[0];
+  oz::Alloc::amount -= size;
 
   free( chunk );
 }

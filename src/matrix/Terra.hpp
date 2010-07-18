@@ -4,7 +4,7 @@
  *  Matrix structure for terrain
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -30,7 +30,7 @@ namespace oz
 
     private:
 
-      // World::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
+      // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
       static const float DIM;
 
 #ifndef OZ_PREBUILT

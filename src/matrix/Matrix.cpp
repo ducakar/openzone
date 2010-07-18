@@ -4,7 +4,7 @@
  *  World model
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -28,8 +28,8 @@ namespace oz
   void Matrix::loadStressTest()
   {
     for( int i = 0; i < 500; ++i ) {
-      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
-      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
+      float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -37,8 +37,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 500; ++i ) {
-      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
-      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
+      float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -46,8 +46,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 500; ++i ) {
-      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
-      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
+      float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -55,8 +55,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 500; ++i ) {
-      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
-      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
+      float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -64,8 +64,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 5000; ++i ) {
-      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
-      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
+      float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 1.0f;
 
       if( z > 0.0f ) {
@@ -73,8 +73,8 @@ namespace oz
       }
     }
     for( int i = 0; i < 5000; ++i ) {
-      float x = -World::DIM + 2.0f * World::DIM * Math::frand();
-      float y = -World::DIM + 2.0f * World::DIM * Math::frand();
+      float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
+      float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = world.terra.height( x, y ) + 2.0f;
 
       if( z > 0.0f ) {

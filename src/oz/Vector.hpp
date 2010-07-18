@@ -5,7 +5,7 @@
  *  It can also be used as a stack or a small set.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -112,32 +112,22 @@ namespace oz
       /**
        * Create empty vector with initial capacity 8.
        */
-      explicit Vector() : data( Alloc::alloc<Type>( 8 ) ), size( 8 ), count( 0 )
+      explicit Vector() : data( Alloc::alloc<Type>( GRANULARITY ) ), size( 8 ), count( 0 )
       {}
 
       /**
        * Create empty vector with given initial capacity.
        * @param initSize
        */
-      explicit Vector( int initSize ) : data( Alloc::alloc<Type>( initSize ) ),
-          size( initSize ), count( 0 )
+      explicit Vector( int initSize ) : data( Alloc::alloc<Type>( initSize ) ), size( initSize ),
+          count( 0 )
       {}
-
-      /**
-       * Copy constructor.
-       * @param v
-       */
-      Vector( const Vector& v ) : data( Alloc::alloc<Type>( v.size ) ),
-          size( v.size ), count( v.count )
-      {
-        aConstruct( data, v.data, count );
-      }
 
       /**
        * Move constructor.
        * @param v
        */
-      Vector( Vector&& v ) : data( v.data ), size( v.size ), count( v.count )
+      Vector( Vector& v ) : data( v.data ), size( v.size ), count( v.count )
       {
         assert( v.size > 0 );
 
@@ -158,35 +148,11 @@ namespace oz
       }
 
       /**
-       * Copy operator.
-       * @param v
-       * @return
-       */
-      Vector& operator = ( const Vector& v )
-      {
-        assert( &v != this );
-        assert( v.size > 0 );
-
-        aDestruct( data, count );
-        // create new data array of the new data doesn't fit, keep the old one otherwise
-        if( size < v.count || size == 0 ) {
-          if( size != 0 ) {
-            Alloc::dealloc( data );
-          }
-          data = Alloc::alloc<Type>( v.size );
-          size = v.size;
-        }
-        aConstruct( data, v.data, v.count );
-        count = v.count;
-        return *this;
-      }
-
-      /**
        * Move operator.
        * @param v
        * @return
        */
-      Vector& operator = ( Vector&& v )
+      Vector& operator = ( Vector& v )
       {
         assert( &v != this );
         assert( v.size > 0 );
@@ -195,6 +161,7 @@ namespace oz
           aDestruct( data, count );
           Alloc::dealloc( data );
         }
+
         data = v.data;
         size = v.size;
         count = v.count;
@@ -203,6 +170,19 @@ namespace oz
         v.size = 0;
         v.count = 0;
         return *this;
+      }
+
+      /**
+       * Create a copy of the array.
+       * @return
+       */
+      Vector clone() const
+      {
+        Vector v( size );
+
+        aConstruct( v.data, data, count );
+        v.count = count;
+        return v;
       }
 
       /**
@@ -305,12 +285,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        for( int i = 0; i < count; ++i ) {
-          if( data[i] == e ) {
-            return true;
-          }
-        }
-        return false;
+        return aContains( data, e, count );
       }
 
       /**
@@ -396,20 +371,21 @@ namespace oz
       }
 
       /**
-       * Add an element to the end.
+       * Add an element to the beginning.
        * @param e
        */
-      void operator << ( const Type& e )
+      void pushFirst( const Type& e )
       {
         ensureCapacity();
-        new( data + count ) Type( e );
-        ++count;
+        new( data + count ) Type( data[count - 1] );
+        aReverseCopy( data + 1, data, count - 1 );
+        data[0] = e;
       }
 
       /**
        * Create slot for a new element at the end.
        */
-      void add()
+      void operator ++ ()
       {
         ensureCapacity();
         new( data + count ) Type;
@@ -420,20 +396,11 @@ namespace oz
        * Add an element to the end.
        * @param e
        */
-      void add( const Type& e )
+      void operator << ( const Type& e )
       {
         ensureCapacity();
         new( data + count ) Type( e );
         ++count;
-      }
-
-      /**
-       * Add an element to the beginning.
-       * @param e
-       */
-      void pushFirst( const Type& e )
-      {
-        return insert( e, 0 );
       }
 
       /**
@@ -456,10 +423,9 @@ namespace oz
       {
         ensureCapacity( count + c.length() );
 
-        int i = count;
         foreach( e, c.citer() ) {
-          new( data + i ) Type( *e );
-          ++i;
+          new( data + count ) Type( e );
+          ++count;
         }
       }
 
@@ -473,7 +439,7 @@ namespace oz
         int newCount = count + arrayCount;
 
         ensureCapacity( newCount );
-        aConstruct( data + count, array, arrayCount );
+        aCopyConstruct( data + count, array, arrayCount );
         count = newCount;
       }
 
@@ -486,7 +452,9 @@ namespace oz
       bool include( const Type& e )
       {
         if( !contains( e ) ) {
-          pushLast( e );
+          ensureCapacity();
+          new( data + count ) Type( e );
+          ++count;
           return true;
         }
         else {
@@ -544,24 +512,13 @@ namespace oz
       /**
        * Remove last element.
        */
-      Vector& operator -- ()
+      void operator -- ()
       {
         assert( count != 0 );
 
         --count;
         data[count].~Type();
         return *this;
-      }
-
-      /**
-       * Remove last element.
-       */
-      void remove()
-      {
-        assert( count != 0 );
-
-        --count;
-        data[count].~Type();
       }
 
       /**
@@ -578,6 +535,22 @@ namespace oz
       }
 
       /**
+       * Remove the element at given position from unordered vector. The last element is moved to
+       * the position to fill the gap.
+       * @param index
+       */
+      void removeUO( int index )
+      {
+        assert( 0 <= index && index < count );
+
+        --count;
+        if( index != count ) {
+          data[index] = data[count];
+        }
+        data[count].~Type();
+      }
+
+      /**
        * Find and remove the given element.
        * @param e
        * @return
@@ -587,7 +560,34 @@ namespace oz
         int index = aIndex( data, e, count );
 
         if( index != -1 ) {
-          remove( index );
+          --count;
+          aCopy( data + index, data + index + 1, count - index );
+          data[count].~Type();
+
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
+
+      /**
+       * Find and remove the given element from unordered vector (last element is moved to fill
+       * the gap.)
+       * @param e
+       * @return
+       */
+      bool excludeUO( const Type& e )
+      {
+        int index = aIndex( data, e, count );
+
+        if( index != -1 ) {
+          --count;
+          if( index != count ) {
+            data[index] = data[count];
+          }
+          data[count].~Type();
+
           return true;
         }
         else {
@@ -640,7 +640,11 @@ namespace oz
        */
       void operator >> ( Type& e )
       {
-        e = popLast();
+        assert( count != 0 );
+
+        --count;
+        e = data[count];
+        data[count].~Type();
       }
 
       /**

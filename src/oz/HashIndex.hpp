@@ -6,7 +6,7 @@
  *  You can find a list of millions of primes at http://www.bigprimes.net/.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -272,8 +272,8 @@ namespace oz
 
     private:
 
-      Pool<Elem, 0, SIZE> pool;
       Elem*               data[SIZE];
+      Pool<Elem, 0, SIZE> pool;
       int                 count;
 
       /**
@@ -352,30 +352,19 @@ namespace oz
       }
 
       /**
-       * Copy constructor.
-       * @param t
-       */
-      HashIndex( const HashIndex& t ) : count( t.count )
-      {
-        for( int i = 0; i < SIZE; ++i ) {
-          data[i] = copyChain( t.data[i] );
-        }
-      }
-
-      /**
        * Move constructor.
        * @param t
        */
-      HashIndex( HashIndex&& t ) : pool( static_cast< Pool<Elem, 0, SIZE>&& >( t.pool ) ),
-          count( t.count )
+      HashIndex( HashIndex& t ) : pool( t.pool ), count( t.count )
       {
         aCopy( data, t.data, SIZE );
 
+        aSet( t.data, static_cast<Elem*>( null ), SIZE );
         t.count = 0;
       }
 
       /**
-       * Default destructor.
+       * Destructor.
        */
       ~HashIndex()
       {
@@ -385,37 +374,36 @@ namespace oz
       }
 
       /**
-       * Copy operator.
-       * @param t
-       * @return
-       */
-      HashIndex& operator = ( const HashIndex& t )
-      {
-        assert( &t != this );
-        assert( count == 0 );
-
-        for( int i = 0; i < SIZE; ++i ) {
-          data[i] = copyChain( t.data[i] );
-        }
-        count = t.count;
-        return *this;
-      }
-
-      /**
        * Move operator.
        * @param t
        * @return
        */
-      HashIndex& operator = ( HashIndex&& t )
+      HashIndex& operator = ( HashIndex& t )
       {
         assert( &t != this );
         assert( count == 0 );
 
         aCopy( data, t.data, SIZE );
-        pool = static_cast< Pool<Elem, 0, SIZE>&& >( t.pool );
+        pool = t.pool;
         count = t.count;
 
+        aSet( t.data, static_cast<Elem*>( null ), SIZE );
         t.count = 0;
+        return *this;
+      }
+
+      /**
+       * Create a copy of the HashIndex.
+       * @return
+       */
+      HashIndex clone() const
+      {
+        HashIndex t;
+
+        for( int i = 0; i < SIZE; ++i ) {
+          t.data[i] = t.copyChain( data[i] );
+        }
+        t.count = count;
         return *this;
       }
 

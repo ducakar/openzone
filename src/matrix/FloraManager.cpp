@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -75,14 +75,14 @@ namespace oz
 
   void FloraManager::seed()
   {
-    float area = 4.0f * World::DIM * World::DIM * DENSITY;
+    float area = 4.0f * Orbis::DIM * Orbis::DIM * DENSITY;
 
     number = int( area * DENSITY );
     growth = int( area * GROWTH );
 
     for( int i = 0; i < number; ++i ) {
-      float x = Math::frand() * 2.0f * World::DIM - World::DIM;
-      float y = Math::frand() * 2.0f * World::DIM - World::DIM;
+      float x = Math::frand() * 2.0f * Orbis::DIM - Orbis::DIM;
+      float y = Math::frand() * 2.0f * Orbis::DIM - Orbis::DIM;
 
       addTree( x, y );
     }

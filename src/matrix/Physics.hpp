@@ -4,12 +4,12 @@
  *  Physics engine
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
-#include "matrix/World.hpp"
+#include "matrix/Orbis.hpp"
 
 namespace oz
 {

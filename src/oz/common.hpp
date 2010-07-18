@@ -4,7 +4,7 @@
  *  Common macros, types and templates
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -29,7 +29,7 @@ namespace oz
 
   /**
    * \def null
-   * It is equivalent to nullptr/NULL macro but it looks prettier.
+   * It is equivalent to nullptr/NULL but it looks prettier.
    */
 #ifdef __GNUG__
 # define null __null
@@ -47,17 +47,29 @@ namespace oz
    * \def soft_assert
    * Resembles output of assert macro (on GNU/Linux) but does not abort.
    */
-#ifdef NDEBUG
+#ifndef OZ_ENABLE_ASSERT
+
+# define assert( cond ) \
+  static_cast<void>( 0 )
 
 # define soft_assert( cond ) \
   static_cast<void>( 0 )
 
 #else
 
-# define soft_assert( cond ) \
-  ( ( cond ) ? static_cast<void>( 0 ) : oz::_softAssert( #cond, __FILE__, __LINE__ ) )
+# define assert( cond ) \
+  ( ( cond ) ? \
+      static_cast<void>( 0 ) : \
+      oz::_assert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
 
-  void _softAssert( const char* message, const char* file, int line );
+  void _assert( const char* message, const char* file, int line, const char* function );
+
+# define soft_assert( cond ) \
+  ( ( cond ) ? \
+      static_cast<void>( 0 ) : \
+      oz::_softAssert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
+
+  void _softAssert( const char* message, const char* file, int line, const char* function );
 
 #endif
 
@@ -126,46 +138,28 @@ namespace oz
 # define ulong ulong
   typedef unsigned long  ulong;
 
-  /**
-   * Type manipulations
-   */
-  struct Type
-  {
-    template <typename Type_>
-    struct StripRef
-    {
-      typedef Type_ Type;
-    };
-
-    template <typename Type_>
-    struct StripRef<Type_&>
-    {
-      typedef Type_ Type;
-    };
-  };
-
   //***********************************
   //*        BASIC ALGORITHMS         *
   //***********************************
 
   /**
    * Swap values of a and b with move semantics.
-   * @param a reference to first variable
-   * @param b reference to second variable
+   * @param a reference to the first variable
+   * @param b reference to the second variable
    */
   template <typename Value>
   inline void swap( Value& a, Value& b )
   {
-    Value t = static_cast<Value&&>( a );
-    a = static_cast<Value&&>( b );
-    b = static_cast<Value&&>( t );
+    Value t( a );
+    a = b;
+    b = t;
   }
 
   /**
    * Minimum.
    * @param a
    * @param b
-   * @return minimum of a and b
+   * @return a if a < b, b otherwise
    */
   template <typename Value>
   inline const Value& min( const Value& a, const Value& b )
@@ -178,7 +172,7 @@ namespace oz
    * Non-const version, can be used as lvalue.
    * @param a
    * @param b
-   * @return minimum of a and b
+   * @return a if a < b, b otherwise
    */
   template <typename Value>
   inline Value& min( Value& a, Value& b )
@@ -190,12 +184,12 @@ namespace oz
    * Maximum.
    * @param a
    * @param b
-   * @return maximum of a and b
+   * @return a if a > b, b otherwise
    */
   template <typename Value>
   inline const Value& max( const Value& a, const Value& b )
   {
-    return a > b ? a : b;
+    return b < a ? a : b;
   }
 
   /**
@@ -203,53 +197,43 @@ namespace oz
    * Non-const version, can be used as lvalue.
    * @param a
    * @param b
-   * @return maximum of a and b
+   * @return a if a > b, b otherwise
    */
   template <typename Value>
   inline Value& max( Value& a, Value& b )
   {
-    return a > b ? a : b;
+    return b < a ? a : b;
   }
 
   /**
-   * Bound c between a and b. Equals to max( min( c, b ), a ).
+   * Bound c between a and b. Equals to max( a, min( b, c ) ).
    * @param c
    * @param a
    * @param b
-   * @return clamped value of c
+   * @return c, if a <= c <= b, respective boundary otherwise
    */
   template <typename Value>
   inline const Value& bound( const Value& c, const Value& a, const Value& b )
   {
     assert( a <= b );
 
-    return c < a ? a : ( c > b ? b : c );
+    return c < a ? a : ( b < c ? b : c );
   }
 
   /**
-   * Bound c between a and b. Equals to max( min( c, b ), a ).
+   * Bound c between a and b. Equals to max( a, min( b, c ) ).
    * Non-const version, can be used as lvalue.
    * @param c
    * @param a
    * @param b
-   * @return clamped value of c
+   * @return c, if a <= c <= b, respective boundary otherwise
    */
   template <typename Value>
   inline Value& bound( Value& c, Value& a, Value& b )
   {
     assert( a <= b );
 
-    return c < a ? a : ( c > b ? b : c );
-  }
-
-  /**
-   * Generic absolute value.
-   * For floating-point use Math::abs.
-   */
-  template <typename Value>
-  inline Value abs( const Value& a )
-  {
-    return a < 0 ? -a : a;
+    return c < a ? a : ( b < c ? b : c );
   }
 
 }

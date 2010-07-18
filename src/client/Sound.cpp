@@ -4,7 +4,7 @@
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -359,10 +359,8 @@ namespace client
       assert( alGetError() == AL_NO_ERROR );
     }
     contSources.clear();
-    contSources.deallocate();
 
     audios.free();
-    audios.deallocate();
     BasicAudio::pool.free();
     BotAudio::pool.free();
     assert( alGetError() == AL_NO_ERROR );

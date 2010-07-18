@@ -33,3 +33,7 @@ target_link_libraries( sparse oz )
 add_executable( test test.cpp )
 add_dependencies( test pch )
 target_link_libraries( test oz )
+
+add_executable( unittest unittest.cpp )
+add_dependencies( unittest pch )
+target_link_libraries( unittest oz )

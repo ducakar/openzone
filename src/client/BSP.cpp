@@ -4,7 +4,7 @@
  *  BSP level rendering class
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -49,10 +49,6 @@ namespace client
       case Structure::R270: {
         return Bounds( Vec3( bounds.mins.y, -bounds.maxs.x, bounds.mins.z ),
                        Vec3( bounds.maxs.y, -bounds.mins.x, bounds.maxs.z ) );
-      }
-      default: {
-        assert( false );
-        break;
       }
     }
   }
@@ -337,7 +333,7 @@ namespace client
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
 
-    drawnFaces = hiddenFaces;
+    aCopy<ulong>( drawnFaces, hiddenFaces, hiddenFaces.unitLength() );
 
     int leafIndex = getLeaf();
     checkInWaterBrush( &bsp->leaves[leafIndex] );
@@ -407,7 +403,7 @@ namespace client
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
 
-    drawnFaces = hiddenFaces;
+    aCopy<ulong>( drawnFaces, hiddenFaces, hiddenFaces.unitLength() );
 
     int leafIndex = getLeaf();
 
@@ -529,7 +525,7 @@ namespace client
 
     glNewList( list, GL_COMPILE );
 
-    drawnFaces = hiddenFaces;
+    aCopy<ulong>( drawnFaces, hiddenFaces, hiddenFaces.unitLength() );
 
     for( int i = 0; i < bsp->nLeaves; ++i ) {
       const oz::BSP::Leaf& leaf = bsp->leaves[i];

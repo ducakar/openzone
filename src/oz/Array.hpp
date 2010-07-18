@@ -5,7 +5,7 @@
  *  The advantage over C++ arrays it that is has bounds checking and an iterator.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -31,7 +31,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit CIterator() : B( null, null )
           {}
@@ -58,7 +57,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit Iterator() : B( null, null )
           {}
@@ -148,12 +146,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        for( int i = 0; i < SIZE; ++i ) {
-          if( data[i] == e ) {
-            return true;
-          }
-        }
-        return false;
+        return aContains( data, e, SIZE );
       }
 
       /**

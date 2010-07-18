@@ -6,7 +6,7 @@
  *  memory when destroyed.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -32,7 +32,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit CIterator() : B( null, null )
           {}
@@ -59,7 +58,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit Iterator() : B( null, null )
           {}
@@ -94,19 +92,10 @@ namespace oz
       {}
 
       /**
-       * Copy constructor.
-       * @param v
-       */
-      DArray( const DArray& a ) : data( new Type[a.count] ), count( a.count )
-      {
-        aCopy( data, a.data, count );
-      }
-
-      /**
        * Move constructor.
        * @param v
        */
-      DArray( DArray&& a ) : data( a.data ), count( a.count )
+      DArray( DArray& a ) : data( a.data ), count( a.count )
       {
         a.data = null;
         a.count = 0;
@@ -123,33 +112,11 @@ namespace oz
       }
 
       /**
-       * Copy operator.
-       * @param a
-       * @return
-       */
-      DArray& operator = ( const DArray& a )
-      {
-        assert( &a != this );
-
-        if( count != a.count ) {
-          if( count != 0 ) {
-            delete[] data;
-          }
-          if( a.count != 0 ) {
-            data = new Type[a.count];
-          }
-          count = a.count;
-        }
-        aCopy( data, a.data, count );
-        return *this;
-      }
-
-      /**
        * Move operator.
        * @param a
        * @return
        */
-      DArray& operator = ( DArray&& a )
+      DArray& operator = ( DArray& a )
       {
         assert( &a != this );
 
@@ -161,7 +128,20 @@ namespace oz
 
         a.data = null;
         a.count = 0;
+
         return *this;
+      }
+
+      /**
+       * Clone array.
+       * @return
+       */
+      DArray clone() const
+      {
+        DArray a( count );
+
+        aCopy( a.data, data, count );
+        return a;
       }
 
       /**
@@ -262,12 +242,7 @@ namespace oz
       {
         assert( count > 0 );
 
-        for( int i = 0; i < count; ++i ) {
-          if( data[i] == e ) {
-            return true;
-          }
-        }
-        return false;
+        return aContains( data, e, count );
       }
 
       /**
