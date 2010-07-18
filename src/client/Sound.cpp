@@ -33,7 +33,7 @@ namespace client
   {
     const Cell& cell = world.cells[cellX][cellY];
 
-    foreach( obj, cell.objects.citer() ) {
+    for( const Object *obj = cell.firstObject; obj != null; obj = obj->next[0] ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
           playAudio( obj, null );

@@ -165,9 +165,5 @@ int main( int, char** )
   hi.clear();
   hs.clear();
 
-  assert( false );
-
-  printf( "end\n" );
-
   return 0;
 }

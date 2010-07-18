@@ -61,6 +61,7 @@ namespace oz
       float  staminaWaterDrain;
       float  staminaRunDrain;
       float  staminaJumpDrain;
+      float  staminaThrowDrain;
 
       int    state;
 

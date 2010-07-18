@@ -538,13 +538,13 @@ namespace oz
        */
       void remove( Type* e )
       {
-        if( e == firstElem ) {
+        if( e->prev[INDEX] == null ) {
           firstElem = e->next[INDEX];
         }
         else {
           e->prev[INDEX]->next[INDEX] = e->next[INDEX];
         }
-        if( e == lastElem ) {
+        if( e->next[INDEX] == null ) {
           lastElem = e->prev[INDEX];
         }
         else {

@@ -128,6 +128,7 @@ namespace oz
     clazz->staminaWaterDrain    = config->get( "staminaWaterDrain", 0.10f );
     clazz->staminaRunDrain      = config->get( "staminaRunDrain", 0.08f );
     clazz->staminaJumpDrain     = config->get( "staminaJumpDrain", 4.0f );
+    clazz->staminaThrowDrain    = config->get( "staminaThrowDrain", 5.0f );
 
     clazz->state = 0;
 

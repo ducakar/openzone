@@ -169,7 +169,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->includes( point, EPSILON ) ) {
             return true;
           }
@@ -189,7 +189,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = world.cells[x][y];
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->includes( point, EPSILON ) ) {
             return true;
           }
@@ -228,7 +228,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->includes( point, EPSILON ) ) {
             return true;
           }
@@ -561,7 +561,7 @@ namespace oz
         startPos = originalStartPos;
         endPos   = originalEndPos;
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->overlaps( trace ) )
           {
@@ -695,7 +695,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
             return true;
           }
@@ -716,7 +716,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = world.cells[x][y];
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
             return true;
           }
@@ -755,7 +755,7 @@ namespace oz
           }
         }
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
             return true;
           }
@@ -1043,7 +1043,7 @@ namespace oz
         startPos = originalStartPos;
         endPos   = originalEndPos;
 
-        foreach( sObj, cell.objects.citer() ) {
+        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->overlaps( trace ) )
           {
@@ -1092,7 +1092,7 @@ namespace oz
         }
 
         if( objects != null ) {
-          foreach( sObj, cell.objects.iter() ) {
+          for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
             if( sObj->overlaps( trace ) ) {
               *objects << sObj;
             }
@@ -1111,7 +1111,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = world.cells[x][y];
 
-        foreach( sObj, cell.objects.iter() ) {
+        for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( trace.includes( *sObj ) ) {
             *objects << sObj;
           }
@@ -1126,7 +1126,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = world.cells[x][y];
 
-        foreach( sObj, cell.objects.iter() ) {
+        for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
             // clearing these two bits should do
             sObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
@@ -1145,7 +1145,7 @@ namespace oz
         const Cell& cell = world.cells[x][y];
 
         if( objects != null ) {
-          foreach( sObj, cell.objects.iter() ) {
+          for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
             aabb = *sObj;
 
             for( int i = 0; i < model->nBrushes; ++i ) {
