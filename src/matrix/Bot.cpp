@@ -492,9 +492,10 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_THROW ) {
-      if( grabObj != -1 ) {
+      if( grabObj != -1 && stamina >= clazz->staminaThrowDrain ) {
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
 
+        stamina -= clazz->staminaThrowDrain;
         obj->momentum = handle * clazz->throwMomentum;
         grabObj = -1;
       }

@@ -65,7 +65,7 @@ namespace client
       }
     }
 
-    foreach( obj, cell.objects.citer() ) {
+    for( const Object* obj = cell.firstObject; obj != null; obj = obj->next[0] ) {
       if( obj->flags & Object::NO_DRAW_BIT ) {
         continue;
       }
@@ -86,7 +86,7 @@ namespace client
       }
     }
 
-    foreach( part, cell.parts.citer() ) {
+    for( const Particle* part = cell.firstPart; part != null; part = part->next[0] ) {
       if( frustum.isVisible( part->p, particleRadius ) ) {
         particles << part;
       }

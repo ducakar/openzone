@@ -359,7 +359,6 @@ namespace oz
       {
         aCopy( data, t.data, SIZE );
 
-        aSet( t.data, static_cast<Elem*>( null ), SIZE );
         t.count = 0;
       }
 
@@ -387,7 +386,6 @@ namespace oz
         pool = t.pool;
         count = t.count;
 
-        aSet( t.data, static_cast<Elem*>( null ), SIZE );
         t.count = 0;
         return *this;
       }

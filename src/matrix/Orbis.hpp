@@ -34,8 +34,8 @@ namespace oz
     static const float INV_SIZE;
     static const float RADIUS;
 
-    DList<Object>     objects;
-    DList<Particle>   parts;
+    Object*           firstObject;
+    Particle*         firstPart;
     SVector<short, 6> structs;
   };
 
@@ -249,20 +249,38 @@ namespace oz
   {
     assert( obj->cell == null );
 
-    obj->cell = getCell( obj->p );
+    Cell* cell = getCell( obj->p );
 
-    assert( !obj->cell->objects.contains( obj ) );
+    obj->cell = cell;
+    obj->next[0] = cell->firstObject;
+    obj->prev[0] = null;
 
-    obj->cell->objects << obj;
+    if( cell->firstObject == null ) {
+      cell->firstObject = obj;
+    }
+    else {
+      cell->firstObject->prev[0] = obj;
+      cell->firstObject = obj;
+    }
   }
 
   inline void Orbis::unposition( Object* obj )
   {
     assert( obj->cell != null );
-    assert( obj->cell->objects.contains( obj ) );
 
-    obj->cell->objects.remove( obj );
+    Cell* cell = obj->cell;
+
     obj->cell = null;
+
+    if( obj->prev[0] == null ) {
+      cell->firstObject = obj->next[0];
+    }
+    else {
+      obj->prev[0]->next[0] = obj->next[0];
+    }
+    if( obj->next[0] != null ) {
+      obj->next[0]->prev[0] = obj->prev[0];
+    }
   }
 
   inline void Orbis::reposition( Object* obj )
@@ -273,12 +291,27 @@ namespace oz
     Cell* newCell = getCell( obj->p );
 
     if( newCell != oldCell ) {
-      assert( oldCell->objects.contains( obj ) );
-      assert( !newCell->objects.contains( obj ) );
+      if( obj->prev[0] == null ) {
+        oldCell->firstObject = obj->next[0];
+      }
+      else {
+        obj->prev[0]->next[0] = obj->next[0];
+      }
+      if( obj->next[0] != null ) {
+        obj->next[0]->prev[0] = obj->prev[0];
+      }
 
-      oldCell->objects.remove( obj );
-      newCell->objects << obj;
       obj->cell = newCell;
+      obj->next[0] = newCell->firstObject;
+      obj->prev[0] = null;
+
+      if( newCell->firstObject == null ) {
+        newCell->firstObject = obj;
+      }
+      else {
+        newCell->firstObject->prev[0] = obj;
+        newCell->firstObject = obj;
+      }
     }
   }
 
@@ -286,20 +319,38 @@ namespace oz
   {
     assert( part->cell == null );
 
-    part->cell = getCell( part->p );
+    Cell* cell = getCell( part->p );
 
-    assert( !part->cell->parts.contains( part ) );
+    part->cell = cell;
+    part->next[0] = cell->firstPart;
+    part->prev[0] = null;
 
-    part->cell->parts << part;
+    if( cell->firstPart == null ) {
+      cell->firstPart = part;
+    }
+    else {
+      cell->firstPart->prev[0] = part;
+      cell->firstPart = part;
+    }
   }
 
   inline void Orbis::unposition( Particle* part )
   {
     assert( part->cell != null );
-    assert( part->cell->parts.contains( part ) );
 
-    part->cell->parts.remove( part );
+    Cell* cell = part->cell;
+
     part->cell = null;
+
+    if( part->prev[0] == null ) {
+      cell->firstPart = part->next[0];
+    }
+    else {
+      part->prev[0]->next[0] = part->next[0];
+    }
+    if( part->next[0] != null ) {
+      part->next[0]->prev[0] = part->prev[0];
+    }
   }
 
   inline void Orbis::reposition( Particle* part )
@@ -310,12 +361,27 @@ namespace oz
     Cell* newCell = getCell( part->p );
 
     if( newCell != oldCell ) {
-      assert( oldCell->parts.contains( part ) );
-      assert( !newCell->parts.contains( part ) );
+      if( part->prev[0] == null ) {
+        oldCell->firstPart = part->next[0];
+      }
+      else {
+        part->prev[0]->next[0] = part->next[0];
+      }
+      if( part->next[0] != null ) {
+        part->next[0]->prev[0] = part->prev[0];
+      }
 
-      oldCell->parts.remove( part );
-      newCell->parts << part;
       part->cell = newCell;
+      part->next[0] = newCell->firstPart;
+      part->prev[0] = null;
+
+      if( newCell->firstPart == null ) {
+        newCell->firstPart = part;
+      }
+      else {
+        newCell->firstPart->prev[0] = part;
+        newCell->firstPart = part;
+      }
     }
   }
 

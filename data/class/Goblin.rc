@@ -48,6 +48,7 @@ grabDistance "1.0"
 
 staminaRunDrain "0.10"
 staminaJumpDrain "8.00"
+staminaThrowDrain "12.00"
 
 mindType "Lua"
 mindFunction "prey"

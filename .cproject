@@ -273,6 +273,7 @@
 				<pathentry include="/usr/include/c++/4.5.0" kind="inc" path="" system="true"/>
 				<pathentry include="/usr/include/libxml2" kind="inc" path="" system="true"/>
 				<pathentry include="/usr/include/SDL" kind="inc" path="" system="true"/>
+				<pathentry kind="mac" name="__GNUG__" path="" value=""/>
 				<pathentry excluding="src|*" kind="src" path=""/>
 				<pathentry excluding="client|CMakeFiles|matrix|nirvana|oz|server|tests|tools|ui" kind="src" path="src"/>
 				<pathentry excluding="CMakeFiles" kind="src" path="src/oz"/>

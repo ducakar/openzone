@@ -67,8 +67,8 @@ namespace oz
     for( int i = 0; i < Orbis::MAX; ++i ) {
       for( int j = 0; j < Orbis::MAX; ++j ) {
         cells[i][j].structs.clear();
-        cells[i][j].objects.clear();
-        cells[i][j].parts.clear();
+        cells[i][j].firstObject = null;
+        cells[i][j].firstPart = null;
       }
     }
 
