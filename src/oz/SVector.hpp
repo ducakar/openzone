@@ -5,7 +5,7 @@
  *  Type should be a POD type as C++0x is not yet fully supported by GCC.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -97,7 +97,15 @@ namespace oz
        */
       SVector( const SVector& v ) : count( v.count )
       {
-        aConstruct( data, v.data, v.count );
+        aCopyConstruct( data, v.data, v.count );
+      }
+
+      /**
+       * Destructor.
+       */
+      ~SVector()
+      {
+        aDestruct( data, count );
       }
 
       /**
@@ -107,6 +115,8 @@ namespace oz
        */
       SVector& operator = ( const SVector& v )
       {
+        assert( &v != this );
+
         aCopy( data, v.data, v.count );
         count = v.count;
         return *this;
@@ -119,7 +129,7 @@ namespace oz
        */
       bool operator == ( const SVector& v ) const
       {
-        return count == v.count && aEquals<Type>( data, v.data, count );
+        return count == v.count && aEquals( data, v.data, count );
       }
 
       /**
@@ -129,7 +139,7 @@ namespace oz
        */
       bool operator != ( const SVector& v ) const
       {
-        return count != v.count || !aEquals<Type>( data, v.data, count );
+        return count != v.count || !aEquals( data, v.data, count );
       }
 
       /**
@@ -235,7 +245,7 @@ namespace oz
        */
       int index( const Type& e ) const
       {
-        return aIndex<Type>( data, e, count );
+        return aIndex( data, e, count );
       }
 
       /**
@@ -245,7 +255,7 @@ namespace oz
        */
       int lastIndex( const Type& e ) const
       {
-        return aLastIndex<Type>( data, e, count );
+        return aLastIndex( data, e, count );
       }
 
       /**
@@ -289,9 +299,23 @@ namespace oz
       }
 
       /**
+       * Add an element to the beginning.
+       * @param e
+       */
+      void pushFirst( const Type& e )
+      {
+        assert( count < SIZE );
+
+        new( data + count ) Type( data[count - 1] );
+        aReverseCopy( data + 1, data, count - 1 );
+        data[0] = e;
+        ++count;
+      }
+
+      /**
        * Create slot for a new element at the end.
        */
-      void add()
+      void operator ++ ()
       {
         assert( count < SIZE );
 
@@ -309,27 +333,6 @@ namespace oz
 
         new( data + count ) Type( e );
         ++count;
-      }
-
-      /**
-       * Add an element to the end.
-       * @param e element to be added
-       */
-      void add( const Type& e )
-      {
-        assert( count < SIZE );
-
-        new( data + count ) Type( e );
-        ++count;
-      }
-
-      /**
-       * Add an element to the beginning.
-       * @param e
-       */
-      void pushFirst( const Type& e )
-      {
-        return insert( e, 0 );
       }
 
       /**
@@ -353,10 +356,9 @@ namespace oz
       {
         assert( count + c.length() <= SIZE );
 
-        int i = count;
         foreach( e, c.citer() ) {
-          new( data + i ) Type( *e );
-          ++i;
+          new( data + count ) Type( e );
+          ++count;
         }
       }
 
@@ -372,7 +374,7 @@ namespace oz
         assert( SIZE >= newCount );
 
         for( int i = 0; i < arrayCount; ++i ) {
-          aConstruct<Type>( data + count, array, arrayCount );
+          aCopyConstruct( data + count, array, arrayCount );
         }
         count = newCount;
       }
@@ -386,7 +388,10 @@ namespace oz
       bool include( const Type& e )
       {
         if( !contains( e ) ) {
-          add( e );
+          assert( count < SIZE );
+
+          new( data + count ) Type( e );
+          ++count;
           return true;
         }
         else {
@@ -433,8 +438,8 @@ namespace oz
           new( data + count ) Type( e );
         }
         else {
-          new( data + count ) Type( data[count - 1] );
-          aReverseCopy<Type>( data + index + 1, data + index, count - index - 1 );
+          new( data + count ) Type( move( data[count - 1] ) );
+          aReverseCopy( data + index + 1, data + index, count - index - 1 );
           data[index] = e;
         }
         ++count;
@@ -443,24 +448,13 @@ namespace oz
       /**
        * Remove last element.
        */
-      SVector& operator -- ()
+      void operator -- ()
       {
         assert( count != 0 );
 
         --count;
         data[count].~Type();
         return *this;
-      }
-
-      /**
-       * Remove last element.
-       */
-      void remove()
-      {
-        assert( count != 0 );
-
-        --count;
-        data[count].~Type();
       }
 
       /**
@@ -472,7 +466,23 @@ namespace oz
         assert( 0 <= index && index < count );
 
         --count;
-        aCopy<Type>( data + index, data + index + 1, count - index );
+        aCopy( data + index, data + index + 1, count - index );
+        data[count].~Type();
+      }
+
+      /**
+       * Remove the element at given position from unordered vector. The last element is moved to
+       * the position to fill the gap.
+       * @param index
+       */
+      void removeUO( int index )
+      {
+        assert( 0 <= index && index < count );
+
+        --count;
+        if( index != count ) {
+          data[index] = data[count];
+        }
         data[count].~Type();
       }
 
@@ -483,11 +493,35 @@ namespace oz
        */
       bool exclude( const Type& e )
       {
-        int i = aIndex<Type>( data, e, count );
+        int i = aIndex( data, e, count );
 
         if( i != -1 ) {
           --count;
-          aCopy<Type>( data + i, data + i + 1, count - i );
+          aCopy( data + i, data + i + 1, count - i );
+          data[count].~Type();
+
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
+
+      /**
+       * Find and remove the given element from unordered vector (last element is moved to fill
+       * the gap.)
+       * @param e
+       * @return
+       */
+      bool excludeUO( const Type& e )
+      {
+        int index = aIndex( data, e, count );
+
+        if( index != -1 ) {
+          --count;
+          if( index != count ) {
+            data[index] = data[count];
+          }
           data[count].~Type();
 
           return true;
@@ -527,10 +561,10 @@ namespace oz
        */
       Type popFirst()
       {
-        Type e = data[0];
+        Type e = move( data[0] );
 
         --count;
-        aCopy<Type>( data, data + 1, count );
+        aMove( data, data + 1, count );
         data[count].~Type();
 
         return e;
@@ -542,7 +576,11 @@ namespace oz
        */
       void operator >> ( Type& e )
       {
-        e = popLast();
+        assert( count != 0 );
+
+        --count;
+        e = move( data[count] );
+        data[count].~Type();
       }
 
       /**
@@ -554,8 +592,8 @@ namespace oz
         assert( count != 0 );
 
         --count;
-        Type e = data[count];
-        destruct( data + count );
+        Type e = move( data[count] );
+        data[count].~Type();
 
         return e;
       }
@@ -573,7 +611,7 @@ namespace oz
        */
       void clear()
       {
-        aDestruct<Type>( data, count );
+        aDestruct( data, count );
         count = 0;
       }
 
@@ -583,7 +621,7 @@ namespace oz
        */
       void free()
       {
-        aFree<Type>( data, count );
+        aFree( data, count );
         clear();
       }
 

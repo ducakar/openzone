@@ -4,7 +4,7 @@
  *  Quaternion library
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -40,6 +40,16 @@ namespace oz
         z = v.z;
         w = 0.0f;
         return *this;
+      }
+
+      bool operator == ( const Quat& q ) const
+      {
+        return x == q.x && y == q.y && z == q.z && w == q.w;
+      }
+
+      bool operator != ( const Quat& q ) const
+      {
+        return x != q.x || y != q.y || z != q.z || w != q.w;
       }
 
       operator const float* () const

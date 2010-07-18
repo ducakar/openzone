@@ -4,7 +4,7 @@
  *  Bitset
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -39,25 +39,6 @@ namespace oz
       {}
 
       /**
-       * Copy construstor.
-       * @param b the original Bitset
-       */
-      Bitset( const Bitset& b ) : data( new ulong[b.size] ), size( b.size )
-      {
-        aCopy( data, b.data, size );
-      }
-
-      /**
-       * Move construstor.
-       * @param b the original Bitset
-       */
-      Bitset( Bitset&& b ) : data( b.data ), size( b.size )
-      {
-        b.data = null;
-        b.size = 0;
-      }
-
-      /**
        * Allocate a new bitset that holds at least <code>nBits</code> bits. The size of
        * <code>data</code> array is adjusted to least multiplier of unit size that can hold the
        * requested number of bits.
@@ -67,6 +48,16 @@ namespace oz
       {
         size = ( nBits - 1 ) / ULONG_BITSIZE + 1;
         data = new ulong[size];
+      }
+
+      /**
+       * Move construstor.
+       * @param b the original Bitset
+       */
+      Bitset( Bitset& b ) : data( b.data ), size( b.size )
+      {
+        b.data = null;
+        b.size = 0;
       }
 
       /**
@@ -80,19 +71,33 @@ namespace oz
       }
 
       /**
-       * Copy operator.
+       * Move operator.
        * @param b the original Bitset
-       * @return copy
+       * @return
        */
-      Bitset& operator = ( const Bitset& b )
+      Bitset& operator = ( Bitset& b )
       {
         assert( &b != this );
 
-        if( size != b.size ) {
-          setUnitSize( b.size );
-        }
-        aCopy( data, b.data, size );
+        data = b.data;
+        size = b.size;
+
+        b.data = null;
+        b.size = 0;
+
         return *this;
+      }
+
+      /**
+       * Clone Bitset.
+       * @return
+       */
+      Bitset clone() const
+      {
+        Bitset b( size * ULONG_BITSIZE );
+
+        aCopy( b.data, data, size );
+        return b;
       }
 
       /**
@@ -175,6 +180,15 @@ namespace oz
       int length() const
       {
         return size * ULONG_BITSIZE;
+      }
+
+      /**
+       * Size of bitset in units.
+       * @return
+       */
+      int unitLength() const
+      {
+        return size;
       }
 
       /**

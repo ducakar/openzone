@@ -4,7 +4,7 @@
  *  Class to hold configuration variables and to read or write them to a configuration file
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -196,11 +196,6 @@ namespace oz
        * Clear variables.
        */
       void clear();
-
-      /**
-       * Free all allocated memory by all instances
-       */
-      void deallocate();
 
       /**
        * Print variables to a formatted String. It's formatted like

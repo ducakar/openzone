@@ -4,7 +4,7 @@
  *  Lua scripting engine for Matrix
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -1417,7 +1417,7 @@ namespace oz
     return 0;
   }
 
-  static int ozWorldAddStr( lua_State* l )
+  static int ozOrbisAddStr( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
     Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
@@ -1443,7 +1443,7 @@ namespace oz
     return 1;
   }
 
-  static int ozWorldForceAddStr( lua_State* l )
+  static int ozOrbisForceAddStr( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
     Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
@@ -1455,7 +1455,7 @@ namespace oz
     return 1;
   }
 
-  static int ozWorldAddObj( lua_State* l )
+  static int ozOrbisAddObj( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
     Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
@@ -1479,7 +1479,7 @@ namespace oz
     return 1;
   }
 
-  static int ozWorldForceAddObj( lua_State* l )
+  static int ozOrbisForceAddObj( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
     Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
@@ -1490,7 +1490,7 @@ namespace oz
     return 1;
   }
 
-  static int ozWorldAddPart( lua_State* l )
+  static int ozOrbisAddPart( lua_State* l )
   {
     Vec3  p           = Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) );
     Vec3  velocity    = Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) );
@@ -1505,7 +1505,7 @@ namespace oz
     return 1;
   }
 
-  static int ozWorldRemoveStr( lua_State* l )
+  static int ozOrbisRemoveStr( lua_State* l )
   {
     if( lua.str == null ) {
       OZ_LUA_ERROR( "selected structure is null" );
@@ -1516,7 +1516,7 @@ namespace oz
     return 0;
   }
 
-  static int ozWorldRemoveObj( lua_State* l )
+  static int ozOrbisRemoveObj( lua_State* l )
   {
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
@@ -1539,7 +1539,7 @@ namespace oz
     return 0;
   }
 
-  static int ozWorldRemovePart( lua_State* l )
+  static int ozOrbisRemovePart( lua_State* l )
   {
     if( lua.part == null ) {
       OZ_LUA_ERROR( "selected particle is null" );
@@ -1722,14 +1722,14 @@ namespace oz
     OZ_LUA_FUNCTION( ozPartSetLife );
     OZ_LUA_FUNCTION( ozPartAddLife );
 
-    OZ_LUA_FUNCTION( ozWorldAddStr );
-    OZ_LUA_FUNCTION( ozWorldForceAddStr );
-    OZ_LUA_FUNCTION( ozWorldAddObj );
-    OZ_LUA_FUNCTION( ozWorldForceAddObj );
-    OZ_LUA_FUNCTION( ozWorldAddPart );
-    OZ_LUA_FUNCTION( ozWorldRemoveStr );
-    OZ_LUA_FUNCTION( ozWorldRemoveObj );
-    OZ_LUA_FUNCTION( ozWorldRemovePart );
+    OZ_LUA_FUNCTION( ozOrbisAddStr );
+    OZ_LUA_FUNCTION( ozOrbisForceAddStr );
+    OZ_LUA_FUNCTION( ozOrbisAddObj );
+    OZ_LUA_FUNCTION( ozOrbisForceAddObj );
+    OZ_LUA_FUNCTION( ozOrbisAddPart );
+    OZ_LUA_FUNCTION( ozOrbisRemoveStr );
+    OZ_LUA_FUNCTION( ozOrbisRemoveObj );
+    OZ_LUA_FUNCTION( ozOrbisRemovePart );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );

@@ -4,7 +4,7 @@
  *  Immutable string object (similar to Java String)
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -21,14 +21,6 @@ namespace oz
       char* buffer;
       int   count;
       char  baseBuffer[BUFFER_SIZE];
-
-      // no equality operators, String::equals functions should be used instead for verbosity
-      bool operator == ( const String& ) const;
-      bool operator != ( const String& ) const;
-      bool operator == ( const char* ) const;
-      bool operator != ( const char* ) const;
-      friend bool operator == ( const char*, const String& );
-      friend bool operator != ( const char*, const String& );
 
       explicit String( int count_, int ) : count( count_ )
       {
@@ -159,16 +151,6 @@ namespace oz
         }
       }
 
-      operator const char* () const
-      {
-        return buffer;
-      }
-
-      const char* cstr() const
-      {
-        return buffer;
-      }
-
       String& operator = ( const char* s )
       {
         assert( s != buffer );
@@ -203,6 +185,10 @@ namespace oz
         return *this;
       }
 
+      // no equality operators, String::equals functions should be used instead for verbosity
+      bool operator == ( const String& ) const = delete;
+      bool operator != ( const String& ) const = delete;
+
       bool equals( const char* s ) const
       {
         assert( s != null );
@@ -230,6 +216,16 @@ namespace oz
           }
         }
         return false;
+      }
+
+      operator const char* () const
+      {
+        return buffer;
+      }
+
+      const char* cstr() const
+      {
+        return buffer;
       }
 
       const char& operator [] ( int i ) const

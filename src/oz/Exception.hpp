@@ -4,7 +4,7 @@
  *  Exception class
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -26,11 +26,11 @@ namespace oz
 
   };
 
-  /**
-   * \def Exception
-   *
-   * Exception constructor wrapper that provides the current file and line.
-   */
+/**
+ * \def Exception
+ *
+ * Exception constructor wrapper that provides the current file and line.
+ */
 # define Exception( message ) \
   oz::Exception( message, __FILE__, __LINE__ )
 

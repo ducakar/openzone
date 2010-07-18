@@ -13,6 +13,7 @@ add_library( matrix STATIC
 	Names.cpp
 	ObjectClass.cpp
 	Object.cpp
+	Orbis.cpp
 	Particle.cpp
 	Physics.cpp
 	Sky.cpp
@@ -25,7 +26,6 @@ add_library( matrix STATIC
 	Vehicle.cpp
 	WeaponClass.cpp
 	Weapon.cpp
-	World.cpp
 )
 
 add_dependencies( matrix pch )

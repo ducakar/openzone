@@ -4,7 +4,7 @@
  *  Chaining hashtable implementation with String key type
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -351,30 +351,19 @@ namespace oz
       }
 
       /**
-       * Copy constructor.
-       * @param t
-       */
-      HashString( const HashString& t ) : count( t.count )
-      {
-        for( int i = 0; i < SIZE; ++i ) {
-          data[i] = copyChain( t.data[i] );
-        }
-      }
-
-      /**
        * Move constructor.
        * @param t
        */
-      HashString( HashString&& t ) : pool( static_cast< Pool<Elem, 0, SIZE>&& >( t.pool ) ),
-         count( t.count )
+      HashString( HashString& t ) : pool( t.pool ), count( t.count )
       {
         aCopy( data, t.data, SIZE );
 
+        aSet( t.data, static_cast<Elem*>( null ), SIZE );
         t.count = 0;
       }
 
       /**
-       * Default destructor.
+       * Destructor.
        */
       ~HashString()
       {
@@ -383,39 +372,32 @@ namespace oz
         pool.free();
       }
 
-      /**
-       * Copy operator.
-       * @param t
-       * @return
-       */
-      HashString& operator = ( const HashString& t )
-      {
-        assert( &t != this );
-        assert( count == 0 );
-
-        for( int i = 0; i < SIZE; ++i ) {
-          data[i] = copyChain( t.data[i] );
-        }
-        count = t.count;
-
-        return *this;
-      }
-
-      /**
-       * Move operator.
-       * @param t
-       * @return
-       */
-      HashString& operator = ( HashString&& t )
+      HashString& operator = ( HashString& t )
       {
         assert( &t != this );
         assert( count == 0 );
 
         aCopy( data, t.data, SIZE );
-        pool = static_cast< Pool<Elem, 0, SIZE>&& >( t.pool );
+        pool = t.pool;
         count = t.count;
 
+        aSet( t.data, static_cast<Elem*>( null ), SIZE );
         t.count = 0;
+        return *this;
+      }
+
+      /**
+       * Create a copy of the HashString.
+       * @return
+       */
+      HashString clone() const
+      {
+        HashString t;
+
+        for( int i = 0; i < SIZE; ++i ) {
+          t.data[i] = t.copyChain( data[i] );
+        }
+        t.count = count;
         return *this;
       }
 

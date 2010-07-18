@@ -5,7 +5,7 @@
  *  The Type should provide next[] pointer.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -13,7 +13,7 @@
 #ifdef OZ_POOL_ALLOC
 /**
  * \def OZ_STATIC_POOL_ALLOC( pool )
- * Implement new and delete operators that (de)allocate for objects of that class from given pool.
+ * Implement new and delete operators that (de)allocate objects of that class from the given pool.
  * As new/delete are static functions so has to be the given pool. The derived classes also
  * need to have overloaded new/delete otherwise the ones from the superclass will be used, which
  * will likely result in a crash (as those would allocate wrong amount of memory as size of both
@@ -21,8 +21,8 @@
  */
 #define OZ_STATIC_POOL_ALLOC( pool ) \
 public:\
-void* operator new ( size_t ) { return pool.alloc(); } \
-void operator delete ( void* ptr ) { pool.dealloc( ptr ); }
+  void* operator new ( size_t ) { return pool.alloc(); } \
+  void operator delete ( void* ptr ) { pool.dealloc( ptr ); }
 
 #else
 
@@ -34,16 +34,16 @@ void operator delete ( void* ptr ) { pool.dealloc( ptr ); }
  * \def OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE )
  * Implement placement new operator, while non-placement new and delete are disabled.
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
- * object should be freed via <code>pool.dealloc( object)</code> and the destructor should be
+ * object should be freed via <code>pool.dealloc( object )</code> and the destructor should be
  * called manually before freeing.
  */
 #define OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE ) \
 public: \
-void* operator new ( size_t, Pool<Type, INDEX, SIZE>& pool ) { return pool.alloc(); } \
-void operator delete ( void* ptr, Pool<Type, INDEX, SIZE>& pool ) { pool.dealloc( ptr ); } \
+  void* operator new ( size_t, oz::Pool<Type, INDEX, SIZE>& pool ) { return pool.alloc(); } \
+  void operator delete ( void* ptr, oz::Pool<Type, INDEX, SIZE>& pool ) { pool.dealloc( ptr ); } \
 private: \
-void* operator new ( size_t ); \
-void operator delete ( void* );
+  void* operator new ( size_t ); \
+  void operator delete ( void* );
 
 namespace oz
 {
@@ -77,11 +77,6 @@ namespace oz
             get( BLOCK_SIZE - 1 )->next[INDEX] = null;
           }
 
-          const Type* get( int i ) const
-          {
-            return reinterpret_cast<const Type*>( data ) + i;
-          }
-
           Type* get( int i )
           {
             return reinterpret_cast<Type*>( data ) + i;
@@ -90,17 +85,13 @@ namespace oz
       };
 
       // List of allocated blocks
-      Block*      firstBlock;
-      // Last freed block, null if none
-      Type*       freeSlot;
+      Block* firstBlock;
+      // List of freed slots, null if none
+      Type*  freeSlot;
       // Size of data blocks
-      int         size;
-      // Number of used slots in the pool
-      int         count;
-
-      // no copying
-      Pool( const Pool& );
-      Pool& operator = ( const Pool& );
+      int    size;
+      // Number of occupied used slots in the pool
+      int    count;
 
     public:
 
@@ -112,18 +103,16 @@ namespace oz
       {}
 
       /**
-       * Move constructor.
-       * All blocks are transferred to the newly constructed pool. The original one remains valid,
-       * but empty.
+       * Copy constructor performs a move.
        * @param p
        */
-      Pool( Pool&& p ) : firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), size( p.size ),
-         count( p.count )
+      Pool( Pool& p ) : firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), size( p.size ),
+          count( p.count )
       {
         p.firstBlock = null;
-        p.freeSlot   = null;
-        p.size       = 0;
-        p.count      = 0;
+        p.freeSlot = null;
+        p.size = 0;
+        p.count = 0;
       }
 
       /**
@@ -131,26 +120,26 @@ namespace oz
        */
       ~Pool()
       {
+        // there's a memory leak if we count != 0
         soft_assert( count == 0 );
       }
 
       /**
-       * Move operator.
-       * All blocks are transferred to this pool. The original one remains valid, but empty.
+       * Copy operator performs a move.
        * @param p
-       * @return
        */
-      Pool& operator = ( Pool&& p )
+      Pool& operator = ( Pool& p )
       {
         firstBlock = p.firstBlock;
-        freeSlot   = p.freeSlot;
-        size       = p.size;
-        count      = p.count;
+        freeSlot = p.freeSlot;
+        size = p.size;
+        count = p.count;
 
         p.firstBlock = null;
-        p.freeSlot   = null;
-        p.size       = 0;
-        p.count      = 0;
+        p.freeSlot = null;
+        p.size = 0;
+        p.count = 0;
+
         return *this;
       }
 

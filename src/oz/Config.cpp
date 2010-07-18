@@ -4,7 +4,7 @@
  *  List that reads configuration file
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "oz.hpp"
@@ -512,11 +512,6 @@ namespace oz
     usedVars.clear();
 #endif
     vars.clear();
-  }
-
-  void Config::deallocate()
-  {
-    vars.deallocate();
   }
 
   String Config::toString( const String& indentString )

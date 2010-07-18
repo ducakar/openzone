@@ -4,7 +4,7 @@
  *  3D vector
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -28,6 +28,16 @@ namespace oz
 
       explicit Vec3( const float* v ) : x( v[0] ), y( v[1] ), z( v[2] )
       {}
+
+      bool operator == ( const Vec3& v ) const
+      {
+        return x == v.x && y == v.y && z == v.z;
+      }
+
+      bool operator != ( const Vec3& v ) const
+      {
+        return x != v.x || y != v.y || z != v.z;
+      }
 
       operator const float* () const
       {

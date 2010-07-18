@@ -7,7 +7,7 @@
  *  It can also be used as a set if we omit values.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -295,26 +295,18 @@ namespace oz
        * Create empty map with given initial capacity.
        * @param initSize
        */
-      explicit Map( int initSize ) : data( Alloc::alloc<Elem>( initSize ) ),
-          size( initSize ), count( 0 )
+      explicit Map( int initSize ) : data( Alloc::alloc<Elem>( initSize ) ), size( initSize ),
+          count( 0 )
       {}
-
-      /**
-       * Copy constructor.
-       * @param m
-       */
-      Map( const Map& m ) : data( Alloc::alloc<Elem>( m.size ) ),
-          size( m.size ), count( m.count )
-      {
-        aConstruct( data, m.data, count );
-      }
 
       /**
        * Move constructor.
        * @param m
        */
-      Map( Map&& m ) : data( m.data ), size( m.size ), count( m.count )
+      Map( Map& m ) : data( m.data ), size( m.size ), count( m.count )
       {
+        assert( m.size > 0 );
+
         m.data  = null;
         m.size  = 0;
         m.count = 0;
@@ -332,35 +324,11 @@ namespace oz
       }
 
       /**
-       * Copy operator.
-       * @param m
-       * @return
-       */
-      Map& operator = ( const Map& m )
-      {
-        assert( &m != this );
-        assert( m.size > 0 );
-
-        aDestruct( data, count );
-        // create new data array of the new data doesn't fit, keep the old one otherwise
-        if( size < m.count || size == 0 ) {
-          if( size != 0 ) {
-            Alloc::dealloc( data );
-          }
-          data = Alloc::alloc<Elem>( m.size );
-          size = m.size;
-        }
-        aConstruct( data, m.data, m.count );
-        count = m.count;
-        return *this;
-      }
-
-      /**
        * Move operator.
        * @param m
        * @return
        */
-      Map& operator = ( Map&& m )
+      Map& operator = ( Map& m )
       {
         assert( &m != this );
         assert( m.size > 0 );
@@ -376,7 +344,21 @@ namespace oz
         m.data  = null;
         m.size  = 0;
         m.count = 0;
+
         return *this;
+      }
+
+      /**
+       * Create a copy of the map.
+       * @return
+       */
+      Map clone() const
+      {
+        Map m( size );
+
+        aConstruct( m.data, data, count );
+        m.count = count;
+        return m;
       }
 
       /**
@@ -593,7 +575,7 @@ namespace oz
         }
         else {
           new( data + count ) Elem( data[count - 1] );
-          aReverseCopy( data + index + 1, data + index, count - index - 1 );
+          aReverseMove( data + index + 1, data + index, count - index - 1 );
           data[index] = Elem( k, v );
         }
         ++count;
@@ -608,7 +590,7 @@ namespace oz
         assert( 0 <= index && index < count );
 
         --count;
-        aCopy( data + index, data + index + 1, count - index );
+        aMove( data + index, data + index + 1, count - index );
         data[count].~Type();
       }
 

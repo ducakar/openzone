@@ -4,7 +4,7 @@
  *  SBitset with static storage
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -31,34 +31,6 @@ namespace oz
       ulong data[SIZE];
 
     public:
-
-      /**
-       * Create a new bitset without allocating any space.
-       */
-      explicit SBitset()
-      {}
-
-      /**
-       * Copy construstor.
-       * @param b the original SBitset
-       */
-      SBitset( const SBitset& b )
-      {
-        aCopy( data, b.data, SIZE );
-      }
-
-      /**
-       * Copy operator.
-       * @param b the original SBitset
-       * @return copy
-       */
-      SBitset& operator = ( const SBitset& b )
-      {
-        assert( &b != this );
-
-        aCopy( data, b.data, SIZE );
-        return *this;
-      }
 
       /**
        * Equality operator.
@@ -107,6 +79,15 @@ namespace oz
       int length() const
       {
         return SIZE * ULONG_BITSIZE;
+      }
+
+      /**
+       * Size of bitset in units.
+       * @return
+       */
+      int unitLength() const
+      {
+        return SIZE;
       }
 
       /**

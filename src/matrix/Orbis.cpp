@@ -1,56 +1,56 @@
 /*
- *  World.cpp
+ *  Orbis.cpp
  *
  *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
 
-#include "matrix/World.hpp"
+#include "matrix/Orbis.hpp"
 
 #include "matrix/Lua.hpp"
 
 namespace oz
 {
 
-  World world;
+  Orbis world;
 
   const float Cell::SIZE     = float( Cell::SIZEI );
   const float Cell::INV_SIZE = 1.0f / float( Cell::SIZEI );
   const float Cell::RADIUS   = Cell::SIZE * Math::SQRT2 / 2.0f;
 
-  const float World::DIM     = Cell::SIZE * World::MAX / 2.0f;
+  const float Orbis::DIM     = Cell::SIZE * Orbis::MAX / 2.0f;
 
-  World::World() : bsps( 32 ), structs( 128 ), objects( 1024 ), parts( 1024 )
+  Orbis::Orbis() : bsps( 32 ), structs( 128 ), objects( 1024 ), parts( 1024 )
   {}
 
-  void World::init()
+  void Orbis::init()
   {
-    log.print( "Initialising World ..." );
+    log.print( "Initialising Orbis ..." );
 
     freeing = 0;
     waiting = 1;
 
-    mins = Vec3( -World::DIM, -World::DIM, -World::DIM );
-    maxs = Vec3(  World::DIM,  World::DIM,  World::DIM );
+    mins = Vec3( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
+    maxs = Vec3(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
 
     terra.init();
 
     log.printEnd( " OK" );
   }
 
-  void World::free()
+  void Orbis::free()
   {
-    log.print( "Freeing World ..." );
+    log.print( "Freeing Orbis ..." );
     log.printEnd( " OK" );
   }
 
-  void World::load()
+  void Orbis::load()
   {
-    log.print( "Loading World ..." );
+    log.print( "Loading Orbis ..." );
 
     for( int i = 0; i < translator.bsps.length(); ++i ) {
       bsps << null;
@@ -59,13 +59,13 @@ namespace oz
     log.printEnd( " OK" );
   }
 
-  void World::unload()
+  void Orbis::unload()
   {
-    log.println( "Unloading World {" );
+    log.println( "Unloading Orbis {" );
     log.indent();
 
-    for( int i = 0; i < World::MAX; ++i ) {
-      for( int j = 0; j < World::MAX; ++j ) {
+    for( int i = 0; i < Orbis::MAX; ++i ) {
+      for( int j = 0; j < Orbis::MAX; ++j ) {
         cells[i][j].structs.clear();
         cells[i][j].objects.clear();
         cells[i][j].parts.clear();
@@ -87,7 +87,7 @@ namespace oz
     log.println( "}" );
   }
 
-  void World::update()
+  void Orbis::update()
   {
     strAvailableIndices.addAll( strFreedIndices[waiting], strFreedIndices[waiting].length() );
     strFreedIndices[waiting].clear();
@@ -104,11 +104,11 @@ namespace oz
     sky.update();
   }
 
-  bool World::read( InputStream* istream )
+  bool Orbis::read( InputStream* istream )
   {
     assert( structs.length() == 0 && objects.length() == 0 && parts.length() == 0 );
 
-    log.println( "Reading World from stream {" );
+    log.println( "Reading Orbis from stream {" );
     log.indent();
 
     int n;
@@ -227,9 +227,9 @@ namespace oz
     return true;
   }
 
-  bool World::write( OutputStream* ostream )
+  bool Orbis::write( OutputStream* ostream )
   {
-    log.print( "Writing World to stream ..." );
+    log.print( "Writing Orbis to stream ..." );
 
     ostream->writeInt( strFreedIndices[freeing].length() );
     foreach( i, strFreedIndices[freeing].citer() ) {

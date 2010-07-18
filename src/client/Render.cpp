@@ -4,7 +4,7 @@
  *  Graphics render engine
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "stable.hpp"
@@ -93,7 +93,7 @@ namespace client
     }
   }
 
-  void Render::drawWorld()
+  void Render::drawOrbis()
   {
     assert( glGetError() == GL_NO_ERROR );
     assert( !glIsEnabled( GL_TEXTURE_2D ) );
@@ -120,9 +120,9 @@ namespace client
     frustum.getExtrems( span, camera.p );
 
     span.minX = max( span.minX - 2, 0 );
-    span.maxX = min( span.maxX + 2, World::MAX - 1 );
+    span.maxX = min( span.maxX + 2, Orbis::MAX - 1 );
     span.minY = max( span.minY - 2, 0 );
-    span.maxY = min( span.maxY + 2, World::MAX - 1 );
+    span.maxY = min( span.maxY + 2, Orbis::MAX - 1 );
 
     sky.update();
     water.update();
@@ -133,8 +133,8 @@ namespace client
     }
     drawnStructures.clearAll();
 
-    float minXCenter = float( span.minX - World::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
-    float minYCenter = float( span.minY - World::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+    float minXCenter = float( span.minX - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+    float minYCenter = float( span.minY - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
 
     float x = minXCenter;
     for( int i = span.minX; i <= span.maxX; ++i, x += Cell::SIZE ) {
@@ -442,7 +442,7 @@ namespace client
 
   void Render::update()
   {
-    drawWorld();
+    drawOrbis();
     drawCommon();
   }
 
@@ -567,7 +567,6 @@ namespace client
     drawnStructures.setSize( 0 );
 
     models.free();
-    models.deallocate();
 
     OBJModel::pool.free();
     OBJVehicleModel::pool.free();

@@ -1,11 +1,11 @@
 /*
- *  World.hpp
+ *  Orbis.hpp
  *
  *  Matrix data structure for world (terrain, all structures and objects in the world).
  *  The world should not be manipulated directly; use Synapse instead.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -34,12 +34,17 @@ namespace oz
     static const float INV_SIZE;
     static const float RADIUS;
 
-    SVector<int, 5> structs;
-    DList<Object>   objects;
-    DList<Particle> parts;
+    DList<Object>     objects;
+    DList<Particle>   parts;
+    SVector<short, 6> structs;
   };
 
-  class World : public Bounds
+  struct MarkerCell
+  {
+    SVector<short, 6> markers;
+  };
+
+  class Orbis : public Bounds
   {
     friend class Synapse;
     friend class Physics;
@@ -50,9 +55,10 @@ namespace oz
       static const int   MAX = 256;
       static const float DIM;
 
+      Cell               cells[Orbis::MAX][Orbis::MAX];
+      Cell               markerCells[Orbis::MAX][Orbis::MAX];
       Sky                sky;
       Terra              terra;
-      Cell               cells[World::MAX][World::MAX];
       Vector<BSP*>       bsps;
       Vector<Structure*> structs;
       Vector<Object*>    objects;
@@ -64,7 +70,7 @@ namespace oz
        * Index reusing: when an entity is removed, there may still be references to it (from other
        * entities or from render or audio subsystems); that's why every cycle all references must
        * be checked if the slot they're pointing at (all references should be indices of a slot
-       * in World::structures/objects/particles vectors). If the target slot is null, the referenced
+       * in Orbis::structures/objects/particles vectors). If the target slot is null, the referenced
        * entity doesn't exist any more, so reference must be cleared. To make sure all references
        * can be checked that way, a full world update must pass before a slot is reused. Otherwise
        * an entity may be removed and immediately after that another added into it's slot; when an
@@ -135,7 +141,7 @@ namespace oz
       // get indices of min and max cells which the bounds intersects
       Span getInters( const Bounds& bounds, float epsilon = 0.0f ) const;
 
-      World();
+      Orbis();
 
       void init();
       void free();
@@ -150,59 +156,59 @@ namespace oz
 
   };
 
-  extern World world;
+  extern Orbis world;
 
-  inline Cell* World::getCell( float x, float y )
+  inline Cell* Orbis::getCell( float x, float y )
   {
-    int ix = int( ( x + World::DIM ) * Cell::INV_SIZE );
-    int iy = int( ( y + World::DIM ) * Cell::INV_SIZE );
+    int ix = int( ( x + Orbis::DIM ) * Cell::INV_SIZE );
+    int iy = int( ( y + Orbis::DIM ) * Cell::INV_SIZE );
 
-    ix = bound( ix, 0, World::MAX - 1 );
-    iy = bound( iy, 0, World::MAX - 1 );
+    ix = bound( ix, 0, Orbis::MAX - 1 );
+    iy = bound( iy, 0, Orbis::MAX - 1 );
 
     return &cells[ix][iy];
   }
 
-  inline Cell* World::getCell( const Vec3& p )
+  inline Cell* Orbis::getCell( const Vec3& p )
   {
     return getCell( p.x, p.y );
   }
 
-  inline Span World::getInters( float x, float y, float epsilon ) const
+  inline Span Orbis::getInters( float x, float y, float epsilon ) const
   {
-    return Span( max( int( ( x - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 ),
-                 max( int( ( y - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 ),
-                 min( int( ( x + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 ),
-                 min( int( ( y + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 ) );
+    return Span( max( int( ( x - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
+                 max( int( ( y - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
+                 min( int( ( x + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ),
+                 min( int( ( y + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ) );
   }
 
-  inline Span World::getInters( const Vec3& p, float epsilon ) const
+  inline Span Orbis::getInters( const Vec3& p, float epsilon ) const
   {
     return getInters( p.x, p.y, epsilon );
   }
 
-  inline Span World::getInters( float minPosX, float minPosY,
+  inline Span Orbis::getInters( float minPosX, float minPosY,
                                 float maxPosX, float maxPosY, float epsilon ) const
   {
-    return Span( max( int( ( minPosX - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 ),
-                 max( int( ( minPosY - epsilon + World::DIM ) * Cell::INV_SIZE ), 0 ),
-                 min( int( ( maxPosX + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 ),
-                 min( int( ( maxPosY + epsilon + World::DIM ) * Cell::INV_SIZE ), World::MAX - 1 ) );
+    return Span( max( int( ( minPosX - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
+                 max( int( ( minPosY - epsilon + Orbis::DIM ) * Cell::INV_SIZE ), 0 ),
+                 min( int( ( maxPosX + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ),
+                 min( int( ( maxPosY + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ) );
   }
 
-  inline Span World::getInters( const AABB& bb, float epsilon ) const
+  inline Span Orbis::getInters( const AABB& bb, float epsilon ) const
   {
     return getInters( bb.p.x - bb.dim.x, bb.p.y - bb.dim.y,
                       bb.p.x + bb.dim.x, bb.p.y + bb.dim.y,
                       epsilon );
   }
 
-  inline Span World::getInters( const Bounds& bounds, float epsilon ) const
+  inline Span Orbis::getInters( const Bounds& bounds, float epsilon ) const
   {
     return getInters( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
   }
 
-  inline bool World::position( Structure* str )
+  inline bool Orbis::position( Structure* str )
   {
     str->setRotation( *bsps[str->bsp], str->rot );
 
@@ -218,28 +224,28 @@ namespace oz
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
-        assert( !cells[x][y].structs.contains( str->index ) );
+        assert( !cells[x][y].structs.contains( short( str->index ) ) );
 
-        cells[x][y].structs << str->index;
+        cells[x][y].structs << short( str->index );
       }
     }
     return true;
   }
 
-  inline void World::unposition( Structure* str )
+  inline void Orbis::unposition( Structure* str )
   {
     Span span = getInters( *str, EPSILON );
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
-        assert( cells[x][y].structs.contains( str->index ) );
+        assert( cells[x][y].structs.contains( short( str->index ) ) );
 
-        cells[x][y].structs.exclude( str->index );
+        cells[x][y].structs.excludeUO( short( str->index ) );
       }
     }
   }
 
-  inline void World::position( Object* obj )
+  inline void Orbis::position( Object* obj )
   {
     assert( obj->cell == null );
 
@@ -250,7 +256,7 @@ namespace oz
     obj->cell->objects << obj;
   }
 
-  inline void World::unposition( Object* obj )
+  inline void Orbis::unposition( Object* obj )
   {
     assert( obj->cell != null );
     assert( obj->cell->objects.contains( obj ) );
@@ -259,7 +265,7 @@ namespace oz
     obj->cell = null;
   }
 
-  inline void World::reposition( Object* obj )
+  inline void Orbis::reposition( Object* obj )
   {
     assert( obj->cell != null );
 
@@ -276,7 +282,7 @@ namespace oz
     }
   }
 
-  inline void World::position( Particle* part )
+  inline void Orbis::position( Particle* part )
   {
     assert( part->cell == null );
 
@@ -287,7 +293,7 @@ namespace oz
     part->cell->parts << part;
   }
 
-  inline void World::unposition( Particle* part )
+  inline void Orbis::unposition( Particle* part )
   {
     assert( part->cell != null );
     assert( part->cell->parts.contains( part ) );
@@ -296,7 +302,7 @@ namespace oz
     part->cell = null;
   }
 
-  inline void World::reposition( Particle* part )
+  inline void Orbis::reposition( Particle* part )
   {
     assert( part->cell != null );
 
@@ -313,7 +319,7 @@ namespace oz
     }
   }
 
-  inline void World::requestBSP( int bspIndex ) {
+  inline void Orbis::requestBSP( int bspIndex ) {
     if( bsps[bspIndex] == null ) {
       bsps[bspIndex] = new BSP();
       if( !bsps[bspIndex]->load( translator.bsps[bspIndex].name ) ) {
@@ -322,7 +328,7 @@ namespace oz
     }
   }
 
-  inline int World::addStruct( const char* name, const Vec3& p, Structure::Rotation rot )
+  inline int Orbis::addStruct( const char* name, const Vec3& p, Structure::Rotation rot )
   {
     int index;
 
@@ -338,7 +344,7 @@ namespace oz
   }
 
   // has to be reentrant, can be called again from translator.createObject
-  inline int World::addObject( const char* name, const Vec3& p )
+  inline int Orbis::addObject( const char* name, const Vec3& p )
   {
     int index;
 
@@ -360,7 +366,7 @@ namespace oz
     return index;
   }
 
-  inline int World::addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
+  inline int Orbis::addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
                              float restitution, float mass, float lifeTime )
   {
     int index;
@@ -376,7 +382,7 @@ namespace oz
     return index;
   }
 
-  inline void World::remove( Structure* str )
+  inline void Orbis::remove( Structure* str )
   {
     assert( str->index >= 0 );
 
@@ -385,7 +391,7 @@ namespace oz
     str->index = -1;
   }
 
-  inline void World::remove( Object* obj )
+  inline void Orbis::remove( Object* obj )
   {
     assert( obj->index >= 0 );
     assert( obj->cell == null );
@@ -398,7 +404,7 @@ namespace oz
     obj->index = -1;
   }
 
-  inline void World::remove( Particle* part )
+  inline void Orbis::remove( Particle* part )
   {
     assert( part->index >= 0 );
     assert( part->cell == null );

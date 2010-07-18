@@ -5,7 +5,7 @@
  *  The Type should provide the "prev[INDEX]" and "next[INDEX]" pointers.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -39,9 +39,6 @@ namespace oz
    *
    * <code>DList</code> class doesn't take care of memory management except for the
    * <code>free()</code> method.
-   *
-   * In general all operations are O(1) except <code>contains()</code>, <code>length()</code> and
-   * <code>free()</code> are O(n).
    */
   template <class Type, int INDEX = 0>
   class DList
@@ -61,7 +58,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit CIterator() : B( null )
           {}
@@ -110,7 +106,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit Iterator() : B( null )
           {}
@@ -153,10 +148,6 @@ namespace oz
       // Last element in list.
       Type* lastElem;
 
-      // no copying, use clone() + move instead
-      DList( const DList& );
-      DList& operator = ( const DList& );
-
     public:
 
       /**
@@ -166,61 +157,63 @@ namespace oz
       {}
 
       /**
-       * Move constructor
-       * Clears the source list as having two lists with the same elements makes no sense.
-       * @param l the original list
+       * Move constructor.
+       * @param l
        */
-      DList( DList&& l ) : firstElem( l.firstElem ), lastElem( l.lastElem )
+      DList( DList& l ) : firstElem( l.firstElem ), lastElem( l.lastElem )
       {
         l.firstElem = null;
-        l.lastElem  = null;
-      }
-
-      /**
-       * Create a list with only one element.
-       * @param e the element
-       */
-      explicit DList( Type* e ) : firstElem( e ), lastElem( e )
-      {
-        e->prev[INDEX] = null;
-        e->next[INDEX] = null;
+        l.lastElem = null;
       }
 
       /**
        * Move operator.
-       * Clears the source list as having two lists with the same elements makes no sense.
        * @param l
        * @return
        */
-      DList& operator = ( DList&& l )
+      DList& operator = ( DList& l )
       {
+        assert( &l != this );
+
         firstElem = l.firstElem;
-        lastElem  = l.lastElem;
+        lastElem = l.lastElem;
 
         l.firstElem = null;
-        l.lastElem  = null;
+        l.lastElem = null;
         return *this;
       }
 
       /**
        * Clone list.
-       * Allocate copies of all elements of the original list. Type should implement copy
-       * constructor and for sake of performance the order of elements in the new list is reversed.
+       * Create a new list from copies of all elements of the original list.
        * @return
        */
       DList clone() const
       {
         DList clone;
+        Type* prev = null;
+        Type* elem = firstElem;
 
-        foreach( e, CIterator( *this ) ) {
-          clone.pushFirst( new Type( *e ) );
+        while( elem != null ) {
+          Type* last = new Type( *elem );
+          last->prev[INDEX] = prev;
+
+          if( prev == null ) {
+            clone.firstElem = last;
+          }
+          else {
+            prev->next[INDEX] = last;
+          }
+          prev = last;
         }
+        clone.lastElem = prev;
+
         return clone;
       }
 
       /**
        * Compare all elements in two lists.
-       * Type should implement operator =, otherwise comparison doesn't make sense (two copies
+       * Type should implement operator ==, otherwise comparison doesn't make sense (two copies
        * always differ on next[INDEX] members).
        * @param l
        * @return
@@ -230,20 +223,16 @@ namespace oz
         Type* e1 = firstElem;
         Type* e2 = l.firstElem;
 
-        while( e1 != null && e2 != null ) {
-          if( *e1 != *e2 ) {
-            return false;
-          }
+        while( e1 != null && e2 != null && *e1 == *e2 ) {
           e1 = e1->next[INDEX];
           e2 = e2->next[INDEX];
         }
-        // at least one is null, so (e1 == e2) <=> (e1 == null && e2 == null)
         return e1 == e2;
       }
 
       /**
        * Compare all elements in two lists.
-       * Type should implement operator =, otherwise comparison doesn't make sense (two copies
+       * Type should implement operator ==, otherwise comparison doesn't make sense (two copies
        * always differ on next[INDEX] members).
        * @param l
        * @return
@@ -253,14 +242,10 @@ namespace oz
         Type* e1 = firstElem;
         Type* e2 = l.firstElem;
 
-        while( e1 != null && e2 != null ) {
-          if( *e1 != *e2 ) {
-            return true;
-          }
+        while( e1 != null && e2 != null && *e1 == *e2 ) {
           e1 = e1->next[INDEX];
           e2 = e2->next[INDEX];
         }
-        // at least one is null, so (e1 == e2) <=> (e1 == null && e2 == null)
         return e1 != e2;
       }
 
@@ -363,16 +348,19 @@ namespace oz
        */
       void operator << ( Type* e )
       {
-        pushFirst( e );
-      }
+        assert( e != null );
 
-      /**
-       * Add element to the beginning of the list.
-       * @param e element to be added
-       */
-      void add( Type* e )
-      {
-        pushFirst( e );
+        e->prev[INDEX] = null;
+        e->next[INDEX] = firstElem;
+
+        if( firstElem == null ) {
+          firstElem = e;
+          lastElem = e;
+        }
+        else {
+          firstElem->prev[INDEX] = e;
+          firstElem = e;
+        }
       }
 
       /**
@@ -423,12 +411,23 @@ namespace oz
        */
       void operator >> ( Type*& e )
       {
-        e = popFirst();
+        assert( firstElem != null );
+
+        e = firstElem;
+
+        firstElem = e->next[INDEX];
+
+        if( firstElem == null ) {
+          lastElem = null;
+        }
+        else {
+          firstElem->prev[INDEX] = null;
+        }
       }
 
       /**
        * Pop first element from the list.
-       * @param e pointer to the first element
+       * @return pointer to the first element
        */
       Type* popFirst()
       {
@@ -478,19 +477,17 @@ namespace oz
         assert( e != null );
         assert( p != null );
 
-        e->prev[INDEX] = p;
+        Type* next = p->next[INDEX];
 
-        if( p == lastElem ) {
-          e->next[INDEX] = null;
-          p->next[INDEX] = e;
+        e->prev[INDEX] = p;
+        e->next[INDEX] = p->next[INDEX];
+        p->next[INDEX] = e;
+
+        if( next == null ) {
           lastElem = e;
         }
         else {
-          Type* next = p->next[INDEX];
-
           next->prev[INDEX] = e;
-          e->next[INDEX] = next;
-          p->next[INDEX] = e;
         }
       }
 
@@ -504,19 +501,34 @@ namespace oz
         assert( e != null );
         assert( p != null );
 
-        e->next[INDEX] = p;
+        Type* prev = p->prev[INDEX];
 
-        if( p == firstElem ) {
-          e->prev[INDEX] = null;
-          p->prev[INDEX] = e;
+        e->next[INDEX] = p;
+        e->prev[INDEX] = prev;
+        p->prev[INDEX] = e;
+
+        if( prev == null ) {
           firstElem = e;
         }
         else {
-          Type* prev = p->prev[INDEX];
-
-          prev->next[INDEX] = e;
-          e->prev[INDEX] = prev;
           p->prev[INDEX] = e;
+        }
+      }
+
+      /**
+       * Remove the last element from the list.
+       */
+      void operator -- ()
+      {
+        assert( lastElem != null );
+
+        lastElem = lastElem->prev[INDEX];
+
+        if( lastElem == null ) {
+          firstElem = null;
+        }
+        else {
+          lastElem->next[INDEX] = null;
         }
       }
 
@@ -537,41 +549,6 @@ namespace oz
         }
         else {
           e->next[INDEX]->prev[INDEX] = e->prev[INDEX];
-        }
-      }
-
-      /**
-       * Remove the last element from the list.
-       * @return
-       */
-      DList& operator -- ()
-      {
-        assert( lastElem != null );
-
-        lastElem = lastElem->prev[INDEX];
-
-        if( lastElem == null ) {
-          firstElem = null;
-        }
-        else {
-          lastElem->next[INDEX] = null;
-        }
-      }
-
-      /**
-       * Remove the last element from the list.
-       */
-      void remove()
-      {
-        assert( lastElem != null );
-
-        lastElem = lastElem->prev[INDEX];
-
-        if( lastElem == null ) {
-          firstElem = null;
-        }
-        else {
-          lastElem->next[INDEX] = null;
         }
       }
 

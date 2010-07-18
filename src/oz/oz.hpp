@@ -4,7 +4,7 @@
  *  Common include file for oz library.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -20,9 +20,10 @@
 #include <cstddef>
 
 /*
- * assert macro
+ * prevent conflict with the standard assert macro
  */
 #include <cassert>
+#undef assert
 
 /*
  * Standard C++ new/delete operator and exception definitions
@@ -102,7 +103,9 @@
  */
 #define OZ_IMPORT() \
   using namespace oz; \
+  using oz::swap; \
   using oz::min; \
   using oz::max; \
-  using oz::abs; \
+  using oz::pair; \
+  using oz::tie; \
   using oz::log;

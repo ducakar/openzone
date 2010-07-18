@@ -4,15 +4,16 @@ include( CheckLibraryExists )
 
 project( openzone C CXX )
 
+option( OZ_ENABLE_ASSERT "Enable assert and soft_assert macros" ON )
 option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make heap usage statistics" ON )
-option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." OFF )
+option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
 option( OZ_GNU_MATH "Use GCC math builtins (no need to include <cmath> and faster calls in debug mode)" ON )
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in config files" ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 option( OZ_CROSS_MINGW "If MinGW is not used natively on Windows, but on Unix for cross-compiling." OFF )
 option( OZ_BUILD "Optimise and dump resources where possible. Those can be used by a OZ_PREBUILT enabled build." OFF )
 option( OZ_PREBUILT "If OpenZone optimized resources should be loaded instead of generic ones" OFF )
-option( OZ_ENABLE_CYLINDER "Enable cylinder collision shape and physics" ON )
+option( OZ_ENABLE_CYLINDER "Enable cylinder collision shape and physics" OFF )
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 

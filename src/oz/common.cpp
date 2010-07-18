@@ -4,19 +4,35 @@
  *  _softAssert helper function
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #include "oz.hpp"
 
+#ifdef OZ_ENABLE_ASSERT
+
 #include <cstdio>
+#include <csignal>
 
 namespace oz
 {
 
-  void _softAssert( const char* message, const char* file, int line )
+  static void sigtrapHandler( int )
+  {}
+
+  void _assert( const char* message, const char* file, int line, const char* function  )
   {
-    fprintf( stderr, "%s:%d: Soft assertion `%s' failed.", file, line, message );
+    fprintf( stderr, "%s:%d: %s: Assertion `%s' failed.\n", file, line, function, message );
+    raise( SIGABRT );
+  }
+
+  void _softAssert( const char* message, const char* file, int line, const char* function )
+  {
+    fprintf( stderr, "%s:%d: %s: Soft assertion `%s' failed.\n", file, line, function, message );
+    signal( SIGTRAP, sigtrapHandler );
+    raise( SIGTRAP );
   }
 
 }
+
+#endif

@@ -4,7 +4,7 @@
  *  Basic iterator classes and utility templates.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -41,6 +41,26 @@ namespace oz
     public:
 
       /**
+       * Returns true if the iterators point at the same element.
+       * @param e
+       * @return
+       */
+      bool operator == ( const CIteratorBase& i ) const
+      {
+        return elem == i.elem;
+      }
+
+      /**
+       * Returns true if the iterators do not point at the same element.
+       * @param e
+       * @return
+       */
+      bool operator != ( const CIteratorBase& i ) const
+      {
+        return elem != i.elem;
+      }
+
+      /**
        * Returns true if the iterator is at the given element.
        * @param e
        * @return
@@ -62,7 +82,7 @@ namespace oz
 
       /**
        * Returns true when iterator goes past the last element.
-       * Should be overridden in derivative classes
+       * May be overridden in derived classes
        * @return
        */
       bool isPassed() const
@@ -98,14 +118,14 @@ namespace oz
 
       /**
        * Advance to next element
-       * Should be overridden in derivative classes
+       * Should be overridden in derived classes
        * @return
        */
       CIteratorBase& operator ++ ();
 
       /**
        * Go to previous element
-       * May be overridden in derivative classes (optional)
+       * May be overridden in derived classes (optional)
        * @return
        */
       CIteratorBase& operator -- ();
@@ -137,6 +157,26 @@ namespace oz
       {}
 
     public:
+
+      /**
+       * Returns true if the iterators point at the same element.
+       * @param e
+       * @return
+       */
+      bool operator == ( const IteratorBase& i ) const
+      {
+        return elem == i.elem;
+      }
+
+      /**
+       * Returns true if the iterators do not point at the same element.
+       * @param e
+       * @return
+       */
+      bool operator != ( const IteratorBase& i ) const
+      {
+        return elem != i.elem;
+      }
 
       /**
        * Returns true if the iterator is at the given element.
@@ -243,6 +283,7 @@ namespace oz
    *   printf( "%d ", *i );
    * }</pre>
    * This replaces much more cryptic and longer pieces of code, like:
+   * <pre>
    * Vector&lt;int&gt; v;
    * for( Vector&lt;int&gt;::Iterator i( v ); !i.isPassed(); ++i )
    *   printf( "%d ", *i );
@@ -250,29 +291,29 @@ namespace oz
    * There's no need to add it to Katepart syntax highlighting as it is already there (Qt has some
    * similar foreach macro).
    */
-# define foreach( i, iterator ) \
+  # define foreach( i, iterator ) \
   for( auto i = iterator; !i.isPassed(); ++i )
 
   /**
-   * Compare all elements. (Like STL equal)
+   * Compare all elements (like std::equal, but containers have to be the same length).
    * @param iSrcA
    * @param iSrcB
-   * @return true if all elements are equal
+   * @return true if all elements are equal and containers are the same length
    */
   template <class CIteratorA, class CIteratorB>
   inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
   {
-    while( !iSrcA.isPassed() && *iSrcA == *iSrcB ) {
-      assert( !iSrcB.isPassed() );
+    assert( &*iSrcA != &*iSrcB );
 
+    while( !iSrcA.isPassed() && !iSrcB.isPassed() && *iSrcA == *iSrcB ) {
       ++iSrcA;
       ++iSrcB;
     }
-    return iSrcA.isPassed();
+    return iSrcA.isPassed() && iSrcB.isPassed();
   }
 
   /**
-   * Set all elements. (Like STL fill)
+   * Set all elements (like std::fill).
    * @param iDest
    * @param value
    */
@@ -286,7 +327,7 @@ namespace oz
   }
 
   /**
-   * Copy elements from first to last. (Like STL copy)
+   * Copy elements from first to last (like std::copy, but reversed parameters).
    * @param iDest
    * @param iSrc
    */
@@ -305,7 +346,7 @@ namespace oz
   }
 
   /**
-   * Copy elements from last to first.
+   * Copy elements from last to first (like std::copy_backward, but reversed parameters).
    * @param iDest
    * @param iSrc
    */
@@ -324,29 +365,25 @@ namespace oz
   }
 
   /**
-   * Move elements.
-   * @param iDest
+   * Return true if given value is found in container.
    * @param iSrc
+   * @param value
+   * @return
    */
-  template <class IteratorA, class CIteratorB>
-  inline void iMove( IteratorA iDest, CIteratorB iSrc )
+  template <class CIterator, typename Value>
+  inline bool iContains( CIterator iSrc, const Value& value )
   {
-    assert( &*iDest != &*iSrc );
-
-    while( !iDest.isPassed() ) {
-      assert( !iSrc.isPassed() );
-
-      *iDest = static_cast< typename Type::StripRef< decltype( *iSrc ) >::Type&& >( *iSrc );
-      ++iDest;
+    while( !iSrc.isPassed() && *iSrc != value ) {
       ++iSrc;
     }
+    return !iSrc.isPassed();
   }
 
   /**
-   * Find first occurrence of given element. (Like STL find)
+   * Find first occurrence of given element (like std::find)
    * @param iSrc
    * @param value
-   * @return iterator at the elements found, passed iterator if not found
+   * @return iterator at the element found, passed iterator if not found
    */
   template <class CIterator, typename Value>
   inline CIterator iIndex( CIterator iSrc, const Value& value )
@@ -358,10 +395,10 @@ namespace oz
   }
 
   /**
-   * Find last occurrence of given element.
+   * Find last occurrence of given element (like std::find_end).
    * @param iSrc
    * @param value
-   * @return iterator at the elements found, passed iterator if not found
+   * @return iterator at the element found, passed iterator if not found
    */
   template <class CReverseIterator, typename Value>
   inline CReverseIterator iLastIndex( CReverseIterator iSrc, const Value& value )
@@ -373,14 +410,14 @@ namespace oz
   }
 
   /**
-   * Call delete on each non-null element of an container of pointers and set all elements to null.
+   * Call delete on each non-null element of a container of pointers and set all elements to null.
    * @param iDest
    */
   template <class Iterator>
   inline void iFree( Iterator iDest )
   {
     while( !iDest.isPassed() ) {
-      decltype( *iDest )& elem = *iDest;
+      decltype( *iDest ) elem = *iDest;
       ++iDest;
 
       if( elem != null ) {

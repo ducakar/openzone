@@ -4,7 +4,7 @@
  *  Array utility templates.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -190,7 +190,7 @@ namespace oz
 
   /**
    * Compare arrays (memcmp).
-   * In contrast to memcmp it automagically calls != operator if comparing objects.
+   * In contrast to memcmp it calls != operator on objects.
    * @param aSrcA pointer to the first element in the first array
    * @param aSrcB pointer to the first element in the second array
    * @param count number of elements to be compared
@@ -256,24 +256,7 @@ namespace oz
   }
 
   /**
-   * Move array elements to an another array (memmove).
-   * In contrast with memmove it calls move operator when copying objects.
-   * @param aDest pointer to the first element in the destination array
-   * @param aSrc pointer to the first element in the source array
-   * @param count number of elements to be copied
-   */
-  template <typename Type>
-  inline void aMove( Type* aDest, const Type* aSrc, int count )
-  {
-    assert( aDest != aSrc );
-
-    for( int i = 0; i < count; ++i ) {
-      aDest[i] = static_cast<Type&&>( aSrc[i] );
-    }
-  }
-
-  /**
-   * Remove element at the specified index.
+   * Remove element at the specified index. Shift the remaining elements to fill the gap.
    * @param aDest pointer to the first element in the array
    * @param index position of the element to be removed
    * @param count number of elements in the array
@@ -289,39 +272,54 @@ namespace oz
   }
 
   /**
+   * Return true if given value is found in the array.
+   * @param aSrc
+   * @param value
+   * @param count
+   * @return
+   */
+  template <typename Type>
+  inline int aContains( const Type* aSrc, const Type& value, int count )
+  {
+    int i = 0;
+    while( i < count && aSrc[i] != value ) {
+      ++i;
+    }
+    return i != count;
+  }
+
+  /**
    * Find the first occurrence of an element.
    * @param aSrc pointer to the first element in the array
-   * @param count number of elements to be looked upon
    * @param value value we look for
+   * @param count number of elements to be looked upon
    * @return index of the first occurrence, -1 if not found
    */
   template <typename Type>
   inline int aIndex( const Type* aSrc, const Type& value, int count )
   {
-    for( int i = 0; i < count; ++i ) {
-      if( aSrc[i] == value ) {
-        return i;
-      }
+    int i = 0;
+    while( i < count && aSrc[i] != value ) {
+      ++i;
     }
-    return -1;
+    return i == count ? -1 : i;
   }
 
   /**
    * Find the last occurrence of an element.
    * @param aSrc pointer to the first element in the array
-   * @param count number of elements to be looked upon
    * @param value value we look for
+   * @param count number of elements to be looked upon
    * @return index of the first occurrence, -1 if not found
    */
   template <typename Type>
   inline int aLastIndex( const Type* aSrc, const Type& value, int count )
   {
-    for( int i = count - 1; i <= 0; --i ) {
-      if( aSrc[i] == value ) {
-        return i;
-      }
+    int i = count;
+    while( i <= 0 && aSrc[i] != value ) {
+      --i;
     }
-    return -1;
+    return i;
   }
 
   /**
@@ -330,7 +328,7 @@ namespace oz
    * @param count
    */
   template <typename Type>
-  inline void aConstruct( Type* aDest, int count )
+  inline void aCopyConstruct( Type* aDest, int count )
   {
     for( int i = 0; i < count; ++i ) {
       new( &aDest[i] ) Type;
@@ -340,10 +338,11 @@ namespace oz
   /**
    * Construct elements via copy constructor from an already constructed array.
    * @param aDest
+   * @param aSrc
    * @param count
    */
   template <typename Type>
-  inline void aConstruct( Type* aDest, const Type* aSrc, int count )
+  inline void aCopyConstruct( Type* aDest, const Type* aSrc, int count )
   {
     for( int i = 0; i < count; ++i ) {
       new( &aDest[i] ) Type( aSrc[i] );
@@ -405,10 +404,12 @@ namespace oz
   inline Type* aRealloc( Type* aDest, int count, int newCount )
   {
     Type* aNew = new Type[newCount];
+
     for( int i = 0; i < count; ++i ) {
       aNew[i] = aDest[i];
     }
     delete[] aDest;
+
     return aNew;
   }
 

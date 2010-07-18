@@ -8,7 +8,7 @@
  *  Type should provide int nextSlot[INDEX] field.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
- *  This software is covered by GNU General Public License v3. See COPYING file for details.
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
@@ -173,21 +173,10 @@ namespace oz
       }
 
       /**
-       * Copy constructor.
-       * @param s
-       */
-      Sparse( const Sparse& s ) : data( new Type[s.size] ), size( s.size ), count( s.count ),
-          freeSlot( s.freeSlot )
-      {
-        aCopy( data, s.data, size );
-      }
-
-      /**
        * Move constructor.
        * @param s
        */
-      Sparse( Sparse&& s ) : data( s.data ), size( s.size ), count( s.count ),
-          freeSlot( s.freeSlot )
+      Sparse( Sparse& s ) : data( s.data ), size( s.size ), count( s.count ), freeSlot( s.freeSlot )
       {
         assert( s.size > 0 );
 
@@ -201,31 +190,9 @@ namespace oz
        */
       ~Sparse()
       {
-        delete[] data;
-      }
-
-      /**
-       * Copy operator.
-       * @param s
-       * @return
-       */
-      Sparse& operator = ( const Sparse& s )
-      {
-        assert( &s != this );
-        assert( s.size > 0 );
-
-        // create new data array of the new data doesn't fit, keep the old one otherwise
-        if( size < s.size || size == 0 ) {
-          if( size != 0 ) {
-            delete[] data;
-          }
-          data = new Type[s.size];
-          size = s.size;
+        if( size != 0 ) {
+          delete[] data;
         }
-        aCopy( data, s.data, s.size );
-        count = s.count;
-        freeSlot = s.freeSlot;
-        return *this;
       }
 
       /**
@@ -233,7 +200,7 @@ namespace oz
        * @param s
        * @return
        */
-      Sparse& operator = ( Sparse&& s )
+      Sparse& operator = ( Sparse& s )
       {
         assert( &s != this );
         assert( s.size > 0 );
@@ -249,7 +216,23 @@ namespace oz
         s.data = null;
         s.size = 0;
         s.count = 0;
+        s.freeSlot = -1;
+
         return *this;
+      }
+
+      /**
+       * Create a copy of the vector.
+       * @return
+       */
+      Sparse clone() const
+      {
+        Sparse s( size );
+
+        aCopy( s.data, data, size );
+        s.count = count;
+        s.freeSlot = freeSlot;
+        return s;
       }
 
       /**
@@ -259,15 +242,15 @@ namespace oz
        */
       bool operator == ( const Sparse& s ) const
       {
-        if( count != s. count ) {
+        if( count != s.count ) {
           return false;
         }
-        for( int i = 0; i < size; ++i ) {
-          if( data[i].nextSlot[INDEX] == -1 && data[i] != s.data[i] ) {
-            return false;
-          }
+
+        int i = 0;
+        while( i < size && ( data[i].nextSlot[INDEX] > 0 || data[i] == s.data[i] ) ) {
+          ++i;
         }
-        return true;
+        return i == size;
       }
 
       /**
@@ -277,15 +260,15 @@ namespace oz
        */
       bool operator != ( const Sparse& s ) const
       {
-        if( count != s. count ) {
+        if( count != s.count ) {
           return true;
         }
-        for( int i = 0; i < size; ++i ) {
-          if( data[i].nextSlot[INDEX] == -1 && data[i] != s.data[i] ) {
-            return true;
-          }
+
+        int i = 0;
+        while( i < size && ( data[i].nextSlot[INDEX] > 0 || data[i] == s.data[i] ) ) {
+          ++i;
         }
-        return false;
+        return i != size;
       }
 
       /**
