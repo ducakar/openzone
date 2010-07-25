@@ -294,35 +294,67 @@ namespace oz
   # define foreach( i, iterator ) \
   for( auto i = iterator; !i.isPassed(); ++i )
 
-  /**
-   * Compare all elements (like std::equal, but containers have to be the same length).
-   * @param iSrcA
-   * @param iSrcB
-   * @return true if all elements are equal and containers are the same length
+   /**
+   * Construct elements of an uninitialised container.
+   * @param iDest
    */
-  template <class CIteratorA, class CIteratorB>
-  inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
+  template <class Iterator>
+  inline void iConstruct( Iterator iDest )
   {
-    assert( &*iSrcA != &*iSrcB );
-
-    while( !iSrcA.isPassed() && !iSrcB.isPassed() && *iSrcA == *iSrcB ) {
-      ++iSrcA;
-      ++iSrcB;
+    typedef decltype( *iDest ) Type;
+    while( !iDest.isPassed() ) {
+      new( static_cast<Type*>( iDest ) ) Type( iDest );
     }
-    return iSrcA.isPassed() && iSrcB.isPassed();
   }
 
   /**
-   * Set all elements (like std::fill).
+   * Construct elements via copy constructor from an already constructed container.
    * @param iDest
-   * @param value
+   * @param iSrc
    */
-  template <class Iterator, typename Value>
-  inline void iSet( Iterator iDest, const Value& value )
+  template <class IteratorA, class CIteratorB>
+  inline void iConstruct( IteratorA iDest, CIteratorB* iSrc )
+  {
+    typedef decltype( *iDest ) Type;
+
+    while( !iDest.isPassed() ) {
+      assert( !iSrc->isPassed() );
+
+      new( static_cast<Type*>( iDest ) ) Type( *iSrc );
+      ++iDest;
+      ++iSrc;
+    }
+  }
+
+  /**
+   * Construct elements in reverse direction via copy constructor from an already constructed
+   * container.
+   * @param iDest
+   * @param iSrc
+   */
+  template <class ReverseIteratorA, class CReverseIteratorB>
+  inline void iReverseConstruct( ReverseIteratorA iDest, CReverseIteratorB* iSrc )
+  {
+    typedef decltype( *iDest ) Type;
+
+    while( !iDest.isPassed() ) {
+      assert( !iSrc->isPassed() );
+
+      new( static_cast<Type*>( iDest ) ) Type( *iSrc );
+      --iDest;
+      --iSrc;
+    }
+  }
+
+  /**
+   * Destruct all elements.
+   * @param iDest
+   */
+  template <typename Iterator>
+  inline void aDestruct( Iterator iDest )
   {
     while( !iDest.isPassed() ) {
-      *iDest = value;
-      ++iDest;
+      ( *iDest ).~Type();
     }
   }
 
@@ -362,6 +394,38 @@ namespace oz
       --iDest;
       --iSrc;
     }
+  }
+
+  /**
+   * Set all elements (like std::fill).
+   * @param iDest
+   * @param value
+   */
+  template <class Iterator, typename Value>
+  inline void iSet( Iterator iDest, const Value& value )
+  {
+    while( !iDest.isPassed() ) {
+      *iDest = value;
+      ++iDest;
+    }
+  }
+
+  /**
+   * Compare all elements (like std::equal, but containers have to be the same length).
+   * @param iSrcA
+   * @param iSrcB
+   * @return true if all elements are equal and containers are the same length
+   */
+  template <class CIteratorA, class CIteratorB>
+  inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
+  {
+    assert( &*iSrcA != &*iSrcB );
+
+    while( !iSrcA.isPassed() && !iSrcB.isPassed() && *iSrcA == *iSrcB ) {
+      ++iSrcA;
+      ++iSrcB;
+    }
+    return iSrcA.isPassed() && iSrcB.isPassed();
   }
 
   /**

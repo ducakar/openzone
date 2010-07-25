@@ -9,6 +9,8 @@
 
 #include "stable.hpp"
 
+#include <SDL_main.h>
+
 using namespace oz;
 
 struct Test
@@ -51,10 +53,7 @@ struct Test
   }
 };
 
-int main()
+int main( int, char** )
 {
-  Test a, b;
-  Pair<Test&, int> p( a, 0 );
-  Pair<Test, int> r = p;
   return 0;
 }

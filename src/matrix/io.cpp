@@ -41,7 +41,7 @@ namespace oz
     int blocksRead = 1;
 
     while( blocksToRead > 0 && blocksRead > 0 ) {
-      blocksRead = fread( buffer, BLOCK_SIZE, blocksToRead, handle );
+      blocksRead = int( fread( buffer, BLOCK_SIZE, blocksToRead, handle ) );
       blocksToRead -= blocksRead;
     }
     fclose( handle );
@@ -66,7 +66,7 @@ namespace oz
     int blocksWritten = 1;
 
     while( blocksToWrite > 0 && blocksWritten > 0 ) {
-      blocksWritten = fwrite( buffer, BLOCK_SIZE, blocksToWrite, handle );
+      blocksWritten = int( fwrite( buffer, BLOCK_SIZE, blocksToWrite, handle ) );
       blocksToWrite -= blocksWritten;
     }
     fclose( handle );

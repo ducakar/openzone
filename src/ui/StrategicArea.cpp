@@ -35,7 +35,7 @@ namespace ui
     t.x = Math::round( ( t.x / t.y ) * stepPixel );
     t.z = Math::round( ( t.z / t.y ) * stepPixel );
 
-    return Pair<int>( camera.centerX + int( t.x ), camera.centerY + int( t.z ) );
+    return Pair<int>( camera.centreX + int( t.x ), camera.centreY + int( t.z ) );
   }
 
   Span StrategicArea::projectBounds( const AABB& bb ) const
@@ -257,9 +257,9 @@ namespace ui
 
   void StrategicArea::onDraw()
   {
-    Vec3 at( float( mouse.x - camera.centerX ) * pixelStep * 100.0f,
+    Vec3 at( float( mouse.x - camera.centreX ) * pixelStep * 100.0f,
              100.0f,
-             float( mouse.y - camera.centerY ) * pixelStep * 100.0f );
+             float( mouse.y - camera.centreY ) * pixelStep * 100.0f );
 
     at = camera.rotMat * at;
     collider.mask = ~0;

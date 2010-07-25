@@ -50,8 +50,8 @@ namespace client
     int  result;
 
     do {
-      result = ov_read( &oggStream, &data[bytesRead], MUSIC_BUFFER_SIZE - bytesRead, 0, 2, 1,
-                        &section );
+      result = int( ov_read( &oggStream, &data[bytesRead], MUSIC_BUFFER_SIZE - bytesRead,
+                             0, 2, 1, &section ) );
       bytesRead += result;
       if( result < 0 ) {
         isMusicPlaying = false;
@@ -60,7 +60,7 @@ namespace client
     }
     while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
 
-    alBufferData( buffer, musicFormat, data, bytesRead, vorbisInfo->rate );
+    alBufferData( buffer, musicFormat, data, bytesRead, ALsizei( vorbisInfo->rate ) );
   }
 
   void Sound::updateMusic()

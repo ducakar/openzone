@@ -260,7 +260,7 @@ namespace client
 
     timer.init();
 
-    // set mouse cursor to center of the screen and clear any events (key presses and mouse moves)
+    // set mouse cursor to centre of the screen and clear any events (key presses and mouse moves)
     // from before
     SDL_WarpMouse( screenCenterX, screenCenterY );
     while( SDL_PollEvent( &event ) ) {

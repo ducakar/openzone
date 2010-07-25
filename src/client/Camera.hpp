@@ -81,8 +81,8 @@ namespace client
 
       int   width;
       int   height;
-      int   centerX;
-      int   centerY;
+      int   centreX;
+      int   centreY;
 
       float angle;
       float aspect;

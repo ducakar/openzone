@@ -190,12 +190,12 @@ namespace oz
 
     int size = 0;
 
-    size += 1 * sizeof( int );
+    size += 1 * int( sizeof( int ) );
     size += detailTexture.length() + 1;
     size += mapTexture.length() + 1;
     size += waterTexture.length() + 1;
-    size += MAX * MAX * sizeof( Vec3 );
-    size += QUADS * QUADS * sizeof( Quad );
+    size += MAX * MAX * int( sizeof( Vec3 ) );
+    size += QUADS * QUADS * int( sizeof( Quad ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();

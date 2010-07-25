@@ -97,7 +97,7 @@ namespace oz
        */
       SVector( const SVector& v ) : count( v.count )
       {
-        aCopyConstruct( data, v.data, v.count );
+        aConstruct( data, v.data, v.count );
       }
 
       /**
@@ -208,12 +208,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        for( int i = 0; i < count; ++i ) {
-          if( data[i] == e ) {
-            return true;
-          }
-        }
-        return false;
+        return aContains( data, e, count );
       }
 
       /**
@@ -306,10 +301,16 @@ namespace oz
       {
         assert( count < SIZE );
 
-        new( data + count ) Type( data[count - 1] );
-        aReverseCopy( data + 1, data, count - 1 );
-        data[0] = e;
-        ++count;
+        if( count == 0 ) {
+          new( data + 0 ) Type( e );
+          ++count;
+        }
+        else {
+          new( data + count ) Type( data[count - 1] );
+          aReverseCopy( data + 1, data, count - 1 );
+          data[0] = e;
+          ++count;
+        }
       }
 
       /**
@@ -348,21 +349,6 @@ namespace oz
       }
 
       /**
-       * Add all elements from a vector to the end.
-       * @param c
-       */
-      template <class Container>
-      void addAll( const Container& c )
-      {
-        assert( count + c.length() <= SIZE );
-
-        foreach( e, c.citer() ) {
-          new( data + count ) Type( e );
-          ++count;
-        }
-      }
-
-      /**
        * Add all elements from an array to the end.
        * @param array
        * @param arrayCount
@@ -374,7 +360,7 @@ namespace oz
         assert( SIZE >= newCount );
 
         for( int i = 0; i < arrayCount; ++i ) {
-          aCopyConstruct( data + count, array, arrayCount );
+          aConstruct( data + count, array, arrayCount );
         }
         count = newCount;
       }
@@ -396,30 +382,6 @@ namespace oz
         }
         else {
           return false;
-        }
-      }
-
-      /**
-       * Add all elements from given vector which are not yet included in this vector.
-       * @param c
-       */
-      template <class Container>
-      void includeAll( const Container& c )
-      {
-        foreach( e, c.citer() ) {
-          include( *e );
-        }
-      }
-
-      /**
-       * Add all elements from given array which are not yet included in this vector.
-       * @param array
-       * @param count
-       */
-      void includeAll( const Type* array, int count )
-      {
-        for( int i = 0; i < count; ++i ) {
-          include( array[i] );
         }
       }
 
@@ -532,39 +494,15 @@ namespace oz
       }
 
       /**
-       * Remove intersection of vectors from this vector.
-       * @param c
-       */
-      template <class Container>
-      void excludeAll( const Container& c )
-      {
-        foreach( e, c.citer() ) {
-          exclude( *e );
-        }
-      }
-
-      /**
-       * Remove intersection of this vector and given array from this vector.
-       * @param array
-       * @param count
-       */
-      void excludeAll( const Type* array, int count )
-      {
-        for( int i = 0; i < count; ++i ) {
-          exclude( array[i] );
-        }
-      }
-
-      /**
        * Remove first element
        * @return value of removed element
        */
       Type popFirst()
       {
-        Type e = move( data[0] );
+        Type e = data[0];
 
         --count;
-        aMove( data, data + 1, count );
+        aCopy( data, data + 1, count );
         data[count].~Type();
 
         return e;
@@ -579,7 +517,7 @@ namespace oz
         assert( count != 0 );
 
         --count;
-        e = move( data[count] );
+        e = data[count];
         data[count].~Type();
       }
 
@@ -592,7 +530,7 @@ namespace oz
         assert( count != 0 );
 
         --count;
-        Type e = move( data[count] );
+        Type e = data[count];
         data[count].~Type();
 
         return e;

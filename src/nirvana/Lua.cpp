@@ -13,12 +13,7 @@
 
 #include "matrix/BotClass.hpp"
 
-extern "C"
-{
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-}
+#include <lua.hpp>
 
 #define OZ_LUA_ERROR( message ) luaL_error( l, "[%s] %s", __FUNCTION__, message );
 #define OZ_LUA_FUNCTION( func ) lua_register( l, #func, func )
@@ -117,7 +112,7 @@ namespace nirvana
 
   static int ozStrBindIndex( lua_State* l )
   {
-    int index = lua_tointeger( l, 1 );
+    int index = int( lua_tointeger( l, 1 ) );
     if( index < 0 || world.structs.length() <= index ) {
       OZ_LUA_ERROR( "invalid index" );
     }
@@ -253,7 +248,7 @@ namespace nirvana
 
   static int ozObjBindIndex( lua_State* l )
   {
-    int index = lua_tointeger( l, 1 );
+    int index = int( lua_tointeger( l, 1 ) );
     if( index < 0 || world.objects.length() <= index ) {
       OZ_LUA_ERROR( "invalid index" );
     }
@@ -852,7 +847,7 @@ namespace nirvana
 
   static int ozPartBindIndex( lua_State* l )
   {
-    int index = lua_tointeger( l, 1 );
+    int index = int( lua_tointeger( l, 1 ) );
     if( index < 0 || world.parts.length() <= index ) {
       OZ_LUA_ERROR( "invalid particle index" );
     }

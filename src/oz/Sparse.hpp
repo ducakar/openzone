@@ -15,6 +15,7 @@
 
 namespace oz
 {
+
   template <class Type, int INDEX = 0>
   class Sparse
   {
@@ -173,16 +174,13 @@ namespace oz
       }
 
       /**
-       * Move constructor.
+       * Copy constructor.
        * @param s
        */
-      Sparse( Sparse& s ) : data( s.data ), size( s.size ), count( s.count ), freeSlot( s.freeSlot )
+      Sparse( const Sparse& s ) : data( new Type[s.size] ), size( s.size ), count( s.count ),
+          freeSlot( s.freeSlot )
       {
-        assert( s.size > 0 );
-
-        s.data = null;
-        s.size = 0;
-        s.count = 0;
+        aCopy( data, s.data, size );
       }
 
       /**
@@ -196,28 +194,27 @@ namespace oz
       }
 
       /**
-       * Move operator.
+       * Copy operator.
        * @param s
        * @return
        */
-      Sparse& operator = ( Sparse& s )
+      Sparse& operator = ( const Sparse& s )
       {
         assert( &s != this );
         assert( s.size > 0 );
 
-        if( size != 0 ) {
-          delete[] data;
+        // create new data array of the new data doesn't fit, keep the old one otherwise
+        if( size < s.size || size == 0 ) {
+          if( size != 0 ) {
+            delete[] data;
+          }
+          data = new Type[s.size];
+          size = s.size;
         }
-        data = s.data;
-        size = s.size;
+
+        aCopy( data, s.data, s.size );
         count = s.count;
         freeSlot = s.freeSlot;
-
-        s.data = null;
-        s.size = 0;
-        s.count = 0;
-        s.freeSlot = -1;
-
         return *this;
       }
 

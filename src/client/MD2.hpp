@@ -75,6 +75,8 @@ namespace client
       explicit MD2( const char* name );
       ~MD2();
 
+      void optimise();
+
       void scale( float scale );
       void translate( const Vec3& t );
       void translate( int animType, const Vec3& t );

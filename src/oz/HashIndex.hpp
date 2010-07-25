@@ -272,8 +272,8 @@ namespace oz
 
     private:
 
-      Elem*               data[SIZE];
       Pool<Elem, 0, SIZE> pool;
+      Elem*               data[SIZE];
       int                 count;
 
       /**
@@ -352,14 +352,14 @@ namespace oz
       }
 
       /**
-       * Move constructor.
+       * Copy constructor.
        * @param t
        */
-      HashIndex( HashIndex& t ) : pool( t.pool ), count( t.count )
+      HashIndex( const HashIndex& t ) : count( t.count )
       {
-        aCopy( data, t.data, SIZE );
-
-        t.count = 0;
+        for( int i = 0; i < SIZE; ++i ) {
+          data[i] = copyChain( t.data[i] );
+        }
       }
 
       /**
@@ -373,35 +373,19 @@ namespace oz
       }
 
       /**
-       * Move operator.
+       * Copy operator.
        * @param t
        * @return
        */
-      HashIndex& operator = ( HashIndex& t )
+      HashIndex& operator = ( const HashIndex& t )
       {
         assert( &t != this );
         assert( count == 0 );
 
-        aCopy( data, t.data, SIZE );
-        pool = t.pool;
-        count = t.count;
-
-        t.count = 0;
-        return *this;
-      }
-
-      /**
-       * Create a copy of the HashIndex.
-       * @return
-       */
-      HashIndex clone() const
-      {
-        HashIndex t;
-
         for( int i = 0; i < SIZE; ++i ) {
-          t.data[i] = t.copyChain( data[i] );
+          data[i] = copyChain( t.data[i] );
         }
-        t.count = count;
+        count = t.count;
         return *this;
       }
 

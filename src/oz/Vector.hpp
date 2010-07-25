@@ -124,16 +124,15 @@ namespace oz
       {}
 
       /**
-       * Move constructor.
+       * Copy constructor.
        * @param v
        */
-      Vector( Vector& v ) : data( v.data ), size( v.size ), count( v.count )
+      Vector( const Vector& v ) : data( Alloc::alloc<Type>( v.size ) ), size( v.size ),
+          count( v.count )
       {
         assert( v.size > 0 );
 
-        v.data = null;
-        v.size = 0;
-        v.count = 0;
+        aConstruct( data, v.data, v.count );
       }
 
       /**
@@ -148,41 +147,26 @@ namespace oz
       }
 
       /**
-       * Move operator.
+       * Copy operator.
        * @param v
        * @return
        */
-      Vector& operator = ( Vector& v )
+      Vector& operator = ( const Vector& v )
       {
         assert( &v != this );
         assert( v.size > 0 );
 
-        if( size != 0 ) {
-          aDestruct( data, count );
+        aDestruct( data, count );
+
+        if( size < v.count ) {
           Alloc::dealloc( data );
+          data = Alloc::alloc<Type>( v.size );
+          size = v.size;
         }
 
-        data = v.data;
-        size = v.size;
+        aConstruct( data, v.data, v.count );
         count = v.count;
-
-        v.data = null;
-        v.size = 0;
-        v.count = 0;
         return *this;
-      }
-
-      /**
-       * Create a copy of the array.
-       * @return
-       */
-      Vector clone() const
-      {
-        Vector v( size );
-
-        aConstruct( v.data, data, count );
-        v.count = count;
-        return v;
       }
 
       /**
@@ -377,9 +361,17 @@ namespace oz
       void pushFirst( const Type& e )
       {
         ensureCapacity();
-        new( data + count ) Type( data[count - 1] );
-        aReverseCopy( data + 1, data, count - 1 );
-        data[0] = e;
+
+        if( count == 0 ) {
+          new( data + 0 ) Type( e );
+          ++count;
+        }
+        else {
+          new( data + count ) Type( data[count - 1] );
+          aReverseCopy( data + 1, data, count - 1 );
+          data[0] = e;
+          ++count;
+        }
       }
 
       /**
@@ -388,6 +380,7 @@ namespace oz
       void operator ++ ()
       {
         ensureCapacity();
+
         new( data + count ) Type;
         ++count;
       }
@@ -399,6 +392,7 @@ namespace oz
       void operator << ( const Type& e )
       {
         ensureCapacity();
+
         new( data + count ) Type( e );
         ++count;
       }
@@ -410,23 +404,9 @@ namespace oz
       void pushLast( const Type& e )
       {
         ensureCapacity();
+
         new( data + count ) Type( e );
         ++count;
-      }
-
-      /**
-       * Add all elements from a container to the end.
-       * @param c
-       */
-      template <class Container>
-      void addAll( const Container& c )
-      {
-        ensureCapacity( count + c.length() );
-
-        foreach( e, c.citer() ) {
-          new( data + count ) Type( e );
-          ++count;
-        }
       }
 
       /**
@@ -439,7 +419,8 @@ namespace oz
         int newCount = count + arrayCount;
 
         ensureCapacity( newCount );
-        aCopyConstruct( data + count, array, arrayCount );
+
+        aConstruct( data + count, array, arrayCount );
         count = newCount;
       }
 
@@ -453,36 +434,13 @@ namespace oz
       {
         if( !contains( e ) ) {
           ensureCapacity();
+
           new( data + count ) Type( e );
           ++count;
           return true;
         }
         else {
           return false;
-        }
-      }
-
-      /**
-       * Add all elements from given container which are not yet included in this vector.
-       * @param c
-       */
-      template <class Container>
-      void includeAll( const Container& c )
-      {
-        foreach( e, c.citer() ) {
-          include( *e );
-        }
-      }
-
-      /**
-       * Add all elements from given array which are not yet included in this vector.
-       * @param array
-       * @param count
-       */
-      void includeAll( const Type* array, int count )
-      {
-        for( int i = 0; i < count; ++i ) {
-          include( array[i] );
         }
       }
 
@@ -592,30 +550,6 @@ namespace oz
         }
         else {
           return false;
-        }
-      }
-
-      /**
-       * Remove intersection from this vector.
-       * @param c
-       */
-      template <class Container>
-      void excludeAll( const Container& c )
-      {
-        foreach( e, c.citer() ) {
-          exclude( *e );
-        }
-      }
-
-      /**
-       * Remove intersection of this vector and given array from this vector.
-       * @param array
-       * @param count
-       */
-      void excludeAll( const Type* array, int count )
-      {
-        for( int i = 0; i < count; ++i ) {
-          exclude( array[i] );
         }
       }
 

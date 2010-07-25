@@ -31,8 +31,8 @@ namespace ui
     type = ARROW;
     doShow = false;
 
-    x = camera.centerX;
-    y = camera.centerY;
+    x = camera.centreX;
+    y = camera.centreY;
     relX = 0;
     relY = 0;
 
@@ -103,8 +103,8 @@ namespace ui
       overEdgeY = y != desiredY ? desiredY - y : 0;
     }
     else {
-      x = camera.centerX;
-      y = camera.centerY;
+      x = camera.centreX;
+      y = camera.centreY;
 
       overEdgeX = relX;
       overEdgeY = relY;

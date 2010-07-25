@@ -300,16 +300,14 @@ namespace oz
       {}
 
       /**
-       * Move constructor.
+       * Copy constructor.
        * @param m
        */
-      Map( Map& m ) : data( m.data ), size( m.size ), count( m.count )
+      Map( const Map& m ) : data( Alloc::alloc<Elem>( m.size ) ), size( m.size ), count( m.count )
       {
         assert( m.size > 0 );
 
-        m.data  = null;
-        m.size  = 0;
-        m.count = 0;
+        aConstruct( data, m.data, m.count );
       }
 
       /**
@@ -324,41 +322,26 @@ namespace oz
       }
 
       /**
-       * Move operator.
+       * Copy operator.
        * @param m
        * @return
        */
-      Map& operator = ( Map& m )
+      Map& operator = ( const Map& m )
       {
         assert( &m != this );
         assert( m.size > 0 );
 
-        if( size != 0 ) {
-          aDestruct( data, count );
+        aDestruct( data, count );
+
+        if( size < m.count ) {
           Alloc::dealloc( data );
+          data = Alloc::alloc<Elem>( m.size );
+          size = m.size;
         }
-        data    = m.data;
-        size    = m.size;
-        count   = m.count;
 
-        m.data  = null;
-        m.size  = 0;
-        m.count = 0;
-
+        aConstruct( data, m.data, m.count );
+        count = m.count;
         return *this;
-      }
-
-      /**
-       * Create a copy of the map.
-       * @return
-       */
-      Map clone() const
-      {
-        Map m( size );
-
-        aConstruct( m.data, data, count );
-        m.count = count;
-        return m;
       }
 
       /**
@@ -575,7 +558,7 @@ namespace oz
         }
         else {
           new( data + count ) Elem( data[count - 1] );
-          aReverseMove( data + index + 1, data + index, count - index - 1 );
+          aReverseCopy( data + index + 1, data + index, count - index - 1 );
           data[index] = Elem( k, v );
         }
         ++count;
@@ -590,7 +573,7 @@ namespace oz
         assert( 0 <= index && index < count );
 
         --count;
-        aMove( data + index, data + index + 1, count - index );
+        aCopy( data + index, data + index + 1, count - index );
         data[count].~Type();
       }
 
@@ -608,18 +591,6 @@ namespace oz
       }
 
       /**
-       * Add all elements from given container which are not yet included in this map.
-       * @param c
-       */
-      template <class Container>
-      void includeAll( const Container& c )
-      {
-        foreach( e, c.citer() ) {
-          include( *e );
-        }
-      }
-
-      /**
        * Find and remove the given element.
        * @param e
        * @return
@@ -633,18 +604,6 @@ namespace oz
         }
         else {
           return false;
-        }
-      }
-
-      /**
-       * Remove intersection from this map.
-       * @param c
-       */
-      template <class Container>
-      void excludeAll( const Container& c )
-      {
-        foreach( e, c.citer() ) {
-          exclude( *e );
         }
       }
 

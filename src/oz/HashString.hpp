@@ -351,14 +351,14 @@ namespace oz
       }
 
       /**
-       * Move constructor.
+       * Copy constructor.
        * @param t
        */
-      HashString( HashString& t ) : pool( t.pool ), count( t.count )
+      HashString( const HashString& t ) : count( t.count )
       {
-        aCopy( data, t.data, SIZE );
-
-        t.count = 0;
+        for( int i = 0; i < SIZE; ++i ) {
+          data[i] = copyChain( t.data[i] );
+        }
       }
 
       /**
@@ -371,31 +371,21 @@ namespace oz
         pool.free();
       }
 
-      HashString& operator = ( HashString& t )
+      /**
+       * Copy operator.
+       * @param t
+       * @return
+       */
+      HashString& operator = ( const HashString& t )
       {
         assert( &t != this );
         assert( count == 0 );
 
-        aCopy( data, t.data, SIZE );
-        pool = t.pool;
+        for( int i = 0; i < SIZE; ++i ) {
+          data[i] = copyChain( t.data[i] );
+        }
         count = t.count;
 
-        t.count = 0;
-        return *this;
-      }
-
-      /**
-       * Create a copy of the HashString.
-       * @return
-       */
-      HashString clone() const
-      {
-        HashString t;
-
-        for( int i = 0; i < SIZE; ++i ) {
-          t.data[i] = t.copyChain( data[i] );
-        }
-        t.count = count;
         return *this;
       }
 

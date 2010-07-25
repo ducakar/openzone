@@ -41,7 +41,7 @@ namespace client
     {
       float dv = Math::sqrt( dyn->velocity.x*dyn->velocity.x +
                              dyn->velocity.y*dyn->velocity.y );
-      playContSound( samples[SND_FRICTING], dv, uint( &*dyn ), parent->obj );
+      playContSound( samples[SND_FRICTING], dv, uint( size_t( &*dyn ) ), parent->obj );
     }
 
     // events

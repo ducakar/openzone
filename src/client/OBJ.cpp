@@ -97,7 +97,7 @@ namespace client
     pos = skipSpaces( pos );
     end = readWord( pos );
 
-    int wordLength = end - pos;
+    int wordLength = int( end - pos );
     if( wordLength <= 0 ) {
       return false;
     }

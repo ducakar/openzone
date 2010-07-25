@@ -39,13 +39,18 @@ namespace oz
 
   /**
    * \def S
-   * "Stringify" the given identifier/type/reserved word/...
+   * "Stringify" the given identifier.
    */
 # define S( s ) #s
 
   /**
+   * \def assert
+   * Emulates assert macro (like on GNU/Linux).
+   */
+
+  /**
    * \def soft_assert
-   * Resembles output of assert macro (on GNU/Linux) but does not abort.
+   * Like assert, but raises SIGTRAP with a dummy handler (like DebugBreak in MSVC).
    */
 #ifndef OZ_ENABLE_ASSERT
 
@@ -80,7 +85,7 @@ namespace oz
   /**
    * Unit type
    */
-  # define nil nil
+# define nil nil
   struct nil
   {
     /**
@@ -137,6 +142,9 @@ namespace oz
    */
 # define ulong ulong
   typedef unsigned long  ulong;
+
+  // just make syntax highlighting work
+# define size_t size_t
 
   //***********************************
   //*        BASIC ALGORITHMS         *

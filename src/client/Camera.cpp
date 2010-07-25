@@ -46,8 +46,8 @@ namespace client
   {
     width              = config.get( "screen.width",         1024 );
     height             = config.get( "screen.height",        768  );
-    centerX            = width / 2;
-    centerY            = height / 2;
+    centreX            = width / 2;
+    centreY            = height / 2;
     angle              = config.getSet( "camera.angle",      80.0f );
     aspect             = config.getSet( "camera.aspect",     0.0f );
     aspect             = aspect != 0.0f ? aspect : float( width ) / float( height );

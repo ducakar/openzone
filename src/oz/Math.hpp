@@ -77,8 +77,8 @@ namespace oz
 
       // static class
       Math() {}
-      Math( const Math& ) = delete;
-      Math& operator = ( const Math& ) = delete;
+      Math( const Math& );
+      Math& operator = ( const Math& );
 
     public:
 
