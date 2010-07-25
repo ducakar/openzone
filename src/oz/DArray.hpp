@@ -92,13 +92,12 @@ namespace oz
       {}
 
       /**
-       * Move constructor.
-       * @param v
+       * Copy constructor.
+       * @param a
        */
-      DArray( DArray& a ) : data( a.data ), count( a.count )
+      DArray( const DArray& a ) : data( new Type[a.count] ), count( a.count )
       {
-        a.data = null;
-        a.count = 0;
+        aCopy( data, a.data, count );
       }
 
       /**
@@ -112,36 +111,23 @@ namespace oz
       }
 
       /**
-       * Move operator.
+       * Copy operator.
        * @param a
        * @return
        */
-      DArray& operator = ( DArray& a )
+      DArray& operator = ( const DArray& a )
       {
         assert( &a != this );
+        assert( a.count != 0 );
 
-        if( count != 0 ) {
+        if( count != a.count ) {
           delete[] data;
+          data = new Type[a.count];
+          count = a.count;
         }
-        data = a.data;
-        count = a.count;
 
-        a.data = null;
-        a.count = 0;
-
+        aCopy( data, a.data, a.count );
         return *this;
-      }
-
-      /**
-       * Clone array.
-       * @return
-       */
-      DArray clone() const
-      {
-        DArray a( count );
-
-        aCopy( a.data, data, count );
-        return a;
       }
 
       /**

@@ -361,12 +361,12 @@ namespace client
         return AL_NONE;
       }
 
-      int  section;
-      int  bytesRead = 0;
-      int  result;
+      int section;
+      int bytesRead = 0;
+      int result;
       do {
-        result = ov_read( &oggStream, &vorbisBuffer[bytesRead], VORBIS_BUFFER_SIZE - bytesRead,
-                          0, 2, 1, &section );
+        result = int( ov_read( &oggStream, &vorbisBuffer[bytesRead], VORBIS_BUFFER_SIZE - bytesRead,
+                               0, 2, 1, &section ) );
         bytesRead += result;
         if( result < 0 ) {
           ov_clear( &oggStream );
@@ -383,7 +383,7 @@ namespace client
       }
 
       alGenBuffers( 1, &sounds[resource].id );
-      alBufferData( sounds[resource].id, format, vorbisBuffer, bytesRead, vorbisInfo->rate );
+      alBufferData( sounds[resource].id, format, vorbisBuffer, bytesRead, int( vorbisInfo->rate ) );
       ov_clear( &oggStream );
 
       if( alGetError() != AL_NO_ERROR ) {

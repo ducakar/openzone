@@ -15,14 +15,14 @@
 namespace oz
 {
 
-int  Alloc::count     = 0;
-long Alloc::amount    = 0;
+  int  Alloc::count     = 0;
+  long Alloc::amount    = 0;
 
-int  Alloc::sumCount  = 0;
-long Alloc::sumAmount = 0;
+  int  Alloc::sumCount  = 0;
+  long Alloc::sumAmount = 0;
 
-int  Alloc::maxCount  = 0;
-long Alloc::maxAmount = 0;
+  int  Alloc::maxCount  = 0;
+  long Alloc::maxAmount = 0;
 
 }
 

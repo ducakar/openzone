@@ -114,7 +114,7 @@ namespace oz
         }
 
         const char* p = pos;
-        int length = term - pos;
+        int length = int( term - pos );
         pos += length + 1;
 
         return String( p, length );
@@ -136,7 +136,7 @@ namespace oz
         }
 
         const char* p = pos;
-        int length = term - pos;
+        int length = int( term - pos );
         pos += length + 1;
 
         s = String( p, length );

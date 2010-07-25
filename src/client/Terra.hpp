@@ -23,20 +23,6 @@ namespace client
       static const float DETAIL_SCALE;
       static const float WATER_SCALE;
 
-      struct TexCoord
-      {
-        float u;
-        float v;
-      };
-
-      struct VertexData
-      {
-        Vec3     position;
-        Vec3     normal;
-        TexCoord detailTexCoord;
-        TexCoord mapTexCoord;
-      };
-
       uint      arrayBuffer;
       uint      indexBuffer;
 

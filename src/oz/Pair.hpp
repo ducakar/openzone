@@ -31,14 +31,19 @@ namespace oz
       {}
 
       /**
-       *
+       * Constructor that initialises members.
        * @param x_
        * @param y_
-       * @return
        */
       explicit Pair( const TypeX& x_, const TypeY& y_ ) : x( x_ ), y( y_ )
       {}
 
+      /**
+       * Copy constructor.
+       * @param p
+       */
+      Pair( const Pair& p ) : x( p.x ), y( p.y )
+      {}
 
       /**
        * Copy constructor.
@@ -51,6 +56,18 @@ namespace oz
 
       /**
        * Copy operator.
+       * @param p
+       * @return
+       */
+      Pair& operator = ( const Pair& p )
+      {
+        x = p.x;
+        y = p.y;
+        return *this;
+      }
+
+      /**
+       * Copy operator.
        * It allows copying pairs of different types.
        * @param p
        * @return
@@ -58,8 +75,6 @@ namespace oz
       template <typename TypeX_, typename TypeY_>
       Pair& operator = ( const Pair<TypeX_, TypeY_>& p )
       {
-        assert( &p != this );
-
         x = p.x;
         y = p.y;
         return *this;

@@ -107,7 +107,7 @@ namespace oz
 
   static int ozStrBindIndex( lua_State* l )
   {
-    int index = lua_tointeger( l, 1 );
+    int index = int( lua_tointeger( l, 1 ) );
     if( index < 0 || world.structs.length() <= index ) {
       OZ_LUA_ERROR( "invalid structure index" );
     }
@@ -263,7 +263,7 @@ namespace oz
 
   static int ozObjBindIndex( lua_State* l )
   {
-    int index = lua_tointeger( l, 1 );
+    int index = int( lua_tointeger( l, 1 ) );
     if( index < 0 || world.objects.length() <= index ) {
       OZ_LUA_ERROR( "invalid object index" );
     }
@@ -497,7 +497,7 @@ namespace oz
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    int   id        = lua_tointeger( l, 1 );
+    int   id        = int( lua_tointeger( l, 1 ) );
     float intensity = float( lua_tonumber( l, 2 ) );
 
     if( id >= 0 && intensity < 0.0f ) {
@@ -1291,7 +1291,7 @@ namespace oz
 
   static int ozPartBindIndex( lua_State* l )
   {
-    int index = lua_tointeger( l, 1 );
+    int index = int( lua_tointeger( l, 1 ) );
     if( index < 0 || world.parts.length() <= index ) {
       OZ_LUA_ERROR( "invalid particle index" );
     }

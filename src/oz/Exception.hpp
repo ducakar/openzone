@@ -19,19 +19,21 @@ namespace oz
       const char* message;
       const char* file;
       int         line;
+      const char* function;
 
-      explicit Exception( const char* message_, const char* file_, int line_ ) :
-          message( message_ ), file( file_ ), line( line_ )
+      explicit Exception( const char* message_, const char* file_, int line_,
+                          const char* function_ ) :
+          message( message_ ), file( file_ ), line( line_ ), function( function_ )
       {}
 
   };
 
-/**
- * \def Exception
- *
- * Exception constructor wrapper that provides the current file and line.
- */
+  /**
+   * \def Exception
+   *
+   * Exception constructor wrapper that provides the current file and line.
+   */
 # define Exception( message ) \
-  oz::Exception( message, __FILE__, __LINE__ )
+  oz::Exception( message, __FILE__, __LINE__, __PRETTY_FUNCTION__ )
 
 }

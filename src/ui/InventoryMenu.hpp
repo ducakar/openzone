@@ -42,7 +42,7 @@ namespace ui
     public:
 
       explicit InventoryMenu();
-      ~InventoryMenu();
+      virtual ~InventoryMenu();
 
   };
 

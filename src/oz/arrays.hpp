@@ -189,41 +189,61 @@ namespace oz
   }
 
   /**
-   * Compare arrays (memcmp).
-   * In contrast to memcmp it calls != operator on objects.
-   * @param aSrcA pointer to the first element in the first array
-   * @param aSrcB pointer to the first element in the second array
-   * @param count number of elements to be compared
-   * @return
+   * Construct elements of an uninitialised array.
+   * @param aDest
+   * @param count
    */
   template <typename Type>
-  inline bool aEquals( const Type* aSrcA, const Type* aSrcB, int count )
+  inline void aConstruct( Type* aDest, int count )
   {
-    int i = 0;
-    while( i < count && aSrcA[i] == aSrcB[i] ) {
-      ++i;
+    for( int i = 0; i < count; ++i ) {
+      new( &aDest[i] ) Type;
     }
-    return i == count;
   }
 
   /**
-   * Set array members to given value (memset).
-   * In contrast with memset it calls copy operator on objects.
-   * @param aDest pointer to the first element
-   * @param value value to be set
-   * @param count number of elements to be set
+   * Construct elements via copy constructor from an already constructed array.
+   * @param aDest
+   * @param aSrc
+   * @param count
    */
   template <typename Type>
-  inline void aSet( Type* aDest, const Type& value, int count )
+  inline void aConstruct( Type* aDest, const Type* aSrc, int count )
   {
     for( int i = 0; i < count; ++i ) {
-      aDest[i] = value;
+      new( &aDest[i] ) Type( aSrc[i] );
+    }
+  }
+
+  /**
+   * Construct elements in reverse direction via copy constructor from an already constructed array.
+   * @param aDest
+   * @param count
+   */
+  template <typename Type>
+  inline void aReverseConstruct( Type* aDest, const Type* aSrc, int count )
+  {
+    for( int i = count - 1; i >= 0; --i ) {
+      new( &aDest[i] ) Type( aSrc[i] );
+    }
+  }
+
+  /**
+   * Destruct elements of an initialised array.
+   * @param aDest
+   * @param count
+   */
+  template <typename Type>
+  inline void aDestruct( Type* aDest, int count )
+  {
+    for( int i = 0; i < count; ++i ) {
+      aDest[i].~Type();
     }
   }
 
   /**
    * Copy array from first to last element (memcpy).
-   * In contrast with memcpy it calls copy on objects.
+   * In contrast with memcpy it calls copy operator on objects.
    * @param aDest pointer to the first element in the destination array
    * @param aSrc pointer to the first element in the source array
    * @param count number of elements to be copied
@@ -256,19 +276,36 @@ namespace oz
   }
 
   /**
-   * Remove element at the specified index. Shift the remaining elements to fill the gap.
-   * @param aDest pointer to the first element in the array
-   * @param index position of the element to be removed
-   * @param count number of elements in the array
+   * Set array members to given value (memset).
+   * In contrast with memset it calls copy operator on objects.
+   * @param aDest pointer to the first element
+   * @param value value to be set
+   * @param count number of elements to be set
    */
   template <typename Type>
-  inline void aRemove( Type* aDest, int index, int count )
+  inline void aSet( Type* aDest, const Type& value, int count )
   {
-    assert( 0 <= index && index < count );
-
-    for( int i = index + 1; i < count; ++i ) {
-      aDest[i - 1] = aDest[i];
+    for( int i = 0; i < count; ++i ) {
+      aDest[i] = value;
     }
+  }
+
+  /**
+   * Compare arrays (memcmp).
+   * In contrast to memcmp it calls != operator on objects.
+   * @param aSrcA pointer to the first element in the first array
+   * @param aSrcB pointer to the first element in the second array
+   * @param count number of elements to be compared
+   * @return
+   */
+  template <typename Type>
+  inline bool aEquals( const Type* aSrcA, const Type* aSrcB, int count )
+  {
+    int i = 0;
+    while( i < count && aSrcA[i] == aSrcB[i] ) {
+      ++i;
+    }
+    return i == count;
   }
 
   /**
@@ -323,55 +360,18 @@ namespace oz
   }
 
   /**
-   * Construct elements of an uninitialised array.
-   * @param aDest
-   * @param count
+   * Remove element at the specified index. Shift the remaining elements to fill the gap.
+   * @param aDest pointer to the first element in the array
+   * @param index position of the element to be removed
+   * @param count number of elements in the array
    */
   template <typename Type>
-  inline void aCopyConstruct( Type* aDest, int count )
+  inline void aRemove( Type* aDest, int index, int count )
   {
-    for( int i = 0; i < count; ++i ) {
-      new( &aDest[i] ) Type;
-    }
-  }
+    assert( 0 <= index && index < count );
 
-  /**
-   * Construct elements via copy constructor from an already constructed array.
-   * @param aDest
-   * @param aSrc
-   * @param count
-   */
-  template <typename Type>
-  inline void aCopyConstruct( Type* aDest, const Type* aSrc, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      new( &aDest[i] ) Type( aSrc[i] );
-    }
-  }
-
-  /**
-   * Construct elements in reverse direction via copy constructor from an already constructed array.
-   * @param aDest
-   * @param count
-   */
-  template <typename Type>
-  inline void aReverseConstruct( Type* aDest, const Type* aSrc, int count )
-  {
-    for( int i = count - 1; i >= 0; --i ) {
-      new( &aDest[i] ) Type( aSrc[i] );
-    }
-  }
-
-  /**
-   * Destruct elements of an initialised array.
-   * @param aDest
-   * @param count
-   */
-  template <typename Type>
-  inline void aDestruct( Type* aDest, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      aDest[i].~Type();
+    for( int i = index + 1; i < count; ++i ) {
+      aDest[i - 1] = aDest[i];
     }
   }
 

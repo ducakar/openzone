@@ -157,33 +157,6 @@ namespace oz
       {}
 
       /**
-       * Move constructor.
-       * @param l
-       */
-      DList( DList& l ) : firstElem( l.firstElem ), lastElem( l.lastElem )
-      {
-        l.firstElem = null;
-        l.lastElem = null;
-      }
-
-      /**
-       * Move operator.
-       * @param l
-       * @return
-       */
-      DList& operator = ( DList& l )
-      {
-        assert( &l != this );
-
-        firstElem = l.firstElem;
-        lastElem = l.lastElem;
-
-        l.firstElem = null;
-        l.lastElem = null;
-        return *this;
-      }
-
-      /**
        * Clone list.
        * Create a new list from copies of all elements of the original list.
        * @return

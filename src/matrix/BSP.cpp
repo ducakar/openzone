@@ -208,7 +208,7 @@ namespace oz
     QBSPLump lumps[QBSP_LUMPS_NUM];
     fread( lumps, sizeof( QBSPLump ), QBSP_LUMPS_NUM, file );
 
-    nTextures = lumps[QBSP_LUMP_TEXTURES].length / sizeof( QBSPTexture );
+    nTextures = int( lumps[QBSP_LUMP_TEXTURES].length / sizeof( QBSPTexture ) );
     textures = new int[nTextures];
     int* texFlags = new int[nTextures];
     int* texTypes = new int[nTextures];
@@ -242,7 +242,7 @@ namespace oz
     log.unindent();
     log.println( "}" );
 
-    nPlanes = lumps[QBSP_LUMP_PLANES].length / sizeof( QBSPPlane );
+    nPlanes = int( lumps[QBSP_LUMP_PLANES].length / sizeof( QBSPPlane ) );
     planes = new BSP::Plane[nPlanes];
     fseek( file, lumps[QBSP_LUMP_PLANES].offset, SEEK_SET );
 
@@ -268,7 +268,7 @@ namespace oz
       }
     }
 
-    nNodes = lumps[QBSP_LUMP_NODES].length / sizeof( QBSPNode );
+    nNodes = int( lumps[QBSP_LUMP_NODES].length / sizeof( QBSPNode ) );
     nodes = new BSP::Node[nNodes];
     fseek( file, lumps[QBSP_LUMP_NODES].offset, SEEK_SET );
 
@@ -290,7 +290,7 @@ namespace oz
     maxs.y = -Math::inf();
     maxs.z = -Math::inf();
 
-    nLeaves = lumps[QBSP_LUMP_LEAFS].length / sizeof( QBSPLeaf );
+    nLeaves = int( lumps[QBSP_LUMP_LEAFS].length / sizeof( QBSPLeaf ) );
     leaves = new BSP::Leaf[nLeaves];
     fseek( file, lumps[QBSP_LUMP_LEAFS].offset, SEEK_SET );
 
@@ -327,17 +327,17 @@ namespace oz
       }
     }
 
-    nLeafFaces = lumps[QBSP_LUMP_LEAFFACES].length / sizeof( int );
+    nLeafFaces = int( lumps[QBSP_LUMP_LEAFFACES].length / sizeof( int ) );
     leafFaces = new int[nLeafFaces];
     fseek( file, lumps[QBSP_LUMP_LEAFFACES].offset, SEEK_SET );
     fread( leafFaces, sizeof( int ), nLeafFaces, file );
 
-    nLeafBrushes = lumps[QBSP_LUMP_LEAFBRUSHES].length / sizeof( int );
+    nLeafBrushes = int( lumps[QBSP_LUMP_LEAFBRUSHES].length / sizeof( int ) );
     leafBrushes = new int[nLeafBrushes];
     fseek( file, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
     fread( leafBrushes, sizeof( int ), nLeafBrushes, file );
 
-    nModels = lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel );
+    nModels = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) );
     models = new BSP::Model[nModels];
     fseek( file, lumps[QBSP_LUMP_MODELS].offset, SEEK_SET );
 
@@ -360,7 +360,7 @@ namespace oz
       models[i].nFaces     = model.nFaces;
     }
 
-    nBrushSides = lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide );
+    nBrushSides = int( lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide ) );
     brushSides = new int[nBrushSides];
     fseek( file, lumps[QBSP_LUMP_BRUSHSIDES].offset, SEEK_SET );
 
@@ -372,7 +372,7 @@ namespace oz
       brushSides[i] = brushSide.plane;
     }
 
-    nBrushes = lumps[QBSP_LUMP_BRUSHES].length / sizeof( QBSPBrush );
+    nBrushes = int( lumps[QBSP_LUMP_BRUSHES].length / sizeof( QBSPBrush ) );
     brushes = new BSP::Brush[nBrushes];
     fseek( file, lumps[QBSP_LUMP_BRUSHES].offset, SEEK_SET );
 
@@ -411,7 +411,7 @@ namespace oz
       return false;
     }
 
-    nVertices = lumps[QBSP_LUMP_VERTICES].length / sizeof( QBSPVertex );
+    nVertices = int( lumps[QBSP_LUMP_VERTICES].length / sizeof( QBSPVertex ) );
     vertices = new BSP::Vertex[nVertices];
     fseek( file, lumps[QBSP_LUMP_VERTICES].offset, SEEK_SET );
 
@@ -427,12 +427,12 @@ namespace oz
       vertices[i].lightmapCoord[1] = vertex.lightmapCoord[1];
     }
 
-    nIndices = lumps[QBSP_LUMP_INDICES].length / sizeof( int );
+    nIndices = int( lumps[QBSP_LUMP_INDICES].length / sizeof( int ) );
     indices = new int[nIndices];
     fseek( file, lumps[QBSP_LUMP_INDICES].offset, SEEK_SET );
     fread( indices, sizeof( int ), nIndices, file );
 
-    nFaces = lumps[QBSP_LUMP_FACES].length / sizeof( QBSPFace );
+    nFaces = int( lumps[QBSP_LUMP_FACES].length / sizeof( QBSPFace ) );
     faces = new BSP::Face[nFaces];
     fseek( file, lumps[QBSP_LUMP_FACES].offset, SEEK_SET );
 
@@ -451,7 +451,7 @@ namespace oz
       faces[i].nIndices    = face.nIndices;
     }
 
-    nLightmaps = lumps[QBSP_LUMP_LIGHTMAPS].length / sizeof( BSP::Lightmap );
+    nLightmaps = int( lumps[QBSP_LUMP_LIGHTMAPS].length / sizeof( BSP::Lightmap ) );
 
     if( nLightmaps != 0 ) {
       lightmaps = new BSP::Lightmap[nLightmaps];
@@ -829,23 +829,23 @@ namespace oz
 
     int size = 0;
 
-    size += 1            * sizeof( Bounds );
-    size += 2            * sizeof( float );
-    size += 12           * sizeof( int );
-    size += nPlanes      * sizeof( Plane );
-    size += nNodes       * sizeof( Node );
-    size += nLeaves      * sizeof( Leaf );
-    size += nLeafFaces   * sizeof( int );
-    size += nLeafBrushes * sizeof( int );
-    size += nBrushes     * sizeof( Brush );
-    size += nBrushSides  * sizeof( int );
-    size += nModels      * sizeof( Model );
-    size += nEntities    * sizeof( Entity );
-    size += nTextures    * sizeof( int );
-    size += nVertices    * sizeof( Vertex );
-    size += nIndices     * sizeof( int );
-    size += nFaces       * sizeof( Face );
-    size += nLightmaps   * sizeof( Lightmap );
+    size += 1            * int( sizeof( Bounds ) );
+    size += 2            * int( sizeof( float ) );
+    size += 12           * int( sizeof( int ) );
+    size += nPlanes      * int( sizeof( Plane ) );
+    size += nNodes       * int( sizeof( Node ) );
+    size += nLeaves      * int( sizeof( Leaf ) );
+    size += nLeafFaces   * int( sizeof( int ) );
+    size += nLeafBrushes * int( sizeof( int ) );
+    size += nBrushes     * int( sizeof( Brush ) );
+    size += nBrushSides  * int( sizeof( int ) );
+    size += nModels      * int( sizeof( Model ) );
+    size += nEntities    * int( sizeof( Entity ) );
+    size += nTextures    * int( sizeof( int ) );
+    size += nVertices    * int( sizeof( Vertex ) );
+    size += nIndices     * int( sizeof( int ) );
+    size += nFaces       * int( sizeof( Face ) );
+    size += nLightmaps   * int( sizeof( Lightmap ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
@@ -997,20 +997,20 @@ namespace oz
 
     int size = 0;
 
-    size += nPlanes      * sizeof( Plane );
-    size += nNodes       * sizeof( Node );
-    size += nLeaves      * sizeof( Leaf );
-    size += nLeafFaces   * sizeof( int );
-    size += nLeafBrushes * sizeof( int );
-    size += nModels      * sizeof( Model );
-    size += nEntities    * sizeof( Entity );
-    size += nBrushes     * sizeof( Brush );
-    size += nBrushSides  * sizeof( int );
-    size += nTextures    * sizeof( int );
-    size += nVertices    * sizeof( Vertex );
-    size += nIndices     * sizeof( int );
-    size += nFaces       * sizeof( Face );
-    size += nLightmaps   * sizeof( Lightmap );
+    size += nPlanes      * int( sizeof( Plane ) );
+    size += nNodes       * int( sizeof( Node ) );
+    size += nLeaves      * int( sizeof( Leaf ) );
+    size += nLeafFaces   * int( sizeof( int ) );
+    size += nLeafBrushes * int( sizeof( int ) );
+    size += nModels      * int( sizeof( Model ) );
+    size += nEntities    * int( sizeof( Entity ) );
+    size += nBrushes     * int( sizeof( Brush ) );
+    size += nBrushSides  * int( sizeof( int ) );
+    size += nTextures    * int( sizeof( int ) );
+    size += nVertices    * int( sizeof( Vertex ) );
+    size += nIndices     * int( sizeof( int ) );
+    size += nFaces       * int( sizeof( Face ) );
+    size += nLightmaps   * int( sizeof( Lightmap ) );
 
     char* data = Alloc::alloc<char>( size );
 

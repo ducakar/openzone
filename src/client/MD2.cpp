@@ -400,6 +400,11 @@ namespace client
     assert( glGetError() == GL_NO_ERROR );
   }
 
+  void MD2::optimise()
+  {
+    Vector< Vector<int> > strips;
+  }
+
   void MD2::scale( float scale )
   {
     int max = nVerts * nFrames;

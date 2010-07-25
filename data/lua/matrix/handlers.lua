@@ -1,12 +1,12 @@
 function heal100( l )
-  ozWorldRemoveObj()
+  ozOrbisRemoveObj()
   ozObjBindUser()
   ozObjAddLife( 100.0 )
 end
 
 function spawnGoblin( l )
   x, y, z = ozObjGetPos()
-  ozWorldAddObj( "Goblin", x, y, z + 2.0 )
+  ozOrbisAddObj( "Goblin", x, y, z + 2.0 )
 end
 
 function Explosion_onUpdate( l )
@@ -14,7 +14,7 @@ function Explosion_onUpdate( l )
     l.ticks = l.ticks - 1
 
     if l.ticks == 0 then
-      ozWorldRemoveObj()
+      ozOrbisRemoveObj()
     end
   else
     l.ticks = 50
@@ -62,7 +62,7 @@ function Bomb_onUpdate( l )
 end
 
 function Bomb_onDestroy( l )
-  ozWorldForceAddObj( "Explosion", ozObjGetPos() )
+  ozOrbisForceAddObj( "Explosion", ozObjGetPos() )
 end
 
 function Rifle_onShot( l )
@@ -74,6 +74,6 @@ function Rifle_onShot( l )
 		     3 - math.random() * 6,
 		     3 - math.random() * 6
 
-  ozWorldAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
+  ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
 		  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
 end

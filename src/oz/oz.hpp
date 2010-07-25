@@ -45,6 +45,7 @@
  */
 #include "Alloc.hpp"
 #include "Pool.hpp"
+#include "AutoPtr.hpp"
 
 /*
  * Iterators and utilities for iterable containers and arrays

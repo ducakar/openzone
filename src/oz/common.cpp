@@ -17,8 +17,10 @@
 namespace oz
 {
 
+#ifndef WIN32
   static void sigtrapHandler( int )
   {}
+#endif
 
   void _assert( const char* message, const char* file, int line, const char* function  )
   {
@@ -29,8 +31,11 @@ namespace oz
   void _softAssert( const char* message, const char* file, int line, const char* function )
   {
     fprintf( stderr, "%s:%d: %s: Soft assertion `%s' failed.\n", file, line, function, message );
+
+#ifndef WIN32
     signal( SIGTRAP, sigtrapHandler );
     raise( SIGTRAP );
+#endif
   }
 
 }

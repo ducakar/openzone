@@ -51,13 +51,12 @@ namespace oz
       }
 
       /**
-       * Move construstor.
+       * Copy construstor.
        * @param b the original Bitset
        */
-      Bitset( Bitset& b ) : data( b.data ), size( b.size )
+      Bitset( Bitset& b ) : data( new ulong[b.size] ), size( b.size )
       {
-        b.data = null;
-        b.size = 0;
+        aCopy( data, b.data, b.size );
       }
 
       /**
@@ -75,29 +74,18 @@ namespace oz
        * @param b the original Bitset
        * @return
        */
-      Bitset& operator = ( Bitset& b )
+      Bitset& operator = ( const Bitset& b )
       {
         assert( &b != this );
 
-        data = b.data;
-        size = b.size;
+        if( size != b.size ) {
+          delete[] data;
+          data = new ulong[b.size];
+          size = b.size;
+        }
 
-        b.data = null;
-        b.size = 0;
-
+        aCopy( data, b.data, b.size );
         return *this;
-      }
-
-      /**
-       * Clone Bitset.
-       * @return
-       */
-      Bitset clone() const
-      {
-        Bitset b( size * ULONG_BITSIZE );
-
-        aCopy( b.data, data, size );
-        return b;
       }
 
       /**

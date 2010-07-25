@@ -129,30 +129,6 @@ namespace oz
       {}
 
       /**
-       * Move constructor.
-       * @param l
-       */
-      List( List& l ) : firstElem( l.firstElem )
-      {
-        l.firstElem = null;
-      }
-
-      /**
-       * Move operator.
-       * @param l
-       * @return
-       */
-      List& operator = ( List& l )
-      {
-        assert( &l != this );
-
-        firstElem = l.firstElem;
-
-        l.firstElem = null;
-        return *this;
-      }
-
-      /**
        * Clone list.
        * Create a new list from copies of all elements of the original list.
        * @return

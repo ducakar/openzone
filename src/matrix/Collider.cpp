@@ -343,7 +343,7 @@ namespace oz
   // finds out if Point-AABB collision occurs and the time when it occurs
   void Collider::trimPointObj( const Object* sObj )
   {
-#ifdef OZ_ENABLE_CYLINDER
+  #ifdef OZ_ENABLE_CYLINDER
 
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
@@ -381,7 +381,7 @@ namespace oz
       hit.material = Material::OBJECT_BIT;
     }
 
-#else
+  #else
 
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
@@ -419,7 +419,7 @@ namespace oz
       hit.material = Material::OBJECT_BIT;
     }
 
-#endif
+  #endif
   }
 
   // finds out if Ray-Brush collision occurs and the time when it occurs
@@ -875,7 +875,7 @@ namespace oz
     }
   }
 
-  // checks if AABB and Brush overlap and if AABB center is inside a brush
+  // checks if AABB and Brush overlap and if AABB centre is inside a brush
   void Collider::trimAABBWater( const BSP::Brush* brush )
   {
     float depth = Math::inf();
@@ -884,9 +884,9 @@ namespace oz
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
       if( plane.normal.z <= 0.0f ) {
-        float centerDist = startPos * plane.normal - plane.distance;
+        float centreDist = startPos * plane.normal - plane.distance;
 
-        if( centerDist > -EPSILON ) {
+        if( centreDist > -EPSILON ) {
           return;
         }
       }
@@ -906,7 +906,7 @@ namespace oz
     hit.inWater    = true;
   }
 
-  // checks if AABB and Brush overlap and if AABB center is inside a brush
+  // checks if AABB and Brush overlap and if AABB centre is inside a brush
   void Collider::trimAABBLadder( const BSP::Brush* brush )
   {
     for( int i = 0; i < brush->nSides; ++i ) {

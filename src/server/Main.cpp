@@ -184,7 +184,7 @@ int main( int, char** )
   try {
     server::main.main();
   }
-  catch( Exception e ) {
+  catch( const Exception& e ) {
     log.resetIndent();
     log.println();
     log.println( "*** EXCEPTION: %s line %d", e.file, e.line );
