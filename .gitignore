@@ -5,6 +5,8 @@ CMakeFiles
 cmake_install.cmake
 Makefile
 
+/.project
+/.cproject
 /.settings
 
 /openzone.kdev4
@@ -13,15 +15,19 @@ Makefile
 /openzone.sln
 /openzone.suo
 /openzone.sln.old
+/openzone.sdf
 /openzone.opensdf
+/openzone.ncb
 *.vcproj
+*.vcproj.*.user
 *.vcxproj*
 *.dir
 Debug
 Release
 MinSizeRel
 RelWithDebInfo
-/UpgradeLog.XML
+/ipch
+/UpgradeLog*.XML
 /_UpgradeReport_Files
 
 /doxygen

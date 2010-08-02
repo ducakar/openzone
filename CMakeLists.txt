@@ -1,8 +1,8 @@
 cmake_minimum_required( VERSION 2.8 )
 
-include( CheckLibraryExists )
-
 project( openzone C CXX )
+
+include( CheckLibraryExists )
 
 option( OZ_ENABLE_ASSERT "Enable assert and soft_assert macros" ON )
 option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make heap usage statistics" ON )
@@ -17,6 +17,7 @@ option( OZ_ENABLE_CYLINDER "Enable cylinder collision shape and physics" OFF )
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 
+Find_Package( LibXml2 REQUIRED )
 Find_Package( SDL REQUIRED )
 Find_Package( SDL_image REQUIRED )
 Find_Package( SDL_net REQUIRED )
@@ -24,6 +25,42 @@ Find_Package( SDL_ttf REQUIRED )
 Find_Package( Lua51 REQUIRED )
 Find_Package( OpenGL REQUIRED )
 Find_Package( OpenAL REQUIRED )
+
+if( NOT ALUT_INCLUDE_DIR )
+	set( ALUT_INCLUDE_DIR "NOT-SET" CACHE PATH "" FORCE )
+endif( NOT ALUT_INCLUDE_DIR )
+
+if( NOT ALUT_LIBRARY )
+	set( ALUT_LIBRARY "NOT-SET" CACHE FILEPATH "" FORCE )
+endif( NOT ALUT_LIBRARY )
+
+if( NOT OGG_INCLUDE_DIR )
+	set( OGG_INCLUDE_DIR "NOT-SET" CACHE PATH "" FORCE )
+endif( NOT OGG_INCLUDE_DIR )
+
+if( NOT OGG_LIBRARY )
+	set( OGG_LIBRARY "NOT-SET" CACHE FILEPATH "" FORCE )
+endif( NOT OGG_LIBRARY )
+
+if( NOT VORBIS_INCLUDE_DIR )
+	set( VORBIS_INCLUDE_DIR "NOT-SET" CACHE PATH "" FORCE )
+endif( NOT VORBIS_INCLUDE_DIR )
+
+if( NOT VORBIS_LIBRARY )
+	set( VORBIS_LIBRARY "NOT-SET" CACHE FILEPATH "" FORCE )
+endif( NOT VORBIS_LIBRARY )
+
+if( NOT VORBISFILE_INCLUDE_DIR )
+	set( VORBISFILE_INCLUDE_DIR "NOT-SET" CACHE PATH "" FORCE )
+endif( NOT VORBISFILE_INCLUDE_DIR )
+
+if( NOT VORBISFILE_LIBRARY )
+	set( VORBISFILE_LIBRARY "NOT-SET" CACHE FILEPATH "" FORCE )
+endif( NOT VORBISFILE_LIBRARY )
+
+if( NOT DIRENT_INCLUDE_DIR )
+	set( DIRENT_INCLUDE_DIR "NOT-SET" CACHE PATH "" FORCE )
+endif( NOT DIRENT_INCLUDE_DIR )
 
 if( MSVC )
 
@@ -36,59 +73,79 @@ if( MSVC )
 	set( arch_flags "" )
 
 	# set platform-specific includes and library names
-	include_directories( deps/include )
-	include_directories( deps/include/SDL )
-	include_directories( deps/include/AL )
-	set( libs "${libs} /LIBPATH:deps/lib" )
+	include_directories( ${SDL_INCLUDE_DIR} )
+	include_directories( ${SDLIMAGE_INCLUDE_DIR} )
+	include_directories( ${SDLNET_INCLUDE_DIR} )
+	include_directories( ${SDLTTF_INCLUDE_DIR} )
+	include_directories( ${LUA_INCLUDE_DIR} )
+	include_directories( ${OPENGL_INCLUDE_DIR} )
+	include_directories( ${OPENAL_INCLUDE_DIR} )
+	include_directories( ${ALUT_INCLUDE_DIR} )
+	include_directories( ${OGG_INCLUDE_DIR} )
+	include_directories( ${VORBIS_INCLUDE_DIR} )
+	include_directories( ${VORBISFILE_INCLUDE_DIR} )
+	include_directories( ${DIRENT_INCLUDE_DIR} )
+
+	set( libs "${libs};${SDL_LIBRARY}" )
+	set( libs "${libs};${SDLMAIN_LIBRARY}" )
+	set( libs "${libs};${SDLIMAGE_LIBRARY}" )
+	set( libs "${libs};${SDLNET_LIBRARY}" )
+	set( libs "${libs};${SDLTTF_LIBRARY}" )
+	set( libs "${libs};${LUA_LIBRARY}" )
+	set( libs "${libs};${OPENGL_gl_LIBRARY}" )
+	set( libs "${libs};${OPENGL_glu_LIBRARY}" )
+	set( libs "${libs};${OPENAL_LIBRARY}" )
+	set( libs "${libs};${ALUT_LIBRARY}" )
+	set( libs "${libs};${OGG_LIBRARY}" )
+	set( libs "${libs};${VORBIS_LIBRARY}" )
+	set( libs "${libs};${VORBISFILE_LIBRARY}" )
 	
 else( MSVC )
 
-	# compiler and linker flags
-	set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wconversion -Wdisabled-optimization" )
-	set( warnings "${warnings} -Wredundant-decls -Woverloaded-virtual -Wnon-virtual-dtor -Wsign-promo" )
-	set( warnings "${warnings} -Wctor-dtor-privacy -Wstrict-overflow -Wlogical-op -Wpacked" )
-	set( libs "-lSDL -lSDL_image -lSDL_ttf -lSDL_net -lvorbisfile -llua" )
-	set( arch_flags "-mmmx -msse3 -mfpmath=sse" )
-
-	if( NOT OZ_CROSS_MINGW )
-		set( CMAKE_FIND_ROOT_PATH "C:/MinGW" )
-	endif( NOT OZ_CROSS_MINGW )
-
-	# set platform-specific includes and library names
 	if( WIN32 )
-		set( flags "-pedantic -std=gnu++0x -fmessage-length=0 -pipe" )
-		set( libs "-lmingw32 -lSDLmain ${libs} -lopengl32 -lglu32 -lOpenAL32 -lalut" )
 		set( OZ_MINGW ON )
-		foreach( ROOT ${CMAKE_FIND_ROOT_PATH} )
-			set( flags "${flags} -I${ROOT}/include" )
-			set( flags "${flags} -I${ROOT}/include/SDL" )
-			set( libs "${libs} -L${ROOT}/lib" )
-		endforeach()
-	else()
-		set( flags "-pedantic -std=c++0x -fmessage-length=0 -pipe" )
-		set( flags "${flags} -I/usr/include/SDL" )
-		set( libs "${libs} -lGL -lGLU -lopenal -lalut" )
-		# libxml is only supported on linux
-		if( OZ_XML_CONFIG )
-			set( flags "${flags} -I/usr/include/libxml2" )
-			set( libs "${libs} -lxml2" )
-		endif()
 	endif()
 
+	# compiler and linker flags
+	set( flags "-pedantic -std=c++0x -fmessage-length=0 -pipe" )
+	set( warnings "-Wall -Wextra -Wold-style-cast -Wconversion -Wstrict-overflow" )
+	set( warnings "${warnings} -Wlogical-op -Wredundant-decls -Wsign-promo -Wpacked" )
+	set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor" )
+	set( warnings "${warnings} -Wctor-dtor-privacy -Winvalid-pch -Wdisabled-optimization" )
+	
+	set( arch_flags "-mmmx -msse3 -mfpmath=sse" )
+	
+	set( includes "" )
+	set( includes "${includes} -I${SDL_INCLUDE_DIR}" )
+	set( includes "${includes} -I${LUA_INCLUDE_DIR}" )
+	set( includes "${includes} -I${OPENGL_INCLUDE_DIR}" )
+	set( includes "${includes} -I${OPENAL_INCLUDE_DIR}" )
+	
+	set( libs "${SDL_LIBRARY}" )
+	set( libs "${libs};${SDLIMAGE_LIBRARY}" )
+	set( libs "${libs};${SDLNET_LIBRARY}" )
+	set( libs "${libs};${SDLTTF_LIBRARY}" )
+	set( libs "${libs};${LUA_LIBRARY}" )
+	set( libs "${libs};${OPENGL_gl_LIBRARY}" )
+	set( libs "${libs};${OPENGL_glu_LIBRARY}" )
+	set( libs "${libs};${OPENAL_LIBRARY}" )
+	
+	set( libs "${libs};-lvorbisfile" )
+	set( libs "${libs};-lalut" )
+	
+	if( OZ_XML_CONFIG )
+		set( includes "${includes} -I${LIBXML2_INCLUDE_DIR}" )
+		set( libs "${libs};${LIBXML2_LIBRARIES}" )
+	endif( OZ_XML_CONFIG )
+
 	set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
-	set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fomit-frame-pointer -ffast-math ${arch_flags}" CACHE STRING "" FORCE )
-	set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -fomit-frame-pointer -ffast-math ${arch_flags}" CACHE STRING "" FORCE )
+	set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fomit-frame-pointer -ffast-math -fstrict-enums ${arch_flags}" CACHE STRING "" FORCE )
+	set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -fomit-frame-pointer -ffast-math -fstrict-enums ${arch_flags}" CACHE STRING "" FORCE )
 	set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
 
 endif( MSVC )
 
-set( CMAKE_CXX_FLAGS "${warnings} ${flags} ${arch_flags}" )
-
-if( MINGW )
-	set( CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} ${libs}" )
-else()
-	set( CMAKE_EXE_LINKER_FLAGS "${libs}" )
-endif()
+set( CMAKE_CXX_FLAGS "${flags} ${warnings} ${includes}" )
 
 if( NOT CMAKE_BUILD_TYPE )
 	set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE )
@@ -116,6 +173,7 @@ install( FILES
 	src/oz/Exception.hpp
 	src/oz/Alloc.hpp
 	src/oz/Pool.hpp
+	src/oz/AutoPtr.hpp
 	src/oz/iterables.hpp
 	src/oz/arrays.hpp
 	src/oz/Pair.hpp
@@ -130,6 +188,7 @@ install( FILES
 	src/oz/HashIndex.hpp
 	src/oz/HashString.hpp
 	src/oz/Bitset.hpp
+	src/oz/SBitset.hpp
 	src/oz/Math.hpp
 	src/oz/Vec3.hpp
 	src/oz/Quat.hpp

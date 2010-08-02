@@ -49,12 +49,13 @@ namespace oz
       {}
 
       /**
-       * Return true while iterator has not passed the last element.
+       * Returns pointer that should be equal to what iterator points at when it passes all elements
+       * in the container.
        * @return true if iterator is passed
        */
-      bool isPassed() const
+      const Type* end() const
       {
-        return B::elem == past;
+        return past;
       }
 
       /**
@@ -120,12 +121,13 @@ namespace oz
       {}
 
       /**
-       * Return true while iterator has not passed the last element.
+       * Returns pointer that should be equal to what iterator points at when it passes all elements
+       * in the container.
        * @return true if iterator is passed
        */
-      bool isPassed() const
+      const Type* end() const
       {
-        return B::elem == past;
+        return past;
       }
 
       /**
@@ -316,7 +318,7 @@ namespace oz
    * @return
    */
   template <typename Type>
-  inline int aContains( const Type* aSrc, const Type& value, int count )
+  inline bool aContains( const Type* aSrc, const Type& value, int count )
   {
     int i = 0;
     while( i < count && aSrc[i] != value ) {

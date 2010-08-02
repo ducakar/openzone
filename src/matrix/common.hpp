@@ -11,7 +11,7 @@
 
 namespace oz
 {
-  // ~1 mm, should be enough for 4 km x 4 km world
+  // ~1 mm, should be enough for 8 km x 8 km world
   const float EPSILON = 0.0009765625f;
 
   struct Span

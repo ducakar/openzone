@@ -9,10 +9,14 @@
 
 #include "oz.hpp"
 
-#ifdef OZ_ENABLE_ASSERT
+#ifndef NDEBUG
 
 #include <cstdio>
 #include <csignal>
+
+#ifdef OZ_MSVC
+# include <windows.h>
+#endif
 
 namespace oz
 {
@@ -22,12 +26,6 @@ namespace oz
   {}
 #endif
 
-  void _assert( const char* message, const char* file, int line, const char* function  )
-  {
-    fprintf( stderr, "%s:%d: %s: Assertion `%s' failed.\n", file, line, function, message );
-    raise( SIGABRT );
-  }
-
   void _softAssert( const char* message, const char* file, int line, const char* function )
   {
     fprintf( stderr, "%s:%d: %s: Soft assertion `%s' failed.\n", file, line, function, message );
@@ -35,6 +33,10 @@ namespace oz
 #ifndef WIN32
     signal( SIGTRAP, sigtrapHandler );
     raise( SIGTRAP );
+#else
+# ifdef OZ_MSVC
+    DebugBreak();
+# endif
 #endif
   }
 

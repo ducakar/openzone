@@ -18,6 +18,8 @@
  *  <code>~/.kde/share/apps/katepart/syntax/cpp.xml</code> or global file
  *  <code>$KDEDIR/share/apps/katepart/syntax/cpp.xml</code> to look like reserved words in
  *  Katepart (Kate/KWrite/KDevelop).
+ *  For Eclipse I use the same syntax highlighting for macros as for reserved words hence the macro
+ *  definitions like #define uint uint.
  */
 
 namespace oz
@@ -44,30 +46,15 @@ namespace oz
 # define S( s ) #s
 
   /**
-   * \def assert
-   * Emulates assert macro (like on GNU/Linux).
-   */
-
-  /**
    * \def soft_assert
    * Like assert, but raises SIGTRAP with a dummy handler (like DebugBreak in MSVC).
    */
-#ifndef OZ_ENABLE_ASSERT
-
-# define assert( cond ) \
-  static_cast<void>( 0 )
+#ifdef NDEBUG
 
 # define soft_assert( cond ) \
   static_cast<void>( 0 )
 
 #else
-
-# define assert( cond ) \
-  ( ( cond ) ? \
-      static_cast<void>( 0 ) : \
-      oz::_assert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
-
-  void _assert( const char* message, const char* file, int line, const char* function );
 
 # define soft_assert( cond ) \
   ( ( cond ) ? \

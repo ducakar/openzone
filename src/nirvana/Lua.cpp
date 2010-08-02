@@ -506,7 +506,7 @@ namespace nirvana
 
   static int ozEventBindNext( lua_State* l )
   {
-    if( !lua.event.isPassed() ) {
+    if( lua.event != lua.event.end() ) {
       ++lua.event;
       lua_pushboolean( l, true );
     }
@@ -518,7 +518,7 @@ namespace nirvana
 
   static int ozEventGet( lua_State* l )
   {
-    if( lua.event.isPassed() ) {
+    if( lua.event == lua.event.end() ) {
       OZ_LUA_ERROR( "event is null" );
     }
     lua_pushinteger( l, lua.event->id );

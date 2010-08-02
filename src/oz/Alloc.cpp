@@ -50,7 +50,11 @@ void operator delete[] ( void* ptr ) throw()
 
 #else
 
+#ifdef OZ_MSVC
+void* operator new ( size_t size )
+#else
 void* operator new ( size_t size ) throw( std::bad_alloc )
+#endif
 {
   size_t* p = reinterpret_cast<size_t*>( malloc( size + sizeof( size_t ) ) );
 
@@ -71,7 +75,11 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   return p + 1;
 }
 
+#ifdef OZ_MSVC
+void* operator new[] ( size_t size )
+#else
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
+#endif
 {
   size_t* p = reinterpret_cast<size_t*>( malloc( size + sizeof( size_t ) ) );
 

@@ -14,7 +14,7 @@
 #include <lua.hpp>
 #include <SDL_main.h>
 
-OZ_IMPORT()
+using namespace oz;
 
 static lua_State* l;
 static float life = 100.0f;

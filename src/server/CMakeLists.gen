@@ -2,9 +2,9 @@
 
 echo 'add_executable( server' > CMakeLists.txt
 
-ls *.cpp | sed -e 's/.*/\t\0/' >> CMakeLists.txt
+ls *.{hpp,cpp} | sed -e 's/.*/\t\0/' >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt
 echo 'add_dependencies( server pch )' >> CMakeLists.txt
-echo 'target_link_libraries( server nirvana matrix base )' >> CMakeLists.txt
+echo 'target_link_libraries( server nirvana matrix oz ${libs} )' >> CMakeLists.txt

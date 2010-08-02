@@ -25,7 +25,7 @@
 
 using namespace std;
 
-class Object;
+struct Object;
 
 struct Object
 {

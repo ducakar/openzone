@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export LC_COLLATE=C
+
 echo Generating src/oz/CMakeLists.txt
 cd src/oz      && ./CMakeLists.gen && cd ../..
 echo Generating src/matrix/CMakeLists.txt

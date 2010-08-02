@@ -20,10 +20,9 @@
 #include <cstddef>
 
 /*
- * prevent conflict with the standard assert macro
+ * assert macro
  */
 #include <cassert>
-#undef assert
 
 /*
  * Standard C++ new/delete operator and exception definitions
@@ -98,15 +97,3 @@
  */
 #include "Log.hpp"
 #include "Config.hpp"
-
-/*
- * Imports oz namespace and explicitly imports all symbols from oz that may be ambiguous
- */
-#define OZ_IMPORT() \
-  using namespace oz; \
-  using oz::swap; \
-  using oz::min; \
-  using oz::max; \
-  using oz::pair; \
-  using oz::tie; \
-  using oz::log;

@@ -39,15 +39,7 @@ namespace oz
       {}
 
       /**
-       * Copy constructor.
-       * @param p
-       */
-      Pair( const Pair& p ) : x( p.x ), y( p.y )
-      {}
-
-      /**
-       * Copy constructor.
-       * It allows constructing from pairs of different types.
+       * Copy constructor for constructing from pairs of different types.
        * @param p
        */
       template <typename TypeX_, typename TypeY_>
@@ -55,20 +47,7 @@ namespace oz
       {}
 
       /**
-       * Copy operator.
-       * @param p
-       * @return
-       */
-      Pair& operator = ( const Pair& p )
-      {
-        x = p.x;
-        y = p.y;
-        return *this;
-      }
-
-      /**
-       * Copy operator.
-       * It allows copying pairs of different types.
+       * Copy operator for copying pairs of different types.
        * @param p
        * @return
        */
@@ -91,18 +70,6 @@ namespace oz
       }
 
       /**
-       * Equality operator.
-       * It allows comparing pairs of different types.
-       * @param p
-       * @return
-       */
-      template <typename TypeX_, typename TypeY_>
-      bool operator == ( const Pair<TypeX_, TypeY_>& p ) const
-      {
-        return x == p.x && y == p.y;
-      }
-
-      /**
        * Inequality operator.
        * @param p
        * @return
@@ -113,8 +80,18 @@ namespace oz
       }
 
       /**
-       * Inequality operator.
-       * It allows comparing pairs of different types.
+       * Equality operator for comparing pairs of different types.
+       * @param p
+       * @return
+       */
+      template <typename TypeX_, typename TypeY_>
+      bool operator == ( const Pair<TypeX_, TypeY_>& p ) const
+      {
+        return x == p.x && y == p.y;
+      }
+
+      /**
+       * Inequality operator for comparing pairs of different types.
        * @param p
        * @return
        */

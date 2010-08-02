@@ -11,15 +11,15 @@
 
 #include <SDL_main.h>
 
-OZ_IMPORT()
+using namespace oz;
 
 int main( int argc, char** argv )
 {
-  log.init();
+  oz::log.init();
 
   if( argc != 2 ) {
-    log.println( "usage: ozXmlrc file_to_convert" );
-    log.println( "  if `file.xml' file is given, a new converted file `file.xml.rc' is created and "
+    oz::log.println( "usage: ozXmlrc file_to_convert" );
+    oz::log.println( "  if `file.xml' file is given, a new converted file `file.xml.rc' is created and "
         "vice versa" );
     return -1;
   }
