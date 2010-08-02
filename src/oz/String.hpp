@@ -134,6 +134,7 @@ namespace oz
       }
 
       explicit String( float f );
+
       explicit String( double d );
 
       String( const String& s ) : count( s.count )

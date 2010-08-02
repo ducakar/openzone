@@ -343,14 +343,14 @@ namespace oz
   // finds out if Point-AABB collision occurs and the time when it occurs
   void Collider::trimPointObj( const Object* sObj )
   {
-  #ifdef OZ_ENABLE_CYLINDER
+#ifdef OZ_ENABLE_CYLINDER
 
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
     const Vec3* tmpNormal = null;
 
     for( int i = 0; i < 6; ++i ) {
-      int j = i >> 1;
+      int j = i / 2;
       const Vec3& normal = bbNormals[i];
 
       float startDist = ( startPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
@@ -381,14 +381,14 @@ namespace oz
       hit.material = Material::OBJECT_BIT;
     }
 
-  #else
+#else
 
     float minRatio        = -1.0f;
     float maxRatio        =  1.0f;
     const Vec3* tmpNormal = null;
 
     for( int i = 0; i < 6; ++i ) {
-      int j = i >> 1;
+      int j = i / 2;
       const Vec3& normal = bbNormals[i];
 
       float startDist = ( startPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
@@ -419,7 +419,7 @@ namespace oz
       hit.material = Material::OBJECT_BIT;
     }
 
-  #endif
+#endif
   }
 
   // finds out if Ray-Brush collision occurs and the time when it occurs
@@ -797,7 +797,7 @@ namespace oz
     const Vec3* tmpNormal = null;
 
     for( int i = 0; i < 6; ++i ) {
-      int j = i >> 1;
+      int j = i / 2;
       const Vec3& normal = bbNormals[i];
 
       float startDist = ( startPos[j] - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
@@ -894,7 +894,7 @@ namespace oz
         float dist = ( plane.distance - plane.normal.x*startPos.x + plane.normal.y*startPos.y ) /
             plane.normal.z - startPos.z + aabb.dim.z;
 
-        if( dist <= 0.0f ) {
+        if( dist < 0.0f ) {
           return;
         }
         else {

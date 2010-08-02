@@ -3,6 +3,10 @@
 // enable assert and soft_assert macros
 #cmakedefine OZ_ENABLE_ASSERT
 
+#ifndef OZ_ENABLE_ASSERT
+# define NDEBUG
+#endif
+
 // enable overloaded new and delete to count allocated memory
 #cmakedefine OZ_ALLOC_STATISTICS
 
@@ -27,6 +31,8 @@
 
 #ifdef OZ_MSVC
 # define _CRT_SECURE_NO_WARNINGS 1
+# define WIN32
+# define __PRETTY_FUNCTION__ ""
 # define snprintf sprintf_s
 # define chdir _chdir
 # define mkdir _mkdir

@@ -12,9 +12,13 @@
 #include "matrix/Matrix.hpp"
 
 #include <SDL_main.h>
-#include <unistd.h>
+#ifdef OZ_MSVC
+# include <direct.h>
+#else
+# include <unistd.h>
+#endif
 
-OZ_IMPORT()
+using namespace oz;
 
 int main( int, char** )
 {
@@ -22,7 +26,7 @@ int main( int, char** )
 
   chdir( "data" );
 
-  log.init( "", false, "  " );
+  oz::log.init( "", false, "  " );
   matrix.init();
   world.load();
 
@@ -31,12 +35,7 @@ int main( int, char** )
     float y = -Orbis::DIM + Math::frand() * 2.0f * Orbis::DIM;
     float z = -Orbis::DIM + Math::frand() * 2.0f * Orbis::DIM;
 
-    switch( Math::randn( 3 ) ) {
-      default: {
-        synapse.addObject( "Tree2", Vec3( x, y, z ) );
-        break;
-      }
-    }
+    synapse.addObject( "Tree2", Vec3( x, y, z ) );
   }
 
   world.unload();

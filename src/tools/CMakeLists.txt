@@ -1,3 +1,3 @@
 add_executable( ozXmlrc ozXmlrc.cpp )
 add_dependencies( ozXmlrc pch )
-target_link_libraries( ozXmlrc oz )
+target_link_libraries( ozXmlrc oz ${libs} )

@@ -1,31 +1,61 @@
 add_library( matrix STATIC
 	AABB.cpp
-	BotClass.cpp
-	Bot.cpp
+	AABB.hpp
 	BSP.cpp
+	BSP.hpp
+	Bot.cpp
+	Bot.hpp
+	BotClass.cpp
+	BotClass.hpp
+	Bounds.hpp
 	Collider.cpp
-	DynamicClass.cpp
+	Collider.hpp
 	Dynamic.cpp
+	Dynamic.hpp
+	DynamicClass.cpp
+	DynamicClass.hpp
 	FloraManager.cpp
-	io.cpp
+	FloraManager.hpp
 	Lua.cpp
+	Lua.hpp
 	Matrix.cpp
+	Matrix.hpp
 	Names.cpp
-	ObjectClass.cpp
+	Names.hpp
 	Object.cpp
+	Object.hpp
+	ObjectClass.cpp
+	ObjectClass.hpp
 	Orbis.cpp
+	Orbis.hpp
 	Particle.cpp
+	Particle.hpp
 	Physics.cpp
+	Physics.hpp
 	Sky.cpp
+	Sky.hpp
+	Sphere.hpp
 	Structure.cpp
+	Structure.hpp
 	Synapse.cpp
+	Synapse.hpp
 	Terra.cpp
+	Terra.hpp
 	Timer.cpp
+	Timer.hpp
 	Translator.cpp
-	VehicleClass.cpp
+	Translator.hpp
 	Vehicle.cpp
-	WeaponClass.cpp
+	Vehicle.hpp
+	VehicleClass.cpp
+	VehicleClass.hpp
 	Weapon.cpp
+	Weapon.hpp
+	WeaponClass.cpp
+	WeaponClass.hpp
+	common.hpp
+	io.cpp
+	io.hpp
 )
 
 add_dependencies( matrix pch )

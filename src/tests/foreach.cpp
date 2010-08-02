@@ -12,7 +12,7 @@
 #include <SDL.h>
 #include <SDL_main.h>
 
-OZ_IMPORT()
+using namespace oz;
 
 struct Elem
 {

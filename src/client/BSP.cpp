@@ -17,7 +17,7 @@
 #include "client/Water.hpp"
 #include "client/Render.hpp"
 
-#include <GL/glext.h>
+#include <SDL_opengl.h>
 
 namespace oz
 {
@@ -46,6 +46,7 @@ namespace client
         return Bounds( Vec3( -bounds.maxs.x, -bounds.maxs.y, bounds.mins.z ),
                        Vec3( -bounds.mins.x, -bounds.mins.y, bounds.maxs.z ) );
       }
+      default:
       case Structure::R270: {
         return Bounds( Vec3( bounds.mins.y, -bounds.maxs.x, bounds.mins.z ),
                        Vec3( bounds.maxs.y, -bounds.mins.x, bounds.maxs.z ) );

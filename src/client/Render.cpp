@@ -33,8 +33,7 @@
 #include "client/ExplosionModel.hpp"
 
 #include <ctime>
-#include <GL/glu.h>
-#include <GL/glext.h>
+#include <SDL_opengl.h>
 
 namespace oz
 {
@@ -404,7 +403,7 @@ namespace client
         }
       }
       // remove unused models
-      for( auto i = models.citer(); !i.isPassed(); ) {
+      for( auto i = models.citer(); i != i.end(); ) {
         Model* model = *i;
         uint   key   = i.key();
 
@@ -428,7 +427,7 @@ namespace client
 
   void Render::sync()
   {
-    for( auto i = models.citer(); !i.isPassed(); ) {
+    for( auto i = models.citer(); i != i.end(); ) {
       Model* model = i.value();
       uint   key   = i.key();
       ++i;
