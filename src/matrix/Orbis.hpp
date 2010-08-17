@@ -226,7 +226,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         assert( !cells[x][y].structs.contains( short( str->index ) ) );
 
-        cells[x][y].structs << short( str->index );
+        cells[x][y].structs.add( short( str->index ) );
       }
     }
     return true;
@@ -400,10 +400,10 @@ namespace oz
 
     if( strAvailableIndices.isEmpty() ) {
       index = structs.length();
-      structs << translator.createStruct( index, name, p, rot );
+      structs.pushLast( translator.createStruct( index, name, p, rot ) );
     }
     else {
-      strAvailableIndices >> index;
+      index = strAvailableIndices.popLast();
       structs[index] = translator.createStruct( index, name, p, rot );
     }
     return index;
@@ -417,10 +417,10 @@ namespace oz
     if( objAvailableIndices.isEmpty() ) {
       index = objects.length();
       // reserve slot so reentrant calls cannot occupy it again
-      objects << null;
+      objects.pushLast( null );
     }
     else {
-      objAvailableIndices >> index;
+      index = objAvailableIndices.popLast();
     }
     // objects vector may relocate during createObject call, we must use this workaround
     Object* obj = translator.createObject( index, name, p );
@@ -439,10 +439,10 @@ namespace oz
 
     if( partAvailableIndices.isEmpty() ) {
       index = parts.length();
-      parts << new Particle( index, p, velocity, colour, restitution, mass, lifeTime );
+      parts.pushLast( new Particle( index, p, velocity, colour, restitution, mass, lifeTime ) );
     }
     else {
-      partAvailableIndices >> index;
+      index = partAvailableIndices.popLast();
       parts[index] = new Particle( index, p, velocity, colour, restitution, mass, lifeTime );
     }
     return index;
@@ -452,7 +452,7 @@ namespace oz
   {
     assert( str->index >= 0 );
 
-    strFreedIndices[freeing] << str->index;
+    strFreedIndices[freeing].pushLast( str->index );
     structs[str->index] = null;
     str->index = -1;
   }
@@ -465,7 +465,7 @@ namespace oz
     if( obj->flags & Object::LUA_BIT ) {
       lua.unregisterObject( obj->index );
     }
-    objFreedIndices[freeing] << obj->index;
+    objFreedIndices[freeing].pushLast( obj->index );
     objects[obj->index] = null;
     obj->index = -1;
   }
@@ -475,7 +475,7 @@ namespace oz
     assert( part->index >= 0 );
     assert( part->cell == null );
 
-    partFreedIndices[freeing] << part->index;
+    partFreedIndices[freeing].pushLast( part->index );
     parts[part->index] = null;
     part->index = -1;
   }

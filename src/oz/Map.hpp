@@ -1,9 +1,9 @@
 /*
  *  Map.hpp
  *
- *  Map, implemented as sorted vector. Better worst case performance than hashtable and it can use
- *  arbitrary type as a key. For large maps HashIndex/HashString is preferred as it is much faster
- *  on average.
+ *  Map, implemented as a sorted vector that supports binding values to its elements (keys).
+ *  Better worst case performance than hashtable and it can use an arbitrary type as a key. For
+ *  large maps HashIndex/HashString is preferred as it is much faster on average.
  *  It can also be used as a set if we omit values.
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
@@ -31,6 +31,16 @@ namespace oz
         explicit Elem( const Key& key_, const Value& value_ ) :
             key( key_ ), value( value_ )
         {}
+
+        bool operator == ( const Elem& e )
+        {
+          return key == e.key && value == e.value;
+        }
+
+        bool operator != ( const Elem& e )
+        {
+          return key != e.key || value != e.value;
+        }
       };
 
     public:
@@ -61,7 +71,31 @@ namespace oz
           {}
 
           /**
-           * @return current element's key
+           * @return constant pointer to current element's value
+           */
+          operator const Value* () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return constant reference to current element's value
+           */
+          const Value& operator * () const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return constant access to value's member
+           */
+          const Value* operator -> () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return constant reference to current element's key
            */
           const Key& key() const
           {
@@ -74,30 +108,6 @@ namespace oz
           const Value& value() const
           {
             return B::elem->value;
-          }
-
-          /**
-           * @return constant pointer to current element
-           */
-          operator const Value* () const
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return constant reference to current element
-           */
-          const Value& operator * () const
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return constant access to member
-           */
-          const Value* operator -> () const
-          {
-            return &B::elem->value;
           }
 
       };
@@ -128,7 +138,55 @@ namespace oz
           {}
 
           /**
-           * @return current element's key
+           * @return constant pointer to current element's value
+           */
+          operator const Value* () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return pointer to current element's value
+           */
+          operator Value* ()
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return constant reference to current element's value
+           */
+          const Value& operator * () const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return reference to current element's value
+           */
+          Value& operator * ()
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return constant access to value's member
+           */
+          const Value* operator -> () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return non-constant access to value's member
+           */
+          Value* operator -> ()
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return constant reference to current element's key
            */
           const Key& key() const
           {
@@ -149,54 +207,6 @@ namespace oz
           Value& value()
           {
             return B::elem->value;
-          }
-
-          /**
-           * @return constant pointer to current element
-           */
-          operator const Value* () const
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return pointer to current element
-           */
-          operator Value* ()
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return constant reference to current element
-           */
-          const Value& operator * () const
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return reference to current element
-           */
-          Value& operator * ()
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return constant access to member
-           */
-          const Value* operator -> () const
-          {
-            return &B::elem->value;
-          }
-
-          /**
-           * @return non-constant access to member
-           */
-          Value* operator -> ()
-          {
-            return &B::elem->value;
           }
 
       };
@@ -365,19 +375,19 @@ namespace oz
       }
 
       /**
-       * @return iterator for this map
-       */
-      Iterator iter() const
-      {
-        return Iterator( *this );
-      }
-
-      /**
        * @return constant iterator for this map
        */
       CIterator citer() const
       {
         return CIterator( *this );
+      }
+
+      /**
+       * @return iterator for this map
+       */
+      Iterator iter() const
+      {
+        return Iterator( *this );
       }
 
       /**
@@ -482,43 +492,23 @@ namespace oz
       }
 
       /**
-       * @return constant reference to first element
+       * @return constant reference to first element's key
        */
-      const Value& first() const
+      const Key& first() const
       {
         assert( count != 0 );
 
-        return data[0];
+        return data[0].key;
       }
 
       /**
-       * @return reference to first element
+       * @return constant reference to last element's key
        */
-      Value& first()
+      const Key& last() const
       {
         assert( count != 0 );
 
-        return data[0];
-      }
-
-      /**
-       * @return constant reference to last element
-       */
-      const Value& last() const
-      {
-        assert( count != 0 );
-
-        return data[count - 1];
-      }
-
-      /**
-       * @return reference to last element
-       */
-      Value& last()
-      {
-        assert( count != 0 );
-
-        return data[count - 1];
+        return data[count - 1].key;
       }
 
       /**

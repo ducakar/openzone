@@ -72,7 +72,7 @@ namespace oz
         throw Exception( "Translator initialisation failure" );
       }
       textureIndices.add( baseName, textures.length() );
-      textures << Resource( baseName, fileName );
+      textures.add( Resource( baseName, fileName ) );
 
       log.println( "%s", baseName.cstr() );
     }
@@ -115,7 +115,7 @@ namespace oz
         continue;
       }
       soundIndices.add( baseName, sounds.length() );
-      sounds << Resource( baseName, fileName );
+      sounds.add( Resource( baseName, fileName ) );
 
       log.println( "%s", baseName.cstr() );
     }
@@ -154,7 +154,7 @@ namespace oz
         throw Exception( "Translator initialisation failure" );
       }
       bspIndices.add( baseName, bsps.length() );
-      bsps << Resource( baseName, "" );
+      bsps.add( Resource( baseName, "" ) );
 
       log.println( "%s", baseName.cstr() );
     }
@@ -246,7 +246,7 @@ namespace oz
       String fileName = "lua/matrix/" + name;
       String baseName = name.substring( 0, dot );
 
-      matrixScripts << Resource( baseName, fileName );
+      matrixScripts.add( Resource( baseName, fileName ) );
       log.println( "%s", baseName.cstr() );
     }
     closedir( dir );
@@ -280,7 +280,7 @@ namespace oz
       String fileName = "lua/nirvana/" + name;
       String baseName = name.substring( 0, dot );
 
-      nirvanaScripts << Resource( baseName, fileName );
+      nirvanaScripts.add( Resource( baseName, fileName ) );
       log.println( "%s", baseName.cstr() );
     }
     closedir( dir );

@@ -500,13 +500,13 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    lua.event = lua.obj->events.iter();
+    lua.event = lua.obj->events.citer();
     return 0;
   }
 
   static int ozEventBindNext( lua_State* l )
   {
-    if( lua.event != lua.event.end() ) {
+    if( lua.event.isValid() ) {
       ++lua.event;
       lua_pushboolean( l, true );
     }
@@ -518,7 +518,7 @@ namespace nirvana
 
   static int ozEventGet( lua_State* l )
   {
-    if( lua.event == lua.event.end() ) {
+    if( !lua.event.isValid() ) {
       OZ_LUA_ERROR( "event is null" );
     }
     lua_pushinteger( l, lua.event->id );
@@ -910,10 +910,10 @@ namespace nirvana
     assert( self != null );
     assert( lua_gettop( l ) == 1 && lua_istable( l, 1 ) );
 
-    obj      = self;
-    str      = null;
-    part     = null;
-    event    = List<Object::Event>::Iterator();
+    obj   = self;
+    str   = null;
+    part  = null;
+    event = List<Object::Event>::CIterator();
 
     objIndex = 0;
     strIndex = 0;

@@ -52,7 +52,7 @@ namespace client
       if( nMatches != 3 ) {
         return false;
       }
-      *tempVerts << Vec3( x, y, z );
+      tempVerts->add( Vec3( x, y, z ) );
       return true;
     }
     // vertex normal coords
@@ -65,7 +65,7 @@ namespace client
       if( nMatches != 3 ) {
         return false;
       }
-      *tempNormals << Vec3( x, y, z );
+      tempNormals->add( Vec3( x, y, z ) );
       return true;
     }
     // vertex texture coords
@@ -78,7 +78,7 @@ namespace client
       if( nMatches != 2 ) {
         return false;
       }
-      *tempTexCoords << TexCoord( u, v );
+      tempTexCoords->add( TexCoord( u, v ) );
       return true;
     }
     return false;
@@ -123,7 +123,7 @@ namespace client
         if( sscanf( pos, "%d", &vertIndex ) != 1 ) {
           return false;
         }
-        vertIndices << vertIndex - 1;
+        vertIndices.add( vertIndex - 1 );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -136,8 +136,8 @@ namespace client
         if( sscanf( pos, "%d/%d", &vertIndex, &texCoordIndex ) != 2 ) {
           return false;
         }
-        vertIndices << vertIndex - 1;
-        texCoordIndices << texCoordIndex - 1;
+        vertIndices.add( vertIndex - 1 );
+        texCoordIndices.add( texCoordIndex - 1 );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -150,8 +150,8 @@ namespace client
         if( sscanf( pos, "%d//%d", &vertIndex, &normalIndex ) != 2 ) {
           return false;
         }
-        vertIndices << vertIndex - 1;
-        normalIndices << normalIndex - 1;
+        vertIndices.add( vertIndex - 1 );
+        normalIndices.add( normalIndex - 1 );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -164,9 +164,9 @@ namespace client
         if( sscanf( pos, "%d/%d/%d", &vertIndex, &texCoordIndex, &normalIndex ) != 3 ) {
           return false;
         }
-        vertIndices << vertIndex - 1;
-        normalIndices << normalIndex - 1;
-        texCoordIndices << texCoordIndex - 1;
+        vertIndices.add( vertIndex - 1 );
+        normalIndices.add( normalIndex - 1 );
+        texCoordIndices.add( texCoordIndex - 1 );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -238,7 +238,7 @@ namespace client
 
             if( !mtlName.isEmpty() ) {
               materialIndices->add( mtlName, tempMaterials.length() );
-              tempMaterials << material;
+              tempMaterials.add( material );
             }
 
             end = readWord( pos );
@@ -289,7 +289,7 @@ namespace client
 
     if( !mtlName.isEmpty() ) {
       materialIndices->add( mtlName, tempMaterials.length() );
-      tempMaterials << material;
+      tempMaterials.add( material );
     }
 
     materials( tempMaterials.length() );
@@ -369,7 +369,7 @@ namespace client
             log.println( "}" );
             throw Exception( "OBJ model loading error" );
           }
-          tempFaces << face;
+          tempFaces.add( face );
           break;
         }
         // usemtl
@@ -388,7 +388,7 @@ namespace client
             else {
               materialFace.nVerts = 0;
             }
-            tempFaces << materialFace;
+            tempFaces.add( materialFace );
           }
           break;
         }

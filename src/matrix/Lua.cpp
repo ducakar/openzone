@@ -636,7 +636,7 @@ namespace oz
 
   static int ozEventBindNext( lua_State* l )
   {
-    if( lua.event != lua.event.end() ) {
+    if( lua.event.isValid() ) {
       ++lua.event;
       lua_pushboolean( l, true );
     }
@@ -648,7 +648,7 @@ namespace oz
 
   static int ozEventGet( lua_State* l )
   {
-    if( lua.event == lua.event.end() ) {
+    if( !lua.event.isValid() ) {
       OZ_LUA_ERROR( "event is null" );
     }
     lua_pushinteger( l, lua.event->id );
@@ -1554,10 +1554,10 @@ namespace oz
   {
     assert( self != null );
 
-    obj      = self;
-    str      = null;
-    part     = null;
-    event    = List<Object::Event>::Iterator();
+    obj   = self;
+    str   = null;
+    part  = null;
+    event = List<Object::Event>::Iterator();
 
     objIndex = 0;
     strIndex = 0;

@@ -31,7 +31,7 @@ namespace oz
   void Names::init()
   {
     // a default entry, we need it if nothing is read
-    names << "";
+    names.add( "" );
 
     log.print( "Reading character name database 'name/names' ..." );
 
@@ -48,7 +48,7 @@ namespace oz
       name = name.trim();
 
       if( !name.isEmpty() ) {
-        names << name;
+        names.add( name );
       }
     }
     fclose( file );

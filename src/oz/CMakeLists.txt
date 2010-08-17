@@ -34,5 +34,4 @@ add_library( oz STATIC
 	common.hpp
 	iterables.hpp
 	oz.hpp
-	ozconfig.hpp
 )

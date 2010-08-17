@@ -90,7 +90,7 @@ namespace oz
 #ifdef OZ_VERBOSE_CONFIG
         usedVars.add( key );
 #endif
-        return vars[key];
+        return vars.get( key );
       }
 
       /**

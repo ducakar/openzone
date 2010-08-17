@@ -35,7 +35,7 @@ namespace oz
       template <typename Type>
       static Type* alloc( int size )
       {
-        return reinterpret_cast<Type*>( new char[size * sizeof( Type )] );
+        return reinterpret_cast<Type*>( new char[ size * sizeof( Type ) ] );
       }
 
       /**

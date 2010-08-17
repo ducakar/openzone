@@ -51,7 +51,7 @@ namespace oz
       return;
     }
 
-    AABB bounds = AABB( pos, translator.classes[type]->dim );
+    AABB bounds = AABB( pos, translator.classes.get( type )->dim );
     bounds *= SPACING;
 
     if( !collider.overlapsOSO( bounds ) ) {
@@ -62,7 +62,7 @@ namespace oz
   inline void FloraManager::addPlant( const char* type, float x, float y )
   {
     Vec3 pos = Vec3( x, y, world.terra.height( x, y ) );
-    AABB bounds = AABB( pos, translator.classes[type]->dim );
+    AABB bounds = AABB( pos, translator.classes.get( type )->dim );
 
     if( pos.z < 0.0f || 40.0f < pos.z ) {
       return;

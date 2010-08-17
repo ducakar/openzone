@@ -6,4 +6,4 @@ ls *.{hpp,cpp} | sed -e 's/.*/\t\0/' >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt
-echo 'add_dependencies( nirvana pch )' >> CMakeLists.txt
+echo 'add_dependencies( nirvana matrix pch )' >> CMakeLists.txt

@@ -31,7 +31,7 @@ namespace nirvana
   void Nirvana::sync()
   {
     // remove minds of removed bots
-    for( auto i = minds.iter(); i != i.end(); ) {
+    for( auto i = minds.iter(); i.isValid(); ) {
       Mind* mind = i;
       ++i;
 
@@ -50,7 +50,7 @@ namespace nirvana
 
         MindCtor* value = mindClasses.find( clazz->mindType );
         if( value != null ) {
-          minds << value->create( bot->index );
+          minds.add( value->create( bot->index ) );
         }
         else if( !clazz->mindType.isEmpty() ) {
           throw Exception( "Invalid mind type" );
@@ -208,7 +208,7 @@ namespace nirvana
     for( int i = 0; i < nMinds; ++i ) {
       istream->readString( typeName );
       if( !typeName.isEmpty() ) {
-        minds << mindClasses[typeName].read( istream );
+        minds.add( mindClasses.get( typeName ).read( istream ) );
       }
     }
   }

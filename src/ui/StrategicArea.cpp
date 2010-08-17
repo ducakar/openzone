@@ -274,7 +274,7 @@ namespace ui
 
       if( leftClick ) {
         tagged.clear();
-        tagged << hovered->index;
+        tagged.add( hovered->index );
       }
     }
     else {

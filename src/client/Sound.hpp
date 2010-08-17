@@ -93,7 +93,7 @@ namespace client
 
       void addSource( uint sourceId )
       {
-        sources << new Source( sourceId );
+        sources.add( new Source( sourceId ) );
       }
 
       void addContSource( uint key, uint sourceId  )

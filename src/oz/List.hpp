@@ -291,7 +291,22 @@ namespace oz
       }
 
       /**
-       * @return element before the given one
+       * @return constant pointer to element before the given one
+       */
+      const Type* before( const Type* e ) const
+      {
+        Type* elem = firstElem;
+        Type* beforeElem = null;
+
+        while( last != e ) {
+          beforeElem = elem;
+          elem = elem->next[INDEX];
+        }
+        return beforeElem;
+      }
+
+      /**
+       * @return pointer to element before the given one
        */
       Type* before( const Type* e )
       {
@@ -309,52 +324,12 @@ namespace oz
        * Add element to the beginning of the list.
        * @param e element to be added
        */
-      void operator << ( Type* e )
+      void add( Type* e )
       {
         assert( e != null );
 
         e->next[INDEX] = firstElem;
         firstElem = e;
-      }
-
-      /**
-       * Add element to the beginning of the list.
-       * @param e element to be added
-       */
-      void pushFirst( Type* e )
-      {
-        assert( e != null );
-
-        e->next[INDEX] = firstElem;
-        firstElem = e;
-      }
-
-      /**
-       * Pop first element from the list.
-       * @param e reference to pointer where the pointer to the first element is to be saved
-       */
-      void operator >> ( Type*& e )
-      {
-        assert( firstElem != null );
-
-        Type* p = firstElem;
-
-        firstElem = p->next[INDEX];
-        return p;
-      }
-
-      /**
-       * Pop first element from the list.
-       * @return the pointer to the first element
-       */
-      Type* popFirst()
-      {
-        assert( firstElem != null );
-
-        Type* p = firstElem;
-
-        firstElem = p->next[INDEX];
-        return p;
       }
 
       /**
@@ -387,6 +362,32 @@ namespace oz
         else {
           prev->next[INDEX] = e->next[INDEX];
         }
+      }
+
+      /**
+       * Add element to the beginning of the list.
+       * @param e element to be added
+       */
+      void pushFirst( Type* e )
+      {
+        assert( e != null );
+
+        e->next[INDEX] = firstElem;
+        firstElem = e;
+      }
+
+      /**
+       * Pop first element from the list.
+       * @return the pointer to the first element
+       */
+      Type* popFirst()
+      {
+        assert( firstElem != null );
+
+        Type* p = firstElem;
+
+        firstElem = p->next[INDEX];
+        return p;
       }
 
       /**

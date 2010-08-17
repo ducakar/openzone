@@ -81,7 +81,7 @@ namespace client
   {
     initFlags = 0;
 
-#if defined( OZ_MINGW ) || defined( OZ_MSVC )
+#ifdef OZ_WINDOWS
     // print directly to the console, do not use SDL's stdout.txt and stderr.txt
     freopen( "CON", "wt", stdout );
     freopen( "CON", "wt", stderr );
@@ -116,7 +116,7 @@ namespace client
     }
 
 #ifdef OZ_LOG_FILE
-    String logPath = rcDir + OZ_LOG_FILE;
+    String logPath = rcDir + "/" OZ_LOG_FILE;
 
     if( !log.init( logPath, true, "  " ) ) {
       printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
@@ -368,11 +368,12 @@ namespace client
     float renderTimeSec  = float( renderTime ) / 1000.0f;
     float sleepTimeSec   = Math::max( 0.0f, allTimeSec - gameTimeSec - renderTimeSec );
     float nirvanaTimeSec = float( timer.nirvanaMillis ) / 1000.0f;
+    int   ticks          = timer.millis / Timer::TICK_MILLIS;
 
     log.println( "STATISTICS {" );
     log.indent();
-    log.println( "Ticks: %d (%.2f Hz)", timer.millis / Timer::TICK_MILLIS, 1000.0f / Timer::TICK_MILLIS );
-    log.println( "Frames: %d (%.2f Hz)", timer.nFrames, float( timer.nFrames ) / timer.time );
+    log.println( "Ticks: %d (%.2f Hz)", ticks, float( ticks ) / allTimeSec );
+    log.println( "Frames: %d (%.2f Hz)", timer.nFrames, float( timer.nFrames ) / allTimeSec );
     log.println( "Time usage:" );
     log.println( "   %.4g s\t%.1f%%\tall time", allTimeSec, 100.0f );
     log.println( "   %.4g s\t%.1f%%\tsystem + simulation + basic sound update",

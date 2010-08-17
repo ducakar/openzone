@@ -15,4 +15,4 @@ add_library( nirvana STATIC
 	common.hpp
 )
 
-add_dependencies( nirvana pch )
+add_dependencies( nirvana matrix pch )

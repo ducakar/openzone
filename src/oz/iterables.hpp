@@ -17,7 +17,7 @@ namespace oz
   /**
    * Generalised constant iterator.
    * It should only be used as a base class. Following functions need to be implemented:<br>
-   * <code>const Type* end()</code> (if necessary)<br>
+   * <code>bool isValid() const</code> (if necessary)<br>
    * <code>Iterator& operator ++ ()</code><br>
    * <code>Iterator& operator -- ()</code> (optional)<br>
    * and a constructor of course.
@@ -81,14 +81,13 @@ namespace oz
       }
 
       /**
-       * Returns pointer that should be equal to what iterator points at when it passes all elements
-       * in the container.
-       * May be overridden in derived classes
+       * Returns true while the iterator has not passed all the elements in the container and thus
+       * points to a valid location.
        * @return
        */
-      const Type* end() const
+      bool isValid() const
       {
-        return null;
+        return elem != null;
       }
 
       /**
@@ -136,7 +135,7 @@ namespace oz
   /**
    * Generalised iterator.
    * It should only be used as a base class. Following functions need to be implemented:<br>
-   * <code>const Type* end()</code> (if necessary)<br>
+   * <code>bool isValid() const</code> (if necessary)<br>
    * <code>Iterator& operator ++ ()</code><br>
    * <code>Iterator& operator -- ()</code> (optional)<br>
    * and a constructor of course.
@@ -200,14 +199,13 @@ namespace oz
       }
 
       /**
-       * Returns pointer that should be equal to what iterator points at when it passes all elements
-       * in the container.
-       * May be overridden in derived classes
+       * Returns true while the iterator has not passed all the elements in the container and thus
+       * points to a valid location.
        * @return
        */
-      const Type* end() const
+      bool isValid() const
       {
-        return null;
+        return elem != null;
       }
 
       /**
@@ -287,16 +285,16 @@ namespace oz
    * This replaces much more cryptic and longer pieces of code, like:
    * <pre>
    * Vector&lt;int&gt; v;
-   * for( Vector&lt;int&gt;::Iterator i( v ); i != i.end(); ++i )
+   * for( Vector&lt;int&gt;::Iterator i( v ); i.isValid(); ++i )
    *   printf( "%d ", *i );
    * }</pre>
    * There's no need to add it to Katepart syntax highlighting as it is already there (Qt has some
    * similar foreach macro).
    */
 # define foreach( i, iterator ) \
-  for( auto i = iterator; i != i.end(); ++i )
+  for( auto i = iterator; i.isValid(); ++i )
 
-   /**
+  /**
    * Construct elements of an uninitialised container.
    * @param iDest
    */
@@ -305,8 +303,9 @@ namespace oz
   {
     typedef decltype( *iDest ) Type;
 
-    while( iDest != iDest.end() ) {
-      new( static_cast<Type*>( iDest ) ) Type( iDest );
+    while( iDest.isValid() ) {
+      new( static_cast<Type*>( iDest ) ) Type;
+      ++iDest;
     }
   }
 
@@ -320,8 +319,8 @@ namespace oz
   {
     typedef decltype( *iDest ) Type;
 
-    while( iDest != iDest.end() ) {
-      assert( iSrc != iSrc.end() );
+    while( iDest.isValid() ) {
+      assert( iSrc.isValid() );
 
       new( static_cast<Type*>( iDest ) ) Type( *iSrc );
       ++iDest;
@@ -340,8 +339,8 @@ namespace oz
   {
     typedef decltype( *iDest ) Type;
 
-    while( iDest != iDest.end() ) {
-      assert( iSrc != iSrc.end() );
+    while( iDest.isValid() ) {
+      assert( iSrc.isValid() );
 
       new( static_cast<Type*>( iDest ) ) Type( *iSrc );
       --iDest;
@@ -356,7 +355,7 @@ namespace oz
   template <typename Iterator>
   inline void iDestruct( Iterator iDest )
   {
-    while( iDest != iDest.end() ) {
+    while( iDest.isValid() ) {
       ( *iDest ).~Type();
     }
   }
@@ -371,8 +370,8 @@ namespace oz
   {
     assert( &*iDest != &*iSrc );
 
-    while( iDest != iDest.end() ) {
-      assert( iSrc != iSrc.end() );
+    while( iDest.isValid() ) {
+      assert( iSrc.isValid() );
 
       *iDest = *iSrc;
       ++iDest;
@@ -390,8 +389,8 @@ namespace oz
   {
     assert( &*iDest != &*iSrc );
 
-    while( iDest != iDest.end() ) {
-      assert( iSrc != iSrc.end() );
+    while( iDest.isValid() ) {
+      assert( iSrc.isValid() );
 
       *iDest = *iSrc;
       --iDest;
@@ -407,8 +406,22 @@ namespace oz
   template <class Iterator, typename Value>
   inline void iSet( Iterator iDest, const Value& value )
   {
-    while( iDest != iDest.end() ) {
+    while( iDest.isValid() ) {
       *iDest = value;
+      ++iDest;
+    }
+  }
+
+  /**
+   * Apply method on all elements (like std::for_each).
+   * @param iDest
+   * @param method
+   */
+  template <class Iterator, typename Method>
+  inline void iMap( Iterator iDest, const Method& method )
+  {
+    while( iDest.isValid() ) {
+      method( iDest );
       ++iDest;
     }
   }
@@ -424,11 +437,11 @@ namespace oz
   {
     assert( &*iSrcA != &*iSrcB );
 
-    while( iSrcA != iSrcA.end() && iSrcB != iSrcB.end() && *iSrcA == *iSrcB ) {
+    while( iSrcA.isValid() && iSrcB.isValid() && *iSrcA == *iSrcB ) {
       ++iSrcA;
       ++iSrcB;
     }
-    return iSrcA == iSrcA.end() && iSrcB == iSrcB.end();
+    return !iSrcA.isValid() && !iSrcB.isValid();
   }
 
   /**
@@ -440,10 +453,10 @@ namespace oz
   template <class CIterator, typename Value>
   inline bool iContains( CIterator iSrc, const Value& value )
   {
-    while( iSrc != iSrc.end() && *iSrc != value ) {
+    while( iSrc.isValid() && *iSrc != value ) {
       ++iSrc;
     }
-    return iSrc != iSrc.end();
+    return iSrc.isValid();
   }
 
   /**
@@ -455,7 +468,7 @@ namespace oz
   template <class CIterator, typename Value>
   inline CIterator iIndex( CIterator iSrc, const Value& value )
   {
-    while( iSrc != iSrc.end() && *iSrc != value ) {
+    while( iSrc.isValid() && *iSrc != value ) {
       ++iSrc;
     }
     return iSrc;
@@ -470,7 +483,7 @@ namespace oz
   template <class CReverseIterator, typename Value>
   inline CReverseIterator iLastIndex( CReverseIterator iSrc, const Value& value )
   {
-    while( iSrc != iSrc.end() && *iSrc != value ) {
+    while( iSrc.isValid() && *iSrc != value ) {
       --iSrc;
     }
     return iSrc;
@@ -483,8 +496,10 @@ namespace oz
   template <class Iterator>
   inline void iFree( Iterator iDest )
   {
-    while( iDest != iDest.end() ) {
-      decltype( *iDest ) elem = *iDest;
+    typedef decltype( *iDest ) Type;
+
+    while( iDest.isValid() ) {
+      Type& elem = *iDest;
       ++iDest;
 
       if( elem != null ) {

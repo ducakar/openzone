@@ -294,29 +294,9 @@ namespace oz
       }
 
       /**
-       * Add an element to the beginning.
-       * @param e
-       */
-      void pushFirst( const Type& e )
-      {
-        assert( count < SIZE );
-
-        if( count == 0 ) {
-          new( data + 0 ) Type( e );
-          ++count;
-        }
-        else {
-          new( data + count ) Type( data[count - 1] );
-          aReverseCopy( data + 1, data, count - 1 );
-          data[0] = e;
-          ++count;
-        }
-      }
-
-      /**
        * Create slot for a new element at the end.
        */
-      void operator ++ ()
+      void add()
       {
         assert( count < SIZE );
 
@@ -328,19 +308,7 @@ namespace oz
        * Add an element to the end.
        * @param e
        */
-      void operator << ( const Type& e )
-      {
-        assert( count < SIZE );
-
-        new( data + count ) Type( e );
-        ++count;
-      }
-
-      /**
-       * Add an element to the end.
-       * @param e
-       */
-      void pushLast( const Type& e )
+      void add( const Type& e )
       {
         assert( count < SIZE );
 
@@ -410,7 +378,7 @@ namespace oz
       /**
        * Remove last element.
        */
-      void operator -- ()
+      void remove()
       {
         assert( count != 0 );
 
@@ -494,6 +462,38 @@ namespace oz
       }
 
       /**
+       * Add an element to the beginning.
+       * @param e
+       */
+      void pushFirst( const Type& e )
+      {
+        assert( count < SIZE );
+
+        if( count == 0 ) {
+          new( data + 0 ) Type( e );
+          ++count;
+        }
+        else {
+          new( data + count ) Type( data[count - 1] );
+          aReverseCopy( data + 1, data, count - 1 );
+          data[0] = e;
+          ++count;
+        }
+      }
+
+      /**
+       * Add an element to the end.
+       * @param e
+       */
+      void pushLast( const Type& e )
+      {
+        assert( count < SIZE );
+
+        new( data + count ) Type( e );
+        ++count;
+      }
+
+      /**
        * Remove first element
        * @return value of removed element
        */
@@ -506,19 +506,6 @@ namespace oz
         data[count].~Type();
 
         return e;
-      }
-
-      /**
-       * Remove last element
-       * @param e reference to variable to be overwritten with value of removed element
-       */
-      void operator >> ( Type& e )
-      {
-        assert( count != 0 );
-
-        --count;
-        e = data[count];
-        data[count].~Type();
       }
 
       /**

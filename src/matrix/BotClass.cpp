@@ -146,7 +146,7 @@ namespace oz
 
       String itemName = config->get( buffer, "" );
       if( !itemName.isEmpty() ) {
-        clazz->inventoryItems << itemName;
+        clazz->inventoryItems.add( itemName );
       }
     }
 

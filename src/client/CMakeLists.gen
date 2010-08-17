@@ -6,5 +6,5 @@ ls *.{hpp,cpp} | sed -e 's/.*/\t\0/' >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt
-echo 'add_dependencies( openzone pch )' >> CMakeLists.txt
-echo 'target_link_libraries( openzone ui nirvana matrix oz ${libs} )' >> CMakeLists.txt
+echo 'add_dependencies( openzone ui nirvana matrix pch )' >> CMakeLists.txt
+echo 'target_link_libraries( openzone ui nirvana matrix oz )' >> CMakeLists.txt

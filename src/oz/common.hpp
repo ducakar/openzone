@@ -33,11 +33,7 @@ namespace oz
    * \def null
    * It is equivalent to nullptr/NULL but it looks prettier.
    */
-#ifdef __GNUG__
-# define null __null
-#else
 # define null nullptr
-#endif
 
   /**
    * \def S
@@ -142,10 +138,10 @@ namespace oz
    * @param a reference to the first variable
    * @param b reference to the second variable
    */
-  template <typename Value>
-  inline void swap( Value& a, Value& b )
+  template <typename Type>
+  inline void swap( Type& a, Type& b )
   {
-    Value t( a );
+    Type t( a );
     a = b;
     b = t;
   }
@@ -156,8 +152,8 @@ namespace oz
    * @param b
    * @return a if a < b, b otherwise
    */
-  template <typename Value>
-  inline const Value& min( const Value& a, const Value& b )
+  template <typename Type>
+  inline const Type& min( const Type& a, const Type& b )
   {
     return a < b ? a : b;
   }
@@ -169,8 +165,8 @@ namespace oz
    * @param b
    * @return a if a < b, b otherwise
    */
-  template <typename Value>
-  inline Value& min( Value& a, Value& b )
+  template <typename Type>
+  inline Type& min( Type& a, Type& b )
   {
     return a < b ? a : b;
   }
@@ -181,8 +177,8 @@ namespace oz
    * @param b
    * @return a if a > b, b otherwise
    */
-  template <typename Value>
-  inline const Value& max( const Value& a, const Value& b )
+  template <typename Type>
+  inline const Type& max( const Type& a, const Type& b )
   {
     return b < a ? a : b;
   }
@@ -194,8 +190,8 @@ namespace oz
    * @param b
    * @return a if a > b, b otherwise
    */
-  template <typename Value>
-  inline Value& max( Value& a, Value& b )
+  template <typename Type>
+  inline Type& max( Type& a, Type& b )
   {
     return b < a ? a : b;
   }
@@ -207,8 +203,8 @@ namespace oz
    * @param b
    * @return c, if a <= c <= b, respective boundary otherwise
    */
-  template <typename Value>
-  inline const Value& bound( const Value& c, const Value& a, const Value& b )
+  template <typename Type>
+  inline const Type& bound( const Type& c, const Type& a, const Type& b )
   {
     assert( a <= b );
 
@@ -223,8 +219,8 @@ namespace oz
    * @param b
    * @return c, if a <= c <= b, respective boundary otherwise
    */
-  template <typename Value>
-  inline Value& bound( Value& c, Value& a, Value& b )
+  template <typename Type>
+  inline Type& bound( Type& c, Type& a, Type& b )
   {
     assert( a <= b );
 

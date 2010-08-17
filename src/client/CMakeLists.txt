@@ -69,5 +69,5 @@ add_executable( openzone
 	common.hpp
 )
 
-add_dependencies( openzone pch )
-target_link_libraries( openzone ui nirvana matrix oz ${libs} )
+add_dependencies( openzone ui nirvana matrix pch )
+target_link_libraries( openzone ui nirvana matrix oz )

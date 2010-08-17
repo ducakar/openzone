@@ -1,10 +1,3 @@
-/*CMakeCache.txt
-/install_manifest.txt
-CMakeCache.txt
-CMakeFiles
-cmake_install.cmake
-Makefile
-
 /.project
 /.cproject
 /.settings
@@ -12,30 +5,12 @@ Makefile
 /openzone.kdev4
 /.kdev4
 
-/openzone.sln
-/openzone.suo
-/openzone.sln.old
-/openzone.sdf
-/openzone.opensdf
-/openzone.ncb
-*.vcproj
-*.vcproj.*.user
-*.vcxproj*
-*.dir
-Debug
-Release
-MinSizeRel
-RelWithDebInfo
-/ipch
-/UpgradeLog*.XML
-/_UpgradeReport_Files
+/linux
+/mingw32
+/msvc
 
 /doxygen
 /tags
 /openzone.tag
 
 /valgrind.supp
-
-*.gcno
-gmon.out
-pg.out

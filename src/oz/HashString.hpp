@@ -23,13 +23,13 @@ namespace oz
         Type   value;
         Elem*  next[1];
 
-        explicit Elem( const String& key_, const Type& value_, Elem* next_ ) :
+        explicit Elem( const char* key_, const Type& value_, Elem* next_ ) :
             key( key_ ), value( value_ )
         {
           next[0] = next_;
         }
 
-        explicit Elem( const String& key_, Elem* next_ ) : key( key_ )
+        explicit Elem( const char* key_, Elem* next_ ) : key( key_ )
         {
           next[0] = next_;
         }
@@ -48,7 +48,7 @@ namespace oz
 
           typedef CIteratorBase<Elem> B;
 
-          Elem* const* const data;
+          Elem* const* data;
           int index;
 
         public:
@@ -97,22 +97,6 @@ namespace oz
           }
 
           /**
-           * @return current element's key
-           */
-          const String& key() const
-          {
-            return B::elem->key;
-          }
-
-          /**
-           * @return constant reference to current element's value
-           */
-          const Type& value() const
-          {
-            return B::elem->value;
-          }
-
-          /**
            * @return constant pointer to current element
            */
           operator const Type* () const
@@ -136,6 +120,22 @@ namespace oz
             return &B::elem->value;
           }
 
+          /**
+           * @return current element's key
+           */
+          const String& key() const
+          {
+            return B::elem->key;
+          }
+
+          /**
+           * @return constant reference to current element's value
+           */
+          const Type& value() const
+          {
+            return B::elem->value;
+          }
+
       };
 
       /**
@@ -147,7 +147,7 @@ namespace oz
 
           typedef IteratorBase<Elem> B;
 
-          Elem* const* const data;
+          Elem* const* data;
           int index;
 
         public:
@@ -196,30 +196,6 @@ namespace oz
           }
 
           /**
-           * @return current element's key
-           */
-          const String& key() const
-          {
-            return B::elem->key;
-          }
-
-          /**
-           * @return constant reference to current element's value
-           */
-          const Type& value() const
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return reference to current element's value
-           */
-          Type& value()
-          {
-            return B::elem->value;
-          }
-
-          /**
            * @return constant pointer to current element
            */
           operator const Type* () const
@@ -265,6 +241,30 @@ namespace oz
           Type* operator -> ()
           {
             return &B::elem->value;
+          }
+
+          /**
+           * @return current element's key
+           */
+          const String& key() const
+          {
+            return B::elem->key;
+          }
+
+          /**
+           * @return constant reference to current element's value
+           */
+          const Type& value() const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return reference to current element's value
+           */
+          Type& value()
+          {
+            return B::elem->value;
           }
 
       };
@@ -366,8 +366,7 @@ namespace oz
        */
       ~HashString()
       {
-        assert( count == 0 );
-
+        clear();
         pool.free();
       }
 
@@ -379,9 +378,9 @@ namespace oz
       HashString& operator = ( const HashString& t )
       {
         assert( &t != this );
-        assert( count == 0 );
 
         for( int i = 0; i < SIZE; ++i ) {
+          freeChain( data[i] );
           data[i] = copyChain( t.data[i] );
         }
         count = t.count;
@@ -542,7 +541,7 @@ namespace oz
        * @param key
        * @return reference to value associated to the given key
        */
-      const Type& operator [] ( const char* key ) const
+      const Type& get( const char* key ) const
       {
         int   i = String::hash( key ) % SIZE;
         Elem* p = data[i];
@@ -567,7 +566,7 @@ namespace oz
        * @param key
        * @return reference to value associated to the given key
        */
-      Type& operator [] ( const char* key )
+      Type& get( const char* key )
       {
         int   i = String::hash( key ) % SIZE;
         Elem* p = data[i];
@@ -596,26 +595,6 @@ namespace oz
         assert( !contains( key ) );
 
         int   i = String::hash( key ) % SIZE;
-        Elem* elem = new( pool ) Elem( key, value, data[i] );
-
-        data[i] = elem;
-        ++count;
-
-        soft_assert( loadFactor() < 0.75f );
-
-        return &data[i]->value;
-      }
-
-      /**
-       * Add new element. The key must not yet exist in this HashString.
-       * @param key
-       * @param value
-       */
-      Type* add( const String& key, const Type& value = Type() )
-      {
-        assert( !contains( key ) );
-
-        int   i = key.hash() % SIZE;
         Elem* elem = new( pool ) Elem( key, value, data[i] );
 
         data[i] = elem;
