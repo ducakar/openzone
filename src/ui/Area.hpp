@@ -166,9 +166,9 @@ namespace ui
         area->realign( x + relativeX, y + relativeY );
         area->parent = this;
 
-        children << area;
+        children.add( area );
         if( area->flags & UPDATE_FUNC_BIT ) {
-          updateAreas << area;
+          updateAreas.add( area );
         }
       }
 

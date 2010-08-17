@@ -232,7 +232,7 @@ namespace oz
        */
       void addEvent( int id )
       {
-        events << new Event( id );
+        events.add( new Event( id ) );
       }
 
       /**
@@ -242,7 +242,7 @@ namespace oz
        */
       void addEvent( int id, float intensity )
       {
-        events << new Event( id, intensity );
+        events.add( new Event( id, intensity ) );
       }
 
       void destroy()

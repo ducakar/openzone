@@ -134,7 +134,7 @@ namespace oz
   inline void Synapse::use( Bot* user, Object* target )
   {
     if( target->flags & Object::USE_FUNC_BIT ) {
-      actions << Action( user->index, target->index );
+      actions.add( Action( user->index, target->index ) );
       target->use( user );
     }
   }
@@ -143,7 +143,7 @@ namespace oz
   {
     assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
 
-    putObjects << obj->index;
+    putObjects.add( obj->index );
     world.position( obj );
   }
 
@@ -155,7 +155,7 @@ namespace oz
         Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
     obj->lower = -1;
 
-    cutObjects << obj->index;
+    cutObjects.add( obj->index );
     world.unposition( obj );
   }
 
@@ -172,7 +172,7 @@ namespace oz
       return -1;
     }
 
-    addedStructs << index;
+    addedStructs.add( index );
     return index;
   }
 
@@ -185,7 +185,7 @@ namespace oz
     world.position( obj );
     obj->addEvent( Object::EVENT_CREATE, 1.0f );
 
-    addedObjects << index;
+    addedObjects.add( index );
     return index;
   }
 
@@ -197,7 +197,7 @@ namespace oz
 
     world.position( part );
 
-    addedParts << index;
+    addedParts.add( index );
     return index;
   }
 
@@ -207,7 +207,7 @@ namespace oz
 
     collider.touchOverlaps( str->toAABB(), 4.0f * EPSILON );
 
-    removedStructs << str->index;
+    removedStructs.add( str->index );
     world.unposition( str );
     world.remove( str );
     delete str;
@@ -221,8 +221,8 @@ namespace oz
       collider.touchOverlaps( *obj, 4.0f * EPSILON );
     }
 
-    deleteObjects << obj;
-    removedObjects << obj->index;
+    removedObjects.add( obj->index );
+    deleteObjects.add( obj );
     world.unposition( obj );
     world.remove( obj );
   }
@@ -231,8 +231,8 @@ namespace oz
   {
     assert( obj->index != -1 && obj->cell == null );
 
-    deleteObjects << obj;
-    removedObjects << obj->index;
+    removedObjects.add( obj->index );
+    deleteObjects.add( obj );
     world.remove( obj );
   }
 
@@ -240,7 +240,7 @@ namespace oz
   {
     assert( part->index != -1 );
 
-    removedParts << part->index;
+    removedParts.add( part->index );
     world.unposition( part );
     world.remove( part );
     delete part;

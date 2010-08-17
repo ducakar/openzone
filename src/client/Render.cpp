@@ -60,7 +60,7 @@ namespace client
 
       if( !drawnStructures.get( cell.structs[i] ) && frustum.isVisible( *str ) ) {
         drawnStructures.set( cell.structs[i] );
-        structures << str;
+        structures.add( str );
       }
     }
 
@@ -77,17 +77,17 @@ namespace client
         ObjectEntry entry( ( obj->p - camera.p ).sqL(), obj );
 
         if( obj->flags & Object::DELAYED_DRAW_BIT ) {
-          delayedObjects << entry;
+          delayedObjects.add( entry );
         }
         else {
-          objects << entry;
+          objects.add( entry );
         }
       }
     }
 
     for( const Particle* part = cell.firstPart; part != null; part = part->next[0] ) {
       if( frustum.isVisible( part->p, particleRadius ) ) {
-        particles << part;
+        particles.add( part );
       }
     }
   }
@@ -203,7 +203,7 @@ namespace client
         isUnderWater = true;
       }
       if( waterFlags & BSP::DRAW_WATER ) {
-        waterStructures << str;
+        waterStructures.add( str );
       }
     }
 
@@ -403,7 +403,7 @@ namespace client
         }
       }
       // remove unused models
-      for( auto i = models.citer(); i != i.end(); ) {
+      for( auto i = models.citer(); i.isValid(); ) {
         Model* model = *i;
         uint   key   = i.key();
 
@@ -427,7 +427,7 @@ namespace client
 
   void Render::sync()
   {
-    for( auto i = models.citer(); i != i.end(); ) {
+    for( auto i = models.citer(); i.isValid(); ) {
       Model* model = i.value();
       uint   key   = i.key();
       ++i;
@@ -528,7 +528,7 @@ namespace client
     MD2::init();
 
     for( int i = 0; i < translator.bsps.length(); ++i ) {
-      bsps << null;
+      bsps.add( null );
     }
 
     glEnable( GL_POINT_SMOOTH );

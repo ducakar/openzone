@@ -53,7 +53,7 @@ namespace oz
     log.print( "Loading Orbis ..." );
 
     for( int i = 0; i < translator.bsps.length(); ++i ) {
-      bsps << null;
+      bsps.add( null );
     }
 
     log.printEnd( " OK" );
@@ -115,41 +115,41 @@ namespace oz
 
     n = istream->readInt();
     for( int i = 0; i < n; ++i ) {
-      strFreedIndices[freeing] << istream->readInt();
+      strFreedIndices[freeing].add( istream->readInt() );
     }
     n = istream->readInt();
     for( int i = 0; i < n; ++i ) {
-      objFreedIndices[freeing] << istream->readInt();
+      objFreedIndices[freeing].add( istream->readInt() );
     }
     n = istream->readInt();
     for( int i = 0; i < n; ++i ) {
-      partFreedIndices[freeing] << istream->readInt();
-    }
-
-    n = istream->readInt();
-    for( int i = 0; i < n; ++i ) {
-      strFreedIndices[waiting] << istream->readInt();
-    }
-    n = istream->readInt();
-    for( int i = 0; i < n; ++i ) {
-      objFreedIndices[waiting] << istream->readInt();
-    }
-    n = istream->readInt();
-    for( int i = 0; i < n; ++i ) {
-      partFreedIndices[waiting] << istream->readInt();
+      partFreedIndices[freeing].add( istream->readInt() );
     }
 
     n = istream->readInt();
     for( int i = 0; i < n; ++i ) {
-      strAvailableIndices << istream->readInt();
+      strFreedIndices[waiting].add( istream->readInt() );
     }
     n = istream->readInt();
     for( int i = 0; i < n; ++i ) {
-      objAvailableIndices << istream->readInt();
+      objFreedIndices[waiting].add( istream->readInt() );
     }
     n = istream->readInt();
     for( int i = 0; i < n; ++i ) {
-      partAvailableIndices << istream->readInt();
+      partFreedIndices[waiting].add( istream->readInt() );
+    }
+
+    n = istream->readInt();
+    for( int i = 0; i < n; ++i ) {
+      strAvailableIndices.add( istream->readInt() );
+    }
+    n = istream->readInt();
+    for( int i = 0; i < n; ++i ) {
+      objAvailableIndices.add( istream->readInt() );
+    }
+    n = istream->readInt();
+    for( int i = 0; i < n; ++i ) {
+      partAvailableIndices.add( istream->readInt() );
     }
 
     sky.read( istream );
@@ -168,11 +168,11 @@ namespace oz
       istream->readString( bspName );
 
       if( bspName.isEmpty() ) {
-        structs << null;
+        structs.add( null );
       }
       else {
         str = translator.createStruct( i, bspName, istream );
-        structs << str;
+        structs.add( str );
 
         if( bsps[str->bsp] == null ) {
           bsps[str->bsp] = new BSP();
@@ -190,11 +190,11 @@ namespace oz
       istream->readString( typeName );
 
       if( typeName.isEmpty() ) {
-        objects << null;
+        objects.add( null );
       }
       else {
         obj = translator.createObject( i, typeName, istream );
-        objects << obj;
+        objects.add( obj );
 
         if( obj->flags & Object::LUA_BIT ) {
           lua.registerObject( i );
@@ -211,13 +211,13 @@ namespace oz
       bool exists = istream->readBool();
 
       if( !exists ) {
-        parts << null;
+        parts.add( null );
       }
       else {
         part = new Particle();
         part->readFull( istream );
         part->index = i;
-        parts << part;
+        parts.add( part );
         position( part );
       }
     }

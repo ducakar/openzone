@@ -33,7 +33,7 @@ namespace nirvana
       Structure*         str;
       Object*            obj;
       Particle*          part;
-      List<Object::Event>::Iterator event;
+      List<Object::Event>::CIterator event;
 
       int                strIndex;
       int                objIndex;

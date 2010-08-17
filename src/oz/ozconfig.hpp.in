@@ -1,12 +1,5 @@
 #pragma once
 
-// enable assert and soft_assert macros
-#cmakedefine OZ_ENABLE_ASSERT
-
-#ifndef OZ_ENABLE_ASSERT
-# define NDEBUG
-#endif
-
 // enable overloaded new and delete to count allocated memory
 #cmakedefine OZ_ALLOC_STATISTICS
 
@@ -29,11 +22,30 @@
 #cmakedefine OZ_MINGW
 #cmakedefine OZ_MSVC
 
+#ifdef __GNUC__
+# if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 5 )
+#      error Too old GCC, at least 4.5 is needed
+# endif
+# if __GNUC__ == 4 && __GNUC__MINOR <= 5
+#      define nullptr __null
+# endif
+#endif
+
 #ifdef OZ_MSVC
+# if _MSC_VER < 1600
+#      error Too old MSVC, at least 16.00 (Visual C++ 2010) needed
+# endif
 # define _CRT_SECURE_NO_WARNINGS 1
-# define WIN32
 # define __PRETTY_FUNCTION__ ""
 # define snprintf sprintf_s
 # define chdir _chdir
 # define mkdir _mkdir
+#endif
+
+#if !defined( __LP64__ ) && !defined( _WIN64 )
+# define OZ_LONG_32
+#endif
+
+#if defined( OZ_MINGW ) || defined( OZ_MSVC )
+# define OZ_WINDOWS
 #endif

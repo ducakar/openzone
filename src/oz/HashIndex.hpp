@@ -49,7 +49,7 @@ namespace oz
 
           typedef CIteratorBase<Elem> B;
 
-          const Elem* const* const data;
+          const Elem* const* data;
           int index;
 
         public:
@@ -98,22 +98,6 @@ namespace oz
           }
 
           /**
-           * @return current element's key
-           */
-          const uint& key() const
-          {
-            return B::elem->key;
-          }
-
-          /**
-           * @return constant reference to current element's value
-           */
-          const Type& value() const
-          {
-            return B::elem->value;
-          }
-
-          /**
            * @return constant pointer to current element
            */
           operator const Type* () const
@@ -137,6 +121,22 @@ namespace oz
             return &B::elem->value;
           }
 
+          /**
+           * @return current element's key
+           */
+          const uint& key() const
+          {
+            return B::elem->key;
+          }
+
+          /**
+           * @return constant reference to current element's value
+           */
+          const Type& value() const
+          {
+            return B::elem->value;
+          }
+
       };
 
       /**
@@ -148,7 +148,7 @@ namespace oz
 
           typedef IteratorBase<Elem> B;
 
-          Elem* const* const data;
+          Elem* const* data;
           int index;
 
         public:
@@ -197,30 +197,6 @@ namespace oz
           }
 
           /**
-           * @return current element's key
-           */
-          const uint& key() const
-          {
-            return B::elem->key;
-          }
-
-          /**
-           * @return constant reference to current element's value
-           */
-          const Type& value() const
-          {
-            return B::elem->value;
-          }
-
-          /**
-           * @return reference to current element's value
-           */
-          Type& value()
-          {
-            return B::elem->value;
-          }
-
-          /**
            * @return constant pointer to current element
            */
           operator const Type* () const
@@ -266,6 +242,30 @@ namespace oz
           Type* operator -> ()
           {
             return &B::elem->value;
+          }
+
+          /**
+           * @return current element's key
+           */
+          const uint& key() const
+          {
+            return B::elem->key;
+          }
+
+          /**
+           * @return constant reference to current element's value
+           */
+          const Type& value() const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return reference to current element's value
+           */
+          Type& value()
+          {
+            return B::elem->value;
           }
 
       };
@@ -367,8 +367,7 @@ namespace oz
        */
       ~HashIndex()
       {
-        assert( count == 0 );
-
+        clear();
         pool.free();
       }
 
@@ -380,12 +379,13 @@ namespace oz
       HashIndex& operator = ( const HashIndex& t )
       {
         assert( &t != this );
-        assert( count == 0 );
 
         for( int i = 0; i < SIZE; ++i ) {
+          freeChain( data[i] );
           data[i] = copyChain( t.data[i] );
         }
         count = t.count;
+
         return *this;
       }
 
@@ -542,7 +542,7 @@ namespace oz
        * @param key
        * @return reference to value associated to the given key
        */
-      const Type& operator [] ( uint key ) const
+      const Type& get( uint key ) const
       {
         int   i = key % SIZE;
         Elem* p = data[i];
@@ -567,7 +567,7 @@ namespace oz
        * @param key
        * @return reference to value associated to the given key
        */
-      Type& operator [] ( uint key )
+      Type& get( uint key )
       {
         int   i = key % SIZE;
         Elem* p = data[i];

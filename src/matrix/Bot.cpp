@@ -600,7 +600,7 @@ namespace oz
   {
     assert( index != -1 && ( item->flags & Object::ITEM_BIT ) );
 
-    items << item->index;
+    items.add( item->index );
     item->parent = index;
     synapse.cut( item );
   }
@@ -647,7 +647,7 @@ namespace oz
 
     int nItems = istream->readInt();
     for( int i = 0; i < nItems; ++i ) {
-      items << istream->readInt();
+      items.add( istream->readInt() );
     }
     weaponItem   = istream->readInt();
 

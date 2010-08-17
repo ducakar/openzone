@@ -40,6 +40,16 @@ namespace oz
         return *this;
       }
 
+      const Type& operator * () const
+      {
+        return *pointer;
+      }
+
+      Type& operator * ()
+      {
+        return *pointer;
+      }
+
       operator const Type* () const
       {
         return pointer;

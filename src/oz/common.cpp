@@ -21,7 +21,7 @@
 namespace oz
 {
 
-#ifndef WIN32
+#ifndef OZ_WINDOWS
   static void sigtrapHandler( int )
   {}
 #endif
@@ -30,13 +30,11 @@ namespace oz
   {
     fprintf( stderr, "%s:%d: %s: Soft assertion `%s' failed.\n", file, line, function, message );
 
-#ifndef WIN32
+#ifndef OZ_WINDOWS
     signal( SIGTRAP, sigtrapHandler );
     raise( SIGTRAP );
-#else
-# ifdef OZ_MSVC
-    DebugBreak();
-# endif
+#elif defined( OZ_MSVC )
+    //DebugBreak();
 #endif
   }
 

@@ -142,7 +142,7 @@ namespace oz
 
     synapse.addStruct( "pool", Vec3( 50, -60, 37 ), Structure::R0 );
     synapse.addStruct( "test", Vec3( 60, -60, 38 ), Structure::R0 );
-    synapse.addStruct( "door", Vec3( 60, -60, 40 ), Structure::R0 );
+    //synapse.addStruct( "door", Vec3( 60, -60, 40 ), Structure::R0 );
 
     synapse.addObject( "SmallCrate", Vec3( 52, -61, 40 ) );
     synapse.addObject( "SmallCrate", Vec3( 52, -61, 41 ) );

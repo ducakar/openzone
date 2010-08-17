@@ -1085,7 +1085,7 @@ namespace oz
               startPos = toStructCS( aabb.p - str->p );
 
               if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBModels() ) ) {
-                *structs << str;
+                structs->add( str );
               }
             }
           }
@@ -1094,7 +1094,7 @@ namespace oz
         if( objects != null ) {
           for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
             if( sObj->overlaps( trace ) ) {
-              *objects << sObj;
+              objects->add( sObj );
             }
           }
         }
@@ -1113,7 +1113,7 @@ namespace oz
 
         for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( trace.includes( *sObj ) ) {
-            *objects << sObj;
+            objects->add( sObj );
           }
         }
       }
@@ -1153,7 +1153,7 @@ namespace oz
               const BSP::Brush& brush = bsp->brushes[index];
 
               if( overlapsAABBBrush( &brush ) ) {
-                *objects << sObj;
+                objects->add( sObj );
               }
             }
           }

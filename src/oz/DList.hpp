@@ -319,7 +319,7 @@ namespace oz
        * Add element to the beginning of the list.
        * @param e element to be added
        */
-      void operator << ( Type* e )
+      void add( Type* e )
       {
         assert( e != null );
 
@@ -334,110 +334,6 @@ namespace oz
           firstElem->prev[INDEX] = e;
           firstElem = e;
         }
-      }
-
-      /**
-       * Add element to the beginning of the list.
-       * @param e element to be added
-       */
-      void pushFirst( Type* e )
-      {
-        assert( e != null );
-
-        e->prev[INDEX] = null;
-        e->next[INDEX] = firstElem;
-
-        if( firstElem == null ) {
-          firstElem = e;
-          lastElem = e;
-        }
-        else {
-          firstElem->prev[INDEX] = e;
-          firstElem = e;
-        }
-      }
-
-      /**
-       * Add element to the end of the list.
-       * @param e element to be added
-       */
-      void pushLast( Type* e )
-      {
-        assert( e != null );
-
-        e->prev[INDEX] = lastElem;
-        e->next[INDEX] = null;
-
-        if( lastElem == null ) {
-          firstElem = e;
-          lastElem = e;
-        }
-        else {
-          lastElem->next[INDEX] = e;
-          lastElem = e;
-        }
-      }
-
-      /**
-       * Pop first element from the list.
-       * @param e reference to pointer where the pointer to the first element is to be saved
-       */
-      void operator >> ( Type*& e )
-      {
-        assert( firstElem != null );
-
-        e = firstElem;
-
-        firstElem = e->next[INDEX];
-
-        if( firstElem == null ) {
-          lastElem = null;
-        }
-        else {
-          firstElem->prev[INDEX] = null;
-        }
-      }
-
-      /**
-       * Pop first element from the list.
-       * @return pointer to the first element
-       */
-      Type* popFirst()
-      {
-        assert( firstElem != null );
-
-        Type* p = firstElem;
-
-        firstElem = p->next[INDEX];
-
-        if( firstElem == null ) {
-          lastElem = null;
-        }
-        else {
-          firstElem->prev[INDEX] = null;
-        }
-        return p;
-      }
-
-      /**
-       * Pop last element from the list.
-       * @param e pointer to the last element
-       */
-      Type* popLast()
-      {
-        assert( lastElem != null );
-
-        Type* p = lastElem;
-
-        lastElem = p->prev[INDEX];
-
-        if( lastElem == null ) {
-          firstElem = null;
-        }
-        else {
-          lastElem->next[INDEX] = null;
-        }
-        return p;
       }
 
       /**
@@ -491,7 +387,7 @@ namespace oz
       /**
        * Remove the last element from the list.
        */
-      void operator -- ()
+      void remove()
       {
         assert( lastElem != null );
 
@@ -523,6 +419,90 @@ namespace oz
         else {
           e->next[INDEX]->prev[INDEX] = e->prev[INDEX];
         }
+      }
+
+      /**
+       * Add element to the beginning of the list.
+       * @param e element to be added
+       */
+      void pushFirst( Type* e )
+      {
+        assert( e != null );
+
+        e->prev[INDEX] = null;
+        e->next[INDEX] = firstElem;
+
+        if( firstElem == null ) {
+          firstElem = e;
+          lastElem = e;
+        }
+        else {
+          firstElem->prev[INDEX] = e;
+          firstElem = e;
+        }
+      }
+
+      /**
+       * Add element to the end of the list.
+       * @param e element to be added
+       */
+      void pushLast( Type* e )
+      {
+        assert( e != null );
+
+        e->prev[INDEX] = lastElem;
+        e->next[INDEX] = null;
+
+        if( lastElem == null ) {
+          firstElem = e;
+          lastElem = e;
+        }
+        else {
+          lastElem->next[INDEX] = e;
+          lastElem = e;
+        }
+      }
+
+      /**
+       * Pop first element from the list.
+       * @return pointer to the first element
+       */
+      Type* popFirst()
+      {
+        assert( firstElem != null );
+
+        Type* p = firstElem;
+
+        firstElem = p->next[INDEX];
+
+        if( firstElem == null ) {
+          lastElem = null;
+        }
+        else {
+          firstElem->prev[INDEX] = null;
+        }
+        return p;
+      }
+
+      /**
+       * Pop last element from the list.
+       * @param e pointer to the last element
+       */
+      Type* popLast()
+      {
+        assert( lastElem != null );
+
+        Type* p = lastElem;
+
+        lastElem = p->prev[INDEX];
+
+        if( lastElem == null ) {
+          firstElem = null;
+        }
+        else {
+          lastElem->next[INDEX] = null;
+        }
+        return p;
       }
 
       /**

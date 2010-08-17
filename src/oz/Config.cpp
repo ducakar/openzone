@@ -267,8 +267,8 @@ namespace oz
   bool Config::get( const char* name, bool defVal ) const
   {
     assert( !vars.contains( name ) ||
-            vars[name].equals( "true" ) ||
-            vars[name].equals( "false" ) );
+            vars.get( name ).equals( "true" ) ||
+            vars.get( name ).equals( "false" ) );
 
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
@@ -364,8 +364,8 @@ namespace oz
   bool Config::getSet( const char* name, bool defVal )
   {
     assert( !vars.contains( name ) ||
-            vars[name].equals( "true" ) ||
-            vars[name].equals( "false" ) );
+            vars.get( name ).equals( "true" ) ||
+            vars.get( name ).equals( "false" ) );
 
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {

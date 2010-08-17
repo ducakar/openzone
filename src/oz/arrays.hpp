@@ -27,8 +27,9 @@ namespace oz
       /**
        * Successor of the last element.
        * Is is used to determine when iterator becomes invalid.
+       * It's not declared const so we can have use copy operator on Iterator.
        */
-      const Type* const past;
+      const Type* past;
 
     public:
 
@@ -49,13 +50,13 @@ namespace oz
       {}
 
       /**
-       * Returns pointer that should be equal to what iterator points at when it passes all elements
-       * in the container.
-       * @return true if iterator is passed
+       * Returns true while the iterator has not passed all the elements in the container and thus
+       * points to a valid location.
+       * @return
        */
-      const Type* end() const
+      bool isValid() const
       {
-        return past;
+        return B::elem != past;
       }
 
       /**
@@ -99,8 +100,9 @@ namespace oz
       /**
        * Successor of the last element.
        * Is is used to determine when iterator becomes invalid.
+       * It's not declared const so we can have use copy operator on Iterator.
        */
-      const Type* const past;
+      const Type* past;
 
     public:
 
@@ -121,13 +123,13 @@ namespace oz
       {}
 
       /**
-       * Returns pointer that should be equal to what iterator points at when it passes all elements
-       * in the container.
-       * @return true if iterator is passed
+       * Returns true while the iterator has not passed all the elements in the container and thus
+       * points to a valid location.
+       * @return
        */
-      const Type* end() const
+      bool isValid() const
       {
-        return past;
+        return B::elem != past;
       }
 
       /**
@@ -289,6 +291,20 @@ namespace oz
   {
     for( int i = 0; i < count; ++i ) {
       aDest[i] = value;
+    }
+  }
+
+  /**
+   * Apply method on all array elements.
+   * @param aDest
+   * @param method
+   * @param count
+   */
+  template <typename Type, typename Method>
+  inline void aMap( Type* aDest, const Method& method, int count )
+  {
+    for( int i = 0; i < count; ++i ) {
+      method( aDest[i] );
     }
   }
 

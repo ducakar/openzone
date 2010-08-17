@@ -219,20 +219,6 @@ namespace oz
       }
 
       /**
-       * Create a copy of the vector.
-       * @return
-       */
-      Sparse clone() const
-      {
-        Sparse s( size );
-
-        aCopy( s.data, data, size );
-        s.count = count;
-        s.freeSlot = freeSlot;
-        return s;
-      }
-
-      /**
        * Equality operator. Capacity of sparse vectors doesn't matter.
        * @param s
        * @return true if all elements in both sparse vectors are equal
@@ -403,24 +389,6 @@ namespace oz
           }
         }
         return -1;
-      }
-
-      /**
-       * Add an element to the end.
-       * @param e
-       */
-      int operator << ( const Type& e )
-      {
-        ensureCapacity();
-
-        int index = freeSlot;
-
-        freeSlot = data[index].nextSlot[INDEX];
-        data[index] = e;
-        data[index].nextSlot[INDEX] = -1;
-        ++count;
-
-        return index;
       }
 
       /**
