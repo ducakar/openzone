@@ -494,9 +494,9 @@ namespace oz
       }
 
       /**
-       * Find element with given value
+       * If given key exists, return constant pointer to its value, otherwise return null.
        * @param key
-       * @return constant pointer to value of given key
+       * @return
        */
       const Type* find( const char* key ) const
       {
@@ -515,9 +515,9 @@ namespace oz
       }
 
       /**
-       * Find element with given value
+       * If given key exists, return pointer to its value, otherwise return null.
        * @param key
-       * @return pointer to value of given key
+       * @return
        */
       Type* find( const char* key )
       {
@@ -536,10 +536,10 @@ namespace oz
       }
 
       /**
-       * If given key exists, return constant reference to it's value.
+       * If given key exists, return constant reference to its value.
        * Only use this function if you are certain that the key exists.
        * @param key
-       * @return reference to value associated to the given key
+       * @return constant reference to value associated to the given key
        */
       const Type& get( const char* key ) const
       {
@@ -561,7 +561,7 @@ namespace oz
       }
 
       /**
-       * If given key exists, return reference to it's value.
+       * If given key exists, return reference to its value.
        * Only use this function if you are certain that the key exists.
        * @param key
        * @return reference to value associated to the given key
@@ -589,6 +589,7 @@ namespace oz
        * Add new element. The key must not yet exist in this HashString.
        * @param key
        * @param value
+       * @return pointer to new entry's value
        */
       Type* add( const char* key, const Type& value = Type() )
       {
@@ -602,14 +603,14 @@ namespace oz
 
         soft_assert( loadFactor() < 0.75f );
 
-        return &data[i]->value;
+        return &elem->value;
       }
 
       /**
        * Remove element with given key.
        * @param key
        */
-      void remove( const char* key )
+      void exclude( const char* key )
       {
         int    i = String::hash( key ) % SIZE;
         Elem*  p = data[i];

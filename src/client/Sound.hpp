@@ -44,7 +44,7 @@ namespace client
         uint    source;
         Source* next[1];
 
-        Source( uint sourceId ) : source( sourceId ) {}
+        explicit Source( uint sourceId ) : source( sourceId ) {}
 
         static Pool<Source> pool;
 
@@ -56,7 +56,7 @@ namespace client
         uint source;
         bool isUpdated;
 
-        ContSource( uint sourceId ) : source( sourceId ), isUpdated( true ) {}
+        explicit ContSource( uint sourceId ) : source( sourceId ), isUpdated( true ) {}
       };
 
       /*
@@ -98,7 +98,7 @@ namespace client
 
       void addContSource( uint key, uint sourceId  )
       {
-        cachedSource = contSources.add( key, sourceId );
+        cachedSource = contSources.add( key, ContSource( sourceId ) );
       }
 
       uint getCachedContSourceId() const

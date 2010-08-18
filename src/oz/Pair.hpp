@@ -126,20 +126,4 @@ namespace oz
     return Pair<TypeX, TypeY>( x, y );
   }
 
-  /**
-   * Utility for constructing pair of references to given variables.
-   * It can be used to assign both variables at once, like this example implementation of swap:
-   * <pre>
-   * int a = 1, b = 2;
-   * tie( a, b ) = pair( b, a );</pre>
-   * @param x
-   * @param y
-   * @return
-   */
-  template <typename TypeX, typename TypeY>
-  inline Pair<TypeX&, TypeY&> tie( TypeX& x, TypeY& y )
-  {
-    return Pair<TypeX&, TypeY&>( x, y );
-  }
-
 }

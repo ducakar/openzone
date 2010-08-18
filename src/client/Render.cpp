@@ -414,7 +414,7 @@ namespace client
           model->flags &= ~Model::UPDATED_BIT;
         }
         else {
-          models.remove( key );
+          models.exclude( key );
           delete model;
         }
       }
@@ -434,7 +434,7 @@ namespace client
 
       if( world.objects[key] == null ) {
         delete model;
-        models.remove( key );
+        models.exclude( key );
       }
     }
   }
