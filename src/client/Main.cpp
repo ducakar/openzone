@@ -80,13 +80,6 @@ namespace client
   void Main::main( int* argc, char** argv )
   {
     initFlags = 0;
-
-#ifdef OZ_WINDOWS
-    // print directly to the console, do not use SDL's stdout.txt and stderr.txt
-    freopen( "CON", "wt", stdout );
-    freopen( "CON", "wt", stderr );
-#endif
-
     String rcDir;
 
 #if defined( OZ_MINGW ) || defined( OZ_MSVC )
@@ -102,7 +95,7 @@ namespace client
 
     struct stat homeDirStat;
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
-      printf( "No resource dir found, creating '%s' ...", rcDir.cstr() );
+      printf( "No resource directory found, creating '%s' ...", rcDir.cstr() );
 
 #if defined( OZ_MINGW ) || defined( OZ_MSVC )
       if( mkdir( rcDir.cstr() ) != 0 ) {
@@ -137,7 +130,7 @@ namespace client
       initFlags |= INIT_CONFIG;
     }
     else {
-      log.println( "No config file, default config will be written on exit" );
+      log.println( "No configuration file, default configuration will be written on exit" );
     }
     config.add( "dir.rc", rcDir );
 
@@ -174,7 +167,7 @@ namespace client
 
     initFlags |= INIT_SDL;
 
-    const char* data = config.getSet( "dir.data", "data" );
+    const char* data = config.getSet( "dir.data", OZ_DEFAULT_DATA_DIR );
 
     log.print( "Setting working directory '%s' ...", data );
 
@@ -387,7 +380,7 @@ namespace client
     log.println( "}" );
 
     if( ~initFlags & INIT_CONFIG ) {
-      config.remove( "dir.rc" );
+      config.exclude( "dir.rc" );
       config.save( configPath );
       config.add( "dir.rc", rcDir );
     }
@@ -400,6 +393,12 @@ using namespace oz;
 
 int main( int argc, char** argv )
 {
+#ifdef OZ_WINDOWS
+  // print directly to the console, do not use SDL's stdout.txt and stderr.txt
+  freopen( "CON", "wt", stdout );
+  freopen( "CON", "wt", stderr );
+#endif
+
   printf( "OpenZone  Copyright (C) 2002-2009  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
       "This is free software, and you are welcome to redistribute it\n"

@@ -164,7 +164,7 @@ namespace client
 
       if( world.objects[key] == null ) {
         delete audio;
-        audios.remove( key );
+        audios.exclude( key );
       }
     }
   }
@@ -203,7 +203,7 @@ namespace client
       else {
         alSourceStop( src->source );
         alDeleteSources( 1, &src->source );
-        contSources.remove( key );
+        contSources.exclude( key );
       }
     }
 
@@ -257,7 +257,7 @@ namespace client
           audio->flags &= ~Audio::UPDATED_BIT ;
         }
         else {
-          audios.remove( key );
+          audios.exclude( key );
           delete audio;
         }
       }

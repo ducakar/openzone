@@ -50,7 +50,7 @@ namespace server
       Client* client = new Client();
 
       client->socket = clientSocket;
-      clients << client;
+      clients.add( client );
 
       log.println( "Client connected" );
     }

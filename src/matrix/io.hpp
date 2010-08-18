@@ -11,7 +11,36 @@
 
 namespace oz
 {
+  struct Endian
+  {
+    static short swap16( short s )
+    {
+      return short( s << 8 ) | short( ushort( s ) >> 8 );
+    }
 
+    static int swap32( int i )
+    {
+#ifdef __GNUG__
+      return __builtin_bswap32( i );
+#else
+      return ( i << 24 ) | ( ( i & 0x0000ff00 ) << 8 ) |
+          ( ( i & 0x00ff0000 ) >> 8 ) | ( uint( i ) >> 24 );
+#endif
+    }
+
+#ifdef OZ_LP64
+    static long swap64( long l )
+    {
+#ifdef __GNUG__
+      return __builtin_bswap64( l );
+#else
+      return ( l << 56 ) | ( ( l & 0x000000000000ff00L ) << 40 ) |
+        ( ( l & 0x0000000000ff0000L ) << 24 ) | ( ( l & 0x00000000ff000000L ) << 8 ) |
+        ( ( l & 0x000000ff00000000L ) >> 8 ) | ( ( l & 0x0000ff0000000000L ) >> 24 ) |
+        ( ( l & 0x00ff000000000000L ) >> 40 ) | ( ulong( l ) >> 56 );
+#endif
+#endif
+  };
   /**
    * Read-only non-seekable stream.
    */
@@ -74,7 +103,7 @@ namespace oz
         const short* s = reinterpret_cast<const short*>( pos );
         pos += sizeof( short );
 
-        return SDL_SwapBE16( *s );
+        return Endian::swap16( *s );
       }
 
       int readInt()
@@ -86,7 +115,7 @@ namespace oz
         const int* i = reinterpret_cast<const int*>( pos );
         pos += sizeof( int );
 
-        return SDL_SwapBE32( *i );
+        return Endian::swap32( *i );
       }
 
       float readFloat()
@@ -98,7 +127,7 @@ namespace oz
         const int* f = reinterpret_cast<const int*>( pos );
         pos += sizeof( float );
 
-        return Math::fromBits( SDL_SwapBE32( *f ) );
+        return Math::fromBits( Endian::swap32( *f ) );
       }
 
       String readString()
@@ -151,9 +180,9 @@ namespace oz
         const int* v = reinterpret_cast<const int*>( pos );
         pos += sizeof( Vec3 );
 
-        return Vec3( Math::fromBits( SDL_SwapBE32( v[0] ) ),
-                     Math::fromBits( SDL_SwapBE32( v[1] ) ),
-                     Math::fromBits( SDL_SwapBE32( v[2] ) ) );
+        return Vec3( Math::fromBits( Endian::swap32( v[0] ) ),
+                     Math::fromBits( Endian::swap32( v[1] ) ),
+                     Math::fromBits( Endian::swap32( v[2] ) ) );
       }
 
       Quat readQuat()
@@ -165,10 +194,10 @@ namespace oz
         const int* q = reinterpret_cast<const int*>( pos );
         pos += sizeof( Quat );
 
-        return Quat( Math::fromBits( SDL_SwapBE32( q[0] ) ),
-                     Math::fromBits( SDL_SwapBE32( q[1] ) ),
-                     Math::fromBits( SDL_SwapBE32( q[2] ) ),
-                     Math::fromBits( SDL_SwapBE32( q[3] ) ) );
+        return Quat( Math::fromBits( Endian::swap32( q[0] ) ),
+                     Math::fromBits( Endian::swap32( q[1] ) ),
+                     Math::fromBits( Endian::swap32( q[2] ) ),
+                     Math::fromBits( Endian::swap32( q[3] ) ) );
       }
 
       Mat33 readMat33()
@@ -180,15 +209,15 @@ namespace oz
         const int* m = reinterpret_cast<const int*>( pos );
         pos += sizeof( Mat33 );
 
-        return Mat33( Math::fromBits( SDL_SwapBE32( m[0] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[1] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[2] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[3] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[4] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[5] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[6] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[7] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[8] ) ) );
+        return Mat33( Math::fromBits( Endian::swap32( m[0] ) ),
+                      Math::fromBits( Endian::swap32( m[1] ) ),
+                      Math::fromBits( Endian::swap32( m[2] ) ),
+                      Math::fromBits( Endian::swap32( m[3] ) ),
+                      Math::fromBits( Endian::swap32( m[4] ) ),
+                      Math::fromBits( Endian::swap32( m[5] ) ),
+                      Math::fromBits( Endian::swap32( m[6] ) ),
+                      Math::fromBits( Endian::swap32( m[7] ) ),
+                      Math::fromBits( Endian::swap32( m[8] ) ) );
       }
 
       Mat44 readMat44()
@@ -200,22 +229,22 @@ namespace oz
         const int* m = reinterpret_cast<const int*>( pos );
         pos += sizeof( Mat44 );
 
-        return Mat44( Math::fromBits( SDL_SwapBE32( m[ 0] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[ 1] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[ 2] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[ 3] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[ 4] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[ 5] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[ 6] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[ 7] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[ 8] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[ 9] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[10] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[11] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[12] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[13] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[14] ) ),
-                      Math::fromBits( SDL_SwapBE32( m[15] ) ) );
+        return Mat44( Math::fromBits( Endian::swap32( m[ 0] ) ),
+                      Math::fromBits( Endian::swap32( m[ 1] ) ),
+                      Math::fromBits( Endian::swap32( m[ 2] ) ),
+                      Math::fromBits( Endian::swap32( m[ 3] ) ),
+                      Math::fromBits( Endian::swap32( m[ 4] ) ),
+                      Math::fromBits( Endian::swap32( m[ 5] ) ),
+                      Math::fromBits( Endian::swap32( m[ 6] ) ),
+                      Math::fromBits( Endian::swap32( m[ 7] ) ),
+                      Math::fromBits( Endian::swap32( m[ 8] ) ),
+                      Math::fromBits( Endian::swap32( m[ 9] ) ),
+                      Math::fromBits( Endian::swap32( m[10] ) ),
+                      Math::fromBits( Endian::swap32( m[11] ) ),
+                      Math::fromBits( Endian::swap32( m[12] ) ),
+                      Math::fromBits( Endian::swap32( m[13] ) ),
+                      Math::fromBits( Endian::swap32( m[14] ) ),
+                      Math::fromBits( Endian::swap32( m[15] ) ) );
       }
   };
 
@@ -281,7 +310,7 @@ namespace oz
         short* p = reinterpret_cast<short*>( pos );
         pos += sizeof( short );
 
-        *p = SDL_SwapBE16( s );
+        *p = Endian::swap16( s );
       }
 
       void writeInt( int i )
@@ -293,7 +322,7 @@ namespace oz
         int* p = reinterpret_cast<int*>( pos );
         pos += sizeof( int );
 
-        *p = SDL_SwapBE32( i );
+        *p = Endian::swap32( i );
       }
 
       void writeFloat( float f )
@@ -305,7 +334,7 @@ namespace oz
         int* p = reinterpret_cast<int*>( pos );
         pos += sizeof( float );
 
-        *p = SDL_SwapBE32( Math::toBits( f ) );
+        *p = Endian::swap32( Math::toBits( f ) );
       }
 
       void writeString( const String& s )
@@ -345,9 +374,9 @@ namespace oz
         int* p = reinterpret_cast<int*>( pos );
         pos += sizeof( Vec3 );
 
-        p[0] = SDL_SwapBE32( Math::toBits( v.x ) );
-        p[1] = SDL_SwapBE32( Math::toBits( v.y ) );
-        p[2] = SDL_SwapBE32( Math::toBits( v.z ) );
+        p[0] = Endian::swap32( Math::toBits( v.x ) );
+        p[1] = Endian::swap32( Math::toBits( v.y ) );
+        p[2] = Endian::swap32( Math::toBits( v.z ) );
       }
 
       void writeQuat( const Quat& q )
@@ -359,10 +388,10 @@ namespace oz
         int* p = reinterpret_cast<int*>( pos );
         pos += sizeof( Quat );
 
-        p[0] = SDL_SwapBE32( Math::toBits( q.x ) );
-        p[1] = SDL_SwapBE32( Math::toBits( q.y ) );
-        p[2] = SDL_SwapBE32( Math::toBits( q.z ) );
-        p[3] = SDL_SwapBE32( Math::toBits( q.w ) );
+        p[0] = Endian::swap32( Math::toBits( q.x ) );
+        p[1] = Endian::swap32( Math::toBits( q.y ) );
+        p[2] = Endian::swap32( Math::toBits( q.z ) );
+        p[3] = Endian::swap32( Math::toBits( q.w ) );
       }
 
       void writeMat33( const Mat33& m )
@@ -374,15 +403,15 @@ namespace oz
         int* p = reinterpret_cast<int*>( pos );
         pos += sizeof( Mat33 );
 
-        p[0] = SDL_SwapBE32( Math::toBits( m.x.x ) );
-        p[1] = SDL_SwapBE32( Math::toBits( m.x.y ) );
-        p[2] = SDL_SwapBE32( Math::toBits( m.x.z ) );
-        p[3] = SDL_SwapBE32( Math::toBits( m.y.x ) );
-        p[4] = SDL_SwapBE32( Math::toBits( m.y.y ) );
-        p[5] = SDL_SwapBE32( Math::toBits( m.y.z ) );
-        p[6] = SDL_SwapBE32( Math::toBits( m.z.x ) );
-        p[7] = SDL_SwapBE32( Math::toBits( m.z.y ) );
-        p[8] = SDL_SwapBE32( Math::toBits( m.z.z ) );
+        p[0] = Endian::swap32( Math::toBits( m.x.x ) );
+        p[1] = Endian::swap32( Math::toBits( m.x.y ) );
+        p[2] = Endian::swap32( Math::toBits( m.x.z ) );
+        p[3] = Endian::swap32( Math::toBits( m.y.x ) );
+        p[4] = Endian::swap32( Math::toBits( m.y.y ) );
+        p[5] = Endian::swap32( Math::toBits( m.y.z ) );
+        p[6] = Endian::swap32( Math::toBits( m.z.x ) );
+        p[7] = Endian::swap32( Math::toBits( m.z.y ) );
+        p[8] = Endian::swap32( Math::toBits( m.z.z ) );
       }
 
       void writeMat44( const Mat44& m )
@@ -394,22 +423,22 @@ namespace oz
         int* p = reinterpret_cast<int*>( pos );
         pos += sizeof( Mat44 );
 
-        p[ 0] = SDL_SwapBE32( Math::toBits( m.x.x ) );
-        p[ 1] = SDL_SwapBE32( Math::toBits( m.x.y ) );
-        p[ 2] = SDL_SwapBE32( Math::toBits( m.x.z ) );
-        p[ 3] = SDL_SwapBE32( Math::toBits( m.x.w ) );
-        p[ 4] = SDL_SwapBE32( Math::toBits( m.y.x ) );
-        p[ 5] = SDL_SwapBE32( Math::toBits( m.y.y ) );
-        p[ 6] = SDL_SwapBE32( Math::toBits( m.y.z ) );
-        p[ 7] = SDL_SwapBE32( Math::toBits( m.y.w ) );
-        p[ 8] = SDL_SwapBE32( Math::toBits( m.z.x ) );
-        p[ 9] = SDL_SwapBE32( Math::toBits( m.z.y ) );
-        p[10] = SDL_SwapBE32( Math::toBits( m.z.z ) );
-        p[11] = SDL_SwapBE32( Math::toBits( m.z.w ) );
-        p[12] = SDL_SwapBE32( Math::toBits( m.w.x ) );
-        p[13] = SDL_SwapBE32( Math::toBits( m.w.y ) );
-        p[14] = SDL_SwapBE32( Math::toBits( m.w.z ) );
-        p[15] = SDL_SwapBE32( Math::toBits( m.w.w ) );
+        p[ 0] = Endian::swap32( Math::toBits( m.x.x ) );
+        p[ 1] = Endian::swap32( Math::toBits( m.x.y ) );
+        p[ 2] = Endian::swap32( Math::toBits( m.x.z ) );
+        p[ 3] = Endian::swap32( Math::toBits( m.x.w ) );
+        p[ 4] = Endian::swap32( Math::toBits( m.y.x ) );
+        p[ 5] = Endian::swap32( Math::toBits( m.y.y ) );
+        p[ 6] = Endian::swap32( Math::toBits( m.y.z ) );
+        p[ 7] = Endian::swap32( Math::toBits( m.y.w ) );
+        p[ 8] = Endian::swap32( Math::toBits( m.z.x ) );
+        p[ 9] = Endian::swap32( Math::toBits( m.z.y ) );
+        p[10] = Endian::swap32( Math::toBits( m.z.z ) );
+        p[11] = Endian::swap32( Math::toBits( m.z.w ) );
+        p[12] = Endian::swap32( Math::toBits( m.w.x ) );
+        p[13] = Endian::swap32( Math::toBits( m.w.y ) );
+        p[14] = Endian::swap32( Math::toBits( m.w.z ) );
+        p[15] = Endian::swap32( Math::toBits( m.w.w ) );
       }
   };
 

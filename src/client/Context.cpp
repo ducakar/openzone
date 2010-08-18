@@ -472,7 +472,7 @@ namespace client
       if( resource->nUsers == 0 ) {
         glDeleteLists( resource->object->list, 1 );
         delete resource->object;
-        objs.remove( path );
+        objs.exclude( path );
       }
     }
   }
@@ -500,7 +500,7 @@ namespace client
       if( resource->nUsers == 0 ) {
         glDeleteLists( resource->object->list, 1 );
         delete resource->object;
-        staticMd2s.remove( path );
+        staticMd2s.exclude( path );
       }
     }
   }
@@ -526,7 +526,7 @@ namespace client
 
       if( resource->nUsers == 0 ) {
         delete resource->object;
-        md2s.remove( path );
+        md2s.exclude( path );
       }
     }
   }
@@ -555,7 +555,7 @@ namespace client
       if( resource->nUsers == 0 ) {
         glDeleteLists( resource->object->list, 1 );
         delete resource->object;
-        staticMd3s.remove( path );
+        staticMd3s.exclude( path );
       }
     }
   }
@@ -581,7 +581,7 @@ namespace client
 
       if( resource->nUsers == 0 ) {
         delete resource->object;
-        md3s.remove( path );
+        md3s.exclude( path );
       }
     }
   }

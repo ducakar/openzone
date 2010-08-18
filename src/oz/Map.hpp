@@ -32,14 +32,15 @@ namespace oz
             key( key_ ), value( value_ )
         {}
 
-        bool operator == ( const Elem& e )
+        // operators overloads are needed for bisection algorithms to work
+        friend bool operator == ( const Key& key, const Elem& e )
         {
-          return key == e.key && value == e.value;
+          return key == e.key;
         }
 
-        bool operator != ( const Elem& e )
+        friend bool operator < ( const Key& key, const Elem& e )
         {
-          return key != e.key || value != e.value;
+          return key < e.key;
         }
       };
 
@@ -231,68 +232,6 @@ namespace oz
         }
       }
 
-      int bisectFind( const Key& key ) const
-      {
-        if( count == 0 ) {
-          return -1;
-        }
-
-        int a = 0;
-        int b = count;
-
-        // Note that the algorithm ensures data[a] <= key and key < data[b] all the time, so the
-        // key may only lie on position a.
-        do {
-          int c = ( a + b ) / 2;
-
-          if( data[c].key == key ) {
-            return c;
-          }
-          else if( key < data[c].key ) {
-            b = c;
-          }
-          else {
-            a = c;
-          }
-        }
-        while( b - a > 1 );
-
-        return data[a].key == key ? a : -1;
-      }
-
-      int bisectPosition( const Key& key ) const
-      {
-        if( count == 0 ) {
-          return 0;
-        }
-        // the algorithm cannot put elements before data[1]
-        if( key < data[0].key ) {
-          return 0;
-        }
-
-        int a = 0;
-        int b = count;
-
-        // Note that the algorithm ensures data[a] <= key and key < data[b] all the time, so the
-        // key may only lie on position a.
-        do {
-          int c = ( a + b ) / 2;
-
-          if( data[c].key == key ) {
-            return -1;
-          }
-          else if( key < data[c].key ) {
-            b = c;
-          }
-          else {
-            a = c;
-          }
-        }
-        while( b - a > 1 );
-
-        return b;
-      }
-
     public:
 
       /**
@@ -415,26 +354,12 @@ namespace oz
       }
 
       /**
-       * Trim map, leave at most <code>left</code> elements/capacity.
-       * @param left
-       */
-      void trim()
-      {
-        int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-
-        if( newSize < size ) {
-          size = newSize;
-          data = Alloc::realloc( data, count, size );
-        }
-      }
-
-      /**
        * @param e
        * @return true if the key is found in the vector
        */
       bool contains( const Key& key ) const
       {
-        return bisectFind( key ) != -1;
+        return aBisectFind( data, key, count ) != -1;
       }
 
       /**
@@ -488,7 +413,7 @@ namespace oz
        */
       int index( const Key& key ) const
       {
-        return bisectFind( key );
+        return aBisectFind( data, key, count );
       }
 
       /**
@@ -512,23 +437,82 @@ namespace oz
       }
 
       /**
-       * @param i
-       * @return pointer i-th giver key's value
+       * If given key exists, return constant pointer to its value, otherwise return null.
+       * @param key
+       * @return
        */
-      Value* get( const Key& key )
+      const Value* find( const Key& key ) const
       {
-        int i = index( key );
-        return i == -1 ? null : data[i].value;
+        int i = aBisectFind( data, key, count );
+        return i == -1 ? null : &data[i].value;
       }
 
       /**
-       * @param i
-       * @return constant pointer i-th giver key's value
+       * If given key exists, return pointer to its value, otherwise return null.
+       * @param key
+       * @return
        */
-      const Value* get( const Key& key ) const
+      Value* find( const Key& key )
       {
-        int i = index( key );
-        return i == -1 ? null : data[i].value;
+        int i = aBisectFind( data, key, count );
+        return i == -1 ? null : &data[i].value;
+      }
+
+      /**
+       * If given key exists, return constant reference to its value.
+       * Only use this function if you are certain that the key exists.
+       * @param key
+       * @return constant reference to value associated to the given key
+       */
+      const Value& get( const Key& key ) const
+      {
+        int i = aBisectFind( data, key, count );
+
+        assert( i != -1 );
+
+        return data[i].value;
+      }
+
+      /**
+       * If given key exists, return reference to its value.
+       * Only use this function if you are certain that the key exists.
+       * @param key
+       * @return reference to value associated to the given key
+       */
+      Value& get( const Key& key )
+      {
+        int i = aBisectFind( data, key, count );
+
+        assert( i != -1 );
+
+        return data[i].value;
+      }
+
+      /**
+       * Add an element. The key must not yet exist in this map.
+       * @param e
+       * @return true if element has been added
+       */
+      void add( const Key& key, const Value& value = Value() )
+      {
+        assert( !contains( key ) );
+
+        int i = aBisectPosition( data, key, count );
+        insert( i, key, value );
+      }
+
+      /**
+       * Add an element, but only if there's no any equal element in the map.
+       * @param e
+       * @return true if element has been added
+       */
+      void include( const Key& key, const Value& value = Value() )
+      {
+        int i = aBisectPosition( data, key, count );
+
+        if( i == 0 || data[i - 1].key != key ) {
+          insert( i, key, value );
+        }
       }
 
       /**
@@ -568,26 +552,14 @@ namespace oz
       }
 
       /**
-       * Add an element, but only if there's no any equal element in the map.
-       * @param e
-       * @return true if element has been added
-       */
-      void include( const Key& key, const Value& value = Value() )
-      {
-        int i = bisectPosition( key );
-        if( i != -1 ) {
-          insert( i, key, value );
-        }
-      }
-
-      /**
        * Find and remove the given element.
        * @param e
        * @return
        */
       bool exclude( const Key& key )
       {
-        int i = index( key );
+        int i = aBisectFind( data, key, count );
+
         if( i != -1 ) {
           remove( i );
           return true;
@@ -614,6 +586,20 @@ namespace oz
       {
         aFree( data, count );
         clear();
+      }
+
+      /**
+       * Trim map, leave at most <code>left</code> elements/capacity.
+       * @param left
+       */
+      void trim()
+      {
+        int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
+
+        if( newSize < size ) {
+          size = newSize;
+          data = Alloc::realloc( data, count, size );
+        }
       }
 
   };

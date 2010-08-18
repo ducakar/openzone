@@ -13,6 +13,9 @@
 namespace oz
 {
 
+  /**
+   * Auto pointer (similar to std::auto_ptr).
+   */
   template <typename Type>
   class AutoPtr
   {

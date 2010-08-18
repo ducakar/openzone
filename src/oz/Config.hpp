@@ -66,9 +66,9 @@ namespace oz
        * Remove variable.
        * @param key variable name
        */
-      void remove( const char* key )
+      void exclude( const char* key )
       {
-        vars.remove( key );
+        vars.exclude( key );
       }
 
       /**

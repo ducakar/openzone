@@ -250,20 +250,6 @@ namespace oz
       }
 
       /**
-       * Trim vector, leave at most <code>left</code> elements/capacity.
-       * @param left
-       */
-      void trim()
-      {
-        int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-
-        if( newSize < size ) {
-          size = newSize;
-          data = Alloc::realloc( data, count, size );
-        }
-      }
-
-      /**
        * @param e
        * @return true if the element is found in the vector
        */
@@ -608,6 +594,20 @@ namespace oz
       {
         aFree( data, count );
         clear();
+      }
+
+      /**
+       * Trim vector, leave at most <code>left</code> elements/capacity.
+       * @param left
+       */
+      void trim()
+      {
+        int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
+
+        if( newSize < size ) {
+          size = newSize;
+          data = Alloc::realloc( data, count, size );
+        }
       }
 
   };

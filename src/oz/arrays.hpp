@@ -495,4 +495,84 @@ namespace oz
     quicksort( aSrc, aSrc + count - 1 );
   }
 
+  /**
+   * Find an element using bisection.
+   * @param aSrc non-empty array
+   * @param key the key we are looking for
+   * @param count
+   * @return index of requested element or -1 if not found
+   */
+  template <typename Type, typename Key>
+  inline int aBisectFind( Type* aSrc, const Key& key, int count )
+  {
+    if( count == 0 ) {
+      return -1;
+    }
+
+    int a = 0;
+    int b = count;
+
+    // we must check this or the next assumption may not hold
+    if( key < aSrc[0] ) {
+      return -1;
+    }
+
+    // Note that the algorithm ensures data[a] <= key and key < data[b] all the time, so the
+    // key may only lie on position a.
+    do {
+      int c = ( a + b ) / 2;
+
+      if( key < aSrc[c] ) {
+        b = c;
+      }
+      else {
+        a = c;
+      }
+    }
+    while( b - a > 1 );
+
+    return key == aSrc[a] ? a : -1;
+  }
+
+  /**
+   * Find insert position for an element to be added using bisection.
+   * Returns an index such that aSrc[index - 1] <= key && key < aSrc[index]. If all elements are
+   * lesser, return count, if all elements are greater, return 0.
+   * @param aSrc
+   * @param key the key we are looking for
+   * @param count
+   * @return
+   */
+  template <typename Type, typename Key>
+  inline int aBisectPosition( Type* aSrc, const Key& key, int count )
+  {
+    if( count == 0 ) {
+      return 0;
+    }
+
+    int a = 0;
+    int b = count;
+
+    // we must check this or the next assumption may not hold
+    if( key < aSrc[0] ) {
+      return 0;
+    }
+
+    // Note that the algorithm ensures data[a] <= key and key < data[b] all the time, so the
+    // key may only lie on position a.
+    do {
+      int c = ( a + b ) / 2;
+
+      if( key < aSrc[c] ) {
+        b = c;
+      }
+      else {
+        a = c;
+      }
+    }
+    while( b - a > 1 );
+
+    return a + 1;
+  }
+
 }

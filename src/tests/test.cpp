@@ -42,11 +42,6 @@ struct T
 
 int main( int, char** )
 {
-  int a = 1, b = 2;
-  tie( a, b ) = pair( b, a );
-
-  printf( "%d %d\n", a, b );
-
   int array[] = { 0, 1, 2, 3, 4, 5, 6 };
 
   auto add42 = [] ( int* elem ) { *elem += 42; };

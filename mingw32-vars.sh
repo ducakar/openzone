@@ -1,15 +1,22 @@
 #!/bin/sh
 
-export CPP="i486-mingw32-gcc -E"
-export CC="i486-mingw32-gcc"
-export CXX="i486-mingw32-g++"
-export LD="i486-mingw32-ld"
-export LDSHARE="i486-mingw32-ld"
-# must be AR="i486-mingw32-ar rc" for zlib
-export AR="i486-mingw32-ar"
-export RANLIB="i486-mingw32-ranlib"
-export RC="i486-mingw32-windres"
-export CFLAGS="-O3 -fomit-frame-pointer -march=i686 -mtune=generic -mmmx -msse -mfpmath=sse -ffast-math"
-export CFLAGS="$CFLAGS -I/home/davorin/Projects/openzone/mingw32/include"
-export LDFLAGS="-s -L/home/davorin/Projects/openzone/mingw32/lib"
-export PREFIX="/home/davorin/Projects/openzone/mingw32"
+prefix="`pwd`/../openzone-build/mingw32"
+triplet="mingw32"
+triplet_minus="${triplet}-"
+alias make="${triplet_minus}make"
+
+export LC_ALL=C
+
+export CPP="${triplet_minus}gcc -E"
+export CC="${triplet_minus}gcc"
+export CXX="${triplet_minus}g++"
+export LD="${triplet_minus}ld"
+export LDSHARE="${triplet_minus}ld"
+# must be AR="${triplet_minus}ar rc" for zlib
+export AR="${triplet_minus}ar"
+export STRIP="${triplet_minus}strip"
+export RANLIB="${triplet_minus}ranlib"
+export RC="${triplet_minus}windres"
+export CFLAGS="-O3 -fomit-frame-pointer -march=i686 -mtune=generic -mmmx -msse3 -mfpmath=sse -ffast-math"
+export CFLAGS="$CFLAGS -I${prefix}/include"
+export LDFLAGS="-s -L${prefix}/lib"

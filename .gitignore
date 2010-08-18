@@ -8,6 +8,7 @@
 /linux
 /mingw32
 /msvc
+/nmake
 
 /doxygen
 /tags
