@@ -102,9 +102,9 @@ namespace oz
       bool includes( const Vec3& v, float eps = 0.0f ) const
       {
         Vec3 relPos = v - p;
-        Vec3 d( dim.x + eps,
-                dim.y + eps,
-                dim.z + eps );
+        Vec3 d = Vec3( dim.x + eps,
+                       dim.y + eps,
+                       dim.z + eps );
 
         return
             -d.x <= relPos.x && relPos.x <= d.x &&
@@ -115,9 +115,9 @@ namespace oz
       bool isInside( const AABB& a, float eps = 0.0f ) const
       {
         Vec3 relPos = p - a.p;
-        Vec3 d( a.dim.x - dim.x + eps,
-                a.dim.y - dim.y + eps,
-                a.dim.z - dim.z + eps );
+        Vec3 d = Vec3( a.dim.x - dim.x + eps,
+                       a.dim.y - dim.y + eps,
+                       a.dim.z - dim.z + eps );
 
         return
             -d.x <= relPos.x && relPos.x <= d.x &&
@@ -133,9 +133,9 @@ namespace oz
       bool overlaps( const AABB& a, float eps = 0.0f ) const
       {
         Vec3 relPos = a.p - p;
-        Vec3 d( a.dim.x + dim.x + eps,
-                a.dim.y + dim.y + eps,
-                a.dim.z + dim.z + eps );
+        Vec3 d = Vec3( a.dim.x + dim.x + eps,
+                       a.dim.y + dim.y + eps,
+                       a.dim.z + dim.z + eps );
 
         return
             -d.x <= relPos.x && relPos.x <= d.x &&

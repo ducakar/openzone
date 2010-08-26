@@ -12,7 +12,7 @@
 namespace oz
 {
 
-  class Exception
+  class Exception : public std::exception
   {
     public:
 
@@ -22,9 +22,14 @@ namespace oz
       const char* function;
 
       explicit Exception( const char* message_, const char* file_, int line_,
-                          const char* function_ ) :
+                          const char* function_ ) throw() :
           message( message_ ), file( file_ ), line( line_ ), function( function_ )
       {}
+
+      virtual const char* what() const throw()
+      {
+        return message;
+      }
 
   };
 

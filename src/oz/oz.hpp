@@ -25,6 +25,11 @@
 #include <cassert>
 
 /*
+ * Standard C++ exception definitions (usually included via new, but just for sure)
+ */
+#include <exception>
+
+/*
  * Standard C++ new/delete operator and exception definitions
  */
 #include <new>

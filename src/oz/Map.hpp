@@ -32,7 +32,7 @@ namespace oz
             key( key_ ), value( value_ )
         {}
 
-        // operators overloads are needed for bisection algorithms to work
+        // operators overloads are required for bisection algorithms to work properly
         friend bool operator == ( const Key& key, const Elem& e )
         {
           return key == e.key;
@@ -59,7 +59,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit CIterator() : B( null, null )
           {}
@@ -126,7 +125,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit Iterator() : B( null, null )
           {}
@@ -256,7 +254,7 @@ namespace oz
       {
         assert( m.size > 0 );
 
-        aConstruct( data, m.data, m.count );
+        aCopyConstruct( data, m.data, m.count );
       }
 
       /**
@@ -288,7 +286,7 @@ namespace oz
           size = m.size;
         }
 
-        aConstruct( data, m.data, m.count );
+        aCopyConstruct( data, m.data, m.count );
         count = m.count;
         return *this;
       }

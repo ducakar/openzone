@@ -6,8 +6,10 @@
 // enable PoolAlloc allocator; otherwise use a dummy class that calls malloc/free
 #cmakedefine OZ_POOL_ALLOC
 
-// enable GNU math builtins
+// enable GNU math builtins if we use GCC
+#ifdef __GNUC__
 #cmakedefine OZ_GNU_MATH
+#endif
 
 // whether math library has sincosf function
 #cmakedefine OZ_HAVE_SINCOSF
@@ -25,16 +27,16 @@
 
 #ifdef __GNUC__
 # if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 5 )
-#  error Too old GCC, at least 4.5 is needed
+#  error Too old GCC, at least 4.5 is required
 # endif
-# if __GNUC__ == 4 && __GNUC__MINOR <= 5
+# if __GNUC__ == 4 && __GNUC_MINOR__ <= 5
 #  define nullptr __null
 # endif
 #endif
 
 #ifdef OZ_MSVC
 # if _MSC_VER < 1600
-#  error Too old MSVC, at least 16.00 (Visual C++ 2010) needed
+#  error Too old MSVC, at least 16.00 (Visual C++ 2010) required
 # endif
 # define _CRT_SECURE_NO_WARNINGS 1
 # define __PRETTY_FUNCTION__ ""
@@ -43,6 +45,10 @@
 # define mkdir _mkdir
 #endif
 
-#if !defined( __LP64__ ) && !defined( _WIN64 )
+#ifndef __LP64__
 # define OZ_LONG_32
+#endif
+
+#if !defined( __LP64__ ) && !defined( __LLP64__ ) && !defined( _WIN64 )
+# define OZ_POINTER_32
 #endif

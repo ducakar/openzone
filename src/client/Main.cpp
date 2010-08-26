@@ -410,13 +410,13 @@ int main( int argc, char** argv )
   catch( const Exception& e ) {
     oz::log.resetIndent();
     oz::log.println();
-    oz::log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
+    oz::log.println( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.message );
 
     if( oz::log.isFile() ) {
-      fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
+      fprintf( stderr, "EXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.message );
     }
   }
-  catch( const std::bad_alloc& e ) {
+  catch( const std::exception& e ) {
     oz::log.resetIndent();
     oz::log.println();
     oz::log.println( "EXCEPTION: %s", e.what() );

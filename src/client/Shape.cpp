@@ -66,15 +66,15 @@ namespace client
   {
     float dim = size / 2.0f;
 
-    Vec3 v0( -dim * Math::frand(), -dim * Math::frand(), -dim );
-    Vec3 v1(  dim * Math::frand(), -dim * Math::frand(), -dim );
-    Vec3 v2(  dim * Math::frand(),  dim * Math::frand(), -dim );
-    Vec3 v3( -dim * Math::frand(),  dim * Math::frand(), -dim );
+    Vec3 v0 = Vec3( -dim * Math::frand(), -dim * Math::frand(), -dim );
+    Vec3 v1 = Vec3(  dim * Math::frand(), -dim * Math::frand(), -dim );
+    Vec3 v2 = Vec3(  dim * Math::frand(),  dim * Math::frand(), -dim );
+    Vec3 v3 = Vec3( -dim * Math::frand(),  dim * Math::frand(), -dim );
 
-    Vec3 v4( v0.x, v0.y,  dim );
-    Vec3 v5( v1.x, v1.y,  dim );
-    Vec3 v6( v2.x, v2.y,  dim );
-    Vec3 v7( v3.x, v3.y,  dim );
+    Vec3 v4 = Vec3( v0.x, v0.y,  dim );
+    Vec3 v5 = Vec3( v1.x, v1.y,  dim );
+    Vec3 v6 = Vec3( v2.x, v2.y,  dim );
+    Vec3 v7 = Vec3( v3.x, v3.y,  dim );
 
     glNewList( list, GL_COMPILE );
 

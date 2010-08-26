@@ -317,9 +317,9 @@ namespace client
     log.indent();
 
     float scaling = config.get( "scale", 1.0f );
-    Vec3 translation( config.get( "translate.x", 0.0f ),
-                      config.get( "translate.y", 0.0f ),
-                      config.get( "translate.z", 0.0f ) );
+    Vec3 translation = Vec3( config.get( "translate.x", 0.0f ),
+                             config.get( "translate.y", 0.0f ),
+                             config.get( "translate.z", 0.0f ) );
 
     HashString<int, 32> materialIndices;
 

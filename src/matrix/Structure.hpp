@@ -85,10 +85,6 @@ namespace oz
             out.maxs = Vec3( in.maxs.y + p.x, -in.mins.x + p.y, in.maxs.z + p.z );
             break;
           }
-          default: {
-            assert( false );
-            break;
-          }
         }
         return out;
       }
@@ -114,10 +110,6 @@ namespace oz
           case Structure::R270: {
             mins = Vec3( in.mins.y + p.x, -in.maxs.x + p.y, in.mins.z + p.z );
             maxs = Vec3( in.maxs.y + p.x, -in.mins.x + p.y, in.maxs.z + p.z );
-            break;
-          }
-          default: {
-            assert( false );
             break;
           }
         }

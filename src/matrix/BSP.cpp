@@ -149,7 +149,7 @@ namespace oz
     int  size[2];
   };
 
-#ifndef OZ_PREBUILT
+#ifndef OZ_USE_PREBUILT
 
   inline bool BSP::includes( const BSP::Brush& brush ) const
   {
@@ -675,8 +675,8 @@ namespace oz
     log.printEnd( " OK" );
 
     // integrity check
-    Bitset usedNodes( nNodes );
-    Bitset usedLeaves( nLeaves );
+    Bitset usedNodes = Bitset( nNodes );
+    Bitset usedLeaves = Bitset( nLeaves );
 
     usedNodes.clearAll();
     usedLeaves.clearAll();
@@ -847,7 +847,7 @@ namespace oz
     size += nFaces       * int( sizeof( Face ) );
     size += nLightmaps   * int( sizeof( Lightmap ) );
 
-    Buffer buffer( size );
+    Buffer buffer = Buffer( size );
     OutputStream os = buffer.outputStream();
 
     os.writeVec3( mins );
@@ -1150,7 +1150,7 @@ namespace oz
   {
     name = name_;
 
-#ifdef OZ_PREBUILT
+#ifdef OZ_USE_PREBUILT
 
     log.println( "Loading OpenZone BSP structure '%s' {", name.cstr() );
     log.indent();
@@ -1176,7 +1176,7 @@ namespace oz
       return false;
     }
 
-#ifdef OZ_BUILD
+#ifdef OZ_MAKE_PREBUILT
 //    optimise();
     save( "maps/" + name + ".ozBSP" );
 #endif
@@ -1193,9 +1193,9 @@ namespace oz
   {
     log.print( "Freeing BSP structure '%s' ...", name.cstr() );
 
-#ifdef OZ_PREBUILT
+#ifdef OZ_USE_PREBUILT
 
-    if( textures != null ) {
+    if( planes != null ) {
       aDestruct( planes, nPlanes );
       aDestruct( nodes, nNodes );
       aDestruct( leaves, nLeaves );
@@ -1211,7 +1211,7 @@ namespace oz
       aDestruct( faces, nFaces );
       aDestruct( lightmaps, nLightmaps );
 
-      Alloc::dealloc( textures );
+      Alloc::dealloc( planes );
 
       nPlanes      = 0;
       nNodes       = 0;

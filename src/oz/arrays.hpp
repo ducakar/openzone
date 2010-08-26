@@ -35,7 +35,6 @@ namespace oz
 
       /**
        * Default constructor returns a dummy passed iterator
-       * @return
        */
       explicit CIterator() : B( null ), past( null )
       {}
@@ -108,7 +107,6 @@ namespace oz
 
       /**
        * Default constructor returns a dummy passed iterator
-       * @return
        */
       explicit Iterator() : B( null ), past( null )
       {}
@@ -198,7 +196,7 @@ namespace oz
    * @param count
    */
   template <typename Type>
-  inline void aConstruct( Type* aDest, int count )
+  inline void aDefaultConstruct( Type* aDest, int count )
   {
     for( int i = 0; i < count; ++i ) {
       new( &aDest[i] ) Type;
@@ -212,7 +210,7 @@ namespace oz
    * @param count
    */
   template <typename Type>
-  inline void aConstruct( Type* aDest, const Type* aSrc, int count )
+  inline void aCopyConstruct( Type* aDest, const Type* aSrc, int count )
   {
     for( int i = 0; i < count; ++i ) {
       new( &aDest[i] ) Type( aSrc[i] );
@@ -225,10 +223,37 @@ namespace oz
    * @param count
    */
   template <typename Type>
-  inline void aReverseConstruct( Type* aDest, const Type* aSrc, int count )
+  inline void aReverseCopyConstruct( Type* aDest, const Type* aSrc, int count )
   {
     for( int i = count - 1; i >= 0; --i ) {
       new( &aDest[i] ) Type( aSrc[i] );
+    }
+  }
+
+  /**
+   * Construct elements via move constructor from an already constructed array.
+   * @param aDest
+   * @param aSrc
+   * @param count
+   */
+  template <typename Type>
+  inline void aMoveConstruct( Type* aDest, Type* aSrc, int count )
+  {
+    for( int i = 0; i < count; ++i ) {
+      new( &aDest[i] ) Type( static_cast<Type&&>( aSrc[i] ) );
+    }
+  }
+
+  /**
+   * Construct elements in reverse direction via move constructor from an already constructed array.
+   * @param aDest
+   * @param count
+   */
+  template <typename Type>
+  inline void aReverseMoveConstruct( Type* aDest, Type* aSrc, int count )
+  {
+    for( int i = count - 1; i >= 0; --i ) {
+      new( &aDest[i] ) Type( static_cast<Type&&>( aSrc[i] ) );
     }
   }
 
@@ -276,6 +301,38 @@ namespace oz
 
     for( int i = count - 1; i >= 0; --i ) {
       aDest[i] = aSrc[i];
+    }
+  }
+
+  /**
+   * Move array from first to last element.
+   * @param aDest pointer to the first element in the destination array
+   * @param aSrc pointer to the first element in the source array
+   * @param count number of elements to be copied
+   */
+  template <typename Type>
+  inline void aMove( Type* aDest, Type* aSrc, int count )
+  {
+    assert( aDest != aSrc );
+
+    for( int i = 0; i < count; ++i ) {
+      aDest[i] = static_cast<Type&&>( aSrc[i] );
+    }
+  }
+
+  /**
+   * Move array from last to first element.
+   * @param aDest pointer to the first element in the destination array
+   * @param aSrc pointer to the first element in the source array
+   * @param count number of elements to be copied
+   */
+  template <typename Type>
+  inline void aReverseCopy( Type* aDest, Type* aSrc, int count )
+  {
+    assert( aDest != aSrc );
+
+    for( int i = count - 1; i >= 0; --i ) {
+      aDest[i] = static_cast<Type&&>( aSrc[i] );
     }
   }
 
@@ -378,7 +435,8 @@ namespace oz
   }
 
   /**
-   * Remove element at the specified index. Shift the remaining elements to fill the gap.
+   * Remove element at the specified index. Shift (with move operator) the remaining elements to
+   * fill the gap.
    * @param aDest pointer to the first element in the array
    * @param index position of the element to be removed
    * @param count number of elements in the array
@@ -389,7 +447,7 @@ namespace oz
     assert( 0 <= index && index < count );
 
     for( int i = index + 1; i < count; ++i ) {
-      aDest[i - 1] = aDest[i];
+      aDest[i - 1] = static_cast<Type&&>( aDest[i] );
     }
   }
 
@@ -424,7 +482,7 @@ namespace oz
     Type* aNew = new Type[newCount];
 
     for( int i = 0; i < count; ++i ) {
-      aNew[i] = aDest[i];
+      aNew[i] = static_cast<Type&&>( aDest[i] );
     }
     delete[] aDest;
 
@@ -432,8 +490,8 @@ namespace oz
   }
 
   /**
-   * Utility function for aSort. It could also be called directly. Type must have operator& lt;
-   * defined.
+   * Utility function for aSort. It could also be called directly.
+   * Type must have operator &lt; defined.
    * @param first pointer to first element in the array to be sorted
    * @param last pointer to last element in the array
    */
@@ -485,7 +543,8 @@ namespace oz
   /**
    * Perform quicksort on the array. Recursive quicksort algorithm is used which takes first
    * element in partition as a pivot so sorting a sorted or nearly sorted array will take O(n^2)
-   * time instead of O(n log n) as in general case. Type must have operator& lt; defined.
+   * time instead of O(n log n) as in general case.
+   * Type must have operator &lt; defined.
    * @param array pointer to the first element in the array
    * @param count number of elements to be sorted
    */
@@ -497,6 +556,7 @@ namespace oz
 
   /**
    * Find an element using bisection.
+   * Type must have operators == and &lt; defined.
    * @param aSrc non-empty array
    * @param key the key we are looking for
    * @param count
@@ -538,10 +598,11 @@ namespace oz
    * Find insert position for an element to be added using bisection.
    * Returns an index such that aSrc[index - 1] <= key && key < aSrc[index]. If all elements are
    * lesser, return count, if all elements are greater, return 0.
+   * Type must have operators == and &lt; defined.
    * @param aSrc
    * @param key the key we are looking for
    * @param count
-   * @return
+   * @return index of least element greater than the key, or count if there's no such element
    */
   template <typename Type, typename Key>
   inline int aBisectPosition( Type* aSrc, const Key& key, int count )

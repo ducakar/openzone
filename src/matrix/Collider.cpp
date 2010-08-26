@@ -349,30 +349,8 @@ namespace oz
     float maxRatio        =  1.0f;
     const Vec3* tmpNormal = null;
 
-    for( int i = 0; i < 6; ++i ) {
-      int j = i / 2;
-      const Vec3& normal = bbNormals[i];
+    Vec3 dir = Vec3( move.x, move.y, 0.0f );
 
-      float startDist = ( startPos[j] - sObj->p[j] ) * normal[j] - sObj->dim[j];
-      float endDist   = ( endPos[j]   - sObj->p[j] ) * normal[j] - sObj->dim[j];
-
-      if( endDist > EPSILON ) {
-        if( startDist < 0.0f ) {
-          maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
-        }
-        else {
-          return;
-        }
-      }
-      else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
-
-        if( ratio > minRatio ) {
-          minRatio  = ratio;
-          tmpNormal = &normal;
-        }
-      }
-    }
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio    = Math::max( 0.0f, minRatio );
       hit.normal   = *tmpNormal;

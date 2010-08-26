@@ -111,10 +111,20 @@ namespace nirvana
     catch( const Exception& e ) {
       log.resetIndent();
       log.println();
-      log.println( "EXCEPTION: %s:%d: %s", e.file, e.line, e.message );
+      log.println( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.message );
 
       if( log.isFile() ) {
-        fprintf( stderr, "EXCEPTION: %s:%d: %s\n", e.file, e.line, e.message );
+        fprintf( stderr, "EXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.message );
+      }
+      abort();
+    }
+    catch( const std::exception& e ) {
+      log.resetIndent();
+      log.println();
+      log.println( "EXCEPTION: %s", e.what() );
+
+      if( log.isFile() ) {
+        fprintf( stderr, "EXCEPTION: %s\n", e.what() );
       }
       abort();
     }

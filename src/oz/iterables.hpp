@@ -25,6 +25,13 @@ namespace oz
   template <typename Type>
   class CIteratorBase
   {
+    public:
+
+      /**
+       * Element type
+       */
+      typedef Type Elem;
+
     protected:
 
       /**
@@ -143,6 +150,13 @@ namespace oz
   template <typename Type>
   class IteratorBase
   {
+    public:
+
+      /**
+       * Element type
+       */
+      typedef Type Elem;
+
     protected:
 
       /**
@@ -299,9 +313,9 @@ namespace oz
    * @param iDest
    */
   template <class Iterator>
-  inline void iConstruct( Iterator iDest )
+  inline void iDefaultConstruct( Iterator iDest )
   {
-    typedef decltype( *iDest ) Type;
+    typedef typename Iterator::Elem Type;
 
     while( iDest.isValid() ) {
       new( static_cast<Type*>( iDest ) ) Type;
@@ -315,9 +329,9 @@ namespace oz
    * @param iSrc
    */
   template <class IteratorA, class CIteratorB>
-  inline void iConstruct( IteratorA iDest, CIteratorB* iSrc )
+  inline void iCopyConstruct( IteratorA iDest, CIteratorB iSrc )
   {
-    typedef decltype( *iDest ) Type;
+    typedef typename IteratorA::Elem Type;
 
     while( iDest.isValid() ) {
       assert( iSrc.isValid() );
@@ -335,14 +349,55 @@ namespace oz
    * @param iSrc
    */
   template <class ReverseIteratorA, class CReverseIteratorB>
-  inline void iReverseConstruct( ReverseIteratorA iDest, CReverseIteratorB* iSrc )
+  inline void iReverseCopyConstruct( ReverseIteratorA iDest, CReverseIteratorB iSrc )
   {
-    typedef decltype( *iDest ) Type;
+    typedef typename ReverseIteratorA::Elem Type;
 
     while( iDest.isValid() ) {
       assert( iSrc.isValid() );
 
       new( static_cast<Type*>( iDest ) ) Type( *iSrc );
+      --iDest;
+      --iSrc;
+    }
+  }
+
+  /**
+   * Construct elements via move constructor from an already constructed container.
+   * @param iDest
+   * @param iSrc
+   */
+  template <class IteratorA, class IteratorB>
+  inline void iMoveConstruct( IteratorA iDest, IteratorB iSrc )
+  {
+    typedef typename IteratorA::Elem TypeA;
+    typedef typename IteratorB::Elem TypeB;
+
+    while( iDest.isValid() ) {
+      assert( iSrc.isValid() );
+
+      new( static_cast<TypeA*>( iDest ) ) TypeA( static_cast<TypeB&&>( *iSrc ) );
+      ++iDest;
+      ++iSrc;
+    }
+  }
+
+  /**
+   * Construct elements in reverse direction via move constructor from an already constructed
+   * container.
+   * @param iDest
+   * @param iSrc
+   */
+  template <class ReverseIteratorA, class ReverseIteratorB>
+  inline void iReverseMoveConstruct( ReverseIteratorA iDest, ReverseIteratorB iSrc )
+  {
+    typedef typename ReverseIteratorA::Elem TypeA;
+    typedef typename ReverseIteratorB::Elem TypeB;
+
+    while( iDest.isValid() ) {
+      assert( iSrc.isValid() );
+
+      new( static_cast<TypeA*>( iDest ) ) TypeA( static_cast<TypeB&&>( *iSrc ) );
       --iDest;
       --iSrc;
     }
@@ -393,6 +448,48 @@ namespace oz
       assert( iSrc.isValid() );
 
       *iDest = *iSrc;
+      --iDest;
+      --iSrc;
+    }
+  }
+
+  /**
+   * Move elements from first to last.
+   * @param iDest
+   * @param iSrc
+   */
+  template <class IteratorA, class IteratorB>
+  inline void iMove( IteratorA iDest, IteratorB iSrc )
+  {
+    assert( &*iDest != &*iSrc );
+
+    typedef typename IteratorB::Elem Type;
+
+    while( iDest.isValid() ) {
+      assert( iSrc.isValid() );
+
+      *iDest = static_cast<Type&&>( *iSrc );
+      ++iDest;
+      ++iSrc;
+    }
+  }
+
+  /**
+   * Move elements from last to first.
+   * @param iDest
+   * @param iSrc
+   */
+  template <class ReverseIteratorA, class ReverseIteratorB>
+  inline void iReverseMove( ReverseIteratorA iDest, ReverseIteratorB iSrc )
+  {
+    assert( &*iDest != &*iSrc );
+
+    typedef typename ReverseIteratorB::Elem Type;
+
+    while( iDest.isValid() ) {
+      assert( iSrc.isValid() );
+
+      *iDest = static_cast<Type&&>( *iSrc );
       --iDest;
       --iSrc;
     }
@@ -496,7 +593,7 @@ namespace oz
   template <class Iterator>
   inline void iFree( Iterator iDest )
   {
-    typedef decltype( *iDest ) Type;
+    typedef typename Iterator::Elem Type;
 
     while( iDest.isValid() ) {
       Type& elem = *iDest;

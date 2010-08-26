@@ -13,25 +13,25 @@ namespace oz
 {
   struct Endian
   {
-    static short swap16( short s )
+    static ushort swap16( ushort s )
     {
-      return short( s << 8 ) | short( ushort( s ) >> 8 );
+      return ushort( s << 8 | s >> 8 );
     }
 
-    static int swap32( int i )
+    static uint swap32( uint i )
     {
-#ifdef __GNUG__
+#ifdef __GNUC__
       return __builtin_bswap32( i );
 #else
       return ( i << 24 ) | ( ( i & 0x0000ff00 ) << 8 ) |
-          ( ( i & 0x00ff0000 ) >> 8 ) | ( uint( i ) >> 24 );
+          ( ( i & 0x00ff0000 ) >> 8 ) | ( i >> 24 );
 #endif
     }
 
-#ifdef OZ_LP64
+#ifndef OZ_LONG_32
     static long swap64( long l )
     {
-#ifdef __GNUG__
+#ifdef __GNUC__
       return __builtin_bswap64( l );
 #else
       return ( l << 56 ) | ( ( l & 0x000000000000ff00L ) << 40 ) |
@@ -39,6 +39,7 @@ namespace oz
         ( ( l & 0x000000ff00000000L ) >> 8 ) | ( ( l & 0x0000ff0000000000L ) >> 24 ) |
         ( ( l & 0x00ff000000000000L ) >> 40 ) | ( ulong( l ) >> 56 );
 #endif
+    }
 #endif
   };
   /**
@@ -72,6 +73,8 @@ namespace oz
 
       bool readBool()
       {
+        static_assert( sizeof( bool ) == sizeof( char ), "unexpected bool type size" );
+
         if( pos + sizeof( bool ) > end ) {
           throw Exception( "Buffer overrun" );
         }

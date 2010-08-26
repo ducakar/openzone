@@ -301,9 +301,9 @@ namespace client
     config.load( configFile );
 
     float scaling = config.get( "scale", 0.042f );
-    Vec3 translation( config.get( "translate.x", 0.00f ),
-                      config.get( "translate.y", 0.00f ),
-                      config.get( "translate.z", 0.00f ) );
+    Vec3 translation = Vec3( config.get( "translate.x", 0.00f ),
+                             config.get( "translate.y", 0.00f ),
+                             config.get( "translate.z", 0.00f ) );
 
     if( scaling != 1.0f ) {
       scale( scaling );

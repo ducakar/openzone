@@ -22,7 +22,7 @@ namespace oz
   {
     // %g gives 6-digit precision + sign + dot + exponent (worst case e-xx) + terminating null char
     // 13 chars should be enough
-    assert( BUFFER_SIZE >= 13 );
+    static_assert( BUFFER_SIZE >= 13, "Too small String::BUFFER_SIZE for float representation." );
 
     count = snprintf( buffer, BUFFER_SIZE, "%#g", f );
   }
@@ -31,7 +31,7 @@ namespace oz
   {
     // %g gives 6-digit precision + sign + dot + exponent (worst case e-xxx) + terminating null char
     // 14 chars should be enough
-    assert( BUFFER_SIZE >= 14 );
+    static_assert( BUFFER_SIZE >= 14, "Too small String::BUFFER_SIZE for double representation." );
 
     count = snprintf( buffer, BUFFER_SIZE, "%#g", d );
   }

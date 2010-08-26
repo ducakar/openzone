@@ -257,9 +257,9 @@ namespace ui
 
   void StrategicArea::onDraw()
   {
-    Vec3 at( float( mouse.x - camera.centreX ) * pixelStep * 100.0f,
-             100.0f,
-             float( mouse.y - camera.centreY ) * pixelStep * 100.0f );
+    Vec3 at = Vec3( float( mouse.x - camera.centreX ) * pixelStep * 100.0f,
+                    100.0f,
+                    float( mouse.y - camera.centreY ) * pixelStep * 100.0f );
 
     at = camera.rotMat * at;
     collider.mask = ~0;

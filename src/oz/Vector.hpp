@@ -31,7 +31,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit CIterator() : B( null, null )
           {}
@@ -58,7 +57,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit Iterator() : B( null, null )
           {}
@@ -132,7 +130,7 @@ namespace oz
       {
         assert( v.size > 0 );
 
-        aConstruct( data, v.data, v.count );
+        aCopyConstruct( data, v.data, v.count );
       }
 
       /**
@@ -164,7 +162,7 @@ namespace oz
           size = v.size;
         }
 
-        aConstruct( data, v.data, v.count );
+        aCopyConstruct( data, v.data, v.count );
         count = v.count;
         return *this;
       }
@@ -374,7 +372,7 @@ namespace oz
 
         ensureCapacity( newCount );
 
-        aConstruct( data + count, array, arrayCount );
+        aCopyConstruct( data + count, array, arrayCount );
         count = newCount;
       }
 

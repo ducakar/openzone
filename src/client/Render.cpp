@@ -74,7 +74,7 @@ namespace client
               frustum.isVisible( *obj );
 
       if( isVisible ) {
-        ObjectEntry entry( ( obj->p - camera.p ).sqL(), obj );
+        ObjectEntry entry = ObjectEntry( ( obj->p - camera.p ).sqL(), obj );
 
         if( obj->flags & Object::DELAYED_DRAW_BIT ) {
           delayedObjects.add( entry );
@@ -455,7 +455,7 @@ namespace client
 
     DArray<String> extensions;
     String sExtensions = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
-    sExtensions.trim().split( ' ', extensions );
+    sExtensions.trim().split( ' ', &extensions );
 
     log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
     log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );

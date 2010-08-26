@@ -22,7 +22,7 @@ namespace oz
 
   const float Terra::DIM            = Terra::Quad::DIM * Terra::QUADS;
 
-#ifndef OZ_PREBUILT
+#ifndef OZ_USE_PREBUILT
 
   void Terra::buildTerraFrame()
   {
@@ -69,7 +69,7 @@ namespace oz
     }
   }
 
-#ifndef OZ_PREBUILT
+#ifndef OZ_USE_PREBUILT
   void Terra::load( float height )
   {
     for( int x = 0; x < MAX; ++x ) {
@@ -86,7 +86,7 @@ namespace oz
 
   void Terra::load( const char* name_ )
   {
-#ifdef OZ_PREBUILT
+#ifdef OZ_USE_PREBUILT
 
     String terraFile = "terra/" + String( name_ ) + ".ozTerra";
 
@@ -175,14 +175,14 @@ namespace oz
     SDL_FreeSurface( image );
     log.printEnd( " OK" );
 
-#ifdef OZ_BUILD
+#ifdef OZ_MAKE_PREBUILT
     save( "terra/" + name + ".ozTerra" );
 #endif
 
 #endif
   }
 
-#ifndef OZ_PREBUILT
+#ifndef OZ_USE_PREBUILT
 
   void Terra::save( const char* fileName )
   {
@@ -197,7 +197,7 @@ namespace oz
     size += MAX * MAX * int( sizeof( Vec3 ) );
     size += QUADS * QUADS * int( sizeof( Quad ) );
 
-    Buffer buffer( size );
+    Buffer buffer = Buffer( size );
     OutputStream os = buffer.outputStream();
 
     os.writeInt( MAX );
