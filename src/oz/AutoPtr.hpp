@@ -23,9 +23,16 @@ namespace oz
 
       Type* pointer;
 
+      // no copying
+      AutoPtr( const AutoPtr& );
+      AutoPtr& operator = ( const AutoPtr& );
+
     public:
 
       AutoPtr( Type* pointer_ ) : pointer( pointer_ )
+      {}
+
+      AutoPtr( AutoPtr&& p ) : pointer( p.pointer )
       {}
 
       ~AutoPtr()
@@ -33,6 +40,14 @@ namespace oz
         if( pointer != null ) {
           delete pointer;
         }
+      }
+
+      AutoPtr& operator = ( AutoPtr&& p )
+      {
+        pointer = p.pointer;
+        p.pointer = null;
+
+        return *this;
       }
 
       AutoPtr& operator = ( const Type* pointer_ )
@@ -71,6 +86,37 @@ namespace oz
       Type* operator -> ()
       {
         return pointer;
+      }
+
+      const Type& operator[] ( int index ) const
+      {
+        return pointer[index];
+      }
+
+      Type& operator[] ( int index )
+      {
+        return pointer[index];
+      }
+
+      Type* operator + ( int offset ) const
+      {
+        return pointer + offset;
+      }
+
+      Type* operator - ( int offset ) const
+      {
+        return pointer - offset;
+      }
+
+      void clear()
+      {
+        pointer = null;
+      }
+
+      void free()
+      {
+        delete pointer;
+        pointer = null;
       }
 
   };

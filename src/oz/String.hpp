@@ -70,7 +70,7 @@ namespace oz
       explicit String( bool b ) : buffer( baseBuffer )
       {
         // some protection against too small buffers
-        assert( BUFFER_SIZE >= 6 );
+        static_assert( BUFFER_SIZE >= 6, "Too small String::BUFFER_SIZE for bool representation" );
 
         if( b ) {
           count = 4;
@@ -99,7 +99,8 @@ namespace oz
       {
         // that should assure enough space, since log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ),
         // +2 for sign and terminating null char
-        assert( BUFFER_SIZE >= 3 * int( sizeof( int ) ) + 2 );
+        static_assert( BUFFER_SIZE >= 3 * int( sizeof( int ) ) + 2,
+                       "Too small String::BUFFER_SIZE for int representation" );
 
         // we have [sign +] first digit + remaining digits
         // since we always count first digit, we assure that we never get 0 digits (if n == 0)
@@ -474,7 +475,7 @@ namespace oz
        * @param ch split at that characket
        * @return
        */
-      void split( char ch, DArray<String>& array ) const
+      void split( char ch, DArray<String>* array ) const
       {
         int p0    = 0;
         int p1    = index( ch );
@@ -488,17 +489,17 @@ namespace oz
           ++count;
         }
 
-        array( count );
+        (*array)( count );
         p0 = 0;
         p1 = index( ch );
 
         while( p1 >= 0 ) {
-          array[i] = substring( p0, p1 );
+          (*array)[i] = substring( p0, p1 );
           p0 = p1 + 1;
           p1 = index( ch, p0 );
           ++i;
         }
-        array[i] = substring( p0 );
+        (*array)[i] = substring( p0 );
       }
 
       static bool isDigit( char c )

@@ -56,7 +56,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit CIterator() : B( null )
           {}
@@ -155,7 +154,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit Iterator() : B( null )
           {}

@@ -33,7 +33,7 @@ namespace oz
    * \def null
    * It is equivalent to nullptr/NULL but it looks prettier.
    */
-# define null nullptr
+# define null NULL
 
   /**
    * \def S
@@ -141,9 +141,9 @@ namespace oz
   template <typename Type>
   inline void swap( Type& a, Type& b )
   {
-    Type t( a );
-    a = b;
-    b = t;
+    Type t = static_cast<Type&&>( a );
+    a = static_cast<Type&&>( b );
+    b = static_cast<Type&&>( t );
   }
 
   /**

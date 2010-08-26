@@ -9,9 +9,14 @@ option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in c
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 option( OZ_CROSS_MINGW "If MinGW is not used natively on Windows, but on Unix for cross-compiling." OFF )
 
-option( OZ_BUILD "Optimise and dump resources where possible. Those can be used by a OZ_PREBUILT enabled build." OFF )
-option( OZ_PREBUILT "If OpenZone optimised resources should be loaded instead of generic ones" OFF )
+option( OZ_MAKE_PREBUILT "Optimise and dump resources where possible. Those can be loaded by a OZ_USE_PREBUILT enabled build." OFF )
+option( OZ_USE_PREBUILT "If optimised resources should be loaded instead of generic ones" OFF )
 option( OZ_ENABLE_CYLINDER "Enable cylinder collision shape and physics" OFF )
+
+option( OZ_BUILD_TESTS "Build tests" OFF )
+option( OZ_BUILD_TOOLS "Build tools" OFF )
+option( OZ_BUILD_CLIENT "Build client" ON )
+option( OZ_BUILD_SERVER "Build server" OFF )
 
 option( OZ_INSTALL_LIBOZ "Install liboz" OFF )
 option( OZ_INSTALL_CLIENT "Install openzone client executable" ON )
@@ -19,13 +24,21 @@ option( OZ_INSTALL_SERVER "Install openzone server executable" OFF )
 option( OZ_INSTALL_DATA "Install game data" ON )
 option( OZ_INSTALL_OPENAL "Include OpenAL installation in NSIS installer" OFF )
 
-set( CPACK_PACKAGE_VERSION 0.0.0 )
-set( CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" )
+set( CPACK_PACKAGE_NAME "OpenZone" )
+set( CPACK_PACKAGE_VERSION "0.0.0" )
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform 3D game engine" )
 set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
+set( CPACK_PACKAGE_INSTALL_DIRECTORY "OpenZone" )
+set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "OpenZone" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
 set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
+if( NOT OZ_SYSTEM_NAME )
+   set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
+endif( NOT OZ_SYSTEM_NAME )
+set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
 set( CPACK_PACKAGE_EXECUTABLES "openzone" "OpenZone" )
+set( CPACK_STRIP_FILES "bin/openzone" )
+set( CPACK_NSIS_DISPLAY_NAME "OpenZone" )
 if( OZ_INSTALL_OPENAL )
   set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
 endif( OZ_INSTALL_OPENAL )
@@ -34,29 +47,29 @@ include( CheckLibraryExists )
 include( CPack )
 
 macro( add_pch _targetName _inputHeader )
-   if( NOT MSVC )
-      # extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for current build configuration XXX
-      string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _build_type_flags_var )
-      set( _flags "${CMAKE_CXX_FLAGS} ${${_build_type_flags_var}}" )
+  if( NOT MSVC )
+    # extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for current build configuration XXX
+    string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _build_type_flags_var )
+    set( _flags "${CMAKE_CXX_FLAGS} ${${_build_type_flags_var}}" )
 
-      # convert string of space separated flags into a list
-      separate_arguments( _flags )
+    # convert string of space separated flags into a list
+    separate_arguments( _flags )
 
-      # extract include directories set by include_directories command
-      get_directory_property( _includes INCLUDE_DIRECTORIES )
-      foreach( _inc_dir ${_includes} )
-        list( APPEND _flags "-I${_inc_dir}" )
-      endforeach( _inc_dir ${_includes} )
+    # extract include directories set by include_directories command
+    get_directory_property( _includes INCLUDE_DIRECTORIES )
+    foreach( _inc_dir ${_includes} )
+      list( APPEND _flags "-I${_inc_dir}" )
+    endforeach( _inc_dir ${_includes} )
 
-      # set build rules
-      add_custom_command( OUTPUT ${_inputHeader}.gch
-        ${ARGN} ${_inputHeader}
-        COMMAND ${CMAKE_COMMAND} -E remove ${_inputHeader}.gch
-        COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o ${_inputHeader}.gch ${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader} )
-      add_custom_target( ${_targetName} DEPENDS ${_inputHeader}.gch )
-   else( NOT MSVC )
-      add_custom_target( ${_targetName} SOURCES ${_inputHeader} )
-   endif( NOT MSVC )
+    # set build rules
+    add_custom_command( OUTPUT ${_inputHeader}.gch
+      ${ARGN} ${_inputHeader}
+      COMMAND ${CMAKE_COMMAND} -E remove ${_inputHeader}.gch
+      COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o ${_inputHeader}.gch ${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader} )
+    add_custom_target( ${_targetName} SOURCES ${_inputHeader} DEPENDS ${_inputHeader}.gch )
+  else( NOT MSVC )
+    add_custom_target( ${_targetName} SOURCES ${_inputHeader} )
+  endif( NOT MSVC )
 endmacro( add_pch )
 
 if( NOT CMAKE_BUILD_TYPE )
@@ -109,14 +122,23 @@ if( MSVC AND NOT DIRENT_INCLUDE_DIR )
   set( DIRENT_INCLUDE_DIR "DIRENT_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
 endif( MSVC AND NOT DIRENT_INCLUDE_DIR )
 
-if( WIN32 )
+if( UNIX )
+  set( OZ_UNIX ON )
+elseif( MSVC )
+  set( OZ_MSVC ON )
   set( OZ_WINDOWS ON )
-endif( WIN32 )
+else( UNIX )
+  set( OZ_MINGW ON )
+  set( OZ_WINDOWS ON )
+endif( UNIX )
 
 if( NOT OZ_DEFAULT_DATA_DIR )
-  set( OZ_DEFAULT_DATA_DIR "data" CACHE STRING "" FORCE )
+  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
 endif( NOT OZ_DEFAULT_DATA_DIR )
 
+if( OZ_XML_CONFIG )
+  include_directories( ${LIBXML2_INCLUDE_DIR} )
+endif( OZ_XML_CONFIG )
 include_directories( ${SDL_INCLUDE_DIR} )
 include_directories( ${SDLIMAGE_INCLUDE_DIR} )
 include_directories( ${SDLNET_INCLUDE_DIR} )
@@ -141,22 +163,25 @@ set( libs "${libs};${ALUT_LIBRARY}" )
 set( libs "${libs};${OGG_LIBRARY}" )
 set( libs "${libs};${VORBIS_LIBRARY}" )
 set( libs "${libs};${VORBISFILE_LIBRARY}" )
+if( OZ_XML_CONFIG )
+  set( libs "${libs};${LIBXML2_LIBRARIES}" )
+endif( OZ_XML_CONFIG )
 
 if( MSVC )
 
-  set( OZ_MSVC ON )
-
   # compiler and linker flags
-  set( warnings "/W3 /D _CRT_SECURE_NO_WARNINGS" )
+  set( warnings "/W3" )
   set( flags "/EHsc" )
-  set( libs "" )
   set( arch_flags "/arch:SSE2" )
 
-else( MSVC )
+  include_directories( ${DIRENT_INCLUDE_DIR} )
 
-  if( WIN32 )
-    set( OZ_MINGW ON )
-  endif()
+  set( CMAKE_CXX_FLAGS_DEBUG "-Zi" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Ox -Os -fp:fast" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ox -Os -fp:fast" CACHE STRING "" FORCE )
+  set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
+
+else( MSVC )
 
   # compiler and linker flags
   set( flags "-pedantic -std=c++0x -fmessage-length=0 -pipe" )
@@ -166,11 +191,6 @@ else( MSVC )
   set( warnings "${warnings} -Wctor-dtor-privacy -Winvalid-pch -Wdisabled-optimization" )
 
   set( arch_flags "-mmmx -msse3 -mfpmath=sse" )
-
-  if( OZ_XML_CONFIG )
-    include_directories( ${LIBXML2_INCLUDE_DIR} )
-    set( libs "${libs};${LIBXML2_LIBRARIES}" )
-  endif( OZ_XML_CONFIG )
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math" CACHE STRING "" FORCE )
@@ -185,6 +205,9 @@ link_libraries( ${libs} )
 # sources
 add_subdirectory( src )
 add_subdirectory( data )
+
+string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" location_var )
+get_target_property( openzone_path openzone ${location_var} )
 
 # installation
 include( install_files.cmake )

@@ -33,7 +33,7 @@ namespace oz
       // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
       static const float DIM;
 
-#ifndef OZ_PREBUILT
+#ifndef OZ_USE_PREBUILT
       void buildTerraFrame();
 #endif
 
@@ -66,11 +66,11 @@ namespace oz
       String waterTexture;
 
       void init();
-#ifndef OZ_PREBUILT
+#ifndef OZ_USE_PREBUILT
       void load( float height );
 #endif
       void load( const char* name );
-#ifndef OZ_PREBUILT
+#ifndef OZ_USE_PREBUILT
       void save( const char* name );
 #endif
 

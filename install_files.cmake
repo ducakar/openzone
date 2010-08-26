@@ -1,3 +1,6 @@
+string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" liboz_location_var )
+get_target_property( liboz_file oz ${liboz_location_var} )
+
 if( OZ_INSTALL_LIBOZ )
   install( FILES
     ${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp
@@ -37,15 +40,18 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/iterables.hpp
     src/oz/oz.hpp
     DESTINATION include/oz )
-  install( FILES ${CMAKE_BINARY_DIR}/src/oz/liboz.a DESTINATION lib )
+  install( FILES ${liboz_file} DESTINATION lib )
 endif( OZ_INSTALL_LIBOZ )
+
+string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" client_location_var )
+get_target_property( client_file openzone ${client_location_var} )
 
 if( OZ_INSTALL_OPENAL )
   install( FILES "oalinst.exe" DESTINATION support )
 endif( OZ_INSTALL_OPENAL )
 
 if( OZ_INSTALL_CLIENT )
-  install( FILES ${CMAKE_BINARY_DIR}/src/client/openzone
+  install( FILES ${client_file}
     DESTINATION bin
     PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE

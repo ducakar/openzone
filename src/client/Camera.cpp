@@ -128,9 +128,6 @@ namespace client
 
     if( newState != state ) {
       switch( newState ) {
-        default: {
-          assert( false );
-        }
         case FREECAM: {
           proxy = &freeCamProxy;
           break;
@@ -141,6 +138,10 @@ namespace client
         }
         case BOT: {
           proxy = &botProxy;
+          break;
+        }
+        case NONE: {
+          assert( false );
           break;
         }
       }

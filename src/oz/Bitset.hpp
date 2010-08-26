@@ -54,7 +54,7 @@ namespace oz
        * Copy construstor.
        * @param b the original Bitset
        */
-      Bitset( Bitset& b ) : data( new ulong[b.size] ), size( b.size )
+      Bitset( const Bitset& b ) : data( new ulong[b.size] ), size( b.size )
       {
         aCopy( data, b.data, b.size );
       }
@@ -205,7 +205,7 @@ namespace oz
       {
         assert( size == b.size );
 
-        Bitset r( size );
+        Bitset r = Bitset( size );
 
         for( int i = 0; i < size; ++i ) {
           if( ( data[i] & ~b.data[i] ) != 0ul ) {
@@ -347,7 +347,7 @@ namespace oz
        */
       Bitset operator ~ () const
       {
-        Bitset r( size );
+        Bitset r = Bitset( size );
 
         for( int i = 0; i < size; ++i ) {
           r.data[i] = ~data[i];
@@ -403,7 +403,7 @@ namespace oz
       {
         assert( size == b.size );
 
-        Bitset r( size );
+        Bitset r = Bitset( size );
 
         for( int i = 0; i < size; ++i ) {
           r.data[i] = data[i] & b.data[i];
@@ -420,7 +420,7 @@ namespace oz
       {
         assert( size == b.size );
 
-        Bitset r( size );
+        Bitset r = Bitset( size );
 
         for( int i = 0; i < size; ++i ) {
           r.data[i] = data[i] | b.data[i];
@@ -437,7 +437,7 @@ namespace oz
       {
         assert( size == b.size );
 
-        Bitset r( size );
+        Bitset r = Bitset( size );
 
         for( int i = 0; i < size; ++i ) {
           r.data[i] = data[i] ^ b.data[i];

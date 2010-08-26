@@ -31,7 +31,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit CIterator() : B( null, null )
           {}
@@ -58,7 +57,6 @@ namespace oz
 
           /**
            * Default constructor returns a dummy passed iterator
-           * @return
            */
           explicit Iterator() : B( null, null )
           {}
@@ -97,7 +95,7 @@ namespace oz
        */
       SVector( const SVector& v ) : count( v.count )
       {
-        aConstruct( data, v.data, v.count );
+        aCopyConstruct( data, v.data, v.count );
       }
 
       /**
@@ -328,7 +326,7 @@ namespace oz
         assert( SIZE >= newCount );
 
         for( int i = 0; i < arrayCount; ++i ) {
-          aConstruct( data + count, array, arrayCount );
+          aCopyConstruct( data + count, array, arrayCount );
         }
         count = newCount;
       }

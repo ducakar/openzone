@@ -34,7 +34,7 @@ namespace oz
     signal( SIGTRAP, sigtrapHandler );
     raise( SIGTRAP );
 #elif defined( OZ_MSVC )
-    //DebugBreak();
+    DebugBreak();
 #endif
   }
 

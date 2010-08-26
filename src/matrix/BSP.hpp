@@ -165,7 +165,7 @@ namespace oz
 
     private:
 
-#ifndef OZ_PREBUILT
+#ifndef OZ_USE_PREBUILT
       bool includes( const Brush& brush ) const;
 
       bool loadQBSP( const char* fileName );

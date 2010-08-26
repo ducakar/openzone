@@ -28,7 +28,7 @@ namespace oz
 
       /**
        * Allocate memory without constructing the elements. Memory has to be freed via
-       * Alloc::dealloc.
+       * <code>Alloc::dealloc</code>.
        * @param size
        * @return
        */
@@ -39,7 +39,8 @@ namespace oz
       }
 
       /**
-       * Free memory allocated with Alloc::alloc function without destructing the elements.
+       * Free memory allocated with <code>Alloc::alloc</code> function without destructing the
+       * elements.
        * @param ptr
        */
       template <typename Type>
@@ -51,8 +52,10 @@ namespace oz
       /**
        * Allocates new memory for the array for newSize elements to fit in. Elements are constructed
        * via move constructor in the new copy of the array and destructed in the old copy before it
-       * is freed. The memory has to be allocated with Alloc::alloc function and freed with
-       * Alloc::dealloc.
+       * is freed. The memory has to be allocated with <code>Alloc::alloc</code> function and freed
+       * with <code>Alloc::dealloc</code>.
+       * It's similar to aRealloc, but works on arrays where only first <code>count</code> elements
+       * are constructed.
        * @param array
        * @param count number of elements from the beginning of the array that are constructed
        * @param newSize new size of the array
@@ -64,7 +67,7 @@ namespace oz
         Type* newArray = reinterpret_cast<Type*>( new char[newSize * sizeof( Type )] );
 
         for( int i = 0; i < count; ++i ) {
-          new( newArray + i ) Type( array[i] );
+          new( newArray + i ) Type( static_cast<Type&&>( array[i] ) );
           array[i].~Type();
         }
         delete[] reinterpret_cast<char*>( array );

@@ -17,7 +17,7 @@ using namespace oz;
 
 int main( int, char** )
 {
-  Buffer buffer( 1024 );
+  Buffer buffer = Buffer( 1024 );
   OutputStream os = buffer.outputStream();
   InputStream is = buffer.inputStream();
 
@@ -29,14 +29,14 @@ int main( int, char** )
   os.writeVec3( Vec3( 1.51f, 0.71f, 4.91f ) );
   os.writeFloat( 1.71f );
 
-  Vec3 v1 = is.readVec3();
-  int i1 = is.readInt();
-  float f1 = is.readFloat();
-  String s1 = is.readString();
-  int i2 = is.readInt();
-  Vec3 v2 = is.readVec3();
-  float f2 = is.readFloat();
+  assert( is.readVec3() == Vec3( 1.5f, 0.7f, 4.9f ) );
+  assert( is.readInt() == 42 );
+  assert( is.readFloat() == 1.7f );
+  assert( is.readString().equals( "drek" ) );
+  assert( is.readInt() == 43 );
+  assert( is.readVec3() == Vec3( 1.51f, 0.71f, 4.91f ) );
+  assert( is.readFloat() == 1.71f );
 
-  printf( "(%g %g %g) %d %g %s %d (%g %g %g) %g\n", v1.x, v1.y, v1.z, i1, f1, s1.cstr(), i2, v2.x, v2.y, v2.z, f2 );
+  printf( "OK\n" );
   return 0;
 }

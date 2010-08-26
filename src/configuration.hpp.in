@@ -1,10 +1,10 @@
 #pragma once
 
 // prebuild resources 
-#cmakedefine OZ_BUILD
+#cmakedefine OZ_MAKE_PREBUILT
 
 // whether to use prebuilt resources
-#cmakedefine OZ_PREBUILT
+#cmakedefine OZ_USE_PREBUILT
 
 // cylinder collision and physics support
 #cmakedefine OZ_ENABLE_CYLINDER
