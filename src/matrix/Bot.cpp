@@ -184,7 +184,7 @@ namespace oz
         dim = clazz->dim;
 
         if( !collider.overlaps( *this, this ) ) {
-          radius = !dim;
+          r      = !dim;
           camZ   = clazz->camZ;
           state  &= ~CROUCHING_BIT;
         }
@@ -200,7 +200,7 @@ namespace oz
 
         p.z    += dim.z - clazz->dimCrouch.z;
         dim.z  = clazz->dimCrouch.z;
-        radius = !dim;
+        r      = !dim;
         camZ   = clazz->crouchCamZ;
         state  |= CROUCHING_BIT;
       }
@@ -592,7 +592,7 @@ namespace oz
   void Bot::onAct()
   {}
 
-  Bot::Bot() : h( 0.0f ), v( 0.0f ), actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
+  Bot::Bot() : actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
       grabObj( -1 ), weaponItem( -1 ), anim( ANIM_STAND )
   {}
 
@@ -632,7 +632,6 @@ namespace oz
   {
     Dynamic::readFull( istream );
 
-    h            = istream->readFloat();
     v            = istream->readFloat();
     state        = istream->readInt();
     oldState     = istream->readInt();
@@ -656,14 +655,13 @@ namespace oz
 
     const BotClass* clazz = static_cast<const BotClass*>( type );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
-    radius = !dim;
+    r   = !dim;
   }
 
   void Bot::writeFull( OutputStream* ostream ) const
   {
     Dynamic::writeFull( ostream );
 
-    ostream->writeFloat( h );
     ostream->writeFloat( v );
     ostream->writeInt( state );
     ostream->writeInt( oldState );
@@ -690,7 +688,6 @@ namespace oz
   {
     Dynamic::readUpdate( istream );
 
-    h            = istream->readFloat();
     v            = istream->readFloat();
     state        = istream->readInt();
     grabObj      = istream->readInt();
@@ -701,7 +698,6 @@ namespace oz
   {
     Dynamic::writeUpdate( ostream );
 
-    ostream->writeFloat( h );
     ostream->writeFloat( v );
     ostream->writeInt( state );
     ostream->writeInt( grabObj );

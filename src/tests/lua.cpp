@@ -9,8 +9,6 @@
 
 #include "stable.hpp"
 
-#include "matrix/io.hpp"
-
 #include <lua.hpp>
 #include <SDL_main.h>
 

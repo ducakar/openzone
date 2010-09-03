@@ -296,14 +296,12 @@ namespace oz
    * foreach( i, v.citer() ) {
    *   printf( "%d ", *i );
    * }</pre>
-   * This replaces much more cryptic and longer pieces of code, like:
+   * This replaces a longer piece of code, like:
    * <pre>
    * Vector&lt;int&gt; v;
-   * for( Vector&lt;int&gt;::Iterator i( v ); i.isValid(); ++i )
+   * for( Vector&lt;int&gt;::CIterator i( v ); i.isValid(); ++i )
    *   printf( "%d ", *i );
    * }</pre>
-   * There's no need to add it to Katepart syntax highlighting as it is already there (Qt has some
-   * similar foreach macro).
    */
 # define foreach( i, iterator ) \
   for( auto i = iterator; i.isValid(); ++i )
@@ -339,26 +337,6 @@ namespace oz
       new( static_cast<Type*>( iDest ) ) Type( *iSrc );
       ++iDest;
       ++iSrc;
-    }
-  }
-
-  /**
-   * Construct elements in reverse direction via copy constructor from an already constructed
-   * container.
-   * @param iDest
-   * @param iSrc
-   */
-  template <class ReverseIteratorA, class CReverseIteratorB>
-  inline void iReverseConstruct( ReverseIteratorA iDest, CReverseIteratorB iSrc )
-  {
-    typedef typename ReverseIteratorA::Elem Type;
-
-    while( iDest.isValid() ) {
-      assert( iSrc.isValid() );
-
-      new( static_cast<Type*>( iDest ) ) Type( *iSrc );
-      --iDest;
-      --iSrc;
     }
   }
 

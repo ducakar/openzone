@@ -21,20 +21,23 @@
 namespace oz
 {
 
-#ifndef OZ_WINDOWS
+#ifndef OZ_MSVC
   static void sigtrapHandler( int )
   {}
 #endif
 
   void _softAssert( const char* message, const char* file, int line, const char* function )
   {
-    fprintf( stderr, "%s:%d: %s: Soft assertion `%s' failed.\n", file, line, function, message );
+    fprintf( stderr, "\n%s:%d: %s: Soft assertion `%s' failed.\n", file, line, function, message );
 
-#ifndef OZ_WINDOWS
+#if defined( OZ_MSVC )
+    DebugBreak();
+#elif defined( OZ_MINGW )
+    signal( SIGABRT, sigtrapHandler );
+    raise( SIGABRT );
+#else
     signal( SIGTRAP, sigtrapHandler );
     raise( SIGTRAP );
-#elif defined( OZ_MSVC )
-    DebugBreak();
 #endif
   }
 

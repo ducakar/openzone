@@ -160,7 +160,7 @@ namespace oz
    * Make constant array iterator
    * Simplifies construction of array iterators.
    * Instead of
-   * <code>Iterator&lt;int&gt;( array, array + 10 );</code>
+   * <code>CIterator&lt;int&gt;( array, array + 10 );</code>
    * you write
    * <code>citer( array, 10 );</code>
    * @param array
@@ -213,19 +213,6 @@ namespace oz
   inline void aConstruct( Type* aDest, const Type* aSrc, int count )
   {
     for( int i = 0; i < count; ++i ) {
-      new( &aDest[i] ) Type( aSrc[i] );
-    }
-  }
-
-  /**
-   * Construct elements in reverse direction via copy constructor from an already constructed array.
-   * @param aDest
-   * @param count
-   */
-  template <typename Type>
-  inline void aReverseConstruct( Type* aDest, const Type* aSrc, int count )
-  {
-    for( int i = count - 1; i >= 0; --i ) {
       new( &aDest[i] ) Type( aSrc[i] );
     }
   }

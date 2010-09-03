@@ -1,7 +1,7 @@
 /*
- *  io.hpp
+ *  stream.hpp
  *
- *  Stream readers/writers and buffer
+ *  [description]
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -11,6 +11,7 @@
 
 namespace oz
 {
+
   struct Endian
   {
     static_assert( sizeof( short ) == 2, "sizeof( short ) should be 2" );
@@ -18,24 +19,39 @@ namespace oz
 
     static ushort shuffle16( ushort s )
     {
-#if defined( OZ_BIG_ENDIAN_DATA ) != defined( OZ_BIG_ENDIAN_ARCH )
-      return ushort( s << 8 | s >> 8 );
-#else
+#if defined( OZ_BIG_ENDIAN_DATA ) == defined( OZ_BIG_ENDIAN_ARCH )
       return s;
+#else
+      return ushort( s << 8 | s >> 8 );
 #endif
     }
 
     static uint shuffle32( uint i )
     {
-#if defined( OZ_BIG_ENDIAN_DATA ) != defined( OZ_BIG_ENDIAN_ARCH )
+#if defined( OZ_BIG_ENDIAN_DATA ) == defined( OZ_BIG_ENDIAN_ARCH )
+      return i;
+#else
 # ifdef __GNUC__
       return __builtin_bswap32( i );
 # else
-      return ( i << 24 ) | ( ( i & 0x0000ff00 ) << 8 ) |
-          ( ( i & 0x00ff0000 ) >> 8 ) | ( i >> 24 );
+      return ( i << 24 ) | ( i << 8 & 0x00ff0000 ) |
+          ( i >> 8 & 0x0000ff00 ) | ( i >> 24 );
 # endif
+#endif
+    }
+
+    static ulong64 shuffle64( ulong64 l )
+    {
+#if defined( OZ_BIG_ENDIAN_DATA ) == defined( OZ_BIG_ENDIAN_ARCH )
+      return l;
 #else
-      return i;
+# ifdef __GNUC__
+      return __builtin_bswap64( l );
+# else
+      return ( l << 56 ) | ( l << 40 & 0x00ff000000000000 ) | ( l << 24 & 0x0000ff0000000000 ) |
+          ( l << 8 & 0x000000ff00000000 ) | ( l >> 8 & 0x00000000ff000000 ) |
+          ( l >> 24 & 0x0000000000ff0000 ) | ( l >> 40 & 0x000000000000ff00 ) | ( l >> 56 );
+# endif
 #endif
     }
   };
@@ -74,7 +90,7 @@ namespace oz
 
         if( pos > end ) {
           throw Exception( String( "Buffer overrun for " ) +
-                           String( int( size_t( pos - end ) ) ) + " bytes during read of " +
+                           String( int( ptrdiff_t( pos - end ) ) ) + " bytes during read of " +
                            String( count ) + " bytes" );
         }
         return oldPos;
@@ -213,7 +229,7 @@ namespace oz
 
         if( pos > end ) {
           throw Exception( String( "Buffer overrun for " ) +
-                           String( int( size_t( pos - end ) ) ) + " bytes during read of " +
+                           String( int( ptrdiff_t( pos - end ) ) ) + " bytes during read of " +
                            String( count ) + " bytes" );
         }
         return oldPos;
@@ -320,90 +336,6 @@ namespace oz
         p[14] = Endian::shuffle32( Math::toBits( m.w.z ) );
         p[15] = Endian::shuffle32( Math::toBits( m.w.w ) );
       }
-  };
-
-  /**
-   * Memory buffer.
-   * It can be filled with data from a file or written to a file.
-   */
-  class Buffer
-  {
-    private:
-
-      // Size of block that will be used for block reads from/writes to a file. Optimal size is
-      // the same as filesystem block size, that is 4K by default on Linux filesystems.
-      static const int BLOCK_SIZE = 4096;
-
-      char* buffer;
-      int  count;
-
-    public:
-
-      explicit Buffer() : buffer( null ), count( 0 )
-      {}
-
-      explicit Buffer( int size ) : count( ( ( size - 1 ) / BLOCK_SIZE + 1 ) * BLOCK_SIZE )
-      {
-        buffer = new char[count];
-      }
-
-      ~Buffer()
-      {
-        if( buffer != null ) {
-          delete[] buffer;
-        }
-      }
-
-      bool isEmpty() const
-      {
-        assert( ( count == 0 ) == ( buffer == null ) );
-
-        return count == 0;
-      }
-
-      int length() const
-      {
-        assert( ( count == 0 ) == ( buffer == null ) );
-
-        return count;
-      }
-
-      void create( int size )
-      {
-        if( buffer != null ) {
-          delete[] buffer;
-        }
-        buffer = new char[size];
-        count = size;
-      }
-
-      void free()
-      {
-        if( buffer != null ) {
-          delete[] buffer;
-          buffer = null;
-          count = 0;
-        }
-      }
-
-      InputStream inputStream() const
-      {
-        assert( buffer != null );
-
-        return InputStream( buffer, buffer + count );
-      }
-
-      OutputStream outputStream() const
-      {
-        assert( buffer != null );
-
-        return OutputStream( buffer, buffer + count );
-      }
-
-      bool load( const char* path );
-
-      bool write( const char* path );
-
   };
 
 }

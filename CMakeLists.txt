@@ -4,7 +4,7 @@ project( openzone C CXX )
 
 option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make heap usage statistics" ON )
 option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
-option( OZ_GNU_MATH "Use GCC math built-ins (no need to include <cmath> and faster calls in debug mode)" ON )
+option( OZ_BUILTIN_MATH "Use GCC/clang built-in math functions (no need to include <cmath>, possibly faster math calls in debug mode)" ON )
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in configuration files" ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 option( OZ_CROSS_MINGW "If MinGW is not used natively on Windows, but on Unix for cross-compiling." OFF )
@@ -197,7 +197,7 @@ else( MSVC )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -ffast-math" CACHE STRING "" FORCE )
   set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
-  
+
   if( WIN32 )
     set( CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import" )
   endif( WIN32 )

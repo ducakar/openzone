@@ -19,6 +19,13 @@ namespace oz
       Vec3  p;
       float r;
 
+    protected:
+
+      explicit Sphere( const Vec3& p_ ) : p( p_ )
+      {}
+
+    public:
+
       explicit Sphere()
       {}
 
@@ -44,6 +51,28 @@ namespace oz
       Sphere& operator -= ( const Vec3& v )
       {
         p -= v;
+        return *this;
+      }
+
+      Sphere operator * ( float k ) const
+      {
+        return Sphere( p, r * k );
+      }
+
+      Sphere operator / ( float k ) const
+      {
+        return Sphere( p, r / k );
+      }
+
+      Sphere& operator *= ( float k )
+      {
+        r *= k;
+        return *this;
+      }
+
+      Sphere& operator /= ( float k )
+      {
+        r /= k;
         return *this;
       }
 

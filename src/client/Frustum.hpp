@@ -55,7 +55,7 @@ namespace client
 
       bool isVisible( const AABB& bb, float factor = 1.0f )
       {
-        return isVisible( bb.p, bb.radius * factor );
+        return isVisible( bb.p, bb.r * factor );
       }
 
       bool isVisible( const Bounds& b )

@@ -45,5 +45,3 @@ namespace oz
 #include "matrix/Sphere.hpp"
 #include "matrix/Bounds.hpp"
 #include "matrix/AABB.hpp"
-
-#include "matrix/io.hpp"

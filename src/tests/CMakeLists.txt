@@ -8,7 +8,7 @@ target_link_libraries( foreach oz )
 
 add_executable( io io.cpp )
 add_dependencies( io matrix pch )
-target_link_libraries( io matrix oz )
+target_link_libraries( io oz )
 
 add_executable( lua lua.cpp )
 add_dependencies( lua pch )

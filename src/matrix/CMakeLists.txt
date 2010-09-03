@@ -54,8 +54,6 @@ add_library( matrix STATIC
   WeaponClass.cpp
   WeaponClass.hpp
   common.hpp
-  io.cpp
-  io.hpp
 )
 
 add_dependencies( matrix pch )

@@ -18,8 +18,8 @@
  *  <code>~/.kde/share/apps/katepart/syntax/cpp.xml</code> or global file
  *  <code>$KDEDIR/share/apps/katepart/syntax/cpp.xml</code> to look like reserved words in
  *  Katepart (Kate/KWrite/KDevelop).
- *  For Eclipse I use the same syntax highlighting for macros as for reserved words hence the macro
- *  definitions like #define uint uint.
+ *  For Eclipse I use the same syntax highlighting for macro invocations and reserved words hence
+ *  the macro definitions like #define uint uint to highlight uint as the reserved word.
  */
 
 namespace oz
@@ -33,7 +33,7 @@ namespace oz
    * \def null
    * It is equivalent to nullptr/NULL but it looks prettier.
    */
-# define null NULL
+# define null nullptr
 
   /**
    * \def S
@@ -98,7 +98,7 @@ namespace oz
    * depending on the platform).
    */
 # define byte byte
-  typedef signed   char  byte;
+  typedef signed char byte;
 
   /**
    * unsigned byte
@@ -106,7 +106,7 @@ namespace oz
    * depending on the platform).
    */
 # define ubyte ubyte
-  typedef unsigned char  ubyte;
+  typedef unsigned char ubyte;
 
   /**
    * unsigned short integer
@@ -118,16 +118,29 @@ namespace oz
    * unsigned integer
    */
 # define uint uint
-  typedef unsigned int   uint;
+  typedef unsigned int uint;
 
   /**
    * unsigned long integer
    */
 # define ulong ulong
-  typedef unsigned long  ulong;
+  typedef unsigned long ulong;
+
+  /**
+   * signed long long integer
+   */
+# define long64 long64
+  typedef long long long64;
+
+  /**
+   * unsigned long long integer
+   */
+# define ulong64 ulong64
+  typedef unsigned long long ulong64;
 
   // just make syntax highlighting work
 # define size_t size_t
+# define ptrdiff_t ptrdiff_t
 
   //***********************************
   //*        BASIC ALGORITHMS         *
