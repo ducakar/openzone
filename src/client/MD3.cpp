@@ -203,7 +203,7 @@ namespace client
 
   void MD3::Part::drawFrame( int frame ) const
   {
-    assert( 0 <= frame && frame < nFrames );
+    assert( frame < nFrames );
 
     for( int i = 0; i < meshes.length(); ++i ) {
       const Mesh& mesh = meshes[i];

@@ -30,7 +30,7 @@ namespace nirvana
         Mind::CreateFunc create;
         Mind::ReadFunc   read;
 
-        MindCtor( Mind::CreateFunc create_, Mind::ReadFunc read_ ) :
+        explicit MindCtor( Mind::CreateFunc create_, Mind::ReadFunc read_ ) :
             create( create_ ), read( read_ )
         {}
       };

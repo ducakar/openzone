@@ -117,7 +117,7 @@ namespace oz
         int     clusterLength;
         Bitset* bitsets;
 
-        VisualData() : bitsets( null ) {}
+        explicit VisualData() : bitsets( null ) {}
 
         ~VisualData()
         {

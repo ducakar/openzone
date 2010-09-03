@@ -9,7 +9,7 @@
 
 #pragma once
 
-#if defined( OZ_MINGW ) || defined( OZ_MSVC )
+#ifdef OZ_WINDOWS
 
 # include <SDL_opengl.h>
 

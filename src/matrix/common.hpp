@@ -11,8 +11,8 @@
 
 namespace oz
 {
-  // ~1 mm, should be enough for 8 km x 8 km world
-  const float EPSILON = 0.0009765625f;
+  // ensure epsilon is big enough for a 4 km x 4 km world
+  const float EPSILON = 2048.0f * 4.0f * Math::EPSILON;
 
   struct Span
   {
@@ -21,10 +21,10 @@ namespace oz
     int maxX;
     int maxY;
 
-    Span()
+    explicit Span()
     {}
 
-    Span( int minX_, int minY_, int maxX_, int maxY_ ) :
+    explicit Span( int minX_, int minY_, int maxX_, int maxY_ ) :
         minX( minX_ ), minY( minY_ ), maxX( maxX_ ), maxY( maxY_ )
     {}
   };

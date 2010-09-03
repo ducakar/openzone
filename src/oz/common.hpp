@@ -134,66 +134,66 @@ namespace oz
   //***********************************
 
   /**
-   * Swap values of a and b with move semantics.
+   * Swap values of a and b.
    * @param a reference to the first variable
    * @param b reference to the second variable
    */
   template <typename Type>
   inline void swap( Type& a, Type& b )
   {
-    Type t = static_cast<Type&&>( a );
-    a = static_cast<Type&&>( b );
-    b = static_cast<Type&&>( t );
+    Type t = a;
+    a = b;
+    b = t;
   }
 
   /**
    * Minimum.
    * @param a
    * @param b
-   * @return a if a < b, b otherwise
+   * @return a if a <= b, b otherwise
    */
   template <typename Type>
   inline const Type& min( const Type& a, const Type& b )
   {
-    return a < b ? a : b;
+    return b < a ? b : a;
   }
 
   /**
    * Minimum
-   * Non-const version, can be used as lvalue.
+   * Non-const version, can be used as a lvalue.
    * @param a
    * @param b
-   * @return a if a < b, b otherwise
+   * @return a if a <= b, b otherwise
    */
   template <typename Type>
   inline Type& min( Type& a, Type& b )
   {
-    return a < b ? a : b;
+    return b < a ? b : a;
   }
 
   /**
    * Maximum.
    * @param a
    * @param b
-   * @return a if a > b, b otherwise
+   * @return a if a >= b, b otherwise
    */
   template <typename Type>
   inline const Type& max( const Type& a, const Type& b )
   {
-    return b < a ? a : b;
+    return a < b ? b : a;
   }
 
   /**
    * Maximum
-   * Non-const version, can be used as lvalue.
+   * Non-const version, can be used as a lvalue.
    * @param a
    * @param b
-   * @return a if a > b, b otherwise
+   * @return a if a >= b, b otherwise
    */
   template <typename Type>
   inline Type& max( Type& a, Type& b )
   {
-    return b < a ? a : b;
+    return a < b ? b : a;
   }
 
   /**
@@ -213,7 +213,7 @@ namespace oz
 
   /**
    * Bound c between a and b. Equals to max( a, min( b, c ) ).
-   * Non-const version, can be used as lvalue.
+   * Non-const version, can be used as a lvalue.
    * @param c
    * @param a
    * @param b

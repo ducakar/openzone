@@ -694,7 +694,7 @@ namespace oz
     v            = istream->readFloat();
     state        = istream->readInt();
     grabObj      = istream->readInt();
-    anim         = AnimEnum( istream->readByte() );
+    anim         = AnimEnum( istream->readChar() );
   }
 
   void Bot::writeUpdate( OutputStream* ostream ) const
@@ -705,7 +705,7 @@ namespace oz
     ostream->writeFloat( v );
     ostream->writeInt( state );
     ostream->writeInt( grabObj );
-    ostream->writeByte( byte( anim ) );
+    ostream->writeChar( char( anim ) );
   }
 
 }

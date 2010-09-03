@@ -26,9 +26,9 @@ namespace ui
 
     private:
 
+      Callback* callback;
       bool      isHighlighted;
       bool      isClicked;
-      Callback* callback;
 
     protected:
 
@@ -40,7 +40,7 @@ namespace ui
       String   label;
 
       explicit Button( const char* label_, Callback* callback, int width, int height ) :
-          Area( width, height ), isHighlighted( false ), isClicked( false ), callback( callback ),
+          Area( width, height ), callback( callback ), isHighlighted( false ), isClicked( false ),
           label( label_ )
       {}
 

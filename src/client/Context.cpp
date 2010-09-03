@@ -229,7 +229,7 @@ namespace client
 
   void Context::releaseTexture( int resource )
   {
-    assert( 0 <= resource && resource < translator.textures.length() );
+    assert( resource < translator.textures.length() );
     assert( textures[resource].nUsers > 0 );
 
     --textures[resource].nUsers;
@@ -404,7 +404,7 @@ namespace client
 
   void Context::releaseSound( int resource )
   {
-    assert( 0 <= resource && resource < translator.sounds.length() );
+    assert( resource < translator.sounds.length() );
     assert( sounds[resource].nUsers > 0 );
 
     --sounds[resource].nUsers;
@@ -412,7 +412,7 @@ namespace client
 
   void Context::freeSound( int resource )
   {
-    assert( 0 <= resource && resource < translator.sounds.length() );
+    assert( resource < translator.sounds.length() );
     assert( sounds[resource].nUsers == -2 );
 
     log.print( "Unloading sound '%s' ...", translator.sounds[resource].name.cstr() );

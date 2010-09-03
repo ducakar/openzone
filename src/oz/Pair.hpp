@@ -14,7 +14,7 @@ namespace oz
 
   /**
    * Pair container.
-   * It can hold two elements of different type.
+   * It can hold two elements of different types.
    */
   template <typename TypeX, typename TypeY = TypeX>
   class Pair

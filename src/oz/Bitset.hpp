@@ -51,7 +51,7 @@ namespace oz
       }
 
       /**
-       * Copy construstor.
+       * Copy constructor.
        * @param b the original Bitset
        */
       Bitset( const Bitset& b ) : data( new ulong[b.size] ), size( b.size )
@@ -70,7 +70,7 @@ namespace oz
       }
 
       /**
-       * Move operator.
+       * Copy operator.
        * @param b the original Bitset
        * @return
        */
@@ -186,7 +186,7 @@ namespace oz
        */
       bool get( int i ) const
       {
-        assert( 0 <= i && i < ( size * ULONG_BITSIZE ) );
+        assert( 0 <= i && i < size * ULONG_BITSIZE );
 
         return ( data[i / ULONG_BITSIZE] & ( 1ul << ( i % ULONG_BITSIZE ) ) ) != 0ul;
       }
@@ -221,7 +221,7 @@ namespace oz
        */
       void set( int i )
       {
-        assert( 0 <= i && i < ( size * ULONG_BITSIZE ) );
+        assert( 0 <= i && i < size * ULONG_BITSIZE );
 
         data[i / ULONG_BITSIZE] |= 1ul << ( i % ULONG_BITSIZE );
       }
@@ -232,7 +232,7 @@ namespace oz
        */
       void clear( int i )
       {
-        assert( 0 <= i && i < ( size * ULONG_BITSIZE ) );
+        assert( 0 <= i && i < size * ULONG_BITSIZE );
 
         data[i / ULONG_BITSIZE] &= ~( 1ul << ( i % ULONG_BITSIZE ) );
       }
@@ -270,7 +270,7 @@ namespace oz
        */
       void set( int start, int end )
       {
-        assert( 0 <= start && start <= end && end <= ( size * ULONG_BITSIZE ) );
+        assert( 0 <= start && start <= end && end <= size * ULONG_BITSIZE );
 
         int startUnit   = start / ULONG_BITSIZE;
         int startOffset = start % ULONG_BITSIZE;
@@ -301,7 +301,7 @@ namespace oz
        */
       void clear( int start, int end )
       {
-        assert( 0 <= start && start <= end && end <= ( size * ULONG_BITSIZE ) );
+        assert( 0 <= start && start <= end && end <= size * ULONG_BITSIZE );
 
         int startUnit   = start / ULONG_BITSIZE;
         int startOffset = start % ULONG_BITSIZE;

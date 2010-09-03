@@ -28,7 +28,7 @@ namespace client
 
     public:
 
-      typedef Audio* ( *CreateFunc )( const Object* object );
+      typedef Audio* ( * CreateFunc )( const Object* object );
 
       Audio* next[1];
 

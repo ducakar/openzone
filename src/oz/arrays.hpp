@@ -196,7 +196,7 @@ namespace oz
    * @param count
    */
   template <typename Type>
-  inline void aDefaultConstruct( Type* aDest, int count )
+  inline void aConstruct( Type* aDest, int count )
   {
     for( int i = 0; i < count; ++i ) {
       new( &aDest[i] ) Type;
@@ -210,7 +210,7 @@ namespace oz
    * @param count
    */
   template <typename Type>
-  inline void aCopyConstruct( Type* aDest, const Type* aSrc, int count )
+  inline void aConstruct( Type* aDest, const Type* aSrc, int count )
   {
     for( int i = 0; i < count; ++i ) {
       new( &aDest[i] ) Type( aSrc[i] );
@@ -223,37 +223,10 @@ namespace oz
    * @param count
    */
   template <typename Type>
-  inline void aReverseCopyConstruct( Type* aDest, const Type* aSrc, int count )
+  inline void aReverseConstruct( Type* aDest, const Type* aSrc, int count )
   {
     for( int i = count - 1; i >= 0; --i ) {
       new( &aDest[i] ) Type( aSrc[i] );
-    }
-  }
-
-  /**
-   * Construct elements via move constructor from an already constructed array.
-   * @param aDest
-   * @param aSrc
-   * @param count
-   */
-  template <typename Type>
-  inline void aMoveConstruct( Type* aDest, Type* aSrc, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      new( &aDest[i] ) Type( static_cast<Type&&>( aSrc[i] ) );
-    }
-  }
-
-  /**
-   * Construct elements in reverse direction via move constructor from an already constructed array.
-   * @param aDest
-   * @param count
-   */
-  template <typename Type>
-  inline void aReverseMoveConstruct( Type* aDest, Type* aSrc, int count )
-  {
-    for( int i = count - 1; i >= 0; --i ) {
-      new( &aDest[i] ) Type( static_cast<Type&&>( aSrc[i] ) );
     }
   }
 
@@ -301,38 +274,6 @@ namespace oz
 
     for( int i = count - 1; i >= 0; --i ) {
       aDest[i] = aSrc[i];
-    }
-  }
-
-  /**
-   * Move array from first to last element.
-   * @param aDest pointer to the first element in the destination array
-   * @param aSrc pointer to the first element in the source array
-   * @param count number of elements to be copied
-   */
-  template <typename Type>
-  inline void aMove( Type* aDest, Type* aSrc, int count )
-  {
-    assert( aDest != aSrc );
-
-    for( int i = 0; i < count; ++i ) {
-      aDest[i] = static_cast<Type&&>( aSrc[i] );
-    }
-  }
-
-  /**
-   * Move array from last to first element.
-   * @param aDest pointer to the first element in the destination array
-   * @param aSrc pointer to the first element in the source array
-   * @param count number of elements to be copied
-   */
-  template <typename Type>
-  inline void aReverseCopy( Type* aDest, Type* aSrc, int count )
-  {
-    assert( aDest != aSrc );
-
-    for( int i = count - 1; i >= 0; --i ) {
-      aDest[i] = static_cast<Type&&>( aSrc[i] );
     }
   }
 
@@ -428,7 +369,7 @@ namespace oz
   inline int aLastIndex( const Type* aSrc, const Type& value, int count )
   {
     int i = count;
-    while( i <= 0 && aSrc[i] != value ) {
+    while( i >= 0 && aSrc[i] != value ) {
       --i;
     }
     return i;
@@ -447,7 +388,7 @@ namespace oz
     assert( 0 <= index && index < count );
 
     for( int i = index + 1; i < count; ++i ) {
-      aDest[i - 1] = static_cast<Type&&>( aDest[i] );
+      aDest[i - 1] = aDest[i];
     }
   }
 
@@ -468,6 +409,18 @@ namespace oz
   }
 
   /**
+   * Length of a static array.
+   * This function does not work with pointers to array.
+   * @param array
+   * @return
+   */
+  template <typename Type, int COUNT>
+  inline int aLength( Type array[COUNT] )
+  {
+    return COUNT;
+  }
+
+  /**
    * Reallocate array (realloc).
    * Allocates new block of size newSize * sizeof( Type ) and copies first "count" elements of
    * source array. newCount should be equal to or greater than count.
@@ -482,7 +435,7 @@ namespace oz
     Type* aNew = new Type[newCount];
 
     for( int i = 0; i < count; ++i ) {
-      aNew[i] = static_cast<Type&&>( aDest[i] );
+      aNew[i] = aDest[i];
     }
     delete[] aDest;
 

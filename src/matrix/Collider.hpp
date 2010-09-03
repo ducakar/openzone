@@ -128,7 +128,7 @@ namespace oz
        */
       int  mask;
 
-      Collider();
+      explicit Collider();
 
       bool overlaps( const Vec3& point, const Object* exclObj = null );
       // test for object collisions only (no structures or terrain)

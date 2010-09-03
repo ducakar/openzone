@@ -27,7 +27,7 @@ namespace oz
 #ifdef OZ_VERBOSE_CONFIG
     bool isUsed;
 
-    Elem() : isUsed( false ) {}
+    explicit Elem() : isUsed( false ) {}
 #endif
 
     bool operator < ( const Elem& e ) const

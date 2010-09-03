@@ -32,7 +32,7 @@ namespace oz
       // 00 <= AUDIOARGS <= 99 (two decimal digits)
       static const int AUDIO_SAMPLES = 32;
 
-      typedef ObjectClass* ( *InitFunc )( const String& name, const Config* config );
+      typedef ObjectClass* ( * InitFunc )( const String& name, const Config* config );
 
       String name;
       String description;

@@ -9,62 +9,43 @@
 
 #pragma once
 
-#ifdef OZ_GNU_MATH
+#include <cmath>
 
-# define fminf( x, y )          __builtin_fminf( x, y )
-# define fmaxf( x, y )          __builtin_fmaxf( x, y )
-# define fabsf( x )             __builtin_fabsf( x )
-# define floorf( x )            __builtin_floorf( x )
-# define ceilf( x )             __builtin_ceilf( x )
-# define roundf( x )            __builtin_roundf( x )
-# define fmodf( x, y )          __builtin_fmodf( x, y )
-# define sqrtf( x )             __builtin_sqrtf( x )
-# define expf( x )              __builtin_expf( x )
-# define logf( x )              __builtin_logf( x )
-# define powf( x, y )           __builtin_powf( x, y )
-# define sinf( x )              __builtin_sinf( x )
-# define cosf( x )              __builtin_cosf( x )
-# define tanf( x )              __builtin_tanf( x )
-# define asinf( x )             __builtin_asinf( x )
-# define acosf( x )             __builtin_acosf( x )
-# define atanf( x )             __builtin_atanf( x )
-# define atan2f( x, y )         __builtin_atan2f( x, y )
-# define nanf( x )              __builtin_nanf( x )
-# define INFINITY               __builtin_inff()
-# define isnanf( x )            __builtin_isnanf( x )
-# define isinff( x )            __builtin_isinff( x )
+#ifdef OZ_MSVC
 
-# ifdef OZ_HAVE_SINCOSF
-#  define sincosf( x, s, c )    __builtin_sincosf( x, s, c )
-# else
-#  define sincosf( x, s, c )    ( *( s ) = sinf( x ), *( c ) = cosf( x ) )
-# endif
+# include <cfloat>
 
-#else
+# define fminf( x, y )          ( ( x ) < ( y ) ? ( x ) : ( y ) )
+# define fmaxf( x, y )          ( ( x ) > ( y ) ? ( x ) : ( y ) )
+# define roundf( x )            ( ( x ) < 0.0f ? ceilf( ( x ) - 0.5f ) : floorf( ( x ) + 0.5f ) )
+# define truncf( x )            ( ( x ) < 0.0f ? ceilf( x ) : floorf( x ) )
+# define nanf( x )              float( 0.0f * HUGE_VAL )
+# define INFINITY               float( HUGE_VAL )
 
-# ifdef OZ_MINGW
-#  include <math.h>
-# else
-#  include <cmath>
-# endif
+namespace std
+{
 
-# define sincosf( x, s, c )     ( *( s ) = sinf( x ), *( c ) = cosf( x ) )
-# define isnanf( x )            isnan( x )
-# define isinff( x )            isinf( x )
+  inline bool isnan( float x )
+  {
+    return _isnan( x ) != 0;
+  }
 
-# ifdef _MSC_VER
+  inline bool isfinite( float x )
+  {
+    return _finite( x ) != 0;
+  }
 
-#  include <cfloat>
+  inline bool isinf( float x )
+  {
+    return _finite( x ) == 0 && _isnan( x ) == 0;
+  }
 
-#  define fminf( x, y )         ( ( x ) < ( y ) ? ( x ) : ( y ) )
-#  define fmaxf( x, y )         ( ( x ) > ( y ) ? ( x ) : ( y ) )
-#  define roundf( x )           ( ( x ) < 0.0f ? ceilf( ( x ) - 0.5f ) : floorf( ( x ) + 0.5f ) )
-#  define nanf( x )             float( 0.0f * HUGE_VAL )
-#  define INFINITY              float( HUGE_VAL )
-#  define isnan( x )            ( _isnan( x ) != 0 )
-#  define isinf( x )            ( _isnan( x ) != 0 && !_finite( x ) != 0 )
+  inline bool isnormal( float x )
+  {
+    return ( _fpclass( x ) & ( _FPCLASS_NN | _FPCLASS_PN ) ) != 0;
+  }
 
-# endif
+}
 
 #endif
 
@@ -76,13 +57,13 @@ namespace oz
     private:
 
       // static class
-      Math() {}
+      explicit Math() {}
       Math( const Math& );
       Math& operator = ( const Math& );
 
     public:
 
-      static const float FLOAT_EPS;
+      static const float EPSILON;
       static const float E;
       static const float LOG2E;
       static const float LOG10E;
@@ -97,9 +78,6 @@ namespace oz
       static const float SQRT2;
       static const float SQRT1_2;
 
-      static const int  INT_MAX  = ~0u >> 1;
-      static const long LONG_MAX = ~0ul >> 1;
-
       static const float MAX_RAND;
 
       /*
@@ -108,17 +86,17 @@ namespace oz
 
       static float min( float x, float y )
       {
-        return fminf( x, y );
+        return y < x ? y : x;
       }
 
       static float max( float x, float y )
       {
-        return fmaxf( x, y );
+        return x < y ? y : x;
       }
 
       static float bound( float x, float a, float b )
       {
-        return fmaxf( a, fminf( x, b ) );
+        return x < a ? a : ( b < x ? b : x );
       }
 
       static float abs( float x )
@@ -141,9 +119,21 @@ namespace oz
         return roundf( x );
       }
 
+      static float trunc( float x )
+      {
+        return truncf( x );
+      }
+
       static float mod( float x, float y )
       {
         return fmodf( x, y );
+      }
+
+      static Pair<float> fract( float x )
+      {
+        float integral;
+        float fractional = modff( x, &integral );
+        return Pair<float>( integral, fractional );
       }
 
       static float sqrt( float x )
@@ -178,7 +168,12 @@ namespace oz
 
       static void sincos( float x, float* s, float* c )
       {
+#ifdef OZ_HAVE_SINCOSF
         sincosf( x, s, c );
+#else
+        *s = sinf( x );
+        *c = cosf( x );
+#endif
       }
 
       static float tan( float x )
@@ -222,12 +217,22 @@ namespace oz
 
       static bool isNaN( float x )
       {
-        return isnanf( x );
+        return std::isnan( x );
+      }
+
+      static bool isFinite( float x )
+      {
+        return std::isfinite( x );
       }
 
       static bool isInf( float x )
       {
-        return isinff( x );
+        return std::isinf( x );
+      }
+
+      static bool isNormal( float x )
+      {
+        return std::isnormal( x );
       }
 
       static float sgn( float x )
@@ -312,48 +317,14 @@ namespace oz
 
 }
 
-#ifdef OZ_GNU_MATH
+#ifdef OZ_MSVC
 
 # undef fminf
 # undef fmaxf
-# undef fabsf
-# undef floorf
-# undef ceilf
 # undef roundf
-# undef fmodf
-# undef sqrtf
-# undef expf
-# undef logf
-# undef powf
-# undef sinf
-# undef cosf
-# undef sincosf
-# undef tanf
-# undef asinf
-# undef acosf
-# undef atanf
-# undef atan2f
 # undef nanf
 # undef INFINITY
-# undef isnanf
-# undef isinff
-
-#else
-
-# undef sincosf
-# undef isnanf
-# undef isinff
-
-# ifdef _MSC_VER
-
-#  undef fminf
-#  undef fmaxf
-#  undef roundf
-#  undef nanf
-#  undef INFINITY
-#  undef isnan
-#  undef isinf
-
-# endif
+# undef isnan
+# undef isinf
 
 #endif

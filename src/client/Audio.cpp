@@ -26,7 +26,7 @@ namespace client
 
   void Audio::playSound( int sample, float volume, const Object* obj ) const
   {
-    assert( 0 <= sample && sample < translator.sounds.length() );
+    assert( sample < translator.sounds.length() );
     assert( alGetError() == AL_NO_ERROR );
 
     uint srcId;
@@ -64,7 +64,7 @@ namespace client
 
   void Audio::playContSound( int sample, float volume, uint key, const Object* obj ) const
   {
-    assert( 0 <= sample && sample < translator.sounds.length() );
+    assert( sample < translator.sounds.length() );
     assert( alGetError() == AL_NO_ERROR );
 
     if( sound.updateContSource( key ) ) {

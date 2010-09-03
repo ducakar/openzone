@@ -28,7 +28,7 @@ namespace oz
        * Initialises Log with default parameters to init() (look declaration).
        * @return
        */
-      Log();
+      explicit Log();
 
       /**
        * First parameter is file name (if NULL or "", it writes to stdout), the other tells us

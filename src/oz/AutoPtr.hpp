@@ -23,17 +23,15 @@ namespace oz
 
       Type* pointer;
 
-      // no copying
-      AutoPtr( const AutoPtr& );
-      AutoPtr& operator = ( const AutoPtr& );
-
     public:
 
       AutoPtr( Type* pointer_ ) : pointer( pointer_ )
       {}
 
-      AutoPtr( AutoPtr&& p ) : pointer( p.pointer )
-      {}
+      AutoPtr( AutoPtr& p ) : pointer( p.pointer )
+      {
+        p.pointer = null;
+      }
 
       ~AutoPtr()
       {
@@ -42,8 +40,10 @@ namespace oz
         }
       }
 
-      AutoPtr& operator = ( AutoPtr&& p )
+      AutoPtr& operator = ( AutoPtr& p )
       {
+        assert( pointer == null );
+
         pointer = p.pointer;
         p.pointer = null;
 

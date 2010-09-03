@@ -27,8 +27,8 @@ namespace nirvana
 
       static const int ACTIVE_BIT = 0x00000001;
 
-      typedef Task* ( *CreateFunc )( const Task* parent );
-      typedef Task* ( *ReadFunc )( InputStream* istream, const Task* parent );
+      typedef Task* ( * CreateFunc )( const Task* parent );
+      typedef Task* ( * ReadFunc )( InputStream* istream, const Task* parent );
 
       Task*       prev[1];
       Task*       next[1];
@@ -46,7 +46,7 @@ namespace nirvana
       static Task* create( const Task* parent );
       static Task* read( InputStream* istream, const Task* parent );
 
-      Task( Mind* mind_, Task* parent_ ) : flags( 0 ), mind( mind_ ), parent( parent_ ) {}
+      explicit Task( Mind* mind_, Task* parent_ ) : flags( 0 ), mind( mind_ ), parent( parent_ ) {}
       virtual ~Task() {}
 
       virtual const char* type() const = 0;

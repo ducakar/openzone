@@ -67,7 +67,7 @@ namespace client
 
         public:
 
-          Part( MD3* parent, const String& dir, const char* fileName, MD3Tag** tags );
+          explicit Part( MD3* parent, const String& dir, const char* fileName, MD3Tag** tags );
           ~Part();
 
           void scale( float scale );

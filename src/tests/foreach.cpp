@@ -21,7 +21,7 @@ struct Elem
   Elem* prev[1];
   Elem* next[1];
 
-  Elem( int value_ ) : value( value_ ) {}
+  explicit Elem( int value_ ) : value( value_ ) {}
 };
 
 struct SparseElem
@@ -29,8 +29,8 @@ struct SparseElem
   int value;
   int nextSlot[1];
 
-  SparseElem() {}
-  SparseElem( int value_ ) : value( value_ ) {}
+  explicit SparseElem() {}
+  explicit SparseElem( int value_ ) : value( value_ ) {}
 };
 
 int main( int, char** )
@@ -116,7 +116,7 @@ int main( int, char** )
   swap( v, v1 );
   swap( sv, sv1 );
   swap( s, s1 );
-//  swap( m, m1 );
+  swap( m, m1 );
   swap( hi, hi1 );
   swap( hs, hs1 );
 
@@ -126,7 +126,7 @@ int main( int, char** )
   swap( v, v1 );
   swap( sv, sv1 );
   swap( s, s1 );
-//  swap( m, m1 );
+  swap( m, m1 );
   swap( hi, hi1 );
   swap( hs, hs1 );
 

@@ -9,6 +9,7 @@ option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in c
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
 option( OZ_CROSS_MINGW "If MinGW is not used natively on Windows, but on Unix for cross-compiling." OFF )
 
+option( OZ_BIG_ENDIAN_DATA "Use big-endian byte-order for data when saving to disk or sending across network" ON )
 option( OZ_MAKE_PREBUILT "Optimise and dump resources where possible. Those can be loaded by a OZ_USE_PREBUILT enabled build." OFF )
 option( OZ_USE_PREBUILT "If optimised resources should be loaded instead of generic ones" OFF )
 option( OZ_ENABLE_CYLINDER "Enable cylinder collision shape and physics" OFF )
@@ -184,7 +185,7 @@ if( MSVC )
 else( MSVC )
 
   # compiler and linker flags
-  set( flags "-pedantic -std=c++0x -fmessage-length=0 -pipe" )
+  set( flags "-std=c++0x -fmessage-length=0 -pipe" )
   set( warnings "-Wall -Wextra -Wold-style-cast -Wconversion -Wstrict-overflow" )
   set( warnings "${warnings} -Wlogical-op -Wredundant-decls -Wsign-promo -Wpacked" )
   set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor" )
@@ -196,6 +197,10 @@ else( MSVC )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -ffast-math" CACHE STRING "" FORCE )
   set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
+  
+  if( WIN32 )
+    set( CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import" )
+  endif( WIN32 )
 
 endif( MSVC )
 

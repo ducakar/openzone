@@ -139,10 +139,10 @@ namespace oz
     // default inventory
     char buffer[] = "inventoryItem  ";
     for( int i = 0; i < INVENTORY_ITEMS; ++i ) {
-      assert( 0 <= i && i < 100 );
+      assert( i < 100 );
 
-      buffer[ sizeof( buffer ) - 3 ] = char( '0' + ( i / 10 ) );
-      buffer[ sizeof( buffer ) - 2 ] = char( '0' + ( i % 10 ) );
+      buffer[ sizeof buffer - 3 ] = char( '0' + ( i / 10 ) );
+      buffer[ sizeof buffer - 2 ] = char( '0' + ( i % 10 ) );
 
       String itemName = config->get( buffer, "" );
       if( !itemName.isEmpty() ) {

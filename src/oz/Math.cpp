@@ -9,18 +9,15 @@
 
 #include "oz.hpp"
 
-#ifdef OZ_MINGW
-# include <math.h>
-#else
-# include <cmath>
-#endif
+#include <cmath>
+#include <cfloat>
 #include <cstdlib>
 #include <ctime>
 
 namespace oz
 {
 
-  const float Math::FLOAT_EPS  = 1.1920928955078125e-7f;
+  const float Math::EPSILON    = FLT_EPSILON;
   const float Math::E          = 2.7182818284590452354f;
   const float Math::LOG2E      = 1.4426950408889634074f;
   const float Math::LOG10E     = 0.43429448190325182765f;

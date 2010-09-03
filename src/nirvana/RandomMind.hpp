@@ -25,7 +25,7 @@ namespace nirvana
       static Mind* create( int botIndex );
       static Mind* read( InputStream* istream );
 
-      RandomMind( int botIndex ) : Mind( botIndex ) {}
+      explicit RandomMind( int botIndex ) : Mind( botIndex ) {}
 
       virtual const char* type() const;
       virtual void update();
