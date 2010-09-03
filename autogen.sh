@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# Some CMakeLists.txt files are auto-generated since some targets have lots of source files and it
+# would be unconvenient to keep CMakeLists.txt files up-to-date and without any files missing.
+# Those CMakeLists.txt are generated via CMakeLists.gen scripts in the same directory that add all
+# .hpp and .cpp files in the target directory to the target definition.
+#
 
 export LC_COLLATE=C
 

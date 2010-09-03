@@ -9,44 +9,8 @@
 
 #pragma once
 
-#include <cmath>
-
 #ifdef OZ_MSVC
-
 # include <cfloat>
-
-# define fminf( x, y )          ( ( x ) < ( y ) ? ( x ) : ( y ) )
-# define fmaxf( x, y )          ( ( x ) > ( y ) ? ( x ) : ( y ) )
-# define roundf( x )            ( ( x ) < 0.0f ? ceilf( ( x ) - 0.5f ) : floorf( ( x ) + 0.5f ) )
-# define truncf( x )            ( ( x ) < 0.0f ? ceilf( x ) : floorf( x ) )
-# define nanf( x )              float( 0.0f * HUGE_VAL )
-# define INFINITY               float( HUGE_VAL )
-
-namespace std
-{
-
-  inline bool isnan( float x )
-  {
-    return _isnan( x ) != 0;
-  }
-
-  inline bool isfinite( float x )
-  {
-    return _finite( x ) != 0;
-  }
-
-  inline bool isinf( float x )
-  {
-    return _finite( x ) == 0 && _isnan( x ) == 0;
-  }
-
-  inline bool isnormal( float x )
-  {
-    return ( _fpclass( x ) & ( _FPCLASS_NN | _FPCLASS_PN ) ) != 0;
-  }
-
-}
-
 #endif
 
 namespace oz
@@ -80,10 +44,6 @@ namespace oz
 
       static const float MAX_RAND;
 
-      /*
-       * Standard math functions
-       */
-
       static float min( float x, float y )
       {
         return y < x ? y : x;
@@ -101,143 +61,258 @@ namespace oz
 
       static float abs( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_fabsf( x );
+#else
         return fabsf( x );
+#endif
       }
 
       static float floor( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_floorf( x );
+#else
         return floorf( x );
+#endif
       }
 
       static float ceil( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_ceilf( x );
+#else
         return ceilf( x );
+#endif
       }
 
       static float round( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_roundf( x );
+#elif defined( OZ_MSVC )
+        return x < 0.0f ? ceilf( x - 0.5f ) : floorf( x + 0.5f );
+#else
         return roundf( x );
+#endif
       }
 
       static float trunc( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_truncf( x );
+#elif defined( OZ_MSVC )
+        return x < 0.0f ? ceilf( x ) : floorf( x );
+#else
         return truncf( x );
+#endif
       }
 
       static float mod( float x, float y )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_fmodf( x, y );
+#else
         return fmodf( x, y );
+#endif
       }
 
       static Pair<float> fract( float x )
       {
         float integral;
+#ifdef OZ_BUILTIN_MATH
+        float fractional = __builtin_modff( x, &integral );
+#else
         float fractional = modff( x, &integral );
+#endif
         return Pair<float>( integral, fractional );
       }
 
       static float sqrt( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_sqrtf( x );
+#else
         return sqrtf( x );
+#endif
       }
 
       static float exp( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_expf( x );
+#else
         return expf( x );
+#endif
       }
 
       static float log( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_logf( x );
+#else
         return logf( x );
+#endif
       }
 
       static float pow( float x, float y )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_powf( x, y );
+#else
         return powf( x, y );
+#endif
       }
 
       static float sin( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_sinf( x );
+#else
         return sinf( x );
+#endif
       }
 
       static float cos( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_cosf( x );
+#else
         return cosf( x );
+#endif
       }
 
       static void sincos( float x, float* s, float* c )
       {
 #ifdef OZ_HAVE_SINCOSF
+# ifdef OZ_BUILTIN_MATH
+        __builtin_sincosf( x, s, c );
+# else
         sincosf( x, s, c );
+# endif
 #else
+# ifdef OZ_BUILTIN_MATH
+        *s = __builtin_sinf( x );
+        *c = __builtin_cosf( x );
+# else
         *s = sinf( x );
         *c = cosf( x );
+# endif
 #endif
       }
 
       static float tan( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_tanf( x );
+#else
         return tanf( x );
+#endif
       }
 
       static float asin( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_asinf( x );
+#else
         return asinf( x );
+#endif
       }
 
       static float acos( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_acosf( x );
+#else
         return acosf( x );
+#endif
       }
 
       static float atan( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_atanf( x );
+#else
         return atanf( x );
+#endif
       }
 
       static float atan2( float x, float y )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_atan2f( x, y );
+#else
         return atan2f( x, y );
+#endif
       }
-
-      /*
-       * Some additional functions
-       */
 
       static float nan()
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_nanf( "" );
+#elif defined( OZ_MSVC )
+        return float( 0.0f * HUGE_VAL );
+#else
         return nanf( "" );
+#endif
       }
 
       static float inf()
       {
-        return INFINITY;
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_inff();
+#else
+        return float( HUGE_VAL );
+#endif
       }
 
       static bool isNaN( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_isnan( x );
+#elif defined( OZ_MSVC )
+        return _isnan( x ) != 0;
+#else
         return std::isnan( x );
+#endif
       }
 
       static bool isFinite( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_isfinite( x );
+#elif defined( OZ_MSVC )
+        return _finite( x ) != 0;
+#else
         return std::isfinite( x );
+#endif
       }
 
       static bool isInf( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_isinf( x );
+#elif defined( OZ_MSVC )
+        return _finite( x ) == 0 && _isnan( x ) == 0;
+#else
         return std::isinf( x );
+#endif
       }
 
       static bool isNormal( float x )
       {
+#ifdef OZ_BUILTIN_MATH
+        return __builtin_isnormal( x );
+#elif defined( OZ_MSVC )
+        return ( _fpclass( x ) & ( _FPCLASS_NN | _FPCLASS_PN ) ) != 0;
+#else
         return std::isnormal( x );
+#endif
       }
 
       static float sgn( float x )
       {
-        return x < 0.0f ? -1.0f : x > 0.0f ? 1.0f : 0.0f;
+        return x < 0.0f ? -1.0f : ( x > 0.0f ? 1.0f : 0.0f );
       }
 
       static float lerp( float t, float a, float b )
@@ -283,7 +358,7 @@ namespace oz
          return x * fastInvSqrt( x );
       }
 
-      // fast inverse sqrt that appeared in Quake source (google for detailed explanations)
+      // famous fast inverse sqrt from Quake source (google for detailed explanations)
       static float fastInvSqrt( float x )
       {
         float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
@@ -300,7 +375,7 @@ namespace oz
       // pointer to srand in cstdlib
       static void ( *const seed )( uint seed );
 
-      // random integer between 0 and RAND_MAX == INT_MAX
+      // random integer between 0 and RAND_MAX
       // (pointer to rand() function in cstdlib)
       static int ( *const rand )();
 
@@ -316,15 +391,3 @@ namespace oz
   };
 
 }
-
-#ifdef OZ_MSVC
-
-# undef fminf
-# undef fmaxf
-# undef roundf
-# undef nanf
-# undef INFINITY
-# undef isnan
-# undef isinf
-
-#endif

@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# First, count lines and bytes in different groups of files (C++ sources, hand-written data text
+# files (Lua, .rc files) and hand-written buildsystem files) then, if sloccount in found on
+# system, count SLOC in C++ source files. 
+#
 
 source=`echo src/*/*.{hpp,cpp} src/stable.hpp`
 data=`echo data/*/*.rc data/lua/*/*.lua`
@@ -20,5 +25,5 @@ count 'Data config & Lua scripts' $data
 count 'Build system etc.' $build
 
 if [ -x /usr/bin/sloccount ]; then
-  LANG=C /usr/bin/sloccount src *.sh data/lua
+  LANG=C /usr/bin/sloccount src
 fi

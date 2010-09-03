@@ -408,21 +408,25 @@ int main( int argc, char** argv )
     client::main.main( &argc, argv );
   }
   catch( const Exception& e ) {
+    fprintf( stderr, "\nEXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.message );
+
     oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.message );
 
     if( oz::log.isFile() ) {
-      fprintf( stderr, "EXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.message );
+      oz::log.println();
+      oz::log.printRaw( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.message );
+      oz::log.println();
     }
   }
   catch( const std::exception& e ) {
+    fprintf( stderr, "EXCEPTION: %s\n", e.what() );
+
     oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println( "EXCEPTION: %s", e.what() );
 
     if( oz::log.isFile() ) {
-      fprintf( stderr, "EXCEPTION: %s\n", e.what() );
+      oz::log.println();
+      oz::log.printRaw( "EXCEPTION: %s", e.what() );
+      oz::log.println();
     }
   }
   client::main.shutdown();

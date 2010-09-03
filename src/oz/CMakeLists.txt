@@ -4,6 +4,8 @@ add_library( oz STATIC
   Array.hpp
   AutoPtr.hpp
   Bitset.hpp
+  Buffer.cpp
+  Buffer.hpp
   Config.cpp
   Config.hpp
   DArray.hpp
@@ -34,5 +36,5 @@ add_library( oz STATIC
   common.hpp
   iterables.hpp
   oz.hpp
-  ozconfig.hpp
+  stream.hpp
 )

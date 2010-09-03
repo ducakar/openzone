@@ -168,8 +168,11 @@ namespace oz
     assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
     obj->p        = pos;
-    obj->radius   = !dim;
+    obj->r        = !dim;
     obj->dim      = dim;
+
+    obj->h        = 0.0f;
+    obj->v        = 0.0f;
 
     obj->index    = index;
     obj->flags    = flags;

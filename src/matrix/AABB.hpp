@@ -12,7 +12,7 @@
 namespace oz
 {
 
-  class AABB
+  class AABB : public Sphere
   {
     public:
 
@@ -21,15 +21,6 @@ namespace oz
       static const float REAL_MAX_DIM;
 
       /**
-       * Position
-       */
-      Vec3 p;
-      /**
-       * Radius of a bounding sphere (only used in frustum culling, so no need to set it when the
-       * AABB won't be used in a frusum test)
-       */
-      float radius;
-      /**
        * Extents
        */
       Vec3 dim;
@@ -37,7 +28,7 @@ namespace oz
       explicit AABB()
       {}
 
-      explicit AABB( const Vec3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )
+      explicit AABB( const Vec3& p_, const Vec3& dim_ ) : Sphere( p_ ), dim( dim_ )
       {}
 
       Bounds toBounds( float eps = 0.0f ) const

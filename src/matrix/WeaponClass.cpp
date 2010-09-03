@@ -98,8 +98,9 @@ namespace oz
     Weapon* obj = new Weapon();
 
     obj->p        = pos;
-    obj->radius   = !dim;
+    obj->r        = !dim;
     obj->dim      = dim;
+    obj->h        = 0.0f;
 
     obj->index    = index;
     obj->flags    = flags;
@@ -120,7 +121,7 @@ namespace oz
   {
     Weapon* obj = new Weapon();
 
-    obj->radius = !dim;
+    obj->r      = !dim;
     obj->dim    = dim;
 
     obj->index  = index;
