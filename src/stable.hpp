@@ -13,8 +13,6 @@
 #include "configuration.hpp"
 
 // we want to use C++ wrapped C headers, not vanilla ones that are included via SDL
-#include <cstddef>
-#include <cstdarg>
 #include <cstdlib>
 #include <cstdio>
 #include <cctype>

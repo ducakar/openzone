@@ -19,7 +19,6 @@ namespace oz
    * It should only be used as a base class. Following functions need to be implemented:<br>
    * <code>bool isValid() const</code> (if necessary)<br>
    * <code>Iterator& operator ++ ()</code><br>
-   * <code>Iterator& operator -- ()</code> (optional)<br>
    * and a constructor of course.
    */
   template <typename Type>
@@ -130,13 +129,6 @@ namespace oz
        */
       CIteratorBase& operator ++ ();
 
-      /**
-       * Go to previous element
-       * May be overridden in derived classes (optional)
-       * @return
-       */
-      CIteratorBase& operator -- ();
-
   };
 
   /**
@@ -144,7 +136,6 @@ namespace oz
    * It should only be used as a base class. Following functions need to be implemented:<br>
    * <code>bool isValid() const</code> (if necessary)<br>
    * <code>Iterator& operator ++ ()</code><br>
-   * <code>Iterator& operator -- ()</code> (optional)<br>
    * and a constructor of course.
    */
   template <typename Type>
@@ -279,13 +270,6 @@ namespace oz
        */
       IteratorBase& operator ++ ();
 
-      /**
-       * Go to previous element
-       * May be overridden in derivative classes (optional)
-       * @return
-       */
-      IteratorBase& operator -- ();
-
   };
 
   /**
@@ -344,11 +328,14 @@ namespace oz
    * Destruct all elements.
    * @param iDest
    */
-  template <typename Iterator>
-  inline void iDestruct( Iterator iDest )
+  template <typename CIterator>
+  inline void iDestruct( CIterator iSrc )
   {
-    while( iDest.isValid() ) {
-      ( *iDest ).~Type();
+    typedef typename CIterator::Elem Type;
+
+    while( iSrc.isValid() ) {
+      ( *iSrc ).~Type();
+      ++iSrc;
     }
   }
 
@@ -368,25 +355,6 @@ namespace oz
       *iDest = *iSrc;
       ++iDest;
       ++iSrc;
-    }
-  }
-
-  /**
-   * Copy elements from last to first (like std::copy_backward, but reversed parameters).
-   * @param iDest
-   * @param iSrc
-   */
-  template <class ReverseIteratorA, class CReverseIteratorB>
-  inline void iReverseCopy( ReverseIteratorA iDest, CReverseIteratorB iSrc )
-  {
-    assert( &*iDest != &*iSrc );
-
-    while( iDest.isValid() ) {
-      assert( iSrc.isValid() );
-
-      *iDest = *iSrc;
-      --iDest;
-      --iSrc;
     }
   }
 
@@ -413,7 +381,7 @@ namespace oz
   inline void iMap( Iterator iDest, const Method& method )
   {
     while( iDest.isValid() ) {
-      method( iDest );
+      method( *iDest );
       ++iDest;
     }
   }
@@ -445,22 +413,22 @@ namespace oz
   template <class CIterator, typename Value>
   inline bool iContains( CIterator iSrc, const Value& value )
   {
-    while( iSrc.isValid() && *iSrc != value ) {
+    while( iSrc.isValid() && !( *iSrc == value ) ) {
       ++iSrc;
     }
     return iSrc.isValid();
   }
 
   /**
-   * Find first occurrence of given element (like std::find)
+   * Find first occurrence of given element (like std::find).
    * @param iSrc
    * @param value
    * @return iterator at the element found, passed iterator if not found
    */
   template <class CIterator, typename Value>
-  inline CIterator iIndex( CIterator iSrc, const Value& value )
+  inline CIterator iFind( CIterator iSrc, const Value& value )
   {
-    while( iSrc.isValid() && *iSrc != value ) {
+    while( iSrc.isValid() && !( *iSrc == value ) ) {
       ++iSrc;
     }
     return iSrc;
@@ -472,13 +440,59 @@ namespace oz
    * @param value
    * @return iterator at the element found, passed iterator if not found
    */
-  template <class CReverseIterator, typename Value>
-  inline CReverseIterator iLastIndex( CReverseIterator iSrc, const Value& value )
+  template <class CIterator, typename Value>
+  inline CIterator iFindLast( CIterator iSrc, const Value& value )
   {
-    while( iSrc.isValid() && *iSrc != value ) {
-      --iSrc;
+    // default constructor produces an invalid, passed iterator
+    CIterator lastOccurence;
+
+    while( iSrc.isValid() ) {
+      if( *iSrc == value ) {
+        lastOccurence = iSrc;
+      }
+      ++iSrc;
     }
-    return iSrc;
+    return lastOccurence;
+  }
+
+  /**
+   * Get index of the first occurrence of given element.
+   * @param iSrc
+   * @param value
+   * @return consecutive number of the element or -1 if not found
+   */
+  template <class CIterator, typename Value>
+  inline int iIndex( CIterator iSrc, const Value& value )
+  {
+    int index = 0;
+
+    while( iSrc.isValid() && !( *iSrc == value ) ) {
+      ++iSrc;
+      ++index;
+    }
+    return iSrc.isValid() ? index : -1;
+  }
+
+  /**
+   * Get index of the last occurrence of given element.
+   * @param iSrc
+   * @param value
+   * @return consecutive number of the element or -1 if not found
+   */
+  template <class CIterator, typename Value>
+  inline int iLastIndex( CIterator iSrc, const Value& value )
+  {
+    int index = 0;
+    int lastIndex = -1;
+
+    while( iSrc.isValid() ) {
+      if( *iSrc == value ) {
+        lastIndex = index;
+      }
+      ++iSrc;
+      ++index;
+    }
+    return lastIndex;
   }
 
   /**
@@ -494,7 +508,7 @@ namespace oz
       Type& elem = *iDest;
       ++iDest;
 
-      if( elem != null ) {
+      if( !( elem == null ) ) {
         delete elem;
         elem = null;
       }

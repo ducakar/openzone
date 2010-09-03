@@ -140,16 +140,11 @@ namespace oz
        */
       void setUnitSize( int nUnits )
       {
-        soft_assert( size != nUnits );
-
-        if( nUnits == size ) {
-          return;
-        }
-        if( data != null ) {
+        if( nUnits != size ) {
           delete[] data;
+          size = nUnits;
+          data = size == 0 ? null : new ulong[size];
         }
-        size = nUnits;
-        data = size == 0 ? null : new ulong[size];
       }
 
       /**

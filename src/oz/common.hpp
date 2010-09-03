@@ -219,7 +219,7 @@ namespace oz
   template <typename Type>
   inline const Type& bound( const Type& c, const Type& a, const Type& b )
   {
-    assert( a <= b );
+    assert( !( b < a ) );
 
     return c < a ? a : ( b < c ? b : c );
   }
@@ -235,7 +235,7 @@ namespace oz
   template <typename Type>
   inline Type& bound( Type& c, Type& a, Type& b )
   {
-    assert( a <= b );
+    assert( !( b < a ) );
 
     return c < a ? a : ( b < c ? b : c );
   }

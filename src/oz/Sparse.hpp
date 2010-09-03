@@ -59,14 +59,6 @@ namespace oz
             return *this;
           }
 
-        private:
-
-          /**
-           * No iterating backwards.
-           * @return
-           */
-          CIterator& operator -- ();
-
       };
 
       /**
@@ -106,14 +98,6 @@ namespace oz
 
             return *this;
           }
-
-        private:
-
-          /**
-           * No iterating backwards.
-           * @return
-           */
-          Iterator& operator -- ();
 
       };
 

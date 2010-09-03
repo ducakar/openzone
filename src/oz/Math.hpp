@@ -376,7 +376,7 @@ namespace oz
       static void ( *const seed )( uint seed );
 
       // random integer between 0 and RAND_MAX
-      // (pointer to rand() function in cstdlib)
+      // (pointer to rand() function in <cstdlib>)
       static int ( *const rand )();
 
       // random integer between 0 and max - 1

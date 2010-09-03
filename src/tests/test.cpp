@@ -44,10 +44,10 @@ int main( int, char** )
 {
   int array[] = { 0, 1, 2, 3, 4, 5, 6 };
 
-  auto add42 = [] ( int* elem ) { *elem += 42; };
+  auto add42 = [] ( int& elem ) { elem += 42; };
 
   iMap( iter( array, 7 ), add42 );
-  iMap( iter( array, 7 ), [] ( int* elem ) { printf( "%d\n", *elem ); } );
+  iMap( iter( array, 7 ), [] ( int& elem ) { printf( "%d\n", elem ); } );
 
   return 0;
 }
