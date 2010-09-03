@@ -28,7 +28,7 @@ namespace client
 
     protected:
 
-      MD2Model()
+      explicit MD2Model()
       {
         flags |= Model::MD2MODEL_BIT;
       }

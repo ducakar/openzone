@@ -11,10 +11,6 @@
 
 #include <cstdio>
 
-#ifdef OZ_MSVC
-# define snprintf sprintf_s
-#endif
-
 namespace oz
 {
 

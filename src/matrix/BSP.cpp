@@ -951,7 +951,7 @@ namespace oz
 
     for( int i = 0; i < nLightmaps; ++i ) {
       for( int j = 0; j < LIGHTMAP_SIZE; ++j ) {
-        os.writeByte( lightmaps[i].bits[j] );
+        os.writeChar( lightmaps[i].bits[j] );
       }
     }
 
@@ -1122,7 +1122,7 @@ namespace oz
     lightmaps = new( data ) Lightmap[nLightmaps];
     for( int i = 0; i < nLightmaps; ++i ) {
       for( int j = 0; j < LIGHTMAP_SIZE; ++j ) {
-        lightmaps[i].bits[j] = is.readByte();
+        lightmaps[i].bits[j] = is.readChar();
       }
     }
 

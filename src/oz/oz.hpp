@@ -20,17 +20,22 @@
 #include <cstddef>
 
 /*
+ * Platform-independent variable parameters pooling
+ */
+#include <cstdarg>
+
+/*
  * assert macro
  */
 #include <cassert>
 
 /*
- * Standard C++ exception definitions (usually included via new, but just for sure)
+ * Standard exception definitions (usually included via <new>, but just for sure)
  */
 #include <exception>
 
 /*
- * Standard C++ new/delete operator and exception definitions
+ * Standard new/delete operator and exception definitions
  */
 #include <new>
 

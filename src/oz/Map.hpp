@@ -18,6 +18,8 @@ namespace oz
   template <typename Key, typename Value = nil, int GRANULARITY = 8>
   class Map
   {
+    static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
+
     private:
 
       struct Elem
@@ -254,7 +256,7 @@ namespace oz
       {
         assert( m.size > 0 );
 
-        aCopyConstruct( data, m.data, m.count );
+        aConstruct( data, m.data, m.count );
       }
 
       /**
@@ -286,7 +288,7 @@ namespace oz
           size = m.size;
         }
 
-        aCopyConstruct( data, m.data, m.count );
+        aConstruct( data, m.data, m.count );
         count = m.count;
         return *this;
       }
@@ -362,17 +364,6 @@ namespace oz
 
       /**
        * @param i
-       * @return reference i-th element's key
-       */
-      Key& operator [] ( int i )
-      {
-        assert( 0 <= i && i < count );
-
-        return data[i].key;
-      }
-
-      /**
-       * @param i
        * @return constant reference i-th element's key
        */
       const Key& operator [] ( int i ) const
@@ -384,9 +375,20 @@ namespace oz
 
       /**
        * @param i
-       * @return reference i-th element's value
+       * @return reference i-th element's key
        */
-      Value& value( int i )
+      Key& operator [] ( int i )
+      {
+        assert( 0 <= i && i < count );
+
+        return data[i].key;
+      }
+
+      /**
+       * @param i
+       * @return constant reference i-th element's value
+       */
+      const Value& value( int i ) const
       {
         assert( 0 <= i && i < count );
 
@@ -395,9 +397,9 @@ namespace oz
 
       /**
        * @param i
-       * @return constant reference i-th element's value
+       * @return reference i-th element's value
        */
-      const Value& value( int i ) const
+      Value& value( int i )
       {
         assert( 0 <= i && i < count );
 

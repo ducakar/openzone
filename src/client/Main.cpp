@@ -82,7 +82,7 @@ namespace client
     initFlags = 0;
     String rcDir;
 
-#if defined( OZ_MINGW ) || defined( OZ_MSVC )
+#ifdef OZ_WINDOWS
     const char* homeVar = getenv( "USERPROFILE" );
 #else
     const char* homeVar = getenv( "HOME" );
@@ -97,7 +97,7 @@ namespace client
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource directory found, creating '%s' ...", rcDir.cstr() );
 
-#if defined( OZ_MINGW ) || defined( OZ_MSVC )
+#ifdef OZ_WINDOWS
       if( mkdir( rcDir.cstr() ) != 0 ) {
 #else
       if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
@@ -359,7 +359,7 @@ namespace client
     float allTimeSec     = float( timeLast - timeZero ) / 1000.0f;
     float gameTimeSec    = float( gameTime ) / 1000.0f;
     float renderTimeSec  = float( renderTime ) / 1000.0f;
-    float sleepTimeSec   = Math::max( 0.0f, allTimeSec - gameTimeSec - renderTimeSec );
+    float sleepTimeSec   = Math::max( allTimeSec - gameTimeSec - renderTimeSec, 0.0f );
     float nirvanaTimeSec = float( timer.nirvanaMillis ) / 1000.0f;
     int   ticks          = timer.millis / Timer::TICK_MILLIS;
 

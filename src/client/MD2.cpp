@@ -275,7 +275,7 @@ namespace client
 
   void MD2::init()
   {
-    for( uint i = 0; i < sizeof( anorms ) / sizeof( anorms[0] ); ++i ) {
+    for( uint i = 0; i < sizeof anorms / sizeof anorms[0]; ++i ) {
       float x = -anorms[i][1];
       float y =  anorms[i][0];
 
@@ -308,7 +308,7 @@ namespace client
       throw Exception( "MD2 model loading error" );
     }
 
-    fread( &header, 1, sizeof( header ), file );
+    fread( &header, 1, sizeof( MD2Header ), file );
     if( header.id != FOURCC( 'I', 'D', 'P', '2' ) || header.version != 8 ) {
       fclose( file );
       log.printEnd( " Invalid format" );

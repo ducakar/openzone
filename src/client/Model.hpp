@@ -22,7 +22,7 @@ namespace client
   {
     public:
 
-      typedef Model* ( *CreateFunc )( const Object* object );
+      typedef Model* ( * CreateFunc )( const Object* object );
 
       static const int UPDATED_BIT  = 0x00000001;
       static const int MD2MODEL_BIT = 0x00000002;
@@ -32,7 +32,7 @@ namespace client
 
     protected:
 
-      Model() : obj( null ), flags( 0 ) {}
+      explicit Model() : obj( null ), flags( 0 ) {}
 
     public:
 

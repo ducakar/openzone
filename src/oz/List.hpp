@@ -35,6 +35,10 @@ namespace oz
    *
    * <code>List</code> class doesn't take care of memory management except for the
    * <code>free()</code> method.
+   *
+   * <code>List</code> is not a real container but merely binds together already existing elements.
+   * So, copy operator does not copy the elements, to make a copy of a list including its elements,
+   * use <code>List&lt;Type&gt; copy = source.clone()</code>.
    */
   template <class Type, int INDEX = 0>
   class List

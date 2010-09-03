@@ -6,13 +6,16 @@
 // enable PoolAlloc allocator; otherwise use a dummy class that calls malloc/free
 #cmakedefine OZ_POOL_ALLOC
 
-// enable GNU math builtins if we use GCC
+// enable GNU math built-ins if we use GCC
 #ifdef __GNUC__
 #cmakedefine OZ_GNU_MATH
 #endif
 
 // whether math library has sincosf function
 #cmakedefine OZ_HAVE_SINCOSF
+
+// use big-endian for data
+#cmakedefine OZ_BIG_ENDIAN_DATA
 
 // enable warnings about missing and unused variables in config files
 #cmakedefine OZ_VERBOSE_CONFIG
@@ -24,6 +27,11 @@
 #cmakedefine OZ_MINGW
 #cmakedefine OZ_MSVC
 #cmakedefine OZ_WINDOWS
+
+// machine endian
+#if defined( __BIG_ENDIAN__ )
+# define OZ_BIG_ENDIAN_ARCH
+#endif
 
 #ifdef __GNUC__
 # if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 5 )

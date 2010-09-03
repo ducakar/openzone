@@ -466,7 +466,7 @@ namespace client
       log.println( "%s", extension->cstr() );
     }
 
-#if defined( OZ_MINGW32 ) || defined( OZ_MSVC )
+#ifdef OZ_WINDOWS
     glActiveTexture = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
     glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
     glGenBuffers = reinterpret_cast<PFNGLGENBUFFERSPROC>( SDL_GL_GetProcAddress( "glGenBuffers" ) );

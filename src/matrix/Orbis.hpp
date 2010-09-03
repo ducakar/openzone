@@ -141,7 +141,7 @@ namespace oz
       // get indices of min and max cells which the bounds intersects
       Span getInters( const Bounds& bounds, float epsilon = 0.0f ) const;
 
-      Orbis();
+      explicit Orbis();
 
       void init();
       void free();

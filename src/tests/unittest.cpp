@@ -23,7 +23,7 @@ struct Test
 
   int flags;
 
-  Test() : flags( DEFAULT_CTOR_BIT )
+  explicit Test() : flags( DEFAULT_CTOR_BIT )
   {}
 
   Test( const Test& ) : flags( COPY_CTOR_BIT )

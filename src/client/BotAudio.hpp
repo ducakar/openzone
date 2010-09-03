@@ -20,7 +20,7 @@ namespace client
   {
     protected:
 
-      BotAudio( const Object* obj ) : BasicAudio( obj ) {}
+      explicit BotAudio( const Object* obj ) : BasicAudio( obj ) {}
 
     public:
 

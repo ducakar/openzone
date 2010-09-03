@@ -95,7 +95,7 @@ namespace oz
        */
       SVector( const SVector& v ) : count( v.count )
       {
-        aCopyConstruct( data, v.data, v.count );
+        aConstruct( data, v.data, v.count );
       }
 
       /**
@@ -326,7 +326,7 @@ namespace oz
         assert( SIZE >= newCount );
 
         for( int i = 0; i < arrayCount; ++i ) {
-          aCopyConstruct( data + count, array, arrayCount );
+          aConstruct( data + count, array, arrayCount );
         }
         count = newCount;
       }

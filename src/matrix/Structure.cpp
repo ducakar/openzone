@@ -39,14 +39,14 @@ namespace oz
   void Structure::readFull( InputStream* istream )
   {
     p    = istream->readVec3();
-    rot  = Rotation( istream->readByte() );
+    rot  = Rotation( istream->readChar() );
     life = istream->readFloat();
   }
 
   void Structure::writeFull( OutputStream* ostream )
   {
     ostream->writeVec3( p );
-    ostream->writeByte( byte( rot ) );
+    ostream->writeChar( char( rot ) );
     ostream->writeFloat( life );
   }
 

@@ -16,6 +16,8 @@ namespace oz
   template <typename Type, int GRANULARITY = 8>
   class Vector
   {
+    static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
+
     public:
 
       /**
@@ -130,7 +132,7 @@ namespace oz
       {
         assert( v.size > 0 );
 
-        aCopyConstruct( data, v.data, v.count );
+        aConstruct( data, v.data, v.count );
       }
 
       /**
@@ -162,7 +164,7 @@ namespace oz
           size = v.size;
         }
 
-        aCopyConstruct( data, v.data, v.count );
+        aConstruct( data, v.data, v.count );
         count = v.count;
         return *this;
       }
@@ -372,7 +374,7 @@ namespace oz
 
         ensureCapacity( newCount );
 
-        aCopyConstruct( data + count, array, arrayCount );
+        aConstruct( data + count, array, arrayCount );
         count = newCount;
       }
 

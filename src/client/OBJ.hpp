@@ -28,7 +28,7 @@ namespace client
         uint* normIndices;
         uint* texCoordIndices;
 
-        Face() : nVerts( 0 ), vertIndices( null ), normIndices( null ), texCoordIndices( null ) {}
+        explicit Face() : nVerts( 0 ), vertIndices( null ), normIndices( null ), texCoordIndices( null ) {}
       };
 
       struct TexCoord
@@ -36,8 +36,8 @@ namespace client
         float u;
         float v;
 
-        TexCoord() {}
-        TexCoord( float u_, float v_ ) : u( u_ ), v( v_ ) {}
+        explicit TexCoord() {}
+        explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ ) {}
       };
 
       struct Material

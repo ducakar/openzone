@@ -39,8 +39,7 @@ namespace client
         ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) &&
         samples[SND_FRICTING] != -1 && bot->depth == 0.0f )
     {
-      float dv = Math::sqrt( bot->velocity.x*bot->velocity.x +
-                             bot->velocity.y*bot->velocity.y );
+      float dv = Math::sqrt( bot->velocity.x*bot->velocity.x + bot->velocity.y*bot->velocity.y );
       playContSound( samples[SND_FRICTING], dv, uint( size_t( &*bot ) ), obj );
     }
 

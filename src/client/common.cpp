@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#if defined( OZ_MINGW ) || defined( OZ_MSVC )
+#ifdef OZ_WINDOWS
 
 #include "client/common.hpp"
 

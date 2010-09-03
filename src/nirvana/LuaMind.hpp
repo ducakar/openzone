@@ -25,7 +25,7 @@ namespace nirvana
 
       static Pool<LuaMind> pool;
 
-      LuaMind( int botIndex );
+      explicit LuaMind( int botIndex );
       virtual ~LuaMind();
 
       virtual const char* type() const;

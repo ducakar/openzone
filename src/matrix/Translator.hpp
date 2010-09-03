@@ -49,7 +49,8 @@ namespace oz
         String name;
         String path;
 
-        Resource( const String& name_, const String& path_ ) : name( name_ ), path( path_ ) {}
+        explicit Resource( const String& name_, const String& path_ ) : name( name_ ), path( path_ )
+        {}
       };
 
     private:
