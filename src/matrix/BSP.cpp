@@ -408,6 +408,8 @@ namespace oz
 
     if( nBrushes > MAX_BRUSHES ) {
       log.println( "Too many brushes %d, maximum is %d", nBrushes, MAX_BRUSHES );
+      delete[] texFlags;
+      delete[] texTypes;
       return false;
     }
 

@@ -7,7 +7,6 @@ option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Ot
 option( OZ_BUILTIN_MATH "Use GCC/clang built-in math functions (no need to include <cmath>, possibly faster math calls in debug mode)" ON )
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in configuration files" ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
-option( OZ_CROSS_MINGW "If MinGW is not used natively on Windows, but on Unix for cross-compiling." OFF )
 
 option( OZ_BIG_ENDIAN_DATA "Use big-endian byte-order for data when saving to disk or sending across network" ON )
 option( OZ_MAKE_PREBUILT "Optimise and dump resources where possible. Those can be loaded by a OZ_USE_PREBUILT enabled build." OFF )

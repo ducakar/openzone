@@ -52,7 +52,13 @@
 #include "common.hpp"
 
 /*
- * Exception class
+ * Iterators and utilities for iterable containers and arrays
+ */
+#include "iterables.hpp"
+#include "arrays.hpp"
+
+/*
+ * Exception
  */
 #include "Exception.hpp"
 
@@ -62,12 +68,6 @@
 #include "Alloc.hpp"
 #include "Pool.hpp"
 #include "AutoPtr.hpp"
-
-/*
- * Iterators and utilities for iterable containers and arrays
- */
-#include "iterables.hpp"
-#include "arrays.hpp"
 
 /*
  * Simple containers

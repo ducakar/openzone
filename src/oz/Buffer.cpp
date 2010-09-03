@@ -29,11 +29,10 @@ namespace oz
       return false;
     }
 
-    size = int( fileStat.st_size );
-    count = size;
+    count = int( fileStat.st_size );
     data = new char[count];
 
-    int blocksRead = int( fread( data, size, 1, handle ) );
+    int blocksRead = int( fread( data, count, 1, handle ) );
     fclose( handle );
 
     if( blocksRead != 1 ) {

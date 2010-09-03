@@ -314,28 +314,56 @@ namespace oz
 
       const char* find( char ch, int start = 0 ) const
       {
-        return &buffer[index( ch, start )];
+        const char* p = buffer + start;
+
+        while( *p != ch && *p != '\0' ) {
+          ++p;
+        }
+        return *p == ch ? p : null;
       }
 
       const char* findLast( char ch, int end ) const
       {
-        return &buffer[lastIndex( ch, end )];
+        const char* p = buffer + end;
+
+        while( *p != ch && p != buffer ) {
+          --p;
+        }
+        return *p == ch ? p : null;
+      }
+
+      const char* find( const char* str, int start ) const
+      {
+        const char* p = buffer + start;
+        const char* begin = null;
+        const char* end = str;
+
+        while( *p != '\0' && *end != '\0' ) {
+          if( *p == *end ) {
+            begin = p;
+            ++end;
+          }
+          ++p;
+        }
+        return *end == '\0' ? begin : null;
       }
 
       const char* findLast( char ch ) const
       {
-        return findLast( ch, count - 1 );
+        const char* p = buffer + count - 1;
+
+        while( *p != ch && p != buffer ) {
+          --p;
+        }
+        return *p == ch ? p : null;
       }
 
       static const char* find( const char* s, char ch )
       {
-        while( *s != '\0' ) {
-          if( *s == ch ) {
-            return s;
-          }
+        while( *s != ch && *s != '\0' ) {
           ++s;
         }
-        return null;
+        return *s == ch ? s : null;
       }
 
       static const char* findLast( const char* s, char ch )

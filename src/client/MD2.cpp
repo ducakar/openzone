@@ -26,9 +26,9 @@ namespace client
     int id;
     int version;
 
-    int skinwidth;
-    int skinheight;
-    int framesize;
+    int skinWidth;
+    int skinHeight;
+    int frameSize;
 
     int nSkins;
     int nVerts;
@@ -328,16 +328,16 @@ namespace client
     glCmds = new int[header.nGlCmds];
     lightNormals = new int[nVerts * nFrames];
 
-    buffer = new char[nFrames * header.framesize];
+    buffer = new char[nFrames * header.frameSize];
 
     fseek( file, header.offFrames, SEEK_SET );
-    fread( buffer, 1, nFrames * header.framesize, file );
+    fread( buffer, 1, nFrames * header.frameSize, file );
 
     fseek( file, header.offGLCmds, SEEK_SET );
     fread( glCmds, 1, header.nGlCmds * sizeof( int ), file );
 
     for( int i = 0; i < nFrames; ++i ) {
-      pFrame = reinterpret_cast<MD2Frame*>( &buffer[header.framesize * i] );
+      pFrame = reinterpret_cast<MD2Frame*>( &buffer[header.frameSize * i] );
       pVerts = &verts[nVerts * i];
       pNormals = &lightNormals[nVerts * i];
 

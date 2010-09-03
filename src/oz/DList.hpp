@@ -84,17 +84,6 @@ namespace oz
             return *this;
           }
 
-          /**
-           * Go to to previous element.
-           */
-          CIterator& operator -- ()
-          {
-            assert( B::elem != null );
-
-            B::elem = B::elem->prev[INDEX];
-            return *this;
-          }
-
       };
 
       /**
@@ -129,17 +118,6 @@ namespace oz
             assert( B::elem != null );
 
             B::elem = B::elem->next[INDEX];
-            return *this;
-          }
-
-          /**
-           * Go to to previous element.
-           */
-          Iterator& operator -- ()
-          {
-            assert( B::elem != null );
-
-            B::elem = B::elem->prev[INDEX];
             return *this;
           }
 

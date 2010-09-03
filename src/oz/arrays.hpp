@@ -70,18 +70,6 @@ namespace oz
         return *this;
       }
 
-      /**
-       * Go to previous element.
-       * @return
-       */
-      CIterator& operator -- ()
-      {
-        assert( B::elem != past );
-
-        --B::elem;
-        return *this;
-      }
-
   };
 
   /**
@@ -139,18 +127,6 @@ namespace oz
         assert( B::elem != past );
 
         ++B::elem;
-        return *this;
-      }
-
-      /**
-       * Go to previous element.
-       * @return
-       */
-      Iterator& operator -- ()
-      {
-        assert( B::elem != past );
-
-        --B::elem;
         return *this;
       }
 
@@ -223,10 +199,10 @@ namespace oz
    * @param count
    */
   template <typename Type>
-  inline void aDestruct( Type* aDest, int count )
+  inline void aDestruct( const Type* aSrc, int count )
   {
     for( int i = 0; i < count; ++i ) {
-      aDest[i].~Type();
+      aSrc[i].~Type();
     }
   }
 
@@ -322,7 +298,7 @@ namespace oz
   inline bool aContains( const Type* aSrc, const Type& value, int count )
   {
     int i = 0;
-    while( i < count && aSrc[i] != value ) {
+    while( i < count && !( aSrc[i] == value ) ) {
       ++i;
     }
     return i != count;
@@ -339,7 +315,7 @@ namespace oz
   inline int aIndex( const Type* aSrc, const Type& value, int count )
   {
     int i = 0;
-    while( i < count && aSrc[i] != value ) {
+    while( i < count && !( aSrc[i] == value ) ) {
       ++i;
     }
     return i == count ? -1 : i;
@@ -355,8 +331,8 @@ namespace oz
   template <typename Type>
   inline int aLastIndex( const Type* aSrc, const Type& value, int count )
   {
-    int i = count;
-    while( i >= 0 && aSrc[i] != value ) {
+    int i = count - 1;
+    while( i >= 0 && !( aSrc[i] == value ) ) {
       --i;
     }
     return i;
@@ -388,7 +364,7 @@ namespace oz
   inline void aFree( Type* aDest, int count )
   {
     for( int i = 0; i < count; ++i ) {
-      if( aDest[i] != null ) {
+      if( !( aDest[i] == null ) ) {
         delete aDest[i];
         aDest[i] = null;
       }
@@ -401,10 +377,10 @@ namespace oz
    * @param array
    * @return
    */
-  template <typename Type, int COUNT>
-  inline int aLength( Type array[COUNT] )
+  template <typename Type>
+  inline int aLength( const Type& aSrc )
   {
-    return COUNT;
+    return sizeof( aSrc ) / sizeof( aSrc[0] );
   }
 
   /**
@@ -438,7 +414,7 @@ namespace oz
   template <typename Type>
   static void quicksort( Type* first, Type* last )
   {
-    // 8-14 seem as optimal thresholds for switching to selection sort
+    // 8-14 seem as an optimal thresholds for switching to selection sort
     if( last - first > 8 ) {
       // quicksort
       Type* top = first;

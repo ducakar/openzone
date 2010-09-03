@@ -10,6 +10,7 @@ add_library( oz STATIC
   Config.hpp
   DArray.hpp
   DList.hpp
+  Exception.cpp
   Exception.hpp
   HashIndex.hpp
   HashString.hpp

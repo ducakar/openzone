@@ -89,9 +89,10 @@ namespace oz
         pos += count;
 
         if( pos > end ) {
+          pos -= count;
           throw Exception( String( "Buffer overrun for " ) +
-                           String( int( ptrdiff_t( pos - end ) ) ) + " bytes during read of " +
-                           String( count ) + " bytes" );
+                           String( int( ptrdiff_t( pos + count - end ) ) ) +
+                           " bytes during read of " + String( count ) + " bytes" );
         }
         return oldPos;
       }
@@ -132,7 +133,10 @@ namespace oz
         while( pos + length < end && pos[length] != '\0' ) {
           ++length;
         }
-        return String( readBytes( length ), length );
+        if( pos + length == end ) {
+          throw Exception( "End of buffer reached during string read, terminating NULL missing." );
+        }
+        return String( readBytes( length + 1 ), length );
       }
 
       /**
@@ -144,7 +148,10 @@ namespace oz
         while( pos + length < end && pos[length] != '\0' ) {
           ++length;
         }
-        s = String( readBytes( length ), length );
+        if( pos + length == end ) {
+          throw Exception( "End of buffer reached during string read, terminating NULL missing." );
+        }
+        s = String( readBytes( length + 1 ), length );
       }
 
       Vec3 readVec3()
@@ -228,9 +235,10 @@ namespace oz
         pos += count;
 
         if( pos > end ) {
+          pos -= count;
           throw Exception( String( "Buffer overrun for " ) +
-                           String( int( ptrdiff_t( pos - end ) ) ) + " bytes during read of " +
-                           String( count ) + " bytes" );
+                           String( int( ptrdiff_t( pos + count - end ) ) ) +
+                           " bytes during read of " + String( count ) + " bytes" );
         }
         return oldPos;
       }
