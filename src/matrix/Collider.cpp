@@ -971,7 +971,7 @@ namespace oz
     }
   }
 
-  // move AABB unil first collisons occurs
+  // move AABB until first collisons occurs
   void Collider::trimAABBOrbis()
   {
     hit.ratio      = 1.0f;
@@ -1122,17 +1122,15 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = world.cells[x][y];
 
-        if( objects != null ) {
-          for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
-            aabb = *sObj;
+        for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+          aabb = *sObj;
 
-            for( int i = 0; i < model->nBrushes; ++i ) {
-              int index = model->firstBrush + i;
-              const BSP::Brush& brush = bsp->brushes[index];
+          for( int i = 0; i < model->nBrushes; ++i ) {
+            int index = model->firstBrush + i;
+            const BSP::Brush& brush = bsp->brushes[index];
 
-              if( overlapsAABBBrush( &brush ) ) {
-                objects->add( sObj );
-              }
+            if( overlapsAABBBrush( &brush ) ) {
+              objects->add( sObj );
             }
           }
         }

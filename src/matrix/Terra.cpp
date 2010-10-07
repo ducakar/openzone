@@ -108,9 +108,9 @@ namespace oz
       throw Exception( "Failed to load terrain" );
     }
 
-    is.readString( detailTexture );
-    is.readString( mapTexture );
-    is.readString( waterTexture );
+    detailTexture = is.readString();
+    mapTexture = is.readString();
+    waterTexture = is.readString();
 
     for( int x = 0; x < MAX; ++x ) {
       for( int y = 0; y < MAX; ++y ) {
@@ -197,7 +197,7 @@ namespace oz
     size += MAX * MAX * int( sizeof( Vec3 ) );
     size += QUADS * QUADS * int( sizeof( Quad ) );
 
-    Buffer buffer = Buffer( size );
+    Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     os.writeInt( MAX );

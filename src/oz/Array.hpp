@@ -30,7 +30,7 @@ namespace oz
         public:
 
           /**
-           * Default constructor returns a dummy passed iterator
+           * Default constructor returns an invalid iterator
            */
           explicit CIterator() : B( null, null )
           {}
@@ -56,7 +56,7 @@ namespace oz
         public:
 
           /**
-           * Default constructor returns a dummy passed iterator
+           * Default constructor returns an invalid iterator
            */
           explicit Iterator() : B( null, null )
           {}
@@ -75,6 +75,22 @@ namespace oz
       Type data[SIZE];
 
     public:
+
+      /**
+       * Default constructor.
+       */
+      explicit Array()
+      {}
+
+      /**
+       * Initialise from a C++ array.
+       * It could also be used as <code>Array<int, 2> array = (int[]) { 1, 2 };</code>
+       * @param array
+       */
+      Array( const Type* array )
+      {
+        aCopy( data, array, SIZE );
+      }
 
       /**
        * Equality operator.
@@ -99,7 +115,7 @@ namespace oz
       /**
        * @return iterator for this array
        */
-      CIterator citer()
+      CIterator citer() const
       {
         return CIterator( *this );
       }

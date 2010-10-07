@@ -44,7 +44,8 @@ namespace client
         uint    source;
         Source* next[1];
 
-        explicit Source( uint sourceId ) : source( sourceId ) {}
+        explicit Source( uint sourceId ) : source( sourceId )
+        {}
 
         static Pool<Source> pool;
 
@@ -56,12 +57,10 @@ namespace client
         uint source;
         bool isUpdated;
 
-        explicit ContSource( uint sourceId ) : source( sourceId ), isUpdated( true ) {}
+        explicit ContSource( uint sourceId ) : source( sourceId ), isUpdated( true )
+        {}
       };
 
-      /*
-       * SFX
-       */
       ContSource* cachedSource;
       List<Source> sources;
       HashIndex<ContSource, 512> contSources;

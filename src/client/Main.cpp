@@ -280,12 +280,12 @@ namespace client
             break;
           }
           case SDL_MOUSEBUTTONUP: {
-            ui::mouse.currButtons &= ubyte( ~SDL_BUTTON( event.button.button ) );
+            ui::mouse.currButtons &= char( ~SDL_BUTTON( event.button.button ) );
             break;
           }
           case SDL_MOUSEBUTTONDOWN: {
-            ui::mouse.buttons |= ubyte( SDL_BUTTON( event.button.button ) );
-            ui::mouse.currButtons |= ubyte( SDL_BUTTON( event.button.button ) );
+            ui::mouse.buttons |= char( SDL_BUTTON( event.button.button ) );
+            ui::mouse.currButtons |= char( SDL_BUTTON( event.button.button ) );
             break;
           }
           case SDL_ACTIVEEVENT: {
@@ -379,7 +379,7 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    if( ~initFlags & INIT_CONFIG ) {
+    if( !( initFlags & INIT_CONFIG ) ) {
       config.exclude( "dir.rc" );
       config.save( configPath );
       config.add( "dir.rc", rcDir );
@@ -393,12 +393,6 @@ using namespace oz;
 
 int main( int argc, char** argv )
 {
-#ifdef OZ_WINDOWS
-  // print directly to the console, do not use SDL's stdout.txt and stderr.txt
-  freopen( "CON", "wt", stdout );
-  freopen( "CON", "wt", stderr );
-#endif
-
   printf( "OpenZone  Copyright (C) 2002-2009  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
       "This is free software, and you are welcome to redistribute it\n"

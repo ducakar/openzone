@@ -118,7 +118,10 @@ namespace client
   void Sky::update()
   {
     angle = 2.0f * Math::PI * ( world.sky.time / world.sky.period );
-    Vec3  dir = Quat::rotAxis( axis, angle ).rotate( originalLightDir );
+
+    Mat33 rot = Quat::rotAxis( axis, angle ).rotMat33();
+    Vec3  dir = rot * originalLightDir;
+
     ratio = Math::bound( dir.z + DAY_BIAS, 0.0f, 1.0f );
     ratio_1 = 1.0f - ratio;
     float ratioDiff = ( 1.0f - Math::abs( ratio - ratio_1 ) );

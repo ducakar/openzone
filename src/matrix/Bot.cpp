@@ -35,7 +35,7 @@ namespace oz
   void Bot::onDestroy()
   {
     // only play death sound when an alive bot is destroyed but not when a body is destroyed
-    if( ~state & DEATH_BIT ) {
+    if( !( state & DEATH_BIT ) ) {
       addEvent( EVENT_DEATH, 1.0f );
     }
     Object::onDestroy();
@@ -68,7 +68,7 @@ namespace oz
     }
 
     if( life <= type->life / 2.0f ) {
-      if( ( ~state & DEATH_BIT ) && life > 0.0f ) {
+      if( !( state & DEATH_BIT ) && life > 0.0f ) {
         flags |= WIDE_CULL_BIT;
         flags &= ~SOLID_BIT;
         addEvent( EVENT_DEATH, 1.0f );
@@ -156,7 +156,7 @@ namespace oz
     // So, if we press the jump key, we schedule for a jump, and when jump conditions are met,
     // the jump will be commited if we still hold down the jump key.
     if( actions & ACTION_JUMP ) {
-      if( ~oldActions & ACTION_JUMP ) {
+      if( !( oldActions & ACTION_JUMP ) ) {
         state |= JUMP_SCHED_BIT;
       }
       if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObj == -1 &&
@@ -244,7 +244,7 @@ namespace oz
     }
     else if( state & GESTURE4_BIT ) {
       anim = ANIM_FLIP;
-      if( ~oldState & GESTURE4_BIT ) {
+      if( !( oldState & GESTURE4_BIT ) ) {
         addEvent( EVENT_FLIP, 1.0f );
       }
     }
@@ -651,7 +651,7 @@ namespace oz
     weaponItem   = istream->readInt();
 
     anim         = AnimEnum( istream->readInt() );
-    istream->readString( name );
+    name         = istream->readString();
 
     const BotClass* clazz = static_cast<const BotClass*>( type );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;

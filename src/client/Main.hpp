@@ -12,7 +12,7 @@
 #define OZ_APP_NAME            "OpenZone"
 #define OZ_WM_TITLE            OZ_APP_NAME
 #define OZ_RC_DIR              ".openzone"
-#define OZ_LOG_FILE            "client.log"
+//#define OZ_LOG_FILE            "client.log"
 #define OZ_CONFIG_FILE         "client.rc"
 
 #include "client/Stage.hpp"

@@ -74,7 +74,7 @@ namespace client
               frustum.isVisible( *obj );
 
       if( isVisible ) {
-        ObjectEntry entry = ObjectEntry( ( obj->p - camera.p ).sqL(), obj );
+        ObjectEntry entry( ( obj->p - camera.p ).sqL(), obj );
 
         if( obj->flags & Object::DELAYED_DRAW_BIT ) {
           delayedObjects.add( entry );

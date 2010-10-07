@@ -24,9 +24,9 @@ echo >> install_files.cmake
 #
 # oalinst
 #
-echo 'if( OZ_INSTALL_OPENAL )' >> install_files.cmake
+echo 'if( WIN32 )' >> install_files.cmake
 echo '  install( FILES "oalinst.exe" DESTINATION support )' >> install_files.cmake
-echo 'endif( OZ_INSTALL_OPENAL )' >> install_files.cmake
+echo 'endif( WIN32 )' >> install_files.cmake
 
 echo >> install_files.cmake
 
@@ -107,7 +107,7 @@ echo >> install_files.cmake
 #
 for dir in data/mdl/*; do
   echo '  install( FILES' >> install_files.cmake
-  ls $dir/*.{obj,mtl,md2,png,jpg,txt} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+  ls $dir/{*.{obj,mtl,md2,png,jpg,txt},README*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
   echo "    DESTINATION share/openzone/mdl/$dir" >> install_files.cmake
   echo >> install_files.cmake
 done
@@ -124,7 +124,7 @@ echo >> install_files.cmake
 # data/snd
 #
 echo '  install( FILES' >> install_files.cmake
-ls data/snd/{*.ogg,README*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+ls data/snd/{*.oga,*.ogg,README*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
 echo '    DESTINATION share/openzone/snd )' >> install_files.cmake
 echo >> install_files.cmake
 

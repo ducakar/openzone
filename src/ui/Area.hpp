@@ -112,7 +112,7 @@ namespace ui
         // render in opposite order; last added child (the first one in the list) should be rendered
         // last
         for( Area* child = children.last(); child != null; child = child->prev[0] ) {
-          if( ~child->flags & HIDDEN_BIT ) {
+          if( !( child->flags & HIDDEN_BIT ) ) {
             child->onDraw();
           }
         }

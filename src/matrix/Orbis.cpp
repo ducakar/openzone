@@ -165,7 +165,7 @@ namespace oz
     Particle*  part;
 
     for( int i = 0; i < nStructures; ++i ) {
-      istream->readString( bspName );
+      bspName = istream->readString();
 
       if( bspName.isEmpty() ) {
         structs.add( null );
@@ -187,7 +187,7 @@ namespace oz
       }
     }
     for( int i = 0; i < nObjects; ++i ) {
-      istream->readString( typeName );
+      typeName = istream->readString();
 
       if( typeName.isEmpty() ) {
         objects.add( null );

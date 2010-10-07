@@ -108,7 +108,7 @@ namespace oz
 
       struct Lightmap
       {
-        ubyte bits[LIGHTMAP_SIZE];
+        char bits[LIGHTMAP_SIZE];
       };
 
       struct VisualData

@@ -90,7 +90,7 @@ namespace client
 
     network.connect();
 
-    Buffer buffer = Buffer( 1024 * 1024 * 10 );
+    Buffer buffer( 1024 * 1024 * 10 );
     String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
     log.print( "Loading world stream from %s ...", stateFile.cstr() );
@@ -128,7 +128,7 @@ namespace client
       const_cast<Bot*>( camera.botObj )->state &= ~Bot::PLAYER_BIT;
     }
 
-    Buffer buffer = Buffer( 1024 * 1024 * 10 );
+    Buffer buffer( 1024 * 1024 * 10 );
     OutputStream ostream = buffer.outputStream();
     String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 

@@ -85,14 +85,14 @@ namespace client
       HashString<Model::CreateFunc, 16> modelClasses;
       HashString<Audio::CreateFunc, 8> audioClasses;
 
-      static uint buildTexture( const ubyte* data, int width, int height, int bytesPerPixel,
+      static uint buildTexture( const char* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
-      static uint buildNormalmap( ubyte* data, const Vec3& lightNormal, int width,int height,
+      static uint buildNormalmap( char* data, const Vec3& lightNormal, int width,int height,
                                   int bytesPerPixel, bool wrap, int magFilter, int minFilter );
 
     public:
 
-      uint createTexture( const ubyte* data,
+      uint createTexture( const char* data,
                           int width,
                           int height,
                           int bytesPerPixel,
@@ -100,7 +100,7 @@ namespace client
                           int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
 
-      uint createNormalmap( ubyte* data,
+      uint createNormalmap( char* data,
                             const Vec3& lightNormal,
                             int width,
                             int height,

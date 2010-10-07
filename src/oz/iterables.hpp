@@ -15,7 +15,7 @@ namespace oz
 {
 
   /**
-   * Generalised constant iterator.
+   * Generalised constant iterator (constant access to data in a container).
    * It should only be used as a base class. Following functions need to be implemented:<br>
    * <code>bool isValid() const</code> (if necessary)<br>
    * <code>Iterator& operator ++ ()</code><br>
@@ -123,7 +123,7 @@ namespace oz
     private:
 
       /**
-       * Advance to next element
+       * Advance to the next element
        * Should be overridden in derived classes
        * @return
        */
@@ -132,7 +132,7 @@ namespace oz
   };
 
   /**
-   * Generalised iterator.
+   * Generalised iterator (non-constant access to data in a container).
    * It should only be used as a base class. Following functions need to be implemented:<br>
    * <code>bool isValid() const</code> (if necessary)<br>
    * <code>Iterator& operator ++ ()</code><br>
@@ -264,8 +264,8 @@ namespace oz
     private:
 
       /**
-       * Advance to next element
-       * Should be overridden in derivative classes
+       * Advance to the next element
+       * Should be overridden in derived classes
        * @return
        */
       IteratorBase& operator ++ ();

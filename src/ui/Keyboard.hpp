@@ -20,12 +20,12 @@ namespace ui
   {
     private:
 
-      ubyte* currKeys;
+      char* currKeys;
 
     public:
 
-      ubyte  keys[SDLK_LAST];
-      ubyte  oldKeys[SDLK_LAST];
+      char  keys[SDLK_LAST];
+      char  oldKeys[SDLK_LAST];
 
       void init();
       void prepare();

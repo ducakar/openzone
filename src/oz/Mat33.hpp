@@ -357,22 +357,26 @@ namespace oz
     // [   2xz - 2wy      2yz + 2wx    1 - 2xx - 2yy ]
     //
 
-    float x2 = x + x;
-    float y2 = y + y;
-    float z2 = z + z;
-    float xx1 = 1.0f - x2 * x;
-    float yy = y2 * y;
-    float zz = z2 * z;
-    float xy = x2 * y;
-    float xz = x2 * z;
-    float xw = x2 * w;
-    float yz = y2 * z;
-    float yw = y2 * w;
-    float zw = z2 * w;
+    float x2 = 2.0f * x;
+    float y2 = 2.0f * y;
+    float z2 = 2.0f * z;
 
-    return Mat33( 1.0f - yy - zz, xy + zw,  xz - yw,
-                  xy - zw,        xx1 - zz, yz + xw,
-                  xz + yw,        yz - xw,  xx1 - yy );
+    float xx2 = x2 * x;
+    float xy2 = x2 * y;
+    float xz2 = x2 * z;
+    float xw2 = x2 * w;
+    float yy2 = y2 * y;
+    float yz2 = y2 * z;
+    float yw2 = y2 * w;
+    float zz2 = z2 * z;
+    float zw2 = z2 * w;
+
+    float xx2_1 = 1.0f - xx2;
+    float yy2_1 = 1.0f - yy2;
+
+    return Mat33( yy2_1 - zz2, xy2 + zw2,   xz2 - yw2,
+                  xy2 - zw2,   xx2_1 - zz2, yz2 + xw2,
+                  xz2 + yw2,   yz2 - xw2,   xx2_1 - yy2 );
   }
 
   // declared in Quat.hpp
@@ -385,22 +389,26 @@ namespace oz
     // [   2xz + 2wy      2yz - 2wx    1 - 2xx - 2yy ]
     //
 
-    float x2 = x + x;
-    float y2 = y + y;
-    float z2 = z + z;
-    float xx1 = 1.0f - x2 * x;
-    float yy = y2 * y;
-    float zz = z2 * z;
-    float xy = x2 * y;
-    float xz = x2 * z;
-    float xw = x2 * w;
-    float yz = y2 * z;
-    float yw = y2 * w;
-    float zw = z2 * w;
+    float x2 = 2.0f * x;
+    float y2 = 2.0f * y;
+    float z2 = 2.0f * z;
 
-    return Mat33( 1.0f - yy - zz, xy - zw,  xz + yw,
-                  xy + zw,        xx1 - zz, yz - xw,
-                  xz - yw,        yz + xw,  xx1 - yy );
+    float xx2 = x2 * x;
+    float xy2 = x2 * y;
+    float xz2 = x2 * z;
+    float xw2 = x2 * w;
+    float yy2 = y2 * y;
+    float yz2 = y2 * z;
+    float yw2 = y2 * w;
+    float zz2 = z2 * z;
+    float zw2 = z2 * w;
+
+    float xx2_1 = 1.0f - xx2;
+    float yy2_1 = 1.0f - yy2;
+
+    return Mat33( yy2_1 - zz2, xy2 - zw2,   xz2 + yw2,
+                  xy2 + zw2,   xx2_1 - zz2, yz2 - xw2,
+                  xz2 - yw2,   yz2 + xw2,   xx2_1 - yy2 );
   }
 
 }

@@ -73,7 +73,7 @@ struct Test
   }
 
   Test& operator = ( const Test& t )
-   {
+  {
     assert( magic == 42 );
     assert( t.magic == 42 );
 
@@ -219,9 +219,8 @@ void ozIterablesUnittest()
   assert( iEquals( l.citer(), v.citer() ) );
   l.add( new Test( 0 ) );
   assert( !iEquals( l.citer(), v.citer() ) );
-  v.add( Test( 0 ) );
-  // not equals because list adds elements to the end
-  assert( !iEquals( l.citer(), v.citer() ) );
+  v.pushFirst( Test( 0 ) );
+  assert( iEquals( l.citer(), v.citer() ) );
 
   iDestruct( l.citer() );
   assert( constructCount == 6 );

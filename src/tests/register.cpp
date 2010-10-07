@@ -42,7 +42,7 @@ struct Human : Object
 
   string name()
   {
-    return S( Human );
+    return "Human";
   }
 
   virtual ~Human() {}
@@ -54,7 +54,7 @@ struct Vehicle : Object
 
   string name()
   {
-    return S( Vehicle );
+    return "Vehicle";
   }
 
   virtual ~Vehicle() {}

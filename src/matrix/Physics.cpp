@@ -169,7 +169,7 @@ namespace oz
         Dynamic* sObj = static_cast<Dynamic*>( world.objects[obj->lower] );
 
         if( obj->momentum.x != 0.0f || obj->momentum.y != 0.0f ||
-            ( ~sObj->flags & Object::DISABLED_BIT ) )
+            !( sObj->flags & Object::DISABLED_BIT ) )
         {
           float dx  = sObj->velocity.x - obj->momentum.x;
           float dy  = sObj->velocity.y - obj->momentum.y;
@@ -318,7 +318,7 @@ namespace oz
         obj->flags  &= ~Object::ON_FLOOR_BIT;
         obj->lower  = sDyn->index;
 
-        if( ~sDyn->flags & Object::DISABLED_BIT ) {
+        if( !( sDyn->flags & Object::DISABLED_BIT ) ) {
           obj->momentum.z  = sDyn->velocity.z;
           sDyn->momentum.z = momentum.z;
         }
@@ -446,7 +446,7 @@ namespace oz
     obj = obj_;
 
     assert( obj->cell != null );
-    assert( ( ~obj->flags & Object::ON_FLOOR_BIT ) || ( obj->lower == -1 ) );
+    assert( !( obj->flags & Object::ON_FLOOR_BIT ) || ( obj->lower == -1 ) );
 
     obj->flags &= ~( Object::HIT_BIT | Object::FRICTING_BIT | Object::UPPER_BIT );
 
@@ -458,12 +458,12 @@ namespace oz
         obj->flags &= ~Object::DISABLED_BIT;
         obj->lower = -1;
       }
-      else if( ~sObj->flags & Object::DISABLED_BIT ) {
+      else if( !( sObj->flags & Object::DISABLED_BIT ) ) {
         obj->flags &= ~Object::DISABLED_BIT;
       }
     }
     // handle physics
-    if( ~obj->flags & Object::DISABLED_BIT ) {
+    if( !( obj->flags & Object::DISABLED_BIT ) ) {
       if( handleObjFriction() ) {
         // if objects is still in movement or not on a still surface after friction changed its
         // velocity, handle physics

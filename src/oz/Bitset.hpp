@@ -200,7 +200,7 @@ namespace oz
       {
         assert( size == b.size );
 
-        Bitset r = Bitset( size );
+        Bitset r( size );
 
         for( int i = 0; i < size; ++i ) {
           if( ( data[i] & ~b.data[i] ) != 0ul ) {
@@ -342,7 +342,7 @@ namespace oz
        */
       Bitset operator ~ () const
       {
-        Bitset r = Bitset( size );
+        Bitset r( size );
 
         for( int i = 0; i < size; ++i ) {
           r.data[i] = ~data[i];
@@ -398,7 +398,7 @@ namespace oz
       {
         assert( size == b.size );
 
-        Bitset r = Bitset( size );
+        Bitset r( size );
 
         for( int i = 0; i < size; ++i ) {
           r.data[i] = data[i] & b.data[i];
@@ -415,7 +415,7 @@ namespace oz
       {
         assert( size == b.size );
 
-        Bitset r = Bitset( size );
+        Bitset r( size );
 
         for( int i = 0; i < size; ++i ) {
           r.data[i] = data[i] | b.data[i];
@@ -432,7 +432,7 @@ namespace oz
       {
         assert( size == b.size );
 
-        Bitset r = Bitset( size );
+        Bitset r( size );
 
         for( int i = 0; i < size; ++i ) {
           r.data[i] = data[i] ^ b.data[i];
