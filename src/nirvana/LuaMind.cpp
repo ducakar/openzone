@@ -56,7 +56,7 @@ namespace nirvana
 
     Bot* bot = static_cast<Bot*>( world.objects[botIndex] );
 
-    if( ~bot->state & Bot::DEATH_BIT ) {
+    if( !( bot->state & Bot::DEATH_BIT ) ) {
       const BotClass* clazz = static_cast<const BotClass*>( bot->type );
 
       flags &= ~FORCE_UPDATE_BIT;

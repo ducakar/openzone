@@ -177,7 +177,7 @@ namespace ui
       {
         // If event is passed to a child, we won't handle it on parent. Of course we assume
         // children do not overlap, so event can only be passed to one of them.
-        if( ( ~child->flags & IGNORE_BIT ) && child->onMouseEvent() ) {
+        if( !( child->flags & IGNORE_BIT ) && child->onMouseEvent() ) {
           return true;
         }
       }

@@ -225,17 +225,18 @@ namespace oz
       texFlags[i] = texture.flags;
       texTypes[i] = texture.type;
 
-      log.println( "%s", name.cstr() );
+      log.print( "%s", name.cstr() );
 
       if( name.length() <= 12 || name.equals( "textures/NULL" ) ||
           ( texture.flags & QBSP_LADDER_BIT ) )
       {
         textures[i] = -1;
+        log.printEnd();
       }
       else {
         name = name.substring( 12 );
         textures[i] = translator.textureIndex( name );
-        log.println( "%s 0x%x 0x%x", name.cstr(), texture.flags, texture.type );
+        log.printEnd( " 0x%x 0x%x", texture.flags, texture.type );
       }
     }
 
@@ -391,7 +392,7 @@ namespace oz
       if( flags & QBSP_LADDER_BIT ) {
         brushes[i].material |= Material::LADDER_BIT;
       }
-      if( ~flags & QBSP_NONSOLID_BIT ) {
+      if( !( flags & QBSP_NONSOLID_BIT ) ) {
         brushes[i].material |= Material::STRUCT_BIT;
       }
       if( flags & QBSP_SLICK_BIT ) {
@@ -401,8 +402,9 @@ namespace oz
         brushes[i].material |= Material::WATER_BIT;
       }
 
+      // brush out of bounds, mark it for exclusion
       if( !includes( brushes[i] ) ) {
-        brushes[i].nSides = ~brush.nSides;
+        brushes[i].nSides = 0;
       }
     }
 
@@ -493,48 +495,24 @@ namespace oz
     log.println( "Optimising BSP {" );
     log.indent();
 
-    // remove unnecessary brushes
+    // remove brushes that lay out of boundaries
     for( int i = 0; i < nBrushes; ) {
-      bool isReferenced = false;
-
-      for( int j = 0; j < nLeaves; ++j ) {
-        const BSP::Leaf& leaf = leaves[j];
-
-        for( int k = 0; k < leaf.nBrushes; ++k ) {
-          if( leafBrushes[leaf.firstBrush + k] == i ) {
-            isReferenced = true;
-            goto brushReferenced;
-          }
-        }
-      }
-      for( int j = 1; j < nModels; ++j ) {
-        const BSP::Model& model = models[j];
-
-        for( int k = 0; k < model.nBrushes; ++k ) {
-          if( leafBrushes[model.firstBrush + k] == i ) {
-            isReferenced = true;
-            goto brushReferenced;
-          }
-        }
-      }
-
-      brushReferenced:;
-      if( isReferenced && brushes[i].nSides > 0 ) {
+      if( brushes[i].nSides != 0 ) {
         ++i;
         continue;
       }
 
       aRemove( brushes, i, nBrushes );
       --nBrushes;
-      log.print( "brush removed " );
+      log.print( "outside brush removed " );
 
-      // adjust brush references
+      // adjust brush references (for leaves)
       for( int j = 0; j < nLeafBrushes; ) {
         if( leafBrushes[j] < i ) {
           ++j;
         }
-        else if( leafBrushes[j] > i ) {
-          leafBrushes[j]--;
+        else if( i < leafBrushes[j] ) {
+          --leafBrushes[j];
           ++j;
         }
         else {
@@ -554,14 +532,25 @@ namespace oz
           }
         }
       }
+      // adjust brush references (for models)
+      for( int j = 0; j < nModels; ++j ) {
+        if( i < models[j].firstBrush ) {
+          --models[j].firstBrush;
+        }
+        else if( i < models[j].firstBrush + models[j].nBrushes ) {
+          assert( models[j].nBrushes > 0 );
+
+          --models[j].nBrushes;
+        }
+      }
       log.printEnd();
     }
 
     brushes = aRealloc( brushes, nBrushes, nBrushes );
     brushSides = aRealloc( brushSides, nBrushSides, nBrushSides );
 
-    // remove unnecessary leaves
-    log.print( "removing leaves " );
+    // remove unreferenced leaves
+    log.print( "removing unreferenced leaves " );
 
     for( int i = 0; i < nLeaves; ) {
       bool isReferenced = false;
@@ -677,13 +666,12 @@ namespace oz
     log.printEnd( " OK" );
 
     // integrity check
-    Bitset usedNodes = Bitset( nNodes );
-    Bitset usedLeaves = Bitset( nLeaves );
+    Bitset usedNodes( nNodes );
+    Bitset usedLeaves( nLeaves );
 
     usedNodes.clearAll();
     usedLeaves.clearAll();
 
-    // integrity check
     for( int i = 0; i < nNodes; ++i ) {
       if( nodes[i].front < 0 ) {
         usedLeaves.set( ~nodes[i].front );
@@ -833,7 +821,7 @@ namespace oz
 
     size += 1            * int( sizeof( Bounds ) );
     size += 2            * int( sizeof( float ) );
-    size += 12           * int( sizeof( int ) );
+    size += 14           * int( sizeof( int ) );
     size += nPlanes      * int( sizeof( Plane ) );
     size += nNodes       * int( sizeof( Node ) );
     size += nLeaves      * int( sizeof( Leaf ) );
@@ -843,13 +831,13 @@ namespace oz
     size += nBrushSides  * int( sizeof( int ) );
     size += nModels      * int( sizeof( Model ) );
     size += nEntities    * int( sizeof( Entity ) );
-    size += nTextures    * int( sizeof( int ) );
+    size += nTextures    * int( 64 * sizeof( char ) );
     size += nVertices    * int( sizeof( Vertex ) );
     size += nIndices     * int( sizeof( int ) );
     size += nFaces       * int( sizeof( Face ) );
     size += nLightmaps   * int( sizeof( Lightmap ) );
 
-    Buffer buffer = Buffer( size );
+    Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     os.writeVec3( mins );
@@ -862,10 +850,10 @@ namespace oz
     os.writeInt( nLeaves );
     os.writeInt( nLeafFaces );
     os.writeInt( nLeafBrushes );
-    os.writeInt( nModels );
-    os.writeInt( nEntities );
     os.writeInt( nBrushes );
     os.writeInt( nBrushSides );
+    os.writeInt( nModels );
+    os.writeInt( nEntities );
     os.writeInt( nTextures );
     os.writeInt( nVertices );
     os.writeInt( nIndices );
@@ -921,11 +909,21 @@ namespace oz
     }
 
     for( int i = 0; i < nEntities; ++i ) {
-      // TODO
+      os.writeVec3( entities[i].startPos );
+      os.writeVec3( entities[i].endPos );
+      os.writeInt( entities[i].flags );
+      os.writeInt( entities[i].model );
+      os.writeFloat( entities[i].slideTime );
+      os.writeFloat( entities[i].timeout );
     }
 
     for( int i = 0; i < nTextures; ++i ) {
-      os.writeInt( textures[i] );
+      if( textures[i] == -1 ) {
+        os.writePaddedString( "", 64 );
+      }
+      else {
+        os.writePaddedString( translator.textures[ textures[i] ].name, 64 );
+      }
     }
 
     for( int i = 0; i < nVertices; ++i ) {
@@ -952,9 +950,7 @@ namespace oz
     }
 
     for( int i = 0; i < nLightmaps; ++i ) {
-      for( int j = 0; j < LIGHTMAP_SIZE; ++j ) {
-        os.writeChar( lightmaps[i].bits[j] );
-      }
+      os.writeChars( lightmaps[i].bits, LIGHTMAP_SIZE );
     }
 
     buffer.write( fileName );
@@ -987,10 +983,10 @@ namespace oz
     nLeaves      = is.readInt();
     nLeafFaces   = is.readInt();
     nLeafBrushes = is.readInt();
-    nModels      = is.readInt();
-    nEntities    = is.readInt();
     nBrushes     = is.readInt();
     nBrushSides  = is.readInt();
+    nModels      = is.readInt();
+    nEntities    = is.readInt();
     nTextures    = is.readInt();
     nVertices    = is.readInt();
     nIndices     = is.readInt();
@@ -1004,11 +1000,11 @@ namespace oz
     size += nLeaves      * int( sizeof( Leaf ) );
     size += nLeafFaces   * int( sizeof( int ) );
     size += nLeafBrushes * int( sizeof( int ) );
-    size += nModels      * int( sizeof( Model ) );
-    size += nEntities    * int( sizeof( Entity ) );
     size += nBrushes     * int( sizeof( Brush ) );
     size += nBrushSides  * int( sizeof( int ) );
-    size += nTextures    * int( sizeof( int ) );
+    size += nModels      * int( sizeof( Model ) );
+    size += nEntities    * int( sizeof( Entity ) );
+    size += nTextures    * int( 64 * sizeof( char ) );
     size += nVertices    * int( sizeof( Vertex ) );
     size += nIndices     * int( sizeof( int ) );
     size += nFaces       * int( sizeof( Face ) );
@@ -1055,23 +1051,6 @@ namespace oz
     }
     data += nLeafBrushes * sizeof( int );
 
-    models = new( data ) Model[nModels];
-    for( int i = 0; i < nModels; ++i ) {
-      models[i].mins = is.readVec3();
-      models[i].maxs = is.readVec3();
-      models[i].firstBrush = is.readInt();
-      models[i].nBrushes = is.readInt();
-      models[i].firstFace = is.readInt();
-      models[i].nFaces = is.readInt();
-    }
-    data += nModels * sizeof( Model );
-
-    entities = new( data ) Entity[nEntities];
-    for( int i = 0; i < nEntities; ++i ) {
-      // TODO
-    }
-    data += nEntities * sizeof( Entity );
-
     brushes = new( data ) Brush[nBrushes];
     for( int i = 0; i < nBrushes; ++i ) {
       brushes[i].firstSide = is.readInt();
@@ -1086,11 +1065,40 @@ namespace oz
     }
     data += nBrushSides * sizeof( int );
 
+    models = new( data ) Model[nModels];
+    for( int i = 0; i < nModels; ++i ) {
+      models[i].mins = is.readVec3();
+      models[i].maxs = is.readVec3();
+      models[i].firstBrush = is.readInt();
+      models[i].nBrushes = is.readInt();
+      models[i].firstFace = is.readInt();
+      models[i].nFaces = is.readInt();
+    }
+    data += nModels * sizeof( Model );
+
+    entities = new( data ) Entity[nEntities];
+    for( int i = 0; i < nEntities; ++i ) {
+      entities[i].startPos = is.readVec3();
+      entities[i].endPos = is.readVec3();
+      entities[i].flags = is.readInt();
+      entities[i].model = is.readInt();
+      entities[i].slideTime = is.readFloat();
+      entities[i].timeout = is.readFloat();
+    }
+    data += nEntities * sizeof( Entity );
+
     textures = new( data ) int[nTextures];
     for( int i = 0; i < nTextures; ++i ) {
-      textures[i] = is.readInt();
+      String textureName = is.readPaddedString( 64 );
+
+      if( textureName.isEmpty() ) {
+        textures[i] = -1;
+      }
+      else {
+        textures[i] = translator.textureIndex( textureName );
+      }
     }
-    data += nTextures * sizeof( int );
+    data += nTextures * 64 * sizeof( char );
 
     vertices = new( data ) Vertex[nVertices];
     for( int i = 0; i < nVertices; ++i ) {
@@ -1123,9 +1131,7 @@ namespace oz
 
     lightmaps = new( data ) Lightmap[nLightmaps];
     for( int i = 0; i < nLightmaps; ++i ) {
-      for( int j = 0; j < LIGHTMAP_SIZE; ++j ) {
-        lightmaps[i].bits[j] = is.readChar();
-      }
+      is.readChars( lightmaps[i].bits, LIGHTMAP_SIZE );
     }
 
     visual.nClusters = 0;
@@ -1178,8 +1184,9 @@ namespace oz
       return false;
     }
 
+    optimise();
+
 #ifdef OZ_MAKE_PREBUILT
-//    optimise();
     save( "maps/" + name + ".ozBSP" );
 #endif
 

@@ -39,16 +39,17 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/common.hpp
     src/oz/iterables.hpp
     src/oz/oz.hpp
-    DESTINATION include/oz )
-  install( FILES ${liboz_file} DESTINATION lib )
+    DESTINATION include/oz
+    COMPONENT liboz )
+  install( FILES ${liboz_file} DESTINATION lib COMPONENT liboz )
 endif( OZ_INSTALL_LIBOZ )
 
 string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" client_location_var )
 get_target_property( client_file openzone ${client_location_var} )
 
-if( OZ_INSTALL_OPENAL )
-  install( FILES "oalinst.exe" DESTINATION support )
-endif( OZ_INSTALL_OPENAL )
+if( WIN32 )
+  install( FILES "oalinst.exe" DESTINATION support COMPONENT client )
+endif( WIN32 )
 
 if( OZ_INSTALL_CLIENT )
   install( FILES ${client_file}
@@ -56,7 +57,8 @@ if( OZ_INSTALL_CLIENT )
     PERMISSIONS
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE )
+    WORLD_READ WORLD_EXECUTE
+    COMPONENT client)
 endif( OZ_INSTALL_CLIENT )
 
 if( OZ_INSTALL_DATA )

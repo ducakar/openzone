@@ -66,7 +66,7 @@ namespace nirvana
       const Bot* bot = static_cast<const Bot*>( world.objects[mind->botIndex] );
       assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
 
-      if( ( ~bot->state & Bot::PLAYER_BIT ) &&
+      if( !( bot->state & Bot::PLAYER_BIT ) &&
           ( ( mind->flags & Mind::FORCE_UPDATE_BIT ) || count % UPDATE_INTERVAL == updateModulo ) )
       {
         mind->update();
@@ -216,7 +216,7 @@ namespace nirvana
     int nMinds = istream->readInt();
 
     for( int i = 0; i < nMinds; ++i ) {
-      istream->readString( typeName );
+      typeName = istream->readString();
       if( !typeName.isEmpty() ) {
         minds.add( mindClasses.get( typeName ).read( istream ) );
       }

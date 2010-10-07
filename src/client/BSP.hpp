@@ -26,8 +26,6 @@ namespace client
 
     private:
 
-      static const float GAMMA_CORR;
-
       static const Structure* str;
       static Vec3 camPos;
 

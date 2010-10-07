@@ -217,7 +217,7 @@ namespace oz
   {
     assert( obj->index != -1 && obj->cell != null );
 
-    if( ~obj->flags & Object::DYNAMIC_BIT ) {
+    if( !( obj->flags & Object::DYNAMIC_BIT ) ) {
       collider.touchOverlaps( *obj, 4.0f * EPSILON );
     }
 

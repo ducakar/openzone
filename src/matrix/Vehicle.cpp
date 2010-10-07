@@ -55,9 +55,10 @@ namespace oz
       }
     }
 
-    Vec3 at   = rot.rotate( Vec3( 0.0f, 1.0f, 0.0f ) );
-    Vec3 side = rot.rotate( Vec3( 1.0f, 0.0f, 0.0f ) );
-    Vec3 up   = rot.rotate( Vec3( 0.0f, 0.0f, 1.0f ) );
+    Mat33 rotMat = rot.rotMat33();
+    Vec3 at      = rotMat * Vec3( 0.0f, 1.0f, 0.0f );
+    Vec3 side    = rotMat * Vec3( 1.0f, 0.0f, 0.0f );
+    Vec3 up      = rotMat * Vec3( 0.0f, 0.0f, 1.0f );
 
     // controls
     Vec3 move = Vec3::zero();
@@ -103,7 +104,7 @@ namespace oz
           bot->exit();
         }
         else {
-          bot->p = p + rot.rotate( clazz->crewPos[0] ) + momentum * Timer::TICK_TIME;
+          bot->p = p + rotMat * clazz->crewPos[0] + momentum * Timer::TICK_TIME;
           bot->momentum = velocity;
         }
       }

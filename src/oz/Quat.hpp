@@ -1,7 +1,7 @@
 /*
  *  Quat.hpp
  *
- *  Quaternion library
+ *  Quaternion
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -345,48 +345,6 @@ namespace oz
                      cxsy * cz + sxcy * sz,
                      cxcy * sz + sxsy * cz,
                      cxcy * cz - sxsy * sz );
-      }
-
-      Vec3 rotate( const Vec3& v ) const
-      {
-        float a11 = x*x;
-        float a22 = y*y;
-        float a33 = z*z;
-        float a44 = w*w;
-
-        float a12 =  2.0f * x*y;
-        float a13 =  2.0f * x*z;
-        float a14 =  2.0f * x*w;
-        float a23 =  2.0f * y*z;
-        float a24 =  2.0f * y*w;
-        float a34 =  2.0f * z*w;
-
-        float a4433 = a44 - a33;
-
-        return Vec3( ( a4433 - a22 + a11 ) * v.x + ( a12 - a34 ) * v.y + ( a24 + a13 ) * v.z,
-                     ( a34 + a12 ) * v.x + ( a4433 + a22 - a11 ) * v.y + ( a23 - a14 ) * v.z,
-                     ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
-      }
-
-      Vec3 rotateInv( const Vec3& v ) const
-      {
-        float a11 = x*x;
-        float a22 = y*y;
-        float a33 = z*z;
-        float a44 = w*w;
-
-        float a12 =  2.0f * x*y;
-        float a13 =  2.0f * x*z;
-        float a14 = -2.0f * x*w;
-        float a23 =  2.0f * y*z;
-        float a24 = -2.0f * y*w;
-        float a34 = -2.0f * z*w;
-
-        float a4433 = a44 - a33;
-
-        return Vec3( ( a4433 - a22 + a11 ) * v.x + ( a12 - a34 ) * v.y + ( a24 + a13 ) * v.z,
-                     ( a34 + a12 ) * v.x + ( a4433 + a22 - a11 ) * v.y + ( a23 - a14 ) * v.z,
-                     ( a13 - a24 ) * v.x + ( a14 + a23 ) * v.y + ( a44 + a33 - a22 - a11 ) * v.z );
       }
 
   };

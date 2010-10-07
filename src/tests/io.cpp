@@ -15,7 +15,7 @@ using namespace oz;
 
 int main( int, char** )
 {
-  Buffer buffer = Buffer( 1024 );
+  Buffer buffer( 1024 );
   OutputStream os = buffer.outputStream();
   InputStream is = buffer.inputStream();
 

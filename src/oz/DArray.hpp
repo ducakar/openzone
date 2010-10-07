@@ -31,7 +31,7 @@ namespace oz
         public:
 
           /**
-           * Default constructor returns a dummy passed iterator
+           * Default constructor returns an invalid iterator
            */
           explicit CIterator() : B( null, null )
           {}
@@ -57,7 +57,7 @@ namespace oz
         public:
 
           /**
-           * Default constructor returns a dummy passed iterator
+           * Default constructor returns an invalid iterator
            */
           explicit Iterator() : B( null, null )
           {}
@@ -79,17 +79,27 @@ namespace oz
     public:
 
       /**
-       * Create null array.
+       * Create a null array.
        */
       explicit DArray() : data( null ), count( 0 )
       {}
 
       /**
-       * Create empty array with the given size.
-       * @param initSize
+       * Create an empty array with the given size.
+       * @param size
        */
       explicit DArray( int size ) : data( new Type[size] ), count( size )
       {}
+
+      /**
+       * Initialise from a C++ array.
+       * @param array
+       * @param size
+       */
+      explicit DArray( const Type* array, int size ) : data( new Type[size] ), count( size )
+      {
+        aCopy( data, array, size );
+      }
 
       /**
        * Copy constructor.

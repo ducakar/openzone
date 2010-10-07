@@ -32,7 +32,7 @@ namespace oz
         public:
 
           /**
-           * Default constructor returns a dummy passed iterator
+           * Default constructor returns an invalid iterator
            */
           explicit CIterator() : B( null, null )
           {}
@@ -58,7 +58,7 @@ namespace oz
         public:
 
           /**
-           * Default constructor returns a dummy passed iterator
+           * Default constructor returns an invalid iterator
            */
           explicit Iterator() : B( null, null )
           {}

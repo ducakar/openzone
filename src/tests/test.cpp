@@ -22,7 +22,7 @@ struct initializer_list
   const T* first;
   size_t size;
 
-  initializer_list() : first( nullptr ), size( 0 ) {}
+  initializer_list() : first( null ), size( 0 ) {}
   initializer_list( const T* first_, const T* last ) : first( first_ ), size( last - first ) {}
 };
 }*/
@@ -42,12 +42,13 @@ struct T
 
 int main( int, char** )
 {
-  int array[] = { 0, 1, 2, 3, 4, 5, 6 };
+  Array<int, 7> array = (int[]) { 0, 1, 2, 3, 4, 5, 6 };
 
   auto add42 = [] ( int& elem ) { elem += 42; };
+  auto print = [] ( const int& elem ) { printf( "%d\n", elem ); };
 
-  iMap( iter( array, 7 ), add42 );
-  iMap( iter( array, 7 ), [] ( int& elem ) { printf( "%d\n", elem ); } );
+  iMap( array.iter(), add42 );
+  iMap( array.iter(), print );
 
   return 0;
 }

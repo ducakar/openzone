@@ -44,37 +44,37 @@ namespace ui
 
     public:
 
-      int    x;
-      int    y;
-      int    relX;
-      int    relY;
+      int  x;
+      int  y;
+      int  relX;
+      int  relY;
 
-      ubyte  buttons;
-      ubyte  oldButtons;
-      ubyte  currButtons;
+      char buttons;
+      char oldButtons;
+      char currButtons;
 
-      int    overEdgeX;
-      int    overEdgeY;
+      int  overEdgeX;
+      int  overEdgeY;
 
-      bool   leftClick;
-      bool   rightClick;
-      bool   middleClick;
-      bool   wheelUp;
-      bool   wheelDown;
+      bool leftClick;
+      bool rightClick;
+      bool middleClick;
+      bool wheelUp;
+      bool wheelDown;
 
-      int    type;
-      bool   doShow;
+      int  type;
+      bool doShow;
 
-      void   init();
-      void   free();
+      void init();
+      void free();
 
-      void   show();
-      void   hide();
+      void show();
+      void hide();
 
-      void   prepare();
-      void   update();
+      void prepare();
+      void update();
 
-      void   draw() const;
+      void draw() const;
 
   };
 

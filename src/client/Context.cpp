@@ -44,7 +44,7 @@ namespace client
 
   Context context;
 
-  uint Context::buildTexture( const ubyte* data, int width, int height, int bytesPerPixel,
+  uint Context::buildTexture( const char* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
     assert( glGetError() == GL_NO_ERROR );
@@ -82,14 +82,14 @@ namespace client
     return texNum;
   }
 
-  uint Context::buildNormalmap( ubyte* data, const Vec3& lightNormal, int width, int height,
+  uint Context::buildNormalmap( char* data, const Vec3& lightNormal, int width, int height,
                                 int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
     assert( glGetError() == GL_NO_ERROR );
 
-    ubyte* dataEnd = data + width * height * bytesPerPixel;
+    ubyte* dataEnd = reinterpret_cast<ubyte*>( data ) + width * height * bytesPerPixel;
 
-    for( ubyte* p = data; p < dataEnd; p += bytesPerPixel ) {
+    for( ubyte* p = reinterpret_cast<ubyte*>( data ); p < dataEnd; p += bytesPerPixel ) {
       float x = ( float( p[0] ) - 128.0f ) / 128.0f;
       float y = ( float( p[1] ) - 128.0f ) / 128.0f;
       float z = ( float( p[2] ) - 128.0f ) / 128.0f;
@@ -135,7 +135,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::createTexture( const ubyte* data, int width, int height, int bytesPerPixel,
+  uint Context::createTexture( const char* data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
   {
     uint texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
@@ -146,7 +146,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::createNormalmap( ubyte* data, const Vec3& lightNormal, int width, int height,
+  uint Context::createNormalmap( char* data, const Vec3& lightNormal, int width, int height,
                                  int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
     uint texNum = buildNormalmap( data, lightNormal, width, height, bytesPerPixel, wrap,
@@ -183,7 +183,7 @@ namespace client
     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createTexture( reinterpret_cast<const ubyte*>( image->pixels ), image->w, image->h,
+    int texNum = createTexture( reinterpret_cast<const char*>( image->pixels ), image->w, image->h,
                                 bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
@@ -218,7 +218,7 @@ namespace client
     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createNormalmap( reinterpret_cast<ubyte*>( image->pixels ), lightNormal,
+    int texNum = createNormalmap( reinterpret_cast<char*>( image->pixels ), lightNormal,
                                   image->w, image->h, bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
@@ -257,7 +257,7 @@ namespace client
     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createTexture( reinterpret_cast<const ubyte*>( image->pixels ), image->w, image->h,
+    int texNum = createTexture( reinterpret_cast<const char*>( image->pixels ), image->w, image->h,
                                 bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );
@@ -282,7 +282,7 @@ namespace client
     log.printEnd( " OK" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createNormalmap( reinterpret_cast<ubyte*>( image->pixels ), lightNormal,
+    int texNum = createNormalmap( reinterpret_cast<char*>( image->pixels ), lightNormal,
                                   image->w, image->h, bytesPerPixel, wrap, magFilter, minFilter );
 
     SDL_FreeSurface( image );

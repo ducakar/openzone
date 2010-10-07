@@ -22,9 +22,9 @@ namespace ui
 
   void Keyboard::init()
   {
-    aSet<ubyte>( keys, 0, SDLK_LAST );
-    aSet<ubyte>( oldKeys, 0, SDLK_LAST );
-    currKeys = SDL_GetKeyState( null );
+    aSet<char>( keys, 0, SDLK_LAST );
+    aSet<char>( oldKeys, 0, SDLK_LAST );
+    currKeys = reinterpret_cast<char*>( SDL_GetKeyState( null ) );
   }
 
   void Keyboard::prepare()

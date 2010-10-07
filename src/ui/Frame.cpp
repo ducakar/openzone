@@ -22,7 +22,7 @@ namespace ui
 
   bool Frame::onMouseEvent()
   {
-    if( ( ~flags & GRAB_BIT ) && passMouseEvents() ) {
+    if( !( flags & GRAB_BIT ) && passMouseEvents() ) {
       return true;
     }
     if( mouse.buttons & SDL_BUTTON_LMASK ) {

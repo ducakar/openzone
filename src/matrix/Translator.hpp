@@ -57,7 +57,7 @@ namespace oz
 
       HashString<int, 512> textureIndices;
       HashString<int, 512> soundIndices;
-      HashString<int, 128>  bspIndices;
+      HashString<int, 128> bspIndices;
 
     public:
 
@@ -71,33 +71,33 @@ namespace oz
       HashString<const ObjectClass::InitFunc, 8> baseClasses;
       HashString<const ObjectClass*, 64> classes;
 
-      int textureIndex( const char* file ) const
+      int textureIndex( const char* name ) const
       {
-        const int* value = textureIndices.find( file );
+        const int* value = textureIndices.find( name );
         if( value != null ) {
           return *value;
         }
         else {
-          log.println( "W: invalid texture file index requested: %s", file );
+          log.println( "W: invalid texture file index requested: %s", name );
           return -1;
         }
       }
 
-      int soundIndex( const char* file ) const
+      int soundIndex( const char* name ) const
       {
-        const int* value = soundIndices.find( file );
+        const int* value = soundIndices.find( name );
         if( value != null ) {
           return *value;
         }
         else {
-          log.println( "W: invalid sound file index requested: %s", file );
+          log.println( "W: invalid sound file index requested: %s", name );
           return -1;
         }
       }
 
-      int bspIndex( const char* file ) const
+      int bspIndex( const char* name ) const
       {
-        const int* value = bspIndices.find( file );
+        const int* value = bspIndices.find( name );
         if( value != null ) {
           return *value;
         }

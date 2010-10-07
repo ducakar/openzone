@@ -36,12 +36,6 @@ namespace oz
 # define null nullptr
 
   /**
-   * \def S
-   * "Stringify" the given identifier.
-   */
-# define S( s ) #s
-
-  /**
    * \def soft_assert
    * Like assert, but raises SIGTRAP with a dummy handler (like DebugBreak in MSVC).
    */

@@ -318,7 +318,7 @@ namespace nirvana
   {
     const Bot* bot = static_cast<const Bot*>( lua.obj );
     lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::BOT_BIT ) &&
-                     ( ~bot->state & Bot::DEATH_BIT ) );
+                     !( bot->state & Bot::DEATH_BIT ) );
     return 1;
   }
 
@@ -531,7 +531,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::DYNAMIC_BIT ) {
+    if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
@@ -548,7 +548,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::DYNAMIC_BIT ) {
+    if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
@@ -565,7 +565,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::DYNAMIC_BIT ) {
+    if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
@@ -580,7 +580,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::DYNAMIC_BIT ) {
+    if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not dynamic" );
     }
 
@@ -595,7 +595,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::BOT_BIT ) {
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not a bot" );
     }
 
@@ -612,7 +612,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::BOT_BIT ) {
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not a bot" );
     }
 
@@ -627,7 +627,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::BOT_BIT ) {
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not a bot" );
     }
 
@@ -642,7 +642,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::BOT_BIT ) {
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not a bot" );
     }
 
@@ -669,7 +669,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::BOT_BIT ) {
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not a bot" );
     }
 
@@ -684,7 +684,7 @@ namespace nirvana
     if( lua.obj == null ) {
       OZ_LUA_ERROR( "selected object is null" );
     }
-    if( ~lua.obj->flags & Object::BOT_BIT ) {
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
       OZ_LUA_ERROR( "selected object is not a bot" );
     }
 

@@ -54,7 +54,7 @@ namespace oz
         public:
 
           /**
-           * Default constructor returns a dummy passed iterator
+           * Default constructor returns an invalid iterator
            */
           explicit CIterator() : B( null )
           {}
@@ -69,30 +69,6 @@ namespace oz
               ++index;
               B::elem = data[index];
             }
-          }
-
-          /**
-           * Advance to the next element.
-           * @param
-           */
-          CIterator& operator ++ ()
-          {
-            assert( B::elem != null );
-
-            if( B::elem->next[0] != null ) {
-              B::elem = B::elem->next[0];
-            }
-            else if( index < SIZE - 1 ) {
-              do {
-                ++index;
-                B::elem = data[index];
-              }
-              while( B::elem == null && index < SIZE - 1 );
-            }
-            else {
-              B::elem = null;
-            }
-            return *this;
           }
 
           /**
@@ -135,45 +111,11 @@ namespace oz
             return B::elem->value;
           }
 
-      };
-
-      /**
-       * HashString iterator.
-       */
-      class Iterator : public IteratorBase<Elem>
-      {
-        private:
-
-          typedef IteratorBase<Elem> B;
-
-          Elem* const* data;
-          int index;
-
-        public:
-
-          /**
-           * Default constructor returns a dummy passed iterator
-           */
-          explicit Iterator() : B( null )
-          {}
-
-          /**
-           * Make iterator for given HashString. After creation it points to first element.
-           * @param t
-           */
-          explicit Iterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
-          {
-            while( B::elem == null && index < SIZE - 1 ) {
-              ++index;
-              B::elem = data[index];
-            }
-          }
-
           /**
            * Advance to the next element.
            * @param
            */
-          Iterator& operator ++ ()
+          CIterator& operator ++ ()
           {
             assert( B::elem != null );
 
@@ -191,6 +133,40 @@ namespace oz
               B::elem = null;
             }
             return *this;
+          }
+
+      };
+
+      /**
+       * HashString iterator.
+       */
+      class Iterator : public IteratorBase<Elem>
+      {
+        private:
+
+          typedef IteratorBase<Elem> B;
+
+          Elem* const* data;
+          int index;
+
+        public:
+
+          /**
+           * Default constructor returns an invalid iterator
+           */
+          explicit Iterator() : B( null )
+          {}
+
+          /**
+           * Make iterator for given HashString. After creation it points to first element.
+           * @param t
+           */
+          explicit Iterator( const HashString& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          {
+            while( B::elem == null && index < SIZE - 1 ) {
+              ++index;
+              B::elem = data[index];
+            }
           }
 
           /**
@@ -263,6 +239,30 @@ namespace oz
           Type& value()
           {
             return B::elem->value;
+          }
+
+          /**
+           * Advance to the next element.
+           * @param
+           */
+          Iterator& operator ++ ()
+          {
+            assert( B::elem != null );
+
+            if( B::elem->next[0] != null ) {
+              B::elem = B::elem->next[0];
+            }
+            else if( index < SIZE - 1 ) {
+              do {
+                ++index;
+                B::elem = data[index];
+              }
+              while( B::elem == null && index < SIZE - 1 );
+            }
+            else {
+              B::elem = null;
+            }
+            return *this;
           }
 
       };
