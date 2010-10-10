@@ -113,10 +113,10 @@ namespace nirvana
   static int ozStrBindIndex( lua_State* l )
   {
     int index = int( lua_tointeger( l, 1 ) );
-    if( index < 0 || world.structs.length() <= index ) {
+    if( index < 0 || orbis.structs.length() <= index ) {
       OZ_LUA_ERROR( "invalid index" );
     }
-    lua.str = world.structs[index];
+    lua.str = orbis.structs[index];
     return 0;
   }
 
@@ -249,10 +249,10 @@ namespace nirvana
   static int ozObjBindIndex( lua_State* l )
   {
     int index = int( lua_tointeger( l, 1 ) );
-    if( index < 0 || world.objects.length() <= index ) {
+    if( index < 0 || orbis.objects.length() <= index ) {
       OZ_LUA_ERROR( "invalid index" );
     }
-    lua.obj = world.objects[index];
+    lua.obj = orbis.objects[index];
     return 0;
   }
 
@@ -848,10 +848,10 @@ namespace nirvana
   static int ozPartBindIndex( lua_State* l )
   {
     int index = int( lua_tointeger( l, 1 ) );
-    if( index < 0 || world.parts.length() <= index ) {
+    if( index < 0 || orbis.parts.length() <= index ) {
       OZ_LUA_ERROR( "invalid particle index" );
     }
-    lua.part = world.parts[index];
+    lua.part = orbis.parts[index];
     return 0;
   }
 

@@ -44,7 +44,7 @@ namespace client
       return;
     }
 
-    Bot* bot = static_cast<Bot*>( world.objects[camera.bot] );
+    Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
     if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
       ui::mouse.doShow = !ui::mouse.doShow;
@@ -177,7 +177,7 @@ namespace client
 
     if( !isExternal ) {
       if( bot->parent != -1 ) { // inside vehicle
-        assert( world.objects[bot->parent]->flags & Object::VEHICLE_BIT );
+        assert( orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT );
 
         camera.w = 0.0f;
         camera.align();
@@ -237,7 +237,7 @@ namespace client
 
       float dist;
       if( bot->parent != -1 ) {
-        Vehicle* veh = static_cast<Vehicle*>( world.objects[bot->parent] );
+        Vehicle* veh = static_cast<Vehicle*>( orbis.objects[bot->parent] );
 
         assert( veh->flags & Object::VEHICLE_BIT );
 
@@ -262,7 +262,7 @@ namespace client
     }
 
     if( bot->grabObj != -1 ) {
-      camera.setTagged( world.objects[camera.botObj->grabObj] );
+      camera.setTagged( orbis.objects[camera.botObj->grabObj] );
     }
     else if( isExternal && isFreelook ) {
       // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }

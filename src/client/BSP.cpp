@@ -237,7 +237,7 @@ namespace client
 
   BSP::BSP( int bspIndex ) : isUpdated( false )
   {
-    bsp = world.bsps[bspIndex];
+    bsp = orbis.bsps[bspIndex];
 
     log.println( "Loading BSP model '%s' {", translator.bsps[bspIndex].name.cstr() );
     log.indent();
@@ -471,12 +471,21 @@ namespace client
     int leafIndex = getLeaf();
     checkInWaterBrush( &bsp->leaves[leafIndex] );
 
-    for( int i = 0; i < bsp->nFaces; ++i ) {
-      const oz::BSP::Face& face = bsp->faces[i];
+    for( int i = 0; i < bsp->nEntities; ++i ) {
+      const oz::BSP::Entity& entity = bsp->entities[i];
+      const Vec3& entityPos = str->entities[i].offset;
 
-      if( !hiddenFaces.get( i ) ) {
-        drawFace( &face );
+      glPushMatrix();
+      glTranslatef( entityPos.x, entityPos.y, entityPos.z );
+
+      for( int j = 0; j < entity.nFaces; ++j ) {
+        const oz::BSP::Face& face = bsp->faces[ entity.firstFace + j ];
+
+        if( !hiddenFaces.get( entity.firstFace + j ) ) {
+          drawFace( &face );
+        }
       }
+      glPopMatrix();
     }
     glPopMatrix();
 

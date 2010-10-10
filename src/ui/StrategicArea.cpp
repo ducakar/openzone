@@ -287,7 +287,7 @@ namespace ui
     leftClick = false;
 
     for( int i = 0; i < tagged.length(); ) {
-      const Object* obj = world.objects[tagged[i]];
+      const Object* obj = orbis.objects[tagged[i]];
 
       if( obj == null ||
           ( ( obj->flags & Object::BOT_BIT ) && obj->life <= obj->type->life / 2.0f ) )

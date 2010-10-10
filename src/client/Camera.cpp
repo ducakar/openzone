@@ -119,7 +119,7 @@ namespace client
       h += keyYSens * Timer::TICK_TIME;
     }
 
-    botObj = bot == -1 ? null : static_cast<const Bot*>( world.objects[bot] );
+    botObj = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
 
     if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
       bot = -1;

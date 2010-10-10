@@ -49,7 +49,7 @@ namespace ui
 
     Frame::onMouseEvent();
 
-    Bot* bot = static_cast<Bot*>( world.objects[camera.bot] );
+    Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
     taggedIndex = -1;
 
@@ -118,7 +118,7 @@ namespace ui
     Dynamic* taggedItem = null;
 
     for( int i = minIndex; i < maxIndex; ++i ) {
-      Dynamic* item = static_cast<Dynamic*>( world.objects[items[i]] );
+      Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[i]] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 

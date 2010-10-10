@@ -51,7 +51,7 @@ namespace client
       int index = veh->crew[i];
 
       if( index != -1 && ( index != camera.bot || camera.isExternal ) ) {
-        const Bot* bot = static_cast<const Bot*>( world.objects[veh->crew[i]] );
+        const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->crew[i]] );
 
         glPushMatrix();
         glTranslatef(  clazz->crewPos[i].x,  clazz->crewPos[i].y,  clazz->crewPos[i].z );

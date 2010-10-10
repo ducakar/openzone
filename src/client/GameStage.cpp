@@ -41,7 +41,7 @@ namespace client
     matrix.cleanObjects();
 
     if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
-      world.sky.time += world.sky.period * 0.25f;
+      orbis.sky.time += orbis.sky.period * 0.25f;
     }
 
     camera.update();

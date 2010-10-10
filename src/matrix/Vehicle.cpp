@@ -27,7 +27,7 @@ namespace oz
   {
     for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {
-        Bot* bot = static_cast<Bot*>( world.objects[crew[i]] );
+        Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
 
         if( bot != null ) {
           bot->exit();
@@ -45,7 +45,7 @@ namespace oz
     flags &= ~HOVER_BIT;
     actions = 0;
     if( crew[PILOT] != -1 ) {
-      Bot* pilot = static_cast<Bot*>( world.objects[crew[PILOT]] );
+      Bot* pilot = static_cast<Bot*>( orbis.objects[crew[PILOT]] );
 
       if( pilot != null ) {
         rot = Quat::rotZYX( Math::rad( pilot->h ), 0.0f, Math::rad( pilot->v ) );
@@ -87,7 +87,7 @@ namespace oz
 
     for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {
-        Bot* bot = static_cast<Bot*>( world.objects[crew[i]] );
+        Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
 
         if( bot == null || bot->parent != index ) {
           crew[i] = -1;

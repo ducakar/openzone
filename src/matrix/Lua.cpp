@@ -108,10 +108,10 @@ namespace oz
   static int ozStrBindIndex( lua_State* l )
   {
     int index = int( lua_tointeger( l, 1 ) );
-    if( index < 0 || world.structs.length() <= index ) {
+    if( index < 0 || orbis.structs.length() <= index ) {
       OZ_LUA_ERROR( "invalid structure index" );
     }
-    lua.str = world.structs[index];
+    lua.str = orbis.structs[index];
     return 0;
   }
 
@@ -264,10 +264,10 @@ namespace oz
   static int ozObjBindIndex( lua_State* l )
   {
     int index = int( lua_tointeger( l, 1 ) );
-    if( index < 0 || world.objects.length() <= index ) {
+    if( index < 0 || orbis.objects.length() <= index ) {
       OZ_LUA_ERROR( "invalid object index" );
     }
-    lua.obj = world.objects[index];
+    lua.obj = orbis.objects[index];
     return 0;
   }
 
@@ -367,7 +367,7 @@ namespace oz
       const Dynamic* dyn = static_cast<const Dynamic*>( lua.obj );
 
       if( dyn->parent != -1 ) {
-        Object* parent = world.objects[dyn->parent];
+        Object* parent = orbis.objects[dyn->parent];
 
         if( parent != null ) {
           lua_pushnumber( l, parent->p.x );
@@ -1292,10 +1292,10 @@ namespace oz
   static int ozPartBindIndex( lua_State* l )
   {
     int index = int( lua_tointeger( l, 1 ) );
-    if( index < 0 || world.parts.length() <= index ) {
+    if( index < 0 || orbis.parts.length() <= index ) {
       OZ_LUA_ERROR( "invalid particle index" );
     }
-    lua.part = world.parts[index];
+    lua.part = orbis.parts[index];
     return 0;
   }
 
@@ -1428,12 +1428,12 @@ namespace oz
       OZ_LUA_ERROR( "invalid bsp name" );
     }
 
-    world.requestBSP( bsp );
-    Bounds bounds = Structure::rotate( *world.bsps[bsp], rot );
+    orbis.requestBSP( bsp );
+    Bounds bounds = Structure::rotate( *orbis.bsps[bsp], rot );
 
     if( !collider.overlaps( bounds.toAABB() + p ) ) {
       int index = synapse.addStruct( name, p, rot );
-      lua.str = world.structs[index];
+      lua.str = orbis.structs[index];
       lua_pushinteger( l, index );
     }
     else {
@@ -1450,7 +1450,7 @@ namespace oz
     Structure::Rotation rot = Structure::Rotation( lua_tointeger( l, 5 ) );
 
     int index = synapse.addStruct( name, p, rot );
-    lua.str = world.structs[index];
+    lua.str = orbis.structs[index];
     lua_pushinteger( l, index );
     return 1;
   }
@@ -1469,7 +1469,7 @@ namespace oz
 
     if( collider.overlaps( aabb ) ) {
       int index = synapse.addObject( name, p );
-      lua.obj = world.objects[index];
+      lua.obj = orbis.objects[index];
       lua_pushinteger( l, index );
     }
     else {
@@ -1485,7 +1485,7 @@ namespace oz
     Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
 
     int index = synapse.addObject( name, p );
-    lua.obj = world.objects[index];
+    lua.obj = orbis.objects[index];
     lua_pushinteger( l, index );
     return 1;
   }
@@ -1500,7 +1500,7 @@ namespace oz
     float lifeTime    = float( lua_tonumber( l, 12 ) );
 
     int index = synapse.addPart( p, velocity, colour, restitution, mass, lifeTime );
-    lua.part = world.parts[index];
+    lua.part = orbis.parts[index];
     lua_pushinteger( l, index );
     return 1;
   }

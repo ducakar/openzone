@@ -156,7 +156,7 @@ namespace oz
 
   };
 
-  extern Orbis world;
+  extern Orbis orbis;
 
   inline Cell* Orbis::getCell( float x, float y )
   {

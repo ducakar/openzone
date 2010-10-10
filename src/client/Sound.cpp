@@ -31,7 +31,7 @@ namespace client
 
   void Sound::playCell( int cellX, int cellY )
   {
-    const Cell& cell = world.cells[cellX][cellY];
+    const Cell& cell = orbis.cells[cellX][cellY];
 
     for( const Object *obj = cell.firstObject; obj != null; obj = obj->next[0] ) {
       if( obj->flags & Object::AUDIO_BIT ) {
@@ -162,7 +162,7 @@ namespace client
       uint key     = i.key();
       ++i;
 
-      if( world.objects[key] == null ) {
+      if( orbis.objects[key] == null ) {
         delete audio;
         audios.exclude( key );
       }
@@ -175,7 +175,7 @@ namespace client
     alListenerfv( AL_ORIENTATION, camera.at );
     alListenerfv( AL_POSITION, camera.p );
 
-    Span span = world.getInters( camera.p, DMAX + AABB::MAX_DIM );
+    Span span = orbis.getInters( camera.p, DMAX + AABB::MAX_DIM );
 
     for( int x = span.minX ; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {

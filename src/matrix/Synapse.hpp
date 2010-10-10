@@ -144,7 +144,7 @@ namespace oz
     assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
 
     putObjects.add( obj->index );
-    world.position( obj );
+    orbis.position( obj );
   }
 
   inline void Synapse::cut( Dynamic* obj )
@@ -156,18 +156,18 @@ namespace oz
     obj->lower = -1;
 
     cutObjects.add( obj->index );
-    world.unposition( obj );
+    orbis.unposition( obj );
   }
 
   inline int Synapse::addStruct( const char* name, const Vec3& p, Structure::Rotation rot )
   {
-    world.requestBSP( translator.bspIndex( name ) );
+    orbis.requestBSP( translator.bspIndex( name ) );
 
-    int index = world.addStruct( name, p, rot );
-    Structure* str = world.structs[index];
+    int index = orbis.addStruct( name, p, rot );
+    Structure* str = orbis.structs[index];
 
-    if( !world.position( str ) ) {
-      world.remove( str );
+    if( !orbis.position( str ) ) {
+      orbis.remove( str );
       delete str;
       return -1;
     }
@@ -178,11 +178,11 @@ namespace oz
 
   inline int Synapse::addObject( const char* name, const Vec3& p )
   {
-    int index = world.addObject( name, p );
-    Object* obj = world.objects[index];
+    int index = orbis.addObject( name, p );
+    Object* obj = orbis.objects[index];
     assert( obj->cell == null );
 
-    world.position( obj );
+    orbis.position( obj );
     obj->addEvent( Object::EVENT_CREATE, 1.0f );
 
     addedObjects.add( index );
@@ -192,10 +192,10 @@ namespace oz
   inline int Synapse::addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
                                float restitution, float mass, float lifeTime )
   {
-    int index = world.addPart( p, velocity, colour, restitution, mass, lifeTime );
-    Particle* part = world.parts[index];
+    int index = orbis.addPart( p, velocity, colour, restitution, mass, lifeTime );
+    Particle* part = orbis.parts[index];
 
-    world.position( part );
+    orbis.position( part );
 
     addedParts.add( index );
     return index;
@@ -208,8 +208,8 @@ namespace oz
     collider.touchOverlaps( str->toAABB(), 4.0f * EPSILON );
 
     removedStructs.add( str->index );
-    world.unposition( str );
-    world.remove( str );
+    orbis.unposition( str );
+    orbis.remove( str );
     delete str;
   }
 
@@ -223,8 +223,8 @@ namespace oz
 
     removedObjects.add( obj->index );
     deleteObjects.add( obj );
-    world.unposition( obj );
-    world.remove( obj );
+    orbis.unposition( obj );
+    orbis.remove( obj );
   }
 
   inline void Synapse::removeCut( Dynamic* obj )
@@ -233,7 +233,7 @@ namespace oz
 
     removedObjects.add( obj->index );
     deleteObjects.add( obj );
-    world.remove( obj );
+    orbis.remove( obj );
   }
 
   inline void Synapse::remove( Particle* part )
@@ -241,8 +241,8 @@ namespace oz
     assert( part->index != -1 );
 
     removedParts.add( part->index );
-    world.unposition( part );
-    world.remove( part );
+    orbis.unposition( part );
+    orbis.remove( part );
     delete part;
   }
 

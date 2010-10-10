@@ -32,12 +32,20 @@ namespace oz
         R270 = 3
       };
 
-      struct Door
+      struct Entity
       {
+        enum State
+        {
+          CLOSED,
+          OPENING,
+          OPENED,
+          CLOSING
+        };
+
         Vec3  offset;
-        int   model;
 
         float timer;
+        State state;
       };
 
       static Pool<Structure, 0, 256> pool;
@@ -54,52 +62,47 @@ namespace oz
       Rotation   rot;
       float      life;
 
-      Vector<int> models;
+      DArray<Entity> entities;
 
       explicit Structure( int index, int bsp, const Vec3& p, Rotation rot );
       explicit Structure( int index, int bsp_, InputStream* istream );
 
       static Bounds rotate( const Bounds& in, Rotation rot )
       {
-        Bounds out;
         Vec3 p = ( in.maxs - in.mins ) * 0.5f;
 
         switch( rot ) {
           case Structure::R0: {
-            out.mins = in.mins + p;
-            out.maxs = in.maxs + p;
-            break;
+            return Bounds( p + in.mins,
+                           p + in.maxs );
           }
           case Structure::R90: {
-            out.mins = Vec3( -in.maxs.y + p.x, in.mins.x + p.y, in.mins.z + p.z );
-            out.maxs = Vec3( -in.mins.y + p.x, in.maxs.x + p.y, in.maxs.z + p.z );
-            break;
+            return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
+                           p + Vec3( -in.mins.y, +in.maxs.x, +in.maxs.z ) );
           }
           case Structure::R180: {
-            out.mins = p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z );
-            out.maxs = p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z );
-            break;
+            return Bounds( p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z ),
+                           p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z ) );
           }
           case Structure::R270: {
-            out.mins = Vec3( in.mins.y + p.x, -in.maxs.x + p.y, in.mins.z + p.z );
-            out.maxs = Vec3( in.maxs.y + p.x, -in.mins.x + p.y, in.maxs.z + p.z );
-            break;
+            return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
+                           p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
           }
         }
-        return out;
+        assert( false );
       }
 
       void setRotation( const Bounds& in, Rotation rot )
       {
         switch( rot ) {
           case Structure::R0: {
-            mins = in.mins + p;
-            maxs = in.maxs + p;
+            mins = p + in.mins;
+            maxs = p + in.maxs;
             break;
           }
           case Structure::R90: {
-            mins = Vec3( -in.maxs.y + p.x, in.mins.x + p.y, in.mins.z + p.z );
-            maxs = Vec3( -in.mins.y + p.x, in.maxs.x + p.y, in.maxs.z + p.z );
+            mins = p + Vec3( -in.maxs.y, in.mins.x, in.mins.z );
+            maxs = p + Vec3( -in.mins.y, in.maxs.x, in.maxs.z );
             break;
           }
           case Structure::R180: {
@@ -108,8 +111,8 @@ namespace oz
             break;
           }
           case Structure::R270: {
-            mins = Vec3( in.mins.y + p.x, -in.maxs.x + p.y, in.mins.z + p.z );
-            maxs = Vec3( in.maxs.y + p.x, -in.mins.x + p.y, in.maxs.z + p.z );
+            mins = p + Vec3( in.mins.y, -in.maxs.x, in.mins.z );
+            maxs = p + Vec3( in.maxs.y, -in.mins.x, in.maxs.z );
             break;
           }
         }
@@ -121,14 +124,11 @@ namespace oz
 
         if( damage > 0.0f ) {
           life -= damage;
-
-          if( life <= 0.0f ) {
-            destroy();
-          }
         }
       }
 
       void destroy();
+      void update();
 
       void readFull( InputStream* istream );
       void writeFull( OutputStream* ostream );

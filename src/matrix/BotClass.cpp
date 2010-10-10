@@ -192,7 +192,7 @@ namespace oz
 
     for( int i = 0; i < inventoryItems.length(); ++i ) {
       int index = synapse.addObject( inventoryItems[i], Vec3::zero() );
-      Dynamic* item = static_cast<Dynamic*>( world.objects[index] );
+      Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 

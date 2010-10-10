@@ -338,27 +338,27 @@ namespace oz
     fseek( file, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
     fread( leafBrushes, sizeof( int ), nLeafBrushes, file );
 
-    nModels = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) );
-    models = new BSP::Model[nModels];
+    nEntities = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) );
+    entities = new BSP::Entity[nEntities];
     fseek( file, lumps[QBSP_LUMP_MODELS].offset, SEEK_SET );
 
-    for( int i = 0; i < nModels; ++i ) {
+    for( int i = 0; i < nEntities; ++i ) {
       QBSPModel model;
 
       fread( &model, sizeof( QBSPModel ), 1, file );
 
-      models[i].mins.x = model.bb[0][0] * scale;
-      models[i].mins.y = model.bb[0][1] * scale;
-      models[i].mins.z = model.bb[0][2] * scale;
+      entities[i].mins.x = model.bb[0][0] * scale;
+      entities[i].mins.y = model.bb[0][1] * scale;
+      entities[i].mins.z = model.bb[0][2] * scale;
 
-      models[i].maxs.x = model.bb[1][0] * scale;
-      models[i].maxs.y = model.bb[1][1] * scale;
-      models[i].maxs.z = model.bb[1][2] * scale;
+      entities[i].maxs.x = model.bb[1][0] * scale;
+      entities[i].maxs.y = model.bb[1][1] * scale;
+      entities[i].maxs.z = model.bb[1][2] * scale;
 
-      models[i].firstBrush = model.firstBrush;
-      models[i].nBrushes   = model.nBrushes;
-      models[i].firstFace  = model.firstFace;
-      models[i].nFaces     = model.nFaces;
+      entities[i].firstBrush = model.firstBrush;
+      entities[i].nBrushes   = model.nBrushes;
+      entities[i].firstFace  = model.firstFace;
+      entities[i].nFaces     = model.nFaces;
     }
 
     nBrushSides = int( lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide ) );
@@ -532,15 +532,15 @@ namespace oz
           }
         }
       }
-      // adjust brush references (for models)
-      for( int j = 0; j < nModels; ++j ) {
-        if( i < models[j].firstBrush ) {
-          --models[j].firstBrush;
+      // adjust brush references (for entities)
+      for( int j = 0; j < nEntities; ++j ) {
+        if( i < entities[j].firstBrush ) {
+          --entities[j].firstBrush;
         }
-        else if( i < models[j].firstBrush + models[j].nBrushes ) {
-          assert( models[j].nBrushes > 0 );
+        else if( i < entities[j].firstBrush + entities[j].nBrushes ) {
+          assert( entities[j].nBrushes > 0 );
 
-          --models[j].nBrushes;
+          --entities[j].nBrushes;
         }
       }
       log.printEnd();
@@ -829,7 +829,6 @@ namespace oz
     size += nLeafBrushes * int( sizeof( int ) );
     size += nBrushes     * int( sizeof( Brush ) );
     size += nBrushSides  * int( sizeof( int ) );
-    size += nModels      * int( sizeof( Model ) );
     size += nEntities    * int( sizeof( Entity ) );
     size += nTextures    * int( 64 * sizeof( char ) );
     size += nVertices    * int( sizeof( Vertex ) );
@@ -852,7 +851,6 @@ namespace oz
     os.writeInt( nLeafBrushes );
     os.writeInt( nBrushes );
     os.writeInt( nBrushSides );
-    os.writeInt( nModels );
     os.writeInt( nEntities );
     os.writeInt( nTextures );
     os.writeInt( nVertices );
@@ -881,12 +879,12 @@ namespace oz
       os.writeInt( leaves[i].cluster );
     }
 
-    for( int i = 0; i < nLeafFaces; ++i ) {
-      os.writeInt( leafFaces[i] );
-    }
-
     for( int i = 0; i < nLeafBrushes; ++i ) {
       os.writeInt( leafBrushes[i] );
+    }
+
+    for( int i = 0; i < nLeafFaces; ++i ) {
+      os.writeInt( leafFaces[i] );
     }
 
     for( int i = 0; i < nBrushes; ++i ) {
@@ -899,20 +897,15 @@ namespace oz
       os.writeInt( brushSides[i] );
     }
 
-    for( int i = 0; i < nModels; ++i ) {
-      os.writeVec3( models[i].mins );
-      os.writeVec3( models[i].maxs );
-      os.writeInt( models[i].firstBrush );
-      os.writeInt( models[i].nBrushes );
-      os.writeInt( models[i].firstFace );
-      os.writeInt( models[i].nFaces );
-    }
-
     for( int i = 0; i < nEntities; ++i ) {
-      os.writeVec3( entities[i].startPos );
-      os.writeVec3( entities[i].endPos );
+      os.writeVec3( entities[i].mins );
+      os.writeVec3( entities[i].maxs );
+      os.writeInt( entities[i].firstBrush );
+      os.writeInt( entities[i].nBrushes );
+      os.writeInt( entities[i].firstFace );
+      os.writeInt( entities[i].nFaces );
+      os.writeVec3( entities[i].move );
       os.writeInt( entities[i].flags );
-      os.writeInt( entities[i].model );
       os.writeFloat( entities[i].slideTime );
       os.writeFloat( entities[i].timeout );
     }
@@ -981,11 +974,10 @@ namespace oz
     nPlanes      = is.readInt();
     nNodes       = is.readInt();
     nLeaves      = is.readInt();
-    nLeafFaces   = is.readInt();
     nLeafBrushes = is.readInt();
+    nLeafFaces   = is.readInt();
     nBrushes     = is.readInt();
     nBrushSides  = is.readInt();
-    nModels      = is.readInt();
     nEntities    = is.readInt();
     nTextures    = is.readInt();
     nVertices    = is.readInt();
@@ -998,11 +990,10 @@ namespace oz
     size += nPlanes      * int( sizeof( Plane ) );
     size += nNodes       * int( sizeof( Node ) );
     size += nLeaves      * int( sizeof( Leaf ) );
-    size += nLeafFaces   * int( sizeof( int ) );
     size += nLeafBrushes * int( sizeof( int ) );
+    size += nLeafFaces   * int( sizeof( int ) );
     size += nBrushes     * int( sizeof( Brush ) );
     size += nBrushSides  * int( sizeof( int ) );
-    size += nModels      * int( sizeof( Model ) );
     size += nEntities    * int( sizeof( Entity ) );
     size += nTextures    * int( 64 * sizeof( char ) );
     size += nVertices    * int( sizeof( Vertex ) );
@@ -1039,17 +1030,17 @@ namespace oz
     }
     data += nLeaves * sizeof( Leaf );
 
-    leafFaces = new( data ) int[nLeafFaces];
-    for( int i = 0; i < nLeafFaces; ++i ) {
-      leafFaces[i] = is.readInt();
-    }
-    data += nLeafFaces * sizeof( int );
-
     leafBrushes = new( data ) int[nLeafBrushes];
     for( int i = 0; i < nLeafBrushes; ++i ) {
       leafBrushes[i] = is.readInt();
     }
     data += nLeafBrushes * sizeof( int );
+
+    leafFaces = new( data ) int[nLeafFaces];
+    for( int i = 0; i < nLeafFaces; ++i ) {
+      leafFaces[i] = is.readInt();
+    }
+    data += nLeafFaces * sizeof( int );
 
     brushes = new( data ) Brush[nBrushes];
     for( int i = 0; i < nBrushes; ++i ) {
@@ -1065,23 +1056,16 @@ namespace oz
     }
     data += nBrushSides * sizeof( int );
 
-    models = new( data ) Model[nModels];
-    for( int i = 0; i < nModels; ++i ) {
-      models[i].mins = is.readVec3();
-      models[i].maxs = is.readVec3();
-      models[i].firstBrush = is.readInt();
-      models[i].nBrushes = is.readInt();
-      models[i].firstFace = is.readInt();
-      models[i].nFaces = is.readInt();
-    }
-    data += nModels * sizeof( Model );
-
     entities = new( data ) Entity[nEntities];
     for( int i = 0; i < nEntities; ++i ) {
-      entities[i].startPos = is.readVec3();
-      entities[i].endPos = is.readVec3();
+      entities[i].mins = is.readVec3();
+      entities[i].maxs = is.readVec3();
+      entities[i].firstBrush = is.readInt();
+      entities[i].nBrushes = is.readInt();
+      entities[i].firstFace = is.readInt();
+      entities[i].nFaces = is.readInt();
+      entities[i].move = is.readVec3();
       entities[i].flags = is.readInt();
-      entities[i].model = is.readInt();
       entities[i].slideTime = is.readFloat();
       entities[i].timeout = is.readFloat();
     }
@@ -1141,12 +1125,12 @@ namespace oz
     return true;
   }
 
-  BSP::BSP() : nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafFaces( 0 ), nModels( 0 ),
-      nEntities( 0 ), nBrushes( 0 ), nBrushSides( 0 ), nTextures( 0 ), nVertices( 0 ),
-      nIndices( 0 ), nFaces( 0 ), nLightmaps( 0 ),
-      planes( null ), nodes( null ), leaves( null ), leafFaces( null ), models( null ),
-      entities( null ), brushes( null ), brushSides( null ), textures( null ), vertices( null ),
-      indices( null ), faces( null ), lightmaps( null )
+  BSP::BSP() : nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafFaces( 0 ), nEntities( 0 ),
+      nBrushes( 0 ), nBrushSides( 0 ), nTextures( 0 ), nVertices( 0 ), nIndices( 0 ), nFaces( 0 ),
+      nLightmaps( 0 ),
+      planes( null ), nodes( null ), leaves( null ), leafFaces( null ), entities( null ),
+      brushes( null ), brushSides( null ), textures( null ), vertices( null ), indices( null ),
+      faces( null ), lightmaps( null )
   {}
 
   BSP::~BSP()
@@ -1208,9 +1192,8 @@ namespace oz
       aDestruct( planes, nPlanes );
       aDestruct( nodes, nNodes );
       aDestruct( leaves, nLeaves );
-      aDestruct( leafFaces, nLeafFaces );
       aDestruct( leafBrushes, nLeafBrushes );
-      aDestruct( models, nModels );
+      aDestruct( leafFaces, nLeafFaces );
       aDestruct( entities, nEntities );
       aDestruct( brushes, nBrushes );
       aDestruct( brushSides, nBrushSides );
@@ -1225,9 +1208,8 @@ namespace oz
       nPlanes      = 0;
       nNodes       = 0;
       nLeaves      = 0;
-      nLeafFaces   = 0;
       nLeafBrushes = 0;
-      nModels      = 0;
+      nLeafFaces   = 0;
       nEntities    = 0;
       nBrushes     = 0;
       nBrushSides  = 0;
@@ -1240,9 +1222,8 @@ namespace oz
       planes      = null;
       nodes       = null;
       leaves      = null;
-      leafFaces   = null;
       leafBrushes = null;
-      models      = null;
+      leafFaces   = null;
       entities    = null;
       brushes     = null;
       brushSides  = null;
@@ -1270,20 +1251,15 @@ namespace oz
       nLeaves = 0;
       leaves = null;
     }
-    if( leafFaces != null ) {
-      delete[] leafFaces;
-      nLeafFaces = 0;
-      leafFaces = null;
-    }
     if( leafBrushes != null ) {
       delete[] leafBrushes;
       nLeafBrushes = 0;
       leafBrushes = null;
     }
-    if( models != null ) {
-      delete[] models;
-      nModels = 0;
-      models = null;
+    if( leafFaces != null ) {
+      delete[] leafFaces;
+      nLeafFaces = 0;
+      leafFaces = null;
     }
     if( entities != null ) {
       delete[] entities;

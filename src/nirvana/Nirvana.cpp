@@ -35,14 +35,14 @@ namespace nirvana
       Mind* mind = i;
       ++i;
 
-      if( world.objects[mind->botIndex] == null ) {
+      if( orbis.objects[mind->botIndex] == null ) {
         minds.remove( mind );
         delete mind;
       }
     }
     // add minds for new bots
     foreach( i, synapse.addedObjects.citer() ) {
-      const Object* obj = world.objects[*i];
+      const Object* obj = orbis.objects[*i];
 
       if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
         const Bot* bot = static_cast<const Bot*>( obj );
@@ -63,7 +63,7 @@ namespace nirvana
   {
     int count = 0;
     foreach( mind, minds.iter() ) {
-      const Bot* bot = static_cast<const Bot*>( world.objects[mind->botIndex] );
+      const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->botIndex] );
       assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
 
       if( !( bot->state & Bot::PLAYER_BIT ) &&
