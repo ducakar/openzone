@@ -16,7 +16,7 @@
 namespace oz
 {
 
-  Orbis world;
+  Orbis orbis;
 
   const float Cell::SIZE     = float( Cell::SIZEI );
   const float Cell::INV_SIZE = 1.0f / float( Cell::SIZEI );

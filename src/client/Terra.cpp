@@ -46,9 +46,9 @@ namespace client
 
   void Terra::load()
   {
-    detailTexId = context.loadTexture( world.terra.detailTexture );
-    mapTexId    = context.loadTexture( world.terra.mapTexture );
-    waterTexId  = context.loadTexture( world.terra.waterTexture );
+    detailTexId = context.loadTexture( orbis.terra.detailTexture );
+    mapTexId    = context.loadTexture( orbis.terra.mapTexture );
+    waterTexId  = context.loadTexture( orbis.terra.waterTexture );
 
     int nVertices = oz::Terra::MAX * oz::Terra::MAX;
     int nIndices = oz::Terra::MAX * ( oz::Terra::MAX - 1 ) * 2;
@@ -60,22 +60,22 @@ namespace client
       for( int y = 0; y < oz::Terra::MAX; ++y ) {
         VertexData& vertex = arrayData[x * oz::Terra::MAX + y];
 
-        vertex.position = world.terra.vertices[x][y];
+        vertex.position = orbis.terra.vertices[x][y];
 
         vertex.normal.setZero();
         if( x < oz::Terra::QUADS && y < oz::Terra::QUADS ) {
-          vertex.normal += world.terra.quads[x][y].tri[0].normal;
-          vertex.normal += world.terra.quads[x][y].tri[1].normal;
+          vertex.normal += orbis.terra.quads[x][y].tri[0].normal;
+          vertex.normal += orbis.terra.quads[x][y].tri[1].normal;
         }
         if( x > 0 && y < oz::Terra::QUADS ) {
-          vertex.normal += world.terra.quads[x - 1][y].tri[0].normal;
+          vertex.normal += orbis.terra.quads[x - 1][y].tri[0].normal;
         }
         if( x > 0 && y > 0 ) {
-          vertex.normal += world.terra.quads[x - 1][y - 1].tri[0].normal;
-          vertex.normal += world.terra.quads[x - 1][y - 1].tri[1].normal;
+          vertex.normal += orbis.terra.quads[x - 1][y - 1].tri[0].normal;
+          vertex.normal += orbis.terra.quads[x - 1][y - 1].tri[1].normal;
         }
         if( x < oz::Terra::QUADS && y > 0 ) {
-          vertex.normal += world.terra.quads[x][y - 1].tri[1].normal;
+          vertex.normal += orbis.terra.quads[x][y - 1].tri[1].normal;
         }
         vertex.normal.norm();
 
@@ -112,7 +112,7 @@ namespace client
 
   void Terra::draw() const
   {
-    Span span = world.terra.getInters( camera.p.x - radius, camera.p.y - radius,
+    Span span = orbis.terra.getInters( camera.p.x - radius, camera.p.y - radius,
                                        camera.p.x + radius, camera.p.y + radius );
     ++span.maxX;
     ++span.maxY;
@@ -170,7 +170,7 @@ namespace client
 
   void Terra::drawWater() const
   {
-    Span span = world.terra.getInters( camera.p.x - radius, camera.p.y - radius,
+    Span span = orbis.terra.getInters( camera.p.x - radius, camera.p.y - radius,
                                        camera.p.x + radius, camera.p.y + radius );
     ++span.maxX;
     ++span.maxY;
@@ -182,8 +182,8 @@ namespace client
 
     glBindTexture( GL_TEXTURE_2D, waterTexId );
 
-    const Vec3& v0 = world.terra.vertices[span.minX][span.minY];
-    const Vec3& v1 = world.terra.vertices[span.maxX][span.maxY];
+    const Vec3& v0 = orbis.terra.vertices[span.minX][span.minY];
+    const Vec3& v1 = orbis.terra.vertices[span.maxX][span.maxY];
 
     if( camera.p.z >= 0 ) {
       glNormal3f( 0.0f, 0.0f, 1.0f );

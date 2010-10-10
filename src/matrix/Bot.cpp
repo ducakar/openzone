@@ -59,7 +59,7 @@ namespace oz
 
     // clear invalid references from inventory
     for( int i = 0; i < items.length(); ) {
-      if( world.objects[items[i]] == null ) {
+      if( orbis.objects[items[i]] == null ) {
         items.remove( i );
       }
       else {
@@ -85,7 +85,7 @@ namespace oz
         // and particles to fly around), that's why we remove the object
         if( life <= 0.0f ) {
           foreach( i, items.citer() ) {
-            synapse.removeCut( static_cast<Dynamic*>( world.objects[*i] ) );
+            synapse.removeCut( static_cast<Dynamic*>( orbis.objects[*i] ) );
           }
           life = EPSILON;
           synapse.remove( this );
@@ -107,7 +107,7 @@ namespace oz
     hvsc[5] = hvsc[3] * hvsc[1];
 
     if( parent != -1 ) {
-      Vehicle* vehicle = static_cast<Vehicle*>( world.objects[parent] );
+      Vehicle* vehicle = static_cast<Vehicle*>( orbis.objects[parent] );
 
       assert( vehicle->flags & VEHICLE_BIT );
 
@@ -220,7 +220,7 @@ namespace oz
       anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_WALK : ANIM_RUN;
     }
     else if( ( actions & ACTION_ATTACK ) && weaponItem != -1 && grabObj == -1 ) {
-      Weapon* weapon = static_cast<Weapon*>( world.objects[weaponItem] );
+      Weapon* weapon = static_cast<Weapon*>( orbis.objects[weaponItem] );
 
       if( weapon != null && weapon->shotTime == 0.0f ) {
         anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
@@ -412,7 +412,7 @@ namespace oz
 
     Dynamic* obj = null;
     if( grabObj != -1 ) {
-      obj = static_cast<Dynamic*>( world.objects[grabObj] );
+      obj = static_cast<Dynamic*>( orbis.objects[grabObj] );
 
       if( obj == null || obj->cell == null || weaponItem != -1 ) {
         grabObj = -1;
@@ -528,7 +528,7 @@ namespace oz
     }
     else if( actions & ~oldActions & ACTION_INV_USE ) {
       if( taggedItem != -1 && taggedItem < items.length() && items[taggedItem] != -1 ) {
-        Dynamic* item = static_cast<Dynamic*>( world.objects[items[taggedItem]] );
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
 
         assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -541,7 +541,7 @@ namespace oz
     }
     else if( actions & ~oldActions & ACTION_INV_GRAB ) {
       if( grabObj == -1 && taggedItem != -1 && taggedItem < items.length() ) {
-        Dynamic* item = static_cast<Dynamic*>( world.objects[items[taggedItem]] );
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
 
         assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -575,7 +575,7 @@ namespace oz
      * WEAPON
      */
     if( weaponItem != -1 ) {
-      Dynamic* weapon = static_cast<Dynamic*>( world.objects[weaponItem] );
+      Dynamic* weapon = static_cast<Dynamic*>( orbis.objects[weaponItem] );
 
       assert( ( weapon->flags & DYNAMIC_BIT ) && ( weapon->flags & ITEM_BIT ) &&
               ( weapon->flags & WEAPON_BIT ) );

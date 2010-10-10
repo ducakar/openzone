@@ -28,7 +28,7 @@ int main( int, char** )
 
   oz::log.init( "", false, "  " );
   matrix.init();
-  world.load();
+  orbis.load();
 
   for( int i = 0; i < 1000000; ++i ) {
     float x = -Orbis::DIM + Math::frand() * 2.0f * Orbis::DIM;
@@ -38,7 +38,7 @@ int main( int, char** )
     synapse.addObject( "Tree2", Vec3( x, y, z ) );
   }
 
-  world.unload();
+  orbis.unload();
   matrix.free();
 
   SDL_Quit();

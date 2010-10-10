@@ -97,7 +97,7 @@ namespace oz
     }
     while( true );
 
-    world.reposition( part );
+    orbis.reposition( part );
   }
 
   //***********************************
@@ -166,7 +166,7 @@ namespace oz
       }
       // on another object
       if( obj->lower != -1 ) {
-        Dynamic* sObj = static_cast<Dynamic*>( world.objects[obj->lower] );
+        Dynamic* sObj = static_cast<Dynamic*>( orbis.objects[obj->lower] );
 
         if( obj->momentum.x != 0.0f || obj->momentum.y != 0.0f ||
             !( sObj->flags & Object::DISABLED_BIT ) )
@@ -434,7 +434,7 @@ namespace oz
       obj->splash( obj->velocity.z );
     }
 
-    world.reposition( obj );
+    orbis.reposition( obj );
   }
 
   //***********************************
@@ -451,7 +451,7 @@ namespace oz
     obj->flags &= ~( Object::HIT_BIT | Object::FRICTING_BIT | Object::UPPER_BIT );
 
     if( obj->lower != -1 ) {
-      Object* sObj = world.objects[obj->lower];
+      Object* sObj = orbis.objects[obj->lower];
 
       // clear the lower object if it doesn't exist any more
       if( sObj == null || sObj->cell == null ) {

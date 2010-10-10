@@ -39,10 +39,10 @@ namespace nirvana
 
   void RandomMind::update()
   {
-    assert( world.objects[botIndex] != null );
-    assert( world.objects[botIndex]->flags & Object::BOT_BIT );
+    assert( orbis.objects[botIndex] != null );
+    assert( orbis.objects[botIndex]->flags & Object::BOT_BIT );
 
-    Bot& bot = *static_cast<Bot*>( world.objects[botIndex] );
+    Bot& bot = *static_cast<Bot*>( orbis.objects[botIndex] );
 
     bot.actions = 0;
 

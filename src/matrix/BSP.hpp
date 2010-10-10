@@ -49,28 +49,25 @@ namespace oz
         int cluster;
       };
 
-      struct Model : Bounds
+      struct Entity : Bounds
       {
-        int  firstFace;
-        int  nFaces;
+        static const int TYPE_MASK     = 0x0000000f;
+        static const int IGNORING_TYPE = 0x00000000;
+        static const int BLOCKING_TYPE = 0x00000001;
+        static const int CRUSHING_TYPE = 0x00000002;
+        static const int PUSHING_TYPE  = 0x00000004;
+        static const int AUTOMATIC_BIT = 0x00000010;
 
-        int  firstBrush;
-        int  nBrushes;
-      };
+        int   firstBrush;
+        int   nBrushes;
 
-      struct Entity
-      {
-        static const int AUTOMATIC_BIT = 0x00000001;
-        static const int PUSHING_BIT   = 0x00000002;
-        static const int CRUSHING_BIT  = 0x00000004;
+        int   firstFace;
+        int   nFaces;
 
-        Vec3  startPos;
-        Vec3  endPos;
-
+        Vec3  move;
         int   flags;
 
-        int   model;
-
+        float margin;
         float slideTime;
         float timeout;
       };
@@ -134,9 +131,8 @@ namespace oz
       int        nPlanes;
       int        nNodes;
       int        nLeaves;
-      int        nLeafFaces;
       int        nLeafBrushes;
-      int        nModels;
+      int        nLeafFaces;
       int        nEntities;
       int        nBrushes;
       int        nBrushSides;
@@ -151,7 +147,6 @@ namespace oz
       Leaf*      leaves;
       int*       leafBrushes;
       int*       leafFaces;
-      Model*     models;
       Entity*    entities;
       Brush*     brushes;
       int*       brushSides;

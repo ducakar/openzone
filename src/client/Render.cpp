@@ -53,10 +53,10 @@ namespace client
 
   void Render::scheduleCell( int cellX, int cellY )
   {
-    Cell& cell = world.cells[cellX][cellY];
+    Cell& cell = orbis.cells[cellX][cellY];
 
     for( int i = 0; i < cell.structs.length(); ++i ) {
-      Structure* str = world.structs[ cell.structs[i] ];
+      Structure* str = orbis.structs[ cell.structs[i] ];
 
       if( !drawnStructures.get( cell.structs[i] ) && frustum.isVisible( *str ) ) {
         drawnStructures.set( cell.structs[i] );
@@ -127,8 +127,8 @@ namespace client
     water.update();
 
     // drawnStructures
-    if( drawnStructures.length() < world.structs.length() ) {
-      drawnStructures.setSize( world.structs.length() );
+    if( drawnStructures.length() < orbis.structs.length() ) {
+      drawnStructures.setSize( orbis.structs.length() );
     }
     drawnStructures.clearAll();
 
@@ -432,7 +432,7 @@ namespace client
       uint   key   = i.key();
       ++i;
 
-      if( world.objects[key] == null ) {
+      if( orbis.objects[key] == null ) {
         delete model;
         models.exclude( key );
       }
