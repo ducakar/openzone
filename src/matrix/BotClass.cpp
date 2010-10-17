@@ -191,13 +191,13 @@ namespace oz
     obj->name     = names.genName();
 
     for( int i = 0; i < inventoryItems.length(); ++i ) {
-      int index = synapse.addObject( inventoryItems[i], Vec3::zero() );
+      int index = synapse.addObject( inventoryItems[i], Vec3::ZERO );
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
       if( weaponItem == i ) {
-        obj->weaponItem = item->index;
+        obj->iWeaponItem = item->index;
       }
       obj->take( item );
     }

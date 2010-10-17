@@ -20,12 +20,12 @@ namespace nirvana
   {
     public:
 
-      static Mind* create( int botIndex );
+      static Mind* create( int iBot );
       static Mind* read( InputStream* istream );
 
       static Pool<LuaMind> pool;
 
-      explicit LuaMind( int botIndex );
+      explicit LuaMind( int iBot );
       virtual ~LuaMind();
 
       virtual const char* type() const;

@@ -61,7 +61,7 @@ namespace oz
     Vec3 up      = rotMat * Vec3( 0.0f, 0.0f, 1.0f );
 
     // controls
-    Vec3 move = Vec3::zero();
+    Vec3 move = Vec3::ZERO;
 
     if( actions & Bot::ACTION_FORWARD ) {
       move += at;
@@ -81,7 +81,7 @@ namespace oz
     if( actions & Bot::ACTION_CROUCH ) {
       move -= up;
     }
-    if( !move.isZero() ) {
+    if( move != Vec3::ZERO ) {
       momentum += move * clazz->moveMomentum;
     }
 
@@ -122,7 +122,7 @@ namespace oz
     }
   }
 
-  Vehicle::Vehicle() : rot( Quat::id() ), actions( 0 ), oldActions( 0 )
+  Vehicle::Vehicle() : rot( Quat::ID ), actions( 0 ), oldActions( 0 )
   {
     aSet( crew, -1, CREW_MAX );
   }

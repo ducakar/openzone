@@ -205,7 +205,7 @@ namespace oz
   {
     assert( str->index != -1 );
 
-    collider.touchOverlaps( str->toAABB(), 4.0f * EPSILON );
+    collider.touchOverlaps( str->toAABB(), 2.0f * EPSILON );
 
     removedStructs.add( str->index );
     orbis.unposition( str );
@@ -218,7 +218,7 @@ namespace oz
     assert( obj->index != -1 && obj->cell != null );
 
     if( !( obj->flags & Object::DYNAMIC_BIT ) ) {
-      collider.touchOverlaps( *obj, 4.0f * EPSILON );
+      collider.touchOverlaps( *obj, 2.0f * EPSILON );
     }
 
     removedObjects.add( obj->index );

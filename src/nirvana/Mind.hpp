@@ -29,7 +29,7 @@ namespace nirvana
 
       static const int FORCE_UPDATE_BIT = 0x00000001;
 
-      typedef Mind* ( * CreateFunc )( int bot );
+      typedef Mind* ( * CreateFunc )( int iBot );
       typedef Mind* ( * ReadFunc )( InputStream* istream );
 
       static Pool<Mind> pool;
@@ -38,12 +38,12 @@ namespace nirvana
       Mind* next[1];
 
       int flags;
-      int botIndex;
+      int iBot;
 
-      static Mind* create( int botIndex );
+      static Mind* create( int iBot );
       static Mind* read( InputStream* istream );
 
-      explicit Mind( int botIndex_ ) : flags( 0 ), botIndex( botIndex_ ) {}
+      explicit Mind( int iBot_ ) : flags( 0 ), iBot( iBot_ ) {}
       virtual ~Mind();
 
       virtual const char* type() const;

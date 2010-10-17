@@ -192,12 +192,12 @@ namespace client
     for( int i = 0; i < structures.length(); ++i ) {
       const Structure* str = structures[i];
 
-      if( bsps[str->bsp] == null ) {
-        bsps[str->bsp] = new BSP( str->bsp );
+      if( bsps[str->iBsp] == null ) {
+        bsps[str->iBsp] = new BSP( str->iBsp );
       }
 
-      int waterFlags = bsps[str->bsp]->fullDraw( str );
-      bsps[str->bsp]->isUpdated = true;
+      int waterFlags = bsps[str->iBsp]->fullDraw( str );
+      bsps[str->iBsp]->isUpdated = true;
 
       if( waterFlags & BSP::IN_WATER_BRUSH ) {
         isUnderWater = true;
@@ -291,7 +291,7 @@ namespace client
     for( int i = 0; i < waterStructures.length(); ++i ) {
       const Structure* str = waterStructures[i];
 
-      bsps[str->bsp]->fullDrawWater( str );
+      bsps[str->iBsp]->fullDrawWater( str );
     }
 
     BSP::endRender();

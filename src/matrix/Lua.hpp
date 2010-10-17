@@ -38,8 +38,8 @@ namespace oz
       Particle*          part;
       List<Object::Event>::Iterator event;
 
-      int                strIndex;
-      int                objIndex;
+      int                iStruct;
+      int                iObject;
 
       float              damage;
       float              hitMomentum;

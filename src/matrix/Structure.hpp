@@ -10,9 +10,12 @@
 #pragma once
 
 #include "matrix/common.hpp"
+#include "matrix/BSP.hpp"
 
 namespace oz
 {
+
+  class Object;
 
   class Structure : public Bounds
   {
@@ -32,23 +35,43 @@ namespace oz
         R270 = 3
       };
 
-      struct Entity
+      class Entity
       {
-        enum State
-        {
-          CLOSED,
-          OPENING,
-          OPENED,
-          CLOSING
-        };
+        friend class Structure;
 
-        Vec3  offset;
+        public:
 
-        float timer;
-        State state;
+          enum State
+          {
+            CLOSED,
+            OPENING,
+            OPENING_BLOCKED,
+            OPENED,
+            CLOSING,
+            CLOSING_BLOCKED
+          };
+
+          static Vector<Object*> overlapingObjs;
+
+          Vec3  offset;
+          State state;
+
+          float ratio;
+          float time;
+
+        private:
+
+          void updateIgnoring( const BSP::Model* model );
+          void updateBlocking( const Structure* str, int iEntity, const BSP::Model* model );
+          void updatePushing( const Structure* str, int iEntity, const BSP::Model* model );
+          void updateCrushing( const Structure* str, int iEntity, const BSP::Model* model );
+
       };
 
       static Pool<Structure, 0, 256> pool;
+
+      static const Mat33 rotations[];
+      static const Mat33 invRotations[];
 
     private:
 
@@ -57,76 +80,55 @@ namespace oz
     public:
 
       int        index;
-      int        bsp;
+      int        iBsp;
       Vec3       p;
       Rotation   rot;
       float      life;
 
-      DArray<Entity> entities;
+      Entity*    entities;
+      int        nEntities;
 
       explicit Structure( int index, int bsp, const Vec3& p, Rotation rot );
-      explicit Structure( int index, int bsp_, InputStream* istream );
+      explicit Structure( int index, int bsp, InputStream* istream );
 
-      static Bounds rotate( const Bounds& in, Rotation rot )
-      {
-        Vec3 p = ( in.maxs - in.mins ) * 0.5f;
+      ~Structure();
 
-        switch( rot ) {
-          case Structure::R0: {
-            return Bounds( p + in.mins,
-                           p + in.maxs );
-          }
-          case Structure::R90: {
-            return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
-                           p + Vec3( -in.mins.y, +in.maxs.x, +in.maxs.z ) );
-          }
-          case Structure::R180: {
-            return Bounds( p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z ),
-                           p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z ) );
-          }
-          case Structure::R270: {
-            return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
-                           p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
-          }
-        }
-        assert( false );
-      }
+      /**
+       * Rotate vector from absolute coordinate system to structure coordinate system. Do not
+       * translate (because of normals).
+       * @param v
+       * @return
+       */
+      Vec3 toStructCS( const Vec3& v ) const;
 
-      void setRotation( const Bounds& in, Rotation rot )
-      {
-        switch( rot ) {
-          case Structure::R0: {
-            mins = p + in.mins;
-            maxs = p + in.maxs;
-            break;
-          }
-          case Structure::R90: {
-            mins = p + Vec3( -in.maxs.y, in.mins.x, in.mins.z );
-            maxs = p + Vec3( -in.mins.y, in.maxs.x, in.maxs.z );
-            break;
-          }
-          case Structure::R180: {
-            mins = p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z );
-            maxs = p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z );
-            break;
-          }
-          case Structure::R270: {
-            mins = p + Vec3( in.mins.y, -in.maxs.x, in.mins.z );
-            maxs = p + Vec3( in.maxs.y, -in.mins.x, in.maxs.z );
-            break;
-          }
-        }
-      }
+      /**
+       * Rotate vector from structure coordinate system to absolute coordinate system. Do not
+       * translate (because of normals).
+       * @param v
+       * @return
+       */
+      Vec3 toAbsoluteCS( const Vec3& v ) const;
 
-      void damage( float damage )
-      {
-        damage -= DAMAGE_THRESHOLD;
+      /**
+       * Rotate Bounds from absolute coordinate system to structure coordinate system. Do not
+       * translate (for consistency with vector version).
+       * @param v
+       * @return
+       */
+      Bounds toStructCS( const Bounds& bb ) const;
 
-        if( damage > 0.0f ) {
-          life -= damage;
-        }
-      }
+      /**
+       * Rotate Bounds from structure coordinate system to absolute coordinate system. Do not
+       * translate (for consistency with vector version).
+       * @param v
+       * @return
+       */
+      Bounds toAbsoluteCS( const Bounds& bb ) const;
 
+      static Bounds rotate( const Bounds& in, Rotation rot );
+      void setRotation( const Bounds& in, Rotation rot );
+
+      void damage( float damage );
       void destroy();
       void update();
 
@@ -136,5 +138,70 @@ namespace oz
     OZ_STATIC_POOL_ALLOC( pool )
 
   };
+
+  inline Vec3 Structure::toStructCS( const Vec3& v ) const
+  {
+    return invRotations[ int( rot ) ] * v;
+  }
+
+  inline Vec3 Structure::toAbsoluteCS( const Vec3& v ) const
+  {
+    return rotations[ int( rot ) ] * v;
+  }
+
+  inline Bounds Structure::toStructCS( const Bounds& bb ) const
+  {
+    switch( rot ) {
+      case Structure::R0: {
+        return Bounds( Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
+                       Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
+      }
+      case Structure::R90: {
+        return Bounds( Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
+                       Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+      }
+      case Structure::R180: {
+        return Bounds( Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
+                       Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+      }
+      case Structure::R270: {
+        return Bounds( Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
+                       Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+      }
+    }
+    assert( false );
+  }
+
+  inline Bounds Structure::toAbsoluteCS( const Bounds& bb ) const
+  {
+    switch( rot ) {
+      case Structure::R0: {
+        return Bounds( Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
+                       Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
+      }
+      case Structure::R90: {
+        return Bounds( Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
+                       Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+      }
+      case Structure::R180: {
+        return Bounds( Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
+                       Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+      }
+      case Structure::R270: {
+        return Bounds( Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
+                       Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+      }
+    }
+    assert( false );
+  }
+
+  inline void Structure::damage( float damage )
+  {
+    damage -= DAMAGE_THRESHOLD;
+
+    if( damage > 0.0f ) {
+      life -= damage;
+    }
+  }
 
 }

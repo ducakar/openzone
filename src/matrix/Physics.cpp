@@ -112,7 +112,7 @@ namespace oz
       // in air
       if( obj->flags & Object::HOVER_BIT ) {
         if( obj->momentum.sqL() <= AIR_STICK_VELOCITY ) {
-          obj->momentum.setZero();
+          obj->momentum = Vec3::ZERO;
         }
         else {
           obj->momentum *= 1.0f - AIR_FRICTION;
@@ -151,7 +151,7 @@ namespace oz
       // on ladder
       else if( obj->flags & Object::ON_LADDER_BIT ) {
         if( obj->momentum.sqL() <= STICK_VELOCITY ) {
-          obj->momentum.setZero();
+          obj->momentum = Vec3::ZERO;
         }
         else {
           obj->momentum *= 1.0f - LADDER_FRICTION;
@@ -188,7 +188,7 @@ namespace oz
             obj->momentum.z += G_VELOCITY;
 
             if( ( sObj->flags & Object::DISABLED_BIT ) && obj->momentum.z < 0.0f ) {
-              obj->momentum.setZero();
+              obj->momentum = Vec3::ZERO;
               return false;
             }
           }
@@ -388,13 +388,13 @@ namespace oz
           Vec3 out   = collider.hit.normal + lastNormals[0];
           Vec3 cross = collider.hit.normal ^ lastNormals[0];
 
-          if( !cross.isZero() ) {
-            cross.norm();
+          if( cross != Vec3::ZERO ) {
+            cross = ~cross;
             move = ( move * cross ) * cross;
             move += out * EPSILON;
           }
-          if( !out.isZero() ) {
-            out.norm();
+          if( out != Vec3::ZERO ) {
+            out = ~out;
             obj->momentum -= ( obj->momentum * out ) * out;
           }
         }
@@ -409,13 +409,13 @@ namespace oz
             Vec3 out   = collider.hit.normal + lastNormals[1];
             Vec3 cross = collider.hit.normal ^ lastNormals[1];
 
-            if( !cross.isZero() ) {
-              cross.norm();
+            if( cross != Vec3::ZERO ) {
+              cross = ~cross;
               move = ( move * cross ) * cross;
               move += out * EPSILON;
             }
-            if( !out.isZero() ) {
-              out.norm();
+            if( out != Vec3::ZERO ) {
+              out = ~out;
               obj->momentum -= ( obj->momentum * out ) * out;
             }
           }
@@ -440,6 +440,19 @@ namespace oz
   //***********************************
   //*             PUBLIC              *
   //***********************************
+
+  void Physics::updatePart( Particle* part_ )
+  {
+    part = part_;
+
+    assert( part->cell != null );
+
+    part->velocity.z += G_VELOCITY;
+    part->lifeTime -= Timer::TICK_TIME;
+
+    part->rot += part->rotVelocity * Timer::TICK_TIME;
+    handlePartMove();
+  }
 
   void Physics::updateObj( Dynamic* obj_ )
   {
@@ -472,10 +485,10 @@ namespace oz
         obj->velocity = ( obj->p - oldPos ) / Timer::TICK_TIME;
       }
       else {
-        assert( obj->momentum.isZero() );
+        assert( obj->momentum == Vec3::ZERO );
 
         obj->flags |= Object::DISABLED_BIT;
-        obj->velocity.setZero();
+        obj->velocity = Vec3::ZERO;
       }
     }
   }

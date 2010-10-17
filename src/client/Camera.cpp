@@ -44,22 +44,22 @@ namespace client
 
   void Camera::init()
   {
-    width              = config.get( "screen.width",         1024 );
-    height             = config.get( "screen.height",        768  );
-    centreX            = width / 2;
-    centreY            = height / 2;
-    angle              = config.getSet( "camera.angle",      80.0f );
-    aspect             = config.getSet( "camera.aspect",     0.0f );
-    aspect             = aspect != 0.0f ? aspect : float( width ) / float( height );
-    minDist            = config.getSet( "camera.minDist",    0.1f );
-    maxDist            = config.getSet( "camera.maxDist",    400.0f );
-    mouseXSens         = config.getSet( "camera.mouseXSens", 0.20f );
-    mouseYSens         = config.getSet( "camera.mouseYSens", 0.20f );
-    keyXSens           = config.getSet( "camera.keysXSens",  100.0f );
-    keyYSens           = config.getSet( "camera.keysYSens",  100.0f );
-    smoothCoef         = config.getSet( "camera.smoothCoef", 0.50f );
-    smoothCoef_1       = 1.0f - smoothCoef;
-    isExternal         = true;
+    width        = config.get( "screen.width",         1024 );
+    height       = config.get( "screen.height",        768  );
+    centreX      = width / 2;
+    centreY      = height / 2;
+    angle        = config.getSet( "camera.angle",      80.0f );
+    aspect       = config.getSet( "camera.aspect",     0.0f );
+    aspect       = aspect != 0.0f ? aspect : float( width ) / float( height );
+    minDist      = config.getSet( "camera.minDist",    0.1f );
+    maxDist      = config.getSet( "camera.maxDist",    400.0f );
+    mouseXSens   = config.getSet( "camera.mouseXSens", 0.20f );
+    mouseYSens   = config.getSet( "camera.mouseYSens", 0.20f );
+    keyXSens     = config.getSet( "camera.keysXSens",  100.0f );
+    keyYSens     = config.getSet( "camera.keysYSens",  100.0f );
+    smoothCoef   = config.getSet( "camera.smoothCoef", 0.50f );
+    smoothCoef_1 = 1.0f - smoothCoef;
+    isExternal   = true;
 
     String sDefaultState = config.getSet( "camera.defaultState", "FREECAM" );
     if( sDefaultState.equals( "FREECAM" ) ) {
@@ -74,31 +74,31 @@ namespace client
       defaultState = FREECAM;
     }
 
-    p.setZero();
-    oldP.setZero();
-    newP.setZero();
-    h                  = 0.0f;
-    v                  = 0.0f;
-    w                  = 0.0f;
+    p            = Vec3::ZERO;
+    oldP         = Vec3::ZERO;
+    newP         = Vec3::ZERO;
+    h            = 0.0f;
+    v            = 0.0f;
+    w            = 0.0f;
 
-    rot.setId();
-    relRot.setId();
+    rot          = Quat::ID;
+    relRot       = Quat::ID;
 
-    rotMat             = rot.rotMat44();
-    rotTMat            = ~rotTMat;
+    rotMat       = rot.rotMat44();
+    rotTMat      = ~rotTMat;
 
-    right              = rotMat.x;
-    at                 = rotTMat.y;
-    up                 = rotTMat.z;
+    right        = rotMat.x;
+    at           = rotTMat.y;
+    up           = rotTMat.z;
 
-    bot                = -1;
+    bot          = -1;
 
     freeCamProxy.init();
     strategicProxy.init();
     botProxy.init();
 
-    state              = NONE;
-    newState           = defaultState;
+    state        = NONE;
+    newState     = defaultState;
   }
 
   void Camera::update()

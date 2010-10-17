@@ -115,12 +115,12 @@ namespace oz
       float       stamina;
       float       stepRate;
 
-      int         grabObj;
+      int         iGrabObj;
       float       grabHandle;
 
       Vector<int> items;
-      int         taggedItem;
-      int         weaponItem;
+      int         iTaggedItem;
+      int         iWeaponItem;
 
       String      name;
 
@@ -130,7 +130,7 @@ namespace oz
       explicit Bot();
 
       void take( Dynamic* item );
-      void enter( int vehicleIndex );
+      void enter( int iVehicle );
       void exit();
       void kill();
 

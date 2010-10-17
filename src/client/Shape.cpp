@@ -33,25 +33,25 @@ namespace client
 
     glBegin( GL_TRIANGLES );
       // fore
-      glNormal3fv( ( ( v2 - v1 ) ^ ( v0 - v1 ) ).norm() );
+      glNormal3fv( ~( ( v2 - v1 ) ^ ( v0 - v1 ) ) );
       glVertex3fv( v0 );
       glVertex3fv( v1 );
       glVertex3fv( v2 );
 
       // left
-      glNormal3fv( ( ( v1 - v3 ) ^ ( v0 - v3 ) ).norm() );
+      glNormal3fv( ~( ( v1 - v3 ) ^ ( v0 - v3 ) ) );
       glVertex3fv( v0 );
       glVertex3fv( v3 );
       glVertex3fv( v1 );
 
       // right
-      glNormal3fv( ( ( v3 - v2 ) ^ ( v0 - v2 ) ).norm() );
+      glNormal3fv( ~( ( v3 - v2 ) ^ ( v0 - v2 ) ) );
       glVertex3fv( v0 );
       glVertex3fv( v2 );
       glVertex3fv( v3 );
 
       // bottom
-      glNormal3fv( ( ( v3 - v1 ) ^ ( v2 - v1 ) ).norm() );
+      glNormal3fv( ~( ( v3 - v1 ) ^ ( v2 - v1 ) ) );
       glVertex3fv( v1 );
       glVertex3fv( v3 );
       glVertex3fv( v2 );
@@ -87,28 +87,28 @@ namespace client
       glVertex3fv( v7 );
 
       // fore
-      glNormal3fv( ( ( v1 - v0 ) ^ ( v4 - v0 ) ).norm() );
+      glNormal3fv( ~( ( v1 - v0 ) ^ ( v4 - v0 ) ) );
       glVertex3fv( v0 );
       glVertex3fv( v1 );
       glVertex3fv( v5 );
       glVertex3fv( v4 );
 
       // left
-      glNormal3fv( ( ( v0 - v3 ) ^ ( v7 - v3 ) ).norm() );
+      glNormal3fv( ~( ( v0 - v3 ) ^ ( v7 - v3 ) ) );
       glVertex3fv( v3 );
       glVertex3fv( v0 );
       glVertex3fv( v4 );
       glVertex3fv( v7 );
 
       // back
-      glNormal3fv( ( ( v3 - v2 ) ^ ( v6 - v2 ) ).norm() );
+      glNormal3fv( ~( ( v3 - v2 ) ^ ( v6 - v2 ) ) );
       glVertex3fv( v2 );
       glVertex3fv( v3 );
       glVertex3fv( v7 );
       glVertex3fv( v6 );
 
       // right
-      glNormal3fv( ( ( v2 - v1 ) ^ ( v5 - v1 ) ).norm() );
+      glNormal3fv( ~( ( v2 - v1 ) ^ ( v5 - v1 ) ) );
       glVertex3fv( v1 );
       glVertex3fv( v2 );
       glVertex3fv( v6 );

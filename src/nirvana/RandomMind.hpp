@@ -22,10 +22,10 @@ namespace nirvana
 
       static Pool<RandomMind> pool;
 
-      static Mind* create( int botIndex );
+      static Mind* create( int iBot );
       static Mind* read( InputStream* istream );
 
-      explicit RandomMind( int botIndex ) : Mind( botIndex ) {}
+      explicit RandomMind( int iBot ) : Mind( iBot ) {}
 
       virtual const char* type() const;
       virtual void update();

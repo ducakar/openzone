@@ -377,7 +377,7 @@ namespace client
 
     translate( translation );
 
-    if( !jumpTranslate.isZero() && animList[ANIM_JUMP].lastFrame < nFrames ) {
+    if( jumpTranslate != Vec3::ZERO && animList[ANIM_JUMP].lastFrame < nFrames ) {
       translate( ANIM_JUMP, jumpTranslate );
     }
 

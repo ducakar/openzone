@@ -61,8 +61,8 @@ namespace client
         VertexData& vertex = arrayData[x * oz::Terra::MAX + y];
 
         vertex.position = orbis.terra.vertices[x][y];
+        vertex.normal   = Vec3::ZERO;
 
-        vertex.normal.setZero();
         if( x < oz::Terra::QUADS && y < oz::Terra::QUADS ) {
           vertex.normal += orbis.terra.quads[x][y].tri[0].normal;
           vertex.normal += orbis.terra.quads[x][y].tri[1].normal;
@@ -77,7 +77,7 @@ namespace client
         if( x < oz::Terra::QUADS && y > 0 ) {
           vertex.normal += orbis.terra.quads[x][y - 1].tri[1].normal;
         }
-        vertex.normal.norm();
+        vertex.normal = ~vertex.normal;
 
         vertex.detailTexCoord.u = float( x & 1 ) * DETAIL_SCALE;
         vertex.detailTexCoord.v = float( y & 1 ) * DETAIL_SCALE;

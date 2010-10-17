@@ -58,19 +58,7 @@ namespace oz
 
     public:
 
-      void updatePart( Particle* part_ )
-      {
-        part = part_;
-
-        assert( part->cell != null );
-
-        part->velocity.z += G_VELOCITY;
-        part->lifeTime -= Timer::TICK_TIME;
-
-        part->rot += part->rotVelocity * Timer::TICK_TIME;
-        handlePartMove();
-      }
-
+      void updatePart( Particle* part );
       void updateObj( Dynamic* obj );
 
   };

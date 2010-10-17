@@ -15,6 +15,10 @@ namespace oz
   class Mat44
   {
     public:
+
+      static const Mat44 ZERO;
+      static const Mat44 ID;
+
       // first column (i base vector)
       Quat x;
       // second column (j base vector)
@@ -88,123 +92,12 @@ namespace oz
         return ( &x.x )[i];
       }
 
-      static Mat44 zero()
-      {
-        return Mat44( 0.0f, 0.0f, 0.0f, 0.0f,
-                      0.0f, 0.0f, 0.0f, 0.0f,
-                      0.0f, 0.0f, 0.0f, 0.0f,
-                      0.0f, 0.0f, 0.0f, 0.0f );
-      }
-
-      bool isZero() const
-      {
-        return
-            x.x == 0.0f &&
-            x.y == 0.0f &&
-            x.z == 0.0f &&
-            x.w == 0.0f &&
-            y.x == 0.0f &&
-            y.y == 0.0f &&
-            y.z == 0.0f &&
-            y.w == 0.0f &&
-            z.x == 0.0f &&
-            z.y == 0.0f &&
-            z.z == 0.0f &&
-            z.w == 0.0f &&
-            w.x == 0.0f &&
-            w.y == 0.0f &&
-            w.z == 0.0f &&
-            w.w == 0.0f;
-      }
-
-      Mat44& setZero()
-      {
-        x.x = 0.0f;
-        x.y = 0.0f;
-        x.z = 0.0f;
-        x.w = 0.0f;
-        y.x = 0.0f;
-        y.y = 0.0f;
-        y.z = 0.0f;
-        y.w = 0.0f;
-        z.x = 0.0f;
-        z.y = 0.0f;
-        z.z = 0.0f;
-        z.w = 0.0f;
-        w.x = 0.0f;
-        w.y = 0.0f;
-        w.z = 0.0f;
-        w.w = 0.0f;
-        return *this;
-      }
-
-      static Mat44 id()
-      {
-        return Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
-                      0.0f, 1.0f, 0.0f, 0.0f,
-                      0.0f, 0.0f, 1.0f, 0.0f,
-                      0.0f, 0.0f, 0.0f, 1.0f );
-      }
-
-      bool isId() const
-      {
-        return
-            x.x == 1.0f &&
-            x.y == 0.0f &&
-            x.z == 0.0f &&
-            x.w == 0.0f &&
-            y.x == 0.0f &&
-            y.y == 1.0f &&
-            y.z == 0.0f &&
-            y.w == 0.0f &&
-            z.x == 0.0f &&
-            z.y == 0.0f &&
-            z.z == 1.0f &&
-            z.w == 0.0f &&
-            w.x == 0.0f &&
-            w.y == 0.0f &&
-            w.z == 0.0f &&
-            w.w == 1.0f;
-      }
-
-      Mat44& setId()
-      {
-        x.x = 1.0f;
-        x.y = 0.0f;
-        x.z = 0.0f;
-        x.w = 0.0f;
-        y.x = 0.0f;
-        y.y = 1.0f;
-        y.z = 0.0f;
-        y.w = 0.0f;
-        z.x = 0.0f;
-        z.y = 0.0f;
-        z.z = 1.0f;
-        z.w = 0.0f;
-        w.x = 0.0f;
-        w.y = 0.0f;
-        w.z = 0.0f;
-        w.w = 1.0f;
-        return *this;
-      }
-
       Mat44 operator ~ () const
       {
         return Mat44( x.x, y.x, z.x, w.x,
                       x.y, y.y, z.y, w.y,
                       x.z, y.z, z.z, w.z,
                       x.w, y.w, z.w, w.w );
-      }
-
-      Mat44& trans()
-      {
-        swap( x.y, y.x );
-        swap( x.z, z.x );
-        swap( x.w, w.x );
-        swap( y.z, z.y );
-        swap( y.w, w.y );
-        swap( z.w, w.z );
-        return *this;
       }
 
       float det() const
@@ -237,34 +130,22 @@ namespace oz
 
       Mat44 operator - () const
       {
-        return Mat44( -x.x, -x.y, -x.z, -x.w,
-                      -y.x, -y.y, -y.z, -y.w,
-                      -z.x, -z.y, -z.z, -z.w,
-                      -w.x, -w.y, -w.z, -w.w );
+        return Mat44( -x, -y, -z, -w );
       }
 
       Mat44 operator + ( const Mat44& a ) const
       {
-        return Mat44( x.x + a.x.x, x.y + a.x.y, x.z + a.x.z, x.w + a.x.w,
-                      y.x + a.y.x, y.y + a.y.y, y.z + a.y.z, y.w + a.y.w,
-                      z.x + a.z.x, z.y + a.z.y, z.z + a.z.z, z.w + a.z.w,
-                      w.x + a.w.x, w.y + a.w.y, w.z + a.w.z, w.w + a.w.w );
+        return Mat44( x + a.x, y + a.y, z + a.z, w + a.w );
       }
 
       Mat44 operator - ( const Mat44& a ) const
       {
-        return Mat44( x.x - a.x.x, x.y - a.x.y, x.z - a.x.z, x.w - a.x.w,
-                      y.x - a.y.x, y.y - a.y.y, y.z - a.y.z, y.w - a.y.w,
-                      z.x - a.z.x, z.y - a.z.y, z.z - a.z.z, z.w - a.z.w,
-                      w.x - a.w.x, w.y - a.w.y, w.z - a.w.z, w.w - a.w.w );
+        return Mat44( x - a.x, y - a.y, z - a.z, w - a.w );
       }
 
       Mat44 operator * ( float k ) const
       {
-        return Mat44( x.x * k, x.y * k, x.z * k, x.w * k,
-                      y.x * k, y.y * k, y.z * k, y.w * k,
-                      z.x * k, z.y * k, z.z * k, z.w * k,
-                      w.x * k, w.y * k, w.z * k, w.w * k );
+        return Mat44( x * k, y * k, z * k, w * k );
       }
 
       Mat44 operator / ( float k ) const
@@ -272,72 +153,33 @@ namespace oz
         assert( k != 0.0f );
 
         k = 1.0f / k;
-        return Mat44( x.x * k, x.y * k, x.z * k, x.w * k,
-                      y.x * k, y.y * k, y.z * k, y.w * k,
-                      z.x * k, z.y * k, z.z * k, z.w * k,
-                      w.x * k, w.y * k, w.z * k, w.w * k );
+        return Mat44( x * k, y * k, z * k, w * k );
       }
 
       Mat44& operator += ( const Mat44& a )
       {
-        x.x += a.x.x;
-        x.y += a.x.y;
-        x.z += a.x.z;
-        x.w += a.x.w;
-        y.x += a.y.x;
-        y.y += a.y.y;
-        y.z += a.y.z;
-        y.w += a.y.w;
-        z.x += a.z.x;
-        z.y += a.z.y;
-        z.z += a.z.z;
-        z.w += a.z.w;
-        w.x += a.w.x;
-        w.y += a.w.y;
-        w.z += a.w.z;
-        w.w += a.w.w;
+        x += a.x;
+        y += a.y;
+        z += a.z;
+        w += a.w;
         return *this;
       }
 
       Mat44& operator -= ( const Mat44& a )
       {
-        x.x -= a.x.x;
-        x.y -= a.x.y;
-        x.z -= a.x.z;
-        x.w -= a.x.w;
-        y.x -= a.y.x;
-        y.y -= a.y.y;
-        y.z -= a.y.z;
-        y.w -= a.y.w;
-        z.x -= a.z.x;
-        z.y -= a.z.y;
-        z.z -= a.z.z;
-        z.w -= a.z.w;
-        w.x -= a.w.x;
-        w.y -= a.w.y;
-        w.z -= a.w.z;
-        w.w -= a.w.w;
+        x -= a.x;
+        y -= a.y;
+        z -= a.z;
+        w -= a.w;
         return *this;
       }
 
       Mat44& operator *= ( float k )
       {
-        x.x *= k;
-        x.y *= k;
-        x.z *= k;
-        x.w *= k;
-        y.x *= k;
-        y.y *= k;
-        y.z *= k;
-        y.w *= k;
-        z.x *= k;
-        z.y *= k;
-        z.z *= k;
-        z.w *= k;
-        w.x *= k;
-        w.y *= k;
-        w.z *= k;
-        w.w *= k;
+        x *= k;
+        y *= k;
+        z *= k;
+        w *= k;
         return *this;
       }
 
@@ -346,22 +188,10 @@ namespace oz
         assert( k != 0.0f );
 
         k = 1.0f / k;
-        x.x *= k;
-        x.y *= k;
-        x.z *= k;
-        x.w *= k;
-        y.x *= k;
-        y.y *= k;
-        y.z *= k;
-        y.w *= k;
-        z.x *= k;
-        z.y *= k;
-        z.z *= k;
-        z.w *= k;
-        w.x *= k;
-        w.y *= k;
-        w.z *= k;
-        w.w *= k;
+        x *= k;
+        y *= k;
+        z *= k;
+        w *= k;
         return *this;
       }
 
@@ -404,10 +234,7 @@ namespace oz
 
       friend Mat44 operator * ( float k, const Mat44& a )
       {
-        return Mat44( a.x.x * k, a.x.y * k, a.x.z * k, a.x.w * k,
-                      a.y.x * k, a.y.y * k, a.y.z * k, a.y.w * k,
-                      a.z.x * k, a.z.y * k, a.z.z * k, a.z.w * k,
-                      a.w.x * k, a.w.y * k, a.w.z * k, a.w.w * k );
+        return Mat44( a.x * k, a.y * k, a.z * k, a.w * k );
       }
 
       // transformation matrices

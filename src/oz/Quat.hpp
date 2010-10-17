@@ -19,6 +19,9 @@ namespace oz
   {
     public:
 
+      static const Quat ZERO;
+      static const Quat ID;
+
       float w;
 
       explicit Quat()
@@ -76,55 +79,9 @@ namespace oz
         return ( &x )[i];
       }
 
-      static Quat zero()
-      {
-        return Quat( 0.0f, 0.0f, 0.0f, 0.0f );
-      }
-
-      bool isZero() const
-      {
-        return x == 0.0f && y == 0.0f && z == 0.0f && w == 0.0f;
-      }
-
-      Quat& setZero()
-      {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-        w = 0.0f;
-        return *this;
-      }
-
-      static Quat id()
-      {
-        return Quat( 0.0f, 0.0f, 0.0f, 1.0f );
-      }
-
-      bool isId() const
-      {
-        return x == 0.0f && y == 0.0f && z == 0.0f && w == 1.0f;
-      }
-
-      Quat& setId()
-      {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-        w = 1.0f;
-        return *this;
-      }
-
       Quat operator * () const
       {
         return Quat( -x, -y, -z, -w );
-      }
-
-      Quat& conj()
-      {
-        x = -x;
-        y = -y;
-        z = -z;
-        return *this;
       }
 
       float operator ! () const
@@ -156,30 +113,6 @@ namespace oz
 
         float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
         return Quat( x * k, y * k, z * k, w * k );
-      }
-
-      Quat& norm()
-      {
-        assert( x*x + y*y + z*z + w*w > 0.0f );
-
-        float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
-        x *= k;
-        z *= k;
-        z *= k;
-        w *= k;
-        return *this;
-      }
-
-      Quat& fastNorm()
-      {
-        assert( x*x + y*y + z*z + w*w > 0.0f );
-
-        float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
-        x *= k;
-        z *= k;
-        z *= k;
-        w *= k;
-        return *this;
       }
 
       Quat operator + () const

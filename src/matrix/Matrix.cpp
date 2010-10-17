@@ -138,9 +138,9 @@ namespace oz
     synapse.addObject( "BigCrate", Vec3( 50, -55, 38 ) );
     synapse.addObject( "BigCrate", Vec3( 50, -55, 40 ) );
 
-//    synapse.addStruct( "castle", Vec3( 57, -33, 43 ), Structure::R0 );
-//    synapse.addStruct( "pool", Vec3( 50, -60, 37 ), Structure::R0 );
-//    synapse.addStruct( "test", Vec3( 60, -60, 38 ), Structure::R0 );
+    synapse.addStruct( "castle", Vec3( 57, -33, 43 ), Structure::R0 );
+    synapse.addStruct( "pool", Vec3( 50, -60, 37 ), Structure::R0 );
+    synapse.addStruct( "test", Vec3( 60, -60, 38 ), Structure::R0 );
     synapse.addStruct( "door", Vec3( 60, -60, 40 ), Structure::R270 );
 
     synapse.addObject( "SmallCrate", Vec3( 52, -61, 40 ) );

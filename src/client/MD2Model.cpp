@@ -92,17 +92,17 @@ namespace client
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
 
-      if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
-        render.drawModel( orbis.objects[bot->weaponItem], this );
+      if( bot->iWeaponItem != -1 && orbis.objects[bot->iWeaponItem] != null ) {
+        render.drawModel( orbis.objects[bot->iWeaponItem], this );
       }
     }
-    else if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
+    else if( bot->iWeaponItem != -1 && orbis.objects[bot->iWeaponItem] != null ) {
       glTranslatef( 0.0f, 0.0f,  bot->camZ );
       glRotatef( bot->v, 1.0f, 0.0f, 0.0f );
       glTranslatef( 0.0f, 0.0f, -bot->camZ );
 
       md2->advance( &anim, timer.frameTime );
-      render.drawModel( orbis.objects[bot->weaponItem], this );
+      render.drawModel( orbis.objects[bot->iWeaponItem], this );
     }
   }
 
