@@ -16,6 +16,8 @@ namespace oz
   {
     public:
 
+      static const Vec3 ZERO;
+
       float x;
       float y;
       float z;
@@ -71,22 +73,9 @@ namespace oz
             Math::abs( z - a.z ) <= epsilon;
       }
 
-      static Vec3 zero()
+      Vec3 abs() const
       {
-        return Vec3( 0.0f, 0.0f, 0.0f );
-      }
-
-      bool isZero() const
-      {
-        return x == 0.0f && y == 0.0f && z == 0.0f;
-      }
-
-      const Vec3& setZero()
-      {
-        x = 0.0f;
-        y = 0.0f;
-        z = 0.0f;
-        return *this;
+        return Vec3( Math::abs( x ), Math::abs( y ), Math::abs( z ) );
       }
 
       float operator ! () const
@@ -123,28 +112,6 @@ namespace oz
 
         float k = Math::fastInvSqrt( x*x + y*y + z*z );
         return Vec3( x * k, y * k, z * k );
-      }
-
-      Vec3& norm()
-      {
-        assert( x*x + y*y + z*z > 0.0f );
-
-        float k = 1.0f / Math::sqrt( x*x + y*y + z*z );
-        x *= k;
-        y *= k;
-        z *= k;
-        return *this;
-      }
-
-      Vec3& fastNorm()
-      {
-        assert( x*x + y*y + z*z > 0.0f );
-
-        float k = Math::fastInvSqrt( x*x + y*y + z*z );
-        x *= k;
-        y *= k;
-        z *= k;
-        return *this;
       }
 
       bool isColinear( const Vec3& v, float epsilon ) const

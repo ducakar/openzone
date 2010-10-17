@@ -31,7 +31,7 @@ namespace ui
       static const int   FOOTER_SIZE = 40;
 
       uint useTexId;
-      int  taggedIndex;
+      int  iTagged;
       int  row;
 
     protected:

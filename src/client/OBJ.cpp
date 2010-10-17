@@ -92,7 +92,7 @@ namespace client
     Vector<uint> normalIndices;
     Vector<uint> texCoordIndices;
 
-    int vertIndex, normalIndex, texCoordIndex;
+    int iVertex, iNormal, iTexCoord;
 
     pos = skipSpaces( pos );
     end = readWord( pos );
@@ -120,10 +120,10 @@ namespace client
     // vert
     if( firstSlash == -1 ) {
       do {
-        if( sscanf( pos, "%d", &vertIndex ) != 1 ) {
+        if( sscanf( pos, "%d", &iVertex ) != 1 ) {
           return false;
         }
-        vertIndices.add( vertIndex - 1 );
+        vertIndices.add( iVertex - 1 );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -133,11 +133,11 @@ namespace client
     // vert/tex
     else if( lastSlash == -1 ) {
       do {
-        if( sscanf( pos, "%d/%d", &vertIndex, &texCoordIndex ) != 2 ) {
+        if( sscanf( pos, "%d/%d", &iVertex, &iTexCoord ) != 2 ) {
           return false;
         }
-        vertIndices.add( vertIndex - 1 );
-        texCoordIndices.add( texCoordIndex - 1 );
+        vertIndices.add( iVertex - 1 );
+        texCoordIndices.add( iTexCoord - 1 );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -147,11 +147,11 @@ namespace client
     // vert//norm
     else if( firstSlash + 1 == lastSlash ) {
       do {
-        if( sscanf( pos, "%d//%d", &vertIndex, &normalIndex ) != 2 ) {
+        if( sscanf( pos, "%d//%d", &iVertex, &iNormal ) != 2 ) {
           return false;
         }
-        vertIndices.add( vertIndex - 1 );
-        normalIndices.add( normalIndex - 1 );
+        vertIndices.add( iVertex - 1 );
+        normalIndices.add( iNormal - 1 );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -161,12 +161,12 @@ namespace client
     // vert/tex/norm
     else {
       do {
-        if( sscanf( pos, "%d/%d/%d", &vertIndex, &texCoordIndex, &normalIndex ) != 3 ) {
+        if( sscanf( pos, "%d/%d/%d", &iVertex, &iTexCoord, &iNormal ) != 3 ) {
           return false;
         }
-        vertIndices.add( vertIndex - 1 );
-        normalIndices.add( normalIndex - 1 );
-        texCoordIndices.add( texCoordIndex - 1 );
+        vertIndices.add( iVertex - 1 );
+        normalIndices.add( iNormal - 1 );
+        texCoordIndices.add( iTexCoord - 1 );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -245,7 +245,7 @@ namespace client
             *end = '\0';
 
             mtlName = pos;
-            material.ambient  = Vec3::zero();
+            material.ambient  = Vec3::ZERO;
             material.diffuse  = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
             material.specular = Vec3( 0.5f, 0.5f, 0.5f );
             material.texId    = 0;

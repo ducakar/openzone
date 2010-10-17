@@ -18,18 +18,22 @@ add_library( oz STATIC
   Log.cpp
   Log.hpp
   Map.hpp
+  Mat33.cpp
   Mat33.hpp
+  Mat44.cpp
   Mat44.hpp
   Math.cpp
   Math.hpp
   Pair.hpp
   Pool.hpp
+  Quat.cpp
   Quat.hpp
   SBitset.hpp
   SVector.hpp
   Sparse.hpp
   String.cpp
   String.hpp
+  Vec3.cpp
   Vec3.hpp
   Vector.hpp
   arrays.hpp

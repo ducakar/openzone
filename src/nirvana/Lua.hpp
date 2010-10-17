@@ -35,8 +35,8 @@ namespace nirvana
       Particle*          part;
       List<Object::Event>::CIterator event;
 
-      int                strIndex;
-      int                objIndex;
+      int                iStruct;
+      int                iObject;
 
       Vector<Object*>    objects;
       Vector<Structure*> structs;

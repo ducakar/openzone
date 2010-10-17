@@ -48,10 +48,10 @@ namespace oz
         const Vec3& c = vertices[x + 1][y + 1];
         const Vec3& d = vertices[x    ][y + 1];
 
-        quads[x][y].tri[0].normal   = ( ( c - b ) ^ ( a - b ) ).norm();
+        quads[x][y].tri[0].normal   = ~( ( c - b ) ^ ( a - b ) );
         quads[x][y].tri[0].distance = quads[x][y].tri[0].normal * a;
 
-        quads[x][y].tri[1].normal   = ( ( a - d ) ^ ( c - d ) ).norm();
+        quads[x][y].tri[1].normal   = ~( ( a - d ) ^ ( c - d ) );
         quads[x][y].tri[1].distance = quads[x][y].tri[1].normal * a;
       }
     }

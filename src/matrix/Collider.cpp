@@ -26,22 +26,6 @@ namespace oz
     Vec3(  0.0f,  0.0f, -1.0f )
   };
 
-  const Mat33 Collider::rotations[] =
-  {
-    Mat33::id(),
-    Mat33::rotZ(  Math::PI_2 ),
-    Mat33::rotZ(  Math::PI ),
-    Mat33::rotZ( -Math::PI_2 )
-  };
-
-  const Mat33 Collider::invRotations[] =
-  {
-    Mat33::id(),
-    Mat33::rotZ( -Math::PI_2 ),
-    Mat33::rotZ(  Math::PI ),
-    Mat33::rotZ(  Math::PI_2 )
-  };
-
   Collider::Collider() : mask( Object::SOLID_BIT )
   {}
 
@@ -50,62 +34,6 @@ namespace oz
     bool isTested = visitedBrushes.get( index );
     visitedBrushes.set( index );
     return isTested;
-  }
-
-  inline Vec3 Collider::toStructCS( const Vec3& v ) const
-  {
-    return invRotations[ int( str->rot ) ] * v;
-  }
-
-  inline Vec3 Collider::toAbsoluteCS( const Vec3& v ) const
-  {
-    return rotations[ int( str->rot ) ] * v;
-  }
-
-  inline Bounds Collider::toStructCS( const Bounds& bb ) const
-  {
-    switch( str->rot ) {
-      case Structure::R0: {
-        return Bounds( Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
-                       Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
-      }
-      case Structure::R90: {
-        return Bounds( Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
-                       Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
-      }
-      case Structure::R180: {
-        return Bounds( Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
-                       Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
-      }
-      case Structure::R270: {
-        return Bounds( Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
-                       Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
-      }
-    }
-    assert( false );
-  }
-
-  inline Bounds Collider::toAbsoluteCS( const Bounds& bb ) const
-  {
-    switch( str->rot ) {
-      case Structure::R0: {
-        return Bounds( Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
-                       Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
-      }
-      case Structure::R90: {
-        return Bounds( Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
-                       Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
-      }
-      case Structure::R180: {
-        return Bounds( Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
-                       Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
-      }
-      case Structure::R270: {
-        return Bounds( Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
-                       Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
-      }
-    }
-    assert( false );
   }
 
   //***********************************
@@ -120,12 +48,8 @@ namespace oz
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset =
-          Math::abs( plane.normal.x * aabb.dim.x ) +
-          Math::abs( plane.normal.y * aabb.dim.y ) +
-          Math::abs( plane.normal.z * aabb.dim.z );
-
-      float dist = startPos * plane.normal - plane.distance - offset;
+      float offset = plane.normal.abs() * aabb.dim;
+      float dist   = startPos * plane.normal - plane.distance - offset;
 
       result &= dist <= EPSILON;
     }
@@ -133,10 +57,10 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush overlapping
-  bool Collider::overlapsAABBNode( int nodeIndex )
+  bool Collider::overlapsAABBNode( int iNode )
   {
-    if( nodeIndex < 0 ) {
-      const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
+    if( iNode < 0 ) {
+      const BSP::Leaf& leaf = bsp->leaves[~iNode];
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
         int index = bsp->leafBrushes[leaf.firstBrush + i];
@@ -151,15 +75,10 @@ namespace oz
       return false;
     }
     else {
-      const BSP::Node&  node  = bsp->nodes[nodeIndex];
+      const BSP::Node&  node  = bsp->nodes[iNode];
       const BSP::Plane& plane = bsp->planes[node.plane];
 
-      float offset =
-          Math::abs( plane.normal.x * aabb.dim.x ) +
-          Math::abs( plane.normal.y * aabb.dim.y ) +
-          Math::abs( plane.normal.z * aabb.dim.z ) +
-          2.0f * EPSILON;
-
+      float offset = plane.normal.abs() * aabb.dim + 2.0f * EPSILON;
       float dist = startPos * plane.normal - plane.distance;
 
       if( dist > offset ) {
@@ -176,21 +95,20 @@ namespace oz
 
   bool Collider::overlapsAABBEntities()
   {
-    if( bsp->nEntities == 1 ) {
+    if( bsp->nModels == 1 ) {
       return false;
     }
 
-    Vec3 originalStartPos = startPos;
-    Bounds localTrace = toStructCS( trace - str->p );
+    Vec3   originalStartPos = startPos;
+    Bounds localTrace       = str->toStructCS( trace - str->p );
 
-    for( int i = 1; i < bsp->nEntities; ++i ) {
-      const BSP::Entity& entity = bsp->entities[i];
+    for( int i = 1; i < bsp->nModels; ++i ) {
+      const BSP::Model& model = bsp->models[i];
       const Vec3& offset = str->entities[i].offset;
 
-      //if( entity.overlaps( localTrace - offset ) )
-      {
-        for( int j = 0; j < entity.nBrushes; ++j ) {
-          int index = entity.firstBrush + j;
+      if( model.overlaps( localTrace - offset ) ) {
+        for( int j = 0; j < model.nBrushes; ++j ) {
+          int index = model.firstBrush + j;
           const BSP::Brush& brush = bsp->brushes[index];
 
           assert( !visitedBrushes.get( index ) );
@@ -225,13 +143,13 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( strIndex, cell.structs.citer() ) {
-          str = orbis.structs[*strIndex];
+        foreach( iStr, cell.structs.citer() ) {
+          str = orbis.structs[*iStr];
 
           if( str != oldStr ) {
-            bsp = orbis.bsps[str->bsp];
+            bsp = orbis.bsps[str->iBsp];
 
-            startPos = toStructCS( aabb.p - str->p );
+            startPos = str->toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
@@ -285,13 +203,13 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( strIndex, cell.structs.citer() ) {
-          str = orbis.structs[*strIndex];
+        foreach( iStr, cell.structs.citer() ) {
+          str = orbis.structs[*iStr];
 
           if( str != oldStr ) {
-            bsp = orbis.bsps[str->bsp];
+            bsp = orbis.bsps[str->iBsp];
 
-            startPos = toStructCS( aabb.p - str->p );
+            startPos = str->toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
@@ -304,6 +222,38 @@ namespace oz
         for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
             return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  //***********************************
+  //*        STATIC ENTITY CD         *
+  //***********************************
+
+  // check for BSP Model-AABB overlapping in the world
+  bool Collider::overlapsEntityOrbisOO()
+  {
+    for( int x = span.minX; x <= span.maxX; ++x ) {
+      for( int y = span.minY; y <= span.maxY; ++y ) {
+        const Cell& cell = orbis.cells[x][y];
+
+        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+          if( sObj->overlaps( trace ) ) {
+            startPos = str->toStructCS( sObj->p - str->p ) - entity->offset;
+            aabb.dim = sObj->dim;
+
+            for( int i = 0; i < model->nBrushes; ++i ) {
+              const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
+
+              if( ( brush.material & Material::STRUCT_BIT ) && ( sObj->flags & mask ) &&
+                  overlapsAABBBrush( &brush ) )
+              {
+                return true;
+              }
+            }
           }
         }
       }
@@ -333,6 +283,7 @@ namespace oz
           hit.normal   = normal;
           hit.obj      = null;
           hit.str      = null;
+          hit.iEntity  = -1;
           hit.material = Material::VOID_BIT;
         }
       }
@@ -375,6 +326,7 @@ namespace oz
       hit.normal   = *tmpNormal;
       hit.obj      = sObj;
       hit.str      = null;
+      hit.iEntity  = -1;
       hit.material = Material::OBJECT_BIT;
     }
   }
@@ -389,11 +341,7 @@ namespace oz
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset =
-          Math::abs( plane.normal.x * aabb.dim.x ) +
-          Math::abs( plane.normal.y * aabb.dim.y ) +
-          Math::abs( plane.normal.z * aabb.dim.z );
-
+      float offset    = plane.normal.abs() * aabb.dim;
       float startDist = startPos * plane.normal - plane.distance - offset;
       float endDist   = endPos   * plane.normal - plane.distance - offset;
 
@@ -417,9 +365,10 @@ namespace oz
     if( minRatio != -1.0f && minRatio < maxRatio ) {
       if( minRatio < hit.ratio ) {
         hit.ratio    = Math::max( 0.0f, minRatio );
-        hit.normal   = toAbsoluteCS( *tmpNormal );
+        hit.normal   = str->toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
         hit.str      = str;
+        hit.iEntity  = iEntity;
         hit.material = brush->material;
       }
     }
@@ -462,12 +411,8 @@ namespace oz
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset =
-          Math::abs( plane.normal.x * aabb.dim.x ) +
-          Math::abs( plane.normal.y * aabb.dim.y ) +
-          Math::abs( plane.normal.z * aabb.dim.z );
-
-      float dist = startPos * plane.normal - plane.distance - offset;
+      float offset = plane.normal.abs() * aabb.dim;
+      float dist   = startPos * plane.normal - plane.distance - offset;
 
       if( dist > 0.0f ) {
         return;
@@ -477,10 +422,10 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush collisions
-  void Collider::trimAABBNode( int nodeIndex )
+  void Collider::trimAABBNode( int iNode )
   {
-    if( nodeIndex < 0 ) {
-      const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
+    if( iNode < 0 ) {
+      const BSP::Leaf& leaf = bsp->leaves[~iNode];
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
         int index = bsp->leafBrushes[leaf.firstBrush + i];
@@ -502,15 +447,10 @@ namespace oz
       }
     }
     else {
-      const BSP::Node&  node  = bsp->nodes[nodeIndex];
+      const BSP::Node&  node  = bsp->nodes[iNode];
       const BSP::Plane& plane = bsp->planes[node.plane];
 
-      float offset =
-          Math::abs( plane.normal.x * aabb.dim.x ) +
-          Math::abs( plane.normal.y * aabb.dim.y ) +
-          Math::abs( plane.normal.z * aabb.dim.z ) +
-          2.0f * EPSILON;
-
+      float offset    = plane.normal.abs() * aabb.dim + 2.0f * EPSILON;
       float startDist = startPos * plane.normal - plane.distance;
       float endDist   = endPos   * plane.normal - plane.distance;
 
@@ -529,21 +469,23 @@ namespace oz
 
   void Collider::trimAABBEntities()
   {
-    if( bsp->nEntities == 1 ) {
+    if( bsp->nModels == 1 ) {
       return;
     }
 
-    Vec3 originalStartPos = startPos;
-    Vec3 originalEndPos   = endPos;
-    Bounds localTrace = toStructCS( trace - str->p );
+    Vec3   originalStartPos = startPos;
+    Vec3   originalEndPos   = endPos;
+    Bounds localTrace       = str->toStructCS( trace - str->p );
 
-    for( int i = 1; i < bsp->nEntities; ++i ) {
-      const BSP::Entity& entity = bsp->entities[i];
+    for( int i = 1; i < bsp->nModels; ++i ) {
+      const BSP::Model& model = bsp->models[i];
       const Vec3& offset = str->entities[i].offset;
 
-      if( localTrace.overlaps( entity + offset ) ) {
-        for( int j = 0; j < entity.nBrushes; ++j ) {
-          int index = entity.firstBrush + j;
+      iEntity = i;
+
+      if( localTrace.overlaps( model + offset ) ) {
+        for( int j = 0; j < model.nBrushes; ++j ) {
+          int index = model.firstBrush + j;
           const BSP::Brush& brush = bsp->brushes[index];
 
           assert( !visitBrush( index ) );
@@ -584,6 +526,7 @@ namespace oz
         hit.normal   = quad.tri[0].normal;
         hit.obj      = null;
         hit.str      = null;
+        hit.iEntity  = -1;
         hit.material = Material::TERRAIN_BIT;
 
         return false;
@@ -608,6 +551,7 @@ namespace oz
         hit.normal   = quad.tri[1].normal;
         hit.obj      = null;
         hit.str      = null;
+        hit.iEntity  = -1;
         hit.material = Material::TERRAIN_BIT;
 
         return false;
@@ -664,18 +608,19 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( strIndex, cell.structs.citer() ) {
-          str = orbis.structs[*strIndex];
+        foreach( iStr, cell.structs.citer() ) {
+          str = orbis.structs[*iStr];
 
           // to prevent some of duplicated structure tests
           if( str != oldStr ) {
-            bsp = orbis.bsps[str->bsp];
+            bsp = orbis.bsps[str->iBsp];
 
             if( str->overlaps( trace ) ) {
               visitedBrushes.clearAll();
 
-              startPos = toStructCS( originalStartPos - str->p );
-              endPos   = toStructCS( originalEndPos - str->p );
+              startPos = str->toStructCS( originalStartPos - str->p );
+              endPos   = str->toStructCS( originalEndPos - str->p );
+              iEntity  = 0;
 
               trimAABBNode( 0 );
               trimAABBEntities();
@@ -720,13 +665,13 @@ namespace oz
         const Cell& cell = orbis.cells[x][y];
 
         if( structs != null ) {
-          foreach( strIndex, cell.structs.citer() ) {
-            Structure* str = orbis.structs[*strIndex];
+          foreach( iStr, cell.structs.citer() ) {
+            Structure* str = orbis.structs[*iStr];
 
             if( !structs->contains( str ) ) {
-              bsp = orbis.bsps[str->bsp];
+              bsp = orbis.bsps[str->iBsp];
 
-              startPos = toStructCS( aabb.p - str->p );
+              startPos = str->toStructCS( aabb.p - str->p );
 
               if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
                 structs->add( str );
@@ -771,7 +716,7 @@ namespace oz
         const Cell& cell = orbis.cells[x][y];
 
         for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
-          if( ( sObj->flags & Object::DYNAMIC_BIT ) && trace.overlaps( *sObj ) ) {
+          if( ( sObj->flags & Object::DYNAMIC_BIT ) && sObj->overlaps( trace ) ) {
             // clearing these two bits should do
             sObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
           }
@@ -786,25 +731,197 @@ namespace oz
 
     Vec3 dimMargin = Vec3( margin, margin, margin );
 
+    trace.mins -= dimMargin;
+    trace.maxs += dimMargin;
+
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
         for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
-          aabb.p = sObj->p;
-          aabb.dim = sObj->dim + dimMargin;
+          if( sObj->overlaps( trace ) ) {
+            startPos = str->toStructCS( sObj->p - str->p ) - entity->offset;
+            aabb.dim = sObj->dim + dimMargin;
 
-          for( int i = 0; i < entity->nBrushes; ++i ) {
-            int index = entity->firstBrush + i;
-            const BSP::Brush& brush = bsp->brushes[index];
+            for( int i = 0; i < model->nBrushes; ++i ) {
+              const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
 
-            if( overlapsAABBBrush( &brush ) ) {
-              objects->add( sObj );
+              if( overlapsAABBBrush( &brush ) ) {
+                objects->add( sObj );
+              }
             }
           }
         }
       }
     }
+  }
+
+  bool Collider::overlaps( const Vec3& point, const Object* exclObj_ )
+  {
+    aabb = AABB( point, Vec3::ZERO );
+    exclObj = exclObj_;
+
+    span = orbis.getInters( point, AABB::MAX_DIM );
+
+    return overlapsAABBOrbis();
+  }
+
+  bool Collider::overlapsOO( const Vec3& point, const Object* exclObj_ )
+  {
+    aabb = AABB( point, Vec3::ZERO );
+    exclObj = exclObj_;
+
+    span = orbis.getInters( point, AABB::MAX_DIM );
+
+    return overlapsAABBOrbisOO();
+  }
+
+  bool Collider::overlapsOSO( const Vec3& point, const Object* exclObj_ )
+  {
+    aabb = AABB( point, Vec3::ZERO );
+    exclObj = exclObj_;
+
+    span = orbis.getInters( point, AABB::MAX_DIM );
+
+    return overlapsAABBOrbisOSO();
+  }
+
+  bool Collider::overlaps( const AABB& aabb_, const Object* exclObj_ )
+  {
+    aabb = aabb_;
+    exclObj = exclObj_;
+
+    trace = aabb.toBounds( 2.0f * EPSILON );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    return overlapsAABBOrbis();
+  }
+
+  bool Collider::overlapsOO( const AABB& aabb_, const Object* exclObj_ )
+  {
+    aabb = aabb_;
+    exclObj = exclObj_;
+
+    trace = aabb.toBounds( 2.0f * EPSILON );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    return overlapsAABBOrbisOO();
+  }
+
+  bool Collider::overlapsOSO( const AABB& aabb_, const Object* exclObj_ )
+  {
+    aabb = aabb_;
+    exclObj = exclObj_;
+
+    trace = aabb.toBounds( 2.0f * EPSILON );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    return overlapsAABBOrbisOSO();
+  }
+
+  bool Collider::overlapsOO( const Structure* str_, int iEntity_ )
+  {
+    str = str_;
+    iEntity = iEntity_;
+
+    entity = &str_->entities[iEntity];
+    bsp = orbis.bsps[str_->iBsp];
+    model = &bsp->models[iEntity];
+
+    trace = str->toAbsoluteCS( *model + entity->offset ) + str_->p;
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    return overlapsEntityOrbisOO();
+  }
+
+  void Collider::getOverlaps( const AABB& aabb_, Vector<Object*>* objects,
+                              Vector<Structure*>* structs, float eps )
+  {
+    aabb = aabb_;
+    exclObj = null;
+
+    trace = aabb.toBounds( eps );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    getOrbisOverlaps( objects, structs );
+  }
+
+  void Collider::getIncludes( const AABB& aabb_, Vector<Object*>* objects, float eps )
+  {
+    aabb = aabb_;
+    exclObj = null;
+
+    trace = aabb.toBounds( eps );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    getOrbisIncludes( objects );
+  }
+
+  void Collider::touchOverlaps( const AABB& aabb_, float eps )
+  {
+    aabb = aabb_;
+    exclObj = null;
+
+    trace = aabb.toBounds( eps );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    touchOrbisOverlaps();
+  }
+
+  void Collider::getOverlaps( const Structure* str_, int iEntity_,
+                              Vector<Object*>* objects, float margin )
+  {
+    str = str_;
+    iEntity = iEntity_;
+
+    entity = &str_->entities[iEntity];
+    bsp = orbis.bsps[str_->iBsp];
+    model = &bsp->models[iEntity];
+
+    trace = str->toAbsoluteCS( *model + entity->offset ) + str_->p;
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    getEntityOverlaps( objects, margin );
+  }
+
+  void Collider::translate( const Vec3& point, const Vec3& move_, const Object* exclObj_ )
+  {
+    aabb = AABB( point, Vec3::ZERO );
+    move = move_;
+    exclObj = exclObj_;
+
+    trace.fromPointMove( point, move, 2.0f * EPSILON );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    trimAABBOrbis();
+  }
+
+  void Collider::translate( const AABB& aabb_, const Vec3& move_, const Object* exclObj_ )
+  {
+    obj  = null;
+    aabb = aabb_;
+    move = move_;
+    exclObj = exclObj_;
+
+    trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    trimAABBOrbis();
+  }
+
+  void Collider::translate( const Dynamic* obj_, const Vec3& move_ )
+  {
+    assert( obj_->cell != null );
+
+    obj  = obj_;
+    aabb = *obj_;
+    move = move_;
+    exclObj = obj_;
+
+    trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    trimAABBOrbis();
   }
 
 }

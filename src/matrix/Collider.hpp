@@ -19,9 +19,9 @@ namespace oz
     Vec3  normal;
     float ratio;
 
-    const Object*      obj;
-    const Structure*   str;
-    const BSP::Entity* entity;
+    const Object*    obj;
+    const Structure* str;
+    int              iEntity;
 
     int   material;
 
@@ -34,24 +34,25 @@ namespace oz
   {
     private:
 
-      static const Vec3  normals[];
-      static const Mat33 rotations[];
-      static const Mat33 invRotations[];
+      static const Vec3         normals[];
 
-      Span               span;
-      Bounds             trace;
-      Vec3               move;
+      Span                      span;
+      Bounds                    trace;
+      Vec3                      move;
 
-      AABB               aabb;
+      AABB                      aabb;
 
-      Vec3               startPos;
-      Vec3               endPos;
+      Vec3                      startPos;
+      Vec3                      endPos;
 
-      const Dynamic*     obj;
-      const Object*      exclObj;
-      const Structure*   str;
-      const BSP::Entity* entity;
-      const BSP*         bsp;
+      const Dynamic*            obj;
+      const Object*             exclObj;
+      const Structure*          str;
+      int                       iEntity;
+
+      const Structure::Entity*  entity;
+      const BSP*                bsp;
+      const BSP::Model*         model;
 
       SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
@@ -62,51 +63,21 @@ namespace oz
        */
       bool visitBrush( int index );
 
-      /**
-       * Rotate vector from absolute coordinate system to structure coordinate system. Do not
-       * translate (because of normals).
-       * @param v
-       * @return
-       */
-      Vec3 toStructCS( const Vec3& v ) const;
-
-      /**
-       * Rotate vector from structure coordinate system to absolute coordinate system. Do not
-       * translate (because of normals).
-       * @param v
-       * @return
-       */
-      Vec3 toAbsoluteCS( const Vec3& v ) const;
-
-      /**
-       * Rotate Bounds from absolute coordinate system to structure coordinate system. Do not
-       * translate (for consistency with vector version).
-       * @param v
-       * @return
-       */
-      Bounds toStructCS( const Bounds& bb ) const;
-
-      /**
-       * Rotate Bounds from structure coordinate system to absolute coordinate system. Do not
-       * translate (for consistency with vector version).
-       * @param v
-       * @return
-       */
-      Bounds toAbsoluteCS( const Bounds& bb ) const;
-
       bool overlapsAABBBrush( const BSP::Brush* brush ) const;
-      bool overlapsAABBNode( int nodeIndex );
+      bool overlapsAABBNode( int iNode );
       bool overlapsAABBEntities();
       bool overlapsAABBOrbis();
       bool overlapsAABBOrbisOO();
       bool overlapsAABBOrbisOSO();
+
+      bool overlapsEntityOrbisOO();
 
       void trimAABBVoid();
       void trimAABBObj( const Object* sObj );
       void trimAABBBrush( const BSP::Brush* brush );
       void trimAABBWater( const BSP::Brush* brush );
       void trimAABBLadder( const BSP::Brush* brush );
-      void trimAABBNode( int nodeIndex );
+      void trimAABBNode( int iNode );
       void trimAABBEntities();
       bool trimAABBTerraQuad( int x, int y );
       void trimAABBTerra();
@@ -140,6 +111,8 @@ namespace oz
       bool overlapsOO( const AABB& aabb, const Object* exclObj = null );
       bool overlapsOSO( const AABB& aabb, const Object* exclObj = null );
 
+      bool overlapsOO( const Structure* str, int iEntity );
+
       // fill given vectors with objects and structures overlapping with the AABB
       // if either vector is null the respecitve test is not performed
       void getOverlaps( const AABB& aabb, Vector<Object*>* objects, Vector<Structure*>* structs,
@@ -148,7 +121,7 @@ namespace oz
       void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = 0.0f );
       void touchOverlaps( const AABB& aabb, float eps = 0.0f );
 
-      void getOverlaps( const BSP* bsp, const BSP::Entity* entity, Vector<Object*>* objects,
+      void getOverlaps( const Structure* str, int iEntity, Vector<Object*>* objects,
                         float margin = 0.0f );
 
       void translate( const Vec3& point, const Vec3& move, const Object* exclObj = null );
@@ -158,154 +131,5 @@ namespace oz
   };
 
   extern Collider collider;
-
-  inline bool Collider::overlaps( const Vec3& point, const Object* exclObj_ )
-  {
-    aabb = AABB( point, Vec3::zero() );
-    exclObj = exclObj_;
-
-    span = orbis.getInters( point, AABB::MAX_DIM );
-
-    return overlapsAABBOrbis();
-  }
-
-  inline bool Collider::overlapsOO( const Vec3& point, const Object* exclObj_ )
-  {
-    aabb = AABB( point, Vec3::zero() );
-    exclObj = exclObj_;
-
-    span = orbis.getInters( point, AABB::MAX_DIM );
-
-    return overlapsAABBOrbisOO();
-  }
-
-  inline bool Collider::overlapsOSO( const Vec3& point, const Object* exclObj_ )
-  {
-    aabb = AABB( point, Vec3::zero() );
-    exclObj = exclObj_;
-
-    span = orbis.getInters( point, AABB::MAX_DIM );
-
-    return overlapsAABBOrbisOSO();
-  }
-
-  inline bool Collider::overlaps( const AABB& aabb_, const Object* exclObj_ )
-  {
-    aabb = aabb_;
-    exclObj = exclObj_;
-
-    trace = aabb.toBounds( 2.0f * EPSILON );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    return overlapsAABBOrbis();
-  }
-
-  inline bool Collider::overlapsOO( const AABB& aabb_, const Object* exclObj_ )
-  {
-    aabb = aabb_;
-    exclObj = exclObj_;
-
-    trace = aabb.toBounds( 2.0f * EPSILON );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    return overlapsAABBOrbisOO();
-  }
-
-  inline bool Collider::overlapsOSO( const AABB& aabb_, const Object* exclObj_ )
-  {
-    aabb = aabb_;
-    exclObj = exclObj_;
-
-    trace = aabb.toBounds( 2.0f * EPSILON );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    return overlapsAABBOrbisOSO();
-  }
-
-  inline void Collider::getOverlaps( const AABB& aabb_, Vector<Object*>* objects,
-                                     Vector<Structure*>* structs, float eps )
-  {
-    aabb = aabb_;
-    exclObj = null;
-
-    trace = aabb.toBounds( eps );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    getOrbisOverlaps( objects, structs );
-  }
-
-  inline void Collider::getIncludes( const AABB& aabb_, Vector<Object*>* objects, float eps )
-  {
-    aabb = aabb_;
-    exclObj = null;
-
-    trace = aabb.toBounds( eps );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    getOrbisIncludes( objects );
-  }
-
-  inline void Collider::touchOverlaps( const AABB& aabb_, float eps )
-  {
-    aabb = aabb_;
-    exclObj = null;
-
-    trace = aabb.toBounds( eps );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    touchOrbisOverlaps();
-  }
-
-  inline void Collider::getOverlaps( const BSP* bsp_, const BSP::Entity* entity_,
-                                     Vector<Object*>* objects, float margin )
-  {
-    bsp = bsp_;
-    entity = entity_;
-
-    trace = entity->toBounds( 2.0f * EPSILON );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    getEntityOverlaps( objects, margin );
-  }
-
-  inline void Collider::translate( const Vec3& point, const Vec3& move_, const Object* exclObj_ )
-  {
-    aabb = AABB( point, Vec3::zero () );
-    move = move_;
-    exclObj = exclObj_;
-
-    trace.fromPointMove( point, move, 2.0f * EPSILON );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    trimAABBOrbis();
-  }
-
-  inline void Collider::translate( const AABB& aabb_, const Vec3& move_, const Object* exclObj_ )
-  {
-    obj  = null;
-    aabb = aabb_;
-    move = move_;
-    exclObj = exclObj_;
-
-    trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    trimAABBOrbis();
-  }
-
-  inline void Collider::translate( const Dynamic* obj_, const Vec3& move_ )
-  {
-    assert( obj_->cell != null );
-
-    obj  = obj_;
-    aabb = *obj_;
-    move = move_;
-    exclObj = obj_;
-
-    trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
-
-    trimAABBOrbis();
-  }
 
 }

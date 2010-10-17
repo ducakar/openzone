@@ -53,8 +53,8 @@ namespace nirvana
     lua.objects.clear();
     lua.structs.clear();
     collider.getOverlaps( aabb, &lua.objects, &lua.structs );
-    lua.objIndex = 0;
-    lua.strIndex = 0;
+    lua.iObject = 0;
+    lua.iStruct = 0;
     return 0;
   }
 
@@ -64,7 +64,7 @@ namespace nirvana
                       Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.structs.clear();
     collider.getOverlaps( aabb, null, &lua.structs );
-    lua.strIndex = 0;
+    lua.iStruct = 0;
     return 0;
   }
 
@@ -74,7 +74,7 @@ namespace nirvana
                       Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.objects.clear();
     collider.getOverlaps( aabb, &lua.objects, null );
-    lua.objIndex = 0;
+    lua.iObject = 0;
     return 0;
   }
 
@@ -85,8 +85,8 @@ namespace nirvana
     lua.objects.clear();
     lua.structs.clear();
     collider.getOverlaps( aabb, &lua.objects, &lua.structs );
-    lua.objIndex = 0;
-    lua.strIndex = 0;
+    lua.iObject = 0;
+    lua.iStruct = 0;
     return 0;
   }
 
@@ -96,7 +96,7 @@ namespace nirvana
                       Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
     lua.structs.clear();
     collider.getOverlaps( aabb, null, &lua.structs );
-    lua.strIndex = 0;
+    lua.iStruct = 0;
     return 0;
   }
 
@@ -106,7 +106,7 @@ namespace nirvana
                       Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
     lua.objects.clear();
     collider.getOverlaps( aabb, &lua.objects, null );
-    lua.objIndex = 0;
+    lua.iObject = 0;
     return 0;
   }
 
@@ -122,9 +122,9 @@ namespace nirvana
 
   static int ozStrBindNext( lua_State* l )
   {
-    if( lua.strIndex < lua.structs.length() ) {
-      lua.str = lua.structs[lua.strIndex];
-      ++lua.strIndex;
+    if( lua.iStruct < lua.structs.length() ) {
+      lua.str = lua.structs[lua.iStruct];
+      ++lua.iStruct;
       lua_pushboolean( l, true );
     }
     else {
@@ -182,7 +182,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected structure is null" );
     }
 
-    lua_pushinteger( l, lua.str->bsp );
+    lua_pushinteger( l, lua.str->iBsp );
     return 1;
   }
 
@@ -203,7 +203,7 @@ namespace nirvana
     if( lua.str == null ) {
       OZ_LUA_ERROR( "selected structure is null" );
     }
-    Vec3 dir = ( lua.str->p - lua.self->p ).norm();
+    Vec3 dir = ~( lua.str->p - lua.self->p );
     lua_pushnumber( l, dir.x );
     lua_pushnumber( l, dir.y );
     lua_pushnumber( l, dir.z );
@@ -264,9 +264,9 @@ namespace nirvana
 
   static int ozObjBindNext( lua_State* l )
   {
-    if( lua.objIndex < lua.objects.length() ) {
-      lua.obj = lua.objects[lua.objIndex];
-      ++lua.objIndex;
+    if( lua.iObject < lua.objects.length() ) {
+      lua.obj = lua.objects[lua.iObject];
+      ++lua.iObject;
       lua_pushboolean( l, true );
     }
     else {
@@ -425,7 +425,7 @@ namespace nirvana
     if( lua.obj == lua.self ) {
       OZ_LUA_ERROR( "selected object is self" );
     }
-    Vec3 dir = ( lua.obj->p - lua.self->p ).norm();
+    Vec3 dir = ~( lua.obj->p - lua.self->p );
     lua_pushnumber( l, dir.x );
     lua_pushnumber( l, dir.y );
     lua_pushnumber( l, dir.z );
@@ -915,8 +915,8 @@ namespace nirvana
     part  = null;
     event = List<Object::Event>::CIterator();
 
-    objIndex = 0;
-    strIndex = 0;
+    iObject = 0;
+    iStruct = 0;
 
     lua_getglobal( l, functionName );
     lua_rawgeti( l, 1, botIndex );

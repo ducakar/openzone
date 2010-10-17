@@ -22,9 +22,9 @@ namespace nirvana
 
   Pool<LuaMind> LuaMind::pool;
 
-  Mind* LuaMind::create( int botIndex )
+  Mind* LuaMind::create( int iBot )
   {
-    LuaMind* mind = new LuaMind( botIndex );
+    LuaMind* mind = new LuaMind( iBot );
     return mind;
   }
 
@@ -34,14 +34,14 @@ namespace nirvana
     return mind;
   }
 
-  LuaMind::LuaMind( int botIndex_ ) : Mind( botIndex_ )
+  LuaMind::LuaMind( int iBot_ ) : Mind( iBot_ )
   {
-    lua.registerMind( botIndex );
+    lua.registerMind( iBot );
   }
 
   LuaMind::~LuaMind()
   {
-    lua.unregisterMind( botIndex );
+    lua.unregisterMind( iBot );
   }
 
   const char* LuaMind::type() const
@@ -51,10 +51,10 @@ namespace nirvana
 
   void LuaMind::update()
   {
-    assert( orbis.objects[botIndex] != null );
-    assert( orbis.objects[botIndex]->flags & Object::BOT_BIT );
+    assert( orbis.objects[iBot] != null );
+    assert( orbis.objects[iBot]->flags & Object::BOT_BIT );
 
-    Bot* bot = static_cast<Bot*>( orbis.objects[botIndex] );
+    Bot* bot = static_cast<Bot*>( orbis.objects[iBot] );
 
     if( !( bot->state & Bot::DEATH_BIT ) ) {
       const BotClass* clazz = static_cast<const BotClass*>( bot->type );

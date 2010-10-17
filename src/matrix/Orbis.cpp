@@ -158,10 +158,10 @@ namespace oz
     int nObjects    = istream->readInt();
     int nParticles  = istream->readInt();
 
-    String    bspName;
+    String     bspName;
     Structure* str;
     Object*    obj;
-    String    typeName;
+    String     typeName;
     Particle*  part;
 
     for( int i = 0; i < nStructures; ++i ) {
@@ -171,15 +171,18 @@ namespace oz
         structs.add( null );
       }
       else {
-        str = translator.createStruct( i, bspName, istream );
-        structs.add( str );
+        int iBsp = translator.bspIndex( bspName );
 
-        if( bsps[str->bsp] == null ) {
-          bsps[str->bsp] = new BSP();
-          if( !bsps[str->bsp]->load( translator.bsps[str->bsp].name ) ) {
+        if( bsps[iBsp] == null ) {
+          bsps[iBsp] = new BSP();
+
+          if( !bsps[iBsp]->load( translator.bsps[iBsp].name ) ) {
             throw Exception( "Matrix BSP loading failed" );
           }
         }
+
+        str = translator.createStruct( i, bspName, istream );
+        structs.add( str );
 
         if( !position( str ) ) {
           throw Exception( "Matrix structure reading failed, too many structures per cell." );
@@ -288,7 +291,7 @@ namespace oz
         ostream->writeString( "" );
       }
       else {
-        ostream->writeString( translator.bsps[str->bsp].name );
+        ostream->writeString( translator.bsps[str->iBsp].name );
         str->writeFull( ostream );
       }
     }

@@ -68,7 +68,7 @@ namespace oz
 
       /*
        * Index reusing: when an entity is removed, there may still be references to it (from other
-       * entities or from render or audio subsystems); that's why every cycle all references must
+       * models or from render or audio subsystems); that's why every cycle all references must
        * be checked if the slot they're pointing at (all references should be indices of a slot
        * in Orbis::structures/objects/particles vectors). If the target slot is null, the referenced
        * entity doesn't exist any more, so reference must be cleared. To make sure all references
@@ -97,7 +97,7 @@ namespace oz
 
     public:
 
-      void requestBSP( int bspIndex );
+      void requestBSP( int iBsp );
 
     private:
 
@@ -210,7 +210,7 @@ namespace oz
 
   inline bool Orbis::position( Structure* str )
   {
-    str->setRotation( *bsps[str->bsp], str->rot );
+    str->setRotation( *bsps[str->iBsp], str->rot );
 
     Span span = getInters( *str, EPSILON );
 
@@ -385,10 +385,10 @@ namespace oz
     }
   }
 
-  inline void Orbis::requestBSP( int bspIndex ) {
-    if( bsps[bspIndex] == null ) {
-      bsps[bspIndex] = new BSP();
-      if( !bsps[bspIndex]->load( translator.bsps[bspIndex].name ) ) {
+  inline void Orbis::requestBSP( int iBsp ) {
+    if( bsps[iBsp] == null ) {
+      bsps[iBsp] = new BSP();
+      if( !bsps[iBsp]->load( translator.bsps[iBsp].name ) ) {
         throw Exception( "Matrix BSP loading failed" );
       }
     }

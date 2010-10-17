@@ -35,7 +35,7 @@ namespace nirvana
       Mind* mind = i;
       ++i;
 
-      if( orbis.objects[mind->botIndex] == null ) {
+      if( orbis.objects[mind->iBot] == null ) {
         minds.remove( mind );
         delete mind;
       }
@@ -63,7 +63,7 @@ namespace nirvana
   {
     int count = 0;
     foreach( mind, minds.iter() ) {
-      const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->botIndex] );
+      const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->iBot] );
       assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
 
       if( !( bot->state & Bot::PLAYER_BIT ) &&
