@@ -212,7 +212,7 @@ namespace oz
       int                flags;
       int                oldFlags;
 
-      const ObjectClass* type;
+      const ObjectClass* clazz;
 
       // damage
       float              life;
@@ -266,7 +266,7 @@ namespace oz
        */
       void damage( float damage )
       {
-        damage -= type->damageThreshold;
+        damage -= clazz->damageThreshold;
 
         if( damage > 0.0f ) {
           life -= damage;

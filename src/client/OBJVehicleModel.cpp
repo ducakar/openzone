@@ -31,19 +31,19 @@ namespace client
     OBJVehicleModel* model = new OBJVehicleModel();
 
     model->obj  = obj;
-    model->list = context.loadOBJ( obj->type->modelName );
+    model->list = context.loadOBJ( obj->clazz->modelName );
     return model;
   }
 
   OBJVehicleModel::~OBJVehicleModel()
   {
-    context.releaseOBJ( obj->type->modelName );
+    context.releaseOBJ( obj->clazz->modelName );
   }
 
   void OBJVehicleModel::draw( const Model* )
   {
     const Vehicle* veh = static_cast<const Vehicle*>( obj );
-    const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->type );
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
 
     glMultMatrixf( veh->rot.rotMat44() );
 

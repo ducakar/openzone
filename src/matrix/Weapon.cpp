@@ -39,7 +39,7 @@ namespace oz
 
   void Weapon::onShot( Bot* user )
   {
-    const WeaponClass* clazz = static_cast<const WeaponClass*>( type );
+    const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
 
     if( !clazz->onShot.isEmpty() ) {
       lua.call( clazz->onShot, this, user );

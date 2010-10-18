@@ -14,6 +14,39 @@
 namespace oz
 {
 
+  class BSP;
+
+  struct EntityClass : Bounds
+  {
+    enum Mode
+    {
+      IGNORING = 0,
+      BLOCKING = 1,
+      PUSHING  = 2,
+      CRUSHING = 3
+    };
+
+    static const int AUTOMATIC_BIT = 0x00000001;
+    static const int LUA_BIT       = 0x00000002;
+
+    BSP*  bsp;
+
+    int   firstBrush;
+    int   nBrushes;
+
+    int   firstFace;
+    int   nFaces;
+
+    Vec3  move;
+    float ratioInc;
+    int   flags;
+    Mode  mode;
+
+    float margin;
+    float slideTime;
+    float timeout;
+  };
+
   class BSP : public Bounds
   {
     public:
@@ -47,35 +80,6 @@ namespace oz
         int nFaces;
 
         int cluster;
-      };
-
-      struct Model : Bounds
-      {
-        enum Type
-        {
-          IGNORING = 0,
-          BLOCKING = 1,
-          PUSHING  = 2,
-          CRUSHING = 3
-        };
-
-        static const int AUTOMATIC_BIT = 0x00000001;
-        static const int LUA_BIT       = 0x00000002;
-
-        int   firstBrush;
-        int   nBrushes;
-
-        int   firstFace;
-        int   nFaces;
-
-        Vec3  move;
-        float ratioInc;
-        int   flags;
-        Type  type;
-
-        float margin;
-        float slideTime;
-        float timeout;
       };
 
       struct Brush
@@ -130,59 +134,65 @@ namespace oz
         }
       };
 
-      String     name;
-      float      maxDim;
-      float      life;
+      String       name;
+      float        maxDim;
+      float        life;
 
-      int        nPlanes;
-      int        nNodes;
-      int        nLeaves;
-      int        nLeafBrushes;
-      int        nLeafFaces;
-      int        nModels;
-      int        nBrushes;
-      int        nBrushSides;
-      int        nTextures;
-      int        nVertices;
-      int        nIndices;
-      int        nFaces;
-      int        nLightmaps;
+      int          nPlanes;
+      int          nNodes;
+      int          nLeaves;
+      int          nLeafBrushes;
+      int          nLeafFaces;
+      int          nEntityClasses;
+      int          nBrushes;
+      int          nBrushSides;
+      int          nTextures;
+      int          nVertices;
+      int          nIndices;
+      int          nFaces;
+      int          nLightmaps;
 
-      Plane*     planes;
-      Node*      nodes;
-      Leaf*      leaves;
-      int*       leafBrushes;
-      int*       leafFaces;
-      Model*     models;
-      Brush*     brushes;
-      int*       brushSides;
-      int*       textures;
-      Vertex*    vertices;
-      int*       indices;
-      Face*      faces;
-      Lightmap*  lightmaps;
+      Plane*       planes;
+      Node*        nodes;
+      Leaf*        leaves;
+      int*         leafBrushes;
+      int*         leafFaces;
+      EntityClass* entityClasses;
+      Brush*       brushes;
+      int*         brushSides;
+      int*         textures;
+      Vertex*      vertices;
+      int*         indices;
+      Face*        faces;
+      Lightmap*    lightmaps;
 
-      VisualData visual;
+      VisualData   visual;
 
     private:
 
-#ifndef OZ_USE_PREBUILT
       bool includes( const Brush& brush ) const;
 
       bool loadQBSP( const char* fileName );
       void optimise();
-      bool save( const char* fileName );
-#endif
 
       bool loadOZBSP( const char* fileName );
 
+      // free prebuilt ozBSP structure
+      void freeOZBSP();
+
     public:
 
-      explicit BSP();
+      // create BSP from a prebuilt ozBSP
+      explicit BSP( const char* name );
+      // create BSP from a Quake 3 QBSP and optimise it
+      explicit BSP( const char* name, int );
+
       ~BSP();
 
-      bool load( const char* name );
-      void free();
+      // free BSP loaded from a QBSP
+      void freeQBSP();
+
+      bool save( const char* fileName );
 
   };
 

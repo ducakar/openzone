@@ -185,7 +185,7 @@ namespace oz
     log.println( "Loading Matrix {" );
     log.indent();
 
-    orbis.terra.load( "heightmap" );
+    orbis.terra.load( "terra-513" );
     orbis.load();
 
     if( istream != null ) {

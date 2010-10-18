@@ -22,8 +22,6 @@ namespace oz
 
   const float Terra::DIM            = Terra::Quad::DIM * Terra::QUADS;
 
-#ifndef OZ_USE_PREBUILT
-
   void Terra::buildTerraFrame()
   {
     for( int x = 0; x < QUADS; ++x ) {
@@ -57,8 +55,6 @@ namespace oz
     }
   }
 
-#endif
-
   void Terra::init()
   {
     for( int x = 0; x < MAX; ++x ) {
@@ -69,7 +65,6 @@ namespace oz
     }
   }
 
-#ifndef OZ_USE_PREBUILT
   void Terra::load( float height )
   {
     for( int x = 0; x < MAX; ++x ) {
@@ -82,12 +77,9 @@ namespace oz
 
     buildTerraFrame();
   }
-#endif
 
   void Terra::load( const char* name_ )
   {
-#ifdef OZ_USE_PREBUILT
-
     String terraFile = "terra/" + String( name_ ) + ".ozTerra";
 
     log.print( "Loading terrain '%s' ...", name_ );
@@ -128,9 +120,10 @@ namespace oz
     }
 
     log.printEnd( " OK" );
+  }
 
-#else
-
+  void Terra::load( const char* name_, int )
+  {
     String name = name_;
     String configFile = "terra/" + name + ".rc";
     String imageFile = "terra/" + name + ".png";
@@ -174,15 +167,7 @@ namespace oz
 
     SDL_FreeSurface( image );
     log.printEnd( " OK" );
-
-#ifdef OZ_MAKE_PREBUILT
-    save( "terra/" + name + ".ozTerra" );
-#endif
-
-#endif
   }
-
-#ifndef OZ_USE_PREBUILT
 
   void Terra::save( const char* fileName )
   {
@@ -224,7 +209,5 @@ namespace oz
 
     log.printEnd( " OK" );
   }
-
-#endif
 
 }

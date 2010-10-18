@@ -388,7 +388,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua_pushstring( l, lua.obj->type->name );
+    lua_pushstring( l, lua.obj->clazz->name );
     return 1;
   }
 

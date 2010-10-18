@@ -130,7 +130,7 @@ namespace ui
 
   void StrategicArea::drawHoveredRect( const Span& span )
   {
-    const ObjectClass *clazz = hovered->type;
+    const ObjectClass *clazz = hovered->clazz;
 
     float minX = float( span.minX );
     float maxX = float( span.maxX );
@@ -174,7 +174,7 @@ namespace ui
     float maxY = float( span.maxY );
 
     if( obj != hovered ) {
-      const ObjectClass *clazz = obj->type;
+      const ObjectClass *clazz = obj->clazz;
       float life = ( obj->flags & Object::BOT_BIT ) ?
           ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
           obj->life / clazz->life;
@@ -290,7 +290,7 @@ namespace ui
       const Object* obj = orbis.objects[tagged[i]];
 
       if( obj == null ||
-          ( ( obj->flags & Object::BOT_BIT ) && obj->life <= obj->type->life / 2.0f ) )
+          ( ( obj->flags & Object::BOT_BIT ) && obj->life <= obj->clazz->life / 2.0f ) )
       {
         tagged.removeUO( i );
         continue;

@@ -33,49 +33,49 @@ namespace oz
 
   void Object::onDestroy()
   {
-    synapse.genParts( type->nDebris, p, Vec3::ZERO, type->debrisVelocitySpread,
-                      type->debrisColor, type->debrisColorSpread,
-                      type->debrisRejection, type->debrisMass, type->debrisLifeTime );
+    synapse.genParts( clazz->nDebris, p, Vec3::ZERO, clazz->debrisVelocitySpread,
+                      clazz->debrisColor, clazz->debrisColorSpread,
+                      clazz->debrisRejection, clazz->debrisMass, clazz->debrisLifeTime );
 
-    if( !type->onDestroy.isEmpty() ) {
-      lua.call( type->onDestroy, this );
+    if( !clazz->onDestroy.isEmpty() ) {
+      lua.call( clazz->onDestroy, this );
     }
   }
 
   void Object::onDamage( float damage )
   {
-    if( !type->onDamage.isEmpty() ) {
+    if( !clazz->onDamage.isEmpty() ) {
       lua.damage = damage;
-      lua.call( type->onDamage, this );
+      lua.call( clazz->onDamage, this );
     }
   }
 
   void Object::onHit( const Hit*, float hitMomentum )
   {
-    if( !type->onHit.isEmpty() ) {
+    if( !clazz->onHit.isEmpty() ) {
       lua.hitMomentum = hitMomentum;
-      lua.call( type->onHit, this );
+      lua.call( clazz->onHit, this );
     }
   }
 
   void Object::onUse( Bot* user )
   {
-    if( !type->onUse.isEmpty() ) {
-      lua.call( type->onUse, this, user );
+    if( !clazz->onUse.isEmpty() ) {
+      lua.call( clazz->onUse, this, user );
     }
   }
 
   void Object::onUpdate()
   {
-    if( !type->onUpdate.isEmpty() ) {
-      lua.call( type->onUpdate, this );
+    if( !clazz->onUpdate.isEmpty() ) {
+      lua.call( clazz->onUpdate, this );
     }
   }
 
   void Object::onAct()
   {
-    if( !type->onAct.isEmpty() ) {
-      lua.call( type->onAct, this );
+    if( !clazz->onAct.isEmpty() ) {
+      lua.call( clazz->onAct, this );
     }
   }
 

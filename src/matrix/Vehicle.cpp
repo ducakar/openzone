@@ -40,7 +40,7 @@ namespace oz
 
   void Vehicle::onUpdate()
   {
-    const VehicleClass* clazz = static_cast<const VehicleClass*>( type );
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
     flags &= ~HOVER_BIT;
     actions = 0;

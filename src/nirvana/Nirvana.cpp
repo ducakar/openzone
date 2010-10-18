@@ -46,7 +46,7 @@ namespace nirvana
 
       if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
         const Bot* bot = static_cast<const Bot*>( obj );
-        const BotClass* clazz = static_cast<const BotClass*>( bot->type );
+        const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
         MindCtor* value = mindClasses.find( clazz->mindType );
         if( value != null ) {

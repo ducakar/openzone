@@ -33,7 +33,7 @@ namespace client
 
     model->obj   = obj;
     model->flags = Model::MD2MODEL_BIT;
-    model->md2   = context.loadMD2( obj->type->modelName );
+    model->md2   = context.loadMD2( obj->clazz->modelName );
 
     model->setAnim( bot->anim );
     model->anim.nextFrame = model->anim.endFrame;
@@ -44,7 +44,7 @@ namespace client
 
   MD2Model::~MD2Model()
   {
-    context.releaseMD2( obj->type->modelName );
+    context.releaseMD2( obj->clazz->modelName );
   }
 
   void MD2Model::setAnim( int type )
@@ -64,7 +64,7 @@ namespace client
   void MD2Model::draw( const Model* )
   {
     const Bot* bot = static_cast<const Bot*>( obj );
-    const BotClass* clazz = static_cast<const BotClass*>( bot->type );
+    const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
     glRotatef( bot->h, 0.0f, 0.0f, 1.0f );
 

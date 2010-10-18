@@ -155,7 +155,7 @@ namespace ui
     iTagged = -1;
 
     if( taggedItem != null ) {
-      float life = taggedItem->life / taggedItem->type->life;
+      float life = taggedItem->life / taggedItem->clazz->life;
       int lifeWidth = int( life * 46.0f );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
@@ -183,7 +183,7 @@ namespace ui
         glDisable( GL_TEXTURE_2D );
       }
 
-      printBaseline( 4, FOOTER_SIZE / 2, "%s", taggedItem->type->description.cstr() );
+      printBaseline( 4, FOOTER_SIZE / 2, "%s", taggedItem->clazz->description.cstr() );
     }
   }
 

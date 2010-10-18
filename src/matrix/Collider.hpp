@@ -21,7 +21,7 @@ namespace oz
 
     const Object*    obj;
     const Structure* str;
-    int              iEntity;
+    const Entity*    entity;
 
     int   material;
 
@@ -48,11 +48,9 @@ namespace oz
       const Dynamic*            obj;
       const Object*             exclObj;
       const Structure*          str;
-      int                       iEntity;
-
-      const Structure::Entity*  entity;
+      const Entity*             entity;
       const BSP*                bsp;
-      const BSP::Model*         model;
+      const EntityClass*        entityClazz;
 
       SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
@@ -111,7 +109,7 @@ namespace oz
       bool overlapsOO( const AABB& aabb, const Object* exclObj = null );
       bool overlapsOSO( const AABB& aabb, const Object* exclObj = null );
 
-      bool overlapsOO( const Structure* str, int iEntity );
+      bool overlapsOO( const Entity* entity );
 
       // fill given vectors with objects and structures overlapping with the AABB
       // if either vector is null the respecitve test is not performed
@@ -121,8 +119,7 @@ namespace oz
       void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = 0.0f );
       void touchOverlaps( const AABB& aabb, float eps = 0.0f );
 
-      void getOverlaps( const Structure* str, int iEntity, Vector<Object*>* objects,
-                        float margin = 0.0f );
+      void getOverlaps( const Entity* entity, Vector<Object*>* objects, float margin = 0.0f );
 
       void translate( const Vec3& point, const Vec3& move, const Object* exclObj = null );
       void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );

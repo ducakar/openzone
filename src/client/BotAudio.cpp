@@ -32,7 +32,7 @@ namespace client
   void BotAudio::play( const Audio* )
   {
     const Bot* bot = static_cast<const Bot*>( obj );
-    const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
+    const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->clazz->audioSamples;
 
     // friction
     if( ( bot->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==

@@ -25,7 +25,7 @@ namespace oz
 
     public:
 
-      static const int QUADS = 256;
+      static const int QUADS = 512;
       static const int MAX   = QUADS + 1;
 
     private:
@@ -33,9 +33,7 @@ namespace oz
       // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
       static const float DIM;
 
-#ifndef OZ_USE_PREBUILT
       void buildTerraFrame();
-#endif
 
     public:
 
@@ -66,13 +64,12 @@ namespace oz
       String waterTexture;
 
       void init();
-#ifndef OZ_USE_PREBUILT
       void load( float height );
-#endif
+      // load prebuilt terrain
       void load( const char* name );
-#ifndef OZ_USE_PREBUILT
+      // load terrain from PNG image & configuration file
+      void load( const char* name, int );
       void save( const char* name );
-#endif
 
       void isEmpty() const;
 
