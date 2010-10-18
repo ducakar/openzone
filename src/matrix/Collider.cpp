@@ -95,20 +95,20 @@ namespace oz
 
   bool Collider::overlapsAABBEntities()
   {
-    if( bsp->nModels == 1 ) {
+    if( bsp->nEntityClasses == 1 ) {
       return false;
     }
 
     Vec3   originalStartPos = startPos;
     Bounds localTrace       = str->toStructCS( trace - str->p );
 
-    for( int i = 1; i < bsp->nModels; ++i ) {
-      const BSP::Model& model = bsp->models[i];
+    for( int i = 1; i < bsp->nEntityClasses; ++i ) {
+      const EntityClass& clazz = bsp->entityClasses[i];
       const Vec3& offset = str->entities[i].offset;
 
-      if( model.overlaps( localTrace - offset ) ) {
-        for( int j = 0; j < model.nBrushes; ++j ) {
-          int index = model.firstBrush + j;
+      if( clazz.overlaps( localTrace - offset ) ) {
+        for( int j = 0; j < entityClazz->nBrushes; ++j ) {
+          int index = entityClazz->firstBrush + j;
           const BSP::Brush& brush = bsp->brushes[index];
 
           assert( !visitedBrushes.get( index ) );
@@ -245,8 +245,8 @@ namespace oz
             startPos = str->toStructCS( sObj->p - str->p ) - entity->offset;
             aabb.dim = sObj->dim;
 
-            for( int i = 0; i < model->nBrushes; ++i ) {
-              const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
+            for( int i = 0; i < entityClazz->nBrushes; ++i ) {
+              const BSP::Brush& brush = bsp->brushes[entityClazz->firstBrush + i];
 
               if( ( brush.material & Material::STRUCT_BIT ) && ( sObj->flags & mask ) &&
                   overlapsAABBBrush( &brush ) )
@@ -283,7 +283,7 @@ namespace oz
           hit.normal   = normal;
           hit.obj      = null;
           hit.str      = null;
-          hit.iEntity  = -1;
+          hit.entity   = null;
           hit.material = Material::VOID_BIT;
         }
       }
@@ -326,7 +326,7 @@ namespace oz
       hit.normal   = *tmpNormal;
       hit.obj      = sObj;
       hit.str      = null;
-      hit.iEntity  = -1;
+      hit.entity   = null;
       hit.material = Material::OBJECT_BIT;
     }
   }
@@ -368,7 +368,7 @@ namespace oz
         hit.normal   = str->toAbsoluteCS( *tmpNormal );
         hit.obj      = null;
         hit.str      = str;
-        hit.iEntity  = iEntity;
+        hit.entity   = entity;
         hit.material = brush->material;
       }
     }
@@ -469,7 +469,7 @@ namespace oz
 
   void Collider::trimAABBEntities()
   {
-    if( bsp->nModels == 1 ) {
+    if( bsp->nEntityClasses == 1 ) {
       return;
     }
 
@@ -477,21 +477,19 @@ namespace oz
     Vec3   originalEndPos   = endPos;
     Bounds localTrace       = str->toStructCS( trace - str->p );
 
-    for( int i = 1; i < bsp->nModels; ++i ) {
-      const BSP::Model& model = bsp->models[i];
-      const Vec3& offset = str->entities[i].offset;
+    for( int i = 1; i < bsp->nEntityClasses; ++i ) {
+      entity = &str->entities[i];
+      entityClazz = entity->clazz;
 
-      iEntity = i;
-
-      if( localTrace.overlaps( model + offset ) ) {
-        for( int j = 0; j < model.nBrushes; ++j ) {
-          int index = model.firstBrush + j;
+      if( localTrace.overlaps( *entityClazz + entity->offset ) ) {
+        for( int j = 0; j < entityClazz->nBrushes; ++j ) {
+          int index = entityClazz->firstBrush + j;
           const BSP::Brush& brush = bsp->brushes[index];
 
           assert( !visitBrush( index ) );
 
-          startPos = originalStartPos - offset;
-          endPos   = originalEndPos   - offset;
+          startPos = originalStartPos - entity->offset;
+          endPos   = originalEndPos   - entity->offset;
 
           trimAABBBrush( &brush );
         }
@@ -526,7 +524,7 @@ namespace oz
         hit.normal   = quad.tri[0].normal;
         hit.obj      = null;
         hit.str      = null;
-        hit.iEntity  = -1;
+        hit.entity   = null;
         hit.material = Material::TERRAIN_BIT;
 
         return false;
@@ -551,7 +549,7 @@ namespace oz
         hit.normal   = quad.tri[1].normal;
         hit.obj      = null;
         hit.str      = null;
-        hit.iEntity  = -1;
+        hit.entity   = null;
         hit.material = Material::TERRAIN_BIT;
 
         return false;
@@ -587,6 +585,7 @@ namespace oz
     hit.ratio      = 1.0f;
     hit.obj        = null;
     hit.str        = null;
+    hit.entity     = null;
     hit.material   = 0;
     hit.waterDepth = 0.0f;
     hit.inWater    = false;
@@ -620,7 +619,7 @@ namespace oz
 
               startPos = str->toStructCS( originalStartPos - str->p );
               endPos   = str->toStructCS( originalEndPos - str->p );
-              iEntity  = 0;
+              entity   = null;
 
               trimAABBNode( 0 );
               trimAABBEntities();
@@ -743,8 +742,8 @@ namespace oz
             startPos = str->toStructCS( sObj->p - str->p ) - entity->offset;
             aabb.dim = sObj->dim + dimMargin;
 
-            for( int i = 0; i < model->nBrushes; ++i ) {
-              const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
+            for( int i = 0; i < entityClazz->nBrushes; ++i ) {
+              const BSP::Brush& brush = bsp->brushes[entityClazz->firstBrush + i];
 
               if( overlapsAABBBrush( &brush ) ) {
                 objects->add( sObj );
@@ -819,16 +818,14 @@ namespace oz
     return overlapsAABBOrbisOSO();
   }
 
-  bool Collider::overlapsOO( const Structure* str_, int iEntity_ )
+  bool Collider::overlapsOO( const Entity* entity_ )
   {
-    str = str_;
-    iEntity = iEntity_;
+    str = entity_->str;
+    entity = entity_;
+    bsp = entity_->clazz->bsp;
+    entityClazz = entity_->clazz;
 
-    entity = &str_->entities[iEntity];
-    bsp = orbis.bsps[str_->iBsp];
-    model = &bsp->models[iEntity];
-
-    trace = str->toAbsoluteCS( *model + entity->offset ) + str_->p;
+    trace = str->toAbsoluteCS( *entityClazz + entity->offset ) + str->p;
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsEntityOrbisOO();
@@ -868,17 +865,14 @@ namespace oz
     touchOrbisOverlaps();
   }
 
-  void Collider::getOverlaps( const Structure* str_, int iEntity_,
-                              Vector<Object*>* objects, float margin )
+  void Collider::getOverlaps( const Entity* entity_, Vector<Object*>* objects, float margin )
   {
-    str = str_;
-    iEntity = iEntity_;
+    str = entity_->str;
+    entity = entity_;
+    bsp = entity_->clazz->bsp;
+    entityClazz = entity_->clazz;
 
-    entity = &str_->entities[iEntity];
-    bsp = orbis.bsps[str_->iBsp];
-    model = &bsp->models[iEntity];
-
-    trace = str->toAbsoluteCS( *model + entity->offset ) + str_->p;
+    trace = str->toAbsoluteCS( *entityClazz + entity->offset ) + str->p;
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     getEntityOverlaps( objects, margin );

@@ -30,7 +30,7 @@ namespace client
   void BasicAudio::play( const Audio* parent )
   {
     const Dynamic* dyn = static_cast<const Dynamic*>( obj );
-    const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->type->audioSamples;
+    const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->clazz->audioSamples;
 
     parent = parent == null ? this : parent;
 

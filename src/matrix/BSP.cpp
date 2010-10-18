@@ -150,8 +150,6 @@ namespace oz
     int  size[2];
   };
 
-#ifndef OZ_USE_PREBUILT
-
   inline bool BSP::includes( const BSP::Brush& brush ) const
   {
     for( int i = 0; i < brush.nSides; ++i ) {
@@ -339,62 +337,64 @@ namespace oz
     fseek( file, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
     fread( leafBrushes, sizeof( int ), nLeafBrushes, file );
 
-    nModels = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) );
-    models = new BSP::Model[nModels];
+    nEntityClasses = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) );
+    entityClasses = new EntityClass[nEntityClasses];
     fseek( file, lumps[QBSP_LUMP_MODELS].offset, SEEK_SET );
 
-    if( nModels < 1 ) {
+    if( nEntityClasses < 1 ) {
       log.println( "BSP should contain at least 1 model (entire BSP)" );
       return false;
     }
 
-    assert( nModels <= 99 );
+    assert( nEntityClasses <= 99 );
     char keyBuffer[] = "model  ";
 
-    for( int i = 0; i < nModels; ++i ) {
+    for( int i = 0; i < nEntityClasses; ++i ) {
       QBSPModel model;
 
       fread( &model, sizeof( QBSPModel ), 1, file );
 
-      models[i].mins.x = model.bb[0][0] * scale;
-      models[i].mins.y = model.bb[0][1] * scale;
-      models[i].mins.z = model.bb[0][2] * scale;
+      entityClasses[i].mins.x = model.bb[0][0] * scale;
+      entityClasses[i].mins.y = model.bb[0][1] * scale;
+      entityClasses[i].mins.z = model.bb[0][2] * scale;
 
-      models[i].maxs.x = model.bb[1][0] * scale;
-      models[i].maxs.y = model.bb[1][1] * scale;
-      models[i].maxs.z = model.bb[1][2] * scale;
+      entityClasses[i].maxs.x = model.bb[1][0] * scale;
+      entityClasses[i].maxs.y = model.bb[1][1] * scale;
+      entityClasses[i].maxs.z = model.bb[1][2] * scale;
 
-      models[i].mins -= Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
-      models[i].maxs += Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
+      entityClasses[i].mins -= Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
+      entityClasses[i].maxs += Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
 
-      models[i].firstBrush = model.firstBrush;
-      models[i].nBrushes   = model.nBrushes;
-      models[i].firstFace  = model.firstFace;
-      models[i].nFaces     = model.nFaces;
+      entityClasses[i].bsp = this;
+
+      entityClasses[i].firstBrush = model.firstBrush;
+      entityClasses[i].nBrushes   = model.nBrushes;
+      entityClasses[i].firstFace  = model.firstFace;
+      entityClasses[i].nFaces     = model.nFaces;
 
       keyBuffer[5] = char( '0' + i / 10 );
       keyBuffer[6] = char( '0' + i % 10 );
       String keyName = keyBuffer;
 
-      models[i].move.x = bspConfig.get( keyName + ".move.x", 0.0f );
-      models[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
-      models[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
+      entityClasses[i].move.x = bspConfig.get( keyName + ".move.x", 0.0f );
+      entityClasses[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
+      entityClasses[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
 
-      models[i].ratioInc = bspConfig.get( keyName + ".ratioInc", Timer::TICK_TIME );
-      models[i].flags = 0;
+      entityClasses[i].ratioInc = bspConfig.get( keyName + ".ratioInc", Timer::TICK_TIME );
+      entityClasses[i].flags = 0;
 
       String type = bspConfig.get( keyName + ".type", "BLOCKING" );
       if( type.equals( "IGNORING" ) ) {
-        models[i].type = Model::IGNORING;
+        entityClasses[i].mode = EntityClass::IGNORING;
       }
       else if( type.equals( "BLOCKING" ) ) {
-        models[i].type = Model::BLOCKING;
+        entityClasses[i].mode = EntityClass::BLOCKING;
       }
       else if( type.equals( "PUSHING" ) ) {
-        models[i].type = Model::PUSHING;
+        entityClasses[i].mode = EntityClass::PUSHING;
       }
       else if( type.equals( "CRUSHING" ) ) {
-        models[i].type = Model::CRUSHING;
+        entityClasses[i].mode = EntityClass::CRUSHING;
       }
       else {
         log.println( "invalid BSP model type, should be either IGNORING, BLOCKING, PUSHING or "
@@ -404,13 +404,13 @@ namespace oz
         return false;
       }
 
-      models[i].margin = bspConfig.get( keyName + ".margin", 1.0f );
-      models[i].slideTime = 1.0f;
-      models[i].timeout = 5.0f;
+      entityClasses[i].margin = bspConfig.get( keyName + ".margin", 1.0f );
+      entityClasses[i].slideTime = 1.0f;
+      entityClasses[i].timeout = 5.0f;
     }
 
-    models[0].mins = mins;
-    models[0].maxs = maxs;
+    entityClasses[0].mins = mins;
+    entityClasses[0].maxs = maxs;
 
     nBrushSides = int( lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide ) );
     brushSides = new int[nBrushSides];
@@ -584,14 +584,14 @@ namespace oz
         }
       }
       // adjust brush references (for models)
-      for( int j = 0; j < nModels; ++j ) {
-        if( i < models[j].firstBrush ) {
-          --models[j].firstBrush;
+      for( int j = 0; j < nEntityClasses; ++j ) {
+        if( i < entityClasses[j].firstBrush ) {
+          --entityClasses[j].firstBrush;
         }
-        else if( i < models[j].firstBrush + models[j].nBrushes ) {
-          assert( models[j].nBrushes > 0 );
+        else if( i < entityClasses[j].firstBrush + entityClasses[j].nBrushes ) {
+          assert( entityClasses[j].nBrushes > 0 );
 
-          --models[j].nBrushes;
+          --entityClasses[j].nBrushes;
         }
       }
       log.printEnd();
@@ -858,8 +858,8 @@ namespace oz
       }
     }
 
-    models[0].mins = mins;
-    models[0].maxs = maxs;
+    entityClasses[0].mins = mins;
+    entityClasses[0].maxs = maxs;
 
     log.printEnd( "(%g %g %g) (%g %g %g)", mins.x, mins.y, mins.z, maxs.x, maxs.y, maxs.z );
 
@@ -873,22 +873,22 @@ namespace oz
 
     int size = 0;
 
-    size += 1            * int( sizeof( Bounds ) );
-    size += 2            * int( sizeof( float ) );
-    size += 14           * int( sizeof( int ) );
-    size += nPlanes      * int( sizeof( Plane ) );
-    size += nNodes       * int( sizeof( Node ) );
-    size += nLeaves      * int( sizeof( Leaf ) );
-    size += nLeafFaces   * int( sizeof( int ) );
-    size += nLeafBrushes * int( sizeof( int ) );
-    size += nBrushes     * int( sizeof( Brush ) );
-    size += nBrushSides  * int( sizeof( int ) );
-    size += nModels      * int( sizeof( Model ) );
-    size += nTextures    * int( 64 * sizeof( char ) );
-    size += nVertices    * int( sizeof( Vertex ) );
-    size += nIndices     * int( sizeof( int ) );
-    size += nFaces       * int( sizeof( Face ) );
-    size += nLightmaps   * int( sizeof( Lightmap ) );
+    size += 1              * int( sizeof( Bounds ) );
+    size += 2              * int( sizeof( float ) );
+    size += 14             * int( sizeof( int ) );
+    size += nPlanes        * int( sizeof( Plane ) );
+    size += nNodes         * int( sizeof( Node ) );
+    size += nLeaves        * int( sizeof( Leaf ) );
+    size += nLeafFaces     * int( sizeof( int ) );
+    size += nLeafBrushes   * int( sizeof( int ) );
+    size += nBrushes       * int( sizeof( Brush ) );
+    size += nBrushSides    * int( sizeof( int ) );
+    size += nEntityClasses * int( sizeof( EntityClass ) );
+    size += nTextures      * int( 64 * sizeof( char ) );
+    size += nVertices      * int( sizeof( Vertex ) );
+    size += nIndices       * int( sizeof( int ) );
+    size += nFaces         * int( sizeof( Face ) );
+    size += nLightmaps     * int( sizeof( Lightmap ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
@@ -905,7 +905,7 @@ namespace oz
     os.writeInt( nLeafBrushes );
     os.writeInt( nBrushes );
     os.writeInt( nBrushSides );
-    os.writeInt( nModels );
+    os.writeInt( nEntityClasses );
     os.writeInt( nTextures );
     os.writeInt( nVertices );
     os.writeInt( nIndices );
@@ -951,20 +951,20 @@ namespace oz
       os.writeInt( brushSides[i] );
     }
 
-    for( int i = 0; i < nModels; ++i ) {
-      os.writeVec3( models[i].mins );
-      os.writeVec3( models[i].maxs );
-      os.writeInt( models[i].firstBrush );
-      os.writeInt( models[i].nBrushes );
-      os.writeInt( models[i].firstFace );
-      os.writeInt( models[i].nFaces );
-      os.writeVec3( models[i].move );
-      os.writeFloat( models[i].ratioInc );
-      os.writeInt( models[i].flags );
-      os.writeChar( models[i].type );
-      os.writeFloat( models[i].margin );
-      os.writeFloat( models[i].slideTime );
-      os.writeFloat( models[i].timeout );
+    for( int i = 0; i < nEntityClasses; ++i ) {
+      os.writeVec3( entityClasses[i].mins );
+      os.writeVec3( entityClasses[i].maxs );
+      os.writeInt( entityClasses[i].firstBrush );
+      os.writeInt( entityClasses[i].nBrushes );
+      os.writeInt( entityClasses[i].firstFace );
+      os.writeInt( entityClasses[i].nFaces );
+      os.writeVec3( entityClasses[i].move );
+      os.writeFloat( entityClasses[i].ratioInc );
+      os.writeInt( entityClasses[i].flags );
+      os.writeChar( entityClasses[i].mode );
+      os.writeFloat( entityClasses[i].margin );
+      os.writeFloat( entityClasses[i].slideTime );
+      os.writeFloat( entityClasses[i].timeout );
     }
 
     for( int i = 0; i < nTextures; ++i ) {
@@ -1009,38 +1009,35 @@ namespace oz
     return true;
   }
 
-#endif
-
   bool BSP::loadOZBSP( const char* fileName )
   {
     Buffer buffer;
     buffer.load( fileName );
 
     if( buffer.isEmpty() ) {
-      log.println( "Cannot read file" );
       return false;
     }
 
     InputStream is = buffer.inputStream();
 
-    mins         = is.readVec3();
-    maxs         = is.readVec3();
-    maxDim       = is.readFloat();
-    life         = is.readFloat();
+    mins           = is.readVec3();
+    maxs           = is.readVec3();
+    maxDim         = is.readFloat();
+    life           = is.readFloat();
 
-    nPlanes      = is.readInt();
-    nNodes       = is.readInt();
-    nLeaves      = is.readInt();
-    nLeafBrushes = is.readInt();
-    nLeafFaces   = is.readInt();
-    nBrushes     = is.readInt();
-    nBrushSides  = is.readInt();
-    nModels      = is.readInt();
-    nTextures    = is.readInt();
-    nVertices    = is.readInt();
-    nIndices     = is.readInt();
-    nFaces       = is.readInt();
-    nLightmaps   = is.readInt();
+    nPlanes        = is.readInt();
+    nNodes         = is.readInt();
+    nLeaves        = is.readInt();
+    nLeafBrushes   = is.readInt();
+    nLeafFaces     = is.readInt();
+    nBrushes       = is.readInt();
+    nBrushSides    = is.readInt();
+    nEntityClasses = is.readInt();
+    nTextures      = is.readInt();
+    nVertices      = is.readInt();
+    nIndices       = is.readInt();
+    nFaces         = is.readInt();
+    nLightmaps     = is.readInt();
 
     int size = 0;
 
@@ -1051,7 +1048,7 @@ namespace oz
     size += nLeafFaces   * int( sizeof( int ) );
     size += nBrushes     * int( sizeof( Brush ) );
     size += nBrushSides  * int( sizeof( int ) );
-    size += nModels      * int( sizeof( Model ) );
+    size += nEntityClasses      * int( sizeof( EntityClass ) );
     size += nTextures    * int( 64 * sizeof( char ) );
     size += nVertices    * int( sizeof( Vertex ) );
     size += nIndices     * int( sizeof( int ) );
@@ -1113,23 +1110,23 @@ namespace oz
     }
     data += nBrushSides * sizeof( int );
 
-    models = new( data ) Model[nModels];
-    for( int i = 0; i < nModels; ++i ) {
-      models[i].mins = is.readVec3();
-      models[i].maxs = is.readVec3();
-      models[i].firstBrush = is.readInt();
-      models[i].nBrushes = is.readInt();
-      models[i].firstFace = is.readInt();
-      models[i].nFaces = is.readInt();
-      models[i].move = is.readVec3();
-      models[i].ratioInc = is.readFloat();
-      models[i].flags = is.readInt();
-      models[i].type = Model::Type( is.readChar() );
-      models[i].margin = is.readFloat();
-      models[i].slideTime = is.readFloat();
-      models[i].timeout = is.readFloat();
+    entityClasses = new( data ) EntityClass[nEntityClasses];
+    for( int i = 0; i < nEntityClasses; ++i ) {
+      entityClasses[i].mins = is.readVec3();
+      entityClasses[i].maxs = is.readVec3();
+      entityClasses[i].firstBrush = is.readInt();
+      entityClasses[i].nBrushes = is.readInt();
+      entityClasses[i].firstFace = is.readInt();
+      entityClasses[i].nFaces = is.readInt();
+      entityClasses[i].move = is.readVec3();
+      entityClasses[i].ratioInc = is.readFloat();
+      entityClasses[i].flags = is.readInt();
+      entityClasses[i].mode = EntityClass::Mode( is.readChar() );
+      entityClasses[i].margin = is.readFloat();
+      entityClasses[i].slideTime = is.readFloat();
+      entityClasses[i].timeout = is.readFloat();
     }
-    data += nModels * sizeof( Model );
+    data += nEntityClasses * sizeof( EntityClass );
 
     textures = new( data ) int[nTextures];
     for( int i = 0; i < nTextures; ++i ) {
@@ -1185,68 +1182,9 @@ namespace oz
     return true;
   }
 
-  BSP::BSP() : nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafFaces( 0 ), nModels( 0 ),
-      nBrushes( 0 ), nBrushSides( 0 ), nTextures( 0 ), nVertices( 0 ), nIndices( 0 ), nFaces( 0 ),
-      nLightmaps( 0 ),
-      planes( null ), nodes( null ), leaves( null ), leafFaces( null ), models( null ),
-      brushes( null ), brushSides( null ), textures( null ), vertices( null ), indices( null ),
-      faces( null ), lightmaps( null )
-  {}
-
-  BSP::~BSP()
-  {
-    free();
-  }
-
-  bool BSP::load( const char* name_ )
-  {
-    name = name_;
-
-#ifdef OZ_USE_PREBUILT
-
-    log.println( "Loading OpenZone BSP structure '%s' {", name.cstr() );
-    log.indent();
-
-    if( !loadOZBSP( "maps/" + name + ".ozBSP" ) ) {
-      free();
-      log.unindent();
-      log.println();
-    }
-
-    log.unindent();
-    log.println( "}" );
-
-#else
-
-    log.println( "Loading Quake 3 BSP structure '%s' {", name.cstr() );
-    log.indent();
-
-    if( !loadQBSP( "maps/" + name ) ) {
-      free();
-      log.unindent();
-      log.println( "}" );
-      return false;
-    }
-
-    optimise();
-
-#ifdef OZ_MAKE_PREBUILT
-    save( "maps/" + name + ".ozBSP" );
-#endif
-
-    log.unindent();
-    log.println( "}" );
-
-#endif
-
-    return true;
-  }
-
-  void BSP::free()
+  void BSP::freeOZBSP()
   {
     log.print( "Freeing BSP structure '%s' ...", name.cstr() );
-
-#ifdef OZ_USE_PREBUILT
 
     if( planes != null ) {
       aDestruct( planes, nPlanes );
@@ -1254,7 +1192,7 @@ namespace oz
       aDestruct( leaves, nLeaves );
       aDestruct( leafBrushes, nLeafBrushes );
       aDestruct( leafFaces, nLeafFaces );
-      aDestruct( models, nModels );
+      aDestruct( entityClasses, nEntityClasses );
       aDestruct( brushes, nBrushes );
       aDestruct( brushSides, nBrushSides );
       aDestruct( textures, nTextures );
@@ -1265,36 +1203,41 @@ namespace oz
 
       Alloc::dealloc( planes );
 
-      nPlanes      = 0;
-      nNodes       = 0;
-      nLeaves      = 0;
-      nLeafBrushes = 0;
-      nLeafFaces   = 0;
-      nModels      = 0;
-      nBrushes     = 0;
-      nBrushSides  = 0;
-      nTextures    = 0;
-      nVertices    = 0;
-      nIndices     = 0;
-      nFaces       = 0;
-      nLightmaps   = 0;
+      nPlanes        = 0;
+      nNodes         = 0;
+      nLeaves        = 0;
+      nLeafBrushes   = 0;
+      nLeafFaces     = 0;
+      nEntityClasses = 0;
+      nBrushes       = 0;
+      nBrushSides    = 0;
+      nTextures      = 0;
+      nVertices      = 0;
+      nIndices       = 0;
+      nFaces         = 0;
+      nLightmaps     = 0;
 
-      planes      = null;
-      nodes       = null;
-      leaves      = null;
-      leafBrushes = null;
-      leafFaces   = null;
-      models      = null;
-      brushes     = null;
-      brushSides  = null;
-      textures    = null;
-      vertices    = null;
-      indices     = null;
-      faces       = null;
-      lightmaps   = null;
+      planes        = null;
+      nodes         = null;
+      leaves        = null;
+      leafBrushes   = null;
+      leafFaces     = null;
+      entityClasses = null;
+      brushes       = null;
+      brushSides    = null;
+      textures      = null;
+      vertices      = null;
+      indices       = null;
+      faces         = null;
+      lightmaps     = null;
     }
 
-#else
+    log.printEnd( " OK" );
+  }
+
+  void BSP::freeQBSP()
+  {
+    log.print( "Freeing Quake 3 BSP structure '%s' ...", name.cstr() );
 
     if( planes != null ) {
       delete[] planes;
@@ -1321,10 +1264,10 @@ namespace oz
       nLeafFaces = 0;
       leafFaces = null;
     }
-    if( models != null ) {
-      delete[] models;
-      nModels = 0;
-      models = null;
+    if( entityClasses != null ) {
+      delete[] entityClasses;
+      nEntityClasses = 0;
+      entityClasses = null;
     }
     if( brushes != null ) {
       delete[] brushes;
@@ -1362,9 +1305,59 @@ namespace oz
       lightmaps = null;
     }
 
-#endif
+    log.printEnd( " OK" );
+  }
+
+  BSP::BSP( const char* name_ ) :
+      nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nLeafFaces( 0 ),
+      nEntityClasses( 0 ), nBrushes( 0 ), nBrushSides( 0 ), nTextures( 0 ), nVertices( 0 ),
+      nIndices( 0 ), nFaces( 0 ), nLightmaps( 0 ),
+      planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), leafFaces( null ),
+      entityClasses( null ), brushes( null ), brushSides( null ), textures( null ),
+      vertices( null ), indices( null ), faces( null ), lightmaps( null )
+  {
+    name = name_;
+
+    log.print( "Loading OpenZone BSP structure '%s' ...", name.cstr() );
+
+    if( !loadOZBSP( "maps/" + name + ".ozBSP" ) ) {
+      log.printEnd( " Failed" );
+      freeOZBSP();
+      throw Exception( "Matrix ozBSP loading failed" );
+    }
 
     log.printEnd( " OK" );
+  }
+
+  BSP::BSP( const char* name_, int ) :
+      nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nLeafFaces( 0 ),
+      nEntityClasses( 0 ), nBrushes( 0 ), nBrushSides( 0 ), nTextures( 0 ), nVertices( 0 ),
+      nIndices( 0 ), nFaces( 0 ), nLightmaps( 0 ),
+      planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), leafFaces( null ),
+      entityClasses( null ), brushes( null ), brushSides( null ), textures( null ),
+      vertices( null ), indices( null ), faces( null ), lightmaps( null )
+  {
+    name = name_;
+
+    log.println( "Loading Quake 3 BSP structure '%s' {", name.cstr() );
+    log.indent();
+
+    if( !loadQBSP( "maps/" + name ) ) {
+      freeQBSP();
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Matrix QBSP loading failed" );
+    }
+
+    optimise();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  BSP::~BSP()
+  {
+    freeOZBSP();
   }
 
 }

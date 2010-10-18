@@ -16,6 +16,42 @@ namespace oz
 {
 
   class Object;
+  class Structure;
+
+  class Entity
+  {
+    friend class Structure;
+
+    public:
+
+      enum State
+      {
+        CLOSED,
+        OPENING,
+        OPENING_BLOCKED,
+        OPENED,
+        CLOSING,
+        CLOSING_BLOCKED
+      };
+
+      static Vector<Object*> overlapingObjs;
+
+      const EntityClass* clazz;
+      Structure*         str;
+      Vec3               offset;
+      State              state;
+
+      float              ratio;
+      float              time;
+
+    private:
+
+      void updateIgnoring();
+      void updateBlocking();
+      void updatePushing();
+      void updateCrushing();
+
+  };
 
   class Structure : public Bounds
   {
@@ -33,39 +69,6 @@ namespace oz
         R90  = 1,
         R180 = 2,
         R270 = 3
-      };
-
-      class Entity
-      {
-        friend class Structure;
-
-        public:
-
-          enum State
-          {
-            CLOSED,
-            OPENING,
-            OPENING_BLOCKED,
-            OPENED,
-            CLOSING,
-            CLOSING_BLOCKED
-          };
-
-          static Vector<Object*> overlapingObjs;
-
-          Vec3  offset;
-          State state;
-
-          float ratio;
-          float time;
-
-        private:
-
-          void updateIgnoring( const BSP::Model* model );
-          void updateBlocking( const Structure* str, int iEntity, const BSP::Model* model );
-          void updatePushing( const Structure* str, int iEntity, const BSP::Model* model );
-          void updateCrushing( const Structure* str, int iEntity, const BSP::Model* model );
-
       };
 
       static Pool<Structure, 0, 256> pool;

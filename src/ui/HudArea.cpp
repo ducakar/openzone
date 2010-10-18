@@ -64,7 +64,7 @@ namespace ui
   {
     if( camera.tagged != -1 && camera.state != Camera::STRATEGIC ) {
       const Object* obj = camera.taggedObj;
-      const ObjectClass* clazz = obj->type;
+      const ObjectClass* clazz = obj->clazz;
       float life = ( obj->flags & Object::BOT_BIT ) ?
           ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
           obj->life / clazz->life;
@@ -95,7 +95,7 @@ namespace ui
     }
 
     if( camera.bot != -1 ) {
-      const BotClass* clazz = static_cast<const BotClass*>( camera.botObj->type );
+      const BotClass* clazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
       float life         = ( camera.botObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
       int   lifeWidth    = max( int( life * 188.0f ), 0 );

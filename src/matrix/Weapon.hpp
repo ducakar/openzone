@@ -41,7 +41,7 @@ namespace oz
         assert( user != null );
 
         if( shotTime == 0.0f ) {
-          const WeaponClass* clazz = static_cast<const WeaponClass*>( type );
+          const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
 
           shotTime = clazz->shotInterval;
 

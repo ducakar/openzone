@@ -95,7 +95,7 @@ namespace client
 
   Audio::Audio( const Object* obj_ ) : obj( obj_ ), flags( 0 )
   {
-    const int* samples = obj->type->audioSamples;
+    const int* samples = obj->clazz->audioSamples;
 
     for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; ++i ) {
       if( samples[i] != -1 ) {
@@ -107,7 +107,7 @@ namespace client
 
   Audio::~Audio()
   {
-    const int* samples = obj->type->audioSamples;
+    const int* samples = obj->clazz->audioSamples;
 
     for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; ++i ) {
       if( samples[i] != -1 ) {

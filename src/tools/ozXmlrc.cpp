@@ -19,8 +19,8 @@ int main( int argc, char** argv )
 
   if( argc != 2 ) {
     oz::log.println( "usage: ozXmlrc file_to_convert" );
-    oz::log.println( "  if `file.xml' file is given, a new converted file `file.xml.rc' is created and "
-        "vice versa" );
+    oz::log.println( "  if `file.xml' file is given, a new converted file `file.xml.rc' is created "
+        "and vice versa" );
     return -1;
   }
 

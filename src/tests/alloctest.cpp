@@ -26,7 +26,6 @@ int main( int, char** )
 
   chdir( "data" );
 
-  oz::log.init( "", false, "  " );
   matrix.init();
   orbis.load();
 

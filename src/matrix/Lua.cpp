@@ -456,7 +456,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua_pushstring( l, lua.obj->type->name );
+    lua_pushstring( l, lua.obj->clazz->name );
     return 1;
   }
 
@@ -476,7 +476,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->life = Math::bound( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->type->life );
+    lua.obj->life = Math::bound( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->clazz->life );
     return 0;
   }
 
@@ -488,7 +488,7 @@ namespace oz
 
     lua.obj->life = Math::bound( lua.obj->life + float( lua_tonumber( l, 1 ) ),
                                  0.0f,
-                                 lua.obj->type->life );
+                                 lua.obj->clazz->life );
     return 0;
   }
 
@@ -781,7 +781,7 @@ namespace oz
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
-    const DynamicClass* clazz = static_cast<const DynamicClass*>( lua.obj->type );
+    const DynamicClass* clazz = static_cast<const DynamicClass*>( lua.obj->clazz );
 
     obj->mass = clazz->mass;
     return 0;
@@ -842,7 +842,7 @@ namespace oz
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
-    const DynamicClass* clazz = static_cast<const DynamicClass*>( lua.obj->type );
+    const DynamicClass* clazz = static_cast<const DynamicClass*>( lua.obj->clazz );
 
     obj->lift = clazz->lift;
     return 0;
@@ -1267,7 +1267,7 @@ namespace oz
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
-    const BotClass* clazz = static_cast<const BotClass*>( bot->type );
+    const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
     bot->stamina = Math::bound( float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;
@@ -1283,7 +1283,7 @@ namespace oz
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
-    const BotClass* clazz = static_cast<const BotClass*>( bot->type );
+    const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
     bot->stamina = Math::bound( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;

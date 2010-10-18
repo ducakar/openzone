@@ -161,16 +161,16 @@ namespace client
       Model* createModel( const Object* obj )
       {
         if( obj->flags & Object::MODEL_BIT ) {
-          assert( !obj->type->modelType.isEmpty() );
+          assert( !obj->clazz->modelType.isEmpty() );
 
-          const Model::CreateFunc* value = modelClasses.find( obj->type->modelType );
+          const Model::CreateFunc* value = modelClasses.find( obj->clazz->modelType );
           if( value == null ) {
             throw Exception( "Invalid Model" );
           }
           return ( *value )( obj );
         }
         else {
-          assert( obj->type->modelType.isEmpty() );
+          assert( obj->clazz->modelType.isEmpty() );
 
           return null;
         }
@@ -179,16 +179,16 @@ namespace client
       Audio* createAudio( const Object* obj )
       {
         if( obj->flags & Object::AUDIO_BIT ) {
-          assert( !obj->type->audioType.isEmpty() );
+          assert( !obj->clazz->audioType.isEmpty() );
 
-          const Audio::CreateFunc* value = audioClasses.find( obj->type->audioType );
+          const Audio::CreateFunc* value = audioClasses.find( obj->clazz->audioType );
           if( value == null ) {
             throw Exception( "Invalid Audio" );
           }
           return ( *value )( obj );
         }
         else {
-          assert( obj->type->audioType.isEmpty() );
+          assert( obj->clazz->audioType.isEmpty() );
 
           return null;
         }

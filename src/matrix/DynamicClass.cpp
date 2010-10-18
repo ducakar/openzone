@@ -101,7 +101,7 @@ namespace oz
     obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
-    obj->type     = this;
+    obj->clazz     = this;
     obj->life     = life;
 
     obj->mass     = mass;
@@ -118,7 +118,7 @@ namespace oz
     obj->dim    = dim;
 
     obj->index  = index;
-    obj->type   = this;
+    obj->clazz   = this;
 
     obj->mass   = mass;
     obj->lift   = lift;

@@ -471,17 +471,17 @@ namespace client
     int iLeaf = getLeaf();
     checkInWaterBrush( &bsp->leaves[iLeaf] );
 
-    for( int i = 0; i < bsp->nModels; ++i ) {
-      const oz::BSP::Model& model = bsp->models[i];
+    for( int i = 0; i < bsp->nEntityClasses; ++i ) {
+      const oz::EntityClass& clazz = bsp->entityClasses[i];
       const Vec3& entityPos = str->entities[i].offset;
 
       glPushMatrix();
       glTranslatef( entityPos.x, entityPos.y, entityPos.z );
 
-      for( int j = 0; j < model.nFaces; ++j ) {
-        const oz::BSP::Face& face = bsp->faces[ model.firstFace + j ];
+      for( int j = 0; j < clazz.nFaces; ++j ) {
+        const oz::BSP::Face& face = bsp->faces[ clazz.firstFace + j ];
 
-        if( !hiddenFaces.get( model.firstFace + j ) ) {
+        if( !hiddenFaces.get( clazz.firstFace + j ) ) {
           drawFace( &face );
         }
       }

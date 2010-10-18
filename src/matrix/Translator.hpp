@@ -65,6 +65,8 @@ namespace oz
       Vector<Resource> sounds;
       Vector<Resource> bsps;
 
+      Vector<Resource> terras;
+
       Vector<Resource> matrixScripts;
       Vector<Resource> nirvanaScripts;
 

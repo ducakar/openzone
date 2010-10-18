@@ -29,7 +29,7 @@ namespace oz
 
   struct Cell
   {
-    static const int   SIZEI = 8;
+    static const int   SIZEI = 16;
     static const float SIZE;
     static const float INV_SIZE;
     static const float RADIUS;
@@ -39,10 +39,10 @@ namespace oz
     SVector<short, 6> structs;
   };
 
-  struct MarkerCell
-  {
-    SVector<short, 6> markers;
-  };
+//  struct MarkerCell
+//  {
+//    SVector<short, 6> markers;
+//  };
 
   class Orbis : public Bounds
   {
@@ -56,7 +56,7 @@ namespace oz
       static const float DIM;
 
       Cell               cells[Orbis::MAX][Orbis::MAX];
-      Cell               markerCells[Orbis::MAX][Orbis::MAX];
+//      Cell               markerCells[Orbis::MAX][Orbis::MAX];
       Sky                sky;
       Terra              terra;
       Vector<BSP*>       bsps;
@@ -387,10 +387,7 @@ namespace oz
 
   inline void Orbis::requestBSP( int iBsp ) {
     if( bsps[iBsp] == null ) {
-      bsps[iBsp] = new BSP();
-      if( !bsps[iBsp]->load( translator.bsps[iBsp].name ) ) {
-        throw Exception( "Matrix BSP loading failed" );
-      }
+      bsps[iBsp] = new BSP( translator.bsps[iBsp].name );
     }
   }
 

@@ -67,6 +67,7 @@ namespace oz
 
       String fileName = "textures/oz/" + name;
       String baseName = name.substring( 0, dot );
+
       if( textureIndices.contains( baseName ) ) {
         log.println( "duplicated texture: %s", baseName.cstr() );
         throw Exception( "Translator initialisation failure" );
@@ -110,6 +111,7 @@ namespace oz
 
       String fileName = "snd/" + name;
       String baseName = name.substring( 0, dot );
+
       if( soundIndices.contains( baseName ) ) {
         log.println( "duplicated sound: %s", baseName.cstr() );
         continue;
@@ -147,14 +149,48 @@ namespace oz
         continue;
       }
 
-      String fileName = "maps/" + name;
       String baseName = name.substring( 0, dot );
+
       if( bspIndices.contains( baseName ) ) {
         log.println( "duplicated bsp: %s", baseName.cstr() );
         throw Exception( "Translator initialisation failure" );
       }
       bspIndices.add( baseName, bsps.length() );
       bsps.add( Resource( baseName, "" ) );
+
+      log.println( "%s", baseName.cstr() );
+    }
+    closedir( dir );
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "Terrain heightmaps (*.rc in 'terra') {" );
+    log.indent();
+
+    dir = opendir( "terra" );
+    if( dir == null ) {
+      free();
+
+      log.println( "Cannot open directory 'terra'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    while( ( file = readdir( dir ) ) != null ) {
+      String name = file->d_name;
+      int dot = name.lastIndex( '.' );
+
+      if( dot <= 0 ) {
+        continue;
+      }
+      String extension = name.substring( dot );
+      if( !extension.equals( ".rc" ) ) {
+        continue;
+      }
+
+      String baseName = name.substring( 0, dot );
+
+      terras.add( Resource( baseName, "" ) );
 
       log.println( "%s", baseName.cstr() );
     }

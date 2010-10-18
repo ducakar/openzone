@@ -54,10 +54,10 @@ namespace oz
         Object* sObj = const_cast<Object*>( collider.hit.obj );
         float damage = velocity2 * part->mass;
 
-        if( damage > sObj->type->damageThreshold ) {
-          damage -= sObj->type->damageThreshold;
+        if( damage > sObj->clazz->damageThreshold ) {
+          damage -= sObj->clazz->damageThreshold;
           damage *= Math::frand();
-          sObj->damage( sObj->type->damageThreshold + damage );
+          sObj->damage( sObj->clazz->damageThreshold + damage );
         }
       }
     }

@@ -174,11 +174,7 @@ namespace oz
         int iBsp = translator.bspIndex( bspName );
 
         if( bsps[iBsp] == null ) {
-          bsps[iBsp] = new BSP();
-
-          if( !bsps[iBsp]->load( translator.bsps[iBsp].name ) ) {
-            throw Exception( "Matrix BSP loading failed" );
-          }
+          bsps[iBsp] = new BSP( translator.bsps[iBsp].name );
         }
 
         str = translator.createStruct( i, bspName, istream );
@@ -305,7 +301,7 @@ namespace oz
         if( obj->cell == null ) {
           obj->flags |= obj->CUT_BIT;
         }
-        ostream->writeString( obj->type->name );
+        ostream->writeString( obj->clazz->name );
         obj->writeFull( ostream );
       }
     }

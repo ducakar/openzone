@@ -55,7 +55,7 @@ namespace oz
 
   void Bot::onUpdate()
   {
-    const BotClass* clazz = static_cast<const BotClass*>( type );
+    const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
     // clear invalid references from inventory
     for( int i = 0; i < items.length(); ) {
@@ -67,12 +67,12 @@ namespace oz
       }
     }
 
-    if( life <= type->life / 2.0f ) {
+    if( life <= clazz->life / 2.0f ) {
       if( !( state & DEATH_BIT ) && life > 0.0f ) {
         flags |= WIDE_CULL_BIT;
         flags &= ~SOLID_BIT;
         addEvent( EVENT_DEATH, 1.0f );
-        life = type->life / 2.0f - EPSILON;
+        life = clazz->life / 2.0f - EPSILON;
         anim = ANIM_DEATH_FALLBACK;
       }
       state |= DEATH_BIT;
@@ -80,7 +80,7 @@ namespace oz
     if( state & DEATH_BIT ) {
       // if body gets destroyed during fade out, skip this, or Object::destroy() won't be called
       if( life > 0.0f ) {
-        life -= type->life * BODY_FADEOUT_FACTOR;
+        life -= clazz->life * BODY_FADEOUT_FACTOR;
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes sounds
         // and particles to fly around), that's why we remove the object
         if( life <= 0.0f ) {
@@ -255,7 +255,7 @@ namespace oz
       anim = ANIM_STAND;
     }
     if( actions & ACTION_SUICIDE ) {
-      life = type->life / 2.0f - EPSILON;
+      life = clazz->life / 2.0f - EPSILON;
     }
 
     /*
@@ -625,7 +625,7 @@ namespace oz
 
   void Bot::kill()
   {
-    life = type->life / 2.0f - EPSILON;
+    life = clazz->life / 2.0f - EPSILON;
   }
 
   void Bot::readFull( InputStream* istream )
@@ -653,7 +653,7 @@ namespace oz
     anim         = AnimEnum( istream->readInt() );
     name         = istream->readString();
 
-    const BotClass* clazz = static_cast<const BotClass*>( type );
+    const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
     r   = !dim;
   }
