@@ -96,7 +96,7 @@ namespace oz
     public:
 
       /**
-       * Create empty pool with initial capacity BLOCK_SIZE.
+       * Create empty pool, storage is allocated on first element addition.
        * @param initSize
        */
       explicit Pool() : firstBlock( null ), freeSlot( null ), size( 0 ), count( 0 )
@@ -120,7 +120,7 @@ namespace oz
        */
       ~Pool()
       {
-        // there's a memory leak if we count != 0
+        // there's a memory leak if count != 0
         soft_assert( count == 0 );
       }
 

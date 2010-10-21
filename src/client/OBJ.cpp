@@ -19,6 +19,13 @@ namespace oz
 namespace client
 {
 
+  Vector<Vec3>          OBJ::positions;
+  Vector<Vec3>          OBJ::normals;
+  Vector<TexCoord>      OBJ::texCoords;
+  Vector<OBJ::Face>     OBJ::faces;
+  Vector<OBJ::Material> OBJ::materials;
+  HashString<int>       OBJ::materialIndices;
+
   char* OBJ::skipSpaces( char* pos )
   {
     while( *pos == ' ' || *pos == '\t' ) {
@@ -35,12 +42,9 @@ namespace client
     return pos;
   }
 
-  bool OBJ::readVertexData( char* pos,
-                            Vector<Vec3>* tempVerts,
-                            Vector<Vec3>* tempNormals,
-                            Vector<TexCoord>* tempTexCoords ) const
+  bool OBJ::readVertexData( char* pos ) const
   {
-    // pos should be at position just after 'v'
+    // pos should point to char just after 'v'
 
     // vertex coords
     if( *pos == ' ' ) {
@@ -52,7 +56,7 @@ namespace client
       if( nMatches != 3 ) {
         return false;
       }
-      tempVerts->add( Vec3( x, y, z ) );
+      positions.add( Vec3( x, y, z ) );
       return true;
     }
     // vertex normal coords
@@ -65,7 +69,7 @@ namespace client
       if( nMatches != 3 ) {
         return false;
       }
-      tempNormals->add( Vec3( x, y, z ) );
+      normals.add( Vec3( x, y, z ) );
       return true;
     }
     // vertex texture coords
@@ -78,7 +82,7 @@ namespace client
       if( nMatches != 2 ) {
         return false;
       }
-      tempTexCoords->add( TexCoord( u, v ) );
+      texCoords.add( TexCoord( u, v ) );
       return true;
     }
     return false;
@@ -87,10 +91,6 @@ namespace client
   bool OBJ::readFace( char* pos, Face* face ) const
   {
     char* end;
-
-    Vector<uint> vertIndices;
-    Vector<uint> normalIndices;
-    Vector<uint> texCoordIndices;
 
     int iVertex, iNormal, iTexCoord;
 
@@ -123,7 +123,7 @@ namespace client
         if( sscanf( pos, "%d", &iVertex ) != 1 ) {
           return false;
         }
-        vertIndices.add( iVertex - 1 );
+        face->vertices.add( Face::Vertex( iVertex - 1, -1, -1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -136,8 +136,7 @@ namespace client
         if( sscanf( pos, "%d/%d", &iVertex, &iTexCoord ) != 2 ) {
           return false;
         }
-        vertIndices.add( iVertex - 1 );
-        texCoordIndices.add( iTexCoord - 1 );
+        face->vertices.add( Face::Vertex( iVertex - 1, -1, iTexCoord - 1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -150,8 +149,7 @@ namespace client
         if( sscanf( pos, "%d//%d", &iVertex, &iNormal ) != 2 ) {
           return false;
         }
-        vertIndices.add( iVertex - 1 );
-        normalIndices.add( iNormal - 1 );
+        face->vertices.add( Face::Vertex( iVertex - 1, iNormal - 1, -1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -164,9 +162,7 @@ namespace client
         if( sscanf( pos, "%d/%d/%d", &iVertex, &iTexCoord, &iNormal ) != 3 ) {
           return false;
         }
-        vertIndices.add( iVertex - 1 );
-        normalIndices.add( iNormal - 1 );
-        texCoordIndices.add( iTexCoord - 1 );
+        face->vertices.add( Face::Vertex( iVertex - 1, iNormal - 1, iTexCoord - 1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -174,41 +170,14 @@ namespace client
       while( end - pos > 0 );
     }
 
-    face->nVerts = vertIndices.length();
-
-    if( face->nVerts < 3 ) {
+    if( face->vertices.length() < 3 ) {
       return false;
-    }
-    if( normalIndices.length() != 0 && normalIndices.length() != face->nVerts ) {
-      return false;
-    }
-    if( texCoordIndices.length() != 0 && texCoordIndices.length() != face->nVerts ) {
-      return false;
-    }
-
-    face->vertIndices = new uint[face->nVerts];
-    aCopy<uint>( face->vertIndices, vertIndices, face->nVerts );
-
-    if( !normalIndices.isEmpty() ) {
-      face->normIndices = new uint[face->nVerts];
-      aCopy<uint>( face->normIndices, normalIndices, face->nVerts );
-    }
-    else {
-      face->normIndices = null;
-    }
-
-    if( !texCoordIndices.isEmpty() ) {
-      face->texCoordIndices = new uint[face->nVerts];
-      aCopy<uint>( face->texCoordIndices, texCoordIndices, face->nVerts );
-    }
-    else {
-      face->texCoordIndices = null;
     }
 
     return true;
   }
 
-  bool OBJ::loadMaterial( const String& path, HashString<int, 32>* materialIndices )
+  bool OBJ::loadMaterial( const String& path )
   {
     FILE* file;
     char buffer[LINE_BUFFER_SIZE];
@@ -220,7 +189,6 @@ namespace client
 
     String   mtlName;
     Material material;
-    Vector<Material> tempMaterials;
 
     char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
     char* end;
@@ -237,8 +205,8 @@ namespace client
             *end = '\0';
 
             if( !mtlName.isEmpty() ) {
-              materialIndices->add( mtlName, tempMaterials.length() );
-              tempMaterials.add( material );
+              materialIndices.add( mtlName, materials.length() );
+              materials.add( material );
             }
 
             end = readWord( pos );
@@ -288,12 +256,9 @@ namespace client
     }
 
     if( !mtlName.isEmpty() ) {
-      materialIndices->add( mtlName, tempMaterials.length() );
-      tempMaterials.add( material );
+      materialIndices.add( mtlName, materials.length() );
+      materials.add( material );
     }
-
-    materials( tempMaterials.length() );
-    iCopy( materials.iter(), tempMaterials.citer() );
 
     fclose( file );
     return true;
@@ -303,6 +268,8 @@ namespace client
   {
     FILE* file;
     char buffer[LINE_BUFFER_SIZE];
+
+    int iCurrentMaterial = 0;
 
     name = name_;
 
@@ -321,9 +288,7 @@ namespace client
                              config.get( "translate.y", 0.0f ),
                              config.get( "translate.z", 0.0f ) );
 
-    HashString<int, 32> materialIndices;
-
-    if( !loadMaterial( sPath, &materialIndices ) ) {
+    if( !loadMaterial( sPath ) ) {
       throw Exception( "OBJ model material loading error" );
     }
 
@@ -335,11 +300,6 @@ namespace client
       throw Exception( "OBJ model loading error" );
     }
 
-    Vector<Vec3>     tempVerts;
-    Vector<Vec3>     tempNormals;
-    Vector<TexCoord> tempTexCoords;
-    Vector<Face>     tempFaces;
-
     char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
     char* end;
 
@@ -349,7 +309,7 @@ namespace client
 
       switch( *pos ) {
         case 'v': {
-          if( !readVertexData( pos + 1, &tempVerts, &tempNormals, &tempTexCoords ) ) {
+          if( !readVertexData( pos + 1 ) ) {
             fclose( file );
             log.println( "invalid vertex line: %s", buffer );
             log.unindent();
@@ -361,6 +321,7 @@ namespace client
         // face
         case 'f': {
           Face face;
+          face.iMaterial = iCurrentMaterial;
 
           if( !readFace( pos + 1, &face ) ) {
             fclose( file );
@@ -369,7 +330,7 @@ namespace client
             log.println( "}" );
             throw Exception( "OBJ model loading error" );
           }
-          tempFaces.add( face );
+          faces.add( face );
           break;
         }
         // usemtl
@@ -380,15 +341,13 @@ namespace client
             end = readWord( pos );
             *end = '\0';
 
-            Face materialFace;
             const int* value = materialIndices.find( pos );
             if( value != null ) {
-              materialFace.nVerts = ~*value;
+              iCurrentMaterial = *value;
             }
             else {
-              materialFace.nVerts = 0;
+              iCurrentMaterial = 0;
             }
-            tempFaces.add( materialFace );
           }
           break;
         }
@@ -402,39 +361,19 @@ namespace client
     fclose( file );
 
     // copy everything into arrays for memory optimisation
-    if( !tempVerts.isEmpty() ) {
-      vertices( tempVerts.length() );
-      for( int i = 0; i < vertices.length(); ++i ) {
-        vertices[i] = translation + scaling * tempVerts[i];
-      }
-    }
-    else {
+    if( positions.isEmpty() ) {
       throw Exception( "OBJ model loading error" );
     }
-
-    if( !tempNormals.isEmpty() ) {
-      normals( tempNormals.length() );
-      aCopy<Vec3>( normals, tempNormals, normals.length() );
+    for( int i = 0; i < positions.length(); ++i ) {
+      positions[i] = translation + scaling * positions[i];
     }
 
-    if( !tempTexCoords.isEmpty() ) {
-      texCoords( tempTexCoords.length() );
-      aCopy<TexCoord>( texCoords, tempTexCoords, texCoords.length() );
-    }
-
-    if( !tempFaces.isEmpty() ) {
-      faces( tempFaces.length() );
-      // we don't copy arrays, pointers in both containers point to the same data
-      aCopy<Face>( faces, tempFaces, faces.length() );
-    }
-    else {
+    if( faces.isEmpty() ) {
       log.println( "no faces" );
       log.unindent();
       log.println( "}" );
       throw Exception( "OBJ model loading error" );
     }
-
-    materialIndices.clear();
 
     log.unindent();
     log.println( "}" );
@@ -457,66 +396,50 @@ namespace client
     assert( glGetError() == GL_NO_ERROR );
   }
 
-  void OBJ::scale( float scale )
-  {
-    for( int i = 0; i < vertices.length(); ++i ) {
-      vertices[i] *= scale;
-    }
-  }
-
-  void OBJ::translate( const Vec3& t )
-  {
-    for( int i = 0; i < vertices.length(); ++i ) {
-      vertices[i] += t;
-    }
-  }
-
   void OBJ::draw() const
   {
-    int  currentMaterial = -1;
+    int  iCurrentMaterial = -1;
     bool isTransfluent = false;
     bool isTextured = true;
 
     for( int i = 0; i < faces.length(); ++i ) {
       const Face& face = faces[i];
 
-      if( face.nVerts < 0 ) {
-        if( currentMaterial != ~face.nVerts ) {
-          currentMaterial = ~face.nVerts;
-          const Material& material = materials[currentMaterial];
+      if( iCurrentMaterial != face.iMaterial ) {
+        iCurrentMaterial = face.iMaterial;
+        const Material& material = materials[iCurrentMaterial];
 
-          if( !isTransfluent && material.diffuse.w != 1.0f ) {
-            glEnable( GL_BLEND );
-            isTransfluent = true;
-          }
-          else if( isTransfluent && material.diffuse.w == 1.0f ) {
-            glDisable( GL_BLEND );
-            isTransfluent = false;
-          }
-          if( isTextured && material.texId == 0 ) {
-            glDisable( GL_TEXTURE_2D );
-            isTextured = false;
-          }
-          else if( !isTextured && material.texId != 0 ) {
-            glEnable( GL_TEXTURE_2D );
-            isTextured = true;
-          }
-          if( material.texId != 0 ) {
-            glBindTexture( GL_TEXTURE_2D, material.texId );
-          }
-          glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, material.diffuse );
+        if( !isTransfluent && material.diffuse.w != 1.0f ) {
+          glEnable( GL_BLEND );
+          isTransfluent = true;
         }
+        else if( isTransfluent && material.diffuse.w == 1.0f ) {
+          glDisable( GL_BLEND );
+          isTransfluent = false;
+        }
+        if( isTextured && material.texId == 0 ) {
+          glDisable( GL_TEXTURE_2D );
+          isTextured = false;
+        }
+        else if( !isTextured && material.texId != 0 ) {
+          glEnable( GL_TEXTURE_2D );
+          isTextured = true;
+        }
+        if( material.texId != 0 ) {
+          glBindTexture( GL_TEXTURE_2D, material.texId );
+        }
+        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, material.diffuse );
       }
 
       glBegin( GL_POLYGON );
-        for( int j = 0; j < face.nVerts; ++j ) {
+        foreach( vertex, face.vertices.citer() ) {
           if( !texCoords.isEmpty() ) {
-            glTexCoord2fv( &texCoords[face.texCoordIndices[j]].u );
+            glTexCoord2fv( &texCoords[ vertex->iTexCoord ].u );
           }
           if( !normals.isEmpty() ) {
-            glNormal3fv( normals[face.normIndices[j]] );
+            glNormal3fv( normals[ vertex->iNorm ] );
           }
-          glVertex3fv( vertices[face.vertIndices[j]] );
+          glVertex3fv( positions[ vertex->iPos ] );
         }
       glEnd();
     }
@@ -539,25 +462,62 @@ namespace client
     glEndList();
   }
 
-  void OBJ::trim()
+  void OBJ::saveCached( const char* fileName )
   {
-    for( int i = 0; i < faces.length(); ++i ) {
-      if( faces[i].nVerts > 0 ) {
-        delete[] faces[i].vertIndices;
+    // for now, ranges will contain indices of faces that begin and end the range
+    Vector<Range> ranges;
+    Map<Face::Vertex> uniqueVertices;
+    int currentMaterial = faces[0].iMaterial;
+    // actually number of ranges - 1
+    int nRanges = 0;
+    int nVertexRefs = 0;
 
-        if( faces[i].normIndices != null ) {
-          delete[] faces[i].normIndices;
-        }
-        if( faces[i].texCoordIndices != null ) {
-          delete[] faces[i].texCoordIndices;
-        }
+    foreach( face, faces.iter() ) {
+      if( face->iMaterial != currentMaterial ) {
+        currentMaterial = face->iMaterial;
+        ++nRanges;
+      }
+
+      foreach( vertex, face->vertices.iter() ) {
+        // index is only written to copy of vertex in faces array
+        vertex->iVertex = uniqueVertices.include( *vertex );
+        ++nVertexRefs;
       }
     }
 
-    vertices.clear();
+    // vertex buffer
+    DArray<Vertex> vertices( uniqueVertices.length() );
+
+    for( int i = 0; i < vertices.length(); ++i ) {
+      const Face::Vertex& faceVertex = uniqueVertices[i];
+
+      vertices[i].pos      = positions[faceVertex.iPos];
+      vertices[i].norm     = normals[faceVertex.iNorm];
+      vertices[i].texCoord = texCoords[faceVertex.iTexCoord];
+    }
+
+    // index buffer
+    DArray<int> indices( nVertexRefs + nRanges * 2 );
+
+    for( int i = 0; i < faces.length(); ++i ) {
+      const Face& face = faces[i];
+
+      for( int j = 0; j < face.vertices.length(); ++j ) {
+        const Face::Vertex& vertex = face.vertices[j];
+
+
+      }
+    }
+  }
+
+  void OBJ::trim()
+  {
+    positions.clear();
     normals.clear();
     texCoords.clear();
     faces.clear();
+    materials.clear();
+    materialIndices.clear();
   }
 
 }

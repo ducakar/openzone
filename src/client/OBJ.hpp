@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "matrix/common.hpp"
+
 namespace oz
 {
 namespace client
@@ -22,22 +24,58 @@ namespace client
 
       struct Face
       {
-        int nVerts;
+        struct Vertex
+        {
+          // vertex position index in positions array
+          int iPos;
+          // vertex normal in normals array
+          int iNorm;
+          // vertex texture coordinates in texCoords array
+          int iTexCoord;
+          // vertex index in vertex buffer
+          int iVertex;
 
-        uint* vertIndices;
-        uint* normIndices;
-        uint* texCoordIndices;
+          explicit Vertex()
+          {}
 
-        explicit Face() : nVerts( 0 ), vertIndices( null ), normIndices( null ), texCoordIndices( null ) {}
+          explicit Vertex( int iPos_, int iNorm_, int iTexCoord_ ) :
+              iPos( iPos_ ), iNorm( iNorm_ ), iTexCoord( iTexCoord_ )
+          {}
+
+          bool operator == ( const Vertex& v ) const
+          {
+            return iPos == v.iPos && iNorm == v.iNorm && iTexCoord == v.iTexCoord;
+          }
+
+          bool operator != ( const Vertex& v ) const
+          {
+            return iPos != v.iPos || iNorm != v.iNorm || iTexCoord != v.iTexCoord;
+          }
+
+          bool operator < ( const Vertex& v ) const
+          {
+            return iPos < v.iPos ||
+                ( iPos == v.iPos && ( iNorm < v.iNorm ||
+                    ( iNorm == v.iNorm && iTexCoord < v.iTexCoord ) ) );
+          }
+        };
+
+        int            iMaterial;
+        Vector<Vertex> vertices;
       };
 
-      struct TexCoord
+      struct Vertex
       {
-        float u;
-        float v;
+        Vec3     pos;
+        Vec3     norm;
+        TexCoord texCoord;
+      };
 
-        explicit TexCoord() {}
-        explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ ) {}
+      struct Range
+      {
+        int iMaterial;
+        int iFirstIndex;
+        int iLastIndex;
       };
 
       struct Material
@@ -48,23 +86,21 @@ namespace client
         uint texId;
       };
 
-      String           name;
+      static Vector<Vec3>     positions;
+      static Vector<Vec3>     normals;
+      static Vector<TexCoord> texCoords;
+      static Vector<Face>     faces;
+      static Vector<Material> materials;
+      static HashString<int>  materialIndices;
 
-      DArray<Vec3>     vertices;
-      DArray<Vec3>     normals;
-      DArray<TexCoord> texCoords;
-      DArray<Face>     faces;
-      DArray<Material> materials;
+      String name;
 
       static char* skipSpaces( char* pos );
       static char* readWord( char* pos );
 
-      bool readVertexData( char* pos,
-                           Vector<Vec3>* tempVerts,
-                           Vector<Vec3>* tempNormals,
-                           Vector<TexCoord>* tempTexCoords ) const;
+      bool readVertexData( char* pos ) const;
       bool readFace( char* pos, Face* face ) const;
-      bool loadMaterial( const String& path, HashString<int, 32>* materialIndices );
+      bool loadMaterial( const String& path );
 
     public:
 
@@ -73,11 +109,9 @@ namespace client
       explicit OBJ( const char* name );
       ~OBJ();
 
-      void scale( float scale );
-      void translate( const Vec3& t );
-
       void draw() const;
       void genList();
+      void saveCached( const char* fileName );
 
       void trim();
 

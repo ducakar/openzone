@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cdtprojectproperties>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.IncludePaths">
+<language name="holder for library settings">
+
+</language>
+<language name="Assembly">
+
+</language>
+<language name="GNU C++">
+<includepath>/usr/lib/gcc/i686-pc-linux-gnu/4.5.0/include</includepath>
+<includepath>/usr/include</includepath>
+<includepath>/usr/include/c++/4.5.0</includepath>
+<includepath>/usr/include/libxml2</includepath>
+<includepath>/usr/include/SDL</includepath>
+
+</language>
+<language name="GNU C">
+
+</language>
+</section>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.Macros">
+<language name="holder for library settings">
+
+</language>
+<language name="Assembly">
+<macro>
+<name>__GNUC__</name><value>4</value>
+</macro>
+<macro>
+<name>__GNUC_MINOR__</name><value>5</value>
+</macro>
+<macro>
+<name>__GNUG__</name><value/>
+</macro>
+<macro>
+<name>__SSE__</name><value>1</value>
+</macro>
+
+</language>
+<language name="GNU C++">
+<macro>
+<name>__GNUC__</name><value>4</value>
+</macro>
+<macro>
+<name>__GNUC_MINOR__</name><value>5</value>
+</macro>
+<macro>
+<name>__GNUG__</name><value/>
+</macro>
+<macro>
+<name>__SSE__</name><value>1</value>
+</macro>
+<macro>
+<name>__LP64__</name><value/>
+</macro>
+
+</language>
+<language name="GNU C">
+<macro>
+<name>__GNUC__</name><value>4</value>
+</macro>
+<macro>
+<name>__GNUC_MINOR__</name><value>5</value>
+</macro>
+<macro>
+<name>__GNUG__</name><value/>
+</macro>
+<macro>
+<name>__SSE__</name><value>1</value>
+</macro>
+<macro>
+<name>__LP64__</name><value/>
+</macro>
+
+</language>
+</section>
+</cdtprojectproperties>

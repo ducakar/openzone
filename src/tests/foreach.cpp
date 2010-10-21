@@ -177,8 +177,6 @@ int main( int, char** )
 
   l.free();
   dl.free();
-  hi.clear();
-  hs.clear();
 
   return 0;
 }

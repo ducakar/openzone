@@ -270,8 +270,8 @@ namespace oz
 
     private:
 
-      Pool<Elem, 0, SIZE> pool;
       Elem*               data[SIZE];
+      Pool<Elem, 0, SIZE> pool;
       int                 count;
 
       /**
@@ -366,7 +366,6 @@ namespace oz
       ~HashIndex()
       {
         clear();
-        pool.free();
       }
 
       /**
@@ -637,11 +636,11 @@ namespace oz
       void clear()
       {
         for( int i = 0; i < SIZE; ++i ) {
-          if( data[i] != null ) {
-            freeChain( data[i] );
-            data[i] = null;
-          }
+          freeChain( data[i] );
+          data[i] = null;
         }
+
+        pool.free();
         count = 0;
       }
 
@@ -654,6 +653,8 @@ namespace oz
           freeChainAndValues( data[i] );
           data[i] = null;
         }
+
+        pool.free();
         count = 0;
       }
 

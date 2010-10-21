@@ -440,6 +440,17 @@ namespace oz
         return r;
       }
 
+      /**
+       * Free allocated resources.
+       */
+      void clear()
+      {
+        delete[] data;
+
+        data = null;
+        size = 0;
+      }
+
   };
 
 }

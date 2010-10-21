@@ -92,10 +92,9 @@ namespace oz
 
       struct Vertex
       {
-        Vec3  p;
-
-        float texCoord[2];
-        float lightmapCoord[2];
+        Vec3     p;
+        TexCoord texCoord;
+        TexCoord lightmapCoord;
       };
 
       struct Face

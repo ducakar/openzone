@@ -119,11 +119,11 @@ namespace oz
 
   struct QBSPVertex
   {
-    Vec3  p;
-    float texCoord[2];
-    float lightmapCoord[2];
-    Vec3  normal;
-    char  colour[4];
+    Vec3     p;
+    TexCoord texCoord;
+    TexCoord lightmapCoord;
+    Vec3     normal;
+    char     colour[4];
   };
 
   struct QBSPFace
@@ -475,11 +475,9 @@ namespace oz
 
       fread( &vertex, sizeof( QBSPVertex ), 1, file );
 
-      vertices[i].p                = vertex.p * scale;
-      vertices[i].texCoord[0]      = vertex.texCoord[0];
-      vertices[i].texCoord[1]      = vertex.texCoord[1];
-      vertices[i].lightmapCoord[0] = vertex.lightmapCoord[0];
-      vertices[i].lightmapCoord[1] = vertex.lightmapCoord[1];
+      vertices[i].p             = vertex.p * scale;
+      vertices[i].texCoord      = vertex.texCoord;
+      vertices[i].lightmapCoord = vertex.lightmapCoord;
     }
 
     nIndices = int( lumps[QBSP_LUMP_INDICES].length / sizeof( int ) );
@@ -978,10 +976,10 @@ namespace oz
 
     for( int i = 0; i < nVertices; ++i ) {
       os.writeVec3( vertices[i].p );
-      os.writeFloat( vertices[i].texCoord[0] );
-      os.writeFloat( vertices[i].texCoord[1] );
-      os.writeFloat( vertices[i].lightmapCoord[0] );
-      os.writeFloat( vertices[i].lightmapCoord[0] );
+      os.writeFloat( vertices[i].texCoord.u );
+      os.writeFloat( vertices[i].texCoord.v );
+      os.writeFloat( vertices[i].lightmapCoord.u );
+      os.writeFloat( vertices[i].lightmapCoord.v );
     }
 
     for( int i = 0; i < nIndices; ++i ) {
@@ -1144,10 +1142,10 @@ namespace oz
     vertices = new( data ) Vertex[nVertices];
     for( int i = 0; i < nVertices; ++i ) {
       vertices[i].p = is.readVec3();
-      vertices[i].texCoord[0] = is.readFloat();
-      vertices[i].texCoord[1] = is.readFloat();
-      vertices[i].lightmapCoord[0] = is.readFloat();
-      vertices[i].lightmapCoord[0] = is.readFloat();
+      vertices[i].texCoord.u = is.readFloat();
+      vertices[i].texCoord.v = is.readFloat();
+      vertices[i].lightmapCoord.u = is.readFloat();
+      vertices[i].lightmapCoord.v = is.readFloat();
     }
     data += nVertices * sizeof( Vertex );
 
@@ -1239,71 +1237,47 @@ namespace oz
   {
     log.print( "Freeing Quake 3 BSP structure '%s' ...", name.cstr() );
 
-    if( planes != null ) {
-      delete[] planes;
-      nPlanes = 0;
-      planes = null;
-    }
-    if( nodes != null ) {
-      delete[] nodes;
-      nNodes = 0;
-      nodes = null;
-    }
-    if( leaves != null ) {
-      delete[] leaves;
-      nLeaves = 0;
-      leaves = null;
-    }
-    if( leafBrushes != null ) {
-      delete[] leafBrushes;
-      nLeafBrushes = 0;
-      leafBrushes = null;
-    }
-    if( leafFaces != null ) {
-      delete[] leafFaces;
-      nLeafFaces = 0;
-      leafFaces = null;
-    }
-    if( entityClasses != null ) {
-      delete[] entityClasses;
-      nEntityClasses = 0;
-      entityClasses = null;
-    }
-    if( brushes != null ) {
-      delete[] brushes;
-      nBrushes = 0;
-      brushes = null;
-    }
-    if( brushSides != null ) {
-      delete[] brushSides;
-      nBrushSides = 0;
-      brushSides = null;
-    }
-    if( textures != null ) {
-      delete[] textures;
-      nTextures = 0;
-      textures = null;
-    }
-    if( vertices != null ) {
-      delete[] vertices;
-      nVertices = 0;
-      vertices = null;
-    }
-    if( indices != null ) {
-      delete[] indices;
-      nIndices = 0;
-      indices = null;
-    }
-    if( faces != null ) {
-      delete[] faces;
-      nFaces = 0;
-      faces = null;
-    }
-    if( lightmaps != null ) {
-      delete[] lightmaps;
-      nLightmaps = 0;
-      lightmaps = null;
-    }
+    delete[] planes;
+    delete[] nodes;
+    delete[] leaves;
+    delete[] leafBrushes;
+    delete[] leafFaces;
+    delete[] entityClasses;
+    delete[] brushes;
+    delete[] brushSides;
+    delete[] textures;
+    delete[] vertices;
+    delete[] indices;
+    delete[] faces;
+    delete[] lightmaps;
+
+    planes        = null;
+    nodes         = null;
+    leaves        = null;
+    leafBrushes   = null;
+    leafFaces     = null;
+    entityClasses = null;
+    brushes       = null;
+    brushSides    = null;
+    textures      = null;
+    vertices      = null;
+    indices       = null;
+    faces         = null;
+    lightmaps     = null;
+
+    nPlanes        = 0;
+    nNodes         = 0;
+    nLeaves        = 0;
+    nLeafBrushes   = 0;
+    nLeafFaces     = 0;
+    nEntityClasses = 0;
+    nBrushes       = 0;
+    nBrushSides    = 0;
+    nTextures      = 0;
+    nVertices      = 0;
+    nIndices       = 0;
+    nFaces         = 0;
+    nLightmaps     = 0;
 
     log.printEnd( " OK" );
   }

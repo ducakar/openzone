@@ -115,9 +115,7 @@ namespace oz
        */
       ~DArray()
       {
-        if( count != 0 ) {
-          delete[] data;
-        }
+        delete[] data;
       }
 
       /**
@@ -342,11 +340,10 @@ namespace oz
        */
       void clear()
       {
-        if( count != 0 ) {
-          delete[] data;
-          data  = null;
-          count = 0;
-        }
+        delete[] data;
+
+        data  = null;
+        count = 0;
       }
 
       /**
