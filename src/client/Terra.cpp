@@ -28,12 +28,6 @@ namespace client
   const float Terra::DETAIL_SCALE = 4.0f;
   const float Terra::WATER_SCALE  = 2.0f;
 
-  struct TexCoord
-  {
-    float u;
-    float v;
-  };
-
   struct VertexData
   {
     Vec3     position;

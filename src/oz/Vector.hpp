@@ -87,8 +87,14 @@ namespace oz
       void ensureCapacity()
       {
         if( size == count ) {
-          size *= 2;
-          data = Alloc::realloc( data, count, size );
+          if( size == 0 ) {
+            size = GRANULARITY;
+            data = Alloc::alloc<Type>( size );
+          }
+          else {
+            size *= 2;
+            data = Alloc::realloc( data, count, size );
+          }
         }
       }
 
@@ -98,12 +104,19 @@ namespace oz
       void ensureCapacity( int desiredSize )
       {
         if( size < desiredSize ) {
+          size = size == 0 ? GRANULARITY : size;
+
           do {
             size *= 2;
           }
           while( size < desiredSize );
 
-          data = Alloc::realloc( data, count, size );
+          if( data == null ) {
+            data = Alloc::alloc<Type>( size );
+          }
+          else {
+            data = Alloc::realloc( data, count, size );
+          }
         }
       }
 
@@ -112,7 +125,7 @@ namespace oz
       /**
        * Create empty vector with initial capacity 8.
        */
-      explicit Vector() : data( Alloc::alloc<Type>( GRANULARITY ) ), size( 8 ), count( 0 )
+      explicit Vector() : data( null ), size( 0 ), count( 0 )
       {}
 
       /**
@@ -140,10 +153,8 @@ namespace oz
        */
       ~Vector()
       {
-        if( size != 0 ) {
-          aDestruct( data, count );
-          Alloc::dealloc( data );
-        }
+        aDestruct( data, count );
+        Alloc::dealloc( data );
       }
 
       /**
@@ -583,12 +594,16 @@ namespace oz
       void clear()
       {
         aDestruct( data, count );
+        Alloc::dealloc( data );
+
+        data = null;
+        size = 0;
         count = 0;
       }
 
       /**
-       * Empty the vector and delete all elements - take care of memory management. Use this function
-       * only with vector of pointers that you want to be deleted.
+       * Empty the vector and delete all elements - take care of memory management. Use this
+       * function only with vector of pointers that you want to be deleted.
        */
       void free()
       {

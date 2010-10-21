@@ -25,7 +25,7 @@ namespace oz
 
     public:
 
-      static const int QUADS = 512;
+      static const int QUADS = 256;
       static const int MAX   = QUADS + 1;
 
     private:

@@ -539,8 +539,8 @@ namespace oz
       }
 
       /**
-       * Empty the vector and delete all elements - take care of memory management. Use this function
-       * only with vector of pointer that you want to be deleted.
+       * Empty the vector and delete all elements - take care of memory management. Use this
+       * function only with vector of pointer that you want to be deleted.
        */
       void free()
       {

@@ -13,7 +13,7 @@
 #include <SDL_main.h>
 
 #ifdef NDEBUG
-# error NDEBUG should not be defined. Unittest needs assert macro enabled to function properly.
+# warning NDEBUG should not be defined. Unittest needs assert macro enabled to function properly.
 #endif
 
 #define OZ_UNITTEST( name ) \

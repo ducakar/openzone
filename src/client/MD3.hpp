@@ -28,12 +28,6 @@ namespace client
         int indices[3];
       };
 
-      struct TexCoord
-      {
-        float u;
-        float v;
-      };
-
       struct Vertex
       {
         Vec3 p;

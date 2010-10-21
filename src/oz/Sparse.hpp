@@ -16,9 +16,11 @@
 namespace oz
 {
 
-  template <class Type, int INDEX = 0>
+  template <class Type, int INDEX = 0, int GRANULARITY = 8>
   class Sparse
   {
+    static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
+
     public:
 
       /**
@@ -121,8 +123,14 @@ namespace oz
         assert( ( count == size ) == ( freeSlot == size ) );
 
         if( freeSlot == size ) {
-          size *= 2;
-          data = aRealloc( data, count, size );
+          if( size == 0 ) {
+            size = GRANULARITY;
+            data = new Type[size];
+          }
+          else {
+            size *= 2;
+            data = aRealloc( data, count, size );
+          }
 
           freeSlot = count;
           for( int i = count; i < size; ++i ) {
@@ -136,12 +144,8 @@ namespace oz
       /**
        * Create empty sparse vector with initial capacity 8.
        */
-      explicit Sparse() : data( new Type[8] ), size( 8 ), count( 0 ), freeSlot( 0 )
-      {
-        for( int i = 0; i < size; ++i ) {
-          data[i].nextSlot[INDEX] = i + 1;
-        }
-      }
+      explicit Sparse() : data( null ), size( 0 ), count( 0 ), freeSlot( 0 )
+      {}
 
       /**
        * Create empty sparse vector with given initial capacity.
@@ -170,9 +174,7 @@ namespace oz
        */
       ~Sparse()
       {
-        if( size != 0 ) {
-          delete[] data;
-        }
+        delete[] data;
       }
 
       /**
@@ -427,12 +429,12 @@ namespace oz
        */
       void clear()
       {
+        delete[] data;
+
+        data = null;
+        size = 0;
         count = 0;
         freeSlot = 0;
-
-        for( int i = 0; i < size; ++i ) {
-          data[i].nextSlot[INDEX] = i + 1;
-        }
       }
 
   };

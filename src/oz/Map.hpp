@@ -227,8 +227,14 @@ namespace oz
       void ensureCapacity()
       {
         if( size == count ) {
-          size *= 2;
-          data = Alloc::realloc( data, count, size );
+          if( size == 0 ) {
+            size = GRANULARITY;
+            data = Alloc::alloc<Elem>( size );
+          }
+          else {
+            size *= 2;
+            data = Alloc::realloc( data, count, size );
+          }
         }
       }
 
@@ -237,7 +243,7 @@ namespace oz
       /**
        * Create empty map with initial capacity 8.
        */
-      explicit Map() : data( Alloc::alloc<Elem>( 8 ) ), size( 8 ), count( 0 )
+      explicit Map() : data( null ), size( 0 ), count( 0 )
       {}
 
       /**
@@ -264,10 +270,8 @@ namespace oz
        */
       ~Map()
       {
-        if( size != 0 ) {
-          aDestruct( data, count );
-          Alloc::dealloc( data );
-        }
+        aDestruct( data, count );
+        Alloc::dealloc( data );
       }
 
       /**
@@ -493,12 +497,13 @@ namespace oz
        * @param e
        * @return true if element has been added
        */
-      void add( const Key& key, const Value& value = Value() )
+      int add( const Key& key, const Value& value = Value() )
       {
         assert( !contains( key ) );
 
         int i = aBisectPosition( data, key, count );
         insert( i, key, value );
+        return i;
       }
 
       /**
@@ -506,13 +511,15 @@ namespace oz
        * @param e
        * @return true if element has been added
        */
-      void include( const Key& key, const Value& value = Value() )
+      int include( const Key& key, const Value& value = Value() )
       {
         int i = aBisectPosition( data, key, count );
 
-        if( i == 0 || data[i - 1].key != key ) {
+        if( i == 0 || !( data[i - 1].key == key ) ) {
           insert( i, key, value );
+          return i;
         }
+        return -1;
       }
 
       /**
@@ -575,12 +582,16 @@ namespace oz
       void clear()
       {
         aDestruct( data, count );
+        Alloc::dealloc( data );
+
+        data = null;
+        size = 0;
         count = 0;
       }
 
       /**
-       * Empty the vector and delete all elements - take care of memory management. Use this function
-       * only with vector of pointers that you want to be deleted.
+       * Empty the vector and delete all elements - take care of memory management. Use this
+       * function only with vector of pointers that you want to be deleted.
        */
       void free()
       {

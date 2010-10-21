@@ -40,6 +40,52 @@ namespace oz
     static const int OBJECT_BIT  = 0x00000040;
   };
 
+  struct TexCoord
+  {
+    float u;
+    float v;
+
+    explicit TexCoord()
+    {}
+
+    explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ )
+    {}
+
+    bool operator == ( const TexCoord& tc ) const
+    {
+      return u == tc.u && v == tc.v;
+    }
+
+    bool operator != ( const TexCoord& tc ) const
+    {
+      return u != tc.u || v != tc.v;
+    }
+
+    operator const float* () const
+    {
+      return &u;
+    }
+
+    operator float* ()
+    {
+      return &u;
+    }
+
+    const float& operator [] ( int i ) const
+    {
+      assert( 0 <= i && i < 2 );
+
+      return ( &u )[i];
+    }
+
+    float& operator [] ( int i )
+    {
+      assert( 0 <= i && i < 2 );
+
+      return ( &u )[i];
+    }
+  };
+
 }
 
 #include "matrix/Sphere.hpp"
