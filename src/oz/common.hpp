@@ -22,6 +22,36 @@
  *  the macro definitions like #define uint uint to highlight uint as the reserved word.
  */
 
+/*
+ * Configuration
+ */
+#include "ozconfig.hpp"
+
+/*
+ * Base C/C++ definitions (size_t, ptrdiff_t, NULL and offsetof)
+ */
+#include <cstddef>
+
+/*
+ * Platform-independent argument reading for variable-argument functions
+ */
+#include <cstdarg>
+
+/*
+ * assert macro
+ */
+#include <cassert>
+
+/*
+ * Standard exception definitions (usually included via <new>, but just for sure)
+ */
+#include <exception>
+
+/*
+ * Standard new/delete operator and exception definitions
+ */
+#include <new>
+
 namespace oz
 {
 
@@ -62,7 +92,6 @@ namespace oz
   /**
    * Unit type
    */
-# define nil nil
   struct nil
   {
     /**
@@ -91,7 +120,6 @@ namespace oz
    * It should be used where char must be signed (otherwise char may be either signed or unsigned
    * depending on the platform).
    */
-# define byte byte
   typedef signed char byte;
 
   /**
@@ -99,42 +127,32 @@ namespace oz
    * It should be used where char must be unsigned (otherwise char may be either signed or unsigned
    * depending on the platform).
    */
-# define ubyte ubyte
   typedef unsigned char ubyte;
 
   /**
    * unsigned short integer
    */
-# define ushort ushort
   typedef unsigned short ushort;
 
   /**
    * unsigned integer
    */
-# define uint uint
   typedef unsigned int uint;
 
   /**
    * unsigned long integer
    */
-# define ulong ulong
   typedef unsigned long ulong;
 
   /**
    * signed long long integer
    */
-# define long64 long64
   typedef long long long64;
 
   /**
    * unsigned long long integer
    */
-# define ulong64 ulong64
   typedef unsigned long long ulong64;
-
-  // just make syntax highlighting work
-# define size_t size_t
-# define ptrdiff_t ptrdiff_t
 
   //***********************************
   //*        BASIC ALGORITHMS         *

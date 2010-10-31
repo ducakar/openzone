@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include "arrays.hpp"
+
 namespace oz
 {
 

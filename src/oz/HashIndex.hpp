@@ -11,6 +11,9 @@
 
 #pragma once
 
+#include "iterables.hpp"
+#include "Pool.hpp"
+
 namespace oz
 {
 

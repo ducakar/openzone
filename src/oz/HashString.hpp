@@ -9,6 +9,9 @@
 
 #pragma once
 
+#include "String.hpp"
+#include "Pool.hpp"
+
 namespace oz
 {
 

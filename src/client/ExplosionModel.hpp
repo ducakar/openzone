@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "client/Model.hpp"
 
 class GLUquadric;

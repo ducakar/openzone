@@ -98,7 +98,7 @@ struct Test
   }
 };
 
-void ozCommonUnittest()
+static void ozCommonUnittest()
 {
   Test a( 42 ), b( 43 ), c( 44 ), d( 43 );
 
@@ -119,7 +119,7 @@ void ozCommonUnittest()
   assert( &bound( a, b, d ) == &b );
 }
 
-void ozIterablesUnittest()
+static void ozIterablesUnittest()
 {
   DList<Test> l;
   Vector<Test> v;
@@ -228,7 +228,15 @@ void ozIterablesUnittest()
   assert( constructCount == 12 );
   assert( iEquals( l.citer(), v.citer() ) );
 
-  auto set12 = [] ( Test& t ) { t = Test( 12 ); };
+  struct
+  {
+    void operator () ( Test& t ) const
+    {
+      t = Test( 12 );
+    }
+  }
+  set12;
+
   iMap( l.iter(), set12 );
   assert( !iEquals( v.citer(), l.citer() ) );
   iSet( v.iter(), Test( 12 ) );
@@ -246,7 +254,15 @@ void ozIterablesUnittest()
   iDestruct( l.citer() );
   iConstruct( l.iter() );
 
-  auto destroy = [] ( const Test& t ) { delete &t; };
+  struct
+  {
+    void operator () ( const Test& t ) const
+    {
+      delete &t;
+    }
+  }
+  destroy;
+
   iMap( l.citer(), destroy );
 
   Vector<Test*> pv;
@@ -256,7 +272,7 @@ void ozIterablesUnittest()
   iFree( pv.iter() );
 }
 
-void ozArraysUnittest()
+static void ozArraysUnittest()
 {
   Test a[5];
   Test b[5];
@@ -322,7 +338,15 @@ void ozArraysUnittest()
   assert( a[0] == Test( 3 ) && a[1] == Test( 3 ) );
   assert( b[0] == Test( -1 ) && b[1] == Test( 3 ) && b[2] == Test( 4 ) && b[3] == Test( 3 ) );
 
-  auto set12 = [] ( Test& t ) { t = Test( 12 ); };
+  struct
+  {
+    void operator () ( Test& t ) const
+    {
+      t = Test( 12 );
+    }
+  }
+  set12;
+
   aMap( a, set12, 5 );
   assert( !aEquals( a, b, 5 ) );
   aSet( b, Test( 12 ), 5 );
@@ -365,7 +389,7 @@ void ozArraysUnittest()
   }
 }
 
-void ozAllocUnittest()
+static void ozAllocUnittest()
 {
   Test* array = Alloc::alloc<Test>( 10 );
   assert( Alloc::amount == 10 * sizeof( Test ) );

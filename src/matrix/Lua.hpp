@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/Object.hpp"
 
 struct lua_State;
@@ -38,8 +40,8 @@ namespace oz
       Particle*          part;
       List<Object::Event>::Iterator event;
 
-      int                iStruct;
-      int                iObject;
+      int                strIndex;
+      int                objIndex;
 
       float              damage;
       float              hitMomentum;

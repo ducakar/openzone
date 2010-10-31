@@ -538,6 +538,55 @@ namespace oz
     return true;
   }
 
+  void BSP::freeQBSP()
+  {
+    log.print( "Freeing Quake 3 BSP structure '%s' ...", name.cstr() );
+
+    delete[] planes;
+    delete[] nodes;
+    delete[] leaves;
+    delete[] leafBrushes;
+    delete[] leafFaces;
+    delete[] entityClasses;
+    delete[] brushes;
+    delete[] brushSides;
+    delete[] textures;
+    delete[] vertices;
+    delete[] indices;
+    delete[] faces;
+    delete[] lightmaps;
+
+    planes        = null;
+    nodes         = null;
+    leaves        = null;
+    leafBrushes   = null;
+    leafFaces     = null;
+    entityClasses = null;
+    brushes       = null;
+    brushSides    = null;
+    textures      = null;
+    vertices      = null;
+    indices       = null;
+    faces         = null;
+    lightmaps     = null;
+
+    nPlanes        = 0;
+    nNodes         = 0;
+    nLeaves        = 0;
+    nLeafBrushes   = 0;
+    nLeafFaces     = 0;
+    nEntityClasses = 0;
+    nBrushes       = 0;
+    nBrushSides    = 0;
+    nTextures      = 0;
+    nVertices      = 0;
+    nIndices       = 0;
+    nFaces         = 0;
+    nLightmaps     = 0;
+
+    log.printEnd( " OK" );
+  }
+
   void BSP::optimise()
   {
     // optimise
@@ -865,9 +914,9 @@ namespace oz
     log.println( "}" );
   }
 
-  bool BSP::save( const char* fileName )
+  bool BSP::save( const char* file )
   {
-    log.print( "Dumping BSP structure to '%s' ...", fileName );
+    log.print( "Dumping BSP structure to '%s' ...", file );
 
     int size = 0;
 
@@ -1001,16 +1050,15 @@ namespace oz
       os.writeChars( lightmaps[i].bits, LIGHTMAP_SIZE );
     }
 
-    buffer.write( fileName );
+    buffer.write( file );
 
     log.printEnd( " OK" );
     return true;
   }
 
-  bool BSP::loadOZBSP( const char* fileName )
+  bool BSP::loadOZBSP( const char* file )
   {
-    Buffer buffer;
-    buffer.load( fileName );
+    Buffer buffer( file );
 
     if( buffer.isEmpty() ) {
       return false;
@@ -1112,6 +1160,7 @@ namespace oz
     for( int i = 0; i < nEntityClasses; ++i ) {
       entityClasses[i].mins = is.readVec3();
       entityClasses[i].maxs = is.readVec3();
+      entityClasses[i].bsp = this;
       entityClasses[i].firstBrush = is.readInt();
       entityClasses[i].nBrushes = is.readInt();
       entityClasses[i].firstFace = is.readInt();
@@ -1233,56 +1282,40 @@ namespace oz
     log.printEnd( " OK" );
   }
 
-  void BSP::freeQBSP()
+  BSP::BSP() :
+      nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nLeafFaces( 0 ),
+      nEntityClasses( 0 ), nBrushes( 0 ), nBrushSides( 0 ), nTextures( 0 ), nVertices( 0 ),
+      nIndices( 0 ), nFaces( 0 ), nLightmaps( 0 ),
+      planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), leafFaces( null ),
+      entityClasses( null ), brushes( null ), brushSides( null ), textures( null ),
+      vertices( null ), indices( null ), faces( null ), lightmaps( null )
+  {}
+
+  void BSP::prebuild( const char* name )
   {
-    log.print( "Freeing Quake 3 BSP structure '%s' ...", name.cstr() );
+    log.println( "Prebuilding Quake 3 BSP structure '%s' {", name );
+    log.indent();
 
-    delete[] planes;
-    delete[] nodes;
-    delete[] leaves;
-    delete[] leafBrushes;
-    delete[] leafFaces;
-    delete[] entityClasses;
-    delete[] brushes;
-    delete[] brushSides;
-    delete[] textures;
-    delete[] vertices;
-    delete[] indices;
-    delete[] faces;
-    delete[] lightmaps;
+    BSP* bsp = new BSP();
 
-    planes        = null;
-    nodes         = null;
-    leaves        = null;
-    leafBrushes   = null;
-    leafFaces     = null;
-    entityClasses = null;
-    brushes       = null;
-    brushSides    = null;
-    textures      = null;
-    vertices      = null;
-    indices       = null;
-    faces         = null;
-    lightmaps     = null;
+    if( !bsp->loadQBSP( String( "maps/" ) + name ) ) {
+      bsp->freeQBSP();
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Matrix QBSP loading failed" );
+    }
 
-    nPlanes        = 0;
-    nNodes         = 0;
-    nLeaves        = 0;
-    nLeafBrushes   = 0;
-    nLeafFaces     = 0;
-    nEntityClasses = 0;
-    nBrushes       = 0;
-    nBrushSides    = 0;
-    nTextures      = 0;
-    nVertices      = 0;
-    nIndices       = 0;
-    nFaces         = 0;
-    nLightmaps     = 0;
+    bsp->optimise();
+    bsp->save( String( "maps/" ) + name + String( ".ozBSP" ) );
+    bsp->freeQBSP();
+    delete bsp;
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   BSP::BSP( const char* name_ ) :
+      name( name_ ),
       nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nLeafFaces( 0 ),
       nEntityClasses( 0 ), nBrushes( 0 ), nBrushSides( 0 ), nTextures( 0 ), nVertices( 0 ),
       nIndices( 0 ), nFaces( 0 ), nLightmaps( 0 ),
@@ -1290,8 +1323,6 @@ namespace oz
       entityClasses( null ), brushes( null ), brushSides( null ), textures( null ),
       vertices( null ), indices( null ), faces( null ), lightmaps( null )
   {
-    name = name_;
-
     log.print( "Loading OpenZone BSP structure '%s' ...", name.cstr() );
 
     if( !loadOZBSP( "maps/" + name + ".ozBSP" ) ) {
@@ -1301,32 +1332,6 @@ namespace oz
     }
 
     log.printEnd( " OK" );
-  }
-
-  BSP::BSP( const char* name_, int ) :
-      nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nLeafFaces( 0 ),
-      nEntityClasses( 0 ), nBrushes( 0 ), nBrushSides( 0 ), nTextures( 0 ), nVertices( 0 ),
-      nIndices( 0 ), nFaces( 0 ), nLightmaps( 0 ),
-      planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), leafFaces( null ),
-      entityClasses( null ), brushes( null ), brushSides( null ), textures( null ),
-      vertices( null ), indices( null ), faces( null ), lightmaps( null )
-  {
-    name = name_;
-
-    log.println( "Loading Quake 3 BSP structure '%s' {", name.cstr() );
-    log.indent();
-
-    if( !loadQBSP( "maps/" + name ) ) {
-      freeQBSP();
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Matrix QBSP loading failed" );
-    }
-
-    optimise();
-
-    log.unindent();
-    log.println( "}" );
   }
 
   BSP::~BSP()

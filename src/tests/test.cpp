@@ -9,17 +9,9 @@
 
 #include "stable.hpp"
 
-#include <vector>
-
 using namespace oz;
 
 int main( int, char** )
 {
-  HashIndex<int> hi;
-
-//  hi.add( 0, 42 );
-
-  printf( "%d\n", Alloc::count );
-  printf( "%ld\n", Alloc::amount );
   return 0;
 }

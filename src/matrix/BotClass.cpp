@@ -197,7 +197,7 @@ namespace oz
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
       if( weaponItem == i ) {
-        obj->iWeaponItem = item->index;
+        obj->weaponItem = item->index;
       }
       obj->take( item );
     }

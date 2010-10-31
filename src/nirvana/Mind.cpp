@@ -18,9 +18,9 @@ namespace nirvana
 
   Pool<Mind> Mind::pool;
 
-  Mind* Mind::create( int iBot )
+  Mind* Mind::create( int bot )
   {
-    Mind* mind = new Mind( iBot );
+    Mind* mind = new Mind( bot );
     return mind;
   }
 
@@ -43,7 +43,7 @@ namespace nirvana
 
   void Mind::write( OutputStream* ostream ) const
   {
-    ostream->writeInt( iBot );
+    ostream->writeInt( bot );
   }
 
 }

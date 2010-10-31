@@ -5,11 +5,11 @@ export LC_COLLATE=C
 #
 # liboz
 #
-echo 'string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" liboz_location_var )' >> install_files.cmake
+echo 'string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" liboz_location_var )' > install_files.cmake
 echo 'get_target_property( liboz_file oz ${liboz_location_var} )' >> install_files.cmake
 echo >> install_files.cmake
 
-echo 'if( OZ_INSTALL_LIBOZ )' > install_files.cmake
+echo 'if( OZ_INSTALL_LIBOZ )' >> install_files.cmake
 echo '  install( FILES' >> install_files.cmake
 echo '    ${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp' >> install_files.cmake
 
@@ -37,7 +37,7 @@ echo 'string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" client_location_var )' >> i
 echo 'get_target_property( client_file openzone ${client_location_var} )' >> install_files.cmake
 echo >> install_files.cmake
 
-echo 'if( OZ_INSTALL_CLIENT )' >> install_files.cmake  
+echo 'if( OZ_INSTALL_CLIENT )' >> install_files.cmake
 echo '  install( FILES ${client_file}' >> install_files.cmake
 echo '    DESTINATION bin' >> install_files.cmake
 echo '    PERMISSIONS' >> install_files.cmake
@@ -108,7 +108,7 @@ echo >> install_files.cmake
 for dir in data/mdl/*; do
   echo '  install( FILES' >> install_files.cmake
   ls $dir/{*.{obj,mtl,md2,png,jpg,txt},README*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
-  echo "    DESTINATION share/openzone/mdl/$dir" >> install_files.cmake
+  echo "    DESTINATION share/openzone/mdl/$dir )" >> install_files.cmake
   echo >> install_files.cmake
 done
 

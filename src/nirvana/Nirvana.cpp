@@ -35,7 +35,7 @@ namespace nirvana
       Mind* mind = i;
       ++i;
 
-      if( orbis.objects[mind->iBot] == null ) {
+      if( orbis.objects[mind->bot] == null ) {
         minds.remove( mind );
         delete mind;
       }
@@ -63,7 +63,7 @@ namespace nirvana
   {
     int count = 0;
     foreach( mind, minds.iter() ) {
-      const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->iBot] );
+      const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
       assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
 
       if( !( bot->state & Bot::PLAYER_BIT ) &&
@@ -111,10 +111,10 @@ namespace nirvana
     catch( const Exception& e ) {
       log.resetIndent();
       log.println();
-      log.println( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.message );
+      log.println( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.what() );
 
       if( log.isFile() ) {
-        fprintf( stderr, "EXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.message );
+        fprintf( stderr, "EXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.what() );
       }
       abort();
     }

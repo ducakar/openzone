@@ -111,7 +111,7 @@ namespace client
     *tags = new MD3Tag[header.nFrames * header.nTags];
     fread( *tags, sizeof( MD3Tag ), header.nFrames * header.nTags, file );
 
-    meshes( header.nSurfaces );
+    meshes.setSize( header.nSurfaces );
     for( int i = 0; i < header.nSurfaces; ++i ) {
       Mesh* mesh = &meshes[i];
 
@@ -120,7 +120,7 @@ namespace client
 
       mesh->nVertices = surface.nVertices;
 
-      mesh->triangles( surface.nTriangles );
+      mesh->triangles.setSize( surface.nTriangles );
       fread( mesh->triangles, sizeof( Triangle ), surface.nTriangles, file );
 
       MD3Shader* shaders = new MD3Shader[surface.nShaders];
@@ -141,7 +141,7 @@ namespace client
       parent->textures.include( mesh->texId );
       delete[] shaders;
 
-      mesh->texCoords( surface.nVertices );
+      mesh->texCoords.setSize( surface.nVertices );
       fread( mesh->texCoords, sizeof( TexCoord ), surface.nVertices, file );
 
       // convert (S,T) -> (U,V) i.e. top-left origin coords to lower-left origin coords
@@ -149,7 +149,7 @@ namespace client
 //         mesh->texCoords[j].v = 1.0f - mesh->texCoords[j].v;
       }
 
-      mesh->vertices( surface.nFrames * surface.nVertices );
+      mesh->vertices.setSize( surface.nFrames * surface.nVertices );
       MD3Vertex* vertices = new MD3Vertex[mesh->vertices.length()];
       fread( vertices, sizeof( MD3Vertex ), mesh->vertices.length(), file );
 
@@ -274,9 +274,9 @@ namespace client
     upper = new Part( this, dir, "upper.md3", &upperTags );
     lower = new Part( this, dir, "lower.md3", &lowerTags );
 
-    headOffsets( upper->nFrames );
-    lowerOffsets( upper->nFrames );
-    weaponOffsets( upper->nFrames );
+    headOffsets.setSize( upper->nFrames );
+    lowerOffsets.setSize( upper->nFrames );
+    weaponOffsets.setSize( upper->nFrames );
 
     // assemble the model
     for( int i = 0; i < upper->nFrames; ++i ) {

@@ -10,6 +10,9 @@
 
 #pragma once
 
+#include "arrays.hpp"
+#include "Alloc.hpp"
+
 namespace oz
 {
 

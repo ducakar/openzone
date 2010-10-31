@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/Matrix.hpp"
 #include "client/FreeCamProxy.hpp"
 #include "client/StrategicProxy.hpp"

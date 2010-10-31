@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/common.hpp"
 
 namespace oz
@@ -23,31 +25,40 @@ namespace client
       static const float DETAIL_SCALE;
       static const float WATER_SCALE;
 
-      uint      arrayBuffer;
-      uint      indexBuffer;
+      struct VertexData
+      {
+        Vec3     position;
+        Vec3     normal;
+        TexCoord detailTexCoord;
+        TexCoord mapTexCoord;
+      };
 
-      uint      detailTexId;
-      uint      mapTexId;
-      uint      waterTexId;
+      uint arrayBuffer;
+      uint indexBuffer;
 
-      float     radius;
+      uint detailTexId;
+      uint mapTexId;
+      uint waterTexId;
 
-      bool      inWater;
+      bool inWater;
+
+      void genBufferData( DArray<VertexData>* arrayData, DArray<uint>* indexData );
+      void saveBufferData( const char* file, DArray<VertexData>* arrayData,
+                           DArray<uint>* indexData );
+      void loadBufferData( const char* file, DArray<VertexData>* arrayData,
+                           DArray<uint>* indexData );
 
     public:
 
+      float radius;
+
+      void prebuild();
       void load();
       void unload();
 
-      void setRadius( float radius );
       void draw() const;
       void drawWater() const;
   };
-
-  inline void Terra::setRadius( float radius_ )
-  {
-    radius = radius_;
-  }
 
   extern Terra terra;
 

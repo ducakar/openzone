@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/common.hpp"
 
 namespace oz
@@ -63,13 +65,13 @@ namespace oz
       String mapTexture;
       String waterTexture;
 
+      String name;
+
       void init();
-      void load( float height );
       // load prebuilt terrain
       void load( const char* name );
-      // load terrain from PNG image & configuration file
-      void load( const char* name, int );
-      void save( const char* name );
+
+      void prebuild( const char* name );
 
       void isEmpty() const;
 
@@ -81,7 +83,7 @@ namespace oz
   };
 
   inline Span Terra::getInters( float minPosX, float minPosY,
-                                  float maxPosX, float maxPosY, float epsilon ) const
+                                float maxPosX, float maxPosY, float epsilon ) const
   {
     return Span( max( int( ( minPosX - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),
                  max( int( ( minPosY - epsilon + DIM ) * Quad::INV_SIZE ), 0 ),

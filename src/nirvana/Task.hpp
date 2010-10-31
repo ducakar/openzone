@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "nirvana/common.hpp"
 
 namespace oz

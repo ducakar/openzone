@@ -416,9 +416,9 @@ namespace oz
   }
 
   Structure::Structure( int index_, int bsp_, const Vec3& p_, Rotation rot_ ) :
-      index( index_ ), iBsp( bsp_ ), p( p_ ), rot( rot_ ), life( orbis.bsps[iBsp]->life )
+      index( index_ ), bsp( bsp_ ), p( p_ ), rot( rot_ ), life( orbis.bsps[bsp]->life )
   {
-    const BSP* bsp = orbis.bsps[iBsp];
+    const BSP* bsp = orbis.bsps[this->bsp];
 
     assert( bsp != null );
 
@@ -438,9 +438,9 @@ namespace oz
   }
 
   Structure::Structure( int index_, int bsp_, InputStream* istream ) :
-      index( index_ ), iBsp( bsp_ )
+      index( index_ ), bsp( bsp_ )
   {
-    const BSP* bsp = orbis.bsps[iBsp];
+    const BSP* bsp = orbis.bsps[this->bsp];
 
     assert( bsp != null );
 
@@ -467,6 +467,9 @@ namespace oz
     Vec3 p = ( in.maxs - in.mins ) * 0.5f;
 
     switch( rot ) {
+      default: {
+        assert( false );
+      }
       case Structure::R0: {
         return Bounds( p + in.mins,
                        p + in.maxs );
@@ -483,16 +486,15 @@ namespace oz
         return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
                        p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
       }
-      default: {
-        assert( false );
-        break;
-      }
     }
   }
 
   void Structure::setRotation( const Bounds& in, Rotation rot )
   {
     switch( rot ) {
+      default: {
+        assert( false );
+      }
       case Structure::R0: {
         mins = p + in.mins;
         maxs = p + in.maxs;
@@ -511,10 +513,6 @@ namespace oz
       case Structure::R270: {
         mins = p + Vec3( in.mins.y, -in.maxs.x, in.mins.z );
         maxs = p + Vec3( in.maxs.y, -in.mins.x, in.maxs.z );
-        break;
-      }
-      default: {
-        assert( false );
         break;
       }
     }

@@ -65,27 +65,15 @@ namespace oz
     }
   }
 
-  void Terra::load( float height )
-  {
-    for( int x = 0; x < MAX; ++x ) {
-      for( int y = 0; y < MAX; ++y ) {
-        vertices[x][y].x = float( x * Quad::SIZEI ) - DIM;
-        vertices[x][y].y = float( y * Quad::SIZEI ) - DIM;
-        vertices[x][y].z = height;
-      }
-    }
-
-    buildTerraFrame();
-  }
-
   void Terra::load( const char* name_ )
   {
-    String terraFile = "terra/" + String( name_ ) + ".ozTerra";
+    name = name_;
 
-    log.print( "Loading terrain '%s' ...", name_ );
+    String terraFile = "terra/" + name + ".ozTerra";
 
-    Buffer buffer;
-    buffer.load( terraFile );
+    log.print( "Loading terrain '%s' ...", name.cstr() );
+
+    Buffer buffer( terraFile );
 
     if( buffer.isEmpty() ) {
       log.printEnd( " Cannot read file" );
@@ -122,11 +110,13 @@ namespace oz
     log.printEnd( " OK" );
   }
 
-  void Terra::load( const char* name_, int )
+  void Terra::prebuild( const char* name_ )
   {
-    String name = name_;
+    name = name_;
+
     String configFile = "terra/" + name + ".rc";
     String imageFile = "terra/" + name + ".png";
+    String destFile = "terra/" + name + ".ozTerra";
 
     Config terraConfig;
     terraConfig.load( configFile );
@@ -167,11 +157,7 @@ namespace oz
 
     SDL_FreeSurface( image );
     log.printEnd( " OK" );
-  }
-
-  void Terra::save( const char* fileName )
-  {
-    log.print( "Dumping terrain to '%s' ...", fileName );
+    log.print( "Dumping terrain to '%s' ...", destFile.cstr() );
 
     int size = 0;
 
@@ -205,7 +191,7 @@ namespace oz
       }
     }
 
-    buffer.write( fileName );
+    buffer.write( destFile );
 
     log.printEnd( " OK" );
   }

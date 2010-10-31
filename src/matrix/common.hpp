@@ -42,6 +42,8 @@ namespace oz
 
   struct TexCoord
   {
+    static const TexCoord ZERO;
+
     float u;
     float v;
 

@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "ui/Frame.hpp"
 
 namespace oz
@@ -31,7 +33,7 @@ namespace ui
       static const int   FOOTER_SIZE = 40;
 
       uint useTexId;
-      int  iTagged;
+      int  tagged;
       int  row;
 
     protected:

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "common.hpp"
+
 namespace oz
 {
 
@@ -39,6 +41,7 @@ namespace oz
           delete pointer;
         }
       }
+
 
       AutoPtr& operator = ( AutoPtr& p )
       {

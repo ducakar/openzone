@@ -7,7 +7,7 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#include "oz.hpp"
+#include "Buffer.hpp"
 
 #include <cstdio>
 #include <sys/stat.h>
@@ -15,9 +15,16 @@
 namespace oz
 {
 
+  Buffer::Buffer( const char* path ) : data( null ), count( 0 )
+  {
+    if( !load( path ) ) {
+      throw Exception( "Failed to load buffer from file" );
+    }
+  }
+
   bool Buffer::load( const char* path )
   {
-    free();
+    delete[] data;
 
     struct stat fileStat;
     if( stat( path, &fileStat ) != 0 || fileStat.st_size > 0x7fffffffl ) {
@@ -49,16 +56,10 @@ namespace oz
       return false;
     }
 
-    Buffer* currentBuffer = this;
-    int blocksWritten = -1;
-    do {
-      blocksWritten = int( fwrite( currentBuffer->data, currentBuffer->count, 1, handle ) );
-      currentBuffer = currentBuffer->next;
-    }
-    while( currentBuffer != null && blocksWritten == 1 );
+    int result = int( fwrite( data, count, 1, handle ) );
     fclose( handle );
 
-    return blocksWritten == 1;
+    return result == 1;
   }
 
 }

@@ -183,7 +183,7 @@ namespace client
     wasUnderWater = isUnderWater;
     isUnderWater  = camera.p.z < 0.0f;
 
-    terra.setRadius( frustum.radius );
+    terra.radius = frustum.radius;
     terra.draw();
 
     // draw structures
@@ -192,12 +192,12 @@ namespace client
     for( int i = 0; i < structures.length(); ++i ) {
       const Structure* str = structures[i];
 
-      if( bsps[str->iBsp] == null ) {
-        bsps[str->iBsp] = new BSP( str->iBsp );
+      if( bsps[str->bsp] == null ) {
+        bsps[str->bsp] = new BSP( str->bsp );
       }
 
-      int waterFlags = bsps[str->iBsp]->fullDraw( str );
-      bsps[str->iBsp]->isUpdated = true;
+      int waterFlags = bsps[str->bsp]->fullDraw( str );
+      bsps[str->bsp]->isUpdated = true;
 
       if( waterFlags & BSP::IN_WATER_BRUSH ) {
         isUnderWater = true;
@@ -291,7 +291,7 @@ namespace client
     for( int i = 0; i < waterStructures.length(); ++i ) {
       const Structure* str = waterStructures[i];
 
-      bsps[str->iBsp]->fullDrawWater( str );
+      bsps[str->bsp]->fullDrawWater( str );
     }
 
     BSP::endRender();

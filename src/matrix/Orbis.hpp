@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/Sky.hpp"
 #include "matrix/Terra.hpp"
 #include "matrix/BSP.hpp"
@@ -97,7 +99,7 @@ namespace oz
 
     public:
 
-      void requestBSP( int iBsp );
+      void requestBSP( int bsp );
 
     private:
 
@@ -210,7 +212,7 @@ namespace oz
 
   inline bool Orbis::position( Structure* str )
   {
-    str->setRotation( *bsps[str->iBsp], str->rot );
+    str->setRotation( *bsps[str->bsp], str->rot );
 
     Span span = getInters( *str, EPSILON );
 
@@ -385,9 +387,9 @@ namespace oz
     }
   }
 
-  inline void Orbis::requestBSP( int iBsp ) {
-    if( bsps[iBsp] == null ) {
-      bsps[iBsp] = new BSP( translator.bsps[iBsp].name );
+  inline void Orbis::requestBSP( int bsp ) {
+    if( bsps[bsp] == null ) {
+      bsps[bsp] = new BSP( translator.bsps[bsp].name );
     }
   }
 

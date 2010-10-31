@@ -32,7 +32,7 @@ namespace ui
     setFontColor( 0xff, 0xff, 0xff );
 
     useTexId = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
-    iTagged = -1;
+    tagged = -1;
     row = 0;
   }
 
@@ -51,7 +51,7 @@ namespace ui
 
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-    iTagged = -1;
+    tagged = -1;
 
     int minY = y + FOOTER_SIZE;
     int maxY = y + FOOTER_SIZE + ROWS * SLOT_SIZE;
@@ -61,14 +61,14 @@ namespace ui
       int i = ( mouse.x - x ) / SLOT_SIZE + COLS * ( ROWS - 1 - ( mouse.y - minY ) / SLOT_SIZE );
 
       if( 0 <= i && i < COLS * ROWS ) {
-        iTagged = row * COLS + i;
+        tagged = row * COLS + i;
 
         if( mouse.rightClick ) {
-          bot->iTaggedItem = iTagged;
+          bot->taggedItem = tagged;
           bot->actions |= Bot::ACTION_INV_USE;
         }
         else if( mouse.middleClick ) {
-          bot->iTaggedItem = iTagged;
+          bot->taggedItem = tagged;
           bot->actions |= Bot::ACTION_INV_GRAB;
 
           mouse.doShow = false;
@@ -94,7 +94,7 @@ namespace ui
   void InventoryMenu::onDraw()
   {
     if( camera.state != Camera::BOT || camera.bot == -1 || !mouse.doShow ) {
-      iTagged = -1;
+      tagged = -1;
       row = 0;
       return;
     }
@@ -113,11 +113,11 @@ namespace ui
 
     const Vector<int>& items = camera.botObj->items;
 
-    int iMin = row * COLS;
-    int iMax = min( iMin + COLS * ROWS, items.length() );
+    int minIndex = row * COLS;
+    int maxIndex = min( minIndex + COLS * ROWS, items.length() );
     Dynamic* taggedItem = null;
 
-    for( int i = iMin; i < iMax; ++i ) {
+    for( int i = minIndex; i < maxIndex; ++i ) {
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[i]] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
@@ -134,14 +134,14 @@ namespace ui
       glRotatef(  20.0f, 0.0f, 0.0f, 1.0f );
       glScalef( scale, scale, scale );
 
-      if( i == iTagged ) {
+      if( i == tagged ) {
         glColor4fv( Colours::TAG );
         taggedItem = item;
       }
 
       render.drawModel( item, null );
 
-      if( i == iTagged ) {
+      if( i == tagged ) {
         glColor4fv( Colours::WHITE );
       }
 
@@ -152,7 +152,7 @@ namespace ui
     glPopMatrix();
     glDisable( GL_TEXTURE_2D );
 
-    iTagged = -1;
+    tagged = -1;
 
     if( taggedItem != null ) {
       float life = taggedItem->life / taggedItem->clazz->life;

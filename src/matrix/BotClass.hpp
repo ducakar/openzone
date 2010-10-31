@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/DynamicClass.hpp"
 
 namespace oz

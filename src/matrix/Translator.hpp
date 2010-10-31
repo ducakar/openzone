@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/Structure.hpp"
 #include "matrix/ObjectClass.hpp"
 
@@ -65,6 +67,7 @@ namespace oz
       Vector<Resource> sounds;
       Vector<Resource> bsps;
 
+      Vector<Resource> models;
       Vector<Resource> terras;
 
       Vector<Resource> matrixScripts;

@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/common.hpp"
 #include "matrix/Timer.hpp"
 

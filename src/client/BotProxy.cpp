@@ -192,7 +192,7 @@ namespace client
 
         if( bot->state & Bot::MOVING_BIT ) {
           if( bot->flags & Object::IN_WATER_BIT ) {
-            float bobInc = ( bot->state & Bot::RUNNING_BIT ) && bot->iGrabObj == -1 ?
+            float bobInc = ( bot->state & Bot::RUNNING_BIT ) && bot->grabObj == -1 ?
               clazz->bobSwimRunInc : clazz->bobSwimInc;
 
             bobPhi   = Math::mod( bobPhi + bobInc, 360.0f );
@@ -202,7 +202,7 @@ namespace client
           else if( ( bot->flags & Object::ON_FLOOR_BIT ) || bot->lower != -1 ) {
             float bobInc =
                 ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT &&
-                bot->iGrabObj == -1 ? clazz->bobRunInc : clazz->bobWalkInc;
+                bot->grabObj == -1 ? clazz->bobRunInc : clazz->bobWalkInc;
 
             bobPhi   = Math::mod( bobPhi + bobInc, 360.0f );
             bobTheta = Math::sin( Math::rad( bobPhi ) ) * clazz->bobRotation;
@@ -261,8 +261,8 @@ namespace client
       bobBias  = 0.0f;
     }
 
-    if( bot->iGrabObj != -1 ) {
-      camera.setTagged( orbis.objects[camera.botObj->iGrabObj] );
+    if( bot->grabObj != -1 ) {
+      camera.setTagged( orbis.objects[camera.botObj->grabObj] );
     }
     else if( isExternal && isFreelook ) {
       // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }

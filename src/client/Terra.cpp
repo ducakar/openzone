@@ -28,15 +28,20 @@ namespace client
   const float Terra::DETAIL_SCALE = 4.0f;
   const float Terra::WATER_SCALE  = 2.0f;
 
-  struct VertexData
-  {
-    Vec3     position;
-    Vec3     normal;
-    TexCoord detailTexCoord;
-    TexCoord mapTexCoord;
-  };
-
   Terra terra;
+
+  void Terra::prebuild()
+  {
+    int nVertices = oz::Terra::MAX * oz::Terra::MAX;
+    int nIndices = oz::Terra::MAX * ( oz::Terra::MAX - 1 ) * 2;
+
+    DArray<VertexData> arrayData( nVertices );
+    DArray<uint>       indexData( nIndices );
+
+    String path = "terra/" + orbis.terra.name + ".ozcTerra";
+    genBufferData( &arrayData, &indexData );
+    saveBufferData( path, &arrayData, &indexData );
+  }
 
   void Terra::load()
   {
@@ -47,12 +52,28 @@ namespace client
     int nVertices = oz::Terra::MAX * oz::Terra::MAX;
     int nIndices = oz::Terra::MAX * ( oz::Terra::MAX - 1 ) * 2;
 
-    VertexData* arrayData = new VertexData[nVertices];
-    uint* indexData = new uint[nIndices];
+    DArray<VertexData> arrayData( nVertices );
+    DArray<uint>       indexData( nIndices );
+
+    String path = "terra/" + orbis.terra.name + ".ozcTerra";
+    loadBufferData( path, &arrayData, &indexData );
+
+    glGenBuffers( 1, &arrayBuffer );
+    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( VertexData ), arrayData, GL_STATIC_DRAW );
+
+    glGenBuffers( 1, &indexBuffer );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( uint ), indexData, GL_STATIC_DRAW );
+  }
+
+  void Terra::genBufferData( DArray<VertexData>* arrayData, DArray<uint>* indexData )
+  {
+    log.print( "Generating client terrain data ..." );
 
     for( int x = 0; x < oz::Terra::MAX; ++x ) {
       for( int y = 0; y < oz::Terra::MAX; ++y ) {
-        VertexData& vertex = arrayData[x * oz::Terra::MAX + y];
+        VertexData& vertex = ( *arrayData )[x * oz::Terra::MAX + y];
 
         vertex.position = orbis.terra.vertices[x][y];
         vertex.normal   = Vec3::ZERO;
@@ -80,28 +101,96 @@ namespace client
         vertex.mapTexCoord.v = float( y ) / oz::Terra::MAX;
 
         if( x != oz::Terra::MAX - 1 ) {
-          indexData[ 2 * ( x * oz::Terra::MAX + y ) ] = ( x + 1 ) * oz::Terra::MAX + y;
-          indexData[ 2 * ( x * oz::Terra::MAX + y ) + 1 ] = x * oz::Terra::MAX + y;
+          ( *indexData )[ 2 * ( x * oz::Terra::MAX + y ) ] = ( x + 1 ) * oz::Terra::MAX + y;
+          ( *indexData )[ 2 * ( x * oz::Terra::MAX + y ) + 1 ] = x * oz::Terra::MAX + y;
         }
       }
     }
 
-    glGenBuffers( 1, &arrayBuffer );
-    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( VertexData ), arrayData, GL_STATIC_DRAW );
+    log.printEnd( " OK" );
+  }
 
-    glGenBuffers( 1, &indexBuffer );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( uint ), indexData, GL_STATIC_DRAW );
+  void Terra::saveBufferData( const char* path, DArray<VertexData>* arrayData,
+                              DArray<uint>* indexData )
+  {
+    log.print( "Saving client terrain data to '%s' ...", path );
 
-    delete[] indexData;
-    delete[] arrayData;
+    int size = 0;
+    size += int( 2 * sizeof( int ) );
+    size += int( arrayData->length() * sizeof( VertexData ) );
+    size += int( indexData->length() * sizeof( uint ) );
+
+    Buffer buffer( size );
+    OutputStream os = buffer.outputStream();
+
+    os.writeInt( arrayData->length() );
+    os.writeInt( indexData->length() );
+
+    for( int i = 0; i < arrayData->length(); ++i ) {
+      const VertexData& vertex = ( *arrayData )[i];
+
+      os.writeVec3( vertex.position );
+      os.writeVec3( vertex.normal );
+      os.writeFloat( vertex.detailTexCoord.u );
+      os.writeFloat( vertex.detailTexCoord.v );
+      os.writeFloat( vertex.mapTexCoord.u );
+      os.writeFloat( vertex.mapTexCoord.v );
+    }
+
+    for( int i = 0; i < indexData->length(); ++i ) {
+      const uint& index = ( *indexData )[i];
+
+      os.writeInt( index );
+    }
+
+    buffer.write( path );
+
+    log.printEnd( " OK" );
+  }
+
+  void Terra::loadBufferData( const char* path, DArray<VertexData>* arrayData,
+                              DArray<uint>* indexData )
+  {
+    log.print( "Loading client terrain data from '%s' ...", path );
+
+    Buffer buffer( path );
+    InputStream is = buffer.inputStream();
+
+    int nVertices = is.readInt();
+    int nIndices = is.readInt();
+
+    if( nVertices != arrayData->length() || nIndices != indexData->length() ) {
+      throw Exception( "Invalid client terrain size" );
+    }
+
+    for( int i = 0; i < nVertices; ++i ) {
+      VertexData& vertex = ( *arrayData )[i];
+
+      vertex.position = is.readVec3();
+      vertex.normal = is.readVec3();
+      vertex.detailTexCoord.u = is.readFloat();
+      vertex.detailTexCoord.v = is.readFloat();
+      vertex.mapTexCoord.u = is.readFloat();
+      vertex.mapTexCoord.v = is.readFloat();
+    }
+
+    for( int i = 0; i < nIndices; ++i ) {
+      uint& index = ( *indexData )[i];
+
+      index = is.readInt();
+    }
+
+    log.printEnd( " OK" );
   }
 
   void Terra::unload()
   {
     glDeleteBuffers( 1, &indexBuffer );
     glDeleteBuffers( 1, &arrayBuffer );
+
+    context.freeTexture( waterTexId );
+    context.freeTexture( mapTexId );
+    context.freeTexture( detailTexId );
   }
 
   void Terra::draw() const

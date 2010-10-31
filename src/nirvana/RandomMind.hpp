@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "nirvana/Mind.hpp"
 
 namespace oz
@@ -22,10 +24,10 @@ namespace nirvana
 
       static Pool<RandomMind> pool;
 
-      static Mind* create( int iBot );
+      static Mind* create( int bot );
       static Mind* read( InputStream* istream );
 
-      explicit RandomMind( int iBot ) : Mind( iBot ) {}
+      explicit RandomMind( int bot ) : Mind( bot ) {}
 
       virtual const char* type() const;
       virtual void update();

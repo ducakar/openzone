@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/Structure.hpp"
 #include "matrix/BSP.hpp"
 
@@ -50,14 +52,14 @@ namespace client
       void drawFaceWater( const oz::BSP::Face* face ) const;
       // This function  _should_ draw a BSP without depth testing if only OpenGL supported some kind
       // of depth func that would draw pixel only if it hasn't been drawn yet.
-      void drawNode( int iNode );
-      void drawNodeWater( int iNode );
+      void drawNode( int nodeIndex );
+      void drawNodeWater( int nodeIndex );
 
     public:
 
       bool isUpdated;
 
-      explicit BSP( int iBsp );
+      explicit BSP( int bspIndex );
       ~BSP();
 
       void init( oz::BSP* bsp );

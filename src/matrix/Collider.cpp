@@ -57,10 +57,10 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush overlapping
-  bool Collider::overlapsAABBNode( int iNode )
+  bool Collider::overlapsAABBNode( int nodeIndex )
   {
-    if( iNode < 0 ) {
-      const BSP::Leaf& leaf = bsp->leaves[~iNode];
+    if( nodeIndex < 0 ) {
+      const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
         int index = bsp->leafBrushes[leaf.firstBrush + i];
@@ -75,7 +75,7 @@ namespace oz
       return false;
     }
     else {
-      const BSP::Node&  node  = bsp->nodes[iNode];
+      const BSP::Node&  node  = bsp->nodes[nodeIndex];
       const BSP::Plane& plane = bsp->planes[node.plane];
 
       float offset = plane.normal.abs() * aabb.dim + 2.0f * EPSILON;
@@ -143,11 +143,11 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( iStr, cell.structs.citer() ) {
-          str = orbis.structs[*iStr];
+        foreach( strIndex, cell.structs.citer() ) {
+          str = orbis.structs[*strIndex];
 
           if( str != oldStr ) {
-            bsp = orbis.bsps[str->iBsp];
+            bsp = orbis.bsps[str->bsp];
 
             startPos = str->toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
@@ -203,11 +203,11 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( iStr, cell.structs.citer() ) {
-          str = orbis.structs[*iStr];
+        foreach( strIndex, cell.structs.citer() ) {
+          str = orbis.structs[*strIndex];
 
           if( str != oldStr ) {
-            bsp = orbis.bsps[str->iBsp];
+            bsp = orbis.bsps[str->bsp];
 
             startPos = str->toStructCS( aabb.p - str->p );
             visitedBrushes.clearAll();
@@ -269,8 +269,8 @@ namespace oz
   void Collider::trimAABBVoid()
   {
     for( int i = 0; i < 3; ++i ) {
-      int iSide = move[i] >= 0.0f;
-      const Vec3& normal = normals[i * 2 + iSide];
+      int side = move[i] >= 0.0f;
+      const Vec3& normal = normals[i * 2 + side];
 
       float startDist = orbis.maxs[i] + startPos[i] * normal[i] - aabb.dim[i];
       float endDist   = orbis.maxs[i] + endPos[i]   * normal[i] - aabb.dim[i];
@@ -422,10 +422,10 @@ namespace oz
   }
 
   // recursively check nodes of BSP-tree for AABB-Brush collisions
-  void Collider::trimAABBNode( int iNode )
+  void Collider::trimAABBNode( int nodeIndex )
   {
-    if( iNode < 0 ) {
-      const BSP::Leaf& leaf = bsp->leaves[~iNode];
+    if( nodeIndex < 0 ) {
+      const BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
 
       for( int i = 0; i < leaf.nBrushes; ++i ) {
         int index = bsp->leafBrushes[leaf.firstBrush + i];
@@ -447,7 +447,7 @@ namespace oz
       }
     }
     else {
-      const BSP::Node&  node  = bsp->nodes[iNode];
+      const BSP::Node&  node  = bsp->nodes[nodeIndex];
       const BSP::Plane& plane = bsp->planes[node.plane];
 
       float offset    = plane.normal.abs() * aabb.dim + 2.0f * EPSILON;
@@ -607,12 +607,12 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        foreach( iStr, cell.structs.citer() ) {
-          str = orbis.structs[*iStr];
+        foreach( strIndex, cell.structs.citer() ) {
+          str = orbis.structs[*strIndex];
 
           // to prevent some of duplicated structure tests
           if( str != oldStr ) {
-            bsp = orbis.bsps[str->iBsp];
+            bsp = orbis.bsps[str->bsp];
 
             if( str->overlaps( trace ) ) {
               visitedBrushes.clearAll();
@@ -664,11 +664,11 @@ namespace oz
         const Cell& cell = orbis.cells[x][y];
 
         if( structs != null ) {
-          foreach( iStr, cell.structs.citer() ) {
-            Structure* str = orbis.structs[*iStr];
+          foreach( strIndex, cell.structs.citer() ) {
+            Structure* str = orbis.structs[*strIndex];
 
             if( !structs->contains( str ) ) {
-              bsp = orbis.bsps[str->iBsp];
+              bsp = orbis.bsps[str->bsp];
 
               startPos = str->toStructCS( aabb.p - str->p );
 

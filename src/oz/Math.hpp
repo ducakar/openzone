@@ -9,6 +9,15 @@
 
 #pragma once
 
+#include "Pair.hpp"
+
+/*
+ * Standard math header, if we don't use built-in math
+ */
+#ifndef OZ_BUILTIN_MATH
+# include <cmath>
+#endif
+
 #ifdef OZ_MSVC
 # include <cfloat>
 #endif
@@ -89,7 +98,11 @@ namespace oz
       static float round( float x )
       {
 #ifdef OZ_BUILTIN_MATH
+# ifdef __clang__
+        return x < 0.0f ? __builtin_ceilf( x - 0.5f ) : __builtin_floorf( x + 0.5f );
+# else
         return __builtin_roundf( x );
+# endif
 #elif defined( OZ_MSVC )
         return x < 0.0f ? ceilf( x - 0.5f ) : floorf( x + 0.5f );
 #else
@@ -100,7 +113,11 @@ namespace oz
       static float trunc( float x )
       {
 #ifdef OZ_BUILTIN_MATH
+# ifdef __clang__
+        return x < 0.0f ? __builtin_ceilf( x ) : __builtin_floorf( x );
+# else
         return __builtin_truncf( x );
+# endif
 #elif defined( OZ_MSVC )
         return x < 0.0f ? ceilf( x ) : floorf( x );
 #else
@@ -184,16 +201,16 @@ namespace oz
 
       static void sincos( float x, float* s, float* c )
       {
-#ifdef OZ_HAVE_SINCOSF
-# ifdef OZ_BUILTIN_MATH
+#ifdef OZ_BUILTIN_MATH
+# if defined( OZ_HAVE_SINCOSF ) && !defined( __clang__ )
         __builtin_sincosf( x, s, c );
 # else
-        sincosf( x, s, c );
-# endif
-#else
-# ifdef OZ_BUILTIN_MATH
         *s = __builtin_sinf( x );
         *c = __builtin_cosf( x );
+# endif
+#else
+# ifdef OZ_HAVE_SINCOSF
+        sincosf( x, s, c );
 # else
         *s = sinf( x );
         *c = cosf( x );

@@ -91,37 +91,51 @@ Find_Package( OpenGL )
 Find_Package( OpenAL )
 
 if( NOT ALUT_INCLUDE_DIR )
-  set( ALUT_INCLUDE_DIR "ALUT_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
+#  set( ALUT_INCLUDE_DIR "ALUT_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
+  set( ALUT_INCLUDE_DIR "/usr/include" CACHE PATH "" FORCE )
 endif( NOT ALUT_INCLUDE_DIR )
 
 if( NOT ALUT_LIBRARY )
-  set( ALUT_LIBRARY "ALUT_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
+#  set( ALUT_LIBRARY "ALUT_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
+  set( ALUT_LIBRARY "-lalut" CACHE FILEPATH "" FORCE )
 endif( NOT ALUT_LIBRARY )
 
 if( NOT OGG_INCLUDE_DIR )
-  set( OGG_INCLUDE_DIR "OGG_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
+#  set( OGG_INCLUDE_DIR "OGG_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
+  set( OGG_INCLUDE_DIR "/usr/include" CACHE PATH "" FORCE )
 endif( NOT OGG_INCLUDE_DIR )
 
 if( NOT OGG_LIBRARY )
-  set( OGG_LIBRARY "OGG_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
+#  set( OGG_LIBRARY "OGG_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
+  set( OGG_LIBRARY "-logg" CACHE FILEPATH "" FORCE )
 endif( NOT OGG_LIBRARY )
 
 if( NOT VORBIS_INCLUDE_DIR )
-  set( VORBIS_INCLUDE_DIR "VORBIS_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
+#  set( VORBIS_INCLUDE_DIR "VORBIS_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
+  set( VORBIS_INCLUDE_DIR "/usr/include" CACHE PATH "" FORCE )
 endif( NOT VORBIS_INCLUDE_DIR )
 
 if( NOT VORBIS_LIBRARY )
-  set( VORBIS_LIBRARY "VORBIS_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
+#  set( VORBIS_LIBRARY "VORBIS_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
+  set( VORBIS_LIBRARY "-lvorbis" CACHE FILEPATH "" FORCE )
 endif( NOT VORBIS_LIBRARY )
 
 if( NOT VORBISFILE_LIBRARY )
-  set( VORBISFILE_LIBRARY "VORBISFILE_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
+#  set( VORBISFILE_LIBRARY "VORBISFILE_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
+  set( VORBISFILE_LIBRARY "-lvorbisfile" CACHE FILEPATH "" FORCE )
 endif( NOT VORBISFILE_LIBRARY )
 
 if( MSVC AND NOT DIRENT_INCLUDE_DIR )
   set( DIRENT_INCLUDE_DIR "DIRENT_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
 endif( MSVC AND NOT DIRENT_INCLUDE_DIR )
 
+# detect clang
+string( REGEX MATCH "clang\\+\\+" compiler_base "${CMAKE_CXX_COMPILER}" )
+if( "${compiler_base}" STREQUAL "clang++" )
+  set( CLANG ON )
+endif()
+
+# detect platform
 if( UNIX )
   set( OZ_UNIX ON )
 elseif( MSVC )
@@ -185,25 +199,27 @@ else( MSVC )
 
   # compiler and linker flags
   set( flags "-std=c++0x -fmessage-length=0 -pipe" )
-  set( warnings "-Wall -Wextra -Wold-style-cast -Wconversion -Wstrict-overflow" )
-  set( warnings "${warnings} -Wlogical-op -Wredundant-decls -Wsign-promo -Wpacked" )
-  set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor" )
-  set( warnings "${warnings} -Wctor-dtor-privacy -Winvalid-pch -Wdisabled-optimization" )
+  set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wconversion -Wcast-qual -Wcast-align" )
+  set( warnings "${warnings} -Wlogical-op -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor" )
+  set( warnings "${warnings} -Wredundant-decls -Wmissing-declarations -Wdisabled-optimization" )
 
-  set( arch_flags "-mmmx -msse3 -mfpmath=sse" )
+  set( arch_flags "-mmmx -msse3" )
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math" CACHE STRING "" FORCE )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -ffast-math" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
   set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
 
+  set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-flto -Wl,--gc-sections" CACHE STRING "" FORCE )
+  set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-flto -Wl,--gc-sections" CACHE STRING "" FORCE )
+
   if( WIN32 )
-    set( CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-auto-import" )
+    set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import" )
   endif( WIN32 )
 
 endif( MSVC )
 
-set( CMAKE_CXX_FLAGS "${flags} ${arch_flags} ${warnings} ${includes}" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings} ${includes}" )
 link_libraries( ${libs} )
 
 # sources

@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "DArray.hpp"
+
 namespace oz
 {
 
@@ -517,17 +519,17 @@ namespace oz
           ++count;
         }
 
-        (*array)( count );
+        array->setSize( count );
         p0 = 0;
         p1 = index( ch );
 
         while( p1 >= 0 ) {
-          (*array)[i] = substring( p0, p1 );
+          ( *array )[i] = substring( p0, p1 );
           p0 = p1 + 1;
           p1 = index( ch, p0 );
           ++i;
         }
-        (*array)[i] = substring( p0 );
+        ( *array )[i] = substring( p0 );
       }
 
       static bool isDigit( char c )

@@ -54,23 +54,23 @@ namespace client
 
   int BSP::getLeaf() const
   {
-    int iNode = 0;
+    int nodeIndex = 0;
     do {
-      const oz::BSP::Node&  node  = bsp->nodes[iNode];
+      const oz::BSP::Node&  node  = bsp->nodes[nodeIndex];
       const oz::BSP::Plane& plane = bsp->planes[node.plane];
 
       if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
-        iNode = node.back;
+        nodeIndex = node.back;
       }
       else {
-        iNode = node.front;
+        nodeIndex = node.front;
       }
 
-      assert( iNode != 0 );
+      assert( nodeIndex != 0 );
     }
-    while( iNode >= 0 );
+    while( nodeIndex >= 0 );
 
-    return ~iNode;
+    return ~nodeIndex;
   }
 
   void BSP::checkInWaterBrush( const oz::BSP::Leaf* leaf ) const
@@ -171,10 +171,10 @@ namespace client
     glMatrixMode( GL_MODELVIEW );
   }
 
-  void BSP::drawNode( int iNode )
+  void BSP::drawNode( int nodeIndex )
   {
-    if( iNode >= 0 ) {
-      const oz::BSP::Node&  node  = bsp->nodes[iNode];
+    if( nodeIndex >= 0 ) {
+      const oz::BSP::Node&  node  = bsp->nodes[nodeIndex];
       const oz::BSP::Plane& plane = bsp->planes[node.plane];
 
       if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
@@ -187,26 +187,26 @@ namespace client
       }
     }
     else {
-      const oz::BSP::Leaf& leaf = bsp->leaves[~iNode];
+      const oz::BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
         for( int i = 0; i < leaf.nFaces; ++i ) {
-          int iFace = bsp->leafFaces[leaf.firstFace + i];
+          int face = bsp->leafFaces[leaf.firstFace + i];
 
-          if( !drawnFaces.get( iFace ) ) {
-            drawFace( &bsp->faces[iFace] );
-            drawnFaces.set( iFace );
+          if( !drawnFaces.get( face ) ) {
+            drawFace( &bsp->faces[face] );
+            drawnFaces.set( face );
           }
         }
       }
     }
   }
 
-  void BSP::drawNodeWater( int iNode )
+  void BSP::drawNodeWater( int nodeIndex )
   {
-    if( iNode >= 0 ) {
-      const oz::BSP::Node&  node  = bsp->nodes[iNode];
+    if( nodeIndex >= 0 ) {
+      const oz::BSP::Node&  node  = bsp->nodes[nodeIndex];
       const oz::BSP::Plane& plane = bsp->planes[node.plane];
 
       if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
@@ -219,27 +219,27 @@ namespace client
       }
     }
     else {
-      const oz::BSP::Leaf& leaf = bsp->leaves[~iNode];
+      const oz::BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
       if( frustum.isVisible( leaf + str->p ) ) {
         for( int i = 0; i < leaf.nFaces; ++i ) {
-          int iFace = bsp->leafFaces[leaf.firstFace + i];
+          int face = bsp->leafFaces[leaf.firstFace + i];
 
-          if( !drawnFaces.get( iFace ) ) {
-            drawFaceWater( &bsp->faces[iFace] );
-            drawnFaces.set( iFace );
+          if( !drawnFaces.get( face ) ) {
+            drawFaceWater( &bsp->faces[face] );
+            drawnFaces.set( face );
           }
         }
       }
     }
   }
 
-  BSP::BSP( int iBsp ) : isUpdated( false )
+  BSP::BSP( int bspIndex ) : isUpdated( false )
   {
-    bsp = orbis.bsps[iBsp];
+    bsp = orbis.bsps[bspIndex];
 
-    log.println( "Loading BSP model '%s' {", translator.bsps[iBsp].name.cstr() );
+    log.println( "Loading BSP model '%s' {", translator.bsps[bspIndex].name.cstr() );
     log.indent();
 
     textures = new uint[bsp->nTextures];
@@ -329,11 +329,11 @@ namespace client
 
     aCopy<ulong>( drawnFaces, hiddenFaces, hiddenFaces.unitLength() );
 
-    int iLeaf = getLeaf();
-    checkInWaterBrush( &bsp->leaves[iLeaf] );
+    int leaf = getLeaf();
+    checkInWaterBrush( &bsp->leaves[leaf] );
 
     if( bsp->visual.bitsets != null ) {
-      int     cluster = bsp->leaves[iLeaf].cluster;
+      int     cluster = bsp->leaves[leaf].cluster;
       Bitset& bitset  = bsp->visual.bitsets[cluster];
 
       for( int i = 0; i < bsp->nLeaves; ++i ) {
@@ -344,12 +344,12 @@ namespace client
             frustum.isVisible( rotatedLeaf + str->p ) )
         {
           for( int j = 0; j < leaf.nFaces; ++j ) {
-            int iFace = bsp->leafFaces[leaf.firstFace + j];
-            const oz::BSP::Face& face = bsp->faces[iFace];
+            int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+            const oz::BSP::Face& face = bsp->faces[faceIndex];
 
-            if( !drawnFaces.get( iFace ) ) {
+            if( !drawnFaces.get( faceIndex ) ) {
               drawFace( &face );
-              drawnFaces.set( iFace );
+              drawnFaces.set( faceIndex );
             }
           }
         }
@@ -362,12 +362,12 @@ namespace client
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
           for( int j = 0; j < leaf.nFaces; ++j ) {
-            int iFace = bsp->leafFaces[leaf.firstFace + j];
-            const oz::BSP::Face& face = bsp->faces[iFace];
+            int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+            const oz::BSP::Face& face = bsp->faces[faceIndex];
 
-            if( !drawnFaces.get( iFace ) ) {
+            if( !drawnFaces.get( faceIndex ) ) {
               drawFace( &face );
-              drawnFaces.set( iFace );
+              drawnFaces.set( faceIndex );
             }
           }
         }
@@ -399,10 +399,10 @@ namespace client
 
     aCopy<ulong>( drawnFaces, hiddenFaces, hiddenFaces.unitLength() );
 
-    int iLeaf = getLeaf();
+    int leaf = getLeaf();
 
     if( bsp->visual.bitsets != null ) {
-      int     cluster = bsp->leaves[iLeaf].cluster;
+      int     cluster = bsp->leaves[leaf].cluster;
       Bitset& bitset  = bsp->visual.bitsets[cluster];
 
       for( int i = 0; i < bsp->nLeaves; ++i ) {
@@ -413,12 +413,12 @@ namespace client
             frustum.isVisible( rotatedLeaf + str->p ) )
         {
           for( int j = 0; j < leaf.nFaces; ++j ) {
-            int iFace = bsp->leafFaces[leaf.firstFace + j];
-            const oz::BSP::Face& face = bsp->faces[iFace];
+            int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+            const oz::BSP::Face& face = bsp->faces[faceIndex];
 
-            if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( iFace ) ) {
+            if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
               drawFaceWater( &face );
-              drawnFaces.set( iFace );
+              drawnFaces.set( faceIndex );
             }
           }
         }
@@ -431,12 +431,12 @@ namespace client
 
         if( frustum.isVisible( rotatedLeaf + str->p ) ) {
           for( int j = 0; j < leaf.nFaces; ++j ) {
-            int iFace = bsp->leafFaces[leaf.firstFace + j];
-            const oz::BSP::Face& face = bsp->faces[iFace];
+            int faceIndex = bsp->leafFaces[leaf.firstFace + j];
+            const oz::BSP::Face& face = bsp->faces[faceIndex];
 
-            if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( iFace ) ) {
+            if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
               drawFaceWater( &face );
-              drawnFaces.set( iFace );
+              drawnFaces.set( faceIndex );
             }
           }
         }
@@ -468,8 +468,8 @@ namespace client
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
 
-    int iLeaf = getLeaf();
-    checkInWaterBrush( &bsp->leaves[iLeaf] );
+    int leaf = getLeaf();
+    checkInWaterBrush( &bsp->leaves[leaf] );
 
     for( int i = 0; i < bsp->nEntityClasses; ++i ) {
       const oz::EntityClass& clazz = bsp->entityClasses[i];
@@ -534,11 +534,11 @@ namespace client
       const oz::BSP::Leaf& leaf = bsp->leaves[i];
 
       for( int j = 0; j < leaf.nFaces; ++j ) {
-        int iFace = bsp->leafFaces[leaf.firstFace + j];
+        int face = bsp->leafFaces[leaf.firstFace + j];
 
-        if( !drawnFaces.get( iFace ) ) {
-          drawFace( &bsp->faces[iFace] );
-          drawnFaces.set( iFace );
+        if( !drawnFaces.get( face ) ) {
+          drawFace( &bsp->faces[face] );
+          drawnFaces.set( face );
         }
       }
     }
