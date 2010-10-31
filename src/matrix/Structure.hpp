@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/common.hpp"
 #include "matrix/BSP.hpp"
 
@@ -83,7 +85,7 @@ namespace oz
     public:
 
       int        index;
-      int        iBsp;
+      int        bsp;
       Vec3       p;
       Rotation   rot;
       float      life;
@@ -155,6 +157,9 @@ namespace oz
   inline Bounds Structure::toStructCS( const Bounds& bb ) const
   {
     switch( rot ) {
+      default: {
+        assert( false );
+      }
       case Structure::R0: {
         return Bounds( Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
                        Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
@@ -172,12 +177,14 @@ namespace oz
                        Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
       }
     }
-    assert( false );
   }
 
   inline Bounds Structure::toAbsoluteCS( const Bounds& bb ) const
   {
     switch( rot ) {
+      default: {
+        assert( false );
+      }
       case Structure::R0: {
         return Bounds( Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
                        Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
@@ -195,7 +202,6 @@ namespace oz
                        Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
       }
     }
-    assert( false );
   }
 
   inline void Structure::damage( float damage )

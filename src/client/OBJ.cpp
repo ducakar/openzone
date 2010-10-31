@@ -26,6 +26,33 @@ namespace client
   Vector<OBJ::Material> OBJ::materials;
   HashString<int>       OBJ::materialIndices;
 
+  DArray<OBJ::Vertex>   OBJ::vertices;
+  DArray<uint>          OBJ::indices;
+
+  inline OBJ::Face::Vertex::Vertex()
+  {}
+
+  inline OBJ::Face::Vertex::Vertex( int pos_, int norm_, int texCoord_ ) :
+      position( pos_ ), normal( norm_ ), texCoord( texCoord_ )
+  {}
+
+  inline bool OBJ::Face::Vertex::operator == ( const Vertex& v ) const
+  {
+    return position == v.position && normal == v.normal && texCoord == v.texCoord;
+  }
+
+  inline bool OBJ::Face::Vertex::operator != ( const Vertex& v ) const
+  {
+    return position != v.position || normal != v.normal || texCoord != v.texCoord;
+  }
+
+  inline bool OBJ::Face::Vertex::operator < ( const Vertex& v ) const
+  {
+    return position < v.position ||
+        ( position == v.position && ( normal < v.normal ||
+            ( normal == v.normal && texCoord < v.texCoord ) ) );
+  }
+
   char* OBJ::skipSpaces( char* pos )
   {
     while( *pos == ' ' || *pos == '\t' ) {
@@ -92,7 +119,7 @@ namespace client
   {
     char* end;
 
-    int iVertex, iNormal, iTexCoord;
+    int vertIndex, normalIndex, texCoordIndex;
 
     pos = skipSpaces( pos );
     end = readWord( pos );
@@ -120,10 +147,10 @@ namespace client
     // vert
     if( firstSlash == -1 ) {
       do {
-        if( sscanf( pos, "%d", &iVertex ) != 1 ) {
+        if( sscanf( pos, "%d", &vertIndex ) != 1 ) {
           return false;
         }
-        face->vertices.add( Face::Vertex( iVertex - 1, -1, -1 ) );
+        face->vertices.add( Face::Vertex( vertIndex - 1, -1, -1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -133,10 +160,10 @@ namespace client
     // vert/tex
     else if( lastSlash == -1 ) {
       do {
-        if( sscanf( pos, "%d/%d", &iVertex, &iTexCoord ) != 2 ) {
+        if( sscanf( pos, "%d/%d", &vertIndex, &texCoordIndex ) != 2 ) {
           return false;
         }
-        face->vertices.add( Face::Vertex( iVertex - 1, -1, iTexCoord - 1 ) );
+        face->vertices.add( Face::Vertex( vertIndex - 1, -1, texCoordIndex - 1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -146,10 +173,10 @@ namespace client
     // vert//norm
     else if( firstSlash + 1 == lastSlash ) {
       do {
-        if( sscanf( pos, "%d//%d", &iVertex, &iNormal ) != 2 ) {
+        if( sscanf( pos, "%d//%d", &vertIndex, &normalIndex ) != 2 ) {
           return false;
         }
-        face->vertices.add( Face::Vertex( iVertex - 1, iNormal - 1, -1 ) );
+        face->vertices.add( Face::Vertex( vertIndex - 1, normalIndex - 1, -1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -159,10 +186,10 @@ namespace client
     // vert/tex/norm
     else {
       do {
-        if( sscanf( pos, "%d/%d/%d", &iVertex, &iTexCoord, &iNormal ) != 3 ) {
+        if( sscanf( pos, "%d/%d/%d", &vertIndex, &texCoordIndex, &normalIndex ) != 3 ) {
           return false;
         }
-        face->vertices.add( Face::Vertex( iVertex - 1, iNormal - 1, iTexCoord - 1 ) );
+        face->vertices.add( Face::Vertex( vertIndex - 1, normalIndex - 1, texCoordIndex - 1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -264,12 +291,160 @@ namespace client
     return true;
   }
 
+  void OBJ::saveCached( const char* fileName )
+  {
+    log.print( "Dumping OBJ model to '%s' ...", fileName );
+
+    DArray<int> faceVertices;
+
+    Vector<Range> ranges;
+    Map<Face::Vertex> uniqueVertices;
+    int currentMaterial = faces[0].material;
+    int nRanges = 1;
+    // sum of face.vertices.length() for all faces
+    int nVertexRefs = 0;
+
+    foreach( face, faces.iter() ) {
+      if( face->material != currentMaterial ) {
+        currentMaterial = face->material;
+        ++nRanges;
+      }
+
+      nVertexRefs += face->vertices.length();
+
+      foreach( vertex, face->vertices.citer() ) {
+        // index is only written to copy of vertex in faces array
+        vertex->index = uniqueVertices.include( *vertex );
+      }
+    }
+
+    // vertex buffer
+    vertices.clear();
+    vertices.setSize( uniqueVertices.length() );
+
+    for( int i = 0; i < vertices.length(); ++i ) {
+      const Face::Vertex& faceVertex = uniqueVertices[i];
+
+      vertices[i].position = positions[faceVertex.position];
+      vertices[i].norm     = faceVertex.normal == -1 ?
+          Vec3::ZERO : normals[faceVertex.normal];
+      vertices[i].texCoord = faceVertex.texCoord == -1 ?
+          TexCoord::ZERO : texCoords[faceVertex.texCoord];
+    }
+
+    // index buffer
+    indices.setSize( nVertexRefs + ( faces.length() - 1 ) * 2 );
+    int k = 0;
+
+    for( int i = 0; i < faces.length(); ++i ) {
+      const Face& face = faces[i];
+
+      // for a degenerated triangle, simulating restart-index
+      if( i != 0 ) {
+        indices[k] = face.vertices.first().index;
+        ++k;
+      }
+
+      int n = face.vertices.length();
+      int n_2 = ( n + 1 ) / 2;
+
+      indices[k] = face.vertices[0].index;
+      ++k;
+
+      for( int j = 1; j < n_2; ++j ) {
+        indices[k] = face.vertices[j].index;
+        ++k;
+        indices[k] = face.vertices[n - j].index;
+        ++k;
+      }
+
+      if( n % 2 == 0 ) {
+        indices[k] = face.vertices[n_2].index;
+        ++k;
+      }
+
+      // for a degenerated triangle, simulating restart-index
+      if( i != faces.length() - 1 ) {
+        indices[k] = face.vertices.last().index;
+        ++k;
+      }
+    }
+
+    int size = 0;
+
+    size += int( 2                 * sizeof( int ) );
+    size += int( vertices.length() * sizeof( Vertex ) );
+    size += int( indices.length()  * sizeof( int ) );
+
+    Buffer buffer( size );
+    OutputStream os = buffer.outputStream();
+
+    os.writeInt( vertices.length() );
+    os.writeInt( indices.length() );
+
+    for( int i = 0; i < vertices.length(); ++i ) {
+      os.writeVec3( vertices[i].position );
+      os.writeVec3( vertices[i].norm );
+      os.writeFloat( vertices[i].texCoord.u );
+      os.writeFloat( vertices[i].texCoord.v );
+    }
+
+    for( int i = 0; i < indices.length(); ++i ) {
+      os.writeInt( indices[i] );
+    }
+
+    buffer.write( fileName );
+
+    log.printEnd( " OK" );
+  }
+
+  OBJ::OBJ( const char* name_, int )
+  {
+    name = name_;
+
+    String modelPath = "mdl/" + name + ".ozcOBJ";
+
+    log.println( "Loading OBJ model '%s' {", modelPath.cstr() );
+    log.indent();
+
+    Buffer buffer( modelPath );
+    InputStream is = buffer.inputStream();
+
+    int nVertices = is.readInt();
+    int nIndices = is.readInt();
+
+    DArray<Vertex> vertices( nVertices );
+    DArray<uint>   indices( nIndices );
+
+    for( int i = 0; i < nVertices; ++i ) {
+      vertices[i].position = is.readVec3();
+      vertices[i].norm = is.readVec3();
+      vertices[i].texCoord.u = is.readFloat();
+      vertices[i].texCoord.v = is.readFloat();
+    }
+
+    for( int i = 0; i < nIndices; ++i ) {
+      indices[i] = is.readInt();
+    }
+
+    glGenBuffers( 1, &arrayBuffer );
+    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, GL_STATIC_DRAW );
+
+    glGenBuffers( 1, &indexBuffer );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( uint ), indices, GL_STATIC_DRAW );
+
+    log.unindent();
+    log.println( "}" );
+  }
+
   OBJ::OBJ( const char* name_ )
   {
     FILE* file;
     char buffer[LINE_BUFFER_SIZE];
 
-    int iCurrentMaterial = 0;
+    int currentMaterial = 0;
 
     name = name_;
 
@@ -321,7 +496,7 @@ namespace client
         // face
         case 'f': {
           Face face;
-          face.iMaterial = iCurrentMaterial;
+          face.material = currentMaterial;
 
           if( !readFace( pos + 1, &face ) ) {
             fclose( file );
@@ -343,10 +518,10 @@ namespace client
 
             const int* value = materialIndices.find( pos );
             if( value != null ) {
-              iCurrentMaterial = *value;
+              currentMaterial = *value;
             }
             else {
-              iCurrentMaterial = 0;
+              currentMaterial = 0;
             }
           }
           break;
@@ -375,14 +550,18 @@ namespace client
       throw Exception( "OBJ model loading error" );
     }
 
+    saveCached( sPath + "/" + name + ".ozcOBJ" );
+
     log.unindent();
     log.println( "}" );
   }
 
   OBJ::~OBJ()
   {
+    glDeleteBuffers( 1, &arrayBuffer );
+    glDeleteBuffers( 1, &indexBuffer );
+
     log.print( "Unloading OBJ model '%s' ...", name.cstr() );
-    trim();
 
     foreach( material, materials.citer() ) {
       if( material->texId != GL_NONE ) {
@@ -398,16 +577,16 @@ namespace client
 
   void OBJ::draw() const
   {
-    int  iCurrentMaterial = -1;
+    int  currentMaterial = -1;
     bool isTransfluent = false;
     bool isTextured = true;
 
     for( int i = 0; i < faces.length(); ++i ) {
       const Face& face = faces[i];
 
-      if( iCurrentMaterial != face.iMaterial ) {
-        iCurrentMaterial = face.iMaterial;
-        const Material& material = materials[iCurrentMaterial];
+      if( currentMaterial != face.material ) {
+        currentMaterial = face.material;
+        const Material& material = materials[currentMaterial];
 
         if( !isTransfluent && material.diffuse.w != 1.0f ) {
           glEnable( GL_BLEND );
@@ -434,12 +613,12 @@ namespace client
       glBegin( GL_POLYGON );
         foreach( vertex, face.vertices.citer() ) {
           if( !texCoords.isEmpty() ) {
-            glTexCoord2fv( &texCoords[ vertex->iTexCoord ].u );
+            glTexCoord2fv( &texCoords[ vertex->texCoord ].u );
           }
           if( !normals.isEmpty() ) {
-            glNormal3fv( normals[ vertex->iNorm ] );
+            glNormal3fv( normals[ vertex->normal ] );
           }
-          glVertex3fv( positions[ vertex->iPos ] );
+          glVertex3fv( positions[ vertex->position ] );
         }
       glEnd();
     }
@@ -462,54 +641,6 @@ namespace client
     glEndList();
   }
 
-  void OBJ::saveCached( const char* fileName )
-  {
-    // for now, ranges will contain indices of faces that begin and end the range
-    Vector<Range> ranges;
-    Map<Face::Vertex> uniqueVertices;
-    int currentMaterial = faces[0].iMaterial;
-    // actually number of ranges - 1
-    int nRanges = 0;
-    int nVertexRefs = 0;
-
-    foreach( face, faces.iter() ) {
-      if( face->iMaterial != currentMaterial ) {
-        currentMaterial = face->iMaterial;
-        ++nRanges;
-      }
-
-      foreach( vertex, face->vertices.iter() ) {
-        // index is only written to copy of vertex in faces array
-        vertex->iVertex = uniqueVertices.include( *vertex );
-        ++nVertexRefs;
-      }
-    }
-
-    // vertex buffer
-    DArray<Vertex> vertices( uniqueVertices.length() );
-
-    for( int i = 0; i < vertices.length(); ++i ) {
-      const Face::Vertex& faceVertex = uniqueVertices[i];
-
-      vertices[i].pos      = positions[faceVertex.iPos];
-      vertices[i].norm     = normals[faceVertex.iNorm];
-      vertices[i].texCoord = texCoords[faceVertex.iTexCoord];
-    }
-
-    // index buffer
-    DArray<int> indices( nVertexRefs + nRanges * 2 );
-
-    for( int i = 0; i < faces.length(); ++i ) {
-      const Face& face = faces[i];
-
-      for( int j = 0; j < face.vertices.length(); ++j ) {
-        const Face::Vertex& vertex = face.vertices[j];
-
-
-      }
-    }
-  }
-
   void OBJ::trim()
   {
     positions.clear();
@@ -519,6 +650,9 @@ namespace client
     materials.clear();
     materialIndices.clear();
   }
+
+  void OBJ::prebuild( const char* )
+  {}
 
 }
 }

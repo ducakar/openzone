@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "client/Proxy.hpp"
 
 namespace oz

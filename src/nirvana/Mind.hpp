@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "nirvana/common.hpp"
 #include "nirvana/Task.hpp"
 
@@ -29,7 +31,7 @@ namespace nirvana
 
       static const int FORCE_UPDATE_BIT = 0x00000001;
 
-      typedef Mind* ( * CreateFunc )( int iBot );
+      typedef Mind* ( * CreateFunc )( int bot );
       typedef Mind* ( * ReadFunc )( InputStream* istream );
 
       static Pool<Mind> pool;
@@ -38,12 +40,12 @@ namespace nirvana
       Mind* next[1];
 
       int flags;
-      int iBot;
+      int bot;
 
-      static Mind* create( int iBot );
+      static Mind* create( int bot );
       static Mind* read( InputStream* istream );
 
-      explicit Mind( int iBot_ ) : flags( 0 ), iBot( iBot_ ) {}
+      explicit Mind( int bot_ ) : flags( 0 ), bot( bot_ ) {}
       virtual ~Mind();
 
       virtual const char* type() const;

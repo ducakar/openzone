@@ -1,4 +1,4 @@
-add_executable( openzone
+add_library( client STATIC
   Audio.cpp
   Audio.hpp
   BSP.cpp
@@ -69,5 +69,4 @@ add_executable( openzone
   common.hpp
 )
 
-add_dependencies( openzone ui nirvana matrix pch )
-target_link_libraries( openzone ui nirvana matrix oz )
+add_dependencies( client ui nirvana matrix pch )

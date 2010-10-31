@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "ui/Font.hpp"
 #include "ui/Mouse.hpp"
 

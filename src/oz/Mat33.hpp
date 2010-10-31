@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "Quat.hpp"
+
 namespace oz
 {
 

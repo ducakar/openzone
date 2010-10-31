@@ -7,7 +7,7 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#include "oz.hpp"
+#include "Math.hpp"
 
 #include <cmath>
 #include <cfloat>

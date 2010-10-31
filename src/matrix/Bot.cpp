@@ -125,7 +125,7 @@ namespace oz
 
     bool isSwimming   = depth >= dim.z;
     bool isUnderWater = depth >= dim.z + camZ;
-    bool isClimbing   = ( flags & ON_LADDER_BIT ) && iGrabObj == -1;
+    bool isClimbing   = ( flags & ON_LADDER_BIT ) && grabObj == -1;
     bool isGrounded   = ( lower != -1 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
 
     flags |= CLIMBER_BIT;
@@ -159,7 +159,7 @@ namespace oz
       if( !( oldActions & ACTION_JUMP ) ) {
         state |= JUMP_SCHED_BIT;
       }
-      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && iGrabObj == -1 &&
+      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObj == -1 &&
           stamina >= clazz->staminaJumpDrain )
       {
         flags &= ~DISABLED_BIT;
@@ -219,8 +219,8 @@ namespace oz
     else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
       anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_WALK : ANIM_RUN;
     }
-    else if( ( actions & ACTION_ATTACK ) && iWeaponItem != -1 && iGrabObj == -1 ) {
-      Weapon* weapon = static_cast<Weapon*>( orbis.objects[iWeaponItem] );
+    else if( ( actions & ACTION_ATTACK ) && weaponItem != -1 && grabObj == -1 ) {
+      Weapon* weapon = static_cast<Weapon*>( orbis.objects[weaponItem] );
 
       if( weapon != null && weapon->shotTime == 0.0f ) {
         anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
@@ -321,7 +321,7 @@ namespace oz
       if( state & CROUCHING_BIT ) {
         desiredMomentum *= clazz->crouchMomentum;
       }
-      else if( ( state & RUNNING_BIT ) && iGrabObj == -1 ) {
+      else if( ( state & RUNNING_BIT ) && grabObj == -1 ) {
         desiredMomentum *= clazz->runMomentum;
       }
       else {
@@ -411,18 +411,18 @@ namespace oz
      */
 
     Dynamic* obj = null;
-    if( iGrabObj != -1 ) {
-      obj = static_cast<Dynamic*>( orbis.objects[iGrabObj] );
+    if( grabObj != -1 ) {
+      obj = static_cast<Dynamic*>( orbis.objects[grabObj] );
 
-      if( obj == null || obj->cell == null || iWeaponItem != -1 ) {
-        iGrabObj = -1;
+      if( obj == null || obj->cell == null || weaponItem != -1 ) {
+        grabObj = -1;
         obj = null;
       }
     }
 
-    if( iGrabObj != -1 ) {
-      if( lower == iGrabObj || isSwimming || ( obj->flags & Object::UPPER_BIT ) ) {
-        iGrabObj = -1;
+    if( grabObj != -1 ) {
+      if( lower == grabObj || isSwimming || ( obj->flags & Object::UPPER_BIT ) ) {
+        grabObj = -1;
       }
       else {
         // keep constant length of xy projection of handle
@@ -432,7 +432,7 @@ namespace oz
         Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - obj->p;
 
         if( string.sqL() > grabHandle*grabHandle ) {
-          iGrabObj = -1;
+          grabObj = -1;
         }
         else {
           Vec3 desiredMom   = string * GRAB_STRING_RATIO;
@@ -457,7 +457,7 @@ namespace oz
      */
 
     if( actions & ~oldActions & ACTION_USE ) {
-      if( iGrabObj != -1 ) {
+      if( grabObj != -1 ) {
         synapse.use( this, obj );
       }
       else {
@@ -472,7 +472,7 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_TAKE ) {
-      if( iGrabObj != -1 ) {
+      if( grabObj != -1 ) {
         if( obj->flags & ITEM_BIT ) {
           take( obj );
         }
@@ -492,17 +492,17 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_THROW ) {
-      if( iGrabObj != -1 && stamina >= clazz->staminaThrowDrain ) {
+      if( grabObj != -1 && stamina >= clazz->staminaThrowDrain ) {
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
 
         stamina -= clazz->staminaThrowDrain;
         obj->momentum = handle * clazz->throwMomentum;
-        iGrabObj = -1;
+        grabObj = -1;
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
-      if( iGrabObj != -1 || isSwimming || iWeaponItem != -1 ) {
-        iGrabObj = -1;
+      if( grabObj != -1 || isSwimming || weaponItem != -1 ) {
+        grabObj = -1;
       }
       else {
         Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
@@ -519,7 +519,7 @@ namespace oz
           float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
           if( dist <= clazz->grabDistance ) {
-            iGrabObj   = obj->index;
+            grabObj   = obj->index;
             grabHandle = dist;
             flags      &= ~ON_LADDER_BIT;
           }
@@ -527,21 +527,21 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_INV_USE ) {
-      if( iTaggedItem != -1 && iTaggedItem < items.length() && items[iTaggedItem] != -1 ) {
-        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[iTaggedItem]] );
+      if( taggedItem != -1 && taggedItem < items.length() && items[taggedItem] != -1 ) {
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
 
         assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
         synapse.use( this, item );
         // the object may have removed itself after use
         if( item->index == -1 ) {
-          items.remove( iTaggedItem );
+          items.remove( taggedItem );
         }
       }
     }
     else if( actions & ~oldActions & ACTION_INV_GRAB ) {
-      if( iGrabObj == -1 && iTaggedItem != -1 && iTaggedItem < items.length() ) {
-        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[iTaggedItem]] );
+      if( grabObj == -1 && taggedItem != -1 && taggedItem < items.length() ) {
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
 
         assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -558,14 +558,14 @@ namespace oz
         if( !collider.overlaps( *item ) ) {
           item->parent = -1;
           synapse.put( item );
-          items.remove( iTaggedItem );
+          items.remove( taggedItem );
 
-          iGrabObj   = item->index;
+          grabObj   = item->index;
           grabHandle = dist;
           flags      &= ~ON_LADDER_BIT;
 
-          if( item->index == iWeaponItem ) {
-            iWeaponItem = -1;
+          if( item->index == weaponItem ) {
+            weaponItem = -1;
           }
         }
       }
@@ -574,14 +574,14 @@ namespace oz
     /*
      * WEAPON
      */
-    if( iWeaponItem != -1 ) {
-      Dynamic* weapon = static_cast<Dynamic*>( orbis.objects[iWeaponItem] );
+    if( weaponItem != -1 ) {
+      Dynamic* weapon = static_cast<Dynamic*>( orbis.objects[weaponItem] );
 
       assert( ( weapon->flags & DYNAMIC_BIT ) && ( weapon->flags & ITEM_BIT ) &&
               ( weapon->flags & WEAPON_BIT ) );
 
       if( weapon == null ) {
-        iWeaponItem = -1;
+        weaponItem = -1;
       }
     }
 
@@ -593,7 +593,7 @@ namespace oz
   {}
 
   Bot::Bot() : actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
-      iGrabObj( -1 ), iWeaponItem( -1 ), anim( ANIM_STAND )
+      grabObj( -1 ), weaponItem( -1 ), anim( ANIM_STAND )
   {}
 
   void Bot::take( Dynamic* item )
@@ -605,12 +605,12 @@ namespace oz
     synapse.cut( item );
   }
 
-  void Bot::enter( int iVehicle_ )
+  void Bot::enter( int vehicle_ )
   {
     assert( cell != null );
 
-    parent   = iVehicle_;
-    iGrabObj = -1;
+    parent   = vehicle_;
+    grabObj  = -1;
     anim     = ANIM_STAND;
     synapse.cut( this );
   }
@@ -632,15 +632,15 @@ namespace oz
   {
     Dynamic::readFull( istream );
 
-    v            = istream->readFloat();
-    state        = istream->readInt();
-    oldState     = istream->readInt();
-    actions      = istream->readInt();
-    oldActions   = istream->readInt();
-    stamina      = istream->readFloat();
+    v          = istream->readFloat();
+    state      = istream->readInt();
+    oldState   = istream->readInt();
+    actions    = istream->readInt();
+    oldActions = istream->readInt();
+    stamina    = istream->readFloat();
 
-    iGrabObj     = istream->readInt();
-    grabHandle   = istream->readFloat();
+    grabObj    = istream->readInt();
+    grabHandle = istream->readFloat();
 
     stepRate     = istream->readFloat();
 
@@ -648,10 +648,10 @@ namespace oz
     for( int i = 0; i < nItems; ++i ) {
       items.add( istream->readInt() );
     }
-    iWeaponItem  = istream->readInt();
+    weaponItem = istream->readInt();
 
-    anim         = AnimEnum( istream->readInt() );
-    name         = istream->readString();
+    anim       = AnimEnum( istream->readInt() );
+    name       = istream->readString();
 
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
@@ -669,7 +669,7 @@ namespace oz
     ostream->writeInt( oldActions );
     ostream->writeFloat( stamina );
 
-    ostream->writeInt( iGrabObj );
+    ostream->writeInt( grabObj );
     ostream->writeFloat( grabHandle );
 
     ostream->writeFloat( stepRate );
@@ -678,7 +678,7 @@ namespace oz
     foreach( item, items.citer() ) {
       ostream->writeInt( *item );
     }
-    ostream->writeInt( iWeaponItem );
+    ostream->writeInt( weaponItem );
 
     ostream->writeInt( anim );
     ostream->writeString( name );
@@ -690,7 +690,7 @@ namespace oz
 
     v            = istream->readFloat();
     state        = istream->readInt();
-    iGrabObj     = istream->readInt();
+    grabObj      = istream->readInt();
     anim         = AnimEnum( istream->readChar() );
   }
 
@@ -700,7 +700,7 @@ namespace oz
 
     ostream->writeFloat( v );
     ostream->writeInt( state );
-    ostream->writeInt( iGrabObj );
+    ostream->writeInt( grabObj );
     ostream->writeChar( char( anim ) );
   }
 

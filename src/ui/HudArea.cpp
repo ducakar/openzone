@@ -173,7 +173,7 @@ namespace ui
           }
         }
 
-        if( camera.botObj->iGrabObj != -1 ) {
+        if( camera.botObj->grabObj != -1 ) {
           glBindTexture( GL_TEXTURE_2D, grabTexId );
           glBegin( GL_QUADS );
             glTexCoord2i( 0, 1 );

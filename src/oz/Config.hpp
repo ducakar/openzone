@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "HashString.hpp"
+
 namespace oz
 {
 

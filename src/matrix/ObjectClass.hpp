@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/common.hpp"
 
 #define OZ_CLASS_SET_FLAG( flagBit, varName, defValue ) \

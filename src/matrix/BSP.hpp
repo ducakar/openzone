@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/common.hpp"
 
 namespace oz
@@ -171,27 +173,31 @@ namespace oz
 
       bool includes( const Brush& brush ) const;
 
-      bool loadQBSP( const char* fileName );
+      bool loadQBSP( const char* file );
+      // free BSP loaded from a QBSP
+      void freeQBSP();
+
       void optimise();
 
-      bool loadOZBSP( const char* fileName );
+      bool save( const char* file );
+
+      bool loadOZBSP( const char* file );
 
       // free prebuilt ozBSP structure
       void freeOZBSP();
 
+      // used internally by prebuild
+      explicit BSP();
+
     public:
+
+      // create BSP from a Quake 3 QBSP and optimise it
+      static void prebuild( const char* name );
 
       // create BSP from a prebuilt ozBSP
       explicit BSP( const char* name );
-      // create BSP from a Quake 3 QBSP and optimise it
-      explicit BSP( const char* name, int );
 
       ~BSP();
-
-      // free BSP loaded from a QBSP
-      void freeQBSP();
-
-      bool save( const char* fileName );
 
   };
 

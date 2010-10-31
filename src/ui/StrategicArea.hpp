@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/Object.hpp"
 #include "ui/Area.hpp"
 

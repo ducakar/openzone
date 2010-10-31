@@ -171,10 +171,10 @@ namespace oz
         structs.add( null );
       }
       else {
-        int iBsp = translator.bspIndex( bspName );
+        int bsp = translator.bspIndex( bspName );
 
-        if( bsps[iBsp] == null ) {
-          bsps[iBsp] = new BSP( translator.bsps[iBsp].name );
+        if( bsps[bsp] == null ) {
+          bsps[bsp] = new BSP( translator.bsps[bsp].name );
         }
 
         str = translator.createStruct( i, bspName, istream );
@@ -287,7 +287,7 @@ namespace oz
         ostream->writeString( "" );
       }
       else {
-        ostream->writeString( translator.bsps[str->iBsp].name );
+        ostream->writeString( translator.bsps[str->bsp].name );
         str->writeFull( ostream );
       }
     }

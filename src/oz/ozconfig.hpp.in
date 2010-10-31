@@ -12,6 +12,10 @@
 // whether GCC-compatible builtin functions should be used to avoid including <cmath>
 #cmakedefine OZ_BUILTIN_MATH
 
+#if !defined( __GNUC__ ) && !defined( __clang__ )
+# undef OZ_BUILTIN_MATH
+#endif
+
 // use big-endian for data
 #cmakedefine OZ_BIG_ENDIAN_DATA
 
@@ -22,36 +26,26 @@
 #cmakedefine OZ_XML_CONFIG
 
 // platform
-#cmakedefine OZ_UNIX
-#cmakedefine OZ_MINGW
-#cmakedefine OZ_MSVC
-#cmakedefine OZ_WINDOWS
+#if defined( WIN32 ) || defined( __WIN32__ )
+# define OZ_WINDOWS
+#else
+# define OZ_UNIX
+#endif
+
+#ifdef _MSCVER
+# define OZ_MSVC
+#endif
+
+#if defined( OZ_WINDOWS ) && defined( __GNUC__ )
+# define OZ_MINGW
+#endif
 
 // machine endian
 #if defined( __BIG_ENDIAN__ )
 # define OZ_BIG_ENDIAN_ARCH
 #endif
 
-#ifdef __GNUC__
-# if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 4 )
-#  error Too old GCC, at least 4.4 is required, 4.5 recommended
-# endif
-# if __GNUC__ == 4 && __GNUC_MINOR__ <= 5
-#  define nullptr __null
-# endif
-#endif
-
-#ifdef OZ_MSVC
-# if _MSC_VER < 1600
-#  error Too old MSVC, at least 16.00 (Visual C++ 2010) required
-# endif
-# define _CRT_SECURE_NO_WARNINGS 1
-# define __PRETTY_FUNCTION__ ""
-# define snprintf sprintf_s
-# define chdir _chdir
-# define mkdir _mkdir
-#endif
-
+// long and pointer sizes
 #ifndef __LP64__
 # define OZ_LONG_32
 #endif
@@ -60,6 +54,28 @@
 # define OZ_POINTER_32
 #endif
 
-#if !defined( __GNUC__ ) && !defined( __clang__ )
-# undef OZ_BUILTIN_MATH
+// compiler-specific hacks
+#if defined( __GNUC__ ) && !defined( __clang__ )
+# if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 4 )
+#  error Too old GCC, at least 4.4 is required, 4.5 recommended
+# endif
+# if __GNUC__ == 4 && __GNUC_MINOR__ <= 5
+#  define nullptr __null
+# endif
+#endif
+
+#ifdef __clang__
+# undef __GXX_EXPERIMENTAL_CXX0X__
+#endif
+
+#ifdef OZ_MSVC
+# if _MSC_VER < 1600
+#  error Too old MSVC, at least 16.00 (Visual C++ 2010) required
+# endif
+# define typeof decltype
+# define _CRT_SECURE_NO_WARNINGS 1
+# define __PRETTY_FUNCTION__ ""
+# define snprintf sprintf_s
+# define chdir _chdir
+# define mkdir _mkdir
 #endif

@@ -48,7 +48,7 @@ namespace client
   struct MD2Vertex
   {
     ubyte v[3];
-    ubyte iLightNormal;
+    ubyte lightNormal;
   };
 
   struct MD2Frame
@@ -61,8 +61,8 @@ namespace client
 
   struct MD2Triangle
   {
-    short iVerts[3];
-    short iTexCoords[3];
+    short vertices[3];
+    short texCoords[3];
   };
 
   float MD2::anorms[][3] =
@@ -347,7 +347,7 @@ namespace client
           ( float( pFrame->verts[j].v[0] ) *  pFrame->scale.x ) + pFrame->translate.x,
           ( float( pFrame->verts[j].v[2] ) *  pFrame->scale.z ) + pFrame->translate.z );
 
-        pNormals[j] = pFrame->verts[j].iLightNormal;
+        pNormals[j] = pFrame->verts[j].lightNormal;
       }
     }
     delete[] buffer;

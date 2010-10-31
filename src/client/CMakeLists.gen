@@ -1,10 +1,9 @@
 #!/bin/sh
 
-echo 'add_executable( openzone' > CMakeLists.txt
+echo 'add_library( client STATIC' > CMakeLists.txt
 
 ls *.{hpp,cpp} | sed -e 's/^./  \0/' >> CMakeLists.txt
 
 echo ')' >> CMakeLists.txt
 echo '' >> CMakeLists.txt
-echo 'add_dependencies( openzone ui nirvana matrix pch )' >> CMakeLists.txt
-echo 'target_link_libraries( openzone ui nirvana matrix oz )' >> CMakeLists.txt
+echo 'add_dependencies( client ui nirvana matrix pch )' >> CMakeLists.txt

@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/Dynamic.hpp"
 #include "matrix/Weapon.hpp"
 
@@ -115,12 +117,12 @@ namespace oz
       float       stamina;
       float       stepRate;
 
-      int         iGrabObj;
+      int         grabObj;
       float       grabHandle;
 
       Vector<int> items;
-      int         iTaggedItem;
-      int         iWeaponItem;
+      int         taggedItem;
+      int         weaponItem;
 
       String      name;
 
@@ -130,7 +132,7 @@ namespace oz
       explicit Bot();
 
       void take( Dynamic* item );
-      void enter( int iVehicle );
+      void enter( int vehicle );
       void exit();
       void kill();
 

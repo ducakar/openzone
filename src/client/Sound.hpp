@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/Orbis.hpp"
 #include "matrix/Translator.hpp"
 #include "client/Audio.hpp"

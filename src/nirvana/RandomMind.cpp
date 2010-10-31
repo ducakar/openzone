@@ -20,9 +20,9 @@ namespace nirvana
 
   Pool<RandomMind> RandomMind::pool;
 
-  Mind* RandomMind::create( int iBot )
+  Mind* RandomMind::create( int bot )
   {
-    RandomMind* mind = new RandomMind( iBot );
+    RandomMind* mind = new RandomMind( bot );
     return mind;
   }
 
@@ -39,10 +39,10 @@ namespace nirvana
 
   void RandomMind::update()
   {
-    assert( orbis.objects[iBot] != null );
-    assert( orbis.objects[iBot]->flags & Object::BOT_BIT );
+    assert( orbis.objects[bot] != null );
+    assert( orbis.objects[bot]->flags & Object::BOT_BIT );
 
-    Bot& bot = *static_cast<Bot*>( orbis.objects[iBot] );
+    Bot& bot = *static_cast<Bot*>( orbis.objects[this->bot] );
 
     bot.actions = 0;
 

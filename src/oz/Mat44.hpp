@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "Mat33.hpp"
+
 namespace oz
 {
 

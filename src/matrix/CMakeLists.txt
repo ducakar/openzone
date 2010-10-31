@@ -53,6 +53,7 @@ add_library( matrix STATIC
   Weapon.hpp
   WeaponClass.cpp
   WeaponClass.hpp
+  common.cpp
   common.hpp
 )
 

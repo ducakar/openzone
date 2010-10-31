@@ -10,43 +10,6 @@
 #pragma once
 
 /*
- * Configuration
- */
-#include "ozconfig.hpp"
-
-/*
- * Base C/C++ definitions (size_t, ptrdiff_t, NULL and offsetof)
- */
-#include <cstddef>
-
-/*
- * Platform-independent argument pulling for variable-argument functions
- */
-#include <cstdarg>
-
-/*
- * assert macro
- */
-#include <cassert>
-
-/*
- * Standard math header, if we don't use built-in math
- */
-#ifndef OZ_BUILTIN_MATH
-# include <cmath>
-#endif
-
-/*
- * Standard exception definitions (usually included via <new>, but just for sure)
- */
-#include <exception>
-
-/*
- * Standard new/delete operator and exception definitions
- */
-#include <new>
-
-/*
  * Base definitions and templates
  */
 #include "common.hpp"
@@ -56,18 +19,6 @@
  */
 #include "iterables.hpp"
 #include "arrays.hpp"
-
-/*
- * Exception
- */
-#include "Exception.hpp"
-
-/*
- * Memory management
- */
-#include "Alloc.hpp"
-#include "Pool.hpp"
-#include "AutoPtr.hpp"
 
 /*
  * Simple containers
@@ -82,6 +33,18 @@
  * String
  */
 #include "String.hpp"
+
+/*
+ * Exception
+ */
+#include "Exception.hpp"
+
+/*
+ * Memory management
+ */
+#include "Alloc.hpp"
+#include "Pool.hpp"
+#include "AutoPtr.hpp"
 
 /*
  * Advanced containers (HashString needs String defined)

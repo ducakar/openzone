@@ -11,6 +11,9 @@
 
 #include "matrix/Matrix.hpp"
 
+#include "client/Terra.hpp"
+#include "client/OBJ.hpp"
+
 #include <SDL_main.h>
 
 using namespace oz;
@@ -19,24 +22,25 @@ int main( int, char** )
 {
   matrix.init();
 
-  for( int i = 0; i < translator.terras.length(); ++i ) {
-    const String& name = translator.terras[i].name;
-
+  foreach( terra, translator.terras.citer() ) {
     try {
-      orbis.terra.load( name, 0 );
-      orbis.terra.save( "terra/" + name + ".ozTerra" );
+      orbis.terra.prebuild( terra->name );
+      client::terra.prebuild();
     }
-    catch( const Exception& e ) {
+    catch( const Exception& ) {
     }
   }
 
-  for( int i = 0; i < translator.bsps.length(); ++i ) {
-    const String& name = translator.bsps[i].name;
+  foreach( bsp, translator.bsps.citer() ) {
+    BSP::prebuild( bsp->name );
+  }
 
-    BSP* bsp = new BSP( name, 0 );
-    bsp->save( "maps/" + name + ".ozBSP" );
-    bsp->freeQBSP();
-    delete bsp;
+  foreach( model, translator.models.citer() ) {
+    try {
+      client::OBJ::prebuild( model->name );
+    }
+    catch( const Exception& ) {
+    }
   }
 
   matrix.free();

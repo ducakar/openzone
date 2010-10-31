@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "client/BasicAudio.hpp"
 
 namespace oz

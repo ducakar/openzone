@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "arrays.hpp"
+
 namespace oz
 {
 
@@ -220,9 +222,11 @@ namespace oz
        * meant to be called after DArray( void ) ctor, when the size becomes known.
        * @param size new size
        */
-      void operator () ( int size )
+      void setSize( int size )
       {
-        assert( size > 0 && count == 0 );
+        assert( size > 0 );
+
+        delete[] data;
 
         data  = new Type[size];
         count = size;

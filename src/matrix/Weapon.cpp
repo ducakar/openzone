@@ -33,7 +33,7 @@ namespace oz
     assert( parent == -1 || parent == user->index );
 
     if( parent == user->index ) {
-      user->iWeaponItem = user->iWeaponItem == index  ? -1 : index;
+      user->weaponItem = user->weaponItem == index  ? -1 : index;
     }
   }
 

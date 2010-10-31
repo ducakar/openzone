@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #ifdef OZ_WINDOWS
 
 # include <SDL_opengl.h>

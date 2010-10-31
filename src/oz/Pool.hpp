@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include "common.hpp"
+
 #ifdef OZ_POOL_ALLOC
 /**
  * \def OZ_STATIC_POOL_ALLOC( pool )

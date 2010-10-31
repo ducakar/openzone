@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #define OZ_APP_NAME            "OpenZone"
 #define OZ_WM_TITLE            OZ_APP_NAME
 #define OZ_RC_DIR              ".openzone"
@@ -16,8 +18,6 @@
 #define OZ_CONFIG_FILE         "client.rc"
 
 #include "client/Stage.hpp"
-
-#include <SDL_main.h>
 
 namespace oz
 {

@@ -125,6 +125,35 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
+    log.println( "models (* directories in 'mdl') {" );
+    log.indent();
+
+    dir = opendir( "mdl" );
+    if( dir == null ) {
+      free();
+
+      log.println( "Cannot open directory 'mdl'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    while( ( file = readdir( dir ) ) != null ) {
+      String name = file->d_name;
+
+      assert( !name.isEmpty() );
+
+      if( name[0] == '.' || file->d_type != DT_DIR ) {
+        continue;
+      }
+
+      models.add( Resource( name, "" ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    closedir( dir );
+
+    log.unindent();
+    log.println( "}" );
     log.println( "BSP structures (*.rc in 'bsp') {" );
     log.indent();
 

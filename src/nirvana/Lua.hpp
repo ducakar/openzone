@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "nirvana/common.hpp"
 
 struct lua_State;
@@ -35,8 +37,8 @@ namespace nirvana
       Particle*          part;
       List<Object::Event>::CIterator event;
 
-      int                iStruct;
-      int                iObject;
+      int                strIndex;
+      int                objIndex;
 
       Vector<Object*>    objects;
       Vector<Structure*> structs;

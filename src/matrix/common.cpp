@@ -1,5 +1,5 @@
 /*
- *  Quat.cpp
+ *  common.cpp
  *
  *  [description]
  *
@@ -7,13 +7,13 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
+#include "stable.hpp"
 
-#include "Quat.hpp"
+#include "matrix/common.hpp"
 
 namespace oz
 {
 
-  const Quat Quat::ZERO = Quat( 0.0f, 0.0f, 0.0f, 0.0f );
-  const Quat Quat::ID   = Quat( 0.0f, 0.0f, 0.0f, 1.0f );
+  const TexCoord TexCoord::ZERO = TexCoord( 0.0f, 0.0f );
 
 }

@@ -8,7 +8,7 @@
  */
 
 
-#include "oz.hpp"
+#include "Mat33.hpp"
 
 namespace oz
 {

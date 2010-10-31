@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "./stable.hpp"
+
 #include "matrix/Orbis.hpp"
 
 namespace oz
@@ -62,7 +64,7 @@ namespace oz
       bool visitBrush( int index );
 
       bool overlapsAABBBrush( const BSP::Brush* brush ) const;
-      bool overlapsAABBNode( int iNode );
+      bool overlapsAABBNode( int nodeIndex );
       bool overlapsAABBEntities();
       bool overlapsAABBOrbis();
       bool overlapsAABBOrbisOO();
@@ -75,7 +77,7 @@ namespace oz
       void trimAABBBrush( const BSP::Brush* brush );
       void trimAABBWater( const BSP::Brush* brush );
       void trimAABBLadder( const BSP::Brush* brush );
-      void trimAABBNode( int iNode );
+      void trimAABBNode( int nodeIndex );
       void trimAABBEntities();
       bool trimAABBTerraQuad( int x, int y );
       void trimAABBTerra();

@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "Math.hpp"
+
 namespace oz
 {
 

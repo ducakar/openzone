@@ -25,4 +25,4 @@ add_library( ui STATIC
   UI.hpp
 )
 
-add_dependencies( ui matrix pch )
+add_dependencies( ui nirvana matrix pch )
