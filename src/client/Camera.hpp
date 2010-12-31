@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "./stable.hpp"
+#include "stable.hpp"
 
 #include "matrix/Matrix.hpp"
 #include "client/FreeCamProxy.hpp"

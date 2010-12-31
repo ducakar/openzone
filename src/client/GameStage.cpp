@@ -90,11 +90,11 @@ namespace client
 
     network.connect();
 
-    Buffer buffer( 1024 * 1024 * 10 );
+    Buffer buffer;
     String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
     log.print( "Loading world stream from %s ...", stateFile.cstr() );
-    if( buffer.load( stateFile ) ) {
+    if( buffer.read( stateFile ) ) {
       log.printEnd( " OK" );
 
       InputStream istream = buffer.inputStream();

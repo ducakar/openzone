@@ -25,6 +25,8 @@
 namespace oz
 {
 
+  typedef float __attribute__(( vector_size( 16 ) )) float4;
+
   class Math
   {
     private:

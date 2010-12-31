@@ -284,11 +284,8 @@ namespace oz
       if( value->equals( "true" ) ) {
         return true;
       }
-      else if( value->equals( "false" ) ) {
-        return false;
-      }
       else {
-        throw Exception( "Invalid boolean value" );
+        return false;
       }
     }
     else {
@@ -381,11 +378,8 @@ namespace oz
       if( value->equals( "true" ) ) {
         return true;
       }
-      else if( value->equals( "false" ) ) {
-        return false;
-      }
       else {
-        throw Exception( "Invalid boolean value" );
+        return false;
       }
     }
     else {

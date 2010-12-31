@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "./stable.hpp"
+#include "stable.hpp"
 
 #include "ui/Area.hpp"
 

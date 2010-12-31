@@ -24,20 +24,20 @@ namespace oz
 
   Pool<Structure, 0, 256> Structure::pool;
 
-  const Mat33 Structure::rotations[] =
+  const Mat44 Structure::rotations[] =
   {
-    Mat33::ID,
-    Mat33::rotZ(  Math::PI_2 ),
-    Mat33::rotZ(  Math::PI ),
-    Mat33::rotZ( -Math::PI_2 )
+    Mat44::ID,
+    Mat44::rotZ(  Math::PI_2 ),
+    Mat44::rotZ(  Math::PI ),
+    Mat44::rotZ( -Math::PI_2 )
   };
 
-  const Mat33 Structure::invRotations[] =
+  const Mat44 Structure::invRotations[] =
   {
-    Mat33::ID,
-    Mat33::rotZ( -Math::PI_2 ),
-    Mat33::rotZ(  Math::PI ),
-    Mat33::rotZ(  Math::PI_2 )
+    Mat44::ID,
+    Mat44::rotZ( -Math::PI_2 ),
+    Mat44::rotZ(  Math::PI ),
+    Mat44::rotZ(  Math::PI_2 )
   };
 
   void Entity::updateIgnoring()

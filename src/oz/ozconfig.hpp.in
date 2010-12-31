@@ -72,7 +72,6 @@
 # if _MSC_VER < 1600
 #  error Too old MSVC, at least 16.00 (Visual C++ 2010) required
 # endif
-# define typeof decltype
 # define _CRT_SECURE_NO_WARNINGS 1
 # define __PRETTY_FUNCTION__ ""
 # define snprintf sprintf_s

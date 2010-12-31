@@ -521,6 +521,7 @@ namespace oz
 
     if( lumps[QBSP_LUMP_VISUALDATA].length != 0 ) {
       visual.bitsets = new Bitset[visual.nClusters];
+
       for( int i = 0; i < visual.nClusters; ++i ) {
         visual.bitsets[i].setSize( visual.clusterLength * 8 );
         fread( visual.bitsets[i], sizeof( char ), visual.clusterLength, file );
@@ -1058,7 +1059,8 @@ namespace oz
 
   bool BSP::loadOZBSP( const char* file )
   {
-    Buffer buffer( file );
+    Buffer buffer;
+    buffer.read( file );
 
     if( buffer.isEmpty() ) {
       return false;

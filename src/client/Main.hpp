@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "./stable.hpp"
+#include "stable.hpp"
 
 #define OZ_APP_NAME            "OpenZone"
 #define OZ_WM_TITLE            OZ_APP_NAME

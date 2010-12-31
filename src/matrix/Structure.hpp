@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "./stable.hpp"
+#include "stable.hpp"
 
 #include "matrix/common.hpp"
 #include "matrix/BSP.hpp"
@@ -75,8 +75,8 @@ namespace oz
 
       static Pool<Structure, 0, 256> pool;
 
-      static const Mat33 rotations[];
-      static const Mat33 invRotations[];
+      static const Mat44 rotations[];
+      static const Mat44 invRotations[];
 
     private:
 

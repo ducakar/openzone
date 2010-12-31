@@ -9,12 +9,18 @@
 
 #include "Exception.hpp"
 
-#ifndef NDEBUG
-
 #undef Exception
 
 #include <cstdio>
 #include <csignal>
+
+// prevent old-style cast warning due to a bug in <bits/signum.h>
+#ifdef __GNUC__
+# undef SIG_DFL
+# undef SIG_IGN
+# define SIG_DFL reinterpret_cast<__sighandler_t>( 0 )            /* Default action.  */
+# define SIG_IGN reinterpret_cast<__sighandler_t>( 1 )            /* Ignore signal.  */
+#endif
 
 #ifdef OZ_MSVC
 # include <windows.h>
@@ -23,26 +29,33 @@
 namespace oz
 {
 
-#ifndef OZ_MSVC
-  static void sigtrapHandler( int )
-  {}
-#endif
-
   Exception::Exception( const String& message_, const char* file_, int line_,
                         const char* function_ ) throw() :
-          message( message_ ), file( file_ ), line( line_ ), function( function_ )
+      message( message_ ), file( file_ ), line( line_ ), function( function_ )
   {
-#if defined( OZ_MSVC )
+#ifndef NDEBUG
+
+# if defined( OZ_MSVC )
     DebugBreak();
-#elif defined( OZ_MINGW )
-    signal( SIGABRT, sigtrapHandler );
+# elif defined( OZ_MINGW )
+    signal( SIGABRT, SIG_IGN );
     raise( SIGABRT );
-#else
-    signal( SIGTRAP, sigtrapHandler );
+    signal( SIGABRT, SIG_DFL );
+# else
+    signal( SIGTRAP, SIG_IGN );
     raise( SIGTRAP );
+    signal( SIGTRAP, SIG_DFL );
+# endif
+
 #endif
   }
 
-}
+  Exception::~Exception() throw()
+  {}
 
-#endif
+  const char* Exception::what() const throw()
+  {
+    return message;
+  }
+
+}

@@ -407,7 +407,8 @@ namespace client
     log.println( "Loading OBJ model '%s' {", modelPath.cstr() );
     log.indent();
 
-    Buffer buffer( modelPath );
+    Buffer buffer;
+    buffer.read( modelPath );
     InputStream is = buffer.inputStream();
 
     int nVertices = is.readInt();

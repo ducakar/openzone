@@ -165,6 +165,22 @@ namespace oz
                      Math::fromBits( Endian::shuffle32( data[2] ) ) );
       }
 
+      Vec4 readVec4()
+      {
+        const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[3] ) ) );
+        return Vec4( Math::fromBits( Endian::shuffle32( data[0] ) ),
+                     Math::fromBits( Endian::shuffle32( data[1] ) ),
+                     Math::fromBits( Endian::shuffle32( data[2] ) ) );
+      }
+
+      Point4 readPoint4()
+      {
+        const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[3] ) ) );
+        return Point4( Math::fromBits( Endian::shuffle32( data[0] ) ),
+                       Math::fromBits( Endian::shuffle32( data[1] ) ),
+                       Math::fromBits( Endian::shuffle32( data[2] ) ) );
+      }
+
       Quat readQuat()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[4] ) ) );
@@ -174,19 +190,19 @@ namespace oz
                      Math::fromBits( Endian::shuffle32( data[3] ) ) );
       }
 
-      Mat33 readMat33()
-      {
-        const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[9] ) ) );
-        return Mat33( Math::fromBits( Endian::shuffle32( data[0] ) ),
-                      Math::fromBits( Endian::shuffle32( data[1] ) ),
-                      Math::fromBits( Endian::shuffle32( data[2] ) ),
-                      Math::fromBits( Endian::shuffle32( data[3] ) ),
-                      Math::fromBits( Endian::shuffle32( data[4] ) ),
-                      Math::fromBits( Endian::shuffle32( data[5] ) ),
-                      Math::fromBits( Endian::shuffle32( data[6] ) ),
-                      Math::fromBits( Endian::shuffle32( data[7] ) ),
-                      Math::fromBits( Endian::shuffle32( data[8] ) ) );
-      }
+//       Mat33 readMat33()
+//       {
+//         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[9] ) ) );
+//         return Mat33( Math::fromBits( Endian::shuffle32( data[0] ) ),
+//                       Math::fromBits( Endian::shuffle32( data[1] ) ),
+//                       Math::fromBits( Endian::shuffle32( data[2] ) ),
+//                       Math::fromBits( Endian::shuffle32( data[3] ) ),
+//                       Math::fromBits( Endian::shuffle32( data[4] ) ),
+//                       Math::fromBits( Endian::shuffle32( data[5] ) ),
+//                       Math::fromBits( Endian::shuffle32( data[6] ) ),
+//                       Math::fromBits( Endian::shuffle32( data[7] ) ),
+//                       Math::fromBits( Endian::shuffle32( data[8] ) ) );
+//       }
 
       Mat44 readMat44()
       {
@@ -240,7 +256,7 @@ namespace oz
         if( pos > end ) {
           pos -= count;
           throw Exception( "Buffer overrun for " + String( int( ptrdiff_t( pos + count - end ) ) ) +
-              " bytes during a write of " + String( count ) + " bytes" );
+                           " bytes during a write of " + String( count ) + " bytes" );
         }
         return oldPos;
       }
@@ -315,6 +331,24 @@ namespace oz
         aSet( data + length, '\0', size - length );
       }
 
+      void writeVec4( const Vec4& v )
+      {
+        int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[3] ) ) );
+
+        data[0] = Endian::shuffle32( Math::toBits( v.x ) );
+        data[1] = Endian::shuffle32( Math::toBits( v.y ) );
+        data[2] = Endian::shuffle32( Math::toBits( v.z ) );
+      }
+
+      void writePoint4( const Point4& p )
+      {
+        int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[3] ) ) );
+
+        data[0] = Endian::shuffle32( Math::toBits( p.x ) );
+        data[1] = Endian::shuffle32( Math::toBits( p.y ) );
+        data[2] = Endian::shuffle32( Math::toBits( p.z ) );
+      }
+
       void writeVec3( const Vec3& v )
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[3] ) ) );
@@ -334,20 +368,20 @@ namespace oz
         data[3] = Endian::shuffle32( Math::toBits( q.w ) );
       }
 
-      void writeMat33( const Mat33& m )
-      {
-        int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[9] ) ) );
-
-        data[0] = Endian::shuffle32( Math::toBits( m.x.x ) );
-        data[1] = Endian::shuffle32( Math::toBits( m.x.y ) );
-        data[2] = Endian::shuffle32( Math::toBits( m.x.z ) );
-        data[3] = Endian::shuffle32( Math::toBits( m.y.x ) );
-        data[4] = Endian::shuffle32( Math::toBits( m.y.y ) );
-        data[5] = Endian::shuffle32( Math::toBits( m.y.z ) );
-        data[6] = Endian::shuffle32( Math::toBits( m.z.x ) );
-        data[7] = Endian::shuffle32( Math::toBits( m.z.y ) );
-        data[8] = Endian::shuffle32( Math::toBits( m.z.z ) );
-      }
+//       void writeMat33( const Mat33& m )
+//       {
+//         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[9] ) ) );
+//
+//         data[0] = Endian::shuffle32( Math::toBits( m.x.x ) );
+//         data[1] = Endian::shuffle32( Math::toBits( m.x.y ) );
+//         data[2] = Endian::shuffle32( Math::toBits( m.x.z ) );
+//         data[3] = Endian::shuffle32( Math::toBits( m.y.x ) );
+//         data[4] = Endian::shuffle32( Math::toBits( m.y.y ) );
+//         data[5] = Endian::shuffle32( Math::toBits( m.y.z ) );
+//         data[6] = Endian::shuffle32( Math::toBits( m.z.x ) );
+//         data[7] = Endian::shuffle32( Math::toBits( m.z.y ) );
+//         data[8] = Endian::shuffle32( Math::toBits( m.z.z ) );
+//       }
 
       void writeMat44( const Mat44& m )
       {

@@ -43,7 +43,7 @@ namespace client
   {
     char  name[64];
     Vec3  p;
-    Mat33 rot;
+    float rot[9];
   };
 
   struct MD3Surface

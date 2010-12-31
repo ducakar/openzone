@@ -13,7 +13,7 @@
 namespace oz
 {
 
-  const Quat Quat::ZERO = Quat( 0.0f, 0.0f, 0.0f, 0.0f );
-  const Quat Quat::ID   = Quat( 0.0f, 0.0f, 0.0f, 1.0f );
+  const Quat Quat::ZERO = Quat( (float4) { 0.0f, 0.0f, 0.0f, 0.0f } );
+  const Quat Quat::ID   = Quat( (float4) { 0.0f, 0.0f, 0.0f, 1.0f } );
 
 }

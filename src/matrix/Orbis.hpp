@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "./stable.hpp"
+#include "stable.hpp"
 
 #include "matrix/Sky.hpp"
 #include "matrix/Terra.hpp"
