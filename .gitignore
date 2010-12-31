@@ -5,10 +5,9 @@
 /openzone.kdev4
 /.kdev4
 
-/linux
-/mingw32
-/msvc
-/nmake
+/Linux-*
+/MinGW-*
+/Windows-*
 
 /doxygen
 /tags

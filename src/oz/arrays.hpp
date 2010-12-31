@@ -350,7 +350,7 @@ namespace oz
   template <typename Type>
   inline void aRemove( Type* aDest, int index, int count )
   {
-    assert( 0 <= index && index < count );
+    assert( uint( index ) < uint( count ) );
 
     for( int i = index + 1; i < count; ++i ) {
       aDest[i - 1] = aDest[i];
@@ -483,6 +483,8 @@ namespace oz
   template <typename Type, typename Key>
   inline int aBisectFind( Type* aSrc, const Key& key, int count )
   {
+    assert( count >= 0 );
+
     if( count == 0 ) {
       return -1;
     }
@@ -490,14 +492,9 @@ namespace oz
     int a = 0;
     int b = count;
 
-    // we must check this or the next assumption may not hold
-    if( key < aSrc[0] ) {
-      return -1;
-    }
-
-    // Note that the algorithm ensures data[a] <= key and key < data[b] all the time, so the
-    // key may only lie on position a.
-    do {
+    // The algorithm ensures that ( a == 0 or data[a] <= key ) and ( b == count or key < data[b] ),
+    // so the key may only lie on position a or nowhere.
+    while( b - a > 1 ) {
       int c = ( a + b ) / 2;
 
       if( key < aSrc[c] ) {
@@ -507,7 +504,6 @@ namespace oz
         a = c;
       }
     }
-    while( b - a > 1 );
 
     return key == aSrc[a] ? a : -1;
   }
@@ -525,21 +521,14 @@ namespace oz
   template <typename Type, typename Key>
   inline int aBisectPosition( Type* aSrc, const Key& key, int count )
   {
-    if( count == 0 ) {
-      return 0;
-    }
+    assert( count >= 0 );
 
-    int a = 0;
+    int a = -1;
     int b = count;
 
-    // we must check this or the next assumption may not hold
-    if( key < aSrc[0] ) {
-      return 0;
-    }
-
-    // Note that the algorithm ensures data[a] <= key and key < data[b] all the time, so the
-    // key may only lie on position a.
-    do {
+    // The algorithm ensures that ( a == -1 or data[a] <= key ) and ( b == count or key < data[b] ),
+    // so the key may only lie on position a or nowhere.
+    while( b - a > 1 ) {
       int c = ( a + b ) / 2;
 
       if( key < aSrc[c] ) {
@@ -549,7 +538,6 @@ namespace oz
         a = c;
       }
     }
-    while( b - a > 1 );
 
     return a + 1;
   }

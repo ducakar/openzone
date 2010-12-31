@@ -15,16 +15,9 @@
 namespace oz
 {
 
-  Buffer::Buffer( const char* path ) : data( null ), count( 0 )
+  bool Buffer::read( const char* path )
   {
-    if( !load( path ) ) {
-      throw Exception( "Failed to load buffer from file" );
-    }
-  }
-
-  bool Buffer::load( const char* path )
-  {
-    delete[] data;
+    free();
 
     struct stat fileStat;
     if( stat( path, &fileStat ) != 0 || fileStat.st_size > 0x7fffffffl ) {

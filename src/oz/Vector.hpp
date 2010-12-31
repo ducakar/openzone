@@ -102,7 +102,7 @@ namespace oz
       }
 
       /**
-       * Enlarge capacity to the smallest power of two greater or equal to desired capacity.
+       * Enlarge capacity to the smallest power of 2, greater or equal to desired capacity.
        */
       void ensureCapacity( int desiredSize )
       {
@@ -278,7 +278,7 @@ namespace oz
        */
       const Type& operator [] ( int i ) const
       {
-        assert( 0 <= i && i < count );
+        assert( uint( i ) < uint( count ) );
 
         return data[i];
       }
@@ -289,7 +289,7 @@ namespace oz
        */
       Type& operator [] ( int i )
       {
-        assert( 0 <= i && i < count );
+        assert( uint( i ) < uint( count ) );
 
         return data[i];
       }
@@ -396,41 +396,41 @@ namespace oz
        * Add an element to the end, but only if there's no any equal element in the vector.
        * This function is useful if you plan to use vector as a set.
        * @param e
-       * @return true if element has been added
+       * @return position of the inserted element or an existing one if it was not inserted
        */
-      bool include( const Type& e )
+      int include( const Type& e )
       {
-        if( !contains( e ) ) {
+        int i = aIndex( data, e, count );
+
+        if( i == -1 ) {
           ensureCapacity();
 
           new( data + count ) Type( e );
+          i = count;
           ++count;
-          return true;
         }
-        else {
-          return false;
-        }
+        return i;
       }
 
       /**
        * Insert an element at given position. All later elements are shifted to make a gap
        * for the new element.
        * @param e
-       * @param index
+       * @param i
        */
-      void insert( int index, const Type& e )
+      void insert( int i, const Type& e )
       {
-        assert( 0 <= index && index <= count );
+        assert( uint( i ) <= uint( count ) );
 
         ensureCapacity();
 
-        if( index == count ) {
+        if( i == count ) {
           new( data + count ) Type( e );
         }
         else {
           new( data + count ) Type( data[count - 1] );
-          aReverseCopy( data + index + 1, data + index, count - index - 1 );
-          data[index] = e;
+          aReverseCopy( data + i + 1, data + i, count - i - 1 );
+          data[i] = e;
         }
         ++count;
       }
@@ -449,29 +449,29 @@ namespace oz
 
       /**
        * Remove the element at given position. All later element are shifted to fill the gap.
-       * @param index
+       * @param i
        */
-      void remove( int index )
+      void remove( int i )
       {
-        assert( 0 <= index && index < count );
+        assert( uint( i ) < uint( count ) );
 
         --count;
-        aCopy( data + index, data + index + 1, count - index );
+        aCopy( data + i, data + i + 1, count - i );
         data[count].~Type();
       }
 
       /**
        * Remove the element at given position from unordered vector. The last element is moved to
        * the position to fill the gap.
-       * @param index
+       * @param i
        */
-      void removeUO( int index )
+      void removeUO( int i )
       {
-        assert( 0 <= index && index < count );
+        assert( uint( i ) < uint( count ) );
 
         --count;
-        if( index != count ) {
-          data[index] = data[count];
+        if( i != count ) {
+          data[i] = data[count];
         }
         data[count].~Type();
       }
@@ -481,20 +481,16 @@ namespace oz
        * @param e
        * @return
        */
-      bool exclude( const Type& e )
+      int exclude( const Type& e )
       {
-        int index = aIndex( data, e, count );
+        int i = aIndex( data, e, count );
 
-        if( index != -1 ) {
+        if( i != -1 ) {
           --count;
-          aCopy( data + index, data + index + 1, count - index );
+          aCopy( data + i, data + i + 1, count - i );
           data[count].~Type();
-
-          return true;
         }
-        else {
-          return false;
-        }
+        return i;
       }
 
       /**
@@ -503,22 +499,18 @@ namespace oz
        * @param e
        * @return
        */
-      bool excludeUO( const Type& e )
+      int excludeUO( const Type& e )
       {
-        int index = aIndex( data, e, count );
+        int i = aIndex( data, e, count );
 
-        if( index != -1 ) {
+        if( i != -1 ) {
           --count;
-          if( index != count ) {
-            data[index] = data[count];
+          if( i != count ) {
+            data[i] = data[count];
           }
           data[count].~Type();
-
-          return true;
         }
-        else {
-          return false;
-        }
+        return i;
       }
 
       /**

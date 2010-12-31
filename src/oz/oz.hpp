@@ -66,9 +66,10 @@
  * Math
  */
 #include "Math.hpp"
+#include "Vec4.hpp"
 #include "Vec3.hpp"
+#include "Point4.hpp"
 #include "Quat.hpp"
-#include "Mat33.hpp"
 #include "Mat44.hpp"
 
 /*

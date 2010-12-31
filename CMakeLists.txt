@@ -6,17 +6,17 @@ option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make 
 option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
 option( OZ_BUILTIN_MATH "Use GCC/clang built-in math functions (no need to include <cmath>, possibly faster math calls in debug mode)" ON )
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in configuration files" ON )
-option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" OFF )
+option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" ON )
 
 option( OZ_BIG_ENDIAN_DATA "Use big-endian byte-order for data when saving to disk or sending across network" ON )
 option( OZ_ENABLE_CYLINDER "Enable cylinder collision shape and physics" OFF )
 
-option( OZ_BUILD_TESTS "Build tests" OFF )
-option( OZ_BUILD_TOOLS "Build tools" OFF )
+option( OZ_BUILD_TESTS "Build tests" ON )
+option( OZ_BUILD_TOOLS "Build tools" ON )
 option( OZ_BUILD_CLIENT "Build client" ON )
 option( OZ_BUILD_SERVER "Build server" OFF )
 
-option( OZ_INSTALL_LIBOZ "Install liboz" OFF )
+option( OZ_INSTALL_LIBOZ "Install liboz" ON )
 option( OZ_INSTALL_CLIENT "Install openzone client executable" ON )
 option( OZ_INSTALL_SERVER "Install openzone server executable" OFF )
 option( OZ_INSTALL_DATA "Install game data" ON )
@@ -61,14 +61,18 @@ macro( add_pch _targetName _inputHeader )
       list( APPEND _flags "-I${_inc_dir}" )
     endforeach( _inc_dir ${_includes} )
 
-    # set build rules
-    add_custom_command( OUTPUT ${_inputHeader}.gch
-      ${ARGN} ${_inputHeader}
-      COMMAND ${CMAKE_COMMAND} -E remove ${_inputHeader}.gch
-      COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o ${_inputHeader}.gch ${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader} )
+    # set build rules (build precompiled header and copy original header to build folder - needed to
+    # be there to be included via other headers - which is needed for KDevelop's indexer to work
+    # properly)
+    add_custom_command( OUTPUT "${_inputHeader}.gch"
+      ${ARGN} "${_inputHeader}"
+      COMMAND ${CMAKE_COMMAND} -E remove "${_inputHeader}"
+      COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}.gch"
+      COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
+      COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
     add_custom_target( ${_targetName} SOURCES ${_inputHeader} DEPENDS ${_inputHeader}.gch )
   else( NOT MSVC )
-    add_custom_target( ${_targetName} SOURCES ${_inputHeader} )
+    add_custom_target( ${_targetName} SOURCES "${_inputHeader}" )
   endif( NOT MSVC )
 endmacro( add_pch )
 
@@ -199,11 +203,17 @@ else( MSVC )
 
   # compiler and linker flags
   set( flags "-std=c++0x -fmessage-length=0 -pipe" )
-  set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wconversion -Wcast-qual -Wcast-align" )
-  set( warnings "${warnings} -Wlogical-op -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor" )
+  set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wcast-qual -Wcast-align" )
+  set( warnings "${warnings} -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor" )
   set( warnings "${warnings} -Wredundant-decls -Wmissing-declarations -Wdisabled-optimization" )
 
-  set( arch_flags "-mmmx -msse3" )
+  if( CLANG )
+    set( warnings "${warnings} -Wno-invalid-offsetof" )
+  else( CLANG )
+    set( warnings "${warnings} -Wlogical-op -Wconversion" )
+  endif( CLANG )
+
+  set( arch_flags "-march=prescott -mfpmath=sse" )
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
@@ -220,7 +230,6 @@ else( MSVC )
 endif( MSVC )
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings} ${includes}" )
-link_libraries( ${libs} )
 
 # sources
 add_subdirectory( src )

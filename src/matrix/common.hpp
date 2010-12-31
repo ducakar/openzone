@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "stable.hpp"
+
 namespace oz
 {
   // ensure epsilon is big enough for a 4 km x 4 km world

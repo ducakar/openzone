@@ -23,23 +23,12 @@ namespace oz
       int         line;
       const char* function;
 
-#ifdef NDEBUG
-      explicit Exception( const String& message_, const char* file_, int line_,
-                          const char* function_ ) throw() :
-          message( message_ ), file( file_ ), line( line_ ), function( function_ )
-      {}
-#else
       explicit Exception( const String& message_, const char* file_, int line_,
                           const char* function_ ) throw();
-#endif
 
-      virtual ~Exception() throw()
-      {}
+      virtual ~Exception() throw();
 
-      virtual const char* what() const throw()
-      {
-        return message;
-      }
+      virtual const char* what() const throw();
 
   };
 

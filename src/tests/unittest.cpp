@@ -195,6 +195,7 @@ static void ozIterablesUnittest()
 
   li = decltype( li )();
   vi = decltype( vi )();
+
   assert( iFindLast( l.citer(), Test( 0 ) ) == li );
   assert( iFindLast( v.citer(), Test( 0 ) ) == vi );
 

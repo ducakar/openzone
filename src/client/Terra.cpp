@@ -153,7 +153,8 @@ namespace client
   {
     log.print( "Loading client terrain data from '%s' ...", path );
 
-    Buffer buffer( path );
+    Buffer buffer;
+    buffer.read( path );
     InputStream is = buffer.inputStream();
 
     int nVertices = is.readInt();

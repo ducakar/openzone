@@ -18,13 +18,17 @@ add_library( oz STATIC
   Log.cpp
   Log.hpp
   Map.hpp
-  Mat33.cpp
-  Mat33.hpp
+
+
+
+
   Mat44.cpp
   Mat44.hpp
   Math.cpp
   Math.hpp
   Pair.hpp
+  Point4.cpp
+  Point4.hpp
   Pool.hpp
   Quat.cpp
   Quat.hpp
@@ -35,6 +39,8 @@ add_library( oz STATIC
   String.hpp
   Vec3.cpp
   Vec3.hpp
+  Vec4.cpp
+  Vec4.hpp
   Vector.hpp
   arrays.hpp
   common.cpp

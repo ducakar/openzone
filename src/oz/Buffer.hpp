@@ -33,8 +33,6 @@ namespace oz
       explicit Buffer( int size ) : data( new char[size] ), count( size )
       {}
 
-      explicit Buffer( const char* path );
-
       ~Buffer()
       {
         free();
@@ -77,8 +75,7 @@ namespace oz
         return OutputStream( data, data + count );
       }
 
-      bool load( const char* path );
-
+      bool read( const char* path );
       bool write( const char* path );
 
   };

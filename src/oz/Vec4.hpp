@@ -1,7 +1,7 @@
 /*
- *  Vec3.hpp
+ *  Vec4.hpp
  *
- *  3D vector
+ *  3D vector inside 4D space, optimised for SIMD
  *
  *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -9,47 +9,51 @@
 
 #pragma once
 
-#include "Vec4.hpp"
+#include "Math.hpp"
 
 namespace oz
 {
 
-  class Vec3
+  class __attribute__(( aligned( 16 ) )) Vec4
   {
     public:
 
-      static const Vec3 ZERO;
+      static const Vec4 ZERO;
 
-      float x;
-      float y;
-      float z;
-
-      explicit Vec3()
-      {}
-
-      explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
-      {}
-
-      explicit Vec3( const float* v ) : x( v[0] ), y( v[1] ), z( v[2] )
-      {}
-
-      explicit Vec3( const Vec4& v ) : x( v.x ), y( v.y ), z( v.z )
-      {}
-
-      Vec3& operator = ( const Vec4& v )
+      union
       {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-        return *this;
-      }
+        float4 f4;
 
-      bool operator == ( const Vec3& v ) const
+        struct
+        {
+          float x;
+          float y;
+          float z;
+          float w;
+        };
+      };
+
+      explicit Vec4()
+      {}
+
+      explicit Vec4( float4 f4_ ) : f4( f4_ )
+      {}
+
+      explicit Vec4( float x, float y, float z, float w ) : f4( (float4) { x, y, z, w } )
+      {}
+
+      explicit Vec4( float x, float y, float z ) : f4( (float4) { x, y, z, 0.0f } )
+      {}
+
+      explicit Vec4( const float* v ) : f4( (float4) { v[0], v[1], v[2], 0.0f } )
+      {}
+
+      bool operator == ( const Vec4& v ) const
       {
         return x == v.x && y == v.y && z == v.z;
       }
 
-      bool operator != ( const Vec3& v ) const
+      bool operator != ( const Vec4& v ) const
       {
         return x != v.x || y != v.y || z != v.z;
       }
@@ -78,7 +82,7 @@ namespace oz
         return ( &x )[i];
       }
 
-      bool equals( const Vec3& v, float epsilon ) const
+      bool equals( const Vec4& v, float epsilon ) const
       {
         return
             Math::abs( x - v.x ) <= epsilon &&
@@ -86,9 +90,9 @@ namespace oz
             Math::abs( z - v.z ) <= epsilon;
       }
 
-      Vec3 abs() const
+      Vec4 abs() const
       {
-        return Vec3( Math::abs( x ), Math::abs( y ), Math::abs( z ) );
+        return Vec4( Math::abs( x ), Math::abs( y ), Math::abs( z ) );
       }
 
       float operator ! () const
@@ -111,23 +115,23 @@ namespace oz
         return x*x + y*y + z*z == 1.0f;
       }
 
-      Vec3 operator ~ () const
+      Vec4 operator ~ () const
       {
         assert( x*x + y*y + z*z > 0.0f );
 
         float k = 1.0f / Math::sqrt( x*x + y*y + z*z );
-        return Vec3( x * k, y * k, z * k );
+        return Vec4( f4 * (float4) { k, k, k, k } );
       }
 
-      Vec3 fastUnit() const
+      Vec4 fastUnit() const
       {
         assert( x*x + y*y + z*z > 0.0f );
 
         float k = Math::fastInvSqrt( x*x + y*y + z*z );
-        return Vec3( x * k, y * k, z * k );
+        return Vec4( f4 * (float4) { k, k, k, k } );
       }
 
-      bool isColinear( const Vec3& v, float epsilon ) const
+      bool isColinear( const Vec4& v, float epsilon ) const
       {
         float p1 = v.x * y * z;
         float p2 = v.y * x * z;
@@ -136,93 +140,85 @@ namespace oz
         return Math::abs( p1 - p2 ) <= epsilon && Math::abs( p1 - p3 ) <= epsilon;
       }
 
-      Vec3 operator + () const
+      Vec4 operator + () const
       {
         return *this;
       }
 
-      Vec3 operator - () const
+      Vec4 operator - () const
       {
-        return Vec3( -x, -y, -z );
+        return Vec4( -f4 );
       }
 
-      Vec3 operator + ( const Vec3& v ) const
+      Vec4 operator + ( const Vec4& v ) const
       {
-        return Vec3( x + v.x, y + v.y, z + v.z );
+        return Vec4( f4 + v.f4 );
       }
 
-      Vec3 operator - ( const Vec3& v ) const
+      Vec4 operator - ( const Vec4& v ) const
       {
-        return Vec3( x - v.x, y - v.y, z - v.z );
+        return Vec4( f4 - v.f4 );
       }
 
-      Vec3 operator * ( float k ) const
+      Vec4 operator * ( float k ) const
       {
-        return Vec3( x * k, y * k, z * k );
+        return Vec4( f4 * (float4) { k, k, k, k } );
       }
 
-      friend Vec3 operator * ( float k, const Vec3& v )
+      friend Vec4 operator * ( float k, const Vec4& v )
       {
-        return Vec3( v.x * k, v.y * k, v.z * k );
+        return Vec4( (float4) { k, k, k, k } * v.f4 );
       }
 
-      Vec3 operator / ( float k ) const
+      Vec4 operator / ( float k ) const
       {
         assert( k != 0.0f );
 
         k = 1.0f / k;
-        return Vec3( x * k, y * k, z * k );
+        return Vec4( f4 * (float4) { k, k, k, k } );
       }
 
-      Vec3& operator += ( const Vec3& v )
+      Vec4& operator += ( const Vec4& v )
       {
-        x += v.x;
-        y += v.y;
-        z += v.z;
+        f4 += v.f4;
         return *this;
       }
 
-      Vec3& operator -= ( const Vec3& v )
+      Vec4& operator -= ( const Vec4& v )
       {
-        x -= v.x;
-        y -= v.y;
-        z -= v.z;
+        f4 -= v.f4;
         return *this;
       }
 
-      Vec3& operator *= ( float k )
+      Vec4& operator *= ( float k )
       {
-        x *= k;
-        y *= k;
-        z *= k;
+        f4 *= (float4) { k, k, k, k };
         return *this;
       }
 
-      Vec3& operator /= ( float k )
+      Vec4& operator /= ( float k )
       {
         assert( k != 0.0f );
 
         k = 1.0f / k;
-        x *= k;
-        y *= k;
-        z *= k;
+        f4 *= (float4) { k, k, k, k };
         return *this;
       }
 
       // dot product
-      float operator * ( const Vec3& v ) const
+      float operator * ( const Vec4& v ) const
       {
         return x*v.x + y*v.y + z*v.z;
       }
 
       // cross product
-      Vec3 operator ^ ( const Vec3& v ) const
+      Vec4 operator ^ ( const Vec4& v ) const
       {
-        return Vec3( y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x );
+        return Vec4( y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x );
       }
 
       // vector which lies in plane defined by given vectors and is perpendicular to first one
-      Vec3 operator % ( const Vec3& v ) const
+      Vec4 operator % ( const Vec4& v ) const
       {
         // this is actually -( u x v ) x u, where u is* this vector
         // This equals to:
@@ -234,11 +230,11 @@ namespace oz
         assert( k != 0.0f );
 
         k = ( x*v.x + y*v.y + z*v.z ) / k;
-        return v - Vec3( x * k, y * k, z * k );
+        return Vec4( v.f4 - f4 * (float4) { k, k, k, k } );
       }
 
       // mixed product
-      static float mix( const Vec3& a, const Vec3& b, const Vec3& c )
+      static float mix( const Vec4& a, const Vec4& b, const Vec4& c )
       {
         // 3x3 determinant
         return

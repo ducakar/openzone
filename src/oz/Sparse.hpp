@@ -301,14 +301,14 @@ namespace oz
       }
 
       /**
-       * @param index
+       * @param i
        * @return true if slot at given index in use
        */
-      bool hasIndex( int index ) const
+      bool hasIndex( int i ) const
       {
-        assert( 0 <= index && index < size );
+        assert( uint( i ) < uint( size ) );
 
-        return data[index].nextSlot[INDEX] != -1;
+        return data[i].nextSlot[INDEX] != -1;
       }
 
       /**
@@ -385,13 +385,13 @@ namespace oz
       {
         ensureCapacity();
 
-        int index = freeSlot;
+        int i = freeSlot;
 
-        freeSlot = data[index].nextSlot[INDEX];
-        data[index].nextSlot[INDEX] = -1;
+        freeSlot = data[i].nextSlot[INDEX];
+        data[i].nextSlot[INDEX] = -1;
         ++count;
 
-        return index;
+        return i;
       }
 
       /**
@@ -403,26 +403,26 @@ namespace oz
       {
         ensureCapacity();
 
-        int index = freeSlot;
+        int i = freeSlot;
 
-        freeSlot = data[index].nextSlot[INDEX];
-        data[index] = e;
-        data[index].nextSlot[INDEX] = -1;
+        freeSlot = data[i].nextSlot[INDEX];
+        data[i] = e;
+        data[i].nextSlot[INDEX] = -1;
         ++count;
 
-        return index;
+        return i;
       }
 
       /**
        * Remove the element at given position. A gap will remain there.
-       * @param index
+       * @param i
        */
-      void remove( int index )
+      void remove( int i )
       {
-        assert( 0 <= index && index < size );
+        assert( uint( i ) < uint( size ) );
 
-        data[index].nextSlot[INDEX] = freeSlot;
-        freeSlot = index;
+        data[i].nextSlot[INDEX] = freeSlot;
+        freeSlot = i;
         --count;
       }
 

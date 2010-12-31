@@ -173,7 +173,7 @@ namespace oz
        */
       const Type& operator [] ( int i ) const
       {
-        assert( 0 <= i && i < SIZE );
+        assert( uint( i ) < uint( SIZE ) );
 
         return data[i];
       }
@@ -184,7 +184,7 @@ namespace oz
        */
       Type& operator [] ( int i )
       {
-        assert( 0 <= i && i < SIZE );
+        assert( uint( i ) < uint( SIZE ) );
 
         return data[i];
       }

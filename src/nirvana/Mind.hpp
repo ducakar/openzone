@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "./stable.hpp"
+#include "stable.hpp"
 
 #include "nirvana/common.hpp"
 #include "nirvana/Task.hpp"

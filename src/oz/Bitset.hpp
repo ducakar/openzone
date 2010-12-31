@@ -183,7 +183,7 @@ namespace oz
        */
       bool get( int i ) const
       {
-        assert( 0 <= i && i < size * ULONG_BITSIZE );
+        assert( uint( i ) < uint( size * ULONG_BITSIZE ) );
 
         return ( data[i / ULONG_BITSIZE] & ( 1ul << ( i % ULONG_BITSIZE ) ) ) != 0ul;
       }
@@ -218,7 +218,7 @@ namespace oz
        */
       void set( int i )
       {
-        assert( 0 <= i && i < size * ULONG_BITSIZE );
+        assert( uint( i ) < uint( size * ULONG_BITSIZE ) );
 
         data[i / ULONG_BITSIZE] |= 1ul << ( i % ULONG_BITSIZE );
       }
@@ -229,7 +229,7 @@ namespace oz
        */
       void clear( int i )
       {
-        assert( 0 <= i && i < size * ULONG_BITSIZE );
+        assert( uint( i ) < uint( size * ULONG_BITSIZE ) );
 
         data[i / ULONG_BITSIZE] &= ~( 1ul << ( i % ULONG_BITSIZE ) );
       }
@@ -267,7 +267,7 @@ namespace oz
        */
       void set( int start, int end )
       {
-        assert( 0 <= start && start <= end && end <= size * ULONG_BITSIZE );
+        assert( uint( start ) <= uint( end ) && uint( end ) <= uint( size * ULONG_BITSIZE ) );
 
         int startUnit   = start / ULONG_BITSIZE;
         int startOffset = start % ULONG_BITSIZE;
@@ -298,7 +298,7 @@ namespace oz
        */
       void clear( int start, int end )
       {
-        assert( 0 <= start && start <= end && end <= size * ULONG_BITSIZE );
+        assert( uint( start ) <= uint( end ) && uint( end ) <= uint( size * ULONG_BITSIZE ) );
 
         int startUnit   = start / ULONG_BITSIZE;
         int startOffset = start % ULONG_BITSIZE;

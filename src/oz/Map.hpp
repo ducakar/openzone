@@ -375,7 +375,7 @@ namespace oz
        */
       const Key& operator [] ( int i ) const
       {
-        assert( 0 <= i && i < count );
+        assert( uint( i ) < uint( count ) );
 
         return data[i].key;
       }
@@ -386,7 +386,7 @@ namespace oz
        */
       Key& operator [] ( int i )
       {
-        assert( 0 <= i && i < count );
+        assert( uint( i ) < uint( count ) );
 
         return data[i].key;
       }
@@ -397,7 +397,7 @@ namespace oz
        */
       const Value& value( int i ) const
       {
-        assert( 0 <= i && i < count );
+        assert( uint( i ) < uint( count ) );
 
         return data[i].value;
       }
@@ -408,7 +408,7 @@ namespace oz
        */
       Value& value( int i )
       {
-        assert( 0 <= i && i < count );
+        assert( uint( i ) < uint( count ) );
 
         return data[i].value;
       }
@@ -512,7 +512,7 @@ namespace oz
       /**
        * Add an element, but only if there's no any equal element in the map.
        * @param e
-       * @return true if element has been added
+       * @return position of the inserted element or an existing one if it was not inserted
        */
       int include( const Key& key, const Value& value = Value() )
       {
@@ -520,44 +520,43 @@ namespace oz
 
         if( i == 0 || !( data[i - 1].key == key ) ) {
           insert( i, key, value );
-          return i;
         }
-        return -1;
+        return i;
       }
 
       /**
        * Insert an element at given position. All later elements are shifted to make a gap
        * for the new element.
        * @param e
-       * @param index
+       * @param i
        */
-      void insert( int index, const Key& k, const Value& v = Value() )
+      void insert( int i, const Key& k, const Value& v = Value() )
       {
-        assert( 0 <= index && index <= count );
+        assert( uint( i ) <= uint( count ) );
 
         ensureCapacity();
 
-        if( index == count ) {
+        if( i == count ) {
           new( data + count ) Elem( k, v );
         }
         else {
           new( data + count ) Elem( data[count - 1] );
-          aReverseCopy( data + index + 1, data + index, count - index - 1 );
-          data[index] = Elem( k, v );
+          aReverseCopy( data + i + 1, data + i, count - i - 1 );
+          data[i] = Elem( k, v );
         }
         ++count;
       }
 
       /**
        * Remove the element at given position. All later element are shifted to fill the gap.
-       * @param index
+       * @param i
        */
-      void remove( int index )
+      void remove( int i )
       {
-        assert( 0 <= index && index < count );
+        assert( uint( i ) < uint( count ) );
 
         --count;
-        aCopy( data + index, data + index + 1, count - index );
+        aCopy( data + i, data + i + 1, count - i );
         data[count].~Type();
       }
 
@@ -566,17 +565,14 @@ namespace oz
        * @param e
        * @return
        */
-      bool exclude( const Key& key )
+      int exclude( const Key& key )
       {
         int i = aBisectFind( data, key, count );
 
         if( i != -1 ) {
           remove( i );
-          return true;
         }
-        else {
-          return false;
-        }
+        return i;
       }
 
       /**

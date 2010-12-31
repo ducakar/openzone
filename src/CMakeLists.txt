@@ -2,6 +2,7 @@ configure_file( oz/ozconfig.hpp.in oz/ozconfig.hpp )
 configure_file( configuration.hpp.in configuration.hpp )
 
 # required to include configuration headers when we use a separate build directory
+# the second entry must be included before '.', so precompiled header is used instead the actual one
 include_directories( ${CMAKE_CURRENT_BINARY_DIR}/oz )
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
@@ -23,10 +24,10 @@ if( OZ_BUILD_SERVER )
   add_subdirectory( server )
 endif( OZ_BUILD_SERVER )
 
-#if( OZ_BUILD_TOOLS )
+if( OZ_BUILD_TOOLS )
   add_subdirectory( tools )
-#endif( OZ_BUILD_TOOLS )
+endif( OZ_BUILD_TOOLS )
 
-#if( OZ_BUILD_TESTS )
+if( OZ_BUILD_TESTS )
   add_subdirectory( tests )
-#endif( OZ_BUILD_TESTS )
+endif( OZ_BUILD_TESTS )

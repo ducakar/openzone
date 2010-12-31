@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "./stable.hpp"
+#include "stable.hpp"
 
 #include "matrix/Orbis.hpp"
 #include "matrix/Bot.hpp"
