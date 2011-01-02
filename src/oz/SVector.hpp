@@ -4,7 +4,7 @@
  *  Static-size vector
  *  Type should be a POD type as C++0x is not yet fully supported by GCC.
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 

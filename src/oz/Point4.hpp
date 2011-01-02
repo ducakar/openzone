@@ -3,7 +3,7 @@
  *
  *  3D point in 4D space optimised for SIMD
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -49,10 +49,10 @@ namespace oz
       explicit Point4( float4 f4_ ) : f4( f4_ )
       {}
 
-      explicit Point4( float x, float y, float z ) : f4( (float4) { x, y, z, 1.0f } )
+      explicit Point4( float x, float y, float z ) : f4( float4( x, y, z, 1.0f ) )
       {}
 
-      explicit Point4( const float* v ) : f4( (float4) { v[0], v[1], v[2], 1.0f } )
+      explicit Point4( const float* v ) : f4( float4( v[0], v[1], v[2], 1.0f ) )
       {}
 
       bool operator == ( const Point4& p ) const

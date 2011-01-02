@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -24,8 +24,8 @@ namespace client
   {
     OBJModel* model = new OBJModel();
 
-    model->obj  = obj;
-    model->list = context.loadOBJ( obj->clazz->modelName );
+    model->obj = obj;
+    model->objModel = context.loadOBJ( obj->clazz->modelName );
     return model;
   }
 
@@ -36,7 +36,7 @@ namespace client
 
   void OBJModel::draw( const Model* )
   {
-    glCallList( list );
+    objModel->draw();
   }
 
 }

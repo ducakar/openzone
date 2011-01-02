@@ -5,7 +5,7 @@
  *  The advantage over C++ arrays is it has bounds checking, iterator and it frees allocated
  *  memory when destroyed.
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -90,7 +90,7 @@ namespace oz
        * Create an empty array with the given size.
        * @param size
        */
-      explicit DArray( int size ) : data( new Type[size] ), count( size )
+      explicit DArray( int size ) : data( size == 0 ? null : new Type[size] ), count( size )
       {}
 
       /**
@@ -98,7 +98,8 @@ namespace oz
        * @param array
        * @param size
        */
-      explicit DArray( const Type* array, int size ) : data( new Type[size] ), count( size )
+      explicit DArray( const Type* array, int size ) : data( size == 0 ? null : new Type[size] ),
+          count( size )
       {
         aCopy( data, array, size );
       }
@@ -107,7 +108,7 @@ namespace oz
        * Copy constructor.
        * @param a
        */
-      DArray( const DArray& a ) : data( new Type[a.count] ), count( a.count )
+      DArray( const DArray& a ) : data( a.count == 0 ? null : new Type[a.count] ), count( a.count )
       {
         aCopy( data, a.data, count );
       }
@@ -228,7 +229,7 @@ namespace oz
 
         delete[] data;
 
-        data  = new Type[size];
+        data  = size == 0 ? null : new Type[size];
         count = size;
       }
 

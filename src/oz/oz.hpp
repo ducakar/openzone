@@ -3,7 +3,7 @@
  *
  *  Common include file for the OpenZone library (liboz).
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -30,6 +30,12 @@
 #include "DList.hpp"
 
 /*
+ * Bitset
+ */
+#include "Bitset.hpp"
+#include "SBitset.hpp"
+
+/*
  * String
  */
 #include "String.hpp"
@@ -51,25 +57,19 @@
  */
 #include "Vector.hpp"
 #include "SVector.hpp"
-#include "Sparse.hpp"
 #include "Map.hpp"
+#include "Sparse.hpp"
 #include "HashIndex.hpp"
 #include "HashString.hpp"
-
-/*
- * Bitset
- */
-#include "Bitset.hpp"
-#include "SBitset.hpp"
 
 /*
  * Math
  */
 #include "Math.hpp"
 #include "Vec4.hpp"
-#include "Vec3.hpp"
 #include "Point4.hpp"
 #include "Quat.hpp"
+#include "Vec3.hpp"
 #include "Mat44.hpp"
 
 /*

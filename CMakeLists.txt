@@ -202,7 +202,7 @@ if( MSVC )
 else( MSVC )
 
   # compiler and linker flags
-  set( flags "-std=c++0x -fmessage-length=0 -pipe" )
+  set( flags "-std=c++0x -pipe" )
   set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wcast-qual -Wcast-align" )
   set( warnings "${warnings} -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor" )
   set( warnings "${warnings} -Wredundant-decls -Wmissing-declarations -Wdisabled-optimization" )
@@ -213,7 +213,7 @@ else( MSVC )
     set( warnings "${warnings} -Wlogical-op -Wconversion" )
   endif( CLANG )
 
-  set( arch_flags "-march=prescott -mfpmath=sse" )
+  set( arch_flags "-msse3 -mfpmath=sse" )
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )

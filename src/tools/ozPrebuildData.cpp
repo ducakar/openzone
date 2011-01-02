@@ -3,7 +3,7 @@
  *
  *  Prebuild data
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -14,6 +14,7 @@
 #include "client/Terra.hpp"
 #include "client/OBJ.hpp"
 
+#include <sys/stat.h>
 #include <SDL_main.h>
 
 using namespace oz;
@@ -37,7 +38,11 @@ int main( int, char** )
 
   foreach( model, translator.models.citer() ) {
     try {
-      client::OBJ::prebuild( model->name );
+      struct stat statInfo;
+
+      if( stat( model->path + "/data.obj", &statInfo ) == 0 ) {
+        client::OBJ::prebuild( model->name );
+      }
     }
     catch( const Exception& ) {
     }

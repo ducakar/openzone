@@ -3,7 +3,7 @@
  *
  *  Common macros, types and templates
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -153,6 +153,18 @@ namespace oz
    * unsigned long long integer
    */
   typedef unsigned long long ulong64;
+
+  /**
+   * SIMD vector of four floats
+   */
+  typedef float __attribute__(( vector_size( 16 ) )) float4;
+
+  /**
+   * \def float4
+   * float4 "constructor"
+   */
+# define float4( x, y, z, w ) \
+  (float4) { x, y, z, w }
 
   //***********************************
   //*        BASIC ALGORITHMS         *

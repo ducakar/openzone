@@ -3,7 +3,7 @@
  *
  *  Quaternion
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -17,7 +17,7 @@ namespace oz
   class Mat33;
   class Mat44;
 
-  class Quat : public Vec4
+  class __attribute__(( aligned( 16 ) )) Quat : public Vec4
   {
     public:
 
@@ -95,7 +95,7 @@ namespace oz
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
         float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
-        return Quat( f4 * (float4) { k, k, k, k } );
+        return Quat( f4 * float4( k, k, k, k ) );
       }
 
       Quat fastUnit() const
@@ -103,7 +103,7 @@ namespace oz
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
         float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
-        return Quat( f4 * (float4) { k, k, k, k } );
+        return Quat( f4 * float4( k, k, k, k ) );
       }
 
       Quat operator + () const
@@ -128,19 +128,19 @@ namespace oz
 
       Quat operator * ( float k ) const
       {
-        return Quat( f4 * (float4) { k, k, k, k } );
+        return Quat( f4 * float4( k, k, k, k ) );
       }
 
       friend Quat operator * ( float k, const Quat& v )
       {
-        return Quat( (float4) { k, k, k, k } * v.f4 );
+        return Quat( float4( k, k, k, k ) * v.f4 );
       }
 
       Quat operator / ( float k ) const
       {
         assert( k != 0.0f );
 
-        return Quat( f4 / (float4) { k, k, k, k } );
+        return Quat( f4 / float4( k, k, k, k ) );
       }
 
       Quat& operator += ( const Quat& v )
@@ -157,7 +157,7 @@ namespace oz
 
       Quat& operator *= ( float k )
       {
-        f4 *= (float4) { k, k, k, k };
+        f4 *= float4( k, k, k, k );
         return *this;
       }
 
@@ -165,7 +165,7 @@ namespace oz
       {
         assert( k != 0.0f );
 
-        f4 /= (float4) { k, k, k, k };
+        f4 /= float4( k, k, k, k );
         return *this;
       }
 
@@ -210,7 +210,7 @@ namespace oz
         float s, c;
         Math::sincos( theta * 0.5f, &s, &c );
         Vec4 qv = s * axis;
-        return Quat( qv.f4 + (float4) { 0.0f, 0.0f, 0.0f, c } );
+        return Quat( qv.f4 + float4( 0.0f, 0.0f, 0.0f, c ) );
       }
 
       // make quaternion for rotation around x axis

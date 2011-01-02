@@ -4,7 +4,7 @@
  *  Overload default new and delete operators for slightly better performance (ifndef OZ_ALLOC) or
  *  provide heap allocation statistics (ifdef OZ_ALLOC).
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -102,6 +102,8 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
 void operator delete ( void* ptr ) throw()
 {
+  assert( ptr != null );
+
   size_t* chunk = reinterpret_cast<size_t*>( ptr ) - 1;
   size_t size = chunk[0];
 
@@ -113,6 +115,8 @@ void operator delete ( void* ptr ) throw()
 
 void operator delete[] ( void* ptr ) throw()
 {
+  assert( ptr != null );
+
   size_t* chunk = reinterpret_cast<size_t*>( ptr ) - 1;
   size_t size = chunk[0];
 

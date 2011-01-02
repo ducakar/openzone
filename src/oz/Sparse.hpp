@@ -7,7 +7,7 @@
  *  the middle.
  *  Type should provide int nextSlot[INDEX] field.
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -153,8 +153,8 @@ namespace oz
        * Create empty sparse vector with given initial capacity.
        * @param initSize
        */
-      explicit Sparse( int initSize ) : data( new Type[initSize] ), size( initSize ), count( 0 ),
-          freeSlot( 0 )
+      explicit Sparse( int initSize ) : data( initSize == 0 ? null : new Type[initSize] ),
+          size( initSize ), count( 0 ), freeSlot( 0 )
       {
         for( int i = 0; i < size; ++i ) {
           data[i].nextSlot[INDEX] = i + 1;
@@ -165,8 +165,8 @@ namespace oz
        * Copy constructor.
        * @param s
        */
-      Sparse( const Sparse& s ) : data( new Type[s.size] ), size( s.size ), count( s.count ),
-          freeSlot( s.freeSlot )
+      Sparse( const Sparse& s ) : data( s.size == 0 ? null : new Type[s.size] ),
+          size( s.size ), count( s.count ), freeSlot( s.freeSlot )
       {
         aCopy( data, s.data, size );
       }

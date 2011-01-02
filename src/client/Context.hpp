@@ -3,13 +3,13 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
 #pragma once
 
-#include "./stable.hpp"
+#include "stable.hpp"
 
 #include "matrix/Translator.hpp"
 
@@ -145,19 +145,19 @@ namespace client
       uint genLists( int count );
       void freeLists( uint listId );
 
-      uint loadOBJ( const char* name );
+      OBJ* loadOBJ( const char* name );
       void releaseOBJ( const char* name );
 
       uint loadStaticMD2( const char* name );
       void releaseStaticMD2( const char* name );
 
-      MD2*  loadMD2( const char* name );
+      MD2* loadMD2( const char* name );
       void releaseMD2( const char* name );
 
       uint loadStaticMD3( const char* name );
       void releaseStaticMD3( const char* name );
 
-      MD3*  loadMD3( const char* name );
+      MD3* loadMD3( const char* name );
       void releaseMD3( const char* name );
 
       Model* createModel( const Object* obj )

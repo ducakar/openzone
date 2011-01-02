@@ -6,7 +6,7 @@
  *  large maps HashIndex/HashString is preferred as it is much faster on average.
  *  It can also be used as a set if we omit values.
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -253,18 +253,17 @@ namespace oz
        * Create empty map with given initial capacity.
        * @param initSize
        */
-      explicit Map( int initSize ) : data( Alloc::alloc<Elem>( initSize ) ), size( initSize ),
-          count( 0 )
+      explicit Map( int initSize ) : data( initSize == 0 ? null : Alloc::alloc<Elem>( initSize ) ),
+          size( initSize ), count( 0 )
       {}
 
       /**
        * Copy constructor.
        * @param m
        */
-      Map( const Map& m ) : data( Alloc::alloc<Elem>( m.size ) ), size( m.size ), count( m.count )
+      Map( const Map& m ) : data( m.size == 0 ? null : Alloc::alloc<Elem>( m.size ) ),
+          size( m.size ), count( m.count )
       {
-        assert( m.size > 0 );
-
         aConstruct( data, m.data, m.count );
       }
 
