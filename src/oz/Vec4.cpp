@@ -3,7 +3,7 @@
  *
  *  3D vector inside 4D space, optimised for SIMD
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -12,6 +12,6 @@
 namespace oz
 {
 
-  const Vec4 Vec4::ZERO = Vec4( (float4) { 0.0f, 0.0f, 0.0f, 0.0f } );
+  const Vec4 Vec4::ZERO = Vec4( float4( 0.0f, 0.0f, 0.0f, 0.0f ) );
 
 }

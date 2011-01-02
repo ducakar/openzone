@@ -4,7 +4,7 @@
  *  Pool memory allocator
  *  The Type should provide next[] pointer.
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -95,6 +95,10 @@ namespace oz
       // Number of occupied used slots in the pool
       int    count;
 
+      // no copying
+      Pool( const Pool& );
+      Pool& operator = ( const Pool& );
+
     public:
 
       /**
@@ -105,44 +109,12 @@ namespace oz
       {}
 
       /**
-       * Copy constructor performs a move.
-       * @param p
-       */
-      Pool( Pool& p ) : firstBlock( p.firstBlock ), freeSlot( p.freeSlot ), size( p.size ),
-          count( p.count )
-      {
-        p.firstBlock = null;
-        p.freeSlot = null;
-        p.size = 0;
-        p.count = 0;
-      }
-
-      /**
        * Destructor.
        */
       ~Pool()
       {
         // there's a memory leak if count != 0
         soft_assert( count == 0 );
-      }
-
-      /**
-       * Copy operator performs a move.
-       * @param p
-       */
-      Pool& operator = ( Pool& p )
-      {
-        firstBlock = p.firstBlock;
-        freeSlot = p.freeSlot;
-        size = p.size;
-        count = p.count;
-
-        p.firstBlock = null;
-        p.freeSlot = null;
-        p.size = 0;
-        p.count = 0;
-
-        return *this;
       }
 
       /**

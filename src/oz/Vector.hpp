@@ -4,7 +4,7 @@
  *  Vector
  *  It can also be used as a stack or a small set.
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -135,19 +135,17 @@ namespace oz
        * Create empty vector with given initial capacity.
        * @param initSize
        */
-      explicit Vector( int initSize ) : data( Alloc::alloc<Type>( initSize ) ), size( initSize ),
-          count( 0 )
+      explicit Vector( int initSize ) : data( initSize == 0 ? null : Alloc::alloc<Type>( initSize ) ),
+          size( initSize ), count( 0 )
       {}
 
       /**
        * Copy constructor.
        * @param v
        */
-      Vector( const Vector& v ) : data( Alloc::alloc<Type>( v.size ) ), size( v.size ),
-          count( v.count )
+      Vector( const Vector& v ) : data( v.size == 0 ? null : Alloc::alloc<Type>( v.size ) ),
+          size( v.size ), count( v.count )
       {
-        assert( v.size > 0 );
-
         aConstruct( data, v.data, v.count );
       }
 

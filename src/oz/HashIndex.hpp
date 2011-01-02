@@ -5,7 +5,7 @@
  *  A prime number is recommended as hashtable size unless key distribution is "random".
  *  You can find a list of millions of primes at http://www.bigprimes.net/.
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 

@@ -18,10 +18,6 @@ add_library( oz STATIC
   Log.cpp
   Log.hpp
   Map.hpp
-
-
-
-
   Mat44.cpp
   Mat44.hpp
   Math.cpp

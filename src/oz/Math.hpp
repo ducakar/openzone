@@ -3,7 +3,7 @@
  *
  *  Replacement for math.h and some other utility functions
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -24,8 +24,6 @@
 
 namespace oz
 {
-
-  typedef float __attribute__(( vector_size( 16 ) )) float4;
 
   class Math
   {

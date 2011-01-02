@@ -3,7 +3,7 @@
  *
  *  Bitset
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -48,15 +48,21 @@ namespace oz
        */
       explicit Bitset( int nBits )
       {
-        size = ( nBits - 1 ) / ULONG_BITSIZE + 1;
-        data = new ulong[size];
+        if( nBits == 0 ) {
+          data = null;
+          size = 0;
+        }
+        else {
+          size = ( nBits - 1 ) / ULONG_BITSIZE + 1;
+          data = new ulong[size];
+        }
       }
 
       /**
        * Copy constructor.
        * @param b the original Bitset
        */
-      Bitset( const Bitset& b ) : data( new ulong[b.size] ), size( b.size )
+      Bitset( const Bitset& b ) : data( b.size == 0 ? null : new ulong[b.size] ), size( b.size )
       {
         aCopy( data, b.data, b.size );
       }
@@ -66,9 +72,7 @@ namespace oz
        */
       ~Bitset()
       {
-        if( data != null ) {
-          delete[] data;
-        }
+        delete[] data;
       }
 
       /**

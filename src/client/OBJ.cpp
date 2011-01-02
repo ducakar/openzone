@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -19,39 +19,55 @@ namespace oz
 namespace client
 {
 
-  Vector<Vec3>          OBJ::positions;
-  Vector<Vec3>          OBJ::normals;
-  Vector<TexCoord>      OBJ::texCoords;
-  Vector<OBJ::Face>     OBJ::faces;
-  Vector<OBJ::Material> OBJ::materials;
-  HashString<int>       OBJ::materialIndices;
-
-  DArray<OBJ::Vertex>   OBJ::vertices;
-  DArray<uint>          OBJ::indices;
-
-  inline OBJ::Face::Vertex::Vertex()
-  {}
-
-  inline OBJ::Face::Vertex::Vertex( int pos_, int norm_, int texCoord_ ) :
-      position( pos_ ), normal( norm_ ), texCoord( texCoord_ )
-  {}
-
-  inline bool OBJ::Face::Vertex::operator == ( const Vertex& v ) const
+  struct FaceVertex
   {
-    return position == v.position && normal == v.normal && texCoord == v.texCoord;
-  }
+    // vertex position index in positions array
+    int position;
+    // vertex normal in normals array
+    int normal;
+    // vertex texture coordinates in texCoords array
+    int texCoord;
 
-  inline bool OBJ::Face::Vertex::operator != ( const Vertex& v ) const
-  {
-    return position != v.position || normal != v.normal || texCoord != v.texCoord;
-  }
+    explicit FaceVertex()
+    {}
 
-  inline bool OBJ::Face::Vertex::operator < ( const Vertex& v ) const
+    explicit FaceVertex( int pos_, int norm_, int texCoord_ ) :
+        position( pos_ ), normal( norm_ ), texCoord( texCoord_ )
+    {}
+
+    // lexicographical order
+    bool operator == ( const FaceVertex& v ) const
+    {
+      return position == v.position && normal == v.normal && texCoord == v.texCoord;
+    }
+
+    bool operator < ( const FaceVertex& v ) const
+    {
+      return position < v.position ||
+          ( position == v.position && ( normal < v.normal ||
+              ( normal == v.normal && texCoord < v.texCoord ) ) );
+    }
+  };
+
+  struct Face
   {
-    return position < v.position ||
-        ( position == v.position && ( normal < v.normal ||
-            ( normal == v.normal && texCoord < v.texCoord ) ) );
-  }
+    Vector<FaceVertex> vertices;
+  };
+
+  struct Part
+  {
+    Vector<Face> faces;
+
+    Quat   specular;
+    Quat   diffuse;
+    String texture;
+  };
+
+  static Vector<Vec3>     positions;
+  static Vector<Vec3>     normals;
+  static Vector<TexCoord> texCoords;
+  static Vector<Part>     parts;
+  static HashString<int>  materialIndices;
 
   char* OBJ::skipSpaces( char* pos )
   {
@@ -69,7 +85,7 @@ namespace client
     return pos;
   }
 
-  bool OBJ::readVertexData( char* pos ) const
+  bool OBJ::readVertexData( char* pos )
   {
     // pos should point to char just after 'v'
 
@@ -115,7 +131,7 @@ namespace client
     return false;
   }
 
-  bool OBJ::readFace( char* pos, Face* face ) const
+  bool OBJ::readFace( char* pos, int part )
   {
     char* end;
 
@@ -131,6 +147,9 @@ namespace client
 
     int firstSlash = -1;
     int lastSlash = -1;
+
+    parts[part].faces.add();
+    Face& face = parts[part].faces.last();
 
     // find slashes and determine whether we have vert, vert/tex, vert//norm or vert/tex/norm
     for( int i = 0; i < wordLength; ++i ) {
@@ -150,7 +169,7 @@ namespace client
         if( sscanf( pos, "%d", &vertIndex ) != 1 ) {
           return false;
         }
-        face->vertices.add( Face::Vertex( vertIndex - 1, -1, -1 ) );
+        face.vertices.add( FaceVertex( vertIndex - 1, -1, -1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -163,7 +182,7 @@ namespace client
         if( sscanf( pos, "%d/%d", &vertIndex, &texCoordIndex ) != 2 ) {
           return false;
         }
-        face->vertices.add( Face::Vertex( vertIndex - 1, -1, texCoordIndex - 1 ) );
+        face.vertices.add( FaceVertex( vertIndex - 1, -1, texCoordIndex - 1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -176,7 +195,7 @@ namespace client
         if( sscanf( pos, "%d//%d", &vertIndex, &normalIndex ) != 2 ) {
           return false;
         }
-        face->vertices.add( Face::Vertex( vertIndex - 1, normalIndex - 1, -1 ) );
+        face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, -1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -189,7 +208,7 @@ namespace client
         if( sscanf( pos, "%d/%d/%d", &vertIndex, &texCoordIndex, &normalIndex ) != 3 ) {
           return false;
         }
-        face->vertices.add( Face::Vertex( vertIndex - 1, normalIndex - 1, texCoordIndex - 1 ) );
+        face.vertices.add( FaceVertex( vertIndex - 1, normalIndex - 1, texCoordIndex - 1 ) );
 
         pos = skipSpaces( end );
         end = readWord( pos );
@@ -197,14 +216,14 @@ namespace client
       while( end - pos > 0 );
     }
 
-    if( face->vertices.length() < 3 ) {
+    if( face.vertices.length() < 3 ) {
       return false;
     }
 
     return true;
   }
 
-  bool OBJ::loadMaterial( const String& path )
+  bool OBJ::loadMaterials( const String& path )
   {
     FILE* file;
     char buffer[LINE_BUFFER_SIZE];
@@ -214,8 +233,12 @@ namespace client
       return false;
     }
 
-    String   mtlName;
-    Material material;
+    String mtlName;
+    Part   part;
+
+    part.diffuse  = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+    part.specular = Quat( 0.5f, 0.5f, 0.5f, 1.0f );
+    part.texture  = "";
 
     char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
     char* end;
@@ -232,35 +255,31 @@ namespace client
             *end = '\0';
 
             if( !mtlName.isEmpty() ) {
-              materialIndices.add( mtlName, materials.length() );
-              materials.add( material );
+              materialIndices.add( mtlName, parts.length() );
+              parts.add( part );
             }
 
             end = readWord( pos );
             *end = '\0';
 
             mtlName = pos;
-            material.ambient  = Vec3::ZERO;
-            material.diffuse  = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
-            material.specular = Vec3( 0.5f, 0.5f, 0.5f );
-            material.texId    = 0;
+            part.diffuse  = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+            part.specular = Quat( 0.5f, 0.5f, 0.5f, 1.0f );
+            part.texture  = "";
           }
           break;
         }
         case 'K': {
-          if( pos[1] == 'a' ) {
-            sscanf( pos + 2, "%f %f %f", &material.ambient.x, &material.ambient.y, &material.ambient.z );
-          }
-          else if( pos[1] == 'd' ) {
-            sscanf( pos + 2, "%f %f %f", &material.diffuse.x, &material.diffuse.y, &material.diffuse.z );
+          if( pos[1] == 'd' ) {
+            sscanf( pos + 2, "%f %f %f", &part.diffuse.x, &part.diffuse.y, &part.diffuse.z );
           }
           else if( pos[1] == 's' ) {
-            sscanf( pos + 2, "%f %f %f", &material.specular.x, &material.specular.y, &material.specular.z );
+            sscanf( pos + 2, "%f %f %f", &part.specular.x, &part.specular.y, &part.specular.z );
           }
           break;
         }
         case 'd': {
-          sscanf( pos + 1, "%f", &material.diffuse.w );
+          sscanf( pos + 1, "%f", &part.diffuse.w );
           break;
         }
         case 'm': {
@@ -270,7 +289,7 @@ namespace client
             end = readWord( pos );
             *end = '\0';
 
-            material.texId = context.loadTexture( path + "/" + String( pos ), true );
+            part.texture = path + "/" + String( pos );
           }
           break;
         }
@@ -283,196 +302,43 @@ namespace client
     }
 
     if( !mtlName.isEmpty() ) {
-      materialIndices.add( mtlName, materials.length() );
-      materials.add( material );
+      materialIndices.add( mtlName, parts.length() );
+      parts.add( part );
     }
 
     fclose( file );
     return true;
   }
 
-  void OBJ::saveCached( const char* fileName )
-  {
-    log.print( "Dumping OBJ model to '%s' ...", fileName );
-
-    DArray<int> faceVertices;
-
-    Vector<Range> ranges;
-    Map<Face::Vertex> uniqueVertices;
-    int currentMaterial = faces[0].material;
-    int nRanges = 1;
-    // sum of face.vertices.length() for all faces
-    int nVertexRefs = 0;
-
-    foreach( face, faces.iter() ) {
-      if( face->material != currentMaterial ) {
-        currentMaterial = face->material;
-        ++nRanges;
-      }
-
-      nVertexRefs += face->vertices.length();
-
-      foreach( vertex, face->vertices.citer() ) {
-        // index is only written to copy of vertex in faces array
-        vertex->index = uniqueVertices.include( *vertex );
-      }
-    }
-
-    // vertex buffer
-    vertices.clear();
-    vertices.setSize( uniqueVertices.length() );
-
-    for( int i = 0; i < vertices.length(); ++i ) {
-      const Face::Vertex& faceVertex = uniqueVertices[i];
-
-      vertices[i].position = positions[faceVertex.position];
-      vertices[i].norm     = faceVertex.normal == -1 ?
-          Vec3::ZERO : normals[faceVertex.normal];
-      vertices[i].texCoord = faceVertex.texCoord == -1 ?
-          TexCoord::ZERO : texCoords[faceVertex.texCoord];
-    }
-
-    // index buffer
-    indices.setSize( nVertexRefs + ( faces.length() - 1 ) * 2 );
-    int k = 0;
-
-    for( int i = 0; i < faces.length(); ++i ) {
-      const Face& face = faces[i];
-
-      // for a degenerated triangle, simulating restart-index
-      if( i != 0 ) {
-        indices[k] = face.vertices.first().index;
-        ++k;
-      }
-
-      int n = face.vertices.length();
-      int n_2 = ( n + 1 ) / 2;
-
-      indices[k] = face.vertices[0].index;
-      ++k;
-
-      for( int j = 1; j < n_2; ++j ) {
-        indices[k] = face.vertices[j].index;
-        ++k;
-        indices[k] = face.vertices[n - j].index;
-        ++k;
-      }
-
-      if( n % 2 == 0 ) {
-        indices[k] = face.vertices[n_2].index;
-        ++k;
-      }
-
-      // for a degenerated triangle, simulating restart-index
-      if( i != faces.length() - 1 ) {
-        indices[k] = face.vertices.last().index;
-        ++k;
-      }
-    }
-
-    int size = 0;
-
-    size += int( 2                 * sizeof( int ) );
-    size += int( vertices.length() * sizeof( Vertex ) );
-    size += int( indices.length()  * sizeof( int ) );
-
-    Buffer buffer( size );
-    OutputStream os = buffer.outputStream();
-
-    os.writeInt( vertices.length() );
-    os.writeInt( indices.length() );
-
-    for( int i = 0; i < vertices.length(); ++i ) {
-      os.writeVec3( vertices[i].position );
-      os.writeVec3( vertices[i].norm );
-      os.writeFloat( vertices[i].texCoord.u );
-      os.writeFloat( vertices[i].texCoord.v );
-    }
-
-    for( int i = 0; i < indices.length(); ++i ) {
-      os.writeInt( indices[i] );
-    }
-
-    buffer.write( fileName );
-
-    log.printEnd( " OK" );
-  }
-
-  OBJ::OBJ( const char* name_, int )
-  {
-    name = name_;
-
-    String modelPath = "mdl/" + name + ".ozcOBJ";
-
-    log.println( "Loading OBJ model '%s' {", modelPath.cstr() );
-    log.indent();
-
-    Buffer buffer;
-    buffer.read( modelPath );
-    InputStream is = buffer.inputStream();
-
-    int nVertices = is.readInt();
-    int nIndices = is.readInt();
-
-    DArray<Vertex> vertices( nVertices );
-    DArray<uint>   indices( nIndices );
-
-    for( int i = 0; i < nVertices; ++i ) {
-      vertices[i].position = is.readVec3();
-      vertices[i].norm = is.readVec3();
-      vertices[i].texCoord.u = is.readFloat();
-      vertices[i].texCoord.v = is.readFloat();
-    }
-
-    for( int i = 0; i < nIndices; ++i ) {
-      indices[i] = is.readInt();
-    }
-
-    glGenBuffers( 1, &arrayBuffer );
-    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, GL_STATIC_DRAW );
-
-    glGenBuffers( 1, &indexBuffer );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( uint ), indices, GL_STATIC_DRAW );
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  OBJ::OBJ( const char* name_ )
+  void OBJ::load( const char* name )
   {
     FILE* file;
     char buffer[LINE_BUFFER_SIZE];
 
     int currentMaterial = 0;
 
-    name = name_;
-
-    String sPath = "mdl/" + name;
+    String sPath = String( "mdl/" ) + name;
     String modelFile = sPath + "/data.obj";
     String configFile = sPath + "/config.rc";
 
     Config config;
     config.load( configFile );
 
-    log.println( "Loading OBJ model '%s' {", modelFile.cstr() );
-    log.indent();
+    log.print( "Loading OBJ model '%s' ...", modelFile.cstr() );
 
     float scaling = config.get( "scale", 1.0f );
     Vec3 translation = Vec3( config.get( "translate.x", 0.0f ),
                              config.get( "translate.y", 0.0f ),
                              config.get( "translate.z", 0.0f ) );
 
-    if( !loadMaterial( sPath ) ) {
+    if( !loadMaterials( sPath ) ) {
+      log.printEnd( " Material loading failed" );
       throw Exception( "OBJ model material loading error" );
     }
 
     file = fopen( modelFile.cstr(), "r" );
     if( file == null ) {
-      log.println( "No such file" );
-      log.unindent();
-      log.println( "}" );
+      log.printEnd( " No such file" );
       throw Exception( "OBJ model loading error" );
     }
 
@@ -487,26 +353,18 @@ namespace client
         case 'v': {
           if( !readVertexData( pos + 1 ) ) {
             fclose( file );
-            log.println( "invalid vertex line: %s", buffer );
-            log.unindent();
-            log.println( "}" );
+            log.printEnd( " Invalid vertex line: %s", buffer );
             throw Exception( "OBJ model loading error" );
           }
           break;
         }
         // face
         case 'f': {
-          Face face;
-          face.material = currentMaterial;
-
-          if( !readFace( pos + 1, &face ) ) {
+          if( !readFace( pos + 1, currentMaterial ) ) {
             fclose( file );
-            log.println( "invalid face line: %s", buffer );
-            log.unindent();
-            log.println( "}" );
+            log.printEnd( " Invalid face line: %s", buffer );
             throw Exception( "OBJ model loading error" );
           }
-          faces.add( face );
           break;
         }
         // usemtl
@@ -522,7 +380,9 @@ namespace client
               currentMaterial = *value;
             }
             else {
-              currentMaterial = 0;
+              fclose( file );
+              log.printEnd( " Invalid material requested: %s", buffer );
+              throw Exception( "Invalid material requested" );
             }
           }
           break;
@@ -536,22 +396,219 @@ namespace client
     }
     fclose( file );
 
-    // copy everything into arrays for memory optimisation
     if( positions.isEmpty() ) {
+      log.printEnd( " No vertices" );
       throw Exception( "OBJ model loading error" );
     }
     for( int i = 0; i < positions.length(); ++i ) {
       positions[i] = translation + scaling * positions[i];
     }
 
-    if( faces.isEmpty() ) {
-      log.println( "no faces" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "OBJ model loading error" );
+    log.printEnd( " OK" );
+  }
+
+  void OBJ::save( const char* fileName )
+  {
+    log.print( "Dumping OBJ model to '%s' ...", fileName );
+
+    Map<FaceVertex> faceVertices;
+    Vector<uint>    indices;
+    Vector<Segment> segments;
+
+    // build vertex array
+    foreach( part, parts.citer() ) {
+      foreach( face, part->faces.citer() ) {
+        foreach( vertex, face->vertices.citer() ) {
+          faceVertices.include( *vertex );
+        }
+      }
     }
 
-    saveCached( sPath + "/" + name + ".ozcOBJ" );
+    // build index array
+    for( int i = 0; i < parts.length(); ++i ) {
+      segments.add();
+
+      const Part& part = parts[i];
+      Segment& segment = segments.last();
+
+      segment.diffuse    = part.diffuse;
+      segment.specular   = part.specular;
+      segment.firstIndex = indices.length();
+
+      for( int j = 0; j < part.faces.length(); ++ j ) {
+        const Face& face = part.faces[j];
+
+        int index = faceVertices.index( face.vertices.first() );
+
+        // for a degenerated triangle to restart strip
+        if( j != 0 ) {
+          indices.add( index );
+        }
+
+        // generate triangle strip for a polygon
+        int n = face.vertices.length();
+        int n_2 = ( n + 1 ) / 2;
+
+        indices.add( index );
+
+        for( int k = 1; k < n_2; ++k ) {
+          index = faceVertices.index( face.vertices[k] );
+          indices.add( index );
+          index = faceVertices.index( face.vertices[n - k] );
+          indices.add( index );
+        }
+
+        if( n % 2 == 0 ) {
+          index = faceVertices.index( face.vertices[n_2] );
+          indices.add( index );
+        }
+
+        // for a degenerated triangle to restart strip
+        if( j != part.faces.length() - 1 ) {
+          indices.add( index );
+        }
+      }
+      segment.nIndices = indices.length() - segment.firstIndex;
+    }
+
+    int size = 0;
+
+    size += int( 3                     * sizeof( int ) );
+    size += int( faceVertices.length() * sizeof( Vertex ) );
+    size += int( indices.length()      * sizeof( uint ) );
+    size += int( segments.length()     * sizeof( Segment ) );
+    size -= int( segments.length()     * sizeof( uint ) );
+
+    for( int i = 0; i < parts.length(); ++i ) {
+      size += int( parts[i].texture.length() + 1 );
+    }
+
+    Buffer buffer( size );
+    OutputStream os = buffer.outputStream();
+
+    try {
+      os.writeInt( faceVertices.length() );
+      os.writeInt( indices.length() );
+      os.writeInt( segments.length() );
+
+      for( int i = 0; i < faceVertices.length(); ++i ) {
+        int posIndex = faceVertices[i].position;
+        int normIndex = faceVertices[i].normal;
+        int texIndex = faceVertices[i].texCoord;
+
+        os.writeVec3( positions[posIndex] );
+        os.writeVec3( normIndex == -1 ? Vec3::ZERO : normals[normIndex] );
+        os.writeFloat( texIndex == -1 ? 0.0f : texCoords[texIndex].u );
+        os.writeFloat( texIndex == -1 ? 0.0f : texCoords[texIndex].v );
+      }
+
+      for( int i = 0; i < indices.length(); ++i ) {
+        os.writeInt( indices[i] );
+      }
+
+      assert( segments.length() == parts.length() );
+
+      for( int i = 0; i < segments.length(); ++i ) {
+        os.writeQuat( segments[i].diffuse );
+        os.writeQuat( segments[i].specular );
+        os.writeInt( segments[i].firstIndex );
+        os.writeInt( segments[i].nIndices );
+        os.writeString( parts[i].texture );
+      }
+    }
+    catch( const Exception& e ) {
+      log.printEnd( " Failed: %s", e.what() );
+      return;
+    }
+
+    if( !buffer.write( fileName ) ) {
+      log.printEnd( " Failed to write buffer" );
+    }
+    else {
+      log.printEnd( " OK" );
+    }
+  }
+
+  void OBJ::free()
+  {
+    positions.clear();
+    normals.clear();
+    texCoords.clear();
+    parts.clear();
+    materialIndices.clear();
+  }
+
+  void OBJ::prebuild( const char* name )
+  {
+    log.println( "Prebuilding OBJ model '%s' {", name );
+    log.indent();
+
+    load( name );
+    save( "mdl/" + String( name ) + ".ozcOBJ" );
+
+    positions.clear();
+    normals.clear();
+    texCoords.clear();
+    parts.clear();
+    materialIndices.clear();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  OBJ::OBJ( const char* name_ )
+  {
+    name = name_;
+
+    String modelPath = "mdl/" + name + ".ozcOBJ";
+
+    log.println( "Loading OBJ model '%s' {", modelPath.cstr() );
+    log.indent();
+
+    Buffer buffer;
+    buffer.read( modelPath );
+    InputStream is = buffer.inputStream();
+
+    int nVertices = is.readInt();
+    int nIndices = is.readInt();
+    int nSegments = is.readInt();
+
+    segments.setSize( nSegments );
+
+    DArray<Vertex> vertices( nVertices );
+    DArray<uint> indices( nIndices );
+
+    for( int i = 0; i < nVertices; ++i ) {
+      vertices[i].position = is.readVec3();
+      vertices[i].normal = is.readVec3();
+      vertices[i].texCoord.u = is.readFloat();
+      vertices[i].texCoord.v = is.readFloat();
+    }
+
+    for( int i = 0; i < nIndices; ++i ) {
+      indices[i] = is.readInt();
+    }
+
+    for( int i = 0; i < segments.length(); ++i ) {
+      segments[i].diffuse = is.readQuat();
+      segments[i].specular = is.readQuat();
+      segments[i].firstIndex = is.readInt();
+      segments[i].nIndices = is.readInt();
+
+      String texPath = is.readString();
+      segments[i].texId = texPath.isEmpty() ? GL_NONE : context.loadTexture( texPath );
+    }
+
+    glGenBuffers( 1, &arrayBuffer );
+    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, GL_STATIC_DRAW );
+
+    glGenBuffers( 1, &indexBuffer );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( uint ), indices, GL_STATIC_DRAW );
+
+    vertices.clear();
+    indices.clear();
 
     log.unindent();
     log.println( "}" );
@@ -564,12 +621,11 @@ namespace client
 
     log.print( "Unloading OBJ model '%s' ...", name.cstr() );
 
-    foreach( material, materials.citer() ) {
-      if( material->texId != GL_NONE ) {
-        context.freeTexture( material->texId );
+    for( int i = 0; i < segments.length(); ++i ) {
+      if( segments[i].texId != GL_NONE ) {
+        context.freeTexture( segments[i].texId );
       }
     }
-    materials.clear();
 
     log.printEnd( " OK" );
 
@@ -578,82 +634,57 @@ namespace client
 
   void OBJ::draw() const
   {
-    int  currentMaterial = -1;
-    bool isTransfluent = false;
-    bool isTextured = true;
+    const Vertex* vertices = null;
+    const uint*   indices = null;
 
-    for( int i = 0; i < faces.length(); ++i ) {
-      const Face& face = faces[i];
+    bool isBlendEnabled = false;
 
-      if( currentMaterial != face.material ) {
-        currentMaterial = face.material;
-        const Material& material = materials[currentMaterial];
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-        if( !isTransfluent && material.diffuse.w != 1.0f ) {
+    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
+
+    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ), &vertices[0].position );
+    glNormalPointer( GL_FLOAT, sizeof( Vertex ), &vertices[0].normal );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ), &vertices[0].texCoord );
+
+    for( int i = 0; i < segments.length(); ++i ) {
+      const Segment& segment = segments[i];
+
+      glMaterialfv( GL_FRONT, GL_DIFFUSE, segment.diffuse );
+      glMaterialfv( GL_FRONT, GL_SPECULAR, segment.specular );
+      glBindTexture( GL_TEXTURE_2D, segment.texId );
+
+      if( segment.diffuse.w != 1.0f ) {
+        if( !isBlendEnabled ) {
+          isBlendEnabled = true;
           glEnable( GL_BLEND );
-          isTransfluent = true;
         }
-        else if( isTransfluent && material.diffuse.w == 1.0f ) {
+      }
+      else {
+        if( isBlendEnabled ) {
+          isBlendEnabled = false;
           glDisable( GL_BLEND );
-          isTransfluent = false;
         }
-        if( isTextured && material.texId == 0 ) {
-          glDisable( GL_TEXTURE_2D );
-          isTextured = false;
-        }
-        else if( !isTextured && material.texId != 0 ) {
-          glEnable( GL_TEXTURE_2D );
-          isTextured = true;
-        }
-        if( material.texId != 0 ) {
-          glBindTexture( GL_TEXTURE_2D, material.texId );
-        }
-        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, material.diffuse );
       }
 
-      glBegin( GL_POLYGON );
-        foreach( vertex, face.vertices.citer() ) {
-          if( !texCoords.isEmpty() ) {
-            glTexCoord2fv( &texCoords[ vertex->texCoord ].u );
-          }
-          if( !normals.isEmpty() ) {
-            glNormal3fv( normals[ vertex->normal ] );
-          }
-          glVertex3fv( positions[ vertex->position ] );
-        }
-      glEnd();
+      glDrawElements( GL_TRIANGLE_STRIP, segments[i].nIndices, GL_UNSIGNED_INT,
+                      &indices[ segments[i].firstIndex ] );
     }
 
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
-
-    if( !isTextured ) {
-      glEnable( GL_TEXTURE_2D );
-    }
-    if( isTransfluent ) {
+    if( isBlendEnabled ) {
       glDisable( GL_BLEND );
     }
-  }
 
-  void OBJ::genList()
-  {
-    list = glGenLists( 1 );
-    glNewList( list, GL_COMPILE );
-      draw();
-    glEndList();
-  }
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-  void OBJ::trim()
-  {
-    positions.clear();
-    normals.clear();
-    texCoords.clear();
-    faces.clear();
-    materials.clear();
-    materialIndices.clear();
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
   }
-
-  void OBJ::prebuild( const char* )
-  {}
 
 }
 }

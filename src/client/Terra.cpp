@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -201,9 +201,6 @@ namespace client
     ++span.maxX;
     ++span.maxY;
 
-    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
-
     // to match strip triangles with matrix terrain we have to make them clockwise since
     // we draw column-major (strips along y axis) for better cache performance
     glFrontFace( GL_CW );
@@ -218,6 +215,9 @@ namespace client
     glEnableClientState( GL_VERTEX_ARRAY );
     glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
 
     glVertexPointer( 3, GL_FLOAT, sizeof( VertexData ),
                      OZ_VBO_OFFSETOF( 0, VertexData, position ) );
@@ -238,6 +238,9 @@ namespace client
       glDrawElements( GL_TRIANGLE_STRIP, count, GL_UNSIGNED_INT, OZ_VBO_OFFSET( offset, uint ) );
     }
 
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
     glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
@@ -247,9 +250,6 @@ namespace client
     glActiveTexture( GL_TEXTURE0 );
 
     glFrontFace( GL_CCW );
-
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
   }
 
   void Terra::drawWater() const

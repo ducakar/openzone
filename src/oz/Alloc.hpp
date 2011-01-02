@@ -4,7 +4,7 @@
  *  Overload default new and delete operators for slightly better performance or provide heap
  *  allocation statistics (if defined OZ_ALLOC_STATISTICS).
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 

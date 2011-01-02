@@ -3,7 +3,7 @@
  *
  *  3D vector inside 4D space, optimised for SIMD
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -39,13 +39,13 @@ namespace oz
       explicit Vec4( float4 f4_ ) : f4( f4_ )
       {}
 
-      explicit Vec4( float x, float y, float z, float w ) : f4( (float4) { x, y, z, w } )
+      explicit Vec4( float x, float y, float z, float w ) : f4( float4( x, y, z, w ) )
       {}
 
-      explicit Vec4( float x, float y, float z ) : f4( (float4) { x, y, z, 0.0f } )
+      explicit Vec4( float x, float y, float z ) : f4( float4( x, y, z, 0.0f ) )
       {}
 
-      explicit Vec4( const float* v ) : f4( (float4) { v[0], v[1], v[2], 0.0f } )
+      explicit Vec4( const float* v ) : f4( float4( v[0], v[1], v[2], 0.0f ) )
       {}
 
       bool operator == ( const Vec4& v ) const
@@ -120,7 +120,7 @@ namespace oz
         assert( x*x + y*y + z*z > 0.0f );
 
         float k = 1.0f / Math::sqrt( x*x + y*y + z*z );
-        return Vec4( f4 * (float4) { k, k, k, k } );
+        return Vec4( f4 * float4( k, k, k, k ) );
       }
 
       Vec4 fastUnit() const
@@ -128,7 +128,7 @@ namespace oz
         assert( x*x + y*y + z*z > 0.0f );
 
         float k = Math::fastInvSqrt( x*x + y*y + z*z );
-        return Vec4( f4 * (float4) { k, k, k, k } );
+        return Vec4( f4 * float4( k, k, k, k ) );
       }
 
       bool isColinear( const Vec4& v, float epsilon ) const
@@ -162,12 +162,12 @@ namespace oz
 
       Vec4 operator * ( float k ) const
       {
-        return Vec4( f4 * (float4) { k, k, k, k } );
+        return Vec4( f4 * float4( k, k, k, k ) );
       }
 
       friend Vec4 operator * ( float k, const Vec4& v )
       {
-        return Vec4( (float4) { k, k, k, k } * v.f4 );
+        return Vec4( float4( k, k, k, k ) * v.f4 );
       }
 
       Vec4 operator / ( float k ) const
@@ -175,7 +175,7 @@ namespace oz
         assert( k != 0.0f );
 
         k = 1.0f / k;
-        return Vec4( f4 * (float4) { k, k, k, k } );
+        return Vec4( f4 * float4( k, k, k, k ) );
       }
 
       Vec4& operator += ( const Vec4& v )
@@ -192,7 +192,7 @@ namespace oz
 
       Vec4& operator *= ( float k )
       {
-        f4 *= (float4) { k, k, k, k };
+        f4 *= float4( k, k, k, k );
         return *this;
       }
 
@@ -201,7 +201,7 @@ namespace oz
         assert( k != 0.0f );
 
         k = 1.0f / k;
-        f4 *= (float4) { k, k, k, k };
+        f4 *= float4( k, k, k, k );
         return *this;
       }
 
@@ -230,7 +230,7 @@ namespace oz
         assert( k != 0.0f );
 
         k = ( x*v.x + y*v.y + z*v.z ) / k;
-        return Vec4( v.f4 - f4 * (float4) { k, k, k, k } );
+        return Vec4( v.f4 - f4 * float4( k, k, k, k ) );
       }
 
       // mixed product

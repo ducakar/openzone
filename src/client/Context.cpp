@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2010, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -448,17 +448,15 @@ namespace client
     }
   }
 
-  uint Context::loadOBJ( const char* path )
+  OBJ* Context::loadOBJ( const char* path )
   {
     Resource<OBJ*>* resource = objs.find( path );
     if( resource == null ) {
       resource = objs.add( path, Resource<OBJ*>() );
       resource->object = new OBJ( path );
-      resource->object->genList();
-      resource->object->trim();
     }
     ++resource->nUsers;
-    return resource->object->list;
+    return resource->object;
   }
 
   void Context::releaseOBJ( const char* path )
@@ -470,7 +468,6 @@ namespace client
       --resource->nUsers;
 
       if( resource->nUsers == 0 ) {
-        glDeleteLists( resource->object->list, 1 );
         delete resource->object;
         objs.exclude( path );
       }
