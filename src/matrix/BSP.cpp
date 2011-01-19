@@ -1089,19 +1089,44 @@ namespace oz
 
     int size = 0;
 
-    size += nPlanes      * int( sizeof( Plane ) );
-    size += nNodes       * int( sizeof( Node ) );
-    size += nLeaves      * int( sizeof( Leaf ) );
-    size += nLeafBrushes * int( sizeof( int ) );
-    size += nLeafFaces   * int( sizeof( int ) );
-    size += nBrushes     * int( sizeof( Brush ) );
-    size += nBrushSides  * int( sizeof( int ) );
-    size += nEntityClasses      * int( sizeof( EntityClass ) );
-    size += nTextures    * int( 64 * sizeof( char ) );
-    size += nVertices    * int( sizeof( Vertex ) );
-    size += nIndices     * int( sizeof( int ) );
-    size += nFaces       * int( sizeof( Face ) );
-    size += nLightmaps   * int( sizeof( Lightmap ) );
+    size += nPlanes        * int( sizeof( Plane ) );
+    size = Alloc::alignUp( size );
+
+    size += nNodes         * int( sizeof( Node ) );
+    size = Alloc::alignUp( size );
+
+    size += nLeaves        * int( sizeof( Leaf ) );
+    size = Alloc::alignUp( size );
+
+    size += nLeafBrushes   * int( sizeof( int ) );
+    size = Alloc::alignUp( size );
+
+    size += nLeafFaces     * int( sizeof( int ) );
+    size = Alloc::alignUp( size );
+
+    size += nBrushes       * int( sizeof( Brush ) );
+    size = Alloc::alignUp( size );
+
+    size += nBrushSides    * int( sizeof( int ) );
+    size = Alloc::alignUp( size );
+
+    size += nEntityClasses * int( sizeof( EntityClass ) );
+    size = Alloc::alignUp( size );
+
+    size += nTextures      * int( 64 * sizeof( char ) );
+    size = Alloc::alignUp( size );
+
+    size += nVertices      * int( sizeof( Vertex ) );
+    size = Alloc::alignUp( size );
+
+    size += nIndices       * int( sizeof( int ) );
+    size = Alloc::alignUp( size );
+
+    size += nFaces         * int( sizeof( Face ) );
+    size = Alloc::alignUp( size );
+
+    size += nLightmaps     * int( sizeof( Lightmap ) );
+    size = Alloc::alignUp( size );
 
     char* data = Alloc::alloc<char>( size );
 
@@ -1111,6 +1136,7 @@ namespace oz
       planes[i].distance = is.readFloat();
     }
     data += nPlanes * sizeof( Plane );
+    data = Alloc::alignUp( data );
 
     nodes = new( data ) Node[nNodes];
     for( int i = 0; i < nNodes; ++i ) {
@@ -1119,6 +1145,7 @@ namespace oz
       nodes[i].back = is.readInt();
     }
     data += nNodes * sizeof( Node );
+    data = Alloc::alignUp( data );
 
     leaves = new( data ) Leaf[nLeaves];
     for( int i = 0; i < nLeaves; ++i ) {
@@ -1131,18 +1158,21 @@ namespace oz
       leaves[i].cluster = is.readInt();
     }
     data += nLeaves * sizeof( Leaf );
+    data = Alloc::alignUp( data );
 
     leafBrushes = new( data ) int[nLeafBrushes];
     for( int i = 0; i < nLeafBrushes; ++i ) {
       leafBrushes[i] = is.readInt();
     }
     data += nLeafBrushes * sizeof( int );
+    data = Alloc::alignUp( data );
 
     leafFaces = new( data ) int[nLeafFaces];
     for( int i = 0; i < nLeafFaces; ++i ) {
       leafFaces[i] = is.readInt();
     }
     data += nLeafFaces * sizeof( int );
+    data = Alloc::alignUp( data );
 
     brushes = new( data ) Brush[nBrushes];
     for( int i = 0; i < nBrushes; ++i ) {
@@ -1151,12 +1181,14 @@ namespace oz
       brushes[i].material = is.readInt();
     }
     data += nBrushes * sizeof( Brush );
+    data = Alloc::alignUp( data );
 
     brushSides = new( data ) int[nBrushSides];
     for( int i = 0; i < nBrushSides; ++i ) {
       brushSides[i] = is.readInt();
     }
     data += nBrushSides * sizeof( int );
+    data = Alloc::alignUp( data );
 
     entityClasses = new( data ) EntityClass[nEntityClasses];
     for( int i = 0; i < nEntityClasses; ++i ) {
@@ -1176,6 +1208,7 @@ namespace oz
       entityClasses[i].timeout = is.readFloat();
     }
     data += nEntityClasses * sizeof( EntityClass );
+    data = Alloc::alignUp( data );
 
     textures = new( data ) int[nTextures];
     for( int i = 0; i < nTextures; ++i ) {
@@ -1189,6 +1222,7 @@ namespace oz
       }
     }
     data += nTextures * 64 * sizeof( char );
+    data = Alloc::alignUp( data );
 
     vertices = new( data ) Vertex[nVertices];
     for( int i = 0; i < nVertices; ++i ) {
@@ -1199,12 +1233,14 @@ namespace oz
       vertices[i].lightmapCoord.v = is.readFloat();
     }
     data += nVertices * sizeof( Vertex );
+    data = Alloc::alignUp( data );
 
     indices = new( data ) int[nIndices];
     for( int i = 0; i < nIndices; ++i ) {
       indices[i] = is.readInt();
     }
     data += nIndices * sizeof( int );
+    data = Alloc::alignUp( data );
 
     faces = new( data ) Face[nFaces];
     for( int i = 0; i < nFaces; ++i ) {
@@ -1218,6 +1254,7 @@ namespace oz
       faces[i].nIndices = is.readInt();
     }
     data += nFaces * sizeof( Face );
+    data = Alloc::alignUp( data );
 
     lightmaps = new( data ) Lightmap[nLightmaps];
     for( int i = 0; i < nLightmaps; ++i ) {

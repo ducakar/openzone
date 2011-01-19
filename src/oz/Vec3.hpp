@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Vec4.hpp"
+#include "Math.hpp"
 
 namespace oz
 {
@@ -32,17 +32,6 @@ namespace oz
 
       explicit Vec3( const float* v ) : x( v[0] ), y( v[1] ), z( v[2] )
       {}
-
-      explicit Vec3( const Vec4& v ) : x( v.x ), y( v.y ), z( v.z )
-      {}
-
-      Vec3& operator = ( const Vec4& v )
-      {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-        return *this;
-      }
 
       bool operator == ( const Vec3& v ) const
       {

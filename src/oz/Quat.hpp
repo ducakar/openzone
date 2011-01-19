@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Vec4.hpp"
+#include "Vec3.hpp"
 
 namespace oz
 {
@@ -17,23 +17,22 @@ namespace oz
   class Mat33;
   class Mat44;
 
-  class __attribute__(( aligned( 16 ) )) Quat : public Vec4
+  class Quat : public Vec3
   {
     public:
 
       static const Quat ZERO;
       static const Quat ID;
 
+      float w;
+
       explicit Quat()
       {}
 
-      explicit Quat( float4 f4 ) : Vec4( f4 )
+      explicit Quat( float x_, float y_, float z_, float w_ ) : Vec3( x_, y_, z_), w( w_ )
       {}
 
-      explicit Quat( float x_, float y_, float z_, float w_ ) : Vec4( x_, y_, z_, w_ )
-      {}
-
-      explicit Quat( const float* q ) : Vec4( q[0], q[1], q[2], q[3] )
+      explicit Quat( const float* q ) : Vec3( q[0], q[1], q[2] ), w( q[3] )
       {}
 
       bool operator == ( const Quat& q ) const
@@ -95,7 +94,7 @@ namespace oz
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
         float k = 1.0f / Math::sqrt( x*x + y*y + z*z + w*w );
-        return Quat( f4 * float4( k, k, k, k ) );
+        return Quat( x * k, y * k, z * k, w * k );
       }
 
       Quat fastUnit() const
@@ -103,7 +102,7 @@ namespace oz
         assert( x*x + y*y + z*z + w*w > 0.0f );
 
         float k = Math::fastInvSqrt( x*x + y*y + z*z + w*w );
-        return Quat( f4 * float4( k, k, k, k ) );
+        return Quat( x * k, y * k, z * k, w * k );
       }
 
       Quat operator + () const
@@ -113,51 +112,61 @@ namespace oz
 
       Quat operator - () const
       {
-        return Quat( -f4 );
+        return Quat( -x, -y, -z, -w );
       }
 
-      Quat operator + ( const Quat& v ) const
+      Quat operator + ( const Quat& q ) const
       {
-        return Quat( f4 + v.f4 );
+        return Quat( x + q.x, y + q.y, z + q.z, w + q.w );
       }
 
-      Quat operator - ( const Quat& v ) const
+      Quat operator - ( const Quat& q ) const
       {
-        return Quat( f4 - v.f4 );
+        return Quat( x - q.x, y - q.y, z - q.z, w - q.w );
       }
 
       Quat operator * ( float k ) const
       {
-        return Quat( f4 * float4( k, k, k, k ) );
+        return Quat( x * k, y * k, z * k, w * k );
       }
 
-      friend Quat operator * ( float k, const Quat& v )
+      friend Quat operator * ( float k, const Quat& q )
       {
-        return Quat( float4( k, k, k, k ) * v.f4 );
+        return Quat( q.x * k, q.y * k, q.z * k, q.w * k );
       }
 
       Quat operator / ( float k ) const
       {
         assert( k != 0.0f );
 
-        return Quat( f4 / float4( k, k, k, k ) );
+        k = 1.0f / k;
+        return Quat( x * k, y * k, z * k, w * k );
       }
 
-      Quat& operator += ( const Quat& v )
+      Quat& operator += ( const Quat& q )
       {
-        f4 += v.f4;
+        x += q.x;
+        y += q.y;
+        z += q.z;
+        w += q.w;
         return *this;
       }
 
-      Quat& operator -= ( const Quat& v )
+      Quat& operator -= ( const Quat& q )
       {
-        f4 -= v.f4;
+        x -= q.x;
+        y -= q.y;
+        z -= q.z;
+        w -= q.w;
         return *this;
       }
 
       Quat& operator *= ( float k )
       {
-        f4 *= float4( k, k, k, k );
+        x *= k;
+        y *= k;
+        z *= k;
+        w *= k;
         return *this;
       }
 
@@ -165,7 +174,11 @@ namespace oz
       {
         assert( k != 0.0f );
 
-        f4 /= float4( k, k, k, k );
+        k = 1.0f / k;
+        x *= k;
+        y *= k;
+        z *= k;
+        w *= k;
         return *this;
       }
 
@@ -205,12 +218,11 @@ namespace oz
       Mat44 invRotMat44() const;
 
       // make quaternion for rotation around given axis
-      static Quat rotAxis( const Vec4& axis, float theta )
+      static Quat rotAxis( const Vec3& axis, float theta )
       {
         float s, c;
         Math::sincos( theta * 0.5f, &s, &c );
-        Vec4 qv = s * axis;
-        return Quat( qv.f4 + float4( 0.0f, 0.0f, 0.0f, c ) );
+        return Quat( s * axis.x, s * axis.y, s * axis.z, c );
       }
 
       // make quaternion for rotation around x axis

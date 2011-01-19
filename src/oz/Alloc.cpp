@@ -15,6 +15,9 @@
 namespace oz
 {
 
+  static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
+                 "Alloc::ALIGNMENT should be power of two" );
+
   int  Alloc::count     = 0;
   long Alloc::amount    = 0;
 
@@ -26,16 +29,29 @@ namespace oz
 
 }
 
+using oz::max;
+using oz::Alloc;
+
 #ifndef OZ_ALLOC_STATISTICS
 
 void* operator new ( size_t size ) throw( std::bad_alloc )
 {
-  return malloc( size );
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
+    throw std::bad_alloc();
+  }
+
+  return ptr;
 }
 
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
-  return malloc( size );
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
+    throw std::bad_alloc();
+  }
+
+  return ptr;
 }
 
 void operator delete ( void* ptr ) throw()
@@ -50,29 +66,34 @@ void operator delete[] ( void* ptr ) throw()
 
 #else
 
+static_assert( sizeof( size_t ) < size_t( Alloc::ALIGNMENT ),
+               "Alloc::ALIGNEMENT should not be less than sizeof( size_t ) when using memory "
+               "allocation statistics." );
+
 #ifdef OZ_MSVC
 void* operator new ( size_t size )
 #else
 void* operator new ( size_t size ) throw( std::bad_alloc )
 #endif
 {
-  size_t* p = reinterpret_cast<size_t*>( malloc( size + sizeof( size_t ) ) );
+  size += Alloc::ALIGNMENT;
 
-  if( p == null ) {
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     throw std::bad_alloc();
   }
 
-  ++oz::Alloc::count;
-  oz::Alloc::amount += size;
+  ++Alloc::count;
+  Alloc::amount += size;
 
-  ++oz::Alloc::sumCount;
-  oz::Alloc::sumAmount += size;
+  ++Alloc::sumCount;
+  Alloc::sumAmount += size;
 
-  oz::Alloc::maxCount = oz::max( oz::Alloc::count, oz::Alloc::maxCount );
-  oz::Alloc::maxAmount = oz::max( oz::Alloc::amount, oz::Alloc::maxAmount );
+  Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
+  Alloc::maxAmount = max( Alloc::amount, Alloc::maxAmount );
 
-  p[0] = size;
-  return p + 1;
+  reinterpret_cast<size_t*>( ptr )[0] = size;
+  return reinterpret_cast<char*>( ptr ) + Alloc::ALIGNMENT;
 }
 
 #ifdef OZ_MSVC
@@ -81,34 +102,35 @@ void* operator new[] ( size_t size )
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 #endif
 {
-  size_t* p = reinterpret_cast<size_t*>( malloc( size + sizeof( size_t ) ) );
+  size += Alloc::ALIGNMENT;
 
-  if( p == null ) {
+  void* ptr;
+  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     throw std::bad_alloc();
   }
 
-  ++oz::Alloc::count;
-  oz::Alloc::amount += size;
+  ++Alloc::count;
+  Alloc::amount += size;
 
-  ++oz::Alloc::sumCount;
-  oz::Alloc::sumAmount += size;
+  ++Alloc::sumCount;
+  Alloc::sumAmount += size;
 
-  oz::Alloc::maxCount = oz::max( oz::Alloc::count, oz::Alloc::maxCount );
-  oz::Alloc::maxAmount = oz::max( oz::Alloc::amount, oz::Alloc::maxAmount );
+  Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
+  Alloc::maxAmount = max( Alloc::amount, Alloc::maxAmount );
 
-  p[0] = size;
-  return p + 1;
+  reinterpret_cast<size_t*>( ptr )[0] = size;
+  return reinterpret_cast<char*>( ptr ) + Alloc::ALIGNMENT;
 }
 
 void operator delete ( void* ptr ) throw()
 {
   assert( ptr != null );
 
-  size_t* chunk = reinterpret_cast<size_t*>( ptr ) - 1;
-  size_t size = chunk[0];
+  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
+  size_t size  = reinterpret_cast<size_t*>( chunk )[0];
 
-  --oz::Alloc::count;
-  oz::Alloc::amount -= size;
+  --Alloc::count;
+  Alloc::amount -= size;
 
   free( chunk );
 }
@@ -117,11 +139,11 @@ void operator delete[] ( void* ptr ) throw()
 {
   assert( ptr != null );
 
-  size_t* chunk = reinterpret_cast<size_t*>( ptr ) - 1;
-  size_t size = chunk[0];
+  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
+  size_t size  = reinterpret_cast<size_t*>( chunk )[0];
 
-  --oz::Alloc::count;
-  oz::Alloc::amount -= size;
+  --Alloc::count;
+  Alloc::amount -= size;
 
   free( chunk );
 }

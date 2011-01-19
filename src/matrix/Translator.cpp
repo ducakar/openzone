@@ -41,7 +41,7 @@ namespace oz
     DIR* dir;
     dirent* file;
 
-    log.println( "textures (*.png, *.jpg in 'textures/oz') {" );
+    log.println( "textures (*.png, *.jpeg, *.jpg in 'textures/oz') {" );
     log.indent();
 
     dir = opendir( "textures/oz" );
@@ -61,7 +61,10 @@ namespace oz
         continue;
       }
       String extension = name.substring( dot );
-      if( !extension.equals( ".png" ) && !extension.equals( ".jpg" ) ) {
+      if( !extension.equals( ".png" ) &&
+          !extension.equals( ".jpeg" ) &&
+          !extension.equals( ".jpg" ) )
+      {
         continue;
       }
 
@@ -81,7 +84,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "sounds (*.au, *.wav, *.oga in 'snd') {" );
+    log.println( "sounds (*.au, *.wav, *.oga, *.ogg in 'snd') {" );
     log.indent();
 
     dir = opendir( "snd" );
