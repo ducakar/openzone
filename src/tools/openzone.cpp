@@ -17,7 +17,7 @@ using namespace oz;
 
 int main( int argc, char** argv )
 {
-  printf( "OpenZone  Copyright (C) 2002-2009  Davorin Učakar\n"
+  printf( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
       "This is free software, and you are welcome to redistribute it\n"
       "under certain conditions; See COPYING file for details.\n\n" );

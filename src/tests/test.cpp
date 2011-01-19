@@ -14,7 +14,7 @@
 
 using namespace oz;
 
-#if 0
+#if 1
 struct __attribute__(( aligned( 16 ) )) VecX
 {
   union {
@@ -57,11 +57,11 @@ struct __attribute__(( aligned( 16 ) )) VecX
 
   float operator * ( const VecX& v ) const
   {
-    return x*v.x + y*v.y + z*v.z + w*v.w;
-//     return x*v.x + y*v.y + z*v.z;
+//     return x*v.x + y*v.y + z*v.z + w*v.w;
+    return x*v.x + y*v.y + z*v.z;
   }
 };
-#elif 1
+#elif 0
 struct __attribute__(( aligned( 16 ) )) VecX
 {
   union {

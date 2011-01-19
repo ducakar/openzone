@@ -23,8 +23,8 @@ add_library( oz STATIC
   Math.cpp
   Math.hpp
   Pair.hpp
-  Point4.cpp
-  Point4.hpp
+  Point3.cpp
+  Point3.hpp
   Pool.hpp
   Quat.cpp
   Quat.hpp
@@ -35,8 +35,6 @@ add_library( oz STATIC
   String.hpp
   Vec3.cpp
   Vec3.hpp
-  Vec4.cpp
-  Vec4.hpp
   Vector.hpp
   arrays.hpp
   common.cpp

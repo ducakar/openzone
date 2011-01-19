@@ -9,14 +9,13 @@
 
 #pragma once
 
-#include "Point4.hpp"
 #include "Quat.hpp"
-#include "Vec3.hpp"
+#include "Point3.hpp"
 
 namespace oz
 {
 
-  class __attribute__(( aligned( 16 ) )) Mat44
+  class Mat44
   {
     public:
 
@@ -36,10 +35,6 @@ namespace oz
       {}
 
       explicit Mat44( const Quat& a, const Quat& b, const Quat& c, const Quat& d ) :
-          x( a ), y( b ), z( c ), w( d )
-      {}
-
-      explicit Mat44( float4 a, float4 b, float4 c, float4 d ) :
           x( a ), y( b ), z( c ), w( d )
       {}
 
@@ -92,10 +87,10 @@ namespace oz
 
       Mat44 operator ~ () const
       {
-        return Mat44( float4( x.x, y.x, z.x, w.x ),
-                      float4( x.y, y.y, z.y, w.y ),
-                      float4( x.z, y.z, z.z, w.z ),
-                      float4( x.w, y.w, z.w, w.w ) );
+        return Mat44( x.x, y.x, z.x, w.x,
+                      x.y, y.y, z.y, w.y,
+                      x.z, y.z, z.z, w.z,
+                      x.w, y.w, z.w, w.w );
       }
 
       float det() const
@@ -143,9 +138,7 @@ namespace oz
 
       Mat44 operator * ( float k ) const
       {
-        float4 k4 = float4( k, k, k, k );
-
-        return Mat44( x.f4 * k4, y.f4 * k4, z.f4 * k4, w.f4 * k4 );
+        return Mat44( x * k, y * k, z * k, w * k );
       }
 
       Mat44 operator / ( float k ) const
@@ -153,37 +146,33 @@ namespace oz
         assert( k != 0.0f );
 
         k = 1.0f / k;
-        float4 k4 = float4( k, k, k, k );
-
-        return Mat44( x.f4 * k4, y.f4 * k4, z.f4 * k4, w.f4 * k4 );
+        return Mat44( x * k, y * k, z * k, w * k );
       }
 
       Mat44& operator += ( const Mat44& a )
       {
-        x.f4 += a.x.f4;
-        y.f4 += a.y.f4;
-        z.f4 += a.z.f4;
-        w.f4 += a.w.f4;
+        x += a.x;
+        y += a.y;
+        z += a.z;
+        w += a.w;
         return *this;
       }
 
       Mat44& operator -= ( const Mat44& a )
       {
-        x.f4 -= a.x.f4;
-        y.f4 -= a.y.f4;
-        z.f4 -= a.z.f4;
-        w.f4 -= a.w.f4;
+        x -= a.x;
+        y -= a.y;
+        z -= a.z;
+        w -= a.w;
         return *this;
       }
 
       Mat44& operator *= ( float k )
       {
-        float4 k4 = float4( k, k, k, k );
-
-        x.f4 *= k4;
-        y.f4 *= k4;
-        z.f4 *= k4;
-        w.f4 *= k4;
+        x *= k;
+        y *= k;
+        z *= k;
+        w *= k;
         return *this;
       }
 
@@ -192,86 +181,46 @@ namespace oz
         assert( k != 0.0f );
 
         k = 1.0f / k;
-        float4 k4 = float4( k, k, k, k );
-
-        x.f4 *= k4;
-        y.f4 *= k4;
-        z.f4 *= k4;
-        w.f4 *= k4;
+        x *= k;
+        y *= k;
+        z *= k;
+        w *= k;
         return *this;
       }
 
       Mat44 operator * ( const Mat44& m ) const
       {
-        float4 xx = float4( m.x.x, m.x.x, m.x.x, m.x.x );
-        float4 xy = float4( m.x.y, m.x.y, m.x.y, m.x.y );
-        float4 xz = float4( m.x.z, m.x.z, m.x.z, m.x.z );
-        float4 xw = float4( m.x.w, m.x.w, m.x.w, m.x.w );
-
-        float4 yx = float4( m.y.x, m.y.x, m.y.x, m.y.x );
-        float4 yy = float4( m.y.y, m.y.y, m.y.y, m.y.y );
-        float4 yz = float4( m.y.z, m.y.z, m.y.z, m.y.z );
-        float4 yw = float4( m.y.w, m.y.w, m.y.w, m.y.w );
-
-        float4 zx = float4( m.z.x, m.z.x, m.z.x, m.z.x );
-        float4 zy = float4( m.z.y, m.z.y, m.z.y, m.z.y );
-        float4 zz = float4( m.z.z, m.z.z, m.z.z, m.z.z );
-        float4 zw = float4( m.z.w, m.z.w, m.z.w, m.z.w );
-
-        float4 wx = float4( m.w.x, m.w.x, m.w.x, m.w.x );
-        float4 wy = float4( m.w.y, m.w.y, m.w.y, m.w.y );
-        float4 wz = float4( m.w.z, m.w.z, m.w.z, m.w.z );
-        float4 ww = float4( m.w.w, m.w.w, m.w.w, m.w.w );
-
-        return Mat44( x.f4 * xx + y.f4 * xy + z.f4 * xz + w.f4 * xw,
-                      x.f4 * yx + y.f4 * yy + z.f4 * yz + w.f4 * yw,
-                      x.f4 * zx + y.f4 * zy + z.f4 * zz + w.f4 * zw,
-                      x.f4 * wx + y.f4 * wy + z.f4 * wz + w.f4 * ww );
-      }
-
-      Vec4 operator * ( const Vec4& v ) const
-      {
-        float4 vx = float4( v.x, v.x, v.x, v.x );
-        float4 vy = float4( v.y, v.y, v.y, v.y );
-        float4 vz = float4( v.z, v.z, v.z, v.z );
-
-        return Vec4( x.f4 * vx + y.f4 * vy + z.f4 * vz );
-      }
-
-      Point4 operator * ( const Point4& p ) const
-      {
-        float4 px = float4( p.x, p.x, p.x, p.x );
-        float4 py = float4( p.y, p.y, p.y, p.y );
-        float4 pz = float4( p.z, p.z, p.z, p.z );
-
-        return Point4( x.f4 * px + y.f4 * py + z.f4 * pz + w.f4 );
+        return Mat44( x * m.x.x + y * m.x.y + z * m.x.z + w * m.x.w,
+                      x * m.y.x + y * m.y.y + z * m.y.z + w * m.y.w,
+                      x * m.z.x + y * m.z.y + z * m.z.z + w * m.z.w,
+                      x * m.w.x + y * m.w.y + z * m.w.z + w * m.w.w );
       }
 
       Vec3 operator * ( const Vec3& v ) const
       {
-        float4 vx = float4( v.x, v.x, v.x, v.x );
-        float4 vy = float4( v.y, v.y, v.y, v.y );
-        float4 vz = float4( v.z, v.z, v.z, v.z );
+        return Vec3( x * v.x + y * v.y + z * v.z );
+      }
 
-        Vec4 r = Vec4( x.f4 * vx + y.f4 * vy + z.f4 * vz );
-        return Vec3( r );
+      Point3 operator * ( const Point3& p ) const
+      {
+        return Point3( x * p.x + y * p.y + z * p.z + w );
       }
 
       // transformation matrices
       static Mat44 transl( float dx, float dy, float dz )
       {
-        return Mat44( float4( 1.0f, 0.0f, 0.0f, 0.0f ),
-                      float4( 0.0f, 1.0f, 0.0f, 0.0f ),
-                      float4( 0.0f, 0.0f, 1.0f, 0.0f ),
-                      float4(   dx,   dy,   dz, 1.0f ) );
+        return Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
+                      0.0f, 1.0f, 0.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f,
+                        dx,   dy,   dz, 1.0f );
       }
 
-      static Mat44 transl( const Vec4& v )
+      static Mat44 transl( const Vec3& v )
       {
-        return Mat44( float4( 1.0f, 0.0f, 0.0f, 0.0f ),
-                      float4( 0.0f, 1.0f, 0.0f, 0.0f ),
-                      float4( 0.0f, 0.0f, 1.0f, 0.0f ),
-                      float4( 0.0f, 0.0f, 0.0f, 1.0f ) + v.f4 );
+        return Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
+                      0.0f, 1.0f, 0.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f,
+                       v.x,  v.y,  v.z, 1.0f );
       }
 
       static Mat44 rotX( float theta )
@@ -280,10 +229,10 @@ namespace oz
 
         Math::sincos( theta, &s, &c );
 
-        return Mat44( float4( 1.0f, 0.0f, 0.0f, 0.0f ),
-                      float4( 0.0f,    c,    s, 0.0f ),
-                      float4( 0.0f,   -s,    c, 0.0f ),
-                      float4( 0.0f, 0.0f, 0.0f, 1.0f ) );
+        return Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
+                      0.0f,    c,    s, 0.0f,
+                      0.0f,   -s,    c, 0.0f,
+                      0.0f, 0.0f, 0.0f, 1.0f );
       }
 
       static Mat44 rotY( float theta )
@@ -292,10 +241,10 @@ namespace oz
 
         Math::sincos( theta, &s, &c );
 
-        return Mat44( float4(    c, 0.0f,   -s, 0.0f ),
-                      float4( 0.0f, 1.0f, 0.0f, 0.0f ),
-                      float4(    s, 0.0f,    c, 0.0f ),
-                      float4( 0.0f, 0.0f, 0.0f, 1.0f ) );
+        return Mat44(    c, 0.0f,   -s, 0.0f,
+                      0.0f, 1.0f, 0.0f, 0.0f,
+                         s, 0.0f,    c, 0.0f,
+                      0.0f, 0.0f, 0.0f, 1.0f );
       }
 
       static Mat44 rotZ( float theta )
@@ -304,10 +253,10 @@ namespace oz
 
         Math::sincos( theta, &s, &c );
 
-        return Mat44( float4(    c,    s, 0.0f, 0.0f ),
-                      float4(   -s,    c, 0.0f, 0.0f ),
-                      float4( 0.0f, 0.0f, 1.0f, 0.0f ),
-                      float4( 0.0f, 0.0f, 0.0f, 1.0f ) );
+        return Mat44(    c,    s, 0.0f, 0.0f,
+                        -s,    c, 0.0f, 0.0f,
+                      0.0f, 0.0f, 1.0f, 0.0f,
+                      0.0f, 0.0f, 0.0f, 1.0f );
       }
 
   };
@@ -336,10 +285,10 @@ namespace oz
     float yw = y2 * w;
     float zw = z2 * w;
 
-    return Mat44( float4( 1.0f - yy - zz, xy + zw,  xz - yw,  0.0f ),
-                  float4( xy - zw,        xx1 - zz, yz + xw,  0.0f ),
-                  float4( xz + yw,        yz - xw,  xx1 - yy, 0.0f ),
-                  float4( 0.0f,           0.0f,     0.0f,     1.0f ) );
+    return Mat44( 1.0f - yy - zz, xy + zw,  xz - yw,  0.0f,
+                  xy - zw,        xx1 - zz, yz + xw,  0.0f,
+                  xz + yw,        yz - xw,  xx1 - yy, 0.0f,
+                  0.0f,           0.0f,     0.0f,     1.0f );
   }
 
   // declared in Quat.hpp
@@ -366,10 +315,10 @@ namespace oz
     float yw = y2 * w;
     float zw = z2 * w;
 
-    return Mat44( float4( 1.0f - yy - zz, xy - zw,  xz + yw,  0.0f ),
-                  float4( xy + zw,        xx1 - zz, yz - xw,  0.0f ),
-                  float4( xz - yw,        yz + xw,  xx1 - yy, 0.0f ),
-                  float4( 0.0f,           0.0f,     0.0f,     1.0f ) );
+    return Mat44( 1.0f - yy - zz, xy - zw,  xz + yw,  0.0f,
+                  xy + zw,        xx1 - zz, yz - xw,  0.0f,
+                  xz - yw,        yz + xw,  xx1 - yy, 0.0f,
+                  0.0f,           0.0f,     0.0f,     1.0f );
   }
 
 }

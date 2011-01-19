@@ -119,7 +119,7 @@ namespace client
   {
     angle = 2.0f * Math::PI * ( orbis.sky.time / orbis.sky.period );
 
-    Mat44 rot = Quat::rotAxis( Vec4( axis ), angle ).rotMat44();
+    Mat44 rot = Quat::rotAxis( axis, angle ).rotMat44();
     Vec3  dir = rot * originalLightDir;
 
     ratio = Math::bound( dir.z + DAY_BIAS, 0.0f, 1.0f );

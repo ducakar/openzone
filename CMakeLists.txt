@@ -213,7 +213,7 @@ else( MSVC )
     set( warnings "${warnings} -Wlogical-op -Wconversion" )
   endif( CLANG )
 
-  set( arch_flags "-msse3 -mfpmath=sse" )
+  set( arch_flags "-msse -mfpmath=sse" )
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )

@@ -19,6 +19,8 @@ namespace oz
   {
     public:
 
+      static const int ALIGNMENT = 16;
+
       static int  count;
       static long amount;
 
@@ -75,6 +77,34 @@ namespace oz
         delete[] reinterpret_cast<char*>( array );
 
         return newArray;
+      }
+
+      template <typename Size>
+      static Size alignDown( Size size )
+      {
+        size_t s = static_cast<size_t>( size );
+        return static_cast<Size>( s & ~( ALIGNMENT - 1 ) );
+      }
+
+      template <typename Size>
+      static Size alignUp( Size size )
+      {
+        size_t s = static_cast<size_t>( size );
+        return static_cast<Size>( ( ( s - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
+      }
+
+      template <typename Pointer>
+      static Pointer* alignDown( Pointer* size )
+      {
+        size_t s = reinterpret_cast<size_t>( size );
+        return reinterpret_cast<Pointer*>( s & ~( ALIGNMENT - 1 ) );
+      }
+
+      template <typename Pointer>
+      static Pointer* alignUp( Pointer* size )
+      {
+        size_t s = reinterpret_cast<size_t>( size );
+        return reinterpret_cast<Pointer*>( ( ( s - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
       }
 
   };

@@ -175,7 +175,7 @@ namespace oz
     obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
-    obj->clazz     = this;
+    obj->clazz    = this;
     obj->life     = life;
 
     return obj;
@@ -189,7 +189,7 @@ namespace oz
     obj->dim    = dim;
 
     obj->index  = index;
-    obj->clazz   = this;
+    obj->clazz  = this;
 
     obj->readFull( istream );
 

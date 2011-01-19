@@ -28,7 +28,7 @@ namespace oz
     rot         = istream->readVec3();
     rotVelocity = istream->readVec3();
 
-    restitution   = istream->readFloat();
+    restitution = istream->readFloat();
     mass        = istream->readFloat();
     lifeTime    = istream->readFloat();
   }

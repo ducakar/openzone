@@ -61,14 +61,31 @@ namespace client
 
     config.clear();
 
+    log.println( "Time statistics {" );
+    log.indent();
+    log.println( "Loading time: %.2f s", loadingTime );
+    log.println( "Matrix ticks: %d (%.2f Hz)", ticks, float( ticks ) / allTimeSec );
+    log.println( "Rendered frames: %d (%.2f Hz)", timer.nFrames, float( timer.nFrames ) / allTimeSec );
+    log.println( "Main loop time usage:" );
+    log.println( "   %.4g s\t%.1f%%\tall time", allTimeSec, 100.0f );
+    log.println( "   %.4g s\t%.1f%%\tsystem + simulation + basic sound update",
+                 gameTimeSec, gameTimeSec / allTimeSec * 100.0f );
+    log.println( "   %.4g s\t%.1f%%\trender + advanced sound update",
+                 renderTimeSec, renderTimeSec / allTimeSec * 100.0f );
+    log.println( "   %.4g s\t%.1f%%\tsleep", sleepTimeSec, sleepTimeSec / allTimeSec * 100.0f );
+    log.println( "   %.4g s\t%.1f%%\t[own thread] artificial intelligence",
+                 nirvanaTimeSec, nirvanaTimeSec / allTimeSec * 100.0f );
+    log.unindent();
+    log.println( "}" );
+
 #ifdef OZ_ALLOC_STATISTICS
-    log.println( "Heap usage {" );
+    log.println( "Heap usage (libraries not included) {" );
     log.println( "  current chunks     %d", Alloc::count  );
     log.println( "  current amount     %.2f MiB", float( Alloc::amount ) / ( 1024.0f * 1024.0f ) );
-    log.println( "  cumulative chunks  %d", Alloc::sumCount );
-    log.println( "  cumulative amount  %.2f MiB", float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ) );
     log.println( "  maximum chunks     %d", Alloc::maxCount );
     log.println( "  maximum amount     %.2f MiB", float( Alloc::maxAmount ) / ( 1024.0f * 1024.0f ) );
+    log.println( "  cumulative chunks  %d", Alloc::sumCount );
+    log.println( "  cumulative amount  %.2f MiB", float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ) );
     log.println( "}" );
 #endif
 
@@ -79,6 +96,8 @@ namespace client
 
   void Main::main( int* argc, char** argv )
   {
+    long createTime = clock();
+
     initFlags = 0;
     String rcDir;
 
@@ -169,7 +188,7 @@ namespace client
 
     const char* data = config.getSet( "dir.data", OZ_DEFAULT_DATA_DIR );
 
-    log.print( "Setting working directory '%s' ...", data );
+    log.print( "Setting working directory to data directory '%s' ...", data );
 
     if( chdir( data ) != 0 ) {
       log.printEnd( " Failed" );
@@ -231,7 +250,9 @@ namespace client
     render.load();
     initFlags |= INIT_RENDER_LOAD;
 
-    log.println( "MAIN LOOP {" );
+    loadingTime = float( clock() - createTime ) / float( CLOCKS_PER_SEC );
+
+    log.println( "Main loop {" );
     log.indent();
 
     SDL_Event event;
@@ -356,28 +377,12 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    float allTimeSec     = float( timeLast - timeZero ) / 1000.0f;
-    float gameTimeSec    = float( gameTime ) / 1000.0f;
-    float renderTimeSec  = float( renderTime ) / 1000.0f;
-    float sleepTimeSec   = Math::max( allTimeSec - gameTimeSec - renderTimeSec, 0.0f );
-    float nirvanaTimeSec = float( timer.nirvanaMillis ) / 1000.0f;
-    int   ticks          = timer.millis / Timer::TICK_MILLIS;
-
-    log.println( "STATISTICS {" );
-    log.indent();
-    log.println( "Ticks: %d (%.2f Hz)", ticks, float( ticks ) / allTimeSec );
-    log.println( "Frames: %d (%.2f Hz)", timer.nFrames, float( timer.nFrames ) / allTimeSec );
-    log.println( "Time usage:" );
-    log.println( "   %.4g s\t%.1f%%\tall time", allTimeSec, 100.0f );
-    log.println( "   %.4g s\t%.1f%%\tsystem + simulation + basic sound update",
-                 gameTimeSec, gameTimeSec / allTimeSec * 100.0f );
-    log.println( "   %.4g s\t%.1f%%\trender + advanced sound update",
-                 renderTimeSec, renderTimeSec / allTimeSec * 100.0f );
-    log.println( "   %.4g s\t%.1f%%\tsleep", sleepTimeSec, sleepTimeSec / allTimeSec * 100.0f );
-    log.println( "   %.4g s\t%.1f%%\t[own thread] artificial intelligence",
-                 nirvanaTimeSec, nirvanaTimeSec / allTimeSec * 100.0f );
-    log.unindent();
-    log.println( "}" );
+    allTimeSec     = float( timeLast - timeZero ) / 1000.0f;
+    gameTimeSec    = float( gameTime ) / 1000.0f;
+    renderTimeSec  = float( renderTime ) / 1000.0f;
+    sleepTimeSec   = Math::max( allTimeSec - gameTimeSec - renderTimeSec, 0.0f );
+    nirvanaTimeSec = float( timer.nirvanaMillis ) / 1000.0f;
+    ticks          = timer.millis / Timer::TICK_MILLIS;
 
     if( !( initFlags & INIT_CONFIG ) ) {
       config.exclude( "dir.rc" );
