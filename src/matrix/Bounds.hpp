@@ -18,21 +18,24 @@ namespace oz
   {
     public:
 
-      Vec3 mins;
-      Vec3 maxs;
+      Point3 mins;
+      Point3 maxs;
 
+      OZ_ALWAYS_INLINE
       explicit Bounds()
       {}
 
-      explicit Bounds( const Vec3& mins_, const Vec3& maxs_ ) : mins( mins_ ), maxs( maxs_ )
+      OZ_ALWAYS_INLINE
+      explicit Bounds( const Point3& mins_, const Point3& maxs_ ) : mins( mins_ ), maxs( maxs_ )
       {}
 
+      OZ_ALWAYS_INLINE
       Bounds toBounds( float eps ) const
       {
         return Bounds( mins - Vec3( eps, eps, eps ), maxs + Vec3( eps, eps, eps ) );
       }
 
-      Bounds& fromPointMove( const Vec3& p, const Vec3& move, float eps = 0.0f )
+      Bounds& fromPointMove( const Point3& p, const Vec3& move, float eps = 0.0f )
       {
         if( move.x < 0.0f ) {
           mins.x = p.x - 2.0f * eps + move.x;
@@ -61,16 +64,19 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Bounds operator + ( const Vec3& v ) const
       {
         return Bounds( mins + v, maxs + v );
       }
 
+      OZ_ALWAYS_INLINE
       Bounds operator - ( const Vec3& v ) const
       {
         return Bounds( mins - v, maxs - v );
       }
 
+      OZ_ALWAYS_INLINE
       Bounds& operator += ( const Vec3& v )
       {
         mins += v;
@@ -78,6 +84,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Bounds& operator -= ( const Vec3& v )
       {
         mins -= v;
@@ -85,14 +92,16 @@ namespace oz
         return *this;
       }
 
-      bool includes( const Vec3& v, float eps = 0.0f ) const
+      OZ_ALWAYS_INLINE
+      bool includes( const Point3& p, float eps = 0.0f ) const
       {
         return
-            mins.x - eps <= v.x && v.x <= maxs.x + eps &&
-            mins.y - eps <= v.y && v.y <= maxs.y + eps &&
-            mins.z - eps <= v.z && v.z <= maxs.z + eps;
+            mins.x - eps <= p.x && p.x <= maxs.x + eps &&
+            mins.y - eps <= p.y && p.y <= maxs.y + eps &&
+            mins.z - eps <= p.z && p.z <= maxs.z + eps;
       }
 
+      OZ_ALWAYS_INLINE
       bool isInside( const Bounds& b, float eps = 0.0f ) const
       {
         return
@@ -101,11 +110,13 @@ namespace oz
             b.mins.z - eps <= mins.z && maxs.z <= b.maxs.z + eps;
       }
 
+      OZ_ALWAYS_INLINE
       bool includes( const Bounds& b, float eps = 0.0f ) const
       {
         return b.isInside( *this, eps );
       }
 
+      OZ_ALWAYS_INLINE
       bool overlaps( const Bounds& b, float eps = 0.0f ) const
       {
         return

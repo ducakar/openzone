@@ -21,7 +21,7 @@ namespace oz
 
   void Particle::readFull( InputStream* istream )
   {
-    p           = istream->readVec3();
+    p           = istream->readPoint3();
     velocity    = istream->readVec3();
 
     colour      = istream->readVec3();
@@ -35,7 +35,7 @@ namespace oz
 
   void Particle::writeFull( OutputStream* ostream )
   {
-    ostream->writeVec3( p );
+    ostream->writePoint3( p );
     ostream->writeVec3( velocity );
 
     ostream->writeVec3( colour );
@@ -49,13 +49,13 @@ namespace oz
 
   void Particle::readUpdate( InputStream* istream )
   {
-    p        = istream->readVec3();
+    p        = istream->readPoint3();
     velocity = istream->readVec3();
   }
 
   void Particle::writeUpdate( OutputStream* ostream )
   {
-    ostream->writeVec3( p );
+    ostream->writePoint3( p );
     ostream->writeVec3( velocity );
   }
 

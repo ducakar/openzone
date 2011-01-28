@@ -1,5 +1,8 @@
 #pragma once
 
+// enable inlining in debug mode for critical functions
+#cmakedefine OZ_ALWAYS_INLINE
+
 // enable overloaded new and delete to count allocated memory
 #cmakedefine OZ_ALLOC_STATISTICS
 
@@ -72,9 +75,20 @@
 # if _MSC_VER < 1600
 #  error Too old MSVC, at least 16.00 (Visual C++ 2010) required
 # endif
-# define _CRT_SECURE_NO_WARNINGS 1
 # define __PRETTY_FUNCTION__ ""
+# define _CRT_SECURE_NO_WARNINGS 1
 # define snprintf sprintf_s
 # define chdir _chdir
 # define mkdir _mkdir
+#endif
+
+#ifdef OZ_ALWAYS_INLINE
+# undef OZ_ALWAYS_INLINE
+# ifdef OZ_MSVC
+#  define OZ_ALWAYS_INLINE __forceinline
+# else
+#  define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
+# endif
+#else
+# define OZ_ALWAYS_INLINE
 #endif

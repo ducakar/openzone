@@ -39,7 +39,7 @@ namespace oz
       Particle* prev[1];
       Particle* next[1];
 
-      Vec3      p;            // position
+      Point3    p;            // position
 
       int       index;        // position in world.objects vector
       Cell*     cell;
@@ -58,7 +58,7 @@ namespace oz
       explicit Particle() : index( -1 ), cell( null )
       {}
 
-      explicit Particle( int index_, const Vec3& p_, const Vec3& velocity_, const Vec3& color_,
+      explicit Particle( int index_, const Point3& p_, const Vec3& velocity_, const Vec3& color_,
                          float restitution_, float mass_, float lifeTime_ ) :
           p( p_ ), index( index_ ), cell( null ), velocity( velocity_ ), colour( color_ ),
           rot( Vec3( Math::frand() * 360.0f, Math::frand() * 360.0f, Math::frand() * 360.0f ) ),

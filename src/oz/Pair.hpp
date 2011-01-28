@@ -29,6 +29,7 @@ namespace oz
       /**
        * Default constructor.
        */
+      OZ_ALWAYS_INLINE
       explicit Pair()
       {}
 
@@ -37,6 +38,7 @@ namespace oz
        * @param x_
        * @param y_
        */
+      OZ_ALWAYS_INLINE
       explicit Pair( const TypeX& x_, const TypeY& y_ ) : x( x_ ), y( y_ )
       {}
 
@@ -45,6 +47,7 @@ namespace oz
        * @param p
        */
       template <typename TypeX_, typename TypeY_>
+      OZ_ALWAYS_INLINE
       Pair( const Pair<TypeX_, TypeY_>& p ) : x( p.x ), y( p.y )
       {}
 
@@ -54,6 +57,7 @@ namespace oz
        * @return
        */
       template <typename TypeX_, typename TypeY_>
+      OZ_ALWAYS_INLINE
       Pair& operator = ( const Pair<TypeX_, TypeY_>& p )
       {
         x = p.x;
@@ -66,6 +70,7 @@ namespace oz
        * @param p
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator == ( const Pair& p ) const
       {
         return x == p.x && y == p.y;
@@ -76,6 +81,7 @@ namespace oz
        * @param p
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator != ( const Pair& p ) const
       {
         return x != p.x || y != p.y;
@@ -87,6 +93,7 @@ namespace oz
        * @return
        */
       template <typename TypeX_, typename TypeY_>
+      OZ_ALWAYS_INLINE
       bool operator == ( const Pair<TypeX_, TypeY_>& p ) const
       {
         return x == p.x && y == p.y;
@@ -98,6 +105,7 @@ namespace oz
        * @return
        */
       template <typename TypeX_, typename TypeY_>
+      OZ_ALWAYS_INLINE
       bool operator != ( const Pair<TypeX_, TypeY_>& p ) const
       {
         return x != p.x || y != p.y;
@@ -108,6 +116,7 @@ namespace oz
        * @param x_
        * @param y_
        */
+      OZ_ALWAYS_INLINE
       void set( const TypeX& x_, const TypeY& y_ )
       {
         x = x_;
@@ -123,6 +132,7 @@ namespace oz
    * @return
    */
   template <typename TypeX, typename TypeY>
+  OZ_ALWAYS_INLINE
   inline Pair<TypeX, TypeY> pair( const TypeX& x, const TypeY& y )
   {
     return Pair<TypeX, TypeY>( x, y );

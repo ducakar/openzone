@@ -40,10 +40,6 @@ namespace client
       float keyXSens;
       float keyYSens;
       float smoothCoef;
-      float smoothCoef_1;
-
-      Vec3  newP;
-      Vec3  oldP;
 
       static FreeCamProxy   freeCamProxy;
       static StrategicProxy strategicProxy;
@@ -53,45 +49,47 @@ namespace client
 
     public:
 
-      Vec3  p;
+      Point3 p;
+      Point3 newP;
+      Point3 oldP;
 
       // relative to the object the camera is bound to
-      float h;
-      float v;
-      float w;
+      float  h;
+      float  v;
+      float  w;
 
-      Quat  relRot;
-      Quat  rot;
+      Quat   relRot;
+      Quat   rot;
 
       // global rotation matrix and it's inverse
-      Mat44 rotMat;
-      Mat44 rotTMat;
+      Mat44  rotMat;
+      Mat44  rotTMat;
 
-      Vec3  right;
-      Vec3  at;
-      Vec3  up;
+      Vec3   right;
+      Vec3   at;
+      Vec3   up;
 
-      int   tagged;
+      int    tagged;
       const Object* taggedObj;
 
-      int   bot;
+      int    bot;
       const Bot* botObj;
 
-      State state;
-      State newState;
-      State defaultState;
+      State  state;
+      State  newState;
+      State  defaultState;
 
-      int   width;
-      int   height;
-      int   centreX;
-      int   centreY;
+      int    width;
+      int    height;
+      int    centreX;
+      int    centreY;
 
-      float angle;
-      float aspect;
-      float minDist;
-      float maxDist;
+      float  angle;
+      float  aspect;
+      float  minDist;
+      float  maxDist;
 
-      bool  isExternal;
+      bool   isExternal;
 
       void setState( State state )
       {
@@ -112,27 +110,27 @@ namespace client
         assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
       }
 
-      void move( const Vec3& pos )
+      void move( const Point3& pos )
       {
-        p    = pos * smoothCoef_1 + oldP * smoothCoef;
+        p    = pos + smoothCoef * ( oldP - pos );
         newP = pos;
         oldP = p;
       }
 
-      void wrapMoveZ( const Vec3& pos )
-      {
-        p.x  = pos.x;
-        p.y  = pos.y;
-        p.z  = pos.z * smoothCoef_1 + oldP.z * smoothCoef;
-        newP = pos;
-        oldP = p;
-      }
-
-      void warp( const Vec3& pos )
+      void warp( const Point3& pos )
       {
         oldP = pos;
         newP = pos;
         p    = pos;
+      }
+
+      void warpMoveZ( const Point3& pos )
+      {
+        p.x  = pos.x;
+        p.y  = pos.y;
+        p.z  = pos.z + smoothCoef * ( oldP.z - pos.z );
+        newP = pos;
+        oldP = p;
       }
 
       void align();

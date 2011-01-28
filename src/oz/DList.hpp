@@ -65,6 +65,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator() : B( null )
           {}
 
@@ -72,12 +73,14 @@ namespace oz
            * Make iterator for given list. After creation it points to first element.
            * @param l
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator( const DList& l ) : B( l.firstElem )
           {}
 
           /**
            * Advance to next element.
            */
+          OZ_ALWAYS_INLINE
           CIterator& operator ++ ()
           {
             assert( B::elem != null );
@@ -102,6 +105,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator() : B( null )
           {}
 
@@ -109,12 +113,14 @@ namespace oz
            * Make iterator for given list. After creation it points to first element.
            * @param l
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator( const DList& l ) : B( l.firstElem )
           {}
 
           /**
            * Advance to next element.
            */
+          OZ_ALWAYS_INLINE
           Iterator& operator ++ ()
           {
             assert( B::elem != null );
@@ -209,6 +215,7 @@ namespace oz
       /**
        * @return constant iterator for this list
        */
+      OZ_ALWAYS_INLINE
       CIterator citer() const
       {
         return CIterator( *this );
@@ -217,6 +224,7 @@ namespace oz
       /**
        * @return iterator for this list
        */
+      OZ_ALWAYS_INLINE
       Iterator iter() const
       {
         return Iterator( *this );
@@ -241,11 +249,48 @@ namespace oz
       /**
        * @return true if the list has no elements
        */
+      OZ_ALWAYS_INLINE
       bool isEmpty() const
       {
         assert( ( firstElem == null ) == ( lastElem == null ) );
 
         return firstElem == null;
+      }
+
+      /**
+       * @return constant pointer to first element in the list
+       */
+      OZ_ALWAYS_INLINE
+      const Type* first() const
+      {
+        return firstElem;
+      }
+
+      /**
+       * @return pointer to first element in the list
+       */
+      OZ_ALWAYS_INLINE
+      Type* first()
+      {
+        return firstElem;
+      }
+
+      /**
+       * @return constant pointer to last element in the list
+       */
+      OZ_ALWAYS_INLINE
+      const Type* last() const
+      {
+        return lastElem;
+      }
+
+      /**
+       * @return pointer to last element in the list
+       */
+      OZ_ALWAYS_INLINE
+      Type* last()
+      {
+        return lastElem;
       }
 
       /**
@@ -265,38 +310,6 @@ namespace oz
           p = p->next[INDEX];
         }
         return false;
-      }
-
-      /**
-       * @return constant pointer to first element in the list
-       */
-      const Type* first() const
-      {
-        return firstElem;
-      }
-
-      /**
-       * @return pointer to first element in the list
-       */
-      Type* first()
-      {
-        return firstElem;
-      }
-
-      /**
-       * @return constant pointer to last element in the list
-       */
-      const Type* last() const
-      {
-        return lastElem;
-      }
-
-      /**
-       * @return pointer to last element in the list
-       */
-      Type* last()
-      {
-        return lastElem;
       }
 
       /**

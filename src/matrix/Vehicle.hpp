@@ -42,6 +42,11 @@ namespace oz
       virtual void onUpdate();
       virtual void onUse( Bot* user );
 
+    protected:
+
+      float oldH;
+      float oldV;
+
     public:
 
       Quat rot;

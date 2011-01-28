@@ -149,7 +149,7 @@ namespace oz
     return clazz;
   }
 
-  Object* VehicleClass::create( int index, const Vec3& pos ) const
+  Object* VehicleClass::create( int index, const Point3& pos ) const
   {
     Vehicle* obj = new Vehicle();
 
@@ -161,7 +161,7 @@ namespace oz
     obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
-    obj->clazz     = this;
+    obj->clazz    = this;
     obj->life     = life;
 
     obj->mass     = mass;
@@ -181,7 +181,7 @@ namespace oz
     obj->dim    = dim;
 
     obj->index  = index;
-    obj->clazz   = this;
+    obj->clazz  = this;
 
     obj->mass   = mass;
     obj->lift   = lift;

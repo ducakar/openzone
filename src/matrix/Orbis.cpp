@@ -34,8 +34,8 @@ namespace oz
     freeing = 0;
     waiting = 1;
 
-    mins = Vec3( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
-    maxs = Vec3(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
+    mins = Point3( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
+    maxs = Point3(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
 
     terra.init();
 

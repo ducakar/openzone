@@ -53,47 +53,26 @@ namespace oz
        * @param key variable name
        * @param value variable value
        */
-      void add( const char* key, const char* value_ )
-      {
-        String* value = vars.find( key );
-        if( value != null ) {
-          *value = value_;
-        }
-        else {
-          vars.add( key, value_ );
-        }
-      }
+      void add( const char* key, const char* value );
 
       /**
        * Remove variable.
        * @param key variable name
        */
-      void exclude( const char* key )
-      {
-        vars.exclude( key );
-      }
+      void exclude( const char* key );
 
       /**
        * @param key variable name
        * @return true if config contains the variable
        */
-      bool contains( const char* key ) const
-      {
-        return vars.contains( key );
-      }
+      bool contains( const char* key ) const;
 
       /**
        * Get value of variable. Only use this function if you are sure the key exists.
        * @param key variable name
        * @return variable value
        */
-      const String& operator [] ( const char* key ) const
-      {
-#ifdef OZ_VERBOSE_CONFIG
-        usedVars.add( key );
-#endif
-        return vars.get( key );
-      }
+      const String& operator [] ( const char* key ) const;
 
       /**
        * @param name variable name
@@ -115,13 +94,6 @@ namespace oz
        * @return value of given variable
        */
       float get( const char* name, float defVal ) const;
-
-      /**
-       * @param name variable name
-       * @param defVal default value, if variable does not exist in configuration
-       * @return value of given variable
-       */
-      double get( const char* name, double defVal ) const;
 
       /**
        * @param name variable name
@@ -153,14 +125,6 @@ namespace oz
        * @return value of given variable
        */
       float getSet( const char* name, float defVal );
-
-      /**
-       * Like get, but adds variable with default value, if doesn't exist yet
-       * @param name variable name
-       * @param defVal default value, if variable does not exist in configuration
-       * @return value of given variable
-       */
-      double getSet( const char* name, double defVal );
 
       /**
        * Like get, but adds variable with default value, if doesn't exist yet

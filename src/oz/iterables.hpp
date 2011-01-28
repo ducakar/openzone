@@ -41,6 +41,7 @@ namespace oz
       /**
        * @param start first element
        */
+      OZ_ALWAYS_INLINE
       explicit CIteratorBase( const Type* start ) : elem( start )
       {}
 
@@ -51,6 +52,7 @@ namespace oz
        * @param e
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator == ( const CIteratorBase& i ) const
       {
         return elem == i.elem;
@@ -61,6 +63,7 @@ namespace oz
        * @param e
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator != ( const CIteratorBase& i ) const
       {
         return elem != i.elem;
@@ -71,6 +74,7 @@ namespace oz
        * @param e
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator == ( const Type* e ) const
       {
         return elem == e;
@@ -81,6 +85,7 @@ namespace oz
        * @param e
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator != ( const Type* e ) const
       {
         return elem != e;
@@ -91,6 +96,7 @@ namespace oz
        * points to a valid location.
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool isValid() const
       {
         return elem != null;
@@ -99,6 +105,7 @@ namespace oz
       /**
        * @return constant pointer to current element
        */
+      OZ_ALWAYS_INLINE
       operator const Type* () const
       {
         return elem;
@@ -107,6 +114,7 @@ namespace oz
       /**
        * @return constant reference to current element
        */
+      OZ_ALWAYS_INLINE
       const Type& operator * () const
       {
         return *elem;
@@ -115,6 +123,7 @@ namespace oz
       /**
        * @return constant access to member
        */
+      OZ_ALWAYS_INLINE
       const Type* operator -> () const
       {
         return elem;
@@ -158,6 +167,7 @@ namespace oz
       /**
        * @param start first element
        */
+      OZ_ALWAYS_INLINE
       explicit IteratorBase( Type* start ) : elem( start )
       {}
 
@@ -168,6 +178,7 @@ namespace oz
        * @param e
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator == ( const IteratorBase& i ) const
       {
         return elem == i.elem;
@@ -178,6 +189,7 @@ namespace oz
        * @param e
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator != ( const IteratorBase& i ) const
       {
         return elem != i.elem;
@@ -188,6 +200,7 @@ namespace oz
        * @param e
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator == ( const Type* e ) const
       {
         return elem == e;
@@ -198,6 +211,7 @@ namespace oz
        * @param e
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool operator != ( const Type* e ) const
       {
         return elem != e;
@@ -208,6 +222,7 @@ namespace oz
        * points to a valid location.
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool isValid() const
       {
         return elem != null;
@@ -216,6 +231,7 @@ namespace oz
       /**
        * @return constant pointer to current element
        */
+      OZ_ALWAYS_INLINE
       operator const Type* () const
       {
         return elem;
@@ -224,6 +240,7 @@ namespace oz
       /**
        * @return pointer to current element
        */
+      OZ_ALWAYS_INLINE
       operator Type* ()
       {
         return elem;
@@ -232,6 +249,7 @@ namespace oz
       /**
        * @return constant reference to current element
        */
+      OZ_ALWAYS_INLINE
       const Type& operator * () const
       {
         return *elem;
@@ -240,6 +258,7 @@ namespace oz
       /**
        * @return reference to current element
        */
+      OZ_ALWAYS_INLINE
       Type& operator * ()
       {
         return *elem;
@@ -248,6 +267,7 @@ namespace oz
       /**
        * @return constant access to member
        */
+      OZ_ALWAYS_INLINE
       const Type* operator -> () const
       {
         return elem;
@@ -256,6 +276,7 @@ namespace oz
       /**
        * @return non-constant access to member
        */
+      OZ_ALWAYS_INLINE
       Type* operator -> ()
       {
         return elem;

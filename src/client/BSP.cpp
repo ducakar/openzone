@@ -37,17 +37,17 @@ namespace client
         return bounds;
       }
       case Structure::R90: {
-        return Bounds( Vec3( -bounds.maxs.y, bounds.mins.x, bounds.mins.z ),
-                       Vec3( -bounds.mins.y, bounds.maxs.x, bounds.maxs.z ) );
+        return Bounds( Point3( -bounds.maxs.y, bounds.mins.x, bounds.mins.z ),
+                       Point3( -bounds.mins.y, bounds.maxs.x, bounds.maxs.z ) );
       }
       case Structure::R180: {
-        return Bounds( Vec3( -bounds.maxs.x, -bounds.maxs.y, bounds.mins.z ),
-                       Vec3( -bounds.mins.x, -bounds.mins.y, bounds.maxs.z ) );
+        return Bounds( Point3( -bounds.maxs.x, -bounds.maxs.y, bounds.mins.z ),
+                       Point3( -bounds.mins.x, -bounds.mins.y, bounds.maxs.z ) );
       }
       default:
       case Structure::R270: {
-        return Bounds( Vec3( bounds.mins.y, -bounds.maxs.x, bounds.mins.z ),
-                       Vec3( bounds.maxs.y, -bounds.mins.x, bounds.maxs.z ) );
+        return Bounds( Point3( bounds.mins.y, -bounds.maxs.x, bounds.mins.z ),
+                       Point3( bounds.maxs.y, -bounds.mins.x, bounds.maxs.z ) );
       }
     }
   }
@@ -190,7 +190,7 @@ namespace client
       const oz::BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
-      if( frustum.isVisible( leaf + str->p ) ) {
+      if( frustum.isVisible( leaf + ( str->p - Point3::ORIGIN ) ) ) {
         for( int i = 0; i < leaf.nFaces; ++i ) {
           int face = bsp->leafFaces[leaf.firstFace + i];
 
@@ -222,7 +222,7 @@ namespace client
       const oz::BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
       Bounds rotatedLeaf  = rotateBounds( leaf, str->rot );
 
-      if( frustum.isVisible( leaf + str->p ) ) {
+      if( frustum.isVisible( leaf + ( str->p - Point3::ORIGIN ) ) ) {
         for( int i = 0; i < leaf.nFaces; ++i ) {
           int face = bsp->leafFaces[leaf.firstFace + i];
 
@@ -341,7 +341,7 @@ namespace client
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
-            frustum.isVisible( rotatedLeaf + str->p ) )
+            frustum.isVisible( rotatedLeaf + ( str->p - Point3::ORIGIN ) ) )
         {
           for( int j = 0; j < leaf.nFaces; ++j ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
@@ -360,7 +360,7 @@ namespace client
         const oz::BSP::Leaf& leaf = bsp->leaves[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
-        if( frustum.isVisible( rotatedLeaf + str->p ) ) {
+        if( frustum.isVisible( rotatedLeaf + ( str->p - Point3::ORIGIN ) ) ) {
           for( int j = 0; j < leaf.nFaces; ++j ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
             const oz::BSP::Face& face = bsp->faces[faceIndex];
@@ -410,7 +410,7 @@ namespace client
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
         if( ( cluster == -1 || bitset.get( cluster ) ) &&
-            frustum.isVisible( rotatedLeaf + str->p ) )
+            frustum.isVisible( rotatedLeaf + ( str->p - Point3::ORIGIN ) ) )
         {
           for( int j = 0; j < leaf.nFaces; ++j ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
@@ -429,7 +429,7 @@ namespace client
         const oz::BSP::Leaf& leaf = bsp->leaves[i];
         Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
 
-        if( frustum.isVisible( rotatedLeaf + str->p ) ) {
+        if( frustum.isVisible( rotatedLeaf + ( str->p - Point3::ORIGIN ) ) ) {
           for( int j = 0; j < leaf.nFaces; ++j ) {
             int faceIndex = bsp->leafFaces[leaf.firstFace + j];
             const oz::BSP::Face& face = bsp->faces[faceIndex];

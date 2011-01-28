@@ -21,6 +21,7 @@ namespace oz
     static_assert( sizeof( short ) == 2, "sizeof( short ) should be 2" );
     static_assert( sizeof( int ) == 4, "sizeof( int ) should be 4" );
 
+    OZ_ALWAYS_INLINE
     static ushort shuffle16( ushort s )
     {
 #if defined( OZ_BIG_ENDIAN_DATA ) == defined( OZ_BIG_ENDIAN_ARCH )
@@ -30,6 +31,7 @@ namespace oz
 #endif
     }
 
+    OZ_ALWAYS_INLINE
     static uint shuffle32( uint i )
     {
 #if defined( OZ_BIG_ENDIAN_DATA ) == defined( OZ_BIG_ENDIAN_ARCH )
@@ -44,6 +46,7 @@ namespace oz
 #endif
     }
 
+    OZ_ALWAYS_INLINE
     static ulong64 shuffle64( ulong64 l )
     {
 #if defined( OZ_BIG_ENDIAN_DATA ) == defined( OZ_BIG_ENDIAN_ARCH )

@@ -26,35 +26,43 @@ namespace oz
 
       float w;
 
+      OZ_ALWAYS_INLINE
       explicit Quat()
       {}
 
+      OZ_ALWAYS_INLINE
       explicit Quat( float x_, float y_, float z_, float w_ ) : Vec3( x_, y_, z_), w( w_ )
       {}
 
+      OZ_ALWAYS_INLINE
       explicit Quat( const float* q ) : Vec3( q[0], q[1], q[2] ), w( q[3] )
       {}
 
+      OZ_ALWAYS_INLINE
       bool operator == ( const Quat& q ) const
       {
         return x == q.x && y == q.y && z == q.z && w == q.w;
       }
 
+      OZ_ALWAYS_INLINE
       bool operator != ( const Quat& q ) const
       {
         return x != q.x || y != q.y || z != q.z || w != q.w;
       }
 
+      OZ_ALWAYS_INLINE
       operator const float* () const
       {
         return &x;
       }
 
+      OZ_ALWAYS_INLINE
       operator float* ()
       {
         return &x;
       }
 
+      OZ_ALWAYS_INLINE
       const float& operator [] ( int i ) const
       {
         assert( 0 <= i && i < 4 );
@@ -62,6 +70,7 @@ namespace oz
         return ( &x )[i];
       }
 
+      OZ_ALWAYS_INLINE
       float& operator [] ( int i )
       {
         assert( 0 <= i && i < 4 );
@@ -69,26 +78,31 @@ namespace oz
         return ( &x )[i];
       }
 
+      OZ_ALWAYS_INLINE
       Quat operator * () const
       {
         return Quat( -x, -y, -z, w );
       }
 
+      OZ_ALWAYS_INLINE
       float operator ! () const
       {
         return Math::sqrt( x*x + y*y + z*z + w*w );
       }
 
+      OZ_ALWAYS_INLINE
       float sqL() const
       {
         return x*x + y*y + z*z + w*w;
       }
 
+      OZ_ALWAYS_INLINE
       bool isUnit() const
       {
         return x*x + y*y + z*z + w*w == 1.0f;
       }
 
+      OZ_ALWAYS_INLINE
       Quat operator ~ () const
       {
         assert( x*x + y*y + z*z + w*w > 0.0f );
@@ -97,6 +111,7 @@ namespace oz
         return Quat( x * k, y * k, z * k, w * k );
       }
 
+      OZ_ALWAYS_INLINE
       Quat fastUnit() const
       {
         assert( x*x + y*y + z*z + w*w > 0.0f );
@@ -105,36 +120,43 @@ namespace oz
         return Quat( x * k, y * k, z * k, w * k );
       }
 
+      OZ_ALWAYS_INLINE
       Quat operator + () const
       {
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Quat operator - () const
       {
         return Quat( -x, -y, -z, -w );
       }
 
+      OZ_ALWAYS_INLINE
       Quat operator + ( const Quat& q ) const
       {
         return Quat( x + q.x, y + q.y, z + q.z, w + q.w );
       }
 
+      OZ_ALWAYS_INLINE
       Quat operator - ( const Quat& q ) const
       {
         return Quat( x - q.x, y - q.y, z - q.z, w - q.w );
       }
 
+      OZ_ALWAYS_INLINE
       Quat operator * ( float k ) const
       {
         return Quat( x * k, y * k, z * k, w * k );
       }
 
+      OZ_ALWAYS_INLINE
       friend Quat operator * ( float k, const Quat& q )
       {
         return Quat( q.x * k, q.y * k, q.z * k, q.w * k );
       }
 
+      OZ_ALWAYS_INLINE
       Quat operator / ( float k ) const
       {
         assert( k != 0.0f );
@@ -143,6 +165,7 @@ namespace oz
         return Quat( x * k, y * k, z * k, w * k );
       }
 
+      OZ_ALWAYS_INLINE
       Quat& operator += ( const Quat& q )
       {
         x += q.x;
@@ -152,6 +175,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Quat& operator -= ( const Quat& q )
       {
         x -= q.x;
@@ -161,6 +185,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Quat& operator *= ( float k )
       {
         x *= k;
@@ -170,6 +195,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Quat& operator /= ( float k )
       {
         assert( k != 0.0f );
@@ -183,6 +209,7 @@ namespace oz
       }
 
       // quaternion multiplication
+      OZ_ALWAYS_INLINE
       Quat operator ^ ( const Quat& a ) const
       {
 
@@ -193,6 +220,7 @@ namespace oz
       }
 
       // quaternion multiplication
+      OZ_ALWAYS_INLINE
       Quat& operator ^= ( const Quat& a )
       {
         float tx = x, ty = y, tz = z;

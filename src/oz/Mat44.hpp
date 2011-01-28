@@ -31,13 +31,16 @@ namespace oz
       // last column (usually used for position)
       Quat w;
 
+      OZ_ALWAYS_INLINE
       explicit Mat44()
       {}
 
+      OZ_ALWAYS_INLINE
       explicit Mat44( const Quat& a, const Quat& b, const Quat& c, const Quat& d ) :
           x( a ), y( b ), z( c ), w( d )
       {}
 
+      OZ_ALWAYS_INLINE
       explicit Mat44( float xx, float xy, float xz, float xw,
                       float yx, float yy, float yz, float yw,
                       float zx, float zy, float zz, float zw,
@@ -48,29 +51,35 @@ namespace oz
           w( wx, wy, wz, ww )
       {}
 
+      OZ_ALWAYS_INLINE
       explicit Mat44( const float* v ) : x( &v[0] ), y( &v[4] ), z( &v[8] ), w( &v[12] )
       {}
 
+      OZ_ALWAYS_INLINE
       bool operator == ( const Mat44& m ) const
       {
         return x == m.x && y == m.y && z == m.z && w == m.w;
       }
 
+      OZ_ALWAYS_INLINE
       bool operator != ( const Mat44& m ) const
       {
         return x != m.x || y != m.y || z != m.z || w != m.w;
       }
 
+      OZ_ALWAYS_INLINE
       operator const float* () const
       {
         return &x.x;
       }
 
+      OZ_ALWAYS_INLINE
       operator float* ()
       {
         return &x.x;
       }
 
+      OZ_ALWAYS_INLINE
       const float& operator [] ( int i ) const
       {
         assert( 0 <= i && i < 16 );
@@ -78,6 +87,7 @@ namespace oz
         return ( &x.x )[i];
       }
 
+      OZ_ALWAYS_INLINE
       float& operator [] ( int i )
       {
         assert( 0 <= i && i < 16 );
@@ -85,6 +95,7 @@ namespace oz
         return ( &x.x )[i];
       }
 
+      OZ_ALWAYS_INLINE
       Mat44 operator ~ () const
       {
         return Mat44( x.x, y.x, z.x, w.x,
@@ -116,31 +127,37 @@ namespace oz
             w.x * z.y * ijmn;
       }
 
+      OZ_ALWAYS_INLINE
       Mat44 operator + () const
       {
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Mat44 operator - () const
       {
         return Mat44( -x, -y, -z, -w );
       }
 
+      OZ_ALWAYS_INLINE
       Mat44 operator + ( const Mat44& a ) const
       {
         return Mat44( x + a.x, y + a.y, z + a.z, w + a.w );
       }
 
+      OZ_ALWAYS_INLINE
       Mat44 operator - ( const Mat44& a ) const
       {
         return Mat44( x - a.x, y - a.y, z - a.z, w - a.w );
       }
 
+      OZ_ALWAYS_INLINE
       Mat44 operator * ( float k ) const
       {
         return Mat44( x * k, y * k, z * k, w * k );
       }
 
+      OZ_ALWAYS_INLINE
       Mat44 operator / ( float k ) const
       {
         assert( k != 0.0f );
@@ -149,6 +166,7 @@ namespace oz
         return Mat44( x * k, y * k, z * k, w * k );
       }
 
+      OZ_ALWAYS_INLINE
       Mat44& operator += ( const Mat44& a )
       {
         x += a.x;
@@ -158,6 +176,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Mat44& operator -= ( const Mat44& a )
       {
         x -= a.x;
@@ -167,6 +186,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Mat44& operator *= ( float k )
       {
         x *= k;
@@ -176,6 +196,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Mat44& operator /= ( float k )
       {
         assert( k != 0.0f );
@@ -188,6 +209,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Mat44 operator * ( const Mat44& m ) const
       {
         return Mat44( x * m.x.x + y * m.x.y + z * m.x.z + w * m.x.w,
@@ -196,11 +218,13 @@ namespace oz
                       x * m.w.x + y * m.w.y + z * m.w.z + w * m.w.w );
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 operator * ( const Vec3& v ) const
       {
         return Vec3( x * v.x + y * v.y + z * v.z );
       }
 
+      OZ_ALWAYS_INLINE
       Point3 operator * ( const Point3& p ) const
       {
         return Point3( x * p.x + y * p.y + z * p.z + w );

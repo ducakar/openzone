@@ -11,6 +11,7 @@
 
 #include "client/StrategicProxy.hpp"
 
+#include "matrix/Vehicle.hpp"
 #include "ui/UI.hpp"
 #include "client/Camera.hpp"
 
@@ -41,9 +42,24 @@ namespace client
   {
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
       if( ui::ui.strategic->tagged.length() == 1 ) {
-        Bot* me = static_cast<Bot*>( orbis.objects[ui::ui.strategic->tagged[0]] );
+        Object* tagged = orbis.objects[ ui::ui.strategic->tagged.first() ];
+        Bot*    me = null;
 
-        if( me != null && ( me->flags & Object::BOT_BIT ) ) {
+        if( tagged->flags & Object::BOT_BIT ) {
+          me = const_cast<Bot*>( static_cast<const Bot*>( tagged ) );
+        }
+        else if( tagged->flags & Object::VEHICLE_BIT ) {
+          Vehicle* veh = const_cast<Vehicle*>( static_cast<const Vehicle*>( tagged ) );
+
+          for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
+            if( veh->crew[i] != -1 && orbis.objects[ veh->crew[i] ] != null ) {
+              me = const_cast<Bot*>( static_cast<const Bot*>( orbis.objects[ veh->crew[i] ] ) );
+              break;
+            }
+          }
+        }
+
+        if( me != null ) {
           me->state |= Bot::PLAYER_BIT;
           camera.setBot( me );
           camera.setState( Camera::BOT );
@@ -56,8 +72,8 @@ namespace client
   {
     camera.align();
 
-    Vec3 up = Vec3( -camera.rotMat.x.y, camera.rotMat.x.x, 0.0f );
-    Vec3 p  = camera.p;
+    Vec3   up = Vec3( -camera.rotMat.x.y, camera.rotMat.x.x, 0.0f );
+    Point3 p  = camera.newP;
 
     if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
       fastMove = !fastMove;

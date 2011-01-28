@@ -166,6 +166,7 @@ namespace oz
        * Size of bitset in bits.
        * @return number of bits the bitset can hold
        */
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return size * ULONG_BITSIZE;
@@ -175,6 +176,7 @@ namespace oz
        * Size of bitset in units.
        * @return
        */
+      OZ_ALWAYS_INLINE
       int unitLength() const
       {
         return size;
@@ -185,6 +187,7 @@ namespace oz
        * @param i bit index
        * @return bit
        */
+      OZ_ALWAYS_INLINE
       bool get( int i ) const
       {
         assert( uint( i ) < uint( size * ULONG_BITSIZE ) );
@@ -220,6 +223,7 @@ namespace oz
        * Set i-th bit to true.
        * @param i bit index
        */
+      OZ_ALWAYS_INLINE
       void set( int i )
       {
         assert( uint( i ) < uint( size * ULONG_BITSIZE ) );
@@ -231,6 +235,7 @@ namespace oz
        * Set i-th bit to false.
        * @param i bit index
        */
+      OZ_ALWAYS_INLINE
       void clear( int i )
       {
         assert( uint( i ) < uint( size * ULONG_BITSIZE ) );

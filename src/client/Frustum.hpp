@@ -29,9 +29,6 @@ namespace client
       Vec3  nLeft, nRight, nDown, nUp, nFront;
       float dLeft, dRight, dDown, dUp, dFront;
 
-      uint visibility( const Vec3& p );
-      uint visibility( const Vec3& p, float radius );
-
     public:
 
       float maxDistance;
@@ -40,7 +37,8 @@ namespace client
       void init( float fovY, float aspect, float maxDistance );
       void update( float maxDistance );
 
-      bool isVisible( const Vec3& p, float radius = 0.0f )
+      OZ_ALWAYS_INLINE
+      bool isVisible( const Point3& p, float radius = 0.0f )
       {
         return
             p * nLeft  > dLeft  - radius &&
@@ -50,22 +48,26 @@ namespace client
             p * nFront < dFront + radius;
       }
 
+      OZ_ALWAYS_INLINE
       bool isVisible( const Sphere& s, float factor = 1.0f )
       {
         return isVisible( s.p, s.r * factor );
       }
 
+      OZ_ALWAYS_INLINE
       bool isVisible( const AABB& bb, float factor = 1.0f )
       {
         return isVisible( bb.p, bb.r * factor );
       }
 
+      OZ_ALWAYS_INLINE
       bool isVisible( const Bounds& b )
       {
         Vec3 dim = b.maxs - b.mins;
-        return isVisible( ( b.mins + b.maxs ) / 2.0f, !dim );
+        return isVisible( b.mins + 0.5f * ( b.maxs - b.mins ), !dim );
       }
 
+      OZ_ALWAYS_INLINE
       bool isVisible( float x, float y, float radius )
       {
         Vec3 min = Vec3( x, y, -Orbis::DIM );
@@ -80,7 +82,7 @@ namespace client
       }
 
       // get min and max index for cells per each axis, which should be included in pvs
-      void getExtrems( Span& span, const Vec3& p )
+      void getExtrems( Span& span, const Point3& p )
       {
         span.minX = max( int( ( p.x - radius + Orbis::DIM ) * Cell::INV_SIZE ), 0 );
         span.minY = max( int( ( p.y - radius + Orbis::DIM ) * Cell::INV_SIZE ), 0 );

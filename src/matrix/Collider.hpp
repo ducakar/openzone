@@ -19,14 +19,14 @@ namespace oz
   struct Hit
   {
     Vec3  normal;
-    float ratio;
 
     const Object*    obj;
     const Structure* str;
     const Entity*    entity;
 
-    int   material;
+    float ratio;
 
+    int   material;
     float waterDepth;
     bool  inWater;
     bool  onLadder;
@@ -44,8 +44,8 @@ namespace oz
 
       AABB                      aabb;
 
-      Vec3                      startPos;
-      Vec3                      endPos;
+      Point3                    startPos;
+      Point3                    endPos;
 
       const Dynamic*            obj;
       const Object*             exclObj;
@@ -101,11 +101,11 @@ namespace oz
 
       explicit Collider();
 
-      bool overlaps( const Vec3& point, const Object* exclObj = null );
+      bool overlaps( const Point3& point, const Object* exclObj = null );
       // test for object collisions only (no structures or terrain)
-      bool overlapsOO( const Vec3& point, const Object* exclObj = null );
+      bool overlapsOO( const Point3& point, const Object* exclObj = null );
       // test for object and structure collisions only (no terain)
-      bool overlapsOSO( const Vec3& point, const Object* exclObj = null );
+      bool overlapsOSO( const Point3& point, const Object* exclObj = null );
 
       bool overlaps( const AABB& aabb, const Object* exclObj = null );
       bool overlapsOO( const AABB& aabb, const Object* exclObj = null );
@@ -123,7 +123,7 @@ namespace oz
 
       void getOverlaps( const Entity* entity, Vector<Object*>* objects, float margin = 0.0f );
 
-      void translate( const Vec3& point, const Vec3& move, const Object* exclObj = null );
+      void translate( const Point3& point, const Vec3& move, const Object* exclObj = null );
       void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );
       void translate( const Dynamic* obj, const Vec3& move );
 

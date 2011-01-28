@@ -26,12 +26,14 @@ namespace oz
         Type   value;
         Elem*  next[1];
 
+        OZ_ALWAYS_INLINE
         explicit Elem( const char* key_, const Type& value_, Elem* next_ ) :
             key( key_ ), value( value_ )
         {
           next[0] = next_;
         }
 
+        OZ_ALWAYS_INLINE
         explicit Elem( const char* key_, Elem* next_ ) : key( key_ )
         {
           next[0] = next_;
@@ -59,6 +61,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator() : B( null )
           {}
 
@@ -77,6 +80,7 @@ namespace oz
           /**
            * @return constant pointer to current element
            */
+          OZ_ALWAYS_INLINE
           operator const Type* () const
           {
             return &B::elem->value;
@@ -85,6 +89,7 @@ namespace oz
           /**
            * @return constant reference to current element
            */
+          OZ_ALWAYS_INLINE
           const Type& operator * () const
           {
             return B::elem->value;
@@ -93,6 +98,7 @@ namespace oz
           /**
            * @return constant access to member
            */
+          OZ_ALWAYS_INLINE
           const Type* operator -> () const
           {
             return &B::elem->value;
@@ -101,6 +107,7 @@ namespace oz
           /**
            * @return current element's key
            */
+          OZ_ALWAYS_INLINE
           const String& key() const
           {
             return B::elem->key;
@@ -109,6 +116,7 @@ namespace oz
           /**
            * @return constant reference to current element's value
            */
+          OZ_ALWAYS_INLINE
           const Type& value() const
           {
             return B::elem->value;
@@ -157,6 +165,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator() : B( null )
           {}
 
@@ -175,6 +184,7 @@ namespace oz
           /**
            * @return constant pointer to current element
            */
+          OZ_ALWAYS_INLINE
           operator const Type* () const
           {
             return &B::elem->value;
@@ -183,6 +193,7 @@ namespace oz
           /**
            * @return pointer to current element
            */
+          OZ_ALWAYS_INLINE
           operator Type* ()
           {
             return &B::elem->value;
@@ -191,6 +202,7 @@ namespace oz
           /**
            * @return constant reference to current element
            */
+          OZ_ALWAYS_INLINE
           const Type& operator * () const
           {
             return B::elem->value;
@@ -199,6 +211,7 @@ namespace oz
           /**
            * @return reference to current element
            */
+          OZ_ALWAYS_INLINE
           Type& operator * ()
           {
             return B::elem->value;
@@ -207,6 +220,7 @@ namespace oz
           /**
            * @return constant access to member
            */
+          OZ_ALWAYS_INLINE
           const Type* operator -> () const
           {
             return &B::elem->value;
@@ -215,6 +229,7 @@ namespace oz
           /**
            * @return non-constant access to member
            */
+          OZ_ALWAYS_INLINE
           Type* operator -> ()
           {
             return &B::elem->value;
@@ -223,6 +238,7 @@ namespace oz
           /**
            * @return current element's key
            */
+          OZ_ALWAYS_INLINE
           const String& key() const
           {
             return B::elem->key;
@@ -231,6 +247,7 @@ namespace oz
           /**
            * @return constant reference to current element's value
            */
+          OZ_ALWAYS_INLINE
           const Type& value() const
           {
             return B::elem->value;
@@ -239,6 +256,7 @@ namespace oz
           /**
            * @return reference to current element's value
            */
+          OZ_ALWAYS_INLINE
           Type& value()
           {
             return B::elem->value;
@@ -427,6 +445,7 @@ namespace oz
       /**
        * @return constant iterator for this HashString
        */
+      OZ_ALWAYS_INLINE
       CIterator citer() const
       {
         return CIterator( *this );
@@ -435,6 +454,7 @@ namespace oz
       /**
        * @return iterator for this HashString
        */
+      OZ_ALWAYS_INLINE
       Iterator iter() const
       {
         return Iterator( *this );
@@ -443,14 +463,25 @@ namespace oz
       /**
        * @return number of elements
        */
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return count;
       }
 
       /**
+       * @return true if HashString has no elements
+       */
+      OZ_ALWAYS_INLINE
+      bool isEmpty() const
+      {
+        return count == 0;
+      }
+
+      /**
        * @return capacity
        */
+      OZ_ALWAYS_INLINE
       int capacity() const
       {
         return SIZE;
@@ -462,14 +493,6 @@ namespace oz
       float loadFactor() const
       {
         return float( count ) / float( SIZE );
-      }
-
-      /**
-       * @return true if HashString has no elements
-       */
-      bool isEmpty() const
-      {
-        return count == 0;
       }
 
       /**

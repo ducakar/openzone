@@ -72,7 +72,7 @@ namespace oz
       explicit String( bool b ) : buffer( baseBuffer )
       {
         // some protection against too small buffers
-        static_assert( BUFFER_SIZE >= 6, "Too small String::BUFFER_SIZE for bool representation" );
+        static_assert( BUFFER_SIZE >= 6, "String::BUFFER_SIZE too small for bool representation" );
 
         if( b ) {
           count = 4;
@@ -102,7 +102,7 @@ namespace oz
         // that should assure enough space, since log10( 2^( 8*sizeof( int ) ) ) <= 3*sizeof( int ),
         // +2 for sign and terminating null char
         static_assert( BUFFER_SIZE >= 3 * int( sizeof( int ) ) + 2,
-                       "Too small String::BUFFER_SIZE for int representation" );
+                       "String::BUFFER_SIZE too small for int representation" );
 
         // we have [sign +] first digit + remaining digits
         // since we always count first digit, we assure that we never get 0 digits (if n == 0)
@@ -222,16 +222,19 @@ namespace oz
         return false;
       }
 
+      OZ_ALWAYS_INLINE
       operator const char* () const
       {
         return buffer;
       }
 
+      OZ_ALWAYS_INLINE
       const char* cstr() const
       {
         return buffer;
       }
 
+      OZ_ALWAYS_INLINE
       const char& operator [] ( int i ) const
       {
         assert( 0 <= i && i < count );
@@ -256,11 +259,13 @@ namespace oz
         return i;
       }
 
+      OZ_ALWAYS_INLINE
       bool isEmpty() const
       {
         return count == 0;
       }
 
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return count;
@@ -389,12 +394,11 @@ namespace oz
       static uint hash( const char* s )
       {
         uint hash = 5381;
-        int count = length( s );
 
-        for( int i = 0; i < count; ++i ) {
-          hash = hash * 33 + s[i];
+        while( *s != '\0' ) {
+          hash = hash * 33 + *s;
+          ++s;
         }
-        // absolute value
         return hash;
       }
 

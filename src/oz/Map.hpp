@@ -322,6 +322,7 @@ namespace oz
       /**
        * @return constant iterator for this map
        */
+      OZ_ALWAYS_INLINE
       CIterator citer() const
       {
         return CIterator( *this );
@@ -330,6 +331,7 @@ namespace oz
       /**
        * @return iterator for this map
        */
+      OZ_ALWAYS_INLINE
       Iterator iter() const
       {
         return Iterator( *this );
@@ -338,6 +340,7 @@ namespace oz
       /**
        * @return number of elements in the map
        */
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return count;
@@ -346,6 +349,7 @@ namespace oz
       /**
        * @return capacity of the map
        */
+      OZ_ALWAYS_INLINE
       int capacity() const
       {
         return size;
@@ -354,6 +358,7 @@ namespace oz
       /**
        * @return true if map has no elements
        */
+      OZ_ALWAYS_INLINE
       bool isEmpty() const
       {
         return count == 0;
@@ -372,6 +377,7 @@ namespace oz
        * @param i
        * @return constant reference i-th element's key
        */
+      OZ_ALWAYS_INLINE
       const Key& operator [] ( int i ) const
       {
         assert( uint( i ) < uint( count ) );
@@ -383,6 +389,7 @@ namespace oz
        * @param i
        * @return reference i-th element's key
        */
+      OZ_ALWAYS_INLINE
       Key& operator [] ( int i )
       {
         assert( uint( i ) < uint( count ) );
@@ -394,6 +401,7 @@ namespace oz
        * @param i
        * @return constant reference i-th element's value
        */
+      OZ_ALWAYS_INLINE
       const Value& value( int i ) const
       {
         assert( uint( i ) < uint( count ) );
@@ -405,6 +413,7 @@ namespace oz
        * @param i
        * @return reference i-th element's value
        */
+      OZ_ALWAYS_INLINE
       Value& value( int i )
       {
         assert( uint( i ) < uint( count ) );
@@ -413,18 +422,9 @@ namespace oz
       }
 
       /**
-       * Return index of the specified element
-       * @param e
-       * @return index of element, -1 if not found
-       */
-      int index( const Key& key ) const
-      {
-        return aBisectFind( data, key, count );
-      }
-
-      /**
        * @return constant reference to first element's key
        */
+      OZ_ALWAYS_INLINE
       const Key& first() const
       {
         assert( count != 0 );
@@ -435,11 +435,22 @@ namespace oz
       /**
        * @return constant reference to last element's key
        */
+      OZ_ALWAYS_INLINE
       const Key& last() const
       {
         assert( count != 0 );
 
         return data[count - 1].key;
+      }
+
+      /**
+       * Return index of the specified element
+       * @param e
+       * @return index of element, -1 if not found
+       */
+      int index( const Key& key ) const
+      {
+        return aBisectFind( data, key, count );
       }
 
       /**

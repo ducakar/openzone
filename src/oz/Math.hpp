@@ -53,21 +53,25 @@ namespace oz
 
       static const float MAX_RAND;
 
+      OZ_ALWAYS_INLINE
       static float min( float x, float y )
       {
         return y < x ? y : x;
       }
 
+      OZ_ALWAYS_INLINE
       static float max( float x, float y )
       {
         return x < y ? y : x;
       }
 
+      OZ_ALWAYS_INLINE
       static float bound( float x, float a, float b )
       {
         return x < a ? a : ( b < x ? b : x );
       }
 
+      OZ_ALWAYS_INLINE
       static float abs( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -77,6 +81,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float floor( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -86,6 +91,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float ceil( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -95,6 +101,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float round( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -110,6 +117,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float trunc( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -125,6 +133,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float mod( float x, float y )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -134,6 +143,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static Pair<float> fract( float x )
       {
         float integral;
@@ -145,6 +155,7 @@ namespace oz
         return Pair<float>( integral, fractional );
       }
 
+      OZ_ALWAYS_INLINE
       static float sqrt( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -154,6 +165,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float exp( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -163,6 +175,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float log( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -172,6 +185,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float pow( float x, float y )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -181,6 +195,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float sin( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -190,6 +205,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float cos( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -199,6 +215,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static void sincos( float x, float* s, float* c )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -218,6 +235,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float tan( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -227,6 +245,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float asin( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -236,6 +255,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float acos( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -245,6 +265,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float atan( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -254,6 +275,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float atan2( float x, float y )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -263,6 +285,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float nan()
       {
 #ifdef OZ_BUILTIN_MATH
@@ -274,6 +297,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float inf()
       {
 #ifdef OZ_BUILTIN_MATH
@@ -283,6 +307,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static bool isNaN( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -294,6 +319,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static bool isFinite( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -305,6 +331,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static bool isInf( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -316,6 +343,7 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static bool isNormal( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -327,22 +355,26 @@ namespace oz
 #endif
       }
 
+      OZ_ALWAYS_INLINE
       static float sgn( float x )
       {
         return x < 0.0f ? -1.0f : ( x > 0.0f ? 1.0f : 0.0f );
       }
 
       // deg-to-rad and rad-to-deg conversion
+      OZ_ALWAYS_INLINE
       static float rad( float x )
       {
         return x * ( PI / 180.0f );
       }
 
+      OZ_ALWAYS_INLINE
       static float deg( float x )
       {
         return x * ( _1_PI * 180.0f );
       }
 
+      OZ_ALWAYS_INLINE
       static int toBits( float x )
       {
         union FloatToBits
@@ -354,6 +386,7 @@ namespace oz
         return fb.b;
       }
 
+      OZ_ALWAYS_INLINE
       static float fromBits( int i )
       {
         union BitsToFloat
@@ -365,12 +398,14 @@ namespace oz
         return fb.f;
       }
 
+      OZ_ALWAYS_INLINE
       static float fastSqrt( float x )
       {
-         return x * fastInvSqrt( x );
+        return x * fastInvSqrt( x );
       }
 
       // famous fast inverse sqrt from Quake source (google for detailed explanations)
+      OZ_ALWAYS_INLINE
       static float fastInvSqrt( float x )
       {
         float y = fromBits( 0x5f3759df - ( toBits( x ) >> 1 ) );
@@ -379,6 +414,7 @@ namespace oz
 
       // is power of two?
       template <typename Value>
+      OZ_ALWAYS_INLINE
       static bool isPow2( const Value& v )
       {
         return ( v & ( v - 1 ) ) == 0;
@@ -392,6 +428,7 @@ namespace oz
       static int ( *const rand )();
 
       // random integer between 0 and max - 1
+      OZ_ALWAYS_INLINE
       static int randn( int max )
       {
         return rand() % max;

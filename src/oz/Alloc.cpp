@@ -40,7 +40,6 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     throw std::bad_alloc();
   }
-
   return ptr;
 }
 
@@ -50,7 +49,6 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     throw std::bad_alloc();
   }
-
   return ptr;
 }
 
@@ -66,7 +64,7 @@ void operator delete[] ( void* ptr ) throw()
 
 #else
 
-static_assert( sizeof( size_t ) < size_t( Alloc::ALIGNMENT ),
+static_assert( sizeof( size_t ) <= size_t( Alloc::ALIGNMENT ),
                "Alloc::ALIGNEMENT should not be less than sizeof( size_t ) when using memory "
                "allocation statistics." );
 

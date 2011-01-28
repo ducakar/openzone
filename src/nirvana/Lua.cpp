@@ -48,7 +48,7 @@ namespace nirvana
 
   static int ozBindAllOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+    AABB aabb = AABB( Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
                       Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.objects.clear();
     lua.structs.clear();
@@ -60,7 +60,7 @@ namespace nirvana
 
   static int ozBindStrOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+    AABB aabb = AABB( Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
                       Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.structs.clear();
     collider.getOverlaps( aabb, null, &lua.structs );
@@ -70,7 +70,7 @@ namespace nirvana
 
   static int ozBindObjOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+    AABB aabb = AABB( Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
                       Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.objects.clear();
     collider.getOverlaps( aabb, &lua.objects, null );

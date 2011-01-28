@@ -415,7 +415,7 @@ namespace oz
     }
   }
 
-  Structure::Structure( int index_, int bsp_, const Vec3& p_, Rotation rot_ ) :
+  Structure::Structure( int index_, int bsp_, const Point3& p_, Rotation rot_ ) :
       index( index_ ), bsp( bsp_ ), p( p_ ), rot( rot_ ), life( orbis.bsps[bsp]->life )
   {
     const BSP* bsp = orbis.bsps[this->bsp];
@@ -464,15 +464,15 @@ namespace oz
 
   Bounds Structure::rotate( const Bounds& in, Rotation rot )
   {
-    Vec3 p = ( in.maxs - in.mins ) * 0.5f;
+    Point3 p = in.mins + ( in.maxs - in.mins ) * 0.5f;
 
     switch( rot ) {
       default: {
         assert( false );
       }
       case Structure::R0: {
-        return Bounds( p + in.mins,
-                       p + in.maxs );
+        return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
+                       p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
       }
       case Structure::R90: {
         return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
@@ -496,8 +496,8 @@ namespace oz
         assert( false );
       }
       case Structure::R0: {
-        mins = p + in.mins;
-        maxs = p + in.maxs;
+        mins = p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z );
+        maxs = p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z );
         break;
       }
       case Structure::R90: {
@@ -559,7 +559,7 @@ namespace oz
 
   void Structure::readFull( InputStream* istream )
   {
-    p    = istream->readVec3();
+    p    = istream->readPoint3();
     rot  = Rotation( istream->readChar() );
     life = istream->readFloat();
 
@@ -573,7 +573,7 @@ namespace oz
 
   void Structure::writeFull( OutputStream* ostream )
   {
-    ostream->writeVec3( p );
+    ostream->writePoint3( p );
     ostream->writeChar( rot );
     ostream->writeFloat( life );
 

@@ -58,7 +58,6 @@ namespace client
     keyXSens     = config.getSet( "camera.keysXSens",  100.0f );
     keyYSens     = config.getSet( "camera.keysYSens",  100.0f );
     smoothCoef   = config.getSet( "camera.smoothCoef", 0.50f );
-    smoothCoef_1 = 1.0f - smoothCoef;
     isExternal   = true;
 
     String sDefaultState = config.getSet( "camera.defaultState", "FREECAM" );
@@ -74,9 +73,9 @@ namespace client
       defaultState = FREECAM;
     }
 
-    p            = Vec3::ZERO;
-    oldP         = Vec3::ZERO;
-    newP         = Vec3::ZERO;
+    p            = Point3::ORIGIN;
+    oldP         = Point3::ORIGIN;
+    newP         = Point3::ORIGIN;
     h            = 0.0f;
     v            = 0.0f;
     w            = 0.0f;

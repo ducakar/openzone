@@ -14,3 +14,5 @@
 /openzone.tag
 
 /valgrind.supp
+
+/*.patch

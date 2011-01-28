@@ -28,9 +28,9 @@ namespace ui
 
   const float StrategicArea::TAG_CLIP_DIST = 0.1f;
 
-  Pair<int> StrategicArea::project( const Vec3& p ) const
+  Pair<int> StrategicArea::project( const Point3& p ) const
   {
-    Vec3 t = camera.rotTMat * p;
+    Point3 t = camera.rotTMat * p;
 
     t.x = Math::round( ( t.x / t.y ) * stepPixel );
     t.z = Math::round( ( t.z / t.y ) * stepPixel );
@@ -268,7 +268,7 @@ namespace ui
     hovered = collider.hit.obj;
 
     if( hovered != null ) {
-      Span span = projectBounds( *hovered - camera.p );
+      Span span = projectBounds( *hovered + ( Point3::ORIGIN - camera.p ) );
       drawHoveredRect( span );
       camera.setTagged( hovered );
 
@@ -296,7 +296,7 @@ namespace ui
         continue;
       }
 
-      AABB bb = *obj - camera.p;
+      AABB bb = *obj + ( Point3::ORIGIN - camera.p );
       if( bb.p * camera.at >= TAG_CLIP_DIST ) {
         Span span = projectBounds( bb );
         drawTaggedRect( obj, span );

@@ -34,6 +34,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator() : B( null, null )
           {}
 
@@ -41,6 +42,7 @@ namespace oz
            * Make iterator for given array. After creation it points to first element.
            * @param v
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator( const Array& a ) : B( a.data, a.data + SIZE )
           {}
 
@@ -60,6 +62,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator() : B( null, null )
           {}
 
@@ -67,6 +70,7 @@ namespace oz
            * Make iterator for given array. After creation it points to first element.
            * @param v
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator( Array& a ) : B( a.data, a.data + SIZE )
           {}
 
@@ -117,6 +121,7 @@ namespace oz
       /**
        * @return iterator for this array
        */
+      OZ_ALWAYS_INLINE
       CIterator citer() const
       {
         return CIterator( *this );
@@ -125,6 +130,7 @@ namespace oz
       /**
        * @return iterator for this array
        */
+      OZ_ALWAYS_INLINE
       Iterator iter()
       {
         return Iterator( *this );
@@ -135,6 +141,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return constant pointer to data array
        */
+      OZ_ALWAYS_INLINE
       operator const Type* () const
       {
         return data;
@@ -145,6 +152,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
+      OZ_ALWAYS_INLINE
       operator Type* ()
       {
         return data;
@@ -153,9 +161,19 @@ namespace oz
       /**
        * @return number of elements in the array
        */
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return SIZE;
+      }
+
+      /**
+       * @return true if vector has no elements
+       */
+      OZ_ALWAYS_INLINE
+      bool isEmpty() const
+      {
+        return SIZE == 0;
       }
 
       /**
@@ -171,6 +189,7 @@ namespace oz
        * @param i
        * @return constant reference i-th element
        */
+      OZ_ALWAYS_INLINE
       const Type& operator [] ( int i ) const
       {
         assert( uint( i ) < uint( SIZE ) );
@@ -182,11 +201,48 @@ namespace oz
        * @param i
        * @return reference i-th element
        */
+      OZ_ALWAYS_INLINE
       Type& operator [] ( int i )
       {
         assert( uint( i ) < uint( SIZE ) );
 
         return data[i];
+      }
+
+      /**
+       * @return constant reference to first element
+       */
+      OZ_ALWAYS_INLINE
+      const Type& first() const
+      {
+        return data[0];
+      }
+
+      /**
+       * @return reference to first element
+       */
+      OZ_ALWAYS_INLINE
+      Type& first()
+      {
+        return data[0];
+      }
+
+      /**
+       * @return constant reference to last element
+       */
+      OZ_ALWAYS_INLINE
+      const Type& last() const
+      {
+        return data[SIZE - 1];
+      }
+
+      /**
+       * @return reference to last element
+       */
+      OZ_ALWAYS_INLINE
+      Type& last()
+      {
+        return data[SIZE - 1];
       }
 
       /**
@@ -207,38 +263,6 @@ namespace oz
       int lastIndex( const Type& e ) const
       {
         return aLastIndex( data, e, SIZE );
-      }
-
-      /**
-       * @return constant reference to first element
-       */
-      const Type& first() const
-      {
-        return data[0];
-      }
-
-      /**
-       * @return reference to first element
-       */
-      Type& first()
-      {
-        return data[0];
-      }
-
-      /**
-       * @return constant reference to last element
-       */
-      const Type& last() const
-      {
-        return data[SIZE - 1];
-      }
-
-      /**
-       * @return reference to last element
-       */
-      Type& last()
-      {
-        return data[SIZE - 1];
       }
 
       /**

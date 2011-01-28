@@ -43,7 +43,7 @@ namespace oz
 
   static int ozBindAllOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+    AABB aabb = AABB( Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
                       Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.objects.clear();
     lua.structs.clear();
@@ -55,7 +55,7 @@ namespace oz
 
   static int ozBindStrOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+    AABB aabb = AABB( Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
                       Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.structs.clear();
     collider.getOverlaps( aabb, null, &lua.structs );
@@ -65,7 +65,7 @@ namespace oz
 
   static int ozBindObjOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
+    AABB aabb = AABB( Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
                       Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
     lua.objects.clear();
     collider.getOverlaps( aabb, &lua.objects, null );
@@ -1420,7 +1420,7 @@ namespace oz
   static int ozOrbisAddStr( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
     Structure::Rotation rot = Structure::Rotation( lua_tointeger( l, 5 ) );
 
     int bsp = translator.bspIndex( name );
@@ -1431,7 +1431,7 @@ namespace oz
     orbis.requestBSP( bsp );
     Bounds bounds = Structure::rotate( *orbis.bsps[bsp], rot );
 
-    if( !collider.overlaps( bounds.toAABB() + p ) ) {
+    if( !collider.overlaps( bounds.toAABB() + ( p - Point3::ORIGIN ) ) ) {
       int index = synapse.addStruct( name, p, rot );
       lua.str = orbis.structs[index];
       lua_pushinteger( l, index );
@@ -1446,7 +1446,7 @@ namespace oz
   static int ozOrbisForceAddStr( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
     Structure::Rotation rot = Structure::Rotation( lua_tointeger( l, 5 ) );
 
     int index = synapse.addStruct( name, p, rot );
@@ -1458,7 +1458,7 @@ namespace oz
   static int ozOrbisAddObj( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
 
     const ObjectClass* const* value = translator.classes.find( name );
     if( value == null ) {
@@ -1482,7 +1482,7 @@ namespace oz
   static int ozOrbisForceAddObj( lua_State* l )
   {
     const char* name = lua_tostring( l, 1 );
-    Vec3 p = Vec3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
 
     int index = synapse.addObject( name, p );
     lua.obj = orbis.objects[index];
@@ -1492,12 +1492,12 @@ namespace oz
 
   static int ozOrbisAddPart( lua_State* l )
   {
-    Vec3  p           = Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) );
-    Vec3  velocity    = Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) );
-    Vec3  colour      = Vec3( float( lua_tonumber( l, 7 ) ), float( lua_tonumber( l, 8 ) ), float( lua_tonumber( l, 9 ) ) );
-    float restitution = float( lua_tonumber( l, 10 ) );
-    float mass        = float( lua_tonumber( l, 11 ) );
-    float lifeTime    = float( lua_tonumber( l, 12 ) );
+    Point3 p           = Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) );
+    Vec3   velocity    = Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) );
+    Vec3   colour      = Vec3( float( lua_tonumber( l, 7 ) ), float( lua_tonumber( l, 8 ) ), float( lua_tonumber( l, 9 ) ) );
+    float  restitution = float( lua_tonumber( l, 10 ) );
+    float  mass        = float( lua_tonumber( l, 11 ) );
+    float  lifeTime    = float( lua_tonumber( l, 12 ) );
 
     int index = synapse.addPart( p, velocity, colour, restitution, mass, lifeTime );
     lua.part = orbis.parts[index];

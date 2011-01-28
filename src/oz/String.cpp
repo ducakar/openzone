@@ -16,20 +16,20 @@ namespace oz
 
   String::String( float f ) : buffer( baseBuffer )
   {
-    // %g gives 6-digit precision + sign + dot + exponent (worst case e-xx) + terminating null char
-    // 13 chars should be enough
-    static_assert( BUFFER_SIZE >= 13, "Too small String::BUFFER_SIZE for float representation." );
+    // worst case: sign + 8 digits + dot + exponent (at most e-xx) + '\0'
+    static_assert( BUFFER_SIZE >= 15,
+                   "String::BUFFER_SIZE too small for float representation." );
 
-    count = snprintf( buffer, BUFFER_SIZE, "%#g", f );
+    count = snprintf( buffer, BUFFER_SIZE, "%#.8g", f );
   }
 
   String::String( double d ) : buffer( baseBuffer )
   {
-    // %g gives 6-digit precision + sign + dot + exponent (worst case e-xxx) + terminating null char
-    // 14 chars should be enough
-    static_assert( BUFFER_SIZE >= 14, "Too small String::BUFFER_SIZE for double representation." );
+    // worst case: sign + 16 digits + dot + exponent (at most e-xxx) + '\0'
+    static_assert( BUFFER_SIZE >= 24,
+                   "String::BUFFER_SIZE too small for double representation." );
 
-    count = snprintf( buffer, BUFFER_SIZE, "%#g", d );
+    count = snprintf( buffer, BUFFER_SIZE, "%#.16g", d );
   }
 
 }

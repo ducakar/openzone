@@ -2,6 +2,7 @@ cmake_minimum_required( VERSION 2.8 )
 
 project( openzone C CXX )
 
+option( OZ_ALWAYS_INLINE "Enable inlining in debug mode for critical functions" ON )
 option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make heap usage statistics" ON )
 option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
 option( OZ_BUILTIN_MATH "Use GCC/clang built-in math functions (no need to include <cmath>, possibly faster math calls in debug mode)" ON )
@@ -213,7 +214,7 @@ else( MSVC )
     set( warnings "${warnings} -Wlogical-op -Wconversion" )
   endif( CLANG )
 
-  set( arch_flags "-msse -mfpmath=sse" )
+  set( arch_flags "-msse3 -mfpmath=sse" )
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
