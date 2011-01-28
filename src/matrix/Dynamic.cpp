@@ -44,7 +44,7 @@ namespace oz
   {
     Object::readUpdate( istream );
 
-    p        = istream->readVec3();
+    p        = istream->readPoint3();
     h        = istream->readFloat();
     velocity = istream->readVec3();
     momentum = istream->readVec3();
@@ -54,7 +54,7 @@ namespace oz
   {
     Object::writeUpdate( ostream );
 
-    ostream->writeVec3( p );
+    ostream->writePoint3( p );
     ostream->writeFloat( h );
     ostream->writeFloat( life );
     ostream->writeVec3( velocity );

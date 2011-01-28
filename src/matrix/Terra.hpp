@@ -107,8 +107,7 @@ namespace oz
     float intraY = Math::mod( y + DIM, Quad::SIZE );
     int   ii = intraX <= intraY;
 
-    return
-        ( quads[i.x][i.y].tri[ii].distance - quads[i.x][i.y].tri[ii].normal.x * x -
+    return ( quads[i.x][i.y].tri[ii].distance - quads[i.x][i.y].tri[ii].normal.x * x -
         quads[i.x][i.y].tri[ii].normal.y * y ) / quads[i.x][i.y].tri[ii].normal.z;
   }
 

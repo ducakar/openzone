@@ -38,6 +38,7 @@ namespace oz
       /**
        * Default constructor returns an invalid iterator
        */
+      OZ_ALWAYS_INLINE
       explicit CIterator() : B( null ), past( null )
       {}
 
@@ -47,6 +48,7 @@ namespace oz
        * @param past_ successor of last element for forward iterator or predecessor of first element
        * for backward iterator
        */
+      OZ_ALWAYS_INLINE
       explicit CIterator( const Type* start, const Type* past_ ) : B( start ), past( past_ )
       {}
 
@@ -55,6 +57,7 @@ namespace oz
        * points to a valid location.
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool isValid() const
       {
         return B::elem != past;
@@ -64,6 +67,7 @@ namespace oz
        * Advance to next element.
        * @return
        */
+      OZ_ALWAYS_INLINE
       CIterator& operator ++ ()
       {
         assert( B::elem != past );
@@ -98,6 +102,7 @@ namespace oz
       /**
        * Default constructor returns an invalid iterator
        */
+      OZ_ALWAYS_INLINE
       explicit Iterator() : B( null ), past( null )
       {}
 
@@ -107,6 +112,7 @@ namespace oz
        * @param past_ successor of last element for forward iterator or predecessor of first element
        * for backward iterator
        */
+      OZ_ALWAYS_INLINE
       explicit Iterator( Type* start, const Type* past_ ) : B( start ), past( past_ )
       {}
 
@@ -115,6 +121,7 @@ namespace oz
        * points to a valid location.
        * @return
        */
+      OZ_ALWAYS_INLINE
       bool isValid() const
       {
         return B::elem != past;
@@ -124,6 +131,7 @@ namespace oz
        * Advance to next element.
        * @return
        */
+      OZ_ALWAYS_INLINE
       Iterator& operator ++ ()
       {
         assert( B::elem != past );
@@ -146,6 +154,7 @@ namespace oz
    * @return
    */
   template <typename Type>
+  OZ_ALWAYS_INLINE
   inline CIterator<Type> citer( const Type* array, int count )
   {
     return CIterator<Type>( array, array + count );
@@ -163,6 +172,7 @@ namespace oz
    * @return
    */
   template <typename Type>
+  OZ_ALWAYS_INLINE
   inline Iterator<Type> iter( Type* array, int count )
   {
     return Iterator<Type>( array, array + count );

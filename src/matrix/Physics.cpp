@@ -480,7 +480,7 @@ namespace oz
       if( handleObjFriction() ) {
         // if objects is still in movement or not on a still surface after friction changed its
         // velocity, handle physics
-        Vec3 oldPos = obj->p;
+        Point3 oldPos = obj->p;
         handleObjMove();
         obj->velocity = ( obj->p - oldPos ) / Timer::TICK_TIME;
       }

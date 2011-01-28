@@ -51,8 +51,8 @@ namespace client
 
     private:
 
-      static float anorms[][3];
-      static Vec3  vertList[MAX_VERTS];
+      static Vec3 anorms[];
+      static Vec3 vertList[MAX_VERTS];
 
       String       name;
 

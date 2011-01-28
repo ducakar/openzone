@@ -210,8 +210,8 @@ namespace client
 
   void Shape::drawBox( const AABB& bb )
   {
-    Vec3 v0 = bb.p - bb.dim;
-    Vec3 v1 = bb.p + bb.dim;
+    Point3 v0 = bb.p - bb.dim;
+    Point3 v1 = bb.p + bb.dim;
 
     glBegin( GL_QUADS );
       // top
@@ -284,8 +284,8 @@ namespace client
 
   void Shape::drawWireBox( const AABB& bb )
   {
-    Vec3 v0 = bb.p - bb.dim;
-    Vec3 v1 = bb.p + bb.dim;
+    Point3 v0 = bb.p - bb.dim;
+    Point3 v1 = bb.p + bb.dim;
 
     glBegin( GL_LINES );
       glVertex3f( v0.x, v0.y, v0.z );

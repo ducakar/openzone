@@ -14,6 +14,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <cerrno>
 
 #ifdef OZ_XML_CONFIG
 #include <libxml/xmlreader.h>
@@ -44,6 +45,35 @@ namespace oz
   Config::~Config()
   {
     clear();
+  }
+
+  void Config::add( const char* key, const char* value_ )
+  {
+    String* value = vars.find( key );
+    if( value != null ) {
+      *value = value_;
+    }
+    else {
+      vars.add( key, value_ );
+    }
+  }
+
+  void Config::exclude( const char* key )
+  {
+    vars.exclude( key );
+  }
+
+  bool Config::contains( const char* key ) const
+  {
+    return vars.contains( key );
+  }
+
+  const String& Config::operator [] ( const char* key ) const
+  {
+#ifdef OZ_VERBOSE_CONFIG
+    usedVars.add( key );
+#endif
+    return vars.get( key );
   }
 
   bool Config::loadConf( const char* file )
@@ -284,8 +314,11 @@ namespace oz
       if( value->equals( "true" ) ) {
         return true;
       }
-      else {
+      else if( value->equals( "false" ) ) {
         return false;
+      }
+      else {
+        throw Exception( "Invalid boolean value '" + *value + "'" );
       }
     }
     else {
@@ -303,7 +336,16 @@ namespace oz
 
     const String* value = vars.find( name );
     if( value != null ) {
-      return atoi( *value );
+      errno = 0;
+      char* end;
+      int   num = int( strtol( *value, &end, 0 ) );
+
+      if( errno != 0 || end == value->cstr() ) {
+        throw Exception( "Invalid int value '" + *value + "'" );
+      }
+      else {
+        return num;
+      }
     }
     else {
       return defVal;
@@ -320,24 +362,16 @@ namespace oz
 
     const String* value = vars.find( name );
     if( value != null ) {
-      return float( atof( *value ) );
-    }
-    else {
-      return defVal;
-    }
-  }
+      errno = 0;
+      char* end;
+      float num = strtof( *value, &end );
 
-  double Config::get( const char* name, double defVal ) const
-  {
-#ifdef OZ_VERBOSE_CONFIG
-    if( !usedVars.contains( name ) ) {
-      usedVars.add( name );
-    }
-#endif
-
-    const String* value = vars.find( name );
-    if( value != null ) {
-      return atof( *value );
+      if( errno != 0 || end == value->cstr() ) {
+        throw Exception( "Invalid float value '" + *value + "'" );
+      }
+      else {
+        return num;
+      }
     }
     else {
       return defVal;
@@ -363,10 +397,6 @@ namespace oz
 
   bool Config::getSet( const char* name, bool defVal )
   {
-    assert( !vars.contains( name ) ||
-            vars.get( name ).equals( "true" ) ||
-            vars.get( name ).equals( "false" ) );
-
 #ifdef OZ_VERBOSE_CONFIG
     if( !usedVars.contains( name ) ) {
       usedVars.add( name );
@@ -378,8 +408,11 @@ namespace oz
       if( value->equals( "true" ) ) {
         return true;
       }
-      else {
+      else if( value->equals( "false" ) ) {
         return false;
+      }
+      else {
+        throw Exception( "Invalid boolean value '" + *value + "'" );
       }
     }
     else {
@@ -398,7 +431,16 @@ namespace oz
 
     const String* value = vars.find( name );
     if( value != null ) {
-      return atoi( *value );
+      errno = 0;
+      char* end;
+      int   num = int( strtol( *value, &end, 0 ) );
+
+      if( errno != 0 || end == value->cstr() ) {
+        throw Exception( "Invalid int value '" + *value + "'" );
+      }
+      else {
+        return num;
+      }
     }
     else {
       vars.add( name, String( defVal ) );
@@ -416,25 +458,16 @@ namespace oz
 
     const String* value = vars.find( name );
     if( value != null ) {
-      return float( atof( *value ) );
-    }
-    else {
-      vars.add( name, String( defVal ) );
-      return defVal;
-    }
-  }
+      errno = 0;
+      char* end;
+      float num = strtof( *value, &end );
 
-  double Config::getSet( const char* name, double defVal )
-  {
-#ifdef OZ_VERBOSE_CONFIG
-    if( !usedVars.contains( name ) ) {
-      usedVars.add( name );
-    }
-#endif
-
-    const String* value = vars.find( name );
-    if( value != null ) {
-      return atof( *value );
+      if( errno != 0 || end == value->cstr() ) {
+        throw Exception( "Invalid float value '" + *value + "'" );
+      }
+      else {
+        return num;
+      }
     }
     else {
       vars.add( name, String( defVal ) );
@@ -525,7 +558,6 @@ namespace oz
       sortedVars[i].value = j.value().cstr();
       ++i;
     }
-    //sortedVars.sort();
     sortedVars.sort();
 
     for( int i = 0; i < size; ++i ) {

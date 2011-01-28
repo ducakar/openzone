@@ -86,49 +86,59 @@ namespace oz
 
       int        index;
       int        bsp;
-      Vec3       p;
+      Point3     p;
       Rotation   rot;
       float      life;
 
       Entity*    entities;
       int        nEntities;
 
-      explicit Structure( int index, int bsp, const Vec3& p, Rotation rot );
+      explicit Structure( int index, int bsp, const Point3& p, Rotation rot );
       explicit Structure( int index, int bsp, InputStream* istream );
 
       ~Structure();
 
       /**
-       * Rotate vector from absolute coordinate system to structure coordinate system. Do not
-       * translate (because of normals).
+       * Rotate vector from absolute coordinate system to structure coordinate system.
        * @param v
        * @return
        */
       Vec3 toStructCS( const Vec3& v ) const;
 
       /**
-       * Rotate vector from structure coordinate system to absolute coordinate system. Do not
-       * translate (because of normals).
+       * Rotate vector from structure coordinate system to absolute coordinate system.
        * @param v
        * @return
        */
       Vec3 toAbsoluteCS( const Vec3& v ) const;
 
       /**
-       * Rotate Bounds from absolute coordinate system to structure coordinate system. Do not
-       * translate (for consistency with vector version).
+       * Rotate point from absolute coordinate system to structure coordinate system.
        * @param v
        * @return
        */
-      Bounds toStructCS( const Bounds& bb ) const;
+      Point3 toStructCS( const Point3& p, const Point3& origin ) const;
 
       /**
-       * Rotate Bounds from structure coordinate system to absolute coordinate system. Do not
-       * translate (for consistency with vector version).
+       * Rotate point from structure coordinate system to absolute coordinate system.
        * @param v
        * @return
        */
-      Bounds toAbsoluteCS( const Bounds& bb ) const;
+      Point3 toAbsoluteCS( const Point3& p, const Point3& origin ) const;
+
+      /**
+       * Rotate Bounds from absolute coordinate system to structure coordinate system.
+       * @param v
+       * @return
+       */
+      Bounds toStructCS( const Bounds& bb, const Point3& origin ) const;
+
+      /**
+       * Rotate Bounds from structure coordinate system to absolute coordinate system.
+       * @param v
+       * @return
+       */
+      Bounds toAbsoluteCS( const Bounds& bb, const Point3& origin ) const;
 
       static Bounds rotate( const Bounds& in, Rotation rot );
       void setRotation( const Bounds& in, Rotation rot );
@@ -154,52 +164,65 @@ namespace oz
     return rotations[ int( rot ) ] * v;
   }
 
-  inline Bounds Structure::toStructCS( const Bounds& bb ) const
+  inline Point3 Structure::toStructCS( const Point3& p, const Point3& origin ) const
   {
+    return Point3::ORIGIN + invRotations[ int( rot ) ] * ( p - origin );
+  }
+
+  inline Point3 Structure::toAbsoluteCS( const Point3& p, const Point3& origin ) const
+  {
+    return origin + rotations[ int( rot ) ] * ( p - Point3::ORIGIN );
+  }
+
+  inline Bounds Structure::toStructCS( const Bounds& bb, const Point3& origin ) const
+  {
+    Point3 mins = bb.mins - ( Point3::ORIGIN - origin );
+    Point3 maxs = bb.maxs - ( Point3::ORIGIN - origin );
+
     switch( rot ) {
       default: {
         assert( false );
       }
       case Structure::R0: {
-        return Bounds( Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
-                       Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
+        return Bounds( Point3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
+                       Point3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
       }
       case Structure::R90: {
-        return Bounds( Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
-                       Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+        return Bounds( Point3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
+                       Point3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
       }
       case Structure::R180: {
-        return Bounds( Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
-                       Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+        return Bounds( Point3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
+                       Point3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
       }
       case Structure::R270: {
-        return Bounds( Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
-                       Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+        return Bounds( Point3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
+                       Point3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
       }
     }
   }
 
-  inline Bounds Structure::toAbsoluteCS( const Bounds& bb ) const
+  inline Bounds Structure::toAbsoluteCS( const Bounds& bb, const Point3& origin ) const
   {
     switch( rot ) {
       default: {
         assert( false );
       }
       case Structure::R0: {
-        return Bounds( Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
-                       Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
+        return Bounds( origin + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
+                       origin + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
       }
       case Structure::R90: {
-        return Bounds( Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
-                       Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+        return Bounds( origin + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
+                       origin + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
       }
       case Structure::R180: {
-        return Bounds( Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
-                       Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+        return Bounds( origin + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
+                       origin + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
       }
       case Structure::R270: {
-        return Bounds( Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
-                       Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+        return Bounds( origin + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
+                       origin + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
       }
     }
   }

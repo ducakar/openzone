@@ -50,6 +50,8 @@ namespace client
 
     public:
 
+      explicit Main();
+
       void main( int* argc, char* argv[] );
       void shutdown();
 

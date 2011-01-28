@@ -61,6 +61,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator() : B( null )
           {}
 
@@ -68,12 +69,14 @@ namespace oz
            * Make iterator for given list. After creation it points to first element.
            * @param l
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator( const List& l ) : B( l.firstElem )
           {}
 
           /**
            * Advance to next element.
            */
+          OZ_ALWAYS_INLINE
           CIterator& operator ++ ()
           {
             assert( B::elem != null );
@@ -98,6 +101,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator() : B( null )
           {}
 
@@ -105,12 +109,14 @@ namespace oz
            * Make iterator for given list. After creation it points to first element.
            * @param l
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator( const List& l ) : B( l.firstElem )
           {}
 
           /**
            * Advance to next element.
            */
+          OZ_ALWAYS_INLINE
           Iterator& operator ++ ()
           {
             assert( B::elem != null );
@@ -201,6 +207,7 @@ namespace oz
       /**
        * @return constant iterator for this list
        */
+      OZ_ALWAYS_INLINE
       CIterator citer() const
       {
         return CIterator( *this );
@@ -209,6 +216,7 @@ namespace oz
       /**
        * @return iterator for this list
        */
+      OZ_ALWAYS_INLINE
       Iterator iter() const
       {
         return Iterator( *this );
@@ -233,30 +241,16 @@ namespace oz
       /**
        * @return true if the list has no elements
        */
+      OZ_ALWAYS_INLINE
       bool isEmpty() const
       {
         return firstElem == null;
       }
 
       /**
-       * @param e requested element
-       * @return true if some element in the list points to the requested element
-       */
-      bool contains( const Type* e ) const
-      {
-        assert( e != null );
-
-        Type* p = firstElem;
-
-        while( p != null && p != e ) {
-          p = p->next[INDEX];
-        }
-        return p != null;
-      }
-
-      /**
        * @return constant pointer to first element in the list
        */
+      OZ_ALWAYS_INLINE
       const Type* first() const
       {
         return firstElem;
@@ -265,6 +259,7 @@ namespace oz
       /**
        * @return pointer to first element in the list
        */
+      OZ_ALWAYS_INLINE
       Type* first()
       {
         return firstElem;
@@ -324,6 +319,22 @@ namespace oz
           elem = elem->next[INDEX];
         }
         return beforeElem;
+      }
+
+      /**
+       * @param e requested element
+       * @return true if some element in the list points to the requested element
+       */
+      bool contains( const Type* e ) const
+      {
+        assert( e != null );
+
+        Type* p = firstElem;
+
+        while( p != null && p != e ) {
+          p = p->next[INDEX];
+        }
+        return p != null;
       }
 
       /**

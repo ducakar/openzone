@@ -99,14 +99,14 @@ namespace client
 
     // clear colour, visibility, fog
     if( isUnderWater ) {
-      visibility = sky.ratio * waterDayVisibility + sky.ratio_1 * waterNightVisibility;
+      visibility = waterNightVisibility + sky.ratio * ( waterDayVisibility - waterNightVisibility );
 
       glClearColor( Colours::water[0], Colours::water[1], Colours::water[2], Colours::water[3] );
       glFogfv( GL_FOG_COLOR, Colours::water );
       glFogf( GL_FOG_END, visibility );
     }
     else {
-      visibility = sky.ratio * dayVisibility + sky.ratio_1 * nightVisibility;
+      visibility = nightVisibility + sky.ratio * ( dayVisibility - nightVisibility );
 
       glClearColor( Colours::sky[0], Colours::sky[1], Colours::sky[2], Colours::sky[3] );
       glFogfv( GL_FOG_COLOR, Colours::sky );

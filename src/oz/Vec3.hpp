@@ -24,35 +24,43 @@ namespace oz
       float y;
       float z;
 
+      OZ_ALWAYS_INLINE
       explicit Vec3()
       {}
 
+      OZ_ALWAYS_INLINE
       explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
       {}
 
+      OZ_ALWAYS_INLINE
       explicit Vec3( const float* v ) : x( v[0] ), y( v[1] ), z( v[2] )
       {}
 
+      OZ_ALWAYS_INLINE
       bool operator == ( const Vec3& v ) const
       {
         return x == v.x && y == v.y && z == v.z;
       }
 
+      OZ_ALWAYS_INLINE
       bool operator != ( const Vec3& v ) const
       {
         return x != v.x || y != v.y || z != v.z;
       }
 
+      OZ_ALWAYS_INLINE
       operator const float* () const
       {
         return &x;
       }
 
+      OZ_ALWAYS_INLINE
       operator float* ()
       {
         return &x;
       }
 
+      OZ_ALWAYS_INLINE
       const float& operator [] ( int i ) const
       {
         assert( 0 <= i && i < 3 );
@@ -60,6 +68,7 @@ namespace oz
         return ( &x )[i];
       }
 
+      OZ_ALWAYS_INLINE
       float& operator [] ( int i )
       {
         assert( 0 <= i && i < 3 );
@@ -67,6 +76,7 @@ namespace oz
         return ( &x )[i];
       }
 
+      OZ_ALWAYS_INLINE
       bool equals( const Vec3& v, float epsilon ) const
       {
         return
@@ -75,31 +85,37 @@ namespace oz
             Math::abs( z - v.z ) <= epsilon;
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 abs() const
       {
         return Vec3( Math::abs( x ), Math::abs( y ), Math::abs( z ) );
       }
 
+      OZ_ALWAYS_INLINE
       float operator ! () const
       {
         return Math::sqrt( x*x + y*y + z*z );
       }
 
+      OZ_ALWAYS_INLINE
       float fastL() const
       {
          return Math::fastSqrt( x*x + y*y + z*z );
       }
 
+      OZ_ALWAYS_INLINE
       float sqL() const
       {
         return x*x + y*y + z*z;
       }
 
+      OZ_ALWAYS_INLINE
       bool isUnit() const
       {
         return x*x + y*y + z*z == 1.0f;
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 operator ~ () const
       {
         assert( x*x + y*y + z*z > 0.0f );
@@ -108,6 +124,7 @@ namespace oz
         return Vec3( x * k, y * k, z * k );
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 fastUnit() const
       {
         assert( x*x + y*y + z*z > 0.0f );
@@ -116,6 +133,7 @@ namespace oz
         return Vec3( x * k, y * k, z * k );
       }
 
+      OZ_ALWAYS_INLINE
       bool isColinear( const Vec3& v, float epsilon ) const
       {
         float p1 = v.x * y * z;
@@ -125,36 +143,43 @@ namespace oz
         return Math::abs( p1 - p2 ) <= epsilon && Math::abs( p1 - p3 ) <= epsilon;
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 operator + () const
       {
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 operator - () const
       {
         return Vec3( -x, -y, -z );
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 operator + ( const Vec3& v ) const
       {
         return Vec3( x + v.x, y + v.y, z + v.z );
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 operator - ( const Vec3& v ) const
       {
         return Vec3( x - v.x, y - v.y, z - v.z );
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 operator * ( float k ) const
       {
         return Vec3( x * k, y * k, z * k );
       }
 
+      OZ_ALWAYS_INLINE
       friend Vec3 operator * ( float k, const Vec3& v )
       {
         return Vec3( v.x * k, v.y * k, v.z * k );
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 operator / ( float k ) const
       {
         assert( k != 0.0f );
@@ -163,6 +188,7 @@ namespace oz
         return Vec3( x * k, y * k, z * k );
       }
 
+      OZ_ALWAYS_INLINE
       Vec3& operator += ( const Vec3& v )
       {
         x += v.x;
@@ -171,6 +197,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Vec3& operator -= ( const Vec3& v )
       {
         x -= v.x;
@@ -179,6 +206,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Vec3& operator *= ( float k )
       {
         x *= k;
@@ -187,6 +215,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       Vec3& operator /= ( float k )
       {
         assert( k != 0.0f );
@@ -199,41 +228,17 @@ namespace oz
       }
 
       // dot product
+      OZ_ALWAYS_INLINE
       float operator * ( const Vec3& v ) const
       {
         return x*v.x + y*v.y + z*v.z;
       }
 
       // cross product
+      OZ_ALWAYS_INLINE
       Vec3 operator ^ ( const Vec3& v ) const
       {
         return Vec3( y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x );
-      }
-
-      // vector which lies in plane defined by given vectors and is perpendicular to first one
-      Vec3 operator % ( const Vec3& v ) const
-      {
-        // this is actually -( u x v ) x u, where u is* this vector
-        // This equals to:
-        // ( u . u )v - ( u . v )u = |u|^2 * ( v - ( u . v )/( |u|^2 ) * u )
-        // ( the length doesn't matter )
-
-        // |u|^2, assume it's not 0
-        float k = x*x + y*y + z*z;
-        assert( k != 0.0f );
-
-        k = ( x*v.x + y*v.y + z*v.z ) / k;
-        return v - Vec3( x * k, y * k, z * k );
-      }
-
-      // mixed product
-      static float mix( const Vec3& a, const Vec3& b, const Vec3& c )
-      {
-        // 3x3 determinant
-        return
-            a.x * ( b.y * c.z - b.z * c.y ) -
-            a.y * ( b.x * c.z - b.z * c.x ) +
-            a.z * ( b.x * c.y - b.y * c.x );
       }
 
   };

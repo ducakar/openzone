@@ -27,7 +27,7 @@ namespace oz
   {
     for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {
-        Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
+        Bot* bot = static_cast<Bot*>( orbis.objects[ crew[i] ] );
 
         if( bot != null ) {
           bot->exit();
@@ -40,12 +40,28 @@ namespace oz
 
   void Vehicle::onUpdate()
   {
+    for( int i = 0; i < CREW_MAX; ++i ) {
+      if( crew[i] != -1 ) {
+        Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
+
+        assert( bot == null || bot->parent == index );
+
+        if( bot == null ) {
+          crew[i] = -1;
+        }
+        else if( bot->flags & Bot::DEATH_BIT ) {
+          crew[i] = -1;
+          bot->exit();
+        }
+      }
+    }
+
     const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
     flags &= ~HOVER_BIT;
     actions = 0;
     if( crew[PILOT] != -1 ) {
-      Bot* pilot = static_cast<Bot*>( orbis.objects[crew[PILOT]] );
+      Bot* pilot = static_cast<Bot*>( orbis.objects[ crew[PILOT] ] );
 
       if( pilot != null ) {
         rot = Quat::rotZYX( Math::rad( pilot->h ), 0.0f, Math::rad( pilot->v ) );
@@ -89,19 +105,17 @@ namespace oz
       if( crew[i] != -1 ) {
         Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
 
-        if( bot == null || bot->parent != index ) {
-          crew[i] = -1;
-        }
-        else if( bot->flags & Bot::DEATH_BIT ) {
+        if( bot->actions & Bot::ACTION_EXIT ) {
           crew[i] = -1;
           bot->exit();
         }
         else if( bot->actions & Bot::ACTION_EJECT ) {
+          crew[i] = -1;
+          bot->exit();
+
           // move up a bit to prevent colliding with the vehicle
           bot->p += up * EJECT_MOVE;
-
           bot->momentum += ( up + 0.5f * at ) * EJECT_MOMENTUM;
-          bot->exit();
         }
         else {
           bot->p = p + rotMat * clazz->crewPos[0] + momentum * Timer::TICK_TIME;
@@ -116,8 +130,8 @@ namespace oz
 
   void Vehicle::onUse( Bot* user )
   {
-    if( crew[0] == -1 ) {
-      crew[0] = user->index;
+    if( crew[PILOT] == -1 ) {
+      crew[PILOT] = user->index;
       user->enter( index );
     }
   }

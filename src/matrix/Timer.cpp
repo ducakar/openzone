@@ -18,7 +18,12 @@ namespace oz
 
   Timer timer;
 
-  void Timer::init()
+  Timer::Timer() : millis( 0 ), time( 0.0f ), nFrames( 0 ), nirvanaMillis( 0 ), frameMillis( 0 ),
+      frameTime( 0.0f ), frameTicks( 0 )
+  {}
+
+
+  void Timer::reset()
   {
     millis        = 0;
     time          = 0.0f;

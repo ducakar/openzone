@@ -14,8 +14,8 @@
 #include "ui/Font.hpp"
 #include "ui/Keyboard.hpp"
 #include "ui/Mouse.hpp"
-#include "ui/Area.hpp"
 
+#include "ui/Area.hpp"
 #include "ui/Frame.hpp"
 #include "ui/Button.hpp"
 
@@ -36,6 +36,7 @@ namespace ui
   {
     public:
 
+      Bot* b;
       Area*          root;
       HudArea*       hud;
       StrategicArea* strategic;

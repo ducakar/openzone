@@ -99,6 +99,7 @@ namespace oz
      * @param
      * @return
      */
+    OZ_ALWAYS_INLINE
     bool operator == ( const nil& ) const
     {
       return true;
@@ -109,6 +110,7 @@ namespace oz
      * @param
      * @return
      */
+    OZ_ALWAYS_INLINE
     bool operator != ( const nil& ) const
     {
       return false;
@@ -155,6 +157,18 @@ namespace oz
   typedef unsigned long long ulong64;
 
   /**
+   * SIMD vector of four ints
+   */
+  typedef int __attribute__(( vector_size( 16 ) )) int4;
+
+  /**
+   * \def int4
+   * int4 "constructor"
+   */
+# define int4( x, y, z, w ) \
+  (int4) { x, y, z, w }
+
+  /**
    * SIMD vector of four floats
    */
   typedef float __attribute__(( vector_size( 16 ) )) float4;
@@ -176,6 +190,7 @@ namespace oz
    * @param b reference to the second variable
    */
   template <typename Type>
+  OZ_ALWAYS_INLINE
   inline void swap( Type& a, Type& b )
   {
     Type t = a;
@@ -190,6 +205,7 @@ namespace oz
    * @return a if a <= b, b otherwise
    */
   template <typename Type>
+  OZ_ALWAYS_INLINE
   inline const Type& min( const Type& a, const Type& b )
   {
     return b < a ? b : a;
@@ -203,6 +219,7 @@ namespace oz
    * @return a if a <= b, b otherwise
    */
   template <typename Type>
+  OZ_ALWAYS_INLINE
   inline Type& min( Type& a, Type& b )
   {
     return b < a ? b : a;
@@ -215,6 +232,7 @@ namespace oz
    * @return a if a >= b, b otherwise
    */
   template <typename Type>
+  OZ_ALWAYS_INLINE
   inline const Type& max( const Type& a, const Type& b )
   {
     return a < b ? b : a;
@@ -228,6 +246,7 @@ namespace oz
    * @return a if a >= b, b otherwise
    */
   template <typename Type>
+  OZ_ALWAYS_INLINE
   inline Type& max( Type& a, Type& b )
   {
     return a < b ? b : a;
@@ -241,6 +260,7 @@ namespace oz
    * @return c, if a <= c <= b, respective boundary otherwise
    */
   template <typename Type>
+  OZ_ALWAYS_INLINE
   inline const Type& bound( const Type& c, const Type& a, const Type& b )
   {
     assert( !( b < a ) );
@@ -257,6 +277,7 @@ namespace oz
    * @return c, if a <= c <= b, respective boundary otherwise
    */
   template <typename Type>
+  OZ_ALWAYS_INLINE
   inline Type& bound( Type& c, Type& a, Type& b )
   {
     assert( !( b < a ) );

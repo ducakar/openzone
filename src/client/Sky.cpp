@@ -32,10 +32,10 @@ namespace client
   const float Sky::GREEN_COEF = -0.05f;
   const float Sky::BLUE_COEF  = -0.10f;
 
-  const float Sky::DAY_COLOR[]   = { 0.45f, 0.60f, 0.90f, 1.0f };
-  const float Sky::NIGHT_COLOR[] = { 0.02f, 0.02f, 0.05f, 1.0f };
-  const float Sky::WATER_COLOR[] = { 0.00f, 0.05f, 0.25f, 1.0f };
-  const float Sky::STAR_COLOR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
+  const float Sky::DAY_COLOUR[]   = { 0.45f, 0.60f, 0.90f, 1.0f };
+  const float Sky::NIGHT_COLOUR[] = { 0.02f, 0.02f, 0.05f, 1.0f };
+  const float Sky::WATER_COLOUR[] = { 0.00f, 0.05f, 0.25f, 1.0f };
+  const float Sky::STAR_COLOUR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
 
   void Sky::load()
   {
@@ -123,18 +123,17 @@ namespace client
     Vec3  dir = rot * originalLightDir;
 
     ratio = Math::bound( dir.z + DAY_BIAS, 0.0f, 1.0f );
-    ratio_1 = 1.0f - ratio;
-    float ratioDiff = ( 1.0f - Math::abs( ratio - ratio_1 ) );
+    float ratioDiff = ( 1.0f - Math::abs( 1.0f - 2.0f * ratio ) );
 
-    Colours::sky[0] = ratio * DAY_COLOR[0] + ratio_1 * NIGHT_COLOR[0] + RED_COEF * ratioDiff;
-    Colours::sky[1] = ratio * DAY_COLOR[1] + ratio_1 * NIGHT_COLOR[1] + GREEN_COEF * ratioDiff;
-    Colours::sky[2] = ratio * DAY_COLOR[2] + ratio_1 * NIGHT_COLOR[2] + BLUE_COEF * ratioDiff;
+    Colours::sky[0] = NIGHT_COLOUR[0] + ratio * ( DAY_COLOUR[0] - NIGHT_COLOUR[0] ) + RED_COEF * ratioDiff;
+    Colours::sky[1] = NIGHT_COLOUR[1] + ratio * ( DAY_COLOUR[1] - NIGHT_COLOUR[1] ) + GREEN_COEF * ratioDiff;
+    Colours::sky[2] = NIGHT_COLOUR[2] + ratio * ( DAY_COLOUR[2] - NIGHT_COLOUR[2] ) + BLUE_COEF * ratioDiff;
     Colours::sky[3] = 1.0f;
 
-    Colours::water[0] = ratio * WATER_COLOR[0] + ratio_1 * NIGHT_COLOR[0];
-    Colours::water[1] = ratio * WATER_COLOR[1] + ratio_1 * NIGHT_COLOR[1];
-    Colours::water[2] = ratio * WATER_COLOR[2] + ratio_1 * NIGHT_COLOR[2];
-    Colours::water[3] = ratio * WATER_COLOR[3] + ratio_1 * NIGHT_COLOR[3];
+    Colours::water[0] = NIGHT_COLOUR[0] + ratio * ( WATER_COLOUR[0] - NIGHT_COLOUR[0] );
+    Colours::water[1] = NIGHT_COLOUR[1] + ratio * ( WATER_COLOUR[1] - NIGHT_COLOUR[1] );
+    Colours::water[2] = NIGHT_COLOUR[2] + ratio * ( WATER_COLOUR[2] - NIGHT_COLOUR[2] );
+    Colours::water[3] = NIGHT_COLOUR[3] + ratio * ( WATER_COLOUR[3] - NIGHT_COLOUR[3] );
 
     lightDir[0] = dir.x;
     lightDir[1] = dir.y;
@@ -155,9 +154,9 @@ namespace client
   void Sky::draw()
   {
     float colour[3] = {
-      ratio * DAY_COLOR[0] + ratio_1 * STAR_COLOR[0],
-      ratio * DAY_COLOR[1] + ratio_1 * STAR_COLOR[0],
-      ratio * DAY_COLOR[2] + ratio_1 * STAR_COLOR[0]
+      STAR_COLOUR[0] + ratio * ( DAY_COLOUR[0] - STAR_COLOUR[0] ),
+      STAR_COLOUR[1] + ratio * ( DAY_COLOUR[1] - STAR_COLOUR[1] ),
+      STAR_COLOUR[2] + ratio * ( DAY_COLOUR[2] - STAR_COLOUR[2] )
     };
 
     // we need the transformation matrix for occlusion of stars below horizon

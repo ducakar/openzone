@@ -30,7 +30,9 @@ namespace oz
       float frameTime;
       int   frameTicks;
 
-      void init();
+      explicit Timer();
+
+      void reset();
       void tick();
       void frame();
   };

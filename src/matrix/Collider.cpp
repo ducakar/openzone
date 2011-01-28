@@ -99,8 +99,8 @@ namespace oz
       return false;
     }
 
-    Vec3   originalStartPos = startPos;
-    Bounds localTrace       = str->toStructCS( trace - str->p );
+    Point3 originalStartPos = startPos;
+    Bounds localTrace       = str->toStructCS( trace, str->p );
 
     for( int i = 1; i < bsp->nEntityClasses; ++i ) {
       const EntityClass& clazz = bsp->entityClasses[i];
@@ -149,7 +149,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = orbis.bsps[str->bsp];
 
-            startPos = str->toStructCS( aabb.p - str->p );
+            startPos = str->toStructCS( aabb.p, str->p );
             visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
@@ -209,7 +209,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = orbis.bsps[str->bsp];
 
-            startPos = str->toStructCS( aabb.p - str->p );
+            startPos = str->toStructCS( aabb.p, str->p );
             visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
@@ -242,7 +242,7 @@ namespace oz
 
         for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj->overlaps( trace ) ) {
-            startPos = str->toStructCS( sObj->p - str->p ) - entity->offset;
+            startPos = str->toStructCS( sObj->p, str->p ) - entity->offset;
             aabb.dim = sObj->dim;
 
             for( int i = 0; i < entityClazz->nBrushes; ++i ) {
@@ -293,9 +293,9 @@ namespace oz
   // finds out if AABB-AABB collision occurs and the time when it occurs
   void Collider::trimAABBObj( const Object* sObj )
   {
-    float minRatio        = -1.0f;
-    float maxRatio        =  1.0f;
-    const Vec3* tmpNormal = null;
+    float minRatio = -1.0f;
+    float maxRatio =  1.0f;
+    const Vec3* lastNormal = null;
 
     for( int i = 0; i < 6; ++i ) {
       int j = i / 2;
@@ -316,14 +316,14 @@ namespace oz
         float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
-          minRatio  = ratio;
-          tmpNormal = &normal;
+          minRatio   = ratio;
+          lastNormal = &normal;
         }
       }
     }
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio    = Math::max( 0.0f, minRatio );
-      hit.normal   = *tmpNormal;
+      hit.normal   = *lastNormal;
       hit.obj      = sObj;
       hit.str      = null;
       hit.entity   = null;
@@ -334,9 +334,9 @@ namespace oz
   // finds out if AABB-Brush collision occurs and the time when it occurs
   void Collider::trimAABBBrush( const BSP::Brush* brush )
   {
-    float minRatio        = -1.0f;
-    float maxRatio        =  1.0f;
-    const Vec3* tmpNormal = null;
+    float minRatio = -1.0f;
+    float maxRatio =  1.0f;
+    const Vec3* lastNormal = null;
 
     for( int i = 0; i < brush->nSides; ++i ) {
       const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -357,15 +357,15 @@ namespace oz
         float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
 
         if( ratio > minRatio ) {
-          minRatio  = ratio;
-          tmpNormal = &plane.normal;
+          minRatio   = ratio;
+          lastNormal = &plane.normal;
         }
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
       if( minRatio < hit.ratio ) {
         hit.ratio    = Math::max( 0.0f, minRatio );
-        hit.normal   = str->toAbsoluteCS( *tmpNormal );
+        hit.normal   = str->toAbsoluteCS( *lastNormal );
         hit.obj      = null;
         hit.str      = str;
         hit.entity   = entity;
@@ -473,9 +473,9 @@ namespace oz
       return;
     }
 
-    Vec3   originalStartPos = startPos;
-    Vec3   originalEndPos   = endPos;
-    Bounds localTrace       = str->toStructCS( trace - str->p );
+    Point3 originalStartPos = startPos;
+    Point3 originalEndPos   = endPos;
+    Bounds localTrace       = str->toStructCS( trace, str->p );
 
     for( int i = 1; i < bsp->nEntityClasses; ++i ) {
       entity = &str->entities[i];
@@ -591,8 +591,8 @@ namespace oz
     hit.inWater    = false;
     hit.onLadder   = false;
 
-    Vec3 originalStartPos = aabb.p;
-    Vec3 originalEndPos   = aabb.p + move;
+    Point3 originalStartPos = aabb.p;
+    Point3 originalEndPos   = aabb.p + move;
 
     startPos = originalStartPos;
     endPos   = originalEndPos;
@@ -617,8 +617,8 @@ namespace oz
             if( str->overlaps( trace ) ) {
               visitedBrushes.clearAll();
 
-              startPos = str->toStructCS( originalStartPos - str->p );
-              endPos   = str->toStructCS( originalEndPos - str->p );
+              startPos = str->toStructCS( originalStartPos, str->p );
+              endPos   = str->toStructCS( originalEndPos, str->p );
               entity   = null;
 
               trimAABBNode( 0 );
@@ -670,7 +670,7 @@ namespace oz
             if( !structs->contains( str ) ) {
               bsp = orbis.bsps[str->bsp];
 
-              startPos = str->toStructCS( aabb.p - str->p );
+              startPos = str->toStructCS( aabb.p, str->p );
 
               if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
                 structs->add( str );
@@ -739,7 +739,7 @@ namespace oz
 
         for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj->overlaps( trace ) ) {
-            startPos = str->toStructCS( sObj->p - str->p ) - entity->offset;
+            startPos = str->toStructCS( sObj->p, str->p ) - entity->offset;
             aabb.dim = sObj->dim + dimMargin;
 
             for( int i = 0; i < entityClazz->nBrushes; ++i ) {
@@ -755,7 +755,7 @@ namespace oz
     }
   }
 
-  bool Collider::overlaps( const Vec3& point, const Object* exclObj_ )
+  bool Collider::overlaps( const Point3& point, const Object* exclObj_ )
   {
     aabb = AABB( point, Vec3::ZERO );
     exclObj = exclObj_;
@@ -765,7 +765,7 @@ namespace oz
     return overlapsAABBOrbis();
   }
 
-  bool Collider::overlapsOO( const Vec3& point, const Object* exclObj_ )
+  bool Collider::overlapsOO( const Point3& point, const Object* exclObj_ )
   {
     aabb = AABB( point, Vec3::ZERO );
     exclObj = exclObj_;
@@ -775,7 +775,7 @@ namespace oz
     return overlapsAABBOrbisOO();
   }
 
-  bool Collider::overlapsOSO( const Vec3& point, const Object* exclObj_ )
+  bool Collider::overlapsOSO( const Point3& point, const Object* exclObj_ )
   {
     aabb = AABB( point, Vec3::ZERO );
     exclObj = exclObj_;
@@ -825,7 +825,7 @@ namespace oz
     bsp = entity_->clazz->bsp;
     entityClazz = entity_->clazz;
 
-    trace = str->toAbsoluteCS( *entityClazz + entity->offset ) + str->p;
+    trace = str->toAbsoluteCS( *entityClazz + entity->offset, str->p );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsEntityOrbisOO();
@@ -872,13 +872,13 @@ namespace oz
     bsp = entity_->clazz->bsp;
     entityClazz = entity_->clazz;
 
-    trace = str->toAbsoluteCS( *entityClazz + entity->offset ) + str->p;
+    trace = str->toAbsoluteCS( *entityClazz + entity->offset, str->p );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     getEntityOverlaps( objects, margin );
   }
 
-  void Collider::translate( const Vec3& point, const Vec3& move_, const Object* exclObj_ )
+  void Collider::translate( const Point3& point, const Vec3& move_, const Object* exclObj_ )
   {
     aabb = AABB( point, Vec3::ZERO );
     move = move_;

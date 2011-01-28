@@ -25,77 +25,84 @@ namespace oz
        */
       Vec3 dim;
 
+      OZ_ALWAYS_INLINE
       explicit AABB()
       {}
 
-      explicit AABB( const Vec3& p_, const Vec3& dim_ ) : Sphere( p_ ), dim( dim_ )
+      OZ_ALWAYS_INLINE
+      explicit AABB( const Point3& p_, const Vec3& dim_ ) : Sphere( p_ ), dim( dim_ )
       {}
 
+      OZ_ALWAYS_INLINE
       Bounds toBounds( float eps = 0.0f ) const
       {
-        return Bounds( Vec3( p.x - dim.x - eps,
-                             p.y - dim.y - eps,
-                             p.z - dim.z - eps ),
-                       Vec3( p.x + dim.x + eps,
-                             p.y + dim.y + eps,
-                             p.z + dim.z + eps ) );
+        return Bounds( p - dim - Vec3( eps, eps, eps ),
+                       p + dim + Vec3( eps, eps, eps ) );
       }
 
+      OZ_ALWAYS_INLINE
       AABB toAABB( float eps ) const
       {
         return AABB( p, dim + Vec3( eps, eps, eps ) );
       }
 
+      OZ_ALWAYS_INLINE
       AABB operator + ( const Vec3& v ) const
       {
         return AABB( p + v, dim );
       }
 
+      OZ_ALWAYS_INLINE
       AABB operator - ( const Vec3& v ) const
       {
         return AABB( p - v, dim );
       }
 
+      OZ_ALWAYS_INLINE
       AABB& operator += ( const Vec3& v )
       {
         p += v;
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       AABB& operator -= ( const Vec3& v )
       {
         p -= v;
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       AABB operator * ( float k ) const
       {
         return AABB( p, dim * k );
       }
 
+      OZ_ALWAYS_INLINE
       AABB operator / ( float k ) const
       {
         return AABB( p, dim / k );
       }
 
+      OZ_ALWAYS_INLINE
       AABB& operator *= ( float k )
       {
         dim *= k;
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       AABB& operator /= ( float k )
       {
         dim /= k;
         return *this;
       }
 
-      bool includes( const Vec3& v, float eps = 0.0f ) const
+      OZ_ALWAYS_INLINE
+      bool includes( const Point3& point, float eps = 0.0f ) const
       {
-        Vec3 relPos = v - p;
-        Vec3 d = Vec3( dim.x + eps,
-                       dim.y + eps,
-                       dim.z + eps );
+        Vec3 relPos = point - p;
+        Vec3 d = dim + Vec3( eps, eps, eps );
 
         return
             -d.x <= relPos.x && relPos.x <= d.x &&
@@ -103,12 +110,11 @@ namespace oz
             -d.z <= relPos.z && relPos.z <= d.z;
       }
 
+      OZ_ALWAYS_INLINE
       bool isInside( const AABB& a, float eps = 0.0f ) const
       {
         Vec3 relPos = p - a.p;
-        Vec3 d = Vec3( a.dim.x - dim.x + eps,
-                       a.dim.y - dim.y + eps,
-                       a.dim.z - dim.z + eps );
+        Vec3 d = a.dim - dim + Vec3( eps, eps, eps );
 
         return
             -d.x <= relPos.x && relPos.x <= d.x &&
@@ -116,17 +122,17 @@ namespace oz
             -d.z <= relPos.z && relPos.z <= d.z;
       }
 
+      OZ_ALWAYS_INLINE
       bool includes( const AABB& a, float eps = 0.0f ) const
       {
         return a.isInside( *this, eps );
       }
 
+      OZ_ALWAYS_INLINE
       bool overlaps( const AABB& a, float eps = 0.0f ) const
       {
         Vec3 relPos = a.p - p;
-        Vec3 d = Vec3( a.dim.x + dim.x + eps,
-                       a.dim.y + dim.y + eps,
-                       a.dim.z + dim.z + eps );
+        Vec3 d = a.dim + dim + Vec3( eps, eps, eps );
 
         return
             -d.x <= relPos.x && relPos.x <= d.x &&
@@ -134,6 +140,7 @@ namespace oz
             -d.z <= relPos.z && relPos.z <= d.z;
       }
 
+      OZ_ALWAYS_INLINE
       bool isInside( const Bounds& b, float eps = 0.0f ) const
       {
         return
@@ -142,6 +149,7 @@ namespace oz
             b.mins.z - eps <= p.z - dim.z && p.z + dim.z <= b.maxs.z + eps;
       }
 
+      OZ_ALWAYS_INLINE
       bool includes( const Bounds& b, float eps = 0.0f ) const
       {
         return
@@ -150,6 +158,7 @@ namespace oz
             b.mins.z + eps >= p.z - dim.z && p.z + dim.z >= b.maxs.z - eps;
       }
 
+      OZ_ALWAYS_INLINE
       bool overlaps( const Bounds& b, float eps = 0.0f ) const
       {
         return
@@ -160,11 +169,12 @@ namespace oz
 
   };
 
+  OZ_ALWAYS_INLINE
   inline AABB Bounds::toAABB( float eps ) const
   {
-    return AABB( Vec3( ( mins.x + maxs.x ) * 0.5f,
-                       ( mins.y + maxs.y ) * 0.5f,
-                       ( mins.z + maxs.z ) * 0.5f ),
+    return AABB( Point3( ( mins.x + maxs.x ) * 0.5f,
+                         ( mins.y + maxs.y ) * 0.5f,
+                         ( mins.z + maxs.z ) * 0.5f ),
                  Vec3( ( maxs.x - mins.x ) * 0.5f + eps,
                        ( maxs.y - mins.y ) * 0.5f + eps,
                        ( maxs.z - mins.z ) * 0.5f + eps ) );
@@ -199,16 +209,19 @@ namespace oz
     return *this;
   }
 
+  OZ_ALWAYS_INLINE
   inline bool Bounds::isInside( const AABB& a, float eps ) const
   {
     return a.includes( *this, eps );
   }
 
+  OZ_ALWAYS_INLINE
   inline bool Bounds::includes( const AABB& a, float eps ) const
   {
     return a.isInside( *this, eps );
   }
 
+  OZ_ALWAYS_INLINE
   inline bool Bounds::overlaps( const AABB& a, float eps ) const
   {
     return a.overlaps( *this, eps );

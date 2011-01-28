@@ -39,6 +39,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator() : B( null, null )
           {}
 
@@ -46,6 +47,7 @@ namespace oz
            * Make iterator for given Sparse. After creation it points to first element.
            * @param s
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator( const Sparse& s ) : B( s.data, s.data + s.size )
           {}
 
@@ -79,6 +81,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator() : B( null, null )
           {}
 
@@ -86,6 +89,7 @@ namespace oz
            * Make iterator for given Sparse. After creation it points to first element.
            * @param s
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator( const Sparse& s ) : B( s.data, s.data + s.size )
           {}
 
@@ -243,6 +247,7 @@ namespace oz
       /**
        * @return constant iterator for this vector
        */
+      OZ_ALWAYS_INLINE
       CIterator citer() const
       {
         return CIterator( *this );
@@ -251,6 +256,7 @@ namespace oz
       /**
        * @return iterator for this vector
        */
+      OZ_ALWAYS_INLINE
       Iterator iter() const
       {
         return Iterator( *this );
@@ -261,6 +267,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return constant pointer to data array
        */
+      OZ_ALWAYS_INLINE
       operator const Type* () const
       {
         return data;
@@ -271,6 +278,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
+      OZ_ALWAYS_INLINE
       operator Type* ()
       {
         return data;
@@ -279,25 +287,28 @@ namespace oz
       /**
        * @return number of elements (occupied slots) in the sparse vector
        */
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return count;
       }
 
       /**
-       * @return capacity of the sparse vector
-       */
-      int capacity() const
-      {
-        return size;
-      }
-
-      /**
        * @return true if sparse vector has no elements
        */
+      OZ_ALWAYS_INLINE
       bool isEmpty() const
       {
         return count == 0;
+      }
+
+      /**
+       * @return capacity of the sparse vector
+       */
+      OZ_ALWAYS_INLINE
+      int capacity() const
+      {
+        return size;
       }
 
       /**
@@ -329,6 +340,7 @@ namespace oz
        * @param i
        * @return constant reference i-th element
        */
+      OZ_ALWAYS_INLINE
       const Type& operator [] ( int i ) const
       {
         assert( 0 <= i && i < size );
@@ -340,6 +352,7 @@ namespace oz
        * @param i
        * @return reference i-th element
        */
+      OZ_ALWAYS_INLINE
       Type& operator [] ( int i )
       {
         assert( 0 <= i && i < size );

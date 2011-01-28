@@ -107,14 +107,11 @@ namespace oz
     hvsc[5] = hvsc[3] * hvsc[1];
 
     if( parent != -1 ) {
-      Vehicle* vehicle = static_cast<Vehicle*>( orbis.objects[parent] );
-
-      assert( vehicle->flags & VEHICLE_BIT );
-
-      if( vehicle == null || ( actions & ~oldActions & ACTION_EXIT ) ) {
+      if( orbis.objects[parent] == null ) {
         exit();
       }
       else {
+        assert( orbis.objects[parent]->flags & VEHICLE_BIT );
         return;
       }
     }
@@ -461,8 +458,8 @@ namespace oz
         synapse.use( this, obj );
       }
       else {
-        Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
+        Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
+        Vec3   look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -478,8 +475,8 @@ namespace oz
         }
       }
       else {
-        Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
+        Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
+        Vec3   look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -505,8 +502,8 @@ namespace oz
         grabObj = -1;
       }
       else {
-        Vec3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3 look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
+        Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
+        Vec3   look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 

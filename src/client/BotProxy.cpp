@@ -28,14 +28,19 @@ namespace client
 
   void BotProxy::begin()
   {
-    camera.v          = 0.0f;
-    camera.isExternal = isExternal;
+    assert( camera.bot != -1 );
+
+    Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
     ui::mouse.doShow = false;
 
     bobPhi   = 0.0f;
     bobTheta = 0.0f;
     bobBias  = 0.0f;
+
+    camera.h = bot->h;
+    camera.v = bot->v;
+    camera.isExternal = isExternal;
   }
 
   void BotProxy::update()
@@ -112,6 +117,9 @@ namespace client
     }
     if( isExternal && ui::keyboard.keys[SDLK_LALT] && !ui::keyboard.oldKeys[SDLK_LALT] ) {
       isFreelook = !isFreelook;
+
+      camera.h = bot->h;
+      camera.v = bot->v;
     }
     if( ui::keyboard.keys[SDLK_p] && !ui::keyboard.oldKeys[SDLK_p] ) {
       bot->state ^= Bot::STEPPING_BIT;
@@ -145,6 +153,16 @@ namespace client
 
       isExternal = !isExternal;
       camera.isExternal = isExternal;
+
+      if( !isExternal ) {
+        if( bot->parent != -1 ) {
+          camera.align();
+          camera.warp( bot->p + camera.rotMat.z * bot->camZ );
+        }
+        else {
+          camera.warp( bot->p + Vec3( 0.0f, 0.0f, bot->camZ ) );
+        }
+      }
     }
 
     if( !ui::mouse.doShow ) {
@@ -223,12 +241,12 @@ namespace client
           bobTheta = 0.0f;
         }
 
-        Vec3 p = bot->p;
+        Point3 p = bot->p;
         p.z += bot->camZ + bobBias;
 
         camera.w = bobTheta;
         camera.align();
-        camera.wrapMoveZ( p );
+        camera.warpMoveZ( p );
       }
     }
     else { // external
@@ -247,14 +265,14 @@ namespace client
         dist = !bot->dim * externalDistFactor;
       }
 
-      Vec3 origin = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
-      Vec3 offset = -camera.at * dist;
+      Point3 origin = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
+      Vec3   offset = -camera.at * dist;
 
       collider.translate( origin, offset, bot );
       offset *= collider.hit.ratio;
       offset += camera.at * THIRD_PERSON_CLIP_DIST;
 
-      camera.wrapMoveZ( origin + offset );
+      camera.warpMoveZ( origin + offset );
 
       bobPhi   = 0.0f;
       bobTheta = 0.0f;

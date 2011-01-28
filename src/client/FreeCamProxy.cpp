@@ -11,7 +11,7 @@
 
 #include "client/FreeCamProxy.hpp"
 
-#include "matrix/Collider.hpp"
+#include "matrix/Vehicle.hpp"
 #include "ui/UI.hpp"
 #include "client/Camera.hpp"
 
@@ -34,12 +34,28 @@ namespace client
       ui::mouse.doShow = !ui::mouse.doShow;
     }
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
-      if( camera.tagged != -1 && ( camera.taggedObj->flags & Object::BOT_BIT ) ) {
-        Bot* me = const_cast<Bot*>( static_cast<const Bot*>( camera.taggedObj ) );
+      if( camera.tagged != -1 ) {
+        Bot* me = null;
 
-        me->state |= Bot::PLAYER_BIT;
-        camera.setBot( me );
-        camera.setState( Camera::BOT );
+        if( camera.taggedObj->flags & Object::BOT_BIT ) {
+          me = const_cast<Bot*>( static_cast<const Bot*>( camera.taggedObj ) );
+        }
+        else if( camera.taggedObj->flags & Object::VEHICLE_BIT ) {
+          Vehicle* veh = const_cast<Vehicle*>( static_cast<const Vehicle*>( camera.taggedObj ) );
+
+          for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
+            if( veh->crew[i] != -1 && orbis.objects[ veh->crew[i] ] != null ) {
+              me = const_cast<Bot*>( static_cast<const Bot*>( orbis.objects[ veh->crew[i] ] ) );
+              break;
+            }
+          }
+        }
+
+        if( me != null ) {
+          me->state |= Bot::PLAYER_BIT;
+          camera.setBot( me );
+          camera.setState( Camera::BOT );
+        }
       }
     }
   }
@@ -50,7 +66,7 @@ namespace client
       fastMove = !fastMove;
     }
 
-    Vec3  p = camera.p;
+    Point3 p = camera.newP;
     float speed = fastMove ? HIGH_SPEED : LOW_SPEED;
 
     if( ui::keyboard.keys[SDLK_w] ) {

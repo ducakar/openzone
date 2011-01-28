@@ -34,6 +34,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator() : B( null, null )
           {}
 
@@ -41,6 +42,7 @@ namespace oz
            * Make iterator for given vector. After creation it points to first element.
            * @param v
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator( const SVector& v ) : B( v.data, v.data + v.count )
           {}
 
@@ -60,6 +62,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator() : B( null, null )
           {}
 
@@ -67,6 +70,7 @@ namespace oz
            * Make iterator for given vector. After creation it points to first element.
            * @param v
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator( SVector& v ) : B( v.data, v.data + v.count )
           {}
 
@@ -145,6 +149,7 @@ namespace oz
       /**
        * @return constant iterator for this vector
        */
+      OZ_ALWAYS_INLINE
       CIterator citer() const
       {
         return CIterator( *this );
@@ -153,6 +158,7 @@ namespace oz
       /**
        * @return iterator for this vector
        */
+      OZ_ALWAYS_INLINE
       Iterator iter()
       {
         return Iterator( *this );
@@ -163,6 +169,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return constant pointer to data array
        */
+      OZ_ALWAYS_INLINE
       operator const Type* () const
       {
         return data;
@@ -173,6 +180,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
+      OZ_ALWAYS_INLINE
       operator Type* ()
       {
         return data;
@@ -181,25 +189,28 @@ namespace oz
       /**
        * @return number of elements in the vector
        */
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return count;
       }
 
       /**
-       * @return capacity of the vector
-       */
-      int capacity() const
-      {
-        return SIZE;
-      }
-
-      /**
        * @return true if vector has no elements
        */
+      OZ_ALWAYS_INLINE
       bool isEmpty() const
       {
         return count == 0;
+      }
+
+      /**
+       * @return capacity of the vector
+       */
+      OZ_ALWAYS_INLINE
+      int capacity() const
+      {
+        return SIZE;
       }
 
       /**
@@ -215,6 +226,7 @@ namespace oz
        * @param i
        * @return constant reference i-th element
        */
+      OZ_ALWAYS_INLINE
       const Type& operator [] ( int i ) const
       {
         assert( uint( i ) < uint( count ) );
@@ -226,11 +238,56 @@ namespace oz
        * @param i
        * @return reference i-th element
        */
+      OZ_ALWAYS_INLINE
       Type& operator [] ( int i )
       {
         assert( uint( i ) < uint( count ) );
 
         return data[i];
+      }
+
+      /**
+       * @return constant reference to first element
+       */
+      OZ_ALWAYS_INLINE
+      const Type& first() const
+      {
+        assert( count != 0 );
+
+        return data[0];
+      }
+
+      /**
+       * @return reference to first element
+       */
+      OZ_ALWAYS_INLINE
+      Type& first()
+      {
+        assert( count != 0 );
+
+        return data[0];
+      }
+
+      /**
+       * @return constant reference to last element
+       */
+      OZ_ALWAYS_INLINE
+      const Type& last() const
+      {
+        assert( count != 0 );
+
+        return data[count - 1];
+      }
+
+      /**
+       * @return reference to last element
+       */
+      OZ_ALWAYS_INLINE
+      Type& last()
+      {
+        assert( count != 0 );
+
+        return data[count - 1];
       }
 
       /**
@@ -251,46 +308,6 @@ namespace oz
       int lastIndex( const Type& e ) const
       {
         return aLastIndex( data, e, count );
-      }
-
-      /**
-       * @return constant reference to first element
-       */
-      const Type& first() const
-      {
-        assert( count != 0 );
-
-        return data[0];
-      }
-
-      /**
-       * @return reference to first element
-       */
-      Type& first()
-      {
-        assert( count != 0 );
-
-        return data[0];
-      }
-
-      /**
-       * @return constant reference to last element
-       */
-      const Type& last() const
-      {
-        assert( count != 0 );
-
-        return data[count - 1];
-      }
-
-      /**
-       * @return reference to last element
-       */
-      Type& last()
-      {
-        assert( count != 0 );
-
-        return data[count - 1];
       }
 
       /**

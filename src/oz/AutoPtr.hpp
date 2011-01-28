@@ -27,9 +27,11 @@ namespace oz
 
     public:
 
+      OZ_ALWAYS_INLINE
       AutoPtr( Type* pointer_ ) : pointer( pointer_ )
       {}
 
+      OZ_ALWAYS_INLINE
       AutoPtr( AutoPtr& p ) : pointer( p.pointer )
       {
         p.pointer = null;
@@ -43,6 +45,7 @@ namespace oz
       }
 
 
+      OZ_ALWAYS_INLINE
       AutoPtr& operator = ( AutoPtr& p )
       {
         assert( pointer == null );
@@ -53,6 +56,7 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       AutoPtr& operator = ( const Type* pointer_ )
       {
         assert( pointer_ == null );
@@ -61,56 +65,67 @@ namespace oz
         return *this;
       }
 
+      OZ_ALWAYS_INLINE
       const Type& operator * () const
       {
         return *pointer;
       }
 
+      OZ_ALWAYS_INLINE
       Type& operator * ()
       {
         return *pointer;
       }
 
+      OZ_ALWAYS_INLINE
       operator const Type* () const
       {
         return pointer;
       }
 
+      OZ_ALWAYS_INLINE
       operator Type* () const
       {
         return pointer;
       }
 
+      OZ_ALWAYS_INLINE
       const Type* operator -> () const
       {
         return pointer;
       }
 
+      OZ_ALWAYS_INLINE
       Type* operator -> ()
       {
         return pointer;
       }
 
+      OZ_ALWAYS_INLINE
       const Type& operator[] ( int index ) const
       {
         return pointer[index];
       }
 
+      OZ_ALWAYS_INLINE
       Type& operator[] ( int index )
       {
         return pointer[index];
       }
 
+      OZ_ALWAYS_INLINE
       Type* operator + ( int offset ) const
       {
         return pointer + offset;
       }
 
+      OZ_ALWAYS_INLINE
       Type* operator - ( int offset ) const
       {
         return pointer - offset;
       }
 
+      OZ_ALWAYS_INLINE
       void clear()
       {
         pointer = null;

@@ -161,7 +161,7 @@ namespace oz
     return clazz;
   }
 
-  Object* BotClass::create( int index, const Vec3& pos ) const
+  Object* BotClass::create( int index, const Point3& pos ) const
   {
     Bot* obj = new Bot();
 
@@ -177,7 +177,7 @@ namespace oz
     obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
-    obj->clazz     = this;
+    obj->clazz    = this;
     obj->life     = life;
 
     obj->mass     = mass;
@@ -191,7 +191,7 @@ namespace oz
     obj->name     = names.genName();
 
     for( int i = 0; i < inventoryItems.length(); ++i ) {
-      int index = synapse.addObject( inventoryItems[i], Vec3::ZERO );
+      int index = synapse.addObject( inventoryItems[i], Point3::ORIGIN );
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] );
 
       assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
@@ -210,7 +210,7 @@ namespace oz
     Bot* obj = new Bot();
 
     obj->index  = index;
-    obj->clazz   = this;
+    obj->clazz  = this;
 
     obj->mass   = mass;
     obj->lift   = lift;

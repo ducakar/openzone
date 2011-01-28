@@ -19,7 +19,7 @@ namespace oz
   Synapse::Synapse() : isSingle( true ), isServer( false ), isClient( false )
   {}
 
-  void Synapse::genParts( int number, const Vec3& p,
+  void Synapse::genParts( int number, const Point3& p,
                           const Vec3& velocity, float velocitySpread,
                           const Vec3& colour, float colorSpread,
                           float restitution, float mass, float lifeTime )

@@ -12,7 +12,6 @@
 #include "stable.hpp"
 
 #include "matrix/Synapse.hpp"
-#include "matrix/Bot.hpp"
 
 namespace oz
 {

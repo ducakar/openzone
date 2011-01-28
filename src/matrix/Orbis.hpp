@@ -41,11 +41,6 @@ namespace oz
     SVector<short, 6> structs;
   };
 
-//  struct MarkerCell
-//  {
-//    SVector<short, 6> markers;
-//  };
-
   class Orbis : public Bounds
   {
     friend class Synapse;
@@ -58,7 +53,6 @@ namespace oz
       static const float DIM;
 
       Cell               cells[Orbis::MAX][Orbis::MAX];
-//      Cell               markerCells[Orbis::MAX][Orbis::MAX];
       Sky                sky;
       Terra              terra;
       Vector<BSP*>       bsps;
@@ -114,9 +108,9 @@ namespace oz
       void unposition( Particle* part );
       void reposition( Particle* part );
 
-      int  addStruct( const char* name, const Vec3& p, Structure::Rotation rot );
-      int  addObject( const char* name, const Vec3& p );
-      int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
+      int  addStruct( const char* name, const Point3& p, Structure::Rotation rot );
+      int  addObject( const char* name, const Point3& p );
+      int  addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
                     float restitution, float mass, float lifeTime );
 
       void remove( Structure* str );
@@ -127,11 +121,11 @@ namespace oz
 
       // get pointer to the cell the point is in
       Cell* getCell( float x, float y );
-      Cell* getCell( const Vec3& p );
+      Cell* getCell( const Point3& p );
 
       // get indices of the cell the point is in
       Span getInters( float x, float y, float epsilon = 0.0f ) const;
-      Span getInters( const Vec3& p, float epsilon = 0.0f ) const;
+      Span getInters( const Point3& p, float epsilon = 0.0f ) const;
 
       // get indices of min and max cells which the area intersects
       Span getInters( float minPosX, float minPosY, float maxPosX, float maxPosY,
@@ -171,7 +165,7 @@ namespace oz
     return &cells[ix][iy];
   }
 
-  inline Cell* Orbis::getCell( const Vec3& p )
+  inline Cell* Orbis::getCell( const Point3& p )
   {
     return getCell( p.x, p.y );
   }
@@ -184,7 +178,7 @@ namespace oz
                  min( int( ( y + epsilon + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 ) );
   }
 
-  inline Span Orbis::getInters( const Vec3& p, float epsilon ) const
+  inline Span Orbis::getInters( const Point3& p, float epsilon ) const
   {
     return getInters( p.x, p.y, epsilon );
   }
@@ -393,7 +387,7 @@ namespace oz
     }
   }
 
-  inline int Orbis::addStruct( const char* name, const Vec3& p, Structure::Rotation rot )
+  inline int Orbis::addStruct( const char* name, const Point3& p, Structure::Rotation rot )
   {
     int index;
 
@@ -409,7 +403,7 @@ namespace oz
   }
 
   // has to be reentrant, can be called again from translator.createObject
-  inline int Orbis::addObject( const char* name, const Vec3& p )
+  inline int Orbis::addObject( const char* name, const Point3& p )
   {
     int index;
 
@@ -431,7 +425,7 @@ namespace oz
     return index;
   }
 
-  inline int Orbis::addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
+  inline int Orbis::addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
                              float restitution, float mass, float lifeTime )
   {
     int index;

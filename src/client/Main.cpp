@@ -32,26 +32,30 @@ namespace client
 
   Main main;
 
+  Main::Main() : loadingTime( 0.0f ), ticks( 0 ), allTimeSec( 0.0f ), gameTimeSec( 0.0f ),
+      renderTimeSec( 0.0f ), sleepTimeSec( 0.0f ), nirvanaTimeSec( 0.0f )
+  {}
+
   void Main::shutdown()
   {
     log.println( "Shutdown {" );
     log.indent();
 
-    if( initFlags & INIT_RENDER_INIT ) {
+    if( ( initFlags & INIT_RENDER_INIT ) != 0 ) {
       render.unload();
       render.free();
     }
-    if( initFlags & INIT_AUDIO ) {
+    if( ( initFlags & INIT_AUDIO ) != 0 ) {
       sound.free();
     }
-    if( initFlags & INIT_CONTEXT ) {
+    if( ( initFlags & INIT_CONTEXT ) != 0 ) {
       context.free();
     }
-    if( initFlags & INIT_GAME_INIT ) {
+    if( ( initFlags & INIT_GAME_INIT ) != 0 ) {
       stage->unload();
       stage->free();
     }
-    if( initFlags & INIT_SDL ) {
+    if( ( initFlags & INIT_SDL ) != 0 ) {
       log.print( "Shutting down SDL ..." );
       SDL_ShowCursor( SDL_TRUE );
       SDLNet_Quit();
@@ -65,27 +69,25 @@ namespace client
     log.indent();
     log.println( "Loading time: %.2f s", loadingTime );
     log.println( "Matrix ticks: %d (%.2f Hz)", ticks, float( ticks ) / allTimeSec );
-    log.println( "Rendered frames: %d (%.2f Hz)", timer.nFrames, float( timer.nFrames ) / allTimeSec );
+    log.println( "Rendered frames: %d (%.2f Hz)", timer.nFrames,
+                 float( timer.nFrames ) / allTimeSec );
     log.println( "Main loop time usage:" );
-    log.println( "   %.4g s\t%.1f%%\tall time", allTimeSec, 100.0f );
-    log.println( "   %.4g s\t%.1f%%\tsystem + simulation + basic sound update",
-                 gameTimeSec, gameTimeSec / allTimeSec * 100.0f );
-    log.println( "   %.4g s\t%.1f%%\trender + advanced sound update",
-                 renderTimeSec, renderTimeSec / allTimeSec * 100.0f );
-    log.println( "   %.4g s\t%.1f%%\tsleep", sleepTimeSec, sleepTimeSec / allTimeSec * 100.0f );
-    log.println( "   %.4g s\t%.1f%%\t[own thread] artificial intelligence",
-                 nirvanaTimeSec, nirvanaTimeSec / allTimeSec * 100.0f );
+    log.println( "  %6.6g s  all time", allTimeSec );
+    log.println( "  %6.2f %%  system + simulation + basic sound", gameTimeSec / allTimeSec * 100.0f );
+    log.println( "  %6.2f %%  render + sound cleanups", renderTimeSec / allTimeSec * 100.0f );
+    log.println( "  %6.2f %%  sleep", sleepTimeSec / allTimeSec * 100.0f );
+    log.println( "  %6.2f %%  [own thread] AI", nirvanaTimeSec / allTimeSec * 100.0f );
     log.unindent();
     log.println( "}" );
 
 #ifdef OZ_ALLOC_STATISTICS
     log.println( "Heap usage (libraries not included) {" );
     log.println( "  current chunks     %d", Alloc::count  );
-    log.println( "  current amount     %.2f MiB", float( Alloc::amount ) / ( 1024.0f * 1024.0f ) );
+    log.println( "  current amount     %.2f MiB", float( Alloc::amount ) / ( 1024.0f*1024.0f ) );
     log.println( "  maximum chunks     %d", Alloc::maxCount );
-    log.println( "  maximum amount     %.2f MiB", float( Alloc::maxAmount ) / ( 1024.0f * 1024.0f ) );
+    log.println( "  maximum amount     %.2f MiB", float( Alloc::maxAmount ) / ( 1024.0f*1024.0f ) );
     log.println( "  cumulative chunks  %d", Alloc::sumCount );
-    log.println( "  cumulative amount  %.2f MiB", float( Alloc::sumAmount ) / ( 1024.0f * 1024.0f ) );
+    log.println( "  cumulative amount  %.2f MiB", float( Alloc::sumAmount ) / ( 1024.0f*1024.0f ) );
     log.println( "}" );
 #endif
 
@@ -96,7 +98,14 @@ namespace client
 
   void Main::main( int* argc, char** argv )
   {
-    long createTime = clock();
+    log.print( "Initialising SDL ..." );
+    if( SDL_Init( 0 ) != 0 ) {
+      log.printEnd( " Failed" );
+      return;
+    }
+    log.printEnd( " OK" );
+
+    uint createTime = SDL_GetTicks();
 
     initFlags = 0;
     String rcDir;
@@ -164,20 +173,20 @@ namespace client
       log.println( "Random generator seed set to: %d", seed );
     }
 
-    log.print( "Initialising SDL ..." );
+    log.print( "Initialising SDL subsystems ..." );
 
     // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
     // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
-    // crashes or exits forcibly, it remains turned off. Besides that, in X11 several programs
-    // (e.g. IM clients like Pidgin, Kopete, Psi) detect user's inactivity based on screensaver's
-    // counter, so they don't detect that you are away if the screensaver is screwed.
+    // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients like
+    // Pidgin, Kopete, Psi) rely on screensaver's counter, so they don't detect that you are away
+    // if the screensaver is screwed.
     if( config.getSet( "screen.leaveScreensaver", true ) ) {
       SDL_putenv( const_cast<char*>( "SDL_VIDEO_ALLOW_SCREENSAVER=1" ) );
     }
     if( config.getSet( "screen.nvVSync", true ) ) {
       SDL_putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
     }
-    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) || SDLNet_Init() ) {
+    if( SDL_InitSubSystem( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) != 0 || SDLNet_Init() != 0 ) {
       log.printEnd( " Failed" );
       return;
     }
@@ -198,36 +207,42 @@ namespace client
       log.printEnd( " OK" );
     }
 
-    int screenX    = config.getSet( "screen.width", 1024 );
-    int screenY    = config.getSet( "screen.height", 768 );
-    int screenBpp  = config.getSet( "screen.bpp", 32 );
-    int screenFull = config.getSet( "screen.full", false ) ? SDL_FULLSCREEN : 0;
+    int screenX    = config.get( "screen.width", 0 );
+    int screenY    = config.get( "screen.height", 0 );
+    int screenBpp  = config.get( "screen.bpp", 0 );
+    int screenFull = config.getSet( "screen.full", true ) ? SDL_FULLSCREEN : 0;
 
-    ushort screenCenterX = ushort( screenX / 2 );
-    ushort screenCenterY = ushort( screenY / 2 );
-
-    log.print( "Setting OpenGL surface %dx%d %dbpp %s ...",
+    log.print( "Setting OpenGL surface %dx%d-%d %s ...",
                screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
 
     SDL_WM_SetCaption( OZ_WM_TITLE, null );
     SDL_ShowCursor( SDL_FALSE );
 
-    int modeResult = SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
-    if( modeResult == 0 ) {
+    if( ( screenX != 0 || screenY != 0 || screenBpp != 0 ) &&
+        SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull ) == 0 )
+    {
       log.printEnd( " Mode not supported" );
       return;
     }
-    if( SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull ) == null ) {
+    SDL_Surface* surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
+    if( surface == null ) {
       log.printEnd( " Failed" );
       return;
     }
 
-    if( modeResult != screenBpp ) {
-      log.printEnd( " OK, but at %dbpp", modeResult );
-    }
-    else {
-      log.printEnd( " OK" );
-    }
+    screenX   = surface->w;
+    screenY   = surface->h;
+    screenBpp = surface->format->BitsPerPixel;
+
+    config.getSet( "screen.width", screenX );
+    config.getSet( "screen.height", screenY );
+    config.getSet( "screen.bpp", screenBpp );
+
+    ushort screenCenterX = ushort( screenX / 2 );
+    ushort screenCenterY = ushort( screenY / 2 );
+
+    log.printEnd( " OK, %dx%d-%d set", screenX, screenY, screenBpp );
+
     initFlags |= INIT_SDL_VIDEO;
 
     render.init();
@@ -250,7 +265,7 @@ namespace client
     render.load();
     initFlags |= INIT_RENDER_LOAD;
 
-    loadingTime = float( clock() - createTime ) / float( CLOCKS_PER_SEC );
+    loadingTime = float( SDL_GetTicks() - createTime ) / 1000.0f;
 
     log.println( "Main loop {" );
     log.indent();
@@ -260,7 +275,7 @@ namespace client
     bool isAlive        = true;
     bool isActive       = true;
 
-    uint tick           = Timer::TICK_MILLIS;
+    const uint tick     = static_cast<const uint>( Timer::TICK_MILLIS );
     // time passed form start of the frame
     uint delta;
     uint timeNow;
@@ -271,8 +286,6 @@ namespace client
 
     uint gameTime       = 0;
     uint renderTime     = 0;
-
-    timer.init();
 
     // set mouse cursor to centre of the screen and clear any events (key presses and mouse moves)
     // from before
@@ -384,7 +397,7 @@ namespace client
     nirvanaTimeSec = float( timer.nirvanaMillis ) / 1000.0f;
     ticks          = timer.millis / Timer::TICK_MILLIS;
 
-    if( !( initFlags & INIT_CONFIG ) ) {
+    if( ( initFlags & INIT_CONFIG ) == 0 ) {
       config.exclude( "dir.rc" );
       config.save( configPath );
       config.add( "dir.rc", rcDir );

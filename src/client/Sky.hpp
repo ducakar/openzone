@@ -28,10 +28,10 @@ namespace client
       static const float GREEN_COEF;
       static const float BLUE_COEF;
 
-      static const float DAY_COLOR[4];
-      static const float NIGHT_COLOR[4];
-      static const float WATER_COLOR[4];
-      static const float STAR_COLOR[4];
+      static const float DAY_COLOUR[4];
+      static const float NIGHT_COLOUR[4];
+      static const float WATER_COLOUR[4];
+      static const float STAR_COLOUR[4];
 
       static const int MAX_STARS = 512;
 
@@ -46,7 +46,6 @@ namespace client
 
       float angle;
       float ratio;
-      float ratio_1;
       Vec3  originalLightDir;
       Vec3  axis;
 

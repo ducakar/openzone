@@ -87,7 +87,7 @@ namespace oz
     return clazz;
   }
 
-  Object* DynamicClass::create( int index, const Vec3& pos ) const
+  Object* DynamicClass::create( int index, const Point3& pos ) const
   {
     Dynamic* obj = new Dynamic();
 
@@ -101,7 +101,7 @@ namespace oz
     obj->index    = index;
     obj->flags    = flags;
     obj->oldFlags = flags;
-    obj->clazz     = this;
+    obj->clazz    = this;
     obj->life     = life;
 
     obj->mass     = mass;
@@ -118,7 +118,7 @@ namespace oz
     obj->dim    = dim;
 
     obj->index  = index;
-    obj->clazz   = this;
+    obj->clazz  = this;
 
     obj->mass   = mass;
     obj->lift   = lift;

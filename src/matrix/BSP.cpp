@@ -24,14 +24,14 @@ namespace oz
 
   struct QBSPHeader
   {
-     char id[4];
-     int  version;
+    char id[4];
+    int  version;
   };
 
   struct QBSPLump
   {
-     int offset;
-     int length;
+    int offset;
+    int length;
   };
 
   enum QBSPLumpType
@@ -65,7 +65,7 @@ namespace oz
 
   struct QBSPPlane
   {
-    Vec3  normal;
+    float normal[3];
     float distance;
   };
 
@@ -119,35 +119,35 @@ namespace oz
 
   struct QBSPVertex
   {
-    Vec3     p;
-    TexCoord texCoord;
-    TexCoord lightmapCoord;
-    Vec3     normal;
-    char     colour[4];
+    float p[3];
+    float texCoord[2];
+    float lightmapCoord[2];
+    float normal[3];
+    char  colour[4];
   };
 
   struct QBSPFace
   {
-    int  texture;
-    int  effect;
-    int  type;
+    int   texture;
+    int   effect;
+    int   type;
 
-    int  firstVertex;
-    int  nVertices;
+    int   firstVertex;
+    int   nVertices;
 
-    int  firstIndex;
-    int  nIndices;
+    int   firstIndex;
+    int   nIndices;
 
-    int  lightmap;
-    int  lightmapCorner[2];
-    int  lightmapSize[2];
+    int   lightmap;
+    int   lightmapCorner[2];
+    int   lightmapSize[2];
 
-    Vec3 lightmapPos;
-    Vec3 lightmapVecs[2];
+    float lightmapPos[3];
+    float lightmapVecs[2][3];
 
-    Vec3 normal;
+    float normal[3];
 
-    int  size[2];
+    int   size[2];
   };
 
   inline bool BSP::includes( const BSP::Brush& brush ) const
@@ -252,7 +252,7 @@ namespace oz
 
       fread( &plane, sizeof( QBSPPlane ), 1, file );
 
-      planes[i].normal   = plane.normal;
+      planes[i].normal   = Vec3( plane.normal );
       planes[i].distance = plane.distance * scale;
 
       float offset =
@@ -475,9 +475,9 @@ namespace oz
 
       fread( &vertex, sizeof( QBSPVertex ), 1, file );
 
-      vertices[i].p             = vertex.p * scale;
-      vertices[i].texCoord      = vertex.texCoord;
-      vertices[i].lightmapCoord = vertex.lightmapCoord;
+      vertices[i].p             = Vec3( vertex.p ) * scale;
+      vertices[i].texCoord      = TexCoord( vertex.texCoord[0], vertex.texCoord[1] );
+      vertices[i].lightmapCoord = TexCoord( vertex.lightmapCoord[0], vertex.lightmapCoord[1] );
     }
 
     nIndices = int( lumps[QBSP_LUMP_INDICES].length / sizeof( int ) );
@@ -497,7 +497,7 @@ namespace oz
       faces[i].texture     = face.texture;
       faces[i].lightmap    = face.lightmap;
       faces[i].material    = ( texTypes[face.texture] & QBSP_WATER_BIT ) ? Material::WATER_BIT : 0;
-      faces[i].normal      = face.normal;
+      faces[i].normal      = Vec3( face.normal );
       faces[i].firstVertex = face.firstVertex;
       faces[i].nVertices   = face.nVertices;
       faces[i].firstIndex  = face.firstIndex;
@@ -880,8 +880,8 @@ namespace oz
     // optimise bounds
     log.print( "Fitting bounds: " );
 
-    mins = Vec3( +Math::inf(), +Math::inf(), +Math::inf() );
-    maxs = Vec3( -Math::inf(), -Math::inf(), -Math::inf() );
+    mins = Point3( +Math::inf(), +Math::inf(), +Math::inf() );
+    maxs = Point3( -Math::inf(), -Math::inf(), -Math::inf() );
 
     for( int i = 0; i < nBrushSides; ++i ) {
       Plane& plane = planes[ brushSides[i] ];
@@ -941,8 +941,8 @@ namespace oz
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
-    os.writeVec3( mins );
-    os.writeVec3( maxs );
+    os.writePoint3( mins );
+    os.writePoint3( maxs );
     os.writeFloat( maxDim );
     os.writeFloat( life );
 
@@ -972,8 +972,8 @@ namespace oz
     }
 
     for( int i = 0; i < nLeaves; ++i ) {
-      os.writeVec3( leaves[i].mins );
-      os.writeVec3( leaves[i].maxs );
+      os.writePoint3( leaves[i].mins );
+      os.writePoint3( leaves[i].maxs );
       os.writeInt( leaves[i].firstBrush );
       os.writeInt( leaves[i].nBrushes );
       os.writeInt( leaves[i].firstFace );
@@ -1000,8 +1000,8 @@ namespace oz
     }
 
     for( int i = 0; i < nEntityClasses; ++i ) {
-      os.writeVec3( entityClasses[i].mins );
-      os.writeVec3( entityClasses[i].maxs );
+      os.writePoint3( entityClasses[i].mins );
+      os.writePoint3( entityClasses[i].maxs );
       os.writeInt( entityClasses[i].firstBrush );
       os.writeInt( entityClasses[i].nBrushes );
       os.writeInt( entityClasses[i].firstFace );
@@ -1068,8 +1068,8 @@ namespace oz
 
     InputStream is = buffer.inputStream();
 
-    mins           = is.readVec3();
-    maxs           = is.readVec3();
+    mins           = is.readPoint3();
+    maxs           = is.readPoint3();
     maxDim         = is.readFloat();
     life           = is.readFloat();
 
@@ -1149,8 +1149,8 @@ namespace oz
 
     leaves = new( data ) Leaf[nLeaves];
     for( int i = 0; i < nLeaves; ++i ) {
-      leaves[i].mins = is.readVec3();
-      leaves[i].maxs = is.readVec3();
+      leaves[i].mins = is.readPoint3();
+      leaves[i].maxs = is.readPoint3();
       leaves[i].firstBrush = is.readInt();
       leaves[i].nBrushes = is.readInt();
       leaves[i].firstFace = is.readInt();
@@ -1192,8 +1192,8 @@ namespace oz
 
     entityClasses = new( data ) EntityClass[nEntityClasses];
     for( int i = 0; i < nEntityClasses; ++i ) {
-      entityClasses[i].mins = is.readVec3();
-      entityClasses[i].maxs = is.readVec3();
+      entityClasses[i].mins = is.readPoint3();
+      entityClasses[i].maxs = is.readPoint3();
       entityClasses[i].bsp = this;
       entityClasses[i].firstBrush = is.readInt();
       entityClasses[i].nBrushes = is.readInt();

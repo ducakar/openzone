@@ -83,9 +83,9 @@ namespace oz
       void cut( Dynamic* obj );
 
       // create an object, schedule for addition in the world and return predicted world index
-      int  addStruct( const char* name, const Vec3& p, Structure::Rotation rot );
-      int  addObject( const char* name, const Vec3& p );
-      int  addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
+      int  addStruct( const char* name, const Point3& p, Structure::Rotation rot );
+      int  addObject( const char* name, const Point3& p );
+      int  addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
                     float restitution, float mass, float lifeTime );
 
       // schedule for removal from physical world and delete it
@@ -118,7 +118,7 @@ namespace oz
       int  getObjectIndex( int ticket ) const;
       int  getPartIndex( int ticket ) const;
 
-      void genParts( int number, const Vec3& p,
+      void genParts( int number, const Point3& p,
                      const Vec3& velocity, float velocitySpread,
                      const Vec3& colour, float colourSpread,
                      float restitution, float mass, float lifeTime );
@@ -161,7 +161,7 @@ namespace oz
     orbis.unposition( obj );
   }
 
-  inline int Synapse::addStruct( const char* name, const Vec3& p, Structure::Rotation rot )
+  inline int Synapse::addStruct( const char* name, const Point3& p, Structure::Rotation rot )
   {
     orbis.requestBSP( translator.bspIndex( name ) );
 
@@ -178,7 +178,7 @@ namespace oz
     return index;
   }
 
-  inline int Synapse::addObject( const char* name, const Vec3& p )
+  inline int Synapse::addObject( const char* name, const Point3& p )
   {
     int index = orbis.addObject( name, p );
     Object* obj = orbis.objects[index];
@@ -191,7 +191,7 @@ namespace oz
     return index;
   }
 
-  inline int Synapse::addPart( const Vec3& p, const Vec3& velocity, const Vec3& colour,
+  inline int Synapse::addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
                                float restitution, float mass, float lifeTime )
   {
     int index = orbis.addPart( p, velocity, colour, restitution, mass, lifeTime );
