@@ -11,7 +11,9 @@
 
 #include "stable.hpp"
 
-#include "matrix/Matrix.hpp"
+#include "matrix/Orbis.hpp"
+#include "matrix/Bot.hpp"
+
 #include "client/FreeCamProxy.hpp"
 #include "client/StrategicProxy.hpp"
 #include "client/BotProxy.hpp"

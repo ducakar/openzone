@@ -139,24 +139,6 @@ namespace oz
         return *this;
       }
 
-      OZ_ALWAYS_INLINE
-      Point3& operator *= ( float k )
-      {
-        x *= k;
-        y *= k;
-        z *= k;
-        return *this;
-      }
-
-      OZ_ALWAYS_INLINE
-      Point3& operator /= ( float k )
-      {
-        x /= k;
-        y /= k;
-        z /= k;
-        return *this;
-      }
-
       // dot product
       OZ_ALWAYS_INLINE
       float operator * ( const Vec3& v ) const

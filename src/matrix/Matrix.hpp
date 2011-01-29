@@ -11,8 +11,6 @@
 
 #include "stable.hpp"
 
-#include "matrix/Synapse.hpp"
-
 namespace oz
 {
 

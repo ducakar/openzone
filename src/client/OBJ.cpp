@@ -63,7 +63,7 @@ namespace client
     String texture;
   };
 
-  static Vector<Vec3>     positions;
+  static Vector<Point3>   positions;
   static Vector<Vec3>     normals;
   static Vector<TexCoord> texCoords;
   static Vector<Part>     parts;
@@ -99,7 +99,7 @@ namespace client
       if( nMatches != 3 ) {
         return false;
       }
-      positions.add( Vec3( x, y, z ) );
+      positions.add( Point3( x, y, z ) );
       return true;
     }
     // vertex normal coords
@@ -401,7 +401,7 @@ namespace client
       throw Exception( "OBJ model loading error" );
     }
     for( int i = 0; i < positions.length(); ++i ) {
-      positions[i] = translation + scaling * positions[i];
+      positions[i] = Point3::ORIGIN + translation + scaling * ( positions[i] - Point3::ORIGIN );
     }
 
     log.printEnd( " OK" );
@@ -496,7 +496,7 @@ namespace client
         int normIndex = faceVertices[i].normal;
         int texIndex = faceVertices[i].texCoord;
 
-        os.writeVec3( positions[posIndex] );
+        os.writePoint3( positions[posIndex] );
         os.writeVec3( normIndex == -1 ? Vec3::ZERO : normals[normIndex] );
         os.writeFloat( texIndex == -1 ? 0.0f : texCoords[texIndex].u );
         os.writeFloat( texIndex == -1 ? 0.0f : texCoords[texIndex].v );
@@ -566,7 +566,9 @@ namespace client
     log.indent();
 
     Buffer buffer;
-    buffer.read( modelPath );
+    if( !buffer.read( modelPath ) ) {
+      throw Exception( "Cannot read model file" );
+    }
     InputStream is = buffer.inputStream();
 
     int nVertices = is.readInt();
@@ -579,7 +581,7 @@ namespace client
     DArray<uint> indices( nIndices );
 
     for( int i = 0; i < nVertices; ++i ) {
-      vertices[i].position = is.readVec3();
+      vertices[i].position = is.readPoint3();
       vertices[i].normal = is.readVec3();
       vertices[i].texCoord.u = is.readFloat();
       vertices[i].texCoord.v = is.readFloat();
@@ -634,9 +636,6 @@ namespace client
 
   void OBJ::draw() const
   {
-    const Vertex* vertices = null;
-    const uint*   indices = null;
-
     bool isBlendEnabled = false;
 
     glEnableClientState( GL_VERTEX_ARRAY );
@@ -646,9 +645,9 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
 
-    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ), &vertices[0].position );
-    glNormalPointer( GL_FLOAT, sizeof( Vertex ), &vertices[0].normal );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ), &vertices[0].texCoord );
+    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ), OZ_VBO_OFFSETOF( 0, Vertex, position ) );
+    glNormalPointer( GL_FLOAT, sizeof( Vertex ), OZ_VBO_OFFSETOF( 0, Vertex, normal ) );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ), OZ_VBO_OFFSETOF( 0, Vertex, texCoord ) );
 
     for( int i = 0; i < segments.length(); ++i ) {
       const Segment& segment = segments[i];
@@ -671,7 +670,7 @@ namespace client
       }
 
       glDrawElements( GL_TRIANGLE_STRIP, segments[i].nIndices, GL_UNSIGNED_INT,
-                      &indices[ segments[i].firstIndex ] );
+                      OZ_VBO_OFFSET( segments[i].firstIndex, uint ) );
     }
 
     if( isBlendEnabled ) {

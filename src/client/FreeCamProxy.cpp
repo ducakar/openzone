@@ -11,8 +11,11 @@
 
 #include "client/FreeCamProxy.hpp"
 
+#include "matrix/Collider.hpp"
 #include "matrix/Vehicle.hpp"
+
 #include "ui/UI.hpp"
+
 #include "client/Camera.hpp"
 
 namespace oz
@@ -88,7 +91,7 @@ namespace client
       p.z -= speed;
     }
 
-    if( ui::keyboard.keys[SDLK_m] && !ui::keyboard.oldKeys[SDLK_m] ) {
+    if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
       camera.setState( Camera::STRATEGIC );
     }
 

@@ -35,21 +35,21 @@ namespace client
 
       static const int MAX_STARS = 512;
 
-      uint  sunTexId;
-      uint  moonTexId;
-      uint  sunList;
-      uint  moonList;
+      uint   sunTexId;
+      uint   moonTexId;
+      uint   sunList;
+      uint   moonList;
 
-      Vec3  stars[MAX_STARS];
+      Point3 stars[MAX_STARS];
 
     public:
 
-      float angle;
-      float ratio;
-      Vec3  originalLightDir;
-      Vec3  axis;
+      float  angle;
+      float  ratio;
+      Vec3   originalLightDir;
+      Vec3   axis;
 
-      float lightDir[4];
+      float  lightDir[4];
 
       void load();
       void unload();

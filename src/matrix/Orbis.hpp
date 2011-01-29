@@ -12,22 +12,16 @@
 
 #include "stable.hpp"
 
-#include "matrix/Sky.hpp"
-#include "matrix/Terra.hpp"
 #include "matrix/BSP.hpp"
+#include "matrix/Terra.hpp"
+#include "matrix/Sky.hpp"
 
 #include "matrix/Structure.hpp"
 #include "matrix/Dynamic.hpp"
 #include "matrix/Particle.hpp"
 
-#include "matrix/Translator.hpp"
-#include "matrix/Lua.hpp"
-
 namespace oz
 {
-
-  class Synapse;
-  class Physics;
 
   struct Cell
   {
@@ -53,12 +47,14 @@ namespace oz
       static const float DIM;
 
       Cell               cells[Orbis::MAX][Orbis::MAX];
-      Sky                sky;
-      Terra              terra;
+
       Vector<BSP*>       bsps;
       Vector<Structure*> structs;
       Vector<Object*>    objects;
       Vector<Particle*>  parts;
+
+      Terra              terra;
+      Sky                sky;
 
     private:
 
@@ -202,275 +198,6 @@ namespace oz
   inline Span Orbis::getInters( const Bounds& bounds, float epsilon ) const
   {
     return getInters( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
-  }
-
-  inline bool Orbis::position( Structure* str )
-  {
-    str->setRotation( *bsps[str->bsp], str->rot );
-
-    Span span = getInters( *str, EPSILON );
-
-    for( int x = span.minX; x <= span.maxX; ++x ) {
-      for( int y = span.minY; y <= span.maxY; ++y ) {
-        if( cells[x][y].structs.length() == cells[x][y].structs.capacity() ) {
-          return false;
-        }
-      }
-    }
-
-    for( int x = span.minX; x <= span.maxX; ++x ) {
-      for( int y = span.minY; y <= span.maxY; ++y ) {
-        assert( !cells[x][y].structs.contains( short( str->index ) ) );
-
-        cells[x][y].structs.add( short( str->index ) );
-      }
-    }
-    return true;
-  }
-
-  inline void Orbis::unposition( Structure* str )
-  {
-    Span span = getInters( *str, EPSILON );
-
-    for( int x = span.minX; x <= span.maxX; ++x ) {
-      for( int y = span.minY; y <= span.maxY; ++y ) {
-        assert( cells[x][y].structs.contains( short( str->index ) ) );
-
-        cells[x][y].structs.excludeUO( short( str->index ) );
-      }
-    }
-  }
-
-  inline void Orbis::position( Object* obj )
-  {
-    assert( obj->cell == null );
-
-    Cell* cell = getCell( obj->p );
-
-    obj->cell = cell;
-    obj->next[0] = cell->firstObject;
-    obj->prev[0] = null;
-
-    if( cell->firstObject == null ) {
-      cell->firstObject = obj;
-    }
-    else {
-      cell->firstObject->prev[0] = obj;
-      cell->firstObject = obj;
-    }
-  }
-
-  inline void Orbis::unposition( Object* obj )
-  {
-    assert( obj->cell != null );
-
-    Cell* cell = obj->cell;
-
-    obj->cell = null;
-
-    if( obj->prev[0] == null ) {
-      cell->firstObject = obj->next[0];
-    }
-    else {
-      obj->prev[0]->next[0] = obj->next[0];
-    }
-    if( obj->next[0] != null ) {
-      obj->next[0]->prev[0] = obj->prev[0];
-    }
-  }
-
-  inline void Orbis::reposition( Object* obj )
-  {
-    assert( obj->cell != null );
-
-    Cell* oldCell = obj->cell;
-    Cell* newCell = getCell( obj->p );
-
-    if( newCell != oldCell ) {
-      if( obj->prev[0] == null ) {
-        oldCell->firstObject = obj->next[0];
-      }
-      else {
-        obj->prev[0]->next[0] = obj->next[0];
-      }
-      if( obj->next[0] != null ) {
-        obj->next[0]->prev[0] = obj->prev[0];
-      }
-
-      obj->cell = newCell;
-      obj->next[0] = newCell->firstObject;
-      obj->prev[0] = null;
-
-      if( newCell->firstObject == null ) {
-        newCell->firstObject = obj;
-      }
-      else {
-        newCell->firstObject->prev[0] = obj;
-        newCell->firstObject = obj;
-      }
-    }
-  }
-
-  inline void Orbis::position( Particle* part )
-  {
-    assert( part->cell == null );
-
-    Cell* cell = getCell( part->p );
-
-    part->cell = cell;
-    part->next[0] = cell->firstPart;
-    part->prev[0] = null;
-
-    if( cell->firstPart == null ) {
-      cell->firstPart = part;
-    }
-    else {
-      cell->firstPart->prev[0] = part;
-      cell->firstPart = part;
-    }
-  }
-
-  inline void Orbis::unposition( Particle* part )
-  {
-    assert( part->cell != null );
-
-    Cell* cell = part->cell;
-
-    part->cell = null;
-
-    if( part->prev[0] == null ) {
-      cell->firstPart = part->next[0];
-    }
-    else {
-      part->prev[0]->next[0] = part->next[0];
-    }
-    if( part->next[0] != null ) {
-      part->next[0]->prev[0] = part->prev[0];
-    }
-  }
-
-  inline void Orbis::reposition( Particle* part )
-  {
-    assert( part->cell != null );
-
-    Cell* oldCell = part->cell;
-    Cell* newCell = getCell( part->p );
-
-    if( newCell != oldCell ) {
-      if( part->prev[0] == null ) {
-        oldCell->firstPart = part->next[0];
-      }
-      else {
-        part->prev[0]->next[0] = part->next[0];
-      }
-      if( part->next[0] != null ) {
-        part->next[0]->prev[0] = part->prev[0];
-      }
-
-      part->cell = newCell;
-      part->next[0] = newCell->firstPart;
-      part->prev[0] = null;
-
-      if( newCell->firstPart == null ) {
-        newCell->firstPart = part;
-      }
-      else {
-        newCell->firstPart->prev[0] = part;
-        newCell->firstPart = part;
-      }
-    }
-  }
-
-  inline void Orbis::requestBSP( int bsp ) {
-    if( bsps[bsp] == null ) {
-      bsps[bsp] = new BSP( translator.bsps[bsp].name );
-    }
-  }
-
-  inline int Orbis::addStruct( const char* name, const Point3& p, Structure::Rotation rot )
-  {
-    int index;
-
-    if( strAvailableIndices.isEmpty() ) {
-      index = structs.length();
-      structs.pushLast( translator.createStruct( index, name, p, rot ) );
-    }
-    else {
-      index = strAvailableIndices.popLast();
-      structs[index] = translator.createStruct( index, name, p, rot );
-    }
-    return index;
-  }
-
-  // has to be reentrant, can be called again from translator.createObject
-  inline int Orbis::addObject( const char* name, const Point3& p )
-  {
-    int index;
-
-    if( objAvailableIndices.isEmpty() ) {
-      index = objects.length();
-      // reserve slot so reentrant calls cannot occupy it again
-      objects.pushLast( null );
-    }
-    else {
-      index = objAvailableIndices.popLast();
-    }
-    // objects vector may relocate during createObject call, we must use this workaround
-    Object* obj = translator.createObject( index, name, p );
-    objects[index] = obj;
-
-    if( objects[index]->flags & Object::LUA_BIT ) {
-      lua.registerObject( index );
-    }
-    return index;
-  }
-
-  inline int Orbis::addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
-                             float restitution, float mass, float lifeTime )
-  {
-    int index;
-
-    if( partAvailableIndices.isEmpty() ) {
-      index = parts.length();
-      parts.pushLast( new Particle( index, p, velocity, colour, restitution, mass, lifeTime ) );
-    }
-    else {
-      index = partAvailableIndices.popLast();
-      parts[index] = new Particle( index, p, velocity, colour, restitution, mass, lifeTime );
-    }
-    return index;
-  }
-
-  inline void Orbis::remove( Structure* str )
-  {
-    assert( str->index >= 0 );
-
-    strFreedIndices[freeing].pushLast( str->index );
-    structs[str->index] = null;
-    str->index = -1;
-  }
-
-  inline void Orbis::remove( Object* obj )
-  {
-    assert( obj->index >= 0 );
-    assert( obj->cell == null );
-
-    if( obj->flags & Object::LUA_BIT ) {
-      lua.unregisterObject( obj->index );
-    }
-    objFreedIndices[freeing].pushLast( obj->index );
-    objects[obj->index] = null;
-    obj->index = -1;
-  }
-
-  inline void Orbis::remove( Particle* part )
-  {
-    assert( part->index >= 0 );
-    assert( part->cell == null );
-
-    partFreedIndices[freeing].pushLast( part->index );
-    parts[part->index] = null;
-    part->index = -1;
   }
 
 }

@@ -11,11 +11,15 @@
 
 #include "ui/BuildMenu.hpp"
 
+#include "matrix/Translator.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
+
 #include "nirvana/Nirvana.hpp"
-#include "client/Camera.hpp"
+
 #include "ui/Button.hpp"
+
+#include "client/Camera.hpp"
 
 namespace oz
 {
@@ -86,7 +90,6 @@ namespace ui
   BuildMenu::BuildMenu() : Frame( -205, -255, 200, 250 )
   {
     setFont( TITLE );
-    setFontColor( 0xff, 0xff, 0xff );
 
     add( new Button( "SmallCrate", createObject, 90, 15 ), 5, -35 );
     add( new Button( "BigCrate", createObject, 90, 15 ), 5, -55 );
@@ -124,7 +127,7 @@ namespace ui
   {
     if( mouse.doShow ) {
       Frame::onDraw();
-      printCentered( 50, -10, "Create" );
+      printCentred( 50, -10, "Create" );
     }
   }
 

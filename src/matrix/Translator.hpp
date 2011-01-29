@@ -51,8 +51,7 @@ namespace oz
         String name;
         String path;
 
-        explicit Resource( const String& name_, const String& path_ ) : name( name_ ), path( path_ )
-        {}
+        explicit Resource( const String& name, const String& path );
       };
 
     private:
@@ -73,88 +72,20 @@ namespace oz
       Vector<Resource> matrixScripts;
       Vector<Resource> nirvanaScripts;
 
+      Vector<Resource> names;
+
       HashString<const ObjectClass::InitFunc, 8> baseClasses;
       HashString<const ObjectClass*, 64> classes;
 
-      int textureIndex( const char* name ) const
-      {
-        const int* value = textureIndices.find( name );
-        if( value != null ) {
-          return *value;
-        }
-        else {
-          log.println( "W: invalid texture file index requested: %s", name );
-          return -1;
-        }
-      }
-
-      int soundIndex( const char* name ) const
-      {
-        const int* value = soundIndices.find( name );
-        if( value != null ) {
-          return *value;
-        }
-        else {
-          log.println( "W: invalid sound file index requested: %s", name );
-          return -1;
-        }
-      }
-
-      int bspIndex( const char* name ) const
-      {
-        const int* value = bspIndices.find( name );
-        if( value != null ) {
-          return *value;
-        }
-        else {
-          throw Exception( "Invalid BSP index requested" );
-        }
-      }
+      int textureIndex( const char* name ) const;
+      int soundIndex( const char* name ) const;
+      int bspIndex( const char* name ) const;
 
       Structure* createStruct( int index, const char* name, const Point3& p,
-                               Structure::Rotation rot ) const
-      {
-        const int* value = bspIndices.find( name );
-        if( value != null ) {
-          return new Structure( index, *value, p, rot );
-        }
-        else {
-          throw Exception( "Invalid Structure class requested" );
-        }
-      }
-
-      Structure* createStruct( int index, const char* name, InputStream* istream ) const
-      {
-        const int* value = bspIndices.find( name );
-        if( value != null ) {
-          return new Structure( index, *value, istream );
-        }
-        else {
-          throw Exception( "Invalid Structure class requested" );
-        }
-      }
-
-      Object* createObject( int index, const char* name, const Point3& p ) const
-      {
-        const ObjectClass* const* value = classes.find( name );
-        if( value != null ) {
-          return ( *value )->create( index, p );
-        }
-        else {
-          throw Exception( "Invalid Object class requested" );
-        }
-      }
-
-      Object* createObject( int index, const char* name, InputStream* istream ) const
-      {
-        const ObjectClass* const* value = classes.find( name );
-        if( value != null ) {
-          return ( *value )->create( index, istream );
-        }
-        else {
-          throw Exception( "Invalid Object class requested" );
-        }
-      }
+                               Structure::Rotation rot ) const;
+      Structure* createStruct( int index, const char* name, InputStream* istream ) const;
+      Object* createObject( int index, const char* name, const Point3& p ) const;
+      Object* createObject( int index, const char* name, InputStream* istream ) const;
 
       void init();
       void free();

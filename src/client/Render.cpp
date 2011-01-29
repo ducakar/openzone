@@ -11,7 +11,7 @@
 
 #include "client/Render.hpp"
 
-#include "matrix/Matrix.hpp"
+#include "matrix/Collider.hpp"
 #include "matrix/Physics.hpp"
 #include "matrix/BotClass.hpp"
 
@@ -132,12 +132,12 @@ namespace client
     }
     drawnStructures.clearAll();
 
-    float minXCenter = float( span.minX - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
-    float minYCenter = float( span.minY - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+    float minXCentre = float( span.minX - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
+    float minYCentre = float( span.minY - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
 
-    float x = minXCenter;
+    float x = minXCentre;
     for( int i = span.minX; i <= span.maxX; ++i, x += Cell::SIZE ) {
-      float y = minYCenter;
+      float y = minYCentre;
 
       for( int j = span.minY; j <= span.maxY; ++j, y += Cell::SIZE ) {
         if( frustum.isVisible( x, y, CELL_WIDE_RADIUS  ) ) {
@@ -284,6 +284,9 @@ namespace client
     assert( !glIsEnabled( GL_BLEND ) );
     assert( glIsEnabled( GL_TEXTURE_2D ) );
     glEnable( GL_BLEND );
+
+    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
+    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
 
     // draw structures' water
     BSP::beginRender();
@@ -540,7 +543,7 @@ namespace client
 
     // lighting
     glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
-    glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
+//     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
     glLightModelfv( GL_LIGHT_MODEL_AMBIENT, Colours::GLOBAL_AMBIENT );
     glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );

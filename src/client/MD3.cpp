@@ -12,6 +12,7 @@
 #include "client/MD3.hpp"
 
 #include "client/Context.hpp"
+#include "Colours.hpp"
 
 #define FOURCC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
@@ -41,9 +42,9 @@ namespace client
 
   struct MD3Tag
   {
-    char  name[64];
-    Vec3  p;
-    float rot[9];
+    char   name[64];
+    Point3 p;
+    float  rot[9];
   };
 
   struct MD3Surface
@@ -66,9 +67,9 @@ namespace client
 
   struct MD3Frame : Bounds
   {
-    Vec3  p;
-    float radius;
-    char  name[16];
+    Point3 p;
+    float  radius;
+    char   name[16];
   };
 
   struct MD3Shader
@@ -187,7 +188,7 @@ namespace client
   {
     foreach( mesh, meshes.citer() ) {
       foreach( v, mesh->vertices.iter() ) {
-        v->p *= scale;
+        v->p = Point3::ORIGIN + scale * ( v->p - Point3::ORIGIN );
       }
     }
   }
@@ -318,6 +319,9 @@ namespace client
 
   void MD3::drawFrame( int frame ) const
   {
+    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
+    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
+
     glPushMatrix();
 
     upper->drawFrame( frame );

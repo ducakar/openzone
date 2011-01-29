@@ -13,6 +13,7 @@
 
 #include "matrix/BotClass.hpp"
 #include "matrix/Bot.hpp"
+#include "matrix/Translator.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 

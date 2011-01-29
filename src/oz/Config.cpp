@@ -175,9 +175,9 @@ namespace oz
       fprintf( f, "%s", sortedVars[i].key );
 
       int chars = ALIGNMENT - String::length( sortedVars[i].key );
-      while( chars > 0 ) {
-        fprintf( f, " " );
-        --chars;
+      int tabs  = ( chars - 1 ) / 8 + 1;
+      for( int j = 0; j < tabs; ++j ) {
+        fprintf( f, "\t" );
       }
       fprintf( f, "\"%s\"\n", sortedVars[i].value );
     }

@@ -11,6 +11,10 @@
 
 #include "matrix/Synapse.hpp"
 
+#include "matrix/Translator.hpp"
+#include "matrix/Collider.hpp"
+#include "matrix/Bot.hpp"
+
 namespace oz
 {
 
@@ -19,21 +23,136 @@ namespace oz
   Synapse::Synapse() : isSingle( true ), isServer( false ), isClient( false )
   {}
 
+  void Synapse::use( Bot* user, Object* target )
+  {
+    if( target->flags & Object::USE_FUNC_BIT ) {
+      actions.add( Action( user->index, target->index ) );
+      target->use( user );
+    }
+  }
+
+  void Synapse::put( Dynamic* obj )
+  {
+    assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
+
+    putObjects.add( obj->index );
+    orbis.position( obj );
+  }
+
+  void Synapse::cut( Dynamic* obj )
+  {
+    assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
+
+    obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
+        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
+    obj->lower = -1;
+
+    cutObjects.add( obj->index );
+    orbis.unposition( obj );
+  }
+
+  int Synapse::addStruct( const char* name, const Point3& p, Structure::Rotation rot )
+  {
+    orbis.requestBSP( translator.bspIndex( name ) );
+
+    int index = orbis.addStruct( name, p, rot );
+    Structure* str = orbis.structs[index];
+
+    if( !orbis.position( str ) ) {
+      orbis.remove( str );
+      delete str;
+      return -1;
+    }
+
+    addedStructs.add( index );
+    return index;
+  }
+
+  int Synapse::addObject( const char* name, const Point3& p )
+  {
+    int index = orbis.addObject( name, p );
+    Object* obj = orbis.objects[index];
+    assert( obj->cell == null );
+
+    orbis.position( obj );
+    obj->addEvent( Object::EVENT_CREATE, 1.0f );
+
+    addedObjects.add( index );
+    return index;
+  }
+
+  int Synapse::addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
+                               float restitution, float mass, float lifeTime )
+  {
+    int index = orbis.addPart( p, velocity, colour, restitution, mass, lifeTime );
+    Particle* part = orbis.parts[index];
+
+    orbis.position( part );
+
+    addedParts.add( index );
+    return index;
+  }
+
+  void Synapse::remove( Structure* str )
+  {
+    assert( str->index != -1 );
+
+    collider.touchOverlaps( str->toAABB(), 2.0f * EPSILON );
+
+    removedStructs.add( str->index );
+    orbis.unposition( str );
+    orbis.remove( str );
+    delete str;
+  }
+
+  void Synapse::remove( Object* obj )
+  {
+    assert( obj->index != -1 && obj->cell != null );
+
+    if( !( obj->flags & Object::DYNAMIC_BIT ) ) {
+      collider.touchOverlaps( *obj, 2.0f * EPSILON );
+    }
+
+    removedObjects.add( obj->index );
+    deleteObjects.add( obj );
+    orbis.unposition( obj );
+    orbis.remove( obj );
+  }
+
+  void Synapse::removeCut( Dynamic* obj )
+  {
+    assert( obj->index != -1 && obj->cell == null );
+
+    removedObjects.add( obj->index );
+    deleteObjects.add( obj );
+    orbis.remove( obj );
+  }
+
+  void Synapse::remove( Particle* part )
+  {
+    assert( part->index != -1 );
+
+    removedParts.add( part->index );
+    orbis.unposition( part );
+    orbis.remove( part );
+    delete part;
+  }
+
   void Synapse::genParts( int number, const Point3& p,
                           const Vec3& velocity, float velocitySpread,
-                          const Vec3& colour, float colorSpread,
+                          const Vec3& colour, float colourSpread,
                           float restitution, float mass, float lifeTime )
   {
     float velocitySpread2 = velocitySpread / 2.0f;
-    float colourSpread2 = colorSpread / 2.0f;
+    float colourSpread2 = colourSpread / 2.0f;
 
     for( int i = 0; i < number; ++i ) {
       Vec3 velDisturb = Vec3( velocitySpread * Math::frand() - velocitySpread2,
                               velocitySpread * Math::frand() - velocitySpread2,
                               velocitySpread * Math::frand() - velocitySpread2 );
-      Vec3 colourDisturb = Vec3( colorSpread * Math::frand() - colourSpread2,
-                                 colorSpread * Math::frand() - colourSpread2,
-                                 colorSpread * Math::frand() - colourSpread2 );
+      Vec3 colourDisturb = Vec3( colourSpread * Math::frand() - colourSpread2,
+                                 colourSpread * Math::frand() - colourSpread2,
+                                 colourSpread * Math::frand() - colourSpread2 );
       float timeDisturb = lifeTime * Math::frand();
 
       addPart( p, velocity + velDisturb, colour + colourDisturb,

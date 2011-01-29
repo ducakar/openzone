@@ -9,6 +9,8 @@
 
 #include "stable.hpp"
 
+#include "matrix/Translator.hpp"
+#include "matrix/Orbis.hpp"
 #include "matrix/Matrix.hpp"
 
 #include "client/Terra.hpp"
@@ -21,6 +23,10 @@ using namespace oz;
 
 int main( int, char** )
 {
+  SDL_Init( SDL_INIT_NOPARACHUTE );
+
+  long startTime = SDL_GetTicks();
+
   matrix.init();
 
   foreach( terra, translator.terras.citer() ) {
@@ -50,5 +56,11 @@ int main( int, char** )
 
   matrix.free();
 
+  long endTime = SDL_GetTicks();
+
+  log.println();
+  log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
+
+  SDL_Quit();
   return 0;
 }

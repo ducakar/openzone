@@ -47,11 +47,21 @@ namespace ui
     }
     fill( 0, 0, width, height );
     setFont( SANS );
-    setFontColor( 200, 200, 200 );
-    printCentered( width / 2, height / 2, "%s", label.cstr() );
+    setFontColour( 200, 200, 200 );
+    printCentred( width / 2, height / 2, "%s", label.cstr() );
 
     isHighlighted = false;
     isClicked = false;
+  }
+
+  Button::Button( const char* label_, Callback* callback, int width, int height ) :
+      Area( width, height ), callback( callback ), isHighlighted( false ), isClicked( false ),
+      label( label_ )
+  {}
+
+  void Button::setCallback( Callback* callback_ )
+  {
+    callback = callback_;
   }
 
 }

@@ -12,8 +12,6 @@
 #include "stable.hpp"
 
 #include "matrix/Orbis.hpp"
-#include "matrix/Bot.hpp"
-#include "matrix/Collider.hpp"
 
 namespace oz
 {
@@ -22,6 +20,8 @@ namespace oz
   {
     class Nirvana;
   }
+
+  class Bot;
 
   class Synapse
   {
@@ -132,120 +132,5 @@ namespace oz
   };
 
   extern Synapse synapse;
-
-  inline void Synapse::use( Bot* user, Object* target )
-  {
-    if( target->flags & Object::USE_FUNC_BIT ) {
-      actions.add( Action( user->index, target->index ) );
-      target->use( user );
-    }
-  }
-
-  inline void Synapse::put( Dynamic* obj )
-  {
-    assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
-
-    putObjects.add( obj->index );
-    orbis.position( obj );
-  }
-
-  inline void Synapse::cut( Dynamic* obj )
-  {
-    assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
-
-    obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
-        Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
-    obj->lower = -1;
-
-    cutObjects.add( obj->index );
-    orbis.unposition( obj );
-  }
-
-  inline int Synapse::addStruct( const char* name, const Point3& p, Structure::Rotation rot )
-  {
-    orbis.requestBSP( translator.bspIndex( name ) );
-
-    int index = orbis.addStruct( name, p, rot );
-    Structure* str = orbis.structs[index];
-
-    if( !orbis.position( str ) ) {
-      orbis.remove( str );
-      delete str;
-      return -1;
-    }
-
-    addedStructs.add( index );
-    return index;
-  }
-
-  inline int Synapse::addObject( const char* name, const Point3& p )
-  {
-    int index = orbis.addObject( name, p );
-    Object* obj = orbis.objects[index];
-    assert( obj->cell == null );
-
-    orbis.position( obj );
-    obj->addEvent( Object::EVENT_CREATE, 1.0f );
-
-    addedObjects.add( index );
-    return index;
-  }
-
-  inline int Synapse::addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
-                               float restitution, float mass, float lifeTime )
-  {
-    int index = orbis.addPart( p, velocity, colour, restitution, mass, lifeTime );
-    Particle* part = orbis.parts[index];
-
-    orbis.position( part );
-
-    addedParts.add( index );
-    return index;
-  }
-
-  inline void Synapse::remove( Structure* str )
-  {
-    assert( str->index != -1 );
-
-    collider.touchOverlaps( str->toAABB(), 2.0f * EPSILON );
-
-    removedStructs.add( str->index );
-    orbis.unposition( str );
-    orbis.remove( str );
-    delete str;
-  }
-
-  inline void Synapse::remove( Object* obj )
-  {
-    assert( obj->index != -1 && obj->cell != null );
-
-    if( !( obj->flags & Object::DYNAMIC_BIT ) ) {
-      collider.touchOverlaps( *obj, 2.0f * EPSILON );
-    }
-
-    removedObjects.add( obj->index );
-    deleteObjects.add( obj );
-    orbis.unposition( obj );
-    orbis.remove( obj );
-  }
-
-  inline void Synapse::removeCut( Dynamic* obj )
-  {
-    assert( obj->index != -1 && obj->cell == null );
-
-    removedObjects.add( obj->index );
-    deleteObjects.add( obj );
-    orbis.remove( obj );
-  }
-
-  inline void Synapse::remove( Particle* part )
-  {
-    assert( part->index != -1 );
-
-    removedParts.add( part->index );
-    orbis.unposition( part );
-    orbis.remove( part );
-    delete part;
-  }
 
 }

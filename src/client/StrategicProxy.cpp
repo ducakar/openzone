@@ -101,7 +101,7 @@ namespace client
       height = Math::max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
     }
 
-    if( ui::keyboard.keys[SDLK_m] && !ui::keyboard.oldKeys[SDLK_m] ) {
+    if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
       ui::mouse.doShow = false;
       camera.setState( Camera::FREECAM );
     }

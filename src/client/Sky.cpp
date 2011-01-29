@@ -61,7 +61,7 @@ namespace client
     aSort( tempStars, MAX_STARS );
 
     for( int i = 0; i < MAX_STARS; ++i ) {
-      stars[i] = Vec3( tempStars[i] );
+      stars[i] = Point3( tempStars[i] );
     }
 
     delete[] tempStars;
@@ -174,16 +174,16 @@ namespace client
 
     const Vec3& tz = Vec3( transf.z );
     int start, end;
-    if( tz * stars[0] > 0.0f ) {
-      for( end = 1; end < MAX_STARS && tz * stars[end] > 0.0f; ++end );
-      for( start = end + 1; start < MAX_STARS && tz * stars[start] <= 0.0f; ++start );
+    if( stars[0] * tz > 0.0f ) {
+      for( end = 1; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
+      for( start = end + 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
 
       glDrawArrays( GL_POINTS, 0, end );
       glDrawArrays( GL_POINTS, start, MAX_STARS - start );
     }
     else {
-      for( start = 1; start < MAX_STARS && tz * stars[start] <= 0.0f; ++start );
-      for( end = start; end < MAX_STARS && tz * stars[end] > 0.0f; ++end );
+      for( start = 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
+      for( end = start; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
 
       glDrawArrays( GL_POINTS, start, end - start );
     }

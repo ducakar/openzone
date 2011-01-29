@@ -502,9 +502,11 @@ namespace oz
   // terrain collision detection is penetration-safe
   bool Collider::trimAABBTerraQuad( int x, int y )
   {
-    const Terra::Quad& quad = orbis.terra.quads[x][y];
-    const Vec3& minVert = orbis.terra.vertices[x    ][y    ];
-    const Vec3& maxVert = orbis.terra.vertices[x + 1][y + 1];
+    const Terra::Quad& quad     = orbis.terra.quads[x    ][y    ];
+    const Terra::Quad& nextQuad = orbis.terra.quads[x + 1][y + 1];
+
+    const Point3& minVert = quad.vertex;
+    const Point3& maxVert = nextQuad.vertex;
 
     float startDist = startPos * quad.tri[0].normal - quad.tri[0].distance;
     float endDist   = endPos   * quad.tri[0].normal - quad.tri[0].distance;

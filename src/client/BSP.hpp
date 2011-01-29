@@ -29,7 +29,7 @@ namespace client
     private:
 
       static const Structure* str;
-      static Vec3 camPos;
+      static Point3 camPos;
 
       const oz::BSP* bsp;
 

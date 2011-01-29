@@ -40,6 +40,7 @@ add_library( oz STATIC
   common.cpp
   common.hpp
   iterables.hpp
+  oz.cpp
   oz.hpp
   stream.hpp
 )

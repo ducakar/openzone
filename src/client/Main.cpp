@@ -99,7 +99,7 @@ namespace client
   void Main::main( int* argc, char** argv )
   {
     log.print( "Initialising SDL ..." );
-    if( SDL_Init( 0 ) != 0 ) {
+    if( SDL_Init( SDL_INIT_NOPARACHUTE ) != 0 ) {
       log.printEnd( " Failed" );
       return;
     }
@@ -186,7 +186,7 @@ namespace client
     if( config.getSet( "screen.nvVSync", true ) ) {
       SDL_putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
     }
-    if( SDL_InitSubSystem( SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE ) != 0 || SDLNet_Init() != 0 ) {
+    if( SDL_InitSubSystem( SDL_INIT_VIDEO ) != 0 || SDLNet_Init() != 0 ) {
       log.printEnd( " Failed" );
       return;
     }
@@ -238,8 +238,8 @@ namespace client
     config.getSet( "screen.height", screenY );
     config.getSet( "screen.bpp", screenBpp );
 
-    ushort screenCenterX = ushort( screenX / 2 );
-    ushort screenCenterY = ushort( screenY / 2 );
+    ushort screenCentreX = ushort( screenX / 2 );
+    ushort screenCentreY = ushort( screenY / 2 );
 
     log.printEnd( " OK, %dx%d-%d set", screenX, screenY, screenBpp );
 
@@ -289,7 +289,7 @@ namespace client
 
     // set mouse cursor to centre of the screen and clear any events (key presses and mouse moves)
     // from before
-    SDL_WarpMouse( screenCenterX, screenCenterY );
+    SDL_WarpMouse( screenCentreX, screenCentreY );
     while( SDL_PollEvent( &event ) ) {
     }
 
@@ -306,7 +306,7 @@ namespace client
           case SDL_MOUSEMOTION: {
             ui::mouse.relX = -event.motion.xrel;
             ui::mouse.relY =  event.motion.yrel;
-            SDL_WarpMouse( screenCenterX, screenCenterY );
+            SDL_WarpMouse( screenCentreX, screenCentreY );
             break;
           }
           case SDL_KEYDOWN: {

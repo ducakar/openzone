@@ -12,6 +12,7 @@
 #include "matrix/Bot.hpp"
 
 #include "matrix/Synapse.hpp"
+#include "matrix/Collider.hpp"
 #include "matrix/Physics.hpp"
 #include "matrix/Weapon.hpp"
 #include "matrix/BotClass.hpp"

@@ -47,8 +47,11 @@ endif( WIN32 )
 include( CheckLibraryExists )
 include( CPack )
 
+# add_pch( target_name header.hpp DEPENDS dep1 dep2 ... )
 macro( add_pch _targetName _inputHeader )
-  if( NOT MSVC )
+  if( MSVC )
+    add_custom_target( ${_targetName} SOURCES "${_inputHeader}" )
+  else( MSVC )
     # extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for current build configuration XXX
     string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _build_type_flags_var )
     set( _flags "${CMAKE_CXX_FLAGS} ${${_build_type_flags_var}}" )
@@ -71,10 +74,10 @@ macro( add_pch _targetName _inputHeader )
       COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}.gch"
       COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
       COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
-    add_custom_target( ${_targetName} SOURCES ${_inputHeader} DEPENDS ${_inputHeader}.gch )
-  else( NOT MSVC )
-    add_custom_target( ${_targetName} SOURCES "${_inputHeader}" )
-  endif( NOT MSVC )
+    add_custom_target( ${_targetName}
+      SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
+      DEPENDS "${_inputHeader}.gch" )
+  endif( MSVC )
 endmacro( add_pch )
 
 if( NOT CMAKE_BUILD_TYPE )
@@ -214,7 +217,7 @@ else( MSVC )
     set( warnings "${warnings} -Wlogical-op -Wconversion" )
   endif( CLANG )
 
-  set( arch_flags "-msse3 -mfpmath=sse" )
+  set( arch_flags "-msse3 -mfpmath=sse -ffast-math" )
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )

@@ -11,6 +11,10 @@
 
 #include "matrix/Names.hpp"
 
+#include <dirent.h>
+#include <sys/types.h>
+#include "Translator.hpp"
+
 namespace oz
 {
 
@@ -30,30 +34,38 @@ namespace oz
 
   void Names::init()
   {
+    log.println( "Loading name databases {" );
+    log.indent();
+
     // a default entry, we need it if nothing is read
     names.add( "" );
 
-    log.print( "Reading character name database 'name/names' ..." );
+    for( int i = 0; i < translator.names.length(); ++i ) {
+      log.print( "'%s' ...", translator.names[i].name.cstr() );
 
-    FILE* file = fopen( "name/names", "r" );
-    if( file == null ) {
-      log.printEnd( " Failed" );
-      return;
-    }
-
-    char buffer[LINE_LENGTH];
-
-    while( fgets( buffer, LINE_LENGTH, file ) != null ) {
-      String name = buffer;
-      name = name.trim();
-
-      if( !name.isEmpty() ) {
-        names.add( name );
+      FILE* file = fopen( translator.names[i].path, "r" );
+      if( file == null ) {
+        log.printEnd( " Failed" );
+        return;
       }
-    }
-    fclose( file );
 
-    log.printEnd( " OK" );
+      char buffer[LINE_LENGTH];
+
+      while( fgets( buffer, LINE_LENGTH, file ) != null ) {
+        String name = buffer;
+        name = name.trim();
+
+        if( !name.isEmpty() ) {
+          names.add( name );
+        }
+      }
+      fclose( file );
+
+      log.printEnd( " OK" );
+    }
+
+    log.unindent();
+    log.println( "}" );
   }
 
   void Names::free()

@@ -13,7 +13,9 @@
 
 #include "matrix/Names.hpp"
 #include "matrix/Lua.hpp"
+#include "matrix/Translator.hpp"
 #include "matrix/Physics.hpp"
+#include "matrix/Synapse.hpp"
 #include "matrix/Vehicle.hpp"
 #include "matrix/FloraManager.hpp"
 
@@ -85,7 +87,7 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    orbis.sky.set( 205.0f, 1440.0f, 180.0f );
+    orbis.sky.set( 205.0f, 14.4f, 1.8f );
 
     int index = synapse.addObject( "Lord", Point3( 52, -44, 37 ) );
     static_cast<Bot*>( orbis.objects[index] )->h = 270.0f;

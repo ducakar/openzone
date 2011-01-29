@@ -27,7 +27,6 @@ namespace ui
   DebugFrame::DebugFrame() : Frame( 5, -15 - 6 * font.monoHeight, 480, 10 + 6 * font.monoHeight )
   {
     setFont( MONO );
-    setFontColor( 0xff, 0xff, 0xff );
   }
 
   void DebugFrame::onDraw()

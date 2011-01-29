@@ -32,8 +32,8 @@ namespace client
 
   void Terra::prebuild()
   {
-    int nVertices = oz::Terra::MAX * oz::Terra::MAX;
-    int nIndices = oz::Terra::MAX * ( oz::Terra::MAX - 1 ) * 2;
+    int nVertices = oz::Terra::VERTS * oz::Terra::VERTS;
+    int nIndices  = oz::Terra::VERTS * ( oz::Terra::VERTS - 1 ) * 2;
 
     DArray<VertexData> arrayData( nVertices );
     DArray<uint>       indexData( nIndices );
@@ -49,8 +49,8 @@ namespace client
     mapTexId    = context.loadTexture( orbis.terra.mapTexture );
     waterTexId  = context.loadTexture( orbis.terra.waterTexture );
 
-    int nVertices = oz::Terra::MAX * oz::Terra::MAX;
-    int nIndices = oz::Terra::MAX * ( oz::Terra::MAX - 1 ) * 2;
+    int nVertices = oz::Terra::VERTS * oz::Terra::VERTS;
+    int nIndices  = oz::Terra::VERTS * ( oz::Terra::VERTS - 1 ) * 2;
 
     DArray<VertexData> arrayData( nVertices );
     DArray<uint>       indexData( nIndices );
@@ -71,11 +71,11 @@ namespace client
   {
     log.print( "Generating client terrain data ..." );
 
-    for( int x = 0; x < oz::Terra::MAX; ++x ) {
-      for( int y = 0; y < oz::Terra::MAX; ++y ) {
-        VertexData& vertex = ( *arrayData )[x * oz::Terra::MAX + y];
+    for( int x = 0; x < oz::Terra::VERTS; ++x ) {
+      for( int y = 0; y < oz::Terra::VERTS; ++y ) {
+        VertexData& vertex = ( *arrayData )[x * oz::Terra::VERTS + y];
 
-        vertex.position = orbis.terra.vertices[x][y];
+        vertex.position = orbis.terra.quads[x][y].vertex;
         vertex.normal   = Vec3::ZERO;
 
         if( x < oz::Terra::QUADS && y < oz::Terra::QUADS ) {
@@ -97,12 +97,12 @@ namespace client
         vertex.detailTexCoord.u = float( x & 1 ) * DETAIL_SCALE;
         vertex.detailTexCoord.v = float( y & 1 ) * DETAIL_SCALE;
 
-        vertex.mapTexCoord.u = float( x ) / oz::Terra::MAX;
-        vertex.mapTexCoord.v = float( y ) / oz::Terra::MAX;
+        vertex.mapTexCoord.u = float( x ) / oz::Terra::VERTS;
+        vertex.mapTexCoord.v = float( y ) / oz::Terra::VERTS;
 
-        if( x != oz::Terra::MAX - 1 ) {
-          ( *indexData )[ 2 * ( x * oz::Terra::MAX + y ) ] = ( x + 1 ) * oz::Terra::MAX + y;
-          ( *indexData )[ 2 * ( x * oz::Terra::MAX + y ) + 1 ] = x * oz::Terra::MAX + y;
+        if( x != oz::Terra::VERTS - 1 ) {
+          ( *indexData )[ 2 * ( x * oz::Terra::VERTS + y ) ] = ( x + 1 ) * oz::Terra::VERTS + y;
+          ( *indexData )[ 2 * ( x * oz::Terra::VERTS + y ) + 1 ] = x * oz::Terra::VERTS + y;
         }
       }
     }
@@ -129,7 +129,7 @@ namespace client
     for( int i = 0; i < arrayData->length(); ++i ) {
       const VertexData& vertex = ( *arrayData )[i];
 
-      os.writeVec3( vertex.position );
+      os.writePoint3( vertex.position );
       os.writeVec3( vertex.normal );
       os.writeFloat( vertex.detailTexCoord.u );
       os.writeFloat( vertex.detailTexCoord.v );
@@ -154,7 +154,9 @@ namespace client
     log.print( "Loading client terrain data from '%s' ...", path );
 
     Buffer buffer;
-    buffer.read( path );
+    if( !buffer.read( path ) ) {
+      throw Exception( "Cannot read terrain file" );
+    }
     InputStream is = buffer.inputStream();
 
     int nVertices = is.readInt();
@@ -167,7 +169,7 @@ namespace client
     for( int i = 0; i < nVertices; ++i ) {
       VertexData& vertex = ( *arrayData )[i];
 
-      vertex.position = is.readVec3();
+      vertex.position = is.readPoint3();
       vertex.normal = is.readVec3();
       vertex.detailTexCoord.u = is.readFloat();
       vertex.detailTexCoord.v = is.readFloat();
@@ -234,7 +236,7 @@ namespace client
 
     int count = ( span.maxY - span.minY + 1 ) * 2;
     for( int x = span.minX; x < span.maxX; ++x ) {
-      int offset = ( x * oz::Terra::MAX + span.minY ) * 2;
+      int offset = ( x * oz::Terra::VERTS + span.minY ) * 2;
       glDrawElements( GL_TRIANGLE_STRIP, count, GL_UNSIGNED_INT, OZ_VBO_OFFSET( offset, uint ) );
     }
 
@@ -266,8 +268,8 @@ namespace client
 
     glBindTexture( GL_TEXTURE_2D, waterTexId );
 
-    const Vec3& v0 = orbis.terra.vertices[span.minX][span.minY];
-    const Vec3& v1 = orbis.terra.vertices[span.maxX][span.maxY];
+    const Point3& v0 = orbis.terra.quads[span.minX][span.minY].vertex;
+    const Point3& v1 = orbis.terra.quads[span.maxX][span.maxY].vertex;
 
     if( camera.p.z >= 0 ) {
       glNormal3f( 0.0f, 0.0f, 1.0f );

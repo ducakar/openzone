@@ -34,7 +34,7 @@ namespace oz
   void Object::onDestroy()
   {
     synapse.genParts( clazz->nDebris, p, Vec3::ZERO, clazz->debrisVelocitySpread,
-                      clazz->debrisColor, clazz->debrisColorSpread,
+                      clazz->debrisColour, clazz->debrisColourSpread,
                       clazz->debrisRejection, clazz->debrisMass, clazz->debrisLifeTime );
 
     if( !clazz->onDestroy.isEmpty() ) {

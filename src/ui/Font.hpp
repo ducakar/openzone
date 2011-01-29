@@ -11,7 +11,8 @@
 
 #include "stable.hpp"
 
-#include <SDL_ttf.h>
+struct _TTF_Font;
+typedef _TTF_Font TTF_Font;
 
 namespace oz
 {

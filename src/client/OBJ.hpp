@@ -28,7 +28,7 @@ namespace client
 
       struct Vertex
       {
-        Vec3     position;
+        Point3   position;
         Vec3     normal;
         TexCoord texCoord;
       };

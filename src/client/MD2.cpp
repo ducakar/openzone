@@ -12,6 +12,7 @@
 #include "client/MD2.hpp"
 
 #include "client/Context.hpp"
+#include "Colours.hpp"
 
 #define FOURCC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
@@ -258,18 +259,17 @@ namespace client
     {   0, 197,  7.0f, 1 }    // FULL
   };
 
-  Vec3 MD2::vertList[MAX_VERTS];
+  Point3 MD2::vertList[MAX_VERTS];
 
   void MD2::interpolate( const AnimState* anim ) const
   {
-    const Vec3* currFrame = &verts[nVerts * anim->currFrame];
-    const Vec3* nextFrame = &verts[nVerts * anim->nextFrame];
+    const Point3* currFrame = &verts[nVerts * anim->currFrame];
+    const Point3* nextFrame = &verts[nVerts * anim->nextFrame];
 
-    float t1 = anim->fps * anim->currTime;
-    float t2 = 1.0f - t1;
+    float t = anim->fps * anim->currTime;
 
     for( int i = 0; i < nVerts; ++i ) {
-      vertList[i] = t2 * currFrame[i] + t1 * nextFrame[i];
+      vertList[i] = currFrame[i] + t * ( nextFrame[i] - currFrame[i] );
     }
   }
 
@@ -290,7 +290,7 @@ namespace client
     MD2Header header;
     char*     buffer;
     MD2Frame* pFrame;
-    Vec3*     pVerts;
+    Point3*   pVerts;
     int*      pNormals;
 
     name = name_;
@@ -324,7 +324,7 @@ namespace client
       throw Exception( "MD2 model loading error" );
     }
 
-    verts = new Vec3[nVerts * nFrames];
+    verts = new Point3[nVerts * nFrames];
     glCmds = new int[header.nGlCmds];
     lightNormals = new int[nVerts * nFrames];
 
@@ -342,7 +342,7 @@ namespace client
       pNormals = &lightNormals[nVerts * i];
 
       for( int j = 0; j < nVerts; ++j ) {
-        pVerts[j] = Vec3(
+        pVerts[j] = Point3(
           ( float( pFrame->verts[j].v[1] ) * -pFrame->scale[1] ) - pFrame->translate[1],
           ( float( pFrame->verts[j].v[0] ) *  pFrame->scale[0] ) + pFrame->translate[0],
           ( float( pFrame->verts[j].v[2] ) *  pFrame->scale[2] ) + pFrame->translate[2] );
@@ -410,7 +410,7 @@ namespace client
     int max = nVerts * nFrames;
 
     for( int i = 0; i < max; ++i ) {
-      verts[i] *= scale;
+      verts[i] = Point3::ORIGIN + scale * ( verts[i] - Point3::ORIGIN );
     }
   }
 
@@ -437,11 +437,13 @@ namespace client
 
   void MD2::drawFrame( int frame ) const
   {
-    const Vec3* vertList = &verts[nVerts * frame];
-    const int*  pCmd     = glCmds;
+    const Point3* vertList = &verts[nVerts * frame];
+    const int*    pCmd     = glCmds;
 
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
+    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
+    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
 
     while( int i = *( pCmd ) ) {
       if( i < 0 ) {
@@ -472,6 +474,8 @@ namespace client
 
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
+    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
+    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
 
     while( int i = *( pCmd ) ) {
       if( i < 0 ) {

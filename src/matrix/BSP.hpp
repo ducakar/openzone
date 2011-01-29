@@ -94,7 +94,7 @@ namespace oz
 
       struct Vertex
       {
-        Vec3     p;
+        Point3   p;
         TexCoord texCoord;
         TexCoord lightmapCoord;
       };
@@ -125,14 +125,8 @@ namespace oz
         int     clusterLength;
         Bitset* bitsets;
 
-        explicit VisualData() : bitsets( null ) {}
-
-        ~VisualData()
-        {
-          if( bitsets != null ) {
-            delete[] bitsets;
-          }
-        }
+        explicit VisualData();
+        ~VisualData();
       };
 
       String       name;
@@ -196,7 +190,6 @@ namespace oz
 
       // create BSP from a prebuilt ozBSP
       explicit BSP( const char* name );
-
       ~BSP();
 
   };

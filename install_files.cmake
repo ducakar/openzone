@@ -23,13 +23,13 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/Log.cpp
     src/oz/Log.hpp
     src/oz/Map.hpp
-    src/oz/Mat33.cpp
-    src/oz/Mat33.hpp
     src/oz/Mat44.cpp
     src/oz/Mat44.hpp
     src/oz/Math.cpp
     src/oz/Math.hpp
     src/oz/Pair.hpp
+    src/oz/Point3.cpp
+    src/oz/Point3.hpp
     src/oz/Pool.hpp
     src/oz/Quat.cpp
     src/oz/Quat.hpp
@@ -45,6 +45,7 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/common.cpp
     src/oz/common.hpp
     src/oz/iterables.hpp
+    src/oz/oz.cpp
     src/oz/oz.hpp
     src/oz/stream.hpp
     DESTINATION include/oz )
@@ -96,6 +97,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/class )
 
   install( FILES
+    data/cursors/COPYING
     data/cursors/X_cursor.png
     data/cursors/fleur.png
     data/cursors/hand2.png
@@ -104,6 +106,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/cursors )
 
   install( FILES
+    data/fonts/COPYING.DejaVu
     data/fonts/DejaVuSans.ttf
     data/fonts/DejaVuSansMono.ttf
     DESTINATION share/openzone/fonts )
@@ -184,6 +187,9 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/bigCrate )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/bigCrate.ozcOBJ )
+
+  install( FILES
     data/mdl/bombs/skin.jpg
     data/mdl/bombs/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/bombs )
@@ -239,6 +245,9 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/health )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/health.ozcOBJ )
+
+  install( FILES
     data/mdl/hellpig/readme.txt
     data/mdl/hellpig/skin.jpg
     data/mdl/hellpig/tris.md2
@@ -276,6 +285,9 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/monkey )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/monkey.ozcOBJ )
+
+  install( FILES
     data/mdl/mushroom/skin.jpg
     data/mdl/mushroom/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/mushroom )
@@ -300,6 +312,9 @@ if( OZ_INSTALL_DATA )
     data/mdl/raptor/data.mtl
     data/mdl/raptor/data.obj
     DESTINATION share/openzone/mdl/data/mdl/raptor )
+
+  install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/raptor.ozcOBJ )
 
   install( FILES
     data/mdl/rat/Ratamahatta.txt
@@ -339,6 +354,9 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/smallCrate )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/smallCrate.ozcOBJ )
+
+  install( FILES
     data/mdl/smplant/skin.jpg
     data/mdl/smplant/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/smplant )
@@ -366,7 +384,8 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/winebottle )
 
   install( FILES
-    data/name/names
+    data/name/COPYING.wesnoth
+    data/name/wesnoth.drake-male.txt
     DESTINATION share/openzone/name )
 
   install( FILES
