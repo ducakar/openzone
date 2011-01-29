@@ -41,15 +41,9 @@ namespace ui
 
       String   label;
 
-      explicit Button( const char* label_, Callback* callback, int width, int height ) :
-          Area( width, height ), callback( callback ), isHighlighted( false ), isClicked( false ),
-          label( label_ )
-      {}
+      explicit Button( const char* label, Callback* callback, int width, int height );
 
-      void setCallback( Callback* callback_ )
-      {
-        callback = callback_;
-      }
+      void setCallback( Callback* callback );
 
   };
 

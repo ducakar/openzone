@@ -38,26 +38,7 @@ namespace oz
 
       explicit Weapon() {}
 
-      void trigger( Bot* user )
-      {
-        assert( user != null );
-
-        if( shotTime == 0.0f ) {
-          const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
-
-          shotTime = clazz->shotInterval;
-
-          if( nShots == 0 ) {
-            addEvent( EVENT_SHOT_EMPTY, 1.0f );
-          }
-          else {
-            nShots = max( -1, nShots - 1 );
-
-            addEvent( EVENT_SHOT, 1.0f );
-            onShot( user );
-          }
-        }
-      }
+      void trigger( Bot* user );
 
       virtual void readFull( InputStream* istream );
       virtual void writeFull( OutputStream* ostream ) const;

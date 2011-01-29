@@ -11,6 +11,8 @@
 
 #include "matrix/Sky.hpp"
 
+#include "matrix/Timer.hpp"
+
 namespace oz
 {
 

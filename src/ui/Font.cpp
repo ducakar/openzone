@@ -11,7 +11,7 @@
 
 #include "ui/Font.hpp"
 
-#include <cstdarg>
+#include <SDL_ttf.h>
 
 namespace oz
 {

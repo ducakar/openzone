@@ -12,8 +12,14 @@
 
 #include "stable.hpp"
 
-#include "matrix/Object.hpp"
 #include "ui/Area.hpp"
+
+#include "matrix/common.hpp"
+
+namespace oz
+{
+  class Object;
+}
 
 namespace oz
 {
@@ -28,9 +34,9 @@ namespace ui
 
       static const float TAG_CLIP_DIST;
 
-      float         pixelStep;
-      float         stepPixel;
-      bool          leftClick;
+      float pixelStep;
+      float stepPixel;
+      bool  leftClick;
 
     public:
 

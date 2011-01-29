@@ -12,6 +12,7 @@
 #include "nirvana/Lua.hpp"
 
 #include "matrix/BotClass.hpp"
+#include "matrix/Translator.hpp"
 
 #include <lua.hpp>
 

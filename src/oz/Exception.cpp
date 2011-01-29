@@ -34,7 +34,6 @@ namespace oz
       message( message_ ), file( file_ ), line( line_ ), function( function_ )
   {
 #ifndef NDEBUG
-
 # if defined( OZ_MSVC )
     DebugBreak();
 # elif defined( OZ_MINGW )
@@ -46,7 +45,6 @@ namespace oz
     raise( SIGTRAP );
     signal( SIGTRAP, SIG_DFL );
 # endif
-
 #endif
   }
 

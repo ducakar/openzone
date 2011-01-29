@@ -26,6 +26,90 @@ namespace oz
 
   Translator translator;
 
+  Translator::Resource::Resource( const String& name_, const String& path_ ) :
+      name( name_ ), path( path_ )
+  {}
+
+  Structure* Translator::createStruct( int index, const char* name, const Point3& p,
+                                       Structure::Rotation rot ) const
+  {
+    const int* value = bspIndices.find( name );
+    if( value != null ) {
+      return new Structure( index, *value, p, rot );
+    }
+    else {
+      throw Exception( "Invalid Structure class requested" );
+    }
+  }
+
+  int Translator::textureIndex( const char* name ) const
+  {
+    const int* value = textureIndices.find( name );
+    if( value != null ) {
+      return *value;
+    }
+    else {
+      log.println( "W: invalid texture file index requested: %s", name );
+      return -1;
+    }
+  }
+
+  int Translator::soundIndex( const char* name ) const
+  {
+    const int* value = soundIndices.find( name );
+    if( value != null ) {
+      return *value;
+    }
+    else {
+      log.println( "W: invalid sound file index requested: %s", name );
+      return -1;
+    }
+  }
+
+  int Translator::bspIndex( const char* name ) const
+  {
+    const int* value = bspIndices.find( name );
+    if( value != null ) {
+      return *value;
+    }
+    else {
+      throw Exception( "Invalid BSP index requested" );
+    }
+  }
+
+  Structure* Translator::createStruct( int index, const char* name, InputStream* istream ) const
+  {
+    const int* value = bspIndices.find( name );
+    if( value != null ) {
+      return new Structure( index, *value, istream );
+    }
+    else {
+      throw Exception( "Invalid Structure class requested" );
+    }
+  }
+
+  Object* Translator::createObject( int index, const char* name, const Point3& p ) const
+  {
+    const ObjectClass* const* value = classes.find( name );
+    if( value != null ) {
+      return ( *value )->create( index, p );
+    }
+    else {
+      throw Exception( "Invalid Object class requested" );
+    }
+  }
+
+  Object* Translator::createObject( int index, const char* name, InputStream* istream ) const
+  {
+    const ObjectClass* const* value = classes.find( name );
+    if( value != null ) {
+      return ( *value )->create( index, istream );
+    }
+    else {
+      throw Exception( "Invalid Object class requested" );
+    }
+  }
+
   void Translator::init()
   {
     OZ_REGISTER_BASECLASS( Object );
@@ -39,7 +123,7 @@ namespace oz
 
     Config classConfig;
     DIR* dir;
-    dirent* file;
+    struct dirent* file;
 
     log.println( "textures (*.png, *.jpeg, *.jpg in 'textures/oz') {" );
     log.indent();
@@ -349,6 +433,40 @@ namespace oz
       String baseName = name.substring( 0, dot );
 
       nirvanaScripts.add( Resource( baseName, fileName ) );
+      log.println( "%s", baseName.cstr() );
+    }
+    closedir( dir );
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "names (*.txt in 'name') {" );
+    log.indent();
+
+    dir = opendir( "name" );
+    if( dir == null ) {
+      free();
+
+      log.println( "Cannot open directory 'name'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    while( ( file = readdir( dir ) ) != null ) {
+      String name = file->d_name;
+      int dot = name.lastIndex( '.' );
+
+      if( dot <= 0 ) {
+        continue;
+      }
+      String extension = name.substring( dot );
+      if( !extension.equals( ".txt" ) ) {
+        continue;
+      }
+
+      String fileName = "name/" + name;
+      String baseName = name.substring( 0, dot );
+
+      names.add( Resource( baseName, fileName ) );
       log.println( "%s", baseName.cstr() );
     }
     closedir( dir );

@@ -51,15 +51,15 @@ namespace client
 
     private:
 
-      static Vec3 anorms[];
-      static Vec3 vertList[MAX_VERTS];
+      static Vec3   anorms[];
+      static Point3 vertList[MAX_VERTS];
 
       String       name;
 
       int          nFrames;
       int          nVerts;
 
-      Vec3*        verts;
+      Point3*      verts;
       int*         glCmds;
       int*         lightNormals;
 

@@ -25,8 +25,8 @@ namespace client
 {
 
   const Structure* BSP::str;
-  Vec3  BSP::camPos;
-  int   BSP::waterFlags;
+  Point3 BSP::camPos;
+  int    BSP::waterFlags;
 
   inline Bounds BSP::rotateBounds( const Bounds& bounds, Structure::Rotation rotation )
   {
@@ -308,7 +308,7 @@ namespace client
   int BSP::draw( const Structure* str_ )
   {
     str = str_;
-    camPos = camera.p - str->p;
+    camPos = camera.p + ( Point3::ORIGIN - str->p );
 
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
@@ -381,7 +381,7 @@ namespace client
   void BSP::drawWater( const Structure* str_ )
   {
     str = str_;
-    camPos = camera.p - str->p;
+    camPos = camera.p + ( Point3::ORIGIN - str->p );
 
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
@@ -449,7 +449,7 @@ namespace client
   int BSP::fullDraw( const Structure* str_ )
   {
     str = str_;
-    camPos = camera.p - str->p;
+    camPos = camera.p + ( Point3::ORIGIN - str->p );
 
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );
@@ -495,7 +495,7 @@ namespace client
   void BSP::fullDrawWater( const Structure* str_ )
   {
     str = str_;
-    camPos = camera.p - str->p;
+    camPos = camera.p + ( Point3::ORIGIN - str->p );
 
     if( lightMaps != null ) {
       glActiveTexture( GL_TEXTURE1 );

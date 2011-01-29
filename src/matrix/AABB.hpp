@@ -9,6 +9,11 @@
 
 #pragma once
 
+#include "stable.hpp"
+
+#include "matrix/Sphere.hpp"
+#include "matrix/Bounds.hpp"
+
 namespace oz
 {
 

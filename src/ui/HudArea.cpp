@@ -88,10 +88,10 @@ namespace ui
         description = clazz->description;
       }
 
-      setFontColor( 0x00, 0x00, 0x00 );
-      printCentered( descTextX + 1, descTextY - 1, "%s", description.cstr() );
-      setFontColor( 0xff, 0xff, 0xff );
-      printCentered( descTextX + 0, descTextY + 0, "%s", description.cstr() );
+      setFontColour( 0x00, 0x00, 0x00 );
+      printCentred( descTextX + 1, descTextY - 1, "%s", description.cstr() );
+      setFontColour( 0xff, 0xff, 0xff );
+      printCentred( descTextX + 0, descTextY + 0, "%s", description.cstr() );
     }
 
     if( camera.bot != -1 ) {

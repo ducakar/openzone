@@ -30,6 +30,8 @@ namespace oz
       static int  maxCount;
       static long maxAmount;
 
+      explicit Alloc() = delete;
+
       /**
        * Allocate memory without constructing the elements. Memory has to be freed via
        * <code>Alloc::dealloc</code>.

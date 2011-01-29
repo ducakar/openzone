@@ -27,13 +27,6 @@ namespace oz
 
   class Math
   {
-    private:
-
-      // static class
-      explicit Math() {}
-      Math( const Math& );
-      Math& operator = ( const Math& );
-
     public:
 
       static const float EPSILON;
@@ -52,6 +45,8 @@ namespace oz
       static const float SQRT1_2;
 
       static const float MAX_RAND;
+
+      explicit Math() = delete;
 
       OZ_ALWAYS_INLINE
       static float min( float x, float y )

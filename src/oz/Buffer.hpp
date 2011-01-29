@@ -22,13 +22,34 @@ namespace oz
   {
     private:
 
-      char*   data;
-      int     count;
+      char* data;
+      int   count;
 
     public:
 
       explicit Buffer() : data( null ), count( 0 )
       {}
+
+      Buffer( const Buffer& b ) : data( null ), count( b.count )
+      {
+        if( b.count != 0 ) {
+          data = new char[b.count];
+          aCopy( data, b.data, b.count );
+        }
+      }
+
+      Buffer& operator = ( const Buffer& b )
+      {
+        delete[] data;
+        data  = null;
+        count = b.count;
+
+        if( b.count != 0 ) {
+          data = new char[b.count];
+          aCopy( data, b.data, b.count );
+        }
+        return *this;
+      }
 
       explicit Buffer( int size ) : data( new char[size] ), count( size )
       {}

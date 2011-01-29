@@ -70,15 +70,15 @@ namespace client
       OZ_ALWAYS_INLINE
       bool isVisible( float x, float y, float radius )
       {
-        Vec3 min = Vec3( x, y, -Orbis::DIM );
-        Vec3 max = Vec3( x, y,  Orbis::DIM );
+        Point3 mins = Point3( x, y, -Orbis::DIM );
+        Point3 maxs = Point3( x, y,  Orbis::DIM );
 
         return
-            ( min * nLeft  > dLeft  - radius || max * nLeft  > dLeft  - radius ) &&
-            ( min * nRight > dRight - radius || max * nRight > dRight - radius ) &&
-            ( min * nUp    > dUp    - radius || max * nUp    > dUp    - radius ) &&
-            ( min * nDown  > dDown  - radius || max * nDown  > dDown  - radius ) &&
-            ( min * nFront < dFront + radius || max * nFront < dFront + radius );
+            ( mins * nLeft  > dLeft  - radius || maxs * nLeft  > dLeft  - radius ) &&
+            ( mins * nRight > dRight - radius || maxs * nRight > dRight - radius ) &&
+            ( mins * nUp    > dUp    - radius || maxs * nUp    > dUp    - radius ) &&
+            ( mins * nDown  > dDown  - radius || maxs * nDown  > dDown  - radius ) &&
+            ( mins * nFront < dFront + radius || maxs * nFront < dFront + radius );
       }
 
       // get min and max index for cells per each axis, which should be included in pvs

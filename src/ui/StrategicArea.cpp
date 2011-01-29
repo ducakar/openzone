@@ -11,12 +11,13 @@
 
 #include "ui/StrategicArea.hpp"
 
-#include "matrix/BotClass.hpp"
+#include "matrix/Collider.hpp"
+
 #include "client/Camera.hpp"
 #include "client/Colours.hpp"
-#include "client/Context.hpp"
 #include "ui/Keyboard.hpp"
 
+#include <SDL_ttf.h>
 #include <SDL_opengl.h>
 
 namespace oz
@@ -92,8 +93,8 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    setFontColor( 0x00, 0x00, 0x00 );
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
+    setFontColour( 0x00, 0x00, 0x00 );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColour );
 
     // flip
     uint* pixels = reinterpret_cast<uint*>( text->pixels );

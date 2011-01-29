@@ -32,8 +32,8 @@ namespace client
 
       struct Vertex
       {
-        Vec3 p;
-        Vec3 normal;
+        Point3 p;
+        Vec3   normal;
       };
 
       struct Mesh

@@ -12,8 +12,11 @@
 #include "client/GameStage.hpp"
 
 #include "matrix/Bot.hpp"
+#include "matrix/Synapse.hpp"
 #include "matrix/Matrix.hpp"
+
 #include "nirvana/Nirvana.hpp"
+
 #include "client/Network.hpp"
 #include "client/Render.hpp"
 #include "client/Sound.hpp"

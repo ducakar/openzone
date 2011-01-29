@@ -11,6 +11,7 @@
 
 #include "nirvana/Nirvana.hpp"
 
+#include "matrix/Synapse.hpp"
 #include "matrix/Matrix.hpp"
 #include "matrix/BotClass.hpp"
 #include "nirvana/Lua.hpp"

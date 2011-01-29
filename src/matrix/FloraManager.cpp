@@ -11,6 +11,7 @@
 
 #include "matrix/FloraManager.hpp"
 
+#include "matrix/Translator.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 

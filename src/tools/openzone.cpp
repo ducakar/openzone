@@ -28,21 +28,27 @@ int main( int argc, char** argv )
   catch( const Exception& e ) {
     oz::log.resetIndent();
     oz::log.println();
-    oz::log.printRaw( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.what() );
+    oz::log.println();
+    oz::log.println( "EXCEPTION: %s", e.what() );
+    oz::log.println( "  in %s", e.function );
+    oz::log.println( "  at %s:%d", e.file, e.line );
     oz::log.println();
 
     if( oz::log.isFile() ) {
-      fprintf( stderr, "\nEXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.what() );
+      fprintf( stderr, "\n\nEXCEPTION: %s\n", e.what() );
+      fprintf( stderr, "  in %s\n\n", e.function );
+      fprintf( stderr, "  at %s:%d\n", e.file, e.line );
     }
   }
   catch( const std::exception& e ) {
     oz::log.resetIndent();
     oz::log.println();
-    oz::log.printRaw( "EXCEPTION: %s", e.what() );
+    oz::log.println();
+    oz::log.println( "EXCEPTION: %s", e.what() );
     oz::log.println();
 
     if( oz::log.isFile() ) {
-      fprintf( stderr, "EXCEPTION: %s\n", e.what() );
+      fprintf( stderr, "\n\nEXCEPTION: %s\n\n", e.what() );
     }
   }
   client::main.shutdown();

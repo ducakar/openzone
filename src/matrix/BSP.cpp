@@ -150,6 +150,16 @@ namespace oz
     int   size[2];
   };
 
+  BSP::VisualData::VisualData() : bitsets( null )
+  {}
+
+  BSP::VisualData::~VisualData()
+  {
+    if( bitsets != null ) {
+      delete[] bitsets;
+    }
+  }
+
   inline bool BSP::includes( const BSP::Brush& brush ) const
   {
     for( int i = 0; i < brush.nSides; ++i ) {
@@ -475,7 +485,7 @@ namespace oz
 
       fread( &vertex, sizeof( QBSPVertex ), 1, file );
 
-      vertices[i].p             = Vec3( vertex.p ) * scale;
+      vertices[i].p             = Point3::ORIGIN + ( Point3( vertex.p ) - Point3::ORIGIN ) * scale;
       vertices[i].texCoord      = TexCoord( vertex.texCoord[0], vertex.texCoord[1] );
       vertices[i].lightmapCoord = TexCoord( vertex.lightmapCoord[0], vertex.lightmapCoord[1] );
     }
@@ -1025,7 +1035,7 @@ namespace oz
     }
 
     for( int i = 0; i < nVertices; ++i ) {
-      os.writeVec3( vertices[i].p );
+      os.writePoint3( vertices[i].p );
       os.writeFloat( vertices[i].texCoord.u );
       os.writeFloat( vertices[i].texCoord.v );
       os.writeFloat( vertices[i].lightmapCoord.u );
@@ -1226,7 +1236,7 @@ namespace oz
 
     vertices = new( data ) Vertex[nVertices];
     for( int i = 0; i < nVertices; ++i ) {
-      vertices[i].p = is.readVec3();
+      vertices[i].p = is.readPoint3();
       vertices[i].texCoord.u = is.readFloat();
       vertices[i].texCoord.v = is.readFloat();
       vertices[i].lightmapCoord.u = is.readFloat();

@@ -28,7 +28,7 @@ namespace oz
     public:
 
       static const int QUADS = 256;
-      static const int MAX   = QUADS + 1;
+      static const int VERTS = QUADS + 1;
 
     private:
 
@@ -55,11 +55,11 @@ namespace oz
         // dimension of a terrain quad (size / 2)
         static const float DIM;
 
+        Point3   vertex;
         Triangle tri[2];
       };
 
-      Vec3 vertices[MAX][MAX];
-      Quad quads[QUADS][QUADS];
+      Quad   quads[VERTS][VERTS];
 
       String detailTexture;
       String mapTexture;

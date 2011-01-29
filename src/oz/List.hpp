@@ -173,7 +173,7 @@ namespace oz
        * @param l
        * @return
        */
-      bool operator == ( const List& l ) const
+      bool equals( const List& l ) const
       {
         Type* e1 = firstElem;
         Type* e2 = l.firstElem;
@@ -183,25 +183,6 @@ namespace oz
           e2 = e2->next[INDEX];
         }
         return e1 == e2;
-      }
-
-      /**
-       * Compare all elements in two lists.
-       * Type should implement operator ==, otherwise comparison doesn't make sense (two copies
-       * always differ on next[INDEX] members).
-       * @param l
-       * @return
-       */
-      bool operator != ( const List& l ) const
-      {
-        Type* e1 = firstElem;
-        Type* e2 = l.firstElem;
-
-        while( e1 != null && e2 != null && *e1 == *e2 ) {
-          e1 = e1->next[INDEX];
-          e2 = e2->next[INDEX];
-        }
-        return e1 != e2;
       }
 
       /**

@@ -35,10 +35,6 @@ namespace oz
         buffer = count < BUFFER_SIZE ? baseBuffer : new char[count + 1];
       }
 
-      // no equality operators, String::equals functions should be used instead for verbosity
-      bool operator == ( const String& ) const;
-      bool operator != ( const String& ) const;
-
     public:
 
       explicit String() : buffer( baseBuffer ), count( 0 )
@@ -192,6 +188,10 @@ namespace oz
 
         return *this;
       }
+
+      // no equality operators, String::equals functions should be used instead for verbosity
+      bool operator == ( const String& ) const = delete;
+      bool operator != ( const String& ) const = delete;
 
       bool equals( const char* s ) const
       {

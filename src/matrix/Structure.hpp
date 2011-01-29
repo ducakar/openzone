@@ -11,7 +11,6 @@
 
 #include "stable.hpp"
 
-#include "matrix/common.hpp"
 #include "matrix/BSP.hpp"
 
 namespace oz

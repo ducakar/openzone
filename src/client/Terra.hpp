@@ -27,7 +27,7 @@ namespace client
 
       struct VertexData
       {
-        Vec3     position;
+        Point3   position;
         Vec3     normal;
         TexCoord detailTexCoord;
         TexCoord mapTexCoord;

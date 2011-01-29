@@ -392,16 +392,22 @@ static void ozArraysUnittest()
 
 static void ozAllocUnittest()
 {
+#ifdef OZ_ALLOC_STATISTICS
+  static const size_t STAT_META_SIZE = Alloc::ALIGNMENT;
+#else
+  static const size_t STAT_META_SIZE = 0;
+#endif
+
   Test* array = Alloc::alloc<Test>( 10 );
-  assert( Alloc::amount == 10 * sizeof( Test ) );
-  assert( Alloc::sumAmount == 10 * sizeof( Test ) );
+  assert( Alloc::amount == 10 * sizeof( Test ) + STAT_META_SIZE );
+  assert( Alloc::sumAmount == 10 * sizeof( Test ) + STAT_META_SIZE );
   assert( Alloc::count == 1 );
   assert( Alloc::sumCount == 1 );
   aConstruct( array, 5 );
 
   array = Alloc::realloc( array, 5, 8 );
-  assert( Alloc::amount == 8 * sizeof( Test ) );
-  assert( Alloc::sumAmount == 18 * sizeof( Test ) );
+  assert( Alloc::amount == 8 * sizeof( Test ) + STAT_META_SIZE );
+  assert( Alloc::sumAmount == 18 * sizeof( Test ) + 2 * STAT_META_SIZE );
   assert( Alloc::count == 1 );
   assert( Alloc::sumCount == 2 );
   assert( constructCount == 5 );
@@ -410,7 +416,7 @@ static void ozAllocUnittest()
   assert( constructCount == 0 );
   Alloc::dealloc( array );
   assert( Alloc::amount == 0 );
-  assert( Alloc::sumAmount == 18 * sizeof( Test ) );
+  assert( Alloc::sumAmount == 18 * sizeof( Test ) + 2 * STAT_META_SIZE );
   assert( Alloc::count == 0 );
   assert( Alloc::sumCount == 2 );
 }

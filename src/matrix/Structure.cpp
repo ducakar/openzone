@@ -13,6 +13,7 @@
 
 #include "matrix/Timer.hpp"
 #include "matrix/Synapse.hpp"
+#include "matrix/Collider.hpp"
 #include "matrix/Physics.hpp"
 
 namespace oz

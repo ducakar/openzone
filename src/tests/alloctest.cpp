@@ -9,6 +9,7 @@
 
 #include "stable.hpp"
 
+#include "matrix/Synapse.hpp"
 #include "matrix/Matrix.hpp"
 
 #include <SDL_main.h>

@@ -26,6 +26,10 @@ add_executable( register register.cpp )
 add_dependencies( register pch )
 target_link_libraries( register oz ${libs} )
 
+add_executable( simd simd.cpp )
+add_dependencies( simd pch )
+target_link_libraries( simd oz ${libs} )
+
 add_executable( sparse sparse.cpp )
 add_dependencies( sparse pch )
 target_link_libraries( sparse oz ${libs} )

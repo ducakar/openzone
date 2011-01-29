@@ -11,6 +11,7 @@
 
 #include "ui/Area.hpp"
 
+#include <SDL_ttf.h>
 #include <SDL_opengl.h>
 
 namespace oz
@@ -20,9 +21,21 @@ namespace client
 namespace ui
 {
 
-  const SDL_Color Area::SDL_COLOR_WHITE = { 0xff, 0xff, 0xff, 0xff };
+  const SDL_Color Area::SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
   Vector<Area*> Area::updateAreas;
+
+  Area::Area( int width_, int height_ ) :
+      parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ), flags( 0 ),
+      currentFont( font.sansFont ), fontColour( { 0xff, 0xff, 0xff, 0x00 } ),
+      textWidth( 0 ), textHeight( font.sansHeight )
+  {}
+
+  Area::Area( int x_, int y_, int width_, int height_ ) :
+      parent( null ), x( x_ ), y( y_ ), width( width_ ), height( height_ ), flags( 0 ),
+      currentFont( font.sansFont ), fontColour( { 0xff, 0xff, 0xff, 0x00 } ),
+      textWidth( 0 ), textHeight( font.sansHeight )
+  {}
 
   Area::~Area()
   {
@@ -45,11 +58,11 @@ namespace ui
     }
   }
 
-  void Area::setFontColor( ubyte r, ubyte g, ubyte b )
+  void Area::setFontColour( ubyte r, ubyte g, ubyte b )
   {
-    fontColor.r = r;
-    fontColor.g = g;
-    fontColor.b = b;
+    fontColour.r = r;
+    fontColour.g = g;
+    fontColour.b = b;
   }
 
   void Area::fill( int x, int y, int width, int height ) const
@@ -83,7 +96,7 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColour );
 
     // flip
     uint* pixels = reinterpret_cast<uint*>( text->pixels );
@@ -103,7 +116,7 @@ namespace ui
     SDL_FreeSurface( text );
   }
 
-  void Area::printCentered( int baseX, int baseY, const char* s, ... )
+  void Area::printCentred( int baseX, int baseY, const char* s, ... )
   {
     char buffer[1024];
     va_list ap;
@@ -113,7 +126,7 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColour );
 
     // flip
     uint* pixels = reinterpret_cast<uint*>( text->pixels );
@@ -143,7 +156,7 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColor );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColour );
 
     // flip
     uint* pixels = reinterpret_cast<uint*>( text->pixels );
@@ -161,6 +174,33 @@ namespace ui
 
     textWidth = text->w;
     SDL_FreeSurface( text );
+  }
+
+  void Area::realign( int newX, int newY )
+  {
+    int dx = newX - x;
+    int dy = newY - y;
+
+    x = newX;
+    y = newY;
+
+    foreach( child, children.iter() ) {
+      child->x += dx;
+      child->y += dy;
+    }
+  }
+
+  void Area::move( int moveX, int moveY )
+  {
+    moveX = bound( moveX, parent->x - x, parent->x + parent->width  - x - width  );
+    moveY = bound( moveY, parent->y - y, parent->y + parent->height - y - height );
+
+    x += moveX;
+    y += moveY;
+
+    foreach( child, children.iter() ) {
+      child->move( moveX, moveY );
+    }
   }
 
   bool Area::passMouseEvents()
@@ -183,6 +223,17 @@ namespace ui
       }
     }
     return false;
+  }
+
+  void Area::drawChildren()
+  {
+    // render in opposite order; last added child (the first one in the list) should be rendered
+    // last
+    for( Area* child = children.last(); child != null; child = child->prev[0] ) {
+      if( !( child->flags & HIDDEN_BIT ) ) {
+        child->onDraw();
+      }
+    }
   }
 
   void Area::update()
@@ -208,6 +259,55 @@ namespace ui
 
   void Area::onDraw()
   {}
+
+  void Area::show( bool doShow )
+  {
+    if( doShow ) {
+      flags &= ~( IGNORE_BIT | HIDDEN_BIT );
+
+      if( flags & UPDATE_FUNC_BIT ) {
+        flags |= UPDATE_BIT;
+      }
+    }
+    else {
+      flags |= IGNORE_BIT | HIDDEN_BIT;
+      flags &= ~UPDATE_BIT;
+    }
+  }
+
+  void Area::add( Area* area, int relativeX, int relativeY )
+  {
+    area->width  = bound( area->width,  1, width  );
+    area->height = bound( area->height, 1, height );
+
+    relativeX = relativeX < 0 ? width  + relativeX : relativeX;
+    relativeY = relativeY < 0 ? height + relativeY : relativeY;
+
+    relativeX = bound( relativeX, 0, width  - area->width  );
+    relativeY = bound( relativeY, 0, height - area->height );
+
+    area->realign( x + relativeX, y + relativeY );
+    area->parent = this;
+
+    children.add( area );
+    if( area->flags & UPDATE_FUNC_BIT ) {
+      updateAreas.add( area );
+    }
+  }
+
+  void Area::add( Area* area )
+  {
+    add( area, area->x, area->y );
+  }
+
+  void Area::remove( Area* area )
+  {
+    if( area->flags & UPDATE_FUNC_BIT ) {
+      updateAreas.exclude( area );
+    }
+    children.remove( area );
+    delete area;
+  }
 
 }
 }

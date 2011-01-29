@@ -13,8 +13,11 @@
 #include "configuration.hpp"
 
 // we want to use C++ wrapped C headers, not vanilla ones that are included via SDL
+#include <cstdint>
 #include <cstdlib>
 #include <cstdio>
 #include <cctype>
+#include <cstring>
+#include <cinttypes>
 // include SDL as it is commonly used
 #include <SDL.h>

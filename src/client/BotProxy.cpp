@@ -11,10 +11,13 @@
 
 #include "client/BotProxy.hpp"
 
+#include "matrix/Collider.hpp"
 #include "matrix/BotClass.hpp"
 #include "matrix/VehicleClass.hpp"
+
 #include "ui/Keyboard.hpp"
 #include "ui/Mouse.hpp"
+
 #include "client/Camera.hpp"
 
 namespace oz
@@ -147,7 +150,7 @@ namespace client
       bot->state |= Bot::GESTURE_ALL_BIT;
     }
 
-    if( ui::keyboard.keys[SDLK_m] && !ui::keyboard.oldKeys[SDLK_m] ) {
+    if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
       camera.h = bot->h;
       camera.v = bot->v;
 

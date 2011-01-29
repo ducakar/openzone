@@ -96,8 +96,7 @@ namespace oz
       int    count;
 
       // no copying
-      Pool( const Pool& );
-      Pool& operator = ( const Pool& );
+
 
     public:
 
@@ -109,6 +108,12 @@ namespace oz
       {}
 
       /**
+       * No copying
+       * @param
+       */
+      Pool( const Pool& ) = delete;
+
+      /**
        * Destructor.
        */
       ~Pool()
@@ -116,6 +121,12 @@ namespace oz
         // there's a memory leak if count != 0
         soft_assert( count == 0 );
       }
+
+      /**
+       * No copying
+       * @param
+       */
+      Pool& operator = ( const Pool& ) = delete;
 
       /**
        * Allocate a new element.

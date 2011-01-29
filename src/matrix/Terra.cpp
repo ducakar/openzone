@@ -41,26 +41,26 @@ namespace oz
             |/ 0|/ 0|
           (0,0)
         */
-        const Vec3& a = vertices[x    ][y    ];
-        const Vec3& b = vertices[x + 1][y    ];
-        const Vec3& c = vertices[x + 1][y + 1];
-        const Vec3& d = vertices[x    ][y + 1];
+        const Point3& a = quads[x    ][y    ].vertex;
+        const Point3& b = quads[x + 1][y    ].vertex;
+        const Point3& c = quads[x + 1][y + 1].vertex;
+        const Point3& d = quads[x    ][y + 1].vertex;
 
         quads[x][y].tri[0].normal   = ~( ( c - b ) ^ ( a - b ) );
-        quads[x][y].tri[0].distance = quads[x][y].tri[0].normal * a;
+        quads[x][y].tri[0].distance = a * quads[x][y].tri[0].normal;
 
         quads[x][y].tri[1].normal   = ~( ( a - d ) ^ ( c - d ) );
-        quads[x][y].tri[1].distance = quads[x][y].tri[1].normal * a;
+        quads[x][y].tri[1].distance = a * quads[x][y].tri[1].normal;
       }
     }
   }
 
   void Terra::init()
   {
-    for( int x = 0; x < MAX; ++x ) {
-      for( int y = 0; y < MAX; ++y ) {
-        vertices[x][y].x = float( x * Quad::SIZEI ) - DIM;
-        vertices[x][y].y = float( y * Quad::SIZEI ) - DIM;
+    for( int x = 0; x < VERTS; ++x ) {
+      for( int y = 0; y < VERTS; ++y ) {
+        quads[x][y].vertex.x = float( x * Quad::SIZEI ) - DIM;
+        quads[x][y].vertex.y = float( y * Quad::SIZEI ) - DIM;
       }
     }
   }
@@ -84,8 +84,8 @@ namespace oz
     InputStream is = buffer.inputStream();
 
     int max = is.readInt();
-    if( max != MAX ) {
-      log.printEnd( " Invalid dimension %d, should be %d", max, MAX );
+    if( max != VERTS ) {
+      log.printEnd( " Invalid dimension %d, should be %d", max, VERTS );
       throw Exception( "Failed to load terrain" );
     }
 
@@ -93,14 +93,9 @@ namespace oz
     mapTexture = is.readString();
     waterTexture = is.readString();
 
-    for( int x = 0; x < MAX; ++x ) {
-      for( int y = 0; y < MAX; ++y ) {
-        vertices[x][y] = is.readVec3();
-      }
-    }
-
-    for( int x = 0; x < QUADS; ++x ) {
-      for( int y = 0; y < QUADS; ++y ) {
+    for( int x = 0; x < VERTS; ++x ) {
+      for( int y = 0; y < VERTS; ++y ) {
+        quads[x][y].vertex          = is.readPoint3();
         quads[x][y].tri[0].normal   = is.readVec3();
         quads[x][y].tri[0].distance = is.readFloat();
         quads[x][y].tri[1].normal   = is.readVec3();
@@ -138,18 +133,18 @@ namespace oz
       log.printEnd( " No such file" );
       throw Exception( "Failed to load terrain" );
     }
-    if( image->w != MAX || image->h != MAX || image->format->BytesPerPixel != 1 ) {
+    if( image->w != VERTS || image->h != VERTS || image->format->BytesPerPixel != 1 ) {
       log.printEnd( " Invalid format: %d x %d %d bpp, should be %d x %d 8 bpp", image->w, image->h,
-                   image->format->BytesPerPixel * 8, MAX, MAX );
+                   image->format->BytesPerPixel * 8, VERTS, VERTS );
       SDL_FreeSurface( image );
       throw Exception( "Failed to load terrain" );
     }
 
     int scanLineLength = image->pitch;
     const ubyte* line = reinterpret_cast<const ubyte*>( image->pixels );
-    for( int y = MAX - 1; y >= 0; --y ) {
-      for( int x = 0; x < MAX; ++x ) {
-        vertices[x][y].z = float( line[x] ) * heightStep + heightBias;
+    for( int y = VERTS - 1; y >= 0; --y ) {
+      for( int x = 0; x < VERTS; ++x ) {
+        quads[x][y].vertex.z = float( line[x] ) * heightStep + heightBias;
       }
       line += scanLineLength;
     }
@@ -166,29 +161,32 @@ namespace oz
     size += detailTexture.length() + 1;
     size += mapTexture.length() + 1;
     size += waterTexture.length() + 1;
-    size += MAX * MAX * int( sizeof( Vec3 ) );
-    size += QUADS * QUADS * int( sizeof( Quad ) );
+    size += VERTS * VERTS * int( sizeof( Quad ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
-    os.writeInt( MAX );
+    os.writeInt( VERTS );
     os.writeString( detailTexture );
     os.writeString( mapTexture );
     os.writeString( waterTexture );
 
-    for( int x = 0; x < MAX; ++x ) {
-      for( int y = 0; y < MAX; ++y ) {
-        os.writeVec3( vertices[x][y] );
-      }
-    }
+    for( int x = 0; x < VERTS; ++x ) {
+      for( int y = 0; y < VERTS; ++y ) {
+        os.writePoint3( quads[x][y].vertex );
 
-    for( int x = 0; x < QUADS; ++x ) {
-      for( int y = 0; y < QUADS; ++y ) {
-        os.writeVec3( quads[x][y].tri[0].normal );
-        os.writeFloat( quads[x][y].tri[0].distance );
-        os.writeVec3( quads[x][y].tri[1].normal );
-        os.writeFloat( quads[x][y].tri[1].distance );
+        if( x == QUADS || y == QUADS ) {
+          os.writeVec3( Vec3::ZERO );
+          os.writeFloat( 0.0f );
+          os.writeVec3( Vec3::ZERO );
+          os.writeFloat( 0.0f );
+        }
+        else {
+          os.writeVec3( quads[x][y].tri[0].normal );
+          os.writeFloat( quads[x][y].tri[0].distance );
+          os.writeVec3( quads[x][y].tri[1].normal );
+          os.writeFloat( quads[x][y].tri[1].distance );
+        }
       }
     }
 

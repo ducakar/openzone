@@ -125,6 +125,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
+      OZ_ALWAYS_INLINE
       operator const ulong* () const
       {
         return data;
@@ -135,6 +136,7 @@ namespace oz
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
+      OZ_ALWAYS_INLINE
       operator ulong* ()
       {
         return data;

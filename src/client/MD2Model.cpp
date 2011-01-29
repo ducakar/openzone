@@ -12,6 +12,7 @@
 #include "client/MD2Model.hpp"
 
 #include "matrix/BotClass.hpp"
+
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
