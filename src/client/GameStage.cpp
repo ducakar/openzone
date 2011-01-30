@@ -28,20 +28,88 @@ namespace oz
 namespace client
 {
 
+  using oz::nirvana::nirvana;
+
   GameStage gameStage;
+
+  int GameStage::auxMain( void* )
+  {
+    try{
+      gameStage.run();
+    }
+    catch( const Exception& e ) {
+      log.resetIndent();
+      log.println();
+      log.println( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.what() );
+
+      if( log.isFile() ) {
+        fprintf( stderr, "EXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.what() );
+      }
+      abort();
+    }
+    catch( const std::exception& e ) {
+      log.resetIndent();
+      log.println();
+      log.println( "EXCEPTION: %s", e.what() );
+
+      if( log.isFile() ) {
+        fprintf( stderr, "EXCEPTION: %s\n", e.what() );
+      }
+      abort();
+    }
+    return 0;
+  }
+
+  void GameStage::run()
+  {
+    uint beginTime;
+
+    nirvana.sync();
+
+    SDL_SemPost( mainSemaphore );
+    SDL_SemWait( auxSemaphore );
+
+    while( isAlive ) {
+      /*
+       * PHASE 1
+       */
+      beginTime = SDL_GetTicks();
+
+      // we can finally delete removed object after render and sound are sync'd (as model/audio
+      // dtors have pointers to objects) and nirvana has read vector of removed objects and sync'd
+      synapse.update();
+
+      network.update();
+
+      // update world
+      matrix.update();
+      // don't add any objects until next Game::update call or there will be index collisions in
+      // nirvana
+
+      timer.matrixMillis += SDL_GetTicks() - beginTime;
+
+      SDL_SemPost( mainSemaphore );
+      SDL_SemWait( auxSemaphore );
+
+      /*
+       * PHASE 2
+       */
+      beginTime = SDL_GetTicks();
+
+      nirvana.sync();
+      // update minds
+      nirvana.update();
+
+      timer.nirvanaMillis += SDL_GetTicks() - beginTime;
+
+      SDL_SemPost( mainSemaphore );
+      SDL_SemWait( auxSemaphore );
+    }
+  }
 
   bool GameStage::update()
   {
-    // wait until nirvana thread has stopped
-    SDL_SemWait( matrix.semaphore );
-    assert( SDL_SemValue( matrix.semaphore ) == 0 );
-
-    // we can finally delete removed object after render and sound are sync'd (as model/audio dtors
-    // have pointers to objects) and nirvana has read vector of removed objects and sync'd
-    synapse.update();
-
-    // clean events and remove destroyed objects
-    matrix.cleanObjects();
+    uint beginTime;
 
     if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
       orbis.sky.time += orbis.sky.period * 0.25f;
@@ -52,38 +120,44 @@ namespace client
 
     bool doQuit = ui::keyboard.keys[SDLK_ESCAPE] != 0;
 
-    synapse.clearTickets();
+    SDL_SemPost( auxSemaphore );
+    SDL_SemWait( mainSemaphore );
 
-    network.update();
+    beginTime = SDL_GetTicks();
 
-    // update world
-    matrix.update();
-    // don't add any objects until next Game::update call or there will be index collisions in
-    // nirvana
+    // TODO LOADER
+
+    timer.loaderMillis += SDL_GetTicks() - beginTime;
+
+    SDL_SemPost( auxSemaphore );
+    SDL_SemWait( mainSemaphore );
+
+    beginTime = SDL_GetTicks();
 
     // delete models and audio objects of removed objects
     oz::client::render.sync();
     sound.sync();
-
-    if( !doQuit ) {
-      // resume nirvana
-      SDL_SemPost( nirvana::nirvana.semaphore );
-    }
 
     camera.prepare();
 
     // play sounds, but don't do any cleanups
     sound.play();
 
+    timer.syncMillis += SDL_GetTicks() - beginTime;
+
     return !doQuit;
   }
 
   void GameStage::render()
   {
+    uint beginTime = SDL_GetTicks();
+
     // render graphics
     oz::client::render.update();
     // stop playing stopped continuous sounds, do cleanups
     sound.update();
+
+    timer.renderMillis += SDL_GetTicks() - beginTime;
   }
 
   void GameStage::load()
@@ -103,18 +177,26 @@ namespace client
       InputStream istream = buffer.inputStream();
 
       matrix.load( &istream );
-      nirvana::nirvana.load( &istream );
+      nirvana.load( &istream );
     }
     else {
       log.printEnd( " Failed, starting a new world" );
 
       matrix.load( null );
-      nirvana::nirvana.load( null );
+      nirvana.load( null );
     }
 
-    nirvana::nirvana.start();
-
     camera.warp( Point3( 62, -29, 40 ) );
+
+    log.print( "Starting auxilary thread ..." );
+
+    isAlive = true;
+
+    mainSemaphore = SDL_CreateSemaphore( 0 );
+    auxSemaphore  = SDL_CreateSemaphore( 0 );
+    auxThread     = SDL_CreateThread( auxMain, null );
+
+    log.printEnd( " OK" );
 
     log.unindent();
     log.println( "}" );
@@ -125,7 +207,21 @@ namespace client
     log.println( "Unloading GameStage {" );
     log.indent();
 
-    nirvana::nirvana.stop();
+    log.print( "Stopping auxilary thread ..." );
+
+    isAlive = false;
+
+    SDL_SemPost( auxSemaphore );
+    SDL_WaitThread( auxThread, null );
+
+    SDL_DestroySemaphore( mainSemaphore );
+    SDL_DestroySemaphore( auxSemaphore );
+
+    mainSemaphore = null;
+    auxSemaphore  = null;
+    auxThread     = null;
+
+    log.printEnd( " OK" );
 
     if( camera.bot != -1 ) {
       const_cast<Bot*>( camera.botObj )->state &= ~Bot::PLAYER_BIT;
@@ -139,7 +235,7 @@ namespace client
     synapse.update();
 
     matrix.unload( &ostream );
-    nirvana::nirvana.unload( &ostream );
+    nirvana.unload( &ostream );
 
     log.print( "Writing world stream to %s ...", stateFile.cstr() );
     buffer.write( stateFile );
@@ -157,7 +253,7 @@ namespace client
     log.indent();
 
     matrix.init();
-    nirvana::nirvana.init();
+    nirvana.init();
 
     log.unindent();
     log.println( "}" );
@@ -168,7 +264,7 @@ namespace client
     log.println( "Freeing GameStage {" );
     log.indent();
 
-    nirvana::nirvana.free();
+    nirvana.free();
     matrix.free();
 
     log.unindent();

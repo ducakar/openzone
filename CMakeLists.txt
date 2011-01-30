@@ -10,7 +10,6 @@ option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in c
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" ON )
 
 option( OZ_BIG_ENDIAN_DATA "Use big-endian byte-order for data when saving to disk or sending across network" ON )
-option( OZ_ENABLE_CYLINDER "Enable cylinder collision shape and physics" OFF )
 
 option( OZ_BUILD_TESTS "Build tests" ON )
 option( OZ_BUILD_TOOLS "Build tools" ON )
@@ -91,50 +90,59 @@ if( OZ_XML_CONFIG )
 endif( OZ_XML_CONFIG )
 
 Find_Package( SDL REQUIRED )
-Find_Package( SDL_image )
-Find_Package( SDL_net )
-Find_Package( SDL_ttf )
-Find_Package( Lua51 )
-Find_Package( OpenGL )
-Find_Package( OpenAL )
+Find_Package( SDL_image REQUIRED )
+Find_Package( PNG REQUIRED )
+Find_Package( JPEG REQUIRED )
+Find_Package( SDL_net REQUIRED )
+Find_Package( SDL_ttf REQUIRED )
+Find_Package( Lua51 REQUIRED )
+Find_Package( OpenGL REQUIRED )
+Find_Package( OpenAL REQUIRED )
+
+mark_as_advanced( SDL_INCLUDE_DIR )
+mark_as_advanced( SDL_LIBRARY )
+mark_as_advanced( SDLMAIN_LIBRARY )
+
+mark_as_advanced( SDLNET_INCLUDE_DIR )
+mark_as_advanced( SDLNET_LIBRARY )
+
+mark_as_advanced( SDLIMAGE_INCLUDE_DIR )
+mark_as_advanced( SDLIMAGE_LIBRARY )
+
+mark_as_advanced( SDLTTF_INCLUDE_DIR )
+mark_as_advanced( SDLTTF_LIBRARY )
+
+find_library( ALUT_LIBRARY alut )
 
 if( NOT ALUT_INCLUDE_DIR )
-#  set( ALUT_INCLUDE_DIR "ALUT_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
-  set( ALUT_INCLUDE_DIR "/usr/include" CACHE PATH "" FORCE )
+  set( ALUT_INCLUDE_DIR "" CACHE PATH "" FORCE )
+  mark_as_advanced( ALUT_INCLUDE_DIR )
 endif( NOT ALUT_INCLUDE_DIR )
 
-if( NOT ALUT_LIBRARY )
-#  set( ALUT_LIBRARY "ALUT_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
-  set( ALUT_LIBRARY "-lalut" CACHE FILEPATH "" FORCE )
-endif( NOT ALUT_LIBRARY )
+find_library( ALUT_LIBRARY alut )
+mark_as_advanced( ALUT_LIBRARY )
 
 if( NOT OGG_INCLUDE_DIR )
-#  set( OGG_INCLUDE_DIR "OGG_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
-  set( OGG_INCLUDE_DIR "/usr/include" CACHE PATH "" FORCE )
+  set( OGG_INCLUDE_DIR "" CACHE PATH "" FORCE )
+  mark_as_advanced( OGG_INCLUDE_DIR )
 endif( NOT OGG_INCLUDE_DIR )
 
-if( NOT OGG_LIBRARY )
-#  set( OGG_LIBRARY "OGG_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
-  set( OGG_LIBRARY "-logg" CACHE FILEPATH "" FORCE )
-endif( NOT OGG_LIBRARY )
+find_library( OGG_LIBRARY ogg )
+mark_as_advanced( OGG_LIBRARY )
 
 if( NOT VORBIS_INCLUDE_DIR )
-#  set( VORBIS_INCLUDE_DIR "VORBIS_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
-  set( VORBIS_INCLUDE_DIR "/usr/include" CACHE PATH "" FORCE )
+  set( VORBIS_INCLUDE_DIR "" CACHE PATH "" FORCE )
+  mark_as_advanced( VORBIS_INCLUDE_DIR )
 endif( NOT VORBIS_INCLUDE_DIR )
 
-if( NOT VORBIS_LIBRARY )
-#  set( VORBIS_LIBRARY "VORBIS_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
-  set( VORBIS_LIBRARY "-lvorbis" CACHE FILEPATH "" FORCE )
-endif( NOT VORBIS_LIBRARY )
-
-if( NOT VORBISFILE_LIBRARY )
-#  set( VORBISFILE_LIBRARY "VORBISFILE_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE )
-  set( VORBISFILE_LIBRARY "-lvorbisfile" CACHE FILEPATH "" FORCE )
-endif( NOT VORBISFILE_LIBRARY )
+find_library( VORBIS_LIBRARY vorbis )
+mark_as_advanced( VORBIS_LIBRARY )
+find_library( VORBISFILE_LIBRARY vorbisfile )
+mark_as_advanced( VORBISFILE_LIBRARY )
 
 if( MSVC AND NOT DIRENT_INCLUDE_DIR )
   set( DIRENT_INCLUDE_DIR "DIRENT_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
+  mark_as_advanced( DIRENT_INCLUDE_DIR )
 endif( MSVC AND NOT DIRENT_INCLUDE_DIR )
 
 # detect clang

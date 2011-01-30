@@ -31,6 +31,7 @@ namespace nirvana
 
   void Nirvana::sync()
   {
+#ifndef OZ_MINGW
     // remove minds of removed bots
     for( auto i = minds.iter(); i.isValid(); ) {
       Mind* mind = i;
@@ -58,10 +59,12 @@ namespace nirvana
         }
       }
     }
+#endif
   }
 
   void Nirvana::update()
   {
+#ifndef OZ_MINGW
     int count = 0;
     foreach( mind, minds.iter() ) {
       const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
@@ -75,65 +78,52 @@ namespace nirvana
       ++count;
     }
     updateModulo = ( updateModulo + 1 ) % UPDATE_INTERVAL;
+#endif
   }
 
-  int Nirvana::run( void* )
+  void Nirvana::load( InputStream* istream )
   {
-    uint timeBegin;
-
-    try{
 #ifndef OZ_MINGW
-      nirvana.sync();
+    log.print( "Loading Nirvana ..." );
+
+    if( istream != null ) {
+      String typeName;
+      int nMinds = istream->readInt();
+
+      for( int i = 0; i < nMinds; ++i ) {
+        typeName = istream->readString();
+        if( !typeName.isEmpty() ) {
+          minds.add( mindClasses.get( typeName ).read( istream ) );
+        }
+      }
+    }
+
+    log.printEnd( " OK" );
 #endif
+  }
 
-      // prepare semaphores for the first world update
-      SDL_SemPost( matrix.semaphore );
-      SDL_SemWait( nirvana.semaphore );
-
-      while( nirvana.isAlive ) {
-        timeBegin = SDL_GetTicks();
-
+  void Nirvana::unload( OutputStream* ostream )
+  {
 #ifndef OZ_MINGW
-        // FIXME freezes on Windows, works fine on Wine?
-        nirvana.sync();
+    log.print( "Unloading Nirvana ..." );
 
-        // update minds
-        nirvana.update();
+    if( ostream != null ) {
+      ostream->writeInt( minds.length() );
+
+      foreach( mind, minds.citer() ) {
+        ostream->writeString( mind->type() );
+        mind->write( ostream );
+      }
+    }
+    minds.free();
+
+    log.printEnd( " OK" );
 #endif
-
-        timer.nirvanaMillis += SDL_GetTicks() - timeBegin;
-
-        // notify matrix it can proceed changing the world
-        SDL_SemPost( matrix.semaphore );
-        // wait until world has changed
-        SDL_SemWait( nirvana.semaphore );
-      }
-    }
-    catch( const Exception& e ) {
-      log.resetIndent();
-      log.println();
-      log.println( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.what() );
-
-      if( log.isFile() ) {
-        fprintf( stderr, "EXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.what() );
-      }
-      abort();
-    }
-    catch( const std::exception& e ) {
-      log.resetIndent();
-      log.println();
-      log.println( "EXCEPTION: %s", e.what() );
-
-      if( log.isFile() ) {
-        fprintf( stderr, "EXCEPTION: %s\n", e.what() );
-      }
-      abort();
-    }
-    return 0;
   }
 
   void Nirvana::init()
   {
+#ifndef OZ_MINGW
     log.println( "Initialising Nirvana {" );
     log.indent();
 
@@ -142,18 +132,18 @@ namespace nirvana
     OZ_REGISTER_MINDCLASS( Lua );
     OZ_REGISTER_MINDCLASS( Random );
 
-    semaphore = SDL_CreateSemaphore( 0 );
+    updateModulo = 0;
 
     log.unindent();
     log.println( "}" );
+#endif
   }
 
   void Nirvana::free()
   {
+#ifndef OZ_MINGW
     log.println( "Freeing Nirvana {" );
     log.indent();
-
-    SDL_DestroySemaphore( semaphore );
 
     minds.free();
     mindClasses.clear();
@@ -161,77 +151,7 @@ namespace nirvana
 
     log.unindent();
     log.println( "}" );
-  }
-
-  void Nirvana::load( InputStream* istream )
-  {
-    log.print( "Loading Nirvana ..." );
-
-    if( istream != null ) {
-      read( istream );
-    }
-
-    log.printEnd( " OK" );
-  }
-
-  void Nirvana::unload( OutputStream* ostream )
-  {
-    log.print( "Unloading Nirvana ..." );
-
-    if( ostream != null ) {
-      write( ostream );
-    }
-    minds.free();
-
-    log.printEnd( " OK" );
-  }
-
-  void Nirvana::start()
-  {
-    log.print( "Starting Nirvana thread ..." );
-
-    updateModulo = 0;
-    isAlive = true;
-    thread = SDL_CreateThread( run, null );
-
-    log.printEnd( " OK" );
-  }
-
-  void Nirvana::stop()
-  {
-    log.print( "Stopping Nirvana thread ..." );
-
-    isAlive = false;
-
-    SDL_SemPost( semaphore );
-    SDL_WaitThread( thread, null );
-
-    thread = null;
-
-    log.printEnd( " OK" );
-  }
-
-  void Nirvana::read( InputStream* istream )
-  {
-    String typeName;
-    int nMinds = istream->readInt();
-
-    for( int i = 0; i < nMinds; ++i ) {
-      typeName = istream->readString();
-      if( !typeName.isEmpty() ) {
-        minds.add( mindClasses.get( typeName ).read( istream ) );
-      }
-    }
-  }
-
-  void Nirvana::write( OutputStream* ostream ) const
-  {
-    ostream->writeInt( minds.length() );
-
-    foreach( mind, minds.citer() ) {
-      ostream->writeString( mind->type() );
-      mind->write( ostream );
-    }
+#endif
   }
 
 }

@@ -25,17 +25,13 @@ namespace oz
 
       static const float MAX_VELOCITY2;
 
-      // thread synchronisation
-      SDL_semaphore* semaphore;
-
-      void init();
-      void free();
+      void update();
 
       void load( InputStream* istream );
       void unload( OutputStream* ostream );
 
-      void cleanObjects();
-      void update();
+      void init();
+      void free();
 
   };
 

@@ -32,8 +32,7 @@ namespace client
 
   Main main;
 
-  Main::Main() : loadingTime( 0.0f ), ticks( 0 ), allTimeSec( 0.0f ), gameTimeSec( 0.0f ),
-      renderTimeSec( 0.0f ), sleepTimeSec( 0.0f ), nirvanaTimeSec( 0.0f )
+  Main::Main() : allTime( 0.0f ), loadingTime( 0.0f )
   {}
 
   void Main::shutdown()
@@ -65,18 +64,27 @@ namespace client
 
     config.clear();
 
+    float loaderTime  = float( timer.loaderMillis )  * 0.001f;
+    float syncTime    = float( timer.syncMillis )    * 0.001f;
+    float renderTime  = float( timer.renderMillis )  * 0.001f;
+    float sleepTime   = float( timer.sleepMillis )   * 0.001f;
+
+    float matrixTime  = float( timer.matrixMillis )  * 0.001f;
+    float nirvanaTime = float( timer.nirvanaMillis ) * 0.001f;
+
     log.println( "Time statistics {" );
     log.indent();
     log.println( "Loading time: %.2f s", loadingTime );
-    log.println( "Matrix ticks: %d (%.2f Hz)", ticks, float( ticks ) / allTimeSec );
-    log.println( "Rendered frames: %d (%.2f Hz)", timer.nFrames,
-                 float( timer.nFrames ) / allTimeSec );
+    log.println( "Matrix ticks: %d (%.2f Hz)", timer.ticks, float( timer.ticks ) / allTime );
+    log.println( "Rendered frames: %d (%.2f Hz)", timer.nFrames, float( timer.nFrames ) / allTime );
     log.println( "Main loop time usage:" );
-    log.println( "  %6.6g s  all time", allTimeSec );
-    log.println( "  %6.2f %%  system + simulation + basic sound", gameTimeSec / allTimeSec * 100.0f );
-    log.println( "  %6.2f %%  render + sound cleanups", renderTimeSec / allTimeSec * 100.0f );
-    log.println( "  %6.2f %%  sleep", sleepTimeSec / allTimeSec * 100.0f );
-    log.println( "  %6.2f %%  [own thread] AI", nirvanaTimeSec / allTimeSec * 100.0f );
+    log.println( "  %6.6g s  all time", allTime );
+    log.println( "  %6.2f %%  [M:1  ] loader",                loaderTime  / allTime * 100.0f );
+    log.println( "  %6.2f %%  [M:2.1] sync + sound.play",     syncTime    / allTime * 100.0f );
+    log.println( "  %6.2f %%  [M:2.2] render + sound.update", renderTime  / allTime * 100.0f );
+    log.println( "  %6.2f %%  [M:2.3] sleep",                 sleepTime   / allTime * 100.0f );
+    log.println( "  %6.2f %%  [A:1  ] matrix",                matrixTime  / allTime * 100.0f );
+    log.println( "  %6.2f %%  [A:2  ] nirvana",               nirvanaTime / allTime * 100.0f );
     log.unindent();
     log.println( "}" );
 
@@ -267,10 +275,16 @@ namespace client
 
     loadingTime = float( SDL_GetTicks() - createTime ) / 1000.0f;
 
+    SDL_Event event;
+
+    // set mouse cursor to centre of the screen and clear any events (key presses and mouse moves)
+    // from before
+    SDL_WarpMouse( screenCentreX, screenCentreY );
+    while( SDL_PollEvent( &event ) ) {
+    }
+
     log.println( "Main loop {" );
     log.indent();
-
-    SDL_Event event;
 
     bool isAlive        = true;
     bool isActive       = true;
@@ -284,19 +298,8 @@ namespace client
     uint timeLast       = timeZero;
     uint timeLastRender = timeZero;
 
-    uint gameTime       = 0;
-    uint renderTime     = 0;
-
-    // set mouse cursor to centre of the screen and clear any events (key presses and mouse moves)
-    // from before
-    SDL_WarpMouse( screenCentreX, screenCentreY );
-    while( SDL_PollEvent( &event ) ) {
-    }
-
     // THE MAGNIFICANT MAIN LOOP
     do {
-      uint timeBegin = SDL_GetTicks();
-
       // read input & events
       ui::keyboard.prepare();
       ui::mouse.prepare();
@@ -357,14 +360,11 @@ namespace client
 
       ui::mouse.update();
 
-      // stop nirvana, commit with cuts/removals, sync Render and Sound, update world,
-      // resume nirvana
       isAlive &= stage->update();
 
       timer.tick();
       timeNow = SDL_GetTicks();
       delta = timeNow - timeLast;
-      gameTime += timeNow - timeBegin;
 
       // render graphics, if we have enough time left
       if( delta < tick || timeNow - timeLastRender > 32 * tick ) {
@@ -373,11 +373,11 @@ namespace client
         timer.frame();
         // if there's still some time left, waste it
         timeLastRender = SDL_GetTicks();
-        renderTime += timeLastRender - timeNow;
         delta = timeLastRender - timeLast;
 
         if( delta < tick ) {
           SDL_Delay( tick - delta );
+          timer.sleepMillis += tick - delta;
         }
       }
       if( delta > 4 * tick ) {
@@ -390,12 +390,7 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    allTimeSec     = float( timeLast - timeZero ) / 1000.0f;
-    gameTimeSec    = float( gameTime ) / 1000.0f;
-    renderTimeSec  = float( renderTime ) / 1000.0f;
-    sleepTimeSec   = Math::max( allTimeSec - gameTimeSec - renderTimeSec, 0.0f );
-    nirvanaTimeSec = float( timer.nirvanaMillis ) / 1000.0f;
-    ticks          = timer.millis / Timer::TICK_MILLIS;
+    allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
 
     if( ( initFlags & INIT_CONFIG ) == 0 ) {
       config.exclude( "dir.rc" );

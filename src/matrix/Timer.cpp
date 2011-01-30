@@ -18,39 +18,50 @@ namespace oz
 
   Timer timer;
 
-  Timer::Timer() : millis( 0 ), time( 0.0f ), nFrames( 0 ), nirvanaMillis( 0 ), frameMillis( 0 ),
-      frameTime( 0.0f ), frameTicks( 0 )
-  {}
+  Timer::Timer()
+  {
+    reset();
+  }
 
 
   void Timer::reset()
   {
+    ticks         = 0;
     millis        = 0;
     time          = 0.0f;
-    nFrames       = 0;
+
+    matrixMillis  = 0;
     nirvanaMillis = 0;
+
+    loaderMillis  = 0;
+    syncMillis    = 0;
+    renderMillis  = 0;
+    sleepMillis   = 0;
+
+    nFrames       = 0;
+    frameTicks    = 0;
     frameMillis   = 0;
     frameTime     = 0.0f;
-    frameTicks    = 0;
   }
 
   void Timer::tick()
   {
+    ++ticks;
     millis      += TICK_MILLIS;
     time        = float( millis ) / 1000.0f;
 
+    ++frameTicks;
     frameMillis += TICK_MILLIS;
     frameTime   += TICK_TIME;
-    ++frameTicks;
   }
 
   void Timer::frame()
   {
     ++nFrames;
 
+    frameTicks  = 0;
     frameMillis = 0;
     frameTime   = 0.0f;
-    frameTicks  = 0;
   }
 
 }

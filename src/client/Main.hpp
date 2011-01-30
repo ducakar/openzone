@@ -40,13 +40,8 @@ namespace client
       Stage* stage;
       int    initFlags;
 
-      float loadingTime;
-      int   ticks;
-      float allTimeSec;
-      float gameTimeSec;
-      float renderTimeSec;
-      float sleepTimeSec;
-      float nirvanaTimeSec;
+      float  allTime;
+      float  loadingTime;
 
     public:
 

@@ -133,11 +133,11 @@ namespace oz
       DArray& operator = ( const DArray& a )
       {
         assert( &a != this );
-        assert( a.count != 0 );
 
         if( count != a.count ) {
           delete[] data;
-          data = new Type[a.count];
+
+          data  = a.count == 0 ? null : new Type[a.count];
           count = a.count;
         }
 

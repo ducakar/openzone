@@ -166,12 +166,12 @@ namespace oz
       Vector& operator = ( const Vector& v )
       {
         assert( &v != this );
-        assert( v.size > 0 );
 
         aDestruct( data, count );
 
         if( size < v.count ) {
           Alloc::dealloc( data );
+
           data = Alloc::alloc<Type>( v.size );
           size = v.size;
         }
