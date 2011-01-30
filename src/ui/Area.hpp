@@ -95,9 +95,12 @@ namespace ui
     public:
 
       void show( bool doShow );
+
       void add( Area* area, int relativeX, int relativeY );
       void add( Area* area );
       void remove( Area* area );
+      // bring to front
+      void focus( Area* area );
 
   };
 

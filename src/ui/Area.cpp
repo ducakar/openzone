@@ -289,7 +289,8 @@ namespace ui
     area->realign( x + relativeX, y + relativeY );
     area->parent = this;
 
-    children.add( area );
+    children.pushFirst( area );
+
     if( area->flags & UPDATE_FUNC_BIT ) {
       updateAreas.add( area );
     }
@@ -305,8 +306,19 @@ namespace ui
     if( area->flags & UPDATE_FUNC_BIT ) {
       updateAreas.exclude( area );
     }
+
     children.remove( area );
     delete area;
+  }
+
+  void Area::focus( Area* area )
+  {
+    assert( children.contains( area ) );
+
+    if( children.first() != area ) {
+      children.remove( area );
+      children.pushFirst( area );
+    }
   }
 
 }

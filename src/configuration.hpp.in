@@ -1,12 +1,9 @@
 #pragma once
 
-// cylinder collision and physics support
-#cmakedefine OZ_ENABLE_CYLINDER
-
 // path to default data directory
 #define OZ_DEFAULT_DATA_DIR "@OZ_DEFAULT_DATA_DIR@"
 
 // fix error in vorbisfile.h
 #ifdef OZ_MINGW
 # define OV_EXCLUDE_STATIC_CALLBACKS
-#endif 
+#endif

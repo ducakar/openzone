@@ -21,14 +21,22 @@ namespace oz
       static const int   TICK_MILLIS = 20;
       static const float TICK_TIME;
 
+      int   ticks;
       int   millis;
       float time;
-      int   nFrames;
-      int   nirvanaMillis;
 
+      uint  matrixMillis;
+      uint  nirvanaMillis;
+
+      uint  loaderMillis;
+      uint  syncMillis;
+      uint  renderMillis;
+      uint  sleepMillis;
+
+      int   nFrames;
+      int   frameTicks;
       int   frameMillis;
       float frameTime;
-      int   frameTicks;
 
       explicit Timer();
 

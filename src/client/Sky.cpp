@@ -37,6 +37,22 @@ namespace client
   const float Sky::WATER_COLOUR[] = { 0.00f, 0.05f, 0.25f, 1.0f };
   const float Sky::STAR_COLOUR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
 
+  struct StarEntry
+  {
+    Point3 p;
+    float  coef;
+
+    bool operator == ( const StarEntry& se )
+    {
+      return coef == se.coef;
+    }
+
+    bool operator < ( const StarEntry& se )
+    {
+      return coef < se.coef;
+    }
+  };
+
   void Sky::load()
   {
     float heading = Math::rad( orbis.sky.heading );
@@ -44,15 +60,15 @@ namespace client
     axis = Vec3( -Math::sin( heading ), Math::cos( heading ), 0.0f );
     originalLightDir = Vec3( -Math::cos( heading ), -Math::sin( heading ), 0.0f );
 
-    Quat* tempStars = new Quat[MAX_STARS];
+    StarEntry* tempStars = new StarEntry[MAX_STARS];
     for( int i = 0; i < MAX_STARS; ++i ) {
       float length;
       do {
-        tempStars[i].x = 20.0f * Math::frand() - 10.0f;
-        tempStars[i].y = 20.0f * Math::frand() - 10.0f;
-        tempStars[i].z = 20.0f * Math::frand() - 10.0f;
-        tempStars[i].w = Math::atan2( tempStars[i].z, tempStars[i].x );
-        length = Vec3( tempStars[i] ).sqL();
+        tempStars[i].p.x  = 20.0f * Math::frand() - 10.0f;
+        tempStars[i].p.y  = 20.0f * Math::frand() - 10.0f;
+        tempStars[i].p.z  = 20.0f * Math::frand() - 10.0f;
+        tempStars[i].coef = Math::atan2( tempStars[i].p.z, tempStars[i].p.x );
+        length = Vec3( tempStars[i].p ).sqL();
       }
       while( Math::isNaN( length ) || length < 1.0f || length > 100.0f );
     }
@@ -61,7 +77,7 @@ namespace client
     aSort( tempStars, MAX_STARS );
 
     for( int i = 0; i < MAX_STARS; ++i ) {
-      stars[i] = Point3( tempStars[i] );
+      stars[i] = tempStars[i].p;
     }
 
     delete[] tempStars;
@@ -172,7 +188,7 @@ namespace client
     glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer( 3, GL_FLOAT, 0, stars );
 
-    const Vec3& tz = Vec3( transf.z );
+    Vec3 tz = transf.z;
     int start, end;
     if( stars[0] * tz > 0.0f ) {
       for( end = 1; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );

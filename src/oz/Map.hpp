@@ -284,12 +284,12 @@ namespace oz
       Map& operator = ( const Map& m )
       {
         assert( &m != this );
-        assert( m.size > 0 );
 
         aDestruct( data, count );
 
         if( size < m.count ) {
           Alloc::dealloc( data );
+
           data = Alloc::alloc<Elem>( m.size );
           size = m.size;
         }

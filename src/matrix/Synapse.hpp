@@ -54,10 +54,6 @@ namespace oz
       Vector<int>     removedObjects;
       Vector<int>     removedParts;
 
-      Vector<int>     putStructsIndices;
-      Vector<int>     putObjectsIndices;
-      Vector<int>     putPartsIndices;
-
     public:
 
       // isSingle XOR isServer XOR isClient
@@ -96,28 +92,6 @@ namespace oz
       // for removing inventory (cut) objects
       void removeCut( Dynamic* obj );
 
-      // client-initiated actions, returns a ticket that can be used to retrieve index of the
-      // added object
-      int  globalPut( Structure* str );
-      int  globalPut( Object* obj );
-      int  globalPut( Particle* part );
-
-      void globalCut( Structure* str );
-      void globalCut( Object* obj );
-      void globalCut( Particle* part );
-
-      void globalRemove( Structure* str );
-      void globalRemove( Object* obj );
-      void globalRemove( Particle* part );
-
-      void globalUse( Bot* user, Object* target );
-
-      // indices in Orbis vectors after objects have been remotely added
-      // (ticket is the integer returned by globalPut())
-      int  getStructIndex( int ticket ) const;
-      int  getObjectIndex( int ticket ) const;
-      int  getPartIndex( int ticket ) const;
-
       void genParts( int number, const Point3& p,
                      const Vec3& velocity, float velocitySpread,
                      const Vec3& colour, float colourSpread,
@@ -125,9 +99,6 @@ namespace oz
 
       // do deletes and clear lists for actions, additions, removals
       void update();
-
-      // clear tickets
-      void clearTickets();
 
   };
 

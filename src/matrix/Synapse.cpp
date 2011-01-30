@@ -119,15 +119,6 @@ namespace oz
     orbis.remove( obj );
   }
 
-  void Synapse::removeCut( Dynamic* obj )
-  {
-    assert( obj->index != -1 && obj->cell == null );
-
-    removedObjects.add( obj->index );
-    deleteObjects.add( obj );
-    orbis.remove( obj );
-  }
-
   void Synapse::remove( Particle* part )
   {
     assert( part->index != -1 );
@@ -136,6 +127,15 @@ namespace oz
     orbis.unposition( part );
     orbis.remove( part );
     delete part;
+  }
+
+  void Synapse::removeCut( Dynamic* obj )
+  {
+    assert( obj->index != -1 && obj->cell == null );
+
+    removedObjects.add( obj->index );
+    deleteObjects.add( obj );
+    orbis.remove( obj );
   }
 
   void Synapse::genParts( int number, const Point3& p,
@@ -173,13 +173,6 @@ namespace oz
     removedStructs.clear();
     removedObjects.clear();
     removedParts.clear();
-  }
-
-  void Synapse::clearTickets()
-  {
-    putStructsIndices.clear();
-    putObjectsIndices.clear();
-    putPartsIndices.clear();
   }
 
 }

@@ -42,29 +42,16 @@ namespace nirvana
       DList<Mind> minds;
       int updateModulo;
 
-      void sync();
-      void update();
-
-      static int run( void* data );
-
-      void read( InputStream* istream );
-      void write( OutputStream* ostream ) const;
-
     public:
 
-      SDL_semaphore* semaphore;
-      SDL_Thread*    thread;
-
-      volatile bool  isAlive;
-
-      void init();
-      void free();
+      void sync();
+      void update();
 
       void load( InputStream* istream );
       void unload( OutputStream* ostream );
 
-      void start();
-      void stop();
+      void init();
+      void free();
 
   };
 

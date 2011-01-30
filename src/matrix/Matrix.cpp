@@ -87,7 +87,7 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    orbis.sky.set( 205.0f, 14.4f, 1.8f );
+    orbis.sky.set( 205.0f, 1440.0f, 180.0f );
 
     int index = synapse.addObject( "Lord", Point3( 52, -44, 37 ) );
     static_cast<Bot*>( orbis.objects[index] )->h = 270.0f;
@@ -150,101 +150,24 @@ namespace oz
     synapse.addObject( "SmallCrate", Point3( 52, -61, 42 ) );
   }
 
-  void Matrix::init()
-  {
-    log.println( "Initialising Matrix {" );
-    log.indent();
-
-    semaphore = SDL_CreateSemaphore( 0 );
-
-    translator.init();
-    names.init();
-    lua.init();
-    orbis.init();
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void Matrix::free()
-  {
-    log.println( "Freeing Matrix {" );
-    log.indent();
-
-    orbis.free();
-    lua.free();
-    names.free();
-    translator.free();
-
-    SDL_DestroySemaphore( semaphore );
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void Matrix::load( InputStream* istream )
-  {
-    log.println( "Loading Matrix {" );
-    log.indent();
-
-    orbis.terra.load( "heightmap" );
-    orbis.load();
-
-    if( istream != null ) {
-      orbis.read( istream );
-    }
-    else {
-      loadSample();
-      loadStressTest();
-      floraManager.seed();
-    }
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void Matrix::unload( OutputStream* ostream )
-  {
-    log.println( "Unloading Matrix {" );
-    log.indent();
-
-    if( ostream != null ) {
-      orbis.write( ostream );
-    }
-    orbis.unload();
-
-    Particle::pool.free();
-
-    Object::Event::pool.free();
-    Object::pool.free();
-    Dynamic::pool.free();
-    Weapon::pool.free();
-    Bot::pool.free();
-    Vehicle::pool.free();
-
-    Structure::pool.free();
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void Matrix::cleanObjects()
+  void Matrix::update()
   {
     for( int i = 0; i < orbis.objects.length(); ++i ) {
       Object* obj = orbis.objects[i];
 
       if( obj != null ) {
+        // If this is cleared on the object's update, we may also remove effects that were added
+        // by other objects, updated before it.
         obj->events.free();
 
+        // We don't remove objects as they get destroyed but on the next update, so the destroy
+        // sound and ohter effects can be played on an object's destruction.
         if( ( obj->flags & Object::DESTROYED_BIT ) && obj->cell != null ) {
           synapse.remove( obj );
         }
       }
     }
-  }
 
-  void Matrix::update()
-  {
     for( int i = 0; i < orbis.parts.length(); ++i ) {
       Particle* part = orbis.parts[i];
 
@@ -315,6 +238,80 @@ namespace oz
 
     // rotate freeing/waiting/available indices
     orbis.update();
+  }
+
+  void Matrix::load( InputStream* istream )
+  {
+    log.println( "Loading Matrix {" );
+    log.indent();
+
+    orbis.terra.load( "heightmap" );
+    orbis.load();
+
+    if( istream != null ) {
+      orbis.read( istream );
+    }
+    else {
+      loadSample();
+      loadStressTest();
+      floraManager.seed();
+    }
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Matrix::unload( OutputStream* ostream )
+  {
+    log.println( "Unloading Matrix {" );
+    log.indent();
+
+    if( ostream != null ) {
+      orbis.write( ostream );
+    }
+    orbis.unload();
+
+    Particle::pool.free();
+
+    Object::Event::pool.free();
+    Object::pool.free();
+    Dynamic::pool.free();
+    Weapon::pool.free();
+    Bot::pool.free();
+    Vehicle::pool.free();
+
+    Structure::pool.free();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Matrix::init()
+  {
+    log.println( "Initialising Matrix {" );
+    log.indent();
+
+    translator.init();
+    names.init();
+    lua.init();
+    orbis.init();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Matrix::free()
+  {
+    log.println( "Freeing Matrix {" );
+    log.indent();
+
+    orbis.free();
+    lua.free();
+    names.free();
+    translator.free();
+
+    log.unindent();
+    log.println( "}" );
   }
 
 }

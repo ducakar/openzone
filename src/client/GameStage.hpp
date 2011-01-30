@@ -31,8 +31,16 @@ namespace client
 
     private:
 
-      float moveStep;
-      float runStep;
+      SDL_Thread* auxThread;
+
+      SDL_sem* mainSemaphore;
+      SDL_sem* auxSemaphore;
+
+      volatile bool isAlive;
+
+      static int auxMain( void* );
+
+      void run();
 
     public:
 
@@ -42,11 +50,11 @@ namespace client
       bool update();
       void render();
 
-      virtual void init();
-      virtual void free();
-
       virtual void load();
       virtual void unload();
+
+      virtual void init();
+      virtual void free();
 
   };
 
