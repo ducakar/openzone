@@ -51,12 +51,10 @@ namespace oz
     orbis.unposition( obj );
   }
 
-  int Synapse::addStruct( const char* name, const Point3& p, Structure::Rotation rot )
+  int Synapse::addStruct( const char* name, const Point3& p, Struct::Rotation rot )
   {
-    orbis.requestBSP( translator.bspIndex( name ) );
-
     int index = orbis.addStruct( name, p, rot );
-    Structure* str = orbis.structs[index];
+    Struct* str = orbis.structs[index];
 
     if( !orbis.position( str ) ) {
       orbis.remove( str );
@@ -93,7 +91,7 @@ namespace oz
     return index;
   }
 
-  void Synapse::remove( Structure* str )
+  void Synapse::remove( Struct* str )
   {
     assert( str->index != -1 );
 

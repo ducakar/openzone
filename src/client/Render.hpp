@@ -59,31 +59,31 @@ namespace client
         }
       };
 
-      Vector<BSP*>             bsps;
-      Bitset                   drawnStructures;
+      Vector<BSP*>            bsps;
+      Bitset                  drawnStructs;
 
-      int                      clearCount;
+      int                     clearCount;
 
-      Vector<const Structure*> structures;
-      Vector<ObjectEntry>      objects;
-      Vector<ObjectEntry>      delayedObjects;
-      Vector<const Particle*>  particles;
+      Vector<const Struct*>   structs;
+      Vector<ObjectEntry>     objects;
+      Vector<ObjectEntry>     delayedObjects;
+      Vector<const Particle*> particles;
 
-      Vector<const Structure*> waterStructures;
-      HashIndex<Model*, 4093>  models;
+      Vector<const Struct*>   waterStructs;
+      HashIndex<Model*, 4093> models;
 
-      float                    dayVisibility;
-      float                    nightVisibility;
-      float                    waterDayVisibility;
-      float                    waterNightVisibility;
+      float                   dayVisibility;
+      float                   nightVisibility;
+      float                   waterDayVisibility;
+      float                   waterNightVisibility;
 
-      float                    particleRadius;
-      bool                     drawAABBs;
-      bool                     showAim;
+      float                   particleRadius;
+      bool                    drawAABBs;
+      bool                    showAim;
 
-      bool                     isUnderWater;
-      bool                     wasUnderWater;
-      float                    visibility;
+      bool                    isUnderWater;
+      bool                    wasUnderWater;
+      float                   visibility;
 
       void scheduleCell( int cellX, int cellY );
 

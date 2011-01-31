@@ -442,8 +442,6 @@ namespace client
 
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
-    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
-    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
 
     while( int i = *( pCmd ) ) {
       if( i < 0 ) {
@@ -474,8 +472,6 @@ namespace client
 
     glFrontFace( GL_CW );
     glBindTexture( GL_TEXTURE_2D, texId );
-    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
-    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
 
     while( int i = *( pCmd ) ) {
       if( i < 0 ) {

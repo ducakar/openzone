@@ -319,9 +319,6 @@ namespace client
 
   void MD3::drawFrame( int frame ) const
   {
-    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
-    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
-
     glPushMatrix();
 
     upper->drawFrame( frame );

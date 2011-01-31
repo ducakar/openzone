@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#include "matrix/Structure.hpp"
+#include "matrix/Struct.hpp"
 #include "matrix/ObjectClass.hpp"
 
 namespace oz
@@ -81,9 +81,9 @@ namespace oz
       int soundIndex( const char* name ) const;
       int bspIndex( const char* name ) const;
 
-      Structure* createStruct( int index, const char* name, const Point3& p,
-                               Structure::Rotation rot ) const;
-      Structure* createStruct( int index, const char* name, InputStream* istream ) const;
+      Struct* createStruct( int index, const char* name, const Point3& p,
+                            Struct::Rotation rot ) const;
+      Struct* createStruct( int index, const char* name, InputStream* istream ) const;
       Object* createObject( int index, const char* name, const Point3& p ) const;
       Object* createObject( int index, const char* name, InputStream* istream ) const;
 

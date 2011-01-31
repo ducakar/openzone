@@ -18,41 +18,41 @@ namespace oz
 
   struct Hit
   {
-    Vec3  normal;
+    Vec3          normal;
 
-    const Object*    obj;
-    const Structure* str;
-    const Entity*    entity;
+    const Object* obj;
+    const Struct* str;
+    const Entity* entity;
 
-    float ratio;
+    float         ratio;
 
-    int   material;
-    float waterDepth;
-    bool  inWater;
-    bool  onLadder;
+    int           material;
+    float         waterDepth;
+    bool          inWater;
+    bool          onLadder;
   };
 
   class Collider
   {
     private:
 
-      static const Vec3         normals[];
+      static const Vec3  normals[];
 
-      Span                      span;
-      Bounds                    trace;
-      Vec3                      move;
+      Span               span;
+      Bounds             trace;
+      Vec3               move;
 
-      AABB                      aabb;
+      AABB               aabb;
 
-      Point3                    startPos;
-      Point3                    endPos;
+      Point3             startPos;
+      Point3             endPos;
 
-      const Dynamic*            obj;
-      const Object*             exclObj;
-      const Structure*          str;
-      const Entity*             entity;
-      const BSP*                bsp;
-      const EntityClass*        entityClazz;
+      const Dynamic*     obj;
+      const Object*      exclObj;
+      const Struct*      str;
+      const Entity*      entity;
+      const EntityClass* entityClazz;
+      const BSP*         bsp;
 
       SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
@@ -83,7 +83,7 @@ namespace oz
       void trimAABBTerra();
       void trimAABBOrbis();
 
-      void getOrbisOverlaps( Vector<Object*>* objects, Vector<Structure*>* structs );
+      void getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* structs );
       void getOrbisIncludes( Vector<Object*>* objects ) const;
       void touchOrbisOverlaps() const;
       void getEntityOverlaps( Vector<Object*>* objects, float margin );
@@ -115,7 +115,7 @@ namespace oz
 
       // fill given vectors with objects and structures overlapping with the AABB
       // if either vector is null the respecitve test is not performed
-      void getOverlaps( const AABB& aabb, Vector<Object*>* objects, Vector<Structure*>* structs,
+      void getOverlaps( const AABB& aabb, Vector<Object*>* objects, Vector<Struct*>* structs,
                         float eps = 0.0f );
       // fill given vector with objects included in the AABB
       void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = 0.0f );

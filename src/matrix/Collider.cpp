@@ -100,20 +100,20 @@ namespace oz
     }
 
     Point3 originalStartPos = startPos;
-    Bounds localTrace       = str->toStructCS( trace, str->p );
+    Bounds localTrace       = str->toStructCS( trace );
 
     for( int i = 1; i < bsp->nEntityClasses; ++i ) {
-      const EntityClass& clazz = bsp->entityClasses[i];
-      const Vec3& offset = str->entities[i].offset;
+      entityClazz = &bsp->entityClasses[i];
+      entity = &str->entities[i];
 
-      if( clazz.overlaps( localTrace - offset ) ) {
+      if( localTrace.overlaps( *entityClazz + entity->offset ) ) {
         for( int j = 0; j < entityClazz->nBrushes; ++j ) {
           int index = entityClazz->firstBrush + j;
           const BSP::Brush& brush = bsp->brushes[index];
 
           assert( !visitedBrushes.get( index ) );
 
-          startPos = originalStartPos - offset;
+          startPos = originalStartPos - entity->offset;
 
           if( ( brush.material & Material::STRUCT_BIT ) && overlapsAABBBrush( &brush ) ) {
             startPos = originalStartPos;
@@ -137,7 +137,7 @@ namespace oz
       return true;
     }
 
-    const Structure* oldStr = null;
+    const Struct* oldStr = null;
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -149,7 +149,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = orbis.bsps[str->bsp];
 
-            startPos = str->toStructCS( aabb.p, str->p );
+            startPos = str->toStructCS( aabb.p );
             visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
@@ -197,7 +197,7 @@ namespace oz
       return true;
     }
 
-    const Structure* oldStr = null;
+    const Struct* oldStr = null;
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -209,7 +209,7 @@ namespace oz
           if( str != oldStr ) {
             bsp = orbis.bsps[str->bsp];
 
-            startPos = str->toStructCS( aabb.p, str->p );
+            startPos = str->toStructCS( aabb.p );
             visitedBrushes.clearAll();
 
             if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
@@ -242,7 +242,7 @@ namespace oz
 
         for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj->overlaps( trace ) ) {
-            startPos = str->toStructCS( sObj->p, str->p ) - entity->offset;
+            startPos = str->toStructCS( sObj->p ) - entity->offset;
             aabb.dim = sObj->dim;
 
             for( int i = 0; i < entityClazz->nBrushes; ++i ) {
@@ -475,11 +475,11 @@ namespace oz
 
     Point3 originalStartPos = startPos;
     Point3 originalEndPos   = endPos;
-    Bounds localTrace       = str->toStructCS( trace, str->p );
+    Bounds localTrace       = str->toStructCS( trace );
 
     for( int i = 1; i < bsp->nEntityClasses; ++i ) {
+      entityClazz = &bsp->entityClasses[i];
       entity = &str->entities[i];
-      entityClazz = entity->clazz;
 
       if( localTrace.overlaps( *entityClazz + entity->offset ) ) {
         for( int j = 0; j < entityClazz->nBrushes; ++j ) {
@@ -603,7 +603,7 @@ namespace oz
       trimAABBVoid();
     }
 
-    const Structure* oldStr = null;
+    const Struct* oldStr = null;
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -619,8 +619,8 @@ namespace oz
             if( str->overlaps( trace ) ) {
               visitedBrushes.clearAll();
 
-              startPos = str->toStructCS( originalStartPos, str->p );
-              endPos   = str->toStructCS( originalEndPos, str->p );
+              startPos = str->toStructCS( originalStartPos );
+              endPos   = str->toStructCS( originalEndPos );
               entity   = null;
 
               trimAABBNode( 0 );
@@ -657,7 +657,7 @@ namespace oz
   //***********************************
 
   // get all objects and structures that overlap with our trace
-  void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Structure*>* structs )
+  void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* structs )
   {
     assert( objects != null || structs != null );
 
@@ -667,12 +667,12 @@ namespace oz
 
         if( structs != null ) {
           foreach( strIndex, cell.structs.citer() ) {
-            Structure* str = orbis.structs[*strIndex];
+            Struct* str = orbis.structs[*strIndex];
 
             if( !structs->contains( str ) ) {
               bsp = orbis.bsps[str->bsp];
 
-              startPos = str->toStructCS( aabb.p, str->p );
+              startPos = str->toStructCS( aabb.p );
 
               if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
                 structs->add( str );
@@ -741,7 +741,7 @@ namespace oz
 
         for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
           if( sObj->overlaps( trace ) ) {
-            startPos = str->toStructCS( sObj->p, str->p ) - entity->offset;
+            startPos = str->toStructCS( sObj->p ) - entity->offset;
             aabb.dim = sObj->dim + dimMargin;
 
             for( int i = 0; i < entityClazz->nBrushes; ++i ) {
@@ -827,14 +827,14 @@ namespace oz
     bsp = entity_->clazz->bsp;
     entityClazz = entity_->clazz;
 
-    trace = str->toAbsoluteCS( *entityClazz + entity->offset, str->p );
+    trace = str->toAbsoluteCS( *entityClazz + entity->offset );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsEntityOrbisOO();
   }
 
   void Collider::getOverlaps( const AABB& aabb_, Vector<Object*>* objects,
-                              Vector<Structure*>* structs, float eps )
+                              Vector<Struct*>* structs, float eps )
   {
     aabb = aabb_;
     exclObj = null;
@@ -874,8 +874,8 @@ namespace oz
     bsp = entity_->clazz->bsp;
     entityClazz = entity_->clazz;
 
-    trace = str->toAbsoluteCS( *entityClazz + entity->offset, str->p );
-    span = orbis.getInters( trace, AABB::MAX_DIM );
+    trace = str->toAbsoluteCS( *entityClazz + entity->offset );
+    span = orbis.getInters( trace, AABB::MAX_DIM + margin );
 
     getEntityOverlaps( objects, margin );
   }

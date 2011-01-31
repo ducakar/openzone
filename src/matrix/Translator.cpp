@@ -30,12 +30,12 @@ namespace oz
       name( name_ ), path( path_ )
   {}
 
-  Structure* Translator::createStruct( int index, const char* name, const Point3& p,
-                                       Structure::Rotation rot ) const
+  Struct* Translator::createStruct( int index, const char* name, const Point3& p,
+                                    Struct::Rotation rot ) const
   {
     const int* value = bspIndices.find( name );
     if( value != null ) {
-      return new Structure( index, *value, p, rot );
+      return new Struct( index, *value, p, rot );
     }
     else {
       throw Exception( "Invalid Structure class requested" );
@@ -77,11 +77,11 @@ namespace oz
     }
   }
 
-  Structure* Translator::createStruct( int index, const char* name, InputStream* istream ) const
+  Struct* Translator::createStruct( int index, const char* name, InputStream* istream ) const
   {
     const int* value = bspIndices.find( name );
     if( value != null ) {
-      return new Structure( index, *value, istream );
+      return new Struct( index, *value, istream );
     }
     else {
       throw Exception( "Invalid Structure class requested" );

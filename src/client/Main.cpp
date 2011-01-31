@@ -40,21 +40,21 @@ namespace client
     log.println( "Shutdown {" );
     log.indent();
 
-    if( ( initFlags & INIT_RENDER_INIT ) != 0 ) {
+    if( initFlags & INIT_RENDER_INIT ) {
       render.unload();
       render.free();
     }
-    if( ( initFlags & INIT_AUDIO ) != 0 ) {
+    if( initFlags & INIT_AUDIO ) {
       sound.free();
     }
-    if( ( initFlags & INIT_CONTEXT ) != 0 ) {
+    if( initFlags & INIT_CONTEXT ) {
       context.free();
     }
-    if( ( initFlags & INIT_GAME_INIT ) != 0 ) {
+    if( initFlags & INIT_GAME_INIT ) {
       stage->unload();
       stage->free();
     }
-    if( ( initFlags & INIT_SDL ) != 0 ) {
+    if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
       SDL_ShowCursor( SDL_TRUE );
       SDLNet_Quit();
@@ -218,7 +218,7 @@ namespace client
     int screenX    = config.get( "screen.width", 0 );
     int screenY    = config.get( "screen.height", 0 );
     int screenBpp  = config.get( "screen.bpp", 0 );
-    int screenFull = config.getSet( "screen.full", true ) ? SDL_FULLSCREEN : 0;
+    int screenFull = config.getSet( "screen.full", false ) ? SDL_FULLSCREEN : 0;
 
     log.print( "Setting OpenGL surface %dx%d-%d %s ...",
                screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );

@@ -16,7 +16,7 @@
 #include "matrix/Terra.hpp"
 #include "matrix/Sky.hpp"
 
-#include "matrix/Structure.hpp"
+#include "matrix/Struct.hpp"
 #include "matrix/Dynamic.hpp"
 #include "matrix/Particle.hpp"
 
@@ -46,15 +46,15 @@ namespace oz
       static const int   MAX = 128;
       static const float DIM;
 
-      Cell               cells[Orbis::MAX][Orbis::MAX];
+      Cell              cells[Orbis::MAX][Orbis::MAX];
 
-      Vector<BSP*>       bsps;
-      Vector<Structure*> structs;
-      Vector<Object*>    objects;
-      Vector<Particle*>  parts;
+      Vector<BSP*>      bsps;
+      Vector<Struct*>   structs;
+      Vector<Object*>   objects;
+      Vector<Particle*> parts;
 
-      Terra              terra;
-      Sky                sky;
+      Terra             terra;
+      Sky               sky;
 
     private:
 
@@ -87,14 +87,10 @@ namespace oz
       Vector<int>        objAvailableIndices;
       Vector<int>        partAvailableIndices;
 
-    public:
-
-      void requestBSP( int bsp );
-
     private:
 
-      bool position( Structure* str );
-      void unposition( Structure* str );
+      bool position( Struct* str );
+      void unposition( Struct* str );
 
       void position( Object* obj );
       void unposition( Object* obj );
@@ -104,12 +100,12 @@ namespace oz
       void unposition( Particle* part );
       void reposition( Particle* part );
 
-      int  addStruct( const char* name, const Point3& p, Structure::Rotation rot );
+      int  addStruct( const char* name, const Point3& p, Struct::Rotation rot );
       int  addObject( const char* name, const Point3& p );
       int  addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
                     float restitution, float mass, float lifeTime );
 
-      void remove( Structure* str );
+      void remove( Struct* str );
       void remove( Object* obj );
       void remove( Particle* part );
 

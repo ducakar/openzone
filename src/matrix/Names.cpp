@@ -11,9 +11,10 @@
 
 #include "matrix/Names.hpp"
 
+#include "matrix/Translator.hpp"
+
 #include <dirent.h>
 #include <sys/types.h>
-#include "Translator.hpp"
 
 namespace oz
 {
