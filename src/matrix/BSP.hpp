@@ -36,9 +36,6 @@ namespace oz
     int   firstBrush;
     int   nBrushes;
 
-    int   firstFace;
-    int   nFaces;
-
     Vec3  move;
     float ratioInc;
     int   flags;
@@ -53,11 +50,7 @@ namespace oz
   {
     public:
 
-      static const int MAX_BRUSHES   = 256;
-
-      static const int LIGHTMAP_DIM  = 128;
-      static const int LIGHTMAP_BPP  = 3;
-      static const int LIGHTMAP_SIZE = LIGHTMAP_DIM * LIGHTMAP_DIM * LIGHTMAP_BPP;
+      static const int MAX_BRUSHES = 256;
 
       struct Plane
       {
@@ -73,15 +66,10 @@ namespace oz
         int back;
       };
 
-      struct Leaf : Bounds
+      struct Leaf
       {
         int firstBrush;
         int nBrushes;
-
-        int firstFace;
-        int nFaces;
-
-        int cluster;
       };
 
       struct Brush
@@ -92,100 +80,44 @@ namespace oz
         int material;
       };
 
-      struct Vertex
-      {
-        Point3   p;
-        TexCoord texCoord;
-        TexCoord lightmapCoord;
-      };
-
-      struct Face
-      {
-        Vec3 normal;
-
-        int  texture;
-        int  lightmap;
-        int  material;
-
-        int  firstVertex;
-        int  nVertices;
-
-        int  firstIndex;
-        int  nIndices;
-      };
-
-      struct Lightmap
-      {
-        char bits[LIGHTMAP_SIZE];
-      };
-
-      struct VisualData
-      {
-        int     nClusters;
-        int     clusterLength;
-        Bitset* bitsets;
-
-        explicit VisualData();
-        ~VisualData();
-      };
-
       String       name;
-      float        maxDim;
       float        life;
 
       int          nPlanes;
       int          nNodes;
       int          nLeaves;
       int          nLeafBrushes;
-      int          nLeafFaces;
       int          nEntityClasses;
       int          nBrushes;
       int          nBrushSides;
-      int          nTextures;
-      int          nVertices;
-      int          nIndices;
-      int          nFaces;
-      int          nLightmaps;
 
       Plane*       planes;
       Node*        nodes;
       Leaf*        leaves;
       int*         leafBrushes;
-      int*         leafFaces;
       EntityClass* entityClasses;
       Brush*       brushes;
       int*         brushSides;
-      int*         textures;
-      Vertex*      vertices;
-      int*         indices;
-      Face*        faces;
-      Lightmap*    lightmaps;
-
-      VisualData   visual;
 
     private:
 
-      bool includes( const Brush& brush ) const;
+      bool includes( const Brush& brush, float maxDim ) const;
 
-      bool loadQBSP( const char* file );
-      // free BSP loaded from a QBSP
-      void freeQBSP();
-
-      void optimise();
-
-      bool save( const char* file );
-
-      bool loadOZBSP( const char* file );
-
-      // free prebuilt ozBSP structure
+      bool loadOZBSP( const char* fileName );
       void freeOZBSP();
+
+      // prebuild
+      bool loadQBSP( const char* fileName );
+      void freeQBSP();
+      void optimise();
+      bool save( const char* fileName );
 
       // used internally by prebuild
       explicit BSP();
 
     public:
 
-      // create BSP from a Quake 3 QBSP and optimise it
+      // create ozBSP from a Quake 3 QBSP and optimise it
       static void prebuild( const char* name );
 
       // create BSP from a prebuilt ozBSP

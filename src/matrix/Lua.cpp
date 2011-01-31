@@ -1422,15 +1422,14 @@ namespace oz
   {
     const char* name = lua_tostring( l, 1 );
     Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
-    Structure::Rotation rot = Structure::Rotation( lua_tointeger( l, 5 ) );
+    Struct::Rotation rot = Struct::Rotation( lua_tointeger( l, 5 ) );
 
     int bsp = translator.bspIndex( name );
     if( bsp == -1 ) {
       OZ_LUA_ERROR( "invalid bsp name" );
     }
 
-    orbis.requestBSP( bsp );
-    Bounds bounds = Structure::rotate( *orbis.bsps[bsp], rot );
+    Bounds bounds = Struct::rotate( *orbis.bsps[bsp], rot );
 
     if( !collider.overlaps( bounds.toAABB() + ( p - Point3::ORIGIN ) ) ) {
       int index = synapse.addStruct( name, p, rot );
@@ -1448,7 +1447,7 @@ namespace oz
   {
     const char* name = lua_tostring( l, 1 );
     Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
-    Structure::Rotation rot = Structure::Rotation( lua_tointeger( l, 5 ) );
+    Struct::Rotation rot = Struct::Rotation( lua_tointeger( l, 5 ) );
 
     int index = synapse.addStruct( name, p, rot );
     lua.str = orbis.structs[index];

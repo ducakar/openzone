@@ -140,10 +140,10 @@ namespace oz
     synapse.addObject( "BigCrate", Point3( 50, -55, 38 ) );
     synapse.addObject( "BigCrate", Point3( 50, -55, 40 ) );
 
-    synapse.addStruct( "castle", Point3( 57, -33, 43 ), Structure::R0 );
-    synapse.addStruct( "pool", Point3( 50, -60, 37 ), Structure::R0 );
-    synapse.addStruct( "test", Point3( 60, -60, 38 ), Structure::R0 );
-    synapse.addStruct( "door", Point3( 60, -60, 40 ), Structure::R270 );
+    synapse.addStruct( "castle", Point3( 57, -33, 43 ), Struct::R0 );
+    synapse.addStruct( "pool", Point3( 50, -60, 37 ), Struct::R0 );
+    synapse.addStruct( "test", Point3( 60, -60, 38 ), Struct::R0 );
+    synapse.addStruct( "door", Point3( 60, -60, 40 ), Struct::R0 );
 
     synapse.addObject( "SmallCrate", Point3( 52, -61, 40 ) );
     synapse.addObject( "SmallCrate", Point3( 52, -61, 41 ) );
@@ -223,7 +223,7 @@ namespace oz
     }
 
     for( int i = 0; i < orbis.structs.length(); ++i ) {
-      Structure* str = orbis.structs[i];
+      Struct* str = orbis.structs[i];
 
       if( str == null ) {
         continue;
@@ -280,7 +280,7 @@ namespace oz
     Bot::pool.free();
     Vehicle::pool.free();
 
-    Structure::pool.free();
+    Struct::pool.free();
 
     log.unindent();
     log.println( "}" );

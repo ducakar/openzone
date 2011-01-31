@@ -18,7 +18,7 @@ struct lua_State;
 namespace oz
 {
 
-  class Structure;
+  class Struct;
   class Bot;
   class Particle;
 
@@ -32,22 +32,23 @@ namespace oz
 
     public:
 
-      Object*            self;
-      Bot*               user;
+      Object*         self;
+      Bot*            user;
 
-      Structure*         str;
-      Object*            obj;
-      Particle*          part;
+      Struct*         str;
+      Object*         obj;
+      Particle*       part;
+
+      int             strIndex;
+      int             objIndex;
+
+      float           damage;
+      float           hitMomentum;
+
+      Vector<Object*> objects;
+      Vector<Struct*> structs;
+
       List<Object::Event>::Iterator event;
-
-      int                strIndex;
-      int                objIndex;
-
-      float              damage;
-      float              hitMomentum;
-
-      Vector<Object*>    objects;
-      Vector<Structure*> structs;
 
       void call( const char* functionName, Object* self_, Bot* user_ = null )
       {

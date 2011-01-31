@@ -35,8 +35,8 @@ add_library( matrix STATIC
   Sky.cpp
   Sky.hpp
   Sphere.hpp
-  Structure.cpp
-  Structure.hpp
+  Struct.cpp
+  Struct.hpp
   Synapse.cpp
   Synapse.hpp
   Terra.cpp

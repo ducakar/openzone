@@ -30,20 +30,21 @@ namespace nirvana
 
     public:
 
-      Bot*               self;
+      Bot*            self;
 
-      Structure*         str;
-      Object*            obj;
-      Particle*          part;
+      Struct*         str;
+      Object*         obj;
+      Particle*       part;
+
+      int             strIndex;
+      int             objIndex;
+
+      Vector<Object*> objects;
+      Vector<Struct*> structs;
+
       List<Object::Event>::CIterator event;
 
-      int                strIndex;
-      int                objIndex;
-
-      Vector<Object*>    objects;
-      Vector<Structure*> structs;
-
-      bool               forceUpdate;
+      bool            forceUpdate;
 
       void call( const char* functionName, Bot* self_ )
       {

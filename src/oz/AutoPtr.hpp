@@ -28,6 +28,10 @@ namespace oz
     public:
 
       OZ_ALWAYS_INLINE
+      explicit AutoPtr() : pointer( null )
+      {}
+
+      OZ_ALWAYS_INLINE
       AutoPtr( Type* pointer_ ) : pointer( pointer_ )
       {}
 

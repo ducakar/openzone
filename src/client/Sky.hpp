@@ -33,7 +33,7 @@ namespace client
       static const float WATER_COLOUR[4];
       static const float STAR_COLOUR[4];
 
-      static const int MAX_STARS = 512;
+      static const int   MAX_STARS = 512;
 
       uint   sunTexId;
       uint   moonTexId;

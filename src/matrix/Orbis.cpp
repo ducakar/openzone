@@ -25,13 +25,7 @@ namespace oz
 
   const float Orbis::DIM     = Cell::SIZE * Orbis::MAX / 2.0f;
 
-  void Orbis::requestBSP( int bsp ) {
-    if( bsps[bsp] == null ) {
-      bsps[bsp] = new BSP( translator.bsps[bsp].name );
-    }
-  }
-
-  bool Orbis::position( Structure* str )
+  bool Orbis::position( Struct* str )
   {
     str->setRotation( *bsps[str->bsp], str->rot );
 
@@ -55,7 +49,7 @@ namespace oz
     return true;
   }
 
-  void Orbis::unposition( Structure* str )
+  void Orbis::unposition( Struct* str )
   {
     Span span = getInters( *str, EPSILON );
 
@@ -208,7 +202,7 @@ namespace oz
     }
   }
 
-  int Orbis::addStruct( const char* name, const Point3& p, Structure::Rotation rot )
+  int Orbis::addStruct( const char* name, const Point3& p, Struct::Rotation rot )
   {
     int index;
 
@@ -262,7 +256,7 @@ namespace oz
     return index;
   }
 
-  void Orbis::remove( Structure* str )
+  void Orbis::remove( Struct* str )
   {
     assert( str->index >= 0 );
 
@@ -320,13 +314,15 @@ namespace oz
 
   void Orbis::load()
   {
-    log.print( "Loading Orbis ..." );
+    log.println( "Loading Orbis {" );
+    log.indent();
 
     for( int i = 0; i < translator.bsps.length(); ++i ) {
-      bsps.add( null );
+      bsps.add( new BSP( translator.bsps[i].name ) );
     }
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Orbis::unload()
@@ -378,8 +374,7 @@ namespace oz
   {
     assert( structs.length() == 0 && objects.length() == 0 && parts.length() == 0 );
 
-    log.println( "Reading Orbis from stream {" );
-    log.indent();
+    log.print( "Reading Orbis from stream ..." );
 
     int n;
 
@@ -424,29 +419,23 @@ namespace oz
 
     sky.read( istream );
 
-    int nStructures = istream->readInt();
-    int nObjects    = istream->readInt();
-    int nParticles  = istream->readInt();
+    int nStructs   = istream->readInt();
+    int nObjects   = istream->readInt();
+    int nParticles = istream->readInt();
 
-    String     bspName;
-    Structure* str;
-    Object*    obj;
-    String     typeName;
-    Particle*  part;
+    String    bspName;
+    Struct*   str;
+    Object*   obj;
+    String    typeName;
+    Particle* part;
 
-    for( int i = 0; i < nStructures; ++i ) {
+    for( int i = 0; i < nStructs; ++i ) {
       bspName = istream->readString();
 
       if( bspName.isEmpty() ) {
         structs.add( null );
       }
       else {
-        int bsp = translator.bspIndex( bspName );
-
-        if( bsps[bsp] == null ) {
-          bsps[bsp] = new BSP( translator.bsps[bsp].name );
-        }
-
         str = translator.createStruct( i, bspName, istream );
         structs.add( str );
 
@@ -491,8 +480,7 @@ namespace oz
       }
     }
 
-    log.unindent();
-    log.println( "}" );
+    log.printEnd( " OK" );
     return true;
   }
 
@@ -546,9 +534,9 @@ namespace oz
     ostream->writeInt( parts.length() );
 
     String    typeName;
-    Structure* str;
-    Object*    obj;
-    Particle*  part;
+    Struct*   str;
+    Object*   obj;
+    Particle* part;
 
     for( int i = 0; i < structs.length(); ++i ) {
       str = structs[i];

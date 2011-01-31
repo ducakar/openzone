@@ -677,6 +677,9 @@ namespace client
       glDisable( GL_BLEND );
     }
 
+    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
+    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
+
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
 

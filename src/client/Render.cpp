@@ -56,11 +56,11 @@ namespace client
     Cell& cell = orbis.cells[cellX][cellY];
 
     for( int i = 0; i < cell.structs.length(); ++i ) {
-      Structure* str = orbis.structs[ cell.structs[i] ];
+      Struct* str = orbis.structs[ cell.structs[i] ];
 
-      if( !drawnStructures.get( cell.structs[i] ) && frustum.isVisible( *str ) ) {
-        drawnStructures.set( cell.structs[i] );
-        structures.add( str );
+      if( !drawnStructs.get( cell.structs[i] ) && frustum.isVisible( *str ) ) {
+        drawnStructs.set( cell.structs[i] );
+        structs.add( str );
       }
     }
 
@@ -126,11 +126,11 @@ namespace client
     sky.update();
     water.update();
 
-    // drawnStructures
-    if( drawnStructures.length() < orbis.structs.length() ) {
-      drawnStructures.setSize( orbis.structs.length() );
+    // drawnStructs
+    if( drawnStructs.length() < orbis.structs.length() ) {
+      drawnStructs.setSize( orbis.structs.length() );
     }
-    drawnStructures.clearAll();
+    drawnStructs.clearAll();
 
     float minXCentre = float( span.minX - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
     float minYCentre = float( span.minY - Orbis::MAX / 2 ) * Cell::SIZE + Cell::SIZE / 2.0f;
@@ -189,8 +189,8 @@ namespace client
     // draw structures
     BSP::beginRender();
 
-    for( int i = 0; i < structures.length(); ++i ) {
-      const Structure* str = structures[i];
+    for( int i = 0; i < structs.length(); ++i ) {
+      const Struct* str = structs[i];
 
       if( bsps[str->bsp] == null ) {
         bsps[str->bsp] = new BSP( str->bsp );
@@ -199,11 +199,9 @@ namespace client
       int waterFlags = bsps[str->bsp]->fullDraw( str );
       bsps[str->bsp]->isUpdated = true;
 
-      if( waterFlags & BSP::IN_WATER_BRUSH ) {
-        isUnderWater = true;
-      }
+      isUnderWater = ( waterFlags & BSP::IN_WATER_BRUSH ) != 0;
       if( waterFlags & BSP::DRAW_WATER ) {
-        waterStructures.add( str );
+        waterStructs.add( str );
       }
     }
 
@@ -285,14 +283,11 @@ namespace client
     assert( glIsEnabled( GL_TEXTURE_2D ) );
     glEnable( GL_BLEND );
 
-    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
-    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
-
     // draw structures' water
     BSP::beginRender();
 
-    for( int i = 0; i < waterStructures.length(); ++i ) {
-      const Structure* str = waterStructures[i];
+    for( int i = 0; i < waterStructs.length(); ++i ) {
+      const Struct* str = waterStructs[i];
 
       bsps[str->bsp]->fullDrawWater( str );
     }
@@ -326,16 +321,16 @@ namespace client
 
       glColor4fv( Colours::STRUCTURE_AABB );
 
-      for( int i = 0; i < structures.length(); ++i ) {
-        shape.drawBox( structures[i]->toAABB() );
+      for( int i = 0; i < structs.length(); ++i ) {
+        shape.drawBox( structs[i]->toAABB() );
       }
 
       glColor4fv( Colours::WHITE );
       glDisable( GL_COLOR_MATERIAL );
     }
 
-    structures.clear();
-    waterStructures.clear();
+    structs.clear();
+    waterStructs.clear();
     objects.clear();
     delayedObjects.clear();
     particles.clear();
@@ -547,6 +542,7 @@ namespace client
     glLightModelfv( GL_LIGHT_MODEL_AMBIENT, Colours::GLOBAL_AMBIENT );
     glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, Colours::BLACK );
     glEnable( GL_LIGHT0 );
 
     glEnable( GL_BLEND );
@@ -566,7 +562,7 @@ namespace client
 
     bsps.free();
     bsps.trim();
-    drawnStructures.setSize( 0 );
+    drawnStructs.setSize( 0 );
 
     models.free();
 

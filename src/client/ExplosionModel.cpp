@@ -13,6 +13,7 @@
 
 #include "matrix/Timer.hpp"
 #include "client/Context.hpp"
+#include "client/Colours.hpp"
 
 #include <GL/glu.h>
 
@@ -55,6 +56,7 @@ namespace client
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colour );
     glBindTexture( GL_TEXTURE_2D, texId );
     gluSphere( quadric, radius, 32, 32 );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
     glEnable( GL_CULL_FACE );
     glDisable( GL_BLEND );
   }

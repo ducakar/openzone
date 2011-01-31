@@ -14,6 +14,7 @@
 #include "matrix/Matrix.hpp"
 
 #include "client/Terra.hpp"
+#include "client/BSP.hpp"
 #include "client/OBJ.hpp"
 
 #include <sys/stat.h>
@@ -40,6 +41,7 @@ int main( int, char** )
 
   foreach( bsp, translator.bsps.citer() ) {
     BSP::prebuild( bsp->name );
+    client::BSP::prebuild( bsp->name );
   }
 
   foreach( model, translator.models.citer() ) {
@@ -58,7 +60,6 @@ int main( int, char** )
 
   long endTime = SDL_GetTicks();
 
-  log.println();
   log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 
   SDL_Quit();

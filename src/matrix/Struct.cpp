@@ -1,5 +1,5 @@
 /*
- *  Structure.cpp
+ *  Struct.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "matrix/Structure.hpp"
+#include "matrix/Struct.hpp"
 
 #include "matrix/Timer.hpp"
 #include "matrix/Synapse.hpp"
@@ -21,11 +21,11 @@ namespace oz
 
   Vector<Object*> Entity::overlapingObjs;
 
-  const float Structure::DAMAGE_THRESHOLD = 400.0f;
+  const float Struct::DAMAGE_THRESHOLD = 400.0f;
 
-  Pool<Structure, 0, 256> Structure::pool;
+  Pool<Struct, 0, 256> Struct::pool;
 
-  const Mat44 Structure::rotations[] =
+  const Mat44 Struct::rotations[] =
   {
     Mat44::ID,
     Mat44::rotZ(  Math::PI_2 ),
@@ -33,7 +33,7 @@ namespace oz
     Mat44::rotZ( -Math::PI_2 )
   };
 
-  const Mat44 Structure::invRotations[] =
+  const Mat44 Struct::invRotations[] =
   {
     Mat44::ID,
     Mat44::rotZ( -Math::PI_2 ),
@@ -416,7 +416,7 @@ namespace oz
     }
   }
 
-  Structure::Structure( int index_, int bsp_, const Point3& p_, Rotation rot_ ) :
+  Struct::Struct( int index_, int bsp_, const Point3& p_, Rotation rot_ ) :
       index( index_ ), bsp( bsp_ ), p( p_ ), rot( rot_ ), life( orbis.bsps[bsp]->life )
   {
     const BSP* bsp = orbis.bsps[this->bsp];
@@ -438,7 +438,7 @@ namespace oz
     }
   }
 
-  Structure::Structure( int index_, int bsp_, InputStream* istream ) :
+  Struct::Struct( int index_, int bsp_, InputStream* istream ) :
       index( index_ ), bsp( bsp_ )
   {
     const BSP* bsp = orbis.bsps[this->bsp];
@@ -458,12 +458,62 @@ namespace oz
     readFull( istream );
   }
 
-  Structure::~Structure()
+  Struct::~Struct()
   {
     delete[] entities;
   }
 
-  Bounds Structure::rotate( const Bounds& in, Rotation rot )
+  Bounds Struct::toStructCS( const Bounds& bb ) const
+  {
+    switch( rot ) {
+      default: {
+        assert( false );
+      }
+      case Struct::R0: {
+        return Bounds( Point3( +bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z ),
+                       Point3( +bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z ) );
+      }
+      case Struct::R90: {
+        return Bounds( Point3( +bb.mins.y - p.y, -bb.maxs.x + p.x, +bb.mins.z - p.z ),
+                       Point3( +bb.maxs.y - p.y, -bb.mins.x + p.x, +bb.maxs.z - p.z ) );
+      }
+      case Struct::R180: {
+        return Bounds( Point3( -bb.maxs.x + p.x, -bb.maxs.y + p.y, +bb.mins.z - p.z ),
+                       Point3( -bb.mins.x + p.x, -bb.mins.y + p.y, +bb.maxs.z - p.z ) );
+      }
+      case Struct::R270: {
+        return Bounds( Point3( -bb.maxs.y + p.y, +bb.mins.x - p.x, +bb.mins.z - p.z ),
+                       Point3( -bb.mins.y + p.y, +bb.maxs.x - p.x, +bb.maxs.z - p.z ) );
+      }
+    }
+  }
+
+  Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
+  {
+    switch( rot ) {
+      default: {
+        assert( false );
+      }
+      case Struct::R0: {
+        return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
+                       p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
+      }
+      case Struct::R90: {
+        return Bounds( p + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
+                       p + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
+      }
+      case Struct::R180: {
+        return Bounds( p + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
+                       p + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
+      }
+      case Struct::R270: {
+        return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
+                       p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
+      }
+    }
+  }
+
+  Bounds Struct::rotate( const Bounds& in, Rotation rot )
   {
     Point3 p = in.mins + ( in.maxs - in.mins ) * 0.5f;
 
@@ -471,47 +521,47 @@ namespace oz
       default: {
         assert( false );
       }
-      case Structure::R0: {
+      case Struct::R0: {
         return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
                        p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
       }
-      case Structure::R90: {
+      case Struct::R90: {
         return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
                        p + Vec3( -in.mins.y, +in.maxs.x, +in.maxs.z ) );
       }
-      case Structure::R180: {
+      case Struct::R180: {
         return Bounds( p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z ),
                        p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z ) );
       }
-      case Structure::R270: {
+      case Struct::R270: {
         return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
                        p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
       }
     }
   }
 
-  void Structure::setRotation( const Bounds& in, Rotation rot )
+  void Struct::setRotation( const Bounds& in, Rotation rot )
   {
     switch( rot ) {
       default: {
         assert( false );
       }
-      case Structure::R0: {
+      case Struct::R0: {
         mins = p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z );
         maxs = p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z );
         break;
       }
-      case Structure::R90: {
+      case Struct::R90: {
         mins = p + Vec3( -in.maxs.y, in.mins.x, in.mins.z );
         maxs = p + Vec3( -in.mins.y, in.maxs.x, in.maxs.z );
         break;
       }
-      case Structure::R180: {
+      case Struct::R180: {
         mins = p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z );
         maxs = p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z );
         break;
       }
-      case Structure::R270: {
+      case Struct::R270: {
         mins = p + Vec3( in.mins.y, -in.maxs.x, in.mins.z );
         maxs = p + Vec3( in.maxs.y, -in.mins.x, in.maxs.z );
         break;
@@ -519,14 +569,14 @@ namespace oz
     }
   }
 
-  void Structure::destroy()
+  void Struct::destroy()
   {
     synapse.genParts( 100, p, Vec3::ZERO, 10.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f,
                       1.98f, 0.0f, 2.0f );
     synapse.remove( this );
   }
 
-  void Structure::update()
+  void Struct::update()
   {
     for( int i = 1; i < nEntities; ++i ) {
       Entity& entity = entities[i];
@@ -558,7 +608,7 @@ namespace oz
     }
   }
 
-  void Structure::readFull( InputStream* istream )
+  void Struct::readFull( InputStream* istream )
   {
     p    = istream->readPoint3();
     rot  = Rotation( istream->readChar() );
@@ -572,7 +622,7 @@ namespace oz
     }
   }
 
-  void Structure::writeFull( OutputStream* ostream )
+  void Struct::writeFull( OutputStream* ostream )
   {
     ostream->writePoint3( p );
     ostream->writeChar( rot );

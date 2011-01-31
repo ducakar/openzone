@@ -79,13 +79,13 @@ namespace oz
       void cut( Dynamic* obj );
 
       // create an object, schedule for addition in the world and return predicted world index
-      int  addStruct( const char* name, const Point3& p, Structure::Rotation rot );
+      int  addStruct( const char* name, const Point3& p, Struct::Rotation rot );
       int  addObject( const char* name, const Point3& p );
       int  addPart( const Point3& p, const Vec3& velocity, const Vec3& colour,
                     float restitution, float mass, float lifeTime );
 
       // schedule for removal from physical world and delete it
-      void remove( Structure* str );
+      void remove( Struct* str );
       void remove( Object* obj );
       void remove( Particle* part );
 
