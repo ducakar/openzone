@@ -22,7 +22,7 @@ namespace client
   {
     public:
 
-      static const int   UPDATED_BIT = 0x00000001;
+      static const int UPDATED_BIT = 0x00000001;
 
     protected:
 
@@ -31,8 +31,6 @@ namespace client
     public:
 
       typedef Audio* ( * CreateFunc )( const Object* object );
-
-      Audio* next[1];
 
     protected:
 

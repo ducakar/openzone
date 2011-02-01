@@ -159,7 +159,7 @@ namespace oz
           }
         }
 
-        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+        foreach( sObj, cell.objects.citer() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
             return true;
           }
@@ -180,7 +180,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+        foreach( sObj, cell.objects.citer() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
             return true;
           }
@@ -219,7 +219,7 @@ namespace oz
           }
         }
 
-        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+        foreach( sObj, cell.objects.citer() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
             return true;
           }
@@ -240,7 +240,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+        foreach( sObj, cell.objects.citer() ) {
           if( sObj->overlaps( trace ) ) {
             startPos = str->toStructCS( sObj->p ) - entity->offset;
             aabb.dim = sObj->dim;
@@ -508,8 +508,11 @@ namespace oz
     const Point3& minVert = quad.vertex;
     const Point3& maxVert = nextQuad.vertex;
 
-    float startDist = startPos * quad.tri[0].normal - quad.tri[0].distance;
-    float endDist   = endPos   * quad.tri[0].normal - quad.tri[0].distance;
+    Vec3 localStartPos = startPos - minVert;
+    Vec3 localEndPos   = endPos   - minVert;
+
+    float startDist = localStartPos * quad.triNormal[0];
+    float endDist   = localEndPos   * quad.triNormal[0];
 
     if( endDist <= EPSILON && endDist <= startDist ) {
       float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
@@ -523,7 +526,7 @@ namespace oz
           ratio < hit.ratio )
       {
         hit.ratio    = ratio;
-        hit.normal   = quad.tri[0].normal;
+        hit.normal   = quad.triNormal[0];
         hit.obj      = null;
         hit.str      = null;
         hit.entity   = null;
@@ -533,8 +536,8 @@ namespace oz
       }
     }
 
-    startDist = startPos * quad.tri[1].normal - quad.tri[1].distance;
-    endDist   = endPos   * quad.tri[1].normal - quad.tri[1].distance;
+    startDist = localStartPos * quad.triNormal[1];
+    endDist   = localEndPos   * quad.triNormal[1];
 
     if( endDist <= EPSILON && endDist <= startDist ) {
       float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
@@ -548,7 +551,7 @@ namespace oz
           ratio < hit.ratio )
       {
         hit.ratio    = ratio;
-        hit.normal   = quad.tri[1].normal;
+        hit.normal   = quad.triNormal[1];
         hit.obj      = null;
         hit.str      = null;
         hit.entity   = null;
@@ -633,7 +636,7 @@ namespace oz
         startPos = originalStartPos;
         endPos   = originalEndPos;
 
-        for( const Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+        foreach( sObj, cell.objects.citer() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->overlaps( trace ) )
           {
@@ -682,7 +685,7 @@ namespace oz
         }
 
         if( objects != null ) {
-          for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+          foreach( sObj, cell.objects.iter() ) {
             if( sObj->overlaps( trace ) ) {
               objects->add( sObj );
             }
@@ -701,7 +704,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+        foreach( sObj, cell.objects.iter() ) {
           if( trace.includes( *sObj ) ) {
             objects->add( sObj );
           }
@@ -716,7 +719,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+        foreach( sObj, cell.objects.iter() ) {
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && sObj->overlaps( trace ) ) {
             // clearing these two bits should do
             sObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
@@ -739,7 +742,7 @@ namespace oz
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
 
-        for( Object* sObj = cell.firstObject; sObj != null; sObj = sObj->next[0] ) {
+        foreach( sObj, cell.objects.iter() ) {
           if( sObj->overlaps( trace ) ) {
             startPos = str->toStructCS( sObj->p ) - entity->offset;
             aabb.dim = sObj->dim + dimMargin;

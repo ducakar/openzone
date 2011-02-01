@@ -22,9 +22,6 @@ namespace oz
 
   class Particle
   {
-    friend class DList<Particle>;
-    friend class Pool<Particle>;
-
     public:
 
       static const float MAX_ROTVELOCITY;

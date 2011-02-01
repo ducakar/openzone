@@ -556,6 +556,26 @@ namespace oz
         return c == ' ' || c == '\t' || c == '\n';
       }
 
+      static const char* cstr( const byte* s )
+      {
+        return reinterpret_cast<const char*>( s );
+      }
+
+      static const char* cstr( const ubyte* s )
+      {
+        return reinterpret_cast<const char*>( s );
+      }
+
+      static const byte* bytestr( const char* s )
+      {
+        return reinterpret_cast<const byte*>( s );
+      }
+
+      static const ubyte* ubytestr( const char* s )
+      {
+        return reinterpret_cast<const ubyte*>( s );
+      }
+
   };
 
 }

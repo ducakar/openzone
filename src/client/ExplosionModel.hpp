@@ -32,7 +32,7 @@ namespace client
 
     public:
 
-      static Pool<ExplosionModel, 0, 256> pool;
+      static Pool<ExplosionModel, 256> pool;
 
       static Model* create( const Object* obj );
 

@@ -79,18 +79,18 @@ namespace client
         vertex.normal   = Vec3::ZERO;
 
         if( x < oz::Terra::QUADS && y < oz::Terra::QUADS ) {
-          vertex.normal += orbis.terra.quads[x][y].tri[0].normal;
-          vertex.normal += orbis.terra.quads[x][y].tri[1].normal;
+          vertex.normal += orbis.terra.quads[x][y].triNormal[0];
+          vertex.normal += orbis.terra.quads[x][y].triNormal[1];
         }
         if( x > 0 && y < oz::Terra::QUADS ) {
-          vertex.normal += orbis.terra.quads[x - 1][y].tri[0].normal;
+          vertex.normal += orbis.terra.quads[x - 1][y].triNormal[0];
         }
         if( x > 0 && y > 0 ) {
-          vertex.normal += orbis.terra.quads[x - 1][y - 1].tri[0].normal;
-          vertex.normal += orbis.terra.quads[x - 1][y - 1].tri[1].normal;
+          vertex.normal += orbis.terra.quads[x - 1][y - 1].triNormal[0];
+          vertex.normal += orbis.terra.quads[x - 1][y - 1].triNormal[1];
         }
         if( x < oz::Terra::QUADS && y > 0 ) {
-          vertex.normal += orbis.terra.quads[x][y - 1].tri[1].normal;
+          vertex.normal += orbis.terra.quads[x][y - 1].triNormal[1];
         }
         vertex.normal = ~vertex.normal;
 

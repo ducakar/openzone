@@ -22,9 +22,6 @@ namespace nirvana
 
   class Task
   {
-    friend class DList<Task>;
-    friend class Pool<Task>;
-
     public:
 
       static const int ACTIVE_BIT = 0x00000001;

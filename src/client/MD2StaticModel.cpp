@@ -18,7 +18,7 @@ namespace oz
 namespace client
 {
 
-  Pool<MD2StaticModel, 0, 256> MD2StaticModel::pool;
+  Pool<MD2StaticModel, 256> MD2StaticModel::pool;
 
   Model* MD2StaticModel::create( const Object* obj )
   {

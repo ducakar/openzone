@@ -26,7 +26,7 @@ namespace client
       MD2*           md2;
       MD2::AnimState anim;
 
-      static Pool<MD2Model, 0, 256> pool;
+      static Pool<MD2Model, 256> pool;
 
     protected:
 

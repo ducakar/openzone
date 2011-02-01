@@ -71,21 +71,33 @@ namespace oz
     private:
 
       const char* pos;
+      const char* start;
       const char* end;
 
     public:
 
-      explicit InputStream( const char* start, const char* end_ ) : pos( start ), end( end_ )
+      explicit InputStream( const char* start_, const char* end_ ) :
+          pos( start_ ), start( start_ ), end( end_ )
       {}
 
-      bool hasData() const
+      int available() const
       {
-        return pos < end;
+        return int( size_t( end - pos ) );
+      }
+
+      bool isAvailable() const
+      {
+        return pos != end;
+      }
+
+      void reset()
+      {
+        pos = start;
       }
 
       const char* getPos() const
       {
-        assert( pos <= end );
+        assert( start <= pos && pos <= end );
 
         return pos;
       }
@@ -215,16 +227,33 @@ namespace oz
     private:
 
       char*       pos;
+      char*       start;
       const char* end;
 
     public:
 
-      explicit OutputStream( char* start, const char* end_ ) : pos( start ), end( end_ )
+      explicit OutputStream( char* start_, const char* end_ ) :
+          pos( start_ ), start( start_ ), end( end_ )
       {}
+
+      int available() const
+      {
+        return int( size_t( end - pos ) );
+      }
+
+      bool isAvailable() const
+      {
+        return pos != end;
+      }
+
+      void reset()
+      {
+        pos = start;
+      }
 
       char* getPos() const
       {
-        assert( pos <= end );
+        assert( start <= pos && pos <= end );
 
         return pos;
       }

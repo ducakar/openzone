@@ -64,7 +64,7 @@ namespace client
       }
     }
 
-    for( const Object* obj = cell.firstObject; obj != null; obj = obj->next[0] ) {
+    foreach( obj, cell.objects.citer() ) {
       if( obj->flags & Object::NO_DRAW_BIT ) {
         continue;
       }
@@ -85,7 +85,7 @@ namespace client
       }
     }
 
-    for( const Particle* part = cell.firstPart; part != null; part = part->next[0] ) {
+    foreach( part, cell.particles.citer() ) {
       if( frustum.isVisible( part->p, particleRadius ) ) {
         particles.add( part );
       }
@@ -452,7 +452,7 @@ namespace client
     log.indent();
 
     DArray<String> extensions;
-    String sExtensions = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
+    String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
     sExtensions.trim().split( ' ', &extensions );
 
     log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );

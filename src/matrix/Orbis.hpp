@@ -30,8 +30,8 @@ namespace oz
     static const float INV_SIZE;
     static const float RADIUS;
 
-    Object*           firstObject;
-    Particle*         firstPart;
+    List<Object>      objects;
+    List<Particle>    particles;
     SVector<short, 6> structs;
   };
 

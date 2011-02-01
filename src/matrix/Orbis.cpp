@@ -69,16 +69,13 @@ namespace oz
     Cell* cell = getCell( obj->p );
 
     obj->cell = cell;
-    obj->next[0] = cell->firstObject;
     obj->prev[0] = null;
 
-    if( cell->firstObject == null ) {
-      cell->firstObject = obj;
+    if( !cell->objects.isEmpty() ) {
+      cell->objects.first()->prev[0] = obj;
     }
-    else {
-      cell->firstObject->prev[0] = obj;
-      cell->firstObject = obj;
-    }
+
+    cell->objects.add( obj );
   }
 
   void Orbis::unposition( Object* obj )
@@ -89,15 +86,11 @@ namespace oz
 
     obj->cell = null;
 
-    if( obj->prev[0] == null ) {
-      cell->firstObject = obj->next[0];
-    }
-    else {
-      obj->prev[0]->next[0] = obj->next[0];
-    }
     if( obj->next[0] != null ) {
       obj->next[0]->prev[0] = obj->prev[0];
     }
+
+    cell->objects.remove( obj, obj->prev[0] );
   }
 
   void Orbis::reposition( Object* obj )
@@ -108,27 +101,20 @@ namespace oz
     Cell* newCell = getCell( obj->p );
 
     if( newCell != oldCell ) {
-      if( obj->prev[0] == null ) {
-        oldCell->firstObject = obj->next[0];
-      }
-      else {
-        obj->prev[0]->next[0] = obj->next[0];
-      }
       if( obj->next[0] != null ) {
         obj->next[0]->prev[0] = obj->prev[0];
       }
 
+      oldCell->objects.remove( obj, obj->prev[0] );
+
       obj->cell = newCell;
-      obj->next[0] = newCell->firstObject;
       obj->prev[0] = null;
 
-      if( newCell->firstObject == null ) {
-        newCell->firstObject = obj;
+      if( !newCell->objects.isEmpty() ) {
+        newCell->objects.first()->prev[0] = obj;
       }
-      else {
-        newCell->firstObject->prev[0] = obj;
-        newCell->firstObject = obj;
-      }
+
+      newCell->objects.add( obj );
     }
   }
 
@@ -139,16 +125,13 @@ namespace oz
     Cell* cell = getCell( part->p );
 
     part->cell = cell;
-    part->next[0] = cell->firstPart;
     part->prev[0] = null;
 
-    if( cell->firstPart == null ) {
-      cell->firstPart = part;
+    if( !cell->particles.isEmpty() ) {
+      cell->particles.first()->prev[0] = part;
     }
-    else {
-      cell->firstPart->prev[0] = part;
-      cell->firstPart = part;
-    }
+
+    cell->particles.add( part );
   }
 
   void Orbis::unposition( Particle* part )
@@ -159,15 +142,11 @@ namespace oz
 
     part->cell = null;
 
-    if( part->prev[0] == null ) {
-      cell->firstPart = part->next[0];
-    }
-    else {
-      part->prev[0]->next[0] = part->next[0];
-    }
     if( part->next[0] != null ) {
       part->next[0]->prev[0] = part->prev[0];
     }
+
+    cell->particles.remove( part, part->prev[0] );
   }
 
   void Orbis::reposition( Particle* part )
@@ -178,27 +157,20 @@ namespace oz
     Cell* newCell = getCell( part->p );
 
     if( newCell != oldCell ) {
-      if( part->prev[0] == null ) {
-        oldCell->firstPart = part->next[0];
-      }
-      else {
-        part->prev[0]->next[0] = part->next[0];
-      }
       if( part->next[0] != null ) {
         part->next[0]->prev[0] = part->prev[0];
       }
 
+      oldCell->particles.remove( part, part->prev[0] );
+
       part->cell = newCell;
-      part->next[0] = newCell->firstPart;
       part->prev[0] = null;
 
-      if( newCell->firstPart == null ) {
-        newCell->firstPart = part;
+      if( !newCell->particles.isEmpty() ) {
+        newCell->particles.first()->prev[0] = part;
       }
-      else {
-        newCell->firstPart->prev[0] = part;
-        newCell->firstPart = part;
-      }
+
+      newCell->particles.add( part );
     }
   }
 
@@ -333,8 +305,8 @@ namespace oz
     for( int i = 0; i < Orbis::MAX; ++i ) {
       for( int j = 0; j < Orbis::MAX; ++j ) {
         cells[i][j].structs.clear();
-        cells[i][j].firstObject = null;
-        cells[i][j].firstPart = null;
+        cells[i][j].objects.clear();
+        cells[i][j].particles.clear();
       }
     }
 

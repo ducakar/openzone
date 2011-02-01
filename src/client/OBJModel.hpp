@@ -29,7 +29,7 @@ namespace client
 
     public:
 
-      static Pool<OBJModel, 0, 256> pool;
+      static Pool<OBJModel, 256> pool;
 
       static Model* create( const Object* obj );
 

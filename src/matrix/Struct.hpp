@@ -56,8 +56,6 @@ namespace oz
 
   class Struct : public Bounds
   {
-    friend class Pool<Struct, 0, 256>;
-
     private:
 
       static const float DAMAGE_THRESHOLD;
@@ -72,14 +70,10 @@ namespace oz
         R270 = 3
       };
 
-      static Pool<Struct, 0, 256> pool;
+      static Pool<Struct, 256> pool;
 
       static const Mat44 rotations[];
       static const Mat44 invRotations[];
-
-    private:
-
-      Struct*  next[1];
 
     public:
 

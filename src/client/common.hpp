@@ -29,8 +29,8 @@ extern PFNGLBUFFERDATAPROC           glBufferData;
 #endif
 
 #define OZ_VBO_OFFSET( index, Type ) \
-  reinterpret_cast<const void*>( ( index ) * sizeof( Type ) )
+  ( reinterpret_cast<const char*>( null ) + ( index ) * sizeof( Type ) )
 
 #define OZ_VBO_OFFSETOF( index, VertexStruct, member ) \
-  reinterpret_cast<const void*> \
-  ( ( index ) * sizeof( VertexStruct ) + offsetof( VertexStruct, member ) )
+  ( reinterpret_cast<const char*>( null ) + ( index ) * sizeof( VertexStruct ) + \
+      offsetof( VertexStruct, member ) )

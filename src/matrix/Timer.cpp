@@ -33,6 +33,7 @@ namespace oz
     matrixMillis  = 0;
     nirvanaMillis = 0;
 
+    uiMillis      = 0;
     loaderMillis  = 0;
     syncMillis    = 0;
     renderMillis  = 0;

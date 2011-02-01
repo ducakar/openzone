@@ -28,7 +28,7 @@ namespace client
 
     public:
 
-      static Pool<MD3StaticModel, 0, 256> pool;
+      static Pool<MD3StaticModel, 256> pool;
 
       static Model* create( const Object* obj );
 

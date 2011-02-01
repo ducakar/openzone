@@ -109,7 +109,7 @@ namespace client
 
   bool GameStage::update()
   {
-    uint beginTime;
+    uint beginTime = SDL_GetTicks();
 
     if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
       orbis.sky.time += orbis.sky.period * 0.25f;
@@ -119,6 +119,8 @@ namespace client
     ui::ui.update();
 
     bool doQuit = ui::keyboard.keys[SDLK_ESCAPE] != 0;
+
+    timer.uiMillis += SDL_GetTicks() - beginTime;
 
     SDL_SemPost( auxSemaphore );
     SDL_SemWait( mainSemaphore );

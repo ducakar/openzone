@@ -22,6 +22,8 @@ namespace oz
   template <int BITSIZE>
   class SBitset
   {
+    static_assert( BITSIZE > 0, "SBitset size must be at least 1" );
+
     private:
 
       // Number of bits per unit.

@@ -31,18 +31,21 @@ namespace ui
 
     crossTexId = context.loadTexture( "ui/crosshair.png", false, GL_LINEAR, GL_LINEAR );
     useTexId   = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
-    takeTexId  = context.loadTexture( "ui/take.png", false, GL_LINEAR, GL_LINEAR );
     mountTexId = context.loadTexture( "ui/mount.png", false, GL_LINEAR, GL_LINEAR );
+    takeTexId  = context.loadTexture( "ui/take.png", false, GL_LINEAR, GL_LINEAR );
+    liftTexId  = context.loadTexture( "ui/lift.png", false, GL_LINEAR, GL_LINEAR );
     grabTexId  = context.loadTexture( "ui/grab.png", false, GL_LINEAR, GL_LINEAR );
 
     crossIconX = ( width - ICON_SIZE ) / 2;
     crossIconY = ( height - ICON_SIZE ) / 2;
     useIconX   = crossIconX + ICON_SIZE;
     useIconY   = crossIconY;
-    takeIconX  = crossIconX + ICON_SIZE;
-    takeIconY  = crossIconY - ICON_SIZE;
-    mountIconX = crossIconX - ICON_SIZE;
+    mountIconX = crossIconX + ICON_SIZE;
     mountIconY = crossIconY;
+    takeIconX  = crossIconX - ICON_SIZE;
+    takeIconY  = crossIconY;
+    liftIconX  = crossIconX;
+    liftIconY  = crossIconY - ICON_SIZE;
     grabIconX  = crossIconX;
     grabIconY  = crossIconY - ICON_SIZE;
     healthBarX = crossIconX - 8;
@@ -55,8 +58,9 @@ namespace ui
   {
     context.freeTexture( crossTexId );
     context.freeTexture( useTexId );
-    context.freeTexture( takeTexId );
     context.freeTexture( mountTexId );
+    context.freeTexture( takeTexId );
+    context.freeTexture( liftTexId );
     context.freeTexture( grabTexId );
   }
 
@@ -95,11 +99,12 @@ namespace ui
     }
 
     if( camera.bot != -1 ) {
+      const Bot*      bot   = camera.botObj;
       const BotClass* clazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-      float life         = ( camera.botObj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
+      float life         = ( bot->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
       int   lifeWidth    = max( int( life * 188.0f ), 0 );
-      float stamina      = camera.botObj->stamina / clazz->stamina;
+      float stamina      = bot->stamina / clazz->stamina;
       int   staminaWidth = max( int( stamina * 188.0f ), 0 );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
@@ -128,51 +133,7 @@ namespace ui
         glEnd();
       }
 
-      if( camera.botObj->parent == -1 ) {
-        if( camera.tagged != -1 ) {
-          if( camera.taggedObj->flags & Object::VEHICLE_BIT ) {
-            glBindTexture( GL_TEXTURE_2D, mountTexId );
-            glBegin( GL_QUADS );
-              glTexCoord2i( 0, 1 );
-              glVertex2i( mountIconX, mountIconY );
-              glTexCoord2i( 1, 1 );
-              glVertex2i( mountIconX + ICON_SIZE, mountIconY );
-              glTexCoord2i( 1, 0 );
-              glVertex2i( mountIconX + ICON_SIZE, mountIconY + ICON_SIZE );
-              glTexCoord2i( 0, 0 );
-              glVertex2i( mountIconX, mountIconY + ICON_SIZE );
-            glEnd();
-          }
-          else {
-            if( camera.taggedObj->flags & Object::USE_FUNC_BIT ) {
-              glBindTexture( GL_TEXTURE_2D, useTexId );
-              glBegin( GL_QUADS );
-                glTexCoord2i( 0, 1 );
-                glVertex2i( useIconX, useIconY );
-                glTexCoord2i( 1, 1 );
-                glVertex2i( useIconX + ICON_SIZE, useIconY );
-                glTexCoord2i( 1, 0 );
-                glVertex2i( useIconX + ICON_SIZE, useIconY + ICON_SIZE );
-                glTexCoord2i( 0, 0 );
-                glVertex2i( useIconX, useIconY + ICON_SIZE );
-              glEnd();
-            }
-            if( camera.taggedObj->flags & Object::ITEM_BIT ) {
-              glBindTexture( GL_TEXTURE_2D, takeTexId );
-              glBegin( GL_QUADS );
-                glTexCoord2i( 0, 1 );
-                glVertex2i( takeIconX, takeIconY );
-                glTexCoord2i( 1, 1 );
-                glVertex2i( takeIconX + ICON_SIZE, takeIconY );
-                glTexCoord2i( 1, 0 );
-                glVertex2i( takeIconX + ICON_SIZE, takeIconY + ICON_SIZE );
-                glTexCoord2i( 0, 0 );
-                glVertex2i( takeIconX, takeIconY + ICON_SIZE );
-              glEnd();
-            }
-          }
-        }
-
+      if( bot->parent == -1 ) {
         if( camera.botObj->grabObj != -1 ) {
           glBindTexture( GL_TEXTURE_2D, grabTexId );
           glBegin( GL_QUADS );
@@ -185,6 +146,68 @@ namespace ui
             glTexCoord2i( 0, 0 );
             glVertex2i( grabIconX, grabIconY + ICON_SIZE );
           glEnd();
+        }
+        else if( camera.tagged != -1 ) {
+          const Object* tagged = camera.taggedObj;
+
+          if( tagged->flags & Object::VEHICLE_BIT ) {
+            glBindTexture( GL_TEXTURE_2D, mountTexId );
+            glBegin( GL_QUADS );
+              glTexCoord2i( 0, 1 );
+              glVertex2i( mountIconX, mountIconY );
+              glTexCoord2i( 1, 1 );
+              glVertex2i( mountIconX + ICON_SIZE, mountIconY );
+              glTexCoord2i( 1, 0 );
+              glVertex2i( mountIconX + ICON_SIZE, mountIconY + ICON_SIZE );
+              glTexCoord2i( 0, 0 );
+              glVertex2i( mountIconX, mountIconY + ICON_SIZE );
+            glEnd();
+          }
+          else if( tagged->flags & Object::USE_FUNC_BIT ) {
+            glBindTexture( GL_TEXTURE_2D, useTexId );
+            glBegin( GL_QUADS );
+              glTexCoord2i( 0, 1 );
+              glVertex2i( useIconX, useIconY );
+              glTexCoord2i( 1, 1 );
+              glVertex2i( useIconX + ICON_SIZE, useIconY );
+              glTexCoord2i( 1, 0 );
+              glVertex2i( useIconX + ICON_SIZE, useIconY + ICON_SIZE );
+              glTexCoord2i( 0, 0 );
+              glVertex2i( useIconX, useIconY + ICON_SIZE );
+            glEnd();
+          }
+          if( tagged->flags & Object::ITEM_BIT ) {
+            glBindTexture( GL_TEXTURE_2D, takeTexId );
+            glBegin( GL_QUADS );
+              glTexCoord2i( 0, 1 );
+              glVertex2i( takeIconX, takeIconY );
+              glTexCoord2i( 1, 1 );
+              glVertex2i( takeIconX + ICON_SIZE, takeIconY );
+              glTexCoord2i( 1, 0 );
+              glVertex2i( takeIconX + ICON_SIZE, takeIconY + ICON_SIZE );
+              glTexCoord2i( 0, 0 );
+              glVertex2i( takeIconX, takeIconY + ICON_SIZE );
+            glEnd();
+          }
+          if( bot->grabObj == -1 && bot->weaponItem == -1 &&
+              ( tagged->flags & Object::DYNAMIC_BIT ) )
+          {
+            const Dynamic* taggedDyn = static_cast<const Dynamic*>( tagged );
+
+            if( taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged ) {
+              glBindTexture( GL_TEXTURE_2D, liftTexId );
+              glBegin( GL_QUADS );
+                glTexCoord2i( 0, 1 );
+                glVertex2i( liftIconX, liftIconY );
+                glTexCoord2i( 1, 1 );
+                glVertex2i( liftIconX + ICON_SIZE, liftIconY );
+                glTexCoord2i( 1, 0 );
+                glVertex2i( liftIconX + ICON_SIZE, liftIconY + ICON_SIZE );
+                glTexCoord2i( 0, 0 );
+                glVertex2i( liftIconX, liftIconY + ICON_SIZE );
+              glEnd();
+            }
+          }
         }
       }
 
