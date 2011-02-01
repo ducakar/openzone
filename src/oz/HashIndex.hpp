@@ -20,6 +20,8 @@ namespace oz
   template <typename Type = nil, int SIZE = 253>
   class HashIndex
   {
+    static_assert( SIZE > 0, "HashIndex size must be at least 1" );
+
     private:
 
       struct Elem
@@ -40,7 +42,7 @@ namespace oz
           next[0] = next_;
         }
 
-        OZ_PLACEMENT_POOL_ALLOC( Elem, 0, SIZE )
+        OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
       };
 
     public:
@@ -291,9 +293,9 @@ namespace oz
 
     private:
 
-      Elem*               data[SIZE];
-      Pool<Elem, 0, SIZE> pool;
-      int                 count;
+      Elem*            data[SIZE];
+      Pool<Elem, SIZE> pool;
+      int              count;
 
       /**
        * @param chainA

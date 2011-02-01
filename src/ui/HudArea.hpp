@@ -30,18 +30,21 @@ namespace ui
 
       int crossTexId;
       int useTexId;
-      int takeTexId;
       int mountTexId;
+      int takeTexId;
+      int liftTexId;
       int grabTexId;
 
       int crossIconX;
       int crossIconY;
       int useIconX;
       int useIconY;
-      int takeIconX;
-      int takeIconY;
       int mountIconX;
       int mountIconY;
+      int takeIconX;
+      int takeIconY;
+      int liftIconX;
+      int liftIconY;
       int grabIconX;
       int grabIconY;
       int healthBarX;

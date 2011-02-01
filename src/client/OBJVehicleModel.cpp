@@ -22,7 +22,7 @@ namespace oz
 namespace client
 {
 
-  Pool<OBJVehicleModel, 0, 256> OBJVehicleModel::pool;
+  Pool<OBJVehicleModel, 256> OBJVehicleModel::pool;
 
   Model* OBJVehicleModel::create( const Object* obj )
   {

@@ -29,9 +29,6 @@ namespace client
       static const int UPDATED_BIT  = 0x00000001;
       static const int MD2MODEL_BIT = 0x00000002;
 
-      // for Pool allocator
-      Model* next[1];
-
     protected:
 
       explicit Model() : obj( null ), flags( 0 ) {}

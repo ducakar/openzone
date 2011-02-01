@@ -23,7 +23,7 @@ namespace oz
 
   const float Struct::DAMAGE_THRESHOLD = 400.0f;
 
-  Pool<Struct, 0, 256> Struct::pool;
+  Pool<Struct, 256> Struct::pool;
 
   const Mat44 Struct::rotations[] =
   {

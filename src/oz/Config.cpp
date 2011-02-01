@@ -201,12 +201,12 @@ namespace oz
 
     int error = xmlTextReaderRead( reader );
     while( error == 1 ) {
-      const char* name = reinterpret_cast<const char*>( xmlTextReaderConstName( reader ) );
+      const char* name = String::cstr( xmlTextReaderConstName( reader ) );
 
       // only check "var" nodes, ignore others
       if( name != null && String::equals( name, "var" ) ) {
-        void* key = xmlTextReaderGetAttribute( reader, reinterpret_cast<const xmlChar*>( "name" ) );
-        void* value = xmlTextReaderGetAttribute( reader, reinterpret_cast<const xmlChar*>( "value" ) );
+        xmlChar* key = xmlTextReaderGetAttribute( reader, String::ubytestr( "name" ) );
+        xmlChar* value = xmlTextReaderGetAttribute( reader, String::ubytestr( "value" ) );
 
         // error if "var" tag doesn't has "name" and "value" attributes
         if( key == null || value == null ) {
@@ -216,7 +216,7 @@ namespace oz
           error = -1;
           break;
         }
-        add( reinterpret_cast<const char*>( key ), reinterpret_cast<const char*>( value ) );
+        add( String::cstr( key ), String::cstr( value ) );
 
         xmlFree( key );
         xmlFree( value );
@@ -258,7 +258,7 @@ namespace oz
     }
 
     if( xmlTextWriterStartDocument( writer, null, "UTF-8", null ) < 0 ||
-        xmlTextWriterStartElement( writer, reinterpret_cast<const xmlChar*>( "config" ) ) < 0 )
+        xmlTextWriterStartElement( writer, String::ubytestr( "config" ) ) < 0 )
     {
       xmlFreeTextWriter( writer );
       xmlCleanupParser();
@@ -267,12 +267,12 @@ namespace oz
     }
 
     for( int i = 0; i < size; ++i ) {
-      if( xmlTextWriterWriteString( writer, reinterpret_cast<const xmlChar*>( "\n  " ) ) < 0 ||
-          xmlTextWriterStartElement( writer, reinterpret_cast<const xmlChar*>( "var" ) ) < 0 ||
-          xmlTextWriterWriteAttribute( writer, reinterpret_cast<const xmlChar*>( "name" ),
-                                       reinterpret_cast<const xmlChar*>( sortedVars[i].key ) ) < 0 ||
-          xmlTextWriterWriteAttribute( writer, reinterpret_cast<const xmlChar*>( "value" ),
-                                       reinterpret_cast<const xmlChar*>( sortedVars[i].value ) ) < 0 ||
+      if( xmlTextWriterWriteString( writer, String::ubytestr( "\n  " ) ) < 0 ||
+          xmlTextWriterStartElement( writer, String::ubytestr( "var" ) ) < 0 ||
+          xmlTextWriterWriteAttribute( writer, String::ubytestr( "name" ),
+                                       String::ubytestr( sortedVars[i].key ) ) < 0 ||
+          xmlTextWriterWriteAttribute( writer, String::ubytestr( "value" ),
+                                       String::ubytestr( sortedVars[i].value ) ) < 0 ||
           xmlTextWriterEndElement( writer ) < 0 )
       {
         xmlFreeTextWriter( writer );
@@ -281,7 +281,7 @@ namespace oz
         return false;
       }
     }
-    if( xmlTextWriterWriteString( writer, reinterpret_cast<const xmlChar*>( "\n" ) ) < 0 ||
+    if( xmlTextWriterWriteString( writer, String::ubytestr( "\n" ) ) < 0 ||
         xmlTextWriterEndElement( writer ) < 0 ||
         xmlTextWriterEndDocument( writer ) < 0 )
     {

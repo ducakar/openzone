@@ -18,6 +18,8 @@ namespace oz
   template <typename Type, int SIZE>
   class SVector
   {
+    static_assert( SIZE > 0, "SVector size must be at least 1" );
+
     public:
 
       /**

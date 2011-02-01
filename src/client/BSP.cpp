@@ -70,36 +70,6 @@ namespace client
     int  type;
   };
 
-  struct QBSPPlane
-  {
-    float normal[3];
-    float distance;
-  };
-
-  struct QBSPNode
-  {
-    int plane;
-
-    int front;
-    int back;
-
-    int bb[2][3];
-  };
-
-  struct QBSPLeaf
-  {
-    int cluster;
-    int area;
-
-    int bb[2][3];
-
-    int firstFace;
-    int nFaces;
-
-    int firstBrush;
-    int nBrushes;
-  };
-
   struct QBSPModel
   {
     float bb[2][3];
@@ -144,64 +114,8 @@ namespace client
     int   size[2];
   };
 
-  const Struct* BSP::str;
   Point3 BSP::camPos;
-  int BSP::waterFlags;
-
-  BSP::VisualData::VisualData() : bitsets( null )
-  {}
-
-  BSP::VisualData::~VisualData()
-  {
-    if( bitsets != null ) {
-      delete[] bitsets;
-    }
-  }
-
-  inline Bounds BSP::rotateBounds( const Bounds& bounds, Struct::Rotation rotation )
-  {
-    Bounds rotatedBounds;
-
-    switch( rotation ) {
-      case Struct::R0: {
-        return bounds;
-      }
-      case Struct::R90: {
-        return Bounds( Point3( -bounds.maxs.y, bounds.mins.x, bounds.mins.z ),
-                       Point3( -bounds.mins.y, bounds.maxs.x, bounds.maxs.z ) );
-      }
-      case Struct::R180: {
-        return Bounds( Point3( -bounds.maxs.x, -bounds.maxs.y, bounds.mins.z ),
-                       Point3( -bounds.mins.x, -bounds.mins.y, bounds.maxs.z ) );
-      }
-      default:
-      case Struct::R270: {
-        return Bounds( Point3( bounds.mins.y, -bounds.maxs.x, bounds.mins.z ),
-                       Point3( bounds.maxs.y, -bounds.mins.x, bounds.maxs.z ) );
-      }
-    }
-  }
-
-  int BSP::getLeaf() const
-  {
-    int nodeIndex = 0;
-    do {
-      const Node&  node  = nodes[nodeIndex];
-      const Plane& plane = planes[node.plane];
-
-      if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
-        nodeIndex = node.back;
-      }
-      else {
-        nodeIndex = node.front;
-      }
-
-      assert( nodeIndex != 0 );
-    }
-    while( nodeIndex >= 0 );
-
-    return ~nodeIndex;
-  }
+  int    BSP::waterFlags;
 
   bool BSP::isInWater() const
   {
@@ -313,70 +227,6 @@ namespace client
     glMatrixMode( GL_MODELVIEW );
   }
 
-  void BSP::drawNode( int nodeIndex )
-  {
-    if( nodeIndex >= 0 ) {
-      const Node&  node  = nodes[nodeIndex];
-      const Plane& plane = planes[node.plane];
-
-      if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
-        drawNode( node.back );
-        drawNode( node.front );
-      }
-      else {
-        drawNode( node.front );
-        drawNode( node.back );
-      }
-    }
-    else {
-      const Leaf& leaf = leaves[~nodeIndex];
-      Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
-
-      if( frustum.isVisible( leaf + ( str->p - Point3::ORIGIN ) ) ) {
-        for( int i = 0; i < leaf.nFaces; ++i ) {
-          int face = leafFaces[leaf.firstFace + i];
-
-          if( !drawnFaces.get( face ) ) {
-            drawFace( &faces[face] );
-            drawnFaces.set( face );
-          }
-        }
-      }
-    }
-  }
-
-  void BSP::drawNodeWater( int nodeIndex )
-  {
-    if( nodeIndex >= 0 ) {
-      const Node&  node  = nodes[nodeIndex];
-      const Plane& plane = planes[node.plane];
-
-      if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
-        drawNodeWater( node.back );
-        drawNodeWater( node.front );
-      }
-      else {
-        drawNodeWater( node.front );
-        drawNodeWater( node.back );
-      }
-    }
-    else {
-      const Leaf& leaf = leaves[~nodeIndex];
-      Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
-
-      if( frustum.isVisible( leaf + ( str->p - Point3::ORIGIN ) ) ) {
-        for( int i = 0; i < leaf.nFaces; ++i ) {
-          int face = leafFaces[leaf.firstFace + i];
-
-          if( !drawnFaces.get( face ) ) {
-            drawFaceWater( &faces[face] );
-            drawnFaces.set( face );
-          }
-        }
-      }
-    }
-  }
-
   bool BSP::loadOZCBSP( const char* fileName )
   {
     Buffer buffer;
@@ -388,17 +238,10 @@ namespace client
 
     InputStream is = buffer.inputStream();
 
-    mins          = is.readPoint3();
-    maxs          = is.readPoint3();
-
     nTextures     = is.readInt();
-    nPlanes       = is.readInt();
-    nNodes        = is.readInt();
-    nLeaves       = is.readInt();
     nEntityModels = is.readInt();
     nVertices     = is.readInt();
     nIndices      = is.readInt();
-    nLeafFaces    = is.readInt();
     nFaces        = is.readInt();
     nLightmaps    = is.readInt();
 
@@ -406,33 +249,13 @@ namespace client
 
     size += nTextures     * int( 64 * sizeof( char ) );
     size = Alloc::alignUp( size );
-
-    size += nPlanes       * int( sizeof( Plane ) );
-    size = Alloc::alignUp( size );
-
-    size += nNodes        * int( sizeof( Node ) );
-    size = Alloc::alignUp( size );
-
-    size += nLeaves       * int( sizeof( Leaf ) );
-    size = Alloc::alignUp( size );
-
     size += nEntityModels * int( sizeof( EntityModel ) );
     size = Alloc::alignUp( size );
-
     size += nVertices     * int( sizeof( Vertex ) );
-    size = Alloc::alignUp( size );
-
     size += nIndices      * int( sizeof( int ) );
     size = Alloc::alignUp( size );
-
-    size += nLeafFaces    * int( sizeof( int ) );
-    size = Alloc::alignUp( size );
-
     size += nFaces        * int( sizeof( Face ) );
-    size = Alloc::alignUp( size );
-
     size += nLightmaps    * int( sizeof( Lightmap ) );
-    size = Alloc::alignUp( size );
 
     char* data = Alloc::alloc<char>( size );
 
@@ -448,67 +271,34 @@ namespace client
       }
     }
     data += nTextures * 64 * sizeof( char );
-    data = Alloc::alignUp( data );
 
-    planes = new( data ) Plane[nPlanes];
-    for( int i = 0; i < nPlanes; ++i ) {
-      planes[i].normal = is.readVec3();
-      planes[i].distance = is.readFloat();
-    }
-    data += nPlanes * sizeof( Plane );
     data = Alloc::alignUp( data );
-
-    nodes = new( data ) Node[nNodes];
-    for( int i = 0; i < nNodes; ++i ) {
-      nodes[i].plane = is.readInt();
-      nodes[i].front = is.readInt();
-      nodes[i].back = is.readInt();
-    }
-    data += nNodes * sizeof( Node );
-    data = Alloc::alignUp( data );
-
-    leaves = new( data ) Leaf[nLeaves];
-    for( int i = 0; i < nLeaves; ++i ) {
-      leaves[i].firstFace = is.readInt();
-      leaves[i].nFaces = is.readInt();
-      leaves[i].cluster = is.readInt();
-    }
-    data += nLeaves * sizeof( Leaf );
-    data = Alloc::alignUp( data );
-
     entityModels = new( data ) EntityModel[nEntityModels];
     for( int i = 0; i < nEntityModels; ++i ) {
       entityModels[i].firstFace = is.readInt();
       entityModels[i].nFaces = is.readInt();
     }
     data += nEntityModels * sizeof( EntityModel );
-    data = Alloc::alignUp( data );
 
+    data = Alloc::alignUp( data );
     vertices = new( data ) Vertex[nVertices];
     for( int i = 0; i < nVertices; ++i ) {
       vertices[i].p = is.readPoint3();
+      vertices[i].normal = is.readVec3();
       vertices[i].texCoord.u = is.readFloat();
       vertices[i].texCoord.v = is.readFloat();
       vertices[i].lightmapCoord.u = is.readFloat();
       vertices[i].lightmapCoord.v = is.readFloat();
     }
     data += nVertices * sizeof( Vertex );
-    data = Alloc::alignUp( data );
 
     indices = new( data ) int[nIndices];
     for( int i = 0; i < nIndices; ++i ) {
       indices[i] = is.readInt();
     }
     data += nIndices * sizeof( int );
-    data = Alloc::alignUp( data );
 
-    leafFaces = new( data ) int[nLeafFaces];
-    for( int i = 0; i < nLeafFaces; ++i ) {
-      leafFaces[i] = is.readInt();
-    }
-    data += nLeafFaces * sizeof( int );
     data = Alloc::alignUp( data );
-
     faces = new( data ) Face[nFaces];
     for( int i = 0; i < nFaces; ++i ) {
       faces[i].normal = is.readVec3();
@@ -521,16 +311,8 @@ namespace client
       faces[i].nIndices = is.readInt();
     }
     data += nFaces * sizeof( Face );
-    data = Alloc::alignUp( data );
 
-    lightmaps = new( data ) Lightmap[nLightmaps];
-    for( int i = 0; i < nLightmaps; ++i ) {
-      is.readChars( lightmaps[i].bits, LIGHTMAP_SIZE );
-    }
-
-    visual.nClusters = 0;
-    visual.clusterLength = 0;
-    visual.bitsets = null;
+    assert( !is.isAvailable() );
 
     return true;
   }
@@ -541,37 +323,25 @@ namespace client
 
     if( textures != null ) {
       aDestruct( textures, nTextures );
-      aDestruct( planes, nPlanes );
-      aDestruct( nodes, nNodes );
-      aDestruct( leaves, nLeaves );
       aDestruct( entityModels, nEntityModels );
       aDestruct( vertices, nVertices );
       aDestruct( indices, nIndices );
-      aDestruct( leafFaces, nLeafFaces );
       aDestruct( faces, nFaces );
       aDestruct( lightmaps, nLightmaps );
 
       Alloc::dealloc( textures );
 
       nTextures     = 0;
-      nPlanes       = 0;
-      nNodes        = 0;
-      nLeaves       = 0;
       nEntityModels = 0;
       nVertices     = 0;
       nIndices      = 0;
-      nLeafFaces    = 0;
       nFaces        = 0;
       nLightmaps    = 0;
 
       textures     = null;
-      planes       = null;
-      nodes        = null;
-      leaves       = null;
       entityModels = null;
       vertices     = null;
       indices      = null;
-      leafFaces    = null;
       faces        = null;
       lightmaps    = null;
     }
@@ -654,60 +424,6 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    nPlanes = int( lumps[QBSP_LUMP_PLANES].length / sizeof( QBSPPlane ) );
-    planes = new BSP::Plane[nPlanes];
-    fseek( file, lumps[QBSP_LUMP_PLANES].offset, SEEK_SET );
-
-    // rescale plane data
-    for( int i = 0; i < nPlanes; ++i ) {
-      QBSPPlane plane;
-
-      fread( &plane, sizeof( QBSPPlane ), 1, file );
-
-      planes[i].normal   = Vec3( plane.normal );
-      planes[i].distance = plane.distance * scale;
-
-      float offset =
-          Math::abs( planes[i].normal.x * maxDim ) +
-          Math::abs( planes[i].normal.y * maxDim ) +
-          Math::abs( planes[i].normal.z * maxDim );
-
-      if( planes[i].distance < -offset ) {
-        planes[i].distance = -Math::inf();
-      }
-      else if( planes[i].distance > offset ) {
-        planes[i].distance = Math::inf();
-      }
-    }
-
-    nNodes = int( lumps[QBSP_LUMP_NODES].length / sizeof( QBSPNode ) );
-    nodes = new BSP::Node[nNodes];
-    fseek( file, lumps[QBSP_LUMP_NODES].offset, SEEK_SET );
-
-    for( int i = 0; i < nNodes; ++i ) {
-      QBSPNode node;
-
-      fread( &node, sizeof( QBSPNode ), 1, file );
-
-      nodes[i].plane = node.plane;
-      nodes[i].front = node.front;
-      nodes[i].back  = node.back;
-    }
-
-    nLeaves = int( lumps[QBSP_LUMP_LEAFS].length / sizeof( QBSPLeaf ) );
-    leaves = new BSP::Leaf[nLeaves];
-    fseek( file, lumps[QBSP_LUMP_LEAFS].offset, SEEK_SET );
-
-    for( int i = 0; i < nLeaves; ++i ) {
-      QBSPLeaf leaf;
-
-      fread( &leaf, sizeof( QBSPLeaf ), 1, file );
-
-      leaves[i].firstFace = leaf.firstFace;
-      leaves[i].nFaces    = leaf.nFaces;
-      leaves[i].cluster   = leaf.cluster;
-    }
-
     nEntityModels = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) );
     entityModels = new EntityModel[nEntityModels];
     fseek( file, lumps[QBSP_LUMP_MODELS].offset, SEEK_SET );
@@ -745,11 +461,6 @@ namespace client
     fseek( file, lumps[QBSP_LUMP_INDICES].offset, SEEK_SET );
     fread( indices, sizeof( int ), nIndices, file );
 
-    nLeafFaces = int( lumps[QBSP_LUMP_LEAFFACES].length / sizeof( int ) );
-    leafFaces = new int[nLeafFaces];
-    fseek( file, lumps[QBSP_LUMP_LEAFFACES].offset, SEEK_SET );
-    fread( leafFaces, sizeof( int ), nLeafFaces, file );
-
     nFaces = int( lumps[QBSP_LUMP_FACES].length / sizeof( QBSPFace ) );
     faces = new BSP::Face[nFaces];
     fseek( file, lumps[QBSP_LUMP_FACES].offset, SEEK_SET );
@@ -767,6 +478,18 @@ namespace client
       faces[i].nVertices   = face.nVertices;
       faces[i].firstIndex  = face.firstIndex;
       faces[i].nIndices    = face.nIndices;
+
+      // disable if out of bounds
+      const Vertex* verts = &vertices[ faces[i].firstVertex ];
+      for( int j = 0; j < faces[i].nVertices; ++j ) {
+        if( verts[j].p.x < -maxDim || verts[j].p.x > maxDim ||
+            verts[j].p.y < -maxDim || verts[j].p.y > maxDim ||
+            verts[j].p.z < -maxDim || verts[j].p.z > maxDim )
+        {
+          faces[i].nIndices = 0;
+          break;
+        }
+      }
     }
 
     nLightmaps = int( lumps[QBSP_LUMP_LIGHTMAPS].length / sizeof( BSP::Lightmap ) );
@@ -776,26 +499,10 @@ namespace client
 
       fseek( file, lumps[QBSP_LUMP_LIGHTMAPS].offset, SEEK_SET );
       fread( lightmaps, sizeof( BSP::Lightmap ), nLightmaps, file );
-
-      fseek( file, lumps[QBSP_LUMP_VISUALDATA].offset, SEEK_SET );
-      fread( &visual.nClusters, sizeof( int ), 1, file );
-      fread( &visual.clusterLength, sizeof( int ), 1, file );
     }
     else {
       lightmaps = null;
     }
-
-//     if( lumps[QBSP_LUMP_VISUALDATA].length != 0 ) {
-//       visual.bitsets = new Bitset[visual.nClusters];
-//
-//       for( int i = 0; i < visual.nClusters; ++i ) {
-//         visual.bitsets[i].setSize( visual.clusterLength * 8 );
-//         fread( visual.bitsets[i], sizeof( char ), visual.clusterLength, file );
-//       }
-//     }
-//     else {
-//       visual.bitsets = null;
-//     }
 
     delete[] texFlags;
     delete[] texTypes;
@@ -810,38 +517,349 @@ namespace client
     log.print( "Freeing Quake 3 BSP model '%s' ...", name );
 
     delete[] textures;
-    delete[] planes;
-    delete[] nodes;
-    delete[] leaves;
     delete[] entityModels;
     delete[] vertices;
     delete[] indices;
-    delete[] leafFaces;
     delete[] faces;
     delete[] lightmaps;
 
-    textures     = null;
-    planes       = null;
-    nodes        = null;
-    leaves       = null;
-    vertices     = null;
-    indices      = null;
-    leafFaces    = null;
-    faces        = null;
-    lightmaps    = null;
+    textures  = null;
+    vertices  = null;
+    indices   = null;
+    faces     = null;
+    lightmaps = null;
 
     nTextures     = 0;
-    nPlanes       = 0;
-    nNodes        = 0;
-    nLeaves       = 0;
     nEntityModels = 0;
     nVertices     = 0;
     nIndices      = 0;
-    nLeafFaces    = 0;
     nFaces        = 0;
     nLightmaps    = 0;
 
     log.printEnd( " OK" );
+  }
+
+  void BSP::optimise()
+  {/*
+    log.println( "Optimising BSP model {" );
+    log.indent();
+
+    // remove faces that lay out of boundaries
+    for( int i = 0; i < nFaces; ) {
+      assert( faces[i].nVertices > 0 && faces[i].nIndices >= 0 );
+
+      if( faces[i].nIndices != 0 ) {
+        ++i;
+        continue;
+      }
+
+      aRemove( faces, i, nFaces );
+      --nFaces;
+      log.print( "outside face removed " );
+
+      // adjust face references (for leaves)
+      for( int j = 0; j < nLeafFaces; ) {
+        if( leafFaces[j] < i ) {
+          ++j;
+        }
+        else if( i < leafFaces[j] ) {
+          --leafFaces[j];
+          ++j;
+        }
+        else {
+          aRemove( leafFaces, j, nLeafFaces );
+          --nLeafFaces;
+          log.printRaw( "." );
+
+          for( int k = 0; k < nLeaves; ++k ) {
+            if( j < leaves[k].firstFace ) {
+              --leaves[k].firstFace;
+            }
+            else if( j < leaves[k].firstFace + leaves[k].nFaces ) {
+              assert( leaves[k].nFaces > 0 );
+
+              --leaves[k].nFaces;
+            }
+          }
+        }
+      }
+      // adjust face references (for models)
+      for( int j = 0; j < nEntityModels; ++j ) {
+        if( i < entityModels[j].firstFace ) {
+          --entityModels[j].firstFace;
+        }
+        else if( i < entityModels[j].firstFace + entityModels[j].nFaces ) {
+          assert( entityModels[j].nFaces > 0 );
+
+          --entityModels[j].nFaces;
+        }
+      }
+      log.printEnd();
+    }
+
+    faces = aRealloc( faces, nFaces, nFaces );
+    leafFaces = aRealloc( leafFaces, nLeafFaces, nLeafFaces);
+
+    // remove unreferenced and empty leaves
+    log.print( "removing unreferenced and empty leaves " );
+
+    for( int i = 0; i < nLeaves; ) {
+      bool isReferenced = false;
+
+      for( int j = 0; j < nNodes; ++j ) {
+        if( nodes[j].front == ~i || nodes[j].back == ~i ) {
+          isReferenced = true;
+          break;
+        }
+      }
+
+      if( isReferenced && leaves[i].nFaces != 0 ) {
+        ++i;
+        continue;
+      }
+
+      aRemove( leaves, i, nLeaves );
+      --nLeaves;
+      log.printRaw( "." );
+
+      // update references and tag unnecessary nodes, will be removed in the next pass (index 0 is
+      // invalid as the root cannot be referenced)
+      for( int j = 0; j < nNodes; ++j ) {
+        if( ~nodes[j].front == i ) {
+          nodes[j].front = 0;
+        }
+        else if( ~nodes[j].front > i ) {
+          ++nodes[j].front;
+        }
+
+        if( ~nodes[j].back == i ) {
+          nodes[j].back = 0;
+        }
+        else if( ~nodes[j].back > i ) {
+          ++nodes[j].back;
+        }
+      }
+    }
+
+    leaves = aRealloc( leaves, nLeaves, nLeaves );
+
+    log.printEnd( " OK" );
+
+    // collapse unnecessary nodes
+    log.print( "collapsing nodes " );
+
+    bool hasCollapsed;
+    do {
+      hasCollapsed = false;
+
+      for( int i = 0; i < nNodes; ++i ) {
+        if( nodes[i].front == 0 ) {
+          hasCollapsed = true;
+
+          // find parent and bind the remaining leaf to the parent
+          int j;
+          for( j = 0; j < nNodes; ++j ) {
+            if( nodes[j].front == i ) {
+              nodes[j].front = nodes[i].back;
+              break;
+            }
+            else if( nodes[j].back == i ) {
+              nodes[j].back = nodes[i].back;
+              break;
+            }
+          }
+          assert( j < nNodes );
+
+          log.printRaw( "." );
+        }
+        else if( nodes[i].back == 0 ) {
+          hasCollapsed = true;
+
+          // find parent and bind the remaining leaf to the parent
+          int j;
+          for( j = 0; j < nNodes; ++j ) {
+            if( nodes[j].front == i ) {
+              nodes[j].front = nodes[i].front;
+              break;
+            }
+            else if( nodes[j].back == i ) {
+              nodes[j].back = nodes[i].front;
+              break;
+            }
+          }
+          assert( j < nNodes );
+
+          log.printRaw( "." );
+        }
+
+        // remove node and adjust references
+        if( nodes[i].front == 0 || nodes[i].back == 0 ) {
+          aRemove( nodes, i, nNodes );
+          --nNodes;
+
+          for( int j = 0; j < nNodes; ++j ) {
+            assert( nodes[j].front != i && nodes[j].back != i );
+
+            if( nodes[j].front > i && nodes[j].front != 0 ) {
+              --nodes[j].front;
+            }
+            if( nodes[j].back > i && nodes[j].back != 0 ) {
+              --nodes[j].back;
+            }
+          }
+        }
+      }
+    }
+    while( hasCollapsed );
+
+    nodes = aRealloc( nodes, nNodes, nNodes );
+
+    log.printEnd( " OK" );
+
+    // integrity check
+    Bitset usedNodes( nNodes );
+    Bitset usedLeaves( nLeaves );
+
+    usedNodes.clearAll();
+    usedLeaves.clearAll();
+
+    for( int i = 0; i < nNodes; ++i ) {
+      if( nodes[i].front < 0 ) {
+        usedLeaves.set( ~nodes[i].front );
+      }
+      else if( nodes[i].front != 0 ) {
+        usedNodes.set( nodes[i].front );
+      }
+
+      if( nodes[i].back < 0 ) {
+        usedLeaves.set( ~nodes[i].back );
+      }
+      else if( nodes[i].back != 0 ) {
+        usedNodes.set( nodes[i].back );
+      }
+    }
+
+    for( int i = 0; i < nLeaves; ++i ) {
+      assert( usedLeaves.get( i ) );
+    }
+    for( int i = 1; i < nNodes; ++i ) {
+      assert( usedNodes.get( i ) );
+    }
+
+    // remove unused indices
+    log.print( "removing unused indices " );
+
+    bool* usedIndices = new bool[nIndices];
+    aSet( usedIndices, false, nIndices );
+
+    for( int i = 0; i < nFaces; ++i ) {
+      for( int j = 0; j < faces[i].nIndices; ++j ) {
+        usedIndices[ faces[i].firstIndex + j ] = true;
+      }
+    }
+
+    for( int i = 0; i < nIndices; ) {
+      if( usedIndices[i] ) {
+        ++i;
+        continue;
+      }
+
+      aRemove( indices, i, nIndices );
+      aRemove( usedIndices, i, nIndices );
+      --nIndices;
+      log.printRaw( "." );
+
+      for( int j = 0; j < nFaces; ++j ) {
+        if( i < faces[j].firstIndex ) {
+          --faces[j].firstIndex;
+        }
+        else if( i < faces[j].firstIndex + faces[j].nIndices ) {
+          // removed index shouldn't be referenced by any face
+          assert( false );
+        }
+      }
+    }
+
+    log.printEnd( " OK" );
+
+    delete[] usedIndices;
+    indices = aRealloc( indices, nIndices, nIndices );
+
+    // remove unused vertices
+    log.print( "removing unused vertices " );
+
+    bool* usedVertices = new bool[nVertices];
+    aSet( usedVertices, false, nVertices );
+
+    for( int i = 0; i < nIndices; ++i ) {
+      usedVertices[ indices[i] ] = true;
+    }
+
+    for( int i = 0; i < nVertices; ) {
+      if( usedVertices[i] ) {
+        ++i;
+        continue;
+      }
+
+      aRemove( vertices, i, nVertices );
+      aRemove( usedVertices, i, nVertices );
+      --nVertices;
+      log.printRaw( "." );
+
+      for( int j = 0; j < nIndices; ++j ) {
+        if( i < indices[j] ) {
+          --indices[j];
+        }
+        else if( i == indices[j] ) {
+          // removed vertex shouldn't be referenced by any index
+          assert( false );
+        }
+      }
+    }
+
+    log.printEnd( " OK" );
+
+    delete[] usedVertices;
+    vertices = aRealloc( vertices, nVertices, nVertices );
+
+    // remove unused planes
+    log.print( "removing unused planes " );
+
+    bool* usedPlanes = new bool[nPlanes];
+    aSet( usedPlanes, false, nPlanes );
+
+    for( int i = 0; i < nNodes; ++i ) {
+      usedPlanes[ nodes[i].plane ] = true;
+    }
+
+    for( int i = 0; i < nPlanes; ) {
+      if( usedPlanes[i] ) {
+        ++i;
+        continue;
+      }
+
+      aRemove( planes, i, nPlanes );
+      aRemove( usedPlanes, i, nPlanes );
+      --nPlanes;
+      log.printRaw( "." );
+
+      // adjust plane references
+      for( int j = 0; j < nNodes; ++j ) {
+        assert( nodes[j].plane != i );
+
+        if( nodes[j].plane > i ) {
+          --nodes[j].plane;
+        }
+      }
+    }
+
+    delete[] usedPlanes;
+    planes = aRealloc( planes, nPlanes, nPlanes );
+
+    log.printEnd( " OK" );
+
+    log.unindent();
+    log.println( "}" );*/
   }
 
   bool BSP::save( const char* file )
@@ -850,33 +868,21 @@ namespace client
 
     int size = 0;
 
-    size += 1             * int( sizeof( Bounds ) );
-    size += 10            * int( sizeof( int ) );
+    size += 6             * int( sizeof( int ) );
     size += nTextures     * int( 64 * sizeof( char ) );
-    size += nPlanes       * int( sizeof( Plane ) );
-    size += nNodes        * int( sizeof( Node ) );
-    size += nLeaves       * int( sizeof( Leaf ) );
-    size += nEntityModels * int( sizeof( EntityClass ) );
+    size += nEntityModels * int( sizeof( EntityModel ) );
     size += nVertices     * int( sizeof( Vertex ) );
     size += nIndices      * int( sizeof( int ) );
-    size += nLeafFaces    * int( sizeof( int ) );
     size += nFaces        * int( sizeof( Face ) );
-    size += nLightmaps    * int( sizeof( Lightmap ) );
+    size += nLightmaps    * int( LIGHTMAP_SIZE * sizeof( char ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
-    os.writePoint3( mins );
-    os.writePoint3( maxs );
-
     os.writeInt( nTextures );
-    os.writeInt( nPlanes );
-    os.writeInt( nNodes );
-    os.writeInt( nLeaves );
     os.writeInt( nEntityModels );
     os.writeInt( nVertices );
     os.writeInt( nIndices );
-    os.writeInt( nLeafFaces );
     os.writeInt( nFaces );
     os.writeInt( nLightmaps );
 
@@ -889,23 +895,6 @@ namespace client
       }
     }
 
-    for( int i = 0; i < nPlanes; ++i ) {
-      os.writeVec3( planes[i].normal );
-      os.writeFloat( planes[i].distance );
-    }
-
-    for( int i = 0; i < nNodes; ++i ) {
-      os.writeInt( nodes[i].plane );
-      os.writeInt( nodes[i].front );
-      os.writeInt( nodes[i].back );
-    }
-
-    for( int i = 0; i < nLeaves; ++i ) {
-      os.writeInt( leaves[i].firstFace );
-      os.writeInt( leaves[i].nFaces );
-      os.writeInt( leaves[i].cluster );
-    }
-
     for( int i = 0; i < nEntityModels; ++i ) {
       os.writeInt( entityModels[i].firstFace );
       os.writeInt( entityModels[i].nFaces );
@@ -913,6 +902,7 @@ namespace client
 
     for( int i = 0; i < nVertices; ++i ) {
       os.writePoint3( vertices[i].p );
+      os.writeVec3( vertices[i].normal );
       os.writeFloat( vertices[i].texCoord.u );
       os.writeFloat( vertices[i].texCoord.v );
       os.writeFloat( vertices[i].lightmapCoord.u );
@@ -921,10 +911,6 @@ namespace client
 
     for( int i = 0; i < nIndices; ++i ) {
       os.writeInt( indices[i] );
-    }
-
-    for( int i = 0; i < nLeafFaces; ++i ) {
-      os.writeInt( leafFaces[i] );
     }
 
     for( int i = 0; i < nFaces; ++i ) {
@@ -942,6 +928,7 @@ namespace client
       os.writeChars( lightmaps[i].bits, LIGHTMAP_SIZE );
     }
 
+    assert( !os.isAvailable() );
     buffer.write( file );
 
     log.printEnd( " OK" );
@@ -949,10 +936,10 @@ namespace client
   }
 
   BSP::BSP() :
-      nTextures( 0 ), nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nEntityModels( 0 ),
-      nVertices( 0 ), nIndices( 0 ), nLeafFaces( 0 ), nFaces( 0 ), nLightmaps( 0 ),
-      textures( null ), planes( null ), nodes( null ), leaves( null ), entityModels( null ),
-      vertices( null ), indices( null ), leafFaces( null ), faces( null ), lightmaps( null ),
+      nTextures( 0 ), nEntityModels( 0 ), nVertices( 0 ), nIndices( 0 ), nFaces( 0 ),
+      nLightmaps( 0 ),
+      textures( null ), entityModels( null ), vertices( null ), indices( null ), faces( null ),
+      lightmaps( null ),
       texIds( null ), lightmapIds( null )
   {}
 
@@ -971,6 +958,7 @@ namespace client
       throw Exception( "Client QBSP loading failed" );
     }
 
+    bsp->optimise();
     bsp->save( String( "maps/" ) + name + String( ".ozcBSP" ) );
     bsp->freeQBSP( name );
     delete bsp;
@@ -980,10 +968,10 @@ namespace client
   }
 
   BSP::BSP( int bspIndex ) :
-      nTextures( 0 ), nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nEntityModels( 0 ),
-      nVertices( 0 ), nIndices( 0 ), nLeafFaces( 0 ), nFaces( 0 ), nLightmaps( 0 ),
-      textures( null ), planes( null ), nodes( null ), leaves( null ), entityModels( null ),
-      vertices( null ), indices( null ), leafFaces( null ), faces( null ), lightmaps( null ),
+      nTextures( 0 ), nEntityModels( 0 ), nVertices( 0 ), nIndices( 0 ), nFaces( 0 ),
+      nLightmaps( 0 ),
+      textures( null ), entityModels( null ), vertices( null ), indices( null ), faces( null ),
+      lightmaps( null ),
       texIds( null ), lightmapIds( null ), isUpdated( false )
   {
     const String& name = translator.bsps[bspIndex].name;
@@ -1019,24 +1007,6 @@ namespace client
     drawnFaces.setSize( nFaces );
     hiddenFaces.clearAll();
 
-    if( visual.bitsets != null ) {
-      visibleLeafs.setSize( visual.bitsets[0].length() );
-    }
-
-    for( int i = 0; i < nFaces; ++i ) {
-      const Vertex* verts = &vertices[ faces[i].firstVertex ];
-
-      for( int j = 0; j < faces[i].nVertices; ++j ) {
-        if( verts[j].p.x < mins.x || verts[j].p.x > maxs.x ||
-            verts[j].p.y < mins.y || verts[j].p.y > maxs.y ||
-            verts[j].p.z < mins.z || verts[j].p.z > maxs.z )
-        {
-          hiddenFaces.set( i );
-          break;
-        }
-      }
-    }
-
     log.unindent();
     log.println( "}" );
   }
@@ -1058,152 +1028,8 @@ namespace client
     freeOZCBSP();
   }
 
-  int BSP::draw( const Struct* str_ )
+  int BSP::fullDraw( const Struct* str )
   {
-    str = str_;
-    camPos = camera.p + ( Point3::ORIGIN - str->p );
-
-    if( nLightmaps != 0 ) {
-      glActiveTexture( GL_TEXTURE1 );
-      glEnable( GL_TEXTURE_2D );
-      glActiveTexture( GL_TEXTURE0 );
-    }
-    else {
-      glActiveTexture( GL_TEXTURE1 );
-      glDisable( GL_TEXTURE_2D );
-      glActiveTexture( GL_TEXTURE0 );
-    }
-
-    glClientActiveTexture( GL_TEXTURE0 );
-
-    glPushMatrix();
-    glTranslatef( str->p.x, str->p.y, str->p.z );
-    glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
-
-    aCopy<ulong>( drawnFaces, hiddenFaces, hiddenFaces.unitLength() );
-
-    int leaf = getLeaf();
-    if( isInWater() ) {
-      waterFlags |= IN_WATER_BRUSH;
-    }
-
-    if( visual.bitsets != null ) {
-      int     cluster = leaves[leaf].cluster;
-      Bitset& bitset  = visual.bitsets[cluster];
-
-      for( int i = 0; i < nLeaves; ++i ) {
-        const Leaf& leaf = leaves[i];
-        Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
-
-        if( ( cluster == -1 || bitset.get( cluster ) ) &&
-            frustum.isVisible( rotatedLeaf + ( str->p - Point3::ORIGIN ) ) )
-        {
-          for( int j = 0; j < leaf.nFaces; ++j ) {
-            int faceIndex = leafFaces[leaf.firstFace + j];
-            const Face& face = faces[faceIndex];
-
-            if( !drawnFaces.get( faceIndex ) ) {
-              drawFace( &face );
-              drawnFaces.set( faceIndex );
-            }
-          }
-        }
-      }
-    }
-    else {
-      for( int i = 0; i < nLeaves; ++i ) {
-        const Leaf& leaf = leaves[i];
-        Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
-
-        if( frustum.isVisible( rotatedLeaf + ( str->p - Point3::ORIGIN ) ) ) {
-          for( int j = 0; j < leaf.nFaces; ++j ) {
-            int faceIndex = leafFaces[leaf.firstFace + j];
-            const Face& face = faces[faceIndex];
-
-            if( !drawnFaces.get( faceIndex ) ) {
-              drawFace( &face );
-              drawnFaces.set( faceIndex );
-            }
-          }
-        }
-      }
-    }
-    glPopMatrix();
-
-    return waterFlags;
-  }
-
-  void BSP::drawWater( const Struct* str_ )
-  {
-    str = str_;
-    camPos = camera.p + ( Point3::ORIGIN - str->p );
-
-    if( nLightmaps != 0 ) {
-      glActiveTexture( GL_TEXTURE1 );
-      glEnable( GL_TEXTURE_2D );
-      glActiveTexture( GL_TEXTURE0 );
-    }
-    else {
-      glActiveTexture( GL_TEXTURE1 );
-      glDisable( GL_TEXTURE_2D );
-      glActiveTexture( GL_TEXTURE0 );
-    }
-    glPushMatrix();
-    glTranslatef( str->p.x, str->p.y, str->p.z );
-    glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
-
-    aCopy<ulong>( drawnFaces, hiddenFaces, hiddenFaces.unitLength() );
-
-    int leaf = getLeaf();
-
-    if( visual.bitsets != null ) {
-      int     cluster = leaves[leaf].cluster;
-      Bitset& bitset  = visual.bitsets[cluster];
-
-      for( int i = 0; i < nLeaves; ++i ) {
-        const Leaf& leaf = leaves[i];
-        Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
-
-        if( ( cluster == -1 || bitset.get( cluster ) ) &&
-            frustum.isVisible( rotatedLeaf + ( str->p - Point3::ORIGIN ) ) )
-        {
-          for( int j = 0; j < leaf.nFaces; ++j ) {
-            int faceIndex = leafFaces[leaf.firstFace + j];
-            const Face& face = faces[faceIndex];
-
-            if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
-              drawFaceWater( &face );
-              drawnFaces.set( faceIndex );
-            }
-          }
-        }
-      }
-    }
-    else {
-      for( int i = 0; i < nLeaves; ++i ) {
-        const Leaf& leaf = leaves[i];
-        Bounds rotatedLeaf = rotateBounds( leaf, str->rot );
-
-        if( frustum.isVisible( rotatedLeaf + ( str->p - Point3::ORIGIN ) ) ) {
-          for( int j = 0; j < leaf.nFaces; ++j ) {
-            int faceIndex = leafFaces[leaf.firstFace + j];
-            const Face& face = faces[faceIndex];
-
-            if( ( face.material & Material::WATER_BIT ) && !drawnFaces.get( faceIndex ) ) {
-              drawFaceWater( &face );
-              drawnFaces.set( faceIndex );
-            }
-          }
-        }
-      }
-    }
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
-    glPopMatrix();
-  }
-
-  int BSP::fullDraw( const Struct* str_ )
-  {
-    str = str_;
     camPos = camera.p + ( Point3::ORIGIN - str->p );
 
     if( nLightmaps != 0 ) {
@@ -1248,9 +1074,8 @@ namespace client
     return waterFlags;
   }
 
-  void BSP::fullDrawWater( const Struct* str_ )
+  void BSP::fullDrawWater( const Struct* str )
   {
-    str = str_;
     camPos = camera.p + ( Point3::ORIGIN - str->p );
 
     if( nLightmaps != 0 ) {
@@ -1274,31 +1099,6 @@ namespace client
     }
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
     glPopMatrix();
-  }
-
-  uint BSP::genList()
-  {
-    uint list = context.genList();
-
-    glNewList( list, GL_COMPILE );
-
-    aCopy<ulong>( drawnFaces, hiddenFaces, hiddenFaces.unitLength() );
-
-    for( int i = 0; i < nLeaves; ++i ) {
-      const Leaf& leaf = leaves[i];
-
-      for( int j = 0; j < leaf.nFaces; ++j ) {
-        int face = leafFaces[leaf.firstFace + j];
-
-        if( !drawnFaces.get( face ) ) {
-          drawFace( &faces[face] );
-          drawnFaces.set( face );
-        }
-      }
-    }
-    glEndList();
-
-    return list;
   }
 
   void BSP::beginRender()

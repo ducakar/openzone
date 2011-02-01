@@ -64,6 +64,7 @@ namespace client
 
     config.clear();
 
+    float uiTime      = float( timer.uiMillis )      * 0.001f;
     float loaderTime  = float( timer.loaderMillis )  * 0.001f;
     float syncTime    = float( timer.syncMillis )    * 0.001f;
     float renderTime  = float( timer.renderMillis )  * 0.001f;
@@ -80,9 +81,10 @@ namespace client
     log.println( "Main loop time usage:" );
     log.println( "  %6.6g s  all time", allTime );
     log.println( "  %6.2f %%  [M:1  ] loader",                loaderTime  / allTime * 100.0f );
-    log.println( "  %6.2f %%  [M:2.1] sync + sound.play",     syncTime    / allTime * 100.0f );
-    log.println( "  %6.2f %%  [M:2.2] render + sound.update", renderTime  / allTime * 100.0f );
-    log.println( "  %6.2f %%  [M:2.3] sleep",                 sleepTime   / allTime * 100.0f );
+    log.println( "  %6.2f %%  [M:2.1] ui",                    uiTime      / allTime * 100.0f );
+    log.println( "  %6.2f %%  [M:2.2] sync + sound.play",     syncTime    / allTime * 100.0f );
+    log.println( "  %6.2f %%  [M:2.3] render + sound.update", renderTime  / allTime * 100.0f );
+    log.println( "  %6.2f %%  [M:2.4] sleep",                 sleepTime   / allTime * 100.0f );
     log.println( "  %6.2f %%  [A:1  ] matrix",                matrixTime  / allTime * 100.0f );
     log.println( "  %6.2f %%  [A:2  ] nirvana",               nirvanaTime / allTime * 100.0f );
     log.unindent();

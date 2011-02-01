@@ -18,6 +18,8 @@ namespace oz
   template <typename Type, int SIZE>
   class Array
   {
+    static_assert( SIZE > 0, "Array size must be at least 1" );
+
     public:
 
       /**

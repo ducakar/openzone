@@ -160,25 +160,13 @@ namespace oz
     int size = 0;
 
     size += nPlanes        * int( sizeof( Plane ) );
-    size = Alloc::alignUp( size );
-
     size += nNodes         * int( sizeof( Node ) );
-    size = Alloc::alignUp( size );
-
     size += nLeaves        * int( sizeof( Leaf ) );
-    size = Alloc::alignUp( size );
-
     size += nLeafBrushes   * int( sizeof( int ) );
-    size = Alloc::alignUp( size );
-
     size += nBrushes       * int( sizeof( Brush ) );
-    size = Alloc::alignUp( size );
-
     size += nBrushSides    * int( sizeof( int ) );
     size = Alloc::alignUp( size );
-
     size += nEntityClasses * int( sizeof( EntityClass ) );
-    size = Alloc::alignUp( size );
 
     char* data = Alloc::alloc<char>( size );
 
@@ -188,7 +176,6 @@ namespace oz
       planes[i].distance = is.readFloat();
     }
     data += nPlanes * sizeof( Plane );
-    data = Alloc::alignUp( data );
 
     nodes = new( data ) Node[nNodes];
     for( int i = 0; i < nNodes; ++i ) {
@@ -197,7 +184,6 @@ namespace oz
       nodes[i].back = is.readInt();
     }
     data += nNodes * sizeof( Node );
-    data = Alloc::alignUp( data );
 
     leaves = new( data ) Leaf[nLeaves];
     for( int i = 0; i < nLeaves; ++i ) {
@@ -205,14 +191,12 @@ namespace oz
       leaves[i].nBrushes = is.readInt();
     }
     data += nLeaves * sizeof( Leaf );
-    data = Alloc::alignUp( data );
 
     leafBrushes = new( data ) int[nLeafBrushes];
     for( int i = 0; i < nLeafBrushes; ++i ) {
       leafBrushes[i] = is.readInt();
     }
     data += nLeafBrushes * sizeof( int );
-    data = Alloc::alignUp( data );
 
     brushes = new( data ) Brush[nBrushes];
     for( int i = 0; i < nBrushes; ++i ) {
@@ -221,15 +205,14 @@ namespace oz
       brushes[i].material = is.readInt();
     }
     data += nBrushes * sizeof( Brush );
-    data = Alloc::alignUp( data );
 
     brushSides = new( data ) int[nBrushSides];
     for( int i = 0; i < nBrushSides; ++i ) {
       brushSides[i] = is.readInt();
     }
     data += nBrushSides * sizeof( int );
-    data = Alloc::alignUp( data );
 
+    data = Alloc::alignUp( data );
     entityClasses = new( data ) EntityClass[nEntityClasses];
     for( int i = 0; i < nEntityClasses; ++i ) {
       entityClasses[i].mins = is.readPoint3();
@@ -240,13 +223,13 @@ namespace oz
       entityClasses[i].move = is.readVec3();
       entityClasses[i].ratioInc = is.readFloat();
       entityClasses[i].flags = is.readInt();
-      entityClasses[i].mode = EntityClass::Mode( is.readChar() );
+      entityClasses[i].mode = EntityClass::Mode( is.readInt() );
       entityClasses[i].margin = is.readFloat();
       entityClasses[i].slideTime = is.readFloat();
       entityClasses[i].timeout = is.readFloat();
     }
-    data += nEntityClasses * sizeof( EntityClass );
-    data = Alloc::alignUp( data );
+
+    assert( !is.isAvailable() );
 
     return true;
   }
@@ -288,7 +271,6 @@ namespace oz
 
   bool BSP::loadQBSP( const char* fileName )
   {
-    // TODO move cfg stuff to prebuild()
     String rcFile = fileName + String( ".rc" );
     String bspFile = fileName + String( ".bsp" );
 
@@ -570,12 +552,13 @@ namespace oz
 
   void BSP::optimise()
   {
-    // optimise
-    log.println( "Optimising BSP {" );
+    log.println( "Optimising BSP structure {" );
     log.indent();
 
     // remove brushes that lay out of boundaries
     for( int i = 0; i < nBrushes; ) {
+      assert( brushes[i].nSides >= 0 );
+
       if( brushes[i].nSides != 0 ) {
         ++i;
         continue;
@@ -626,10 +609,10 @@ namespace oz
     }
 
     brushes = aRealloc( brushes, nBrushes, nBrushes );
-    brushSides = aRealloc( brushSides, nBrushSides, nBrushSides );
+    leafBrushes = aRealloc( leafBrushes, nLeafBrushes, nLeafBrushes );
 
-    // remove unreferenced leaves
-    log.print( "removing unreferenced leaves " );
+    // remove unreferenced and empty leaves
+    log.print( "removing unreferenced and empty leaves " );
 
     for( int i = 0; i < nLeaves; ) {
       bool isReferenced = false;
@@ -774,14 +757,11 @@ namespace oz
       assert( usedNodes.get( i ) );
     }
 
-    // remove brush sides and planes
-    log.print( "removing brush sides " );
+    // remove unused brush sides
+    log.print( "removing unused brush sides " );
 
     bool* usedBrushSides = new bool[nBrushSides];
-    bool* usedPlanes = new bool[nPlanes];
-
     aSet( usedBrushSides, false, nBrushSides );
-    aSet( usedPlanes, false, nPlanes );
 
     for( int i = 0; i < nBrushes; ++i ) {
       for( int j = 0; j < brushes[i].nSides; ++j ) {
@@ -812,7 +792,15 @@ namespace oz
     }
 
     log.printEnd( " OK" );
-    log.print( "removing planes " );
+
+    delete[] usedBrushSides;
+    brushSides = aRealloc( brushSides, nBrushSides, nBrushSides );
+
+    // remove unused planes
+    log.print( "removing unused planes " );
+
+    bool* usedPlanes = new bool[nPlanes];
+    aSet( usedPlanes, false, nPlanes );
 
     for( int i = 0; i < nNodes; ++i ) {
       usedPlanes[ nodes[i].plane ] = true;
@@ -849,10 +837,7 @@ namespace oz
       }
     }
 
-    delete[] usedBrushSides;
-    delete[] usedPlanes;
-
-    brushSides = aRealloc( brushSides, nBrushSides, nBrushSides );
+    delete[] usedPlanes;;
     planes = aRealloc( planes, nPlanes, nPlanes );
 
     log.printEnd( " OK" );
@@ -910,7 +895,7 @@ namespace oz
     size += nLeafBrushes   * int( sizeof( int ) );
     size += nBrushes       * int( sizeof( Brush ) );
     size += nBrushSides    * int( sizeof( int ) );
-    size += nEntityClasses * int( sizeof( EntityClass ) );
+    size += nEntityClasses * int( sizeof( EntityClass ) - sizeof( void* ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
@@ -965,12 +950,13 @@ namespace oz
       os.writeVec3( entityClasses[i].move );
       os.writeFloat( entityClasses[i].ratioInc );
       os.writeInt( entityClasses[i].flags );
-      os.writeChar( entityClasses[i].mode );
+      os.writeInt( entityClasses[i].mode );
       os.writeFloat( entityClasses[i].margin );
       os.writeFloat( entityClasses[i].slideTime );
       os.writeFloat( entityClasses[i].timeout );
     }
 
+    assert( !os.isAvailable() );
     buffer.write( fileName );
 
     log.printEnd( " OK" );

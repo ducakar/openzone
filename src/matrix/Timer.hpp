@@ -28,6 +28,7 @@ namespace oz
       uint  matrixMillis;
       uint  nirvanaMillis;
 
+      uint  uiMillis;
       uint  loaderMillis;
       uint  syncMillis;
       uint  renderMillis;

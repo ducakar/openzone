@@ -46,11 +46,8 @@ namespace oz
         const Point3& c = quads[x + 1][y + 1].vertex;
         const Point3& d = quads[x    ][y + 1].vertex;
 
-        quads[x][y].tri[0].normal   = ~( ( c - b ) ^ ( a - b ) );
-        quads[x][y].tri[0].distance = a * quads[x][y].tri[0].normal;
-
-        quads[x][y].tri[1].normal   = ~( ( a - d ) ^ ( c - d ) );
-        quads[x][y].tri[1].distance = a * quads[x][y].tri[1].normal;
+        quads[x][y].triNormal[0] = ~( ( c - b ) ^ ( a - b ) );
+        quads[x][y].triNormal[1] = ~( ( a - d ) ^ ( c - d ) );
       }
     }
   }
@@ -95,13 +92,13 @@ namespace oz
 
     for( int x = 0; x < VERTS; ++x ) {
       for( int y = 0; y < VERTS; ++y ) {
-        quads[x][y].vertex          = is.readPoint3();
-        quads[x][y].tri[0].normal   = is.readVec3();
-        quads[x][y].tri[0].distance = is.readFloat();
-        quads[x][y].tri[1].normal   = is.readVec3();
-        quads[x][y].tri[1].distance = is.readFloat();
+        quads[x][y].vertex       = is.readPoint3();
+        quads[x][y].triNormal[0] = is.readVec3();
+        quads[x][y].triNormal[1] = is.readVec3();
       }
     }
+
+    assert( !is.isAvailable() );
 
     log.printEnd( " OK" );
   }
@@ -177,19 +174,16 @@ namespace oz
 
         if( x == QUADS || y == QUADS ) {
           os.writeVec3( Vec3::ZERO );
-          os.writeFloat( 0.0f );
           os.writeVec3( Vec3::ZERO );
-          os.writeFloat( 0.0f );
         }
         else {
-          os.writeVec3( quads[x][y].tri[0].normal );
-          os.writeFloat( quads[x][y].tri[0].distance );
-          os.writeVec3( quads[x][y].tri[1].normal );
-          os.writeFloat( quads[x][y].tri[1].distance );
+          os.writeVec3( quads[x][y].triNormal[0] );
+          os.writeVec3( quads[x][y].triNormal[1] );
         }
       }
     }
 
+    assert( !os.isAvailable() );
     buffer.write( destFile );
 
     log.printEnd( " OK" );

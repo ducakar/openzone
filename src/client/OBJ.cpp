@@ -521,6 +521,7 @@ namespace client
       return;
     }
 
+    assert( !os.isAvailable() );
     if( !buffer.write( fileName ) ) {
       log.printEnd( " Failed to write buffer" );
     }
@@ -600,6 +601,8 @@ namespace client
       String texPath = is.readString();
       segments[i].texId = texPath.isEmpty() ? GL_NONE : context.loadTexture( texPath );
     }
+
+    assert( !is.isAvailable() );
 
     glGenBuffers( 1, &arrayBuffer );
     glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );

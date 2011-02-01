@@ -2,7 +2,6 @@
  *  Pool.hpp
  *
  *  Pool memory allocator
- *  The Type should provide next[] pointer.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -33,16 +32,16 @@ public:\
 #endif
 
 /**
- * \def OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE )
+ * \def OZ_PLACEMENT_POOL_ALLOC( Type, SIZE )
  * Implement placement new operator, while non-placement new and delete are disabled.
  * The pool is given to new operator as an additional parameter. As delete cannot be provided,
  * object should be freed via <code>pool.dealloc( object )</code> and the destructor should be
  * called manually before freeing.
  */
-#define OZ_PLACEMENT_POOL_ALLOC( Type, INDEX, SIZE ) \
+#define OZ_PLACEMENT_POOL_ALLOC( Type, SIZE ) \
 public: \
-  void* operator new ( size_t, oz::Pool<Type, INDEX, SIZE>& pool ) { return pool.alloc(); } \
-  void operator delete ( void* ptr, oz::Pool<Type, INDEX, SIZE>& pool ) { pool.dealloc( ptr ); } \
+  void* operator new ( size_t, oz::Pool<Type, SIZE>& pool ) { return pool.alloc(); } \
+  void operator delete ( void* ptr, oz::Pool<Type, SIZE>& pool ) { pool.dealloc( ptr ); } \
 private: \
   void* operator new ( size_t ); \
   void operator delete ( void* );
@@ -50,10 +49,22 @@ private: \
 namespace oz
 {
 
-  template <class Type, int INDEX = 0, int BLOCK_SIZE = 256>
+  template <class Type, int BLOCK_SIZE = 256>
   class Pool
   {
+    static_assert( BLOCK_SIZE >= 2, "Pool block size must be at least 2" );
+
     private:
+
+      /**
+       * Slot that occcupies memory for an object. It also provides a pointer to the next slot
+       * in a block.
+       */
+      union Slot
+      {
+        char  content[ sizeof( Type ) ];
+        Slot* nextSlot;
+      };
 
       /**
        * Memory block.
@@ -61,42 +72,28 @@ namespace oz
        * we simply allocate another block. Once a block is allocated it cannot be freed any
        * more unless Pool is empty. Anyways, that would be rarely possible due to fragmentation.
        */
-      class Block
+      struct Block
       {
-        private:
+        Slot   data[BLOCK_SIZE];
+        Block* next;
 
-          char data[BLOCK_SIZE * sizeof( Type )];
-
-        public:
-
-          Block* next;
-
-          explicit Block( Block* next_ ) : next( next_ )
-          {
-            for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
-              get( i )->next[INDEX] = get( i + 1 );
-            }
-            get( BLOCK_SIZE - 1 )->next[INDEX] = null;
+        explicit Block( Block* next_ ) : next( next_ )
+        {
+          for( int i = 0; i < BLOCK_SIZE - 1; ++i ) {
+            data[i].nextSlot = &data[i + 1];
           }
-
-          Type* get( int i )
-          {
-            return reinterpret_cast<Type*>( data ) + i;
-          }
-
+          data[BLOCK_SIZE - 1].nextSlot = null;
+        }
       };
 
       // List of allocated blocks
       Block* firstBlock;
       // List of freed slots, null if none
-      Type*  freeSlot;
+      Slot*  freeSlot;
       // Size of data blocks
       int    size;
       // Number of occupied used slots in the pool
       int    count;
-
-      // no copying
-
 
     public:
 
@@ -139,18 +136,17 @@ namespace oz
 
         if( freeSlot == null ) {
           firstBlock = new Block( firstBlock );
-          freeSlot = firstBlock->get( 1 );
+          freeSlot = &firstBlock->data[1];
           size += BLOCK_SIZE;
-          return firstBlock->get( 0 );
+          return firstBlock->data[0].content;
         }
         else {
-          Type* slot = freeSlot;
-          // static_cast to make it on derived classes
-          freeSlot = static_cast<Type*>( slot->next[INDEX] );
+          Slot* slot = freeSlot;
+          freeSlot = slot->nextSlot;
           return slot;
         }
 #else
-        return new char[sizeof( Type )];
+        return new char[ sizeof( Type ) ];
 #endif
       }
 
@@ -163,9 +159,10 @@ namespace oz
 #ifdef OZ_POOL_ALLOC
         assert( count != 0 );
 
-        Type* elem = reinterpret_cast<Type*>( ptr );
-        elem->next[INDEX] = freeSlot;
-        freeSlot = elem;
+        Slot* slot = reinterpret_cast<Slot*>( ptr );
+
+        slot->nextSlot = freeSlot;
+        freeSlot = slot;
         --count;
 #else
         delete[] reinterpret_cast<char*>( ptr );
@@ -209,8 +206,8 @@ namespace oz
 
         while( block != null ) {
           Block* next = block->next;
-
           delete block;
+
           block = next;
         }
 

@@ -39,12 +39,6 @@ namespace oz
 
     public:
 
-      struct Triangle
-      {
-        Vec3  normal;
-        float distance;
-      };
-
       struct Quad
       {
         // integer size of a terrain quad
@@ -55,8 +49,8 @@ namespace oz
         // dimension of a terrain quad (size / 2)
         static const float DIM;
 
-        Point3   vertex;
-        Triangle tri[2];
+        Point3 vertex;
+        Vec3   triNormal[2];
       };
 
       Quad   quads[VERTS][VERTS];
@@ -101,14 +95,15 @@ namespace oz
 
   inline float Terra::height( float x, float y ) const
   {
-    Pair<int> i = getIndices( x, y );
+    Pair<int>   i    = getIndices( x, y );
+    const Quad& quad = quads[i.x][i.y];
 
-    float intraX = Math::mod( x + DIM, Quad::SIZE );
-    float intraY = Math::mod( y + DIM, Quad::SIZE );
-    int   ii = intraX <= intraY;
+    float localX = x - quad.vertex.x;
+    float localY = y - quad.vertex.y;
+    int   ii     = localX <= localY;
 
-    return ( quads[i.x][i.y].tri[ii].distance - quads[i.x][i.y].tri[ii].normal.x * x -
-        quads[i.x][i.y].tri[ii].normal.y * y ) / quads[i.x][i.y].tri[ii].normal.z;
+    return quad.vertex.z - ( quad.triNormal[ii].x * localX + quad.triNormal[ii].y * localY ) /
+        quad.triNormal[ii].z;
   }
 
 }

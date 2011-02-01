@@ -19,8 +19,6 @@ namespace oz
   // dynamic object abstract class
   class Dynamic : public Object
   {
-    friend class Pool<Dynamic>;
-
     public:
 
       static Pool<Dynamic> pool;
@@ -34,8 +32,7 @@ namespace oz
       float mass;
       float lift;
 
-      // if on ground, used as floor normal, it is not set if on another object
-      Vec3  floor;
+      Vec3  floor;      // if on ground, used as floor normal, it is not set if on another object
       int   lower;      // index of the lower object
       float depth;      // how deep under water the object's lower bound is
 

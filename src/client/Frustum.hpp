@@ -55,12 +55,6 @@ namespace client
       }
 
       OZ_ALWAYS_INLINE
-      bool isVisible( const AABB& bb, float factor = 1.0f )
-      {
-        return isVisible( bb.p, bb.r * factor );
-      }
-
-      OZ_ALWAYS_INLINE
       bool isVisible( const Bounds& b )
       {
         Vec3 dim = b.maxs - b.mins;

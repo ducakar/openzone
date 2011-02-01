@@ -20,13 +20,13 @@ class A
     int value;
     A*  next[1];
 
-    static Pool<A, 0> pool;
+    static Pool<A, 2> pool;
 
   OZ_STATIC_POOL_ALLOC( pool )
 
 };
 
-Pool<A, 0> A::pool;
+Pool<A, 2> A::pool;
 
 int main( int, char** )
 {

@@ -33,7 +33,7 @@ namespace client
   {
     const Cell& cell = orbis.cells[cellX][cellY];
 
-    for( const Object *obj = cell.firstObject; obj != null; obj = obj->next[0] ) {
+    foreach( obj, cell.objects.citer() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
           playAudio( obj, null );
@@ -299,7 +299,7 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
 
     DArray<String> extensions;
-    String sExtensions = reinterpret_cast<const char*>( alGetString( AL_EXTENSIONS ) );
+    String sExtensions = alGetString( AL_EXTENSIONS );
     sExtensions.trim().split( ' ', &extensions );
 
     log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );

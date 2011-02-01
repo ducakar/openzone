@@ -24,9 +24,6 @@ namespace nirvana
 
   class Mind
   {
-    friend class DList<Mind>;
-    friend class Pool<Mind>;
-
     public:
 
       static const int FORCE_UPDATE_BIT = 0x00000001;
