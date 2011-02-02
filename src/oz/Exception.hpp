@@ -19,12 +19,16 @@ namespace oz
     public:
 
       String      message;
+
       const char* file;
       int         line;
       const char* function;
 
-      explicit Exception( const String& message_, const char* file_, int line_,
-                          const char* function_ ) throw();
+      int         nFrames;
+      char*       frames;
+
+      explicit Exception( const String& message, const char* file, int line,
+                          const char* function ) throw();
 
       virtual ~Exception() throw();
 
@@ -72,6 +76,7 @@ namespace oz
   /**
    * \def OZ_ONLEAVE_AUX
    * Auxilary helper for onleave macro (used internally).
+   * This intermediate macro is required to instantiate __LINE__ macro for its value.
    */
 #define OZ_ONLEAVE_AUX( func, line ) \
   OZ_ONLEAVE_CODE( func, line )

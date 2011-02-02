@@ -13,6 +13,7 @@
 
 #include "matrix/Translator.hpp"
 
+#include "client/BSP.hpp"
 #include "client/Model.hpp"
 #include "client/Audio.hpp"
 
@@ -29,6 +30,9 @@ namespace client
 
   class Context
   {
+    friend class Render;
+    friend class Sound;
+
     private:
 
       static const int DEFAULT_MAG_FILTER = GL_LINEAR;
@@ -45,6 +49,28 @@ namespace client
           int count;
           int nextSlot[1];
         };
+      };
+
+      struct Source
+      {
+        uint    source;
+        Source* next[1];
+
+        explicit Source( uint sourceId ) : source( sourceId )
+        {}
+
+        static Pool<Source> pool;
+
+        OZ_STATIC_POOL_ALLOC( pool )
+      };
+
+      struct ContSource
+      {
+        uint source;
+        bool isUpdated;
+
+        explicit ContSource( uint sourceId ) : source( sourceId ), isUpdated( true )
+        {}
       };
 
     public:
@@ -78,14 +104,23 @@ namespace client
       char           vorbisBuffer[VORBIS_BUFFER_SIZE];
       Sparse<Lists>  lists;
 
-      HashString< Resource<OBJ*>, 64 > objs;
-      HashString< Resource<MD2*>, 64 > staticMd2s;
-      HashString< Resource<MD2*>, 64 > md2s;
-      HashString< Resource<MD3*>, 64 > staticMd3s;
-      HashString< Resource<MD3*>, 64 > md3s;
+      Vector<BSP*>                      bsps;
+
+      HashString< Resource<OBJ*>, 64 >  objs;
+      HashString< Resource<MD2*>, 64 >  staticMd2s;
+      HashString< Resource<MD2*>, 64 >  md2s;
+      HashString< Resource<MD3*>, 64 >  staticMd3s;
+      HashString< Resource<MD3*>, 64 >  md3s;
 
       HashString<Model::CreateFunc, 16> modelClasses;
-      HashString<Audio::CreateFunc, 8> audioClasses;
+      HashString<Audio::CreateFunc, 8>  audioClasses;
+
+      HashIndex<Model*, 4093>           models;   // currently loaded models
+      HashIndex<Audio*, 1021>           audios;   // currently loaded audio models
+
+      ContSource*                       cachedSource;
+      List<Source>                      sources;
+      HashIndex<ContSource, 512>        contSources;
 
       static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
@@ -160,39 +195,36 @@ namespace client
       MD3* loadMD3( const char* name );
       void releaseMD3( const char* name );
 
-      Model* createModel( const Object* obj )
+      int  drawBSP( const Struct* str );
+      void drawBSPWater( const Struct* str );
+      void drawModel( const Object* obj, const Model* parent );
+      void playAudio( const Object* obj, const Audio* parent );
+
+      void addSource( uint sourceId )
       {
-        if( obj->flags & Object::MODEL_BIT ) {
-          assert( !obj->clazz->modelType.isEmpty() );
-
-          const Model::CreateFunc* value = modelClasses.find( obj->clazz->modelType );
-          if( value == null ) {
-            throw Exception( "Invalid Model" );
-          }
-          return ( *value )( obj );
-        }
-        else {
-          assert( obj->clazz->modelType.isEmpty() );
-
-          return null;
-        }
+        sources.add( new Source( sourceId ) );
       }
 
-      Audio* createAudio( const Object* obj )
+      void addContSource( uint key, uint sourceId  )
       {
-        if( obj->flags & Object::AUDIO_BIT ) {
-          assert( !obj->clazz->audioType.isEmpty() );
+        cachedSource = contSources.add( key, ContSource( sourceId ) );
+      }
 
-          const Audio::CreateFunc* value = audioClasses.find( obj->clazz->audioType );
-          if( value == null ) {
-            throw Exception( "Invalid Audio" );
-          }
-          return ( *value )( obj );
+      uint getCachedContSourceId() const
+      {
+        return cachedSource->source;
+      }
+
+      bool updateContSource( uint key )
+      {
+        cachedSource = contSources.find( key );
+
+        if( cachedSource != null ) {
+          cachedSource->isUpdated = true;
+          return true;
         }
         else {
-          assert( obj->clazz->audioType.isEmpty() );
-
-          return null;
+          return false;
         }
       }
 

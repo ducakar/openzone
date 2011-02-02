@@ -3,8 +3,14 @@
 // enable inlining in debug mode for critical functions
 #cmakedefine OZ_ALWAYS_INLINE
 
-// enable overloaded new and delete to count allocated memory
+// enable StackTrace class
+#cmakedefine OZ_ENABLE_STACKTRACE
+
+// enable new and delete to count allocated memory
 #cmakedefine OZ_ALLOC_STATISTICS
+
+// enable new and delete to save backtraces to show memory leaks
+#cmakedefine OZ_ALLOC_TRACELEAKS
 
 // enable Pool allocator; otherwise just call Alloc::alloc/dealloc
 #cmakedefine OZ_POOL_ALLOC

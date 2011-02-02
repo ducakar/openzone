@@ -15,7 +15,6 @@
 #include "client/Context.hpp"
 #include "client/Shape.hpp"
 #include "client/Colours.hpp"
-#include "client/Render.hpp"
 
 namespace oz
 {
@@ -137,7 +136,7 @@ namespace ui
         taggedItem = item;
       }
 
-      render.drawModel( item, null );
+      context.drawModel( item, null );
 
       if( i == tagged ) {
         glColor4fv( Colours::WHITE );

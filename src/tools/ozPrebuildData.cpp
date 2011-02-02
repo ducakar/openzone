@@ -62,6 +62,8 @@ int main( int, char** )
 
   log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 
+  Alloc::dumpLeaks();
+
   SDL_Quit();
   return 0;
 }

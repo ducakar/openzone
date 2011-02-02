@@ -137,7 +137,7 @@ namespace client
     beginTime = SDL_GetTicks();
 
     // delete models and audio objects of removed objects
-    oz::client::render.sync();
+    render.sync();
     sound.sync();
 
     camera.prepare();
@@ -150,7 +150,7 @@ namespace client
     return !doQuit;
   }
 
-  void GameStage::render()
+  void GameStage::present()
   {
     uint beginTime = SDL_GetTicks();
 
@@ -188,7 +188,7 @@ namespace client
       nirvana.load( null );
     }
 
-    camera.warp( Point3( 62, -29, 40 ) );
+    camera.warp( Point3( 55, -45, 40 ) );
 
     log.print( "Starting auxilary thread ..." );
 

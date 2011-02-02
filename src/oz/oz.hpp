@@ -30,15 +30,14 @@
 #include "DList.hpp"
 
 /*
- * Bitset
- */
-#include "Bitset.hpp"
-#include "SBitset.hpp"
-
-/*
  * String
  */
 #include "String.hpp"
+
+/*
+ * StackTrace
+ */
+#include "StackTrace.hpp"
 
 /*
  * Exception
@@ -61,6 +60,12 @@
 #include "Sparse.hpp"
 #include "HashIndex.hpp"
 #include "HashString.hpp"
+
+/*
+ * Bitset
+ */
+#include "Bitset.hpp"
+#include "SBitset.hpp"
 
 /*
  * Math

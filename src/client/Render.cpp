@@ -192,12 +192,7 @@ namespace client
     for( int i = 0; i < structs.length(); ++i ) {
       const Struct* str = structs[i];
 
-      if( bsps[str->bsp] == null ) {
-        bsps[str->bsp] = new BSP( str->bsp );
-      }
-
-      int waterFlags = bsps[str->bsp]->fullDraw( str );
-      bsps[str->bsp]->isUpdated = true;
+      int waterFlags = context.drawBSP( str );
 
       isUnderWater = ( waterFlags & BSP::IN_WATER_BRUSH ) != 0;
       if( waterFlags & BSP::DRAW_WATER ) {
@@ -224,7 +219,7 @@ namespace client
       glPushMatrix();
       glTranslatef( obj->p.x, obj->p.y, obj->p.z );
 
-      drawModel( obj, null );
+      context.drawModel( obj, null );
 
       glPopMatrix();
 
@@ -270,7 +265,7 @@ namespace client
       glPushMatrix();
       glTranslatef( obj->p.x, obj->p.y, obj->p.z );
 
-      drawModel( obj, null );
+      context.drawModel( obj, null );
 
       glPopMatrix();
 
@@ -289,7 +284,7 @@ namespace client
     for( int i = 0; i < waterStructs.length(); ++i ) {
       const Struct* str = waterStructs[i];
 
-      bsps[str->bsp]->fullDrawWater( str );
+      context.drawBSPWater( str );
     }
 
     BSP::endRender();
@@ -389,19 +384,21 @@ namespace client
     // cleanups
     if( clearCount >= CLEAR_INTERVAL ) {
       // remove unused BSPs
-      for( int i = 0; i < bsps.length(); ++i ) {
-        if( bsps[i] != null ) {
-          if( bsps[i]->isUpdated ) {
-            bsps[i]->isUpdated = false;
+      for( int i = 0; i < context.bsps.length(); ++i ) {
+        BSP* bsp = context.bsps[i];
+
+        if( bsp != null ) {
+          if( bsp->isUpdated ) {
+            bsp->isUpdated = false;
           }
           else {
-            delete bsps[i];
-            bsps[i] = null;
+            delete bsp;
+            bsp = null;
           }
         }
       }
       // remove unused models
-      for( auto i = models.citer(); i.isValid(); ) {
+      for( auto i = context.models.citer(); i.isValid(); ) {
         Model* model = *i;
         uint   key   = i.key();
 
@@ -412,7 +409,7 @@ namespace client
           model->flags &= ~Model::UPDATED_BIT;
         }
         else {
-          models.exclude( key );
+          context.models.exclude( key );
           delete model;
         }
       }
@@ -425,14 +422,14 @@ namespace client
 
   void Render::sync()
   {
-    for( auto i = models.citer(); i.isValid(); ) {
+    for( auto i = context.models.citer(); i.isValid(); ) {
       Model* model = i.value();
       uint   key   = i.key();
       ++i;
 
       if( orbis.objects[key] == null ) {
         delete model;
-        models.exclude( key );
+        context.models.exclude( key );
       }
     }
   }
@@ -523,11 +520,6 @@ namespace client
     shape.load();
     sky.load();
     terra.load();
-    MD2::init();
-
-    for( int i = 0; i < translator.bsps.length(); ++i ) {
-      bsps.add( null );
-    }
 
     glEnable( GL_POINT_SMOOTH );
     glPointSize( float( camera.height ) * STAR_SIZE );
@@ -556,23 +548,11 @@ namespace client
     log.println( "Unloading Graphics {" );
     log.indent();
 
+    drawnStructs.clear();
+
     terra.unload();
     sky.unload();
     shape.unload();
-
-    bsps.free();
-    bsps.trim();
-    drawnStructs.setSize( 0 );
-
-    models.free();
-
-    OBJModel::pool.free();
-    OBJVehicleModel::pool.free();
-    MD2StaticModel::pool.free();
-    MD2Model::pool.free();
-    MD2WeaponModel::pool.free();
-    MD3StaticModel::pool.free();
-    ExplosionModel::pool.free();
 
     log.unindent();
     log.println( "}" );

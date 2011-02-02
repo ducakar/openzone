@@ -15,7 +15,6 @@
 #include "matrix/VehicleClass.hpp"
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
-#include "client/Render.hpp"
 
 namespace oz
 {
@@ -57,7 +56,7 @@ namespace client
         glTranslatef(  clazz->crewPos[i].x,  clazz->crewPos[i].y,  clazz->crewPos[i].z );
         glRotatef( -bot->h, 0.0f, 0.0f, 1.0f );
 
-        render.drawModel( bot, null );
+        context.drawModel( bot, null );
 
         glPopMatrix();
       }

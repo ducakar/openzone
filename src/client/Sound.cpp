@@ -27,8 +27,6 @@ namespace client
   const float Sound::DMAX = 100.0f;
   const float Sound::DMAX_SQ = DMAX * DMAX;
 
-  Pool<Sound::Source> Sound::Source::pool;
-
   void Sound::playCell( int cellX, int cellY )
   {
     const Cell& cell = orbis.cells[cellX][cellY];
@@ -36,7 +34,7 @@ namespace client
     foreach( obj, cell.objects.citer() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {
-          playAudio( obj, null );
+          context.playAudio( obj, null );
         }
       }
     }
@@ -157,14 +155,14 @@ namespace client
   void Sound::sync()
   {
     // remove Audio objects of removed objects
-    for( auto i = audios.citer(); i.isValid(); ) {
+    for( auto i = context.audios.citer(); i.isValid(); ) {
       Audio* audio = i.value();
       uint key     = i.key();
       ++i;
 
       if( orbis.objects[key] == null ) {
         delete audio;
-        audios.exclude( key );
+        context.audios.exclude( key );
       }
     }
   }
@@ -190,8 +188,8 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
 
     // remove continous sounds that are not played any more
-    for( auto i = contSources.iter(); i.isValid(); ) {
-      ContSource* src = i;
+    for( auto i = context.contSources.iter(); i.isValid(); ) {
+      Context::ContSource* src = i;
       uint key = i.key();
 
       // we should advance now, so that we don't remove the element the iterator is pointing at
@@ -203,7 +201,7 @@ namespace client
       else {
         alSourceStop( src->source );
         alDeleteSources( 1, &src->source );
-        contSources.exclude( key );
+        context.contSources.exclude( key );
       }
     }
 
@@ -211,11 +209,11 @@ namespace client
 
     if( sourceClearCount >= SOURCES_CLEAR_INTERVAL ) {
       // remove stopped sources of non-continous sounds
-      Source* prev = null;
-      Source* src  = sources.first();
+      Context::Source* prev = null;
+      Context::Source* src  = context.sources.first();
 
       while( src != null ) {
-        Source* next = src->next[0];
+        Context::Source* next = src->next[0];
 
         ALint value;
         alGetSourcei( src->source, AL_SOURCE_STATE, &value );
@@ -223,7 +221,7 @@ namespace client
         if( value != AL_PLAYING ) {
           alDeleteSources( 1, &src->source );
 
-          sources.remove( src, prev );
+          context.sources.remove( src, prev );
           delete src;
         }
         else {
@@ -246,7 +244,7 @@ namespace client
       assert( alGetError() == AL_NO_ERROR );
 
       // remove Audio objects that are not used any more
-      for( auto i = audios.citer(); i.isValid(); ) {
+      for( auto i = context.audios.citer(); i.isValid(); ) {
         Audio* audio = *i;
         uint key = i.key();
 
@@ -257,7 +255,7 @@ namespace client
           audio->flags &= ~Audio::UPDATED_BIT ;
         }
         else {
-          audios.exclude( key );
+          context.audios.exclude( key );
           delete audio;
         }
       }
@@ -343,26 +341,6 @@ namespace client
 
     log.print( "Shutting down SoundManager ..." );
 
-    foreach( src, sources.citer() ) {
-      alSourceStop( src->source );
-      alDeleteSources( 1, &src->source );
-      assert( alGetError() == AL_NO_ERROR );
-    }
-    sources.free();
-    Source::pool.free();
-
-    foreach( i, contSources.citer() ) {
-      const ContSource& src = *static_cast<const ContSource*>( i );
-
-      alSourceStop( src.source );
-      alDeleteSources( 1, &src.source );
-      assert( alGetError() == AL_NO_ERROR );
-    }
-    contSources.clear();
-
-    audios.free();
-    BasicAudio::pool.free();
-    BotAudio::pool.free();
     assert( alGetError() == AL_NO_ERROR );
 
     unloadMusic();

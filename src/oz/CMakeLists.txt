@@ -31,6 +31,8 @@ add_library( oz STATIC
   SBitset.hpp
   SVector.hpp
   Sparse.hpp
+  StackTrace.cpp
+  StackTrace.hpp
   String.cpp
   String.hpp
   Vec3.cpp

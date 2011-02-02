@@ -921,7 +921,7 @@ namespace nirvana
 
     lua_getglobal( l, functionName );
     lua_rawgeti( l, 1, botIndex );
-    lua_pcall( l, 1, 0, 0 );
+//     lua_pcall( l, 1, 0, 0 );
 
     if( lua_gettop( l ) != 1 ){
       if( lua_isstring( l, -1 ) ) {
