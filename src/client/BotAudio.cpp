@@ -12,8 +12,9 @@
 #include "client/BotAudio.hpp"
 
 #include "matrix/Physics.hpp"
+
 #include "client/Camera.hpp"
-#include "client/Sound.hpp"
+#include "client/Context.hpp"
 
 namespace oz
 {
@@ -57,7 +58,7 @@ namespace client
     // inventory items' events
     foreach( item, bot->items.citer() ) {
       if( orbis.objects[*item] != null ) {
-        sound.playAudio( orbis.objects[*item], this );
+        context.playAudio( orbis.objects[*item], this );
       }
     }
   }

@@ -13,7 +13,6 @@
 
 #include "matrix/Physics.hpp"
 #include "client/Camera.hpp"
-#include "client/Sound.hpp"
 
 namespace oz
 {

@@ -40,19 +40,19 @@ namespace client
     log.println( "Shutdown {" );
     log.indent();
 
+    if( initFlags & INIT_GAME_INIT ) {
+      stage->unload();
+      stage->free();
+    }
+    if( initFlags & INIT_CONTEXT ) {
+      context.free();
+    }
     if( initFlags & INIT_RENDER_INIT ) {
       render.unload();
       render.free();
     }
     if( initFlags & INIT_AUDIO ) {
       sound.free();
-    }
-    if( initFlags & INIT_CONTEXT ) {
-      context.free();
-    }
-    if( initFlags & INIT_GAME_INIT ) {
-      stage->unload();
-      stage->free();
     }
     if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
@@ -370,7 +370,7 @@ namespace client
 
       // render graphics, if we have enough time left
       if( delta < tick || timeNow - timeLastRender > 32 * tick ) {
-        stage->render();
+        stage->present();
 
         timer.frame();
         // if there's still some time left, waste it

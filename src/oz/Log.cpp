@@ -10,6 +10,7 @@
 #include "Log.hpp"
 
 #include <cstdio>
+#include <cstring>
 #include <ctime>
 
 namespace oz
@@ -236,6 +237,80 @@ namespace oz
     }
   }
 
+#ifndef OZ_ENABLE_STACKTRACE
+
+  void Log::printTrace( const char*, int )
+  {}
+
+#else
+
+  void Log::printTrace( const char* frames, int nFrames )
+  {
+    FILE* f;
+
+    f = isStdout ? stdout : fopen( logFile, "a" );
+
+    if( nFrames == 0 ) {
+      for( int i = 0; i < tabs; ++i ) {
+        fprintf( f, "%s", indentStr.cstr() );
+      }
+      fprintf( f, "[empty stack trace]\n" );
+    }
+    else {
+      const char* entry = frames;
+
+      for( int i = 0; i < nFrames; ++i ) {
+        for( int j = 0; j < tabs; ++j ) {
+          fprintf( f, "%s", indentStr.cstr() );
+        }
+        fprintf( f, "%s\n", entry );
+        entry += strlen( entry ) + 1;
+      }
+    }
+
+    if( !isStdout ) {
+      fclose( f );
+    }
+  }
+
+#endif
+
+  void Log::printException( const Exception& e )
+  {
+    FILE* f;
+
+    f = isStdout ? stdout : fopen( logFile, "a" );
+
+    fprintf( f,
+             "\n"
+             "EXCEPTION: %s\n"
+             "%sin %s\n"
+             "%sat %s:%d\n",
+             e.what(),
+             indentStr.cstr(), e.function,
+             indentStr.cstr(), e.file, e.line );
+
+#ifdef OZ_ENABLE_STACKTRACE
+    fprintf( f, "%sstack trace:\n", indentStr.cstr() );
+
+    if( e.nFrames == 0 ) {
+      fprintf( f, "%s%s[empty stack trace]\n", indentStr.cstr(), indentStr.cstr() );
+    }
+    else {
+      const char* entry = e.frames;
+
+      for( int i = 0; i < e.nFrames; ++i ) {
+        fprintf( f, "%s%s%s\n", indentStr.cstr(), indentStr.cstr(), entry );
+        entry += strlen( entry ) + 1;
+      }
+    }
+#endif
+
+    if( !isStdout ) {
+      fclose( f );
+    }
+  }
+
   void Log::resetIndent()
   {
     tabs = 0;
@@ -248,7 +323,7 @@ namespace oz
 
   void Log::unindent()
   {
-    if( tabs ) {
+    if( tabs > 0 ) {
       --tabs;
     }
   }

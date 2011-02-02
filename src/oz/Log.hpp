@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "String.hpp"
+#include "Exception.hpp"
 
 namespace oz
 {
@@ -99,6 +99,19 @@ namespace oz
        * @param s
        */
       void printlnETD( const char* s, ... ) const;
+
+      /**
+       * Prints stacktrace returned by StackTrace.
+       * @param frames pointer to frame names returned by StackTrace::get()
+       * @param nFrames number of frames returned by StackTrace::get()
+       */
+      void printTrace( const char* frames, int nFrames );
+
+      /**
+       * Prints nicely formatted exception, unindented.
+       * @param e
+       */
+      void printException( const Exception& e );
 
       /**
        * Sets indent to none.

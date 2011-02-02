@@ -41,36 +41,8 @@ namespace client
       /*
        * SFX
        */
-      struct Source
-      {
-        uint    source;
-        Source* next[1];
-
-        explicit Source( uint sourceId ) : source( sourceId )
-        {}
-
-        static Pool<Source> pool;
-
-        OZ_STATIC_POOL_ALLOC( pool )
-      };
-
-      struct ContSource
-      {
-        uint source;
-        bool isUpdated;
-
-        explicit ContSource( uint sourceId ) : source( sourceId ), isUpdated( true )
-        {}
-      };
-
-      ContSource* cachedSource;
-      List<Source> sources;
-      HashIndex<ContSource, 512> contSources;
-
       int  sourceClearCount;
       int  fullClearCount;
-
-      HashIndex<Audio*, 2039> audios;
 
       void playCell( int cellX, int cellY );
 
@@ -91,45 +63,6 @@ namespace client
       bool                       isMusicLoaded;
 
     public:
-
-      void addSource( uint sourceId )
-      {
-        sources.add( new Source( sourceId ) );
-      }
-
-      void addContSource( uint key, uint sourceId  )
-      {
-        cachedSource = contSources.add( key, ContSource( sourceId ) );
-      }
-
-      uint getCachedContSourceId() const
-      {
-        return cachedSource->source;
-      }
-
-      bool updateContSource( uint key )
-      {
-        cachedSource = contSources.find( key );
-        if( cachedSource != null ) {
-          cachedSource->isUpdated = true;
-          return true;
-        }
-        else {
-          return false;
-        }
-      }
-
-      void playAudio( const Object* obj, const Audio* parent )
-      {
-        Audio* const* value = audios.find( obj->index );
-        if( value == null ) {
-          value = audios.add( obj->index, context.createAudio( &*obj ) );
-        }
-        Audio* audio = *value;
-
-        audio->flags |= Audio::UPDATED_BIT;
-        audio->play( parent );
-      }
 
       void setVolume( float volume )
       {

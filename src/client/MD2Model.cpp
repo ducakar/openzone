@@ -16,7 +16,6 @@
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
-#include "client/Render.hpp"
 
 namespace oz
 {
@@ -94,7 +93,7 @@ namespace client
       md2->draw( &anim );
 
       if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
-        render.drawModel( orbis.objects[bot->weaponItem], this );
+        context.drawModel( orbis.objects[bot->weaponItem], this );
       }
     }
     else if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
@@ -103,7 +102,7 @@ namespace client
       glTranslatef( 0.0f, 0.0f, -bot->camZ );
 
       md2->advance( &anim, timer.frameTime );
-      render.drawModel( orbis.objects[bot->weaponItem], this );
+      context.drawModel( orbis.objects[bot->weaponItem], this );
     }
   }
 

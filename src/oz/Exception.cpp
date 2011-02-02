@@ -9,10 +9,14 @@
 
 #include "Exception.hpp"
 
+#include "StackTrace.hpp"
+
 #undef Exception
 
-#include <cstdio>
 #include <csignal>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 // prevent old-style cast warning due to a bug in <bits/signum.h>
 #ifdef __GNUC__
@@ -31,8 +35,12 @@ namespace oz
 
   Exception::Exception( const String& message_, const char* file_, int line_,
                         const char* function_ ) throw() :
-      message( message_ ), file( file_ ), line( line_ ), function( function_ )
+      message( message_ ), file( file_ ), line( line_ ), function( function_ ),
+      nFrames( 0 ), frames( null )
   {
+#ifdef OZ_ENABLE_STACKTRACE
+    nFrames = StackTrace::get( &frames );
+#endif
 #ifndef NDEBUG
 # if defined( OZ_MSVC )
     DebugBreak();
@@ -49,7 +57,9 @@ namespace oz
   }
 
   Exception::~Exception() throw()
-  {}
+  {
+    free( frames );
+  }
 
   const char* Exception::what() const throw()
   {

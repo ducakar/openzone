@@ -36,6 +36,8 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/SBitset.hpp
     src/oz/SVector.hpp
     src/oz/Sparse.hpp
+    src/oz/StackTrace.cpp
+    src/oz/StackTrace.hpp
     src/oz/String.cpp
     src/oz/String.hpp
     src/oz/Vec3.cpp
@@ -440,6 +442,7 @@ if( OZ_INSTALL_DATA )
   install( FILES
     data/ui/crosshair.png
     data/ui/grab.png
+    data/ui/lift.png
     data/ui/mount.png
     data/ui/take.png
     data/ui/use.png

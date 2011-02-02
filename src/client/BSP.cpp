@@ -15,7 +15,6 @@
 #include "client/Frustum.hpp"
 #include "client/Colours.hpp"
 #include "client/Water.hpp"
-#include "client/Render.hpp"
 
 #include <SDL_opengl.h>
 

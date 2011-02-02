@@ -92,6 +92,9 @@ namespace oz
     int index = synapse.addObject( "Lord", Point3( 52, -44, 37 ) );
     static_cast<Bot*>( orbis.objects[index] )->h = 270.0f;
 
+    index = synapse.addObject( "DroidCommander", Point3( 54, -44, 37 ) );
+    static_cast<Bot*>( orbis.objects[index] )->h = 90.0f;
+
     synapse.addObject( "Knight", Point3( 50, -35, 37 ) );
     synapse.addObject( "Goblin", Point3( 51, -35, 37 ) );
 
@@ -134,7 +137,7 @@ namespace oz
     synapse.addObject( "SmallCrate", Point3( 62, -21, 39 ) );
     synapse.addObject( "SmallCrate", Point3( 62, -21, 40 ) );
 
-    synapse.addObject( "BigCrate", Point3( 54, -43, 36 ) );
+    synapse.addObject( "BigCrate", Point3( 54, -40, 36 ) );
 
     synapse.addObject( "BigCrate", Point3( 50, -55, 36 ) );
     synapse.addObject( "BigCrate", Point3( 50, -55, 38 ) );

@@ -134,20 +134,7 @@ namespace ui
       }
 
       if( bot->parent == -1 ) {
-        if( camera.botObj->grabObj != -1 ) {
-          glBindTexture( GL_TEXTURE_2D, grabTexId );
-          glBegin( GL_QUADS );
-            glTexCoord2i( 0, 1 );
-            glVertex2i( grabIconX, grabIconY );
-            glTexCoord2i( 1, 1 );
-            glVertex2i( grabIconX + ICON_SIZE, grabIconY );
-            glTexCoord2i( 1, 0 );
-            glVertex2i( grabIconX + ICON_SIZE, grabIconY + ICON_SIZE );
-            glTexCoord2i( 0, 0 );
-            glVertex2i( grabIconX, grabIconY + ICON_SIZE );
-          glEnd();
-        }
-        else if( camera.tagged != -1 ) {
+        if( camera.tagged != -1 ) {
           const Object* tagged = camera.taggedObj;
 
           if( tagged->flags & Object::VEHICLE_BIT ) {
@@ -207,6 +194,19 @@ namespace ui
                 glVertex2i( liftIconX, liftIconY + ICON_SIZE );
               glEnd();
             }
+          }
+          if( camera.botObj->grabObj != -1 ) {
+            glBindTexture( GL_TEXTURE_2D, grabTexId );
+            glBegin( GL_QUADS );
+              glTexCoord2i( 0, 1 );
+              glVertex2i( grabIconX, grabIconY );
+              glTexCoord2i( 1, 1 );
+              glVertex2i( grabIconX + ICON_SIZE, grabIconY );
+              glTexCoord2i( 1, 0 );
+              glVertex2i( grabIconX + ICON_SIZE, grabIconY + ICON_SIZE );
+              glTexCoord2i( 0, 0 );
+              glVertex2i( grabIconX, grabIconY + ICON_SIZE );
+            glEnd();
           }
         }
       }

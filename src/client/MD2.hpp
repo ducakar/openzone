@@ -51,8 +51,8 @@ namespace client
 
     private:
 
-      static Vec3   anorms[];
-      static Point3 vertList[MAX_VERTS];
+      static Vec3   anorms[];                   // precomputed normals
+      static Point3 vertList[MAX_VERTS];        // buffer for temporary interpolated frames
 
       String       name;
 
@@ -71,8 +71,6 @@ namespace client
 
       uint         list;
       Vec3         weaponTransl;
-
-      static void init();
 
       explicit MD2( const char* name );
       ~MD2();

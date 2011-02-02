@@ -19,7 +19,9 @@ namespace oz
   {
     public:
 
-      static const int ALIGNMENT = 16;
+      static const int ALIGNMENT            = 16;
+      static const int BACKTRACE_SIZE       = 16;
+      static const int DEMANGLE_BUFFER_SIZE = 1024;
 
       static int  count;
       static long amount;
@@ -108,6 +110,8 @@ namespace oz
         size_t s = reinterpret_cast<size_t>( size );
         return reinterpret_cast<Pointer*>( ( ( s - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
       }
+
+      static void dumpLeaks();
 
   };
 

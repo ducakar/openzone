@@ -31,7 +31,7 @@ namespace oz
 
   void _softAssert( const char* message, const char* file, int line, const char* function )
   {
-    fprintf( stderr, "\n%s:%d: %s: Soft assertion `%s' failed.\n", file, line, function, message );
+    fprintf( stderr, "%s:%d: %s: Soft assertion `%s' failed.\n", file, line, function, message );
 
 #if defined( OZ_MSVC )
     DebugBreak();

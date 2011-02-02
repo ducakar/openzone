@@ -13,7 +13,6 @@
 
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
-#include "client/Sound.hpp"
 
 #include <AL/alut.h>
 
@@ -59,7 +58,7 @@ namespace client
 
     assert( alGetError() == AL_NO_ERROR );
 
-    sound.addSource( srcId );
+    context.addSource( srcId );
   }
 
   void Audio::playContSound( int sample, float volume, uint key, const Object* obj ) const
@@ -67,9 +66,9 @@ namespace client
     assert( sample < translator.sounds.length() );
     assert( alGetError() == AL_NO_ERROR );
 
-    if( sound.updateContSource( key ) ) {
-      alSourcef( sound.getCachedContSourceId(), AL_GAIN, volume );
-      alSourcefv( sound.getCachedContSourceId(), AL_POSITION, obj->p );
+    if( context.updateContSource( key ) ) {
+      alSourcef( context.getCachedContSourceId(), AL_GAIN, volume );
+      alSourcefv( context.getCachedContSourceId(), AL_POSITION, obj->p );
     }
     else {
       uint srcId;
@@ -87,7 +86,7 @@ namespace client
       alSourcef( srcId, AL_GAIN, volume );
       alSourcePlay( srcId );
 
-      sound.addContSource( key, srcId );
+      context.addContSource( key, srcId );
     }
 
     assert( alGetError() == AL_NO_ERROR );

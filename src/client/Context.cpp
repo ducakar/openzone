@@ -44,6 +44,8 @@ namespace client
 
   Context context;
 
+  Pool<Context::Source> Context::Source::pool;
+
   uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
@@ -584,6 +586,88 @@ namespace client
     }
   }
 
+  int Context::drawBSP( const Struct* str )
+  {
+    BSP* bsp = bsps[str->bsp];
+
+    if( bsp == null ) {
+      bsp = new BSP( str->bsp );
+      bsps[str->bsp] = bsp;
+    }
+
+    bsp->isUpdated = true;
+    return bsp->fullDraw( str );
+  }
+
+  void Context::drawBSPWater( const Struct* str )
+  {
+    BSP* bsp = bsps[str->bsp];
+
+    if( bsp == null ) {
+      bsp = new BSP( str->bsp );
+      bsps[str->bsp] = bsp;
+    }
+
+    bsp->isUpdated = true;
+    bsp->fullDrawWater( str );
+  }
+
+  void Context::drawModel( const Object* obj, const Model* parent )
+  {
+    Model* const* value = models.find( obj->index );
+
+    if( value == null ) {
+      if( obj->flags & Object::MODEL_BIT ) {
+        assert( !obj->clazz->modelType.isEmpty() );
+
+        const Model::CreateFunc* createFunc = modelClasses.find( obj->clazz->modelType );
+        if( createFunc == null ) {
+          throw Exception( "Invalid Model" );
+        }
+
+        value = models.add( obj->index, ( *createFunc )( obj ) );
+      }
+      else {
+        assert( obj->clazz->modelType.isEmpty() );
+
+        value = models.add( obj->index, null );
+      }
+    }
+
+    Model* model = *value;
+
+    model->flags |= Model::UPDATED_BIT;
+    model->draw( parent );
+  }
+
+  void Context::playAudio( const Object* obj, const Audio* parent )
+  {
+    Audio* const* value = audios.find( obj->index );
+
+    if( value == null ) {
+      if( obj->flags & Object::AUDIO_BIT ) {
+        assert( !obj->clazz->audioType.isEmpty() );
+
+        const Audio::CreateFunc* createFunc = audioClasses.find( obj->clazz->audioType );
+        if( createFunc == null ) {
+          throw Exception( "Invalid Audio" );
+        }
+
+        value = audios.add( obj->index, ( *createFunc )( obj ) );
+      }
+      else {
+        assert( obj->clazz->audioType.isEmpty() );
+
+        value = audios.add( obj->index, null );
+      }
+    }
+
+    Audio* audio = *value;
+
+    audio->flags |= Audio::UPDATED_BIT;
+    audio->play( parent );
+  }
+
   Context::Context() : textures( null ), sounds( null )
   {}
 
@@ -599,6 +683,10 @@ namespace client
     for( int i = 0; i < translator.sounds.length(); ++i ) {
       sounds[i].id = AL_NONE;
       sounds[i].nUsers = -1;
+    }
+
+    for( int i = 0; i < translator.bsps.length(); ++i ) {
+      bsps.add( null );
     }
 
     OZ_REGISTER_MODELCLASS( OBJ );
@@ -617,7 +705,31 @@ namespace client
 
   void Context::free()
   {
-    log.print( "Clearing Context ..." );
+    log.println( "Clearing Context {" );
+    log.indent();
+
+    assert( alGetError() == AL_NO_ERROR );
+
+    bsps.free();
+    models.free();
+    audios.free();
+
+    foreach( src, sources.citer() ) {
+      alSourceStop( src->source );
+      alDeleteSources( 1, &src->source );
+      assert( alGetError() == AL_NO_ERROR );
+    }
+    sources.free();
+    Source::pool.free();
+
+    foreach( i, contSources.citer() ) {
+      const ContSource& src = *static_cast<const ContSource*>( i );
+
+      alSourceStop( src.source );
+      alDeleteSources( 1, &src.source );
+      assert( alGetError() == AL_NO_ERROR );
+    }
+    contSources.clear();
 
     if( textures != null ) {
       delete[] textures;
@@ -633,16 +745,29 @@ namespace client
       sounds = null;
     }
 
+    bsps.clear();
     md2s.clear();
     staticMd2s.clear();
     md3s.clear();
     staticMd3s.clear();
     objs.clear();
 
+    OBJModel::pool.free();
+    OBJVehicleModel::pool.free();
+    MD2StaticModel::pool.free();
+    MD2Model::pool.free();
+    MD2WeaponModel::pool.free();
+    MD3StaticModel::pool.free();
+    ExplosionModel::pool.free();
+
+    BasicAudio::pool.free();
+    BotAudio::pool.free();
+
     modelClasses.clear();
     audioClasses.clear();
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
 }

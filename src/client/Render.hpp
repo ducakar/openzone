@@ -59,7 +59,6 @@ namespace client
         }
       };
 
-      Vector<BSP*>            bsps;
       Bitset                  drawnStructs;
 
       int                     clearCount;
@@ -70,7 +69,6 @@ namespace client
       Vector<const Particle*> particles;
 
       Vector<const Struct*>   waterStructs;
-      HashIndex<Model*, 4093> models;
 
       float                   dayVisibility;
       float                   nightVisibility;
@@ -95,18 +93,6 @@ namespace client
     public:
 
       bool doScreenshot;
-
-      void drawModel( const Object* obj, const Model* parent )
-      {
-        Model* const* value = models.find( obj->index );
-        if( value == null ) {
-          value = models.add( obj->index, context.createModel( obj ) );
-        }
-        Model* model = *value;
-
-        model->flags |= Model::UPDATED_BIT;
-        model->draw( parent );
-      }
 
       void sync();
       void update();

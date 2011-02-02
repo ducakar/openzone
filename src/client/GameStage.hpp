@@ -48,7 +48,7 @@ namespace client
       Proxy* proxy;
 
       bool update();
-      void render();
+      void present();
 
       virtual void load();
       virtual void unload();
