@@ -14,6 +14,8 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 #if 1
 struct __attribute__(( aligned( 16 ) )) VecX
 {
@@ -117,6 +119,12 @@ VecX e[MAX];
 
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
+
   for( int i = 0; i < MAX; ++i ) {
     a[i] = VecX( Math::frand(), Math::frand(), Math::frand() ) * 100.0f;
     b[i] = VecX( Math::frand(), Math::frand(), Math::frand() ) * 100.0f;

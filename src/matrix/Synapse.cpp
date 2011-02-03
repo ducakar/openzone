@@ -173,4 +173,50 @@ namespace oz
     removedParts.clear();
   }
 
+  void Synapse::load()
+  {
+    deleteObjects.alloc( 64 );
+
+    actions.alloc( 256 );
+
+    putObjects.alloc( 32 );
+    cutObjects.alloc( 32 );
+
+    addedStructs.alloc( 4 * 16 );
+    addedObjects.alloc( 64 * 16 );
+    addedParts.alloc( 128 * 8 );
+
+    removedStructs.alloc( 4 );
+    removedObjects.alloc( 64 );
+    removedParts.alloc( 128 );
+  }
+
+  void Synapse::unload()
+  {
+    deleteObjects.clear();
+    deleteObjects.dealloc();
+
+    actions.clear();
+    actions.dealloc();
+
+    putObjects.clear();
+    putObjects.dealloc();
+    cutObjects.clear();
+    cutObjects.dealloc();
+
+    addedStructs.clear();
+    addedStructs.dealloc();
+    addedObjects.clear();
+    addedObjects.dealloc();
+    addedParts.clear();
+    addedParts.dealloc();
+
+    removedStructs.clear();
+    removedStructs.dealloc();
+    removedObjects.clear();
+    removedObjects.dealloc();
+    removedParts.clear();
+    removedParts.dealloc();
+  }
+
 }

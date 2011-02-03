@@ -13,9 +13,15 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 int main( int argc, char** argv )
 {
-  oz::log.init();
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
 
   if( argc != 2 ) {
     oz::log.println( "usage: ozXmlrc file_to_convert" );

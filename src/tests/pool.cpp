@@ -13,6 +13,8 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 class A
 {
   public:
@@ -30,6 +32,12 @@ Pool<A, 2> A::pool;
 
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
+
   const int max = 10000;
 
   A* array[max];
@@ -41,5 +49,6 @@ int main( int, char** )
     delete array[i];
   }
 
+  A::pool.free();
   return 0;
 }

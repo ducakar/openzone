@@ -14,6 +14,8 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 struct A
 {
   int nextSlot[1];
@@ -25,6 +27,12 @@ struct A
 
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
+
   Sparse<A> sparse( 1 );
 
   sparse.add( A( 0 ) );

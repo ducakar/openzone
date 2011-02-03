@@ -250,6 +250,7 @@ namespace oz
 
     orbis.terra.load( "heightmap" );
     orbis.load();
+    synapse.load();
 
     if( istream != null ) {
       orbis.read( istream );
@@ -272,18 +273,9 @@ namespace oz
     if( ostream != null ) {
       orbis.write( ostream );
     }
+
+    synapse.unload();
     orbis.unload();
-
-    Particle::pool.free();
-
-    Object::Event::pool.free();
-    Object::pool.free();
-    Dynamic::pool.free();
-    Weapon::pool.free();
-    Bot::pool.free();
-    Vehicle::pool.free();
-
-    Struct::pool.free();
 
     log.unindent();
     log.println( "}" );

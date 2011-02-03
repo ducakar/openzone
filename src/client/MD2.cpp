@@ -341,7 +341,7 @@ namespace client
     delete[] buffer;
     fclose( file );
 
-    log.printEnd( "OK" );
+    log.printEnd( " OK" );
 
     texId = context.loadTexture( skinFile, true );
 
@@ -379,6 +379,7 @@ namespace client
     log.print( "Unloading MD2 model '%s' ...", name.cstr() );
 
     context.freeTexture( texId );
+
     delete[] verts;
     delete[] glCmds;
     delete[] lightNormals;

@@ -58,7 +58,7 @@ namespace client
 
     assert( alGetError() == AL_NO_ERROR );
 
-    context.addSource( srcId );
+    context.sources.add( new Context::Source( srcId ) );
   }
 
   void Audio::playContSound( int sample, float volume, uint key, const Object* obj ) const
@@ -66,9 +66,13 @@ namespace client
     assert( sample < translator.sounds.length() );
     assert( alGetError() == AL_NO_ERROR );
 
-    if( context.updateContSource( key ) ) {
-      alSourcef( context.getCachedContSourceId(), AL_GAIN, volume );
-      alSourcefv( context.getCachedContSourceId(), AL_POSITION, obj->p );
+    Context::ContSource* contSource = context.contSources.find( key );
+
+    if( contSource != null ) {
+      alSourcef( contSource->source, AL_GAIN, volume );
+      alSourcefv( contSource->source, AL_POSITION, obj->p );
+
+      contSource->isUpdated = true;
     }
     else {
       uint srcId;
@@ -86,7 +90,7 @@ namespace client
       alSourcef( srcId, AL_GAIN, volume );
       alSourcePlay( srcId );
 
-      context.addContSource( key, srcId );
+      context.contSources.add( key, Context::ContSource( srcId ) );
     }
 
     assert( alGetError() == AL_NO_ERROR );

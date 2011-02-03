@@ -44,6 +44,7 @@ namespace client
     camera.h = bot->h;
     camera.v = bot->v;
     camera.isExternal = isExternal;
+    camera.setTagged( null );
   }
 
   void BotProxy::update()

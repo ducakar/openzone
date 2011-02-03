@@ -100,6 +100,9 @@ namespace oz
       // do deletes and clear lists for actions, additions, removals
       void update();
 
+      void load();
+      void unload();
+
   };
 
   extern Synapse synapse;

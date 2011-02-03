@@ -101,7 +101,7 @@ namespace oz
       void printlnETD( const char* s, ... ) const;
 
       /**
-       * Prints stacktrace returned by StackTrace.
+       * Prints stack trace returned by StackTrace.
        * @param frames pointer to frame names returned by StackTrace::get()
        * @param nFrames number of frames returned by StackTrace::get()
        */

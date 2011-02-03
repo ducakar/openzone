@@ -24,6 +24,8 @@
 using namespace std;
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 static int constructCount = 0;
 
 struct Test
@@ -361,6 +363,7 @@ static void ozArraysUnittest()
     *i = new Test();
   }
   aFree( c, 5 );
+  delete[] c;
 
   assert( aLength( a ) == 5 );
 
@@ -423,6 +426,13 @@ static void ozAllocUnittest()
 
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
+
   // check first, before any memory allocations are made
   OZ_UNITTEST( ozAlloc );
 

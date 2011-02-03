@@ -47,6 +47,9 @@ namespace ui
   {
     delete root;
 
+    Area::updateAreas.clear();
+    Area::updateAreas.dealloc();
+
     font.free();
     mouse.free();
   }

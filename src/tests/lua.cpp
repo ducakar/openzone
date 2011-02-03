@@ -14,6 +14,8 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 static lua_State* l;
 static float life = 100.0f;
 
@@ -53,6 +55,9 @@ static int addLife( lua_State* l )
 
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+  onleave( []() { Alloc::isLocked = true; } );
+
   l = lua_open();
   luaL_openlibs( l );
 

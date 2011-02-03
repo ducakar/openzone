@@ -14,6 +14,8 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 struct Elem
 {
   int value;
@@ -35,6 +37,12 @@ struct SparseElem
 
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
+
   List<Elem, 0> l;
   DList<Elem, 0> dl;
   Array<int, 5> a;

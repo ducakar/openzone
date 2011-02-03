@@ -112,7 +112,7 @@ namespace client
     *tags = new MD3Tag[header.nFrames * header.nTags];
     fread( *tags, sizeof( MD3Tag ), header.nFrames * header.nTags, file );
 
-    meshes.setSize( header.nSurfaces );
+    meshes.alloc( header.nSurfaces );
     for( int i = 0; i < header.nSurfaces; ++i ) {
       Mesh* mesh = &meshes[i];
 
@@ -121,7 +121,7 @@ namespace client
 
       mesh->nVertices = surface.nVertices;
 
-      mesh->triangles.setSize( surface.nTriangles );
+      mesh->triangles.alloc( surface.nTriangles );
       fread( mesh->triangles, sizeof( Triangle ), surface.nTriangles, file );
 
       MD3Shader* shaders = new MD3Shader[surface.nShaders];
@@ -142,7 +142,7 @@ namespace client
       parent->textures.include( mesh->texId );
       delete[] shaders;
 
-      mesh->texCoords.setSize( surface.nVertices );
+      mesh->texCoords.alloc( surface.nVertices );
       fread( mesh->texCoords, sizeof( TexCoord ), surface.nVertices, file );
 
       // convert (S,T) -> (U,V) i.e. top-left origin coords to lower-left origin coords
@@ -150,7 +150,7 @@ namespace client
 //         mesh->texCoords[j].v = 1.0f - mesh->texCoords[j].v;
       }
 
-      mesh->vertices.setSize( surface.nFrames * surface.nVertices );
+      mesh->vertices.alloc( surface.nFrames * surface.nVertices );
       MD3Vertex* vertices = new MD3Vertex[mesh->vertices.length()];
       fread( vertices, sizeof( MD3Vertex ), mesh->vertices.length(), file );
 
@@ -176,11 +176,11 @@ namespace client
   {
     if( !meshes.isEmpty() ) {
       for( int i = 0; i < meshes.length(); ++i ) {
-        meshes[i].triangles.clear();
-        meshes[i].texCoords.clear();
-        meshes[i].vertices.clear();
+        meshes[i].triangles.dealloc();
+        meshes[i].texCoords.dealloc();
+        meshes[i].vertices.dealloc();
       }
-      meshes.clear();
+      meshes.dealloc();
     }
   }
 
@@ -275,9 +275,9 @@ namespace client
     upper = new Part( this, dir, "upper.md3", &upperTags );
     lower = new Part( this, dir, "lower.md3", &lowerTags );
 
-    headOffsets.setSize( upper->nFrames );
-    lowerOffsets.setSize( upper->nFrames );
-    weaponOffsets.setSize( upper->nFrames );
+    headOffsets.alloc( upper->nFrames );
+    lowerOffsets.alloc( upper->nFrames );
+    weaponOffsets.alloc( upper->nFrames );
 
     // assemble the model
     for( int i = 0; i < upper->nFrames; ++i ) {

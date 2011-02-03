@@ -40,15 +40,20 @@ namespace client
     log.println( "Shutdown {" );
     log.indent();
 
+    if( initFlags & INIT_RENDER_LOAD ) {
+      render.unload();
+    }
+    if( initFlags & INIT_CONTEXT_LOAD ) {
+      context.unload();
+    }
     if( initFlags & INIT_GAME_INIT ) {
       stage->unload();
       stage->free();
     }
-    if( initFlags & INIT_CONTEXT ) {
+    if( initFlags & INIT_CONTEXT_INIT ) {
       context.free();
     }
     if( initFlags & INIT_RENDER_INIT ) {
-      render.unload();
       render.free();
     }
     if( initFlags & INIT_AUDIO ) {
@@ -75,11 +80,11 @@ namespace client
 
     log.println( "Time statistics {" );
     log.indent();
-    log.println( "Loading time: %.2f s", loadingTime );
+    log.println( "Loading time: %.3f s", loadingTime );
     log.println( "Matrix ticks: %d (%.2f Hz)", timer.ticks, float( timer.ticks ) / allTime );
     log.println( "Rendered frames: %d (%.2f Hz)", timer.nFrames, float( timer.nFrames ) / allTime );
     log.println( "Main loop time usage:" );
-    log.println( "  %6.6g s  all time", allTime );
+    log.println( "  %6.5g s  all time", allTime );
     log.println( "  %6.2f %%  [M:1  ] loader",                loaderTime  / allTime * 100.0f );
     log.println( "  %6.2f %%  [M:2.1] ui",                    uiTime      / allTime * 100.0f );
     log.println( "  %6.2f %%  [M:2.2] sync + sound.play",     syncTime    / allTime * 100.0f );
@@ -90,16 +95,7 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-#ifdef OZ_ALLOC_STATISTICS
-    log.println( "Heap usage (libraries not included) {" );
-    log.println( "  current chunks     %d", Alloc::count  );
-    log.println( "  current amount     %.2f MiB", float( Alloc::amount ) / ( 1024.0f*1024.0f ) );
-    log.println( "  maximum chunks     %d", Alloc::maxCount );
-    log.println( "  maximum amount     %.2f MiB", float( Alloc::maxAmount ) / ( 1024.0f*1024.0f ) );
-    log.println( "  cumulative chunks  %d", Alloc::sumCount );
-    log.println( "  cumulative amount  %.2f MiB", float( Alloc::sumAmount ) / ( 1024.0f*1024.0f ) );
-    log.println( "}" );
-#endif
+    Alloc::dumpStatistics();
 
     log.unindent();
     log.println( "}" );
@@ -258,6 +254,9 @@ namespace client
     render.init();
     initFlags |= INIT_RENDER_INIT;
 
+    context.init();
+    initFlags |= INIT_CONTEXT_INIT;
+
     if( !sound.init( argc, argv ) ) {
       return;
     }
@@ -269,8 +268,8 @@ namespace client
     stage->load();
     initFlags |= INIT_GAME_INIT;
 
-    context.init();
-    initFlags |= INIT_CONTEXT;
+    context.load();
+    initFlags |= INIT_CONTEXT_LOAD;
 
     render.load();
     initFlags |= INIT_RENDER_LOAD;

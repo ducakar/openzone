@@ -29,8 +29,9 @@ namespace oz
 
 #ifndef OZ_ENABLE_STACKTRACE
 
-  int StackTrace::get( char** )
+  int StackTrace::get( char** bufferPtr )
   {
+    *bufferPtr = null;
     return 0;
   }
 
@@ -152,9 +153,7 @@ namespace oz
       free( demangleBuf );
     }
 
-    free( frames );
-
-    *bufferPtr = reinterpret_cast<char*>( malloc( out - output ) );
+    *bufferPtr = reinterpret_cast<char*>( realloc( frames, out - output ) );
     memcpy( *bufferPtr, output, out - output );
     return nFrames;
   }

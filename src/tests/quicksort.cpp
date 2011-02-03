@@ -14,6 +14,8 @@
 #include <ctime>
 #include <SDL_main.h>
 
+bool oz::Alloc::isLocked = true;
+
 using namespace std;
 
 template <typename Type, int STACK_SIZE>
@@ -266,6 +268,12 @@ void TQuickSortInc( T *a, int num_el )
 
 int main( int, char** )
 {
+  oz::Alloc::isLocked = false;
+  onleave( []() {
+    oz::Alloc::isLocked = true;
+    oz::Alloc::dumpLeaks();
+  } );
+
   int array[MAX];
 
   srand( 32 );

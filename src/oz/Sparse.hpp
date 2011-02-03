@@ -442,6 +442,40 @@ namespace oz
        */
       void clear()
       {
+        for( int i = 0; i < size; ++i ) {
+          data[i].nextSlot[INDEX] = i + 1;
+        }
+
+        count = 0;
+        freeSlot = 0;
+      }
+
+      /**
+       * Allocates capacity for initSize elements. It analoguous to Sparse( initSize ) constructor
+       * if one want to reserving size on construction cannot be done.
+       * Sparse vector must be empty for this function to work.
+       * @param initSize
+       */
+      void alloc( int initSize )
+      {
+        assert( size == 0 && initSize > 0 );
+
+        data = new Type[initSize];
+        size = initSize;
+
+        for( int i = 0; i < size; ++i ) {
+          data[i].nextSlot[INDEX] = i + 1;
+        }
+      }
+
+      /**
+       * Deallocate rosources.
+       * Container must be empty for this function to work.
+       */
+      void dealloc()
+      {
+        assert( count == 0 );
+
         delete[] data;
 
         data = null;

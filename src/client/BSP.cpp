@@ -973,7 +973,7 @@ namespace client
       lightmaps( null ),
       texIds( null ), lightmapIds( null ), isUpdated( false )
   {
-    const String& name = translator.bsps[bspIndex].name;
+    name = translator.bsps[bspIndex].name;
 
     bsp = orbis.bsps[bspIndex];
     assert( bsp != null );

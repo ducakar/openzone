@@ -388,6 +388,7 @@ namespace oz
       ~HashString()
       {
         clear();
+        dealloc();
       }
 
       /**
@@ -666,8 +667,6 @@ namespace oz
           freeChain( data[i] );
           data[i] = null;
         }
-
-        pool.free();
         count = 0;
       }
 
@@ -688,7 +687,7 @@ namespace oz
       /**
        * Deallocate memory from Pool.
        */
-      void deallocate()
+      void dealloc()
       {
         assert( count == 0 );
 

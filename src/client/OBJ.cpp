@@ -533,10 +533,19 @@ namespace client
   void OBJ::free()
   {
     positions.clear();
+    positions.dealloc();
+
     normals.clear();
+    normals.dealloc();
+
     texCoords.clear();
+    texCoords.dealloc();
+
     parts.clear();
+    parts.dealloc();
+
     materialIndices.clear();
+    materialIndices.dealloc();
   }
 
   void OBJ::prebuild( const char* name )
@@ -547,11 +556,7 @@ namespace client
     load( name );
     save( "mdl/" + String( name ) + ".ozcOBJ" );
 
-    positions.clear();
-    normals.clear();
-    texCoords.clear();
-    parts.clear();
-    materialIndices.clear();
+    free();
 
     log.unindent();
     log.println( "}" );
@@ -576,7 +581,7 @@ namespace client
     int nIndices = is.readInt();
     int nSegments = is.readInt();
 
-    segments.setSize( nSegments );
+    segments.alloc( nSegments );
 
     DArray<Vertex> vertices( nVertices );
     DArray<uint> indices( nIndices );
@@ -612,8 +617,8 @@ namespace client
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( uint ), indices, GL_STATIC_DRAW );
 
-    vertices.clear();
-    indices.clear();
+    vertices.dealloc();
+    indices.dealloc();
 
     log.unindent();
     log.println( "}" );
