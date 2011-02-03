@@ -554,6 +554,21 @@ namespace client
     sky.unload();
     shape.unload();
 
+    structs.clear();
+    structs.dealloc();
+
+    objects.clear();
+    objects.dealloc();
+
+    delayedObjects.clear();
+    delayedObjects.clear();
+
+    particles.clear();
+    particles.dealloc();
+
+    waterStructs.clear();
+    waterStructs.dealloc();
+
     log.unindent();
     log.println( "}" );
   }

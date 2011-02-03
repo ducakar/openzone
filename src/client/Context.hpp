@@ -32,6 +32,7 @@ namespace client
   {
     friend class Render;
     friend class Sound;
+    friend class Audio;
 
     private:
 
@@ -73,8 +74,6 @@ namespace client
         {}
       };
 
-    public:
-
       template <typename Type>
       struct Resource
       {
@@ -96,15 +95,24 @@ namespace client
         explicit Resource() : nUsers( 0 ) {}
       };
 
-      Resource<uint>* textures;
-      Resource<uint>* sounds;
+
 
     private:
 
-      char           vorbisBuffer[VORBIS_BUFFER_SIZE];
-      Sparse<Lists>  lists;
+      char                              vorbisBuffer[VORBIS_BUFFER_SIZE];
 
+      HashString<Model::CreateFunc, 16> modelClasses;
+      HashString<Audio::CreateFunc, 8>  audioClasses;
+
+      Resource<uint>*                   textures;
+      Resource<uint>*                   sounds;
       Vector<BSP*>                      bsps;
+
+      ContSource*                       cachedSource;
+      List<Source>                      sources;
+      HashIndex<ContSource, 512>        contSources;
+
+      Sparse<Lists>                     lists;
 
       HashString< Resource<OBJ*>, 64 >  objs;
       HashString< Resource<MD2*>, 64 >  staticMd2s;
@@ -112,15 +120,8 @@ namespace client
       HashString< Resource<MD3*>, 64 >  staticMd3s;
       HashString< Resource<MD3*>, 64 >  md3s;
 
-      HashString<Model::CreateFunc, 16> modelClasses;
-      HashString<Audio::CreateFunc, 8>  audioClasses;
-
       HashIndex<Model*, 4093>           models;   // currently loaded models
       HashIndex<Audio*, 1021>           audios;   // currently loaded audio models
-
-      ContSource*                       cachedSource;
-      List<Source>                      sources;
-      HashIndex<ContSource, 512>        contSources;
 
       static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
@@ -200,35 +201,10 @@ namespace client
       void drawModel( const Object* obj, const Model* parent );
       void playAudio( const Object* obj, const Audio* parent );
 
-      void addSource( uint sourceId )
-      {
-        sources.add( new Source( sourceId ) );
-      }
-
-      void addContSource( uint key, uint sourceId  )
-      {
-        cachedSource = contSources.add( key, ContSource( sourceId ) );
-      }
-
-      uint getCachedContSourceId() const
-      {
-        return cachedSource->source;
-      }
-
-      bool updateContSource( uint key )
-      {
-        cachedSource = contSources.find( key );
-
-        if( cachedSource != null ) {
-          cachedSource->isUpdated = true;
-          return true;
-        }
-        else {
-          return false;
-        }
-      }
-
       explicit Context();
+
+      void load();
+      void unload();
 
       void init();
       void free();

@@ -21,7 +21,29 @@ namespace oz
 {
 
   static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
-                 "Alloc::ALIGNMENT should be power of two" );
+               "Alloc::ALIGNMENT should be power of two" );
+
+#ifdef OZ_ALLOC_STATISTICS
+  static_assert( sizeof( size_t ) <= size_t( Alloc::ALIGNMENT ),
+                 "Alloc::ALIGNEMENT should not be less than sizeof( size_t ) when using memory "
+                 "allocation statistics." );
+#endif
+
+#ifdef OZ_ALLOC_TRACELEAKS
+
+  struct TraceEntry
+  {
+    TraceEntry* next;
+    void*       address;
+    size_t      size;
+    int         nFrames;
+    char*       frames;
+  };
+
+  TraceEntry*   firstObjectTraceEntry = null;
+  TraceEntry*   firstArrayTraceEntry  = null;
+
+#endif
 
   int  Alloc::count     = 0;
   long Alloc::amount    = 0;
@@ -32,6 +54,34 @@ namespace oz
   int  Alloc::maxCount  = 0;
   long Alloc::maxAmount = 0;
 
+#ifndef OZ_ALLOC_STATISTICS
+
+  void Alloc::dumpStatistics()
+  {}
+
+#else
+
+  void Alloc::dumpStatistics()
+  {
+    log.println( "Heap usage (libraries not included) {" );
+    log.indent();
+
+    log.println( "current chunks     %d", Alloc::count  );
+    log.println( "current amount     %.2f MiB (%d B)",
+                 float( Alloc::amount ) / ( 1024.0f*1024.0f ), Alloc::amount );
+    log.println( "maximum chunks     %d", Alloc::maxCount );
+    log.println( "maximum amount     %.2f MiB (%d B)",
+                 float( Alloc::maxAmount ) / ( 1024.0f*1024.0f ), Alloc::maxAmount );
+    log.println( "cumulative chunks  %d", Alloc::sumCount );
+    log.println( "cumulative amount  %.2f MiB (%d B)",
+                 float( Alloc::sumAmount ) / ( 1024.0f*1024.0f ), Alloc::sumAmount );
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+#endif
+
 #ifndef OZ_ALLOC_TRACELEAKS
 
   void Alloc::dumpLeaks()
@@ -39,52 +89,29 @@ namespace oz
 
 #else
 
-  struct TraceEntry
-  {
-    TraceEntry* next;
-    void*       address;
-    int         size;
-    int         nFrames;
-    char*       frames;
-  };
-
-  TraceEntry*   firstObjectTraceEntry = null;
-  TraceEntry*   firstArrayTraceEntry  = null;
-
   void Alloc::dumpLeaks()
   {
-    TraceEntry* bt;
-    TraceEntry* next;
+    const TraceEntry* bt;
 
     bt = firstObjectTraceEntry;
     while( bt != null ) {
-      printf( "Leaked object at %p of size %d B allocated in\n", bt->address, bt->size );
-
+      log.println( "Leaked object at %p of size %d B allocated", bt->address, bt->size );
       log.indent();
       log.printTrace( bt->frames, bt->nFrames );
       log.unindent();
 
-      next = bt->next;
-      free( bt->frames );
-      free( bt );
-      bt = next;
+      bt = bt->next;
     }
-    firstObjectTraceEntry = null;
 
     bt = firstArrayTraceEntry;
     while( bt != null ) {
-      printf( "Leaked array at %p of size %d B allocated in\n", bt->address, bt->size );
-
+      log.println( "Leaked array at %p of size %d B allocated", bt->address, bt->size );
       log.indent();
       log.printTrace( bt->frames, bt->nFrames );
       log.unindent();
 
-      next = bt->next;
-      free( bt->frames );
-      free( bt );
-      bt = next;
+      bt = bt->next;
     }
-    firstArrayTraceEntry = null;
   }
 
 #endif
@@ -96,6 +123,7 @@ using oz::Alloc;
 
 #ifdef OZ_ALLOC_TRACELEAKS
 
+using oz::log;
 using oz::StackTrace;
 using oz::TraceEntry;
 using oz::firstObjectTraceEntry;
@@ -107,6 +135,9 @@ using oz::firstArrayTraceEntry;
 
 void* operator new ( size_t size ) throw( std::bad_alloc )
 {
+  assert( !Alloc::isLocked );
+  assert( size != 0 );
+
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     throw std::bad_alloc();
@@ -128,6 +159,9 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
+  assert( !Alloc::isLocked );
+  assert( size != 0 );
+
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     throw std::bad_alloc();
@@ -149,6 +183,9 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
 void operator delete ( void* ptr ) throw()
 {
+  assert( !Alloc::isLocked );
+  assert( ptr != null );
+
 #ifdef OZ_ALLOC_TRACELEAKS
   TraceEntry* st   = firstObjectTraceEntry;
   TraceEntry* prev = null;
@@ -170,22 +207,31 @@ void operator delete ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  fprintf( stderr, "ALLOC: Trying to free object at %p that was not found on the list of "
-           "allocated objects\n", ptr );
+  log.resetIndent();
+  log.println( "ALLOC: Trying to free object at %p that was not found on the list of "
+               "allocated objects", ptr );
 
   st   = firstArrayTraceEntry;
   prev = null;
 
   while( st != null ) {
     if( st->address == ptr ) {
-      fprintf( stderr, "However, it was found on the list of allocated arrays "
-               "(new -> delete[] mismatch)\n" );
+      log.println( "However, it was found on the list of allocated arrays "
+                   "(new -> delete[] mismatch)" );
       break;
     }
     prev = st;
     st = st->next;
   }
 
+  char* frames;
+  int nFrames;
+  nFrames = StackTrace::get( &frames );
+
+  log.indent();
+  log.printTrace( frames, nFrames );
+
+  free( frames );
   abort();
 
   backtraceFound:;
@@ -196,6 +242,9 @@ void operator delete ( void* ptr ) throw()
 
 void operator delete[] ( void* ptr ) throw()
 {
+  assert( !Alloc::isLocked );
+  assert( ptr != null );
+
 #ifdef OZ_ALLOC_TRACELEAKS
   TraceEntry* st   = firstArrayTraceEntry;
   TraceEntry* prev = null;
@@ -217,22 +266,31 @@ void operator delete[] ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  fprintf( stderr, "ALLOC: Trying to free array at %p that was not found on the list of "
-           "allocated arrays\n", ptr );
+  log.resetIndent();
+  log.println( "ALLOC: Trying to free array at %p that was not found on the list of "
+               "allocated arrays", ptr );
 
   st   = firstObjectTraceEntry;
   prev = null;
 
   while( st != null ) {
     if( st->address == ptr ) {
-      fprintf( stderr, "However, it was found on the list of allocated objects "
-               "(new[] -> delete mismatch)\n" );
+      log.println( "However, it was found on the list of allocated objects "
+                   "(new[] -> delete mismatch)" );
       break;
     }
     prev = st;
     st = st->next;
   }
 
+  char* frames;
+  int nFrames;
+  nFrames = StackTrace::get( &frames );
+
+  log.indent();
+  log.printTrace( frames, nFrames );
+
+  free( frames );
   abort();
 
   backtraceFound:;
@@ -243,16 +301,15 @@ void operator delete[] ( void* ptr ) throw()
 
 #else
 
-static_assert( sizeof( size_t ) <= size_t( Alloc::ALIGNMENT ),
-               "Alloc::ALIGNEMENT should not be less than sizeof( size_t ) when using memory "
-               "allocation statistics." );
-
 #ifdef OZ_MSVC
 void* operator new ( size_t size )
 #else
 void* operator new ( size_t size ) throw( std::bad_alloc )
 #endif
 {
+  assert( !Alloc::isLocked );
+  assert( size != 0 );
+
   size += Alloc::ALIGNMENT;
 
   void* ptr;
@@ -290,6 +347,9 @@ void* operator new[] ( size_t size )
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 #endif
 {
+  assert( !Alloc::isLocked );
+  assert( size != 0 );
+
   size += Alloc::ALIGNMENT;
 
   void* ptr;
@@ -302,6 +362,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
   st->next    = firstArrayTraceEntry;
   st->address = ptr;
+  st->size    = size;
   st->nFrames = StackTrace::get( &st->frames );
 
   firstArrayTraceEntry = st;
@@ -322,9 +383,11 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
 void operator delete ( void* ptr ) throw()
 {
+  assert( !Alloc::isLocked );
   assert( ptr != null );
 
-  char* chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
+  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
+  size_t size  = reinterpret_cast<size_t*>( chunk )[0];
 
 #ifdef OZ_ALLOC_TRACELEAKS
   TraceEntry* st   = firstObjectTraceEntry;
@@ -332,6 +395,8 @@ void operator delete ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
+      assert( st->size == size );
+
       if( prev == null ) {
         firstObjectTraceEntry = st->next;
       }
@@ -347,28 +412,37 @@ void operator delete ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  fprintf( stderr, "ALLOC: Trying to free object at %p that was not found on the list of "
-           "allocated objects\n", chunk );
+  soft_assert( false );
+
+  log.resetIndent();
+  log.println( "ALLOC: Trying to free object at %p that was not found on the list of "
+               "allocated objects", chunk );
 
   st   = firstArrayTraceEntry;
   prev = null;
 
   while( st != null ) {
     if( st->address == chunk ) {
-      fprintf( stderr, "However, it was found on the list of allocated arrays "
-               "(new -> delete[] mismatch)\n" );
+      log.println( "However, it was found on the list of allocated arrays "
+                   "(new -> delete[] mismatch)" );
       break;
     }
     prev = st;
     st = st->next;
   }
 
+  char* frames;
+  int nFrames;
+  nFrames = StackTrace::get( &frames );
+
+  log.indent();
+  log.printTrace( frames, nFrames );
+
+  free( frames );
   abort();
 
   backtraceFound:;
 #endif
-
-  size_t size = reinterpret_cast<size_t*>( chunk )[0];
 
   --Alloc::count;
   Alloc::amount -= size;
@@ -378,9 +452,11 @@ void operator delete ( void* ptr ) throw()
 
 void operator delete[] ( void* ptr ) throw()
 {
+  assert( !Alloc::isLocked );
   assert( ptr != null );
 
-  char* chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
+  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
+  size_t size  = reinterpret_cast<size_t*>( chunk )[0];
 
 #ifdef OZ_ALLOC_TRACELEAKS
   TraceEntry* st   = firstArrayTraceEntry;
@@ -388,6 +464,8 @@ void operator delete[] ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
+      assert( st->size == size );
+
       if( prev == null ) {
         firstArrayTraceEntry = st->next;
       }
@@ -403,28 +481,37 @@ void operator delete[] ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  fprintf( stderr, "ALLOC: Trying to free array at %p that was not found on the list of "
-           "allocated arrays\n", chunk );
+  soft_assert( false );
+
+  log.resetIndent();
+  log.println( "ALLOC: Trying to free array at %p that was not found on the list of "
+               "allocated arrays", chunk );
 
   st   = firstObjectTraceEntry;
   prev = null;
 
   while( st != null ) {
     if( st->address == chunk ) {
-      fprintf( stderr, "However, it was found on the list of allocated objects "
-               "(new[] -> delete mismatch)\n" );
+      log.println( "However, it was found on the list of allocated objects "
+                   "(new[] -> delete mismatch)" );
       break;
     }
     prev = st;
     st = st->next;
   }
 
+  char* frames;
+  int nFrames;
+  nFrames = StackTrace::get( &frames );
+
+  log.indent();
+  log.printTrace( frames, nFrames );
+
+  free( frames );
   abort();
 
   backtraceFound:;
 #endif
-
-  size_t size = reinterpret_cast<size_t*>( chunk )[0];
 
   --Alloc::count;
   Alloc::amount -= size;

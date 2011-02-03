@@ -22,8 +22,16 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
+
   SDL_Init( SDL_INIT_NOPARACHUTE );
 
   long startTime = SDL_GetTicks();
@@ -62,8 +70,8 @@ int main( int, char** )
 
   log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 
-  Alloc::dumpLeaks();
-
   SDL_Quit();
+
+  Alloc::dumpStatistics();
   return 0;
 }

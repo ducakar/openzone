@@ -23,6 +23,8 @@
 
 #include <SDL_main.h>
 
+bool oz::Alloc::isLocked = false;
+
 using namespace std;
 
 struct Object;
@@ -80,5 +82,6 @@ int main( int, char** )
 {
   Object* o = registry["Vehicle"]();
   cout << o->name() << endl;
+
   return 0;
 }

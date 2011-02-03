@@ -511,6 +511,8 @@ namespace oz
        */
       void split( char ch, DArray<String>* array ) const
       {
+        assert( array->isEmpty() );
+
         int p0    = 0;
         int p1    = index( ch );
         int i     = 0;
@@ -523,7 +525,8 @@ namespace oz
           ++count;
         }
 
-        array->setSize( count );
+        array->alloc( count );
+
         p0 = 0;
         p1 = index( ch );
 

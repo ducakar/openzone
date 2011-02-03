@@ -13,8 +13,16 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
+
   Buffer buffer( 1024 );
   OutputStream os = buffer.outputStream();
   InputStream is = buffer.inputStream();

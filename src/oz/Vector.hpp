@@ -600,10 +600,6 @@ namespace oz
       void clear()
       {
         aDestruct( data, count );
-        Alloc::dealloc( data );
-
-        data = null;
-        size = 0;
         count = 0;
       }
 
@@ -615,6 +611,35 @@ namespace oz
       {
         aFree( data, count );
         clear();
+      }
+
+      /**
+       * Allocates capacity for initSize elements. It analoguous to Vector( initSize ) constructor
+       * if one want to reserving size on construction cannot be done.
+       * Vector must be empty for this function to work.
+       * @param initSize
+       */
+      void alloc( int initSize )
+      {
+        assert( size == 0 && initSize > 0 );
+
+        data = Alloc::alloc<Type>( initSize );
+        size = initSize;
+      }
+
+      /**
+       * Deallocate rosources.
+       * Container must be empty for this function to work.
+       */
+      void dealloc()
+      {
+        assert( count == 0 );
+
+        Alloc::dealloc( data );
+
+        data = null;
+        size = 0;
+        count = 0;
       }
 
       /**

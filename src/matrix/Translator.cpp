@@ -480,11 +480,36 @@ namespace oz
   void Translator::free()
   {
     textureIndices.clear();
+    textureIndices.dealloc();
     soundIndices.clear();
+    soundIndices.dealloc();
     bspIndices.clear();
+    bspIndices.dealloc();
+
+    textures.clear();
+    textures.dealloc();
+    sounds.clear();
+    sounds.dealloc();
+    bsps.clear();
+    bsps.dealloc();
+
+    models.clear();
+    models.dealloc();
+    terras.clear();
+    terras.dealloc();
+
+    matrixScripts.clear();
+    matrixScripts.dealloc();
+    nirvanaScripts.clear();
+    nirvanaScripts.dealloc();
+
+    names.clear();
+    names.dealloc();
 
     baseClasses.clear();
+    baseClasses.dealloc();
     classes.free();
+    classes.dealloc();
   }
 
 }

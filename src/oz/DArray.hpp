@@ -228,22 +228,6 @@ namespace oz
       }
 
       /**
-       * Allocate memory
-       * It does not delete the allocated memory, it assumes it hasn't been allocated yet. It's
-       * meant to be called after DArray( void ) ctor, when the size becomes known.
-       * @param size new size
-       */
-      void setSize( int size )
-      {
-        assert( size > 0 );
-
-        delete[] data;
-
-        data  = size == 0 ? null : new Type[size];
-        count = size;
-      }
-
-      /**
        * @param e
        * @return true if the element is found in the array
        */
@@ -357,24 +341,37 @@ namespace oz
       }
 
       /**
-       * Delete the array but don't delete the elements.
-       */
-      void clear()
-      {
-        delete[] data;
-
-        data  = null;
-        count = 0;
-      }
-
-      /**
        * Delete the array and delete all elements - take care of memory management. Use this
        * function only with array of pointers that you want to be deleted.
        */
       void free()
       {
         aFree( data, count );
-        clear();
+      }
+
+      /**
+       * Allocates capacity for initSize elements. It analoguous to DArray( initSize ) constructor
+       * if one want to reserving size on construction cannot be done.
+       * DArray must be empty for this function to work.
+       * @param initSize
+       */
+      void alloc( int initSize )
+      {
+        assert( count == 0 && initSize > 0 );
+
+        data = new Type[initSize];
+        count = initSize;
+      }
+
+      /**
+       * Deallocate rosources.
+       */
+      void dealloc()
+      {
+        delete[] data;
+
+        data = null;
+        count = 0;
       }
 
   };

@@ -117,6 +117,9 @@ namespace nirvana
     }
     minds.free();
 
+    RandomMind::pool.free();
+    LuaMind::pool.free();
+
     log.printEnd( " OK" );
 #endif
   }
@@ -145,8 +148,8 @@ namespace nirvana
     log.println( "Freeing Nirvana {" );
     log.indent();
 
-    minds.free();
     mindClasses.clear();
+    mindClasses.dealloc();
     lua.free();
 
     log.unindent();

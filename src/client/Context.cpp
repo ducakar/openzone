@@ -494,7 +494,7 @@ namespace client
     assert( staticMd2s.contains( path ) );
 
     Resource<MD2*>* resource = staticMd2s.find( path );
-    if( resource == null ) {
+    if( resource != null ) {
       --resource->nUsers;
 
       if( resource->nUsers == 0 ) {
@@ -671,9 +671,9 @@ namespace client
   Context::Context() : textures( null ), sounds( null )
   {}
 
-  void Context::init()
+  void Context::load()
   {
-    log.print( "Initialising Context ..." );
+    log.print( "Loading Context ..." );
 
     assert( textures == null && sounds == null );
 
@@ -688,6 +688,109 @@ namespace client
     for( int i = 0; i < translator.bsps.length(); ++i ) {
       bsps.add( null );
     }
+
+    log.printEnd( " OK" );
+  }
+
+  void Context::unload()
+  {
+    log.println( "Unloading Context {" );
+    log.indent();
+
+    assert( alGetError() == AL_NO_ERROR );
+
+    models.free();
+    models.dealloc();
+    audios.free();
+    audios.dealloc();
+
+    foreach( i, objs.citer() ) {
+      assert( i->nUsers == 0 );
+    }
+    foreach( i, staticMd2s.citer() ) {
+      assert( i->nUsers == 0 );
+    }
+    foreach( i, md2s.citer() ) {
+      assert( i->nUsers == 0 );
+    }
+    foreach( i, staticMd3s.citer() ) {
+      assert( i->nUsers == 0 );
+    }
+    foreach( i, md3s.citer() ) {
+      assert( i->nUsers == 0 );
+    }
+
+    objs.dealloc();
+    staticMd2s.dealloc();
+    md2s.dealloc();
+    staticMd3s.dealloc();
+    md3s.dealloc();
+
+    bsps.free();
+    bsps.dealloc();
+
+    foreach( list, lists.citer() ) {
+//       assert( list->count == 0 );
+    }
+
+    lists.clear();
+    lists.dealloc();
+
+    foreach( src, sources.citer() ) {
+      alSourceStop( src->source );
+      alDeleteSources( 1, &src->source );
+      assert( alGetError() == AL_NO_ERROR );
+    }
+    foreach( i, contSources.citer() ) {
+      const ContSource& src = *static_cast<const ContSource*>( i );
+
+      alSourceStop( src.source );
+      alDeleteSources( 1, &src.source );
+      assert( alGetError() == AL_NO_ERROR );
+    }
+
+    sources.free();
+    contSources.clear();
+    contSources.dealloc();
+
+    for( int i = 0; i < translator.textures.length(); ++i ) {
+      assert( textures[i].nUsers == 0 );
+    }
+    for( int i = 0; i < translator.sounds.length(); ++i ) {
+      assert( ( sounds[i].id == AL_NONE ) == ( sounds[i].nUsers == -1 ) );
+      assert( ( sounds[i].id != AL_NONE ) == ( sounds[i].nUsers == -2 || sounds[i].nUsers == 0 ) );
+
+      if( sounds[i].id != AL_NONE ) {
+        alDeleteBuffers( 1, &sounds[i].id );
+      }
+    }
+
+    delete[] textures;
+    delete[] sounds;
+
+    textures = null;
+    sounds = null;
+
+    Source::pool.free();
+
+    OBJModel::pool.free();
+    OBJVehicleModel::pool.free();
+    MD2StaticModel::pool.free();
+    MD2Model::pool.free();
+    MD2WeaponModel::pool.free();
+    MD3StaticModel::pool.free();
+    ExplosionModel::pool.free();
+
+    BasicAudio::pool.free();
+    BotAudio::pool.free();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Context::init()
+  {
+    log.print( "Initialising Context ..." );
 
     OZ_REGISTER_MODELCLASS( OBJ );
     OZ_REGISTER_MODELCLASS( Explosion );
@@ -705,69 +808,14 @@ namespace client
 
   void Context::free()
   {
-    log.println( "Clearing Context {" );
-    log.indent();
-
-    assert( alGetError() == AL_NO_ERROR );
-
-    bsps.free();
-    models.free();
-    audios.free();
-
-    foreach( src, sources.citer() ) {
-      alSourceStop( src->source );
-      alDeleteSources( 1, &src->source );
-      assert( alGetError() == AL_NO_ERROR );
-    }
-    sources.free();
-    Source::pool.free();
-
-    foreach( i, contSources.citer() ) {
-      const ContSource& src = *static_cast<const ContSource*>( i );
-
-      alSourceStop( src.source );
-      alDeleteSources( 1, &src.source );
-      assert( alGetError() == AL_NO_ERROR );
-    }
-    contSources.clear();
-
-    if( textures != null ) {
-      delete[] textures;
-      textures = null;
-    }
-    if( sounds != null ) {
-      for( int i = 0; i < translator.sounds.length(); ++i ) {
-        if( sounds[i].id != AL_NONE ) {
-          alDeleteBuffers( 1, &sounds[i].id );
-        }
-      }
-      delete[] sounds;
-      sounds = null;
-    }
-
-    bsps.clear();
-    md2s.clear();
-    staticMd2s.clear();
-    md3s.clear();
-    staticMd3s.clear();
-    objs.clear();
-
-    OBJModel::pool.free();
-    OBJVehicleModel::pool.free();
-    MD2StaticModel::pool.free();
-    MD2Model::pool.free();
-    MD2WeaponModel::pool.free();
-    MD3StaticModel::pool.free();
-    ExplosionModel::pool.free();
-
-    BasicAudio::pool.free();
-    BotAudio::pool.free();
+    log.print( "Freeing Context ..." );
 
     modelClasses.clear();
+    modelClasses.dealloc();
     audioClasses.clear();
+    audioClasses.dealloc();
 
-    log.unindent();
-    log.println( "}" );
+    log.printEnd( " OK" );
   }
 
 }

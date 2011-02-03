@@ -15,8 +15,16 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 int main( int argc, char** argv )
 {
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
+
   printf( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
       "This is free software, and you are welcome to redistribute it\n"
@@ -27,12 +35,7 @@ int main( int argc, char** argv )
   }
   catch( const Exception& e ) {
     oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println();
-    oz::log.println( "EXCEPTION: %s", e.what() );
-    oz::log.println( "  in %s", e.function );
-    oz::log.println( "  at %s:%d", e.file, e.line );
-    oz::log.println();
+    oz::log.printException( e );
 
     if( oz::log.isFile() ) {
       fprintf( stderr, "\n\nEXCEPTION: %s\n", e.what() );
@@ -43,7 +46,6 @@ int main( int argc, char** argv )
   catch( const std::exception& e ) {
     oz::log.resetIndent();
     oz::log.println();
-    oz::log.println();
     oz::log.println( "EXCEPTION: %s", e.what() );
     oz::log.println();
 
@@ -51,8 +53,8 @@ int main( int argc, char** argv )
       fprintf( stderr, "\n\nEXCEPTION: %s\n\n", e.what() );
     }
   }
+
   client::main.shutdown();
-  Alloc::dumpLeaks();
 
   return 0;
 }

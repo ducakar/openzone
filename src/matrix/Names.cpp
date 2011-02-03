@@ -72,6 +72,7 @@ namespace oz
   void Names::free()
   {
     names.clear();
+    names.dealloc();
   }
 
 }

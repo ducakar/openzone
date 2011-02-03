@@ -13,6 +13,8 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 void foo();
 
 void foo()
@@ -25,13 +27,15 @@ void foo()
   b = new int;
   c = new int;
 
-  onleave( [&]() { delete a; delete b; delete c; } );
+  onleave( [&]() { delete a; delete b; } );
 
   throw Exception( "drek" );
 }
 
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+
   try {
     foo();
   }
@@ -39,6 +43,7 @@ int main( int, char** )
     log.printException( e );
   }
 
+  Alloc::isLocked = true;
   Alloc::dumpLeaks();
   return 0;
 }

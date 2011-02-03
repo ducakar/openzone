@@ -540,8 +540,10 @@ namespace oz
       }
     }
     usedVars.clear();
+    usedVars.dealloc();
 #endif
     vars.clear();
+    vars.dealloc();
   }
 
   String Config::toString( const String& indentString )

@@ -13,6 +13,11 @@
 
 #include "matrix/Translator.hpp"
 #include "matrix/Lua.hpp"
+// needed to release resources
+#include "matrix/Dynamic.hpp"
+#include "matrix/Bot.hpp"
+#include "matrix/Weapon.hpp"
+#include "matrix/Vehicle.hpp"
 
 namespace oz
 {
@@ -260,7 +265,7 @@ namespace oz
     part->index = -1;
   }
 
-  Orbis::Orbis() : bsps( 32 ), structs( 128 ), objects( 1024 ), parts( 1024 )
+  Orbis::Orbis()
   {}
 
   void Orbis::init()
@@ -289,6 +294,22 @@ namespace oz
     log.println( "Loading Orbis {" );
     log.indent();
 
+    bsps.alloc( 32 );
+    structs.alloc( 128 );
+    objects.alloc( 1024 );
+    parts.alloc( 1024 );
+
+    strFreedIndices[0].alloc( 4 );
+    strFreedIndices[1].alloc( 4 );
+    objFreedIndices[0].alloc( 64 );
+    objFreedIndices[1].alloc( 64 );
+    partFreedIndices[0].alloc( 128 );
+    partFreedIndices[1].alloc( 128 );
+
+    strAvailableIndices.alloc( 16 );
+    objAvailableIndices.alloc( 256 );
+    partAvailableIndices.alloc( 512 );
+
     for( int i = 0; i < translator.bsps.length(); ++i ) {
       bsps.add( new BSP( translator.bsps[i].name ) );
     }
@@ -310,16 +331,45 @@ namespace oz
       }
     }
 
-    parts.free();
-    parts.trim();
-
-    objects.free();
-    objects.trim();
-
-    structs.free();
-    structs.trim();
-
     bsps.free();
+    bsps.dealloc();
+    structs.free();
+    structs.dealloc();
+    objects.free();
+    objects.dealloc();
+    parts.free();
+    parts.dealloc();
+
+    strFreedIndices[0].clear();
+    strFreedIndices[0].dealloc();
+    strFreedIndices[1].clear();
+    strFreedIndices[1].dealloc();
+    objFreedIndices[0].clear();
+    objFreedIndices[0].dealloc();
+    objFreedIndices[1].clear();
+    objFreedIndices[1].dealloc();
+    partFreedIndices[0].clear();
+    partFreedIndices[0].dealloc();
+    partFreedIndices[1].clear();
+    partFreedIndices[1].dealloc();
+
+    strAvailableIndices.clear();
+    strAvailableIndices.dealloc();
+    objAvailableIndices.clear();
+    objAvailableIndices.dealloc();
+    partAvailableIndices.clear();
+    partAvailableIndices.dealloc();
+
+    Struct::pool.free();
+
+    Object::Event::pool.free();
+    Object::pool.free();
+    Dynamic::pool.free();
+    Weapon::pool.free();
+    Bot::pool.free();
+    Vehicle::pool.free();
+
+    Particle::pool.free();
 
     log.unindent();
     log.println( "}" );

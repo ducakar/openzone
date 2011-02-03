@@ -21,13 +21,22 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 int main( int, char** )
 {
+  Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::dumpLeaks();
+  } );
+
   SDL_Init( 0 );
 
   chdir( "data" );
 
   matrix.init();
+  synapse.load();
   orbis.load();
 
   for( int i = 0; i < 1000000; ++i ) {
@@ -38,6 +47,7 @@ int main( int, char** )
     synapse.addObject( "Tree2", Point3( x, y, z ) );
   }
 
+  synapse.unload();
   orbis.unload();
   matrix.free();
 

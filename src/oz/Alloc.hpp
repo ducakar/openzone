@@ -32,6 +32,8 @@ namespace oz
       static int  maxCount;
       static long maxAmount;
 
+      static bool isLocked;
+
       explicit Alloc() = delete;
 
       /**
@@ -111,6 +113,7 @@ namespace oz
         return reinterpret_cast<Pointer*>( ( ( s - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
       }
 
+      static void dumpStatistics();
       static void dumpLeaks();
 
   };

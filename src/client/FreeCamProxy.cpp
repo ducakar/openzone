@@ -29,6 +29,7 @@ namespace client
   void FreeCamProxy::begin()
   {
     camera.w = 0.0f;
+    camera.setTagged( null );
   }
 
   void FreeCamProxy::update()
