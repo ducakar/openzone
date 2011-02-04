@@ -122,7 +122,7 @@ int main( int, char** )
   Alloc::isLocked = false;
   onleave( []() {
     Alloc::isLocked = true;
-    Alloc::dumpLeaks();
+    Alloc::printLeaks();
   } );
 
   for( int i = 0; i < MAX; ++i ) {

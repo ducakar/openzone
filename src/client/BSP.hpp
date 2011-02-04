@@ -115,21 +115,19 @@ namespace client
 
     public:
 
-      bool isUpdated;
-
       // create ozcBSP from a Quake 3 QBSP (matrix BSP must be loaded)
       static void prebuild( const char* name );
+
+      static void beginRender();
+      static void endRender();
 
       explicit BSP( int bspIndex );
       ~BSP();
 
       void init( oz::BSP* bsp );
 
-      int  fullDraw( const Struct* str );
-      void fullDrawWater( const Struct* str );
-
-      static void beginRender();
-      static void endRender();
+      int  fullDraw( const Struct* str ) const;
+      void fullDrawWater( const Struct* str ) const;
 
   };
 

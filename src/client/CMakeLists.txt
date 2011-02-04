@@ -23,6 +23,8 @@ add_library( client STATIC
   Frustum.hpp
   GameStage.cpp
   GameStage.hpp
+  Loader.cpp
+  Loader.hpp
   MD2.cpp
   MD2.hpp
   MD2Model.cpp

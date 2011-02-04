@@ -18,10 +18,9 @@ namespace oz
   {
     private:
 
-      String logFile;                            // name of log file
-      String indentStr;                          // indent string
-      int    tabs;                               // amount of indent (one indent is 3 spaces)
-      bool   isStdout;
+      void*  stream;          // should be declared as FILE*, but we don't want to include <cstdio>
+      int    tabs;            // amount of indent (one indent is 3 spaces)
+      String indentStr;       // indent string
 
     public:
 
@@ -31,6 +30,11 @@ namespace oz
        * @return
        */
       explicit Log();
+
+      /**
+       * Destructor closes the stream.
+       */
+      ~Log();
 
       /**
        * First parameter is file name (if NULL or "", it writes to stdout), the other tells us
@@ -105,13 +109,13 @@ namespace oz
        * @param frames pointer to frame names returned by StackTrace::get()
        * @param nFrames number of frames returned by StackTrace::get()
        */
-      void printTrace( const char* frames, int nFrames );
+      void printTrace( const char* frames, int nFrames ) const;
 
       /**
        * Prints nicely formatted exception, unindented.
        * @param e
        */
-      void printException( const Exception& e );
+      void printException( const Exception& e ) const;
 
       /**
        * Sets indent to none.
@@ -128,10 +132,6 @@ namespace oz
        */
       void unindent();
 
-      /**
-       * Clears content of a file.
-       */
-      void clear() const;
   };
 
   extern Log log;

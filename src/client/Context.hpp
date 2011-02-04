@@ -33,6 +33,7 @@ namespace client
     friend class Render;
     friend class Sound;
     friend class Audio;
+    friend class Loader;
 
     private:
 
@@ -78,39 +79,43 @@ namespace client
       struct Resource
       {
         Type id;
-        // for sounds:
-        // -1: not loaded
-        // -2: scheduled for removal
-        int  nUsers;
-
-        explicit Resource() : nUsers( 0 ) {}
+        union
+        {
+          // for sounds:
+          //  0: loaded, but no source needs it
+          // -1: not loaded
+          // -2: scheduled for removal
+          int  nUsers;
+          bool isUpdated;
+        };
       };
 
       template <typename Type>
       struct Resource<Type*>
       {
         Type* object;
-        int   nUsers;
-
-        explicit Resource() : nUsers( 0 ) {}
+        union
+        {
+          int  nUsers;
+          bool isUpdated;
+        };
       };
 
-
+      char                              vorbisBuffer[VORBIS_BUFFER_SIZE];
 
     private:
-
-      char                              vorbisBuffer[VORBIS_BUFFER_SIZE];
 
       HashString<Model::CreateFunc, 16> modelClasses;
       HashString<Audio::CreateFunc, 8>  audioClasses;
 
       Resource<uint>*                   textures;
       Resource<uint>*                   sounds;
-      Vector<BSP*>                      bsps;
 
       ContSource*                       cachedSource;
       List<Source>                      sources;
       HashIndex<ContSource, 512>        contSources;
+
+      Resource<BSP*>*                   bsps;
 
       Sparse<Lists>                     lists;
 
@@ -120,7 +125,7 @@ namespace client
       HashString< Resource<MD3*>, 64 >  staticMd3s;
       HashString< Resource<MD3*>, 64 >  md3s;
 
-      HashIndex<Model*, 4093>           models;   // currently loaded models
+      HashIndex<Model*, 8191>           models;   // currently loaded models
       HashIndex<Audio*, 1021>           audios;   // currently loaded audio models
 
       static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
@@ -177,6 +182,9 @@ namespace client
       void releaseSound( int resource );
       void freeSound( int resource );
 
+      BSP* loadBSP( int resource );
+      void releaseBSP( int resource );
+
       uint genList();
       uint genLists( int count );
       void freeLists( uint listId );
@@ -201,7 +209,7 @@ namespace client
       void drawModel( const Object* obj, const Model* parent );
       void playAudio( const Object* obj, const Audio* parent );
 
-      explicit Context();
+      void printLoad();
 
       void load();
       void unload();

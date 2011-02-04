@@ -31,10 +31,12 @@ namespace client
 
     private:
 
-      SDL_Thread* auxThread;
+      SDL_Thread*   auxThread;
 
-      SDL_sem* mainSemaphore;
-      SDL_sem* auxSemaphore;
+      SDL_sem*      mainSemaphore;
+      SDL_sem*      auxSemaphore;
+
+      int           diagnosticsCount;
 
       volatile bool isAlive;
 

@@ -26,10 +26,12 @@ bool Alloc::isLocked = true;
 
 int main( int, char** )
 {
+  StackTrace::init();
+
   Alloc::isLocked = false;
   onleave( []() {
     Alloc::isLocked = true;
-    Alloc::dumpLeaks();
+    Alloc::printLeaks();
   } );
 
   SDL_Init( SDL_INIT_NOPARACHUTE );
@@ -72,6 +74,6 @@ int main( int, char** )
 
   SDL_Quit();
 
-  Alloc::dumpStatistics();
+  Alloc::printStatistics();
   return 0;
 }

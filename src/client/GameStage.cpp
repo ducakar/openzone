@@ -18,6 +18,7 @@
 #include "nirvana/Nirvana.hpp"
 
 #include "client/Network.hpp"
+#include "client/Loader.hpp"
 #include "client/Render.hpp"
 #include "client/Sound.hpp"
 
@@ -127,7 +128,14 @@ namespace client
 
     beginTime = SDL_GetTicks();
 
-    // TODO LOADER
+    // clean up unused models, audios and audio sources
+    loader.cleanup();
+    // load scheduled resources
+    loader.update();
+
+    if( ui::keyboard.keys[SDLK_F11] && !ui::keyboard.oldKeys[SDLK_F11] ) {
+      loader.makeScreenshot();
+    }
 
     timer.loaderMillis += SDL_GetTicks() - beginTime;
 
@@ -154,10 +162,14 @@ namespace client
   {
     uint beginTime = SDL_GetTicks();
 
-    // render graphics
-    oz::client::render.update();
-    // stop playing stopped continuous sounds, do cleanups
-    sound.update();
+    ++diagnosticsCount;
+    if( diagnosticsCount == 250 ) {
+      diagnosticsCount = 0;
+      context.printLoad();
+    }
+
+    render.draw();
+    sound.updateMusic();
 
     timer.renderMillis += SDL_GetTicks() - beginTime;
   }
@@ -166,6 +178,8 @@ namespace client
   {
     log.println( "Loading GameStage {" );
     log.indent();
+
+    diagnosticsCount = 0;
 
     network.connect();
 
@@ -256,6 +270,7 @@ namespace client
 
     matrix.init();
     nirvana.init();
+    loader.init();
 
     log.unindent();
     log.println( "}" );
@@ -266,6 +281,7 @@ namespace client
     log.println( "Freeing GameStage {" );
     log.indent();
 
+    loader.free();
     nirvana.free();
     matrix.free();
 

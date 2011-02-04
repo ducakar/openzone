@@ -35,11 +35,7 @@ namespace oz
 
 #if defined( OZ_MSVC )
     DebugBreak();
-#elif defined( OZ_MINGW )
-    signal( SIGABRT, SIG_IGN );
-    raise( SIGABRT );
-    signal( SIGABRT, SIG_DFL );
-#else
+#elif defined( OZ_UNIX )
     signal( SIGTRAP, SIG_IGN );
     raise( SIGTRAP );
     signal( SIGTRAP, SIG_DFL );

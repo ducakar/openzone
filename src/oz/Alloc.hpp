@@ -113,8 +113,8 @@ namespace oz
         return reinterpret_cast<Pointer*>( ( ( s - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
       }
 
-      static void dumpStatistics();
-      static void dumpLeaks();
+      static void printStatistics();
+      static void printLeaks();
 
   };
 

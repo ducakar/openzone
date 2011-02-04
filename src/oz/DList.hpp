@@ -487,7 +487,7 @@ namespace oz
        * Transfer elements from given list. The given list is cleared after the operation.
        * @param l
        */
-      void transfer( DList& l )
+      void take( DList& l )
       {
         if( l.isEmpty() ) {
           return;

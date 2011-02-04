@@ -32,7 +32,6 @@
 #include "client/MD3StaticModel.hpp"
 #include "client/ExplosionModel.hpp"
 
-#include <ctime>
 #include <SDL_opengl.h>
 
 namespace oz
@@ -344,80 +343,7 @@ namespace client
 
     assert( !glIsEnabled( GL_TEXTURE_2D ) );
 
-    if( doScreenshot ) {
-      uint* pixels = new uint[camera.width * camera.height * 4];
-      char fileName[1024];
-      time_t ct;
-      struct tm t;
-
-      ct = time( null );
-      t = *localtime( &ct );
-
-      snprintf( fileName, 1024, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
-                config.get( "dir.rc", "" ),
-                1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
-      fileName[1023] = '\0';
-
-      log.print( "Saving screenshot to '%s' ...", fileName );
-
-      glReadPixels( 0, 0, camera.width, camera.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
-      SDL_Surface* surf = SDL_CreateRGBSurfaceFrom( pixels, camera.width, camera.height, 32,
-                                                    camera.width * 4,
-                                                    0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
-      // flip image
-      for( int i = 0; i < camera.height / 2; ++i ) {
-        for( int j = 0; j < camera.width; ++j ) {
-          swap( pixels[i * camera.width + j],
-                pixels[( camera.height - i - 1 ) * camera.width + j] );
-        }
-      }
-      SDL_SaveBMP( surf, fileName );
-      SDL_FreeSurface( surf );
-      delete[] pixels;
-
-      doScreenshot = false;
-      log.printEnd( "OK" );
-    }
-
     SDL_GL_SwapBuffers();
-
-    // cleanups
-    if( clearCount >= CLEAR_INTERVAL ) {
-      // remove unused BSPs
-      for( int i = 0; i < context.bsps.length(); ++i ) {
-        BSP* bsp = context.bsps[i];
-
-        if( bsp != null ) {
-          if( bsp->isUpdated ) {
-            bsp->isUpdated = false;
-          }
-          else {
-            delete bsp;
-            bsp = null;
-          }
-        }
-      }
-      // remove unused models
-      for( auto i = context.models.citer(); i.isValid(); ) {
-        Model* model = *i;
-        uint   key   = i.key();
-
-        // we should advance now, so that we don't remove the element the iterator is pointing at
-        ++i;
-
-        if( model->flags & Model::UPDATED_BIT ) {
-          model->flags &= ~Model::UPDATED_BIT;
-        }
-        else {
-          context.models.exclude( key );
-          delete model;
-        }
-      }
-      clearCount = 0;
-    }
-    else {
-      clearCount += timer.frameMillis;
-    }
   }
 
   void Render::sync()
@@ -434,70 +360,10 @@ namespace client
     }
   }
 
-  void Render::update()
+  void Render::draw()
   {
     drawOrbis();
     drawCommon();
-  }
-
-  void Render::init()
-  {
-    doScreenshot = false;
-    clearCount   = 0;
-
-    log.println( "Initialising Graphics {" );
-    log.indent();
-
-    DArray<String> extensions;
-    String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
-    sExtensions.trim().split( ' ', &extensions );
-
-    log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
-    log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );
-    log.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
-    log.println( "OpenGL extensions {" );
-    log.indent();
-    foreach( extension, extensions.citer() ) {
-      log.println( "%s", extension->cstr() );
-    }
-
-#ifdef OZ_WINDOWS
-    glActiveTexture = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
-    glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
-    glGenBuffers = reinterpret_cast<PFNGLGENBUFFERSPROC>( SDL_GL_GetProcAddress( "glGenBuffers" ) );
-    glDeleteBuffers = reinterpret_cast<PFNGLDELETEBUFFERSPROC>( SDL_GL_GetProcAddress( "glDeleteBuffers" ) );
-    glBindBuffer = reinterpret_cast<PFNGLBINDBUFFERPROC>( SDL_GL_GetProcAddress( "glBindBuffer" ) );
-    glBufferData = reinterpret_cast<PFNGLBUFFERDATAPROC>( SDL_GL_GetProcAddress( "glBufferData" ) );
-#endif
-
-    log.unindent();
-    log.println( "}" );
-
-    glDepthFunc( GL_LEQUAL );
-
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-    camera.init();
-    ui::ui.init();
-
-    SDL_GL_SwapBuffers();
-
-    assert( glGetError() == GL_NO_ERROR );
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void Render::free()
-  {
-    log.println( "Shutting down Graphics {" );
-    log.indent();
-
-    ui::ui.free();
-
-    log.unindent();
-    log.println( "}" );
   }
 
   void Render::load()
@@ -568,6 +434,63 @@ namespace client
 
     waterStructs.clear();
     waterStructs.dealloc();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Render::init()
+  {
+    log.println( "Initialising Graphics {" );
+    log.indent();
+
+    DArray<String> extensions;
+    String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
+    sExtensions.trim().split( ' ', &extensions );
+
+    log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
+    log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );
+    log.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
+    log.println( "OpenGL extensions {" );
+    log.indent();
+    foreach( extension, extensions.citer() ) {
+      log.println( "%s", extension->cstr() );
+    }
+
+#ifdef OZ_WINDOWS
+    glActiveTexture = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
+    glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
+    glGenBuffers = reinterpret_cast<PFNGLGENBUFFERSPROC>( SDL_GL_GetProcAddress( "glGenBuffers" ) );
+    glDeleteBuffers = reinterpret_cast<PFNGLDELETEBUFFERSPROC>( SDL_GL_GetProcAddress( "glDeleteBuffers" ) );
+    glBindBuffer = reinterpret_cast<PFNGLBINDBUFFERPROC>( SDL_GL_GetProcAddress( "glBindBuffer" ) );
+    glBufferData = reinterpret_cast<PFNGLBUFFERDATAPROC>( SDL_GL_GetProcAddress( "glBufferData" ) );
+#endif
+
+    log.unindent();
+    log.println( "}" );
+
+    glDepthFunc( GL_LEQUAL );
+
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    camera.init();
+    ui::ui.init();
+
+    SDL_GL_SwapBuffers();
+
+    assert( glGetError() == GL_NO_ERROR );
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Render::free()
+  {
+    log.println( "Shutting down Graphics {" );
+    log.indent();
+
+    ui::ui.free();
 
     log.unindent();
     log.println( "}" );

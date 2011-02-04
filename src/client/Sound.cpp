@@ -61,31 +61,14 @@ namespace client
     alBufferData( buffer, musicFormat, data, bytesRead, ALsizei( vorbisInfo->rate ) );
   }
 
-  void Sound::updateMusic()
+  void Sound::setVolume( float volume )
   {
-    assert( alGetError() == AL_NO_ERROR );
+    alListenerf( AL_GAIN, volume );
+  }
 
-    if( !isMusicPlaying ) {
-      return;
-    }
-
-    int processed;
-    alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &processed );
-
-    while( processed > 0 ) {
-      uint buffer;
-      alSourceUnqueueBuffers( musicSource, 1, &buffer );
-      loadMusicBuffer( buffer );
-      alSourceQueueBuffers( musicSource, 1, &buffer );
-      --processed;
-    }
-
-    ALint value;
-    alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
-
-    if( value != AL_PLAYING ) {
-      alSourcePlay( musicSource );
-    }
+  void Sound::setMusicVolume( float volume )
+  {
+    alSourcef( musicSource, AL_GAIN, volume );
   }
 
   bool Sound::loadMusic( const char* path )
@@ -180,105 +163,35 @@ namespace client
         playCell( x, y );
       }
     }
+
     assert( alGetError() == AL_NO_ERROR );
   }
 
-  void Sound::update()
+  void Sound::updateMusic()
   {
     assert( alGetError() == AL_NO_ERROR );
 
-    // remove continous sounds that are not played any more
-    for( auto i = context.contSources.iter(); i.isValid(); ) {
-      Context::ContSource* src = i;
-      uint key = i.key();
-
-      // we should advance now, so that we don't remove the element the iterator is pointing at
-      ++i;
-
-      if( src->isUpdated ) {
-        src->isUpdated = false;
-      }
-      else {
-        alSourceStop( src->source );
-        alDeleteSources( 1, &src->source );
-        context.contSources.exclude( key );
-      }
+    if( !isMusicPlaying ) {
+      return;
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    int processed;
+    alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &processed );
 
-    if( sourceClearCount >= SOURCES_CLEAR_INTERVAL ) {
-      // remove stopped sources of non-continous sounds
-      Context::Source* prev = null;
-      Context::Source* src  = context.sources.first();
-
-      while( src != null ) {
-        Context::Source* next = src->next[0];
-
-        ALint value;
-        alGetSourcei( src->source, AL_SOURCE_STATE, &value );
-
-        if( value != AL_PLAYING ) {
-          alDeleteSources( 1, &src->source );
-
-          context.sources.remove( src, prev );
-          delete src;
-        }
-        else {
-          prev = src;
-        }
-        src = next;
-      }
-      sourceClearCount = 0;
-    }
-    else {
-      sourceClearCount += timer.frameMillis;
+    while( processed > 0 ) {
+      uint buffer;
+      alSourceUnqueueBuffers( musicSource, 1, &buffer );
+      loadMusicBuffer( buffer );
+      alSourceQueueBuffers( musicSource, 1, &buffer );
+      --processed;
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    ALint value;
+    alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
 
-    updateMusic();
-
-    // cleanups
-    if( fullClearCount >= FULL_CLEAR_INTERVAL ) {
-      assert( alGetError() == AL_NO_ERROR );
-
-      // remove Audio objects that are not used any more
-      for( auto i = context.audios.citer(); i.isValid(); ) {
-        Audio* audio = *i;
-        uint key = i.key();
-
-        // we should advance now, so that we don't remove the element the iterator is pointing at
-        ++i;
-
-        if( audio->flags & Audio::UPDATED_BIT ) {
-          audio->flags &= ~Audio::UPDATED_BIT ;
-        }
-        else {
-          context.audios.exclude( key );
-          delete audio;
-        }
-      }
-
-      assert( alGetError() == AL_NO_ERROR );
-
-      // remove unused (no object audio uses it) buffers
-      for( int i = 0; i < translator.sounds.length(); ++i ) {
-        // first, only
-        if( context.sounds[i].nUsers == 0 ) {
-          context.sounds[i].nUsers = -2;
-        }
-        else if( context.sounds[i].nUsers == -2 ) {
-          context.freeSound( i );
-        }
-      }
-      fullClearCount = 0;
+    if( value != AL_PLAYING ) {
+      alSourcePlay( musicSource );
     }
-    else {
-      fullClearCount += timer.frameMillis;
-    }
-
-    assert( alGetError() == AL_NO_ERROR );
   }
 
   bool Sound::init( int* argc, char** argv )
@@ -313,9 +226,6 @@ namespace client
 
     log.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
     log.println( "ALUT supported formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
-
-    sourceClearCount = 0;
-    fullClearCount   = 0;
 
     isMusicLoaded  = false;
     isMusicPlaying = false;

@@ -3,15 +3,37 @@ cmake_minimum_required( VERSION 2.8 )
 project( openzone C CXX )
 
 option( OZ_ALWAYS_INLINE "Enable inlining in debug mode for critical functions" ON )
-option( OZ_ENABLE_STACKTRACE "Enable StackTrace class" ON )
 option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make heap usage statistics" ON )
 option( OZ_ALLOC_TRACELEAKS "Use overloads for default new and delete that saves backtraces for each new call and trace memory leaks" OFF )
 option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
 option( OZ_BUILTIN_MATH "Use GCC/clang built-in math functions (no need to include <cmath>, possibly faster math calls in debug mode)" ON )
+option( OZ_BIG_ENDIAN_DATA "Use big-endian byte-order for data when saving to disk or sending across network" ON )
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in configuration files" ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" ON )
 
-option( OZ_BIG_ENDIAN_DATA "Use big-endian byte-order for data when saving to disk or sending across network" ON )
+if( NOT OZ_APPLICATION_NAME )
+  set( OZ_APPLICATION_NAME "OpenZone" CACHE STRING "" FORCE )
+endif( NOT OZ_APPLICATION_NAME )
+
+if( NOT OZ_WINDOW_TITLE )
+  set( OZ_WINDOW_TITLE "OpenZone" CACHE STRING "" FORCE )
+endif( NOT OZ_WINDOW_TITLE )
+
+if( NOT OZ_RC_DIR )
+  set( OZ_RC_DIR ".openzone" CACHE STRING "" FORCE )
+endif( NOT OZ_RC_DIR )
+
+if( NOT OZ_CLIENT_LOG_FILE )
+  set( OZ_CLIENT_LOG_FILE "client.log" CACHE STRING "" FORCE )
+endif( NOT OZ_CLIENT_LOG_FILE )
+
+if( NOT OZ_CLIENT_CONFIG_FILE )
+  set( OZ_CLIENT_CONFIG_FILE "client.rc" CACHE STRING "" FORCE )
+endif( NOT OZ_CLIENT_CONFIG_FILE )
+
+if( NOT OZ_DEFAULT_DATA_DIR )
+  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
+endif( NOT OZ_DEFAULT_DATA_DIR )
 
 option( OZ_BUILD_TESTS "Build tests" ON )
 option( OZ_BUILD_TOOLS "Build tools" ON )
@@ -163,10 +185,6 @@ else( UNIX )
   set( OZ_MINGW ON )
   set( OZ_WINDOWS ON )
 endif( UNIX )
-
-if( NOT OZ_DEFAULT_DATA_DIR )
-  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
-endif( NOT OZ_DEFAULT_DATA_DIR )
 
 if( OZ_XML_CONFIG )
   include_directories( ${LIBXML2_INCLUDE_DIR} )

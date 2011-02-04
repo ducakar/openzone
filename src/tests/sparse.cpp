@@ -30,7 +30,7 @@ int main( int, char** )
   Alloc::isLocked = false;
   onleave( []() {
     Alloc::isLocked = true;
-    Alloc::dumpLeaks();
+    Alloc::printLeaks();
   } );
 
   Sparse<A> sparse( 1 );

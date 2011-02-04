@@ -35,7 +35,7 @@ int main( int, char** )
   Alloc::isLocked = false;
   onleave( []() {
     Alloc::isLocked = true;
-    Alloc::dumpLeaks();
+    Alloc::printLeaks();
   } );
 
   const int max = 10000;
