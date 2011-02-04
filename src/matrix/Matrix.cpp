@@ -87,7 +87,9 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    orbis.sky.set( 205.0f, 1440.0f, 180.0f );
+    orbis.sky.heading = 205.0f;
+    orbis.sky.period = 1440.0f;
+    orbis.sky.time = 180.0f;
 
     int index = synapse.addObject( "Lord", Point3( 52, -44, 37 ) );
     static_cast<Bot*>( orbis.objects[index] )->h = 270.0f;
@@ -286,7 +288,6 @@ namespace oz
     log.println( "Initialising Matrix {" );
     log.indent();
 
-    translator.init();
     names.init();
     lua.init();
     orbis.init();
@@ -303,7 +304,6 @@ namespace oz
     orbis.free();
     lua.free();
     names.free();
-    translator.free();
 
     log.unindent();
     log.println( "}" );

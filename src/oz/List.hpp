@@ -392,7 +392,7 @@ namespace oz
        * Transfer elements from given list. The given list is cleared after the operation.
        * @param l
        */
-      void transfer( List& l )
+      void take( List& l )
       {
         if( l.isEmpty() ) {
           return;

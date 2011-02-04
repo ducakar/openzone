@@ -53,11 +53,14 @@ namespace client
     if( initFlags & INIT_CONTEXT_INIT ) {
       context.free();
     }
-    if( initFlags & INIT_RENDER_INIT ) {
-      render.free();
+    if( initFlags & INIT_TRANSLATOR ) {
+      translator.free();
     }
     if( initFlags & INIT_AUDIO ) {
       sound.free();
+    }
+    if( initFlags & INIT_RENDER_INIT ) {
+      render.free();
     }
     if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
@@ -69,37 +72,54 @@ namespace client
 
     config.clear();
 
-    float uiTime      = float( timer.uiMillis )      * 0.001f;
-    float loaderTime  = float( timer.loaderMillis )  * 0.001f;
-    float syncTime    = float( timer.syncMillis )    * 0.001f;
-    float renderTime  = float( timer.renderMillis )  * 0.001f;
-    float sleepTime   = float( timer.sleepMillis )   * 0.001f;
+    float uiTime       = float( timer.uiMillis )      * 0.001f;
+    float loaderTime   = float( timer.loaderMillis )  * 0.001f;
+    float syncTime     = float( timer.syncMillis )    * 0.001f;
+    float renderTime   = float( timer.renderMillis )  * 0.001f;
+    float sleepTime    = float( timer.sleepMillis )   * 0.001f;
 
-    float matrixTime  = float( timer.matrixMillis )  * 0.001f;
-    float nirvanaTime = float( timer.nirvanaMillis ) * 0.001f;
+    float matrixTime   = float( timer.matrixMillis )  * 0.001f;
+    float nirvanaTime  = float( timer.nirvanaMillis ) * 0.001f;
+
+    float inactiveTime = float( inactiveMillis )      * 0.001f;
+    float droppedTime  = float( droppedMillis )       * 0.001f;
+    float activeTime   = allTime - inactiveTime;
+
+    int   frameDrops   = timer.ticks - timer.nFrames;
 
     log.println( "Time statistics {" );
     log.indent();
-    log.println( "Loading time: %.3f s", loadingTime );
-    log.println( "Matrix ticks: %d (%.2f Hz)", timer.ticks, float( timer.ticks ) / allTime );
-    log.println( "Rendered frames: %d (%.2f Hz)", timer.nFrames, float( timer.nFrames ) / allTime );
-    log.println( "Main loop time usage:" );
-    log.println( "  %6.5g s  all time", allTime );
-    log.println( "  %6.2f %%  [M:1  ] loader",                loaderTime  / allTime * 100.0f );
-    log.println( "  %6.2f %%  [M:2.1] ui",                    uiTime      / allTime * 100.0f );
-    log.println( "  %6.2f %%  [M:2.2] sync + sound.play",     syncTime    / allTime * 100.0f );
-    log.println( "  %6.2f %%  [M:2.3] render + sound.update", renderTime  / allTime * 100.0f );
-    log.println( "  %6.2f %%  [M:2.4] sleep",                 sleepTime   / allTime * 100.0f );
-    log.println( "  %6.2f %%  [A:1  ] matrix",                matrixTime  / allTime * 100.0f );
-    log.println( "  %6.2f %%  [A:2  ] nirvana",               nirvanaTime / allTime * 100.0f );
+    log.println( "Loading time             %.2f s",    loadingTime );
+    log.println( "Real main loop time      %.2f s",    allTime );
+    log.println( "Active main loop time    %.2f s",    activeTime );
+    log.println( "Inactive main loop time  %.2f s",    inactiveTime );
+    log.println( "Game time                %.2f s",    timer.time );
+    log.println( "Dropped time             %.2f s",    droppedTime );
+    log.println( "Ticks in active time     %d (%.2f Hz)",
+                 timer.ticks, float( timer.ticks ) / activeTime );
+    log.println( "Frames in active time    %d (%.2f Hz)",
+                 timer.nFrames, float( timer.nFrames ) / activeTime );
+    log.println( "Frame drops:             %d (%.2f %%)",
+                 frameDrops, float( frameDrops ) / float( timer.ticks ) * 100.0f );
+    log.println( "Main loop active time usage {" );
+    log.indent();
+    log.println( "%6.2f %%  [M:1  ] cleanup + loader",  loaderTime  / activeTime * 100.0f );
+    log.println( "%6.2f %%  [M:2.1] ui",                uiTime      / activeTime * 100.0f );
+    log.println( "%6.2f %%  [M:2.2] sync + sound",      syncTime    / activeTime * 100.0f );
+    log.println( "%6.2f %%  [M:2.3] render",            renderTime  / activeTime * 100.0f );
+    log.println( "%6.2f %%  [M:2.4] sleep",             sleepTime   / activeTime * 100.0f );
+    log.println( "%6.2f %%  [A:1  ] matrix",            matrixTime  / activeTime * 100.0f );
+    log.println( "%6.2f %%  [A:2  ] nirvana",           nirvanaTime / activeTime * 100.0f );
+    log.unindent();
+    log.println( "}" );
     log.unindent();
     log.println( "}" );
 
-    Alloc::dumpStatistics();
+    Alloc::printStatistics();
 
     log.unindent();
     log.println( "}" );
-    log.printlnETD( OZ_APP_NAME " finished at" );
+    log.printlnETD( OZ_APPLICATION_NAME " finished at" );
   }
 
   void Main::main( int* argc, char** argv )
@@ -156,9 +176,9 @@ namespace client
     log.println( "Log stream stdout ... OK" );
 #endif
 
-    log.printlnETD( OZ_APP_NAME " started at" );
+    log.printlnETD( OZ_APPLICATION_NAME " started at" );
 
-    String configPath = rcDir + "/" OZ_CONFIG_FILE;
+    String configPath = rcDir + "/" OZ_CLIENT_CONFIG_FILE;
     if( config.load( configPath ) ) {
       log.printEnd( "Configuration read from '%s'", configPath.cstr() );
       initFlags |= INIT_CONFIG;
@@ -221,7 +241,7 @@ namespace client
     log.print( "Setting OpenGL surface %dx%d-%d %s ...",
                screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
 
-    SDL_WM_SetCaption( OZ_WM_TITLE, null );
+    SDL_WM_SetCaption( OZ_WINDOW_TITLE, null );
     SDL_ShowCursor( SDL_FALSE );
 
     if( ( screenX != 0 || screenY != 0 || screenBpp != 0 ) &&
@@ -254,13 +274,16 @@ namespace client
     render.init();
     initFlags |= INIT_RENDER_INIT;
 
-    context.init();
-    initFlags |= INIT_CONTEXT_INIT;
-
     if( !sound.init( argc, argv ) ) {
       return;
     }
     initFlags |= INIT_AUDIO;
+
+    translator.init();
+    initFlags |= INIT_TRANSLATOR;
+
+    context.init();
+    initFlags |= INIT_CONTEXT_INIT;
 
     stage = &gameStage;
 
@@ -274,8 +297,6 @@ namespace client
     render.load();
     initFlags |= INIT_RENDER_LOAD;
 
-    loadingTime = float( SDL_GetTicks() - createTime ) / 1000.0f;
-
     SDL_Event event;
 
     // set mouse cursor to centre of the screen and clear any events (key presses and mouse moves)
@@ -283,9 +304,6 @@ namespace client
     SDL_WarpMouse( screenCentreX, screenCentreY );
     while( SDL_PollEvent( &event ) ) {
     }
-
-    log.println( "Main loop {" );
-    log.indent();
 
     bool isAlive        = true;
     bool isActive       = true;
@@ -298,6 +316,13 @@ namespace client
     // time at start of the frame
     uint timeLast       = timeZero;
     uint timeLastRender = timeZero;
+
+    loadingTime = float( timeZero - createTime ) / 1000.0f;
+    inactiveMillis = 0;
+    droppedMillis = 0;
+
+    log.println( "Main loop {" );
+    log.indent();
 
     // THE MAGNIFICANT MAIN LOOP
     do {
@@ -341,20 +366,16 @@ namespace client
         SDL_WM_IconifyWindow();
         isActive = false;
       }
-      else if( ui::keyboard.keys[SDLK_F11] ) {
-        render.doScreenshot = true;
-      }
 
       // waste time when iconified
       if( !isActive ) {
         delta = SDL_GetTicks() - timeLast;
-        timeLast += tick;
+
+        timeLast += delta;
+        inactiveMillis += delta;
 
         if( delta < tick ) {
           SDL_Delay( tick - delta );
-        }
-        else if( delta > 16 * tick ) {
-          timeLast = SDL_GetTicks() - tick;
         }
         continue;
       }
@@ -383,6 +404,7 @@ namespace client
       }
       if( delta > 4 * tick ) {
         timeLast += delta - tick;
+        droppedMillis += delta - tick;
       }
       timeLast += tick;
     }

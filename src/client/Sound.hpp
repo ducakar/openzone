@@ -32,22 +32,13 @@ namespace client
       static const float DMAX;
       static const float DMAX_SQ;
 
-      static const int MUSIC_BUFFER_SIZE = 16 * 1024;
-      // stopped sources clear interval -- 4 s for 50 fps
-      static const int SOURCES_CLEAR_INTERVAL = 4 * 1000;
-      // cleanup interval (remove unused audios, unload unused sounds) -- 5 min for 50 fps
-      static const int FULL_CLEAR_INTERVAL = 291 * 1000;
+      static const int MUSIC_BUFFER_SIZE = 32 * 1024;
 
       /*
        * SFX
        */
-      int  sourceClearCount;
-      int  fullClearCount;
-
       void playCell( int cellX, int cellY );
-
       void loadMusicBuffer( uint buffer );
-      void updateMusic();
 
       /*
        * Music
@@ -64,22 +55,14 @@ namespace client
 
     public:
 
-      void setVolume( float volume )
-      {
-        alListenerf( AL_GAIN, volume );
-      }
-
-      void setMusicVolume( float volume )
-      {
-        alSourcef( musicSource, AL_GAIN, volume );
-      }
-
+      void setVolume( float volume );
+      void setMusicVolume( float volume );
       bool loadMusic( const char* path );
       void unloadMusic();
 
       void sync();
       void play();
-      void update();
+      void updateMusic();
 
       bool init( int* argc, char** argv );
       void free();

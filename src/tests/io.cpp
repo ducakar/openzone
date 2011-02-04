@@ -20,7 +20,7 @@ int main( int, char** )
   Alloc::isLocked = false;
   onleave( []() {
     Alloc::isLocked = true;
-    Alloc::dumpLeaks();
+    Alloc::printLeaks();
   } );
 
   Buffer buffer( 1024 );

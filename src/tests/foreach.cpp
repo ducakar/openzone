@@ -40,7 +40,7 @@ int main( int, char** )
   Alloc::isLocked = false;
   onleave( []() {
     Alloc::isLocked = true;
-    Alloc::dumpLeaks();
+    Alloc::printLeaks();
   } );
 
   List<Elem, 0> l;

@@ -966,12 +966,34 @@ namespace client
     log.println( "}" );
   }
 
+  void BSP::beginRender()
+  {
+    waterFlags = 0;
+
+    glFrontFace( GL_CW );
+
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+  }
+
+  void BSP::endRender()
+  {
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    glActiveTexture( GL_TEXTURE1 );
+    glDisable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE0 );
+
+    glFrontFace( GL_CCW );
+  }
+
   BSP::BSP( int bspIndex ) :
       nTextures( 0 ), nEntityModels( 0 ), nVertices( 0 ), nIndices( 0 ), nFaces( 0 ),
       nLightmaps( 0 ),
       textures( null ), entityModels( null ), vertices( null ), indices( null ), faces( null ),
       lightmaps( null ),
-      texIds( null ), lightmapIds( null ), isUpdated( false )
+      texIds( null ), lightmapIds( null )
   {
     name = translator.bsps[bspIndex].name;
 
@@ -1027,7 +1049,7 @@ namespace client
     freeOZCBSP();
   }
 
-  int BSP::fullDraw( const Struct* str )
+  int BSP::fullDraw( const Struct* str ) const
   {
     camPos = camera.p + ( Point3::ORIGIN - str->p );
 
@@ -1073,7 +1095,7 @@ namespace client
     return waterFlags;
   }
 
-  void BSP::fullDrawWater( const Struct* str )
+  void BSP::fullDrawWater( const Struct* str ) const
   {
     camPos = camera.p + ( Point3::ORIGIN - str->p );
 
@@ -1098,28 +1120,6 @@ namespace client
     }
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
     glPopMatrix();
-  }
-
-  void BSP::beginRender()
-  {
-    waterFlags = 0;
-
-    glFrontFace( GL_CW );
-
-    glEnableClientState( GL_VERTEX_ARRAY );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-  }
-
-  void BSP::endRender()
-  {
-    glDisableClientState( GL_VERTEX_ARRAY );
-    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-
-    glActiveTexture( GL_TEXTURE1 );
-    glDisable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE0 );
-
-    glFrontFace( GL_CCW );
   }
 
 }

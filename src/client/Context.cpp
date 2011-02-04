@@ -161,16 +161,18 @@ namespace client
     return texNum;
   }
 
-  uint Context::requestTexture( int resource, bool wrap, int magFilter, int minFilter )
+  uint Context::requestTexture( int id, bool wrap, int magFilter, int minFilter )
   {
-    if( textures[resource].nUsers > 0 ) {
-      ++textures[resource].nUsers;
-      return textures[resource].id;
-    }
-    textures[resource].nUsers = 1;
+    Resource<uint>& resource = textures[id];
 
-    String& name = translator.textures[resource].name;
-    String& path = translator.textures[resource].path;
+    if( resource.nUsers > 0 ) {
+      ++resource.nUsers;
+      return resource.id;
+    }
+    resource.nUsers = 1;
+
+    String& name = translator.textures[id].name;
+    String& path = translator.textures[id].path;
 
     log.print( "Loading registered texture '%s' ...", name.cstr() );
 
@@ -191,21 +193,23 @@ namespace client
 
     SDL_FreeSurface( image );
 
-    textures[resource].id = texNum;
+    resource.id = texNum;
     return texNum;
   }
 
-  uint Context::requestNormalmap( int resource, const Vec3& lightNormal,
+  uint Context::requestNormalmap( int id, const Vec3& lightNormal,
                                   bool wrap, int magFilter, int minFilter )
   {
-    if( textures[resource].nUsers > 0 ) {
-      ++textures[resource].nUsers;
-      return textures[resource].id;
-    }
-    textures[resource].nUsers = 1;
+    Resource<uint>& resource = textures[id];
 
-    String& name = translator.textures[resource].name;
-    String& path = translator.textures[resource].path;
+    if( resource.nUsers > 0 ) {
+      ++resource.nUsers;
+      return resource.id;
+    }
+    resource.nUsers = 1;
+
+    String& name = translator.textures[id].name;
+    String& path = translator.textures[id].path;
 
     log.print( "Loading registerded normalmap texture '%s' ...", name.cstr() );
 
@@ -226,20 +230,23 @@ namespace client
 
     SDL_FreeSurface( image );
 
-    textures[resource].id = texNum;
+    resource.id = texNum;
     return texNum;
   }
 
-  void Context::releaseTexture( int resource )
+  void Context::releaseTexture( int id )
   {
-    assert( resource < translator.textures.length() );
-    assert( textures[resource].nUsers > 0 );
+    Resource<uint>& resource = textures[id];
 
-    --textures[resource].nUsers;
+    assert( uint( id ) < uint( translator.textures.length() ) );
+    assert( resource.nUsers > 0 );
 
-    if( textures[resource].nUsers == 0 ) {
-      log.print( "Unloading texture '%s' ...", translator.textures[resource].name.cstr() );
-      glDeleteTextures( 1, &textures[resource].id );
+    --resource.nUsers;
+
+    if( resource.nUsers == 0 ) {
+      log.print( "Unloading texture '%s' ...", translator.textures[id].name.cstr() );
+      glDeleteTextures( 1, &resource.id );
+      assert( glGetError() == GL_NO_ERROR );
       log.printEnd( " OK" );
     }
   }
@@ -295,24 +302,28 @@ namespace client
   void Context::freeTexture( uint id )
   {
     glDeleteTextures( 1, &id );
+    assert( glGetError() == GL_NO_ERROR );
   }
 
-  uint Context::requestSound( int resource )
+  uint Context::requestSound( int id )
   {
+    Resource<uint>& resource = sounds[id];
+
+    if( resource.nUsers >= 0 ) {
+      ++resource.nUsers;
+      return resource.id;
+    }
+
+    resource.nUsers = 1;
+
+    if( resource.nUsers == -2 ) {
+      return resource.id;
+    }
+
     assert( alGetError() == AL_NO_ERROR );
 
-    if( sounds[resource].nUsers == -2 ) {
-      sounds[resource].nUsers = 1;
-      return sounds[resource].id;
-    }
-    if( sounds[resource].nUsers >= 0 ) {
-      ++sounds[resource].nUsers;
-      return sounds[resource].id;
-    }
-    sounds[resource].nUsers = 1;
-
-    const String& path = translator.sounds[resource].path;
-    log.print( "Loading sound '%s' ...", translator.sounds[resource].name.cstr() );
+    const String& path = translator.sounds[id].path;
+    log.print( "Loading sound '%s' ...", translator.sounds[id].name.cstr() );
 
     int dot = path.lastIndex( '.' );
     if( dot <= 0 ) {
@@ -322,9 +333,9 @@ namespace client
     String extension = path.substring( dot );
 
     if( extension.equals( ".au" ) || extension.equals( ".wav" ) ) {
-      sounds[resource].id = alutCreateBufferFromFile( path );
+      resource.id = alutCreateBufferFromFile( path );
 
-      if( sounds[resource].id == AL_NONE ) {
+      if( resource.id == AL_NONE ) {
         log.printEnd( " Failed" );
         return AL_NONE;
       }
@@ -385,8 +396,8 @@ namespace client
         return AL_NONE;
       }
 
-      alGenBuffers( 1, &sounds[resource].id );
-      alBufferData( sounds[resource].id, format, vorbisBuffer, bytesRead, int( vorbisInfo->rate ) );
+      alGenBuffers( 1, &resource.id );
+      alBufferData( resource.id, format, vorbisBuffer, bytesRead, int( vorbisInfo->rate ) );
       ov_clear( &oggStream );
 
       if( alGetError() != AL_NO_ERROR ) {
@@ -402,28 +413,53 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
 
     log.printEnd( " OK" );
-    return sounds[resource].id;
+    return resource.id;
   }
 
-  void Context::releaseSound( int resource )
+  void Context::releaseSound( int id )
   {
-    assert( resource < translator.sounds.length() );
-    assert( sounds[resource].nUsers > 0 );
+    Resource<uint>& resource = sounds[id];
 
-    --sounds[resource].nUsers;
+    assert( uint( id ) < uint( translator.sounds.length() ) );
+    assert( resource.nUsers > 0 );
+
+    --resource.nUsers;
   }
 
-  void Context::freeSound( int resource )
+  void Context::freeSound( int id )
   {
-    assert( resource < translator.sounds.length() );
-    assert( sounds[resource].nUsers == -2 );
+    Resource<uint>& resource = sounds[id];
 
-    log.print( "Unloading sound '%s' ...", translator.sounds[resource].name.cstr() );
-    alDeleteBuffers( 1, &context.sounds[resource].id );
-    context.sounds[resource].nUsers = -1;
-    log.printEnd( " OK" );
+    assert( uint( id ) < uint( translator.sounds.length() ) );
+    assert( resource.nUsers == -2 );
+
+    log.print( "Unloading sound '%s' ...", translator.sounds[id].name.cstr() );
+    alDeleteBuffers( 1, &resource.id );
+    resource.nUsers = -1;
 
     assert( alGetError() == AL_NO_ERROR );
+    log.printEnd( " OK" );
+  }
+
+  BSP* Context::loadBSP( int id )
+  {
+    Resource<BSP*>& resource = bsps[id];
+
+    assert( resource.object == null && resource.isUpdated == false );
+
+    resource.object = new BSP( id );
+    return resource.object;
+  }
+
+  void Context::releaseBSP( int id )
+  {
+    Resource<BSP*>& resource = bsps[id];
+
+    assert( resource.object != null );
+
+    delete resource.object;
+    resource.object = null;
+    resource.isUpdated = 0;
   }
 
   uint Context::genList()
@@ -447,6 +483,8 @@ namespace client
     for( int i = 0; i < lists.length(); ++i ) {
       if( lists[i].base == listId ) {
         glDeleteLists( lists[i].base, lists[i].count );
+        lists.remove( i );
+        break;
       }
     }
   }
@@ -464,9 +502,10 @@ namespace client
 
   void Context::releaseOBJ( const char* path )
   {
-    assert( objs.contains( path ) );
-
     Resource<OBJ*>* resource = objs.find( path );
+
+    assert( resource != null && resource->nUsers > 0 );
+
     if( resource != null ) {
       --resource->nUsers;
 
@@ -491,9 +530,10 @@ namespace client
 
   void Context::releaseStaticMD2( const char* path )
   {
-    assert( staticMd2s.contains( path ) );
-
     Resource<MD2*>* resource = staticMd2s.find( path );
+
+    assert( resource != null && resource->nUsers > 0 );
+
     if( resource != null ) {
       --resource->nUsers;
 
@@ -518,9 +558,10 @@ namespace client
 
   void Context::releaseMD2( const char* path )
   {
-    assert( md2s.contains( path ) );
-
     Resource<MD2*>* resource = md2s.find( path );
+
+    assert( resource != null && resource->nUsers > 0 );
+
     if( resource != null ) {
       --resource->nUsers;
 
@@ -546,9 +587,10 @@ namespace client
 
   void Context::releaseStaticMD3( const char* path )
   {
-    assert( staticMd3s.contains( path ) );
-
     Resource<MD3*>* resource = staticMd3s.find( path );
+
+    assert( resource != null && resource->nUsers > 0 );
+
     if( resource != null ) {
       --resource->nUsers;
 
@@ -573,9 +615,10 @@ namespace client
 
   void Context::releaseMD3( const char* path )
   {
-    assert( md3s.contains( path ) );
-
     Resource<MD3*>* resource = md3s.find( path );
+
+    assert( resource != null && resource->nUsers > 0 );
+
     if( resource != null ) {
       --resource->nUsers;
 
@@ -588,28 +631,24 @@ namespace client
 
   int Context::drawBSP( const Struct* str )
   {
-    BSP* bsp = bsps[str->bsp];
+    Resource<BSP*>& resource = bsps[str->bsp];
 
-    if( bsp == null ) {
-      bsp = new BSP( str->bsp );
-      bsps[str->bsp] = bsp;
+    if( resource.object == null ) {
+      loadBSP( str->bsp );
     }
-
-    bsp->isUpdated = true;
-    return bsp->fullDraw( str );
+    resource.isUpdated = true;
+    return resource.object->fullDraw( str );
   }
 
   void Context::drawBSPWater( const Struct* str )
   {
-    BSP* bsp = bsps[str->bsp];
+    Resource<BSP*>& resource = bsps[str->bsp];
 
-    if( bsp == null ) {
-      bsp = new BSP( str->bsp );
-      bsps[str->bsp] = bsp;
+    if( resource.object == null ) {
+      loadBSP( str->bsp );
     }
-
-    bsp->isUpdated = true;
-    bsp->fullDrawWater( str );
+    resource.isUpdated = true;
+    return resource.object->fullDrawWater( str );
   }
 
   void Context::drawModel( const Object* obj, const Model* parent )
@@ -668,25 +707,29 @@ namespace client
     audio->play( parent );
   }
 
-  Context::Context() : textures( null ), sounds( null )
-  {}
+  void Context::printLoad()
+  {
+    log.println( "Context load {" );
+    log.indent();
+    log.println( "Models: %.2f (%d)", models.loadFactor(), models.length() );
+    log.println( "Audios: %.2f (%d)", audios.loadFactor(), audios.length() );
+    log.unindent();
+    log.println( "}" );
+  }
 
   void Context::load()
   {
     log.print( "Loading Context ..." );
 
-    assert( textures == null && sounds == null );
-
-    textures = new Resource<uint>[translator.textures.length()];
-    sounds = new Resource<uint>[translator.sounds.length()];
-
+    for( int i = 0; i < translator.textures.length(); ++i ) {
+      textures[i].nUsers = 0;
+    }
     for( int i = 0; i < translator.sounds.length(); ++i ) {
-      sounds[i].id = AL_NONE;
       sounds[i].nUsers = -1;
     }
-
     for( int i = 0; i < translator.bsps.length(); ++i ) {
-      bsps.add( null );
+      bsps[i].object = null;
+      bsps[i].isUpdated = false;
     }
 
     log.printEnd( " OK" );
@@ -697,12 +740,14 @@ namespace client
     log.println( "Unloading Context {" );
     log.indent();
 
-    assert( alGetError() == AL_NO_ERROR );
-
     models.free();
     models.dealloc();
     audios.free();
     audios.dealloc();
+
+    assert( alGetError() == AL_NO_ERROR );
+
+    assert( lists.length() == 0 );
 
     foreach( i, objs.citer() ) {
       assert( i->nUsers == 0 );
@@ -720,32 +765,28 @@ namespace client
       assert( i->nUsers == 0 );
     }
 
+    lists.clear();
+    lists.dealloc();
     objs.dealloc();
     staticMd2s.dealloc();
     md2s.dealloc();
     staticMd3s.dealloc();
     md3s.dealloc();
 
-    bsps.free();
-    bsps.dealloc();
-
-    foreach( list, lists.citer() ) {
-//       assert( list->count == 0 );
+    for( int i = 0; i < translator.bsps.length(); ++i ) {
+      delete bsps[i].object;
+      bsps[i].object = null;
+      bsps[i].nUsers = 0;
     }
-
-    lists.clear();
-    lists.dealloc();
 
     foreach( src, sources.citer() ) {
       alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
       assert( alGetError() == AL_NO_ERROR );
     }
-    foreach( i, contSources.citer() ) {
-      const ContSource& src = *static_cast<const ContSource*>( i );
-
-      alSourceStop( src.source );
-      alDeleteSources( 1, &src.source );
+    foreach( src, contSources.citer() ) {
+      alSourceStop( src->source );
+      alDeleteSources( 1, &src->source );
       assert( alGetError() == AL_NO_ERROR );
     }
 
@@ -757,19 +798,16 @@ namespace client
       assert( textures[i].nUsers == 0 );
     }
     for( int i = 0; i < translator.sounds.length(); ++i ) {
-      assert( ( sounds[i].id == AL_NONE ) == ( sounds[i].nUsers == -1 ) );
-      assert( ( sounds[i].id != AL_NONE ) == ( sounds[i].nUsers == -2 || sounds[i].nUsers == 0 ) );
+      assert( sounds[i].nUsers <= 0 );
 
-      if( sounds[i].id != AL_NONE ) {
+      if( sounds[i].nUsers != -1 ) {
         alDeleteBuffers( 1, &sounds[i].id );
+        assert( alGetError() == AL_NO_ERROR );
       }
     }
 
-    delete[] textures;
-    delete[] sounds;
-
-    textures = null;
-    sounds = null;
+    assert( glGetError() == AL_NO_ERROR );
+    assert( alGetError() == AL_NO_ERROR );
 
     Source::pool.free();
 
@@ -803,12 +841,20 @@ namespace client
     OZ_REGISTER_AUDIOCLASS( Basic );
     OZ_REGISTER_AUDIOCLASS( Bot );
 
+    textures = new Resource<uint>[translator.textures.length()];
+    sounds   = new Resource<uint>[translator.sounds.length()];
+    bsps     = new Resource<BSP*>[translator.bsps.length()];
+
     log.printEnd( " OK" );
   }
 
   void Context::free()
   {
     log.print( "Freeing Context ..." );
+
+    delete[] textures;
+    delete[] sounds;
+    delete[] bsps;
 
     modelClasses.clear();
     modelClasses.dealloc();

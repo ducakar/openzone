@@ -19,10 +19,12 @@ bool Alloc::isLocked = true;
 
 int main( int argc, char** argv )
 {
+  StackTrace::init();
+
   Alloc::isLocked = false;
   onleave( []() {
     Alloc::isLocked = true;
-    Alloc::dumpLeaks();
+    Alloc::printLeaks();
   } );
 
   printf( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
@@ -35,10 +37,11 @@ int main( int argc, char** argv )
   }
   catch( const Exception& e ) {
     oz::log.resetIndent();
+    oz::log.println();
     oz::log.printException( e );
 
     if( oz::log.isFile() ) {
-      fprintf( stderr, "\n\nEXCEPTION: %s\n", e.what() );
+      fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
       fprintf( stderr, "  in %s\n\n", e.function );
       fprintf( stderr, "  at %s:%d\n", e.file, e.line );
     }
@@ -47,10 +50,9 @@ int main( int argc, char** argv )
     oz::log.resetIndent();
     oz::log.println();
     oz::log.println( "EXCEPTION: %s", e.what() );
-    oz::log.println();
 
     if( oz::log.isFile() ) {
-      fprintf( stderr, "\n\nEXCEPTION: %s\n\n", e.what() );
+      fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
     }
   }
 

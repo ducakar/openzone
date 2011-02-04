@@ -39,7 +39,7 @@ namespace client
         samples[SND_FRICTING] != -1 && dyn->depth == 0.0f )
     {
       float dv = Math::sqrt( dyn->velocity.x*dyn->velocity.x + dyn->velocity.y*dyn->velocity.y );
-      playContSound( samples[SND_FRICTING], dv, uint( size_t( &*dyn ) ), parent->obj );
+      playContSound( samples[SND_FRICTING], dv, parent->obj );
     }
 
     // events

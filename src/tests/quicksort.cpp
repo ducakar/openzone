@@ -271,7 +271,7 @@ int main( int, char** )
   oz::Alloc::isLocked = false;
   onleave( []() {
     oz::Alloc::isLocked = true;
-    oz::Alloc::dumpLeaks();
+    oz::Alloc::printLeaks();
   } );
 
   int array[MAX];

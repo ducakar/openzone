@@ -53,8 +53,8 @@ namespace oz
       Vector<Object*>   objects;
       Vector<Particle*> parts;
 
-      Terra             terra;
       Sky               sky;
+      Terra             terra;
 
     private:
 
@@ -128,8 +128,6 @@ namespace oz
 
       // get indices of min and max cells which the bounds intersects
       Span getInters( const Bounds& bounds, float epsilon = 0.0f ) const;
-
-      explicit Orbis();
 
       void init();
       void free();

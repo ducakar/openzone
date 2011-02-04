@@ -18,237 +18,204 @@ namespace oz
 
   Log log;
 
-  Log::Log()
+  Log::Log() : stream( stdout ), tabs( 0 ), indentStr( "  " )
+  {}
+
+  Log::~Log()
   {
-    init();
+    FILE* f = reinterpret_cast<FILE*>( stream );
+
+    if( f != stdout ) {
+      fclose( f );
+    }
   }
 
-  // first parameter is file name, the other tells us if we want to clear its content if
-  // the file already exists
-  bool Log::init( const char* fileName, bool clearFile, const char* indentStr_ )
+  bool Log::init( const char* fileName, bool doClear, const char* indentStr_ )
   {
-    // initialise indent
-    tabs = 0;
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
+    tabs = 0;
     indentStr = indentStr_ != null ? indentStr_ : "  ";
 
+    if( f != stdout ) {
+      fclose( f );
+    }
+
     if( fileName != null && fileName[0] != '\0' ) {
-      isStdout = false;
-      logFile = fileName;
+      FILE* f = fopen( fileName, doClear ? "w" : "a" );
 
-      // clear the file if necessary
-      if( clearFile ) {
-        FILE* f = fopen( logFile, "w" );
-
-        if( f != null ) {
-          fclose( f );
-        }
-        else {
-          return false;
-        }
+      if( f == null ) {
+        stream = stdout;
+        return false;
       }
+      stream = f;
     }
     else {
-      isStdout = true;
+      stream = stdout;
     }
-
     return true;
   }
 
   bool Log::isFile() const
   {
-    return !isStdout;
+    return stream != stdout;
   }
 
   void Log::printRaw( const char* s, ... ) const
   {
+    FILE* f = reinterpret_cast<FILE*>( stream );
+
     va_list ap;
-    FILE* f;
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
-
     va_start( ap, s );
+
     vfprintf( f, s, ap );
+
     va_end( ap );
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
   void Log::print( const char* s, ... ) const
   {
-    va_list ap;
-    FILE* f;
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
     for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
+
+    va_list ap;
     va_start( ap, s );
+
     vfprintf( f, s, ap );
+
     va_end( ap );
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
   void Log::println( const char* s, ... ) const
   {
-    va_list ap;
-    FILE* f;
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
     for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
+
+    va_list ap;
     va_start( ap, s );
+
     vfprintf( f, s, ap );
     fprintf( f, "\n" );
+
     va_end( ap );
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
   void Log::println() const
   {
-    FILE* f;
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
     fprintf( f, "\n" );
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
   void Log::printEnd( const char* s, ... ) const
   {
+    FILE* f = reinterpret_cast<FILE*>( stream );
+
     va_list ap;
-    FILE* f;
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
-
     va_start( ap, s );
+
     vfprintf( f, s, ap );
     fprintf( f, "\n" );
+
     va_end( ap );
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
   void Log::printEnd() const
   {
-    FILE* f;
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
     fprintf( f, "\n" );
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
   void Log::printlnBT( const char* s, ... ) const
   {
-    va_list ap;
-    FILE* f;
-    time_t ct;                 // current time
-    tm t;
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
-    ct = time( null );         // get current time
-    t = *localtime( &ct );
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
+    time_t ct = time( null );
+    tm t = *localtime( &ct );
 
     for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
     fprintf( f, "%02d:%02d:%02d ", t.tm_hour, t.tm_min, t.tm_sec );
 
+    va_list ap;
     va_start( ap, s );
+
     vfprintf( f, s, ap );
     fprintf( f, "\n" );
+
     va_end( ap );
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
   void Log::printlnET( const char* s, ... ) const
   {
-    va_list ap;
-    FILE* f;
-    time_t ct;
-    tm t;
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
-    ct = time( null );
-    t = *localtime( &ct );
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
+    time_t ct = time( null );
+    tm t = *localtime( &ct );
 
     for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
+
+    va_list ap;
     va_start( ap, s );
+
     vfprintf( f, s, ap );
     fprintf( f, " %02d:%02d:%02d\n", t.tm_hour, t.tm_min, t.tm_sec );
+
     va_end( ap );
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
   void Log::printlnETD( const char* s, ... ) const
   {
-    va_list ap;
-    FILE* f;
-    time_t ct;
-    tm t;
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
-    ct = time( null );
-    // transformation to years, months and days is too complicated, using function localtime
-    t = *localtime( &ct );
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
+    time_t ct = time( null );
+    tm t = *localtime( &ct );
 
     for( int i = 0; i < tabs; ++i ) {
       fprintf( f, "%s", indentStr.cstr() );
     }
+
+    va_list ap;
     va_start( ap, s );
+
     vfprintf( f, s, ap );
     fprintf( f, " %02d.%02d.%04d %02d:%02d:%02d\n", t.tm_mday, t.tm_mon + 1, t.tm_year + 1900,
              t.tm_hour, t.tm_min, t.tm_sec );
+
     va_end( ap );
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
-#ifndef OZ_ENABLE_STACKTRACE
-
-  void Log::printTrace( const char*, int )
-  {}
-
-#else
-
-  void Log::printTrace( const char* frames, int nFrames )
+  void Log::printTrace( const char* frames, int nFrames ) const
   {
-    FILE* f;
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
     if( nFrames == 0 ) {
       for( int i = 0; i < tabs; ++i ) {
@@ -268,18 +235,12 @@ namespace oz
       }
     }
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
-#endif
-
-  void Log::printException( const Exception& e )
+  void Log::printException( const Exception& e ) const
   {
-    FILE* f;
-
-    f = isStdout ? stdout : fopen( logFile, "a" );
+    FILE* f = reinterpret_cast<FILE*>( stream );
 
     fprintf( f,
              "\n"
@@ -290,7 +251,6 @@ namespace oz
              indentStr.cstr(), e.function,
              indentStr.cstr(), e.file, e.line );
 
-#ifdef OZ_ENABLE_STACKTRACE
     fprintf( f, "%sstack trace:\n", indentStr.cstr() );
 
     if( e.nFrames == 0 ) {
@@ -304,11 +264,8 @@ namespace oz
         entry += strlen( entry ) + 1;
       }
     }
-#endif
 
-    if( !isStdout ) {
-      fclose( f );
-    }
+    fflush( f );
   }
 
   void Log::resetIndent()
@@ -325,14 +282,6 @@ namespace oz
   {
     if( tabs > 0 ) {
       --tabs;
-    }
-  }
-
-  void Log::clear() const
-  {
-    if( !isStdout ) {
-      FILE* f = fopen( logFile, "w" );
-      fclose( f );
     }
   }
 

@@ -38,9 +38,8 @@ namespace oz
       message( message_ ), file( file_ ), line( line_ ), function( function_ ),
       nFrames( 0 ), frames( null )
   {
-#ifdef OZ_ENABLE_STACKTRACE
     nFrames = StackTrace::get( &frames );
-#endif
+
 #ifndef NDEBUG
 # if defined( OZ_MSVC )
     DebugBreak();

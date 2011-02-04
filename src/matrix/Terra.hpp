@@ -61,18 +61,14 @@ namespace oz
 
       String name;
 
-      void init();
-      // load prebuilt terrain
-      void load( const char* name );
-
-      void prebuild( const char* name );
-
-      void isEmpty() const;
-
       Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;
       // indices of TerraQuad and index of the triangle inside the TerraQuad
       Pair<int> getIndices( float x, float y ) const;
       float height( float x, float y ) const;
+
+      void prebuild( const char* name );
+      void load( const char* name );
+      void init();
 
   };
 

@@ -176,11 +176,14 @@ namespace ui
               glVertex2i( takeIconX, takeIconY + ICON_SIZE );
             glEnd();
           }
-          if( bot->grabObj == -1 && bot->weaponItem == -1 &&
-              ( tagged->flags & Object::DYNAMIC_BIT ) )
-          {
-            const Dynamic* taggedDyn = static_cast<const Dynamic*>( tagged );
 
+          const Dynamic* taggedDyn = static_cast<const Dynamic*>( tagged );
+          const Bot* taggedBot = static_cast<const Bot*>( tagged );
+
+          if( bot->grabObj == -1 && bot->weaponItem == -1 && bot->depth < bot->dim.z &&
+              ( tagged->flags & Object::DYNAMIC_BIT ) &&
+              ( ( ~tagged->flags & Object::BOT_BIT ) || ( taggedBot->grabObj == -1 ) ) )
+          {
             if( taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged ) {
               glBindTexture( GL_TEXTURE_2D, liftTexId );
               glBegin( GL_QUADS );

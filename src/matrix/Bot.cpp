@@ -60,7 +60,7 @@ namespace oz
 
     // clear invalid references from inventory
     for( int i = 0; i < items.length(); ) {
-      if( orbis.objects[items[i]] == null ) {
+      if( orbis.objects[ items[i] ] == null ) {
         items.remove( i );
       }
       else {
@@ -108,6 +108,10 @@ namespace oz
     hvsc[5] = hvsc[3] * hvsc[1];
 
     if( parent != -1 ) {
+      grabObj = -1;
+      taggedItem = -1;
+      weaponItem = -1;
+
       if( orbis.objects[parent] == null ) {
         exit();
       }
@@ -509,8 +513,10 @@ namespace oz
         collider.translate( eye, look, this );
 
         const Dynamic* obj = static_cast<const Dynamic*>( collider.hit.obj );
+        const Bot* bot = static_cast<const Bot*>( collider.hit.obj );
+
         if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
-            lower != obj->index )
+            lower != obj->index && ( ( ~obj->flags & BOT_BIT ) || bot->grabObj == -1 ) )
         {
           float dimX = dim.x + obj->dim.x;
           float dimY = dim.y + obj->dim.y;

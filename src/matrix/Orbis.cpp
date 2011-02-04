@@ -185,7 +185,7 @@ namespace oz
 
     if( strAvailableIndices.isEmpty() ) {
       index = structs.length();
-      structs.pushLast( translator.createStruct( index, name, p, rot ) );
+      structs.add( translator.createStruct( index, name, p, rot ) );
     }
     else {
       index = strAvailableIndices.popLast();
@@ -202,7 +202,7 @@ namespace oz
     if( objAvailableIndices.isEmpty() ) {
       index = objects.length();
       // reserve slot so reentrant calls cannot occupy it again
-      objects.pushLast( null );
+      objects.add( null );
     }
     else {
       index = objAvailableIndices.popLast();
@@ -224,7 +224,7 @@ namespace oz
 
     if( partAvailableIndices.isEmpty() ) {
       index = parts.length();
-      parts.pushLast( new Particle( index, p, velocity, colour, restitution, mass, lifeTime ) );
+      parts.add( new Particle( index, p, velocity, colour, restitution, mass, lifeTime ) );
     }
     else {
       index = partAvailableIndices.popLast();
@@ -237,7 +237,7 @@ namespace oz
   {
     assert( str->index >= 0 );
 
-    strFreedIndices[freeing].pushLast( str->index );
+    strFreedIndices[freeing].add( str->index );
     structs[str->index] = null;
     str->index = -1;
   }
@@ -250,7 +250,7 @@ namespace oz
     if( obj->flags & Object::LUA_BIT ) {
       lua.unregisterObject( obj->index );
     }
-    objFreedIndices[freeing].pushLast( obj->index );
+    objFreedIndices[freeing].add( obj->index );
     objects[obj->index] = null;
     obj->index = -1;
   }
@@ -260,13 +260,10 @@ namespace oz
     assert( part->index >= 0 );
     assert( part->cell == null );
 
-    partFreedIndices[freeing].pushLast( part->index );
+    partFreedIndices[freeing].add( part->index );
     parts[part->index] = null;
     part->index = -1;
   }
-
-  Orbis::Orbis()
-  {}
 
   void Orbis::init()
   {

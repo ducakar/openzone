@@ -9,7 +9,8 @@
 
 #include <stable.hpp>
 
-#include <execinfo.h>
+#include <unistd.h>
+#include <csignal>
 
 using namespace oz;
 
@@ -19,31 +20,22 @@ void foo();
 
 void foo()
 {
-  int* a;
-  int* b;
-  int* c;
-
-  a = new int;
-  b = new int;
-  c = new int;
-
-  onleave( [&]() { delete a; delete b; } );
-
-  throw Exception( "drek" );
+  int* a = null;
+  ++*a;
 }
 
 int main( int, char** )
 {
+  StackTrace::init();
+
   Alloc::isLocked = false;
+  onleave( []() {
+    Alloc::isLocked = true;
+    Alloc::printLeaks();
+  } );
 
-  try {
-    foo();
-  }
-  catch( const Exception& e ) {
-    log.printException( e );
-  }
+  foo();
 
-  Alloc::isLocked = true;
-  Alloc::dumpLeaks();
+  log.println( "Hello, world!" );
   return 0;
 }

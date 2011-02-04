@@ -18,12 +18,10 @@ namespace oz
   {
     public:
 
-      float heading;
-      float period;
       float time;
+      float period;
+      float heading;
 
-      // heading of sun in degrees and day time in seconds
-      void set( float heading, float period, float time );
       void update();
 
       void read( InputStream* istream );

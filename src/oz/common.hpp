@@ -10,16 +10,16 @@
 #pragma once
 
 /**
- *  \file base/common.hpp
+ * \file base/common.hpp
  *
- *  \brief Common types and templates
+ * \brief Common types and templates
  *
- *  You may add <code>null</code>, <code>foreach</code> and the types to your
- *  <code>~/.kde/share/apps/katepart/syntax/cpp.xml</code> or global file
- *  <code>$KDEDIR/share/apps/katepart/syntax/cpp.xml</code> to look like reserved words in
- *  Katepart (Kate/KWrite/KDevelop).
- *  For Eclipse I use the same syntax highlighting for macro invocations and reserved words hence
- *  the macro definitions like #define uint uint to highlight uint as the reserved word.
+ * You may add <code>null</code>, <code>soft_assert</code>, <code>foreach</code>,
+ * <code>onleave</code> and the types to your <code>~/.kde/share/apps/katepart/syntax/cpp.xml</code>
+ * or global file <code>$KDEDIR/share/apps/katepart/syntax/cpp.xml</code> to look like reserved
+ * words in Katepart (Kate/KWrite/KDevelop).
+ * For Eclipse I use the same syntax highlighting for macro invocations and reserved words hence
+ * the macro definitions like #define uint uint to highlight uint as the reserved word.
  */
 
 /*

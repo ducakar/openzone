@@ -52,57 +52,6 @@ namespace oz
     }
   }
 
-  void Terra::init()
-  {
-    for( int x = 0; x < VERTS; ++x ) {
-      for( int y = 0; y < VERTS; ++y ) {
-        quads[x][y].vertex.x = float( x * Quad::SIZEI ) - DIM;
-        quads[x][y].vertex.y = float( y * Quad::SIZEI ) - DIM;
-      }
-    }
-  }
-
-  void Terra::load( const char* name_ )
-  {
-    name = name_;
-
-    String terraFile = "terra/" + name + ".ozTerra";
-
-    log.print( "Loading terrain '%s' ...", name.cstr() );
-
-    Buffer buffer;
-    buffer.read( terraFile );
-
-    if( buffer.isEmpty() ) {
-      log.printEnd( " Cannot read file" );
-      throw Exception( "Failed to load terrain" );
-    }
-
-    InputStream is = buffer.inputStream();
-
-    int max = is.readInt();
-    if( max != VERTS ) {
-      log.printEnd( " Invalid dimension %d, should be %d", max, VERTS );
-      throw Exception( "Failed to load terrain" );
-    }
-
-    detailTexture = is.readString();
-    mapTexture = is.readString();
-    waterTexture = is.readString();
-
-    for( int x = 0; x < VERTS; ++x ) {
-      for( int y = 0; y < VERTS; ++y ) {
-        quads[x][y].vertex       = is.readPoint3();
-        quads[x][y].triNormal[0] = is.readVec3();
-        quads[x][y].triNormal[1] = is.readVec3();
-      }
-    }
-
-    assert( !is.isAvailable() );
-
-    log.printEnd( " OK" );
-  }
-
   void Terra::prebuild( const char* name_ )
   {
     name = name_;
@@ -187,6 +136,57 @@ namespace oz
     buffer.write( destFile );
 
     log.printEnd( " OK" );
+  }
+
+  void Terra::load( const char* name_ )
+  {
+    name = name_;
+
+    String terraFile = "terra/" + name + ".ozTerra";
+
+    log.print( "Loading terrain '%s' ...", name.cstr() );
+
+    Buffer buffer;
+    buffer.read( terraFile );
+
+    if( buffer.isEmpty() ) {
+      log.printEnd( " Cannot read file" );
+      throw Exception( "Failed to load terrain" );
+    }
+
+    InputStream is = buffer.inputStream();
+
+    int max = is.readInt();
+    if( max != VERTS ) {
+      log.printEnd( " Invalid dimension %d, should be %d", max, VERTS );
+      throw Exception( "Failed to load terrain" );
+    }
+
+    detailTexture = is.readString();
+    mapTexture = is.readString();
+    waterTexture = is.readString();
+
+    for( int x = 0; x < VERTS; ++x ) {
+      for( int y = 0; y < VERTS; ++y ) {
+        quads[x][y].vertex       = is.readPoint3();
+        quads[x][y].triNormal[0] = is.readVec3();
+        quads[x][y].triNormal[1] = is.readVec3();
+      }
+    }
+
+    assert( !is.isAvailable() );
+
+    log.printEnd( " OK" );
+  }
+
+  void Terra::init()
+  {
+    for( int x = 0; x < VERTS; ++x ) {
+      for( int y = 0; y < VERTS; ++y ) {
+        quads[x][y].vertex.x = float( x * Quad::SIZEI ) - DIM;
+        quads[x][y].vertex.y = float( y * Quad::SIZEI ) - DIM;
+      }
+    }
   }
 
 }

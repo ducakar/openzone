@@ -21,7 +21,7 @@ namespace oz
 {
 
   static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
-               "Alloc::ALIGNMENT should be power of two" );
+                 "Alloc::ALIGNMENT should be power of two" );
 
 #ifdef OZ_ALLOC_STATISTICS
   static_assert( sizeof( size_t ) <= size_t( Alloc::ALIGNMENT ),
@@ -56,14 +56,14 @@ namespace oz
 
 #ifndef OZ_ALLOC_STATISTICS
 
-  void Alloc::dumpStatistics()
+  void Alloc::printStatistics()
   {}
 
 #else
 
-  void Alloc::dumpStatistics()
+  void Alloc::printStatistics()
   {
-    log.println( "Heap usage (libraries not included) {" );
+    log.println( "Alloc statistics {" );
     log.indent();
 
     log.println( "current chunks     %d", Alloc::count  );
@@ -84,12 +84,12 @@ namespace oz
 
 #ifndef OZ_ALLOC_TRACELEAKS
 
-  void Alloc::dumpLeaks()
+  void Alloc::printLeaks()
   {}
 
 #else
 
-  void Alloc::dumpLeaks()
+  void Alloc::printLeaks()
   {
     const TraceEntry* bt;
 
@@ -412,8 +412,6 @@ void operator delete ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  soft_assert( false );
-
   log.resetIndent();
   log.println( "ALLOC: Trying to free object at %p that was not found on the list of "
                "allocated objects", chunk );
@@ -481,8 +479,6 @@ void operator delete[] ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  soft_assert( false );
-
   log.resetIndent();
   log.println( "ALLOC: Trying to free array at %p that was not found on the list of "
                "allocated arrays", chunk );

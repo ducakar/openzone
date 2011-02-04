@@ -40,9 +40,6 @@ namespace client
 
       static const float STAR_SIZE;
 
-      // cleanup interval (remove unused models)
-      static const int   CLEAR_INTERVAL = 303 * 1000;
-
       struct ObjectEntry
       {
         float distance;
@@ -60,8 +57,6 @@ namespace client
       };
 
       Bitset                  drawnStructs;
-
-      int                     clearCount;
 
       Vector<const Struct*>   structs;
       Vector<ObjectEntry>     objects;
@@ -92,16 +87,14 @@ namespace client
 
     public:
 
-      bool doScreenshot;
-
       void sync();
-      void update();
-
-      void init();
-      void free();
+      void draw();
 
       void load();
       void unload();
+
+      void init();
+      void free();
 
   };
 
