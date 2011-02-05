@@ -272,7 +272,25 @@ namespace client
     }
   }
 
-  MD2::MD2( const char* name_ )
+  MD2::MD2( const char* name_ ) : name( name_ ), isLoaded( false )
+  {}
+
+  MD2::~MD2()
+  {
+    log.print( "Unloading MD2 model '%s' ...", name.cstr() );
+
+    context.freeTexture( texId );
+
+    delete[] verts;
+    delete[] glCmds;
+    delete[] lightNormals;
+
+    log.printEnd( " OK" );
+
+    assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void MD2::load()
   {
     FILE*     file;
     MD2Header header;
@@ -280,8 +298,6 @@ namespace client
     MD2Frame* pFrame;
     Point3*   pVerts;
     int*      pNormals;
-
-    name = name_;
 
     String sPath = "mdl/" + name;
     String modelFile = sPath + "/tris.md2";
@@ -372,21 +388,8 @@ namespace client
     if( texId == 0 ) {
       throw Exception( "MD2 model loading error" );
     }
-  }
 
-  MD2::~MD2()
-  {
-    log.print( "Unloading MD2 model '%s' ...", name.cstr() );
-
-    context.freeTexture( texId );
-
-    delete[] verts;
-    delete[] glCmds;
-    delete[] lightNormals;
-
-    log.printEnd( " OK" );
-
-    assert( glGetError() == GL_NO_ERROR );
+    isLoaded = true;
   }
 
   void MD2::optimise()
@@ -421,6 +424,21 @@ namespace client
 
     for( int i = start; i <= end; ++i ) {
       verts[i] += t;
+    }
+  }
+
+  void MD2::advance( AnimState* anim, float dt ) const
+  {
+    anim->currTime += dt;
+
+    while( anim->currTime > anim->frameTime ) {
+      anim->currTime -= anim->frameTime;
+      anim->currFrame = anim->nextFrame;
+      ++anim->nextFrame;
+
+      if( anim->nextFrame > anim->endFrame ) {
+        anim->nextFrame = anim->repeat ? anim->startFrame : anim->endFrame;
+      }
     }
   }
 

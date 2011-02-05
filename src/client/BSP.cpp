@@ -989,15 +989,34 @@ namespace client
   }
 
   BSP::BSP( int bspIndex ) :
+      bsp( orbis.bsps[bspIndex] ),
       nTextures( 0 ), nEntityModels( 0 ), nVertices( 0 ), nIndices( 0 ), nFaces( 0 ),
       nLightmaps( 0 ),
       textures( null ), entityModels( null ), vertices( null ), indices( null ), faces( null ),
       lightmaps( null ),
-      texIds( null ), lightmapIds( null )
-  {
-    name = translator.bsps[bspIndex].name;
+      texIds( null ), lightmapIds( null ),
+      name( translator.bsps[bspIndex].name ), isLoaded( false )
+  {}
 
-    bsp = orbis.bsps[bspIndex];
+  BSP::~BSP()
+  {
+    for( int i = 0; i < nTextures; ++i ) {
+      if( textures[i] != -1 ) {
+        context.releaseTexture( textures[i] );
+      }
+    }
+    delete[] texIds;
+
+    for( int i = 0; i < nLightmaps; ++i ) {
+      context.freeTexture( lightmapIds[i] );
+    }
+    delete[] lightmapIds;
+
+    freeOZCBSP();
+  }
+
+  void BSP::load()
+  {
     assert( bsp != null );
 
     log.println( "Loading BSP model '%s' {", name.cstr() );
@@ -1030,23 +1049,8 @@ namespace client
 
     log.unindent();
     log.println( "}" );
-  }
 
-  BSP::~BSP()
-  {
-    for( int i = 0; i < nTextures; ++i ) {
-      if( textures[i] != -1 ) {
-        context.releaseTexture( textures[i] );
-      }
-    }
-    delete[] texIds;
-
-    for( int i = 0; i < nLightmaps; ++i ) {
-      context.freeTexture( lightmapIds[i] );
-    }
-    delete[] lightmapIds;
-
-    freeOZCBSP();
+    isLoaded = true;
   }
 
   int BSP::fullDraw( const Struct* str ) const

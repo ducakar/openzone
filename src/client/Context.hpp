@@ -111,13 +111,13 @@ namespace client
       Resource<uint>*                   textures;
       Resource<uint>*                   sounds;
 
+      Sparse<Lists>                     lists;
+
       ContSource*                       cachedSource;
       List<Source>                      sources;
       HashIndex<ContSource, 512>        contSources;
 
       Resource<BSP*>*                   bsps;
-
-      Sparse<Lists>                     lists;
 
       HashString< Resource<OBJ*>, 64 >  objs;
       HashString< Resource<MD2*>, 64 >  staticMd2s;

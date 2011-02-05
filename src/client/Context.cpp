@@ -459,7 +459,7 @@ namespace client
 
     delete resource.object;
     resource.object = null;
-    resource.isUpdated = 0;
+    resource.nUsers = 0;
   }
 
   uint Context::genList()
@@ -492,10 +492,13 @@ namespace client
   OBJ* Context::loadOBJ( const char* path )
   {
     Resource<OBJ*>* resource = objs.find( path );
+
     if( resource == null ) {
       resource = objs.add( path, Resource<OBJ*>() );
       resource->object = new OBJ( path );
+      resource->nUsers = 0;
     }
+
     ++resource->nUsers;
     return resource->object;
   }
@@ -506,24 +509,21 @@ namespace client
 
     assert( resource != null && resource->nUsers > 0 );
 
-    if( resource != null ) {
-      --resource->nUsers;
-
-      if( resource->nUsers == 0 ) {
-        delete resource->object;
-        objs.exclude( path );
-      }
-    }
+    --resource->nUsers;
   }
 
   uint Context::loadStaticMD2( const char* path )
   {
     Resource<MD2*>* resource = staticMd2s.find( path );
+
     if( resource == null ) {
       resource = staticMd2s.add( path, Resource<MD2*>() );
       resource->object = new MD2( path );
+      resource->object->load();
       resource->object->genList();
+      resource->nUsers = 0;
     }
+
     ++resource->nUsers;
     return resource->object->list;
   }
@@ -548,10 +548,13 @@ namespace client
   MD2* Context::loadMD2( const char* path )
   {
     Resource<MD2*>* resource = md2s.find( path );
+
     if( resource == null ) {
       resource = md2s.add( path, Resource<MD2*>() );
       resource->object = new MD2( path );
+      resource->nUsers = 0;
     }
+
     ++resource->nUsers;
     return resource->object;
   }
@@ -562,25 +565,22 @@ namespace client
 
     assert( resource != null && resource->nUsers > 0 );
 
-    if( resource != null ) {
-      --resource->nUsers;
-
-      if( resource->nUsers == 0 ) {
-        delete resource->object;
-        md2s.exclude( path );
-      }
-    }
+    --resource->nUsers;
   }
 
   uint Context::loadStaticMD3( const char* path )
   {
     Resource<MD3*>* resource = staticMd3s.find( path );
+
     if( resource == null ) {
       resource = staticMd3s.add( path, Resource<MD3*>() );
       resource->object = new MD3( path );
+      resource->object->load();
       resource->object->genList();
       resource->object->trim();
+      resource->nUsers = 0;
     }
+
     ++resource->nUsers;
     return resource->object->list;
   }
@@ -605,10 +605,13 @@ namespace client
   MD3* Context::loadMD3( const char* path )
   {
     Resource<MD3*>* resource = md3s.find( path );
+
     if( resource == null ) {
       resource = md3s.add( path, Resource<MD3*>() );
       resource->object = new MD3( path );
+      resource->nUsers = 0;
     }
+
     ++resource->nUsers;
     return resource->object;
   }
@@ -619,14 +622,7 @@ namespace client
 
     assert( resource != null && resource->nUsers > 0 );
 
-    if( resource != null ) {
-      --resource->nUsers;
-
-      if( resource->nUsers == 0 ) {
-        delete resource->object;
-        md3s.exclude( path );
-      }
-    }
+    --resource->nUsers;
   }
 
   int Context::drawBSP( const Struct* str )
@@ -636,8 +632,12 @@ namespace client
     if( resource.object == null ) {
       loadBSP( str->bsp );
     }
-    resource.isUpdated = true;
-    return resource.object->fullDraw( str );
+    else if( resource.object->isLoaded ) {
+      // we don't count users, just to show there is at least one
+      resource.nUsers = 1;
+      return resource.object->fullDraw( str );
+    }
+    return 0;
   }
 
   void Context::drawBSPWater( const Struct* str )
@@ -647,8 +647,11 @@ namespace client
     if( resource.object == null ) {
       loadBSP( str->bsp );
     }
-    resource.isUpdated = true;
-    return resource.object->fullDrawWater( str );
+    else if( resource.object->isLoaded ) {
+      // we don't count users, just to show there is at least one
+      resource.nUsers = 1;
+      return resource.object->fullDrawWater( str );
+    }
   }
 
   void Context::drawModel( const Object* obj, const Model* parent )
@@ -711,8 +714,10 @@ namespace client
   {
     log.println( "Context load {" );
     log.indent();
-    log.println( "Models: %.2f (%d)", models.loadFactor(), models.length() );
-    log.println( "Audios: %.2f (%d)", audios.loadFactor(), audios.length() );
+    log.println( "Models       %d (hashtable load %.2f)", models.length(), models.loadFactor() );
+    log.println( "Audios       %d (hashtable load %.2f)", audios.length(), audios.loadFactor() );
+    log.println( "Sources      %d", sources.length() );
+    log.println( "ContSources  %d", contSources.length() );
     log.unindent();
     log.println( "}" );
   }
@@ -747,22 +752,29 @@ namespace client
 
     assert( alGetError() == AL_NO_ERROR );
 
-    assert( lists.length() == 0 );
-
     foreach( i, objs.citer() ) {
       assert( i->nUsers == 0 );
+
+      delete i->object;
+      objs.exclude( i.key() );
     }
     foreach( i, staticMd2s.citer() ) {
       assert( i->nUsers == 0 );
     }
     foreach( i, md2s.citer() ) {
       assert( i->nUsers == 0 );
+
+      delete i->object;
+      md2s.exclude( i.key() );
     }
     foreach( i, staticMd3s.citer() ) {
       assert( i->nUsers == 0 );
     }
     foreach( i, md3s.citer() ) {
       assert( i->nUsers == 0 );
+
+      delete i->object;
+      md3s.exclude( i.key() );
     }
 
     lists.clear();
@@ -778,6 +790,8 @@ namespace client
       bsps[i].object = null;
       bsps[i].nUsers = 0;
     }
+
+    assert( lists.length() == 0 );
 
     foreach( src, sources.citer() ) {
       alSourceStop( src->source );

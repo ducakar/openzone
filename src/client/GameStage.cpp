@@ -110,7 +110,10 @@ namespace client
 
   bool GameStage::update()
   {
-    uint beginTime = SDL_GetTicks();
+    uint beginTime;
+    uint currentTime;
+
+    beginTime = SDL_GetTicks();
 
     if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
       orbis.sky.time += orbis.sky.period * 0.25f;
@@ -144,16 +147,17 @@ namespace client
 
     beginTime = SDL_GetTicks();
 
-    // delete models and audio objects of removed objects
-    render.sync();
-    sound.sync();
-
     camera.prepare();
+
+    currentTime = SDL_GetTicks();
+    timer.uiMillis += currentTime - beginTime;
+
+    beginTime = currentTime;
 
     // play sounds, but don't do any cleanups
     sound.play();
 
-    timer.syncMillis += SDL_GetTicks() - beginTime;
+    timer.soundMillis += SDL_GetTicks() - beginTime;
 
     return !doQuit;
   }

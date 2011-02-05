@@ -56,17 +56,20 @@ namespace client
       static bool readFace( char* pos, int part );
       static bool loadMaterials( const String& path );
 
-      static void load( const char* name );
+      static void loadOBJ( const char* name );
+      static void freeOBJ();
       static void save( const char* fileName );
 
     public:
 
-      static void free();
+      bool isLoaded;
+
       static void prebuild( const char* name );
 
       explicit OBJ( const char* name );
       ~OBJ();
 
+      void load();
       void draw() const;
 
   };

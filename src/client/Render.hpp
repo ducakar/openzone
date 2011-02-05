@@ -40,6 +40,13 @@ namespace client
 
       static const float STAR_SIZE;
 
+      enum BoundsType
+      {
+        NONE,
+        BOX,
+        WIREFRAME
+      };
+
       struct ObjectEntry
       {
         float distance;
@@ -71,7 +78,7 @@ namespace client
       float                   waterNightVisibility;
 
       float                   particleRadius;
-      bool                    drawAABBs;
+      BoundsType              boundsType;
       bool                    showAim;
 
       bool                    isUnderWater;
@@ -87,7 +94,6 @@ namespace client
 
     public:
 
-      void sync();
       void draw();
 
       void load();

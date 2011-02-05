@@ -304,19 +304,38 @@ namespace client
 
     glEnable( GL_BLEND );
 
-    if( drawAABBs ) {
+    if( boundsType != NONE ) {
       glEnable( GL_COLOR_MATERIAL );
 
-      for( int i = 0; i < objects.length(); ++i ) {
-        glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
-            Colours::CLIP_AABB : Colours::NOCLIP_AABB );
-        shape.drawBox( *objects[i].obj );
+      if( boundsType == BOX ) {
+        for( int i = 0; i < objects.length(); ++i ) {
+          glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
+              Colours::CLIP_AABB : Colours::NOCLIP_AABB );
+          shape.drawBox( *objects[i].obj );
+        }
+
+        glColor4fv( Colours::STRUCTURE_AABB );
+
+        for( int i = 0; i < structs.length(); ++i ) {
+          shape.drawBox( structs[i]->toAABB() );
+        }
       }
+      else {
+        glDisable( GL_BLEND );
 
-      glColor4fv( Colours::STRUCTURE_AABB );
+        for( int i = 0; i < objects.length(); ++i ) {
+          glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
+              Colours::CLIP_AABB : Colours::NOCLIP_AABB );
+          shape.drawWireBox( *objects[i].obj );
+        }
 
-      for( int i = 0; i < structs.length(); ++i ) {
-        shape.drawBox( structs[i]->toAABB() );
+        glColor4fv( Colours::STRUCTURE_AABB );
+
+        for( int i = 0; i < structs.length(); ++i ) {
+          shape.drawWireBox( structs[i]->toAABB() );
+        }
+
+        glEnable( GL_BLEND );
       }
 
       glColor4fv( Colours::WHITE );
@@ -346,20 +365,6 @@ namespace client
     SDL_GL_SwapBuffers();
   }
 
-  void Render::sync()
-  {
-    for( auto i = context.models.citer(); i.isValid(); ) {
-      Model* model = i.value();
-      uint   key   = i.key();
-      ++i;
-
-      if( orbis.objects[key] == null ) {
-        delete model;
-        context.models.exclude( key );
-      }
-    }
-  }
-
   void Render::draw()
   {
     drawOrbis();
@@ -372,14 +377,6 @@ namespace client
     log.indent();
 
     assert( glGetError() == GL_NO_ERROR );
-
-    dayVisibility        = config.getSet( "render.dayVisibility",        300.0f );
-    nightVisibility      = config.getSet( "render.nightVisibility",      100.0f );
-    waterDayVisibility   = config.getSet( "render.waterDayVisibility",   8.0f );
-    waterNightVisibility = config.getSet( "render.waterNightVisibility", 4.0f );
-    particleRadius       = config.getSet( "render.particleRadius",       0.5f );
-    drawAABBs            = config.getSet( "render.drawAABBs",            false );
-    showAim              = config.getSet( "render.showAim",              false );
 
     frustum.init( camera.angle, camera.aspect, camera.maxDist );
     water.init();
@@ -465,6 +462,28 @@ namespace client
     glBindBuffer = reinterpret_cast<PFNGLBINDBUFFERPROC>( SDL_GL_GetProcAddress( "glBindBuffer" ) );
     glBufferData = reinterpret_cast<PFNGLBUFFERDATAPROC>( SDL_GL_GetProcAddress( "glBufferData" ) );
 #endif
+
+    dayVisibility        = config.getSet( "render.dayVisibility",        300.0f );
+    nightVisibility      = config.getSet( "render.nightVisibility",      100.0f );
+    waterDayVisibility   = config.getSet( "render.waterDayVisibility",   8.0f );
+    waterNightVisibility = config.getSet( "render.waterNightVisibility", 4.0f );
+    particleRadius       = config.getSet( "render.particleRadius",       0.5f );
+    showAim              = config.getSet( "render.showAim",              false );
+
+    String sBoundsType   = config.getSet( "render.boundsType",           "NONE" );
+
+    if( sBoundsType.equals( "NONE" ) ) {
+      boundsType = NONE;
+    }
+    else if( sBoundsType.equals( "BOX" ) ) {
+      boundsType = BOX;
+    }
+    else if( sBoundsType.equals( "WIREFRAME" ) ) {
+      boundsType = WIREFRAME;
+    }
+    else {
+      throw Exception( "render.boundsType should be either NONE, WIREFRAME or BOX" );
+    }
 
     log.unindent();
     log.println( "}" );

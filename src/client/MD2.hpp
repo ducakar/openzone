@@ -71,10 +71,12 @@ namespace client
 
       uint         list;
       Vec3         weaponTransl;
+      bool         isLoaded;
 
       explicit MD2( const char* name );
       ~MD2();
 
+      void load();
       void optimise();
 
       void scale( float scale );
@@ -88,21 +90,6 @@ namespace client
       void genList();
 
   };
-
-  inline void MD2::advance( AnimState* anim, float dt ) const
-  {
-    anim->currTime += dt;
-
-    while( anim->currTime > anim->frameTime ) {
-      anim->currTime -= anim->frameTime;
-      anim->currFrame = anim->nextFrame;
-      ++anim->nextFrame;
-
-      if( anim->nextFrame > anim->endFrame ) {
-        anim->nextFrame = anim->repeat ? anim->startFrame : anim->endFrame;
-      }
-    }
-  }
 
 }
 }

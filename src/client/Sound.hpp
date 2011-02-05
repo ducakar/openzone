@@ -60,7 +60,6 @@ namespace client
       bool loadMusic( const char* path );
       void unloadMusic();
 
-      void sync();
       void play();
       void updateMusic();
 

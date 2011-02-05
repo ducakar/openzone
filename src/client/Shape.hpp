@@ -27,6 +27,8 @@ namespace client
       static const int MAX_PART_LISTS = 64;
 
       uint partListBase;
+      uint boxList;
+      uint wireBoxList;
 
     public:
 

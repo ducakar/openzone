@@ -640,7 +640,7 @@ namespace oz
           if( sObj != exclObj && ( sObj->flags & mask ) &&
               sObj->overlaps( trace ) )
           {
-            trimAABBObj( &*sObj );
+            trimAABBObj( sObj );
           }
         }
       }

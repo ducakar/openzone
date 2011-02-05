@@ -43,6 +43,10 @@ namespace client
 
   void MD2WeaponModel::draw( const Model* parent )
   {
+    if( !md2->isLoaded ) {
+      return;
+    }
+
     if( parent == null ) {
       glTranslatef( md2->weaponTransl.x, md2->weaponTransl.y, md2->weaponTransl.z );
 

@@ -310,7 +310,7 @@ namespace client
     return true;
   }
 
-  void OBJ::load( const char* name )
+  void OBJ::loadOBJ( const char* name )
   {
     FILE* file;
     char buffer[LINE_BUFFER_SIZE];
@@ -530,7 +530,7 @@ namespace client
     }
   }
 
-  void OBJ::free()
+  void OBJ::freeOBJ()
   {
     positions.clear();
     positions.dealloc();
@@ -553,19 +553,16 @@ namespace client
     log.println( "Prebuilding OBJ model '%s' {", name );
     log.indent();
 
-    load( name );
+    loadOBJ( name );
     save( "mdl/" + String( name ) + ".ozcOBJ" );
-
-    free();
+    freeOBJ();
 
     log.unindent();
     log.println( "}" );
   }
 
-  OBJ::OBJ( const char* name_ )
+  void OBJ::load()
   {
-    name = name_;
-
     String modelPath = "mdl/" + name + ".ozcOBJ";
 
     log.println( "Loading OBJ model '%s' {", modelPath.cstr() );
@@ -620,9 +617,14 @@ namespace client
     vertices.dealloc();
     indices.dealloc();
 
+    isLoaded = true;
+
     log.unindent();
     log.println( "}" );
   }
+
+  OBJ::OBJ( const char* name_ ) : name( name_ ), isLoaded( false )
+  {}
 
   OBJ::~OBJ()
   {

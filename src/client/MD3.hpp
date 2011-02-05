@@ -72,6 +72,8 @@ namespace client
 
       };
 
+      String         name;
+
       Vector<uint>   textures;
 
       Part*          head;
@@ -88,9 +90,12 @@ namespace client
     public:
 
       uint list;
+      bool isLoaded;
 
       explicit MD3( const char* name );
       ~MD3();
+
+      void load();
 
       void drawFrame( int frame ) const;
       void genList();

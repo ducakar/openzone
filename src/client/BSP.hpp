@@ -72,7 +72,6 @@ namespace client
       static int     waterFlags;
 
       const oz::BSP* bsp;
-      String         name;
 
       int            nTextures;
       int            nEntityModels;
@@ -96,6 +95,8 @@ namespace client
       Bitset         visibleLeafs;
       Bitset         hiddenFaces;
 
+      String         name;
+
       bool isInWater() const;
 
       void drawFace( const Face* face ) const;
@@ -115,6 +116,8 @@ namespace client
 
     public:
 
+      bool isLoaded;
+
       // create ozcBSP from a Quake 3 QBSP (matrix BSP must be loaded)
       static void prebuild( const char* name );
 
@@ -124,7 +127,7 @@ namespace client
       explicit BSP( int bspIndex );
       ~BSP();
 
-      void init( oz::BSP* bsp );
+      void load();
 
       int  fullDraw( const Struct* str ) const;
       void fullDrawWater( const Struct* str ) const;
