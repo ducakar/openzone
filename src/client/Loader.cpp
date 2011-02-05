@@ -13,6 +13,9 @@
 
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
+#include "client/OBJ.hpp"
+#include "client/MD2.hpp"
+#include "client/MD3.hpp"
 
 #include <ctime>
 #include <AL/alut.h>
@@ -26,7 +29,26 @@ namespace client
 
   void Loader::cleanupRender()
   {
-    if( tick % MODEL_CLEAR_INTERVAL == 0 ) {
+    assert( glGetError() == GL_NO_ERROR );
+
+    // delete models of removed objects
+    for( auto i = context.models.citer(); i.isValid(); ) {
+      Model* model = i.value();
+      uint   key   = i.key();
+      ++i;
+
+      // We can afford to do this as orbis.objects[key] will remain null at least one whole tick
+      // after the object has been removed (because matrix also needs to clear references to this
+      // object).
+      if( orbis.objects[key] == null ) {
+        delete model;
+        context.models.exclude( key );
+      }
+    }
+
+    assert( glGetError() == GL_NO_ERROR );
+
+    if( tick % BSP_CLEAR_INTERVAL == 0 ) {
       // remove unused BSPs
       for( int i = 0; i < translator.bsps.length(); ++i ) {
         Context::Resource<BSP*>& bsp = context.bsps[i];
@@ -41,6 +63,11 @@ namespace client
           }
         }
       }
+    }
+
+    assert( glGetError() == GL_NO_ERROR );
+
+    if( tick % MODEL_CLEAR_INTERVAL == 0 ) {
       // remove unused models
       for( auto i = context.models.citer(); i.isValid(); ) {
         Model* model = *i;
@@ -58,10 +85,29 @@ namespace client
         }
       }
     }
+
+    assert( glGetError() == GL_NO_ERROR );
   }
 
   void Loader::cleanupSound()
   {
+    assert( alGetError() == AL_NO_ERROR );
+
+    // remove audio models of removed objects
+    for( auto i = context.audios.citer(); i.isValid(); ) {
+      Audio* audio = i.value();
+      uint key     = i.key();
+      ++i;
+
+      // We can afford to do this as orbis.objects[key] will remain null at least one whole tick
+      // after the object has been removed (because matrix also needs to clear references to this
+      // object).
+      if( orbis.objects[key] == null ) {
+        delete audio;
+        context.audios.exclude( key );
+      }
+    }
+
     assert( alGetError() == AL_NO_ERROR );
 
     if( tick % SOURCE_CLEAR_INTERVAL ) {
@@ -186,6 +232,60 @@ namespace client
   void Loader::update()
   {
     tick = ( tick + 1 ) % TICK_CLEAR_PERIOD;
+
+    // BSP
+    for( int i = 0; i < translator.bsps.length(); ++i ) {
+      BSP* bsp = context.bsps[i].object;
+
+      if( bsp != null && !bsp->isLoaded ) {
+        bsp->load();
+      }
+    }
+
+    // OBJ
+    for( auto i = context.objs.iter(); i.isValid(); ) {
+      auto j = i;
+
+      ++i;
+
+      if( !j->object->isLoaded ) {
+        j->object->load();
+      }
+      else if( j->nUsers == 0 ) {
+        delete j->object;
+        context.objs.exclude( j.key() );;
+      }
+    }
+
+    // MD2
+    for( auto i = context.md2s.iter(); i.isValid(); ) {
+      auto j = i;
+
+      ++i;
+
+      if( !j->object->isLoaded ) {
+        j->object->load();
+      }
+      else if( j->nUsers == 0 ) {
+        delete j->object;
+        context.md2s.exclude( j.key() );;
+      }
+    }
+
+    // MD3
+    for( auto i = context.md3s.iter(); i.isValid(); ) {
+      auto j = i;
+
+      ++i;
+
+      if( !j->object->isLoaded ) {
+        j->object->load();
+      }
+      else if( j->nUsers == 0 ) {
+        delete j->object;
+        context.md3s.exclude( j.key() );;
+      }
+    }
   }
 
   void Loader::cleanup()
@@ -194,25 +294,13 @@ namespace client
     cleanupSound();
   }
 
-  void Loader::load()
-  {}
-
-  void Loader::unload()
-  {}
-
   void Loader::init()
   {
-    log.print( "Initialising Loader ..." );
-
     tick = 0;
-
-    log.printEnd( " OK" );
   }
 
   void Loader::free()
-  {
-    log.println( "Freeing Loader ... OK" );
-  }
+  {}
 
 }
 }

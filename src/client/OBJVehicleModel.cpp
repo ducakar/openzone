@@ -41,6 +41,10 @@ namespace client
 
   void OBJVehicleModel::draw( const Model* )
   {
+    if( !objModel->isLoaded ) {
+      return;
+    }
+
     const Vehicle* veh = static_cast<const Vehicle*>( obj );
     const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
 

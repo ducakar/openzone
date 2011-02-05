@@ -63,6 +63,10 @@ namespace client
 
   void MD2Model::draw( const Model* )
   {
+    if( !md2->isLoaded ) {
+      return;
+    }
+
     const Bot* bot = static_cast<const Bot*>( obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 

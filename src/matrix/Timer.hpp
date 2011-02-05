@@ -30,7 +30,7 @@ namespace oz
 
       uint  uiMillis;
       uint  loaderMillis;
-      uint  syncMillis;
+      uint  soundMillis;
       uint  renderMillis;
       uint  sleepMillis;
 

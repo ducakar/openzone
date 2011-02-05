@@ -37,6 +37,8 @@ namespace client
 
   void Main::shutdown()
   {
+    uint beginTime = SDL_GetTicks();
+
     log.println( "Shutdown {" );
     log.indent();
 
@@ -62,6 +64,9 @@ namespace client
     if( initFlags & INIT_RENDER_INIT ) {
       render.free();
     }
+
+    config.clear();
+
     if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
       SDL_ShowCursor( SDL_TRUE );
@@ -70,11 +75,9 @@ namespace client
       log.printEnd( " OK" );
     }
 
-    config.clear();
-
     float uiTime       = float( timer.uiMillis )      * 0.001f;
     float loaderTime   = float( timer.loaderMillis )  * 0.001f;
-    float syncTime     = float( timer.syncMillis )    * 0.001f;
+    float syncTime     = float( timer.soundMillis )   * 0.001f;
     float renderTime   = float( timer.renderMillis )  * 0.001f;
     float sleepTime    = float( timer.sleepMillis )   * 0.001f;
 
@@ -87,9 +90,12 @@ namespace client
 
     int   frameDrops   = timer.ticks - timer.nFrames;
 
+    float shutdownTime = float( SDL_GetTicks() - beginTime ) * 0.001f;
+
     log.println( "Time statistics {" );
     log.indent();
     log.println( "Loading time             %.2f s",    loadingTime );
+    log.println( "Shutdown time            %.2f s",    shutdownTime );
     log.println( "Real main loop time      %.2f s",    allTime );
     log.println( "Active main loop time    %.2f s",    activeTime );
     log.println( "Inactive main loop time  %.2f s",    inactiveTime );
@@ -103,9 +109,9 @@ namespace client
                  frameDrops, float( frameDrops ) / float( timer.ticks ) * 100.0f );
     log.println( "Main loop active time usage {" );
     log.indent();
-    log.println( "%6.2f %%  [M:1  ] cleanup + loader",  loaderTime  / activeTime * 100.0f );
+    log.println( "%6.2f %%  [M:1  ] loader",            loaderTime  / activeTime * 100.0f );
     log.println( "%6.2f %%  [M:2.1] ui",                uiTime      / activeTime * 100.0f );
-    log.println( "%6.2f %%  [M:2.2] sync + sound",      syncTime    / activeTime * 100.0f );
+    log.println( "%6.2f %%  [M:2.2] sound",             syncTime    / activeTime * 100.0f );
     log.println( "%6.2f %%  [M:2.3] render",            renderTime  / activeTime * 100.0f );
     log.println( "%6.2f %%  [M:2.4] sleep",             sleepTime   / activeTime * 100.0f );
     log.println( "%6.2f %%  [A:1  ] matrix",            matrixTime  / activeTime * 100.0f );
@@ -130,6 +136,7 @@ namespace client
       return;
     }
     log.printEnd( " OK" );
+    initFlags |= INIT_SDL;
 
     uint createTime = SDL_GetTicks();
 
@@ -218,8 +225,6 @@ namespace client
     }
     ui::keyboard.init();
     log.printEnd( " OK" );
-
-    initFlags |= INIT_SDL;
 
     const char* data = config.getSet( "dir.data", OZ_DEFAULT_DATA_DIR );
 

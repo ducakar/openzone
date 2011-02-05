@@ -35,7 +35,7 @@ namespace oz
 
     uiMillis      = 0;
     loaderMillis  = 0;
-    syncMillis    = 0;
+    soundMillis   = 0;
     renderMillis  = 0;
     sleepMillis   = 0;
 

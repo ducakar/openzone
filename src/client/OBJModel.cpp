@@ -36,6 +36,10 @@ namespace client
 
   void OBJModel::draw( const Model* )
   {
+    if( !objModel->isLoaded ) {
+      return;
+    }
+
     objModel->draw();
   }
 

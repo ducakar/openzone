@@ -135,21 +135,6 @@ namespace client
     }
   }
 
-  void Sound::sync()
-  {
-    // remove Audio objects of removed objects
-    for( auto i = context.audios.citer(); i.isValid(); ) {
-      Audio* audio = i.value();
-      uint key     = i.key();
-      ++i;
-
-      if( orbis.objects[key] == null ) {
-        delete audio;
-        context.audios.exclude( key );
-      }
-    }
-  }
-
   void Sound::play()
   {
     // add new sounds

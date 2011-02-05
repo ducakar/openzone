@@ -368,7 +368,7 @@ namespace oz
   template <class IteratorA, class CIteratorB>
   inline void iCopy( IteratorA iDest, CIteratorB iSrc )
   {
-    assert( &*iDest != &*iSrc );
+    assert( iDest != iSrc );
 
     while( iDest.isValid() ) {
       assert( iSrc.isValid() );
@@ -416,7 +416,7 @@ namespace oz
   template <class CIteratorA, class CIteratorB>
   inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
   {
-    assert( &*iSrcA != &*iSrcB );
+    assert( iSrcA != iSrcB );
 
     while( iSrcA.isValid() && iSrcB.isValid() && *iSrcA == *iSrcB ) {
       ++iSrcA;

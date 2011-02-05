@@ -81,8 +81,8 @@ namespace oz
       signum = 0;
     }
 
-    fprintf( stderr, "\nCaught %s (%d, %s). Stack trace:\n",
-             SIGNALS[signum][0], signum, SIGNALS[signum][1] );
+    fprintf( stderr, "\nCaught signal %d %s (%s)\n",
+             signum, SIGNALS[signum][0], SIGNALS[signum][1] );
 
     char* frames;
     int nFrames = StackTrace::get( &frames );

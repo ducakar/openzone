@@ -261,9 +261,16 @@ namespace client
     lower->translate( t );
   }
 
-  MD3::MD3( const char* name_ )
+  MD3::MD3( const char* name_ ) : name( name_ ), isLoaded( false )
+  {}
+
+  MD3::~MD3()
   {
-    String name       = name_;
+    assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void MD3::load()
+  {
     String dir        = "mdl/" + name + "/";
     String configFile = dir + "config.rc";
 
@@ -310,11 +317,8 @@ namespace client
       scale( scaling );
     }
     translate( translation );
-  }
 
-  MD3::~MD3()
-  {
-    assert( glGetError() == GL_NO_ERROR );
+    isLoaded = true;
   }
 
   void MD3::drawFrame( int frame ) const

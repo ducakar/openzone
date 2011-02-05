@@ -20,15 +20,22 @@ namespace client
   {
     private:
 
-      static const int TICK_CLEAR_PERIOD         = 60 * 20;
-      static const int MODEL_CLEAR_INTERVAL      = 30 * 20;
+      static const int TICK_CLEAR_PERIOD         = 60 * 20;     // 60 s
+
+      static const int MODEL_CLEAR_INTERVAL      = 20 * 20;     // 20 s (mod  0 ms)
       static const int MODEL_CLEAR_LAG           = 0;
-      static const int AUDIO_CLEAR_INTERVAL      = 10 * 20;
-      static const int AUDIO_CLEAR_LAG           = 5;
-      static const int SOURCE_CLEAR_INTERVAL     = 1 * 20;      // 1 s
-      static const int SOURCE_CLEAR_LAG          = 10;
-      static const int CONTSOURCE_CLEAR_INTERVAL = 1 * 20;      // 1 s
-      static const int CONTSOURCE_CLEAR_LAG      = 15;
+
+      static const int BSP_CLEAR_INTERVAL        = 40 * 20;     // 40 s (mod  5 ms)
+      static const int BSP_CLEAR_LAG             = 5;
+
+      static const int AUDIO_CLEAR_INTERVAL      = 10 * 20;     // 10 s (mod 10 ms)
+      static const int AUDIO_CLEAR_LAG           = 10;
+
+      static const int SOURCE_CLEAR_INTERVAL     = 1 * 20;      //  1 s (mod 13 ms)
+      static const int SOURCE_CLEAR_LAG          = 13;
+
+      static const int CONTSOURCE_CLEAR_INTERVAL = 1 * 20;      //  1 s (mod 16 ms)
+      static const int CONTSOURCE_CLEAR_LAG      = 16;
 
       int tick;
 
@@ -43,9 +50,6 @@ namespace client
 
       void cleanup();
       void update();
-
-      void load();
-      void unload();
 
       void init();
       void free();
