@@ -129,8 +129,8 @@ namespace client
 
       void load();
 
-      int  fullDraw( const Struct* str ) const;
-      void fullDrawWater( const Struct* str ) const;
+      int  draw( const Struct* str ) const;
+      void drawWater( const Struct* str ) const;
 
   };
 

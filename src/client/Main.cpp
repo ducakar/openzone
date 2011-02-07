@@ -16,14 +16,16 @@
 #include "client/Sound.hpp"
 #include "client/Render.hpp"
 
+#include <cerrno>
 #include <ctime>
+#include <sys/stat.h>
+#include <SDL_net.h>
+
 #ifdef OZ_MSVC
 # include <direct.h>
 #else
 # include <unistd.h>
 #endif
-#include <sys/stat.h>
-#include <SDL_net.h>
 
 namespace oz
 {
@@ -92,6 +94,9 @@ namespace client
 
     float shutdownTime = float( SDL_GetTicks() - beginTime ) * 0.001f;
 
+    context.printLoad();
+    Alloc::printStatistics();
+
     log.println( "Time statistics {" );
     log.indent();
     log.println( "Loading time             %.2f s",    loadingTime );
@@ -120,8 +125,6 @@ namespace client
     log.println( "}" );
     log.unindent();
     log.println( "}" );
-
-    Alloc::printStatistics();
 
     log.unindent();
     log.println( "}" );
@@ -302,6 +305,22 @@ namespace client
     render.load();
     initFlags |= INIT_RENDER_LOAD;
 
+    bool  isBenchmark = false;
+    float benchmarkTime;
+
+    for( int i = 1; i < *argc; ++i ) {
+      if( String::equals( argv[i], "-b" ) && i + 1 < *argc ) {
+        errno = 0;
+        char* end;
+
+        benchmarkTime = strtof( argv[i + 1], &end );
+
+        if( errno == 0 && end != argv[i + 1] ) {
+          isBenchmark = true;
+        }
+      }
+    }
+
     SDL_Event event;
 
     // set mouse cursor to centre of the screen and clear any events (key presses and mouse moves)
@@ -412,6 +431,10 @@ namespace client
         droppedMillis += delta - tick;
       }
       timeLast += tick;
+
+      if( isBenchmark && float( SDL_GetTicks() - timeZero ) >= benchmarkTime * 1000.0f ) {
+        isAlive = false;
+      }
     }
     while( isAlive );
 

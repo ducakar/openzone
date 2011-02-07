@@ -145,28 +145,28 @@ namespace oz
 
     InputStream is = buffer.inputStream();
 
-    mins           = is.readPoint3();
-    maxs           = is.readPoint3();
-    life           = is.readFloat();
+    mins         = is.readPoint3();
+    maxs         = is.readPoint3();
+    life         = is.readFloat();
 
-    nPlanes        = is.readInt();
-    nNodes         = is.readInt();
-    nLeaves        = is.readInt();
-    nLeafBrushes   = is.readInt();
-    nBrushes       = is.readInt();
-    nBrushSides    = is.readInt();
-    nEntityClasses = is.readInt();
+    nPlanes      = is.readInt();
+    nNodes       = is.readInt();
+    nLeaves      = is.readInt();
+    nLeafBrushes = is.readInt();
+    nBrushes     = is.readInt();
+    nBrushSides  = is.readInt();
+    nModels      = is.readInt();
 
     int size = 0;
 
-    size += nPlanes        * int( sizeof( Plane ) );
-    size += nNodes         * int( sizeof( Node ) );
-    size += nLeaves        * int( sizeof( Leaf ) );
-    size += nLeafBrushes   * int( sizeof( int ) );
-    size += nBrushes       * int( sizeof( Brush ) );
-    size += nBrushSides    * int( sizeof( int ) );
+    size += nPlanes      * int( sizeof( Plane ) );
+    size += nNodes       * int( sizeof( Node ) );
+    size += nLeaves      * int( sizeof( Leaf ) );
+    size += nLeafBrushes * int( sizeof( int ) );
+    size += nBrushes     * int( sizeof( Brush ) );
+    size += nBrushSides  * int( sizeof( int ) );
     size = Alloc::alignUp( size );
-    size += nEntityClasses * int( sizeof( EntityClass ) );
+    size += nModels      * int( sizeof( Model ) );
 
     char* data = Alloc::alloc<char>( size );
 
@@ -213,20 +213,20 @@ namespace oz
     data += nBrushSides * sizeof( int );
 
     data = Alloc::alignUp( data );
-    entityClasses = new( data ) EntityClass[nEntityClasses];
-    for( int i = 0; i < nEntityClasses; ++i ) {
-      entityClasses[i].mins = is.readPoint3();
-      entityClasses[i].maxs = is.readPoint3();
-      entityClasses[i].bsp = this;
-      entityClasses[i].firstBrush = is.readInt();
-      entityClasses[i].nBrushes = is.readInt();
-      entityClasses[i].move = is.readVec3();
-      entityClasses[i].ratioInc = is.readFloat();
-      entityClasses[i].flags = is.readInt();
-      entityClasses[i].mode = EntityClass::Mode( is.readInt() );
-      entityClasses[i].margin = is.readFloat();
-      entityClasses[i].slideTime = is.readFloat();
-      entityClasses[i].timeout = is.readFloat();
+    models = new( data ) Model[nModels];
+    for( int i = 0; i < nModels; ++i ) {
+      models[i].mins = is.readPoint3();
+      models[i].maxs = is.readPoint3();
+      models[i].bsp = this;
+      models[i].firstBrush = is.readInt();
+      models[i].nBrushes = is.readInt();
+      models[i].move = is.readVec3();
+      models[i].ratioInc = is.readFloat();
+      models[i].flags = is.readInt();
+      models[i].mode = Model::Mode( is.readInt() );
+      models[i].margin = is.readFloat();
+      models[i].slideTime = is.readFloat();
+      models[i].timeout = is.readFloat();
     }
 
     assert( !is.isAvailable() );
@@ -243,27 +243,27 @@ namespace oz
       aDestruct( nodes, nNodes );
       aDestruct( leaves, nLeaves );
       aDestruct( leafBrushes, nLeafBrushes );
-      aDestruct( entityClasses, nEntityClasses );
+      aDestruct( models, nModels );
       aDestruct( brushes, nBrushes );
       aDestruct( brushSides, nBrushSides );
 
       Alloc::dealloc( planes );
 
-      nPlanes        = 0;
-      nNodes         = 0;
-      nLeaves        = 0;
-      nLeafBrushes   = 0;
-      nEntityClasses = 0;
-      nBrushes       = 0;
-      nBrushSides    = 0;
+      nPlanes      = 0;
+      nNodes       = 0;
+      nLeaves      = 0;
+      nLeafBrushes = 0;
+      nModels      = 0;
+      nBrushes     = 0;
+      nBrushSides  = 0;
 
-      planes        = null;
-      nodes         = null;
-      leaves        = null;
-      leafBrushes   = null;
-      entityClasses = null;
-      brushes       = null;
-      brushSides    = null;
+      planes      = null;
+      nodes       = null;
+      leaves      = null;
+      leafBrushes = null;
+      models      = null;
+      brushes     = null;
+      brushSides  = null;
     }
 
     log.printEnd( " OK" );
@@ -384,78 +384,76 @@ namespace oz
     fseek( file, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
     fread( leafBrushes, sizeof( int ), nLeafBrushes, file );
 
-    nEntityClasses = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) );
-    entityClasses = new EntityClass[nEntityClasses];
-    fseek( file, lumps[QBSP_LUMP_MODELS].offset, SEEK_SET );
+    nModels = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) ) - 1;
+    models = null;
 
-    if( nEntityClasses < 1 ) {
-      log.println( "BSP should contain at least 1 model (entire BSP)" );
-      return false;
-    }
+    if( nModels != 0 ) {
+      models = new Model[nModels];
+      fseek( file, lumps[QBSP_LUMP_MODELS].offset, SEEK_SET );
 
-    assert( nEntityClasses <= 99 );
-    char keyBuffer[] = "model  ";
+      assert( nModels <= 99 );
+      char keyBuffer[] = "model  ";
 
-    for( int i = 0; i < nEntityClasses; ++i ) {
+      // skip model 0 (whole BSP)
       QBSPModel model;
-
       fread( &model, sizeof( QBSPModel ), 1, file );
 
-      entityClasses[i].mins.x = model.bb[0][0] * scale;
-      entityClasses[i].mins.y = model.bb[0][1] * scale;
-      entityClasses[i].mins.z = model.bb[0][2] * scale;
+      for( int i = 0; i < nModels; ++i ) {
+        fread( &model, sizeof( QBSPModel ), 1, file );
 
-      entityClasses[i].maxs.x = model.bb[1][0] * scale;
-      entityClasses[i].maxs.y = model.bb[1][1] * scale;
-      entityClasses[i].maxs.z = model.bb[1][2] * scale;
+        models[i].mins.x = model.bb[0][0] * scale;
+        models[i].mins.y = model.bb[0][1] * scale;
+        models[i].mins.z = model.bb[0][2] * scale;
 
-      entityClasses[i].mins -= Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
-      entityClasses[i].maxs += Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
+        models[i].maxs.x = model.bb[1][0] * scale;
+        models[i].maxs.y = model.bb[1][1] * scale;
+        models[i].maxs.z = model.bb[1][2] * scale;
 
-      entityClasses[i].bsp = this;
+        models[i].mins -= Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
+        models[i].maxs += Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
 
-      entityClasses[i].firstBrush = model.firstBrush;
-      entityClasses[i].nBrushes   = model.nBrushes;
+        models[i].bsp = this;
 
-      keyBuffer[5] = char( '0' + i / 10 );
-      keyBuffer[6] = char( '0' + i % 10 );
-      String keyName = keyBuffer;
+        models[i].firstBrush = model.firstBrush;
+        models[i].nBrushes   = model.nBrushes;
 
-      entityClasses[i].move.x = bspConfig.get( keyName + ".move.x", 0.0f );
-      entityClasses[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
-      entityClasses[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
+        keyBuffer[5] = char( '0' + i / 10 );
+        keyBuffer[6] = char( '0' + i % 10 );
+        String keyName = keyBuffer;
 
-      entityClasses[i].ratioInc = bspConfig.get( keyName + ".ratioInc", Timer::TICK_TIME );
-      entityClasses[i].flags = 0;
+        models[i].move.x = bspConfig.get( keyName + ".move.x", 0.0f );
+        models[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
+        models[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
 
-      String type = bspConfig.get( keyName + ".type", "BLOCKING" );
-      if( type.equals( "IGNORING" ) ) {
-        entityClasses[i].mode = EntityClass::IGNORING;
+        models[i].ratioInc = bspConfig.get( keyName + ".ratioInc", Timer::TICK_TIME );
+        models[i].flags = 0;
+
+        String type = bspConfig.get( keyName + ".type", "BLOCKING" );
+        if( type.equals( "IGNORING" ) ) {
+          models[i].mode = Model::IGNORING;
+        }
+        else if( type.equals( "BLOCKING" ) ) {
+          models[i].mode = Model::BLOCKING;
+        }
+        else if( type.equals( "PUSHING" ) ) {
+          models[i].mode = Model::PUSHING;
+        }
+        else if( type.equals( "CRUSHING" ) ) {
+          models[i].mode = Model::CRUSHING;
+        }
+        else {
+          log.println( "invalid BSP entity type, should be either IGNORING, BLOCKING, PUSHING or "
+              "CRUSHING" );
+          delete[] texFlags;
+          delete[] texTypes;
+          return false;
+        }
+
+        models[i].margin = bspConfig.get( keyName + ".margin", 1.0f );
+        models[i].slideTime = 1.0f;
+        models[i].timeout = 5.0f;
       }
-      else if( type.equals( "BLOCKING" ) ) {
-        entityClasses[i].mode = EntityClass::BLOCKING;
-      }
-      else if( type.equals( "PUSHING" ) ) {
-        entityClasses[i].mode = EntityClass::PUSHING;
-      }
-      else if( type.equals( "CRUSHING" ) ) {
-        entityClasses[i].mode = EntityClass::CRUSHING;
-      }
-      else {
-        log.println( "invalid BSP model type, should be either IGNORING, BLOCKING, PUSHING or "
-            "CRUSHING" );
-        delete[] texFlags;
-        delete[] texTypes;
-        return false;
-      }
-
-      entityClasses[i].margin = bspConfig.get( keyName + ".margin", 1.0f );
-      entityClasses[i].slideTime = 1.0f;
-      entityClasses[i].timeout = 5.0f;
     }
-
-    entityClasses[0].mins = mins;
-    entityClasses[0].maxs = maxs;
 
     nBrushSides = int( lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide ) );
     brushSides = new int[nBrushSides];
@@ -527,25 +525,25 @@ namespace oz
     delete[] nodes;
     delete[] leaves;
     delete[] leafBrushes;
-    delete[] entityClasses;
+    delete[] models;
     delete[] brushes;
     delete[] brushSides;
 
-    planes        = null;
-    nodes         = null;
-    leaves        = null;
-    leafBrushes   = null;
-    entityClasses = null;
-    brushes       = null;
-    brushSides    = null;
+    planes      = null;
+    nodes       = null;
+    leaves      = null;
+    leafBrushes = null;
+    models      = null;
+    brushes     = null;
+    brushSides  = null;
 
-    nPlanes        = 0;
-    nNodes         = 0;
-    nLeaves        = 0;
-    nLeafBrushes   = 0;
-    nEntityClasses = 0;
-    nBrushes       = 0;
-    nBrushSides    = 0;
+    nPlanes      = 0;
+    nNodes       = 0;
+    nLeaves      = 0;
+    nLeafBrushes = 0;
+    nModels      = 0;
+    nBrushes     = 0;
+    nBrushSides  = 0;
 
     log.printEnd( " OK" );
   }
@@ -595,23 +593,54 @@ namespace oz
         }
       }
       // adjust brush references (for models)
-      for( int j = 0; j < nEntityClasses; ++j ) {
-        if( i < entityClasses[j].firstBrush ) {
-          --entityClasses[j].firstBrush;
+      for( int j = 0; j < nModels; ++j ) {
+        if( i < models[j].firstBrush ) {
+          --models[j].firstBrush;
         }
-        else if( i < entityClasses[j].firstBrush + entityClasses[j].nBrushes ) {
-          assert( entityClasses[j].nBrushes > 0 );
+        else if( i < models[j].firstBrush + models[j].nBrushes ) {
+          assert( models[j].nBrushes > 0 );
 
-          --entityClasses[j].nBrushes;
+          --models[j].nBrushes;
         }
       }
       log.printEnd();
     }
 
-    brushes = aRealloc( brushes, nBrushes, nBrushes );
-    leafBrushes = aRealloc( leafBrushes, nLeafBrushes, nLeafBrushes );
+    // remove model brushes from the static tree (Wtf Quake BSP puts them there in the first place?)
+    log.print( "removing model brush references " );
 
-    // remove unreferenced and empty leaves
+    for( int i = 0; i < nModels; ++i ) {
+      for( int j = 0; j < models[i].nBrushes; ++j ) {
+        int brush = models[i].firstBrush + j;
+
+        for( int k = 0; k < nLeafBrushes; ) {
+          if( leafBrushes[k] != brush ) {
+            ++k;
+            continue;
+          }
+
+          aRemove( leafBrushes, k, nLeafBrushes );
+          --nLeafBrushes;
+          log.printRaw( "." );
+
+          // adjust leaf references
+          for( int l = 0; l < nLeaves; ++l ) {
+            if( k < leaves[l].firstBrush ) {
+              --leaves[l].firstBrush;
+            }
+            else if( k < leaves[l].firstBrush + leaves[l].nBrushes ) {
+              assert( leaves[l].nBrushes > 0 );
+
+              --leaves[l].nBrushes;
+            }
+          }
+        }
+      }
+    }
+
+    log.printEnd( " OK" );
+
+    // remove unreferenced leaves
     log.print( "removing unreferenced and empty leaves " );
 
     for( int i = 0; i < nLeaves; ) {
@@ -652,8 +681,6 @@ namespace oz
       }
     }
 
-    leaves = aRealloc( leaves, nLeaves, nLeaves );
-
     log.printEnd( " OK" );
 
     // collapse unnecessary nodes
@@ -663,99 +690,78 @@ namespace oz
     do {
       hasCollapsed = false;
 
-      for( int i = 0; i < nNodes; ++i ) {
-        if( nodes[i].front == 0 ) {
-          hasCollapsed = true;
-
-          // find parent and bind the remaining leaf to the parent
-          int j;
-          for( j = 0; j < nNodes; ++j ) {
-            if( nodes[j].front == i ) {
-              nodes[j].front = nodes[i].back;
-              break;
-            }
-            else if( nodes[j].back == i ) {
-              nodes[j].back = nodes[i].back;
-              break;
-            }
-          }
-          assert( j < nNodes );
-
-          log.printRaw( "." );
+      for( int i = 0; i < nNodes; ) {
+        if( nodes[i].front != 0 && nodes[i].back != 0 ) {
+          ++i;
+          continue;
         }
-        else if( nodes[i].back == 0 ) {
-          hasCollapsed = true;
-
-          // find parent and bind the remaining leaf to the parent
-          int j;
-          for( j = 0; j < nNodes; ++j ) {
-            if( nodes[j].front == i ) {
-              nodes[j].front = nodes[i].front;
-              break;
-            }
-            else if( nodes[j].back == i ) {
-              nodes[j].back = nodes[i].front;
-              break;
-            }
+        if( i == 0 ) {
+          // change root node for one of its children, and set i to that child index, so it will
+          // be removed instead of root
+          if( nodes[0].front == 0 ) {
+            i = nodes[0].back;
           }
-          assert( j < nNodes );
-
-          log.printRaw( "." );
+          else if( nodes[0].back == 0 ) {
+            i = nodes[0].front;
+          }
+          else {
+            assert( false );
+          }
+          nodes[0] = nodes[i];
         }
-
-        // remove node and adjust references
-        if( nodes[i].front == 0 || nodes[i].back == 0 ) {
-          aRemove( nodes, i, nNodes );
-          --nNodes;
-
+        else {
+          // find parent
+          int* parentsRef = null;
           for( int j = 0; j < nNodes; ++j ) {
-            assert( nodes[j].front != i && nodes[j].back != i );
+            if( nodes[j].front == i ) {
+              assert( parentsRef == null );
 
-            if( nodes[j].front > i && nodes[j].front != 0 ) {
-              --nodes[j].front;
+              parentsRef = &nodes[j].front;
             }
-            if( nodes[j].back > i && nodes[j].back != 0 ) {
-              --nodes[j].back;
+            if( nodes[j].back == i ) {
+              assert( parentsRef == null );
+
+              parentsRef = &nodes[j].back;
             }
           }
+          assert( parentsRef != null );
+
+          if( nodes[i].front == 0 ) {
+            *parentsRef = nodes[i].back;
+          }
+          else if( nodes[i].back == 0 ) {
+            *parentsRef = nodes[i].front;
+          }
+          else {
+            assert( false );
+          }
         }
+
+        aRemove( nodes, i, nNodes );
+        --nNodes;
+
+        for( int j = 0; j < nNodes; ++j ) {
+          assert( nodes[j].front != i );
+          assert( nodes[j].back != i );
+        }
+
+        // shift nodes' references
+        for( int j = 0; j < nNodes; ++j ) {
+          if( nodes[j].front > i ) {
+            --nodes[j].front;
+          }
+          if( nodes[j].back > i ) {
+            --nodes[j].back;
+          }
+        }
+
+        log.printRaw( "." );
+        hasCollapsed = true;
       }
     }
     while( hasCollapsed );
 
-    nodes = aRealloc( nodes, nNodes, nNodes );
-
     log.printEnd( " OK" );
-
-    // integrity check
-    Bitset usedNodes( nNodes );
-    Bitset usedLeaves( nLeaves );
-
-    usedNodes.clearAll();
-    usedLeaves.clearAll();
-
-    for( int i = 0; i < nNodes; ++i ) {
-      if( nodes[i].front < 0 ) {
-        usedLeaves.set( ~nodes[i].front );
-      }
-      else if( nodes[i].front != 0 ) {
-        usedNodes.set( nodes[i].front );
-      }
-
-      if( nodes[i].back < 0 ) {
-        usedLeaves.set( ~nodes[i].back );
-      }
-      else if( nodes[i].back != 0 ) {
-        usedNodes.set( nodes[i].back );
-      }
-    }
-
-    for( int i = 0; i < nLeaves; ++i ) {
-      assert( usedLeaves.get( i ) );
-    }
-    for( int i = 1; i < nNodes; ++i ) {
-      assert( usedNodes.get( i ) );
-    }
 
     // remove unused brush sides
     log.print( "removing unused brush sides " );
@@ -794,7 +800,6 @@ namespace oz
     log.printEnd( " OK" );
 
     delete[] usedBrushSides;
-    brushSides = aRealloc( brushSides, nBrushSides, nBrushSides );
 
     // remove unused planes
     log.print( "removing unused planes " );
@@ -838,7 +843,6 @@ namespace oz
     }
 
     delete[] usedPlanes;;
-    planes = aRealloc( planes, nPlanes, nPlanes );
 
     log.printEnd( " OK" );
 
@@ -871,13 +875,108 @@ namespace oz
       }
     }
 
-    entityClasses[0].mins = mins;
-    entityClasses[0].maxs = maxs;
-
     log.printEnd( "(%g %g %g) (%g %g %g)", mins.x, mins.y, mins.z, maxs.x, maxs.y, maxs.z );
 
     log.unindent();
     log.println( "}" );
+  }
+
+  void BSP::check( bool isOptimised ) const
+  {
+    log.print( "Integrity check ..." );
+
+    Bitset usedNodes( nNodes );
+    Bitset usedLeaves( nLeaves );
+    Bitset usedBrushes( nBrushes );
+
+    usedNodes.clearAll();
+    usedLeaves.clearAll();
+    usedBrushes.clearAll();
+
+    for( int i = 0; i < nNodes; ++i ) {
+      if( nodes[i].front < 0 ) {
+        if( usedLeaves.get( ~nodes[i].front ) ) {
+          throw Exception( "BSP leaf " + String( ~nodes[i].front ) + " referenced twice" );
+        }
+        usedLeaves.set( ~nodes[i].front );
+      }
+      else if( nodes[i].front != 0 ) {
+        if( usedNodes.get( nodes[i].front ) ) {
+          throw Exception( "BSP node " + String( nodes[i].front ) + " referenced twice" );
+        }
+        usedNodes.set( nodes[i].front );
+      }
+      else {
+        throw Exception( "BSP root node referenced" );
+      }
+
+      if( nodes[i].back < 0 ) {
+        if( usedLeaves.get( ~nodes[i].back ) ) {
+          throw Exception( "BSP leaf " + String( ~nodes[i].back ) + " referenced twice" );
+        }
+        usedLeaves.set( ~nodes[i].back );
+      }
+      else if( nodes[i].back != 0 ) {
+        if( usedNodes.get( nodes[i].back ) ) {
+          throw Exception( "BSP node " + String( nodes[i].back ) + " referenced twice" );
+        }
+        usedNodes.set( nodes[i].back );
+      }
+      else {
+        throw Exception( "BSP root node referenced" );
+      }
+    }
+
+    for( int i = 0; i < nModels; ++i ) {
+      for( int j = 0; j < models[i].nBrushes; ++j ) {
+        int index = models[i].firstBrush + j;
+
+        if( usedBrushes.get( index ) ) {
+          throw Exception( "BSP brush " + String( index ) + " referenced by two models" );
+        }
+        usedBrushes.set( index );
+      }
+    }
+
+    usedBrushes.clearAll();
+    for( int i = 0; i < nLeaves; ++i ) {
+      for( int j = 0; j < leaves[i].nBrushes; ++j ) {
+        int index = leafBrushes[ leaves[i].firstBrush + j ];
+
+        usedBrushes.set( index );
+      }
+    }
+    for( int i = 0; i < nModels; ++i ) {
+      for( int j = 0; j < models[i].nBrushes; ++j ) {
+        int index = models[i].firstBrush + j;
+
+        if( isOptimised && usedBrushes.get( index ) ) {
+          throw Exception( "BSP model brush " + String( index ) + " referenced by static tree" );
+        }
+        usedBrushes.set( index );
+      }
+    }
+
+    if( usedNodes.get( 0 ) ) {
+      throw Exception( "BSP root node referenced" );
+    }
+    for( int i = 1; i < nNodes; ++i ) {
+      if( !usedNodes.get( i ) ) {
+        throw Exception( "BSP node " + String( i ) + " not referenced" );
+      }
+    }
+    for( int i = 0; i < nLeaves; ++i ) {
+      if( isOptimised && !usedLeaves.get( i ) ) {
+        throw Exception( "BSP leaf " + String( i ) + " not referenced" );
+      }
+    }
+    for( int i = 0; i < nBrushes; ++i ) {
+      if( !usedBrushes.get( i ) ) {
+        throw Exception( "BSP brush " + String( i ) + " not referenced" );
+      }
+    }
+
+    log.printEnd( " OK" );
   }
 
   bool BSP::save( const char* fileName )
@@ -886,16 +985,16 @@ namespace oz
 
     int size = 0;
 
-    size += 1              * int( sizeof( Bounds ) );
-    size += 1              * int( sizeof( float ) );
-    size += 7              * int( sizeof( int ) );
-    size += nPlanes        * int( sizeof( Plane ) );
-    size += nNodes         * int( sizeof( Node ) );
-    size += nLeaves        * int( sizeof( Leaf ) );
-    size += nLeafBrushes   * int( sizeof( int ) );
-    size += nBrushes       * int( sizeof( Brush ) );
-    size += nBrushSides    * int( sizeof( int ) );
-    size += nEntityClasses * int( sizeof( EntityClass ) - sizeof( void* ) );
+    size += 1            * int( sizeof( Bounds ) );
+    size += 1            * int( sizeof( float ) );
+    size += 7            * int( sizeof( int ) );
+    size += nPlanes      * int( sizeof( Plane ) );
+    size += nNodes       * int( sizeof( Node ) );
+    size += nLeaves      * int( sizeof( Leaf ) );
+    size += nLeafBrushes * int( sizeof( int ) );
+    size += nBrushes     * int( sizeof( Brush ) );
+    size += nBrushSides  * int( sizeof( int ) );
+    size += nModels      * int( sizeof( Model ) - sizeof( void* ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
@@ -910,7 +1009,7 @@ namespace oz
     os.writeInt( nLeafBrushes );
     os.writeInt( nBrushes );
     os.writeInt( nBrushSides );
-    os.writeInt( nEntityClasses );
+    os.writeInt( nModels );
 
     for( int i = 0; i < nPlanes; ++i ) {
       os.writeVec3( planes[i].normal );
@@ -942,18 +1041,18 @@ namespace oz
       os.writeInt( brushSides[i] );
     }
 
-    for( int i = 0; i < nEntityClasses; ++i ) {
-      os.writePoint3( entityClasses[i].mins );
-      os.writePoint3( entityClasses[i].maxs );
-      os.writeInt( entityClasses[i].firstBrush );
-      os.writeInt( entityClasses[i].nBrushes );
-      os.writeVec3( entityClasses[i].move );
-      os.writeFloat( entityClasses[i].ratioInc );
-      os.writeInt( entityClasses[i].flags );
-      os.writeInt( entityClasses[i].mode );
-      os.writeFloat( entityClasses[i].margin );
-      os.writeFloat( entityClasses[i].slideTime );
-      os.writeFloat( entityClasses[i].timeout );
+    for( int i = 0; i < nModels; ++i ) {
+      os.writePoint3( models[i].mins );
+      os.writePoint3( models[i].maxs );
+      os.writeInt( models[i].firstBrush );
+      os.writeInt( models[i].nBrushes );
+      os.writeVec3( models[i].move );
+      os.writeFloat( models[i].ratioInc );
+      os.writeInt( models[i].flags );
+      os.writeInt( models[i].mode );
+      os.writeFloat( models[i].margin );
+      os.writeFloat( models[i].slideTime );
+      os.writeFloat( models[i].timeout );
     }
 
     assert( !os.isAvailable() );
@@ -964,9 +1063,9 @@ namespace oz
   }
 
   BSP::BSP() :
-      nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nEntityClasses( 0 ),
+      nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nModels( 0 ),
       nBrushes( 0 ), nBrushSides( 0 ),
-      planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), entityClasses( null ),
+      planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), models( null ),
       brushes( null ), brushSides( null )
   {}
 
@@ -986,6 +1085,7 @@ namespace oz
     }
 
     bsp->optimise();
+    bsp->check( true );
     bsp->save( String( "maps/" ) + name + String( ".ozBSP" ) );
     bsp->freeQBSP();
     delete bsp;
@@ -996,9 +1096,9 @@ namespace oz
 
   BSP::BSP( const char* name_ ) :
       name( name_ ),
-      nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nEntityClasses( 0 ),
+      nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nModels( 0 ),
       nBrushes( 0 ), nBrushSides( 0 ),
-      planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), entityClasses( null ),
+      planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), models( null ),
       brushes( null ), brushSides( null )
   {
     log.print( "Loading OpenZone BSP structure '%s' ...", name.cstr() );

@@ -36,8 +36,6 @@ namespace client
       SDL_sem*      mainSemaphore;
       SDL_sem*      auxSemaphore;
 
-      int           diagnosticsCount;
-
       volatile bool isAlive;
 
       static int auxMain( void* );

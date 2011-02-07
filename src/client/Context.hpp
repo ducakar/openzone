@@ -115,7 +115,7 @@ namespace client
 
       ContSource*                       cachedSource;
       List<Source>                      sources;
-      HashIndex<ContSource, 512>        contSources;
+      HashIndex<ContSource, 256>        contSources;
 
       Resource<BSP*>*                   bsps;
 
@@ -127,6 +127,11 @@ namespace client
 
       HashIndex<Model*, 8191>           models;   // currently loaded models
       HashIndex<Audio*, 1021>           audios;   // currently loaded audio models
+
+      int                               maxModels;
+      int                               maxAudios;
+      int                               maxSources;
+      int                               maxContSources;
 
       static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
@@ -206,9 +211,11 @@ namespace client
 
       int  drawBSP( const Struct* str );
       void drawBSPWater( const Struct* str );
+
       void drawModel( const Object* obj, const Model* parent );
       void playAudio( const Object* obj, const Audio* parent );
 
+      void updateLoad();
       void printLoad();
 
       void load();

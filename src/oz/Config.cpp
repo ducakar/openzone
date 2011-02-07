@@ -12,9 +12,9 @@
 #include "Exception.hpp"
 #include "Log.hpp"
 
+#include <cerrno>
 #include <cstdlib>
 #include <cstdio>
-#include <cerrno>
 
 #ifdef OZ_XML_CONFIG
 #include <libxml/xmlreader.h>

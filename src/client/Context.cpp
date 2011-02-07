@@ -635,7 +635,7 @@ namespace client
     else if( resource.object->isLoaded ) {
       // we don't count users, just to show there is at least one
       resource.nUsers = 1;
-      return resource.object->fullDraw( str );
+      return resource.object->draw( str );
     }
     return 0;
   }
@@ -650,7 +650,7 @@ namespace client
     else if( resource.object->isLoaded ) {
       // we don't count users, just to show there is at least one
       resource.nUsers = 1;
-      return resource.object->fullDrawWater( str );
+      return resource.object->drawWater( str );
     }
   }
 
@@ -710,14 +710,25 @@ namespace client
     audio->play( parent );
   }
 
+  void Context::updateLoad()
+  {
+    maxModels      = max( maxModels, models.length() );
+    maxAudios      = max( maxAudios, audios.length() );
+    maxSources     = max( maxSources, sources.length() );
+    maxContSources = max( maxContSources, contSources.length() );
+  }
+
   void Context::printLoad()
   {
-    log.println( "Context load {" );
+    log.println( "Context maximum load {" );
     log.indent();
-    log.println( "Models       %d (hashtable load %.2f)", models.length(), models.loadFactor() );
-    log.println( "Audios       %d (hashtable load %.2f)", audios.length(), audios.loadFactor() );
-    log.println( "Sources      %d", sources.length() );
-    log.println( "ContSources  %d", contSources.length() );
+    log.println( "Models       %d (hashtable load %.2f)", maxModels,
+                 float( maxModels ) / float( models.capacity() ) );
+    log.println( "Audios       %d (hashtable load %.2f)", maxAudios,
+                 float( maxAudios ) / float( audios.capacity() ) );
+    log.println( "Sources      %d", maxSources );
+    log.println( "ContSources  %d (hashtable load %.2f)", maxContSources,
+                 float( maxContSources ) / float( contSources.capacity() ) );
     log.unindent();
     log.println( "}" );
   }
@@ -736,6 +747,11 @@ namespace client
       bsps[i].object = null;
       bsps[i].isUpdated = false;
     }
+
+    maxModels      = 0;
+    maxAudios      = 0;
+    maxSources     = 0;
+    maxContSources = 0;
 
     log.printEnd( " OK" );
   }

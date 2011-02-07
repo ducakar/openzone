@@ -304,42 +304,35 @@ namespace client
 
     glEnable( GL_BLEND );
 
-    if( boundsType != NONE ) {
+    if( showBounds ) {
+      glDisable( GL_BLEND );
       glEnable( GL_COLOR_MATERIAL );
 
-      if( boundsType == BOX ) {
-        for( int i = 0; i < objects.length(); ++i ) {
-          glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
-              Colours::CLIP_AABB : Colours::NOCLIP_AABB );
-          shape.drawBox( *objects[i].obj );
-        }
-
-        glColor4fv( Colours::STRUCTURE_AABB );
-
-        for( int i = 0; i < structs.length(); ++i ) {
-          shape.drawBox( structs[i]->toAABB() );
-        }
+      for( int i = 0; i < objects.length(); ++i ) {
+        glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
+            Colours::CLIP_AABB : Colours::NOCLIP_AABB );
+        shape.drawWireBox( *objects[i].obj );
       }
-      else {
-        glDisable( GL_BLEND );
 
-        for( int i = 0; i < objects.length(); ++i ) {
-          glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
-              Colours::CLIP_AABB : Colours::NOCLIP_AABB );
-          shape.drawWireBox( *objects[i].obj );
+      glColor4fv( Colours::STRUCTURE_AABB );
+
+      for( int i = 0; i < structs.length(); ++i ) {
+        const Struct* str = structs[i];
+
+        glColor4fv( Colours::ENTITY_AABB );
+
+        foreach( entity, citer( str->entities, str->nEntities ) ) {
+          Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
+          shape.drawWireBox( bb.toAABB() );
         }
 
         glColor4fv( Colours::STRUCTURE_AABB );
-
-        for( int i = 0; i < structs.length(); ++i ) {
-          shape.drawWireBox( structs[i]->toAABB() );
-        }
-
-        glEnable( GL_BLEND );
+        shape.drawWireBox( str->toAABB() );
       }
 
       glColor4fv( Colours::WHITE );
       glDisable( GL_COLOR_MATERIAL );
+      glEnable( GL_BLEND );
     }
 
     structs.clear();
@@ -468,22 +461,8 @@ namespace client
     waterDayVisibility   = config.getSet( "render.waterDayVisibility",   8.0f );
     waterNightVisibility = config.getSet( "render.waterNightVisibility", 4.0f );
     particleRadius       = config.getSet( "render.particleRadius",       0.5f );
+    showBounds           = config.getSet( "render.showBounds",           false );
     showAim              = config.getSet( "render.showAim",              false );
-
-    String sBoundsType   = config.getSet( "render.boundsType",           "NONE" );
-
-    if( sBoundsType.equals( "NONE" ) ) {
-      boundsType = NONE;
-    }
-    else if( sBoundsType.equals( "BOX" ) ) {
-      boundsType = BOX;
-    }
-    else if( sBoundsType.equals( "WIREFRAME" ) ) {
-      boundsType = WIREFRAME;
-    }
-    else {
-      throw Exception( "render.boundsType should be either NONE, WIREFRAME or BOX" );
-    }
 
     log.unindent();
     log.println( "}" );

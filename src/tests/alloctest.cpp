@@ -9,6 +9,7 @@
 
 #include "stable.hpp"
 
+#include "matrix/Translator.hpp"
 #include "matrix/Synapse.hpp"
 #include "matrix/Matrix.hpp"
 
@@ -35,6 +36,7 @@ int main( int, char** )
 
   chdir( "data" );
 
+  translator.init();
   matrix.init();
   synapse.load();
   orbis.load();
@@ -50,6 +52,7 @@ int main( int, char** )
   synapse.unload();
   orbis.unload();
   matrix.free();
+  translator.init();
 
   SDL_Quit();
   return 0;

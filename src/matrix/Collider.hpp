@@ -18,41 +18,41 @@ namespace oz
 
   struct Hit
   {
-    Vec3          normal;
+    Vec3  normal;
 
     const Object* obj;
     const Struct* str;
-    const Entity* entity;
+    const Struct::Entity* entity;
 
-    float         ratio;
+    float ratio;
 
-    int           material;
-    float         waterDepth;
-    bool          inWater;
-    bool          onLadder;
+    int   material;
+    float waterDepth;
+    bool  inWater;
+    bool  onLadder;
   };
 
   class Collider
   {
     private:
 
-      static const Vec3  normals[];
+      static const Vec3 normals[];
 
-      Span               span;
-      Bounds             trace;
-      Vec3               move;
+      Span   span;
+      Bounds trace;
+      Vec3   move;
 
-      AABB               aabb;
+      AABB   aabb;
 
-      Point3             startPos;
-      Point3             endPos;
+      Point3 startPos;
+      Point3 endPos;
 
-      const Dynamic*     obj;
-      const Object*      exclObj;
-      const Struct*      str;
-      const Entity*      entity;
-      const EntityClass* entityClazz;
-      const BSP*         bsp;
+      const Dynamic* obj;
+      const Object* exclObj;
+      const Struct* str;
+      const Struct::Entity* entity;
+      const BSP::Model* model;
+      const BSP* bsp;
 
       SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
@@ -111,7 +111,7 @@ namespace oz
       bool overlapsOO( const AABB& aabb, const Object* exclObj = null );
       bool overlapsOSO( const AABB& aabb, const Object* exclObj = null );
 
-      bool overlapsOO( const Entity* entity );
+      bool overlapsOO( const Struct::Entity* entity );
 
       // fill given vectors with objects and structures overlapping with the AABB
       // if either vector is null the respecitve test is not performed
@@ -121,7 +121,8 @@ namespace oz
       void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = 0.0f );
       void touchOverlaps( const AABB& aabb, float eps = 0.0f );
 
-      void getOverlaps( const Entity* entity, Vector<Object*>* objects, float margin = 0.0f );
+      void getOverlaps( const Struct::Entity* entity, Vector<Object*>* objects,
+                        float margin = 0.0f );
 
       void translate( const Point3& point, const Vec3& move, const Object* exclObj = null );
       void translate( const AABB& aabb, const Vec3& move, const Object* exclObj = null );

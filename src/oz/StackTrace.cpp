@@ -75,7 +75,15 @@ namespace oz
 
   void StackTrace::signalHandler( int signum )
   {
-    signal( signum, SIG_DFL );
+    signal( SIGHUP,  SIG_DFL );
+    signal( SIGINT,  SIG_DFL );
+    signal( SIGQUIT, SIG_DFL );
+    signal( SIGILL,  SIG_DFL );
+    signal( SIGABRT, SIG_DFL );
+    signal( SIGFPE,  SIG_DFL );
+    signal( SIGSEGV, SIG_DFL );
+    signal( SIGPIPE, SIG_DFL );
+    signal( SIGTERM, SIG_DFL );
 
     if( signum < 1 || signum > 31 ) {
       signum = 0;
@@ -102,17 +110,23 @@ namespace oz
       log.printTrace( frames, nFrames );
     }
 
+    fprintf( stderr, "Attach a debugger or send a fatal signal to kill ...\n" );
+    while( sleep( 1 ) == 0 );
+
     raise( signum );
   }
 
   void StackTrace::init()
   {
-    signal( SIGILL,     signalHandler );
-    signal( SIGABRT,    signalHandler );
-    signal( SIGFPE,     signalHandler );
-    signal( SIGKILL,    signalHandler );
-    signal( SIGSEGV,    signalHandler );
-    signal( SIGTERM,    signalHandler );
+    signal( SIGHUP,  signalHandler );
+    signal( SIGINT,  signalHandler );
+    signal( SIGQUIT, signalHandler );
+    signal( SIGILL,  signalHandler );
+    signal( SIGABRT, signalHandler );
+    signal( SIGFPE,  signalHandler );
+    signal( SIGSEGV, signalHandler );
+    signal( SIGPIPE, signalHandler );
+    signal( SIGTERM, signalHandler );
   }
 
 #ifndef OZ_UNIX

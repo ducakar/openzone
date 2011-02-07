@@ -131,6 +131,7 @@ namespace client
 
     beginTime = SDL_GetTicks();
 
+    context.updateLoad();
     // clean up unused models, audios and audio sources
     loader.cleanup();
     // load scheduled resources
@@ -166,12 +167,6 @@ namespace client
   {
     uint beginTime = SDL_GetTicks();
 
-    ++diagnosticsCount;
-    if( diagnosticsCount == 250 ) {
-      diagnosticsCount = 0;
-      context.printLoad();
-    }
-
     render.draw();
     sound.updateMusic();
 
@@ -182,8 +177,6 @@ namespace client
   {
     log.println( "Loading GameStage {" );
     log.indent();
-
-    diagnosticsCount = 0;
 
     network.connect();
 
@@ -247,19 +240,28 @@ namespace client
       const_cast<Bot*>( camera.botObj )->state &= ~Bot::PLAYER_BIT;
     }
 
-    Buffer buffer( 1024 * 1024 * 10 );
-    OutputStream ostream = buffer.outputStream();
-    String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
+    if( config.get( "autosave", true ) ) {
+      Buffer buffer( 1024 * 1024 * 10 );
+      OutputStream ostream = buffer.outputStream();
+      String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
-    // to delete removed objects, world.unload only deletes those that haven't been removed yet
-    synapse.update();
+      // to delete removed objects, world.unload only deletes those that haven't been removed yet
+      synapse.update();
 
-    matrix.unload( &ostream );
-    nirvana.unload( &ostream );
+      matrix.unload( &ostream );
+      nirvana.unload( &ostream );
 
-    log.print( "Writing world stream to %s ...", stateFile.cstr() );
-    buffer.write( stateFile );
-    log.printEnd( " OK" );
+      log.print( "Writing world stream to %s ...", stateFile.cstr() );
+      buffer.write( stateFile );
+      log.printEnd( " OK" );
+    }
+    else {
+      // to delete removed objects, world.unload only deletes those that haven't been removed yet
+      synapse.update();
+
+      matrix.unload( null );
+      nirvana.unload( null );
+    }
 
     network.disconnect();
 

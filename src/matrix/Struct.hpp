@@ -17,42 +17,6 @@ namespace oz
 {
 
   class Object;
-  class Struct;
-
-  class Entity
-  {
-    friend class Struct;
-
-    public:
-
-      enum State
-      {
-        CLOSED,
-        OPENING,
-        OPENING_BLOCKED,
-        OPENED,
-        CLOSING,
-        CLOSING_BLOCKED
-      };
-
-      static Vector<Object*> overlapingObjs;
-
-      const EntityClass* clazz;
-      Struct*            str;
-      Vec3               offset;
-      State              state;
-
-      float              ratio;
-      float              time;
-
-    private:
-
-      void updateIgnoring();
-      void updateBlocking();
-      void updatePushing();
-      void updateCrushing();
-
-  };
 
   class Struct : public Bounds
   {
@@ -61,6 +25,41 @@ namespace oz
       static const float DAMAGE_THRESHOLD;
 
     public:
+
+      class Entity
+      {
+        friend class Struct;
+
+        public:
+
+          enum State
+          {
+            CLOSED,
+            OPENING,
+            OPENING_BLOCKED,
+            OPENED,
+            CLOSING,
+            CLOSING_BLOCKED
+          };
+
+          static Vector<Object*> overlappingObjs;
+
+          const BSP::Model* model;
+          Struct*           str;
+          Vec3              offset;
+          State             state;
+
+          float             ratio;
+          float             time;
+
+        private:
+
+          void updateIgnoring();
+          void updateBlocking();
+          void updatePushing();
+          void updateCrushing();
+
+      };
 
       enum Rotation
       {
@@ -83,8 +82,8 @@ namespace oz
       Rotation rot;
       float    life;
 
-      Entity*  entities;
       int      nEntities;
+      Entity*  entities;
 
       explicit Struct( int index, int bsp, const Point3& p, Rotation rot );
       explicit Struct( int index, int bsp, InputStream* istream );
