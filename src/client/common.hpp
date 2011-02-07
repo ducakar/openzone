@@ -11,6 +11,8 @@
 
 #include "stable.hpp"
 
+#include "matrix/Collider.hpp"
+
 #ifdef OZ_WINDOWS
 
 # include <SDL_opengl.h>
@@ -34,3 +36,13 @@ extern PFNGLBUFFERDATAPROC           glBufferData;
 #define OZ_VBO_OFFSETOF( index, VertexStruct, member ) \
   ( reinterpret_cast<const char*>( null ) + ( index ) * sizeof( VertexStruct ) + \
       offsetof( VertexStruct, member ) )
+
+namespace oz
+{
+namespace client
+{
+
+  extern Collider collider;
+
+}
+}

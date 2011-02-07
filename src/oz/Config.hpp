@@ -56,6 +56,13 @@ namespace oz
       void add( const char* key, const char* value );
 
       /**
+       * Add variable if it doesn't exist, otherwise do nothing.
+       * @param key variable name
+       * @param value variable value
+       */
+      void include( const char* key, const char* value );
+
+      /**
        * Remove variable.
        * @param key variable name
        */

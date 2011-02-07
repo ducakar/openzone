@@ -4,6 +4,8 @@ dim.x "0.44"
 dim.y "0.44"
 dim.z "1.09"
 
+//flag.solid                      "false"
+
 life "400.0"
 mass "100.0"
 

@@ -1,5 +1,5 @@
 /*
- *  StackTrace.hpp
+ *  System.hpp
  *
  *  Class for generating stack trace for the current function call.
  *
@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  class StackTrace
+  class System
   {
     private:
 
@@ -24,18 +24,23 @@ namespace oz
 
       static const char* const SIGNALS[][2];
 
-      static void* framePtrs[StackTrace::TRACE_SIZE + 1];
-      static char  output[StackTrace::TRACE_BUFFER_SIZE];
+      static thread_local void* framePtrs[TRACE_SIZE + 1];
+      static thread_local char  output[TRACE_BUFFER_SIZE];
 
       static void signalHandler( int signum );
 
     public:
 
       /**
-       * Set signal handlers so that signal information and stack trace is printed when a signal
-       * is raised.
+       * Set signal handlers to catch critical signals, print information, stack trace and wait
+       * for a debugger. SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV, SIGTERM are caught.
        */
-      static void init();
+      static void catchSignals();
+
+      /**
+       * Reset signal handlers to defaults.
+       */
+      static void resetSignals();
 
       /**
        * Generates and demangles stack trace.
@@ -45,7 +50,7 @@ namespace oz
        * @param bufferPtr where to save pointer to buffer
        * @return number of frames
        */
-      static int get( char** bufferPtr );
+      static int getStackTrace( char** bufferPtr );
 
   };
 

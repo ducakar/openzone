@@ -77,7 +77,6 @@ namespace client
       ~MD2();
 
       void load();
-      void optimise();
 
       void scale( float scale );
       void translate( const Vec3& t );
@@ -87,7 +86,9 @@ namespace client
 
       void drawFrame( int frame ) const;
       void draw( const AnimState* anim ) const;
+
       void genList();
+      void deleteList() const;
 
   };
 

@@ -68,6 +68,7 @@ namespace client
     nirvana.sync();
 
     SDL_SemPost( mainSemaphore );
+    SDL_SemPost( mainSemaphore );
     SDL_SemWait( auxSemaphore );
 
     while( isAlive ) {
@@ -76,16 +77,10 @@ namespace client
        */
       beginTime = SDL_GetTicks();
 
-      // we can finally delete removed object after render and sound are sync'd (as model/audio
-      // dtors have pointers to objects) and nirvana has read vector of removed objects and sync'd
-      synapse.update();
-
       network.update();
 
       // update world
       matrix.update();
-      // don't add any objects until next Game::update call or there will be index collisions in
-      // nirvana
 
       timer.matrixMillis += SDL_GetTicks() - beginTime;
 
@@ -97,7 +92,15 @@ namespace client
        */
       beginTime = SDL_GetTicks();
 
+      // sync nirvana
       nirvana.sync();
+
+      // now synapse lists are not needed any more
+      synapse.update();
+
+      // we can now add/remove object from the main thread after synapse lists have been cleared
+      SDL_SemPost( mainSemaphore );
+
       // update minds
       nirvana.update();
 
@@ -112,6 +115,8 @@ namespace client
   {
     uint beginTime;
     uint currentTime;
+
+    SDL_SemWait( mainSemaphore );
 
     beginTime = SDL_GetTicks();
 
@@ -180,23 +185,35 @@ namespace client
 
     network.connect();
 
-    Buffer buffer;
-    String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
+    if( config.getSet( "gameStage.autoload", true ) ) {
+      Buffer buffer;
+      String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
-    log.print( "Loading world stream from %s ...", stateFile.cstr() );
-    if( buffer.read( stateFile ) ) {
-      log.printEnd( " OK" );
+      log.print( "Loading world stream from %s ...", stateFile.cstr() );
+      if( buffer.read( stateFile ) ) {
+        InputStream istream = buffer.inputStream();
 
-      InputStream istream = buffer.inputStream();
+        matrix.load( &istream );
+        nirvana.load( &istream );
 
-      matrix.load( &istream );
-      nirvana.load( &istream );
+        log.printEnd( " OK" );
+      }
+      else {
+        log.printRaw( " Failed, starting a new world ..." );
+
+        matrix.load( null );
+        nirvana.load( null );
+
+        log.printEnd( " OK" );
+      }
     }
     else {
-      log.printEnd( " Failed, starting a new world" );
+      log.print( "Loading a new world ..." );
 
       matrix.load( null );
       nirvana.load( null );
+
+      log.printEnd( " OK" );
     }
 
     camera.warp( Point3( 55, -45, 40 ) );
@@ -240,13 +257,10 @@ namespace client
       const_cast<Bot*>( camera.botObj )->state &= ~Bot::PLAYER_BIT;
     }
 
-    if( config.get( "autosave", true ) ) {
+    if( config.getSet( "gameStage.autosave", true ) ) {
       Buffer buffer( 1024 * 1024 * 10 );
       OutputStream ostream = buffer.outputStream();
       String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
-
-      // to delete removed objects, world.unload only deletes those that haven't been removed yet
-      synapse.update();
 
       matrix.unload( &ostream );
       nirvana.unload( &ostream );
@@ -256,9 +270,6 @@ namespace client
       log.printEnd( " OK" );
     }
     else {
-      // to delete removed objects, world.unload only deletes those that haven't been removed yet
-      synapse.update();
-
       matrix.unload( null );
       nirvana.unload( null );
     }

@@ -2,7 +2,6 @@ add_library( oz STATIC
   Alloc.cpp
   Alloc.hpp
   Array.hpp
-  AutoPtr.hpp
   Bitset.hpp
   Buffer.cpp
   Buffer.hpp
@@ -31,10 +30,10 @@ add_library( oz STATIC
   SBitset.hpp
   SVector.hpp
   Sparse.hpp
-  StackTrace.cpp
-  StackTrace.hpp
   String.cpp
   String.hpp
+  System.cpp
+  System.hpp
   Vec3.cpp
   Vec3.hpp
   Vector.hpp

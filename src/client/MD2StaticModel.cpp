@@ -12,6 +12,7 @@
 #include "client/MD2StaticModel.hpp"
 
 #include "client/Context.hpp"
+#include "client/MD2.hpp"
 
 namespace oz
 {
@@ -24,19 +25,24 @@ namespace client
   {
     MD2StaticModel* model = new MD2StaticModel();
 
-    model->obj  = obj;
-    model->list = context.loadStaticMD2( obj->clazz->modelName );
+    model->obj   = obj;
+    model->clazz = obj->clazz;
+    model->md2   = context.loadStaticMD2( obj->clazz->modelName );
     return model;
   }
 
   MD2StaticModel::~MD2StaticModel()
   {
-    context.releaseStaticMD2( obj->clazz->modelName );
+    context.releaseStaticMD2( clazz->modelName );
   }
 
   void MD2StaticModel::draw( const Model* )
   {
-    glCallList( list );
+    if( !md2->isLoaded ) {
+      return;
+    }
+
+    glCallList( md2->list );
   }
 
 }

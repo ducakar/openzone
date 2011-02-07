@@ -75,6 +75,7 @@
 #  error Too old MSVC, at least 16.00 (Visual C++ 2010) required
 # endif
 # define __PRETTY_FUNCTION__ ""
+# define __thread declspec( thread )
 # define _CRT_SECURE_NO_WARNINGS 1
 # define snprintf sprintf_s
 # define chdir _chdir

@@ -392,11 +392,6 @@ namespace client
     isLoaded = true;
   }
 
-  void MD2::optimise()
-  {
-    Vector< Vector<int> > strips;
-  }
-
   void MD2::scale( float scale )
   {
     int max = nVerts * nFrames;
@@ -507,6 +502,11 @@ namespace client
     glNewList( list, GL_COMPILE );
       drawFrame( 0 );
     glEndList();
+  }
+
+  void MD2::deleteList() const
+  {
+    glDeleteLists( list, 1 );
   }
 
 }

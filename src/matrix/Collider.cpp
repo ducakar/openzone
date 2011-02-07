@@ -637,9 +637,7 @@ namespace oz
         endPos   = originalEndPos;
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) &&
-              sObj->overlaps( trace ) )
-          {
+          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
             trimAABBObj( sObj );
           }
         }
@@ -691,7 +689,7 @@ namespace oz
 
         if( objects != null ) {
           foreach( sObj, cell.objects.iter() ) {
-            if( sObj->overlaps( trace ) ) {
+            if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
               objects->add( sObj );
             }
           }
@@ -710,7 +708,7 @@ namespace oz
         const Cell& cell = orbis.cells[x][y];
 
         foreach( sObj, cell.objects.iter() ) {
-          if( trace.includes( *sObj ) ) {
+          if( ( sObj->flags & mask ) && trace.includes( *sObj ) ) {
             objects->add( sObj );
           }
         }
@@ -748,7 +746,7 @@ namespace oz
         const Cell& cell = orbis.cells[x][y];
 
         foreach( sObj, cell.objects.iter() ) {
-          if( sObj->overlaps( trace ) ) {
+          if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
             startPos = str->toStructCS( sObj->p ) - entity->offset;
             aabb.dim = sObj->dim + dimMargin;
 

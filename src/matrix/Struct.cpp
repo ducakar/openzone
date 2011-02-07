@@ -245,7 +245,10 @@ namespace oz
           offset = oldOffset;
 
           overlappingObjs.clear();
+
+          collider.mask = Object::DYNAMIC_BIT;
           collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
+          collider.mask = Object::SOLID_BIT;
 
           offset = ratio * model->move;
 
@@ -307,7 +310,10 @@ namespace oz
           offset = oldOffset;
 
           overlappingObjs.clear();
+
+          collider.mask = Object::DYNAMIC_BIT;
           collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
+          collider.mask = Object::SOLID_BIT;
 
           offset = ratio * model->move;
 

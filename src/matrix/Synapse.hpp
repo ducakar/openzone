@@ -16,17 +16,10 @@
 namespace oz
 {
 
-  namespace nirvana
-  {
-    class Nirvana;
-  }
-
   class Bot;
 
   class Synapse
   {
-    friend class nirvana::Nirvana;
-
     public:
 
       struct Action
@@ -34,12 +27,9 @@ namespace oz
         int user;
         int target;
 
-        explicit Action( int user_, int target_ ) : user( user_ ), target( target_ ) {}
+        explicit Action( int user_, int target_ ) : user( user_ ), target( target_ )
+        {}
       };
-
-    private:
-
-      Vector<Object*> deleteObjects;
 
       Vector<Action>  actions;
 
@@ -53,8 +43,6 @@ namespace oz
       Vector<int>     removedStructs;
       Vector<int>     removedObjects;
       Vector<int>     removedParts;
-
-    public:
 
       // isSingle XOR isServer XOR isClient
 
@@ -97,7 +85,7 @@ namespace oz
                      const Vec3& colour, float colourSpread,
                      float restitution, float mass, float lifeTime );
 
-      // do deletes and clear lists for actions, additions, removals
+      // clear lists for actions, additions, removals
       void update();
 
       void load();

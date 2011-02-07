@@ -119,6 +119,7 @@ namespace oz
                         float eps = 0.0f );
       // fill given vector with objects included in the AABB
       void getIncludes( const AABB& aabb, Vector<Object*>* objects, float eps = 0.0f );
+      // un-disable all dynamic objects that overlap (does not respect mask)
       void touchOverlaps( const AABB& aabb, float eps = 0.0f );
 
       void getOverlaps( const Struct::Entity* entity, Vector<Object*>* objects,

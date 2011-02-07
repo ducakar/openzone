@@ -155,6 +155,8 @@ namespace ui
       float life = taggedItem->life / taggedItem->clazz->life;
       int lifeWidth = int( life * 46.0f );
 
+      assert( 0.0f <= life && life <= 1.0f );
+
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
       fill( -51, -15, lifeWidth, 10 );
 

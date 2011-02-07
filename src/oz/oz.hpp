@@ -15,6 +15,11 @@
 #include "common.hpp"
 
 /*
+ * System
+ */
+#include "System.hpp"
+
+/*
  * Iterators and utilities for iterable containers and arrays
  */
 #include "iterables.hpp"
@@ -35,21 +40,10 @@
 #include "String.hpp"
 
 /*
- * StackTrace
- */
-#include "StackTrace.hpp"
-
-/*
- * Exception
- */
-#include "Exception.hpp"
-
-/*
  * Memory management
  */
 #include "Alloc.hpp"
 #include "Pool.hpp"
-#include "AutoPtr.hpp"
 
 /*
  * Advanced containers (HashString needs String defined)
@@ -75,6 +69,11 @@
 #include "Point3.hpp"
 #include "Quat.hpp"
 #include "Mat44.hpp"
+
+/*
+ * Exception
+ */
+#include "Exception.hpp"
 
 /*
  * IO

@@ -10,12 +10,16 @@
 
 #include "Alloc.hpp"
 
-#include "StackTrace.hpp"
+#include "System.hpp"
 #include "Log.hpp"
 
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+
+#ifdef OZ_ALLOC_TRACELEAKS
+# include <pthread.h>
+#endif
 
 namespace oz
 {
@@ -40,8 +44,12 @@ namespace oz
     char*       frames;
   };
 
-  TraceEntry*   firstObjectTraceEntry = null;
-  TraceEntry*   firstArrayTraceEntry  = null;
+  static TraceEntry* firstObjectTraceEntry = null;
+  static TraceEntry* firstArrayTraceEntry  = null;
+
+  // if we deallocate from two different threads at once with OZ_ALLOC_TRACELEAKS, changing the list
+  // of allocated blocks while iterating it in another thread can result in a SIGSEGV.
+  static pthread_mutex_t sectionMutex = PTHREAD_MUTEX_INITIALIZER;
 
 #endif
 
@@ -124,10 +132,11 @@ using oz::Alloc;
 #ifdef OZ_ALLOC_TRACELEAKS
 
 using oz::log;
-using oz::StackTrace;
+using oz::System;
 using oz::TraceEntry;
 using oz::firstObjectTraceEntry;
 using oz::firstArrayTraceEntry;
+using oz::sectionMutex;
 
 #endif
 
@@ -146,12 +155,16 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 #ifdef OZ_ALLOC_TRACELEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
+  pthread_mutex_lock( &sectionMutex );
+
   st->next    = firstObjectTraceEntry;
   st->address = ptr;
   st->size    = size;
-  st->nFrames = StackTrace::get( &st->frames );
+  st->nFrames = System::getStackTrace( &st->frames );
 
   firstObjectTraceEntry = st;
+
+  pthread_mutex_unlock( &sectionMutex );
 #endif
 
   return ptr;
@@ -170,12 +183,16 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 #ifdef OZ_ALLOC_TRACELEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
+  pthread_mutex_lock( &sectionMutex );
+
   st->next    = firstArrayTraceEntry;
   st->address = ptr;
   st->size    = size;
-  st->nFrames = StackTrace::get( &st->frames );
+  st->nFrames = System::getStackTrace( &st->frames );
 
   firstArrayTraceEntry = st;
+
+  pthread_mutex_unlock( &sectionMutex );
 #endif
 
   return ptr;
@@ -187,6 +204,8 @@ void operator delete ( void* ptr ) throw()
   assert( ptr != null );
 
 #ifdef OZ_ALLOC_TRACELEAKS
+  pthread_mutex_lock( &sectionMutex );
+
   TraceEntry* st   = firstObjectTraceEntry;
   TraceEntry* prev = null;
 
@@ -224,17 +243,10 @@ void operator delete ( void* ptr ) throw()
     st = st->next;
   }
 
-  char* frames;
-  int nFrames;
-  nFrames = StackTrace::get( &frames );
-
-  log.indent();
-  log.printTrace( frames, nFrames );
-
-  free( frames );
   abort();
 
   backtraceFound:;
+  pthread_mutex_unlock( &sectionMutex );
 #endif
 
   free( ptr );
@@ -246,6 +258,8 @@ void operator delete[] ( void* ptr ) throw()
   assert( ptr != null );
 
 #ifdef OZ_ALLOC_TRACELEAKS
+  pthread_mutex_lock( &sectionMutex );
+
   TraceEntry* st   = firstArrayTraceEntry;
   TraceEntry* prev = null;
 
@@ -283,17 +297,10 @@ void operator delete[] ( void* ptr ) throw()
     st = st->next;
   }
 
-  char* frames;
-  int nFrames;
-  nFrames = StackTrace::get( &frames );
-
-  log.indent();
-  log.printTrace( frames, nFrames );
-
-  free( frames );
   abort();
 
   backtraceFound:;
+  pthread_mutex_unlock( &sectionMutex );
 #endif
 
   free( ptr );
@@ -320,12 +327,16 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 #ifdef OZ_ALLOC_TRACELEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
+  pthread_mutex_lock( &sectionMutex );
+
   st->next    = firstObjectTraceEntry;
   st->address = ptr;
   st->size    = size;
-  st->nFrames = StackTrace::get( &st->frames );
+  st->nFrames = System::getStackTrace( &st->frames );
 
   firstObjectTraceEntry = st;
+
+  pthread_mutex_unlock( &sectionMutex );
 #endif
 
   ++Alloc::count;
@@ -360,12 +371,16 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 #ifdef OZ_ALLOC_TRACELEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
+  pthread_mutex_lock( &sectionMutex );
+
   st->next    = firstArrayTraceEntry;
   st->address = ptr;
   st->size    = size;
-  st->nFrames = StackTrace::get( &st->frames );
+  st->nFrames = System::getStackTrace( &st->frames );
 
   firstArrayTraceEntry = st;
+
+  pthread_mutex_unlock( &sectionMutex );
 #endif
 
   ++Alloc::count;
@@ -390,6 +405,8 @@ void operator delete ( void* ptr ) throw()
   size_t size  = reinterpret_cast<size_t*>( chunk )[0];
 
 #ifdef OZ_ALLOC_TRACELEAKS
+  pthread_mutex_lock( &sectionMutex );
+
   TraceEntry* st   = firstObjectTraceEntry;
   TraceEntry* prev = null;
 
@@ -429,17 +446,10 @@ void operator delete ( void* ptr ) throw()
     st = st->next;
   }
 
-  char* frames;
-  int nFrames;
-  nFrames = StackTrace::get( &frames );
-
-  log.indent();
-  log.printTrace( frames, nFrames );
-
-  free( frames );
   abort();
 
   backtraceFound:;
+  pthread_mutex_unlock( &sectionMutex );
 #endif
 
   --Alloc::count;
@@ -457,6 +467,8 @@ void operator delete[] ( void* ptr ) throw()
   size_t size  = reinterpret_cast<size_t*>( chunk )[0];
 
 #ifdef OZ_ALLOC_TRACELEAKS
+  pthread_mutex_lock( &sectionMutex );
+
   TraceEntry* st   = firstArrayTraceEntry;
   TraceEntry* prev = null;
 
@@ -496,17 +508,10 @@ void operator delete[] ( void* ptr ) throw()
     st = st->next;
   }
 
-  char* frames;
-  int nFrames;
-  nFrames = StackTrace::get( &frames );
-
-  log.indent();
-  log.printTrace( frames, nFrames );
-
-  free( frames );
   abort();
 
   backtraceFound:;
+  pthread_mutex_unlock( &sectionMutex );
 #endif
 
   --Alloc::count;

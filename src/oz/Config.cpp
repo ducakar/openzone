@@ -58,6 +58,14 @@ namespace oz
     }
   }
 
+  void Config::include( const char* key, const char* value_ )
+  {
+    String* value = vars.find( key );
+    if( value == null ) {
+      vars.add( key, value_ );
+    }
+  }
+
   void Config::exclude( const char* key )
   {
     vars.exclude( key );
@@ -132,7 +140,7 @@ namespace oz
         }
         if( ch == '"' ) {
           buffer[i] = '\0';
-          add( name, buffer );
+          include( name, buffer );
         }
       }
 
@@ -216,7 +224,7 @@ namespace oz
           error = -1;
           break;
         }
-        add( String::cstr( key ), String::cstr( value ) );
+        include( String::cstr( key ), String::cstr( value ) );
 
         xmlFree( key );
         xmlFree( value );

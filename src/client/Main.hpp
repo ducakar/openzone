@@ -32,6 +32,7 @@ namespace client
       static const int INIT_AUDIO        = 0x0400;
       static const int INIT_CONTEXT_LOAD = 0x1000;
       static const int INIT_RENDER_LOAD  = 0x2000;
+      static const int QUICK_SHUTDOWN    = 0x80000000;
 
       Stage* stage;
       int    initFlags;
@@ -43,10 +44,10 @@ namespace client
 
     public:
 
-      explicit Main();
+      void shutdown();
+      void printUsage();
 
       void main( int* argc, char* argv[] );
-      void shutdown();
 
   };
 

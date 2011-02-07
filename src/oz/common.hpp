@@ -66,6 +66,12 @@ namespace oz
 # define null nullptr
 
   /**
+   * \def local
+   * Thread-local modifier for a type.
+   */
+# define thread_local __thread
+
+  /**
    * \def soft_assert
    * Like assert, but raises SIGTRAP with a dummy handler (like DebugBreak in MSVC).
    */

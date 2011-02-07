@@ -18,11 +18,13 @@ namespace oz
 namespace client
 {
 
+  class MD3;
+
   class MD3StaticModel : public Model
   {
     protected:
 
-      uint list;
+      MD3* md3;
 
       virtual ~MD3StaticModel();
 

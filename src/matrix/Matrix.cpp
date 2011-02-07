@@ -33,79 +33,91 @@ namespace oz
     for( int i = 0; i < 500; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
-      float z = orbis.terra.height( x, y ) + 1.0f;
+      float z = orbis.terra.height( x, y );
 
       const ObjectClass* const* value = translator.classes.find( "Goblin" );
       Point3 p = Point3( x, y, z );
       AABB aabb = AABB( p, ( *value )->dim );
 
+      aabb.p.z += aabb.dim.z + 0.1f;
+
       if( z > 0.0f && !collider.overlaps( aabb ) ) {
-        synapse.addObject( "Goblin", p );
+        synapse.addObject( "Goblin", aabb.p );
       }
     }
     for( int i = 0; i < 500; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
-      float z = orbis.terra.height( x, y ) + 1.0f;
+      float z = orbis.terra.height( x, y );
 
       const ObjectClass* const* value = translator.classes.find( "Knight" );
       Point3 p = Point3( x, y, z );
       AABB aabb = AABB( p, ( *value )->dim );
 
+      aabb.p.z += aabb.dim.z + 0.1f;
+
       if( z > 0.0f && !collider.overlaps( aabb ) ) {
-        synapse.addObject( "Knight", p );
+        synapse.addObject( "Knight", aabb.p );
       }
     }
     for( int i = 0; i < 500; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
-      float z = orbis.terra.height( x, y ) + 1.0f;
+      float z = orbis.terra.height( x, y );
 
       const ObjectClass* const* value = translator.classes.find( "Beast" );
       Point3 p = Point3( x, y, z );
       AABB aabb = AABB( p, ( *value )->dim );
 
+      aabb.p.z += aabb.dim.z + 0.1f;
+
       if( z > 0.0f && !collider.overlaps( aabb ) ) {
-        synapse.addObject( "Beast", p );
+        synapse.addObject( "Beast", aabb.p );
       }
     }
     for( int i = 0; i < 500; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
-      float z = orbis.terra.height( x, y ) + 1.0f;
+      float z = orbis.terra.height( x, y );
 
       const ObjectClass* const* value = translator.classes.find( "Droid" );
       Point3 p = Point3( x, y, z );
       AABB aabb = AABB( p, ( *value )->dim );
 
+      aabb.p.z += aabb.dim.z + 0.1f;
+
       if( z > 0.0f && !collider.overlaps( aabb ) ) {
-        synapse.addObject( "Droid", p );
+        synapse.addObject( "Droid", aabb.p );
       }
     }
     for( int i = 0; i < 5000; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
-      float z = orbis.terra.height( x, y ) + 1.0f;
+      float z = orbis.terra.height( x, y );
 
       const ObjectClass* const* value = translator.classes.find( "MetalBarrel" );
       Point3 p = Point3( x, y, z );
       AABB aabb = AABB( p, ( *value )->dim );
 
+      aabb.p.z += aabb.dim.z + 0.1f;
+
       if( z > 0.0f && !collider.overlaps( aabb ) ) {
-        synapse.addObject( "MetalBarrel", p );
+        synapse.addObject( "MetalBarrel", aabb.p );
       }
     }
     for( int i = 0; i < 5000; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
-      float z = orbis.terra.height( x, y ) + 2.0f;
+      float z = orbis.terra.height( x, y );
 
       const ObjectClass* const* value = translator.classes.find( "SmallCrate" );
       Point3 p = Point3( x, y, z );
       AABB aabb = AABB( p, ( *value )->dim );
 
+      aabb.p.z += aabb.dim.z + 0.1f;
+
       if( z > 0.0f && !collider.overlaps( aabb ) ) {
-        synapse.addObject( "SmallCrate", p );
+        synapse.addObject( "SmallCrate", aabb.p );
       }
     }
   }
@@ -191,7 +203,7 @@ namespace oz
         obj->events.free();
 
         // We don't remove objects as they get destroyed but on the next update, so the destroy
-        // sound and ohter effects can be played on an object's destruction.
+        // sound and other effects can be played on an object's destruction.
         if( ( obj->flags & Object::DESTROYED_BIT ) && obj->cell != null ) {
           synapse.remove( obj );
         }

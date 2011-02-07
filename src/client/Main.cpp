@@ -34,9 +34,6 @@ namespace client
 
   Main main;
 
-  Main::Main() : allTime( 0.0f ), loadingTime( 0.0f )
-  {}
-
   void Main::shutdown()
   {
     uint beginTime = SDL_GetTicks();
@@ -77,14 +74,20 @@ namespace client
       log.printEnd( " OK" );
     }
 
+    if( initFlags & QUICK_SHUTDOWN ) {
+      return;
+    }
+
     float uiTime       = float( timer.uiMillis )      * 0.001f;
     float loaderTime   = float( timer.loaderMillis )  * 0.001f;
-    float syncTime     = float( timer.soundMillis )   * 0.001f;
+    float soundTime    = float( timer.soundMillis )   * 0.001f;
     float renderTime   = float( timer.renderMillis )  * 0.001f;
     float sleepTime    = float( timer.sleepMillis )   * 0.001f;
 
     float matrixTime   = float( timer.matrixMillis )  * 0.001f;
     float nirvanaTime  = float( timer.nirvanaMillis ) * 0.001f;
+
+    float m2Time       = uiTime + soundTime + renderTime;
 
     float inactiveTime = float( inactiveMillis )      * 0.001f;
     float droppedTime  = float( droppedMillis )       * 0.001f;
@@ -115,8 +118,9 @@ namespace client
     log.println( "Main loop active time usage {" );
     log.indent();
     log.println( "%6.2f %%  [M:1  ] loader",            loaderTime  / activeTime * 100.0f );
+    log.println( "%6.2f %%  [M:2  ]",                   m2Time      / activeTime * 100.0f );
     log.println( "%6.2f %%  [M:2.1] ui",                uiTime      / activeTime * 100.0f );
-    log.println( "%6.2f %%  [M:2.2] sound",             syncTime    / activeTime * 100.0f );
+    log.println( "%6.2f %%  [M:2.2] sound",             soundTime   / activeTime * 100.0f );
     log.println( "%6.2f %%  [M:2.3] render",            renderTime  / activeTime * 100.0f );
     log.println( "%6.2f %%  [M:2.4] sleep",             sleepTime   / activeTime * 100.0f );
     log.println( "%6.2f %%  [A:1  ] matrix",            matrixTime  / activeTime * 100.0f );
@@ -131,6 +135,25 @@ namespace client
     log.printlnETD( OZ_APPLICATION_NAME " finished at" );
   }
 
+  void Main::printUsage()
+  {
+    log.println( "Usage:" );
+    log.indent();
+    log.println( "%s [-b|-h|-s]" );
+    log.println();
+    log.println( "--help" );
+    log.println( "\tPrints that help message" );
+    log.println( "--save --no-save" );
+    log.println( "-s -S" );
+    log.println( "\tEnables or disables autosave on exit respectively. Overrides 'autosave' "
+                 "resource" );
+    log.println( "--benchmark number" );
+    log.println( "-b number" );
+    log.println( "\tExits after number seconds (can be floating-point number). For "
+                 "benchmarking purposes" );
+    log.unindent();
+  }
+
   void Main::main( int* argc, char** argv )
   {
     log.print( "Initialising SDL ..." );
@@ -142,6 +165,46 @@ namespace client
     initFlags |= INIT_SDL;
 
     uint createTime = SDL_GetTicks();
+
+    bool  isBenchmark = false;
+    float benchmarkTime;
+
+    for( int i = 1; i < *argc; ++i ) {
+      if( String::equals( argv[i], "--help" ) ) {
+        printUsage();
+        initFlags |= QUICK_SHUTDOWN;
+        return;
+      }
+      else if( String::equals( argv[i], "--benchamrk" ) || String::equals( argv[i], "-b" ) ) {
+        if( i + 1 < *argc ) {
+          errno = 0;
+          char* end;
+
+          benchmarkTime = strtof( argv[i + 1], &end );
+
+          if( errno == 0 && end != argv[i + 1] ) {
+            isBenchmark = true;
+          }
+        }
+        else {
+          printUsage();
+          initFlags |= QUICK_SHUTDOWN;
+          return;
+        }
+      }
+      else if( String::equals( argv[i], "--load" ) || String::equals( argv[i], "-l" ) ) {
+        config.add( "gameStage.autoload", "true" );
+      }
+      else if( String::equals( argv[i], "--no-load" ) || String::equals( argv[i], "-L" ) ) {
+        config.add( "gameStage.autoload", "false" );
+      }
+      else if( String::equals( argv[i], "--save" ) || String::equals( argv[i], "-s" ) ) {
+        config.add( "gameStage.autosave", "true" );
+      }
+      else if( String::equals( argv[i], "--no-save" ) || String::equals( argv[i], "-S" ) ) {
+        config.add( "gameStage.autosave", "false" );
+      }
+    }
 
     initFlags = 0;
     String rcDir;
@@ -304,22 +367,6 @@ namespace client
 
     render.load();
     initFlags |= INIT_RENDER_LOAD;
-
-    bool  isBenchmark = false;
-    float benchmarkTime;
-
-    for( int i = 1; i < *argc; ++i ) {
-      if( String::equals( argv[i], "-b" ) && i + 1 < *argc ) {
-        errno = 0;
-        char* end;
-
-        benchmarkTime = strtof( argv[i + 1], &end );
-
-        if( errno == 0 && end != argv[i + 1] ) {
-          isBenchmark = true;
-        }
-      }
-    }
 
     SDL_Event event;
 

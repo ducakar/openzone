@@ -197,13 +197,13 @@ namespace client
       OBJ* loadOBJ( const char* name );
       void releaseOBJ( const char* name );
 
-      uint loadStaticMD2( const char* name );
+      MD2* loadStaticMD2( const char* name );
       void releaseStaticMD2( const char* name );
 
       MD2* loadMD2( const char* name );
       void releaseMD2( const char* name );
 
-      uint loadStaticMD3( const char* name );
+      MD3* loadStaticMD3( const char* name );
       void releaseStaticMD3( const char* name );
 
       MD3* loadMD3( const char* name );

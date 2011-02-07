@@ -18,11 +18,13 @@ namespace oz
 namespace client
 {
 
+  class MD2;
+
   class MD2StaticModel : public Model
   {
     protected:
 
-      uint list;
+      MD2* md2;
 
       virtual ~MD2StaticModel();
 

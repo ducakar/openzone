@@ -9,9 +9,9 @@
 
 #include "stable.hpp"
 
-#ifdef OZ_WINDOWS
-
 #include "client/common.hpp"
+
+#ifdef OZ_WINDOWS
 
 PFNGLACTIVETEXTUREPROC        glActiveTexture;
 PFNGLCLIENTACTIVETEXTUREPROC  glClientActiveTexture;
@@ -21,3 +21,13 @@ PFNGLBINDBUFFERPROC           glBindBuffer;
 PFNGLBUFFERDATAPROC           glBufferData;
 
 #endif
+
+namespace oz
+{
+namespace client
+{
+
+  Collider collider;
+
+}
+}
