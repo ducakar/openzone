@@ -14,6 +14,7 @@
 #include "matrix/Names.hpp"
 #include "matrix/Lua.hpp"
 #include "matrix/Translator.hpp"
+#include "matrix/Collider.hpp"
 #include "matrix/Physics.hpp"
 #include "matrix/Synapse.hpp"
 #include "matrix/Vehicle.hpp"
@@ -34,8 +35,12 @@ namespace oz
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y ) + 1.0f;
 
-      if( z > 0.0f ) {
-        synapse.addObject( "Goblin", Point3( x, y, z ) );
+      const ObjectClass* const* value = translator.classes.find( "Goblin" );
+      Point3 p = Point3( x, y, z );
+      AABB aabb = AABB( p, ( *value )->dim );
+
+      if( z > 0.0f && !collider.overlaps( aabb ) ) {
+        synapse.addObject( "Goblin", p );
       }
     }
     for( int i = 0; i < 500; ++i ) {
@@ -43,8 +48,12 @@ namespace oz
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y ) + 1.0f;
 
-      if( z > 0.0f ) {
-        synapse.addObject( "Knight", Point3( x, y, z ) );
+      const ObjectClass* const* value = translator.classes.find( "Knight" );
+      Point3 p = Point3( x, y, z );
+      AABB aabb = AABB( p, ( *value )->dim );
+
+      if( z > 0.0f && !collider.overlaps( aabb ) ) {
+        synapse.addObject( "Knight", p );
       }
     }
     for( int i = 0; i < 500; ++i ) {
@@ -52,8 +61,12 @@ namespace oz
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y ) + 1.0f;
 
-      if( z > 0.0f ) {
-        synapse.addObject( "Beast", Point3( x, y, z ) );
+      const ObjectClass* const* value = translator.classes.find( "Beast" );
+      Point3 p = Point3( x, y, z );
+      AABB aabb = AABB( p, ( *value )->dim );
+
+      if( z > 0.0f && !collider.overlaps( aabb ) ) {
+        synapse.addObject( "Beast", p );
       }
     }
     for( int i = 0; i < 500; ++i ) {
@@ -61,8 +74,12 @@ namespace oz
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y ) + 1.0f;
 
-      if( z > 0.0f ) {
-        synapse.addObject( "Droid", Point3( x, y, z ) );
+      const ObjectClass* const* value = translator.classes.find( "Droid" );
+      Point3 p = Point3( x, y, z );
+      AABB aabb = AABB( p, ( *value )->dim );
+
+      if( z > 0.0f && !collider.overlaps( aabb ) ) {
+        synapse.addObject( "Droid", p );
       }
     }
     for( int i = 0; i < 5000; ++i ) {
@@ -70,8 +87,12 @@ namespace oz
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y ) + 1.0f;
 
-      if( z > 0.0f ) {
-        synapse.addObject( "MetalBarrel", Point3( x, y, z ) );
+      const ObjectClass* const* value = translator.classes.find( "MetalBarrel" );
+      Point3 p = Point3( x, y, z );
+      AABB aabb = AABB( p, ( *value )->dim );
+
+      if( z > 0.0f && !collider.overlaps( aabb ) ) {
+        synapse.addObject( "MetalBarrel", p );
       }
     }
     for( int i = 0; i < 5000; ++i ) {
@@ -79,8 +100,12 @@ namespace oz
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y ) + 2.0f;
 
-      if( z > 0.0f ) {
-        synapse.addObject( "SmallCrate", Point3( x, y, z ) );
+      const ObjectClass* const* value = translator.classes.find( "SmallCrate" );
+      Point3 p = Point3( x, y, z );
+      AABB aabb = AABB( p, ( *value )->dim );
+
+      if( z > 0.0f && !collider.overlaps( aabb ) ) {
+        synapse.addObject( "SmallCrate", p );
       }
     }
   }
@@ -106,8 +131,8 @@ namespace oz
 
     synapse.addObject( "Raptor", Point3( 70, -60, 38 ) );
 
-    synapse.genParts( 1000, Point3( 50, -36, 40 ), Vec3( 0, 0, 10 ), 15.0f,
-                      Vec3( 0.4f, 0.4f, 0.4f ), 0.2f, 1.95f, 0.1f, 5.0f );
+    synapse.genParts( 1000, Point3( 50, -36, 35 ), Vec3( 0, 0, 10 ), 15.0f,
+                      Vec3( 0.4f, 0.4f, 0.4f ), 0.2f, 1.95f, 0.1f, 10.0f );
 
     synapse.addObject( "MetalBarrel", Point3( 61, -44, 36 ) );
     synapse.addObject( "MetalBarrel", Point3( 61, -44, 38 ) );
@@ -259,8 +284,8 @@ namespace oz
     }
     else {
       loadSample();
-      loadStressTest();
       floraManager.seed();
+      loadStressTest();
     }
 
     log.unindent();

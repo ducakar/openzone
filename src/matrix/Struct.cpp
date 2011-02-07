@@ -19,7 +19,7 @@
 namespace oz
 {
 
-  Vector<Object*> Entity::overlapingObjs;
+  Vector<Object*> Struct::Entity::overlappingObjs;
 
   const float Struct::DAMAGE_THRESHOLD = 400.0f;
 
@@ -41,13 +41,13 @@ namespace oz
     Mat44::rotZ(  Math::PI_2 )
   };
 
-  void Entity::updateIgnoring()
+  void Struct::Entity::updateIgnoring()
   {
     switch( state ) {
       case CLOSED: {
         time += Timer::TICK_TIME;
 
-        if( time >= clazz->timeout ) {
+        if( time >= model->timeout ) {
           time = 0.0f;
           state = OPENING;
         }
@@ -55,7 +55,7 @@ namespace oz
       }
       case OPENING:
       case OPENING_BLOCKED: {
-        ratio += clazz->ratioInc;
+        ratio += model->ratioInc;
         time += Timer::TICK_TIME;
 
         if( ratio >= 1.0f ) {
@@ -64,13 +64,13 @@ namespace oz
           state = OPENED;
         }
 
-        offset = ratio * clazz->move;
+        offset = ratio * model->move;
         break;
       }
       case OPENED: {
         time += Timer::TICK_TIME;
 
-        if( time >= clazz->timeout ) {
+        if( time >= model->timeout ) {
           time = 0.0f;
           state = CLOSING;
         }
@@ -78,7 +78,7 @@ namespace oz
       }
       case CLOSING:
       case CLOSING_BLOCKED: {
-        ratio -= clazz->ratioInc;
+        ratio -= model->ratioInc;
         time += Timer::TICK_TIME;
 
         if( ratio <= 0.0f ) {
@@ -87,7 +87,7 @@ namespace oz
           state = CLOSED;
         }
 
-        offset = ratio * clazz->move;
+        offset = ratio * model->move;
         break;
       }
       default: {
@@ -97,13 +97,13 @@ namespace oz
     }
   }
 
-  void Entity::updateBlocking()
+  void Struct::Entity::updateBlocking()
   {
     switch( state ) {
       case CLOSED: {
         time += Timer::TICK_TIME;
 
-        if( time >= clazz->timeout ) {
+        if( time >= model->timeout ) {
           time = 0.0f;
           state = OPENING;
         }
@@ -114,8 +114,8 @@ namespace oz
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
-        ratio = Math::min( ratio + clazz->ratioInc, 1.0f );
-        offset = ratio * clazz->move;
+        ratio = Math::min( ratio + model->ratioInc, 1.0f );
+        offset = ratio * model->move;
 
         if( collider.overlapsOO( this ) ) {
           ratio = oldRatio;
@@ -129,12 +129,12 @@ namespace oz
 
           offset = oldOffset;
 
-          overlapingObjs.clear();
-          collider.getOverlaps( this, &overlapingObjs, 2.0f * EPSILON );
+          overlappingObjs.clear();
+          collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
 
-          offset = ratio * clazz->move;
+          offset = ratio * model->move;
 
-          foreach( obj, overlapingObjs.iter() ) {
+          foreach( obj, overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -147,7 +147,7 @@ namespace oz
       case OPENED: {
         time += Timer::TICK_TIME;
 
-        if( time >= clazz->timeout ) {
+        if( time >= model->timeout ) {
           time = 0.0f;
           state = CLOSING;
         }
@@ -158,12 +158,12 @@ namespace oz
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
-        ratio = Math::max( ratio - clazz->ratioInc, 0.0f );
-        offset = ratio * clazz->move;
+        ratio = Math::max( ratio - model->ratioInc, 0.0f );
+        offset = ratio * model->move;
 
         if( collider.overlapsOO( this ) ) {
           ratio = oldRatio;
-          offset = ratio * clazz->move;
+          offset = ratio * model->move;
         }
         else {
           if( ratio == 0.0f ) {
@@ -172,12 +172,12 @@ namespace oz
 
           offset = oldOffset;
 
-          overlapingObjs.clear();
-          collider.getOverlaps( this, &overlapingObjs, 2.0f * EPSILON );
+          overlappingObjs.clear();
+          collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
 
-          offset = ratio * clazz->move;
+          offset = ratio * model->move;
 
-          foreach( obj, overlapingObjs.iter() ) {
+          foreach( obj, overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -194,13 +194,13 @@ namespace oz
     }
   }
 
-  void Entity::updatePushing()
+  void Struct::Entity::updatePushing()
   {
     switch( state ) {
       case CLOSED: {
         time += Timer::TICK_TIME;
 
-        if( time >= clazz->timeout ) {
+        if( time >= model->timeout ) {
           time = 0.0f;
           state = OPENING;
         }
@@ -211,21 +211,21 @@ namespace oz
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
-        ratio = Math::min( ratio + clazz->ratioInc, 1.0f );
-        offset = ratio * clazz->move;
+        ratio = Math::min( ratio + model->ratioInc, 1.0f );
+        offset = ratio * model->move;
 
-        overlapingObjs.clear();
-        collider.getOverlaps( this, &overlapingObjs, 0.0f * EPSILON );
+        overlappingObjs.clear();
+        collider.getOverlaps( this, &overlappingObjs, 0.0f * EPSILON );
 
-        if( !overlapingObjs.isEmpty() ) {
-          Vec3 momentum = ( clazz->ratioInc * clazz->move ) / Timer::TICK_TIME;
+        if( !overlappingObjs.isEmpty() ) {
+          Vec3 momentum = ( model->ratioInc * model->move ) / Timer::TICK_TIME;
           momentum = str->toAbsoluteCS( momentum ) * ( 1.0f + 2.0f * EPSILON );
 
           if( momentum.z > 0.0f ) {
             momentum.z -= Physics::G_VELOCITY;
           }
 
-          foreach( obj, overlapingObjs.iter() ) {
+          foreach( obj, overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -244,12 +244,12 @@ namespace oz
 
           offset = oldOffset;
 
-          overlapingObjs.clear();
-          collider.getOverlaps( this, &overlapingObjs, 2.0f * EPSILON );
+          overlappingObjs.clear();
+          collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
 
-          offset = ratio * clazz->move;
+          offset = ratio * model->move;
 
-          foreach( obj, overlapingObjs.iter() ) {
+          foreach( obj, overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -262,7 +262,7 @@ namespace oz
       case OPENED: {
         time += Timer::TICK_TIME;
 
-        if( time >= clazz->timeout ) {
+        if( time >= model->timeout ) {
           time = 0.0f;
           state = CLOSING;
         }
@@ -273,21 +273,21 @@ namespace oz
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
-        ratio = Math::max( ratio - clazz->ratioInc, 0.0f );
-        offset = ratio * clazz->move;
+        ratio = Math::max( ratio - model->ratioInc, 0.0f );
+        offset = ratio * model->move;
 
-        overlapingObjs.clear();
-        collider.getOverlaps( this, &overlapingObjs, 0.0f * EPSILON );
+        overlappingObjs.clear();
+        collider.getOverlaps( this, &overlappingObjs, 0.0f * EPSILON );
 
-        if( !overlapingObjs.isEmpty() ) {
-          Vec3 momentum = ( clazz->ratioInc * clazz->move ) / Timer::TICK_TIME;
+        if( !overlappingObjs.isEmpty() ) {
+          Vec3 momentum = ( model->ratioInc * model->move ) / Timer::TICK_TIME;
           momentum = str->toAbsoluteCS( momentum ) * ( 1.0f + 2.0f * EPSILON );
 
           if( momentum.z > 0.0f ) {
             momentum.z -= Physics::G_VELOCITY;
           }
 
-          foreach( obj, overlapingObjs.iter() ) {
+          foreach( obj, overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -306,12 +306,12 @@ namespace oz
 
           offset = oldOffset;
 
-          overlapingObjs.clear();
-          collider.getOverlaps( this, &overlapingObjs, 2.0f * EPSILON );
+          overlappingObjs.clear();
+          collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
 
-          offset = ratio * clazz->move;
+          offset = ratio * model->move;
 
-          foreach( obj, overlapingObjs.iter() ) {
+          foreach( obj, overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -328,13 +328,13 @@ namespace oz
     }
   }
 
-  void Entity::updateCrushing()
+  void Struct::Entity::updateCrushing()
   {
     switch( state ) {
       case CLOSED: {
         time += Timer::TICK_TIME;
 
-        if( time >= clazz->timeout ) {
+        if( time >= model->timeout ) {
           time = 0.0f;
           state = OPENING;
         }
@@ -342,17 +342,17 @@ namespace oz
       }
       case OPENING:
       case OPENING_BLOCKED: {
-        ratio = Math::min( ratio + clazz->ratioInc, 1.0f );
-        offset = ratio * clazz->move;
+        ratio = Math::min( ratio + model->ratioInc, 1.0f );
+        offset = ratio * model->move;
 
-        overlapingObjs.clear();
-        collider.getOverlaps( this, &overlapingObjs, 2.0f * EPSILON );
+        overlappingObjs.clear();
+        collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
 
-        if( !overlapingObjs.isEmpty() ) {
-          Vec3 move = ( clazz->ratioInc + 2.0f * EPSILON ) * clazz->move;
+        if( !overlappingObjs.isEmpty() ) {
+          Vec3 move = ( model->ratioInc + 2.0f * EPSILON ) * model->move;
           move = str->toAbsoluteCS( move );
 
-          foreach( obj, overlapingObjs.iter() ) {
+          foreach( obj, overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -369,7 +369,7 @@ namespace oz
       case OPENED: {
         time += Timer::TICK_TIME;
 
-        if( time >= clazz->timeout ) {
+        if( time >= model->timeout ) {
           time = 0.0f;
           state = CLOSING;
         }
@@ -377,17 +377,17 @@ namespace oz
       }
       case CLOSING:
       case CLOSING_BLOCKED: {
-        ratio = Math::max( ratio - clazz->ratioInc, 0.0f );
-        offset = ratio * clazz->move;
+        ratio = Math::max( ratio - model->ratioInc, 0.0f );
+        offset = ratio * model->move;
 
-        overlapingObjs.clear();
-        collider.getOverlaps( this, &overlapingObjs, 2.0f * EPSILON );
+        overlappingObjs.clear();
+        collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
 
-        if( !overlapingObjs.isEmpty() ) {
-          Vec3 move = ( clazz->ratioInc + 2.0f * EPSILON ) * clazz->move;
+        if( !overlappingObjs.isEmpty() ) {
+          Vec3 move = ( model->ratioInc + 2.0f * EPSILON ) * model->move;
           move = str->toAbsoluteCS( move );
 
-          foreach( obj, overlapingObjs.iter() ) {
+          foreach( obj, overlappingObjs.iter() ) {
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
@@ -423,13 +423,16 @@ namespace oz
 
     assert( bsp != null );
 
-    entities = new Entity[bsp->nEntityClasses];
-    nEntities = bsp->nEntityClasses;
+    nEntities = bsp->nModels;
+    entities = null;
 
+    if( nEntities != 0 ) {
+      entities = new Entity[nEntities];
+    }
     for( int i = 0; i < nEntities; ++i ) {
       Entity& entity = entities[i];
 
-      entity.clazz  = &bsp->entityClasses[i];
+      entity.model  = &bsp->models[i];
       entity.str    = this;
       entity.offset = Vec3::ZERO;
       entity.state  = Entity::CLOSED;
@@ -445,14 +448,17 @@ namespace oz
 
     assert( bsp != null );
 
-    entities = new Entity[bsp->nEntityClasses];
-    nEntities = bsp->nEntityClasses;
+    nEntities = bsp->nModels;
+    entities = null;
 
+    if( nEntities != 0 ) {
+      entities = new Entity[nEntities];
+    }
     for( int i = 0; i < nEntities; ++i ) {
       Entity& entity = entities[i];
 
-      entity.clazz  = &bsp->entityClasses[i];
-      entity.str    = this;
+      entity.model = &bsp->models[i];
+      entity.str   = this;
     }
 
     readFull( istream );
@@ -578,25 +584,25 @@ namespace oz
 
   void Struct::update()
   {
-    for( int i = 1; i < nEntities; ++i ) {
+    for( int i = 0; i < nEntities; ++i ) {
       Entity& entity = entities[i];
 
       assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
 
-      switch( entity.clazz->mode ) {
-        case EntityClass::IGNORING: {
+      switch( entity.model->mode ) {
+        case BSP::Model::IGNORING: {
           entity.updateIgnoring();
           break;
         }
-        case EntityClass::BLOCKING: {
+        case BSP::Model::BLOCKING: {
           entity.updateBlocking();
           break;
         }
-        case EntityClass::PUSHING: {
+        case BSP::Model::PUSHING: {
           entity.updatePushing();
           break;
         }
-        case EntityClass::CRUSHING: {
+        case BSP::Model::CRUSHING: {
           entity.updateCrushing();
           break;
         }
@@ -611,12 +617,12 @@ namespace oz
   void Struct::readFull( InputStream* istream )
   {
     p    = istream->readPoint3();
-    rot  = Rotation( istream->readChar() );
+    rot  = Rotation( istream->readInt() );
     life = istream->readFloat();
 
     for( int i = 0; i < nEntities; ++i ) {
       entities[i].offset = istream->readVec3();
-      entities[i].state = Entity::State( istream->readChar() );
+      entities[i].state = Entity::State( istream->readInt() );
       entities[i].ratio = istream->readFloat();
       entities[i].time = istream->readFloat();
     }
@@ -625,12 +631,12 @@ namespace oz
   void Struct::writeFull( OutputStream* ostream )
   {
     ostream->writePoint3( p );
-    ostream->writeChar( rot );
+    ostream->writeInt( rot );
     ostream->writeFloat( life );
 
     for( int i = 0; i < nEntities; ++i ) {
       ostream->writeVec3( entities[i].offset );
-      ostream->writeChar( entities[i].state );
+      ostream->writeInt( entities[i].state );
       ostream->writeFloat( entities[i].ratio );
       ostream->writeFloat( entities[i].time );
     }

@@ -21,6 +21,7 @@ namespace client
     static const float BLACK[];
     static const float WHITE[];
 
+    static const float ENTITY_AABB[];
     static const float STRUCTURE_AABB[];
     static const float CLIP_AABB[];
     static const float NOCLIP_AABB[];

@@ -18,34 +18,6 @@ namespace oz
 
   class BSP;
 
-  struct EntityClass : Bounds
-  {
-    enum Mode
-    {
-      IGNORING = 0,
-      BLOCKING = 1,
-      PUSHING  = 2,
-      CRUSHING = 3
-    };
-
-    static const int AUTOMATIC_BIT = 0x00000001;
-    static const int LUA_BIT       = 0x00000002;
-
-    BSP*  bsp;
-
-    int   firstBrush;
-    int   nBrushes;
-
-    Vec3  move;
-    float ratioInc;
-    int   flags;
-    Mode  mode;
-
-    float margin;
-    float slideTime;
-    float timeout;
-  };
-
   class BSP : public Bounds
   {
     public:
@@ -80,24 +52,52 @@ namespace oz
         int material;
       };
 
-      String       name;
-      float        life;
+      struct Model : Bounds
+      {
+        enum Mode
+        {
+          IGNORING = 0,
+          BLOCKING = 1,
+          PUSHING  = 2,
+          CRUSHING = 3
+        };
 
-      int          nPlanes;
-      int          nNodes;
-      int          nLeaves;
-      int          nLeafBrushes;
-      int          nEntityClasses;
-      int          nBrushes;
-      int          nBrushSides;
+        static const int AUTOMATIC_BIT = 0x00000001;
+        static const int LUA_BIT       = 0x00000002;
 
-      Plane*       planes;
-      Node*        nodes;
-      Leaf*        leaves;
-      int*         leafBrushes;
-      EntityClass* entityClasses;
-      Brush*       brushes;
-      int*         brushSides;
+        BSP*  bsp;
+
+        int   firstBrush;
+        int   nBrushes;
+
+        Vec3  move;
+        float ratioInc;
+        int   flags;
+        Mode  mode;
+
+        float margin;
+        float slideTime;
+        float timeout;
+      };
+
+      String  name;
+      float   life;
+
+      int     nPlanes;
+      int     nNodes;
+      int     nLeaves;
+      int     nLeafBrushes;
+      int     nModels;
+      int     nBrushes;
+      int     nBrushSides;
+
+      Plane*  planes;
+      Node*   nodes;
+      Leaf*   leaves;
+      int*    leafBrushes;
+      Model*  models;
+      Brush*  brushes;
+      int*    brushSides;
 
     private:
 
@@ -110,6 +110,7 @@ namespace oz
       bool loadQBSP( const char* fileName );
       void freeQBSP();
       void optimise();
+      void check( bool isOptimised ) const;
       bool save( const char* fileName );
 
       // used internally by prebuild

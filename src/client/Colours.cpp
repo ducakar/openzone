@@ -19,6 +19,7 @@ namespace client
   const float Colours::BLACK[] = { 0.0f, 0.0f, 0.0f, 1.0f };
   const float Colours::WHITE[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+  const float Colours::ENTITY_AABB[] = { 1.00f, 0.20f, 0.50f, 0.30f };
   const float Colours::STRUCTURE_AABB[] = { 0.20f, 0.50f, 1.00f, 0.30f };
   const float Colours::CLIP_AABB[] = { 0.50f, 1.00f, 0.20f, 0.30f };
   const float Colours::NOCLIP_AABB[] = { 0.80f, 0.80f, 1.00f, 0.30f };

@@ -95,20 +95,20 @@ namespace oz
 
   bool Collider::overlapsAABBEntities()
   {
-    if( bsp->nEntityClasses == 1 ) {
+    if( str->nEntities == 0 ) {
       return false;
     }
 
     Point3 originalStartPos = startPos;
     Bounds localTrace       = str->toStructCS( trace );
 
-    for( int i = 1; i < bsp->nEntityClasses; ++i ) {
-      entityClazz = &bsp->entityClasses[i];
+    for( int i = 0; i < bsp->nModels; ++i ) {
+      model  = &bsp->models[i];
       entity = &str->entities[i];
 
-      if( localTrace.overlaps( *entityClazz + entity->offset ) ) {
-        for( int j = 0; j < entityClazz->nBrushes; ++j ) {
-          int index = entityClazz->firstBrush + j;
+      if( localTrace.overlaps( *model + entity->offset ) ) {
+        for( int j = 0; j < model->nBrushes; ++j ) {
+          int index = model->firstBrush + j;
           const BSP::Brush& brush = bsp->brushes[index];
 
           assert( !visitedBrushes.get( index ) );
@@ -146,15 +146,16 @@ namespace oz
         foreach( strIndex, cell.structs.citer() ) {
           str = orbis.structs[*strIndex];
 
-          if( str != oldStr ) {
-            bsp = orbis.bsps[str->bsp];
-
-            startPos = str->toStructCS( aabb.p );
+          if( str != oldStr && str->overlaps( trace ) ) {
             visitedBrushes.clearAll();
 
-            if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
+            startPos = str->toStructCS( aabb.p );
+            bsp      = orbis.bsps[str->bsp];
+
+            if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
               return true;
             }
+
             oldStr = str;
           }
         }
@@ -206,15 +207,16 @@ namespace oz
         foreach( strIndex, cell.structs.citer() ) {
           str = orbis.structs[*strIndex];
 
-          if( str != oldStr ) {
-            bsp = orbis.bsps[str->bsp];
-
-            startPos = str->toStructCS( aabb.p );
+          if( str != oldStr && str->overlaps( trace ) ) {
             visitedBrushes.clearAll();
 
-            if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
+            startPos = str->toStructCS( aabb.p );
+            bsp      = orbis.bsps[str->bsp];
+
+            if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
               return true;
             }
+
             oldStr = str;
           }
         }
@@ -245,8 +247,8 @@ namespace oz
             startPos = str->toStructCS( sObj->p ) - entity->offset;
             aabb.dim = sObj->dim;
 
-            for( int i = 0; i < entityClazz->nBrushes; ++i ) {
-              const BSP::Brush& brush = bsp->brushes[entityClazz->firstBrush + i];
+            for( int i = 0; i < model->nBrushes; ++i ) {
+              const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
 
               if( ( brush.material & Material::STRUCT_BIT ) && ( sObj->flags & mask ) &&
                   overlapsAABBBrush( &brush ) )
@@ -469,7 +471,7 @@ namespace oz
 
   void Collider::trimAABBEntities()
   {
-    if( bsp->nEntityClasses == 1 ) {
+    if( str->nEntities == 0 ) {
       return;
     }
 
@@ -477,13 +479,13 @@ namespace oz
     Point3 originalEndPos   = endPos;
     Bounds localTrace       = str->toStructCS( trace );
 
-    for( int i = 1; i < bsp->nEntityClasses; ++i ) {
-      entityClazz = &bsp->entityClasses[i];
+    for( int i = 0; i < bsp->nModels; ++i ) {
+      model  = &bsp->models[i];
       entity = &str->entities[i];
 
-      if( localTrace.overlaps( *entityClazz + entity->offset ) ) {
-        for( int j = 0; j < entityClazz->nBrushes; ++j ) {
-          int index = entityClazz->firstBrush + j;
+      if( localTrace.overlaps( *model + entity->offset ) ) {
+        for( int j = 0; j < model->nBrushes; ++j ) {
+          int index = model->firstBrush + j;
           const BSP::Brush& brush = bsp->brushes[index];
 
           assert( !visitBrush( index ) );
@@ -616,19 +618,17 @@ namespace oz
           str = orbis.structs[*strIndex];
 
           // to prevent some of duplicated structure tests
-          if( str != oldStr ) {
-            bsp = orbis.bsps[str->bsp];
+          if( str != oldStr && str->overlaps( trace ) ) {
+            visitedBrushes.clearAll();
 
-            if( str->overlaps( trace ) ) {
-              visitedBrushes.clearAll();
+            startPos = str->toStructCS( originalStartPos );
+            endPos   = str->toStructCS( originalEndPos );
+            bsp      = orbis.bsps[str->bsp];
+            entity   = null;
 
-              startPos = str->toStructCS( originalStartPos );
-              endPos   = str->toStructCS( originalEndPos );
-              entity   = null;
+            trimAABBNode( 0 );
+            trimAABBEntities();
 
-              trimAABBNode( 0 );
-              trimAABBEntities();
-            }
             oldStr = str;
           }
         }
@@ -664,6 +664,8 @@ namespace oz
   {
     assert( objects != null || structs != null );
 
+    const Struct* oldStr = null;
+
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
         const Cell& cell = orbis.cells[x][y];
@@ -672,15 +674,18 @@ namespace oz
           foreach( strIndex, cell.structs.citer() ) {
             Struct* str = orbis.structs[*strIndex];
 
-            if( !structs->contains( str ) ) {
-              bsp = orbis.bsps[str->bsp];
+            if( str != oldStr && str->overlaps( trace ) && !structs->contains( str ) ) {
+              visitedBrushes.clearAll();
 
               startPos = str->toStructCS( aabb.p );
+              bsp      = orbis.bsps[str->bsp];
 
-              if( str->overlaps( trace ) && ( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) ) {
+              if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
                 structs->add( str );
               }
             }
+
+            oldStr = str;
           }
         }
 
@@ -747,8 +752,8 @@ namespace oz
             startPos = str->toStructCS( sObj->p ) - entity->offset;
             aabb.dim = sObj->dim + dimMargin;
 
-            for( int i = 0; i < entityClazz->nBrushes; ++i ) {
-              const BSP::Brush& brush = bsp->brushes[entityClazz->firstBrush + i];
+            for( int i = 0; i < model->nBrushes; ++i ) {
+              const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
 
               if( overlapsAABBBrush( &brush ) ) {
                 objects->add( sObj );
@@ -823,14 +828,14 @@ namespace oz
     return overlapsAABBOrbisOSO();
   }
 
-  bool Collider::overlapsOO( const Entity* entity_ )
+  bool Collider::overlapsOO( const Struct::Entity* entity_ )
   {
     str = entity_->str;
     entity = entity_;
-    bsp = entity_->clazz->bsp;
-    entityClazz = entity_->clazz;
+    bsp = entity_->model->bsp;
+    model = entity_->model;
 
-    trace = str->toAbsoluteCS( *entityClazz + entity->offset );
+    trace = str->toAbsoluteCS( *model + entity->offset );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsEntityOrbisOO();
@@ -870,14 +875,15 @@ namespace oz
     touchOrbisOverlaps();
   }
 
-  void Collider::getOverlaps( const Entity* entity_, Vector<Object*>* objects, float margin )
+  void Collider::getOverlaps( const Struct::Entity* entity_, Vector<Object*>* objects,
+                              float margin )
   {
     str = entity_->str;
     entity = entity_;
-    bsp = entity_->clazz->bsp;
-    entityClazz = entity_->clazz;
+    bsp = entity_->model->bsp;
+    model = entity_->model;
 
-    trace = str->toAbsoluteCS( *entityClazz + entity->offset );
+    trace = str->toAbsoluteCS( *model + entity->offset );
     span = orbis.getInters( trace, AABB::MAX_DIM + margin );
 
     getEntityOverlaps( objects, margin );

@@ -20,6 +20,8 @@
 #include <sys/stat.h>
 #include <SDL_main.h>
 
+#include <csignal>
+
 using namespace oz;
 
 bool Alloc::isLocked = true;
@@ -38,6 +40,7 @@ int main( int, char** )
 
   long startTime = SDL_GetTicks();
 
+  translator.init();
   matrix.init();
 
   foreach( terra, translator.terras.citer() ) {
@@ -50,8 +53,16 @@ int main( int, char** )
   }
 
   foreach( bsp, translator.bsps.citer() ) {
-    BSP::prebuild( bsp->name );
-    client::BSP::prebuild( bsp->name );
+    try {
+      BSP::prebuild( bsp->name );
+      client::BSP::prebuild( bsp->name );
+    }
+    catch( const Exception& e ) {
+      log.resetIndent();
+      log.println();
+      log.printException( e );
+      exit( -1 );
+    }
   }
 
   foreach( model, translator.models.citer() ) {
@@ -67,6 +78,7 @@ int main( int, char** )
   }
 
   matrix.free();
+  translator.free();
 
   long endTime = SDL_GetTicks();
 

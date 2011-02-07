@@ -14,6 +14,7 @@
 #include "client/Context.hpp"
 #include "client/Frustum.hpp"
 #include "client/Colours.hpp"
+#include "client/Shape.hpp"
 #include "client/Water.hpp"
 
 #include <SDL_opengl.h>
@@ -1053,7 +1054,7 @@ namespace client
     isLoaded = true;
   }
 
-  int BSP::fullDraw( const Struct* str ) const
+  int BSP::draw( const Struct* str ) const
   {
     camPos = camera.p + ( Point3::ORIGIN - str->p );
 
@@ -1080,7 +1081,7 @@ namespace client
 
     for( int i = 0; i < nEntityModels; ++i ) {
       const EntityModel& model = entityModels[i];
-      const Vec3& entityPos = str->entities[i].offset;
+      const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;
 
       glPushMatrix();
       glTranslatef( entityPos.x, entityPos.y, entityPos.z );
@@ -1099,7 +1100,7 @@ namespace client
     return waterFlags;
   }
 
-  void BSP::fullDrawWater( const Struct* str ) const
+  void BSP::drawWater( const Struct* str ) const
   {
     camPos = camera.p + ( Point3::ORIGIN - str->p );
 
