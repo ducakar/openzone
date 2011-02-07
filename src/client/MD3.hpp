@@ -98,10 +98,9 @@ namespace client
       void load();
 
       void drawFrame( int frame ) const;
-      void genList();
 
-      // call on static models, to release resources after list has been generated
-      void trim();
+      void genList();
+      void deleteList() const;
 
   };
 

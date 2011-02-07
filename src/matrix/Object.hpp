@@ -251,7 +251,7 @@ namespace oz
 
       void destroy()
       {
-        if( !( flags & DESTROYED_BIT ) ) {
+        if( ~flags & DESTROYED_BIT ) {
           life = 0.0f;
           flags |= DESTROYED_BIT;
           addEvent( EVENT_DESTROY, 1.0f );

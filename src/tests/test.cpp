@@ -26,7 +26,7 @@ void foo()
 
 int main( int, char** )
 {
-  StackTrace::init();
+  System::catchSignals();
 
   Alloc::isLocked = false;
   onleave( []() {

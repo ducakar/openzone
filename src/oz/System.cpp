@@ -1,5 +1,5 @@
 /*
- *  StackTrace.hpp
+ *  System.hpp
  *
  *  Class for generating stack trace for the current function call.
  *
@@ -7,7 +7,7 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#include "StackTrace.hpp"
+#include "System.hpp"
 
 #include "common.hpp"
 #include "Log.hpp"
@@ -25,16 +25,17 @@
 
 // prevent old-style cast warning due to a bug in <bits/signum.h>
 #ifdef __GNUC__
+# undef SIG_ERR
 # undef SIG_DFL
 # undef SIG_IGN
-# define SIG_DFL reinterpret_cast<__sighandler_t>( 0 )            /* Default action.  */
-# define SIG_IGN reinterpret_cast<__sighandler_t>( 1 )            /* Ignore signal.  */
+# define SIG_DFL reinterpret_cast<__sighandler_t>(  0 )            /* Default action.  */
+# define SIG_IGN reinterpret_cast<__sighandler_t>(  1 )            /* Ignore signal.  */
 #endif
 
 namespace oz
 {
 
-  const char* const StackTrace::SIGNALS[][2] =
+  const char* const System::SIGNALS[][2] =
   {
     { "?",              "[invalid signal number]"    },
     { "SIGHUP",         "Hangup"                     }, //  1
@@ -70,19 +71,17 @@ namespace oz
     { "SIGSYS",         "Bad system call"            }  // 31
   };
 
-  void* StackTrace::framePtrs[StackTrace::TRACE_SIZE + 1];
-  char  StackTrace::output[StackTrace::TRACE_BUFFER_SIZE];
+  thread_local void* System::framePtrs[System::TRACE_SIZE + 1];
+  thread_local char  System::output[System::TRACE_BUFFER_SIZE];
 
-  void StackTrace::signalHandler( int signum )
+  void System::signalHandler( int signum )
   {
-    signal( SIGHUP,  SIG_DFL );
     signal( SIGINT,  SIG_DFL );
     signal( SIGQUIT, SIG_DFL );
     signal( SIGILL,  SIG_DFL );
     signal( SIGABRT, SIG_DFL );
     signal( SIGFPE,  SIG_DFL );
     signal( SIGSEGV, SIG_DFL );
-    signal( SIGPIPE, SIG_DFL );
     signal( SIGTERM, SIG_DFL );
 
     if( signum < 1 || signum > 31 ) {
@@ -93,7 +92,7 @@ namespace oz
              signum, SIGNALS[signum][0], SIGNALS[signum][1] );
 
     char* frames;
-    int nFrames = StackTrace::get( &frames );
+    int nFrames = System::getStackTrace( &frames );
     const char* entry = frames;
 
     for( int i = 0; i < nFrames; ++i ) {
@@ -113,25 +112,34 @@ namespace oz
     fprintf( stderr, "Attach a debugger or send a fatal signal to kill ...\n" );
     while( sleep( 1 ) == 0 );
 
-    raise( signum );
+    abort();
   }
 
-  void StackTrace::init()
+  void System::catchSignals()
   {
-    signal( SIGHUP,  signalHandler );
     signal( SIGINT,  signalHandler );
     signal( SIGQUIT, signalHandler );
     signal( SIGILL,  signalHandler );
     signal( SIGABRT, signalHandler );
     signal( SIGFPE,  signalHandler );
     signal( SIGSEGV, signalHandler );
-    signal( SIGPIPE, signalHandler );
     signal( SIGTERM, signalHandler );
+  }
+
+  void System::resetSignals()
+  {
+    signal( SIGINT,  SIG_DFL );
+    signal( SIGQUIT, SIG_DFL );
+    signal( SIGILL,  SIG_DFL );
+    signal( SIGABRT, SIG_DFL );
+    signal( SIGFPE,  SIG_DFL );
+    signal( SIGSEGV, SIG_DFL );
+    signal( SIGTERM, SIG_DFL );
   }
 
 #ifndef OZ_UNIX
 
-  int StackTrace::get( char** bufferPtr )
+  int System::getStackTrace( char** bufferPtr )
   {
     signalHelper.dummy();
 
@@ -141,7 +149,7 @@ namespace oz
 
 #else
 
-  int StackTrace::get( char** bufferPtr )
+  int System::getStackTrace( char** bufferPtr )
   {
     int    nFrames = backtrace( framePtrs, TRACE_SIZE + 1 ) - 1;
     char** frames  = backtrace_symbols( framePtrs + 1, nFrames );

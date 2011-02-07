@@ -19,7 +19,7 @@ bool Alloc::isLocked = true;
 
 int main( int argc, char** argv )
 {
-  StackTrace::init();
+  System::catchSignals();
 
   Alloc::isLocked = false;
   onleave( []() {

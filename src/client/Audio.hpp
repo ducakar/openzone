@@ -45,6 +45,7 @@ namespace client
 
       const Object* obj;
       int flags;
+      const ObjectClass* clazz;
 
       virtual ~Audio();
 

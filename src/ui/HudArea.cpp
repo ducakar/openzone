@@ -70,9 +70,11 @@ namespace ui
       const Object* obj = camera.taggedObj;
       const ObjectClass* clazz = obj->clazz;
       float life = ( obj->flags & Object::BOT_BIT ) ?
-          ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
+          Math::max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
           obj->life / clazz->life;
       int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
+
+      assert( 0.0f <= life && life <= 1.0f );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
       fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );

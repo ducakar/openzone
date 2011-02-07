@@ -7,7 +7,6 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/Alloc.cpp
     src/oz/Alloc.hpp
     src/oz/Array.hpp
-    src/oz/AutoPtr.hpp
     src/oz/Bitset.hpp
     src/oz/Buffer.cpp
     src/oz/Buffer.hpp
@@ -36,10 +35,10 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/SBitset.hpp
     src/oz/SVector.hpp
     src/oz/Sparse.hpp
-    src/oz/StackTrace.cpp
-    src/oz/StackTrace.hpp
     src/oz/String.cpp
     src/oz/String.hpp
+    src/oz/System.cpp
+    src/oz/System.hpp
     src/oz/Vec3.cpp
     src/oz/Vec3.hpp
     src/oz/Vector.hpp
@@ -124,11 +123,8 @@ if( OZ_INSTALL_DATA )
 
   install( FILES
     data/maps/castle.ozBSP
-    data/maps/center.ozBSP
     data/maps/door.ozBSP
-    data/maps/house.ozBSP
     data/maps/pool.ozBSP
-    data/maps/rod.ozBSP
     data/maps/test.ozBSP
     DESTINATION share/openzone/maps )
 
@@ -391,7 +387,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/name )
 
   install( FILES
-    data/snd/cg2.ogg
+    data/snd/cg2.oga
     data/snd/damage_bot1.ogg
     data/snd/damage_bot2.ogg
     data/snd/death1.ogg

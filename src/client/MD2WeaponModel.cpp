@@ -31,8 +31,9 @@ namespace client
 
     MD2WeaponModel* model = new MD2WeaponModel();
 
-    model->obj = obj;
-    model->md2 = context.loadMD2( obj->clazz->modelName );
+    model->obj   = obj;
+    model->clazz = obj->clazz;
+    model->md2   = context.loadMD2( obj->clazz->modelName );
 
     model->setAnim( Bot::ANIM_STAND );
     model->anim.nextFrame = model->anim.endFrame;

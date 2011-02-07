@@ -20,10 +20,14 @@ function count()
   echo
 }
 
-count 'C++ Source' $source
-count 'Data config & Lua scripts' $data
-count 'Build system etc.' $build
+#count 'C++ Source' $source
+#count 'Data config & Lua scripts' $data
+#count 'Build system etc.' $build
 
-if [ -x /usr/bin/sloccount ]; then
-  LANG=C /usr/bin/sloccount src
+#if [ -x /usr/bin/sloccount ]; then
+#  LANG=C /usr/bin/sloccount src
+#fi
+
+if [ -x /usr/bin/cloc ]; then
+  /usr/bin/cloc --exclude-ext=gen src data/lua
 fi

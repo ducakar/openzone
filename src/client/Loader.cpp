@@ -257,6 +257,23 @@ namespace client
       }
     }
 
+    // static MD2
+    for ( auto i = context.staticMd2s.iter(); i.isValid(); ) {
+      auto j = i;
+
+      ++i;
+
+      if ( !j->object->isLoaded ) {
+        j->object->load();
+        j->object->genList();
+      }
+      else if ( j->nUsers == 0 ) {
+        j->object->deleteList();
+        delete j->object;
+        context.staticMd2s.exclude( j.key() );;
+      }
+    }
+
     // MD2
     for( auto i = context.md2s.iter(); i.isValid(); ) {
       auto j = i;
@@ -269,6 +286,23 @@ namespace client
       else if( j->nUsers == 0 ) {
         delete j->object;
         context.md2s.exclude( j.key() );;
+      }
+    }
+
+    // static MD3
+    for ( auto i = context.staticMd3s.iter(); i.isValid(); ) {
+      auto j = i;
+
+      ++i;
+
+      if ( !j->object->isLoaded ) {
+        j->object->load();
+        j->object->genList();
+      }
+      else if ( j->nUsers == 0 ) {
+        j->object->deleteList();
+        delete j->object;
+        context.staticMd3s.exclude( j.key() );;
       }
     }
 

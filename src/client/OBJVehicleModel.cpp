@@ -30,13 +30,14 @@ namespace client
     OBJVehicleModel* model = new OBJVehicleModel();
 
     model->obj = obj;
+    model->clazz = obj->clazz;
     model->objModel = context.loadOBJ( obj->clazz->modelName );
     return model;
   }
 
   OBJVehicleModel::~OBJVehicleModel()
   {
-    context.releaseOBJ( obj->clazz->modelName );
+    context.releaseOBJ( clazz->modelName );
   }
 
   void OBJVehicleModel::draw( const Model* )

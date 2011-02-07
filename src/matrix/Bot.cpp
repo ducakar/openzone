@@ -377,6 +377,7 @@ namespace oz
         // check if bot's gonna hit a stair in next frame
         Vec3 desiredMove = momentum * Timer::TICK_TIME;
 
+        collider.mask = flags & SOLID_BIT;
         collider.translate( *this, desiredMove, this );
 
         if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
@@ -405,6 +406,8 @@ namespace oz
           p.z = originalZ;
           stepSucceeded:;
         }
+
+        collider.mask = SOLID_BIT;
       }
     }
 

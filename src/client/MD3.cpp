@@ -347,8 +347,10 @@ namespace client
     glEndList();
   }
 
-  void MD3::trim()
-  {}
+  void MD3::deleteList() const
+  {
+    glDeleteLists( list, 1 );
+  }
 
 }
 }

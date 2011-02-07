@@ -99,7 +99,10 @@ namespace client
     camera.align();
     camera.move( p );
 
+    collider.mask = ~0;
     collider.translate( camera.p, camera.at * 2.0f );
+    collider.mask = Object::SOLID_BIT;
+
     camera.setTagged( collider.hit.obj );
   }
 

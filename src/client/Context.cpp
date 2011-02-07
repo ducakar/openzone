@@ -512,20 +512,18 @@ namespace client
     --resource->nUsers;
   }
 
-  uint Context::loadStaticMD2( const char* path )
+  MD2* Context::loadStaticMD2( const char* path )
   {
     Resource<MD2*>* resource = staticMd2s.find( path );
 
     if( resource == null ) {
       resource = staticMd2s.add( path, Resource<MD2*>() );
       resource->object = new MD2( path );
-      resource->object->load();
-      resource->object->genList();
       resource->nUsers = 0;
     }
 
     ++resource->nUsers;
-    return resource->object->list;
+    return resource->object;
   }
 
   void Context::releaseStaticMD2( const char* path )
@@ -534,15 +532,7 @@ namespace client
 
     assert( resource != null && resource->nUsers > 0 );
 
-    if( resource != null ) {
-      --resource->nUsers;
-
-      if( resource->nUsers == 0 ) {
-        glDeleteLists( resource->object->list, 1 );
-        delete resource->object;
-        staticMd2s.exclude( path );
-      }
-    }
+    --resource->nUsers;
   }
 
   MD2* Context::loadMD2( const char* path )
@@ -568,21 +558,18 @@ namespace client
     --resource->nUsers;
   }
 
-  uint Context::loadStaticMD3( const char* path )
+  MD3* Context::loadStaticMD3( const char* path )
   {
     Resource<MD3*>* resource = staticMd3s.find( path );
 
     if( resource == null ) {
       resource = staticMd3s.add( path, Resource<MD3*>() );
       resource->object = new MD3( path );
-      resource->object->load();
-      resource->object->genList();
-      resource->object->trim();
       resource->nUsers = 0;
     }
 
     ++resource->nUsers;
-    return resource->object->list;
+    return resource->object;
   }
 
   void Context::releaseStaticMD3( const char* path )
@@ -591,15 +578,7 @@ namespace client
 
     assert( resource != null && resource->nUsers > 0 );
 
-    if( resource != null ) {
-      --resource->nUsers;
-
-      if( resource->nUsers == 0 ) {
-        glDeleteLists( resource->object->list, 1 );
-        delete resource->object;
-        staticMd3s.exclude( path );
-      }
-    }
+    --resource->nUsers;
   }
 
   MD3* Context::loadMD3( const char* path )
@@ -776,6 +755,9 @@ namespace client
     }
     foreach( i, staticMd2s.citer() ) {
       assert( i->nUsers == 0 );
+
+      delete i->object;
+      staticMd2s.exclude( i.key() );
     }
     foreach( i, md2s.citer() ) {
       assert( i->nUsers == 0 );
@@ -785,6 +767,9 @@ namespace client
     }
     foreach( i, staticMd3s.citer() ) {
       assert( i->nUsers == 0 );
+
+      delete i->object;
+      staticMd3s.exclude( i.key() );
     }
     foreach( i, md3s.citer() ) {
       assert( i->nUsers == 0 );

@@ -96,9 +96,9 @@ namespace client
     assert( alGetError() == AL_NO_ERROR );
   }
 
-  Audio::Audio( const Object* obj_ ) : obj( obj_ ), flags( 0 )
+  Audio::Audio( const Object* obj_ ) : obj( obj_ ), flags( 0 ), clazz( obj_->clazz )
   {
-    const int* samples = obj->clazz->audioSamples;
+    const int* samples = clazz->audioSamples;
 
     for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; ++i ) {
       if( samples[i] != -1 ) {
@@ -110,7 +110,7 @@ namespace client
 
   Audio::~Audio()
   {
-    const int* samples = obj->clazz->audioSamples;
+    const int* samples = clazz->audioSamples;
 
     for( int i = 0; i < ObjectClass::AUDIO_SAMPLES; ++i ) {
       if( samples[i] != -1 ) {

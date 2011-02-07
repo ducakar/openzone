@@ -112,9 +112,9 @@ namespace oz
     }
 
     removedObjects.add( obj->index );
-    deleteObjects.add( obj );
     orbis.unposition( obj );
     orbis.remove( obj );
+    delete obj;
   }
 
   void Synapse::remove( Particle* part )
@@ -132,8 +132,8 @@ namespace oz
     assert( obj->index != -1 && obj->cell == null );
 
     removedObjects.add( obj->index );
-    deleteObjects.add( obj );
     orbis.remove( obj );
+    delete obj;
   }
 
   void Synapse::genParts( int number, const Point3& p,
@@ -160,8 +160,6 @@ namespace oz
 
   void Synapse::update()
   {
-    deleteObjects.free();
-
     actions.clear();
 
     addedStructs.clear();
@@ -175,8 +173,6 @@ namespace oz
 
   void Synapse::load()
   {
-    deleteObjects.alloc( 64 );
-
     actions.alloc( 256 );
 
     putObjects.alloc( 32 );
@@ -193,9 +189,6 @@ namespace oz
 
   void Synapse::unload()
   {
-    deleteObjects.clear();
-    deleteObjects.dealloc();
-
     actions.clear();
     actions.dealloc();
 

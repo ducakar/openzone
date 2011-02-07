@@ -7,6 +7,7 @@ option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make 
 option( OZ_ALLOC_TRACELEAKS "Use overloads for default new and delete that saves backtraces for each new call and trace memory leaks" OFF )
 option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
 option( OZ_BUILTIN_MATH "Use GCC/clang built-in math functions (no need to include <cmath>, possibly faster math calls in debug mode)" ON )
+option( OZ_SIMD "Use SIMD for vectors etc. Changes the size of Vec3 and Point3" OFF )
 option( OZ_BIG_ENDIAN_DATA "Use big-endian byte-order for data when saving to disk or sending across network" ON )
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in configuration files" ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" ON )

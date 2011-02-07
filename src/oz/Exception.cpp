@@ -9,7 +9,7 @@
 
 #include "Exception.hpp"
 
-#include "StackTrace.hpp"
+#include "System.hpp"
 
 #undef Exception
 
@@ -38,7 +38,7 @@ namespace oz
       message( message_ ), file( file_ ), line( line_ ), function( function_ ),
       nFrames( 0 ), frames( null )
   {
-    nFrames = StackTrace::get( &frames );
+    nFrames = System::getStackTrace( &frames );
 
 #ifndef NDEBUG
 # if defined( OZ_MSVC )

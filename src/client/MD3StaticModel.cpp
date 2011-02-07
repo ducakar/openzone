@@ -12,6 +12,7 @@
 #include "client/MD3StaticModel.hpp"
 
 #include "client/Context.hpp"
+#include "client/MD3.hpp"
 
 namespace oz
 {
@@ -24,19 +25,24 @@ namespace client
   {
     MD3StaticModel* model = new MD3StaticModel();
 
-    model->obj  = obj;
-    model->list = context.loadStaticMD3( obj->clazz->modelName );
+    model->obj   = obj;
+    model->clazz = obj->clazz;
+    model->md3   = context.loadStaticMD3( obj->clazz->modelName );
     return model;
   }
 
   MD3StaticModel::~MD3StaticModel()
   {
-    context.releaseStaticMD3( obj->clazz->modelName );
+    context.releaseStaticMD3( clazz->modelName );
   }
 
   void MD3StaticModel::draw( const Model* )
   {
-    glCallList( list );
+    if( !md3->isLoaded ) {
+      return;
+    }
+
+    glCallList( md3->list );
   }
 
 }
