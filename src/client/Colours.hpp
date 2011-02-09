@@ -18,24 +18,24 @@ namespace client
 
   struct Colours
   {
-    static const float BLACK[];
-    static const float WHITE[];
+    static const Quat BLACK;
+    static const Quat WHITE;
 
-    static const float ENTITY_AABB[];
-    static const float STRUCTURE_AABB[];
-    static const float CLIP_AABB[];
-    static const float NOCLIP_AABB[];
-    static const float TAG[];
+    static const Quat ENTITY_AABB;
+    static const Quat STRUCTURE_AABB;
+    static const Quat CLIP_AABB;
+    static const Quat NOCLIP_AABB;
+    static const Quat TAG;
 
-    static const float GLOBAL_AMBIENT[];
+    static const Quat GLOBAL_AMBIENT;
 
-    static float diffuse[];
-    static float ambient[];
-    static float sky[];
-    static float water[];
+    static Quat diffuse;
+    static Quat ambient;
+    static Quat sky;
+    static Quat water;
 
-    static float waterBlend1[];
-    static float waterBlend2[];
+    static Quat waterBlend1;
+    static Quat waterBlend2;
   };
 
 }

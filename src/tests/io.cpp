@@ -35,13 +35,13 @@ int main( int, char** )
   os.writeVec3( Vec3( 1.51f, 0.71f, 4.91f ) );
   os.writeFloat( 1.71f );
 
-  assert( is.readVec3() == Vec3( 1.5f, 0.7f, 4.9f ) );
-  assert( is.readInt() == 42 );
-  assert( is.readFloat() == 1.7f );
-  assert( is.readString().equals( "drek" ) );
-  assert( is.readInt() == 43 );
-  assert( is.readVec3() == Vec3( 1.51f, 0.71f, 4.91f ) );
-  assert( is.readFloat() == 1.71f );
+  hard_assert( is.readVec3() == Vec3( 1.5f, 0.7f, 4.9f ) );
+  hard_assert( is.readInt() == 42 );
+  hard_assert( is.readFloat() == 1.7f );
+  hard_assert( is.readString().equals( "drek" ) );
+  hard_assert( is.readInt() == 43 );
+  hard_assert( is.readVec3() == Vec3( 1.51f, 0.71f, 4.91f ) );
+  hard_assert( is.readFloat() == 1.71f );
 
   printf( "OK\n" );
   return 0;

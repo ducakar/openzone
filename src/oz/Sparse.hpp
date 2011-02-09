@@ -126,7 +126,7 @@ namespace oz
        */
       void ensureCapacity()
       {
-        assert( ( count == size ) == ( freeSlot == size ) );
+        hard_assert( ( count == size ) == ( freeSlot == size ) );
 
         if( freeSlot == size ) {
           if( size == 0 ) {
@@ -190,7 +190,7 @@ namespace oz
        */
       Sparse& operator = ( const Sparse& s )
       {
-        assert( &s != this );
+        hard_assert( &s != this );
 
         // create new data array of the new data doesn't fit, keep the old one otherwise
         if( size < s.size ) {
@@ -315,7 +315,7 @@ namespace oz
        */
       bool hasIndex( int i ) const
       {
-        assert( uint( i ) < uint( size ) );
+        hard_assert( uint( i ) < uint( size ) );
 
         return data[i].nextSlot[INDEX] != -1;
       }
@@ -341,7 +341,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& operator [] ( int i ) const
       {
-        assert( 0 <= i && i < size );
+        hard_assert( 0 <= i && i < size );
 
         return data[i];
       }
@@ -353,7 +353,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& operator [] ( int i )
       {
-        assert( 0 <= i && i < size );
+        hard_assert( 0 <= i && i < size );
 
         return data[i];
       }
@@ -430,7 +430,7 @@ namespace oz
        */
       void remove( int i )
       {
-        assert( uint( i ) < uint( size ) );
+        hard_assert( uint( i ) < uint( size ) );
 
         data[i].nextSlot[INDEX] = freeSlot;
         freeSlot = i;
@@ -458,7 +458,7 @@ namespace oz
        */
       void alloc( int initSize )
       {
-        assert( size == 0 && initSize > 0 );
+        hard_assert( size == 0 && initSize > 0 );
 
         data = new Type[initSize];
         size = initSize;
@@ -474,7 +474,7 @@ namespace oz
        */
       void dealloc()
       {
-        assert( count == 0 );
+        hard_assert( count == 0 );
 
         delete[] data;
 

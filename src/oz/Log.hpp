@@ -52,6 +52,12 @@ namespace oz
       bool isFile() const;
 
       /**
+       * Prints the text from argument list.
+       * @param s
+       */
+      void vprintRaw( const char* s, va_list ap ) const;
+
+      /**
        * Prints the text.
        * @param s
        */

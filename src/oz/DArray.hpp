@@ -132,7 +132,7 @@ namespace oz
        */
       DArray& operator = ( const DArray& a )
       {
-        assert( &a != this );
+        hard_assert( &a != this );
 
         if( count != a.count ) {
           delete[] data;
@@ -191,7 +191,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       operator const Type* () const
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         return data;
       }
@@ -204,7 +204,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       operator Type* ()
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         return data;
       }
@@ -233,7 +233,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         return aContains( data, e, count );
       }
@@ -245,7 +245,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& operator [] ( int i ) const
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i];
       }
@@ -257,7 +257,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& operator [] ( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i];
       }
@@ -268,7 +268,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& first() const
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         return data[0];
       }
@@ -279,7 +279,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& first()
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         return data[0];
       }
@@ -290,7 +290,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& last() const
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         return data[count - 1];
       }
@@ -301,7 +301,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& last()
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         return data[count - 1];
       }
@@ -313,7 +313,7 @@ namespace oz
        */
       int index( const Type& e ) const
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         return aIndex( data, e, count );
       }
@@ -325,7 +325,7 @@ namespace oz
        */
       int lastIndex( const Type& e ) const
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         return aLastIndex( data, e, count );
       }
@@ -335,7 +335,7 @@ namespace oz
        */
       void sort()
       {
-        assert( count > 0 );
+        hard_assert( count > 0 );
 
         aSort( data, count );
       }
@@ -357,7 +357,7 @@ namespace oz
        */
       void alloc( int initSize )
       {
-        assert( count == 0 && initSize > 0 );
+        hard_assert( count == 0 && initSize > 0 );
 
         data = new Type[initSize];
         count = initSize;

@@ -49,7 +49,7 @@ namespace ui
     Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
 
-    synapse.addStruct( "house", p, Struct::R0 );
+    synapse.addStruct( "house", p, Struct::Rotation::R0 );
   }
 
   static void createCenterR90( Button* )
@@ -57,7 +57,7 @@ namespace ui
     Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
 
-    synapse.addStruct( "house", p, Struct::R90 );
+    synapse.addStruct( "house", p, Struct::Rotation::R90 );
   }
 
   static void createCenterR180( Button* )
@@ -65,7 +65,7 @@ namespace ui
     Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
 
-    synapse.addStruct( "house", p, Struct::R180 );
+    synapse.addStruct( "house", p, Struct::Rotation::R180 );
   }
 
   static void createCenterR270( Button* )
@@ -73,7 +73,7 @@ namespace ui
     Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
     p += camera.at * 2.0f;
 
-    synapse.addStruct( "house", p, Struct::R270 );
+    synapse.addStruct( "house", p, Struct::Rotation::R270 );
   }
 
   static void destroy( Button* )
@@ -89,7 +89,7 @@ namespace ui
 
   BuildMenu::BuildMenu() : Frame( -205, -255, 200, 250 )
   {
-    setFont( TITLE );
+    setFont( Font::Type::TITLE );
 
     add( new Button( "SmallCrate", createObject, 90, 15 ), 5, -35 );
     add( new Button( "BigCrate", createObject, 90, 15 ), 5, -55 );

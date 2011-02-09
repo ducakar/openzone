@@ -132,7 +132,7 @@ namespace oz
       }
     }
 
-    assert( !os.isAvailable() );
+    hard_assert( !os.isAvailable() );
     buffer.write( destFile );
 
     log.printEnd( " OK" );
@@ -174,7 +174,7 @@ namespace oz
       }
     }
 
-    assert( !is.isAvailable() );
+    hard_assert( !is.isAvailable() );
 
     log.printEnd( " OK" );
   }

@@ -46,7 +46,7 @@ namespace oz
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
-        assert( !cells[x][y].structs.contains( short( str->index ) ) );
+        hard_assert( !cells[x][y].structs.contains( short( str->index ) ) );
 
         cells[x][y].structs.add( short( str->index ) );
       }
@@ -60,7 +60,7 @@ namespace oz
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
-        assert( cells[x][y].structs.contains( short( str->index ) ) );
+        hard_assert( cells[x][y].structs.contains( short( str->index ) ) );
 
         cells[x][y].structs.excludeUO( short( str->index ) );
       }
@@ -69,7 +69,7 @@ namespace oz
 
   void Orbis::position( Object* obj )
   {
-    assert( obj->cell == null );
+    hard_assert( obj->cell == null );
 
     Cell* cell = getCell( obj->p );
 
@@ -85,7 +85,7 @@ namespace oz
 
   void Orbis::unposition( Object* obj )
   {
-    assert( obj->cell != null );
+    hard_assert( obj->cell != null );
 
     Cell* cell = obj->cell;
 
@@ -100,7 +100,7 @@ namespace oz
 
   void Orbis::reposition( Object* obj )
   {
-    assert( obj->cell != null );
+    hard_assert( obj->cell != null );
 
     Cell* oldCell = obj->cell;
     Cell* newCell = getCell( obj->p );
@@ -125,7 +125,7 @@ namespace oz
 
   void Orbis::position( Particle* part )
   {
-    assert( part->cell == null );
+    hard_assert( part->cell == null );
 
     Cell* cell = getCell( part->p );
 
@@ -141,7 +141,7 @@ namespace oz
 
   void Orbis::unposition( Particle* part )
   {
-    assert( part->cell != null );
+    hard_assert( part->cell != null );
 
     Cell* cell = part->cell;
 
@@ -156,7 +156,7 @@ namespace oz
 
   void Orbis::reposition( Particle* part )
   {
-    assert( part->cell != null );
+    hard_assert( part->cell != null );
 
     Cell* oldCell = part->cell;
     Cell* newCell = getCell( part->p );
@@ -235,7 +235,7 @@ namespace oz
 
   void Orbis::remove( Struct* str )
   {
-    assert( str->index >= 0 );
+    hard_assert( str->index >= 0 );
 
     strFreedIndices[freeing].add( str->index );
     structs[str->index] = null;
@@ -244,8 +244,8 @@ namespace oz
 
   void Orbis::remove( Object* obj )
   {
-    assert( obj->index >= 0 );
-    assert( obj->cell == null );
+    hard_assert( obj->index >= 0 );
+    hard_assert( obj->cell == null );
 
     if( obj->flags & Object::LUA_BIT ) {
       lua.unregisterObject( obj->index );
@@ -257,8 +257,8 @@ namespace oz
 
   void Orbis::remove( Particle* part )
   {
-    assert( part->index >= 0 );
-    assert( part->cell == null );
+    hard_assert( part->index >= 0 );
+    hard_assert( part->cell == null );
 
     partFreedIndices[freeing].add( part->index );
     parts[part->index] = null;
@@ -394,7 +394,7 @@ namespace oz
 
   bool Orbis::read( InputStream* istream )
   {
-    assert( structs.length() == 0 && objects.length() == 0 && parts.length() == 0 );
+    hard_assert( structs.length() == 0 && objects.length() == 0 && parts.length() == 0 );
 
     log.print( "Reading Orbis from stream ..." );
 

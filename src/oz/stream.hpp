@@ -11,6 +11,7 @@
 
 #include "Exception.hpp"
 #include "String.hpp"
+#include "Plane.hpp"
 #include "Mat44.hpp"
 
 namespace oz
@@ -97,7 +98,7 @@ namespace oz
 
       const char* getPos() const
       {
-        assert( start <= pos && pos <= end );
+        hard_assert( start <= pos && pos <= end );
 
         return pos;
       }
@@ -188,6 +189,15 @@ namespace oz
                        Math::fromBits( Endian::shuffle32( data[2] ) ) );
       }
 
+      Plane readPlane()
+      {
+        const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[4] ) ) );
+        return Plane( Math::fromBits( Endian::shuffle32( data[0] ) ),
+                      Math::fromBits( Endian::shuffle32( data[1] ) ),
+                      Math::fromBits( Endian::shuffle32( data[2] ) ),
+                      Math::fromBits( Endian::shuffle32( data[3] ) ) );
+      }
+
       Quat readQuat()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[4] ) ) );
@@ -253,7 +263,7 @@ namespace oz
 
       char* getPos() const
       {
-        assert( start <= pos && pos <= end );
+        hard_assert( start <= pos && pos <= end );
 
         return pos;
       }
@@ -357,6 +367,16 @@ namespace oz
         data[0] = Endian::shuffle32( Math::toBits( p.x ) );
         data[1] = Endian::shuffle32( Math::toBits( p.y ) );
         data[2] = Endian::shuffle32( Math::toBits( p.z ) );
+      }
+
+      void writePlane( const Plane& p )
+      {
+        int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[4] ) ) );
+
+        data[0] = Endian::shuffle32( Math::toBits( p.nx ) );
+        data[1] = Endian::shuffle32( Math::toBits( p.ny ) );
+        data[2] = Endian::shuffle32( Math::toBits( p.nz ) );
+        data[3] = Endian::shuffle32( Math::toBits( p.d ) );
       }
 
       void writeQuat( const Quat& q )

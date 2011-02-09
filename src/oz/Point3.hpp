@@ -14,6 +14,142 @@
 namespace oz
 {
 
+#ifdef OZ_SIMD
+
+  class Point3
+  {
+    public:
+
+      static const Point3 ORIGIN;
+
+      union
+      {
+        float4 f4;
+        int4   i4;
+        struct
+        {
+          float x;
+          float y;
+          float z;
+          float w;
+        };
+      };
+
+    public:
+
+      OZ_ALWAYS_INLINE
+      explicit Point3()
+      {}
+
+      OZ_ALWAYS_INLINE
+      explicit Point3( float4 f4_ ) : f4( f4_ )
+      {}
+
+      OZ_ALWAYS_INLINE
+      explicit Point3( int4 i4_ ) : i4( i4_ )
+      {}
+
+      OZ_ALWAYS_INLINE
+      explicit Point3( float x, float y, float z ) : f4( float4( x, y, z, 1.0f ) )
+      {}
+
+      OZ_ALWAYS_INLINE
+      explicit Point3( const float* v ) : f4( float4( v[0], v[1], v[2], 1.0f ) )
+      {}
+
+      OZ_ALWAYS_INLINE
+      bool operator == ( const Point3& p ) const
+      {
+        return x == p.x && y == p.y && z == p.z;
+      }
+
+      OZ_ALWAYS_INLINE
+      bool operator != ( const Point3& p ) const
+      {
+        return x != p.x || y != p.y || z != p.z;
+      }
+
+      OZ_ALWAYS_INLINE
+      operator const float* () const
+      {
+        return &x;
+      }
+
+      OZ_ALWAYS_INLINE
+      operator float* ()
+      {
+        return &x;
+      }
+
+      OZ_ALWAYS_INLINE
+      const float& operator [] ( int i ) const
+      {
+        hard_assert( 0 <= i && i < 3 );
+
+        return ( &x )[i];
+      }
+
+      OZ_ALWAYS_INLINE
+      float& operator [] ( int i )
+      {
+        hard_assert( 0 <= i && i < 3 );
+
+        return ( &x )[i];
+      }
+
+      OZ_ALWAYS_INLINE
+      bool isColinear( const Point3& p, float epsilon ) const
+      {
+        float p1 = p.x * y * z;
+        float p2 = p.y * x * z;
+        float p3 = p.z * x * y;
+
+        return Math::abs( p1 - p2 ) <= epsilon && Math::abs( p1 - p3 ) <= epsilon;
+      }
+
+      OZ_ALWAYS_INLINE
+      Point3 operator + ( const Vec3& v ) const
+      {
+        return Point3( f4 + v.f4 );
+      }
+
+      OZ_ALWAYS_INLINE
+      Point3 operator - ( const Vec3& v ) const
+      {
+        return Point3( f4 - v.f4 );
+      }
+
+      OZ_ALWAYS_INLINE
+      Vec3 operator - ( const Point3& p ) const
+      {
+        return Vec3( f4 - p.f4 );
+      }
+
+      OZ_ALWAYS_INLINE
+      Point3& operator += ( const Vec3& v )
+      {
+        f4 += v.f4;
+        return *this;
+      }
+
+      OZ_ALWAYS_INLINE
+      Point3& operator -= ( const Vec3& v )
+      {
+        f4 -= v.f4;
+        return *this;
+      }
+
+      // dot product
+      OZ_ALWAYS_INLINE
+      float operator * ( const Vec3& v ) const
+      {
+        return x*v.x + y*v.y + z*v.z;
+      }
+
+  };
+
+#else
+
   class Point3
   {
     public:
@@ -65,7 +201,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const float& operator [] ( int i ) const
       {
-        assert( 0 <= i && i < 3 );
+        hard_assert( 0 <= i && i < 3 );
 
         return ( &x )[i];
       }
@@ -73,24 +209,9 @@ namespace oz
       OZ_ALWAYS_INLINE
       float& operator [] ( int i )
       {
-        assert( 0 <= i && i < 3 );
+        hard_assert( 0 <= i && i < 3 );
 
         return ( &x )[i];
-      }
-
-      OZ_ALWAYS_INLINE
-      bool equals( const Point3& p, float epsilon ) const
-      {
-        return
-            Math::abs( x - p.x ) <= epsilon &&
-            Math::abs( y - p.y ) <= epsilon &&
-            Math::abs( z - p.z ) <= epsilon;
-      }
-
-      OZ_ALWAYS_INLINE
-      Point3 abs() const
-      {
-        return Point3( Math::abs( x ), Math::abs( y ), Math::abs( z ) );
       }
 
       OZ_ALWAYS_INLINE
@@ -147,5 +268,7 @@ namespace oz
       }
 
   };
+
+#endif
 
 }

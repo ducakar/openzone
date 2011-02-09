@@ -17,7 +17,7 @@
 namespace oz
 {
 
-  class AABB : public Sphere
+  class AABB
   {
     public:
 
@@ -26,16 +26,21 @@ namespace oz
       static const float REAL_MAX_DIM;
 
       /**
+       * Position
+       */
+      Point3 p;
+
+      /**
        * Extents
        */
-      Vec3 dim;
+      Vec3   dim;
 
       OZ_ALWAYS_INLINE
       explicit AABB()
       {}
 
       OZ_ALWAYS_INLINE
-      explicit AABB( const Point3& p_, const Vec3& dim_ ) : Sphere( p_ ), dim( dim_ )
+      explicit AABB( const Point3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )
       {}
 
       OZ_ALWAYS_INLINE

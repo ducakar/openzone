@@ -46,10 +46,10 @@ namespace oz
     bool result = true;
 
     for( int i = 0; i < brush->nSides; ++i ) {
-      const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset = plane.normal.abs() * aabb.dim;
-      float dist   = startPos * plane.normal - plane.distance - offset;
+      float offset = plane.abs() * aabb.dim;
+      float dist   = plane * startPos - offset;
 
       result &= dist <= EPSILON;
     }
@@ -75,11 +75,11 @@ namespace oz
       return false;
     }
     else {
-      const BSP::Node&  node  = bsp->nodes[nodeIndex];
-      const BSP::Plane& plane = bsp->planes[node.plane];
+      const BSP::Node& node  = bsp->nodes[nodeIndex];
+      const Plane&     plane = bsp->planes[node.plane];
 
-      float offset = plane.normal.abs() * aabb.dim + 2.0f * EPSILON;
-      float dist = startPos * plane.normal - plane.distance;
+      float offset = plane.abs() * aabb.dim + 2.0f * EPSILON;
+      float dist = plane * startPos;
 
       if( dist > offset ) {
         return overlapsAABBNode( node.front );
@@ -111,7 +111,7 @@ namespace oz
           int index = model->firstBrush + j;
           const BSP::Brush& brush = bsp->brushes[index];
 
-          assert( !visitedBrushes.get( index ) );
+          hard_assert( !visitedBrushes.get( index ) );
 
           startPos = originalStartPos - entity->offset;
 
@@ -338,14 +338,14 @@ namespace oz
   {
     float minRatio = -1.0f;
     float maxRatio =  1.0f;
-    const Vec3* lastNormal = null;
+    Vec3  lastNormal;
 
     for( int i = 0; i < brush->nSides; ++i ) {
-      const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset    = plane.normal.abs() * aabb.dim;
-      float startDist = startPos * plane.normal - plane.distance - offset;
-      float endDist   = endPos   * plane.normal - plane.distance - offset;
+      float offset    = plane.abs() * aabb.dim;
+      float startDist = plane * startPos - offset;
+      float endDist   = plane * endPos   - offset;
 
       if( endDist > EPSILON ) {
         if( startDist < 0.0f ) {
@@ -360,14 +360,14 @@ namespace oz
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
-          lastNormal = &plane.normal;
+          lastNormal = plane.normal();
         }
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
       if( minRatio < hit.ratio ) {
         hit.ratio    = Math::max( 0.0f, minRatio );
-        hit.normal   = str->toAbsoluteCS( *lastNormal );
+        hit.normal   = str->toAbsoluteCS( lastNormal );
         hit.obj      = null;
         hit.str      = str;
         hit.entity   = entity;
@@ -382,18 +382,18 @@ namespace oz
     float depth = Math::inf();
 
     for( int i = 0; i < brush->nSides; ++i ) {
-      const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      if( plane.normal.z <= 0.0f ) {
-        float centreDist = startPos * plane.normal - plane.distance;
+      if( plane.nz <= 0.0f ) {
+        float centreDist = plane * startPos;
 
         if( centreDist > -EPSILON ) {
           return;
         }
       }
       else {
-        float dist = ( plane.distance - plane.normal.x*startPos.x + plane.normal.y*startPos.y ) /
-            plane.normal.z - startPos.z + aabb.dim.z;
+        float dist = ( plane.d - startPos.x*plane.nx + startPos.y*plane.ny ) /
+            plane.nz - startPos.z + aabb.dim.z;
 
         if( dist < 0.0f ) {
           return;
@@ -411,10 +411,10 @@ namespace oz
   void Collider::trimAABBLadder( const BSP::Brush* brush )
   {
     for( int i = 0; i < brush->nSides; ++i ) {
-      const BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+      const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset = plane.normal.abs() * aabb.dim;
-      float dist   = startPos * plane.normal - plane.distance - offset;
+      float offset = plane.abs() * aabb.dim;
+      float dist   = plane * startPos - offset;
 
       if( dist > 0.0f ) {
         return;
@@ -449,12 +449,12 @@ namespace oz
       }
     }
     else {
-      const BSP::Node&  node  = bsp->nodes[nodeIndex];
-      const BSP::Plane& plane = bsp->planes[node.plane];
+      const BSP::Node& node  = bsp->nodes[nodeIndex];
+      const Plane&     plane = bsp->planes[node.plane];
 
-      float offset    = plane.normal.abs() * aabb.dim + 2.0f * EPSILON;
-      float startDist = startPos * plane.normal - plane.distance;
-      float endDist   = endPos   * plane.normal - plane.distance;
+      float offset    = plane.abs() * aabb.dim + 2.0f * EPSILON;
+      float startDist = plane * startPos;
+      float endDist   = plane * endPos;
 
       if( startDist > offset && endDist > offset ) {
         trimAABBNode( node.front );
@@ -488,7 +488,7 @@ namespace oz
           int index = model->firstBrush + j;
           const BSP::Brush& brush = bsp->brushes[index];
 
-          assert( !visitBrush( index ) );
+          hard_assert( !visitBrush( index ) );
 
           startPos = originalStartPos - entity->offset;
           endPos   = originalEndPos   - entity->offset;
@@ -649,8 +649,8 @@ namespace oz
 
     trimAABBTerra();
 
-    assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
-    assert( ( ( hit.material & Material::OBJECT_BIT ) != 0 ) == ( hit.obj != null ) );
+    hard_assert( 0.0f <= hit.ratio && hit.ratio <= 1.0f );
+    hard_assert( ( ( hit.material & Material::OBJECT_BIT ) != 0 ) == ( hit.obj != null ) );
   }
 
   //***********************************
@@ -660,7 +660,7 @@ namespace oz
   // get all objects and structures that overlap with our trace
   void Collider::getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* structs )
   {
-    assert( objects != null || structs != null );
+    hard_assert( objects != null || structs != null );
 
     const Struct* oldStr = null;
 
@@ -701,7 +701,7 @@ namespace oz
   // get all objects which are included in our trace
   void Collider::getOrbisIncludes( Vector<Object*>* objects ) const
   {
-    assert( objects != null );
+    hard_assert( objects != null );
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -734,7 +734,7 @@ namespace oz
 
   void Collider::getEntityOverlaps( Vector<Object*>* objects, float margin )
   {
-    assert( objects != null );
+    hard_assert( objects != null );
 
     Vec3 dimMargin = Vec3( margin, margin, margin );
 
@@ -914,7 +914,7 @@ namespace oz
 
   void Collider::translate( const Dynamic* obj_, const Vec3& move_ )
   {
-    assert( obj_->cell != null );
+    hard_assert( obj_->cell != null );
 
     obj  = obj_;
     aabb = *obj_;

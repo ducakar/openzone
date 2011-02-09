@@ -158,7 +158,7 @@ namespace ui
     float lifeWidth = life * barWidth;
     float lifeWidthLeft = barWidth - lifeWidth;
 
-    assert( 0.0f <= life && life <= 1.0f );
+    hard_assert( 0.0f <= life && life <= 1.0f );
 
     glColor4f( 1.0f - life, life, 0.0f, 1.0f );
     fillRect( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
@@ -185,7 +185,7 @@ namespace ui
       float lifeWidth = life * barWidth;
       float lifeWidthLeft = barWidth - lifeWidth;
 
-      assert( 0.0f <= life && life <= 1.0f );
+      hard_assert( 0.0f <= life && life <= 1.0f );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.5f );
       fillRect( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
@@ -235,7 +235,7 @@ namespace ui
   StrategicArea::StrategicArea() : Area( camera.width, camera.height ), leftClick( false )
   {
     flags |= IGNORE_BIT | HIDDEN_BIT | UPDATE_FUNC_BIT;
-    setFont( SANS );
+    setFont( Font::Type::SANS );
 
     pixelStep = Math::tan( Math::rad( camera.angle / 2.0f ) ) / float( camera.height / 2 );
     stepPixel = 1.0f / pixelStep;
@@ -246,7 +246,7 @@ namespace ui
 
   void StrategicArea::onUpdate()
   {
-    if( camera.state != Camera::STRATEGIC ) {
+    if( camera.state != Camera::State::STRATEGIC ) {
       show( false );
       tagged.clear();
       leftClick = false;

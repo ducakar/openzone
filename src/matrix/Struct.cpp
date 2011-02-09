@@ -44,54 +44,54 @@ namespace oz
   void Struct::Entity::updateIgnoring()
   {
     switch( state ) {
-      case CLOSED: {
+      case State::CLOSED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = OPENING;
+          state = State::OPENING;
         }
         break;
       }
-      case OPENING:
-      case OPENING_BLOCKED: {
+      case State::OPENING:
+      case State::OPENING_BLOCKED: {
         ratio += model->ratioInc;
         time += Timer::TICK_TIME;
 
         if( ratio >= 1.0f ) {
           ratio = 1.0f;
           time = 0.0f;
-          state = OPENED;
+          state = State::OPENED;
         }
 
         offset = ratio * model->move;
         break;
       }
-      case OPENED: {
+      case State::OPENED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = CLOSING;
+          state = State::CLOSING;
         }
         break;
       }
-      case CLOSING:
-      case CLOSING_BLOCKED: {
+      case State::CLOSING:
+      case State::CLOSING_BLOCKED: {
         ratio -= model->ratioInc;
         time += Timer::TICK_TIME;
 
         if( ratio <= 0.0f ) {
           ratio = 0.0f;
           time = 0.0f;
-          state = CLOSED;
+          state = State::CLOSED;
         }
 
         offset = ratio * model->move;
         break;
       }
       default: {
-        assert( false );
+        hard_assert( false );
         break;
       }
     }
@@ -100,17 +100,17 @@ namespace oz
   void Struct::Entity::updateBlocking()
   {
     switch( state ) {
-      case CLOSED: {
+      case State::CLOSED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = OPENING;
+          state = State::OPENING;
         }
         break;
       }
-      case OPENING:
-      case OPENING_BLOCKED: {
+      case State::OPENING:
+      case State::OPENING_BLOCKED: {
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
@@ -124,7 +124,7 @@ namespace oz
         }
         else {
           if( ratio == 1.0f ) {
-            state = OPENED;
+            state = State::OPENED;
           }
 
           offset = oldOffset;
@@ -144,17 +144,17 @@ namespace oz
         }
         break;
       }
-      case OPENED: {
+      case State::OPENED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = CLOSING;
+          state = State::CLOSING;
         }
         break;
       }
-      case CLOSING:
-      case CLOSING_BLOCKED: {
+      case State::CLOSING:
+      case State::CLOSING_BLOCKED: {
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
@@ -167,7 +167,7 @@ namespace oz
         }
         else {
           if( ratio == 0.0f ) {
-            state = CLOSED;
+            state = State::CLOSED;
           }
 
           offset = oldOffset;
@@ -188,7 +188,7 @@ namespace oz
         break;
       }
       default: {
-        assert( false );
+        hard_assert( false );
         break;
       }
     }
@@ -197,17 +197,17 @@ namespace oz
   void Struct::Entity::updatePushing()
   {
     switch( state ) {
-      case CLOSED: {
+      case State::CLOSED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = OPENING;
+          state = State::OPENING;
         }
         break;
       }
-      case OPENING:
-      case OPENING_BLOCKED: {
+      case State::OPENING:
+      case State::OPENING_BLOCKED: {
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
@@ -239,7 +239,7 @@ namespace oz
         }
         else {
           if( ratio == 1.0f ) {
-            state = OPENED;
+            state = State::OPENED;
           }
 
           offset = oldOffset;
@@ -262,17 +262,17 @@ namespace oz
         }
         break;
       }
-      case OPENED: {
+      case State::OPENED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = CLOSING;
+          state = State::CLOSING;
         }
         break;
       }
-      case CLOSING:
-      case CLOSING_BLOCKED: {
+      case State::CLOSING:
+      case State::CLOSING_BLOCKED: {
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
@@ -304,7 +304,7 @@ namespace oz
         }
         else {
           if( ratio == 0.0f ) {
-            state = CLOSED;
+            state = State::CLOSED;
           }
 
           offset = oldOffset;
@@ -328,7 +328,7 @@ namespace oz
         break;
       }
       default: {
-        assert( false );
+        hard_assert( false );
         break;
       }
     }
@@ -337,17 +337,17 @@ namespace oz
   void Struct::Entity::updateCrushing()
   {
     switch( state ) {
-      case CLOSED: {
+      case State::CLOSED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = OPENING;
+          state = State::OPENING;
         }
         break;
       }
-      case OPENING:
-      case OPENING_BLOCKED: {
+      case State::OPENING:
+      case State::OPENING_BLOCKED: {
         ratio = Math::min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
 
@@ -368,21 +368,21 @@ namespace oz
           }
         }
         else if( ratio == 1.0f ) {
-          state = OPENED;
+          state = State::OPENED;
         }
         break;
       }
-      case OPENED: {
+      case State::OPENED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = CLOSING;
+          state = State::CLOSING;
         }
         break;
       }
-      case CLOSING:
-      case CLOSING_BLOCKED: {
+      case State::CLOSING:
+      case State::CLOSING_BLOCKED: {
         ratio = Math::max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
 
@@ -411,23 +411,23 @@ namespace oz
           }
         }
         else if( ratio == 0.0f ) {
-          state = CLOSED;
+          state = State::CLOSED;
         }
         break;
       }
       default: {
-        assert( false );
+        hard_assert( false );
         break;
       }
     }
   }
 
   Struct::Struct( int index_, int bsp_, const Point3& p_, Rotation rot_ ) :
-      index( index_ ), bsp( bsp_ ), p( p_ ), rot( rot_ ), life( orbis.bsps[bsp]->life )
+      p( p_ ), index( index_ ), bsp( bsp_ ), rot( rot_ ), life( orbis.bsps[bsp]->life )
   {
     const BSP* bsp = orbis.bsps[this->bsp];
 
-    assert( bsp != null );
+    hard_assert( bsp != null );
 
     nEntities = bsp->nModels;
     entities = null;
@@ -441,7 +441,7 @@ namespace oz
       entity.model  = &bsp->models[i];
       entity.str    = this;
       entity.offset = Vec3::ZERO;
-      entity.state  = Entity::CLOSED;
+      entity.state  = Entity::State::CLOSED;
       entity.ratio  = 0.0f;
       entity.time   = 0.0f;
     }
@@ -452,7 +452,7 @@ namespace oz
   {
     const BSP* bsp = orbis.bsps[this->bsp];
 
-    assert( bsp != null );
+    hard_assert( bsp != null );
 
     nEntities = bsp->nModels;
     entities = null;
@@ -479,21 +479,21 @@ namespace oz
   {
     switch( rot ) {
       default: {
-        assert( false );
+        hard_assert( false );
       }
-      case Struct::R0: {
+      case Rotation::R0: {
         return Bounds( Point3( +bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z ),
                        Point3( +bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z ) );
       }
-      case Struct::R90: {
+      case Rotation::R90: {
         return Bounds( Point3( +bb.mins.y - p.y, -bb.maxs.x + p.x, +bb.mins.z - p.z ),
                        Point3( +bb.maxs.y - p.y, -bb.mins.x + p.x, +bb.maxs.z - p.z ) );
       }
-      case Struct::R180: {
+      case Rotation::R180: {
         return Bounds( Point3( -bb.maxs.x + p.x, -bb.maxs.y + p.y, +bb.mins.z - p.z ),
                        Point3( -bb.mins.x + p.x, -bb.mins.y + p.y, +bb.maxs.z - p.z ) );
       }
-      case Struct::R270: {
+      case Rotation::R270: {
         return Bounds( Point3( -bb.maxs.y + p.y, +bb.mins.x - p.x, +bb.mins.z - p.z ),
                        Point3( -bb.mins.y + p.y, +bb.maxs.x - p.x, +bb.maxs.z - p.z ) );
       }
@@ -504,21 +504,21 @@ namespace oz
   {
     switch( rot ) {
       default: {
-        assert( false );
+        hard_assert( false );
       }
-      case Struct::R0: {
+      case Rotation::R0: {
         return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
                        p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
       }
-      case Struct::R90: {
+      case Rotation::R90: {
         return Bounds( p + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
                        p + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
       }
-      case Struct::R180: {
+      case Rotation::R180: {
         return Bounds( p + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
                        p + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
       }
-      case Struct::R270: {
+      case Rotation::R270: {
         return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
                        p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
       }
@@ -531,21 +531,21 @@ namespace oz
 
     switch( rot ) {
       default: {
-        assert( false );
+        hard_assert( false );
       }
-      case Struct::R0: {
+      case Rotation::R0: {
         return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
                        p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
       }
-      case Struct::R90: {
+      case Rotation::R90: {
         return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
                        p + Vec3( -in.mins.y, +in.maxs.x, +in.maxs.z ) );
       }
-      case Struct::R180: {
+      case Rotation::R180: {
         return Bounds( p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z ),
                        p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z ) );
       }
-      case Struct::R270: {
+      case Rotation::R270: {
         return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
                        p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
       }
@@ -556,24 +556,24 @@ namespace oz
   {
     switch( rot ) {
       default: {
-        assert( false );
+        hard_assert( false );
       }
-      case Struct::R0: {
+      case Rotation::R0: {
         mins = p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z );
         maxs = p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z );
         break;
       }
-      case Struct::R90: {
+      case Rotation::R90: {
         mins = p + Vec3( -in.maxs.y, in.mins.x, in.mins.z );
         maxs = p + Vec3( -in.mins.y, in.maxs.x, in.maxs.z );
         break;
       }
-      case Struct::R180: {
+      case Rotation::R180: {
         mins = p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z );
         maxs = p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z );
         break;
       }
-      case Struct::R270: {
+      case Rotation::R270: {
         mins = p + Vec3( in.mins.y, -in.maxs.x, in.mins.z );
         maxs = p + Vec3( in.maxs.y, -in.mins.x, in.maxs.z );
         break;
@@ -593,27 +593,27 @@ namespace oz
     for( int i = 0; i < nEntities; ++i ) {
       Entity& entity = entities[i];
 
-      assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
+      hard_assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
 
-      switch( entity.model->mode ) {
-        case BSP::Model::IGNORING: {
+      switch( entity.model->type ) {
+        case BSP::Model::Type::IGNORING: {
           entity.updateIgnoring();
           break;
         }
-        case BSP::Model::BLOCKING: {
+        case BSP::Model::Type::BLOCKING: {
           entity.updateBlocking();
           break;
         }
-        case BSP::Model::PUSHING: {
+        case BSP::Model::Type::PUSHING: {
           entity.updatePushing();
           break;
         }
-        case BSP::Model::CRUSHING: {
+        case BSP::Model::Type::CRUSHING: {
           entity.updateCrushing();
           break;
         }
         default: {
-          assert( false );
+          hard_assert( false );
           break;
         }
       }
@@ -637,12 +637,12 @@ namespace oz
   void Struct::writeFull( OutputStream* ostream )
   {
     ostream->writePoint3( p );
-    ostream->writeInt( rot );
+    ostream->writeInt( int( rot ) );
     ostream->writeFloat( life );
 
     for( int i = 0; i < nEntities; ++i ) {
       ostream->writeVec3( entities[i].offset );
-      ostream->writeInt( entities[i].state );
+      ostream->writeInt( int( entities[i].state ) );
       ostream->writeFloat( entities[i].ratio );
       ostream->writeFloat( entities[i].time );
     }

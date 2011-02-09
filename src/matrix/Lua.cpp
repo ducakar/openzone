@@ -363,7 +363,7 @@ namespace oz
     }
 
     if( lua.obj->cell == null ) {
-      assert( lua.obj->flags & Object::DYNAMIC_BIT );
+      hard_assert( lua.obj->flags & Object::DYNAMIC_BIT );
 
       const Dynamic* dyn = static_cast<const Dynamic*>( lua.obj );
 
@@ -1525,7 +1525,7 @@ namespace oz
     if( lua.obj->cell == null ) {
       Dynamic* dyn = static_cast<Dynamic*>( lua.obj );
 
-      assert( dyn->flags & Object::DYNAMIC_BIT );
+      hard_assert( dyn->flags & Object::DYNAMIC_BIT );
 
       synapse.removeCut( dyn );
     }
@@ -1552,7 +1552,7 @@ namespace oz
 
   void Lua::callFunc( const char* functionName, int index )
   {
-    assert( self != null );
+    hard_assert( self != null );
 
     obj   = self;
     str   = null;

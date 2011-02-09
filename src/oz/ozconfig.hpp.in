@@ -6,8 +6,8 @@
 // enable new and delete to count allocated memory
 #cmakedefine OZ_ALLOC_STATISTICS
 
-// enable new and delete to save backtraces to show memory leaks
-#cmakedefine OZ_ALLOC_TRACELEAKS
+// enable new and delete to save stack traces to show memory leaks
+#cmakedefine OZ_TRACE_LEAKS
 
 // enable Pool allocator; otherwise just call Alloc::alloc/dealloc
 #cmakedefine OZ_POOL_ALLOC
@@ -18,7 +18,10 @@
 // whether math library has sincosf function
 #cmakedefine OZ_HAVE_SINCOSF
 
-// use big-endian for data
+// use SIMD for vector math
+#cmakedefine OZ_SIMD
+
+// use big-endian for stream
 #cmakedefine OZ_BIG_ENDIAN_DATA
 
 // enable warnings about missing and unused variables in config files

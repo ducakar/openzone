@@ -44,10 +44,10 @@ namespace client
 
     // events
     foreach( event, obj->events.citer() ) {
-      assert( event->id < ObjectClass::AUDIO_SAMPLES );
+      hard_assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
       if( event->id >= 0 && samples[event->id] != -1 ) {
-        assert( 0.0f <= event->intensity );
+        hard_assert( 0.0f <= event->intensity );
 
         playSound( samples[event->id], event->intensity, parent->obj );
       }

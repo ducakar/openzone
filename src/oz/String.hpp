@@ -44,25 +44,25 @@ namespace oz
 
       explicit String( const char* s, int count_ ) : count( count_ )
       {
-        assert( s != null && s != baseBuffer );
-        assert( length( s ) >= count );
+        hard_assert( s != null && s != baseBuffer );
+        hard_assert( length( s ) >= count );
 
         ensureCapacity();
         aCopy( buffer, s, count );
         buffer[count] = '\0';
 
-        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
       String( const char* s )
       {
-        assert( s != null && s != baseBuffer );
+        hard_assert( s != null && s != baseBuffer );
 
         count = length( s );
         ensureCapacity();
         aCopy( buffer, s, count + 1 );
 
-        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
       explicit String( bool b ) : buffer( baseBuffer )
@@ -90,7 +90,7 @@ namespace oz
           buffer[5] = '\0';
         }
 
-        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
       explicit String( int n ) : buffer( baseBuffer ), count( 1 )
@@ -129,7 +129,7 @@ namespace oz
           n /= 10;
         }
 
-        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
       explicit String( float f );
@@ -138,17 +138,17 @@ namespace oz
 
       String( const String& s ) : count( s.count )
       {
-        assert( &s != this );
+        hard_assert( &s != this );
 
         ensureCapacity();
         aCopy( buffer, s.buffer, count + 1 );
 
-        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
       ~String()
       {
-        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 
         if( buffer != baseBuffer ) {
           delete[] buffer;
@@ -157,7 +157,7 @@ namespace oz
 
       String& operator = ( const char* s )
       {
-        assert( s != buffer );
+        hard_assert( s != buffer );
 
         count = length( s );
 
@@ -167,14 +167,14 @@ namespace oz
         ensureCapacity();
         aCopy( buffer, s, count + 1 );
 
-        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 
         return *this;
       }
 
       String& operator = ( const String& s )
       {
-        assert( &s != this );
+        hard_assert( &s != this );
 
         count = s.count;
 
@@ -184,7 +184,7 @@ namespace oz
         ensureCapacity();
         aCopy( buffer, s.buffer, count + 1 );
 
-        assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 
         return *this;
       }
@@ -195,7 +195,7 @@ namespace oz
 
       bool equals( const char* s ) const
       {
-        assert( s != null );
+        hard_assert( s != null );
 
         for( int i = 0; buffer[i] == s[i]; ++i ) {
           if( buffer[i] == '\0' ) {
@@ -212,7 +212,7 @@ namespace oz
 
       static bool equals( const char* a, const char* b )
       {
-        assert( a != null && b != null );
+        hard_assert( a != null && b != null );
 
         for( int i = 0; a[i] == b[i]; ++i ) {
           if( a[i] == '\0' ) {
@@ -237,14 +237,14 @@ namespace oz
       OZ_ALWAYS_INLINE
       const char& operator [] ( int i ) const
       {
-        assert( 0 <= i && i < count );
+        hard_assert( 0 <= i && i < count );
 
         return buffer[i];
       }
 
       static bool isEmpty( const char* s )
       {
-        assert( s != null );
+        hard_assert( s != null );
 
         return s[0] == '\0';
       }
@@ -273,7 +273,7 @@ namespace oz
 
       static int compare( const char* a, const char* b )
       {
-        assert( a != null && b != null );
+        hard_assert( a != null && b != null );
 
         int diff = 0;
         int i = 0;
@@ -413,7 +413,7 @@ namespace oz
 
       String operator + ( const char* s ) const
       {
-        assert( s != null );
+        hard_assert( s != null );
 
         int    sLength = length( s );
         int    rCount  = count + sLength;
@@ -438,7 +438,7 @@ namespace oz
 
       friend String operator + ( const char* s, const String& t )
       {
-        assert( s != null );
+        hard_assert( s != null );
 
         int    sLength = String::length( s );
         int    rCount  = t.count + sLength;
@@ -452,7 +452,7 @@ namespace oz
 
       String substring( int start ) const
       {
-        assert( 0 <= start && start <= count );
+        hard_assert( 0 <= start && start <= count );
 
         int    rCount = count - start;
         String r      = String( rCount, 0 );
@@ -464,7 +464,7 @@ namespace oz
 
       String substring( int start, int end ) const
       {
-        assert( 0 <= start && start <= count && start <= end && end <= count );
+        hard_assert( 0 <= start && start <= count && start <= end && end <= count );
 
         int    rCount = end - start;
         String r      = String( rCount, 0 );
@@ -511,7 +511,7 @@ namespace oz
        */
       void split( char ch, DArray<String>* array ) const
       {
-        assert( array->isEmpty() );
+        hard_assert( array->isEmpty() );
 
         int p0    = 0;
         int p1    = index( ch );

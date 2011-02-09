@@ -15,11 +15,6 @@
 #include "common.hpp"
 
 /*
- * System
- */
-#include "System.hpp"
-
-/*
  * Iterators and utilities for iterable containers and arrays
  */
 #include "iterables.hpp"
@@ -67,6 +62,7 @@
 #include "Math.hpp"
 #include "Vec3.hpp"
 #include "Point3.hpp"
+#include "Plane.hpp"
 #include "Quat.hpp"
 #include "Mat44.hpp"
 
@@ -84,5 +80,6 @@
 /*
  * Utilities
  */
+#include "System.hpp"
 #include "Log.hpp"
 #include "Config.hpp"

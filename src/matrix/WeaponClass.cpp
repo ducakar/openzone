@@ -98,7 +98,6 @@ namespace oz
     Weapon* obj = new Weapon();
 
     obj->p        = pos;
-    obj->r        = !dim;
     obj->dim      = dim;
     obj->h        = 0.0f;
 
@@ -121,7 +120,6 @@ namespace oz
   {
     Weapon* obj = new Weapon();
 
-    obj->r      = !dim;
     obj->dim    = dim;
 
     obj->index  = index;

@@ -11,6 +11,8 @@
 
 #include "stable.hpp"
 
+#include "matrix/Translator.hpp"
+
 namespace oz
 {
 namespace client
@@ -24,7 +26,7 @@ namespace client
 
     public:
 
-      struct Anim
+      struct AnimInfo
       {
         int   firstFrame;
         int   lastFrame;
@@ -34,7 +36,7 @@ namespace client
 
       struct AnimState
       {
-        int   type;
+        Anim  type;
         int   repeat;
 
         int   startFrame;
@@ -47,31 +49,31 @@ namespace client
         float currTime;
       };
 
-      static Anim  animList[];
+      static AnimInfo animList[];
 
     private:
 
       static Vec3   anorms[];                   // precomputed normals
       static Point3 vertList[MAX_VERTS];        // buffer for temporary interpolated frames
 
-      String       name;
+      String        name;
 
-      int          nFrames;
-      int          nVerts;
+      int           nFrames;
+      int           nVerts;
 
-      Point3*      verts;
-      int*         glCmds;
-      int*         lightNormals;
+      Point3*       verts;
+      int*          glCmds;
+      int*          lightNormals;
 
-      uint         texId;
+      uint          texId;
 
       void interpolate( const AnimState* anim ) const;
 
     public:
 
-      uint         list;
-      Vec3         weaponTransl;
-      bool         isLoaded;
+      uint          list;
+      Vec3          weaponTransl;
+      bool          isLoaded;
 
       explicit MD2( const char* name );
       ~MD2();
@@ -80,7 +82,7 @@ namespace client
 
       void scale( float scale );
       void translate( const Vec3& t );
-      void translate( int animType, const Vec3& t );
+      void translate( Anim anim, const Vec3& t );
 
       void advance( AnimState* anim, float dt ) const;
 

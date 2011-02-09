@@ -21,16 +21,16 @@ namespace oz
 
   Particle::Particle( int index_, const Point3& p_, const Vec3& velocity_, const Vec3& colour_,
                       float restitution_, float mass_, float lifeTime_ ) :
-      p( p_ ), index( index_ ), cell( null ), velocity( velocity_ ), colour( colour_ ),
+      index( index_ ), cell( null ), p( p_ ), velocity( velocity_ ), colour( colour_ ),
       rot( Vec3( Math::frand() * 360.0f, Math::frand() * 360.0f, Math::frand() * 360.0f ) ),
       rotVelocity( Vec3( Math::frand() * MAX_ROTVELOCITY,
                           Math::frand() * MAX_ROTVELOCITY,
                           Math::frand() * MAX_ROTVELOCITY ) ),
       restitution( restitution_ ), mass( mass_ ), lifeTime( lifeTime_ )
   {
-    assert( 1.0f + EPSILON < restitution && restitution < 2.0f - EPSILON );
-    assert( mass >= 0.0f );
-    assert( lifeTime > 0.0f );
+    hard_assert( 1.0f + EPSILON < restitution && restitution < 2.0f - EPSILON );
+    hard_assert( mass >= 0.0f );
+    hard_assert( lifeTime > 0.0f );
   }
 
   void Particle::readFull( InputStream* istream )

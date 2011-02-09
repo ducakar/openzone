@@ -36,11 +36,10 @@ namespace oz
       Particle* prev[1];
       Particle* next[1];
 
-      Point3    p;            // position
-
       int       index;        // position in world.objects vector
       Cell*     cell;
 
+      Point3    p;            // position
       Vec3      velocity;
 
       // graphics data

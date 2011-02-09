@@ -77,14 +77,14 @@ namespace oz
 
     const float& operator [] ( int i ) const
     {
-      assert( 0 <= i && i < 2 );
+      hard_assert( 0 <= i && i < 2 );
 
       return ( &u )[i];
     }
 
     float& operator [] ( int i )
     {
-      assert( 0 <= i && i < 2 );
+      hard_assert( 0 <= i && i < 2 );
 
       return ( &u )[i];
     }

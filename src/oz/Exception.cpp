@@ -11,24 +11,9 @@
 
 #include "System.hpp"
 
-#undef Exception
-
-#include <csignal>
-#include <cstdio>
 #include <cstdlib>
-#include <cstring>
 
-// prevent old-style cast warning due to a bug in <bits/signum.h>
-#ifdef __GNUC__
-# undef SIG_DFL
-# undef SIG_IGN
-# define SIG_DFL reinterpret_cast<__sighandler_t>( 0 )            /* Default action.  */
-# define SIG_IGN reinterpret_cast<__sighandler_t>( 1 )            /* Ignore signal.  */
-#endif
-
-#ifdef OZ_MSVC
-# include <windows.h>
-#endif
+#undef Exception
 
 namespace oz
 {
@@ -38,21 +23,8 @@ namespace oz
       message( message_ ), file( file_ ), line( line_ ), function( function_ ),
       nFrames( 0 ), frames( null )
   {
+    System::trap();
     nFrames = System::getStackTrace( &frames );
-
-#ifndef NDEBUG
-# if defined( OZ_MSVC )
-    DebugBreak();
-# elif defined( OZ_MINGW )
-    signal( SIGABRT, SIG_IGN );
-    raise( SIGABRT );
-    signal( SIGABRT, SIG_DFL );
-# else
-    signal( SIGTRAP, SIG_IGN );
-    raise( SIGTRAP );
-    signal( SIGTRAP, SIG_DFL );
-# endif
-#endif
   }
 
   Exception::~Exception() throw()

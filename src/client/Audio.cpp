@@ -25,8 +25,8 @@ namespace client
 
   void Audio::playSound( int sample, float volume, const Object* obj ) const
   {
-    assert( uint( sample ) < uint( translator.sounds.length() ) );
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     uint srcId;
 
@@ -56,15 +56,15 @@ namespace client
     alSourcef( srcId, AL_GAIN, volume );
     alSourcePlay( srcId );
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     context.sources.add( new Context::Source( srcId ) );
   }
 
   void Audio::playContSound( int sample, float volume, const Object* obj ) const
   {
-    assert( uint( sample ) < uint( translator.sounds.length() ) );
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     Context::ContSource* contSource = context.contSources.find( obj->index );
 
@@ -93,7 +93,7 @@ namespace client
       context.contSources.add( obj->index, Context::ContSource( srcId ) );
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
   }
 
   Audio::Audio( const Object* obj_ ) : obj( obj_ ), flags( 0 ), clazz( obj_->clazz )
@@ -105,7 +105,7 @@ namespace client
         context.requestSound( samples[i] );
       }
     }
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
   }
 
   Audio::~Audio()
@@ -117,7 +117,7 @@ namespace client
         context.releaseSound( samples[i] );
       }
     }
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
   }
 
 }

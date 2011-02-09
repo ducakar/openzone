@@ -93,8 +93,8 @@ namespace client
 
   void Render::drawOrbis()
   {
-    assert( glGetError() == GL_NO_ERROR );
-    assert( !glIsEnabled( GL_TEXTURE_2D ) );
+    hard_assert( glGetError() == GL_NO_ERROR );
+    hard_assert( !glIsEnabled( GL_TEXTURE_2D ) );
 
     // clear colour, visibility, fog
     if( isUnderWater ) {
@@ -148,8 +148,8 @@ namespace client
     // clear buffer
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
-    assert( !glIsEnabled( GL_TEXTURE_2D ) );
-    assert( glIsEnabled( GL_BLEND ) );
+    hard_assert( !glIsEnabled( GL_TEXTURE_2D ) );
+    hard_assert( glIsEnabled( GL_BLEND ) );
 
     // camera transformation
     glMatrixMode( GL_PROJECTION );
@@ -227,7 +227,7 @@ namespace client
       }
     }
 
-    assert( !glIsEnabled( GL_BLEND ) );
+    hard_assert( !glIsEnabled( GL_BLEND ) );
 
     // draw particles
     glEnable( GL_COLOR_MATERIAL );
@@ -245,7 +245,7 @@ namespace client
       glPopMatrix();
     }
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
     glColor4fv( Colours::WHITE );
     glEnable( GL_TEXTURE_2D );
@@ -273,8 +273,8 @@ namespace client
       }
     }
 
-    assert( !glIsEnabled( GL_BLEND ) );
-    assert( glIsEnabled( GL_TEXTURE_2D ) );
+    hard_assert( !glIsEnabled( GL_BLEND ) );
+    hard_assert( glIsEnabled( GL_TEXTURE_2D ) );
     glEnable( GL_BLEND );
 
     // draw structures' water
@@ -346,14 +346,14 @@ namespace client
     glDisable( GL_DEPTH_TEST );
     glColor4fv( Colours::WHITE );
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   void Render::drawCommon()
   {
     ui::ui.draw();
 
-    assert( !glIsEnabled( GL_TEXTURE_2D ) );
+    hard_assert( !glIsEnabled( GL_TEXTURE_2D ) );
 
     SDL_GL_SwapBuffers();
   }
@@ -369,7 +369,7 @@ namespace client
     log.println( "Loading Graphics {" );
     log.indent();
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
     frustum.init( camera.angle, camera.aspect, camera.maxDist );
     water.init();
@@ -477,7 +477,7 @@ namespace client
 
     SDL_GL_SwapBuffers();
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
     log.unindent();
     log.println( "}" );

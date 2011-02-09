@@ -42,13 +42,13 @@ namespace ui
     children.free();
   }
 
-  void Area::setFont( FontType type )
+  void Area::setFont( Font::Type type )
   {
-    if( type == MONO ) {
+    if( type == Font::Type::MONO ) {
       currentFont = font.monoFont;
       textHeight  = font.monoHeight;
     }
-    else if( type == SANS ) {
+    else if( type == Font::Type::SANS ) {
       currentFont = font.sansFont;
       textHeight  = font.sansHeight;
     }
@@ -240,7 +240,7 @@ namespace ui
   {
     for( int i = 0; i < updateAreas.length(); ++i ) {
       if( updateAreas[i]->flags & UPDATE_BIT ) {
-        assert( updateAreas[i]->flags & UPDATE_FUNC_BIT );
+        hard_assert( updateAreas[i]->flags & UPDATE_FUNC_BIT );
 
         updateAreas[i]->onUpdate();
       }
@@ -254,7 +254,7 @@ namespace ui
 
   void Area::onUpdate()
   {
-    assert( false );
+    hard_assert( false );
   }
 
   void Area::onDraw()
@@ -313,7 +313,7 @@ namespace ui
 
   void Area::focus( Area* area )
   {
-    assert( children.contains( area ) );
+    hard_assert( children.contains( area ) );
 
     if( children.first() != area ) {
       children.remove( area );

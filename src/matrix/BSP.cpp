@@ -30,30 +30,27 @@ namespace oz
 
   struct QBSPLump
   {
+    static const int ENTITIES     =  0;
+    static const int TEXTURES     =  1;
+    static const int PLANES       =  2;
+    static const int NODES        =  3;
+    static const int LEAFS        =  4;
+    static const int LEAFFACES    =  5;
+    static const int LEAFBRUSHES  =  6;
+    static const int MODELS       =  7;
+    static const int BRUSHES      =  8;
+    static const int BRUSHSIDES   =  9;
+    static const int VERTICES     = 10;
+    static const int INDICES      = 11;
+    static const int SHADERS      = 12;
+    static const int FACES        = 13;
+    static const int LIGHTMAPS    = 14;
+    static const int LIGHTVOLUMES = 15;
+    static const int VISUALDATA   = 16;
+    static const int MAX          = 17;
+
     int offset;
     int length;
-  };
-
-  enum QBSPLumpType
-  {
-    QBSP_LUMP_ENTITIES = 0,
-    QBSP_LUMP_TEXTURES,
-    QBSP_LUMP_PLANES,
-    QBSP_LUMP_NODES,
-    QBSP_LUMP_LEAFS,
-    QBSP_LUMP_LEAFFACES,
-    QBSP_LUMP_LEAFBRUSHES,
-    QBSP_LUMP_MODELS,
-    QBSP_LUMP_BRUSHES,
-    QBSP_LUMP_BRUSHSIDES,
-    QBSP_LUMP_VERTICES,
-    QBSP_LUMP_INDICES,
-    QBSP_LUMP_SHADERS,
-    QBSP_LUMP_FACES,
-    QBSP_LUMP_LIGHTMAPS,
-    QBSP_LUMP_LIGHTVOLUMES,
-    QBSP_LUMP_VISUALDATA,
-    QBSP_LUMPS_NUM
   };
 
   struct QBSPTexture
@@ -122,12 +119,9 @@ namespace oz
     for( int i = 0; i < brush.nSides; ++i ) {
       const Plane& plane = planes[ brushSides[brush.firstSide + i] ];
 
-      float offset =
-          Math::abs( plane.normal.x * maxDim ) +
-          Math::abs( plane.normal.y * maxDim ) +
-          Math::abs( plane.normal.z * maxDim );
+      float offset = plane.abs() * Vec3( maxDim, maxDim, maxDim );
 
-      if( offset <= plane.distance ) {
+      if( offset <= plane.d ) {
         return false;
       }
     }
@@ -172,8 +166,7 @@ namespace oz
 
     planes = new( data ) Plane[nPlanes];
     for( int i = 0; i < nPlanes; ++i ) {
-      planes[i].normal = is.readVec3();
-      planes[i].distance = is.readFloat();
+      planes[i] = is.readPlane();
     }
     data += nPlanes * sizeof( Plane );
 
@@ -223,13 +216,13 @@ namespace oz
       models[i].move = is.readVec3();
       models[i].ratioInc = is.readFloat();
       models[i].flags = is.readInt();
-      models[i].mode = Model::Mode( is.readInt() );
+      models[i].type = Model::Type( is.readInt() );
       models[i].margin = is.readFloat();
       models[i].slideTime = is.readFloat();
       models[i].timeout = is.readFloat();
     }
 
-    assert( !is.isAvailable() );
+    hard_assert( !is.isAvailable() );
 
     return true;
   }
@@ -309,13 +302,13 @@ namespace oz
       return false;
     }
 
-    QBSPLump lumps[QBSP_LUMPS_NUM];
-    fread( lumps, sizeof( QBSPLump ), QBSP_LUMPS_NUM, file );
+    QBSPLump lumps[QBSPLump::MAX];
+    fread( lumps, sizeof( QBSPLump ), QBSPLump::MAX, file );
 
-    int nTextures = int( lumps[QBSP_LUMP_TEXTURES].length / sizeof( QBSPTexture ) );
+    int nTextures = int( lumps[QBSPLump::TEXTURES].length / sizeof( QBSPTexture ) );
     int* texFlags = new int[nTextures];
     int* texTypes = new int[nTextures];
-    fseek( file, lumps[QBSP_LUMP_TEXTURES].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::TEXTURES].offset, SEEK_SET );
 
     for( int i = 0; i < nTextures; ++i ) {
       QBSPTexture texture;
@@ -326,9 +319,9 @@ namespace oz
       texTypes[i] = texture.type;
     }
 
-    nPlanes = int( lumps[QBSP_LUMP_PLANES].length / sizeof( QBSPPlane ) );
-    planes = new BSP::Plane[nPlanes];
-    fseek( file, lumps[QBSP_LUMP_PLANES].offset, SEEK_SET );
+    nPlanes = int( lumps[QBSPLump::PLANES].length / sizeof( QBSPPlane ) );
+    planes = new Plane[nPlanes];
+    fseek( file, lumps[QBSPLump::PLANES].offset, SEEK_SET );
 
     // rescale plane data
     for( int i = 0; i < nPlanes; ++i ) {
@@ -336,25 +329,22 @@ namespace oz
 
       fread( &plane, sizeof( QBSPPlane ), 1, file );
 
-      planes[i].normal   = Vec3( plane.normal );
-      planes[i].distance = plane.distance * scale;
+      planes[i]   = Vec3( plane.normal );
+      planes[i].d = plane.distance * scale;
 
-      float offset =
-          Math::abs( planes[i].normal.x * maxDim ) +
-          Math::abs( planes[i].normal.y * maxDim ) +
-          Math::abs( planes[i].normal.z * maxDim );
+      float offset = planes[i].abs() * Vec3( maxDim, maxDim, maxDim );
 
-      if( planes[i].distance < -offset ) {
-        planes[i].distance = -Math::inf();
+      if( planes[i].d < -offset ) {
+        planes[i].d = -Math::inf();
       }
-      else if( planes[i].distance > offset ) {
-        planes[i].distance = Math::inf();
+      else if( planes[i].d > offset ) {
+        planes[i].d = Math::inf();
       }
     }
 
-    nNodes = int( lumps[QBSP_LUMP_NODES].length / sizeof( QBSPNode ) );
+    nNodes = int( lumps[QBSPLump::NODES].length / sizeof( QBSPNode ) );
     nodes = new BSP::Node[nNodes];
-    fseek( file, lumps[QBSP_LUMP_NODES].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::NODES].offset, SEEK_SET );
 
     for( int i = 0; i < nNodes; ++i ) {
       QBSPNode node;
@@ -366,9 +356,9 @@ namespace oz
       nodes[i].back  = node.back;
     }
 
-    nLeaves = int( lumps[QBSP_LUMP_LEAFS].length / sizeof( QBSPLeaf ) );
+    nLeaves = int( lumps[QBSPLump::LEAFS].length / sizeof( QBSPLeaf ) );
     leaves = new BSP::Leaf[nLeaves];
-    fseek( file, lumps[QBSP_LUMP_LEAFS].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::LEAFS].offset, SEEK_SET );
 
     for( int i = 0; i < nLeaves; ++i ) {
       QBSPLeaf leaf;
@@ -379,19 +369,19 @@ namespace oz
       leaves[i].nBrushes   = leaf.nBrushes;
     }
 
-    nLeafBrushes = int( lumps[QBSP_LUMP_LEAFBRUSHES].length / sizeof( int ) );
+    nLeafBrushes = int( lumps[QBSPLump::LEAFBRUSHES].length / sizeof( int ) );
     leafBrushes = new int[nLeafBrushes];
-    fseek( file, lumps[QBSP_LUMP_LEAFBRUSHES].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::LEAFBRUSHES].offset, SEEK_SET );
     fread( leafBrushes, sizeof( int ), nLeafBrushes, file );
 
-    nModels = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) ) - 1;
+    nModels = int( lumps[QBSPLump::MODELS].length / sizeof( QBSPModel ) ) - 1;
     models = null;
 
     if( nModels != 0 ) {
       models = new Model[nModels];
-      fseek( file, lumps[QBSP_LUMP_MODELS].offset, SEEK_SET );
+      fseek( file, lumps[QBSPLump::MODELS].offset, SEEK_SET );
 
-      assert( nModels <= 99 );
+      hard_assert( nModels <= 99 );
       char keyBuffer[] = "model  ";
 
       // skip model 0 (whole BSP)
@@ -430,16 +420,16 @@ namespace oz
 
         String type = bspConfig.get( keyName + ".type", "BLOCKING" );
         if( type.equals( "IGNORING" ) ) {
-          models[i].mode = Model::IGNORING;
+          models[i].type = Model::Type::IGNORING;
         }
         else if( type.equals( "BLOCKING" ) ) {
-          models[i].mode = Model::BLOCKING;
+          models[i].type = Model::Type::BLOCKING;
         }
         else if( type.equals( "PUSHING" ) ) {
-          models[i].mode = Model::PUSHING;
+          models[i].type = Model::Type::PUSHING;
         }
         else if( type.equals( "CRUSHING" ) ) {
-          models[i].mode = Model::CRUSHING;
+          models[i].type = Model::Type::CRUSHING;
         }
         else {
           log.println( "invalid BSP entity type, should be either IGNORING, BLOCKING, PUSHING or "
@@ -455,9 +445,9 @@ namespace oz
       }
     }
 
-    nBrushSides = int( lumps[QBSP_LUMP_BRUSHSIDES].length / sizeof( QBSPBrushSide ) );
+    nBrushSides = int( lumps[QBSPLump::BRUSHSIDES].length / sizeof( QBSPBrushSide ) );
     brushSides = new int[nBrushSides];
-    fseek( file, lumps[QBSP_LUMP_BRUSHSIDES].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::BRUSHSIDES].offset, SEEK_SET );
 
     for( int i = 0; i < nBrushSides; ++i ) {
       QBSPBrushSide brushSide;
@@ -467,9 +457,9 @@ namespace oz
       brushSides[i] = brushSide.plane;
     }
 
-    nBrushes = int( lumps[QBSP_LUMP_BRUSHES].length / sizeof( QBSPBrush ) );
+    nBrushes = int( lumps[QBSPLump::BRUSHES].length / sizeof( QBSPBrush ) );
     brushes = new BSP::Brush[nBrushes];
-    fseek( file, lumps[QBSP_LUMP_BRUSHES].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::BRUSHES].offset, SEEK_SET );
 
     for( int i = 0; i < nBrushes; ++i ) {
       QBSPBrush brush;
@@ -555,7 +545,7 @@ namespace oz
 
     // remove brushes that lay out of boundaries
     for( int i = 0; i < nBrushes; ) {
-      assert( brushes[i].nSides >= 0 );
+      hard_assert( brushes[i].nSides >= 0 );
 
       if( brushes[i].nSides != 0 ) {
         ++i;
@@ -585,7 +575,7 @@ namespace oz
               --leaves[k].firstBrush;
             }
             else if( j < leaves[k].firstBrush + leaves[k].nBrushes ) {
-              assert( leaves[k].nBrushes > 0 );
+              hard_assert( leaves[k].nBrushes > 0 );
 
               --leaves[k].nBrushes;
             }
@@ -598,7 +588,7 @@ namespace oz
           --models[j].firstBrush;
         }
         else if( i < models[j].firstBrush + models[j].nBrushes ) {
-          assert( models[j].nBrushes > 0 );
+          hard_assert( models[j].nBrushes > 0 );
 
           --models[j].nBrushes;
         }
@@ -629,7 +619,7 @@ namespace oz
               --leaves[l].firstBrush;
             }
             else if( k < leaves[l].firstBrush + leaves[l].nBrushes ) {
-              assert( leaves[l].nBrushes > 0 );
+              hard_assert( leaves[l].nBrushes > 0 );
 
               --leaves[l].nBrushes;
             }
@@ -705,7 +695,7 @@ namespace oz
             i = nodes[0].front;
           }
           else {
-            assert( false );
+            hard_assert( false );
           }
           nodes[0] = nodes[i];
         }
@@ -714,17 +704,17 @@ namespace oz
           int* parentsRef = null;
           for( int j = 0; j < nNodes; ++j ) {
             if( nodes[j].front == i ) {
-              assert( parentsRef == null );
+              hard_assert( parentsRef == null );
 
               parentsRef = &nodes[j].front;
             }
             if( nodes[j].back == i ) {
-              assert( parentsRef == null );
+              hard_assert( parentsRef == null );
 
               parentsRef = &nodes[j].back;
             }
           }
-          assert( parentsRef != null );
+          hard_assert( parentsRef != null );
 
           if( nodes[i].front == 0 ) {
             *parentsRef = nodes[i].back;
@@ -733,7 +723,7 @@ namespace oz
             *parentsRef = nodes[i].front;
           }
           else {
-            assert( false );
+            hard_assert( false );
           }
         }
 
@@ -741,8 +731,8 @@ namespace oz
         --nNodes;
 
         for( int j = 0; j < nNodes; ++j ) {
-          assert( nodes[j].front != i );
-          assert( nodes[j].back != i );
+          hard_assert( nodes[j].front != i );
+          hard_assert( nodes[j].back != i );
         }
 
         // shift nodes' references
@@ -792,7 +782,7 @@ namespace oz
         }
         else if( i < brushes[j].firstSide + brushes[j].nSides ) {
           // removed brush side shouldn't be referenced by any brush
-          assert( false );
+          hard_assert( false );
         }
       }
     }
@@ -827,14 +817,14 @@ namespace oz
 
       // adjust plane references
       for( int j = 0; j < nNodes; ++j ) {
-        assert( nodes[j].plane != i );
+        hard_assert( nodes[j].plane != i );
 
         if( nodes[j].plane > i ) {
           --nodes[j].plane;
         }
       }
       for( int j = 0; j < nBrushSides; ++j ) {
-        assert( brushSides[j] != i );
+        hard_assert( brushSides[j] != i );
 
         if( brushSides[j] > i ) {
           --brushSides[j];
@@ -855,23 +845,23 @@ namespace oz
     for( int i = 0; i < nBrushSides; ++i ) {
       Plane& plane = planes[ brushSides[i] ];
 
-      if( plane.normal.x == -1.0f ) {
-        mins.x = min( -plane.distance, mins.x );
+      if( plane.nx == -1.0f ) {
+        mins.x = min( -plane.d, mins.x );
       }
-      else if( plane.normal.x == 1.0f ) {
-        maxs.x = max( +plane.distance, maxs.x );
+      else if( plane.nx == 1.0f ) {
+        maxs.x = max( +plane.d, maxs.x );
       }
-      else if( plane.normal.y == -1.0f ) {
-        mins.y = min( -plane.distance, mins.y );
+      else if( plane.ny == -1.0f ) {
+        mins.y = min( -plane.d, mins.y );
       }
-      else if( plane.normal.y == 1.0f ) {
-        maxs.y = max( +plane.distance, maxs.y );
+      else if( plane.ny == 1.0f ) {
+        maxs.y = max( +plane.d, maxs.y );
       }
-      else if( plane.normal.z == -1.0f ) {
-        mins.z = min( -plane.distance, mins.z );
+      else if( plane.nz == -1.0f ) {
+        mins.z = min( -plane.d, mins.z );
       }
-      else if( plane.normal.z == 1.0f ) {
-        maxs.z = max( +plane.distance, maxs.z );
+      else if( plane.nz == 1.0f ) {
+        maxs.z = max( +plane.d, maxs.z );
       }
     }
 
@@ -976,6 +966,12 @@ namespace oz
       }
     }
 
+    for( int i = 0; i < nPlanes; ++i ) {
+      if( !Math::isNormal( planes[i].d ) ) {
+        throw Exception( "BSP has invalid plane " + String( i ) );
+      }
+    }
+
     log.printEnd( " OK" );
   }
 
@@ -1012,8 +1008,7 @@ namespace oz
     os.writeInt( nModels );
 
     for( int i = 0; i < nPlanes; ++i ) {
-      os.writeVec3( planes[i].normal );
-      os.writeFloat( planes[i].distance );
+      os.writePlane( planes[i] );
     }
 
     for( int i = 0; i < nNodes; ++i ) {
@@ -1049,13 +1044,13 @@ namespace oz
       os.writeVec3( models[i].move );
       os.writeFloat( models[i].ratioInc );
       os.writeInt( models[i].flags );
-      os.writeInt( models[i].mode );
+      os.writeInt( int( models[i].type ) );
       os.writeFloat( models[i].margin );
       os.writeFloat( models[i].slideTime );
       os.writeFloat( models[i].timeout );
     }
 
-    assert( !os.isAvailable() );
+    hard_assert( !os.isAvailable() );
     buffer.write( fileName );
 
     log.printEnd( " OK" );

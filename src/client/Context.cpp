@@ -49,7 +49,7 @@ namespace client
   uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
     GLenum format = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
 
@@ -79,7 +79,7 @@ namespace client
       glDeleteTextures( 1, &texNum );
       texNum = ~0u;
 
-      assert( glGetError() == GL_NO_ERROR );
+      hard_assert( glGetError() == GL_NO_ERROR );
     }
     return texNum;
   }
@@ -87,7 +87,7 @@ namespace client
   uint Context::buildNormalmap( void* data_, const Vec3& lightNormal, int width, int height,
                                 int bytesPerPixel, bool wrap, int magFilter, int minFilter )
   {
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
     ubyte* data    = reinterpret_cast<ubyte*>( data_ );
     ubyte* dataEnd = data + width * height * bytesPerPixel;
@@ -133,7 +133,7 @@ namespace client
       glDeleteTextures( 1, &texNum );
       texNum = ~0u;
 
-      assert( glGetError() == GL_NO_ERROR );
+      hard_assert( glGetError() == GL_NO_ERROR );
     }
     return texNum;
   }
@@ -238,15 +238,15 @@ namespace client
   {
     Resource<uint>& resource = textures[id];
 
-    assert( uint( id ) < uint( translator.textures.length() ) );
-    assert( resource.nUsers > 0 );
+    hard_assert( uint( id ) < uint( translator.textures.length() ) );
+    hard_assert( resource.nUsers > 0 );
 
     --resource.nUsers;
 
     if( resource.nUsers == 0 ) {
       log.print( "Unloading texture '%s' ...", translator.textures[id].name.cstr() );
       glDeleteTextures( 1, &resource.id );
-      assert( glGetError() == GL_NO_ERROR );
+      hard_assert( glGetError() == GL_NO_ERROR );
       log.printEnd( " OK" );
     }
   }
@@ -302,7 +302,7 @@ namespace client
   void Context::freeTexture( uint id )
   {
     glDeleteTextures( 1, &id );
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   uint Context::requestSound( int id )
@@ -320,7 +320,7 @@ namespace client
       return resource.id;
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     const String& path = translator.sounds[id].path;
     log.print( "Loading sound '%s' ...", translator.sounds[id].name.cstr() );
@@ -410,7 +410,7 @@ namespace client
       return AL_NONE;
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     log.printEnd( " OK" );
     return resource.id;
@@ -420,8 +420,8 @@ namespace client
   {
     Resource<uint>& resource = sounds[id];
 
-    assert( uint( id ) < uint( translator.sounds.length() ) );
-    assert( resource.nUsers > 0 );
+    hard_assert( uint( id ) < uint( translator.sounds.length() ) );
+    hard_assert( resource.nUsers > 0 );
 
     --resource.nUsers;
   }
@@ -430,14 +430,14 @@ namespace client
   {
     Resource<uint>& resource = sounds[id];
 
-    assert( uint( id ) < uint( translator.sounds.length() ) );
-    assert( resource.nUsers == -2 );
+    hard_assert( uint( id ) < uint( translator.sounds.length() ) );
+    hard_assert( resource.nUsers == -2 );
 
     log.print( "Unloading sound '%s' ...", translator.sounds[id].name.cstr() );
     alDeleteBuffers( 1, &resource.id );
     resource.nUsers = -1;
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
     log.printEnd( " OK" );
   }
 
@@ -445,7 +445,7 @@ namespace client
   {
     Resource<BSP*>& resource = bsps[id];
 
-    assert( resource.object == null && resource.isUpdated == false );
+    hard_assert( resource.object == null && resource.isUpdated == false );
 
     resource.object = new BSP( id );
     return resource.object;
@@ -455,7 +455,7 @@ namespace client
   {
     Resource<BSP*>& resource = bsps[id];
 
-    assert( resource.object != null );
+    hard_assert( resource.object != null );
 
     delete resource.object;
     resource.object = null;
@@ -507,7 +507,7 @@ namespace client
   {
     Resource<OBJ*>* resource = objs.find( path );
 
-    assert( resource != null && resource->nUsers > 0 );
+    hard_assert( resource != null && resource->nUsers > 0 );
 
     --resource->nUsers;
   }
@@ -530,7 +530,7 @@ namespace client
   {
     Resource<MD2*>* resource = staticMd2s.find( path );
 
-    assert( resource != null && resource->nUsers > 0 );
+    hard_assert( resource != null && resource->nUsers > 0 );
 
     --resource->nUsers;
   }
@@ -553,7 +553,7 @@ namespace client
   {
     Resource<MD2*>* resource = md2s.find( path );
 
-    assert( resource != null && resource->nUsers > 0 );
+    hard_assert( resource != null && resource->nUsers > 0 );
 
     --resource->nUsers;
   }
@@ -576,7 +576,7 @@ namespace client
   {
     Resource<MD3*>* resource = staticMd3s.find( path );
 
-    assert( resource != null && resource->nUsers > 0 );
+    hard_assert( resource != null && resource->nUsers > 0 );
 
     --resource->nUsers;
   }
@@ -599,7 +599,7 @@ namespace client
   {
     Resource<MD3*>* resource = md3s.find( path );
 
-    assert( resource != null && resource->nUsers > 0 );
+    hard_assert( resource != null && resource->nUsers > 0 );
 
     --resource->nUsers;
   }
@@ -639,7 +639,7 @@ namespace client
 
     if( value == null ) {
       if( obj->flags & Object::MODEL_BIT ) {
-        assert( !obj->clazz->modelType.isEmpty() );
+        hard_assert( !obj->clazz->modelType.isEmpty() );
 
         const Model::CreateFunc* createFunc = modelClasses.find( obj->clazz->modelType );
         if( createFunc == null ) {
@@ -649,7 +649,7 @@ namespace client
         value = models.add( obj->index, ( *createFunc )( obj ) );
       }
       else {
-        assert( obj->clazz->modelType.isEmpty() );
+        hard_assert( obj->clazz->modelType.isEmpty() );
 
         value = models.add( obj->index, null );
       }
@@ -667,7 +667,7 @@ namespace client
 
     if( value == null ) {
       if( obj->flags & Object::AUDIO_BIT ) {
-        assert( !obj->clazz->audioType.isEmpty() );
+        hard_assert( !obj->clazz->audioType.isEmpty() );
 
         const Audio::CreateFunc* createFunc = audioClasses.find( obj->clazz->audioType );
         if( createFunc == null ) {
@@ -677,7 +677,7 @@ namespace client
         value = audios.add( obj->index, ( *createFunc )( obj ) );
       }
       else {
-        assert( obj->clazz->audioType.isEmpty() );
+        hard_assert( obj->clazz->audioType.isEmpty() );
 
         value = audios.add( obj->index, null );
       }
@@ -745,34 +745,34 @@ namespace client
     audios.free();
     audios.dealloc();
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     foreach( i, objs.citer() ) {
-      assert( i->nUsers == 0 );
+      hard_assert( i->nUsers == 0 );
 
       delete i->object;
       objs.exclude( i.key() );
     }
     foreach( i, staticMd2s.citer() ) {
-      assert( i->nUsers == 0 );
+      hard_assert( i->nUsers == 0 );
 
       delete i->object;
       staticMd2s.exclude( i.key() );
     }
     foreach( i, md2s.citer() ) {
-      assert( i->nUsers == 0 );
+      hard_assert( i->nUsers == 0 );
 
       delete i->object;
       md2s.exclude( i.key() );
     }
     foreach( i, staticMd3s.citer() ) {
-      assert( i->nUsers == 0 );
+      hard_assert( i->nUsers == 0 );
 
       delete i->object;
       staticMd3s.exclude( i.key() );
     }
     foreach( i, md3s.citer() ) {
-      assert( i->nUsers == 0 );
+      hard_assert( i->nUsers == 0 );
 
       delete i->object;
       md3s.exclude( i.key() );
@@ -792,17 +792,17 @@ namespace client
       bsps[i].nUsers = 0;
     }
 
-    assert( lists.length() == 0 );
+    hard_assert( lists.length() == 0 );
 
     foreach( src, sources.citer() ) {
       alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
-      assert( alGetError() == AL_NO_ERROR );
+      hard_assert( alGetError() == AL_NO_ERROR );
     }
     foreach( src, contSources.citer() ) {
       alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
-      assert( alGetError() == AL_NO_ERROR );
+      hard_assert( alGetError() == AL_NO_ERROR );
     }
 
     sources.free();
@@ -810,19 +810,19 @@ namespace client
     contSources.dealloc();
 
     for( int i = 0; i < translator.textures.length(); ++i ) {
-      assert( textures[i].nUsers == 0 );
+      hard_assert( textures[i].nUsers == 0 );
     }
     for( int i = 0; i < translator.sounds.length(); ++i ) {
-      assert( sounds[i].nUsers <= 0 );
+      hard_assert( sounds[i].nUsers <= 0 );
 
       if( sounds[i].nUsers != -1 ) {
         alDeleteBuffers( 1, &sounds[i].id );
-        assert( alGetError() == AL_NO_ERROR );
+        hard_assert( alGetError() == AL_NO_ERROR );
       }
     }
 
-    assert( glGetError() == AL_NO_ERROR );
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( glGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     Source::pool.free();
 

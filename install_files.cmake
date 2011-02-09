@@ -27,6 +27,7 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/Math.cpp
     src/oz/Math.hpp
     src/oz/Pair.hpp
+    src/oz/Plane.hpp
     src/oz/Point3.cpp
     src/oz/Point3.hpp
     src/oz/Pool.hpp

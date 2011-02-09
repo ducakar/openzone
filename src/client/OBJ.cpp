@@ -506,7 +506,7 @@ namespace client
         os.writeInt( indices[i] );
       }
 
-      assert( segments.length() == parts.length() );
+      hard_assert( segments.length() == parts.length() );
 
       for( int i = 0; i < segments.length(); ++i ) {
         os.writeQuat( segments[i].diffuse );
@@ -521,7 +521,7 @@ namespace client
       return;
     }
 
-    assert( !os.isAvailable() );
+    hard_assert( !os.isAvailable() );
     if( !buffer.write( fileName ) ) {
       log.printEnd( " Failed to write buffer" );
     }
@@ -604,7 +604,7 @@ namespace client
       segments[i].texId = texPath.isEmpty() ? GL_NONE : context.loadTexture( texPath );
     }
 
-    assert( !is.isAvailable() );
+    hard_assert( !is.isAvailable() );
 
     glGenBuffers( 1, &arrayBuffer );
     glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
@@ -641,7 +641,7 @@ namespace client
 
     log.printEnd( " OK" );
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   void OBJ::draw() const

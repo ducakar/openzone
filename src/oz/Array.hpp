@@ -194,7 +194,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& operator [] ( int i ) const
       {
-        assert( uint( i ) < uint( SIZE ) );
+        hard_assert( uint( i ) < uint( SIZE ) );
 
         return data[i];
       }
@@ -206,7 +206,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& operator [] ( int i )
       {
-        assert( uint( i ) < uint( SIZE ) );
+        hard_assert( uint( i ) < uint( SIZE ) );
 
         return data[i];
       }

@@ -24,12 +24,6 @@ namespace oz
 
       static const int MAX_BRUSHES = 256;
 
-      struct Plane
-      {
-        Vec3  normal;
-        float distance;
-      };
-
       struct Node
       {
         int plane;
@@ -54,26 +48,27 @@ namespace oz
 
       struct Model : Bounds
       {
-        enum Mode
+        enum class Type
         {
-          IGNORING = 0,
-          BLOCKING = 1,
-          PUSHING  = 2,
-          CRUSHING = 3
+          IGNORING,
+          BLOCKING,
+          PUSHING,
+          CRUSHING
         };
 
         static const int AUTOMATIC_BIT = 0x00000001;
         static const int LUA_BIT       = 0x00000002;
+
+        Vec3  move;
 
         BSP*  bsp;
 
         int   firstBrush;
         int   nBrushes;
 
-        Vec3  move;
         float ratioInc;
         int   flags;
-        Mode  mode;
+        Type  type;
 
         float margin;
         float slideTime;

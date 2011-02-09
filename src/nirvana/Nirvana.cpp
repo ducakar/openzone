@@ -68,7 +68,7 @@ namespace nirvana
     int count = 0;
     foreach( mind, minds.iter() ) {
       const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
-      assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
+      hard_assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
 
       if( !( bot->state & Bot::PLAYER_BIT ) &&
           ( ( mind->flags & Mind::FORCE_UPDATE_BIT ) || count % UPDATE_INTERVAL == updateModulo ) )

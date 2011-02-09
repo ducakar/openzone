@@ -129,14 +129,12 @@ namespace oz
         return elem;
       }
 
-    private:
-
       /**
        * Advance to the next element
        * Should be overridden in derived classes
        * @return
        */
-      CIteratorBase& operator ++ ();
+      CIteratorBase& operator ++ () = delete;
 
   };
 
@@ -282,14 +280,12 @@ namespace oz
         return elem;
       }
 
-    private:
-
       /**
        * Advance to the next element
        * Should be overridden in derived classes
        * @return
        */
-      IteratorBase& operator ++ ();
+      IteratorBase& operator ++ () = delete;
 
   };
 
@@ -337,7 +333,7 @@ namespace oz
     typedef typename IteratorA::Elem Type;
 
     while( iDest.isValid() ) {
-      assert( iSrc.isValid() );
+      hard_assert( iSrc.isValid() );
 
       new( static_cast<Type*>( iDest ) ) Type( *iSrc );
       ++iDest;
@@ -368,10 +364,10 @@ namespace oz
   template <class IteratorA, class CIteratorB>
   inline void iCopy( IteratorA iDest, CIteratorB iSrc )
   {
-    assert( iDest != iSrc );
+    hard_assert( iDest != iSrc );
 
     while( iDest.isValid() ) {
-      assert( iSrc.isValid() );
+      hard_assert( iSrc.isValid() );
 
       *iDest = *iSrc;
       ++iDest;
@@ -416,7 +412,7 @@ namespace oz
   template <class CIteratorA, class CIteratorB>
   inline bool iEquals( CIteratorA iSrcA, CIteratorB iSrcB )
   {
-    assert( iSrcA != iSrcB );
+    hard_assert( iSrcA != iSrcB );
 
     while( iSrcA.isValid() && iSrcB.isValid() && *iSrcA == *iSrcB ) {
       ++iSrcA;

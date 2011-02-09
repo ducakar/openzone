@@ -33,7 +33,7 @@ namespace oz
 
   void Synapse::put( Dynamic* obj )
   {
-    assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
+    hard_assert( obj->index != -1 && obj->cell == null && obj->parent == -1 );
 
     putObjects.add( obj->index );
     orbis.position( obj );
@@ -41,7 +41,7 @@ namespace oz
 
   void Synapse::cut( Dynamic* obj )
   {
-    assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
+    hard_assert( obj->index != -1 && obj->cell != null && obj->parent != -1 );
 
     obj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::IN_WATER_BIT |
         Object::ON_LADDER_BIT | Object::ON_SLICK_BIT | Object::FRICTING_BIT | Object::HIT_BIT );
@@ -70,7 +70,7 @@ namespace oz
   {
     int index = orbis.addObject( name, p );
     Object* obj = orbis.objects[index];
-    assert( obj->cell == null );
+    hard_assert( obj->cell == null );
 
     orbis.position( obj );
     obj->addEvent( Object::EVENT_CREATE, 1.0f );
@@ -93,7 +93,7 @@ namespace oz
 
   void Synapse::remove( Struct* str )
   {
-    assert( str->index != -1 );
+    hard_assert( str->index != -1 );
 
     collider.touchOverlaps( str->toAABB(), 2.0f * EPSILON );
 
@@ -105,7 +105,7 @@ namespace oz
 
   void Synapse::remove( Object* obj )
   {
-    assert( obj->index != -1 && obj->cell != null );
+    hard_assert( obj->index != -1 && obj->cell != null );
 
     if( !( obj->flags & Object::DYNAMIC_BIT ) ) {
       collider.touchOverlaps( *obj, 2.0f * EPSILON );
@@ -119,7 +119,7 @@ namespace oz
 
   void Synapse::remove( Particle* part )
   {
-    assert( part->index != -1 );
+    hard_assert( part->index != -1 );
 
     removedParts.add( part->index );
     orbis.unposition( part );
@@ -129,7 +129,7 @@ namespace oz
 
   void Synapse::removeCut( Dynamic* obj )
   {
-    assert( obj->index != -1 && obj->cell == null );
+    hard_assert( obj->index != -1 && obj->cell == null );
 
     removedObjects.add( obj->index );
     orbis.remove( obj );

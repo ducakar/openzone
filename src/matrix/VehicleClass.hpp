@@ -28,10 +28,10 @@ namespace oz
 
     public:
 
-      int   state;
-
       Vec3 crewPos[Vehicle::CREW_MAX];
       Quat crewRot[Vehicle::CREW_MAX];
+
+      int   state;
 
       float moveMomentum;
 

@@ -908,8 +908,8 @@ namespace nirvana
 
   void Lua::callFunc( const char* functionName, int botIndex )
   {
-    assert( self != null );
-    assert( lua_gettop( l ) == 1 && lua_istable( l, 1 ) );
+    hard_assert( self != null );
+    hard_assert( lua_gettop( l ) == 1 && lua_istable( l, 1 ) );
 
     obj   = self;
     str   = null;
@@ -929,12 +929,12 @@ namespace nirvana
       }
       lua_settop( l, 1 );
     }
-    assert( lua_gettop( l ) == 1 && lua_istable( l, 1 ) );
+    hard_assert( lua_gettop( l ) == 1 && lua_istable( l, 1 ) );
   }
 
   void Lua::registerMind( int botIndex )
   {
-    assert( lua_istable( l, 1 ) );
+    hard_assert( lua_istable( l, 1 ) );
 
     lua_newtable( l );
     lua_rawseti( l, 1, botIndex );
@@ -942,7 +942,7 @@ namespace nirvana
 
   void Lua::unregisterMind( int botIndex )
   {
-    assert( lua_istable( l, 1 ) );
+    hard_assert( lua_istable( l, 1 ) );
 
     lua_pushnil( l );
     lua_rawseti( l, 1, botIndex );

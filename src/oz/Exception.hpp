@@ -47,7 +47,7 @@ namespace oz
    * Helper class for onleave macro.
    */
   template <typename Function>
-  class OnLeave
+  class _OnLeave
   {
     private:
 
@@ -55,10 +55,10 @@ namespace oz
 
     public:
 
-      explicit OnLeave( const Function& func_ ) : func( func_ )
+      explicit _OnLeave( const Function& func_ ) : func( func_ )
       {}
 
-      ~OnLeave()
+      ~_OnLeave()
       {
         func();
       }
@@ -69,17 +69,17 @@ namespace oz
    * \def OZ_ONLEAVE_CODE
    * Helper for onleave macro (used internally).
    */
-#define OZ_ONLEAVE_CODE( func, line ) \
-  auto onLeaveFunc_##line = func; \
-  oz::OnLeave< decltype( onLeaveFunc_##line ) > onLeaveGuard_##line( onLeaveFunc_##line )
+#define _OZ_ONLEAVE_CODE( func, line ) \
+  auto _onLeaveFunc_##line = func; \
+  oz::_OnLeave< decltype( _onLeaveFunc_##line ) > _onLeaveGuard_##line( _onLeaveFunc_##line )
 
   /**
    * \def OZ_ONLEAVE_AUX
    * Auxilary helper for onleave macro (used internally).
    * This intermediate macro is required to instantiate __LINE__ macro for its value.
    */
-#define OZ_ONLEAVE_AUX( func, line ) \
-  OZ_ONLEAVE_CODE( func, line )
+#define _OZ_ONLEAVE_AUX( func, line ) \
+  _OZ_ONLEAVE_CODE( func, line )
 
   /**
    * \def onleave
@@ -88,6 +88,6 @@ namespace oz
    * This is the preferred way of cleaning up things for the case an exception is thrown.
    */
 #define onleave( func ) \
-  OZ_ONLEAVE_AUX( func, __LINE__ )
+  _OZ_ONLEAVE_AUX( func, __LINE__ )
 
 }

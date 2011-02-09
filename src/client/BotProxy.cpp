@@ -31,7 +31,7 @@ namespace client
 
   void BotProxy::begin()
   {
-    assert( camera.bot != -1 );
+    hard_assert( camera.bot != -1 );
 
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
@@ -199,7 +199,7 @@ namespace client
 
     if( !isExternal ) {
       if( bot->parent != -1 ) { // inside vehicle
-        assert( orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT );
+        hard_assert( orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT );
 
         camera.w = 0.0f;
         camera.align();
@@ -261,7 +261,7 @@ namespace client
       if( bot->parent != -1 ) {
         Vehicle* veh = static_cast<Vehicle*>( orbis.objects[bot->parent] );
 
-        assert( veh->flags & Object::VEHICLE_BIT );
+        hard_assert( veh->flags & Object::VEHICLE_BIT );
 
         dist = !veh->dim * externalDistFactor;
       }

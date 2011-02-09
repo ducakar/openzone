@@ -105,7 +105,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       bool get( int i ) const
       {
-        assert( uint( i ) < uint( SIZE * ULONG_BITSIZE ) );
+        hard_assert( uint( i ) < uint( SIZE * ULONG_BITSIZE ) );
 
         return ( data[i / ULONG_BITSIZE] & ( 1ul << ( i % ULONG_BITSIZE ) ) ) != 0ul;
       }
@@ -138,7 +138,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       void set( int i )
       {
-        assert( uint( i ) < uint( SIZE * ULONG_BITSIZE ) );
+        hard_assert( uint( i ) < uint( SIZE * ULONG_BITSIZE ) );
 
         data[i / ULONG_BITSIZE] |= 1ul << ( i % ULONG_BITSIZE );
       }
@@ -150,7 +150,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       void clear( int i )
       {
-        assert( uint( i ) < uint( SIZE * ULONG_BITSIZE ) );
+        hard_assert( uint( i ) < uint( SIZE * ULONG_BITSIZE ) );
 
         data[i / ULONG_BITSIZE] &= ~( 1ul << ( i % ULONG_BITSIZE ) );
       }
@@ -188,7 +188,7 @@ namespace oz
        */
       void set( int start, int end )
       {
-        assert( uint( start ) <= uint( end ) && uint( end ) <= uint( SIZE * ULONG_BITSIZE ) );
+        hard_assert( uint( start ) <= uint( end ) && uint( end ) <= uint( SIZE * ULONG_BITSIZE ) );
 
         int startUnit   = start / ULONG_BITSIZE;
         int startOffset = start % ULONG_BITSIZE;
@@ -219,7 +219,7 @@ namespace oz
        */
       void clear( int start, int end )
       {
-        assert( uint( start ) <= uint( end ) && uint( end ) <= uint( SIZE * ULONG_BITSIZE ) );
+        hard_assert( uint( start ) <= uint( end ) && uint( end ) <= uint( SIZE * ULONG_BITSIZE ) );
 
         int startUnit   = start / ULONG_BITSIZE;
         int startOffset = start % ULONG_BITSIZE;

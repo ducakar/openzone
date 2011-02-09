@@ -74,10 +74,6 @@ namespace client
       log.printEnd( " OK" );
     }
 
-    if( initFlags & QUICK_SHUTDOWN ) {
-      return;
-    }
-
     float uiTime       = float( timer.uiMillis )      * 0.001f;
     float loaderTime   = float( timer.loaderMillis )  * 0.001f;
     float soundTime    = float( timer.soundMillis )   * 0.001f;
@@ -110,11 +106,11 @@ namespace client
     log.println( "Game time                %.2f s",    timer.time );
     log.println( "Dropped time             %.2f s",    droppedTime );
     log.println( "Ticks in active time     %d (%.2f Hz)",
-                 timer.ticks, float( timer.ticks ) / activeTime );
+                timer.ticks, float( timer.ticks ) / activeTime );
     log.println( "Frames in active time    %d (%.2f Hz)",
-                 timer.nFrames, float( timer.nFrames ) / activeTime );
+                timer.nFrames, float( timer.nFrames ) / activeTime );
     log.println( "Frame drops:             %d (%.2f %%)",
-                 frameDrops, float( frameDrops ) / float( timer.ticks ) * 100.0f );
+                frameDrops, float( frameDrops ) / float( timer.ticks ) * 100.0f );
     log.println( "Main loop active time usage {" );
     log.indent();
     log.println( "%6.2f %%  [M:1  ] loader",            loaderTime  / activeTime * 100.0f );
@@ -139,41 +135,42 @@ namespace client
   {
     log.println( "Usage:" );
     log.indent();
-    log.println( "%s [-b|-h|-s]" );
+    log.println( "%s [OPTIONS]", program_invocation_short_name );
     log.println();
     log.println( "--help" );
-    log.println( "\tPrints that help message" );
-    log.println( "--save --no-save" );
-    log.println( "-s -S" );
-    log.println( "\tEnables or disables autosave on exit respectively. Overrides 'autosave' "
-                 "resource" );
-    log.println( "--benchmark number" );
-    log.println( "-b number" );
-    log.println( "\tExits after number seconds (can be floating-point number). For "
-                 "benchmarking purposes" );
+    log.println( "\tPrints that help message." );
+    log.println();
+    log.println( "--load, --no-load" );
+    log.println( "-l, -L" );
+    log.println( "\tEnables or disables autoload of ~/" OZ_RC_DIR "/default.ozState on startup "
+                 "respectively. Overrides the 'autoload' resource." );
+    log.println();
+    log.println( "--save, --no-save" );
+    log.println( "-s, -S" );
+    log.println( "\tEnables or disables autosave to ~/" OZ_RC_DIR "/default.ozState on exit "
+                 "respectively. Overrides the 'autosave' resource." );
+    log.println();
+    log.println( "--benchmark num" );
+    log.println( "-b num" );
+    log.println( "\tExits after num seconds (can be a floating-point number). For "
+                 "benchmarking purposes." );
+    log.println();
     log.unindent();
+
+    exit( 0 );
   }
 
   void Main::main( int* argc, char** argv )
   {
-    log.print( "Initialising SDL ..." );
-    if( SDL_Init( SDL_INIT_NOPARACHUTE ) != 0 ) {
-      log.printEnd( " Failed" );
-      return;
-    }
-    log.printEnd( " OK" );
-    initFlags |= INIT_SDL;
-
-    uint createTime = SDL_GetTicks();
+    initFlags = 0;
+    String rcDir;
 
     bool  isBenchmark = false;
-    float benchmarkTime;
+    float benchmarkTime = 0.0f;
 
     for( int i = 1; i < *argc; ++i ) {
       if( String::equals( argv[i], "--help" ) ) {
         printUsage();
-        initFlags |= QUICK_SHUTDOWN;
-        return;
       }
       else if( String::equals( argv[i], "--benchamrk" ) || String::equals( argv[i], "-b" ) ) {
         if( i + 1 < *argc ) {
@@ -188,8 +185,6 @@ namespace client
         }
         else {
           printUsage();
-          initFlags |= QUICK_SHUTDOWN;
-          return;
         }
       }
       else if( String::equals( argv[i], "--load" ) || String::equals( argv[i], "-l" ) ) {
@@ -204,10 +199,22 @@ namespace client
       else if( String::equals( argv[i], "--no-save" ) || String::equals( argv[i], "-S" ) ) {
         config.add( "gameStage.autosave", "false" );
       }
+      else {
+        log.println( "Invalid command-line option '%s'", argv[i] );
+        log.println();
+        printUsage();
+      }
     }
 
-    initFlags = 0;
-    String rcDir;
+    log.print( "Initialising SDL ..." );
+    if( SDL_Init( SDL_INIT_NOPARACHUTE ) != 0 ) {
+      log.printEnd( " Failed" );
+      return;
+    }
+    log.printEnd( " OK" );
+    initFlags |= INIT_SDL;
+
+    uint createTime = SDL_GetTicks();
 
 #ifdef OZ_WINDOWS
     const char* homeVar = getenv( "USERPROFILE" );

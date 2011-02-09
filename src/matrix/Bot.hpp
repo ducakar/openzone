@@ -11,6 +11,7 @@
 
 #include "stable.hpp"
 
+#include "matrix/Translator.hpp"
 #include "matrix/Dynamic.hpp"
 #include "matrix/Weapon.hpp"
 
@@ -74,31 +75,6 @@ namespace oz
       static const float DEAD_BODY_LIFT;
       static const float BODY_FADEOUT_FACTOR;
 
-      enum AnimEnum
-      {
-        ANIM_STAND,
-        ANIM_RUN,
-        ANIM_ATTACK,
-        ANIM_PAIN_A,
-        ANIM_PAIN_B,
-        ANIM_PAIN_C,
-        ANIM_JUMP,
-        ANIM_FLIP,
-        ANIM_SALUTE,
-        ANIM_FALLBACK,
-        ANIM_WAVE,
-        ANIM_POINT,
-        ANIM_CROUCH_STAND,
-        ANIM_CROUCH_WALK,
-        ANIM_CROUCH_ATTACK,
-        ANIM_CROUCH_PAIN,
-        ANIM_CROUCH_DEATH,
-        ANIM_DEATH_FALLBACK,
-        ANIM_DEATH_FALLFORWARD,
-        ANIM_DEATH_FALLBACKSLOW,
-        ANIM_MAX
-      };
-
       static Pool<Bot> pool;
 
     protected:
@@ -127,7 +103,7 @@ namespace oz
       String      name;
 
       float       camZ;
-      AnimEnum    anim;
+      Anim        anim;
 
       explicit Bot();
 

@@ -83,7 +83,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           CIterator& operator ++ ()
           {
-            assert( B::elem != null );
+            hard_assert( B::elem != null );
 
             B::elem = B::elem->next[INDEX];
             return *this;
@@ -123,7 +123,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           Iterator& operator ++ ()
           {
-            assert( B::elem != null );
+            hard_assert( B::elem != null );
 
             B::elem = B::elem->next[INDEX];
             return *this;
@@ -233,7 +233,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       bool isEmpty() const
       {
-        assert( ( firstElem == null ) == ( lastElem == null ) );
+        hard_assert( ( firstElem == null ) == ( lastElem == null ) );
 
         return firstElem == null;
       }
@@ -280,7 +280,7 @@ namespace oz
        */
       bool contains( const Type* e ) const
       {
-        assert( e != null );
+        hard_assert( e != null );
 
         Type* p = firstElem;
 
@@ -299,7 +299,7 @@ namespace oz
        */
       void add( Type* e )
       {
-        assert( e != null );
+        hard_assert( e != null );
 
         e->prev[INDEX] = null;
         e->next[INDEX] = firstElem;
@@ -321,8 +321,8 @@ namespace oz
        */
       void insertAfter( Type* e, Type* p )
       {
-        assert( e != null );
-        assert( p != null );
+        hard_assert( e != null );
+        hard_assert( p != null );
 
         Type* next = p->next[INDEX];
 
@@ -345,8 +345,8 @@ namespace oz
        */
       void insertBefore( Type* e, Type* p )
       {
-        assert( e != null );
-        assert( p != null );
+        hard_assert( e != null );
+        hard_assert( p != null );
 
         Type* prev = p->prev[INDEX];
 
@@ -367,7 +367,7 @@ namespace oz
        */
       void remove()
       {
-        assert( lastElem != null );
+        hard_assert( lastElem != null );
 
         lastElem = lastElem->prev[INDEX];
 
@@ -405,7 +405,7 @@ namespace oz
        */
       void pushFirst( Type* e )
       {
-        assert( e != null );
+        hard_assert( e != null );
 
         e->prev[INDEX] = null;
         e->next[INDEX] = firstElem;
@@ -426,7 +426,7 @@ namespace oz
        */
       void pushLast( Type* e )
       {
-        assert( e != null );
+        hard_assert( e != null );
 
         e->prev[INDEX] = lastElem;
         e->next[INDEX] = null;
@@ -447,7 +447,7 @@ namespace oz
        */
       Type* popFirst()
       {
-        assert( firstElem != null );
+        hard_assert( firstElem != null );
 
         Type* p = firstElem;
 
@@ -468,7 +468,7 @@ namespace oz
        */
       Type* popLast()
       {
-        assert( lastElem != null );
+        hard_assert( lastElem != null );
 
         Type* p = lastElem;
 
@@ -493,8 +493,8 @@ namespace oz
           return;
         }
 
-        assert( l.firstElem->prev[INDEX] == null );
-        assert( l.lastElem->next[INDEX] == null );
+        hard_assert( l.firstElem->prev[INDEX] == null );
+        hard_assert( l.lastElem->next[INDEX] == null );
 
         l.lastElem->next[INDEX] = firstElem;
 

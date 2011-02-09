@@ -13,6 +13,8 @@ add_library( client STATIC
   Camera.hpp
   Colours.cpp
   Colours.hpp
+  Compiler.cpp
+  Compiler.hpp
   Context.cpp
   Context.hpp
   ExplosionModel.cpp
@@ -39,6 +41,8 @@ add_library( client STATIC
   MD3StaticModel.hpp
   Main.cpp
   Main.hpp
+  Mesh.cpp
+  Mesh.hpp
   Model.cpp
   Model.hpp
   Network.cpp

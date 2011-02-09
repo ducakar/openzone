@@ -186,12 +186,12 @@ namespace oz
         // want to use this ctor as we need to set the intensity
         explicit Event( int id_ ) : id( id_ )
         {
-          assert( id < 0 );
+          hard_assert( id < 0 );
         }
 
         explicit Event( int id_, float intensity_ ) : id( id_ ), intensity( intensity_ )
         {
-          assert( id < 0 || intensity >= 0.0f );
+          hard_assert( id < 0 || intensity >= 0.0f );
         }
 
         OZ_STATIC_POOL_ALLOC( pool )

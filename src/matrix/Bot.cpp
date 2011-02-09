@@ -45,7 +45,7 @@ namespace oz
   void Bot::onHit( const Hit* hit, float hitMomentum )
   {
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
-      assert( hitMomentum <= 0.0f );
+      hard_assert( hitMomentum <= 0.0f );
 
       addEvent( EVENT_LAND, hitMomentum * Object::MOMENTUM_INTENSITY_COEF );
     }
@@ -74,7 +74,7 @@ namespace oz
         flags &= ~SOLID_BIT;
         addEvent( EVENT_DEATH, 1.0f );
         life = clazz->life / 2.0f - EPSILON;
-        anim = ANIM_DEATH_FALLBACK;
+        anim = Anim::DEATH_FALLBACK;
       }
       state |= DEATH_BIT;
     }
@@ -116,7 +116,7 @@ namespace oz
         exit();
       }
       else {
-        assert( orbis.objects[parent]->flags & VEHICLE_BIT );
+        hard_assert( orbis.objects[parent]->flags & VEHICLE_BIT );
         return;
       }
     }
@@ -186,7 +186,6 @@ namespace oz
         dim = clazz->dim;
 
         if( !collider.overlaps( *this, this ) ) {
-          r      = !dim;
           camZ   = clazz->camZ;
           state  &= ~CROUCHING_BIT;
         }
@@ -202,7 +201,6 @@ namespace oz
 
         p.z    += dim.z - clazz->dimCrouch.z;
         dim.z  = clazz->dimCrouch.z;
-        r      = !dim;
         camZ   = clazz->crouchCamZ;
         state  |= CROUCHING_BIT;
       }
@@ -216,45 +214,45 @@ namespace oz
      */
 
     if( ( actions & ACTION_JUMP ) && !isGrounded ) {
-      anim = ANIM_JUMP;
+      anim = Anim::JUMP;
     }
     else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
-      anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_WALK : ANIM_RUN;
+      anim = ( state & CROUCHING_BIT ) ? Anim::CROUCH_WALK : Anim::RUN;
     }
     else if( ( actions & ACTION_ATTACK ) && weaponItem != -1 && grabObj == -1 ) {
       Weapon* weapon = static_cast<Weapon*>( orbis.objects[weaponItem] );
 
       if( weapon != null && weapon->shotTime == 0.0f ) {
-        anim = ( state & CROUCHING_BIT ) ? ANIM_CROUCH_ATTACK : ANIM_ATTACK;
+        anim = ( state & CROUCHING_BIT ) ? Anim::CROUCH_ATTACK : Anim::ATTACK;
         weapon->trigger( this );
       }
     }
     else if( state & CROUCHING_BIT ) {
-      anim = ANIM_CROUCH_STAND;
+      anim = Anim::CROUCH_STAND;
     }
     else if( state & GESTURE0_BIT ) {
-      anim = ANIM_POINT;
+      anim = Anim::POINT;
     }
     else if( state & GESTURE1_BIT ) {
-      anim = ANIM_FALLBACK;
+      anim = Anim::FALLBACK;
     }
     else if( state & GESTURE2_BIT ) {
-      anim = ANIM_SALUTE;
+      anim = Anim::SALUTE;
     }
     else if( state & GESTURE3_BIT ) {
-      anim = ANIM_WAVE;
+      anim = Anim::WAVE;
     }
     else if( state & GESTURE4_BIT ) {
-      anim = ANIM_FLIP;
+      anim = Anim::FLIP;
       if( !( oldState & GESTURE4_BIT ) ) {
         addEvent( EVENT_FLIP, 1.0f );
       }
     }
     else if( state & GESTURE_ALL_BIT ) {
-      anim = ANIM_MAX;
+      anim = Anim::MAX;
     }
     else {
-      anim = ANIM_STAND;
+      anim = Anim::STAND;
     }
     if( actions & ACTION_SUICIDE ) {
       life = clazz->life / 2.0f - EPSILON;
@@ -490,7 +488,7 @@ namespace oz
 
         const Dynamic* obj = static_cast<const Dynamic*>( collider.hit.obj );
         if( obj != null && ( obj->flags & ITEM_BIT ) ) {
-          assert( obj->flags & DYNAMIC_BIT );
+          hard_assert( obj->flags & DYNAMIC_BIT );
 
           take( const_cast<Dynamic*>( obj ) );
         }
@@ -537,7 +535,7 @@ namespace oz
       if( taggedItem != -1 && taggedItem < items.length() && items[taggedItem] != -1 ) {
         Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
 
-        assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+        hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
         synapse.use( this, item );
         // the object may have removed itself after use
@@ -550,7 +548,7 @@ namespace oz
       if( grabObj == -1 && taggedItem != -1 && taggedItem < items.length() ) {
         Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
 
-        assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+        hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
         float dimX = dim.x + item->dim.x;
         float dimY = dim.y + item->dim.y;
@@ -584,7 +582,7 @@ namespace oz
     if( weaponItem != -1 ) {
       Dynamic* weapon = static_cast<Dynamic*>( orbis.objects[weaponItem] );
 
-      assert( ( weapon->flags & DYNAMIC_BIT ) && ( weapon->flags & ITEM_BIT ) &&
+      hard_assert( ( weapon->flags & DYNAMIC_BIT ) && ( weapon->flags & ITEM_BIT ) &&
               ( weapon->flags & WEAPON_BIT ) );
 
       if( weapon == null ) {
@@ -600,12 +598,12 @@ namespace oz
   {}
 
   Bot::Bot() : actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
-      grabObj( -1 ), weaponItem( -1 ), anim( ANIM_STAND )
+      grabObj( -1 ), weaponItem( -1 ), anim( Anim::STAND )
   {}
 
   void Bot::take( Dynamic* item )
   {
-    assert( index != -1 && ( item->flags & Object::ITEM_BIT ) );
+    hard_assert( index != -1 && ( item->flags & Object::ITEM_BIT ) );
 
     items.add( item->index );
     item->parent = index;
@@ -614,17 +612,17 @@ namespace oz
 
   void Bot::enter( int vehicle_ )
   {
-    assert( cell != null );
+    hard_assert( cell != null );
 
     parent   = vehicle_;
     grabObj  = -1;
-    anim     = ANIM_STAND;
+    anim     = Anim::STAND;
     synapse.cut( this );
   }
 
   void Bot::exit()
   {
-    assert( cell == null && parent != -1 );
+    hard_assert( cell == null && parent != -1 );
 
     parent = -1;
     synapse.put( this );
@@ -657,12 +655,11 @@ namespace oz
     }
     weaponItem = istream->readInt();
 
-    anim       = AnimEnum( istream->readInt() );
+    anim       = Anim( istream->readInt() );
     name       = istream->readString();
 
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
-    r   = !dim;
   }
 
   void Bot::writeFull( OutputStream* ostream ) const
@@ -687,7 +684,7 @@ namespace oz
     }
     ostream->writeInt( weaponItem );
 
-    ostream->writeInt( anim );
+    ostream->writeInt( int( anim ) );
     ostream->writeString( name );
   }
 
@@ -698,7 +695,7 @@ namespace oz
     v            = istream->readFloat();
     state        = istream->readInt();
     grabObj      = istream->readInt();
-    anim         = AnimEnum( istream->readChar() );
+    anim         = Anim( istream->readInt() );
   }
 
   void Bot::writeUpdate( OutputStream* ostream ) const
@@ -708,7 +705,7 @@ namespace oz
     ostream->writeFloat( v );
     ostream->writeInt( state );
     ostream->writeInt( grabObj );
-    ostream->writeChar( char( anim ) );
+    ostream->writeInt( int( anim ) );
   }
 
 }

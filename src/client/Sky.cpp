@@ -220,7 +220,7 @@ namespace client
 
     glPopMatrix();
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
 }

@@ -13,6 +13,8 @@
 namespace oz
 {
 
+#ifdef OZ_SIMD
+
   const Mat44 Mat44::ZERO = Mat44( 0.0f, 0.0f, 0.0f, 0.0f,
                                    0.0f, 0.0f, 0.0f, 0.0f,
                                    0.0f, 0.0f, 0.0f, 0.0f,
@@ -22,5 +24,19 @@ namespace oz
                                    0.0f, 1.0f, 0.0f, 0.0f,
                                    0.0f, 0.0f, 1.0f, 0.0f,
                                    0.0f, 0.0f, 0.0f, 1.0f );
+
+#else
+
+  const Mat44 Mat44::ZERO = Mat44( 0.0f, 0.0f, 0.0f, 0.0f,
+                                   0.0f, 0.0f, 0.0f, 0.0f,
+                                   0.0f, 0.0f, 0.0f, 0.0f,
+                                   0.0f, 0.0f, 0.0f, 0.0f );
+
+  const Mat44 Mat44::ID   = Mat44( 1.0f, 0.0f, 0.0f, 0.0f,
+                                   0.0f, 1.0f, 0.0f, 0.0f,
+                                   0.0f, 0.0f, 1.0f, 0.0f,
+                                   0.0f, 0.0f, 0.0f, 1.0f );
+
+#endif
 
 }
