@@ -154,7 +154,6 @@ namespace oz
     Vehicle* obj = new Vehicle();
 
     obj->p        = pos;
-    obj->r        = !dim;
     obj->dim      = dim;
     obj->h        = 0.0f;
 
@@ -177,7 +176,6 @@ namespace oz
   {
     Vehicle* obj = new Vehicle();
 
-    obj->r      = !dim;
     obj->dim    = dim;
 
     obj->index  = index;

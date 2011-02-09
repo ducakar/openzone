@@ -25,7 +25,7 @@ namespace client
 
   Model* OBJVehicleModel::create( const Object* obj )
   {
-    assert( obj->flags & Object::VEHICLE_BIT );
+    hard_assert( obj->flags & Object::VEHICLE_BIT );
 
     OBJVehicleModel* model = new OBJVehicleModel();
 

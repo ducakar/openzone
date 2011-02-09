@@ -165,7 +165,7 @@ namespace oz
        */
       Vector& operator = ( const Vector& v )
       {
-        assert( &v != this );
+        hard_assert( &v != this );
 
         aDestruct( data, count );
 
@@ -284,7 +284,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& operator [] ( int i ) const
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i];
       }
@@ -296,7 +296,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& operator [] ( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i];
       }
@@ -307,7 +307,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& first() const
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[0];
       }
@@ -318,7 +318,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& first()
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[0];
       }
@@ -329,7 +329,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& last() const
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[count - 1];
       }
@@ -340,7 +340,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& last()
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[count - 1];
       }
@@ -431,7 +431,7 @@ namespace oz
        */
       void insert( int i, const Type& e )
       {
-        assert( uint( i ) <= uint( count ) );
+        hard_assert( uint( i ) <= uint( count ) );
 
         ensureCapacity();
 
@@ -451,7 +451,7 @@ namespace oz
        */
       void remove()
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         --count;
         data[count].~Type();
@@ -464,7 +464,7 @@ namespace oz
        */
       void remove( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         --count;
         aCopy( data + i, data + i + 1, count - i );
@@ -478,7 +478,7 @@ namespace oz
        */
       void removeUO( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         --count;
         if( i != count ) {
@@ -577,7 +577,7 @@ namespace oz
        */
       Type popLast()
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         --count;
         Type e = data[count];
@@ -621,7 +621,7 @@ namespace oz
        */
       void alloc( int initSize )
       {
-        assert( size == 0 && initSize > 0 );
+        hard_assert( size == 0 && initSize > 0 );
 
         data = Alloc::alloc<Type>( initSize );
         size = initSize;
@@ -633,7 +633,7 @@ namespace oz
        */
       void dealloc()
       {
-        assert( count == 0 );
+        hard_assert( count == 0 );
 
         Alloc::dealloc( data );
 

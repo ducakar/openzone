@@ -13,11 +13,9 @@
 #include "System.hpp"
 #include "Log.hpp"
 
-#include <cstring>
 #include <cstdlib>
-#include <cstdio>
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
 # include <pthread.h>
 #endif
 
@@ -33,7 +31,7 @@ namespace oz
                  "allocation statistics." );
 #endif
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
 
   struct TraceEntry
   {
@@ -47,7 +45,7 @@ namespace oz
   static TraceEntry* firstObjectTraceEntry = null;
   static TraceEntry* firstArrayTraceEntry  = null;
 
-  // if we deallocate from two different threads at once with OZ_ALLOC_TRACELEAKS, changing the list
+  // if we deallocate from two different threads at once with OZ_TRACE_LEAKS, changing the list
   // of allocated blocks while iterating it in another thread can result in a SIGSEGV.
   static pthread_mutex_t sectionMutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -90,7 +88,7 @@ namespace oz
 
 #endif
 
-#ifndef OZ_ALLOC_TRACELEAKS
+#ifndef OZ_TRACE_LEAKS
 
   void Alloc::printLeaks()
   {}
@@ -129,7 +127,7 @@ namespace oz
 using oz::max;
 using oz::Alloc;
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
 
 using oz::log;
 using oz::System;
@@ -144,15 +142,15 @@ using oz::sectionMutex;
 
 void* operator new ( size_t size ) throw( std::bad_alloc )
 {
-  assert( !Alloc::isLocked );
-  assert( size != 0 );
+  hard_assert( !Alloc::isLocked );
+  hard_assert( size != 0 );
 
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     throw std::bad_alloc();
   }
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
   pthread_mutex_lock( &sectionMutex );
@@ -172,15 +170,15 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 {
-  assert( !Alloc::isLocked );
-  assert( size != 0 );
+  hard_assert( !Alloc::isLocked );
+  hard_assert( size != 0 );
 
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     throw std::bad_alloc();
   }
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
   pthread_mutex_lock( &sectionMutex );
@@ -200,10 +198,12 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
 void operator delete ( void* ptr ) throw()
 {
-  assert( !Alloc::isLocked );
-  assert( ptr != null );
+  hard_assert( !Alloc::isLocked );
+  hard_assert( ptr != null );
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
+  System::resetSignals();
+
   pthread_mutex_lock( &sectionMutex );
 
   TraceEntry* st   = firstObjectTraceEntry;
@@ -226,24 +226,21 @@ void operator delete ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  log.resetIndent();
-  log.println( "ALLOC: Trying to free object at %p that was not found on the list of "
-               "allocated objects", ptr );
+  System::trap();
 
   st   = firstArrayTraceEntry;
   prev = null;
 
   while( st != null ) {
     if( st->address == ptr ) {
-      log.println( "However, it was found on the list of allocated arrays "
-                   "(new -> delete[] mismatch)" );
+      System::abort( "ALLOC: new[] -> delete mismatch for block at %p", chunk );
       break;
     }
     prev = st;
     st = st->next;
   }
 
-  abort();
+  System::abort( "ALLOC: Trying to free object at %p that does not seem to be allocated", chunk );
 
   backtraceFound:;
   pthread_mutex_unlock( &sectionMutex );
@@ -254,10 +251,12 @@ void operator delete ( void* ptr ) throw()
 
 void operator delete[] ( void* ptr ) throw()
 {
-  assert( !Alloc::isLocked );
-  assert( ptr != null );
+  hard_assert( !Alloc::isLocked );
+  hard_assert( ptr != null );
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
+  System::resetSignals();
+
   pthread_mutex_lock( &sectionMutex );
 
   TraceEntry* st   = firstArrayTraceEntry;
@@ -280,24 +279,21 @@ void operator delete[] ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  log.resetIndent();
-  log.println( "ALLOC: Trying to free array at %p that was not found on the list of "
-               "allocated arrays", ptr );
+  System::trap();
 
   st   = firstObjectTraceEntry;
   prev = null;
 
   while( st != null ) {
     if( st->address == ptr ) {
-      log.println( "However, it was found on the list of allocated objects "
-                   "(new[] -> delete mismatch)" );
+      System::abort( "ALLOC: new -> delete[] mismatch for block at %p", chunk );
       break;
     }
     prev = st;
     st = st->next;
   }
 
-  abort();
+  System::abort( "ALLOC: Trying to free array at %p that does not seem to be allocated", chunk );
 
   backtraceFound:;
   pthread_mutex_unlock( &sectionMutex );
@@ -314,8 +310,8 @@ void* operator new ( size_t size )
 void* operator new ( size_t size ) throw( std::bad_alloc )
 #endif
 {
-  assert( !Alloc::isLocked );
-  assert( size != 0 );
+  hard_assert( !Alloc::isLocked );
+  hard_assert( size != 0 );
 
   size += Alloc::ALIGNMENT;
 
@@ -324,7 +320,7 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
     throw std::bad_alloc();
   }
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
   pthread_mutex_lock( &sectionMutex );
@@ -358,8 +354,8 @@ void* operator new[] ( size_t size )
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
 #endif
 {
-  assert( !Alloc::isLocked );
-  assert( size != 0 );
+  hard_assert( !Alloc::isLocked );
+  hard_assert( size != 0 );
 
   size += Alloc::ALIGNMENT;
 
@@ -368,7 +364,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
     throw std::bad_alloc();
   }
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
 
   pthread_mutex_lock( &sectionMutex );
@@ -398,13 +394,15 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
 void operator delete ( void* ptr ) throw()
 {
-  assert( !Alloc::isLocked );
-  assert( ptr != null );
+  hard_assert( !Alloc::isLocked );
+  hard_assert( ptr != null );
 
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
   size_t size  = reinterpret_cast<size_t*>( chunk )[0];
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
+  System::resetSignals();
+
   pthread_mutex_lock( &sectionMutex );
 
   TraceEntry* st   = firstObjectTraceEntry;
@@ -412,7 +410,7 @@ void operator delete ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
-      assert( st->size == size );
+      hard_assert( st->size == size );
 
       if( prev == null ) {
         firstObjectTraceEntry = st->next;
@@ -429,24 +427,21 @@ void operator delete ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  log.resetIndent();
-  log.println( "ALLOC: Trying to free object at %p that was not found on the list of "
-               "allocated objects", chunk );
+  System::trap();
 
   st   = firstArrayTraceEntry;
   prev = null;
 
   while( st != null ) {
     if( st->address == chunk ) {
-      log.println( "However, it was found on the list of allocated arrays "
-                   "(new -> delete[] mismatch)" );
+      System::abort( "ALLOC: new[] -> delete mismatch for block at %p", chunk );
       break;
     }
     prev = st;
     st = st->next;
   }
 
-  abort();
+  System::abort( "ALLOC: Trying to free object at %p that does not seem to be allocated", chunk );
 
   backtraceFound:;
   pthread_mutex_unlock( &sectionMutex );
@@ -460,13 +455,15 @@ void operator delete ( void* ptr ) throw()
 
 void operator delete[] ( void* ptr ) throw()
 {
-  assert( !Alloc::isLocked );
-  assert( ptr != null );
+  hard_assert( !Alloc::isLocked );
+  hard_assert( ptr != null );
 
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
   size_t size  = reinterpret_cast<size_t*>( chunk )[0];
 
-#ifdef OZ_ALLOC_TRACELEAKS
+#ifdef OZ_TRACE_LEAKS
+  System::resetSignals();
+
   pthread_mutex_lock( &sectionMutex );
 
   TraceEntry* st   = firstArrayTraceEntry;
@@ -474,7 +471,7 @@ void operator delete[] ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
-      assert( st->size == size );
+      hard_assert( st->size == size );
 
       if( prev == null ) {
         firstArrayTraceEntry = st->next;
@@ -491,24 +488,20 @@ void operator delete[] ( void* ptr ) throw()
     st = st->next;
   }
   // loop fell through
-  log.resetIndent();
-  log.println( "ALLOC: Trying to free array at %p that was not found on the list of "
-               "allocated arrays", chunk );
+  System::trap();
 
   st   = firstObjectTraceEntry;
   prev = null;
 
   while( st != null ) {
     if( st->address == chunk ) {
-      log.println( "However, it was found on the list of allocated objects "
-                   "(new[] -> delete mismatch)" );
-      break;
+      System::abort( "ALLOC: new -> delete[] mismatch for block at %p", chunk );
     }
     prev = st;
     st = st->next;
   }
 
-  abort();
+  System::abort( "ALLOC: Trying to free array at %p that does not seem to be allocated", chunk );
 
   backtraceFound:;
   pthread_mutex_unlock( &sectionMutex );

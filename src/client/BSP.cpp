@@ -121,17 +121,17 @@ namespace client
   {
     int nodeIndex = 0;
     do {
-      const oz::BSP::Node&  node  = bsp->nodes[nodeIndex];
-      const oz::BSP::Plane& plane = bsp->planes[node.plane];
+      const oz::BSP::Node& node  = bsp->nodes[nodeIndex];
+      const Plane&         plane = bsp->planes[node.plane];
 
-      if( ( camPos * plane.normal - plane.distance ) < 0.0f ) {
+      if( plane * camPos < 0.0f ) {
         nodeIndex = node.back;
       }
       else {
         nodeIndex = node.front;
       }
 
-      assert( nodeIndex != 0 );
+      hard_assert( nodeIndex != 0 );
     }
     while( nodeIndex >= 0 );
 
@@ -142,9 +142,9 @@ namespace client
 
       if( brush->material & Material::WATER_BIT ) {
         for( int i = 0; i < brush->nSides; ++i ) {
-          const oz::BSP::Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
+          const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-          if( ( camPos * plane.normal - plane.distance ) >= 0.0f ) {
+          if( plane * camPos >= 0.0f ) {
             goto nextBrush;
           }
         }
@@ -312,7 +312,7 @@ namespace client
     }
     data += nFaces * sizeof( Face );
 
-    assert( !is.isAvailable() );
+    hard_assert( !is.isAvailable() );
 
     return true;
   }
@@ -546,7 +546,7 @@ namespace client
 
     // remove faces that lay out of boundaries
     for( int i = 0; i < nFaces; ) {
-      assert( faces[i].nVertices > 0 && faces[i].nIndices >= 0 );
+      hard_assert( faces[i].nVertices > 0 && faces[i].nIndices >= 0 );
 
       if( faces[i].nIndices != 0 ) {
         ++i;
@@ -576,7 +576,7 @@ namespace client
               --leaves[k].firstFace;
             }
             else if( j < leaves[k].firstFace + leaves[k].nFaces ) {
-              assert( leaves[k].nFaces > 0 );
+              hard_assert( leaves[k].nFaces > 0 );
 
               --leaves[k].nFaces;
             }
@@ -589,7 +589,7 @@ namespace client
           --entityModels[j].firstFace;
         }
         else if( i < entityModels[j].firstFace + entityModels[j].nFaces ) {
-          assert( entityModels[j].nFaces > 0 );
+          hard_assert( entityModels[j].nFaces > 0 );
 
           --entityModels[j].nFaces;
         }
@@ -668,7 +668,7 @@ namespace client
               break;
             }
           }
-          assert( j < nNodes );
+          hard_assert( j < nNodes );
 
           log.printRaw( "." );
         }
@@ -687,7 +687,7 @@ namespace client
               break;
             }
           }
-          assert( j < nNodes );
+          hard_assert( j < nNodes );
 
           log.printRaw( "." );
         }
@@ -698,7 +698,7 @@ namespace client
           --nNodes;
 
           for( int j = 0; j < nNodes; ++j ) {
-            assert( nodes[j].front != i && nodes[j].back != i );
+            hard_assert( nodes[j].front != i && nodes[j].back != i );
 
             if( nodes[j].front > i && nodes[j].front != 0 ) {
               --nodes[j].front;
@@ -740,10 +740,10 @@ namespace client
     }
 
     for( int i = 0; i < nLeaves; ++i ) {
-      assert( usedLeaves.get( i ) );
+      hard_assert( usedLeaves.get( i ) );
     }
     for( int i = 1; i < nNodes; ++i ) {
-      assert( usedNodes.get( i ) );
+      hard_assert( usedNodes.get( i ) );
     }
 
     // remove unused indices
@@ -775,7 +775,7 @@ namespace client
         }
         else if( i < faces[j].firstIndex + faces[j].nIndices ) {
           // removed index shouldn't be referenced by any face
-          assert( false );
+          hard_assert( false );
         }
       }
     }
@@ -812,7 +812,7 @@ namespace client
         }
         else if( i == indices[j] ) {
           // removed vertex shouldn't be referenced by any index
-          assert( false );
+          hard_assert( false );
         }
       }
     }
@@ -845,7 +845,7 @@ namespace client
 
       // adjust plane references
       for( int j = 0; j < nNodes; ++j ) {
-        assert( nodes[j].plane != i );
+        hard_assert( nodes[j].plane != i );
 
         if( nodes[j].plane > i ) {
           --nodes[j].plane;
@@ -928,7 +928,7 @@ namespace client
       os.writeChars( lightmaps[i].bits, LIGHTMAP_SIZE );
     }
 
-    assert( !os.isAvailable() );
+    hard_assert( !os.isAvailable() );
     buffer.write( file );
 
     log.printEnd( " OK" );
@@ -1018,7 +1018,7 @@ namespace client
 
   void BSP::load()
   {
-    assert( bsp != null );
+    hard_assert( bsp != null );
 
     log.println( "Loading BSP model '%s' {", name.cstr() );
     log.indent();

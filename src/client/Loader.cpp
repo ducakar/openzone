@@ -29,7 +29,7 @@ namespace client
 
   void Loader::cleanupRender()
   {
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
     // delete models of removed objects
     for( auto i = context.models.citer(); i.isValid(); ) {
@@ -46,7 +46,7 @@ namespace client
       }
     }
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
     if( tick % BSP_CLEAR_INTERVAL == 0 ) {
       // remove unused BSPs
@@ -65,7 +65,7 @@ namespace client
       }
     }
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
     if( tick % MODEL_CLEAR_INTERVAL == 0 ) {
       // remove unused models
@@ -86,12 +86,12 @@ namespace client
       }
     }
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   void Loader::cleanupSound()
   {
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     // remove audio models of removed objects
     for( auto i = context.audios.citer(); i.isValid(); ) {
@@ -108,7 +108,7 @@ namespace client
       }
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     if( tick % SOURCE_CLEAR_INTERVAL ) {
       // remove stopped sources of non-continous sounds
@@ -133,7 +133,7 @@ namespace client
       }
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     if( tick % CONTSOURCE_CLEAR_INTERVAL == 0 ) {
       // remove continous sounds that are not played any more
@@ -155,10 +155,10 @@ namespace client
       }
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     if( tick % AUDIO_CLEAR_INTERVAL == 0 ) {
-      assert( alGetError() == AL_NO_ERROR );
+      hard_assert( alGetError() == AL_NO_ERROR );
 
       // remove unused Audio objects
       for( auto i = context.audios.citer(); i.isValid(); ) {
@@ -177,7 +177,7 @@ namespace client
         }
       }
 
-      assert( alGetError() == AL_NO_ERROR );
+      hard_assert( alGetError() == AL_NO_ERROR );
 
       // remove unused (no object audio uses it) buffers
       for( int i = 0; i < translator.sounds.length(); ++i ) {
@@ -191,7 +191,7 @@ namespace client
       }
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
   }
 
   void Loader::makeScreenshot()

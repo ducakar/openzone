@@ -232,7 +232,7 @@ namespace client
     Vec3(  0.587785f, -0.688191f, -0.425325f )
   };
 
-  MD2::Anim MD2::animList[] =
+  MD2::AnimInfo MD2::animList[] =
   {
     // first, last, fps, repeat
     {   0,  39,  9.0f, 1 },   // STAND
@@ -272,7 +272,8 @@ namespace client
     }
   }
 
-  MD2::MD2( const char* name_ ) : name( name_ ), isLoaded( false )
+  MD2::MD2( const char* name_ ) : name( name_ ), verts( null ), glCmds( null ),
+      lightNormals( null ), isLoaded( false )
   {}
 
   MD2::~MD2()
@@ -287,7 +288,7 @@ namespace client
 
     log.printEnd( " OK" );
 
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   void MD2::load()
@@ -381,8 +382,8 @@ namespace client
 
     translate( translation );
 
-    if( jumpTranslate != Vec3::ZERO && animList[ANIM_JUMP].lastFrame < nFrames ) {
-      translate( ANIM_JUMP, jumpTranslate );
+    if( jumpTranslate != Vec3::ZERO && animList[int( Anim::JUMP )].lastFrame < nFrames ) {
+      translate( Anim::JUMP, jumpTranslate );
     }
 
     if( texId == 0 ) {
@@ -410,12 +411,12 @@ namespace client
     }
   }
 
-  void MD2::translate( int animType, const Vec3& t )
+  void MD2::translate( Anim anim, const Vec3& t )
   {
-    int start = animList[animType].firstFrame * nVerts;
-    int end = ( animList[animType].lastFrame + 1 ) * nVerts - 1;
+    int start = animList[int( anim )].firstFrame * nVerts;
+    int end = ( animList[int( anim )].lastFrame + 1 ) * nVerts - 1;
 
-    assert( end < nVerts * nFrames );
+    hard_assert( end < nVerts * nFrames );
 
     for( int i = start; i <= end; ++i ) {
       verts[i] += t;

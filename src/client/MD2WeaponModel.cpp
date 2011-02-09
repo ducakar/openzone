@@ -26,8 +26,8 @@ namespace client
 
   Model* MD2WeaponModel::create( const Object* obj )
   {
-    assert( obj->flags & Object::DYNAMIC_BIT );
-    assert( obj->flags & Object::WEAPON_BIT );
+    hard_assert( obj->flags & Object::DYNAMIC_BIT );
+    hard_assert( obj->flags & Object::WEAPON_BIT );
 
     MD2WeaponModel* model = new MD2WeaponModel();
 
@@ -35,7 +35,7 @@ namespace client
     model->clazz = obj->clazz;
     model->md2   = context.loadMD2( obj->clazz->modelName );
 
-    model->setAnim( Bot::ANIM_STAND );
+    model->setAnim( Anim::STAND );
     model->anim.nextFrame = model->anim.endFrame;
     model->anim.currFrame = model->anim.endFrame;
 

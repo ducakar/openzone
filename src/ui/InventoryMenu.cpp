@@ -40,7 +40,7 @@ namespace ui
 
   bool InventoryMenu::onMouseEvent()
   {
-    if( camera.state != Camera::BOT || camera.bot == -1 || !mouse.doShow ) {
+    if( camera.state != Camera::State::BOT || camera.bot == -1 || !mouse.doShow ) {
       return false;
     }
 
@@ -90,7 +90,7 @@ namespace ui
 
   void InventoryMenu::onDraw()
   {
-    if( camera.state != Camera::BOT || camera.bot == -1 || !mouse.doShow ) {
+    if( camera.state != Camera::State::BOT || camera.bot == -1 || !mouse.doShow ) {
       tagged = -1;
       row = 0;
       return;
@@ -98,9 +98,9 @@ namespace ui
 
     Frame::onDraw();
 
-    setFont( TITLE );
+    setFont( Font::Type::TITLE );
     printCentred( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, "Inventory" );
-    setFont( SANS );
+    setFont( Font::Type::SANS );
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     glEnable( GL_TEXTURE_2D );
@@ -117,7 +117,7 @@ namespace ui
     for( int i = minIndex; i < maxIndex; ++i ) {
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[i]] );
 
-      assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
+      hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
       float size = !item->dim;
       float scale = SLOT_DIMF / size;
@@ -155,7 +155,7 @@ namespace ui
       float life = taggedItem->life / taggedItem->clazz->life;
       int lifeWidth = int( life * 46.0f );
 
-      assert( 0.0f <= life && life <= 1.0f );
+      hard_assert( 0.0f <= life && life <= 1.0f );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.6f );
       fill( -51, -15, lifeWidth, 10 );

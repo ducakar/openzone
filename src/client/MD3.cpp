@@ -204,7 +204,7 @@ namespace client
 
   void MD3::Part::drawFrame( int frame ) const
   {
-    assert( frame < nFrames );
+    hard_assert( frame < nFrames );
 
     for( int i = 0; i < meshes.length(); ++i ) {
       const Mesh& mesh = meshes[i];
@@ -266,7 +266,7 @@ namespace client
 
   MD3::~MD3()
   {
-    assert( glGetError() == GL_NO_ERROR );
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   void MD3::load()

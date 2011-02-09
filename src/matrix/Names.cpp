@@ -23,7 +23,7 @@ namespace oz
 
   const String& Names::genName() const
   {
-    assert( names.length() > 0 );
+    hard_assert( names.length() > 0 );
 
     if( names.length() == 1 ) {
       return names[0];

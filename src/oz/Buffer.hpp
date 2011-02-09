@@ -61,7 +61,7 @@ namespace oz
 
       bool isEmpty() const
       {
-        assert( ( count == 0 ) == ( data == null ) );
+        hard_assert( ( count == 0 ) == ( data == null ) );
 
         return count == 0;
       }
@@ -84,14 +84,14 @@ namespace oz
 
       InputStream inputStream() const
       {
-        assert( data != null );
+        hard_assert( data != null );
 
         return InputStream( data, data + count );
       }
 
       OutputStream outputStream() const
       {
-        assert( data != null );
+        hard_assert( data != null );
 
         return OutputStream( data, data + count );
       }

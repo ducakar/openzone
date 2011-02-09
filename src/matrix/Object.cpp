@@ -25,8 +25,8 @@ namespace oz
 
   Object::~Object()
   {
-    assert( dim.x <= AABB::REAL_MAX_DIM );
-    assert( dim.y <= AABB::REAL_MAX_DIM );
+    hard_assert( dim.x <= AABB::REAL_MAX_DIM );
+    hard_assert( dim.y <= AABB::REAL_MAX_DIM );
 
     events.free();
   }

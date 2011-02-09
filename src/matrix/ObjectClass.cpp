@@ -92,7 +92,7 @@ namespace oz
 
       char buffer[] = "audioSample  ";
       for( int i = 0; i < AUDIO_SAMPLES; ++i ) {
-        assert( i < 100 );
+        hard_assert( i < 100 );
 
         buffer[ sizeof buffer - 3 ] = char( '0' + ( i / 10 ) );
         buffer[ sizeof buffer - 2 ] = char( '0' + ( i % 10 ) );
@@ -165,10 +165,9 @@ namespace oz
   {
     Object* obj = new Object();
 
-    assert( obj->index == -1 && obj->cell == null );
+    hard_assert( obj->index == -1 && obj->cell == null );
 
     obj->p        = pos;
-    obj->r        = !dim;
     obj->dim      = dim;
     obj->h        = 0.0f;
 
@@ -185,7 +184,6 @@ namespace oz
   {
     Object* obj = new Object();
 
-    obj->r      = !dim;
     obj->dim    = dim;
 
     obj->index  = index;

@@ -32,7 +32,7 @@ namespace oz
 
         public:
 
-          enum State
+          enum class State
           {
             CLOSED,
             OPENING,
@@ -44,11 +44,12 @@ namespace oz
 
           static Vector<Object*> overlappingObjs;
 
+          Vec3              offset;
+
           const BSP::Model* model;
           Struct*           str;
-          Vec3              offset;
-          State             state;
 
+          State             state;
           float             ratio;
           float             time;
 
@@ -61,12 +62,12 @@ namespace oz
 
       };
 
-      enum Rotation
+      enum class Rotation
       {
-        R0   = 0,
-        R90  = 1,
-        R180 = 2,
-        R270 = 3
+        R0,
+        R90,
+        R180,
+        R270
       };
 
       static Pool<Struct, 256> pool;
@@ -76,9 +77,9 @@ namespace oz
 
     public:
 
+      Point3   p;
       int      index;
       int      bsp;
-      Point3   p;
       Rotation rot;
       float    life;
 

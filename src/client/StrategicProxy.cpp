@@ -62,7 +62,7 @@ namespace client
         if( me != null ) {
           me->state |= Bot::PLAYER_BIT;
           camera.setBot( me );
-          camera.setState( Camera::BOT );
+          camera.setState( Camera::State::BOT );
         }
       }
     }
@@ -103,7 +103,7 @@ namespace client
 
     if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
       ui::mouse.doShow = false;
-      camera.setState( Camera::FREECAM );
+      camera.setState( Camera::State::FREECAM );
     }
 
     p.z = Math::max( 0.0f, orbis.terra.height( p.x, p.y ) ) + height;

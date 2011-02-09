@@ -307,7 +307,7 @@ namespace oz
 
   bool Config::get( const char* name, bool defVal ) const
   {
-    assert( !vars.contains( name ) ||
+    hard_assert( !vars.contains( name ) ||
             vars.get( name ).equals( "true" ) ||
             vars.get( name ).equals( "false" ) );
 

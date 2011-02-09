@@ -44,7 +44,7 @@ namespace oz
       if( crew[i] != -1 ) {
         Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
 
-        assert( bot == null || bot->parent == index );
+        hard_assert( bot == null || bot->parent == index );
 
         if( bot == null ) {
           crew[i] = -1;

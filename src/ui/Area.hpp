@@ -69,7 +69,7 @@ namespace ui
       explicit Area( int x, int y, int width, int height );
       virtual ~Area();
 
-      void setFont( FontType type );
+      void setFont( Font::Type type );
       void setFontColour( ubyte r, ubyte g, ubyte b );
 
       void fill( int x, int y, int width, int height ) const;

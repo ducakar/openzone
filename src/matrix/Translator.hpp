@@ -17,29 +17,29 @@
 namespace oz
 {
 
-  enum AnimEnum
+  enum class Anim
   {
-    ANIM_STAND,
-    ANIM_RUN,
-    ANIM_ATTACK,
-    ANIM_PAIN_A,
-    ANIM_PAIN_B,
-    ANIM_PAIN_C,
-    ANIM_JUMP,
-    ANIM_FLIP,
-    ANIM_SALUTE,
-    ANIM_FALLBACK,
-    ANIM_WAVE,
-    ANIM_POINT,
-    ANIM_CROUCH_STAND,
-    ANIM_CROUCH_WALK,
-    ANIM_CROUCH_ATTACK,
-    ANIM_CROUCH_PAIN,
-    ANIM_CROUCH_DEATH,
-    ANIM_DEATH_FALLBACK,
-    ANIM_DEATH_FALLFORWARD,
-    ANIM_DEATH_FALLBACKSLOW,
-    ANIM_MAX
+    STAND,
+    RUN,
+    ATTACK,
+    PAIN_A,
+    PAIN_B,
+    PAIN_C,
+    JUMP,
+    FLIP,
+    SALUTE,
+    FALLBACK,
+    WAVE,
+    POINT,
+    CROUCH_STAND,
+    CROUCH_WALK,
+    CROUCH_ATTACK,
+    CROUCH_PAIN,
+    CROUCH_DEATH,
+    DEATH_FALLBACK,
+    DEATH_FALLFORWARD,
+    DEATH_FALLBACKSLOW,
+    MAX
   };
 
   class Translator

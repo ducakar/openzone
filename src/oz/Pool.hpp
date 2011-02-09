@@ -157,7 +157,7 @@ namespace oz
       void dealloc( void* ptr )
       {
 #ifdef OZ_POOL_ALLOC
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         Slot* slot = reinterpret_cast<Slot*>( ptr );
 
@@ -200,7 +200,7 @@ namespace oz
        */
       void free()
       {
-        assert( count == 0 );
+        hard_assert( count == 0 );
 
         Block* block = firstBlock;
 

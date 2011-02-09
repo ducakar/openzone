@@ -227,7 +227,7 @@ namespace oz
     while( ( file = readdir( dir ) ) != null ) {
       String name = file->d_name;
 
-      assert( !name.isEmpty() );
+      hard_assert( !name.isEmpty() );
 
       if( name[0] == '.' || file->d_type != DT_DIR ) {
         continue;

@@ -140,7 +140,7 @@ namespace oz
     // default inventory
     char buffer[] = "inventoryItem  ";
     for( int i = 0; i < INVENTORY_ITEMS; ++i ) {
-      assert( i < 100 );
+      hard_assert( i < 100 );
 
       buffer[ sizeof buffer - 3 ] = char( '0' + ( i / 10 ) );
       buffer[ sizeof buffer - 2 ] = char( '0' + ( i % 10 ) );
@@ -166,10 +166,9 @@ namespace oz
   {
     Bot* obj = new Bot();
 
-    assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
+    hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
     obj->p        = pos;
-    obj->r        = !dim;
     obj->dim      = dim;
 
     obj->h        = 0.0f;
@@ -195,7 +194,7 @@ namespace oz
       int index = synapse.addObject( inventoryItems[i], Point3::ORIGIN );
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] );
 
-      assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
+      hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
       if( weaponItem == i ) {
         obj->weaponItem = item->index;

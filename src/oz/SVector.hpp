@@ -121,7 +121,7 @@ namespace oz
        */
       SVector& operator = ( const SVector& v )
       {
-        assert( &v != this );
+        hard_assert( &v != this );
 
         aCopy( data, v.data, v.count );
         count = v.count;
@@ -231,7 +231,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& operator [] ( int i ) const
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i];
       }
@@ -243,7 +243,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& operator [] ( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i];
       }
@@ -254,7 +254,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& first() const
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[0];
       }
@@ -265,7 +265,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& first()
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[0];
       }
@@ -276,7 +276,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& last() const
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[count - 1];
       }
@@ -287,7 +287,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& last()
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[count - 1];
       }
@@ -317,7 +317,7 @@ namespace oz
        */
       void add()
       {
-        assert( count < SIZE );
+        hard_assert( count < SIZE );
 
         new( data + count ) Type;
         ++count;
@@ -329,7 +329,7 @@ namespace oz
        */
       void add( const Type& e )
       {
-        assert( count < SIZE );
+        hard_assert( count < SIZE );
 
         new( data + count ) Type( e );
         ++count;
@@ -344,7 +344,7 @@ namespace oz
       {
         int newCount = count + arrayCount;
 
-        assert( SIZE >= newCount );
+        hard_assert( SIZE >= newCount );
 
         for( int i = 0; i < arrayCount; ++i ) {
           aConstruct( data + count, array, arrayCount );
@@ -363,7 +363,7 @@ namespace oz
         int i = aIndex( data, e, count );
 
         if( i == -1 ) {
-          assert( count < SIZE );
+          hard_assert( count < SIZE );
 
           new( data + count ) Type( e );
           i = count;
@@ -380,8 +380,8 @@ namespace oz
        */
       void insert( int i, const Type& e )
       {
-        assert( uint( i ) <= uint( count ) );
-        assert( count < SIZE );
+        hard_assert( uint( i ) <= uint( count ) );
+        hard_assert( count < SIZE );
 
         if( i == count ) {
           new( data + count ) Type( e );
@@ -399,7 +399,7 @@ namespace oz
        */
       void remove()
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         --count;
         data[count].~Type();
@@ -412,7 +412,7 @@ namespace oz
        */
       void remove( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         --count;
         aCopy( data + i, data + i + 1, count - i );
@@ -426,7 +426,7 @@ namespace oz
        */
       void removeUO( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         --count;
         if( i != count ) {
@@ -478,7 +478,7 @@ namespace oz
        */
       void pushFirst( const Type& e )
       {
-        assert( count < SIZE );
+        hard_assert( count < SIZE );
 
         if( count == 0 ) {
           new( data + 0 ) Type( e );
@@ -498,7 +498,7 @@ namespace oz
        */
       void pushLast( const Type& e )
       {
-        assert( count < SIZE );
+        hard_assert( count < SIZE );
 
         new( data + count ) Type( e );
         ++count;
@@ -525,7 +525,7 @@ namespace oz
        */
       Type popLast()
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         --count;
         Type e = data[count];

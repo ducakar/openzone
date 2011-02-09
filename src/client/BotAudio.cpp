@@ -25,7 +25,7 @@ namespace client
 
   Audio* BotAudio::create( const Object* obj )
   {
-    assert( obj->flags & Object::BOT_BIT );
+    hard_assert( obj->flags & Object::BOT_BIT );
 
     return new BotAudio( obj );
   }
@@ -46,10 +46,10 @@ namespace client
 
     // events
     foreach( event, bot->events.citer() ) {
-      assert( event->id < ObjectClass::AUDIO_SAMPLES );
+      hard_assert( event->id < ObjectClass::AUDIO_SAMPLES );
 
       if( event->id >= 0 && samples[event->id] != -1 ) {
-        assert( 0.0f <= event->intensity );
+        hard_assert( 0.0f <= event->intensity );
 
         playSound( samples[event->id], event->intensity, obj );
       }

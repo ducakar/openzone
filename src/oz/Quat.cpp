@@ -13,7 +13,16 @@
 namespace oz
 {
 
+#ifdef OZ_SIMD
+
   const Quat Quat::ZERO = Quat( 0.0f, 0.0f, 0.0f, 0.0f );
   const Quat Quat::ID   = Quat( 0.0f, 0.0f, 0.0f, 1.0f );
+
+#else
+
+  const Quat Quat::ZERO = Quat( 0.0f, 0.0f, 0.0f, 0.0f );
+  const Quat Quat::ID   = Quat( 0.0f, 0.0f, 0.0f, 1.0f );
+
+#endif
 
 }

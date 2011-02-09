@@ -311,7 +311,7 @@ namespace oz
         sDyn->momentum.z = momentum.z;
       }
       else { // hit.normal.z == 1.0f
-        assert( hit.normal.z == 1.0f );
+        hard_assert( hit.normal.z == 1.0f );
 
         sDyn->damage( obj->mass * WEIGHT_FACTOR );
 
@@ -445,7 +445,7 @@ namespace oz
   {
     part = part_;
 
-    assert( part->cell != null );
+    hard_assert( part->cell != null );
 
     part->velocity.z += G_VELOCITY;
     part->lifeTime -= Timer::TICK_TIME;
@@ -458,8 +458,8 @@ namespace oz
   {
     obj = obj_;
 
-    assert( obj->cell != null );
-    assert( !( obj->flags & Object::ON_FLOOR_BIT ) || ( obj->lower == -1 ) );
+    hard_assert( obj->cell != null );
+    hard_assert( !( obj->flags & Object::ON_FLOOR_BIT ) || ( obj->lower == -1 ) );
 
     obj->flags &= ~( Object::HIT_BIT | Object::FRICTING_BIT | Object::UPPER_BIT );
 
@@ -489,7 +489,7 @@ namespace oz
         obj->velocity = ( obj->p - oldPos ) / Timer::TICK_TIME;
       }
       else {
-        assert( obj->momentum == Vec3::ZERO );
+        hard_assert( obj->momentum == Vec3::ZERO );
 
         obj->flags |= Object::DISABLED_BIT;
         obj->velocity = Vec3::ZERO;

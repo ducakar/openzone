@@ -79,7 +79,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           CIterator& operator ++ ()
           {
-            assert( B::elem != null );
+            hard_assert( B::elem != null );
 
             B::elem = B::elem->next[INDEX];
             return *this;
@@ -119,7 +119,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           Iterator& operator ++ ()
           {
-            assert( B::elem != null );
+            hard_assert( B::elem != null );
 
             B::elem = B::elem->next[INDEX];
             return *this;
@@ -308,7 +308,7 @@ namespace oz
        */
       bool contains( const Type* e ) const
       {
-        assert( e != null );
+        hard_assert( e != null );
 
         Type* p = firstElem;
 
@@ -324,7 +324,7 @@ namespace oz
        */
       void add( Type* e )
       {
-        assert( e != null );
+        hard_assert( e != null );
 
         e->next[INDEX] = firstElem;
         firstElem = e;
@@ -337,8 +337,8 @@ namespace oz
        */
       void insertAfter( Type* e, Type* p )
       {
-        assert( e != null );
-        assert( p != null );
+        hard_assert( e != null );
+        hard_assert( p != null );
 
         e->next[INDEX] = p->next[INDEX];
         p->next[INDEX] = e;
@@ -352,7 +352,7 @@ namespace oz
        */
       void remove( Type* e, Type* prev )
       {
-        assert( prev == null || prev->next[INDEX] == e );
+        hard_assert( prev == null || prev->next[INDEX] == e );
 
         if( prev == null ) {
           firstElem = e->next[INDEX];
@@ -368,7 +368,7 @@ namespace oz
        */
       void pushFirst( Type* e )
       {
-        assert( e != null );
+        hard_assert( e != null );
 
         e->next[INDEX] = firstElem;
         firstElem = e;
@@ -380,7 +380,7 @@ namespace oz
        */
       Type* popFirst()
       {
-        assert( firstElem != null );
+        hard_assert( firstElem != null );
 
         Type* p = firstElem;
 

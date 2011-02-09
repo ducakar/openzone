@@ -16,24 +16,24 @@ namespace oz
 namespace client
 {
 
-  const float Colours::BLACK[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-  const float Colours::WHITE[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+  const Quat Colours::BLACK = Quat( 0.0f, 0.0f, 0.0f, 1.0f );
+  const Quat Colours::WHITE = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
 
-  const float Colours::ENTITY_AABB[] = { 1.00f, 0.20f, 0.50f, 0.30f };
-  const float Colours::STRUCTURE_AABB[] = { 0.20f, 0.50f, 1.00f, 0.30f };
-  const float Colours::CLIP_AABB[] = { 0.50f, 1.00f, 0.20f, 0.30f };
-  const float Colours::NOCLIP_AABB[] = { 0.70f, 0.80f, 0.90f, 0.30f };
-  const float Colours::TAG[] = { -0.60f, 0.80f, 1.00f, 1.00f };
+  const Quat Colours::ENTITY_AABB = Quat( 1.00f, 0.20f, 0.50f, 0.30f );
+  const Quat Colours::STRUCTURE_AABB = Quat( 0.20f, 0.50f, 1.00f, 0.30f );
+  const Quat Colours::CLIP_AABB = Quat( 0.50f, 1.00f, 0.20f, 0.30f );
+  const Quat Colours::NOCLIP_AABB = Quat( 0.70f, 0.80f, 0.90f, 0.30f );
+  const Quat Colours::TAG = Quat( -0.60f, 0.80f, 1.00f, 1.00f );
 
-  const float Colours::GLOBAL_AMBIENT[] = { 0.20f, 0.20f, 0.20f, 1.00f };
+  const Quat Colours::GLOBAL_AMBIENT = Quat( 0.20f, 0.20f, 0.20f, 1.00f );
 
-  float Colours::diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-  float Colours::ambient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-  float Colours::sky[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-  float Colours::water[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+  Quat Colours::diffuse = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+  Quat Colours::ambient = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+  Quat Colours::sky = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+  Quat Colours::water = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
 
-  float Colours::waterBlend1[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-  float Colours::waterBlend2[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+  Quat Colours::waterBlend1 = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+  Quat Colours::waterBlend2 = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
 
 }
 }

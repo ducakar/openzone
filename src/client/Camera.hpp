@@ -27,7 +27,7 @@ namespace client
   {
     public:
 
-      enum State
+      enum class State
       {
         NONE,
         FREECAM,
@@ -109,7 +109,7 @@ namespace client
         bot    = bot_ == null ? -1 : bot_->index;
         botObj = bot_;
 
-        assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
+        hard_assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
       }
 
       void move( const Point3& pos )

@@ -91,10 +91,9 @@ namespace oz
   {
     Dynamic* obj = new Dynamic();
 
-    assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
+    hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
     obj->p        = pos;
-    obj->r        = !dim;
     obj->dim      = dim;
     obj->h        = 0.0f;
 
@@ -114,7 +113,6 @@ namespace oz
   {
     Dynamic* obj = new Dynamic();
 
-    obj->r      = !dim;
     obj->dim    = dim;
 
     obj->index  = index;

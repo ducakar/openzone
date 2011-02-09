@@ -26,7 +26,7 @@ namespace client
 
   Model* MD2Model::create( const Object* obj )
   {
-    assert( obj->flags & Object::BOT_BIT );
+    hard_assert( obj->flags & Object::BOT_BIT );
 
     const Bot* bot = static_cast<const Bot*>( obj );
     MD2Model* model = new MD2Model();
@@ -48,9 +48,11 @@ namespace client
     context.releaseMD2( clazz->modelName );
   }
 
-  void MD2Model::setAnim( int type )
+  void MD2Model::setAnim( Anim type_ )
   {
-    anim.type       = type;
+    int type = int( type_ );
+
+    anim.type       = type_;
     anim.repeat     = MD2::animList[type].repeat;
 
     anim.startFrame = MD2::animList[type].firstFrame;

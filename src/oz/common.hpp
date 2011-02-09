@@ -38,11 +38,6 @@
 #include <cstdarg>
 
 /*
- * assert macro
- */
-#include <cassert>
-
-/*
  * Standard exception definitions (usually included via <new>, but just for sure)
  */
 #include <exception>
@@ -73,20 +68,35 @@ namespace oz
 
   /**
    * \def soft_assert
-   * Like assert, but raises SIGTRAP with a dummy handler (like DebugBreak in MSVC).
+   * Like assert, but raises SIGTRAP with a dummy handler (like DebugBreak in MSVC) and prints
+   * stack trace.
+   */
+
+  /**
+   * \def hard_assert
+   * Like assert, but also prints stack trace.
    */
 #ifdef NDEBUG
+
+# define hard_assert( cond ) \
+  static_cast<void>( 0 )
 
 # define soft_assert( cond ) \
   static_cast<void>( 0 )
 
 #else
 
+# define hard_assert( cond ) \
+  ( ( cond ) ? \
+      static_cast<void>( 0 ) : \
+      oz::_hardAssert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
+
 # define soft_assert( cond ) \
   ( ( cond ) ? \
       static_cast<void>( 0 ) : \
       oz::_softAssert( #cond, __FILE__, __LINE__, __PRETTY_FUNCTION__ ) )
 
+  void _hardAssert( const char* message, const char* file, int line, const char* function );
   void _softAssert( const char* message, const char* file, int line, const char* function );
 
 #endif
@@ -269,7 +279,7 @@ namespace oz
   OZ_ALWAYS_INLINE
   inline const Type& bound( const Type& c, const Type& a, const Type& b )
   {
-    assert( !( b < a ) );
+    hard_assert( !( b < a ) );
 
     return c < a ? a : ( b < c ? b : c );
   }
@@ -286,7 +296,7 @@ namespace oz
   OZ_ALWAYS_INLINE
   inline Type& bound( Type& c, Type& a, Type& b )
   {
-    assert( !( b < a ) );
+    hard_assert( !( b < a ) );
 
     return c < a ? a : ( b < c ? b : c );
   }

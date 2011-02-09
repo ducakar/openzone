@@ -22,6 +22,7 @@ add_library( oz STATIC
   Math.cpp
   Math.hpp
   Pair.hpp
+  Plane.hpp
   Point3.cpp
   Point3.hpp
   Pool.hpp

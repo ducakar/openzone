@@ -30,7 +30,7 @@ namespace oz
 
   void Weapon::onUse( Bot* user )
   {
-    assert( parent == -1 || parent == user->index );
+    hard_assert( parent == -1 || parent == user->index );
 
     if( parent == user->index ) {
       user->weaponItem = user->weaponItem == index  ? -1 : index;
@@ -48,7 +48,7 @@ namespace oz
 
   void Weapon::trigger( Bot* user )
   {
-    assert( user != null );
+    hard_assert( user != null );
 
     if( shotTime == 0.0f ) {
       const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );

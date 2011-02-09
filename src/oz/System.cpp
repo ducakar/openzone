@@ -1,5 +1,5 @@
 /*
- *  System.hpp
+ *  System.cpp
  *
  *  Class for generating stack trace for the current function call.
  *
@@ -16,12 +16,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-
-#ifdef OZ_UNIX
-# include <unistd.h>
-# include <cxxabi.h>
-# include <execinfo.h>
-#endif
+#include <unistd.h>
+#include <cxxabi.h>
+#include <execinfo.h>
 
 // prevent old-style cast warning due to a bug in <bits/signum.h>
 #ifdef __GNUC__
@@ -76,43 +73,13 @@ namespace oz
 
   void System::signalHandler( int signum )
   {
-    signal( SIGINT,  SIG_DFL );
-    signal( SIGQUIT, SIG_DFL );
-    signal( SIGILL,  SIG_DFL );
-    signal( SIGABRT, SIG_DFL );
-    signal( SIGFPE,  SIG_DFL );
-    signal( SIGSEGV, SIG_DFL );
-    signal( SIGTERM, SIG_DFL );
+    System::resetSignals();
 
     if( signum < 1 || signum > 31 ) {
       signum = 0;
     }
 
-    fprintf( stderr, "\nCaught signal %d %s (%s)\n",
-             signum, SIGNALS[signum][0], SIGNALS[signum][1] );
-
-    char* frames;
-    int nFrames = System::getStackTrace( &frames );
-    const char* entry = frames;
-
-    for( int i = 0; i < nFrames; ++i ) {
-      fprintf( stderr, "  %s\n", entry );
-      entry += strlen( entry ) + 1;
-    }
-
-    if( log.isFile() ) {
-      log.resetIndent();
-      log.println();
-      log.println( "Caught %s (%d, %s). Stack trace:",
-                  SIGNALS[signum][0], signum, SIGNALS[signum][1] );
-      log.indent();
-      log.printTrace( frames, nFrames );
-    }
-
-    fprintf( stderr, "Attach a debugger or send a fatal signal to kill ...\n" );
-    while( sleep( 1 ) == 0 );
-
-    abort();
+    abort( "Caught signal %d %s (%s)", signum, SIGNALS[signum][0], SIGNALS[signum][1] );
   }
 
   void System::catchSignals()
@@ -239,8 +206,10 @@ namespace oz
       size_t offsetLen    = strnlen( offset, size );
       size_t addressLen   = strnlen( address, size );
 
-      size = 1 + fileLen + 2 + addressLen;
-      size = demangledLen != 0 && offsetLen != 0 ? size + demangledLen + 3 + offsetLen : size;
+      size = fileLen + 2 + addressLen + 1;
+      size = demangledLen != 0 && offsetLen != 0 ?
+          size + 1 + demangledLen + 3 + offsetLen + 1 :
+          size;
 
       if( out + size > outEnd ) {
         free( demangleBuf );
@@ -289,6 +258,81 @@ namespace oz
     *bufferPtr = reinterpret_cast<char*>( realloc( frames, out - output ) );
     memcpy( *bufferPtr, output, out - output );
     return nFrames;
+  }
+
+  void System::trap()
+  {
+    signal( SIGTRAP, SIG_IGN );
+    raise( SIGTRAP );
+    signal( SIGTRAP, SIG_DFL );
+  }
+
+  void System::error( const char* msg, ... )
+  {
+    va_list ap;
+    va_start( ap, msg );
+
+    fflush( stdout );
+
+    fprintf( stderr, "\n" );
+    vfprintf( stderr, msg, ap );
+    fprintf( stderr, "\n" );
+
+    fflush( stderr );
+
+    if( log.isFile() ) {
+      log.printEnd( "\n" );
+      log.vprintRaw( msg, ap );
+      log.printEnd( "\n" );
+    }
+
+    va_end( ap );
+  }
+
+  void System::abort( const char* msg, ... )
+  {
+    System::resetSignals();
+
+    va_list ap;
+    va_start( ap, msg );
+
+    fflush( stdout );
+
+    fprintf( stderr, "\n" );
+    vfprintf( stderr, msg, ap );
+    fprintf( stderr, "\n" );
+
+    char* frames;
+    int nFrames = System::getStackTrace( &frames );
+    const char* entry = frames;
+
+    for( int i = 0; i < nFrames; ++i ) {
+      fprintf( stderr, "  %s\n", entry );
+      entry += strlen( entry ) + 1;
+    }
+
+    fflush( stderr );
+
+    if( log.isFile() ) {
+      log.printEnd();
+      log.vprintRaw( msg, ap );
+      log.printEnd( "\n" );
+
+      log.resetIndent();
+      log.indent();
+      log.printTrace( frames, nFrames );
+      log.unindent();
+    }
+
+    va_end( ap );
+
+    free( frames );
+
+    fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
+    fflush( stderr );
+    while( sleep( 1 ) == 0 );
+
+    ::abort();
   }
 
 #endif

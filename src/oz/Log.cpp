@@ -61,6 +61,15 @@ namespace oz
     return stream != stdout;
   }
 
+  void Log::vprintRaw( const char* s, va_list ap ) const
+  {
+    FILE* f = reinterpret_cast<FILE*>( stream );
+
+    vfprintf( f, s, ap );
+
+    fflush( f );
+  }
+
   void Log::printRaw( const char* s, ... ) const
   {
     FILE* f = reinterpret_cast<FILE*>( stream );

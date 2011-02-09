@@ -131,7 +131,7 @@ namespace oz
            */
           CIterator& operator ++ ()
           {
-            assert( B::elem != null );
+            hard_assert( B::elem != null );
 
             if( B::elem->next[0] != null ) {
               B::elem = B::elem->next[0];
@@ -271,7 +271,7 @@ namespace oz
            */
           Iterator& operator ++ ()
           {
-            assert( B::elem != null );
+            hard_assert( B::elem != null );
 
             if( B::elem->next[0] != null ) {
               B::elem = B::elem->next[0];
@@ -399,7 +399,7 @@ namespace oz
        */
       HashIndex& operator = ( const HashIndex& t )
       {
-        assert( &t != this );
+        hard_assert( &t != this );
 
         for( int i = 0; i < SIZE; ++i ) {
           freeChain( data[i] );
@@ -582,7 +582,7 @@ namespace oz
           }
         }
 
-        assert( false );
+        hard_assert( false );
 
         return data[0].value;
       }
@@ -607,7 +607,7 @@ namespace oz
           }
         }
 
-        assert( false );
+        hard_assert( false );
 
         return data[0].value;
       }
@@ -620,7 +620,7 @@ namespace oz
        */
       Type* add( uint key, const Type& value = Type() )
       {
-        assert( !contains( key ) );
+        hard_assert( !contains( key ) );
 
         int  i = key % SIZE;
         Elem* elem = new( pool ) Elem( key, value, data[i] );
@@ -656,7 +656,7 @@ namespace oz
           }
         }
 
-        assert( false );
+        hard_assert( false );
       }
 
       /**
@@ -690,7 +690,7 @@ namespace oz
        */
       void dealloc()
       {
-        assert( count == 0 );
+        hard_assert( count == 0 );
 
         pool.free();
       }

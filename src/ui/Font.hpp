@@ -21,21 +21,20 @@ namespace client
 namespace ui
 {
 
-  enum FontType
-  {
-    MONO,
-    SANS,
-    TITLE
-  };
-
   class Font
   {
     friend class Area;
-
     friend void init( int screenX, int screenY );
     friend void free();
 
     public:
+
+      enum class Type
+      {
+        MONO,
+        SANS,
+        TITLE
+      };
 
       TTF_Font* monoFont;
       TTF_Font* sansFont;

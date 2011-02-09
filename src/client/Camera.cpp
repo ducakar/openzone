@@ -62,15 +62,15 @@ namespace client
 
     String sDefaultState = config.getSet( "camera.defaultState", "FREECAM" );
     if( sDefaultState.equals( "FREECAM" ) ) {
-      defaultState = FREECAM;
+      defaultState = State::FREECAM;
     }
     else if( sDefaultState.equals( "STRATEGIC" ) ) {
-      defaultState = STRATEGIC;
+      defaultState = State::STRATEGIC;
     }
     else {
       log.println( "WARNING: invalid camera enum %s, must be euther FREECAM or STRATEGIC",
                    sDefaultState.cstr() );
-      defaultState = FREECAM;
+      defaultState = State::FREECAM;
     }
 
     p            = Point3::ORIGIN;
@@ -96,7 +96,7 @@ namespace client
     strategicProxy.init();
     botProxy.init();
 
-    state        = NONE;
+    state        = State::NONE;
     newState     = defaultState;
   }
 
@@ -127,20 +127,20 @@ namespace client
 
     if( newState != state ) {
       switch( newState ) {
-        case FREECAM: {
+        case State::FREECAM: {
           proxy = &freeCamProxy;
           break;
         }
-        case STRATEGIC: {
+        case State::STRATEGIC: {
           proxy = &strategicProxy;
           break;
         }
-        case BOT: {
+        case State::BOT: {
           proxy = &botProxy;
           break;
         }
-        case NONE: {
-          assert( false );
+        case State::NONE: {
+          hard_assert( false );
           break;
         }
       }

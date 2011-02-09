@@ -31,6 +31,8 @@ namespace oz
 
     public:
 
+      explicit System() = delete;
+
       /**
        * Set signal handlers to catch critical signals, print information, stack trace and wait
        * for a debugger. SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV, SIGTERM are caught.
@@ -51,6 +53,25 @@ namespace oz
        * @return number of frames
        */
       static int getStackTrace( char** bufferPtr );
+
+      /**
+       * Raise trap signal (to trigger breakpoint).
+       */
+      static void trap();
+
+      /**
+       * Print given error message.
+       * Everything is printed to stderr and log file, if log target is a file.
+       * @param msg
+       */
+      static void error( const char* msg, ... );
+
+      /**
+       * Crash with given message, stack trace and wait for a debugger or fatal signal.
+       * Everything is printed to stderr and log file, if log target is a file.
+       * @param msg
+       */
+      static void abort( const char* msg, ... );
 
   };
 

@@ -283,7 +283,7 @@ namespace oz
        */
       Map& operator = ( const Map& m )
       {
-        assert( &m != this );
+        hard_assert( &m != this );
 
         aDestruct( data, count );
 
@@ -380,7 +380,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Key& operator [] ( int i ) const
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i].key;
       }
@@ -392,7 +392,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Key& operator [] ( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i].key;
       }
@@ -404,7 +404,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Value& value( int i ) const
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i].value;
       }
@@ -416,7 +416,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Value& value( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         return data[i].value;
       }
@@ -427,7 +427,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Key& first() const
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[0].key;
       }
@@ -438,7 +438,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Key& last() const
       {
-        assert( count != 0 );
+        hard_assert( count != 0 );
 
         return data[count - 1].key;
       }
@@ -485,7 +485,7 @@ namespace oz
       {
         int i = aBisectFind( data, key, count );
 
-        assert( i != -1 );
+        hard_assert( i != -1 );
 
         return data[i].value;
       }
@@ -500,7 +500,7 @@ namespace oz
       {
         int i = aBisectFind( data, key, count );
 
-        assert( i != -1 );
+        hard_assert( i != -1 );
 
         return data[i].value;
       }
@@ -512,7 +512,7 @@ namespace oz
        */
       int add( const Key& key, const Value& value = Value() )
       {
-        assert( !contains( key ) );
+        hard_assert( !contains( key ) );
 
         int i = aBisectPosition( data, key, count );
         insert( i, key, value );
@@ -542,7 +542,7 @@ namespace oz
        */
       void insert( int i, const Key& k, const Value& v = Value() )
       {
-        assert( uint( i ) <= uint( count ) );
+        hard_assert( uint( i ) <= uint( count ) );
 
         ensureCapacity();
 
@@ -563,7 +563,7 @@ namespace oz
        */
       void remove( int i )
       {
-        assert( uint( i ) < uint( count ) );
+        hard_assert( uint( i ) < uint( count ) );
 
         --count;
         aCopy( data + i, data + i + 1, count - i );
@@ -612,7 +612,7 @@ namespace oz
        */
       void alloc( int initSize )
       {
-        assert( size == 0 && initSize > 0 );
+        hard_assert( size == 0 && initSize > 0 );
 
         data = Alloc::alloc<Elem>( initSize );
         size = initSize;
@@ -624,7 +624,7 @@ namespace oz
        */
       void dealloc()
       {
-        assert( count == 0 );
+        hard_assert( count == 0 );
 
         Alloc::dealloc( data );
 

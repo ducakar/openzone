@@ -51,8 +51,8 @@ namespace nirvana
 
   void LuaMind::update()
   {
-    assert( orbis.objects[bot] != null );
-    assert( orbis.objects[bot]->flags & Object::BOT_BIT );
+    hard_assert( orbis.objects[bot] != null );
+    hard_assert( orbis.objects[bot]->flags & Object::BOT_BIT );
 
     Bot* bot = static_cast<Bot*>( orbis.objects[this->bot] );
 

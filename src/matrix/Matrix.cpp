@@ -182,10 +182,10 @@ namespace oz
     synapse.addObject( "BigCrate", Point3( 50, -55, 38 ) );
     synapse.addObject( "BigCrate", Point3( 50, -55, 40 ) );
 
-    synapse.addStruct( "castle", Point3( 57, -33, 43 ), Struct::R0 );
-    synapse.addStruct( "pool", Point3( 50, -60, 37 ), Struct::R0 );
-    synapse.addStruct( "test", Point3( 60, -60, 38 ), Struct::R0 );
-    synapse.addStruct( "door", Point3( 60, -60, 40 ), Struct::R270 );
+    synapse.addStruct( "castle", Point3( 57, -33, 43 ), Struct::Rotation::R0 );
+    synapse.addStruct( "pool", Point3( 50, -60, 37 ), Struct::Rotation::R0 );
+    synapse.addStruct( "test", Point3( 60, -60, 38 ), Struct::Rotation::R0 );
+    synapse.addStruct( "door", Point3( 60, -60, 40 ), Struct::Rotation::R270 );
 
     synapse.addObject( "SmallCrate", Point3( 52, -61, 40 ) );
     synapse.addObject( "SmallCrate", Point3( 52, -61, 41 ) );
@@ -241,7 +241,7 @@ namespace oz
         Dynamic* dyn = static_cast<Dynamic*>( obj );
 
         if( dyn->cell == null ) {
-          assert( dyn->parent != -1 );
+          hard_assert( dyn->parent != -1 );
 
           // remove if its container has been removed
           if( orbis.objects[dyn->parent] == null ) {

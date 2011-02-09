@@ -70,7 +70,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       CIterator& operator ++ ()
       {
-        assert( B::elem != past );
+        hard_assert( B::elem != past );
 
         ++B::elem;
         return *this;
@@ -134,7 +134,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Iterator& operator ++ ()
       {
-        assert( B::elem != past );
+        hard_assert( B::elem != past );
 
         ++B::elem;
         return *this;
@@ -228,7 +228,7 @@ namespace oz
   template <typename Type>
   inline void aCopy( Type* aDest, const Type* aSrc, int count )
   {
-    assert( aDest != aSrc );
+    hard_assert( aDest != aSrc );
 
     for( int i = 0; i < count; ++i ) {
       aDest[i] = aSrc[i];
@@ -245,7 +245,7 @@ namespace oz
   template <typename Type>
   inline void aReverseCopy( Type* aDest, const Type* aSrc, int count )
   {
-    assert( aDest != aSrc );
+    hard_assert( aDest != aSrc );
 
     for( int i = count - 1; i >= 0; --i ) {
       aDest[i] = aSrc[i];
@@ -360,7 +360,7 @@ namespace oz
   template <typename Type>
   inline void aRemove( Type* aDest, int index, int count )
   {
-    assert( uint( index ) < uint( count ) );
+    hard_assert( uint( index ) < uint( count ) );
 
     for( int i = index + 1; i < count; ++i ) {
       aDest[i - 1] = aDest[i];
@@ -493,7 +493,7 @@ namespace oz
   template <typename Type, typename Key>
   inline int aBisectFind( Type* aSrc, const Key& key, int count )
   {
-    assert( count >= 0 );
+    hard_assert( count >= 0 );
 
     if( count == 0 ) {
       return -1;
@@ -531,7 +531,7 @@ namespace oz
   template <typename Type, typename Key>
   inline int aBisectPosition( Type* aSrc, const Key& key, int count )
   {
-    assert( count >= 0 );
+    hard_assert( count >= 0 );
 
     int a = -1;
     int b = count;

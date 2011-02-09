@@ -116,7 +116,7 @@ namespace client
     alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
     alSourcePlay( musicSource );
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     log.printEnd( " OK" );
     return true;
@@ -149,12 +149,12 @@ namespace client
       }
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
   }
 
   void Sound::updateMusic()
   {
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     if( !isMusicPlaying ) {
       return;
@@ -192,7 +192,7 @@ namespace client
       return false;
     }
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     DArray<String> extensions;
     String sExtensions = alGetString( AL_EXTENSIONS );
@@ -225,21 +225,21 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     return true;
   }
 
   void Sound::free()
   {
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     log.print( "Shutting down SoundManager ..." );
 
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     unloadMusic();
-    assert( alGetError() == AL_NO_ERROR );
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     alutExit();
     log.printEnd( " OK" );

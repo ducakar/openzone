@@ -20,8 +20,11 @@ void foo();
 
 void foo()
 {
-  int* a = null;
-  ++*a;
+  printf("a");
+  soft_assert( 0 );
+  int* a = new int;
+  printf("a");
+  delete[] a;
 }
 
 int main( int, char** )
