@@ -24,7 +24,7 @@ debrisColourSpread "0.3"
 modelType "MD2"
 modelName "bauul"
 
-audioType "Basic"
+audioType "Bot"
 audioType                       "Bot"
 audioSample00                   ""                              # create
 audioSample01                   ""                              # destroy

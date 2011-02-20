@@ -61,13 +61,13 @@ namespace oz
       OZ_ALWAYS_INLINE
       operator const float* () const
       {
-        return &x;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
       operator float* ()
       {
-        return &x;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
@@ -75,7 +75,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 4 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE
@@ -83,7 +83,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 4 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE
@@ -95,7 +95,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Quat operator * () const
       {
-        return Quat( float4( -x, -y, -z, w ) );
+        return Quat( i4 ^ int4( 0x80000000, 0x80000000, 0x80000000, 0x00000000 ) );
       }
 
       OZ_ALWAYS_INLINE
@@ -149,25 +149,37 @@ namespace oz
       OZ_ALWAYS_INLINE
       Quat operator + ( const Quat& q ) const
       {
-        return Quat( x + q.x, y + q.y, z + q.z, w + q.w );
+        return Quat( f4 + q.f4 );
       }
 
       OZ_ALWAYS_INLINE
       Quat operator - ( const Quat& q ) const
       {
-        return Quat( x - q.x, y - q.y, z - q.z, w - q.w );
+        return Quat( f4 - q.f4 );
       }
 
       OZ_ALWAYS_INLINE
       Quat operator * ( float k ) const
       {
-        return Quat( x * k, y * k, z * k, w * k );
+        return Quat( f4 * float4( k, k, k, k ) );
+      }
+
+      OZ_ALWAYS_INLINE
+      Quat operator * ( float4 k ) const
+      {
+        return Quat( f4 * k );
       }
 
       OZ_ALWAYS_INLINE
       friend Quat operator * ( float k, const Quat& q )
       {
-        return Quat( q.x * k, q.y * k, q.z * k, q.w * k );
+        return Quat( q.f4 * float4( k, k, k, k ) );
+      }
+
+      OZ_ALWAYS_INLINE
+      friend Quat operator * ( float4 k, const Quat& q )
+      {
+        return Quat( q.f4 * k );
       }
 
       OZ_ALWAYS_INLINE
@@ -175,37 +187,40 @@ namespace oz
       {
         hard_assert( k != 0.0f );
 
-        k = 1.0f / k;
-        return Quat( x * k, y * k, z * k, w * k );
+        return Quat( f4 / float4( k, k, k, k ) );
+      }
+
+      OZ_ALWAYS_INLINE
+      Quat operator / ( float4 k ) const
+      {
+        return Quat( f4 / k );
       }
 
       OZ_ALWAYS_INLINE
       Quat& operator += ( const Quat& q )
       {
-        x += q.x;
-        y += q.y;
-        z += q.z;
-        w += q.w;
+        f4 += q.f4;
         return *this;
       }
 
       OZ_ALWAYS_INLINE
       Quat& operator -= ( const Quat& q )
       {
-        x -= q.x;
-        y -= q.y;
-        z -= q.z;
-        w -= q.w;
+        f4 -= q.f4;
         return *this;
       }
 
       OZ_ALWAYS_INLINE
       Quat& operator *= ( float k )
       {
-        x *= k;
-        y *= k;
-        z *= k;
-        w *= k;
+        f4 *= float4( k, k, k, k );
+        return *this;
+      }
+
+      OZ_ALWAYS_INLINE
+      Quat& operator *= ( float4 k )
+      {
+        f4 *= k;
         return *this;
       }
 
@@ -214,11 +229,14 @@ namespace oz
       {
         hard_assert( k != 0.0f );
 
-        k = 1.0f / k;
-        x *= k;
-        y *= k;
-        z *= k;
-        w *= k;
+        f4 /= float4( k, k, k, k );
+        return *this;
+      }
+
+      OZ_ALWAYS_INLINE
+      Quat& operator /= ( float4 k )
+      {
+        f4 /= k;
         return *this;
       }
 
@@ -264,7 +282,7 @@ namespace oz
       {
         float s, c;
         Math::sincos( theta * 0.5f, &s, &c );
-        return Quat( s * axis.x, s * axis.y, s * axis.z, c );
+        return Quat( float4( s, s, s, s ) * axis.f4 + float4( 0.0f, 0.0f, 0.0f, c ) );
       }
 
       // make quaternion for rotation around x axis
@@ -272,7 +290,7 @@ namespace oz
       {
         float s, c;
         Math::sincos( theta * 0.5f, &s, &c );
-        return Quat( s, 0.0f, 0.0f, c );
+        return Quat( float4( s, 0.0f, 0.0f, c ) );
       }
 
       // make quaternion for rotation around y axis
@@ -280,7 +298,7 @@ namespace oz
       {
         float s, c;
         Math::sincos( theta * 0.5f, &s, &c );
-        return Quat( 0.0f, s, 0.0f, c );
+        return Quat( float4( 0.0f, s, 0.0f, c ) );
       }
 
       // make quaternion for rotation around z axis
@@ -288,7 +306,7 @@ namespace oz
       {
         float s, c;
         Math::sincos( theta * 0.5f, &s, &c );
-        return Quat( 0.0f, 0.0f, s, c );
+        return Quat( float4( 0.0f, 0.0f, s, c ) );
       }
 
       // rotZ ^ rotX ^ rotY
@@ -329,7 +347,7 @@ namespace oz
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Quat( float x_, float y_, float z_, float w_ ) : Vec3( x_, y_, z_), w( w_ )
+      explicit Quat( float x_, float y_, float z_, float w_ ) : Vec3( x_, y_, z_ ), w( w_ )
       {}
 
       OZ_ALWAYS_INLINE

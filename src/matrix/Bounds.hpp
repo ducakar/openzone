@@ -39,29 +39,26 @@ namespace oz
 
       Bounds& fromPointMove( const Point3& p, const Vec3& move, float eps = 0.0f )
       {
+        mins = p - 2.0f * Vec3( eps, eps, eps );
+        maxs = p + 2.0f * Vec3( eps, eps, eps );
+
         if( move.x < 0.0f ) {
-          mins.x = p.x - 2.0f * eps + move.x;
-          maxs.x = p.x + 2.0f * eps;
+          mins.x += move.x;
         }
         else {
-          mins.x = p.x - 2.0f * eps;
-          maxs.x = p.x + 2.0f * eps + move.x;
+          maxs.x += move.x;
         }
         if( move.y < 0.0f ) {
-          mins.y = p.y - 2.0f * eps + move.y;
-          maxs.y = p.y + 2.0f * eps;
+          mins.y += move.y;
         }
         else {
-          mins.y = p.y - 2.0f * eps;
-          maxs.y = p.y + 2.0f * eps + move.y;
+          maxs.y += move.y;
         }
         if( move.z < 0.0f ) {
-          mins.z = p.z - 2.0f * eps + move.z;
-          maxs.z = p.z + 2.0f * eps;
+          mins.z += move.z;
         }
         else {
-          mins.z = p.z - 2.0f * eps;
-          maxs.z = p.z + 2.0f * eps + move.z;
+          maxs.z += move.z;
         }
         return *this;
       }

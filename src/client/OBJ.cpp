@@ -475,7 +475,7 @@ namespace client
 
     size += int( 3                     * sizeof( int ) );
     size += int( faceVertices.length() * sizeof( Vertex ) );
-    size += int( indices.length()      * sizeof( uint ) );
+    size += int( indices.length()      * sizeof( ushort ) );
     size += int( segments.length()     * sizeof( Segment ) );
     size -= int( segments.length()     * sizeof( uint ) );
 
@@ -503,7 +503,7 @@ namespace client
       }
 
       for( int i = 0; i < indices.length(); ++i ) {
-        os.writeInt( indices[i] );
+        os.writeShort( ushort( indices[i] ) );
       }
 
       hard_assert( segments.length() == parts.length() );
@@ -580,18 +580,24 @@ namespace client
 
     segments.alloc( nSegments );
 
-    DArray<Vertex> vertices( nVertices );
-    DArray<uint> indices( nIndices );
+    Vertex* vertices = new Vertex[nVertices];
+    ushort* indices  = new ushort[nIndices];
 
     for( int i = 0; i < nVertices; ++i ) {
-      vertices[i].position = is.readPoint3();
-      vertices[i].normal = is.readVec3();
-      vertices[i].texCoord.u = is.readFloat();
-      vertices[i].texCoord.v = is.readFloat();
+      vertices[i].pos[0] = is.readFloat();
+      vertices[i].pos[1] = is.readFloat();
+      vertices[i].pos[2] = is.readFloat();
+
+      vertices[i].normal[0] = is.readFloat();
+      vertices[i].normal[1] = is.readFloat();
+      vertices[i].normal[2] = is.readFloat();
+
+      vertices[i].texCoord[0] = is.readFloat();
+      vertices[i].texCoord[1] = is.readFloat();
     }
 
     for( int i = 0; i < nIndices; ++i ) {
-      indices[i] = is.readInt();
+      indices[i] = is.readShort();
     }
 
     for( int i = 0; i < segments.length(); ++i ) {
@@ -606,16 +612,12 @@ namespace client
 
     hard_assert( !is.isAvailable() );
 
-    glGenBuffers( 1, &arrayBuffer );
-    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, GL_STATIC_DRAW );
+    arrayId = context.genArray( VAO_INDEXED | VAO_NORMAL_BIT | VAO_TEXCOORD0_BIT, GL_STATIC_DRAW,
+                                vertices, nVertices,
+                                indices, nIndices );
 
-    glGenBuffers( 1, &indexBuffer );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( uint ), indices, GL_STATIC_DRAW );
-
-    vertices.dealloc();
-    indices.dealloc();
+    delete[] vertices;
+    delete[] indices;
 
     isLoaded = true;
 
@@ -628,14 +630,13 @@ namespace client
 
   OBJ::~OBJ()
   {
-    glDeleteBuffers( 1, &arrayBuffer );
-    glDeleteBuffers( 1, &indexBuffer );
+    context.deleteArray( arrayId );
 
     log.print( "Unloading OBJ model '%s' ...", name.cstr() );
 
     for( int i = 0; i < segments.length(); ++i ) {
       if( segments[i].texId != GL_NONE ) {
-        context.freeTexture( segments[i].texId );
+        context.deleteTexture( segments[i].texId );
       }
     }
 
@@ -648,16 +649,7 @@ namespace client
   {
     bool isBlendEnabled = false;
 
-    glEnableClientState( GL_VERTEX_ARRAY );
-    glEnableClientState( GL_NORMAL_ARRAY );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
-
-    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ), OZ_VBO_OFFSETOF( 0, Vertex, position ) );
-    glNormalPointer( GL_FLOAT, sizeof( Vertex ), OZ_VBO_OFFSETOF( 0, Vertex, normal ) );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ), OZ_VBO_OFFSETOF( 0, Vertex, texCoord ) );
+    context.bindArray( arrayId );
 
     for( int i = 0; i < segments.length(); ++i ) {
       const Segment& segment = segments[i];
@@ -679,8 +671,7 @@ namespace client
         }
       }
 
-      glDrawElements( GL_TRIANGLE_STRIP, segments[i].nIndices, GL_UNSIGNED_INT,
-                      OZ_VBO_OFFSET( segments[i].firstIndex, uint ) );
+      context.drawIndexedArray( GL_TRIANGLE_STRIP, segments[i].firstIndex, segments[i].nIndices );
     }
 
     if( isBlendEnabled ) {
@@ -690,12 +681,7 @@ namespace client
     glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
     glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-    glDisableClientState( GL_NORMAL_ARRAY );
-    glDisableClientState( GL_VERTEX_ARRAY );
+    context.unbindArray();
   }
 
 }

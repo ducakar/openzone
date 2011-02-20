@@ -32,7 +32,7 @@ namespace oz
 
         public:
 
-          enum class State
+          enum State : int
           {
             CLOSED,
             OPENING,
@@ -62,7 +62,7 @@ namespace oz
 
       };
 
-      enum class Rotation
+      enum Rotation : int
       {
         R0,
         R90,

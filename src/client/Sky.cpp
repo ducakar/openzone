@@ -82,6 +82,14 @@ namespace client
 
     delete[] tempStars;
 
+    Vertex* vertices = new Vertex[MAX_STARS];
+    for( int i = 0; i < MAX_STARS; ++i ) {
+      vertices[i].set( stars[i] );
+    }
+
+    starArray = context.genArray( 0, GL_STATIC_DRAW, vertices, MAX_STARS );
+    delete[] vertices;
+
     sunTexId  = context.loadTexture( "sky/simplesun.png", false, GL_LINEAR, GL_LINEAR );
     moonTexId = context.loadTexture( "sky/moon18.png", false, GL_LINEAR, GL_LINEAR );
 
@@ -126,9 +134,10 @@ namespace client
 
   void Sky::unload()
   {
-    context.freeLists( sunList );
-    context.freeTexture( sunTexId );
-    context.freeTexture( moonTexId );
+    context.deleteLists( sunList );
+    context.deleteTexture( sunTexId );
+    context.deleteTexture( moonTexId );
+    context.deleteArray( starArray );
   }
 
   void Sky::update()
@@ -185,8 +194,7 @@ namespace client
     glMultMatrixf( transf );
     transf = ~transf;
 
-    glEnableClientState( GL_VERTEX_ARRAY );
-    glVertexPointer( 3, GL_FLOAT, 0, stars );
+    context.bindArray( starArray );
 
     Vec3 tz = transf.z;
     int start, end;
@@ -194,17 +202,17 @@ namespace client
       for( end = 1; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
       for( start = end + 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
 
-      glDrawArrays( GL_POINTS, 0, end );
-      glDrawArrays( GL_POINTS, start, MAX_STARS - start );
+      context.drawArray( GL_POINTS, 0, end );
+      context.drawArray( GL_POINTS, start, MAX_STARS - start );
     }
     else {
       for( start = 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
       for( end = start; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
 
-      glDrawArrays( GL_POINTS, start, end - start );
+      context.drawArray( GL_POINTS, start, end - start );
     }
 
-    glDisableClientState( GL_VERTEX_ARRAY );
+    context.unbindArray();
 
     glEnable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );

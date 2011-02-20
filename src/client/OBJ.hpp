@@ -26,13 +26,6 @@ namespace client
 
       static const int LINE_BUFFER_SIZE = 1024;
 
-      struct Vertex
-      {
-        Point3   position;
-        Vec3     normal;
-        TexCoord texCoord;
-      };
-
       struct Segment
       {
         Quat specular;
@@ -45,8 +38,7 @@ namespace client
 
       String          name;
 
-      uint            arrayBuffer;
-      uint            indexBuffer;
+      uint            arrayId;
       DArray<Segment> segments;
 
       static char* skipSpaces( char* pos );

@@ -138,6 +138,21 @@ namespace client
     return texNum;
   }
 
+  void Context::deleteSound( int id )
+  {
+    Resource<uint>& resource = sounds[id];
+
+    hard_assert( uint( id ) < uint( translator.sounds.length() ) );
+    hard_assert( resource.nUsers == -2 );
+
+    log.print( "Unloading sound '%s' ...", translator.sounds[id].name.cstr() );
+    alDeleteBuffers( 1, &resource.id );
+    resource.nUsers = -1;
+
+    hard_assert( alGetError() == AL_NO_ERROR );
+    log.printEnd( " OK" );
+  }
+
   uint Context::createTexture( const void* data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
   {
@@ -159,6 +174,60 @@ namespace client
       log.println( "Error creating normalmap texture from buffer" );
     }
     return texNum;
+  }
+
+  uint Context::loadTexture( const char* path, bool wrap, int magFilter, int minFilter )
+  {
+    log.print( "Loading texture from file '%s' ...", path );
+
+    SDL_Surface* image = IMG_Load( path );
+    if( image == null ) {
+      log.printEnd( " No such file" );
+      return 0;
+    }
+    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
+      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
+      return 0;
+    }
+    log.printEnd( " OK" );
+
+    int bytesPerPixel = image->format->BitsPerPixel / 8;
+    int texNum = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
+                                magFilter, minFilter );
+
+    SDL_FreeSurface( image );
+
+    return texNum;
+  }
+
+  uint Context::loadNormalmap( const char* path, const Vec3& lightNormal,
+                               bool wrap, int magFilter, int minFilter )
+  {
+    log.print( "Loading normalmap texture from file '%s' ...", path );
+
+    SDL_Surface* image = IMG_Load( path );
+    if( image == null ) {
+      log.printEnd( " No such file" );
+      return 0;
+    }
+    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
+      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
+      return 0;
+    }
+    log.printEnd( " OK" );
+
+    int bytesPerPixel = image->format->BitsPerPixel / 8;
+    int texNum = createNormalmap( image->pixels, lightNormal, image->w, image->h, bytesPerPixel,
+                                  wrap, magFilter, minFilter );
+
+    SDL_FreeSurface( image );
+    return texNum;
+  }
+
+  void Context::deleteTexture( uint id )
+  {
+    glDeleteTextures( 1, &id );
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   uint Context::requestTexture( int id, bool wrap, int magFilter, int minFilter )
@@ -249,60 +318,6 @@ namespace client
       hard_assert( glGetError() == GL_NO_ERROR );
       log.printEnd( " OK" );
     }
-  }
-
-  uint Context::loadTexture( const char* path, bool wrap, int magFilter, int minFilter )
-  {
-    log.print( "Loading texture from file '%s' ...", path );
-
-    SDL_Surface* image = IMG_Load( path );
-    if( image == null ) {
-      log.printEnd( " No such file" );
-      return 0;
-    }
-    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
-      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
-      return 0;
-    }
-    log.printEnd( " OK" );
-
-    int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
-                                magFilter, minFilter );
-
-    SDL_FreeSurface( image );
-
-    return texNum;
-  }
-
-  uint Context::loadNormalmap( const char* path, const Vec3& lightNormal,
-                               bool wrap, int magFilter, int minFilter )
-  {
-    log.print( "Loading normalmap texture from file '%s' ...", path );
-
-    SDL_Surface* image = IMG_Load( path );
-    if( image == null ) {
-      log.printEnd( " No such file" );
-      return 0;
-    }
-    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
-      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
-      return 0;
-    }
-    log.printEnd( " OK" );
-
-    int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createNormalmap( image->pixels, lightNormal, image->w, image->h, bytesPerPixel,
-                                  wrap, magFilter, minFilter );
-
-    SDL_FreeSurface( image );
-    return texNum;
-  }
-
-  void Context::freeTexture( uint id )
-  {
-    glDeleteTextures( 1, &id );
-    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   uint Context::requestSound( int id )
@@ -426,21 +441,6 @@ namespace client
     --resource.nUsers;
   }
 
-  void Context::freeSound( int id )
-  {
-    Resource<uint>& resource = sounds[id];
-
-    hard_assert( uint( id ) < uint( translator.sounds.length() ) );
-    hard_assert( resource.nUsers == -2 );
-
-    log.print( "Unloading sound '%s' ...", translator.sounds[id].name.cstr() );
-    alDeleteBuffers( 1, &resource.id );
-    resource.nUsers = -1;
-
-    hard_assert( alGetError() == AL_NO_ERROR );
-    log.printEnd( " OK" );
-  }
-
   BSP* Context::loadBSP( int id )
   {
     Resource<BSP*>& resource = bsps[id];
@@ -462,6 +462,100 @@ namespace client
     resource.nUsers = 0;
   }
 
+  uint Context::genArray( int flags, GLenum usage,
+                          const Vertex* vertices, int nVertices,
+                          const ushort* indices, int nIndices )
+  {
+    hard_assert( ( indices == null ) == ( nIndices == 0 ) );
+    hard_assert( ( indices == null ) == ( ( flags & VAO_INDEXED ) == 0 ) );
+
+    int  id  = vaos.add();
+    VAO& vao = vaos[id];
+
+    vao.flags = flags;
+
+    if( flags & VAO_INDEXED ) {
+      glGenBuffers( 2, vao.buffers );
+    }
+    else {
+      glGenBuffers( 1, vao.buffers );
+      vao.buffers[1] = 0;
+    }
+
+    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, usage );
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+    if( flags & VAO_INDEXED ) {
+      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vao.buffers[1] );
+      glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( ushort ), indices, usage );
+      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    }
+
+    return id;
+  }
+
+  void Context::deleteArray( uint id )
+  {
+    glDeleteBuffers( vaos[id].flags & VAO_INDEXED ? 2 : 1, vaos[id].buffers );
+    vaos.remove( id );
+  }
+
+  void Context::bindArray( uint id ) const
+  {
+    const VAO& vao = vaos[id];
+
+    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
+    if( vao.flags & VAO_INDEXED ) {
+      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vao.buffers[1] );
+    }
+
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
+                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+
+    if( vao.flags & VAO_NORMAL_BIT ) {
+      glEnableClientState( GL_NORMAL_ARRAY );
+      glNormalPointer( GL_FLOAT, sizeof( Vertex ),
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+    }
+    if( vao.flags & VAO_TEXCOORD0_BIT ) {
+      glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+      glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+    }
+  }
+
+  void Context::unbindArray()
+  {
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_NORMAL_ARRAY );
+
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+  }
+
+  void Context::setVertexFormat()
+  {
+    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
+                    reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+    glNormalPointer( GL_FLOAT, sizeof( Vertex ),
+                    reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                      reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+  }
+
+  void Context::drawArray( GLenum mode, int firstVertex, int nVertices ) const
+  {
+    glDrawArrays( mode, firstVertex, nVertices );
+  }
+
+  void Context::drawIndexedArray( GLenum mode, int firstIndex, int nIndices ) const
+  {
+    glDrawElements( mode, nIndices, GL_UNSIGNED_SHORT,
+                    reinterpret_cast<const ushort*>( 0 ) + firstIndex );
+  }
+
   uint Context::genList()
   {
     int index = lists.add();
@@ -478,7 +572,7 @@ namespace client
     return lists[index].base;
   }
 
-  void Context::freeLists( uint listId )
+  void Context::deleteLists( uint listId )
   {
     for( int i = 0; i < lists.length(); ++i ) {
       if( lists[i].base == listId ) {
@@ -635,24 +729,19 @@ namespace client
 
   void Context::drawModel( const Object* obj, const Model* parent )
   {
+    hard_assert( obj->flags & Object::MODEL_BIT );
+
     Model* const* value = models.find( obj->index );
 
     if( value == null ) {
-      if( obj->flags & Object::MODEL_BIT ) {
-        hard_assert( !obj->clazz->modelType.isEmpty() );
+      hard_assert( !obj->clazz->modelType.isEmpty() );
 
-        const Model::CreateFunc* createFunc = modelClasses.find( obj->clazz->modelType );
-        if( createFunc == null ) {
-          throw Exception( "Invalid Model" );
-        }
-
-        value = models.add( obj->index, ( *createFunc )( obj ) );
+      const Model::CreateFunc* createFunc = modelClasses.find( obj->clazz->modelType );
+      if( createFunc == null ) {
+        throw Exception( "Invalid Model" );
       }
-      else {
-        hard_assert( obj->clazz->modelType.isEmpty() );
 
-        value = models.add( obj->index, null );
-      }
+      value = models.add( obj->index, ( *createFunc )( obj ) );
     }
 
     Model* model = *value;
@@ -663,24 +752,19 @@ namespace client
 
   void Context::playAudio( const Object* obj, const Audio* parent )
   {
+    hard_assert( obj->flags & Object::AUDIO_BIT );
+
     Audio* const* value = audios.find( obj->index );
 
     if( value == null ) {
-      if( obj->flags & Object::AUDIO_BIT ) {
-        hard_assert( !obj->clazz->audioType.isEmpty() );
+      hard_assert( !obj->clazz->audioType.isEmpty() );
 
-        const Audio::CreateFunc* createFunc = audioClasses.find( obj->clazz->audioType );
-        if( createFunc == null ) {
-          throw Exception( "Invalid Audio" );
-        }
-
-        value = audios.add( obj->index, ( *createFunc )( obj ) );
+      const Audio::CreateFunc* createFunc = audioClasses.find( obj->clazz->audioType );
+      if( createFunc == null ) {
+        throw Exception( "Invalid Audio" );
       }
-      else {
-        hard_assert( obj->clazz->audioType.isEmpty() );
 
-        value = audios.add( obj->index, null );
-      }
+      value = audios.add( obj->index, ( *createFunc )( obj ) );
     }
 
     Audio* audio = *value;
@@ -778,6 +862,9 @@ namespace client
       md3s.exclude( i.key() );
     }
 
+    hard_assert( vaos.isEmpty() );
+
+    vaos.dealloc();
     lists.clear();
     lists.dealloc();
     objs.dealloc();

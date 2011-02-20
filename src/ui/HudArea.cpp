@@ -27,7 +27,7 @@ namespace ui
   HudArea::HudArea() : Area( camera.width, camera.height )
   {
     flags |= IGNORE_BIT;
-    setFont( Font::Type::TITLE );
+    setFont( Font::TITLE );
 
     crossTexId = context.loadTexture( "ui/crosshair.png", false, GL_LINEAR, GL_LINEAR );
     useTexId   = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
@@ -56,17 +56,17 @@ namespace ui
 
   HudArea::~HudArea()
   {
-    context.freeTexture( crossTexId );
-    context.freeTexture( useTexId );
-    context.freeTexture( mountTexId );
-    context.freeTexture( takeTexId );
-    context.freeTexture( liftTexId );
-    context.freeTexture( grabTexId );
+    context.deleteTexture( crossTexId );
+    context.deleteTexture( useTexId );
+    context.deleteTexture( mountTexId );
+    context.deleteTexture( takeTexId );
+    context.deleteTexture( liftTexId );
+    context.deleteTexture( grabTexId );
   }
 
   void HudArea::onDraw()
   {
-    if( camera.tagged != -1 && camera.state != Camera::State::STRATEGIC ) {
+    if( camera.tagged != -1 && camera.state != Camera::STRATEGIC ) {
       const Object* obj = camera.taggedObj;
       const ObjectClass* clazz = obj->clazz;
       float life = ( obj->flags & Object::BOT_BIT ) ?
@@ -218,7 +218,7 @@ namespace ui
 
       glDisable( GL_TEXTURE_2D );
     }
-    else if( camera.state != Camera::State::STRATEGIC ) {
+    else if( camera.state != Camera::STRATEGIC ) {
       glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
       glEnable( GL_TEXTURE_2D );
 

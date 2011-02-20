@@ -17,7 +17,7 @@
 namespace oz
 {
 
-  enum class Anim
+  enum Anim : int
   {
     STAND,
     RUN,

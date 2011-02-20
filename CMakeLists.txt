@@ -239,14 +239,14 @@ else( MSVC )
   set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wcast-qual -Wcast-align" )
   set( warnings "${warnings} -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor" )
   set( warnings "${warnings} -Wredundant-decls -Wmissing-declarations -Wdisabled-optimization" )
+  set( arch_flags "-msse3 -ffast-math" )
 
   if( CLANG )
     set( warnings "${warnings} -Wno-invalid-offsetof" )
   else( CLANG )
     set( warnings "${warnings} -Wlogical-op -Wconversion" )
+    set( arch_flags "${arch_flags} -mfpmath=sse" )
   endif( CLANG )
-
-  set( arch_flags "-msse3 -mfpmath=sse -ffast-math" )
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
   set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )

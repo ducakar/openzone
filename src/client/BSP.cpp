@@ -41,7 +41,7 @@ namespace client
     int length;
   };
 
-  enum QBSPLumpType
+  enum QBSPLumpType : int
   {
     QBSP_LUMP_ENTITIES = 0,
     QBSP_LUMP_TEXTURES,
@@ -360,7 +360,7 @@ namespace client
     }
 
     float scale = bspConfig.get( "scale", 0.01f );
-    float maxDim = bspConfig.get( "maxDim", Math::inf() );
+    float maxDim = bspConfig.get( "maxDim", Math::INF );
 
     if( Math::isNaN( scale ) ) {
       log.println( " Invalid config" );
@@ -1009,7 +1009,7 @@ namespace client
     delete[] texIds;
 
     for( int i = 0; i < nLightmaps; ++i ) {
-      context.freeTexture( lightmapIds[i] );
+      context.deleteTexture( lightmapIds[i] );
     }
     delete[] lightmapIds;
 

@@ -57,8 +57,8 @@ namespace ui
 
       int flags;
 
-      TTF_Font* currentFont;
-      SDL_Color fontColour;
+      TTF_Font*  currentFont;
+      SDL_Colour fontColour;
 
       // width of the last printed text
       int textWidth;

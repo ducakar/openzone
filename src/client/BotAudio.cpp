@@ -57,7 +57,9 @@ namespace client
 
     // inventory items' events
     foreach( item, bot->items.citer() ) {
-      if( orbis.objects[*item] != null ) {
+      const Object* obj = orbis.objects[*item];
+
+      if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {
         context.playAudio( orbis.objects[*item], this );
       }
     }

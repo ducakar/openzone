@@ -30,8 +30,7 @@ namespace client
       {
         Quat   diffuse;
         Quat   specular;
-        String texture0;
-        String texture1;
+        String texture[3];
 
         int    flags;
 
@@ -39,40 +38,43 @@ namespace client
         int    nElements;
       };
 
-      Vector<Mesh::Vertex> vertices;
-      Vector<uint>         elements;
-      Vector<Part>         parts;
+      Vector<Vertex> vertices;
+      Vector<ushort> elements;
+      Vector<Part>   parts;
 
-      Part                 part;
-      Mesh::Vertex         vertex;
+      Part           part;
+      Vertex         vert;
 
-      int                  flags;
-      int                  mode;
-      int                  vertNum;
+      int            flags;
+      int            mode;
+      int            vertNum;
 
     public:
 
-      void glNewMesh();
-      void glEndMesh();
+      void beginMesh();
+      void endMesh();
 
-      void glBeginMaterial();
-      void glEndMaterial();
+      void beginMaterial();
+      void endMaterial();
 
-      void glEnable( int cap );
-      void glMaterial( int face, int target, const float* params );
-      void glBindTexture( int unit, int target, const char* texture );
+      void enable( int cap );
+      void disable( int cap );
+      void material( int face, int target, const float* params );
+      void setTexture( int unit, int target, const char* texture );
 
-      void glBegin( int mode );
-      void glEnd();
+      void texCoord( float s, float t );
+      void texCoord( const float* v );
 
-      void glTexCoord( int target, float s, float t );
-      void glTexCoord( int target, const float* v );
+      void normal( float nx, float ny, float nz );
+      void normal( const float* v );
 
-      void glNormal( float nx, float ny, float nz );
-      void glNormal( const float* v );
+      void vertex( float x, float y, float z );
+      void vertex( const float* v );
 
-      void glVertex( float x, float y, float z );
-      void glVertex( const float* v );
+      void element( ushort index );
+
+      void begin( int mode );
+      void end();
 
       void writeMesh( OutputStream* stream ) const;
       void getMesh( Mesh* mesh ) const;

@@ -87,7 +87,7 @@ namespace client
 
     float inactiveTime = float( inactiveMillis )      * 0.001f;
     float droppedTime  = float( droppedMillis )       * 0.001f;
-    float activeTime   = allTime - inactiveTime;
+    float activeTime   = allTime - inactiveTime - droppedTime;
 
     int   frameDrops   = timer.ticks - timer.nFrames;
 
@@ -103,8 +103,8 @@ namespace client
     log.println( "Real main loop time      %.2f s",    allTime );
     log.println( "Active main loop time    %.2f s",    activeTime );
     log.println( "Inactive main loop time  %.2f s",    inactiveTime );
+    log.println( "Dropped main loop time   %.2f s",    droppedTime );
     log.println( "Game time                %.2f s",    timer.time );
-    log.println( "Dropped time             %.2f s",    droppedTime );
     log.println( "Ticks in active time     %d (%.2f Hz)",
                 timer.ticks, float( timer.ticks ) / activeTime );
     log.println( "Frames in active time    %d (%.2f Hz)",
@@ -181,11 +181,11 @@ namespace client
 
           if( errno == 0 && end != argv[i + 1] ) {
             isBenchmark = true;
+            ++i;
+            continue;
           }
         }
-        else {
-          printUsage();
-        }
+        printUsage();
       }
       else if( String::equals( argv[i], "--load" ) || String::equals( argv[i], "-l" ) ) {
         config.add( "gameStage.autoload", "true" );

@@ -54,11 +54,6 @@ namespace oz
       };
 
       Quad   quads[VERTS][VERTS];
-
-      String detailTexture;
-      String mapTexture;
-      String waterTexture;
-
       String name;
 
       Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;

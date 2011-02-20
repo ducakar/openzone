@@ -32,6 +32,14 @@ namespace oz
   const float Math::SQRT2      = 1.41421356237309504880f;
   const float Math::SQRT1_2    = 0.70710678118654752440f;
 
+#ifdef OZ_MSVC
+  const float Math::INF        = float( HUGE_VAL );
+  const float Math::NaN        = float( 0.0 * HUGE_VAL );
+#else
+  const float Math::INF        = float( INFINITY );
+  const float Math::NaN        = float( NAN );
+#endif
+
   const float Math::MAX_RAND = float( RAND_MAX );
 
   void ( *const Math::seed )( uint ) = ::srand;

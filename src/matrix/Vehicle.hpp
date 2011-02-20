@@ -20,16 +20,19 @@ namespace oz
   {
     public:
 
-      static const int PILOT      = 0;
-      static const int GUNNER     = 1;
-      static const int COMMANDER  = 2;
-      static const int PASSENGER0 = 3;
-      static const int PASSENGER1 = 4;
-      static const int PASSENGER2 = 5;
-      static const int PASSENGER3 = 6;
-      static const int PASSENGER4 = 7;
-      static const int PASSENGER5 = 8;
-      static const int CREW_MAX   = 9;
+      enum Role : int
+      {
+        PILOT,
+        GUNNER,
+        COMMANDER,
+        PASSENGER0,
+        PASSENGER1,
+        PASSENGER2,
+        PASSENGER3,
+        PASSENGER4,
+        PASSENGER5,
+        CREW_MAX
+      };
 
       static const float EJECT_MOVE;
       static const float EJECT_MOMENTUM;

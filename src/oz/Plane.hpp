@@ -16,54 +16,45 @@ namespace oz
 
 #ifdef OZ_SIMD
 
-  class Plane
+  class Plane : public Simd
   {
     public:
-
-      union
-      {
-        float4 f4;
-        int4   i4;
-        struct
-        {
-          float nx;
-          float ny;
-          float nz;
-          float d;
-        };
-      };
 
       OZ_ALWAYS_INLINE
       explicit Plane()
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Plane( float4 f4_ ) : f4( f4_ )
+      explicit Plane( float4 f4 ) : Simd( f4 )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Plane( int4 i4_ ) : i4( i4_ )
+      explicit Plane( int4 i4 ) : Simd( i4 )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Plane( float nx, float ny, float nz, float d ) : f4( float4( nx, ny, nz, d ) )
+      explicit Plane( float nx, float ny, float nz, float d ) : Simd( float4( nx, ny, nz, d ) )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Plane( const float* p ) : f4( float4( p[0], p[1], p[2], p[3] ) )
+      explicit Plane( const Vec3& n, float d ) : Simd( float4( n.x, n.y, n.z, d ) )
+      {}
+
+      OZ_ALWAYS_INLINE
+      explicit Plane( const float* p ) : Simd( float4( p[0], p[1], p[2], p[3] ) )
       {}
 
       OZ_ALWAYS_INLINE
       Plane& operator = ( const Vec3& v )
       {
-        f4 = float4( v.x, v.y, v.z, d );
+        f4 = v.f4;
         return *this;
       }
 
       OZ_ALWAYS_INLINE
       bool operator == ( const Plane& p ) const
       {
-        return nx == p.nx && ny == p.ny && nz == p.nz && d != p.d;
+        return nx == p.nx && ny == p.ny && nz == p.nz && d == p.d;
       }
 
       OZ_ALWAYS_INLINE
@@ -75,13 +66,13 @@ namespace oz
       OZ_ALWAYS_INLINE
       operator const float* () const
       {
-        return &nx;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
       operator float* ()
       {
-        return &nx;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
@@ -89,7 +80,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 4 );
 
-        return ( &nx )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE
@@ -97,7 +88,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 4 );
 
-        return ( &nx )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE
@@ -109,7 +100,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       Vec3 normal() const
       {
-        return Vec3( float4( nx, ny, nz, 0.0f ) );
+        return Vec3( i4 & int4( -1, -1, -1, 0 ) );
       }
 
       // dot product

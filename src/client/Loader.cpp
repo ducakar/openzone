@@ -186,7 +186,7 @@ namespace client
           context.sounds[i].nUsers = -2;
         }
         else if( context.sounds[i].nUsers == -2 ) {
-          context.freeSound( i );
+          context.deleteSound( i );
         }
       }
     }

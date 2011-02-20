@@ -179,10 +179,8 @@ namespace client
     glDisable( GL_BLEND );
     glEnable( GL_TEXTURE_2D );
 
-    wasUnderWater = isUnderWater;
-    isUnderWater  = camera.p.z < 0.0f;
+    isUnderWater = camera.p.z < 0.0f;
 
-    terra.radius = frustum.radius;
     terra.draw();
 
     // draw structures
@@ -193,7 +191,7 @@ namespace client
 
       int waterFlags = context.drawBSP( str );
 
-      isUnderWater = ( waterFlags & BSP::IN_WATER_BRUSH ) != 0;
+      isUnderWater |= ( waterFlags & BSP::IN_WATER_BRUSH ) != 0;
       if( waterFlags & BSP::DRAW_WATER ) {
         waterStructs.add( str );
       }

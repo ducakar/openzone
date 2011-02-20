@@ -40,6 +40,8 @@ namespace client
       uint   sunList;
       uint   moonList;
 
+      int    starArray;
+
       Point3 stars[MAX_STARS];
 
     public:

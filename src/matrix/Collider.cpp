@@ -379,7 +379,7 @@ namespace oz
   // checks if AABB and Brush overlap and if AABB centre is inside a brush
   void Collider::trimAABBWater( const BSP::Brush* brush )
   {
-    float depth = Math::inf();
+    float depth = Math::INF;
 
     for( int i = 0; i < brush->nSides; ++i ) {
       const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];

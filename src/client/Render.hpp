@@ -75,7 +75,6 @@ namespace client
       bool                    showAim;
 
       bool                    isUnderWater;
-      bool                    wasUnderWater;
       float                   visibility;
 
       void scheduleCell( int cellX, int cellY );
