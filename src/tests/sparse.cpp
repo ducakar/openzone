@@ -18,11 +18,7 @@ bool Alloc::isLocked = true;
 
 struct A
 {
-  int nextSlot[1];
   int value;
-
-  A() {}
-  A( int value_ ) : value( value_ ) {}
 };
 
 int main( int, char** )
@@ -35,11 +31,11 @@ int main( int, char** )
 
   Sparse<A> sparse( 1 );
 
-  sparse.add( A( 0 ) );
-  sparse.add( A( 1 ) );
-  sparse.add( A( 2 ) );
-  sparse.add( A( 3 ) );
-  sparse.add( A( 4 ) );
+  sparse.add( (A) { 0 } );
+  sparse.add( (A) { 1 } );
+  sparse.add( (A) { 2 } );
+  sparse.add( (A) { 3 } );
+  sparse.add( (A) { 4 } );
 
   sparse.remove( 2 );
   sparse.remove( 4 );
@@ -48,20 +44,20 @@ int main( int, char** )
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, citer<A>( sparse, sparse.capacity() ) ) {
-    printf( "%d,%d ", i->value, i->nextSlot[0] );
+  foreach( i, sparse.citer() ) {
+    printf( "%d ", i->value );
   }
   printf( "\n" );
 
-  sparse.add( A( 4 ) );
-  sparse.add( A( 2 ) );
+  sparse.add( (A) { 4 } );
+  sparse.add( (A) { 2 } );
 
   foreach( i, sparse.citer() ) {
     printf( "%d ", i->value );
   }
   printf( "\n" );
-  foreach( i, citer<A>( sparse, sparse.capacity() ) ) {
-    printf( "%d,%d ", i->value, i->nextSlot[0] );
+  foreach( i, sparse.citer() ) {
+    printf( "%d ", i->value );
   }
   printf( "\n" );
 

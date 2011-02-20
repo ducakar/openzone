@@ -5,7 +5,6 @@
  *  Similar to Vector, but it can have holes in the middle. When a new elements are added it first
  *  tries to occupy all free slots, new element is added to the end only if there is no holes in
  *  the middle.
- *  Type should provide int nextSlot[INDEX] field.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -18,21 +17,33 @@
 namespace oz
 {
 
-  template <class Type, int INDEX = 0, int GRANULARITY = 8>
+  template <class Type, int GRANULARITY = 8>
   class Sparse
   {
     static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
+
+    private:
+
+      struct Elem
+      {
+        union
+        {
+          char cvalue[sizeof( Type )];
+          Type value;
+        };
+        int  nextSlot;
+      };
 
     public:
 
       /**
        * Constant Sparse iterator.
        */
-      class CIterator : public oz::CIterator<Type>
+      class CIterator : public oz::CIterator<Elem>
       {
         private:
 
-          typedef oz::CIterator<Type> B;
+          typedef oz::CIterator<Elem> B;
 
         public:
 
@@ -52,6 +63,33 @@ namespace oz
           {}
 
           /**
+           * @return constant pointer to current element
+           */
+          OZ_ALWAYS_INLINE
+          operator const Type* () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return constant reference to current element
+           */
+          OZ_ALWAYS_INLINE
+          const Type& operator * () const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return constant access to member
+           */
+          OZ_ALWAYS_INLINE
+          const Type* operator -> () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
            * Advance to next element.
            * @return
            */
@@ -60,7 +98,7 @@ namespace oz
             do {
               ++B::elem;
             }
-            while( B::elem != B::past && B::elem->nextSlot[INDEX] != -1 );
+            while( B::elem != B::past && B::elem->nextSlot != -1 );
 
             return *this;
           }
@@ -70,11 +108,11 @@ namespace oz
       /**
        * Sparse iterator.
        */
-      class Iterator : public oz::Iterator<Type>
+      class Iterator : public oz::Iterator<Elem>
       {
         private:
 
-          typedef oz::Iterator<Type> B;
+          typedef oz::Iterator<Elem> B;
 
         public:
 
@@ -94,6 +132,60 @@ namespace oz
           {}
 
           /**
+           * @return constant pointer to current element
+           */
+          OZ_ALWAYS_INLINE
+          operator const Type* () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return pointer to current element
+           */
+          OZ_ALWAYS_INLINE
+          operator Type* ()
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return constant reference to current element
+           */
+          OZ_ALWAYS_INLINE
+          const Type& operator * () const
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return reference to current element
+           */
+          OZ_ALWAYS_INLINE
+          Type& operator * ()
+          {
+            return B::elem->value;
+          }
+
+          /**
+           * @return constant access to member
+           */
+          OZ_ALWAYS_INLINE
+          const Type* operator -> () const
+          {
+            return &B::elem->value;
+          }
+
+          /**
+           * @return non-constant access to member
+           */
+          OZ_ALWAYS_INLINE
+          Type* operator -> ()
+          {
+            return &B::elem->value;
+          }
+
+          /**
            * Advance to next element.
            * @return
            */
@@ -102,7 +194,7 @@ namespace oz
             do {
               ++B::elem;
             }
-            while( B::elem != B::past && B::elem->nextSlot[INDEX] != -1 );
+            while( B::elem != B::past && B::elem->nextSlot != -1 );
 
             return *this;
           }
@@ -112,7 +204,7 @@ namespace oz
     private:
 
       // Pointer to data array
-      Type* data;
+      Elem* data;
       // Size of data array
       int   size;
       // Number of used slots in the sparse sparse vector
@@ -131,7 +223,7 @@ namespace oz
         if( freeSlot == size ) {
           if( size == 0 ) {
             size = GRANULARITY;
-            data = new Type[size];
+            data = new Elem[size];
           }
           else {
             size *= 2;
@@ -140,7 +232,7 @@ namespace oz
 
           freeSlot = count;
           for( int i = count; i < size; ++i ) {
-            data[i].nextSlot[INDEX] = i + 1;
+            data[i].nextSlot = i + 1;
           }
         }
       }
@@ -157,11 +249,11 @@ namespace oz
        * Create empty sparse vector with given initial capacity.
        * @param initSize
        */
-      explicit Sparse( int initSize ) : data( initSize == 0 ? null : new Type[initSize] ),
+      explicit Sparse( int initSize ) : data( initSize == 0 ? null : new Elem[initSize] ),
           size( initSize ), count( 0 ), freeSlot( 0 )
       {
         for( int i = 0; i < size; ++i ) {
-          data[i].nextSlot[INDEX] = i + 1;
+          data[i].nextSlot = i + 1;
         }
       }
 
@@ -169,7 +261,7 @@ namespace oz
        * Copy constructor.
        * @param s
        */
-      Sparse( const Sparse& s ) : data( s.size == 0 ? null : new Type[s.size] ),
+      Sparse( const Sparse& s ) : data( s.size == 0 ? null : new Elem[s.size] ),
           size( s.size ), count( s.count ), freeSlot( s.freeSlot )
       {
         aCopy( data, s.data, size );
@@ -196,7 +288,7 @@ namespace oz
         if( size < s.size ) {
           delete[] data;
 
-          data = new Type[s.size];
+          data = new Elem[s.size];
           size = s.size;
         }
 
@@ -218,7 +310,7 @@ namespace oz
         }
 
         int i = 0;
-        while( i < size && ( data[i].nextSlot[INDEX] > 0 || data[i] == s.data[i] ) ) {
+        while( i < size && ( data[i].nextSlot != -1 || data[i].value == s.data[i].value ) ) {
           ++i;
         }
         return i == size;
@@ -236,7 +328,7 @@ namespace oz
         }
 
         int i = 0;
-        while( i < size && ( data[i].nextSlot[INDEX] > 0 || data[i] == s.data[i] ) ) {
+        while( i < size && ( data[i].nextSlot != -1 || data[i].value == s.data[i].value ) ) {
           ++i;
         }
         return i != size;
@@ -258,28 +350,6 @@ namespace oz
       Iterator iter() const
       {
         return Iterator( *this );
-      }
-
-      /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return constant pointer to data array
-       */
-      OZ_ALWAYS_INLINE
-      operator const Type* () const
-      {
-        return data;
-      }
-
-      /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
-       * @return non-constant pointer to data array
-       */
-      OZ_ALWAYS_INLINE
-      operator Type* ()
-      {
-        return data;
       }
 
       /**
@@ -317,7 +387,7 @@ namespace oz
       {
         hard_assert( uint( i ) < uint( size ) );
 
-        return data[i].nextSlot[INDEX] != -1;
+        return data[i].nextSlot == -1;
       }
 
       /**
@@ -327,7 +397,7 @@ namespace oz
       bool contains( const Type& e ) const
       {
         for( int i = 0; i < size; ++i ) {
-          if( data[i].nextSlot[INDEX] == -1 && data[i] == e ) {
+          if( data[i].nextSlot == -1 && data[i].value == e ) {
             return true;
           }
         }
@@ -341,9 +411,9 @@ namespace oz
       OZ_ALWAYS_INLINE
       const Type& operator [] ( int i ) const
       {
-        hard_assert( 0 <= i && i < size );
+        hard_assert( 0 <= i && i < size && data[i].nextSlot == -1 );
 
-        return data[i];
+        return data[i].value;
       }
 
       /**
@@ -353,9 +423,9 @@ namespace oz
       OZ_ALWAYS_INLINE
       Type& operator [] ( int i )
       {
-        hard_assert( 0 <= i && i < size );
+        hard_assert( 0 <= i && i < size && data[i].nextSlot == -1 );
 
-        return data[i];
+        return data[i].value;
       }
 
       /**
@@ -366,7 +436,7 @@ namespace oz
       int index( const Type& e ) const
       {
         for( int i = 0; i < size; ++i ) {
-          if( data[i].nextSlot[INDEX] == -1 && data[i] == e ) {
+          if( data[i].nextSlot == -1 && data[i].value == e ) {
             return i;
           }
         }
@@ -381,7 +451,7 @@ namespace oz
       int lastIndex( const Type& e ) const
       {
         for( int i = size - 1; i >= 0; --i ) {
-          if( data[i].nextSlot[INDEX] == -1 && data[i] == e ) {
+          if( data[i].nextSlot == -1 && data[i].value == e ) {
             return i;
           }
         }
@@ -398,8 +468,9 @@ namespace oz
 
         int i = freeSlot;
 
-        freeSlot = data[i].nextSlot[INDEX];
-        data[i].nextSlot[INDEX] = -1;
+        freeSlot = data[i].nextSlot;
+        new( &data[i].value ) Type;
+        data[i].nextSlot = -1;
         ++count;
 
         return i;
@@ -416,9 +487,9 @@ namespace oz
 
         int i = freeSlot;
 
-        freeSlot = data[i].nextSlot[INDEX];
-        data[i] = e;
-        data[i].nextSlot[INDEX] = -1;
+        freeSlot = data[i].nextSlot;
+        new( &data[i].value ) Type( e );
+        data[i].nextSlot = -1;
         ++count;
 
         return i;
@@ -432,7 +503,8 @@ namespace oz
       {
         hard_assert( uint( i ) < uint( size ) );
 
-        data[i].nextSlot[INDEX] = freeSlot;
+        data[i].value.~Type();
+        data[i].nextSlot = freeSlot;
         freeSlot = i;
         --count;
       }
@@ -443,7 +515,8 @@ namespace oz
       void clear()
       {
         for( int i = 0; i < size; ++i ) {
-          data[i].nextSlot[INDEX] = i + 1;
+          data[i].value.~Type();
+          data[i].nextSlot = i + 1;
         }
 
         count = 0;
@@ -464,7 +537,7 @@ namespace oz
         size = initSize;
 
         for( int i = 0; i < size; ++i ) {
-          data[i].nextSlot[INDEX] = i + 1;
+          data[i].nextSlot = i + 1;
         }
       }
 

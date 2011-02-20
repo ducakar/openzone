@@ -37,7 +37,6 @@ struct Test
 
   Test* prev[1];
   Test* next[1];
-  int nextSlot;
 
   explicit Test()
   {

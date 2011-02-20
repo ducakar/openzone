@@ -48,7 +48,7 @@ namespace oz
 
       struct Model : Bounds
       {
-        enum class Type
+        enum Type : int
         {
           IGNORING,
           BLOCKING,

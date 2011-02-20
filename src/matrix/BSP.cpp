@@ -30,24 +30,27 @@ namespace oz
 
   struct QBSPLump
   {
-    static const int ENTITIES     =  0;
-    static const int TEXTURES     =  1;
-    static const int PLANES       =  2;
-    static const int NODES        =  3;
-    static const int LEAFS        =  4;
-    static const int LEAFFACES    =  5;
-    static const int LEAFBRUSHES  =  6;
-    static const int MODELS       =  7;
-    static const int BRUSHES      =  8;
-    static const int BRUSHSIDES   =  9;
-    static const int VERTICES     = 10;
-    static const int INDICES      = 11;
-    static const int SHADERS      = 12;
-    static const int FACES        = 13;
-    static const int LIGHTMAPS    = 14;
-    static const int LIGHTVOLUMES = 15;
-    static const int VISUALDATA   = 16;
-    static const int MAX          = 17;
+    enum Lumps : int
+    {
+      ENTITIES,
+      TEXTURES,
+      PLANES,
+      NODES,
+      LEAFS,
+      LEAFFACES,
+      LEAFBRUSHES,
+      MODELS,
+      BRUSHES,
+      BRUSHSIDES,
+      VERTICES,
+      INDICES,
+      SHADERS,
+      FACES,
+      LIGHTMAPS,
+      LIGHTVOLUMES,
+      VISUALDATA,
+      MAX
+    };
 
     int offset;
     int length;
@@ -273,7 +276,7 @@ namespace oz
     }
 
     float scale = bspConfig.get( "scale", 0.01f );
-    float maxDim = bspConfig.get( "maxDim", Math::inf() );
+    float maxDim = bspConfig.get( "maxDim", Math::INF );
     life = bspConfig.get( "life", 1000.0f );
 
     mins = Point3( -maxDim, -maxDim, -maxDim );
@@ -335,10 +338,10 @@ namespace oz
       float offset = planes[i].abs() * Vec3( maxDim, maxDim, maxDim );
 
       if( planes[i].d < -offset ) {
-        planes[i].d = -Math::inf();
+        planes[i].d = -Math::INF;
       }
       else if( planes[i].d > offset ) {
-        planes[i].d = Math::inf();
+        planes[i].d = Math::INF;
       }
     }
 
@@ -420,16 +423,16 @@ namespace oz
 
         String type = bspConfig.get( keyName + ".type", "BLOCKING" );
         if( type.equals( "IGNORING" ) ) {
-          models[i].type = Model::Type::IGNORING;
+          models[i].type = Model::IGNORING;
         }
         else if( type.equals( "BLOCKING" ) ) {
-          models[i].type = Model::Type::BLOCKING;
+          models[i].type = Model::BLOCKING;
         }
         else if( type.equals( "PUSHING" ) ) {
-          models[i].type = Model::Type::PUSHING;
+          models[i].type = Model::PUSHING;
         }
         else if( type.equals( "CRUSHING" ) ) {
-          models[i].type = Model::Type::CRUSHING;
+          models[i].type = Model::CRUSHING;
         }
         else {
           log.println( "invalid BSP entity type, should be either IGNORING, BLOCKING, PUSHING or "
@@ -839,8 +842,8 @@ namespace oz
     // optimise bounds
     log.print( "Fitting bounds: " );
 
-    mins = Point3( +Math::inf(), +Math::inf(), +Math::inf() );
-    maxs = Point3( -Math::inf(), -Math::inf(), -Math::inf() );
+    mins = Point3( +Math::INF, +Math::INF, +Math::INF );
+    maxs = Point3( -Math::INF, -Math::INF, -Math::INF );
 
     for( int i = 0; i < nBrushSides; ++i ) {
       Plane& plane = planes[ brushSides[i] ];
@@ -967,7 +970,7 @@ namespace oz
     }
 
     for( int i = 0; i < nPlanes; ++i ) {
-      if( !Math::isNormal( planes[i].d ) ) {
+      if( !Math::isFinite( planes[i].d ) ) {
         throw Exception( "BSP has invalid plane " + String( i ) );
       }
     }

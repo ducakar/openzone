@@ -46,7 +46,7 @@ namespace ui
       glColor4f( 0.6f, 0.6f, 0.6f, 0.4f );
     }
     fill( 0, 0, width, height );
-    setFont( Font::Type::SANS );
+    setFont( Font::SANS );
     setFontColour( 200, 200, 200 );
     printCentred( width / 2, height / 2, "%s", label.cstr() );
 

@@ -192,29 +192,26 @@ namespace oz
 
   inline Bounds& Bounds::fromAABBMove( const AABB& a, const Vec3& move, float eps )
   {
+    mins = a.p - a.dim - 2.0f * Vec3( eps, eps, eps );
+    maxs = a.p + a.dim + 2.0f * Vec3( eps, eps, eps );
+
     if( move.x < 0.0f ) {
-      mins.x = a.p.x - a.dim.x - 2.0f * eps + move.x;
-      maxs.x = a.p.x + a.dim.x + 2.0f * eps;
+      mins.x += move.x;
     }
     else {
-      mins.x = a.p.x - a.dim.x - 2.0f * eps;
-      maxs.x = a.p.x + a.dim.x + 2.0f * eps + move.x;
+      maxs.x += move.x;
     }
     if( move.y < 0.0f ) {
-      mins.y = a.p.y - a.dim.y - 2.0f * eps + move.y;
-      maxs.y = a.p.y + a.dim.y + 2.0f * eps;
+      mins.y += move.y;
     }
     else {
-      mins.y = a.p.y - a.dim.y - 2.0f * eps;
-      maxs.y = a.p.y + a.dim.y + 2.0f * eps + move.y;
+      maxs.y += move.y;
     }
     if( move.z < 0.0f ) {
-      mins.z = a.p.z - a.dim.z - 2.0f * eps + move.z;
-      maxs.z = a.p.z + a.dim.z + 2.0f * eps;
+      mins.z += move.z;
     }
     else {
-      mins.z = a.p.z - a.dim.z - 2.0f * eps;
-      maxs.z = a.p.z + a.dim.z + 2.0f * eps + move.z;
+      maxs.z += move.z;
     }
     return *this;
   }

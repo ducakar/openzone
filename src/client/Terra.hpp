@@ -11,7 +11,9 @@
 
 #include "stable.hpp"
 
-#include "matrix/common.hpp"
+#include "matrix/Terra.hpp"
+
+#include "client/Mesh.hpp"
 
 namespace oz
 {
@@ -22,42 +24,35 @@ namespace client
   {
     private:
 
+      static const int   TILE_QUADS   = 16;
+      static const int   TILES        = oz::Terra::QUADS / TILE_QUADS;
+
+      static const int   TILE_INDICES;
+      static const int   TILE_VERTICES;
+
+      static const float TILE_SIZE;
+      static const float TILE_INV_SIZE;
+
       static const float DETAIL_SCALE;
       static const float WATER_SCALE;
 
-      struct VertexData
-      {
-        Point3   position;
-        Vec3     normal;
-        TexCoord detailTexCoord;
-        TexCoord mapTexCoord;
-      };
-
-      uint arrayBuffer;
       uint indexBuffer;
+      uint vertexBuffers[TILES][TILES];
 
+      uint waterTexId;
       uint detailTexId;
       uint mapTexId;
-      uint waterTexId;
 
-      bool inWater;
-
-      void genBufferData( DArray<VertexData>* arrayData, DArray<uint>* indexData );
-      void saveBufferData( const char* file, DArray<VertexData>* arrayData,
-                           DArray<uint>* indexData );
-      void loadBufferData( const char* file, DArray<VertexData>* arrayData,
-                           DArray<uint>* indexData );
+      Span span;
 
     public:
-
-      float radius;
 
       void prebuild();
       void load();
       void unload();
 
-      void draw() const;
-      void drawWater() const;
+      void draw();
+      void drawWater();
   };
 
   extern Terra terra;

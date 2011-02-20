@@ -83,7 +83,7 @@ namespace oz
       // data array
       union
       {
-        char cdata[ SIZE * sizeof( Type ) ];
+        char cdata[SIZE * sizeof( Type )];
         Type data[SIZE];
       };
       // Number of elements in vector

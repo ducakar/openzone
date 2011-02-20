@@ -29,7 +29,7 @@ namespace ui
 
     public:
 
-      enum class Type
+      enum Type : int
       {
         MONO,
         SANS,

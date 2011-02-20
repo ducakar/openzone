@@ -24,7 +24,7 @@ namespace client
 
   Compiler compiler;
 
-  void Compiler::glNewMesh()
+  void Compiler::beginMesh()
   {
     hard_assert( ~flags & MESH_BIT );
     hard_assert( ~flags & MATERIAL_BIT );
@@ -36,14 +36,25 @@ namespace client
     elements.clear();
     parts.clear();
 
-    part.diffuse  = Colours::WHITE;
-    part.specular = Colours::BLACK;
-    part.texture0 = GL_NONE;
-    part.texture1 = GL_NONE;
-    part.flags    = 0;
+    part.diffuse    = Colours::WHITE;
+    part.specular   = Colours::BLACK;
+    part.texture[0] = GL_NONE;
+    part.texture[1] = GL_NONE;
+    part.flags      = 0;
+
+    vert.pos[0] = 0.0f;
+    vert.pos[1] = 0.0f;
+    vert.pos[2] = 0.0f;
+
+    vert.normal[0] = 0.0f;
+    vert.normal[1] = 0.0f;
+    vert.normal[2] = 0.0f;
+
+    vert.texCoord[0] = 0.0f;
+    vert.texCoord[1] = 0.0f;
   }
 
-  void Compiler::glEndMesh()
+  void Compiler::endMesh()
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( ~flags & MATERIAL_BIT );
@@ -52,7 +63,7 @@ namespace client
     flags &= ~MESH_BIT;
   }
 
-  void Compiler::glBeginMaterial()
+  void Compiler::beginMaterial()
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( ~flags & MATERIAL_BIT );
@@ -60,11 +71,10 @@ namespace client
 
     flags |= MATERIAL_BIT;
 
-
     part.firstElement = elements.length();
   }
 
-  void Compiler::glEndMaterial()
+  void Compiler::endMaterial()
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( flags & MATERIAL_BIT );
@@ -76,7 +86,7 @@ namespace client
     parts.add( part );
   }
 
-  void Compiler::glMaterial( int face, int target, const float* params )
+  void Compiler::material( int face, int target, const float* params )
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( flags & MATERIAL_BIT );
@@ -106,7 +116,7 @@ namespace client
     }
   }
 
-  void Compiler::glBindTexture( int unit, int target, const char* texture )
+  void Compiler::setTexture( int unit, int target, const char* texture )
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( flags & MATERIAL_BIT );
@@ -116,11 +126,11 @@ namespace client
 
     switch( unit ) {
       case GL_TEXTURE0: {
-        part.texture0 = texture;
+        part.texture[0] = texture;
         break;
       }
       case GL_TEXTURE1: {
-        part.texture1 = texture;
+        part.texture[1] = texture;
         break;
       }
       default: {
@@ -130,7 +140,56 @@ namespace client
     }
   }
 
-  void Compiler::glBegin( int mode_ )
+  void Compiler::texCoord( float s, float t )
+  {
+    hard_assert( flags & MESH_BIT );
+    hard_assert( flags & MATERIAL_BIT );
+    hard_assert( ~flags & SURFACE_BIT );
+
+    vert.texCoord[0] = s;
+    vert.texCoord[1] = t;
+  }
+
+  void Compiler::texCoord( const float* v )
+  {
+    texCoord( v[0], v[1] );
+  }
+
+  void Compiler::normal( float nx, float ny, float nz )
+  {
+    hard_assert( flags & MESH_BIT );
+    hard_assert( flags & MATERIAL_BIT );
+    hard_assert( ~flags & SURFACE_BIT );
+
+    vert.normal[0] = nx;
+    vert.normal[1] = ny;
+    vert.normal[2] = nz;
+  }
+
+  void Compiler::normal( const float* v )
+  {
+    normal( v[0], v[1], v[2] );
+  }
+
+  void Compiler::vertex( float x, float y, float z )
+  {
+    hard_assert( flags & MESH_BIT );
+    hard_assert( flags & MATERIAL_BIT );
+    hard_assert( ~flags & SURFACE_BIT );
+
+    vert.pos[0] = x;
+    vert.pos[1] = y;
+    vert.pos[2] = z;
+
+    vertices.add( vert );
+  }
+
+  void Compiler::vertex( const float* v )
+  {
+    vertex( v[0], v[1], v[2] );
+  }
+
+  void Compiler::begin( int mode_ )
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( flags & MATERIAL_BIT );
@@ -145,7 +204,7 @@ namespace client
         mode == GL_LINE_LOOP || mode == GL_TRIANGLE_STRIP || mode == GL_TRIANGLES );
   }
 
-  void Compiler::glEnd()
+  void Compiler::end()
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( flags & MATERIAL_BIT );
@@ -161,54 +220,11 @@ namespace client
     hard_assert( mode != GL_QUADS || vertNum == 4 );
   }
 
-  void Compiler::glTexCoord( int unit, float s, float t )
+  void Compiler::element( ushort index )
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( flags & MATERIAL_BIT );
-    hard_assert( flags & SURFACE_BIT );
-
-    hard_assert( 0 <= unit && unit <= 1 );
-
-    switch( unit ) {
-      case 0: {
-        vertex.texCoord0[0] = s;
-        vertex.texCoord0[1] = t;
-        break;
-      }
-      case 1: {
-        vertex.texCoord1[0] = s;
-        vertex.texCoord1[1] = t;
-        break;
-      }
-    }
-  }
-
-  void Compiler::glTexCoord( int unit, const float* v )
-  {
-    glTexCoord( unit, v[0], v[1] );
-  }
-
-  void Compiler::glNormal( float nx, float ny, float nz )
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
-    hard_assert( flags & SURFACE_BIT );
-
-    vertex.normal[0] = nx;
-    vertex.normal[1] = ny;
-    vertex.normal[2] = nz;
-  }
-
-  void Compiler::glNormal( const float* v )
-  {
-    glNormal( v[0], v[1], v[2] );
-  }
-
-  void Compiler::glVertex( float x, float y, float z )
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
-    hard_assert( flags & SURFACE_BIT );
+    hard_assert( ( flags & SURFACE_BIT ) || mode == GL_TRIANGLE_STRIP );
 
     // add additional vertices to restart triangle strip if neccesary
     if( mode == GL_TRIANGLES && vertNum == 3 ) {
@@ -222,23 +238,13 @@ namespace client
 
     ++vertNum;
 
-    vertex.pos[0] = x;
-    vertex.pos[1] = y;
-    vertex.pos[2] = z;
-
-    int i = vertices.include( vertex );
-    elements.add( i );
+    elements.add( index );
 
     // if this is first vertex of not-first primitive, add additional vertex to restart strip
     if( vertNum == 0 ) {
-      elements.add( i );
+      elements.add( index );
       ++vertNum;
     }
-  }
-
-  void Compiler::glVertex( const float* v )
-  {
-    glVertex( v[0], v[1], v[2] );
   }
 
   void Compiler::writeMesh( OutputStream* stream ) const
@@ -257,11 +263,8 @@ namespace client
       stream->writeFloat( vertices[i].normal[1] );
       stream->writeFloat( vertices[i].normal[2] );
 
-      stream->writeFloat( vertices[i].texCoord0[0] );
-      stream->writeFloat( vertices[i].texCoord0[1] );
-
-      stream->writeFloat( vertices[i].texCoord1[0] );
-      stream->writeFloat( vertices[i].texCoord1[1] );
+      stream->writeFloat( vertices[i].texCoord[0] );
+      stream->writeFloat( vertices[i].texCoord[1] );
     }
 
     stream->writeInt( elements.length() );
@@ -273,7 +276,13 @@ namespace client
     for( int i = 0; i < parts.length(); ++i ) {
       stream->writeQuat( parts[i].diffuse );
       stream->writeQuat( parts[i].specular );
+
+      stream->writeString( parts[i].texture[0] );
+      stream->writeString( parts[i].texture[1] );
+      stream->writeString( parts[i].texture[2] );
+
       stream->writeInt( parts[i].flags );
+
       stream->writeInt( parts[i].firstElement );
       stream->writeInt( parts[i].nElements );
     }
@@ -290,7 +299,7 @@ namespace client
     glGenBuffers( 2, buffers );
 
     glBindBuffer( GL_ARRAY_BUFFER, buffers[0] );
-    glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Mesh::Vertex ), vertices,
+    glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices,
                   GL_STATIC_DRAW );
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, buffers[1] );
@@ -305,8 +314,9 @@ namespace client
 
       mesh->parts[i].diffuse      = parts[i].diffuse;
       mesh->parts[i].specular     = parts[i].specular;
-      mesh->parts[i].texture0     = context.loadTexture( parts[i].texture0 );
-      mesh->parts[i].texture1     = context.loadTexture( parts[i].texture1 );
+      mesh->parts[i].texture[0]   = context.loadTexture( parts[i].texture[0] );
+      mesh->parts[i].texture[1]   = context.loadTexture( parts[i].texture[1] );
+      mesh->parts[i].texture[2]   = context.loadTexture( parts[i].texture[2] );
 
       mesh->parts[i].flags        = parts[i].flags;
 

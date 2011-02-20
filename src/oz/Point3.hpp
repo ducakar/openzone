@@ -16,24 +16,11 @@ namespace oz
 
 #ifdef OZ_SIMD
 
-  class Point3
+  class Point3 : public Simd
   {
     public:
 
       static const Point3 ORIGIN;
-
-      union
-      {
-        float4 f4;
-        int4   i4;
-        struct
-        {
-          float x;
-          float y;
-          float z;
-          float w;
-        };
-      };
 
     public:
 
@@ -42,19 +29,19 @@ namespace oz
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Point3( float4 f4_ ) : f4( f4_ )
+      explicit Point3( float4 f4 ) : Simd( f4 )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Point3( int4 i4_ ) : i4( i4_ )
+      explicit Point3( int4 i4 ) : Simd( i4 )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Point3( float x, float y, float z ) : f4( float4( x, y, z, 1.0f ) )
+      explicit Point3( float x, float y, float z ) : Simd( float4( x, y, z, 1.0f ) )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Point3( const float* v ) : f4( float4( v[0], v[1], v[2], 1.0f ) )
+      explicit Point3( const float* v ) : Simd( float4( v[0], v[1], v[2], 1.0f ) )
       {}
 
       OZ_ALWAYS_INLINE
@@ -72,13 +59,13 @@ namespace oz
       OZ_ALWAYS_INLINE
       operator const float* () const
       {
-        return &x;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
       operator float* ()
       {
-        return &x;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
@@ -86,7 +73,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 3 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE
@@ -94,7 +81,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 3 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE

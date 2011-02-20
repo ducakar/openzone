@@ -41,7 +41,7 @@ namespace oz
    * Exception constructor wrapper that provides the current file and line.
    */
 # define Exception( message ) \
-  oz::Exception( message, __FILE__, __LINE__, __PRETTY_FUNCTION__ )
+    oz::Exception( message, __FILE__, __LINE__, __PRETTY_FUNCTION__ )
 
   /**
    * Helper class for onleave macro.
@@ -66,20 +66,20 @@ namespace oz
   };
 
   /**
-   * \def OZ_ONLEAVE_CODE
+   * \def _OZ_ONLEAVE_CODE
    * Helper for onleave macro (used internally).
    */
-#define _OZ_ONLEAVE_CODE( func, line ) \
-  auto _onLeaveFunc_##line = func; \
-  oz::_OnLeave< decltype( _onLeaveFunc_##line ) > _onLeaveGuard_##line( _onLeaveFunc_##line )
+# define _OZ_ONLEAVE_CODE( func, line ) \
+    auto _onLeaveFunc_##line = func; \
+    oz::_OnLeave< decltype( _onLeaveFunc_##line ) > _onLeaveGuard_##line( _onLeaveFunc_##line )
 
   /**
-   * \def OZ_ONLEAVE_AUX
+   * \def _OZ_ONLEAVE_AUX
    * Auxilary helper for onleave macro (used internally).
    * This intermediate macro is required to instantiate __LINE__ macro for its value.
    */
-#define _OZ_ONLEAVE_AUX( func, line ) \
-  _OZ_ONLEAVE_CODE( func, line )
+# define _OZ_ONLEAVE_AUX( func, line ) \
+    _OZ_ONLEAVE_CODE( func, line )
 
   /**
    * \def onleave
@@ -87,7 +87,7 @@ namespace oz
    * Cleanup snippets are executed in the opposite order as they were defined inside a block.
    * This is the preferred way of cleaning up things for the case an exception is thrown.
    */
-#define onleave( func ) \
-  _OZ_ONLEAVE_AUX( func, __LINE__ )
+# define onleave( func ) \
+    _OZ_ONLEAVE_AUX( func, __LINE__ )
 
 }

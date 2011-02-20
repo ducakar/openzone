@@ -58,7 +58,7 @@ namespace client
         if( me != null ) {
           me->state |= Bot::PLAYER_BIT;
           camera.setBot( me );
-          camera.setState( Camera::State::BOT );
+          camera.setState( Camera::BOT );
         }
       }
     }
@@ -93,7 +93,7 @@ namespace client
     }
 
     if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
-      camera.setState( Camera::State::STRATEGIC );
+      camera.setState( Camera::STRATEGIC );
     }
 
     camera.align();

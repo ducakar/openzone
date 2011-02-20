@@ -22,14 +22,14 @@ namespace ui
   {
     public:
 
-      struct Icon
+      enum Icon : int
       {
-        static const int X     = 0;
-        static const int ARROW = 1;
-        static const int MOVE  = 2;
-        static const int TEXT  = 3;
-        static const int HAND  = 4;
-        static const int MAX   = 5;
+        X,
+        ARROW,
+        MOVE,
+        TEXT,
+        HAND,
+        MAX
       };
 
     private:
@@ -42,7 +42,7 @@ namespace ui
         int  hotspotY;
       };
 
-      Cursor cursors[Icon::MAX];
+      Cursor cursors[MAX];
 
     public:
 

@@ -68,13 +68,13 @@ namespace oz
 
   /**
    * \def soft_assert
-   * Like assert, but raises SIGTRAP with a dummy handler (like DebugBreak in MSVC) and prints
-   * stack trace.
+   * Like assert, but doesn't abort, it only raises SIGTRAP, prints stack trace and resumes
+   * execution.
    */
 
   /**
    * \def hard_assert
-   * Like assert, but also prints stack trace.
+   * Like assert, but also prints stack trace and waits for a debugger to attach.
    */
 #ifdef NDEBUG
 
@@ -135,15 +135,15 @@ namespace oz
 
   /**
    * signed byte
-   * It should be used where char must be signed (otherwise char may be either signed or unsigned
-   * depending on the platform).
+   * It should be used where char must be signed (char may be either signed or unsigned depending
+   * on the platform).
    */
   typedef signed char byte;
 
   /**
    * unsigned byte
-   * It should be used where char must be unsigned (otherwise char may be either signed or unsigned
-   * depending on the platform).
+   * It should be used where char must be unsigned (char may be either signed or unsigned depending
+   * on the platform).
    */
   typedef unsigned char ubyte;
 
@@ -163,12 +163,12 @@ namespace oz
   typedef unsigned long ulong;
 
   /**
-   * signed long long integer
+   * signed 64-bit integer
    */
   typedef long long long64;
 
   /**
-   * unsigned long long integer
+   * unsigned 64-bit integer
    */
   typedef unsigned long long ulong64;
 
@@ -195,6 +195,41 @@ namespace oz
    */
 # define float4( x, y, z, w ) \
   (float4) { x, y, z, w }
+
+  /**
+   * Simd register structure
+   */
+  struct Simd
+  {
+    union
+    {
+      int4   i4;
+      float4 f4;
+
+      struct { int   i[4]; };
+      struct { float f[4]; };
+
+      struct
+      {
+        float x;
+        float y;
+        float z;
+        float w;
+      };
+
+      struct
+      {
+        float nx;
+        float ny;
+        float nz;
+        float d;
+      };
+    };
+
+    OZ_ALWAYS_INLINE Simd()                          {}
+    OZ_ALWAYS_INLINE Simd( int4    i4_ ) : i4( i4_ ) {}
+    OZ_ALWAYS_INLINE Simd( float4  f4_ ) : f4( f4_ ) {}
+  };
 
   //***********************************
   //*        BASIC ALGORITHMS         *

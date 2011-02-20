@@ -94,7 +94,7 @@ namespace oz
       throw Exception( "Invalid bot crouch dimensions. Should be >= 0." );
     }
 
-    clazz->camZ                 = config->get( "camZ", 0.89f );
+    clazz->camZ                 = config->get( "camZ", 0.79f );
     clazz->crouchCamZ           = config->get( "crouchCamZ", 0.69f );
 
     clazz->bobWalkInc           = config->get( "bobWalkInc", 8.00f );

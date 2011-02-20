@@ -28,7 +28,7 @@ namespace ui
 
   void Mouse::init()
   {
-    icon = Icon::ARROW;
+    icon = ARROW;
     doShow = false;
 
     x = camera.centreX;
@@ -41,42 +41,42 @@ namespace ui
     currButtons = 0;
 
     const char* x = config.getSet( "ui.cursor.x", "cursors/X_cursor.png" );
-    cursors[Icon::X].texId    = context.loadTexture( x, false, GL_NEAREST, GL_NEAREST );
-    cursors[Icon::X].size     = config.getSet( "ui.cursor.x.size", 32 );
-    cursors[Icon::X].hotspotX = config.getSet( "ui.cursor.x.hotspot.x", 16 );
-    cursors[Icon::X].hotspotY = config.getSet( "ui.cursor.x.hotspot.y", 16 );
+    cursors[X].texId    = context.loadTexture( x, false, GL_NEAREST, GL_NEAREST );
+    cursors[X].size     = config.getSet( "ui.cursor.x.size", 32 );
+    cursors[X].hotspotX = config.getSet( "ui.cursor.x.hotspot.x", 16 );
+    cursors[X].hotspotY = config.getSet( "ui.cursor.x.hotspot.y", 16 );
 
     const char* arrow = config.getSet( "ui.cursor.arrow", "cursors/left_ptr.png" );
-    cursors[Icon::ARROW].texId    = context.loadTexture( arrow, false, GL_NEAREST, GL_NEAREST );
-    cursors[Icon::ARROW].size     = config.getSet( "ui.cursor.arrow.size", 32 );
-    cursors[Icon::ARROW].hotspotX = config.getSet( "ui.cursor.arrow.hotspot.x", 1 );
-    cursors[Icon::ARROW].hotspotY = config.getSet( "ui.cursor.arrow.hotspot.y", 1 );
+    cursors[ARROW].texId    = context.loadTexture( arrow, false, GL_NEAREST, GL_NEAREST );
+    cursors[ARROW].size     = config.getSet( "ui.cursor.arrow.size", 32 );
+    cursors[ARROW].hotspotX = config.getSet( "ui.cursor.arrow.hotspot.x", 1 );
+    cursors[ARROW].hotspotY = config.getSet( "ui.cursor.arrow.hotspot.y", 1 );
 
     const char* move = config.getSet( "ui.cursor.move", "cursors/fleur.png" );
-    cursors[Icon::MOVE].texId    = context.loadTexture( move, false, GL_NEAREST, GL_NEAREST );
-    cursors[Icon::MOVE].size     = config.getSet( "ui.cursor.move.size", 32 );
-    cursors[Icon::MOVE].hotspotX = config.getSet( "ui.cursor.move.hotspot.x", 16 );
-    cursors[Icon::MOVE].hotspotY = config.getSet( "ui.cursor.move.hotspot.y", 16 );
+    cursors[MOVE].texId    = context.loadTexture( move, false, GL_NEAREST, GL_NEAREST );
+    cursors[MOVE].size     = config.getSet( "ui.cursor.move.size", 32 );
+    cursors[MOVE].hotspotX = config.getSet( "ui.cursor.move.hotspot.x", 16 );
+    cursors[MOVE].hotspotY = config.getSet( "ui.cursor.move.hotspot.y", 16 );
 
     const char* text = config.getSet( "ui.cursor.text", "cursors/xterm.png" );
-    cursors[Icon::TEXT].texId    = context.loadTexture( text, false, GL_NEAREST, GL_NEAREST );
-    cursors[Icon::TEXT].size     = config.getSet( "ui.cursor.text.size", 32 );
-    cursors[Icon::TEXT].hotspotX = config.getSet( "ui.cursor.text.hotspot.x", 16 );
-    cursors[Icon::TEXT].hotspotY = config.getSet( "ui.cursor.text.hotspot.y", 16 );
+    cursors[TEXT].texId    = context.loadTexture( text, false, GL_NEAREST, GL_NEAREST );
+    cursors[TEXT].size     = config.getSet( "ui.cursor.text.size", 32 );
+    cursors[TEXT].hotspotX = config.getSet( "ui.cursor.text.hotspot.x", 16 );
+    cursors[TEXT].hotspotY = config.getSet( "ui.cursor.text.hotspot.y", 16 );
 
     const char* hand = config.getSet( "ui.cursor.hand", "cursors/hand2.png" );
-    cursors[Icon::HAND].texId    = context.loadTexture( hand, false, GL_NEAREST, GL_NEAREST );
-    cursors[Icon::HAND].size     = config.getSet( "ui.cursor.hand.size", 32 );
-    cursors[Icon::HAND].hotspotX = config.getSet( "ui.cursor.hand.hotspot.x", 16 );
-    cursors[Icon::HAND].hotspotY = config.getSet( "ui.cursor.hand.hotspot.y", 16 );
+    cursors[HAND].texId    = context.loadTexture( hand, false, GL_NEAREST, GL_NEAREST );
+    cursors[HAND].size     = config.getSet( "ui.cursor.hand.size", 32 );
+    cursors[HAND].hotspotX = config.getSet( "ui.cursor.hand.hotspot.x", 16 );
+    cursors[HAND].hotspotY = config.getSet( "ui.cursor.hand.hotspot.y", 16 );
   }
 
   void Mouse::free()
   {
-    context.freeTexture( cursors[Icon::X].texId );
-    context.freeTexture( cursors[Icon::ARROW].texId );
-    context.freeTexture( cursors[Icon::MOVE].texId );
-    context.freeTexture( cursors[Icon::TEXT].texId );
+    context.deleteTexture( cursors[X].texId );
+    context.deleteTexture( cursors[ARROW].texId );
+    context.deleteTexture( cursors[MOVE].texId );
+    context.deleteTexture( cursors[TEXT].texId );
   }
 
   void Mouse::prepare()
@@ -91,7 +91,7 @@ namespace ui
   void Mouse::update()
   {
     if( doShow ) {
-      icon = Icon::ARROW;
+      icon = ARROW;
 
       int desiredX = x + relX;
       int desiredY = y + relY;

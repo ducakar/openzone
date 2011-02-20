@@ -66,10 +66,10 @@ namespace oz
     float heightStep = terraConfig.get( "step", 0.5f );
     float heightBias = terraConfig.get( "bias", 0.0f );
 
-    String terraString = "terra/";
-    detailTexture = terraString + terraConfig.get( "detailTexture", "" );
-    mapTexture = terraString + terraConfig.get( "mapTexture", "" );
-    waterTexture = terraString + terraConfig.get( "waterTexture", "" );
+    // just to mark them as used for OZ_VERBOSE_CONFIG
+    terraConfig.get( "detailTexture", "" );
+    terraConfig.get( "mapTexture", "" );
+    terraConfig.get( "waterTexture", "" );
 
     log.print( "Loading terrain heightmap image '%s' ...", name.cstr() );
 
@@ -104,18 +104,12 @@ namespace oz
     int size = 0;
 
     size += 1 * int( sizeof( int ) );
-    size += detailTexture.length() + 1;
-    size += mapTexture.length() + 1;
-    size += waterTexture.length() + 1;
     size += VERTS * VERTS * int( sizeof( Quad ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     os.writeInt( VERTS );
-    os.writeString( detailTexture );
-    os.writeString( mapTexture );
-    os.writeString( waterTexture );
 
     for( int x = 0; x < VERTS; ++x ) {
       for( int y = 0; y < VERTS; ++y ) {
@@ -161,10 +155,6 @@ namespace oz
       log.printEnd( " Invalid dimension %d, should be %d", max, VERTS );
       throw Exception( "Failed to load terrain" );
     }
-
-    detailTexture = is.readString();
-    mapTexture = is.readString();
-    waterTexture = is.readString();
 
     for( int x = 0; x < VERTS; ++x ) {
       for( int y = 0; y < VERTS; ++y ) {

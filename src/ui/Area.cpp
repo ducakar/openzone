@@ -27,13 +27,13 @@ namespace ui
 
   Area::Area( int width_, int height_ ) :
       parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ), flags( 0 ),
-      currentFont( font.sansFont ), fontColour( { 0xff, 0xff, 0xff, 0x00 } ),
+      currentFont( font.sansFont ), fontColour( (SDL_Colour) { 0xff, 0xff, 0xff, 0x00 } ),
       textWidth( 0 ), textHeight( font.sansHeight )
   {}
 
   Area::Area( int x_, int y_, int width_, int height_ ) :
       parent( null ), x( x_ ), y( y_ ), width( width_ ), height( height_ ), flags( 0 ),
-      currentFont( font.sansFont ), fontColour( { 0xff, 0xff, 0xff, 0x00 } ),
+      currentFont( font.sansFont ), fontColour( (SDL_Colour) { 0xff, 0xff, 0xff, 0x00 } ),
       textWidth( 0 ), textHeight( font.sansHeight )
   {}
 
@@ -44,11 +44,11 @@ namespace ui
 
   void Area::setFont( Font::Type type )
   {
-    if( type == Font::Type::MONO ) {
+    if( type == Font::MONO ) {
       currentFont = font.monoFont;
       textHeight  = font.monoHeight;
     }
-    else if( type == Font::Type::SANS ) {
+    else if( type == Font::SANS ) {
       currentFont = font.sansFont;
       textHeight  = font.sansHeight;
     }

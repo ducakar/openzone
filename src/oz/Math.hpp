@@ -44,6 +44,9 @@ namespace oz
       static const float SQRT2;
       static const float SQRT1_2;
 
+      static const float INF;
+      static const float NaN;
+
       static const float MAX_RAND;
 
       explicit Math() = delete;
@@ -281,28 +284,6 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
-      static float nan()
-      {
-#ifdef OZ_BUILTIN_MATH
-        return __builtin_nanf( "" );
-#elif defined( OZ_MSVC )
-        return float( 0.0f * HUGE_VAL );
-#else
-        return nanf( "" );
-#endif
-      }
-
-      OZ_ALWAYS_INLINE
-      static float inf()
-      {
-#ifdef OZ_BUILTIN_MATH
-        return __builtin_inff();
-#else
-        return float( HUGE_VAL );
-#endif
-      }
-
-      OZ_ALWAYS_INLINE
       static bool isNaN( float x )
       {
 #ifdef OZ_BUILTIN_MATH
@@ -327,12 +308,17 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
-      static bool isInf( float x )
+      static int isInf( float x )
       {
 #ifdef OZ_BUILTIN_MATH
         return __builtin_isinf( x );
 #elif defined( OZ_MSVC )
-        return _finite( x ) == 0 && _isnan( x ) == 0;
+        if( _finite( x ) != 0 || _isnan( x ) != 0 ) {
+          return 0;
+        }
+        else {
+          return x < 0.0f ? -1 : 1;
+        }
 #else
         return std::isinf( x );
 #endif

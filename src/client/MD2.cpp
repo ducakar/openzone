@@ -280,7 +280,7 @@ namespace client
   {
     log.print( "Unloading MD2 model '%s' ...", name.cstr() );
 
-    context.freeTexture( texId );
+    context.deleteTexture( texId );
 
     delete[] verts;
     delete[] glCmds;
@@ -382,7 +382,7 @@ namespace client
 
     translate( translation );
 
-    if( jumpTranslate != Vec3::ZERO && animList[int( Anim::JUMP )].lastFrame < nFrames ) {
+    if( jumpTranslate != Vec3::ZERO && animList[Anim::JUMP].lastFrame < nFrames ) {
       translate( Anim::JUMP, jumpTranslate );
     }
 

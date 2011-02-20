@@ -25,163 +25,290 @@ namespace oz
 namespace client
 {
 
-  const float Terra::DETAIL_SCALE = 4.0f;
-  const float Terra::WATER_SCALE  = 2.0f;
+  const int Terra::TILE_INDICES =
+      Terra::TILE_QUADS * ( Terra::TILE_QUADS + 1 ) * 2 + ( Terra::TILE_QUADS - 1 ) * 2;
+
+  const int Terra::TILE_VERTICES   = ( Terra::TILE_QUADS + 1 ) * ( Terra::TILE_QUADS + 1 );
+
+  const float Terra::TILE_SIZE     = Terra::TILE_QUADS * oz::Terra::Quad::SIZE;
+  const float Terra::TILE_INV_SIZE = 1.0f / Terra::TILE_SIZE;
+
+  const float Terra::DETAIL_SCALE  = 4.00f;
+  const float Terra::WATER_SCALE   = 0.25f;
 
   Terra terra;
 
   void Terra::prebuild()
   {
-    int nVertices = oz::Terra::VERTS * oz::Terra::VERTS;
-    int nIndices  = oz::Terra::VERTS * ( oz::Terra::VERTS - 1 ) * 2;
+    String configFile = "terra/" + orbis.terra.name + ".rc";
+    String outFile    = "terra/" + orbis.terra.name + ".ozcTerra";
 
-    DArray<VertexData> arrayData( nVertices );
-    DArray<uint>       indexData( nIndices );
+    log.print( "Saving client terrain data to '%s' ...", outFile.cstr() );
 
-    String path = "terra/" + orbis.terra.name + ".ozcTerra";
-    genBufferData( &arrayData, &indexData );
-    saveBufferData( path, &arrayData, &indexData );
-  }
+    Config terraConfig;
+    terraConfig.load( configFile );
 
-  void Terra::load()
-  {
-    detailTexId = context.loadTexture( orbis.terra.detailTexture );
-    mapTexId    = context.loadTexture( orbis.terra.mapTexture );
-    waterTexId  = context.loadTexture( orbis.terra.waterTexture );
+    // just to mark them used for OZ_VERBOSE_CONFIG
+    terraConfig.get( "step", 0.5f );
+    terraConfig.get( "bias", 0.0f );
 
-    int nVertices = oz::Terra::VERTS * oz::Terra::VERTS;
-    int nIndices  = oz::Terra::VERTS * ( oz::Terra::VERTS - 1 ) * 2;
-
-    DArray<VertexData> arrayData( nVertices );
-    DArray<uint>       indexData( nIndices );
-
-    String path = "terra/" + orbis.terra.name + ".ozcTerra";
-    loadBufferData( path, &arrayData, &indexData );
-
-    glGenBuffers( 1, &arrayBuffer );
-    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( VertexData ), arrayData, GL_STATIC_DRAW );
-
-    glGenBuffers( 1, &indexBuffer );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( uint ), indexData, GL_STATIC_DRAW );
-  }
-
-  void Terra::genBufferData( DArray<VertexData>* arrayData, DArray<uint>* indexData )
-  {
-    log.print( "Generating client terrain data ..." );
-
-    for( int x = 0; x < oz::Terra::VERTS; ++x ) {
-      for( int y = 0; y < oz::Terra::VERTS; ++y ) {
-        VertexData& vertex = ( *arrayData )[x * oz::Terra::VERTS + y];
-
-        vertex.position = orbis.terra.quads[x][y].vertex;
-        vertex.normal   = Vec3::ZERO;
-
-        if( x < oz::Terra::QUADS && y < oz::Terra::QUADS ) {
-          vertex.normal += orbis.terra.quads[x][y].triNormal[0];
-          vertex.normal += orbis.terra.quads[x][y].triNormal[1];
-        }
-        if( x > 0 && y < oz::Terra::QUADS ) {
-          vertex.normal += orbis.terra.quads[x - 1][y].triNormal[0];
-        }
-        if( x > 0 && y > 0 ) {
-          vertex.normal += orbis.terra.quads[x - 1][y - 1].triNormal[0];
-          vertex.normal += orbis.terra.quads[x - 1][y - 1].triNormal[1];
-        }
-        if( x < oz::Terra::QUADS && y > 0 ) {
-          vertex.normal += orbis.terra.quads[x][y - 1].triNormal[1];
-        }
-        vertex.normal = ~vertex.normal;
-
-        vertex.detailTexCoord.u = float( x & 1 ) * DETAIL_SCALE;
-        vertex.detailTexCoord.v = float( y & 1 ) * DETAIL_SCALE;
-
-        vertex.mapTexCoord.u = float( x ) / oz::Terra::VERTS;
-        vertex.mapTexCoord.v = float( y ) / oz::Terra::VERTS;
-
-        if( x != oz::Terra::VERTS - 1 ) {
-          ( *indexData )[ 2 * ( x * oz::Terra::VERTS + y ) ] = ( x + 1 ) * oz::Terra::VERTS + y;
-          ( *indexData )[ 2 * ( x * oz::Terra::VERTS + y ) + 1 ] = x * oz::Terra::VERTS + y;
-        }
-      }
-    }
-
-    log.printEnd( " OK" );
-  }
-
-  void Terra::saveBufferData( const char* path, DArray<VertexData>* arrayData,
-                              DArray<uint>* indexData )
-  {
-    log.print( "Saving client terrain data to '%s' ...", path );
+    String terraDir      = "terra/";
+    String waterTexture  = terraDir + terraConfig.get( "waterTexture", "" );
+    String detailTexture = terraDir + terraConfig.get( "detailTexture", "" );
+    String mapTexture    = terraDir + terraConfig.get( "mapTexture", "" );
 
     int size = 0;
-    size += int( 2 * sizeof( int ) );
-    size += int( arrayData->length() * sizeof( VertexData ) );
-    size += int( indexData->length() * sizeof( uint ) );
+    size += waterTexture.length() + 1;
+    size += detailTexture.length() + 1;
+    size += mapTexture.length() + 1;
+    size += int( ( TILE_INDICES + 16 ) * sizeof( ushort ) );
+    size += int( TILES * TILES * ( TILE_VERTICES + 16 ) * sizeof( Vertex ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
-    os.writeInt( arrayData->length() );
-    os.writeInt( indexData->length() );
+    os.writeString( waterTexture );
+    os.writeString( detailTexture );
+    os.writeString( mapTexture );
 
-    for( int i = 0; i < arrayData->length(); ++i ) {
-      const VertexData& vertex = ( *arrayData )[i];
-
-      os.writePoint3( vertex.position );
-      os.writeVec3( vertex.normal );
-      os.writeFloat( vertex.detailTexCoord.u );
-      os.writeFloat( vertex.detailTexCoord.v );
-      os.writeFloat( vertex.mapTexCoord.u );
-      os.writeFloat( vertex.mapTexCoord.v );
+    // generate index buffer
+    int index = 0;
+    for( int x = 0; x < TILE_QUADS; ++x ) {
+      if( x != 0 ) {
+        os.writeShort( ushort( index ) );
+      }
+      for( int y = 0; y <= TILE_QUADS; ++y ) {
+        os.writeShort( ushort( index ) );
+        os.writeShort( ushort( index + TILE_QUADS + 1 ) );
+        ++index;
+      }
+      if( x != TILE_QUADS - 1 ) {
+        os.writeShort( ushort( index + TILE_QUADS ) );
+      }
     }
 
-    for( int i = 0; i < indexData->length(); ++i ) {
-      const uint& index = ( *indexData )[i];
+    // water front
+    os.writeShort( ushort( TILE_VERTICES + 1 ) );
+    os.writeShort( ushort( TILE_VERTICES + 0 ) );
+    os.writeShort( ushort( TILE_VERTICES + 3 ) );
+    os.writeShort( ushort( TILE_VERTICES + 2 ) );
+    os.writeShort( ushort( TILE_VERTICES + 5 ) );
+    os.writeShort( ushort( TILE_VERTICES + 4 ) );
+    os.writeShort( ushort( TILE_VERTICES + 7 ) );
+    os.writeShort( ushort( TILE_VERTICES + 6 ) );
 
-      os.writeInt( index );
+    // water back
+    os.writeShort( ushort( TILE_VERTICES +  8 ) );
+    os.writeShort( ushort( TILE_VERTICES +  9 ) );
+    os.writeShort( ushort( TILE_VERTICES + 10 ) );
+    os.writeShort( ushort( TILE_VERTICES + 11 ) );
+    os.writeShort( ushort( TILE_VERTICES + 12 ) );
+    os.writeShort( ushort( TILE_VERTICES + 13 ) );
+    os.writeShort( ushort( TILE_VERTICES + 14 ) );
+    os.writeShort( ushort( TILE_VERTICES + 15 ) );
+
+    // generate vertex buffers
+    Point3 pos;
+    Vec3   normal;
+
+    for( int i = 0; i < TILES; ++i ) {
+      for( int j = 0; j < TILES; ++j ) {
+        // tile
+        const auto& quads = orbis.terra.quads;
+
+        for( int k = 0; k <= TILE_QUADS; ++k ) {
+          for( int l = 0; l <= TILE_QUADS; ++l ) {
+            int x = i * TILE_QUADS + k;
+            int y = j * TILE_QUADS + l;
+
+            pos    = quads[x][y].vertex;
+            normal = Vec3::ZERO;
+
+            if( x < oz::Terra::QUADS && y < oz::Terra::QUADS ) {
+              normal += quads[x][y].triNormal[0];
+              normal += quads[x][y].triNormal[1];
+            }
+            if( x > 0 && y < oz::Terra::QUADS ) {
+              normal += quads[x - 1][y].triNormal[0];
+            }
+            if( x > 0 && y > 0 ) {
+              normal += quads[x - 1][y - 1].triNormal[0];
+              normal += quads[x - 1][y - 1].triNormal[1];
+            }
+            if( x < oz::Terra::QUADS && y > 0 ) {
+              normal += quads[x][y - 1].triNormal[1];
+            }
+            normal = ~normal;
+
+            os.writePoint3( pos );
+            os.writeVec3( normal );
+            os.writeFloat( float( x & 1 ) * DETAIL_SCALE );
+            os.writeFloat( float( y & 1 ) * DETAIL_SCALE );
+          }
+        }
+
+        int x = i * TILE_QUADS;
+        int y = j * TILE_QUADS;
+
+        float minX = quads[x][y].vertex.x;
+        float minY = quads[x][y].vertex.y;
+        float maxX = quads[x + TILE_QUADS][y + TILE_QUADS].vertex.x;
+        float maxY = quads[x + TILE_QUADS][y + TILE_QUADS].vertex.y;
+
+        normal = Vec3( 0.0f, 0.0f, 1.0f );
+
+        // front, blend 1
+        os.writePoint3( Point3( minX, minY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( 0.0f );
+        os.writeFloat( 0.0f );
+
+        os.writePoint3( Point3( minX, maxY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( 0.0f );
+        os.writeFloat( TILE_SIZE * WATER_SCALE );
+
+        os.writePoint3( Point3( maxX, minY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( TILE_SIZE * WATER_SCALE );
+        os.writeFloat( 0.0f );
+
+        os.writePoint3( Point3( maxX, maxY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( TILE_SIZE * WATER_SCALE );
+        os.writeFloat( TILE_SIZE * WATER_SCALE );
+
+        // front, blend 2
+        os.writePoint3( Point3( minX, minY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( Water::TEX_BIAS );
+        os.writeFloat( Water::TEX_BIAS );
+
+        os.writePoint3( Point3( minX, maxY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( Water::TEX_BIAS );
+        os.writeFloat( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS );
+
+        os.writePoint3( Point3( maxX, minY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS );
+        os.writeFloat( Water::TEX_BIAS );
+
+        os.writePoint3( Point3( maxX, maxY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS );
+        os.writeFloat( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS );
+
+        normal = Vec3( 0.0f, 0.0f, -1.0f );
+
+        // back, blend 1
+        os.writePoint3( Point3( minX, minY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( 0.0f );
+        os.writeFloat( 0.0f );
+
+        os.writePoint3( Point3( minX, maxY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( 0.0f );
+        os.writeFloat( TILE_SIZE * WATER_SCALE );
+
+        os.writePoint3( Point3( maxX, minY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( TILE_SIZE * WATER_SCALE );
+        os.writeFloat( 0.0f );
+
+        os.writePoint3( Point3( maxX, maxY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( TILE_SIZE * WATER_SCALE );
+        os.writeFloat( TILE_SIZE * WATER_SCALE );
+
+        // back, blend 2
+        os.writePoint3( Point3( minX, minY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( Water::TEX_BIAS );
+        os.writeFloat( Water::TEX_BIAS );
+
+        os.writePoint3( Point3( minX, maxY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( Water::TEX_BIAS );
+        os.writeFloat( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS );
+
+        os.writePoint3( Point3( maxX, minY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS );
+        os.writeFloat( Water::TEX_BIAS );
+
+        os.writePoint3( Point3( maxX, maxY, 0.0f ) );
+        os.writeVec3( normal );
+        os.writeFloat( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS );
+        os.writeFloat( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS );
+      }
     }
 
-    buffer.write( path );
+    hard_assert( !os.isAvailable() );
+    buffer.write( outFile );
 
     log.printEnd( " OK" );
   }
 
-  void Terra::loadBufferData( const char* path, DArray<VertexData>* arrayData,
-                              DArray<uint>* indexData )
+  void Terra::load()
   {
-    log.print( "Loading client terrain data from '%s' ...", path );
+    String path = "terra/" + orbis.terra.name + ".ozcTerra";
+
+    log.print( "Loading terrain '%s' ...", path.cstr() );
+
+    ushort* indices  = new ushort[TILE_INDICES + 16];
+    Vertex* vertices = new Vertex[TILE_VERTICES + 16];
 
     Buffer buffer;
-    if( !buffer.read( path ) ) {
-      throw Exception( "Cannot read terrain file" );
-    }
+    buffer.read( path );
+
     InputStream is = buffer.inputStream();
 
-    int nVertices = is.readInt();
-    int nIndices = is.readInt();
+    String waterTexture  = is.readString();
+    String detailTexture = is.readString();
+    String mapTexture    = is.readString();
 
-    if( nVertices != arrayData->length() || nIndices != indexData->length() ) {
-      throw Exception( "Invalid client terrain size" );
+    glGenBuffers( 1, &indexBuffer );
+    glGenBuffers( TILES * TILES, &vertexBuffers[0][0] );
+
+    for( int i = 0; i < TILE_INDICES + 16; ++i ) {
+      indices[i] = is.readShort();
     }
 
-    for( int i = 0; i < nVertices; ++i ) {
-      VertexData& vertex = ( *arrayData )[i];
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, ( TILE_INDICES + 16 ) * sizeof( ushort ), indices,
+                  GL_STATIC_DRAW );
 
-      vertex.position = is.readPoint3();
-      vertex.normal = is.readVec3();
-      vertex.detailTexCoord.u = is.readFloat();
-      vertex.detailTexCoord.v = is.readFloat();
-      vertex.mapTexCoord.u = is.readFloat();
-      vertex.mapTexCoord.v = is.readFloat();
+    for( int i = 0; i < TILES; ++i ) {
+      for( int j = 0; j < TILES; ++j ) {
+        for( int k = 0; k < TILE_VERTICES + 16; ++k ) {
+          vertices[k].pos[0] = is.readFloat();
+          vertices[k].pos[1] = is.readFloat();
+          vertices[k].pos[2] = is.readFloat();
+
+          vertices[k].normal[0] = is.readFloat();
+          vertices[k].normal[1] = is.readFloat();
+          vertices[k].normal[2] = is.readFloat();
+
+          vertices[k].texCoord[0] = is.readFloat();
+          vertices[k].texCoord[1] = is.readFloat();
+        }
+
+        glBindBuffer( GL_ARRAY_BUFFER, vertexBuffers[i][j] );
+        glBufferData( GL_ARRAY_BUFFER, ( TILE_VERTICES + 16 ) * sizeof( Vertex ), vertices,
+                      GL_STATIC_DRAW );
+      }
     }
 
-    for( int i = 0; i < nIndices; ++i ) {
-      uint& index = ( *indexData )[i];
+    delete[] indices;
+    delete[] vertices;
 
-      index = is.readInt();
-    }
+    waterTexId  = context.loadTexture( waterTexture );
+    detailTexId = context.loadTexture( detailTexture );
+    mapTexId    = context.loadTexture( mapTexture );
+
+    hard_assert( !is.isAvailable() );
 
     log.printEnd( " OK" );
   }
@@ -189,154 +316,90 @@ namespace client
   void Terra::unload()
   {
     glDeleteBuffers( 1, &indexBuffer );
-    glDeleteBuffers( 1, &arrayBuffer );
+    glDeleteBuffers( TILES * TILES, &vertexBuffers[0][0] );
 
-    context.freeTexture( waterTexId );
-    context.freeTexture( mapTexId );
-    context.freeTexture( detailTexId );
+    context.deleteTexture( detailTexId );
+    context.deleteTexture( waterTexId );
   }
 
-  void Terra::draw() const
+  void Terra::draw()
   {
-    Span span = orbis.terra.getInters( camera.p.x - radius, camera.p.y - radius,
-                                       camera.p.x + radius, camera.p.y + radius );
-    ++span.maxX;
-    ++span.maxY;
-
-    // to match strip triangles with matrix terrain we have to make them clockwise since
-    // we draw column-major (strips along y axis) for better cache performance
-    glFrontFace( GL_CW );
-
-    glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, detailTexId );
-
-    glActiveTexture( GL_TEXTURE1 );
-    glEnable( GL_TEXTURE_2D );
-    glBindTexture( GL_TEXTURE_2D, mapTexId );
+    span.minX = max( int( ( camera.p.x - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
+    span.minY = max( int( ( camera.p.y - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
+    span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
+    span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
     glEnableClientState( GL_VERTEX_ARRAY );
     glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
+    glBindTexture( GL_TEXTURE_2D, detailTexId );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
 
-    glVertexPointer( 3, GL_FLOAT, sizeof( VertexData ),
-                     OZ_VBO_OFFSETOF( 0, VertexData, position ) );
-    glNormalPointer( GL_FLOAT, sizeof( VertexData ),
-                     OZ_VBO_OFFSETOF( 0, VertexData, normal ) );
-
-    glClientActiveTexture( GL_TEXTURE0 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( VertexData ),
-                       OZ_VBO_OFFSETOF( 0, VertexData, detailTexCoord ) );
-
-    glClientActiveTexture( GL_TEXTURE1 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( VertexData ),
-                       OZ_VBO_OFFSETOF( 0, VertexData, mapTexCoord ) );
-
-    int count = ( span.maxY - span.minY + 1 ) * 2;
-    for( int x = span.minX; x < span.maxX; ++x ) {
-      int offset = ( x * oz::Terra::VERTS + span.minY ) * 2;
-      glDrawElements( GL_TRIANGLE_STRIP, count, GL_UNSIGNED_INT, OZ_VBO_OFFSET( offset, uint ) );
+    for( int i = span.minX; i <= span.maxX; ++i ) {
+      for( int j = span.minY; j <= span.maxY; ++j ) {
+        glBindBuffer( GL_ARRAY_BUFFER, vertexBuffers[i][j] );
+        context.setVertexFormat();
+        context.drawIndexedArray( GL_TRIANGLE_STRIP, 0, TILE_INDICES );
+      }
     }
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-    glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 
-    glActiveTexture( GL_TEXTURE1 );
-    glDisable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE0 );
-
-    glFrontFace( GL_CCW );
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
-  void Terra::drawWater() const
+  void Terra::drawWater()
   {
-    Span span = orbis.terra.getInters( camera.p.x - radius, camera.p.y - radius,
-                                       camera.p.x + radius, camera.p.y + radius );
-    ++span.maxX;
-    ++span.maxY;
+    int sideIndices = 0;
 
-    float minX = float( span.minX );
-    float maxX = float( span.maxX );
-    float minY = float( span.minY );
-    float maxY = float( span.maxY );
+    if( camera.p.z < 0.0f ) {
+      span.minX = max( int( ( camera.p.x - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
+      span.minY = max( int( ( camera.p.y - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
+      span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
+      span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
+
+      sideIndices = 8;
+    }
+
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
     glBindTexture( GL_TEXTURE_2D, waterTexId );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
 
-    const Point3& v0 = orbis.terra.quads[span.minX][span.minY].vertex;
-    const Point3& v1 = orbis.terra.quads[span.maxX][span.maxY].vertex;
+    glMatrixMode( GL_TEXTURE );
 
-    if( camera.p.z >= 0 ) {
-      glNormal3f( 0.0f, 0.0f, 1.0f );
+    for( int i = span.minX; i <= span.maxX; ++i ) {
+      for( int j = span.minY; j <= span.maxY; ++j ) {
+        glBindBuffer( GL_ARRAY_BUFFER, vertexBuffers[i][j] );
+        context.setVertexFormat();
 
-      glBegin( GL_QUADS );
         glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend1 );
-
-        glTexCoord2f( minX * WATER_SCALE, minY * WATER_SCALE );
-        glVertex3f( v0.x, v0.y, 0.0f );
-
-        glTexCoord2f( maxX * WATER_SCALE, minY * WATER_SCALE );
-        glVertex3f( v1.x, v0.y, 0.0f );
-
-        glTexCoord2f( maxX * WATER_SCALE, maxY * WATER_SCALE );
-        glVertex3f( v1.x, v1.y, 0.0f );
-
-        glTexCoord2f( minX * WATER_SCALE, maxY * WATER_SCALE );
-        glVertex3f( v0.x, v1.y, 0.0f );
+        context.drawIndexedArray( GL_TRIANGLE_STRIP, TILE_INDICES + sideIndices, 4 );
 
         glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend2 );
-
-        glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
-        glVertex3f( v0.x, v0.y, 0.0f );
-
-        glTexCoord2f( maxX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
-        glVertex3f( v1.x, v0.y, 0.0f );
-
-        glTexCoord2f( maxX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
-        glVertex3f( v1.x, v1.y, 0.0f );
-
-        glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
-        glVertex3f( v0.x, v1.y, 0.0f );
-      glEnd();
+        context.drawIndexedArray( GL_TRIANGLE_STRIP, TILE_INDICES + sideIndices + 4, 4 );
+      }
     }
-    else {
-      glNormal3f( 0.0f, 0.0f, -1.0f );
 
-      glBegin( GL_QUADS );
-        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend1 );
+    glLoadIdentity();
+    glMatrixMode( GL_MODELVIEW );
 
-        glTexCoord2f( minX * WATER_SCALE, maxY * WATER_SCALE );
-        glVertex3f( v0.x, v1.y, 0.0f );
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-        glTexCoord2f( maxX * WATER_SCALE, maxY * WATER_SCALE );
-        glVertex3f( v1.x, v1.y, 0.0f );
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 
-        glTexCoord2f( maxX * WATER_SCALE, minY * WATER_SCALE );
-        glVertex3f( v1.x, v0.y, 0.0f );
-
-        glTexCoord2f( minX * WATER_SCALE, minY * WATER_SCALE );
-        glVertex3f( v0.x, v0.y, 0.0f );
-
-        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend2 );
-
-        glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
-        glVertex3f( v0.x, v1.y, 0.0f );
-
-        glTexCoord2f( maxX * WATER_SCALE + Water::TEX_BIAS, maxY * WATER_SCALE + Water::TEX_BIAS );
-        glVertex3f( v1.x, v1.y, 0.0f );
-
-        glTexCoord2f( maxX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
-        glVertex3f( v1.x, v0.y, 0.0f );
-
-        glTexCoord2f( minX * WATER_SCALE + Water::TEX_BIAS, minY * WATER_SCALE + Water::TEX_BIAS );
-        glVertex3f( v0.x, v0.y, 0.0f );
-      glEnd();
-    }
+    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
 }

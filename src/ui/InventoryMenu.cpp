@@ -35,12 +35,12 @@ namespace ui
 
   InventoryMenu::~InventoryMenu()
   {
-    context.freeTexture( useTexId );
+    context.deleteTexture( useTexId );
   }
 
   bool InventoryMenu::onMouseEvent()
   {
-    if( camera.state != Camera::State::BOT || camera.bot == -1 || !mouse.doShow ) {
+    if( camera.state != Camera::BOT || camera.bot == -1 || !mouse.doShow ) {
       return false;
     }
 
@@ -90,7 +90,7 @@ namespace ui
 
   void InventoryMenu::onDraw()
   {
-    if( camera.state != Camera::State::BOT || camera.bot == -1 || !mouse.doShow ) {
+    if( camera.state != Camera::BOT || camera.bot == -1 || !mouse.doShow ) {
       tagged = -1;
       row = 0;
       return;
@@ -98,9 +98,9 @@ namespace ui
 
     Frame::onDraw();
 
-    setFont( Font::Type::TITLE );
+    setFont( Font::TITLE );
     printCentred( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, "Inventory" );
-    setFont( Font::Type::SANS );
+    setFont( Font::SANS );
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     glEnable( GL_TEXTURE_2D );

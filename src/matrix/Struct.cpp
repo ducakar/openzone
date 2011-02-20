@@ -44,47 +44,47 @@ namespace oz
   void Struct::Entity::updateIgnoring()
   {
     switch( state ) {
-      case State::CLOSED: {
+      case CLOSED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = State::OPENING;
+          state = OPENING;
         }
         break;
       }
-      case State::OPENING:
-      case State::OPENING_BLOCKED: {
+      case OPENING:
+      case OPENING_BLOCKED: {
         ratio += model->ratioInc;
         time += Timer::TICK_TIME;
 
         if( ratio >= 1.0f ) {
           ratio = 1.0f;
           time = 0.0f;
-          state = State::OPENED;
+          state = OPENED;
         }
 
         offset = ratio * model->move;
         break;
       }
-      case State::OPENED: {
+      case OPENED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = State::CLOSING;
+          state = CLOSING;
         }
         break;
       }
-      case State::CLOSING:
-      case State::CLOSING_BLOCKED: {
+      case CLOSING:
+      case CLOSING_BLOCKED: {
         ratio -= model->ratioInc;
         time += Timer::TICK_TIME;
 
         if( ratio <= 0.0f ) {
           ratio = 0.0f;
           time = 0.0f;
-          state = State::CLOSED;
+          state = CLOSED;
         }
 
         offset = ratio * model->move;
@@ -100,17 +100,17 @@ namespace oz
   void Struct::Entity::updateBlocking()
   {
     switch( state ) {
-      case State::CLOSED: {
+      case CLOSED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = State::OPENING;
+          state = OPENING;
         }
         break;
       }
-      case State::OPENING:
-      case State::OPENING_BLOCKED: {
+      case OPENING:
+      case OPENING_BLOCKED: {
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
@@ -124,7 +124,7 @@ namespace oz
         }
         else {
           if( ratio == 1.0f ) {
-            state = State::OPENED;
+            state = OPENED;
           }
 
           offset = oldOffset;
@@ -144,17 +144,17 @@ namespace oz
         }
         break;
       }
-      case State::OPENED: {
+      case OPENED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = State::CLOSING;
+          state = CLOSING;
         }
         break;
       }
-      case State::CLOSING:
-      case State::CLOSING_BLOCKED: {
+      case CLOSING:
+      case CLOSING_BLOCKED: {
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
@@ -167,7 +167,7 @@ namespace oz
         }
         else {
           if( ratio == 0.0f ) {
-            state = State::CLOSED;
+            state = CLOSED;
           }
 
           offset = oldOffset;
@@ -197,17 +197,17 @@ namespace oz
   void Struct::Entity::updatePushing()
   {
     switch( state ) {
-      case State::CLOSED: {
+      case CLOSED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = State::OPENING;
+          state = OPENING;
         }
         break;
       }
-      case State::OPENING:
-      case State::OPENING_BLOCKED: {
+      case OPENING:
+      case OPENING_BLOCKED: {
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
@@ -239,7 +239,7 @@ namespace oz
         }
         else {
           if( ratio == 1.0f ) {
-            state = State::OPENED;
+            state = OPENED;
           }
 
           offset = oldOffset;
@@ -262,17 +262,17 @@ namespace oz
         }
         break;
       }
-      case State::OPENED: {
+      case OPENED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = State::CLOSING;
+          state = CLOSING;
         }
         break;
       }
-      case State::CLOSING:
-      case State::CLOSING_BLOCKED: {
+      case CLOSING:
+      case CLOSING_BLOCKED: {
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
@@ -304,7 +304,7 @@ namespace oz
         }
         else {
           if( ratio == 0.0f ) {
-            state = State::CLOSED;
+            state = CLOSED;
           }
 
           offset = oldOffset;
@@ -337,17 +337,17 @@ namespace oz
   void Struct::Entity::updateCrushing()
   {
     switch( state ) {
-      case State::CLOSED: {
+      case CLOSED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = State::OPENING;
+          state = OPENING;
         }
         break;
       }
-      case State::OPENING:
-      case State::OPENING_BLOCKED: {
+      case OPENING:
+      case OPENING_BLOCKED: {
         ratio = Math::min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
 
@@ -368,21 +368,21 @@ namespace oz
           }
         }
         else if( ratio == 1.0f ) {
-          state = State::OPENED;
+          state = OPENED;
         }
         break;
       }
-      case State::OPENED: {
+      case OPENED: {
         time += Timer::TICK_TIME;
 
         if( time >= model->timeout ) {
           time = 0.0f;
-          state = State::CLOSING;
+          state = CLOSING;
         }
         break;
       }
-      case State::CLOSING:
-      case State::CLOSING_BLOCKED: {
+      case CLOSING:
+      case CLOSING_BLOCKED: {
         ratio = Math::max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
 
@@ -411,7 +411,7 @@ namespace oz
           }
         }
         else if( ratio == 0.0f ) {
-          state = State::CLOSED;
+          state = CLOSED;
         }
         break;
       }
@@ -441,7 +441,7 @@ namespace oz
       entity.model  = &bsp->models[i];
       entity.str    = this;
       entity.offset = Vec3::ZERO;
-      entity.state  = Entity::State::CLOSED;
+      entity.state  = Entity::CLOSED;
       entity.ratio  = 0.0f;
       entity.time   = 0.0f;
     }
@@ -481,19 +481,19 @@ namespace oz
       default: {
         hard_assert( false );
       }
-      case Rotation::R0: {
+      case R0: {
         return Bounds( Point3( +bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z ),
                        Point3( +bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z ) );
       }
-      case Rotation::R90: {
+      case R90: {
         return Bounds( Point3( +bb.mins.y - p.y, -bb.maxs.x + p.x, +bb.mins.z - p.z ),
                        Point3( +bb.maxs.y - p.y, -bb.mins.x + p.x, +bb.maxs.z - p.z ) );
       }
-      case Rotation::R180: {
+      case R180: {
         return Bounds( Point3( -bb.maxs.x + p.x, -bb.maxs.y + p.y, +bb.mins.z - p.z ),
                        Point3( -bb.mins.x + p.x, -bb.mins.y + p.y, +bb.maxs.z - p.z ) );
       }
-      case Rotation::R270: {
+      case R270: {
         return Bounds( Point3( -bb.maxs.y + p.y, +bb.mins.x - p.x, +bb.mins.z - p.z ),
                        Point3( -bb.mins.y + p.y, +bb.maxs.x - p.x, +bb.maxs.z - p.z ) );
       }
@@ -506,19 +506,19 @@ namespace oz
       default: {
         hard_assert( false );
       }
-      case Rotation::R0: {
+      case R0: {
         return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
                        p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
       }
-      case Rotation::R90: {
+      case R90: {
         return Bounds( p + Vec3( -bb.maxs.y, +bb.mins.x, +bb.mins.z ),
                        p + Vec3( -bb.mins.y, +bb.maxs.x, +bb.maxs.z ) );
       }
-      case Rotation::R180: {
+      case R180: {
         return Bounds( p + Vec3( -bb.maxs.x, -bb.maxs.y, +bb.mins.z ),
                        p + Vec3( -bb.mins.x, -bb.mins.y, +bb.maxs.z ) );
       }
-      case Rotation::R270: {
+      case R270: {
         return Bounds( p + Vec3( +bb.mins.y, -bb.maxs.x, +bb.mins.z ),
                        p + Vec3( +bb.maxs.y, -bb.mins.x, +bb.maxs.z ) );
       }
@@ -533,19 +533,19 @@ namespace oz
       default: {
         hard_assert( false );
       }
-      case Rotation::R0: {
+      case R0: {
         return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
                        p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
       }
-      case Rotation::R90: {
+      case R90: {
         return Bounds( p + Vec3( -in.maxs.y, +in.mins.x, +in.mins.z ),
                        p + Vec3( -in.mins.y, +in.maxs.x, +in.maxs.z ) );
       }
-      case Rotation::R180: {
+      case R180: {
         return Bounds( p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z ),
                        p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z ) );
       }
-      case Rotation::R270: {
+      case R270: {
         return Bounds( p + Vec3( +in.mins.y, -in.maxs.x, +in.mins.z ),
                        p + Vec3( +in.maxs.y, -in.mins.x, +in.maxs.z ) );
       }
@@ -558,22 +558,22 @@ namespace oz
       default: {
         hard_assert( false );
       }
-      case Rotation::R0: {
+      case R0: {
         mins = p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z );
         maxs = p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z );
         break;
       }
-      case Rotation::R90: {
+      case R90: {
         mins = p + Vec3( -in.maxs.y, in.mins.x, in.mins.z );
         maxs = p + Vec3( -in.mins.y, in.maxs.x, in.maxs.z );
         break;
       }
-      case Rotation::R180: {
+      case R180: {
         mins = p + Vec3( -in.maxs.x, -in.maxs.y, +in.mins.z );
         maxs = p + Vec3( -in.mins.x, -in.mins.y, +in.maxs.z );
         break;
       }
-      case Rotation::R270: {
+      case R270: {
         mins = p + Vec3( in.mins.y, -in.maxs.x, in.mins.z );
         maxs = p + Vec3( in.maxs.y, -in.mins.x, in.maxs.z );
         break;
@@ -596,19 +596,19 @@ namespace oz
       hard_assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
 
       switch( entity.model->type ) {
-        case BSP::Model::Type::IGNORING: {
+        case BSP::Model::IGNORING: {
           entity.updateIgnoring();
           break;
         }
-        case BSP::Model::Type::BLOCKING: {
+        case BSP::Model::BLOCKING: {
           entity.updateBlocking();
           break;
         }
-        case BSP::Model::Type::PUSHING: {
+        case BSP::Model::PUSHING: {
           entity.updatePushing();
           break;
         }
-        case BSP::Model::Type::CRUSHING: {
+        case BSP::Model::CRUSHING: {
           entity.updateCrushing();
           break;
         }

@@ -13,6 +13,7 @@
 
 #include "matrix/Translator.hpp"
 
+#include "client/Mesh.hpp"
 #include "client/BSP.hpp"
 #include "client/Model.hpp"
 #include "client/Audio.hpp"
@@ -28,6 +29,12 @@ namespace client
   class MD3;
   class OBJ;
 
+  const int VAO_INDEXED       = 0x01;
+  const int VAO_NORMAL_BIT    = 0x10;
+  const int VAO_TEXCOORD0_BIT = 0x20;
+  const int VAO_TEXCOORD1_BIT = 0x40;
+  const int VAO_TEXCOORD2_BIT = 0x80;
+
   class Context
   {
     friend class Render;
@@ -40,40 +47,6 @@ namespace client
       static const int DEFAULT_MAG_FILTER = GL_LINEAR;
       static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
       static const int VORBIS_BUFFER_SIZE = 1024 * 1024;
-
-      struct Lists
-      {
-        uint base;
-
-        // we can use union here, those two members are never in use at the same time
-        union
-        {
-          int count;
-          int nextSlot[1];
-        };
-      };
-
-      struct Source
-      {
-        uint    source;
-        Source* next[1];
-
-        explicit Source( uint sourceId ) : source( sourceId )
-        {}
-
-        static Pool<Source> pool;
-
-        OZ_STATIC_POOL_ALLOC( pool )
-      };
-
-      struct ContSource
-      {
-        uint source;
-        bool isUpdated;
-
-        explicit ContSource( uint sourceId ) : source( sourceId ), isUpdated( true )
-        {}
-      };
 
       template <typename Type>
       struct Resource
@@ -101,6 +74,41 @@ namespace client
         };
       };
 
+      // provide similar functionality as vertex array objects in OpenGL 3+
+      struct VAO
+      {
+        uint buffers[2];
+        int  flags;
+      };
+
+      struct Lists
+      {
+        uint base;
+        int  count;
+      };
+
+      struct Source
+      {
+        uint    source;
+        Source* next[1];
+
+        explicit Source( uint sourceId ) : source( sourceId )
+        {}
+
+        static Pool<Source> pool;
+
+        OZ_STATIC_POOL_ALLOC( pool )
+      };
+
+      struct ContSource
+      {
+        uint source;
+        bool isUpdated;
+
+        explicit ContSource( uint sourceId ) : source( sourceId ), isUpdated( true )
+        {}
+      };
+
       char                              vorbisBuffer[VORBIS_BUFFER_SIZE];
 
     private:
@@ -111,6 +119,7 @@ namespace client
       Resource<uint>*                   textures;
       Resource<uint>*                   sounds;
 
+      Sparse<VAO>                       vaos;
       Sparse<Lists>                     lists;
 
       ContSource*                       cachedSource;
@@ -137,6 +146,7 @@ namespace client
                                 bool wrap, int magFilter, int minFilter );
       static uint buildNormalmap( void* data, const Vec3& lightNormal, int width,int height,
                                   int bytesPerPixel, bool wrap, int magFilter, int minFilter );
+      void deleteSound( int resource );
 
     public:
 
@@ -157,6 +167,19 @@ namespace client
                             int magFilter = DEFAULT_MAG_FILTER,
                             int minFilter = DEFAULT_MIN_FILTER );
 
+      uint loadTexture( const char* path,
+                        bool wrap = true,
+                        int magFilter = DEFAULT_MAG_FILTER,
+                        int minFilter = DEFAULT_MIN_FILTER );
+
+      uint loadNormalmap( const char* path,
+                          const Vec3& lightNormal,
+                          bool wrap = true,
+                          int magFilter = DEFAULT_MAG_FILTER,
+                          int minFilter = DEFAULT_MIN_FILTER );
+
+      void deleteTexture( uint texId );
+
       uint requestTexture( int resource,
                            bool wrap = true,
                            int magFilter = DEFAULT_MAG_FILTER,
@@ -170,29 +193,29 @@ namespace client
 
       void releaseTexture( int resource );
 
-      uint loadTexture( const char* path,
-                        bool wrap = true,
-                        int magFilter = DEFAULT_MAG_FILTER,
-                        int minFilter = DEFAULT_MIN_FILTER );
-
-      uint loadNormalmap( const char* path,
-                          const Vec3& lightNormal,
-                          bool wrap = true,
-                          int magFilter = DEFAULT_MAG_FILTER,
-                          int minFilter = DEFAULT_MIN_FILTER );
-
-      void freeTexture( uint texId );
-
       uint requestSound( int resource );
       void releaseSound( int resource );
-      void freeSound( int resource );
 
       BSP* loadBSP( int resource );
       void releaseBSP( int resource );
 
+      uint genArray( int flags, GLenum usage,
+                     const Vertex* vertices, int nVertices,
+                     const ushort* indices = null, int nIndices = 0 );
+
+      void deleteArray( uint id );
+
+      void bindArray( uint id ) const;
+      static void unbindArray();
+
+      static void setVertexFormat();
+
+      void drawArray( GLenum mode, int firstVertex, int nVertices ) const;
+      void drawIndexedArray( GLenum mode, int firstIndex, int nIndices ) const;
+
       uint genList();
       uint genLists( int count );
-      void freeLists( uint listId );
+      void deleteLists( uint listId );
 
       OBJ* loadOBJ( const char* name );
       void releaseOBJ( const char* name );

@@ -16,43 +16,30 @@ namespace oz
 
 #ifdef OZ_SIMD
 
-  class Vec3
+  class Vec3 : public Simd
   {
     public:
 
       static const Vec3 ZERO;
-
-      union
-      {
-        float4 f4;
-        int4   i4;
-        struct
-        {
-          float x;
-          float y;
-          float z;
-          float w;
-        };
-      };
 
       OZ_ALWAYS_INLINE
       explicit Vec3()
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec3( float4 f4_ ) : f4( f4_ )
+      explicit Vec3( float4 f4 ) : Simd( f4 )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec3( int4 i4_ ) : i4( i4_ )
+      explicit Vec3( int4 i4 ) : Simd( i4 )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec3( float x, float y, float z ) : f4( float4( x, y, z, 0.0f ) )
+      explicit Vec3( float x, float y, float z ) : Simd( float4( x, y, z, 0.0f ) )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec3( const float* v ) : f4( float4( v[0], v[1], v[2], 0.0f ) )
+      explicit Vec3( const float* v ) : Simd( float4( v[0], v[1], v[2], 0.0f ) )
       {}
 
       OZ_ALWAYS_INLINE
@@ -70,13 +57,13 @@ namespace oz
       OZ_ALWAYS_INLINE
       operator const float* () const
       {
-        return &x;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
       operator float* ()
       {
-        return &x;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
@@ -84,7 +71,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 3 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE
@@ -92,7 +79,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 3 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE
@@ -184,9 +171,21 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
+      Vec3 operator * ( float4 k ) const
+      {
+        return Vec3( f4 * k );
+      }
+
+      OZ_ALWAYS_INLINE
       friend Vec3 operator * ( float k, const Vec3& v )
       {
         return Vec3( float4( k, k, k, k ) * v.f4 );
+      }
+
+      OZ_ALWAYS_INLINE
+      friend Vec3 operator * ( float4 k, const Vec3& v )
+      {
+        return Vec3( k * v.f4 );
       }
 
       OZ_ALWAYS_INLINE
@@ -195,6 +194,12 @@ namespace oz
         hard_assert( k != 0.0f );
 
         return Vec3( f4 / float4( k, k, k, k ) );
+      }
+
+      OZ_ALWAYS_INLINE
+      Vec3 operator / ( float4 k ) const
+      {
+        return Vec3( f4 / k );
       }
 
       OZ_ALWAYS_INLINE
@@ -219,11 +224,25 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
+      Vec3& operator *= ( float4 k )
+      {
+        f4 *= k;
+        return *this;
+      }
+
+      OZ_ALWAYS_INLINE
       Vec3& operator /= ( float k )
       {
         hard_assert( k != 0.0f );
 
         f4 /= float4( k, k, k, k );
+        return *this;
+      }
+
+      OZ_ALWAYS_INLINE
+      Vec3& operator /= ( float4 k )
+      {
+        f4 /= k;
         return *this;
       }
 

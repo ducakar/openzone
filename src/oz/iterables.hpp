@@ -300,7 +300,7 @@ namespace oz
    * This replaces a longer piece of code, like:
    * <pre>
    * Vector&lt;int&gt; v;
-   * for( Vector&lt;int&gt;::CIterator i( v ); i.isValid(); ++i )
+   * for( Vector&lt;int&gt;::CIterator i = v; i.isValid(); ++i )
    *   printf( "%d ", *i );
    * }</pre>
    */
