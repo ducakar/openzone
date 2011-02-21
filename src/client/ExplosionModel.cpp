@@ -29,7 +29,7 @@ namespace client
     ExplosionModel* model = new ExplosionModel();
 
     model->obj = obj;
-    model->texId = context.requestTexture( translator.textureIndex( "explosion" ) );
+    model->texId = context.loadTexture( "textures/oz/explosion.jpg" );
     model->quadric = gluNewQuadric();
     model->startMillis = timer.millis;
 
@@ -41,7 +41,7 @@ namespace client
   ExplosionModel::~ExplosionModel()
   {
     gluDeleteQuadric( quadric );
-    context.releaseTexture( translator.textureIndex( "explosion" ) );
+    context.deleteTexture( texId );
   }
 
   void ExplosionModel::draw( const Model* )

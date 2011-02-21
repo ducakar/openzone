@@ -11,39 +11,48 @@
 
 #include "stable.hpp"
 
+#include "client/common.hpp"
+
 namespace oz
 {
 namespace client
 {
 
+  class MeshData;
   class Compiler;
 
   struct Vertex
   {
     float pos[3];
     float normal[3];
-    float texCoord[2];
+    float texCoord[6];
 
     bool operator == ( const Vertex& v ) const;
 
     void set( float px = 0.0f, float py = 0.0f, float pz = 0.0f,
               float nx = 0.0f, float ny = 0.0f, float nz = 0.0f,
-              float ts = 0.0f, float tt = 0.0f );
+              float t0s = 0.0f, float t0t = 0.0f,
+              float t1s = 0.0f, float t1t = 0.0f,
+              float t2s = 0.0f, float t2t = 0.0f );
 
     void set( const Point3& p = Point3::ORIGIN,
               const Vec3& n = Vec3::ZERO,
-              float ts = 0.0f, float tt = 0.0f );
+              const TexCoord& t0 = TexCoord( 0.0f, 0.0f ),
+              const TexCoord& t1 = TexCoord( 0.0f, 0.0f ),
+              const TexCoord& t2 = TexCoord( 0.0f, 0.0f ) );
+
+    void read( InputStream* stream );
+    void write( OutputStream* stream ) const;
   };
 
   class Mesh
   {
+    friend class MeshData;
     friend class Compiler;
 
-    private:
+    static const int STREAMING_BIT = 0x00000001;
 
-      static const int TEXTURE0_BIT = 0x00000001;
-      static const int TEXTURE1_BIT = 0x00000002;
-      static const int BLEND_BIT    = 0x00000010;
+    private:
 
       struct Part
       {
@@ -51,66 +60,65 @@ namespace client
         Quat specular;
         uint texture[3];
 
+        int  mode;
         int  flags;
 
-        int  firstElement;
-        int  nElements;
+        int  firstIndex;
+        int  nIndices;
       };
 
-      uint arrayBuffer;
-      uint elementBuffer;
-
-      Vector<Part> parts;
+      uint         arrayId;
+      int          flags;
+      Vector<Part> solidParts;
+      Vector<Part> alphaParts;
 
     public:
+
+
 
       static void begin();
       static void end();
 
-      void loadStatic( InputStream* stream );
-      void loadStreaming( InputStream* stream );
+      void load( InputStream* stream, int flags = 0 );
       void unload();
 
-      void draw() const;
+      Vertex* map( int access ) const;
+      void unmap() const;
+
+      void drawSolid() const;
+      void drawAlpha() const;
 
   };
 
-  inline bool Vertex::operator == ( const Vertex& v ) const
+  class MeshData
   {
-    return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
-        normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
-        texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1];
-  }
+    friend class Compiler;
 
-  inline void Vertex::set( float px, float py, float pz,
-                           float nx, float ny, float nz,
-                           float ts, float tt )
-  {
-    pos[0] = px;
-    pos[1] = py;
-    pos[2] = pz;
+    public:
 
-    normal[0] = nx;
-    normal[1] = ny;
-    normal[2] = nz;
+      struct Part
+      {
+        Quat   diffuse;
+        Quat   specular;
+        String texture[3];
 
-    texCoord[0] = ts;
-    texCoord[1] = tt;
-  }
+        int    mode;
+        int    flags;
 
-  inline void Vertex::set( const Point3& p, const Vec3& n, float ts, float tt )
-  {
-    pos[0] = p.x;
-    pos[1] = p.y;
-    pos[2] = p.z;
+        int    firstIndex;
+        int    nIndices;
+      };
 
-    normal[0] = n.x;
-    normal[1] = n.y;
-    normal[2] = n.z;
+      Vector<Part>   solidParts;
+      Vector<Part>   alphaParts;
 
-    texCoord[0] = ts;
-    texCoord[1] = tt;
-  }
+      DArray<ushort> indices;
+      DArray<Vertex> vertices;
+
+      int getSize() const;
+      void write( OutputStream* stream ) const;
+
+  };
 
 }
 }

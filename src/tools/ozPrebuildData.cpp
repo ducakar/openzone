@@ -16,6 +16,8 @@
 #include "client/Terra.hpp"
 #include "client/BSP.hpp"
 #include "client/OBJ.hpp"
+#include "client/MD2.hpp"
+#include "client/Compiler.hpp"
 
 #include <sys/stat.h>
 #include <SDL_main.h>
@@ -66,17 +68,17 @@ int main( int, char** )
   }
 
   foreach( model, translator.models.citer() ) {
-    try {
-      struct stat statInfo;
+    struct stat statInfo;
 
-      if( stat( model->path + "/data.obj", &statInfo ) == 0 ) {
-        client::OBJ::prebuild( model->name );
-      }
+    if( stat( model->path + "/data.obj", &statInfo ) == 0 ) {
+      client::OBJ::prebuild( model->name );
     }
-    catch( const Exception& ) {
+    else if( stat( model->path + "/tris.md2", &statInfo ) == 0 ) {
+      client::MD2::prebuild( model->name );
     }
   }
 
+  client::compiler.free();
   matrix.free();
   translator.free();
 

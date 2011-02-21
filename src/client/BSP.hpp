@@ -14,6 +14,8 @@
 #include "matrix/Struct.hpp"
 #include "matrix/BSP.hpp"
 
+#include "client/Mesh.hpp"
+
 namespace oz
 {
 namespace client
@@ -34,82 +36,19 @@ namespace client
 
     private:
 
-      struct EntityModel
-      {
-        int firstFace;
-        int nFaces;
-      };
-
-      struct Vertex
-      {
-        Point3   p;
-        Vec3     normal;
-        TexCoord texCoord;
-        TexCoord lightmapCoord;
-      };
-
-      struct Face
-      {
-        Vec3 normal;
-
-        int  texture;
-        int  lightmap;
-        int  material;
-
-        int  firstVertex;
-        int  nVertices;
-
-        int  firstIndex;
-        int  nIndices;
-      };
-
-      struct Lightmap
-      {
-        char bits[LIGHTMAP_SIZE];
-      };
-
       static Point3  camPos;
-      static int     waterFlags;
 
       const oz::BSP* bsp;
-
-      int            nTextures;
-      int            nEntityModels;
-      int            nVertices;
-      int            nIndices;
-      int            nFaces;
-      int            nLightmaps;
-
-      int*           textures;
-      EntityModel*   entityModels;
-      Vertex*        vertices;
-      int*           indices;
-      Face*          faces;
-      Lightmap*      lightmaps;
-
-      uint           baseList;
-      uint*          texIds;
-      uint*          lightmapIds;
-
-      Bitset         drawnFaces;
-      Bitset         visibleLeafs;
-      Bitset         hiddenFaces;
-
-      String         name;
+      DArray<Mesh>   meshes;
+      int            flags;
 
       bool isInWater() const;
 
-      void drawFace( const Face* face ) const;
-      void drawFaceWater( const Face* face ) const;
-
-      bool loadOZCBSP( const char* fileName );
-      void freeOZCBSP();
-
       // prebuild
-      bool loadQBSP( const char* fileName );
-      void freeQBSP( const char* name );
-      void optimise();
-      bool save( const char* file );
+      static void loadQBSP( const char* fileName );
+      static void freeQBSP();
+      static void optimise();
+      static void save( const char* file );
 
       // used internally by prebuild
       explicit BSP();
@@ -121,15 +60,12 @@ namespace client
       // create ozcBSP from a Quake 3 QBSP (matrix BSP must be loaded)
       static void prebuild( const char* name );
 
-      static void beginRender();
-      static void endRender();
-
       explicit BSP( int bspIndex );
       ~BSP();
 
       void load();
 
-      int  draw( const Struct* str ) const;
+      bool draw( const Struct* str ) const;
       void drawWater( const Struct* str ) const;
 
   };

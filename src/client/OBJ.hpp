@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#include "matrix/common.hpp"
+#include "client/Mesh.hpp"
 
 namespace oz
 {
@@ -36,7 +36,8 @@ namespace client
         uint texId;
       };
 
-      String          name;
+      String name;
+      Mesh   mesh;
 
       uint            arrayId;
       DArray<Segment> segments;

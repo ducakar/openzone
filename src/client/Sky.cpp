@@ -42,11 +42,6 @@ namespace client
     Point3 p;
     float  coef;
 
-    bool operator == ( const StarEntry& se )
-    {
-      return coef == se.coef;
-    }
-
     bool operator < ( const StarEntry& se )
     {
       return coef < se.coef;
@@ -87,7 +82,7 @@ namespace client
       vertices[i].set( stars[i] );
     }
 
-    starArray = context.genArray( 0, GL_STATIC_DRAW, vertices, MAX_STARS );
+    starArray = context.genArray( GL_STATIC_DRAW, vertices, MAX_STARS );
     delete[] vertices;
 
     sunTexId  = context.loadTexture( "sky/simplesun.png", false, GL_LINEAR, GL_LINEAR );
@@ -211,8 +206,6 @@ namespace client
 
       context.drawArray( GL_POINTS, start, end - start );
     }
-
-    context.unbindArray();
 
     glEnable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );

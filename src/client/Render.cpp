@@ -161,6 +161,8 @@ namespace client
     glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
     glMultMatrixf( camera.rotTMat );
 
+    context.beginArrayMode();
+
     if( !isUnderWater ) {
       sky.draw();
     }
@@ -184,24 +186,9 @@ namespace client
     terra.draw();
 
     // draw structures
-    BSP::beginRender();
-
-    for( int i = 0; i < structs.length(); ++i ) {
-      const Struct* str = structs[i];
-
-      int waterFlags = context.drawBSP( str );
-
-      isUnderWater |= ( waterFlags & BSP::IN_WATER_BRUSH ) != 0;
-      if( waterFlags & BSP::DRAW_WATER ) {
-        waterStructs.add( str );
-      }
+    foreach( str, structs.citer() ) {
+      isUnderWater |= context.drawBSP( *str );
     }
-
-    BSP::endRender();
-
-    glActiveTexture( GL_TEXTURE1 );
-    glDisable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE0 );
 
     // draw (non-delayed) objects
     objects.sort();
@@ -232,16 +219,16 @@ namespace client
     glDisable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );
 
-    for( int i = 0; i < particles.length(); ++i ) {
-      const Particle* part = particles[i];
-
-      glPushMatrix();
-      glTranslatef( part->p.x, part->p.y, part->p.z );
-
-      shape.draw( part );
-
-      glPopMatrix();
-    }
+//     for( int i = 0; i < particles.length(); ++i ) {
+//       const Particle* part = particles[i];
+//
+//       glPushMatrix();
+//       glTranslatef( part->p.x, part->p.y, part->p.z );
+//
+//       shape.draw( part );
+//
+//       glPopMatrix();
+//     }
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -252,41 +239,37 @@ namespace client
     // draw delayed objects
     glDisable( GL_COLOR_MATERIAL );
 
-    for( int i = 0; i < delayedObjects.length(); ++i ) {
-      const Object* obj = delayedObjects[i].obj;
-
-      if( obj->index == camera.tagged ) {
-        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::TAG );
-      }
-
-      glPushMatrix();
-      glTranslatef( obj->p.x, obj->p.y, obj->p.z );
-
-      context.drawModel( obj, null );
-
-      glPopMatrix();
-
-      if( obj->index == camera.tagged ) {
-        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::BLACK );
-      }
-    }
+//     for( int i = 0; i < delayedObjects.length(); ++i ) {
+//       const Object* obj = delayedObjects[i].obj;
+//
+//       if( obj->index == camera.tagged ) {
+//         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::TAG );
+//       }
+//
+//       glPushMatrix();
+//       glTranslatef( obj->p.x, obj->p.y, obj->p.z );
+//
+//       context.drawModel( obj, null );
+//
+//       glPopMatrix();
+//
+//       if( obj->index == camera.tagged ) {
+//         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::BLACK );
+//       }
+//     }
 
     hard_assert( !glIsEnabled( GL_BLEND ) );
     hard_assert( glIsEnabled( GL_TEXTURE_2D ) );
     glEnable( GL_BLEND );
 
     // draw structures' water
-    BSP::beginRender();
-
-    for( int i = 0; i < waterStructs.length(); ++i ) {
-      const Struct* str = waterStructs[i];
-
-      context.drawBSPWater( str );
+    foreach( str, structs.citer() ) {
+      context.drawBSPWater( *str );
     }
 
-    BSP::endRender();
-
     terra.drawWater();
+
+    context.endArrayMode();
 
     glDisable( GL_TEXTURE_2D );
     glDisable( GL_LIGHTING );

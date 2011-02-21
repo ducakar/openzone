@@ -12,116 +12,314 @@
 #include "client/Mesh.hpp"
 
 #include "client/Colours.hpp"
+#include "client/Context.hpp"
 
 #define GL_GLEXT_PROTOTYPES
 #include <SDL_opengl.h>
-#include "Context.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-  void Mesh::begin()
+  bool Vertex::operator == ( const Vertex& v ) const
   {
-    glEnableClientState( GL_VERTEX_ARRAY );
-    glEnableClientState( GL_NORMAL_ARRAY );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-    glClientActiveTexture( GL_TEXTURE0 );
-    glEnable( GL_TEXTURE_2D );
-    glClientActiveTexture( GL_TEXTURE1 );
-    glEnable( GL_TEXTURE_2D );
-    glClientActiveTexture( GL_TEXTURE2 );
-    glEnable( GL_TEXTURE_2D );
+    return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
+        normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
+        texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1];
   }
 
-  void Mesh::end()
+  void Vertex::set( float px, float py, float pz,
+                    float nx, float ny, float nz,
+                    float t0u, float t0v,
+                    float t1u, float t1v,
+                    float t2u, float t2v )
   {
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    pos[0] = px;
+    pos[1] = py;
+    pos[2] = pz;
 
-    glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE,  Colours::WHITE );
-    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, Colours::BLACK );
+    normal[0] = nx;
+    normal[1] = ny;
+    normal[2] = nz;
 
-    glClientActiveTexture( GL_TEXTURE0 );
-    glDisable( GL_TEXTURE_2D );
-    glClientActiveTexture( GL_TEXTURE1 );
-    glDisable( GL_TEXTURE_2D );
-    glClientActiveTexture( GL_TEXTURE2 );
-    glDisable( GL_TEXTURE_2D );
+    texCoord[0] = t0u;
+    texCoord[1] = t0v;
 
-    glEnableClientState( GL_NORMAL_ARRAY );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-    glEnableClientState( GL_VERTEX_ARRAY );
+    texCoord[2] = t1u;
+    texCoord[3] = t1v;
+
+    texCoord[4] = t2u;
+    texCoord[5] = t2v;
   }
 
-  void Mesh::loadStatic( InputStream* stream )
+  void Vertex::set( const Point3& p, const Vec3& n,
+                    const TexCoord& t0, const TexCoord& t1, const TexCoord& t2 )
   {
-    int nVertices = stream->readInt();
-    int nIndices  = stream->readInt();
-    int nParts    = stream->readInt();
+    pos[0] = p.x;
+    pos[1] = p.y;
+    pos[2] = p.z;
 
-    Vertex* vertices = new Vertex[nVertices];
-    ushort* indices  = new ushort[nIndices];
+    normal[0] = n.x;
+    normal[1] = n.y;
+    normal[2] = n.z;
 
-    for( int i = 0; i < nVertices; ++i ) {
-      vertices[i].pos[0] = stream->readFloat();
-      vertices[i].pos[1] = stream->readFloat();
-      vertices[i].pos[2] = stream->readFloat();
+    texCoord[0] = t0.u;
+    texCoord[1] = t0.v;
 
-      vertices[i].normal[0] = stream->readFloat();
-      vertices[i].normal[1] = stream->readFloat();
-      vertices[i].normal[2] = stream->readFloat();
+    texCoord[2] = t1.u;
+    texCoord[3] = t1.v;
 
-      vertices[i].texCoord[0] = stream->readFloat();
-      vertices[i].texCoord[1] = stream->readFloat();
+    texCoord[4] = t2.u;
+    texCoord[5] = t2.v;
+  }
+
+  void Vertex::read( InputStream* stream )
+  {
+    pos[0] = stream->readFloat();
+    pos[1] = stream->readFloat();
+    pos[2] = stream->readFloat();
+
+    normal[0] = stream->readFloat();
+    normal[1] = stream->readFloat();
+    normal[2] = stream->readFloat();
+
+    texCoord[0] = stream->readFloat();
+    texCoord[1] = stream->readFloat();
+
+    texCoord[2] = stream->readFloat();
+    texCoord[3] = stream->readFloat();
+
+    texCoord[4] = stream->readFloat();
+    texCoord[5] = stream->readFloat();
+  }
+
+  void Vertex::write( OutputStream* stream ) const
+  {
+    stream->writeFloat( pos[0] );
+    stream->writeFloat( pos[1] );
+    stream->writeFloat( pos[2] );
+
+    stream->writeFloat( normal[0] );
+    stream->writeFloat( normal[1] );
+    stream->writeFloat( normal[2] );
+
+    stream->writeFloat( texCoord[0] );
+    stream->writeFloat( texCoord[1] );
+
+    stream->writeFloat( texCoord[2] );
+    stream->writeFloat( texCoord[3] );
+
+    stream->writeFloat( texCoord[4] );
+    stream->writeFloat( texCoord[5] );
+  }
+
+  void Mesh::load( InputStream* stream, int usage )
+  {
+    int nSolidParts = stream->readInt();
+    for( int i = 0; i < nSolidParts; ++i ) {
+      solidParts.add();
+      Part& part = solidParts.last();
+
+      part.diffuse    = stream->readQuat();
+      part.specular   = stream->readQuat();
+
+      String texture0 = stream->readString();
+      String texture1 = stream->readString();
+      String texture2 = stream->readString();
+
+      part.texture[0] = texture0.isEmpty() ? GL_NONE : context.loadTexture( texture0 );
+      part.texture[1] = texture1.isEmpty() ? GL_NONE : context.loadTexture( texture1 );
+      part.texture[2] = texture2.isEmpty() ? GL_NONE : context.loadTexture( texture2 );
+
+      part.mode       = stream->readInt();
+      part.flags      = stream->readInt();
+
+      part.firstIndex = stream->readInt();
+      part.nIndices   = stream->readInt();
     }
 
+    int nAlphaParts = stream->readInt();
+    for( int i = 0; i < nAlphaParts; ++i ) {
+      alphaParts.add();
+      Part& part = alphaParts.last();
+
+      part.diffuse    = stream->readQuat();
+      part.specular   = stream->readQuat();
+
+      String texture0 = stream->readString();
+      String texture1 = stream->readString();
+      String texture2 = stream->readString();
+
+      part.texture[0] = texture0.isEmpty() ? GL_NONE : context.loadTexture( texture0 );
+      part.texture[1] = texture1.isEmpty() ? GL_NONE : context.loadTexture( texture1 );
+      part.texture[2] = texture2.isEmpty() ? GL_NONE : context.loadTexture( texture2 );
+
+      part.mode       = stream->readInt();
+      part.flags      = stream->readInt();
+
+      part.firstIndex = stream->readInt();
+      part.nIndices   = stream->readInt();
+    }
+
+    int nIndices = stream->readInt();
+    ushort* indices = new ushort[nIndices];
     for( int i = 0; i < nIndices; ++i ) {
       indices[i] = stream->readShort();
     }
 
-    for( int i = 0; i < nParts; ++i ) {
-      parts.add();
-      Part& part = parts.last();
+    int nVertices = stream->readInt();
+    Vertex* vertices = new Vertex[nVertices];
+    for( int i = 0; i < nVertices; ++i ) {
+      vertices[i].read( stream );
+    }
 
-      part.diffuse      = stream->readQuat();
-      part.specular     = stream->readQuat();
-      part.texture[0]   = context.loadTexture( stream->readString() );
-      part.texture[1]   = context.loadTexture( stream->readString() );
-      part.texture[2]   = context.loadTexture( stream->readString() );
-      part.flags        = stream->readInt();
-      part.firstElement = stream->readInt();
-      part.nElements    = stream->readInt();
+    arrayId = context.genArray( usage,
+                                vertices, nVertices,
+                                indices, nIndices );
+    delete[] vertices;
+    delete[] indices;
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void Mesh::unload()
+  {
+    foreach( part, solidParts.citer() ) {
+      context.deleteTexture( part->texture[0] );
+      context.deleteTexture( part->texture[1] );
+      context.deleteTexture( part->texture[2] );
+    }
+    foreach( part, alphaParts.citer() ) {
+      context.deleteTexture( part->texture[0] );
+      context.deleteTexture( part->texture[1] );
+      context.deleteTexture( part->texture[2] );
+    }
+
+    context.deleteArray( arrayId );
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+  }
+
+  Vertex* Mesh::map( int access ) const
+  {
+    return context.mapArray( arrayId, access );
+  }
+
+  void Mesh::unmap() const
+  {
+    context.unmapArray( arrayId );
+  }
+
+  void Mesh::drawSolid() const
+  {
+    context.bindArray( arrayId );
+
+    foreach( part, solidParts.citer() ) {
+      glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
+      glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
+
+      context.bindTextures( part->texture[0], part->texture[1], part->texture[2] );
+      context.drawIndexedArray( part->mode, part->firstIndex, part->nIndices );
     }
   }
 
-  void Mesh::draw() const
+  void Mesh::drawAlpha() const
   {
-    glBindBuffer( GL_ARRAY_BUFFER, arrayBuffer );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, elementBuffer );
+    if( alphaParts.isEmpty() ) {
+      return;
+    }
 
-    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
-    glNormalPointer( GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-    glClientActiveTexture( GL_TEXTURE0 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[0] ) );
-    glClientActiveTexture( GL_TEXTURE1 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[1] ) );
-    glClientActiveTexture( GL_TEXTURE2 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[2] ) );
+    glEnable( GL_BLEND );
 
-    for( int i = 0; i < parts.length(); ++i ) {
-      glMaterialfv( GL_FRONT, GL_DIFFUSE,  parts[i].diffuse );
-      glMaterialfv( GL_FRONT, GL_SPECULAR, parts[i].specular );
+    context.bindArray( arrayId );
 
-      glDrawElements( GL_TRIANGLE_STRIP, parts[i].nElements, GL_UNSIGNED_SHORT,
-                      reinterpret_cast<uint*>( 0 ) + parts[i].firstElement );
+    foreach( part, alphaParts.citer() ) {
+      glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
+      glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
+
+      context.bindTextures( part->texture[0], part->texture[1], part->texture[2] );
+      context.drawIndexedArray( part->mode, part->firstIndex, part->nIndices );
+    }
+
+    glDisable( GL_BLEND );
+  }
+
+  int MeshData::getSize() const
+  {
+    size_t size = 0;
+
+    size += 4 * sizeof( int );
+
+    foreach( part, solidParts.citer() ) {
+      size += 2 * sizeof( Quat );
+      size += 4 * sizeof( int );
+
+      size += part->texture[0].length() + 1;
+      size += part->texture[1].length() + 1;
+      size += part->texture[2].length() + 1;
+    }
+    foreach( part, alphaParts.citer() ) {
+      size += 2 * sizeof( Quat );
+      size += 4 * sizeof( int );
+
+      size += part->texture[0].length() + 1;
+      size += part->texture[1].length() + 1;
+      size += part->texture[2].length() + 1;
+    }
+
+    size += indices.length() * sizeof( ushort );
+    size += vertices.length() * sizeof( Vertex );
+
+    return int( size );
+  }
+
+  void MeshData::write( OutputStream* stream ) const
+  {
+    hard_assert( solidParts.length() > 0 || alphaParts.length() > 0 );
+    hard_assert( indices.length() > 0 );
+    hard_assert( vertices.length() > 0 );
+
+    stream->writeInt( solidParts.length() );
+    foreach( part, solidParts.citer() ) {
+      stream->writeQuat( part->diffuse );
+      stream->writeQuat( part->specular );
+
+      stream->writeString( part->texture[0] );
+      stream->writeString( part->texture[1] );
+      stream->writeString( part->texture[2] );
+
+      stream->writeInt( part->mode );
+      stream->writeInt( part->flags );
+
+      stream->writeInt( part->firstIndex );
+      stream->writeInt( part->nIndices );
+    }
+
+    stream->writeInt( alphaParts.length() );
+    foreach( part, alphaParts.citer() ) {
+      stream->writeQuat( part->diffuse );
+      stream->writeQuat( part->specular );
+
+      stream->writeString( part->texture[0] );
+      stream->writeString( part->texture[1] );
+      stream->writeString( part->texture[2] );
+
+      stream->writeInt( part->mode );
+      stream->writeInt( part->flags );
+
+      stream->writeInt( part->firstIndex );
+      stream->writeInt( part->nIndices );
+    }
+
+    stream->writeInt( indices.length() );
+    foreach( index, indices.citer() ) {
+      stream->writeShort( *index );
+    }
+
+    stream->writeInt( vertices.length() );
+    foreach( vertex, vertices.citer() ) {
+      vertex->write( stream );
     }
   }
 

@@ -61,7 +61,7 @@ namespace oz
 
       /**
        * Allocates new memory for the array for newSize elements to fit in. Elements are constructed
-       * via move constructor in the new copy of the array and destructed in the old copy before it
+       * via copy constructor in the new copy of the array and destructed in the old copy before it
        * is freed. The memory has to be allocated with <code>Alloc::alloc</code> function and freed
        * with <code>Alloc::dealloc</code>.
        * It's similar to aRealloc, but works on arrays where only first <code>count</code> elements

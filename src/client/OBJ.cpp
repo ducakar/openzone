@@ -13,6 +13,7 @@
 
 #include "client/Context.hpp"
 #include "client/Colours.hpp"
+#include "client/Compiler.hpp"
 
 namespace oz
 {
@@ -39,13 +40,6 @@ namespace client
     bool operator == ( const FaceVertex& v ) const
     {
       return position == v.position && normal == v.normal && texCoord == v.texCoord;
-    }
-
-    bool operator < ( const FaceVertex& v ) const
-    {
-      return position < v.position ||
-          ( position == v.position && ( normal < v.normal ||
-              ( normal == v.normal && texCoord < v.texCoord ) ) );
     }
   };
 
@@ -411,123 +405,46 @@ namespace client
   {
     log.print( "Dumping OBJ model to '%s' ...", fileName );
 
-    Map<FaceVertex> faceVertices;
-    Vector<uint>    indices;
-    Vector<Segment> segments;
+    compiler.beginMesh();
+    compiler.enable( CAP_UNIQUE );
 
-    // build vertex array
-    foreach( part, parts.citer() ) {
-      foreach( face, part->faces.citer() ) {
-        foreach( vertex, face->vertices.citer() ) {
-          faceVertices.include( *vertex );
+    for( int i = 0; i < parts.length(); ++i ) {
+      compiler.material( GL_FRONT_AND_BACK, GL_DIFFUSE,  parts[i].diffuse  );
+      compiler.material( GL_FRONT_AND_BACK, GL_SPECULAR, parts[i].specular );
+      compiler.texture( 0, GL_TEXTURE_2D, parts[i].texture );
+
+      for( int j = 0; j < parts[i].faces.length(); ++j ) {
+        const Face& face = parts[i].faces[j];
+
+        compiler.begin( GL_POLYGON );
+
+        for( int k = 0; k < face.vertices.length(); ++k ) {
+          const FaceVertex& vertex = face.vertices[k];
+
+          if( vertex.texCoord != -1 ) {
+            compiler.texCoord( 0, texCoords[vertex.texCoord].u, texCoords[vertex.texCoord].v );
+          }
+          compiler.normal( normals[vertex.normal] );
+          compiler.vertex( positions[vertex.position] );
         }
+
+        compiler.end();
       }
     }
 
-    // build index array
-    for( int i = 0; i < parts.length(); ++i ) {
-      segments.add();
+    compiler.endMesh();
 
-      const Part& part = parts[i];
-      Segment& segment = segments.last();
-
-      segment.diffuse    = part.diffuse;
-      segment.specular   = part.specular;
-      segment.firstIndex = indices.length();
-
-      for( int j = 0; j < part.faces.length(); ++ j ) {
-        const Face& face = part.faces[j];
-
-        int index = faceVertices.index( face.vertices.first() );
-
-        // for a degenerated triangle to restart strip
-        if( j != 0 ) {
-          indices.add( index );
-        }
-
-        // generate triangle strip for a polygon
-        int n = face.vertices.length();
-        int n_2 = ( n + 1 ) / 2;
-
-        indices.add( index );
-
-        for( int k = 1; k < n_2; ++k ) {
-          index = faceVertices.index( face.vertices[k] );
-          indices.add( index );
-          index = faceVertices.index( face.vertices[n - k] );
-          indices.add( index );
-        }
-
-        if( n % 2 == 0 ) {
-          index = faceVertices.index( face.vertices[n_2] );
-          indices.add( index );
-        }
-
-        // for a degenerated triangle to restart strip
-        if( j != part.faces.length() - 1 ) {
-          indices.add( index );
-        }
-      }
-      segment.nIndices = indices.length() - segment.firstIndex;
-    }
-
-    int size = 0;
-
-    size += int( 3                     * sizeof( int ) );
-    size += int( faceVertices.length() * sizeof( Vertex ) );
-    size += int( indices.length()      * sizeof( ushort ) );
-    size += int( segments.length()     * sizeof( Segment ) );
-    size -= int( segments.length()     * sizeof( uint ) );
-
-    for( int i = 0; i < parts.length(); ++i ) {
-      size += int( parts[i].texture.length() + 1 );
-    }
+    int size = compiler.meshSize();
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
-    try {
-      os.writeInt( faceVertices.length() );
-      os.writeInt( indices.length() );
-      os.writeInt( segments.length() );
-
-      for( int i = 0; i < faceVertices.length(); ++i ) {
-        int posIndex = faceVertices[i].position;
-        int normIndex = faceVertices[i].normal;
-        int texIndex = faceVertices[i].texCoord;
-
-        os.writePoint3( positions[posIndex] );
-        os.writeVec3( normIndex == -1 ? Vec3::ZERO : normals[normIndex] );
-        os.writeFloat( texIndex == -1 ? 0.0f : texCoords[texIndex].u );
-        os.writeFloat( texIndex == -1 ? 0.0f : texCoords[texIndex].v );
-      }
-
-      for( int i = 0; i < indices.length(); ++i ) {
-        os.writeShort( ushort( indices[i] ) );
-      }
-
-      hard_assert( segments.length() == parts.length() );
-
-      for( int i = 0; i < segments.length(); ++i ) {
-        os.writeQuat( segments[i].diffuse );
-        os.writeQuat( segments[i].specular );
-        os.writeInt( segments[i].firstIndex );
-        os.writeInt( segments[i].nIndices );
-        os.writeString( parts[i].texture );
-      }
-    }
-    catch( const Exception& e ) {
-      log.printEnd( " Failed: %s", e.what() );
-      return;
-    }
+    compiler.writeMesh( &os );
 
     hard_assert( !os.isAvailable() );
-    if( !buffer.write( fileName ) ) {
-      log.printEnd( " Failed to write buffer" );
-    }
-    else {
-      log.printEnd( " OK" );
-    }
+    buffer.write( fileName );
+
+    log.printEnd( " OK" );
   }
 
   void OBJ::freeOBJ()
@@ -553,9 +470,16 @@ namespace client
     log.println( "Prebuilding OBJ model '%s' {", name );
     log.indent();
 
-    loadOBJ( name );
-    save( "mdl/" + String( name ) + ".ozcOBJ" );
-    freeOBJ();
+    try {
+      loadOBJ( name );
+      save( "mdl/" + String( name ) + ".ozcOBJ" );
+      freeOBJ();
+    }
+    catch( ... ) {
+      log.unindent();
+      log.println( "}" );
+      throw;
+    }
 
     log.unindent();
     log.println( "}" );
@@ -574,50 +498,9 @@ namespace client
     }
     InputStream is = buffer.inputStream();
 
-    int nVertices = is.readInt();
-    int nIndices = is.readInt();
-    int nSegments = is.readInt();
-
-    segments.alloc( nSegments );
-
-    Vertex* vertices = new Vertex[nVertices];
-    ushort* indices  = new ushort[nIndices];
-
-    for( int i = 0; i < nVertices; ++i ) {
-      vertices[i].pos[0] = is.readFloat();
-      vertices[i].pos[1] = is.readFloat();
-      vertices[i].pos[2] = is.readFloat();
-
-      vertices[i].normal[0] = is.readFloat();
-      vertices[i].normal[1] = is.readFloat();
-      vertices[i].normal[2] = is.readFloat();
-
-      vertices[i].texCoord[0] = is.readFloat();
-      vertices[i].texCoord[1] = is.readFloat();
-    }
-
-    for( int i = 0; i < nIndices; ++i ) {
-      indices[i] = is.readShort();
-    }
-
-    for( int i = 0; i < segments.length(); ++i ) {
-      segments[i].diffuse = is.readQuat();
-      segments[i].specular = is.readQuat();
-      segments[i].firstIndex = is.readInt();
-      segments[i].nIndices = is.readInt();
-
-      String texPath = is.readString();
-      segments[i].texId = texPath.isEmpty() ? GL_NONE : context.loadTexture( texPath );
-    }
+    mesh.load( &is, GL_STATIC_DRAW );
 
     hard_assert( !is.isAvailable() );
-
-    arrayId = context.genArray( VAO_INDEXED | VAO_NORMAL_BIT | VAO_TEXCOORD0_BIT, GL_STATIC_DRAW,
-                                vertices, nVertices,
-                                indices, nIndices );
-
-    delete[] vertices;
-    delete[] indices;
 
     isLoaded = true;
 
@@ -630,15 +513,9 @@ namespace client
 
   OBJ::~OBJ()
   {
-    context.deleteArray( arrayId );
-
     log.print( "Unloading OBJ model '%s' ...", name.cstr() );
 
-    for( int i = 0; i < segments.length(); ++i ) {
-      if( segments[i].texId != GL_NONE ) {
-        context.deleteTexture( segments[i].texId );
-      }
-    }
+    mesh.unload();
 
     log.printEnd( " OK" );
 
@@ -647,41 +524,8 @@ namespace client
 
   void OBJ::draw() const
   {
-    bool isBlendEnabled = false;
-
-    context.bindArray( arrayId );
-
-    for( int i = 0; i < segments.length(); ++i ) {
-      const Segment& segment = segments[i];
-
-      glMaterialfv( GL_FRONT, GL_DIFFUSE, segment.diffuse );
-      glMaterialfv( GL_FRONT, GL_SPECULAR, segment.specular );
-      glBindTexture( GL_TEXTURE_2D, segment.texId );
-
-      if( segment.diffuse.w != 1.0f ) {
-        if( !isBlendEnabled ) {
-          isBlendEnabled = true;
-          glEnable( GL_BLEND );
-        }
-      }
-      else {
-        if( isBlendEnabled ) {
-          isBlendEnabled = false;
-          glDisable( GL_BLEND );
-        }
-      }
-
-      context.drawIndexedArray( GL_TRIANGLE_STRIP, segments[i].firstIndex, segments[i].nIndices );
-    }
-
-    if( isBlendEnabled ) {
-      glDisable( GL_BLEND );
-    }
-
-    glMaterialfv( GL_FRONT, GL_DIFFUSE, Colours::WHITE );
-    glMaterialfv( GL_FRONT, GL_SPECULAR, Colours::BLACK );
-
-    context.unbindArray();
+    mesh.drawSolid();
+    mesh.drawAlpha();
   }
 
 }
