@@ -18,13 +18,16 @@ namespace oz
 namespace client
 {
 
+  static const int CAP_UNIQUE = 0x00000001;
+  static const int CAP_CW     = 0x00000002;
+  static const int CAP_BLEND  = 0x00000004;
+
   class Compiler
   {
     private:
 
       static const int MESH_BIT     = 0x00000001;
-      static const int MATERIAL_BIT = 0x00000002;
-      static const int SURFACE_BIT  = 0x00000004;
+      static const int SURFACE_BIT  = 0x00000002;
 
       struct Part
       {
@@ -32,38 +35,42 @@ namespace client
         Quat   specular;
         String texture[3];
 
+        int    mode;
         int    flags;
 
-        int    firstElement;
-        int    nElements;
+        Vector<int> indices;
+
+        bool operator == ( const Part& part ) const;
       };
 
       Vector<Vertex> vertices;
-      Vector<ushort> elements;
-      Vector<Part>   parts;
+      Vector<Part>   solidParts;
+      Vector<Part>   alphaParts;
 
-      Part           part;
       Vertex         vert;
+      Part           part;
 
+      int            caps;
       int            flags;
       int            mode;
       int            vertNum;
 
     public:
 
+      void enable( int cap );
+      void disable( int cap );
+
       void beginMesh();
       void endMesh();
 
-      void beginMaterial();
-      void endMaterial();
-
-      void enable( int cap );
-      void disable( int cap );
       void material( int face, int target, const float* params );
-      void setTexture( int unit, int target, const char* texture );
+      void texture( int unit, int target, const char* texture );
 
-      void texCoord( float s, float t );
-      void texCoord( const float* v );
+      void begin( int mode );
+      void end();
+
+      void texCoord( int unit, float u, float v );
+      void texCoord( int unit, const float* v );
 
       void normal( float nx, float ny, float nz );
       void normal( const float* v );
@@ -71,13 +78,12 @@ namespace client
       void vertex( float x, float y, float z );
       void vertex( const float* v );
 
-      void element( ushort index );
+      void index( int i );
 
-      void begin( int mode );
-      void end();
-
+      int  meshSize() const;
       void writeMesh( OutputStream* stream ) const;
-      void getMesh( Mesh* mesh ) const;
+      void getMeshData( MeshData* mesh ) const;
+      void getMesh( Mesh* mesh, int usage ) const;
 
       void init();
       void free();

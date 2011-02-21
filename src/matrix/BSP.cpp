@@ -701,6 +701,8 @@ namespace oz
             hard_assert( false );
           }
           nodes[0] = nodes[i];
+
+          log.printRaw( "x" );
         }
         else {
           // find parent
@@ -790,9 +792,9 @@ namespace oz
       }
     }
 
-    log.printEnd( " OK" );
-
     delete[] usedBrushSides;
+
+    log.printEnd( " OK" );
 
     // remove unused planes
     log.print( "removing unused planes " );

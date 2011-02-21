@@ -84,60 +84,6 @@ namespace client
     return texNum;
   }
 
-  uint Context::buildNormalmap( void* data_, const Vec3& lightNormal, int width, int height,
-                                int bytesPerPixel, bool wrap, int magFilter, int minFilter )
-  {
-    hard_assert( glGetError() == GL_NO_ERROR );
-
-    ubyte* data    = reinterpret_cast<ubyte*>( data_ );
-    ubyte* dataEnd = data + width * height * bytesPerPixel;
-
-    for( ubyte* p = data; p < dataEnd; p += bytesPerPixel ) {
-      float x = ( float( p[0] ) - 128.0f ) / 128.0f;
-      float y = ( float( p[1] ) - 128.0f ) / 128.0f;
-      float z = ( float( p[2] ) - 128.0f ) / 128.0f;
-
-      float dot = x * lightNormal.x + y * lightNormal.y + z * lightNormal.z;
-      ubyte colour = ubyte( Math::bound( dot * 256.0f, 0.0f, 255.0f ) );
-
-      p[0] = colour;
-      p[1] = colour;
-      p[2] = colour;
-    }
-
-    GLenum format = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-
-    uint texNum;
-    glGenTextures( 1, &texNum );
-    glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-    glBindTexture( GL_TEXTURE_2D, texNum );
-
-    if( minFilter >= GL_NEAREST_MIPMAP_NEAREST ) {
-      gluBuild2DMipmaps( GL_TEXTURE_2D, format, width, height, format,
-                         GL_UNSIGNED_BYTE, data );
-    }
-    else {
-      glTexImage2D( GL_TEXTURE_2D, 0, format, width, height, 0, format,
-                    GL_UNSIGNED_BYTE, data );
-    }
-
-    if( !wrap ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-    }
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
-
-    if( glGetError() != GL_NO_ERROR ) {
-      glDeleteTextures( 1, &texNum );
-      texNum = ~0u;
-
-      hard_assert( glGetError() == GL_NO_ERROR );
-    }
-    return texNum;
-  }
-
   void Context::deleteSound( int id )
   {
     Resource<uint>& resource = sounds[id];
@@ -164,21 +110,9 @@ namespace client
     return texNum;
   }
 
-  uint Context::createNormalmap( void* data, const Vec3& lightNormal, int width, int height,
-                                 int bytesPerPixel, bool wrap, int magFilter, int minFilter )
-  {
-    uint texNum = buildNormalmap( data, lightNormal, width, height, bytesPerPixel, wrap,
-                                  magFilter, minFilter );
-
-    if( texNum == ~0u ) {
-      log.println( "Error creating normalmap texture from buffer" );
-    }
-    return texNum;
-  }
-
   uint Context::loadTexture( const char* path, bool wrap, int magFilter, int minFilter )
   {
-    log.print( "Loading texture from file '%s' ...", path );
+    log.print( "Loading texture '%s' ...", path );
 
     SDL_Surface* image = IMG_Load( path );
     if( image == null ) {
@@ -197,30 +131,6 @@ namespace client
 
     SDL_FreeSurface( image );
 
-    return texNum;
-  }
-
-  uint Context::loadNormalmap( const char* path, const Vec3& lightNormal,
-                               bool wrap, int magFilter, int minFilter )
-  {
-    log.print( "Loading normalmap texture from file '%s' ...", path );
-
-    SDL_Surface* image = IMG_Load( path );
-    if( image == null ) {
-      log.printEnd( " No such file" );
-      return 0;
-    }
-    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
-      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
-      return 0;
-    }
-    log.printEnd( " OK" );
-
-    int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createNormalmap( image->pixels, lightNormal, image->w, image->h, bytesPerPixel,
-                                  wrap, magFilter, minFilter );
-
-    SDL_FreeSurface( image );
     return texNum;
   }
 
@@ -228,96 +138,6 @@ namespace client
   {
     glDeleteTextures( 1, &id );
     hard_assert( glGetError() == GL_NO_ERROR );
-  }
-
-  uint Context::requestTexture( int id, bool wrap, int magFilter, int minFilter )
-  {
-    Resource<uint>& resource = textures[id];
-
-    if( resource.nUsers > 0 ) {
-      ++resource.nUsers;
-      return resource.id;
-    }
-    resource.nUsers = 1;
-
-    String& name = translator.textures[id].name;
-    String& path = translator.textures[id].path;
-
-    log.print( "Loading registered texture '%s' ...", name.cstr() );
-
-    SDL_Surface* image = IMG_Load( path.cstr() );
-    if( image == null ) {
-      log.printEnd( " No such file" );
-      return 0;
-    }
-    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
-      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
-      return 0;
-    }
-    log.printEnd( " OK" );
-
-    int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
-                                magFilter, minFilter );
-
-    SDL_FreeSurface( image );
-
-    resource.id = texNum;
-    return texNum;
-  }
-
-  uint Context::requestNormalmap( int id, const Vec3& lightNormal,
-                                  bool wrap, int magFilter, int minFilter )
-  {
-    Resource<uint>& resource = textures[id];
-
-    if( resource.nUsers > 0 ) {
-      ++resource.nUsers;
-      return resource.id;
-    }
-    resource.nUsers = 1;
-
-    String& name = translator.textures[id].name;
-    String& path = translator.textures[id].path;
-
-    log.print( "Loading registerded normalmap texture '%s' ...", name.cstr() );
-
-    SDL_Surface* image = IMG_Load( path.cstr() );
-    if( image == null ) {
-      log.printEnd( " No such file" );
-      return 0;
-    }
-    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
-      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
-      return 0;
-    }
-    log.printEnd( " OK" );
-
-    int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createNormalmap( image->pixels, lightNormal, image->w, image->h, bytesPerPixel,
-                                  wrap, magFilter, minFilter );
-
-    SDL_FreeSurface( image );
-
-    resource.id = texNum;
-    return texNum;
-  }
-
-  void Context::releaseTexture( int id )
-  {
-    Resource<uint>& resource = textures[id];
-
-    hard_assert( uint( id ) < uint( translator.textures.length() ) );
-    hard_assert( resource.nUsers > 0 );
-
-    --resource.nUsers;
-
-    if( resource.nUsers == 0 ) {
-      log.print( "Unloading texture '%s' ...", translator.textures[id].name.cstr() );
-      glDeleteTextures( 1, &resource.id );
-      hard_assert( glGetError() == GL_NO_ERROR );
-      log.printEnd( " OK" );
-    }
   }
 
   uint Context::requestSound( int id )
@@ -462,19 +282,72 @@ namespace client
     resource.nUsers = 0;
   }
 
-  uint Context::genArray( int flags, GLenum usage,
+  void Context::beginArrayMode()
+  {
+    glActiveTexture( GL_TEXTURE0 );
+    glEnable( GL_TEXTURE_2D );
+
+    glActiveTexture( GL_TEXTURE1 );
+    glEnable( GL_TEXTURE_2D );
+
+    glActiveTexture( GL_TEXTURE2 );
+    glEnable( GL_TEXTURE_2D );
+
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glEnableClientState( GL_NORMAL_ARRAY );
+
+    glClientActiveTexture( GL_TEXTURE0 );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    glClientActiveTexture( GL_TEXTURE1 );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    glClientActiveTexture( GL_TEXTURE2 );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+  }
+
+  void Context::endArrayMode()
+  {
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_NORMAL_ARRAY );
+
+    glClientActiveTexture( GL_TEXTURE0 );
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    glClientActiveTexture( GL_TEXTURE1 );
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    glClientActiveTexture( GL_TEXTURE2 );
+    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+
+    glActiveTexture( GL_TEXTURE0 );
+    glDisable( GL_TEXTURE_2D );
+
+    glActiveTexture( GL_TEXTURE1 );
+    glDisable( GL_TEXTURE_2D );
+
+    glActiveTexture( GL_TEXTURE2 );
+    glDisable( GL_TEXTURE_2D );
+
+    glActiveTexture( GL_TEXTURE0 );
+    glEnable( GL_TEXTURE_2D );
+  }
+
+  uint Context::genArray( GLenum usage,
                           const Vertex* vertices, int nVertices,
                           const ushort* indices, int nIndices )
   {
     hard_assert( ( indices == null ) == ( nIndices == 0 ) );
-    hard_assert( ( indices == null ) == ( ( flags & VAO_INDEXED ) == 0 ) );
 
     int  id  = vaos.add();
     VAO& vao = vaos[id];
 
-    vao.flags = flags;
+    vao.flags = nIndices != 0 ? VAO::INDEXED_BIT : 0;
 
-    if( flags & VAO_INDEXED ) {
+    if( nIndices != 0 ) {
       glGenBuffers( 2, vao.buffers );
     }
     else {
@@ -486,7 +359,7 @@ namespace client
     glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, usage );
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-    if( flags & VAO_INDEXED ) {
+    if( nIndices != 0 ) {
       glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vao.buffers[1] );
       glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( ushort ), indices, usage );
       glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -497,7 +370,7 @@ namespace client
 
   void Context::deleteArray( uint id )
   {
-    glDeleteBuffers( vaos[id].flags & VAO_INDEXED ? 2 : 1, vaos[id].buffers );
+    glDeleteBuffers( vaos[id].flags & VAO::INDEXED_BIT ? 2 : 1, vaos[id].buffers );
     vaos.remove( id );
   }
 
@@ -506,43 +379,62 @@ namespace client
     const VAO& vao = vaos[id];
 
     glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
-    if( vao.flags & VAO_INDEXED ) {
-      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vao.buffers[1] );
-    }
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vao.buffers[1] );
 
-    glEnableClientState( GL_VERTEX_ARRAY );
     glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
                      reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
-    if( vao.flags & VAO_NORMAL_BIT ) {
-      glEnableClientState( GL_NORMAL_ARRAY );
-      glNormalPointer( GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-    }
-    if( vao.flags & VAO_TEXCOORD0_BIT ) {
-      glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-      glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                         reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-    }
-  }
+    glNormalPointer( GL_FLOAT, sizeof( Vertex ),
+                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-  void Context::unbindArray()
-  {
-    glDisableClientState( GL_VERTEX_ARRAY );
-    glDisableClientState( GL_NORMAL_ARRAY );
+    glClientActiveTexture( GL_TEXTURE0 );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[0] ) );
 
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+    glClientActiveTexture( GL_TEXTURE1 );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[2] ) );
+
+    glClientActiveTexture( GL_TEXTURE2 );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[4] ) );
   }
 
   void Context::setVertexFormat()
   {
     glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
-                    reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+
     glNormalPointer( GL_FLOAT, sizeof( Vertex ),
-                    reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+
+    glClientActiveTexture( GL_TEXTURE0 );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                      reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[0] ) );
+
+    glClientActiveTexture( GL_TEXTURE1 );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[2] ) );
+
+    glClientActiveTexture( GL_TEXTURE2 );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[4] ) );
+  }
+
+  Vertex* Context::mapArray( uint id, int access ) const
+  {
+    const VAO& vao = vaos[id];
+
+    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
+    return reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, access ) );
+  }
+
+  void Context::unmapArray( uint id ) const
+  {
+    const VAO& vao = vaos[id];
+
+    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
+    glUnmapBuffer( GL_ARRAY_BUFFER );
   }
 
   void Context::drawArray( GLenum mode, int firstVertex, int nVertices ) const
@@ -554,6 +446,16 @@ namespace client
   {
     glDrawElements( mode, nIndices, GL_UNSIGNED_SHORT,
                     reinterpret_cast<const ushort*>( 0 ) + firstIndex );
+  }
+
+  void Context::bindTextures( uint texture0, uint texture1, uint texture2 )
+  {
+    glActiveTexture( GL_TEXTURE0 );
+    glBindTexture( GL_TEXTURE_2D, texture0 );
+    glActiveTexture( GL_TEXTURE1 );
+    glBindTexture( GL_TEXTURE_2D, texture1 );
+    glActiveTexture( GL_TEXTURE2 );
+    glBindTexture( GL_TEXTURE_2D, texture2 );
   }
 
   uint Context::genList()
@@ -861,6 +763,11 @@ namespace client
       delete i->object;
       md3s.exclude( i.key() );
     }
+    for( int i = 0; i < translator.bsps.length(); ++i ) {
+      delete bsps[i].object;
+      bsps[i].object = null;
+      bsps[i].isUpdated = false;
+    }
 
     hard_assert( vaos.isEmpty() );
 
@@ -872,12 +779,6 @@ namespace client
     md2s.dealloc();
     staticMd3s.dealloc();
     md3s.dealloc();
-
-    for( int i = 0; i < translator.bsps.length(); ++i ) {
-      delete bsps[i].object;
-      bsps[i].object = null;
-      bsps[i].nUsers = 0;
-    }
 
     hard_assert( lists.length() == 0 );
 

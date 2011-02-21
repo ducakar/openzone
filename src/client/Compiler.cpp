@@ -12,10 +12,10 @@
 #include "client/Compiler.hpp"
 
 #include "client/Colours.hpp"
+#include "client/Context.hpp"
 
 #define GL_GLEXT_PROTOTYPES
 #include <SDL_opengl.h>
-#include "Context.hpp"
 
 namespace oz
 {
@@ -24,22 +24,43 @@ namespace client
 
   Compiler compiler;
 
+  bool Compiler::Part::operator == ( const Part& part ) const
+  {
+    return mode == part.mode &&
+        diffuse == part.diffuse &&
+        specular == part.specular &&
+        texture[0].equals( part.texture[0] ) &&
+        texture[1].equals( part.texture[1] ) &&
+        texture[2].equals( part.texture[2] );
+  }
+
+  void Compiler::enable( int cap )
+  {
+    caps |= cap;
+  }
+
+  void Compiler::disable( int cap )
+  {
+    caps &= ~cap;
+  }
+
   void Compiler::beginMesh()
   {
     hard_assert( ~flags & MESH_BIT );
-    hard_assert( ~flags & MATERIAL_BIT );
     hard_assert( ~flags & SURFACE_BIT );
 
     flags |= MESH_BIT;
+    caps = 0;
 
     vertices.clear();
-    elements.clear();
-    parts.clear();
+    solidParts.clear();
+    alphaParts.clear();
 
     part.diffuse    = Colours::WHITE;
     part.specular   = Colours::BLACK;
-    part.texture[0] = GL_NONE;
-    part.texture[1] = GL_NONE;
+    part.texture[0] = "";
+    part.texture[1] = "";
+    part.texture[2] = "";
     part.flags      = 0;
 
     vert.pos[0] = 0.0f;
@@ -52,47 +73,26 @@ namespace client
 
     vert.texCoord[0] = 0.0f;
     vert.texCoord[1] = 0.0f;
+
+    vert.texCoord[2] = 0.0f;
+    vert.texCoord[3] = 0.0f;
+
+    vert.texCoord[4] = 0.0f;
+    vert.texCoord[5] = 0.0f;
   }
 
   void Compiler::endMesh()
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( ~flags & MATERIAL_BIT );
     hard_assert( ~flags & SURFACE_BIT );
 
     flags &= ~MESH_BIT;
   }
 
-  void Compiler::beginMaterial()
+  void Compiler::material( int, int target, const float* params )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( ~flags & MATERIAL_BIT );
     hard_assert( ~flags & SURFACE_BIT );
-
-    flags |= MATERIAL_BIT;
-
-    part.firstElement = elements.length();
-  }
-
-  void Compiler::endMaterial()
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
-
-    flags &= ~MATERIAL_BIT;
-
-    part.nElements = elements.length() - part.firstElement;
-    parts.add( part );
-  }
-
-  void Compiler::material( int face, int target, const float* params )
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
-
-    hard_assert( face == GL_FRONT );
 
     switch( target ) {
       case GL_DIFFUSE: {
@@ -116,50 +116,139 @@ namespace client
     }
   }
 
-  void Compiler::setTexture( int unit, int target, const char* texture )
+  void Compiler::texture( int unit, int target, const char* texture )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
     hard_assert( ~flags & SURFACE_BIT );
 
     hard_assert( target == GL_TEXTURE_2D );
+    hard_assert( 0 <= unit && unit <= 2 );
 
-    switch( unit ) {
-      case GL_TEXTURE0: {
-        part.texture[0] = texture;
-        break;
-      }
-      case GL_TEXTURE1: {
-        part.texture[1] = texture;
+    part.texture[unit] = texture;
+  }
+
+  void Compiler::begin( int mode_ )
+  {
+    hard_assert( flags & MESH_BIT );
+    hard_assert( ~flags & SURFACE_BIT );
+
+    flags |= SURFACE_BIT;
+
+    mode = mode_;
+    vertNum = 0;
+
+    switch( mode ) {
+      case GL_QUADS:
+      case GL_POLYGON: {
+        part.mode = GL_TRIANGLE_STRIP;
         break;
       }
       default: {
-        hard_assert( false );
+        part.mode = mode;
         break;
       }
     }
   }
 
-  void Compiler::texCoord( float s, float t )
+  void Compiler::end()
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
+    hard_assert( flags & SURFACE_BIT );
 
-    vert.texCoord[0] = s;
-    vert.texCoord[1] = t;
+    flags &= ~SURFACE_BIT;
+
+    if( caps & CAP_CW ) {
+      aReverse<int>( part.indices, part.indices.length() );
+    }
+
+    switch( mode ) {
+      case GL_POINTS: {
+        hard_assert( vertNum >= 1 );
+        break;
+      }
+      case GL_TRIANGLE_STRIP: {
+        hard_assert( vertNum >= 3 );
+        break;
+      }
+      case GL_TRIANGLE_FAN: {
+        hard_assert( vertNum >= 3 );
+        break;
+      }
+      case GL_TRIANGLES: {
+        hard_assert( vertNum >= 3 && vertNum % 3 == 0 );
+        break;
+      }
+      case GL_QUADS: {
+        hard_assert( vertNum >= 4 && vertNum % 4 == 0 );
+
+        for( int i = 0; i < vertNum; i += 4 ) {
+          swap( part.indices[i + 2], part.indices[i + 3] );
+        }
+        break;
+      }
+      case GL_POLYGON: {
+        hard_assert( vertNum >= 3 );
+
+        int n_2 = ( vertNum - 2 ) / 2;
+        for( int i = 1; i <= n_2; ++i ) {
+          int index = part.indices.last();
+          aInsert<int>( part.indices, index, 2 * i, part.indices.length() );
+        }
+        break;
+      }
+    }
+
+    Vector<Part>* parts = part.diffuse.w != 1.0f ? &alphaParts : &solidParts;
+
+    switch( mode ) {
+//       case GL_TRIANGLE_FAN: {
+//         parts->add( part );
+//         break;
+//       }
+      default: {
+        int partIndex = parts->index( part );
+
+        if( partIndex == -1 ) {
+          parts->add( part );
+        }
+        else {
+          Part* destPart = &( *parts )[partIndex];
+
+          switch( part.mode ) {
+            case GL_TRIANGLE_STRIP: {
+              // reset triangle strip
+              destPart->indices.add( destPart->indices.last() );
+              destPart->indices.add( part.indices.first() );
+              break;
+            }
+          }
+          destPart->indices.addAll( part.indices, part.indices.length() );
+        }
+        break;
+      }
+    }
+
+    part.indices.clear();
   }
 
-  void Compiler::texCoord( const float* v )
+  void Compiler::texCoord( int unit, float u, float v )
   {
-    texCoord( v[0], v[1] );
+    hard_assert( flags & MESH_BIT );
+
+    hard_assert( 0 <= unit && unit <= 2 );
+
+    vert.texCoord[2 * unit + 0] = u;
+    vert.texCoord[2 * unit + 1] = v;
+  }
+
+  void Compiler::texCoord( int unit, const float* v )
+  {
+    texCoord( unit, v[0], v[1] );
   }
 
   void Compiler::normal( float nx, float ny, float nz )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
 
     vert.normal[0] = nx;
     vert.normal[1] = ny;
@@ -174,14 +263,44 @@ namespace client
   void Compiler::vertex( float x, float y, float z )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
 
     vert.pos[0] = x;
     vert.pos[1] = y;
     vert.pos[2] = z;
 
-    vertices.add( vert );
+    if( ~flags & SURFACE_BIT ) {
+      vertices.add( vert );
+    }
+    else {
+      bool doRestart = false;
+
+      if( mode == GL_QUADS && vertNum != 0 && vertNum % 4 == 0 ) {
+        doRestart = true;
+      }
+
+      if( doRestart ) {
+        part.indices.add( part.indices.last() );
+      }
+
+      int index;
+
+      if( caps & CAP_UNIQUE ) {
+        index = vertices.include( vert );
+        part.indices.add( index );
+      }
+      else {
+        index = vertices.length();
+
+        vertices.add( vert );
+        part.indices.add( index );
+      }
+
+      if( doRestart ) {
+        part.indices.add( index );
+      }
+
+      ++vertNum;
+    }
   }
 
   void Compiler::vertex( const float* v )
@@ -189,140 +308,254 @@ namespace client
     vertex( v[0], v[1], v[2] );
   }
 
-  void Compiler::begin( int mode_ )
+  void Compiler::index( int i )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
-
-    flags |= SURFACE_BIT;
-
-    mode = mode_;
-    vertNum = 0;
-
-    hard_assert( mode == GL_POINTS || mode == GL_LINES || mode == GL_LINE_STRIP ||
-        mode == GL_LINE_LOOP || mode == GL_TRIANGLE_STRIP || mode == GL_TRIANGLES );
-  }
-
-  void Compiler::end()
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
     hard_assert( flags & SURFACE_BIT );
 
-    flags &= ~SURFACE_BIT;
+    bool doRestart = false;
 
-    // TODO GL_TRIANGLE_STRIP, GL_QUADS, GL_QUAD_STRIP, GL_POLYGON
-
-    hard_assert( mode != GL_TRIANGLE_STRIP || vertNum >= 3 );
-    hard_assert( mode != GL_TRIANGLE_FAN || vertNum >= 3 );
-    hard_assert( mode != GL_TRIANGLES || vertNum == 3 );
-    hard_assert( mode != GL_QUADS || vertNum == 4 );
-  }
-
-  void Compiler::element( ushort index )
-  {
-    hard_assert( flags & MESH_BIT );
-    hard_assert( flags & MATERIAL_BIT );
-    hard_assert( ( flags & SURFACE_BIT ) || mode == GL_TRIANGLE_STRIP );
-
-    // add additional vertices to restart triangle strip if neccesary
-    if( mode == GL_TRIANGLES && vertNum == 3 ) {
-      elements.add( elements.last() );
-      vertNum = -1;
+    if( mode == GL_QUADS && vertNum != 0 && vertNum % 4 == 0 ) {
+      doRestart = true;
     }
-    else if( mode == GL_QUADS && vertNum == 4 ) {
-      elements.add( elements.last() );
-      vertNum = -1;
+
+    if( doRestart ) {
+      part.indices.add( part.indices.last() );
+    }
+
+    part.indices.add( i );
+
+    if( doRestart ) {
+      part.indices.add( i );
     }
 
     ++vertNum;
+  }
 
-    elements.add( index );
+  int Compiler::meshSize() const
+  {
+    size_t size = 0;
 
-    // if this is first vertex of not-first primitive, add additional vertex to restart strip
-    if( vertNum == 0 ) {
-      elements.add( index );
-      ++vertNum;
+    size += 4 * sizeof( int );
+
+    foreach( part, solidParts.citer() ) {
+      size += 2 * sizeof( Quat ) + 4 * sizeof( int );
+
+      size += part->texture[0].length() + 1;
+      size += part->texture[1].length() + 1;
+      size += part->texture[2].length() + 1;
+
+      size += part->indices.length() * sizeof( ushort );
     }
+    foreach( part, alphaParts.citer() ) {
+      size += 2 * sizeof( Quat ) + 4 * sizeof( int );
+
+      size += part->texture[0].length() + 1;
+      size += part->texture[1].length() + 1;
+      size += part->texture[2].length() + 1;
+
+      size += part->indices.length() * sizeof( ushort );
+    }
+
+    size += vertices.length() * sizeof( Vertex );
+
+    return int( size );
   }
 
   void Compiler::writeMesh( OutputStream* stream ) const
   {
     hard_assert( ~flags & MESH_BIT );
-    hard_assert( ~flags & MATERIAL_BIT );
     hard_assert( ~flags & SURFACE_BIT );
+
+    int nIndices = 0;
+
+    stream->writeInt( solidParts.length() );
+    foreach( part, solidParts.citer() ) {
+      stream->writeQuat( part->diffuse );
+      stream->writeQuat( part->specular );
+
+      stream->writeString( part->texture[0] );
+      stream->writeString( part->texture[1] );
+      stream->writeString( part->texture[2] );
+
+      stream->writeInt( part->mode );
+      stream->writeInt( part->flags );
+
+      stream->writeInt( nIndices );
+      stream->writeInt( part->indices.length() );
+
+      nIndices += part->indices.length();
+    }
+
+    stream->writeInt( alphaParts.length() );
+    foreach( part, alphaParts.citer() ) {
+      stream->writeQuat( part->diffuse );
+      stream->writeQuat( part->specular );
+
+      stream->writeString( part->texture[0] );
+      stream->writeString( part->texture[1] );
+      stream->writeString( part->texture[2] );
+
+      stream->writeInt( part->mode );
+      stream->writeInt( part->flags );
+
+      stream->writeInt( nIndices );
+      stream->writeInt( part->indices.length() );
+
+      nIndices += part->indices.length();
+    }
+
+    stream->writeInt( nIndices );
+    foreach( part, solidParts.citer() ) {
+      foreach( i, part->indices.citer() ) {
+        stream->writeShort( ushort( *i ) );
+      }
+    }
+    foreach( part, alphaParts.citer() ) {
+      foreach( i, part->indices.citer() ) {
+        stream->writeShort( ushort( *i ) );
+      }
+    }
 
     stream->writeInt( vertices.length() );
     for( int i = 0; i < vertices.length(); ++i ) {
-      stream->writeFloat( vertices[i].pos[0] );
-      stream->writeFloat( vertices[i].pos[1] );
-      stream->writeFloat( vertices[i].pos[2] );
-
-      stream->writeFloat( vertices[i].normal[0] );
-      stream->writeFloat( vertices[i].normal[1] );
-      stream->writeFloat( vertices[i].normal[2] );
-
-      stream->writeFloat( vertices[i].texCoord[0] );
-      stream->writeFloat( vertices[i].texCoord[1] );
-    }
-
-    stream->writeInt( elements.length() );
-    for( int i = 0; i < elements.length(); ++i ) {
-      stream->writeInt( elements[i] );
-    }
-
-    stream->writeInt( parts.length() );
-    for( int i = 0; i < parts.length(); ++i ) {
-      stream->writeQuat( parts[i].diffuse );
-      stream->writeQuat( parts[i].specular );
-
-      stream->writeString( parts[i].texture[0] );
-      stream->writeString( parts[i].texture[1] );
-      stream->writeString( parts[i].texture[2] );
-
-      stream->writeInt( parts[i].flags );
-
-      stream->writeInt( parts[i].firstElement );
-      stream->writeInt( parts[i].nElements );
+      vertices[i].write( stream );
     }
   }
 
-  void Compiler::getMesh( Mesh* mesh ) const
+  void Compiler::getMeshData( MeshData* mesh ) const
   {
     hard_assert( ~flags & MESH_BIT );
-    hard_assert( ~flags & MATERIAL_BIT );
     hard_assert( ~flags & SURFACE_BIT );
 
-    uint buffers[2];
+    int nIndices = 0;
 
-    glGenBuffers( 2, buffers );
+    for( int i = 0; i < solidParts.length(); ++i ) {
+      mesh->solidParts.add();
 
-    glBindBuffer( GL_ARRAY_BUFFER, buffers[0] );
-    glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices,
-                  GL_STATIC_DRAW );
+      mesh->solidParts[i].diffuse    = solidParts[i].diffuse;
+      mesh->solidParts[i].specular   = solidParts[i].specular;
+      mesh->solidParts[i].texture[0] = solidParts[i].texture[0];
+      mesh->solidParts[i].texture[1] = solidParts[i].texture[1];
+      mesh->solidParts[i].texture[2] = solidParts[i].texture[2];
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, buffers[1] );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, elements.length() * sizeof( uint ), elements,
-                  GL_STATIC_DRAW );
+      mesh->solidParts[i].mode       = solidParts[i].mode;
+      mesh->solidParts[i].flags      = solidParts[i].flags;
 
-    mesh->arrayBuffer = buffers[0];
-    mesh->elementBuffer = buffers[1];
+      mesh->solidParts[i].firstIndex = nIndices;
+      mesh->solidParts[i].nIndices   = solidParts[i].indices.length();
 
-    for( int i = 0; i < parts.length(); ++i ) {
-      mesh->parts.add();
-
-      mesh->parts[i].diffuse      = parts[i].diffuse;
-      mesh->parts[i].specular     = parts[i].specular;
-      mesh->parts[i].texture[0]   = context.loadTexture( parts[i].texture[0] );
-      mesh->parts[i].texture[1]   = context.loadTexture( parts[i].texture[1] );
-      mesh->parts[i].texture[2]   = context.loadTexture( parts[i].texture[2] );
-
-      mesh->parts[i].flags        = parts[i].flags;
-
-      mesh->parts[i].firstElement = parts[i].firstElement;
-      mesh->parts[i].nElements    = parts[i].nElements;
+      nIndices += solidParts[i].indices.length();
     }
+
+    for( int i = 0; i < alphaParts.length(); ++i ) {
+      mesh->alphaParts.add();
+
+      mesh->alphaParts[i].diffuse    = alphaParts[i].diffuse;
+      mesh->alphaParts[i].specular   = alphaParts[i].specular;
+      mesh->alphaParts[i].texture[0] = alphaParts[i].texture[0];
+      mesh->alphaParts[i].texture[1] = alphaParts[i].texture[1];
+      mesh->alphaParts[i].texture[2] = alphaParts[i].texture[2];
+
+      mesh->alphaParts[i].mode       = alphaParts[i].mode;
+      mesh->alphaParts[i].flags      = alphaParts[i].flags;
+
+      mesh->alphaParts[i].firstIndex = nIndices;
+      mesh->alphaParts[i].nIndices   = alphaParts[i].indices.length();
+
+      nIndices += alphaParts[i].indices.length();
+    }
+
+    mesh->indices.alloc( nIndices );
+    ushort* currIndex = mesh->indices;
+
+    foreach( part, solidParts.citer() ) {
+      foreach( i, part->indices.citer() ) {
+        *currIndex = ushort( *i );
+        ++currIndex;
+      }
+    }
+    foreach( part, alphaParts.citer() ) {
+      foreach( i, part->indices.citer() ) {
+        *currIndex = ushort( *i );
+        ++currIndex;
+      }
+    }
+
+    mesh->vertices.alloc( vertices.length() );
+    aCopy<Vertex>( mesh->vertices, vertices, vertices.length() );
+  }
+
+  void Compiler::getMesh( Mesh* mesh, int usage ) const
+  {
+    hard_assert( ~flags & MESH_BIT );
+    hard_assert( ~flags & SURFACE_BIT );
+
+    int nIndices = 0;
+    Vector<ushort> indices;
+
+    for( int i = 0; i < solidParts.length(); ++i ) {
+      mesh->solidParts.add();
+
+      mesh->solidParts[i].diffuse    = solidParts[i].diffuse;
+      mesh->solidParts[i].specular   = solidParts[i].specular;
+      mesh->solidParts[i].texture[0] = context.loadTexture( solidParts[i].texture[0] );
+      mesh->solidParts[i].texture[1] = context.loadTexture( solidParts[i].texture[1] );
+      mesh->solidParts[i].texture[2] = context.loadTexture( solidParts[i].texture[2] );
+
+      mesh->solidParts[i].mode       = solidParts[i].mode;
+      mesh->solidParts[i].flags      = solidParts[i].flags;
+
+      mesh->solidParts[i].firstIndex = nIndices;
+      mesh->solidParts[i].nIndices   = solidParts[i].indices.length();
+
+      nIndices += solidParts[i].indices.length();
+
+      for( int j = 0; j < solidParts[i].indices.length(); ++j ) {
+        indices.add( ushort( solidParts[i].indices[j] ) );
+      }
+    }
+
+    for( int i = 0; i < alphaParts.length(); ++i ) {
+      mesh->alphaParts.add();
+
+      mesh->alphaParts[i].diffuse    = alphaParts[i].diffuse;
+      mesh->alphaParts[i].specular   = alphaParts[i].specular;
+      mesh->alphaParts[i].texture[0] = context.loadTexture( alphaParts[i].texture[0] );
+      mesh->alphaParts[i].texture[1] = context.loadTexture( alphaParts[i].texture[1] );
+      mesh->alphaParts[i].texture[2] = context.loadTexture( alphaParts[i].texture[2] );
+
+      mesh->alphaParts[i].mode       = alphaParts[i].mode;
+      mesh->alphaParts[i].flags      = alphaParts[i].flags;
+
+      mesh->alphaParts[i].firstIndex = nIndices;
+      mesh->alphaParts[i].nIndices   = alphaParts[i].indices.length();
+
+      nIndices += alphaParts[i].indices.length();
+
+      for( int j = 0; j < alphaParts[i].indices.length(); ++j ) {
+        indices.add( ushort( alphaParts[i].indices[j] ) );
+      }
+    }
+
+    mesh->arrayId = context.genArray( usage,
+                                      vertices, vertices.length(),
+                                      indices, indices.length() );
+  }
+
+  void Compiler::free()
+  {
+    vertices.clear();
+    vertices.dealloc();
+
+    solidParts.clear();
+    solidParts.dealloc();
+
+    alphaParts.clear();
+    alphaParts.dealloc();
+
+    part.indices.clear();
+    part.indices.dealloc();
   }
 
 }

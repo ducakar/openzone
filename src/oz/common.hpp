@@ -61,6 +61,12 @@ namespace oz
 # define null nullptr
 
   /**
+   * \def const
+   * Add constness to the variable type.
+   */
+# define const( a ) static_cast< const decltype( a ) >( a )
+
+  /**
    * \def local
    * Thread-local modifier for a type.
    */

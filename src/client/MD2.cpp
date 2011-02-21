@@ -12,7 +12,8 @@
 #include "client/MD2.hpp"
 
 #include "client/Context.hpp"
-#include "Colours.hpp"
+#include "client/Colours.hpp"
+#include "client/Compiler.hpp"
 
 #define FOURCC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
@@ -48,8 +49,8 @@ namespace client
 
   struct MD2Vertex
   {
-    ubyte v[3];
-    ubyte lightNormal;
+    ubyte p[3];
+    ubyte normal;
   };
 
   struct MD2Frame
@@ -66,7 +67,7 @@ namespace client
     short texCoords[3];
   };
 
-  Vec3 MD2::anorms[] =
+  static const Vec3 NORMALS[] =
   {
     Vec3( -0.000000f, -0.525731f,  0.850651f ),
     Vec3( -0.238856f, -0.442863f,  0.864188f ),
@@ -258,82 +259,76 @@ namespace client
     {   0, 197,  7.0f, 1 }    // FULL
   };
 
-  Point3 MD2::vertList[MAX_VERTS];
-
   void MD2::interpolate( const AnimState* anim ) const
   {
-    const Point3* currFrame = &verts[nVerts * anim->currFrame];
-    const Point3* nextFrame = &verts[nVerts * anim->nextFrame];
+    const Point3* currFrame = &vertices[anim->currFrame * nFrameVerts];
+    const Point3* nextFrame = &vertices[anim->nextFrame * nFrameVerts];
+
+    Vertex* vertBuffer = mesh.map( GL_READ_WRITE );
 
     float t = anim->fps * anim->currTime;
 
-    for( int i = 0; i < nVerts; ++i ) {
-      vertList[i] = currFrame[i] + t * ( nextFrame[i] - currFrame[i] );
+    for( int i = 0; i < nFrameVerts; ++i ) {
+      Point3 p = currFrame[i] + t * ( nextFrame[i] - currFrame[i] );
+
+      vertBuffer[i].pos[0] = p.x;
+      vertBuffer[i].pos[1] = p.y;
+      vertBuffer[i].pos[2] = p.z;
     }
+
+    mesh.unmap();
   }
 
-  MD2::MD2( const char* name_ ) : name( name_ ), verts( null ), glCmds( null ),
-      lightNormals( null ), isLoaded( false )
-  {}
-
-  MD2::~MD2()
+  void MD2::prebuild( const char* name )
   {
-    log.print( "Unloading MD2 model '%s' ...", name.cstr() );
-
-    context.deleteTexture( texId );
-
-    delete[] verts;
-    delete[] glCmds;
-    delete[] lightNormals;
-
-    log.printEnd( " OK" );
-
-    hard_assert( glGetError() == GL_NO_ERROR );
-  }
-
-  void MD2::load()
-  {
-    FILE*     file;
-    MD2Header header;
-    char*     buffer;
-    MD2Frame* pFrame;
-    Point3*   pVerts;
-    int*      pNormals;
-
-    String sPath = "mdl/" + name;
+    String sPath = "mdl/" + String( name );
     String modelFile = sPath + "/tris.md2";
     String skinFile = sPath + "/skin.jpg";
     String configFile = sPath + "/config.rc";
 
-    log.print( "Loading MD2 model '%s' ...", name.cstr() );
+    log.println( "Prebuilding MD2 model '%s' {", name );
+    log.indent();
 
-    file = fopen( modelFile.cstr(), "rb" );
+    Config config;
+    config.load( configFile );
+
+    float scale       = config.get( "scale", 0.042f );
+    Vec3 translation  = Vec3( config.get( "translate.x", 0.00f ),
+                              config.get( "translate.y", 0.00f ),
+                              config.get( "translate.z", 0.00f ) );
+    Vec3 jumpTransl   = Vec3( config.get( "jumpTranslate.x", 0.00f ),
+                              config.get( "jumpTranslate.y", 0.00f ),
+                              config.get( "jumpTranslate.z", 0.00f ) );
+    Vec3 weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
+                              config.get( "weaponTranslate.y", 0.00f ),
+                              config.get( "weaponTranslate.z", 0.00f ) );
+
+
+    FILE* file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
-      log.printEnd( " No such file" );
-      throw Exception( "MD2 model loading error" );
+      throw Exception( "MD2 file does not exist" );
     }
 
+    MD2Header header;
     fread( &header, 1, sizeof( MD2Header ), file );
     if( header.id != FOURCC( 'I', 'D', 'P', '2' ) || header.version != 8 ) {
       fclose( file );
-      log.printEnd( " Invalid format" );
-      throw Exception( "MD2 model loading error" );
+      throw Exception( "MD2 invalid format" );
     }
 
-    nFrames = header.nFrames;
-    nVerts = header.nVerts;
+    int nFrames     = header.nFrames;
+    int nFrameVerts = header.nVerts;
 
-    if( nFrames <= 0 || nVerts <= 0 ) {
+    if( nFrames <= 0 || nFrameVerts <= 0 ) {
       fclose( file );
-      log.printEnd( " Format error" );
       throw Exception( "MD2 model loading error" );
     }
 
-    verts = new Point3[nVerts * nFrames];
-    glCmds = new int[header.nGlCmds];
-    lightNormals = new int[nVerts * nFrames];
+    DArray<Point3> vertices( nFrames * nFrameVerts );
+    DArray<int>    normals( nFrames * nFrameVerts );
+    DArray<int>    glCmds( header.nGlCmds );
 
-    buffer = new char[nFrames * header.frameSize];
+    char* buffer = new char[nFrames * header.frameSize];
 
     fseek( file, header.offFrames, SEEK_SET );
     fread( buffer, 1, nFrames * header.frameSize, file );
@@ -342,85 +337,167 @@ namespace client
     fread( glCmds, 1, header.nGlCmds * sizeof( int ), file );
 
     for( int i = 0; i < nFrames; ++i ) {
-      pFrame = reinterpret_cast<MD2Frame*>( &buffer[header.frameSize * i] );
-      pVerts = &verts[nVerts * i];
-      pNormals = &lightNormals[nVerts * i];
+      MD2Frame* pFrame = reinterpret_cast<MD2Frame*>( &buffer[i * header.frameSize] );
+      Point3*   pVerts = &vertices[i * nFrameVerts];
+      int*      pNormals = &normals[i * nFrameVerts];
 
-      for( int j = 0; j < nVerts; ++j ) {
+      for( int j = 0; j < nFrameVerts; ++j ) {
+        pNormals[j] = pFrame->verts[j].normal;
         pVerts[j] = Point3(
-          ( float( pFrame->verts[j].v[1] ) * -pFrame->scale[1] ) - pFrame->translate[1],
-          ( float( pFrame->verts[j].v[0] ) *  pFrame->scale[0] ) + pFrame->translate[0],
-          ( float( pFrame->verts[j].v[2] ) *  pFrame->scale[2] ) + pFrame->translate[2] );
+          ( float( pFrame->verts[j].p[1] ) * -pFrame->scale[1] ) - pFrame->translate[1],
+          ( float( pFrame->verts[j].p[0] ) *  pFrame->scale[0] ) + pFrame->translate[0],
+          ( float( pFrame->verts[j].p[2] ) *  pFrame->scale[2] ) + pFrame->translate[2] );
 
-        pNormals[j] = pFrame->verts[j].lightNormal;
+        pVerts[j] = Point3::ORIGIN + scale * ( pVerts[j] - Point3::ORIGIN );
+        pVerts[j] += translation;
+        if( i == Anim::JUMP ) {
+          pVerts[j] += jumpTransl;
+        }
       }
     }
     delete[] buffer;
     fclose( file );
 
+    MeshData meshes[nFrames];
+
+    for( int i = 0; i < nFrames; ++i ) {
+      const int* cmd = glCmds;
+
+      compiler.beginMesh();
+      compiler.enable( CAP_CW );
+
+      if( nFrames == 1 ) {
+        compiler.enable( CAP_UNIQUE );
+      }
+
+      compiler.texture( 0, GL_TEXTURE_2D, skinFile );
+      compiler.begin( GL_TRIANGLES );
+
+      auto vertex = [&]( const int* cmd ) {
+        compiler.texCoord( 0, reinterpret_cast<const float*>( cmd ) );
+        compiler.normal( NORMALS[ normals[ cmd[2] ] ] );
+        compiler.vertex( vertices[ i * nFrameVerts + cmd[2] ] );
+      };
+
+      while( int n = *cmd ) {
+        int mode;
+        if( n < 0 ) {
+          mode = GL_TRIANGLE_FAN;
+          n = -n;
+        }
+        else {
+          mode = GL_TRIANGLE_STRIP;
+        }
+        ++cmd;
+
+        vertex( cmd + 0 );
+        vertex( cmd + 3 );
+        vertex( cmd + 6 );
+
+        for( int j = 3; j < n; ++j ) {
+          if( mode == GL_TRIANGLE_FAN ) {
+            vertex( cmd + 0 );
+            vertex( cmd + ( j - 1 ) * 3 );
+            vertex( cmd + j * 3 );
+          }
+          else if( j % 2 == 1 ) {
+            vertex( cmd + ( j - 1 ) * 3 );
+            vertex( cmd + ( j - 2 ) * 3 );
+            vertex( cmd + j * 3 );
+          }
+          else {
+            vertex( cmd + ( j - 2 ) * 3 );
+            vertex( cmd + ( j - 1 ) * 3 );
+            vertex( cmd + j * 3 );
+          }
+        }
+
+        cmd += n * 3;
+      }
+      compiler.end();
+      compiler.endMesh();
+
+      compiler.getMeshData( &meshes[i] );
+    }
+
+    size_t size = 0;
+
+    size += 2 * sizeof( int );
+    size += compiler.meshSize();
+
+    if( nFrames > 1 ) {
+      size += nFrames* meshes[0].vertices.length() * sizeof( float[3] );
+    }
+
+    Buffer outBuffer( size );
+    OutputStream os = outBuffer.outputStream();
+
+    os.writeInt( nFrames );
+    os.writeInt( meshes[0].vertices.length() );
+
+    meshes[0].write( &os );
+
+    if( nFrames > 1 ) {
+      for( int i = 0; i < nFrames; ++i ) {
+        foreach( vertex, meshes[i].vertices.citer() ) {
+          os.writeFloat( vertex->pos[0] );
+          os.writeFloat( vertex->pos[1] );
+          os.writeFloat( vertex->pos[2] );
+        }
+      }
+    }
+
+    hard_assert( !os.isAvailable() );
+    outBuffer.write( sPath + "/tris.ozcMD2" );
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  MD2::MD2( const char* name_ ) : name( name_ ), vertices( null ), isLoaded( false )
+  {}
+
+  MD2::~MD2()
+  {
+    log.print( "Unloading MD2 model '%s' ...", name.cstr() );
+
+    mesh.unload();
+    delete[] vertices;
+
     log.printEnd( " OK" );
 
-    texId = context.loadTexture( skinFile, true );
+    hard_assert( glGetError() == GL_NO_ERROR );
+  }
 
-    Config config;
-    config.load( configFile );
+  void MD2::load()
+  {
+    log.println( "Loading MD2 model '%s' {", name.cstr() );
+    log.indent();
 
-    float scaling = config.get( "scale", 0.042f );
-    Vec3 translation   = Vec3( config.get( "translate.x", 0.00f ),
-                               config.get( "translate.y", 0.00f ),
-                               config.get( "translate.z", 0.00f ) );
-    Vec3 jumpTranslate = Vec3( config.get( "jumpTranslate.x", 0.00f ),
-                               config.get( "jumpTranslate.y", 0.00f ),
-                               config.get( "jumpTranslate.z", 0.00f ) );
-    weaponTransl       = Vec3( config.get( "weaponTranslate.x", 0.00f ),
-                               config.get( "weaponTranslate.y", 0.00f ),
-                               config.get( "weaponTranslate.z", 0.00f ) );
+    Buffer buffer;
+    buffer.read( "mdl/" + name + "/tris.ozcMD2" );
+    InputStream is = buffer.inputStream();
 
-    if( scaling != 1.0f ) {
-      scale( scaling );
+    nFrames     = is.readInt();
+    nFrameVerts = is.readInt();
+
+    if( nFrames == 1 ) {
+      mesh.load( &is, GL_STATIC_DRAW );
     }
+    else {
+      mesh.load( &is, GL_STREAM_DRAW );
 
-    translate( translation );
+      vertices = new Point3[nFrames * nFrameVerts];
 
-    if( jumpTranslate != Vec3::ZERO && animList[Anim::JUMP].lastFrame < nFrames ) {
-      translate( Anim::JUMP, jumpTranslate );
-    }
-
-    if( texId == 0 ) {
-      throw Exception( "MD2 model loading error" );
+      for( int i = 0; i < nFrames * nFrameVerts; ++i ) {
+        vertices[i] = is.readPoint3();
+      }
     }
 
     isLoaded = true;
-  }
 
-  void MD2::scale( float scale )
-  {
-    int max = nVerts * nFrames;
-
-    for( int i = 0; i < max; ++i ) {
-      verts[i] = Point3::ORIGIN + scale * ( verts[i] - Point3::ORIGIN );
-    }
-  }
-
-  void MD2::translate( const Vec3& t )
-  {
-    int end = nVerts * nFrames;
-
-    for( int i = 0; i < end; ++i ) {
-      verts[i] += t;
-    }
-  }
-
-  void MD2::translate( Anim anim, const Vec3& t )
-  {
-    int start = animList[int( anim )].firstFrame * nVerts;
-    int end = ( animList[int( anim )].lastFrame + 1 ) * nVerts - 1;
-
-    hard_assert( end < nVerts * nFrames );
-
-    for( int i = start; i <= end; ++i ) {
-      verts[i] += t;
-    }
+    log.unindent();
+    log.println( "}" );
   }
 
   void MD2::advance( AnimState* anim, float dt ) const
@@ -438,76 +515,15 @@ namespace client
     }
   }
 
-  void MD2::drawFrame( int frame ) const
+  void MD2::drawFrame( int ) const
   {
-    const Point3* vertList = &verts[nVerts * frame];
-    const int*    pCmd     = glCmds;
-
-    glFrontFace( GL_CW );
-    glBindTexture( GL_TEXTURE_2D, texId );
-
-    while( int i = *( pCmd ) ) {
-      if( i < 0 ) {
-        glBegin( GL_TRIANGLE_FAN );
-        i = -i;
-      }
-      else {
-        glBegin( GL_TRIANGLE_STRIP );
-      }
-      ++pCmd;
-      for( ; i > 0; --i, pCmd += 3 ) {
-        glNormal3fv( anorms[ lightNormals[ pCmd[2] ] ] );
-        glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],
-                      reinterpret_cast<const float*>( pCmd )[1] );
-        glVertex3fv( vertList[pCmd[2]] );
-      }
-      glEnd();
-    }
-
-    glFrontFace( GL_CCW );
+    mesh.drawSolid();
   }
 
   void MD2::draw( const AnimState* anim ) const
   {
-    const int* pCmd = glCmds;
-
     interpolate( anim );
-
-    glFrontFace( GL_CW );
-    glBindTexture( GL_TEXTURE_2D, texId );
-
-    while( int i = *( pCmd ) ) {
-      if( i < 0 ) {
-        glBegin( GL_TRIANGLE_FAN );
-        i = -i;
-      }
-      else {
-        glBegin( GL_TRIANGLE_STRIP );
-      }
-      ++pCmd;
-      for( ; i > 0; --i, pCmd += 3 ) {
-        glNormal3fv( anorms[ lightNormals[ pCmd[2] ] ] );
-        glTexCoord2f( reinterpret_cast<const float*>( pCmd )[0],
-                      reinterpret_cast<const float*>( pCmd )[1] );
-        glVertex3fv( vertList[pCmd[2]] );
-      }
-      glEnd();
-    }
-
-    glFrontFace( GL_CCW );
-  }
-
-  void MD2::genList()
-  {
-    list = glGenLists( 1 );
-    glNewList( list, GL_COMPILE );
-      drawFrame( 0 );
-    glEndList();
-  }
-
-  void MD2::deleteList() const
-  {
-    glDeleteLists( list, 1 );
+    mesh.drawSolid();
   }
 
 }

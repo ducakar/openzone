@@ -29,12 +29,6 @@ namespace client
   class MD3;
   class OBJ;
 
-  const int VAO_INDEXED       = 0x01;
-  const int VAO_NORMAL_BIT    = 0x10;
-  const int VAO_TEXCOORD0_BIT = 0x20;
-  const int VAO_TEXCOORD1_BIT = 0x40;
-  const int VAO_TEXCOORD2_BIT = 0x80;
-
   class Context
   {
     friend class Render;
@@ -77,6 +71,8 @@ namespace client
       // provide similar functionality as vertex array objects in OpenGL 3+
       struct VAO
       {
+        static const int INDEXED_BIT = 0x1;
+
         uint buffers[2];
         int  flags;
       };
@@ -158,40 +154,12 @@ namespace client
                           int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
 
-      uint createNormalmap( void* data,
-                            const Vec3& lightNormal,
-                            int width,
-                            int height,
-                            int bytesPerPixel,
-                            bool wrap = true,
-                            int magFilter = DEFAULT_MAG_FILTER,
-                            int minFilter = DEFAULT_MIN_FILTER );
-
       uint loadTexture( const char* path,
                         bool wrap = true,
                         int magFilter = DEFAULT_MAG_FILTER,
                         int minFilter = DEFAULT_MIN_FILTER );
 
-      uint loadNormalmap( const char* path,
-                          const Vec3& lightNormal,
-                          bool wrap = true,
-                          int magFilter = DEFAULT_MAG_FILTER,
-                          int minFilter = DEFAULT_MIN_FILTER );
-
       void deleteTexture( uint texId );
-
-      uint requestTexture( int resource,
-                           bool wrap = true,
-                           int magFilter = DEFAULT_MAG_FILTER,
-                           int minFilter = DEFAULT_MIN_FILTER );
-
-      uint requestNormalmap( int resource,
-                             const Vec3& lightNormal,
-                             bool wrap = true,
-                             int magFilter = DEFAULT_MAG_FILTER,
-                             int minFilter = DEFAULT_MIN_FILTER );
-
-      void releaseTexture( int resource );
 
       uint requestSound( int resource );
       void releaseSound( int resource );
@@ -199,19 +167,26 @@ namespace client
       BSP* loadBSP( int resource );
       void releaseBSP( int resource );
 
-      uint genArray( int flags, GLenum usage,
+      uint genArray( GLenum usage,
                      const Vertex* vertices, int nVertices,
                      const ushort* indices = null, int nIndices = 0 );
 
       void deleteArray( uint id );
 
+      static void beginArrayMode();
+      static void endArrayMode();
+
       void bindArray( uint id ) const;
-      static void unbindArray();
 
       static void setVertexFormat();
 
+      Vertex* mapArray( uint id, int access ) const;
+      void unmapArray( uint id ) const;
+
       void drawArray( GLenum mode, int firstVertex, int nVertices ) const;
       void drawIndexedArray( GLenum mode, int firstIndex, int nIndices ) const;
+
+      static void bindTextures( uint texture0 = 0, uint texture1 = 0, uint texture2 = 0 );
 
       uint genList();
       uint genLists( int count );

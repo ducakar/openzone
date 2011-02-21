@@ -42,7 +42,7 @@ namespace client
       return;
     }
 
-    glCallList( md2->list );
+    md2->drawFrame( 0 );
   }
 
 }

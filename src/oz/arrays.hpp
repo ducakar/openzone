@@ -351,23 +351,6 @@ namespace oz
   }
 
   /**
-   * Remove element at the specified index. Shift (with move operator) the remaining elements to
-   * fill the gap.
-   * @param aDest pointer to the first element in the array
-   * @param index position of the element to be removed
-   * @param count number of elements in the array
-   */
-  template <typename Type>
-  inline void aRemove( Type* aDest, int index, int count )
-  {
-    hard_assert( uint( index ) < uint( count ) );
-
-    for( int i = index + 1; i < count; ++i ) {
-      aDest[i - 1] = aDest[i];
-    }
-  }
-
-  /**
    * Call delete on each non-null element of an array of pointers and set all elements to null.
    * @param aDest pointer to the first element in the array
    * @param count number of elements
@@ -415,6 +398,58 @@ namespace oz
     delete[] aDest;
 
     return aNew;
+  }
+
+  /**
+   * Insert an element at the specified index. Shift the remaining elements to make a gap.
+   * The last element is lost.
+   * @param aDest pointer to the first element in the array
+   * @param index position where the element is to be inserted
+   * @param count number of elements in the array
+   */
+  template <typename Type>
+  inline void aInsert( Type* aDest, const Type& value, int index, int count )
+  {
+    hard_assert( uint( index ) < uint( count ) );
+
+    for( int i = count - 1; i > index; --i ) {
+      aDest[i] = aDest[i - 1];
+    }
+    aDest[index] = value;
+  }
+
+  /**
+   * Remove the element at the specified index. Shift the remaining elements to fill the gap.
+   * @param aDest pointer to the first element in the array
+   * @param index position of the element to be removed
+   * @param count number of elements in the array
+   */
+  template <typename Type>
+  inline void aRemove( Type* aDest, int index, int count )
+  {
+    hard_assert( uint( index ) < uint( count ) );
+
+    for( int i = index + 1; i < count; ++i ) {
+      aDest[i - 1] = aDest[i];
+    }
+  }
+
+  /**
+   * Reverses the order of array elements.
+   * @param aDest pointer to the first element in the array
+   * @param count number of elements in the array
+   */
+  template <typename Type>
+  inline void aReverse( Type* aDest, int count )
+  {
+    int bottom = 0;
+    int top    = count - 1;
+
+    while( bottom < top ) {
+      swap( aDest[bottom], aDest[top] );
+      ++bottom;
+      --top;
+    }
   }
 
   /**
@@ -469,6 +504,58 @@ namespace oz
   }
 
   /**
+   * Utility function for aSort. It could also be called directly.
+   * Implementation of operator < is must be provided as a parameter.
+   * @param first pointer to first element in the array to be sorted
+   * @param last pointer to last element in the array
+   * @param isLess operator < implementation for Type
+   */
+  template <typename Type, typename LessComp>
+  static void quicksort( Type* first, Type* last, const LessComp& isLess )
+  {
+    // 8-14 seem as an optimal thresholds for switching to selection sort
+    if( last - first > 8 ) {
+      // quicksort
+      Type* top = first;
+      Type* bottom = last - 1;
+
+      do {
+        while( top <= bottom && !isLess( *last, *top ) ) {
+          ++top;
+        }
+        while( top < bottom && isLess( *last, *bottom ) ) {
+          --bottom;
+        }
+        if( top >= bottom ) {
+          break;
+        }
+        swap( *top, *bottom );
+      }
+      while( true );
+
+      swap( *top, *last );
+
+      quicksort( first, top - 1, isLess );
+      quicksort( top + 1, last, isLess );
+    }
+    else {
+      // selection sort
+      for( Type* i = first; i < last; ) {
+        Type* pivot = i;
+        Type* min = i;
+        ++i;
+
+        for( Type* j = i; j <= last; ++j ) {
+          if( isLess( *j, *min ) ) {
+            min = j;
+          }
+        }
+        swap( *pivot, *min );
+      }
+    }
+  }
+
+  /**
    * Perform quicksort on the array. Recursive quicksort algorithm is used which takes first
    * element in partition as a pivot so sorting a sorted or nearly sorted array will take O(n^2)
    * time instead of O(n log n) as in general case.
@@ -483,10 +570,25 @@ namespace oz
   }
 
   /**
+   * Perform quicksort on the array. Recursive quicksort algorithm is used which takes first
+   * element in partition as a pivot so sorting a sorted or nearly sorted array will take O(n^2)
+   * time instead of O(n log n) as in general case.
+   * Implementation of operator < must be provided as a parameter.
+   * @param array pointer to the first element in the array
+   * @param count number of elements to be sorted
+   * @param isLess operator < implementation for Type
+   */
+  template <typename Type, typename LessComp>
+  inline void aSort( Type* aSrc, int count, const LessComp& isLess )
+  {
+    quicksort( aSrc, aSrc + count - 1, isLess );
+  }
+
+  /**
    * Find an element using bisection.
    * Type must have operators == and &lt; defined.
    * @param aSrc non-empty array
-   * @param key the key we are looking for
+   * @param value the key we are looking for
    * @param count
    * @return index of requested element or -1 if not found
    */
@@ -519,12 +621,50 @@ namespace oz
   }
 
   /**
+   * Find an element using bisection.
+   * Implementations of operator == and operator < must be provided as parameters.
+   * @param aSrc non-empty array
+   * @param value the key we are looking for
+   * @param count
+   * @param isLess operator < implementation
+   * @return index of requested element or -1 if not found
+   */
+  template <typename Type, typename Key, typename EqualComp, typename LessComp>
+  inline int aBisectFind( Type* aSrc, const Key& key, int count,
+                          const EqualComp& isEqual, const LessComp& isLess )
+  {
+    hard_assert( count >= 0 );
+
+    if( count == 0 ) {
+      return -1;
+    }
+
+    int a = 0;
+    int b = count;
+
+    // The algorithm ensures that ( a == 0 or data[a] <= key ) and ( b == count or key < data[b] ),
+    // so the key may only lie on position a or nowhere.
+    while( b - a > 1 ) {
+      int c = ( a + b ) / 2;
+
+      if( isLess( key, aSrc[c] ) ) {
+        b = c;
+      }
+      else {
+        a = c;
+      }
+    }
+
+    return isEqual( key, aSrc[a] ) ? a : -1;
+  }
+
+  /**
    * Find insert position for an element to be added using bisection.
    * Returns an index such that aSrc[index - 1] <= key && key < aSrc[index]. If all elements are
    * lesser, return count, if all elements are greater, return 0.
    * Type must have operators == and &lt; defined.
    * @param aSrc
-   * @param key the key we are looking for
+   * @param value the key we are looking for
    * @param count
    * @return index of least element greater than the key, or count if there's no such element
    */
@@ -542,6 +682,41 @@ namespace oz
       int c = ( a + b ) / 2;
 
       if( key < aSrc[c] ) {
+        b = c;
+      }
+      else {
+        a = c;
+      }
+    }
+
+    return a + 1;
+  }
+
+  /**
+   * Find insert position for an element to be added using bisection.
+   * Returns an index such that aSrc[index - 1] <= key && key < aSrc[index]. If all elements are
+   * lesser, return count, if all elements are greater, return 0.
+   * Implementation of operator < must be provided as a parameter.
+   * @param aSrc
+   * @param value the key we are looking for
+   * @param count
+   * @param isLess operator < implementation
+   * @return index of least element greater than the key, or count if there's no such element
+   */
+  template <typename Type, typename Key, typename LessComp>
+  inline int aBisectPosition( Type* aSrc, const Key& key, int count, const LessComp& isLess )
+  {
+    hard_assert( count >= 0 );
+
+    int a = -1;
+    int b = count;
+
+    // The algorithm ensures that ( a == -1 or data[a] <= key ) and ( b == count or key < data[b] ),
+    // so the key may only lie on position a or nowhere.
+    while( b - a > 1 ) {
+      int c = ( a + b ) / 2;
+
+      if( isLess( key, aSrc[c] ) ) {
         b = c;
       }
       else {

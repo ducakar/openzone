@@ -13,6 +13,8 @@
 
 #include "matrix/Translator.hpp"
 
+#include "client/Mesh.hpp"
+
 namespace oz
 {
 namespace client
@@ -49,48 +51,36 @@ namespace client
         float currTime;
       };
 
-      static AnimInfo animList[];
-
     private:
 
-      static Vec3   anorms[];                   // precomputed normals
-      static Point3 vertList[MAX_VERTS];        // buffer for temporary interpolated frames
+      String          name;
 
-      String        name;
+      int             nFrames;
+      int             nFrameVerts;
 
-      int           nFrames;
-      int           nVerts;
-
-      Point3*       verts;
-      int*          glCmds;
-      int*          lightNormals;
-
-      uint          texId;
+      Mesh            mesh;
+      Point3*         vertices;
 
       void interpolate( const AnimState* anim ) const;
 
     public:
 
-      uint          list;
-      Vec3          weaponTransl;
-      bool          isLoaded;
+      static AnimInfo animList[];
+
+      Vec3            weaponTransl;
+      bool            isLoaded;
+
+      static void prebuild( const char* name );
 
       explicit MD2( const char* name );
       ~MD2();
 
       void load();
 
-      void scale( float scale );
-      void translate( const Vec3& t );
-      void translate( Anim anim, const Vec3& t );
-
       void advance( AnimState* anim, float dt ) const;
 
       void drawFrame( int frame ) const;
       void draw( const AnimState* anim ) const;
-
-      void genList();
-      void deleteList() const;
 
   };
 

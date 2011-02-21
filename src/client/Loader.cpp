@@ -265,10 +265,8 @@ namespace client
 
       if ( !j->object->isLoaded ) {
         j->object->load();
-        j->object->genList();
       }
       else if ( j->nUsers == 0 ) {
-        j->object->deleteList();
         delete j->object;
         context.staticMd2s.exclude( j.key() );;
       }
