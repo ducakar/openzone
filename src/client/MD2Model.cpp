@@ -53,13 +53,13 @@ namespace client
     int type = int( type_ );
 
     anim.type       = type_;
-    anim.repeat     = MD2::animList[type].repeat;
+    anim.repeat     = MD2::ANIM_LIST[type].repeat;
 
-    anim.startFrame = MD2::animList[type].firstFrame;
-    anim.endFrame   = MD2::animList[type].lastFrame;
+    anim.startFrame = MD2::ANIM_LIST[type].firstFrame;
+    anim.endFrame   = MD2::ANIM_LIST[type].lastFrame;
     anim.nextFrame  = anim.startFrame == anim.endFrame ? anim.endFrame : anim.startFrame + 1;
 
-    anim.fps        = MD2::animList[type].fps;
+    anim.fps        = MD2::ANIM_LIST[type].fps;
     anim.frameTime  = 1.0f / anim.fps;
     anim.currTime   = 0.0f;
   }

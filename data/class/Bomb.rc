@@ -22,7 +22,7 @@ onDestroy "Bomb_onDestroy"
 onUpdate  "Bomb_onUpdate"
 onUse     "Bomb_onUse"
 
-modelType "MD2Static"
+modelType "SMM"
 modelName "bombs"
 
 audioType                       "Basic"

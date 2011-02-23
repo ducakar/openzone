@@ -37,9 +37,7 @@ namespace client
       };
 
       String name;
-      Mesh   mesh;
 
-      uint            arrayId;
       DArray<Segment> segments;
 
       static char* skipSpaces( char* pos );
@@ -55,15 +53,7 @@ namespace client
 
     public:
 
-      bool isLoaded;
-
       static void prebuild( const char* name );
-
-      explicit OBJ( const char* name );
-      ~OBJ();
-
-      void load();
-      void draw() const;
 
   };
 

@@ -2,7 +2,7 @@ base                            "Bot"
 
 dim.x                           "0.44"
 dim.y                           "0.44"
-dim.z                           "1.09"
+dim.z                           "0.99"
 
 life                            "100.0"
 mass                            "100.0"

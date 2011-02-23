@@ -24,13 +24,11 @@
 #include "client/Terra.hpp"
 #include "client/BSP.hpp"
 
-#include "client/OBJModel.hpp"
-#include "client/OBJVehicleModel.hpp"
-#include "client/MD2StaticModel.hpp"
+#include "client/SMMModel.hpp"
+#include "client/SMMVehicleModel.hpp"
+#include "client/ExplosionModel.hpp"
 #include "client/MD2Model.hpp"
 #include "client/MD2WeaponModel.hpp"
-#include "client/MD3StaticModel.hpp"
-#include "client/ExplosionModel.hpp"
 
 #include <SDL_opengl.h>
 
@@ -75,12 +73,7 @@ namespace client
       if( isVisible ) {
         ObjectEntry entry( ( obj->p - camera.p ).sqL(), obj );
 
-        if( obj->flags & Object::DELAYED_DRAW_BIT ) {
-          delayedObjects.add( entry );
-        }
-        else {
-          objects.add( entry );
-        }
+        objects.add( entry );
       }
     }
 
@@ -95,6 +88,9 @@ namespace client
   {
     hard_assert( glGetError() == GL_NO_ERROR );
     hard_assert( !glIsEnabled( GL_TEXTURE_2D ) );
+
+    collider.translate( camera.p, Vec3::ZERO );
+    isUnderWater = collider.hit.inWater;
 
     // clear colour, visibility, fog
     if( isUnderWater ) {
@@ -181,13 +177,11 @@ namespace client
     glDisable( GL_BLEND );
     glEnable( GL_TEXTURE_2D );
 
-    isUnderWater = camera.p.z < 0.0f;
-
     terra.draw();
 
     // draw structures
     foreach( str, structs.citer() ) {
-      isUnderWater |= context.drawBSP( *str );
+      context.drawBSP( *str, Mesh::SOLID_BIT );
     }
 
     // draw (non-delayed) objects
@@ -219,16 +213,16 @@ namespace client
     glDisable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );
 
-//     for( int i = 0; i < particles.length(); ++i ) {
-//       const Particle* part = particles[i];
-//
-//       glPushMatrix();
-//       glTranslatef( part->p.x, part->p.y, part->p.z );
-//
-//       shape.draw( part );
-//
-//       glPopMatrix();
-//     }
+    for( int i = 0; i < particles.length(); ++i ) {
+      const Particle* part = particles[i];
+
+      glPushMatrix();
+      glTranslatef( part->p.x, part->p.y, part->p.z );
+
+      shape.draw( part );
+
+      glPopMatrix();
+    }
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -239,32 +233,13 @@ namespace client
     // draw delayed objects
     glDisable( GL_COLOR_MATERIAL );
 
-//     for( int i = 0; i < delayedObjects.length(); ++i ) {
-//       const Object* obj = delayedObjects[i].obj;
-//
-//       if( obj->index == camera.tagged ) {
-//         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::TAG );
-//       }
-//
-//       glPushMatrix();
-//       glTranslatef( obj->p.x, obj->p.y, obj->p.z );
-//
-//       context.drawModel( obj, null );
-//
-//       glPopMatrix();
-//
-//       if( obj->index == camera.tagged ) {
-//         glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::BLACK );
-//       }
-//     }
-
     hard_assert( !glIsEnabled( GL_BLEND ) );
     hard_assert( glIsEnabled( GL_TEXTURE_2D ) );
     glEnable( GL_BLEND );
 
     // draw structures' water
     foreach( str, structs.citer() ) {
-      context.drawBSPWater( *str );
+      context.drawBSP( *str, Mesh::ALPHA_BIT );
     }
 
     terra.drawWater();
@@ -319,7 +294,6 @@ namespace client
     structs.clear();
     waterStructs.clear();
     objects.clear();
-    delayedObjects.clear();
     particles.clear();
 
     glDisable( GL_FOG );
@@ -396,9 +370,6 @@ namespace client
 
     objects.clear();
     objects.dealloc();
-
-    delayedObjects.clear();
-    delayedObjects.clear();
 
     particles.clear();
     particles.dealloc();

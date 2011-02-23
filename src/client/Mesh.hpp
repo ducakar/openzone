@@ -25,21 +25,17 @@ namespace client
   {
     float pos[3];
     float normal[3];
-    float texCoord[6];
+    float texCoord[2];
 
     bool operator == ( const Vertex& v ) const;
 
-    void set( float px = 0.0f, float py = 0.0f, float pz = 0.0f,
+    void set( float x = 0.0f, float y = 0.0f, float z = 0.0f,
               float nx = 0.0f, float ny = 0.0f, float nz = 0.0f,
-              float t0s = 0.0f, float t0t = 0.0f,
-              float t1s = 0.0f, float t1t = 0.0f,
-              float t2s = 0.0f, float t2t = 0.0f );
+              float u = 0.0f, float v = 0.0f );
 
     void set( const Point3& p = Point3::ORIGIN,
               const Vec3& n = Vec3::ZERO,
-              const TexCoord& t0 = TexCoord( 0.0f, 0.0f ),
-              const TexCoord& t1 = TexCoord( 0.0f, 0.0f ),
-              const TexCoord& t2 = TexCoord( 0.0f, 0.0f ) );
+              const TexCoord& t = TexCoord( 0.0f, 0.0f ) );
 
     void read( InputStream* stream );
     void write( OutputStream* stream ) const;
@@ -50,7 +46,10 @@ namespace client
     friend class MeshData;
     friend class Compiler;
 
-    static const int STREAMING_BIT = 0x00000001;
+    public:
+
+      static const int SOLID_BIT = 0x00000001;
+      static const int ALPHA_BIT = 0x00000002;
 
     private:
 
@@ -61,7 +60,6 @@ namespace client
         uint texture[3];
 
         int  mode;
-        int  flags;
 
         int  firstIndex;
         int  nIndices;
@@ -74,19 +72,17 @@ namespace client
 
     public:
 
-
-
-      static void begin();
-      static void end();
+      explicit Mesh();
+      ~Mesh();
 
       void load( InputStream* stream, int flags = 0 );
       void unload();
 
-      Vertex* map( int access ) const;
+      void upload( const Vertex* vertices, int nVertices ) const;
+      Vertex* map( int access, int size = 0 ) const;
       void unmap() const;
 
-      void drawSolid() const;
-      void drawAlpha() const;
+      void draw( int mask ) const;
 
   };
 
@@ -103,7 +99,6 @@ namespace client
         String texture[3];
 
         int    mode;
-        int    flags;
 
         int    firstIndex;
         int    nIndices;

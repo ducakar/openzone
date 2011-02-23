@@ -130,30 +130,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/maps )
 
   install( FILES
-    data/mdl/MarvinMartian/MarvinMartian.txt
-    data/mdl/MarvinMartian/a_grenades.md2
-    data/mdl/MarvinMartian/a_m61frag.md2
-    data/mdl/MarvinMartian/skin.jpg
-    data/mdl/MarvinMartian/tris.md2
-    data/mdl/MarvinMartian/w_akimbo.md2
-    data/mdl/MarvinMartian/w_bfg.md2
-    data/mdl/MarvinMartian/w_cannon.md2
-    data/mdl/MarvinMartian/w_chaingun.md2
-    data/mdl/MarvinMartian/w_glauncher.md2
-    data/mdl/MarvinMartian/w_hyperblaster.md2
-    data/mdl/MarvinMartian/w_knife.md2
-    data/mdl/MarvinMartian/w_m4.md2
-    data/mdl/MarvinMartian/w_machinegun.md2
-    data/mdl/MarvinMartian/w_mk23.md2
-    data/mdl/MarvinMartian/w_mp5.md2
-    data/mdl/MarvinMartian/w_railgun.md2
-    data/mdl/MarvinMartian/w_rlauncher.md2
-    data/mdl/MarvinMartian/w_shotgun.md2
-    data/mdl/MarvinMartian/w_sniper.md2
-    data/mdl/MarvinMartian/w_sshotgun.md2
-    data/mdl/MarvinMartian/w_super90.md2
-    data/mdl/MarvinMartian/weapon.md2
-    DESTINATION share/openzone/mdl/data/mdl/MarvinMartian )
+    DESTINATION share/openzone/mdl/data/mdl/DISABLED )
 
   install( FILES
     data/mdl/barrel1/readme.txt
@@ -162,22 +139,13 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/barrel1 )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/barrel1.ozcSMM )
+
+  install( FILES
     data/mdl/bauul/bauul.txt
     data/mdl/bauul/skin.jpg
     data/mdl/bauul/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/bauul )
-
-  install( FILES
-    data/mdl/bdroid/00M-9.jpg
-    data/mdl/bdroid/bdroid.txt
-    data/mdl/bdroid/infantry.jpg
-    data/mdl/bdroid/pilot.jpg
-    data/mdl/bdroid/security.jpg
-    data/mdl/bdroid/skin.jpg
-    data/mdl/bdroid/tris.md2
-    data/mdl/bdroid/weapon.jpg
-    data/mdl/bdroid/weapon.md2
-    DESTINATION share/openzone/mdl/data/mdl/bdroid )
 
   install( FILES
     data/mdl/bigCrate/crate1.jpg
@@ -186,7 +154,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/bigCrate )
 
   install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/bigCrate.ozcOBJ )
+    DESTINATION share/openzone/mdl/data/mdl/bigCrate.ozcSMM )
 
   install( FILES
     data/mdl/bombs/skin.jpg
@@ -244,13 +212,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/health )
 
   install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/health.ozcOBJ )
-
-  install( FILES
-    data/mdl/hellpig/readme.txt
-    data/mdl/hellpig/skin.jpg
-    data/mdl/hellpig/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/hellpig )
+    DESTINATION share/openzone/mdl/data/mdl/health.ozcSMM )
 
   install( FILES
     data/mdl/hobgoblin/skin.jpg
@@ -263,14 +225,13 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/ivy )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/ivy.ozcSMM )
+
+  install( FILES
     data/mdl/knight/readme.txt
     data/mdl/knight/skin.jpg
     data/mdl/knight/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/knight )
-
-  install( FILES
-    data/mdl/lara/LaraCroft - ReadMe.txt
-    DESTINATION share/openzone/mdl/data/mdl/lara )
 
   install( FILES
     data/mdl/leafs/skin.jpg
@@ -278,13 +239,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/leafs )
 
   install( FILES
-    data/mdl/monkey/Osama.jpg
-    data/mdl/monkey/data.mtl
-    data/mdl/monkey/data.obj
-    DESTINATION share/openzone/mdl/data/mdl/monkey )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/monkey.ozcOBJ )
+    DESTINATION share/openzone/mdl/data/mdl/leafs.ozcSMM )
 
   install( FILES
     data/mdl/mushroom/skin.jpg
@@ -292,10 +247,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/mushroom )
 
   install( FILES
-    data/mdl/ogro/Ogro.txt
-    data/mdl/ogro/skin.jpg
-    data/mdl/ogro/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/ogro )
+    DESTINATION share/openzone/mdl/data/mdl/mushroom.ozcSMM )
 
   install( FILES
     data/mdl/palmtree/skin.jpg
@@ -303,9 +255,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/palmtree )
 
   install( FILES
-    data/mdl/pirate/pirate.mtl
-    data/mdl/pirate/pirate.obj
-    DESTINATION share/openzone/mdl/data/mdl/pirate )
+    DESTINATION share/openzone/mdl/data/mdl/palmtree.ozcSMM )
 
   install( FILES
     data/mdl/raptor/data.mtl
@@ -313,38 +263,12 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/raptor )
 
   install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/raptor.ozcOBJ )
-
-  install( FILES
-    data/mdl/rat/Ratamahatta.txt
-    data/mdl/rat/skin.jpg
-    data/mdl/rat/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/rat )
-
-  install( FILES
-    data/mdl/reaper/blue.jpg
-    data/mdl/reaper/eye_glow.jpg
-    data/mdl/reaper/reaper.jpg
-    data/mdl/reaper/red.jpg
-    data/mdl/reaper/spec.jpg
-    DESTINATION share/openzone/mdl/data/mdl/reaper )
-
-  install( FILES
-    data/mdl/rhino/rhino.txt
-    data/mdl/rhino/skin.jpg
-    data/mdl/rhino/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/rhino )
+    DESTINATION share/openzone/mdl/data/mdl/raptor.ozcSMM )
 
   install( FILES
     data/mdl/rifle/skin.jpg
     data/mdl/rifle/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/rifle )
-
-  install( FILES
-    data/mdl/slith/skin.jpg
-    data/mdl/slith/slithMe.txt
-    data/mdl/slith/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/slith )
 
   install( FILES
     data/mdl/smallCrate/crate1.jpg
@@ -353,7 +277,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/smallCrate )
 
   install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/smallCrate.ozcOBJ )
+    DESTINATION share/openzone/mdl/data/mdl/smallCrate.ozcSMM )
 
   install( FILES
     data/mdl/smplant/skin.jpg
@@ -361,9 +285,15 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/smplant )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/smplant.ozcSMM )
+
+  install( FILES
     data/mdl/tree1/skin.jpg
     data/mdl/tree1/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/tree1 )
+
+  install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/tree1.ozcSMM )
 
   install( FILES
     data/mdl/tree2/readme.txt
@@ -372,15 +302,24 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/tree2 )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/tree2.ozcSMM )
+
+  install( FILES
     data/mdl/tree3/readme.txt
     data/mdl/tree3/skin.jpg
     data/mdl/tree3/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/tree3 )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/tree3.ozcSMM )
+
+  install( FILES
     data/mdl/winebottle/skin.jpg
     data/mdl/winebottle/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/winebottle )
+
+  install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/winebottle.ozcSMM )
 
   install( FILES
     data/name/COPYING.wesnoth

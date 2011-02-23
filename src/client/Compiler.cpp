@@ -61,7 +61,6 @@ namespace client
     part.texture[0] = "";
     part.texture[1] = "";
     part.texture[2] = "";
-    part.flags      = 0;
 
     vert.pos[0] = 0.0f;
     vert.pos[1] = 0.0f;
@@ -73,12 +72,6 @@ namespace client
 
     vert.texCoord[0] = 0.0f;
     vert.texCoord[1] = 0.0f;
-
-    vert.texCoord[2] = 0.0f;
-    vert.texCoord[3] = 0.0f;
-
-    vert.texCoord[4] = 0.0f;
-    vert.texCoord[5] = 0.0f;
   }
 
   void Compiler::endMesh()
@@ -116,12 +109,11 @@ namespace client
     }
   }
 
-  void Compiler::texture( int unit, int target, const char* texture )
+  void Compiler::texture( int unit, const char* texture )
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( ~flags & SURFACE_BIT );
 
-    hard_assert( target == GL_TEXTURE_2D );
     hard_assert( 0 <= unit && unit <= 2 );
 
     part.texture[unit] = texture;
@@ -231,19 +223,17 @@ namespace client
     part.indices.clear();
   }
 
-  void Compiler::texCoord( int unit, float u, float v )
+  void Compiler::texCoord( float u, float v )
   {
     hard_assert( flags & MESH_BIT );
 
-    hard_assert( 0 <= unit && unit <= 2 );
-
-    vert.texCoord[2 * unit + 0] = u;
-    vert.texCoord[2 * unit + 1] = v;
+    vert.texCoord[0] = u;
+    vert.texCoord[1] = v;
   }
 
-  void Compiler::texCoord( int unit, const float* v )
+  void Compiler::texCoord( const float* v )
   {
-    texCoord( unit, v[0], v[1] );
+    texCoord( v[0], v[1] );
   }
 
   void Compiler::normal( float nx, float ny, float nz )
@@ -339,7 +329,7 @@ namespace client
     size += 4 * sizeof( int );
 
     foreach( part, solidParts.citer() ) {
-      size += 2 * sizeof( Quat ) + 4 * sizeof( int );
+      size += 2 * sizeof( Quat ) + 3 * sizeof( int );
 
       size += part->texture[0].length() + 1;
       size += part->texture[1].length() + 1;
@@ -348,7 +338,7 @@ namespace client
       size += part->indices.length() * sizeof( ushort );
     }
     foreach( part, alphaParts.citer() ) {
-      size += 2 * sizeof( Quat ) + 4 * sizeof( int );
+      size += 2 * sizeof( Quat ) + 3 * sizeof( int );
 
       size += part->texture[0].length() + 1;
       size += part->texture[1].length() + 1;
@@ -379,7 +369,6 @@ namespace client
       stream->writeString( part->texture[2] );
 
       stream->writeInt( part->mode );
-      stream->writeInt( part->flags );
 
       stream->writeInt( nIndices );
       stream->writeInt( part->indices.length() );
@@ -397,7 +386,6 @@ namespace client
       stream->writeString( part->texture[2] );
 
       stream->writeInt( part->mode );
-      stream->writeInt( part->flags );
 
       stream->writeInt( nIndices );
       stream->writeInt( part->indices.length() );
@@ -440,7 +428,6 @@ namespace client
       mesh->solidParts[i].texture[2] = solidParts[i].texture[2];
 
       mesh->solidParts[i].mode       = solidParts[i].mode;
-      mesh->solidParts[i].flags      = solidParts[i].flags;
 
       mesh->solidParts[i].firstIndex = nIndices;
       mesh->solidParts[i].nIndices   = solidParts[i].indices.length();
@@ -458,7 +445,6 @@ namespace client
       mesh->alphaParts[i].texture[2] = alphaParts[i].texture[2];
 
       mesh->alphaParts[i].mode       = alphaParts[i].mode;
-      mesh->alphaParts[i].flags      = alphaParts[i].flags;
 
       mesh->alphaParts[i].firstIndex = nIndices;
       mesh->alphaParts[i].nIndices   = alphaParts[i].indices.length();
@@ -504,7 +490,6 @@ namespace client
       mesh->solidParts[i].texture[2] = context.loadTexture( solidParts[i].texture[2] );
 
       mesh->solidParts[i].mode       = solidParts[i].mode;
-      mesh->solidParts[i].flags      = solidParts[i].flags;
 
       mesh->solidParts[i].firstIndex = nIndices;
       mesh->solidParts[i].nIndices   = solidParts[i].indices.length();
@@ -526,7 +511,6 @@ namespace client
       mesh->alphaParts[i].texture[2] = context.loadTexture( alphaParts[i].texture[2] );
 
       mesh->alphaParts[i].mode       = alphaParts[i].mode;
-      mesh->alphaParts[i].flags      = alphaParts[i].flags;
 
       mesh->alphaParts[i].firstIndex = nIndices;
       mesh->alphaParts[i].nIndices   = alphaParts[i].indices.length();

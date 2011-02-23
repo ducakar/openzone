@@ -53,22 +53,24 @@ namespace client
 
     private:
 
-      String          name;
+      String  name;
 
-      int             nFrames;
-      int             nFrameVerts;
+      int     nFrames;
+      int     nFrameVerts;
 
-      Mesh            mesh;
-      Point3*         vertices;
+      Mesh    mesh;
+      Vertex* frameVerts;
+      Point3* vertices;
 
+      void setFrame( int frame ) const;
       void interpolate( const AnimState* anim ) const;
 
     public:
 
-      static AnimInfo animList[];
+      static const AnimInfo ANIM_LIST[];
 
-      Vec3            weaponTransl;
-      bool            isLoaded;
+      Vec3    weaponTransl;
+      bool    isLoaded;
 
       static void prebuild( const char* name );
 

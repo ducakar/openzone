@@ -189,31 +189,27 @@ namespace client
       Buffer buffer;
       String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
-      log.print( "Loading world stream from %s ...", stateFile.cstr() );
+      log.print( "Loading world stream from '%s' ...", stateFile.cstr() );
       if( buffer.read( stateFile ) ) {
+        log.printEnd( " OK" );
+
         InputStream istream = buffer.inputStream();
 
         matrix.load( &istream );
         nirvana.load( &istream );
-
-        log.printEnd( " OK" );
       }
       else {
-        log.printRaw( " Failed, starting a new world ..." );
+        log.printEnd( " Failed, starting a new world" );
 
         matrix.load( null );
         nirvana.load( null );
-
-        log.printEnd( " OK" );
       }
     }
     else {
-      log.print( "Loading a new world ..." );
+      log.println( "Initialising a new world" );
 
       matrix.load( null );
       nirvana.load( null );
-
-      log.printEnd( " OK" );
     }
 
     camera.warp( Point3( 55, -45, 40 ) );
@@ -241,6 +237,7 @@ namespace client
 
     isAlive = false;
 
+    SDL_SemPost( auxSemaphore );
     SDL_SemPost( auxSemaphore );
     SDL_WaitThread( auxThread, null );
 

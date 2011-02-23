@@ -1,5 +1,5 @@
 /*
- *  OBJModel.hpp
+ *  SMMModel.hpp
  *
  *  [description]
  *
@@ -12,24 +12,24 @@
 #include "stable.hpp"
 
 #include "client/Model.hpp"
-#include "client/OBJ.hpp"
+#include "client/SMM.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-  class OBJModel : public Model
+  class SMMModel : public Model
   {
     protected:
 
-      OBJ* objModel;
+      SMM* smm;
 
-      virtual ~OBJModel();
+      virtual ~SMMModel();
 
     public:
 
-      static Pool<OBJModel, 256> pool;
+      static Pool<SMMModel, 256> pool;
 
       static Model* create( const Object* obj );
 

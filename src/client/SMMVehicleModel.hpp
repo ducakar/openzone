@@ -1,5 +1,5 @@
 /*
- *  MD2StaticModel.hpp
+ *  SMMVehicleModel.hpp
  *
  *  [description]
  *
@@ -12,27 +12,26 @@
 #include "stable.hpp"
 
 #include "client/Model.hpp"
+#include "client/SMM.hpp"
 
 namespace oz
 {
 namespace client
 {
 
-  class MD2;
-
-  class MD2StaticModel : public Model
+  class SMMVehicleModel : public Model
   {
     protected:
 
-      MD2* md2;
-
-      virtual ~MD2StaticModel();
+      SMM* smm;
 
     public:
 
-      static Pool<MD2StaticModel, 256> pool;
+      static Pool<SMMVehicleModel, 256> pool;
 
       static Model* create( const Object* obj );
+
+      virtual ~SMMVehicleModel();
 
       virtual void draw( const Model* parent );
 

@@ -7,5 +7,5 @@ dim.z "0.5"
 flag.wideCull "true"
 life "100.0f"
 
-modelType "MD2Static"
+modelType "SMM"
 modelName "smplant"

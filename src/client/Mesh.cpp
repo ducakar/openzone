@@ -29,32 +29,21 @@ namespace client
         texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1];
   }
 
-  void Vertex::set( float px, float py, float pz,
-                    float nx, float ny, float nz,
-                    float t0u, float t0v,
-                    float t1u, float t1v,
-                    float t2u, float t2v )
+  void Vertex::set( float x, float y, float z, float nx, float ny, float nz, float u, float v )
   {
-    pos[0] = px;
-    pos[1] = py;
-    pos[2] = pz;
+    pos[0] = x;
+    pos[1] = y;
+    pos[2] = z;
 
     normal[0] = nx;
     normal[1] = ny;
     normal[2] = nz;
 
-    texCoord[0] = t0u;
-    texCoord[1] = t0v;
-
-    texCoord[2] = t1u;
-    texCoord[3] = t1v;
-
-    texCoord[4] = t2u;
-    texCoord[5] = t2v;
+    texCoord[0] = u;
+    texCoord[1] = v;
   }
 
-  void Vertex::set( const Point3& p, const Vec3& n,
-                    const TexCoord& t0, const TexCoord& t1, const TexCoord& t2 )
+  void Vertex::set( const Point3& p, const Vec3& n, const TexCoord& t )
   {
     pos[0] = p.x;
     pos[1] = p.y;
@@ -64,14 +53,8 @@ namespace client
     normal[1] = n.y;
     normal[2] = n.z;
 
-    texCoord[0] = t0.u;
-    texCoord[1] = t0.v;
-
-    texCoord[2] = t1.u;
-    texCoord[3] = t1.v;
-
-    texCoord[4] = t2.u;
-    texCoord[5] = t2.v;
+    texCoord[0] = t.u;
+    texCoord[1] = t.v;
   }
 
   void Vertex::read( InputStream* stream )
@@ -86,12 +69,6 @@ namespace client
 
     texCoord[0] = stream->readFloat();
     texCoord[1] = stream->readFloat();
-
-    texCoord[2] = stream->readFloat();
-    texCoord[3] = stream->readFloat();
-
-    texCoord[4] = stream->readFloat();
-    texCoord[5] = stream->readFloat();
   }
 
   void Vertex::write( OutputStream* stream ) const
@@ -106,12 +83,14 @@ namespace client
 
     stream->writeFloat( texCoord[0] );
     stream->writeFloat( texCoord[1] );
+  }
 
-    stream->writeFloat( texCoord[2] );
-    stream->writeFloat( texCoord[3] );
+  Mesh::Mesh() : arrayId( ~0u )
+  {}
 
-    stream->writeFloat( texCoord[4] );
-    stream->writeFloat( texCoord[5] );
+  Mesh::~Mesh()
+  {
+    hard_assert( arrayId == ~0u );
   }
 
   void Mesh::load( InputStream* stream, int usage )
@@ -133,7 +112,6 @@ namespace client
       part.texture[2] = texture2.isEmpty() ? GL_NONE : context.loadTexture( texture2 );
 
       part.mode       = stream->readInt();
-      part.flags      = stream->readInt();
 
       part.firstIndex = stream->readInt();
       part.nIndices   = stream->readInt();
@@ -156,7 +134,6 @@ namespace client
       part.texture[2] = texture2.isEmpty() ? GL_NONE : context.loadTexture( texture2 );
 
       part.mode       = stream->readInt();
-      part.flags      = stream->readInt();
 
       part.firstIndex = stream->readInt();
       part.nIndices   = stream->readInt();
@@ -180,30 +157,48 @@ namespace client
     delete[] vertices;
     delete[] indices;
 
+    flags = 0;
+
+    if( nSolidParts != 0 ) {
+      flags |= SOLID_BIT;
+    }
+    if( nAlphaParts != 0 ) {
+      flags |= ALPHA_BIT;
+    }
+
     hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   void Mesh::unload()
   {
-    foreach( part, solidParts.citer() ) {
-      context.deleteTexture( part->texture[0] );
-      context.deleteTexture( part->texture[1] );
-      context.deleteTexture( part->texture[2] );
-    }
-    foreach( part, alphaParts.citer() ) {
-      context.deleteTexture( part->texture[0] );
-      context.deleteTexture( part->texture[1] );
-      context.deleteTexture( part->texture[2] );
-    }
+    if( arrayId != ~0u ) {
+      foreach( part, solidParts.citer() ) {
+        context.deleteTexture( part->texture[0] );
+        context.deleteTexture( part->texture[1] );
+        context.deleteTexture( part->texture[2] );
+      }
+      foreach( part, alphaParts.citer() ) {
+        context.deleteTexture( part->texture[0] );
+        context.deleteTexture( part->texture[1] );
+        context.deleteTexture( part->texture[2] );
+      }
 
-    context.deleteArray( arrayId );
+      context.deleteArray( arrayId );
+
+      arrayId = ~0u;
+    }
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }
 
-  Vertex* Mesh::map( int access ) const
+  void Mesh::upload( const Vertex* vertices, int nVertices ) const
   {
-    return context.mapArray( arrayId, access );
+    context.uploadArray( arrayId, vertices, nVertices );
+  }
+
+  Vertex* Mesh::map( int access, int size ) const
+  {
+    return context.mapArray( arrayId, access, size );
   }
 
   void Mesh::unmap() const
@@ -211,38 +206,38 @@ namespace client
     context.unmapArray( arrayId );
   }
 
-  void Mesh::drawSolid() const
+  void Mesh::draw( int mask ) const
   {
-    context.bindArray( arrayId );
+    mask &= flags;
 
-    foreach( part, solidParts.citer() ) {
-      glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
-      glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
-
-      context.bindTextures( part->texture[0], part->texture[1], part->texture[2] );
-      context.drawIndexedArray( part->mode, part->firstIndex, part->nIndices );
-    }
-  }
-
-  void Mesh::drawAlpha() const
-  {
-    if( alphaParts.isEmpty() ) {
+    if( mask == 0 ) {
       return;
     }
 
-    glEnable( GL_BLEND );
-
     context.bindArray( arrayId );
 
-    foreach( part, alphaParts.citer() ) {
-      glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
-      glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
+    if( mask & SOLID_BIT ) {
+      foreach( part, solidParts.citer() ) {
+        glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
+        glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
 
-      context.bindTextures( part->texture[0], part->texture[1], part->texture[2] );
-      context.drawIndexedArray( part->mode, part->firstIndex, part->nIndices );
+        context.bindTextures( part->texture[0], part->texture[1], part->texture[2] );
+        context.drawIndexedArray( part->mode, part->firstIndex, part->nIndices );
+      }
     }
+    if( mask & ALPHA_BIT ) {
+      glEnable( GL_BLEND );
 
-    glDisable( GL_BLEND );
+      foreach( part, alphaParts.citer() ) {
+        glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
+        glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
+
+        context.bindTextures( part->texture[0], part->texture[1], part->texture[2] );
+        context.drawIndexedArray( part->mode, part->firstIndex, part->nIndices );
+      }
+
+      glDisable( GL_BLEND );
+    }
   }
 
   int MeshData::getSize() const
@@ -253,7 +248,7 @@ namespace client
 
     foreach( part, solidParts.citer() ) {
       size += 2 * sizeof( Quat );
-      size += 4 * sizeof( int );
+      size += 3 * sizeof( int );
 
       size += part->texture[0].length() + 1;
       size += part->texture[1].length() + 1;
@@ -261,7 +256,7 @@ namespace client
     }
     foreach( part, alphaParts.citer() ) {
       size += 2 * sizeof( Quat );
-      size += 4 * sizeof( int );
+      size += 3 * sizeof( int );
 
       size += part->texture[0].length() + 1;
       size += part->texture[1].length() + 1;
@@ -290,7 +285,6 @@ namespace client
       stream->writeString( part->texture[2] );
 
       stream->writeInt( part->mode );
-      stream->writeInt( part->flags );
 
       stream->writeInt( part->firstIndex );
       stream->writeInt( part->nIndices );
@@ -306,7 +300,6 @@ namespace client
       stream->writeString( part->texture[2] );
 
       stream->writeInt( part->mode );
-      stream->writeInt( part->flags );
 
       stream->writeInt( part->firstIndex );
       stream->writeInt( part->nIndices );

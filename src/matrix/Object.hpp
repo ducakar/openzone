@@ -149,13 +149,10 @@ namespace oz
       // don't render object (it will be rendered via another path, e.g. bots in a vehicle)
       static const int NO_DRAW_BIT        = 0x00000004;
 
-      // render after other objects (for large blended objects, e.g. explosions)
-      static const int DELAYED_DRAW_BIT   = 0x00000002;
-
       // wide frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
       // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR
-      static const int WIDE_CULL_BIT      = 0x00000001;
+      static const int WIDE_CULL_BIT      = 0x00000002;
 
       /*
        * STANDARD EVENT IDs

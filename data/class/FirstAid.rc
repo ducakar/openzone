@@ -14,7 +14,7 @@ onUse "heal100"
 
 mass "2.0"
 
-modelType "OBJ"
+modelType "SMM"
 modelName "health"
 
 audioType                       "Basic"

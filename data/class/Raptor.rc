@@ -21,7 +21,7 @@ debrisColourSpread "0.1"
 mass "5000.0"
 lift "15.00"
 
-modelType "OBJVehicle"
+modelType "SMMVehicle"
 modelName "raptor"
 
 crew.pilot.pos.y "2.5"

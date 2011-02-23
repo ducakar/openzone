@@ -60,7 +60,6 @@ namespace client
 
       Vector<const Struct*>   structs;
       Vector<ObjectEntry>     objects;
-      Vector<ObjectEntry>     delayedObjects;
       Vector<const Particle*> particles;
 
       Vector<const Struct*>   waterStructs;

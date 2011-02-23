@@ -31,8 +31,8 @@ add_library( client STATIC
   MD2.hpp
   MD2Model.cpp
   MD2Model.hpp
-  MD2StaticModel.cpp
-  MD2StaticModel.hpp
+
+
   MD2WeaponModel.cpp
   MD2WeaponModel.hpp
   MD3.cpp
@@ -49,13 +49,15 @@ add_library( client STATIC
   Network.hpp
   OBJ.cpp
   OBJ.hpp
-  OBJModel.cpp
-  OBJModel.hpp
-  OBJVehicleModel.cpp
-  OBJVehicleModel.hpp
   Proxy.hpp
   Render.cpp
   Render.hpp
+  SMM.cpp
+  SMM.hpp
+  SMMModel.cpp
+  SMMModel.hpp
+  SMMVehicleModel.cpp
+  SMMVehicleModel.hpp
   Shape.cpp
   Shape.hpp
   Sky.cpp

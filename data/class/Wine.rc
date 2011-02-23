@@ -18,7 +18,7 @@ debrisColour.g "0.0"
 debrisColour.b "0.3"
 debrisColourSpread "0.05"
 
-modelType "MD2Static"
+modelType "SMM"
 modelName "winebottle"
 
 audioType                       "Basic"

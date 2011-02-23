@@ -53,7 +53,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,         "flag.pusher",       true  );
     OZ_CLASS_SET_FLAG( Object::HOVER_BIT,          "flag.hover",        false );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
-    OZ_CLASS_SET_FLAG( Object::DELAYED_DRAW_BIT,   "flag.delayedDraw",  false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
     clazz->life                 = 2.0f * config->get( "life", 100.0f );
