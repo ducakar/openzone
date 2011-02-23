@@ -411,7 +411,7 @@ namespace client
     for( int i = 0; i < parts.length(); ++i ) {
       compiler.material( GL_FRONT_AND_BACK, GL_DIFFUSE,  parts[i].diffuse  );
       compiler.material( GL_FRONT_AND_BACK, GL_SPECULAR, parts[i].specular );
-      compiler.texture( 0, GL_TEXTURE_2D, parts[i].texture );
+      compiler.texture( 0, parts[i].texture );
 
       for( int j = 0; j < parts[i].faces.length(); ++j ) {
         const Face& face = parts[i].faces[j];
@@ -422,7 +422,7 @@ namespace client
           const FaceVertex& vertex = face.vertices[k];
 
           if( vertex.texCoord != -1 ) {
-            compiler.texCoord( 0, texCoords[vertex.texCoord].u, texCoords[vertex.texCoord].v );
+            compiler.texCoord( texCoords[vertex.texCoord].u, texCoords[vertex.texCoord].v );
           }
           compiler.normal( normals[vertex.normal] );
           compiler.vertex( positions[vertex.position] );
@@ -472,7 +472,7 @@ namespace client
 
     try {
       loadOBJ( name );
-      save( "mdl/" + String( name ) + ".ozcOBJ" );
+      save( "mdl/" + String( name ) + ".ozcSMM" );
       freeOBJ();
     }
     catch( ... ) {
@@ -483,49 +483,6 @@ namespace client
 
     log.unindent();
     log.println( "}" );
-  }
-
-  void OBJ::load()
-  {
-    String modelPath = "mdl/" + name + ".ozcOBJ";
-
-    log.println( "Loading OBJ model '%s' {", modelPath.cstr() );
-    log.indent();
-
-    Buffer buffer;
-    if( !buffer.read( modelPath ) ) {
-      throw Exception( "Cannot read model file" );
-    }
-    InputStream is = buffer.inputStream();
-
-    mesh.load( &is, GL_STATIC_DRAW );
-
-    hard_assert( !is.isAvailable() );
-
-    isLoaded = true;
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  OBJ::OBJ( const char* name_ ) : name( name_ ), isLoaded( false )
-  {}
-
-  OBJ::~OBJ()
-  {
-    log.print( "Unloading OBJ model '%s' ...", name.cstr() );
-
-    mesh.unload();
-
-    log.printEnd( " OK" );
-
-    hard_assert( glGetError() == GL_NO_ERROR );
-  }
-
-  void OBJ::draw() const
-  {
-    mesh.drawSolid();
-    mesh.drawAlpha();
   }
 
 }

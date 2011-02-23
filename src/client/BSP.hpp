@@ -29,29 +29,17 @@ namespace client
       static const int LIGHTMAP_BPP  = 3;
       static const int LIGHTMAP_SIZE = LIGHTMAP_DIM * LIGHTMAP_DIM * LIGHTMAP_BPP;
 
-    public:
-
-      static const int DRAW_WATER     = 1;
-      static const int IN_WATER_BRUSH = 2;
-
     private:
-
-      static Point3  camPos;
 
       const oz::BSP* bsp;
       DArray<Mesh>   meshes;
       int            flags;
-
-      bool isInWater() const;
 
       // prebuild
       static void loadQBSP( const char* fileName );
       static void freeQBSP();
       static void optimise();
       static void save( const char* file );
-
-      // used internally by prebuild
-      explicit BSP();
 
     public:
 
@@ -64,9 +52,7 @@ namespace client
       ~BSP();
 
       void load();
-
-      bool draw( const Struct* str ) const;
-      void drawWater( const Struct* str ) const;
+      void draw( const Struct* str, int mask ) const;
 
   };
 

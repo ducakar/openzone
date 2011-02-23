@@ -36,7 +36,6 @@ namespace client
         String texture[3];
 
         int    mode;
-        int    flags;
 
         Vector<int> indices;
 
@@ -64,13 +63,13 @@ namespace client
       void endMesh();
 
       void material( int face, int target, const float* params );
-      void texture( int unit, int target, const char* texture );
+      void texture( int unit, const char* texture );
 
       void begin( int mode );
       void end();
 
-      void texCoord( int unit, float u, float v );
-      void texCoord( int unit, const float* v );
+      void texCoord( float u, float v );
+      void texCoord( const float* v );
 
       void normal( float nx, float ny, float nz );
       void normal( const float* v );

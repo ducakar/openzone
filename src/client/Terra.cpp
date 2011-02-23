@@ -142,8 +142,6 @@ namespace client
 
             vertex.set( pos,
                         ~normal,
-                        TexCoord( float( x & 1 ) * DETAIL_SCALE,
-                                  float( y & 1 ) * DETAIL_SCALE ),
                         TexCoord( float( x ) / float( oz::Terra::VERTS ),
                                   float( y ) / float( oz::Terra::VERTS ) ) );
             vertex.write( &os );
@@ -274,7 +272,8 @@ namespace client
   {
     String path = "terra/" + orbis.terra.name + ".ozcTerra";
 
-    log.print( "Loading terrain '%s' ...", path.cstr() );
+    log.println( "Loading terrain '%s' {", path.cstr() );
+    log.indent();
 
     ushort* indices  = new ushort[TILE_INDICES + 16];
     Vertex* vertices = new Vertex[TILE_VERTICES + 16];
@@ -320,7 +319,8 @@ namespace client
 
     hard_assert( !is.isAvailable() );
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Terra::unload()
@@ -341,6 +341,10 @@ namespace client
 
     context.bindTextures( detailTexId, mapTexId );
 
+    glActiveTexture( GL_TEXTURE0 );
+    glMatrixMode( GL_TEXTURE );
+    glScalef( float( oz::Terra::QUADS ), float( oz::Terra::QUADS ), 0.0f );
+
     // to match strip triangles with matrix terrain we have to make them clockwise since
     // we draw column-major (strips along y axis) for better cache performance
     glFrontFace( GL_CW );
@@ -354,6 +358,9 @@ namespace client
         context.drawIndexedArray( GL_TRIANGLE_STRIP, 0, TILE_INDICES );
       }
     }
+
+    glLoadIdentity();
+    glMatrixMode( GL_MODELVIEW );
 
     glFrontFace( GL_CCW );
 
@@ -373,8 +380,9 @@ namespace client
       sideIndices = 8;
     }
 
+    glEnable( GL_BLEND );
+
     context.bindTextures( waterTexId );
-    glMatrixMode( GL_TEXTURE );
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, indexBuffer );
 
@@ -391,8 +399,7 @@ namespace client
       }
     }
 
-    glLoadIdentity();
-    glMatrixMode( GL_MODELVIEW );
+    glDisable( GL_BLEND );
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }

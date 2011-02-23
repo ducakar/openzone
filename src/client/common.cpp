@@ -27,7 +27,7 @@ namespace oz
 namespace client
 {
 
-  Collider collider;
+  const TexCoord TexCoord::ZERO = TexCoord( 0.0f, 0.0f );
 
 }
 }

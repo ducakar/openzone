@@ -13,7 +13,7 @@ debrisColour.g "0.23"
 debrisColour.b "0.19"
 debrisColourSpread "0.05"
 
-modelType "OBJ"
+modelType "SMM"
 modelName "smallCrate"
 
 audioType                       "Basic"

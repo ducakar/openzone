@@ -13,15 +13,12 @@
 
 #include "client/MD2.hpp"
 #include "client/MD3.hpp"
-#include "client/OBJ.hpp"
 
-#include "client/OBJModel.hpp"
+#include "client/SMMModel.hpp"
+#include "client/SMMVehicleModel.hpp"
 #include "client/ExplosionModel.hpp"
-#include "client/MD2StaticModel.hpp"
 #include "client/MD2Model.hpp"
 #include "client/MD2WeaponModel.hpp"
-#include "client/MD3StaticModel.hpp"
-#include "client/OBJVehicleModel.hpp"
 
 #include "client/BasicAudio.hpp"
 #include "client/BotAudio.hpp"
@@ -265,7 +262,7 @@ namespace client
   {
     Resource<BSP*>& resource = bsps[id];
 
-    hard_assert( resource.object == null && resource.isUpdated == false );
+    hard_assert( resource.object == null && resource.nUsers == 0 );
 
     resource.object = new BSP( id );
     return resource.object;
@@ -345,7 +342,7 @@ namespace client
     int  id  = vaos.add();
     VAO& vao = vaos[id];
 
-    vao.flags = nIndices != 0 ? VAO::INDEXED_BIT : 0;
+    vao.usage = usage;
 
     if( nIndices != 0 ) {
       glGenBuffers( 2, vao.buffers );
@@ -370,7 +367,7 @@ namespace client
 
   void Context::deleteArray( uint id )
   {
-    glDeleteBuffers( vaos[id].flags & VAO::INDEXED_BIT ? 2 : 1, vaos[id].buffers );
+    glDeleteBuffers( 2, vaos[id].buffers );
     vaos.remove( id );
   }
 
@@ -389,15 +386,15 @@ namespace client
 
     glClientActiveTexture( GL_TEXTURE0 );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[0] ) );
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
     glClientActiveTexture( GL_TEXTURE1 );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[2] ) );
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
     glClientActiveTexture( GL_TEXTURE2 );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[4] ) );
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
   }
 
   void Context::setVertexFormat()
@@ -410,22 +407,35 @@ namespace client
 
     glClientActiveTexture( GL_TEXTURE0 );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[0] ) );
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
     glClientActiveTexture( GL_TEXTURE1 );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[2] ) );
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
     glClientActiveTexture( GL_TEXTURE2 );
     glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord[4] ) );
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
   }
 
-  Vertex* Context::mapArray( uint id, int access ) const
+  void Context::uploadArray( uint id, const Vertex* vertices, int nVertices ) const
   {
     const VAO& vao = vaos[id];
 
     glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, vao.usage );
+  }
+
+  Vertex* Context::mapArray( uint id, int access, int size ) const
+  {
+    const VAO& vao = vaos[id];
+
+    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
+
+    if( size != 0 ) {
+      glBufferData( GL_ARRAY_BUFFER, size, null, vao.usage );
+    }
+
     return reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, access ) );
   }
 
@@ -485,13 +495,13 @@ namespace client
     }
   }
 
-  OBJ* Context::loadOBJ( const char* path )
+  SMM* Context::loadSMM( const char* name )
   {
-    Resource<OBJ*>* resource = objs.find( path );
+    Resource<SMM*>* resource = smms.find( name );
 
     if( resource == null ) {
-      resource = objs.add( path, Resource<OBJ*>() );
-      resource->object = new OBJ( path );
+      resource = smms.add( name, Resource<SMM*>() );
+      resource->object = new SMM( name );
       resource->nUsers = 0;
     }
 
@@ -499,9 +509,9 @@ namespace client
     return resource->object;
   }
 
-  void Context::releaseOBJ( const char* path )
+  void Context::releaseSMM( const char* name )
   {
-    Resource<OBJ*>* resource = objs.find( path );
+    Resource<SMM*>* resource = smms.find( name );
 
     hard_assert( resource != null && resource->nUsers > 0 );
 
@@ -600,7 +610,7 @@ namespace client
     --resource->nUsers;
   }
 
-  int Context::drawBSP( const Struct* str )
+  void Context::drawBSP( const Struct* str, int mask )
   {
     Resource<BSP*>& resource = bsps[str->bsp];
 
@@ -610,22 +620,7 @@ namespace client
     else if( resource.object->isLoaded ) {
       // we don't count users, just to show there is at least one
       resource.nUsers = 1;
-      return resource.object->draw( str );
-    }
-    return 0;
-  }
-
-  void Context::drawBSPWater( const Struct* str )
-  {
-    Resource<BSP*>& resource = bsps[str->bsp];
-
-    if( resource.object == null ) {
-      loadBSP( str->bsp );
-    }
-    else if( resource.object->isLoaded ) {
-      // we don't count users, just to show there is at least one
-      resource.nUsers = 1;
-      return resource.object->drawWater( str );
+      resource.object->draw( str, mask );
     }
   }
 
@@ -710,7 +705,7 @@ namespace client
     }
     for( int i = 0; i < translator.bsps.length(); ++i ) {
       bsps[i].object = null;
-      bsps[i].isUpdated = false;
+      bsps[i].nUsers = 0;
     }
 
     maxModels      = 0;
@@ -733,11 +728,11 @@ namespace client
 
     hard_assert( alGetError() == AL_NO_ERROR );
 
-    foreach( i, objs.citer() ) {
+    foreach( i, smms.citer() ) {
       hard_assert( i->nUsers == 0 );
 
       delete i->object;
-      objs.exclude( i.key() );
+      smms.exclude( i.key() );
     }
     foreach( i, staticMd2s.citer() ) {
       hard_assert( i->nUsers == 0 );
@@ -766,7 +761,7 @@ namespace client
     for( int i = 0; i < translator.bsps.length(); ++i ) {
       delete bsps[i].object;
       bsps[i].object = null;
-      bsps[i].isUpdated = false;
+      bsps[i].nUsers = 0;
     }
 
     hard_assert( vaos.isEmpty() );
@@ -774,7 +769,7 @@ namespace client
     vaos.dealloc();
     lists.clear();
     lists.dealloc();
-    objs.dealloc();
+    smms.dealloc();
     staticMd2s.dealloc();
     md2s.dealloc();
     staticMd3s.dealloc();
@@ -814,13 +809,11 @@ namespace client
 
     Source::pool.free();
 
-    OBJModel::pool.free();
-    OBJVehicleModel::pool.free();
-    MD2StaticModel::pool.free();
+    SMMModel::pool.free();
+    SMMVehicleModel::pool.free();
+    ExplosionModel::pool.free();
     MD2Model::pool.free();
     MD2WeaponModel::pool.free();
-    MD3StaticModel::pool.free();
-    ExplosionModel::pool.free();
 
     BasicAudio::pool.free();
     BotAudio::pool.free();
@@ -833,13 +826,11 @@ namespace client
   {
     log.print( "Initialising Context ..." );
 
-    OZ_REGISTER_MODELCLASS( OBJ );
+    OZ_REGISTER_MODELCLASS( SMM );
+    OZ_REGISTER_MODELCLASS( SMMVehicle );
     OZ_REGISTER_MODELCLASS( Explosion );
-    OZ_REGISTER_MODELCLASS( MD2Static );
     OZ_REGISTER_MODELCLASS( MD2 );
     OZ_REGISTER_MODELCLASS( MD2Weapon );
-    OZ_REGISTER_MODELCLASS( MD3Static );
-    OZ_REGISTER_MODELCLASS( OBJVehicle );
 
     OZ_REGISTER_AUDIOCLASS( Basic );
     OZ_REGISTER_AUDIOCLASS( Bot );

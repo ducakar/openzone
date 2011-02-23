@@ -1,5 +1,5 @@
 /*
- *  OBJVehicleModel.cpp
+ *  SMMVehicleModel.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/OBJVehicleModel.hpp"
+#include "client/SMMVehicleModel.hpp"
 
 #include "matrix/Vehicle.hpp"
 #include "matrix/VehicleClass.hpp"
@@ -21,28 +21,28 @@ namespace oz
 namespace client
 {
 
-  Pool<OBJVehicleModel, 256> OBJVehicleModel::pool;
+  Pool<SMMVehicleModel, 256> SMMVehicleModel::pool;
 
-  Model* OBJVehicleModel::create( const Object* obj )
+  Model* SMMVehicleModel::create( const Object* obj )
   {
     hard_assert( obj->flags & Object::VEHICLE_BIT );
 
-    OBJVehicleModel* model = new OBJVehicleModel();
+    SMMVehicleModel* model = new SMMVehicleModel();
 
-    model->obj = obj;
+    model->obj   = obj;
     model->clazz = obj->clazz;
-    model->objModel = context.loadOBJ( obj->clazz->modelName );
+    model->smm   = context.loadSMM( obj->clazz->modelName );
     return model;
   }
 
-  OBJVehicleModel::~OBJVehicleModel()
+  SMMVehicleModel::~SMMVehicleModel()
   {
-    context.releaseOBJ( clazz->modelName );
+    context.releaseSMM( clazz->modelName );
   }
 
-  void OBJVehicleModel::draw( const Model* )
+  void SMMVehicleModel::draw( const Model* )
   {
-    if( !objModel->isLoaded ) {
+    if( !smm->isLoaded ) {
       return;
     }
 
@@ -67,7 +67,7 @@ namespace client
       }
     }
 
-    objModel->draw();
+    smm->draw();
   }
 
 }

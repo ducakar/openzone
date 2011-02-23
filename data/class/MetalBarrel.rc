@@ -9,7 +9,7 @@ life "100.0f"
 mass "50.0"
 lift "7.0"
 
-modelType "MD2Static"
+modelType "SMM"
 modelName "barrel1"
 
 audioType                       "Basic"

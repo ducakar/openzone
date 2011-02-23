@@ -13,7 +13,7 @@
 
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
-#include "client/OBJ.hpp"
+#include "client/SMM.hpp"
 #include "client/MD2.hpp"
 #include "client/MD3.hpp"
 
@@ -54,8 +54,8 @@ namespace client
         Context::Resource<BSP*>& bsp = context.bsps[i];
 
         if( bsp.object != null ) {
-          if( bsp.isUpdated ) {
-            bsp.isUpdated = false;
+          if( bsp.nUsers != 0 ) {
+            bsp.nUsers = 0;
           }
           else {
             delete bsp.object;
@@ -242,8 +242,8 @@ namespace client
       }
     }
 
-    // OBJ
-    for( auto i = context.objs.iter(); i.isValid(); ) {
+    // SMM
+    for( auto i = context.smms.iter(); i.isValid(); ) {
       auto j = i;
 
       ++i;
@@ -253,7 +253,7 @@ namespace client
       }
       else if( j->nUsers == 0 ) {
         delete j->object;
-        context.objs.exclude( j.key() );;
+        context.smms.exclude( j.key() );;
       }
     }
 

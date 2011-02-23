@@ -25,9 +25,9 @@ namespace oz
 namespace client
 {
 
+  class SMM;
   class MD2;
   class MD3;
-  class OBJ;
 
   class Context
   {
@@ -46,26 +46,18 @@ namespace client
       struct Resource
       {
         Type id;
-        union
-        {
-          // for sounds:
-          //  0: loaded, but no source needs it
-          // -1: not loaded
-          // -2: scheduled for removal
-          int  nUsers;
-          bool isUpdated;
-        };
+        // for sounds:
+        //  0: loaded, but no source needs it
+        // -1: not loaded
+        // -2: scheduled for removal
+        int  nUsers;
       };
 
       template <typename Type>
       struct Resource<Type*>
       {
         Type* object;
-        union
-        {
-          int  nUsers;
-          bool isUpdated;
-        };
+        int  nUsers;
       };
 
       // provide similar functionality as vertex array objects in OpenGL 3+
@@ -74,7 +66,7 @@ namespace client
         static const int INDEXED_BIT = 0x1;
 
         uint buffers[2];
-        int  flags;
+        int  usage;
       };
 
       struct Lists
@@ -124,7 +116,7 @@ namespace client
 
       Resource<BSP*>*                   bsps;
 
-      HashString< Resource<OBJ*>, 64 >  objs;
+      HashString< Resource<SMM*>, 64 >  smms;
       HashString< Resource<MD2*>, 64 >  staticMd2s;
       HashString< Resource<MD2*>, 64 >  md2s;
       HashString< Resource<MD3*>, 64 >  staticMd3s;
@@ -180,7 +172,8 @@ namespace client
 
       static void setVertexFormat();
 
-      Vertex* mapArray( uint id, int access ) const;
+      void uploadArray( uint id, const Vertex* vertices, int nVertices ) const;
+      Vertex* mapArray( uint id, int access, int size = 0 ) const;
       void unmapArray( uint id ) const;
 
       void drawArray( GLenum mode, int firstVertex, int nVertices ) const;
@@ -192,8 +185,8 @@ namespace client
       uint genLists( int count );
       void deleteLists( uint listId );
 
-      OBJ* loadOBJ( const char* name );
-      void releaseOBJ( const char* name );
+      SMM* loadSMM( const char* name );
+      void releaseSMM( const char* name );
 
       MD2* loadStaticMD2( const char* name );
       void releaseStaticMD2( const char* name );
@@ -207,8 +200,7 @@ namespace client
       MD3* loadMD3( const char* name );
       void releaseMD3( const char* name );
 
-      int  drawBSP( const Struct* str );
-      void drawBSPWater( const Struct* str );
+      void drawBSP( const Struct* str, int mask );
 
       void drawModel( const Object* obj, const Model* parent );
       void playAudio( const Object* obj, const Audio* parent );

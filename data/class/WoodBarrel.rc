@@ -9,7 +9,7 @@ life "100.0f"
 mass "50.0"
 lift "0.03"
 
-modelType "MD2Static"
+modelType "SMM"
 modelName "woodBarrel"
 
 audioType                       "Basic"

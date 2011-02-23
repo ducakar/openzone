@@ -115,8 +115,6 @@ namespace client
     int   size[2];
   };
 
-  Point3 BSP::camPos;
-
   static int nTextures;
   static int nModels;
   static int nVertices;
@@ -128,44 +126,6 @@ namespace client
   static DArray<QBSPVertex>  vertices;
   static DArray<int>         indices;
   static DArray<QBSPFace>    faces;
-
-  bool BSP::isInWater() const
-  {
-    int nodeIndex = 0;
-    do {
-      const oz::BSP::Node& node  = bsp->nodes[nodeIndex];
-      const Plane&         plane = bsp->planes[node.plane];
-
-      if( plane * camPos < 0.0f ) {
-        nodeIndex = node.back;
-      }
-      else {
-        nodeIndex = node.front;
-      }
-
-      hard_assert( nodeIndex != 0 );
-    }
-    while( nodeIndex >= 0 );
-
-    const oz::BSP::Leaf& leaf = bsp->leaves[~nodeIndex];
-
-    for( int i = 0; i < leaf.nBrushes; ++i ) {
-      const oz::BSP::Brush* brush = &bsp->brushes[ bsp->leafBrushes[leaf.firstBrush + i] ];
-
-      if( brush->material & Material::WATER_BIT ) {
-        for( int i = 0; i < brush->nSides; ++i ) {
-          const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
-
-          if( plane * camPos >= 0.0f ) {
-            goto nextBrush;
-          }
-        }
-        return true;
-      }
-      nextBrush:;
-    }
-    return false;
-  }
 
   void BSP::loadQBSP( const char* fileName )
   {
@@ -298,8 +258,10 @@ namespace client
   {
     log.print( "Dumping BSP model to '%s' ...", file );
 
+    int flags = 0;
+
     Vector<MeshData> meshes( nModels );
-    int size = sizeof( int );
+    int size = 2 * sizeof( int );
 
     for( int i = 0; i < nModels; ++i ) {
       compiler.beginMesh();
@@ -330,21 +292,33 @@ namespace client
         }
 
         if( texture.type & QBSP_WATER_BIT ) {
-          compiler.material( GL_FRONT, GL_DIFFUSE, Quat( 1.0f, 1.0f, 1.0f, 0.5f ) );
+          compiler.material( GL_FRONT, GL_DIFFUSE, Quat( 1.0f, 1.0f, 1.0f, 0.75f ) );
+          flags |= Mesh::ALPHA_BIT;
         }
         else {
           compiler.material( GL_FRONT, GL_DIFFUSE, Quat( 1.0f, 1.0f, 1.0f, 1.0f ) );
+          flags |= Mesh::SOLID_BIT;
         }
 
-        compiler.texture( 0, GL_TEXTURE_2D, name );
+        compiler.texture( 0, name );
         compiler.begin( GL_TRIANGLES );
 
         for( int k = 0; k < face.nIndices; ++k ) {
           const QBSPVertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
 
-          compiler.texCoord( 0, vertex.texCoord );
+          compiler.texCoord( vertex.texCoord );
           compiler.normal( face.normal );
           compiler.vertex( vertex.p );
+        }
+
+        if( texture.type & QBSP_WATER_BIT ) {
+          for( int k = face.nIndices - 1; k >= 0; --k ) {
+            const QBSPVertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
+
+            compiler.texCoord( vertex.texCoord );
+            compiler.normal( -face.normal[0], -face.normal[1], -face.normal[2] );
+            compiler.vertex( vertex.p );
+          }
         }
 
         compiler.end();
@@ -361,6 +335,7 @@ namespace client
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
+    os.writeInt( flags );
     os.writeInt( nModels );
 
     foreach( mesh, meshes.citer() ) {
@@ -412,6 +387,8 @@ namespace client
 
     InputStream is = buffer.inputStream();
 
+    flags = is.readInt();
+
     int nMeshes = is.readInt();
 
     meshes.alloc( nMeshes );
@@ -425,34 +402,14 @@ namespace client
     isLoaded = true;
   }
 
-  bool BSP::draw( const Struct* str ) const
+  void BSP::draw( const Struct* str, int mask ) const
   {
-    camPos = camera.p + ( Point3::ORIGIN - str->p );
+    mask &= flags;
 
-    glPushMatrix();
-    glTranslatef( str->p.x, str->p.y, str->p.z );
-    glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
-
-    for( int i = 0; i < meshes.length(); ++i ) {
-      const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;
-
-      glPushMatrix();
-      glTranslatef( entityPos.x, entityPos.y, entityPos.z );
-
-      meshes[i].drawSolid();
-
-      glPopMatrix();
+    if( mask == 0 ) {
+      return;
     }
 
-    glPopMatrix();
-
-    return isInWater();
-  }
-
-  void BSP::drawWater( const Struct* str ) const
-  {
-    camPos = camera.p + ( Point3::ORIGIN - str->p );
-
     glPushMatrix();
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
@@ -463,7 +420,7 @@ namespace client
       glPushMatrix();
       glTranslatef( entityPos.x, entityPos.y, entityPos.z );
 
-      meshes[i].drawAlpha();
+      meshes[i].draw( mask );
 
       glPopMatrix();
     }
