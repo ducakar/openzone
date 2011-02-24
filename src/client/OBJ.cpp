@@ -434,12 +434,15 @@ namespace client
 
     compiler.endMesh();
 
-    int size = compiler.meshSize();
+    MeshData mesh;
+    compiler.getMeshData( &mesh );
+
+    int size = mesh.getSize();
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
-    compiler.writeMesh( &os );
+    mesh.write( &os );
 
     hard_assert( !os.isAvailable() );
     buffer.write( fileName );

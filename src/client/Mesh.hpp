@@ -48,25 +48,32 @@ namespace client
 
     public:
 
-      static const int SOLID_BIT = 0x00000001;
-      static const int ALPHA_BIT = 0x00000002;
+      static const int SOLID_BIT       = 0x01;
+      static const int ALPHA_BIT       = 0x02;
+      static const int EMBEDED_TEX_BIT = 0x04;
 
     private:
 
       struct Part
       {
-        Quat diffuse;
-        Quat specular;
-        uint texture[3];
+        Quat   diffuse;
+        Quat   specular;
+        uint   texture[3];
 
-        int  mode;
+        int    mode;
 
-        int  firstIndex;
-        int  nIndices;
+        ushort minIndex;
+        ushort maxIndex;
+        ushort nIndices;
+        ushort firstIndex;
       };
 
-      uint         arrayId;
+      uint         vao;
+      uint         ibo;
+      uint         vbo;
+
       int          flags;
+      DArray<int>  texIds;
       Vector<Part> solidParts;
       Vector<Part> alphaParts;
 
@@ -75,11 +82,11 @@ namespace client
       explicit Mesh();
       ~Mesh();
 
-      void load( InputStream* stream, int flags = 0 );
+      void load( InputStream* stream, int usage );
       void unload();
 
-      void upload( const Vertex* vertices, int nVertices ) const;
-      Vertex* map( int access, int size = 0 ) const;
+      void upload( const Vertex* vertices, int nVertices, int flags = 0 ) const;
+      Vertex* map( int access ) const;
       void unmap() const;
 
       void draw( int mask ) const;
@@ -100,8 +107,10 @@ namespace client
 
         int    mode;
 
-        int    firstIndex;
-        int    nIndices;
+        ushort minIndex;
+        ushort maxIndex;
+        ushort nIndices;
+        ushort firstIndex;
       };
 
       Vector<Part>   solidParts;
@@ -110,8 +119,8 @@ namespace client
       DArray<ushort> indices;
       DArray<Vertex> vertices;
 
-      int getSize() const;
-      void write( OutputStream* stream ) const;
+      int getSize( bool embedTextures = true ) const;
+      void write( OutputStream* stream, bool embedTextures = true ) const;
 
   };
 

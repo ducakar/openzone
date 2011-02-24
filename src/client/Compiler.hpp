@@ -37,6 +37,9 @@ namespace client
 
         int    mode;
 
+        int    minIndex;
+        int    maxIndex;
+
         Vector<int> indices;
 
         bool operator == ( const Part& part ) const;
@@ -79,10 +82,7 @@ namespace client
 
       void index( int i );
 
-      int  meshSize() const;
-      void writeMesh( OutputStream* stream ) const;
       void getMeshData( MeshData* mesh ) const;
-      void getMesh( Mesh* mesh, int usage ) const;
 
       void init();
       void free();

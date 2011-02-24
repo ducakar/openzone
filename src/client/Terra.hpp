@@ -36,8 +36,9 @@ namespace client
       static const float DETAIL_SCALE;
       static const float WATER_SCALE;
 
-      uint indexBuffer;
-      uint vertexBuffers[TILES][TILES];
+      uint vaos[TILES][TILES];
+      uint vbos[TILES][TILES];
+      uint ibo;
 
       uint waterTexId;
       uint detailTexId;

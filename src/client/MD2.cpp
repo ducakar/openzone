@@ -275,7 +275,7 @@ namespace client
       frameVerts[i].pos[2] = currFrame[i].z;
     }
 
-    mesh.upload( frameVerts, nFrameVerts );
+    mesh.upload( frameVerts, nFrameVerts, GL_STATIC_DRAW );
   }
 
   void MD2::interpolate( const AnimState* anim ) const
@@ -293,7 +293,7 @@ namespace client
       frameVerts[i].pos[2] = pos.z;
     }
 
-    mesh.upload( frameVerts, nFrameVerts );
+    mesh.upload( frameVerts, nFrameVerts, GL_STREAM_DRAW );
   }
 
   void MD2::prebuild( const char* name )
@@ -309,14 +309,15 @@ namespace client
     Config config;
     config.load( configFile );
 
-    float scale       = config.get( "scale", 0.042f );
-    Vec3 translation  = Vec3( config.get( "translate.x", 0.00f ),
+    bool doForceStatic = config.get( "forceStatic", false );
+    float scale        = config.get( "scale", 0.042f );
+    Vec3 translation   = Vec3( config.get( "translate.x", 0.00f ),
                               config.get( "translate.y", 0.00f ),
                               config.get( "translate.z", 0.00f ) );
-    Vec3 jumpTransl   = Vec3( config.get( "jumpTranslate.x", 0.00f ),
+    Vec3 jumpTransl    = Vec3( config.get( "jumpTranslate.x", 0.00f ),
                               config.get( "jumpTranslate.y", 0.00f ),
                               config.get( "jumpTranslate.z", 0.00f ) );
-    Vec3 weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
+    Vec3 weaponTransl  = Vec3( config.get( "weaponTranslate.x", 0.00f ),
                               config.get( "weaponTranslate.y", 0.00f ),
                               config.get( "weaponTranslate.z", 0.00f ) );
 
@@ -353,6 +354,8 @@ namespace client
     fread( triangles, 1, header.nTriangles * sizeof( MD2Triangle ), file );
 
     fclose( file );
+
+    header.nFrames = doForceStatic ? 1 : header.nFrames;
 
     DArray<Point3> rawVertices( header.nFrames * header.nFrameVerts );
     Point3* currVertex = rawVertices;
@@ -439,7 +442,7 @@ namespace client
 
     size_t size = 0;
 
-    size += compiler.meshSize();
+    size += mesh.getSize();
 
     if( header.nFrames > 1 ) {
       size += 2 * sizeof( int );
@@ -469,7 +472,7 @@ namespace client
     hard_assert( !os.isAvailable() );
 
     if( header.nFrames != 1 ) {
-      outBuffer.write( sPath + "/tris.ozcMD2" );
+      outBuffer.write( sPath + ".ozcMD2" );
     }
     else {
       outBuffer.write( sPath + ".ozcSMM" );
@@ -498,11 +501,10 @@ namespace client
 
   void MD2::load()
   {
-    log.println( "Loading MD2 model '%s' {", name.cstr() );
-    log.indent();
+    log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
     Buffer buffer;
-    if( !buffer.read( "mdl/" + name + "/tris.ozcMD2" ) ) {
+    if( !buffer.read( "mdl/" + name + ".ozcMD2" ) ) {
       throw Exception( "MD2 cannot read model file" );
     }
     InputStream is = buffer.inputStream();
@@ -531,8 +533,7 @@ namespace client
 
     isLoaded = true;
 
-    log.unindent();
-    log.println( "}" );
+    log.printEnd( " OK" );
   }
 
   void MD2::advance( AnimState* anim, float dt ) const

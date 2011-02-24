@@ -48,9 +48,8 @@ namespace client
     height       = config.get( "screen.height",        768  );
     centreX      = width / 2;
     centreY      = height / 2;
-    angle        = config.getSet( "camera.angle",      80.0f );
+
     aspect       = config.getSet( "camera.aspect",     0.0f );
-    aspect       = aspect != 0.0f ? aspect : float( width ) / float( height );
     minDist      = config.getSet( "camera.minDist",    0.1f );
     maxDist      = config.getSet( "camera.maxDist",    400.0f );
     mouseXSens   = config.getSet( "camera.mouseXSens", 0.20f );
@@ -59,6 +58,13 @@ namespace client
     keyYSens     = config.getSet( "camera.keysYSens",  100.0f );
     smoothCoef   = config.getSet( "camera.smoothCoef", 0.50f );
     isExternal   = true;
+
+    float angle  = config.getSet( "camera.angle",      80.0f );
+
+    aspect     = aspect != 0.0f ? aspect : float( width ) / float( height );
+    coeff      = Math::tan( Math::PI * angle / 360.0f );
+    horizPlane = coeff * minDist;
+    vertPlane  = aspect * horizPlane;
 
     String sDefaultState = config.getSet( "camera.defaultState", "FREECAM" );
     if( sDefaultState.equals( "FREECAM" ) ) {

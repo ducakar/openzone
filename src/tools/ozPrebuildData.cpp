@@ -13,11 +13,12 @@
 #include "matrix/Orbis.hpp"
 #include "matrix/Matrix.hpp"
 
+#include <client/Context.hpp>
+#include "client/Compiler.hpp"
 #include "client/Terra.hpp"
 #include "client/BSP.hpp"
 #include "client/OBJ.hpp"
 #include "client/MD2.hpp"
-#include "client/Compiler.hpp"
 
 #include <sys/stat.h>
 #include <SDL_main.h>
@@ -25,6 +26,7 @@
 #include <csignal>
 
 using namespace oz;
+using oz::uint;
 
 bool Alloc::isLocked = true;
 
@@ -38,7 +40,8 @@ int main( int, char** )
     Alloc::printLeaks();
   } );
 
-  SDL_Init( SDL_INIT_NOPARACHUTE );
+  SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO );
+  SDL_SetVideoMode( 100, 100, 32, SDL_OPENGL );
 
   long startTime = SDL_GetTicks();
 
@@ -76,6 +79,23 @@ int main( int, char** )
     else if( stat( model->path + "/tris.md2", &statInfo ) == 0 ) {
       client::MD2::prebuild( model->name );
     }
+  }
+
+  foreach( texture, translator.textures.citer() ) {
+    uint id = client::context.loadTexture( texture->path );
+
+    hard_assert( id != 0 );
+
+    int nMipmaps, size;
+    client::context.getTextureSize( id, &nMipmaps, &size );
+
+    Buffer buffer( size );
+    OutputStream os = buffer.outputStream();
+
+    client::context.writeTexture( id, nMipmaps, &os );
+
+    hard_assert( !os.isAvailable() );
+    buffer.write( "bsp/tex/" + texture->name + ".ozcTex" );
   }
 
   client::compiler.free();

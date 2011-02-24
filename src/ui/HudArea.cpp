@@ -15,7 +15,7 @@
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
 
-#include <SDL_opengl.h>
+#include <GL/gl.h>
 
 namespace oz
 {
@@ -56,12 +56,12 @@ namespace ui
 
   HudArea::~HudArea()
   {
-    context.deleteTexture( crossTexId );
-    context.deleteTexture( useTexId );
-    context.deleteTexture( mountTexId );
-    context.deleteTexture( takeTexId );
-    context.deleteTexture( liftTexId );
-    context.deleteTexture( grabTexId );
+    glDeleteTextures( 1, &crossTexId );
+    glDeleteTextures( 1, &useTexId );
+    glDeleteTextures( 1, &mountTexId );
+    glDeleteTextures( 1, &takeTexId );
+    glDeleteTextures( 1, &liftTexId );
+    glDeleteTextures( 1, &grabTexId );
   }
 
   void HudArea::onDraw()

@@ -19,11 +19,10 @@
 namespace oz
 {
 
-  Vector<Object*> Struct::Entity::overlappingObjs;
-
   const float Struct::DAMAGE_THRESHOLD = 400.0f;
 
   Pool<Struct, 256> Struct::pool;
+  Vector<Object*> Struct::overlappingObjs;
 
   const Mat44 Struct::rotations[] =
   {

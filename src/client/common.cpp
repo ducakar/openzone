@@ -11,17 +11,6 @@
 
 #include "client/common.hpp"
 
-#ifdef OZ_WINDOWS
-
-PFNGLACTIVETEXTUREPROC        glActiveTexture;
-PFNGLCLIENTACTIVETEXTUREPROC  glClientActiveTexture;
-PFNGLGENBUFFERSPROC           glGenBuffers;
-PFNGLDELETEBUFFERSPROC        glDeleteBuffers;
-PFNGLBINDBUFFERPROC           glBindBuffer;
-PFNGLBUFFERDATAPROC           glBufferData;
-
-#endif
-
 namespace oz
 {
 namespace client

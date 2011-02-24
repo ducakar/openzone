@@ -15,7 +15,7 @@
 #include "matrix/Collider.hpp"
 #include "client/Camera.hpp"
 
-#include <SDL_opengl.h>
+#include <GL/gl.h>
 
 namespace oz
 {

@@ -11,31 +11,18 @@
 
 #include "stable.hpp"
 
-#define GL_GLEXT_PROTOTYPES
+# define GL_GLEXT_PROTOTYPES
 
-#define GL_VERSION_1_2_DEPRECATED
-#define GL_VERSION_1_3_DEPRECATED
-#define GL_VERSION_1_4_DEPRECATED
-#define GL_VERSION_1_5_DEPRECATED
-#define GL_VERSION_2_0_DEPRECATED
-#define GL_VERSION_2_1_DEPRECATED
-#define GL_VERSION_3_0_DEPRECATED
+# define GL_VERSION_1_2_DEPRECATED
+# define GL_VERSION_1_3_DEPRECATED
+// # define GL_VERSION_1_4_DEPRECATED
+# define GL_VERSION_1_5_DEPRECATED
+# define GL_VERSION_2_0_DEPRECATED
+# define GL_VERSION_2_1_DEPRECATED
+# define GL_VERSION_3_0_DEPRECATED
 
-#define GL_ARB_imaging_DEPRECATED
-#define GL_ARB_framebuffer_object_DEPRECATED
-
-#ifdef OZ_WINDOWS
-
-# include <SDL_opengl.h>
-
-extern PFNGLACTIVETEXTUREPROC        glActiveTexture;
-extern PFNGLCLIENTACTIVETEXTUREPROC  glClientActiveTexture;
-extern PFNGLGENBUFFERSPROC           glGenBuffers;
-extern PFNGLDELETEBUFFERSPROC        glDeleteBuffers;
-extern PFNGLBINDBUFFERPROC           glBindBuffer;
-extern PFNGLBUFFERDATAPROC           glBufferData;
-
-#endif
+# define GL_ARB_imaging_DEPRECATED
+# define GL_ARB_framebuffer_object_DEPRECATED
 
 namespace oz
 {

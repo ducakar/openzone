@@ -18,7 +18,7 @@
 #include "client/Model.hpp"
 #include "client/Audio.hpp"
 
-#include <SDL_opengl.h>
+#include <GL/gl.h>
 
 namespace oz
 {
@@ -60,15 +60,6 @@ namespace client
         int  nUsers;
       };
 
-      // provide similar functionality as vertex array objects in OpenGL 3+
-      struct VAO
-      {
-        static const int INDEXED_BIT = 0x1;
-
-        uint buffers[2];
-        int  usage;
-      };
-
       struct Lists
       {
         uint base;
@@ -107,7 +98,6 @@ namespace client
       Resource<uint>*                   textures;
       Resource<uint>*                   sounds;
 
-      Sparse<VAO>                       vaos;
       Sparse<Lists>                     lists;
 
       ContSource*                       cachedSource;
@@ -138,46 +128,34 @@ namespace client
 
     public:
 
-      uint createTexture( const void* data,
-                          int width,
-                          int height,
-                          int bytesPerPixel,
-                          bool wrap = true,
-                          int magFilter = DEFAULT_MAG_FILTER,
+      uint detailTexture;
+
+      static uint createTexture( const void* data, int width, int height, int bytesPerPixel,
+                          bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
 
-      uint loadTexture( const char* path,
-                        bool wrap = true,
-                        int magFilter = DEFAULT_MAG_FILTER,
-                        int minFilter = DEFAULT_MIN_FILTER );
+      static uint loadTexture( const char* path, bool wrap = true,
+                               int magFilter = DEFAULT_MAG_FILTER,
+                               int minFilter = DEFAULT_MIN_FILTER );
 
-      void deleteTexture( uint texId );
+      static uint readTexture( InputStream* stream );
 
-      uint requestSound( int resource );
-      void releaseSound( int resource );
+      static void getTextureSize( uint id, int* nMipmaps, int* size );
+      static void writeTexture( uint id, int nMipmaps, OutputStream* stream );
+
+      uint requestTexture( int id );
+      void releaseTexture( int id );
+
+      uint requestSound( int id );
+      void releaseSound( int id );
 
       BSP* loadBSP( int resource );
       void releaseBSP( int resource );
 
-      uint genArray( GLenum usage,
-                     const Vertex* vertices, int nVertices,
-                     const ushort* indices = null, int nIndices = 0 );
-
-      void deleteArray( uint id );
-
       static void beginArrayMode();
       static void endArrayMode();
 
-      void bindArray( uint id ) const;
-
       static void setVertexFormat();
-
-      void uploadArray( uint id, const Vertex* vertices, int nVertices ) const;
-      Vertex* mapArray( uint id, int access, int size = 0 ) const;
-      void unmapArray( uint id ) const;
-
-      void drawArray( GLenum mode, int firstVertex, int nVertices ) const;
-      void drawIndexedArray( GLenum mode, int firstIndex, int nIndices ) const;
 
       static void bindTextures( uint texture0 = 0, uint texture1 = 0, uint texture2 = 0 );
 

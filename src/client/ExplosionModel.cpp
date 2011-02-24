@@ -41,7 +41,7 @@ namespace client
   ExplosionModel::~ExplosionModel()
   {
     gluDeleteQuadric( quadric );
-    context.deleteTexture( texId );
+    glDeleteTextures( 1, &texId );
   }
 
   void ExplosionModel::draw( const Model* )

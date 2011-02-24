@@ -24,7 +24,7 @@
 #include "client/BotAudio.hpp"
 
 #include <SDL_image.h>
-#include <GL/glu.h>
+#include <GL/gl.h>
 #include <AL/alut.h>
 #include <vorbis/vorbisfile.h>
 
@@ -48,20 +48,19 @@ namespace client
   {
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    GLenum format = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+    GLenum format         = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+    GLenum internalFormat = bytesPerPixel == 4 ? GL_COMPRESSED_RGBA : GL_COMPRESSED_RGB;
 
-    uint texNum;
-    glGenTextures( 1, &texNum );
+    uint texId;
+    glGenTextures( 1, &texId );
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-    glBindTexture( GL_TEXTURE_2D, texNum );
+    glBindTexture( GL_TEXTURE_2D, texId );
 
-    if( minFilter >= GL_NEAREST_MIPMAP_NEAREST ) {
-      gluBuild2DMipmaps( GL_TEXTURE_2D, format, width, height, format,
-                         GL_UNSIGNED_BYTE, data );
-    }
-    else {
-      glTexImage2D( GL_TEXTURE_2D, 0, format, width, height, 0, format,
-                    GL_UNSIGNED_BYTE, data );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
+
+    if( minFilter == GL_NEAREST_MIPMAP_NEAREST || minFilter == GL_LINEAR_MIPMAP_LINEAR ) {
+      glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
     }
 
     if( !wrap ) {
@@ -69,16 +68,19 @@ namespace client
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     }
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
+    glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
+                  format, GL_UNSIGNED_BYTE, data );
 
     if( glGetError() != GL_NO_ERROR ) {
-      glDeleteTextures( 1, &texNum );
-      texNum = ~0u;
+      glDeleteTextures( 1, &texId );
+      texId = 0;
 
       hard_assert( glGetError() == GL_NO_ERROR );
     }
-    return texNum;
+
+    hard_assert( glIsTexture( texId ) );
+
+    return texId;
   }
 
   void Context::deleteSound( int id )
@@ -128,121 +130,195 @@ namespace client
 
     SDL_FreeSurface( image );
 
+    hard_assert( glIsTexture( texNum ) );
+
     return texNum;
   }
 
-  void Context::deleteTexture( uint id )
+  uint Context::readTexture( InputStream* stream )
   {
-    glDeleteTextures( 1, &id );
     hard_assert( glGetError() == GL_NO_ERROR );
+
+    uint texId;
+    glGenTextures( 1, &texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
+
+    int nMipmaps       = stream->readInt();
+    int internalFormat = stream->readInt();
+    int magFilter      = stream->readInt();
+    int minFilter      = stream->readInt();
+    int wrap           = stream->readInt();
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
+
+    if( minFilter == GL_NEAREST_MIPMAP_NEAREST || minFilter == GL_LINEAR_MIPMAP_LINEAR ) {
+      glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
+    }
+
+    if( !wrap ) {
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+    }
+
+    for( int i = 0; i < nMipmaps; ++i ) {
+      int width = stream->readInt();
+      int height = stream->readInt();
+      int size = stream->readInt();
+
+      glCompressedTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0, size,
+                              stream->prepareRead( size ) );
+    }
+
+    if( glGetError() != GL_NO_ERROR ) {
+      glDeleteTextures( 1, &texId );
+      texId = 0;
+
+      hard_assert( glGetError() == GL_NO_ERROR );
+    }
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+
+    return texId;
+  }
+
+  void Context::getTextureSize( uint id, int* nMipmaps_, int* size_ )
+  {
+    int nMipmaps = 0;
+    // nMipmaps + internalFormat + minFilter + maxFilter + clamp
+    size_t size = 5 * sizeof( int );
+
+    hard_assert( glIsTexture( id ) );
+    hard_assert( glGetError() == GL_NO_ERROR );
+
+    glBindTexture( GL_TEXTURE_2D, id );
+
+    for( int i = 0; i < 1000; ++i ) {
+      int mipmapSize;
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &mipmapSize );
+
+      if( glGetError() != GL_NO_ERROR ) {
+        break;
+      }
+
+      // width + height + size
+      size += 3 * sizeof( int );
+      size += mipmapSize;
+
+      ++nMipmaps;
+    }
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+
+    *nMipmaps_ = nMipmaps;
+    *size_ = int( size );
+  }
+
+  void Context::writeTexture( uint id, int nMipmaps, OutputStream* stream )
+  {
+    glBindTexture( GL_TEXTURE_2D, id );
+
+    int internalFormat, magFilter, minFilter, wrap;
+    glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &minFilter );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
+
+    stream->writeInt( nMipmaps );
+    stream->writeInt( internalFormat );
+    stream->writeInt( magFilter );
+    stream->writeInt( minFilter );
+    stream->writeInt( wrap );
+
+    for( int i = 0; i < nMipmaps; ++i ) {
+      int width, height, size;
+
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
+
+      stream->writeInt( width );
+      stream->writeInt( height );
+      stream->writeInt( size );
+      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
+    }
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+  }
+
+  uint Context::requestTexture( int id )
+  {
+    Resource<uint>& resource = textures[id];
+
+    if( resource.nUsers > 0 ) {
+      ++resource.nUsers;
+      return resource.id;
+    }
+    resource.nUsers = 1;
+
+    const String& name = translator.textures[id].name;
+
+    log.print( "Loading texture '%s' ...", name.cstr() );
+
+    resource.id = GL_NONE;
+
+    Buffer buffer;
+    buffer.read( "bsp/tex/" + name + ".ozcTex" );
+
+    if( !buffer.isEmpty() ) {
+      InputStream is = buffer.inputStream();
+
+      resource.id = readTexture( &is );
+      buffer.free();
+    }
+
+    if( resource.id == GL_NONE ) {
+      log.printEnd( " Failed" );
+      return GL_NONE;
+    }
+
+    log.printEnd( " OK" );
+    return resource.id;
+  }
+
+  void Context::releaseTexture( int id )
+  {
+    Resource<uint>& resource = textures[id];
+
+    hard_assert( uint( id ) < uint( translator.textures.length() ) );
+    hard_assert( resource.nUsers > 0 );
+
+    --resource.nUsers;
+
+    if( resource.nUsers == 0 ) {
+      log.print( "Unloading texture '%s' ...", translator.textures[id].name.cstr() );
+      glDeleteTextures( 1, &resource.id );
+      hard_assert( glGetError() == GL_NO_ERROR );
+      log.printEnd( " OK" );
+    }
   }
 
   uint Context::requestSound( int id )
   {
     Resource<uint>& resource = sounds[id];
 
-    if( resource.nUsers >= 0 ) {
-      ++resource.nUsers;
+    if( resource.nUsers != -1 ) {
+      resource.nUsers = resource.nUsers < 0 ? 1 : resource.nUsers + 1;
       return resource.id;
     }
 
     resource.nUsers = 1;
 
-    if( resource.nUsers == -2 ) {
-      return resource.id;
-    }
-
     hard_assert( alGetError() == AL_NO_ERROR );
 
-    const String& path = translator.sounds[id].path;
     log.print( "Loading sound '%s' ...", translator.sounds[id].name.cstr() );
 
-    int dot = path.lastIndex( '.' );
-    if( dot <= 0 ) {
-      log.printEnd( " Extension missing" );
+    resource.id = alutCreateBufferFromFile( translator.sounds[id].path );
+
+    if( resource.id == AL_NONE ) {
+      log.printEnd( " Failed" );
       return AL_NONE;
     }
-    String extension = path.substring( dot );
-
-    if( extension.equals( ".au" ) || extension.equals( ".wav" ) ) {
-      resource.id = alutCreateBufferFromFile( path );
-
-      if( resource.id == AL_NONE ) {
-        log.printEnd( " Failed" );
-        return AL_NONE;
-      }
-    }
-    else if( extension.equals( ".oga" ) || extension.equals( ".ogg" ) ) {
-      FILE*          oggFile = fopen( path, "rb" );
-      OggVorbis_File oggStream;
-      vorbis_info*   vorbisInfo;
-      ALenum         format;
-
-      if( oggFile == null ) {
-        log.printEnd( " Failed to open file" );
-        return AL_NONE;
-      }
-      if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
-        fclose( oggFile );
-        log.printEnd( " Failed to open Ogg stream" );
-        return AL_NONE;
-      }
-
-      vorbisInfo = ov_info( &oggStream, -1 );
-      if( vorbisInfo == null ) {
-        ov_clear( &oggStream );
-        log.printEnd( " Failed to read Vorbis header" );
-        return AL_NONE;
-      }
-
-      if( vorbisInfo->channels == 1 ) {
-        format = AL_FORMAT_MONO16;
-      }
-      else if( vorbisInfo->channels == 2 ) {
-        format = AL_FORMAT_STEREO16;
-      }
-      else {
-        ov_clear( &oggStream );
-        log.printEnd( " Invalid number of channels, should be 1 or 2" );
-        return AL_NONE;
-      }
-
-      int section;
-      int bytesRead = 0;
-      int result;
-      do {
-        result = int( ov_read( &oggStream, &vorbisBuffer[bytesRead], VORBIS_BUFFER_SIZE - bytesRead,
-                               0, 2, 1, &section ) );
-        bytesRead += result;
-        if( result < 0 ) {
-          ov_clear( &oggStream );
-          log.printEnd( " Failed to decode Vorbis stream, error %d", result );
-          return AL_NONE;
-        }
-      }
-      while( result > 0 && bytesRead < VORBIS_BUFFER_SIZE );
-
-      if( bytesRead == VORBIS_BUFFER_SIZE ) {
-        ov_clear( &oggStream );
-        log.printEnd( " Temporary buffer (%d bytes) too small to load sample", VORBIS_BUFFER_SIZE );
-        return AL_NONE;
-      }
-
-      alGenBuffers( 1, &resource.id );
-      alBufferData( resource.id, format, vorbisBuffer, bytesRead, int( vorbisInfo->rate ) );
-      ov_clear( &oggStream );
-
-      if( alGetError() != AL_NO_ERROR ) {
-        log.printEnd( " Failed to create buffer" );
-        return AL_NONE;
-      }
-    }
-    else {
-      log.printEnd( " Unknown file extension '%s'", extension.cstr() );
-      return AL_NONE;
-    }
-
-    hard_assert( alGetError() == AL_NO_ERROR );
 
     log.printEnd( " OK" );
     return resource.id;
@@ -289,36 +365,11 @@ namespace client
 
     glActiveTexture( GL_TEXTURE2 );
     glEnable( GL_TEXTURE_2D );
-
-    glEnableClientState( GL_VERTEX_ARRAY );
-    glEnableClientState( GL_NORMAL_ARRAY );
-
-    glClientActiveTexture( GL_TEXTURE0 );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-    glClientActiveTexture( GL_TEXTURE1 );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-    glClientActiveTexture( GL_TEXTURE2 );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
   }
 
   void Context::endArrayMode()
   {
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-    glDisableClientState( GL_VERTEX_ARRAY );
-    glDisableClientState( GL_NORMAL_ARRAY );
-
-    glClientActiveTexture( GL_TEXTURE0 );
-    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-
-    glClientActiveTexture( GL_TEXTURE1 );
-    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-
-    glClientActiveTexture( GL_TEXTURE2 );
-    glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+    glBindVertexArray( 0 );
 
     glActiveTexture( GL_TEXTURE0 );
     glDisable( GL_TEXTURE_2D );
@@ -331,131 +382,6 @@ namespace client
 
     glActiveTexture( GL_TEXTURE0 );
     glEnable( GL_TEXTURE_2D );
-  }
-
-  uint Context::genArray( GLenum usage,
-                          const Vertex* vertices, int nVertices,
-                          const ushort* indices, int nIndices )
-  {
-    hard_assert( ( indices == null ) == ( nIndices == 0 ) );
-
-    int  id  = vaos.add();
-    VAO& vao = vaos[id];
-
-    vao.usage = usage;
-
-    if( nIndices != 0 ) {
-      glGenBuffers( 2, vao.buffers );
-    }
-    else {
-      glGenBuffers( 1, vao.buffers );
-      vao.buffers[1] = 0;
-    }
-
-    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, usage );
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-    if( nIndices != 0 ) {
-      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vao.buffers[1] );
-      glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( ushort ), indices, usage );
-      glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-    }
-
-    return id;
-  }
-
-  void Context::deleteArray( uint id )
-  {
-    glDeleteBuffers( 2, vaos[id].buffers );
-    vaos.remove( id );
-  }
-
-  void Context::bindArray( uint id ) const
-  {
-    const VAO& vao = vaos[id];
-
-    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vao.buffers[1] );
-
-    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
-
-    glNormalPointer( GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-
-    glClientActiveTexture( GL_TEXTURE0 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-    glClientActiveTexture( GL_TEXTURE1 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-    glClientActiveTexture( GL_TEXTURE2 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-  }
-
-  void Context::setVertexFormat()
-  {
-    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
-
-    glNormalPointer( GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-
-    glClientActiveTexture( GL_TEXTURE0 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-    glClientActiveTexture( GL_TEXTURE1 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-    glClientActiveTexture( GL_TEXTURE2 );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-  }
-
-  void Context::uploadArray( uint id, const Vertex* vertices, int nVertices ) const
-  {
-    const VAO& vao = vaos[id];
-
-    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, vao.usage );
-  }
-
-  Vertex* Context::mapArray( uint id, int access, int size ) const
-  {
-    const VAO& vao = vaos[id];
-
-    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
-
-    if( size != 0 ) {
-      glBufferData( GL_ARRAY_BUFFER, size, null, vao.usage );
-    }
-
-    return reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, access ) );
-  }
-
-  void Context::unmapArray( uint id ) const
-  {
-    const VAO& vao = vaos[id];
-
-    glBindBuffer( GL_ARRAY_BUFFER, vao.buffers[0] );
-    glUnmapBuffer( GL_ARRAY_BUFFER );
-  }
-
-  void Context::drawArray( GLenum mode, int firstVertex, int nVertices ) const
-  {
-    glDrawArrays( mode, firstVertex, nVertices );
-  }
-
-  void Context::drawIndexedArray( GLenum mode, int firstIndex, int nIndices ) const
-  {
-    glDrawElements( mode, nIndices, GL_UNSIGNED_SHORT,
-                    reinterpret_cast<const ushort*>( 0 ) + firstIndex );
   }
 
   void Context::bindTextures( uint texture0, uint texture1, uint texture2 )
@@ -713,6 +639,8 @@ namespace client
     maxSources     = 0;
     maxContSources = 0;
 
+    detailTexture = loadTexture( "terra/detail.jpg" );
+
     log.printEnd( " OK" );
   }
 
@@ -764,9 +692,6 @@ namespace client
       bsps[i].nUsers = 0;
     }
 
-    hard_assert( vaos.isEmpty() );
-
-    vaos.dealloc();
     lists.clear();
     lists.dealloc();
     smms.dealloc();
@@ -791,6 +716,8 @@ namespace client
     sources.free();
     contSources.clear();
     contSources.dealloc();
+
+    glDeleteTextures( 1, &detailTexture );
 
     for( int i = 0; i < translator.textures.length(); ++i ) {
       hard_assert( textures[i].nUsers == 0 );

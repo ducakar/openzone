@@ -73,10 +73,10 @@ namespace ui
 
   void Mouse::free()
   {
-    context.deleteTexture( cursors[X].texId );
-    context.deleteTexture( cursors[ARROW].texId );
-    context.deleteTexture( cursors[MOVE].texId );
-    context.deleteTexture( cursors[TEXT].texId );
+    glDeleteTextures( 1, &cursors[X].texId );
+    glDeleteTextures( 1, &cursors[ARROW].texId );
+    glDeleteTextures( 1, &cursors[MOVE].texId );
+    glDeleteTextures( 1, &cursors[TEXT].texId );
   }
 
   void Mouse::prepare()

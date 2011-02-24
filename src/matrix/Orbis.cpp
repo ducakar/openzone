@@ -328,8 +328,8 @@ namespace oz
       }
     }
 
-    Struct::Entity::overlappingObjs.clear();
-    Struct::Entity::overlappingObjs.dealloc();
+    Struct::overlappingObjs.clear();
+    Struct::overlappingObjs.dealloc();
 
     bsps.free();
     bsps.dealloc();
