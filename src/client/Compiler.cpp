@@ -14,8 +14,7 @@
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
 
-#define GL_GLEXT_PROTOTYPES
-#include <SDL_opengl.h>
+#include <GL/gl.h>
 
 namespace oz
 {
@@ -80,6 +79,25 @@ namespace client
     hard_assert( ~flags & SURFACE_BIT );
 
     flags &= ~MESH_BIT;
+
+    foreach( part, solidParts.iter() ) {
+      part->minIndex = part->indices[0];
+      part->maxIndex = part->indices[0];
+
+      for( int i = 1; i < part->indices.length(); ++i ) {
+        part->minIndex = min( part->minIndex, part->indices[i] );
+        part->maxIndex = max( part->maxIndex, part->indices[i] );
+      }
+    }
+    foreach( part, alphaParts.iter() ) {
+      part->minIndex = part->indices[0];
+      part->maxIndex = part->indices[0];
+
+      for( int i = 1; i < part->indices.length(); ++i ) {
+        part->minIndex = min( part->minIndex, part->indices[i] );
+        part->maxIndex = max( part->maxIndex, part->indices[i] );
+      }
+    }
   }
 
   void Compiler::material( int, int target, const float* params )
@@ -193,10 +211,6 @@ namespace client
     Vector<Part>* parts = part.diffuse.w != 1.0f ? &alphaParts : &solidParts;
 
     switch( mode ) {
-//       case GL_TRIANGLE_FAN: {
-//         parts->add( part );
-//         break;
-//       }
       default: {
         int partIndex = parts->index( part );
 
@@ -322,95 +336,6 @@ namespace client
     ++vertNum;
   }
 
-  int Compiler::meshSize() const
-  {
-    size_t size = 0;
-
-    size += 4 * sizeof( int );
-
-    foreach( part, solidParts.citer() ) {
-      size += 2 * sizeof( Quat ) + 3 * sizeof( int );
-
-      size += part->texture[0].length() + 1;
-      size += part->texture[1].length() + 1;
-      size += part->texture[2].length() + 1;
-
-      size += part->indices.length() * sizeof( ushort );
-    }
-    foreach( part, alphaParts.citer() ) {
-      size += 2 * sizeof( Quat ) + 3 * sizeof( int );
-
-      size += part->texture[0].length() + 1;
-      size += part->texture[1].length() + 1;
-      size += part->texture[2].length() + 1;
-
-      size += part->indices.length() * sizeof( ushort );
-    }
-
-    size += vertices.length() * sizeof( Vertex );
-
-    return int( size );
-  }
-
-  void Compiler::writeMesh( OutputStream* stream ) const
-  {
-    hard_assert( ~flags & MESH_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
-
-    int nIndices = 0;
-
-    stream->writeInt( solidParts.length() );
-    foreach( part, solidParts.citer() ) {
-      stream->writeQuat( part->diffuse );
-      stream->writeQuat( part->specular );
-
-      stream->writeString( part->texture[0] );
-      stream->writeString( part->texture[1] );
-      stream->writeString( part->texture[2] );
-
-      stream->writeInt( part->mode );
-
-      stream->writeInt( nIndices );
-      stream->writeInt( part->indices.length() );
-
-      nIndices += part->indices.length();
-    }
-
-    stream->writeInt( alphaParts.length() );
-    foreach( part, alphaParts.citer() ) {
-      stream->writeQuat( part->diffuse );
-      stream->writeQuat( part->specular );
-
-      stream->writeString( part->texture[0] );
-      stream->writeString( part->texture[1] );
-      stream->writeString( part->texture[2] );
-
-      stream->writeInt( part->mode );
-
-      stream->writeInt( nIndices );
-      stream->writeInt( part->indices.length() );
-
-      nIndices += part->indices.length();
-    }
-
-    stream->writeInt( nIndices );
-    foreach( part, solidParts.citer() ) {
-      foreach( i, part->indices.citer() ) {
-        stream->writeShort( ushort( *i ) );
-      }
-    }
-    foreach( part, alphaParts.citer() ) {
-      foreach( i, part->indices.citer() ) {
-        stream->writeShort( ushort( *i ) );
-      }
-    }
-
-    stream->writeInt( vertices.length() );
-    for( int i = 0; i < vertices.length(); ++i ) {
-      vertices[i].write( stream );
-    }
-  }
-
   void Compiler::getMeshData( MeshData* mesh ) const
   {
     hard_assert( ~flags & MESH_BIT );
@@ -429,8 +354,10 @@ namespace client
 
       mesh->solidParts[i].mode       = solidParts[i].mode;
 
-      mesh->solidParts[i].firstIndex = nIndices;
-      mesh->solidParts[i].nIndices   = solidParts[i].indices.length();
+      mesh->solidParts[i].minIndex   = ushort( solidParts[i].minIndex );
+      mesh->solidParts[i].maxIndex   = ushort( solidParts[i].maxIndex );
+      mesh->solidParts[i].nIndices   = ushort( solidParts[i].indices.length() );
+      mesh->solidParts[i].firstIndex = ushort( nIndices );
 
       nIndices += solidParts[i].indices.length();
     }
@@ -446,8 +373,10 @@ namespace client
 
       mesh->alphaParts[i].mode       = alphaParts[i].mode;
 
-      mesh->alphaParts[i].firstIndex = nIndices;
-      mesh->alphaParts[i].nIndices   = alphaParts[i].indices.length();
+      mesh->alphaParts[i].minIndex   = ushort( alphaParts[i].minIndex );
+      mesh->alphaParts[i].maxIndex   = ushort( alphaParts[i].maxIndex );
+      mesh->alphaParts[i].nIndices   = ushort( alphaParts[i].indices.length() );
+      mesh->alphaParts[i].firstIndex = ushort( nIndices );
 
       nIndices += alphaParts[i].indices.length();
     }
@@ -470,61 +399,6 @@ namespace client
 
     mesh->vertices.alloc( vertices.length() );
     aCopy<Vertex>( mesh->vertices, vertices, vertices.length() );
-  }
-
-  void Compiler::getMesh( Mesh* mesh, int usage ) const
-  {
-    hard_assert( ~flags & MESH_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
-
-    int nIndices = 0;
-    Vector<ushort> indices;
-
-    for( int i = 0; i < solidParts.length(); ++i ) {
-      mesh->solidParts.add();
-
-      mesh->solidParts[i].diffuse    = solidParts[i].diffuse;
-      mesh->solidParts[i].specular   = solidParts[i].specular;
-      mesh->solidParts[i].texture[0] = context.loadTexture( solidParts[i].texture[0] );
-      mesh->solidParts[i].texture[1] = context.loadTexture( solidParts[i].texture[1] );
-      mesh->solidParts[i].texture[2] = context.loadTexture( solidParts[i].texture[2] );
-
-      mesh->solidParts[i].mode       = solidParts[i].mode;
-
-      mesh->solidParts[i].firstIndex = nIndices;
-      mesh->solidParts[i].nIndices   = solidParts[i].indices.length();
-
-      nIndices += solidParts[i].indices.length();
-
-      for( int j = 0; j < solidParts[i].indices.length(); ++j ) {
-        indices.add( ushort( solidParts[i].indices[j] ) );
-      }
-    }
-
-    for( int i = 0; i < alphaParts.length(); ++i ) {
-      mesh->alphaParts.add();
-
-      mesh->alphaParts[i].diffuse    = alphaParts[i].diffuse;
-      mesh->alphaParts[i].specular   = alphaParts[i].specular;
-      mesh->alphaParts[i].texture[0] = context.loadTexture( alphaParts[i].texture[0] );
-      mesh->alphaParts[i].texture[1] = context.loadTexture( alphaParts[i].texture[1] );
-      mesh->alphaParts[i].texture[2] = context.loadTexture( alphaParts[i].texture[2] );
-
-      mesh->alphaParts[i].mode       = alphaParts[i].mode;
-
-      mesh->alphaParts[i].firstIndex = nIndices;
-      mesh->alphaParts[i].nIndices   = alphaParts[i].indices.length();
-
-      nIndices += alphaParts[i].indices.length();
-
-      for( int j = 0; j < alphaParts[i].indices.length(); ++j ) {
-        indices.add( ushort( alphaParts[i].indices[j] ) );
-      }
-    }
-
-    mesh->arrayId = context.genArray( usage,
-                                      vertices, vertices.length(),
-                                      indices, indices.length() );
   }
 
   void Compiler::free()

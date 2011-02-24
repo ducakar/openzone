@@ -23,8 +23,7 @@ namespace client
   {
     String modelPath = "mdl/" + name + ".ozcSMM";
 
-    log.println( "Loading SMM model '%s' {", modelPath.cstr() );
-    log.indent();
+    log.print( "Loading SMM model '%s' ...", modelPath.cstr() );
 
     Buffer buffer;
     if( !buffer.read( modelPath ) ) {
@@ -38,8 +37,7 @@ namespace client
 
     isLoaded = true;
 
-    log.unindent();
-    log.println( "}" );
+    log.printEnd( " OK" );
   }
 
   SMM::SMM( const char* name_ ) : name( name_ ), isLoaded( false )

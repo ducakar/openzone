@@ -86,8 +86,10 @@ namespace client
       int    centreX;
       int    centreY;
 
-      float  angle;
+      float  coeff;
       float  aspect;
+      float  vertPlane;
+      float  horizPlane;
       float  minDist;
       float  maxDist;
 

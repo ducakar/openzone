@@ -82,7 +82,7 @@ namespace client
       vertices[i].set( stars[i] );
     }
 
-    starArray = context.genArray( GL_STATIC_DRAW, vertices, MAX_STARS );
+//     starArray = context.genArray( GL_STATIC_DRAW, vertices, MAX_STARS );
     delete[] vertices;
 
     sunTexId  = context.loadTexture( "sky/simplesun.png", false, GL_LINEAR, GL_LINEAR );
@@ -130,9 +130,9 @@ namespace client
   void Sky::unload()
   {
     context.deleteLists( sunList );
-    context.deleteTexture( sunTexId );
-    context.deleteTexture( moonTexId );
-    context.deleteArray( starArray );
+    glDeleteTextures( 1, &sunTexId );
+    glDeleteTextures( 1, &moonTexId );
+//     context.deleteArray( starArray );
   }
 
   void Sky::update()
@@ -189,23 +189,23 @@ namespace client
     glMultMatrixf( transf );
     transf = ~transf;
 
-    context.bindArray( starArray );
+//     context.bindArray( starArray );
 
-    Vec3 tz = transf.z;
-    int start, end;
-    if( stars[0] * tz > 0.0f ) {
-      for( end = 1; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
-      for( start = end + 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
-
-      context.drawArray( GL_POINTS, 0, end );
-      context.drawArray( GL_POINTS, start, MAX_STARS - start );
-    }
-    else {
-      for( start = 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
-      for( end = start; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
-
-      context.drawArray( GL_POINTS, start, end - start );
-    }
+//     Vec3 tz = transf.z;
+//     int start, end;
+//     if( stars[0] * tz > 0.0f ) {
+//       for( end = 1; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
+//       for( start = end + 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
+//
+//       glDrawArrays( GL_POINTS, 0, end );
+//       glDrawArrays( GL_POINTS, start, MAX_STARS - start );
+//     }
+//     else {
+//       for( start = 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
+//       for( end = start; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
+//
+//       glDrawArrays( GL_POINTS, start, end - start );
+//     }
 
     glEnable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );

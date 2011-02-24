@@ -189,9 +189,15 @@ namespace oz
         return *this;
       }
 
-      // no equality operators, String::equals functions should be used instead for verbosity
-      bool operator == ( const String& ) const = delete;
-      bool operator != ( const String& ) const = delete;
+      bool operator == ( const String& s ) const
+      {
+        return equals( s );
+      }
+
+      bool operator != ( const String& s ) const
+      {
+        return !equals( s );
+      }
 
       bool equals( const char* s ) const
       {

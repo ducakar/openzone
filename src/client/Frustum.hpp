@@ -34,7 +34,7 @@ namespace client
       float maxDistance;
       float radius;
 
-      void init( float fovY, float aspect, float maxDistance );
+      void init( float coeff, float aspect, float maxDistance );
       void update( float maxDistance );
 
       OZ_ALWAYS_INLINE

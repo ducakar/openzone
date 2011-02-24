@@ -28,29 +28,29 @@ namespace ui
 
       static const int ICON_SIZE = 32;
 
-      int crossTexId;
-      int useTexId;
-      int mountTexId;
-      int takeTexId;
-      int liftTexId;
-      int grabTexId;
+      uint crossTexId;
+      uint useTexId;
+      uint mountTexId;
+      uint takeTexId;
+      uint liftTexId;
+      uint grabTexId;
 
-      int crossIconX;
-      int crossIconY;
-      int useIconX;
-      int useIconY;
-      int mountIconX;
-      int mountIconY;
-      int takeIconX;
-      int takeIconY;
-      int liftIconX;
-      int liftIconY;
-      int grabIconX;
-      int grabIconY;
-      int healthBarX;
-      int healthBarY;
-      int descTextX;
-      int descTextY;
+      int  crossIconX;
+      int  crossIconY;
+      int  useIconX;
+      int  useIconY;
+      int  mountIconX;
+      int  mountIconY;
+      int  takeIconX;
+      int  takeIconY;
+      int  liftIconX;
+      int  liftIconY;
+      int  grabIconX;
+      int  grabIconY;
+      int  healthBarX;
+      int  healthBarY;
+      int  descTextX;
+      int  descTextY;
 
     protected:
 

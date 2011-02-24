@@ -35,7 +35,7 @@ namespace ui
 
   InventoryMenu::~InventoryMenu()
   {
-    context.deleteTexture( useTexId );
+    glDeleteTextures( 1, &useTexId );
   }
 
   bool InventoryMenu::onMouseEvent()

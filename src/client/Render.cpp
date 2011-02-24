@@ -30,7 +30,7 @@
 #include "client/MD2Model.hpp"
 #include "client/MD2WeaponModel.hpp"
 
-#include <SDL_opengl.h>
+#include <GL/gl.h>
 
 namespace oz
 {
@@ -150,7 +150,8 @@ namespace client
     // camera transformation
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-    gluPerspective( camera.angle, camera.aspect, camera.minDist, visibility );
+    glFrustum( -camera.vertPlane, +camera.vertPlane, -camera.horizPlane, +camera.horizPlane,
+               camera.minDist, visibility );
 
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
@@ -326,7 +327,7 @@ namespace client
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    frustum.init( camera.angle, camera.aspect, camera.maxDist );
+    frustum.init( camera.coeff, camera.aspect, camera.maxDist );
     water.init();
     shape.load();
     sky.load();
@@ -386,27 +387,42 @@ namespace client
     log.println( "Initialising Graphics {" );
     log.indent();
 
+    bool isVaoSupported = false;
+
+    String version = String::cstr( glGetString( GL_VERSION ) );
     DArray<String> extensions;
     String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
     sExtensions.trim().split( ' ', &extensions );
 
     log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
     log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );
-    log.println( "OpenGL version: %s", glGetString( GL_VERSION ) );
+    log.println( "OpenGL version: %s", version.cstr() );
     log.println( "OpenGL extensions {" );
     log.indent();
+
     foreach( extension, extensions.citer() ) {
       log.println( "%s", extension->cstr() );
+
+      if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
+        isVaoSupported = true;
+      }
     }
 
-#ifdef OZ_WINDOWS
-    glActiveTexture = reinterpret_cast<PFNGLACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glActiveTexture" ) );
-    glClientActiveTexture = reinterpret_cast<PFNGLCLIENTACTIVETEXTUREPROC>( SDL_GL_GetProcAddress( "glClientActiveTexture" ) );
-    glGenBuffers = reinterpret_cast<PFNGLGENBUFFERSPROC>( SDL_GL_GetProcAddress( "glGenBuffers" ) );
-    glDeleteBuffers = reinterpret_cast<PFNGLDELETEBUFFERSPROC>( SDL_GL_GetProcAddress( "glDeleteBuffers" ) );
-    glBindBuffer = reinterpret_cast<PFNGLBINDBUFFERPROC>( SDL_GL_GetProcAddress( "glBindBuffer" ) );
-    glBufferData = reinterpret_cast<PFNGLBUFFERDATAPROC>( SDL_GL_GetProcAddress( "glBufferData" ) );
-#endif
+    log.unindent();
+    log.println( "}" );
+
+    int major = atoi( version );
+    int minor = atoi( version + version.index( '.' ) + 1 );
+
+    if( major < 1 || ( major == 1 && minor < 5 ) ) {
+      log.println( "Error: at least OpenGL 1.5 required" );
+      throw Exception( "Too old OpenGL version" );
+    }
+
+    if( !isVaoSupported ) {
+      log.println( "Error: vertex array object (GL_ARB_vertex_array_object) is not supported" );
+      throw Exception( "VAO not supported by OpenGL" );
+    }
 
     dayVisibility        = config.getSet( "render.dayVisibility",        300.0f );
     nightVisibility      = config.getSet( "render.nightVisibility",      100.0f );
@@ -415,9 +431,6 @@ namespace client
     particleRadius       = config.getSet( "render.particleRadius",       0.5f );
     showBounds           = config.getSet( "render.showBounds",           false );
     showAim              = config.getSet( "render.showAim",              false );
-
-    log.unindent();
-    log.println( "}" );
 
     glDepthFunc( GL_LEQUAL );
 

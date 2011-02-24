@@ -12,7 +12,7 @@
 #include "ui/Area.hpp"
 
 #include <SDL_ttf.h>
-#include <SDL_opengl.h>
+#include <GL/gl.h>
 
 namespace oz
 {

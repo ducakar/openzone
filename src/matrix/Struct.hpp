@@ -42,8 +42,6 @@ namespace oz
             CLOSING_BLOCKED
           };
 
-          static Vector<Object*> overlappingObjs;
-
           Vec3              offset;
 
           const BSP::Model* model;
@@ -74,6 +72,8 @@ namespace oz
 
       static const Mat44 rotations[];
       static const Mat44 invRotations[];
+
+      static Vector<Object*> overlappingObjs;
 
     public:
 

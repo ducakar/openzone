@@ -18,10 +18,10 @@ namespace client
 
   Frustum frustum;
 
-  void Frustum::init( float fovY_, float aspect, float maxDistance_ )
+  void Frustum::init( float coeff, float aspect, float maxDistance_ )
   {
-    fovX = Math::atan( Math::tan( Math::rad( fovY_ / 2.0f ) ) * aspect );
-    fovY = Math::atan( Math::tan( Math::rad( fovY_ / 2.0f ) ) );
+    fovX = Math::atan( coeff * aspect );
+    fovY = Math::atan( coeff );
 
     Math::sincos( fovX, &sx, &cx );
     Math::sincos( fovY, &sy, &cy );

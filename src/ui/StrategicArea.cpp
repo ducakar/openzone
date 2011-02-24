@@ -18,7 +18,7 @@
 #include "ui/Keyboard.hpp"
 
 #include <SDL_ttf.h>
-#include <SDL_opengl.h>
+#include <GL/gl.h>
 
 namespace oz
 {
@@ -237,7 +237,7 @@ namespace ui
     flags |= IGNORE_BIT | HIDDEN_BIT | UPDATE_FUNC_BIT;
     setFont( Font::SANS );
 
-    pixelStep = Math::tan( Math::rad( camera.angle / 2.0f ) ) / float( camera.height / 2 );
+    pixelStep = camera.coeff / float( camera.height / 2 );
     stepPixel = 1.0f / pixelStep;
   }
 

@@ -152,8 +152,8 @@ namespace oz
         continue;
       }
 
-      String fileName = "textures/oz/" + name;
       String baseName = name.substring( 0, dot );
+      String fileName = "textures/oz/" + name;
 
       if( textureIndices.contains( baseName ) ) {
         log.println( "duplicated texture: %s", baseName.cstr() );
@@ -168,7 +168,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "sounds (*.au, *.wav, *.oga, *.ogg in 'snd') {" );
+    log.println( "sounds (*.au, *.wav in 'snd') {" );
     log.indent();
 
     dir = opendir( "snd" );
@@ -189,9 +189,7 @@ namespace oz
       }
       String extension = name.substring( dot );
       if( !extension.equals( ".au" ) &&
-          !extension.equals( ".wav" ) &&
-          !extension.equals( ".oga" ) &&
-          !extension.equals( ".ogg" ) )
+          !extension.equals( ".wav" ) )
       {
         continue;
       }

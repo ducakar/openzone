@@ -1077,7 +1077,7 @@ namespace oz
     BSP* bsp = new BSP();
     bsp->name = name;
 
-    if( !bsp->loadQBSP( String( "maps/" ) + name ) ) {
+    if( !bsp->loadQBSP( "maps/" + bsp->name ) ) {
       bsp->freeQBSP();
       log.unindent();
       log.println( "}" );
@@ -1086,7 +1086,7 @@ namespace oz
 
     bsp->optimise();
     bsp->check( true );
-    bsp->save( String( "maps/" ) + name + String( ".ozBSP" ) );
+    bsp->save( "bsp/" + bsp->name + ".ozBSP" );
     bsp->freeQBSP();
     delete bsp;
 
@@ -1103,7 +1103,7 @@ namespace oz
   {
     log.print( "Loading OpenZone BSP structure '%s' ...", name.cstr() );
 
-    if( !loadOZBSP( "maps/" + name + ".ozBSP" ) ) {
+    if( !loadOZBSP( "bsp/" + name + ".ozBSP" ) ) {
       log.printEnd( " Failed" );
       freeOZBSP();
       throw Exception( "Matrix ozBSP loading failed" );

@@ -18,7 +18,7 @@
 #include "client/Shape.hpp"
 #include "client/Water.hpp"
 
-#include <SDL_opengl.h>
+#include <GL/gl.h>
 
 namespace oz
 {
@@ -281,14 +281,6 @@ namespace client
         }
         else {
           name = name.substring( 12 );
-          int index = translator.textureIndex( name );
-
-          if( index == -1 ) {
-            name = "";
-          }
-          else {
-            name = translator.textures[index].path;
-          }
         }
 
         if( texture.type & QBSP_WATER_BIT ) {
@@ -329,7 +321,7 @@ namespace client
       meshes.add();
       compiler.getMeshData( &meshes.last() );
 
-      size += meshes.last().getSize();
+      size += meshes.last().getSize( false );
     }
 
     Buffer buffer( size );
@@ -339,7 +331,7 @@ namespace client
     os.writeInt( nModels );
 
     foreach( mesh, meshes.citer() ) {
-      mesh->write( &os );
+      mesh->write( &os, false );
     }
 
     hard_assert( !os.isAvailable() );
@@ -348,14 +340,16 @@ namespace client
     log.printEnd( " OK" );
   }
 
-  void BSP::prebuild( const char* name )
+  void BSP::prebuild( const char* name_ )
   {
-    log.println( "Prebuilding Quake 3 BSP model '%s' {", name );
+    log.println( "Prebuilding Quake 3 BSP model '%s' {", name_ );
     log.indent();
 
-    loadQBSP( String( "maps/" ) + name );
+    String name = name_;
+
+    loadQBSP( "maps/" + name );
     optimise();
-    save( String( "maps/" ) + name + String( ".ozcBSP" ) );
+    save( "bsp/" + name + ".ozcBSP" );
     freeQBSP();
 
     log.unindent();
@@ -383,7 +377,7 @@ namespace client
     log.indent();
 
     Buffer buffer;
-    buffer.read( "maps/" + name + ".ozcBSP" );
+    buffer.read( "bsp/" + name + ".ozcBSP" );
 
     InputStream is = buffer.inputStream();
 
