@@ -31,13 +31,13 @@ namespace client
 
     model->obj   = obj;
     model->clazz = obj->clazz;
-    model->smm   = context.loadSMM( obj->clazz->modelName );
+    model->smm   = context.requestSMM( obj->clazz->modelIndex );
     return model;
   }
 
   SMMVehicleModel::~SMMVehicleModel()
   {
-    context.releaseSMM( clazz->modelName );
+    context.releaseSMM( clazz->modelIndex );
   }
 
   void SMMVehicleModel::draw( const Model* )

@@ -308,7 +308,7 @@ namespace oz
     partAvailableIndices.alloc( 512 );
 
     for( int i = 0; i < translator.bsps.length(); ++i ) {
-      bsps.add( new BSP( translator.bsps[i].name ) );
+      bsps.add( new BSP( i ) );
     }
 
     log.unindent();

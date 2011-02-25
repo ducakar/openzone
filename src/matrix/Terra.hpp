@@ -53,8 +53,8 @@ namespace oz
         Vec3   triNormal[2];
       };
 
-      Quad   quads[VERTS][VERTS];
-      String name;
+      Quad quads[VERTS][VERTS];
+      int  id;
 
       Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;
       // indices of TerraQuad and index of the triangle inside the TerraQuad
@@ -62,7 +62,7 @@ namespace oz
       float height( float x, float y ) const;
 
       void prebuild( const char* name );
-      void load( const char* name );
+      void load( int id );
       void init();
 
   };

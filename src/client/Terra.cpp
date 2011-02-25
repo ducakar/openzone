@@ -38,12 +38,14 @@ namespace client
 
   Terra terra;
 
-  void Terra::prebuild()
+  void Terra::prebuild( const char* name_ )
   {
-    String configFile = "terra/" + orbis.terra.name + ".rc";
-    String outFile    = "terra/" + orbis.terra.name + ".ozcTerra";
+    String name       = name_;
+    String configFile = "terra/" + name + ".rc";
+    String outFile    = "terra/" + name + ".ozcTerra";
 
-    log.print( "Saving client terrain data to '%s' ...", outFile.cstr() );
+    log.println( "Compiling client terrain data to '%s' {", outFile.cstr() );
+    log.indent();
 
     Config terraConfig;
     terraConfig.load( configFile );
@@ -260,14 +262,16 @@ namespace client
     hard_assert( !os.isAvailable() );
     buffer.write( outFile );
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Terra::load()
   {
-    String path = "terra/" + orbis.terra.name + ".ozcTerra";
+    const String& name = translator.terras[orbis.terra.id].name;
+    String path = "terra/" + name + ".ozcTerra";
 
-    log.println( "Loading terrain '%s' {", path.cstr() );
+    log.println( "Loading terra '%s' {", name.cstr() );
     log.indent();
 
     ushort* indices  = new ushort[TILE_INDICES];

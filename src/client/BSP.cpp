@@ -127,10 +127,10 @@ namespace client
   static DArray<int>         indices;
   static DArray<QBSPFace>    faces;
 
-  void BSP::loadQBSP( const char* fileName )
+  void BSP::loadQBSP( const char* path )
   {
-    String rcFile = fileName + String( ".rc" );
-    String bspFile = fileName + String( ".bsp" );
+    String rcFile = path + String( ".rc" );
+    String bspFile = path + String( ".bsp" );
 
     Config bspConfig;
     if( !bspConfig.load( rcFile ) ) {
@@ -254,10 +254,8 @@ namespace client
     log.println( "}" );
   }
 
-  void BSP::save( const char* file )
+  void BSP::save( const char* path )
   {
-    log.print( "Dumping BSP model to '%s' ...", file );
-
     int flags = 0;
 
     Vector<MeshData> meshes( nModels );
@@ -334,18 +332,20 @@ namespace client
       mesh->write( &os, false );
     }
 
+    log.print( "Dumping BSP model to '%s' ...", path );
+
     hard_assert( !os.isAvailable() );
-    buffer.write( file );
+    buffer.write( path );
 
     log.printEnd( " OK" );
   }
 
   void BSP::prebuild( const char* name_ )
   {
+    String name = name_;
+
     log.println( "Prebuilding Quake 3 BSP model '%s' {", name_ );
     log.indent();
-
-    String name = name_;
 
     loadQBSP( "maps/" + name );
     optimise();
@@ -356,8 +356,7 @@ namespace client
     log.println( "}" );
   }
 
-  BSP::BSP( int bspIndex ) :
-      bsp( orbis.bsps[bspIndex] ), flags( 0 ), isLoaded( false )
+  BSP::BSP( int id ) : bsp( orbis.bsps[id] ), flags( 0 ), isLoaded( false )
   {}
 
   BSP::~BSP()
@@ -371,7 +370,7 @@ namespace client
   {
     hard_assert( bsp != null );
 
-    const String& name = bsp->name.cstr();
+    const String& name = translator.bsps[bsp->id].name;
 
     log.println( "Loading BSP model '%s' {", name.cstr() );
     log.indent();

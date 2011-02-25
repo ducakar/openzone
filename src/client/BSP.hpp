@@ -36,10 +36,10 @@ namespace client
       int            flags;
 
       // prebuild
-      static void loadQBSP( const char* fileName );
+      static void loadQBSP( const char* path );
       static void freeQBSP();
       static void optimise();
-      static void save( const char* file );
+      static void save( const char* path );
 
     public:
 
@@ -48,7 +48,7 @@ namespace client
       // create ozcBSP from a Quake 3 QBSP (matrix BSP must be loaded)
       static void prebuild( const char* name );
 
-      explicit BSP( int bspIndex );
+      explicit BSP( int id );
       ~BSP();
 
       void load();

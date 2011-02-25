@@ -304,14 +304,14 @@ namespace client
     return true;
   }
 
-  void OBJ::loadOBJ( const char* name )
+  void OBJ::loadOBJ( const char* path )
   {
     FILE* file;
     char buffer[LINE_BUFFER_SIZE];
 
     int currentMaterial = 0;
 
-    String sPath = String( "mdl/" ) + name;
+    String sPath = path;
     String modelFile = sPath + "/data.obj";
     String configFile = sPath + "/config.rc";
 
@@ -403,8 +403,6 @@ namespace client
 
   void OBJ::save( const char* fileName )
   {
-    log.print( "Dumping OBJ model to '%s' ...", fileName );
-
     compiler.beginMesh();
     compiler.enable( CAP_UNIQUE );
 
@@ -444,9 +442,9 @@ namespace client
 
     mesh.write( &os );
 
+    log.print( "Writing to '%s' ...", fileName );
     hard_assert( !os.isAvailable() );
     buffer.write( fileName );
-
     log.printEnd( " OK" );
   }
 
@@ -475,7 +473,7 @@ namespace client
 
     try {
       loadOBJ( name );
-      save( "mdl/" + String( name ) + ".ozcSMM" );
+      save( String( name ) + ".ozcSMM" );
       freeOBJ();
     }
     catch( ... ) {

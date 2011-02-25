@@ -21,7 +21,7 @@ namespace client
 
   void SMM::load()
   {
-    String modelPath = "mdl/" + name + ".ozcSMM";
+    const String& modelPath = translator.models[id].path;
 
     log.print( "Loading SMM model '%s' ...", modelPath.cstr() );
 
@@ -40,11 +40,13 @@ namespace client
     log.printEnd( " OK" );
   }
 
-  SMM::SMM( const char* name_ ) : name( name_ ), isLoaded( false )
+  SMM::SMM( int id_ ) : id( id_ ), isLoaded( false )
   {}
 
   SMM::~SMM()
   {
+    const String& name = translator.models[id].name;
+
     log.print( "Unloading SMM model '%s' ...", name.cstr() );
 
     mesh.unload();

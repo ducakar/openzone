@@ -366,7 +366,7 @@ namespace client
     return resource.object;
   }
 
-  void Context::releaseBSP( int id )
+  void Context::freeBSP( int id )
   {
     Resource<BSP*>& resource = bsps[id];
 
@@ -435,13 +435,13 @@ namespace client
     }
   }
 
-  SMM* Context::loadSMM( const char* name )
+  SMM* Context::requestSMM( int id )
   {
-    Resource<SMM*>* resource = smms.find( name );
+    Resource<SMM*>* resource = smms.find( id );
 
     if( resource == null ) {
-      resource = smms.add( name, Resource<SMM*>() );
-      resource->object = new SMM( name );
+      resource = smms.add( id, Resource<SMM*>() );
+      resource->object = new SMM( id );
       resource->nUsers = 0;
     }
 
@@ -449,22 +449,22 @@ namespace client
     return resource->object;
   }
 
-  void Context::releaseSMM( const char* name )
+  void Context::releaseSMM( int id )
   {
-    Resource<SMM*>* resource = smms.find( name );
+    Resource<SMM*>* resource = smms.find( id );
 
     hard_assert( resource != null && resource->nUsers > 0 );
 
     --resource->nUsers;
   }
 
-  MD2* Context::loadStaticMD2( const char* path )
+  MD2* Context::requestMD2( int id )
   {
-    Resource<MD2*>* resource = staticMd2s.find( path );
+    Resource<MD2*>* resource = md2s.find( id );
 
     if( resource == null ) {
-      resource = staticMd2s.add( path, Resource<MD2*>() );
-      resource->object = new MD2( path );
+      resource = md2s.add( id, Resource<MD2*>() );
+      resource->object = new MD2( id );
       resource->nUsers = 0;
     }
 
@@ -472,83 +472,37 @@ namespace client
     return resource->object;
   }
 
-  void Context::releaseStaticMD2( const char* path )
+  void Context::releaseMD2( int id )
   {
-    Resource<MD2*>* resource = staticMd2s.find( path );
+    Resource<MD2*>* resource = md2s.find( id );
 
     hard_assert( resource != null && resource->nUsers > 0 );
 
     --resource->nUsers;
   }
 
-  MD2* Context::loadMD2( const char* path )
-  {
-    Resource<MD2*>* resource = md2s.find( path );
-
-    if( resource == null ) {
-      resource = md2s.add( path, Resource<MD2*>() );
-      resource->object = new MD2( path );
-      resource->nUsers = 0;
-    }
-
-    ++resource->nUsers;
-    return resource->object;
-  }
-
-  void Context::releaseMD2( const char* path )
-  {
-    Resource<MD2*>* resource = md2s.find( path );
-
-    hard_assert( resource != null && resource->nUsers > 0 );
-
-    --resource->nUsers;
-  }
-
-  MD3* Context::loadStaticMD3( const char* path )
-  {
-    Resource<MD3*>* resource = staticMd3s.find( path );
-
-    if( resource == null ) {
-      resource = staticMd3s.add( path, Resource<MD3*>() );
-      resource->object = new MD3( path );
-      resource->nUsers = 0;
-    }
-
-    ++resource->nUsers;
-    return resource->object;
-  }
-
-  void Context::releaseStaticMD3( const char* path )
-  {
-    Resource<MD3*>* resource = staticMd3s.find( path );
-
-    hard_assert( resource != null && resource->nUsers > 0 );
-
-    --resource->nUsers;
-  }
-
-  MD3* Context::loadMD3( const char* path )
-  {
-    Resource<MD3*>* resource = md3s.find( path );
-
-    if( resource == null ) {
-      resource = md3s.add( path, Resource<MD3*>() );
-      resource->object = new MD3( path );
-      resource->nUsers = 0;
-    }
-
-    ++resource->nUsers;
-    return resource->object;
-  }
-
-  void Context::releaseMD3( const char* path )
-  {
-    Resource<MD3*>* resource = md3s.find( path );
-
-    hard_assert( resource != null && resource->nUsers > 0 );
-
-    --resource->nUsers;
-  }
+//   MD3* Context::loadMD3( const char* path )
+//   {
+//     Resource<MD3*>* resource = md3s.find( path );
+//
+//     if( resource == null ) {
+//       resource = md3s.add( path, Resource<MD3*>() );
+//       resource->object = new MD3( path );
+//       resource->nUsers = 0;
+//     }
+//
+//     ++resource->nUsers;
+//     return resource->object;
+//   }
+//
+//   void Context::releaseMD3( const char* path )
+//   {
+//     Resource<MD3*>* resource = md3s.find( path );
+//
+//     hard_assert( resource != null && resource->nUsers > 0 );
+//
+//     --resource->nUsers;
+//   }
 
   void Context::drawBSP( const Struct* str, int mask )
   {
@@ -676,23 +630,11 @@ namespace client
       delete i->object;
       smms.exclude( i.key() );
     }
-    foreach( i, staticMd2s.citer() ) {
-      hard_assert( i->nUsers == 0 );
-
-      delete i->object;
-      staticMd2s.exclude( i.key() );
-    }
     foreach( i, md2s.citer() ) {
       hard_assert( i->nUsers == 0 );
 
       delete i->object;
       md2s.exclude( i.key() );
-    }
-    foreach( i, staticMd3s.citer() ) {
-      hard_assert( i->nUsers == 0 );
-
-      delete i->object;
-      staticMd3s.exclude( i.key() );
     }
     foreach( i, md3s.citer() ) {
       hard_assert( i->nUsers == 0 );
@@ -709,9 +651,7 @@ namespace client
     lists.clear();
     lists.dealloc();
     smms.dealloc();
-    staticMd2s.dealloc();
     md2s.dealloc();
-    staticMd3s.dealloc();
     md3s.dealloc();
 
     hard_assert( lists.length() == 0 );

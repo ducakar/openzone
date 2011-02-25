@@ -33,7 +33,7 @@ namespace client
 
     model->obj   = obj;
     model->clazz = obj->clazz;
-    model->md2   = context.loadMD2( obj->clazz->modelName );
+    model->md2   = context.requestMD2( obj->clazz->modelIndex );
 
     model->setAnim( Anim::STAND );
     model->anim.nextFrame = model->anim.endFrame;

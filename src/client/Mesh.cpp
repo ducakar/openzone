@@ -374,6 +374,9 @@ namespace client
     hard_assert( indices.length() > 0 );
     hard_assert( vertices.length() > 0 );
 
+    log.println( "Compiling mesh {" );
+    log.indent();
+
     Vector<String> textures;
     textures.add( "" );
 
@@ -404,8 +407,6 @@ namespace client
     else {
       stream->writeInt( textures.length() );
       foreach( texture, textures.citer() ) {
-        hard_assert( texture->equals( "" ) || translator.textureIndex( *texture ) != -1 );
-
         stream->writeString( *texture );
       }
     }
@@ -449,6 +450,9 @@ namespace client
     foreach( vertex, vertices.citer() ) {
       vertex->write( stream );
     }
+
+    log.unindent();
+    log.println( "}" );
   }
 
 }
