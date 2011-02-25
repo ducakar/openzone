@@ -17,6 +17,8 @@ add_library( ui STATIC
   InventoryMenu.hpp
   Keyboard.cpp
   Keyboard.hpp
+  LoadingArea.cpp
+  LoadingArea.hpp
   Mouse.cpp
   Mouse.hpp
   StrategicArea.cpp

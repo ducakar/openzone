@@ -30,6 +30,28 @@ using oz::uint;
 
 bool Alloc::isLocked = true;
 
+static void prebuildTexture( const char* srcPath, const char* destPath, bool wrap,
+                             int magFilter, int minFilter )
+{
+  uint id = client::context.loadRawTexture( srcPath, wrap, magFilter, minFilter );
+
+  hard_assert( id != 0 );
+
+  int nMipmaps, size;
+  client::context.getTextureSize( id, &nMipmaps, &size );
+
+  Buffer buffer( size );
+  OutputStream os = buffer.outputStream();
+
+  client::context.writeTexture( id, nMipmaps, &os );
+
+  hard_assert( !os.isAvailable() );
+  if( !buffer.write( destPath ) ) {
+    throw Exception( "Texture writing failed" );
+  }
+  log.println( "Prebuilt texture '%s' -> '%s'", srcPath, destPath );
+}
+
 int main( int, char** )
 {
   System::catchSignals();
@@ -82,20 +104,19 @@ int main( int, char** )
   }
 
   foreach( texture, translator.textures.citer() ) {
-    uint id = client::context.loadTexture( texture->path );
+    prebuildTexture( texture->path, "bsp/tex/" + texture->name + ".ozTex",
+                     true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
+  }
 
-    hard_assert( id != 0 );
+  Directory uiDir( "ui" );
+  foreach( ent, uiDir.citer() ) {
+    if( ent.hasExtension( "png" ) ) {
+      String name = &*ent;
+      String baseName = name.substring( 0, name.lastIndex( '.' ) );
 
-    int nMipmaps, size;
-    client::context.getTextureSize( id, &nMipmaps, &size );
-
-    Buffer buffer( size );
-    OutputStream os = buffer.outputStream();
-
-    client::context.writeTexture( id, nMipmaps, &os );
-
-    hard_assert( !os.isAvailable() );
-    buffer.write( "bsp/tex/" + texture->name + ".ozcTex" );
+      prebuildTexture( "ui/" + name,
+                       "ui/" + baseName + ".ozTex", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
+    }
   }
 
   client::compiler.free();

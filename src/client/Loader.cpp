@@ -110,6 +110,26 @@ namespace client
 
     hard_assert( alGetError() == AL_NO_ERROR );
 
+    // remove continous sounds that are not played any more
+    for( auto i = context.contSources.iter(); i.isValid(); ) {
+      Context::ContSource* src = i;
+      uint key = i.key();
+
+      // we should advance now, so that we don't remove the element the iterator is pointing at
+      ++i;
+
+      if( src->isUpdated ) {
+        src->isUpdated = false;
+      }
+      else {
+        alSourceStop( src->source );
+        alDeleteSources( 1, &src->source );
+        context.contSources.exclude( key );
+      }
+    }
+
+    hard_assert( alGetError() == AL_NO_ERROR );
+
     if( tick % SOURCE_CLEAR_INTERVAL ) {
       // remove stopped sources of non-continous sounds
       Context::Source* prev = null;
@@ -130,28 +150,6 @@ namespace client
           prev = src;
         }
         src = next;
-      }
-    }
-
-    hard_assert( alGetError() == AL_NO_ERROR );
-
-    if( tick % CONTSOURCE_CLEAR_INTERVAL == 0 ) {
-      // remove continous sounds that are not played any more
-      for( auto i = context.contSources.iter(); i.isValid(); ) {
-        Context::ContSource* src = i;
-        uint key = i.key();
-
-        // we should advance now, so that we don't remove the element the iterator is pointing at
-        ++i;
-
-        if( src->isUpdated ) {
-          src->isUpdated = false;
-        }
-        else {
-          alSourceStop( src->source );
-          alDeleteSources( 1, &src->source );
-          context.contSources.exclude( key );
-        }
       }
     }
 

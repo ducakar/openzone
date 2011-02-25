@@ -144,7 +144,7 @@ namespace oz
     synapse.addObject( "Raptor", Point3( 70, -60, 38 ) );
 
     synapse.genParts( 1000, Point3( 50, -36, 35 ), Vec3( 0, 0, 10 ), 15.0f,
-                      Vec3( 0.4f, 0.4f, 0.4f ), 0.2f, 1.95f, 0.1f, 10.0f );
+                      Vec3( 0.4f, 0.4f, 0.4f ), 0.2f, 1.95f, 0.1f, 5.0f );
 
     synapse.addObject( "MetalBarrel", Point3( 61, -44, 36 ) );
     synapse.addObject( "MetalBarrel", Point3( 61, -44, 38 ) );

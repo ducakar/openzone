@@ -44,12 +44,12 @@ namespace client
     if( initFlags & INIT_RENDER_LOAD ) {
       render.unload();
     }
-    if( initFlags & INIT_CONTEXT_LOAD ) {
-      context.unload();
-    }
     if( initFlags & INIT_GAME_INIT ) {
       stage->unload();
       stage->free();
+    }
+    if( initFlags & INIT_CONTEXT_LOAD ) {
+      context.unload();
     }
     if( initFlags & INIT_CONTEXT_INIT ) {
       context.free();
@@ -87,7 +87,7 @@ namespace client
 
     float inactiveTime = float( inactiveMillis )      * 0.001f;
     float droppedTime  = float( droppedMillis )       * 0.001f;
-    float activeTime   = allTime - inactiveTime - droppedTime;
+    float activeTime   = allTime - inactiveTime;
 
     int   frameDrops   = timer.ticks - timer.nFrames;
 
@@ -100,28 +100,28 @@ namespace client
     log.indent();
     log.println( "Loading time             %.2f s",    loadingTime );
     log.println( "Shutdown time            %.2f s",    shutdownTime );
-    log.println( "Real main loop time      %.2f s",    allTime );
-    log.println( "Active main loop time    %.2f s",    activeTime );
-    log.println( "Inactive main loop time  %.2f s",    inactiveTime );
-    log.println( "Dropped main loop time   %.2f s",    droppedTime );
-    log.println( "Game time                %.2f s",    timer.time );
-    log.println( "Ticks in active time     %d (%.2f Hz)",
+    log.println( "Main loop {" );
+    log.println( "  Real time              %.2f s",    allTime );
+    log.println( "  Active time            %.2f s",    activeTime );
+    log.println( "  Inactive time          %.2f s",    inactiveTime );
+    log.println( "  Dropped time           %.2f s",    droppedTime );
+    log.println( "  Game time              %.2f s",    timer.time );
+    log.println( "  Ticks in active time   %d (%.2f Hz)",
                 timer.ticks, float( timer.ticks ) / activeTime );
-    log.println( "Frames in active time    %d (%.2f Hz)",
+    log.println( "  Frames in active time  %d (%.2f Hz)",
                 timer.nFrames, float( timer.nFrames ) / activeTime );
-    log.println( "Frame drops:             %d (%.2f %%)",
+    log.println( "  Frame drops            %d (%.2f %%)",
                 frameDrops, float( frameDrops ) / float( timer.ticks ) * 100.0f );
-    log.println( "Main loop active time usage {" );
-    log.indent();
-    log.println( "%6.2f %%  [M:1  ] loader",            loaderTime  / activeTime * 100.0f );
-    log.println( "%6.2f %%  [M:2  ]",                   m2Time      / activeTime * 100.0f );
-    log.println( "%6.2f %%  [M:2.1] ui",                uiTime      / activeTime * 100.0f );
-    log.println( "%6.2f %%  [M:2.2] sound",             soundTime   / activeTime * 100.0f );
-    log.println( "%6.2f %%  [M:2.3] render",            renderTime  / activeTime * 100.0f );
-    log.println( "%6.2f %%  [M:2.4] sleep",             sleepTime   / activeTime * 100.0f );
-    log.println( "%6.2f %%  [A:1  ] matrix",            matrixTime  / activeTime * 100.0f );
-    log.println( "%6.2f %%  [A:2  ] nirvana",           nirvanaTime / activeTime * 100.0f );
-    log.unindent();
+    log.println( "  Active time usage {" );
+    log.println( "    %6.2f %%  [M:1  ] loader",        loaderTime  / activeTime * 100.0f );
+    log.println( "    %6.2f %%  [M:2  ]",               m2Time      / activeTime * 100.0f );
+    log.println( "    %6.2f %%  [M:2.1] ui",            uiTime      / activeTime * 100.0f );
+    log.println( "    %6.2f %%  [M:2.2] sound",         soundTime   / activeTime * 100.0f );
+    log.println( "    %6.2f %%  [M:2.3] render",        renderTime  / activeTime * 100.0f );
+    log.println( "    %6.2f %%  [M:2.4] sleep",         sleepTime   / activeTime * 100.0f );
+    log.println( "    %6.2f %%  [A:1  ] matrix",        matrixTime  / activeTime * 100.0f );
+    log.println( "    %6.2f %%  [A:2  ] nirvana",       nirvanaTime / activeTime * 100.0f );
+    log.println( "  }" );
     log.println( "}" );
     log.unindent();
     log.println( "}" );
@@ -363,17 +363,19 @@ namespace client
     context.init();
     initFlags |= INIT_CONTEXT_INIT;
 
+    context.load();
+    initFlags |= INIT_CONTEXT_LOAD;
+
     stage = &gameStage;
 
     stage->init();
     stage->load();
     initFlags |= INIT_GAME_INIT;
 
-    context.load();
-    initFlags |= INIT_CONTEXT_LOAD;
-
     render.load();
     initFlags |= INIT_RENDER_LOAD;
+
+    stage->begin();
 
     SDL_Event event;
 
@@ -388,7 +390,7 @@ namespace client
 
     const uint tick     = static_cast<const uint>( Timer::TICK_MILLIS );
     // time passed form start of the frame
-    uint delta;
+    uint timeSpent;
     uint timeNow;
     uint timeZero       = SDL_GetTicks();
     // time at start of the frame
@@ -447,14 +449,13 @@ namespace client
 
       // waste time when iconified
       if( !isActive ) {
-        delta = SDL_GetTicks() - timeLast;
+        SDL_Delay( tick );
 
-        timeLast += delta;
-        inactiveMillis += delta;
+        timeSpent = SDL_GetTicks() - timeLast;
 
-        if( delta < tick ) {
-          SDL_Delay( tick - delta );
-        }
+        timeLast += timeSpent;
+        inactiveMillis += timeSpent;
+
         continue;
       }
 
@@ -464,25 +465,27 @@ namespace client
 
       timer.tick();
       timeNow = SDL_GetTicks();
-      delta = timeNow - timeLast;
+      timeSpent = timeNow - timeLast;
 
       // render graphics, if we have enough time left
-      if( delta < tick || timeNow - timeLastRender > 32 * tick ) {
+      if( timeSpent < tick || timeNow - timeLastRender > 50 * tick ) {
         stage->present();
 
         timer.frame();
         // if there's still some time left, waste it
         timeLastRender = SDL_GetTicks();
-        delta = timeLastRender - timeLast;
+        timeSpent = timeLastRender - timeLast;
 
-        if( delta < tick ) {
-          SDL_Delay( tick - delta );
-          timer.sleepMillis += tick - delta;
+        while( timeSpent < tick ) {
+          SDL_Delay( tick - timeSpent );
+          timer.sleepMillis += tick - timeSpent;
+
+          timeSpent = SDL_GetTicks() - timeLast;
         }
       }
-      if( delta > 4 * tick ) {
-        timeLast += delta - tick;
-        droppedMillis += delta - tick;
+      if( timeSpent > 4 * tick ) {
+        timeLast += timeSpent - tick;
+        droppedMillis += timeSpent - tick;
       }
       timeLast += tick;
 
@@ -496,6 +499,8 @@ namespace client
     log.println( "}" );
 
     allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
+
+    stage->end();
 
     if( ( initFlags & INIT_CONFIG ) == 0 ) {
       config.exclude( "dir.rc" );

@@ -185,7 +185,7 @@ namespace client
       context.drawBSP( *str, Mesh::SOLID_BIT );
     }
 
-    // draw (non-delayed) objects
+    // draw objects
     objects.sort();
 
     for( int i = 0; i < objects.length(); ++i ) {
@@ -333,6 +333,10 @@ namespace client
     sky.load();
     terra.load();
 
+    structs.alloc( 64 );
+    objects.alloc( 8192 );
+    particles.alloc( 1024 );
+
     glEnable( GL_POINT_SMOOTH );
     glPointSize( float( camera.height ) * STAR_SIZE );
 
@@ -387,6 +391,18 @@ namespace client
     log.println( "Initialising Graphics {" );
     log.indent();
 
+    glDepthFunc( GL_LEQUAL );
+
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    camera.init();
+    ui::ui.init();
+
+    ui::ui.loadScreen->show( true );
+
+    SDL_GL_SwapBuffers();
+
     bool isVaoSupported = false;
 
     String version = String::cstr( glGetString( GL_VERSION ) );
@@ -431,16 +447,6 @@ namespace client
     particleRadius       = config.getSet( "render.particleRadius",       0.5f );
     showBounds           = config.getSet( "render.showBounds",           false );
     showAim              = config.getSet( "render.showAim",              false );
-
-    glDepthFunc( GL_LEQUAL );
-
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-    camera.init();
-    ui::ui.init();
-
-    SDL_GL_SwapBuffers();
 
     hard_assert( glGetError() == GL_NO_ERROR );
 

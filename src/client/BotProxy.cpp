@@ -272,9 +272,9 @@ namespace client
       Point3 origin = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
       Vec3   offset = -camera.at * dist;
 
-      collider.mask = ~0;
+//       collider.mask = ~0;
       collider.translate( origin, offset, bot );
-      collider.mask = Object::SOLID_BIT;
+//       collider.mask = Object::SOLID_BIT;
 
       offset *= collider.hit.ratio;
       offset += camera.at * THIRD_PERSON_CLIP_DIST;

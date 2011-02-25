@@ -28,7 +28,7 @@ namespace ui
   InventoryMenu::InventoryMenu() :
       Frame( 5, 5, SLOT_SIZE * COLS, SLOT_SIZE * ROWS + HEADER_SIZE + FOOTER_SIZE )
   {
-    useTexId = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
+    useTexId = context.loadTexture( "ui/use.ozTex" );
     tagged = -1;
     row = 0;
   }
@@ -114,6 +114,8 @@ namespace ui
     int maxIndex = min( minIndex + COLS * ROWS, items.length() );
     Dynamic* taggedItem = null;
 
+    context.beginArrayMode();
+
     for( int i = minIndex; i < maxIndex; ++i ) {
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[i]] );
 
@@ -145,6 +147,8 @@ namespace ui
       glPopMatrix();
       glTranslatef( float( SLOT_SIZE ), 0.0f, 0.0f );
     }
+
+    context.endArrayMode();
 
     glPopMatrix();
     glDisable( GL_TEXTURE_2D );

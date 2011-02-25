@@ -8,7 +8,8 @@ option( OZ_TRACE_LEAKS "Use overloads for default new and delete that saves back
 option( OZ_POOL_ALLOC "Enable PoolAlloc and new/delete overloads that use it. Otherwise a dummy class that calls malloc/free is used and no overloads occur." ON )
 option( OZ_BUILTIN_MATH "Use GCC/clang built-in math functions (no need to include <cmath>, possibly faster math calls in debug mode)" ON )
 option( OZ_SIMD "Use SIMD for vectors etc. Note that Vec3 and Point3 are then 4 floats long instead of just 3 floats." OFF )
-option( OZ_BIG_ENDIAN_DATA "Use big-endian byte-order for binary files and network" ON )
+option( OZ_STREAM_BIG_ENDIAN "Use big-endian byte-order for binary files and network" ON )
+option( OZ_STREAM_READ_CHECK "Check for buffer overruns when reading from stream" ON )
 option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in configuration files" ON )
 option( OZ_XML_CONFIG "Support for XML configuration files (Linux only)" ON )
 

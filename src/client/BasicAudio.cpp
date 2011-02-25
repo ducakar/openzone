@@ -13,6 +13,7 @@
 
 #include "matrix/Physics.hpp"
 #include "client/Camera.hpp"
+#include "Colours.hpp"
 
 namespace oz
 {
@@ -35,8 +36,7 @@ namespace client
 
     // friction
     if( ( obj->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
-        ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) &&
-        samples[SND_FRICTING] != -1 && dyn->depth == 0.0f )
+        ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && samples[SND_FRICTING] != -1 )
     {
       float dv = Math::sqrt( dyn->velocity.x*dyn->velocity.x + dyn->velocity.y*dyn->velocity.y );
       playContSound( samples[SND_FRICTING], dv, parent->obj );

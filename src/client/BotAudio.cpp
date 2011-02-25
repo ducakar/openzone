@@ -37,8 +37,7 @@ namespace client
 
     // friction
     if( ( bot->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
-        ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) &&
-        samples[SND_FRICTING] != -1 && bot->depth == 0.0f )
+        ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && samples[SND_FRICTING] != -1 )
     {
       float dv = Math::sqrt( bot->velocity.x*bot->velocity.x + bot->velocity.y*bot->velocity.y );
       playContSound( samples[SND_FRICTING], dv, obj );

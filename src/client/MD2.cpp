@@ -312,14 +312,14 @@ namespace client
     bool doForceStatic = config.get( "forceStatic", false );
     float scale        = config.get( "scale", 0.042f );
     Vec3 translation   = Vec3( config.get( "translate.x", 0.00f ),
-                              config.get( "translate.y", 0.00f ),
-                              config.get( "translate.z", 0.00f ) );
+                               config.get( "translate.y", 0.00f ),
+                               config.get( "translate.z", 0.00f ) );
     Vec3 jumpTransl    = Vec3( config.get( "jumpTranslate.x", 0.00f ),
-                              config.get( "jumpTranslate.y", 0.00f ),
-                              config.get( "jumpTranslate.z", 0.00f ) );
+                               config.get( "jumpTranslate.y", 0.00f ),
+                               config.get( "jumpTranslate.z", 0.00f ) );
     Vec3 weaponTransl  = Vec3( config.get( "weaponTranslate.x", 0.00f ),
-                              config.get( "weaponTranslate.y", 0.00f ),
-                              config.get( "weaponTranslate.z", 0.00f ) );
+                               config.get( "weaponTranslate.y", 0.00f ),
+                               config.get( "weaponTranslate.z", 0.00f ) );
 
 
     FILE* file = fopen( modelFile.cstr(), "rb" );
@@ -444,8 +444,9 @@ namespace client
 
     size += mesh.getSize();
 
-    if( header.nFrames > 1 ) {
+    if( header.nFrames != 1 ) {
       size += 2 * sizeof( int );
+      size += sizeof( float[3] );
       size += nMeshVerts * sizeof( Vertex );
       size += header.nFrames * nMeshVerts * sizeof( float[3] );
     }
@@ -456,6 +457,7 @@ namespace client
     if( header.nFrames != 1 ) {
       os.writeInt( header.nFrames );
       os.writeInt( nMeshVerts );
+      os.writeVec3( weaponTransl );
     }
 
     mesh.write( &os );
@@ -509,8 +511,9 @@ namespace client
     }
     InputStream is = buffer.inputStream();
 
-    nFrames     = is.readInt();
-    nFrameVerts = is.readInt();
+    nFrames      = is.readInt();
+    nFrameVerts  = is.readInt();
+    weaponTransl = is.readVec3();
 
     if( nFrames == 1 ) {
       mesh.load( &is, GL_STATIC_DRAW );

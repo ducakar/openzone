@@ -47,8 +47,11 @@ namespace client
       State  state;
       Proxy* proxy;
 
-      bool update();
-      void present();
+      virtual bool update();
+      virtual void present();
+
+      virtual void begin();
+      virtual void end();
 
       virtual void load();
       virtual void unload();

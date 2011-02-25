@@ -14,6 +14,8 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/Config.hpp
     src/oz/DArray.hpp
     src/oz/DList.hpp
+    src/oz/Directory.cpp
+    src/oz/Directory.hpp
     src/oz/Exception.cpp
     src/oz/Exception.hpp
     src/oz/HashIndex.hpp
@@ -123,10 +125,6 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/lua/nirvana )
 
   install( FILES
-    data/maps/castle.ozBSP
-    data/maps/door.ozBSP
-    data/maps/pool.ozBSP
-    data/maps/test.ozBSP
     DESTINATION share/openzone/maps )
 
   install( FILES
@@ -148,6 +146,9 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/bauul )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/bauul.ozcMD2 )
+
+  install( FILES
     data/mdl/bigCrate/crate1.jpg
     data/mdl/bigCrate/data.mtl
     data/mdl/bigCrate/data.obj
@@ -162,30 +163,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/bombs )
 
   install( FILES
-    data/mdl/droid/blasted.jpg
-    data/mdl/droid/ctf_b.jpg
-    data/mdl/droid/ctf_r.jpg
-    data/mdl/droid/dirty.jpg
-    data/mdl/droid/droid-sounds.txt
-    data/mdl/droid/droid.jpg
-    data/mdl/droid/droid.txt
-    data/mdl/droid/oom-9.jpg
-    data/mdl/droid/skin.jpg
-    data/mdl/droid/slashed.jpg
-    data/mdl/droid/tris.md2
-    data/mdl/droid/w_bfg.md2
-    data/mdl/droid/w_blaster.md2
-    data/mdl/droid/w_chaingun.md2
-    data/mdl/droid/w_glauncher.md2
-    data/mdl/droid/w_grapple.md2
-    data/mdl/droid/w_hyperblaster.md2
-    data/mdl/droid/w_machinegun.md2
-    data/mdl/droid/w_railgun.md2
-    data/mdl/droid/w_rlauncher.md2
-    data/mdl/droid/w_shotgun.md2
-    data/mdl/droid/w_sshotgun.md2
-    data/mdl/droid/weapon.md2
-    DESTINATION share/openzone/mdl/data/mdl/droid )
+    DESTINATION share/openzone/mdl/data/mdl/bombs.ozcSMM )
 
   install( FILES
     data/mdl/droid_commander/bdroid.txt
@@ -194,16 +172,25 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/droid_commander )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/droid_commander.ozcMD2 )
+
+  install( FILES
     data/mdl/droid_infantry/bdroid.txt
     data/mdl/droid_infantry/skin.jpg
     data/mdl/droid_infantry/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/droid_infantry )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/droid_infantry.ozcMD2 )
+
+  install( FILES
     data/mdl/goblin/readme.txt
     data/mdl/goblin/skin.jpg
     data/mdl/goblin/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/goblin )
+
+  install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/goblin.ozcMD2 )
 
   install( FILES
     data/mdl/health/data.mtl
@@ -220,6 +207,9 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/hobgoblin )
 
   install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/hobgoblin.ozcMD2 )
+
+  install( FILES
     data/mdl/ivy/skin.jpg
     data/mdl/ivy/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/ivy )
@@ -232,6 +222,9 @@ if( OZ_INSTALL_DATA )
     data/mdl/knight/skin.jpg
     data/mdl/knight/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/knight )
+
+  install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/knight.ozcMD2 )
 
   install( FILES
     data/mdl/leafs/skin.jpg
@@ -269,6 +262,9 @@ if( OZ_INSTALL_DATA )
     data/mdl/rifle/skin.jpg
     data/mdl/rifle/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/rifle )
+
+  install( FILES
+    DESTINATION share/openzone/mdl/data/mdl/rifle.ozcMD2 )
 
   install( FILES
     data/mdl/smallCrate/crate1.jpg
@@ -327,31 +323,6 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/name )
 
   install( FILES
-    data/snd/cg2.oga
-    data/snd/damage_bot1.ogg
-    data/snd/damage_bot2.ogg
-    data/snd/death1.ogg
-    data/snd/death2.ogg
-    data/snd/destroy_metal1.ogg
-    data/snd/destroy_wood1.ogg
-    data/snd/explosion.ogg
-    data/snd/friction1.ogg
-    data/snd/gesture_flip.ogg
-    data/snd/hit1.ogg
-    data/snd/hit_bot1.ogg
-    data/snd/hit_bot2.ogg
-    data/snd/hit_metal1.ogg
-    data/snd/hit_metal2.ogg
-    data/snd/hit_wood1.ogg
-    data/snd/hit_wood2.ogg
-    data/snd/jump1.ogg
-    data/snd/jump2.ogg
-    data/snd/land1.ogg
-    data/snd/land2.ogg
-    data/snd/outofammo.ogg
-    data/snd/splash1.ogg
-    data/snd/splash2.ogg
-    data/snd/tick.ogg
     DESTINATION share/openzone/snd )
 
   install( FILES

@@ -178,6 +178,19 @@ namespace client
     timer.renderMillis += SDL_GetTicks() - beginTime;
   }
 
+  void GameStage::begin()
+  {
+    render.draw();
+    loader.update();
+
+    SDL_Delay( uint( config.get( "gameStage.loadingTime", 0.0f ) * 1000.0f ) );
+
+    ui::ui.loadScreen->show( false );
+  }
+
+  void GameStage::end()
+  {}
+
   void GameStage::load()
   {
     log.println( "Loading GameStage {" );

@@ -62,10 +62,8 @@ namespace client
 
         int    mode;
 
-        ushort minIndex;
-        ushort maxIndex;
-        ushort nIndices;
-        ushort firstIndex;
+        int    nIndices;
+        int    firstIndex;
       };
 
       uint         vao;
@@ -107,10 +105,8 @@ namespace client
 
         int    mode;
 
-        ushort minIndex;
-        ushort maxIndex;
-        ushort nIndices;
-        ushort firstIndex;
+        int    nIndices;
+        int    firstIndex;
       };
 
       Vector<Part>   solidParts;

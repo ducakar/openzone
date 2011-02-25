@@ -37,9 +37,6 @@ namespace client
 
         int    mode;
 
-        int    minIndex;
-        int    maxIndex;
-
         Vector<int> indices;
 
         bool operator == ( const Part& part ) const;

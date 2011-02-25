@@ -30,12 +30,25 @@ namespace oz
       explicit Buffer() : data( null ), count( 0 )
       {}
 
+      explicit Buffer( int size ) : data( new char[size] ), count( size )
+      {}
+
+      explicit Buffer( const char* file ) : data( null ), count( 0 )
+      {
+        read( file );
+      }
+
       Buffer( const Buffer& b ) : data( null ), count( b.count )
       {
         if( b.count != 0 ) {
           data = new char[b.count];
           aCopy( data, b.data, b.count );
         }
+      }
+
+      ~Buffer()
+      {
+        free();
       }
 
       Buffer& operator = ( const Buffer& b )
@@ -49,14 +62,6 @@ namespace oz
           aCopy( data, b.data, b.count );
         }
         return *this;
-      }
-
-      explicit Buffer( int size ) : data( new char[size] ), count( size )
-      {}
-
-      ~Buffer()
-      {
-        free();
       }
 
       bool isEmpty() const

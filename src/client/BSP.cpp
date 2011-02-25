@@ -376,8 +376,7 @@ namespace client
     log.println( "Loading BSP model '%s' {", name.cstr() );
     log.indent();
 
-    Buffer buffer;
-    buffer.read( "bsp/" + name + ".ozcBSP" );
+    Buffer buffer( "bsp/" + name + ".ozcBSP" );
 
     InputStream is = buffer.inputStream();
 

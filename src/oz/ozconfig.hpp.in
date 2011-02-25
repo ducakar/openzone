@@ -22,7 +22,10 @@
 #cmakedefine OZ_SIMD
 
 // use big-endian for stream
-#cmakedefine OZ_BIG_ENDIAN_DATA
+#cmakedefine OZ_STREAM_BIG_ENDIAN
+
+// check read buffer overruns for stream
+#cmakedefine OZ_STREAM_READ_CHECK
 
 // enable warnings about missing and unused variables in config files
 #cmakedefine OZ_VERBOSE_CONFIG

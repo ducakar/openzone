@@ -74,7 +74,7 @@ namespace client
       defaultState = STRATEGIC;
     }
     else {
-      log.println( "WARNING: invalid camera enum %s, must be euther FREECAM or STRATEGIC",
+      log.println( "WARNING: invalid camera enum %s, must be either FREECAM or STRATEGIC",
                    sDefaultState.cstr() );
       defaultState = FREECAM;
     }
@@ -96,7 +96,10 @@ namespace client
     at           = rotTMat.y;
     up           = rotTMat.z;
 
+    tagged       = -1;
+    taggedObj    = null;
     bot          = -1;
+    botObj       = null;
 
     freeCamProxy.init();
     strategicProxy.init();

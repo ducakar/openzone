@@ -79,25 +79,6 @@ namespace client
     hard_assert( ~flags & SURFACE_BIT );
 
     flags &= ~MESH_BIT;
-
-    foreach( part, solidParts.iter() ) {
-      part->minIndex = part->indices[0];
-      part->maxIndex = part->indices[0];
-
-      for( int i = 1; i < part->indices.length(); ++i ) {
-        part->minIndex = min( part->minIndex, part->indices[i] );
-        part->maxIndex = max( part->maxIndex, part->indices[i] );
-      }
-    }
-    foreach( part, alphaParts.iter() ) {
-      part->minIndex = part->indices[0];
-      part->maxIndex = part->indices[0];
-
-      for( int i = 1; i < part->indices.length(); ++i ) {
-        part->minIndex = min( part->minIndex, part->indices[i] );
-        part->maxIndex = max( part->maxIndex, part->indices[i] );
-      }
-    }
   }
 
   void Compiler::material( int, int target, const float* params )
@@ -354,10 +335,8 @@ namespace client
 
       mesh->solidParts[i].mode       = solidParts[i].mode;
 
-      mesh->solidParts[i].minIndex   = ushort( solidParts[i].minIndex );
-      mesh->solidParts[i].maxIndex   = ushort( solidParts[i].maxIndex );
-      mesh->solidParts[i].nIndices   = ushort( solidParts[i].indices.length() );
-      mesh->solidParts[i].firstIndex = ushort( nIndices );
+      mesh->solidParts[i].nIndices   = solidParts[i].indices.length();
+      mesh->solidParts[i].firstIndex = nIndices;
 
       nIndices += solidParts[i].indices.length();
     }
@@ -373,10 +352,8 @@ namespace client
 
       mesh->alphaParts[i].mode       = alphaParts[i].mode;
 
-      mesh->alphaParts[i].minIndex   = ushort( alphaParts[i].minIndex );
-      mesh->alphaParts[i].maxIndex   = ushort( alphaParts[i].maxIndex );
-      mesh->alphaParts[i].nIndices   = ushort( alphaParts[i].indices.length() );
-      mesh->alphaParts[i].firstIndex = ushort( nIndices );
+      mesh->alphaParts[i].nIndices   = alphaParts[i].indices.length();
+      mesh->alphaParts[i].firstIndex = nIndices;
 
       nIndices += alphaParts[i].indices.length();
     }

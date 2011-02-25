@@ -25,6 +25,9 @@ namespace client
       virtual bool update()  = 0;
       virtual void present() = 0;
 
+      virtual void begin()   = 0;
+      virtual void end()     = 0;
+
       virtual void load()    = 0;
       virtual void unload()  = 0;
 
