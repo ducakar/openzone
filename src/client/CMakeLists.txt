@@ -31,8 +31,6 @@ add_library( client STATIC
   MD2.hpp
   MD2Model.cpp
   MD2Model.hpp
-
-
   MD2WeaponModel.cpp
   MD2WeaponModel.hpp
   MD3.cpp

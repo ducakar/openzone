@@ -4,7 +4,7 @@ dim.x "0.4032"
 dim.y "0.4032"
 dim.z "0.5922"
 
-life "100.0f"
+life "100.0"
 
 mass "50.0"
 lift "7.0"

@@ -140,8 +140,7 @@ namespace oz
 
     log.print( "Loading terrain '%s' ...", name.cstr() );
 
-    Buffer buffer;
-    buffer.read( terraFile );
+    Buffer buffer( terraFile );
 
     if( buffer.isEmpty() ) {
       log.printEnd( " Cannot read file" );

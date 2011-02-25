@@ -125,10 +125,12 @@ namespace oz
      * STATE
      */
 
-    bool isSwimming   = depth >= dim.z;
-    bool isUnderWater = depth >= dim.z + camZ;
-    bool isClimbing   = ( flags & ON_LADDER_BIT ) && grabObj == -1;
-    bool isGrounded   = ( lower != -1 || ( flags & ON_FLOOR_BIT ) ) && !isSwimming;
+    state &= ~( GROUNDED_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT );
+
+    state |= lower != -1 || ( flags & ON_FLOOR_BIT )    ? GROUNDED_BIT  : 0;
+    state |= ( flags & ON_LADDER_BIT ) && grabObj == -1 ? CLIMBING_BIT  : 0;
+    state |= depth > dim.z && ( ~state & GROUNDED_BIT ) ? SWIMMING_BIT  : 0;
+    state |= depth > dim.z + camZ                       ? SUBMERGED_BIT : 0;
 
     flags |= CLIMBER_BIT;
 
@@ -138,7 +140,7 @@ namespace oz
     stamina += clazz->staminaGain;
     stamina = min( stamina, clazz->stamina );
 
-    if( isUnderWater ) {
+    if( state & SUBMERGED_BIT ) {
       stamina -= clazz->staminaWaterDrain;
 
       if( stamina < 0.0f ) {
@@ -161,11 +163,11 @@ namespace oz
       if( !( oldActions & ACTION_JUMP ) ) {
         state |= JUMP_SCHED_BIT;
       }
-      if( ( state & JUMP_SCHED_BIT ) && ( isGrounded || isSwimming ) && grabObj == -1 &&
-          stamina >= clazz->staminaJumpDrain )
+      if( ( state & ( JUMP_SCHED_BIT | GROUNDED_BIT | SWIMMING_BIT ) ) &&
+          grabObj == -1 && stamina >= clazz->staminaJumpDrain )
       {
         flags &= ~DISABLED_BIT;
-        isGrounded = false;
+        state &= ~GROUNDED_BIT;
         stamina -= clazz->staminaJumpDrain;
 
         momentum.z = clazz->jumpMomentum;
@@ -213,7 +215,7 @@ namespace oz
      * ANIMATION
      */
 
-    if( ( actions & ACTION_JUMP ) && !isGrounded ) {
+    if( ( actions & ACTION_JUMP ) && ( ~state & GROUNDED_BIT ) ) {
       anim = Anim::JUMP;
     }
     else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
@@ -269,12 +271,12 @@ namespace oz
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
-      if( isSwimming ) {
+      if( state & SWIMMING_BIT ) {
         move.x -= hvsc[4];
         move.y += hvsc[5];
         move.z += hvsc[2];
       }
-      else if( isClimbing ) {
+      else if( state & CLIMBING_BIT ) {
         move.x -= hvsc[4];
         move.y += hvsc[5];
         move.z += v < 0.0f ? -1.0f : 1.0f;
@@ -288,7 +290,7 @@ namespace oz
       flags &= ~DISABLED_BIT;
       state |= MOVING_BIT;
 
-      if( isSwimming || isClimbing ) {
+      if( state & ( SWIMMING_BIT | CLIMBING_BIT ) ) {
         move.x += hvsc[4];
         move.y -= hvsc[5];
         move.z -= hvsc[2];
@@ -328,11 +330,14 @@ namespace oz
         desiredMomentum *= clazz->walkMomentum;
       }
 
-      if( !isGrounded || ( flags & ON_SLICK_BIT ) ) {
-        if( isClimbing ) {
+      if( flags & ON_SLICK_BIT ) {
+        desiredMomentum *= clazz->slickControl;
+      }
+      else if( ~state & GROUNDED_BIT ) {
+        if( state & CLIMBING_BIT ) {
           desiredMomentum *= clazz->climbControl;
         }
-        else if( isSwimming ) {
+        else if( state & SWIMMING_BIT ) {
           desiredMomentum *= clazz->waterControl;
         }
         else {
@@ -349,7 +354,7 @@ namespace oz
       }
       momentum += desiredMomentum;
 
-      if( ( state & RUNNING_BIT ) && ( isGrounded || isSwimming || isClimbing ) ) {
+      if( state & ( RUNNING_BIT | GROUNDED_BIT | SWIMMING_BIT | CLIMBING_BIT ) ) {
         stamina -= clazz->staminaRunDrain;
       }
 
@@ -371,7 +376,9 @@ namespace oz
       //               \----------
       //
       //
-      if( ( state & STEPPING_BIT ) && !isClimbing && stepRate <= clazz->stepRateLimit ) {
+      if( ( state & STEPPING_BIT ) && ( ~state & CLIMBING_BIT ) &&
+          stepRate <= clazz->stepRateLimit )
+      {
         // check if bot's gonna hit a stair in next frame
         Vec3 desiredMove = momentum * Timer::TICK_TIME;
 
@@ -424,7 +431,7 @@ namespace oz
     }
 
     if( grabObj != -1 ) {
-      if( lower == grabObj || isSwimming || ( obj->flags & Object::UPPER_BIT ) ) {
+      if( lower == grabObj || ( state & SWIMMING_BIT ) || ( obj->flags & Object::UPPER_BIT ) ) {
         grabObj = -1;
       }
       else {
@@ -442,11 +449,11 @@ namespace oz
           Vec3 momDiff      = ( desiredMom - obj->momentum ) * GRAB_MOM_RATIO;
 
           float momDiffSqL  = momDiff.sqL();
-          momDiff.z         += Physics::G_VELOCITY;
+          momDiff.z         += Physics::G_MOMENTUM;
           if( momDiffSqL > GRAB_MOM_MAX_SQ ) {
             momDiff *= GRAB_MOM_MAX / Math::sqrt( momDiffSqL );
           }
-          momDiff.z         -= Physics::G_VELOCITY;
+          momDiff.z         -= Physics::G_MOMENTUM;
 
           obj->momentum += momDiff;
           obj->flags    &= ~Object::DISABLED_BIT;
@@ -504,7 +511,7 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
-      if( grabObj != -1 || isSwimming || weaponItem != -1 ) {
+      if( grabObj != -1 || ( state & SWIMMING_BIT ) || weaponItem != -1 ) {
         grabObj = -1;
       }
       else {

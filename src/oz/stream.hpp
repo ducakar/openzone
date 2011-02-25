@@ -25,7 +25,7 @@ namespace oz
     OZ_ALWAYS_INLINE
     static ushort shuffle16( ushort s )
     {
-#if defined( OZ_BIG_ENDIAN_DATA ) == defined( OZ_BIG_ENDIAN_ARCH )
+#if defined( OZ_STREAM_BIG_ENDIAN ) == defined( OZ_BIG_ENDIAN_ARCH )
       return s;
 #else
       return ushort( s << 8 | s >> 8 );
@@ -35,7 +35,7 @@ namespace oz
     OZ_ALWAYS_INLINE
     static uint shuffle32( uint i )
     {
-#if defined( OZ_BIG_ENDIAN_DATA ) == defined( OZ_BIG_ENDIAN_ARCH )
+#if defined( OZ_STREAM_BIG_ENDIAN ) == defined( OZ_BIG_ENDIAN_ARCH )
       return i;
 #else
 # ifdef __GNUC__
@@ -50,7 +50,7 @@ namespace oz
     OZ_ALWAYS_INLINE
     static ulong64 shuffle64( ulong64 l )
     {
-#if defined( OZ_BIG_ENDIAN_DATA ) == defined( OZ_BIG_ENDIAN_ARCH )
+#if defined( OZ_STREAM_BIG_ENDIAN ) == defined( OZ_BIG_ENDIAN_ARCH )
       return l;
 #else
 # ifdef __GNUC__
@@ -103,16 +103,19 @@ namespace oz
         return pos;
       }
 
+      OZ_ALWAYS_INLINE
       const char* prepareRead( int count )
       {
         const char* oldPos = pos;
         pos += count;
 
+#ifdef OZ_STREAM_READ_CHECK
         if( pos > end ) {
           pos -= count;
           throw Exception( "Buffer overrun for " + String( int( ptrdiff_t( pos + count - end ) ) ) +
                            " bytes during a read of " + String( count ) + " bytes" );
         }
+#endif
         return oldPos;
       }
 
@@ -268,6 +271,7 @@ namespace oz
         return pos;
       }
 
+      OZ_ALWAYS_INLINE
       char* prepareWrite( int count )
       {
         char* oldPos = pos;

@@ -24,6 +24,7 @@
 #include "ui/DebugFrame.hpp"
 #include "ui/InventoryMenu.hpp"
 #include "ui/BuildMenu.hpp"
+#include "ui/LoadingArea.hpp"
 
 namespace oz
 {
@@ -41,10 +42,10 @@ namespace ui
   {
     public:
 
-      Bot* b;
       Area*          root;
       HudArea*       hud;
       StrategicArea* strategic;
+      LoadingArea*   loadScreen;
 
       void init();
       void free();

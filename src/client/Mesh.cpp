@@ -145,10 +145,8 @@ namespace client
 
       part.mode       = stream->readInt();
 
-      part.minIndex   = stream->readShort();
-      part.maxIndex   = stream->readShort();
-      part.nIndices   = stream->readShort();
-      part.firstIndex = stream->readShort();
+      part.nIndices   = stream->readInt();
+      part.firstIndex = stream->readInt();
     }
 
     int nAlphaParts = stream->readInt();
@@ -165,10 +163,8 @@ namespace client
 
       part.mode       = stream->readInt();
 
-      part.minIndex   = stream->readShort();
-      part.maxIndex   = stream->readShort();
-      part.nIndices   = stream->readShort();
-      part.firstIndex = stream->readShort();
+      part.nIndices   = stream->readInt();
+      part.firstIndex = stream->readInt();
     }
 
     textures.dealloc();
@@ -303,7 +299,7 @@ namespace client
         glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
         glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
 
-        context.bindTextures( part->texture[0], part->texture[1], 0 );
+        context.bindTextures( part->texture[0], part->texture[1] );
         glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
       }
@@ -315,7 +311,7 @@ namespace client
         glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
         glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
 
-        context.bindTextures( part->texture[0], part->texture[1], 0 );
+        context.bindTextures( part->texture[0], part->texture[1] );
         glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
       }
@@ -347,7 +343,7 @@ namespace client
 
     if( embedTextures ) {
       for( int i = 1; i < textures.length(); ++i ) {
-        uint id = context.loadTexture( textures[i] );
+        uint id = context.loadRawTexture( textures[i] );
 
         int nMipmaps, texSize;
         context.getTextureSize( id, &nMipmaps, &texSize );
@@ -363,8 +359,8 @@ namespace client
       }
     }
 
-    size += solidParts.length() * ( 2 * sizeof( Quat ) + 4 * sizeof( int ) + 4 * sizeof( ushort ) );
-    size += alphaParts.length() * ( 2 * sizeof( Quat ) + 4 * sizeof( int ) + 4 * sizeof( ushort ) );
+    size += solidParts.length() * ( 2 * sizeof( Quat ) + 6 * sizeof( int ) );
+    size += alphaParts.length() * ( 2 * sizeof( Quat ) + 6 * sizeof( int ) );
 
     size += indices.length() * sizeof( ushort );
     size += vertices.length() * sizeof( Vertex );
@@ -396,7 +392,7 @@ namespace client
       stream->writeInt( ~textures.length() );
 
       for( int i = 1; i < textures.length(); ++i ) {
-        uint id = context.loadTexture( textures[i] );
+        uint id = context.loadRawTexture( textures[i] );
 
         int nMipmaps, size;
         context.getTextureSize( id, &nMipmaps, &size );
@@ -425,10 +421,8 @@ namespace client
 
       stream->writeInt( part->mode );
 
-      stream->writeShort( part->minIndex );
-      stream->writeShort( part->maxIndex );
-      stream->writeShort( part->nIndices );
-      stream->writeShort( part->firstIndex );
+      stream->writeInt( part->nIndices );
+      stream->writeInt( part->firstIndex );
     }
 
     stream->writeInt( alphaParts.length() );
@@ -442,10 +436,8 @@ namespace client
 
       stream->writeInt( part->mode );
 
-      stream->writeShort( part->minIndex );
-      stream->writeShort( part->maxIndex );
-      stream->writeShort( part->nIndices );
-      stream->writeShort( part->firstIndex );
+      stream->writeInt( part->nIndices );
+      stream->writeInt( part->firstIndex );
     }
 
     stream->writeInt( indices.length() );

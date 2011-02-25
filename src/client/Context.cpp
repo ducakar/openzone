@@ -109,9 +109,9 @@ namespace client
     return texNum;
   }
 
-  uint Context::loadTexture( const char* path, bool wrap, int magFilter, int minFilter )
+  uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int minFilter )
   {
-    log.print( "Loading texture '%s' ...", path );
+    log.print( "Loading raw texture '%s' ...", path );
 
     SDL_Surface* image = IMG_Load( path );
     if( image == null ) {
@@ -133,6 +133,29 @@ namespace client
     hard_assert( glIsTexture( texNum ) );
 
     return texNum;
+  }
+
+  uint Context::loadTexture( const char* path )
+  {
+    log.print( "Loading texture '%s' ...", path );
+
+    Buffer buffer( path );
+
+    if( buffer.isEmpty() ) {
+      log.printEnd( " No such file" );
+      return 0;
+    }
+
+    InputStream is = buffer.inputStream();
+    uint id = readTexture( &is );
+
+    if( id == 0 ) {
+      log.printEnd( " Failed" );
+      return 0;
+    }
+
+    log.printEnd( " OK" );
+    return id;
   }
 
   uint Context::readTexture( InputStream* stream )
@@ -262,8 +285,7 @@ namespace client
 
     resource.id = GL_NONE;
 
-    Buffer buffer;
-    buffer.read( "bsp/tex/" + name + ".ozcTex" );
+    Buffer buffer( "bsp/tex/" + name + ".ozcTex" );
 
     if( !buffer.isEmpty() ) {
       InputStream is = buffer.inputStream();
@@ -272,9 +294,9 @@ namespace client
       buffer.free();
     }
 
-    if( resource.id == GL_NONE ) {
+    if( resource.id == 0 ) {
       log.printEnd( " Failed" );
-      return GL_NONE;
+      return 0;
     }
 
     log.printEnd( " OK" );
@@ -315,9 +337,9 @@ namespace client
 
     resource.id = alutCreateBufferFromFile( translator.sounds[id].path );
 
-    if( resource.id == AL_NONE ) {
+    if( resource.id == 0 ) {
       log.printEnd( " Failed" );
-      return AL_NONE;
+      return 0;
     }
 
     log.printEnd( " OK" );
@@ -362,9 +384,6 @@ namespace client
 
     glActiveTexture( GL_TEXTURE1 );
     glEnable( GL_TEXTURE_2D );
-
-    glActiveTexture( GL_TEXTURE2 );
-    glEnable( GL_TEXTURE_2D );
   }
 
   void Context::endArrayMode()
@@ -377,21 +396,16 @@ namespace client
     glActiveTexture( GL_TEXTURE1 );
     glDisable( GL_TEXTURE_2D );
 
-    glActiveTexture( GL_TEXTURE2 );
-    glDisable( GL_TEXTURE_2D );
-
     glActiveTexture( GL_TEXTURE0 );
     glEnable( GL_TEXTURE_2D );
   }
 
-  void Context::bindTextures( uint texture0, uint texture1, uint texture2 )
+  void Context::bindTextures( uint texture0, uint texture1 )
   {
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, texture0 );
     glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, texture1 );
-    glActiveTexture( GL_TEXTURE2 );
-    glBindTexture( GL_TEXTURE_2D, texture2 );
   }
 
   uint Context::genList()

@@ -22,18 +22,16 @@ namespace oz
   const float Physics::HIT_THRESHOLD          = -2.0f;
   const float Physics::SPLASH_THRESHOLD       = -2.0f;
   const float Physics::FLOOR_NORMAL_Z         = 0.60f;
-  const float Physics::G_VELOCITY             = -9.81f * Timer::TICK_TIME;
+  const float Physics::G_MOMENTUM             = -9.81f * Timer::TICK_TIME;
   const float Physics::WEIGHT_FACTOR          = 0.1f;
 
   const float Physics::STICK_VELOCITY         = 0.015f;
-  const float Physics::SLICK_STICK_VELOCITY   = 0.0001f;
-  const float Physics::BOTTOM_STICK_VELOCITY  = 0.005f;
-  const float Physics::AIR_STICK_VELOCITY     = 0.0001f;
+  const float Physics::SLICK_STICK_VELOCITY   = 0.001f;
+  const float Physics::AIR_STICK_VELOCITY     = 0.001f;
   const float Physics::AIR_FRICTION           = 0.02f;
   const float Physics::WATER_FRICTION         = 0.08f;
   const float Physics::LADDER_FRICTION        = 0.65f;
   const float Physics::FLOOR_FRICTION         = 0.40f;
-  const float Physics::OBJ_FRICTION           = 0.40f;
   const float Physics::SLICK_FRICTION         = 0.02f;
 
   const float Physics::PART_HIT_VELOCITY2     = 100.0f;
@@ -106,9 +104,9 @@ namespace oz
 
   bool Physics::handleObjFriction()
   {
-    if( ( obj->flags & ( Object::HOVER_BIT | Object::ON_LADDER_BIT ) ) ||
-        obj->depth >= obj->dim.z )
-    {
+    float systemMom = G_MOMENTUM;
+
+    if( obj->flags & ( Object::HOVER_BIT | Object::ON_LADDER_BIT ) ) {
       // in air
       if( obj->flags & Object::HOVER_BIT ) {
         if( obj->momentum.sqL() <= AIR_STICK_VELOCITY ) {
@@ -120,33 +118,11 @@ namespace oz
       }
       // swimming
       else if( obj->flags & Object::IN_WATER_BIT ) {
-        float lift = ( 0.5f * obj->depth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
+        // lift
+        systemMom += ( 0.5f * obj->depth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
 
         obj->momentum *= 1.0f - WATER_FRICTION;
-        obj->momentum.z += lift;
-
-        // (partial)underwaterwalk
-        if( ( obj->flags & Object::ON_FLOOR_BIT ) || obj->lower != -1 ) {
-          float dx = obj->momentum.x;
-          float dy = obj->momentum.y;
-          float dv2 = dx*dx + dy*dy;
-
-          if( dv2 <= BOTTOM_STICK_VELOCITY ) {
-            obj->momentum.x = 0.0f;
-            obj->momentum.y = 0.0f;
-
-            if( obj->momentum.z > 0.0f ) {
-              obj->momentum.z += G_VELOCITY;
-            }
-            else {
-              obj->momentum.z = 0.0f;
-              return false;
-            }
-          }
-        }
-        else {
-          obj->momentum.z += G_VELOCITY;
-        }
+        obj->momentum.z += systemMom;
       }
       // on ladder
       else if( obj->flags & Object::ON_LADDER_BIT ) {
@@ -160,103 +136,67 @@ namespace oz
     }
     else {
       if( obj->flags & Object::IN_WATER_BIT ) {
-        float lift = ( 0.5f * obj->depth / obj->dim.z ) * obj->lift * Timer::TICK_TIME;
+        float frictionFactor = 0.5f * obj->depth / obj->dim.z;
 
-        obj->momentum.z += lift;
+        obj->momentum *= 1.0f - WATER_FRICTION * frictionFactor;
+        systemMom += frictionFactor * obj->lift * Timer::TICK_TIME;
       }
-      // on another object
-      if( obj->lower != -1 ) {
-        Dynamic* sObj = static_cast<Dynamic*>( orbis.objects[obj->lower] );
 
-        if( obj->momentum.x != 0.0f || obj->momentum.y != 0.0f ||
-            !( sObj->flags & Object::DISABLED_BIT ) )
-        {
-          float dx  = sObj->velocity.x - obj->momentum.x;
-          float dy  = sObj->velocity.y - obj->momentum.y;
-          float dv2 = dx*dx + dy*dy;
+      Dynamic* sObj = obj->lower == -1 ? null : static_cast<Dynamic*>( orbis.objects[obj->lower] );
 
-          if( dv2 > STICK_VELOCITY ) {
-            obj->momentum.x += dx * OBJ_FRICTION;
-            obj->momentum.y += dy * OBJ_FRICTION;
+      // on floor
+      if( ( obj->flags & Object::ON_FLOOR_BIT ) ||
+          ( sObj != null && ( sObj->flags & Object::DISABLED_BIT ) ) )
+      {
+        float stickVel = STICK_VELOCITY;
+        float friction = FLOOR_FRICTION;
 
-            obj->momentum.z += G_VELOCITY;
-            obj->flags |= Object::FRICTING_BIT;
-          }
-          else {
-            obj->momentum.x = sObj->velocity.x;
-            obj->momentum.y = sObj->velocity.y;
-            obj->momentum.z += G_VELOCITY;
-
-            if( ( sObj->flags & Object::DISABLED_BIT ) && obj->momentum.z < 0.0f ) {
-              obj->momentum = Vec3::ZERO;
-              return false;
-            }
-          }
-        }
-        else if( obj->momentum.z > 0.0f ) {
-          obj->momentum.z += G_VELOCITY;
-        }
-        else {
-          obj->momentum.z = 0.0f;
-          return false;
-        }
-      }
-      else if( obj->flags & Object::ON_FLOOR_BIT ) {
         if( obj->flags & Object::ON_SLICK_BIT ) {
-          float dx = obj->momentum.x;
-          float dy = obj->momentum.y;
-          float dv2 = dx*dx + dy*dy;
+          stickVel = SLICK_STICK_VELOCITY;
+          friction = SLICK_FRICTION;
+        }
 
-          if( dv2 > SLICK_STICK_VELOCITY ) {
-            obj->momentum.x *= 1.0f - SLICK_FRICTION;
-            obj->momentum.y *= 1.0f - SLICK_FRICTION;
+        float dx = obj->momentum.x;
+        float dy = obj->momentum.y;
+        float dv2 = dx*dx + dy*dy;
 
-            obj->momentum += ( G_VELOCITY * obj->floor.z ) * obj->floor;
-            obj->flags |= Object::FRICTING_BIT;
-          }
-          else {
-            obj->momentum.x = 0.0f;
-            obj->momentum.y = 0.0f;
+        if( dv2 > stickVel ) {
+          obj->momentum.x *= 1.0f - friction;
+          obj->momentum.y *= 1.0f - friction;
 
-            if( obj->momentum.z > 0.0f ) {
-              obj->momentum.z += G_VELOCITY;
-            }
-            else {
-              obj->momentum.z = 0.0f;
-              return false;
-            }
-          }
+          obj->momentum += ( systemMom * obj->floor.z ) * obj->floor;
+
+          obj->flags |= Object::FRICTING_BIT;
         }
         else {
-          float dx = obj->momentum.x;
-          float dy = obj->momentum.y;
-          float dv2 = dx*dx + dy*dy;
+          obj->momentum.x = 0.0f;
+          obj->momentum.y = 0.0f;
+          obj->momentum.z += systemMom;
 
-          if( dv2 > STICK_VELOCITY ) {
-            obj->momentum.x *= 1.0f - FLOOR_FRICTION;
-            obj->momentum.y *= 1.0f - FLOOR_FRICTION;
-
-            obj->momentum += ( G_VELOCITY * obj->floor.z ) * obj->floor;
-            obj->flags |= Object::FRICTING_BIT;
+          if( obj->momentum.z <= 0.0f ) {
+            obj->momentum.z = 0.0f;
+            return false;
           }
-          else {
-            obj->momentum.x = 0.0f;
-            obj->momentum.y = 0.0f;
+        }
+      }
+      // on a moving object
+      else if( sObj != null ) {
+        float dx  = sObj->velocity.x - obj->momentum.x;
+        float dy  = sObj->velocity.y - obj->momentum.y;
+        float dv2 = dx*dx + dy*dy;
 
-            if( obj->momentum.z > 0.0f ) {
-              obj->momentum.z += G_VELOCITY;
-            }
-            else {
-              obj->momentum.z = 0.0f;
-              return false;
-            }
-          }
+        obj->momentum.x += dx * FLOOR_FRICTION;
+        obj->momentum.y += dy * FLOOR_FRICTION;
+        obj->momentum.z += systemMom;
+
+        if( dv2 > STICK_VELOCITY ) {
+          obj->flags |= Object::FRICTING_BIT;
         }
       }
       else {
         obj->momentum.x *= 1.0f - AIR_FRICTION;
         obj->momentum.y *= 1.0f - AIR_FRICTION;
-        obj->momentum.z += G_VELOCITY;
+        obj->momentum.z += systemMom;
       }
     }
 
@@ -428,6 +368,8 @@ namespace oz
     obj->flags |= collider.hit.onLadder ? Object::ON_LADDER_BIT : 0;
     obj->depth = min( collider.hit.waterDepth, 2.0f * obj->dim.z );
 
+    hard_assert( ( obj->depth != 0.0f ) == collider.hit.inWater );
+
     if( ( obj->flags & ~obj->oldFlags & Object::IN_WATER_BIT ) &&
         obj->velocity.z <= SPLASH_THRESHOLD )
     {
@@ -447,7 +389,7 @@ namespace oz
 
     hard_assert( part->cell != null );
 
-    part->velocity.z += G_VELOCITY;
+    part->velocity.z += G_MOMENTUM;
     part->lifeTime -= Timer::TICK_TIME;
 
     part->rot += part->rotVelocity * Timer::TICK_TIME;

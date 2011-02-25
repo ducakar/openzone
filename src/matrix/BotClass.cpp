@@ -118,6 +118,7 @@ namespace oz
     clazz->airControl           = config->get( "airControl", 0.025f );
     clazz->climbControl         = config->get( "climbControl", 1.50f );
     clazz->waterControl         = config->get( "waterControl", 0.05f );
+    clazz->slickControl         = config->get( "slickControl", 0.04f );
 
     clazz->grabDistance         = config->get( "grabDistance", 2.0f );
     clazz->grabMass             = config->get( "grabMass", 50.0f );
@@ -128,7 +129,7 @@ namespace oz
     clazz->staminaWaterDrain    = config->get( "staminaWaterDrain", 0.10f );
     clazz->staminaRunDrain      = config->get( "staminaRunDrain", 0.08f );
     clazz->staminaJumpDrain     = config->get( "staminaJumpDrain", 4.0f );
-    clazz->staminaThrowDrain    = config->get( "staminaThrowDrain", 5.0f );
+    clazz->staminaThrowDrain    = config->get( "staminaThrowDrain", 8.0f );
 
     clazz->state = 0;
 

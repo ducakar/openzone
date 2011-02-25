@@ -29,12 +29,12 @@ namespace ui
     flags |= IGNORE_BIT;
     setFont( Font::TITLE );
 
-    crossTexId = context.loadTexture( "ui/crosshair.png", false, GL_LINEAR, GL_LINEAR );
-    useTexId   = context.loadTexture( "ui/use.png", false, GL_LINEAR, GL_LINEAR );
-    mountTexId = context.loadTexture( "ui/mount.png", false, GL_LINEAR, GL_LINEAR );
-    takeTexId  = context.loadTexture( "ui/take.png", false, GL_LINEAR, GL_LINEAR );
-    liftTexId  = context.loadTexture( "ui/lift.png", false, GL_LINEAR, GL_LINEAR );
-    grabTexId  = context.loadTexture( "ui/grab.png", false, GL_LINEAR, GL_LINEAR );
+    crossTexId = context.loadTexture( "ui/crosshair.ozTex" );
+    useTexId   = context.loadTexture( "ui/use.ozTex" );
+    mountTexId = context.loadTexture( "ui/mount.ozTex" );
+    takeTexId  = context.loadTexture( "ui/take.ozTex" );
+    liftTexId  = context.loadTexture( "ui/lift.ozTex" );
+    grabTexId  = context.loadTexture( "ui/grab.ozTex" );
 
     crossIconX = ( width - ICON_SIZE ) / 2;
     crossIconY = ( height - ICON_SIZE ) / 2;
@@ -182,7 +182,7 @@ namespace ui
           const Dynamic* taggedDyn = static_cast<const Dynamic*>( tagged );
           const Bot* taggedBot = static_cast<const Bot*>( tagged );
 
-          if( bot->grabObj == -1 && bot->weaponItem == -1 && bot->depth < bot->dim.z &&
+          if( bot->grabObj == -1 && bot->weaponItem == -1 && ( ~bot->state & Bot::SWIMMING_BIT ) &&
               ( tagged->flags & Object::DYNAMIC_BIT ) &&
               ( ( ~tagged->flags & Object::BOT_BIT ) || ( taggedBot->grabObj == -1 ) ) )
           {

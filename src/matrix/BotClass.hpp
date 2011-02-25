@@ -53,6 +53,7 @@ namespace oz
       float  airControl;
       float  climbControl;
       float  waterControl;
+      float  slickControl;
 
       float  grabDistance;
       float  grabMass;

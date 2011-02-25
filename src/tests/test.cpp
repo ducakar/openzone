@@ -16,29 +16,12 @@ using namespace oz;
 
 bool Alloc::isLocked = true;
 
-void foo();
-
-void foo()
-{
-  printf("a");
-  soft_assert( 0 );
-  int* a = new int;
-  printf("a");
-  delete[] a;
-}
-
 int main( int, char** )
 {
-  System::catchSignals();
+  Directory dir( "data/textures/oz" );
 
-  Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
-
-  foo();
-
-  log.println( "Hello, world!" );
+  foreach( file, dir.citer() ) {
+    printf( "%s %d\n", &*file, file.hasExtension( "png" ) );
+  }
   return 0;
 }

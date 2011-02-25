@@ -51,6 +51,10 @@ grabDistance "2.0"
 grabMass "100.0"
 throwMomentum "10.0"
 
-staminaWaterDrain "0.07"
-staminaRunDrain "0.07"
-staminaJumpDrain "3.0"
+//staminaWaterDrain "0.07"
+//staminaRunDrain "0.07"
+//staminaJumpDrain "3.0"
+
+staminaWaterDrain "0.0"
+staminaRunDrain "0.0"
+staminaJumpDrain "0.0"

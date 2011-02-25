@@ -70,9 +70,6 @@ namespace ui
       void init();
       void free();
 
-      void show();
-      void hide();
-
       void prepare();
       void update();
 

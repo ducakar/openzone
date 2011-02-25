@@ -76,6 +76,7 @@
  */
 #include "stream.hpp"
 #include "Buffer.hpp"
+#include "Directory.hpp"
 
 /*
  * Utilities

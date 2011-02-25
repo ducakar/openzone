@@ -85,8 +85,8 @@ namespace client
 //     starArray = context.genArray( GL_STATIC_DRAW, vertices, MAX_STARS );
     delete[] vertices;
 
-    sunTexId  = context.loadTexture( "sky/simplesun.png", false, GL_LINEAR, GL_LINEAR );
-    moonTexId = context.loadTexture( "sky/moon18.png", false, GL_LINEAR, GL_LINEAR );
+    sunTexId  = context.loadRawTexture( "sky/simplesun.png", false, GL_LINEAR, GL_LINEAR );
+    moonTexId = context.loadRawTexture( "sky/moon18.png", false, GL_LINEAR, GL_LINEAR );
 
     sunList  = context.genLists( 2 );
     moonList = sunList + 1;

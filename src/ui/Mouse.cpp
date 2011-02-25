@@ -40,32 +40,32 @@ namespace ui
     oldButtons = 0;
     currButtons = 0;
 
-    const char* x = config.getSet( "ui.cursor.x", "cursors/X_cursor.png" );
-    cursors[X].texId    = context.loadTexture( x, false, GL_NEAREST, GL_NEAREST );
+    const char* x = config.getSet( "ui.cursor.x", "ui/X_cursor.ozTex" );
+    cursors[X].texId    = context.loadTexture( x );
     cursors[X].size     = config.getSet( "ui.cursor.x.size", 32 );
     cursors[X].hotspotX = config.getSet( "ui.cursor.x.hotspot.x", 16 );
     cursors[X].hotspotY = config.getSet( "ui.cursor.x.hotspot.y", 16 );
 
-    const char* arrow = config.getSet( "ui.cursor.arrow", "cursors/left_ptr.png" );
-    cursors[ARROW].texId    = context.loadTexture( arrow, false, GL_NEAREST, GL_NEAREST );
+    const char* arrow = config.getSet( "ui.cursor.arrow", "ui/left_ptr.ozTex" );
+    cursors[ARROW].texId    = context.loadTexture( arrow );
     cursors[ARROW].size     = config.getSet( "ui.cursor.arrow.size", 32 );
     cursors[ARROW].hotspotX = config.getSet( "ui.cursor.arrow.hotspot.x", 1 );
     cursors[ARROW].hotspotY = config.getSet( "ui.cursor.arrow.hotspot.y", 1 );
 
-    const char* move = config.getSet( "ui.cursor.move", "cursors/fleur.png" );
-    cursors[MOVE].texId    = context.loadTexture( move, false, GL_NEAREST, GL_NEAREST );
+    const char* move = config.getSet( "ui.cursor.move", "ui/fleur.ozTex" );
+    cursors[MOVE].texId    = context.loadTexture( move );
     cursors[MOVE].size     = config.getSet( "ui.cursor.move.size", 32 );
     cursors[MOVE].hotspotX = config.getSet( "ui.cursor.move.hotspot.x", 16 );
     cursors[MOVE].hotspotY = config.getSet( "ui.cursor.move.hotspot.y", 16 );
 
-    const char* text = config.getSet( "ui.cursor.text", "cursors/xterm.png" );
-    cursors[TEXT].texId    = context.loadTexture( text, false, GL_NEAREST, GL_NEAREST );
+    const char* text = config.getSet( "ui.cursor.text", "ui/xterm.ozTex" );
+    cursors[TEXT].texId    = context.loadTexture( text );
     cursors[TEXT].size     = config.getSet( "ui.cursor.text.size", 32 );
     cursors[TEXT].hotspotX = config.getSet( "ui.cursor.text.hotspot.x", 16 );
     cursors[TEXT].hotspotY = config.getSet( "ui.cursor.text.hotspot.y", 16 );
 
-    const char* hand = config.getSet( "ui.cursor.hand", "cursors/hand2.png" );
-    cursors[HAND].texId    = context.loadTexture( hand, false, GL_NEAREST, GL_NEAREST );
+    const char* hand = config.getSet( "ui.cursor.hand", "ui/hand2.ozTex" );
+    cursors[HAND].texId    = context.loadTexture( hand );
     cursors[HAND].size     = config.getSet( "ui.cursor.hand.size", 32 );
     cursors[HAND].hotspotX = config.getSet( "ui.cursor.hand.hotspot.x", 16 );
     cursors[HAND].hotspotY = config.getSet( "ui.cursor.hand.hotspot.y", 16 );

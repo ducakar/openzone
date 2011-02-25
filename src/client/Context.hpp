@@ -113,7 +113,7 @@ namespace client
       HashString< Resource<MD3*>, 64 >  md3s;
 
       HashIndex<Model*, 8191>           models;   // currently loaded models
-      HashIndex<Audio*, 1021>           audios;   // currently loaded audio models
+      HashIndex<Audio*, 2039>           audios;   // currently loaded audio models
 
       int                               maxModels;
       int                               maxAudios;
@@ -134,10 +134,11 @@ namespace client
                           bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
 
-      static uint loadTexture( const char* path, bool wrap = true,
-                               int magFilter = DEFAULT_MAG_FILTER,
-                               int minFilter = DEFAULT_MIN_FILTER );
+      static uint loadRawTexture( const char* path, bool wrap = true,
+                                  int magFilter = DEFAULT_MAG_FILTER,
+                                  int minFilter = DEFAULT_MIN_FILTER );
 
+      static uint loadTexture( const char* path );
       static uint readTexture( InputStream* stream );
 
       static void getTextureSize( uint id, int* nMipmaps, int* size );
@@ -157,7 +158,7 @@ namespace client
 
       static void setVertexFormat();
 
-      static void bindTextures( uint texture0 = 0, uint texture1 = 0, uint texture2 = 0 );
+      static void bindTextures( uint texture0 = 0, uint texture1 = 0 );
 
       uint genList();
       uint genLists( int count );

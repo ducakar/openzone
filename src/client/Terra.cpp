@@ -57,19 +57,34 @@ namespace client
     String detailTexture = terraDir + terraConfig.get( "detailTexture", "" );
     String mapTexture    = terraDir + terraConfig.get( "mapTexture", "" );
 
+    uint waterTexId  = context.loadRawTexture( waterTexture );
+    uint detailTexId = context.loadRawTexture( detailTexture );
+    uint mapTexId    = context.loadRawTexture( mapTexture );
+
+    int nWaterMipmaps, nDetailMipmaps, nMapMipmaps;
+    int waterSize, detailSize, mapSize;
+
+    context.getTextureSize( waterTexId, &nWaterMipmaps, &waterSize );
+    context.getTextureSize( detailTexId, &nDetailMipmaps, &detailSize );
+    context.getTextureSize( mapTexId, &nMapMipmaps, &mapSize );
+
     int size = 0;
-    size += waterTexture.length() + 1;
-    size += detailTexture.length() + 1;
-    size += mapTexture.length() + 1;
+    size += waterSize;
+    size += detailSize;
+    size += mapSize;
     size += int( TILE_INDICES * sizeof( ushort ) );
     size += int( TILES * TILES * ( TILE_VERTICES + 16 ) * sizeof( Vertex ) );
 
     Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
-    os.writeString( waterTexture );
-    os.writeString( detailTexture );
-    os.writeString( mapTexture );
+    context.writeTexture( waterTexId, nWaterMipmaps, &os );
+    context.writeTexture( detailTexId, nDetailMipmaps, &os );
+    context.writeTexture( mapTexId, nMapMipmaps, &os );
+
+    glDeleteTextures( 1, &waterTexId );
+    glDeleteTextures( 1, &detailTexId );
+    glDeleteTextures( 1, &mapTexId );
 
     // generate index buffer
     int index = 0;
@@ -258,14 +273,16 @@ namespace client
     ushort* indices  = new ushort[TILE_INDICES];
     Vertex* vertices = new Vertex[TILE_VERTICES + 16];
 
-    Buffer buffer;
-    buffer.read( path );
+    Buffer buffer( path );
+    if( buffer.isEmpty() ) {
+      throw Exception( "Terra loading failed" );
+    }
 
     InputStream is = buffer.inputStream();
 
-    String waterTexture  = is.readString();
-    String detailTexture = is.readString();
-    String mapTexture    = is.readString();
+    waterTexId  = context.readTexture( &is );
+    detailTexId = context.readTexture( &is );
+    mapTexId    = context.readTexture( &is );
 
     glGenVertexArrays( TILES * TILES, &vaos[0][0] );
     glGenBuffers( TILES * TILES, &vbos[0][0] );
@@ -324,10 +341,6 @@ namespace client
     delete[] indices;
     delete[] vertices;
 
-    waterTexId  = context.loadTexture( waterTexture );
-    detailTexId = context.loadTexture( detailTexture );
-    mapTexId    = context.loadTexture( mapTexture );
-
     hard_assert( !is.isAvailable() );
 
     log.unindent();
@@ -352,15 +365,11 @@ namespace client
     span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
     span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
-    context.bindTextures( detailTexId, detailTexId, mapTexId );
+    context.bindTextures( detailTexId, mapTexId );
 
     glMatrixMode( GL_TEXTURE );
-
     glActiveTexture( GL_TEXTURE0 );
     glScalef( float( oz::Terra::QUADS ) * 0.5f, float( oz::Terra::QUADS ) * 0.5f, 0.0f );
-
-    glActiveTexture( GL_TEXTURE1 );
-    glScalef( float( oz::Terra::QUADS ) * 4.0f, float( oz::Terra::QUADS ) * 4.0f, 0.0f );
 
     // to match strip triangles with matrix terrain we have to make them clockwise since
     // we draw column-major (strips along y axis) for better cache performance
@@ -374,9 +383,6 @@ namespace client
     }
 
     glLoadIdentity();
-    glActiveTexture( GL_TEXTURE0 );
-    glLoadIdentity();
-
     glMatrixMode( GL_MODELVIEW );
 
     glFrontFace( GL_CCW );
