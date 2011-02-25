@@ -23,7 +23,7 @@ namespace client
   {
     private:
 
-      String name;
+      int    id;
       Mesh   mesh;
 
     public:
@@ -32,7 +32,7 @@ namespace client
 
       static void prebuild( const char* name );
 
-      explicit SMM( const char* name );
+      explicit SMM( int id );
       ~SMM();
 
       void load();

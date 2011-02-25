@@ -287,7 +287,7 @@ namespace oz
     log.println( "Loading Matrix {" );
     log.indent();
 
-    orbis.terra.load( "heightmap" );
+    orbis.terra.load( 0 );
     orbis.load();
     synapse.load();
 

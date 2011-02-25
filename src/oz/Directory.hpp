@@ -33,6 +33,8 @@ namespace oz
 
           CIterator& operator ++ ();
 
+          String baseName() const;
+          String extension() const;
           bool hasExtension( const char* ext ) const;
 
       };
@@ -53,6 +55,7 @@ namespace oz
 
       CIterator citer() const;
 
+      bool isOpened() const;
       const char* name() const;
 
       void open( const char* path );

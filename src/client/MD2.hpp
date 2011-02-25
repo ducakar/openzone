@@ -53,7 +53,7 @@ namespace client
 
     private:
 
-      String  name;
+      int     id;
 
       int     nFrames;
       int     nFrameVerts;
@@ -74,7 +74,7 @@ namespace client
 
       static void prebuild( const char* name );
 
-      explicit MD2( const char* name );
+      explicit MD2( int id );
       ~MD2();
 
       void load();

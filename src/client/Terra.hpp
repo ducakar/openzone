@@ -48,7 +48,7 @@ namespace client
 
     public:
 
-      void prebuild();
+      void prebuild( const char* name );
       void load();
       void unload();
 

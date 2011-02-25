@@ -106,11 +106,9 @@ namespace client
 
       Resource<BSP*>*                   bsps;
 
-      HashString< Resource<SMM*>, 64 >  smms;
-      HashString< Resource<MD2*>, 64 >  staticMd2s;
-      HashString< Resource<MD2*>, 64 >  md2s;
-      HashString< Resource<MD3*>, 64 >  staticMd3s;
-      HashString< Resource<MD3*>, 64 >  md3s;
+      HashIndex< Resource<SMM*>, 61 >   smms;
+      HashIndex< Resource<MD2*>, 61 >   md2s;
+      HashIndex< Resource<MD3*>, 61 >   md3s;
 
       HashIndex<Model*, 8191>           models;   // currently loaded models
       HashIndex<Audio*, 2039>           audios;   // currently loaded audio models
@@ -150,8 +148,8 @@ namespace client
       uint requestSound( int id );
       void releaseSound( int id );
 
-      BSP* loadBSP( int resource );
-      void releaseBSP( int resource );
+      BSP* loadBSP( int id );
+      void freeBSP( int id );
 
       static void beginArrayMode();
       static void endArrayMode();
@@ -164,20 +162,14 @@ namespace client
       uint genLists( int count );
       void deleteLists( uint listId );
 
-      SMM* loadSMM( const char* name );
-      void releaseSMM( const char* name );
+      SMM* requestSMM( int id );
+      void releaseSMM( int id );
 
-      MD2* loadStaticMD2( const char* name );
-      void releaseStaticMD2( const char* name );
+      MD2* requestMD2( int id );
+      void releaseMD2( int id );
 
-      MD2* loadMD2( const char* name );
-      void releaseMD2( const char* name );
-
-      MD3* loadStaticMD3( const char* name );
-      void releaseStaticMD3( const char* name );
-
-      MD3* loadMD3( const char* name );
-      void releaseMD3( const char* name );
+      MD3* requestMD3( int id );
+      void releaseMD3( int id );
 
       void drawBSP( const Struct* str, int mask );
 

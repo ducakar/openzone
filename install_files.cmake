@@ -84,7 +84,6 @@ if( OZ_INSTALL_DATA )
     data/class/FirstAid.rc
     data/class/Goblin.rc
     data/class/Knight.rc
-    data/class/Lara.rc
     data/class/Lord.rc
     data/class/MetalBarrel.rc
     data/class/Plant1.rc
@@ -97,16 +96,9 @@ if( OZ_INSTALL_DATA )
     data/class/Tree2.rc
     data/class/Tree3.rc
     data/class/Wine.rc
-    data/class/WoodBarrel.rc
     DESTINATION share/openzone/class )
 
   install( FILES
-    data/cursors/COPYING
-    data/cursors/X_cursor.png
-    data/cursors/fleur.png
-    data/cursors/hand2.png
-    data/cursors/left_ptr.png
-    data/cursors/xterm.png
     DESTINATION share/openzone/cursors )
 
   install( FILES
@@ -347,12 +339,18 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/textures/oz )
 
   install( FILES
+    data/ui/COPYING
+    data/ui/X_cursor.png
     data/ui/crosshair.png
+    data/ui/fleur.png
     data/ui/grab.png
+    data/ui/hand2.png
+    data/ui/left_ptr.png
     data/ui/lift.png
     data/ui/mount.png
     data/ui/take.png
     data/ui/use.png
+    data/ui/xterm.png
     DESTINATION share/openzone/ui )
 
 endif( OZ_INSTALL_DATA )

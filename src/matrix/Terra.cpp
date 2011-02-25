@@ -11,6 +11,8 @@
 
 #include "matrix/Terra.hpp"
 
+#include "matrix/Translator.hpp"
+
 #include <SDL_image.h>
 
 namespace oz
@@ -54,11 +56,10 @@ namespace oz
 
   void Terra::prebuild( const char* name_ )
   {
-    name = name_;
-
+    String name       = name_;
     String configFile = "terra/" + name + ".rc";
-    String imageFile = "terra/" + name + ".png";
-    String destFile = "terra/" + name + ".ozTerra";
+    String imageFile  = "terra/" + name + ".png";
+    String destFile   = "terra/" + name + ".ozTerra";
 
     Config terraConfig;
     terraConfig.load( configFile );
@@ -132,15 +133,16 @@ namespace oz
     log.printEnd( " OK" );
   }
 
-  void Terra::load( const char* name_ )
+  void Terra::load( int id_ )
   {
-    name = name_;
+    id = id_;
 
-    String terraFile = "terra/" + name + ".ozTerra";
+    const String& name = translator.terras[id].name;
+    const String& path = translator.terras[id].path;
 
     log.print( "Loading terrain '%s' ...", name.cstr() );
 
-    Buffer buffer( terraFile );
+    Buffer buffer( path );
 
     if( buffer.isEmpty() ) {
       log.printEnd( " Cannot read file" );

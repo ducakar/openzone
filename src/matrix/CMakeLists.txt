@@ -32,6 +32,8 @@ add_library( matrix STATIC
   Particle.hpp
   Physics.cpp
   Physics.hpp
+  QBSP.cpp
+  QBSP.hpp
   Sky.cpp
   Sky.hpp
   Sphere.hpp

@@ -34,7 +34,7 @@ namespace client
     model->obj   = obj;
     model->flags = Model::MD2MODEL_BIT;
     model->clazz = obj->clazz;
-    model->md2   = context.loadMD2( obj->clazz->modelName );
+    model->md2   = context.requestMD2( obj->clazz->modelIndex );
 
     model->setAnim( bot->anim );
     model->anim.nextFrame = model->anim.endFrame;
@@ -45,7 +45,7 @@ namespace client
 
   MD2Model::~MD2Model()
   {
-    context.releaseMD2( clazz->modelName );
+    context.releaseMD2( clazz->modelIndex );
   }
 
   void MD2Model::setAnim( Anim type_ )

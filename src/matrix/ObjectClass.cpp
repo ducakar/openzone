@@ -79,10 +79,14 @@ namespace oz
     }
 
     clazz->modelType            = config->get( "modelType", "" );
-    clazz->modelName            = config->get( "modelName", "" );
+    const char* modelName       = config->get( "modelName", "" );
 
-    if( !clazz->modelType.isEmpty() ) {
+    if( !clazz->modelType.isEmpty() && modelName[0] != '\0' ) {
       clazz->flags |= Object::MODEL_BIT;
+      clazz->modelIndex = translator.modelIndex( modelName );
+    }
+    else {
+      clazz->modelIndex = -1;
     }
 
     clazz->audioType            = config->get( "audioType", "" );
@@ -99,6 +103,11 @@ namespace oz
 
         String sampleName = config->get( buffer, "" );
         clazz->audioSamples[i] = sampleName.isEmpty() ? -1 : translator.soundIndex( sampleName );
+      }
+    }
+    else {
+      for( int i = 0; i < AUDIO_SAMPLES; ++i ) {
+        clazz->audioSamples[i] = -1;
       }
     }
   }

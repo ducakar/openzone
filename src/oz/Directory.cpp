@@ -40,6 +40,34 @@ namespace oz
     return *this;
   }
 
+  String Directory::CIterator::baseName() const
+  {
+    if( elem == null ) {
+      return "";
+    }
+
+    const char* dot = String::find( elem, '.' );
+    if( dot == null ) {
+      return elem;
+    }
+
+    return String( elem, int( dot - elem ) );
+  }
+
+  String Directory::CIterator::extension() const
+  {
+    if( elem == null ) {
+      return "";
+    }
+
+    const char* dot = String::find( elem, '.' );
+    if( dot == null ) {
+      return "";
+    }
+
+    return dot;
+  }
+
   bool Directory::CIterator::hasExtension( const char* ext ) const
   {
     if( elem == null ) {
@@ -70,6 +98,11 @@ namespace oz
   Directory::CIterator Directory::citer() const
   {
     return CIterator( *this );
+  }
+
+  bool Directory::isOpened() const
+  {
+    return dir != null;
   }
 
   const char* Directory::name() const

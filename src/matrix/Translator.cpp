@@ -30,18 +30,6 @@ namespace oz
       name( name_ ), path( path_ )
   {}
 
-  Struct* Translator::createStruct( int index, const char* name, const Point3& p,
-                                    Struct::Rotation rot ) const
-  {
-    const int* value = bspIndices.find( name );
-    if( value != null ) {
-      return new Struct( index, *value, p, rot );
-    }
-    else {
-      throw Exception( "Invalid Structure class requested" );
-    }
-  }
-
   int Translator::textureIndex( const char* name ) const
   {
     const int* value = textureIndices.find( name );
@@ -49,8 +37,7 @@ namespace oz
       return *value;
     }
     else {
-      log.println( "W: invalid texture file index requested: %s", name );
-      return -1;
+      throw Exception( "Invalid texture requested '" + String( name ) + "'" );
     }
   }
 
@@ -61,8 +48,18 @@ namespace oz
       return *value;
     }
     else {
-      log.println( "W: invalid sound file index requested: %s", name );
-      return -1;
+      throw Exception( "Invalid sound requested '" + String( name ) + "'" );
+    }
+  }
+
+  int Translator::terraIndex( const char* name ) const
+  {
+    const int* value = terraIndices.find( name );
+    if( value != null ) {
+      return *value;
+    }
+    else {
+      throw Exception( "Invalid terra index requested '" + String( name ) + "'" );
     }
   }
 
@@ -73,7 +70,30 @@ namespace oz
       return *value;
     }
     else {
-      throw Exception( "Invalid BSP index requested" );
+      throw Exception( "Invalid BSP index requested '" + String( name ) + "'" );
+    }
+  }
+
+  int Translator::modelIndex( const char* name ) const
+  {
+    const int* value = modelIndices.find( name );
+    if( value != null ) {
+      return *value;
+    }
+    else {
+      throw Exception( "Invalid Model index requested '" + String( name ) + "'" );
+    }
+  }
+
+  Struct* Translator::createStruct( int index, const char* name, const Point3& p,
+                                    Struct::Rotation rot ) const
+  {
+    const int* value = bspIndices.find( name );
+    if( value != null ) {
+      return new Struct( index, *value, p, rot );
+    }
+    else {
+      throw Exception( "Invalid Structure class requested" );
     }
   }
 
@@ -112,67 +132,61 @@ namespace oz
 
   void Translator::init()
   {
+    bool isComplete = false;
+
     OZ_REGISTER_BASECLASS( Object );
     OZ_REGISTER_BASECLASS( Dynamic );
     OZ_REGISTER_BASECLASS( Weapon );
     OZ_REGISTER_BASECLASS( Bot );
     OZ_REGISTER_BASECLASS( Vehicle );
 
+    onleave( [&]() {
+      if( !isComplete ) {
+        free();
+      }
+    } );
+
     log.println( "Translator mapping resources {" );
     log.indent();
 
+    Directory dir;
     Config classConfig;
-    DIR* dir;
-    struct dirent* file;
 
-    log.println( "textures (*.png, *.jpeg, *.jpg in 'textures/oz') {" );
+    log.println( "textures (*.ozcTex in 'bsp/tex') {" );
     log.indent();
 
-    dir = opendir( "textures/oz" );
-    if( dir == null ) {
+    dir.open( "bsp/tex" );
+    if( !dir.isOpened() ) {
       free();
 
-      log.println( "Cannot open directory 'textures/oz'" );
+      log.println( "Cannot open directory 'bsp/tex'" );
       log.unindent();
       log.println( "}" );
+
       throw Exception( "Translator initialisation failure" );
     }
-    while( ( file = readdir( dir ) ) != null ) {
-      String name = file->d_name;
-      int dot = name.lastIndex( '.' );
-
-      if( dot <= 0 ) {
-        continue;
-      }
-      String extension = name.substring( dot );
-      if( !extension.equals( ".png" ) &&
-          !extension.equals( ".jpeg" ) &&
-          !extension.equals( ".jpg" ) )
-      {
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "ozcTex" ) ) {
         continue;
       }
 
-      String baseName = name.substring( 0, dot );
-      String fileName = "textures/oz/" + name;
+      String name = ent.baseName();
+      String path = String( "bsp/tex/" ) + ent;
 
-      if( textureIndices.contains( baseName ) ) {
-        log.println( "duplicated texture: %s", baseName.cstr() );
-        throw Exception( "Translator initialisation failure" );
-      }
-      textureIndices.add( baseName, textures.length() );
-      textures.add( Resource( baseName, fileName ) );
+      textureIndices.add( name, textures.length() );
+      textures.add( Resource( name, path ) );
 
-      log.println( "%s", baseName.cstr() );
+      log.println( "%s", name.cstr() );
     }
-    closedir( dir );
+    dir.close();
 
     log.unindent();
     log.println( "}" );
     log.println( "sounds (*.au, *.wav in 'snd') {" );
     log.indent();
 
-    dir = opendir( "snd" );
-    if( dir == null ) {
+    dir.open( "snd" );
+    if( !dir.isOpened() ) {
       free();
 
       log.println( "Cannot open directory 'snd'" );
@@ -180,41 +194,28 @@ namespace oz
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
-    while( ( file = readdir( dir ) ) != null ) {
-      String name = file->d_name;
-      int dot = name.lastIndex( '.' );
-
-      if( dot <= 0 ) {
-        continue;
-      }
-      String extension = name.substring( dot );
-      if( !extension.equals( ".au" ) &&
-          !extension.equals( ".wav" ) )
-      {
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "au" ) && !ent.hasExtension( "wav" ) ) {
         continue;
       }
 
-      String fileName = "snd/" + name;
-      String baseName = name.substring( 0, dot );
+      String name = ent.baseName();
+      String path = String( "snd/" ) + ent;
 
-      if( soundIndices.contains( baseName ) ) {
-        log.println( "duplicated sound: %s", baseName.cstr() );
-        continue;
-      }
-      soundIndices.add( baseName, sounds.length() );
-      sounds.add( Resource( baseName, fileName ) );
+      soundIndices.add( name, sounds.length() );
+      sounds.add( Resource( name, path ) );
 
-      log.println( "%s", baseName.cstr() );
+      log.println( "%s", name.cstr() );
     }
-    closedir( dir );
+    dir.close();
 
     log.unindent();
     log.println( "}" );
-    log.println( "models (* directories in 'mdl') {" );
+    log.println( "models (*.ozcSMM, *.ozcMD2 in 'mdl') {" );
     log.indent();
 
-    dir = opendir( "mdl" );
-    if( dir == null ) {
+    dir.open( "mdl" );
+    if( !dir.isOpened() ) {
       free();
 
       log.println( "Cannot open directory 'mdl'" );
@@ -222,67 +223,57 @@ namespace oz
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
-    while( ( file = readdir( dir ) ) != null ) {
-      String name = file->d_name;
-
-      hard_assert( !name.isEmpty() );
-
-      if( name[0] == '.' || file->d_type != DT_DIR ) {
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "ozcSMM" ) && !ent.hasExtension( "ozcMD2" ) ) {
         continue;
       }
 
-      models.add( Resource( name, "mdl/" + name ) );
+      String name = ent.baseName();
+      String path = String( "mdl/" ) + ent;
+
+      modelIndices.add( name, models.length() );
+      models.add( Resource( name, path ) );
 
       log.println( "%s", name.cstr() );
     }
-    closedir( dir );
+    dir.close();
 
     log.unindent();
     log.println( "}" );
-    log.println( "BSP structures (*.rc in 'bsp') {" );
+    log.println( "BSP structures (*.ozBSP in 'bsp') {" );
     log.indent();
 
-    dir = opendir( "maps" );
-    if( dir == null ) {
+    dir.open( "bsp" );
+    if( !dir.isOpened() ) {
       free();
 
-      log.println( "Cannot open directory 'maps'" );
+      log.println( "Cannot open directory 'bsp'" );
       log.unindent();
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
-    while( ( file = readdir( dir ) ) != null ) {
-      String name = file->d_name;
-      int dot = name.lastIndex( '.' );
-
-      if( dot <= 0 ) {
-        continue;
-      }
-      String extension = name.substring( dot );
-      if( !extension.equals( ".rc" ) ) {
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "ozBSP" ) ) {
         continue;
       }
 
-      String baseName = name.substring( 0, dot );
+      String name = ent.baseName();
+      String path = String( "bsp/" ) + ent;
 
-      if( bspIndices.contains( baseName ) ) {
-        log.println( "duplicated bsp: %s", baseName.cstr() );
-        throw Exception( "Translator initialisation failure" );
-      }
-      bspIndices.add( baseName, bsps.length() );
-      bsps.add( Resource( baseName, "" ) );
+      bspIndices.add( name, bsps.length() );
+      bsps.add( Resource( name, path ) );
 
-      log.println( "%s", baseName.cstr() );
+      log.println( "%s", name.cstr() );
     }
-    closedir( dir );
+    dir.close();
 
     log.unindent();
     log.println( "}" );
-    log.println( "Terrain heightmaps (*.rc in 'terra') {" );
+    log.println( "Terrain heightmaps (*.ozTerra in 'terra') {" );
     log.indent();
 
-    dir = opendir( "terra" );
-    if( dir == null ) {
+    dir.open( "terra" );
+    if( !dir.isOpened() ) {
       free();
 
       log.println( "Cannot open directory 'terra'" );
@@ -290,33 +281,28 @@ namespace oz
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
-    while( ( file = readdir( dir ) ) != null ) {
-      String name = file->d_name;
-      int dot = name.lastIndex( '.' );
-
-      if( dot <= 0 ) {
-        continue;
-      }
-      String extension = name.substring( dot );
-      if( !extension.equals( ".rc" ) ) {
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "ozTerra" ) ) {
         continue;
       }
 
-      String baseName = name.substring( 0, dot );
+      String name = ent.baseName();
+      String path = String( "terra/" ) + ent;
 
-      terras.add( Resource( baseName, "" ) );
+      terraIndices.add( name, terras.length() );
+      terras.add( Resource( name, path ) );
 
-      log.println( "%s", baseName.cstr() );
+      log.println( "%s", name.cstr() );
     }
-    closedir( dir );
+    dir.close();
 
     log.unindent();
     log.println( "}" );
     log.println( "object classes (*.rc in 'class') {" );
     log.indent();
 
-    dir = opendir( "class" );
-    if( dir == null ) {
+    dir.open( "class" );
+    if( !dir.isOpened() ) {
       free();
 
       log.println( "Cannot open directory 'class'" );
@@ -324,23 +310,16 @@ namespace oz
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
-    while( ( file = readdir( dir ) ) != null ) {
-      String name = file->d_name;
-      int dot = name.lastIndex( '.' );
-
-      if( dot <= 0 ) {
-        continue;
-      }
-      String extension = name.substring( dot );
-      if( !extension.equals( ".rc" ) ) {
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "rc" ) ) {
         continue;
       }
 
-      String fileName = "class/" + name;
-      String baseName = name.substring( 0, dot );
+      String name = ent.baseName();
+      String path = String( "class/" ) + ent;
 
-      if( !classConfig.load( fileName ) ) {
-        log.println( "invalid config file %s", fileName.cstr() );
+      if( !classConfig.load( path ) ) {
+        log.println( "invalid config file %s", path.cstr() );
         classConfig.clear();
         continue;
       }
@@ -355,25 +334,25 @@ namespace oz
         classConfig.clear();
         continue;
       }
-      if( classes.contains( baseName ) ) {
-        log.println( "duplicated class: %s", baseName.cstr() );
+      if( classes.contains( name ) ) {
+        log.println( "duplicated class: %s", name.cstr() );
         classConfig.clear();
         continue;
       }
-      classes.add( baseName, ( *initFunc )( baseName, &classConfig ) );
+      classes.add( name, ( *initFunc )( name, &classConfig ) );
       classConfig.clear();
 
-      log.println( "%s", baseName.cstr() );
+      log.println( "%s", name.cstr() );
     }
-    closedir( dir );
+    dir.close();
 
     log.unindent();
     log.println( "}" );
     log.println( "matrix scripts (*.lua in 'lua/matrix') {" );
     log.indent();
 
-    dir = opendir( "lua/matrix" );
-    if( dir == null ) {
+    dir.open( "lua/matrix" );
+    if( !dir.isOpened() ) {
       free();
 
       log.println( "Cannot open directory 'lua/matrix'" );
@@ -381,33 +360,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
-    while( ( file = readdir( dir ) ) != null ) {
-      String name = file->d_name;
-      int dot = name.lastIndex( '.' );
-
-      if( dot <= 0 ) {
-        continue;
-      }
-      String extension = name.substring( dot );
-      if( !extension.equals( ".lua" ) ) {
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "lua" ) ) {
         continue;
       }
 
-      String fileName = "lua/matrix/" + name;
-      String baseName = name.substring( 0, dot );
+      String name = ent.baseName();
+      String path = String( "lua/matrix/" ) + ent;
 
-      matrixScripts.add( Resource( baseName, fileName ) );
-      log.println( "%s", baseName.cstr() );
+      matrixScripts.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
     }
-    closedir( dir );
+    dir.close();
 
     log.unindent();
     log.println( "}" );
     log.println( "nirvana scripts (*.lua in 'lua/nirvana') {" );
     log.indent();
 
-    dir = opendir( "lua/nirvana" );
-    if( dir == null ) {
+    dir.open( "lua/nirvana" );
+    if( !dir.isOpened() ) {
       free();
 
       log.println( "Cannot open directory 'lua/nirvana'" );
@@ -415,33 +388,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
-    while( ( file = readdir( dir ) ) != null ) {
-      String name = file->d_name;
-      int dot = name.lastIndex( '.' );
-
-      if( dot <= 0 ) {
-        continue;
-      }
-      String extension = name.substring( dot );
-      if( !extension.equals( ".lua" ) ) {
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "lua" ) ) {
         continue;
       }
 
-      String fileName = "lua/nirvana/" + name;
-      String baseName = name.substring( 0, dot );
+      String name = ent.baseName();
+      String path = String( "lua/nirvana/" ) + ent;
 
-      nirvanaScripts.add( Resource( baseName, fileName ) );
-      log.println( "%s", baseName.cstr() );
+      nirvanaScripts.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
     }
-    closedir( dir );
+    dir.close();
 
     log.unindent();
     log.println( "}" );
     log.println( "names (*.txt in 'name') {" );
     log.indent();
 
-    dir = opendir( "name" );
-    if( dir == null ) {
+    dir.open( "name" );
+    if( !dir.isOpened() ) {
       free();
 
       log.println( "Cannot open directory 'name'" );
@@ -449,30 +416,26 @@ namespace oz
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
-    while( ( file = readdir( dir ) ) != null ) {
-      String name = file->d_name;
-      int dot = name.lastIndex( '.' );
-
-      if( dot <= 0 ) {
-        continue;
-      }
-      String extension = name.substring( dot );
-      if( !extension.equals( ".txt" ) ) {
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "txt" ) ) {
         continue;
       }
 
-      String fileName = "name/" + name;
-      String baseName = name.substring( 0, dot );
+      String name = ent.baseName();
+      String path = String( "name/" ) + ent;
 
-      names.add( Resource( baseName, fileName ) );
-      log.println( "%s", baseName.cstr() );
+      names.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
     }
-    closedir( dir );
+    dir.close();
 
     log.unindent();
     log.println( "}" );
     log.unindent();
     log.println( "}" );
+
+    isComplete = true;
   }
 
   void Translator::free()
@@ -481,20 +444,23 @@ namespace oz
     textureIndices.dealloc();
     soundIndices.clear();
     soundIndices.dealloc();
+    terraIndices.clear();
+    terraIndices.dealloc();
     bspIndices.clear();
     bspIndices.dealloc();
+    modelIndices.clear();
+    modelIndices.dealloc();
 
     textures.clear();
     textures.dealloc();
     sounds.clear();
     sounds.dealloc();
-    bsps.clear();
-    bsps.dealloc();
-
-    models.clear();
-    models.dealloc();
     terras.clear();
     terras.dealloc();
+    bsps.clear();
+    bsps.dealloc();
+    models.clear();
+    models.dealloc();
 
     matrixScripts.clear();
     matrixScripts.dealloc();

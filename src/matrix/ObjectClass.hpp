@@ -61,7 +61,7 @@ namespace oz
       float  debrisColourSpread;
 
       String modelType;
-      String modelName;
+      int    modelIndex;
 
       String audioType;
       int    audioSamples[AUDIO_SAMPLES];

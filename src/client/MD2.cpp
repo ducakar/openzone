@@ -296,14 +296,14 @@ namespace client
     mesh.upload( frameVerts, nFrameVerts, GL_STREAM_DRAW );
   }
 
-  void MD2::prebuild( const char* name )
+  void MD2::prebuild( const char* path )
   {
-    String sPath = "mdl/" + String( name );
+    String sPath = path;
     String modelFile = sPath + "/tris.md2";
     String skinFile = sPath + "/skin.jpg";
     String configFile = sPath + "/config.rc";
 
-    log.println( "Prebuilding MD2 model '%s' {", name );
+    log.println( "Prebuilding MD2 model '%s' {", path );
     log.indent();
 
     Config config;
@@ -474,22 +474,28 @@ namespace client
     hard_assert( !os.isAvailable() );
 
     if( header.nFrames != 1 ) {
+      log.print( "Writing to '%s' ...", ( sPath + ".ozcMD2" ).cstr() );
       outBuffer.write( sPath + ".ozcMD2" );
+      log.printEnd( " OK" );
     }
     else {
+      log.print( "Writing to '%s' ...", ( sPath + ".ozcSMM" ).cstr() );
       outBuffer.write( sPath + ".ozcSMM" );
+      log.printEnd( " OK" );
     }
 
     log.unindent();
     log.println( "}" );
   }
 
-  MD2::MD2( const char* name_ ) : name( name_ ), frameVerts( null ), vertices( null ),
+  MD2::MD2( int id_ ) : id( id_ ), frameVerts( null ), vertices( null ),
       isLoaded( false )
   {}
 
   MD2::~MD2()
   {
+    const String& name = translator.models[id].name;
+
     log.print( "Unloading MD2 model '%s' ...", name.cstr() );
 
     mesh.unload();
@@ -503,10 +509,13 @@ namespace client
 
   void MD2::load()
   {
+    const String& name = translator.models[id].name;
+    const String& path = translator.models[id].path;
+
     log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
     Buffer buffer;
-    if( !buffer.read( "mdl/" + name + ".ozcMD2" ) ) {
+    if( !buffer.read( path ) ) {
       throw Exception( "MD2 cannot read model file" );
     }
     InputStream is = buffer.inputStream();

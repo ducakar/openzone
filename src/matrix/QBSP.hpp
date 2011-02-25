@@ -1,7 +1,7 @@
 /*
- *  BSP.hpp
+ *  QBSP.hpp
  *
- *  Data structure and loaders for Internal BSP, Quake3 BSP and OpenBSP formats
+ *  Data structure used for prebuilding BSP from Quake3 BSP.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -16,9 +16,9 @@
 namespace oz
 {
 
-  class BSP : public Bounds
+  class QBSP : public Bounds
   {
-    public:
+    private:
 
       static const int MAX_BRUSHES = 256;
 
@@ -59,8 +59,6 @@ namespace oz
 
         Vec3  move;
 
-        BSP*  bsp;
-
         int   firstBrush;
         int   nBrushes;
 
@@ -73,7 +71,6 @@ namespace oz
         float timeout;
       };
 
-      int     id;
       float   life;
 
       int     nPlanes;
@@ -92,15 +89,20 @@ namespace oz
       Brush*  brushes;
       int*    brushSides;
 
-    private:
+      bool includes( const Brush& brush, float maxDim ) const;
 
-      bool loadOZBSP( const char* file );
-      void freeOZBSP();
+      bool loadQBSP( const char* filePath );
+      void freeQBSP( const char* name );
+      void optimise();
+      void check( bool isOptimised ) const;
+      bool save( const char* fileName );
+
+      explicit QBSP();
 
     public:
 
-      explicit BSP( int id );
-      ~BSP();
+      // create ozBSP from a Quake 3 QBSP and optimise it
+      static void prebuild( const char* name );
 
   };
 
