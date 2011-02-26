@@ -59,25 +59,12 @@ namespace client
     String detailTexture = terraDir + terraConfig.get( "detailTexture", "" );
     String mapTexture    = terraDir + terraConfig.get( "mapTexture", "" );
 
-    uint waterTexId  = context.loadRawTexture( waterTexture );
-    uint detailTexId = context.loadRawTexture( detailTexture );
-    uint mapTexId    = context.loadRawTexture( mapTexture );
-
     int nWaterMipmaps, nDetailMipmaps, nMapMipmaps;
-    int waterSize, detailSize, mapSize;
 
-    context.getTextureSize( waterTexId, &nWaterMipmaps, &waterSize );
-    context.getTextureSize( detailTexId, &nDetailMipmaps, &detailSize );
-    context.getTextureSize( mapTexId, &nMapMipmaps, &mapSize );
+    uint waterTexId  = context.loadRawTexture( waterTexture, &nWaterMipmaps );
+    uint detailTexId = context.loadRawTexture( detailTexture, &nDetailMipmaps );
+    uint mapTexId    = context.loadRawTexture( mapTexture, &nMapMipmaps );
 
-    int size = 0;
-    size += waterSize;
-    size += detailSize;
-    size += mapSize;
-    size += int( TILE_INDICES * sizeof( ushort ) );
-    size += int( TILES * TILES * ( TILE_VERTICES + 16 ) * sizeof( Vertex ) );
-
-    Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     context.writeTexture( waterTexId, nWaterMipmaps, &os );
@@ -259,8 +246,7 @@ namespace client
       }
     }
 
-    hard_assert( !os.isAvailable() );
-    buffer.write( outFile );
+    buffer.write( outFile, os.length() );
 
     log.unindent();
     log.println( "}" );
@@ -277,8 +263,7 @@ namespace client
     ushort* indices  = new ushort[TILE_INDICES];
     Vertex* vertices = new Vertex[TILE_VERTICES + 16];
 
-    Buffer buffer( path );
-    if( buffer.isEmpty() ) {
+    if( !buffer.read( path ) ) {
       throw Exception( "Terra loading failed" );
     }
 
@@ -342,10 +327,11 @@ namespace client
       }
     }
 
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
     delete[] indices;
     delete[] vertices;
-
-    hard_assert( !is.isAvailable() );
 
     log.unindent();
     log.println( "}" );

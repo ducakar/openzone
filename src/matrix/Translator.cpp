@@ -140,11 +140,16 @@ namespace oz
     OZ_REGISTER_BASECLASS( Bot );
     OZ_REGISTER_BASECLASS( Vehicle );
 
-    onleave( [&]() {
-      if( !isComplete ) {
-        free();
-      }
-    } );
+    textures.alloc( 256 );
+    sounds.alloc( 256 );
+    terras.alloc( 16 );
+    bsps.alloc( 64 );
+    models.alloc( 256 );
+
+    matrixScripts.alloc( 64 );
+    nirvanaScripts.alloc( 64 );
+
+    names.alloc( 16 );
 
     log.println( "Translator mapping resources {" );
     log.indent();

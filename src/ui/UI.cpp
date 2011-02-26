@@ -12,6 +12,7 @@
 #include "ui/UI.hpp"
 
 #include "client/Camera.hpp"
+#include "client/Context.hpp"
 
 #include <GL/gl.h>
 
@@ -24,39 +25,10 @@ namespace ui
 
   UI ui;
 
-  void UI::init()
+  void UI::showLoadingScreen( bool doShow )
   {
-    mouse.init();
-
-    if( !font.init() ) {
-      throw Exception( "Failed to load font" );
-    }
-
-    root = new Area( camera.width, camera.height );
-    hud = new HudArea();
-    strategic = new StrategicArea();
-    loadScreen = new LoadingArea();
-
-    root->add( hud );
-    root->add( strategic );
-    root->add( loadScreen );
-    root->add( new DebugFrame() );
-    root->add( new BuildMenu() );
-    root->add( new InventoryMenu() );
-
-    root->focus( loadScreen );
-    loadScreen->show( false );
-  }
-
-  void UI::free()
-  {
-    delete root;
-
-    Area::updateAreas.clear();
-    Area::updateAreas.dealloc();
-
-    font.free();
-    mouse.free();
+    root->focus( loadingScreen );
+    loadingScreen->show( doShow );
   }
 
   void UI::update()
@@ -69,14 +41,73 @@ namespace ui
 
   void UI::draw()
   {
+    hard_assert( glGetError() == GL_NO_ERROR );
+
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
     glOrtho( 0.0, root->width, 0.0, root->height, -100.0, 100.0 );
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
 
+    glEnable( GL_BLEND );
+    context.bindTextures();
+    glActiveTexture( GL_TEXTURE0 );
+
     root->drawChildren();
     mouse.draw();
+
+    glDisable( GL_BLEND );
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void UI::load()
+  {
+    mouse.load();
+
+    hud = new HudArea();
+    strategic = new StrategicArea();
+
+    root->add( hud );
+    root->add( strategic );
+    root->add( new DebugFrame() );
+    root->add( new BuildMenu() );
+    root->add( new InventoryMenu() );
+
+    root->focus( loadingScreen );
+  }
+
+  void UI::unload()
+  {
+    mouse.unload();
+  }
+
+  void UI::init()
+  {
+    mouse.init();
+
+    if( !font.init() ) {
+      throw Exception( "Failed to load font" );
+    }
+
+    root = new Area( camera.width, camera.height );
+    loadingScreen = new LoadingArea();
+
+    hud = null;
+    strategic = null;
+
+    root->add( loadingScreen );
+  }
+
+  void UI::free()
+  {
+    delete root;
+
+    Area::updateAreas.clear();
+    Area::updateAreas.dealloc();
+
+    font.free();
+    mouse.free();
   }
 
 }

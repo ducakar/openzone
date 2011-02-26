@@ -185,11 +185,10 @@ namespace client
     glBindVertexArray( vao );
 
     glGenBuffers( 1, &ibo );
-    glGenBuffers( 1, &vbo );
-
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( ushort ), indices, usage );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( ushort ), indices, GL_STATIC_DRAW );
 
+    glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, usage );
 
@@ -217,6 +216,9 @@ namespace client
                        reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
     glBindVertexArray( 0 );
+
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
     delete[] indices;
     delete[] vertices;
@@ -323,51 +325,6 @@ namespace client
     glMatrixMode( GL_MODELVIEW );
   }
 
-  int MeshData::getSize( bool embedTextures ) const
-  {
-    size_t size = 5 * sizeof( int );
-
-    Vector<String> textures;
-    textures.add( "" );
-
-    foreach( part, solidParts.citer() ) {
-      for( int i = 0; i < 3; ++i ) {
-        textures.include( part->texture[i] );
-      }
-    }
-    foreach( part, alphaParts.citer() ) {
-      for( int i = 0; i < 3; ++i ) {
-        textures.include( part->texture[i] );
-      }
-    }
-
-    if( embedTextures ) {
-      for( int i = 1; i < textures.length(); ++i ) {
-        uint id = context.loadRawTexture( textures[i] );
-
-        int nMipmaps, texSize;
-        context.getTextureSize( id, &nMipmaps, &texSize );
-
-        glDeleteTextures( 1, &id );
-
-        size += texSize;
-      }
-    }
-    else {
-      foreach( texture, textures.citer() ) {
-        size += texture->length() + 1;
-      }
-    }
-
-    size += solidParts.length() * ( 2 * sizeof( Quat ) + 6 * sizeof( int ) );
-    size += alphaParts.length() * ( 2 * sizeof( Quat ) + 6 * sizeof( int ) );
-
-    size += indices.length() * sizeof( ushort );
-    size += vertices.length() * sizeof( Vertex );
-
-    return int( size );
-  }
-
   void MeshData::write( OutputStream* stream, bool embedTextures ) const
   {
     hard_assert( solidParts.length() > 0 || alphaParts.length() > 0 );
@@ -395,12 +352,10 @@ namespace client
       stream->writeInt( ~textures.length() );
 
       for( int i = 1; i < textures.length(); ++i ) {
-        uint id = context.loadRawTexture( textures[i] );
+        int nMipmaps;
+        uint id = context.loadRawTexture( textures[i], &nMipmaps );
 
-        int nMipmaps, size;
-        context.getTextureSize( id, &nMipmaps, &size );
         context.writeTexture( id, nMipmaps, stream );
-
         glDeleteTextures( 1, &id );
       }
     }

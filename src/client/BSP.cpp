@@ -259,7 +259,6 @@ namespace client
     int flags = 0;
 
     Vector<MeshData> meshes( nModels );
-    int size = 2 * sizeof( int );
 
     for( int i = 0; i < nModels; ++i ) {
       compiler.beginMesh();
@@ -318,11 +317,8 @@ namespace client
 
       meshes.add();
       compiler.getMeshData( &meshes.last() );
-
-      size += meshes.last().getSize( false );
     }
 
-    Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     os.writeInt( flags );
@@ -334,8 +330,7 @@ namespace client
 
     log.print( "Dumping BSP model to '%s' ...", path );
 
-    hard_assert( !os.isAvailable() );
-    buffer.write( path );
+    buffer.write( path, os.length() );
 
     log.printEnd( " OK" );
   }
@@ -375,7 +370,9 @@ namespace client
     log.println( "Loading BSP model '%s' {", name.cstr() );
     log.indent();
 
-    Buffer buffer( "bsp/" + name + ".ozcBSP" );
+    if( !buffer.read( "bsp/" + name + ".ozcBSP" ) ) {
+      throw Exception( "BSP loading failed" );
+    }
 
     InputStream is = buffer.inputStream();
 

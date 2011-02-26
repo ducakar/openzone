@@ -158,7 +158,7 @@ namespace oz
        * STANDARD EVENT IDs
        */
 
-      static const int EVENT_CREATE       = 0;
+//       static const int EVENT_CREATE       = 0;
       static const int EVENT_DESTROY      = 1;
       static const int EVENT_DAMAGE       = 2;
       static const int EVENT_HIT          = 3;
@@ -177,7 +177,7 @@ namespace oz
         float  intensity;
         Event* next[1];
 
-        static Pool<Event> pool;
+        static Pool<Event, 256> pool;
 
         // exactly events with negative IDs are ignored by BasicAudio, so if ID is nonzero we don't
         // want to use this ctor as we need to set the intensity
@@ -194,7 +194,7 @@ namespace oz
         OZ_STATIC_POOL_ALLOC( pool )
       };
 
-      static Pool<Object> pool;
+      static Pool<Object, 2048> pool;
 
       /*
        * FIELDS

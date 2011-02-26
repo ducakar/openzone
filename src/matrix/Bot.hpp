@@ -81,7 +81,7 @@ namespace oz
       static const float DEAD_BODY_LIFT;
       static const float BODY_FADEOUT_FACTOR;
 
-      static Pool<Bot> pool;
+      static Pool<Bot, 1024> pool;
 
     protected:
 

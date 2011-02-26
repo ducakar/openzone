@@ -65,6 +65,7 @@ namespace client
     }
 
     config.clear();
+    buffer.dealloc();
 
     if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
@@ -258,6 +259,8 @@ namespace client
 
     log.printlnETD( OZ_APPLICATION_NAME " started at" );
 
+    buffer.alloc( 4 * 1024 * 1024 );
+
     String configPath = rcDir + "/" OZ_CLIENT_CONFIG_FILE;
     if( config.load( configPath ) ) {
       log.printEnd( "Configuration read from '%s'", configPath.cstr() );
@@ -429,6 +432,13 @@ namespace client
           case SDL_MOUSEBUTTONDOWN: {
             ui::mouse.buttons |= char( SDL_BUTTON( event.button.button ) );
             ui::mouse.currButtons |= char( SDL_BUTTON( event.button.button ) );
+
+            if( ui::mouse.buttons & SDL_BUTTON_WUMASK ) {
+              ++ui::mouse.relZ;
+            }
+            if( ui::mouse.buttons & SDL_BUTTON_WDMASK ) {
+              --ui::mouse.relZ;
+            }
             break;
           }
           case SDL_ACTIVEEVENT: {

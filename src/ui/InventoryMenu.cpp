@@ -103,7 +103,6 @@ namespace ui
     setFont( Font::SANS );
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-    glEnable( GL_TEXTURE_2D );
     glPushMatrix();
     glTranslatef( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0 );
     glTranslatef( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f );
@@ -113,8 +112,6 @@ namespace ui
     int minIndex = row * COLS;
     int maxIndex = min( minIndex + COLS * ROWS, items.length() );
     Dynamic* taggedItem = null;
-
-    context.beginArrayMode();
 
     for( int i = minIndex; i < maxIndex; ++i ) {
       Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[i]] );
@@ -148,10 +145,10 @@ namespace ui
       glTranslatef( float( SLOT_SIZE ), 0.0f, 0.0f );
     }
 
-    context.endArrayMode();
-
     glPopMatrix();
-    glDisable( GL_TEXTURE_2D );
+
+    context.bindTextures();
+    glActiveTexture( GL_TEXTURE0 );
 
     tagged = -1;
 
@@ -169,8 +166,6 @@ namespace ui
 
       glColor4fv( Colours::WHITE );
       if( taggedItem->flags & Object::USE_FUNC_BIT ) {
-        glEnable( GL_TEXTURE_2D );
-
         glBindTexture( GL_TEXTURE_2D, useTexId );
         glBegin( GL_QUADS );
           glTexCoord2i( 0, 1 );
@@ -182,8 +177,7 @@ namespace ui
           glTexCoord2i( 0, 0 );
           glVertex2i( x + width - ICON_SIZE - 4, y + ICON_SIZE + 4 );
         glEnd();
-
-        glDisable( GL_TEXTURE_2D );
+        glBindTexture( GL_TEXTURE_2D, 0 );
       }
 
       printBaseline( 4, FOOTER_SIZE / 2, "%s", taggedItem->clazz->description.cstr() );

@@ -18,10 +18,7 @@ namespace oz
 
   bool BSP::loadOZBSP( const char* path )
   {
-    Buffer buffer;
-    buffer.read( path );
-
-    if( buffer.isEmpty() ) {
+    if( !buffer.read( path ) ) {
       return false;
     }
 
@@ -109,8 +106,6 @@ namespace oz
       models[i].slideTime = is.readFloat();
       models[i].timeout = is.readFloat();
     }
-
-    hard_assert( !is.isAvailable() );
 
     return true;
   }

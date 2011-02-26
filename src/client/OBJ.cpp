@@ -435,16 +435,12 @@ namespace client
     MeshData mesh;
     compiler.getMeshData( &mesh );
 
-    int size = mesh.getSize();
-
-    Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     mesh.write( &os );
 
     log.print( "Writing to '%s' ...", fileName );
-    hard_assert( !os.isAvailable() );
-    buffer.write( fileName );
+    buffer.write( fileName, os.length() );
     log.printEnd( " OK" );
   }
 

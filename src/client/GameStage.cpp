@@ -121,7 +121,7 @@ namespace client
     beginTime = SDL_GetTicks();
 
     if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
-      orbis.sky.time += orbis.sky.period * 0.25f;
+      orbis.sky.time += orbis.sky.period * 0.125f;
     }
 
     camera.update();
@@ -180,12 +180,22 @@ namespace client
 
   void GameStage::begin()
   {
-    render.draw();
-    loader.update();
+    log.println( "Preloading GameStage {" );
+    log.indent();
 
     SDL_Delay( uint( config.get( "gameStage.loadingTime", 0.0f ) * 1000.0f ) );
 
-    ui::ui.loadScreen->show( false );
+    camera.update();
+    camera.prepare();
+
+    render.draw();
+    sound.play();
+    loader.update();
+
+    log.unindent();
+    log.println( "}" );
+
+    ui::ui.showLoadingScreen( false );
   }
 
   void GameStage::end()
@@ -199,17 +209,18 @@ namespace client
     network.connect();
 
     if( config.getSet( "gameStage.autoload", true ) ) {
-      Buffer buffer;
       String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
       log.print( "Loading world stream from '%s' ...", stateFile.cstr() );
+      Buffer buffer( 4 * 1024 * 1024 );
+
       if( buffer.read( stateFile ) ) {
         log.printEnd( " OK" );
 
-        InputStream istream = buffer.inputStream();
+        InputStream is = buffer.inputStream();
 
-        matrix.load( &istream );
-        nirvana.load( &istream );
+        matrix.load( &is );
+        nirvana.load( &is );
       }
       else {
         log.printEnd( " Failed, starting a new world" );
@@ -225,7 +236,7 @@ namespace client
       nirvana.load( null );
     }
 
-    camera.warp( Point3( 55, -45, 40 ) );
+    camera.warp( Point3( 55.0f, -45.0f, 48.75f ) );
 
     log.print( "Starting auxilary thread ..." );
 
@@ -268,15 +279,14 @@ namespace client
     }
 
     if( config.getSet( "gameStage.autosave", true ) ) {
-      Buffer buffer( 1024 * 1024 * 10 );
-      OutputStream ostream = buffer.outputStream();
+      OutputStream os = buffer.outputStream();
       String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
 
-      matrix.unload( &ostream );
-      nirvana.unload( &ostream );
+      matrix.unload( &os );
+      nirvana.unload( &os );
 
       log.print( "Writing world stream to %s ...", stateFile.cstr() );
-      buffer.write( stateFile );
+      buffer.write( stateFile, os.length() );
       log.printEnd( " OK" );
     }
     else {

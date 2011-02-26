@@ -10,6 +10,7 @@
 #include "stable.hpp"
 
 #include "client/Shape.hpp"
+#include "client/Camera.hpp"
 
 namespace oz
 {
@@ -18,203 +19,37 @@ namespace client
 
   Shape shape;
 
-  uint Shape::genRandomTetrahedicParticle( uint list, float size )
+  void Shape::bindVertexArray() const
   {
-    static const float SQRT_3_THIRDS = Math::sqrt( 3.0f ) / 3.0f;
-
-    float dim = size / 2.0f;
-
-    Vec3 v0 = Math::frand() * dim * Vec3( 0.0f,            0.0f,        1.0f );
-    Vec3 v1 = Math::frand() * dim * Vec3( 0.0f,            2.0f / 3.0f, 0.0f );
-    Vec3 v2 = Math::frand() * dim * Vec3( -SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
-    Vec3 v3 = Math::frand() * dim * Vec3(  SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
-
-    glNewList( list, GL_COMPILE );
-
-    glBegin( GL_TRIANGLES );
-      // fore
-      glNormal3fv( ~( ( v2 - v1 ) ^ ( v0 - v1 ) ) );
-      glVertex3fv( v0 );
-      glVertex3fv( v1 );
-      glVertex3fv( v2 );
-
-      // left
-      glNormal3fv( ~( ( v1 - v3 ) ^ ( v0 - v3 ) ) );
-      glVertex3fv( v0 );
-      glVertex3fv( v3 );
-      glVertex3fv( v1 );
-
-      // right
-      glNormal3fv( ~( ( v3 - v2 ) ^ ( v0 - v2 ) ) );
-      glVertex3fv( v0 );
-      glVertex3fv( v2 );
-      glVertex3fv( v3 );
-
-      // bottom
-      glNormal3fv( ~( ( v3 - v1 ) ^ ( v2 - v1 ) ) );
-      glVertex3fv( v1 );
-      glVertex3fv( v3 );
-      glVertex3fv( v2 );
-    glEnd();
-
-    glEndList();
-
-    return list;
+    glBindVertexArray( vao );
   }
 
-  uint Shape::genRandomCubicParticle( uint list, float size )
+  void Shape::drawSprite( const Point3& p, float dimX, float dimY )
   {
-    float dim = size / 2.0f;
+    Mat44 transf;
+    glGetFloatv( GL_MODELVIEW_MATRIX, transf );
 
-    Vec3 v0 = Vec3( -dim * Math::frand(), -dim * Math::frand(), -dim );
-    Vec3 v1 = Vec3(  dim * Math::frand(), -dim * Math::frand(), -dim );
-    Vec3 v2 = Vec3(  dim * Math::frand(),  dim * Math::frand(), -dim );
-    Vec3 v3 = Vec3( -dim * Math::frand(),  dim * Math::frand(), -dim );
+    transf.w = Quat::ID;
+    transf = ~transf;
 
-    Vec3 v4 = Vec3( v0.x, v0.y,  dim );
-    Vec3 v5 = Vec3( v1.x, v1.y,  dim );
-    Vec3 v6 = Vec3( v2.x, v2.y,  dim );
-    Vec3 v7 = Vec3( v3.x, v3.y,  dim );
+    glPushMatrix();
+    glTranslatef( p.x, p.y, p.z );
+    glMultMatrixf( transf );
+    glScalef( dimX, 1.0f, dimY );
 
-    glNewList( list, GL_COMPILE );
+    glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 
-    glBegin( GL_QUADS );
-      // top
-      glNormal3f( 0.0f, 0.0f, 1.0f );
-      glVertex3fv( v4 );
-      glVertex3fv( v5 );
-      glVertex3fv( v6 );
-      glVertex3fv( v7 );
-
-      // fore
-      glNormal3fv( ~( ( v1 - v0 ) ^ ( v4 - v0 ) ) );
-      glVertex3fv( v0 );
-      glVertex3fv( v1 );
-      glVertex3fv( v5 );
-      glVertex3fv( v4 );
-
-      // left
-      glNormal3fv( ~( ( v0 - v3 ) ^ ( v7 - v3 ) ) );
-      glVertex3fv( v3 );
-      glVertex3fv( v0 );
-      glVertex3fv( v4 );
-      glVertex3fv( v7 );
-
-      // back
-      glNormal3fv( ~( ( v3 - v2 ) ^ ( v6 - v2 ) ) );
-      glVertex3fv( v2 );
-      glVertex3fv( v3 );
-      glVertex3fv( v7 );
-      glVertex3fv( v6 );
-
-      // right
-      glNormal3fv( ~( ( v2 - v1 ) ^ ( v5 - v1 ) ) );
-      glVertex3fv( v1 );
-      glVertex3fv( v2 );
-      glVertex3fv( v6 );
-      glVertex3fv( v5 );
-
-      // bottom
-      glNormal3f( 0.0f, 0.0f, -1.0f );
-      glVertex3fv( v3 );
-      glVertex3fv( v2 );
-      glVertex3fv( v1 );
-      glVertex3fv( v0 );
-    glEnd();
-
-    glEndList();
-
-    return list;
-  }
-
-  uint Shape::genBox( uint list, const AABB& bb, uint texture )
-  {
-    Vec3 v0 = -bb.dim;
-    Vec3 v1 = +bb.dim;
-
-    glNewList( list, GL_COMPILE );
-
-    glBindTexture( GL_TEXTURE_2D, texture );
-    glBegin( GL_QUADS );
-      // top
-      glNormal3f( 0.0f, 0.0f, 1.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( v0.x, v0.y, v1.z );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( v1.x, v0.y, v1.z );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( v1.x, v1.y, v1.z );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( v0.x, v1.y, v1.z );
-
-      // fore
-      glNormal3f( 0.0f, -1.0f, 0.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( v0.x, v0.y, v0.z );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( v1.x, v0.y, v0.z );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( v1.x, v0.y, v1.z );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( v0.x, v0.y, v1.z );
-
-      // left
-      glNormal3f( -1.0f, 0.0f, 0.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( v0.x, v1.y, v0.z );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( v0.x, v0.y, v0.z );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( v0.x, v0.y, v1.z );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( v0.x, v1.y, v1.z );
-
-      // back
-      glNormal3f( 0.0f, 1.0f, 0.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( v1.x, v1.y, v0.z );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( v0.x, v1.y, v0.z );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( v0.x, v1.y, v1.z );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( v1.x, v1.y, v1.z );
-
-      // right
-      glNormal3f( 1.0f, 0.0f, 0.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( v1.x, v0.y, v0.z );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( v1.x, v1.y, v0.z );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( v1.x, v1.y, v1.z );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( v1.x, v0.y, v1.z );
-
-      // bottom
-      glNormal3f( 0.0f, 0.0f, -1.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( v0.x, v1.y, v0.z );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( v1.x, v1.y, v0.z );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( v1.x, v0.y, v0.z );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( v0.x, v0.y, v0.z );
-    glEnd();
-
-    glEndList();
-
-    return list;
+    glPopMatrix();
   }
 
   void Shape::drawBox( const AABB& bb )
   {
     glPushMatrix();
-
     glTranslatef( bb.p.x, bb.p.y, bb.p.z );
     glScalef( bb.dim.x, bb.dim.y, bb.dim.z );
-    glCallList( boxList );
+
+    glDrawRangeElements( GL_TRIANGLE_STRIP, 4, 11, 22, GL_UNSIGNED_SHORT,
+                         reinterpret_cast<const ushort*>( 0 ) + 0 );
 
     glPopMatrix();
   }
@@ -222,10 +57,11 @@ namespace client
   void Shape::drawWireBox( const AABB& bb )
   {
     glPushMatrix();
-
     glTranslatef( bb.p.x, bb.p.y, bb.p.z );
     glScalef( bb.dim.x, bb.dim.y, bb.dim.z );
-    glCallList( wireBoxList );
+
+    glDrawRangeElements( GL_LINES, 4, 11, 24, GL_UNSIGNED_SHORT,
+                         reinterpret_cast<const ushort*>( 0 ) + 22 );
 
     glPopMatrix();
   }
@@ -237,131 +73,188 @@ namespace client
     glRotatef( part->rot.z, 0.0f, 0.0f, 1.0f );
 
     glColor4f( part->colour.x, part->colour.y, part->colour.z, part->lifeTime );
-    glCallList( partListBase + ( part->index % MAX_PART_LISTS ) );
+
+    int index = part->index % MAX_PARTS;
+    glDrawArrays( GL_TRIANGLES, 12 + index * 12, 12 );
   }
 
   void Shape::load()
   {
-    partListBase = glGenLists( MAX_PART_LISTS );
+    DArray<ushort> indices( 46 );
+    DArray<Vertex> vertices( 12 + MAX_PARTS * 12 );
 
-    for( int i = 0; i < MAX_PART_LISTS; ++i ) {
-      genRandomTetrahedicParticle( partListBase + i, 1.0f );
-    }
+    vertices[ 0].set( -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f );
+    vertices[ 1].set( +1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f );
+    vertices[ 2].set( -1.0f, +1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f );
+    vertices[ 3].set( +1.0f, +1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f );
 
-    boxList = glGenLists( 1 );
-    glNewList( boxList, GL_COMPILE );
+    vertices[ 4].set( -1.0f, -1.0f, -1.0f );
+    vertices[ 5].set( -1.0f, -1.0f, +1.0f );
+    vertices[ 6].set( -1.0f, +1.0f, -1.0f );
+    vertices[ 7].set( -1.0f, +1.0f, +1.0f );
+    vertices[ 8].set( +1.0f, -1.0f, -1.0f );
+    vertices[ 9].set( +1.0f, -1.0f, +1.0f );
+    vertices[10].set( +1.0f, +1.0f, -1.0f );
+    vertices[11].set( +1.0f, +1.0f, +1.0f );
 
-    glBegin( GL_QUADS );
-      // top
-      glNormal3f( 0.0f, 0.0f, 1.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( -1.0f, -1.0f, +1.0f );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( +1.0f, -1.0f, +1.0f );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( +1.0f, +1.0f, +1.0f );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( -1.0f, +1.0f, +1.0f );
+    int  k = 12;
+    Vec3 normal;
+
+    for( int i = 0; i < MAX_PARTS; ++i ) {
+      static const float SQRT_3_THIRDS = Math::sqrt( 3.0f ) / 3.0f;
+      static const float DIM = 1.0f / 2.0f;
+
+      Point3 v0 = Point3::ORIGIN + Math::frand() * DIM * Vec3( 0.0f,            0.0f,        1.0f );
+      Point3 v1 = Point3::ORIGIN + Math::frand() * DIM * Vec3( 0.0f,            2.0f / 3.0f, 0.0f );
+      Point3 v2 = Point3::ORIGIN + Math::frand() * DIM * Vec3( -SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
+      Point3 v3 = Point3::ORIGIN + Math::frand() * DIM * Vec3(  SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
 
       // fore
-      glNormal3f( 0.0f, -1.0f, 0.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( -1.0f, -1.0f, -1.0f );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( +1.0f, -1.0f, -1.0f );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( +1.0f, -1.0f, +1.0f );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( -1.0f, -1.0f, +1.0f );
+      normal = ~( ( v2 - v1 ) ^ ( v0 - v1 ) );
+
+      vertices[k++].set( v0, normal );
+      vertices[k++].set( v1, normal );
+      vertices[k++].set( v2, normal );
 
       // left
-      glNormal3f( -1.0f, 0.0f, 0.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( -1.0f, +1.0f, -1.0f );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( -1.0f, -1.0f, -1.0f );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( -1.0f, -1.0f, +1.0f );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( -1.0f, +1.0f, +1.0f );
+      normal = ~( ( v1 - v3 ) ^ ( v0 - v3 ) );
 
-      // back
-      glNormal3f( 0.0f, 1.0f, 0.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( +1.0f, +1.0f, -1.0f );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( -1.0f, +1.0f, -1.0f );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( -1.0f, +1.0f, +1.0f );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( +1.0f, +1.0f, +1.0f );
+      vertices[k++].set( v0, normal );
+      vertices[k++].set( v3, normal );
+      vertices[k++].set( v1, normal );
 
       // right
-      glNormal3f( 1.0f, 0.0f, 0.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( +1.0f, -1.0f, -1.0f );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( +1.0f, +1.0f, -1.0f );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( +1.0f, +1.0f, +1.0f );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( +1.0f, -1.0f, +1.0f );
+      normal = ~( ( v3 - v2 ) ^ ( v0 - v2 ) );
+
+      vertices[k++].set( v0, normal );
+      vertices[k++].set( v2, normal );
+      vertices[k++].set( v3, normal );
 
       // bottom
-      glNormal3f( 0.0f, 0.0f, -1.0f );
-      glTexCoord2f( 0, 0 );
-      glVertex3f( -1.0f, +1.0f, -1.0f );
-      glTexCoord2f( 1, 0 );
-      glVertex3f( +1.0f, +1.0f, -1.0f );
-      glTexCoord2f( 1, 1 );
-      glVertex3f( +1.0f, -1.0f, -1.0f );
-      glTexCoord2f( 0, 1 );
-      glVertex3f( -1.0f, -1.0f, -1.0f );
-    glEnd();
+      normal = ~( ( v3 - v1 ) ^ ( v2 - v1 ) );
 
-    glEndList();
+      vertices[k++].set( v1, normal );
+      vertices[k++].set( v3, normal );
+      vertices[k++].set( v2, normal );
+    }
 
-    wireBoxList = glGenLists( 1 );
-    glNewList( wireBoxList, GL_COMPILE );
+    /*
+     * Full box (GL_TRIANGLE_STRIP)
+     */
 
-    glBegin( GL_LINES );
-      glVertex3f( -1.0f, -1.0f, -1.0f );
-      glVertex3f( +1.0f, -1.0f, -1.0f );
-      glVertex3f( -1.0f, -1.0f, -1.0f );
-      glVertex3f( -1.0f, +1.0f, -1.0f );
-      glVertex3f( -1.0f, -1.0f, -1.0f );
-      glVertex3f( -1.0f, -1.0f, +1.0f );
+    // left
+    indices[ 0] =  4;
+    indices[ 1] =  5;
+    indices[ 2] =  6;
+    indices[ 3] =  7;
 
-      glVertex3f( -1.0f, +1.0f, +1.0f );
-      glVertex3f( +1.0f, +1.0f, +1.0f );
-      glVertex3f( -1.0f, +1.0f, +1.0f );
-      glVertex3f( -1.0f, -1.0f, +1.0f );
-      glVertex3f( -1.0f, +1.0f, +1.0f );
-      glVertex3f( -1.0f, +1.0f, -1.0f );
+    // back
+    indices[ 4] = 10;
+    indices[ 5] = 11;
 
-      glVertex3f( +1.0f, -1.0f, +1.0f );
-      glVertex3f( -1.0f, -1.0f, +1.0f );
-      glVertex3f( +1.0f, -1.0f, +1.0f );
-      glVertex3f( +1.0f, +1.0f, +1.0f );
-      glVertex3f( +1.0f, -1.0f, +1.0f );
-      glVertex3f( +1.0f, -1.0f, -1.0f );
+    // right
+    indices[ 6] =  8;
+    indices[ 7] =  9;
 
-      glVertex3f( +1.0f, +1.0f, -1.0f );
-      glVertex3f( -1.0f, +1.0f, -1.0f );
-      glVertex3f( +1.0f, +1.0f, -1.0f );
-      glVertex3f( +1.0f, -1.0f, -1.0f );
-      glVertex3f( +1.0f, +1.0f, -1.0f );
-      glVertex3f( +1.0f, +1.0f, +1.0f );
-    glEnd();
+    // front
+    indices[ 8] =  4;
+    indices[ 9] =  5;
+    indices[10] =  5;
 
-    glEndList();
+    // bottom
+    indices[11] =  4;
+    indices[12] =  4;
+    indices[13] =  6;
+    indices[14] =  8;
+    indices[15] = 10;
+    indices[16] = 10;
+
+    // top
+    indices[17] =  5;
+    indices[18] =  5;
+    indices[19] =  9;
+    indices[20] =  7;
+    indices[21] = 11;
+
+    /*
+     * Wire box (GL_LINES)
+     */
+
+    // parallel to z
+    indices[22] =  4;
+    indices[23] =  5;
+    indices[24] =  6;
+    indices[25] =  7;
+    indices[26] =  8;
+    indices[27] =  9;
+    indices[28] = 10;
+    indices[29] = 11;
+
+    // parallel to y
+    indices[30] =  4;
+    indices[31] =  6;
+    indices[32] =  5;
+    indices[33] =  7;
+    indices[34] =  8;
+    indices[35] = 10;
+    indices[36] =  9;
+    indices[37] = 11;
+
+    // parallel to x
+    indices[38] =  4;
+    indices[39] =  8;
+    indices[40] =  5;
+    indices[41] =  9;
+    indices[42] =  6;
+    indices[43] = 10;
+    indices[44] =  7;
+    indices[45] = 11;
+
+    glGenVertexArrays( 1, &vao );
+    glBindVertexArray( vao );
+
+    glGenBuffers( 1, &ibo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, 46 * sizeof( ushort ), indices, GL_STATIC_DRAW );
+
+    glGenBuffers( 1, &vbo );
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices, GL_STATIC_DRAW );
+
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
+                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glNormalPointer( GL_FLOAT, sizeof( Vertex ),
+                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+
+    glClientActiveTexture( GL_TEXTURE0 );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+
+    glClientActiveTexture( GL_TEXTURE1 );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+
+    glClientActiveTexture( GL_TEXTURE2 );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
+                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+
+    glBindVertexArray( 0 );
+
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
   }
 
   void Shape::unload()
   {
-    glDeleteLists( partListBase, MAX_PART_LISTS );
-    glDeleteLists( boxList, 1 );
-    glDeleteLists( wireBoxList, 1 );
+    glDeleteVertexArrays( 1, &vao );
+    glDeleteBuffers( 1, &ibo );
+    glDeleteBuffers( 1, &vbo );
   }
 
 }

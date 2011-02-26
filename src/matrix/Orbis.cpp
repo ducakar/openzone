@@ -293,8 +293,8 @@ namespace oz
 
     bsps.alloc( 32 );
     structs.alloc( 128 );
-    objects.alloc( 1024 );
-    parts.alloc( 1024 );
+    objects.alloc( 4096 );
+    parts.alloc( 2048 );
 
     strFreedIndices[0].alloc( 4 );
     strFreedIndices[1].alloc( 4 );

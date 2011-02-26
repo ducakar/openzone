@@ -81,6 +81,11 @@ namespace oz
           pos( start_ ), start( start_ ), end( end_ )
       {}
 
+      int length() const
+      {
+        return int( size_t( pos - start ) );
+      }
+
       int available() const
       {
         return int( size_t( end - pos ) );
@@ -248,6 +253,11 @@ namespace oz
       explicit OutputStream( char* start_, const char* end_ ) :
           pos( start_ ), start( start_ ), end( end_ )
       {}
+
+      int length() const
+      {
+        return int( size_t( pos - start ) );
+      }
 
       int available() const
       {

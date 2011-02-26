@@ -18,7 +18,7 @@ namespace oz
 namespace client
 {
 
-  Pool<SMMModel, 256> SMMModel::pool;
+  Pool<SMMModel, 2048> SMMModel::pool;
 
   Model* SMMModel::create( const Object* obj )
   {

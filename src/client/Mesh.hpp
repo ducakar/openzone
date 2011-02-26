@@ -115,7 +115,6 @@ namespace client
       DArray<ushort> indices;
       DArray<Vertex> vertices;
 
-      int getSize( bool embedTextures = true ) const;
       void write( OutputStream* stream, bool embedTextures = true ) const;
 
   };

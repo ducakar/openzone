@@ -135,6 +135,8 @@ namespace oz
         ++count;
 
         if( freeSlot == null ) {
+          soft_assert( firstBlock == null );
+
           firstBlock = new Block( firstBlock );
           freeSlot = &firstBlock->data[1];
           size += BLOCK_SIZE;

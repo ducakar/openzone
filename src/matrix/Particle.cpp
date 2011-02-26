@@ -17,7 +17,7 @@ namespace oz
   const float Particle::MAX_ROTVELOCITY = 400.0f * Timer::TICK_TIME;
   const float Particle::DAMAGE_THRESHOLD = 50.0f;
 
-  Pool<Particle> Particle::pool;
+  Pool<Particle, 1024> Particle::pool;
 
   Particle::Particle( int index_, const Point3& p_, const Vec3& velocity_, const Vec3& colour_,
                       float restitution_, float mass_, float lifeTime_ ) :

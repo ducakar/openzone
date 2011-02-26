@@ -30,7 +30,7 @@ namespace oz
       static const int EVENT_SHOT       = 7;
       static const int EVENT_SHOT_EMPTY = 8;
 
-      static Pool<Weapon> pool;
+      static Pool<Weapon, 1024> pool;
 
       // -1: unlimited
       int   nShots;

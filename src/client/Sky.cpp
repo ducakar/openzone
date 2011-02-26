@@ -13,9 +13,11 @@
 
 #include "matrix/Timer.hpp"
 #include "matrix/Orbis.hpp"
+
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
 #include "client/Colours.hpp"
+#include "client/Shape.hpp"
 
 namespace oz
 {
@@ -24,29 +26,20 @@ namespace client
 
   Sky sky;
 
-  const float Sky::DAY_BIAS = 0.4f;
+  const float Sky::DAY_BIAS       = 0.4f;
 
-  const float Sky::AMBIENT_COEF = 0.40f;
+  const float Sky::AMBIENT_COEF   = 0.40f;
 
-  const float Sky::RED_COEF   = +0.05f;
-  const float Sky::GREEN_COEF = -0.05f;
-  const float Sky::BLUE_COEF  = -0.10f;
+  const float Sky::RED_COEF       = +0.05f;
+  const float Sky::GREEN_COEF     = -0.05f;
+  const float Sky::BLUE_COEF      = -0.10f;
 
   const float Sky::DAY_COLOUR[]   = { 0.45f, 0.60f, 0.90f, 1.0f };
   const float Sky::NIGHT_COLOUR[] = { 0.02f, 0.02f, 0.05f, 1.0f };
   const float Sky::WATER_COLOUR[] = { 0.00f, 0.05f, 0.25f, 1.0f };
   const float Sky::STAR_COLOUR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
 
-  struct StarEntry
-  {
-    Point3 p;
-    float  coef;
-
-    bool operator < ( const StarEntry& se )
-    {
-      return coef < se.coef;
-    }
-  };
+  const float Sky::STAR_DIM       = 0.10f;
 
   void Sky::load()
   {
@@ -55,84 +48,98 @@ namespace client
     axis = Vec3( -Math::sin( heading ), Math::cos( heading ), 0.0f );
     originalLightDir = Vec3( -Math::cos( heading ), -Math::sin( heading ), 0.0f );
 
-    StarEntry* tempStars = new StarEntry[MAX_STARS];
+    DArray<Point3> positions( MAX_STARS );
+    DArray<ushort> indices( MAX_STARS * 18 );
+    DArray<Vertex> vertices( MAX_STARS * 6 );
+
     for( int i = 0; i < MAX_STARS; ++i ) {
       float length;
       do {
-        tempStars[i].p.x  = 20.0f * Math::frand() - 10.0f;
-        tempStars[i].p.y  = 20.0f * Math::frand() - 10.0f;
-        tempStars[i].p.z  = 20.0f * Math::frand() - 10.0f;
-        tempStars[i].coef = Math::atan2( tempStars[i].p.z, tempStars[i].p.x );
-        length = Vec3( tempStars[i].p ).sqL();
+        positions[i] = Point3( 200.0f * Math::frand() - 100.0f,
+                               200.0f * Math::frand() - 100.0f,
+                               200.0f * Math::frand() - 100.0f );
+        length = ( positions[i] - Point3::ORIGIN ).sqL();
       }
-      while( Math::isNaN( length ) || length < 1.0f || length > 100.0f );
+      while( Math::isNaN( length ) || length < 1600.0f || length > 10000.0f );
     }
 
-    // sort stars
-    aSort( tempStars, MAX_STARS );
+    ushort* index     = indices;
+    Vertex* vertex    = vertices;
+    int     vertIndex = 0;
 
     for( int i = 0; i < MAX_STARS; ++i ) {
-      stars[i] = tempStars[i].p;
+      index[ 0] = ushort( vertIndex + 0 );
+      index[ 1] = ushort( vertIndex + 0 );
+      index[ 2] = ushort( vertIndex + 1 );
+      index[ 3] = ushort( vertIndex + 4 );
+      index[ 4] = ushort( vertIndex + 5 );
+      index[ 5] = ushort( vertIndex + 5 );
+
+      index[ 6] = ushort( vertIndex + 0 );
+      index[ 7] = ushort( vertIndex + 0 );
+      index[ 8] = ushort( vertIndex + 2 );
+      index[ 9] = ushort( vertIndex + 3 );
+      index[10] = ushort( vertIndex + 5 );
+      index[11] = ushort( vertIndex + 5 );
+
+      index[12] = ushort( vertIndex + 1 );
+      index[13] = ushort( vertIndex + 1 );
+      index[14] = ushort( vertIndex + 2 );
+      index[15] = ushort( vertIndex + 3 );
+      index[16] = ushort( vertIndex + 4 );
+      index[17] = ushort( vertIndex + 4 );
+
+      index += 18;
+      vertIndex += 6;
     }
 
-    delete[] tempStars;
-
-    Vertex* vertices = new Vertex[MAX_STARS];
     for( int i = 0; i < MAX_STARS; ++i ) {
-      vertices[i].set( stars[i] );
+      vertex[0].set( positions[i] + Vec3( -STAR_DIM, 0.0f, 0.0f ) );
+      vertex[1].set( positions[i] + Vec3( 0.0f, -STAR_DIM, 0.0f ) );
+      vertex[2].set( positions[i] + Vec3( 0.0f, 0.0f, -STAR_DIM ) );
+      vertex[3].set( positions[i] + Vec3( 0.0f, 0.0f, +STAR_DIM ) );
+      vertex[4].set( positions[i] + Vec3( 0.0f, +STAR_DIM, 0.0f ) );
+      vertex[5].set( positions[i] + Vec3( +STAR_DIM, 0.0f, 0.0f ) );
+
+      vertex += 6;
     }
 
-//     starArray = context.genArray( GL_STATIC_DRAW, vertices, MAX_STARS );
-    delete[] vertices;
+    glGenVertexArrays( 1, &vao );
+    glBindVertexArray( vao );
 
-    sunTexId  = context.loadRawTexture( "sky/simplesun.png", false, GL_LINEAR, GL_LINEAR );
-    moonTexId = context.loadRawTexture( "sky/moon18.png", false, GL_LINEAR, GL_LINEAR );
+    glGenBuffers( 1, &ibo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, ( indices.length() - 2 ) * sizeof( ushort ), indices,
+                  GL_STATIC_DRAW );
 
-    sunList  = context.genLists( 2 );
-    moonList = sunList + 1;
+    glGenBuffers( 1, &vbo );
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices,
+                  GL_STATIC_DRAW );
 
-    glNewList( sunList, GL_COMPILE );
+    glEnableClientState( GL_VERTEX_ARRAY );
+    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
+                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
-    glBindTexture( GL_TEXTURE_2D, sunTexId );
-    glBegin( GL_QUADS );
-      glTexCoord2f( 0.0f, 1.0f );
-      glVertex3f( 0.0f, -1.0f, +1.0f );
-      glTexCoord2f( 1.0f, 1.0f );
-      glVertex3f( 0.0f, -1.0f, -1.0f );
-      glTexCoord2f( 1.0f, 0.0f );
-      glVertex3f( 0.0f, +1.0f, -1.0f );
-      glTexCoord2f( 0.0f, 0.0f );
-      glVertex3f( 0.0f, +1.0f, +1.0f );
-    glEnd();
+    glBindVertexArray( 0 );
 
-    glEndList();
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-    glNewList( moonList, GL_COMPILE );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
-    glColor3f( 1.0f, 1.0f, 1.0f );
-    glBindTexture( GL_TEXTURE_2D, moonTexId );
-    glBegin( GL_QUADS );
-      glTexCoord2f( 0.0f, 1.0f );
-      glVertex3f( 0.0f, -1.0f, -1.0f );
-      glTexCoord2f( 1.0f, 1.0f );
-      glVertex3f( 0.0f, -1.0f, +1.0f );
-      glTexCoord2f( 1.0f, 0.0f );
-      glVertex3f( 0.0f, +1.0f, +1.0f );
-      glTexCoord2f( 0.0f, 0.0f );
-      glVertex3f( 0.0f, +1.0f, -1.0f );
-    glEnd();
-
-    glEndList();
+    sunTexId  = context.loadRawTexture( "sky/simplesun.png", null, false, GL_LINEAR, GL_LINEAR );
+    moonTexId = context.loadRawTexture( "sky/moon18.png", null, false, GL_LINEAR, GL_LINEAR );
 
     update();
   }
 
   void Sky::unload()
   {
-    context.deleteLists( sunList );
     glDeleteTextures( 1, &sunTexId );
     glDeleteTextures( 1, &moonTexId );
-//     context.deleteArray( starArray );
+
+    glDeleteVertexArrays( 1, &vao );
+    glDeleteBuffers( 1, &vbo );
   }
 
   void Sky::update()
@@ -182,44 +189,39 @@ namespace client
     // we need the transformation matrix for occlusion of stars below horizon
     Mat44 transf = Mat44::rotZ( Math::rad( orbis.sky.heading ) ) * Mat44::rotY( angle );
 
-    glDisable( GL_BLEND );
-    glColor3fv( colour );
+    glDisable( GL_CULL_FACE );
 
     glPushMatrix();
     glMultMatrixf( transf );
-    transf = ~transf;
 
-//     context.bindArray( starArray );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
-//     Vec3 tz = transf.z;
-//     int start, end;
-//     if( stars[0] * tz > 0.0f ) {
-//       for( end = 1; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
-//       for( start = end + 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
-//
-//       glDrawArrays( GL_POINTS, 0, end );
-//       glDrawArrays( GL_POINTS, start, MAX_STARS - start );
-//     }
-//     else {
-//       for( start = 1; start < MAX_STARS && stars[start] * tz <= 0.0f; ++start );
-//       for( end = start; end < MAX_STARS && stars[end] * tz > 0.0f; ++end );
-//
-//       glDrawArrays( GL_POINTS, start, end - start );
-//     }
+    glBindVertexArray( vao );
 
-    glEnable( GL_TEXTURE_2D );
+    glColor3fv( colour );
+    glDrawElements( GL_TRIANGLE_STRIP, MAX_STARS * 18 - 2, GL_UNSIGNED_SHORT, 0 );
+
+    shape.bindVertexArray();
+
     glEnable( GL_BLEND );
 
-    glTranslatef( -15.0f, 0.0f, 0.0f );
     glColor3f( 2.0f * Colours::diffuse[0] + Colours::ambient[0],
                Colours::diffuse[1] + Colours::ambient[1],
                Colours::diffuse[2] + Colours::ambient[2] );
-    glCallList( sunList );
+    glBindTexture( GL_TEXTURE_2D, sunTexId );
 
-    glTranslatef( 30.0f, 0.0f, 0.0f );
-    glCallList( moonList );
+    shape.drawSprite( Point3( -15.0f, 0.0f, 0.0f ), 1.0f, 1.0f );
+
+    glColor4fv( Colours::WHITE );
+    glBindTexture( GL_TEXTURE_2D, moonTexId );
+
+    shape.drawSprite( Point3( 15.0f, 0.0f, 0.0f ), 1.0f, 1.0f );
+
+    glDisable( GL_BLEND );
 
     glPopMatrix();
+
+    glEnable( GL_CULL_FACE );
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }

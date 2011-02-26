@@ -31,11 +31,10 @@ namespace client
 
     public:
 
-      float maxDistance;
       float radius;
 
-      void init( float coeff, float aspect, float maxDistance );
-      void update( float maxDistance );
+      void init();
+      void update();
 
       OZ_ALWAYS_INLINE
       bool isVisible( const Point3& p, float radius = 0.0f )

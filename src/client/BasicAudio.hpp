@@ -28,7 +28,7 @@ namespace client
 
     public:
 
-      static Pool<BasicAudio> pool;
+      static Pool<BasicAudio, 1024> pool;
 
       static Audio* create( const Object* obj );
 

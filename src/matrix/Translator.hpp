@@ -56,10 +56,10 @@ namespace oz
 
     private:
 
-      HashString<int, 512> textureIndices;
-      HashString<int, 512> soundIndices;
+      HashString<int, 256> textureIndices;
+      HashString<int, 256> soundIndices;
       HashString<int, 16>  terraIndices;
-      HashString<int, 128> bspIndices;
+      HashString<int, 64>  bspIndices;
       HashString<int, 256> modelIndices;
 
     public:

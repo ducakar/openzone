@@ -42,6 +42,7 @@ namespace client
   Context context;
 
   Pool<Context::Source> Context::Source::pool;
+  Buffer Context::buffer;
 
   uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
@@ -109,7 +110,8 @@ namespace client
     return texNum;
   }
 
-  uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int minFilter )
+  uint Context::loadRawTexture( const char* path, int* nMipmaps, bool wrap,
+                                int magFilter, int minFilter )
   {
     log.print( "Loading raw texture '%s' ...", path );
 
@@ -132,6 +134,20 @@ namespace client
 
     hard_assert( glIsTexture( texNum ) );
 
+    if( nMipmaps != null ) {
+      *nMipmaps = 0;
+      for( int i = 0; i < 1000; ++i ) {
+        int mipmapSize;
+        glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &mipmapSize );
+
+        if( glGetError() != GL_NO_ERROR ) {
+          break;
+        }
+
+        ++*nMipmaps;
+      }
+    }
+
     return texNum;
   }
 
@@ -139,9 +155,7 @@ namespace client
   {
     log.print( "Loading texture '%s' ...", path );
 
-    Buffer buffer( path );
-
-    if( buffer.isEmpty() ) {
+    if( !buffer.read( path ) ) {
       log.printEnd( " No such file" );
       return 0;
     }
@@ -205,38 +219,6 @@ namespace client
     return texId;
   }
 
-  void Context::getTextureSize( uint id, int* nMipmaps_, int* size_ )
-  {
-    int nMipmaps = 0;
-    // nMipmaps + internalFormat + minFilter + maxFilter + clamp
-    size_t size = 5 * sizeof( int );
-
-    hard_assert( glIsTexture( id ) );
-    hard_assert( glGetError() == GL_NO_ERROR );
-
-    glBindTexture( GL_TEXTURE_2D, id );
-
-    for( int i = 0; i < 1000; ++i ) {
-      int mipmapSize;
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &mipmapSize );
-
-      if( glGetError() != GL_NO_ERROR ) {
-        break;
-      }
-
-      // width + height + size
-      size += 3 * sizeof( int );
-      size += mipmapSize;
-
-      ++nMipmaps;
-    }
-
-    hard_assert( glGetError() == GL_NO_ERROR );
-
-    *nMipmaps_ = nMipmaps;
-    *size_ = int( size );
-  }
-
   void Context::writeTexture( uint id, int nMipmaps, OutputStream* stream )
   {
     glBindTexture( GL_TEXTURE_2D, id );
@@ -285,13 +267,10 @@ namespace client
 
     resource.id = GL_NONE;
 
-    Buffer buffer( "bsp/tex/" + name + ".ozcTex" );
-
-    if( !buffer.isEmpty() ) {
+    if( buffer.read( "bsp/tex/" + name + ".ozcTex" ) ) {
       InputStream is = buffer.inputStream();
 
       resource.id = readTexture( &is );
-      buffer.free();
     }
 
     if( resource.id == 0 ) {
@@ -375,29 +354,6 @@ namespace client
     delete resource.object;
     resource.object = null;
     resource.nUsers = 0;
-  }
-
-  void Context::beginArrayMode()
-  {
-    glActiveTexture( GL_TEXTURE0 );
-    glEnable( GL_TEXTURE_2D );
-
-    glActiveTexture( GL_TEXTURE1 );
-    glEnable( GL_TEXTURE_2D );
-  }
-
-  void Context::endArrayMode()
-  {
-    glBindVertexArray( 0 );
-
-    glActiveTexture( GL_TEXTURE0 );
-    glDisable( GL_TEXTURE_2D );
-
-    glActiveTexture( GL_TEXTURE1 );
-    glDisable( GL_TEXTURE_2D );
-
-    glActiveTexture( GL_TEXTURE0 );
-    glEnable( GL_TEXTURE_2D );
   }
 
   void Context::bindTextures( uint texture0, uint texture1 )
@@ -720,12 +676,16 @@ namespace client
     sounds   = new Resource<uint>[translator.sounds.length()];
     bsps     = new Resource<BSP*>[translator.bsps.length()];
 
+    buffer.alloc( BUFFER_SIZE );
+
     log.printEnd( " OK" );
   }
 
   void Context::free()
   {
     log.print( "Freeing Context ..." );
+
+    buffer.dealloc();
 
     delete[] textures;
     delete[] sounds;

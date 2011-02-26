@@ -21,7 +21,7 @@ namespace oz
   const float Vehicle::EJECT_MOVE     = 4.0f;
   const float Vehicle::EJECT_MOMENTUM = 20.0f;
 
-  Pool<Vehicle> Vehicle::pool;
+  Pool<Vehicle, 1024> Vehicle::pool;
 
   void Vehicle::onDestroy()
   {

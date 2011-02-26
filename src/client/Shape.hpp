@@ -24,21 +24,20 @@ namespace client
   {
     private:
 
-      static const int MAX_PART_LISTS = 64;
+      static const int MAX_PARTS = 64;
 
-      uint partListBase;
-      uint boxList;
-      uint wireBoxList;
+      uint vao;
+      uint ibo;
+      uint vbo;
 
     public:
 
-      uint genRandomTetrahedicParticle( uint list, float size );
-      uint genRandomCubicParticle( uint list, float size );
-      uint genBox( uint list, const AABB& bb, uint texture );
+      void bindVertexArray() const;
 
-      void drawBox( const AABB& bb );
-      void drawWireBox( const AABB& bb );
-      void draw( const Particle* part );
+      static void drawSprite( const Point3& p, float dimX, float dimY );
+      static void drawBox( const AABB& bb );
+      static void drawWireBox( const AABB& bb );
+      static void draw( const Particle* part );
 
       void load();
       void unload();

@@ -25,15 +25,12 @@ namespace client
 
     log.print( "Loading SMM model '%s' ...", modelPath.cstr() );
 
-    Buffer buffer;
     if( !buffer.read( modelPath ) ) {
       throw Exception( "Cannot read model file" );
     }
     InputStream is = buffer.inputStream();
 
     mesh.load( &is, GL_STATIC_DRAW );
-
-    hard_assert( !is.isAvailable() );
 
     isLoaded = true;
 

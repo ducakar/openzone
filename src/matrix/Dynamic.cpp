@@ -14,7 +14,7 @@
 namespace oz
 {
 
-  Pool<Dynamic> Dynamic::pool;
+  Pool<Dynamic, 2048> Dynamic::pool;
 
   void Dynamic::readFull( InputStream* istream )
   {
