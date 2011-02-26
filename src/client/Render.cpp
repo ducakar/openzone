@@ -46,8 +46,6 @@ namespace client
   const float Render::NIGHT_FOG_DIST = 0.3f;
   const float Render::WATER_VISIBILITY = 8.0f;
 
-  const float Render::STAR_SIZE = 1.0f / 400.0f;
-
   void Render::scheduleCell( int cellX, int cellY )
   {
     Cell& cell = orbis.cells[cellX][cellY];
@@ -87,7 +85,6 @@ namespace client
   void Render::drawOrbis()
   {
     hard_assert( glGetError() == GL_NO_ERROR );
-    hard_assert( !glIsEnabled( GL_TEXTURE_2D ) );
 
     collider.translate( camera.p, Vec3::ZERO );
     isUnderWater = collider.hit.inWater;
@@ -110,7 +107,7 @@ namespace client
 
     // frustum
     Span span;
-    frustum.update( visibility );
+    frustum.update();
     frustum.getExtrems( span, camera.p );
 
     span.minX = max( span.minX - 2, 0 );
@@ -144,21 +141,19 @@ namespace client
     // clear buffer
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
-    hard_assert( !glIsEnabled( GL_TEXTURE_2D ) );
-    hard_assert( glIsEnabled( GL_BLEND ) );
+    hard_assert( glIsEnabled( GL_TEXTURE_2D ) );
+    hard_assert( !glIsEnabled( GL_BLEND ) );
 
     // camera transformation
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
     glFrustum( -camera.vertPlane, +camera.vertPlane, -camera.horizPlane, +camera.horizPlane,
-               camera.minDist, visibility );
+               camera.minDist, camera.maxDist );
 
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
     glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
     glMultMatrixf( camera.rotTMat );
-
-    context.beginArrayMode();
 
     if( !isUnderWater ) {
       sky.draw();
@@ -171,12 +166,14 @@ namespace client
     glLightfv( GL_LIGHT0, GL_DIFFUSE, Colours::diffuse );
     glLightfv( GL_LIGHT0, GL_AMBIENT, Colours::ambient );
 
-    glEnable( GL_CULL_FACE );
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_FOG );
     glEnable( GL_LIGHTING );
-    glDisable( GL_BLEND );
-    glEnable( GL_TEXTURE_2D );
+
+    context.bindTextures();
+    glActiveTexture( GL_TEXTURE0 );
+
+    hard_assert( !glIsEnabled( GL_BLEND ) );
 
     terra.draw();
 
@@ -211,8 +208,10 @@ namespace client
 
     // draw particles
     glEnable( GL_COLOR_MATERIAL );
-    glDisable( GL_TEXTURE_2D );
     glEnable( GL_BLEND );
+
+    context.bindTextures();
+    shape.bindVertexArray();
 
     for( int i = 0; i < particles.length(); ++i ) {
       const Particle* part = particles[i];
@@ -228,15 +227,7 @@ namespace client
     hard_assert( glGetError() == GL_NO_ERROR );
 
     glColor4fv( Colours::WHITE );
-    glEnable( GL_TEXTURE_2D );
-    glDisable( GL_BLEND );
-
-    // draw delayed objects
     glDisable( GL_COLOR_MATERIAL );
-
-    hard_assert( !glIsEnabled( GL_BLEND ) );
-    hard_assert( glIsEnabled( GL_TEXTURE_2D ) );
-    glEnable( GL_BLEND );
 
     // draw structures' water
     foreach( str, structs.citer() ) {
@@ -245,10 +236,11 @@ namespace client
 
     terra.drawWater();
 
-    context.endArrayMode();
-
-    glDisable( GL_TEXTURE_2D );
     glDisable( GL_LIGHTING );
+    glDisable( GL_BLEND );
+
+    context.bindTextures();
+    shape.bindVertexArray();
 
     if( showAim ) {
       Vec3 move = camera.at * 32.0f;
@@ -259,12 +251,7 @@ namespace client
       shape.drawBox( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
     }
 
-    glEnable( GL_BLEND );
-
     if( showBounds ) {
-      glDisable( GL_BLEND );
-      glEnable( GL_COLOR_MATERIAL );
-
       for( int i = 0; i < objects.length(); ++i ) {
         glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
             Colours::CLIP_AABB : Colours::NOCLIP_AABB );
@@ -286,10 +273,6 @@ namespace client
         glColor4fv( Colours::STRUCTURE_AABB );
         shape.drawWireBox( str->toAABB() );
       }
-
-      glColor4fv( Colours::WHITE );
-      glDisable( GL_COLOR_MATERIAL );
-      glEnable( GL_BLEND );
     }
 
     structs.clear();
@@ -300,7 +283,6 @@ namespace client
     glDisable( GL_FOG );
 
     glDisable( GL_DEPTH_TEST );
-    glColor4fv( Colours::WHITE );
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }
@@ -308,8 +290,6 @@ namespace client
   void Render::drawCommon()
   {
     ui::ui.draw();
-
-    hard_assert( !glIsEnabled( GL_TEXTURE_2D ) );
 
     SDL_GL_SwapBuffers();
   }
@@ -327,7 +307,12 @@ namespace client
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    frustum.init( camera.coeff, camera.aspect, camera.maxDist );
+    context.bindTextures();
+    glActiveTexture( GL_TEXTURE0 );
+
+    ui::ui.load();
+
+    frustum.init();
     water.init();
     shape.load();
     sky.load();
@@ -336,9 +321,6 @@ namespace client
     structs.alloc( 64 );
     objects.alloc( 8192 );
     particles.alloc( 1024 );
-
-    glEnable( GL_POINT_SMOOTH );
-    glPointSize( float( camera.height ) * STAR_SIZE );
 
     // fog
     glFogi( GL_FOG_MODE, GL_LINEAR );
@@ -352,8 +334,6 @@ namespace client
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
     glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, Colours::BLACK );
     glEnable( GL_LIGHT0 );
-
-    glEnable( GL_BLEND );
 
     log.unindent();
     log.println( "}" );
@@ -382,6 +362,8 @@ namespace client
     waterStructs.clear();
     waterStructs.dealloc();
 
+    ui::ui.unload();
+
     log.unindent();
     log.println( "}" );
   }
@@ -391,15 +373,20 @@ namespace client
     log.println( "Initialising Graphics {" );
     log.indent();
 
+    glEnable( GL_CULL_FACE );
     glDepthFunc( GL_LEQUAL );
 
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
+    glActiveTexture( GL_TEXTURE0 );
+    glEnable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE1 );
+    glEnable( GL_TEXTURE_2D );
+
     camera.init();
     ui::ui.init();
-
-    ui::ui.loadScreen->show( true );
+    ui::ui.draw();
 
     SDL_GL_SwapBuffers();
 

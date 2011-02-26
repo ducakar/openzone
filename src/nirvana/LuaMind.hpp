@@ -25,7 +25,7 @@ namespace nirvana
       static Mind* create( int bot );
       static Mind* read( InputStream* istream );
 
-      static Pool<LuaMind> pool;
+      static Pool<LuaMind, 1024> pool;
 
       explicit LuaMind( int bot );
       virtual ~LuaMind();

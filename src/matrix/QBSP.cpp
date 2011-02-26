@@ -849,20 +849,6 @@ namespace oz
   {
     log.print( "Dumping BSP structure to '%s' ...", path );
 
-    int size = 0;
-
-    size += 1            * int( sizeof( Bounds ) );
-    size += 1            * int( sizeof( float ) );
-    size += 7            * int( sizeof( int ) );
-    size += nPlanes      * int( sizeof( Plane ) );
-    size += nNodes       * int( sizeof( Node ) );
-    size += nLeaves      * int( sizeof( Leaf ) );
-    size += nLeafBrushes * int( sizeof( int ) );
-    size += nBrushes     * int( sizeof( Brush ) );
-    size += nBrushSides  * int( sizeof( int ) );
-    size += nModels      * int( sizeof( Model ) );
-
-    Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     os.writePoint3( mins );
@@ -920,8 +906,7 @@ namespace oz
       os.writeFloat( models[i].timeout );
     }
 
-    hard_assert( !os.isAvailable() );
-    buffer.write( path );
+    buffer.write( path, os.length() );
 
     log.printEnd( " OK" );
     return true;

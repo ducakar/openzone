@@ -57,21 +57,17 @@ static void prebuildTextures( const char* path, bool wrap, int magFilter, int mi
     log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
     log.indent();
 
-    uint id = client::context.loadRawTexture( srcPath, wrap, magFilter, minFilter );
+    int nMipmaps;
+    uint id = client::context.loadRawTexture( srcPath, &nMipmaps, wrap, magFilter, minFilter );
 
     hard_assert( id != 0 );
 
-    int nMipmaps, size;
-    client::context.getTextureSize( id, &nMipmaps, &size );
-
-    Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     log.println( "Compiling into '%s'", destPath.cstr() );
     client::context.writeTexture( id, nMipmaps, &os );
 
-    hard_assert( !os.isAvailable() );
-    if( !buffer.write( destPath ) ) {
+    if( !buffer.write( destPath, os.length() ) ) {
       throw Exception( "Texture writing failed" );
     }
 
@@ -191,6 +187,7 @@ int main( int, char** )
 
     long startTime = SDL_GetTicks();
 
+    buffer.alloc( 10 * 1024 * 1024 );
     matrix.init();
 
     prebuildTextures( "ui", true, GL_LINEAR, GL_LINEAR );
@@ -204,6 +201,7 @@ int main( int, char** )
 
     client::compiler.free();
     matrix.free();
+    buffer.dealloc();
 
     long endTime = SDL_GetTicks();
 

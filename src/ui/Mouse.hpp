@@ -11,6 +11,9 @@
 
 #include "stable.hpp"
 
+#define SDL_BUTTON_WUMASK SDL_BUTTON( SDL_BUTTON_WHEELUP )
+#define SDL_BUTTON_WDMASK SDL_BUTTON( SDL_BUTTON_WHEELDOWN )
+
 namespace oz
 {
 namespace client
@@ -50,6 +53,7 @@ namespace ui
       int  y;
       int  relX;
       int  relY;
+      int  relZ;
 
       char buttons;
       char oldButtons;
@@ -67,13 +71,16 @@ namespace ui
       int  icon;
       bool doShow;
 
-      void init();
-      void free();
-
       void prepare();
       void update();
 
       void draw() const;
+
+      void load();
+      void unload();
+
+      void init();
+      void free();
 
   };
 

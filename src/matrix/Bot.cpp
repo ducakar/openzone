@@ -31,7 +31,7 @@ namespace oz
   const float Bot::DEAD_BODY_LIFT      = 100.0f;
   const float Bot::BODY_FADEOUT_FACTOR = 0.0005f;
 
-  Pool<Bot> Bot::pool;
+  Pool<Bot, 1024> Bot::pool;
 
   void Bot::onDestroy()
   {

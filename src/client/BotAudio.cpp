@@ -21,7 +21,7 @@ namespace oz
 namespace client
 {
 
-  Pool<BotAudio> BotAudio::pool;
+  Pool<BotAudio, 256> BotAudio::pool;
 
   Audio* BotAudio::create( const Object* obj )
   {

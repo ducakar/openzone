@@ -21,10 +21,10 @@ namespace oz
   {
     public:
 
-      static Pool<Dynamic> pool;
+      static Pool<Dynamic, 2048> pool;
 
       Vec3  velocity;
-      Vec3  momentum;  // desired velocity
+      Vec3  momentum;   // desired velocity
       Vec3  floor;      // if on ground, used as floor normal, it is not set if on another object
 
       float mass;

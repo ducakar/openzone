@@ -102,12 +102,6 @@ namespace oz
     log.printEnd( " OK" );
     log.print( "Dumping terrain to '%s' ...", destFile.cstr() );
 
-    int size = 0;
-
-    size += 1 * int( sizeof( int ) );
-    size += VERTS * VERTS * int( sizeof( Quad ) );
-
-    Buffer buffer( size );
     OutputStream os = buffer.outputStream();
 
     os.writeInt( VERTS );
@@ -127,8 +121,7 @@ namespace oz
       }
     }
 
-    hard_assert( !os.isAvailable() );
-    buffer.write( destFile );
+    buffer.write( destFile, os.length() );
 
     log.printEnd( " OK" );
   }
@@ -142,9 +135,7 @@ namespace oz
 
     log.print( "Loading terrain '%s' ...", name.cstr() );
 
-    Buffer buffer( path );
-
-    if( buffer.isEmpty() ) {
+    if( !buffer.read( path ) ) {
       log.printEnd( " Cannot read file" );
       throw Exception( "Failed to load terrain" );
     }
@@ -164,8 +155,6 @@ namespace oz
         quads[x][y].triNormal[1] = is.readVec3();
       }
     }
-
-    hard_assert( !is.isAvailable() );
 
     log.printEnd( " OK" );
   }

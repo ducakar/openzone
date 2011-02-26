@@ -18,10 +18,10 @@ namespace client
 
   Frustum frustum;
 
-  void Frustum::init( float coeff, float aspect, float maxDistance_ )
+  void Frustum::init()
   {
-    fovX = Math::atan( coeff * aspect );
-    fovY = Math::atan( coeff );
+    fovX = Math::atan( camera.coeff * camera.aspect );
+    fovY = Math::atan( camera.coeff );
 
     Math::sincos( fovX, &sx, &cx );
     Math::sincos( fovY, &sy, &cy );
@@ -31,14 +31,12 @@ namespace client
     nUp0    = Vec3( 0.0f, sy,   -cy );
     nDown0  = Vec3( 0.0f, sy,    cy );
 
-    maxDistance = maxDistance_;
-    radius      = maxDistance / cx;
+    radius  = camera.maxDist / cx;
   }
 
-  void Frustum::update( float maxDistance_ )
+  void Frustum::update()
   {
-    maxDistance = maxDistance_;
-    radius      = maxDistance / cx;
+    radius = camera.maxDist / cx;
 
     nLeft  = camera.rotMat * nLeft0;
     nRight = camera.rotMat * nRight0;
@@ -50,7 +48,7 @@ namespace client
     dRight = camera.p * nRight;
     dDown  = camera.p * nDown;
     dUp    = camera.p * nUp;
-    dFront = camera.p * nFront + maxDistance;
+    dFront = camera.p * nFront + camera.maxDist;
   }
 
 }

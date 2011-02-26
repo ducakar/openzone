@@ -20,7 +20,7 @@ namespace oz
 namespace nirvana
 {
 
-  Pool<LuaMind> LuaMind::pool;
+  Pool<LuaMind, 1024> LuaMind::pool;
 
   Mind* LuaMind::create( int bot )
   {

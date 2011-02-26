@@ -342,10 +342,10 @@ namespace client
     DArray<MD2TexCoord> texCoords( header.nTexCoords );
     DArray<MD2Triangle> triangles( header.nTriangles );
 
-    char* buffer = new char[header.nFrames * header.frameSize];
+    char* data = new char[header.nFrames * header.frameSize];
 
     fseek( file, header.offFrames, SEEK_SET );
-    fread( buffer, 1, header.nFrames * header.frameSize, file );
+    fread( data, 1, header.nFrames * header.frameSize, file );
 
     fseek( file, header.offTexCoords, SEEK_SET );
     fread( texCoords, 1, header.nTexCoords * sizeof( MD2TexCoord ), file );
@@ -362,7 +362,7 @@ namespace client
 
     // transform vertices
     for( int i = 0; i < header.nFrames; ++i ) {
-      MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &buffer[i * header.frameSize] );
+      MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &data[i * header.frameSize] );
 
       for( int j = 0; j < header.nFrameVerts; ++j ) {
         currVertex->x = float( frame.verts[j].p[1] ) * -frame.scale[1] - frame.translate[1];
@@ -380,7 +380,7 @@ namespace client
     }
     hard_assert( currVertex == rawVertices + rawVertices.length() );
 
-    MD2Frame& frame = *reinterpret_cast<MD2Frame*>( buffer );
+    MD2Frame& frame = *reinterpret_cast<MD2Frame*>( data );
 
     compiler.beginMesh();
     compiler.enable( CAP_UNIQUE );
@@ -438,21 +438,9 @@ namespace client
       vertex->normal[2] = NORMALS[ frame.verts[index].normal ].z;
     }
 
-    delete[] buffer;
+    delete[] data;
 
-    size_t size = 0;
-
-    size += mesh.getSize();
-
-    if( header.nFrames != 1 ) {
-      size += 2 * sizeof( int );
-      size += sizeof( float[3] );
-      size += nMeshVerts * sizeof( Vertex );
-      size += header.nFrames * nMeshVerts * sizeof( float[3] );
-    }
-
-    Buffer outBuffer( static_cast<int>( size ) );
-    OutputStream os = outBuffer.outputStream();
+    OutputStream os = buffer.outputStream();
 
     if( header.nFrames != 1 ) {
       os.writeInt( header.nFrames );
@@ -471,16 +459,14 @@ namespace client
       }
     }
 
-    hard_assert( !os.isAvailable() );
-
     if( header.nFrames != 1 ) {
       log.print( "Writing to '%s' ...", ( sPath + ".ozcMD2" ).cstr() );
-      outBuffer.write( sPath + ".ozcMD2" );
+      buffer.write( sPath + ".ozcMD2", os.length() );
       log.printEnd( " OK" );
     }
     else {
       log.print( "Writing to '%s' ...", ( sPath + ".ozcSMM" ).cstr() );
-      outBuffer.write( sPath + ".ozcSMM" );
+      buffer.write( sPath + ".ozcSMM", os.length() );
       log.printEnd( " OK" );
     }
 
@@ -514,7 +500,6 @@ namespace client
 
     log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
-    Buffer buffer;
     if( !buffer.read( path ) ) {
       throw Exception( "MD2 cannot read model file" );
     }
@@ -540,8 +525,6 @@ namespace client
         vertices[i] = is.readPoint3();
       }
     }
-
-    hard_assert( !is.isAvailable() );
 
     isLoaded = true;
 

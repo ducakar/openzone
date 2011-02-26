@@ -45,13 +45,18 @@ namespace ui
       Area*          root;
       HudArea*       hud;
       StrategicArea* strategic;
-      LoadingArea*   loadScreen;
+      LoadingArea*   loadingScreen;
 
-      void init();
-      void free();
+      void showLoadingScreen( bool doShow );
 
       void update();
       void draw();
+
+      void load();
+      void unload();
+
+      void init();
+      void free();
 
   };
 

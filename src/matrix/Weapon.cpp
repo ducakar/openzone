@@ -19,7 +19,7 @@
 namespace oz
 {
 
-  Pool<Weapon> Weapon::pool;
+  Pool<Weapon, 1024> Weapon::pool;
 
   void Weapon::onUpdate()
   {

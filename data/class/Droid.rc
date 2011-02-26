@@ -1,5 +1,8 @@
 base "Bot"
 
+dim.x "0.29"
+dim.y "0.29"
+
 life "200.0"
 mass "100.0"
 

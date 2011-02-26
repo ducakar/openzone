@@ -119,7 +119,6 @@ namespace ui
       rect( -200, 10, 190, 16 );
 
       glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-      glEnable( GL_TEXTURE_2D );
 
       if( !camera.isExternal ) {
         glBindTexture( GL_TEXTURE_2D, crossTexId );
@@ -133,6 +132,7 @@ namespace ui
           glTexCoord2i( 0, 0 );
           glVertex2i( crossIconX, crossIconY + ICON_SIZE );
         glEnd();
+        glBindTexture( GL_TEXTURE_2D, 0 );
       }
 
       if( bot->parent == -1 ) {
@@ -151,6 +151,7 @@ namespace ui
               glTexCoord2i( 0, 0 );
               glVertex2i( mountIconX, mountIconY + ICON_SIZE );
             glEnd();
+            glBindTexture( GL_TEXTURE_2D, 0 );
           }
           else if( tagged->flags & Object::USE_FUNC_BIT ) {
             glBindTexture( GL_TEXTURE_2D, useTexId );
@@ -164,6 +165,7 @@ namespace ui
               glTexCoord2i( 0, 0 );
               glVertex2i( useIconX, useIconY + ICON_SIZE );
             glEnd();
+            glBindTexture( GL_TEXTURE_2D, 0 );
           }
           if( tagged->flags & Object::ITEM_BIT ) {
             glBindTexture( GL_TEXTURE_2D, takeTexId );
@@ -177,6 +179,7 @@ namespace ui
               glTexCoord2i( 0, 0 );
               glVertex2i( takeIconX, takeIconY + ICON_SIZE );
             glEnd();
+            glBindTexture( GL_TEXTURE_2D, 0 );
           }
 
           const Dynamic* taggedDyn = static_cast<const Dynamic*>( tagged );
@@ -198,6 +201,7 @@ namespace ui
                 glTexCoord2i( 0, 0 );
                 glVertex2i( liftIconX, liftIconY + ICON_SIZE );
               glEnd();
+              glBindTexture( GL_TEXTURE_2D, 0 );
             }
           }
           if( camera.botObj->grabObj != -1 ) {
@@ -212,16 +216,13 @@ namespace ui
               glTexCoord2i( 0, 0 );
               glVertex2i( grabIconX, grabIconY + ICON_SIZE );
             glEnd();
+            glBindTexture( GL_TEXTURE_2D, 0 );
           }
         }
       }
-
-      glDisable( GL_TEXTURE_2D );
     }
     else if( camera.state != Camera::STRATEGIC ) {
       glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-      glEnable( GL_TEXTURE_2D );
-
       glBindTexture( GL_TEXTURE_2D, crossTexId );
       glBegin( GL_QUADS );
         glTexCoord2i( 0, 1 );
@@ -233,8 +234,7 @@ namespace ui
         glTexCoord2i( 0, 0 );
         glVertex2i( crossIconX, crossIconY + ICON_SIZE );
       glEnd();
-
-      glDisable( GL_TEXTURE_2D );
+      glBindTexture( GL_TEXTURE_2D, 0 );
     }
 
     drawChildren();

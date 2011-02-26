@@ -38,8 +38,6 @@ namespace client
       static const float NIGHT_FOG_DIST;
       static const float WATER_VISIBILITY;
 
-      static const float STAR_SIZE;
-
       struct ObjectEntry
       {
         float distance;

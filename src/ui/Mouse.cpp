@@ -14,9 +14,6 @@
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
 
-#define SDL_BUTTON_WUMASK SDL_BUTTON( SDL_BUTTON_WHEELUP )
-#define SDL_BUTTON_WDMASK SDL_BUTTON( SDL_BUTTON_WHEELDOWN )
-
 namespace oz
 {
 namespace client
@@ -26,63 +23,11 @@ namespace ui
 
   Mouse mouse;
 
-  void Mouse::init()
-  {
-    icon = ARROW;
-    doShow = false;
-
-    x = camera.centreX;
-    y = camera.centreY;
-    relX = 0;
-    relY = 0;
-
-    buttons = 0;
-    oldButtons = 0;
-    currButtons = 0;
-
-    const char* x = config.getSet( "ui.cursor.x", "ui/X_cursor.ozTex" );
-    cursors[X].texId    = context.loadTexture( x );
-    cursors[X].size     = config.getSet( "ui.cursor.x.size", 32 );
-    cursors[X].hotspotX = config.getSet( "ui.cursor.x.hotspot.x", 16 );
-    cursors[X].hotspotY = config.getSet( "ui.cursor.x.hotspot.y", 16 );
-
-    const char* arrow = config.getSet( "ui.cursor.arrow", "ui/left_ptr.ozTex" );
-    cursors[ARROW].texId    = context.loadTexture( arrow );
-    cursors[ARROW].size     = config.getSet( "ui.cursor.arrow.size", 32 );
-    cursors[ARROW].hotspotX = config.getSet( "ui.cursor.arrow.hotspot.x", 1 );
-    cursors[ARROW].hotspotY = config.getSet( "ui.cursor.arrow.hotspot.y", 1 );
-
-    const char* move = config.getSet( "ui.cursor.move", "ui/fleur.ozTex" );
-    cursors[MOVE].texId    = context.loadTexture( move );
-    cursors[MOVE].size     = config.getSet( "ui.cursor.move.size", 32 );
-    cursors[MOVE].hotspotX = config.getSet( "ui.cursor.move.hotspot.x", 16 );
-    cursors[MOVE].hotspotY = config.getSet( "ui.cursor.move.hotspot.y", 16 );
-
-    const char* text = config.getSet( "ui.cursor.text", "ui/xterm.ozTex" );
-    cursors[TEXT].texId    = context.loadTexture( text );
-    cursors[TEXT].size     = config.getSet( "ui.cursor.text.size", 32 );
-    cursors[TEXT].hotspotX = config.getSet( "ui.cursor.text.hotspot.x", 16 );
-    cursors[TEXT].hotspotY = config.getSet( "ui.cursor.text.hotspot.y", 16 );
-
-    const char* hand = config.getSet( "ui.cursor.hand", "ui/hand2.ozTex" );
-    cursors[HAND].texId    = context.loadTexture( hand );
-    cursors[HAND].size     = config.getSet( "ui.cursor.hand.size", 32 );
-    cursors[HAND].hotspotX = config.getSet( "ui.cursor.hand.hotspot.x", 16 );
-    cursors[HAND].hotspotY = config.getSet( "ui.cursor.hand.hotspot.y", 16 );
-  }
-
-  void Mouse::free()
-  {
-    glDeleteTextures( 1, &cursors[X].texId );
-    glDeleteTextures( 1, &cursors[ARROW].texId );
-    glDeleteTextures( 1, &cursors[MOVE].texId );
-    glDeleteTextures( 1, &cursors[TEXT].texId );
-  }
-
   void Mouse::prepare()
   {
     relX = 0;
     relY = 0;
+    relZ = 0;
 
     oldButtons = buttons;
     buttons = currButtons;
@@ -123,7 +68,6 @@ namespace ui
 
     if( doShow ) {
       glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-      glEnable( GL_TEXTURE_2D );
       glBindTexture( GL_TEXTURE_2D, cur.texId );
       glBegin( GL_QUADS );
         glTexCoord2i( 0, 1 );
@@ -135,9 +79,68 @@ namespace ui
         glTexCoord2i( 0, 0 );
         glVertex2i( x - cur.hotspotX           , y + 1 + cur.hotspotY            );
       glEnd();
-      glDisable( GL_TEXTURE_2D );
+      glBindTexture( GL_TEXTURE_2D, 0 );
     }
   }
+
+  void Mouse::load()
+  {
+    const char* x = config.getSet( "ui.cursor.x", "ui/X_cursor.ozTex" );
+    cursors[X].texId    = context.loadTexture( x );
+    cursors[X].size     = config.getSet( "ui.cursor.x.size", 32 );
+    cursors[X].hotspotX = config.getSet( "ui.cursor.x.hotspot.x", 16 );
+    cursors[X].hotspotY = config.getSet( "ui.cursor.x.hotspot.y", 16 );
+
+    const char* arrow = config.getSet( "ui.cursor.arrow", "ui/left_ptr.ozTex" );
+    cursors[ARROW].texId    = context.loadTexture( arrow );
+    cursors[ARROW].size     = config.getSet( "ui.cursor.arrow.size", 32 );
+    cursors[ARROW].hotspotX = config.getSet( "ui.cursor.arrow.hotspot.x", 1 );
+    cursors[ARROW].hotspotY = config.getSet( "ui.cursor.arrow.hotspot.y", 1 );
+
+    const char* move = config.getSet( "ui.cursor.move", "ui/fleur.ozTex" );
+    cursors[MOVE].texId    = context.loadTexture( move );
+    cursors[MOVE].size     = config.getSet( "ui.cursor.move.size", 32 );
+    cursors[MOVE].hotspotX = config.getSet( "ui.cursor.move.hotspot.x", 16 );
+    cursors[MOVE].hotspotY = config.getSet( "ui.cursor.move.hotspot.y", 16 );
+
+    const char* text = config.getSet( "ui.cursor.text", "ui/xterm.ozTex" );
+    cursors[TEXT].texId    = context.loadTexture( text );
+    cursors[TEXT].size     = config.getSet( "ui.cursor.text.size", 32 );
+    cursors[TEXT].hotspotX = config.getSet( "ui.cursor.text.hotspot.x", 16 );
+    cursors[TEXT].hotspotY = config.getSet( "ui.cursor.text.hotspot.y", 16 );
+
+    const char* hand = config.getSet( "ui.cursor.hand", "ui/hand2.ozTex" );
+    cursors[HAND].texId    = context.loadTexture( hand );
+    cursors[HAND].size     = config.getSet( "ui.cursor.hand.size", 32 );
+    cursors[HAND].hotspotX = config.getSet( "ui.cursor.hand.hotspot.x", 16 );
+    cursors[HAND].hotspotY = config.getSet( "ui.cursor.hand.hotspot.y", 16 );
+  }
+
+  void Mouse::unload()
+  {
+    glDeleteTextures( 1, &cursors[X].texId );
+    glDeleteTextures( 1, &cursors[ARROW].texId );
+    glDeleteTextures( 1, &cursors[MOVE].texId );
+    glDeleteTextures( 1, &cursors[TEXT].texId );
+  }
+
+  void Mouse::init()
+  {
+    icon = ARROW;
+    doShow = false;
+
+    x = camera.centreX;
+    y = camera.centreY;
+    relX = 0;
+    relY = 0;
+
+    buttons = 0;
+    oldButtons = 0;
+    currButtons = 0;
+  }
+
+  void Mouse::free()
+  {}
 
 }
 }

@@ -33,16 +33,15 @@ namespace client
       static const float WATER_COLOUR[4];
       static const float STAR_COLOUR[4];
 
-      static const int   MAX_STARS = 512;
+      static const float STAR_DIM;
+      static const int   MAX_STARS = 2048;
+
+      uint   vao;
+      uint   ibo;
+      uint   vbo;
 
       uint   sunTexId;
       uint   moonTexId;
-      uint   sunList;
-      uint   moonList;
-
-      int    starArray;
-
-      Point3 stars[MAX_STARS];
 
     public:
 

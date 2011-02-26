@@ -22,7 +22,7 @@ namespace oz
 namespace client
 {
 
-  Pool<MD2Model, 256> MD2Model::pool;
+  Pool<MD2Model, 1024> MD2Model::pool;
 
   Model* MD2Model::create( const Object* obj )
   {

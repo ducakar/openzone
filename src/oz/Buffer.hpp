@@ -27,83 +27,29 @@ namespace oz
 
     public:
 
-      explicit Buffer() : data( null ), count( 0 )
-      {}
+      explicit Buffer();
+      explicit Buffer( int size );
+      explicit Buffer( const char* file );
 
-      explicit Buffer( int size ) : data( new char[size] ), count( size )
-      {}
+      Buffer( const Buffer& b );
 
-      explicit Buffer( const char* file ) : data( null ), count( 0 )
-      {
-        read( file );
-      }
+      ~Buffer();
 
-      Buffer( const Buffer& b ) : data( null ), count( b.count )
-      {
-        if( b.count != 0 ) {
-          data = new char[b.count];
-          aCopy( data, b.data, b.count );
-        }
-      }
+      Buffer& operator = ( const Buffer& b );
 
-      ~Buffer()
-      {
-        free();
-      }
+      bool isEmpty() const;
 
-      Buffer& operator = ( const Buffer& b )
-      {
-        delete[] data;
-        data  = null;
-        count = b.count;
+      void alloc( int size );
+      void dealloc();
 
-        if( b.count != 0 ) {
-          data = new char[b.count];
-          aCopy( data, b.data, b.count );
-        }
-        return *this;
-      }
-
-      bool isEmpty() const
-      {
-        hard_assert( ( count == 0 ) == ( data == null ) );
-
-        return count == 0;
-      }
-
-      void create( int size )
-      {
-        free();
-
-        data = new char[size];
-        count = size;
-      }
-
-      void free()
-      {
-        delete[] data;
-
-        data  = null;
-        count = 0;
-      }
-
-      InputStream inputStream() const
-      {
-        hard_assert( data != null );
-
-        return InputStream( data, data + count );
-      }
-
-      OutputStream outputStream() const
-      {
-        hard_assert( data != null );
-
-        return OutputStream( data, data + count );
-      }
+      InputStream inputStream() const;
+      OutputStream outputStream() const;
 
       bool read( const char* path );
-      bool write( const char* path );
+      bool write( const char* path, int size );
 
   };
+
+  extern Buffer buffer;
 
 }

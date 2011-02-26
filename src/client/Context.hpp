@@ -40,7 +40,7 @@ namespace client
 
       static const int DEFAULT_MAG_FILTER = GL_LINEAR;
       static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
-      static const int VORBIS_BUFFER_SIZE = 1024 * 1024;
+      static const int BUFFER_SIZE        = 256 * 1024;
 
       template <typename Type>
       struct Resource
@@ -88,7 +88,7 @@ namespace client
         {}
       };
 
-      char                              vorbisBuffer[VORBIS_BUFFER_SIZE];
+      static Buffer                     buffer;
 
     private:
 
@@ -132,15 +132,13 @@ namespace client
                           bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
 
-      static uint loadRawTexture( const char* path, bool wrap = true,
+      static uint loadRawTexture( const char* path, int* nMipmaps = null, bool wrap = true,
                                   int magFilter = DEFAULT_MAG_FILTER,
                                   int minFilter = DEFAULT_MIN_FILTER );
+      static void writeTexture( uint id, int nMipmaps, OutputStream* stream );
 
       static uint loadTexture( const char* path );
       static uint readTexture( InputStream* stream );
-
-      static void getTextureSize( uint id, int* nMipmaps, int* size );
-      static void writeTexture( uint id, int nMipmaps, OutputStream* stream );
 
       uint requestTexture( int id );
       void releaseTexture( int id );
@@ -150,11 +148,6 @@ namespace client
 
       BSP* loadBSP( int id );
       void freeBSP( int id );
-
-      static void beginArrayMode();
-      static void endArrayMode();
-
-      static void setVertexFormat();
 
       static void bindTextures( uint texture0 = 0, uint texture1 = 0 );
 

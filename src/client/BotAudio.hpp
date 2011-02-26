@@ -26,7 +26,7 @@ namespace client
 
     public:
 
-      static Pool<BotAudio> pool;
+      static Pool<BotAudio, 256> pool;
 
       static Audio* create( const Object* obj );
 
