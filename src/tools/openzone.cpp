@@ -39,20 +39,22 @@ int main( int argc, char** argv )
     oz::log.resetIndent();
     oz::log.println();
     oz::log.printException( e );
+    oz::log.println();
 
     if( oz::log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
       fprintf( stderr, "  in %s\n\n", e.function );
-      fprintf( stderr, "  at %s:%d\n", e.file, e.line );
+      fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
     }
   }
   catch( const std::exception& e ) {
     oz::log.resetIndent();
     oz::log.println();
     oz::log.println( "EXCEPTION: %s", e.what() );
+    oz::log.println();
 
     if( oz::log.isFile() ) {
-      fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
+      fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
   }
 

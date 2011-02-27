@@ -257,13 +257,13 @@ namespace client
     const String& name = translator.terras[orbis.terra.id].name;
     String path = "terra/" + name + ".ozcTerra";
 
-    log.println( "Loading terra '%s' {", name.cstr() );
-    log.indent();
+    log.print( "Loading terra '%s' ...", name.cstr() );
 
     ushort* indices  = new ushort[TILE_INDICES];
     Vertex* vertices = new Vertex[TILE_VERTICES + 16];
 
     if( !buffer.read( path ) ) {
+      log.printEnd( " Failed" );
       throw Exception( "Terra loading failed" );
     }
 
@@ -333,8 +333,7 @@ namespace client
     delete[] indices;
     delete[] vertices;
 
-    log.unindent();
-    log.println( "}" );
+    log.printEnd( " OK" );
   }
 
   void Terra::unload()
@@ -355,11 +354,10 @@ namespace client
     span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
     span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
-    context.bindTextures( detailTexId, mapTexId );
+    glUniform1f( Param::oz_TextureScale, float( oz::Terra::QUADS ) * 0.5f );
+    shader.bindTextures( detailTexId, mapTexId );
 
-    glMatrixMode( GL_TEXTURE );
-    glActiveTexture( GL_TEXTURE0 );
-    glScalef( float( oz::Terra::QUADS ) * 0.5f, float( oz::Terra::QUADS ) * 0.5f, 0.0f );
+    hard_assert( glGetError() == GL_NO_ERROR );
 
     // to match strip triangles with matrix terrain we have to make them clockwise since
     // we draw column-major (strips along y axis) for better cache performance
@@ -372,10 +370,9 @@ namespace client
       }
     }
 
-    glLoadIdentity();
-    glMatrixMode( GL_MODELVIEW );
-
     glFrontFace( GL_CCW );
+
+    glUniform1f( Param::oz_TextureScale, 1.0f );
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }
@@ -395,16 +392,16 @@ namespace client
 
     glEnable( GL_BLEND );
 
-    context.bindTextures( waterTexId );
+    shader.bindTextures( waterTexId );
 
     for( int i = span.minX; i <= span.maxX; ++i ) {
       for( int j = span.minY; j <= span.maxY; ++j ) {
         glBindVertexArray( vaos[i][j] );
 
-        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend1 );
+        glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::waterBlend1 );
         glDrawArrays( GL_TRIANGLE_STRIP, TILE_VERTICES + sideVertices, 4 );
 
-        glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::waterBlend2 );
+        glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::waterBlend2 );
         glDrawArrays( GL_TRIANGLE_STRIP, TILE_VERTICES + sideVertices + 4, 4 );
       }
     }

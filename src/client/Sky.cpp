@@ -149,7 +149,7 @@ namespace client
     Mat44 rot = Quat::rotAxis( axis, angle ).rotMat44();
     Vec3  dir = rot * originalLightDir;
 
-    ratio = Math::bound( dir.z + DAY_BIAS, 0.0f, 1.0f );
+    ratio = bound( dir.z + DAY_BIAS, 0.0f, 1.0f );
     float ratioDiff = ( 1.0f - Math::abs( 1.0f - 2.0f * ratio ) );
 
     Colours::sky[0] = NIGHT_COLOUR[0] + ratio * ( DAY_COLOUR[0] - NIGHT_COLOUR[0] ) + RED_COEF * ratioDiff;
@@ -162,10 +162,7 @@ namespace client
     Colours::water[2] = NIGHT_COLOUR[2] + ratio * ( WATER_COLOUR[2] - NIGHT_COLOUR[2] );
     Colours::water[3] = NIGHT_COLOUR[3] + ratio * ( WATER_COLOUR[3] - NIGHT_COLOUR[3] );
 
-    lightDir[0] = dir.x;
-    lightDir[1] = dir.y;
-    lightDir[2] = dir.z;
-    lightDir[3] = 0.0f;
+    lightDir = dir;
 
     Colours::diffuse[0] = ratio + RED_COEF * ratioDiff;
     Colours::diffuse[1] = ratio + GREEN_COEF * ratioDiff;
@@ -180,10 +177,11 @@ namespace client
 
   void Sky::draw()
   {
-    float colour[3] = {
+    float colour[4] = {
       STAR_COLOUR[0] + ratio * ( DAY_COLOUR[0] - STAR_COLOUR[0] ),
       STAR_COLOUR[1] + ratio * ( DAY_COLOUR[1] - STAR_COLOUR[1] ),
-      STAR_COLOUR[2] + ratio * ( DAY_COLOUR[2] - STAR_COLOUR[2] )
+      STAR_COLOUR[2] + ratio * ( DAY_COLOUR[2] - STAR_COLOUR[2] ),
+      1.0f
     };
 
     // we need the transformation matrix for occlusion of stars below horizon
@@ -198,26 +196,31 @@ namespace client
 
     glBindVertexArray( vao );
 
-    glColor3fv( colour );
+    shader.use( Shader::STARS );
+    glUniform4f( Param::oz_DiffuseMaterial, colour[0], colour[1], colour[2], colour[3] );
     glDrawElements( GL_TRIANGLE_STRIP, MAX_STARS * 18 - 2, GL_UNSIGNED_SHORT, 0 );
 
     shape.bindVertexArray();
 
+    shader.use( Shader::UI );
     glEnable( GL_BLEND );
 
     glColor3f( 2.0f * Colours::diffuse[0] + Colours::ambient[0],
                Colours::diffuse[1] + Colours::ambient[1],
                Colours::diffuse[2] + Colours::ambient[2] );
-    glBindTexture( GL_TEXTURE_2D, sunTexId );
+    shader.bindTextures( sunTexId );
 
     shape.drawSprite( Point3( -15.0f, 0.0f, 0.0f ), 1.0f, 1.0f );
 
     glColor4fv( Colours::WHITE );
-    glBindTexture( GL_TEXTURE_2D, moonTexId );
+    shader.bindTextures( moonTexId );
 
     shape.drawSprite( Point3( 15.0f, 0.0f, 0.0f ), 1.0f, 1.0f );
 
     glDisable( GL_BLEND );
+
+    glColor4fv( Colours::BLACK );
+    shader.use( Shader::DEFAULT );
 
     glPopMatrix();
 

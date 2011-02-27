@@ -52,24 +52,6 @@ namespace oz
       explicit Math() = delete;
 
       OZ_ALWAYS_INLINE
-      static float min( float x, float y )
-      {
-        return y < x ? y : x;
-      }
-
-      OZ_ALWAYS_INLINE
-      static float max( float x, float y )
-      {
-        return x < y ? y : x;
-      }
-
-      OZ_ALWAYS_INLINE
-      static float bound( float x, float a, float b )
-      {
-        return x < a ? a : ( b < x ? b : x );
-      }
-
-      OZ_ALWAYS_INLINE
       static float abs( float x )
       {
 #ifdef OZ_BUILTIN_MATH

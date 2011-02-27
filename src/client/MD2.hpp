@@ -38,7 +38,7 @@ namespace client
 
       struct AnimState
       {
-        Anim  type;
+        Anim::Type type;
         int   repeat;
 
         int   startFrame;

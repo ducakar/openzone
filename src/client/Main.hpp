@@ -27,11 +27,13 @@ namespace client
       static const int INIT_SDL_VIDEO    = 0x0004;
       static const int INIT_TRANSLATOR   = 0x0010;
       static const int INIT_GAME_INIT    = 0x0020;
+      static const int INIT_GAME_LOAD    = 0x0040;
       static const int INIT_RENDER_INIT  = 0x0100;
       static const int INIT_CONTEXT_INIT = 0x0200;
       static const int INIT_AUDIO        = 0x0400;
       static const int INIT_CONTEXT_LOAD = 0x1000;
       static const int INIT_RENDER_LOAD  = 0x2000;
+      static const int INIT_MAIN_LOOP    = 0x8000;
 
       Stage* stage;
       int    initFlags;

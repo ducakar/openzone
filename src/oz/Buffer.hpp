@@ -37,7 +37,35 @@ namespace oz
 
       Buffer& operator = ( const Buffer& b );
 
-      bool isEmpty() const;
+      const char* begin() const
+      {
+        return data;
+      }
+
+      char* begin()
+      {
+        return data;
+      }
+
+      const char* end() const
+      {
+        return data + count;
+      }
+
+      char* end()
+      {
+        return data + count;
+      }
+
+      int length() const
+      {
+        return count;
+      }
+
+      bool isEmpty() const
+      {
+        return count == 0;
+      }
 
       void alloc( int size );
       void dealloc();

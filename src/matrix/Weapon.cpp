@@ -24,7 +24,7 @@ namespace oz
   void Weapon::onUpdate()
   {
     if( shotTime > 0.0f ) {
-      shotTime = Math::max( shotTime - Timer::TICK_TIME, 0.0f );
+      shotTime = max( shotTime - Timer::TICK_TIME, 0.0f );
     }
   }
 

@@ -477,7 +477,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->life = Math::bound( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->clazz->life );
+    lua.obj->life = bound( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->clazz->life );
     return 0;
   }
 
@@ -487,9 +487,9 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->life = Math::bound( lua.obj->life + float( lua_tonumber( l, 1 ) ),
-                                 0.0f,
-                                 lua.obj->clazz->life );
+    lua.obj->life = bound( lua.obj->life + float( lua_tonumber( l, 1 ) ),
+                           0.0f,
+                           lua.obj->clazz->life );
     return 0;
   }
 
@@ -1270,7 +1270,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    bot->stamina = Math::bound( float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
+    bot->stamina = bound( float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;
   }
 
@@ -1286,7 +1286,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    bot->stamina = Math::bound( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
+    bot->stamina = bound( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;
   }
 
@@ -1594,6 +1594,8 @@ namespace oz
 
   void Lua::init()
   {
+    l = null;
+
     log.println( "Initialising Matrix Lua {" );
     log.indent();
 
@@ -1805,7 +1807,10 @@ namespace oz
   {
     log.print( "Freeing Matrix Lua ..." );
 
-    lua_close( l );
+    if( l != null ) {
+      lua_close( l );
+      l = null;
+    }
 
     objects.clear();
     objects.dealloc();

@@ -50,7 +50,7 @@ namespace client
       Vec3   originalLightDir;
       Vec3   axis;
 
-      float  lightDir[4];
+      Vec3   lightDir;
 
       void load();
       void unload();

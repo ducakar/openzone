@@ -95,20 +95,20 @@ namespace client
       p -= camera.right * speed;
     }
     if( ui::keyboard.keys[SDLK_SPACE] ) {
-      height = Math::min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
+      height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
     }
     if( ui::keyboard.keys[SDLK_LCTRL] ) {
-      height = Math::max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
+      height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
     }
     if( ui::mouse.wheelDown ) {
       float wheelFactor = float( ui::mouse.relZ ) * 10.0f;
 
-      height = Math::min( MAX_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
+      height = min( MAX_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }
     if( ui::mouse.wheelUp ) {
       float wheelFactor = float( ui::mouse.relZ ) * 10.0f;
 
-      height = Math::max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
+      height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
     }
 
     if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
@@ -116,7 +116,7 @@ namespace client
       camera.setState( Camera::FREECAM );
     }
 
-    p.z = Math::max( 0.0f, orbis.terra.height( p.x, p.y ) ) + height;
+    p.z = max( 0.0f, orbis.terra.height( p.x, p.y ) ) + height;
     camera.move( p );
   }
 

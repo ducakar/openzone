@@ -44,8 +44,10 @@ namespace client
     if( initFlags & INIT_RENDER_LOAD ) {
       render.unload();
     }
-    if( initFlags & INIT_GAME_INIT ) {
+    if( initFlags & INIT_GAME_LOAD ) {
       stage->unload();
+    }
+    if( initFlags & INIT_GAME_INIT ) {
       stage->free();
     }
     if( initFlags & INIT_CONTEXT_LOAD ) {
@@ -75,57 +77,59 @@ namespace client
       log.printEnd( " OK" );
     }
 
-    float uiTime       = float( timer.uiMillis )      * 0.001f;
-    float loaderTime   = float( timer.loaderMillis )  * 0.001f;
-    float soundTime    = float( timer.soundMillis )   * 0.001f;
-    float renderTime   = float( timer.renderMillis )  * 0.001f;
-    float sleepTime    = float( timer.sleepMillis )   * 0.001f;
+    if( ( initFlags & INIT_MAIN_LOOP ) && allTime >= Timer::TICK_TIME ) {
+      float uiTime       = float( timer.uiMillis )      * 0.001f;
+      float loaderTime   = float( timer.loaderMillis )  * 0.001f;
+      float soundTime    = float( timer.soundMillis )   * 0.001f;
+      float renderTime   = float( timer.renderMillis )  * 0.001f;
+      float sleepTime    = float( timer.sleepMillis )   * 0.001f;
 
-    float matrixTime   = float( timer.matrixMillis )  * 0.001f;
-    float nirvanaTime  = float( timer.nirvanaMillis ) * 0.001f;
+      float matrixTime   = float( timer.matrixMillis )  * 0.001f;
+      float nirvanaTime  = float( timer.nirvanaMillis ) * 0.001f;
 
-    float m2Time       = uiTime + soundTime + renderTime;
+      float m2Time       = uiTime + soundTime + renderTime;
 
-    float inactiveTime = float( inactiveMillis )      * 0.001f;
-    float droppedTime  = float( droppedMillis )       * 0.001f;
-    float activeTime   = allTime - inactiveTime;
+      float inactiveTime = float( inactiveMillis )      * 0.001f;
+      float droppedTime  = float( droppedMillis )       * 0.001f;
+      float activeTime   = allTime - inactiveTime;
 
-    int   frameDrops   = timer.ticks - timer.nFrames;
+      int   frameDrops   = timer.ticks - timer.nFrames;
 
-    float shutdownTime = float( SDL_GetTicks() - beginTime ) * 0.001f;
+      float shutdownTime = float( SDL_GetTicks() - beginTime ) * 0.001f;
 
-    context.printLoad();
-    Alloc::printStatistics();
+      context.printLoad();
+      Alloc::printStatistics();
 
-    log.println( "Time statistics {" );
-    log.indent();
-    log.println( "Loading time             %.2f s",    loadingTime );
-    log.println( "Shutdown time            %.2f s",    shutdownTime );
-    log.println( "Main loop {" );
-    log.println( "  Real time              %.2f s",    allTime );
-    log.println( "  Active time            %.2f s",    activeTime );
-    log.println( "  Inactive time          %.2f s",    inactiveTime );
-    log.println( "  Dropped time           %.2f s",    droppedTime );
-    log.println( "  Game time              %.2f s",    timer.time );
-    log.println( "  Ticks in active time   %d (%.2f Hz)",
-                timer.ticks, float( timer.ticks ) / activeTime );
-    log.println( "  Frames in active time  %d (%.2f Hz)",
-                timer.nFrames, float( timer.nFrames ) / activeTime );
-    log.println( "  Frame drops            %d (%.2f %%)",
-                frameDrops, float( frameDrops ) / float( timer.ticks ) * 100.0f );
-    log.println( "  Active time usage {" );
-    log.println( "    %6.2f %%  [M:1  ] loader",        loaderTime  / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2  ]",               m2Time      / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2.1] ui",            uiTime      / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2.2] sound",         soundTime   / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2.3] render",        renderTime  / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [M:2.4] sleep",         sleepTime   / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [A:1  ] matrix",        matrixTime  / activeTime * 100.0f );
-    log.println( "    %6.2f %%  [A:2  ] nirvana",       nirvanaTime / activeTime * 100.0f );
-    log.println( "  }" );
-    log.println( "}" );
-    log.unindent();
-    log.println( "}" );
+      log.println( "Time statistics {" );
+      log.indent();
+      log.println( "Loading time             %.2f s",    loadingTime );
+      log.println( "Shutdown time            %.2f s",    shutdownTime );
+      log.println( "Main loop {" );
+      log.println( "  Real time              %.2f s",    allTime );
+      log.println( "  Active time            %.2f s",    activeTime );
+      log.println( "  Inactive time          %.2f s",    inactiveTime );
+      log.println( "  Dropped time           %.2f s",    droppedTime );
+      log.println( "  Game time              %.2f s",    timer.time );
+      log.println( "  Ticks in active time   %d (%.2f Hz)",
+                  timer.ticks, float( timer.ticks ) / activeTime );
+      log.println( "  Frames in active time  %d (%.2f Hz)",
+                  timer.nFrames, float( timer.nFrames ) / activeTime );
+      log.println( "  Frame drops            %d (%.2f %%)",
+                  frameDrops, float( frameDrops ) / float( timer.ticks ) * 100.0f );
+      log.println( "  Active time usage {" );
+      log.println( "    %6.2f %%  [M:1  ] loader",        loaderTime  / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2  ]",               m2Time      / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2.1] ui",            uiTime      / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2.2] sound",         soundTime   / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2.3] render",        renderTime  / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2.4] sleep",         sleepTime   / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [A:1  ] matrix",        matrixTime  / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [A:2  ] nirvana",       nirvanaTime / activeTime * 100.0f );
+      log.println( "  }" );
+      log.println( "}" );
+      log.unindent();
+      log.println( "}" );
+    }
 
     log.unindent();
     log.println( "}" );
@@ -331,6 +335,8 @@ namespace client
       log.printEnd( " Mode not supported" );
       return;
     }
+
+    initFlags |= INIT_SDL_VIDEO;
     SDL_Surface* surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
     if( surface == null ) {
       log.printEnd( " Failed" );
@@ -350,33 +356,31 @@ namespace client
 
     log.printEnd( " OK, %dx%d-%d set", screenX, screenY, screenBpp );
 
-    initFlags |= INIT_SDL_VIDEO;
-
-    render.init();
     initFlags |= INIT_RENDER_INIT;
+    render.init();
 
-    if( !sound.init( argc, argv ) ) {
-      return;
-    }
     initFlags |= INIT_AUDIO;
+    sound.init( argc, argv );
 
-    translator.init();
     initFlags |= INIT_TRANSLATOR;
+    translator.init();
 
-    context.init();
     initFlags |= INIT_CONTEXT_INIT;
+    context.init();
 
-    context.load();
     initFlags |= INIT_CONTEXT_LOAD;
+    context.load();
 
     stage = &gameStage;
 
-    stage->init();
-    stage->load();
     initFlags |= INIT_GAME_INIT;
+    stage->init();
 
-    render.load();
+    initFlags |= INIT_GAME_LOAD;
+    stage->load();
+
     initFlags |= INIT_RENDER_LOAD;
+    render.load();
 
     stage->begin();
 
@@ -403,6 +407,8 @@ namespace client
     loadingTime = float( timeZero - createTime ) / 1000.0f;
     inactiveMillis = 0;
     droppedMillis = 0;
+
+    initFlags |= INIT_MAIN_LOOP;
 
     log.println( "Main loop {" );
     log.indent();

@@ -109,7 +109,7 @@ namespace oz
       String      name;
 
       float       camZ;
-      Anim        anim;
+      Anim::Type  anim;
 
       explicit Bot();
 

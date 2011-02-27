@@ -113,7 +113,7 @@ namespace oz
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
-        ratio = Math::min( ratio + model->ratioInc, 1.0f );
+        ratio = min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
 
         if( collider.overlapsOO( this ) ) {
@@ -157,7 +157,7 @@ namespace oz
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
-        ratio = Math::max( ratio - model->ratioInc, 0.0f );
+        ratio = max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
 
         if( collider.overlapsOO( this ) ) {
@@ -210,7 +210,7 @@ namespace oz
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
-        ratio = Math::min( ratio + model->ratioInc, 1.0f );
+        ratio = min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
 
         overlappingObjs.clear();
@@ -275,7 +275,7 @@ namespace oz
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
-        ratio = Math::max( ratio - model->ratioInc, 0.0f );
+        ratio = max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
 
         overlappingObjs.clear();
@@ -347,7 +347,7 @@ namespace oz
       }
       case OPENING:
       case OPENING_BLOCKED: {
-        ratio = Math::min( ratio + model->ratioInc, 1.0f );
+        ratio = min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
 
         overlappingObjs.clear();
@@ -382,7 +382,7 @@ namespace oz
       }
       case CLOSING:
       case CLOSING_BLOCKED: {
-        ratio = Math::max( ratio - model->ratioInc, 0.0f );
+        ratio = max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
 
         overlappingObjs.clear();
