@@ -17,29 +17,32 @@
 namespace oz
 {
 
-  enum Anim : int
+  struct Anim
   {
-    STAND,
-    RUN,
-    ATTACK,
-    PAIN_A,
-    PAIN_B,
-    PAIN_C,
-    JUMP,
-    FLIP,
-    SALUTE,
-    FALLBACK,
-    WAVE,
-    POINT,
-    CROUCH_STAND,
-    CROUCH_WALK,
-    CROUCH_ATTACK,
-    CROUCH_PAIN,
-    CROUCH_DEATH,
-    DEATH_FALLBACK,
-    DEATH_FALLFORWARD,
-    DEATH_FALLBACKSLOW,
-    MAX
+    enum Type : int
+    {
+      STAND,
+      RUN,
+      ATTACK,
+      PAIN_A,
+      PAIN_B,
+      PAIN_C,
+      JUMP,
+      FLIP,
+      SALUTE,
+      FALLBACK,
+      WAVE,
+      POINT,
+      CROUCH_STAND,
+      CROUCH_WALK,
+      CROUCH_ATTACK,
+      CROUCH_PAIN,
+      CROUCH_DEATH,
+      DEATH_FALLBACK,
+      DEATH_FALLFORWARD,
+      DEATH_FALLBACKSLOW,
+      MAX
+    };
   };
 
   class Translator

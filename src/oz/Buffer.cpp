@@ -54,13 +54,6 @@ namespace oz
     return *this;
   }
 
-  bool Buffer::isEmpty() const
-  {
-    hard_assert( ( count == 0 ) == ( data == null ) );
-
-    return count == 0;
-  }
-
   void Buffer::alloc( int size )
   {
     hard_assert( data == null && count == 0 );
@@ -111,7 +104,7 @@ namespace oz
     int blocksRead = int( fread( data, fileStat.st_size, 1, handle ) );
     fclose( handle );
 
-    if( blocksRead != 1 ) {
+    if( blocksRead != 1 && fileStat.st_size != 0 ) {
       return false;
     }
     return true;

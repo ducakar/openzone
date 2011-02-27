@@ -30,8 +30,6 @@
 #include "client/MD2Model.hpp"
 #include "client/MD2WeaponModel.hpp"
 
-#include <GL/gl.h>
-
 namespace oz
 {
 namespace client
@@ -80,6 +78,7 @@ namespace client
         particles.add( part );
       }
     }
+
   }
 
   void Render::drawOrbis()
@@ -161,17 +160,23 @@ namespace client
 
     glTranslatef( -camera.p.x, -camera.p.y, -camera.p.z );
 
+    shader.use( Shader::DEFAULT );
+
     // lighting
     glLightfv( GL_LIGHT0, GL_POSITION, sky.lightDir );
     glLightfv( GL_LIGHT0, GL_DIFFUSE, Colours::diffuse );
     glLightfv( GL_LIGHT0, GL_AMBIENT, Colours::ambient );
 
+    glUniform3fv( Param::oz_AmbientLight, 1, Colours::GLOBAL_AMBIENT + Colours::ambient );
+    glUniform3fv( Param::oz_SkyLight, 2, Shader::Light( sky.lightDir, Colours::diffuse ) );
+    glUniform3fv( Param::oz_PointLights, 1,
+                  Shader::Light( Point3( 52, -44, 37 ), Quat( 1.0f, 1.0f, 1.0f, 1.0f ) ) );
+
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_FOG );
     glEnable( GL_LIGHTING );
 
-    context.bindTextures();
-    glActiveTexture( GL_TEXTURE0 );
+    shader.bindTextures( 0 );
 
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
@@ -189,7 +194,7 @@ namespace client
       const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
-        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::TAG );
+        glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::TAG );
       }
 
       glPushMatrix();
@@ -207,10 +212,9 @@ namespace client
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
     // draw particles
-    glEnable( GL_COLOR_MATERIAL );
     glEnable( GL_BLEND );
 
-    context.bindTextures();
+    shader.bindTextures( 0 );
     shape.bindVertexArray();
 
     for( int i = 0; i < particles.length(); ++i ) {
@@ -226,8 +230,7 @@ namespace client
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    glColor4fv( Colours::WHITE );
-    glDisable( GL_COLOR_MATERIAL );
+    glColor4fv( Colours::BLACK );
 
     // draw structures' water
     foreach( str, structs.citer() ) {
@@ -239,7 +242,13 @@ namespace client
     glDisable( GL_LIGHTING );
     glDisable( GL_BLEND );
 
-    context.bindTextures();
+    glUniform4f( Param::oz_DiffuseMaterial, 1.0f, 1.0f, 1.0f, 1.0f );
+
+    glUniform3fv( Param::oz_AmbientLight, 1, Colours::WHITE );
+    glUniform3fv( Param::oz_SkyLight, 2, Shader::Light::NONE );
+    glUniform3fv( Param::oz_PointLights, 16, Shader::Light::NONE );
+
+    shader.bindTextures( 0 );
     shape.bindVertexArray();
 
     if( showAim ) {
@@ -302,13 +311,12 @@ namespace client
 
   void Render::load()
   {
-    log.println( "Loading Graphics {" );
+    log.println( "Loading Render {" );
     log.indent();
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    context.bindTextures();
-    glActiveTexture( GL_TEXTURE0 );
+    shader.bindTextures( 0 );
 
     ui::ui.load();
 
@@ -322,18 +330,26 @@ namespace client
     objects.alloc( 8192 );
     particles.alloc( 1024 );
 
+    shader.load();
+    shader.use( Shader::DEFAULT );
+
     // fog
     glFogi( GL_FOG_MODE, GL_LINEAR );
     glFogf( GL_FOG_START, 0.0f );
 
     // lighting
-    glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE );
 //     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
     glLightModelfv( GL_LIGHT_MODEL_AMBIENT, Colours::GLOBAL_AMBIENT );
-    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
-    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, Colours::BLACK );
+    glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::WHITE );
+    glUniform4fv( Param::oz_SpecularMaterial, 1, Colours::BLACK );
     glEnable( GL_LIGHT0 );
+
+    glUniform1f( Param::oz_TextureScale, 1.0f );
+    glUniform4f( Param::oz_DiffuseMaterial, 1.0f, 1.0f, 1.0f, 1.0f );
+
+    glUniform3fv( Param::oz_AmbientLight, 1, Colours::WHITE );
+    glUniform3fv( Param::oz_SkyLight, 2, Shader::Light::NONE );
+    glUniform3fv( Param::oz_PointLights, 16, Shader::Light::NONE );
 
     log.unindent();
     log.println( "}" );
@@ -341,8 +357,10 @@ namespace client
 
   void Render::unload()
   {
-    log.println( "Unloading Graphics {" );
+    log.println( "Unloading Render {" );
     log.indent();
+
+    shader.unload();
 
     drawnStructs.clear();
 
@@ -370,23 +388,8 @@ namespace client
 
   void Render::init()
   {
-    log.println( "Initialising Graphics {" );
+    log.println( "Initialising Render {" );
     log.indent();
-
-    glEnable( GL_CULL_FACE );
-    glDepthFunc( GL_LEQUAL );
-
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-    glActiveTexture( GL_TEXTURE0 );
-    glEnable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE1 );
-    glEnable( GL_TEXTURE_2D );
-
-    camera.init();
-    ui::ui.init();
-    ui::ui.draw();
 
     SDL_GL_SwapBuffers();
 
@@ -417,8 +420,8 @@ namespace client
     int major = atoi( version );
     int minor = atoi( version + version.index( '.' ) + 1 );
 
-    if( major < 1 || ( major == 1 && minor < 5 ) ) {
-      log.println( "Error: at least OpenGL 1.5 required" );
+    if( major < 2 || ( major == 2 && minor < 1 ) ) {
+      log.println( "Error: at least OpenGL 2.1 required" );
       throw Exception( "Too old OpenGL version" );
     }
 
@@ -435,6 +438,22 @@ namespace client
     showBounds           = config.getSet( "render.showBounds",           false );
     showAim              = config.getSet( "render.showAim",              false );
 
+    glEnable( GL_CULL_FACE );
+    glDepthFunc( GL_LEQUAL );
+
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    glActiveTexture( GL_TEXTURE0 );
+    glEnable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE1 );
+    glEnable( GL_TEXTURE_2D );
+
+    shader.init();
+    camera.init();
+    ui::ui.init();
+    ui::ui.draw();
+
     hard_assert( glGetError() == GL_NO_ERROR );
 
     log.unindent();
@@ -443,10 +462,11 @@ namespace client
 
   void Render::free()
   {
-    log.println( "Shutting down Graphics {" );
+    log.println( "Shutting down Render {" );
     log.indent();
 
     ui::ui.free();
+    shader.free();
 
     log.unindent();
     log.println( "}" );

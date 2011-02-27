@@ -67,8 +67,7 @@ namespace ui
     const Cursor& cur = cursors[icon];
 
     if( doShow ) {
-      glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-      glBindTexture( GL_TEXTURE_2D, cur.texId );
+      shader.bindTextures( cur.texId );
       glBegin( GL_QUADS );
         glTexCoord2i( 0, 1 );
         glVertex2i( x - cur.hotspotX           , y + 1 + cur.hotspotY - cur.size );
@@ -79,37 +78,37 @@ namespace ui
         glTexCoord2i( 0, 0 );
         glVertex2i( x - cur.hotspotX           , y + 1 + cur.hotspotY            );
       glEnd();
-      glBindTexture( GL_TEXTURE_2D, 0 );
+      shader.bindTextures( 0 );
     }
   }
 
   void Mouse::load()
   {
-    const char* x = config.getSet( "ui.cursor.x", "ui/X_cursor.ozTex" );
+    const char* x = config.getSet( "ui.cursor.x", "ui/X_cursor.ozcTex" );
     cursors[X].texId    = context.loadTexture( x );
     cursors[X].size     = config.getSet( "ui.cursor.x.size", 32 );
     cursors[X].hotspotX = config.getSet( "ui.cursor.x.hotspot.x", 16 );
     cursors[X].hotspotY = config.getSet( "ui.cursor.x.hotspot.y", 16 );
 
-    const char* arrow = config.getSet( "ui.cursor.arrow", "ui/left_ptr.ozTex" );
+    const char* arrow = config.getSet( "ui.cursor.arrow", "ui/left_ptr.ozcTex" );
     cursors[ARROW].texId    = context.loadTexture( arrow );
     cursors[ARROW].size     = config.getSet( "ui.cursor.arrow.size", 32 );
     cursors[ARROW].hotspotX = config.getSet( "ui.cursor.arrow.hotspot.x", 1 );
     cursors[ARROW].hotspotY = config.getSet( "ui.cursor.arrow.hotspot.y", 1 );
 
-    const char* move = config.getSet( "ui.cursor.move", "ui/fleur.ozTex" );
+    const char* move = config.getSet( "ui.cursor.move", "ui/fleur.ozcTex" );
     cursors[MOVE].texId    = context.loadTexture( move );
     cursors[MOVE].size     = config.getSet( "ui.cursor.move.size", 32 );
     cursors[MOVE].hotspotX = config.getSet( "ui.cursor.move.hotspot.x", 16 );
     cursors[MOVE].hotspotY = config.getSet( "ui.cursor.move.hotspot.y", 16 );
 
-    const char* text = config.getSet( "ui.cursor.text", "ui/xterm.ozTex" );
+    const char* text = config.getSet( "ui.cursor.text", "ui/xterm.ozcTex" );
     cursors[TEXT].texId    = context.loadTexture( text );
     cursors[TEXT].size     = config.getSet( "ui.cursor.text.size", 32 );
     cursors[TEXT].hotspotX = config.getSet( "ui.cursor.text.hotspot.x", 16 );
     cursors[TEXT].hotspotY = config.getSet( "ui.cursor.text.hotspot.y", 16 );
 
-    const char* hand = config.getSet( "ui.cursor.hand", "ui/hand2.ozTex" );
+    const char* hand = config.getSet( "ui.cursor.hand", "ui/hand2.ozcTex" );
     cursors[HAND].texId    = context.loadTexture( hand );
     cursors[HAND].size     = config.getSet( "ui.cursor.hand.size", 32 );
     cursors[HAND].hotspotX = config.getSet( "ui.cursor.hand.hotspot.x", 16 );

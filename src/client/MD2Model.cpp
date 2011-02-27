@@ -48,7 +48,7 @@ namespace client
     context.releaseMD2( clazz->modelIndex );
   }
 
-  void MD2Model::setAnim( Anim type_ )
+  void MD2Model::setAnim( Anim::Type type_ )
   {
     int type = int( type_ );
 
@@ -83,12 +83,12 @@ namespace client
       float colour[] = { 1.0f, 1.0f, 1.0f, bot->life / clazz->life * 3.0f };
 
       glEnable( GL_BLEND );
-      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colour );
+      glUniform4fv( Param::oz_DiffuseMaterial, 1, colour );
 
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
 
-      glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, Colours::WHITE );
+      glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::WHITE );
       glDisable( GL_BLEND );
     }
     else if( bot->index != camera.bot || camera.isExternal ) {

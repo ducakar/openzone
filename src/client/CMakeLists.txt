@@ -54,6 +54,8 @@ add_library( client STATIC
   SMMModel.hpp
   SMMVehicleModel.cpp
   SMMVehicleModel.hpp
+  Shader.cpp
+  Shader.hpp
   Shape.cpp
   Shape.hpp
   Sky.cpp

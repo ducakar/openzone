@@ -14,8 +14,6 @@
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
 
-#include <GL/gl.h>
-
 namespace oz
 {
 namespace client
@@ -50,8 +48,9 @@ namespace ui
     glLoadIdentity();
 
     glEnable( GL_BLEND );
-    context.bindTextures();
-    glActiveTexture( GL_TEXTURE0 );
+
+    shader.use( Shader::UI );
+    shader.bindTextures( 0 );
 
     root->drawChildren();
     mouse.draw();

@@ -181,7 +181,7 @@ namespace client
 
   bool Sound::init( int* argc, char** argv )
   {
-    log.println( "Initialising SoundManager {" );
+    log.println( "Initialising Sound {" );
     log.indent();
 
     alutInit( argc, argv );
@@ -234,7 +234,7 @@ namespace client
   {
     hard_assert( alGetError() == AL_NO_ERROR );
 
-    log.print( "Shutting down SoundManager ..." );
+    log.print( "Shutting down Sound ..." );
 
     hard_assert( alGetError() == AL_NO_ERROR );
 

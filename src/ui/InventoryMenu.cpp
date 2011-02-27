@@ -28,7 +28,7 @@ namespace ui
   InventoryMenu::InventoryMenu() :
       Frame( 5, 5, SLOT_SIZE * COLS, SLOT_SIZE * ROWS + HEADER_SIZE + FOOTER_SIZE )
   {
-    useTexId = context.loadTexture( "ui/use.ozTex" );
+    useTexId = context.loadTexture( "ui/use.ozcTex" );
     tagged = -1;
     row = 0;
   }
@@ -100,9 +100,10 @@ namespace ui
 
     setFont( Font::TITLE );
     printCentred( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, "Inventory" );
-    setFont( Font::SANS );
 
-    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+    shader.use( Shader::DEFAULT );
+    glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
+
     glPushMatrix();
     glTranslatef( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0 );
     glTranslatef( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f );
@@ -137,9 +138,7 @@ namespace ui
 
       context.drawModel( item, null );
 
-      if( i == tagged ) {
-        glColor4fv( Colours::WHITE );
-      }
+      glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
 
       glPopMatrix();
       glTranslatef( float( SLOT_SIZE ), 0.0f, 0.0f );
@@ -147,8 +146,7 @@ namespace ui
 
     glPopMatrix();
 
-    context.bindTextures();
-    glActiveTexture( GL_TEXTURE0 );
+    shader.use( Shader::UI );
 
     tagged = -1;
 
@@ -164,9 +162,8 @@ namespace ui
       glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
       rect( -52, -16, 48, 12 );
 
-      glColor4fv( Colours::WHITE );
       if( taggedItem->flags & Object::USE_FUNC_BIT ) {
-        glBindTexture( GL_TEXTURE_2D, useTexId );
+        shader.bindTextures( useTexId );
         glBegin( GL_QUADS );
           glTexCoord2i( 0, 1 );
           glVertex2i( x + width - ICON_SIZE - 4, y + 4 );
@@ -177,9 +174,10 @@ namespace ui
           glTexCoord2i( 0, 0 );
           glVertex2i( x + width - ICON_SIZE - 4, y + ICON_SIZE + 4 );
         glEnd();
-        glBindTexture( GL_TEXTURE_2D, 0 );
+        shader.bindTextures( 0 );
       }
 
+      setFont( Font::SANS );
       printBaseline( 4, FOOTER_SIZE / 2, "%s", taggedItem->clazz->description.cstr() );
     }
   }

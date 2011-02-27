@@ -96,7 +96,7 @@ namespace oz
     }
 
     h = Math::mod( h + 360.0f, 360.0f );
-    v = Math::bound( v, -90.0f, 90.0f );
+    v = bound( v, -90.0f, 90.0f );
 
     // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
     float hvsc[6];
@@ -138,7 +138,7 @@ namespace oz
     stepRate *= clazz->stepRateSupp;
 
     stamina += clazz->staminaGain;
-    stamina = min( stamina, clazz->stamina );
+    stamina = bound( stamina, 0.0f, clazz->stamina );
 
     if( state & SUBMERGED_BIT ) {
       stamina -= clazz->staminaWaterDrain;
@@ -163,7 +163,7 @@ namespace oz
       if( !( oldActions & ACTION_JUMP ) ) {
         state |= JUMP_SCHED_BIT;
       }
-      if( ( state & ( JUMP_SCHED_BIT | GROUNDED_BIT | SWIMMING_BIT ) ) &&
+      if( ( state & JUMP_SCHED_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) &&
           grabObj == -1 && stamina >= clazz->staminaJumpDrain )
       {
         flags &= ~DISABLED_BIT;
@@ -662,7 +662,7 @@ namespace oz
     }
     weaponItem = istream->readInt();
 
-    anim       = Anim( istream->readInt() );
+    anim       = Anim::Type( istream->readInt() );
     name       = istream->readString();
 
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
@@ -702,7 +702,7 @@ namespace oz
     v            = istream->readFloat();
     state        = istream->readInt();
     grabObj      = istream->readInt();
-    anim         = Anim( istream->readInt() );
+    anim         = Anim::Type( istream->readInt() );
   }
 
   void Bot::writeUpdate( OutputStream* ostream ) const

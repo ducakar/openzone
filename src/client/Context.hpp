@@ -13,6 +13,7 @@
 
 #include "matrix/Translator.hpp"
 
+#include "client/Shader.hpp"
 #include "client/Mesh.hpp"
 #include "client/BSP.hpp"
 #include "client/Model.hpp"
@@ -60,12 +61,6 @@ namespace client
         int  nUsers;
       };
 
-      struct Lists
-      {
-        uint base;
-        int  count;
-      };
-
       struct Source
       {
         uint    source;
@@ -98,8 +93,6 @@ namespace client
       Resource<uint>*                   textures;
       Resource<uint>*                   sounds;
 
-      Sparse<Lists>                     lists;
-
       ContSource*                       cachedSource;
       List<Source>                      sources;
       HashIndex<ContSource, 256>        contSources;
@@ -126,8 +119,6 @@ namespace client
 
     public:
 
-      uint detailTexture;
-
       static uint createTexture( const void* data, int width, int height, int bytesPerPixel,
                           bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
@@ -148,12 +139,6 @@ namespace client
 
       BSP* loadBSP( int id );
       void freeBSP( int id );
-
-      static void bindTextures( uint texture0 = 0, uint texture1 = 0 );
-
-      uint genList();
-      uint genLists( int count );
-      void deleteLists( uint listId );
 
       SMM* requestSMM( int id );
       void releaseSMM( int id );

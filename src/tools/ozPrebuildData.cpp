@@ -31,13 +31,14 @@ using oz::uint;
 
 bool Alloc::isLocked = true;
 
-static void prebuildTextures( const char* path, bool wrap, int magFilter, int minFilter )
+static void prebuildTextures( const char* srcDir, const char* destDir,
+                              bool wrap, int magFilter, int minFilter )
 {
-  log.println( "Prebuilding textures in '%s' {", path );
+  log.println( "Prebuilding textures in '%s' {", srcDir );
   log.indent();
 
-  String dirName = path;
-  Directory dir( path );
+  String dirName = srcDir;
+  Directory dir( srcDir );
 
   if( !dir.isOpened() ) {
     throw Exception( "Cannot open directory '" + dirName + "'" );
@@ -52,7 +53,7 @@ static void prebuildTextures( const char* path, bool wrap, int magFilter, int mi
 
     String name = ent.baseName();
     String srcPath = dirName + ent;
-    String destPath = dirName + name + ".ozcTex";
+    String destPath = String( destDir ) + "/" + name + ".ozcTex";
 
     log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
     log.indent();
@@ -182,7 +183,7 @@ int main( int, char** )
 
   try {
     SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO );
-    SDL_SetVideoMode( 200, 100, 32, SDL_OPENGL );
+    SDL_SetVideoMode( 400, 40, 32, SDL_OPENGL );
     SDL_WM_SetCaption( "OpenZone :: Prebuilding data ...", null );
 
     long startTime = SDL_GetTicks();
@@ -190,8 +191,8 @@ int main( int, char** )
     buffer.alloc( 10 * 1024 * 1024 );
     matrix.init();
 
-    prebuildTextures( "ui", true, GL_LINEAR, GL_LINEAR );
-    prebuildTextures( "textures/oz", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
+    prebuildTextures( "ui", "ui", true, GL_LINEAR, GL_LINEAR );
+    prebuildTextures( "textures/oz", "bsp/tex", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
 
     prebuildTerras( "terra" );
 
@@ -213,20 +214,22 @@ int main( int, char** )
     oz::log.resetIndent();
     oz::log.println();
     oz::log.printException( e );
+    oz::log.println();
 
     if( oz::log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
       fprintf( stderr, "  in %s\n\n", e.function );
-      fprintf( stderr, "  at %s:%d\n", e.file, e.line );
+      fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
     }
   }
   catch( const std::exception& e ) {
     oz::log.resetIndent();
     oz::log.println();
     oz::log.println( "EXCEPTION: %s", e.what() );
+    oz::log.println();
 
     if( oz::log.isFile() ) {
-      fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
+      fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
   }
 

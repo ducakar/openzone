@@ -29,5 +29,5 @@ if [ -x /usr/bin/sloccount ]; then
 fi
 
 if [ -x /usr/bin/cloc ]; then
-  /usr/bin/cloc --exclude-ext=gen src data/lua
+  /usr/bin/cloc --exclude-ext=gen src data/lua data/glsl
 fi

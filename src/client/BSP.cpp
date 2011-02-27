@@ -399,6 +399,8 @@ namespace client
       return;
     }
 
+    hard_assert( glGetError() == GL_NO_ERROR );
+
     glPushMatrix();
     glTranslatef( str->p.x, str->p.y, str->p.z );
     glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );

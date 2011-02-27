@@ -14,8 +14,6 @@
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
 
-#include <GL/gl.h>
-
 namespace oz
 {
 namespace client
@@ -290,18 +288,14 @@ namespace client
       return;
     }
 
-    glMatrixMode( GL_TEXTURE );
-    glActiveTexture( GL_TEXTURE2 );
-    glScalef( 4.0f, 4.0f, 0.0f );
-
     glBindVertexArray( vao );
 
     if( mask & SOLID_BIT ) {
       foreach( part, solidParts.citer() ) {
-        glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
-        glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
+        glUniform4fv( Param::oz_DiffuseMaterial, 1, part->diffuse );
+        glUniform4fv( Param::oz_SpecularMaterial, 1, part->specular );
 
-        context.bindTextures( part->texture[0], part->texture[1] );
+        shader.bindTextures( part->texture[0], part->texture[1] );
         glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
       }
@@ -310,19 +304,16 @@ namespace client
       glEnable( GL_BLEND );
 
       foreach( part, alphaParts.citer() ) {
-        glMaterialfv( GL_FRONT, GL_DIFFUSE,  part->diffuse  );
-        glMaterialfv( GL_FRONT, GL_SPECULAR, part->specular );
+        glUniform4fv( Param::oz_DiffuseMaterial, 1, part->diffuse );
+        glUniform4fv( Param::oz_SpecularMaterial, 1, part->specular );
 
-        context.bindTextures( part->texture[0], part->texture[1] );
+        shader.bindTextures( part->texture[0], part->texture[1] );
         glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
       }
 
       glDisable( GL_BLEND );
     }
-
-    glLoadIdentity();
-    glMatrixMode( GL_MODELVIEW );
   }
 
   void MeshData::write( OutputStream* stream, bool embedTextures ) const

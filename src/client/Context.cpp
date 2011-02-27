@@ -356,41 +356,6 @@ namespace client
     resource.nUsers = 0;
   }
 
-  void Context::bindTextures( uint texture0, uint texture1 )
-  {
-    glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, texture0 );
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, texture1 );
-  }
-
-  uint Context::genList()
-  {
-    int index = lists.add();
-    lists[index].base = glGenLists( 1 );
-    lists[index].count = 1;
-    return lists[index].base;
-  }
-
-  uint Context::genLists( int count )
-  {
-    int index = lists.add();
-    lists[index].base = glGenLists( count );
-    lists[index].count = count;
-    return lists[index].base;
-  }
-
-  void Context::deleteLists( uint listId )
-  {
-    for( int i = 0; i < lists.length(); ++i ) {
-      if( lists[i].base == listId ) {
-        glDeleteLists( lists[i].base, lists[i].count );
-        lists.remove( i );
-        break;
-      }
-    }
-  }
-
   SMM* Context::requestSMM( int id )
   {
     Resource<SMM*>* resource = smms.find( id );
@@ -563,8 +528,6 @@ namespace client
     maxSources     = 0;
     maxContSources = 0;
 
-    detailTexture = loadTexture( "terra/detail.jpg" );
-
     log.printEnd( " OK" );
   }
 
@@ -604,13 +567,9 @@ namespace client
       bsps[i].nUsers = 0;
     }
 
-    lists.clear();
-    lists.dealloc();
     smms.dealloc();
     md2s.dealloc();
     md3s.dealloc();
-
-    hard_assert( lists.length() == 0 );
 
     foreach( src, sources.citer() ) {
       alSourceStop( src->source );
@@ -626,8 +585,6 @@ namespace client
     sources.free();
     contSources.clear();
     contSources.dealloc();
-
-    glDeleteTextures( 1, &detailTexture );
 
     for( int i = 0; i < translator.textures.length(); ++i ) {
       hard_assert( textures[i].nUsers == 0 );
@@ -661,6 +618,10 @@ namespace client
 
   void Context::init()
   {
+    textures = null;
+    sounds   = null;
+    bsps     = null;
+
     log.print( "Initialising Context ..." );
 
     OZ_REGISTER_MODELCLASS( SMM );
@@ -671,6 +632,16 @@ namespace client
 
     OZ_REGISTER_AUDIOCLASS( Basic );
     OZ_REGISTER_AUDIOCLASS( Bot );
+
+    if( translator.textures.length() == 0 ) {
+      throw Exception( "Context: textures missing!" );
+    }
+    if( translator.sounds.length() == 0 ) {
+      throw Exception( "Context: sounds missing!" );
+    }
+    if( translator.bsps.length() == 0 ) {
+      throw Exception( "Context: BSPs missing!" );
+    }
 
     textures = new Resource<uint>[translator.textures.length()];
     sounds   = new Resource<uint>[translator.sounds.length()];
@@ -690,6 +661,10 @@ namespace client
     delete[] textures;
     delete[] sounds;
     delete[] bsps;
+
+    textures = null;
+    sounds   = null;
+    bsps     = null;
 
     modelClasses.clear();
     modelClasses.dealloc();

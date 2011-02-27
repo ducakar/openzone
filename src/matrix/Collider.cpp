@@ -278,7 +278,7 @@ namespace oz
       float endDist   = orbis.maxs[i] + endPos[i]   * normal[i] - aabb.dim[i];
 
       if( endDist <= EPSILON && endDist <= startDist ) {
-        float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
         if( ratio < hit.ratio ) {
           hit.ratio    = ratio;
@@ -324,7 +324,7 @@ namespace oz
       }
     }
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
-      hit.ratio    = Math::max( 0.0f, minRatio );
+      hit.ratio    = max( 0.0f, minRatio );
       hit.normal   = *lastNormal;
       hit.obj      = sObj;
       hit.str      = null;
@@ -366,7 +366,7 @@ namespace oz
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
       if( minRatio < hit.ratio ) {
-        hit.ratio    = Math::max( 0.0f, minRatio );
+        hit.ratio    = max( 0.0f, minRatio );
         hit.normal   = str->toAbsoluteCS( lastNormal );
         hit.obj      = null;
         hit.str      = str;
@@ -399,11 +399,11 @@ namespace oz
           return;
         }
         else {
-          depth = Math::min( depth, dist );
+          depth = min( depth, dist );
         }
       }
     }
-    hit.waterDepth = Math::max( hit.waterDepth, depth );
+    hit.waterDepth = max( hit.waterDepth, depth );
     hit.inWater    = true;
   }
 
@@ -517,7 +517,7 @@ namespace oz
     float endDist   = localEndPos   * quad.triNormal[0];
 
     if( endDist <= EPSILON && endDist <= startDist ) {
-      float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+      float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
       float impactX = startPos.x + ratio * move.x;
       float impactY = startPos.y + ratio * move.y;
@@ -542,7 +542,7 @@ namespace oz
     endDist   = localEndPos   * quad.triNormal[1];
 
     if( endDist <= EPSILON && endDist <= startDist ) {
-      float ratio = Math::max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+      float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
 
       float impactX = startPos.x + ratio * move.x;
       float impactY = startPos.y + ratio * move.y;
@@ -568,14 +568,14 @@ namespace oz
   void Collider::trimAABBTerra()
   {
     if( startPos.z < 0.0f ) {
-      hit.waterDepth = Math::max( hit.waterDepth, -startPos.z );
+      hit.waterDepth = max( hit.waterDepth, -startPos.z );
       hit.inWater = true;
     }
 
-    float minPosX = Math::min( startPos.x, endPos.x );
-    float minPosY = Math::min( startPos.y, endPos.y );
-    float maxPosX = Math::max( startPos.x, endPos.x );
-    float maxPosY = Math::max( startPos.y, endPos.y );
+    float minPosX = min( startPos.x, endPos.x );
+    float minPosY = min( startPos.y, endPos.y );
+    float maxPosX = max( startPos.x, endPos.x );
+    float maxPosY = max( startPos.y, endPos.y );
 
     Span terraSpan = orbis.terra.getInters( minPosX, minPosY, maxPosX, maxPosY );
 

@@ -152,7 +152,7 @@ namespace ui
     printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", description.cstr() );
 
     float life = ( hovered->flags & Object::BOT_BIT ) ?
-        Math::max( 0.0f, ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
+        max( 0.0f, ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
         hovered->life / clazz->life;
     float barWidth = maxX - minX + 2.0f;
     float lifeWidth = life * barWidth;
@@ -165,7 +165,7 @@ namespace ui
     glColor4f( 0.0f, 0.0f, 0.0f, 0.2f );
     fillRect( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-    glColor4fv( Colours::WHITE );
+    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     drawRect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
   }
 
@@ -179,7 +179,7 @@ namespace ui
     if( obj != hovered ) {
       const ObjectClass *clazz = obj->clazz;
       float life = ( obj->flags & Object::BOT_BIT ) ?
-          Math::max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
+          max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
           obj->life / clazz->life;
       float barWidth = maxX - minX + 2.0f;
       float lifeWidth = life * barWidth;
@@ -208,7 +208,7 @@ namespace ui
       }
     }
 
-    glColor4fv( Colours::WHITE );
+    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
     glBegin( GL_LINES );
       glVertex2f( minX - 1.5f, minY - 1.5f );
       glVertex2f( minX - 1.5f, minY + 3.5f );
