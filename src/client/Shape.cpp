@@ -68,9 +68,9 @@ namespace client
 
   void Shape::draw( const Particle* part )
   {
-    glRotatef( part->rot.y, 0.0f, 1.0f, 0.0f );
-    glRotatef( part->rot.x, 1.0f, 0.0f, 0.0f );
-    glRotatef( part->rot.z, 0.0f, 0.0f, 1.0f );
+    glRotatef( Math::deg( part->rot.y ), 0.0f, 1.0f, 0.0f );
+    glRotatef( Math::deg( part->rot.x ), 1.0f, 0.0f, 0.0f );
+    glRotatef( Math::deg( part->rot.z ), 0.0f, 0.0f, 1.0f );
 
     glColor4f( part->colour.x, part->colour.y, part->colour.z, part->lifeTime );
 

@@ -160,8 +160,8 @@ namespace client
         mesh->vertices[j].p.z =  float( vertices[j].p[2] ) / 64.0f;
 
         // convert from zenith/azimuth coords
-        float azimuth = float( vertices[j].normal[0] ) * Math::_2_PI / 255.0f;
-        float zenith  = float( vertices[j].normal[1] ) * Math::_2_PI / 255.0f;
+        float azimuth = float( vertices[j].normal[0] ) * 4.0f / Math::TAU / 255.0f;
+        float zenith  = float( vertices[j].normal[1] ) * 4.0f / Math::TAU / 255.0f;
         float xy      = Math::sin( zenith );
 
         mesh->vertices[j].normal.x = xy * Math::cos( azimuth );

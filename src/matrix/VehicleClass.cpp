@@ -154,7 +154,6 @@ namespace oz
 
     obj->p        = pos;
     obj->dim      = dim;
-    obj->h        = 0.0f;
 
     obj->index    = index;
     obj->flags    = flags;
@@ -165,6 +164,7 @@ namespace oz
     obj->mass     = mass;
     obj->lift     = lift;
 
+    obj->rot      = Quat::rotX( Math::TAU / 4.0f );
     obj->state    = state;
     obj->oldState = state;
 

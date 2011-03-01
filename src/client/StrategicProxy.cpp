@@ -12,7 +12,9 @@
 #include "client/StrategicProxy.hpp"
 
 #include "matrix/Vehicle.hpp"
+
 #include "ui/UI.hpp"
+
 #include "client/Camera.hpp"
 
 namespace oz
@@ -30,7 +32,7 @@ namespace client
   void StrategicProxy::begin()
   {
     height   = DEFAULT_HEIGHT;
-    camera.v = -75.0f;
+    camera.v = Math::rad( 15.0f );
     camera.w = 0.0f;
     camera.setTagged( null );
 
@@ -72,7 +74,7 @@ namespace client
   {
     camera.align();
 
-    Vec3   up = Vec3( -camera.rotMat.x.y, camera.rotMat.x.x, 0.0f );
+    Vec3   up = Vec3( -camera.right.y, camera.right.x, 0.0f );
     Point3 p  = camera.newP;
 
     if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {

@@ -95,17 +95,17 @@ namespace oz
       return;
     }
 
-    h = Math::mod( h + 360.0f, 360.0f );
-    v = bound( v, -90.0f, 90.0f );
+    h = Math::mod( h + Math::TAU, Math::TAU );
+    v = bound( v, 0.0f, Math::TAU / 2.0f );
 
-    // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
+    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
     float hvsc[6];
 
-    Math::sincos( Math::rad( h ), &hvsc[0], &hvsc[1] );
-    Math::sincos( Math::rad( v ), &hvsc[2], &hvsc[3] );
+    Math::sincos( h, &hvsc[0], &hvsc[1] );
+    Math::sincos( v, &hvsc[2], &hvsc[3] );
 
-    hvsc[4] = hvsc[3] * hvsc[0];
-    hvsc[5] = hvsc[3] * hvsc[1];
+    hvsc[4] = hvsc[2] * hvsc[0];
+    hvsc[5] = hvsc[2] * hvsc[1];
 
     if( parent != -1 ) {
       grabObj = -1;
@@ -274,12 +274,12 @@ namespace oz
       if( state & SWIMMING_BIT ) {
         move.x -= hvsc[4];
         move.y += hvsc[5];
-        move.z += hvsc[2];
+        move.z -= hvsc[3];
       }
       else if( state & CLIMBING_BIT ) {
         move.x -= hvsc[4];
         move.y += hvsc[5];
-        move.z += v < 0.0f ? -1.0f : 1.0f;
+        move.z += v < Math::TAU / 4.0f ? -1.0f : 1.0f;
       }
       else {
         move.x -= hvsc[0];
@@ -293,7 +293,7 @@ namespace oz
       if( state & ( SWIMMING_BIT | CLIMBING_BIT ) ) {
         move.x += hvsc[4];
         move.y -= hvsc[5];
-        move.z -= hvsc[2];
+        move.z += hvsc[3];
       }
       else {
         move.x += hvsc[0];
@@ -436,7 +436,7 @@ namespace oz
       }
       else {
         // keep constant length of xy projection of handle
-        Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * grabHandle;
+        Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * grabHandle;
         // bottom of the object cannot be raised over the player aabb
         handle.z    = min( handle.z, dim.z - camZ + obj->dim.z );
         Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - obj->p;
@@ -472,7 +472,7 @@ namespace oz
       }
       else {
         Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3   look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
+        Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -489,7 +489,7 @@ namespace oz
       }
       else {
         Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3   look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
+        Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -503,7 +503,7 @@ namespace oz
     }
     else if( actions & ~oldActions & ACTION_THROW ) {
       if( grabObj != -1 && stamina >= clazz->staminaThrowDrain ) {
-        Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] );
+        Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] );
 
         stamina -= clazz->staminaThrowDrain;
         obj->momentum = handle * clazz->throwMomentum;
@@ -516,7 +516,7 @@ namespace oz
       }
       else {
         Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3   look = Vec3( -hvsc[4], hvsc[5], hvsc[2] ) * clazz->grabDistance;
+        Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
 
         collider.translate( eye, look, this );
 
@@ -562,7 +562,7 @@ namespace oz
         float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
         // keep constant length of xy projection of handle
-        Vec3 handle = Vec3( -hvsc[0], hvsc[1], hvsc[2] ) * dist;
+        Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * dist;
         // bottom of the object cannot be raised over the player aabb
         handle.z    = min( handle.z, dim.z - camZ + item->dim.z );
         item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
@@ -644,6 +644,7 @@ namespace oz
   {
     Dynamic::readFull( istream );
 
+    h          = istream->readFloat();
     v          = istream->readFloat();
     state      = istream->readInt();
     oldState   = istream->readInt();
@@ -673,6 +674,7 @@ namespace oz
   {
     Dynamic::writeFull( ostream );
 
+    ostream->writeFloat( h );
     ostream->writeFloat( v );
     ostream->writeInt( state );
     ostream->writeInt( oldState );
@@ -699,6 +701,7 @@ namespace oz
   {
     Dynamic::readUpdate( istream );
 
+    h            = istream->readFloat();
     v            = istream->readFloat();
     state        = istream->readInt();
     grabObj      = istream->readInt();
@@ -709,6 +712,7 @@ namespace oz
   {
     Dynamic::writeUpdate( ostream );
 
+    ostream->writeFloat( h );
     ostream->writeFloat( v );
     ostream->writeInt( state );
     ostream->writeInt( grabObj );

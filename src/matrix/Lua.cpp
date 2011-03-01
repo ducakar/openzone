@@ -877,7 +877,7 @@ namespace oz
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushnumber( l, bot->h );
+    lua_pushnumber( l, Math::deg( bot->h ) );
     return 1;
   }
 
@@ -892,7 +892,8 @@ namespace oz
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->h = float( lua_tonumber( l, 1 ) );
+    bot->h = Math::rad( float( lua_tonumber( l, 1 ) ) );
+    bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
     return 1;
   }
 
@@ -907,7 +908,8 @@ namespace oz
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->h += float( lua_tonumber( l, 1 ) );
+    bot->h += Math::rad( float( lua_tonumber( l, 1 ) ) );
+    bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
     return 1;
   }
 
@@ -922,7 +924,7 @@ namespace oz
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushnumber( l, bot->v );
+    lua_pushnumber( l, Math::deg( bot->v ) );
     return 1;
   }
 
@@ -937,7 +939,8 @@ namespace oz
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->v = float( lua_tonumber( l, 1 ) );
+    bot->v = Math::rad( float( lua_tonumber( l, 1 ) ) );
+    bot->v = bound( bot->v, 0.0f, Math::TAU / 2.0f );
     return 1;
   }
 
@@ -952,7 +955,8 @@ namespace oz
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->v += float( lua_tonumber( l, 1 ) );
+    bot->v += Math::rad( float( lua_tonumber( l, 1 ) ) );
+    bot->v = bound( bot->v, 0.0f, Math::TAU / 2.0f );
     return 1;
   }
 
@@ -970,15 +974,15 @@ namespace oz
     // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
     float hvsc[6];
 
-    Math::sincos( Math::rad( bot->h ), &hvsc[0], &hvsc[1] );
-    Math::sincos( Math::rad( bot->v ), &hvsc[2], &hvsc[3] );
+    Math::sincos( bot->h, &hvsc[0], &hvsc[1] );
+    Math::sincos( bot->v, &hvsc[2], &hvsc[3] );
 
     hvsc[4] = hvsc[3] * hvsc[0];
     hvsc[5] = hvsc[3] * hvsc[1];
 
     lua_pushnumber( l, -hvsc[4] );
     lua_pushnumber( l,  hvsc[5] );
-    lua_pushnumber( l,  hvsc[2] );
+    lua_pushnumber( l, -hvsc[3] );
 
     return 3;
   }

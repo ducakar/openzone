@@ -151,7 +151,6 @@ namespace client
 
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
-    glRotatef( -90.0f, 1.0f, 0.0f, 0.0f );
     glMultMatrixf( camera.rotTMat );
 
     if( !isUnderWater ) {
@@ -167,10 +166,10 @@ namespace client
     glLightfv( GL_LIGHT0, GL_DIFFUSE, Colours::diffuse );
     glLightfv( GL_LIGHT0, GL_AMBIENT, Colours::ambient );
 
-    glUniform3fv( Param::oz_AmbientLight, 1, Colours::GLOBAL_AMBIENT + Colours::ambient );
-    glUniform3fv( Param::oz_SkyLight, 2, Shader::Light( sky.lightDir, Colours::diffuse ) );
-    glUniform3fv( Param::oz_PointLights, 1,
-                  Shader::Light( Point3( 52, -44, 37 ), Quat( 1.0f, 1.0f, 1.0f, 1.0f ) ) );
+//     glUniform3fv( Param::oz_AmbientLight, 1, Colours::GLOBAL_AMBIENT + Colours::ambient );
+//     glUniform3fv( Param::oz_SkyLight, 2, Shader::Light( sky.lightDir, Colours::diffuse ) );
+//     glUniform3fv( Param::oz_PointLights, 1,
+//                   Shader::Light( Point3( 52, -44, 37 ), Quat( 1.0f, 1.0f, 1.0f, 1.0f ) ) );
 
     glEnable( GL_DEPTH_TEST );
     glEnable( GL_FOG );
@@ -244,9 +243,9 @@ namespace client
 
     glUniform4f( Param::oz_DiffuseMaterial, 1.0f, 1.0f, 1.0f, 1.0f );
 
-    glUniform3fv( Param::oz_AmbientLight, 1, Colours::WHITE );
-    glUniform3fv( Param::oz_SkyLight, 2, Shader::Light::NONE );
-    glUniform3fv( Param::oz_PointLights, 16, Shader::Light::NONE );
+//     glUniform3fv( Param::oz_AmbientLight, 1, Colours::WHITE );
+//     glUniform3fv( Param::oz_SkyLight, 2, Shader::Light::NONE );
+//     glUniform3fv( Param::oz_PointLights, 16, Shader::Light::NONE );
 
     shader.bindTextures( 0 );
     shape.bindVertexArray();
@@ -347,9 +346,9 @@ namespace client
     glUniform1f( Param::oz_TextureScale, 1.0f );
     glUniform4f( Param::oz_DiffuseMaterial, 1.0f, 1.0f, 1.0f, 1.0f );
 
-    glUniform3fv( Param::oz_AmbientLight, 1, Colours::WHITE );
-    glUniform3fv( Param::oz_SkyLight, 2, Shader::Light::NONE );
-    glUniform3fv( Param::oz_PointLights, 16, Shader::Light::NONE );
+//     glUniform3fv( Param::oz_AmbientLight, 1, Colours::WHITE );
+//     glUniform3fv( Param::oz_SkyLight, 2, Shader::Light::NONE );
+//     glUniform3fv( Param::oz_PointLights, 16, Shader::Light::NONE );
 
     log.unindent();
     log.println( "}" );

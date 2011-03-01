@@ -33,10 +33,10 @@ namespace ui
   {
     Point3 t = camera.rotTMat * p;
 
-    t.x = Math::round( ( t.x / t.y ) * stepPixel );
-    t.z = Math::round( ( t.z / t.y ) * stepPixel );
+    float px = Math::round( ( t.x / -t.z ) * stepPixel );
+    float py = Math::round( ( t.y / -t.z ) * stepPixel );
 
-    return Pair<int>( camera.centreX + int( t.x ), camera.centreY + int( t.z ) );
+    return Pair<int>( camera.centreX + int( px ), camera.centreY + int( py ) );
   }
 
   Span StrategicArea::projectBounds( const AABB& bb ) const
@@ -58,12 +58,20 @@ namespace ui
     span.minY = t[0].y;
     span.maxY = t[0].y;
 
-    for( int i = 0; i < 8; ++i ) {
+    for( int i = 1; i < 8; ++i ) {
       span.minX = min( t[i].x, span.minX );
       span.maxX = max( t[i].x, span.maxX );
       span.minY = min( t[i].y, span.minY );
       span.maxY = max( t[i].y, span.maxY );
     }
+
+    // we must contain boxes that are to far outside the screen, otherwise we get healthbars drawn
+    // over half of the screen and similar defects
+    // 2 px margin so that whole box is drawn inside screen
+    span.minX = max( span.minX, 2 );
+    span.maxX = min( span.maxX, camera.width - 2 );
+    span.minY = max( span.minY, 2 );
+    span.maxY = min( span.maxY, camera.height - 2 );
 
     return span;
   }
@@ -263,8 +271,8 @@ namespace ui
   void StrategicArea::onDraw()
   {
     Vec3 at = Vec3( float( mouse.x - camera.centreX ) * pixelStep * 100.0f,
-                    100.0f,
-                    float( mouse.y - camera.centreY ) * pixelStep * 100.0f );
+                    float( mouse.y - camera.centreY ) * pixelStep * 100.0f,
+                    -100.0f );
 
     at = camera.rotMat * at;
     collider.mask = ~0;
@@ -274,12 +282,15 @@ namespace ui
 
     if( hovered != null ) {
       Span span = projectBounds( *hovered + ( Point3::ORIGIN - camera.p ) );
-      drawHoveredRect( span );
-      camera.setTagged( hovered );
 
-      if( leftClick ) {
-        tagged.clear();
-        tagged.add( hovered->index );
+      if( span.maxX - span.minX >= 10 ) {
+        drawHoveredRect( span );
+        camera.setTagged( hovered );
+
+        if( leftClick ) {
+          tagged.clear();
+          tagged.add( hovered->index );
+        }
       }
     }
     else {
@@ -304,7 +315,10 @@ namespace ui
       AABB bb = *obj + ( Point3::ORIGIN - camera.p );
       if( bb.p * camera.at >= TAG_CLIP_DIST ) {
         Span span = projectBounds( bb );
-        drawTaggedRect( obj, span );
+
+        if( span.maxX - span.minX >= 6 && span.maxY - span.minY >= 6 ) {
+          drawTaggedRect( obj, span );
+        }
       }
       ++i;
     }

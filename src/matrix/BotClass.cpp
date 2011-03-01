@@ -96,11 +96,11 @@ namespace oz
     clazz->camZ                 = config->get( "camZ", 0.79f );
     clazz->crouchCamZ           = config->get( "crouchCamZ", 0.69f );
 
-    clazz->bobWalkInc           = config->get( "bobWalkInc", 8.00f );
-    clazz->bobRunInc            = config->get( "bobRunInc", 16.00f );
-    clazz->bobSwimInc           = config->get( "bobSwimInc", 2.00f );
-    clazz->bobSwimRunInc        = config->get( "bobSwimRunInc", 4.00f );
-    clazz->bobRotation          = config->get( "bobRotation", 0.25f );
+    clazz->bobWalkInc           = Math::rad( config->get( "bobWalkInc", 8.00f ) );
+    clazz->bobRunInc            = Math::rad( config->get( "bobRunInc", 16.00f ) );
+    clazz->bobSwimInc           = Math::rad( config->get( "bobSwimInc", 2.00f ) );
+    clazz->bobSwimRunInc        = Math::rad( config->get( "bobSwimRunInc", 4.00f ) );
+    clazz->bobRotation          = Math::rad( config->get( "bobRotation", 0.25f ) );
     clazz->bobAmplitude         = config->get( "bobAmplitude", 0.02f );
     clazz->bobSwimAmplitude     = config->get( "bobSwimAmplitude", 0.05f );
 
@@ -172,7 +172,7 @@ namespace oz
     obj->dim      = dim;
 
     obj->h        = 0.0f;
-    obj->v        = 0.0f;
+    obj->v        = Math::TAU / 4.0f;
 
     obj->index    = index;
     obj->flags    = flags;

@@ -31,18 +31,7 @@ namespace oz
 
       static const float EPSILON;
       static const float E;
-      static const float LOG2E;
-      static const float LOG10E;
-      static const float LN2;
-      static const float LN10;
-      static const float PI;
-      static const float PI_2;
-      static const float PI_4;
-      static const float _1_PI;
-      static const float _2_PI;
-      static const float _2_SQRTPI;
-      static const float SQRT2;
-      static const float SQRT1_2;
+      static const float TAU;
 
       static const float INF;
       static const float NaN;
@@ -328,13 +317,13 @@ namespace oz
       OZ_ALWAYS_INLINE
       static float rad( float x )
       {
-        return x * ( PI / 180.0f );
+        return x * ( TAU / 360.0f );
       }
 
       OZ_ALWAYS_INLINE
       static float deg( float x )
       {
-        return x * ( _1_PI * 180.0f );
+        return x * ( 360.0f / TAU );
       }
 
       OZ_ALWAYS_INLINE

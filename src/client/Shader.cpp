@@ -135,24 +135,6 @@ namespace client
     log.println( "}" );
   }
 
-  void Shader::bindTextures( uint texture0, uint texture1 ) const
-  {
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, texture1 );
-
-    glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, texture0 );
-
-    if( texture0 == 0 ) {
-      glUniform1i( Param::oz_TextureEnabled, 0 );
-    }
-    else {
-      glUniform1i( Param::oz_TextureEnabled, 1 );
-    }
-
-    hard_assert( glGetError() == GL_NO_ERROR );
-  }
-
   void Shader::use( Program prog )
   {
     activeProgram = prog;
@@ -171,6 +153,75 @@ namespace client
     OZ_REGISTER_PARAMETER( oz_PointLights );
 
     hard_assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void Shader::bindTextures( uint texture0, uint texture1 ) const
+  {
+    glActiveTexture( GL_TEXTURE1 );
+    glBindTexture( GL_TEXTURE_2D, texture1 );
+
+    glActiveTexture( GL_TEXTURE0 );
+    glBindTexture( GL_TEXTURE_2D, texture0 );
+
+    if( texture0 == 0 ) {
+      glUniform1i( Param::oz_TextureEnabled, 0 );
+    }
+    else {
+      glUniform1i( Param::oz_TextureEnabled, 1 );
+    }
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void Shader::setLightingDistance( float distance )
+  {
+    lightingDistance = distance;
+  }
+
+  void Shader::setAmbientLight( const Quat& colour )
+  {
+    ambientLight = colour;
+  }
+
+  void Shader::setSkyLight( const Vec3& dir, const Quat& colour )
+  {
+    skyLight.dir    = dir;
+    skyLight.colour = colour;
+  }
+
+  int Shader::addLight( const Point3& pos, const Quat& colour )
+  {
+    return lights.add( Light( pos, colour ) );
+  }
+
+  void Shader::removeLight( int id )
+  {
+    lights.remove( id );
+  }
+
+  void Shader::setLight( int id, const Point3& pos, const Quat& colour )
+  {
+    lights[id].pos = pos;
+    lights[id].colour = colour;
+  }
+
+  void Shader::updateLights()
+  {
+    Map<float, const Light*> localLights( lights.length() );
+
+    Mat44 transf;
+    glGetFloatv( GL_MODELVIEW_MATRIX, transf );
+
+    foreach( light, lights.citer() ) {
+      Point3 localPos = transf * light->pos;
+      float  dist     = ( localPos - Point3::ORIGIN ).sqL();
+
+      if( dist < lightingDistance ) {
+        localLights.add( dist, light );
+      }
+    }
+
+    // TODO
   }
 
   void Shader::load()

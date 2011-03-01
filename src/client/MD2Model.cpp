@@ -73,7 +73,7 @@ namespace client
     const Bot* bot = static_cast<const Bot*>( obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    glRotatef( bot->h, 0.0f, 0.0f, 1.0f );
+    glRotatef( Math::deg( bot->h ), 0.0f, 0.0f, 1.0f );
 
     if( bot->anim != anim.type ) {
       setAnim( bot->anim );
@@ -105,7 +105,7 @@ namespace client
     }
     else if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
       glTranslatef( 0.0f, 0.0f,  bot->camZ );
-      glRotatef( bot->v, 1.0f, 0.0f, 0.0f );
+      glRotatef( Math::deg( bot->v ), 1.0f, 0.0f, 0.0f );
       glTranslatef( 0.0f, 0.0f, -bot->camZ );
 
       md2->advance( &anim, timer.frameTime );

@@ -129,10 +129,10 @@ namespace oz
     orbis.sky.time = 180.0f;
 
     int index = synapse.addObject( "Lord", Point3( 52, -44, 37 ) );
-    static_cast<Bot*>( orbis.objects[index] )->h = 270.0f;
+    static_cast<Bot*>( orbis.objects[index] )->h = 0.75f * Math::TAU;
 
     index = synapse.addObject( "DroidCommander", Point3( 54, -44, 37 ) );
-    static_cast<Bot*>( orbis.objects[index] )->h = 90.0f;
+    static_cast<Bot*>( orbis.objects[index] )->h = 0.25f * Math::TAU;
 
     synapse.addObject( "Knight", Point3( 50, -35, 37 ) );
     synapse.addObject( "Goblin", Point3( 51, -35, 37 ) );

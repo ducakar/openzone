@@ -619,7 +619,7 @@ namespace nirvana
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushnumber( l, bot->h );
+    lua_pushnumber( l, Math::deg( bot->h ) );
     return 1;
   }
 
@@ -634,7 +634,7 @@ namespace nirvana
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushnumber( l, bot->v );
+    lua_pushnumber( l, Math::deg( bot->v ) );
     return 1;
   }
 
@@ -652,15 +652,15 @@ namespace nirvana
     // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
     float hvsc[6];
 
-    Math::sincos( Math::rad( bot->h ), &hvsc[0], &hvsc[1] );
-    Math::sincos( Math::rad( bot->v ), &hvsc[2], &hvsc[3] );
+    Math::sincos( bot->h, &hvsc[0], &hvsc[1] );
+    Math::sincos( bot->v, &hvsc[2], &hvsc[3] );
 
     hvsc[4] = hvsc[3] * hvsc[0];
     hvsc[5] = hvsc[3] * hvsc[1];
 
     lua_pushnumber( l, -hvsc[4] );
     lua_pushnumber( l,  hvsc[5] );
-    lua_pushnumber( l,  hvsc[2] );
+    lua_pushnumber( l, -hvsc[3] );
 
     return 3;
   }
@@ -705,37 +705,41 @@ namespace nirvana
 
   int Lua::ozSelfGetH( lua_State* l )
   {
-    lua_pushnumber( l, lua.self->h );
+    lua_pushnumber( l, Math::deg( lua.self->h ) );
     return 1;
   }
 
   int Lua::ozSelfSetH( lua_State* l )
   {
-    lua.self->h = float( lua_tonumber( l, 1 ) );
+    lua.self->h = Math::rad( float( lua_tonumber( l, 1 ) ) );
+    lua.self->h = Math::mod( lua.self->h + Math::TAU, Math::TAU );
     return 1;
   }
 
   int Lua::ozSelfAddH( lua_State* l )
   {
-    lua.self->h += float( lua_tonumber( l, 1 ) );
+    lua.self->h += Math::rad( float( lua_tonumber( l, 1 ) ) );
+    lua.self->h = Math::mod( lua.self->h + Math::TAU, Math::TAU );
     return 1;
   }
 
   int Lua::ozSelfGetV( lua_State* l )
   {
-    lua_pushnumber( l, lua.self->v );
+    lua_pushnumber( l, Math::deg( lua.self->v ) );
     return 1;
   }
 
   int Lua::ozSelfSetV( lua_State* l )
   {
-    lua.self->v = float( lua_tonumber( l, 1 ) );
+    lua.self->v = Math::rad( float( lua_tonumber( l, 1 ) ) );
+    lua.self->v = bound( lua.self->v, 0.0f, Math::TAU / 2.0f );
     return 1;
   }
 
   int Lua::ozSelfAddV( lua_State* l )
   {
-    lua.self->v += float( lua_tonumber( l, 1 ) );
+    lua.self->v += Math::rad( float( lua_tonumber( l, 1 ) ) );
+    lua.self->v = bound( lua.self->v, 0.0f, Math::TAU / 2.0f );
     return 1;
   }
 

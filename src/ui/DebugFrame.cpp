@@ -34,14 +34,14 @@ namespace ui
     Frame::onDraw();
 
     print( 5, -5 - textHeight * 1, "cam.p(%.2f %.2f %.2f) cam.relRot(%.2f %.2f)",
-           camera.p.x, camera.p.y, camera.p.z, camera.h, camera.v );
+           camera.p.x, camera.p.y, camera.p.z, camera.h / Math::TAU, camera.v / Math::TAU );
 
     if( camera.bot != -1 ) {
       const Bot* bot = static_cast<const Bot*>( camera.botObj );
 
       print( 5, -5 - textHeight * 2, "bot.pos(%.2f %.2f %.2f) bot.rot(%.2f %.2f)",
             bot->p.x, bot->p.y, bot->p.z,
-            bot->h, bot->v );
+            bot->h / Math::TAU, bot->v / Math::TAU );
 
       print( 5, -5 - textHeight * 3, "bot.vel(%.2f %.2f %.2f) bot.mom(%.2f %.2f %.2f) bot.wd %.2f",
              bot->velocity.x, bot->velocity.y, bot->velocity.z,

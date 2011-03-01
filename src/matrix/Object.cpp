@@ -82,7 +82,6 @@ namespace oz
   void Object::readFull( InputStream* istream )
   {
     p        = istream->readPoint3();
-    h        = istream->readFloat();
     flags    = istream->readInt();
     oldFlags = istream->readInt();
     life     = istream->readFloat();
@@ -99,7 +98,6 @@ namespace oz
   void Object::writeFull( OutputStream* ostream ) const
   {
     ostream->writePoint3( p );
-    ostream->writeFloat( h );
     ostream->writeInt( flags );
     ostream->writeInt( oldFlags );
     ostream->writeFloat( life );
