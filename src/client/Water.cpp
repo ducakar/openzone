@@ -32,7 +32,7 @@ namespace client
   void Water::update()
   {
     // update water
-    phi = Math::mod( phi + timer.frameTime, 2.0f * Math::PI );;
+    phi = Math::mod( phi + timer.frameTime, Math::TAU );;
     float ratio = ( 0.5f + Math::sin( 2.0f * phi ) / 2.0f );
 
     float alpha2 = ratio * ALPHA;

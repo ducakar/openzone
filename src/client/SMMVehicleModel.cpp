@@ -59,7 +59,7 @@ namespace client
 
         glPushMatrix();
         glTranslatef(  clazz->crewPos[i].x,  clazz->crewPos[i].y,  clazz->crewPos[i].z );
-        glRotatef( -bot->h, 0.0f, 0.0f, 1.0f );
+        glRotatef( -Math::deg( bot->h ), 0.0f, 0.0f, 1.0f );
 
         context.drawModel( bot, null );
 

@@ -26,7 +26,7 @@ namespace oz
 
   const float Cell::SIZE     = float( Cell::SIZEI );
   const float Cell::INV_SIZE = 1.0f / float( Cell::SIZEI );
-  const float Cell::RADIUS   = Cell::SIZE * Math::SQRT2 / 2.0f;
+  const float Cell::RADIUS   = Cell::SIZE * Math::sqrt( 2 ) / 2.0f;
 
   const float Orbis::DIM     = Cell::SIZE * Orbis::MAX / 2.0f;
 

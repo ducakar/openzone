@@ -200,8 +200,6 @@ namespace oz
        * FIELDS
        */
 
-      float              h;           // horizontal rotation (around z-axis)
-
       Object*            prev[1];     // the previous object in cell.objects and list
       Object*            next[1];     // the next object in cell.objects and list
 

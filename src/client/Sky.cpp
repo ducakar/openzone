@@ -43,10 +43,8 @@ namespace client
 
   void Sky::load()
   {
-    float heading = Math::rad( orbis.sky.heading );
-
-    axis = Vec3( -Math::sin( heading ), Math::cos( heading ), 0.0f );
-    originalLightDir = Vec3( -Math::cos( heading ), -Math::sin( heading ), 0.0f );
+    axis = Vec3( -Math::sin( orbis.sky.heading ), Math::cos( orbis.sky.heading ), 0.0f );
+    originalLightDir = Vec3( -Math::cos( orbis.sky.heading ), -Math::sin( orbis.sky.heading ), 0.0f );
 
     DArray<Point3> positions( MAX_STARS );
     DArray<ushort> indices( MAX_STARS * 18 );
@@ -144,7 +142,7 @@ namespace client
 
   void Sky::update()
   {
-    angle = 2.0f * Math::PI * ( orbis.sky.time / orbis.sky.period );
+    angle = Math::TAU * ( orbis.sky.time / orbis.sky.period );
 
     Mat44 rot = Quat::rotAxis( axis, angle ).rotMat44();
     Vec3  dir = rot * originalLightDir;
@@ -185,7 +183,7 @@ namespace client
     };
 
     // we need the transformation matrix for occlusion of stars below horizon
-    Mat44 transf = Mat44::rotZ( Math::rad( orbis.sky.heading ) ) * Mat44::rotY( angle );
+    Mat44 transf = Mat44::rotZ( orbis.sky.heading ) * Mat44::rotY( angle );
 
     glDisable( GL_CULL_FACE );
 

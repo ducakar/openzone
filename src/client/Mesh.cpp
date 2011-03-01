@@ -129,40 +129,34 @@ namespace client
       }
     }
 
-    int nSolidParts = stream->readInt();
-    for( int i = 0; i < nSolidParts; ++i ) {
-      solidParts.add();
-      Part& part = solidParts.last();
+    int nParts = stream->readInt();
+    int firstAlphaPart = stream->readInt();
 
-      part.diffuse    = stream->readQuat();
-      part.specular   = stream->readQuat();
+    hard_assert( ( firstAlphaPart & FIRST_ALPHA_PART_MASK ) == firstAlphaPart );
 
-      part.texture[0] = textures[ stream->readInt() ];
-      part.texture[1] = textures[ stream->readInt() ];
-      part.texture[2] = textures[ stream->readInt() ];
+    flags |= firstAlphaPart;
 
-      part.mode       = stream->readInt();
-
-      part.nIndices   = stream->readInt();
-      part.firstIndex = stream->readInt();
+    if( firstAlphaPart != 0 ) {
+      flags |= SOLID_BIT;
+    }
+    if( firstAlphaPart != parts.length() ) {
+      flags |= ALPHA_BIT;
     }
 
-    int nAlphaParts = stream->readInt();
-    for( int i = 0; i < nAlphaParts; ++i ) {
-      alphaParts.add();
-      Part& part = alphaParts.last();
+    parts.alloc( nParts );
 
-      part.diffuse    = stream->readQuat();
-      part.specular   = stream->readQuat();
+    for( int i = 0; i < nParts; ++i ) {
+      parts[i].diffuse    = stream->readQuat();
+      parts[i].specular   = stream->readQuat();
 
-      part.texture[0] = textures[ stream->readInt() ];
-      part.texture[1] = textures[ stream->readInt() ];
-      part.texture[2] = textures[ stream->readInt() ];
+      parts[i].texture[0] = textures[ stream->readInt() ];
+      parts[i].texture[1] = textures[ stream->readInt() ];
+      parts[i].texture[2] = textures[ stream->readInt() ];
 
-      part.mode       = stream->readInt();
+      parts[i].mode       = stream->readInt();
 
-      part.nIndices   = stream->readInt();
-      part.firstIndex = stream->readInt();
+      parts[i].nIndices   = stream->readInt();
+      parts[i].firstIndex = stream->readInt();
     }
 
     textures.dealloc();
@@ -221,13 +215,6 @@ namespace client
     delete[] indices;
     delete[] vertices;
 
-    if( nSolidParts != 0 ) {
-      flags |= SOLID_BIT;
-    }
-    if( nAlphaParts != 0 ) {
-      flags |= ALPHA_BIT;
-    }
-
     hard_assert( glGetError() == GL_NO_ERROR );
   }
 
@@ -235,10 +222,7 @@ namespace client
   {
     if( vao != 0 ) {
       if( flags & EMBEDED_TEX_BIT ) {
-        foreach( part, solidParts.citer() ) {
-          glDeleteTextures( 3, part->texture );
-        }
-        foreach( part, alphaParts.citer() ) {
+        foreach( part, parts.citer() ) {
           glDeleteTextures( 3, part->texture );
         }
       }
@@ -288,28 +272,30 @@ namespace client
       return;
     }
 
+    int firstAlphaPart = flags & FIRST_ALPHA_PART_MASK;
+
     glBindVertexArray( vao );
 
     if( mask & SOLID_BIT ) {
-      foreach( part, solidParts.citer() ) {
-        glUniform4fv( Param::oz_DiffuseMaterial, 1, part->diffuse );
-        glUniform4fv( Param::oz_SpecularMaterial, 1, part->specular );
+      for( int i = 0; i < firstAlphaPart; ++i ) {
+        glUniform4fv( Param::oz_DiffuseMaterial, 1, parts[i].diffuse );
+        glUniform4fv( Param::oz_SpecularMaterial, 1, parts[i].specular );
 
-        shader.bindTextures( part->texture[0], part->texture[1] );
-        glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
-                        reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
+        shader.bindTextures( parts[i].texture[0], parts[i].texture[1] );
+        glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
+                        reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }
     }
     if( mask & ALPHA_BIT ) {
       glEnable( GL_BLEND );
 
-      foreach( part, alphaParts.citer() ) {
-        glUniform4fv( Param::oz_DiffuseMaterial, 1, part->diffuse );
-        glUniform4fv( Param::oz_SpecularMaterial, 1, part->specular );
+      for( int i = firstAlphaPart; i < parts.length(); ++i ) {
+        glUniform4fv( Param::oz_DiffuseMaterial, 1, parts[i].diffuse );
+        glUniform4fv( Param::oz_SpecularMaterial, 1, parts[i].specular );
 
-        shader.bindTextures( part->texture[0], part->texture[1] );
-        glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
-                        reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
+        shader.bindTextures( parts[i].texture[0], parts[i].texture[1] );
+        glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
+                        reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }
 
       glDisable( GL_BLEND );
@@ -357,7 +343,9 @@ namespace client
       }
     }
 
+    stream->writeInt( solidParts.length() + alphaParts.length() );
     stream->writeInt( solidParts.length() );
+
     foreach( part, solidParts.citer() ) {
       stream->writeQuat( part->diffuse );
       stream->writeQuat( part->specular );
@@ -371,8 +359,6 @@ namespace client
       stream->writeInt( part->nIndices );
       stream->writeInt( part->firstIndex );
     }
-
-    stream->writeInt( alphaParts.length() );
     foreach( part, alphaParts.citer() ) {
       stream->writeQuat( part->diffuse );
       stream->writeQuat( part->specular );

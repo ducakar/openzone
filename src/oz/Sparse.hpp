@@ -29,7 +29,7 @@ namespace oz
         union
         {
           char cvalue[sizeof( Type )];
-          Type value;
+//           Type value;
         };
         int  nextSlot;
       };
@@ -68,7 +68,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           operator const Type* () const
           {
-            return &B::elem->value;
+            return reinterpret_cast<const Type*>( &B::elem->cvalue );
           }
 
           /**
@@ -77,7 +77,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           const Type& operator * () const
           {
-            return B::elem->value;
+            return *reinterpret_cast<const Type*>( &B::elem->cvalue );
           }
 
           /**
@@ -86,7 +86,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           const Type* operator -> () const
           {
-            return &B::elem->value;
+            return reinterpret_cast<const Type*>( &B::elem->cvalue );
           }
 
           /**
@@ -137,7 +137,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           operator const Type* () const
           {
-            return &B::elem->value;
+            return reinterpret_cast<const Type*>( &B::elem->cvalue );
           }
 
           /**
@@ -146,7 +146,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           operator Type* ()
           {
-            return &B::elem->value;
+            return reinterpret_cast<Type*>( &B::elem->cvalue );
           }
 
           /**
@@ -155,7 +155,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           const Type& operator * () const
           {
-            return B::elem->value;
+            return *reinterpret_cast<const Type*>( &B::elem->cvalue );
           }
 
           /**
@@ -164,7 +164,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           Type& operator * ()
           {
-            return B::elem->value;
+            return *reinterpret_cast<Type*>( &B::elem->cvalue );
           }
 
           /**
@@ -173,7 +173,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           const Type* operator -> () const
           {
-            return &B::elem->value;
+            return reinterpret_cast<const Type*>( &B::elem->cvalue );
           }
 
           /**
@@ -182,7 +182,7 @@ namespace oz
           OZ_ALWAYS_INLINE
           Type* operator -> ()
           {
-            return &B::elem->value;
+            return reinterpret_cast<Type*>( &B::elem->cvalue );
           }
 
           /**
@@ -310,7 +310,10 @@ namespace oz
         }
 
         int i = 0;
-        while( i < size && ( data[i].nextSlot != -1 || data[i].value == s.data[i].value ) ) {
+        while( i < size && ( data[i].nextSlot != -1 ||
+            *reinterpret_cast<const Type*>( &data[i].cvalue ) ==
+            *reinterpret_cast<const Type*>( &s.data[i].cvalue ) ) )
+        {
           ++i;
         }
         return i == size;
@@ -328,7 +331,10 @@ namespace oz
         }
 
         int i = 0;
-        while( i < size && ( data[i].nextSlot != -1 || data[i].value == s.data[i].value ) ) {
+        while( i < size && ( data[i].nextSlot != -1 ||
+            *reinterpret_cast<const Type*>( &data[i].cvalue ) ==
+            *reinterpret_cast<const Type*>( &s.data[i].cvalue ) ) )
+        {
           ++i;
         }
         return i != size;
@@ -397,7 +403,7 @@ namespace oz
       bool contains( const Type& e ) const
       {
         for( int i = 0; i < size; ++i ) {
-          if( data[i].nextSlot == -1 && data[i].value == e ) {
+          if( data[i].nextSlot == -1 && *reinterpret_cast<const Type*>( &data[i].cvalue ) == e ) {
             return true;
           }
         }
@@ -413,7 +419,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < size && data[i].nextSlot == -1 );
 
-        return data[i].value;
+        return *reinterpret_cast<const Type*>( &data[i].cvalue );
       }
 
       /**
@@ -425,7 +431,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < size && data[i].nextSlot == -1 );
 
-        return data[i].value;
+        return *reinterpret_cast<Type*>( &data[i].cvalue );
       }
 
       /**
@@ -436,7 +442,7 @@ namespace oz
       int index( const Type& e ) const
       {
         for( int i = 0; i < size; ++i ) {
-          if( data[i].nextSlot == -1 && data[i].value == e ) {
+          if( data[i].nextSlot == -1 && *reinterpret_cast<const Type*>( &data[i].cvalue ) == e ) {
             return i;
           }
         }
@@ -451,7 +457,7 @@ namespace oz
       int lastIndex( const Type& e ) const
       {
         for( int i = size - 1; i >= 0; --i ) {
-          if( data[i].nextSlot == -1 && data[i].value == e ) {
+          if( data[i].nextSlot == -1 && *reinterpret_cast<const Type*>( &data[i].cvalue ) == e ) {
             return i;
           }
         }
@@ -469,7 +475,7 @@ namespace oz
         int i = freeSlot;
 
         freeSlot = data[i].nextSlot;
-        new( &data[i].value ) Type;
+        new( &data[i].cvalue ) Type;
         data[i].nextSlot = -1;
         ++count;
 
@@ -488,7 +494,7 @@ namespace oz
         int i = freeSlot;
 
         freeSlot = data[i].nextSlot;
-        new( &data[i].value ) Type( e );
+        new( &data[i].cvalue ) Type( e );
         data[i].nextSlot = -1;
         ++count;
 
@@ -503,7 +509,7 @@ namespace oz
       {
         hard_assert( uint( i ) < uint( size ) );
 
-        data[i].value.~Type();
+        reinterpret_cast<Type*>( &data[i].cvalue )->~Type();
         data[i].nextSlot = freeSlot;
         freeSlot = i;
         --count;
@@ -515,7 +521,7 @@ namespace oz
       void clear()
       {
         for( int i = 0; i < size; ++i ) {
-          data[i].value.~Type();
+          reinterpret_cast<const Type*>( &data[i].cvalue )->~Type();
           data[i].nextSlot = i + 1;
         }
 

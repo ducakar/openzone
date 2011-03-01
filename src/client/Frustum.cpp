@@ -26,10 +26,10 @@ namespace client
     Math::sincos( fovX, &sx, &cx );
     Math::sincos( fovY, &sy, &cy );
 
-    nLeft0  = Vec3(   cx, sx,  0.0f );
-    nRight0 = Vec3(  -cx, sx,  0.0f );
-    nUp0    = Vec3( 0.0f, sy,   -cy );
-    nDown0  = Vec3( 0.0f, sy,    cy );
+    nLeft0  = Vec3(   cx, 0.0f, -sx );
+    nRight0 = Vec3(  -cx, 0.0f, -sx );
+    nDown0  = Vec3( 0.0f,   cy, -sy );
+    nUp0    = Vec3( 0.0f,  -cy, -sy );
 
     radius  = camera.maxDist / cx;
   }

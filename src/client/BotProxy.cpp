@@ -72,11 +72,11 @@ namespace client
       bot->v = camera.v;
     }
     else if( !isFreelook ) {
-      if( camera.h - bot->h > 180.0f ) {
-        bot->h += 360.0f;
+      if( camera.h - bot->h > Math::TAU / 2.0f ) {
+        bot->h += Math::TAU;
       }
-      else if( bot->h - camera.h > 180.0f ) {
-        bot->h -= 360.0f;
+      else if( bot->h - camera.h > Math::TAU / 2.0f ) {
+        bot->h -= Math::TAU;
       }
 
       bot->h = ( 1.0f - TURN_SMOOTHING_COEF ) * camera.h + TURN_SMOOTHING_COEF * bot->h;
@@ -161,7 +161,7 @@ namespace client
       if( !isExternal ) {
         if( bot->parent != -1 ) {
           camera.align();
-          camera.warp( bot->p + camera.rotMat.z * bot->camZ );
+          camera.warp( bot->p + camera.up * bot->camZ );
         }
         else {
           camera.warp( bot->p + Vec3( 0.0f, 0.0f, bot->camZ ) );
@@ -203,7 +203,7 @@ namespace client
 
         camera.w = 0.0f;
         camera.align();
-        camera.warp( bot->p + Vec3( camera.rotMat.y ) * bot->camZ );
+        camera.warp( bot->p + camera.up * bot->camZ );
 
         bobPhi   = 0.0f;
         bobTheta = 0.0f;
@@ -217,18 +217,18 @@ namespace client
             float bobInc = ( bot->state & Bot::RUNNING_BIT ) && bot->grabObj == -1 ?
               clazz->bobSwimRunInc : clazz->bobSwimInc;
 
-            bobPhi   = Math::mod( bobPhi + bobInc, 360.0f );
+            bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
             bobTheta = 0.0f;
-            bobBias  = Math::sin( Math::rad( -2.0f * bobPhi ) ) * clazz->bobSwimAmplitude;
+            bobBias  = Math::sin( -2.0f * bobPhi ) * clazz->bobSwimAmplitude;
           }
           else if( ( bot->flags & Object::ON_FLOOR_BIT ) || bot->lower != -1 ) {
             float bobInc =
                 ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT &&
                 bot->grabObj == -1 ? clazz->bobRunInc : clazz->bobWalkInc;
 
-            bobPhi   = Math::mod( bobPhi + bobInc, 360.0f );
-            bobTheta = Math::sin( Math::rad( bobPhi ) ) * clazz->bobRotation;
-            bobBias  = Math::sin( Math::rad( 2.0f * bobPhi ) ) * clazz->bobAmplitude;
+            bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
+            bobTheta = Math::sin( bobPhi ) * clazz->bobRotation;
+            bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobAmplitude;
           }
           else {
             bobPhi   = 0.0f;
@@ -272,9 +272,7 @@ namespace client
       Point3 origin = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );
       Vec3   offset = -camera.at * dist;
 
-//       collider.mask = ~0;
       collider.translate( origin, offset, bot );
-//       collider.mask = Object::SOLID_BIT;
 
       offset *= collider.hit.ratio;
       offset += camera.at * THIRD_PERSON_CLIP_DIST;
@@ -293,14 +291,14 @@ namespace client
       // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
       float hvsc[6];
 
-      Math::sincos( Math::rad( bot->h ), &hvsc[0], &hvsc[1] );
-      Math::sincos( Math::rad( bot->v ), &hvsc[2], &hvsc[3] );
+      Math::sincos( bot->h, &hvsc[0], &hvsc[1] );
+      Math::sincos( bot->v, &hvsc[2], &hvsc[3] );
 
-      hvsc[4] = hvsc[3] * hvsc[0];
-      hvsc[5] = hvsc[3] * hvsc[1];
+      hvsc[4] = hvsc[2] * hvsc[0];
+      hvsc[5] = hvsc[2] * hvsc[1];
 
       // at vector must be based on bot's orientation, not on camera's
-      Vec3 at = Vec3( -hvsc[4], hvsc[5], hvsc[2] );
+      Vec3 at = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
 
       float distance = static_cast<const BotClass*>( camera.botObj->clazz )->grabDistance;
       collider.mask = ~0;

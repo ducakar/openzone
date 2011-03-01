@@ -94,7 +94,6 @@ namespace oz
 
     obj->p        = pos;
     obj->dim      = dim;
-    obj->h        = 0.0f;
 
     obj->index    = index;
     obj->flags    = flags;

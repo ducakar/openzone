@@ -52,62 +52,63 @@ namespace client
         MAX
       };
 
+    private:
+
+      struct SkyLight
+      {
+        static const SkyLight NONE;
+
+        Vec3 dir;
+        Quat colour;
+        Quat ambient;
+      };
+
       struct Light
       {
         static const Light NONE;
 
-        float pos[3];
-        float colour[3];
+        Point3 pos;
+        Quat   colour;
 
         explicit Light()
         {}
 
-        explicit Light( const Point3& pos_, const Quat& colour_ )
-        {
-          pos[0] = pos_.x;
-          pos[1] = pos_.y;
-          pos[2] = pos_.z;
-
-          colour[0] = colour_.x;
-          colour[1] = colour_.y;
-          colour[2] = colour_.z;
-        }
-
-        explicit Light( const Vec3& dir_, const Quat& colour_ )
-        {
-          pos[0] = dir_.x;
-          pos[1] = dir_.y;
-          pos[2] = dir_.z;
-
-          colour[0] = colour_.x;
-          colour[1] = colour_.y;
-          colour[2] = colour_.z;
-        }
-
-        operator const float* () const
-        {
-          return pos;
-        }
+        explicit Light( const Point3& pos_, const Quat& colour_ ) : pos( pos_ ), colour( colour_ )
+        {}
       };
-
-    private:
 
       static const int   BUFFER_SIZE = 8192;
       static const char* PROGRAM_NAMES[MAX];
 
-      uint vertShaders[MAX];
-      uint fragShaders[MAX];
-      uint programs[MAX];
+      uint          vertShaders[MAX];
+      uint          fragShaders[MAX];
+      uint          programs[MAX];
 
-      Program activeProgram;
+      Program       activeProgram;
+
+      Quat          ambientLight;
+      SkyLight      skyLight;
+      Sparse<Light> lights;
+
+      float lightingDistance;
 
       void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
       void loadProgram( Program prog, const char** sources, int* lengths );
 
     public:
 
-      void bindTextures( uint texture0, uint texture1 = 0 ) const;
       void use( Program prog );
+      void bindTextures( uint texture0, uint texture1 = 0 ) const;
+
+      void setLightingDistance( float distance );
+      void setAmbientLight( const Quat& colour );
+      void setSkyLight( const Vec3& dir, const Quat& colour );
+
+      int  addLight( const Point3& pos, const Quat& colour );
+      void removeLight( int id );
+      void setLight( int id, const Point3& pos, const Quat& colour );
+
+      void updateLights();
 
       void load();
       void unload();

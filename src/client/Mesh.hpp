@@ -48,9 +48,10 @@ namespace client
 
     public:
 
-      static const int SOLID_BIT       = 0x01;
-      static const int ALPHA_BIT       = 0x02;
-      static const int EMBEDED_TEX_BIT = 0x04;
+      static const int FIRST_ALPHA_PART_MASK = 0x00ff;
+      static const int SOLID_BIT             = 0x0100;
+      static const int ALPHA_BIT             = 0x0200;
+      static const int EMBEDED_TEX_BIT       = 0x0400;
 
     private:
 
@@ -72,8 +73,7 @@ namespace client
 
       int          flags;
       DArray<int>  texIds;
-      Vector<Part> solidParts;
-      Vector<Part> alphaParts;
+      DArray<Part> parts;
 
     public:
 

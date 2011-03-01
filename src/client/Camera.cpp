@@ -30,16 +30,16 @@ namespace client
 
   void Camera::align()
   {
-    h = Math::mod( h + 360.0f, 360.0f );
-    v = bound( v, -90.0f, 90.0f );
+    h = Math::mod( h + Math::TAU, Math::TAU );
+    v = bound( v, 0.0f, Math::TAU / 2.0f );
 
-    rot     = Quat::rotZYX( Math::rad( h ), Math::rad( w ), Math::rad( v ) );
+    rot     = Quat::rotZYX( h, w, v );
     rotMat  = rot.rotMat44();
     rotTMat = ~rotMat;
 
     right   = rotMat.x;
-    at      = rotMat.y;
-    up      = rotMat.z;
+    at      = -rotMat.z;
+    up      = rotMat.y;
   }
 
   void Camera::init()
@@ -52,17 +52,17 @@ namespace client
     aspect       = config.getSet( "camera.aspect",     0.0f );
     minDist      = config.getSet( "camera.minDist",    0.1f );
     maxDist      = config.getSet( "camera.maxDist",    400.0f );
-    mouseXSens   = config.getSet( "camera.mouseXSens", 0.20f );
-    mouseYSens   = config.getSet( "camera.mouseYSens", 0.20f );
-    keyXSens     = config.getSet( "camera.keysXSens",  100.0f );
-    keyYSens     = config.getSet( "camera.keysYSens",  100.0f );
+    mouseXSens   = config.getSet( "camera.mouseXSens", 0.003f );
+    mouseYSens   = config.getSet( "camera.mouseYSens", 0.003f );
+    keyXSens     = config.getSet( "camera.keysXSens",  2.0f );
+    keyYSens     = config.getSet( "camera.keysYSens",  2.0f );
     smoothCoef   = config.getSet( "camera.smoothCoef", 0.50f );
     isExternal   = true;
 
-    float angle  = config.getSet( "camera.angle",      80.0f );
+    float angle = Math::rad( config.getSet( "camera.angle", 80.0f ) );
 
     aspect     = aspect != 0.0f ? aspect : float( width ) / float( height );
-    coeff      = Math::tan( Math::PI * angle / 360.0f );
+    coeff      = Math::tan( angle / 2.0f );
     horizPlane = coeff * minDist;
     vertPlane  = aspect * horizPlane;
 
@@ -93,8 +93,8 @@ namespace client
     rotTMat      = ~rotTMat;
 
     right        = rotMat.x;
-    at           = rotTMat.y;
-    up           = rotTMat.z;
+    at           = -rotMat.z;
+    up           = rotMat.y;
 
     tagged       = -1;
     taggedObj    = null;

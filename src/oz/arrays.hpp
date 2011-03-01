@@ -359,7 +359,7 @@ namespace oz
   inline void aFree( Type* aDest, int count )
   {
     for( int i = 0; i < count; ++i ) {
-      if( !( aDest[i] == null ) ) {
+      if( aDest[i] != null ) {
         delete aDest[i];
         aDest[i] = null;
       }
