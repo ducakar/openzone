@@ -305,7 +305,7 @@ namespace oz
    * }</pre>
    */
 # define foreach( i, iterator ) \
-  for( auto i( iterator ); i.isValid(); ++i )
+  for( auto i = iterator; i.isValid(); ++i )
 
   /**
    * Construct elements of an uninitialised container.

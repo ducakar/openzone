@@ -209,7 +209,7 @@ namespace client
     for( int i = 0; i < meshes.length(); ++i ) {
       const Mesh& mesh = meshes[i];
 
-      glBindTexture( GL_TEXTURE_2D, mesh.texId );
+      glBindTexture( mesh.texId );
 
       glBegin( GL_TRIANGLES );
       for( int j = 0; j < mesh.triangles.length(); ++j ) {

@@ -33,7 +33,7 @@ namespace client
     h = Math::mod( h + Math::TAU, Math::TAU );
     v = bound( v, 0.0f, Math::TAU / 2.0f );
 
-    rot     = Quat::rotZYX( h, w, v );
+    rot     = Quat::rotZ( h ) ^ Quat::rotX( v ) ^ Quat::rotZ( w );
     rotMat  = rot.rotMat44();
     rotTMat = ~rotMat;
 

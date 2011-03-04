@@ -40,27 +40,48 @@ namespace client
 
       struct ObjectEntry
       {
-        float distance;
-        const Object* obj;
+        float dist2;
+        union
+        {
+          const Struct* str;
+          const Object* obj;
+        };
 
-        explicit ObjectEntry( float distance_, const Object* obj_ ) :
-            distance( distance_ ), obj( obj_ )
+        explicit ObjectEntry( float dist2_, const Struct* str_ ) :
+            dist2( dist2_ ), str( str_ )
+        {}
+
+        explicit ObjectEntry( float dist2_, const Object* obj_ ) :
+            dist2( dist2_ ), obj( obj_ )
         {}
 
         // sort in reverse order (farest to nearest)
-        bool operator < ( const ObjectEntry& be ) const
+        bool operator < ( const ObjectEntry& oe ) const
         {
-          return distance > be.distance;
+          return dist2 > oe.dist2;
+        }
+
+        friend bool operator == ( float dist2, const ObjectEntry& oe )
+        {
+          return dist2 == oe.dist2;
+        }
+
+        friend bool operator < ( float dist2, const ObjectEntry& oe )
+        {
+          return dist2 > oe.dist2;
         }
       };
 
       Bitset                  drawnStructs;
 
-      Vector<const Struct*>   structs;
+      Vector<ObjectEntry>     structs;
       Vector<ObjectEntry>     objects;
       Vector<const Particle*> particles;
 
       Vector<const Struct*>   waterStructs;
+
+      float                   structNearDist2;
+      float                   objectNearDist2;
 
       float                   dayVisibility;
       float                   nightVisibility;

@@ -22,36 +22,42 @@ namespace client
   bool Vertex::operator == ( const Vertex& v ) const
   {
     return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
-        normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
-        texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1];
+        texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
+        normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2]/* &&
+        tangent[0] == v.tangent[0] && tangent[1] == v.tangent[1] && tangent[2] == v.tangent[2] &&
+        binormal[0] == v.binormal[0] && binormal[1] == v.binormal[1] && binormal[2] == v.binormal[2]*/;
   }
 
-  void Vertex::set( float x, float y, float z, float nx, float ny, float nz, float u, float v )
+  void Vertex::set( float x, float y, float z,
+                    float u, float v,
+                    float nx, float ny, float nz,
+                    float /*tx*/, float /*ty*/, float /*tz*/,
+                    float /*bx*/, float /*by*/, float /*bz*/ )
   {
     pos[0] = x;
     pos[1] = y;
     pos[2] = z;
 
+    texCoord[0] = u;
+    texCoord[1] = v;
+
     normal[0] = nx;
     normal[1] = ny;
     normal[2] = nz;
-
-    texCoord[0] = u;
-    texCoord[1] = v;
   }
 
-  void Vertex::set( const Point3& p, const Vec3& n, const TexCoord& t )
+  void Vertex::set( const Point3& p, const TexCoord& c, const Vec3& n, const Vec3&, const Vec3& )
   {
     pos[0] = p.x;
     pos[1] = p.y;
     pos[2] = p.z;
 
+    texCoord[0] = c.u;
+    texCoord[1] = c.v;
+
     normal[0] = n.x;
     normal[1] = n.y;
     normal[2] = n.z;
-
-    texCoord[0] = t.u;
-    texCoord[1] = t.v;
   }
 
   void Vertex::read( InputStream* stream )
@@ -60,12 +66,20 @@ namespace client
     pos[1] = stream->readFloat();
     pos[2] = stream->readFloat();
 
+    texCoord[0] = stream->readFloat();
+    texCoord[1] = stream->readFloat();
+
     normal[0] = stream->readFloat();
     normal[1] = stream->readFloat();
     normal[2] = stream->readFloat();
 
-    texCoord[0] = stream->readFloat();
-    texCoord[1] = stream->readFloat();
+//     tangent[0] = stream->readFloat();
+//     tangent[1] = stream->readFloat();
+//     tangent[2] = stream->readFloat();
+//
+//     binormal[0] = stream->readFloat();
+//     binormal[1] = stream->readFloat();
+//     binormal[2] = stream->readFloat();
   }
 
   void Vertex::write( OutputStream* stream ) const
@@ -74,12 +88,20 @@ namespace client
     stream->writeFloat( pos[1] );
     stream->writeFloat( pos[2] );
 
+    stream->writeFloat( texCoord[0] );
+    stream->writeFloat( texCoord[1] );
+
     stream->writeFloat( normal[0] );
     stream->writeFloat( normal[1] );
     stream->writeFloat( normal[2] );
 
-    stream->writeFloat( texCoord[0] );
-    stream->writeFloat( texCoord[1] );
+//     stream->writeFloat( tangent[0] );
+//     stream->writeFloat( tangent[1] );
+//     stream->writeFloat( tangent[2] );
+//
+//     stream->writeFloat( binormal[0] );
+//     stream->writeFloat( binormal[1] );
+//     stream->writeFloat( binormal[2] );
   }
 
   Mesh::Mesh() : vao( 0 )
@@ -161,6 +183,13 @@ namespace client
 
     textures.dealloc();
 
+#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
+    int nIndices = stream->readInt();
+    const char* indices = stream->prepareRead( nIndices * sizeof( ushort ) );
+
+    int nVertices = stream->readInt();
+    const char* vertices = stream->prepareRead( nVertices * sizeof( Vertex ) );
+#else
     int nIndices = stream->readInt();
     ushort* indices = new ushort[nIndices];
     for( int i = 0; i < nIndices; ++i ) {
@@ -172,6 +201,7 @@ namespace client
     for( int i = 0; i < nVertices; ++i ) {
       vertices[i].read( stream );
     }
+#endif
 
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
@@ -184,36 +214,35 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, usage );
 
-    glEnableClientState( GL_VERTEX_ARRAY );
-    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+    glEnableVertexAttribArray( Attrib::POSITION );
+    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
-    glEnableClientState( GL_NORMAL_ARRAY );
-    glNormalPointer( GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+    glEnableVertexAttribArray( Attrib::TEXCOORD );
+    glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
-    glClientActiveTexture( GL_TEXTURE0 );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+    glEnableVertexAttribArray( Attrib::NORMAL );
+    glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-    glClientActiveTexture( GL_TEXTURE1 );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-    glClientActiveTexture( GL_TEXTURE2 );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+//     glEnableVertexAttribArray( Attrib::TANGENT );
+//     glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+//
+//     glEnableVertexAttribArray( Attrib::BINORMAL );
+//     glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 
     glBindVertexArray( 0 );
 
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
+#if defined( OZ_BIG_ENDIAN_STREAM ) != defined( OZ_BIG_ENDIAN_ARCH )
     delete[] indices;
     delete[] vertices;
+#endif
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }
@@ -278,10 +307,7 @@ namespace client
 
     if( mask & SOLID_BIT ) {
       for( int i = 0; i < firstAlphaPart; ++i ) {
-        glUniform4fv( Param::oz_DiffuseMaterial, 1, parts[i].diffuse );
-        glUniform4fv( Param::oz_SpecularMaterial, 1, parts[i].specular );
-
-        shader.bindTextures( parts[i].texture[0], parts[i].texture[1] );
+        glBindTexture( parts[i].texture[0] );
         glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }
@@ -290,10 +316,7 @@ namespace client
       glEnable( GL_BLEND );
 
       for( int i = firstAlphaPart; i < parts.length(); ++i ) {
-        glUniform4fv( Param::oz_DiffuseMaterial, 1, parts[i].diffuse );
-        glUniform4fv( Param::oz_SpecularMaterial, 1, parts[i].specular );
-
-        shader.bindTextures( parts[i].texture[0], parts[i].texture[1] );
+        glBindTexture( parts[i].texture[0] );
         glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }

@@ -115,9 +115,9 @@ namespace client
     glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices,
                   GL_STATIC_DRAW );
 
-    glEnableClientState( GL_VERTEX_ARRAY );
-    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+    glEnableVertexAttribArray( Attrib::POSITION );
+    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
     glBindVertexArray( 0 );
 
@@ -195,7 +195,7 @@ namespace client
     glBindVertexArray( vao );
 
     shader.use( Shader::STARS );
-    glUniform4f( Param::oz_DiffuseMaterial, colour[0], colour[1], colour[2], colour[3] );
+    glUniform4f( param.oz_DiffuseMaterial, colour[0], colour[1], colour[2], colour[3] );
     glDrawElements( GL_TRIANGLE_STRIP, MAX_STARS * 18 - 2, GL_UNSIGNED_SHORT, 0 );
 
     shape.bindVertexArray();
@@ -206,19 +206,16 @@ namespace client
     glColor3f( 2.0f * Colours::diffuse[0] + Colours::ambient[0],
                Colours::diffuse[1] + Colours::ambient[1],
                Colours::diffuse[2] + Colours::ambient[2] );
-    shader.bindTextures( sunTexId );
+    glBindTexture( sunTexId );
 
     shape.drawSprite( Point3( -15.0f, 0.0f, 0.0f ), 1.0f, 1.0f );
 
     glColor4fv( Colours::WHITE );
-    shader.bindTextures( moonTexId );
+    glBindTexture( moonTexId );
 
     shape.drawSprite( Point3( 15.0f, 0.0f, 0.0f ), 1.0f, 1.0f );
 
     glDisable( GL_BLEND );
-
-    glColor4fv( Colours::BLACK );
-    shader.use( Shader::DEFAULT );
 
     glPopMatrix();
 

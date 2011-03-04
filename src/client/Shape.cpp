@@ -83,10 +83,10 @@ namespace client
     DArray<ushort> indices( 46 );
     DArray<Vertex> vertices( 12 + MAX_PARTS * 12 );
 
-    vertices[ 0].set( -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f );
-    vertices[ 1].set( +1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f );
-    vertices[ 2].set( -1.0f, +1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f );
-    vertices[ 3].set( +1.0f, +1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f );
+    vertices[ 0].set( -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f );
+    vertices[ 1].set( +1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f );
+    vertices[ 2].set( -1.0f, +1.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f );
+    vertices[ 3].set( +1.0f, +1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f );
 
     vertices[ 4].set( -1.0f, -1.0f, -1.0f );
     vertices[ 5].set( -1.0f, -1.0f, +1.0f );
@@ -112,30 +112,30 @@ namespace client
       // fore
       normal = ~( ( v2 - v1 ) ^ ( v0 - v1 ) );
 
-      vertices[k++].set( v0, normal );
-      vertices[k++].set( v1, normal );
-      vertices[k++].set( v2, normal );
+      vertices[k++].set( v0, TexCoord(), normal );
+      vertices[k++].set( v1, TexCoord(), normal );
+      vertices[k++].set( v2, TexCoord(), normal );
 
       // left
       normal = ~( ( v1 - v3 ) ^ ( v0 - v3 ) );
 
-      vertices[k++].set( v0, normal );
-      vertices[k++].set( v3, normal );
-      vertices[k++].set( v1, normal );
+      vertices[k++].set( v0, TexCoord(), normal );
+      vertices[k++].set( v3, TexCoord(), normal );
+      vertices[k++].set( v1, TexCoord(), normal );
 
       // right
       normal = ~( ( v3 - v2 ) ^ ( v0 - v2 ) );
 
-      vertices[k++].set( v0, normal );
-      vertices[k++].set( v2, normal );
-      vertices[k++].set( v3, normal );
+      vertices[k++].set( v0, TexCoord(), normal );
+      vertices[k++].set( v2, TexCoord(), normal );
+      vertices[k++].set( v3, TexCoord(), normal );
 
       // bottom
       normal = ~( ( v3 - v1 ) ^ ( v2 - v1 ) );
 
-      vertices[k++].set( v1, normal );
-      vertices[k++].set( v3, normal );
-      vertices[k++].set( v2, normal );
+      vertices[k++].set( v1, TexCoord(), normal );
+      vertices[k++].set( v3, TexCoord(), normal );
+      vertices[k++].set( v2, TexCoord(), normal );
     }
 
     /*
@@ -221,28 +221,25 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices, GL_STATIC_DRAW );
 
-    glEnableClientState( GL_VERTEX_ARRAY );
-    glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+    glEnableVertexAttribArray( Attrib::POSITION );
+    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
-    glEnableClientState( GL_NORMAL_ARRAY );
-    glNormalPointer( GL_FLOAT, sizeof( Vertex ),
-                     reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+    glEnableVertexAttribArray( Attrib::TEXCOORD );
+    glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
-    glClientActiveTexture( GL_TEXTURE0 );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+    glEnableVertexAttribArray( Attrib::NORMAL );
+    glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-    glClientActiveTexture( GL_TEXTURE1 );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-    glClientActiveTexture( GL_TEXTURE2 );
-    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-    glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                       reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+//     glEnableVertexAttribArray( Attrib::TANGENT );
+//     glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+//
+//     glEnableVertexAttribArray( Attrib::BINORMAL );
+//     glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 
     glBindVertexArray( 0 );
 

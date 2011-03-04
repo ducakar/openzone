@@ -26,8 +26,7 @@ namespace client
       float fovX, fovY;
       float sx, cx, sy, cy;
       Vec3  nLeft0, nRight0, nDown0, nUp0;
-      Vec3  nLeft, nRight, nDown, nUp, nFront;
-      float dLeft, dRight, dDown, dUp, dFront;
+      Plane left, right, down, up, front;
 
     public:
 
@@ -40,11 +39,11 @@ namespace client
       bool isVisible( const Point3& p, float radius = 0.0f )
       {
         return
-            p * nLeft  > dLeft  - radius &&
-            p * nRight > dRight - radius &&
-            p * nUp    > dUp    - radius &&
-            p * nDown  > dDown  - radius &&
-            p * nFront < dFront + radius;
+            left  * p > -radius &&
+            right * p > -radius &&
+            up    * p > -radius &&
+            down  * p > -radius &&
+            front * p < +radius;
       }
 
       OZ_ALWAYS_INLINE
@@ -57,13 +56,13 @@ namespace client
       bool isVisible( const Bounds& b, float factor = 1.0f )
       {
         Vec3 dim = b.maxs - b.mins;
-        return isVisible( b.mins + 0.5f * dim, !dim * factor );
+        return isVisible( b.mins + 0.5f * dim, dim.fastL() * factor );
       }
 
       OZ_ALWAYS_INLINE
       bool isVisible( const AABB& bb, float factor = 1.0f )
       {
-        return isVisible( bb.p, !bb.dim * factor );
+        return isVisible( bb.p, bb.dim.fastL() * factor );
       }
 
       OZ_ALWAYS_INLINE
@@ -73,11 +72,11 @@ namespace client
         Point3 maxs = Point3( x, y,  Orbis::DIM );
 
         return
-            ( mins * nLeft  > dLeft  - radius || maxs * nLeft  > dLeft  - radius ) &&
-            ( mins * nRight > dRight - radius || maxs * nRight > dRight - radius ) &&
-            ( mins * nUp    > dUp    - radius || maxs * nUp    > dUp    - radius ) &&
-            ( mins * nDown  > dDown  - radius || maxs * nDown  > dDown  - radius ) &&
-            ( mins * nFront < dFront + radius || maxs * nFront < dFront + radius );
+            ( left  * mins > -radius || left  * maxs > -radius ) &&
+            ( right * mins > -radius || right * maxs > -radius ) &&
+            ( up    * mins > -radius || up    * maxs > -radius ) &&
+            ( down  * mins > -radius || down  * maxs > -radius ) &&
+            ( front * mins < +radius || front * maxs < +radius );
       }
 
       // get min and max index for cells per each axis, which should be included in pvs

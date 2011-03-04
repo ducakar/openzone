@@ -50,7 +50,6 @@ namespace ui
     glEnable( GL_BLEND );
 
     shader.use( Shader::UI );
-    shader.bindTextures( 0 );
 
     root->drawChildren();
     mouse.draw();

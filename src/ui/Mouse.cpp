@@ -67,7 +67,8 @@ namespace ui
     const Cursor& cur = cursors[icon];
 
     if( doShow ) {
-      shader.bindTextures( cur.texId );
+      glUniform1i( param.oz_IsTextureEnabled, true );
+      glBindTexture( cur.texId );
       glBegin( GL_QUADS );
         glTexCoord2i( 0, 1 );
         glVertex2i( x - cur.hotspotX           , y + 1 + cur.hotspotY - cur.size );
@@ -78,7 +79,7 @@ namespace ui
         glTexCoord2i( 0, 0 );
         glVertex2i( x - cur.hotspotX           , y + 1 + cur.hotspotY            );
       glEnd();
-      shader.bindTextures( 0 );
+      glUniform1i( param.oz_IsTextureEnabled, false );
     }
   }
 

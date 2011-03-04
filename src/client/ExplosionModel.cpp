@@ -53,10 +53,10 @@ namespace client
 
     glEnable( GL_BLEND );
     glDisable( GL_CULL_FACE );
-    glUniform4fv( Param::oz_DiffuseMaterial, 1, colour );
-    shader.bindTextures( texId );
+
+    glBindTexture( texId );
     gluSphere( quadric, radius, 32, 32 );
-    glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::WHITE );
+
     glEnable( GL_CULL_FACE );
     glDisable( GL_BLEND );
   }

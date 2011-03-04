@@ -47,10 +47,10 @@ namespace oz
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       hard_assert( hitMomentum <= 0.0f );
 
-      addEvent( EVENT_LAND, hitMomentum * Object::MOMENTUM_INTENSITY_COEF );
+      addEvent( EVENT_LAND, hitMomentum * MOMENTUM_INTENSITY_COEF );
     }
     else if( hitMomentum < HIT_HARD_THRESHOLD ) {
-      addEvent( EVENT_HIT_HARD, hitMomentum * Object::MOMENTUM_INTENSITY_COEF );
+      addEvent( EVENT_HIT_HARD, hitMomentum * MOMENTUM_INTENSITY_COEF );
     }
   }
 
@@ -137,8 +137,7 @@ namespace oz
     stepRate -= ( velocity.x*velocity.x + velocity.y*velocity.y );
     stepRate *= clazz->stepRateSupp;
 
-    stamina += clazz->staminaGain;
-    stamina = bound( stamina, 0.0f, clazz->stamina );
+    stamina = min( stamina + clazz->staminaGain, clazz->stamina );
 
     if( state & SUBMERGED_BIT ) {
       stamina -= clazz->staminaWaterDrain;
@@ -198,7 +197,7 @@ namespace oz
       }
       else {
         flags &= ~DISABLED_BIT;
-        flags &= ~Object::ON_FLOOR_BIT;
+        flags &= ~ON_FLOOR_BIT;
         lower =  -1;
 
         p.z    += dim.z - clazz->dimCrouch.z;
@@ -246,7 +245,7 @@ namespace oz
     }
     else if( state & GESTURE4_BIT ) {
       anim = Anim::FLIP;
-      if( !( oldState & GESTURE4_BIT ) ) {
+      if( ~oldState & GESTURE4_BIT ) {
         addEvent( EVENT_FLIP, 1.0f );
       }
     }
@@ -345,7 +344,7 @@ namespace oz
         }
       }
 
-      if( ( flags & Object::ON_FLOOR_BIT ) && floor.z != 1.0f ) {
+      if( ( flags & ( ON_FLOOR_BIT | IN_WATER_BIT ) ) == ON_FLOOR_BIT && floor.z != 1.0f ) {
         float dot = desiredMomentum * floor;
 
         if( dot > 0.0f ) {
@@ -354,7 +353,7 @@ namespace oz
       }
       momentum += desiredMomentum;
 
-      if( state & ( RUNNING_BIT | GROUNDED_BIT | SWIMMING_BIT | CLIMBING_BIT ) ) {
+      if( ( state & RUNNING_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT | CLIMBING_BIT ) ) ) {
         stamina -= clazz->staminaRunDrain;
       }
 
@@ -376,7 +375,7 @@ namespace oz
       //               \----------
       //
       //
-      if( ( state & STEPPING_BIT ) && ( ~state & CLIMBING_BIT ) &&
+      if( ( state & ( STEPPING_BIT | CLIMBING_BIT ) ) == STEPPING_BIT &&
           stepRate <= clazz->stepRateLimit )
       {
         // check if bot's gonna hit a stair in next frame
@@ -431,7 +430,7 @@ namespace oz
     }
 
     if( grabObj != -1 ) {
-      if( lower == grabObj || ( state & SWIMMING_BIT ) || ( obj->flags & Object::UPPER_BIT ) ) {
+      if( lower == grabObj || ( state & SWIMMING_BIT ) || ( obj->flags & UPPER_BIT ) ) {
         grabObj = -1;
       }
       else {
@@ -456,7 +455,7 @@ namespace oz
           momDiff.z         -= Physics::G_MOMENTUM;
 
           obj->momentum += momDiff;
-          obj->flags    &= ~Object::DISABLED_BIT;
+          obj->flags    &= ~DISABLED_BIT;
           flags         &= ~CLIMBER_BIT;
         }
       }
@@ -572,7 +571,7 @@ namespace oz
           synapse.put( item );
           items.remove( taggedItem );
 
-          grabObj   = item->index;
+          grabObj    = item->index;
           grabHandle = dist;
           flags      &= ~ON_LADDER_BIT;
 
@@ -610,7 +609,7 @@ namespace oz
 
   void Bot::take( Dynamic* item )
   {
-    hard_assert( index != -1 && ( item->flags & Object::ITEM_BIT ) );
+    hard_assert( index != -1 && ( item->flags & ITEM_BIT ) );
 
     items.add( item->index );
     item->parent = index;
@@ -701,11 +700,11 @@ namespace oz
   {
     Dynamic::readUpdate( istream );
 
-    h            = istream->readFloat();
-    v            = istream->readFloat();
-    state        = istream->readInt();
-    grabObj      = istream->readInt();
-    anim         = Anim::Type( istream->readInt() );
+    h       = istream->readFloat();
+    v       = istream->readFloat();
+    state   = istream->readInt();
+    grabObj = istream->readInt();
+    anim    = Anim::Type( istream->readInt() );
   }
 
   void Bot::writeUpdate( OutputStream* ostream ) const

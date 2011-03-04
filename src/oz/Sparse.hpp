@@ -26,11 +26,7 @@ namespace oz
 
       struct Elem
       {
-        union
-        {
-          char cvalue[sizeof( Type )];
-//           Type value;
-        };
+        char cvalue[sizeof( Type )];
         int  nextSlot;
       };
 

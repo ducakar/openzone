@@ -76,7 +76,7 @@ namespace oz
     clazz->debrisColourSpread   = config->get( "debrisColourSpread", 0.1f );
 
     clazz->mass                 = config->get( "mass", 100.0f );
-    clazz->lift                 = config->get( "lift", 12.0f );
+    clazz->lift                 = config->get( "lift", 13.0f );
 
     if( clazz->mass < 0.1f ) {
       throw Exception( "Invalid object mass. Should be >= 0.1." );

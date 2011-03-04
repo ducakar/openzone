@@ -192,41 +192,6 @@ namespace client
     hard_assert( alGetError() == AL_NO_ERROR );
   }
 
-  void Loader::makeScreenshot()
-  {
-    uint* pixels = new uint[camera.width * camera.height * 4];
-    char fileName[1024];
-    time_t ct;
-    struct tm t;
-
-    ct = time( null );
-    t = *localtime( &ct );
-
-    snprintf( fileName, 1024, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
-              config.get( "dir.rc", "" ),
-              1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
-    fileName[1023] = '\0';
-
-    log.print( "Saving screenshot to '%s' ...", fileName );
-
-    glReadPixels( 0, 0, camera.width, camera.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
-    SDL_Surface* surf = SDL_CreateRGBSurfaceFrom( pixels, camera.width, camera.height, 32,
-                                                  camera.width * 4,
-                                                  0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
-    // flip image
-    for( int i = 0; i < camera.height / 2; ++i ) {
-      for( int j = 0; j < camera.width; ++j ) {
-        swap( pixels[i * camera.width + j],
-              pixels[( camera.height - i - 1 ) * camera.width + j] );
-      }
-    }
-    SDL_SaveBMP( surf, fileName );
-    SDL_FreeSurface( surf );
-    delete[] pixels;
-
-    log.printEnd( "OK" );
-  }
-
   void Loader::update()
   {
     tick = ( tick + 1 ) % TICK_CLEAR_PERIOD;
@@ -290,6 +255,41 @@ namespace client
   {
     cleanupRender();
     cleanupSound();
+  }
+
+  void Loader::makeScreenshot()
+  {
+    uint* pixels = new uint[camera.width * camera.height * 4];
+    char fileName[1024];
+    time_t ct;
+    struct tm t;
+
+    ct = time( null );
+    t = *localtime( &ct );
+
+    snprintf( fileName, 1024, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
+              config.get( "dir.rc", "" ),
+              1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
+    fileName[1023] = '\0';
+
+    log.print( "Saving screenshot to '%s' ...", fileName );
+
+    glReadPixels( 0, 0, camera.width, camera.height, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+    SDL_Surface* surf = SDL_CreateRGBSurfaceFrom( pixels, camera.width, camera.height, 32,
+                                                  camera.width * 4,
+                                                  0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000 );
+    // flip image
+    for( int i = 0; i < camera.height / 2; ++i ) {
+      for( int j = 0; j < camera.width; ++j ) {
+        swap( pixels[i * camera.width + j],
+              pixels[( camera.height - i - 1 ) * camera.width + j] );
+      }
+    }
+    SDL_SaveBMP( surf, fileName );
+    SDL_FreeSurface( surf );
+    delete[] pixels;
+
+    log.printEnd( "OK" );
   }
 
   void Loader::init()

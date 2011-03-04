@@ -25,10 +25,10 @@ namespace oz
 namespace client
 {
 
-  const int Terra::TILE_INDICES =
+  const int   Terra::TILE_INDICES  =
       Terra::TILE_QUADS * ( Terra::TILE_QUADS + 1 ) * 2 + ( Terra::TILE_QUADS - 1 ) * 2;
 
-  const int Terra::TILE_VERTICES   = ( Terra::TILE_QUADS + 1 ) * ( Terra::TILE_QUADS + 1 );
+  const int   Terra::TILE_VERTICES = ( Terra::TILE_QUADS + 1 ) * ( Terra::TILE_QUADS + 1 );
 
   const float Terra::TILE_SIZE     = Terra::TILE_QUADS * oz::Terra::Quad::SIZE;
   const float Terra::TILE_INV_SIZE = 1.0f / Terra::TILE_SIZE;
@@ -96,6 +96,8 @@ namespace client
     Vec3   normal;
     Vertex vertex;
 
+    waterTiles.clearAll();
+
     for( int i = 0; i < TILES; ++i ) {
       for( int j = 0; j < TILES; ++j ) {
         // tile
@@ -124,10 +126,14 @@ namespace client
               normal += quads[x][y - 1].triNormal[1];
             }
 
+            if( pos.z < 0.0f ) {
+              waterTiles.set( i * TILES + j );
+            }
+
             vertex.set( pos,
-                        ~normal,
                         TexCoord( float( x ) / float( oz::Terra::VERTS ),
-                                  float( y ) / float( oz::Terra::VERTS ) ) );
+                                  float( y ) / float( oz::Terra::VERTS ) ),
+                        ~normal );
             vertex.write( &os );
           }
         }
@@ -140,110 +146,64 @@ namespace client
         float maxX = quads[x + TILE_QUADS][y + TILE_QUADS].vertex.x;
         float maxY = quads[x + TILE_QUADS][y + TILE_QUADS].vertex.y;
 
-        // front, blend 1
+        // front
         normal = Vec3( 0.0f, 0.0f, 1.0f );
 
         vertex.set( Point3( minX, minY, 0.0f ),
-                    normal,
                     TexCoord( 0.0f,
-                              0.0f ) );
+                              0.0f ),
+                    normal );
         vertex.write( &os );
 
         vertex.set( Point3( maxX, minY, 0.0f ),
-                    normal,
                     TexCoord( TILE_SIZE * WATER_SCALE,
-                              0.0f ) );
+                              0.0f ),
+                    normal );
         vertex.write( &os );
 
         vertex.set( Point3( minX, maxY, 0.0f ),
-                    normal,
                     TexCoord( 0.0f,
-                              TILE_SIZE * WATER_SCALE ) );
+                              TILE_SIZE * WATER_SCALE ),
+                    normal );
         vertex.write( &os );
 
         vertex.set( Point3( maxX, maxY, 0.0f ),
-                    normal,
                     TexCoord( TILE_SIZE * WATER_SCALE,
-                              TILE_SIZE * WATER_SCALE ) );
+                              TILE_SIZE * WATER_SCALE ),
+                    normal );
         vertex.write( &os );
 
-        // front, blend 2
-        vertex.set( Point3( minX, minY, 0.0f ),
-                    normal,
-                    TexCoord( Water::TEX_BIAS,
-                              Water::TEX_BIAS ) );
-        vertex.write( &os );
-
-        vertex.set( Point3( maxX, minY, 0.0f ),
-                    normal,
-                    TexCoord( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS,
-                              Water::TEX_BIAS ) );
-        vertex.write( &os );
-
-        vertex.set( Point3( minX, maxY, 0.0f ),
-                    normal,
-                    TexCoord( Water::TEX_BIAS,
-                              TILE_SIZE * WATER_SCALE + Water::TEX_BIAS ) );
-        vertex.write( &os );
-
-        vertex.set( Point3( maxX, maxY, 0.0f ),
-                    normal,
-                    TexCoord( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS,
-                              TILE_SIZE * WATER_SCALE + Water::TEX_BIAS ) );
-        vertex.write( &os );
-
-        // back, blend 1
+        // back
         normal = Vec3( 0.0f, 0.0f, -1.0f );
 
         vertex.set( Point3( minX, minY, 0.0f ),
-                    normal,
                     TexCoord( 0.0f,
-                              0.0f ) );
+                              0.0f ),
+                    normal );
         vertex.write( &os );
 
         vertex.set( Point3( minX, maxY, 0.0f ),
-                    normal,
                     TexCoord( 0.0f,
-                              TILE_SIZE * WATER_SCALE ) );
+                              TILE_SIZE * WATER_SCALE ),
+                    normal );
         vertex.write( &os );
 
         vertex.set( Point3( maxX, minY, 0.0f ),
-                    normal,
                     TexCoord( TILE_SIZE * WATER_SCALE,
-                              0.0f ) );
+                              0.0f ),
+                    normal );
         vertex.write( &os );
 
         vertex.set( Point3( maxX, maxY, 0.0f ),
-                    normal,
                     TexCoord( TILE_SIZE * WATER_SCALE,
-                              TILE_SIZE * WATER_SCALE ) );
-        vertex.write( &os );
-
-        // front, blend 2
-        vertex.set( Point3( minX, minY, 0.0f ),
-                    normal,
-                    TexCoord( Water::TEX_BIAS,
-                              Water::TEX_BIAS ) );
-        vertex.write( &os );
-
-        vertex.set( Point3( minX, maxY, 0.0f ),
-                    normal,
-                    TexCoord( Water::TEX_BIAS,
-                              TILE_SIZE * WATER_SCALE + Water::TEX_BIAS ) );
-        vertex.write( &os );
-
-        vertex.set( Point3( maxX, minY, 0.0f ),
-                    normal,
-                    TexCoord( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS,
-                              Water::TEX_BIAS ) );
-        vertex.write( &os );
-
-        vertex.set( Point3( maxX, maxY, 0.0f ),
-                    normal,
-                    TexCoord( TILE_SIZE * WATER_SCALE + Water::TEX_BIAS,
-                              TILE_SIZE * WATER_SCALE + Water::TEX_BIAS ) );
+                              TILE_SIZE * WATER_SCALE ),
+                    normal );
         vertex.write( &os );
       }
+    }
+
+    for( int i = 0; i < waterTiles.length(); ++i ) {
+      os.writeChar( waterTiles.get( i ) );
     }
 
     buffer.write( outFile, os.length() );
@@ -260,7 +220,7 @@ namespace client
     log.print( "Loading terra '%s' ...", name.cstr() );
 
     ushort* indices  = new ushort[TILE_INDICES];
-    Vertex* vertices = new Vertex[TILE_VERTICES + 16];
+    Vertex* vertices = new Vertex[TILE_VERTICES + 8];
 
     if( !buffer.read( path ) ) {
       log.printEnd( " Failed" );
@@ -288,7 +248,7 @@ namespace client
 
     for( int i = 0; i < TILES; ++i ) {
       for( int j = 0; j < TILES; ++j ) {
-        for( int k = 0; k < TILE_VERTICES + 16; ++k ) {
+        for( int k = 0; k < TILE_VERTICES + 8; ++k ) {
           vertices[k].read( &is );
         }
 
@@ -297,38 +257,50 @@ namespace client
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
         glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-        glBufferData( GL_ARRAY_BUFFER, ( TILE_VERTICES + 16 ) * sizeof( Vertex ), vertices,
+        glBufferData( GL_ARRAY_BUFFER, ( TILE_VERTICES + 8 ) * sizeof( Vertex ), vertices,
                       GL_STATIC_DRAW );
 
-        glEnableClientState( GL_VERTEX_ARRAY );
-        glVertexPointer( 3, GL_FLOAT, sizeof( Vertex ),
-                        reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+        glEnableVertexAttribArray( Attrib::POSITION );
+        glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
-        glEnableClientState( GL_NORMAL_ARRAY );
-        glNormalPointer( GL_FLOAT, sizeof( Vertex ),
-                        reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+        glEnableVertexAttribArray( Attrib::TEXCOORD );
+        glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                               reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
 
-        glClientActiveTexture( GL_TEXTURE0 );
-        glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-        glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+        glEnableVertexAttribArray( Attrib::NORMAL );
+        glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-        glClientActiveTexture( GL_TEXTURE1 );
-        glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-        glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-        glClientActiveTexture( GL_TEXTURE2 );
-        glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-        glTexCoordPointer( 2, GL_FLOAT, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+//         glEnableVertexAttribArray( Attrib::TANGENT );
+//         glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                               reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+//
+//         glEnableVertexAttribArray( Attrib::BINORMAL );
+//         glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                               reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 
         glBindVertexArray( 0 );
       }
     }
 
+    waterTiles.clearAll();
+    for( int i = 0; i < waterTiles.length(); ++i ) {
+      if( is.readChar() ) {
+        waterTiles.set( i );
+      }
+    }
+
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+    float scales[2] = { 1.0f, float( oz::Terra::QUADS ) };
+
+    shader.use( Shader::TERRA );
+    glUniform1fv( param.oz_TextureScales, 2, scales );
+
+    shader.use( Shader::TERRA_WATER );
+    glUniform1fv( param.oz_TextureScales, 2, scales );
 
     delete[] indices;
     delete[] vertices;
@@ -354,8 +326,10 @@ namespace client
     span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
     span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
-    glUniform1f( Param::oz_TextureScale, float( oz::Terra::QUADS ) * 0.5f );
-    shader.bindTextures( detailTexId, mapTexId );
+    glBindTexture( mapTexId );
+    glActiveTexture( GL_TEXTURE1 );
+    glBindTexture( detailTexId );
+    glActiveTexture( GL_TEXTURE0 );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -372,8 +346,6 @@ namespace client
 
     glFrontFace( GL_CCW );
 
-    glUniform1f( Param::oz_TextureScale, 1.0f );
-
     hard_assert( glGetError() == GL_NO_ERROR );
   }
 
@@ -387,22 +359,19 @@ namespace client
       span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
       span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
-      sideVertices = 8;
+      sideVertices = 4;
     }
+
+    glBindTexture( waterTexId );
 
     glEnable( GL_BLEND );
 
-    shader.bindTextures( waterTexId );
-
     for( int i = span.minX; i <= span.maxX; ++i ) {
       for( int j = span.minY; j <= span.maxY; ++j ) {
-        glBindVertexArray( vaos[i][j] );
-
-        glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::waterBlend1 );
-        glDrawArrays( GL_TRIANGLE_STRIP, TILE_VERTICES + sideVertices, 4 );
-
-        glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::waterBlend2 );
-        glDrawArrays( GL_TRIANGLE_STRIP, TILE_VERTICES + sideVertices + 4, 4 );
+        if( waterTiles.get( i * TILES + j ) ) {
+          glBindVertexArray( vaos[i][j] );
+          glDrawArrays( GL_TRIANGLE_STRIP, TILE_VERTICES + sideVertices, 4 );
+        }
       }
     }
 

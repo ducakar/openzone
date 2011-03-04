@@ -22,7 +22,7 @@
 #cmakedefine OZ_SIMD
 
 // use big-endian for stream
-#cmakedefine OZ_STREAM_BIG_ENDIAN
+#cmakedefine OZ_BIG_ENDIAN_STREAM
 
 // check read buffer overruns for stream
 #cmakedefine OZ_STREAM_READ_CHECK
@@ -97,6 +97,12 @@
 # endif
 #else
 # define OZ_ALWAYS_INLINE
+#endif
+
+#ifdef OZ_MSVC
+# define OZ_WEAK_SYMBOL
+#else
+# define OZ_WEAK_SYMBOL __attribute__(( weak ))
 #endif
 
 #if !defined( __GNUC__ ) && !defined( __clang__ )

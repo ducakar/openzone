@@ -26,23 +26,32 @@ namespace oz
 
   void Timer::reset()
   {
-    ticks         = 0;
-    millis        = 0;
-    time          = 0.0f;
+    ticks                 = 0;
+    millis                = 0;
+    time                  = 0.0f;
 
-    matrixMillis  = 0;
-    nirvanaMillis = 0;
+    matrixMillis          = 0;
+    nirvanaMillis         = 0;
 
-    uiMillis      = 0;
-    loaderMillis  = 0;
-    soundMillis   = 0;
-    renderMillis  = 0;
-    sleepMillis   = 0;
+    sleepMillis           = 0;
+    loaderMillis          = 0;
+    uiMillis              = 0;
+    soundMillis           = 0;
+    renderMillis          = 0;
+    renderScheduleMillis  = 0;
+    renderSkyMillis       = 0;
+    renderTerraMillis     = 0;
+    renderStructsMillis   = 0;
+    renderObjectsMillis   = 0;
+    renderParticlesMillis = 0;
+    renderMiscMillis      = 0;
+    renderUiMillis        = 0;
+    renderSyncMillis      = 0;
 
-    nFrames       = 0;
-    frameTicks    = 0;
-    frameMillis   = 0;
-    frameTime     = 0.0f;
+    nFrames               = 0;
+    frameTicks            = 0;
+    frameMillis           = 0;
+    frameTime             = 0.0f;
   }
 
   void Timer::tick()

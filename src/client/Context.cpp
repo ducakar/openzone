@@ -49,20 +49,18 @@ namespace client
   {
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    GLenum format         = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-    GLenum internalFormat = bytesPerPixel == 4 ? GL_COMPRESSED_RGBA : GL_COMPRESSED_RGB;
+    GLenum sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+    GLenum internalFormat = bytesPerPixel == 4 ?
+        GL_COMPRESSED_RGBA_S3TC_DXT5_EXT :
+        GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 
     uint texId;
     glGenTextures( 1, &texId );
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-    glBindTexture( GL_TEXTURE_2D, texId );
+    ::glBindTexture( GL_TEXTURE_2D, texId );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
-
-    if( minFilter == GL_NEAREST_MIPMAP_NEAREST || minFilter == GL_LINEAR_MIPMAP_LINEAR ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
-    }
 
     if( !wrap ) {
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
@@ -70,7 +68,8 @@ namespace client
     }
 
     glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
-                  format, GL_UNSIGNED_BYTE, data );
+                  sourceFormat, GL_UNSIGNED_BYTE, data );
+    glGenerateMipmap( GL_TEXTURE_2D );
 
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texId );
@@ -178,7 +177,7 @@ namespace client
 
     uint texId;
     glGenTextures( 1, &texId );
-    glBindTexture( GL_TEXTURE_2D, texId );
+    glBindTexture( texId );
 
     int nMipmaps       = stream->readInt();
     int internalFormat = stream->readInt();
@@ -188,10 +187,6 @@ namespace client
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
-
-    if( minFilter == GL_NEAREST_MIPMAP_NEAREST || minFilter == GL_LINEAR_MIPMAP_LINEAR ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
-    }
 
     if( !wrap ) {
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
@@ -221,7 +216,7 @@ namespace client
 
   void Context::writeTexture( uint id, int nMipmaps, OutputStream* stream )
   {
-    glBindTexture( GL_TEXTURE_2D, id );
+    glBindTexture( id );
 
     int internalFormat, magFilter, minFilter, wrap;
     glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );

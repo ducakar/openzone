@@ -46,30 +46,25 @@ namespace client
 
   void Render::scheduleCell( int cellX, int cellY )
   {
-    Cell& cell = orbis.cells[cellX][cellY];
+    const Cell& cell = orbis.cells[cellX][cellY];
 
     for( int i = 0; i < cell.structs.length(); ++i ) {
       Struct* str = orbis.structs[ cell.structs[i] ];
 
       if( !drawnStructs.get( cell.structs[i] ) && frustum.isVisible( *str ) ) {
         drawnStructs.set( cell.structs[i] );
-        structs.add( str );
+
+        Vec3 relPos = str->mins + 0.5f * ( str->maxs - str->mins ) - camera.p;
+        structs.add( ObjectEntry( relPos.sqL(), str ) );
       }
     }
 
     foreach( obj, cell.objects.citer() ) {
-      if( obj->flags & Object::NO_DRAW_BIT ) {
-        continue;
-      }
-      bool isVisible =
-          ( obj->flags & Object::WIDE_CULL_BIT ) ?
-              frustum.isVisible( *obj, WIDE_CULL_FACTOR ) :
-              frustum.isVisible( *obj );
+      float factor = ( obj->flags & Object::WIDE_CULL_BIT ) ? WIDE_CULL_FACTOR : 1.0f;
 
-      if( isVisible ) {
-        ObjectEntry entry( ( obj->p - camera.p ).sqL(), obj );
-
-        objects.add( entry );
+      if( frustum.isVisible( *obj, factor ) && ( ~obj->flags & Object::NO_DRAW_BIT ) ) {
+        Vec3 relPos = obj->p - camera.p;
+        objects.add( ObjectEntry( relPos.sqL(), obj ) );
       }
     }
 
@@ -78,33 +73,32 @@ namespace client
         particles.add( part );
       }
     }
-
   }
 
   void Render::drawOrbis()
   {
     hard_assert( glGetError() == GL_NO_ERROR );
 
+    uint currentTime = SDL_GetTicks();
+    uint beginTime = currentTime;
+
     collider.translate( camera.p, Vec3::ZERO );
     isUnderWater = collider.hit.inWater;
 
-    // clear colour, visibility, fog
+    Quat clearColour;
+
     if( isUnderWater ) {
       visibility = waterNightVisibility + sky.ratio * ( waterDayVisibility - waterNightVisibility );
-
-      glClearColor( Colours::water[0], Colours::water[1], Colours::water[2], Colours::water[3] );
-      glFogfv( GL_FOG_COLOR, Colours::water );
-      glFogf( GL_FOG_END, visibility );
+      clearColour = Colours::water;
     }
     else {
       visibility = nightVisibility + sky.ratio * ( dayVisibility - nightVisibility );
-
-      glClearColor( Colours::sky[0], Colours::sky[1], Colours::sky[2], Colours::sky[3] );
-      glFogfv( GL_FOG_COLOR, Colours::sky );
-      glFogf( GL_FOG_END, visibility );
+      clearColour = Colours::sky;
     }
 
     // frustum
+    camera.maxDist = visibility;
+
     Span span;
     frustum.update();
     frustum.getExtrems( span, camera.p );
@@ -137,10 +131,16 @@ namespace client
       }
     }
 
+    structs.sort();
+    objects.sort();
+
+    int firstNearStruct = aBisectPosition( structs + 0, structNearDist2, structs.length() );
+    int firstNearObject = aBisectPosition( objects + 0, objectNearDist2, objects.length() );
+
     // clear buffer
+    glClearColor( clearColour.x, clearColour.y, clearColour.z, clearColour.w );
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
-    hard_assert( glIsEnabled( GL_TEXTURE_2D ) );
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
     // camera transformation
@@ -153,47 +153,70 @@ namespace client
     glLoadIdentity();
     glMultMatrixf( camera.rotTMat );
 
-    if( !isUnderWater ) {
-      sky.draw();
-    }
+    currentTime = SDL_GetTicks();
+    timer.renderScheduleMillis += currentTime - beginTime;
+    beginTime = currentTime;
+
+    sky.draw();
 
     glTranslatef( -camera.p.x, -camera.p.y, -camera.p.z );
 
-    shader.use( Shader::DEFAULT );
-
-    // lighting
-    glLightfv( GL_LIGHT0, GL_POSITION, sky.lightDir );
-    glLightfv( GL_LIGHT0, GL_DIFFUSE, Colours::diffuse );
-    glLightfv( GL_LIGHT0, GL_AMBIENT, Colours::ambient );
-
-//     glUniform3fv( Param::oz_AmbientLight, 1, Colours::GLOBAL_AMBIENT + Colours::ambient );
-//     glUniform3fv( Param::oz_SkyLight, 2, Shader::Light( sky.lightDir, Colours::diffuse ) );
-//     glUniform3fv( Param::oz_PointLights, 1,
-//                   Shader::Light( Point3( 52, -44, 37 ), Quat( 1.0f, 1.0f, 1.0f, 1.0f ) ) );
-
     glEnable( GL_DEPTH_TEST );
-    glEnable( GL_FOG );
-    glEnable( GL_LIGHTING );
 
-    shader.bindTextures( 0 );
+    currentTime = SDL_GetTicks();
+    timer.renderSkyMillis += currentTime - beginTime;
+    beginTime = currentTime;
 
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
-    terra.draw();
+    // set shaders
+    Shader::Program programs[] = { Shader::MESH_NEAR, Shader::MESH_FAR, Shader::TERRA };
+    foreach( shId, citer( programs, 3 ) ) {
+      shader.use( *shId );
 
-    // draw structures
-    foreach( str, structs.citer() ) {
-      context.drawBSP( *str, Mesh::SOLID_BIT );
+      shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
+      shader.setSkyLight( camera.rotTMat * sky.lightDir, Colours::diffuse );
+      shader.updateLights();
+
+      glUniform4fv( param.oz_FogColour, 1, clearColour );
+      glUniform1f( param.oz_FogDistance, visibility );
     }
 
-    // draw objects
-    objects.sort();
+    terra.draw();
 
-    for( int i = 0; i < objects.length(); ++i ) {
+    currentTime = SDL_GetTicks();
+    timer.renderTerraMillis += currentTime - beginTime;
+    beginTime = currentTime;
+
+    // draw structures
+    shader.use( Shader::MESH_FAR );
+
+    for( int i = 0; i < firstNearStruct; ++i ) {
+      const Struct* str = structs[i].str;
+
+      context.drawBSP( str, Mesh::SOLID_BIT );
+    }
+
+    shader.use( Shader::MESH_NEAR );
+
+    for( int i = firstNearStruct; i < structs.length(); ++i ) {
+      const Struct* str = structs[i].str;
+
+      context.drawBSP( str, Mesh::SOLID_BIT );
+    }
+
+    currentTime = SDL_GetTicks();
+    timer.renderStructsMillis += currentTime - beginTime;
+    beginTime = currentTime;
+
+    // draw objects
+    shader.use( Shader::MESH_FAR );
+
+    for( int i = 0; i < firstNearObject; ++i ) {
       const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
-        glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::TAG );
+        glUniform1i( param.oz_IsHighlightEnabled, true );
       }
 
       glPushMatrix();
@@ -204,16 +227,40 @@ namespace client
       glPopMatrix();
 
       if( obj->index == camera.tagged ) {
-        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, Colours::BLACK );
+        glUniform1i( param.oz_IsHighlightEnabled, false );
+      }
+    }
+
+    shader.use( Shader::MESH_NEAR );
+
+    for( int i = firstNearObject; i < objects.length(); ++i ) {
+      const Object* obj = objects[i].obj;
+
+      if( obj->index == camera.tagged ) {
+        glUniform1i( param.oz_IsHighlightEnabled, true );
+      }
+
+      glPushMatrix();
+      glTranslatef( obj->p.x, obj->p.y, obj->p.z );
+
+      context.drawModel( obj, null );
+
+      glPopMatrix();
+
+      if( obj->index == camera.tagged ) {
+        glUniform1i( param.oz_IsHighlightEnabled, false );
       }
     }
 
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
+    currentTime = SDL_GetTicks();
+    timer.renderObjectsMillis += currentTime - beginTime;
+    beginTime = currentTime;
+
     // draw particles
     glEnable( GL_BLEND );
 
-    shader.bindTextures( 0 );
     shape.bindVertexArray();
 
     for( int i = 0; i < particles.length(); ++i ) {
@@ -229,25 +276,42 @@ namespace client
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    glColor4fv( Colours::BLACK );
+    currentTime = SDL_GetTicks();
+    timer.renderParticlesMillis += currentTime - beginTime;
+    beginTime = currentTime;
 
     // draw structures' water
-    foreach( str, structs.citer() ) {
-      context.drawBSP( *str, Mesh::ALPHA_BIT );
+    shader.use( Shader::MESH_FAR );
+
+    for( int i = 0; i < firstNearStruct; ++i ) {
+      const Struct* str = structs[i].str;
+
+      context.drawBSP( str, Mesh::ALPHA_BIT );
     }
 
+    shader.use( Shader::MESH_NEAR );
+
+    for( int i = firstNearStruct; i < structs.length(); ++i ) {
+      const Struct* str = structs[i].str;
+
+      context.drawBSP( str, Mesh::ALPHA_BIT );
+    }
+
+    currentTime = SDL_GetTicks();
+    timer.renderStructsMillis += currentTime - beginTime;
+    beginTime = currentTime;
+
+    shader.use( Shader::TERRA );
     terra.drawWater();
 
-    glDisable( GL_LIGHTING );
     glDisable( GL_BLEND );
 
-    glUniform4f( Param::oz_DiffuseMaterial, 1.0f, 1.0f, 1.0f, 1.0f );
+    currentTime = SDL_GetTicks();
+    timer.renderTerraMillis += currentTime - beginTime;
+    beginTime = currentTime;
 
-//     glUniform3fv( Param::oz_AmbientLight, 1, Colours::WHITE );
-//     glUniform3fv( Param::oz_SkyLight, 2, Shader::Light::NONE );
-//     glUniform3fv( Param::oz_PointLights, 16, Shader::Light::NONE );
+    shader.use( Shader::UI );
 
-    shader.bindTextures( 0 );
     shape.bindVertexArray();
 
     if( showAim ) {
@@ -269,7 +333,7 @@ namespace client
       glColor4fv( Colours::STRUCTURE_AABB );
 
       for( int i = 0; i < structs.length(); ++i ) {
-        const Struct* str = structs[i];
+        const Struct* str = structs[i].str;
 
         glColor4fv( Colours::ENTITY_AABB );
 
@@ -288,24 +352,33 @@ namespace client
     objects.clear();
     particles.clear();
 
-    glDisable( GL_FOG );
-
     glDisable( GL_DEPTH_TEST );
 
     hard_assert( glGetError() == GL_NO_ERROR );
+
+    currentTime = SDL_GetTicks();
+    timer.renderMiscMillis += currentTime - beginTime;
   }
 
   void Render::drawCommon()
   {
+    uint beginTime = SDL_GetTicks();
+
     ui::ui.draw();
 
-    SDL_GL_SwapBuffers();
+    timer.renderUiMillis += SDL_GetTicks() - beginTime;
   }
 
   void Render::draw()
   {
     drawOrbis();
     drawCommon();
+
+    uint beginTime = SDL_GetTicks();
+
+    SDL_GL_SwapBuffers();
+
+    timer.renderSyncMillis += SDL_GetTicks() - beginTime;
   }
 
   void Render::load()
@@ -315,7 +388,7 @@ namespace client
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    shader.bindTextures( 0 );
+    shader.load();
 
     ui::ui.load();
 
@@ -329,27 +402,6 @@ namespace client
     objects.alloc( 8192 );
     particles.alloc( 1024 );
 
-    shader.load();
-    shader.use( Shader::DEFAULT );
-
-    // fog
-    glFogi( GL_FOG_MODE, GL_LINEAR );
-    glFogf( GL_FOG_START, 0.0f );
-
-    // lighting
-//     glLightModeli( GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE );
-    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, Colours::GLOBAL_AMBIENT );
-    glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::WHITE );
-    glUniform4fv( Param::oz_SpecularMaterial, 1, Colours::BLACK );
-    glEnable( GL_LIGHT0 );
-
-    glUniform1f( Param::oz_TextureScale, 1.0f );
-    glUniform4f( Param::oz_DiffuseMaterial, 1.0f, 1.0f, 1.0f, 1.0f );
-
-//     glUniform3fv( Param::oz_AmbientLight, 1, Colours::WHITE );
-//     glUniform3fv( Param::oz_SkyLight, 2, Shader::Light::NONE );
-//     glUniform3fv( Param::oz_PointLights, 16, Shader::Light::NONE );
-
     log.unindent();
     log.println( "}" );
   }
@@ -358,8 +410,6 @@ namespace client
   {
     log.println( "Unloading Render {" );
     log.indent();
-
-    shader.unload();
 
     drawnStructs.clear();
 
@@ -381,6 +431,8 @@ namespace client
 
     ui::ui.unload();
 
+    shader.unload();
+
     log.unindent();
     log.println( "}" );
   }
@@ -392,7 +444,9 @@ namespace client
 
     SDL_GL_SwapBuffers();
 
-    bool isVaoSupported = false;
+    bool isVAOSupported = false;
+    bool isFBOSupported = false;
+    bool isS3TCSupported = false;
 
     String version = String::cstr( glGetString( GL_VERSION ) );
     DArray<String> extensions;
@@ -409,7 +463,13 @@ namespace client
       log.println( "%s", extension->cstr() );
 
       if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
-        isVaoSupported = true;
+        isVAOSupported = true;
+      }
+      if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
+        isFBOSupported = true;
+      }
+      if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
+        isS3TCSupported = true;
       }
     }
 
@@ -424,29 +484,36 @@ namespace client
       throw Exception( "Too old OpenGL version" );
     }
 
-    if( !isVaoSupported ) {
+    if( !isVAOSupported ) {
       log.println( "Error: vertex array object (GL_ARB_vertex_array_object) is not supported" );
-      throw Exception( "VAO not supported by OpenGL" );
+      throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
+    }
+    if( !isFBOSupported ) {
+      log.println( "Error: Frame buffer object (GL_ARB_framebuffer_object) is not supported" );
+      throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
+    }
+    if( !isS3TCSupported ) {
+      log.println( "Error: S3 texture compression (GL_EXT_texture_compression_s3tc) is not supported" );
+      throw Exception( "GL_EXT_texture_compression_s3tc not supported by OpenGL" );
     }
 
+    structNearDist2      = config.getSet( "render.structNearDistance",   100.0f );
+    objectNearDist2      = config.getSet( "render.objectNearDistance",   100.0f );
+
     dayVisibility        = config.getSet( "render.dayVisibility",        300.0f );
-    nightVisibility      = config.getSet( "render.nightVisibility",      100.0f );
-    waterDayVisibility   = config.getSet( "render.waterDayVisibility",   8.0f );
-    waterNightVisibility = config.getSet( "render.waterNightVisibility", 4.0f );
+    nightVisibility      = config.getSet( "render.nightVisibility",      300.0f );
+    waterDayVisibility   = config.getSet( "render.waterDayVisibility",   12.0f );
+    waterNightVisibility = config.getSet( "render.waterNightVisibility", 12.0f );
     particleRadius       = config.getSet( "render.particleRadius",       0.5f );
     showBounds           = config.getSet( "render.showBounds",           false );
     showAim              = config.getSet( "render.showAim",              false );
 
+    structNearDist2      *= structNearDist2;
+    objectNearDist2      *= objectNearDist2;
+
     glEnable( GL_CULL_FACE );
     glDepthFunc( GL_LEQUAL );
-
-    glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-    glActiveTexture( GL_TEXTURE0 );
-    glEnable( GL_TEXTURE_2D );
-    glActiveTexture( GL_TEXTURE1 );
-    glEnable( GL_TEXTURE_2D );
 
     shader.init();
     camera.init();
