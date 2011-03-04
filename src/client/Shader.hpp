@@ -18,25 +18,33 @@ namespace client
 
   struct Param
   {
-    static int oz_TextureEnabled;
-    static int oz_Textures;
-    static int oz_TextureScale;
+    int oz_IsTextureEnabled;
+    int oz_Textures;
+    int oz_TextureScales;
 
-    static int oz_DiffuseMaterial;
-    static int oz_SpecularMaterial;
+    int oz_DiffuseMaterial;
+    int oz_SpecularMaterial;
+    int oz_AmbientLight;
+    int oz_SkyLight;
+    int oz_PointLights;
 
-    static int oz_AmbientLight;
-    static int oz_SkyLight;
-    static int oz_PointLights;
+    int oz_FogDistance;
+    int oz_FogColour;
+
+    int oz_IsHighlightEnabled;
   };
 
-  struct Attr
+  extern Param param;
+
+  struct Attrib
   {
     enum Type : int
     {
       POSITION,
-      NORMAL,
-      TEXCOORD
+      TEXCOORD,
+      NORMAL
+//       TANGENT,
+//       BINORMAL
     };
   };
 
@@ -47,7 +55,12 @@ namespace client
       enum Program : int
       {
         UI,
-        DEFAULT,
+        MESH_ITEMVIEW,
+        MESH_NEAR,
+        MESH_FAR,
+        MESH_WATER,
+        TERRA,
+        TERRA_WATER,
         STARS,
         MAX
       };
@@ -58,23 +71,19 @@ namespace client
       {
         static const SkyLight NONE;
 
-        Vec3 dir;
-        Quat colour;
-        Quat ambient;
+        float dir[3];
+        float diffuse[3];
+        float ambient[3];
       };
 
       struct Light
       {
         static const Light NONE;
 
-        Point3 pos;
-        Quat   colour;
+        float pos[3];
+        float diffuse[3];
 
-        explicit Light()
-        {}
-
-        explicit Light( const Point3& pos_, const Quat& colour_ ) : pos( pos_ ), colour( colour_ )
-        {}
+        explicit Light( const Point3& pos, const Vec3& diffuse );
       };
 
       static const int   BUFFER_SIZE = 8192;
@@ -83,14 +92,15 @@ namespace client
       uint          vertShaders[MAX];
       uint          fragShaders[MAX];
       uint          programs[MAX];
+      Param         progParams[MAX];
 
       Program       activeProgram;
 
-      Quat          ambientLight;
+      uint          textures[2];
+
+      float         lightingDistance;
       SkyLight      skyLight;
       Sparse<Light> lights;
-
-      float lightingDistance;
 
       void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
       void loadProgram( Program prog, const char** sources, int* lengths );
@@ -98,15 +108,14 @@ namespace client
     public:
 
       void use( Program prog );
-      void bindTextures( uint texture0, uint texture1 = 0 ) const;
 
       void setLightingDistance( float distance );
-      void setAmbientLight( const Quat& colour );
-      void setSkyLight( const Vec3& dir, const Quat& colour );
+      void setAmbientLight( const Vec3& colour );
+      void setSkyLight( const Vec3& dir, const Vec3& colour );
 
-      int  addLight( const Point3& pos, const Quat& colour );
+      int  addLight( const Point3& pos, const Vec3& colour );
       void removeLight( int id );
-      void setLight( int id, const Point3& pos, const Quat& colour );
+      void setLight( int id, const Point3& pos, const Vec3& colour );
 
       void updateLights();
 

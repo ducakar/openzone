@@ -28,11 +28,20 @@ namespace oz
       uint  matrixMillis;
       uint  nirvanaMillis;
 
-      uint  uiMillis;
+      uint  sleepMillis;
       uint  loaderMillis;
+      uint  uiMillis;
       uint  soundMillis;
       uint  renderMillis;
-      uint  sleepMillis;
+      uint  renderScheduleMillis;
+      uint  renderSkyMillis;
+      uint  renderTerraMillis;
+      uint  renderStructsMillis;
+      uint  renderObjectsMillis;
+      uint  renderParticlesMillis;
+      uint  renderMiscMillis;
+      uint  renderUiMillis;
+      uint  renderSyncMillis;
 
       int   nFrames;
       int   frameTicks;

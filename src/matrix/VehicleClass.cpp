@@ -164,7 +164,7 @@ namespace oz
     obj->mass     = mass;
     obj->lift     = lift;
 
-    obj->rot      = Quat::rotX( Math::TAU / 4.0f );
+    obj->rot      = Quat::ID;
     obj->state    = state;
     obj->oldState = state;
 

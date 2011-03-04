@@ -101,8 +101,10 @@ namespace ui
     setFont( Font::TITLE );
     printCentred( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, "Inventory" );
 
-    shader.use( Shader::DEFAULT );
-    glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
+    glDisable( GL_BLEND );
+    shader.use( Shader::MESH_ITEMVIEW );
+
+    glColor4fv( Colours::WHITE );
 
     glPushMatrix();
     glTranslatef( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0 );
@@ -132,13 +134,15 @@ namespace ui
       glScalef( scale, scale, scale );
 
       if( i == tagged ) {
-        glColor4fv( Colours::TAG );
+        glUniform1i( param.oz_IsHighlightEnabled, true );
         taggedItem = item;
       }
 
       context.drawModel( item, null );
 
-      glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
+      if( i == tagged ) {
+        glUniform1i( param.oz_IsHighlightEnabled, false );
+      }
 
       glPopMatrix();
       glTranslatef( float( SLOT_SIZE ), 0.0f, 0.0f );
@@ -147,6 +151,7 @@ namespace ui
     glPopMatrix();
 
     shader.use( Shader::UI );
+    glEnable( GL_BLEND );
 
     tagged = -1;
 
@@ -163,7 +168,8 @@ namespace ui
       rect( -52, -16, 48, 12 );
 
       if( taggedItem->flags & Object::USE_FUNC_BIT ) {
-        shader.bindTextures( useTexId );
+        glUniform1i( param.oz_IsTextureEnabled, true );
+        glBindTexture( useTexId );
         glBegin( GL_QUADS );
           glTexCoord2i( 0, 1 );
           glVertex2i( x + width - ICON_SIZE - 4, y + 4 );
@@ -174,7 +180,7 @@ namespace ui
           glTexCoord2i( 0, 0 );
           glVertex2i( x + width - ICON_SIZE - 4, y + ICON_SIZE + 4 );
         glEnd();
-        shader.bindTextures( 0 );
+        glUniform1i( param.oz_IsTextureEnabled, false );
       }
 
       setFont( Font::SANS );

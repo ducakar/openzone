@@ -83,8 +83,6 @@ namespace client
         {}
       };
 
-      static Buffer                     buffer;
-
     private:
 
       HashString<Model::CreateFunc, 16> modelClasses;
@@ -105,6 +103,8 @@ namespace client
 
       HashIndex<Model*, 8191>           models;   // currently loaded models
       HashIndex<Audio*, 2039>           audios;   // currently loaded audio models
+
+      static Buffer                     buffer;
 
       int                               maxModels;
       int                               maxAudios;

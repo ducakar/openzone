@@ -166,7 +166,7 @@ namespace ui
       }
     }
 
-    x     = x < 0     ? this->x + this->width  + x     : this->x + x;
+    x     =     x < 0 ? this->x + this->width  + x     : this->x + x;
     baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
 
     glRasterPos2i( x, baseY - text->h / 2 );

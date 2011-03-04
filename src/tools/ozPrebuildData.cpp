@@ -14,17 +14,17 @@
 #include "matrix/QBSP.hpp"
 #include "matrix/Matrix.hpp"
 
-#include <client/Context.hpp>
+#include "client/Context.hpp"
 #include "client/Compiler.hpp"
 #include "client/Terra.hpp"
 #include "client/BSP.hpp"
 #include "client/OBJ.hpp"
 #include "client/MD2.hpp"
 
+#include <cerrno>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <SDL_main.h>
-
-#include <csignal>
 
 using namespace oz;
 using oz::uint;
@@ -171,7 +171,7 @@ static void prebuildTerras( const char* path )
   log.println( "}" );
 }
 
-int main( int, char** )
+int main( int argc, char** argv )
 {
   System::catchSignals();
 
@@ -181,10 +181,30 @@ int main( int, char** )
     Alloc::printLeaks();
   } );
 
+  printf( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
+      "This program comes with ABSOLUTELY NO WARRANTY.\n"
+      "This is free software, and you are welcome to redistribute it\n"
+      "under certain conditions; See COPYING file for details.\n\n" );
+
   try {
+    if( argc != 2 ) {
+      log.println( "Usage: %s data_directory", program_invocation_short_name );
+      log.println();
+      exit( 0 );
+    }
+
+    log.printlnETD( OZ_APPLICATION_NAME " Prebuild started at" );
+
     SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO );
     SDL_SetVideoMode( 400, 40, 32, SDL_OPENGL );
     SDL_WM_SetCaption( "OpenZone :: Prebuilding data ...", null );
+
+    log.print( "Setting working directory to data directory '%s' ...", argv[1] );
+    if( chdir( argv[1] ) != 0 ) {
+      log.printEnd( " Failed" );
+      exit( 0 );
+    }
+    log.printEnd( " OK" );
 
     long startTime = SDL_GetTicks();
 
@@ -199,10 +219,6 @@ int main( int, char** )
     prebuildBSPs( "maps" );
 
     prebuildModels( "mdl" );
-
-    client::compiler.free();
-    matrix.free();
-    buffer.dealloc();
 
     long endTime = SDL_GetTicks();
 
@@ -233,6 +249,11 @@ int main( int, char** )
     }
   }
 
+  client::compiler.free();
+  matrix.free();
+  buffer.dealloc();
+
   Alloc::printStatistics();
+  log.printlnETD( OZ_APPLICATION_NAME " Prebuild finished at" );
   return 0;
 }

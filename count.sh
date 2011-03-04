@@ -6,7 +6,9 @@
 #
 
 source=`echo src/*/*.{hpp,cpp} src/stable.hpp`
-data=`echo data/*/*.rc data/lua/*/*.lua`
+lua=`echo data/lua/*/*.lua`
+glsl=`echo data/glsl/*.{glsl,vert,frag}`
+data=`echo data/*/*.rc`
 build=`echo src/*/CMakeLists.gen {src,data}/*/CMakeLists.txt src/*/*.in src/*.in CMakeLists.txt *.sh`
 
 function count()
@@ -20,9 +22,11 @@ function count()
   echo
 }
 
-#count 'C++ Source' $source
-#count 'Data config & Lua scripts' $data
-#count 'Build system etc.' $build
+count 'C++ source' $source
+count 'Lua scripts' $lua
+count 'Shader source' $glsl
+count 'Data config' $data
+count 'Build system etc.' $build
 
 if [ -x /usr/bin/sloccount ]; then
   LANG=C /usr/bin/sloccount src

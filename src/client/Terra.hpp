@@ -45,6 +45,7 @@ namespace client
       uint mapTexId;
 
       Span span;
+      SBitset<TILES * TILES> waterTiles;
 
     public:
 

@@ -8,7 +8,7 @@
 
 void main()
 {
-  if( oz_TextureEnabled != 0 ) {
+  if( oz_IsTextureEnabled != 0 ) {
     gl_FragColor = texture2D( oz_Textures[0], gl_TexCoord[0].st );
   }
   else {

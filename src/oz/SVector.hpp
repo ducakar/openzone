@@ -85,11 +85,7 @@ namespace oz
     private:
 
       // data array
-      union
-      {
-        char cdata[SIZE * sizeof( Type )];
-//         Type data[SIZE];
-      };
+      char cdata[SIZE * sizeof( Type )];
       // Number of elements in vector
       int count;
 
@@ -180,7 +176,7 @@ namespace oz
 
       /**
        * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>data</code> array.
+       * overflows if you don't check the size of <code>cdata</code> array.
        * @return constant pointer to data array
        */
       OZ_ALWAYS_INLINE
@@ -190,7 +186,7 @@ namespace oz
       }
 
       /**
-       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
+       * Get pointer to <code>cdata</code> array. Use with caution, since you can easily make buffer
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */

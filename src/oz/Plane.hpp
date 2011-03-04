@@ -140,6 +140,10 @@ namespace oz
       {}
 
       OZ_ALWAYS_INLINE
+      explicit Plane( const Vec3& n, float d_ ) : nx( n.x ), ny( n.y ), nz( n.z ), d( d_ )
+      {}
+
+      OZ_ALWAYS_INLINE
       explicit Plane( const float* p ) : nx( p[0] ), ny( p[1] ), nz( p[2] ), d( p[3] )
       {}
 

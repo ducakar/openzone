@@ -83,12 +83,12 @@ namespace client
       float colour[] = { 1.0f, 1.0f, 1.0f, bot->life / clazz->life * 3.0f };
 
       glEnable( GL_BLEND );
-      glUniform4fv( Param::oz_DiffuseMaterial, 1, colour );
+      glUniform4fv( param.oz_DiffuseMaterial, 1, colour );
 
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
 
-      glUniform4fv( Param::oz_DiffuseMaterial, 1, Colours::WHITE );
+      glUniform4fv( param.oz_DiffuseMaterial, 1, Colours::WHITE );
       glDisable( GL_BLEND );
     }
     else if( bot->index != camera.bot || camera.isExternal ) {
@@ -105,7 +105,7 @@ namespace client
     }
     else if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
       glTranslatef( 0.0f, 0.0f,  bot->camZ );
-      glRotatef( Math::deg( bot->v ), 1.0f, 0.0f, 0.0f );
+      glRotatef( Math::deg( bot->v - Math::TAU / 4.0f ), 1.0f, 0.0f, 0.0f );
       glTranslatef( 0.0f, 0.0f, -bot->camZ );
 
       md2->advance( &anim, timer.frameTime );

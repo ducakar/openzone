@@ -64,7 +64,7 @@ namespace oz
       Bot* pilot = static_cast<Bot*>( orbis.objects[ crew[PILOT] ] );
 
       if( pilot != null ) {
-        rot = Quat::rotZYX( pilot->h, 0.0f, pilot->v );
+        rot = Quat::rotZYX( pilot->h, 0.0f, pilot->v - Math::TAU / 4.0f );
         actions = pilot->actions;
         flags |= HOVER_BIT;
         flags &= ~DISABLED_BIT;

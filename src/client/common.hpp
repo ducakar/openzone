@@ -15,7 +15,7 @@
 
 # define GL_VERSION_1_2_DEPRECATED
 # define GL_VERSION_1_3_DEPRECATED
-// # define GL_VERSION_1_4_DEPRECATED
+# define GL_VERSION_1_4_DEPRECATED
 # define GL_VERSION_1_5_DEPRECATED
 # define GL_VERSION_2_0_DEPRECATED
 # define GL_VERSION_2_1_DEPRECATED
@@ -76,6 +76,9 @@ namespace client
       return ( &u )[i];
     }
   };
+
+  // emulate OpenGL 3.0 glBindTexture
+  void glBindTexture( uint texId );
 
 }
 }

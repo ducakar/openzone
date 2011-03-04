@@ -78,24 +78,35 @@ namespace client
     }
 
     if( ( initFlags & INIT_MAIN_LOOP ) && allTime >= Timer::TICK_TIME ) {
-      float uiTime       = float( timer.uiMillis )      * 0.001f;
-      float loaderTime   = float( timer.loaderMillis )  * 0.001f;
-      float soundTime    = float( timer.soundMillis )   * 0.001f;
-      float renderTime   = float( timer.renderMillis )  * 0.001f;
-      float sleepTime    = float( timer.sleepMillis )   * 0.001f;
+      float sleepTime     = float( timer.sleepMillis )           * 0.001f;
+      float loaderTime    = float( timer.loaderMillis )          * 0.001f;
+      float uiTime        = float( timer.uiMillis )              * 0.001f;
+      float soundTime     = float( timer.soundMillis )           * 0.001f;
+      float renderTime    = float( timer.renderMillis )          * 0.001f;
+      float scheduleTime  = float( timer.renderScheduleMillis )  * 0.001f;
+      float skyTime       = float( timer.renderSkyMillis )       * 0.001f;
+      float terraTime     = float( timer.renderTerraMillis )     * 0.001f;
+      float structsTime   = float( timer.renderStructsMillis )   * 0.001f;
+      float objectsTime   = float( timer.renderObjectsMillis )   * 0.001f;
+      float particlesTime = float( timer.renderParticlesMillis ) * 0.001f;
+      float miscTime      = float( timer.renderMiscMillis )      * 0.001f;
+      float renderUiTime  = float( timer.renderUiMillis )        * 0.001f;
+      float syncTime      = float( timer.renderSyncMillis )      * 0.001f;
 
-      float matrixTime   = float( timer.matrixMillis )  * 0.001f;
-      float nirvanaTime  = float( timer.nirvanaMillis ) * 0.001f;
+      float matrixTime    = float( timer.matrixMillis )          * 0.001f;
+      float nirvanaTime   = float( timer.nirvanaMillis )         * 0.001f;
 
-      float m2Time       = uiTime + soundTime + renderTime;
+      float m2Time        = uiTime + soundTime + renderTime;
 
-      float inactiveTime = float( inactiveMillis )      * 0.001f;
-      float droppedTime  = float( droppedMillis )       * 0.001f;
-      float activeTime   = allTime - inactiveTime;
+      float inactiveTime  = float( inactiveMillis )              * 0.001f;
+      float droppedTime   = float( droppedMillis )               * 0.001f;
+      float activeTime    = allTime - inactiveTime;
 
-      int   frameDrops   = timer.ticks - timer.nFrames;
+      int   frameDrops    = timer.ticks - timer.nFrames;
 
-      float shutdownTime = float( SDL_GetTicks() - beginTime ) * 0.001f;
+      float shutdownTime  = float( SDL_GetTicks() - beginTime )  * 0.001f;
+
+      renderTime -= scheduleTime;
 
       context.printLoad();
       Alloc::printStatistics();
@@ -117,14 +128,23 @@ namespace client
       log.println( "  Frame drops            %d (%.2f %%)",
                   frameDrops, float( frameDrops ) / float( timer.ticks ) * 100.0f );
       log.println( "  Active time usage {" );
-      log.println( "    %6.2f %%  [M:1  ] loader",        loaderTime  / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2  ]",               m2Time      / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2.1] ui",            uiTime      / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2.2] sound",         soundTime   / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2.3] render",        renderTime  / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2.4] sleep",         sleepTime   / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [A:1  ] matrix",        matrixTime  / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [A:2  ] nirvana",       nirvanaTime / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:0] sleep",           sleepTime     / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:1] loader",          loaderTime    / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] ",                m2Time        / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] ui",              uiTime        / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] sound",           soundTime     / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] render",          renderTime    / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] + schedule",      scheduleTime  / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] + sky",           skyTime       / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] + terra",         terraTime     / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] + structs",       structsTime   / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] + objects",       objectsTime   / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] + particles",     particlesTime / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] + misc",          miscTime      / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] + ui",            renderUiTime  / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] + sync",          syncTime      / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [A:1] matrix",          matrixTime    / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [A:2] nirvana",         nirvanaTime   / activeTime * 100.0f );
       log.println( "  }" );
       log.println( "}" );
       log.unindent();
@@ -155,8 +175,8 @@ namespace client
     log.println( "\tEnables or disables autosave to ~/" OZ_RC_DIR "/default.ozState on exit "
                  "respectively. Overrides the 'autosave' resource." );
     log.println();
-    log.println( "--benchmark num" );
-    log.println( "-b num" );
+    log.println( "--time num" );
+    log.println( "-t num" );
     log.println( "\tExits after num seconds (can be a floating-point number). For "
                  "benchmarking purposes." );
     log.println();
@@ -177,7 +197,7 @@ namespace client
       if( String::equals( argv[i], "--help" ) ) {
         printUsage();
       }
-      else if( String::equals( argv[i], "--benchamrk" ) || String::equals( argv[i], "-b" ) ) {
+      else if( String::equals( argv[i], "--time" ) || String::equals( argv[i], "-t" ) ) {
         if( i + 1 < *argc ) {
           errno = 0;
           char* end;
@@ -309,14 +329,11 @@ namespace client
     const char* data = config.getSet( "dir.data", OZ_DEFAULT_DATA_DIR );
 
     log.print( "Setting working directory to data directory '%s' ...", data );
-
     if( chdir( data ) != 0 ) {
       log.printEnd( " Failed" );
       return;
     }
-    else {
-      log.printEnd( " OK" );
-    }
+    log.printEnd( " OK" );
 
     int screenX    = config.get( "screen.width", 0 );
     int screenY    = config.get( "screen.height", 0 );

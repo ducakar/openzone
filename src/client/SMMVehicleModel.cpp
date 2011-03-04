@@ -58,7 +58,7 @@ namespace client
         const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->crew[i]] );
 
         glPushMatrix();
-        glTranslatef(  clazz->crewPos[i].x,  clazz->crewPos[i].y,  clazz->crewPos[i].z );
+        glTranslatef( clazz->crewPos[i].x, clazz->crewPos[i].y, clazz->crewPos[i].z );
         glRotatef( -Math::deg( bot->h ), 0.0f, 0.0f, 1.0f );
 
         context.drawModel( bot, null );

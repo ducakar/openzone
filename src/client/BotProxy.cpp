@@ -288,7 +288,7 @@ namespace client
       camera.setTagged( orbis.objects[camera.botObj->grabObj] );
     }
     else if( isExternal && isFreelook ) {
-      // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
+      // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
       float hvsc[6];
 
       Math::sincos( bot->h, &hvsc[0], &hvsc[1] );

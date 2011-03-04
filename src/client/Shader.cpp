@@ -15,33 +15,36 @@
 #include <GL/gl.h>
 
 #define OZ_REGISTER_PARAMETER( param ) \
-  Param::param = glGetUniformLocation( programs[prog], #param );
+  progParams[prog].param = glGetUniformLocation( programs[prog], #param )
 
 namespace oz
 {
 namespace client
 {
 
+  Param  param;
   Shader shader;
-
-  int Param::oz_TextureEnabled;
-  int Param::oz_Textures;
-  int Param::oz_TextureScale;
-
-  int Param::oz_DiffuseMaterial;
-  int Param::oz_SpecularMaterial;
-
-  int Param::oz_AmbientLight;
-  int Param::oz_SkyLight;
-  int Param::oz_PointLights;
 
   const char* Shader::PROGRAM_NAMES[MAX] = {
     "ui",
-    "default",
+    "mesh_itemview",
+    "mesh_near",
+    "mesh_far",
+    "mesh_water",
+    "terra",
+    "terra_water",
     "stars"
   };
 
   const Shader::Light Shader::Light::NONE = Shader::Light( Point3::ORIGIN, Quat::ZERO );
+
+  Shader::Light::Light( const Point3& pos_, const Vec3& diffuse_ )
+  {
+    for( int i = 0; i < 3; ++i ) {
+      pos[i] = pos_[i];
+      diffuse[i] = diffuse_[i];
+    }
+  }
 
   void Shader::compileShader( uint id, const char* path, const char** sources, int* lengths ) const
   {
@@ -127,6 +130,31 @@ namespace client
       throw Exception( "Shader program linking failed" );
     }
 
+    glUseProgram( programs[prog] );
+
+    OZ_REGISTER_PARAMETER( oz_IsTextureEnabled );
+    OZ_REGISTER_PARAMETER( oz_Textures );
+    OZ_REGISTER_PARAMETER( oz_TextureScales );
+
+    OZ_REGISTER_PARAMETER( oz_DiffuseMaterial );
+    OZ_REGISTER_PARAMETER( oz_SpecularMaterial );
+    OZ_REGISTER_PARAMETER( oz_AmbientLight );
+    OZ_REGISTER_PARAMETER( oz_SkyLight );
+    OZ_REGISTER_PARAMETER( oz_PointLights );
+
+    OZ_REGISTER_PARAMETER( oz_FogDistance );
+    OZ_REGISTER_PARAMETER( oz_FogColour );
+
+    OZ_REGISTER_PARAMETER( oz_IsHighlightEnabled );
+
+    param = progParams[prog];
+
+    glUniform1i( param.oz_IsTextureEnabled, false );
+    glUniform1iv( param.oz_Textures, 2, (int[2]) { 0, 1 } );
+    glUniform1fv( param.oz_TextureScales, 2, (float[2]) { 1.0f, 1.0f } );
+
+    glUniform1i( param.oz_IsHighlightEnabled, false );
+
     hard_assert( glGetError() == GL_NO_ERROR );
 
     log.printEnd( " OK" );
@@ -140,35 +168,7 @@ namespace client
     activeProgram = prog;
 
     glUseProgram( programs[prog] );
-
-    OZ_REGISTER_PARAMETER( oz_TextureEnabled );
-    OZ_REGISTER_PARAMETER( oz_Textures );
-    OZ_REGISTER_PARAMETER( oz_TextureScale );
-
-    OZ_REGISTER_PARAMETER( oz_DiffuseMaterial );
-    OZ_REGISTER_PARAMETER( oz_SpecularMaterial );
-
-    OZ_REGISTER_PARAMETER( oz_AmbientLight );
-    OZ_REGISTER_PARAMETER( oz_SkyLight );
-    OZ_REGISTER_PARAMETER( oz_PointLights );
-
-    hard_assert( glGetError() == GL_NO_ERROR );
-  }
-
-  void Shader::bindTextures( uint texture0, uint texture1 ) const
-  {
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, texture1 );
-
-    glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, texture0 );
-
-    if( texture0 == 0 ) {
-      glUniform1i( Param::oz_TextureEnabled, 0 );
-    }
-    else {
-      glUniform1i( Param::oz_TextureEnabled, 1 );
-    }
+    param = progParams[prog];
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }
@@ -178,18 +178,22 @@ namespace client
     lightingDistance = distance;
   }
 
-  void Shader::setAmbientLight( const Quat& colour )
+  void Shader::setAmbientLight( const Vec3& colour )
   {
-    ambientLight = colour;
+    for( int i = 0; i < 3; ++i ) {
+      skyLight.ambient[i] = colour[i];
+    }
   }
 
-  void Shader::setSkyLight( const Vec3& dir, const Quat& colour )
+  void Shader::setSkyLight( const Vec3& dir, const Vec3& colour )
   {
-    skyLight.dir    = dir;
-    skyLight.colour = colour;
+    for( int i = 0; i < 3; ++i ) {
+      skyLight.dir[i] = dir[i];
+      skyLight.diffuse[i] = colour[i];
+    }
   }
 
-  int Shader::addLight( const Point3& pos, const Quat& colour )
+  int Shader::addLight( const Point3& pos, const Vec3& colour )
   {
     return lights.add( Light( pos, colour ) );
   }
@@ -199,27 +203,31 @@ namespace client
     lights.remove( id );
   }
 
-  void Shader::setLight( int id, const Point3& pos, const Quat& colour )
+  void Shader::setLight( int id, const Point3& pos, const Vec3& colour )
   {
-    lights[id].pos = pos;
-    lights[id].colour = colour;
+    for( int i = 0; i < 3; ++i ) {
+      lights[id].pos[i] = pos[i];
+      lights[id].diffuse[i] = colour[i];
+    }
   }
 
   void Shader::updateLights()
   {
+    glUniform3fv( param.oz_SkyLight, 3, skyLight.dir );
+
     Map<float, const Light*> localLights( lights.length() );
 
-    Mat44 transf;
-    glGetFloatv( GL_MODELVIEW_MATRIX, transf );
+//     Mat44 transf;
+//     glGetFloatv( GL_MODELVIEW_MATRIX, transf );
 
-    foreach( light, lights.citer() ) {
-      Point3 localPos = transf * light->pos;
-      float  dist     = ( localPos - Point3::ORIGIN ).sqL();
-
-      if( dist < lightingDistance ) {
-        localLights.add( dist, light );
-      }
-    }
+//     foreach( light, lights.citer() ) {
+//       Point3 localPos = transf * Point3( light->pos );
+//       float  dist     = ( localPos - Point3::ORIGIN ).sqL();
+//
+//       if( dist < lightingDistance ) {
+//         localLights.add( dist, light );
+//       }
+//     }
 
     // TODO
   }
@@ -252,6 +260,9 @@ namespace client
       loadProgram( Program( i ), sources, lengths );
     }
 
+    textures[0] = 0;
+    textures[1] = 0;
+
     log.unindent();
     log.println( "}" );
   }
@@ -259,6 +270,9 @@ namespace client
   void Shader::unload()
   {
     log.print( "Unloading Shader ..." );
+
+    textures[0] = 0;
+    textures[1] = 0;
 
     for( int i = 1; i < MAX; ++i ) {
       if( programs[i] != 0 ) {

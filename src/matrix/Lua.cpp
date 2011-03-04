@@ -971,14 +971,14 @@ namespace oz
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    // { hsine, hcosine, vsine, vcosine, vcosine * hsine, vcosine * hcosine }
+    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
     float hvsc[6];
 
     Math::sincos( bot->h, &hvsc[0], &hvsc[1] );
     Math::sincos( bot->v, &hvsc[2], &hvsc[3] );
 
-    hvsc[4] = hvsc[3] * hvsc[0];
-    hvsc[5] = hvsc[3] * hvsc[1];
+    hvsc[4] = hvsc[2] * hvsc[0];
+    hvsc[5] = hvsc[2] * hvsc[1];
 
     lua_pushnumber( l, -hvsc[4] );
     lua_pushnumber( l,  hvsc[5] );

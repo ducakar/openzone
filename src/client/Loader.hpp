@@ -46,10 +46,10 @@ namespace client
 
   public:
 
-      void makeScreenshot();
-
       void cleanup();
       void update();
+
+      void makeScreenshot();
 
       void init();
       void free();

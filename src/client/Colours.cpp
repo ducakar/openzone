@@ -16,6 +16,7 @@ namespace oz
 namespace client
 {
 
+  const Quat Colours::NONE  = Quat( 0.0f, 0.0f, 0.0f, 0.0f );
   const Quat Colours::BLACK = Quat( 0.0f, 0.0f, 0.0f, 1.0f );
   const Quat Colours::WHITE = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
 
@@ -23,7 +24,6 @@ namespace client
   const Quat Colours::STRUCTURE_AABB = Quat( 0.20f, 0.50f, 1.00f, 0.30f );
   const Quat Colours::CLIP_AABB = Quat( 0.50f, 1.00f, 0.20f, 0.30f );
   const Quat Colours::NOCLIP_AABB = Quat( 0.70f, 0.80f, 0.90f, 0.30f );
-  const Quat Colours::TAG = Quat( -0.60f, 0.80f, 1.00f, 1.00f );
 
   const Quat Colours::GLOBAL_AMBIENT = Quat( 0.20f, 0.20f, 0.20f, 1.00f );
 

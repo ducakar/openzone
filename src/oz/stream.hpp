@@ -25,7 +25,7 @@ namespace oz
     OZ_ALWAYS_INLINE
     static ushort shuffle16( ushort s )
     {
-#if defined( OZ_STREAM_BIG_ENDIAN ) == defined( OZ_BIG_ENDIAN_ARCH )
+#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return s;
 #else
       return ushort( s << 8 | s >> 8 );
@@ -35,7 +35,7 @@ namespace oz
     OZ_ALWAYS_INLINE
     static uint shuffle32( uint i )
     {
-#if defined( OZ_STREAM_BIG_ENDIAN ) == defined( OZ_BIG_ENDIAN_ARCH )
+#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return i;
 #else
 # ifdef __GNUC__
@@ -50,7 +50,7 @@ namespace oz
     OZ_ALWAYS_INLINE
     static ulong64 shuffle64( ulong64 l )
     {
-#if defined( OZ_STREAM_BIG_ENDIAN ) == defined( OZ_BIG_ENDIAN_ARCH )
+#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return l;
 #else
 # ifdef __GNUC__
@@ -77,30 +77,36 @@ namespace oz
 
     public:
 
+      OZ_ALWAYS_INLINE
       explicit InputStream( const char* start_, const char* end_ ) :
           pos( start_ ), start( start_ ), end( end_ )
       {}
 
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return int( size_t( pos - start ) );
       }
 
+      OZ_ALWAYS_INLINE
       int available() const
       {
         return int( size_t( end - pos ) );
       }
 
+      OZ_ALWAYS_INLINE
       bool isAvailable() const
       {
         return pos != end;
       }
 
+      OZ_ALWAYS_INLINE
       void reset()
       {
         pos = start;
       }
 
+      OZ_ALWAYS_INLINE
       const char* getPos() const
       {
         hard_assert( start <= pos && pos <= end );
@@ -124,42 +130,49 @@ namespace oz
         return oldPos;
       }
 
+      OZ_ALWAYS_INLINE
       bool readBool()
       {
         const bool* data = reinterpret_cast<const bool*>( prepareRead( sizeof( bool ) ) );
         return *data;
       }
 
+      OZ_ALWAYS_INLINE
       char readChar()
       {
         const char* data = reinterpret_cast<const char*>( prepareRead( sizeof( char ) ) );
         return *data;
       }
 
+      OZ_ALWAYS_INLINE
       void readChars( char* array, int count )
       {
         const char* data = reinterpret_cast<const char*>( prepareRead( count ) );
         aCopy( array, data, count );
       }
 
+      OZ_ALWAYS_INLINE
       short readShort()
       {
         const short* data = reinterpret_cast<const short*>( prepareRead( sizeof( short ) ) );
         return Endian::shuffle16( *data );
       }
 
+      OZ_ALWAYS_INLINE
       int readInt()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( int ) ) );
         return Endian::shuffle32( *data );
       }
 
+      OZ_ALWAYS_INLINE
       float readFloat()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( int ) ) );
         return Math::fromBits( Endian::shuffle32( *data ) );
       }
 
+      OZ_ALWAYS_INLINE
       String readString()
       {
         int length = 0;
@@ -172,6 +185,7 @@ namespace oz
         return String( prepareRead( length + 1 ), length );
       }
 
+      OZ_ALWAYS_INLINE
       String readPaddedString( int size )
       {
         const char* data = reinterpret_cast<const char*>( prepareRead( size ) );
@@ -181,6 +195,7 @@ namespace oz
         return String( data );
       }
 
+      OZ_ALWAYS_INLINE
       Vec3 readVec3()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[3] ) ) );
@@ -189,6 +204,7 @@ namespace oz
                      Math::fromBits( Endian::shuffle32( data[2] ) ) );
       }
 
+      OZ_ALWAYS_INLINE
       Point3 readPoint3()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[3] ) ) );
@@ -197,6 +213,7 @@ namespace oz
                        Math::fromBits( Endian::shuffle32( data[2] ) ) );
       }
 
+      OZ_ALWAYS_INLINE
       Plane readPlane()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[4] ) ) );
@@ -206,6 +223,7 @@ namespace oz
                       Math::fromBits( Endian::shuffle32( data[3] ) ) );
       }
 
+      OZ_ALWAYS_INLINE
       Quat readQuat()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[4] ) ) );
@@ -215,6 +233,7 @@ namespace oz
                      Math::fromBits( Endian::shuffle32( data[3] ) ) );
       }
 
+      OZ_ALWAYS_INLINE
       Mat44 readMat44()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[16] ) ) );
@@ -250,30 +269,36 @@ namespace oz
 
     public:
 
+      OZ_ALWAYS_INLINE
       explicit OutputStream( char* start_, const char* end_ ) :
           pos( start_ ), start( start_ ), end( end_ )
       {}
 
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return int( size_t( pos - start ) );
       }
 
+      OZ_ALWAYS_INLINE
       int available() const
       {
         return int( size_t( end - pos ) );
       }
 
+      OZ_ALWAYS_INLINE
       bool isAvailable() const
       {
         return pos != end;
       }
 
+      OZ_ALWAYS_INLINE
       void reset()
       {
         pos = start;
       }
 
+      OZ_ALWAYS_INLINE
       char* getPos() const
       {
         hard_assert( start <= pos && pos <= end );
@@ -295,42 +320,49 @@ namespace oz
         return oldPos;
       }
 
+      OZ_ALWAYS_INLINE
       void writeBool( bool b )
       {
         bool* data = reinterpret_cast<bool*>( prepareWrite( sizeof( bool ) ) );
         *data = b;
       }
 
+      OZ_ALWAYS_INLINE
       void writeChar( char c )
       {
         char* data = reinterpret_cast<char*>( prepareWrite( sizeof( char ) ) );
         *data = c;
       }
 
+      OZ_ALWAYS_INLINE
       void writeChars( char *array, int count )
       {
         char* data = reinterpret_cast<char*>( prepareWrite( count * sizeof( char ) ) );
         aCopy( data, array, count );
       }
 
+      OZ_ALWAYS_INLINE
       void writeShort( short s )
       {
         short* data = reinterpret_cast<short*>( prepareWrite( sizeof( short ) ) );
         *data = Endian::shuffle16( s );
       }
 
+      OZ_ALWAYS_INLINE
       void writeInt( int i )
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( int ) ) );
         *data = Endian::shuffle32( i );
       }
 
+      OZ_ALWAYS_INLINE
       void writeFloat( float f )
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float ) ) );
         *data = Endian::shuffle32( Math::toBits( f ) );
       }
 
+      OZ_ALWAYS_INLINE
       void writeString( const String& s )
       {
         int size = s.length() + 1;
@@ -339,6 +371,7 @@ namespace oz
         aCopy( data, s.cstr(), size );
       }
 
+      OZ_ALWAYS_INLINE
       void writeString( const char* s )
       {
         int size = String::length( s ) + 1;
@@ -347,6 +380,7 @@ namespace oz
         aCopy( data, s, size );
       }
 
+      OZ_ALWAYS_INLINE
       void writePaddedString( const String& s, int size )
       {
         int length = s.length();
@@ -356,6 +390,7 @@ namespace oz
         aSet( data + length, '\0', size - length );
       }
 
+      OZ_ALWAYS_INLINE
       void writePaddedString( const char* s, int size )
       {
         int length = String::length( s );
@@ -365,6 +400,7 @@ namespace oz
         aSet( data + length, '\0', size - length );
       }
 
+      OZ_ALWAYS_INLINE
       void writeVec3( const Vec3& v )
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[3] ) ) );
@@ -374,6 +410,7 @@ namespace oz
         data[2] = Endian::shuffle32( Math::toBits( v.z ) );
       }
 
+      OZ_ALWAYS_INLINE
       void writePoint3( const Point3& p )
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[3] ) ) );
@@ -383,6 +420,7 @@ namespace oz
         data[2] = Endian::shuffle32( Math::toBits( p.z ) );
       }
 
+      OZ_ALWAYS_INLINE
       void writePlane( const Plane& p )
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[4] ) ) );
@@ -393,6 +431,7 @@ namespace oz
         data[3] = Endian::shuffle32( Math::toBits( p.d ) );
       }
 
+      OZ_ALWAYS_INLINE
       void writeQuat( const Quat& q )
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[4] ) ) );
@@ -403,6 +442,7 @@ namespace oz
         data[3] = Endian::shuffle32( Math::toBits( q.w ) );
       }
 
+      OZ_ALWAYS_INLINE
       void writeMat44( const Mat44& m )
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[16] ) ) );

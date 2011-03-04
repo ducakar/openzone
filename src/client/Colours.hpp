@@ -18,6 +18,7 @@ namespace client
 
   struct Colours
   {
+    static const Quat NONE;
     static const Quat BLACK;
     static const Quat WHITE;
 

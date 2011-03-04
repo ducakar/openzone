@@ -118,8 +118,10 @@ namespace ui
       rect( -200, 34, 190, 16 );
       rect( -200, 10, 190, 16 );
 
+      glUniform1i( param.oz_IsTextureEnabled, true );
+
       if( !camera.isExternal ) {
-        shader.bindTextures( crossTexId );
+        glBindTexture( crossTexId );
         glBegin( GL_QUADS );
           glTexCoord2i( 0, 1 );
           glVertex2i( crossIconX, crossIconY );
@@ -137,7 +139,7 @@ namespace ui
           const Object* tagged = camera.taggedObj;
 
           if( tagged->flags & Object::VEHICLE_BIT ) {
-            shader.bindTextures( mountTexId );
+            glBindTexture( mountTexId );
             glBegin( GL_QUADS );
               glTexCoord2i( 0, 1 );
               glVertex2i( mountIconX, mountIconY );
@@ -150,7 +152,7 @@ namespace ui
             glEnd();
           }
           else if( tagged->flags & Object::USE_FUNC_BIT ) {
-            shader.bindTextures( useTexId );
+            glBindTexture( useTexId );
             glBegin( GL_QUADS );
               glTexCoord2i( 0, 1 );
               glVertex2i( useIconX, useIconY );
@@ -163,7 +165,7 @@ namespace ui
             glEnd();
           }
           if( tagged->flags & Object::ITEM_BIT ) {
-            shader.bindTextures( takeTexId );
+            glBindTexture( takeTexId );
             glBegin( GL_QUADS );
               glTexCoord2i( 0, 1 );
               glVertex2i( takeIconX, takeIconY );
@@ -184,7 +186,7 @@ namespace ui
               ( ( ~tagged->flags & Object::BOT_BIT ) || ( taggedBot->grabObj == -1 ) ) )
           {
             if( taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged ) {
-              shader.bindTextures( liftTexId );
+              glBindTexture( liftTexId );
               glBegin( GL_QUADS );
                 glTexCoord2i( 0, 1 );
                 glVertex2i( liftIconX, liftIconY );
@@ -198,7 +200,7 @@ namespace ui
             }
           }
           if( camera.botObj->grabObj != -1 ) {
-            shader.bindTextures( grabTexId );
+            glBindTexture( grabTexId );
             glBegin( GL_QUADS );
               glTexCoord2i( 0, 1 );
               glVertex2i( grabIconX, grabIconY );
@@ -212,10 +214,11 @@ namespace ui
           }
         }
       }
-      shader.bindTextures( 0 );
+      glUniform1i( param.oz_IsTextureEnabled, false );
     }
     else if( camera.state != Camera::STRATEGIC ) {
-      shader.bindTextures( crossTexId );
+      glUniform1i( param.oz_IsTextureEnabled, true );
+      glBindTexture( crossTexId );
       glBegin( GL_QUADS );
         glTexCoord2i( 0, 1 );
         glVertex2i( crossIconX, crossIconY );
@@ -226,7 +229,7 @@ namespace ui
         glTexCoord2i( 0, 0 );
         glVertex2i( crossIconX, crossIconY + ICON_SIZE );
       glEnd();
-      shader.bindTextures( 0 );
+      glUniform1i( param.oz_IsTextureEnabled, false );
     }
 
     drawChildren();

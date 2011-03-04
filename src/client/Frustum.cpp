@@ -38,17 +38,23 @@ namespace client
   {
     radius = camera.maxDist / cx;
 
-    nLeft  = camera.rotMat * nLeft0;
-    nRight = camera.rotMat * nRight0;
-    nDown  = camera.rotMat * nDown0;
-    nUp    = camera.rotMat * nUp0;
-    nFront = camera.at;
+    Vec3 nLeft  = camera.rotMat * nLeft0;
+    Vec3 nRight = camera.rotMat * nRight0;
+    Vec3 nDown  = camera.rotMat * nDown0;
+    Vec3 nUp    = camera.rotMat * nUp0;
+    Vec3 nFront = camera.at;
 
-    dLeft  = camera.p * nLeft;
-    dRight = camera.p * nRight;
-    dDown  = camera.p * nDown;
-    dUp    = camera.p * nUp;
-    dFront = camera.p * nFront + camera.maxDist;
+    float dLeft  = camera.p * nLeft;
+    float dRight = camera.p * nRight;
+    float dDown  = camera.p * nDown;
+    float dUp    = camera.p * nUp;
+    float dFront = camera.p * nFront + camera.maxDist;
+
+    left  = Plane( nLeft,  dLeft  );
+    right = Plane( nRight, dRight );
+    down  = Plane( nDown,  dDown  );
+    up    = Plane( nUp,    dUp    );
+    front = Plane( nFront, dFront );
   }
 
 }

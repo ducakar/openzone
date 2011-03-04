@@ -138,7 +138,7 @@ namespace oz
       if( obj->flags & Object::IN_WATER_BIT ) {
         float frictionFactor = 0.5f * obj->depth / obj->dim.z;
 
-        obj->momentum *= 1.0f - WATER_FRICTION * frictionFactor;
+        obj->momentum *= 1.0f - frictionFactor * WATER_FRICTION;
         systemMom += frictionFactor * obj->lift * Timer::TICK_TIME;
       }
 

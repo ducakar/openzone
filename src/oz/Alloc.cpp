@@ -60,6 +60,9 @@ namespace oz
   int  Alloc::maxCount  = 0;
   long Alloc::maxAmount = 0;
 
+  OZ_WEAK_SYMBOL
+  bool Alloc::isLocked  = false;
+
 #ifndef OZ_ALLOC_STATISTICS
 
   void Alloc::printStatistics()

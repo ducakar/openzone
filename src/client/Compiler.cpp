@@ -65,12 +65,12 @@ namespace client
     vert.pos[1] = 0.0f;
     vert.pos[2] = 0.0f;
 
+    vert.texCoord[0] = 0.0f;
+    vert.texCoord[1] = 0.0f;
+
     vert.normal[0] = 0.0f;
     vert.normal[1] = 0.0f;
     vert.normal[2] = 0.0f;
-
-    vert.texCoord[0] = 0.0f;
-    vert.texCoord[1] = 0.0f;
   }
 
   void Compiler::endMesh()
