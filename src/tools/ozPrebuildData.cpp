@@ -16,10 +16,12 @@
 
 #include "client/Context.hpp"
 #include "client/Compiler.hpp"
+#include "client/Sky.hpp"
 #include "client/Terra.hpp"
 #include "client/BSP.hpp"
 #include "client/OBJ.hpp"
 #include "client/MD2.hpp"
+#include "client/Render.hpp"
 
 #include <cerrno>
 #include <unistd.h>
@@ -208,11 +210,14 @@ int main( int argc, char** argv )
 
     long startTime = SDL_GetTicks();
 
+    client::render.init();
     buffer.alloc( 10 * 1024 * 1024 );
     matrix.init();
 
     prebuildTextures( "ui", "ui", true, GL_LINEAR, GL_LINEAR );
     prebuildTextures( "textures/oz", "bsp/tex", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
+
+    client::Sky::prebuild( "sky" );
 
     prebuildTerras( "terra" );
 
@@ -252,6 +257,8 @@ int main( int argc, char** argv )
   client::compiler.free();
   matrix.free();
   buffer.dealloc();
+  client::render.free();
+  config.clear();
 
   Alloc::printStatistics();
   log.printlnETD( OZ_APPLICATION_NAME " Prebuild finished at" );

@@ -24,7 +24,71 @@ namespace client
     glBindVertexArray( vao );
   }
 
-  void Shape::drawSprite( const Point3& p, float dimX, float dimY )
+  void Shape::fill( float x, float y, float width, float height )
+  {
+    glPushMatrix();
+    glTranslatef( x, y, 0.0f );
+    glScalef( width, height, 0.0f );
+
+    glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+
+    glPopMatrix();
+  }
+
+  void Shape::fill( int x, int y, int width, int height )
+  {
+    fill( float( x ), float( y ), float( width ), float( height ) );
+  }
+
+  void Shape::rect( float x, float y, float width, float height )
+  {
+    glPushMatrix();
+    glTranslatef( x + 0.5f, y + 0.5f, 0.0f );
+    glScalef( width - 1.0f, height - 1.0f, 0.0f );
+
+    glDrawArrays( GL_LINE_LOOP, 4, 4 );
+
+    glPopMatrix();
+  }
+
+  void Shape::rect( int x, int y, int width, int height )
+  {
+    rect( float( x ), float( y ), float( width ), float( height ) );
+  }
+
+  void Shape::tag( float minX, float minY, float maxX, float maxY )
+  {
+    float width  = maxX - minX;
+    float height = maxY - minY;
+
+    glPushMatrix();
+
+    glTranslatef( minX, minY, 0.0f );
+    glDrawArrays( GL_LINES,  8, 4 );
+
+    glTranslatef( width, 0.0f, 0.0f );
+    glDrawArrays( GL_LINES, 12, 4 );
+
+    glTranslatef( 0.0f, height, 0.0f );
+    glDrawArrays( GL_LINES, 16, 4 );
+
+    glTranslatef( -width, 0.0f, 0.0f );
+    glDrawArrays( GL_LINES, 20, 4 );
+
+    glPopMatrix();
+  }
+
+  void Shape::quad( float dimX, float dimY )
+  {
+    glPushMatrix();
+    glScalef( dimX, 1.0f, dimY );
+
+    glDrawArrays( GL_TRIANGLE_STRIP, 24, 4 );
+
+    glPopMatrix();
+  }
+
+  void Shape::sprite( const Point3& p, float dimX, float dimY )
   {
     Mat44 transf;
     glGetFloatv( GL_MODELVIEW_MATRIX, transf );
@@ -37,30 +101,30 @@ namespace client
     glMultMatrixf( transf );
     glScalef( dimX, 1.0f, dimY );
 
-    glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+    glDrawArrays( GL_TRIANGLE_STRIP, 24, 4 );
 
     glPopMatrix();
   }
 
-  void Shape::drawBox( const AABB& bb )
+  void Shape::box( const AABB& bb )
   {
     glPushMatrix();
     glTranslatef( bb.p.x, bb.p.y, bb.p.z );
     glScalef( bb.dim.x, bb.dim.y, bb.dim.z );
 
-    glDrawRangeElements( GL_TRIANGLE_STRIP, 4, 11, 22, GL_UNSIGNED_SHORT,
+    glDrawRangeElements( GL_TRIANGLE_STRIP, 28, 35, 22, GL_UNSIGNED_SHORT,
                          reinterpret_cast<const ushort*>( 0 ) + 0 );
 
     glPopMatrix();
   }
 
-  void Shape::drawWireBox( const AABB& bb )
+  void Shape::wireBox( const AABB& bb )
   {
     glPushMatrix();
     glTranslatef( bb.p.x, bb.p.y, bb.p.z );
     glScalef( bb.dim.x, bb.dim.y, bb.dim.z );
 
-    glDrawRangeElements( GL_LINES, 4, 11, 24, GL_UNSIGNED_SHORT,
+    glDrawRangeElements( GL_LINES, 28, 35, 24, GL_UNSIGNED_SHORT,
                          reinterpret_cast<const ushort*>( 0 ) + 22 );
 
     glPopMatrix();
@@ -75,29 +139,64 @@ namespace client
     glColor4f( part->colour.x, part->colour.y, part->colour.z, part->lifeTime );
 
     int index = part->index % MAX_PARTS;
-    glDrawArrays( GL_TRIANGLES, 12 + index * 12, 12 );
+    glDrawArrays( GL_TRIANGLES, 36 + index * 12, 12 );
   }
 
   void Shape::load()
   {
     DArray<ushort> indices( 46 );
-    DArray<Vertex> vertices( 12 + MAX_PARTS * 12 );
+    DArray<Vertex> vertices( 36 + MAX_PARTS * 12 );
 
-    vertices[ 0].set( -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f );
-    vertices[ 1].set( +1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f );
-    vertices[ 2].set( -1.0f, +1.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f );
-    vertices[ 3].set( +1.0f, +1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f );
+    // filled rectangle
+    vertices[ 0].set( 0.0f, 0.0f, 0.0f, 0.0f, 1.0f );
+    vertices[ 1].set( 1.0f, 0.0f, 0.0f, 1.0f, 1.0f );
+    vertices[ 2].set( 0.0f, 1.0f, 0.0f, 0.0f, 0.0f );
+    vertices[ 3].set( 1.0f, 1.0f, 0.0f, 1.0f, 0.0f );
 
-    vertices[ 4].set( -1.0f, -1.0f, -1.0f );
-    vertices[ 5].set( -1.0f, -1.0f, +1.0f );
-    vertices[ 6].set( -1.0f, +1.0f, -1.0f );
-    vertices[ 7].set( -1.0f, +1.0f, +1.0f );
-    vertices[ 8].set( +1.0f, -1.0f, -1.0f );
-    vertices[ 9].set( +1.0f, -1.0f, +1.0f );
-    vertices[10].set( +1.0f, +1.0f, -1.0f );
-    vertices[11].set( +1.0f, +1.0f, +1.0f );
+    // line rectangle
+    vertices[ 4].set( 0.0f, 0.0f, 0.0f );
+    vertices[ 5].set( 1.0f, 0.0f, 0.0f );
+    vertices[ 6].set( 1.0f, 1.0f, 0.0f );
+    vertices[ 7].set( 0.0f, 1.0f, 0.0f );
 
-    int  k = 12;
+    // tag box
+    vertices[ 8].set( -1.5f, -1.5f, 0.0f );
+    vertices[ 9].set( -1.5f, +3.5f, 0.0f );
+    vertices[10].set( -0.5f, -1.5f, 0.0f );
+    vertices[11].set( +3.5f, -1.5f, 0.0f );
+
+    vertices[12].set( +1.5f, -1.5f, 0.0f );
+    vertices[13].set( -3.5f, -1.5f, 0.0f );
+    vertices[14].set( +1.5f, -0.5f, 0.0f );
+    vertices[15].set( +1.5f, +3.5f, 0.0f );
+
+    vertices[16].set( +1.5f, +1.5f, 0.0f );
+    vertices[17].set( -3.5f, +1.5f, 0.0f );
+    vertices[18].set( +1.5f, +0.5f, 0.0f );
+    vertices[19].set( +1.5f, -3.5f, 0.0f );
+
+    vertices[20].set( -1.5f, +1.5f, 0.0f );
+    vertices[21].set( +3.5f, +1.5f, 0.0f );
+    vertices[22].set( -1.5f, +0.5f, 0.0f );
+    vertices[23].set( -1.5f, -3.5f, 0.0f );
+
+    // sprite
+    vertices[24].set( -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f );
+    vertices[25].set( +1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f );
+    vertices[26].set( -1.0f, +1.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f );
+    vertices[27].set( +1.0f, +1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f );
+
+    // box
+    vertices[28].set( -1.0f, -1.0f, -1.0f );
+    vertices[29].set( -1.0f, -1.0f, +1.0f );
+    vertices[30].set( -1.0f, +1.0f, -1.0f );
+    vertices[31].set( -1.0f, +1.0f, +1.0f );
+    vertices[32].set( +1.0f, -1.0f, -1.0f );
+    vertices[33].set( +1.0f, -1.0f, +1.0f );
+    vertices[34].set( +1.0f, +1.0f, -1.0f );
+    vertices[35].set( +1.0f, +1.0f, +1.0f );
+
+    int  k = 36;
     Vec3 normal;
 
     for( int i = 0; i < MAX_PARTS; ++i ) {
@@ -143,72 +242,72 @@ namespace client
      */
 
     // left
-    indices[ 0] =  4;
-    indices[ 1] =  5;
-    indices[ 2] =  6;
-    indices[ 3] =  7;
+    indices[ 0] = 28 + 0;
+    indices[ 1] = 28 + 1;
+    indices[ 2] = 28 + 2;
+    indices[ 3] = 28 + 3;
 
     // back
-    indices[ 4] = 10;
-    indices[ 5] = 11;
+    indices[ 4] = 28 + 6;
+    indices[ 5] = 28 + 7;
 
     // right
-    indices[ 6] =  8;
-    indices[ 7] =  9;
+    indices[ 6] = 28 + 4;
+    indices[ 7] = 28 + 5;
 
     // front
-    indices[ 8] =  4;
-    indices[ 9] =  5;
-    indices[10] =  5;
+    indices[ 8] = 28 + 0;
+    indices[ 9] = 28 + 1;
+    indices[10] = 28 + 1;
 
     // bottom
-    indices[11] =  4;
-    indices[12] =  4;
-    indices[13] =  6;
-    indices[14] =  8;
-    indices[15] = 10;
-    indices[16] = 10;
+    indices[11] = 28 + 0;
+    indices[12] = 28 + 0;
+    indices[13] = 28 + 2;
+    indices[14] = 28 + 4;
+    indices[15] = 28 + 6;
+    indices[16] = 28 + 6;
 
     // top
-    indices[17] =  5;
-    indices[18] =  5;
-    indices[19] =  9;
-    indices[20] =  7;
-    indices[21] = 11;
+    indices[17] = 28 + 1;
+    indices[18] = 28 + 1;
+    indices[19] = 28 + 5;
+    indices[20] = 28 + 3;
+    indices[21] = 28 + 7;
 
     /*
      * Wire box (GL_LINES)
      */
 
     // parallel to z
-    indices[22] =  4;
-    indices[23] =  5;
-    indices[24] =  6;
-    indices[25] =  7;
-    indices[26] =  8;
-    indices[27] =  9;
-    indices[28] = 10;
-    indices[29] = 11;
+    indices[22] = 28 + 0;
+    indices[23] = 28 + 1;
+    indices[24] = 28 + 2;
+    indices[25] = 28 + 3;
+    indices[26] = 28 + 4;
+    indices[27] = 28 + 5;
+    indices[28] = 28 + 6;
+    indices[29] = 28 + 7;
 
     // parallel to y
-    indices[30] =  4;
-    indices[31] =  6;
-    indices[32] =  5;
-    indices[33] =  7;
-    indices[34] =  8;
-    indices[35] = 10;
-    indices[36] =  9;
-    indices[37] = 11;
+    indices[30] = 28 + 0;
+    indices[31] = 28 + 2;
+    indices[32] = 28 + 1;
+    indices[33] = 28 + 3;
+    indices[34] = 28 + 4;
+    indices[35] = 28 + 6;
+    indices[36] = 28 + 5;
+    indices[37] = 28 + 7;
 
     // parallel to x
-    indices[38] =  4;
-    indices[39] =  8;
-    indices[40] =  5;
-    indices[41] =  9;
-    indices[42] =  6;
-    indices[43] = 10;
-    indices[44] =  7;
-    indices[45] = 11;
+    indices[38] = 28 + 0;
+    indices[39] = 28 + 4;
+    indices[40] = 28 + 1;
+    indices[41] = 28 + 5;
+    indices[42] = 28 + 2;
+    indices[43] = 28 + 6;
+    indices[44] = 28 + 3;
+    indices[45] = 28 + 7;
 
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );

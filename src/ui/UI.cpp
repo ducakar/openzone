@@ -13,6 +13,7 @@
 
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
+#include "client/Shape.hpp"
 
 namespace oz
 {
@@ -46,6 +47,8 @@ namespace ui
     glOrtho( 0.0, root->width, 0.0, root->height, -100.0, 100.0 );
     glMatrixMode( GL_MODELVIEW );
     glLoadIdentity();
+
+    shape.bindVertexArray();
 
     glEnable( GL_BLEND );
 

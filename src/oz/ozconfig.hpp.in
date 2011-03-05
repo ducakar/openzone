@@ -30,9 +30,6 @@
 // enable warnings about missing and unused variables in config files
 #cmakedefine OZ_VERBOSE_CONFIG
 
-// enable support for XML configuration files
-#cmakedefine OZ_XML_CONFIG
-
 // platform
 #if defined( WIN32 ) || defined( __WIN32__ )
 # define OZ_WINDOWS

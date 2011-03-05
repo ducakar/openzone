@@ -7,5 +7,5 @@ add_dependencies( ozXmlrc pch )
 target_link_libraries( ozXmlrc oz ${libs} )
 
 add_executable( ozPrebuildData ozPrebuildData.cpp )
-add_dependencies( ozPrebuildData matrix pch )
+add_dependencies( ozPrebuildData client ui nirvana matrix pch )
 target_link_libraries( ozPrebuildData client ui nirvana matrix oz ${libs} )

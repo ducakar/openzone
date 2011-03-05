@@ -228,27 +228,32 @@ namespace oz
         sDyn->flags &= ~Object::DISABLED_BIT;
 
         if( obj->flags & Object::PUSHER_BIT ) {
-          obj->momentum.x  = sDyn->velocity.x;
-          obj->momentum.y  = sDyn->velocity.y;
           sDyn->momentum.x = momentum.x;
           sDyn->momentum.y = momentum.y;
+
+          if( hit.normal.y == 0.0f ) {
+            obj->momentum.x = sDyn->velocity.x;
+          }
+          else {
+            obj->momentum.y = sDyn->velocity.y;
+          }
         }
         else if( hit.normal.y == 0.0f ) {
-          obj->momentum.x  = sDyn->velocity.x;
           sDyn->momentum.x = momentum.x;
+          obj->momentum.x  = sDyn->velocity.x;
         }
         else {
-          obj->momentum.y  = sDyn->velocity.y;
           sDyn->momentum.y = momentum.y;
+          obj->momentum.y  = sDyn->velocity.y;
         }
       }
       else if( hit.normal.z == -1.0f ) {
-        obj->flags  |= Object::UPPER_BIT;
         sDyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
         sDyn->lower = obj->index;
+        obj->flags  |= Object::UPPER_BIT;
 
-        obj->momentum.z  = sDyn->velocity.z;
         sDyn->momentum.z = momentum.z;
+        obj->momentum.z  = sDyn->velocity.z;
       }
       else { // hit.normal.z == 1.0f
         hard_assert( hit.normal.z == 1.0f );
@@ -259,8 +264,8 @@ namespace oz
         obj->lower  = sDyn->index;
 
         if( !( sDyn->flags & Object::DISABLED_BIT ) ) {
-          obj->momentum.z  = sDyn->velocity.z;
           sDyn->momentum.z = momentum.z;
+          obj->momentum.z  = sDyn->velocity.z;
         }
         else {
           obj->momentum.z = 0.0f;

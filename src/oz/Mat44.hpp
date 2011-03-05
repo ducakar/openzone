@@ -381,6 +381,11 @@ namespace oz
       {}
 
       OZ_ALWAYS_INLINE
+      explicit Mat44( const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d ) :
+          x( a, 0.0f ), y( b, 0.0f ), z( c, 0.0f ), w( d, 1.0f )
+      {}
+
+      OZ_ALWAYS_INLINE
       explicit Mat44( float xx, float xy, float xz, float xw,
                       float yx, float yy, float yz, float yw,
                       float zx, float zy, float zz, float zw,

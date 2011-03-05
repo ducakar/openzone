@@ -12,8 +12,10 @@
 #include "ui/HudArea.hpp"
 
 #include "matrix/BotClass.hpp"
+
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
+#include "client/Shape.hpp"
 
 #include <GL/gl.h>
 
@@ -122,16 +124,7 @@ namespace ui
 
       if( !camera.isExternal ) {
         glBindTexture( crossTexId );
-        glBegin( GL_QUADS );
-          glTexCoord2i( 0, 1 );
-          glVertex2i( crossIconX, crossIconY );
-          glTexCoord2i( 1, 1 );
-          glVertex2i( crossIconX + ICON_SIZE, crossIconY );
-          glTexCoord2i( 1, 0 );
-          glVertex2i( crossIconX + ICON_SIZE, crossIconY + ICON_SIZE );
-          glTexCoord2i( 0, 0 );
-          glVertex2i( crossIconX, crossIconY + ICON_SIZE );
-        glEnd();
+        shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
       }
 
       if( bot->parent == -1 ) {
@@ -140,42 +133,15 @@ namespace ui
 
           if( tagged->flags & Object::VEHICLE_BIT ) {
             glBindTexture( mountTexId );
-            glBegin( GL_QUADS );
-              glTexCoord2i( 0, 1 );
-              glVertex2i( mountIconX, mountIconY );
-              glTexCoord2i( 1, 1 );
-              glVertex2i( mountIconX + ICON_SIZE, mountIconY );
-              glTexCoord2i( 1, 0 );
-              glVertex2i( mountIconX + ICON_SIZE, mountIconY + ICON_SIZE );
-              glTexCoord2i( 0, 0 );
-              glVertex2i( mountIconX, mountIconY + ICON_SIZE );
-            glEnd();
+            shape.fill( mountIconX, mountIconY, ICON_SIZE, ICON_SIZE );
           }
           else if( tagged->flags & Object::USE_FUNC_BIT ) {
             glBindTexture( useTexId );
-            glBegin( GL_QUADS );
-              glTexCoord2i( 0, 1 );
-              glVertex2i( useIconX, useIconY );
-              glTexCoord2i( 1, 1 );
-              glVertex2i( useIconX + ICON_SIZE, useIconY );
-              glTexCoord2i( 1, 0 );
-              glVertex2i( useIconX + ICON_SIZE, useIconY + ICON_SIZE );
-              glTexCoord2i( 0, 0 );
-              glVertex2i( useIconX, useIconY + ICON_SIZE );
-            glEnd();
+            shape.fill( useIconX, useIconY, ICON_SIZE, ICON_SIZE );
           }
           if( tagged->flags & Object::ITEM_BIT ) {
             glBindTexture( takeTexId );
-            glBegin( GL_QUADS );
-              glTexCoord2i( 0, 1 );
-              glVertex2i( takeIconX, takeIconY );
-              glTexCoord2i( 1, 1 );
-              glVertex2i( takeIconX + ICON_SIZE, takeIconY );
-              glTexCoord2i( 1, 0 );
-              glVertex2i( takeIconX + ICON_SIZE, takeIconY + ICON_SIZE );
-              glTexCoord2i( 0, 0 );
-              glVertex2i( takeIconX, takeIconY + ICON_SIZE );
-            glEnd();
+            shape.fill( takeIconX, takeIconY, ICON_SIZE, ICON_SIZE );
           }
 
           const Dynamic* taggedDyn = static_cast<const Dynamic*>( tagged );
@@ -187,30 +153,12 @@ namespace ui
           {
             if( taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged ) {
               glBindTexture( liftTexId );
-              glBegin( GL_QUADS );
-                glTexCoord2i( 0, 1 );
-                glVertex2i( liftIconX, liftIconY );
-                glTexCoord2i( 1, 1 );
-                glVertex2i( liftIconX + ICON_SIZE, liftIconY );
-                glTexCoord2i( 1, 0 );
-                glVertex2i( liftIconX + ICON_SIZE, liftIconY + ICON_SIZE );
-                glTexCoord2i( 0, 0 );
-                glVertex2i( liftIconX, liftIconY + ICON_SIZE );
-              glEnd();
+              shape.fill( liftIconX, liftIconY, ICON_SIZE, ICON_SIZE );
             }
           }
           if( camera.botObj->grabObj != -1 ) {
             glBindTexture( grabTexId );
-            glBegin( GL_QUADS );
-              glTexCoord2i( 0, 1 );
-              glVertex2i( grabIconX, grabIconY );
-              glTexCoord2i( 1, 1 );
-              glVertex2i( grabIconX + ICON_SIZE, grabIconY );
-              glTexCoord2i( 1, 0 );
-              glVertex2i( grabIconX + ICON_SIZE, grabIconY + ICON_SIZE );
-              glTexCoord2i( 0, 0 );
-              glVertex2i( grabIconX, grabIconY + ICON_SIZE );
-            glEnd();
+            shape.fill( grabIconX, grabIconY, ICON_SIZE, ICON_SIZE );
           }
         }
       }
@@ -219,16 +167,7 @@ namespace ui
     else if( camera.state != Camera::STRATEGIC ) {
       glUniform1i( param.oz_IsTextureEnabled, true );
       glBindTexture( crossTexId );
-      glBegin( GL_QUADS );
-        glTexCoord2i( 0, 1 );
-        glVertex2i( crossIconX, crossIconY );
-        glTexCoord2i( 1, 1 );
-        glVertex2i( crossIconX + ICON_SIZE, crossIconY );
-        glTexCoord2i( 1, 0 );
-        glVertex2i( crossIconX + ICON_SIZE, crossIconY + ICON_SIZE );
-        glTexCoord2i( 0, 0 );
-        glVertex2i( crossIconX, crossIconY + ICON_SIZE );
-      glEnd();
+      shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
       glUniform1i( param.oz_IsTextureEnabled, false );
     }
 

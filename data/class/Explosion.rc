@@ -14,7 +14,7 @@ onUpdate  "Explosion_onUpdate"
 modelType "Explosion"
 
 audioType                       "Basic"
-audioSample00                   "explosion"                     # create
+audioSample00                   ""                              # create
 audioSample01                   ""                              # destroy
 audioSample02                   ""                              # damage
 audioSample03                   ""                              # hit

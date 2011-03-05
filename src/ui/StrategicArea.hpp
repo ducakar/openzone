@@ -49,8 +49,6 @@ namespace ui
       Span projectBounds( const AABB& bb ) const;
 
       void printName( int baseX, int baseY, const char* s, ... );
-      static void fillRect( float x, float y, float width, float height );
-      static void drawRect( float x, float y, float width, float height );
 
       void drawHoveredRect( const Span& span );
       void drawTaggedRect( const Object* obj, const Span& span );

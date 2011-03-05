@@ -17,7 +17,7 @@ namespace oz
   /**
    * Container for application variables.
    *
-   * Variables are key-value pairs. They can be loaded from or saved to an XML file.
+   * Variables are key-value pairs. They can be loaded from or saved to a .rc file.
    */
   class Config
   {
@@ -38,11 +38,6 @@ namespace oz
 
       bool loadConf( const char* file );
       bool saveConf( const char* file );
-
-#ifdef OZ_XML_CONFIG
-      bool loadXML( const char* file );
-      bool saveXML( const char* file );
-#endif
 
     public:
 
@@ -142,7 +137,7 @@ namespace oz
       const char* getSet( const char* name, const char* defVal );
 
       /**
-       * Load variables from an XML file. It only reads the nodes named "var" that must have the
+       * Load variables from a rc file. It only reads the nodes named "var" that must have the
        * following format:
        * <pre>&lt;var name="varName" value="varValue"/&gt;</pre>
        * Everything else is ignored.

@@ -33,7 +33,8 @@ namespace client
     "mesh_water",
     "terra",
     "terra_water",
-    "stars"
+    "stars",
+    "particles"
   };
 
   const Shader::Light Shader::Light::NONE = Shader::Light( Point3::ORIGIN, Quat::ZERO );
