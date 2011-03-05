@@ -41,6 +41,8 @@ namespace client
       static void optimise();
       static void save( const char* path );
 
+      void playSound( const Struct::Entity* entity, int sample ) const;
+
     public:
 
       bool isLoaded;
@@ -53,6 +55,7 @@ namespace client
 
       void load();
       void draw( const Struct* str, int mask ) const;
+      void play( const Struct* str ) const;
 
   };
 

@@ -183,6 +183,8 @@ int main( int argc, char** argv )
     Alloc::printLeaks();
   } );
 
+  int exitCode = 0;
+
   printf( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
       "This is free software, and you are welcome to redistribute it\n"
@@ -192,7 +194,7 @@ int main( int argc, char** argv )
     if( argc != 2 ) {
       log.println( "Usage: %s data_directory", program_invocation_short_name );
       log.println();
-      exit( 0 );
+      return -1;
     }
 
     log.printlnETD( OZ_APPLICATION_NAME " Prebuild started at" );
@@ -204,7 +206,7 @@ int main( int argc, char** argv )
     log.print( "Setting working directory to data directory '%s' ...", argv[1] );
     if( chdir( argv[1] ) != 0 ) {
       log.printEnd( " Failed" );
-      exit( 0 );
+      return -1;
     }
     log.printEnd( " OK" );
 
@@ -242,6 +244,8 @@ int main( int argc, char** argv )
       fprintf( stderr, "  in %s\n\n", e.function );
       fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
     }
+
+    exitCode = -1;
   }
   catch( const std::exception& e ) {
     oz::log.resetIndent();
@@ -252,6 +256,8 @@ int main( int argc, char** argv )
     if( oz::log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
+
+    exitCode = -1;
   }
 
   client::compiler.free();
@@ -262,5 +268,6 @@ int main( int argc, char** argv )
 
   Alloc::printStatistics();
   log.printlnETD( OZ_APPLICATION_NAME " Prebuild finished at" );
-  return 0;
+
+  return exitCode;
 }

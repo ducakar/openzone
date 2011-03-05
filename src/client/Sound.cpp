@@ -31,6 +31,11 @@ namespace client
   {
     const Cell& cell = orbis.cells[cellX][cellY];
 
+    foreach( strIndex, cell.structs.citer() ) {
+      const Struct* str = orbis.structs[*strIndex];
+
+      context.playBSP( str );
+    }
     foreach( obj, cell.objects.citer() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
         if( ( camera.p - obj->p ).sqL() < DMAX_SQ ) {

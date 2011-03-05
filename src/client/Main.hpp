@@ -48,7 +48,7 @@ namespace client
       void shutdown();
       void printUsage();
 
-      void main( int* argc, char* argv[] );
+      int  main( int* argc, char* argv[] );
 
   };
 

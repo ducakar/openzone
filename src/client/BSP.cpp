@@ -17,8 +17,10 @@
 #include "client/Colours.hpp"
 #include "client/Shape.hpp"
 #include "client/Water.hpp"
+#include "client/Audio.hpp"
 
 #include <GL/gl.h>
+#include <AL/al.h>
 
 namespace oz
 {
@@ -335,6 +337,35 @@ namespace client
     log.printEnd( " OK" );
   }
 
+  void BSP::playSound( const Struct::Entity* entity, int sample ) const
+  {
+    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+
+    uint srcId;
+
+    alGenSources( 1, &srcId );
+    if( alGetError() != AL_NO_ERROR ) {
+      log.println( "AL: Too many sources" );
+      return;
+    }
+
+    Bounds bounds = *entity->model;
+    Point3 p = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+
+    p = entity->str->toAbsoluteCS( p );
+
+    alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
+    alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
+
+    alSourcefv( srcId, AL_POSITION, p );
+//     alSourcef( srcId, AL_GAIN, 1.0f );
+    alSourcePlay( srcId );
+
+    hard_assert( alGetError() == AL_NO_ERROR );
+
+    context.sources.add( new Context::Source( srcId ) );
+  }
+
   void BSP::prebuild( const char* name_ )
   {
     String name = name_;
@@ -358,6 +389,15 @@ namespace client
   {
     foreach( mesh, meshes.iter() ) {
       mesh->unload();
+    }
+
+    for( int i = 0; i < bsp->nModels; ++i ) {
+      if( bsp->models[i].openSample != -1 ) {
+        context.releaseSound( bsp->models[i].openSample );
+      }
+      if( bsp->models[i].closeSample != -1 ) {
+        context.releaseSound( bsp->models[i].closeSample );
+      }
     }
   }
 
@@ -383,6 +423,15 @@ namespace client
     meshes.alloc( nMeshes );
     foreach( mesh, meshes.iter() ) {
       mesh->load( &is, GL_STATIC_DRAW );
+    }
+
+    for( int i = 0; i < bsp->nModels; ++i ) {
+      if( bsp->models[i].openSample != -1 ) {
+        context.requestSound( bsp->models[i].openSample );
+      }
+      if( bsp->models[i].closeSample != -1 ) {
+        context.requestSound( bsp->models[i].closeSample );
+      }
     }
 
     log.unindent();
@@ -417,6 +466,26 @@ namespace client
     }
 
     glPopMatrix();
+  }
+
+  void BSP::play( const Struct* str ) const
+  {
+    for( int i = 0; i < str->nEntities; ++i ) {
+      const Struct::Entity& entity = str->entities[i];
+
+      if( entity.state == Struct::Entity::OPENING ) {
+        if( entity.ratio == 0.0f && bsp->models[i].openSample != -1 ) {
+          printf( "playing open %d\n", bsp->models[i].openSample );
+          playSound( &entity, bsp->models[i].openSample );
+        }
+      }
+      else if( entity.state == Struct::Entity::CLOSING ) {
+        if( entity.ratio == 1.0f && bsp->models[i].closeSample != -1 ) {
+          printf( "playing close %d\n", bsp->models[i].closeSample );
+          playSound( &entity, bsp->models[i].closeSample );
+        }
+      }
+    }
   }
 
 }

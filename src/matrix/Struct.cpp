@@ -21,6 +21,14 @@ namespace oz
 
   const float Struct::DAMAGE_THRESHOLD = 400.0f;
 
+  void ( Struct::Entity::* Struct::Entity::handlers[5] )() = {
+    &Struct::Entity::updateIgnoring,
+    &Struct::Entity::updateBlocking,
+    &Struct::Entity::updatePushing,
+    &Struct::Entity::updateCrushing,
+    &Struct::Entity::updateAutoDoor
+  };
+
   Pool<Struct, 256> Struct::pool;
   Vector<Object*> Struct::overlappingObjs;
 
@@ -421,6 +429,72 @@ namespace oz
     }
   }
 
+  void Struct::Entity::updateAutoDoor()
+  {
+    switch( state ) {
+      case CLOSED: {
+        if( timer.ticks % 10 == 0 ) {
+          break;
+        }
+
+        if( collider.overlapsOO( this, model->margin ) ) {
+          time = 0.0f;
+          state = OPENING;
+        }
+        break;
+      }
+      case OPENING:
+      case OPENING_BLOCKED: {
+        ratio = min( ratio + model->ratioInc, 1.0f );
+        offset = ratio * model->move;
+
+        if( ratio == 1.0f ) {
+          state = OPENED;
+        }
+        break;
+      }
+      case OPENED: {
+        time += Timer::TICK_TIME;
+
+        if( time >= model->timeout ) {
+          time = 0.0f;
+
+          offset = Vec3::ZERO;
+
+          if( !collider.overlapsOO( this, model->margin ) ) {
+            state = CLOSING;
+          }
+
+          offset = model->move;
+        }
+        break;
+      }
+      case CLOSING:
+      case CLOSING_BLOCKED: {
+        Vec3 oldOffset = offset;
+        float oldRatio = ratio;
+
+        ratio = max( ratio - model->ratioInc, 0.0f );
+        offset = ratio * model->move;
+
+        if( collider.overlapsOO( this, model->margin ) ) {
+          ratio = oldRatio;
+          offset = ratio * model->move;
+
+          state = ratio == 1.0f ? OPENED : OPENING;
+        }
+        else if( ratio == 0.0f ) {
+          state = CLOSED;
+        }
+        break;
+      }
+      default: {
+        hard_assert( false );
+        break;
+      }
+    }
+  }
+
   Struct::Struct( int index_, int bsp_, const Point3& p_, Rotation rot_ ) :
       p( p_ ), index( index_ ), bsp( bsp_ ), rot( rot_ ), life( orbis.bsps[bsp]->life )
   {
@@ -594,28 +668,7 @@ namespace oz
 
       hard_assert( 0.0f <= entity.ratio && entity.ratio <= 1.0f );
 
-      switch( entity.model->type ) {
-        case BSP::Model::IGNORING: {
-          entity.updateIgnoring();
-          break;
-        }
-        case BSP::Model::BLOCKING: {
-          entity.updateBlocking();
-          break;
-        }
-        case BSP::Model::PUSHING: {
-          entity.updatePushing();
-          break;
-        }
-        case BSP::Model::CRUSHING: {
-          entity.updateCrushing();
-          break;
-        }
-        default: {
-          hard_assert( false );
-          break;
-        }
-      }
+      ( entity.*Entity::handlers[entity.model->type] )();
     }
   }
 

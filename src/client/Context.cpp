@@ -330,27 +330,6 @@ namespace client
     --resource.nUsers;
   }
 
-  BSP* Context::loadBSP( int id )
-  {
-    Resource<BSP*>& resource = bsps[id];
-
-    hard_assert( resource.object == null && resource.nUsers == 0 );
-
-    resource.object = new BSP( id );
-    return resource.object;
-  }
-
-  void Context::freeBSP( int id )
-  {
-    Resource<BSP*>& resource = bsps[id];
-
-    hard_assert( resource.object != null );
-
-    delete resource.object;
-    resource.object = null;
-    resource.nUsers = 0;
-  }
-
   SMM* Context::requestSMM( int id )
   {
     Resource<SMM*>* resource = smms.find( id );
@@ -425,12 +404,28 @@ namespace client
     Resource<BSP*>& resource = bsps[str->bsp];
 
     if( resource.object == null ) {
-      loadBSP( str->bsp );
+      resource.object = new BSP( str->bsp );
+      resource.nUsers = 1;
     }
     else if( resource.object->isLoaded ) {
       // we don't count users, just to show there is at least one
       resource.nUsers = 1;
       resource.object->draw( str, mask );
+    }
+  }
+
+  void Context::playBSP( const Struct* str )
+  {
+    Resource<BSP*>& resource = bsps[str->bsp];
+
+    if( resource.object == null ) {
+      resource.object = new BSP( str->bsp );
+      resource.nUsers = 1;
+    }
+    else if( resource.object->isLoaded ) {
+      // we don't count users, just to show there is at least one
+      resource.nUsers = 1;
+      resource.object->play( str );
     }
   }
 
@@ -588,8 +583,8 @@ namespace client
       hard_assert( sounds[i].nUsers <= 0 );
 
       if( sounds[i].nUsers != -1 ) {
-        alDeleteBuffers( 1, &sounds[i].id );
-        hard_assert( alGetError() == AL_NO_ERROR );
+        sounds[i].nUsers = -2;
+        deleteSound( i );
       }
     }
 

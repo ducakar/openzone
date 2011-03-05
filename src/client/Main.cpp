@@ -44,14 +44,14 @@ namespace client
     if( initFlags & INIT_RENDER_LOAD ) {
       render.unload();
     }
+    if( initFlags & INIT_CONTEXT_LOAD ) {
+      context.unload();
+    }
     if( initFlags & INIT_GAME_LOAD ) {
       stage->unload();
     }
     if( initFlags & INIT_GAME_INIT ) {
       stage->free();
-    }
-    if( initFlags & INIT_CONTEXT_LOAD ) {
-      context.unload();
     }
     if( initFlags & INIT_CONTEXT_INIT ) {
       context.free();
@@ -181,11 +181,9 @@ namespace client
                  "benchmarking purposes." );
     log.println();
     log.unindent();
-
-    exit( 0 );
   }
 
-  void Main::main( int* argc, char** argv )
+  int Main::main( int* argc, char** argv )
   {
     initFlags = 0;
     String rcDir;
@@ -196,6 +194,7 @@ namespace client
     for( int i = 1; i < *argc; ++i ) {
       if( String::equals( argv[i], "--help" ) ) {
         printUsage();
+        return -1;
       }
       else if( String::equals( argv[i], "--time" ) || String::equals( argv[i], "-t" ) ) {
         if( i + 1 < *argc ) {
@@ -228,13 +227,14 @@ namespace client
         log.println( "Invalid command-line option '%s'", argv[i] );
         log.println();
         printUsage();
+        return -1;
       }
     }
 
     log.print( "Initialising SDL ..." );
     if( SDL_Init( SDL_INIT_NOPARACHUTE ) != 0 ) {
       log.printEnd( " Failed" );
-      return;
+      return -1;
     }
     log.printEnd( " OK" );
     initFlags |= INIT_SDL;
@@ -262,7 +262,7 @@ namespace client
       if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
 #endif
         printf( " Failed\n" );
-        return;
+        return -1;
       }
       printf( " OK\n" );
     }
@@ -321,7 +321,7 @@ namespace client
     }
     if( SDL_InitSubSystem( SDL_INIT_VIDEO ) != 0 || SDLNet_Init() != 0 ) {
       log.printEnd( " Failed" );
-      return;
+      return -1;
     }
     ui::keyboard.init();
     log.printEnd( " OK" );
@@ -331,7 +331,7 @@ namespace client
     log.print( "Setting working directory to data directory '%s' ...", data );
     if( chdir( data ) != 0 ) {
       log.printEnd( " Failed" );
-      return;
+      return -1;
     }
     log.printEnd( " OK" );
 
@@ -350,14 +350,14 @@ namespace client
         SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull ) == 0 )
     {
       log.printEnd( " Mode not supported" );
-      return;
+      return -1;
     }
 
     initFlags |= INIT_SDL_VIDEO;
     SDL_Surface* surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
     if( surface == null ) {
       log.printEnd( " Failed" );
-      return;
+      return -1;
     }
 
     screenX   = surface->w;
@@ -385,9 +385,6 @@ namespace client
     initFlags |= INIT_CONTEXT_INIT;
     context.init();
 
-    initFlags |= INIT_CONTEXT_LOAD;
-    context.load();
-
     stage = &gameStage;
 
     initFlags |= INIT_GAME_INIT;
@@ -395,6 +392,9 @@ namespace client
 
     initFlags |= INIT_GAME_LOAD;
     stage->load();
+
+    initFlags |= INIT_CONTEXT_LOAD;
+    context.load();
 
     initFlags |= INIT_RENDER_LOAD;
     render.load();
@@ -540,6 +540,8 @@ namespace client
       config.save( configPath );
       config.add( "dir.rc", rcDir );
     }
+
+    return 0;
   }
 
 }

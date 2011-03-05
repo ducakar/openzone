@@ -12,6 +12,7 @@
 #include "matrix/QBSP.hpp"
 
 #include "matrix/Timer.hpp"
+#include "matrix/Translator.hpp"
 
 namespace oz
 {
@@ -283,8 +284,13 @@ namespace oz
         models[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
         models[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
 
-        models[i].ratioInc = bspConfig.get( keyName + ".ratioInc", Timer::TICK_TIME );
-        models[i].flags = 0;
+        models[i].ratioInc = Timer::TICK_TIME / bspConfig.get( keyName + ".slideTime", 1.0f );
+        models[i].flags    = 0;
+        models[i].margin   = bspConfig.get( keyName + ".margin", 1.0f );
+        models[i].timeout  = bspConfig.get( keyName + ".timeout", 6.0f );
+
+        models[i].openSample  = bspConfig.get( keyName + ".openSample", "" );
+        models[i].closeSample = bspConfig.get( keyName + ".closeSample", "" );
 
         String type = bspConfig.get( keyName + ".type", "BLOCKING" );
         if( type.equals( "IGNORING" ) ) {
@@ -299,17 +305,16 @@ namespace oz
         else if( type.equals( "CRUSHING" ) ) {
           models[i].type = Model::CRUSHING;
         }
+        else if( type.equals( "AUTO_DOOR" ) ) {
+          models[i].type = Model::AUTO_DOOR;
+        }
         else {
-          log.println( "invalid BSP entity type, should be either IGNORING, BLOCKING, PUSHING or "
-              "CRUSHING" );
+          log.println( "invalid BSP entity type, should be either IGNORING, BLOCKING, PUSHING, "
+              "CRUSHING or AUTO_DOOR" );
           delete[] texFlags;
           delete[] texTypes;
           return false;
         }
-
-        models[i].margin = bspConfig.get( keyName + ".margin", 1.0f );
-        models[i].slideTime = 1.0f;
-        models[i].timeout = 5.0f;
       }
     }
 
@@ -902,8 +907,9 @@ namespace oz
       os.writeInt( models[i].flags );
       os.writeInt( int( models[i].type ) );
       os.writeFloat( models[i].margin );
-      os.writeFloat( models[i].slideTime );
       os.writeFloat( models[i].timeout );
+      os.writeString( models[i].openSample );
+      os.writeString( models[i].closeSample );
     }
 
     buffer.write( path, os.length() );

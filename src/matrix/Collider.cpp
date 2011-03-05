@@ -245,7 +245,7 @@ namespace oz
         foreach( sObj, cell.objects.citer() ) {
           if( sObj->overlaps( trace ) ) {
             startPos = str->toStructCS( sObj->p ) - entity->offset;
-            aabb.dim = sObj->dim;
+            aabb.dim = sObj->dim + Vec3( margin, margin, margin );
 
             for( int i = 0; i < model->nBrushes; ++i ) {
               const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
@@ -732,14 +732,9 @@ namespace oz
     }
   }
 
-  void Collider::getEntityOverlaps( Vector<Object*>* objects, float margin )
+  void Collider::getEntityOverlaps( Vector<Object*>* objects )
   {
     hard_assert( objects != null );
-
-    Vec3 dimMargin = Vec3( margin, margin, margin );
-
-    trace.mins -= dimMargin;
-    trace.maxs += dimMargin;
 
     for( int x = span.minX; x <= span.maxX; ++x ) {
       for( int y = span.minY; y <= span.maxY; ++y ) {
@@ -748,7 +743,7 @@ namespace oz
         foreach( sObj, cell.objects.iter() ) {
           if( ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
             startPos = str->toStructCS( sObj->p ) - entity->offset;
-            aabb.dim = sObj->dim + dimMargin;
+            aabb.dim = sObj->dim + Vec3( margin, margin, margin );
 
             for( int i = 0; i < model->nBrushes; ++i ) {
               const BSP::Brush& brush = bsp->brushes[model->firstBrush + i];
@@ -826,14 +821,18 @@ namespace oz
     return overlapsAABBOrbisOSO();
   }
 
-  bool Collider::overlapsOO( const Struct::Entity* entity_ )
+  bool Collider::overlapsOO( const Struct::Entity* entity_, float margin_ )
   {
     str = entity_->str;
     entity = entity_;
     bsp = entity_->model->bsp;
     model = entity_->model;
+    margin = margin_;
 
-    trace = str->toAbsoluteCS( *model + entity->offset );
+    Bounds bounds = Bounds( model->mins - Vec3( margin, margin, margin ) + entity->offset,
+                            model->maxs + Vec3( margin, margin, margin ) + entity->offset );
+
+    trace = str->toAbsoluteCS( bounds );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsEntityOrbisOO();
@@ -874,17 +873,21 @@ namespace oz
   }
 
   void Collider::getOverlaps( const Struct::Entity* entity_, Vector<Object*>* objects,
-                              float margin )
+                              float margin_ )
   {
     str = entity_->str;
     entity = entity_;
     bsp = entity_->model->bsp;
     model = entity_->model;
+    margin = margin_;
 
-    trace = str->toAbsoluteCS( *model + entity->offset );
-    span = orbis.getInters( trace, AABB::MAX_DIM + margin );
+    Bounds bounds = Bounds( model->mins - Vec3( margin, margin, margin ) + entity->offset,
+                            model->maxs + Vec3( margin, margin, margin ) + entity->offset );
 
-    getEntityOverlaps( objects, margin );
+    trace = str->toAbsoluteCS( bounds );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    getEntityOverlaps( objects );
   }
 
   void Collider::translate( const Point3& point, const Vec3& move_, const Object* exclObj_ )
