@@ -351,6 +351,10 @@ namespace oz
       {}
 
       OZ_ALWAYS_INLINE
+      explicit Quat( const Vec3& v, float w_ ) : Vec3( v ), w( w_ )
+      {}
+
+      OZ_ALWAYS_INLINE
       explicit Quat( const float* q ) : Vec3( q[0], q[1], q[2] ), w( q[3] )
       {}
 

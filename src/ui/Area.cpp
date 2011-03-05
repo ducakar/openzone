@@ -9,6 +9,8 @@
 
 #include "stable.hpp"
 
+#include "client/Shape.hpp"
+
 #include "ui/Area.hpp"
 
 #include <SDL_ttf.h>
@@ -70,7 +72,7 @@ namespace ui
     x = x < 0 ? this->x + this->width  + x : this->x + x;
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
-    glRecti( x, y, x + width, y + height );
+    shape.fill( x, y, width, height );
   }
 
   void Area::rect( int x, int y, int width, int height ) const
@@ -78,12 +80,7 @@ namespace ui
     x = x < 0 ? this->x + this->width + x  : this->x + x;
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
-    glBegin( GL_LINE_LOOP );
-      glVertex2f( float( x         ) + 0.5f, float( y          ) + 0.5f );
-      glVertex2f( float( x + width ) - 0.5f, float( y          ) + 0.5f );
-      glVertex2f( float( x + width ) - 0.5f, float( y + height ) - 0.5f );
-      glVertex2f( float( x         ) + 0.5f, float( y + height ) - 0.5f );
-    glEnd();
+    shape.rect( x, y, width, height );
   }
 
   void Area::print( int x, int y, const char* s, ... )

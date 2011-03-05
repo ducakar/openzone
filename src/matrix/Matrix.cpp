@@ -124,7 +124,7 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    orbis.sky.heading = 205.0f;
+    orbis.sky.heading = Math::TAU / 16;
     orbis.sky.period = 1440.0f;
     orbis.sky.time = 180.0f;
 

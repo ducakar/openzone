@@ -150,6 +150,7 @@ namespace ui
 
     glPopMatrix();
 
+    shape.bindVertexArray();
     shader.use( Shader::UI );
     glEnable( GL_BLEND );
 
@@ -170,16 +171,7 @@ namespace ui
       if( taggedItem->flags & Object::USE_FUNC_BIT ) {
         glUniform1i( param.oz_IsTextureEnabled, true );
         glBindTexture( useTexId );
-        glBegin( GL_QUADS );
-          glTexCoord2i( 0, 1 );
-          glVertex2i( x + width - ICON_SIZE - 4, y + 4 );
-          glTexCoord2i( 1, 1 );
-          glVertex2i( x + width - 4, y + 4 );
-          glTexCoord2i( 1, 0 );
-          glVertex2i( x + width - 4, y + ICON_SIZE + 4 );
-          glTexCoord2i( 0, 0 );
-          glVertex2i( x + width - ICON_SIZE - 4, y + ICON_SIZE + 4 );
-        glEnd();
+        shape.fill( x + width - ICON_SIZE - 4, y + 4, ICON_SIZE, ICON_SIZE );
         glUniform1i( param.oz_IsTextureEnabled, false );
       }
 

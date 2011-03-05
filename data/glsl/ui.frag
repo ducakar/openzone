@@ -6,10 +6,12 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
+varying vec2 outTexCoord;
+
 void main()
 {
   if( oz_IsTextureEnabled != 0 ) {
-    gl_FragColor = texture2D( oz_Textures[0], gl_TexCoord[0].st );
+    gl_FragColor = texture2D( oz_Textures[0], outTexCoord );
   }
   else {
     gl_FragColor = gl_Color;

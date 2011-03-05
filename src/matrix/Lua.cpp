@@ -256,7 +256,7 @@ namespace oz
     float dx = lua.str->p.x - lua.self->p.x;
     float dy = lua.str->p.y - lua.self->p.y;
     float dz = lua.str->p.z - lua.self->p.z;
-    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) );
+    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
     lua_pushnumber( l, angle );
     return 1;
@@ -597,7 +597,7 @@ namespace oz
     float dx = lua.obj->p.x - lua.self->p.x;
     float dy = lua.obj->p.y - lua.self->p.y;
     float dz = lua.obj->p.z - lua.self->p.z;
-    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) );
+    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
     lua_pushnumber( l, angle );
     return 1;
@@ -620,7 +620,7 @@ namespace oz
     float dx = lua.obj->p.x - bot->p.x;
     float dy = lua.obj->p.y - bot->p.y;
     float dz = lua.obj->p.z - bot->p.z - bot->camZ;
-    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) );
+    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
     lua_pushnumber( l, angle );
     return 1;

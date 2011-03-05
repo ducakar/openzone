@@ -34,9 +34,16 @@ namespace client
 
       void bindVertexArray() const;
 
-      static void drawSprite( const Point3& p, float dimX, float dimY );
-      static void drawBox( const AABB& bb );
-      static void drawWireBox( const AABB& bb );
+      static void fill( float x, float y, float width, float height );
+      static void fill( int x, int y, int width, int height );
+      static void rect( float x, float y, float width, float height );
+      static void rect( int x, int y, int width, int height );
+      static void tag( float minX, float minY, float maxX, float maxY );
+
+      static void quad( float dimX, float dimY );
+      static void sprite( const Point3& p, float dimX, float dimY );
+      static void box( const AABB& bb );
+      static void wireBox( const AABB& bb );
       static void draw( const Particle* part );
 
       void load();

@@ -21,7 +21,7 @@ namespace oz
   // plants/m2
   const float FloraManager::DENSITY = 0.04f;
   // dim * SPACING
-  const float FloraManager::SPACING = 8.0f;
+  const float FloraManager::SPACING = 6.0f;
   // plants/m2/s
   const float FloraManager::GROWTH =  0.0001f;
 

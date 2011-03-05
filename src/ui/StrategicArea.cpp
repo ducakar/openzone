@@ -15,6 +15,8 @@
 
 #include "client/Camera.hpp"
 #include "client/Colours.hpp"
+#include "client/Shape.hpp"
+
 #include "ui/Keyboard.hpp"
 
 #include <SDL_ttf.h>
@@ -74,21 +76,6 @@ namespace ui
     span.maxY = min( span.maxY, camera.height - 2 );
 
     return span;
-  }
-
-  void StrategicArea::fillRect( float x, float y, float width, float height )
-  {
-    glRectf( x, y, x + width, y + height );
-  }
-
-  void StrategicArea::drawRect( float x, float y, float width, float height )
-  {
-    glBegin( GL_LINE_LOOP );
-      glVertex2f( x         + 0.5f, y          + 0.5f );
-      glVertex2f( x + width - 0.5f, y          + 0.5f );
-      glVertex2f( x + width - 0.5f, y + height - 0.5f );
-      glVertex2f( x         + 0.5f, y + height - 0.5f );
-    glEnd();
   }
 
   void StrategicArea::printName( int baseX, int baseY, const char* s, ... )
@@ -162,6 +149,7 @@ namespace ui
     float life = ( hovered->flags & Object::BOT_BIT ) ?
         max( 0.0f, ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
         hovered->life / clazz->life;
+
     float barWidth = maxX - minX + 2.0f;
     float lifeWidth = life * barWidth;
     float lifeWidthLeft = barWidth - lifeWidth;
@@ -169,12 +157,12 @@ namespace ui
     hard_assert( 0.0f <= life && life <= 1.0f );
 
     glColor4f( 1.0f - life, life, 0.0f, 1.0f );
-    fillRect( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
+    shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
     glColor4f( 0.0f, 0.0f, 0.0f, 0.2f );
-    fillRect( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
+    shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-    drawRect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
+    shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
   }
 
   void StrategicArea::drawTaggedRect( const Object* obj, const Span& span )
@@ -196,12 +184,12 @@ namespace ui
       hard_assert( 0.0f <= life && life <= 1.0f );
 
       glColor4f( 1.0f - life, life, 0.0f, 0.5f );
-      fillRect( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
+      shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
       glColor4f( 0.0f, 0.0f, 0.0f, 0.2f );
-      fillRect( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
+      shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
       glColor4f( 1.0f, 1.0f, 1.0f, 0.5f );
-      drawRect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
+      shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
 
       String description;
       if( obj->flags & Object::BOT_BIT ) {
@@ -217,27 +205,7 @@ namespace ui
     }
 
     glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
-    glBegin( GL_LINES );
-      glVertex2f( minX - 1.5f, minY - 1.5f );
-      glVertex2f( minX - 1.5f, minY + 3.5f );
-      glVertex2f( minX - 0.5f, minY - 1.5f );
-      glVertex2f( minX + 3.5f, minY - 1.5f );
-
-      glVertex2f( maxX + 1.5f, minY - 1.5f );
-      glVertex2f( maxX - 3.5f, minY - 1.5f );
-      glVertex2f( maxX + 1.5f, minY - 0.5f );
-      glVertex2f( maxX + 1.5f, minY + 3.5f );
-
-      glVertex2f( maxX + 1.5f, maxY + 1.5f );
-      glVertex2f( maxX - 3.5f, maxY + 1.5f );
-      glVertex2f( maxX + 1.5f, maxY + 0.5f );
-      glVertex2f( maxX + 1.5f, maxY - 3.5f );
-
-      glVertex2f( minX - 1.5f, maxY + 1.5f );
-      glVertex2f( minX + 3.5f, maxY + 1.5f );
-      glVertex2f( minX - 1.5f, maxY + 0.5f );
-      glVertex2f( minX - 1.5f, maxY - 3.5f );
-    glEnd();
+    shape.tag( minX, minY, maxX, maxY );
   }
 
   StrategicArea::StrategicArea() : Area( camera.width, camera.height ), leftClick( false )

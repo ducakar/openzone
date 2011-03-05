@@ -41,14 +41,11 @@ namespace client
 
   const float Sky::STAR_DIM       = 0.10f;
 
-  void Sky::load()
+  void Sky::prebuild( const char* name )
   {
-    axis = Vec3( -Math::sin( orbis.sky.heading ), Math::cos( orbis.sky.heading ), 0.0f );
-    originalLightDir = Vec3( -Math::cos( orbis.sky.heading ), -Math::sin( orbis.sky.heading ), 0.0f );
+    log.println( "Prebuilding sky '%s' ...", name );
 
     DArray<Point3> positions( MAX_STARS );
-    DArray<ushort> indices( MAX_STARS * 18 );
-    DArray<Vertex> vertices( MAX_STARS * 6 );
 
     for( int i = 0; i < MAX_STARS; ++i ) {
       float length;
@@ -58,57 +55,71 @@ namespace client
                                200.0f * Math::frand() - 100.0f );
         length = ( positions[i] - Point3::ORIGIN ).sqL();
       }
-      while( Math::isNaN( length ) || length < 1600.0f || length > 10000.0f );
+      while( Math::isNaN( length ) || length < 2500.0f || length > 10000.0f );
     }
 
-    ushort* index     = indices;
-    Vertex* vertex    = vertices;
-    int     vertIndex = 0;
+    OutputStream os = buffer.outputStream();
 
     for( int i = 0; i < MAX_STARS; ++i ) {
-      index[ 0] = ushort( vertIndex + 0 );
-      index[ 1] = ushort( vertIndex + 0 );
-      index[ 2] = ushort( vertIndex + 1 );
-      index[ 3] = ushort( vertIndex + 4 );
-      index[ 4] = ushort( vertIndex + 5 );
-      index[ 5] = ushort( vertIndex + 5 );
+      Vec3 z = ~( Point3::ORIGIN - positions[i] );
+      Vec3 x = ~Vec3( z.z, 0.0f, -z.x );
+      Vec3 y = z ^ x;
 
-      index[ 6] = ushort( vertIndex + 0 );
-      index[ 7] = ushort( vertIndex + 0 );
-      index[ 8] = ushort( vertIndex + 2 );
-      index[ 9] = ushort( vertIndex + 3 );
-      index[10] = ushort( vertIndex + 5 );
-      index[11] = ushort( vertIndex + 5 );
+      Mat44 rot = Mat44( x, y, z, Vec3::ZERO );
+      Vertex vertex;
 
-      index[12] = ushort( vertIndex + 1 );
-      index[13] = ushort( vertIndex + 1 );
-      index[14] = ushort( vertIndex + 2 );
-      index[15] = ushort( vertIndex + 3 );
-      index[16] = ushort( vertIndex + 4 );
-      index[17] = ushort( vertIndex + 4 );
+      vertex.set( positions[i] + rot * Vec3( -STAR_DIM, 0.0f, 0.0f ) );
+      vertex.write( &os );
 
-      index += 18;
-      vertIndex += 6;
+      vertex.set( positions[i] + rot * Vec3( 0.0f, -STAR_DIM, 0.0f ) );
+      vertex.write( &os );
+
+      vertex.set( positions[i] + rot * Vec3( +STAR_DIM, 0.0f, 0.0f ) );
+      vertex.write( &os );
+
+      vertex.set( positions[i] + rot * Vec3( 0.0f, +STAR_DIM, 0.0f ) );
+      vertex.write( &os );
     }
 
-    for( int i = 0; i < MAX_STARS; ++i ) {
-      vertex[0].set( positions[i] + Vec3( -STAR_DIM, 0.0f, 0.0f ) );
-      vertex[1].set( positions[i] + Vec3( 0.0f, -STAR_DIM, 0.0f ) );
-      vertex[2].set( positions[i] + Vec3( 0.0f, 0.0f, -STAR_DIM ) );
-      vertex[3].set( positions[i] + Vec3( 0.0f, 0.0f, +STAR_DIM ) );
-      vertex[4].set( positions[i] + Vec3( 0.0f, +STAR_DIM, 0.0f ) );
-      vertex[5].set( positions[i] + Vec3( +STAR_DIM, 0.0f, 0.0f ) );
+    int nMipmaps;
+    uint texId = context.loadRawTexture( "sky/simplesun.png", &nMipmaps, false,
+                                         GL_LINEAR, GL_LINEAR );
+    context.writeTexture( texId, nMipmaps, &os );
+    glDeleteTextures( 1, &texId );
 
-      vertex += 6;
+    texId = context.loadRawTexture( "sky/moon18.png", &nMipmaps, false, GL_LINEAR, GL_LINEAR );
+    context.writeTexture( texId, nMipmaps, &os );
+    glDeleteTextures( 1, &texId );
+
+    buffer.write( "sky/" + String( name ) + ".ozcSky", os.length() );
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+
+    log.println( "}" );
+  }
+
+  void Sky::load( const char* name )
+  {
+    log.print( "Loading sky '%s' ...", name );
+
+    axis = Vec3( -Math::sin( orbis.sky.heading ), Math::cos( orbis.sky.heading ), 0.0f );
+    originalLightDir = Vec3( -Math::cos( orbis.sky.heading ), -Math::sin( orbis.sky.heading ), 0.0f );
+
+    DArray<Vertex> vertices(  MAX_STARS * 4 );
+
+    if( !buffer.read( "sky/" + String( name ) + ".ozcSky" ) ) {
+      log.printEnd( " Cannot open file" );
+      throw Exception( "Sky loading failed" );
+    }
+
+    InputStream is = buffer.inputStream();
+
+    for( int i = 0; i < MAX_STARS * 4; ++i ) {
+      vertices[i].read( &is );
     }
 
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
-
-    glGenBuffers( 1, &ibo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, ( indices.length() - 2 ) * sizeof( ushort ), indices,
-                  GL_STATIC_DRAW );
 
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -123,12 +134,16 @@ namespace client
 
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
+    sunTexId  = context.readTexture( &is );
+    moonTexId = context.readTexture( &is );
+
+    vertices.dealloc();
+
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    sunTexId  = context.loadRawTexture( "sky/simplesun.png", null, false, GL_LINEAR, GL_LINEAR );
-    moonTexId = context.loadRawTexture( "sky/moon18.png", null, false, GL_LINEAR, GL_LINEAR );
-
     update();
+
+    log.printEnd( " OK" );
   }
 
   void Sky::unload()
@@ -183,9 +198,7 @@ namespace client
     };
 
     // we need the transformation matrix for occlusion of stars below horizon
-    Mat44 transf = Mat44::rotZ( orbis.sky.heading ) * Mat44::rotY( angle );
-
-    glDisable( GL_CULL_FACE );
+    Mat44 transf = Mat44::rotZ( orbis.sky.heading ) * Mat44::rotY( angle - Math::TAU / 4.0f );
 
     glPushMatrix();
     glMultMatrixf( transf );
@@ -195,26 +208,43 @@ namespace client
     glBindVertexArray( vao );
 
     shader.use( Shader::STARS );
-    glUniform4f( param.oz_DiffuseMaterial, colour[0], colour[1], colour[2], colour[3] );
-    glDrawElements( GL_TRIANGLE_STRIP, MAX_STARS * 18 - 2, GL_UNSIGNED_SHORT, 0 );
+    glUniform4fv( param.oz_FogColour, 1, Colours::sky );
+    glUniform4fv( param.oz_DiffuseMaterial, 1, colour );
+    glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );
 
     shape.bindVertexArray();
 
     shader.use( Shader::UI );
     glEnable( GL_BLEND );
+    glUniform1i( param.oz_IsTextureEnabled, true );
 
     glColor3f( 2.0f * Colours::diffuse[0] + Colours::ambient[0],
                Colours::diffuse[1] + Colours::ambient[1],
                Colours::diffuse[2] + Colours::ambient[2] );
     glBindTexture( sunTexId );
 
-    shape.drawSprite( Point3( -15.0f, 0.0f, 0.0f ), 1.0f, 1.0f );
+    glDisable( GL_CULL_FACE );
+
+    glPushMatrix();
+    glTranslatef( 0.0f, 0.0f, 15.0f );
+//     glMultMatrixf( ~transf );
+
+    shape.quad( 1.0f, 1.0f );
+
+    glPopMatrix();
 
     glColor4fv( Colours::WHITE );
     glBindTexture( moonTexId );
 
-    shape.drawSprite( Point3( 15.0f, 0.0f, 0.0f ), 1.0f, 1.0f );
+    glPushMatrix();
+    glTranslatef( 0.0f, 0.0f, -15.0f );
+//     glMultMatrixf( ~transf );
 
+    shape.quad( 1.0f, 1.0f );
+
+    glPopMatrix();
+
+    glUniform1i( param.oz_IsTextureEnabled, false );
     glDisable( GL_BLEND );
 
     glPopMatrix();

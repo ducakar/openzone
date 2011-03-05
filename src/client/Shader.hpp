@@ -62,6 +62,7 @@ namespace client
         TERRA,
         TERRA_WATER,
         STARS,
+        PARTICLES,
         MAX
       };
 

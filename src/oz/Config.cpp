@@ -16,11 +16,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-#ifdef OZ_XML_CONFIG
-#include <libxml/xmlreader.h>
-#include <libxml/xmlwriter.h>
-#endif
-
 namespace oz
 {
 
@@ -195,115 +190,6 @@ namespace oz
     log.printEnd( " OK" );
     return true;
   }
-
-#ifdef OZ_XML_CONFIG
-  bool Config::loadXML( const char* file )
-  {
-    xmlTextReader* reader = xmlReaderForFile( file, null, 0 );
-
-    if( reader == null ) {
-      xmlCleanupParser();
-      log.println( "Error reading variables from '%s' ... Cannot open file", file );
-      return false;
-    }
-
-    int error = xmlTextReaderRead( reader );
-    while( error == 1 ) {
-      const char* name = String::cstr( xmlTextReaderConstName( reader ) );
-
-      // only check "var" nodes, ignore others
-      if( name != null && String::equals( name, "var" ) ) {
-        xmlChar* key = xmlTextReaderGetAttribute( reader, String::ubytestr( "name" ) );
-        xmlChar* value = xmlTextReaderGetAttribute( reader, String::ubytestr( "value" ) );
-
-        // error if "var" tag doesn't has "name" and "value" attributes
-        if( key == null || value == null ) {
-          xmlFree( key );
-          xmlFree( value );
-
-          error = -1;
-          break;
-        }
-        include( String::cstr( key ), String::cstr( value ) );
-
-        xmlFree( key );
-        xmlFree( value );
-      }
-      error = xmlTextReaderRead( reader );
-    }
-    xmlFreeTextReader( reader );
-    xmlCleanupParser();
-
-    if( error != 0 ) {
-      log.println( "Error reading variables from '%s' ... Parse error", file );
-      return false;
-    }
-    return true;
-  }
-
-  bool Config::saveXML( const char* file )
-  {
-    log.print( "Writing variables to '%s' ...", file );
-
-    // first we sort all the variables by key
-    int size = vars.length();
-    DArray<Elem> sortedVars( size );
-
-    int i = 0;
-    foreach( j, vars.citer() ) {
-      sortedVars[i].key = j.key().cstr();
-      sortedVars[i].value = j.value().cstr();
-      ++i;
-    }
-    sortedVars.sort();
-
-    xmlTextWriter* writer = xmlNewTextWriterFilename( file, 0 );
-
-    if( writer == null ) {
-      xmlCleanupParser();
-      log.printEnd( " Cannot open file" );
-      return false;
-    }
-
-    if( xmlTextWriterStartDocument( writer, null, "UTF-8", null ) < 0 ||
-        xmlTextWriterStartElement( writer, String::ubytestr( "config" ) ) < 0 )
-    {
-      xmlFreeTextWriter( writer );
-      xmlCleanupParser();
-      log.printEnd( " Write error" );
-      return false;
-    }
-
-    for( int i = 0; i < size; ++i ) {
-      if( xmlTextWriterWriteString( writer, String::ubytestr( "\n  " ) ) < 0 ||
-          xmlTextWriterStartElement( writer, String::ubytestr( "var" ) ) < 0 ||
-          xmlTextWriterWriteAttribute( writer, String::ubytestr( "name" ),
-                                       String::ubytestr( sortedVars[i].key ) ) < 0 ||
-          xmlTextWriterWriteAttribute( writer, String::ubytestr( "value" ),
-                                       String::ubytestr( sortedVars[i].value ) ) < 0 ||
-          xmlTextWriterEndElement( writer ) < 0 )
-      {
-        xmlFreeTextWriter( writer );
-        xmlCleanupParser();
-        log.printEnd( " Write error" );
-        return false;
-      }
-    }
-    if( xmlTextWriterWriteString( writer, String::ubytestr( "\n" ) ) < 0 ||
-        xmlTextWriterEndElement( writer ) < 0 ||
-        xmlTextWriterEndDocument( writer ) < 0 )
-    {
-      xmlFreeTextWriter( writer );
-      xmlCleanupParser();
-      log.printEnd( " Write error" );
-      return false;
-    }
-    xmlFreeTextWriter( writer );
-    xmlCleanupParser();
-    log.printEnd( " OK" );
-    return true;
-  }
-#endif
 
   bool Config::get( const char* name, bool defVal ) const
   {
@@ -509,11 +395,6 @@ namespace oz
       if( String::equals( suffix, ".rc" ) ) {
         return loadConf( file );
       }
-#ifdef OZ_XML_CONFIG
-      else if( String::equals( suffix, ".xml" ) ) {
-        return loadXML( file );
-      }
-#endif
     }
 
     log.println( "Unknown configuration file %s", file );
@@ -528,11 +409,6 @@ namespace oz
       if( String::equals( suffix, ".rc" ) ) {
         return saveConf( file );
       }
-#ifdef OZ_XML_CONFIG
-      else if( String::equals( suffix, ".xml" ) ) {
-        return saveXML( file );
-      }
-#endif
     }
 
     log.println( "Unknown configuration file %s", file );

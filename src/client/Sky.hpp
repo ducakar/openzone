@@ -34,7 +34,7 @@ namespace client
       static const float STAR_COLOUR[4];
 
       static const float STAR_DIM;
-      static const int   MAX_STARS = 2048;
+      static const int   MAX_STARS = 4096;
 
       uint   vao;
       uint   ibo;
@@ -52,7 +52,9 @@ namespace client
 
       Vec3   lightDir;
 
-      void load();
+      static void prebuild( const char* name );
+
+      void load( const char* name );
       void unload();
 
       void update();

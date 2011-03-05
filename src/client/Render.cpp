@@ -153,6 +153,24 @@ namespace client
     glLoadIdentity();
     glMultMatrixf( camera.rotTMat );
 
+    // set shaders
+    Shader::Program programs[] = {
+      Shader::MESH_NEAR,
+      Shader::MESH_FAR,
+      Shader::TERRA,
+      Shader::PARTICLES
+    };
+    foreach( shId, citer( programs, 4 ) ) {
+      shader.use( *shId );
+
+      shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
+      shader.setSkyLight( camera.rotTMat * sky.lightDir, Colours::diffuse );
+      shader.updateLights();
+
+      glUniform4fv( param.oz_FogColour, 1, clearColour );
+      glUniform1f( param.oz_FogDistance, visibility );
+    }
+
     currentTime = SDL_GetTicks();
     timer.renderScheduleMillis += currentTime - beginTime;
     beginTime = currentTime;
@@ -169,34 +187,7 @@ namespace client
 
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
-    // set shaders
-    Shader::Program programs[] = { Shader::MESH_NEAR, Shader::MESH_FAR, Shader::TERRA };
-    foreach( shId, citer( programs, 3 ) ) {
-      shader.use( *shId );
-
-      shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
-      shader.setSkyLight( camera.rotTMat * sky.lightDir, Colours::diffuse );
-      shader.updateLights();
-
-      glUniform4fv( param.oz_FogColour, 1, clearColour );
-      glUniform1f( param.oz_FogDistance, visibility );
-    }
-
-    terra.draw();
-
-    currentTime = SDL_GetTicks();
-    timer.renderTerraMillis += currentTime - beginTime;
-    beginTime = currentTime;
-
     // draw structures
-    shader.use( Shader::MESH_FAR );
-
-    for( int i = 0; i < firstNearStruct; ++i ) {
-      const Struct* str = structs[i].str;
-
-      context.drawBSP( str, Mesh::SOLID_BIT );
-    }
-
     shader.use( Shader::MESH_NEAR );
 
     for( int i = firstNearStruct; i < structs.length(); ++i ) {
@@ -205,8 +196,23 @@ namespace client
       context.drawBSP( str, Mesh::SOLID_BIT );
     }
 
+    shader.use( Shader::MESH_FAR );
+
+    for( int i = 0; i < firstNearStruct; ++i ) {
+      const Struct* str = structs[i].str;
+
+      context.drawBSP( str, Mesh::SOLID_BIT );
+    }
+
     currentTime = SDL_GetTicks();
     timer.renderStructsMillis += currentTime - beginTime;
+    beginTime = currentTime;
+
+    shader.use( Shader::TERRA );
+    terra.draw();
+
+    currentTime = SDL_GetTicks();
+    timer.renderTerraMillis += currentTime - beginTime;
     beginTime = currentTime;
 
     // draw objects
@@ -261,6 +267,8 @@ namespace client
     // draw particles
     glEnable( GL_BLEND );
 
+    shader.use( Shader::PARTICLES );
+
     shape.bindVertexArray();
 
     for( int i = 0; i < particles.length(); ++i ) {
@@ -273,6 +281,8 @@ namespace client
 
       glPopMatrix();
     }
+
+    glDisable( GL_BLEND );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -304,8 +314,6 @@ namespace client
     shader.use( Shader::TERRA );
     terra.drawWater();
 
-    glDisable( GL_BLEND );
-
     currentTime = SDL_GetTicks();
     timer.renderTerraMillis += currentTime - beginTime;
     beginTime = currentTime;
@@ -320,14 +328,15 @@ namespace client
       move *= collider.hit.ratio;
 
       glColor3f( 0.0f, 1.0f, 0.0f );
-      shape.drawBox( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
+      shape.box( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
     }
 
     if( showBounds ) {
       for( int i = 0; i < objects.length(); ++i ) {
         glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
             Colours::CLIP_AABB : Colours::NOCLIP_AABB );
-        shape.drawWireBox( *objects[i].obj );
+        shape.wireBox( *objects[i].obj );
+        hard_assert( glGetError() == GL_NO_ERROR );
       }
 
       glColor4fv( Colours::STRUCTURE_AABB );
@@ -339,11 +348,13 @@ namespace client
 
         foreach( entity, citer( str->entities, str->nEntities ) ) {
           Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
-          shape.drawWireBox( bb.toAABB() );
+          shape.wireBox( bb.toAABB() );
+          hard_assert( glGetError() == GL_NO_ERROR );
         }
 
         glColor4fv( Colours::STRUCTURE_AABB );
-        shape.drawWireBox( str->toAABB() );
+        shape.wireBox( str->toAABB() );
+        hard_assert( glGetError() == GL_NO_ERROR );
       }
     }
 
@@ -395,7 +406,7 @@ namespace client
     frustum.init();
     water.init();
     shape.load();
-    sky.load();
+    sky.load( "sky" );
     terra.load();
 
     structs.alloc( 64 );
@@ -512,8 +523,13 @@ namespace client
     objectNearDist2      *= objectNearDist2;
 
     glEnable( GL_CULL_FACE );
-    glDepthFunc( GL_LEQUAL );
+    glDepthFunc( GL_LESS );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+    glActiveTexture( GL_TEXTURE1 );
+    glEnable( GL_TEXTURE_2D );
+    glActiveTexture( GL_TEXTURE0 );
+    glEnable( GL_TEXTURE_2D );
 
     shader.init();
     camera.init();

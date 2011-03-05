@@ -177,7 +177,7 @@ namespace client
 
     uint texId;
     glGenTextures( 1, &texId );
-    glBindTexture( texId );
+    ::glBindTexture( GL_TEXTURE_2D, texId );
 
     int nMipmaps       = stream->readInt();
     int internalFormat = stream->readInt();
@@ -216,7 +216,7 @@ namespace client
 
   void Context::writeTexture( uint id, int nMipmaps, OutputStream* stream )
   {
-    glBindTexture( id );
+    ::glBindTexture( GL_TEXTURE_2D, id );
 
     int internalFormat, magFilter, minFilter, wrap;
     glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
