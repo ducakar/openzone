@@ -103,8 +103,13 @@ namespace oz
       models[i].flags = is.readInt();
       models[i].type = Model::Type( is.readInt() );
       models[i].margin = is.readFloat();
-      models[i].slideTime = is.readFloat();
       models[i].timeout = is.readFloat();
+
+      const char* sOpenSample  = is.readString();
+      const char* sCloseSample = is.readString();
+
+      models[i].openSample  = sOpenSample[0]  == '\0' ? -1 : translator.soundIndex( sOpenSample );
+      models[i].closeSample = sCloseSample[0] == '\0' ? -1 : translator.soundIndex( sCloseSample );
     }
 
     return true;

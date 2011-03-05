@@ -51,7 +51,8 @@ namespace oz
           IGNORING,
           BLOCKING,
           PUSHING,
-          CRUSHING
+          CRUSHING,
+          AUTO_DOOR
         };
 
         static const int AUTOMATIC_BIT = 0x00000001;
@@ -69,8 +70,10 @@ namespace oz
         Type  type;
 
         float margin;
-        float slideTime;
         float timeout;
+
+        int   openSample;
+        int   closeSample;
       };
 
       int     id;

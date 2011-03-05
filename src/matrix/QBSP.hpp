@@ -51,24 +51,27 @@ namespace oz
           IGNORING,
           BLOCKING,
           PUSHING,
-          CRUSHING
+          CRUSHING,
+          AUTO_DOOR
         };
 
         static const int AUTOMATIC_BIT = 0x00000001;
         static const int LUA_BIT       = 0x00000002;
 
-        Vec3  move;
+        Vec3   move;
 
-        int   firstBrush;
-        int   nBrushes;
+        int    firstBrush;
+        int    nBrushes;
 
-        float ratioInc;
-        int   flags;
-        Type  type;
+        float  ratioInc;
+        int    flags;
+        Type   type;
 
-        float margin;
-        float slideTime;
-        float timeout;
+        float  margin;
+        float  timeout;
+
+        String openSample;
+        String closeSample;
       };
 
       float   life;

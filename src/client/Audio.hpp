@@ -22,11 +22,8 @@ namespace client
   {
     public:
 
-      static const int UPDATED_BIT = 0x00000001;
-
-    protected:
-
       static const float REFERENCE_DISTANCE;
+      static const int   UPDATED_BIT = 0x00000001;
 
     public:
 

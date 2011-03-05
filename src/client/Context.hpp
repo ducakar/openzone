@@ -35,6 +35,7 @@ namespace client
     friend class Render;
     friend class Sound;
     friend class Audio;
+    friend class BSP;
     friend class Loader;
 
     private:
@@ -137,9 +138,6 @@ namespace client
       uint requestSound( int id );
       void releaseSound( int id );
 
-      BSP* loadBSP( int id );
-      void freeBSP( int id );
-
       SMM* requestSMM( int id );
       void releaseSMM( int id );
 
@@ -150,6 +148,7 @@ namespace client
       void releaseMD3( int id );
 
       void drawBSP( const Struct* str, int mask );
+      void playBSP( const Struct* str );
 
       void drawModel( const Object* obj, const Model* parent );
       void playAudio( const Object* obj, const Audio* parent );

@@ -54,6 +54,8 @@ namespace oz
       const BSP::Model* model;
       const BSP* bsp;
 
+      float margin;
+
       SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
       /**
@@ -86,7 +88,7 @@ namespace oz
       void getOrbisOverlaps( Vector<Object*>* objects, Vector<Struct*>* structs );
       void getOrbisIncludes( Vector<Object*>* objects ) const;
       void touchOrbisOverlaps() const;
-      void getEntityOverlaps( Vector<Object*>* objects, float margin );
+      void getEntityOverlaps( Vector<Object*>* objects );
 
     public:
 
@@ -111,7 +113,7 @@ namespace oz
       bool overlapsOO( const AABB& aabb, const Object* exclObj = null );
       bool overlapsOSO( const AABB& aabb, const Object* exclObj = null );
 
-      bool overlapsOO( const Struct::Entity* entity );
+      bool overlapsOO( const Struct::Entity* entity, float margin = 0.0f );
 
       // fill given vectors with objects and structures overlapping with the AABB
       // if either vector is null the respecitve test is not performed

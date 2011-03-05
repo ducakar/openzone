@@ -26,7 +26,6 @@ namespace client
   void Audio::playSound( int sample, float volume, const Object* obj ) const
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
-    hard_assert( alGetError() == AL_NO_ERROR );
 
     uint srcId;
 
@@ -64,17 +63,10 @@ namespace client
   void Audio::playContSound( int sample, float volume, const Object* obj ) const
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
-    hard_assert( alGetError() == AL_NO_ERROR );
 
     Context::ContSource* contSource = context.contSources.find( obj->index );
 
-    if( contSource != null ) {
-      alSourcef( contSource->source, AL_GAIN, volume );
-      alSourcefv( contSource->source, AL_POSITION, obj->p );
-
-      contSource->isUpdated = true;
-    }
-    else {
+    if( contSource == null ) {
       uint srcId;
 
       alGenSources( 1, &srcId );
@@ -91,6 +83,12 @@ namespace client
       alSourcePlay( srcId );
 
       context.contSources.add( obj->index, Context::ContSource( srcId ) );
+    }
+    else {
+      alSourcef( contSource->source, AL_GAIN, volume );
+      alSourcefv( contSource->source, AL_POSITION, obj->p );
+
+      contSource->isUpdated = true;
     }
 
     hard_assert( alGetError() == AL_NO_ERROR );

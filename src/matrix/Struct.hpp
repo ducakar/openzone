@@ -53,10 +53,13 @@ namespace oz
 
         private:
 
+          static void ( Entity::* handlers[5] )();
+
           void updateIgnoring();
           void updateBlocking();
           void updatePushing();
           void updateCrushing();
+          void updateAutoDoor();
 
       };
 

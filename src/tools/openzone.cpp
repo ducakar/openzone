@@ -27,13 +27,15 @@ int main( int argc, char** argv )
     Alloc::printLeaks();
   } );
 
+  int exitCode = 0;
+
   printf( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
       "This is free software, and you are welcome to redistribute it\n"
       "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    client::main.main( &argc, argv );
+    exitCode = client::main.main( &argc, argv );
   }
   catch( const Exception& e ) {
     oz::log.resetIndent();
@@ -46,6 +48,8 @@ int main( int argc, char** argv )
       fprintf( stderr, "  in %s\n\n", e.function );
       fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
     }
+
+    exitCode = -1;
   }
   catch( const std::exception& e ) {
     oz::log.resetIndent();
@@ -56,9 +60,11 @@ int main( int argc, char** argv )
     if( oz::log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
+
+    exitCode = -1;
   }
 
   client::main.shutdown();
 
-  return 0;
+  return exitCode;
 }
