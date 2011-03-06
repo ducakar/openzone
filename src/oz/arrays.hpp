@@ -621,44 +621,6 @@ namespace oz
   }
 
   /**
-   * Find an element using bisection.
-   * Implementations of operator == and operator < must be provided as parameters.
-   * @param aSrc non-empty array
-   * @param value the key we are looking for
-   * @param count
-   * @param isLess operator < implementation
-   * @return index of requested element or -1 if not found
-   */
-  template <typename Type, typename Key, typename EqualComp, typename LessComp>
-  inline int aBisectFind( Type* aSrc, const Key& key, int count,
-                          const EqualComp& isEqual, const LessComp& isLess )
-  {
-    hard_assert( count >= 0 );
-
-    if( count == 0 ) {
-      return -1;
-    }
-
-    int a = 0;
-    int b = count;
-
-    // The algorithm ensures that ( a == 0 or data[a] <= key ) and ( b == count or key < data[b] ),
-    // so the key may only lie on position a or nowhere.
-    while( b - a > 1 ) {
-      int c = ( a + b ) / 2;
-
-      if( isLess( key, aSrc[c] ) ) {
-        b = c;
-      }
-      else {
-        a = c;
-      }
-    }
-
-    return isEqual( key, aSrc[a] ) ? a : -1;
-  }
-
-  /**
    * Find insert position for an element to be added using bisection.
    * Returns an index such that aSrc[index - 1] <= key && key < aSrc[index]. If all elements are
    * lesser, return count, if all elements are greater, return 0.
@@ -682,41 +644,6 @@ namespace oz
       int c = ( a + b ) / 2;
 
       if( key < aSrc[c] ) {
-        b = c;
-      }
-      else {
-        a = c;
-      }
-    }
-
-    return a + 1;
-  }
-
-  /**
-   * Find insert position for an element to be added using bisection.
-   * Returns an index such that aSrc[index - 1] <= key && key < aSrc[index]. If all elements are
-   * lesser, return count, if all elements are greater, return 0.
-   * Implementation of operator < must be provided as a parameter.
-   * @param aSrc
-   * @param value the key we are looking for
-   * @param count
-   * @param isLess operator < implementation
-   * @return index of least element greater than the key, or count if there's no such element
-   */
-  template <typename Type, typename Key, typename LessComp>
-  inline int aBisectPosition( Type* aSrc, const Key& key, int count, const LessComp& isLess )
-  {
-    hard_assert( count >= 0 );
-
-    int a = -1;
-    int b = count;
-
-    // The algorithm ensures that ( a == -1 or data[a] <= key ) and ( b == count or key < data[b] ),
-    // so the key may only lie on position a or nowhere.
-    while( b - a > 1 ) {
-      int c = ( a + b ) / 2;
-
-      if( isLess( key, aSrc[c] ) ) {
         b = c;
       }
       else {

@@ -13,7 +13,9 @@
 
 #include "matrix/Translator.hpp"
 
-#include <SDL_image.h>
+#ifdef OZ_BUILD_TOOLS
+# include <SDL_image.h>
+#endif
 
 namespace oz
 {
@@ -24,6 +26,7 @@ namespace oz
 
   const float Terra::DIM            = Terra::Quad::DIM * Terra::QUADS;
 
+#ifdef OZ_BUILD_TOOLS
   void Terra::buildTerraFrame()
   {
     for( int x = 0; x < QUADS; ++x ) {
@@ -125,6 +128,7 @@ namespace oz
 
     log.printEnd( " OK" );
   }
+#endif
 
   void Terra::load( int id_ )
   {

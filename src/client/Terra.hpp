@@ -49,7 +49,10 @@ namespace client
 
     public:
 
+#ifdef OZ_BUILD_TOOLS
       void prebuild( const char* name );
+#endif
+
       void load();
       void unload();
 

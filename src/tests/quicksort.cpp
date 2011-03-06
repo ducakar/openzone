@@ -269,10 +269,6 @@ void TQuickSortInc( T *a, int num_el )
 int main( int, char** )
 {
   oz::Alloc::isLocked = false;
-  onleave( []() {
-    oz::Alloc::isLocked = true;
-    oz::Alloc::printLeaks();
-  } );
 
   int array[MAX];
 
@@ -294,5 +290,8 @@ int main( int, char** )
   for( int i = 0; i < MAX; ++i ) {
     printf( "%d ", array[i] );
   }
+
+  oz::Alloc::isLocked = true;
+  oz::Alloc::printLeaks();
   return 0;
 }

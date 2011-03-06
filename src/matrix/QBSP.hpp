@@ -11,6 +11,8 @@
 
 #include "stable.hpp"
 
+#ifdef OZ_BUILD_TOOLS
+
 #include "matrix/common.hpp"
 
 namespace oz
@@ -110,3 +112,5 @@ namespace oz
   };
 
 }
+
+#endif

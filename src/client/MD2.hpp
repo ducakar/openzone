@@ -72,7 +72,9 @@ namespace client
       Vec3    weaponTransl;
       bool    isLoaded;
 
+#ifdef OZ_BUILD_TOOLS
       static void prebuild( const char* name );
+#endif
 
       explicit MD2( int id );
       ~MD2();

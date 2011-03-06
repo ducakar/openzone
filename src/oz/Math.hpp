@@ -18,10 +18,6 @@
 # include <cmath>
 #endif
 
-#ifdef OZ_MSVC
-# include <cfloat>
-#endif
-
 namespace oz
 {
 
@@ -79,8 +75,6 @@ namespace oz
 # else
         return __builtin_roundf( x );
 # endif
-#elif defined( OZ_MSVC )
-        return x < 0.0f ? ceilf( x - 0.5f ) : floorf( x + 0.5f );
 #else
         return roundf( x );
 #endif
@@ -95,8 +89,6 @@ namespace oz
 # else
         return __builtin_truncf( x );
 # endif
-#elif defined( OZ_MSVC )
-        return x < 0.0f ? ceilf( x ) : floorf( x );
 #else
         return truncf( x );
 #endif
@@ -259,8 +251,6 @@ namespace oz
       {
 #ifdef OZ_BUILTIN_MATH
         return __builtin_isnan( x );
-#elif defined( OZ_MSVC )
-        return _isnan( x ) != 0;
 #else
         return std::isnan( x );
 #endif
@@ -271,8 +261,6 @@ namespace oz
       {
 #ifdef OZ_BUILTIN_MATH
         return __builtin_isfinite( x );
-#elif defined( OZ_MSVC )
-        return _finite( x ) != 0;
 #else
         return std::isfinite( x );
 #endif
@@ -283,13 +271,6 @@ namespace oz
       {
 #ifdef OZ_BUILTIN_MATH
         return __builtin_isinf( x );
-#elif defined( OZ_MSVC )
-        if( _finite( x ) != 0 || _isnan( x ) != 0 ) {
-          return 0;
-        }
-        else {
-          return x < 0.0f ? -1 : 1;
-        }
 #else
         return std::isinf( x );
 #endif
@@ -300,8 +281,6 @@ namespace oz
       {
 #ifdef OZ_BUILTIN_MATH
         return __builtin_isnormal( x );
-#elif defined( OZ_MSVC )
-        return ( _fpclass( x ) & ( _FPCLASS_NN | _FPCLASS_PN ) ) != 0;
 #else
         return std::isnormal( x );
 #endif

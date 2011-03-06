@@ -426,11 +426,6 @@ static void ozAllocUnittest()
 int main( int, char** )
 {
   Alloc::isLocked = false;
-  Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
 
   // check first, before any memory allocations are made
   OZ_UNITTEST( ozAlloc );
@@ -439,5 +434,7 @@ int main( int, char** )
   OZ_UNITTEST( ozIterables );
   OZ_UNITTEST( ozArrays );
 
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return 0;
 }

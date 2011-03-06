@@ -27,6 +27,7 @@ namespace oz
 namespace client
 {
 
+#ifdef OZ_BUILD_TOOLS
   static const int QBSP_SLICK_BIT    = 0x00000002;
   static const int QBSP_LADDER_BIT   = 0x00000008;
   static const int QBSP_WATER_BIT    = 0x00000020;
@@ -336,6 +337,7 @@ namespace client
 
     log.printEnd( " OK" );
   }
+#endif
 
   void BSP::playSound( const Struct::Entity* entity, int sample ) const
   {
@@ -366,6 +368,7 @@ namespace client
     context.sources.add( new Context::Source( srcId ) );
   }
 
+#ifdef OZ_BUILD_TOOLS
   void BSP::prebuild( const char* name_ )
   {
     String name = name_;
@@ -381,6 +384,7 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
+#endif
 
   BSP::BSP( int id ) : bsp( orbis.bsps[id] ), flags( 0 ), isLoaded( false )
   {}

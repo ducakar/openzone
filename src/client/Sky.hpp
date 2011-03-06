@@ -52,7 +52,9 @@ namespace client
 
       Vec3   lightDir;
 
+#ifdef OZ_BUILD_TOOLS
       static void prebuild( const char* name );
+#endif
 
       void load( const char* name );
       void unload();

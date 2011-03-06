@@ -15,7 +15,7 @@
 #include "client/Context.hpp"
 #include "client/Colours.hpp"
 
-#include <GL/glu.h>
+#include <GL/gl.h>
 
 namespace oz
 {
@@ -30,17 +30,17 @@ namespace client
 
     model->obj = obj;
     model->texId = context.loadTexture( "textures/oz/explosion.jpg" );
-    model->quadric = gluNewQuadric();
+//     model->quadric = gluNewQuadric();
     model->startMillis = timer.millis;
 
-    gluQuadricTexture( model->quadric, GL_TRUE );
+//     gluQuadricTexture( model->quadric, GL_TRUE );
 
     return model;
   }
 
   ExplosionModel::~ExplosionModel()
   {
-    gluDeleteQuadric( quadric );
+//     gluDeleteQuadric( quadric );
     glDeleteTextures( 1, &texId );
   }
 
@@ -54,8 +54,8 @@ namespace client
     glEnable( GL_BLEND );
     glDisable( GL_CULL_FACE );
 
-    glBindTexture( texId );
-    gluSphere( quadric, radius, 32, 32 );
+    glBindTexture( GL_TEXTURE_2D, texId );
+//     gluSphere( quadric, radius, 32, 32 );
 
     glEnable( GL_CULL_FACE );
     glDisable( GL_BLEND );

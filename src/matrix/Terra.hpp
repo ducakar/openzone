@@ -35,7 +35,9 @@ namespace oz
       // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
       static const float DIM;
 
+#ifdef OZ_BUILD_TOOLS
       void buildTerraFrame();
+#endif
 
     public:
 
@@ -61,7 +63,10 @@ namespace oz
       Pair<int> getIndices( float x, float y ) const;
       float height( float x, float y ) const;
 
+#ifdef OZ_BUILD_TOOLS
       void prebuild( const char* name );
+#endif
+
       void load( int id );
       void init();
 

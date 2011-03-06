@@ -307,7 +307,7 @@ namespace client
 
     if( mask & SOLID_BIT ) {
       for( int i = 0; i < firstAlphaPart; ++i ) {
-        glBindTexture( parts[i].texture[0] );
+        glBindTexture( GL_TEXTURE_2D, parts[i].texture[0] );
         glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }
@@ -316,7 +316,7 @@ namespace client
       glEnable( GL_BLEND );
 
       for( int i = firstAlphaPart; i < parts.length(); ++i ) {
-        glBindTexture( parts[i].texture[0] );
+        glBindTexture( GL_TEXTURE_2D, parts[i].texture[0] );
         glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }
@@ -325,6 +325,7 @@ namespace client
     }
   }
 
+#ifdef OZ_BUILD_TOOLS
   void MeshData::write( OutputStream* stream, bool embedTextures ) const
   {
     hard_assert( solidParts.length() > 0 || alphaParts.length() > 0 );
@@ -409,6 +410,7 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
+#endif
 
 }
 }

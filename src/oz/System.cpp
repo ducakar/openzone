@@ -18,7 +18,10 @@
 #include <cstring>
 #include <unistd.h>
 #include <cxxabi.h>
-#include <execinfo.h>
+
+#ifndef OZ_WINDOWS
+# include <execinfo.h>
+#endif
 
 // prevent old-style cast warning due to a bug in <bits/signum.h>
 #ifdef __GNUC__
@@ -71,6 +74,8 @@ namespace oz
   thread_local void* System::framePtrs[System::TRACE_SIZE + 1];
   thread_local char  System::output[System::TRACE_BUFFER_SIZE];
 
+#ifndef OZ_WINDOWS
+
   void System::signalHandler( int signum )
   {
     System::resetSignals();
@@ -103,18 +108,6 @@ namespace oz
     signal( SIGSEGV, SIG_DFL );
     signal( SIGTERM, SIG_DFL );
   }
-
-#ifndef OZ_UNIX
-
-  int System::getStackTrace( char** bufferPtr )
-  {
-    signalHelper.dummy();
-
-    *bufferPtr = null;
-    return 0;
-  }
-
-#else
 
   int System::getStackTrace( char** bufferPtr )
   {
@@ -331,6 +324,64 @@ namespace oz
     fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
     fflush( stderr );
     while( sleep( 1 ) == 0 );
+
+    ::abort();
+  }
+
+#else
+
+  void System::signalHandler( int )
+  {}
+
+  void System::catchSignals()
+  {}
+
+  void System::resetSignals()
+  {}
+
+  int System::getStackTrace( char** bufferPtr )
+  {
+    *bufferPtr = null;
+    return 0;
+  }
+
+  void System::trap()
+  {}
+
+  void System::error( const char* msg, ... )
+  {
+    va_list ap;
+    va_start( ap, msg );
+
+    fflush( stdout );
+
+    fprintf( stderr, "\n" );
+    vfprintf( stderr, msg, ap );
+    fprintf( stderr, "\n" );
+
+    fflush( stderr );
+
+    if( log.isFile() ) {
+      log.printEnd( "\n" );
+      log.vprintRaw( msg, ap );
+      log.printEnd( "\n" );
+    }
+
+    va_end( ap );
+  }
+
+  void System::abort( const char* msg, ... )
+  {
+    System::resetSignals();
+
+    va_list ap;
+    va_start( ap, msg );
+
+    fflush( stdout );
+
+    fprintf( stderr, "\n" );
+    vfprintf( stderr, msg, ap );
+    fprintf( stderr, "\n" );
 
     ::abort();
   }

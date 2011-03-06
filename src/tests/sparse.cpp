@@ -24,10 +24,6 @@ struct A
 int main( int, char** )
 {
   Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
 
   Sparse<A> sparse( 1 );
 
@@ -61,5 +57,7 @@ int main( int, char** )
   }
   printf( "\n" );
 
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return 0;
 }

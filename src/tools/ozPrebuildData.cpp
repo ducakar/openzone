@@ -178,10 +178,6 @@ int main( int argc, char** argv )
   System::catchSignals();
 
   Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
 
   int exitCode = 0;
 
@@ -269,5 +265,7 @@ int main( int argc, char** argv )
   Alloc::printStatistics();
   log.printlnETD( OZ_APPLICATION_NAME " Prebuild finished at" );
 
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return exitCode;
 }

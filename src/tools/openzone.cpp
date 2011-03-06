@@ -22,10 +22,6 @@ int main( int argc, char** argv )
   System::catchSignals();
 
   Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
 
   int exitCode = 0;
 
@@ -66,5 +62,7 @@ int main( int argc, char** argv )
 
   client::main.shutdown();
 
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return exitCode;
 }

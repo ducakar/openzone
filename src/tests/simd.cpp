@@ -120,10 +120,6 @@ VecX e[MAX];
 int main( int, char** )
 {
   Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
 
   for( int i = 0; i < MAX; ++i ) {
     a[i] = VecX( Math::frand(), Math::frand(), Math::frand() ) * 100.0f;
@@ -141,5 +137,8 @@ int main( int, char** )
   Quat q = Quat::ZERO;
   q *= 10;
   printf( "%g\n", float( clock() - t0 ) / float( CLOCKS_PER_SEC ) );
+
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return 0;
 }

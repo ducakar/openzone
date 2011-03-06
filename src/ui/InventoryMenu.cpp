@@ -170,7 +170,7 @@ namespace ui
 
       if( taggedItem->flags & Object::USE_FUNC_BIT ) {
         glUniform1i( param.oz_IsTextureEnabled, true );
-        glBindTexture( useTexId );
+        glBindTexture( GL_TEXTURE_2D, useTexId );
         shape.fill( x + width - ICON_SIZE - 4, y + 4, ICON_SIZE, ICON_SIZE );
         glUniform1i( param.oz_IsTextureEnabled, false );
       }

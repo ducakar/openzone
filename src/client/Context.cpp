@@ -23,7 +23,9 @@
 #include "client/BasicAudio.hpp"
 #include "client/BotAudio.hpp"
 
-#include <SDL_image.h>
+#ifdef OZ_BUILD_TOOLS
+# include <SDL_image.h>
+#endif
 #include <GL/gl.h>
 #include <AL/alut.h>
 #include <vorbis/vorbisfile.h>
@@ -44,6 +46,7 @@ namespace client
   Pool<Context::Source> Context::Source::pool;
   Buffer Context::buffer;
 
+#ifdef OZ_BUILD_TOOLS
   uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
@@ -82,6 +85,7 @@ namespace client
 
     return texId;
   }
+#endif
 
   void Context::deleteSound( int id )
   {
@@ -98,6 +102,7 @@ namespace client
     log.printEnd( " OK" );
   }
 
+#ifdef OZ_BUILD_TOOLS
   uint Context::createTexture( const void* data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
   {
@@ -150,6 +155,39 @@ namespace client
     return texNum;
   }
 
+  void Context::writeTexture( uint id, int nMipmaps, OutputStream* stream )
+  {
+    ::glBindTexture( GL_TEXTURE_2D, id );
+
+    int internalFormat, magFilter, minFilter, wrap;
+    glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &minFilter );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
+
+    stream->writeInt( nMipmaps );
+    stream->writeInt( internalFormat );
+    stream->writeInt( magFilter );
+    stream->writeInt( minFilter );
+    stream->writeInt( wrap );
+
+    for( int i = 0; i < nMipmaps; ++i ) {
+      int width, height, size;
+
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
+
+      stream->writeInt( width );
+      stream->writeInt( height );
+      stream->writeInt( size );
+      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
+    }
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+  }
+#endif
+
   uint Context::loadTexture( const char* path )
   {
     log.print( "Loading texture '%s' ...", path );
@@ -177,7 +215,7 @@ namespace client
 
     uint texId;
     glGenTextures( 1, &texId );
-    ::glBindTexture( GL_TEXTURE_2D, texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
 
     int nMipmaps       = stream->readInt();
     int internalFormat = stream->readInt();
@@ -212,38 +250,6 @@ namespace client
     hard_assert( glGetError() == GL_NO_ERROR );
 
     return texId;
-  }
-
-  void Context::writeTexture( uint id, int nMipmaps, OutputStream* stream )
-  {
-    ::glBindTexture( GL_TEXTURE_2D, id );
-
-    int internalFormat, magFilter, minFilter, wrap;
-    glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
-    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
-    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &minFilter );
-    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
-
-    stream->writeInt( nMipmaps );
-    stream->writeInt( internalFormat );
-    stream->writeInt( magFilter );
-    stream->writeInt( minFilter );
-    stream->writeInt( wrap );
-
-    for( int i = 0; i < nMipmaps; ++i ) {
-      int width, height, size;
-
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
-
-      stream->writeInt( width );
-      stream->writeInt( height );
-      stream->writeInt( size );
-      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
-    }
-
-    hard_assert( glGetError() == GL_NO_ERROR );
   }
 
   uint Context::requestTexture( int id )

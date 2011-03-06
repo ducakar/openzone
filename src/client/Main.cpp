@@ -18,13 +18,15 @@
 
 #include <cerrno>
 #include <ctime>
+#include <unistd.h>
 #include <sys/stat.h>
-#include <SDL_net.h>
 
-#ifdef OZ_MSVC
-# include <direct.h>
-#else
-# include <unistd.h>
+#ifdef OZ_NETWORK
+# include <SDL_net.h>
+#endif
+
+#ifdef OZ_WINDOWS
+# define program_invocation_short_name "openzone"
 #endif
 
 namespace oz
@@ -72,7 +74,6 @@ namespace client
     if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
       SDL_ShowCursor( SDL_TRUE );
-      SDLNet_Quit();
       SDL_Quit();
       log.printEnd( " OK" );
     }
@@ -241,10 +242,10 @@ namespace client
 
     uint createTime = SDL_GetTicks();
 
-#ifdef OZ_WINDOWS
-    const char* homeVar = getenv( "USERPROFILE" );
-#else
+#ifndef OZ_WINDOWS
     const char* homeVar = getenv( "HOME" );
+#else
+    const char* homeVar = getenv( "USERPROFILE" );
 #endif
     if( homeVar == null ) {
       throw Exception( "Cannot determine user home directory from environment" );
@@ -256,10 +257,10 @@ namespace client
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource directory found, creating '%s' ...", rcDir.cstr() );
 
-#ifdef OZ_WINDOWS
-      if( mkdir( rcDir.cstr() ) != 0 ) {
-#else
+#ifndef OZ_WINDOWS
       if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
+#else
+      if( mkdir( rcDir.cstr() ) != 0 ) {
 #endif
         printf( " Failed\n" );
         return -1;
@@ -319,7 +320,7 @@ namespace client
     if( config.getSet( "screen.nvVSync", true ) ) {
       SDL_putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
     }
-    if( SDL_InitSubSystem( SDL_INIT_VIDEO ) != 0 || SDLNet_Init() != 0 ) {
+    if( SDL_InitSubSystem( SDL_INIT_VIDEO ) != 0 ) {
       log.printEnd( " Failed" );
       return -1;
     }

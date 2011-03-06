@@ -296,6 +296,7 @@ namespace client
     mesh.upload( frameVerts, nFrameVerts, GL_STREAM_DRAW );
   }
 
+#ifdef OZ_BUILD_TOOLS
   void MD2::prebuild( const char* path )
   {
     String sPath = path;
@@ -473,6 +474,7 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
+#endif
 
   MD2::MD2( int id_ ) : id( id_ ), frameVerts( null ), vertices( null ),
       isLoaded( false )
