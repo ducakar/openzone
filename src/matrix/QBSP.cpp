@@ -11,6 +11,8 @@
 
 #include "matrix/QBSP.hpp"
 
+#ifdef OZ_BUILD_TOOLS
+
 #include "matrix/Timer.hpp"
 #include "matrix/Translator.hpp"
 
@@ -953,3 +955,5 @@ namespace oz
   }
 
 }
+
+#endif

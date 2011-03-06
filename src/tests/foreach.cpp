@@ -34,10 +34,6 @@ struct SparseElem
 int main( int, char** )
 {
   Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
 
   List<Elem, 0> l;
   DList<Elem, 0> dl;
@@ -182,5 +178,7 @@ int main( int, char** )
   l.free();
   dl.free();
 
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return 0;
 }

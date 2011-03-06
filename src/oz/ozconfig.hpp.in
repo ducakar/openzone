@@ -1,5 +1,9 @@
 #pragma once
 
+// define custom "keywords" as macros to highlight them in Eclipse CDT (assuming one has set the
+// same highlighting for macros and keywords)
+#cmakedefine OZ_ECLIPSE_HIGHLIGHTING
+
 // enable inlining in debug mode for critical functions
 #cmakedefine OZ_ALWAYS_INLINE
 
@@ -33,12 +37,6 @@
 // platform
 #if defined( WIN32 ) || defined( __WIN32__ )
 # define OZ_WINDOWS
-#else
-# define OZ_UNIX
-#endif
-
-#ifdef _MSCVER
-# define OZ_MSVC
 #endif
 
 #if defined( OZ_WINDOWS ) && defined( __GNUC__ )
@@ -73,34 +71,25 @@
 # undef __GXX_EXPERIMENTAL_CXX0X__
 #endif
 
-#ifdef OZ_MSVC
-# if _MSC_VER < 1600
-#  error Too old MSVC, at least 16.00 (Visual C++ 2010) required
-# endif
-# define __PRETTY_FUNCTION__ ""
-# define __thread declspec( thread )
-# define _CRT_SECURE_NO_WARNINGS 1
-# define snprintf sprintf_s
-# define chdir _chdir
-# define mkdir _mkdir
+#ifdef OZ_ECLIPSE_HIGHLIGHTING
+# define nil            nil
+# define byte           byte
+# define ubyte          ubyte
+# define ushort         ushort
+# define uint           uint
+# define ulong          ulong
+# define long64         long64
+# define ulong64        ulong64
 #endif
 
 #ifdef OZ_ALWAYS_INLINE
 # undef OZ_ALWAYS_INLINE
-# ifdef OZ_MSVC
-#  define OZ_ALWAYS_INLINE __forceinline
-# else
-#  define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
-# endif
+# define OZ_ALWAYS_INLINE __attribute__(( always_inline ))
 #else
 # define OZ_ALWAYS_INLINE
 #endif
 
-#ifdef OZ_MSVC
-# define OZ_WEAK_SYMBOL
-#else
-# define OZ_WEAK_SYMBOL __attribute__(( weak ))
-#endif
+#define OZ_WEAK_SYMBOL __attribute__(( weak ))
 
 #if !defined( __GNUC__ ) && !defined( __clang__ )
 # undef OZ_BUILTIN_MATH

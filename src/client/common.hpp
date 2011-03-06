@@ -11,7 +11,9 @@
 
 #include "stable.hpp"
 
-# define GL_GLEXT_PROTOTYPES
+# ifndef OZ_WINDOWS
+#  define GL_GLEXT_PROTOTYPES
+# endif
 
 # define GL_VERSION_1_2_DEPRECATED
 # define GL_VERSION_1_3_DEPRECATED
@@ -77,8 +79,65 @@ namespace client
     }
   };
 
-  // emulate OpenGL 3.0 glBindTexture
-  void glBindTexture( uint texId );
+#ifdef OZ_WINDOWS
+# include <GL/gl.h>
+
+  extern PFNGLUNIFORM1IPROC               glUniform1i;
+  extern PFNGLUNIFORM2IPROC               glUniform2i;
+  extern PFNGLUNIFORM3IPROC               glUniform3i;
+  extern PFNGLUNIFORM4IPROC               glUniform4i;
+  extern PFNGLUNIFORM1IVPROC              glUniform1iv;
+  extern PFNGLUNIFORM2IVPROC              glUniform2iv;
+  extern PFNGLUNIFORM3IVPROC              glUniform3iv;
+  extern PFNGLUNIFORM4IVPROC              glUniform4iv;
+  extern PFNGLUNIFORM1FPROC               glUniform1f;
+  extern PFNGLUNIFORM2FPROC               glUniform2f;
+  extern PFNGLUNIFORM3FPROC               glUniform3f;
+  extern PFNGLUNIFORM4FPROC               glUniform4f;
+  extern PFNGLUNIFORM1FVPROC              glUniform1fv;
+  extern PFNGLUNIFORM2FVPROC              glUniform2fv;
+  extern PFNGLUNIFORM3FVPROC              glUniform3fv;
+  extern PFNGLUNIFORM4FVPROC              glUniform4fv;
+
+  extern PFNGLGENVERTEXARRAYSPROC         glGenVertexArrays;
+  extern PFNGLDELETEVERTEXARRAYSPROC      glDeleteVertexArrays;
+  extern PFNGLBINDVERTEXARRAYPROC         glBindVertexArray;
+
+  extern PFNGLGENBUFFERSPROC              glGenBuffers;
+  extern PFNGLDELETEBUFFERSPROC           glDeleteBuffers;
+  extern PFNGLBINDBUFFERPROC              glBindBuffer;
+  extern PFNGLBUFFERDATAPROC              glBufferData;
+  extern PFNGLMAPBUFFERPROC               glMapBuffer;
+  extern PFNGLUNMAPBUFFERPROC             glUnmapBuffer;
+
+  extern PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
+  extern PFNGLVERTEXATTRIBPOINTERPROC     glVertexAttribPointer;
+
+  extern PFNGLCREATESHADERPROC            glCreateShader;
+  extern PFNGLDELETESHADERPROC            glDeleteShader;
+  extern PFNGLSHADERSOURCEPROC            glShaderSource;
+  extern PFNGLCOMPILESHADERPROC           glCompileShader;
+  extern PFNGLGETSHADERIVPROC             glGetShaderiv;
+  extern PFNGLGETSHADERINFOLOGPROC        glGetShaderInfoLog;
+  extern PFNGLCREATEPROGRAMPROC           glCreateProgram;
+  extern PFNGLDELETEPROGRAMPROC           glDeleteProgram;
+  extern PFNGLATTACHSHADERPROC            glAttachShader;
+  extern PFNGLDETACHSHADERPROC            glDetachShader;
+  extern PFNGLLINKPROGRAMPROC             glLinkProgram;
+  extern PFNGLGETPROGRAMIVPROC            glGetProgramiv;
+  extern PFNGLGETPROGRAMINFOLOGPROC       glGetProgramInfoLog;
+  extern PFNGLGETUNIFORMLOCATIONPROC      glGetUniformLocation;
+  extern PFNGLUSEPROGRAMPROC              glUseProgram;
+
+  extern PFNGLACTIVETEXTUREPROC           wglActiveTexture;
+  extern PFNGLCOMPRESSEDTEXIMAGE2DPROC    wglCompressedTexImage2D;
+  extern PFNGLDRAWRANGEELEMENTSPROC       wglDrawRangeElements;
+
+# define glActiveTexture                  wglActiveTexture
+# define glCompressedTexImage2D           wglCompressedTexImage2D
+# define glDrawRangeElements              wglDrawRangeElements
+
+#endif
 
 }
 }

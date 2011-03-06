@@ -41,6 +41,7 @@ namespace client
 
   const float Sky::STAR_DIM       = 0.10f;
 
+#ifdef OZ_BUILD_TOOLS
   void Sky::prebuild( const char* name )
   {
     log.println( "Prebuilding sky '%s' ...", name );
@@ -97,6 +98,7 @@ namespace client
 
     log.println( "}" );
   }
+#endif
 
   void Sky::load( const char* name )
   {
@@ -221,7 +223,7 @@ namespace client
     glColor3f( 2.0f * Colours::diffuse[0] + Colours::ambient[0],
                Colours::diffuse[1] + Colours::ambient[1],
                Colours::diffuse[2] + Colours::ambient[2] );
-    glBindTexture( sunTexId );
+    glBindTexture( GL_TEXTURE_2D, sunTexId );
 
     glDisable( GL_CULL_FACE );
 
@@ -234,7 +236,7 @@ namespace client
     glPopMatrix();
 
     glColor4fv( Colours::WHITE );
-    glBindTexture( moonTexId );
+    glBindTexture( GL_TEXTURE_2D, moonTexId );
 
     glPushMatrix();
     glTranslatef( 0.0f, 0.0f, -15.0f );

@@ -97,6 +97,7 @@ namespace client
 
   };
 
+#ifdef OZ_BUILD_TOOLS
   class MeshData
   {
     friend class Compiler;
@@ -124,6 +125,7 @@ namespace client
       void write( OutputStream* stream, bool embedTextures = true ) const;
 
   };
+#endif
 
 }
 }

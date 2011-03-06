@@ -56,7 +56,6 @@ static int addLife( lua_State* l )
 int main( int, char** )
 {
   Alloc::isLocked = false;
-  onleave( []() { Alloc::isLocked = true; } );
 
   l = lua_open();
   luaL_openlibs( l );
@@ -75,5 +74,8 @@ int main( int, char** )
   printf( "%f\n", life );
 
   lua_close( l );
+
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return 0;
 }

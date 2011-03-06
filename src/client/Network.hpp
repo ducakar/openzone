@@ -11,7 +11,9 @@
 
 #include "stable.hpp"
 
-#include <SDL_net.h>
+#ifdef OZ_NETWORKING
+# include <SDL_net.h>
+#endif
 
 namespace oz
 {
@@ -22,7 +24,9 @@ namespace client
   {
     private:
 
+#ifdef OZ_NETWORKING
       TCPsocket socket;
+#endif
 
     public:
 

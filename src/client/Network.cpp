@@ -18,6 +18,21 @@ namespace client
 
   Network network;
 
+#ifndef OZ_NETWORKING
+
+  bool Network::connect()
+  {
+    return true;
+  }
+
+  void Network::disconnect()
+  {}
+
+  void Network::update()
+  {}
+
+#else
+
   bool Network::connect()
   {
 //    const char* host = config.getSet( "net.server", "localhost" );
@@ -46,6 +61,8 @@ namespace client
 
   void Network::update()
   {}
+
+#endif
 
 }
 }

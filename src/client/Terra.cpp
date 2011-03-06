@@ -38,6 +38,7 @@ namespace client
 
   Terra terra;
 
+#ifdef OZ_BUILD_TOOLS
   void Terra::prebuild( const char* name_ )
   {
     String name       = name_;
@@ -211,6 +212,7 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
+#endif
 
   void Terra::load()
   {
@@ -326,9 +328,9 @@ namespace client
     span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
     span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
-    glBindTexture( mapTexId );
+    glBindTexture( GL_TEXTURE_2D, mapTexId );
     glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( detailTexId );
+    glBindTexture( GL_TEXTURE_2D, detailTexId );
     glActiveTexture( GL_TEXTURE0 );
 
     hard_assert( glGetError() == GL_NO_ERROR );
@@ -362,7 +364,7 @@ namespace client
       sideVertices = 4;
     }
 
-    glBindTexture( waterTexId );
+    glBindTexture( GL_TEXTURE_2D, waterTexId );
 
     glEnable( GL_BLEND );
 

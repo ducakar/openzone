@@ -18,10 +18,6 @@ bool Alloc::isLocked = true;
 int main( int, char** )
 {
   Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
 
   Buffer buffer( 1024 );
   OutputStream os = buffer.outputStream();
@@ -44,5 +40,8 @@ int main( int, char** )
   hard_assert( is.readFloat() == 1.71f );
 
   printf( "OK\n" );
+
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return 0;
 }

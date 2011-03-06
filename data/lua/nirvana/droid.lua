@@ -1,3 +1,11 @@
+--[[
+ *  droid.lua
+ *  AI for droid and droid commander
+ *
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
+]]--
+
 function droid_randomWalk( l )
   ozSelfStateSetRunning( false )
   ozSelfActionForward()

@@ -35,11 +35,13 @@ namespace client
       DArray<Mesh>   meshes;
       int            flags;
 
+#ifdef OZ_BUILD_TOOLS
       // prebuild
       static void loadQBSP( const char* path );
       static void freeQBSP();
       static void optimise();
       static void save( const char* path );
+#endif
 
       void playSound( const Struct::Entity* entity, int sample ) const;
 
@@ -47,8 +49,10 @@ namespace client
 
       bool isLoaded;
 
+#ifdef OZ_BUILD_TOOLS
       // create ozcBSP from a Quake 3 QBSP (matrix BSP must be loaded)
       static void prebuild( const char* name );
+#endif
 
       explicit BSP( int id );
       ~BSP();

@@ -15,8 +15,17 @@
 
 #include <cstdlib>
 
+#ifdef OZ_WINDOWS
+# define posix_memalign( ptr, alignment, size ) \
+  !( *ptr = malloc( size ) )
+#endif
+
 #ifdef OZ_TRACE_LEAKS
-# include <pthread.h>
+# ifndef OZ_WINDOWS
+#  include <pthread.h>
+# else
+#  include <windows.h>
+# endif
 #endif
 
 namespace oz
@@ -47,7 +56,19 @@ namespace oz
 
   // if we deallocate from two different threads at once with OZ_TRACE_LEAKS, changing the list
   // of allocated blocks while iterating it in another thread can result in a SIGSEGV.
+#ifndef OZ_WINDOWS
   static pthread_mutex_t sectionMutex = PTHREAD_MUTEX_INITIALIZER;
+#else
+# define pthread_mutex_lock( mutex ) \
+  InitializeCriticalSection( mutex ); \
+  EnterCriticalSection( mutex )
+
+# define pthread_mutex_unlock( mutex ) \
+  LeaveCriticalSection( mutex ); \
+  DeleteCriticalSection( mutex )
+
+  static CRITICAL_SECTION sectionMutex;
+#endif
 
 #endif
 
@@ -307,11 +328,7 @@ void operator delete[] ( void* ptr ) throw()
 
 #else
 
-#ifdef OZ_MSVC
-void* operator new ( size_t size )
-#else
 void* operator new ( size_t size ) throw( std::bad_alloc )
-#endif
 {
   hard_assert( !Alloc::isLocked );
   hard_assert( size != 0 );
@@ -351,11 +368,7 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   return reinterpret_cast<char*>( ptr ) + Alloc::ALIGNMENT;
 }
 
-#ifdef OZ_MSVC
-void* operator new[] ( size_t size )
-#else
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
-#endif
 {
   hard_assert( !Alloc::isLocked );
   hard_assert( size != 0 );

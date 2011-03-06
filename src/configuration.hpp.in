@@ -18,6 +18,12 @@
 // default data directory
 #define OZ_DEFAULT_DATA_DIR     "@OZ_DEFAULT_DATA_DIR@"
 
+// enable/disable networking
+#cmakedefine                    OZ_NETWORKING
+
+// whether to build tools (build prebuild support)
+#cmakedefine                    OZ_BUILD_TOOLS
+
 // fix error in vorbisfile.h
 #ifdef OZ_MINGW
 # define OV_EXCLUDE_STATIC_CALLBACKS

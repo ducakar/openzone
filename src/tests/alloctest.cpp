@@ -14,11 +14,7 @@
 #include "matrix/Matrix.hpp"
 
 #include <SDL_main.h>
-#ifdef OZ_MSVC
-# include <direct.h>
-#else
-# include <unistd.h>
-#endif
+#include <unistd.h>
 
 using namespace oz;
 
@@ -27,10 +23,6 @@ bool Alloc::isLocked = true;
 int main( int, char** )
 {
   Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
 
   SDL_Init( 0 );
 
@@ -55,5 +47,8 @@ int main( int, char** )
   translator.init();
 
   SDL_Quit();
+
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return 0;
 }

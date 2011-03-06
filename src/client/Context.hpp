@@ -112,14 +112,15 @@ namespace client
       int                               maxSources;
       int                               maxContSources;
 
+#ifdef OZ_BUILD_TOOLS
       static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
-      static uint buildNormalmap( void* data, const Vec3& lightNormal, int width,int height,
-                                  int bytesPerPixel, bool wrap, int magFilter, int minFilter );
+#endif
       void deleteSound( int resource );
 
     public:
 
+#ifdef OZ_BUILD_TOOLS
       static uint createTexture( const void* data, int width, int height, int bytesPerPixel,
                           bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
@@ -128,6 +129,7 @@ namespace client
                                   int magFilter = DEFAULT_MAG_FILTER,
                                   int minFilter = DEFAULT_MIN_FILTER );
       static void writeTexture( uint id, int nMipmaps, OutputStream* stream );
+#endif
 
       static uint loadTexture( const char* path );
       static uint readTexture( InputStream* stream );

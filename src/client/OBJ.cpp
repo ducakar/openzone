@@ -11,6 +11,8 @@
 
 #include "client/OBJ.hpp"
 
+#ifdef OZ_BUILD_TOOLS
+
 #include "client/Context.hpp"
 #include "client/Colours.hpp"
 #include "client/Compiler.hpp"
@@ -484,3 +486,5 @@ namespace client
 
 }
 }
+
+#endif

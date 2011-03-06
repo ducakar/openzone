@@ -24,9 +24,7 @@ if( OZ_BUILD_SERVER )
   add_subdirectory( server )
 endif( OZ_BUILD_SERVER )
 
-if( OZ_BUILD_TOOLS )
-  add_subdirectory( tools )
-endif( OZ_BUILD_TOOLS )
+add_subdirectory( tools )
 
 if( OZ_BUILD_TESTS )
   add_subdirectory( tests )

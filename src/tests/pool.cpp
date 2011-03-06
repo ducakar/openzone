@@ -33,10 +33,6 @@ Pool<A, 2> A::pool;
 int main( int, char** )
 {
   Alloc::isLocked = false;
-  onleave( []() {
-    Alloc::isLocked = true;
-    Alloc::printLeaks();
-  } );
 
   const int max = 10000;
 
@@ -50,5 +46,8 @@ int main( int, char** )
   }
 
   A::pool.free();
+
+  Alloc::isLocked = true;
+  Alloc::printLeaks();
   return 0;
 }

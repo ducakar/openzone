@@ -1,6 +1,14 @@
+--[[
+ *  minds.lua
+ *  Various AIs
+ *
+ *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  This software is covered by GNU GPLv3. See COPYING file for details.
+]]--
+
 function randomWalk( localData )
   ozSelfActionForward()
-  
+
   if math.random( 3 ) == 1 then
     ozSelfAddH( math.random() * 120.0 - 60.0 )
   end

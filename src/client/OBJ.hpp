@@ -11,6 +11,8 @@
 
 #include "stable.hpp"
 
+#ifdef OZ_BUILD_TOOLS
+
 #include "client/Mesh.hpp"
 
 namespace oz
@@ -59,3 +61,5 @@ namespace client
 
 }
 }
+
+#endif

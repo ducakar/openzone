@@ -123,7 +123,7 @@ namespace ui
       glUniform1i( param.oz_IsTextureEnabled, true );
 
       if( !camera.isExternal ) {
-        glBindTexture( crossTexId );
+        glBindTexture( GL_TEXTURE_2D, crossTexId );
         shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
       }
 
@@ -132,15 +132,15 @@ namespace ui
           const Object* tagged = camera.taggedObj;
 
           if( tagged->flags & Object::VEHICLE_BIT ) {
-            glBindTexture( mountTexId );
+            glBindTexture( GL_TEXTURE_2D, mountTexId );
             shape.fill( mountIconX, mountIconY, ICON_SIZE, ICON_SIZE );
           }
           else if( tagged->flags & Object::USE_FUNC_BIT ) {
-            glBindTexture( useTexId );
+            glBindTexture( GL_TEXTURE_2D, useTexId );
             shape.fill( useIconX, useIconY, ICON_SIZE, ICON_SIZE );
           }
           if( tagged->flags & Object::ITEM_BIT ) {
-            glBindTexture( takeTexId );
+            glBindTexture( GL_TEXTURE_2D, takeTexId );
             shape.fill( takeIconX, takeIconY, ICON_SIZE, ICON_SIZE );
           }
 
@@ -152,12 +152,12 @@ namespace ui
               ( ( ~tagged->flags & Object::BOT_BIT ) || ( taggedBot->grabObj == -1 ) ) )
           {
             if( taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged ) {
-              glBindTexture( liftTexId );
+              glBindTexture( GL_TEXTURE_2D, liftTexId );
               shape.fill( liftIconX, liftIconY, ICON_SIZE, ICON_SIZE );
             }
           }
           if( camera.botObj->grabObj != -1 ) {
-            glBindTexture( grabTexId );
+            glBindTexture( GL_TEXTURE_2D, grabTexId );
             shape.fill( grabIconX, grabIconY, ICON_SIZE, ICON_SIZE );
           }
         }
@@ -166,7 +166,7 @@ namespace ui
     }
     else if( camera.state != Camera::STRATEGIC ) {
       glUniform1i( param.oz_IsTextureEnabled, true );
-      glBindTexture( crossTexId );
+      glBindTexture( GL_TEXTURE_2D, crossTexId );
       shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
       glUniform1i( param.oz_IsTextureEnabled, false );
     }
