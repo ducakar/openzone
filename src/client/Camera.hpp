@@ -68,8 +68,8 @@ namespace client
       Mat44  rotTMat;
 
       Vec3   right;
-      Vec3   at;
       Vec3   up;
+      Vec3   at;
 
       int    tagged;
       const Object* taggedObj;

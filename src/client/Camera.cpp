@@ -34,12 +34,12 @@ namespace client
     v = bound( v, 0.0f, Math::TAU / 2.0f );
 
     rot     = Quat::rotZ( h ) ^ Quat::rotX( v ) ^ Quat::rotZ( w );
-    rotMat  = rot.rotMat44();
+    rotMat  = Mat44::rotation( rot );
     rotTMat = ~rotMat;
 
     right   = rotMat.x;
-    at      = -rotMat.z;
     up      = rotMat.y;
+    at      = -rotMat.z;
   }
 
   void Camera::init()
@@ -89,12 +89,12 @@ namespace client
     rot          = Quat::ID;
     relRot       = Quat::ID;
 
-    rotMat       = rot.rotMat44();
+    rotMat       = Mat44::rotation( rot );
     rotTMat      = ~rotTMat;
 
     right        = rotMat.x;
-    at           = -rotMat.z;
     up           = rotMat.y;
+    at           = -rotMat.z;
 
     tagged       = -1;
     taggedObj    = null;

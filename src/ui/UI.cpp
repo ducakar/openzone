@@ -42,17 +42,18 @@ namespace ui
   {
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho( 0.0, root->width, 0.0, root->height, -100.0, 100.0 );
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
+    tf.ortho();
+    tf.camera = Mat44::ID;
+
+    shader.use( Shader::TEXT );
+    tf.applyCamera();
+
+    shader.use( Shader::UI );
+    tf.applyCamera();
 
     shape.bindVertexArray();
 
     glEnable( GL_BLEND );
-
-    shader.use( Shader::UI );
 
     root->drawChildren();
     mouse.draw();

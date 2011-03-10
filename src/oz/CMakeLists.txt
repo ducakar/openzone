@@ -39,6 +39,8 @@ add_library( oz STATIC
   System.hpp
   Vec3.cpp
   Vec3.hpp
+  Vec4.cpp
+  Vec4.hpp
   Vector.hpp
   arrays.hpp
   common.cpp

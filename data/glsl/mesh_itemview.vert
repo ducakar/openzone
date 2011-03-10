@@ -6,13 +6,13 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-attribute vec3 oz_Position;
-attribute vec2 oz_TexCoord;
+in vec3 inPosition;
+in vec2 inTexCoord;
 
-varying   vec2 oz_FragTexCoord;
+out vec2 exTexCoord;
 
 void main()
 {
-  gl_Position     = gl_ModelViewProjectionMatrix * vec4( oz_Position, 1.0 );
-  oz_FragTexCoord = oz_TexCoord;
+  exTexCoord  = inTexCoord;
+  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
 }

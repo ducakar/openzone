@@ -263,10 +263,10 @@ namespace client
 
         hard_assert( veh->flags & Object::VEHICLE_BIT );
 
-        dist = !veh->dim * externalDistFactor;
+        dist = veh->dim.fastL() * externalDistFactor;
       }
       else {
-        dist = !bot->dim * externalDistFactor;
+        dist = bot->dim.fastL() * externalDistFactor;
       }
 
       Point3 origin = bot->p + Vec3( 0.0f, 0.0f, bot->camZ );

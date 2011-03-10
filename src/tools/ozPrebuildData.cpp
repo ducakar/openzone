@@ -36,8 +36,8 @@ bool Alloc::isLocked = true;
 static void prebuildTextures( const char* srcDir, const char* destDir,
                               bool wrap, int magFilter, int minFilter )
 {
-  log.println( "Prebuilding textures in '%s' {", srcDir );
-  log.indent();
+  oz::log.println( "Prebuilding textures in '%s' {", srcDir );
+  oz::log.indent();
 
   String dirName = srcDir;
   Directory dir( srcDir );
@@ -57,8 +57,8 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
     String srcPath = dirName + ent;
     String destPath = String( destDir ) + "/" + name + ".ozcTex";
 
-    log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
-    log.indent();
+    oz::log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
+    oz::log.indent();
 
     int nMipmaps;
     uint id = client::context.loadRawTexture( srcPath, &nMipmaps, wrap, magFilter, minFilter );
@@ -67,25 +67,25 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
 
     OutputStream os = buffer.outputStream();
 
-    log.println( "Compiling into '%s'", destPath.cstr() );
+    oz::log.println( "Compiling into '%s'", destPath.cstr() );
     client::context.writeTexture( id, nMipmaps, &os );
 
     if( !buffer.write( destPath, os.length() ) ) {
       throw Exception( "Texture writing failed" );
     }
 
-    log.unindent();
-    log.println( "}" );
+    oz::log.unindent();
+    oz::log.println( "}" );
   }
 
-  log.unindent();
-  log.println( "}" );
+  oz::log.unindent();
+  oz::log.println( "}" );
 }
 
 static void prebuildModels( const char* path )
 {
-  log.println( "Prebuilding models in '%s' {", path );
-  log.indent();
+  oz::log.println( "Prebuilding models in '%s' {", path );
+  oz::log.indent();
 
   String dirName = path;
   Directory dir( path );
@@ -111,14 +111,14 @@ static void prebuildModels( const char* path )
     }
   }
 
-  log.unindent();
-  log.println( "}" );
+  oz::log.unindent();
+  oz::log.println( "}" );
 }
 
 static void prebuildBSPs( const char* path )
 {
-  log.println( "Prebuilding BSPs in '%s' {", path );
-  log.indent();
+  oz::log.println( "Prebuilding BSPs in '%s' {", path );
+  oz::log.indent();
 
   String dirName = path;
   Directory dir( path );
@@ -140,14 +140,14 @@ static void prebuildBSPs( const char* path )
     client::BSP::prebuild( name );
   }
 
-  log.unindent();
-  log.println( "}" );
+  oz::log.unindent();
+  oz::log.println( "}" );
 }
 
 static void prebuildTerras( const char* path )
 {
-  log.println( "Prebuilding Terras in '%s' {", path );
-  log.indent();
+  oz::log.println( "Prebuilding Terras in '%s' {", path );
+  oz::log.indent();
 
   String dirName = path;
   Directory dir( path );
@@ -169,8 +169,8 @@ static void prebuildTerras( const char* path )
     client::terra.prebuild( name );
   }
 
-  log.unindent();
-  log.println( "}" );
+  oz::log.unindent();
+  oz::log.println( "}" );
 }
 
 int main( int argc, char** argv )
@@ -188,23 +188,23 @@ int main( int argc, char** argv )
 
   try {
     if( argc != 2 ) {
-      log.println( "Usage: %s data_directory", program_invocation_short_name );
-      log.println();
+      oz::log.println( "Usage: %s data_directory", program_invocation_short_name );
+      oz::log.println();
       return -1;
     }
 
-    log.printlnETD( OZ_APPLICATION_NAME " Prebuild started at" );
+    oz::log.printlnETD( OZ_APPLICATION_NAME " Prebuild started at" );
 
     SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO );
     SDL_SetVideoMode( 400, 40, 32, SDL_OPENGL );
     SDL_WM_SetCaption( "OpenZone :: Prebuilding data ...", null );
 
-    log.print( "Setting working directory to data directory '%s' ...", argv[1] );
+    oz::log.print( "Setting working directory to data directory '%s' ...", argv[1] );
     if( chdir( argv[1] ) != 0 ) {
-      log.printEnd( " Failed" );
+      oz::log.printEnd( " Failed" );
       return -1;
     }
-    log.printEnd( " OK" );
+    oz::log.printEnd( " OK" );
 
     long startTime = SDL_GetTicks();
 
@@ -225,7 +225,7 @@ int main( int argc, char** argv )
 
     long endTime = SDL_GetTicks();
 
-    log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
+    oz::log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 
     SDL_Quit();
   }
@@ -263,7 +263,7 @@ int main( int argc, char** argv )
   config.clear();
 
   Alloc::printStatistics();
-  log.printlnETD( OZ_APPLICATION_NAME " Prebuild finished at" );
+  oz::log.printlnETD( OZ_APPLICATION_NAME " Prebuild finished at" );
 
   Alloc::isLocked = true;
   Alloc::printLeaks();

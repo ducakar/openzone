@@ -27,7 +27,7 @@ modelName "bombs"
 
 audioType                       "Basic"
 audioSample00                   ""                              # create
-audioSample01                   "explosion"                     # destroy
+audioSample01                   ""                              # destroy
 audioSample02                   "hit1"                          # damage
 audioSample03                   "hit1"                          # hit
 audioSample04                   "splash1"                       # splash

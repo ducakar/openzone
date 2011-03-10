@@ -20,4 +20,5 @@
 #include <cstring>
 #include <cinttypes>
 // include SDL as it is commonly used
+// #define SDL_NO_COMPAT
 #include <SDL.h>

@@ -284,11 +284,11 @@ namespace client
         }
 
         if( texture.type & QBSP_WATER_BIT ) {
-          compiler.material( GL_FRONT, GL_DIFFUSE, Quat( 1.0f, 1.0f, 1.0f, 0.75f ) );
+          compiler.material( GL_FRONT, GL_DIFFUSE, Vec4( 1.0f, 1.0f, 1.0f, 0.75f ) );
           flags |= Mesh::ALPHA_BIT;
         }
         else {
-          compiler.material( GL_FRONT, GL_DIFFUSE, Quat( 1.0f, 1.0f, 1.0f, 1.0f ) );
+          compiler.material( GL_FRONT, GL_DIFFUSE, Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
           flags |= Mesh::SOLID_BIT;
         }
 
@@ -454,22 +454,20 @@ namespace client
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    glPushMatrix();
-    glTranslatef( str->p.x, str->p.y, str->p.z );
-    glRotatef( 90.0f * float( str->rot ), 0.0f, 0.0f, 1.0f );
+    tf.model = Mat44::translation( str->p - Point3::ORIGIN );
+    tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
 
     for( int i = 0; i < meshes.length(); ++i ) {
       const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;
 
-      glPushMatrix();
-      glTranslatef( entityPos.x, entityPos.y, entityPos.z );
+      tf.push();
+      tf.model.translate( entityPos );
+      tf.apply();
 
       meshes[i].draw( mask );
 
-      glPopMatrix();
+      tf.pop();
     }
-
-    glPopMatrix();
   }
 
   void BSP::play( const Struct* str ) const

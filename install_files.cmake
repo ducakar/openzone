@@ -44,6 +44,8 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/System.hpp
     src/oz/Vec3.cpp
     src/oz/Vec3.hpp
+    src/oz/Vec4.cpp
+    src/oz/Vec4.hpp
     src/oz/Vector.hpp
     src/oz/arrays.hpp
     src/oz/common.cpp
@@ -102,7 +104,6 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/cursors )
 
   install( FILES
-    data/fonts/COPYING.DejaVu
     data/fonts/DejaVuSans.ttf
     data/fonts/DejaVuSansMono.ttf
     DESTINATION share/openzone/fonts )
@@ -219,6 +220,10 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl/data/mdl/knight.ozcMD2 )
 
   install( FILES
+    data/mdl/lara/LaraCroft - ReadMe.txt
+    DESTINATION share/openzone/mdl/data/mdl/lara )
+
+  install( FILES
     data/mdl/leafs/skin.jpg
     data/mdl/leafs/tris.md2
     DESTINATION share/openzone/mdl/data/mdl/leafs )
@@ -333,7 +338,7 @@ if( OZ_INSTALL_DATA )
     data/textures/oz/stone1.jpg
     data/textures/oz/stone2.jpg
     data/textures/oz/stone3.jpg
-    data/textures/oz/water1.jpg
+    data/textures/oz/water1.png
     data/textures/oz/wood1.jpg
     data/textures/oz/wood2.jpg
     DESTINATION share/openzone/textures/oz )

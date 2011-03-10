@@ -158,7 +158,7 @@ namespace oz
        * STANDARD EVENT IDs
        */
 
-//       static const int EVENT_CREATE       = 0;
+      static const int EVENT_CREATE       = 0;
       static const int EVENT_DESTROY      = 1;
       static const int EVENT_DAMAGE       = 2;
       static const int EVENT_HIT          = 3;
@@ -246,7 +246,7 @@ namespace oz
 
       void destroy()
       {
-        if( ~flags & DESTROYED_BIT ) {
+        if( !( flags & DESTROYED_BIT ) ) {
           life = 0.0f;
           flags |= DESTROYED_BIT;
           addEvent( EVENT_DESTROY, 1.0f );

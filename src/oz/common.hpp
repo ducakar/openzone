@@ -178,65 +178,6 @@ namespace oz
    */
   typedef unsigned long long ulong64;
 
-  /**
-   * SIMD vector of four ints
-   */
-  typedef int __attribute__(( vector_size( 16 ) )) int4;
-
-  /**
-   * \def int4
-   * int4 "constructor"
-   */
-# define int4( x, y, z, w ) \
-  (int4) { x, y, z, w }
-
-  /**
-   * SIMD vector of four floats
-   */
-  typedef float __attribute__(( vector_size( 16 ) )) float4;
-
-  /**
-   * \def float4
-   * float4 "constructor"
-   */
-# define float4( x, y, z, w ) \
-  (float4) { x, y, z, w }
-
-  /**
-   * Simd register structure
-   */
-  struct Simd
-  {
-    union
-    {
-      int4   i4;
-      float4 f4;
-
-      struct { int   i[4]; };
-      struct { float f[4]; };
-
-      struct
-      {
-        float x;
-        float y;
-        float z;
-        float w;
-      };
-
-      struct
-      {
-        float nx;
-        float ny;
-        float nz;
-        float d;
-      };
-    };
-
-    OZ_ALWAYS_INLINE Simd()                          {}
-    OZ_ALWAYS_INLINE Simd( int4    i4_ ) : i4( i4_ ) {}
-    OZ_ALWAYS_INLINE Simd( float4  f4_ ) : f4( f4_ ) {}
-  };
-
   //***********************************
   //*        BASIC ALGORITHMS         *
   //***********************************

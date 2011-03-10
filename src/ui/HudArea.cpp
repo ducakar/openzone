@@ -78,10 +78,10 @@ namespace ui
 
       hard_assert( 0.0f <= life && life <= 1.0f );
 
-      glColor4f( 1.0f - life, life, 0.0f, 0.6f );
+      glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
       fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
 
-      glColor4f( 1.0f, 1.0f, 1.0f, 0.8f );
+      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
       rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
 
       String description;
@@ -111,12 +111,12 @@ namespace ui
       float stamina      = bot->stamina / clazz->stamina;
       int   staminaWidth = max( int( stamina * 188.0f ), 0 );
 
-      glColor4f( 1.0f - life, life, 0.0f, 0.6f );
+      glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
       fill( -199, 35, lifeWidth, 14 );
-      glColor4f( 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.6f );
+      glUniform4f( param.oz_Colour, 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.6f );
       fill( -199, 11, staminaWidth, 14 );
 
-      glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
+      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
       rect( -200, 34, 190, 16 );
       rect( -200, 10, 190, 16 );
 
@@ -147,9 +147,9 @@ namespace ui
           const Dynamic* taggedDyn = static_cast<const Dynamic*>( tagged );
           const Bot* taggedBot = static_cast<const Bot*>( tagged );
 
-          if( bot->grabObj == -1 && bot->weaponItem == -1 && ( ~bot->state & Bot::SWIMMING_BIT ) &&
+          if( bot->grabObj == -1 && bot->weaponItem == -1 && !( bot->state & Bot::SWIMMING_BIT ) &&
               ( tagged->flags & Object::DYNAMIC_BIT ) &&
-              ( ( ~tagged->flags & Object::BOT_BIT ) || ( taggedBot->grabObj == -1 ) ) )
+              ( !( tagged->flags & Object::BOT_BIT ) || ( taggedBot->grabObj == -1 ) ) )
           {
             if( taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged ) {
               glBindTexture( GL_TEXTURE_2D, liftTexId );
@@ -162,12 +162,6 @@ namespace ui
           }
         }
       }
-      glUniform1i( param.oz_IsTextureEnabled, false );
-    }
-    else if( camera.state != Camera::STRATEGIC ) {
-      glUniform1i( param.oz_IsTextureEnabled, true );
-      glBindTexture( GL_TEXTURE_2D, crossTexId );
-      shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
       glUniform1i( param.oz_IsTextureEnabled, false );
     }
 

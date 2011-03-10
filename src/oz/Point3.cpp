@@ -12,14 +12,6 @@
 namespace oz
 {
 
-#ifdef OZ_SIMD
-
   const Point3 Point3::ORIGIN = Point3( 0.0f, 0.0f, 0.0f );
-
-#else
-
-  const Point3 Point3::ORIGIN = Point3( 0.0f, 0.0f, 0.0f );
-
-#endif
 
 }

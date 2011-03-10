@@ -49,7 +49,7 @@ namespace client
     const Vehicle* veh = static_cast<const Vehicle*>( obj );
     const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
 
-    glMultMatrixf( veh->rot.rotMat44() );
+    tf.model.rotate( veh->rot );
 
     for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
       int index = veh->crew[i];
@@ -57,13 +57,14 @@ namespace client
       if( index != -1 && ( index != camera.bot || camera.isExternal ) ) {
         const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->crew[i]] );
 
-        glPushMatrix();
-        glTranslatef( clazz->crewPos[i].x, clazz->crewPos[i].y, clazz->crewPos[i].z );
-        glRotatef( -Math::deg( bot->h ), 0.0f, 0.0f, 1.0f );
+        tf.push();
+        tf.model.translate( Vec3( clazz->crewPos[i].x, clazz->crewPos[i].y, clazz->crewPos[i].z ) );
+        tf.model.rotateZ( -bot->h );
+        tf.apply();
 
         context.drawModel( bot, null );
 
-        glPopMatrix();
+        tf.pop();
       }
     }
 

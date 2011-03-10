@@ -60,6 +60,7 @@
  * Math
  */
 #include "Math.hpp"
+#include "Vec4.hpp"
 #include "Vec3.hpp"
 #include "Point3.hpp"
 #include "Plane.hpp"

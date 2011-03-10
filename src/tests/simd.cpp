@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <time.h>
 
+typedef float __attribute__(( vector_size( 16 ) )) float4;
+
 using namespace oz;
 
 bool Alloc::isLocked = true;

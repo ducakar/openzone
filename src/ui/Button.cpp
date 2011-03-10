@@ -11,6 +11,8 @@
 
 #include "ui/Button.hpp"
 
+#include "client/Shader.hpp"
+
 #include <GL/gl.h>
 
 namespace oz
@@ -37,13 +39,13 @@ namespace ui
   void Button::onDraw()
   {
     if( isClicked ) {
-      glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
     }
     else if( isHighlighted ) {
-      glColor4f( 0.8f, 0.8f, 0.8f, 0.4f );
+      glUniform4f( param.oz_Colour, 0.8f, 0.8f, 0.8f, 0.4f );
     }
     else {
-      glColor4f( 0.6f, 0.6f, 0.6f, 0.4f );
+      glUniform4f( param.oz_Colour, 0.6f, 0.6f, 0.6f, 0.4f );
     }
     fill( 0, 0, width, height );
     setFont( Font::SANS );

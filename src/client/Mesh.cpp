@@ -168,8 +168,8 @@ namespace client
     parts.alloc( nParts );
 
     for( int i = 0; i < nParts; ++i ) {
-      parts[i].diffuse    = stream->readQuat();
-      parts[i].specular   = stream->readQuat();
+      parts[i].diffuse    = stream->readVec4();
+      parts[i].specular   = stream->readVec4();
 
       parts[i].texture[0] = textures[ stream->readInt() ];
       parts[i].texture[1] = textures[ stream->readInt() ];
@@ -371,8 +371,8 @@ namespace client
     stream->writeInt( solidParts.length() );
 
     foreach( part, solidParts.citer() ) {
-      stream->writeQuat( part->diffuse );
-      stream->writeQuat( part->specular );
+      stream->writeVec4( part->diffuse );
+      stream->writeVec4( part->specular );
 
       stream->writeInt( textures.index( part->texture[0] ) );
       stream->writeInt( textures.index( part->texture[1] ) );
@@ -384,8 +384,8 @@ namespace client
       stream->writeInt( part->firstIndex );
     }
     foreach( part, alphaParts.citer() ) {
-      stream->writeQuat( part->diffuse );
-      stream->writeQuat( part->specular );
+      stream->writeVec4( part->diffuse );
+      stream->writeVec4( part->specular );
 
       stream->writeInt( textures.index( part->texture[0] ) );
       stream->writeInt( textures.index( part->texture[1] ) );

@@ -250,6 +250,8 @@ namespace oz
       else if( hit.normal.z == -1.0f ) {
         sDyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
         sDyn->lower = obj->index;
+        sDyn->floor = Vec3( 0.0f, 0.0f, 1.0f );
+
         obj->flags  |= Object::UPPER_BIT;
 
         sDyn->momentum.z = momentum.z;
@@ -262,6 +264,7 @@ namespace oz
 
         obj->flags  &= ~Object::ON_FLOOR_BIT;
         obj->lower  = sDyn->index;
+        obj->floor  = Vec3( 0.0f, 0.0f, 1.0f );
 
         if( !( sDyn->flags & Object::DISABLED_BIT ) ) {
           sDyn->momentum.z = momentum.z;

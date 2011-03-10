@@ -40,8 +40,8 @@ namespace client
   const float Render::WIDE_CULL_FACTOR = 6.0f;
   const float Render::CELL_WIDE_RADIUS = Cell::RADIUS + AABB::MAX_DIM * WIDE_CULL_FACTOR;
 
-  const float Render::NIGHT_FOG_COEFF = 2.0f;
-  const float Render::NIGHT_FOG_DIST = 0.3f;
+  const float Render::NIGHT_FOG_COEFF  = 2.0f;
+  const float Render::NIGHT_FOG_DIST   = 0.3f;
   const float Render::WATER_VISIBILITY = 8.0f;
 
   void Render::scheduleCell( int cellX, int cellY )
@@ -62,7 +62,7 @@ namespace client
     foreach( obj, cell.objects.citer() ) {
       float factor = ( obj->flags & Object::WIDE_CULL_BIT ) ? WIDE_CULL_FACTOR : 1.0f;
 
-      if( frustum.isVisible( *obj, factor ) && ( ~obj->flags & Object::NO_DRAW_BIT ) ) {
+      if( frustum.isVisible( *obj, factor ) && !( obj->flags & Object::NO_DRAW_BIT ) ) {
         Vec3 relPos = obj->p - camera.p;
         objects.add( ObjectEntry( relPos.sqL(), obj ) );
       }
@@ -85,7 +85,7 @@ namespace client
     collider.translate( camera.p, Vec3::ZERO );
     isUnderWater = collider.hit.inWater;
 
-    Quat clearColour;
+    Vec4 clearColour;
 
     if( isUnderWater ) {
       visibility = waterNightVisibility + sky.ratio * ( waterDayVisibility - waterNightVisibility );
@@ -134,8 +134,8 @@ namespace client
     structs.sort();
     objects.sort();
 
-    int firstNearStruct = aBisectPosition( structs + 0, structNearDist2, structs.length() );
-    int firstNearObject = aBisectPosition( objects + 0, objectNearDist2, objects.length() );
+    int firstNearStruct = aBisectPosition( structs + 0, nearDist2, structs.length() );
+    int firstNearObject = aBisectPosition( objects + 0, nearDist2, objects.length() );
 
     // clear buffer
     glClearColor( clearColour.x, clearColour.y, clearColour.z, clearColour.w );
@@ -144,32 +144,8 @@ namespace client
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
     // camera transformation
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glFrustum( -camera.vertPlane, +camera.vertPlane, -camera.horizPlane, +camera.horizPlane,
-               camera.minDist, camera.maxDist );
-
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
-    glMultMatrixf( camera.rotTMat );
-
-    // set shaders
-    Shader::Program programs[] = {
-      Shader::MESH_NEAR,
-      Shader::MESH_FAR,
-      Shader::TERRA,
-      Shader::PARTICLES
-    };
-    foreach( shId, citer( programs, 4 ) ) {
-      shader.use( *shId );
-
-      shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
-      shader.setSkyLight( camera.rotTMat * sky.lightDir, Colours::diffuse );
-      shader.updateLights();
-
-      glUniform4fv( param.oz_FogColour, 1, clearColour );
-      glUniform1f( param.oz_FogDistance, visibility );
-    }
+    tf.projection();
+    tf.camera = camera.rotTMat;
 
     currentTime = SDL_GetTicks();
     timer.renderScheduleMillis += currentTime - beginTime;
@@ -177,7 +153,29 @@ namespace client
 
     sky.draw();
 
-    glTranslatef( -camera.p.x, -camera.p.y, -camera.p.z );
+    tf.camera.translate( Point3::ORIGIN - camera.p );
+
+    // set shaders
+    Shader::Program programs[] = {
+      Shader::MESH_NEAR,
+      Shader::MESH_FAR,
+      Shader::TERRA,
+      Shader::TERRA_WATER,
+      Shader::PARTICLES
+    };
+    foreach( shId, citer( programs, 4 ) ) {
+      shader.use( *shId );
+
+      tf.applyCamera();
+
+      shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
+      shader.setSkyLight( camera.rotTMat * sky.lightDir, Colours::diffuse );
+      shader.updateLights();
+
+      glUniform1f( param.oz_NearDistance, Math::sqrt( nearDist2 ) );
+      glUniform4fv( param.oz_FogColour, 1, clearColour );
+      glUniform1f( param.oz_FogDistance, visibility );
+    }
 
     glEnable( GL_DEPTH_TEST );
 
@@ -208,7 +206,6 @@ namespace client
     timer.renderStructsMillis += currentTime - beginTime;
     beginTime = currentTime;
 
-    shader.use( Shader::TERRA );
     terra.draw();
 
     currentTime = SDL_GetTicks();
@@ -222,18 +219,16 @@ namespace client
       const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
-        glUniform1i( param.oz_IsHighlightEnabled, true );
+        glUniform1f( param.oz_Highlight, 1.0f );
       }
 
-      glPushMatrix();
-      glTranslatef( obj->p.x, obj->p.y, obj->p.z );
+      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+      tf.apply();
 
       context.drawModel( obj, null );
 
-      glPopMatrix();
-
       if( obj->index == camera.tagged ) {
-        glUniform1i( param.oz_IsHighlightEnabled, false );
+        glUniform1f( param.oz_Highlight, 0.0f );
       }
     }
 
@@ -243,18 +238,16 @@ namespace client
       const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
-        glUniform1i( param.oz_IsHighlightEnabled, true );
+        glUniform1f( param.oz_Highlight, 1.0f );
       }
 
-      glPushMatrix();
-      glTranslatef( obj->p.x, obj->p.y, obj->p.z );
+      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+      tf.apply();
 
       context.drawModel( obj, null );
 
-      glPopMatrix();
-
       if( obj->index == camera.tagged ) {
-        glUniform1i( param.oz_IsHighlightEnabled, false );
+        glUniform1f( param.oz_Highlight, 0.0f );
       }
     }
 
@@ -274,12 +267,7 @@ namespace client
     for( int i = 0; i < particles.length(); ++i ) {
       const Particle* part = particles[i];
 
-      glPushMatrix();
-      glTranslatef( part->p.x, part->p.y, part->p.z );
-
       shape.draw( part );
-
-      glPopMatrix();
     }
 
     glDisable( GL_BLEND );
@@ -311,14 +299,14 @@ namespace client
     timer.renderStructsMillis += currentTime - beginTime;
     beginTime = currentTime;
 
-    shader.use( Shader::TERRA );
     terra.drawWater();
 
     currentTime = SDL_GetTicks();
     timer.renderTerraMillis += currentTime - beginTime;
     beginTime = currentTime;
 
-    shader.use( Shader::UI );
+    shader.use( Shader::SIMPLE );
+    tf.model = Mat44::ID;
 
     shape.bindVertexArray();
 
@@ -327,24 +315,25 @@ namespace client
       collider.translate( camera.p, move, camera.botObj );
       move *= collider.hit.ratio;
 
-      glColor3f( 0.0f, 1.0f, 0.0f );
+      glUniform4f( param.oz_Colour, 0.0f, 1.0f, 0.0f, 1.0f );
       shape.box( AABB( camera.p + move, Vec3( 0.05f, 0.05f, 0.05f ) ) );
     }
 
     if( showBounds ) {
       for( int i = 0; i < objects.length(); ++i ) {
-        glColor4fv( ( objects[i].obj->flags & Object::SOLID_BIT ) ?
-            Colours::CLIP_AABB : Colours::NOCLIP_AABB );
+        glUniform4fv( param.oz_Colour, 1,
+                      ( objects[i].obj->flags & Object::SOLID_BIT ) ?
+                          Colours::CLIP_AABB : Colours::NOCLIP_AABB );
         shape.wireBox( *objects[i].obj );
         hard_assert( glGetError() == GL_NO_ERROR );
       }
 
-      glColor4fv( Colours::STRUCTURE_AABB );
+      glUniform4fv( param.oz_Colour, 1, Colours::STRUCTURE_AABB );
 
       for( int i = 0; i < structs.length(); ++i ) {
         const Struct* str = structs[i].str;
 
-        glColor4fv( Colours::ENTITY_AABB );
+        glUniform4fv( param.oz_Colour, 1, Colours::ENTITY_AABB );
 
         foreach( entity, citer( str->entities, str->nEntities ) ) {
           Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
@@ -352,7 +341,7 @@ namespace client
           hard_assert( glGetError() == GL_NO_ERROR );
         }
 
-        glColor4fv( Colours::STRUCTURE_AABB );
+        glUniform4fv( param.oz_Colour, 1, Colours::STRUCTURE_AABB );
         shape.wireBox( str->toAABB() );
         hard_assert( glGetError() == GL_NO_ERROR );
       }
@@ -453,6 +442,40 @@ namespace client
     log.println( "Initialising Render {" );
     log.indent();
 
+    int screenX    = config.get( "screen.width", 0 );
+    int screenY    = config.get( "screen.height", 0 );
+    int screenBpp  = config.get( "screen.bpp", 0 );
+    int screenFull = config.getSet( "screen.full", false ) ? SDL_FULLSCREEN : 0;
+
+    log.print( "Creating OpenGL window %dx%d-%d %s ...",
+               screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
+
+    if( ( screenX != 0 || screenY != 0 || screenBpp != 0 ) &&
+        SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull ) == 0 )
+    {
+      log.printEnd( " Mode not supported" );
+      throw Exception( "Video mode not supported" );
+    }
+
+    SDL_Surface* surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
+
+    if( surface == null ) {
+      log.printEnd( " Failed" );
+      throw Exception( "Window creation failed" );
+    }
+
+    screenX   = surface->w;
+    screenY   = surface->h;
+    screenBpp = surface->format->BitsPerPixel;
+
+    config.getSet( "screen.width", screenX );
+    config.getSet( "screen.height", screenY );
+    config.getSet( "screen.bpp", screenBpp );
+
+    log.printEnd( " OK, %dx%d-%d", screenX, screenY, screenBpp );
+
+    SDL_ShowCursor( SDL_FALSE );
+
     bool isVAOSupported = false;
     bool isFBOSupported = false;
     bool isS3TCSupported = false;
@@ -506,8 +529,7 @@ namespace client
       throw Exception( "GL_EXT_texture_compression_s3tc not supported by OpenGL" );
     }
 
-    structNearDist2      = config.getSet( "render.structNearDistance",   100.0f );
-    objectNearDist2      = config.getSet( "render.objectNearDistance",   100.0f );
+    nearDist2            = config.getSet( "render.nearDistance",         100.0f );
 
     dayVisibility        = config.getSet( "render.dayVisibility",        300.0f );
     nightVisibility      = config.getSet( "render.nightVisibility",      300.0f );
@@ -517,8 +539,7 @@ namespace client
     showBounds           = config.getSet( "render.showBounds",           false );
     showAim              = config.getSet( "render.showAim",              false );
 
-    structNearDist2      *= structNearDist2;
-    objectNearDist2      *= objectNearDist2;
+    nearDist2            *= nearDist2;
 
 #ifdef OZ_WINDOWS
     glUniform1i               = reinterpret_cast<PFNGLUNIFORM1IPROC>               ( SDL_GL_GetProcAddress( "glUniform1i" ) );

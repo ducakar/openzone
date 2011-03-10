@@ -250,9 +250,9 @@ namespace oz
       static bool isNaN( float x )
       {
 #ifdef OZ_BUILTIN_MATH
-        return __builtin_isnan( x );
+        return __builtin_isnan( x ) || x == x + 1;
 #else
-        return std::isnan( x );
+        return std::isnan( x ) || x == x + 1;
 #endif
       }
 
@@ -260,9 +260,9 @@ namespace oz
       static bool isFinite( float x )
       {
 #ifdef OZ_BUILTIN_MATH
-        return __builtin_isfinite( x );
+        return __builtin_isfinite( x ) && x != x + 1;
 #else
-        return std::isfinite( x );
+        return std::isfinite( x ) && x != x + 1;
 #endif
       }
 

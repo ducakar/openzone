@@ -129,7 +129,7 @@ namespace oz
 
     state |= lower != -1 || ( flags & ON_FLOOR_BIT )    ? GROUNDED_BIT  : 0;
     state |= ( flags & ON_LADDER_BIT ) && grabObj == -1 ? CLIMBING_BIT  : 0;
-    state |= depth > dim.z && ( ~state & GROUNDED_BIT ) ? SWIMMING_BIT  : 0;
+    state |= depth > dim.z && !( state & GROUNDED_BIT ) ? SWIMMING_BIT  : 0;
     state |= depth > dim.z + camZ                       ? SUBMERGED_BIT : 0;
 
     flags |= CLIMBER_BIT;
@@ -214,7 +214,7 @@ namespace oz
      * ANIMATION
      */
 
-    if( ( actions & ACTION_JUMP ) && ( ~state & GROUNDED_BIT ) ) {
+    if( ( actions & ACTION_JUMP ) && !( state & GROUNDED_BIT ) ) {
       anim = Anim::JUMP;
     }
     else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
@@ -245,7 +245,7 @@ namespace oz
     }
     else if( state & GESTURE4_BIT ) {
       anim = Anim::FLIP;
-      if( ~oldState & GESTURE4_BIT ) {
+      if( !( oldState & GESTURE4_BIT ) ) {
         addEvent( EVENT_FLIP, 1.0f );
       }
     }
@@ -332,7 +332,7 @@ namespace oz
       if( flags & ON_SLICK_BIT ) {
         desiredMomentum *= clazz->slickControl;
       }
-      else if( ~state & GROUNDED_BIT ) {
+      else if( !( state & GROUNDED_BIT ) ) {
         if( state & CLIMBING_BIT ) {
           desiredMomentum *= clazz->climbControl;
         }
@@ -523,7 +523,7 @@ namespace oz
         const Bot* bot = static_cast<const Bot*>( collider.hit.obj );
 
         if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
-            lower != obj->index && ( ( ~obj->flags & BOT_BIT ) || bot->grabObj == -1 ) )
+            lower != obj->index && ( !( obj->flags & BOT_BIT ) || bot->grabObj == -1 ) )
         {
           float dimX = dim.x + obj->dim.x;
           float dimY = dim.y + obj->dim.y;

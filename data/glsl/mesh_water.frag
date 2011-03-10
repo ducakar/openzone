@@ -6,23 +6,18 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-varying vec4 position;
-varying vec2 texCoord;
-varying vec3 skyLightColour;
+in vec4 exPosition;
+in vec2 exTexCoord;
+in vec4 exColour;
+
+out vec4 outColour;
 
 void main()
 {
-  float fogRatio = min( length( position ) / oz_FogDistance, 1.0 );
+  float fogRatio = min( length( exPosition ) / oz_FogDistance, 1.0 );
 
-  gl_FragColor = texture2D( oz_Textures[0], texCoord * oz_TextureScales[0] );
-  gl_FragColor.xyz *= skyLightColour;
-  gl_FragColor = mix( gl_FragColor, oz_FogColour, fogRatio );
-
-  gl_FragColor.x *= 2.0;
-
-  if( oz_IsHighlightEnabled ) {
-    float avgColour = ( gl_FragColor.x + gl_FragColor.y + gl_FragColor.z ) / 3.0;
-    vec3  highlightColour = oz_HighlightBase + oz_HighlightFactor * avgColour;
-    gl_FragColor.xyz = mix( gl_FragColor.xyz, highlightColour, 0.5 );
-  }
+  outColour = exColour;
+  outColour *= texture2D( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
+  outColour = mix( outColour, oz_FogColour, fogRatio );
+  outColour = highlightColour( outColour );
 }

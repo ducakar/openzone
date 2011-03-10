@@ -104,11 +104,9 @@ namespace ui
     glDisable( GL_BLEND );
     shader.use( Shader::MESH_ITEMVIEW );
 
-    glColor4fv( Colours::WHITE );
-
-    glPushMatrix();
-    glTranslatef( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0 );
-    glTranslatef( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f );
+    tf.model = Mat44::ID;
+    tf.model.translate( Vec3( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0.0f ) );
+    tf.model.translate( Vec3( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f ) );
 
     const Vector<int>& items = camera.botObj->items;
 
@@ -121,36 +119,36 @@ namespace ui
 
       hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
-      float size = !item->dim;
+      float size = item->dim.fastL();
       float scale = SLOT_DIMF / size;
 
       if( i % COLS == 0 ) {
-        glTranslatef( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f );
+        tf.model.translate( Vec3( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f ) );
       }
 
-      glPushMatrix();
-      glRotatef( -70.0f, 1.0f, 0.0f, 0.0f );
-      glRotatef(  20.0f, 0.0f, 0.0f, 1.0f );
-      glScalef( scale, scale, scale );
+      tf.push();
+      tf.model.rotateX( Math::rad( -70.0f ) );
+      tf.model.rotateZ( Math::rad( +20.0f ) );
+      tf.model.scale( Vec3( scale, scale, scale ) );
+      tf.apply();
 
       if( i == tagged ) {
-        glUniform1i( param.oz_IsHighlightEnabled, true );
+        glUniform1f( param.oz_Highlight, 1.0f );
         taggedItem = item;
       }
 
       context.drawModel( item, null );
 
       if( i == tagged ) {
-        glUniform1i( param.oz_IsHighlightEnabled, false );
+        glUniform1f( param.oz_Highlight, 0.0f );
       }
 
-      glPopMatrix();
-      glTranslatef( float( SLOT_SIZE ), 0.0f, 0.0f );
+      tf.pop();
+      tf.model.translate( Vec3( float( SLOT_SIZE ), 0.0f, 0.0f ) );
     }
 
-    glPopMatrix();
-
     shape.bindVertexArray();
+
     shader.use( Shader::UI );
     glEnable( GL_BLEND );
 
@@ -162,10 +160,10 @@ namespace ui
 
       hard_assert( 0.0f <= life && life <= 1.0f );
 
-      glColor4f( 1.0f - life, life, 0.0f, 0.6f );
+      glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
       fill( -51, -15, lifeWidth, 10 );
 
-      glColor4f( 1.0f, 1.0f, 1.0f, 0.6f );
+      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
       rect( -52, -16, 48, 12 );
 
       if( taggedItem->flags & Object::USE_FUNC_BIT ) {
