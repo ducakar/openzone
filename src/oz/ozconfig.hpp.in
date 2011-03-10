@@ -22,9 +22,6 @@
 // whether math library has sincosf function
 #cmakedefine OZ_HAVE_SINCOSF
 
-// use SIMD for vector math
-#cmakedefine OZ_SIMD
-
 // use big-endian for stream
 #cmakedefine OZ_BIG_ENDIAN_STREAM
 

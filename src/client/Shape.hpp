@@ -41,7 +41,6 @@ namespace client
       static void tag( float minX, float minY, float maxX, float maxY );
 
       static void quad( float dimX, float dimY );
-      static void sprite( const Point3& p, float dimX, float dimY );
       static void box( const AABB& bb );
       static void wireBox( const AABB& bb );
       static void draw( const Particle* part );

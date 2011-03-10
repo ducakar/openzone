@@ -35,17 +35,17 @@ namespace oz
   const Mat44 Struct::rotations[] =
   {
     Mat44::ID,
-    Mat44::rotZ(  Math::TAU / 4.0f ),
-    Mat44::rotZ(  Math::TAU / 2.0f ),
-    Mat44::rotZ( -Math::TAU / 4.0f )
+    Mat44::rotationZ(  Math::TAU / 4.0f ),
+    Mat44::rotationZ(  Math::TAU / 2.0f ),
+    Mat44::rotationZ( -Math::TAU / 4.0f )
   };
 
   const Mat44 Struct::invRotations[] =
   {
     Mat44::ID,
-    Mat44::rotZ( -Math::TAU / 4.0f ),
-    Mat44::rotZ(  Math::TAU / 2.0f ),
-    Mat44::rotZ(  Math::TAU / 4.0f )
+    Mat44::rotationZ( -Math::TAU / 4.0f ),
+    Mat44::rotationZ(  Math::TAU / 2.0f ),
+    Mat44::rotationZ(  Math::TAU / 4.0f )
   };
 
   void Struct::Entity::updateIgnoring()

@@ -73,7 +73,7 @@ namespace client
     const Bot* bot = static_cast<const Bot*>( obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    glRotatef( Math::deg( bot->h ), 0.0f, 0.0f, 1.0f );
+    tf.model.rotateZ( bot->h );
 
     if( bot->anim != anim.type ) {
       setAnim( bot->anim );
@@ -82,19 +82,23 @@ namespace client
     if( bot->state & Bot::DEATH_BIT ) {
       float colour[] = { 1.0f, 1.0f, 1.0f, bot->life / clazz->life * 3.0f };
 
+      tf.apply();
+
       glEnable( GL_BLEND );
-      glUniform4fv( param.oz_DiffuseMaterial, 1, colour );
+      glUniform4fv( param.oz_Colour, 1, colour );
 
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
 
-      glUniform4fv( param.oz_DiffuseMaterial, 1, Colours::WHITE );
+      glUniform4fv( param.oz_Colour, 1, Colours::WHITE );
       glDisable( GL_BLEND );
     }
     else if( bot->index != camera.bot || camera.isExternal ) {
       if( bot->state & Bot::CROUCHING_BIT ) {
-        glTranslatef( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z );
+        tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z ) );
       }
+
+      tf.apply();
 
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
@@ -104,9 +108,10 @@ namespace client
       }
     }
     else if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
-      glTranslatef( 0.0f, 0.0f,  bot->camZ );
-      glRotatef( Math::deg( bot->v - Math::TAU / 4.0f ), 1.0f, 0.0f, 0.0f );
-      glTranslatef( 0.0f, 0.0f, -bot->camZ );
+      tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
+      tf.model.rotateX( bot->v - Math::TAU / 4.0f );
+      tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
+      tf.apply();
 
       md2->advance( &anim, timer.frameTime );
       context.drawModel( orbis.objects[bot->weaponItem], this );

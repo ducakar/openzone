@@ -54,8 +54,8 @@ namespace client
   {
     Vector<Face> faces;
 
-    Quat   specular;
-    Quat   diffuse;
+    Vec4   specular;
+    Vec4   diffuse;
     String texture;
   };
 
@@ -232,8 +232,8 @@ namespace client
     String mtlName;
     Part   part;
 
-    part.diffuse  = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
-    part.specular = Quat( 0.5f, 0.5f, 0.5f, 1.0f );
+    part.diffuse  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+    part.specular = Vec4( 0.5f, 0.5f, 0.5f, 1.0f );
     part.texture  = "";
 
     char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
@@ -259,8 +259,8 @@ namespace client
             *end = '\0';
 
             mtlName = pos;
-            part.diffuse  = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
-            part.specular = Quat( 0.5f, 0.5f, 0.5f, 1.0f );
+            part.diffuse  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+            part.specular = Vec4( 0.5f, 0.5f, 0.5f, 1.0f );
             part.texture  = "";
           }
           break;

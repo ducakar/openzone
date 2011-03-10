@@ -106,8 +106,12 @@ namespace ui
     x = x < 0 ? this->x + this->width  + x : this->x + x;
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
+    shader.use( Shader::TEXT );
+
     glRasterPos2i( x, y );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+
+    shader.use( Shader::UI );
 
     textWidth = text->w;
     SDL_FreeSurface( text );
@@ -136,8 +140,12 @@ namespace ui
     baseX = baseX < 0 ? this->x + this->width  + baseX : this->x + baseX;
     baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
 
+    shader.use( Shader::TEXT );
+
     glRasterPos2i( baseX - text->w / 2, baseY - text->h / 2 );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+
+    shader.use( Shader::UI );
 
     textWidth = text->w;
     SDL_FreeSurface( text );
@@ -166,8 +174,12 @@ namespace ui
     x     =     x < 0 ? this->x + this->width  + x     : this->x + x;
     baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
 
+    shader.use( Shader::TEXT );
+
     glRasterPos2i( x, baseY - text->h / 2 );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+
+    shader.use( Shader::UI );
 
     textWidth = text->w;
     SDL_FreeSurface( text );

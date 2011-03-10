@@ -73,7 +73,7 @@ namespace oz
     hard_assert( obj->cell == null );
 
     orbis.position( obj );
-//     obj->addEvent( Object::EVENT_CREATE, 1.0f );
+    obj->addEvent( Object::EVENT_CREATE, 1.0f );
 
     addedObjects.add( index );
     return index;

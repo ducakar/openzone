@@ -26,13 +26,11 @@ namespace client
 
   void Shape::fill( float x, float y, float width, float height )
   {
-    glPushMatrix();
-    glTranslatef( x, y, 0.0f );
-    glScalef( width, height, 0.0f );
+    tf.model = Mat44::translation( Vec3( x, y, 0.0f ) );
+    tf.model.scale( Vec3( width, height, 0.0f ) );
+    tf.apply();
 
     glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-
-    glPopMatrix();
   }
 
   void Shape::fill( int x, int y, int width, int height )
@@ -42,13 +40,11 @@ namespace client
 
   void Shape::rect( float x, float y, float width, float height )
   {
-    glPushMatrix();
-    glTranslatef( x + 0.5f, y + 0.5f, 0.0f );
-    glScalef( width - 1.0f, height - 1.0f, 0.0f );
+    tf.model = Mat44::translation( Vec3( x + 0.5f, y + 0.5f, 0.0f ) );
+    tf.model.scale( Vec3( width - 1.0f, height - 1.0f, 0.0f ) );
+    tf.apply();
 
     glDrawArrays( GL_LINE_LOOP, 4, 4 );
-
-    glPopMatrix();
   }
 
   void Shape::rect( int x, int y, int width, int height )
@@ -58,85 +54,64 @@ namespace client
 
   void Shape::tag( float minX, float minY, float maxX, float maxY )
   {
-    float width  = maxX - minX;
-    float height = maxY - minY;
+    tf.model = Mat44::translation( Vec3( minX, minY, 0.0f ) );
+    tf.apply();
 
-    glPushMatrix();
-
-    glTranslatef( minX, minY, 0.0f );
     glDrawArrays( GL_LINES,  8, 4 );
 
-    glTranslatef( width, 0.0f, 0.0f );
+    tf.model = Mat44::translation( Vec3( maxX, minY, 0.0f ) );
+    tf.apply();
+
     glDrawArrays( GL_LINES, 12, 4 );
 
-    glTranslatef( 0.0f, height, 0.0f );
+    tf.model = Mat44::translation( Vec3( maxX, maxY, 0.0f ) );
+    tf.apply();
+
     glDrawArrays( GL_LINES, 16, 4 );
 
-    glTranslatef( -width, 0.0f, 0.0f );
-    glDrawArrays( GL_LINES, 20, 4 );
+    tf.model = Mat44::translation( Vec3( minX, maxY, 0.0f ) );
+    tf.apply();
 
-    glPopMatrix();
+    glDrawArrays( GL_LINES, 20, 4 );
   }
 
   void Shape::quad( float dimX, float dimY )
   {
-    glPushMatrix();
-    glScalef( dimX, 1.0f, dimY );
+    tf.model.scale( Vec3( dimX, 1.0f, dimY ) );
+    tf.apply();
 
     glDrawArrays( GL_TRIANGLE_STRIP, 24, 4 );
-
-    glPopMatrix();
-  }
-
-  void Shape::sprite( const Point3& p, float dimX, float dimY )
-  {
-    Mat44 transf;
-    glGetFloatv( GL_MODELVIEW_MATRIX, transf );
-
-    transf.w = Quat::ID;
-    transf = ~transf;
-
-    glPushMatrix();
-    glTranslatef( p.x, p.y, p.z );
-    glMultMatrixf( transf );
-    glScalef( dimX, 1.0f, dimY );
-
-    glDrawArrays( GL_TRIANGLE_STRIP, 24, 4 );
-
-    glPopMatrix();
   }
 
   void Shape::box( const AABB& bb )
   {
-    glPushMatrix();
-    glTranslatef( bb.p.x, bb.p.y, bb.p.z );
-    glScalef( bb.dim.x, bb.dim.y, bb.dim.z );
+    tf.model = Mat44::translation( bb.p - Point3::ORIGIN );
+    tf.model.scale( bb.dim );
+    tf.apply();
 
     glDrawRangeElements( GL_TRIANGLE_STRIP, 28, 35, 22, GL_UNSIGNED_SHORT,
                          reinterpret_cast<const ushort*>( 0 ) + 0 );
-
-    glPopMatrix();
   }
 
   void Shape::wireBox( const AABB& bb )
   {
-    glPushMatrix();
-    glTranslatef( bb.p.x, bb.p.y, bb.p.z );
-    glScalef( bb.dim.x, bb.dim.y, bb.dim.z );
+    tf.model = Mat44::translation( bb.p - Point3::ORIGIN );
+    tf.model.scale( bb.dim );
+    tf.apply();
 
     glDrawRangeElements( GL_LINES, 28, 35, 24, GL_UNSIGNED_SHORT,
                          reinterpret_cast<const ushort*>( 0 ) + 22 );
-
-    glPopMatrix();
   }
 
   void Shape::draw( const Particle* part )
   {
-    glRotatef( Math::deg( part->rot.y ), 0.0f, 1.0f, 0.0f );
-    glRotatef( Math::deg( part->rot.x ), 1.0f, 0.0f, 0.0f );
-    glRotatef( Math::deg( part->rot.z ), 0.0f, 0.0f, 1.0f );
+    tf.model = Mat44::translation( part->p - Point3::ORIGIN );
+    tf.model.rotateX( part->rot.x );
+    tf.model.rotateY( part->rot.y );
+    tf.model.rotateZ( part->rot.z );
+    tf.apply();
 
-    glColor4f( part->colour.x, part->colour.y, part->colour.z, part->lifeTime );
+    glUniform4f( param.oz_Colour, part->colour.x, part->colour.y, part->colour.z, part->lifeTime );
 
     int index = part->index % MAX_PARTS;
     glDrawArrays( GL_TRIANGLES, 36 + index * 12, 12 );

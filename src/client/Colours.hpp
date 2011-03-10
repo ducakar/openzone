@@ -18,25 +18,25 @@ namespace client
 
   struct Colours
   {
-    static const Quat NONE;
-    static const Quat BLACK;
-    static const Quat WHITE;
+    static const Vec4 NONE;
+    static const Vec4 BLACK;
+    static const Vec4 WHITE;
 
-    static const Quat ENTITY_AABB;
-    static const Quat STRUCTURE_AABB;
-    static const Quat CLIP_AABB;
-    static const Quat NOCLIP_AABB;
-    static const Quat TAG;
+    static const Vec4 ENTITY_AABB;
+    static const Vec4 STRUCTURE_AABB;
+    static const Vec4 CLIP_AABB;
+    static const Vec4 NOCLIP_AABB;
+    static const Vec4 TAG;
 
-    static const Quat GLOBAL_AMBIENT;
+    static const Vec4 GLOBAL_AMBIENT;
 
-    static Quat diffuse;
-    static Quat ambient;
-    static Quat sky;
-    static Quat water;
+    static Vec4 diffuse;
+    static Vec4 ambient;
+    static Vec4 sky;
+    static Vec4 water;
 
-    static Quat waterBlend1;
-    static Quat waterBlend2;
+    static Vec4 waterBlend1;
+    static Vec4 waterBlend2;
   };
 
 }

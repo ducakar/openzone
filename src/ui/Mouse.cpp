@@ -13,7 +13,7 @@
 
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
-#include <client/Shape.hpp>
+#include "client/Shape.hpp"
 
 namespace oz
 {

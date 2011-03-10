@@ -80,8 +80,7 @@ namespace client
 
       Vector<const Struct*>   waterStructs;
 
-      float                   structNearDist2;
-      float                   objectNearDist2;
+      float                   nearDist2;
 
       float                   dayVisibility;
       float                   nightVisibility;

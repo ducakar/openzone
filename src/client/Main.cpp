@@ -12,6 +12,7 @@
 #include "client/Main.hpp"
 
 #include "client/Context.hpp"
+#include "client/Camera.hpp"
 #include "client/GameStage.hpp"
 #include "client/Sound.hpp"
 #include "client/Render.hpp"
@@ -233,7 +234,7 @@ namespace client
     }
 
     log.print( "Initialising SDL ..." );
-    if( SDL_Init( SDL_INIT_NOPARACHUTE ) != 0 ) {
+    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO ) != 0 ) {
       log.printEnd( " Failed" );
       return -1;
     }
@@ -307,8 +308,6 @@ namespace client
       log.println( "Random generator seed set to: %d", seed );
     }
 
-    log.print( "Initialising SDL subsystems ..." );
-
     // Don't mess with screensaver. In X11 it only makes effect for windowed mode, in fullscreen
     // mode screensaver never starts anyway. Turning off screensaver has a side effect: if the game
     // crashes, it remains turned off. Besides that, in X11 several programs (e.g. IM clients like
@@ -320,12 +319,7 @@ namespace client
     if( config.getSet( "screen.nvVSync", true ) ) {
       SDL_putenv( const_cast<char*>( "__GL_SYNC_TO_VBLANK=1" ) );
     }
-    if( SDL_InitSubSystem( SDL_INIT_VIDEO ) != 0 ) {
-      log.printEnd( " Failed" );
-      return -1;
-    }
     ui::keyboard.init();
-    log.printEnd( " OK" );
 
     const char* data = config.getSet( "dir.data", OZ_DEFAULT_DATA_DIR );
 
@@ -335,44 +329,6 @@ namespace client
       return -1;
     }
     log.printEnd( " OK" );
-
-    int screenX    = config.get( "screen.width", 0 );
-    int screenY    = config.get( "screen.height", 0 );
-    int screenBpp  = config.get( "screen.bpp", 0 );
-    int screenFull = config.getSet( "screen.full", false ) ? SDL_FULLSCREEN : 0;
-
-    log.print( "Setting OpenGL surface %dx%d-%d %s ...",
-               screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
-
-    SDL_WM_SetCaption( OZ_WINDOW_TITLE, null );
-    SDL_ShowCursor( SDL_FALSE );
-
-    if( ( screenX != 0 || screenY != 0 || screenBpp != 0 ) &&
-        SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull ) == 0 )
-    {
-      log.printEnd( " Mode not supported" );
-      return -1;
-    }
-
-    initFlags |= INIT_SDL_VIDEO;
-    SDL_Surface* surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
-    if( surface == null ) {
-      log.printEnd( " Failed" );
-      return -1;
-    }
-
-    screenX   = surface->w;
-    screenY   = surface->h;
-    screenBpp = surface->format->BitsPerPixel;
-
-    config.getSet( "screen.width", screenX );
-    config.getSet( "screen.height", screenY );
-    config.getSet( "screen.bpp", screenBpp );
-
-    ushort screenCentreX = ushort( screenX / 2 );
-    ushort screenCentreY = ushort( screenY / 2 );
-
-    log.printEnd( " OK, %dx%d-%d set", screenX, screenY, screenBpp );
 
     initFlags |= INIT_RENDER_INIT;
     render.init();
@@ -406,6 +362,9 @@ namespace client
 
     // set mouse cursor to centre of the screen and clear any events (key presses and mouse moves)
     // from before
+    ushort screenCentreX = ushort( camera.centreX );
+    ushort screenCentreY = ushort( camera.centreY );
+
     SDL_WarpMouse( screenCentreX, screenCentreY );
     while( SDL_PollEvent( &event ) ) {
     }
@@ -441,7 +400,7 @@ namespace client
         switch( event.type ) {
           case SDL_MOUSEMOTION: {
             ui::mouse.relX = -event.motion.xrel;
-            ui::mouse.relY =  event.motion.yrel;
+            ui::mouse.relY = event.motion.yrel;
             SDL_WarpMouse( screenCentreX, screenCentreY );
             break;
           }

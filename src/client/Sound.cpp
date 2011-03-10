@@ -142,8 +142,9 @@ namespace client
 
   void Sound::play()
   {
+    Vec3 orientation[2] = { camera.at, camera.up };
     // add new sounds
-    alListenerfv( AL_ORIENTATION, camera.at );
+    alListenerfv( AL_ORIENTATION, orientation[0] );
     alListenerfv( AL_POSITION, camera.p );
 
     Span span = orbis.getInters( camera.p, DMAX + AABB::MAX_DIM );

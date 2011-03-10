@@ -39,11 +39,11 @@ namespace client
       bool isVisible( const Point3& p, float radius = 0.0f )
       {
         return
-            left  * p > -radius &&
-            right * p > -radius &&
-            up    * p > -radius &&
-            down  * p > -radius &&
-            front * p < +radius;
+            p * left  > -radius &&
+            p * right > -radius &&
+            p * up    > -radius &&
+            p * down  > -radius &&
+            p * front < +radius;
       }
 
       OZ_ALWAYS_INLINE
@@ -72,11 +72,11 @@ namespace client
         Point3 maxs = Point3( x, y,  Orbis::DIM );
 
         return
-            ( left  * mins > -radius || left  * maxs > -radius ) &&
-            ( right * mins > -radius || right * maxs > -radius ) &&
-            ( up    * mins > -radius || up    * maxs > -radius ) &&
-            ( down  * mins > -radius || down  * maxs > -radius ) &&
-            ( front * mins < +radius || front * maxs < +radius );
+            ( mins * left  > -radius || maxs * left  > -radius ) &&
+            ( mins * right > -radius || maxs * right > -radius ) &&
+            ( mins * up    > -radius || maxs * up    > -radius ) &&
+            ( mins * down  > -radius || maxs * down  > -radius ) &&
+            ( mins * front < +radius || maxs * front < +radius );
       }
 
       // get min and max index for cells per each axis, which should be included in pvs

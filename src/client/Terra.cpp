@@ -328,6 +328,11 @@ namespace client
     span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
     span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
+    shader.use( Shader::TERRA );
+
+    tf.model = Mat44::ID;
+    tf.apply();
+
     glBindTexture( GL_TEXTURE_2D, mapTexId );
     glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, detailTexId );
@@ -363,6 +368,11 @@ namespace client
 
       sideVertices = 4;
     }
+
+    shader.use( Shader::TERRA );
+
+    tf.model = Mat44::ID;
+    tf.apply();
 
     glBindTexture( GL_TEXTURE_2D, waterTexId );
 

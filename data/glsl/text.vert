@@ -1,17 +1,14 @@
 /*
- *  Vec3.hpp
- *
- *  3D vector
+ *  text.vert
+ *  [description]
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#include "Vec3.hpp"
+in vec4 inPosition;
 
-namespace oz
+void main()
 {
-
-  const Vec3 Vec3::ZERO = Vec3( 0.0f, 0.0f, 0.0f );
-
+  gl_Position = oz_Transform.proj * inPosition;
 }

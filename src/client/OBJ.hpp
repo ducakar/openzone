@@ -30,8 +30,8 @@ namespace client
 
       struct Segment
       {
-        Quat specular;
-        Quat diffuse;
+        Vec4 specular;
+        Vec4 diffuse;
 
         int  firstIndex;
         int  nIndices;

@@ -11,30 +11,85 @@
 
 #include "stable.hpp"
 
+#include "client/common.hpp"
+
 namespace oz
 {
 namespace client
 {
 
+  class Shader;
+
   struct Param
   {
+    int oz_Transform_proj;
+    int oz_Transform_camera;
+    int oz_Transform_projCamera;
+    int oz_Transform_model;
+    int oz_Transform_complete;
+
+    int oz_Colour;
+
     int oz_IsTextureEnabled;
     int oz_Textures;
     int oz_TextureScales;
 
-    int oz_DiffuseMaterial;
     int oz_SpecularMaterial;
-    int oz_AmbientLight;
-    int oz_SkyLight;
+
+    int oz_SkyLight_dir;
+    int oz_SkyLight_diffuse;
+    int oz_SkyLight_ambient;
+
     int oz_PointLights;
+
+    int oz_NearDistance;
 
     int oz_FogDistance;
     int oz_FogColour;
 
-    int oz_IsHighlightEnabled;
+    int oz_Highlight;
   };
 
   extern Param param;
+
+  class Transform
+  {
+    friend class Shader;
+
+    private:
+
+      Vector<Mat44> stack;
+
+    public:
+
+      Mat44 proj;
+      Mat44 camera;
+      Mat44 model;
+
+      Mat44 projCamera;
+
+      OZ_ALWAYS_INLINE
+      void push()
+      {
+        stack.pushLast( model );
+      }
+
+      OZ_ALWAYS_INLINE
+      void pop()
+      {
+        model = stack.popLast();
+      }
+
+      void ortho();
+      void projection();
+
+      void applyCamera();
+      void applyModel() const;
+      void apply() const;
+
+  };
+
+  extern Transform tf;
 
   struct Attrib
   {
@@ -55,6 +110,8 @@ namespace client
       enum Program : int
       {
         UI,
+        TEXT,
+        SIMPLE,
         MESH_ITEMVIEW,
         MESH_NEAR,
         MESH_FAR,
@@ -72,19 +129,19 @@ namespace client
       {
         static const SkyLight NONE;
 
-        float dir[3];
-        float diffuse[3];
-        float ambient[3];
+        Vec3 dir;
+        Vec4 diffuse;
+        Vec4 ambient;
       };
 
       struct Light
       {
         static const Light NONE;
 
-        float pos[3];
-        float diffuse[3];
+        Point3 pos;
+        Vec4   diffuse;
 
-        explicit Light( const Point3& pos, const Vec3& diffuse );
+        explicit Light( const Point3& pos, const Vec4& diffuse );
       };
 
       static const int   BUFFER_SIZE = 8192;
@@ -111,12 +168,12 @@ namespace client
       void use( Program prog );
 
       void setLightingDistance( float distance );
-      void setAmbientLight( const Vec3& colour );
-      void setSkyLight( const Vec3& dir, const Vec3& colour );
+      void setAmbientLight( const Vec4& colour );
+      void setSkyLight( const Vec3& dir, const Vec4& colour );
 
-      int  addLight( const Point3& pos, const Vec3& colour );
+      int  addLight( const Point3& pos, const Vec4& colour );
       void removeLight( int id );
-      void setLight( int id, const Point3& pos, const Vec3& colour );
+      void setLight( int id, const Point3& pos, const Vec4& colour );
 
       void updateLights();
 

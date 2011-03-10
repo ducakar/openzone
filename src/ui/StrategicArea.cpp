@@ -108,6 +108,8 @@ namespace ui
       return;
     }
 
+    shader.use( Shader::TEXT );
+
     glRasterPos2i( x + 1, y - 1 );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
 
@@ -119,6 +121,8 @@ namespace ui
 
     glRasterPos2i( x, y );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+
+    shader.use( Shader::UI );
 
     textWidth = text->w;
     SDL_FreeSurface( text );
@@ -156,12 +160,12 @@ namespace ui
 
     hard_assert( 0.0f <= life && life <= 1.0f );
 
-    glColor4f( 1.0f - life, life, 0.0f, 1.0f );
+    glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 1.0f );
     shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
-    glColor4f( 0.0f, 0.0f, 0.0f, 0.2f );
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.2f );
     shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
     shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
   }
 
@@ -183,12 +187,12 @@ namespace ui
 
       hard_assert( 0.0f <= life && life <= 1.0f );
 
-      glColor4f( 1.0f - life, life, 0.0f, 0.5f );
+      glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.5f );
       shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );
-      glColor4f( 0.0f, 0.0f, 0.0f, 0.2f );
+      glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.2f );
       shape.fill( minX - 1.0f + lifeWidth, maxY + 3.0f, lifeWidthLeft, 6.0f );
 
-      glColor4f( 1.0f, 1.0f, 1.0f, 0.5f );
+      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.5f );
       shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
 
       String description;
@@ -204,7 +208,7 @@ namespace ui
       }
     }
 
-    glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
     shape.tag( minX, minY, maxX, maxY );
   }
 

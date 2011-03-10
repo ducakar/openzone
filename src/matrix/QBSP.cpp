@@ -126,7 +126,7 @@ namespace oz
     for( int i = 0; i < brush.nSides; ++i ) {
       const Plane& plane = planes[ brushSides[brush.firstSide + i] ];
 
-      float offset = plane.abs() * Vec3( maxDim, maxDim, maxDim );
+      float offset = Vec3( maxDim, maxDim, maxDim ) * plane.abs();
 
       if( offset <= plane.d ) {
         return false;
@@ -202,10 +202,10 @@ namespace oz
 
       fread( &plane, sizeof( QBSPPlane ), 1, file );
 
-      planes[i]   = Vec3( plane.normal );
+      planes[i].n = Vec3( plane.normal );
       planes[i].d = plane.distance * scale;
 
-      float offset = planes[i].abs() * Vec3( maxDim, maxDim, maxDim );
+      float offset = Vec3( maxDim, maxDim, maxDim ) * planes[i].abs();
 
       if( planes[i].d < -offset ) {
         planes[i].d = -Math::INF;
@@ -722,22 +722,22 @@ namespace oz
     for( int i = 0; i < nBrushSides; ++i ) {
       Plane& plane = planes[ brushSides[i] ];
 
-      if( plane.nx == -1.0f ) {
+      if( plane.n.x == -1.0f ) {
         mins.x = min( -plane.d, mins.x );
       }
-      else if( plane.nx == 1.0f ) {
+      else if( plane.n.x == 1.0f ) {
         maxs.x = max( +plane.d, maxs.x );
       }
-      else if( plane.ny == -1.0f ) {
+      else if( plane.n.y == -1.0f ) {
         mins.y = min( -plane.d, mins.y );
       }
-      else if( plane.ny == 1.0f ) {
+      else if( plane.n.y == 1.0f ) {
         maxs.y = max( +plane.d, maxs.y );
       }
-      else if( plane.nz == -1.0f ) {
+      else if( plane.n.z == -1.0f ) {
         mins.z = min( -plane.d, mins.z );
       }
-      else if( plane.nz == 1.0f ) {
+      else if( plane.n.z == 1.0f ) {
         maxs.z = max( +plane.d, maxs.z );
       }
     }

@@ -31,7 +31,6 @@ namespace nirvana
 
   void Nirvana::sync()
   {
-// #ifndef OZ_MINGW
     // remove minds of removed bots
     for( auto i = minds.iter(); i.isValid(); ) {
       Mind* mind = i;
@@ -59,12 +58,10 @@ namespace nirvana
         }
       }
     }
-// #endif
   }
 
   void Nirvana::update()
   {
-// #ifndef OZ_MINGW
     int count = 0;
     foreach( mind, minds.iter() ) {
       const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
@@ -78,12 +75,10 @@ namespace nirvana
       ++count;
     }
     updateModulo = ( updateModulo + 1 ) % UPDATE_INTERVAL;
-// #endif
   }
 
   void Nirvana::load( InputStream* istream )
   {
-// #ifndef OZ_MINGW
     log.print( "Loading Nirvana ..." );
 
     if( istream != null ) {
@@ -99,12 +94,10 @@ namespace nirvana
     }
 
     log.printEnd( " OK" );
-// #endif
   }
 
   void Nirvana::unload( OutputStream* ostream )
   {
-// #ifndef OZ_MINGW
     log.print( "Unloading Nirvana ..." );
 
     if( ostream != null ) {
@@ -121,12 +114,10 @@ namespace nirvana
     LuaMind::pool.free();
 
     log.printEnd( " OK" );
-// #endif
   }
 
   void Nirvana::init()
   {
-// #ifndef OZ_MINGW
     log.println( "Initialising Nirvana {" );
     log.indent();
 
@@ -139,12 +130,10 @@ namespace nirvana
 
     log.unindent();
     log.println( "}" );
-// #endif
   }
 
   void Nirvana::free()
   {
-// #ifndef OZ_MINGW
     log.println( "Freeing Nirvana {" );
     log.indent();
 
@@ -154,7 +143,6 @@ namespace nirvana
 
     log.unindent();
     log.println( "}" );
-// #endif
   }
 
 }

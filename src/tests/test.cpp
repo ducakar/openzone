@@ -7,10 +7,10 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#include "stable.hpp"
+#include "../oz/oz.hpp"
 
-#include <unistd.h>
-#include <csignal>
+#include <cstdio>
+#include <cmath>
 
 using namespace oz;
 
@@ -18,5 +18,7 @@ bool Alloc::isLocked = true;
 
 int main( int, char** )
 {
+  float x = Math::NaN;
+  printf( "%x\n", x == x + 1 );
   return 0;
 }

@@ -161,7 +161,7 @@ namespace client
   {
     angle = Math::TAU * ( orbis.sky.time / orbis.sky.period );
 
-    Mat44 rot = Quat::rotAxis( axis, angle ).rotMat44();
+    Mat44 rot = Mat44::rotation( Quat::rotAxis( axis, angle ) );
     Vec3  dir = rot * originalLightDir;
 
     ratio = bound( dir.z + DAY_BIAS, 0.0f, 1.0f );
@@ -200,56 +200,56 @@ namespace client
     };
 
     // we need the transformation matrix for occlusion of stars below horizon
-    Mat44 transf = Mat44::rotZ( orbis.sky.heading ) * Mat44::rotY( angle - Math::TAU / 4.0f );
-
-    glPushMatrix();
-    glMultMatrixf( transf );
+    Mat44 transf = Mat44::rotationZ( orbis.sky.heading ) *
+        Mat44::rotationY( angle - Math::TAU / 4.0f );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
+    shader.use( Shader::STARS );
+
+    tf.model = transf;
+    tf.apply();
+
     glBindVertexArray( vao );
 
-    shader.use( Shader::STARS );
     glUniform4fv( param.oz_FogColour, 1, Colours::sky );
-    glUniform4fv( param.oz_DiffuseMaterial, 1, colour );
+    glUniform4fv( param.oz_Colour, 1, colour );
+
     glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );
 
     shape.bindVertexArray();
 
-    shader.use( Shader::UI );
+    shader.use( Shader::SIMPLE );
+
     glEnable( GL_BLEND );
     glUniform1i( param.oz_IsTextureEnabled, true );
 
-    glColor3f( 2.0f * Colours::diffuse[0] + Colours::ambient[0],
-               Colours::diffuse[1] + Colours::ambient[1],
-               Colours::diffuse[2] + Colours::ambient[2] );
+    glUniform4f( param.oz_Colour,
+                 2.0f * Colours::diffuse[0] + Colours::ambient[0],
+                 Colours::diffuse[1] + Colours::ambient[1],
+                 Colours::diffuse[2] + Colours::ambient[2],
+                 1.0f );
     glBindTexture( GL_TEXTURE_2D, sunTexId );
 
     glDisable( GL_CULL_FACE );
 
-    glPushMatrix();
-    glTranslatef( 0.0f, 0.0f, 15.0f );
-//     glMultMatrixf( ~transf );
+    tf.model = transf;
+    tf.model.translate( Vec3( 0.0f, 0.0f, +15.0f ) );
+    tf.model = tf.model * ~transf * ~tf.camera;
 
     shape.quad( 1.0f, 1.0f );
 
-    glPopMatrix();
-
-    glColor4fv( Colours::WHITE );
+    glUniform4fv( param.oz_Colour, 1, Colours::WHITE );
     glBindTexture( GL_TEXTURE_2D, moonTexId );
 
-    glPushMatrix();
-    glTranslatef( 0.0f, 0.0f, -15.0f );
-//     glMultMatrixf( ~transf );
+    tf.model = transf;
+    tf.model.translate( Vec3( 0.0f, 0.0f, -15.0f ) );
+    tf.model = tf.model * ~transf * ~tf.camera;
 
     shape.quad( 1.0f, 1.0f );
-
-    glPopMatrix();
 
     glUniform1i( param.oz_IsTextureEnabled, false );
     glDisable( GL_BLEND );
-
-    glPopMatrix();
 
     glEnable( GL_CULL_FACE );
 

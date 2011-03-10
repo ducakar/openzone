@@ -71,7 +71,7 @@ namespace oz
       }
     }
 
-    Mat44 rotMat = rot.rotMat44();
+    Mat44 rotMat = Mat44::rotation( rot );
     Vec3 at      = rotMat * Vec3( 0.0f, 1.0f, 0.0f );
     Vec3 side    = rotMat * Vec3( 1.0f, 0.0f, 0.0f );
     Vec3 up      = rotMat * Vec3( 0.0f, 0.0f, 1.0f );

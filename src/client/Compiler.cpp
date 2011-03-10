@@ -47,8 +47,8 @@ namespace client
 
   void Compiler::beginMesh()
   {
-    hard_assert( ~flags & MESH_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
+    hard_assert( !( flags & MESH_BIT ) );
+    hard_assert( !( flags & SURFACE_BIT ) );
 
     flags |= MESH_BIT;
     caps = 0;
@@ -78,7 +78,7 @@ namespace client
   void Compiler::endMesh()
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
+    hard_assert( !( flags & SURFACE_BIT ) );
 
     flags &= ~MESH_BIT;
   }
@@ -86,7 +86,7 @@ namespace client
   void Compiler::material( int, int target, const float* params )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
+    hard_assert( !( flags & SURFACE_BIT ) );
 
     switch( target ) {
       case GL_DIFFUSE: {
@@ -113,7 +113,7 @@ namespace client
   void Compiler::texture( int unit, const char* texture )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
+    hard_assert( !( flags & SURFACE_BIT ) );
 
     hard_assert( 0 <= unit && unit <= 2 );
 
@@ -123,7 +123,7 @@ namespace client
   void Compiler::begin( int mode_ )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
+    hard_assert( !( flags & SURFACE_BIT ) );
 
     flags |= SURFACE_BIT;
 
@@ -255,7 +255,7 @@ namespace client
     vert.pos[1] = y;
     vert.pos[2] = z;
 
-    if( ~flags & SURFACE_BIT ) {
+    if( !( flags & SURFACE_BIT ) ) {
       vertices.add( vert );
     }
     else {
@@ -321,8 +321,8 @@ namespace client
 
   void Compiler::getMeshData( MeshData* mesh ) const
   {
-    hard_assert( ~flags & MESH_BIT );
-    hard_assert( ~flags & SURFACE_BIT );
+    hard_assert( !( flags & MESH_BIT ) );
+    hard_assert( !( flags & SURFACE_BIT ) );
 
     int nIndices = 0;
 

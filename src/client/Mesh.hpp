@@ -63,8 +63,8 @@ namespace client
 
       struct Part
       {
-        Quat   diffuse;
-        Quat   specular;
+        Vec4   diffuse;
+        Vec4   specular;
         uint   texture[3];
 
         int    mode;
@@ -106,8 +106,8 @@ namespace client
 
       struct Part
       {
-        Quat   diffuse;
-        Quat   specular;
+        Vec4   diffuse;
+        Vec4   specular;
         String texture[3];
 
         int    mode;

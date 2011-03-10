@@ -11,6 +11,8 @@
 
 #include "ui/Frame.hpp"
 
+#include "client/Shader.hpp"
+
 #include <GL/gl.h>
 
 namespace oz
@@ -46,7 +48,7 @@ namespace ui
 
   void Frame::onDraw()
   {
-    glColor4f( 0.0f, 0.0f, 0.0f, 0.25f );
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.25f );
     fill( 0, 0, width, height );
 
     drawChildren();

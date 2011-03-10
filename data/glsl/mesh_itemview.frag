@@ -6,15 +6,12 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-varying vec2 oz_FragTexCoord;
+in vec2 exTexCoord;
+
+out vec4 outColour;
 
 void main()
 {
-  gl_FragColor = texture2D( oz_Textures[0], oz_FragTexCoord * oz_TextureScales[0] );
-
-  if( oz_IsHighlightEnabled ) {
-    float avgColour = ( gl_FragColor.x + gl_FragColor.y + gl_FragColor.z ) / 3.0;
-    vec3  highlightColour = oz_HighlightBase + oz_HighlightFactor * avgColour;
-    gl_FragColor.xyz = mix( gl_FragColor.xyz, highlightColour, 0.5 );
-  }
+  outColour = texture2D( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
+  outColour = highlightColour( outColour );
 }

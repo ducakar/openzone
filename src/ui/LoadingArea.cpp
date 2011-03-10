@@ -12,6 +12,7 @@
 #include "ui/LoadingArea.hpp"
 
 #include "client/Camera.hpp"
+#include "client/Shader.hpp"
 
 #include <GL/gl.h>
 
@@ -32,7 +33,7 @@ namespace ui
 
   void LoadingArea::onDraw()
   {
-    glColor4f( 0.0f, 0.0f, 0.0f, 1.0f );
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
     fill( 0, 0, camera.width, camera.height );
     printCentred( camera.width / 2, camera.height / 4, "LOADING" );
   }

@@ -48,8 +48,8 @@ namespace oz
     for( int i = 0; i < brush->nSides; ++i ) {
       const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset = plane.abs() * aabb.dim;
-      float dist   = plane * startPos - offset;
+      float offset = aabb.dim * plane.abs();
+      float dist   = startPos * plane - offset;
 
       result &= dist <= EPSILON;
     }
@@ -78,8 +78,8 @@ namespace oz
       const BSP::Node& node  = bsp->nodes[nodeIndex];
       const Plane&     plane = bsp->planes[node.plane];
 
-      float offset = plane.abs() * aabb.dim + 2.0f * EPSILON;
-      float dist = plane * startPos;
+      float offset = aabb.dim * plane.abs() + 2.0f * EPSILON;
+      float dist   = startPos * plane;
 
       if( dist > offset ) {
         return overlapsAABBNode( node.front );
@@ -338,14 +338,14 @@ namespace oz
   {
     float minRatio = -1.0f;
     float maxRatio =  1.0f;
-    Vec3  lastNormal;
+    const Vec3* lastNormal = null;
 
     for( int i = 0; i < brush->nSides; ++i ) {
       const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset    = plane.abs() * aabb.dim;
-      float startDist = plane * startPos - offset;
-      float endDist   = plane * endPos   - offset;
+      float offset    = aabb.dim * plane.abs();
+      float startDist = startPos * plane - offset;
+      float endDist   = endPos   * plane - offset;
 
       if( endDist > EPSILON ) {
         if( startDist < 0.0f ) {
@@ -360,14 +360,14 @@ namespace oz
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
-          lastNormal = plane.normal();
+          lastNormal = &plane.n;
         }
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
       if( minRatio < hit.ratio ) {
         hit.ratio    = max( 0.0f, minRatio );
-        hit.normal   = str->toAbsoluteCS( lastNormal );
+        hit.normal   = str->toAbsoluteCS( *lastNormal );
         hit.obj      = null;
         hit.str      = str;
         hit.entity   = entity;
@@ -384,16 +384,16 @@ namespace oz
     for( int i = 0; i < brush->nSides; ++i ) {
       const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      if( plane.nz <= 0.0f ) {
-        float centreDist = plane * startPos;
+      if( plane.n.z <= 0.0f ) {
+        float centreDist = startPos * plane;
 
         if( centreDist > -EPSILON ) {
           return;
         }
       }
       else {
-        float dist = ( plane.d - startPos.x*plane.nx + startPos.y*plane.ny ) /
-            plane.nz - startPos.z + aabb.dim.z;
+        float dist = ( plane.d - startPos.x*plane.n.x + startPos.y*plane.n.y ) /
+            plane.n.z - startPos.z + aabb.dim.z;
 
         if( dist < 0.0f ) {
           return;
@@ -413,8 +413,8 @@ namespace oz
     for( int i = 0; i < brush->nSides; ++i ) {
       const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      float offset = plane.abs() * aabb.dim;
-      float dist   = plane * startPos - offset;
+      float offset = aabb.dim * plane.abs();
+      float dist   = startPos * plane - offset;
 
       if( dist > 0.0f ) {
         return;
@@ -452,9 +452,9 @@ namespace oz
       const BSP::Node& node  = bsp->nodes[nodeIndex];
       const Plane&     plane = bsp->planes[node.plane];
 
-      float offset    = plane.abs() * aabb.dim + 2.0f * EPSILON;
-      float startDist = plane * startPos;
-      float endDist   = plane * endPos;
+      float offset    = aabb.dim * plane.abs() + 2.0f * EPSILON;
+      float startDist = startPos * plane;
+      float endDist   = endPos   * plane;
 
       if( startDist > offset && endDist > offset ) {
         trimAABBNode( node.front );

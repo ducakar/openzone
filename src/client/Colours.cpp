@@ -16,24 +16,24 @@ namespace oz
 namespace client
 {
 
-  const Quat Colours::NONE  = Quat( 0.0f, 0.0f, 0.0f, 0.0f );
-  const Quat Colours::BLACK = Quat( 0.0f, 0.0f, 0.0f, 1.0f );
-  const Quat Colours::WHITE = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+  const Vec4 Colours::NONE  = Vec4( 0.0f, 0.0f, 0.0f, 0.0f );
+  const Vec4 Colours::BLACK = Vec4( 0.0f, 0.0f, 0.0f, 1.0f );
+  const Vec4 Colours::WHITE = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
 
-  const Quat Colours::ENTITY_AABB = Quat( 1.00f, 0.20f, 0.50f, 0.30f );
-  const Quat Colours::STRUCTURE_AABB = Quat( 0.20f, 0.50f, 1.00f, 0.30f );
-  const Quat Colours::CLIP_AABB = Quat( 0.50f, 1.00f, 0.20f, 0.30f );
-  const Quat Colours::NOCLIP_AABB = Quat( 0.70f, 0.80f, 0.90f, 0.30f );
+  const Vec4 Colours::ENTITY_AABB = Vec4( 1.00f, 0.20f, 0.50f, 0.30f );
+  const Vec4 Colours::STRUCTURE_AABB = Vec4( 0.20f, 0.50f, 1.00f, 0.30f );
+  const Vec4 Colours::CLIP_AABB = Vec4( 0.50f, 1.00f, 0.20f, 0.30f );
+  const Vec4 Colours::NOCLIP_AABB = Vec4( 0.70f, 0.80f, 0.90f, 0.30f );
 
-  const Quat Colours::GLOBAL_AMBIENT = Quat( 0.20f, 0.20f, 0.20f, 1.00f );
+  const Vec4 Colours::GLOBAL_AMBIENT = Vec4( 0.20f, 0.20f, 0.20f, 1.00f );
 
-  Quat Colours::diffuse = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
-  Quat Colours::ambient = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
-  Quat Colours::sky = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
-  Quat Colours::water = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+  Vec4 Colours::diffuse = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+  Vec4 Colours::ambient = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+  Vec4 Colours::sky = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+  Vec4 Colours::water = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
 
-  Quat Colours::waterBlend1 = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
-  Quat Colours::waterBlend2 = Quat( 1.0f, 1.0f, 1.0f, 1.0f );
+  Vec4 Colours::waterBlend1 = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+  Vec4 Colours::waterBlend2 = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
 
 }
 }
