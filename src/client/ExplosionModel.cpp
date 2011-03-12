@@ -22,7 +22,7 @@ namespace oz
 namespace client
 {
 
-  Pool<ExplosionModel, 256> ExplosionModel::pool;
+  Pool<ExplosionModel> ExplosionModel::pool;
 
   Model* ExplosionModel::create( const Object* obj )
   {

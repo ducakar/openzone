@@ -360,7 +360,6 @@ namespace client
     alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
 
     alSourcefv( srcId, AL_POSITION, p );
-//     alSourcef( srcId, AL_GAIN, 1.0f );
     alSourcePlay( srcId );
 
     hard_assert( alGetError() == AL_NO_ERROR );
@@ -391,6 +390,9 @@ namespace client
 
   BSP::~BSP()
   {
+    log.println( "Unloading BSP model '%s' {", translator.bsps[bsp->id].name.cstr() );
+    log.indent();
+
     foreach( mesh, meshes.iter() ) {
       mesh->unload();
     }
@@ -403,6 +405,9 @@ namespace client
         context.releaseSound( bsp->models[i].closeSample );
       }
     }
+
+    log.unindent();
+    log.println( "}" );
   }
 
   void BSP::load()
@@ -452,10 +457,7 @@ namespace client
       return;
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
-
-    tf.model = Mat44::translation( str->p - Point3::ORIGIN );
-    tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
+    glUniform4fv( param.oz_Colour, 1, shader.colour );
 
     for( int i = 0; i < meshes.length(); ++i ) {
       const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;

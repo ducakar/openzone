@@ -196,6 +196,15 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
+      Vec3 readVec3()
+      {
+        const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[3] ) ) );
+        return Vec3( Math::fromBits( Endian::shuffle32( data[0] ) ),
+                     Math::fromBits( Endian::shuffle32( data[1] ) ),
+                     Math::fromBits( Endian::shuffle32( data[2] ) ) );
+      }
+
+      OZ_ALWAYS_INLINE
       Vec4 readVec4()
       {
         const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[4] ) ) );
@@ -203,15 +212,6 @@ namespace oz
                      Math::fromBits( Endian::shuffle32( data[1] ) ),
                      Math::fromBits( Endian::shuffle32( data[2] ) ),
                      Math::fromBits( Endian::shuffle32( data[3] ) ) );
-      }
-
-      OZ_ALWAYS_INLINE
-      Vec3 readVec3()
-      {
-        const int* data = reinterpret_cast<const int*>( prepareRead( sizeof( float[3] ) ) );
-        return Vec3( Math::fromBits( Endian::shuffle32( data[0] ) ),
-                     Math::fromBits( Endian::shuffle32( data[1] ) ),
-                     Math::fromBits( Endian::shuffle32( data[2] ) ) );
       }
 
       OZ_ALWAYS_INLINE
@@ -411,6 +411,16 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
+      void writeVec3( const Vec3& v )
+      {
+        int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[3] ) ) );
+
+        data[0] = Endian::shuffle32( Math::toBits( v.x ) );
+        data[1] = Endian::shuffle32( Math::toBits( v.y ) );
+        data[2] = Endian::shuffle32( Math::toBits( v.z ) );
+      }
+
+      OZ_ALWAYS_INLINE
       void writeVec4( const Vec4& v )
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[4] ) ) );
@@ -419,16 +429,6 @@ namespace oz
         data[1] = Endian::shuffle32( Math::toBits( v.y ) );
         data[2] = Endian::shuffle32( Math::toBits( v.z ) );
         data[3] = Endian::shuffle32( Math::toBits( v.w ) );
-      }
-
-      OZ_ALWAYS_INLINE
-      void writeVec3( const Vec3& v )
-      {
-        int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[3] ) ) );
-
-        data[0] = Endian::shuffle32( Math::toBits( v.x ) );
-        data[1] = Endian::shuffle32( Math::toBits( v.y ) );
-        data[2] = Endian::shuffle32( Math::toBits( v.z ) );
       }
 
       OZ_ALWAYS_INLINE

@@ -37,7 +37,7 @@ namespace oz
       static const float EJECT_MOVE;
       static const float EJECT_MOMENTUM;
 
-      static Pool<Vehicle, 1024> pool;
+      static Pool<Vehicle> pool;
 
     protected:
 

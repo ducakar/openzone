@@ -22,7 +22,7 @@ namespace client
   {
     public:
 
-      static Pool<MD2WeaponModel, 256> pool;
+      static Pool<MD2WeaponModel> pool;
 
       static Model* create( const Object* obj );
 

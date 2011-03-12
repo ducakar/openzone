@@ -161,15 +161,16 @@ namespace client
       Shader::MESH_FAR,
       Shader::TERRA,
       Shader::TERRA_WATER,
-      Shader::PARTICLES
+      Shader::PARTICLES,
+      Shader::MD2
     };
-    foreach( shId, citer( programs, 4 ) ) {
+    foreach( shId, citer( programs, 6 ) ) {
       shader.use( *shId );
 
       tf.applyCamera();
 
       shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
-      shader.setSkyLight( camera.rotTMat * sky.lightDir, Colours::diffuse );
+      shader.setSkyLight( sky.lightDir, Colours::diffuse );
       shader.updateLights();
 
       glUniform1f( param.oz_NearDistance, Math::sqrt( nearDist2 ) );
@@ -191,6 +192,9 @@ namespace client
     for( int i = firstNearStruct; i < structs.length(); ++i ) {
       const Struct* str = structs[i].str;
 
+      tf.model = Mat44::translation( str->p - Point3::ORIGIN );
+      tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
+
       context.drawBSP( str, Mesh::SOLID_BIT );
     }
 
@@ -198,6 +202,9 @@ namespace client
 
     for( int i = 0; i < firstNearStruct; ++i ) {
       const Struct* str = structs[i].str;
+
+      tf.model = Mat44::translation( str->p - Point3::ORIGIN );
+      tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
 
       context.drawBSP( str, Mesh::SOLID_BIT );
     }
@@ -219,16 +226,15 @@ namespace client
       const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
-        glUniform1f( param.oz_Highlight, 1.0f );
+        shader.colour = Colours::TAG;
       }
 
       tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
-      tf.apply();
 
       context.drawModel( obj, null );
 
       if( obj->index == camera.tagged ) {
-        glUniform1f( param.oz_Highlight, 0.0f );
+        shader.colour = Colours::WHITE;
       }
     }
 
@@ -238,16 +244,15 @@ namespace client
       const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
-        glUniform1f( param.oz_Highlight, 1.0f );
+        shader.colour = Colours::TAG;
       }
 
       tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
-      tf.apply();
 
       context.drawModel( obj, null );
 
       if( obj->index == camera.tagged ) {
-        glUniform1f( param.oz_Highlight, 0.0f );
+        shader.colour = Colours::WHITE;
       }
     }
 
@@ -267,6 +272,11 @@ namespace client
     for( int i = 0; i < particles.length(); ++i ) {
       const Particle* part = particles[i];
 
+      tf.model = Mat44::translation( part->p - Point3::ORIGIN );
+      tf.model.rotateX( part->rot.x );
+      tf.model.rotateY( part->rot.y );
+      tf.model.rotateZ( part->rot.z );
+
       shape.draw( part );
     }
 
@@ -284,6 +294,9 @@ namespace client
     for( int i = 0; i < firstNearStruct; ++i ) {
       const Struct* str = structs[i].str;
 
+      tf.model = Mat44::translation( str->p - Point3::ORIGIN );
+      tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
+
       context.drawBSP( str, Mesh::ALPHA_BIT );
     }
 
@@ -291,6 +304,9 @@ namespace client
 
     for( int i = firstNearStruct; i < structs.length(); ++i ) {
       const Struct* str = structs[i].str;
+
+      tf.model = Mat44::translation( str->p - Point3::ORIGIN );
+      tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
 
       context.drawBSP( str, Mesh::ALPHA_BIT );
     }
@@ -373,7 +389,10 @@ namespace client
   {
     drawOrbis();
     drawCommon();
+  }
 
+  void Render::sync() const
+  {
     uint beginTime = SDL_GetTicks();
 
     SDL_GL_SwapBuffers();
@@ -408,6 +427,8 @@ namespace client
 
   void Render::unload()
   {
+    glFinish();
+
     log.println( "Unloading Render {" );
     log.indent();
 
@@ -478,6 +499,7 @@ namespace client
 
     bool isVAOSupported = false;
     bool isFBOSupported = false;
+    bool isFloatTexSupported = false;
     bool isS3TCSupported = false;
 
     String version = String::cstr( glGetString( GL_VERSION ) );
@@ -499,6 +521,9 @@ namespace client
       }
       if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
         isFBOSupported = true;
+      }
+      if( extension->equals( "GL_ARB_texture_float" ) ) {
+        isFloatTexSupported = true;
       }
       if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
         isS3TCSupported = true;
@@ -523,6 +548,10 @@ namespace client
     if( !isFBOSupported ) {
       log.println( "Error: Frame buffer object (GL_ARB_framebuffer_object) is not supported" );
       throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
+    }
+    if( !isFloatTexSupported ) {
+      log.println( "Error: Floating point texture pixels (GL_ARB_texture_float) not supported" );
+      throw Exception( "GL_ARB_texture_float not supported by OpenGL" );
     }
     if( !isS3TCSupported ) {
       log.println( "Error: S3 texture compression (GL_EXT_texture_compression_s3tc) is not supported" );

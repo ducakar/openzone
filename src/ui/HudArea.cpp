@@ -127,8 +127,10 @@ namespace ui
         shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
       }
 
+      // it might happen that bot itself is tagged object for a frame when switching from freecam
+      // into a bot
       if( bot->parent == -1 ) {
-        if( camera.tagged != -1 ) {
+        if( camera.tagged != -1 && camera.tagged != bot->index ) {
           const Object* tagged = camera.taggedObj;
 
           if( tagged->flags & Object::VEHICLE_BIT ) {
@@ -147,8 +149,9 @@ namespace ui
           const Dynamic* taggedDyn = static_cast<const Dynamic*>( tagged );
           const Bot* taggedBot = static_cast<const Bot*>( tagged );
 
-          if( bot->grabObj == -1 && bot->weaponItem == -1 && !( bot->state & Bot::SWIMMING_BIT ) &&
-              ( tagged->flags & Object::DYNAMIC_BIT ) &&
+          if( bot->grabObj == -1 && bot->weaponItem == -1 && ( tagged->flags & Object::DYNAMIC_BIT ) &&
+              // not swimming
+              ( ( bot->flags & Object::ON_FLOOR_BIT ) || bot->lower != -1 || bot->depth <= bot->dim.z ) &&
               ( !( tagged->flags & Object::BOT_BIT ) || ( taggedBot->grabObj == -1 ) ) )
           {
             if( taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged ) {

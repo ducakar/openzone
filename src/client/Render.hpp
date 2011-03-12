@@ -104,6 +104,7 @@ namespace client
     public:
 
       void draw();
+      void sync() const;
 
       void load();
       void unload();

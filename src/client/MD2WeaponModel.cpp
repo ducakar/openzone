@@ -22,7 +22,7 @@ namespace oz
 {
 namespace client
 {
-  Pool<MD2WeaponModel, 256> MD2WeaponModel::pool;
+  Pool<MD2WeaponModel> MD2WeaponModel::pool;
 
   Model* MD2WeaponModel::create( const Object* obj )
   {
@@ -50,14 +50,11 @@ namespace client
 
     if( parent == null ) {
       tf.model.translate( Vec3( md2->weaponTransl.x, md2->weaponTransl.y, md2->weaponTransl.z ) );
-      tf.apply();
 
       md2->drawFrame( 0 );
     }
     else if( parent->flags & Model::MD2MODEL_BIT ) {
       const MD2Model* parentModel = static_cast<const MD2Model*>( parent );
-
-      tf.apply();
 
       md2->draw( &parentModel->anim );
     }

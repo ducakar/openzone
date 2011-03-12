@@ -19,6 +19,7 @@ namespace oz
     public:
 
       static const Vec4 ZERO;
+      static const Vec4 ONE;
       static const Vec4 ID;
 
       float w;

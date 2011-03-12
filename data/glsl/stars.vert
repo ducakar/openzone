@@ -8,13 +8,12 @@
 
 in vec3 inPosition;
 
-out vec3 exPosition;
-out vec3 exLocalPosition;
+out vec3  exPosition;
+out float exAzimuth;
 
 void main()
 {
-  vec4 position   = gl_ModelViewMatrix * vec4( inPosition, 1.0 );
-  exPosition      = position.xyz;
-  exLocalPosition = inPosition;
-  gl_Position     = oz_Transform.complete * vec4( inPosition, 1.0 );
+  exPosition  = inPosition;
+  exAzimuth   = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).z;
+  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
 }

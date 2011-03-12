@@ -47,7 +47,7 @@ namespace client
     int oz_FogDistance;
     int oz_FogColour;
 
-    int oz_Highlight;
+    int oz_MD2Anim;
   };
 
   extern Param param;
@@ -58,7 +58,7 @@ namespace client
 
     private:
 
-      Vector<Mat44> stack;
+      SVector<Mat44, 8> stack;
 
     public:
 
@@ -120,6 +120,7 @@ namespace client
         TERRA_WATER,
         STARS,
         PARTICLES,
+        MD2,
         MAX
       };
 
@@ -147,25 +148,28 @@ namespace client
       static const int   BUFFER_SIZE = 8192;
       static const char* PROGRAM_NAMES[MAX];
 
-      uint          vertShaders[MAX];
-      uint          fragShaders[MAX];
-      uint          programs[MAX];
-      Param         progParams[MAX];
+      uint                vertShaders[MAX];
+      uint                fragShaders[MAX];
+      uint                programs[MAX];
+      Param               progParams[MAX];
 
-      Program       activeProgram;
+      Program             activeProgram;
+      SVector<Program, 8> programStack;
 
-      uint          textures[2];
-
-      float         lightingDistance;
-      SkyLight      skyLight;
-      Sparse<Light> lights;
+      float               lightingDistance;
+      SkyLight            skyLight;
+      Sparse<Light>       lights;
 
       void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
       void loadProgram( Program prog, const char** sources, int* lengths );
 
     public:
 
+      Vec4 colour;
+
       void use( Program prog );
+      void push();
+      void pop();
 
       void setLightingDistance( float distance );
       void setAmbientLight( const Vec4& colour );

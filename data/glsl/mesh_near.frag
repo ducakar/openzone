@@ -15,5 +15,5 @@ void main()
 {
   outColour = exColour;
   outColour *= texture2D( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
-  outColour = highlightColour( outColour );
+  outColour *= oz_Colour;
 }

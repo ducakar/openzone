@@ -369,7 +369,7 @@ namespace client
       sideVertices = 4;
     }
 
-    shader.use( Shader::TERRA );
+    shader.use( Shader::TERRA_WATER );
 
     tf.model = Mat44::ID;
     tf.apply();

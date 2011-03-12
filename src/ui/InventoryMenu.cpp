@@ -107,6 +107,7 @@ namespace ui
     tf.model = Mat44::ID;
     tf.model.translate( Vec3( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0.0f ) );
     tf.model.translate( Vec3( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f ) );
+    tf.model.z = Vec4::ZERO;
 
     const Vector<int>& items = camera.botObj->items;
 
@@ -130,17 +131,16 @@ namespace ui
       tf.model.rotateX( Math::rad( -70.0f ) );
       tf.model.rotateZ( Math::rad( +20.0f ) );
       tf.model.scale( Vec3( scale, scale, scale ) );
-      tf.apply();
 
       if( i == tagged ) {
-        glUniform1f( param.oz_Highlight, 1.0f );
+        shader.colour = Colours::TAG;
         taggedItem = item;
       }
 
       context.drawModel( item, null );
 
       if( i == tagged ) {
-        glUniform1f( param.oz_Highlight, 0.0f );
+        shader.colour = Colours::WHITE;
       }
 
       tf.pop();

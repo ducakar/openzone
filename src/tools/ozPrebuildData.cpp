@@ -212,6 +212,8 @@ int main( int argc, char** argv )
     buffer.alloc( 10 * 1024 * 1024 );
     matrix.init();
 
+    client::ui::Mouse::prebuild();
+
     prebuildTextures( "ui", "ui", true, GL_LINEAR, GL_LINEAR );
     prebuildTextures( "textures/oz", "bsp/tex", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
 

@@ -16,10 +16,10 @@ out vec4 exColour;
 
 void main()
 {
-  vec3 normal = gl_NormalMatrix * inNormal;
+  vec3 normal = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
 
-  gl_Position = gl_ModelViewProjectionMatrix * exPosition;
-  exPosition  = gl_ModelViewMatrix * vec4( inPosition, 1.0 );
+  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
+  exPosition  = oz_Transform.camera * oz_Transform.model * vec4( inPosition, 1.0 );
   exTexCoord  = inTexCoord;
   exColour    = skyLightColour( normal );
 }

@@ -6,16 +6,18 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec3 exPosition;
-in vec3 exLocalPosition;
+in vec3  exPosition;
+in float exAzimuth;
 
 out vec4 outColour;
 
 void main()
 {
-  float dist    = ( length( exPosition ) - 50.0 ) / 50.0;
-  vec4  disturb = vec4( sin( exLocalPosition * 100.0 ) * 0.20, 0.0 );
-  outColour     = mix( oz_Colour + disturb, oz_FogColour, dist );
+  if( exAzimuth < 0.0 ) {
+    discard;
+  }
 
-  outColour = vec4( 1.0, 1.0, 1.0, 1.0 );
+  float dist    = ( length( exPosition ) - 50.0 ) / 50.0;
+  vec4  disturb = vec4( sin( exPosition * 100.0 ) * 0.20, 0.0 );
+  outColour     = mix( oz_Colour + disturb, oz_FogColour, dist );
 }

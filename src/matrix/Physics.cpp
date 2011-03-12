@@ -144,7 +144,7 @@ namespace oz
 
       Dynamic* sObj = obj->lower == -1 ? null : static_cast<Dynamic*>( orbis.objects[obj->lower] );
 
-      // on floor
+      // on floor or still object
       if( ( obj->flags & Object::ON_FLOOR_BIT ) ||
           ( sObj != null && ( sObj->flags & Object::DISABLED_BIT ) ) )
       {
@@ -175,7 +175,10 @@ namespace oz
 
           if( obj->momentum.z <= 0.0f ) {
             obj->momentum.z = 0.0f;
-            return false;
+
+            if( systemMom <= 0.0f ) {
+              return false;
+            }
           }
         }
       }

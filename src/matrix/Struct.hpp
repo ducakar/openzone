@@ -71,7 +71,7 @@ namespace oz
         R270
       };
 
-      static Pool<Struct, 256> pool;
+      static Pool<Struct> pool;
 
       static const Mat44 rotations[];
       static const Mat44 invRotations[];
