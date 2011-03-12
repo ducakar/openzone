@@ -21,7 +21,7 @@ namespace oz
 namespace client
 {
 
-  Pool<SMMVehicleModel, 256> SMMVehicleModel::pool;
+  Pool<SMMVehicleModel> SMMVehicleModel::pool;
 
   Model* SMMVehicleModel::create( const Object* obj )
   {
@@ -42,27 +42,24 @@ namespace client
 
   void SMMVehicleModel::draw( const Model* )
   {
+    const Vehicle* veh = static_cast<const Vehicle*>( obj );
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
+
     if( !smm->isLoaded ) {
       return;
     }
 
-    const Vehicle* veh = static_cast<const Vehicle*>( obj );
-    const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
-
-    tf.model.rotate( veh->rot );
-
     for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
       int index = veh->crew[i];
 
-      if( index != -1 && ( index != camera.bot || camera.isExternal ) ) {
+      if( index != -1 ) {
         const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->crew[i]] );
 
         tf.push();
         tf.model.translate( Vec3( clazz->crewPos[i].x, clazz->crewPos[i].y, clazz->crewPos[i].z ) );
         tf.model.rotateZ( -bot->h );
-        tf.apply();
 
-        context.drawModel( bot, null );
+        context.drawModel( bot, this );
 
         tf.pop();
       }

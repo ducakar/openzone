@@ -27,7 +27,7 @@ namespace client
 
     public:
 
-      static Pool<SMMVehicleModel, 256> pool;
+      static Pool<SMMVehicleModel> pool;
 
       static Model* create( const Object* obj );
 

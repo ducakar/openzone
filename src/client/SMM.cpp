@@ -55,6 +55,10 @@ namespace client
 
   void SMM::draw() const
   {
+    glUniform4fv( param.oz_Colour, 1, shader.colour );
+
+    tf.apply();
+
     mesh.draw( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
   }
 

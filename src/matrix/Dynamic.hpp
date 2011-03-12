@@ -21,7 +21,7 @@ namespace oz
   {
     public:
 
-      static Pool<Dynamic, 2048> pool;
+      static Pool<Dynamic, 4096> pool;
 
       Vec3  velocity;
       Vec3  momentum;   // desired velocity

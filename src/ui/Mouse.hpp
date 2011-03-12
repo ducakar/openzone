@@ -39,11 +39,13 @@ namespace ui
 
       struct Cursor
       {
-        uint texId;
         int  size;
         int  hotspotX;
         int  hotspotY;
+        uint texId;
       };
+
+      static const char* NAMES[MAX];
 
       Cursor cursors[MAX];
 
@@ -70,6 +72,10 @@ namespace ui
 
       int  icon;
       bool doShow;
+
+#ifdef OZ_BUILD_TOOLS
+      static void prebuild();
+#endif
 
       void prepare();
       void update();

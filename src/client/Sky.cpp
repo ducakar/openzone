@@ -206,6 +206,7 @@ namespace client
     hard_assert( glGetError() == GL_NO_ERROR );
 
     shader.use( Shader::STARS );
+    tf.applyCamera();
 
     tf.model = transf;
     tf.apply();
@@ -220,6 +221,7 @@ namespace client
     shape.bindVertexArray();
 
     shader.use( Shader::SIMPLE );
+    tf.applyCamera();
 
     glEnable( GL_BLEND );
     glUniform1i( param.oz_IsTextureEnabled, true );

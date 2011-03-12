@@ -75,24 +75,13 @@ uniform float     oz_FogDistance;
 uniform vec4      oz_FogColour;
 
 /*
- * Highlight (selected object)
+ * MD2 animation
  */
-const   vec4      oz_HighlightBase    = vec4( 0.00, 0.30, 0.40, 1.00 );
-const   vec4      oz_HighlightFactor  = vec4( 0.40, 1.20, 1.60, 1.00 );
-
-uniform float     oz_Highlight        = 0.0;
+uniform vec3      oz_MD2Anim;   // vec3( firstFrame, secondFrame, interpolation )
 
 vec4 skyLightColour( in vec3 normal )
 {
   float diffuseFactor = max( dot( oz_SkyLight.dir, normal ), 0.0 );
   vec4 colour = diffuseFactor * oz_SkyLight.diffuse + oz_SkyLight.ambient;
   return min( colour, vec4( 1.0, 1.0, 1.0, 1.0 ) );
-}
-
-vec4 highlightColour( in vec4 colour )
-{
-  float avgColour = ( colour.x + colour.y + colour.z ) / 3.0;
-  vec4  highlightColour = oz_HighlightBase + oz_HighlightFactor * avgColour;
-
-  return mix( colour, highlightColour, 0.5 * oz_Highlight );
 }

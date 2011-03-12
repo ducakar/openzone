@@ -29,7 +29,7 @@ namespace oz
     &Struct::Entity::updateAutoDoor
   };
 
-  Pool<Struct, 256> Struct::pool;
+  Pool<Struct> Struct::pool;
   Vector<Object*> Struct::overlappingObjs;
 
   const Mat44 Struct::rotations[] =

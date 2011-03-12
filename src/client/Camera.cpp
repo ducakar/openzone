@@ -66,7 +66,7 @@ namespace client
     horizPlane = coeff * minDist;
     vertPlane  = aspect * horizPlane;
 
-    String sDefaultState = config.getSet( "camera.defaultState", "FREECAM" );
+    String sDefaultState = config.getSet( "camera.defaultState", "STRATEGIC" );
     if( sDefaultState.equals( "FREECAM" ) ) {
       defaultState = FREECAM;
     }
@@ -83,7 +83,7 @@ namespace client
     oldP         = Point3::ORIGIN;
     newP         = Point3::ORIGIN;
     h            = 0.0f;
-    v            = 0.0f;
+    v            = Math::TAU / 4.0f;
     w            = 0.0f;
 
     rot          = Quat::ID;

@@ -105,13 +105,9 @@ namespace client
 
   void Shape::draw( const Particle* part )
   {
-    tf.model = Mat44::translation( part->p - Point3::ORIGIN );
-    tf.model.rotateX( part->rot.x );
-    tf.model.rotateY( part->rot.y );
-    tf.model.rotateZ( part->rot.z );
-    tf.apply();
-
     glUniform4f( param.oz_Colour, part->colour.x, part->colour.y, part->colour.z, part->lifeTime );
+
+    tf.apply();
 
     int index = part->index % MAX_PARTS;
     glDrawArrays( GL_TRIANGLES, 36 + index * 12, 12 );

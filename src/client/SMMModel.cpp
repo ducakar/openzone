@@ -18,7 +18,7 @@ namespace oz
 namespace client
 {
 
-  Pool<SMMModel, 2048> SMMModel::pool;
+  Pool<SMMModel, 1024> SMMModel::pool;
 
   Model* SMMModel::create( const Object* obj )
   {
@@ -37,9 +37,11 @@ namespace client
 
   void SMMModel::draw( const Model* )
   {
-    if( smm->isLoaded ) {
-      smm->draw();
+    if( !smm->isLoaded ) {
+      return;
     }
+
+    smm->draw();
   }
 
 }

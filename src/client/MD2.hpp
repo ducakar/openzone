@@ -56,14 +56,11 @@ namespace client
       int     id;
 
       int     nFrames;
-      int     nFrameVerts;
+      int     nFramePositions;
+
+      uint    vertTexId;
 
       Mesh    mesh;
-      Vertex* frameVerts;
-      Point3* vertices;
-
-      void setFrame( int frame ) const;
-      void interpolate( const AnimState* anim ) const;
 
     public:
 

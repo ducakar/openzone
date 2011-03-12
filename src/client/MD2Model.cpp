@@ -22,7 +22,7 @@ namespace oz
 namespace client
 {
 
-  Pool<MD2Model, 1024> MD2Model::pool;
+  Pool<MD2Model> MD2Model::pool;
 
   Model* MD2Model::create( const Object* obj )
   {
@@ -66,39 +66,37 @@ namespace client
 
   void MD2Model::draw( const Model* )
   {
-    if( !md2->isLoaded ) {
-      return;
-    }
-
     const Bot* bot = static_cast<const Bot*>( obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    tf.model.rotateZ( bot->h );
+    if( !md2->isLoaded ) {
+      return;
+    }
 
     if( bot->anim != anim.type ) {
       setAnim( bot->anim );
     }
 
+    tf.model.rotateZ( bot->h );
+
     if( bot->state & Bot::DEATH_BIT ) {
-      float colour[] = { 1.0f, 1.0f, 1.0f, bot->life / clazz->life * 3.0f };
-
-      tf.apply();
-
-      glEnable( GL_BLEND );
-      glUniform4fv( param.oz_Colour, 1, colour );
+      shader.colour.w = min( bot->life * 3.0f / clazz->life, 1.0f );
+      if( shader.colour.w != 1.0f ) {
+        glEnable( GL_BLEND );
+      }
 
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
 
-      glUniform4fv( param.oz_Colour, 1, Colours::WHITE );
-      glDisable( GL_BLEND );
+      if( shader.colour.w != 1.0f ) {
+        glDisable( GL_BLEND );
+      }
+      shader.colour.w = 1.0f;
     }
     else if( bot->index != camera.bot || camera.isExternal ) {
       if( bot->state & Bot::CROUCHING_BIT ) {
         tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z ) );
       }
-
-      tf.apply();
 
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
@@ -111,7 +109,6 @@ namespace client
       tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
       tf.model.rotateX( bot->v - Math::TAU / 4.0f );
       tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
-      tf.apply();
 
       md2->advance( &anim, timer.frameTime );
       context.drawModel( orbis.objects[bot->weaponItem], this );

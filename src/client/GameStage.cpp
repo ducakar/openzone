@@ -174,6 +174,7 @@ namespace client
 
     render.draw();
     sound.updateMusic();
+    render.sync();
 
     timer.renderMillis += SDL_GetTicks() - beginTime;
   }
@@ -184,6 +185,8 @@ namespace client
     log.indent();
 
     SDL_Delay( uint( config.get( "gameStage.loadingTime", 0.0f ) * 1000.0f ) );
+
+//     sound.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
 
     camera.update();
     camera.prepare();
@@ -199,7 +202,9 @@ namespace client
   }
 
   void GameStage::end()
-  {}
+  {
+    sound.unloadMusic();
+  }
 
   void GameStage::load()
   {

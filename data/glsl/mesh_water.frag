@@ -18,6 +18,6 @@ void main()
 
   outColour = exColour;
   outColour *= texture2D( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
+  outColour *= oz_Colour;
   outColour = mix( outColour, oz_FogColour, fogRatio );
-  outColour = highlightColour( outColour );
 }

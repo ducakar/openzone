@@ -87,7 +87,8 @@ namespace client
     "terra",
     "terra_water",
     "stars",
-    "particles"
+    "particles",
+    "md2"
   };
 
   const Shader::Light Shader::Light::NONE = Shader::Light( Point3::ORIGIN, Vec4::ZERO );
@@ -213,7 +214,7 @@ namespace client
     OZ_REGISTER_PARAMETER( oz_FogDistance,              "oz_FogDistance" );
     OZ_REGISTER_PARAMETER( oz_FogColour,                "oz_FogColour" );
 
-    OZ_REGISTER_PARAMETER( oz_Highlight,                "oz_Highlight" );
+    OZ_REGISTER_PARAMETER( oz_MD2Anim,                  "oz_MD2Anim" );
 
     param = progParams[prog];
 
@@ -235,6 +236,16 @@ namespace client
     param = progParams[prog];
 
     hard_assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void Shader::push()
+  {
+    programStack.pushLast( activeProgram );
+  }
+
+  void Shader::pop()
+  {
+    use( programStack.popLast() );
   }
 
   void Shader::setLightingDistance( float distance )
@@ -320,8 +331,7 @@ namespace client
       loadProgram( Program( i ), sources, lengths );
     }
 
-    textures[0] = 0;
-    textures[1] = 0;
+    colour = Vec4::ONE;
 
     log.unindent();
     log.println( "}" );
@@ -330,9 +340,6 @@ namespace client
   void Shader::unload()
   {
     log.print( "Unloading Shader ..." );
-
-    textures[0] = 0;
-    textures[1] = 0;
 
     for( int i = 2; i < MAX; ++i ) {
       if( programs[i] != 0 ) {
@@ -360,8 +367,6 @@ namespace client
   {
     log.println( "Initialising Shader {" );
     log.indent();
-
-    tf.stack.alloc( 16 );
 
     aSet<uint>( vertShaders, 0, MAX );
     aSet<uint>( fragShaders, 0, MAX );
@@ -413,8 +418,6 @@ namespace client
         fragShaders[i] = 0;
       }
     }
-
-    tf.stack.dealloc();
 
     hard_assert( glGetError() == GL_NO_ERROR );
 

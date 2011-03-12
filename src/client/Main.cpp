@@ -41,9 +41,6 @@ namespace client
   {
     uint beginTime = SDL_GetTicks();
 
-    log.println( "Shutdown {" );
-    log.indent();
-
     if( initFlags & INIT_RENDER_LOAD ) {
       render.unload();
     }
@@ -108,8 +105,6 @@ namespace client
 
       float shutdownTime  = float( SDL_GetTicks() - beginTime )  * 0.001f;
 
-      renderTime -= scheduleTime;
-
       context.printLoad();
       Alloc::printStatistics();
 
@@ -132,24 +127,22 @@ namespace client
       log.println( "  Active time usage {" );
       log.println( "    %6.2f %%  [M:0] sleep",           sleepTime     / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:1] loader",          loaderTime    / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] ",                m2Time        / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] ui",              uiTime        / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] sound",           soundTime     / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] render",          renderTime    / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] + schedule",      scheduleTime  / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] + sky",           skyTime       / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] + terra",         terraTime     / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] + structs",       structsTime   / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] + objects",       objectsTime   / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] + particles",     particlesTime / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] + misc",          miscTime      / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] + ui",            renderUiTime  / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] + sync",          syncTime      / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] presentation",    m2Time        / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] - ui",            uiTime        / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] - sound",         soundTime     / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2] - render",        renderTime    / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + schedule",    scheduleTime  / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + sky",         skyTime       / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + terra",       terraTime     / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + structs",     structsTime   / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + objects",     objectsTime   / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + particles",   particlesTime / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + misc",        miscTime      / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + ui",          renderUiTime  / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + sync",        syncTime      / activeTime * 100.0f );
       log.println( "    %6.2f %%  [A:1] matrix",          matrixTime    / activeTime * 100.0f );
       log.println( "    %6.2f %%  [A:2] nirvana",         nirvanaTime   / activeTime * 100.0f );
       log.println( "  }" );
-      log.println( "}" );
-      log.unindent();
       log.println( "}" );
     }
 

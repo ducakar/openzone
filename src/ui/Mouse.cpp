@@ -24,6 +24,52 @@ namespace ui
 
   Mouse mouse;
 
+  const char* Mouse::NAMES[Mouse::MAX] = {
+    "X_cursor",
+    "left_ptr",
+    "fleur",
+    "xterm",
+    "hand2"
+  };
+
+#ifdef OZ_BUILD_TOOLS
+  void Mouse::prebuild()
+  {
+    log.println( "Prebuilding mouse cursors {" );
+    log.indent();
+
+    for( int i = 0; i < MAX; ++i ) {
+      FILE* f = fopen( "ui/" + String( NAMES[i] ) + ".in", "r" );
+      if( f == null ) {
+        throw Exception( "Cursor prebuilding failed" );
+      }
+
+      int size, hotspotX, hotspotY;
+      char imgFile[32];
+      fscanf( f, "%d %d %d %31s", &size, &hotspotX, &hotspotY, imgFile );
+      fclose( f );
+
+      int nMipmaps;
+      uint texId = context.loadRawTexture( "ui/" + String( imgFile ), &nMipmaps,
+                                           false, GL_LINEAR, GL_LINEAR );
+
+      OutputStream os = buffer.outputStream();
+
+      os.writeInt( size );
+      os.writeInt( hotspotX );
+      os.writeInt( hotspotY );
+      context.writeTexture( texId, nMipmaps, &os );
+
+      glDeleteTextures( 1, &texId );
+
+      buffer.write( "ui/" + String( NAMES[i] ) + ".ozCur", os.length() );
+    }
+
+    log.unindent();
+    log.println( "}" );
+  }
+#endif
+
   void Mouse::prepare()
   {
     relX = 0;
@@ -77,35 +123,29 @@ namespace ui
 
   void Mouse::load()
   {
-    const char* x           = config.getSet( "ui.cursor.x", "ui/X_cursor.ozcTex" );
-    cursors[X].texId        = context.loadTexture( x );
-    cursors[X].size         = config.getSet( "ui.cursor.x.size", 32 );
-    cursors[X].hotspotX     = config.getSet( "ui.cursor.x.hotspot.x", 16 );
-    cursors[X].hotspotY     = config.getSet( "ui.cursor.x.hotspot.y", 16 );
+    log.println( "Loading mouse cursors {" );
+    log.indent();
 
-    const char* arrow       = config.getSet( "ui.cursor.arrow", "ui/left_ptr.ozcTex" );
-    cursors[ARROW].texId    = context.loadTexture( arrow );
-    cursors[ARROW].size     = config.getSet( "ui.cursor.arrow.size", 32 );
-    cursors[ARROW].hotspotX = config.getSet( "ui.cursor.arrow.hotspot.x", 1 );
-    cursors[ARROW].hotspotY = config.getSet( "ui.cursor.arrow.hotspot.y", 1 );
+    for( int i = 0; i < MAX; ++i ) {
+      log.print( "Loading cursor '%s' ...", NAMES[i] );
 
-    const char* move        = config.getSet( "ui.cursor.move", "ui/fleur.ozcTex" );
-    cursors[MOVE].texId     = context.loadTexture( move );
-    cursors[MOVE].size      = config.getSet( "ui.cursor.move.size", 32 );
-    cursors[MOVE].hotspotX  = config.getSet( "ui.cursor.move.hotspot.x", 16 );
-    cursors[MOVE].hotspotY  = config.getSet( "ui.cursor.move.hotspot.y", 16 );
+      if( !buffer.read( "ui/" + String( NAMES[i] ) + ".ozCur" ) ) {
+        log.printEnd( " Failed" );
+        throw Exception( "Cursor loading failed" );
+      }
 
-    const char* text        = config.getSet( "ui.cursor.text", "ui/xterm.ozcTex" );
-    cursors[TEXT].texId     = context.loadTexture( text );
-    cursors[TEXT].size      = config.getSet( "ui.cursor.text.size", 32 );
-    cursors[TEXT].hotspotX  = config.getSet( "ui.cursor.text.hotspot.x", 16 );
-    cursors[TEXT].hotspotY  = config.getSet( "ui.cursor.text.hotspot.y", 16 );
+      InputStream is = buffer.inputStream();
 
-    const char* hand        = config.getSet( "ui.cursor.hand", "ui/hand2.ozcTex" );
-    cursors[HAND].texId     = context.loadTexture( hand );
-    cursors[HAND].size      = config.getSet( "ui.cursor.hand.size", 32 );
-    cursors[HAND].hotspotX  = config.getSet( "ui.cursor.hand.hotspot.x", 16 );
-    cursors[HAND].hotspotY  = config.getSet( "ui.cursor.hand.hotspot.y", 16 );
+      cursors[i].size     = is.readInt();
+      cursors[i].hotspotX = is.readInt();
+      cursors[i].hotspotY = is.readInt();
+      cursors[i].texId    = context.readTexture( &is );
+
+      log.printEnd( " OK" );
+    }
+
+    log.unindent();
+    log.println( "}" );
   }
 
   void Mouse::unload()

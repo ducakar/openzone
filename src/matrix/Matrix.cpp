@@ -30,7 +30,7 @@ namespace oz
 
   void Matrix::loadStressTest()
   {
-    for( int i = 0; i < 500; ++i ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
@@ -45,7 +45,7 @@ namespace oz
         synapse.addObject( "Goblin", aabb.p );
       }
     }
-    for( int i = 0; i < 500; ++i ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
@@ -60,7 +60,7 @@ namespace oz
         synapse.addObject( "Knight", aabb.p );
       }
     }
-    for( int i = 0; i < 500; ++i ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
@@ -75,7 +75,7 @@ namespace oz
         synapse.addObject( "Beast", aabb.p );
       }
     }
-    for( int i = 0; i < 500; ++i ) {
+    for( int i = 0; i < 400; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
@@ -90,7 +90,7 @@ namespace oz
         synapse.addObject( "Droid", aabb.p );
       }
     }
-    for( int i = 0; i < 5000; ++i ) {
+    for( int i = 0; i < 4000; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
@@ -105,7 +105,7 @@ namespace oz
         synapse.addObject( "MetalBarrel", aabb.p );
       }
     }
-    for( int i = 0; i < 5000; ++i ) {
+    for( int i = 0; i < 4000; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
@@ -125,7 +125,7 @@ namespace oz
   void Matrix::loadSample()
   {
     orbis.sky.heading = Math::TAU / 16;
-    orbis.sky.period = 1440.0f;
+    orbis.sky.period = 144.0f;
     orbis.sky.time = 180.0f;
 
     int index = synapse.addObject( "Lord", Point3( 52, -44, 37 ) );
