@@ -264,6 +264,10 @@ namespace oz
       for( int i = 0; i < nModels; ++i ) {
         fread( &model, sizeof( QBSPModel ), 1, file );
 
+        keyBuffer[5] = char( '0' + i / 10 );
+        keyBuffer[6] = char( '0' + i % 10 );
+        String keyName = keyBuffer;
+
         models[i].mins.x = model.bb[0][0] * scale;
         models[i].mins.y = model.bb[0][1] * scale;
         models[i].mins.z = model.bb[0][2] * scale;
@@ -278,21 +282,12 @@ namespace oz
         models[i].firstBrush = model.firstBrush;
         models[i].nBrushes   = model.nBrushes;
 
-        keyBuffer[5] = char( '0' + i / 10 );
-        keyBuffer[6] = char( '0' + i % 10 );
-        String keyName = keyBuffer;
-
         models[i].move.x = bspConfig.get( keyName + ".move.x", 0.0f );
         models[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
         models[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
 
         models[i].ratioInc = Timer::TICK_TIME / bspConfig.get( keyName + ".slideTime", 1.0f );
         models[i].flags    = 0;
-        models[i].margin   = bspConfig.get( keyName + ".margin", 1.0f );
-        models[i].timeout  = bspConfig.get( keyName + ".timeout", 6.0f );
-
-        models[i].openSample  = bspConfig.get( keyName + ".openSample", "" );
-        models[i].closeSample = bspConfig.get( keyName + ".closeSample", "" );
 
         String type = bspConfig.get( keyName + ".type", "BLOCKING" );
         if( type.equals( "IGNORING" ) ) {
@@ -317,6 +312,12 @@ namespace oz
           delete[] texTypes;
           return false;
         }
+
+        models[i].margin   = bspConfig.get( keyName + ".margin", 1.0f );
+        models[i].timeout  = bspConfig.get( keyName + ".timeout", 6.0f );
+
+        models[i].openSample  = bspConfig.get( keyName + ".openSample", "" );
+        models[i].closeSample = bspConfig.get( keyName + ".closeSample", "" );
       }
     }
 
@@ -378,6 +379,9 @@ namespace oz
     delete[] texTypes;
 
     fclose( file );
+
+    // to disable warnings
+    bspConfig.get( "shader", "" );
 
     return true;
   }

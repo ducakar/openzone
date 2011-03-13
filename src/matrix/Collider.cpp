@@ -299,12 +299,15 @@ namespace oz
     float maxRatio =  1.0f;
     const Vec3* lastNormal = null;
 
-    for( int i = 0; i < 6; ++i ) {
-      int j = i / 2;
-      const Vec3& normal = normals[i];
+    for( int i = 0; i < 3; ++i ) {
+      float relStartPos = startPos[i] - sObj->p[i];
+      float relEndPos   = endPos[i]   - sObj->p[i];
+      float dim         = aabb.dim[i] + sObj->dim[i];
 
-      float startDist = ( startPos[j] - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
-      float endDist   = ( endPos[j]   - sObj->p[j] ) * normal[j] - aabb.dim[j] - sObj->dim[j];
+      float startDist, endDist;
+
+      startDist = +relStartPos - dim;
+      endDist   = +relEndPos   - dim;
 
       if( endDist > EPSILON ) {
         if( startDist < 0.0f ) {
@@ -319,7 +322,27 @@ namespace oz
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
-          lastNormal = &normal;
+          lastNormal = &normals[2*i];
+        }
+      }
+
+      startDist = -relStartPos - dim;
+      endDist   = -relEndPos   - dim;
+
+      if( endDist > EPSILON ) {
+        if( startDist < 0.0f ) {
+          maxRatio = min( maxRatio, startDist / ( startDist - endDist ) );
+        }
+        else {
+          return;
+        }
+      }
+      else if( startDist >= 0.0f && endDist <= startDist ) {
+        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
+
+        if( ratio > minRatio ) {
+          minRatio   = ratio;
+          lastNormal = &normals[2*i + 1];
         }
       }
     }

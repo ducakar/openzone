@@ -931,6 +931,9 @@ namespace nirvana
       if( lua_isstring( l, -1 ) ) {
         log.println( "N! %s", lua_tostring( l, -1 ) );
       }
+
+      throw Exception( "Nirvana Lua function call finished with an error" );
+
       lua_settop( l, 1 );
     }
     hard_assert( lua_gettop( l ) == 1 && lua_istable( l, 1 ) );

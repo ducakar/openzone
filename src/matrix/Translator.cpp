@@ -141,10 +141,349 @@ namespace oz
     }
   }
 
+#ifdef OZ_BUILD_TOOLS
+  void Translator::prebuildInit()
+  {
+    OZ_REGISTER_BASECLASS( Object );
+    OZ_REGISTER_BASECLASS( Dynamic );
+    OZ_REGISTER_BASECLASS( Weapon );
+    OZ_REGISTER_BASECLASS( Bot );
+    OZ_REGISTER_BASECLASS( Vehicle );
+
+    textures.alloc( 256 );
+    sounds.alloc( 256 );
+    terras.alloc( 16 );
+    bsps.alloc( 64 );
+    models.alloc( 256 );
+
+    matrixScripts.alloc( 64 );
+    nirvanaScripts.alloc( 64 );
+
+    names.alloc( 16 );
+
+    log.println( "Translator mapping resources {" );
+    log.indent();
+
+    Directory dir;
+    Config classConfig;
+
+    log.println( "textures (*.png, *.jpeg, *.jpg in 'bsp/tex') {" );
+    log.indent();
+
+    dir.open( "bsp/tex" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'bsp/tex'" );
+      log.unindent();
+      log.println( "}" );
+
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpeg" ) &&
+          !ent.hasExtension( "jpg" ) )
+      {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "bsp/tex/" ) + ent;
+
+      textureIndices.add( name, textures.length() );
+      textures.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "sounds (*.au, *.wav in 'snd') {" );
+    log.indent();
+
+    dir.open( "snd" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'snd'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "au" ) && !ent.hasExtension( "wav" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "snd/" ) + ent;
+
+      soundIndices.add( name, sounds.length() );
+      sounds.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "shaders (*.vert/*.frag in 'glsl') {" );
+    log.indent();
+
+    dir.open( "glsl" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'glsl'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "vert" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+
+      shaderIndices.add( name, shaders.length() );
+      shaders.add( Resource( name, "" ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "Terrains (*.rc in 'terra') {" );
+    log.indent();
+
+    dir.open( "terra" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'terra'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "rc" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "terra/" ) + ent;
+
+      terraIndices.add( name, terras.length() );
+      terras.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "BSP structures (*.rc in 'bsp') {" );
+    log.indent();
+
+    dir.open( "bsp" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'bsp'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "rc" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "bsp/" ) + ent;
+
+      bspIndices.add( name, bsps.length() );
+      bsps.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "models (* in 'mdl') {" );
+    log.indent();
+
+    dir.open( "mdl" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'mdl'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( ent.hasExtension() ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "mdl/" ) + ent;
+
+      modelIndices.add( name, models.length() );
+      models.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "matrix scripts (*.lua in 'lua/matrix') {" );
+    log.indent();
+
+    dir.open( "lua/matrix" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'lua/matrix'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "lua" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "lua/matrix/" ) + ent;
+
+      matrixScripts.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "nirvana scripts (*.lua in 'lua/nirvana') {" );
+    log.indent();
+
+    dir.open( "lua/nirvana" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'lua/nirvana'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "lua" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "lua/nirvana/" ) + ent;
+
+      nirvanaScripts.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "names (*.txt in 'name') {" );
+    log.indent();
+
+    dir.open( "name" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'name'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "txt" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "name/" ) + ent;
+
+      names.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "object classes (*.rc in 'class') {" );
+    log.indent();
+
+    dir.open( "class" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'class'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "rc" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "class/" ) + ent;
+
+      if( !classConfig.load( path ) ) {
+        log.println( "invalid config file %s", path.cstr() );
+        classConfig.clear();
+        continue;
+      }
+      if( !classConfig.contains( "base" ) ) {
+        log.println( "missing base variable" );
+        classConfig.clear();
+        continue;
+      }
+      const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
+      if( initFunc == null ) {
+        log.println( "invalid base %s", classConfig["base"].cstr() );
+        classConfig.clear();
+        continue;
+      }
+      if( classes.contains( name ) ) {
+        log.println( "duplicated class: %s", name.cstr() );
+        classConfig.clear();
+        continue;
+      }
+      classes.add( name, ( *initFunc )( name, &classConfig ) );
+      classConfig.clear();
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.unindent();
+    log.println( "}" );
+  }
+#endif
+
   void Translator::init()
   {
-    bool isComplete = false;
-
     OZ_REGISTER_BASECLASS( Object );
     OZ_REGISTER_BASECLASS( Dynamic );
     OZ_REGISTER_BASECLASS( Weapon );
@@ -342,7 +681,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "matrix scripts (*.lua in 'lua/matrix') {" );
+    log.println( "matrix scripts (*.luac in 'lua/matrix') {" );
     log.indent();
 
     dir.open( "lua/matrix" );
@@ -355,7 +694,7 @@ namespace oz
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "lua" ) ) {
+      if( !ent.hasExtension( "luac" ) ) {
         continue;
       }
 
@@ -370,7 +709,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "nirvana scripts (*.lua in 'lua/nirvana') {" );
+    log.println( "nirvana scripts (*.luac in 'lua/nirvana') {" );
     log.indent();
 
     dir.open( "lua/nirvana" );
@@ -383,7 +722,7 @@ namespace oz
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "lua" ) ) {
+      if( !ent.hasExtension( "luac" ) ) {
         continue;
       }
 
@@ -478,8 +817,6 @@ namespace oz
     log.println( "}" );
     log.unindent();
     log.println( "}" );
-
-    isComplete = true;
   }
 
   void Translator::free()

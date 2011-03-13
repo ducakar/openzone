@@ -200,6 +200,8 @@ namespace client
 
     OZ_REGISTER_PARAMETER( oz_WaveBias,                 "oz_WaveBias" );
 
+    OZ_REGISTER_PARAMETER( oz_Wind,                     "oz_Wind" );
+
     OZ_REGISTER_PARAMETER( oz_MD2Anim,                  "oz_MD2Anim" );
 
     param = programs[id].param;
@@ -366,6 +368,13 @@ namespace client
     log.println( "Initialising Shader {" );
     log.indent();
 
+    programs.alloc( translator.shaders.length() );
+    for( int i = 0; i < translator.shaders.length(); ++i ) {
+      programs[i].program    = 0;
+      programs[i].vertShader = 0;
+      programs[i].fragShader = 0;
+    }
+
     const char* sources[3];
     int         lengths[3];
 
@@ -384,8 +393,6 @@ namespace client
     lengths[1] = buffer.length();
 
     log.printEnd( " OK" );
-
-    programs.alloc( translator.shaders.length() );
 
     ui   = translator.shaderIndex( "ui" );
     text = translator.shaderIndex( "text" );

@@ -1,5 +1,6 @@
 /*
  *  particles.frag
+ *
  *  [description]
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>

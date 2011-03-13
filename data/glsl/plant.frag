@@ -1,7 +1,7 @@
 /*
- *  terra_water.frag
+ *  plant.frag
  *
- *  Terrain water (sea) shader.
+ *  Mesh shader that deforms mesh according to the given wind.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -21,5 +21,6 @@ void main()
 
   outColour = exColour;
   outColour *= texture2D( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
+  outColour *= oz_Colour;
   outColour = applyFog( outColour, exDistance );
 }

@@ -31,6 +31,7 @@ namespace oz
       Vec3 crewPos[Vehicle::CREW_MAX];
       Quat crewRot[Vehicle::CREW_MAX];
 
+      int   type;
       int   state;
 
       float moveMomentum;

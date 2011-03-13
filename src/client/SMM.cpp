@@ -31,9 +31,8 @@ namespace client
     }
     InputStream is = buffer.inputStream();
 
+    shaderId = translator.shaderIndex( is.readString() );
     mesh.load( &is, GL_STATIC_DRAW );
-
-    shaderId = translator.shaderIndex( "mesh" );
 
     isLoaded = true;
 

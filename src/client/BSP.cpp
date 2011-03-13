@@ -16,7 +16,6 @@
 #include "client/Frustum.hpp"
 #include "client/Colours.hpp"
 #include "client/Shape.hpp"
-#include "client/Water.hpp"
 #include "client/Audio.hpp"
 
 #include <GL/gl.h>
@@ -41,30 +40,30 @@ namespace client
 
   struct QBSPLump
   {
+    enum Lumps : int
+    {
+      ENTITIES,
+      TEXTURES,
+      PLANES,
+      NODES,
+      LEAFS,
+      LEAFFACES,
+      LEAFBRUSHES,
+      MODELS,
+      BRUSHES,
+      BRUSHSIDES,
+      VERTICES,
+      INDICES,
+      SHADERS,
+      FACES,
+      LIGHTMAPS,
+      LIGHTVOLUMES,
+      VISUALDATA,
+      MAX
+    };
+
     int offset;
     int length;
-  };
-
-  enum QBSPLumpType : int
-  {
-    QBSP_LUMP_ENTITIES = 0,
-    QBSP_LUMP_TEXTURES,
-    QBSP_LUMP_PLANES,
-    QBSP_LUMP_NODES,
-    QBSP_LUMP_LEAFS,
-    QBSP_LUMP_LEAFFACES,
-    QBSP_LUMP_LEAFBRUSHES,
-    QBSP_LUMP_MODELS,
-    QBSP_LUMP_BRUSHES,
-    QBSP_LUMP_BRUSHSIDES,
-    QBSP_LUMP_VERTICES,
-    QBSP_LUMP_INDICES,
-    QBSP_LUMP_SHADERS,
-    QBSP_LUMP_FACES,
-    QBSP_LUMP_LIGHTMAPS,
-    QBSP_LUMP_LIGHTVOLUMES,
-    QBSP_LUMP_VISUALDATA,
-    QBSP_LUMPS_NUM
   };
 
   struct QBSPTexture
@@ -118,11 +117,12 @@ namespace client
     int   size[2];
   };
 
-  static int nTextures;
-  static int nModels;
-  static int nVertices;
-  static int nIndices;
-  static int nFaces;
+  static int    nTextures;
+  static int    nModels;
+  static int    nVertices;
+  static int    nIndices;
+  static int    nFaces;
+  static String shaderName;
 
   static DArray<QBSPTexture> textures;
   static DArray<QBSPModel>   models;
@@ -143,6 +143,9 @@ namespace client
     float scale = bspConfig.get( "scale", 0.01f );
     float maxDim = bspConfig.get( "maxDim", Math::INF );
 
+    shaderName = bspConfig.get( "shader", "bsp" );
+    translator.shaderIndex( shaderName );
+
     if( Math::isNaN( scale ) ) {
       throw Exception( "BSP scale is NaN" );
     }
@@ -161,22 +164,22 @@ namespace client
       throw Exception( "BSP file has invalid format/version figerprint" );
     }
 
-    QBSPLump lumps[QBSP_LUMPS_NUM];
-    fread( lumps, sizeof( QBSPLump ), QBSP_LUMPS_NUM, file );
+    QBSPLump lumps[QBSPLump::MAX];
+    fread( lumps, sizeof( QBSPLump ), QBSPLump::MAX, file );
 
-    nTextures = int( lumps[QBSP_LUMP_TEXTURES].length / sizeof( QBSPTexture ) );
+    nTextures = int( lumps[QBSPLump::TEXTURES].length / sizeof( QBSPTexture ) );
     textures.alloc( nTextures );
-    fseek( file, lumps[QBSP_LUMP_TEXTURES].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::TEXTURES].offset, SEEK_SET );
     fread( textures, sizeof( QBSPTexture ), nTextures, file );
 
-    nModels = int( lumps[QBSP_LUMP_MODELS].length / sizeof( QBSPModel ) );
+    nModels = int( lumps[QBSPLump::MODELS].length / sizeof( QBSPModel ) );
     models.alloc( nModels );
-    fseek( file, lumps[QBSP_LUMP_MODELS].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::MODELS].offset, SEEK_SET );
     fread( models, sizeof( QBSPModel ), nModels, file );
 
-    nVertices = int( lumps[QBSP_LUMP_VERTICES].length / sizeof( QBSPVertex ) );
+    nVertices = int( lumps[QBSPLump::VERTICES].length / sizeof( QBSPVertex ) );
     vertices.alloc( nVertices );
-    fseek( file, lumps[QBSP_LUMP_VERTICES].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::VERTICES].offset, SEEK_SET );
     fread( vertices, sizeof( QBSPVertex ), nVertices, file );
 
     foreach( vertex, vertices.iter() ) {
@@ -185,14 +188,14 @@ namespace client
       vertex->p[2] *= scale;
     }
 
-    nIndices = int( lumps[QBSP_LUMP_INDICES].length / sizeof( int ) );
+    nIndices = int( lumps[QBSPLump::INDICES].length / sizeof( int ) );
     indices.alloc( nIndices );
-    fseek( file, lumps[QBSP_LUMP_INDICES].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::INDICES].offset, SEEK_SET );
     fread( indices, sizeof( int ), nIndices, file );
 
-    nFaces = int( lumps[QBSP_LUMP_FACES].length / sizeof( QBSPFace ) );
+    nFaces = int( lumps[QBSPLump::FACES].length / sizeof( QBSPFace ) );
     faces.alloc( nFaces );
-    fseek( file, lumps[QBSP_LUMP_FACES].offset, SEEK_SET );
+    fseek( file, lumps[QBSPLump::FACES].offset, SEEK_SET );
     fread( faces, sizeof( QBSPFace ), nFaces, file );
 
     foreach( face, faces.iter() ) {
@@ -210,6 +213,33 @@ namespace client
     }
 
     fclose( file );
+
+    // to disable warnings
+    bspConfig.get( "life", 0.0f );
+
+    if( nModels != 1 ) {
+      hard_assert( nModels <= 99 );
+      char keyBuffer[] = "model  ";
+
+      for( int i = 0; i < nModels - 1; ++i ) {
+        keyBuffer[5] = char( '0' + i / 10 );
+        keyBuffer[6] = char( '0' + i % 10 );
+        String keyName = keyBuffer;
+
+        bspConfig.get( keyName + ".move.x", 0.0f );
+        bspConfig.get( keyName + ".move.y", 0.0f );
+        bspConfig.get( keyName + ".move.z", 0.0f );
+
+        bspConfig.get( keyName + ".slideTime", 0.0f );
+        bspConfig.get( keyName + ".type", "" );
+
+        bspConfig.get( keyName + ".margin", 0.0f );
+        bspConfig.get( keyName + ".timeout", 0.0f );
+
+        bspConfig.get( keyName + ".openSample", "" );
+        bspConfig.get( keyName + ".closeSample", "" );
+      }
+    }
   }
 
   void BSP::freeQBSP()
@@ -325,6 +355,7 @@ namespace client
     OutputStream os = buffer.outputStream();
 
     os.writeInt( flags );
+    os.writeString( shaderName );
     os.writeInt( nModels );
 
     foreach( mesh, meshes.citer() ) {
@@ -426,6 +457,7 @@ namespace client
     InputStream is = buffer.inputStream();
 
     flags = is.readInt();
+    shaderId = translator.shaderIndex( is.readString() );
 
     int nMeshes = is.readInt();
 
@@ -442,8 +474,6 @@ namespace client
         context.requestSound( bsp->models[i].closeSample );
       }
     }
-
-    shaderId = translator.shaderIndex( "mesh" );
 
     log.unindent();
     log.println( "}" );

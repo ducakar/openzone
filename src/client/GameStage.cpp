@@ -41,10 +41,13 @@ namespace client
     catch( const Exception& e ) {
       log.resetIndent();
       log.println();
-      log.println( "EXCEPTION: %s:%d: %s: %s", e.file, e.line, e.function, e.what() );
+      log.printException( e );
+      log.println();
 
-      if( log.isFile() ) {
-        fprintf( stderr, "EXCEPTION: %s:%d: %s: %s\n", e.file, e.line, e.function, e.what() );
+      if( oz::log.isFile() ) {
+        fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
+        fprintf( stderr, "  in %s\n\n", e.function );
+        fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
       }
       abort();
     }
@@ -52,9 +55,10 @@ namespace client
       log.resetIndent();
       log.println();
       log.println( "EXCEPTION: %s", e.what() );
+      log.println();
 
       if( log.isFile() ) {
-        fprintf( stderr, "EXCEPTION: %s\n", e.what() );
+        fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
       }
       abort();
     }

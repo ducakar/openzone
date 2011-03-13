@@ -21,7 +21,7 @@ namespace oz
 
   const float Struct::DAMAGE_THRESHOLD = 400.0f;
 
-  void ( Struct::Entity::* Struct::Entity::handlers[5] )() = {
+  void ( Struct::Entity::* Struct::Entity::handlers[] )() = {
     &Struct::Entity::updateIgnoring,
     &Struct::Entity::updateBlocking,
     &Struct::Entity::updatePushing,

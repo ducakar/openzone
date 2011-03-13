@@ -94,6 +94,10 @@ namespace client
       bool                    isUnderWater;
       float                   visibility;
 
+      float                   windFactor;
+      float                   windPhiInc;
+      float                   windPhi;
+
       int                     simpleShaderId;
       int                     particleShaderId;
 

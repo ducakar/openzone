@@ -23,6 +23,56 @@ namespace oz
 
   Pool<Vehicle> Vehicle::pool;
 
+  void ( Vehicle::* Vehicle::handlers[] )() = {
+    &Vehicle::wheeledHandler,
+    &Vehicle::trackedHandler,
+    &Vehicle::hoverHandler,
+    &Vehicle::airHandler
+  };
+
+  void Vehicle::wheeledHandler()
+  {}
+
+  void Vehicle::trackedHandler()
+  {}
+
+  void Vehicle::hoverHandler()
+  {}
+
+  void Vehicle::airHandler()
+  {
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
+    Mat44 rotMat = Mat44::rotation( rot );
+    Vec3 right = rotMat.x;
+    Vec3 at    = rotMat.y;
+    Vec3 up    = rotMat.z;
+
+    // controls
+    Vec3 move = Vec3::ZERO;
+
+    if( actions & Bot::ACTION_FORWARD ) {
+      move += at;
+    }
+    if( actions & Bot::ACTION_BACKWARD ) {
+      move -= at;
+    }
+    if( actions & Bot::ACTION_RIGHT ) {
+      move += right;
+    }
+    if( actions & Bot::ACTION_LEFT ) {
+      move -= right;
+    }
+    if( actions & Bot::ACTION_JUMP ) {
+      move += up;
+    }
+    if( actions & Bot::ACTION_CROUCH ) {
+      move -= up;
+    }
+
+    momentum += move * clazz->moveMomentum;
+  }
+
   void Vehicle::onDestroy()
   {
     for( int i = 0; i < CREW_MAX; ++i ) {
@@ -72,35 +122,12 @@ namespace oz
       }
     }
 
+    ( this->*handlers[clazz->type] )();
+
     Mat44 rotMat = Mat44::rotation( rot );
-    Vec3 at      = rotMat * Vec3( 0.0f, 1.0f, 0.0f );
-    Vec3 side    = rotMat * Vec3( 1.0f, 0.0f, 0.0f );
-    Vec3 up      = rotMat * Vec3( 0.0f, 0.0f, 1.0f );
-
-    // controls
-    Vec3 move = Vec3::ZERO;
-
-    if( actions & Bot::ACTION_FORWARD ) {
-      move += at;
-    }
-    if( actions & Bot::ACTION_BACKWARD ) {
-      move -= at;
-    }
-    if( actions & Bot::ACTION_RIGHT ) {
-      move += side;
-    }
-    if( actions & Bot::ACTION_LEFT ) {
-      move -= side;
-    }
-    if( actions & Bot::ACTION_JUMP ) {
-      move += up;
-    }
-    if( actions & Bot::ACTION_CROUCH ) {
-      move -= up;
-    }
-    if( move != Vec3::ZERO ) {
-      momentum += move * clazz->moveMomentum;
-    }
+    Vec3 right = rotMat.x;
+    Vec3 at    = rotMat.y;
+    Vec3 up    = rotMat.z;
 
     for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {
