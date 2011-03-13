@@ -149,8 +149,8 @@ namespace oz
     int ix = int( ( x + Orbis::DIM ) * Cell::INV_SIZE );
     int iy = int( ( y + Orbis::DIM ) * Cell::INV_SIZE );
 
-    ix = bound( ix, 0, Orbis::MAX - 1 );
-    iy = bound( iy, 0, Orbis::MAX - 1 );
+    ix = clamp( ix, 0, Orbis::MAX - 1 );
+    iy = clamp( iy, 0, Orbis::MAX - 1 );
 
     return &cells[ix][iy];
   }

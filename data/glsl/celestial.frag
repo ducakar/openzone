@@ -1,5 +1,5 @@
 /*
- *  mesh_far.frag
+ *  celestial.frag
  *  [description]
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
@@ -7,14 +7,16 @@
  */
 
 in vec2  exTexCoord;
-in float exFogRatio;
-in vec4  exColour;
+in float exAzimuth;
 
 out vec4 outColour;
 
 void main()
 {
-  outColour = exColour;
-  outColour *= texture2D( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
-  outColour = mix( outColour, oz_FogColour, exFogRatio );
+  if( exAzimuth < 0.0 ) {
+    discard;
+  }
+
+  outColour = texture2D( oz_Textures[0], exTexCoord );
+  outColour *= oz_Colour;
 }

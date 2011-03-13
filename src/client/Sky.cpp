@@ -127,6 +127,7 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices,
                   GL_STATIC_DRAW );
+    vertices.dealloc();
 
     glEnableVertexAttribArray( Attrib::POSITION );
     glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
@@ -139,7 +140,8 @@ namespace client
     sunTexId  = context.readTexture( &is );
     moonTexId = context.readTexture( &is );
 
-    vertices.dealloc();
+    starShaderId      = translator.shaderIndex( "stars" );
+    celestialShaderId = translator.shaderIndex( "celestial" );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -164,7 +166,7 @@ namespace client
     Mat44 rot = Mat44::rotation( Quat::rotAxis( axis, angle ) );
     Vec3  dir = rot * originalLightDir;
 
-    ratio = bound( dir.z + DAY_BIAS, 0.0f, 1.0f );
+    ratio = clamp( dir.z + DAY_BIAS, 0.0f, 1.0f );
     float ratioDiff = ( 1.0f - Math::abs( 1.0f - 2.0f * ratio ) );
 
     Colours::sky[0] = NIGHT_COLOUR[0] + ratio * ( DAY_COLOUR[0] - NIGHT_COLOUR[0] ) + RED_COEF * ratioDiff;
@@ -205,7 +207,7 @@ namespace client
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
-    shader.use( Shader::STARS );
+    shader.use( starShaderId );
     tf.applyCamera();
 
     tf.model = transf;
@@ -213,18 +215,17 @@ namespace client
 
     glBindVertexArray( vao );
 
-    glUniform4fv( param.oz_FogColour, 1, Colours::sky );
+    glUniform4fv( param.oz_Fog_colour, 1, Colours::sky );
     glUniform4fv( param.oz_Colour, 1, colour );
 
     glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );
 
     shape.bindVertexArray();
 
-    shader.use( Shader::SIMPLE );
+    shader.use( celestialShaderId );
     tf.applyCamera();
 
     glEnable( GL_BLEND );
-    glUniform1i( param.oz_IsTextureEnabled, true );
 
     glUniform4f( param.oz_Colour,
                  2.0f * Colours::diffuse[0] + Colours::ambient[0],
@@ -237,7 +238,6 @@ namespace client
 
     tf.model = transf;
     tf.model.translate( Vec3( 0.0f, 0.0f, +15.0f ) );
-    tf.model = tf.model * ~transf * ~tf.camera;
 
     shape.quad( 1.0f, 1.0f );
 
@@ -246,11 +246,9 @@ namespace client
 
     tf.model = transf;
     tf.model.translate( Vec3( 0.0f, 0.0f, -15.0f ) );
-    tf.model = tf.model * ~transf * ~tf.camera;
 
     shape.quad( 1.0f, 1.0f );
 
-    glUniform1i( param.oz_IsTextureEnabled, false );
     glDisable( GL_BLEND );
 
     glEnable( GL_CULL_FACE );

@@ -151,8 +151,13 @@ namespace oz
 
       // wide frustum culling: object is represented some times larger to frustum culling
       // system than it really is;
-      // how larger it is, is specified by Client::Render::RELEASED_CULL_FACTOR
+      // how larger it is, is specified by Client::Render::WIDE_CULL_FACTOR
       static const int WIDE_CULL_BIT      = 0x00000002;
+
+      // set pseudo-random heading to object's model on model creation; heading is calculated from
+      // object's position, so for static objects its always the same direction (if model is
+      // recreated after object becomes visible again after some time)
+      static const int RANDOM_HEADING_BIT = 0x00000001;
 
       /*
        * STANDARD EVENT IDs

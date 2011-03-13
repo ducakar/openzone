@@ -16,7 +16,7 @@
 #include <GL/gl.h>
 
 #define OZ_REGISTER_PARAMETER( paramName, paramUniform ) \
-  progParams[prog].paramName = glGetUniformLocation( programs[prog], paramUniform )
+  programs[id].param.paramName = glGetUniformLocation( programs[id].program, paramUniform )
 
 namespace oz
 {
@@ -75,21 +75,6 @@ namespace client
     glUniformMatrix4fv( param.oz_Transform_model, 1, GL_FALSE, model );
     glUniformMatrix4fv( param.oz_Transform_complete, 1, GL_FALSE, projCamera * model );
   }
-
-  const char* Shader::PROGRAM_NAMES[MAX] = {
-    "ui",
-    "text",
-    "simple",
-    "mesh_itemview",
-    "mesh_near",
-    "mesh_far",
-    "mesh_water",
-    "terra",
-    "terra_water",
-    "stars",
-    "particles",
-    "md2"
-  };
 
   const Shader::Light Shader::Light::NONE = Shader::Light( Point3::ORIGIN, Vec4::ZERO );
 
@@ -151,34 +136,34 @@ namespace client
     hard_assert( glGetError() == GL_NO_ERROR );
   }
 
-  void Shader::loadProgram( Program prog, const char** sources, int* lengths )
+  void Shader::loadProgram( int id, const char** sources, int* lengths )
   {
-    log.println( "Creating program '%s' {", PROGRAM_NAMES[prog] );
+    const String& name = translator.shaders[id].name;
+
+    log.println( "Creating program '%s' {", name.cstr() );
     log.indent();
 
-    vertShaders[prog] = glCreateShader( GL_VERTEX_SHADER );
-    fragShaders[prog] = glCreateShader( GL_FRAGMENT_SHADER );
+    programs[id].vertShader = glCreateShader( GL_VERTEX_SHADER );
+    programs[id].fragShader = glCreateShader( GL_FRAGMENT_SHADER );
 
-    compileShader( vertShaders[prog], "glsl/" + String( PROGRAM_NAMES[prog] ) + ".vert",
-                   sources, lengths );
-    compileShader( fragShaders[prog], "glsl/" + String( PROGRAM_NAMES[prog] ) + ".frag",
-                   sources, lengths );
+    compileShader( programs[id].vertShader, "glsl/" + name + ".vert", sources, lengths );
+    compileShader( programs[id].fragShader, "glsl/" + name + ".frag", sources, lengths );
 
-    programs[prog] = glCreateProgram();
-    glAttachShader( programs[prog], vertShaders[prog] );
-    glAttachShader( programs[prog], fragShaders[prog] );
+    programs[id].program = glCreateProgram();
+    glAttachShader( programs[id].program, programs[id].vertShader );
+    glAttachShader( programs[id].program, programs[id].fragShader );
 
     log.print( "Linking ..." );
 
-    glLinkProgram( programs[prog] );
+    glLinkProgram( programs[id].program );
 
     int result;
-    glGetProgramiv( programs[prog], GL_LINK_STATUS, &result );
+    glGetProgramiv( programs[id].program, GL_LINK_STATUS, &result );
     if( result != GL_TRUE ) {
       char* logBuffer = new char[BUFFER_SIZE];
       int length;
 
-      glGetProgramInfoLog( programs[prog], BUFFER_SIZE, &length, logBuffer );
+      glGetProgramInfoLog( programs[id].program, BUFFER_SIZE, &length, logBuffer );
       logBuffer[BUFFER_SIZE - 1] = '\0';
 
       log.printEnd( " Error:" );
@@ -188,7 +173,7 @@ namespace client
       throw Exception( "Shader program linking failed" );
     }
 
-    glUseProgram( programs[prog] );
+    glUseProgram( programs[id].program );
 
     OZ_REGISTER_PARAMETER( oz_Transform_proj,           "oz_Transform.proj" );
     OZ_REGISTER_PARAMETER( oz_Transform_camera,         "oz_Transform.camera" );
@@ -209,14 +194,15 @@ namespace client
     OZ_REGISTER_PARAMETER( oz_SkyLight_ambient,         "oz_SkyLight.ambient" );
     OZ_REGISTER_PARAMETER( oz_PointLights,              "oz_PointLights" );
 
-    OZ_REGISTER_PARAMETER( oz_NearDistance,             "oz_NearDistance" );
+    OZ_REGISTER_PARAMETER( oz_Fog_start,                "oz_Fog.start" );
+    OZ_REGISTER_PARAMETER( oz_Fog_end,                  "oz_Fog.end" );
+    OZ_REGISTER_PARAMETER( oz_Fog_colour,               "oz_Fog.colour" );
 
-    OZ_REGISTER_PARAMETER( oz_FogDistance,              "oz_FogDistance" );
-    OZ_REGISTER_PARAMETER( oz_FogColour,                "oz_FogColour" );
+    OZ_REGISTER_PARAMETER( oz_WaveBias,                 "oz_WaveBias" );
 
     OZ_REGISTER_PARAMETER( oz_MD2Anim,                  "oz_MD2Anim" );
 
-    param = progParams[prog];
+    param = programs[id].param;
 
     glUniform1iv( param.oz_Textures, 2, (int[2]) { 0, 1 } );
 
@@ -228,12 +214,16 @@ namespace client
     log.println( "}" );
   }
 
-  void Shader::use( Program prog )
+  void Shader::use( int id )
   {
-    activeProgram = prog;
+    if( id == activeProgram ) {
+      return;
+    }
 
-    glUseProgram( programs[prog] );
-    param = progParams[prog];
+    activeProgram = id;
+
+    glUseProgram( programs[id].program );
+    param = programs[id].param;
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }
@@ -327,8 +317,12 @@ namespace client
 
     log.printEnd( " OK" );
 
-    for( int i = 2; i < MAX; ++i ) {
-      loadProgram( Program( i ), sources, lengths );
+    for( int i = 0; i < translator.shaders.length(); ++i ) {
+      if( i == ui || i == text ) {
+        continue;
+      }
+
+      loadProgram( i, sources, lengths );
     }
 
     colour = Vec4::ONE;
@@ -341,20 +335,24 @@ namespace client
   {
     log.print( "Unloading Shader ..." );
 
-    for( int i = 2; i < MAX; ++i ) {
-      if( programs[i] != 0 ) {
-        glDetachShader( programs[i], vertShaders[i] );
-        glDetachShader( programs[i], fragShaders[i] );
-        glDeleteProgram( programs[i] );
-        programs[i] = 0;
+    for( int i = 0; i < translator.shaders.length(); ++i ) {
+      if( i == ui || i == text ) {
+        continue;
       }
-      if( vertShaders[i] != 0 ) {
-        glDeleteShader( vertShaders[i] );
-        vertShaders[i] = 0;
+
+      if( programs[i].program != 0 ) {
+        glDetachShader( programs[i].program, programs[i].vertShader );
+        glDetachShader( programs[i].program, programs[i].fragShader );
+        glDeleteProgram( programs[i].program );
+        programs[i].program = 0;
       }
-      if( fragShaders[i] != 0 ) {
-        glDeleteShader( fragShaders[i] );
-        fragShaders[i] = 0;
+      if( programs[i].vertShader != 0 ) {
+        glDeleteShader( programs[i].vertShader );
+        programs[i].vertShader = 0;
+      }
+      if( programs[i].fragShader != 0 ) {
+        glDeleteShader( programs[i].fragShader );
+        programs[i].fragShader = 0;
       }
     }
 
@@ -367,10 +365,6 @@ namespace client
   {
     log.println( "Initialising Shader {" );
     log.indent();
-
-    aSet<uint>( vertShaders, 0, MAX );
-    aSet<uint>( fragShaders, 0, MAX );
-    aSet<uint>( programs,  0, MAX );
 
     const char* sources[3];
     int         lengths[3];
@@ -391,8 +385,13 @@ namespace client
 
     log.printEnd( " OK" );
 
-    loadProgram( Program( 0 ), sources, lengths );
-    loadProgram( Program( 1 ), sources, lengths );
+    programs.alloc( translator.shaders.length() );
+
+    ui   = translator.shaderIndex( "ui" );
+    text = translator.shaderIndex( "text" );
+
+    loadProgram( ui, sources, lengths );
+    loadProgram( text, sources, lengths );
 
     log.unindent();
     log.println( "}" );
@@ -402,22 +401,26 @@ namespace client
   {
     log.print( "Shutting down Shader ..." );
 
-    for( int i = 0; i < 2; ++i ) {
-      if( programs[i] != 0 ) {
-        glDetachShader( programs[i], vertShaders[i] );
-        glDetachShader( programs[i], fragShaders[i] );
-        glDeleteProgram( programs[i] );
-        programs[i] = 0;
+    foreach( id, citer( (int[]) { ui, text }, 2 ) ) {
+      int i = *id;
+
+      if( programs[i].program != 0 ) {
+        glDetachShader( programs[i].program, programs[i].vertShader );
+        glDetachShader( programs[i].program, programs[i].fragShader );
+        glDeleteProgram( programs[i].program );
+        programs[i].program = 0;
       }
-      if( vertShaders[i] != 0 ) {
-        glDeleteShader( vertShaders[i] );
-        vertShaders[i] = 0;
+      if( programs[i].vertShader != 0 ) {
+        glDeleteShader( programs[i].vertShader );
+        programs[i].vertShader = 0;
       }
-      if( fragShaders[i] != 0 ) {
-        glDeleteShader( fragShaders[i] );
-        fragShaders[i] = 0;
+      if( programs[i].fragShader != 0 ) {
+        glDeleteShader( programs[i].fragShader );
+        programs[i].fragShader = 0;
       }
     }
+
+    programs.dealloc();
 
     hard_assert( glGetError() == GL_NO_ERROR );
 

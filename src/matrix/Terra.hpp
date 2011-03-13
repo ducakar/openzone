@@ -86,7 +86,7 @@ namespace oz
     int ix = int( ( x + DIM ) * Quad::INV_SIZE );
     int iy = int( ( y + DIM ) * Quad::INV_SIZE );
 
-    return Pair<int>( bound( ix, 0, QUADS - 1 ), bound( iy, 0, QUADS - 1 ) );
+    return Pair<int>( clamp( ix, 0, QUADS - 1 ), clamp( iy, 0, QUADS - 1 ) );
   }
 
   inline float Terra::height( float x, float y ) const

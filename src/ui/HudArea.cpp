@@ -127,12 +127,12 @@ namespace ui
         shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
       }
 
-      // it might happen that bot itself is tagged object for a frame when switching from freecam
-      // into a bot
       if( bot->parent == -1 ) {
-        if( camera.tagged != -1 && camera.tagged != bot->index ) {
-          const Object* tagged = camera.taggedObj;
+        const Object* tagged = camera.taggedObj;
 
+        // it might happen that bot itself is tagged object for a frame when switching from freecam
+        // into a bot
+        if( tagged != null && ( tagged->flags & Object::SOLID_BIT ) && tagged != bot ) {
           if( tagged->flags & Object::VEHICLE_BIT ) {
             glBindTexture( GL_TEXTURE_2D, mountTexId );
             shape.fill( mountIconX, mountIconY, ICON_SIZE, ICON_SIZE );

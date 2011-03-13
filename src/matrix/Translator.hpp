@@ -61,6 +61,7 @@ namespace oz
 
       HashString<int, 256> textureIndices;
       HashString<int, 256> soundIndices;
+      HashString<int, 64>  shaderIndices;
       HashString<int, 16>  terraIndices;
       HashString<int, 64>  bspIndices;
       HashString<int, 256> modelIndices;
@@ -69,6 +70,7 @@ namespace oz
 
       Vector<Resource> textures;
       Vector<Resource> sounds;
+      Vector<Resource> shaders;
       Vector<Resource> terras;
       Vector<Resource> bsps;
       Vector<Resource> models;
@@ -83,9 +85,10 @@ namespace oz
 
       int textureIndex( const char* name ) const;
       int soundIndex( const char* name ) const;
+      int shaderIndex( const char* name ) const;
+      int terraIndex( const char* name ) const;
       int bspIndex( const char* name ) const;
       int modelIndex( const char* name ) const;
-      int terraIndex( const char* name ) const;
 
       Struct* createStruct( int index, const char* name, const Point3& p,
                             Struct::Rotation rot ) const;

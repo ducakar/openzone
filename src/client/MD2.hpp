@@ -59,6 +59,7 @@ namespace client
       int     nFramePositions;
 
       uint    vertTexId;
+      int     shaderId;
 
       Mesh    mesh;
 

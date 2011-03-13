@@ -17,6 +17,7 @@
 bool oz::Alloc::isLocked = true;
 
 using namespace std;
+using namespace oz;
 
 template <typename Type, int STACK_SIZE>
 inline void aSort( Type* array, int count )
@@ -263,18 +264,22 @@ void TQuickSortInc( T *a, int num_el )
    while(1);
 }
 
-#define MAX 200
-#define TESTS 500
+#define MAX 10000
+#define TESTS 2000
 
 int main( int, char** )
 {
   oz::Alloc::isLocked = false;
 
+  oz::System::catchSignals();
+
+  SDL_Init( 0 );
+
   int array[MAX];
 
   srand( 32 );
 
-  long t0 = clock();
+  oz::uint t0 = SDL_GetTicks();
   for( int i = 0; i < TESTS; ++i ) {
     for( int j = 0; j < MAX; ++j ) {
       array[j] = rand() % MAX;
@@ -284,12 +289,14 @@ int main( int, char** )
     //arSort( array, array + MAX - 1 );
     oz::aSort( array, MAX );
     //TQuickSortInc( array, MAX );
-    //aSort<int, 2048>( array, MAX );
+    //aSort<int, 100>( array, MAX );
   }
-  printf( "%d\n", int( clock() - t0 ) / 1000 );
-  for( int i = 0; i < MAX; ++i ) {
-    printf( "%d ", array[i] );
-  }
+  printf( "%d ms\n", SDL_GetTicks() - t0 );
+//   for( int i = 0; i < MAX; ++i ) {
+//     printf( "%d ", array[i] );
+//   }
+
+  SDL_Quit();
 
   oz::Alloc::isLocked = true;
   oz::Alloc::printLeaks();

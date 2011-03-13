@@ -1,5 +1,5 @@
 /*
- *  mesh_far.vert
+ *  terra_land.vert
  *  [description]
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
@@ -11,17 +11,16 @@ in vec2 inTexCoord;
 in vec3 inNormal;
 
 out vec2  exTexCoord;
-out float exFogRatio;
+out float exDistance;
 out vec4  exColour;
 
 void main()
 {
   vec4  position = oz_Transform.camera * oz_Transform.model * vec4( inPosition, 1.0 );
   vec3  normal   = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
-  float dist     = max( length( position ) - oz_NearDistance, 0.0 );
 
   gl_Position    = oz_Transform.complete * vec4( inPosition, 1.0 );
   exTexCoord     = inTexCoord;
-  exFogRatio     = min( dist / ( oz_FogDistance - oz_NearDistance ), 1.0 );
   exColour       = skyLightColour( normal );
+  exDistance     = length( position );
 }

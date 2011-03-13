@@ -503,6 +503,8 @@ namespace client
       delete[] vertices;
     }
 
+    shaderId = translator.shaderIndex( "md2" );
+
     hard_assert( glGetError() == GL_NO_ERROR );
 
     isLoaded = true;
@@ -527,8 +529,7 @@ namespace client
 
   void MD2::drawFrame( int frame ) const
   {
-    shader.push();
-    shader.use( Shader::MD2 );
+    shader.use( shaderId );
 
     glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, vertTexId );
@@ -538,14 +539,11 @@ namespace client
     tf.apply();
 
     mesh.draw( Mesh::SOLID_BIT );
-
-    shader.pop();
   }
 
   void MD2::draw( const AnimState* anim ) const
   {
-    shader.push();
-    shader.use( Shader::MD2 );
+    shader.use( shaderId );
 
     glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, vertTexId );
@@ -559,8 +557,6 @@ namespace client
     tf.apply();
 
     mesh.draw( Mesh::SOLID_BIT );
-
-    shader.pop();
   }
 
 }

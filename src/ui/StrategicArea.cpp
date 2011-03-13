@@ -108,7 +108,7 @@ namespace ui
       return;
     }
 
-    shader.use( Shader::TEXT );
+    shader.use( shader.text );
 
     glRasterPos2i( x + 1, y - 1 );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
@@ -122,7 +122,7 @@ namespace ui
     glRasterPos2i( x, y );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
 
-    shader.use( Shader::UI );
+    shader.use( shader.ui );
 
     textWidth = text->w;
     SDL_FreeSurface( text );

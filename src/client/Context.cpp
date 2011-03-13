@@ -539,23 +539,32 @@ namespace client
 
     hard_assert( alGetError() == AL_NO_ERROR );
 
-    foreach( i, smms.citer() ) {
-      hard_assert( i->nUsers == 0 );
+    for( auto i = smms.citer(); i.isValid(); ) {
+      auto resource = i;
+      ++i;
 
-      delete i->object;
-      smms.exclude( i.key() );
+      hard_assert( resource->nUsers == 0 );
+
+      delete resource->object;
+      smms.exclude( resource.key() );
     }
-    foreach( i, md2s.citer() ) {
-      hard_assert( i->nUsers == 0 );
+    for( auto i = md2s.citer(); i.isValid(); ) {
+      auto resource = i;
+      ++i;
 
-      delete i->object;
-      md2s.exclude( i.key() );
+      hard_assert( resource->nUsers == 0 );
+
+      delete resource->object;
+      md2s.exclude( resource.key() );
     }
-    foreach( i, md3s.citer() ) {
-      hard_assert( i->nUsers == 0 );
+    for( auto i = md3s.citer(); i.isValid(); ) {
+      auto resource = i;
+      ++i;
 
-      delete i->object;
-      md3s.exclude( i.key() );
+      hard_assert( resource->nUsers == 0 );
+
+      delete resource->object;
+      md3s.exclude( resource.key() );
     }
     for( int i = 0; i < translator.bsps.length(); ++i ) {
       delete bsps[i].object;

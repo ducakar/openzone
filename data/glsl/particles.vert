@@ -17,12 +17,10 @@ void main()
   vec4  position = oz_Transform.model * vec4( inPosition, 1.0 );
   vec3  normal   = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
   float dist     = length( position );
-  float fogRatio = min( dist / oz_FogDistance, 1.0 );
 
   exColour       = oz_Colour;
-
   exColour       *= skyLightColour( normal );
-  exColour       = mix( exColour, oz_FogColour, fogRatio );
+  exColour       = applyFog( exColour, dist );
 
   gl_Position    = oz_Transform.complete * vec4( inPosition, 1.0 );
 }

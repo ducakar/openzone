@@ -21,16 +21,19 @@ namespace client
 
   void SMM::load()
   {
-    const String& modelPath = translator.models[id].path;
+    const String& name = translator.models[id].name;
+    const String& path = translator.models[id].path;
 
-    log.print( "Loading SMM model '%s' ...", modelPath.cstr() );
+    log.print( "Loading SMM model '%s' ...", name.cstr() );
 
-    if( !buffer.read( modelPath ) ) {
+    if( !buffer.read( path ) ) {
       throw Exception( "Cannot read model file" );
     }
     InputStream is = buffer.inputStream();
 
     mesh.load( &is, GL_STATIC_DRAW );
+
+    shaderId = translator.shaderIndex( "mesh" );
 
     isLoaded = true;
 
@@ -55,8 +58,9 @@ namespace client
 
   void SMM::draw() const
   {
-    glUniform4fv( param.oz_Colour, 1, shader.colour );
+    shader.use( shaderId );
 
+    glUniform4fv( param.oz_Colour, 1, shader.colour );
     tf.apply();
 
     mesh.draw( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );

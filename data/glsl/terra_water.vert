@@ -10,18 +10,20 @@ in vec3 inPosition;
 in vec2 inTexCoord;
 in vec3 inNormal;
 
-out vec4 exPosition;
-out vec2 exTexCoord;
-out vec4 exColour;
+out vec2  exTexCoord;
+out vec4  exColour;
+out float exDistance;
 
 void main()
 {
-  exPosition     = oz_Transform.camera * oz_Transform.model * vec4( inPosition, 1.0 );
+  float z = 0.15 * sin( oz_WaveBias + inPosition.x + inPosition.y );
 
-  vec3  normal   = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
-  float dist     = max( length( exPosition ) - oz_NearDistance, 0.0 );
+  vec4 localPos  = vec4( inPosition.x, inPosition.y, z, 1.0 );
+  vec4 position  = oz_Transform.camera * oz_Transform.model * localPos;
+  vec3  normal   = ( oz_Transform.model * vec4( 0.0, 0.0, 1.0, 0.0 ) ).xyz;
 
-  gl_Position    = oz_Transform.complete * vec4( inPosition, 1.0 );
+  gl_Position    = oz_Transform.complete * localPos;
   exTexCoord     = inTexCoord;
   exColour       = skyLightColour( normal );
+  exDistance     = length( position );
 }

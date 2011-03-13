@@ -36,13 +36,20 @@ namespace client
       static const float DETAIL_SCALE;
       static const float WATER_SCALE;
 
-      uint vaos[TILES][TILES];
-      uint vbos[TILES][TILES];
-      uint ibo;
+      static const float WAVE_BIAS_INC;
 
-      uint waterTexId;
-      uint detailTexId;
-      uint mapTexId;
+      uint  vaos[TILES][TILES];
+      uint  vbos[TILES][TILES];
+      uint  ibo;
+
+      uint  waterTexId;
+      uint  detailTexId;
+      uint  mapTexId;
+
+      int   landShaderId;
+      int   waterShaderId;
+
+      float waveBias;
 
       Span span;
       SBitset<TILES * TILES> waterTiles;

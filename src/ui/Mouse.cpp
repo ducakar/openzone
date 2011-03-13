@@ -88,8 +88,8 @@ namespace ui
       int desiredX = x + relX;
       int desiredY = y + relY;
 
-      x = bound( desiredX, 0, camera.width - 1 );
-      y = bound( desiredY, 0, camera.height - 1 );
+      x = clamp( desiredX, 0, camera.width - 1 );
+      y = clamp( desiredY, 0, camera.height - 1 );
 
       overEdgeX = x != desiredX ? desiredX - x : 0;
       overEdgeY = y != desiredY ? desiredY - y : 0;

@@ -5,6 +5,8 @@ dim.y "0.6"
 dim.z "8.0"
 
 flag.wideCull "true"
+flag.randomHeading "true"
+
 life "100.0f"
 
 modelType "SMM"

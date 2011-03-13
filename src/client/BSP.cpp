@@ -443,6 +443,8 @@ namespace client
       }
     }
 
+    shaderId = translator.shaderIndex( "mesh" );
+
     log.unindent();
     log.println( "}" );
 
@@ -457,6 +459,7 @@ namespace client
       return;
     }
 
+    shader.use( shaderId );
     glUniform4fv( param.oz_Colour, 1, shader.colour );
 
     for( int i = 0; i < meshes.length(); ++i ) {

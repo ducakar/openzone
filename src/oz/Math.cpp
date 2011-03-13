@@ -25,8 +25,8 @@ namespace oz
 
   const float Math::MAX_RAND = float( RAND_MAX );
 
-  void ( *const Math::seed )( uint ) = ::srand;
-  int ( *const Math::rand )() = ::rand;
+  void ( * const Math::seed )( uint ) = ::srand;
+  int ( * const Math::rand )() = ::rand;
 
   float Math::frand()
   {

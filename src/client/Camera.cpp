@@ -31,7 +31,7 @@ namespace client
   void Camera::align()
   {
     h = Math::mod( h + Math::TAU, Math::TAU );
-    v = bound( v, 0.0f, Math::TAU / 2.0f );
+    v = clamp( v, 0.0f, Math::TAU / 2.0f );
 
     rot     = Quat::rotZ( h ) ^ Quat::rotX( v ) ^ Quat::rotZ( w );
     rotMat  = Mat44::rotation( rot );
@@ -51,7 +51,6 @@ namespace client
 
     aspect       = config.getSet( "camera.aspect",     0.0f );
     minDist      = config.getSet( "camera.minDist",    0.1f );
-    maxDist      = config.getSet( "camera.maxDist",    400.0f );
     mouseXSens   = config.getSet( "camera.mouseXSens", 0.003f );
     mouseYSens   = config.getSet( "camera.mouseYSens", 0.003f );
     keyXSens     = config.getSet( "camera.keysXSens",  2.0f );

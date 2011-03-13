@@ -25,6 +25,7 @@ namespace client
 
       int    id;
       Mesh   mesh;
+      int    shaderId;
 
     public:
 
