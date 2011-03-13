@@ -65,6 +65,13 @@ namespace client
     if( initFlags & INIT_TRANSLATOR ) {
       translator.free();
     }
+    if( ( initFlags & INIT_CONFIG ) == 0 ) {
+      String rcDir = config.get( "dir.rc", "" );
+      String configPath = rcDir + "/" OZ_CLIENT_CONFIG_FILE;
+
+      config.exclude( "dir.rc" );
+      config.save( configPath );
+    }
 
     config.clear();
     buffer.dealloc();
@@ -487,12 +494,6 @@ namespace client
     allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
 
     stage->end();
-
-    if( ( initFlags & INIT_CONFIG ) == 0 ) {
-      config.exclude( "dir.rc" );
-      config.save( configPath );
-      config.add( "dir.rc", rcDir );
-    }
 
     return 0;
   }

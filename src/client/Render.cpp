@@ -19,7 +19,6 @@
 #include "client/Colours.hpp"
 #include "client/Shape.hpp"
 
-#include "client/Water.hpp"
 #include "client/Sky.hpp"
 #include "client/Terra.hpp"
 #include "client/BSP.hpp"
@@ -85,6 +84,8 @@ namespace client
     collider.translate( camera.p, Vec3::ZERO );
     isUnderWater = collider.hit.inWater;
 
+    windPhi = Math::mod( windPhi + windPhiInc, Math::TAU );
+
     Vec4 clearColour;
 
     if( isUnderWater ) {
@@ -109,7 +110,6 @@ namespace client
     span.maxY = min( span.maxY + 2, Orbis::MAX - 1 );
 
     sky.update();
-    water.update();
 
     // drawnStructs
     if( drawnStructs.length() < orbis.structs.length() ) {
@@ -166,9 +166,11 @@ namespace client
       shader.setSkyLight( sky.lightDir, Colours::diffuse );
       shader.updateLights();
 
-      glUniform1f( param.oz_Fog_start, 100.0f );
+      glUniform1f( param.oz_Fog_start, isUnderWater ? 0.0f : 100.0f );
       glUniform1f( param.oz_Fog_end, visibility );
       glUniform4fv( param.oz_Fog_colour, 1, clearColour );
+
+      glUniform4f( param.oz_Wind, 1.0f, 1.0f, windFactor, windPhi );
     }
 
     glEnable( GL_DEPTH_TEST );
@@ -359,7 +361,6 @@ namespace client
     ui::ui.load();
 
     frustum.init();
-    water.init();
     shape.load();
     sky.load( "sky" );
     terra.load();
@@ -514,8 +515,11 @@ namespace client
     particleRadius       = config.getSet( "render.particleRadius",       0.5f );
     showBounds           = config.getSet( "render.showBounds",           false );
     showAim              = config.getSet( "render.showAim",              false );
+    windFactor           = config.getSet( "render.windFactor",           0.0006f );
+    windPhiInc           = config.getSet( "render.windPhiInc",           0.04f );
 
     nearDist2            *= nearDist2;
+    windPhi              = 0.0f;
 
     simpleShaderId       = translator.shaderIndex( "simple" );
     particleShaderId     = translator.shaderIndex( "particles" );

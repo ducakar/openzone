@@ -59,6 +59,7 @@ namespace client
     String texture;
   };
 
+  static String           shaderName;
   static Vector<Point3>   positions;
   static Vector<Vec3>     normals;
   static Vector<TexCoord> texCoords;
@@ -326,6 +327,7 @@ namespace client
     Vec3 translation = Vec3( config.get( "translate.x", 0.0f ),
                              config.get( "translate.y", 0.0f ),
                              config.get( "translate.z", 0.0f ) );
+    shaderName = config.get( "shader", "mesh" );
 
     if( !loadMaterials( sPath ) ) {
       log.printEnd( " Material loading failed" );
@@ -439,6 +441,7 @@ namespace client
 
     OutputStream os = buffer.outputStream();
 
+    os.writeString( shaderName );
     mesh.write( &os );
 
     log.print( "Writing to '%s' ...", fileName );

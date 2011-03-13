@@ -1,5 +1,6 @@
 /*
  *  default.frag
+ *
  *  [description]
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
@@ -73,6 +74,11 @@ uniform Fog       oz_Fog;
 uniform float     oz_WaveBias;
 
 /*
+ * Wind
+ */
+uniform vec4      oz_Wind;      // vec4( vec2( dirXY ), amplitude, phi )
+
+/*
  * MD2 animation
  */
 uniform vec3      oz_MD2Anim;   // vec3( firstFrame, secondFrame, interpolation )
@@ -99,3 +105,96 @@ vec4 applyFog( in vec4 colour, in float dist )
   float ratio = ( dist - oz_Fog.start ) / ( oz_Fog.end - oz_Fog.start );
   return mix( colour, oz_Fog.colour, clamp( ratio, 0.0, 1.0 ) );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// this file should have a 'round' number of lines to easier determine error line from compiler
+// output as it is biased by the number of lines in header.glsl file

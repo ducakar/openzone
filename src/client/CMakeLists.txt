@@ -69,8 +69,8 @@ add_library( client STATIC
   StrategicProxy.hpp
   Terra.cpp
   Terra.hpp
-  Water.cpp
-  Water.hpp
+
+
   common.cpp
   common.hpp
 )

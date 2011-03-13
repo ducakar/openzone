@@ -18,7 +18,6 @@
 #include "client/Context.hpp"
 #include "client/Frustum.hpp"
 #include "client/Colours.hpp"
-#include "client/Water.hpp"
 
 namespace oz
 {

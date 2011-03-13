@@ -249,11 +249,11 @@ namespace client
     {  58,  61,  7.0f, 1 },   // PAIN_B
     {  62,  65,  7.0f, 1 },   // PAIN_C
     {  67,  67,  9.0f, 0 },   // JUMP
-    {  72,  83,  7.0f, 0 },   // FLIP
-    {  84,  94,  7.0f, 0 },   // SALUTE
-    {  95, 111, 10.0f, 0 },   // FALLBACK
-    { 112, 122,  7.0f, 0 },   // WAVE
-    { 123, 134,  6.0f, 0 },   // POINT
+    {  72,  83,  7.0f, 1 },   // FLIP
+    {  84,  94,  7.0f, 1 },   // SALUTE
+    {  95, 111, 10.0f, 1 },   // FALLBACK
+    { 112, 122,  7.0f, 1 },   // WAVE
+    { 123, 134,  6.0f, 1 },   // POINT
     { 135, 153, 10.0f, 1 },   // CROUCH_STAND
     { 154, 159,  7.0f, 1 },   // CROUCH_WALK
     { 160, 168, 18.0f, 1 },   // CROUCH_ATTACK
@@ -290,7 +290,6 @@ namespace client
     Vec3 weaponTransl  = Vec3( config.get( "weaponTranslate.x", 0.00f ),
                                config.get( "weaponTranslate.y", 0.00f ),
                                config.get( "weaponTranslate.z", 0.00f ) );
-
 
     FILE* file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
@@ -409,6 +408,9 @@ namespace client
 
     delete[] data;
 
+    String shaderName = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
+    translator.shaderIndex( shaderName );
+
     OutputStream os = buffer.outputStream();
 
     if( header.nFrames != 1 ) {
@@ -417,6 +419,7 @@ namespace client
       os.writeVec3( weaponTransl );
     }
 
+    os.writeString( shaderName );
     mesh.write( &os );
 
     if( header.nFrames != 1 ) {
@@ -476,6 +479,7 @@ namespace client
     nFrames         = is.readInt();
     nFramePositions = is.readInt();
     weaponTransl    = is.readVec3();
+    shaderId        = translator.shaderIndex( is.readString() );
 
     if( nFrames == 1 ) {
       mesh.load( &is, GL_STATIC_DRAW );
@@ -502,8 +506,6 @@ namespace client
 
       delete[] vertices;
     }
-
-    shaderId = translator.shaderIndex( "md2" );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 

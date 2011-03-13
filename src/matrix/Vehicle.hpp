@@ -20,7 +20,15 @@ namespace oz
   {
     public:
 
-      enum Role : int
+      enum Type : int
+      {
+        WHEELED,
+        TRACKED,
+        HOVER,
+        AIR
+      };
+
+      enum Crew : int
       {
         PILOT,
         GUNNER,
@@ -40,6 +48,13 @@ namespace oz
       static Pool<Vehicle> pool;
 
     protected:
+
+      static void ( Vehicle::* handlers[] )();
+
+      void wheeledHandler();
+      void trackedHandler();
+      void hoverHandler();
+      void airHandler();
 
       virtual void onDestroy();
       virtual void onUpdate();

@@ -77,6 +77,23 @@ namespace oz
       throw Exception( "Invalid object lift. Should be >= 0." );
     }
 
+    String sType = config->get( "type", "AIR" );
+    if( sType.equals( "WHEELED" ) ) {
+      clazz->type = Vehicle::WHEELED;
+    }
+    else if( sType.equals( "TRACKED" ) ) {
+      clazz->type = Vehicle::TRACKED;
+    }
+    else if( sType.equals( "HOVER" ) ) {
+      clazz->type = Vehicle::HOVER;
+    }
+    else if( sType.equals( "AIR" ) ) {
+      clazz->type = Vehicle::AIR;
+    }
+    else {
+      throw Exception( "Invalid vehicle type, should be either WHEELED, TRACKED, HOVER or AIR" );
+    }
+
     clazz->crewPos[Vehicle::PILOT] = Vec3( config->get( "crew.pilot.pos.x", 0.0f ),
                                            config->get( "crew.pilot.pos.y", 0.0f ),
                                            config->get( "crew.pilot.pos.z", 0.0f ) );

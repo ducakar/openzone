@@ -1574,6 +1574,8 @@ namespace oz
     if( lua_isstring( l, -1 ) ) {
       log.println( "M! %s", lua_tostring( l, -1 ) );
       lua_pop( l, 1 );
+
+      throw Exception( "Matrix Lua function call finished with an error" );
     }
     lua_pop( l, 1 );
   }

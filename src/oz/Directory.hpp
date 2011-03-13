@@ -35,6 +35,7 @@ namespace oz
 
           String baseName() const;
           String extension() const;
+          bool hasExtension() const;
           bool hasExtension( const char* ext ) const;
 
       };

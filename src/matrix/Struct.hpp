@@ -53,7 +53,7 @@ namespace oz
 
         private:
 
-          static void ( Entity::* handlers[5] )();
+          static void ( Entity::* handlers[] )();
 
           void updateIgnoring();
           void updateBlocking();

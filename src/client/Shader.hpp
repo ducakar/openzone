@@ -48,6 +48,8 @@ namespace client
 
     int oz_WaveBias;
 
+    int oz_Wind;
+
     int oz_MD2Anim;
   };
 

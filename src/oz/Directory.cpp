@@ -68,6 +68,16 @@ namespace oz
     return dot;
   }
 
+  bool Directory::CIterator::hasExtension() const
+  {
+    if( elem == null ) {
+      return false;
+    }
+
+    const char* dot = String::findLast( elem, '.' );
+    return dot != null;
+  }
+
   bool Directory::CIterator::hasExtension( const char* ext ) const
   {
     if( elem == null ) {

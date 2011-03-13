@@ -173,6 +173,36 @@ static void prebuildTerras( const char* path )
   oz::log.println( "}" );
 }
 
+static void prebuildLua( const char* path )
+{
+  oz::log.println( "Prebuilding Lua scripts in '%s' {", path );
+  oz::log.indent();
+
+  String dirName = path;
+  Directory dir( path );
+
+  if( !dir.isOpened() ) {
+    throw Exception( "Cannot open directory '" + dirName + "'" );
+  }
+
+  dirName = dirName + "/";
+
+  foreach( ent, dir.citer() ) {
+    if( !ent.hasExtension( "lua" ) ) {
+      continue;
+    }
+
+    String fileBase = dirName + ent.baseName();
+    String cmdLine = "luac -o " + fileBase + ".luac " + fileBase + ".lua";
+
+    log.println( "%s", cmdLine.cstr() );
+    system( cmdLine );
+  }
+
+  oz::log.unindent();
+  oz::log.println( "}" );
+}
+
 int main( int argc, char** argv )
 {
   System::catchSignals();
@@ -208,6 +238,7 @@ int main( int argc, char** argv )
 
     long startTime = SDL_GetTicks();
 
+    translator.prebuildInit();
     client::render.init();
     buffer.alloc( 10 * 1024 * 1024 );
     matrix.init();
@@ -218,12 +249,13 @@ int main( int argc, char** argv )
     prebuildTextures( "textures/oz", "bsp/tex", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
 
     client::Sky::prebuild( "sky" );
-
     prebuildTerras( "terra" );
 
     prebuildBSPs( "maps" );
-
     prebuildModels( "mdl" );
+
+    prebuildLua( "lua/matrix" );
+    prebuildLua( "lua/nirvana" );
 
     long endTime = SDL_GetTicks();
 
@@ -262,6 +294,7 @@ int main( int argc, char** argv )
   matrix.free();
   buffer.dealloc();
   client::render.free();
+  translator.free();
   config.clear();
 
   Alloc::printStatistics();
