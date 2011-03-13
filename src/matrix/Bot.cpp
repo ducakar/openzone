@@ -96,7 +96,7 @@ namespace oz
     }
 
     h = Math::mod( h + Math::TAU, Math::TAU );
-    v = bound( v, 0.0f, Math::TAU / 2.0f );
+    v = clamp( v, 0.0f, Math::TAU / 2.0f );
 
     // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
     float hvsc[6];
@@ -183,16 +183,24 @@ namespace oz
       if( state & CROUCHING_BIT ) {
         float oldZ = p.z;
 
-        p.z += clazz->dim.z - clazz->dimCrouch.z;
+        p.z = oldZ + clazz->dim.z - clazz->dimCrouch.z;
         dim = clazz->dim;
 
         if( !collider.overlaps( *this, this ) ) {
-          camZ   = clazz->camZ;
-          state  &= ~CROUCHING_BIT;
+          camZ  = clazz->camZ;
+          state &= ~CROUCHING_BIT;
         }
         else {
-          dim = clazz->dimCrouch;
-          p.z = oldZ;
+          p.z = oldZ - clazz->dim.z + clazz->dimCrouch.z;
+
+          if( !collider.overlaps( *this, this ) ) {
+            camZ  = clazz->camZ;
+            state &= ~CROUCHING_BIT;
+          }
+          else {
+            dim = clazz->dimCrouch;
+            p.z = oldZ;
+          }
         }
       }
       else {

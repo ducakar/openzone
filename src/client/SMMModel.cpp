@@ -24,9 +24,13 @@ namespace client
   {
     SMMModel* model = new SMMModel();
 
-    model->obj   = obj;
-    model->clazz = obj->clazz;
-    model->smm   = context.requestSMM( obj->clazz->modelIndex );
+    model->obj     = obj;
+    model->clazz   = obj->clazz;
+    model->smm     = context.requestSMM( obj->clazz->modelIndex );
+    model->heading = obj->flags & Object::RANDOM_HEADING_BIT ?
+        Math::mod( ( obj->p.x + obj->p.y + obj->p.z ) * Math::E, Math::TAU ) :
+        0.0f;
+
     return model;
   }
 
@@ -40,6 +44,8 @@ namespace client
     if( !smm->isLoaded ) {
       return;
     }
+
+    tf.model.rotateZ( heading );
 
     smm->draw();
   }

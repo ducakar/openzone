@@ -43,6 +43,9 @@ namespace client
       uint   sunTexId;
       uint   moonTexId;
 
+      int    starShaderId;
+      int    celestialShaderId;
+
     public:
 
       float  angle;

@@ -52,6 +52,17 @@ namespace oz
     }
   }
 
+  int Translator::shaderIndex( const char* name ) const
+  {
+    const int* value = shaderIndices.find( name );
+    if( value != null ) {
+      return *value;
+    }
+    else {
+      throw Exception( "Invalid shader requested '" + String( name ) + "'" );
+    }
+  }
+
   int Translator::terraIndex( const char* name ) const
   {
     const int* value = terraIndices.find( name );
@@ -216,28 +227,27 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "models (*.ozcSMM, *.ozcMD2 in 'mdl') {" );
+    log.println( "shaders (*.vert/*.frag in 'glsl') {" );
     log.indent();
 
-    dir.open( "mdl" );
+    dir.open( "glsl" );
     if( !dir.isOpened() ) {
       free();
 
-      log.println( "Cannot open directory 'mdl'" );
+      log.println( "Cannot open directory 'glsl'" );
       log.unindent();
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "ozcSMM" ) && !ent.hasExtension( "ozcMD2" ) ) {
+      if( !ent.hasExtension( "vert" ) ) {
         continue;
       }
 
       String name = ent.baseName();
-      String path = String( "mdl/" ) + ent;
 
-      modelIndices.add( name, models.length() );
-      models.add( Resource( name, path ) );
+      shaderIndices.add( name, shaders.length() );
+      shaders.add( Resource( name, "" ) );
 
       log.println( "%s", name.cstr() );
     }
@@ -245,36 +255,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "BSP structures (*.ozBSP in 'bsp') {" );
-    log.indent();
-
-    dir.open( "bsp" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'bsp'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "ozBSP" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "bsp/" ) + ent;
-
-      bspIndices.add( name, bsps.length() );
-      bsps.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "Terrain heightmaps (*.ozTerra in 'terra') {" );
+    log.println( "Terrains (*.ozTerra/*.ozcTerra in 'terra') {" );
     log.indent();
 
     dir.open( "terra" );
@@ -303,49 +284,57 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "object classes (*.rc in 'class') {" );
+    log.println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
     log.indent();
 
-    dir.open( "class" );
+    dir.open( "bsp" );
     if( !dir.isOpened() ) {
       free();
 
-      log.println( "Cannot open directory 'class'" );
+      log.println( "Cannot open directory 'bsp'" );
       log.unindent();
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "rc" ) ) {
+      if( !ent.hasExtension( "ozBSP" ) ) {
         continue;
       }
 
       String name = ent.baseName();
-      String path = String( "class/" ) + ent;
+      String path = String( "bsp/" ) + ent;
 
-      if( !classConfig.load( path ) ) {
-        log.println( "invalid config file %s", path.cstr() );
-        classConfig.clear();
+      bspIndices.add( name, bsps.length() );
+      bsps.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "models (*.ozcSMM, *.ozcMD2 in 'mdl') {" );
+    log.indent();
+
+    dir.open( "mdl" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'mdl'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "ozcSMM" ) && !ent.hasExtension( "ozcMD2" ) ) {
         continue;
       }
-      if( !classConfig.contains( "base" ) ) {
-        log.println( "missing base variable" );
-        classConfig.clear();
-        continue;
-      }
-      const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
-      if( initFunc == null ) {
-        log.println( "invalid base %s", classConfig["base"].cstr() );
-        classConfig.clear();
-        continue;
-      }
-      if( classes.contains( name ) ) {
-        log.println( "duplicated class: %s", name.cstr() );
-        classConfig.clear();
-        continue;
-      }
-      classes.add( name, ( *initFunc )( name, &classConfig ) );
-      classConfig.clear();
+
+      String name = ent.baseName();
+      String path = String( "mdl/" ) + ent;
+
+      modelIndices.add( name, models.length() );
+      models.add( Resource( name, path ) );
 
       log.println( "%s", name.cstr() );
     }
@@ -437,6 +426,56 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
+    log.println( "object classes (*.rc in 'class') {" );
+    log.indent();
+
+    dir.open( "class" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'class'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "rc" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "class/" ) + ent;
+
+      if( !classConfig.load( path ) ) {
+        log.println( "invalid config file %s", path.cstr() );
+        classConfig.clear();
+        continue;
+      }
+      if( !classConfig.contains( "base" ) ) {
+        log.println( "missing base variable" );
+        classConfig.clear();
+        continue;
+      }
+      const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
+      if( initFunc == null ) {
+        log.println( "invalid base %s", classConfig["base"].cstr() );
+        classConfig.clear();
+        continue;
+      }
+      if( classes.contains( name ) ) {
+        log.println( "duplicated class: %s", name.cstr() );
+        classConfig.clear();
+        continue;
+      }
+      classes.add( name, ( *initFunc )( name, &classConfig ) );
+      classConfig.clear();
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
     log.unindent();
     log.println( "}" );
 
@@ -449,6 +488,8 @@ namespace oz
     textureIndices.dealloc();
     soundIndices.clear();
     soundIndices.dealloc();
+    shaderIndices.clear();
+    shaderIndices.dealloc();
     terraIndices.clear();
     terraIndices.dealloc();
     bspIndices.clear();
@@ -460,6 +501,8 @@ namespace oz
     textures.dealloc();
     sounds.clear();
     sounds.dealloc();
+    shaders.clear();
+    shaders.dealloc();
     terras.clear();
     terras.dealloc();
     bsps.clear();

@@ -101,8 +101,25 @@ namespace ui
     setFont( Font::TITLE );
     printCentred( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, "Inventory" );
 
+    // set shaders
+    for( int i = 0; i < translator.shaders.length(); ++i ) {
+      if( i == shader.ui || i == shader.text ) {
+        continue;
+      }
+
+      shader.use( i );
+
+      tf.applyCamera();
+
+      shader.setAmbientLight( Colours::WHITE );
+      shader.setSkyLight( Vec3( 0.0f, 0.0f, 1.0f ), Colours::BLACK );
+      shader.updateLights();
+
+      glUniform1f( param.oz_Fog_start, 1000000.0f );
+      glUniform1f( param.oz_Fog_end, 2000000.0f );
+    }
+
     glDisable( GL_BLEND );
-    shader.use( Shader::MESH_ITEMVIEW );
 
     tf.model = Mat44::ID;
     tf.model.translate( Vec3( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0.0f ) );
@@ -149,7 +166,7 @@ namespace ui
 
     shape.bindVertexArray();
 
-    shader.use( Shader::UI );
+    shader.use( shader.ui );
     glEnable( GL_BLEND );
 
     tagged = -1;

@@ -42,10 +42,11 @@ namespace client
 
     int oz_PointLights;
 
-    int oz_NearDistance;
+    int oz_Fog_start;
+    int oz_Fog_end;
+    int oz_Fog_colour;
 
-    int oz_FogDistance;
-    int oz_FogColour;
+    int oz_WaveBias;
 
     int oz_MD2Anim;
   };
@@ -105,26 +106,15 @@ namespace client
 
   class Shader
   {
-    public:
-
-      enum Program : int
-      {
-        UI,
-        TEXT,
-        SIMPLE,
-        MESH_ITEMVIEW,
-        MESH_NEAR,
-        MESH_FAR,
-        MESH_WATER,
-        TERRA,
-        TERRA_WATER,
-        STARS,
-        PARTICLES,
-        MD2,
-        MAX
-      };
-
     private:
+
+      struct Program
+      {
+        uint  vertShader;
+        uint  fragShader;
+        uint  program;
+        Param param;
+      };
 
       struct SkyLight
       {
@@ -146,28 +136,27 @@ namespace client
       };
 
       static const int   BUFFER_SIZE = 8192;
-      static const char* PROGRAM_NAMES[MAX];
 
-      uint                vertShaders[MAX];
-      uint                fragShaders[MAX];
-      uint                programs[MAX];
-      Param               progParams[MAX];
+      DArray<Program> programs;
 
-      Program             activeProgram;
-      SVector<Program, 8> programStack;
+      int             activeProgram;
+      SVector<int, 8> programStack;
 
-      float               lightingDistance;
-      SkyLight            skyLight;
-      Sparse<Light>       lights;
+      float           lightingDistance;
+      SkyLight        skyLight;
+      Sparse<Light>   lights;
 
       void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
-      void loadProgram( Program prog, const char** sources, int* lengths );
+      void loadProgram( int id, const char** sources, int* lengths );
 
     public:
 
+      int  ui;
+      int  text;
+
       Vec4 colour;
 
-      void use( Program prog );
+      void use( int id );
       void push();
       void pop();
 

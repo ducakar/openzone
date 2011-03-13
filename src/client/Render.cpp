@@ -134,9 +134,6 @@ namespace client
     structs.sort();
     objects.sort();
 
-    int firstNearStruct = aBisectPosition( structs + 0, nearDist2, structs.length() );
-    int firstNearObject = aBisectPosition( objects + 0, nearDist2, objects.length() );
-
     // clear buffer
     glClearColor( clearColour.x, clearColour.y, clearColour.z, clearColour.w );
     glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
@@ -156,16 +153,12 @@ namespace client
     tf.camera.translate( Point3::ORIGIN - camera.p );
 
     // set shaders
-    Shader::Program programs[] = {
-      Shader::MESH_NEAR,
-      Shader::MESH_FAR,
-      Shader::TERRA,
-      Shader::TERRA_WATER,
-      Shader::PARTICLES,
-      Shader::MD2
-    };
-    foreach( shId, citer( programs, 6 ) ) {
-      shader.use( *shId );
+    for( int i = 0; i < translator.shaders.length(); ++i ) {
+      if( i == shader.ui || i == shader.text ) {
+        continue;
+      }
+
+      shader.use( i );
 
       tf.applyCamera();
 
@@ -173,9 +166,9 @@ namespace client
       shader.setSkyLight( sky.lightDir, Colours::diffuse );
       shader.updateLights();
 
-      glUniform1f( param.oz_NearDistance, Math::sqrt( nearDist2 ) );
-      glUniform4fv( param.oz_FogColour, 1, clearColour );
-      glUniform1f( param.oz_FogDistance, visibility );
+      glUniform1f( param.oz_Fog_start, 100.0f );
+      glUniform1f( param.oz_Fog_end, visibility );
+      glUniform4fv( param.oz_Fog_colour, 1, clearColour );
     }
 
     glEnable( GL_DEPTH_TEST );
@@ -187,20 +180,7 @@ namespace client
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
     // draw structures
-    shader.use( Shader::MESH_NEAR );
-
-    for( int i = firstNearStruct; i < structs.length(); ++i ) {
-      const Struct* str = structs[i].str;
-
-      tf.model = Mat44::translation( str->p - Point3::ORIGIN );
-      tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
-
-      context.drawBSP( str, Mesh::SOLID_BIT );
-    }
-
-    shader.use( Shader::MESH_FAR );
-
-    for( int i = 0; i < firstNearStruct; ++i ) {
+    for( int i = structs.length() - 1; i >= 0; --i ) {
       const Struct* str = structs[i].str;
 
       tf.model = Mat44::translation( str->p - Point3::ORIGIN );
@@ -220,27 +200,7 @@ namespace client
     beginTime = currentTime;
 
     // draw objects
-    shader.use( Shader::MESH_FAR );
-
-    for( int i = 0; i < firstNearObject; ++i ) {
-      const Object* obj = objects[i].obj;
-
-      if( obj->index == camera.tagged ) {
-        shader.colour = Colours::TAG;
-      }
-
-      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
-
-      context.drawModel( obj, null );
-
-      if( obj->index == camera.tagged ) {
-        shader.colour = Colours::WHITE;
-      }
-    }
-
-    shader.use( Shader::MESH_NEAR );
-
-    for( int i = firstNearObject; i < objects.length(); ++i ) {
+    for( int i = 0; i < objects.length(); ++i ) {
       const Object* obj = objects[i].obj;
 
       if( obj->index == camera.tagged ) {
@@ -265,7 +225,7 @@ namespace client
     // draw particles
     glEnable( GL_BLEND );
 
-    shader.use( Shader::PARTICLES );
+    shader.use( particleShaderId );
 
     shape.bindVertexArray();
 
@@ -289,20 +249,7 @@ namespace client
     beginTime = currentTime;
 
     // draw structures' water
-    shader.use( Shader::MESH_FAR );
-
-    for( int i = 0; i < firstNearStruct; ++i ) {
-      const Struct* str = structs[i].str;
-
-      tf.model = Mat44::translation( str->p - Point3::ORIGIN );
-      tf.model.rotateZ( float( str->rot ) * Math::TAU / 4.0f );
-
-      context.drawBSP( str, Mesh::ALPHA_BIT );
-    }
-
-    shader.use( Shader::MESH_NEAR );
-
-    for( int i = firstNearStruct; i < structs.length(); ++i ) {
+    for( int i = 0; i < structs.length(); ++i ) {
       const Struct* str = structs[i].str;
 
       tf.model = Mat44::translation( str->p - Point3::ORIGIN );
@@ -321,7 +268,7 @@ namespace client
     timer.renderTerraMillis += currentTime - beginTime;
     beginTime = currentTime;
 
-    shader.use( Shader::SIMPLE );
+    shader.use( simpleShaderId );
     tf.model = Mat44::ID;
 
     shape.bindVertexArray();
@@ -569,6 +516,9 @@ namespace client
     showAim              = config.getSet( "render.showAim",              false );
 
     nearDist2            *= nearDist2;
+
+    simpleShaderId       = translator.shaderIndex( "simple" );
+    particleShaderId     = translator.shaderIndex( "particles" );
 
 #ifdef OZ_WINDOWS
     glUniform1i               = reinterpret_cast<PFNGLUNIFORM1IPROC>               ( SDL_GL_GetProcAddress( "glUniform1i" ) );

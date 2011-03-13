@@ -56,14 +56,14 @@ namespace client
     if( initFlags & INIT_CONTEXT_INIT ) {
       context.free();
     }
-    if( initFlags & INIT_TRANSLATOR ) {
-      translator.free();
-    }
     if( initFlags & INIT_AUDIO ) {
       sound.free();
     }
     if( initFlags & INIT_RENDER_INIT ) {
       render.free();
+    }
+    if( initFlags & INIT_TRANSLATOR ) {
+      translator.free();
     }
 
     config.clear();
@@ -323,14 +323,14 @@ namespace client
     }
     log.printEnd( " OK" );
 
+    initFlags |= INIT_TRANSLATOR;
+    translator.init();
+
     initFlags |= INIT_RENDER_INIT;
     render.init();
 
     initFlags |= INIT_AUDIO;
     sound.init( argc, argv );
-
-    initFlags |= INIT_TRANSLATOR;
-    translator.init();
 
     initFlags |= INIT_CONTEXT_INIT;
     context.init();

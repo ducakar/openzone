@@ -94,6 +94,9 @@ namespace client
       bool                    isUnderWater;
       float                   visibility;
 
+      int                     simpleShaderId;
+      int                     particleShaderId;
+
       void scheduleCell( int cellX, int cellY );
 
       // render world

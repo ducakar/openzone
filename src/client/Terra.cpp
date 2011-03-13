@@ -36,6 +36,8 @@ namespace client
   const float Terra::DETAIL_SCALE  = 4.00f;
   const float Terra::WATER_SCALE   = 0.25f;
 
+  const float Terra::WAVE_BIAS_INC = 2.0f * Timer::TICK_TIME;
+
   Terra terra;
 
 #ifdef OZ_BUILD_TOOLS
@@ -138,68 +140,6 @@ namespace client
             vertex.write( &os );
           }
         }
-
-        int x = i * TILE_QUADS;
-        int y = j * TILE_QUADS;
-
-        float minX = quads[x][y].vertex.x;
-        float minY = quads[x][y].vertex.y;
-        float maxX = quads[x + TILE_QUADS][y + TILE_QUADS].vertex.x;
-        float maxY = quads[x + TILE_QUADS][y + TILE_QUADS].vertex.y;
-
-        // front
-        normal = Vec3( 0.0f, 0.0f, 1.0f );
-
-        vertex.set( Point3( minX, minY, 0.0f ),
-                    TexCoord( 0.0f,
-                              0.0f ),
-                    normal );
-        vertex.write( &os );
-
-        vertex.set( Point3( maxX, minY, 0.0f ),
-                    TexCoord( TILE_SIZE * WATER_SCALE,
-                              0.0f ),
-                    normal );
-        vertex.write( &os );
-
-        vertex.set( Point3( minX, maxY, 0.0f ),
-                    TexCoord( 0.0f,
-                              TILE_SIZE * WATER_SCALE ),
-                    normal );
-        vertex.write( &os );
-
-        vertex.set( Point3( maxX, maxY, 0.0f ),
-                    TexCoord( TILE_SIZE * WATER_SCALE,
-                              TILE_SIZE * WATER_SCALE ),
-                    normal );
-        vertex.write( &os );
-
-        // back
-        normal = Vec3( 0.0f, 0.0f, -1.0f );
-
-        vertex.set( Point3( minX, minY, 0.0f ),
-                    TexCoord( 0.0f,
-                              0.0f ),
-                    normal );
-        vertex.write( &os );
-
-        vertex.set( Point3( minX, maxY, 0.0f ),
-                    TexCoord( 0.0f,
-                              TILE_SIZE * WATER_SCALE ),
-                    normal );
-        vertex.write( &os );
-
-        vertex.set( Point3( maxX, minY, 0.0f ),
-                    TexCoord( TILE_SIZE * WATER_SCALE,
-                              0.0f ),
-                    normal );
-        vertex.write( &os );
-
-        vertex.set( Point3( maxX, maxY, 0.0f ),
-                    TexCoord( TILE_SIZE * WATER_SCALE,
-                              TILE_SIZE * WATER_SCALE ),
-                    normal );
-        vertex.write( &os );
       }
     }
 
@@ -222,7 +162,7 @@ namespace client
     log.print( "Loading terra '%s' ...", name.cstr() );
 
     ushort* indices  = new ushort[TILE_INDICES];
-    Vertex* vertices = new Vertex[TILE_VERTICES + 8];
+    Vertex* vertices = new Vertex[TILE_VERTICES];
 
     if( !buffer.read( path ) ) {
       log.printEnd( " Failed" );
@@ -250,7 +190,7 @@ namespace client
 
     for( int i = 0; i < TILES; ++i ) {
       for( int j = 0; j < TILES; ++j ) {
-        for( int k = 0; k < TILE_VERTICES + 8; ++k ) {
+        for( int k = 0; k < TILE_VERTICES; ++k ) {
           vertices[k].read( &is );
         }
 
@@ -259,7 +199,7 @@ namespace client
         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
         glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-        glBufferData( GL_ARRAY_BUFFER, ( TILE_VERTICES + 8 ) * sizeof( Vertex ), vertices,
+        glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), vertices,
                       GL_STATIC_DRAW );
 
         glEnableVertexAttribArray( Attrib::POSITION );
@@ -296,12 +236,15 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-    float scales[2] = { 1.0f, float( oz::Terra::QUADS ) };
+    landShaderId = translator.shaderIndex( "terra_land" );
+    waterShaderId = translator.shaderIndex( "terra_water" );
 
-    shader.use( Shader::TERRA );
+    float scales[2] = { float( oz::Terra::QUADS ), 1.0f };
+
+    shader.use( landShaderId );
     glUniform1fv( param.oz_TextureScales, 2, scales );
 
-    shader.use( Shader::TERRA_WATER );
+    shader.use( waterShaderId );
     glUniform1fv( param.oz_TextureScales, 2, scales );
 
     delete[] indices;
@@ -328,14 +271,14 @@ namespace client
     span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
     span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
-    shader.use( Shader::TERRA );
+    shader.use( landShaderId );
 
     tf.model = Mat44::ID;
     tf.apply();
 
-    glBindTexture( GL_TEXTURE_2D, mapTexId );
-    glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, detailTexId );
+    glActiveTexture( GL_TEXTURE1 );
+    glBindTexture( GL_TEXTURE_2D, mapTexId );
     glActiveTexture( GL_TEXTURE0 );
 
     hard_assert( glGetError() == GL_NO_ERROR );
@@ -358,23 +301,19 @@ namespace client
 
   void Terra::drawWater()
   {
-    int sideVertices = 0;
+    waveBias = Math::mod( waveBias + WAVE_BIAS_INC, Math::TAU );
 
-    if( camera.p.z < 0.0f ) {
-      span.minX = max( int( ( camera.p.x - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
-      span.minY = max( int( ( camera.p.y - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
-      span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
-      span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
+    shader.use( waterShaderId );
 
-      sideVertices = 4;
-    }
-
-    shader.use( Shader::TERRA_WATER );
-
+    glUniform1f( param.oz_WaveBias, waveBias );
     tf.model = Mat44::ID;
     tf.apply();
 
     glBindTexture( GL_TEXTURE_2D, waterTexId );
+
+    if( camera.p.z >= 0.0f ) {
+      glFrontFace( GL_CW );
+    }
 
     glEnable( GL_BLEND );
 
@@ -382,12 +321,16 @@ namespace client
       for( int j = span.minY; j <= span.maxY; ++j ) {
         if( waterTiles.get( i * TILES + j ) ) {
           glBindVertexArray( vaos[i][j] );
-          glDrawArrays( GL_TRIANGLE_STRIP, TILE_VERTICES + sideVertices, 4 );
+          glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, 0 );
         }
       }
     }
 
     glDisable( GL_BLEND );
+
+    if( camera.p.z >= 0.0f ) {
+      glFrontFace( GL_CCW );
+    }
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }

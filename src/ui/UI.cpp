@@ -45,10 +45,10 @@ namespace ui
     tf.ortho();
     tf.camera = Mat44::ID;
 
-    shader.use( Shader::TEXT );
+    shader.use( shader.text );
     tf.applyCamera();
 
-    shader.use( Shader::UI );
+    shader.use( shader.ui );
     tf.applyCamera();
 
     shape.bindVertexArray();

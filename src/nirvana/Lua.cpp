@@ -732,14 +732,14 @@ namespace nirvana
   int Lua::ozSelfSetV( lua_State* l )
   {
     lua.self->v = Math::rad( float( lua_tonumber( l, 1 ) ) );
-    lua.self->v = bound( lua.self->v, 0.0f, Math::TAU / 2.0f );
+    lua.self->v = clamp( lua.self->v, 0.0f, Math::TAU / 2.0f );
     return 1;
   }
 
   int Lua::ozSelfAddV( lua_State* l )
   {
     lua.self->v += Math::rad( float( lua_tonumber( l, 1 ) ) );
-    lua.self->v = bound( lua.self->v, 0.0f, Math::TAU / 2.0f );
+    lua.self->v = clamp( lua.self->v, 0.0f, Math::TAU / 2.0f );
     return 1;
   }
 

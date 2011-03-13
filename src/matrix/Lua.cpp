@@ -477,7 +477,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->life = bound( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->clazz->life );
+    lua.obj->life = clamp( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->clazz->life );
     return 0;
   }
 
@@ -487,7 +487,7 @@ namespace oz
       OZ_LUA_ERROR( "selected object is null" );
     }
 
-    lua.obj->life = bound( lua.obj->life + float( lua_tonumber( l, 1 ) ),
+    lua.obj->life = clamp( lua.obj->life + float( lua_tonumber( l, 1 ) ),
                            0.0f,
                            lua.obj->clazz->life );
     return 0;
@@ -940,7 +940,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
 
     bot->v = Math::rad( float( lua_tonumber( l, 1 ) ) );
-    bot->v = bound( bot->v, 0.0f, Math::TAU / 2.0f );
+    bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
     return 1;
   }
 
@@ -956,7 +956,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
 
     bot->v += Math::rad( float( lua_tonumber( l, 1 ) ) );
-    bot->v = bound( bot->v, 0.0f, Math::TAU / 2.0f );
+    bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
     return 1;
   }
 
@@ -1274,7 +1274,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    bot->stamina = bound( float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
+    bot->stamina = clamp( float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;
   }
 
@@ -1290,7 +1290,7 @@ namespace oz
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    bot->stamina = bound( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
+    bot->stamina = clamp( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
     return 0;
   }
 

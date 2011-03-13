@@ -19,9 +19,6 @@ namespace oz
 
   struct Endian
   {
-    static_assert( sizeof( short ) == 2, "sizeof( short ) should be 2" );
-    static_assert( sizeof( int ) == 4, "sizeof( int ) should be 4" );
-
     OZ_ALWAYS_INLINE
     static ushort shuffle16( ushort s )
     {

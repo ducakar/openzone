@@ -28,7 +28,7 @@
 #include "ozconfig.hpp"
 
 /*
- * Base C/C++ definitions (size_t, ptrdiff_t, NULL and offsetof)
+ * The most essential C/C++ definitions (size_t, ptrdiff_t, NULL and offsetof)
  */
 #include <cstddef>
 
@@ -43,7 +43,7 @@
 #include <exception>
 
 /*
- * Standard new/delete operator and exception definitions
+ * Standard new/delete operator
  */
 #include <new>
 
@@ -61,13 +61,7 @@ namespace oz
 # define null nullptr
 
   /**
-   * \def const
-   * Add constness to the variable type.
-   */
-# define const( a ) static_cast< const decltype( a ) >( a )
-
-  /**
-   * \def local
+   * \def thread_local
    * Thread-local modifier for a type.
    */
 # define thread_local __thread
@@ -82,6 +76,7 @@ namespace oz
    * \def hard_assert
    * Like assert, but also prints stack trace and waits for a debugger to attach.
    */
+
 #ifdef NDEBUG
 
 # define hard_assert( cond ) \
@@ -178,6 +173,10 @@ namespace oz
    */
   typedef unsigned long long ulong64;
 
+  static_assert( sizeof( short ) == 2, "sizeof( short ) should be 2" );
+  static_assert( sizeof( int ) == 4, "sizeof( int ) should be 4" );
+  static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
+
   //***********************************
   //*        BASIC ALGORITHMS         *
   //***********************************
@@ -210,20 +209,6 @@ namespace oz
   }
 
   /**
-   * Minimum
-   * Non-const version, can be used as a lvalue.
-   * @param a
-   * @param b
-   * @return a if a <= b, b otherwise
-   */
-  template <typename Type>
-  OZ_ALWAYS_INLINE
-  inline Type& min( Type& a, Type& b )
-  {
-    return b < a ? b : a;
-  }
-
-  /**
    * Maximum.
    * @param a
    * @param b
@@ -237,21 +222,7 @@ namespace oz
   }
 
   /**
-   * Maximum
-   * Non-const version, can be used as a lvalue.
-   * @param a
-   * @param b
-   * @return a if a >= b, b otherwise
-   */
-  template <typename Type>
-  OZ_ALWAYS_INLINE
-  inline Type& max( Type& a, Type& b )
-  {
-    return a < b ? b : a;
-  }
-
-  /**
-   * Bound c between a and b. Equals to max( a, min( b, c ) ).
+   * Clamp c between a and b. Equals to max( a, min( b, c ) ).
    * @param c
    * @param a
    * @param b
@@ -259,24 +230,7 @@ namespace oz
    */
   template <typename Type>
   OZ_ALWAYS_INLINE
-  inline const Type& bound( const Type& c, const Type& a, const Type& b )
-  {
-    hard_assert( !( b < a ) );
-
-    return c < a ? a : ( b < c ? b : c );
-  }
-
-  /**
-   * Bound c between a and b. Equals to max( a, min( b, c ) ).
-   * Non-const version, can be used as a lvalue.
-   * @param c
-   * @param a
-   * @param b
-   * @return c, if a <= c <= b, respective boundary otherwise
-   */
-  template <typename Type>
-  OZ_ALWAYS_INLINE
-  inline Type& bound( Type& c, Type& a, Type& b )
+  inline const Type& clamp( const Type& c, const Type& a, const Type& b )
   {
     hard_assert( !( b < a ) );
 

@@ -106,12 +106,12 @@ namespace ui
     x = x < 0 ? this->x + this->width  + x : this->x + x;
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
-    shader.use( Shader::TEXT );
+    shader.use( translator.shaderIndex( "text" ) );
 
     glRasterPos2i( x, y );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
 
-    shader.use( Shader::UI );
+    shader.use( shader.ui );
 
     textWidth = text->w;
     SDL_FreeSurface( text );
@@ -140,12 +140,12 @@ namespace ui
     baseX = baseX < 0 ? this->x + this->width  + baseX : this->x + baseX;
     baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
 
-    shader.use( Shader::TEXT );
+    shader.use( shader.text );
 
     glRasterPos2i( baseX - text->w / 2, baseY - text->h / 2 );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
 
-    shader.use( Shader::UI );
+    shader.use( shader.ui );
 
     textWidth = text->w;
     SDL_FreeSurface( text );
@@ -174,12 +174,12 @@ namespace ui
     x     =     x < 0 ? this->x + this->width  + x     : this->x + x;
     baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
 
-    shader.use( Shader::TEXT );
+    shader.use( shader.text );
 
     glRasterPos2i( x, baseY - text->h / 2 );
     glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
 
-    shader.use( Shader::UI );
+    shader.use( shader.ui );
 
     textWidth = text->w;
     SDL_FreeSurface( text );
@@ -201,8 +201,8 @@ namespace ui
 
   void Area::move( int moveX, int moveY )
   {
-    moveX = bound( moveX, parent->x - x, parent->x + parent->width  - x - width  );
-    moveY = bound( moveY, parent->y - y, parent->y + parent->height - y - height );
+    moveX = clamp( moveX, parent->x - x, parent->x + parent->width  - x - width  );
+    moveY = clamp( moveY, parent->y - y, parent->y + parent->height - y - height );
 
     x += moveX;
     y += moveY;
@@ -286,14 +286,14 @@ namespace ui
 
   void Area::add( Area* area, int relativeX, int relativeY )
   {
-    area->width  = bound( area->width,  1, width  );
-    area->height = bound( area->height, 1, height );
+    area->width  = clamp( area->width,  1, width  );
+    area->height = clamp( area->height, 1, height );
 
     relativeX = relativeX < 0 ? width  + relativeX : relativeX;
     relativeY = relativeY < 0 ? height + relativeY : relativeY;
 
-    relativeX = bound( relativeX, 0, width  - area->width  );
-    relativeY = bound( relativeY, 0, height - area->height );
+    relativeX = clamp( relativeX, 0, width  - area->width  );
+    relativeY = clamp( relativeY, 0, height - area->height );
 
     area->realign( x + relativeX, y + relativeY );
     area->parent = this;
