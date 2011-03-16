@@ -22,10 +22,12 @@ echo 'endif( OZ_INSTALL_LIBOZ )' >> install_files.cmake
 echo >> install_files.cmake
 
 #
-# oalinst
+# oalinst, DLLs
 #
 echo 'if( WIN32 )' >> install_files.cmake
-echo '  install( FILES "oalinst.exe" DESTINATION support )' >> install_files.cmake
+echo '  install( FILES' >> install_files.cmake
+ls mingw32/{*.exe,*.dll} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+echo '    DESTINATION bin )' >> install_files.cmake
 echo 'endif( WIN32 )' >> install_files.cmake
 
 echo >> install_files.cmake
@@ -63,14 +65,6 @@ echo '    DESTINATION share/openzone/class )' >> install_files.cmake
 echo >> install_files.cmake
 
 #
-# data/cursors
-#
-echo '  install( FILES' >> install_files.cmake
-ls data/cursors/{*.png,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
-echo '    DESTINATION share/openzone/cursors )' >> install_files.cmake
-echo >> install_files.cmake
-
-#
 # data/fonts
 #
 echo '  install( FILES' >> install_files.cmake
@@ -82,7 +76,7 @@ echo >> install_files.cmake
 # data/lua/matrix
 #
 echo '  install( FILES' >> install_files.cmake
-ls data/lua/matrix/{*.lua,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+ls data/lua/matrix/{*.luac,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
 echo '    DESTINATION share/openzone/lua/matrix )' >> install_files.cmake
 echo >> install_files.cmake
 
@@ -90,27 +84,33 @@ echo >> install_files.cmake
 # data/lua/nirvana
 #
 echo '  install( FILES' >> install_files.cmake
-ls data/lua/nirvana/{*.lua,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+ls data/lua/nirvana/{*.luac,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
 echo '    DESTINATION share/openzone/lua/nirvana )' >> install_files.cmake
 echo >> install_files.cmake
 
 #
-# data/maps
+# data/bsp
 #
 echo '  install( FILES' >> install_files.cmake
-ls data/maps/{*.ozBSP,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
-echo '    DESTINATION share/openzone/maps )' >> install_files.cmake
+ls data/bsp/{*.{ozBSP,ozcBSP},README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+echo '    DESTINATION share/openzone/bsp )' >> install_files.cmake
+echo >> install_files.cmake
+
+#
+# data/bsp/tex
+#
+echo '  install( FILES' >> install_files.cmake
+ls data/bsp/tex/{*.ozcTex,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+echo '    DESTINATION share/openzone/bsp/tex )' >> install_files.cmake
 echo >> install_files.cmake
 
 #
 # data/mdl
 #
-for dir in data/mdl/*; do
-  echo '  install( FILES' >> install_files.cmake
-  ls $dir/{*.{obj,mtl,md2,png,jpg,txt},README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
-  echo "    DESTINATION share/openzone/mdl/$dir )" >> install_files.cmake
-  echo >> install_files.cmake
-done
+echo '  install( FILES' >> install_files.cmake
+ls data/mdl/{*.{ozcSMM,ozcMD2},README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+echo "    DESTINATION share/openzone/mdl )" >> install_files.cmake
+echo >> install_files.cmake
 
 #
 # data/name
@@ -124,7 +124,7 @@ echo >> install_files.cmake
 # data/snd
 #
 echo '  install( FILES' >> install_files.cmake
-ls data/snd/{*.oga,*.ogg,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+ls data/snd/{*.wav,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
 echo '    DESTINATION share/openzone/snd )' >> install_files.cmake
 echo >> install_files.cmake
 
@@ -132,24 +132,32 @@ echo >> install_files.cmake
 # data/terra
 #
 echo '  install( FILES' >> install_files.cmake
-ls data/terra/{*.ozTerra,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+ls data/terra/{*.{ozTerra,ozcTerra},README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
 echo '    DESTINATION share/openzone/terra )' >> install_files.cmake
 echo >> install_files.cmake
 
 #
-# data/textures
+# data/sky
 #
 echo '  install( FILES' >> install_files.cmake
-ls data/textures/oz/{*.{png,jpg},README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
-echo '    DESTINATION share/openzone/textures/oz )' >> install_files.cmake
+ls data/sky/{*.ozcSky,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+echo '    DESTINATION share/openzone/sky )' >> install_files.cmake
 echo >> install_files.cmake
 
 #
 # data/ui
 #
 echo '  install( FILES' >> install_files.cmake
-ls data/ui/{*.png,README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+ls data/ui/{*.{ozcCur,ozcTex},README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
 echo '    DESTINATION share/openzone/ui )' >> install_files.cmake
+echo >> install_files.cmake
+
+#
+# data/glsl
+#
+echo '  install( FILES' >> install_files.cmake
+ls data/glsl/{*.{glsl,vert,frag},README*,COPYING*} 2> /dev/null | sed -e 's/^./    \0/' >> install_files.cmake
+echo '    DESTINATION share/openzone/glsl )' >> install_files.cmake
 echo >> install_files.cmake
 
 echo 'endif( OZ_INSTALL_DATA )' >> install_files.cmake

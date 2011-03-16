@@ -72,13 +72,6 @@ namespace oz
     }
   }
 
-  void Object::onAct()
-  {
-    if( !clazz->onAct.isEmpty() ) {
-      lua.call( clazz->onAct, this );
-    }
-  }
-
   void Object::readFull( InputStream* istream )
   {
     p        = istream->readPoint3();

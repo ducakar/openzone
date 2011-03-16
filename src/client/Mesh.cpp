@@ -185,10 +185,10 @@ namespace client
 
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
     int nIndices = stream->readInt();
-    const char* indices = stream->prepareRead( nIndices * sizeof( ushort ) );
+    const char* indices = stream->prepareRead( nIndices * int( sizeof( ushort ) ) );
 
     int nVertices = stream->readInt();
-    const char* vertices = stream->prepareRead( nVertices * sizeof( Vertex ) );
+    const char* vertices = stream->prepareRead( nVertices * int( sizeof( Vertex ) ) );
 #else
     int nIndices = stream->readInt();
     ushort* indices = new ushort[nIndices];

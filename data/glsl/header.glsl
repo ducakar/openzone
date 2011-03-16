@@ -7,7 +7,7 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#version 130
+#version 120
 
 /*
  * Transformation
@@ -27,14 +27,14 @@ uniform Transform oz_Transform;
 /*
  * Colour
  */
-uniform vec4      oz_Colour             = vec4( 1.0, 1.0, 1.0, 1.0 );
+uniform vec4      oz_Colour = vec4( 1.0, 1.0, 1.0, 1.0 );
 
 /*
  * Texturing
  */
-uniform bool      oz_IsTextureEnabled   = false;
+uniform bool      oz_IsTextureEnabled = false;
 uniform sampler2D oz_Textures[2];
-uniform float     oz_TextureScales[2]   = { 1.0, 1.0 };
+uniform float     oz_TextureScales[2] = float[2]( 1.0, 1.0 );
 
 /*
  * Lighting

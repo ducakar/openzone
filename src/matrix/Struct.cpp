@@ -290,7 +290,7 @@ namespace oz
         collider.getOverlaps( this, &overlappingObjs, 0.0f * EPSILON );
 
         if( !overlappingObjs.isEmpty() ) {
-          Vec3 momentum = ( model->ratioInc * model->move ) / Timer::TICK_TIME;
+          Vec3 momentum = ( model->ratioInc * -model->move ) / Timer::TICK_TIME;
           momentum = str->toAbsoluteCS( momentum ) * ( 1.0f + 2.0f * EPSILON );
 
           if( momentum.z > 0.0f ) {
@@ -369,8 +369,17 @@ namespace oz
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
-              dyn->momentum = move / Timer::TICK_TIME;
-              dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
+              collider.translate( *dyn, move, dyn );
+
+              if( collider.hit.ratio == 1.0f ) {
+                dyn->p += move;
+                dyn->velocity += move / Timer::TICK_TIME;
+                dyn->momentum += move / Timer::TICK_TIME;
+                dyn->flags &= ~Object::DISABLED_BIT;
+              }
+              else {
+                dyn->destroy();
+              }
             }
           }
         }
@@ -397,7 +406,7 @@ namespace oz
         collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
 
         if( !overlappingObjs.isEmpty() ) {
-          Vec3 move = ( model->ratioInc + 2.0f * EPSILON ) * model->move;
+          Vec3 move = ( model->ratioInc + 2.0f * EPSILON ) * -model->move;
           move = str->toAbsoluteCS( move );
 
           foreach( obj, overlappingObjs.iter() ) {
@@ -409,7 +418,8 @@ namespace oz
               if( collider.hit.ratio == 1.0f ) {
                 dyn->p += move;
                 dyn->velocity += move / Timer::TICK_TIME;
-                dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
+                dyn->momentum += move / Timer::TICK_TIME;
+                dyn->flags &= ~Object::DISABLED_BIT;
               }
               else {
                 dyn->destroy();
@@ -443,8 +453,7 @@ namespace oz
         }
         break;
       }
-      case OPENING:
-      case OPENING_BLOCKED: {
+      case OPENING: {
         ratio = min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
 
@@ -469,21 +478,19 @@ namespace oz
         }
         break;
       }
-      case CLOSING:
-      case CLOSING_BLOCKED: {
-        Vec3 oldOffset = offset;
-        float oldRatio = ratio;
+      case CLOSING: {
+        offset = Vec3::ZERO;
+
+        if( collider.overlapsOO( this, model->margin ) ) {
+          offset = ratio * model->move;
+          state = ratio == 1.0f ? OPENED : OPENING;
+          break;
+        }
 
         ratio = max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
 
-        if( collider.overlapsOO( this, model->margin ) ) {
-          ratio = oldRatio;
-          offset = ratio * model->move;
-
-          state = ratio == 1.0f ? OPENED : OPENING;
-        }
-        else if( ratio == 0.0f ) {
+        if( ratio == 0.0f ) {
           state = CLOSED;
         }
         break;

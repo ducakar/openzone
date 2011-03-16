@@ -318,6 +318,13 @@ namespace oz
 
         models[i].openSample  = bspConfig.get( keyName + ".openSample", "" );
         models[i].closeSample = bspConfig.get( keyName + ".closeSample", "" );
+
+        if( !models[i].openSample.isEmpty() ) {
+          translator.soundIndex( models[i].openSample );
+        }
+        if( !models[i].closeSample.isEmpty() ) {
+          translator.soundIndex( models[i].closeSample );
+        }
       }
     }
 

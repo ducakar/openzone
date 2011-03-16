@@ -7,7 +7,12 @@
 ]]--
 
 function heal100( l )
-  ozOrbisRemoveObj()
+  ozObjBindUser()
+  ozObjAddLife( 100.0 )
+end
+
+function disposableHeal100( l )
+  ozObjQuietDestroy()
   ozObjBindUser()
   ozObjAddLife( 100.0 )
 end

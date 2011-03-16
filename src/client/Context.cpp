@@ -22,6 +22,7 @@
 
 #include "client/BasicAudio.hpp"
 #include "client/BotAudio.hpp"
+#include "client/VehicleAudio.hpp"
 
 #ifdef OZ_BUILD_TOOLS
 # include <SDL_image.h>
@@ -446,7 +447,7 @@ namespace client
 
       const Model::CreateFunc* createFunc = modelClasses.find( obj->clazz->modelType );
       if( createFunc == null ) {
-        throw Exception( "Invalid Model" );
+        throw Exception( "Invalid Model '" + obj->clazz->modelType + "'" );
       }
 
       value = models.add( obj->index, ( *createFunc )( obj ) );
@@ -469,7 +470,7 @@ namespace client
 
       const Audio::CreateFunc* createFunc = audioClasses.find( obj->clazz->audioType );
       if( createFunc == null ) {
-        throw Exception( "Invalid Audio" );
+        throw Exception( "Invalid Audio '" + obj->clazz->audioType + "'" );
       }
 
       value = audios.add( obj->index, ( *createFunc )( obj ) );
@@ -616,6 +617,7 @@ namespace client
 
     BasicAudio::pool.free();
     BotAudio::pool.free();
+    VehicleAudio::pool.free();
 
     log.unindent();
     log.println( "}" );
@@ -637,6 +639,7 @@ namespace client
 
     OZ_REGISTER_AUDIOCLASS( Basic );
     OZ_REGISTER_AUDIOCLASS( Bot );
+    OZ_REGISTER_AUDIOCLASS( Vehicle );
 
     if( translator.textures.length() == 0 ) {
       throw Exception( "Context: textures missing!" );

@@ -7,11 +7,11 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec3 inPosition;
-in vec2 inTexCoord;
-in vec3 inNormal;
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
+attribute vec3 inNormal;
 
-out vec4 exColour;
+varying vec4 exColour;
 
 void main()
 {

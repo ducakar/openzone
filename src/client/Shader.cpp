@@ -15,8 +15,11 @@
 
 #include <GL/gl.h>
 
-#define OZ_REGISTER_PARAMETER( paramName, paramUniform ) \
-  programs[id].param.paramName = glGetUniformLocation( programs[id].program, paramUniform )
+#define OZ_REGISTER_PARAMETER( paramVar, uniformName ) \
+  programs[id].param.paramVar = glGetUniformLocation( programs[id].program, uniformName )
+
+#define OZ_REGISTER_ATTRIBUTE( location, name ) \
+  glBindAttribLocation( programs[id].program, location, name )
 
 namespace oz
 {
@@ -154,6 +157,12 @@ namespace client
     glAttachShader( programs[id].program, programs[id].fragShader );
 
     log.print( "Linking ..." );
+
+    OZ_REGISTER_ATTRIBUTE( Attrib::POSITION,            "inPosition" );
+    OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD,            "inTexCoord" );
+    OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,              "inNormal" );
+//     OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
+//     OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
 
     glLinkProgram( programs[id].program );
 

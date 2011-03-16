@@ -129,13 +129,13 @@ namespace oz
       // get indices of min and max cells which the bounds intersects
       Span getInters( const Bounds& bounds, float epsilon = 0.0f ) const;
 
-      void init();
-      void free();
+      void update();
 
       void load();
       void unload();
 
-      void update();
+      void init();
+      void free();
 
       bool read( InputStream* istream );
       bool write( OutputStream* ostream );

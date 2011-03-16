@@ -44,38 +44,6 @@ namespace ui
     }
   }
 
-  static void createCenterR0( Button* )
-  {
-    Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
-    p += camera.at * 2.0f;
-
-    synapse.addStruct( "house", p, Struct::R0 );
-  }
-
-  static void createCenterR90( Button* )
-  {
-    Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
-    p += camera.at * 2.0f;
-
-    synapse.addStruct( "house", p, Struct::R90 );
-  }
-
-  static void createCenterR180( Button* )
-  {
-    Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
-    p += camera.at * 2.0f;
-
-    synapse.addStruct( "house", p, Struct::R180 );
-  }
-
-  static void createCenterR270( Button* )
-  {
-    Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
-    p += camera.at * 2.0f;
-
-    synapse.addStruct( "house", p, Struct::R270 );
-  }
-
   static void destroy( Button* )
   {
     Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
@@ -106,11 +74,6 @@ namespace ui
     add( new Button( "Droid", createObject, 90, 15 ), 105, -115 );
     add( new Button( "DroidCommander", createObject, 90, 15 ), 105, -135 );
     add( new Button( "Raptor", createObject, 90, 15 ), 105, -155 );
-
-    add( new Button( "House R0",   createCenterR0,   90, 15 ), 5, -195 );
-    add( new Button( "House R90",  createCenterR90,  90, 15 ), 5, -215 );
-    add( new Button( "House R180", createCenterR180, 90, 15 ), 105, -195 );
-    add( new Button( "House R270", createCenterR270, 90, 15 ), 105, -215 );
 
     add( new Button( "DESTROY", destroy, 90, 15 ), 105, 5 );
   }

@@ -7,9 +7,8 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec4 inPosition;
-
 void main()
 {
-  gl_Position = oz_Transform.proj * inPosition;
+  gl_FrontColor = gl_Color;
+  gl_Position   = oz_Transform.proj * gl_Vertex;
 }

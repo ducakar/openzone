@@ -910,6 +910,9 @@ namespace nirvana
     return 1;
   }
 
+  Lua::Lua() : l( null )
+  {}
+
   void Lua::callFunc( const char* functionName, int botIndex )
   {
     hard_assert( self != null );

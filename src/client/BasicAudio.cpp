@@ -11,9 +11,7 @@
 
 #include "client/BasicAudio.hpp"
 
-#include "matrix/Physics.hpp"
-#include "client/Camera.hpp"
-#include "Colours.hpp"
+#include "matrix/Dynamic.hpp"
 
 namespace oz
 {

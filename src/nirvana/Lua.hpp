@@ -48,6 +48,8 @@ namespace nirvana
 
       bool            forceUpdate;
 
+      explicit Lua();
+
       void call( const char* functionName, Bot* self_ )
       {
         forceUpdate = false;

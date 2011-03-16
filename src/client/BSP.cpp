@@ -421,6 +421,10 @@ namespace client
 
   BSP::~BSP()
   {
+    if( !isLoaded ) {
+      return;
+    }
+
     log.println( "Unloading BSP model '%s' {", translator.bsps[bsp->id].name.cstr() );
     log.indent();
 
@@ -512,13 +516,11 @@ namespace client
 
       if( entity.state == Struct::Entity::OPENING ) {
         if( entity.ratio == 0.0f && bsp->models[i].openSample != -1 ) {
-          printf( "playing open %d\n", bsp->models[i].openSample );
           playSound( &entity, bsp->models[i].openSample );
         }
       }
       else if( entity.state == Struct::Entity::CLOSING ) {
         if( entity.ratio == 1.0f && bsp->models[i].closeSample != -1 ) {
-          printf( "playing close %d\n", bsp->models[i].closeSample );
           playSound( &entity, bsp->models[i].closeSample );
         }
       }

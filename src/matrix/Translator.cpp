@@ -104,7 +104,7 @@ namespace oz
       return new Struct( index, *value, p, rot );
     }
     else {
-      throw Exception( "Invalid Structure class requested" );
+      throw Exception( "Invalid Structure class requested '" + String( name ) + "'" );
     }
   }
 
@@ -115,7 +115,7 @@ namespace oz
       return new Struct( index, *value, istream );
     }
     else {
-      throw Exception( "Invalid Structure class requested" );
+      throw Exception( "Invalid Structure class requested '" + String( name ) + "'" );
     }
   }
 
@@ -126,7 +126,7 @@ namespace oz
       return ( *value )->create( index, p );
     }
     else {
-      throw Exception( "Invalid Object class requested" );
+      throw Exception( "Invalid Object class requested '" + String( name ) + "'" );
     }
   }
 
@@ -137,7 +137,7 @@ namespace oz
       return ( *value )->create( index, istream );
     }
     else {
-      throw Exception( "Invalid Object class requested" );
+      throw Exception( "Invalid Object class requested '" + String( name ) + "'" );
     }
   }
 

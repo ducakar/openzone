@@ -59,7 +59,22 @@ if( OZ_INSTALL_LIBOZ )
 endif( OZ_INSTALL_LIBOZ )
 
 if( WIN32 )
-  install( FILES "oalinst.exe" DESTINATION support )
+  install( FILES
+    mingw32/OpenAL32.dll
+    mingw32/SDL.dll
+    mingw32/SDL_ttf.dll
+    mingw32/libalut-0.dll
+    mingw32/libcharset-1.dll
+    mingw32/libfreetype-6.dll
+    mingw32/libgcc_s_sjlj-1.dll
+    mingw32/libiconv-2.dll
+    mingw32/libogg-0.dll
+    mingw32/libstdc++-6.dll
+    mingw32/libvorbis-0.dll
+    mingw32/libvorbisenc-2.dll
+    mingw32/libvorbisfile-3.dll
+    mingw32/oalinst.exe
+    DESTINATION bin )
 endif( WIN32 )
 
 string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" client_location_var )
@@ -88,9 +103,6 @@ if( OZ_INSTALL_DATA )
     data/class/Knight.rc
     data/class/Lord.rc
     data/class/MetalBarrel.rc
-    data/class/Plant1.rc
-    data/class/Plant2.rc
-    data/class/Plant3.rc
     data/class/Raptor.rc
     data/class/Rifle.rc
     data/class/SmallCrate.rc
@@ -101,218 +113,65 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/class )
 
   install( FILES
-    DESTINATION share/openzone/cursors )
-
-  install( FILES
     data/fonts/DejaVuSans.ttf
     data/fonts/DejaVuSansMono.ttf
     DESTINATION share/openzone/fonts )
 
   install( FILES
-    data/lua/matrix/handlers.lua
+    data/lua/matrix/handlers.luac
     DESTINATION share/openzone/lua/matrix )
 
   install( FILES
-    data/lua/nirvana/droid.lua
-    data/lua/nirvana/minds.lua
+    data/lua/nirvana/droid.luac
+    data/lua/nirvana/minds.luac
     DESTINATION share/openzone/lua/nirvana )
 
   install( FILES
-    DESTINATION share/openzone/maps )
+    data/bsp/bunker.ozBSP
+    data/bsp/bunker.ozcBSP
+    data/bsp/castle.ozBSP
+    data/bsp/castle.ozcBSP
+    data/bsp/pool.ozBSP
+    data/bsp/pool.ozcBSP
+    DESTINATION share/openzone/bsp )
 
   install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/DISABLED )
+    data/bsp/tex/_Drkalisce.ozcTex
+    data/bsp/tex/_Potiskalnica.ozcTex
+    data/bsp/tex/_Samostojeca_voda.ozcTex
+    data/bsp/tex/_Spestalnica.ozcTex
+    data/bsp/tex/crate1.ozcTex
+    data/bsp/tex/particle.ozcTex
+    data/bsp/tex/roof1.ozcTex
+    data/bsp/tex/slick.ozcTex
+    data/bsp/tex/stone1.ozcTex
+    data/bsp/tex/stone2.ozcTex
+    data/bsp/tex/stone3.ozcTex
+    data/bsp/tex/water1.ozcTex
+    data/bsp/tex/wood1.ozcTex
+    data/bsp/tex/wood2.ozcTex
+    DESTINATION share/openzone/bsp/tex )
 
   install( FILES
-    data/mdl/barrel1/readme.txt
-    data/mdl/barrel1/skin.jpg
-    data/mdl/barrel1/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/barrel1 )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/barrel1.ozcSMM )
-
-  install( FILES
-    data/mdl/bauul/bauul.txt
-    data/mdl/bauul/skin.jpg
-    data/mdl/bauul/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/bauul )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/bauul.ozcMD2 )
-
-  install( FILES
-    data/mdl/bigCrate/crate1.jpg
-    data/mdl/bigCrate/data.mtl
-    data/mdl/bigCrate/data.obj
-    DESTINATION share/openzone/mdl/data/mdl/bigCrate )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/bigCrate.ozcSMM )
-
-  install( FILES
-    data/mdl/bombs/skin.jpg
-    data/mdl/bombs/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/bombs )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/bombs.ozcSMM )
-
-  install( FILES
-    data/mdl/droid_commander/bdroid.txt
-    data/mdl/droid_commander/skin.jpg
-    data/mdl/droid_commander/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/droid_commander )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/droid_commander.ozcMD2 )
-
-  install( FILES
-    data/mdl/droid_infantry/bdroid.txt
-    data/mdl/droid_infantry/skin.jpg
-    data/mdl/droid_infantry/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/droid_infantry )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/droid_infantry.ozcMD2 )
-
-  install( FILES
-    data/mdl/goblin/readme.txt
-    data/mdl/goblin/skin.jpg
-    data/mdl/goblin/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/goblin )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/goblin.ozcMD2 )
-
-  install( FILES
-    data/mdl/health/data.mtl
-    data/mdl/health/data.obj
-    data/mdl/health/health.png
-    DESTINATION share/openzone/mdl/data/mdl/health )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/health.ozcSMM )
-
-  install( FILES
-    data/mdl/hobgoblin/skin.jpg
-    data/mdl/hobgoblin/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/hobgoblin )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/hobgoblin.ozcMD2 )
-
-  install( FILES
-    data/mdl/ivy/skin.jpg
-    data/mdl/ivy/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/ivy )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/ivy.ozcSMM )
-
-  install( FILES
-    data/mdl/knight/readme.txt
-    data/mdl/knight/skin.jpg
-    data/mdl/knight/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/knight )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/knight.ozcMD2 )
-
-  install( FILES
-    data/mdl/lara/LaraCroft - ReadMe.txt
-    DESTINATION share/openzone/mdl/data/mdl/lara )
-
-  install( FILES
-    data/mdl/leafs/skin.jpg
-    data/mdl/leafs/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/leafs )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/leafs.ozcSMM )
-
-  install( FILES
-    data/mdl/mushroom/skin.jpg
-    data/mdl/mushroom/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/mushroom )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/mushroom.ozcSMM )
-
-  install( FILES
-    data/mdl/palmtree/skin.jpg
-    data/mdl/palmtree/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/palmtree )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/palmtree.ozcSMM )
-
-  install( FILES
-    data/mdl/raptor/data.mtl
-    data/mdl/raptor/data.obj
-    DESTINATION share/openzone/mdl/data/mdl/raptor )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/raptor.ozcSMM )
-
-  install( FILES
-    data/mdl/rifle/skin.jpg
-    data/mdl/rifle/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/rifle )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/rifle.ozcMD2 )
-
-  install( FILES
-    data/mdl/smallCrate/crate1.jpg
-    data/mdl/smallCrate/data.mtl
-    data/mdl/smallCrate/data.obj
-    DESTINATION share/openzone/mdl/data/mdl/smallCrate )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/smallCrate.ozcSMM )
-
-  install( FILES
-    data/mdl/smplant/skin.jpg
-    data/mdl/smplant/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/smplant )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/smplant.ozcSMM )
-
-  install( FILES
-    data/mdl/tree1/skin.jpg
-    data/mdl/tree1/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/tree1 )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/tree1.ozcSMM )
-
-  install( FILES
-    data/mdl/tree2/readme.txt
-    data/mdl/tree2/skin.jpg
-    data/mdl/tree2/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/tree2 )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/tree2.ozcSMM )
-
-  install( FILES
-    data/mdl/tree3/readme.txt
-    data/mdl/tree3/skin.jpg
-    data/mdl/tree3/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/tree3 )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/tree3.ozcSMM )
-
-  install( FILES
-    data/mdl/winebottle/skin.jpg
-    data/mdl/winebottle/tris.md2
-    DESTINATION share/openzone/mdl/data/mdl/winebottle )
-
-  install( FILES
-    DESTINATION share/openzone/mdl/data/mdl/winebottle.ozcSMM )
+    data/mdl/barrel1.ozcSMM
+    data/mdl/bauul.ozcMD2
+    data/mdl/bigCrate.ozcSMM
+    data/mdl/bombs.ozcSMM
+    data/mdl/droid_commander.ozcMD2
+    data/mdl/droid_infantry.ozcMD2
+    data/mdl/explosion.ozcSMM
+    data/mdl/goblin.ozcMD2
+    data/mdl/health.ozcSMM
+    data/mdl/hobgoblin.ozcMD2
+    data/mdl/knight.ozcMD2
+    data/mdl/palmtree.ozcSMM
+    data/mdl/raptor.ozcSMM
+    data/mdl/rifle.ozcMD2
+    data/mdl/smallCrate.ozcSMM
+    data/mdl/tree2.ozcSMM
+    data/mdl/tree3.ozcSMM
+    data/mdl/winebottle.ozcSMM
+    DESTINATION share/openzone/mdl )
 
   install( FILES
     data/name/COPYING.wesnoth
@@ -320,42 +179,91 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/name )
 
   install( FILES
+    data/snd/cg2.wav
+    data/snd/damage_bot1.wav
+    data/snd/damage_bot2.wav
+    data/snd/death1.wav
+    data/snd/death2.wav
+    data/snd/destroy_metal1.wav
+    data/snd/destroy_wood1.wav
+    data/snd/door.wav
+    data/snd/explosion.wav
+    data/snd/friction1.wav
+    data/snd/gesture_flip.wav
+    data/snd/hit1.wav
+    data/snd/hit_bot1.wav
+    data/snd/hit_bot2.wav
+    data/snd/hit_metal1.wav
+    data/snd/hit_metal2.wav
+    data/snd/hit_wood1.wav
+    data/snd/hit_wood2.wav
+    data/snd/itemback.wav
+    data/snd/jump1.wav
+    data/snd/jump2.wav
+    data/snd/land1.wav
+    data/snd/land2.wav
+    data/snd/outofammo.wav
+    data/snd/splash1.wav
+    data/snd/splash2.wav
+    data/snd/tak.wav
+    data/snd/tick.wav
     DESTINATION share/openzone/snd )
 
   install( FILES
     data/terra/heightmap.ozTerra
+    data/terra/heightmap.ozcTerra
     DESTINATION share/openzone/terra )
 
   install( FILES
-    data/textures/oz/README
-    data/textures/oz/_Drkalisce.png
-    data/textures/oz/_Samostojeca_voda.png
-    data/textures/oz/crate1.jpg
-    data/textures/oz/explosion.jpg
-    data/textures/oz/particle.png
-    data/textures/oz/roof1.jpg
-    data/textures/oz/slick.jpg
-    data/textures/oz/stone1.jpg
-    data/textures/oz/stone2.jpg
-    data/textures/oz/stone3.jpg
-    data/textures/oz/water1.png
-    data/textures/oz/wood1.jpg
-    data/textures/oz/wood2.jpg
-    DESTINATION share/openzone/textures/oz )
+    data/sky/sky.ozcSky
+    DESTINATION share/openzone/sky )
 
   install( FILES
     data/ui/COPYING
-    data/ui/X_cursor.png
-    data/ui/crosshair.png
-    data/ui/fleur.png
-    data/ui/grab.png
-    data/ui/hand2.png
-    data/ui/left_ptr.png
-    data/ui/lift.png
-    data/ui/mount.png
-    data/ui/take.png
-    data/ui/use.png
-    data/ui/xterm.png
+    data/ui/X_cursor.ozcCur
+    data/ui/X_cursor.ozcTex
+    data/ui/crosshair.ozcTex
+    data/ui/fleur.ozcCur
+    data/ui/fleur.ozcTex
+    data/ui/grab.ozcTex
+    data/ui/hand2.ozcCur
+    data/ui/hand2.ozcTex
+    data/ui/left_ptr.ozcCur
+    data/ui/left_ptr.ozcTex
+    data/ui/lift.ozcTex
+    data/ui/mount.ozcTex
+    data/ui/take.ozcTex
+    data/ui/use.ozcTex
+    data/ui/xterm.ozcCur
+    data/ui/xterm.ozcTex
     DESTINATION share/openzone/ui )
+
+  install( FILES
+    data/glsl/bsp.frag
+    data/glsl/bsp.vert
+    data/glsl/celestial.frag
+    data/glsl/celestial.vert
+    data/glsl/header.glsl
+    data/glsl/md2.frag
+    data/glsl/md2.vert
+    data/glsl/mesh.frag
+    data/glsl/mesh.vert
+    data/glsl/particles.frag
+    data/glsl/particles.vert
+    data/glsl/plant.frag
+    data/glsl/plant.vert
+    data/glsl/simple.frag
+    data/glsl/simple.vert
+    data/glsl/stars.frag
+    data/glsl/stars.vert
+    data/glsl/terra_land.frag
+    data/glsl/terra_land.vert
+    data/glsl/terra_water.frag
+    data/glsl/terra_water.vert
+    data/glsl/text.frag
+    data/glsl/text.vert
+    data/glsl/ui.frag
+    data/glsl/ui.vert
+    DESTINATION share/openzone/glsl )
 
 endif( OZ_INSTALL_DATA )

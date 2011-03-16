@@ -13,18 +13,20 @@
 
 # ifndef OZ_WINDOWS
 #  define GL_GLEXT_PROTOTYPES
+#  define GL_VERSION_1_2_DEPRECATED
+#  define GL_VERSION_1_3_DEPRECATED
+#  define GL_VERSION_1_4_DEPRECATED
+#  define GL_VERSION_1_5_DEPRECATED
+#  define GL_VERSION_2_0_DEPRECATED
+#  define GL_VERSION_2_1_DEPRECATED
+#  define GL_VERSION_3_0_DEPRECATED
+#  define GL_ARB_imaging_DEPRECATED
+#  define GL_ARB_framebuffer_object_DEPRECATED
+# else
+#  include <GL/gl.h>
+#  undef near
+#  undef far
 # endif
-
-# define GL_VERSION_1_2_DEPRECATED
-# define GL_VERSION_1_3_DEPRECATED
-# define GL_VERSION_1_4_DEPRECATED
-# define GL_VERSION_1_5_DEPRECATED
-# define GL_VERSION_2_0_DEPRECATED
-# define GL_VERSION_2_1_DEPRECATED
-# define GL_VERSION_3_0_DEPRECATED
-
-# define GL_ARB_imaging_DEPRECATED
-# define GL_ARB_framebuffer_object_DEPRECATED
 
 namespace oz
 {
@@ -80,7 +82,6 @@ namespace client
   };
 
 #ifdef OZ_WINDOWS
-# include <GL/gl.h>
 
   extern PFNGLUNIFORM1IPROC               glUniform1i;
   extern PFNGLUNIFORM2IPROC               glUniform2i;
@@ -98,6 +99,7 @@ namespace client
   extern PFNGLUNIFORM2FVPROC              glUniform2fv;
   extern PFNGLUNIFORM3FVPROC              glUniform3fv;
   extern PFNGLUNIFORM4FVPROC              glUniform4fv;
+  extern PFNGLUNIFORMMATRIX4FVPROC        glUniformMatrix4fv;
 
   extern PFNGLGENVERTEXARRAYSPROC         glGenVertexArrays;
   extern PFNGLDELETEVERTEXARRAYSPROC      glDeleteVertexArrays;

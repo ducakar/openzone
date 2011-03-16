@@ -62,7 +62,7 @@ namespace ui
 
       glDeleteTextures( 1, &texId );
 
-      buffer.write( "ui/" + String( NAMES[i] ) + ".ozCur", os.length() );
+      buffer.write( "ui/" + String( NAMES[i] ) + ".ozcCur", os.length() );
     }
 
     log.unindent();
@@ -129,7 +129,7 @@ namespace ui
     for( int i = 0; i < MAX; ++i ) {
       log.print( "Loading cursor '%s' ...", NAMES[i] );
 
-      if( !buffer.read( "ui/" + String( NAMES[i] ) + ".ozCur" ) ) {
+      if( !buffer.read( "ui/" + String( NAMES[i] ) + ".ozcCur" ) ) {
         log.printEnd( " Failed" );
         throw Exception( "Cursor loading failed" );
       }

@@ -49,6 +49,8 @@ namespace client
       return;
     }
 
+    tf.model.rotate( veh->rot );
+
     for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
       int index = veh->crew[i];
 

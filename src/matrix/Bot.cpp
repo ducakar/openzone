@@ -608,9 +608,6 @@ namespace oz
     oldActions = actions;
   }
 
-  void Bot::onAct()
-  {}
-
   Bot::Bot() : actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
       grabObj( -1 ), weaponItem( -1 ), anim( Anim::STAND )
   {}

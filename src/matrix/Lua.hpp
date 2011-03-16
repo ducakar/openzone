@@ -52,6 +52,8 @@ namespace oz
 
       List<Object::Event>::Iterator event;
 
+      explicit Lua();
+
       void call( const char* functionName, Object* self_, Bot* user_ = null )
       {
         self   = self_;
@@ -123,6 +125,7 @@ namespace oz
       static LuaAPI ozObjAddEvent;
       static LuaAPI ozObjDamage;
       static LuaAPI ozObjDestroy;
+      static LuaAPI ozObjQuietDestroy;
 
       static LuaAPI ozObjVectorFromSelf;
       static LuaAPI ozObjDirectionFromSelf;

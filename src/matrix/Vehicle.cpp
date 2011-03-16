@@ -23,30 +23,72 @@ namespace oz
 
   Pool<Vehicle> Vehicle::pool;
 
-  void ( Vehicle::* Vehicle::handlers[] )() = {
+  void ( Vehicle::* Vehicle::handlers[] )( const Mat44& rotMat ) = {
     &Vehicle::wheeledHandler,
     &Vehicle::trackedHandler,
     &Vehicle::hoverHandler,
     &Vehicle::airHandler
   };
 
-  void Vehicle::wheeledHandler()
+  void Vehicle::wheeledHandler( const Mat44& )
   {}
 
-  void Vehicle::trackedHandler()
+  void Vehicle::trackedHandler( const Mat44& )
   {}
 
-  void Vehicle::hoverHandler()
-  {}
-
-  void Vehicle::airHandler()
+  void Vehicle::hoverHandler( const Mat44& rotMat )
   {
     const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-    Mat44 rotMat = Mat44::rotation( rot );
-    Vec3 right = rotMat.x;
-    Vec3 at    = rotMat.y;
-    Vec3 up    = rotMat.z;
+    const Vec3& right = rotMat.x;
+    const Vec3& at    = rotMat.y;
+    const Vec3& up    = rotMat.z;
+
+    // controls
+    Vec3 move = Vec3::ZERO;
+
+    if( actions & Bot::ACTION_FORWARD ) {
+      move += at;
+    }
+    if( actions & Bot::ACTION_BACKWARD ) {
+      move -= at;
+    }
+    if( actions & Bot::ACTION_RIGHT ) {
+      move += right;
+    }
+    if( actions & Bot::ACTION_LEFT ) {
+      move -= right;
+    }
+    if( actions & Bot::ACTION_JUMP ) {
+      move += up;
+    }
+    if( actions & Bot::ACTION_CROUCH ) {
+      move -= up;
+    }
+
+    momentum += move * clazz->moveMomentum;
+
+    float height = p.z - dim.z - orbis.terra.height( p.x, p.y );
+
+    if( height < 2.0 ) {
+      momentum.z += 10.0f * ( 2.0f - height ) * Timer::TICK_TIME;
+    }
+  }
+
+  void Vehicle::airHandler( const Mat44& rotMat )
+  {
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
+    const Vec3& right = rotMat.x;
+    const Vec3& at    = rotMat.y;
+    const Vec3& up    = rotMat.z;
+
+    if( crew[PILOT] == -1 ) {
+      flags &= ~HOVER_BIT;
+    }
+    else {
+      flags |= HOVER_BIT;
+    }
 
     // controls
     Vec3 move = Vec3::ZERO;
@@ -90,10 +132,12 @@ namespace oz
 
   void Vehicle::onUpdate()
   {
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
     // clean invalid crew references and throw out dead crew
     for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {
-        Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
+        Bot* bot = static_cast<Bot*>( orbis.objects[ crew[i] ] );
 
         hard_assert( bot == null || bot->parent == index );
 
@@ -107,27 +151,21 @@ namespace oz
       }
     }
 
-    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
-
-    flags &= ~HOVER_BIT;
     actions = 0;
+
     if( crew[PILOT] != -1 ) {
       Bot* pilot = static_cast<Bot*>( orbis.objects[ crew[PILOT] ] );
 
-      if( pilot != null ) {
-        rot = Quat::rotZYX( pilot->h, 0.0f, pilot->v - Math::TAU / 4.0f );
-        actions = pilot->actions;
-        flags |= HOVER_BIT;
-        flags &= ~DISABLED_BIT;
-      }
+      rot = Quat::rotZYX( pilot->h, 0.0f, pilot->v - Math::TAU / 4.0f );
+      actions = pilot->actions;
+      flags &= ~DISABLED_BIT;
     }
 
-    ( this->*handlers[clazz->type] )();
-
     Mat44 rotMat = Mat44::rotation( rot );
-    Vec3 right = rotMat.x;
-    Vec3 at    = rotMat.y;
-    Vec3 up    = rotMat.z;
+    const Vec3& at = rotMat.y;
+    const Vec3& up = rotMat.z;
+
+    ( this->*handlers[clazz->type] )( rotMat );
 
     for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {

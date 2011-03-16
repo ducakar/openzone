@@ -49,12 +49,12 @@ namespace oz
 
     protected:
 
-      static void ( Vehicle::* handlers[] )();
+      static void ( Vehicle::* handlers[] )( const Mat44& rotMat );
 
-      void wheeledHandler();
-      void trackedHandler();
-      void hoverHandler();
-      void airHandler();
+      void wheeledHandler( const Mat44& rotMat );
+      void trackedHandler( const Mat44& rotMat );
+      void hoverHandler( const Mat44& rotMat );
+      void airHandler( const Mat44& rotMat );
 
       virtual void onDestroy();
       virtual void onUpdate();
