@@ -528,6 +528,16 @@ namespace oz
     return 0;
   }
 
+  int Lua::ozObjQuietDestroy( lua_State* l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+
+    lua.obj->flags |= Object::DESTROYED_BIT;
+    return 0;
+  }
+
   int Lua::ozObjVectorFromSelf( lua_State* l )
   {
     if( lua.obj == null ) {
@@ -1554,6 +1564,9 @@ namespace oz
     return 0;
   }
 
+  Lua::Lua() : l( null )
+  {}
+
   void Lua::callFunc( const char* functionName, int index )
   {
     hard_assert( self != null );
@@ -1663,6 +1676,7 @@ namespace oz
     OZ_LUA_FUNCTION( ozObjAddEvent );
     OZ_LUA_FUNCTION( ozObjDamage );
     OZ_LUA_FUNCTION( ozObjDestroy );
+    OZ_LUA_FUNCTION( ozObjQuietDestroy );
 
     OZ_LUA_FUNCTION( ozObjVectorFromSelf );
     OZ_LUA_FUNCTION( ozObjDirectionFromSelf );

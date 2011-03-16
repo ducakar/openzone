@@ -225,10 +225,6 @@ int main( int argc, char** argv )
 
     oz::log.printlnETD( OZ_APPLICATION_NAME " Prebuild started at" );
 
-    SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO );
-    SDL_SetVideoMode( 400, 40, 32, SDL_OPENGL );
-    SDL_WM_SetCaption( "OpenZone :: Prebuilding data ...", null );
-
     oz::log.print( "Setting working directory to data directory '%s' ...", argv[1] );
     if( chdir( argv[1] ) != 0 ) {
       oz::log.printEnd( " Failed" );
@@ -236,10 +232,19 @@ int main( int argc, char** argv )
     }
     oz::log.printEnd( " OK" );
 
+    SDL_Init( SDL_INIT_VIDEO );
+
     long startTime = SDL_GetTicks();
 
     translator.prebuildInit();
+
+    config.add( "screen.width", "400" );
+    config.add( "screen.height", "40" );
+    config.add( "screen.bpp", "32" );
+    config.add( "screen.full", "false" );
     client::render.init();
+    SDL_WM_SetCaption( "OpenZone :: Prebuilding data ...", null );
+
     buffer.alloc( 10 * 1024 * 1024 );
     matrix.init();
 

@@ -1,4 +1,4 @@
-/*
+ /*
  *  Render.cpp
  *
  *  Graphics render engine
@@ -60,10 +60,11 @@ namespace client
 
     foreach( obj, cell.objects.citer() ) {
       float factor = ( obj->flags & Object::WIDE_CULL_BIT ) ? WIDE_CULL_FACTOR : 1.0f;
+      float radius = factor * obj->dim.fastL();
 
-      if( frustum.isVisible( *obj, factor ) && !( obj->flags & Object::NO_DRAW_BIT ) ) {
-        Vec3 relPos = obj->p - camera.p;
-        objects.add( ObjectEntry( relPos.sqL(), obj ) );
+      if( frustum.isVisible( obj->p, radius ) ) {
+        float range = max( ( obj->p - camera.p ).fastL() - radius, 0.0f );
+        objects.add( ObjectEntry( range, obj ) );
       }
     }
 
@@ -414,7 +415,7 @@ namespace client
     int screenX    = config.get( "screen.width", 0 );
     int screenY    = config.get( "screen.height", 0 );
     int screenBpp  = config.get( "screen.bpp", 0 );
-    int screenFull = config.getSet( "screen.full", false ) ? SDL_FULLSCREEN : 0;
+    int screenFull = config.getSet( "screen.full", true ) ? SDL_FULLSCREEN : 0;
 
     log.print( "Creating OpenGL window %dx%d-%d %s ...",
                screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
@@ -515,7 +516,7 @@ namespace client
     particleRadius       = config.getSet( "render.particleRadius",       0.5f );
     showBounds           = config.getSet( "render.showBounds",           false );
     showAim              = config.getSet( "render.showAim",              false );
-    windFactor           = config.getSet( "render.windFactor",           0.0006f );
+    windFactor           = config.getSet( "render.windFactor",           0.0008f );
     windPhiInc           = config.getSet( "render.windPhiInc",           0.04f );
 
     nearDist2            *= nearDist2;
@@ -541,6 +542,7 @@ namespace client
     glUniform2fv              = reinterpret_cast<PFNGLUNIFORM2FVPROC>              ( SDL_GL_GetProcAddress( "glUniform2fv" ) );
     glUniform3fv              = reinterpret_cast<PFNGLUNIFORM3FVPROC>              ( SDL_GL_GetProcAddress( "glUniform3fv" ) );
     glUniform4fv              = reinterpret_cast<PFNGLUNIFORM4FVPROC>              ( SDL_GL_GetProcAddress( "glUniform4fv" ) );
+    glUniformMatrix4fv        = reinterpret_cast<PFNGLUNIFORMMATRIX4FVPROC>        ( SDL_GL_GetProcAddress( "glUniformMatrix4fv" ) );
 
     glGenVertexArrays         = reinterpret_cast<PFNGLGENVERTEXARRAYSPROC>         ( SDL_GL_GetProcAddress( "glGenVertexArrays" ) );
     glDeleteVertexArrays      = reinterpret_cast<PFNGLDELETEVERTEXARRAYSPROC>      ( SDL_GL_GetProcAddress( "glDeleteVertexArrays" ) );

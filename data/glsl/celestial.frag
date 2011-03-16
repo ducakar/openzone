@@ -7,10 +7,8 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec2  exTexCoord;
-in float exAzimuth;
-
-out vec4 outColour;
+varying vec2  exTexCoord;
+varying float exAzimuth;
 
 void main()
 {
@@ -18,6 +16,6 @@ void main()
     discard;
   }
 
-  outColour = texture2D( oz_Textures[0], exTexCoord );
-  outColour *= oz_Colour;
+  gl_FragColor = texture2D( oz_Textures[0], exTexCoord );
+  gl_FragColor *= oz_Colour;
 }

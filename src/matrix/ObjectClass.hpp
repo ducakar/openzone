@@ -50,7 +50,6 @@ namespace oz
       String onHit;
       String onUse;
       String onUpdate;
-      String onAct;
 
       int    nDebris;
       float  debrisVelocitySpread;

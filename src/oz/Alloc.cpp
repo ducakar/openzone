@@ -16,8 +16,7 @@
 #include <cstdlib>
 
 #ifdef OZ_WINDOWS
-# define posix_memalign( ptr, alignment, size ) \
-  !( *ptr = malloc( size ) )
+# include <malloc.h>
 #endif
 
 #ifdef OZ_TRACE_LEAKS
@@ -33,12 +32,6 @@ namespace oz
 
   static_assert( ( Alloc::ALIGNMENT & ( Alloc::ALIGNMENT - 1 ) ) == 0,
                  "Alloc::ALIGNMENT should be power of two" );
-
-#ifdef OZ_ALLOC_STATISTICS
-  static_assert( sizeof( size_t ) <= size_t( Alloc::ALIGNMENT ),
-                 "Alloc::ALIGNEMENT should not be less than sizeof( size_t ) when using memory "
-                 "allocation statistics." );
-#endif
 
 #ifdef OZ_TRACE_LEAKS
 
@@ -162,178 +155,44 @@ using oz::sectionMutex;
 
 #endif
 
-#ifndef OZ_ALLOC_STATISTICS
+#ifdef OZ_WINDOWS
 
-void* operator new ( size_t size ) throw( std::bad_alloc )
+static int posix_memalign( void** ptr, size_t alignment, size_t size )
 {
-  hard_assert( !Alloc::isLocked );
-  hard_assert( size != 0 );
+  void** originalPtr = reinterpret_cast<void**>( malloc( sizeof( void* ) + size + alignment - 1 ) );
+  void** beginPtr = Alloc::alignUp( originalPtr + 1 );
 
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
-    throw std::bad_alloc();
+  if( originalPtr == null ) {
+    return -1;
   }
 
-#ifdef OZ_TRACE_LEAKS
-  TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
+  beginPtr[-1] = originalPtr;
+  *ptr = reinterpret_cast<void*>( beginPtr );
 
-  pthread_mutex_lock( &sectionMutex );
-
-  st->next    = firstObjectTraceEntry;
-  st->address = ptr;
-  st->size    = size;
-  st->nFrames = System::getStackTrace( &st->frames );
-
-  firstObjectTraceEntry = st;
-
-  pthread_mutex_unlock( &sectionMutex );
-#endif
-
-  return ptr;
+  return 0;
 }
 
-void* operator new[] ( size_t size ) throw( std::bad_alloc )
+static void posix_memalign_free( void* ptr )
 {
-  hard_assert( !Alloc::isLocked );
-  hard_assert( size != 0 );
+  void** beginPtr = reinterpret_cast<void**>( ptr );
 
-  void* ptr;
-  if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
-    throw std::bad_alloc();
-  }
-
-#ifdef OZ_TRACE_LEAKS
-  TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
-
-  pthread_mutex_lock( &sectionMutex );
-
-  st->next    = firstArrayTraceEntry;
-  st->address = ptr;
-  st->size    = size;
-  st->nFrames = System::getStackTrace( &st->frames );
-
-  firstArrayTraceEntry = st;
-
-  pthread_mutex_unlock( &sectionMutex );
-#endif
-
-  return ptr;
-}
-
-void operator delete ( void* ptr ) throw()
-{
-  hard_assert( !Alloc::isLocked );
-  hard_assert( ptr != null );
-
-#ifdef OZ_TRACE_LEAKS
-  System::resetSignals();
-
-  pthread_mutex_lock( &sectionMutex );
-
-  TraceEntry* st   = firstObjectTraceEntry;
-  TraceEntry* prev = null;
-
-  while( st != null ) {
-    if( st->address == ptr ) {
-      if( prev == null ) {
-        firstObjectTraceEntry = st->next;
-      }
-      else {
-        prev->next = st->next;
-      }
-      free( st->frames );
-      free( st );
-
-      goto backtraceFound;
-    }
-    prev = st;
-    st = st->next;
-  }
-  // loop fell through
-  System::trap();
-
-  st   = firstArrayTraceEntry;
-  prev = null;
-
-  while( st != null ) {
-    if( st->address == ptr ) {
-      System::abort( "ALLOC: new[] -> delete mismatch for block at %p", chunk );
-      break;
-    }
-    prev = st;
-    st = st->next;
-  }
-
-  System::abort( "ALLOC: Trying to free object at %p that does not seem to be allocated", chunk );
-
-  backtraceFound:;
-  pthread_mutex_unlock( &sectionMutex );
-#endif
-
-  free( ptr );
-}
-
-void operator delete[] ( void* ptr ) throw()
-{
-  hard_assert( !Alloc::isLocked );
-  hard_assert( ptr != null );
-
-#ifdef OZ_TRACE_LEAKS
-  System::resetSignals();
-
-  pthread_mutex_lock( &sectionMutex );
-
-  TraceEntry* st   = firstArrayTraceEntry;
-  TraceEntry* prev = null;
-
-  while( st != null ) {
-    if( st->address == ptr ) {
-      if( prev == null ) {
-        firstArrayTraceEntry = st->next;
-      }
-      else {
-        prev->next = st->next;
-      }
-      free( st->frames );
-      free( st );
-
-      goto backtraceFound;
-    }
-    prev = st;
-    st = st->next;
-  }
-  // loop fell through
-  System::trap();
-
-  st   = firstObjectTraceEntry;
-  prev = null;
-
-  while( st != null ) {
-    if( st->address == ptr ) {
-      System::abort( "ALLOC: new -> delete[] mismatch for block at %p", chunk );
-      break;
-    }
-    prev = st;
-    st = st->next;
-  }
-
-  System::abort( "ALLOC: Trying to free array at %p that does not seem to be allocated", chunk );
-
-  backtraceFound:;
-  pthread_mutex_unlock( &sectionMutex );
-#endif
-
-  free( ptr );
+  free( beginPtr[-1] );
 }
 
 #else
 
+# define posix_memalign_free( ptr ) free( ptr )
+
+#endif
+
 void* operator new ( size_t size ) throw( std::bad_alloc )
 {
   hard_assert( !Alloc::isLocked );
   hard_assert( size != 0 );
 
-  size += Alloc::ALIGNMENT;
+#ifdef OZ_ALLOC_STATISTICS
+  size += Alloc::alignUp( sizeof( size_t ) );
+#endif
 
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
@@ -355,6 +214,7 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
+#ifdef OZ_ALLOC_STATISTICS
   ++Alloc::count;
   Alloc::amount += size;
 
@@ -364,8 +224,11 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
   Alloc::maxAmount = max( Alloc::amount, Alloc::maxAmount );
 
-  reinterpret_cast<size_t*>( ptr )[0] = size;
-  return reinterpret_cast<char*>( ptr ) + Alloc::ALIGNMENT;
+  ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
+  reinterpret_cast<size_t*>( ptr )[-1] = size;
+#else
+  return ptr;
+#endif
 }
 
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
@@ -373,7 +236,9 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   hard_assert( !Alloc::isLocked );
   hard_assert( size != 0 );
 
-  size += Alloc::ALIGNMENT;
+#ifdef OZ_ALLOC_STATISTICS
+  size += Alloc::alignUp( sizeof( size_t ) );
+#endif
 
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
@@ -395,6 +260,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
+#ifdef OZ_ALLOC_STATISTICS
   ++Alloc::count;
   Alloc::amount += size;
 
@@ -404,8 +270,11 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   Alloc::maxCount = max( Alloc::count, Alloc::maxCount );
   Alloc::maxAmount = max( Alloc::amount, Alloc::maxAmount );
 
-  reinterpret_cast<size_t*>( ptr )[0] = size;
-  return reinterpret_cast<char*>( ptr ) + Alloc::ALIGNMENT;
+  ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
+  reinterpret_cast<size_t*>( ptr )[-1] = size;
+#else
+  return ptr;
+#endif
 }
 
 void operator delete ( void* ptr ) throw()
@@ -413,8 +282,15 @@ void operator delete ( void* ptr ) throw()
   hard_assert( !Alloc::isLocked );
   hard_assert( ptr != null );
 
-  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
-  size_t size  = reinterpret_cast<size_t*>( chunk )[0];
+#ifdef OZ_ALLOC_STATISTICS
+  size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
+  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
+
+  --Alloc::count;
+  Alloc::amount -= size;
+#else
+  void* chunk = ptr;
+#endif
 
 #ifdef OZ_TRACE_LEAKS
   System::resetSignals();
@@ -426,7 +302,9 @@ void operator delete ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
+# ifdef OZ_ALLOC_STATISTICS
       hard_assert( st->size == size );
+# endif
 
       if( prev == null ) {
         firstObjectTraceEntry = st->next;
@@ -463,10 +341,7 @@ void operator delete ( void* ptr ) throw()
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
-  --Alloc::count;
-  Alloc::amount -= size;
-
-  free( chunk );
+  posix_memalign_free( chunk );
 }
 
 void operator delete[] ( void* ptr ) throw()
@@ -474,8 +349,15 @@ void operator delete[] ( void* ptr ) throw()
   hard_assert( !Alloc::isLocked );
   hard_assert( ptr != null );
 
-  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::ALIGNMENT;
-  size_t size  = reinterpret_cast<size_t*>( chunk )[0];
+#ifdef OZ_ALLOC_STATISTICS
+  size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
+  char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
+
+  --Alloc::count;
+  Alloc::amount -= size;
+#else
+  void* chunk = ptr;
+#endif
 
 #ifdef OZ_TRACE_LEAKS
   System::resetSignals();
@@ -487,7 +369,9 @@ void operator delete[] ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
+# ifdef OZ_ALLOC_STATISTICS
       hard_assert( st->size == size );
+# endif
 
       if( prev == null ) {
         firstArrayTraceEntry = st->next;
@@ -523,10 +407,5 @@ void operator delete[] ( void* ptr ) throw()
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
-  --Alloc::count;
-  Alloc::amount -= size;
-
-  free( chunk );
+  posix_memalign_free( chunk );
 }
-
-#endif

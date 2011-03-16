@@ -22,7 +22,7 @@ namespace oz
 
       static const int INVENTORY_ITEMS = 16;
       static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT |
-          Object::UPDATE_FUNC_BIT | Object::ACT_FUNC_BIT | Object::BOT_BIT;
+          Object::UPDATE_FUNC_BIT | Object::BOT_BIT;
 
     public:
 

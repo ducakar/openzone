@@ -151,8 +151,10 @@ namespace ui
     printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", description.cstr() );
 
     float life = ( hovered->flags & Object::BOT_BIT ) ?
-        max( 0.0f, ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
+        ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
         hovered->life / clazz->life;
+
+    life = max( life, 0.0f );
 
     float barWidth = maxX - minX + 2.0f;
     float lifeWidth = life * barWidth;

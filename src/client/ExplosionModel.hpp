@@ -12,8 +12,7 @@
 #include "stable.hpp"
 
 #include "client/Model.hpp"
-
-class GLUquadric;
+#include "client/SMM.hpp"
 
 namespace oz
 {
@@ -24,9 +23,10 @@ namespace client
   {
     protected:
 
-      uint        texId;
-      GLUquadric* quadric;
-      int         startMillis;
+      static int modelId;
+
+      SMM* smm;
+      int  startMillis;
 
       virtual ~ExplosionModel();
 

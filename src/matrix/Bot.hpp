@@ -88,7 +88,6 @@ namespace oz
       virtual void onDestroy();
       virtual void onHit( const Hit* hit, float hitMomentum );
       virtual void onUpdate();
-      virtual void onAct();
 
     public:
 

@@ -66,11 +66,8 @@ namespace oz
       // if the onUse function should be called when object is used
       static const int USE_FUNC_BIT       = 0x00400000;
 
-      // if the onUpdate (asynchronous self update) method should be called each step
+      // if the onUpdate method should be called each step
       static const int UPDATE_FUNC_BIT    = 0x00200000;
-
-      // if the onAct (synchronous update, can change world) method should be called each step
-      static const int ACT_FUNC_BIT       = 0x00100000;
 
       /*
        * FRONTEND OBJECTS
@@ -327,7 +324,6 @@ namespace oz
       virtual void onHit( const Hit* hit, float momentum );
       virtual void onUse( Bot* user );
       virtual void onUpdate();
-      virtual void onAct();
 
     public:
 

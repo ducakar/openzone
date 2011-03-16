@@ -39,21 +39,30 @@ namespace oz
     int size = 0;
 
     size += nPlanes      * int( sizeof( Plane ) );
+    size = Alloc::alignUp( size );
     size += nNodes       * int( sizeof( Node ) );
+    size = Alloc::alignUp( size );
     size += nLeaves      * int( sizeof( Leaf ) );
+    size = Alloc::alignUp( size );
     size += nLeafBrushes * int( sizeof( int ) );
+    size = Alloc::alignUp( size );
     size += nBrushes     * int( sizeof( Brush ) );
+    size = Alloc::alignUp( size );
     size += nBrushSides  * int( sizeof( int ) );
     size = Alloc::alignUp( size );
     size += nModels      * int( sizeof( Model ) );
 
     char* data = Alloc::alloc<char>( size );
 
+    hard_assert( data == Alloc::alignUp( data ) );
+
     planes = new( data ) Plane[nPlanes];
     for( int i = 0; i < nPlanes; ++i ) {
       planes[i] = is.readPlane();
     }
     data += nPlanes * sizeof( Plane );
+
+    data = Alloc::alignUp( data );
 
     nodes = new( data ) Node[nNodes];
     for( int i = 0; i < nNodes; ++i ) {
@@ -63,6 +72,8 @@ namespace oz
     }
     data += nNodes * sizeof( Node );
 
+    data = Alloc::alignUp( data );
+
     leaves = new( data ) Leaf[nLeaves];
     for( int i = 0; i < nLeaves; ++i ) {
       leaves[i].firstBrush = is.readInt();
@@ -70,11 +81,15 @@ namespace oz
     }
     data += nLeaves * sizeof( Leaf );
 
+    data = Alloc::alignUp( data );
+
     leafBrushes = new( data ) int[nLeafBrushes];
     for( int i = 0; i < nLeafBrushes; ++i ) {
       leafBrushes[i] = is.readInt();
     }
     data += nLeafBrushes * sizeof( int );
+
+    data = Alloc::alignUp( data );
 
     brushes = new( data ) Brush[nBrushes];
     for( int i = 0; i < nBrushes; ++i ) {
@@ -84,6 +99,8 @@ namespace oz
     }
     data += nBrushes * sizeof( Brush );
 
+    data = Alloc::alignUp( data );
+
     brushSides = new( data ) int[nBrushSides];
     for( int i = 0; i < nBrushSides; ++i ) {
       brushSides[i] = is.readInt();
@@ -91,6 +108,7 @@ namespace oz
     data += nBrushSides * sizeof( int );
 
     data = Alloc::alignUp( data );
+
     models = new( data ) Model[nModels];
     for( int i = 0; i < nModels; ++i ) {
       models[i].mins = is.readPoint3();

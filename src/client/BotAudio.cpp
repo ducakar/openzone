@@ -11,9 +11,9 @@
 
 #include "client/BotAudio.hpp"
 
-#include "matrix/Physics.hpp"
+#include "matrix/Orbis.hpp"
+#include "matrix/Bot.hpp"
 
-#include "client/Camera.hpp"
 #include "client/Context.hpp"
 
 namespace oz

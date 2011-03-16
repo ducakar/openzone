@@ -7,13 +7,13 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec3 inPosition;
-in vec2 inTexCoord;
-in vec3 inNormal;
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
+attribute vec3 inNormal;
 
-out vec3 exPosition;
-out vec2 exTexCoord;
-out vec4 exColour;
+varying vec3 exPosition;
+varying vec2 exTexCoord;
+varying vec4 exColour;
 
 void main()
 {
@@ -23,7 +23,7 @@ void main()
   exTexCoord     = inTexCoord;
   exColour       = skyLightColour( normal );
 
-  vec4 firstPos  = texture2D( oz_Textures[1], vec2( oz_MD2Anim[0], inPosition.x ) );
-  vec4 secondPos = texture2D( oz_Textures[1], vec2( oz_MD2Anim[1], inPosition.x ) );
+  vec4 firstPos  = texture2DLod( oz_Textures[1], vec2( oz_MD2Anim[0], inPosition.x ), 0.0 );
+  vec4 secondPos = texture2DLod( oz_Textures[1], vec2( oz_MD2Anim[1], inPosition.x ), 0.0 );
   gl_Position    = oz_Transform.complete * mix( firstPos, secondPos, oz_MD2Anim[2] );
 }

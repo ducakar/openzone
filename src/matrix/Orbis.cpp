@@ -265,25 +265,21 @@ namespace oz
     part->index = -1;
   }
 
-  void Orbis::init()
+  void Orbis::update()
   {
-    log.print( "Initialising Orbis ..." );
+    strAvailableIndices.addAll( strFreedIndices[waiting], strFreedIndices[waiting].length() );
+    strFreedIndices[waiting].clear();
 
-    freeing = 0;
-    waiting = 1;
+    objAvailableIndices.addAll( objFreedIndices[waiting], objFreedIndices[waiting].length() );
+    objFreedIndices[waiting].clear();
 
-    mins = Point3( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
-    maxs = Point3(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
+    partAvailableIndices.addAll( partFreedIndices[waiting], objFreedIndices[waiting].length() );
+    partFreedIndices[waiting].clear();
 
-    terra.init();
+    freeing = !freeing;
+    waiting = !waiting;
 
-    log.printEnd( " OK" );
-  }
-
-  void Orbis::free()
-  {
-    log.print( "Freeing Orbis ..." );
-    log.printEnd( " OK" );
+    sky.update();
   }
 
   void Orbis::load()
@@ -375,22 +371,23 @@ namespace oz
     log.println( "}" );
   }
 
-  void Orbis::update()
+  void Orbis::init()
   {
-    strAvailableIndices.addAll( strFreedIndices[waiting], strFreedIndices[waiting].length() );
-    strFreedIndices[waiting].clear();
+    log.print( "Initialising Orbis ..." );
 
-    objAvailableIndices.addAll( objFreedIndices[waiting], objFreedIndices[waiting].length() );
-    objFreedIndices[waiting].clear();
+    freeing = 0;
+    waiting = 1;
 
-    partAvailableIndices.addAll( partFreedIndices[waiting], objFreedIndices[waiting].length() );
-    partFreedIndices[waiting].clear();
+    mins = Point3( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
+    maxs = Point3(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
 
-    freeing = !freeing;
-    waiting = !waiting;
+    terra.init();
 
-    sky.update();
+    log.printEnd( " OK" );
   }
+
+  void Orbis::free()
+  {}
 
   bool Orbis::read( InputStream* istream )
   {

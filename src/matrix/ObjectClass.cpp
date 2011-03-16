@@ -27,7 +27,6 @@ namespace oz
     clazz->onHit                = config->get( "onHit", "" );
     clazz->onUse                = config->get( "onUse", "" );
     clazz->onUpdate             = config->get( "onUpdate", "" );
-    clazz->onAct                = config->get( "onAct", "" );
 
     if( !String::isEmpty( clazz->onDestroy ) ) {
       clazz->flags |= Object::LUA_BIT | Object::DESTROY_FUNC_BIT;
@@ -67,14 +66,6 @@ namespace oz
       // disable event handler if explicitly set to false
       if( !config->get( "flag.updateFunc", true ) ) {
         clazz->flags &= ~Object::UPDATE_FUNC_BIT;
-      }
-    }
-    if( !String::isEmpty( clazz->onAct ) ) {
-      clazz->flags |= Object::LUA_BIT | Object::ACT_FUNC_BIT;
-
-      // disable event handler if explicitly set to false
-      if( !config->get( "flag.actFunc", true ) ) {
-        clazz->flags &= ~Object::ACT_FUNC_BIT;
       }
     }
 
@@ -138,7 +129,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.hitFunc",       false );
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",       false );
     OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.updateFunc",    false );
-    OZ_CLASS_SET_FLAG( Object::ACT_FUNC_BIT,       "flag.actFunc",       false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",         true  );
     OZ_CLASS_SET_FLAG( Object::DETECT_BIT,         "flag.detect",        true  );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );

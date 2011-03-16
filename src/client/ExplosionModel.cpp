@@ -22,40 +22,49 @@ namespace oz
 namespace client
 {
 
+  int ExplosionModel::modelId;
+
   Pool<ExplosionModel> ExplosionModel::pool;
 
   Model* ExplosionModel::create( const Object* obj )
   {
     ExplosionModel* model = new ExplosionModel();
 
-    model->obj = obj;
-    model->texId = context.loadTexture( "textures/oz/explosion.jpg" );
-//     model->quadric = gluNewQuadric();
-    model->startMillis = timer.millis;
+    modelId = translator.modelIndex( "explosion" );
 
-//     gluQuadricTexture( model->quadric, GL_TRUE );
+    model->obj = obj;
+    model->smm = context.requestSMM( modelId );
+    model->startMillis = timer.millis;
 
     return model;
   }
 
   ExplosionModel::~ExplosionModel()
   {
-//     gluDeleteQuadric( quadric );
-    glDeleteTextures( 1, &texId );
+    context.releaseSMM( modelId );
   }
 
   void ExplosionModel::draw( const Model* )
   {
+    if( !smm->isLoaded ) {
+      return;
+    }
+
     float millis = float( timer.millis - startMillis );
     float radius = millis * obj->dim.z * 0.006f;
     float alpha  = 1.0f - 0.001f * millis;
-    float colour[] = { 1.0f, 1.0f, 1.0f, alpha*alpha };
 
     glEnable( GL_BLEND );
     glDisable( GL_CULL_FACE );
 
-    glBindTexture( GL_TEXTURE_2D, texId );
-//     gluSphere( quadric, radius, 32, 32 );
+    shader.colour = Vec4( 1.0f, 1.0f, 1.0f, alpha*alpha );
+
+    tf.model.scale( Vec3( radius, radius, radius ) );
+    tf.apply();
+
+    smm->draw();
+
+    shader.colour = Colours::WHITE;
 
     glEnable( GL_CULL_FACE );
     glDisable( GL_BLEND );

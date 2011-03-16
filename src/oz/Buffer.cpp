@@ -96,9 +96,9 @@ namespace oz
       return false;
     }
 
-    if( count < fileStat.st_size ) {
+    if( count < int( fileStat.st_size ) ) {
       dealloc();
-      alloc( fileStat.st_size );
+      alloc( int( fileStat.st_size ) );
     }
 
     int blocksRead = int( fread( data, fileStat.st_size, 1, handle ) );

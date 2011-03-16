@@ -24,6 +24,10 @@ lift "15.00"
 modelType "SMMVehicle"
 modelName "raptor"
 
+audioType "Vehicle"
+
+type "HOVER"
+
 crew.pilot.pos.y "2.5"
 crew.pilot.pos.z "-0.5"
 

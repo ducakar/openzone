@@ -7,13 +7,13 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec3 inPosition;
-in vec2 inTexCoord;
-in vec3 inNormal;
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
+attribute vec3 inNormal;
 
-out vec2  exTexCoord;
-out vec4  exColour;
-out float exDistance;
+varying vec2  exTexCoord;
+varying vec4  exColour;
+varying float exDistance;
 
 void main()
 {
@@ -27,6 +27,6 @@ void main()
   vec4  worldPos = oz_Transform.model * vec4( inPosition, 1.0 );
   float windFact = max( inPosition.z, 0.0 );
   vec2  windBias = oz_Wind.xy * windFact*windFact * oz_Wind.z *
-      sin( 0.02 * ( worldPos.x + worldPos.y ) + oz_Wind.w );
+      sin( 0.08 * ( worldPos.x + worldPos.y ) + oz_Wind.w );
   gl_Position    = oz_Transform.complete * vec4( inPosition.xy + windBias.xy, inPosition.z, 1.0 );
 }

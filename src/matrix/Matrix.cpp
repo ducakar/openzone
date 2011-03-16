@@ -183,13 +183,15 @@ namespace oz
     synapse.addObject( "BigCrate", Point3( 50, -55, 40 ) );
 
     synapse.addStruct( "castle", Point3( 57, -33, 43 ), Struct::R0 );
-    synapse.addStruct( "pool", Point3( 50, -60, 37 ), Struct::R0 );
-    synapse.addStruct( "test", Point3( 60, -60, 38 ), Struct::R0 );
-    synapse.addStruct( "door", Point3( 60, -60, 40 ), Struct::R270 );
+    synapse.addStruct( "pool", Point3( 26, -40, 35 ), Struct::R0 );
+    synapse.addStruct( "bunker", Point3( 20, -40, 40 ), Struct::R90 );
 
-    synapse.addObject( "SmallCrate", Point3( 52, -61, 40 ) );
-    synapse.addObject( "SmallCrate", Point3( 52, -61, 41 ) );
-    synapse.addObject( "SmallCrate", Point3( 52, -61, 42 ) );
+    synapse.addObject( "SmallCrate", Point3( 22, -39, 45 ) );
+    synapse.addObject( "SmallCrate", Point3( 22, -39, 46 ) );
+    synapse.addObject( "SmallCrate", Point3( 22, -39, 47 ) );
+    synapse.addObject( "SmallCrate", Point3( 22, -41, 45 ) );
+    synapse.addObject( "SmallCrate", Point3( 22, -41, 46 ) );
+    synapse.addObject( "SmallCrate", Point3( 22, -41, 47 ) );
   }
 
   void Matrix::update()

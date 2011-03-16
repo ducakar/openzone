@@ -19,7 +19,7 @@ namespace oz
   {
     public:
 
-      static const int ALIGNMENT            = 16;
+      static const int ALIGNMENT            = 4;
       static const int BACKTRACE_SIZE       = 16;
       static const int DEMANGLE_BUFFER_SIZE = 1024;
 

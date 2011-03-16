@@ -69,8 +69,8 @@ add_library( client STATIC
   StrategicProxy.hpp
   Terra.cpp
   Terra.hpp
-
-
+  VehicleAudio.cpp
+  VehicleAudio.hpp
   common.cpp
   common.hpp
 )

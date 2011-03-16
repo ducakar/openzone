@@ -38,6 +38,7 @@ namespace client
   PFNGLUNIFORM2FVPROC              glUniform2fv;
   PFNGLUNIFORM3FVPROC              glUniform3fv;
   PFNGLUNIFORM4FVPROC              glUniform4fv;
+  PFNGLUNIFORMMATRIX4FVPROC        glUniformMatrix4fv;
 
   PFNGLGENVERTEXARRAYSPROC         glGenVertexArrays;
   PFNGLDELETEVERTEXARRAYSPROC      glDeleteVertexArrays;

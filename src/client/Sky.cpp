@@ -45,6 +45,7 @@ namespace client
   void Sky::prebuild( const char* name )
   {
     log.println( "Prebuilding sky '%s' ...", name );
+    log.indent();
 
     DArray<Point3> positions( MAX_STARS );
 
@@ -96,6 +97,7 @@ namespace client
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
+    log.unindent();
     log.println( "}" );
   }
 #endif
