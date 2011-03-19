@@ -7,11 +7,11 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-attribute vec3 inPosition;
-attribute vec2 inTexCoord;
+in vec3 inPosition;
+in vec2 inTexCoord;
 
-varying vec2  exTexCoord;
-varying float exAzimuth;
+out vec2  exTexCoord;
+out float exAzimuth;
 
 void main()
 {

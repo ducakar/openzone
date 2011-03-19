@@ -7,10 +7,10 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-attribute vec3 inPosition;
+in vec3 inPosition;
 
-varying vec3  exPosition;
-varying float exAzimuth;
+out vec3  exPosition;
+out float exAzimuth;
 
 void main()
 {

@@ -44,9 +44,17 @@ namespace client
     normal[0] = nx;
     normal[1] = ny;
     normal[2] = nz;
+
+//     tangent[0] = tx;
+//     tangent[1] = ty;
+//     tangent[2] = tz;
+//
+//     binormal[0] = bx;
+//     binormal[1] = by;
+//     binormal[2] = bz;
   }
 
-  void Vertex::set( const Point3& p, const TexCoord& c, const Vec3& n, const Vec3&, const Vec3& )
+  void Vertex::set( const Point3& p, const TexCoord& c, const Vec3& n, const Vec3& /*t*/, const Vec3& /*b*/ )
   {
     pos[0] = p.x;
     pos[1] = p.y;
@@ -58,6 +66,14 @@ namespace client
     normal[0] = n.x;
     normal[1] = n.y;
     normal[2] = n.z;
+
+//     tangent[0] = t.x;
+//     tangent[1] = t.y;
+//     tangent[2] = t.z;
+//
+//     binormal[0] = b.x;
+//     binormal[1] = b.y;
+//     binormal[2] = b.z;
   }
 
   void Vertex::read( InputStream* stream )
@@ -168,12 +184,9 @@ namespace client
     parts.alloc( nParts );
 
     for( int i = 0; i < nParts; ++i ) {
-      parts[i].diffuse    = stream->readVec4();
-      parts[i].specular   = stream->readVec4();
-
-      parts[i].texture[0] = textures[ stream->readInt() ];
-      parts[i].texture[1] = textures[ stream->readInt() ];
-      parts[i].texture[2] = textures[ stream->readInt() ];
+      parts[i].texture    = textures[ stream->readInt() ];
+      parts[i].alpha      = stream->readFloat();
+      parts[i].specular   = stream->readFloat();
 
       parts[i].mode       = stream->readInt();
 
@@ -252,7 +265,7 @@ namespace client
     if( vao != 0 ) {
       if( flags & EMBEDED_TEX_BIT ) {
         foreach( part, parts.citer() ) {
-          glDeleteTextures( 3, part->texture );
+          glDeleteTextures( 1, &part->texture );
         }
       }
       else {
@@ -307,7 +320,8 @@ namespace client
 
     if( mask & SOLID_BIT ) {
       for( int i = 0; i < firstAlphaPart; ++i ) {
-        glBindTexture( GL_TEXTURE_2D, parts[i].texture[0] );
+        glBindTexture( GL_TEXTURE_2D, parts[i].texture );
+        glUniform1f( param.oz_Specular, parts[i].specular );
         glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }
@@ -316,7 +330,8 @@ namespace client
       glEnable( GL_BLEND );
 
       for( int i = firstAlphaPart; i < parts.length(); ++i ) {
-        glBindTexture( GL_TEXTURE_2D, parts[i].texture[0] );
+        glBindTexture( GL_TEXTURE_2D, parts[i].texture );
+        glUniform1f( param.oz_Specular, parts[i].specular );
         glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }
@@ -339,14 +354,10 @@ namespace client
     textures.add( "" );
 
     foreach( part, solidParts.citer() ) {
-      for( int i = 0; i < 3; ++i ) {
-        textures.include( part->texture[i] );
-      }
+      textures.include( part->texture );
     }
     foreach( part, alphaParts.citer() ) {
-      for( int i = 0; i < 3; ++i ) {
-        textures.include( part->texture[i] );
-      }
+      textures.include( part->texture );
     }
 
     if( embedTextures ) {
@@ -371,12 +382,9 @@ namespace client
     stream->writeInt( solidParts.length() );
 
     foreach( part, solidParts.citer() ) {
-      stream->writeVec4( part->diffuse );
-      stream->writeVec4( part->specular );
-
-      stream->writeInt( textures.index( part->texture[0] ) );
-      stream->writeInt( textures.index( part->texture[1] ) );
-      stream->writeInt( textures.index( part->texture[2] ) );
+      stream->writeInt( textures.index( part->texture ) );
+      stream->writeFloat( part->alpha );
+      stream->writeFloat( part->specular );
 
       stream->writeInt( part->mode );
 
@@ -384,12 +392,9 @@ namespace client
       stream->writeInt( part->firstIndex );
     }
     foreach( part, alphaParts.citer() ) {
-      stream->writeVec4( part->diffuse );
-      stream->writeVec4( part->specular );
-
-      stream->writeInt( textures.index( part->texture[0] ) );
-      stream->writeInt( textures.index( part->texture[1] ) );
-      stream->writeInt( textures.index( part->texture[2] ) );
+      stream->writeInt( textures.index( part->texture ) );
+      stream->writeFloat( part->alpha );
+      stream->writeFloat( part->specular );
 
       stream->writeInt( part->mode );
 

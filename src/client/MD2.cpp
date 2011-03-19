@@ -276,21 +276,6 @@ namespace client
     log.println( "Prebuilding MD2 model '%s' {", path );
     log.indent();
 
-    Config config;
-    config.load( configFile );
-
-    bool doForceStatic = config.get( "forceStatic", false );
-    float scale        = config.get( "scale", 0.042f );
-    Vec3 translation   = Vec3( config.get( "translate.x", 0.00f ),
-                               config.get( "translate.y", 0.00f ),
-                               config.get( "translate.z", 0.00f ) );
-    Vec3 jumpTransl    = Vec3( config.get( "jumpTranslate.x", 0.00f ),
-                               config.get( "jumpTranslate.y", 0.00f ),
-                               config.get( "jumpTranslate.z", 0.00f ) );
-    Vec3 weaponTransl  = Vec3( config.get( "weaponTranslate.x", 0.00f ),
-                               config.get( "weaponTranslate.y", 0.00f ),
-                               config.get( "weaponTranslate.z", 0.00f ) );
-
     FILE* file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
       throw Exception( "MD2 file does not exist" );
@@ -311,10 +296,10 @@ namespace client
     DArray<MD2TexCoord> texCoords( header.nTexCoords );
     DArray<MD2Triangle> triangles( header.nTriangles );
 
-    char* data = new char[header.nFrames * header.frameSize];
+    char* frameData = new char[header.nFrames * header.frameSize];
 
     fseek( file, header.offFrames, SEEK_SET );
-    fread( data, 1, header.nFrames * header.frameSize, file );
+    fread( frameData, 1, header.nFrames * header.frameSize, file );
 
     fseek( file, header.offTexCoords, SEEK_SET );
     fread( texCoords, 1, header.nTexCoords * sizeof( MD2TexCoord ), file );
@@ -324,37 +309,40 @@ namespace client
 
     fclose( file );
 
+    Config config;
+    config.load( configFile );
+
+    String shaderName    = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
+    bool   doForceStatic = config.get( "forceStatic", false );
+    float  scale         = config.get( "scale", 0.04f );
+    float  specular      = config.get( "specular", 0.0f );
+
+    Vec3   translation   = Vec3( config.get( "translate.x", +0.00f ),
+                                 config.get( "translate.y", +0.00f ),
+                                 config.get( "translate.z", -0.04f ) );
+    Vec3   jumpTransl    = Vec3( config.get( "jumpTranslate.x", 0.00f ),
+                                 config.get( "jumpTranslate.y", 0.00f ),
+                                 config.get( "jumpTranslate.z", 0.00f ) );
+    Vec3   weaponTransl  = Vec3( config.get( "weaponTranslate.x", 0.00f ),
+                                 config.get( "weaponTranslate.y", 0.00f ),
+                                 config.get( "weaponTranslate.z", 0.00f ) );
+    Vec3   weaponRot     = Vec3( config.get( "weaponRotate.x", 0.00f ),
+                                 config.get( "weaponRotate.y", 0.00f ),
+                                 config.get( "weaponRotate.z", 0.00f ) );
+    Mat44 weaponTransf  = Mat44::ID;
+
+    weaponTransf.rotateX( Math::rad( weaponRot.x ) );
+    weaponTransf.rotateY( Math::rad( weaponRot.y ) );
+    weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
+    weaponTransf.translate( weaponTransl );
+
     header.nFrames = doForceStatic ? 1 : header.nFrames;
-
-    DArray<Point3> positions( header.nFrames * header.nFramePositions );
-    Point3* currPosition = positions;
-
-    // transform vertices
-    for( int i = 0; i < header.nFrames; ++i ) {
-      MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &data[i * header.frameSize] );
-
-      for( int j = 0; j < header.nFramePositions; ++j ) {
-        currPosition->x = float( frame.verts[j].p[1] ) * -frame.scale[1] - frame.translate[1];
-        currPosition->y = float( frame.verts[j].p[0] ) *  frame.scale[0] + frame.translate[0];
-        currPosition->z = float( frame.verts[j].p[2] ) *  frame.scale[2] + frame.translate[2];
-
-        *currPosition = Point3::ORIGIN + ( *currPosition - Point3::ORIGIN ) * scale + translation;
-
-        if( ANIM_LIST[Anim::JUMP].firstFrame <= i && i <= ANIM_LIST[Anim::JUMP].lastFrame ) {
-          *currPosition += jumpTransl;
-        }
-
-        ++currPosition;
-      }
-    }
-    hard_assert( currPosition == positions + positions.length() );
-
-    MD2Frame& firstFrame = *reinterpret_cast<MD2Frame*>( data );
 
     compiler.beginMesh();
     compiler.enable( CAP_UNIQUE );
     compiler.enable( CAP_CW );
-    compiler.texture( 0, skinFile );
+    compiler.material( GL_SPECULAR, specular );
+    compiler.texture( skinFile );
 
     compiler.begin( GL_TRIANGLES );
 
@@ -375,61 +363,75 @@ namespace client
     MeshData mesh;
     compiler.getMeshData( &mesh );
 
-    // generate vertex data for animated MD2s
-    if( header.nFrames == 1 ) {
-      // replace position indices by their actual coordinates if we have a static mesh
-      foreach( vertex, mesh.vertices.iter() ) {
-        int index = int( vertex->pos[0] + 0.5f );
-
-        vertex->pos[0] = positions[index].x;
-        vertex->pos[1] = positions[index].y;
-        vertex->pos[2] = positions[index].z;
-
-        vertex->normal[0] = NORMALS[ firstFrame.verts[index].normal ].x;
-        vertex->normal[1] = NORMALS[ firstFrame.verts[index].normal ].y;
-        vertex->normal[2] = NORMALS[ firstFrame.verts[index].normal ].z;
-      }
-    }
-    else {
-      // if we have an animated model, we use vertex position to save texture coordinate for vertex
-      // texture to fetch the positions in both frames and interpolate them in vertex shader
-      foreach( vertex, mesh.vertices.iter() ) {
-        int index = int( vertex->pos[0] + 0.5f );
-
-        vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( header.nFramePositions );
-        vertex->pos[1] = 0.0f;
-        vertex->pos[2] = 0.0f;
-
-        vertex->normal[0] = NORMALS[ firstFrame.verts[index].normal ].x;
-        vertex->normal[1] = NORMALS[ firstFrame.verts[index].normal ].y;
-        vertex->normal[2] = NORMALS[ firstFrame.verts[index].normal ].z;
-      }
-    }
-
-    delete[] data;
-
-    String shaderName = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
     translator.shaderIndex( shaderName );
 
     OutputStream os = buffer.outputStream();
 
-    if( header.nFrames != 1 ) {
+    os.writeString( shaderName );
+
+    // generate vertex data for animated MD2s
+    if( header.nFrames == 1 ) {
+      // replace position indices by their actual coordinates if we have a static mesh
+      MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[0] );
+
+      foreach( vertex, mesh.vertices.iter() ) {
+        int index = int( vertex->pos[0] + 0.5f );
+
+        vertex->pos[0] = float( frame.verts[index].p[1] ) * -frame.scale[1] - frame.translate[1];
+        vertex->pos[1] = float( frame.verts[index].p[0] ) *  frame.scale[0] + frame.translate[0];
+        vertex->pos[2] = float( frame.verts[index].p[2] ) *  frame.scale[2] + frame.translate[2];
+
+        vertex->pos[0] = vertex->pos[0] * scale + translation.x;
+        vertex->pos[1] = vertex->pos[1] * scale + translation.y;
+        vertex->pos[2] = vertex->pos[2] * scale + translation.z;
+
+        vertex->normal[0] = NORMALS[ frame.verts[index].normal ].x;
+        vertex->normal[1] = NORMALS[ frame.verts[index].normal ].y;
+        vertex->normal[2] = NORMALS[ frame.verts[index].normal ].z;
+      }
+    }
+    else {
       os.writeInt( header.nFrames );
       os.writeInt( header.nFramePositions );
-      os.writeVec3( weaponTransl );
-    }
+      os.writeMat44( weaponTransf );
 
-    os.writeString( shaderName );
-    mesh.write( &os );
-
-    if( header.nFrames != 1 ) {
       // write vertex positions for all frames
       for( int i = 0; i < header.nFramePositions; ++i ) {
         for( int j = 0; j < header.nFrames; ++j ) {
-          os.writePoint3( positions[j * header.nFramePositions + i] );
+          MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[j * header.frameSize] );
+
+          Point3 p = Point3( float( frame.verts[i].p[1] ) * -frame.scale[1] - frame.translate[1],
+                             float( frame.verts[i].p[0] ) *  frame.scale[0] + frame.translate[0],
+                             float( frame.verts[i].p[2] ) *  frame.scale[2] + frame.translate[2] );
+
+          p = Point3::ORIGIN + ( p - Point3::ORIGIN ) * scale + translation;
+
+          if( ANIM_LIST[Anim::JUMP].firstFrame <= j && j <= ANIM_LIST[Anim::JUMP].lastFrame ) {
+            p += jumpTransl;
+          }
+
+          os.writePoint3( p );
         }
       }
+      // write vertex normals for all frames
+      for( int i = 0; i < header.nFramePositions; ++i ) {
+        for( int j = 0; j < header.nFrames; ++j ) {
+          MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[j * header.frameSize] );
+
+          os.writeVec3( NORMALS[ frame.verts[i].normal ] );
+        }
+      }
+
+      // if we have an animated model, we use vertex position to save texture coordinate for vertex
+      // texture to fetch the positions in both frames and interpolate them in vertex shader
+      foreach( vertex, mesh.vertices.iter() ) {
+        vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( header.nFramePositions );
+        vertex->pos[1] = 0.0f;
+        vertex->pos[2] = 0.0f;
+      }
     }
+
+    mesh.write( &os );
 
     if( header.nFrames != 1 ) {
       log.print( "Writing to '%s' ...", ( sPath + ".ozcMD2" ).cstr() );
@@ -441,6 +443,8 @@ namespace client
       buffer.write( sPath + ".ozcSMM", os.length() );
       log.printEnd( " OK" );
     }
+
+    delete[] frameData;
 
     log.unindent();
     log.println( "}" );
@@ -455,6 +459,9 @@ namespace client
     const String& name = translator.models[id].name;
 
     log.print( "Unloading MD2 model '%s' ...", name.cstr() );
+
+    glDeleteTextures( 1, &vertexTexId );
+    glDeleteTextures( 1, &normalTexId );
 
     mesh.unload();
 
@@ -476,36 +483,49 @@ namespace client
 
     InputStream is = buffer.inputStream();
 
-    nFrames         = is.readInt();
-    nFramePositions = is.readInt();
-    weaponTransl    = is.readVec3();
     shaderId        = translator.shaderIndex( is.readString() );
 
-    if( nFrames == 1 ) {
-      mesh.load( &is, GL_STATIC_DRAW );
+    nFrames         = is.readInt();
+    nFramePositions = is.readInt();
+    weaponTransf    = is.readMat44();
+
+    Vec4* vertices = new Vec4[nFramePositions * nFrames];
+    Vec4* normals  = new Vec4[nFramePositions * nFrames];
+
+    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+      vertices[i].x = is.readFloat();
+      vertices[i].y = is.readFloat();
+      vertices[i].z = is.readFloat();
+      vertices[i].w = 1.0f;
     }
-    else {
-      mesh.load( &is, GL_STREAM_DRAW );
 
-      Vec4* vertices = new Vec4[nFramePositions * nFrames];
-
-      for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-        vertices[i].x = is.readFloat();
-        vertices[i].y = is.readFloat();
-        vertices[i].z = is.readFloat();
-        vertices[i].w = 1.0f;
-      }
-
-      glGenTextures( 1, &vertTexId );
-      glBindTexture( GL_TEXTURE_2D, vertTexId );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFrames, nFramePositions, 0,
-                    GL_RGBA, GL_FLOAT, vertices );
-      glBindTexture( GL_TEXTURE_2D, 0 );
-
-      delete[] vertices;
+    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+      normals[i].x  = is.readFloat();
+      normals[i].y  = is.readFloat();
+      normals[i].z  = is.readFloat();
+      normals[i].w  = 0.0f;
     }
+
+    glGenTextures( 1, &vertexTexId );
+    glBindTexture( GL_TEXTURE_2D, vertexTexId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFrames, nFramePositions, 0,
+                  GL_RGBA, GL_FLOAT, vertices );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+
+    glGenTextures( 1, &normalTexId );
+    glBindTexture( GL_TEXTURE_2D, normalTexId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFrames, nFramePositions, 0,
+                  GL_RGBA, GL_FLOAT, normals );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+
+    delete[] vertices;
+    delete[] normals;
+
+    mesh.load( &is, GL_STREAM_DRAW );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -534,7 +554,9 @@ namespace client
     shader.use( shaderId );
 
     glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, vertTexId );
+    glBindTexture( GL_TEXTURE_2D, vertexTexId );
+    glActiveTexture( GL_TEXTURE2 );
+    glBindTexture( GL_TEXTURE_2D, normalTexId );
     glActiveTexture( GL_TEXTURE0 );
 
     glUniform3f( param.oz_MD2Anim, float( frame ) / float( nFrames ), 0.0f, 0.0f );
@@ -548,7 +570,9 @@ namespace client
     shader.use( shaderId );
 
     glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, vertTexId );
+    glBindTexture( GL_TEXTURE_2D, vertexTexId );
+    glActiveTexture( GL_TEXTURE2 );
+    glBindTexture( GL_TEXTURE_2D, normalTexId );
     glActiveTexture( GL_TEXTURE0 );
 
     glUniform4fv( param.oz_Colour, 1, shader.colour );

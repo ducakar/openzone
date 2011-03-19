@@ -28,17 +28,19 @@ namespace client
     int oz_Transform_model;
     int oz_Transform_complete;
 
+    int oz_CameraPosition;
+
     int oz_Colour;
 
     int oz_IsTextureEnabled;
     int oz_Textures;
     int oz_TextureScales;
 
-    int oz_SpecularMaterial;
-
     int oz_SkyLight_dir;
     int oz_SkyLight_diffuse;
     int oz_SkyLight_ambient;
+
+    int oz_Specular;
 
     int oz_PointLights;
 
@@ -100,9 +102,19 @@ namespace client
     {
       POSITION,
       TEXCOORD,
+      NORMAL/*,
+      TANGENT,
+      BINORMAL*/
+    };
+  };
+
+  struct FragData
+  {
+    enum Type : int
+    {
+      COLOUR,
+      EFFECT,
       NORMAL
-//       TANGENT,
-//       BINORMAL
     };
   };
 

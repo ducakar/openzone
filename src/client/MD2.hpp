@@ -58,7 +58,8 @@ namespace client
       int     nFrames;
       int     nFramePositions;
 
-      uint    vertTexId;
+      uint    vertexTexId;
+      uint    normalTexId;
       int     shaderId;
 
       Mesh    mesh;
@@ -67,7 +68,7 @@ namespace client
 
       static const AnimInfo ANIM_LIST[];
 
-      Vec3    weaponTransl;
+      Mat44   weaponTransf;
       bool    isLoaded;
 
 #ifdef OZ_BUILD_TOOLS

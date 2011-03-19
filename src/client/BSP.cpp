@@ -314,15 +314,17 @@ namespace client
         }
 
         if( texture.type & QBSP_WATER_BIT ) {
-          compiler.material( GL_FRONT, GL_DIFFUSE, Vec4( 1.0f, 1.0f, 1.0f, 0.75f ) );
+          compiler.material( GL_DIFFUSE, 0.75f );
+          compiler.material( GL_SPECULAR, 2.0f );
           flags |= Mesh::ALPHA_BIT;
         }
         else {
-          compiler.material( GL_FRONT, GL_DIFFUSE, Vec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
+          compiler.material( GL_DIFFUSE, 1.0f );
+          compiler.material( GL_SPECULAR, 0.3f );
           flags |= Mesh::SOLID_BIT;
         }
 
-        compiler.texture( 0, name );
+        compiler.texture( name );
         compiler.begin( GL_TRIANGLES );
 
         for( int k = 0; k < face.nIndices; ++k ) {

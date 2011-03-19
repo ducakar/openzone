@@ -28,11 +28,9 @@ namespace client
   bool Compiler::Part::operator == ( const Part& part ) const
   {
     return mode == part.mode &&
-        diffuse == part.diffuse &&
+        alpha == part.alpha &&
         specular == part.specular &&
-        texture[0].equals( part.texture[0] ) &&
-        texture[1].equals( part.texture[1] ) &&
-        texture[2].equals( part.texture[2] );
+        texture.equals( part.texture );
   }
 
   void Compiler::enable( int cap )
@@ -57,11 +55,9 @@ namespace client
     solidParts.clear();
     alphaParts.clear();
 
-    part.diffuse    = Colours::WHITE;
-    part.specular   = Colours::BLACK;
-    part.texture[0] = "";
-    part.texture[1] = "";
-    part.texture[2] = "";
+    part.texture  = "";
+    part.alpha    = 1.0f;
+    part.specular = 0.0f;
 
     vert.pos[0] = 0.0f;
     vert.pos[1] = 0.0f;
@@ -83,24 +79,18 @@ namespace client
     flags &= ~MESH_BIT;
   }
 
-  void Compiler::material( int, int target, const float* params )
+  void Compiler::material( int target, float param )
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( !( flags & SURFACE_BIT ) );
 
     switch( target ) {
       case GL_DIFFUSE: {
-        part.diffuse.x = params[0];
-        part.diffuse.y = params[1];
-        part.diffuse.z = params[2];
-        part.diffuse.w = params[3];
+        part.alpha = param;
         break;
       }
       case GL_SPECULAR: {
-        part.specular.x = params[0];
-        part.specular.y = params[1];
-        part.specular.z = params[2];
-        part.specular.w = params[3];
+        part.specular = param;
         break;
       }
       default: {
@@ -110,14 +100,12 @@ namespace client
     }
   }
 
-  void Compiler::texture( int unit, const char* texture )
+  void Compiler::texture( const char* texture )
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( !( flags & SURFACE_BIT ) );
 
-    hard_assert( 0 <= unit && unit <= 2 );
-
-    part.texture[unit] = texture;
+    part.texture = texture;
   }
 
   void Compiler::begin( int mode_ )
@@ -191,7 +179,7 @@ namespace client
       }
     }
 
-    Vector<Part>* parts = part.diffuse.w != 1.0f ? &alphaParts : &solidParts;
+    Vector<Part>* parts = part.alpha != 1.0f ? &alphaParts : &solidParts;
 
     switch( mode ) {
       default: {
@@ -329,11 +317,9 @@ namespace client
     for( int i = 0; i < solidParts.length(); ++i ) {
       mesh->solidParts.add();
 
-      mesh->solidParts[i].diffuse    = solidParts[i].diffuse;
+      mesh->solidParts[i].texture    = solidParts[i].texture;
+      mesh->solidParts[i].alpha      = solidParts[i].alpha;
       mesh->solidParts[i].specular   = solidParts[i].specular;
-      mesh->solidParts[i].texture[0] = solidParts[i].texture[0];
-      mesh->solidParts[i].texture[1] = solidParts[i].texture[1];
-      mesh->solidParts[i].texture[2] = solidParts[i].texture[2];
 
       mesh->solidParts[i].mode       = solidParts[i].mode;
 
@@ -346,11 +332,9 @@ namespace client
     for( int i = 0; i < alphaParts.length(); ++i ) {
       mesh->alphaParts.add();
 
-      mesh->alphaParts[i].diffuse    = alphaParts[i].diffuse;
+      mesh->alphaParts[i].texture    = alphaParts[i].texture;
+      mesh->alphaParts[i].alpha      = alphaParts[i].alpha;
       mesh->alphaParts[i].specular   = alphaParts[i].specular;
-      mesh->alphaParts[i].texture[0] = alphaParts[i].texture[0];
-      mesh->alphaParts[i].texture[1] = alphaParts[i].texture[1];
-      mesh->alphaParts[i].texture[2] = alphaParts[i].texture[2];
 
       mesh->alphaParts[i].mode       = alphaParts[i].mode;
 

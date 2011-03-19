@@ -107,7 +107,7 @@ namespace client
     log.print( "Loading sky '%s' ...", name );
 
     axis = Vec3( -Math::sin( orbis.sky.heading ), Math::cos( orbis.sky.heading ), 0.0f );
-    originalLightDir = Vec3( -Math::cos( orbis.sky.heading ), -Math::sin( orbis.sky.heading ), 0.0f );
+    originalLightDir = Vec3( Math::cos( orbis.sky.heading ), Math::sin( orbis.sky.heading ), 0.0f );
 
     DArray<Vertex> vertices(  MAX_STARS * 4 );
 
@@ -168,7 +168,7 @@ namespace client
     Mat44 rot = Mat44::rotation( Quat::rotAxis( axis, angle ) );
     Vec3  dir = rot * originalLightDir;
 
-    ratio = clamp( dir.z + DAY_BIAS, 0.0f, 1.0f );
+    ratio = clamp( -dir.z + DAY_BIAS, 0.0f, 1.0f );
     float ratioDiff = ( 1.0f - Math::abs( 1.0f - 2.0f * ratio ) );
 
     Colours::sky[0] = NIGHT_COLOUR[0] + ratio * ( DAY_COLOUR[0] - NIGHT_COLOUR[0] ) + RED_COEF * ratioDiff;

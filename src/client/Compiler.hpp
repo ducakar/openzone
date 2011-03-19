@@ -33,9 +33,9 @@ namespace client
 
       struct Part
       {
-        Vec4   diffuse;
-        Vec4   specular;
-        String texture[3];
+        String texture;
+        float  alpha;
+        float  specular;
 
         int    mode;
 
@@ -64,8 +64,8 @@ namespace client
       void beginMesh();
       void endMesh();
 
-      void material( int face, int target, const float* params );
-      void texture( int unit, const char* texture );
+      void material( int target, float param );
+      void texture( const char* texture );
 
       void begin( int mode );
       void end();

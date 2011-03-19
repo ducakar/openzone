@@ -28,19 +28,7 @@ namespace client
 
       static const int LINE_BUFFER_SIZE = 1024;
 
-      struct Segment
-      {
-        Vec4 specular;
-        Vec4 diffuse;
-
-        int  firstIndex;
-        int  nIndices;
-        uint texId;
-      };
-
       String name;
-
-      DArray<Segment> segments;
 
       static char* skipSpaces( char* pos );
       static char* readWord( char* pos );

@@ -54,9 +54,9 @@ namespace client
   {
     Vector<Face> faces;
 
-    Vec4   specular;
-    Vec4   diffuse;
     String texture;
+    float  alpha;
+    float  specular;
   };
 
   static String           shaderName;
@@ -233,9 +233,9 @@ namespace client
     String mtlName;
     Part   part;
 
-    part.diffuse  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-    part.specular = Vec4( 0.5f, 0.5f, 0.5f, 1.0f );
     part.texture  = "";
+    part.alpha    = 1.0f;
+    part.specular = 0.0f;
 
     char* pos = fgets( buffer, LINE_BUFFER_SIZE, file );
     char* end;
@@ -260,23 +260,22 @@ namespace client
             *end = '\0';
 
             mtlName = pos;
-            part.diffuse  = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-            part.specular = Vec4( 0.5f, 0.5f, 0.5f, 1.0f );
             part.texture  = "";
+            part.alpha    = 1.0f;
+            part.specular = 0.0f;
           }
           break;
         }
         case 'K': {
-          if( pos[1] == 'd' ) {
-            sscanf( pos + 2, "%f %f %f", &part.diffuse.x, &part.diffuse.y, &part.diffuse.z );
-          }
-          else if( pos[1] == 's' ) {
-            sscanf( pos + 2, "%f %f %f", &part.specular.x, &part.specular.y, &part.specular.z );
+          if( pos[1] == 's' ) {
+            Vec4 colour;
+            sscanf( pos + 2, "%f %f %f", &colour.x, &colour.y, &colour.z );
+            part.specular = ( colour.x + colour.y + colour.z ) / 3.0f;
           }
           break;
         }
         case 'd': {
-          sscanf( pos + 1, "%f", &part.diffuse.w );
+          sscanf( pos + 1, "%f", &part.alpha );
           break;
         }
         case 'm': {
@@ -411,9 +410,9 @@ namespace client
     compiler.enable( CAP_UNIQUE );
 
     for( int i = 0; i < parts.length(); ++i ) {
-      compiler.material( GL_FRONT_AND_BACK, GL_DIFFUSE,  parts[i].diffuse  );
-      compiler.material( GL_FRONT_AND_BACK, GL_SPECULAR, parts[i].specular );
-      compiler.texture( 0, parts[i].texture );
+      compiler.texture( parts[i].texture );
+      compiler.material( GL_DIFFUSE,  parts[i].alpha  );
+      compiler.material( GL_SPECULAR, parts[i].specular );
 
       for( int j = 0; j < parts[i].faces.length(); ++j ) {
         const Face& face = parts[i].faces[j];

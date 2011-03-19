@@ -167,6 +167,8 @@ namespace client
       shader.setSkyLight( sky.lightDir, Colours::diffuse );
       shader.updateLights();
 
+      glUniform1f( param.oz_Specular, 1.0f );
+
       glUniform1f( param.oz_Fog_start, isUnderWater ? 0.0f : 100.0f );
       glUniform1f( param.oz_Fog_end, visibility );
       glUniform4fv( param.oz_Fog_colour, 1, clearColour );
