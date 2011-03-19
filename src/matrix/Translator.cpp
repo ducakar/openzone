@@ -190,6 +190,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "bsp/tex/" ) + ent;
 
+      if( textureIndices.contains( name ) ) {
+        throw Exception( "Duplicated texture '" + name + "' ['" + path + "']" );
+      }
+
       textureIndices.add( name, textures.length() );
       textures.add( Resource( name, path ) );
 
@@ -218,6 +222,10 @@ namespace oz
 
       String name = ent.baseName();
       String path = String( "snd/" ) + ent;
+
+      if( soundIndices.contains( name ) ) {
+        throw Exception( "Duplicated sound '" + name + "' ['" + path + "']" );
+      }
 
       soundIndices.add( name, sounds.length() );
       sounds.add( Resource( name, path ) );
@@ -557,6 +565,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "snd/" ) + ent;
 
+      if( soundIndices.contains( name ) ) {
+        throw Exception( "Duplicated sound '" + name + "' ['" + path + "']" );
+      }
+
       soundIndices.add( name, sounds.length() );
       sounds.add( Resource( name, path ) );
 
@@ -671,6 +683,10 @@ namespace oz
 
       String name = ent.baseName();
       String path = String( "mdl/" ) + ent;
+
+      if( modelIndices.contains( name ) ) {
+        throw Exception( "Duplicated model '" + name + "' ['" + path + "']" );
+      }
 
       modelIndices.add( name, models.length() );
       models.add( Resource( name, path ) );

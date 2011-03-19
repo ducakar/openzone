@@ -7,7 +7,9 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#version 120
+#version 130
+
+const float TAU = 6.2831853;
 
 /*
  * Transformation
@@ -24,6 +26,8 @@ struct Transform
 
 uniform Transform oz_Transform;
 
+uniform vec3      oz_CameraPosition;
+
 /*
  * Colour
  */
@@ -33,8 +37,8 @@ uniform vec4      oz_Colour = vec4( 1.0, 1.0, 1.0, 1.0 );
  * Texturing
  */
 uniform bool      oz_IsTextureEnabled = false;
-uniform sampler2D oz_Textures[2];
-uniform float     oz_TextureScales[2] = float[2]( 1.0, 1.0 );
+uniform sampler2D oz_Textures[4];
+uniform float     oz_TextureScales[4] = float[4]( 1.0, 1.0, 1.0, 1.0 );
 
 /*
  * Lighting
@@ -52,10 +56,10 @@ struct Light
   vec4 diffuse;
 };
 
-uniform vec3      oz_SpecularMaterial;
-
 uniform SkyLight  oz_SkyLight;
 uniform Light     oz_PointLights[8];
+
+uniform float     oz_Specular = 0.0;
 
 /*
  * Fog
@@ -87,40 +91,36 @@ uniform vec3      oz_MD2Anim;   // vec3( firstFrame, secondFrame, interpolation 
  * FUNCTIONS
  */
 
-vec4 greyscale( in vec4 colour )
+vec4 greyscale( vec4 colour )
 {
   float avg = ( colour.x + colour.y + colour.z ) / 3.0;
   return vec4( avg, avg, avg, colour.w );
 }
 
-vec4 skyLightColour( in vec3 normal )
+vec4 skyLightColour( vec3 normal )
 {
-  float diffuseFactor = max( dot( oz_SkyLight.dir, normal ), 0.0 );
+  float diffuseFactor = max( dot( -oz_SkyLight.dir, normal ), 0.0 );
   vec4 colour = diffuseFactor * oz_SkyLight.diffuse + oz_SkyLight.ambient;
   return min( colour, vec4( 1.0, 1.0, 1.0, 1.0 ) );
 }
 
-vec4 applyFog( in vec4 colour, in float dist )
+vec4 specularColour( vec3 normal, vec3 toCamera )
+{
+  vec3  reflectedLight = reflect( oz_SkyLight.dir, normal );
+  float factor = oz_Specular * max( dot( reflectedLight, toCamera ), 0.0 );
+  return vec4( 1.0, 1.0, 1.0, 1.0 ) + vec4( factor * oz_SkyLight.diffuse.xyz, 0.0 );
+}
+
+vec4 applyFog( vec4 colour, float dist )
 {
   float ratio = ( dist - oz_Fog.start ) / ( oz_Fog.end - oz_Fog.start );
   return mix( colour, oz_Fog.colour, clamp( ratio, 0.0, 1.0 ) );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+vec2 noise( vec2 seed )
+{
+  return vec2( cos( seed.x ), sin( seed.y ) );
+}
 
 
 

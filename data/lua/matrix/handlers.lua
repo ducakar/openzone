@@ -90,3 +90,17 @@ function Rifle_onShot( l )
   ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
 		  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
 end
+
+function Axe_onShot( l )
+  ozObjBindUser()
+
+  local pX, pY, pZ = ozBotGetEyePos()
+  local vX, vY, vZ = ozBotGetDir()
+
+  ozBindObjOverlaps( pX + 0.5*vX, pY + 0.5*vY, pZ + 0.5*vZ, 0.3, 0.3, 0.3 );
+  while ozObjBindNext() do
+    if not ( ozObjIsSelf() or ozObjIsUser() ) then
+      ozObjDamage( 120.0 )
+    end
+  end
+end

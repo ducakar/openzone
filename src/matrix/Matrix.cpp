@@ -139,7 +139,7 @@ namespace oz
 
     synapse.addObject( "Wine", Point3( 49, -36, 37 ) );
     synapse.addObject( "FirstAid", Point3( 50, -36, 37 ) );
-    synapse.addObject( "Rifle", Point3( 51, -36, 37 ) );
+    synapse.addObject( "DroidRifle", Point3( 51, -36, 37 ) );
 
     synapse.addObject( "Raptor", Point3( 70, -60, 38 ) );
 

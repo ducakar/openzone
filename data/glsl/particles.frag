@@ -7,9 +7,11 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-varying vec4 exColour;
+in vec4 exColour;
+
+out vec4 outColour;
 
 void main()
 {
-  gl_FragColor = exColour;
+  outColour = exColour;
 }

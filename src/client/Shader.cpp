@@ -21,6 +21,9 @@
 #define OZ_REGISTER_ATTRIBUTE( location, name ) \
   glBindAttribLocation( programs[id].program, location, name )
 
+#define OZ_REGISTER_FRAGDATA( location, name ) \
+  glBindFragDataLocation( programs[id].program, location, name )
+
 namespace oz
 {
 namespace client
@@ -66,6 +69,8 @@ namespace client
     glUniformMatrix4fv( param.oz_Transform_proj, 1, GL_FALSE, proj );
     glUniformMatrix4fv( param.oz_Transform_camera, 1, GL_FALSE, camera );
     glUniformMatrix4fv( param.oz_Transform_projCamera, 1, GL_FALSE, projCamera );
+
+    glUniform3fv( param.oz_CameraPosition, 1, client::camera.p );
   }
 
   void Transform::applyModel() const
@@ -164,6 +169,10 @@ namespace client
 //     OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
 //     OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
 
+    OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
+    OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
+    OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
+
     glLinkProgram( programs[id].program );
 
     int result;
@@ -190,18 +199,20 @@ namespace client
     OZ_REGISTER_PARAMETER( oz_Transform_model,          "oz_Transform.model" );
     OZ_REGISTER_PARAMETER( oz_Transform_complete,       "oz_Transform.complete" );
 
+    OZ_REGISTER_PARAMETER( oz_CameraPosition,           "oz_CameraPosition" );
+
     OZ_REGISTER_PARAMETER( oz_Colour,                   "oz_Colour" );
 
     OZ_REGISTER_PARAMETER( oz_IsTextureEnabled,         "oz_IsTextureEnabled" );
     OZ_REGISTER_PARAMETER( oz_Textures,                 "oz_Textures" );
     OZ_REGISTER_PARAMETER( oz_TextureScales,            "oz_TextureScales" );
 
-    OZ_REGISTER_PARAMETER( oz_SpecularMaterial,         "oz_SpecularMaterial" );
-
     OZ_REGISTER_PARAMETER( oz_SkyLight_dir,             "oz_SkyLight.dir" );
     OZ_REGISTER_PARAMETER( oz_SkyLight_diffuse,         "oz_SkyLight.diffuse" );
     OZ_REGISTER_PARAMETER( oz_SkyLight_ambient,         "oz_SkyLight.ambient" );
     OZ_REGISTER_PARAMETER( oz_PointLights,              "oz_PointLights" );
+
+    OZ_REGISTER_PARAMETER( oz_Specular,                 "oz_Specular" );
 
     OZ_REGISTER_PARAMETER( oz_Fog_start,                "oz_Fog.start" );
     OZ_REGISTER_PARAMETER( oz_Fog_end,                  "oz_Fog.end" );
@@ -215,7 +226,7 @@ namespace client
 
     param = programs[id].param;
 
-    glUniform1iv( param.oz_Textures, 2, (int[2]) { 0, 1 } );
+    glUniform1iv( param.oz_Textures, 4, (int[]) { 0, 1, 2, 3 } );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 

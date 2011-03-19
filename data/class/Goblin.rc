@@ -50,3 +50,7 @@ staminaThrowDrain "12.00"
 
 mindType "Lua"
 mindFunction "prey"
+
+inventoryItem00 "GoblinAxe"
+
+weaponItem "0"

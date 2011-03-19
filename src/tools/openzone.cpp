@@ -50,6 +50,7 @@ int main( int argc, char** argv )
   catch( const std::exception& e ) {
     oz::log.resetIndent();
     oz::log.println();
+    oz::log.println();
     oz::log.println( "EXCEPTION: %s", e.what() );
     oz::log.println();
 

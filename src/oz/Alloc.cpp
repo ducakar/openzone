@@ -143,11 +143,11 @@ namespace oz
 
 using oz::max;
 using oz::Alloc;
+using oz::System;
 
 #ifdef OZ_TRACE_LEAKS
 
 using oz::log;
-using oz::System;
 using oz::TraceEntry;
 using oz::firstObjectTraceEntry;
 using oz::firstArrayTraceEntry;
@@ -196,6 +196,7 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
+    System::trap();
     throw std::bad_alloc();
   }
 
@@ -226,9 +227,8 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
   ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
   reinterpret_cast<size_t*>( ptr )[-1] = size;
-#else
-  return ptr;
 #endif
+  return ptr;
 }
 
 void* operator new[] ( size_t size ) throw( std::bad_alloc )
@@ -242,6 +242,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
+    System::trap();
     throw std::bad_alloc();
   }
 
@@ -272,9 +273,8 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
   ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
   reinterpret_cast<size_t*>( ptr )[-1] = size;
-#else
-  return ptr;
 #endif
+  return ptr;
 }
 
 void operator delete ( void* ptr ) throw()

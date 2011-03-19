@@ -153,8 +153,6 @@ namespace client
       log.println( "}" );
     }
 
-    log.unindent();
-    log.println( "}" );
     log.printlnETD( OZ_APPLICATION_NAME " finished at" );
   }
 

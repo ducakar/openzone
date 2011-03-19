@@ -7,17 +7,16 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-varying vec2  exTexCoord;
-varying vec4  exColour;
-varying float exDistance;
+in vec3  exPosition;
+in vec2  exTexCoord;
+in vec4  exColour;
+in float exDistance;
+
+out vec4 outColour;
 
 void main()
 {
-  if( exDistance >= oz_Fog.end ) {
-    discard;
-  }
-
-  gl_FragColor = exColour;
-  gl_FragColor *= texture2D( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
-  gl_FragColor = applyFog( gl_FragColor, exDistance );
+  outColour = exColour;
+  outColour *= texture2D( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
+  outColour = applyFog( outColour, exDistance );
 }

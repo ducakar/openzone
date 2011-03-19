@@ -7,18 +7,20 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-varying vec2  exTexCoord;
-varying vec4  exColour;
-varying float exDistance;
+in vec3 exPosition;
+in vec2 exTexCoord;
+in vec3 exNormal;
+
+out vec4 outColour;
 
 void main()
 {
-  if( exDistance >= oz_Fog.end ) {
-    discard;
-  }
+  vec3 toCamera = oz_CameraPosition - exPosition;
+  float dist = length( toCamera );
 
-  gl_FragColor = exColour;
-  gl_FragColor *= texture2D( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
-  gl_FragColor *= oz_Colour;
-  gl_FragColor = applyFog( gl_FragColor, exDistance );
+  outColour = oz_Colour;
+  outColour *= skyLightColour( exNormal );
+  outColour *= specularColour( normalize( exNormal ), toCamera / dist );
+  outColour *= texture2D( oz_Textures[0], exTexCoord );
+  outColour = applyFog( outColour, dist );
 }

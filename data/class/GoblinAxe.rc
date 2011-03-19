@@ -1,18 +1,18 @@
-description "Standard Droid rifle"
+description "Goblin Axe"
 
 base "Weapon"
 
 dim.x "0.24"
-dim.y "0.24"
-dim.z "0.10"
+dim.y "0.29"
+dim.z "0.06"
 
 life "100.0f"
 
 mass "10.0"
-lift "8.0"
+lift "2.0"
 
 modelType "MD2Weapon"
-modelName "rifle"
+modelName "goblin-axe"
 
 audioType                       "Basic"
 audioSample00                   ""                              # create
@@ -22,9 +22,9 @@ audioSample03                   "hit1"                          # hit
 audioSample04                   "splash1"                       # splash
 audioSample05                   ""                              # friction
 audioSample06                   ""                              # use
-audioSample07                   "cg2"                           # trigger
-audioSample08                   "outofammo"                     # trigger_empty
+audioSample07                   "tak"                           # trigger
+audioSample08                   ""                              # trigger_empty
 
-onShot "Rifle_onShot"
+onShot "Axe_onShot"
 nShots "-1"
-shotInterval "0.5"
+shotInterval "0.51"

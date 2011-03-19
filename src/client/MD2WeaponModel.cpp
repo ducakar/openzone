@@ -49,7 +49,7 @@ namespace client
     }
 
     if( parent == null ) {
-      tf.model.translate( Vec3( md2->weaponTransl.x, md2->weaponTransl.y, md2->weaponTransl.z ) );
+      tf.model = tf.model * md2->weaponTransf;
 
       md2->drawFrame( 0 );
     }
