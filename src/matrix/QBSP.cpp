@@ -19,10 +19,11 @@
 namespace oz
 {
 
-  static const int QBSP_SLICK_BIT    = 0x00000002;
-  static const int QBSP_LADDER_BIT   = 0x00000008;
-  static const int QBSP_WATER_BIT    = 0x00000020;
-  static const int QBSP_NONSOLID_BIT = 0x00004000;
+  static const int QBSP_SLICK_FLAG_BIT    = 0x00000002;
+  static const int QBSP_LADDER_FLAG_BIT   = 0x00000008;
+  static const int QBSP_GLASS_FLAG_BIT    = 0x00000020;
+  static const int QBSP_NONSOLID_FLAG_BIT = 0x00004000;
+  static const int QBSP_WATER_TYPE_BIT    = 0x00000020;
 
   struct QBSPHeader
   {
@@ -153,7 +154,7 @@ namespace oz
     maxs = Point3( +maxDim, +maxDim, +maxDim );
 
     if( Math::isNaN( scale ) || Math::isNaN( maxDim ) ) {
-      log.println( " Invalid config" );
+      log.println( "Invalid config" );
       log.unindent();
       log.println( "}" );
       return false;
@@ -190,6 +191,8 @@ namespace oz
 
       texFlags[i] = texture.flags;
       texTypes[i] = texture.type;
+
+      log.println( "Texture '%s' flags %x type %x", texture.name, texture.flags, texture.type );
     }
 
     nPlanes = int( lumps[QBSPLump::PLANES].length / sizeof( QBSPPlane ) );
@@ -356,16 +359,16 @@ namespace oz
       const int& flags = texFlags[brush.texture];
       const int& type  = texTypes[brush.texture];
 
-      if( flags & QBSP_LADDER_BIT ) {
+      if( flags & QBSP_LADDER_FLAG_BIT ) {
         brushes[i].material |= Material::LADDER_BIT;
       }
-      if( !( flags & QBSP_NONSOLID_BIT ) ) {
+      if( !( flags & QBSP_NONSOLID_FLAG_BIT ) ) {
         brushes[i].material |= Material::STRUCT_BIT;
       }
-      if( flags & QBSP_SLICK_BIT ) {
+      if( flags & QBSP_SLICK_FLAG_BIT ) {
         brushes[i].material |= Material::SLICK_BIT;
       }
-      if( type & QBSP_WATER_BIT ) {
+      if( type & QBSP_WATER_TYPE_BIT ) {
         brushes[i].material |= Material::WATER_BIT;
       }
 

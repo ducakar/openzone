@@ -9,7 +9,7 @@
 
 #version 130
 
-const float TAU = 6.2831853;
+const float TAU = 6.283185307179586;
 
 /*
  * Transformation

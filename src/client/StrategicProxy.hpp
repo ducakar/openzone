@@ -25,12 +25,16 @@ namespace client
       static const float MIN_HEIGHT;
       static const float MAX_HEIGHT;
       static const float DEFAULT_HEIGHT;
-      static const float LOW_SPEED;
-      static const float HIGH_SPEED;
+      static const float FREE_LOW_SPEED;
+      static const float FREE_HIGH_SPEED;
+      static const float RTS_LOW_SPEED;
+      static const float RTS_HIGH_SPEED;
       static const float ZOOM_FACTOR;
 
       float height;
-      bool  fastMove;
+      bool  isFree;
+      bool  isFreeFast;
+      bool  isRTSFast;
 
     public:
 

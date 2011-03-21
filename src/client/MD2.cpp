@@ -276,6 +276,11 @@ namespace client
     log.println( "Prebuilding MD2 model '%s' {", path );
     log.indent();
 
+    Config config;
+    config.load( configFile );
+
+    bool doForceStatic = config.get( "forceStatic", false );
+
     FILE* file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
       throw Exception( "MD2 file does not exist" );
@@ -291,6 +296,10 @@ namespace client
     if( header.nFrames <= 0 || header.nFramePositions <= 0 ) {
       fclose( file );
       throw Exception( "MD2 model loading error" );
+    }
+
+    if( doForceStatic ) {
+      header.nFrames = 1;
     }
 
     DArray<MD2TexCoord> texCoords( header.nTexCoords );
@@ -309,11 +318,7 @@ namespace client
 
     fclose( file );
 
-    Config config;
-    config.load( configFile );
-
     String shaderName    = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
-    bool   doForceStatic = config.get( "forceStatic", false );
     float  scale         = config.get( "scale", 0.04f );
     float  specular      = config.get( "specular", 0.0f );
 
@@ -575,7 +580,6 @@ namespace client
     glBindTexture( GL_TEXTURE_2D, normalTexId );
     glActiveTexture( GL_TEXTURE0 );
 
-    glUniform4fv( param.oz_Colour, 1, shader.colour );
     glUniform3f( param.oz_MD2Anim,
                  float( anim->currFrame ) / float( nFrames ),
                  float( anim->nextFrame ) / float( nFrames ),

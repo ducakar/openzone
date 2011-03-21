@@ -40,6 +40,8 @@ namespace ui
       TTF_Font* sansFont;
       TTF_Font* titleFont;
 
+      uint textTexId;
+
       int monoHeight;
       int sansHeight;
       int titleHeight;

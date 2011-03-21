@@ -13,10 +13,9 @@ out vec4 outColour;
 
 void main()
 {
+  outColour = oz_Colour;
+
   if( oz_IsTextureEnabled ) {
-    outColour = texture2D( oz_Textures[0], exTexCoord );
-  }
-  else {
-    outColour = oz_Colour;
+    outColour *= texture2D( oz_Textures[0], exTexCoord );
   }
 }

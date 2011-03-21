@@ -96,10 +96,11 @@ namespace oz
 
     float localX = x - quad.vertex.x;
     float localY = y - quad.vertex.y;
+    float height = quad.vertex.z;
     int   ii     = localX <= localY;
+    Vec3  normal = quad.triNormal[ii];
 
-    return quad.vertex.z - ( quad.triNormal[ii].x * localX + quad.triNormal[ii].y * localY ) /
-        quad.triNormal[ii].z;
+    return height - ( normal.x * localX + normal.y * localY ) / normal.z;
   }
 
 }

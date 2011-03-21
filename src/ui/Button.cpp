@@ -49,7 +49,6 @@ namespace ui
     }
     fill( 0, 0, width, height );
     setFont( Font::SANS );
-    setFontColour( 200, 200, 200 );
     printCentred( width / 2, height / 2, "%s", label.cstr() );
 
     isHighlighted = false;

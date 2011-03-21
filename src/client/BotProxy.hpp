@@ -26,7 +26,6 @@ namespace client
       // because of an obstacle
       static const float THIRD_PERSON_CLIP_DIST;
       static const float BOB_SUPPRESSION_COEF;
-      static const float TURN_SMOOTHING_COEF;
 
       // how far behind the eyes the camera should be
       float externalDistFactor;

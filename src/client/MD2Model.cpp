@@ -22,6 +22,8 @@ namespace oz
 namespace client
 {
 
+  const float MD2Model::TURN_SMOOTHING_COEF = 0.60f;
+
   Pool<MD2Model> MD2Model::pool;
 
   Model* MD2Model::create( const Object* obj )
@@ -35,6 +37,7 @@ namespace client
     model->flags = Model::MD2MODEL_BIT;
     model->clazz = obj->clazz;
     model->md2   = context.requestMD2( obj->clazz->modelIndex );
+    model->h     = bot->h;
 
     model->setAnim( bot->anim );
     model->anim.nextFrame = model->anim.endFrame;
@@ -64,7 +67,7 @@ namespace client
     anim.currTime   = 0.0f;
   }
 
-  void MD2Model::draw( const Model* )
+  void MD2Model::draw( const Model* parent )
   {
     const Bot* bot = static_cast<const Bot*>( obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
@@ -77,7 +80,20 @@ namespace client
       setAnim( bot->anim );
     }
 
-    tf.model.rotateZ( bot->h );
+    if( parent == null ) {
+      if( bot->h - h > Math::TAU / 2.0f ) {
+        h = bot->h + TURN_SMOOTHING_COEF * ( h + Math::TAU - bot->h );
+      }
+      else if( h - bot->h > Math::TAU / 2.0f ) {
+        h = bot->h + Math::TAU + TURN_SMOOTHING_COEF * ( h - bot->h - Math::TAU );
+      }
+      else {
+        h = bot->h + TURN_SMOOTHING_COEF * ( h - bot->h );
+      }
+
+      h = Math::mod( h + Math::TAU, Math::TAU );
+      tf.model.rotateZ( h );
+    }
 
     if( bot->state & Bot::DEATH_BIT ) {
       shader.colour.w = min( bot->life * 3.0f / clazz->life, 1.0f );

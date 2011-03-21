@@ -235,8 +235,8 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-    landShaderId = translator.shaderIndex( "terra_land" );
-    waterShaderId = translator.shaderIndex( "terra_water" );
+    landShaderId = translator.shaderIndex( "terraLand" );
+    waterShaderId = translator.shaderIndex( "terraWater" );
 
     float scales[2] = { float( oz::Terra::QUADS ), 1.0f };
 
@@ -304,7 +304,7 @@ namespace client
 
     shader.use( waterShaderId );
 
-    glUniform1f( param.oz_Specular, 1.0f );
+    glUniform1f( param.oz_Specular, 0.5f );
     glUniform1f( param.oz_WaveBias, waveBias );
     tf.model = Mat44::ID;
     tf.apply();

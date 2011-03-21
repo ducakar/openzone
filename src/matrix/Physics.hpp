@@ -20,7 +20,7 @@ namespace oz
   {
     public:
 
-      static const float CLIP_BACKOFF;
+      static const float MOVE_BOUNCE;
       static const float HIT_THRESHOLD;
       static const float SPLASH_THRESHOLD;
       static const float FLOOR_NORMAL_Z;

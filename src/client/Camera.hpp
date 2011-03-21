@@ -14,7 +14,6 @@
 #include "matrix/Orbis.hpp"
 #include "matrix/Bot.hpp"
 
-#include "client/FreeCamProxy.hpp"
 #include "client/StrategicProxy.hpp"
 #include "client/BotProxy.hpp"
 
@@ -30,7 +29,6 @@ namespace client
       enum State : int
       {
         NONE,
-        FREECAM,
         STRATEGIC,
         BOT
       };
@@ -43,7 +41,6 @@ namespace client
       float keyYSens;
       float smoothCoef;
 
-      static FreeCamProxy   freeCamProxy;
       static StrategicProxy strategicProxy;
       static BotProxy       botProxy;
 

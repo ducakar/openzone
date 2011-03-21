@@ -44,7 +44,7 @@ namespace client
 #ifdef OZ_BUILD_TOOLS
   void Sky::prebuild( const char* name )
   {
-    log.println( "Prebuilding sky '%s' ...", name );
+    log.println( "Prebuilding sky '%s' {", name );
     log.indent();
 
     DArray<Point3> positions( MAX_STARS );

@@ -27,7 +27,6 @@ namespace client
 
   const float BotProxy::THIRD_PERSON_CLIP_DIST = 0.20f;
   const float BotProxy::BOB_SUPPRESSION_COEF   = 0.80f;
-  const float BotProxy::TURN_SMOOTHING_COEF    = 0.60f;
 
   void BotProxy::begin()
   {
@@ -67,20 +66,9 @@ namespace client
     /*
      * Camera
      */
-    if( !isExternal ) {
+    if( !isFreelook ) {
       bot->h = camera.h;
       bot->v = camera.v;
-    }
-    else if( !isFreelook ) {
-      if( camera.h - bot->h > Math::TAU / 2.0f ) {
-        bot->h += Math::TAU;
-      }
-      else if( bot->h - camera.h > Math::TAU / 2.0f ) {
-        bot->h -= Math::TAU;
-      }
-
-      bot->h = ( 1.0f - TURN_SMOOTHING_COEF ) * camera.h + TURN_SMOOTHING_COEF * bot->h;
-      bot->v = ( 1.0f - TURN_SMOOTHING_COEF ) * camera.v + TURN_SMOOTHING_COEF * bot->v;
     }
 
     bot->actions = 0;
@@ -113,13 +101,13 @@ namespace client
     if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
       bot->state ^= Bot::RUNNING_BIT;
     }
-    if( ui::keyboard.keys[SDLK_z] ) {
+    if( ui::keyboard.keys[SDLK_x] ) {
       bot->actions |= Bot::ACTION_EXIT;
     }
-    if( ui::keyboard.keys[SDLK_x] ) {
+    if( ui::keyboard.keys[SDLK_j] ) {
       bot->actions |= Bot::ACTION_EJECT;
     }
-    if( isExternal && ui::keyboard.keys[SDLK_LALT] && !ui::keyboard.oldKeys[SDLK_LALT] ) {
+    if( ui::keyboard.keys[SDLK_LALT] && !ui::keyboard.oldKeys[SDLK_LALT] ) {
       isFreelook = !isFreelook;
 
       camera.h = bot->h;
@@ -284,7 +272,10 @@ namespace client
       bobBias  = 0.0f;
     }
 
-    if( bot->grabObj != -1 ) {
+    if( bot->parent != -1 ) {
+      camera.setTagged( null );
+    }
+    else if( bot->grabObj != -1 ) {
       camera.setTagged( orbis.objects[camera.botObj->grabObj] );
     }
     else if( isExternal && isFreelook ) {

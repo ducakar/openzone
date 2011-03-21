@@ -57,8 +57,7 @@ namespace ui
 
       int flags;
 
-      TTF_Font*  currentFont;
-      SDL_Colour fontColour;
+      TTF_Font* currentFont;
 
       // width of the last printed text
       int textWidth;
@@ -70,7 +69,6 @@ namespace ui
       virtual ~Area();
 
       void setFont( Font::Type type );
-      void setFontColour( ubyte r, ubyte g, ubyte b );
 
       void fill( int x, int y, int width, int height ) const;
       void rect( int x, int y, int width, int height ) const;

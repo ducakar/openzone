@@ -67,10 +67,13 @@ namespace client
     }
     if( ( initFlags & INIT_CONFIG ) == 0 ) {
       String rcDir = config.get( "dir.rc", "" );
-      String configPath = rcDir + "/" OZ_CLIENT_CONFIG_FILE;
 
-      config.exclude( "dir.rc" );
-      config.save( configPath );
+      if( !rcDir.isEmpty() ) {
+        String configPath = rcDir + "/" OZ_CLIENT_CONFIG_FILE;
+
+        config.exclude( "dir.rc" );
+        config.save( configPath );
+      }
     }
 
     config.clear();
@@ -151,9 +154,11 @@ namespace client
       log.println( "    %6.2f %%  [A:2] nirvana",         nirvanaTime   / activeTime * 100.0f );
       log.println( "  }" );
       log.println( "}" );
-    }
+      log.unindent();
+      log.println( "}" );
 
-    log.printlnETD( OZ_APPLICATION_NAME " finished at" );
+      log.printlnETD( OZ_APPLICATION_NAME " finished at" );
+    }
   }
 
   void Main::printUsage()

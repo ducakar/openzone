@@ -1,226 +1,93 @@
-Dependencies:
--------------
-- SDL
-- SDL_image
-- SDL_ttf
-- SDL_net
-- X11 (including MesaGL and MesaGLU)
-- OpenAL
-- FreeALUT
-- libvorbis
-- LibXml2 (optional)
-- Lua
+Camera controls
+---------------
+mouse movement      - rotate camera (when in UI mode, push mouse cursor into screen borders)
+arrow keys          - rotate camera
+Space               - up/increase height
+Ctrl                - down/decrease height
+Tab                 - toggle interface mode
+Numpad Enter        - switch between FreeCam and Strategic camera
+i                   - incarnate into tagged (FreeCam) or selected (Strategic camera) bot
 
-On Linux you have to install packages that provide those libraries.
-For Windows build, all dependencies are included.
-
-Controls:
----------
-mouse or arrow keys - look
-WASD                - move
-Shift               - run
+Bot controls
+------------
+mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
+arrow keys          - look around
+w, a, s, d          - move forwards, left, backwards, right
+Shift               - toggle run
+Ctrl                - toggle crouch
 Space               - jump
-Ctrl                - crouch (toggle)
-Alt                 - freelon (3rd person only) (toggle)
-p                   - step over small obstacles, e.g. walk up the stairs (toggle)
-m                   - 1st/3rd person camera (toggle)
-i                   - reincarnate/disappear
+Tab                 - toggle interface mode
 
-right click         - use
-middle click        - grab/drop when holding an object or take from inventory
-wheel up            - throw (when holding an object)
-wheel down          - put into inventory
-tab                 - interface mode (toggle)
+right click         - use tagged object or enter tagged vehicle
+middle click        - grab/drop tagged object or take an item from the inventory when clicking on an
+                      inventory item
+wheel up            - throw object you are currently holding
+wheel down          - put tagged object into inventory
+
+x                   - exit vehicle
+j                   - eject from vehicle
+
+Alt                 - toggle freelook (look around without rotating the bot)
+Numpad Enter        - switch between 1st persorn and 3rd person camera
+p                   - toggle ability to step over small obstacles, e.g. walk up the stairs
+i                   - leave bot
 
 f                   - point gesture
 g                   - fall back gesture
 h                   - salute gesture
 j                   - wave gesture
 k                   - flip out gesture
-l                   - all animations
+l                   - play all animations
+
+Misc controls
+-------------
+o                   - forward sky time for 1/8 of a day
 
 F11                 - screenshot (saved to ~/.openzone/screenshot-DATE.bmp)
-F12                 - minimize and freeze
+F12                 - minimise and freeze (not working on Windows)
 
-Notes:
-------
+Command line
+------------
+openzone [OPTIONS]
 
-- On first run ~/.openzone/client.rc (or ~/.openzone/client.xml) configuration file
-  with default settings is generated. Edit it to change the settings.
+--help
+      Prints that help message.
+
+--load, --no-load
+-l, -L
+      Enables or disables autoload of ~/.openzone/default.ozState on startup respectively.
+      Overrides the 'autoload' resource.
+
+--save, --no-save
+-s, -S
+      Enables or disables autosave to ~/.openzone/default.ozState on exit respectively.
+      Overrides the 'autosave' resource.
+
+--time num
+-t num
+      Exits after num seconds (can be a floating-point number). For benchmarking purposes.
+
+Dependencies
+------------
+- SDL
+- SDL_image (needed for prebuild only, needs at least PNG and JPEG support)
+- SDL_ttf
+- SDL_net
+- OpenGL (MesaGL)
+- OpenAL
+- FreeALUT
+- libvorbis
+- Lua
+
+On Linux you have to install packages that provide those libraries.
+For Windows build, all dependencies are included.
+
+Notes
+-----
+- On first run ~/.openzone/client.rc configuration file with default settings is generated.
+  Edit it to change any settings you wish.
 - On exit the world is saved to ~/.openzone/default.ozState. Delete this file to start with a
   clean world again.
 - You can jump to higher places with jump-duck (like in Half-Life 1).
 - "~" means $HOME on Linux (i.e. /home/username) and $USERPROFILE on Windows (i.e.
   C:\Documents and Settings\username on Windows XP or C:\Users\username on Windows Vista)
-
-Settings:
----------
-
-Format:
-- XML, example:
-
-<?xml version="1.0" encoding="UTF-8"?>
-<config>
-  <var name="variable1_name" value="variable1_value"/>
-  <var name="variable2_name" value="variable2_value"/>
-  ...
-  <var name="variableN_name" value="variableN_value"/>
-</config>
-
-- or .rc, example:
-
-variable1_name    "variable1_value"
-variable2_name    "variable2_value"
-...
-variableN_name    "variableN_value"
-
-
-
-Types:
-
-bool   - "true" or "false"
-int    - integer (as decimal integer value in C)
-float  - floating point value (as in C)
-string - arbitrary string
-
-
-
-Variables:
-name    [type]    default value
-
-dir.data [string] "data"
-  path to static game data directory (textures, sounds, maps, models)
-
-home.dir [string] "~/.openzone" for Linux, "" for Windows ("" = current directory = data directory)
-  path to home directory where configuration files, saved states, screenshots and logs reside
-
-input.keys.xSens [float] 0.2
-  sensitivity for left/right arrow keys
-
-input.keys.ySens [float] 0.2
-  sensitivity for up/down arrow keys
-
-input.mouse.xSens [float] 0.2
-  sensitivity for x mouse axis
-
-input.mouse.ySens [float] 0.2
-  sensitivity for y mouse axis
-
-net.port [int] 6666
-  server port (network not supported yet)
-
-net.server [string] "localhost"
-  server hostname (network not supported yet)
-
-render.camera.smoothCoef [float] 0.3
-  camera smoothing coefficient
-
-render.camera.thirdPerson [bool] false
-  whether camera should be in 3rd person mode on startup
-
-render.camera.thirdPersonDistance [float] 2.5
-  distance of camera behind model's head when in 3rd person
-
-render.dayVisibility [float] 300.0
-  day visibility range in meters
-
-render.drawAABBs [bool] false
-  if AABBs around objects should be drawn
-
-render.nightVisibility [float] 100.0
-  night visibility range in meters
-
-render.particleRadius [float] 0.5
-  particle radius (currently not used)
-
-render.perspective.angle [float] 80.0
-  vertical camera angle, horizontal angle is adjusted based on aspect ratio
-
-render.perspective.aspect [float] 0.0
-  aspect ratio (H/V), if 0.0 it's automatically calculated from resolution
-
-render.perspective.max [float] 400.0
-  initial perspective matrix max distance (unimportant as later overwritten by xxxVisibility)
-
-render.perspective.min [float] 0.1
-  minimum distance for perspective matrix
-
-render.showAim [bool] false
-  whether a small green box should be projected to the point the player is aiming
-
-render.waterDayVisibility [float] 8.0
-  day visibility under water in meters
-
-render.waterNightVisibility [float] 4.0
-  night visibility under water in meters
-
-screen.bpp [int] 32
-  screen mode bits per pixel
-
-screen.full [bool] false
-  fullscreen mode
-
-screen.height [int] 768
-  screen mode vertical resolution
-
-screen.leaveScreensaver [bool] true
-  don't disable screensaver (sometimes it remains disabled after exit, it's a SDL bug; if we don't
-  disable it, it's just OK, since it won't ever start in fullscreen mode)
-
-screen.nvVSync [bool] true
-  set __GL_SYNC_TO_VBLANK=1 environment variable. On X11 it enables VSync on NVidia cards,
-  otherwise it does no harm.
-
-screen.width [int] 1024
-  screen mode horizontal resolution
-
-sound.volume.effects [float] 1.0
-  sound effects volume (0.0 - mute, 1.0 - max volume)
-
-sound.volume.music [float] 1.0
-  music volume (0.0 - mute, 1.0 - max volume) (currently there's no music loaded)
-
-tick [int] 20
-  Milliseconds between two world updates. Should be 20 to match real time.
-
-ui.cursor.arrow [string] "cursors/left_ptr.png"
-ui.cursor.arrow.hotspot.x [int] 1
-ui.cursor.arrow.hotspot.y [int] 1
-ui.cursor.arrow.size [int] 32
-  arrow cursor
-
-ui.cursor.move [string] "cursors/fleur.png"
-ui.cursor.move.hotspot.x [int] 16
-ui.cursor.move.hotspot.y [int] 16
-ui.cursor.move.size [int] 32
-  move cursor
-
-ui.cursor.hand [string] "cursors/hand2.png"
-ui.cursor.hand.hotspot.x [int] 16
-ui.cursor.hand.hotspot.y [int] 16
-ui.cursor.hand.size [int] 32
-  hand cursor (not used yet)
-
-ui.cursor.text [string] "cursors/xterm.png"
-ui.cursor.text.hotspot.x [int] 16
-ui.cursor.text.hotspot.y [int] 16
-ui.cursor.text.size [int] 32
-  text cursor (not used yet)
-
-ui.cursor.x [string] "cursors/X_cursor.png"
-ui.cursor.x.hotspot.x [int] 16
-ui.cursor.x.hotspot.y [int] 16
-ui.cursor.x.size [int] 32
-  X cursor (not used yet)
-
-ui.font.mono.file [string] "fonts/DejaVuSansMono.ttf"
-ui.font.mono.height [int] 12
-  fixed-width font file and height (must be TrueType)
-
-ui.font.sans.file [string] "fonts/DejaVuSans.ttf"
-ui.font.sans.height [int] 11
-  normal font file and height (must be TrueType)
-
-ui.font.title.file [string] "fonts/DejaVuSans.ttf"
-ui.font.title.height [int] 14
-  title font file and height (must be TrueType)

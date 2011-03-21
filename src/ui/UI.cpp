@@ -45,9 +45,6 @@ namespace ui
     tf.ortho();
     tf.camera = Mat44::ID;
 
-    shader.use( shader.text );
-    tf.applyCamera();
-
     shader.use( shader.ui );
     tf.applyCamera();
 

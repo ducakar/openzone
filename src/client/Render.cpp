@@ -63,7 +63,7 @@ namespace client
       float radius = factor * obj->dim.fastL();
 
       if( frustum.isVisible( obj->p, radius ) ) {
-        float range = max( ( obj->p - camera.p ).fastL() - radius, 0.0f );
+        float range = ( obj->p - camera.p ).fastL() - radius;
         objects.add( ObjectEntry( range, obj ) );
       }
     }
@@ -83,13 +83,13 @@ namespace client
     uint beginTime = currentTime;
 
     collider.translate( camera.p, Vec3::ZERO );
-    isUnderWater = collider.hit.inWater;
+    shader.isInWater = collider.hit.inWater;
 
     windPhi = Math::mod( windPhi + windPhiInc, Math::TAU );
 
     Vec4 clearColour;
 
-    if( isUnderWater ) {
+    if( shader.isInWater ) {
       visibility = waterNightVisibility + sky.ratio * ( waterDayVisibility - waterNightVisibility );
       clearColour = Colours::water;
     }
@@ -155,7 +155,7 @@ namespace client
 
     // set shaders
     for( int i = 0; i < translator.shaders.length(); ++i ) {
-      if( i == shader.ui || i == shader.text ) {
+      if( i == shader.ui ) {
         continue;
       }
 
@@ -169,7 +169,7 @@ namespace client
 
       glUniform1f( param.oz_Specular, 1.0f );
 
-      glUniform1f( param.oz_Fog_start, isUnderWater ? 0.0f : 100.0f );
+      glUniform1f( param.oz_Fog_start, shader.isInWater ? 0.0f : 100.0f );
       glUniform1f( param.oz_Fog_end, visibility );
       glUniform4fv( param.oz_Fog_colour, 1, clearColour );
 
@@ -232,6 +232,8 @@ namespace client
 
     shader.use( particleShaderId );
 
+    glUniform1f( param.oz_Specular, 1.0f );
+
     shape.bindVertexArray();
 
     for( int i = 0; i < particles.length(); ++i ) {
@@ -253,7 +255,13 @@ namespace client
     timer.renderParticlesMillis += currentTime - beginTime;
     beginTime = currentTime;
 
-    // draw structures' water
+    terra.drawWater();
+
+    currentTime = SDL_GetTicks();
+    timer.renderTerraMillis += currentTime - beginTime;
+    beginTime = currentTime;
+
+    // draw structures' alpha parts
     for( int i = 0; i < structs.length(); ++i ) {
       const Struct* str = structs[i].str;
 
@@ -265,12 +273,6 @@ namespace client
 
     currentTime = SDL_GetTicks();
     timer.renderStructsMillis += currentTime - beginTime;
-    beginTime = currentTime;
-
-    terra.drawWater();
-
-    currentTime = SDL_GetTicks();
-    timer.renderTerraMillis += currentTime - beginTime;
     beginTime = currentTime;
 
     shader.use( simpleShaderId );

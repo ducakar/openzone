@@ -23,7 +23,10 @@ namespace client
   {
     public:
 
+      static const float TURN_SMOOTHING_COEF;
+
       MD2*           md2;
+      float          h;
       MD2::AnimState anim;
 
       static Pool<MD2Model> pool;

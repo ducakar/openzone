@@ -97,15 +97,17 @@ if( OZ_INSTALL_DATA )
     data/class/Bomb.rc
     data/class/Droid.rc
     data/class/DroidCommander.rc
+    data/class/DroidRifle.rc
     data/class/Explosion.rc
     data/class/FirstAid.rc
     data/class/Goblin.rc
+    data/class/GoblinAxe.rc
     data/class/Knight.rc
     data/class/Lord.rc
     data/class/MetalBarrel.rc
     data/class/Raptor.rc
-    data/class/Rifle.rc
     data/class/SmallCrate.rc
+    data/class/Tank.rc
     data/class/Tree1.rc
     data/class/Tree2.rc
     data/class/Tree3.rc
@@ -141,6 +143,7 @@ if( OZ_INSTALL_DATA )
     data/bsp/tex/_Samostojeca_voda.ozcTex
     data/bsp/tex/_Spestalnica.ozcTex
     data/bsp/tex/crate1.ozcTex
+    data/bsp/tex/glass.ozcTex
     data/bsp/tex/particle.ozcTex
     data/bsp/tex/roof1.ozcTex
     data/bsp/tex/slick.ozcTex
@@ -157,17 +160,19 @@ if( OZ_INSTALL_DATA )
     data/mdl/bauul.ozcMD2
     data/mdl/bigCrate.ozcSMM
     data/mdl/bombs.ozcSMM
+    data/mdl/droid-rifle.ozcMD2
     data/mdl/droid_commander.ozcMD2
     data/mdl/droid_infantry.ozcMD2
     data/mdl/explosion.ozcSMM
+    data/mdl/goblin-axe.ozcMD2
     data/mdl/goblin.ozcMD2
     data/mdl/health.ozcSMM
     data/mdl/hobgoblin.ozcMD2
     data/mdl/knight.ozcMD2
     data/mdl/palmtree.ozcSMM
     data/mdl/raptor.ozcSMM
-    data/mdl/rifle.ozcMD2
     data/mdl/smallCrate.ozcSMM
+    data/mdl/tank.ozcSMM
     data/mdl/tree2.ozcSMM
     data/mdl/tree3.ozcSMM
     data/mdl/winebottle.ozcSMM
@@ -239,8 +244,8 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/ui )
 
   install( FILES
-    data/glsl/bsp.frag
-    data/glsl/bsp.vert
+    data/glsl/bigMesh.frag
+    data/glsl/bigMesh.vert
     data/glsl/celestial.frag
     data/glsl/celestial.vert
     data/glsl/header.glsl
@@ -256,12 +261,10 @@ if( OZ_INSTALL_DATA )
     data/glsl/simple.vert
     data/glsl/stars.frag
     data/glsl/stars.vert
-    data/glsl/terra_land.frag
-    data/glsl/terra_land.vert
-    data/glsl/terra_water.frag
-    data/glsl/terra_water.vert
-    data/glsl/text.frag
-    data/glsl/text.vert
+    data/glsl/terraLand.frag
+    data/glsl/terraLand.vert
+    data/glsl/terraWater.frag
+    data/glsl/terraWater.vert
     data/glsl/ui.frag
     data/glsl/ui.vert
     DESTINATION share/openzone/glsl )

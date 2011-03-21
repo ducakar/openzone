@@ -340,7 +340,7 @@ namespace client
     log.printEnd( " OK" );
 
     for( int i = 0; i < translator.shaders.length(); ++i ) {
-      if( i == ui || i == text ) {
+      if( i == ui ) {
         continue;
       }
 
@@ -358,7 +358,7 @@ namespace client
     log.print( "Unloading Shader ..." );
 
     for( int i = 0; i < translator.shaders.length(); ++i ) {
-      if( i == ui || i == text ) {
+      if( i == ui ) {
         continue;
       }
 
@@ -414,11 +414,13 @@ namespace client
 
     log.printEnd( " OK" );
 
-    ui   = translator.shaderIndex( "ui" );
-    text = translator.shaderIndex( "text" );
+    ui        = translator.shaderIndex( "ui" );
+    mesh      = translator.shaderIndex( "mesh" );
+    bigMesh   = translator.shaderIndex( "bigMesh" );
+    colour    = Vec4::ONE;
+    isInWater = false;
 
     loadProgram( ui, sources, lengths );
-    loadProgram( text, sources, lengths );
 
     log.unindent();
     log.println( "}" );
@@ -428,23 +430,19 @@ namespace client
   {
     log.print( "Shutting down Shader ..." );
 
-    foreach( id, citer( (int[]) { ui, text }, 2 ) ) {
-      int i = *id;
-
-      if( programs[i].program != 0 ) {
-        glDetachShader( programs[i].program, programs[i].vertShader );
-        glDetachShader( programs[i].program, programs[i].fragShader );
-        glDeleteProgram( programs[i].program );
-        programs[i].program = 0;
-      }
-      if( programs[i].vertShader != 0 ) {
-        glDeleteShader( programs[i].vertShader );
-        programs[i].vertShader = 0;
-      }
-      if( programs[i].fragShader != 0 ) {
-        glDeleteShader( programs[i].fragShader );
-        programs[i].fragShader = 0;
-      }
+    if( programs[ui].program != 0 ) {
+      glDetachShader( programs[ui].program, programs[ui].vertShader );
+      glDetachShader( programs[ui].program, programs[ui].fragShader );
+      glDeleteProgram( programs[ui].program );
+      programs[ui].program = 0;
+    }
+    if( programs[ui].vertShader != 0 ) {
+      glDeleteShader( programs[ui].vertShader );
+      programs[ui].vertShader = 0;
+    }
+    if( programs[ui].fragShader != 0 ) {
+      glDeleteShader( programs[ui].fragShader );
+      programs[ui].fragShader = 0;
     }
 
     programs.dealloc();

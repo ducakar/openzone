@@ -96,10 +96,7 @@ namespace ui
         description = clazz->description;
       }
 
-      setFontColour( 0x00, 0x00, 0x00 );
-      printCentred( descTextX + 1, descTextY - 1, "%s", description.cstr() );
-      setFontColour( 0xff, 0xff, 0xff );
-      printCentred( descTextX + 0, descTextY + 0, "%s", description.cstr() );
+      printCentred( descTextX, descTextY, "%s", description.cstr() );
     }
 
     if( camera.bot != -1 ) {
@@ -121,6 +118,7 @@ namespace ui
       rect( -200, 10, 190, 16 );
 
       glUniform1i( param.oz_IsTextureEnabled, true );
+      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
       if( !camera.isExternal ) {
         glBindTexture( GL_TEXTURE_2D, crossTexId );
