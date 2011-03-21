@@ -68,10 +68,13 @@ namespace oz
 
     momentum += move * clazz->moveMomentum;
 
-    float height = p.z - dim.z - orbis.terra.height( p.x, p.y );
+    collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - 3.0f ) );
+    float ratio  = 1.0f - collider.hit.ratio;
+    Vec3  normal = collider.hit.normal;
 
-    if( height < 2.0 ) {
-      momentum.z += 10.0f * ( 2.0f - height ) * Timer::TICK_TIME;
+    if( ratio != 0.0f ) {
+      momentum.z += 16.0f * ratio * Timer::TICK_TIME;
+      momentum.z -= min( momentum * normal, 0.0f ) * 100.0f * ratio * Timer::TICK_TIME;
     }
   }
 

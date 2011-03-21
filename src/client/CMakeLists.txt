@@ -19,8 +19,6 @@ add_library( client STATIC
   Context.hpp
   ExplosionModel.cpp
   ExplosionModel.hpp
-  FreeCamProxy.cpp
-  FreeCamProxy.hpp
   Frustum.cpp
   Frustum.hpp
   GameStage.cpp

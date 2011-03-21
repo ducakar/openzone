@@ -88,16 +88,9 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    setFontColour( 0x00, 0x00, 0x00 );
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColour );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
 
-    // flip
-    uint* pixels = reinterpret_cast<uint*>( text->pixels );
-    for( int i = 0; i < text->h / 2; ++i ) {
-      for( int j = 0; j < text->w; ++j ) {
-        swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
-      }
-    }
+    textWidth = text->w;
 
     int x = baseX - text->w / 2;
     int y = baseY - text->h / 2;
@@ -108,23 +101,24 @@ namespace ui
       return;
     }
 
-    shader.use( shader.text );
+    uint textTexId;
+    glGenTextures( 1, &textTexId );
+    glBindTexture( GL_TEXTURE_2D, textTexId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                  text->pixels);
 
-    glRasterPos2i( x + 1, y - 1 );
-    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+    glUniform1i( param.oz_IsTextureEnabled, true );
 
-    // make white
-    int size = text->w * text->h;
-    for( int i = 0; i < size; ++i ) {
-      pixels[i] |= 0x00ffffff;
-    }
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
+    shape.fill( x + 1, y - 1, text->w, text->h );
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.fill( x, y, text->w, text->h );
 
-    glRasterPos2i( x, y );
-    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
+    glUniform1i( param.oz_IsTextureEnabled, false );
 
-    shader.use( shader.ui );
-
-    textWidth = text->w;
+    glDeleteTextures( 1, &textTexId );
     SDL_FreeSurface( text );
   }
 

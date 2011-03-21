@@ -29,14 +29,12 @@ namespace ui
 
   Area::Area( int width_, int height_ ) :
       parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ), flags( 0 ),
-      currentFont( font.sansFont ), fontColour( (SDL_Colour) { 0xff, 0xff, 0xff, 0x00 } ),
-      textWidth( 0 ), textHeight( font.sansHeight )
+      currentFont( font.sansFont ), textWidth( 0 ), textHeight( font.sansHeight )
   {}
 
   Area::Area( int x_, int y_, int width_, int height_ ) :
       parent( null ), x( x_ ), y( y_ ), width( width_ ), height( height_ ), flags( 0 ),
-      currentFont( font.sansFont ), fontColour( (SDL_Colour) { 0xff, 0xff, 0xff, 0x00 } ),
-      textWidth( 0 ), textHeight( font.sansHeight )
+      currentFont( font.sansFont ), textWidth( 0 ), textHeight( font.sansHeight )
   {}
 
   Area::~Area()
@@ -58,13 +56,6 @@ namespace ui
       currentFont = font.titleFont;
       textHeight  = font.titleHeight;
     }
-  }
-
-  void Area::setFontColour( ubyte r, ubyte g, ubyte b )
-  {
-    fontColour.r = r;
-    fontColour.g = g;
-    fontColour.b = b;
   }
 
   void Area::fill( int x, int y, int width, int height ) const
@@ -93,28 +84,26 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColour );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
 
-    // flip
-    uint* pixels = reinterpret_cast<uint*>( text->pixels );
-    for( int i = 0; i < text->h / 2; ++i ) {
-      for( int j = 0; j < text->w; ++j ) {
-        swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
-      }
-    }
+    textWidth = text->w;
 
     x = x < 0 ? this->x + this->width  + x : this->x + x;
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
-    shader.use( translator.shaderIndex( "text" ) );
-
-    glRasterPos2i( x, y );
-    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
-
-    shader.use( shader.ui );
-
-    textWidth = text->w;
+    glBindTexture( GL_TEXTURE_2D, font.textTexId );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                  text->pixels);
     SDL_FreeSurface( text );
+
+    glUniform1i( param.oz_IsTextureEnabled, true );
+
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
+    shape.fill( x + 1, y - 1, text->w, text->h );
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.fill( x, y, text->w, text->h );
+
+    glUniform1i( param.oz_IsTextureEnabled, false );
   }
 
   void Area::printCentred( int baseX, int baseY, const char* s, ... )
@@ -127,28 +116,26 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColour );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
 
-    // flip
-    uint* pixels = reinterpret_cast<uint*>( text->pixels );
-    for( int i = 0; i < text->h / 2; ++i ) {
-      for( int j = 0; j < text->w; ++j ) {
-        swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
-      }
-    }
+    textWidth = text->w;
 
     baseX = baseX < 0 ? this->x + this->width  + baseX : this->x + baseX;
     baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
 
-    shader.use( shader.text );
-
-    glRasterPos2i( baseX - text->w / 2, baseY - text->h / 2 );
-    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
-
-    shader.use( shader.ui );
-
-    textWidth = text->w;
+    glBindTexture( GL_TEXTURE_2D, font.textTexId );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                  text->pixels);
     SDL_FreeSurface( text );
+
+    glUniform1i( param.oz_IsTextureEnabled, true );
+
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
+    shape.fill( baseX - text->w / 2 + 1, baseY - text->h / 2 - 1, text->w, text->h );
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.fill( baseX - text->w / 2, baseY - text->h / 2, text->w, text->h );
+
+    glUniform1i( param.oz_IsTextureEnabled, false );
   }
 
   void Area::printBaseline( int x, int baseY, const char* s, ... )
@@ -161,28 +148,26 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, fontColour );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
 
-    // flip
-    uint* pixels = reinterpret_cast<uint*>( text->pixels );
-    for( int i = 0; i < text->h / 2; ++i ) {
-      for( int j = 0; j < text->w; ++j ) {
-        swap( pixels[i * text->w + j], pixels[( text->h - i - 1 ) * text->w + j] );
-      }
-    }
+    textWidth = text->w;
 
     x     =     x < 0 ? this->x + this->width  + x     : this->x + x;
     baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
 
-    shader.use( shader.text );
-
-    glRasterPos2i( x, baseY - text->h / 2 );
-    glDrawPixels( text->w, text->h, GL_RGBA, GL_UNSIGNED_BYTE, pixels );
-
-    shader.use( shader.ui );
-
-    textWidth = text->w;
+    glBindTexture( GL_TEXTURE_2D, font.textTexId );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                  text->pixels);
     SDL_FreeSurface( text );
+
+    glUniform1i( param.oz_IsTextureEnabled, true );
+
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
+    shape.fill( x + 1, baseY - text->h / 2 - 1, text->w, text->h );
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.fill( x, baseY - text->h / 2, text->w, text->h );
+
+    glUniform1i( param.oz_IsTextureEnabled, false );
   }
 
   void Area::realign( int newX, int newY )

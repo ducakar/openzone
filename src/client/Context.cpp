@@ -52,6 +52,7 @@ namespace client
                               bool wrap, int magFilter, int minFilter )
   {
     hard_assert( glGetError() == GL_NO_ERROR );
+    hard_assert( bytesPerPixel == 3 || bytesPerPixel == 4 );
 
     GLenum sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
     GLenum internalFormat = bytesPerPixel == 4 ?
@@ -61,7 +62,7 @@ namespace client
     uint texId;
     glGenTextures( 1, &texId );
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-    ::glBindTexture( GL_TEXTURE_2D, texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
@@ -129,7 +130,7 @@ namespace client
       log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
       return 0;
     }
-    log.printEnd( " OK" );
+    log.printEnd( " OK, %s", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
@@ -158,7 +159,7 @@ namespace client
 
   void Context::writeTexture( uint id, int nMipmaps, OutputStream* stream )
   {
-    ::glBindTexture( GL_TEXTURE_2D, id );
+    glBindTexture( GL_TEXTURE_2D, id );
 
     int internalFormat, magFilter, minFilter, wrap;
     glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );

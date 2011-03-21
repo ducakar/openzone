@@ -34,7 +34,6 @@ namespace client
       const oz::BSP* bsp;
       DArray<Mesh>   meshes;
       int            flags;
-      int            shaderId;
 
 #ifdef OZ_BUILD_TOOLS
       // prebuild

@@ -27,12 +27,11 @@ namespace oz
 
     public:
 
-      Vec3 crewPos[Vehicle::CREW_MAX];
-      Quat crewRot[Vehicle::CREW_MAX];
+      Vec3  crewPos[Vehicle::CREW_MAX];
+      Quat  crewRot[Vehicle::CREW_MAX];
 
       int   type;
       int   state;
-
       float moveMomentum;
 
       static ObjectClass* init( const String& name, const Config* config );

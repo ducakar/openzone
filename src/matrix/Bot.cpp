@@ -165,7 +165,8 @@ namespace oz
       if( ( state & JUMP_SCHED_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) &&
           grabObj == -1 && stamina >= clazz->staminaJumpDrain )
       {
-        flags &= ~DISABLED_BIT;
+        flags &= ~( DISABLED_BIT | ON_FLOOR_BIT | ON_SLICK_BIT );
+        lower = -1;
         state &= ~GROUNDED_BIT;
         stamina -= clazz->staminaJumpDrain;
 

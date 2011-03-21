@@ -18,7 +18,7 @@ namespace oz
 
   Physics physics;
 
-  const float Physics::CLIP_BACKOFF           = EPSILON;
+  const float Physics::MOVE_BOUNCE            = EPSILON;
   const float Physics::HIT_THRESHOLD          = -2.0f;
   const float Physics::SPLASH_THRESHOLD       = -2.0f;
   const float Physics::FLOOR_NORMAL_Z         = 0.60f;
@@ -91,7 +91,7 @@ namespace oz
       ++traceSplits;
 
       move *= 1.0f - collider.hit.ratio;
-      move -= ( move * collider.hit.normal - CLIP_BACKOFF ) * collider.hit.normal;
+      move -= ( move * collider.hit.normal - MOVE_BOUNCE ) * collider.hit.normal;
     }
     while( true );
 
@@ -160,18 +160,16 @@ namespace oz
         float dy = obj->momentum.y;
         float dv2 = dx*dx + dy*dy;
 
-        if( dv2 > stickVel ) {
-          obj->momentum.x *= 1.0f - friction;
-          obj->momentum.y *= 1.0f - friction;
+        obj->momentum += ( systemMom * obj->floor.z ) * obj->floor;
 
-          obj->momentum += ( systemMom * obj->floor.z ) * obj->floor;
+        if( dv2 > stickVel ) {
+          obj->momentum *= 1.0f - friction;
 
           obj->flags |= Object::FRICTING_BIT;
         }
         else {
           obj->momentum.x = 0.0f;
           obj->momentum.y = 0.0f;
-          obj->momentum.z += systemMom;
 
           if( obj->momentum.z <= 0.0f ) {
             obj->momentum.z = 0.0f;
@@ -326,7 +324,7 @@ namespace oz
       ++traceSplits;
 
       move *= 1.0f - collider.hit.ratio;
-      move -= ( move * collider.hit.normal - CLIP_BACKOFF ) * collider.hit.normal;
+      move -= ( move * collider.hit.normal - MOVE_BOUNCE ) * collider.hit.normal;
 
       // to prevent getting stuck in corners < 90° and to prevent oscillations in corners > 90°
       if( traceSplits == 1 ) {
@@ -336,16 +334,17 @@ namespace oz
         float dot = lastNormals[0] * collider.hit.normal;
 
         if( dot < 0.0f ) {
-          Vec3 out   = collider.hit.normal + lastNormals[0];
-          Vec3 cross = collider.hit.normal ^ lastNormals[0];
+          Vec3 out     = collider.hit.normal + lastNormals[0];
+          Vec3 cross   = collider.hit.normal ^ lastNormals[0];
+          float outLen = !out;
 
           if( cross != Vec3::ZERO ) {
             cross = ~cross;
             move = ( move * cross ) * cross;
             move += out * EPSILON;
           }
-          if( out != Vec3::ZERO ) {
-            out = ~out;
+          if( outLen != 0.0f ) {
+            out /= outLen;
             obj->momentum -= ( obj->momentum * out ) * out;
           }
         }
@@ -357,16 +356,17 @@ namespace oz
           dot = lastNormals[1] * collider.hit.normal;
 
           if( dot < 0.0f ) {
-            Vec3 out   = collider.hit.normal + lastNormals[1];
-            Vec3 cross = collider.hit.normal ^ lastNormals[1];
+            Vec3  out    = collider.hit.normal + lastNormals[1];
+            Vec3  cross  = collider.hit.normal ^ lastNormals[1];
+            float outLen = !out;
 
             if( cross != Vec3::ZERO ) {
               cross = ~cross;
               move = ( move * cross ) * cross;
               move += out * EPSILON;
             }
-            if( out != Vec3::ZERO ) {
-              out = ~out;
+            if( outLen != 0.0f ) {
+              out /= outLen;
               obj->momentum -= ( obj->momentum * out ) * out;
             }
           }

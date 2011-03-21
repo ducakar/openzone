@@ -22,12 +22,14 @@ namespace oz
 namespace client
 {
 
-  const float StrategicProxy::MIN_HEIGHT     = 5.00f;
-  const float StrategicProxy::MAX_HEIGHT     = 50.0f;
-  const float StrategicProxy::DEFAULT_HEIGHT = 15.0f;
-  const float StrategicProxy::LOW_SPEED      = 0.25f;
-  const float StrategicProxy::HIGH_SPEED     = 0.75f;
-  const float StrategicProxy::ZOOM_FACTOR    = 0.15f;
+  const float StrategicProxy::MIN_HEIGHT      = 5.00f;
+  const float StrategicProxy::MAX_HEIGHT      = 50.0f;
+  const float StrategicProxy::DEFAULT_HEIGHT  = 15.0f;
+  const float StrategicProxy::FREE_LOW_SPEED  = 0.04f;
+  const float StrategicProxy::FREE_HIGH_SPEED = 0.50f;
+  const float StrategicProxy::RTS_LOW_SPEED   = 0.25f;
+  const float StrategicProxy::RTS_HIGH_SPEED  = 0.75f;
+  const float StrategicProxy::ZOOM_FACTOR     = 0.15f;
 
   void StrategicProxy::begin()
   {
@@ -42,6 +44,17 @@ namespace client
 
   void StrategicProxy::update()
   {
+    if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
+      isFree = !isFree;
+    }
+    if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
+      ui::mouse.doShow = !ui::mouse.doShow;
+    }
+
+    if( !isFree ) {
+      ui::mouse.doShow = true;
+    }
+
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
       if( ui::ui.strategic->tagged.length() == 1 ) {
         Object* tagged = orbis.objects[ ui::ui.strategic->tagged.first() ];
@@ -74,57 +87,85 @@ namespace client
   {
     camera.align();
 
-    Vec3   up = Vec3( -camera.right.y, camera.right.x, 0.0f );
-    Point3 p  = camera.newP;
+    Point3 p = camera.newP;
 
-    if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
-      fastMove = !fastMove;
+    if( isFree ) {
+      // free camera mode
+      if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
+        isFreeFast = !isFreeFast;
+      }
+
+      float speed = isFreeFast ? FREE_HIGH_SPEED : FREE_LOW_SPEED;
+
+      if( ui::keyboard.keys[SDLK_w] ) {
+        p += camera.at * speed;
+      }
+      if( ui::keyboard.keys[SDLK_s] ) {
+        p -= camera.at * speed;
+      }
+      if( ui::keyboard.keys[SDLK_d] ) {
+        p += camera.right * speed;
+      }
+      if( ui::keyboard.keys[SDLK_a] ) {
+        p -= camera.right * speed;
+      }
+      if( ui::keyboard.keys[SDLK_SPACE] ) {
+        p.z += speed;
+      }
+      if( ui::keyboard.keys[SDLK_LCTRL] ) {
+        p.z -= speed;
+      }
+    }
+    else {
+      // RTS camera mode
+      if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
+        isRTSFast = !isRTSFast;
+      }
+
+      Vec3  up = Vec3( -camera.right.y, camera.right.x, 0.0f );
+      float logHeight = Math::log( height );
+      float speed = ( isRTSFast ? RTS_HIGH_SPEED : RTS_LOW_SPEED ) * logHeight;
+
+      if( ui::keyboard.keys[SDLK_w] ) {
+        p += up * speed;
+      }
+      if( ui::keyboard.keys[SDLK_s] ) {
+        p -= up * speed;
+      }
+      if( ui::keyboard.keys[SDLK_d] ) {
+        p += camera.right * speed;
+      }
+      if( ui::keyboard.keys[SDLK_a] ) {
+        p -= camera.right * speed;
+      }
+      if( ui::keyboard.keys[SDLK_SPACE] ) {
+        height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
+      }
+      if( ui::keyboard.keys[SDLK_LCTRL] ) {
+        height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
+      }
+      if( ui::mouse.wheelDown ) {
+        float wheelFactor = float( ui::mouse.relZ ) * 10.0f;
+
+        height = min( MAX_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
+      }
+      if( ui::mouse.wheelUp ) {
+        float wheelFactor = float( ui::mouse.relZ ) * 10.0f;
+
+        height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
+      }
+
+      p.z = max( 0.0f, orbis.terra.height( p.x, p.y ) ) + height;
     }
 
-    float logHeight = Math::log( height );
-    float speed = ( fastMove ? HIGH_SPEED : LOW_SPEED ) * logHeight;
-
-    if( ui::keyboard.keys[SDLK_w] ) {
-      p += up * speed;
-    }
-    if( ui::keyboard.keys[SDLK_s] ) {
-      p -= up * speed;
-    }
-    if( ui::keyboard.keys[SDLK_d] ) {
-      p += camera.right * speed;
-    }
-    if( ui::keyboard.keys[SDLK_a] ) {
-      p -= camera.right * speed;
-    }
-    if( ui::keyboard.keys[SDLK_SPACE] ) {
-      height = min( MAX_HEIGHT, height + logHeight * ZOOM_FACTOR );
-    }
-    if( ui::keyboard.keys[SDLK_LCTRL] ) {
-      height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR );
-    }
-    if( ui::mouse.wheelDown ) {
-      float wheelFactor = float( ui::mouse.relZ ) * 10.0f;
-
-      height = min( MAX_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
-    }
-    if( ui::mouse.wheelUp ) {
-      float wheelFactor = float( ui::mouse.relZ ) * 10.0f;
-
-      height = max( MIN_HEIGHT, height - logHeight * ZOOM_FACTOR * wheelFactor );
-    }
-
-    if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
-      ui::mouse.doShow = false;
-      camera.setState( Camera::FREECAM );
-    }
-
-    p.z = max( 0.0f, orbis.terra.height( p.x, p.y ) ) + height;
     camera.move( p );
   }
 
   void StrategicProxy::init()
   {
-    fastMove = false;
+    isFree     = false;
+    isFreeFast = true;
+    isRTSFast  = false;
   }
 
 }

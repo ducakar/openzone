@@ -14,6 +14,11 @@
 #include "matrix/Vehicle.hpp"
 #include "matrix/Translator.hpp"
 
+#define OZ_CLASS_SET_STATE( stateBit, varName, defValue ) \
+  if( config->get( varName, defValue ) ) { \
+    clazz->state |= stateBit; \
+  }
+
 namespace oz
 {
 
@@ -93,6 +98,10 @@ namespace oz
     else {
       throw Exception( "Invalid vehicle type, should be either WHEELED, TRACKED, HOVER or AIR" );
     }
+
+    clazz->state = 0;
+
+    OZ_CLASS_SET_STATE( Vehicle::CREW_VISIBLE_BIT, "state.crewVisible", true );
 
     clazz->crewPos[Vehicle::PILOT] = Vec3( config->get( "crew.pilot.pos.x", 0.0f ),
                                            config->get( "crew.pilot.pos.y", 0.0f ),

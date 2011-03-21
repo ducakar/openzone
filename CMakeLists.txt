@@ -33,10 +33,12 @@ if( NOT OZ_CLIENT_CONFIG_FILE )
 endif( NOT OZ_CLIENT_CONFIG_FILE )
 
 if( NOT OZ_DEFAULT_DATA_DIR )
-  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
+#   set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
+  set( OZ_DEFAULT_DATA_DIR "data" CACHE STRING "" FORCE )
 endif( NOT OZ_DEFAULT_DATA_DIR )
 
 option( OZ_NETWORKING "Enable networking" OFF )
+option( OZ_VERTEX_TEXTURE "Enable use of vertex texture fetch (works on GeForce 6+, but not on Radeon)" ON )
 
 option( OZ_BUILD_TESTS "Build tests" ON )
 option( OZ_BUILD_TOOLS "Build tools" ON )

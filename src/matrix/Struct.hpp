@@ -36,10 +36,8 @@ namespace oz
           {
             CLOSED,
             OPENING,
-            OPENING_BLOCKED,
             OPENED,
             CLOSING,
-            CLOSING_BLOCKED
           };
 
           Vec3              offset;

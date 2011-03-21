@@ -23,7 +23,8 @@ void main()
 
   exTexCoord    = inTexCoord;
   exDistance    = length( toCamera );
-  exColour      = skyLightColour( normal );
-  exColour      *= specularColour( normalize( normal ), toCamera / exDistance );
+  exColour      = oz_Colour;
+  exColour      *= skyLightColour( normal );
+  exColour      *= specularColour( normal, toCamera / exDistance );
   gl_Position   = oz_Transform.complete * vec4( inPosition, 1.0 );
 }

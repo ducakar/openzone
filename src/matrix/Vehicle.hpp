@@ -42,6 +42,8 @@ namespace oz
         CREW_MAX
       };
 
+      static const int   CREW_VISIBLE_BIT       = 0x00000001;
+
       static const float EJECT_MOVE;
       static const float EJECT_MOMENTUM;
 

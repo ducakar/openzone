@@ -166,9 +166,12 @@ namespace client
     public:
 
       int  ui;
-      int  text;
+      int  mesh;
+      int  bigMesh;
 
       Vec4 colour;
+
+      bool isInWater;
 
       void use( int id );
       void push();

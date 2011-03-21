@@ -194,7 +194,8 @@ namespace client
           switch( part.mode ) {
             case GL_TRIANGLE_STRIP: {
               // reset triangle strip
-              destPart->indices.add( destPart->indices.last() );
+              int last = destPart->indices.last();
+              destPart->indices.add( last );
               destPart->indices.add( part.indices.first() );
               break;
             }

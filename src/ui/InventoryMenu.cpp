@@ -103,7 +103,7 @@ namespace ui
 
     // set shaders
     for( int i = 0; i < translator.shaders.length(); ++i ) {
-      if( i == shader.ui || i == shader.text ) {
+      if( i == shader.ui ) {
         continue;
       }
 
@@ -145,8 +145,8 @@ namespace ui
       }
 
       tf.push();
-      tf.model.rotateX( Math::rad( -70.0f ) );
-      tf.model.rotateZ( Math::rad( +20.0f ) );
+      tf.model.rotateX( Math::rad( -60.0f ) );
+      tf.model.rotateZ( Math::rad( +70.0f ) );
       tf.model.scale( Vec3( scale, scale, scale ) );
 
       if( i == tagged ) {
@@ -185,8 +185,11 @@ namespace ui
 
       if( taggedItem->flags & Object::USE_FUNC_BIT ) {
         glUniform1i( param.oz_IsTextureEnabled, true );
+        glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
         glBindTexture( GL_TEXTURE_2D, useTexId );
+
         shape.fill( x + width - ICON_SIZE - 4, y + 4, ICON_SIZE, ICON_SIZE );
+
         glUniform1i( param.oz_IsTextureEnabled, false );
       }
 

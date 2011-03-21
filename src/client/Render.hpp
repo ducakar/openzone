@@ -91,7 +91,6 @@ namespace client
       bool                    showBounds;
       bool                    showAim;
 
-      bool                    isUnderWater;
       float                   visibility;
 
       float                   windFactor;

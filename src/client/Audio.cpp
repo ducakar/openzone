@@ -21,8 +21,6 @@ namespace oz
 namespace client
 {
 
-  const float Audio::REFERENCE_DISTANCE = 4.0f;
-
   void Audio::playSound( int sample, float volume, const Object* obj ) const
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
@@ -36,7 +34,6 @@ namespace client
     }
 
     alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
-    alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
 
     // If the object moves since source starts playing and source stands still, it's usually
     // not noticeable for short-time source. After all, sound source many times does't move
@@ -77,7 +74,6 @@ namespace client
 
       alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
       alSourcei( srcId, AL_LOOPING, AL_TRUE );
-      alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
       alSourcefv( srcId, AL_POSITION, obj->p );
       alSourcef( srcId, AL_GAIN, volume );
       alSourcePlay( srcId );

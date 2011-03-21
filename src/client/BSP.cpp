@@ -27,10 +27,11 @@ namespace client
 {
 
 #ifdef OZ_BUILD_TOOLS
-  static const int QBSP_SLICK_BIT    = 0x00000002;
-  static const int QBSP_LADDER_BIT   = 0x00000008;
-  static const int QBSP_WATER_BIT    = 0x00000020;
-  static const int QBSP_NONSOLID_BIT = 0x00004000;
+  static const int QBSP_SLICK_FLAG_BIT    = 0x00000002;
+  static const int QBSP_LADDER_FLAG_BIT   = 0x00000008;
+  static const int QBSP_GLASS_FLAG_BIT    = 0x00000020;
+  static const int QBSP_NONSOLID_FLAG_BIT = 0x00004000;
+  static const int QBSP_WATER_TYPE_BIT    = 0x00000020;
 
   struct QBSPHeader
   {
@@ -122,7 +123,6 @@ namespace client
   static int    nVertices;
   static int    nIndices;
   static int    nFaces;
-  static String shaderName;
 
   static DArray<QBSPTexture> textures;
   static DArray<QBSPModel>   models;
@@ -143,8 +143,8 @@ namespace client
     float scale = bspConfig.get( "scale", 0.01f );
     float maxDim = bspConfig.get( "maxDim", Math::INF );
 
-    shaderName = bspConfig.get( "shader", "bsp" );
-    translator.shaderIndex( shaderName );
+    translator.shaderIndex( "mesh" );
+    translator.shaderIndex( "bigMesh" );
 
     if( Math::isNaN( scale ) ) {
       throw Exception( "BSP scale is NaN" );
@@ -305,7 +305,7 @@ namespace client
         String name = texture.name;
 
         if( name.length() <= 12 || name.equals( "textures/NULL" ) ||
-            ( texture.flags & QBSP_LADDER_BIT ) )
+            ( texture.flags & QBSP_LADDER_FLAG_BIT ) )
         {
           name = "";
         }
@@ -313,14 +313,19 @@ namespace client
           name = name.substring( 12 );
         }
 
-        if( texture.type & QBSP_WATER_BIT ) {
+        if( texture.type & QBSP_WATER_TYPE_BIT ) {
           compiler.material( GL_DIFFUSE, 0.75f );
+          compiler.material( GL_SPECULAR, 0.5f );
+          flags |= Mesh::ALPHA_BIT;
+        }
+        else if( texture.flags & QBSP_GLASS_FLAG_BIT ) {
+          compiler.material( GL_DIFFUSE, 0.25f );
           compiler.material( GL_SPECULAR, 2.0f );
           flags |= Mesh::ALPHA_BIT;
         }
         else {
           compiler.material( GL_DIFFUSE, 1.0f );
-          compiler.material( GL_SPECULAR, 0.3f );
+          compiler.material( GL_SPECULAR, 0.2f );
           flags |= Mesh::SOLID_BIT;
         }
 
@@ -335,7 +340,7 @@ namespace client
           compiler.vertex( vertex.p );
         }
 
-        if( texture.type & QBSP_WATER_BIT ) {
+        if( texture.type & QBSP_WATER_TYPE_BIT ) {
           for( int k = face.nIndices - 1; k >= 0; --k ) {
             const QBSPVertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
 
@@ -357,7 +362,6 @@ namespace client
     OutputStream os = buffer.outputStream();
 
     os.writeInt( flags );
-    os.writeString( shaderName );
     os.writeInt( nModels );
 
     foreach( mesh, meshes.citer() ) {
@@ -390,7 +394,6 @@ namespace client
     p = entity->str->toAbsoluteCS( p );
 
     alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
-    alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
 
     alSourcefv( srcId, AL_POSITION, p );
     alSourcePlay( srcId );
@@ -463,7 +466,6 @@ namespace client
     InputStream is = buffer.inputStream();
 
     flags = is.readInt();
-    shaderId = translator.shaderIndex( is.readString() );
 
     int nMeshes = is.readInt();
 
@@ -495,8 +497,7 @@ namespace client
       return;
     }
 
-    shader.use( shaderId );
-    glUniform4fv( param.oz_Colour, 1, shader.colour );
+    shader.use( shader.isInWater ? shader.mesh : shader.bigMesh );
 
     for( int i = 0; i < meshes.length(); ++i ) {
       const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;

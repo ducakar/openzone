@@ -24,7 +24,6 @@ namespace client
 
   Camera camera;
 
-  FreeCamProxy   Camera::freeCamProxy;
   StrategicProxy Camera::strategicProxy;
   BotProxy       Camera::botProxy;
 
@@ -66,16 +65,13 @@ namespace client
     vertPlane  = aspect * horizPlane;
 
     String sDefaultState = config.getSet( "camera.defaultState", "STRATEGIC" );
-    if( sDefaultState.equals( "FREECAM" ) ) {
-      defaultState = FREECAM;
-    }
-    else if( sDefaultState.equals( "STRATEGIC" ) ) {
+    if( sDefaultState.equals( "STRATEGIC" ) ) {
       defaultState = STRATEGIC;
     }
     else {
-      log.println( "WARNING: invalid camera enum %s, must be either FREECAM or STRATEGIC",
+      log.println( "WARNING: invalid camera enum %s, must be STRATEGIC",
                    sDefaultState.cstr() );
-      defaultState = FREECAM;
+      defaultState = STRATEGIC;
     }
 
     p            = Point3::ORIGIN;
@@ -100,7 +96,6 @@ namespace client
     bot          = -1;
     botObj       = null;
 
-    freeCamProxy.init();
     strategicProxy.init();
     botProxy.init();
 
@@ -135,10 +130,6 @@ namespace client
 
     if( newState != state ) {
       switch( newState ) {
-        case FREECAM: {
-          proxy = &freeCamProxy;
-          break;
-        }
         case STRATEGIC: {
           proxy = &strategicProxy;
           break;

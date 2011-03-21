@@ -13,8 +13,8 @@ in vec3 inNormal;
 
 out vec3  exPosition;
 out vec2  exTexCoord;
-out vec4  exColour;
 out float exDistance;
+out vec4  exColour;
 
 void main()
 {
@@ -26,8 +26,9 @@ void main()
 
   exPosition    = position;
   exTexCoord    = inTexCoord;
-  exColour      = skyLightColour( normal );
-  exColour      *= specularColour( normal, normalize( toCamera ) );
   exDistance    = length( toCamera );
+  exColour      = vec4( 1.0, 1.0, 1.0, 0.75 );
+  exColour      *= skyLightColour( normal );
+  exColour      *= specularColour( normal, toCamera / exDistance );
   gl_Position   = oz_Transform.complete * localPos;
 }

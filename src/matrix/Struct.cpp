@@ -60,8 +60,7 @@ namespace oz
         }
         break;
       }
-      case OPENING:
-      case OPENING_BLOCKED: {
+      case OPENING: {
         ratio += model->ratioInc;
         time += Timer::TICK_TIME;
 
@@ -83,8 +82,7 @@ namespace oz
         }
         break;
       }
-      case CLOSING:
-      case CLOSING_BLOCKED: {
+      case CLOSING: {
         ratio -= model->ratioInc;
         time += Timer::TICK_TIME;
 
@@ -116,8 +114,7 @@ namespace oz
         }
         break;
       }
-      case OPENING:
-      case OPENING_BLOCKED: {
+      case OPENING: {
         Vec3 oldOffset = offset;
         float oldRatio = ratio;
 
@@ -127,7 +124,10 @@ namespace oz
         if( collider.overlapsOO( this ) ) {
           ratio = oldRatio;
           offset = oldOffset;
-          break;
+
+          if( ratio == 0.0f ) {
+            state = CLOSED;
+          }
         }
         else {
           if( ratio == 1.0f ) {
@@ -160,17 +160,20 @@ namespace oz
         }
         break;
       }
-      case CLOSING:
-      case CLOSING_BLOCKED: {
-        Vec3 oldOffset = offset;
+      case CLOSING: {
         float oldRatio = ratio;
+        Vec3 oldOffset = offset;
 
         ratio = max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
 
         if( collider.overlapsOO( this ) ) {
           ratio = oldRatio;
-          offset = ratio * model->move;
+          offset = oldOffset;
+
+          if( ratio == 0.0f ) {
+            state = OPENED;
+          }
         }
         else {
           if( ratio == 0.0f ) {
@@ -213,10 +216,9 @@ namespace oz
         }
         break;
       }
-      case OPENING:
-      case OPENING_BLOCKED: {
-        Vec3 oldOffset = offset;
+      case OPENING: {
         float oldRatio = ratio;
+        Vec3 oldOffset = offset;
 
         ratio = min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
@@ -241,8 +243,12 @@ namespace oz
             }
           }
 
-          offset = oldOffset;
           ratio = oldRatio;
+          offset = oldOffset;
+
+          if( ratio == 0.0f ) {
+            state = CLOSED;
+          }
         }
         else {
           if( ratio == 1.0f ) {
@@ -278,10 +284,9 @@ namespace oz
         }
         break;
       }
-      case CLOSING:
-      case CLOSING_BLOCKED: {
-        Vec3 oldOffset = offset;
+      case CLOSING: {
         float oldRatio = ratio;
+        Vec3 oldOffset = offset;
 
         ratio = max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
@@ -306,8 +311,12 @@ namespace oz
             }
           }
 
-          offset = oldOffset;
           ratio = oldRatio;
+          offset = oldOffset;
+
+          if( ratio == 0.0f ) {
+            state = OPENED;
+          }
         }
         else {
           if( ratio == 0.0f ) {
@@ -353,8 +362,7 @@ namespace oz
         }
         break;
       }
-      case OPENING:
-      case OPENING_BLOCKED: {
+      case OPENING: {
         ratio = min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
 
@@ -397,8 +405,7 @@ namespace oz
         }
         break;
       }
-      case CLOSING:
-      case CLOSING_BLOCKED: {
+      case CLOSING: {
         ratio = max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
 
