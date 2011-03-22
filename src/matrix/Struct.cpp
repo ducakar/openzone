@@ -377,7 +377,7 @@ namespace oz
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
-              collider.translate( *dyn, move, dyn );
+              collider.translate( dyn, move );
 
               if( collider.hit.ratio == 1.0f ) {
                 dyn->p += move;
@@ -420,7 +420,7 @@ namespace oz
             Dynamic* dyn = static_cast<Dynamic*>( *obj );
 
             if( dyn->flags & Object::DYNAMIC_BIT ) {
-              collider.translate( *dyn, move, dyn );
+              collider.translate( dyn, move );
 
               if( collider.hit.ratio == 1.0f ) {
                 dyn->p += move;

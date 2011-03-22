@@ -22,7 +22,7 @@ function spawnGoblin( l )
   ozOrbisAddObj( "Goblin", x, y, z + 2.0 )
 end
 
-function Explosion_onUpdate( l )
+function BigExplosion_onUpdate( l )
   if l.ticks then
     l.ticks = l.ticks - 1
 
@@ -56,6 +56,40 @@ function Explosion_onUpdate( l )
   end
 end
 
+function SmallExplosion_onUpdate( l )
+  if l.ticks then
+    l.ticks = l.ticks - 1
+
+    if l.ticks == 0 then
+      ozOrbisRemoveObj()
+    end
+  else
+    l.ticks = 50
+
+    local distance
+    local dirX, dirY, dirZ
+
+    ozSelfBindAllOverlaps( 8, 8, 8 )
+    while ozStrBindNext() do
+      ozStrDamage( 500 )
+    end
+    while ozObjBindNext() do
+      if not ozObjIsSelf() then
+        distance = ozObjDistanceFromSelf()
+        if distance < 8 then
+          distance = 8 - distance
+          ozObjDamage( distance*distance )
+
+          if distance < 8 and ozObjIsDynamic() then
+            dirX, dirY, dirZ = ozObjDirectionFromSelf()
+            ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
+          end
+        end
+      end
+    end
+  end
+end
+
 function Bomb_onUse( l )
   if l.time then
     l.time = nil
@@ -75,7 +109,11 @@ function Bomb_onUpdate( l )
 end
 
 function Bomb_onDestroy( l )
-  ozOrbisForceAddObj( "Explosion", ozObjGetPos() )
+  ozOrbisForceAddObj( "BigExplosion", ozObjGetPos() )
+end
+
+function Rocket_onDestroy( l )
+  ozOrbisForceAddObj( "SmallExplosion", ozObjGetPos() );
 end
 
 function Rifle_onShot( l )
@@ -89,6 +127,18 @@ function Rifle_onShot( l )
 
   ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
 		  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
+end
+
+function Tank_onShot0( l )
+  local pX, pY, pZ = ozObjGetPos()
+  ozObjBindUser();
+  local vX, vY, vZ = ozBotGetDir()
+  local dX, dY, dZ = 3 - math.random() * 6,
+                     3 - math.random() * 6,
+                     3 - math.random() * 6
+
+  ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
+                  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
 end
 
 function Axe_onShot( l )

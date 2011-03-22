@@ -1,15 +1,16 @@
 base "Object"
-dim.x "3.99"
-dim.y "3.99"
-dim.z "3.99"
+
+dim.x "1.99"
+dim.y "1.99"
+dim.z "1.99"
 
 flag.destroyFunc "false"
 flag.solid       "false"
 flag.wideCull    "true"
 
-life "1000.0f"
+life "INFINITY"
 
-onUpdate  "Explosion_onUpdate"
+onUpdate  "SmallExplosion_onUpdate"
 
 modelType "Explosion"
 
@@ -20,3 +21,4 @@ audioSample02                   ""                              # damage
 audioSample03                   ""                              # hit
 audioSample04                   ""                              # splash
 audioSample05                   ""                              # friction
+audioSample06                   ""                              # use

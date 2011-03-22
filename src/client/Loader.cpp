@@ -122,7 +122,6 @@ namespace client
         src->isUpdated = false;
       }
       else {
-        alSourceStop( src->source );
         alDeleteSources( 1, &src->source );
         context.contSources.exclude( key );
       }

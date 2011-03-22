@@ -16,6 +16,6 @@ void main()
   outColour = oz_Colour;
 
   if( oz_IsTextureEnabled ) {
-    outColour *= texture2D( oz_Textures[0], exTexCoord );
+    outColour *= texture( oz_Textures[0], exTexCoord );
   }
 }

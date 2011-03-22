@@ -92,7 +92,6 @@ namespace client
       Resource<uint>*                   textures;
       Resource<uint>*                   sounds;
 
-      ContSource*                       cachedSource;
       List<Source>                      sources;
       HashIndex<ContSource, 256>        contSources;
 

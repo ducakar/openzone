@@ -27,12 +27,21 @@ namespace oz
 
     public:
 
-      Vec3  crewPos[Vehicle::CREW_MAX];
-      Quat  crewRot[Vehicle::CREW_MAX];
+      int    type;
+      int    state;
 
-      int   type;
-      int   state;
-      float moveMomentum;
+      String onShot[Vehicle::WEAPONS_MAX];
+      int    nShots[Vehicle::WEAPONS_MAX];
+      float  shotInterval[Vehicle::WEAPONS_MAX];
+
+      Vec3   crewPos[Vehicle::CREW_MAX];
+      Quat   crewRot[Vehicle::CREW_MAX];
+
+      float  moveMomentum;
+
+      float  hoverHeight;
+      float  hoverHeightStiffness;
+      float  hoverMomentumStiffness;
 
       static ObjectClass* init( const String& name, const Config* config );
 

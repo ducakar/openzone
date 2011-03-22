@@ -4,6 +4,8 @@ dim.x "0.3"
 dim.y "0.3"
 dim.z "0.3"
 
+flag.cylinder "false"
+
 life "50.0f"
 
 mass "20.0"
@@ -23,3 +25,4 @@ audioSample02                   "hit_wood1"                     # damage
 audioSample03                   "hit_wood1"                     # hit
 audioSample04                   "splash1"                       # splash
 audioSample05                   ""                              # friction
+audioSample06                   ""                              # use

@@ -47,8 +47,10 @@ namespace client
       alSourcefv( srcId, AL_POSITION, Vec3::ZERO );
     }
     else {
+      alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
       alSourcefv( srcId, AL_POSITION, obj->p );
     }
+
     alSourcef( srcId, AL_GAIN, volume );
     alSourcePlay( srcId );
 
@@ -74,6 +76,7 @@ namespace client
 
       alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
       alSourcei( srcId, AL_LOOPING, AL_TRUE );
+      alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
       alSourcefv( srcId, AL_POSITION, obj->p );
       alSourcef( srcId, AL_GAIN, volume );
       alSourcePlay( srcId );
@@ -81,9 +84,8 @@ namespace client
       context.contSources.add( obj->index, Context::ContSource( srcId ) );
     }
     else {
-      alSourcef( contSource->source, AL_GAIN, volume );
       alSourcefv( contSource->source, AL_POSITION, obj->p );
-
+      alSourcef( contSource->source, AL_GAIN, volume );
       contSource->isUpdated = true;
     }
 

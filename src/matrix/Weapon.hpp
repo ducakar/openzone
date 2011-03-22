@@ -23,7 +23,6 @@ namespace oz
 
       virtual void onUpdate();
       virtual void onUse( Bot* user );
-      virtual void onShot( Bot* user );
 
     public:
 

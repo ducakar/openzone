@@ -22,11 +22,11 @@ namespace oz
 
   void ObjectClass::fillCommon( ObjectClass* clazz, const Config* config )
   {
-    clazz->onDestroy            = config->get( "onDestroy", "" );
-    clazz->onDamage             = config->get( "onDamage", "" );
-    clazz->onHit                = config->get( "onHit", "" );
-    clazz->onUse                = config->get( "onUse", "" );
-    clazz->onUpdate             = config->get( "onUpdate", "" );
+    clazz->onDestroy = config->get( "onDestroy", "" );
+    clazz->onDamage  = config->get( "onDamage", "" );
+    clazz->onHit     = config->get( "onHit", "" );
+    clazz->onUse     = config->get( "onUse", "" );
+    clazz->onUpdate  = config->get( "onUpdate", "" );
 
     if( !String::isEmpty( clazz->onDestroy ) ) {
       clazz->flags |= Object::LUA_BIT | Object::DESTROY_FUNC_BIT;
@@ -69,7 +69,7 @@ namespace oz
       }
     }
 
-    clazz->modelType            = config->get( "modelType", "" );
+    clazz->modelType = config->get( "modelType", "" );
 
     if( !clazz->modelType.isEmpty() ) {
       clazz->flags |= Object::MODEL_BIT;
@@ -81,7 +81,7 @@ namespace oz
       clazz->modelIndex = -1;
     }
 
-    clazz->audioType            = config->get( "audioType", "" );
+    clazz->audioType = config->get( "audioType", "" );
 
     if( !clazz->audioType.isEmpty() ) {
       clazz->flags |= Object::AUDIO_BIT;
@@ -90,8 +90,8 @@ namespace oz
       for( int i = 0; i < AUDIO_SAMPLES; ++i ) {
         hard_assert( i < 100 );
 
-        buffer[ sizeof buffer - 3 ] = char( '0' + ( i / 10 ) );
-        buffer[ sizeof buffer - 2 ] = char( '0' + ( i % 10 ) );
+        buffer[11] = char( '0' + ( i / 10 ) );
+        buffer[12] = char( '0' + ( i % 10 ) );
 
         const char* sampleName = config->get( buffer, "" );
         clazz->audioSamples[i] = sampleName[0] == '\0' ? -1 : translator.soundIndex( sampleName );
@@ -130,7 +130,7 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",       false );
     OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.updateFunc",    false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",         true  );
-    OZ_CLASS_SET_FLAG( Object::DETECT_BIT,         "flag.detect",        true  );
+    OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",      true  );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",      false );
     OZ_CLASS_SET_FLAG( Object::RANDOM_HEADING_BIT, "flag.randomHeading", false );

@@ -1,13 +1,14 @@
+/openzone.kdev4
+/.kdev4
+
 /.project
 /.cproject
 /.settings
 
-/openzone.kdev4
-/.kdev4
-
 /Linux-*
 /MinGW-*
 /Windows-*
+/mingw32
 
 /doxygen
 /tags

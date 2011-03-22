@@ -40,6 +40,24 @@ namespace oz
   //*         STATIC AABB CD          *
   //***********************************
 
+  // checks if AABB and Object overlap
+  bool Collider::overlapsAABBObj( const Object* sObj ) const
+  {
+    if( flags & sObj->flags & Object::CYLINDER_BIT ) {
+      Vec3  relPos  = aabb.p - sObj->p;
+      Vec3  sumDim  = aabb.dim + sObj->dim;
+      float distXY2 = relPos.x*relPos.x + relPos.y*relPos.y;
+      float radius2 = sumDim.x*sumDim.y + 2.0f * EPSILON;
+
+      return distXY2 <= radius2 &&
+          relPos.z <= +sumDim.z + EPSILON &&
+          relPos.z >= -sumDim.z - EPSILON;
+    }
+    else {
+      return sObj->overlaps( aabb, EPSILON );
+    }
+  }
+
   // checks if AABB and Brush overlap
   bool Collider::overlapsAABBBrush( const BSP::Brush* brush ) const
   {
@@ -161,7 +179,7 @@ namespace oz
         }
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
             return true;
           }
         }
@@ -182,7 +200,7 @@ namespace oz
         const Cell& cell = orbis.cells[x][y];
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
             return true;
           }
         }
@@ -222,7 +240,7 @@ namespace oz
         }
 
         foreach( sObj, cell.objects.citer() ) {
-          if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( aabb, EPSILON ) ) {
+          if( sObj != exclObj && ( sObj->flags & mask ) && overlapsAABBObj( sObj ) ) {
             return true;
           }
         }
@@ -295,19 +313,55 @@ namespace oz
   // finds out if AABB-AABB collision occurs and the time when it occurs
   void Collider::trimAABBObj( const Object* sObj )
   {
-    float minRatio = -1.0f;
-    float maxRatio =  1.0f;
-    const Vec3* lastNormal = null;
+    float minRatio    = -1.0f;
+    float maxRatio    =  1.0f;
+    Vec3  lastNormal;
 
-    for( int i = 0; i < 3; ++i ) {
-      float relStartPos = startPos[i] - sObj->p[i];
-      float relEndPos   = endPos[i]   - sObj->p[i];
-      float dim         = aabb.dim[i] + sObj->dim[i];
+    Vec3  relStartPos = startPos - sObj->p;
+    Vec3  relEndPos   = endPos   - sObj->p;
+    Vec3  sumDim      = aabb.dim + sObj->dim;
 
+    int   firstPlane  = 0;
+
+    if( flags & sObj->flags & Object::CYLINDER_BIT ) {
+      float radius2 = sumDim.x*sumDim.y + 2.0f * EPSILON;
+
+      float rx = relStartPos.x;
+      float ry = relStartPos.y;
+      float sx = move.x;
+      float sy = move.y;
+
+      float startDist = rx*rx + ry*ry - radius2;
+
+      if( startDist >= 0.0f ) {
+        float sx2_sy2      = sx*sx + sy*sy;
+        float rxsx_rysy    = rx*sx + ry*sy;
+        float rxsy_rysx    = rx*sy - ry*sx;
+        float discriminant = radius2 * sx2_sy2 - rxsy_rysx*rxsy_rysx;
+
+        if( discriminant >= 0.0f ) {
+          float sqrt_discr = Math::sqrt( discriminant );
+          float t0         = ( -rxsx_rysy - sqrt_discr ) / sx2_sy2;
+          float t1         = ( -rxsx_rysy + sqrt_discr ) / sx2_sy2;
+
+          minRatio = max( minRatio, t0 - EPSILON );
+          maxRatio = min( maxRatio, t1 );
+
+          lastNormal = ~Vec3( rx + t0 * sx, ry + t0 * sy, 0.0f );
+        }
+        else {
+          return;
+        }
+      }
+
+      firstPlane = 2;
+    }
+
+    for( int i = firstPlane; i < 3; ++i ) {
       float startDist, endDist;
 
-      startDist = +relStartPos - dim;
-      endDist   = +relEndPos   - dim;
+      startDist = +relStartPos[i] - sumDim[i];
+      endDist   = +relEndPos[i]   - sumDim[i];
 
       if( endDist > EPSILON ) {
         if( startDist < 0.0f ) {
@@ -322,12 +376,12 @@ namespace oz
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
-          lastNormal = &normals[2*i];
+          lastNormal = normals[2*i];
         }
       }
 
-      startDist = -relStartPos - dim;
-      endDist   = -relEndPos   - dim;
+      startDist = -relStartPos[i] - sumDim[i];
+      endDist   = -relEndPos[i]   - sumDim[i];
 
       if( endDist > EPSILON ) {
         if( startDist < 0.0f ) {
@@ -342,13 +396,14 @@ namespace oz
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
-          lastNormal = &normals[2*i + 1];
+          lastNormal = normals[2*i + 1];
         }
       }
     }
+
     if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
       hit.ratio    = max( 0.0f, minRatio );
-      hit.normal   = *lastNormal;
+      hit.normal   = lastNormal;
       hit.obj      = sObj;
       hit.str      = null;
       hit.entity   = null;
@@ -361,7 +416,7 @@ namespace oz
   {
     float minRatio = -1.0f;
     float maxRatio =  1.0f;
-    const Vec3* lastNormal = null;
+    Vec3  lastNormal;
 
     for( int i = 0; i < brush->nSides; ++i ) {
       const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
@@ -383,14 +438,14 @@ namespace oz
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
-          lastNormal = &plane.n;
+          lastNormal = plane.n;
         }
       }
     }
     if( minRatio != -1.0f && minRatio < maxRatio ) {
       if( minRatio < hit.ratio ) {
         hit.ratio    = max( 0.0f, minRatio );
-        hit.normal   = str->toAbsoluteCS( *lastNormal );
+        hit.normal   = str->toAbsoluteCS( lastNormal );
         hit.obj      = null;
         hit.str      = str;
         hit.entity   = entity;
@@ -785,6 +840,7 @@ namespace oz
   {
     aabb = AABB( point, Vec3::ZERO );
     exclObj = exclObj_;
+    flags = Object::CYLINDER_BIT;
 
     span = orbis.getInters( point, AABB::MAX_DIM );
 
@@ -795,6 +851,7 @@ namespace oz
   {
     aabb = AABB( point, Vec3::ZERO );
     exclObj = exclObj_;
+    flags = Object::CYLINDER_BIT;
 
     span = orbis.getInters( point, AABB::MAX_DIM );
 
@@ -805,6 +862,7 @@ namespace oz
   {
     aabb = AABB( point, Vec3::ZERO );
     exclObj = exclObj_;
+    flags = Object::CYLINDER_BIT;
 
     span = orbis.getInters( point, AABB::MAX_DIM );
 
@@ -815,6 +873,7 @@ namespace oz
   {
     aabb = aabb_;
     exclObj = exclObj_;
+    flags = 0;
 
     trace = aabb.toBounds( 2.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
@@ -826,6 +885,7 @@ namespace oz
   {
     aabb = aabb_;
     exclObj = exclObj_;
+    flags = 0;
 
     trace = aabb.toBounds( 2.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
@@ -837,6 +897,43 @@ namespace oz
   {
     aabb = aabb_;
     exclObj = exclObj_;
+    flags = 0;
+
+    trace = aabb.toBounds( 2.0f * EPSILON );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    return overlapsAABBOrbisOSO();
+  }
+
+  bool Collider::overlaps( const Object* obj_, const Object* exclObj_ )
+  {
+    aabb = *obj_;
+    exclObj = exclObj_;
+    flags = obj_->flags;
+
+    trace = aabb.toBounds( 2.0f * EPSILON );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    return overlapsAABBOrbis();
+  }
+
+  bool Collider::overlapsOO( const Object* obj_, const Object* exclObj_ )
+  {
+    aabb = *obj_;
+    exclObj = exclObj_;
+    flags = obj_->flags;
+
+    trace = aabb.toBounds( 2.0f * EPSILON );
+    span = orbis.getInters( trace, AABB::MAX_DIM );
+
+    return overlapsAABBOrbisOO();
+  }
+
+  bool Collider::overlapsOSO( const Object* obj_, const Object* exclObj_ )
+  {
+    aabb = *obj_;
+    exclObj = exclObj_;
+    flags = obj_->flags;
 
     trace = aabb.toBounds( 2.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
@@ -918,6 +1015,7 @@ namespace oz
     aabb = AABB( point, Vec3::ZERO );
     move = move_;
     exclObj = exclObj_;
+    flags = Object::CYLINDER_BIT;
 
     trace.fromPointMove( point, move, 2.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
@@ -927,10 +1025,11 @@ namespace oz
 
   void Collider::translate( const AABB& aabb_, const Vec3& move_, const Object* exclObj_ )
   {
-    obj  = null;
+    obj = null;
     aabb = aabb_;
     move = move_;
     exclObj = exclObj_;
+    flags = 0;
 
     trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
@@ -942,10 +1041,11 @@ namespace oz
   {
     hard_assert( obj_->cell != null );
 
-    obj  = obj_;
+    obj = obj_;
     aabb = *obj_;
     move = move_;
     exclObj = obj_;
+    flags = obj_->flags;
 
     trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );

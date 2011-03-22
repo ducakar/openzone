@@ -31,6 +31,7 @@ audioSample02                   "hit_metal1"                    # damage
 audioSample03                   ""                              # hit
 audioSample04                   "splash2"                       # splash
 audioSample05                   ""                              # friction
+audioSample06                   ""                              # use
 
 type "AIR"
 

@@ -14,6 +14,7 @@
 #include "matrix/Collider.hpp"
 #include "matrix/VehicleClass.hpp"
 #include "matrix/Bot.hpp"
+#include "matrix/Lua.hpp"
 
 namespace oz
 {
@@ -48,33 +49,37 @@ namespace oz
     Vec3 move = Vec3::ZERO;
 
     if( actions & Bot::ACTION_FORWARD ) {
-      move += at;
+      move.x += at.x;
+      move.y += at.y;
     }
     if( actions & Bot::ACTION_BACKWARD ) {
-      move -= at;
+      move.x -= at.x;
+      move.y -= at.y;
     }
     if( actions & Bot::ACTION_RIGHT ) {
-      move += right;
+      move.x += right.x;
+      move.y += right.y;
     }
     if( actions & Bot::ACTION_LEFT ) {
-      move -= right;
+      move.x -= right.x;
+      move.y -= right.y;
     }
     if( actions & Bot::ACTION_JUMP ) {
       move += up;
     }
-    if( actions & Bot::ACTION_CROUCH ) {
-      move -= up;
-    }
 
     momentum += move * clazz->moveMomentum;
 
-    collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - 3.0f ) );
-    float ratio  = 1.0f - collider.hit.ratio;
+    collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - clazz->hoverHeight ) );
+    float ratio  = 1.0f - min( collider.hit.ratio, ( p.z - dim.z ) / clazz->hoverHeight );
     Vec3  normal = collider.hit.normal;
 
     if( ratio != 0.0f ) {
-      momentum.z += 16.0f * ratio * Timer::TICK_TIME;
-      momentum.z -= min( momentum * normal, 0.0f ) * 100.0f * ratio * Timer::TICK_TIME;
+      float groundMomentum = min( velocity * normal, 0.0f );
+      float tickRatio = ratio*ratio * Timer::TICK_TIME;
+
+      momentum.z += clazz->hoverHeightStiffness * tickRatio;
+      momentum.z -= groundMomentum * clazz->hoverMomentumStiffness * min( tickRatio / 4.0f, 1.0f );
     }
   }
 
@@ -156,8 +161,10 @@ namespace oz
 
     actions = 0;
 
+    Bot* pilot = null;
+
     if( crew[PILOT] != -1 ) {
-      Bot* pilot = static_cast<Bot*>( orbis.objects[ crew[PILOT] ] );
+      pilot = static_cast<Bot*>( orbis.objects[ crew[PILOT] ] );
 
       rot = Quat::rotZYX( pilot->h, 0.0f, pilot->v - Math::TAU / 4.0f );
       actions = pilot->actions;
@@ -169,6 +176,33 @@ namespace oz
     const Vec3& up = rotMat.z;
 
     ( this->*handlers[clazz->type] )( rotMat );
+
+    // move forwards (predicted movement) to prevent our bullets hitting us in the back when we are
+    // moving very fast
+    Point3 oldPos = p;
+    p += momentum * Timer::TICK_TIME;
+
+    if( ( actions & Bot::ACTION_ATTACK ) && !clazz->onShot[0].isEmpty() ) {
+      if( shotTime[0] == 0.0f ) {
+        shotTime[0] = clazz->shotInterval[0];
+
+        if( nShots[0] == 0 ) {
+          addEvent( EVENT_SHOT0_EMPTY, 1.0f );
+        }
+        else {
+          nShots[0] = max( -1, nShots[0] - 1 );
+
+          addEvent( EVENT_SHOT0, 1.0f );
+          lua.call( clazz->onShot[0], this, pilot );
+        }
+      }
+    }
+
+    p = oldPos;
+
+    if( shotTime[0] > 0.0f ) {
+      shotTime[0] = max( shotTime[0] - Timer::TICK_TIME, 0.0f );
+    }
 
     for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {
@@ -214,11 +248,16 @@ namespace oz
   {
     Dynamic::readFull( istream );
 
-    rot          = istream->readQuat();
-    state        = istream->readInt();
-    oldState     = istream->readInt();
-    actions      = istream->readInt();
-    oldActions   = istream->readInt();
+    rot               = istream->readQuat();
+    state             = istream->readInt();
+    oldState          = istream->readInt();
+    actions           = istream->readInt();
+    oldActions        = istream->readInt();
+
+    for( int i = 0; i < WEAPONS_MAX; ++i ) {
+      nShots[i]   = istream->readInt();
+      shotTime[i] = istream->readFloat();
+    }
 
     for( int i = 0; i < CREW_MAX; ++i ) {
       crew[i] = istream->readInt();
@@ -235,6 +274,11 @@ namespace oz
     ostream->writeInt( actions );
     ostream->writeInt( oldActions );
 
+    for( int i = 0; i < WEAPONS_MAX; ++i ) {
+      ostream->writeInt( nShots[i] );
+      ostream->writeFloat( shotTime[i] );
+    }
+
     for( int i = 0; i < CREW_MAX; ++i ) {
       ostream->writeInt( crew[i] );
     }
@@ -244,8 +288,12 @@ namespace oz
   {
     Dynamic::readUpdate( istream );
 
-    rot   = istream->readQuat();
-    state = istream->readInt();
+    rot             = istream->readQuat();
+    state           = istream->readInt();
+
+    for( int i = 0; i < WEAPONS_MAX; ++i ) {
+      nShots[i] = istream->readInt();
+    }
   }
 
   void Vehicle::writeUpdate( OutputStream* ostream ) const
@@ -254,6 +302,10 @@ namespace oz
 
     ostream->writeQuat( rot );
     ostream->writeInt( state );
+
+    for( int i = 0; i < WEAPONS_MAX; ++i ) {
+      ostream->writeInt( nShots[i] );
+    }
   }
 
 }

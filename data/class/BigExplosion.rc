@@ -1,0 +1,24 @@
+base "Object"
+
+dim.x "3.99"
+dim.y "3.99"
+dim.z "3.99"
+
+flag.destroyFunc "false"
+flag.solid       "false"
+flag.wideCull    "true"
+
+life "INFINITY"
+
+onUpdate  "BigExplosion_onUpdate"
+
+modelType "Explosion"
+
+audioType                       "Basic"
+audioSample00                   "explosion"                     # create
+audioSample01                   ""                              # destroy
+audioSample02                   ""                              # damage
+audioSample03                   ""                              # hit
+audioSample04                   ""                              # splash
+audioSample05                   ""                              # friction
+audioSample06                   ""                              # use

@@ -19,3 +19,4 @@ audioSample02                   "hit_metal1"                    # damage
 audioSample03                   "hit_metal1"                    # hit
 audioSample04                   "splash2"                       # splash
 audioSample05                   "friction1"                     # friction
+audioSample06                   ""                              # use

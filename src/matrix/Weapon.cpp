@@ -12,9 +12,9 @@
 #include "matrix/Weapon.hpp"
 
 #include "matrix/Timer.hpp"
-#include "matrix/Lua.hpp"
 #include "matrix/Bot.hpp"
 #include "matrix/WeaponClass.hpp"
+#include "matrix/Lua.hpp"
 
 namespace oz
 {
@@ -37,22 +37,17 @@ namespace oz
     }
   }
 
-  void Weapon::onShot( Bot* user )
-  {
-    const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
-
-    if( !clazz->onShot.isEmpty() ) {
-      lua.call( clazz->onShot, this, user );
-    }
-  }
-
   void Weapon::trigger( Bot* user )
   {
     hard_assert( user != null );
 
-    if( shotTime == 0.0f ) {
-      const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
+    const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
 
+    if( clazz->onShot.isEmpty() ) {
+      return;
+    }
+
+    if( shotTime == 0.0f ) {
       shotTime = clazz->shotInterval;
 
       if( nShots == 0 ) {
@@ -62,7 +57,7 @@ namespace oz
         nShots = max( -1, nShots - 1 );
 
         addEvent( EVENT_SHOT, 1.0f );
-        onShot( user );
+        lua.call( clazz->onShot, this, user );
       }
     }
   }
