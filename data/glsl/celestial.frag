@@ -18,6 +18,6 @@ void main()
     discard;
   }
 
-  outColour = texture2D( oz_Textures[0], exTexCoord );
+  outColour = texture( oz_Textures[0], exTexCoord );
   outColour *= oz_Colour;
 }

@@ -47,7 +47,7 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.hitFunc",      false );
     OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",      false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
-    OZ_CLASS_SET_FLAG( Object::DETECT_BIT,         "flag.detect",       true  );
+    OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
     OZ_CLASS_SET_FLAG( Object::HOVER_BIT,          "flag.hover",        false );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
@@ -102,6 +102,31 @@ namespace oz
     clazz->state = 0;
 
     OZ_CLASS_SET_STATE( Vehicle::CREW_VISIBLE_BIT, "state.crewVisible", true );
+
+    char onShotBuffer[] = "weapon  .onShot";
+    char nShotsBuffer[] = "weapon  .nShots";
+    char shotIntervalBuffer[] = "weapon  .shotInterval";
+
+    for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
+      hard_assert( i < 100 );
+
+      onShotBuffer[6] = char( '0' + ( i / 10 ) );
+      onShotBuffer[7] = char( '0' + ( i % 10 ) );
+
+      nShotsBuffer[6] = char( '0' + ( i / 10 ) );
+      nShotsBuffer[7] = char( '0' + ( i % 10 ) );
+
+      shotIntervalBuffer[6] = char( '0' + ( i / 10 ) );
+      shotIntervalBuffer[7] = char( '0' + ( i % 10 ) );
+
+      clazz->onShot[i]       = config->get( onShotBuffer, "" );
+      clazz->nShots[i]       = config->get( nShotsBuffer, -1 );
+      clazz->shotInterval[i] = config->get( shotIntervalBuffer, 0.5f );
+
+      if( !String::isEmpty( clazz->onShot[i] ) ) {
+        clazz->flags |= Object::LUA_BIT;
+      }
+    }
 
     clazz->crewPos[Vehicle::PILOT] = Vec3( config->get( "crew.pilot.pos.x", 0.0f ),
                                            config->get( "crew.pilot.pos.y", 0.0f ),
@@ -166,7 +191,11 @@ namespace oz
                                                         0.0f,
                                                         config->get( "crew.passenger5.rot.x", 0.0f ) );
 
-    clazz->moveMomentum         = config->get( "moveMomentum", 5.0f );
+    clazz->moveMomentum           = config->get( "moveMomentum", 2.0f );
+
+    clazz->hoverHeight            = config->get( "hoverHeight", 2.0f );
+    clazz->hoverHeightStiffness   = config->get( "hoverHeightStiffness", 40.0f );
+    clazz->hoverMomentumStiffness = config->get( "hoverMomentumStiffness", 160.0f );
 
     fillCommon( clazz, config );
     clazz->flags |= BASE_FLAGS;
@@ -178,21 +207,26 @@ namespace oz
   {
     Vehicle* obj = new Vehicle();
 
-    obj->p        = pos;
-    obj->dim      = dim;
+    obj->p                 = pos;
+    obj->dim               = dim;
 
-    obj->index    = index;
-    obj->flags    = flags;
-    obj->oldFlags = flags;
-    obj->clazz    = this;
-    obj->life     = life;
+    obj->index             = index;
+    obj->flags             = flags;
+    obj->oldFlags          = flags;
+    obj->clazz             = this;
+    obj->life              = life;
 
-    obj->mass     = mass;
-    obj->lift     = lift;
+    obj->mass              = mass;
+    obj->lift              = lift;
 
-    obj->rot      = Quat::ID;
-    obj->state    = state;
-    obj->oldState = state;
+    obj->rot               = Quat::ID;
+    obj->state             = state;
+    obj->oldState          = state;
+
+    for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
+      obj->nShots[i]   = nShots[i];
+      obj->shotTime[i] = 0.0f;
+    }
 
     return obj;
   }

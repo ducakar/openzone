@@ -29,12 +29,24 @@ audioSample02                   "hit_metal1"                    # damage
 audioSample03                   ""                              # hit
 audioSample04                   "splash2"                       # splash
 audioSample05                   ""                              # friction
+audioSample06                   ""                              # use
+audioSample07                   ""                              # engine
+audioSample08                   ""                              #
+audioSample09                   ""                              #
+audioSample10                   "cg2"                           # primary trigger
+audioSample11                   "outofammo"                     # primary trigger empty
+audioSample12                   ""                              # secondary trigger
+audioSample13                   ""                              # secondary trigger empty
 
 type "HOVER"
 
 state.crewVisible "false"
 
+weapon00.onShot "Tank_onShot0"
+weapon00.nShots "100"
+weapon00.shotInterval "0.10"
+
 crew.pilot.pos.y "-0.20"
 crew.pilot.pos.z "-0.20"
 
-moveMomentum "0.60"
+moveMomentum "0.40"

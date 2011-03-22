@@ -187,14 +187,14 @@ namespace oz
         p.z = oldZ + clazz->dim.z - clazz->dimCrouch.z;
         dim = clazz->dim;
 
-        if( !collider.overlaps( *this, this ) ) {
+        if( !collider.overlaps( this, this ) ) {
           camZ  = clazz->camZ;
           state &= ~CROUCHING_BIT;
         }
         else {
           p.z = oldZ - clazz->dim.z + clazz->dimCrouch.z;
 
-          if( !collider.overlaps( *this, this ) ) {
+          if( !collider.overlaps( this, this ) ) {
             camZ  = clazz->camZ;
             state &= ~CROUCHING_BIT;
           }
@@ -391,7 +391,7 @@ namespace oz
         Vec3 desiredMove = momentum * Timer::TICK_TIME;
 
         collider.mask = flags & SOLID_BIT;
-        collider.translate( *this, desiredMove, this );
+        collider.translate( this, desiredMove );
 
         if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
           float originalZ = p.z;
@@ -399,13 +399,13 @@ namespace oz
           float negStartDist = ( desiredMove * collider.hit.ratio ) * normal - EPSILON;
 
           for( float raise = clazz->stepInc; raise <= clazz->stepMax; raise += clazz->stepInc ) {
-            collider.translate( *this, Vec3( 0.0f, 0.0f, clazz->stepInc ) );
+            collider.translate( this, Vec3( 0.0f, 0.0f, clazz->stepInc ) );
 
             if( collider.hit.ratio != 1.0f ) {
               break;
             }
             p.z += clazz->stepInc;
-            collider.translate( *this, desiredMove, this );
+            collider.translate( this, desiredMove );
 
             Vec3 move = desiredMove * collider.hit.ratio;
             move.z += raise;
@@ -575,7 +575,7 @@ namespace oz
         handle.z    = min( handle.z, dim.z - camZ + item->dim.z );
         item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
 
-        if( !collider.overlaps( *item ) ) {
+        if( !collider.overlaps( item ) ) {
           item->parent = -1;
           synapse.put( item );
           items.remove( taggedItem );

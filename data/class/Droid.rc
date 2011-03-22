@@ -19,7 +19,7 @@ audioType                       "Bot"
 audioSample00                   ""                              # create
 audioSample01                   "destroy_metal1"                # destroy
 audioSample02                   "damage_bot2"                   # damage
-audioSample03                   ""                      	# hit
+audioSample03                   ""                              # hit
 audioSample04                   "splash1"                       # splash
 audioSample05                   ""                              # friction
 audioSample06                   ""                              # use

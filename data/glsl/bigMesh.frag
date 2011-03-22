@@ -16,6 +16,6 @@ out vec4 outColour;
 void main()
 {
   outColour = exColour;
-  outColour *= texture2D( oz_Textures[0], exTexCoord );
+  outColour *= texture( oz_Textures[0], exTexCoord );
   outColour = applyFog( outColour, exDistance );
 }

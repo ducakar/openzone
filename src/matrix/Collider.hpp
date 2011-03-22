@@ -54,17 +54,19 @@ namespace oz
       const BSP::Model* model;
       const BSP* bsp;
 
+      int   flags;
       float margin;
 
       SBitset<BSP::MAX_BRUSHES> visitedBrushes;
 
       /**
-       * Return if brush was already visited and mark it visited.
+       * Return true if brush was already visited and mark it visited.
        * @param index
        * @return
        */
       bool visitBrush( int index );
 
+      bool overlapsAABBObj( const Object* sObj ) const;
       bool overlapsAABBBrush( const BSP::Brush* brush ) const;
       bool overlapsAABBNode( int nodeIndex );
       bool overlapsAABBEntities();
@@ -112,6 +114,10 @@ namespace oz
       bool overlaps( const AABB& aabb, const Object* exclObj = null );
       bool overlapsOO( const AABB& aabb, const Object* exclObj = null );
       bool overlapsOSO( const AABB& aabb, const Object* exclObj = null );
+
+      bool overlaps( const Object* obj, const Object* exclObj = null );
+      bool overlapsOO( const Object* obj, const Object* exclObj = null );
+      bool overlapsOSO( const Object* obj, const Object* exclObj = null );
 
       bool overlapsOO( const Struct::Entity* entity, float margin = 0.0f );
 

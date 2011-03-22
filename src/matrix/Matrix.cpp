@@ -220,16 +220,17 @@ namespace oz
       }
     }
 
-    for( int i = 0; i < orbis.parts.length(); ++i ) {
-      Particle* part = orbis.parts[i];
+    for( int i = 0; i < orbis.structs.length(); ++i ) {
+      Struct* str = orbis.structs[i];
 
-      if( part != null ) {
-        part->update();
-        physics.updatePart( part );
+      if( str == null ) {
+        continue;
+      }
 
-        if( part->lifeTime <= 0.0f || part->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
-          synapse.remove( part );
-        }
+      str->update();
+
+      if( str->life <= 0.0f ) {
+        str->destroy();
       }
     }
 
@@ -274,17 +275,16 @@ namespace oz
       }
     }
 
-    for( int i = 0; i < orbis.structs.length(); ++i ) {
-      Struct* str = orbis.structs[i];
+    for( int i = 0; i < orbis.parts.length(); ++i ) {
+      Particle* part = orbis.parts[i];
 
-      if( str == null ) {
-        continue;
-      }
+      if( part != null ) {
+        part->update();
+        physics.updatePart( part );
 
-      str->update();
-
-      if( str->life <= 0.0f ) {
-        str->destroy();
+        if( part->lifeTime <= 0.0f || part->velocity.sqL() > Matrix::MAX_VELOCITY2 ) {
+          synapse.remove( part );
+        }
       }
     }
 

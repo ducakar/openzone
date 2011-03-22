@@ -42,6 +42,18 @@ namespace oz
         CREW_MAX
       };
 
+      static const int   WEAPONS_MAX            = 8;
+
+      // not used, to reserve slot for engine sound sample
+      static const int   EVENT_ENGINE           = 7;
+
+      static const int   EVENT_SHOT0            = 10;
+      static const int   EVENT_SHOT0_EMPTY      = 11;
+      static const int   EVENT_SHOT1            = 12;
+      static const int   EVENT_SHOT1_EMPTY      = 13;
+      static const int   EVENT_SHOT2            = 14;
+      static const int   EVENT_SHOT2_EMPTY      = 15;
+
       static const int   CREW_VISIBLE_BIT       = 0x00000001;
 
       static const float EJECT_MOVE;
@@ -69,12 +81,17 @@ namespace oz
 
     public:
 
-      Quat rot;
-      int  state, oldState;
-      int  actions, oldActions;
-      Vec3 camPos;
+      Quat  rot;
+      Vec3  camPos;
 
-      int  crew[CREW_MAX];
+      int   state, oldState;
+      int   actions, oldActions;
+
+      // -1: unlimited
+      int   nShots[WEAPONS_MAX];
+      float shotTime[WEAPONS_MAX];
+
+      int   crew[CREW_MAX];
 
       explicit Vehicle();
 

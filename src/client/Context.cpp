@@ -579,12 +579,10 @@ namespace client
     md3s.dealloc();
 
     foreach( src, sources.citer() ) {
-      alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
       hard_assert( alGetError() == AL_NO_ERROR );
     }
     foreach( src, contSources.citer() ) {
-      alSourceStop( src->source );
       alDeleteSources( 1, &src->source );
       hard_assert( alGetError() == AL_NO_ERROR );
     }

@@ -52,22 +52,22 @@ namespace oz
        */
 
       // if object has Lua handlers
-      static const int LUA_BIT            = 0x04000000;
+      static const int LUA_BIT            = 0x02000000;
 
       // if the onDestroy function should be called on destruction
-      static const int DESTROY_FUNC_BIT   = 0x02000000;
+      static const int DESTROY_FUNC_BIT   = 0x01000000;
 
       // if the onDamage function should be called on damage received
-      static const int DAMAGE_FUNC_BIT    = 0x01000000;
+      static const int DAMAGE_FUNC_BIT    = 0x00800000;
 
       // if the onHit function should be called on hit
-      static const int HIT_FUNC_BIT       = 0x00800000;
+      static const int HIT_FUNC_BIT       = 0x00400000;
 
       // if the onUse function should be called when object is used
-      static const int USE_FUNC_BIT       = 0x00400000;
+      static const int USE_FUNC_BIT       = 0x00200000;
 
       // if the onUpdate method should be called each step
-      static const int UPDATE_FUNC_BIT    = 0x00200000;
+      static const int UPDATE_FUNC_BIT    = 0x00100000;
 
       /*
        * FRONTEND OBJECTS
@@ -125,15 +125,14 @@ namespace oz
       // other object collide with the object
       static const int SOLID_BIT          = 0x00000080;
 
-      // object is non-collidable, but can still be detected by the interface (when we point on it)
-      static const int DETECT_BIT         = 0x00000040;
+      // use cylinder model for collision between objects when both are flagged as cylinder
+      static const int CYLINDER_BIT       = 0x00000040;
 
       // If the object is climber it is tested against ladder brushes and gains ON_LADDER_BIT if it
       // intersects with a ladder brush. Otherwise object is not affected by ladders.
       static const int CLIMBER_BIT        = 0x00000020;
 
-      // if the object is meant to push itself and other objects around  (e.g. Bot), turn on
-      // some physics hacks (to prevent continuous hits) and enable pushing to side directions
+      // enable pushing to side directions
       static const int PUSHER_BIT         = 0x00000010;
 
       // if the object is immune to gravity

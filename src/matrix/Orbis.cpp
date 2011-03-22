@@ -13,7 +13,6 @@
 
 #include "matrix/Translator.hpp"
 #include "matrix/Lua.hpp"
-// needed to release resources
 #include "matrix/Dynamic.hpp"
 #include "matrix/Bot.hpp"
 #include "matrix/Weapon.hpp"

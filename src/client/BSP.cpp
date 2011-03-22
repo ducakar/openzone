@@ -396,6 +396,7 @@ namespace client
     alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
 
     alSourcefv( srcId, AL_POSITION, p );
+    alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
     alSourcePlay( srcId );
 
     hard_assert( alGetError() == AL_NO_ERROR );

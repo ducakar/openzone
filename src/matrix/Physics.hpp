@@ -43,7 +43,7 @@ namespace oz
 
     private:
 
-      Dynamic*  obj;
+      Dynamic*  dyn;
       Particle* part;
       Bounds    trace;
       Vec3      move;
@@ -61,7 +61,7 @@ namespace oz
     public:
 
       void updatePart( Particle* part );
-      void updateObj( Dynamic* obj );
+      void updateObj( Dynamic* dyn );
 
   };
 

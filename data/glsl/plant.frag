@@ -20,6 +20,6 @@ void main()
 
   outColour = oz_Colour;
   outColour *= skyLightColour( exNormal );
-  outColour *= texture2D( oz_Textures[0], exTexCoord );
+  outColour *= texture( oz_Textures[0], exTexCoord );
   outColour = applyFog( outColour, dist );
 }
