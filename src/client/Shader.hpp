@@ -172,6 +172,7 @@ namespace client
       Vec4 colour;
 
       bool isInWater;
+      bool isLoaded;
 
       void use( int id );
       void push();

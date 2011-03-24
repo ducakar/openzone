@@ -23,7 +23,7 @@ namespace client
 
   const float Audio::MIN_GAIN = 0.25f;
 
-  void Audio::playSound( int sample, float volume, const Object* obj ) const
+  void Audio::playSound( int sample, float volume, const Object* obj, const Object* parent ) const
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
 
@@ -50,22 +50,25 @@ namespace client
     }
     else {
       alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
-      alSourcefv( srcId, AL_POSITION, obj->p );
+      alSourcefv( srcId, AL_POSITION, parent->p );
     }
 
     alSourcef( srcId, AL_GAIN, max( volume, MIN_GAIN ) );
     alSourcePlay( srcId );
 
-    hard_assert( alGetError() == AL_NO_ERROR );
-
     context.sources.add( new Context::Source( srcId ) );
+
+    hard_assert( alGetError() == AL_NO_ERROR );
   }
 
-  void Audio::playContSound( int sample, float volume, const Object* obj ) const
+  void Audio::playContSound( int sample, float volume, const Object* obj,
+                             const Object* parent ) const
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
 
-    Context::ContSource* contSource = context.contSources.find( obj->index );
+    int id = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
+
+    Context::ContSource* contSource = context.objSources.find( id );
 
     if( contSource == null ) {
       uint srcId;
@@ -79,15 +82,17 @@ namespace client
       alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
       alSourcei( srcId, AL_LOOPING, AL_TRUE );
       alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
-      alSourcefv( srcId, AL_POSITION, obj->p );
+
+      alSourcefv( srcId, AL_POSITION, parent->p );
       alSourcef( srcId, AL_GAIN, volume );
       alSourcePlay( srcId );
 
-      context.contSources.add( obj->index, Context::ContSource( srcId ) );
+      context.objSources.add( id, Context::ContSource( srcId ) );
     }
     else {
-      alSourcefv( contSource->source, AL_POSITION, obj->p );
+      alSourcefv( contSource->source, AL_POSITION, parent->p );
       alSourcef( contSource->source, AL_GAIN, max( volume, MIN_GAIN ) );
+
       contSource->isUpdated = true;
     }
 

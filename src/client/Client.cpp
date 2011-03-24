@@ -1,5 +1,5 @@
 /*
- *  Main.cpp
+ *  Client.cpp
  *
  *  Game initialisation and main loop
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/Main.hpp"
+#include "client/Client.hpp"
 
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
@@ -35,9 +35,9 @@ namespace oz
 namespace client
 {
 
-  Main main;
+  Client client;
 
-  void Main::shutdown()
+  void Client::shutdown()
   {
     uint beginTime = SDL_GetTicks();
 
@@ -157,11 +157,11 @@ namespace client
       log.unindent();
       log.println( "}" );
 
-      log.printlnETD( OZ_APPLICATION_NAME " finished at" );
+      log.printlnETD( OZ_APPLICATION_NAME " " OZ_APPLICATION_VERSION " finished at" );
     }
   }
 
-  void Main::printUsage()
+  void Client::printUsage()
   {
     log.println( "Usage:" );
     log.indent();
@@ -188,7 +188,7 @@ namespace client
     log.unindent();
   }
 
-  int Main::main( int* argc, char** argv )
+  int Client::main( int* argc, char** argv )
   {
     initFlags = 0;
     String rcDir;
@@ -246,10 +246,10 @@ namespace client
 
     uint createTime = SDL_GetTicks();
 
-#ifndef OZ_WINDOWS
-    const char* homeVar = getenv( "HOME" );
-#else
+#ifdef OZ_WINDOWS
     const char* homeVar = getenv( "USERPROFILE" );
+#else
+    const char* homeVar = getenv( "HOME" );
 #endif
     if( homeVar == null ) {
       throw Exception( "Cannot determine user home directory from environment" );
@@ -261,10 +261,10 @@ namespace client
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource directory found, creating '%s' ...", rcDir.cstr() );
 
-#ifndef OZ_WINDOWS
-      if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
-#else
+#ifdef OZ_WINDOWS
       if( mkdir( rcDir.cstr() ) != 0 ) {
+#else
+      if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
 #endif
         printf( " Failed\n" );
         return -1;
@@ -286,18 +286,28 @@ namespace client
     log.println( "Log stream stdout ... OK" );
 #endif
 
-    log.printlnETD( OZ_APPLICATION_NAME " started at" );
+    log.printlnETD( OZ_APPLICATION_NAME " " OZ_APPLICATION_VERSION " started at" );
 
     buffer.alloc( 4 * 1024 * 1024 );
 
     String configPath = rcDir + "/" OZ_CLIENT_CONFIG_FILE;
     if( config.load( configPath ) ) {
       log.printEnd( "Configuration read from '%s'", configPath.cstr() );
-      initFlags |= INIT_CONFIG;
+
+      if( String::equals( config.get( "_version", "" ), OZ_APPLICATION_VERSION ) ) {
+        initFlags |= INIT_CONFIG;
+      }
+      else {
+        log.println( "Invalid configuration file version, will be overwritten on exit" );
+        config.clear();
+        config.add( "_version", OZ_APPLICATION_VERSION );
+      }
     }
     else {
       log.println( "No configuration file, default configuration will be written on exit" );
+      config.add( "_version", OZ_APPLICATION_VERSION );
     }
+
     config.add( "dir.rc", rcDir );
 
     if( config.contains( "seed" ) && config["seed"].equals( "time" ) ) {

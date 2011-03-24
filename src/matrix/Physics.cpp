@@ -320,14 +320,13 @@ namespace oz
         float dot = lastNormals[0] * collider.hit.normal;
 
         if( dot < 0.0f ) {
-          Vec3  out      = collider.hit.normal + lastNormals[0];
           Vec3  cross    = collider.hit.normal ^ lastNormals[0];
           float crossSqL = cross.sqL();
 
           if( crossSqL != 0.0f ) {
             cross /= Math::sqrt( crossSqL );
             move = ( move * cross ) * cross;
-            move += out * EPSILON;
+            move += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[0] );
           }
         }
         if( traceSplits == 2 ) {
@@ -338,14 +337,13 @@ namespace oz
           dot = lastNormals[1] * collider.hit.normal;
 
           if( dot < 0.0f ) {
-            Vec3  out      = collider.hit.normal + lastNormals[1];
             Vec3  cross    = collider.hit.normal ^ lastNormals[1];
             float crossSqL = cross.sqL();
 
             if( crossSqL != 0.0f ) {
               cross /= Math::sqrt( crossSqL );
               move = ( move * cross ) * cross;
-              move += out * EPSILON;
+              move += MOVE_BOUNCE * ( collider.hit.normal + lastNormals[1] );
             }
           }
         }

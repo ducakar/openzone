@@ -32,9 +32,12 @@ namespace client
     const Cell& cell = orbis.cells[cellX][cellY];
 
     foreach( strIndex, cell.structs.citer() ) {
-      const Struct* str = orbis.structs[*strIndex];
+      if( !playedStructs.get( *strIndex ) ) {
+        playedStructs.set( *strIndex );
 
-      context.playBSP( str );
+        const Struct* str = orbis.structs[*strIndex];
+        context.playBSP( str );
+      }
     }
     foreach( obj, cell.objects.citer() ) {
       if( obj->flags & Object::AUDIO_BIT ) {
@@ -147,6 +150,12 @@ namespace client
     alListenerfv( AL_ORIENTATION, orientation[0] );
     alListenerfv( AL_POSITION, camera.p );
 
+    if( playedStructs.length() < orbis.structs.length() ) {
+      playedStructs.dealloc();
+      playedStructs.alloc( orbis.structs.length() );
+    }
+    playedStructs.clearAll();
+
     Span span = orbis.getInters( camera.p, DMAX + AABB::MAX_DIM );
 
     for( int x = span.minX ; x <= span.maxX; ++x ) {
@@ -238,11 +247,9 @@ namespace client
 
   void Sound::free()
   {
-    hard_assert( alGetError() == AL_NO_ERROR );
-
     log.print( "Shutting down Sound ..." );
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    playedStructs.dealloc();
 
     unloadMusic();
     hard_assert( alGetError() == AL_NO_ERROR );

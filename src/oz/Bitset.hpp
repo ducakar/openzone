@@ -143,28 +143,6 @@ namespace oz
       }
 
       /**
-       * Resize the <code>data</code> array. New size if specified in units.
-       * @param nUnits
-       */
-      void setUnitSize( int nUnits )
-      {
-        if( nUnits != size ) {
-          delete[] data;
-          size = nUnits;
-          data = size == 0 ? null : new ulong[size];
-        }
-      }
-
-      /**
-       * Resize the <code>data</code> array. New size if specified in bits.
-       * @param nBits
-       */
-      void setSize( int nBits )
-      {
-        setUnitSize( nBits == 0 ? 0 : ( nBits - 1 ) / ULONG_BITSIZE + 1 );
-      }
-
-      /**
        * Size of bitset in bits.
        * @return number of bits the bitset can hold
        */
@@ -454,9 +432,23 @@ namespace oz
       }
 
       /**
-       * Free allocated resources.
+       * Allocates capacity for <code>nBits</code>.
+       * @param nUnits
        */
-      void clear()
+      void alloc( int nBits )
+      {
+        hard_assert( size == 0 && nBits > 0 );
+
+        int nUnits = nBits == 0 ? 0 : ( nBits - 1 ) / ULONG_BITSIZE + 1;
+
+        size = nUnits;
+        data = size == 0 ? null : new ulong[size];
+      }
+
+      /**
+       * Deallocate resources.
+       */
+      void dealloc()
       {
         delete[] data;
 

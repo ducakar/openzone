@@ -74,6 +74,7 @@ namespace oz
 
         int   openSample;
         int   closeSample;
+        int   frictSample;
       };
 
       int     id;

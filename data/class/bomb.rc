@@ -16,9 +16,9 @@ debrisColour.g "0.23"
 debrisColour.b "0.19"
 debrisColourSpread "0.05"
 
-onDestroy "Bomb_onDestroy"
-onUpdate  "Bomb_onUpdate"
-onUse     "Bomb_onUse"
+onDestroy "bomb_onDestroy"
+onUpdate  "bomb_onUpdate"
+onUse     "bomb_onUse"
 
 modelType "SMM"
 modelName "bombs"

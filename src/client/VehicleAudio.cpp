@@ -11,7 +11,10 @@
 
 #include "client/VehicleAudio.hpp"
 
+#include "matrix/Orbis.hpp"
 #include "matrix/Vehicle.hpp"
+
+#include "client/Context.hpp"
 
 namespace oz
 {
@@ -27,7 +30,7 @@ namespace client
     return new VehicleAudio( obj );
   }
 
-  void VehicleAudio::play( const Audio* )
+  void VehicleAudio::play( const Audio* parent )
   {
     const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->clazz->audioSamples;
@@ -39,7 +42,20 @@ namespace client
       if( event->id >= 0 && samples[event->id] != -1 ) {
         hard_assert( 0.0f <= event->intensity );
 
-        playSound( samples[event->id], event->intensity, obj );
+        playSound( samples[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+      }
+    }
+
+    // crew
+    for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
+      if( vehicle->crew[i] != -1 ) {
+        const Bot* bot = static_cast<const Bot*>( orbis.objects[ vehicle->crew[i] ] );
+
+        hard_assert( bot->flags & Object::BOT_BIT );
+
+        if( bot != null && ( bot->flags & Object::AUDIO_BIT ) ) {
+          context.playAudio( bot, parent == null ? this : parent );
+        }
       }
     }
   }

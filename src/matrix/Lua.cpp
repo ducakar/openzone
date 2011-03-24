@@ -12,7 +12,7 @@
 #include "matrix/Lua.hpp"
 
 #include "matrix/BotClass.hpp"
-#include "matrix/Bot.hpp"
+#include "matrix/VehicleClass.hpp"
 #include "matrix/Translator.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
@@ -1304,6 +1304,21 @@ namespace oz
     return 0;
   }
 
+  int Lua::ozVehicleService( lua_State* l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( !( lua.obj->flags & Object::VEHICLE_BIT ) ) {
+      OZ_LUA_ERROR( "selected object is not a vehicle" );
+    }
+
+    Vehicle* vehicle = static_cast<Vehicle*>( lua.obj );
+    vehicle->service();
+
+    return 0;
+  }
+
   int Lua::ozPartBindIndex( lua_State* l )
   {
     int index = int( lua_tointeger( l, 1 ) );
@@ -1731,6 +1746,8 @@ namespace oz
     OZ_LUA_FUNCTION( ozBotSetStamina );
     OZ_LUA_FUNCTION( ozBotAddStamina );
 
+    OZ_LUA_FUNCTION( ozVehicleService );
+
     OZ_LUA_FUNCTION( ozPartBindIndex );
     OZ_LUA_FUNCTION( ozPartIsNull );
     OZ_LUA_FUNCTION( ozPartGetPos );
@@ -1790,6 +1807,7 @@ namespace oz
     OZ_LUA_INT_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_RANDOM_HEADING_BIT",   Object::RANDOM_HEADING_BIT );
 
+    OZ_LUA_INT_CONST( "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
     OZ_LUA_INT_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
     OZ_LUA_INT_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
     OZ_LUA_INT_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
@@ -1798,10 +1816,20 @@ namespace oz
     OZ_LUA_INT_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
     OZ_LUA_INT_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
     OZ_LUA_INT_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
+    OZ_LUA_INT_CONST( "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
     OZ_LUA_INT_CONST( "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
     OZ_LUA_INT_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
     OZ_LUA_INT_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
     OZ_LUA_INT_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
+    OZ_LUA_INT_CONST( "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SERVICE",               Vehicle::EVENT_SERVICE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT0_EMPTY",           Vehicle::EVENT_SHOT0_EMPTY );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT1",                 Vehicle::EVENT_SHOT1 );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT1_EMPTY",           Vehicle::EVENT_SHOT1_EMPTY );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2_EMPTY",           Vehicle::EVENT_SHOT2_EMPTY );
 
     lua_newtable( l );
     lua_setglobal( l, "ozLocalData" );

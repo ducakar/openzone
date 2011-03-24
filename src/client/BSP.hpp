@@ -44,6 +44,7 @@ namespace client
 #endif
 
       void playSound( const Struct::Entity* entity, int sample ) const;
+      void playContSound( const Struct::Entity* entity, int sample ) const;
 
     public:
 

@@ -46,7 +46,8 @@ namespace oz
 
       // not used, to reserve slot for engine sound sample
       static const int   EVENT_ENGINE           = 7;
-
+      static const int   EVENT_SERVICE          = 8;
+      static const int   EVENT_NEXT_WEAPON      = 9;
       static const int   EVENT_SHOT0            = 10;
       static const int   EVENT_SHOT0_EMPTY      = 11;
       static const int   EVENT_SHOT1            = 12;
@@ -87,15 +88,15 @@ namespace oz
       int   state, oldState;
       int   actions, oldActions;
 
-      // -1: unlimited
       int   nShots[WEAPONS_MAX];
       float shotTime[WEAPONS_MAX];
+      int   weapon;
 
       int   crew[CREW_MAX];
 
       explicit Vehicle();
 
-      void exit( Bot* bot );
+      void service();
 
       virtual void readFull( InputStream* istream );
       virtual void writeFull( OutputStream* ostream ) const;

@@ -102,6 +102,10 @@ namespace oz
         clazz->audioSamples[i] = -1;
       }
     }
+
+    if( ( clazz->flags & Object::CYLINDER_BIT ) && clazz->dim.x != clazz->dim.y ) {
+      throw Exception( "Cylindric object '" + clazz->name + "' should have dim.x == dim.y" );
+    }
   }
 
   ObjectClass* ObjectClass::init( const String& name, const Config* config )

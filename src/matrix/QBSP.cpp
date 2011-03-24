@@ -321,12 +321,16 @@ namespace oz
 
         models[i].openSample  = bspConfig.get( keyName + ".openSample", "" );
         models[i].closeSample = bspConfig.get( keyName + ".closeSample", "" );
+        models[i].frictSample = bspConfig.get( keyName + ".frictSample", "" );
 
         if( !models[i].openSample.isEmpty() ) {
           translator.soundIndex( models[i].openSample );
         }
         if( !models[i].closeSample.isEmpty() ) {
           translator.soundIndex( models[i].closeSample );
+        }
+        if( !models[i].frictSample.isEmpty() ) {
+          translator.soundIndex( models[i].frictSample );
         }
       }
     }
@@ -926,6 +930,7 @@ namespace oz
       os.writeFloat( models[i].timeout );
       os.writeString( models[i].openSample );
       os.writeString( models[i].closeSample );
+      os.writeString( models[i].frictSample );
     }
 
     buffer.write( path, os.length() );

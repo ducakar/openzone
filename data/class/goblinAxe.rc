@@ -1,22 +1,18 @@
-description "+100 health"
+base "Weapon"
 
-base "Dynamic"
+dim.x "0.24"
+dim.y "0.29"
+dim.z "0.06"
 
-dim.x "0.25"
-dim.y "0.25"
-dim.z "0.15"
-
-flag.item "true"
 flag.cylinder "false"
 
-life "30.0f"
+life "100.0f"
 
-onUse "disposableHeal100"
+mass "10.0"
+lift "2.0"
 
-mass "2.0"
-
-modelType "SMM"
-modelName "health"
+modelType "MD2Weapon"
+modelName "goblin-axe"
 
 audioType                       "Basic"
 audioSample00                   ""                              # create
@@ -25,4 +21,10 @@ audioSample02                   "hit1"                          # damage
 audioSample03                   "hit1"                          # hit
 audioSample04                   "splash1"                       # splash
 audioSample05                   ""                              # friction
-audioSample06                   "tak"                           # use
+audioSample06                   ""                              # use
+audioSample07                   "tak"                           # trigger
+audioSample08                   ""                              # trigger_empty
+
+onShot "axe_onShot"
+nShots "-1"
+shotInterval "0.51"

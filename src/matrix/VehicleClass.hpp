@@ -30,6 +30,7 @@ namespace oz
       int    type;
       int    state;
 
+      int    nWeapons;
       String onShot[Vehicle::WEAPONS_MAX];
       int    nShots[Vehicle::WEAPONS_MAX];
       float  shotInterval[Vehicle::WEAPONS_MAX];

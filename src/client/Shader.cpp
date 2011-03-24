@@ -347,7 +347,7 @@ namespace client
       loadProgram( i, sources, lengths );
     }
 
-    colour = Vec4::ONE;
+    isLoaded = true;
 
     log.unindent();
     log.println( "}" );
@@ -356,6 +356,8 @@ namespace client
   void Shader::unload()
   {
     log.print( "Unloading Shader ..." );
+
+    isLoaded = false;
 
     for( int i = 0; i < translator.shaders.length(); ++i ) {
       if( i == ui ) {
@@ -419,6 +421,7 @@ namespace client
     bigMesh   = translator.shaderIndex( "bigMesh" );
     colour    = Vec4::ONE;
     isInWater = false;
+    isLoaded  = false;
 
     loadProgram( ui, sources, lengths );
 

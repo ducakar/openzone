@@ -14,6 +14,7 @@ add_pch( pch stable.hpp DEPENDS oz ${CMAKE_CURRENT_BINARY_DIR}/configuration.hpp
 
 add_subdirectory( matrix )
 add_subdirectory( nirvana )
+add_subdirectory( architect )
 
 if( OZ_BUILD_CLIENT )
   add_subdirectory( ui )
@@ -29,3 +30,4 @@ add_subdirectory( tools )
 if( OZ_BUILD_TESTS )
   add_subdirectory( tests )
 endif( OZ_BUILD_TESTS )
+

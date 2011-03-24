@@ -22,7 +22,7 @@ function spawnGoblin( l )
   ozOrbisAddObj( "goblin", x, y, z + 2.0 )
 end
 
-function BigExplosion_onUpdate( l )
+function bigExplosion_onUpdate( l )
   if l.ticks then
     l.ticks = l.ticks - 1
 
@@ -56,7 +56,7 @@ function BigExplosion_onUpdate( l )
   end
 end
 
-function SmallExplosion_onUpdate( l )
+function smallExplosion_onUpdate( l )
   if l.ticks then
     l.ticks = l.ticks - 1
 
@@ -90,7 +90,7 @@ function SmallExplosion_onUpdate( l )
   end
 end
 
-function Bomb_onUse( l )
+function bomb_onUse( l )
   if l.time then
     l.time = nil
   else
@@ -98,7 +98,7 @@ function Bomb_onUse( l )
   end
 end
 
-function Bomb_onUpdate( l )
+function bomb_onUpdate( l )
   if l.time then
     if l.time > 0 then
       l.time = l.time - 1
@@ -108,15 +108,15 @@ function Bomb_onUpdate( l )
   end
 end
 
-function Bomb_onDestroy( l )
-  ozOrbisForceAddObj( "big explosion", ozObjGetPos() )
+function bomb_onDestroy( l )
+  ozOrbisForceAddObj( "bigExplosion", ozObjGetPos() )
 end
 
-function Rocket_onDestroy( l )
-  ozOrbisForceAddObj( "small explosion", ozObjGetPos() );
+function rocket_onDestroy( l )
+  ozOrbisForceAddObj( "smallExplosion", ozObjGetPos() );
 end
 
-function Rifle_onShot( l )
+function rifle_onShot( l )
   ozObjBindUser()
 
   local pX, pY, pZ = ozBotGetEyePos()
@@ -129,19 +129,27 @@ function Rifle_onShot( l )
 		  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
 end
 
-function Tank_onShot0( l )
+function tank_onShot0( l )
   local pX, pY, pZ = ozObjGetPos()
   ozObjBindUser();
   local vX, vY, vZ = ozBotGetDir()
-  local dX, dY, dZ = 3 - math.random() * 6,
-                     3 - math.random() * 6,
-                     3 - math.random() * 6
+  ozOrbisAddPart( pX, pY, pZ, vX * 400, vY * 400, vZ * 400,
+                  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
+end
+
+function tank_onShot1( l )
+  local pX, pY, pZ = ozObjGetPos()
+  ozObjBindUser();
+  local vX, vY, vZ = ozBotGetDir()
+  local dX, dY, dZ = 5 - math.random() * 10,
+                     5 - math.random() * 10,
+                     5 - math.random() * 10
 
   ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
                   1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
 end
 
-function Axe_onShot( l )
+function axe_onShot( l )
   ozObjBindUser()
 
   local pX, pY, pZ = ozBotGetEyePos()
@@ -151,6 +159,22 @@ function Axe_onShot( l )
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
       ozObjDamage( 120.0 )
+    end
+  end
+end
+
+function serviceStation_onUpdate( l )
+  if l.ticks and l.ticks > 0 then
+    l.ticks = l.ticks - 1
+  else
+    -- check for vehicles every second
+    l.ticks = 50
+
+    ozSelfBindAllOverlaps( 4, 4, 4 )
+    while ozObjBindNext() do
+      if ozObjIsVehicle() then
+        ozVehicleService()
+      end
     end
   end
 end

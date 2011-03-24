@@ -52,6 +52,10 @@ namespace ui
       int  descTextX;
       int  descTextY;
 
+      void drawBotCrosshair();
+      void drawBotStatus();
+      void drawVehicleStatus();
+
     protected:
 
       virtual void onDraw();

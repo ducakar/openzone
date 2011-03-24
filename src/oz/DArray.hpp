@@ -364,7 +364,7 @@ namespace oz
       }
 
       /**
-       * Deallocate rosources.
+       * Deallocate resources.
        */
       void dealloc()
       {

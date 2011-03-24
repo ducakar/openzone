@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/Main.hpp"
+#include "client/Client.hpp"
 
 #include "matrix/common.hpp"
 
@@ -32,10 +32,8 @@ int main( int argc, char** argv )
       "This is free software, and you are welcome to redistribute it\n"
       "under certain conditions; See COPYING file for details.\n\n" );
 
-  printf( "%g %g\n", EPSILON, Math::EPSILON );
-
   try {
-    exitCode = client::main.main( &argc, argv );
+    exitCode = client::client.main( &argc, argv );
   }
   catch( const Exception& e ) {
     oz::log.resetIndent();
@@ -65,7 +63,7 @@ int main( int argc, char** argv )
     exitCode = -1;
   }
 
-  client::main.shutdown();
+  client::client.shutdown();
 
   Alloc::isLocked = true;
   Alloc::printLeaks();

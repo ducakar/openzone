@@ -125,9 +125,11 @@ namespace oz
 
       const char* sOpenSample  = is.readString();
       const char* sCloseSample = is.readString();
+      const char* sFrictSample = is.readString();
 
       models[i].openSample  = sOpenSample[0]  == '\0' ? -1 : translator.soundIndex( sOpenSample );
       models[i].closeSample = sCloseSample[0] == '\0' ? -1 : translator.soundIndex( sCloseSample );
+      models[i].frictSample = sFrictSample[0] == '\0' ? -1 : translator.soundIndex( sFrictSample );
     }
 
     return true;

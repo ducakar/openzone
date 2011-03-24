@@ -64,7 +64,7 @@ namespace oz
       move.x -= right.x;
       move.y -= right.y;
     }
-    if( actions & Bot::ACTION_JUMP ) {
+    if( actions & Bot::ACTION_VEH_UP ) {
       move += up;
     }
 
@@ -113,10 +113,10 @@ namespace oz
     if( actions & Bot::ACTION_LEFT ) {
       move -= right;
     }
-    if( actions & Bot::ACTION_JUMP ) {
+    if( actions & Bot::ACTION_VEH_UP ) {
       move += up;
     }
-    if( actions & Bot::ACTION_CROUCH ) {
+    if( actions & Bot::ACTION_VEH_DOWN ) {
       move -= up;
     }
 
@@ -182,26 +182,34 @@ namespace oz
     Point3 oldPos = p;
     p += momentum * Timer::TICK_TIME;
 
-    if( ( actions & Bot::ACTION_ATTACK ) && !clazz->onShot[0].isEmpty() ) {
-      if( shotTime[0] == 0.0f ) {
-        shotTime[0] = clazz->shotInterval[0];
+    if( clazz->nWeapons != 0 ) {
+      if( actions & ~oldActions & Bot::ACTION_VEH_NEXT_WEAPON ) {
+        weapon = ( weapon + 1 ) % clazz->nWeapons;
+        addEvent( EVENT_NEXT_WEAPON, 1.0f );
+      }
+      if( actions & Bot::ACTION_ATTACK ) {
+        if( shotTime[weapon] == 0.0f ) {
+          shotTime[weapon] = clazz->shotInterval[weapon];
 
-        if( nShots[0] == 0 ) {
-          addEvent( EVENT_SHOT0_EMPTY, 1.0f );
-        }
-        else {
-          nShots[0] = max( -1, nShots[0] - 1 );
+          if( nShots[weapon] == 0 ) {
+            addEvent( EVENT_SHOT0_EMPTY, 1.0f );
+          }
+          else {
+            nShots[weapon] = max( -1, nShots[weapon] - 1 );
 
-          addEvent( EVENT_SHOT0, 1.0f );
-          lua.call( clazz->onShot[0], this, pilot );
+            addEvent( EVENT_SHOT0, 1.0f );
+            lua.call( clazz->onShot[weapon], this, pilot );
+          }
         }
       }
     }
 
     p = oldPos;
 
-    if( shotTime[0] > 0.0f ) {
-      shotTime[0] = max( shotTime[0] - Timer::TICK_TIME, 0.0f );
+    for( int i = 0; i < clazz->nWeapons; ++i ) {
+      if( shotTime[i] > 0.0f ) {
+        shotTime[i] = max( shotTime[i] - Timer::TICK_TIME, 0.0f );
+      }
     }
 
     for( int i = 0; i < CREW_MAX; ++i ) {
@@ -239,9 +247,31 @@ namespace oz
     }
   }
 
-  Vehicle::Vehicle() : rot( Quat::ID ), actions( 0 ), oldActions( 0 )
+  Vehicle::Vehicle() : rot( Quat::ID ), actions( 0 ), oldActions( 0 ), weapon( 0 )
   {
     aSet( crew, -1, CREW_MAX );
+  }
+
+  void Vehicle::service()
+  {
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+    bool wasServiced = false;
+
+    if( life != clazz->life ) {
+      life = clazz->life;
+      wasServiced = true;
+    }
+
+    for( int i = 0; i < clazz->nWeapons; ++i ) {
+      if( nShots[i] != clazz->nShots[i] ) {
+        nShots[i] = clazz->nShots[i];
+        wasServiced = true;
+      }
+    }
+
+    if( wasServiced ) {
+      addEvent( EVENT_SERVICE, 1.0f );
+    }
   }
 
   void Vehicle::readFull( InputStream* istream )

@@ -26,8 +26,10 @@ namespace ui
   const float InventoryMenu::SLOT_DIMF = float( InventoryMenu::SLOT_SIZE ) / 2.0f;
 
   InventoryMenu::InventoryMenu() :
-      Frame( 5, 5, SLOT_SIZE * COLS, SLOT_SIZE * ROWS + HEADER_SIZE + FOOTER_SIZE )
+      Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + HEADER_SIZE + FOOTER_SIZE )
   {
+    x = ( camera.width - width ) / 2;
+
     useTexId = context.loadTexture( "ui/use.ozcTex" );
     tagged = -1;
     row = 0;
@@ -101,30 +103,12 @@ namespace ui
     setFont( Font::TITLE );
     printCentred( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, "Inventory" );
 
-    // set shaders
-    for( int i = 0; i < translator.shaders.length(); ++i ) {
-      if( i == shader.ui ) {
-        continue;
-      }
-
-      shader.use( i );
-
-      tf.applyCamera();
-
-      shader.setAmbientLight( Colours::WHITE );
-      shader.setSkyLight( Vec3( 0.0f, 0.0f, 1.0f ), Colours::BLACK );
-      shader.updateLights();
-
-      glUniform1f( param.oz_Fog_start, 1000000.0f );
-      glUniform1f( param.oz_Fog_end, 2000000.0f );
-    }
-
     glDisable( GL_BLEND );
 
-    tf.model = Mat44::ID;
-    tf.model.translate( Vec3( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0.0f ) );
-    tf.model.translate( Vec3( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f ) );
-    tf.model.z = Vec4::ZERO;
+    tf.camera = Mat44::ID;
+    tf.camera.translate( Vec3( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0.0f ) );
+    tf.camera.translate( Vec3( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f ) );
+    tf.camera.z = Vec4::ZERO;
 
     const Vector<int>& items = camera.botObj->items;
 
@@ -141,13 +125,17 @@ namespace ui
       float scale = SLOT_DIMF / size;
 
       if( i % COLS == 0 ) {
-        tf.model.translate( Vec3( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f ) );
+        tf.camera.translate( Vec3( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f ) );
       }
 
-      tf.push();
-      tf.model.rotateX( Math::rad( -60.0f ) );
-      tf.model.rotateZ( Math::rad( +70.0f ) );
-      tf.model.scale( Vec3( scale, scale, scale ) );
+      Mat44 originalCamera = tf.camera;
+
+      tf.camera.rotateX( Math::rad( -60.0f ) );
+      tf.camera.rotateZ( Math::rad( +70.0f ) );
+      tf.camera.scale( Vec3( scale, scale, scale ) );
+      tf.applyCamera();
+
+      tf.model = Mat44::ID;
 
       if( i == tagged ) {
         shader.colour = Colours::TAG;
@@ -160,13 +148,18 @@ namespace ui
         shader.colour = Colours::WHITE;
       }
 
-      tf.pop();
-      tf.model.translate( Vec3( float( SLOT_SIZE ), 0.0f, 0.0f ) );
+      tf.camera = originalCamera;
+      tf.camera.translate( Vec3( float( SLOT_SIZE ), 0.0f, 0.0f ) );
     }
 
     shape.bindVertexArray();
 
     shader.use( shader.ui );
+
+    tf.camera = Mat44::ID;
+    tf.model = Mat44::ID;
+    tf.applyCamera();
+
     glEnable( GL_BLEND );
 
     tagged = -1;

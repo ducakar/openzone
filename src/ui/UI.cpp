@@ -12,6 +12,7 @@
 #include "ui/UI.hpp"
 
 #include "client/Camera.hpp"
+#include "client/Colours.hpp"
 #include "client/Context.hpp"
 #include "client/Shape.hpp"
 
@@ -45,8 +46,23 @@ namespace ui
     tf.ortho();
     tf.camera = Mat44::ID;
 
+    // set shaders
+    for( int i = 0; i < translator.shaders.length(); ++i ) {
+      if( shader.isLoaded || i == shader.ui ) {
+        shader.use( i );
+
+        tf.applyCamera();
+
+        shader.setAmbientLight( Vec4( 0.6f, 0.5f, 0.6f, 1.0f ) );
+        shader.setSkyLight( Vec3( 0.67f, -0.67f, -0.33f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
+        shader.updateLights();
+
+        glUniform1f( param.oz_Fog_start, 1000000.0f );
+        glUniform1f( param.oz_Fog_end, 2000000.0f );
+      }
+    }
+
     shader.use( shader.ui );
-    tf.applyCamera();
 
     shape.bindVertexArray();
 

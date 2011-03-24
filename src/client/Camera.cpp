@@ -108,16 +108,24 @@ namespace client
     h -= float( ui::mouse.overEdgeX ) * mouseXSens;
     v += float( ui::mouse.overEdgeY ) * mouseYSens;
 
-    if( ui::keyboard.keys[SDLK_UP] ) {
+    if( ui::keyboard.keys[SDLK_UP] | ui::keyboard.keys[SDLK_KP7] |
+        ui::keyboard.keys[SDLK_KP8] | ui::keyboard.keys[SDLK_KP9] )
+    {
       v += keyXSens * Timer::TICK_TIME;
     }
-    if( ui::keyboard.keys[SDLK_DOWN] ) {
+    if( ui::keyboard.keys[SDLK_DOWN] | ui::keyboard.keys[SDLK_KP1] |
+        ui::keyboard.keys[SDLK_KP2] | ui::keyboard.keys[SDLK_KP3] )
+    {
       v -= keyXSens * Timer::TICK_TIME;
     }
-    if( ui::keyboard.keys[SDLK_RIGHT] ) {
+    if( ui::keyboard.keys[SDLK_RIGHT] | ui::keyboard.keys[SDLK_KP3] |
+        ui::keyboard.keys[SDLK_KP6] | ui::keyboard.keys[SDLK_KP9] )
+    {
       h -= keyYSens * Timer::TICK_TIME;
     }
-    if( ui::keyboard.keys[SDLK_LEFT] ) {
+    if( ui::keyboard.keys[SDLK_LEFT] | ui::keyboard.keys[SDLK_KP1] |
+        ui::keyboard.keys[SDLK_KP4] | ui::keyboard.keys[SDLK_KP7] )
+    {
       h += keyYSens * Timer::TICK_TIME;
     }
 
@@ -153,6 +161,15 @@ namespace client
 
   void Camera::prepare()
   {
+    hard_assert( ( bot == -1 && botObj == null ) || ( bot != -1 && botObj == orbis.objects[bot] ) );
+
+    botObj = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
+
+    if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
+      bot = -1;
+      botObj = null;
+    }
+
     proxy->prepare();
   }
 

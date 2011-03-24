@@ -1,7 +1,7 @@
 base "Vehicle"
 
-dim.x "1.49"
-dim.y "1.49"
+dim.x "1.39"
+dim.y "1.39"
 dim.z "0.79"
 
 life "2000.0f"
@@ -31,8 +31,8 @@ audioSample04                   "splash2"                       # splash
 audioSample05                   ""                              # friction
 audioSample06                   ""                              # use
 audioSample07                   ""                              # engine
-audioSample08                   ""                              #
-audioSample09                   ""                              #
+audioSample08                   "acid5"                         # service
+audioSample09                   "itempick"                      # switch weapon
 audioSample10                   "cg2"                           # primary trigger
 audioSample11                   "outofammo"                     # primary trigger empty
 audioSample12                   ""                              # secondary trigger
@@ -42,9 +42,15 @@ type "HOVER"
 
 state.crewVisible "false"
 
-weapon00.onShot "Tank_onShot0"
+weapon00.name "30 mm cannon"
+weapon00.onShot "tank_onShot0"
 weapon00.nShots "100"
-weapon00.shotInterval "0.10"
+weapon00.shotInterval "0.50"
+
+weapon01.name "7 mm machinegun"
+weapon01.onShot "tank_onShot1"
+weapon01.nShots "400"
+weapon01.shotInterval "0.08"
 
 crew.pilot.pos.y "-0.20"
 crew.pilot.pos.z "-0.20"

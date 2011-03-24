@@ -74,6 +74,7 @@ namespace oz
 
         String openSample;
         String closeSample;
+        String frictSample;
       };
 
       float   life;

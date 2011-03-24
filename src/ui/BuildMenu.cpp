@@ -44,40 +44,27 @@ namespace ui
     }
   }
 
-  static void destroy( Button* )
-  {
-    Point3 p = camera.bot == -1 ? camera.p : camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ );
-    collider.translate( p, camera.at * 2.0f, camera.botObj );
-
-    if( collider.hit.obj != null ) {
-      Object* obj = const_cast<Object*>( collider.hit.obj );
-      obj->life = 0.0f;
-    }
-  }
-
-  BuildMenu::BuildMenu() : Frame( -205, -255, 220, 250 )
+  BuildMenu::BuildMenu() : Frame( -228, -258, 220, 250 )
   {
     setFont( Font::TITLE );
 
-    add( new Button( "small crate", createObject, 100, 15 ), 5, -35 );
-    add( new Button( "big crate", createObject, 100, 15 ), 5, -55 );
-    add( new Button( "metal barrel", createObject, 100, 15 ), 5, -75 );
-    add( new Button( "first aid", createObject, 100, 15 ), 5, -95 );
+    add( new Button( "smallCrate", createObject, 100, 15 ), 5, -35 );
+    add( new Button( "bigCrate", createObject, 100, 15 ), 5, -55 );
+    add( new Button( "metalBarrel", createObject, 100, 15 ), 5, -75 );
+    add( new Button( "firstAid", createObject, 100, 15 ), 5, -95 );
     add( new Button( "cvicek", createObject, 100, 15 ), 5, -115 );
     add( new Button( "bomb", createObject, 100, 15 ), 5, -135 );
-    add( new Button( "droid rifle", createObject, 100, 15 ), 5, -155 );
-    add( new Button( "goblin axe", createObject, 100, 15 ), 5, -185 );
+    add( new Button( "droidRifle", createObject, 100, 15 ), 5, -155 );
+    add( new Button( "goblinAxe", createObject, 100, 15 ), 5, -175 );
 
     add( new Button( "goblin", createObject, 100, 15 ), 115, -35 );
     add( new Button( "knight", createObject, 100, 15 ), 115, -55 );
     add( new Button( "lord", createObject, 100, 15 ), 115, -75 );
     add( new Button( "beast", createObject, 100, 15 ), 115, -95 );
     add( new Button( "droid", createObject, 100, 15 ), 115, -115 );
-    add( new Button( "droid commander", createObject, 100, 15 ), 115, -135 );
+    add( new Button( "droidCommander", createObject, 100, 15 ), 115, -135 );
     add( new Button( "raptor", createObject, 100, 15 ), 115, -155 );
-    add( new Button( "tank", createObject, 100, 15 ), 115, -185 );
-
-    add( new Button( "DESTROY", destroy, 100, 15 ), 115, 5 );
+    add( new Button( "tank", createObject, 100, 15 ), 115, -175 );
   }
 
   bool BuildMenu::onMouseEvent()

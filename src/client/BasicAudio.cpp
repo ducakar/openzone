@@ -57,10 +57,8 @@ namespace client
         }
       }
 
-      playContSound( samples[SND_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj );
+      playContSound( samples[SND_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj, obj );
     }
-
-    parent = parent == null ? this : parent;
 
     // events
     foreach( event, obj->events.citer() ) {
@@ -69,7 +67,7 @@ namespace client
       if( event->id >= 0 && samples[event->id] != -1 ) {
         hard_assert( 0.0f <= event->intensity );
 
-        playSound( samples[event->id], event->intensity, parent->obj );
+        playSound( samples[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
       }
     }
   }
