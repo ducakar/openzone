@@ -1,8 +1,8 @@
 base "Object"
 
-dim.x "1.99"
-dim.y "1.99"
-dim.z "1.99"
+dim.x "3.99"
+dim.y "3.99"
+dim.z "3.99"
 
 flag.destroyFunc "false"
 flag.solid       "false"
@@ -10,7 +10,7 @@ flag.wideCull    "true"
 
 life "INFINITY"
 
-onUpdate  "SmallExplosion_onUpdate"
+onUpdate  "bigExplosion_onUpdate"
 
 modelType "Explosion"
 

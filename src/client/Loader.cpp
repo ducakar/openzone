@@ -111,7 +111,7 @@ namespace client
     hard_assert( alGetError() == AL_NO_ERROR );
 
     // remove continous sounds that are not played any more
-    for( auto i = context.contSources.iter(); i.isValid(); ) {
+    for( auto i = context.bspSources.iter(); i.isValid(); ) {
       Context::ContSource* src = i;
       uint key = i.key();
 
@@ -123,7 +123,23 @@ namespace client
       }
       else {
         alDeleteSources( 1, &src->source );
-        context.contSources.exclude( key );
+        context.bspSources.exclude( key );
+      }
+    }
+
+    for( auto i = context.objSources.iter(); i.isValid(); ) {
+      Context::ContSource* src = i;
+      uint key = i.key();
+
+      // we should advance now, so that we don't remove the element the iterator is pointing at
+      ++i;
+
+      if( src->isUpdated ) {
+        src->isUpdated = false;
+      }
+      else {
+        alDeleteSources( 1, &src->source );
+        context.objSources.exclude( key );
       }
     }
 

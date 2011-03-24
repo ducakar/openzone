@@ -26,7 +26,7 @@ namespace oz
   Matrix matrix;
 
   // default 10000.0f: 100 m/s
-  const float Matrix::MAX_VELOCITY2 = 100000.0f;
+  const float Matrix::MAX_VELOCITY2 = 1000000.0f;
 
   void Matrix::loadStressTest()
   {
@@ -95,14 +95,14 @@ namespace oz
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
 
-      const ObjectClass* const* value = translator.classes.find( "metal barrel" );
+      const ObjectClass* const* value = translator.classes.find( "metalBarrel" );
       Point3 p = Point3( x, y, z );
       AABB aabb = AABB( p, ( *value )->dim );
 
       aabb.p.z += aabb.dim.z + 0.1f;
 
       if( z > 0.0f && !collider.overlaps( aabb ) ) {
-        synapse.addObject( "metal barrel", aabb.p );
+        synapse.addObject( "metalBarrel", aabb.p );
       }
     }
     for( int i = 0; i < 5000; ++i ) {
@@ -110,14 +110,14 @@ namespace oz
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
 
-      const ObjectClass* const* value = translator.classes.find( "small crate" );
+      const ObjectClass* const* value = translator.classes.find( "smallCrate" );
       Point3 p = Point3( x, y, z );
       AABB aabb = AABB( p, ( *value )->dim );
 
       aabb.p.z += aabb.dim.z + 0.1f;
 
       if( z > 0.0f && !collider.overlaps( aabb ) ) {
-        synapse.addObject( "small crate", aabb.p );
+        synapse.addObject( "smallCrate", aabb.p );
       }
     }
   }
@@ -131,12 +131,12 @@ namespace oz
     int index = synapse.addObject( "lord", Point3( 138, -11, 73 ) );
     static_cast<Bot*>( orbis.objects[index] )->h = 0.75f * Math::TAU;
 
-    index = synapse.addObject( "droid commander", Point3( 140, -11, 73 ) );
+    index = synapse.addObject( "droidCommander", Point3( 140, -11, 73 ) );
     static_cast<Bot*>( orbis.objects[index] )->h = 0.25f * Math::TAU;
 
     synapse.addObject( "cvicek", Point3( 135, -3, 73 ) );
-    synapse.addObject( "first aid", Point3( 136, -3, 73 ) );
-    synapse.addObject( "droid rifle", Point3( 137, -3, 73 ) );
+    synapse.addObject( "firstAid", Point3( 136, -3, 73 ) );
+    synapse.addObject( "droidRifle", Point3( 137, -3, 73 ) );
 
     synapse.addObject( "raptor", Point3( 155, -30, 70 ) );
     synapse.addObject( "tank", Point3( 145, -30, 71 ) );
@@ -144,48 +144,48 @@ namespace oz
     synapse.genParts( 1000, Point3( 136, -3, 71 ), Vec3( 0, 0, 10 ), 15.0f,
                       Vec3( 0.4f, 0.4f, 0.4f ), 0.2f, 1.95f, 0.1f, 5.0f );
 
-    synapse.addObject( "metal barrel", Point3( 147, -11, 72 ) );
-    synapse.addObject( "metal barrel", Point3( 147, -11, 74 ) );
-    synapse.addObject( "metal barrel", Point3( 147, -11, 76 ) );
+    synapse.addObject( "metalBarrel", Point3( 147, -11, 72 ) );
+    synapse.addObject( "metalBarrel", Point3( 147, -11, 74 ) );
+    synapse.addObject( "metalBarrel", Point3( 147, -11, 76 ) );
 
-    synapse.addObject( "small crate", Point3( 147, 11, 72 ) );
-    synapse.addObject( "small crate", Point3( 147, 11, 73 ) );
-    synapse.addObject( "small crate", Point3( 147, 11, 74 ) );
-    synapse.addObject( "small crate", Point3( 147, 11, 75 ) );
-    synapse.addObject( "small crate", Point3( 147, 11, 76 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 11, 72 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 11, 73 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 11, 74 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 11, 75 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 11, 76 ) );
 
-    synapse.addObject( "small crate", Point3( 147, 12, 72 ) );
-    synapse.addObject( "small crate", Point3( 147, 12, 73 ) );
-    synapse.addObject( "small crate", Point3( 147, 12, 74 ) );
-    synapse.addObject( "small crate", Point3( 147, 12, 75 ) );
-    synapse.addObject( "small crate", Point3( 147, 12, 76 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 12, 72 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 12, 73 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 12, 74 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 12, 75 ) );
+    synapse.addObject( "smallCrate", Point3( 147, 12, 76 ) );
 
-    synapse.addObject( "small crate", Point3( 148, 11, 72 ) );
-    synapse.addObject( "small crate", Point3( 148, 11, 73 ) );
-    synapse.addObject( "small crate", Point3( 148, 11, 74 ) );
-    synapse.addObject( "small crate", Point3( 148, 11, 75 ) );
-    synapse.addObject( "small crate", Point3( 148, 11, 76 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 11, 72 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 11, 73 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 11, 74 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 11, 75 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 11, 76 ) );
 
-    synapse.addObject( "small crate", Point3( 148, 12, 72 ) );
-    synapse.addObject( "small crate", Point3( 148, 12, 73 ) );
-    synapse.addObject( "small crate", Point3( 148, 12, 74 ) );
-    synapse.addObject( "small crate", Point3( 148, 12, 75 ) );
-    synapse.addObject( "small crate", Point3( 148, 12, 76 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 12, 72 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 12, 73 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 12, 74 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 12, 75 ) );
+    synapse.addObject( "smallCrate", Point3( 148, 12, 76 ) );
 
-    synapse.addObject( "big crate", Point3( 140, -7, 72 ) );
+    synapse.addObject( "bigCrate", Point3( 140, -7, 72 ) );
 
-    synapse.addStruct( "castle", Point3( 143, 0, 79 ), Struct::R0 ); // 57, -33, 43
+    synapse.addStruct( "castle", Point3( 143, 0, 79 ), Struct::R0 );
     synapse.addStruct( "pool", Point3( 112, -7, 70 ), Struct::R0 );
     synapse.addStruct( "bunker", Point3( 106, -7, 75 ), Struct::R90 );
 
-    // +86, +33, +36
+    synapse.addObject( "serviceStation", Point3( 110, -25, 69 ) );
 
-    synapse.addObject( "small crate", Point3( 108, -6, 81 ) );
-    synapse.addObject( "small crate", Point3( 108, -6, 82 ) );
-    synapse.addObject( "small crate", Point3( 108, -6, 83 ) );
-    synapse.addObject( "small crate", Point3( 108, -8, 81 ) );
-    synapse.addObject( "small crate", Point3( 108, -8, 82 ) );
-    synapse.addObject( "small crate", Point3( 108, -8, 83 ) );
+    synapse.addObject( "smallCrate", Point3( 108, -6, 81 ) );
+    synapse.addObject( "smallCrate", Point3( 108, -6, 82 ) );
+    synapse.addObject( "smallCrate", Point3( 108, -6, 83 ) );
+    synapse.addObject( "smallCrate", Point3( 108, -8, 81 ) );
+    synapse.addObject( "smallCrate", Point3( 108, -8, 82 ) );
+    synapse.addObject( "smallCrate", Point3( 108, -8, 83 ) );
   }
 
   void Matrix::update()

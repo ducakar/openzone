@@ -1,0 +1,16 @@
+description "vehicle service station"
+
+base "Object"
+
+dim.x "1.29"
+dim.y "0.99"
+dim.z "2.57"
+
+flag.cylinder "false"
+
+life "1000"
+
+onUpdate "serviceStation_onUpdate"
+
+modelType "SMM"
+modelName "biotank"

@@ -1,5 +1,5 @@
 /*
- *  Main.hpp
+ *  Client.hpp
  *
  *  Game initialisation and main loop
  *
@@ -18,7 +18,7 @@ namespace oz
 namespace client
 {
 
-  class Main
+  class Client
   {
     private:
 
@@ -52,7 +52,7 @@ namespace client
 
   };
 
-  extern Main main;
+  extern Client client;
 
 }
 }

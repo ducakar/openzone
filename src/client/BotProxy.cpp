@@ -93,10 +93,10 @@ namespace client
      * Actions
      */
     if( ui::keyboard.keys[SDLK_SPACE] ) {
-      bot->actions |= Bot::ACTION_JUMP;
+      bot->actions |= Bot::ACTION_JUMP | Bot::ACTION_VEH_UP;
     }
     if( ui::keyboard.keys[SDLK_LCTRL] ) {
-      bot->actions |= Bot::ACTION_CROUCH;
+      bot->actions |= Bot::ACTION_CROUCH | Bot::ACTION_VEH_DOWN;
     }
     if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
       bot->state ^= Bot::RUNNING_BIT;
@@ -107,7 +107,10 @@ namespace client
     if( ui::keyboard.keys[SDLK_j] ) {
       bot->actions |= Bot::ACTION_EJECT;
     }
-    if( ui::keyboard.keys[SDLK_LALT] && !ui::keyboard.oldKeys[SDLK_LALT] ) {
+    if( ui::keyboard.keys[SDLK_m] ) {
+      bot->actions |= Bot::ACTION_SUICIDE;
+    }
+    if( ui::keyboard.keys[SDLK_KP_MULTIPLY] && !ui::keyboard.oldKeys[SDLK_KP_MULTIPLY] ) {
       isFreelook = !isFreelook;
 
       camera.h = bot->h;
@@ -162,7 +165,7 @@ namespace client
         bot->actions |= Bot::ACTION_ATTACK;
       }
       if( ui::mouse.rightClick ) {
-        bot->actions |= Bot::ACTION_USE;
+        bot->actions |= Bot::ACTION_USE | Bot::ACTION_VEH_NEXT_WEAPON;
       }
       if( ui::mouse.wheelDown ) {
         bot->actions |= Bot::ACTION_TAKE;
@@ -278,7 +281,7 @@ namespace client
     else if( bot->grabObj != -1 ) {
       camera.setTagged( orbis.objects[camera.botObj->grabObj] );
     }
-    else if( isExternal && isFreelook ) {
+    else if( isFreelook ) {
       // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
       float hvsc[6];
 

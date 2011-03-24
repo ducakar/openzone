@@ -1,3 +1,5 @@
+description "droid"
+
 base "Bot"
 
 dim.x "0.29"
@@ -35,9 +37,9 @@ staminaWaterDrain "0.07"
 staminaRunDrain "0.07"
 staminaJumpDrain "3.0"
 
-inventoryItem00 "droid rifle"
-inventoryItem01 "first aid"
-inventoryItem02 "first aid"
+inventoryItem00 "droidRifle"
+inventoryItem01 "firstAid"
+inventoryItem02 "firstAid"
 inventoryItem03 "bomb"
 inventoryItem04 "bomb"
 

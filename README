@@ -1,12 +1,12 @@
-Camera controls
----------------
+Free camera controls
+--------------------
 mouse movement      - rotate camera (when in UI mode, push mouse cursor into screen borders)
 arrow keys          - rotate camera
 Space               - up/increase height
 Ctrl                - down/decrease height
 Tab                 - toggle interface mode
 Numpad Enter        - switch between FreeCam and Strategic camera
-i                   - incarnate into tagged (FreeCam) or selected (Strategic camera) bot
+i                   - incarnate into the selected bot
 
 Bot controls
 ------------
@@ -16,21 +16,21 @@ w, a, s, d          - move forwards, left, backwards, right
 Shift               - toggle run
 Ctrl                - toggle crouch
 Space               - jump
-Tab                 - toggle interface mode
 
+left click          - trigger equipped weapon
 right click         - use tagged object or enter tagged vehicle
 middle click        - grab/drop tagged object or take an item from the inventory when clicking on an
                       inventory item
 wheel up            - throw object you are currently holding
 wheel down          - put tagged object into inventory
 
-x                   - exit vehicle
-j                   - eject from vehicle
-
-Alt                 - toggle freelook (look around without rotating the bot)
-Numpad Enter        - switch between 1st persorn and 3rd person camera
-p                   - toggle ability to step over small obstacles, e.g. walk up the stairs
+m                   - suicide
 i                   - leave bot
+p                   - toggle ability to step over small obstacles, e.g. walk up the stairs
+
+Tab                 - toggle interface mode
+Numpad Enter        - switch between 1st persorn and 3rd person camera
+Numpad *            - toggle freelook (look around without rotating the bot)
 
 f                   - point gesture
 g                   - fall back gesture
@@ -38,6 +38,25 @@ h                   - salute gesture
 j                   - wave gesture
 k                   - flip out gesture
 l                   - play all animations
+
+Vehicle controls
+----------------
+mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
+arrow keys          - look around
+w, a, s, d          - move forwards, left, backwards, right
+Space               - up (air vehicles) or jump (hover vehicles)
+Ctrl                - down (air vehicles)
+
+left click          - trigger selected weapon
+wheel up            - select previous weapon
+wheel down          - select next weapon
+
+x                   - exit vehicle
+j                   - eject from vehicle
+
+Tab                 - toggle interface mode
+Numpad Enter        - switch between 1st persorn and 3rd person camera
+Numpad *            - toggle freelook (look around without rotating the vehicle)
 
 Misc controls
 -------------

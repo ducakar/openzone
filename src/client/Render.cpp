@@ -114,7 +114,8 @@ namespace client
 
     // drawnStructs
     if( drawnStructs.length() < orbis.structs.length() ) {
-      drawnStructs.setSize( orbis.structs.length() );
+      drawnStructs.dealloc();
+      drawnStructs.alloc( orbis.structs.length() );
     }
     drawnStructs.clearAll();
 
@@ -389,7 +390,7 @@ namespace client
     log.println( "Unloading Render {" );
     log.indent();
 
-    drawnStructs.clear();
+    drawnStructs.dealloc();
 
     terra.unload();
     sky.unload();
@@ -441,6 +442,8 @@ namespace client
       log.printEnd( " Failed" );
       throw Exception( "Window creation failed" );
     }
+
+    SDL_WM_SetCaption( OZ_APPLICATION_NAME " " OZ_APPLICATION_VERSION, null );
 
     screenX   = surface->w;
     screenY   = surface->h;

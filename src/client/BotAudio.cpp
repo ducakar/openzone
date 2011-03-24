@@ -58,7 +58,7 @@ namespace client
         }
       }
 
-      playContSound( samples[SND_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj );
+      playContSound( samples[SND_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj, obj );
     }
 
     // events
@@ -68,7 +68,11 @@ namespace client
       if( event->id >= 0 && samples[event->id] != -1 ) {
         hard_assert( 0.0f <= event->intensity );
 
-        playSound( samples[event->id], event->intensity, obj );
+        if( event->id == Object::EVENT_DAMAGE && ( bot->state & Bot::DEATH_BIT ) ) {
+          continue;
+        }
+
+        playSound( samples[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
       }
     }
 
@@ -77,7 +81,7 @@ namespace client
       const Object* obj = orbis.objects[*item];
 
       if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {
-        context.playAudio( orbis.objects[*item], this );
+        context.playAudio( obj, parent == null ? this : parent );
       }
     }
   }

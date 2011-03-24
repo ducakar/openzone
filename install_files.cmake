@@ -93,24 +93,24 @@ if( OZ_INSTALL_DATA )
 
   install( FILES
     data/class/beast.rc
-    data/class/big crate.rc
-    data/class/big explosion.rc
+    data/class/bigCrate.rc
+    data/class/bigExplosion.rc
     data/class/bomb.rc
-    data/class/cviček.rc
+    data/class/cvicek.rc
     data/class/drevo.rc
-    data/class/droid commander.rc
-    data/class/droid rifle.rc
     data/class/droid.rc
-    data/class/first aid.rc
-    data/class/goblin axe.rc
+    data/class/droidCommander.rc
+    data/class/droidRifle.rc
+    data/class/firstAid.rc
     data/class/goblin.rc
+    data/class/goblinAxe.rc
     data/class/knight.rc
     data/class/lord.rc
-    data/class/metal barrel.rc
+    data/class/metalBarrel.rc
     data/class/palma.rc
     data/class/raptor.rc
-    data/class/small crate.rc
-    data/class/small explosion.rc
+    data/class/smallCrate.rc
+    data/class/smallExplosion.rc
     data/class/smreka.rc
     data/class/tank.rc
     DESTINATION share/openzone/class )
@@ -204,6 +204,7 @@ if( OZ_INSTALL_DATA )
     data/snd/hit_wood1.wav
     data/snd/hit_wood2.wav
     data/snd/itemback.wav
+    data/snd/itempick.wav
     data/snd/jump1.wav
     data/snd/jump2.wav
     data/snd/land1.wav

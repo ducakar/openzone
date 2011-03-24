@@ -180,6 +180,8 @@ namespace oz
       static LuaAPI ozBotSetStamina;
       static LuaAPI ozBotAddStamina;
 
+      static LuaAPI ozVehicleService;
+
       static LuaAPI ozPartBindIndex;
       static LuaAPI ozPartIsNull;
       static LuaAPI ozPartGetPos;

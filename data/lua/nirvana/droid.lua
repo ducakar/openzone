@@ -18,14 +18,14 @@ function droid_followCommander( l )
   if not l.commander then
     ozSelfBindObjOverlaps( 30, 30, 30 )
     while ozObjBindNext() do
-      if ozObjIsBot() and not ozObjIsSelf() and ozObjGetTypeName() == "droid commander" then
+      if ozObjIsBot() and not ozObjIsSelf() and ozObjGetTypeName() == "droidCommander" then
 	l.commander = ozObjGetIndex()
         break
       end
     end
   else
     ozObjBindIndex( l.commander )
-    if ozObjIsNull() or not ozObjIsBot() or ozObjGetTypeName() ~= "droid commander" then
+    if ozObjIsNull() or not ozObjIsBot() or ozObjGetTypeName() ~= "droidCommander" then
       l.commander = nil
     end
   end

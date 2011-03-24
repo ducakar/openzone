@@ -100,13 +100,13 @@ namespace oz
 
       // read variable
       String name;
-      if( String::isLetter( ch ) ) {
+      if( String::isLetter( ch ) || ch == '_' ) {
         buffer[0] = ch;
         ch = char( fgetc( f ) );
 
         int i = 1;
         while( i < BUFFER_SIZE - 1 &&
-            ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '.' ) )
+            ( String::isLetter( ch ) || String::isDigit( ch ) || ch == '_' || ch == '.' ) )
         {
           buffer[i] = ch;
           ch = char( fgetc( f ) );

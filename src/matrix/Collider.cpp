@@ -47,13 +47,14 @@ namespace oz
   {
     if( flags & sObj->flags & Object::CYLINDER_BIT ) {
       Vec3  relPos  = aabb.p - sObj->p;
-      Vec3  sumDim  = aabb.dim + sObj->dim;
+      float sumDimX = aabb.dim.x + sObj->dim.x;
+      float sumDimZ = aabb.dim.z + sObj->dim.z;
       float distXY2 = relPos.x*relPos.x + relPos.y*relPos.y;
-      float radius  = sumDim.x + EPSILON;
+      float radius  = sumDimX + EPSILON;
 
       return distXY2 <= radius*radius &&
-          relPos.z <= +sumDim.z + EPSILON &&
-          relPos.z >= -sumDim.z - EPSILON;
+          relPos.z <= +sumDimZ + EPSILON &&
+          relPos.z >= -sumDimZ - EPSILON;
     }
     else {
       return sObj->overlaps( aabb, EPSILON );
@@ -326,37 +327,65 @@ namespace oz
     int   firstPlane  = 0;
 
     if( flags & sObj->flags & Object::CYLINDER_BIT ) {
-      float rx = relStartPos.x;
-      float ry = relStartPos.y;
-      float sx = move.x;
-      float sy = move.y;
+      firstPlane = 2;
 
-      if( rx*rx + ry*ry >= sumDim.x*sumDim.x ) {
+      float px           = relStartPos.x;
+      float py           = relStartPos.y;
+      float rx           = relEndPos.x;
+      float ry           = relEndPos.y;
+      float sx           = move.x;
+      float sy           = move.y;
+      float startDist2   = px*px + py*py;
+      float endDist2     = rx*rx + ry*ry;
+      float radius2      = sumDim.x*sumDim.x;
+      float radiusEps2   = ( sumDim.x + EPSILON ) * ( sumDim.x + EPSILON );
+
+      if( endDist2 > radiusEps2 ) {
         float moveDist2    = sx*sx + sy*sy;
-        float rxsx_rysy    = rx*sx + ry*sy;
-        float rxsy_rysx    = rx*sy - ry*sx;
-        float radius       = sumDim.x + EPSILON;
-        float discriminant = radius*radius * moveDist2 - rxsy_rysx * rxsy_rysx;
+        float pxsx_pysy    = px*sx + py*sy;
+        float pxsy_pysx    = px*sy - py*sx;
+        float discriminant = radiusEps2 * moveDist2 - pxsy_pysx * pxsy_pysx;
 
-        if( discriminant > 0.0f ) {
+        if( startDist2 < radius2 ) {
+          hard_assert( discriminant > 0.0f );
+
           float sqrtDiscr = Math::sqrt( discriminant );
-          float endRatio = ( -rxsx_rysy + sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
+          float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
 
-          if( endRatio > 0.0f ) {
-            float startRatio = ( -rxsx_rysy - sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
-
-            minRatio = max( minRatio, startRatio );
-            maxRatio = min( maxRatio, endRatio );
-
-            lastNormal = ~Vec3( rx + startRatio*sx, ry + startRatio*sy, 0.0f );
-          }
+          maxRatio = min( maxRatio, endRatio );
         }
-        else {
+        else if( discriminant < 0.0f ) {
           return;
         }
-      }
+        else {
+          float sqrtDiscr  = Math::sqrt( discriminant );
+          float endRatio   = ( -pxsx_pysy + sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
 
-      firstPlane = 2;
+          if( endRatio <= 0.0f ) {
+            return;
+          }
+
+          float startRatio = ( -pxsx_pysy - sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
+
+          minRatio = max( minRatio, startRatio );
+          maxRatio = min( maxRatio, endRatio );
+
+          lastNormal = ~Vec3( px + startRatio*sx, py + startRatio*sy, 0.0f );
+        }
+      }
+      else if( startDist2 >= radius2 && endDist2 <= startDist2 ) {
+        float moveDist2    = sx*sx + sy*sy;
+        float pxsx_pysy    = px*sx + py*sy;
+        float pxsy_pysx    = px*sy - py*sx;
+        float discriminant = radiusEps2 * moveDist2 - pxsy_pysx * pxsy_pysx;
+        float sqrtDiscr    = Math::sqrt( max( discriminant, 0.0f ) );
+        float startRatio   = ( -pxsx_pysy - sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
+
+        if( startRatio > minRatio ) {
+          minRatio   = startRatio;
+          lastNormal = ~Vec3( px + startRatio*sx, py + startRatio*sy, 0.0f );
+        }
+      }
     }
 
     for( int i = firstPlane; i < 3; ++i ) {

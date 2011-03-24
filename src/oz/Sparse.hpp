@@ -544,7 +544,7 @@ namespace oz
       }
 
       /**
-       * Deallocate rosources.
+       * Deallocate resources.
        * Container must be empty for this function to work.
        */
       void dealloc()

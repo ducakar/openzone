@@ -37,6 +37,8 @@ namespace client
       /*
        * SFX
        */
+      Bitset                    playedStructs;
+
       void playCell( int cellX, int cellY );
       void loadMusicBuffer( uint buffer );
 

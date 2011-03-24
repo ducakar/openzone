@@ -3,8 +3,8 @@
 // application name
 #define OZ_APPLICATION_NAME     "@OZ_APPLICATION_NAME@"
 
-// application window title
-#define OZ_WINDOW_TITLE         "@OZ_WINDOW_TITLE@"
+// version
+#define OZ_APPLICATION_VERSION  "@OZ_APPLICATION_VERSION@"
 
 // resource dir (configuration, saved games, logs)
 #define OZ_RC_DIR               "@OZ_RC_DIR@"

@@ -11,6 +11,8 @@ add_library( client STATIC
   BotProxy.hpp
   Camera.cpp
   Camera.hpp
+  Client.cpp
+  Client.hpp
   Colours.cpp
   Colours.hpp
   Compiler.cpp
@@ -33,8 +35,6 @@ add_library( client STATIC
   MD2WeaponModel.hpp
   MD3.cpp
   MD3.hpp
-  Main.cpp
-  Main.hpp
   Mesh.cpp
   Mesh.hpp
   Model.cpp

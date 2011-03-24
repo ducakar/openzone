@@ -107,6 +107,8 @@ namespace oz
     char nShotsBuffer[] = "weapon  .nShots";
     char shotIntervalBuffer[] = "weapon  .shotInterval";
 
+    clazz->nWeapons = Vehicle::WEAPONS_MAX;
+
     for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
       hard_assert( i < 100 );
 
@@ -125,6 +127,9 @@ namespace oz
 
       if( !String::isEmpty( clazz->onShot[i] ) ) {
         clazz->flags |= Object::LUA_BIT;
+      }
+      else if( clazz->nWeapons == Vehicle::WEAPONS_MAX ) {
+        clazz->nWeapons = i;
       }
     }
 

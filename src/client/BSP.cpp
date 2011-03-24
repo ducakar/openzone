@@ -380,6 +380,10 @@ namespace client
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
 
+    Bounds bounds = *entity->model;
+    Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+    Point3 p = entity->str->toAbsoluteCS( localPos + entity->offset );
+
     uint srcId;
 
     alGenSources( 1, &srcId );
@@ -388,20 +392,63 @@ namespace client
       return;
     }
 
-    Bounds bounds = *entity->model;
-    Point3 p = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
-
-    p = entity->str->toAbsoluteCS( p );
-
     alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
+    alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
 
     alSourcefv( srcId, AL_POSITION, p );
-    alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
+    alSourcef( srcId, AL_GAIN, 1.0f );
     alSourcePlay( srcId );
 
-    hard_assert( alGetError() == AL_NO_ERROR );
-
     context.sources.add( new Context::Source( srcId ) );
+
+    hard_assert( alGetError() == AL_NO_ERROR );
+  }
+
+  void BSP::playContSound( const Struct::Entity* entity, int sample ) const
+  {
+    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+
+    const Struct* str = entity->str;
+    // we can have at most 100 models per BSP, so stride 128 should do
+    int id = str->index * 128 + int( entity - str->entities );
+
+    Bounds bounds = *entity->model;
+    Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+    Point3 p = entity->str->toAbsoluteCS( localPos + entity->offset );
+
+    Context::ContSource* contSource = context.bspSources.find( id );
+
+    if( contSource == null ) {
+      uint srcId;
+
+      alGenSources( 1, &srcId );
+      if( alGetError() != AL_NO_ERROR ) {
+        log.println( "AL: Too many sources" );
+        return;
+      }
+
+      Bounds bounds = *entity->model;
+      Point3 p = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+
+      p = entity->str->toAbsoluteCS( p + entity->offset );
+
+      alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
+      alSourcei( srcId, AL_LOOPING, AL_TRUE );
+      alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
+
+      alSourcefv( srcId, AL_POSITION, p );
+      alSourcef( srcId, AL_GAIN, 1.0f );
+      alSourcePlay( srcId );
+
+      context.bspSources.add( id, Context::ContSource( srcId ) );
+    }
+    else {
+      alSourcefv( contSource->source, AL_POSITION, p );
+
+      contSource->isUpdated = true;
+    }
+
+    hard_assert( alGetError() == AL_NO_ERROR );
   }
 
 #ifdef OZ_BUILD_TOOLS
@@ -445,6 +492,9 @@ namespace client
       if( bsp->models[i].closeSample != -1 ) {
         context.releaseSound( bsp->models[i].closeSample );
       }
+      if( bsp->models[i].frictSample != -1 ) {
+        context.releaseSound( bsp->models[i].frictSample );
+      }
     }
 
     log.unindent();
@@ -481,6 +531,9 @@ namespace client
       }
       if( bsp->models[i].closeSample != -1 ) {
         context.requestSound( bsp->models[i].closeSample );
+      }
+      if( bsp->models[i].frictSample != -1 ) {
+        context.requestSound( bsp->models[i].frictSample );
       }
     }
 
@@ -522,10 +575,16 @@ namespace client
         if( entity.ratio == 0.0f && bsp->models[i].openSample != -1 ) {
           playSound( &entity, bsp->models[i].openSample );
         }
+        if( bsp->models[i].frictSample != -1 ) {
+          playContSound( &entity, bsp->models[i].frictSample );
+        }
       }
       else if( entity.state == Struct::Entity::CLOSING ) {
         if( entity.ratio == 1.0f && bsp->models[i].closeSample != -1 ) {
           playSound( &entity, bsp->models[i].closeSample );
+        }
+        if( bsp->models[i].frictSample != -1 ) {
+          playContSound( &entity, bsp->models[i].frictSample );
         }
       }
     }

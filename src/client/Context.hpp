@@ -92,8 +92,11 @@ namespace client
       Resource<uint>*                   textures;
       Resource<uint>*                   sounds;
 
+      // non-looping sources
       List<Source>                      sources;
-      HashIndex<ContSource, 256>        contSources;
+      // looping sources
+      HashIndex<ContSource, 256>        bspSources;
+      HashIndex<ContSource, 256>        objSources;
 
       Resource<BSP*>*                   bsps;
 
@@ -109,7 +112,8 @@ namespace client
       int                               maxModels;
       int                               maxAudios;
       int                               maxSources;
-      int                               maxContSources;
+      int                               maxBSPSources;
+      int                               maxObjSources;
 
 #ifdef OZ_BUILD_TOOLS
       static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,

@@ -485,10 +485,11 @@ namespace client
 
   void Context::updateLoad()
   {
-    maxModels      = max( maxModels, models.length() );
-    maxAudios      = max( maxAudios, audios.length() );
-    maxSources     = max( maxSources, sources.length() );
-    maxContSources = max( maxContSources, contSources.length() );
+    maxModels     = max( maxModels, models.length() );
+    maxAudios     = max( maxAudios, audios.length() );
+    maxSources    = max( maxSources, sources.length() );
+    maxBSPSources = max( maxBSPSources, bspSources.length() );
+    maxObjSources = max( maxObjSources, objSources.length() );
   }
 
   void Context::printLoad()
@@ -500,8 +501,10 @@ namespace client
     log.println( "Audios       %d (hashtable load %.2f)", maxAudios,
                  float( maxAudios ) / float( audios.capacity() ) );
     log.println( "Sources      %d", maxSources );
-    log.println( "ContSources  %d (hashtable load %.2f)", maxContSources,
-                 float( maxContSources ) / float( contSources.capacity() ) );
+    log.println( "BSPSources   %d (hashtable load %.2f)", maxBSPSources,
+                 float( maxBSPSources ) / float( bspSources.capacity() ) );
+    log.println( "ObjSources   %d (hashtable load %.2f)", maxObjSources,
+                 float( maxObjSources ) / float( bspSources.capacity() ) );
     log.unindent();
     log.println( "}" );
   }
@@ -521,10 +524,11 @@ namespace client
       bsps[i].nUsers = 0;
     }
 
-    maxModels      = 0;
-    maxAudios      = 0;
-    maxSources     = 0;
-    maxContSources = 0;
+    maxModels     = 0;
+    maxAudios     = 0;
+    maxSources    = 0;
+    maxBSPSources = 0;
+    maxObjSources = 0;
 
     log.printEnd( " OK" );
   }
@@ -582,14 +586,20 @@ namespace client
       alDeleteSources( 1, &src->source );
       hard_assert( alGetError() == AL_NO_ERROR );
     }
-    foreach( src, contSources.citer() ) {
+    foreach( src, bspSources.citer() ) {
+      alDeleteSources( 1, &src->source );
+      hard_assert( alGetError() == AL_NO_ERROR );
+    }
+    foreach( src, objSources.citer() ) {
       alDeleteSources( 1, &src->source );
       hard_assert( alGetError() == AL_NO_ERROR );
     }
 
     sources.free();
-    contSources.clear();
-    contSources.dealloc();
+    bspSources.clear();
+    bspSources.dealloc();
+    objSources.clear();
+    objSources.dealloc();
 
     for( int i = 0; i < translator.textures.length(); ++i ) {
       hard_assert( textures[i].nUsers == 0 );

@@ -24,6 +24,7 @@ namespace oz
   const float Bot::HIT_HARD_THRESHOLD  = -8.00f;
   const float Bot::GRAB_EPSILON        = 0.20f;
   const float Bot::GRAB_STRING_RATIO   = 10.0f;
+  const float Bot::GRAB_HANDLE_TOL     = 1.60f;
   const float Bot::GRAB_MOM_RATIO      = 0.3f;
   // should be smaller than abs( Physics::HIT_THRESHOLD )
   const float Bot::GRAB_MOM_MAX        = 1.0f;
@@ -68,6 +69,10 @@ namespace oz
       }
     }
 
+    if( actions & ACTION_SUICIDE ) {
+      life = clazz->life / 2.0f - EPSILON;
+    }
+
     if( life <= clazz->life / 2.0f ) {
       if( !( state & DEATH_BIT ) && life > 0.0f ) {
         flags |= WIDE_CULL_BIT;
@@ -98,15 +103,6 @@ namespace oz
     h = Math::mod( h + Math::TAU, Math::TAU );
     v = clamp( v, 0.0f, Math::TAU / 2.0f );
 
-    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
-    float hvsc[6];
-
-    Math::sincos( h, &hvsc[0], &hvsc[1] );
-    Math::sincos( v, &hvsc[2], &hvsc[3] );
-
-    hvsc[4] = hvsc[2] * hvsc[0];
-    hvsc[5] = hvsc[2] * hvsc[1];
-
     if( parent != -1 ) {
       grabObj = -1;
       taggedItem = -1;
@@ -124,6 +120,15 @@ namespace oz
     /*
      * STATE
      */
+
+    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+    float hvsc[6];
+
+    Math::sincos( h, &hvsc[0], &hvsc[1] );
+    Math::sincos( v, &hvsc[2], &hvsc[3] );
+
+    hvsc[4] = hvsc[2] * hvsc[0];
+    hvsc[5] = hvsc[2] * hvsc[1];
 
     state &= ~( GROUNDED_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT );
 
@@ -263,9 +268,6 @@ namespace oz
     }
     else {
       anim = Anim::STAND;
-    }
-    if( actions & ACTION_SUICIDE ) {
-      life = clazz->life / 2.0f - EPSILON;
     }
 
     /*
@@ -449,7 +451,7 @@ namespace oz
         handle.z    = min( handle.z, dim.z - camZ + obj->dim.z );
         Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - obj->p;
 
-        if( string.sqL() > grabHandle*grabHandle ) {
+        if( string.sqL() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
           grabObj = -1;
         }
         else {
@@ -539,7 +541,7 @@ namespace oz
           float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
           if( dist <= clazz->grabDistance ) {
-            grabObj   = obj->index;
+            grabObj    = obj->index;
             grabHandle = dist;
             flags      &= ~ON_LADDER_BIT;
           }
@@ -626,9 +628,10 @@ namespace oz
   {
     hard_assert( cell != null );
 
-    parent   = vehicle_;
-    grabObj  = -1;
-    anim     = Anim::STAND;
+    parent  = vehicle_;
+    actions = 0;
+    grabObj = -1;
+    anim    = Anim::STAND;
     synapse.cut( this );
   }
 
@@ -636,7 +639,8 @@ namespace oz
   {
     hard_assert( cell == null && parent != -1 );
 
-    parent = -1;
+    parent  = -1;
+    actions = 0;
     synapse.put( this );
   }
 

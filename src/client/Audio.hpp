@@ -29,8 +29,8 @@ namespace client
 
     protected:
 
-      void playSound( int sample, float volume, const Object* obj ) const;
-      void playContSound( int sample, float volume, const Object* obj ) const;
+      void playSound( int sample, float volume, const Object* obj, const Object* parent ) const;
+      void playContSound( int sample, float volume, const Object* obj, const Object* parent ) const;
       void requestSounds() const;
       void releaseSounds() const;
 

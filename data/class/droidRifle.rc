@@ -1,8 +1,12 @@
+description "droid rifle"
+
 base "Weapon"
 
 dim.x "0.18"
 dim.y "0.24"
 dim.z "0.04"
+
+flag.cylinder "false"
 
 life "100.0f"
 
@@ -23,6 +27,6 @@ audioSample06                   ""                              # use
 audioSample07                   "cg2"                           # trigger
 audioSample08                   "outofammo"                     # trigger_empty
 
-onShot "Rifle_onShot"
+onShot "rifle_onShot"
 nShots "-1"
 shotInterval "0.5"
