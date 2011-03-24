@@ -208,7 +208,7 @@ namespace ui
     shape.tag( minX, minY, maxX, maxY );
   }
 
-  StrategicArea::StrategicArea() : Area( camera.width, camera.height ), leftClick( false )
+  StrategicArea::StrategicArea() : Area( camera.width, camera.height )
   {
     flags |= IGNORE_BIT | HIDDEN_BIT | UPDATE_FUNC_BIT;
     setFont( Font::SANS );
@@ -225,15 +225,8 @@ namespace ui
     if( camera.state != Camera::STRATEGIC ) {
       show( false );
       tagged.clear();
-      leftClick = false;
       return;
     }
-  }
-
-  bool StrategicArea::onMouseEvent()
-  {
-    leftClick |= mouse.leftClick;
-    return true;
   }
 
   void StrategicArea::onDraw()
@@ -255,7 +248,7 @@ namespace ui
         drawHoveredRect( span );
         camera.setTagged( hovered );
 
-        if( leftClick ) {
+        if( ui::mouse.leftClick ) {
           tagged.clear();
           tagged.add( hovered->index );
         }
@@ -264,11 +257,10 @@ namespace ui
     else {
       camera.setTagged( null );
 
-      if( leftClick ) {
+      if( ui::mouse.leftClick ) {
         tagged.clear();
       }
     }
-    leftClick = false;
 
     for( int i = 0; i < tagged.length(); ) {
       const Object* obj = orbis.objects[tagged[i]];

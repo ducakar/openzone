@@ -1,25 +1,16 @@
-description "Cviček"
+base "Weapon"
 
-base "Dynamic"
+dim.x "0.24"
+dim.y "0.29"
+dim.z "0.06"
 
-dim.x "0.1"
-dim.y "0.1"
-dim.z "0.25"
+life "100.0f"
 
-flag.item "true"
+mass "10.0"
+lift "2.0"
 
-life "10.0f"
-
-mass "1.0f"
-
-nDebris "4"
-debrisColour.r "0.4"
-debrisColour.g "0.0"
-debrisColour.b "0.3"
-debrisColourSpread "0.05"
-
-modelType "SMM"
-modelName "winebottle"
+modelType "MD2Weapon"
+modelName "goblin-axe"
 
 audioType                       "Basic"
 audioSample00                   ""                              # create
@@ -29,3 +20,9 @@ audioSample03                   "hit1"                          # hit
 audioSample04                   "splash1"                       # splash
 audioSample05                   ""                              # friction
 audioSample06                   ""                              # use
+audioSample07                   "tak"                           # trigger
+audioSample08                   ""                              # trigger_empty
+
+onShot "Axe_onShot"
+nShots "-1"
+shotInterval "0.51"

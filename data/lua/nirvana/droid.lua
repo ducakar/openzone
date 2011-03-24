@@ -18,14 +18,14 @@ function droid_followCommander( l )
   if not l.commander then
     ozSelfBindObjOverlaps( 30, 30, 30 )
     while ozObjBindNext() do
-      if ozObjIsBot() and not ozObjIsSelf() and ozObjGetTypeName() == "DroidCommander" then
+      if ozObjIsBot() and not ozObjIsSelf() and ozObjGetTypeName() == "droid commander" then
 	l.commander = ozObjGetIndex()
         break
       end
     end
   else
     ozObjBindIndex( l.commander )
-    if ozObjIsNull() or not ozObjIsBot() or ozObjGetTypeName() ~= "DroidCommander" then
+    if ozObjIsNull() or not ozObjIsBot() or ozObjGetTypeName() ~= "droid commander" then
       l.commander = nil
     end
   end
@@ -85,7 +85,7 @@ function droid( l )
     ozSelfBindObjOverlaps( 100, 100, 100 )
     while ozObjBindNext() do
       local typeName = ozObjGetTypeName()
-      if ozObjIsBot() and not ozObjIsSelf() and string.sub( typeName, 1, 5 ) ~= "Droid" then
+      if ozObjIsBot() and not ozObjIsSelf() and string.sub( typeName, 1, 5 ) ~= "droid" then
 	local distance = ozObjDistanceFromSelf()
 	if distance < minDistance then
 	  l.target = ozObjGetIndex()

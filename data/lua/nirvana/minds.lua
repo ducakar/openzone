@@ -52,7 +52,7 @@ function prey( localData )
 
   ozSelfBindObjOverlaps( 20, 20, 20 )
   while ozObjBindNext() do
-    if not ozObjIsSelf() and ozObjIsBot() and ozObjGetTypeName() ~= "Goblin" then
+    if not ozObjIsSelf() and ozObjIsBot() and ozObjGetTypeName() ~= "goblin" then
       distance = ozObjDistanceFromSelf()
       if distance < minDistance then
 	minDistance = distance
@@ -76,7 +76,7 @@ function predator( localData )
 
   ozSelfBindObjOverlaps( 20, 20, 20 )
   while ozObjBindNext() do
-    if not ozObjIsSelf() and ozObjIsBot() and ozObjGetTypeName() == "Goblin" then
+    if not ozObjIsSelf() and ozObjIsBot() and ozObjGetTypeName() == "goblin" then
       distance = ozObjDistanceFromSelf()
       if distance < minDistance then
 	minDistance = distance

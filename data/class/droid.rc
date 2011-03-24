@@ -35,11 +35,11 @@ staminaWaterDrain "0.07"
 staminaRunDrain "0.07"
 staminaJumpDrain "3.0"
 
-inventoryItem00 "DroidRifle"
-inventoryItem01 "FirstAid"
-inventoryItem02 "FirstAid"
-inventoryItem03 "Bomb"
-inventoryItem04 "Bomb"
+inventoryItem00 "droid rifle"
+inventoryItem01 "first aid"
+inventoryItem02 "first aid"
+inventoryItem03 "bomb"
+inventoryItem04 "bomb"
 
 weaponItem "0"
 

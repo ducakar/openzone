@@ -23,6 +23,9 @@ namespace client
 
   Pool<BotAudio> BotAudio::pool;
 
+  BotAudio::BotAudio( const Object* obj ) : BasicAudio( obj )
+  {}
+
   Audio* BotAudio::create( const Object* obj )
   {
     hard_assert( obj->flags & Object::BOT_BIT );
@@ -30,17 +33,32 @@ namespace client
     return new BotAudio( obj );
   }
 
-  void BotAudio::play( const Audio* )
+  void BotAudio::play( const Audio* parent )
   {
     const Bot* bot = static_cast<const Bot*>( obj );
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->clazz->audioSamples;
 
+    int objFlags = oldFlags[0] | oldFlags[1] | obj->flags;
+    oldFlags[timer.ticks % 2] = obj->flags;
+
     // friction
-    if( ( bot->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
+    if( parent == null &&
+        ( objFlags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
         ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && samples[SND_FRICTING] != -1 )
     {
-      float dv = Math::sqrt( bot->velocity.x*bot->velocity.x + bot->velocity.y*bot->velocity.y );
-      playContSound( samples[SND_FRICTING], dv, obj );
+      float dvx = bot->velocity.x;
+      float dvy = bot->velocity.y;
+
+      if( bot->lower != -1 ) {
+        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[bot->lower] );
+
+        if( sDyn != null ) {
+          dvx -= sDyn->velocity.x;
+          dvy -= sDyn->velocity.y;
+        }
+      }
+
+      playContSound( samples[SND_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj );
     }
 
     // events

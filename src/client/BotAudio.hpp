@@ -22,7 +22,7 @@ namespace client
   {
     protected:
 
-      explicit BotAudio( const Object* obj ) : BasicAudio( obj ) {}
+      explicit BotAudio( const Object* obj );
 
     public:
 

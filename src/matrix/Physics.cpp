@@ -18,8 +18,8 @@ namespace oz
 
   Physics physics;
 
-  const float Physics::MOVE_BOUNCE            = EPSILON;
-  const float Physics::HIT_THRESHOLD          = -2.0f;
+  const float Physics::MOVE_BOUNCE            = 1.5f * EPSILON;
+  const float Physics::HIT_THRESHOLD          = -3.0f;
   const float Physics::SPLASH_THRESHOLD       = -2.0f;
   const float Physics::FLOOR_NORMAL_Z         = 0.60f;
   const float Physics::G_MOMENTUM             = -9.81f * Timer::TICK_TIME;
@@ -156,18 +156,14 @@ namespace oz
           friction = SLICK_FRICTION;
         }
 
-        float dx = dyn->momentum.x;
-        float dy = dyn->momentum.y;
-        float dv2 = dx*dx + dy*dy;
-
         dyn->momentum += ( systemMom * dyn->floor.z ) * dyn->floor;
+        dyn->momentum *= 1.0f - friction;
 
-        if( dv2 > stickVel ) {
-          dyn->momentum *= 1.0f - friction;
-
+        if( dyn->velocity.x*dyn->velocity.x + dyn->velocity.y*dyn->velocity.y > stickVel ) {
           dyn->flags |= Object::FRICTING_BIT;
         }
-        else {
+
+        if( dyn->momentum.x*dyn->momentum.x + dyn->momentum.y*dyn->momentum.y <= stickVel ) {
           dyn->momentum.x = 0.0f;
           dyn->momentum.y = 0.0f;
 
@@ -182,17 +178,11 @@ namespace oz
       }
       // on a moving object
       else if( sObj != null ) {
-        float dx  = sObj->velocity.x - dyn->momentum.x;
-        float dy  = sObj->velocity.y - dyn->momentum.y;
-        float dv2 = dx*dx + dy*dy;
-
-        dyn->momentum.x += dx * FLOOR_FRICTION;
-        dyn->momentum.y += dy * FLOOR_FRICTION;
+        dyn->momentum.x += ( sObj->velocity.x - dyn->velocity.x ) * FLOOR_FRICTION;
+        dyn->momentum.y += ( sObj->velocity.y - dyn->velocity.y ) * FLOOR_FRICTION;
         dyn->momentum.z += systemMom;
 
-        if( dv2 > STICK_VELOCITY ) {
-          dyn->flags |= Object::FRICTING_BIT;
-        }
+        dyn->flags |= Object::FRICTING_BIT;
       }
       else {
         dyn->momentum.x *= 1.0f - AIR_FRICTION;
@@ -330,18 +320,14 @@ namespace oz
         float dot = lastNormals[0] * collider.hit.normal;
 
         if( dot < 0.0f ) {
-          Vec3 out     = collider.hit.normal + lastNormals[0];
-          Vec3 cross   = collider.hit.normal ^ lastNormals[0];
-          float outLen = !out;
+          Vec3  out      = collider.hit.normal + lastNormals[0];
+          Vec3  cross    = collider.hit.normal ^ lastNormals[0];
+          float crossSqL = cross.sqL();
 
-          if( cross != Vec3::ZERO ) {
-            cross = ~cross;
+          if( crossSqL != 0.0f ) {
+            cross /= Math::sqrt( crossSqL );
             move = ( move * cross ) * cross;
             move += out * EPSILON;
-          }
-          if( outLen != 0.0f ) {
-            out /= outLen;
-            dyn->momentum -= ( dyn->momentum * out ) * out;
           }
         }
         if( traceSplits == 2 ) {
@@ -352,18 +338,14 @@ namespace oz
           dot = lastNormals[1] * collider.hit.normal;
 
           if( dot < 0.0f ) {
-            Vec3  out    = collider.hit.normal + lastNormals[1];
-            Vec3  cross  = collider.hit.normal ^ lastNormals[1];
-            float outLen = !out;
+            Vec3  out      = collider.hit.normal + lastNormals[1];
+            Vec3  cross    = collider.hit.normal ^ lastNormals[1];
+            float crossSqL = cross.sqL();
 
-            if( cross != Vec3::ZERO ) {
-              cross = ~cross;
+            if( crossSqL != 0.0f ) {
+              cross /= Math::sqrt( crossSqL );
               move = ( move * cross ) * cross;
               move += out * EPSILON;
-            }
-            if( outLen != 0.0f ) {
-              out /= outLen;
-              dyn->momentum -= ( dyn->momentum * out ) * out;
             }
           }
         }
@@ -436,6 +418,11 @@ namespace oz
         collider.mask = Object::SOLID_BIT;
 
         dyn->velocity = ( dyn->p - oldPos ) / Timer::TICK_TIME;
+
+        Vec3 absVelocity = dyn->velocity.abs();
+        dyn->momentum.x = clamp( dyn->momentum.x, -absVelocity.x, +absVelocity.x );
+        dyn->momentum.y = clamp( dyn->momentum.y, -absVelocity.y, +absVelocity.y );
+        dyn->momentum.z = clamp( dyn->momentum.z, -absVelocity.z, +absVelocity.z );
       }
       else {
         hard_assert( dyn->momentum == Vec3::ZERO );

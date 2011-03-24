@@ -55,27 +55,29 @@ namespace ui
     }
   }
 
-  BuildMenu::BuildMenu() : Frame( -205, -255, 200, 250 )
+  BuildMenu::BuildMenu() : Frame( -205, -255, 220, 250 )
   {
     setFont( Font::TITLE );
 
-    add( new Button( "SmallCrate", createObject, 90, 15 ), 5, -35 );
-    add( new Button( "BigCrate", createObject, 90, 15 ), 5, -55 );
-    add( new Button( "MetalBarrel", createObject, 90, 15 ), 5, -75 );
-    add( new Button( "FirstAid", createObject, 90, 15 ), 5, -95 );
-    add( new Button( "Wine", createObject, 90, 15 ), 5, -115 );
-    add( new Button( "Bomb", createObject, 90, 15 ), 5, -135 );
-    add( new Button( "Rifle", createObject, 90, 15 ), 5, -155 );
+    add( new Button( "small crate", createObject, 100, 15 ), 5, -35 );
+    add( new Button( "big crate", createObject, 100, 15 ), 5, -55 );
+    add( new Button( "metal barrel", createObject, 100, 15 ), 5, -75 );
+    add( new Button( "first aid", createObject, 100, 15 ), 5, -95 );
+    add( new Button( "cvicek", createObject, 100, 15 ), 5, -115 );
+    add( new Button( "bomb", createObject, 100, 15 ), 5, -135 );
+    add( new Button( "droid rifle", createObject, 100, 15 ), 5, -155 );
+    add( new Button( "goblin axe", createObject, 100, 15 ), 5, -185 );
 
-    add( new Button( "Goblin", createObject, 90, 15 ), 105, -35 );
-    add( new Button( "Knight", createObject, 90, 15 ), 105, -55 );
-    add( new Button( "Lord", createObject, 90, 15 ), 105, -75 );
-    add( new Button( "Beast", createObject, 90, 15 ), 105, -95 );
-    add( new Button( "Droid", createObject, 90, 15 ), 105, -115 );
-    add( new Button( "DroidCommander", createObject, 90, 15 ), 105, -135 );
-    add( new Button( "Raptor", createObject, 90, 15 ), 105, -155 );
+    add( new Button( "goblin", createObject, 100, 15 ), 115, -35 );
+    add( new Button( "knight", createObject, 100, 15 ), 115, -55 );
+    add( new Button( "lord", createObject, 100, 15 ), 115, -75 );
+    add( new Button( "beast", createObject, 100, 15 ), 115, -95 );
+    add( new Button( "droid", createObject, 100, 15 ), 115, -115 );
+    add( new Button( "droid commander", createObject, 100, 15 ), 115, -135 );
+    add( new Button( "raptor", createObject, 100, 15 ), 115, -155 );
+    add( new Button( "tank", createObject, 100, 15 ), 115, -185 );
 
-    add( new Button( "DESTROY", destroy, 90, 15 ), 105, 5 );
+    add( new Button( "DESTROY", destroy, 100, 15 ), 115, 5 );
   }
 
   bool BuildMenu::onMouseEvent()

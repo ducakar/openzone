@@ -43,7 +43,7 @@ namespace oz
     public:
 
       // # of cells on each (x, y) axis
-      static const int   MAX = 128;
+      static const int   MAX = 256;
       static const float DIM;
 
       Cell              cells[Orbis::MAX][Orbis::MAX];

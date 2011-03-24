@@ -21,6 +21,8 @@ namespace oz
 namespace client
 {
 
+  const float Audio::MIN_GAIN = 0.25f;
+
   void Audio::playSound( int sample, float volume, const Object* obj ) const
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
@@ -51,7 +53,7 @@ namespace client
       alSourcefv( srcId, AL_POSITION, obj->p );
     }
 
-    alSourcef( srcId, AL_GAIN, volume );
+    alSourcef( srcId, AL_GAIN, max( volume, MIN_GAIN ) );
     alSourcePlay( srcId );
 
     hard_assert( alGetError() == AL_NO_ERROR );
@@ -85,7 +87,7 @@ namespace client
     }
     else {
       alSourcefv( contSource->source, AL_POSITION, obj->p );
-      alSourcef( contSource->source, AL_GAIN, volume );
+      alSourcef( contSource->source, AL_GAIN, max( volume, MIN_GAIN ) );
       contSource->isUpdated = true;
     }
 

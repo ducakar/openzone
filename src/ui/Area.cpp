@@ -94,7 +94,6 @@ namespace ui
     glBindTexture( GL_TEXTURE_2D, font.textTexId );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                   text->pixels);
-    SDL_FreeSurface( text );
 
     glUniform1i( param.oz_IsTextureEnabled, true );
 
@@ -104,6 +103,8 @@ namespace ui
     shape.fill( x, y, text->w, text->h );
 
     glUniform1i( param.oz_IsTextureEnabled, false );
+
+    SDL_FreeSurface( text );
   }
 
   void Area::printCentred( int baseX, int baseY, const char* s, ... )
@@ -126,7 +127,6 @@ namespace ui
     glBindTexture( GL_TEXTURE_2D, font.textTexId );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                   text->pixels);
-    SDL_FreeSurface( text );
 
     glUniform1i( param.oz_IsTextureEnabled, true );
 
@@ -136,6 +136,8 @@ namespace ui
     shape.fill( baseX - text->w / 2, baseY - text->h / 2, text->w, text->h );
 
     glUniform1i( param.oz_IsTextureEnabled, false );
+
+    SDL_FreeSurface( text );
   }
 
   void Area::printBaseline( int x, int baseY, const char* s, ... )
@@ -158,7 +160,6 @@ namespace ui
     glBindTexture( GL_TEXTURE_2D, font.textTexId );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                   text->pixels);
-    SDL_FreeSurface( text );
 
     glUniform1i( param.oz_IsTextureEnabled, true );
 
@@ -168,6 +169,8 @@ namespace ui
     shape.fill( x, baseY - text->h / 2, text->w, text->h );
 
     glUniform1i( param.oz_IsTextureEnabled, false );
+
+    SDL_FreeSurface( text );
   }
 
   void Area::realign( int newX, int newY )

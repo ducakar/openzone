@@ -330,7 +330,7 @@ namespace client
     timer.renderMiscMillis += currentTime - beginTime;
   }
 
-  void Render::drawCommon()
+  void Render::drawUI()
   {
     uint beginTime = SDL_GetTicks();
 
@@ -339,10 +339,14 @@ namespace client
     timer.renderUiMillis += SDL_GetTicks() - beginTime;
   }
 
-  void Render::draw()
+  void Render::draw( int flags )
   {
-    drawOrbis();
-    drawCommon();
+    if( flags & DRAW_ORBIS_BIT ) {
+      drawOrbis();
+    }
+    if( flags & DRAW_UI_BIT ) {
+      drawUI();
+    }
   }
 
   void Render::sync() const
@@ -576,6 +580,8 @@ namespace client
     glGetProgramiv            = reinterpret_cast<PFNGLGETPROGRAMIVPROC>            ( SDL_GL_GetProcAddress( "glGetProgramiv" ) );
     glGetProgramInfoLog       = reinterpret_cast<PFNGLGETPROGRAMINFOLOGPROC>       ( SDL_GL_GetProcAddress( "glGetProgramInfoLog" ) );
     glGetUniformLocation      = reinterpret_cast<PFNGLGETUNIFORMLOCATIONPROC>      ( SDL_GL_GetProcAddress( "glGetUniformLocation" ) );
+    glBindAttribLocation      = reinterpret_cast<PFNGLBINDFRAGDATALOCATIONPROC>    ( SDL_GL_GetProcAddress( "glBindAttribLocation" ) );
+    glBindFragDataLocation    = reinterpret_cast<PFNGLBINDFRAGDATALOCATIONPROC>    ( SDL_GL_GetProcAddress( "glBindFragDataLocation" ) );
     glUseProgram              = reinterpret_cast<PFNGLUSEPROGRAMPROC>              ( SDL_GL_GetProcAddress( "glUseProgram" ) );
 
     wglActiveTexture          = reinterpret_cast<PFNGLACTIVETEXTUREPROC>           ( SDL_GL_GetProcAddress( "glActiveTexture" ) );
@@ -596,6 +602,8 @@ namespace client
     camera.init();
     ui::ui.init();
     ui::ui.draw();
+
+    SDL_GL_SwapBuffers();
 
     hard_assert( glGetError() == GL_NO_ERROR );
 

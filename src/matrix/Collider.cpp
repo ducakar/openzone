@@ -16,6 +16,8 @@ namespace oz
 
   Collider collider;
 
+  const float Collider::LOCAL_EPS = 256.0f * Math::EPSILON;
+
   const Vec3 Collider::normals[] =
   {
     Vec3(  1.0f,  0.0f,  0.0f ),
@@ -47,9 +49,9 @@ namespace oz
       Vec3  relPos  = aabb.p - sObj->p;
       Vec3  sumDim  = aabb.dim + sObj->dim;
       float distXY2 = relPos.x*relPos.x + relPos.y*relPos.y;
-      float radius2 = sumDim.x*sumDim.y + 2.0f * EPSILON;
+      float radius  = sumDim.x + EPSILON;
 
-      return distXY2 <= radius2 &&
+      return distXY2 <= radius*radius &&
           relPos.z <= +sumDim.z + EPSILON &&
           relPos.z >= -sumDim.z - EPSILON;
     }
@@ -313,8 +315,8 @@ namespace oz
   // finds out if AABB-AABB collision occurs and the time when it occurs
   void Collider::trimAABBObj( const Object* sObj )
   {
-    float minRatio    = -1.0f;
-    float maxRatio    =  1.0f;
+    float minRatio = -1.0f;
+    float maxRatio =  1.0f;
     Vec3  lastNormal;
 
     Vec3  relStartPos = startPos - sObj->p;
@@ -324,30 +326,30 @@ namespace oz
     int   firstPlane  = 0;
 
     if( flags & sObj->flags & Object::CYLINDER_BIT ) {
-      float radius2 = sumDim.x*sumDim.y + 2.0f * EPSILON;
-
       float rx = relStartPos.x;
       float ry = relStartPos.y;
       float sx = move.x;
       float sy = move.y;
 
-      float startDist = rx*rx + ry*ry - radius2;
-
-      if( startDist >= 0.0f ) {
-        float sx2_sy2      = sx*sx + sy*sy;
+      if( rx*rx + ry*ry >= sumDim.x*sumDim.x ) {
+        float moveDist2    = sx*sx + sy*sy;
         float rxsx_rysy    = rx*sx + ry*sy;
         float rxsy_rysx    = rx*sy - ry*sx;
-        float discriminant = radius2 * sx2_sy2 - rxsy_rysx*rxsy_rysx;
+        float radius       = sumDim.x + EPSILON;
+        float discriminant = radius*radius * moveDist2 - rxsy_rysx * rxsy_rysx;
 
-        if( discriminant >= 0.0f ) {
-          float sqrt_discr = Math::sqrt( discriminant );
-          float t0         = ( -rxsx_rysy - sqrt_discr ) / sx2_sy2;
-          float t1         = ( -rxsx_rysy + sqrt_discr ) / sx2_sy2;
+        if( discriminant > 0.0f ) {
+          float sqrtDiscr = Math::sqrt( discriminant );
+          float endRatio = ( -rxsx_rysy + sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
 
-          minRatio = max( minRatio, t0 - EPSILON );
-          maxRatio = min( maxRatio, t1 );
+          if( endRatio > 0.0f ) {
+            float startRatio = ( -rxsx_rysy - sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
 
-          lastNormal = ~Vec3( rx + t0 * sx, ry + t0 * sy, 0.0f );
+            minRatio = max( minRatio, startRatio );
+            maxRatio = min( maxRatio, endRatio );
+
+            lastNormal = ~Vec3( rx + startRatio*sx, ry + startRatio*sy, 0.0f );
+          }
         }
         else {
           return;
@@ -372,7 +374,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
+        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + LOCAL_EPS );
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
@@ -392,7 +394,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
+        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + LOCAL_EPS );
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
@@ -401,7 +403,7 @@ namespace oz
       }
     }
 
-    if( minRatio != -1.0f && minRatio < hit.ratio && minRatio < maxRatio ) {
+    if( minRatio != -1.0f && minRatio <= maxRatio && minRatio < hit.ratio ) {
       hit.ratio    = max( 0.0f, minRatio );
       hit.normal   = lastNormal;
       hit.obj      = sObj;
@@ -434,7 +436,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + EPSILON );
+        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + LOCAL_EPS );
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
@@ -442,15 +444,13 @@ namespace oz
         }
       }
     }
-    if( minRatio != -1.0f && minRatio < maxRatio ) {
-      if( minRatio < hit.ratio ) {
-        hit.ratio    = max( 0.0f, minRatio );
-        hit.normal   = str->toAbsoluteCS( lastNormal );
-        hit.obj      = null;
-        hit.str      = str;
-        hit.entity   = entity;
-        hit.material = brush->material;
-      }
+    if( minRatio != -1.0f && minRatio <= maxRatio && minRatio < hit.ratio ) {
+      hit.ratio    = max( 0.0f, minRatio );
+      hit.normal   = str->toAbsoluteCS( lastNormal );
+      hit.obj      = null;
+      hit.str      = str;
+      hit.entity   = entity;
+      hit.material = brush->material;
     }
   }
 

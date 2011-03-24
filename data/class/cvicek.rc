@@ -1,18 +1,25 @@
-description "Standard Droid rifle"
+description "cviček"
 
-base "Weapon"
+base "Dynamic"
 
-dim.x "0.18"
-dim.y "0.24"
-dim.z "0.04"
+dim.x "0.1"
+dim.y "0.1"
+dim.z "0.25"
 
-life "100.0f"
+flag.item "true"
 
-mass "10.0"
-lift "8.0"
+life "10.0f"
 
-modelType "MD2Weapon"
-modelName "droid-rifle"
+mass "1.0f"
+
+nDebris "4"
+debrisColour.r "0.4"
+debrisColour.g "0.0"
+debrisColour.b "0.3"
+debrisColourSpread "0.05"
+
+modelType "SMM"
+modelName "winebottle"
 
 audioType                       "Basic"
 audioSample00                   ""                              # create
@@ -22,9 +29,3 @@ audioSample03                   "hit1"                          # hit
 audioSample04                   "splash1"                       # splash
 audioSample05                   ""                              # friction
 audioSample06                   ""                              # use
-audioSample07                   "cg2"                           # trigger
-audioSample08                   "outofammo"                     # trigger_empty
-
-onShot "Rifle_onShot"
-nShots "-1"
-shotInterval "0.5"

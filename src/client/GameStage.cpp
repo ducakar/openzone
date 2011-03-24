@@ -176,8 +176,8 @@ namespace client
   {
     uint beginTime = SDL_GetTicks();
 
-    render.draw();
-    sound.updateMusic();
+    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+    sound.update();
     render.sync();
 
     timer.renderMillis += SDL_GetTicks() - beginTime;
@@ -190,19 +190,25 @@ namespace client
 
     SDL_Delay( uint( config.get( "gameStage.loadingTime", 0.0f ) * 1000.0f ) );
 
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
+
 //     sound.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
 
     camera.update();
     camera.prepare();
 
-    render.draw();
-    sound.play();
+    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
     loader.update();
+    render.sync();
+
+    sound.play();
+    sound.update();
+
+    ui::ui.showLoadingScreen( false );
 
     log.unindent();
     log.println( "}" );
-
-    ui::ui.showLoadingScreen( false );
   }
 
   void GameStage::end()
@@ -245,7 +251,7 @@ namespace client
       nirvana.load( null );
     }
 
-    camera.warp( Point3( 55.0f, -45.0f, 48.75f ) );
+    camera.warp( Point3( 141.0f, -12.0f, 84.75f ) );
 
     log.print( "Starting auxilary thread ..." );
 

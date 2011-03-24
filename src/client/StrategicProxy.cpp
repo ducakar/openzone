@@ -46,13 +46,18 @@ namespace client
   {
     if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
       isFree = !isFree;
-    }
-    if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
-      ui::mouse.doShow = !ui::mouse.doShow;
-    }
 
-    if( !isFree ) {
-      ui::mouse.doShow = true;
+      if( isFree ) {
+        ui::mouse.doShow = false;
+        isRTSFast = false;
+      }
+      else {
+        ui::mouse.doShow = true;
+        isFreeFast = true;
+      }
+    }
+    if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] && isFree ) {
+      ui::mouse.doShow = !ui::mouse.doShow;
     }
 
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {

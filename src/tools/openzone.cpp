@@ -11,6 +11,8 @@
 
 #include "client/Main.hpp"
 
+#include "matrix/common.hpp"
+
 #include <SDL_main.h>
 
 using namespace oz;
@@ -29,6 +31,8 @@ int main( int argc, char** argv )
       "This program comes with ABSOLUTELY NO WARRANTY.\n"
       "This is free software, and you are welcome to redistribute it\n"
       "under certain conditions; See COPYING file for details.\n\n" );
+
+  printf( "%g %g\n", EPSILON, Math::EPSILON );
 
   try {
     exitCode = client::main.main( &argc, argv );

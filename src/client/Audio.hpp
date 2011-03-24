@@ -23,8 +23,7 @@ namespace client
     public:
 
       static const int   UPDATED_BIT = 0x00000001;
-
-    public:
+      static const float MIN_GAIN;
 
       typedef Audio* ( * CreateFunc )( const Object* object );
 

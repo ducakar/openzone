@@ -13,8 +13,8 @@
 
 namespace oz
 {
-  // ensure epsilon is big enough for a 4 km x 4 km world
-  const float EPSILON = 2048.0f * 4.0f * Math::EPSILON;
+
+  extern const float EPSILON;
 
   struct Span
   {

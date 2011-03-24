@@ -29,6 +29,11 @@ namespace client
 
   class Render
   {
+    public:
+
+      static const int   DRAW_UI_BIT    = 0x01;
+      static const int   DRAW_ORBIS_BIT = 0x02;
+
     private:
 
       static const float WIDE_CULL_FACTOR;
@@ -102,14 +107,12 @@ namespace client
 
       void scheduleCell( int cellX, int cellY );
 
-      // render world
+      void drawUI();
       void drawOrbis();
-      // UI, swap buffers, cleanup models
-      void drawCommon();
 
     public:
 
-      void draw();
+      void draw( int flags );
       void sync() const;
 
       void load();

@@ -1,10 +1,13 @@
 base "Bot"
 
+#dim.x "0.4032"
+#dim.y "0.4032"
 dim.x "0.44"
 dim.y "0.44"
 dim.z "1.09"
 
-//flag.solid                      "false"
+#flag.solid "false"
+#flag.cylinder "false"
 
 life "400.0"
 mass "100.0"
@@ -51,10 +54,11 @@ grabDistance "2.0"
 grabMass "100.0"
 throwMomentum "10.0"
 
-//staminaWaterDrain "0.07"
-//staminaRunDrain "0.07"
-//staminaJumpDrain "3.0"
+#staminaWaterDrain "0.07"
+#staminaRunDrain "0.07"
+#staminaJumpDrain "3.0"
 
 staminaWaterDrain "0.0"
 staminaRunDrain "0.0"
 staminaJumpDrain "0.0"
+staminaThrowDrain "0.0"

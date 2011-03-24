@@ -24,7 +24,9 @@ namespace client
 
       static const int SND_FRICTING = Object::EVENT_FRICTING;
 
-      explicit BasicAudio( const Object* obj ) : Audio( obj ) {}
+      int oldFlags[2];
+
+      explicit BasicAudio( const Object* obj );
 
     public:
 

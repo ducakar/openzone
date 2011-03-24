@@ -36,7 +36,8 @@ namespace oz
   {
     private:
 
-      static const Vec3 normals[];
+      static const float LOCAL_EPS;
+      static const Vec3  normals[];
 
       Span   span;
       Bounds trace;

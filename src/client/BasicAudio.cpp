@@ -11,7 +11,7 @@
 
 #include "client/BasicAudio.hpp"
 
-#include "matrix/Dynamic.hpp"
+#include "matrix/Orbis.hpp"
 
 namespace oz
 {
@@ -19,6 +19,12 @@ namespace client
 {
 
   Pool<BasicAudio, 1024> BasicAudio::pool;
+
+  BasicAudio::BasicAudio( const Object* obj ) : Audio( obj )
+  {
+    oldFlags[0] = 0;
+    oldFlags[1] = 0;
+  }
 
   Audio* BasicAudio::create( const Object* obj )
   {
@@ -30,15 +36,31 @@ namespace client
     const Dynamic* dyn = static_cast<const Dynamic*>( obj );
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->clazz->audioSamples;
 
-    parent = parent == null ? this : parent;
+    // prevent friction sound restarting when it suspends for a tick or two
+    int objFlags = oldFlags[0] | oldFlags[1] | obj->flags;
+    oldFlags[timer.ticks % 2] = obj->flags;
 
     // friction
-    if( ( obj->flags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
+    if( parent == null &&
+        ( objFlags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
         ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && samples[SND_FRICTING] != -1 )
     {
-      float dv = Math::sqrt( dyn->velocity.x*dyn->velocity.x + dyn->velocity.y*dyn->velocity.y );
-      playContSound( samples[SND_FRICTING], dv, parent->obj );
+      float dvx = dyn->velocity.x;
+      float dvy = dyn->velocity.y;
+
+      if( dyn->lower != -1 ) {
+        const Dynamic* sDyn = static_cast<const Dynamic*>( orbis.objects[dyn->lower] );
+
+        if( sDyn != null ) {
+          dvx -= sDyn->velocity.x;
+          dvy -= sDyn->velocity.y;
+        }
+      }
+
+      playContSound( samples[SND_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj );
     }
+
+    parent = parent == null ? this : parent;
 
     // events
     foreach( event, obj->events.citer() ) {

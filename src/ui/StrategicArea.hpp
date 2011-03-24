@@ -36,7 +36,6 @@ namespace ui
 
       float pixelStep;
       float stepPixel;
-      bool  leftClick;
 
     public:
 
@@ -56,7 +55,6 @@ namespace ui
     protected:
 
       virtual void onUpdate();
-      virtual bool onMouseEvent();
       virtual void onDraw();
 
     public:

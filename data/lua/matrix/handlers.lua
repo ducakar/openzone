@@ -19,7 +19,7 @@ end
 
 function spawnGoblin( l )
   x, y, z = ozObjGetPos()
-  ozOrbisAddObj( "Goblin", x, y, z + 2.0 )
+  ozOrbisAddObj( "goblin", x, y, z + 2.0 )
 end
 
 function BigExplosion_onUpdate( l )
@@ -109,11 +109,11 @@ function Bomb_onUpdate( l )
 end
 
 function Bomb_onDestroy( l )
-  ozOrbisForceAddObj( "BigExplosion", ozObjGetPos() )
+  ozOrbisForceAddObj( "big explosion", ozObjGetPos() )
 end
 
 function Rocket_onDestroy( l )
-  ozOrbisForceAddObj( "SmallExplosion", ozObjGetPos() );
+  ozOrbisForceAddObj( "small explosion", ozObjGetPos() );
 end
 
 function Rifle_onShot( l )
