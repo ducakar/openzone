@@ -21,7 +21,7 @@ namespace oz
   // plants/m2
   const float FloraManager::DENSITY = 0.04f;
   // dim * SPACING
-  const float FloraManager::SPACING = 8.0f;
+  const float FloraManager::SPACING = 12.0f;
   // plants/m2/s
   const float FloraManager::GROWTH =  0.0001f;
 
@@ -33,19 +33,19 @@ namespace oz
 
     const char* type;
 
-    if( pos.z > 65.0f ) {
+    if( pos.z > 110.0f ) {
       return;
     }
-    else if( pos.z > 45.0f ) {
-      type = "Tree3";
+    else if( pos.z > 70.0f ) {
+      type = "smreka";
       pos.z += 7.0f;
     }
-    else if( pos.z > 20.0f ) {
-      type = "Tree2";
+    else if( pos.z > 30.0f ) {
+      type = "drevo";
       pos.z += 3.0f;
     }
     else if( pos.z > 2.0f ) {
-      type = "Tree1";
+      type = "palma";
       pos.z += 8.0f;
     }
     else {

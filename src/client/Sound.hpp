@@ -61,7 +61,7 @@ namespace client
       void unloadMusic();
 
       void play();
-      void updateMusic();
+      void update();
 
       bool init( int* argc, char** argv );
       void free();

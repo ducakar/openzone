@@ -68,6 +68,8 @@ namespace client
   PFNGLGETPROGRAMIVPROC            glGetProgramiv;
   PFNGLGETPROGRAMINFOLOGPROC       glGetProgramInfoLog;
   PFNGLGETUNIFORMLOCATIONPROC      glGetUniformLocation;
+  PFNGLBINDATTRIBLOCATIONPROC      glBindAttribLocation;
+  PFNGLBINDFRAGDATALOCATIONPROC    glBindFragDataLocation;
   PFNGLUSEPROGRAMPROC              glUseProgram;
 
   PFNGLACTIVETEXTUREPROC           wglActiveTexture;

@@ -44,7 +44,7 @@ namespace oz
       struct Quad
       {
         // integer size of a terrain quad
-        static const int   SIZEI = 8;
+        static const int   SIZEI = 16;
         // float size of a terrain quad
         static const float SIZE;
         static const float INV_SIZE;

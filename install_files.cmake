@@ -92,26 +92,27 @@ endif( OZ_INSTALL_CLIENT )
 if( OZ_INSTALL_DATA )
 
   install( FILES
-    data/class/Beast.rc
-    data/class/BigCrate.rc
-    data/class/Bomb.rc
-    data/class/Droid.rc
-    data/class/DroidCommander.rc
-    data/class/DroidRifle.rc
-    data/class/Explosion.rc
-    data/class/FirstAid.rc
-    data/class/Goblin.rc
-    data/class/GoblinAxe.rc
-    data/class/Knight.rc
-    data/class/Lord.rc
-    data/class/MetalBarrel.rc
-    data/class/Raptor.rc
-    data/class/SmallCrate.rc
-    data/class/Tank.rc
-    data/class/Tree1.rc
-    data/class/Tree2.rc
-    data/class/Tree3.rc
-    data/class/Wine.rc
+    data/class/beast.rc
+    data/class/big crate.rc
+    data/class/big explosion.rc
+    data/class/bomb.rc
+    data/class/cviček.rc
+    data/class/drevo.rc
+    data/class/droid commander.rc
+    data/class/droid rifle.rc
+    data/class/droid.rc
+    data/class/first aid.rc
+    data/class/goblin axe.rc
+    data/class/goblin.rc
+    data/class/knight.rc
+    data/class/lord.rc
+    data/class/metal barrel.rc
+    data/class/palma.rc
+    data/class/raptor.rc
+    data/class/small crate.rc
+    data/class/small explosion.rc
+    data/class/smreka.rc
+    data/class/tank.rc
     DESTINATION share/openzone/class )
 
   install( FILES
