@@ -57,7 +57,8 @@ namespace oz
 
       static const int   CREW_VISIBLE_BIT       = 0x00000001;
 
-      static const float EJECT_MOVE;
+      static const float EXIT_EPSILON;
+      static const float EXIT_MOMENTUM;
       static const float EJECT_MOMENTUM;
 
       static Pool<Vehicle> pool;
@@ -75,22 +76,18 @@ namespace oz
       virtual void onUpdate();
       virtual void onUse( Bot* user );
 
-    protected:
-
-      float oldH;
-      float oldV;
-
     public:
 
+      float h, v;
       Quat  rot;
       Vec3  camPos;
 
       int   state, oldState;
       int   actions, oldActions;
 
+      int   weapon;
       int   nShots[WEAPONS_MAX];
       float shotTime[WEAPONS_MAX];
-      int   weapon;
 
       int   crew[CREW_MAX];
 

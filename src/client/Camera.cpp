@@ -29,8 +29,8 @@ namespace client
 
   void Camera::align()
   {
-    h = Math::mod( h + Math::TAU, Math::TAU );
-    v = clamp( v, 0.0f, Math::TAU / 2.0f );
+    h       = Math::mod( h + Math::TAU, Math::TAU );
+    v       = clamp( v, 0.0f, Math::TAU / 2.0f );
 
     rot     = Quat::rotZ( h ) ^ Quat::rotX( v ) ^ Quat::rotZ( w );
     rotMat  = Mat44::rotation( rot );
@@ -39,6 +39,74 @@ namespace client
     right   = rotMat.x;
     up      = rotMat.y;
     at      = -rotMat.z;
+  }
+
+  void Camera::update()
+  {
+    relH = -float( ui::mouse.overEdgeX ) * mouseXSens;
+    relV = +float( ui::mouse.overEdgeY ) * mouseYSens;
+
+    if( ui::keyboard.keys[SDLK_LEFT] | ui::keyboard.keys[SDLK_KP1] |
+        ui::keyboard.keys[SDLK_KP4] | ui::keyboard.keys[SDLK_KP7] )
+    {
+      relH += keyYSens * Timer::TICK_TIME;
+    }
+    if( ui::keyboard.keys[SDLK_RIGHT] | ui::keyboard.keys[SDLK_KP3] |
+        ui::keyboard.keys[SDLK_KP6] | ui::keyboard.keys[SDLK_KP9] )
+    {
+      relH -= keyYSens * Timer::TICK_TIME;
+    }
+    if( ui::keyboard.keys[SDLK_DOWN] | ui::keyboard.keys[SDLK_KP1] |
+        ui::keyboard.keys[SDLK_KP2] | ui::keyboard.keys[SDLK_KP3] )
+    {
+      relV -= keyXSens * Timer::TICK_TIME;
+    }
+    if( ui::keyboard.keys[SDLK_UP] | ui::keyboard.keys[SDLK_KP7] |
+        ui::keyboard.keys[SDLK_KP8] | ui::keyboard.keys[SDLK_KP9] )
+    {
+      relV += keyXSens * Timer::TICK_TIME;
+    }
+
+    botObj = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
+
+    if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
+      bot = -1;
+      botObj = null;
+    }
+
+    if( newState != state ) {
+      switch( newState ) {
+        case STRATEGIC: {
+          proxy = &strategicProxy;
+          break;
+        }
+        case BOT: {
+          proxy = &botProxy;
+          break;
+        }
+        case NONE: {
+          hard_assert( false );
+          break;
+        }
+      }
+      isExternal = true;
+      proxy->begin();
+      state = newState;
+    }
+
+    proxy->update();
+  }
+
+  void Camera::prepare()
+  {
+    botObj = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
+
+    if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
+      bot = -1;
+      botObj = null;
+    }
+
+    proxy->prepare();
   }
 
   void Camera::init()
@@ -80,6 +148,8 @@ namespace client
     h            = 0.0f;
     v            = Math::TAU / 4.0f;
     w            = 0.0f;
+    relH         = 0.0f;
+    relV         = 0.0f;
 
     rot          = Quat::ID;
     relRot       = Quat::ID;
@@ -101,76 +171,6 @@ namespace client
 
     state        = NONE;
     newState     = defaultState;
-  }
-
-  void Camera::update()
-  {
-    h -= float( ui::mouse.overEdgeX ) * mouseXSens;
-    v += float( ui::mouse.overEdgeY ) * mouseYSens;
-
-    if( ui::keyboard.keys[SDLK_UP] | ui::keyboard.keys[SDLK_KP7] |
-        ui::keyboard.keys[SDLK_KP8] | ui::keyboard.keys[SDLK_KP9] )
-    {
-      v += keyXSens * Timer::TICK_TIME;
-    }
-    if( ui::keyboard.keys[SDLK_DOWN] | ui::keyboard.keys[SDLK_KP1] |
-        ui::keyboard.keys[SDLK_KP2] | ui::keyboard.keys[SDLK_KP3] )
-    {
-      v -= keyXSens * Timer::TICK_TIME;
-    }
-    if( ui::keyboard.keys[SDLK_RIGHT] | ui::keyboard.keys[SDLK_KP3] |
-        ui::keyboard.keys[SDLK_KP6] | ui::keyboard.keys[SDLK_KP9] )
-    {
-      h -= keyYSens * Timer::TICK_TIME;
-    }
-    if( ui::keyboard.keys[SDLK_LEFT] | ui::keyboard.keys[SDLK_KP1] |
-        ui::keyboard.keys[SDLK_KP4] | ui::keyboard.keys[SDLK_KP7] )
-    {
-      h += keyYSens * Timer::TICK_TIME;
-    }
-
-    botObj = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
-
-    if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
-      bot = -1;
-      botObj = null;
-    }
-
-    if( newState != state ) {
-      switch( newState ) {
-        case STRATEGIC: {
-          proxy = &strategicProxy;
-          break;
-        }
-        case BOT: {
-          proxy = &botProxy;
-          break;
-        }
-        case NONE: {
-          hard_assert( false );
-          break;
-        }
-      }
-      isExternal = true;
-      proxy->begin();
-      state = newState;
-    }
-
-    proxy->update();
-  }
-
-  void Camera::prepare()
-  {
-    hard_assert( ( bot == -1 && botObj == null ) || ( bot != -1 && botObj == orbis.objects[bot] ) );
-
-    botObj = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
-
-    if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
-      bot = -1;
-      botObj = null;
-    }
-
-    proxy->prepare();
   }
 
 }

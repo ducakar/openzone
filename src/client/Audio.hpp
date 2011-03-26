@@ -22,25 +22,25 @@ namespace client
   {
     public:
 
-      static const int   UPDATED_BIT = 0x00000001;
-      static const float MIN_GAIN;
+      static const int UPDATED_BIT = 0x00000001;
 
       typedef Audio* ( * CreateFunc )( const Object* object );
 
     protected:
 
+      // obj: source object of the effect, parent: object at which the effect is played
+      // obj != parent: e.g. an object obj in the inventory of bot parent plays a sound
       void playSound( int sample, float volume, const Object* obj, const Object* parent ) const;
       void playContSound( int sample, float volume, const Object* obj, const Object* parent ) const;
-      void requestSounds() const;
-      void releaseSounds() const;
+      void playEngineSound( int sample, float volume, float pitch, const Object* obj ) const;
 
       explicit Audio( const Object* obj );
 
     public:
 
-      const Object* obj;
-      int flags;
+      const Object*      obj;
       const ObjectClass* clazz;
+      int                flags;
 
       virtual ~Audio();
 

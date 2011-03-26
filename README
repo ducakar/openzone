@@ -6,7 +6,7 @@ Space               - up/increase height
 Ctrl                - down/decrease height
 Tab                 - toggle interface mode
 Numpad Enter        - switch between FreeCam and Strategic camera
-i                   - incarnate into the selected bot
+i                   - incarnate into the selected bot (also works when the bot is inside a vehicle)
 
 Bot controls
 ------------
@@ -44,15 +44,18 @@ Vehicle controls
 mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
 arrow keys          - look around
 w, a, s, d          - move forwards, left, backwards, right
-Space               - up (air vehicles) or jump (hover vehicles)
-Ctrl                - down (air vehicles)
+Space               - up (air vehicles only)
+Ctrl                - down (air vehicles only)
 
 left click          - trigger selected weapon
+right click         - select next weapon
 wheel up            - select previous weapon
 wheel down          - select next weapon
 
 x                   - exit vehicle
 j                   - eject from vehicle
+i                   - leave bot
+m                   - suicide
 
 Tab                 - toggle interface mode
 Numpad Enter        - switch between 1st persorn and 3rd person camera
@@ -64,6 +67,17 @@ o                   - forward sky time for 1/8 of a day
 
 F11                 - screenshot (saved to ~/.openzone/screenshot-DATE.bmp)
 F12                 - minimise and freeze (not working on Windows)
+
+Tips
+----
+- You can jump to a little higher places if you crouch and uncrouch shortly after jump.
+- To lift object, your hands must be empty (no weapon equipped), you must not be swimming and
+  object must not be too heavy. If you don't stand close enough to the object it may slip from your
+  hands immediately after you grab it.
+- To equip/unequip a weapon right click it in your inventory.
+- To climb the ladder look up or down into a ladder. If you move away from the ladder you will
+  fall from it.
+- You can move faster under water if you walk on the bottom. Just move into the bottom to do it.
 
 Command line
 ------------
@@ -86,13 +100,20 @@ openzone [OPTIONS]
 -t num
       Exits after num seconds (can be a floating-point number). For benchmarking purposes.
 
+Notes
+-----
+- On first run ~/.openzone/client.rc configuration file with default settings is generated.
+  Edit it to change any settings you wish.
+- "~" means $HOME on Linux (i.e. /home/username) and $USERPROFILE on Windows (i.e.
+  C:\Documents and Settings\username on Windows XP or C:\Users\username on Windows Vista)
+
 Dependencies
 ------------
 - SDL
 - SDL_image (needed for prebuild only, needs at least PNG and JPEG support)
 - SDL_ttf
 - SDL_net
-- OpenGL (MesaGL)
+- OpenGL (MesaGL headers included in source)
 - OpenAL
 - FreeALUT
 - libvorbis
@@ -101,12 +122,13 @@ Dependencies
 On Linux you have to install packages that provide those libraries.
 For Windows build, all dependencies are included.
 
-Notes
------
-- On first run ~/.openzone/client.rc configuration file with default settings is generated.
-  Edit it to change any settings you wish.
-- On exit the world is saved to ~/.openzone/default.ozState. Delete this file to start with a
-  clean world again.
-- You can jump to higher places with jump-duck (like in Half-Life 1).
-- "~" means $HOME on Linux (i.e. /home/username) and $USERPROFILE on Windows (i.e.
-  C:\Documents and Settings\username on Windows XP or C:\Users\username on Windows Vista)
+Licence
+-------
+Copyright (C) 2002-2001  Davorin Učakar <davorin.ucakar@gmail.com>
+
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions; See COPYING file for details.
+
+Data (everything under 'data' directory) and included libraries ('*.dll' in the root directory) are
+work of various authors. See respective readme files for details.

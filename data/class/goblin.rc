@@ -6,7 +6,7 @@ dim.z "0.64"
 
 dimCrouch.z "0.49"
 
-life "100.0f"
+life "100.0"
 mass "30.0"
 
 nDebris "8"
@@ -42,7 +42,7 @@ crouchCamZ "0.39"
 walkMomentum "1.0"
 runMomentum "2.5"
 crouchMomentum "1.0"
-jumpMomentum "3.0"
+jumpMomentum "4.0"
 
 staminaRunDrain "0.10"
 staminaJumpDrain "8.00"

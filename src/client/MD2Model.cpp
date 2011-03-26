@@ -117,11 +117,11 @@ namespace client
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
 
-      if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
+      if( parent == null && bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
         context.drawModel( orbis.objects[bot->weaponItem], this );
       }
     }
-    else if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
+    else if( parent == null && bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
       tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
       tf.model.rotateX( bot->v - Math::TAU / 4.0f );
       tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );

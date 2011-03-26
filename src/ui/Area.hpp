@@ -28,16 +28,26 @@ namespace ui
 
     protected:
 
-      static const int UPDATE_FUNC_BIT = 0x00000001;
-      // if onUpdate should be called
-      static const int UPDATE_BIT      = 0x00000002;
-      // ignore when passing events
-      static const int IGNORE_BIT      = 0x00000004;
-      // a child with GRAB_BIT get exclusive focus for events
-      static const int GRAB_BIT        = 0x00000008;
-      // do not draw
-      static const int HIDDEN_BIT      = 0x00000010;
       // element has onUpdate handler implemented
+      static const int UPDATE_FUNC_BIT = 0x01;
+      // if onUpdate should be called
+      static const int UPDATE_BIT      = 0x02;
+      // ignore when passing events
+      static const int IGNORE_BIT      = 0x04;
+      // a child with GRAB_BIT get exclusive focus for events
+      static const int GRAB_BIT        = 0x08;
+      // do not draw
+      static const int HIDDEN_BIT      = 0x10;
+
+      // text alignment
+      static const int ALIGN_LEFT      = 0x00;
+      static const int ALIGN_RIGHT     = 0x01;
+      static const int ALIGN_HCENTRE   = 0x02;
+      static const int ALIGN_BOTTOM    = 0x00;
+      static const int ALIGN_TOP       = 0x04;
+      static const int ALIGN_VCENTRE   = 0x08;
+      static const int ALIGN_NONE      = ALIGN_LEFT | ALIGN_BOTTOM;
+      static const int ALIGN_CENTRE    = ALIGN_HCENTRE | ALIGN_VCENTRE;
 
       static const SDL_Color SDL_COLOUR_WHITE;
 
@@ -72,9 +82,7 @@ namespace ui
 
       void fill( int x, int y, int width, int height ) const;
       void rect( int x, int y, int width, int height ) const;
-      void print( int x, int y, const char* s, ... );
-      void printCentred( int baseX, int baseY, const char* s, ... );
-      void printBaseline( int baseX, int baseY, const char* s, ... );
+      void print( int x, int y, int align, const char* s, ... );
 
       void realign( int newX, int newY );
       void move( int moveX, int moveY );

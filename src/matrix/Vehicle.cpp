@@ -19,7 +19,8 @@
 namespace oz
 {
 
-  const float Vehicle::EJECT_MOVE     = 4.0f;
+  const float Vehicle::EXIT_EPSILON   = 0.20f;
+  const float Vehicle::EXIT_MOMENTUM  = 1.00f;
   const float Vehicle::EJECT_MOMENTUM = 20.0f;
 
   Pool<Vehicle> Vehicle::pool;
@@ -43,7 +44,7 @@ namespace oz
 
     const Vec3& right = rotMat.x;
     const Vec3& at    = rotMat.y;
-    const Vec3& up    = rotMat.z;
+//     const Vec3& up    = rotMat.z;
 
     // controls
     Vec3 move = Vec3::ZERO;
@@ -64,9 +65,9 @@ namespace oz
       move.x -= right.x;
       move.y -= right.y;
     }
-    if( actions & Bot::ACTION_VEH_UP ) {
-      move += up;
-    }
+//     if( actions & Bot::ACTION_VEH_UP ) {
+//       move += up;
+//     }
 
     momentum += move * clazz->moveMomentum;
 
@@ -147,9 +148,7 @@ namespace oz
       if( crew[i] != -1 ) {
         Bot* bot = static_cast<Bot*>( orbis.objects[ crew[i] ] );
 
-        hard_assert( bot == null || bot->parent == index );
-
-        if( bot == null ) {
+        if( bot == null || bot->parent == -1 ) {
           crew[i] = -1;
         }
         else if( bot->flags & Bot::DEATH_BIT ) {
@@ -166,14 +165,14 @@ namespace oz
     if( crew[PILOT] != -1 ) {
       pilot = static_cast<Bot*>( orbis.objects[ crew[PILOT] ] );
 
-      rot = Quat::rotZYX( pilot->h, 0.0f, pilot->v - Math::TAU / 4.0f );
+      h = pilot->h;
+      v = pilot->v;
+      rot = Quat::rotZYX( h, 0.0f, v - Math::TAU / 4.0f );
       actions = pilot->actions;
       flags &= ~DISABLED_BIT;
     }
 
     Mat44 rotMat = Mat44::rotation( rot );
-    const Vec3& at = rotMat.y;
-    const Vec3& up = rotMat.z;
 
     ( this->*handlers[clazz->type] )( rotMat );
 
@@ -192,12 +191,12 @@ namespace oz
           shotTime[weapon] = clazz->shotInterval[weapon];
 
           if( nShots[weapon] == 0 ) {
-            addEvent( EVENT_SHOT0_EMPTY, 1.0f );
+            addEvent( EVENT_SHOT0_EMPTY + weapon*2, 1.0f );
           }
           else {
             nShots[weapon] = max( -1, nShots[weapon] - 1 );
 
-            addEvent( EVENT_SHOT0, 1.0f );
+            addEvent( EVENT_SHOT0 + weapon*2, 1.0f );
             lua.call( clazz->onShot[weapon], this, pilot );
           }
         }
@@ -216,21 +215,37 @@ namespace oz
       if( crew[i] != -1 ) {
         Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
 
+        bot->p = p + rotMat * clazz->crewPos[0] + momentum * Timer::TICK_TIME;
+        bot->momentum = velocity;
+        bot->velocity = velocity;
+
         if( bot->actions & Bot::ACTION_EXIT ) {
-          crew[i] = -1;
-          bot->exit();
+          float hsc[2];
+          Math::sincos( h, &hsc[0], &hsc[1] );
+
+          float  handle = !( dim + bot->dim ) + EXIT_EPSILON;
+          Point3 exitPos = Point3( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
+
+          if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
+            crew[i] = -1;
+
+            bot->p = exitPos;
+            bot->exit();
+          }
         }
         else if( bot->actions & Bot::ACTION_EJECT ) {
-          crew[i] = -1;
-          bot->exit();
+          Point3 ejectPos = Point3( p.x, p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
 
-          // move up a bit to prevent colliding with the vehicle
-          bot->p += up * EJECT_MOVE;
-          bot->momentum += ( up + 0.5f * at ) * EJECT_MOMENTUM;
-        }
-        else {
-          bot->p = p + rotMat * clazz->crewPos[0] + momentum * Timer::TICK_TIME;
-          bot->momentum = velocity;
+          if( !collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
+            crew[i] = -1;
+
+            float hsc[2];
+            Math::sincos( h, &hsc[0], &hsc[1] );
+
+            bot->p = ejectPos;
+            bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+            bot->exit();
+          }
         }
       }
     }
@@ -243,11 +258,14 @@ namespace oz
   {
     if( crew[PILOT] == -1 ) {
       crew[PILOT] = user->index;
+
+      user->h = h;
+      user->v = v;
       user->enter( index );
     }
   }
 
-  Vehicle::Vehicle() : rot( Quat::ID ), actions( 0 ), oldActions( 0 ), weapon( 0 )
+  Vehicle::Vehicle() : actions( 0 ), oldActions( 0 ), weapon( 0 )
   {
     aSet( crew, -1, CREW_MAX );
   }
@@ -278,11 +296,15 @@ namespace oz
   {
     Dynamic::readFull( istream );
 
+    h                 = istream->readFloat();
+    v                 = istream->readFloat();
     rot               = istream->readQuat();
     state             = istream->readInt();
     oldState          = istream->readInt();
     actions           = istream->readInt();
     oldActions        = istream->readInt();
+
+    weapon            = istream->readInt();
 
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
       nShots[i]   = istream->readInt();
@@ -298,11 +320,15 @@ namespace oz
   {
     Dynamic::writeFull( ostream );
 
+    ostream->writeFloat( h );
+    ostream->writeFloat( v );
     ostream->writeQuat( rot );
     ostream->writeInt( state );
     ostream->writeInt( oldState );
     ostream->writeInt( actions );
     ostream->writeInt( oldActions );
+
+    ostream->writeInt( weapon );
 
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
       ostream->writeInt( nShots[i] );
@@ -321,6 +347,8 @@ namespace oz
     rot             = istream->readQuat();
     state           = istream->readInt();
 
+    weapon          = istream->readInt();
+
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
       nShots[i] = istream->readInt();
     }
@@ -332,6 +360,8 @@ namespace oz
 
     ostream->writeQuat( rot );
     ostream->writeInt( state );
+
+    ostream->writeInt( weapon );
 
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
       ostream->writeInt( nShots[i] );

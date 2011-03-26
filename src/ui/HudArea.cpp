@@ -27,6 +27,8 @@ namespace client
 namespace ui
 {
 
+  const float HudArea::VEHICLE_DIMF = VEHICLE_SIZE / 2.0f;
+
   void HudArea::drawBotCrosshair()
   {
     const Bot*      bot   = camera.botObj;
@@ -74,7 +76,7 @@ namespace ui
           description = taggedClazz->description;
         }
 
-        printCentred( descTextX, descTextY, "%s", description.cstr() );
+        print( descTextX, descTextY, ALIGN_CENTRE, "%s", description.cstr() );
 
         glUniform1i( param.oz_IsTextureEnabled, true );
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
@@ -97,7 +99,7 @@ namespace ui
 
         if( bot->grabObj == -1 && bot->weaponItem == -1 && ( tagged->flags & Object::DYNAMIC_BIT ) &&
             // not swimming
-            ( ( bot->flags & Object::ON_FLOOR_BIT ) || bot->lower != -1 || bot->depth <= bot->dim.z ) &&
+            ( bot->depth <= bot->dim.z ) &&
             // if it is not a bot that is holding us
             ( !( tagged->flags & Object::BOT_BIT ) || ( taggedBot->grabObj == -1 ) ) &&
             taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged )
@@ -134,26 +136,75 @@ namespace ui
     rect( 8, 30, 200, 14 );
     rect( 8, 8, 200, 14 );
 
-    if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
-      const Vehicle*      vehicle = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
-      const VehicleClass* clazz   = static_cast<const VehicleClass*>( vehicle->clazz );
+    if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
+      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weaponItem] );
 
-      float life      = vehicle->life / clazz->life;
-      int   lifeWidth = max( int( life * 188.0f ), 0 );
+      glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.25f );
+      fill( 8, 52, 200, textHeight + 8 );
 
-      glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
-      fill( -199, 31, lifeWidth, 10 );
-//         glUniform4f( param.oz_Colour, 0.7f - 0.7f * stamina, 0.3f, 0.5f + 0.5f * stamina, 0.6f );
-//         fill( 11, 11, staminaWidth, 10 );
-
-      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
-      rect( -200, 30, 190, 12 );
-//         rect( 10, 10, 190, 12 );
+      print( 16, 54, ALIGN_LEFT, "%s", weapon->clazz->description.cstr() );
+      print( 200, 54, ALIGN_RIGHT, weapon->nShots == -1 ? "∞" : "%d", weapon->nShots );
     }
   }
 
   void HudArea::drawVehicleStatus()
-  {}
+  {
+    const Bot*          bot     = camera.botObj;
+    const Vehicle*      vehicle = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
+    const VehicleClass* clazz   = static_cast<const VehicleClass*>( vehicle->clazz );
+
+    glEnable( GL_DEPTH_TEST );
+    glDisable( GL_BLEND );
+
+    float size = vehicle->dim.fastL();
+    float scale = VEHICLE_DIMF / size;
+
+    tf.model = Mat44::ID;
+    tf.camera = Mat44::ID;
+    tf.camera.translate( Vec3( float( camera.width - 208 + VEHICLE_SIZE / 2 ),
+                               float( 30 + clazz->nWeapons * ( textHeight + 8 ) + VEHICLE_SIZE / 2 ),
+                               0.0f ) );
+    tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
+    tf.camera.rotateX( Math::rad( -30.0f ) );
+    tf.camera.rotateZ( Math::rad( 160.0f ) );
+    tf.camera.scale( Vec3( scale, scale, scale ) );
+    tf.applyCamera();
+
+    context.drawModel( vehicle, null );
+
+    shape.bindVertexArray();
+
+    shader.use( shader.ui );
+
+    tf.camera = Mat44::ID;
+    tf.applyCamera();
+
+    glEnable( GL_BLEND );
+    glDisable( GL_DEPTH_TEST );
+
+    float life      = vehicle->life / clazz->life;
+    int   lifeWidth = max( int( life * 198.0f ), 0 );
+
+    glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
+    fill( -207, 9, lifeWidth, 12 );
+
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
+    rect( -208, 8, 200, 14 );
+
+    for( int i = 0; i < clazz->nWeapons; ++i ) {
+      int yBias = ( clazz->nWeapons - 1 - i ) * ( textHeight + 8 );
+
+      if( i == vehicle->weapon ) {
+        glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.25f );
+        fill( -208, 30 + yBias, 200, textHeight + 8 );
+      }
+
+      print( -200, 32 + yBias, ALIGN_LEFT,
+             "%s", clazz->weaponNames[i].cstr() );
+      print( -16, 32 + yBias, ALIGN_RIGHT,
+             vehicle->nShots[i] == -1 ? "∞" : "%d", vehicle->nShots[i] );
+    }
+  }
 
   void HudArea::onDraw()
   {
@@ -165,7 +216,7 @@ namespace ui
       drawBotCrosshair();
       drawBotStatus();
 
-      if( bot->parent != -1 ) {
+      if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
         drawVehicleStatus();
       }
     }

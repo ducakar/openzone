@@ -12,7 +12,7 @@
 #include "client/VehicleAudio.hpp"
 
 #include "matrix/Orbis.hpp"
-#include "matrix/Vehicle.hpp"
+#include "matrix/VehicleClass.hpp"
 
 #include "client/Context.hpp"
 
@@ -33,7 +33,15 @@ namespace client
   void VehicleAudio::play( const Audio* parent )
   {
     const Vehicle* vehicle = static_cast<const Vehicle*>( obj );
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->clazz->audioSamples;
+
+    // engine sound
+    if( vehicle->crew[Vehicle::PILOT] != -1 ) {
+      float pitch = vehicle->momentum.sqL() * clazz->enginePitchRatio;
+
+      playEngineSound( samples[Vehicle::EVENT_ENGINE], 1.0f, 1.0f + pitch, obj );
+    }
 
     // events
     foreach( event, vehicle->events.citer() ) {

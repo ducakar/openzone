@@ -1,5 +1,5 @@
 /*
- *  bsp.frag
+ *  bigMesh.frag
  *
  *  Same as mesh shader, but per-pixel fog as BSPs can have quite large faces.
  *

@@ -1,3 +1,5 @@
+description "goblin battle axe"
+
 base "Weapon"
 
 dim.x "0.24"

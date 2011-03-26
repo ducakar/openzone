@@ -49,7 +49,7 @@ namespace ui
     }
     fill( 0, 0, width, height );
     setFont( Font::SANS );
-    printCentred( width / 2, height / 2, "%s", label.cstr() );
+    print( width / 2, height / 2, ALIGN_CENTRE, "%s", label.cstr() );
 
     isHighlighted = false;
     isClicked = false;

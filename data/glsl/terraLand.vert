@@ -1,5 +1,5 @@
 /*
- *  terra_land.vert
+ *  bigTerraLand.vert
  *
  *  Terrain (land) shader.
  *

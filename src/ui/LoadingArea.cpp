@@ -35,7 +35,7 @@ namespace ui
   {
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
     fill( 0, 0, camera.width, camera.height );
-    printCentred( camera.width / 2, camera.height / 4, "LOADING" );
+    print( camera.width / 2, camera.height / 4, ALIGN_CENTRE, "LOADING" );
   }
 
 }

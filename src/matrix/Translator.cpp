@@ -697,7 +697,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "matrix scripts (*.luac in 'lua/matrix') {" );
+    log.println( "matrix scripts (*.lua in 'lua/matrix') {" );
     log.indent();
 
     dir.open( "lua/matrix" );
@@ -710,7 +710,7 @@ namespace oz
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "luac" ) ) {
+      if( !ent.hasExtension( "lua" ) ) {
         continue;
       }
 
@@ -725,7 +725,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "nirvana scripts (*.luac in 'lua/nirvana') {" );
+    log.println( "nirvana scripts (*.lua in 'lua/nirvana') {" );
     log.indent();
 
     dir.open( "lua/nirvana" );
@@ -738,7 +738,7 @@ namespace oz
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "luac" ) ) {
+      if( !ent.hasExtension( "lua" ) ) {
         continue;
       }
 

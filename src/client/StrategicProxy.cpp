@@ -44,6 +44,9 @@ namespace client
 
   void StrategicProxy::update()
   {
+    camera.h += camera.relH;
+    camera.v += camera.relV;
+
     if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
       isFree = !isFree;
 

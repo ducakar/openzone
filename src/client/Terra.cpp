@@ -24,13 +24,11 @@ namespace oz
 namespace client
 {
 
-  const int   Terra::TILE_INDICES  =
-      Terra::TILE_QUADS * ( Terra::TILE_QUADS + 1 ) * 2 + ( Terra::TILE_QUADS - 1 ) * 2;
+  const int   Terra::TILE_INDICES  = TILE_QUADS * ( TILE_QUADS + 1 ) * 2 + ( TILE_QUADS - 1 ) * 2;
+  const int   Terra::TILE_VERTICES = ( TILE_QUADS + 1 ) * ( TILE_QUADS + 1 );
 
-  const int   Terra::TILE_VERTICES = ( Terra::TILE_QUADS + 1 ) * ( Terra::TILE_QUADS + 1 );
-
-  const float Terra::TILE_SIZE     = Terra::TILE_QUADS * oz::Terra::Quad::SIZE;
-  const float Terra::TILE_INV_SIZE = 1.0f / Terra::TILE_SIZE;
+  const float Terra::TILE_SIZE     = TILE_QUADS * oz::Terra::Quad::SIZE;
+  const float Terra::TILE_INV_SIZE = 1.0f / TILE_SIZE;
 
   const float Terra::DETAIL_SCALE  = 4.00f;
   const float Terra::WATER_SCALE   = 0.25f;
@@ -237,6 +235,8 @@ namespace client
 
     landShaderId = translator.shaderIndex( "terraLand" );
     waterShaderId = translator.shaderIndex( "terraWater" );
+    submergedLandShaderId = translator.shaderIndex( "submergedTerraLand" );
+    submergedWaterShaderId = translator.shaderIndex( "submergedTerraWater" );
 
     float scales[2] = { float( oz::Terra::QUADS ), 1.0f };
 
@@ -244,6 +244,12 @@ namespace client
     glUniform1fv( param.oz_TextureScales, 2, scales );
 
     shader.use( waterShaderId );
+    glUniform1fv( param.oz_TextureScales, 2, scales );
+
+    shader.use( submergedLandShaderId );
+    glUniform1fv( param.oz_TextureScales, 2, scales );
+
+    shader.use( submergedWaterShaderId );
     glUniform1fv( param.oz_TextureScales, 2, scales );
 
     delete[] indices;
@@ -270,7 +276,7 @@ namespace client
     span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
     span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
-    shader.use( landShaderId );
+    shader.use( shader.isInWater ? submergedLandShaderId : landShaderId );
 
     tf.model = Mat44::ID;
     tf.apply();

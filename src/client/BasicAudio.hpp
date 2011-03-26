@@ -22,8 +22,6 @@ namespace client
   {
     protected:
 
-      static const int SND_FRICTING = Object::EVENT_FRICTING;
-
       int oldFlags[2];
 
       explicit BasicAudio( const Object* obj );

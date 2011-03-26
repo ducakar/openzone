@@ -79,7 +79,7 @@ namespace ui
   {
     if( mouse.doShow ) {
       Frame::onDraw();
-      printCentred( 50, -10, "Create" );
+      print( 50, -10, ALIGN_CENTRE, "Create" );
     }
   }
 
