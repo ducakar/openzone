@@ -1,0 +1,19 @@
+base "Dynamic"
+
+dim.x "0.05"
+dim.y "0.05"
+dim.z "0.05"
+
+flag.cylinder "false"
+
+damageThreshold "0.0"
+life "10.0"
+mass "1.0"
+
+onDestroy "shell_onDestroy"
+onUpdate  "shell_onUpdate"
+
+nDebris "0"
+
+modelType "SMM"
+modelName "shell"

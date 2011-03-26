@@ -44,7 +44,7 @@ namespace client
     // friction
     if( parent == null &&
         ( objFlags & ( Object::DYNAMIC_BIT | Object::FRICTING_BIT | Object::ON_SLICK_BIT ) ) ==
-        ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && samples[SND_FRICTING] != -1 )
+        ( Object::DYNAMIC_BIT | Object::FRICTING_BIT ) && samples[Object::EVENT_FRICTING] != -1 )
     {
       float dvx = bot->velocity.x;
       float dvy = bot->velocity.y;
@@ -58,7 +58,7 @@ namespace client
         }
       }
 
-      playContSound( samples[SND_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj, obj );
+      playContSound( samples[Object::EVENT_FRICTING], Math::sqrt( dvx*dvx + dvy*dvy ), obj, obj );
     }
 
     // events

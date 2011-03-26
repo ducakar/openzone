@@ -54,7 +54,10 @@ namespace client
 
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-    if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
+    if( bot->parent != -1 ) {
+      ui::mouse.doShow = false;
+    }
+    else if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
       ui::mouse.doShow = !ui::mouse.doShow;
     }
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
@@ -66,9 +69,24 @@ namespace client
     /*
      * Camera
      */
-    if( !isFreelook ) {
-      bot->h = camera.h;
-      bot->v = camera.v;
+    if( isFreelook ) {
+      camera.h += camera.relH;
+      camera.v += camera.relV;
+    }
+    else {
+      float relH = camera.relH;
+      float relV = camera.relV;
+
+//       if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
+//         const Vehicle*      vehicle = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
+//         const VehicleClass* clazz   = static_cast<const VehicleClass*>( vehicle->clazz );
+//
+//         relH = clamp( relH, -clazz->turnLimitH, +clazz->turnLimitH );
+//         relV = clamp( relV, -clazz->turnLimitV, +clazz->turnLimitV );
+//       }
+
+      bot->h += relH;
+      bot->v += relV;
     }
 
     bot->actions = 0;
@@ -188,9 +206,15 @@ namespace client
 
     const Bot* bot = camera.botObj;
 
+    if( !isFreelook ) {
+      camera.h = bot->h;
+      camera.v = bot->v;
+    }
+
     if( !isExternal ) {
       if( bot->parent != -1 ) { // inside vehicle
-        hard_assert( orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT );
+        hard_assert( orbis.objects[bot->parent] == null ||
+            orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT );
 
         camera.w = 0.0f;
         camera.align();
@@ -249,7 +273,7 @@ namespace client
       camera.align();
 
       float dist;
-      if( bot->parent != -1 ) {
+      if( bot->parent != -1 && orbis.objects[bot->parent] ) {
         Vehicle* veh = static_cast<Vehicle*>( orbis.objects[bot->parent] );
 
         hard_assert( veh->flags & Object::VEHICLE_BIT );

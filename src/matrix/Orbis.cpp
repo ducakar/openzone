@@ -23,11 +23,11 @@ namespace oz
 
   Orbis orbis;
 
-  const float Cell::SIZE     = float( Cell::SIZEI );
-  const float Cell::INV_SIZE = 1.0f / float( Cell::SIZEI );
-  const float Cell::RADIUS   = Cell::SIZE * Math::sqrt( 2 ) / 2.0f;
+  const float Cell::SIZE     = float( SIZEI );
+  const float Cell::INV_SIZE = 1.0f / float( SIZEI );
+  const float Cell::RADIUS   = SIZE * Math::sqrt( 2 ) / 2.0f;
 
-  const float Orbis::DIM     = Cell::SIZE * Orbis::MAX / 2.0f;
+  const float Orbis::DIM     = Cell::SIZE * MAX / 2.0f;
 
   bool Orbis::position( Struct* str )
   {

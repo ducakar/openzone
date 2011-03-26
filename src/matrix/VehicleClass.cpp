@@ -11,8 +11,9 @@
 
 #include "matrix/VehicleClass.hpp"
 
-#include "matrix/Vehicle.hpp"
+#include "matrix/Timer.hpp"
 #include "matrix/Translator.hpp"
+#include "matrix/Vehicle.hpp"
 
 #define OZ_CLASS_SET_STATE( stateBit, varName, defValue ) \
   if( config->get( varName, defValue ) ) { \
@@ -103,6 +104,16 @@ namespace oz
 
     OZ_CLASS_SET_STATE( Vehicle::CREW_VISIBLE_BIT, "state.crewVisible", true );
 
+    clazz->turnLimitH = config->get( "turnLimitH", 300.0f );
+    clazz->turnLimitV = config->get( "turnLimitV", 300.0f );
+
+    clazz->turnLimitH = Math::rad( clazz->turnLimitH ) * Timer::TICK_TIME;
+    clazz->turnLimitV = Math::rad( clazz->turnLimitV ) * Timer::TICK_TIME;
+
+    clazz->enginePitchBias  = config->get( "enginePitchBias", 1.0f );
+    clazz->enginePitchRatio = config->get( "enginePitchRatio", 0.001f );
+
+    char weaponNameBuffer[] = "weapon  .name";
     char onShotBuffer[] = "weapon  .onShot";
     char nShotsBuffer[] = "weapon  .nShots";
     char shotIntervalBuffer[] = "weapon  .shotInterval";
@@ -111,6 +122,9 @@ namespace oz
 
     for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
       hard_assert( i < 100 );
+
+      weaponNameBuffer[6] = char( '0' + ( i / 10 ) );
+      weaponNameBuffer[7] = char( '0' + ( i % 10 ) );
 
       onShotBuffer[6] = char( '0' + ( i / 10 ) );
       onShotBuffer[7] = char( '0' + ( i % 10 ) );
@@ -121,15 +135,16 @@ namespace oz
       shotIntervalBuffer[6] = char( '0' + ( i / 10 ) );
       shotIntervalBuffer[7] = char( '0' + ( i % 10 ) );
 
+      clazz->weaponNames[i]  = config->get( weaponNameBuffer, "" );
       clazz->onShot[i]       = config->get( onShotBuffer, "" );
       clazz->nShots[i]       = config->get( nShotsBuffer, -1 );
       clazz->shotInterval[i] = config->get( shotIntervalBuffer, 0.5f );
 
+      if( clazz->weaponNames[i].isEmpty() && clazz->nWeapons > i ) {
+        clazz->nWeapons = i;
+      }
       if( !String::isEmpty( clazz->onShot[i] ) ) {
         clazz->flags |= Object::LUA_BIT;
-      }
-      else if( clazz->nWeapons == Vehicle::WEAPONS_MAX ) {
-        clazz->nWeapons = i;
       }
     }
 
@@ -224,9 +239,13 @@ namespace oz
     obj->mass              = mass;
     obj->lift              = lift;
 
+    obj->h                 = 0.0f;
+    obj->v                 = Math::TAU / 4.0f;
     obj->rot               = Quat::ID;
     obj->state             = state;
     obj->oldState          = state;
+
+    obj->weapon            = 0;
 
     for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
       obj->nShots[i]   = nShots[i];

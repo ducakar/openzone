@@ -142,16 +142,23 @@ namespace client
 
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
-    // camera transformation
-    tf.projection();
-    tf.camera = camera.rotTMat;
-
     currentTime = SDL_GetTicks();
     timer.renderScheduleMillis += currentTime - beginTime;
     beginTime = currentTime;
 
-    sky.draw();
+    tf.camera = camera.rotTMat;
 
+    if( !shader.isInWater ) {
+      camera.maxDist = 100.0f;
+      tf.projection();
+
+      sky.draw();
+
+      camera.maxDist = visibility;
+    }
+
+    // camera transformation
+    tf.projection();
     tf.camera.translate( Point3::ORIGIN - camera.p );
 
     // set shaders
@@ -209,7 +216,7 @@ namespace client
     for( int i = 0; i < objects.length(); ++i ) {
       const Object* obj = objects[i].obj;
 
-      if( obj->index == camera.tagged ) {
+      if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
         shader.colour = Colours::TAG;
       }
 
@@ -217,7 +224,7 @@ namespace client
 
       context.drawModel( obj, null );
 
-      if( obj->index == camera.tagged ) {
+      if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
         shader.colour = Colours::WHITE;
       }
     }
@@ -522,8 +529,8 @@ namespace client
 
     dayVisibility        = config.getSet( "render.dayVisibility",        300.0f );
     nightVisibility      = config.getSet( "render.nightVisibility",      300.0f );
-    waterDayVisibility   = config.getSet( "render.waterDayVisibility",   12.0f );
-    waterNightVisibility = config.getSet( "render.waterNightVisibility", 12.0f );
+    waterDayVisibility   = config.getSet( "render.waterDayVisibility",   32.0f );
+    waterNightVisibility = config.getSet( "render.waterNightVisibility", 32.0f );
     particleRadius       = config.getSet( "render.particleRadius",       0.5f );
     showBounds           = config.getSet( "render.showBounds",           false );
     showAim              = config.getSet( "render.showAim",              false );

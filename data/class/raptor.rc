@@ -32,6 +32,15 @@ audioSample03                   ""                              # hit
 audioSample04                   "splash2"                       # splash
 audioSample05                   ""                              # friction
 audioSample06                   ""                              # use
+audioSample07                   ""                              # engine
+audioSample08                   "acid5"                         # service
+audioSample09                   "itempick"                      # switch weapon
+audioSample10                   "cg2"                           # 1st trigger
+audioSample11                   "outofammo"                     # 1st trigger empty
+audioSample12                   "cg2"                           # 2nd trigger
+audioSample13                   "outofammo"                     # 2nd trigger empty
+audioSample14                   "cg2"                           # 3rd trigger
+audioSample15                   "outofammo"                     # 3rd trigger empty
 
 type "AIR"
 

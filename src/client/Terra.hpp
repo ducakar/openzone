@@ -48,6 +48,8 @@ namespace client
 
       int   landShaderId;
       int   waterShaderId;
+      int   submergedLandShaderId;
+      int   submergedWaterShaderId;
 
       float waveBias;
 

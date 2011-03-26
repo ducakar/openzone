@@ -304,7 +304,7 @@ namespace oz
       // collision response
       handleObjHit();
 
-      if( traceSplits >= 3 ) {
+      if( traceSplits >= 3 || dyn->life <= 0.0f ) {
         break;
       }
       ++traceSplits;

@@ -30,7 +30,14 @@ namespace oz
       int    type;
       int    state;
 
+      float  turnLimitH;
+      float  turnLimitV;
+
+      float  enginePitchBias;
+      float  enginePitchRatio;
+
       int    nWeapons;
+      String weaponNames[Vehicle::WEAPONS_MAX];
       String onShot[Vehicle::WEAPONS_MAX];
       int    nShots[Vehicle::WEAPONS_MAX];
       float  shotInterval[Vehicle::WEAPONS_MAX];

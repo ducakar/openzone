@@ -152,8 +152,6 @@ namespace client
       static const int   BUFFER_SIZE = 8192;
 
       DArray<Program> programs;
-
-      int             activeProgram;
       SVector<int, 8> programStack;
 
       float           lightingDistance;
@@ -168,6 +166,8 @@ namespace client
       int  ui;
       int  mesh;
       int  bigMesh;
+
+      int  activeProgram;
 
       Vec4 colour;
 

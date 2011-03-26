@@ -20,11 +20,11 @@
 namespace oz
 {
 
-  const float Terra::Quad::SIZE     = float( Terra::Quad::SIZEI );
-  const float Terra::Quad::INV_SIZE = 1.0f / float( Terra::Quad::SIZEI );
-  const float Terra::Quad::DIM      = Terra::Quad::SIZE / 2.0f;
+  const float Terra::Quad::SIZE     = float( SIZEI );
+  const float Terra::Quad::INV_SIZE = 1.0f / float( SIZEI );
+  const float Terra::Quad::DIM      = SIZE / 2.0f;
 
-  const float Terra::DIM            = Terra::Quad::DIM * Terra::QUADS;
+  const float Terra::DIM            = Terra::Quad::DIM * QUADS;
 
 #ifdef OZ_BUILD_TOOLS
   void Terra::buildTerraFrame()

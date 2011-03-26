@@ -74,7 +74,7 @@ namespace ui
     shape.rect( x, y, width, height );
   }
 
-  void Area::print( int x, int y, const char* s, ... )
+  void Area::print( int x, int y, int align, const char* s, ... )
   {
     char buffer[1024];
     va_list ap;
@@ -91,6 +91,19 @@ namespace ui
     x = x < 0 ? this->x + this->width  + x : this->x + x;
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
+    if( align & ALIGN_RIGHT ) {
+      x -= text->w;
+    }
+    else if( align & ALIGN_HCENTRE ) {
+      x -= text->w / 2;
+    }
+    if( align & ALIGN_TOP ) {
+      y -= text->h;
+    }
+    else if( align & ALIGN_VCENTRE ) {
+      y -= text->h / 2;
+    }
+
     glBindTexture( GL_TEXTURE_2D, font.textTexId );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                   text->pixels);
@@ -101,72 +114,6 @@ namespace ui
     shape.fill( x + 1, y - 1, text->w, text->h );
     glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
     shape.fill( x, y, text->w, text->h );
-
-    glUniform1i( param.oz_IsTextureEnabled, false );
-
-    SDL_FreeSurface( text );
-  }
-
-  void Area::printCentred( int baseX, int baseY, const char* s, ... )
-  {
-    char buffer[1024];
-    va_list ap;
-
-    va_start( ap, s );
-    vsnprintf( buffer, 1024, s, ap );
-    va_end( ap );
-    buffer[1023] = '\0';
-
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
-
-    textWidth = text->w;
-
-    baseX = baseX < 0 ? this->x + this->width  + baseX : this->x + baseX;
-    baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
-
-    glBindTexture( GL_TEXTURE_2D, font.textTexId );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                  text->pixels);
-
-    glUniform1i( param.oz_IsTextureEnabled, true );
-
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
-    shape.fill( baseX - text->w / 2 + 1, baseY - text->h / 2 - 1, text->w, text->h );
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    shape.fill( baseX - text->w / 2, baseY - text->h / 2, text->w, text->h );
-
-    glUniform1i( param.oz_IsTextureEnabled, false );
-
-    SDL_FreeSurface( text );
-  }
-
-  void Area::printBaseline( int x, int baseY, const char* s, ... )
-  {
-    char buffer[1024];
-    va_list ap;
-
-    va_start( ap, s );
-    vsnprintf( buffer, 1024, s, ap );
-    va_end( ap );
-    buffer[1023] = '\0';
-
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
-
-    textWidth = text->w;
-
-    x     =     x < 0 ? this->x + this->width  + x     : this->x + x;
-    baseY = baseY < 0 ? this->y + this->height + baseY : this->y + baseY;
-
-    glBindTexture( GL_TEXTURE_2D, font.textTexId );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                  text->pixels);
-
-    glUniform1i( param.oz_IsTextureEnabled, true );
-
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
-    shape.fill( x + 1, baseY - text->h / 2 - 1, text->w, text->h );
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    shape.fill( x, baseY - text->h / 2, text->w, text->h );
 
     glUniform1i( param.oz_IsTextureEnabled, false );
 

@@ -68,6 +68,9 @@ namespace oz
         ++i;
       }
     }
+    if( weaponItem != -1 && orbis.objects[weaponItem] == null ) {
+      weaponItem = -1;
+    }
 
     if( actions & ACTION_SUICIDE ) {
       life = clazz->life / 2.0f - EPSILON;
@@ -106,15 +109,7 @@ namespace oz
     if( parent != -1 ) {
       grabObj = -1;
       taggedItem = -1;
-      weaponItem = -1;
-
-      if( orbis.objects[parent] == null ) {
-        exit();
-      }
-      else {
-        hard_assert( orbis.objects[parent]->flags & VEHICLE_BIT );
-        return;
-      }
+      return;
     }
 
     /*
@@ -134,7 +129,7 @@ namespace oz
 
     state |= lower != -1 || ( flags & ON_FLOOR_BIT )    ? GROUNDED_BIT  : 0;
     state |= ( flags & ON_LADDER_BIT ) && grabObj == -1 ? CLIMBING_BIT  : 0;
-    state |= depth > dim.z && !( state & GROUNDED_BIT ) ? SWIMMING_BIT  : 0;
+    state |= depth > dim.z                              ? SWIMMING_BIT  : 0;
     state |= depth > dim.z + camZ                       ? SUBMERGED_BIT : 0;
 
     flags |= CLIMBER_BIT;
@@ -593,20 +588,6 @@ namespace oz
       }
     }
 
-    /*
-     * WEAPON
-     */
-    if( weaponItem != -1 ) {
-      Dynamic* weapon = static_cast<Dynamic*>( orbis.objects[weaponItem] );
-
-      hard_assert( ( weapon->flags & DYNAMIC_BIT ) && ( weapon->flags & ITEM_BIT ) &&
-              ( weapon->flags & WEAPON_BIT ) );
-
-      if( weapon == null ) {
-        weaponItem = -1;
-      }
-    }
-
     oldState   = state;
     oldActions = actions;
   }
@@ -626,7 +607,7 @@ namespace oz
 
   void Bot::enter( int vehicle_ )
   {
-    hard_assert( cell != null );
+    hard_assert( cell != null && vehicle_ != -1 );
 
     parent  = vehicle_;
     actions = 0;

@@ -1,5 +1,5 @@
 /*
- *  bigTerraLand.frag
+ *  terraLand.frag
  *
  *  Terrain (land) shader.
  *
@@ -7,16 +7,19 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec2  exTexCoord;
-in vec4  exColour;
-in float exDistance;
+in vec3 exPosition;
+in vec2 exTexCoord;
+in vec3 exNormal;
 
 out vec4 outColour;
 
 void main()
 {
-  outColour = exColour;
+  vec3 toCamera = oz_CameraPosition - exPosition;
+  float dist = length( toCamera );
+
+  outColour = skyLightColour( exNormal );
   outColour *= texture( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
   outColour *= texture( oz_Textures[1], exTexCoord * oz_TextureScales[1] );
-  outColour = applyFog( outColour, exDistance );
+  outColour = applyFog( outColour, dist );
 }

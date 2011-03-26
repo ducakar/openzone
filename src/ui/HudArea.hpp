@@ -26,7 +26,9 @@ namespace ui
 
     private:
 
-      static const int ICON_SIZE = 32;
+      static const int   ICON_SIZE    = 32;
+      static const int   VEHICLE_SIZE = 180;
+      static const float VEHICLE_DIMF;
 
       uint crossTexId;
       uint useTexId;

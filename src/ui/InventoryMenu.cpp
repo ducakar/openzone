@@ -23,7 +23,7 @@ namespace client
 namespace ui
 {
 
-  const float InventoryMenu::SLOT_DIMF = float( InventoryMenu::SLOT_SIZE ) / 2.0f;
+  const float InventoryMenu::SLOT_DIMF = float( SLOT_SIZE ) / 2.0f;
 
   InventoryMenu::InventoryMenu() :
       Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + HEADER_SIZE + FOOTER_SIZE )
@@ -101,14 +101,15 @@ namespace ui
     Frame::onDraw();
 
     setFont( Font::TITLE );
-    printCentred( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, "Inventory" );
+    print( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, ALIGN_CENTRE, "Inventory" );
 
+    glEnable( GL_DEPTH_TEST );
     glDisable( GL_BLEND );
 
     tf.camera = Mat44::ID;
     tf.camera.translate( Vec3( float( x + SLOT_SIZE / 2 ), float( y + SLOT_SIZE / 2 + FOOTER_SIZE ), 0.0f ) );
     tf.camera.translate( Vec3( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f ) );
-    tf.camera.z = Vec4::ZERO;
+    tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
 
     const Vector<int>& items = camera.botObj->items;
 
@@ -130,12 +131,11 @@ namespace ui
 
       Mat44 originalCamera = tf.camera;
 
+      tf.model = Mat44::ID;
       tf.camera.rotateX( Math::rad( -60.0f ) );
       tf.camera.rotateZ( Math::rad( +70.0f ) );
       tf.camera.scale( Vec3( scale, scale, scale ) );
       tf.applyCamera();
-
-      tf.model = Mat44::ID;
 
       if( i == tagged ) {
         shader.colour = Colours::TAG;
@@ -157,10 +157,10 @@ namespace ui
     shader.use( shader.ui );
 
     tf.camera = Mat44::ID;
-    tf.model = Mat44::ID;
     tf.applyCamera();
 
     glEnable( GL_BLEND );
+    glDisable( GL_DEPTH_TEST );
 
     tagged = -1;
 
@@ -187,7 +187,8 @@ namespace ui
       }
 
       setFont( Font::SANS );
-      printBaseline( 4, FOOTER_SIZE / 2, "%s", taggedItem->clazz->description.cstr() );
+      print( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE,
+             "%s", taggedItem->clazz->description.cstr() );
     }
   }
 

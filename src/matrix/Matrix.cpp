@@ -178,7 +178,7 @@ namespace oz
     synapse.addStruct( "pool", Point3( 112, -7, 70 ), Struct::R0 );
     synapse.addStruct( "bunker", Point3( 106, -7, 75 ), Struct::R90 );
 
-    synapse.addObject( "serviceStation", Point3( 110, -25, 69 ) );
+    synapse.addObject( "serviceStation", Point3( 110, -25, 68.8f ) );
 
     synapse.addObject( "smallCrate", Point3( 108, -6, 81 ) );
     synapse.addObject( "smallCrate", Point3( 108, -6, 82 ) );
@@ -249,7 +249,6 @@ namespace oz
 
           // remove if its container has been removed
           if( orbis.objects[dyn->parent] == null ) {
-            dyn->parent = -1;
             synapse.removeCut( dyn );
           }
         }

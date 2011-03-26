@@ -44,9 +44,9 @@ function bigExplosion_onUpdate( l )
 	distance = ozObjDistanceFromSelf()
 	if distance < 20 then
 	  distance = 20 - distance
-	  ozObjDamage( distance*distance )
+	  ozObjDamage( 100 + distance*distance )
 
-	  if distance < 20 and ozObjIsDynamic() then
+	  if distance < 19.9 and ozObjIsDynamic() then
 	    dirX, dirY, dirZ = ozObjDirectionFromSelf()
 	    ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
 	  end
@@ -69,19 +69,17 @@ function smallExplosion_onUpdate( l )
     local distance
     local dirX, dirY, dirZ
 
-    ozSelfBindAllOverlaps( 8, 8, 8 )
-    while ozStrBindNext() do
-      ozStrDamage( 500 )
-    end
+    ozSelfBindObjOverlaps( 8, 8, 8 )
     while ozObjBindNext() do
       if not ozObjIsSelf() then
         distance = ozObjDistanceFromSelf()
-        if distance < 8 then
-          distance = 8 - distance
-          ozObjDamage( distance*distance )
+        if distance < 10 then
+          distance = 10 - distance
+          ozObjDamage( 100 + 4*distance*distance )
 
-          if distance < 8 and ozObjIsDynamic() then
+          if distance < 9.9 and ozObjIsDynamic() then
             dirX, dirY, dirZ = ozObjDirectionFromSelf()
+            distance = 2 * distance
             ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
           end
         end
@@ -112,8 +110,18 @@ function bomb_onDestroy( l )
   ozOrbisForceAddObj( "bigExplosion", ozObjGetPos() )
 end
 
-function rocket_onDestroy( l )
+function shell_onDestroy( l )
   ozOrbisForceAddObj( "smallExplosion", ozObjGetPos() );
+end
+
+function shell_onUpdate( l )
+  if not l.ticks then
+    l.ticks = 2 * 50
+  elseif l.ticks > 0 then
+    l.ticks = l.ticks - 1
+  else
+    ozObjDestroy()
+  end
 end
 
 function rifle_onShot( l )
@@ -133,8 +141,8 @@ function tank_onShot0( l )
   local pX, pY, pZ = ozObjGetPos()
   ozObjBindUser();
   local vX, vY, vZ = ozBotGetDir()
-  ozOrbisAddPart( pX, pY, pZ, vX * 400, vY * 400, vZ * 400,
-                  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
+  ozOrbisAddPart( pX, pY, pZ, vX * 300, vY * 300, vZ * 300,
+                  1.0, 0.2, 0.2, 1.9, 0.01, 3.0 );
 end
 
 function tank_onShot1( l )
@@ -146,7 +154,16 @@ function tank_onShot1( l )
                      5 - math.random() * 10
 
   ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
-                  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
+                  1.0, 1.0, 0.0, 1.9, 0.008, 3.0 );
+end
+
+function tank_onShot2( l )
+  local pX, pY, pZ = ozObjGetPos()
+  ozObjBindUser();
+  local vX, vY, vZ = ozBotGetDir()
+
+  ozOrbisForceAddObj( "shell", pX, pY, pZ )
+  ozDynSetMomentum( vX * 400, vY * 400, vZ * 400 )
 end
 
 function axe_onShot( l )

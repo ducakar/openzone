@@ -1,5 +1,5 @@
 /*
- *  bsp.vert
+ *  bigMesh.vert
  *
  *  Same as mesh shader, but per-pixel fog as BSPs can have quite large faces.
  *

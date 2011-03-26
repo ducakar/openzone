@@ -56,6 +56,8 @@ namespace client
       float  h;
       float  v;
       float  w;
+      float  relH;
+      float  relV;
 
       Quat   relRot;
       Quat   rot;
@@ -135,7 +137,6 @@ namespace client
       }
 
       void align();
-
       void update();
       void prepare();
 
