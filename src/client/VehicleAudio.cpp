@@ -37,10 +37,11 @@ namespace client
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->clazz->audioSamples;
 
     // engine sound
-    if( vehicle->crew[Vehicle::PILOT] != -1 ) {
-      float pitch = vehicle->momentum.sqL() * clazz->enginePitchRatio;
+    if( vehicle->crew[Vehicle::PILOT] != -1 && samples[Vehicle::EVENT_ENGINE] != -1 ) {
+      float pitch = clazz->enginePitchBias + min( vehicle->momentum.sqL() * clazz->enginePitchRatio,
+                                                  clazz->enginePitchLimit );
 
-      playEngineSound( samples[Vehicle::EVENT_ENGINE], 1.0f, 1.0f + pitch, obj );
+      playEngineSound( samples[Vehicle::EVENT_ENGINE], 1.0f, pitch, obj );
     }
 
     // events

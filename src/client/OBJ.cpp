@@ -22,49 +22,12 @@ namespace oz
 namespace client
 {
 
-  struct FaceVertex
-  {
-    // vertex position index in positions array
-    int position;
-    // vertex normal in normals array
-    int normal;
-    // vertex texture coordinates in texCoords array
-    int texCoord;
-
-    explicit FaceVertex()
-    {}
-
-    explicit FaceVertex( int pos_, int norm_, int texCoord_ ) :
-        position( pos_ ), normal( norm_ ), texCoord( texCoord_ )
-    {}
-
-    // lexicographical order
-    bool operator == ( const FaceVertex& v ) const
-    {
-      return position == v.position && normal == v.normal && texCoord == v.texCoord;
-    }
-  };
-
-  struct Face
-  {
-    Vector<FaceVertex> vertices;
-  };
-
-  struct Part
-  {
-    Vector<Face> faces;
-
-    String texture;
-    float  alpha;
-    float  specular;
-  };
-
-  static String           shaderName;
-  static Vector<Point3>   positions;
-  static Vector<Vec3>     normals;
-  static Vector<TexCoord> texCoords;
-  static Vector<Part>     parts;
-  static HashString<int>  materialIndices;
+  String            OBJ::shaderName;
+  Vector<Point3>    OBJ::positions;
+  Vector<Vec3>      OBJ::normals;
+  Vector<TexCoord>  OBJ::texCoords;
+  Vector<OBJ::Part> OBJ::parts;
+  HashString<int>   OBJ::materialIndices;
 
   char* OBJ::skipSpaces( char* pos )
   {
@@ -442,6 +405,8 @@ namespace client
 
     os.writeString( shaderName );
     mesh.write( &os );
+
+    shaderName = "";
 
     log.print( "Writing to '%s' ...", fileName );
     buffer.write( fileName, os.length() );

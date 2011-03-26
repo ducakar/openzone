@@ -21,6 +21,9 @@ namespace oz
 namespace client
 {
 
+  const float Audio::REFERENCE_DISTANCE = 2.0f;
+  const float Audio::ROLLOFF_FACTOR     = 0.25f;
+
   void Audio::playSound( int sample, float volume, const Object* obj, const Object* parent ) const
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
@@ -49,7 +52,9 @@ namespace client
       alSourcefv( srcId, AL_POSITION, Vec3::ZERO );
     }
     else {
-      alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
+      alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
+      alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
+
       alSourcefv( srcId, AL_POSITION, parent->p );
     }
 
@@ -81,7 +86,8 @@ namespace client
 
       alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
       alSourcei( srcId, AL_LOOPING, AL_TRUE );
-      alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
+      alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
+      alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
 
       alSourcefv( srcId, AL_POSITION, parent->p );
       alSourcef( srcId, AL_GAIN, volume );

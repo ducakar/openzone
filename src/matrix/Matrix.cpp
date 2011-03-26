@@ -75,22 +75,7 @@ namespace oz
         synapse.addObject( "beast", aabb.p );
       }
     }
-    for( int i = 0; i < 500; ++i ) {
-      float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
-      float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
-      float z = orbis.terra.height( x, y );
-
-      const ObjectClass* const* value = translator.classes.find( "droid" );
-      Point3 p = Point3( x, y, z );
-      AABB aabb = AABB( p, ( *value )->dim );
-
-      aabb.p.z += aabb.dim.z + 0.1f;
-
-      if( z > 0.0f && !collider.overlaps( aabb ) ) {
-        synapse.addObject( "droid", aabb.p );
-      }
-    }
-    for( int i = 0; i < 5000; ++i ) {
+    for( int i = 0; i < 10000; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
@@ -105,7 +90,7 @@ namespace oz
         synapse.addObject( "metalBarrel", aabb.p );
       }
     }
-    for( int i = 0; i < 5000; ++i ) {
+    for( int i = 0; i < 10000; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );

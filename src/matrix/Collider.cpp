@@ -316,9 +316,9 @@ namespace oz
   // finds out if AABB-AABB collision occurs and the time when it occurs
   void Collider::trimAABBObj( const Object* sObj )
   {
-    float minRatio = -1.0f;
-    float maxRatio =  1.0f;
-    Vec3  lastNormal;
+    float minRatio   = -1.0f;
+    float maxRatio   =  1.0f;
+    Vec3  lastNormal = Vec3::ZERO;
 
     Vec3  relStartPos = startPos - sObj->p;
     Vec3  relEndPos   = endPos   - sObj->p;
@@ -358,19 +358,21 @@ namespace oz
           return;
         }
         else {
-          float sqrtDiscr  = Math::sqrt( discriminant );
-          float endRatio   = ( -pxsx_pysy + sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
+          float sqrtDiscr = Math::sqrt( discriminant );
+          float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
 
           if( endRatio <= 0.0f ) {
             return;
           }
 
-          float startRatio = ( -pxsx_pysy - sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
-
-          minRatio = max( minRatio, startRatio );
           maxRatio = min( maxRatio, endRatio );
 
-          lastNormal = ~Vec3( px + startRatio*sx, py + startRatio*sy, 0.0f );
+          float startRatio = ( -pxsx_pysy - sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
+
+          if( startRatio > minRatio ) {
+            minRatio = startRatio;
+            lastNormal = ~Vec3( px + startRatio*sx, py + startRatio*sy, 0.0f );
+          }
         }
       }
       else if( startDist2 >= radius2 && endDist2 <= startDist2 ) {
@@ -445,9 +447,9 @@ namespace oz
   // finds out if AABB-Brush collision occurs and the time when it occurs
   void Collider::trimAABBBrush( const BSP::Brush* brush )
   {
-    float minRatio = -1.0f;
-    float maxRatio =  1.0f;
-    Vec3  lastNormal;
+    float minRatio   = -1.0f;
+    float maxRatio   =  1.0f;
+    Vec3  lastNormal = Vec3::ZERO;
 
     for( int i = 0; i < brush->nSides; ++i ) {
       const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];

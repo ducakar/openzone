@@ -2,15 +2,15 @@ cmake_minimum_required( VERSION 2.8 )
 
 project( openzone C CXX )
 
-option( OZ_ECLIPSE_HIGHLIGHTING "Define custom 'keywords' as macros to highlight them" OFF )
+option( OZ_ECLIPSE_HIGHLIGHTING "Define custom 'keywords' as macros to highlight them in Eclipse IDE" OFF )
 option( OZ_ALWAYS_INLINE "Enable inlining in debug mode for critical functions" ON )
-option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that make heap usage statistics" ON )
+option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that record heap usage statistics" ON )
 option( OZ_TRACE_LEAKS "Use overloads for default new and delete that saves stacktrace for each new call and trace memory leaks" ON )
 option( OZ_POOL_ALLOC "Enable Pool and new/delete overloads that use it. Otherwise use a dummy class that calls generic new/delete." ON )
 option( OZ_BUILTIN_MATH "Use GCC/clang built-in math functions (no need to include <cmath>, possibly faster math calls in debug mode)" ON )
 option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and networking" OFF )
 option( OZ_STREAM_READ_CHECK "Check for buffer overruns when reading from InputStream" ON )
-option( OZ_VERBOSE_CONFIG "Print warnings about missing or unused variables in configuration files" ON )
+option( OZ_VERBOSE_CONFIG "Print warnings about redundant variables in configuration files" ON )
 
 if( NOT OZ_APPLICATION_NAME )
   set( OZ_APPLICATION_NAME "OpenZone" CACHE STRING "" FORCE )
@@ -33,12 +33,10 @@ if( NOT OZ_CLIENT_CONFIG_FILE )
 endif( NOT OZ_CLIENT_CONFIG_FILE )
 
 if( NOT OZ_DEFAULT_DATA_DIR )
-#   set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
-  set( OZ_DEFAULT_DATA_DIR "data" CACHE STRING "" FORCE )
+  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
 endif( NOT OZ_DEFAULT_DATA_DIR )
 
 option( OZ_NETWORKING "Enable networking" OFF )
-option( OZ_VERTEX_TEXTURE "Enable use of vertex texture fetch (works on GeForce 6+, but not on Radeon)" ON )
 
 option( OZ_BUILD_TESTS "Build tests" ON )
 option( OZ_BUILD_TOOLS "Build tools" ON )
@@ -46,10 +44,10 @@ option( OZ_BUILD_CLIENT "Build client" ON )
 option( OZ_BUILD_SERVER "Build server" OFF )
 
 option( OZ_INSTALL_LIBOZ "Install liboz" ON )
-option( OZ_INSTALL_CLIENT "Install openzone client executable" ON )
+option( OZ_INSTALL_CLIENT "Install openzone client executable" OFF )
 option( OZ_INSTALL_SERVER "Install openzone server executable" OFF )
 option( OZ_INSTALL_DATA "Install game data" ON )
-option( OZ_INSTALL_OPENAL "Include OpenAL installation in NSIS installer" OFF )
+option( OZ_INSTALL_OPENAL "Include OpenAL installation in NSIS installer" ON )
 
 set( CPACK_PACKAGE_NAME OZ_APPLICATION_NAME )
 set( CPACK_PACKAGE_VERSION OZ_APPLICATION_VERSION )
@@ -77,35 +75,31 @@ include( CPack )
 
 # add_pch( target_name header.hpp DEPENDS dep1 dep2 ... )
 macro( add_pch _targetName _inputHeader )
-  if( MSVC )
-    add_custom_target( ${_targetName} SOURCES "${_inputHeader}" )
-  else( MSVC )
-    # extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for current build configuration XXX
-    string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _build_type_flags_var )
-    set( _flags "${CMAKE_CXX_FLAGS} ${${_build_type_flags_var}}" )
+  # extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for current build configuration XXX
+  string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _build_type_flags_var )
+  set( _flags "${CMAKE_CXX_FLAGS} ${${_build_type_flags_var}}" )
 
-    # convert string of space separated flags into a list
-    separate_arguments( _flags )
+  # convert string of space separated flags into a list
+  separate_arguments( _flags )
 
-    # extract include directories set by include_directories command
-    get_directory_property( _includes INCLUDE_DIRECTORIES )
-    foreach( _inc_dir ${_includes} )
-      list( APPEND _flags "-I${_inc_dir}" )
-    endforeach( _inc_dir ${_includes} )
+  # extract include directories set by include_directories command
+  get_directory_property( _includes INCLUDE_DIRECTORIES )
+  foreach( _inc_dir ${_includes} )
+    list( APPEND _flags "-I${_inc_dir}" )
+  endforeach( _inc_dir ${_includes} )
 
-    # set build rules (build precompiled header and copy original header to build folder - needed to
-    # be there to be included via other headers - which is needed for KDevelop's indexer to work
-    # properly)
-    add_custom_command( OUTPUT "${_inputHeader}.gch"
-      ${ARGN} "${_inputHeader}"
-      COMMAND ${CMAKE_COMMAND} -E remove "${_inputHeader}"
-      COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}.gch"
-      COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
-      COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
-    add_custom_target( ${_targetName}
-      SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
-      DEPENDS "${_inputHeader}.gch" )
-  endif( MSVC )
+  # set build rules (build precompiled header and copy original header to build folder - needed to
+  # be there to be included via other headers - which is needed for KDevelop's indexer to work
+  # properly)
+  add_custom_command( OUTPUT "${_inputHeader}.gch"
+    ${ARGN} "${_inputHeader}"
+    COMMAND ${CMAKE_COMMAND} -E remove "${_inputHeader}"
+    COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}.gch"
+    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
+    COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
+  add_custom_target( ${_targetName}
+    SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
+    DEPENDS "${_inputHeader}.gch" )
 endmacro( add_pch )
 
 if( NOT CMAKE_BUILD_TYPE )
@@ -143,38 +137,34 @@ mark_as_advanced( SDLIMAGE_LIBRARY )
 mark_as_advanced( SDLTTF_INCLUDE_DIR )
 mark_as_advanced( SDLTTF_LIBRARY )
 
-find_library( ALUT_LIBRARY alut )
-
 if( NOT ALUT_INCLUDE_DIR )
   set( ALUT_INCLUDE_DIR "" CACHE PATH "" FORCE )
-  mark_as_advanced( ALUT_INCLUDE_DIR )
 endif( NOT ALUT_INCLUDE_DIR )
 
 find_library( ALUT_LIBRARY alut )
+
+mark_as_advanced( ALUT_INCLUDE_DIR )
 mark_as_advanced( ALUT_LIBRARY )
 
 if( NOT OGG_INCLUDE_DIR )
   set( OGG_INCLUDE_DIR "" CACHE PATH "" FORCE )
-  mark_as_advanced( OGG_INCLUDE_DIR )
 endif( NOT OGG_INCLUDE_DIR )
 
 find_library( OGG_LIBRARY ogg )
+
+mark_as_advanced( OGG_INCLUDE_DIR )
 mark_as_advanced( OGG_LIBRARY )
 
 if( NOT VORBIS_INCLUDE_DIR )
   set( VORBIS_INCLUDE_DIR "" CACHE PATH "" FORCE )
-  mark_as_advanced( VORBIS_INCLUDE_DIR )
 endif( NOT VORBIS_INCLUDE_DIR )
 
 find_library( VORBIS_LIBRARY vorbis )
-mark_as_advanced( VORBIS_LIBRARY )
 find_library( VORBISFILE_LIBRARY vorbisfile )
-mark_as_advanced( VORBISFILE_LIBRARY )
 
-if( MSVC AND NOT DIRENT_INCLUDE_DIR )
-  set( DIRENT_INCLUDE_DIR "DIRENT_INCLUDE_DIR-NOTFOUND" CACHE PATH "" FORCE )
-  mark_as_advanced( DIRENT_INCLUDE_DIR )
-endif( MSVC AND NOT DIRENT_INCLUDE_DIR )
+mark_as_advanced( VORBIS_INCLUDE_DIR )
+mark_as_advanced( VORBIS_LIBRARY )
+mark_as_advanced( VORBISFILE_LIBRARY )
 
 # detect clang
 string( REGEX MATCH "clang\\+\\+" compiler_base "${CMAKE_CXX_COMPILER}" )
@@ -227,8 +217,12 @@ endif( OZ_WINDOWS )
 set( flags "-std=c++0x -pipe" )
 set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wcast-qual -Wcast-align" )
 set( warnings "${warnings} -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor" )
-set( warnings "${warnings} -Wredundant-decls -Wmissing-declarations -Wdisabled-optimization" )
+set( warnings "${warnings} -Wmissing-declarations -Wdisabled-optimization" )
 set( arch_flags "-msse3 -ffast-math" )
+
+if( NOT OZ_WINDOWS )
+  set( warnings "${warnings} -Wredundant-decls" )
+endif( NOT OZ_WINDOWS )
 
 if( CLANG )
   set( warnings "${warnings} -Wno-invalid-offsetof" )
@@ -237,30 +231,29 @@ else( CLANG )
   set( arch_flags "${arch_flags} -mfpmath=sse" )
 endif( CLANG )
 
+set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
-#set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
-#set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -ffast-math -flto -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -ffast-math -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
-set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
 
-#set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-flto -Wl,--gc-sections" CACHE STRING "" FORCE )
-#set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-flto -Wl,--gc-sections" CACHE STRING "" FORCE )
 set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-Wl,--gc-sections" CACHE STRING "" FORCE )
 set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-Wl,--gc-sections" CACHE STRING "" FORCE )
 
-if( WIN32 )
+if( OZ_WINDOWS )
   set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import" )
-endif( WIN32 )
+else( OZ_WINDOWS )
+  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto" )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -flto" )
+
+  set( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto" )
+  set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} -flto" )
+endif( OZ_WINDOWS )
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings} ${includes}" )
 
 # sources
 add_subdirectory( src )
-add_subdirectory( data )
-
-string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" location_var )
-get_target_property( openzone_path openzone ${location_var} )
+add_subdirectory( share/openzone )
 
 # installation
 include( install_files.cmake )

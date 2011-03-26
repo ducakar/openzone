@@ -85,9 +85,9 @@ namespace oz
     private:
 
       // data array
-      char cdata[SIZE * sizeof( Type )];
+      char cdata[ SIZE * sizeof( Type ) ];
       // Number of elements in vector
-      int count;
+      int  count;
 
     public:
 

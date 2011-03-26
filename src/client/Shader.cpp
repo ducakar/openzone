@@ -33,6 +33,8 @@ namespace client
   Transform tf;
   Shader    shader;
 
+  String Shader::defines;
+
   void Transform::ortho()
   {
     float cx = float( 2.0 / double( client::camera.width ) );
@@ -107,6 +109,10 @@ namespace client
 
     sources[2] = buffer.begin();
     lengths[2] = buffer.length();
+
+    printf( "%d {\n %s }\n", lengths[0], sources[0] );
+    printf( "%d {\n %s }\n", lengths[1], sources[1] );
+    printf( "%d {\n %s }\n", lengths[2], sources[2] );
 
     glShaderSource( id, 3, sources, lengths );
 
@@ -276,21 +282,21 @@ namespace client
     skyLight.diffuse = colour;
   }
 
-  int Shader::addLight( const Point3& pos, const Vec4& colour )
-  {
-    return lights.add( Light( pos, colour ) );
-  }
-
-  void Shader::removeLight( int id )
-  {
-    lights.remove( id );
-  }
-
-  void Shader::setLight( int id, const Point3& pos, const Vec4& colour )
-  {
-    lights[id].pos = pos;
-    lights[id].diffuse = colour;
-  }
+//   int Shader::addLight( const Point3& pos, const Vec4& colour )
+//   {
+//     return lights.add( Light( pos, colour ) );
+//   }
+//
+//   void Shader::removeLight( int id )
+//   {
+//     lights.remove( id );
+//   }
+//
+//   void Shader::setLight( int id, const Point3& pos, const Vec4& colour )
+//   {
+//     lights[id].pos = pos;
+//     lights[id].diffuse = colour;
+//   }
 
   void Shader::updateLights()
   {
@@ -298,7 +304,7 @@ namespace client
     glUniform4fv( param.oz_SkyLight_diffuse, 1, skyLight.diffuse );
     glUniform4fv( param.oz_SkyLight_ambient, 1, skyLight.ambient );
 
-    Map<float, const Light*> localLights( lights.length() );
+//     Map<float, const Light*> localLights( lights.length() );
 
 //     Mat44 transf;
 //     glGetFloatv( GL_MODELVIEW_MATRIX, transf );
@@ -323,8 +329,15 @@ namespace client
     const char* sources[3];
     int         lengths[3];
 
-    sources[0] = "";
-    lengths[0] = 0;
+    defines = "#version 130\n";
+    defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
+
+    for( int i = 2; i < 10; ++i ) {
+      defines = defines + "\n";
+    }
+
+    sources[0] = defines;
+    lengths[0] = defines.length();
 
     log.print( "Reading 'glsl/header.glsl' ..." );
 
@@ -390,6 +403,8 @@ namespace client
     log.println( "Initialising Shader {" );
     log.indent();
 
+    hasVertexTexture = config.getSet( "shader.vertexTexture", false );
+
     programs.alloc( translator.shaders.length() );
     for( int i = 0; i < translator.shaders.length(); ++i ) {
       programs[i].program    = 0;
@@ -400,8 +415,15 @@ namespace client
     const char* sources[3];
     int         lengths[3];
 
-    sources[0] = "";
-    lengths[0] = 0;
+    defines = "#version 130\n";
+    defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
+
+    for( int i = 2; i < 10; ++i ) {
+      defines = defines + "\n";
+    }
+
+    sources[0] = defines;
+    lengths[0] = defines.length();
 
     log.print( "Reading 'glsl/header.glsl' ..." );
 
@@ -447,6 +469,8 @@ namespace client
       glDeleteShader( programs[ui].fragShader );
       programs[ui].fragShader = 0;
     }
+
+    defines = "";
 
     programs.dealloc();
 

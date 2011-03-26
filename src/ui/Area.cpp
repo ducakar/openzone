@@ -29,12 +29,12 @@ namespace ui
 
   Area::Area( int width_, int height_ ) :
       parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ), flags( 0 ),
-      currentFont( font.sansFont ), textWidth( 0 ), textHeight( font.sansHeight )
+      currentFont( font.sansFont ), textWidth( 0 ), textHeight( font.SANS_HEIGHT )
   {}
 
   Area::Area( int x_, int y_, int width_, int height_ ) :
       parent( null ), x( x_ ), y( y_ ), width( width_ ), height( height_ ), flags( 0 ),
-      currentFont( font.sansFont ), textWidth( 0 ), textHeight( font.sansHeight )
+      currentFont( font.sansFont ), textWidth( 0 ), textHeight( font.SANS_HEIGHT )
   {}
 
   Area::~Area()
@@ -46,15 +46,15 @@ namespace ui
   {
     if( type == Font::MONO ) {
       currentFont = font.monoFont;
-      textHeight  = font.monoHeight;
+      textHeight  = Font::MONO_HEIGHT;
     }
     else if( type == Font::SANS ) {
       currentFont = font.sansFont;
-      textHeight  = font.sansHeight;
+      textHeight  = Font::SANS_HEIGHT;
     }
     else {
       currentFont = font.titleFont;
-      textHeight  = font.titleHeight;
+      textHeight  = Font::TITLE_HEIGHT;
     }
   }
 

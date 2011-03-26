@@ -12,6 +12,7 @@
 #include "stable.hpp"
 
 #include "ui/Frame.hpp"
+#include "ui/Button.hpp"
 
 namespace oz
 {
@@ -22,6 +23,10 @@ namespace ui
 
   class BuildMenu : public Frame
   {
+    private:
+
+      static void createObject( Button* button );
+
     protected:
 
       virtual bool onMouseEvent();

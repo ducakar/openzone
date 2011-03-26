@@ -134,6 +134,65 @@ namespace client
 
     flags = 0;
 
+    int nVertices = stream->readInt();
+    int nIndices  = stream->readInt();
+
+#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
+    const char* vertices = stream->prepareRead( nVertices * int( sizeof( Vertex ) ) );
+    const char* indices  = stream->prepareRead( nIndices *  int( sizeof( ushort ) ) );
+#else
+    Vertex* vertices = new Vertex[nVertices];
+    for( int i = 0; i < nVertices; ++i ) {
+      vertices[i].read( stream );
+    }
+
+    ushort* indices = new ushort[nIndices];
+    for( int i = 0; i < nIndices; ++i ) {
+      indices[i] = stream->readShort();
+    }
+#endif
+
+    glGenVertexArrays( 1, &vao );
+    glBindVertexArray( vao );
+
+    glGenBuffers( 1, &ibo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( ushort ), indices, GL_STATIC_DRAW );
+
+    glGenBuffers( 1, &vbo );
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, usage );
+
+    glEnableVertexAttribArray( Attrib::POSITION );
+    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+
+    glEnableVertexAttribArray( Attrib::TEXCOORD );
+    glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+
+    glEnableVertexAttribArray( Attrib::NORMAL );
+    glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+
+//     glEnableVertexAttribArray( Attrib::TANGENT );
+//     glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+//
+//     glEnableVertexAttribArray( Attrib::BINORMAL );
+//     glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+
+    glBindVertexArray( 0 );
+
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+#if defined( OZ_BIG_ENDIAN_STREAM ) != defined( OZ_BIG_ENDIAN_ARCH )
+    delete[] indices;
+    delete[] vertices;
+#endif
+
     int nTextures = stream->readInt();
 
     if( nTextures < 0 ) {
@@ -195,67 +254,6 @@ namespace client
     }
 
     textures.dealloc();
-
-#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
-    int nIndices = stream->readInt();
-    const char* indices = stream->prepareRead( nIndices * int( sizeof( ushort ) ) );
-
-    int nVertices = stream->readInt();
-    const char* vertices = stream->prepareRead( nVertices * int( sizeof( Vertex ) ) );
-#else
-    int nIndices = stream->readInt();
-    ushort* indices = new ushort[nIndices];
-    for( int i = 0; i < nIndices; ++i ) {
-      indices[i] = stream->readShort();
-    }
-
-    int nVertices = stream->readInt();
-    Vertex* vertices = new Vertex[nVertices];
-    for( int i = 0; i < nVertices; ++i ) {
-      vertices[i].read( stream );
-    }
-#endif
-
-    glGenVertexArrays( 1, &vao );
-    glBindVertexArray( vao );
-
-    glGenBuffers( 1, &ibo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( ushort ), indices, GL_STATIC_DRAW );
-
-    glGenBuffers( 1, &vbo );
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, usage );
-
-    glEnableVertexAttribArray( Attrib::POSITION );
-    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
-
-    glEnableVertexAttribArray( Attrib::TEXCOORD );
-    glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-    glEnableVertexAttribArray( Attrib::NORMAL );
-    glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-
-//     glEnableVertexAttribArray( Attrib::TANGENT );
-//     glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
-//
-//     glEnableVertexAttribArray( Attrib::BINORMAL );
-//     glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
-
-    glBindVertexArray( 0 );
-
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-#if defined( OZ_BIG_ENDIAN_STREAM ) != defined( OZ_BIG_ENDIAN_ARCH )
-    delete[] indices;
-    delete[] vertices;
-#endif
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }
@@ -355,6 +353,16 @@ namespace client
     log.println( "Compiling mesh {" );
     log.indent();
 
+    stream->writeInt( vertices.length() );
+    stream->writeInt( indices.length() );
+
+    foreach( vertex, vertices.citer() ) {
+      vertex->write( stream );
+    }
+    foreach( index, indices.citer() ) {
+      stream->writeShort( *index );
+    }
+
     Vector<String> textures;
     textures.add( "" );
 
@@ -405,16 +413,6 @@ namespace client
 
       stream->writeInt( part->nIndices );
       stream->writeInt( part->firstIndex );
-    }
-
-    stream->writeInt( indices.length() );
-    foreach( index, indices.citer() ) {
-      stream->writeShort( *index );
-    }
-
-    stream->writeInt( vertices.length() );
-    foreach( vertex, vertices.citer() ) {
-      vertex->write( stream );
     }
 
     log.unindent();

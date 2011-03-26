@@ -53,14 +53,75 @@ namespace client
 
     private:
 
+#ifdef OZ_BUILD_TOOLS
+      struct MD2Header
+      {
+        int id;
+        int version;
+
+        int skinWidth;
+        int skinHeight;
+        int frameSize;
+
+        int nSkins;
+        int nFramePositions;
+        int nTexCoords;
+        int nTriangles;
+        int nGlCmds;
+        int nFrames;
+
+        int offSkins;
+        int offTexCoords;
+        int offTriangles;
+        int offFrames;
+        int offGLCmds;
+        int offEnd;
+      };
+
+      struct MD2Vertex
+      {
+        ubyte p[3];
+        ubyte normal;
+      };
+
+      struct MD2TexCoord
+      {
+        short s;
+        short t;
+      };
+
+      struct MD2Frame
+      {
+        float     scale[3];
+        float     translate[3];
+        char      name[16];
+        MD2Vertex verts[1];
+      };
+
+      struct MD2Triangle
+      {
+        short vertices[3];
+        short texCoords[3];
+      };
+
+      static const Vec3 NORMALS[];
+#endif
+
+      static Vertex animBuffer[MAX_VERTS];
+
       int     id;
 
       int     nFrames;
+      int     nFrameVertices;
       int     nFramePositions;
 
       uint    vertexTexId;
       uint    normalTexId;
       int     shaderId;
+
+      Vertex* vertices;
+      Vec4*   positions;
+      Vec4*   normals;
 
       Mesh    mesh;
 

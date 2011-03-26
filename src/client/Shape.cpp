@@ -19,6 +19,9 @@ namespace client
 
   Shape shape;
 
+  const float Shape::SQRT_3_THIRDS = Math::sqrt( 3.0f ) / 3.0f;
+  const float Shape::DIM = 1.0f / 2.0f;
+
   void Shape::bindVertexArray() const
   {
     glBindVertexArray( vao );
@@ -171,9 +174,6 @@ namespace client
     Vec3 normal;
 
     for( int i = 0; i < MAX_PARTS; ++i ) {
-      static const float SQRT_3_THIRDS = Math::sqrt( 3.0f ) / 3.0f;
-      static const float DIM = 1.0f / 2.0f;
-
       Point3 v0 = Point3::ORIGIN + Math::frand() * DIM * Vec3( 0.0f,            0.0f,        1.0f );
       Point3 v1 = Point3::ORIGIN + Math::frand() * DIM * Vec3( 0.0f,            2.0f / 3.0f, 0.0f );
       Point3 v2 = Point3::ORIGIN + Math::frand() * DIM * Vec3( -SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );

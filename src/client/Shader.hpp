@@ -149,14 +149,16 @@ namespace client
         explicit Light( const Point3& pos, const Vec4& diffuse );
       };
 
-      static const int   BUFFER_SIZE = 8192;
+      static const int BUFFER_SIZE = 8192;
+
+      static String   defines;
 
       DArray<Program> programs;
       SVector<int, 8> programStack;
 
       float           lightingDistance;
       SkyLight        skyLight;
-      Sparse<Light>   lights;
+//       Sparse<Light>   lights;
 
       void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
       void loadProgram( int id, const char** sources, int* lengths );
@@ -173,6 +175,7 @@ namespace client
 
       bool isInWater;
       bool isLoaded;
+      bool hasVertexTexture;
 
       void use( int id );
       void push();

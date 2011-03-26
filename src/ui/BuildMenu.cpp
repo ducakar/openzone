@@ -17,8 +17,6 @@
 
 #include "nirvana/Nirvana.hpp"
 
-#include "ui/Button.hpp"
-
 #include "client/Camera.hpp"
 
 namespace oz
@@ -28,7 +26,7 @@ namespace client
 namespace ui
 {
 
-  static void createObject( Button* button )
+  void BuildMenu::createObject( Button* button )
   {
     const ObjectClass* const* clazz = translator.classes.find( button->label );
     if( clazz == null ) {

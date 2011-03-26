@@ -232,9 +232,8 @@ namespace client
 
     alGenSources( 1, &musicSource );
     alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
-    alSourcei( musicSource, AL_ROLLOFF_FACTOR, 0 );
 
-    setVolume( config.getSet( "sound.volume.effects", 1.00f ) );
+    setVolume( config.getSet( "sound.volume", 1.00f ) );
     setMusicVolume( config.getSet( "sound.volume.music", 0.35f ) );
 
     log.unindent();

@@ -157,7 +157,7 @@ namespace oz
     clazz->debrisVelocitySpread = config->get( "debrisVelocitySpread", 4.0f );
     clazz->debrisRejection      = config->get( "debrisRejection", 1.80f );
     clazz->debrisMass           = config->get( "debrisMass", 0.0f );
-    clazz->debrisLifeTime       = config->get( "debrisLifeTime", 2.5f );
+    clazz->debrisLifeTime       = config->get( "debrisLifeTime", 2.0f );
     clazz->debrisColour.x       = config->get( "debrisColour.r", 0.5f );
     clazz->debrisColour.y       = config->get( "debrisColour.g", 0.5f );
     clazz->debrisColour.z       = config->get( "debrisColour.b", 0.5f );

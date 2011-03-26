@@ -23,10 +23,10 @@ cd src/client  && ./CMakeLists.gen && cd ../..
 echo Generating src/server/CMakeLists.txt
 cd src/server  && ./CMakeLists.gen && cd ../..
 
-echo Generating data/lua/matrix/CMakeLists.txt
-cd data/lua/matrix  && ./CMakeLists.gen && cd ../../..
-echo Generating data/lua/nirvana/CMakeLists.txt
-cd data/lua/nirvana && ./CMakeLists.gen && cd ../../..
+echo Generating share/openzone/lua/matrix/CMakeLists.txt
+cd share/openzone/lua/matrix  && ./CMakeLists.gen && cd ../../../..
+echo Generating share/openzone/lua/nirvana/CMakeLists.txt
+cd share/openzone/lua/nirvana && ./CMakeLists.gen && cd ../../../..
 
 #
 # For the same reason as CMakeLists.txt we also automatically generate install_files.cmake file

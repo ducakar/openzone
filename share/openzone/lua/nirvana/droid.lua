@@ -67,7 +67,7 @@ function droid_huntTarget( l )
       ozSelfSetV( ozObjPitchFromSelfEye() )
 
       if distance < 20 then
-	--ozSelfActionAttack()
+	ozSelfActionAttack()
 	ozForceUpdate()
       else
 	ozSelfStateSetRunning( true )

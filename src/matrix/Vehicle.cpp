@@ -131,8 +131,18 @@ namespace oz
         Bot* bot = static_cast<Bot*>( orbis.objects[ crew[i] ] );
 
         if( bot != null ) {
-          bot->exit();
-          bot->kill();
+          Point3 ejectPos = Point3( p.x, p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
+
+          if( !collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
+            crew[i] = -1;
+
+            float hsc[2];
+            Math::sincos( h, &hsc[0], &hsc[1] );
+
+            bot->p = ejectPos;
+            bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+            bot->exit();
+          }
         }
       }
     }

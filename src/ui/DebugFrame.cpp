@@ -24,8 +24,8 @@ namespace client
 namespace ui
 {
 
-  DebugFrame::DebugFrame() : Frame( 8, -18 - 6 * ( font.monoHeight + 2 ),
-                                    480, 10 + 6 * ( font.monoHeight + 2 ) )
+  DebugFrame::DebugFrame() : Frame( 8, -18 - 6 * ( Font::MONO_HEIGHT + 2 ),
+                                    480, 10 + 6 * ( Font::MONO_HEIGHT + 2 ) )
   {
     setFont( Font::MONO );
   }
