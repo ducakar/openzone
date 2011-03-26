@@ -17,15 +17,22 @@ out vec3 exNormal;
 
 void main()
 {
-  vec4 firstPosition  = texture( oz_Textures[1], vec2( oz_MD2Anim[0], inPosition.x ) );
-  vec4 secondPosition = texture( oz_Textures[1], vec2( oz_MD2Anim[1], inPosition.x ) );
-  vec4 firstNormal    = texture( oz_Textures[2], vec2( oz_MD2Anim[0], inPosition.x ) );
-  vec4 secondNormal   = texture( oz_Textures[2], vec2( oz_MD2Anim[1], inPosition.x ) );
+#ifdef OZ_VERTEX_TEXTURE
+  vec4 firstPosition  = texture( oz_Textures[1], vec2( inPosition.x, oz_MD2Anim[0] ) );
+  vec4 secondPosition = texture( oz_Textures[1], vec2( inPosition.x, oz_MD2Anim[1] ) );
+  vec4 firstNormal    = texture( oz_Textures[2], vec2( inPosition.x, oz_MD2Anim[0] ) );
+  vec4 secondNormal   = texture( oz_Textures[2], vec2( inPosition.x, oz_MD2Anim[1] ) );
   vec4 localPosition  = mix( firstPosition, secondPosition, oz_MD2Anim[2] );
   vec4 localNormal    = mix( firstNormal, secondNormal, oz_MD2Anim[2] );
 
   exPosition    = ( oz_Transform.model * localPosition ).xyz;
-  exNormal      = ( oz_Transform.model * localNormal ).xyz;
   exTexCoord    = inTexCoord;
+  exNormal      = ( oz_Transform.model * localNormal ).xyz;
   gl_Position   = oz_Transform.complete * localPosition;
+#else
+  exPosition  = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).xyz;
+  exTexCoord  = inTexCoord;
+  exNormal    = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
+  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
+#endif
 }

@@ -684,6 +684,42 @@ namespace oz
     return 3;
   }
 
+  int Lua::ozDynSetVelocity( lua_State* l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
+      OZ_LUA_ERROR( "selected object is not dynamic" );
+    }
+
+    Dynamic* obj = static_cast<Dynamic*>( lua.obj );
+
+    obj->flags &= ~Object::DISABLED_BIT;
+    obj->velocity.x = float( lua_tonumber( l, 1 ) );
+    obj->velocity.y = float( lua_tonumber( l, 2 ) );
+    obj->velocity.z = float( lua_tonumber( l, 3 ) );
+    return 0;
+  }
+
+  int Lua::ozDynAddVelocity( lua_State* l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
+      OZ_LUA_ERROR( "selected object is not dynamic" );
+    }
+
+    Dynamic* obj = static_cast<Dynamic*>( lua.obj );
+
+    obj->flags &= ~Object::DISABLED_BIT;
+    obj->velocity.x += float( lua_tonumber( l, 1 ) );
+    obj->velocity.y += float( lua_tonumber( l, 2 ) );
+    obj->velocity.z += float( lua_tonumber( l, 3 ) );
+    return 0;
+  }
+
   int Lua::ozDynGetMomentum( lua_State* l )
   {
     if( lua.obj == null ) {
@@ -1705,6 +1741,8 @@ namespace oz
     OZ_LUA_FUNCTION( ozEventGet );
 
     OZ_LUA_FUNCTION( ozDynGetVelocity );
+    OZ_LUA_FUNCTION( ozDynSetVelocity );
+    OZ_LUA_FUNCTION( ozDynAddVelocity );
     OZ_LUA_FUNCTION( ozDynGetMomentum );
     OZ_LUA_FUNCTION( ozDynSetMomentum );
     OZ_LUA_FUNCTION( ozDynAddMomentum );

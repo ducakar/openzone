@@ -27,108 +27,17 @@ namespace client
 {
 
 #ifdef OZ_BUILD_TOOLS
-  static const int QBSP_SLICK_FLAG_BIT    = 0x00000002;
-  static const int QBSP_LADDER_FLAG_BIT   = 0x00000008;
-  static const int QBSP_GLASS_FLAG_BIT    = 0x00000020;
-  static const int QBSP_NONSOLID_FLAG_BIT = 0x00004000;
-  static const int QBSP_WATER_TYPE_BIT    = 0x00000020;
+  int BSP::nTextures;
+  int BSP::nModels;
+  int BSP::nVertices;
+  int BSP::nIndices;
+  int BSP::nFaces;
 
-  struct QBSPHeader
-  {
-    char id[4];
-    int  version;
-  };
-
-  struct QBSPLump
-  {
-    enum Lumps : int
-    {
-      ENTITIES,
-      TEXTURES,
-      PLANES,
-      NODES,
-      LEAFS,
-      LEAFFACES,
-      LEAFBRUSHES,
-      MODELS,
-      BRUSHES,
-      BRUSHSIDES,
-      VERTICES,
-      INDICES,
-      SHADERS,
-      FACES,
-      LIGHTMAPS,
-      LIGHTVOLUMES,
-      VISUALDATA,
-      MAX
-    };
-
-    int offset;
-    int length;
-  };
-
-  struct QBSPTexture
-  {
-    char name[64];
-    int  flags;
-    int  type;
-  };
-
-  struct QBSPModel
-  {
-    float bb[2][3];
-
-    int firstFace;
-    int nFaces;
-
-    int firstBrush;
-    int nBrushes;
-  };
-
-  struct QBSPVertex
-  {
-    float p[3];
-    float texCoord[2];
-    float lightmapCoord[2];
-    float normal[3];
-    char  colour[4];
-  };
-
-  struct QBSPFace
-  {
-    int   texture;
-    int   effect;
-    int   type;
-
-    int   firstVertex;
-    int   nVertices;
-
-    int   firstIndex;
-    int   nIndices;
-
-    int   lightmap;
-    int   lightmapCorner[2];
-    int   lightmapSize[2];
-
-    float lightmapPos[3];
-    float lightmapVecs[2][3];
-
-    float normal[3];
-
-    int   size[2];
-  };
-
-  static int    nTextures;
-  static int    nModels;
-  static int    nVertices;
-  static int    nIndices;
-  static int    nFaces;
-
-  static DArray<QBSPTexture> textures;
-  static DArray<QBSPModel>   models;
-  static DArray<QBSPVertex>  vertices;
-  static DArray<int>         indices;
-  static DArray<QBSPFace>    faces;
+  DArray<BSP::QBSPTexture> BSP::textures;
+  DArray<BSP::QBSPModel>   BSP::models;
+  DArray<BSP::QBSPVertex>  BSP::vertices;
+  DArray<int>              BSP::indices;
+  DArray<BSP::QBSPFace>    BSP::faces;
 
   void BSP::loadQBSP( const char* path )
   {
@@ -393,7 +302,8 @@ namespace client
     }
 
     alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
-    alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
+    alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
+    alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
 
     alSourcefv( srcId, AL_POSITION, p );
     alSourcef( srcId, AL_GAIN, 1.0f );

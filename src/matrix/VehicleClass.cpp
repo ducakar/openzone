@@ -112,6 +112,7 @@ namespace oz
 
     clazz->enginePitchBias  = config->get( "enginePitchBias", 1.0f );
     clazz->enginePitchRatio = config->get( "enginePitchRatio", 0.001f );
+    clazz->enginePitchLimit = config->get( "enginePitchLimit", 2.00f );
 
     char weaponNameBuffer[] = "weapon  .name";
     char onShotBuffer[] = "weapon  .onShot";

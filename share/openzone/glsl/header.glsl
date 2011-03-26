@@ -7,8 +7,6 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#version 130
-
 const float TAU = 6.283185307179586;
 
 /*
@@ -121,16 +119,6 @@ vec2 noise( vec2 seed )
 {
   return vec2( cos( seed.x ), sin( seed.y ) );
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

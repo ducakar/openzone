@@ -6,10 +6,10 @@
 #
 
 source=`echo src/*/*.{hpp,cpp} src/stable.hpp`
-lua=`echo data/lua/*/*.lua`
-glsl=`echo data/glsl/*.{glsl,vert,frag}`
-data=`echo data/*/*.rc`
-build=`echo src/*/CMakeLists.gen {src,data}/*/CMakeLists.txt src/*/*.in src/*.in CMakeLists.txt *.sh`
+lua=`echo share/openzone/lua/*/*.lua`
+glsl=`echo share/openzone/glsl/*.{glsl,vert,frag}`
+data=`echo share/openzone/*/*.rc`
+build=`echo src/*/CMakeLists.gen {src,share/openzone,share/openzone/lua}/*/CMakeLists.txt src/*/*.in src/*.in CMakeLists.txt *.sh`
 
 function count()
 {
@@ -33,5 +33,5 @@ if [ -x /usr/bin/sloccount ]; then
 fi
 
 if [ -x /usr/bin/cloc ]; then
-  /usr/bin/cloc --exclude-ext=gen src data/lua data/glsl
+  /usr/bin/cloc --exclude-ext=gen src share/openzone/lua share/openzone/glsl
 fi

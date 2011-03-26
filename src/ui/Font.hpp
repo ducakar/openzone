@@ -36,15 +36,15 @@ namespace ui
         TITLE
       };
 
+      static const int MONO_HEIGHT  = 12;
+      static const int SANS_HEIGHT  = 12;
+      static const int TITLE_HEIGHT = 14;
+
       TTF_Font* monoFont;
       TTF_Font* sansFont;
       TTF_Font* titleFont;
 
       uint textTexId;
-
-      int monoHeight;
-      int sansHeight;
-      int titleHeight;
 
       bool init();
       void free();

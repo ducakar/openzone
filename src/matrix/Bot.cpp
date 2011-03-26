@@ -93,10 +93,6 @@ namespace oz
         // we don't want Object::destroy() to be called when body dissolves (destroy() causes sounds
         // and particles to fly around), that's why we remove the object
         if( life <= 0.0f ) {
-          foreach( i, items.citer() ) {
-            synapse.removeCut( static_cast<Dynamic*>( orbis.objects[*i] ) );
-          }
-          life = EPSILON;
           synapse.remove( this );
         }
       }

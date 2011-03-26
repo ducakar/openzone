@@ -139,6 +139,8 @@ namespace oz
       static LuaAPI ozEventGet;
 
       static LuaAPI ozDynGetVelocity;
+      static LuaAPI ozDynSetVelocity;
+      static LuaAPI ozDynAddVelocity;
       static LuaAPI ozDynGetMomentum;
       static LuaAPI ozDynSetMomentum;
       static LuaAPI ozDynAddMomentum;

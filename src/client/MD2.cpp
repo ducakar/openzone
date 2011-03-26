@@ -23,57 +23,10 @@ namespace oz
 namespace client
 {
 
-  struct MD2Header
-  {
-    int id;
-    int version;
+  Vertex MD2::animBuffer[MAX_VERTS];
 
-    int skinWidth;
-    int skinHeight;
-    int frameSize;
-
-    int nSkins;
-    int nFramePositions;
-    int nTexCoords;
-    int nTriangles;
-    int nGlCmds;
-    int nFrames;
-
-    int offSkins;
-    int offTexCoords;
-    int offTriangles;
-    int offFrames;
-    int offGLCmds;
-    int offEnd;
-  };
-
-  struct MD2Vertex
-  {
-    ubyte p[3];
-    ubyte normal;
-  };
-
-  struct MD2TexCoord
-  {
-    short s;
-    short t;
-  };
-
-  struct MD2Frame
-  {
-    float     scale[3];
-    float     translate[3];
-    char      name[16];
-    MD2Vertex verts[1];
-  };
-
-  struct MD2Triangle
-  {
-    short vertices[3];
-    short texCoords[3];
-  };
-
-  static const Vec3 NORMALS[] =
+#ifdef OZ_BUILD_TOOLS
+  const Vec3 MD2::NORMALS[] =
   {
     Vec3( -0.000000f, -0.525731f,  0.850651f ),
     Vec3( -0.238856f, -0.442863f,  0.864188f ),
@@ -238,6 +191,7 @@ namespace client
     Vec3(  0.425325f, -0.587785f, -0.688191f ),
     Vec3(  0.587785f, -0.688191f, -0.425325f )
   };
+#endif
 
   const MD2::AnimInfo MD2::ANIM_LIST[] =
   {
@@ -368,7 +322,13 @@ namespace client
     MeshData mesh;
     compiler.getMeshData( &mesh );
 
+    int nFrameVertices = mesh.vertices.length();
+
     translator.shaderIndex( shaderName );
+
+    if( nFrameVertices > MAX_VERTS ) {
+      throw Exception( "MD2 model has too many vertices" );
+    }
 
     OutputStream os = buffer.outputStream();
 
@@ -397,21 +357,22 @@ namespace client
     }
     else {
       os.writeInt( header.nFrames );
+      os.writeInt( nFrameVertices );
       os.writeInt( header.nFramePositions );
       os.writeMat44( weaponTransf );
 
       // write vertex positions for all frames
-      for( int i = 0; i < header.nFramePositions; ++i ) {
-        for( int j = 0; j < header.nFrames; ++j ) {
-          MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[j * header.frameSize] );
+      for( int i = 0; i < header.nFrames; ++i ) {
+        MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[i * header.frameSize] );
 
-          Point3 p = Point3( float( frame.verts[i].p[1] ) * -frame.scale[1] - frame.translate[1],
-                             float( frame.verts[i].p[0] ) *  frame.scale[0] + frame.translate[0],
-                             float( frame.verts[i].p[2] ) *  frame.scale[2] + frame.translate[2] );
+        for( int j = 0; j < header.nFramePositions; ++j ) {
+          Point3 p = Point3( float( frame.verts[j].p[1] ) * -frame.scale[1] - frame.translate[1],
+                             float( frame.verts[j].p[0] ) *  frame.scale[0] + frame.translate[0],
+                             float( frame.verts[j].p[2] ) *  frame.scale[2] + frame.translate[2] );
 
           p = Point3::ORIGIN + ( p - Point3::ORIGIN ) * scale + translation;
 
-          if( ANIM_LIST[Anim::JUMP].firstFrame <= j && j <= ANIM_LIST[Anim::JUMP].lastFrame ) {
+          if( ANIM_LIST[Anim::JUMP].firstFrame <= i && i <= ANIM_LIST[Anim::JUMP].lastFrame ) {
             p += jumpTransl;
           }
 
@@ -419,11 +380,11 @@ namespace client
         }
       }
       // write vertex normals for all frames
-      for( int i = 0; i < header.nFramePositions; ++i ) {
-        for( int j = 0; j < header.nFrames; ++j ) {
-          MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[j * header.frameSize] );
+      for( int i = 0; i < header.nFrames; ++i ) {
+        MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[i * header.frameSize] );
 
-          os.writeVec3( NORMALS[ frame.verts[i].normal ] );
+        for( int j = 0; j < header.nFramePositions; ++j ) {
+          os.writeVec3( NORMALS[ frame.verts[j].normal ] );
         }
       }
 
@@ -465,8 +426,15 @@ namespace client
 
     log.print( "Unloading MD2 model '%s' ...", name.cstr() );
 
-    glDeleteTextures( 1, &vertexTexId );
-    glDeleteTextures( 1, &normalTexId );
+    if( shader.hasVertexTexture ) {
+      glDeleteTextures( 1, &vertexTexId );
+      glDeleteTextures( 1, &normalTexId );
+    }
+    else {
+      delete[] vertices;
+      delete[] positions;
+      delete[] normals;
+    }
 
     mesh.unload();
 
@@ -486,22 +454,23 @@ namespace client
       throw Exception( "MD2 cannot read model file" );
     }
 
-    InputStream is = buffer.inputStream();
+    InputStream is  = buffer.inputStream();
 
     shaderId        = translator.shaderIndex( is.readString() );
 
     nFrames         = is.readInt();
+    nFrameVertices  = is.readInt();
     nFramePositions = is.readInt();
     weaponTransf    = is.readMat44();
 
-    Vec4* vertices = new Vec4[nFramePositions * nFrames];
-    Vec4* normals  = new Vec4[nFramePositions * nFrames];
+    positions = new Vec4[nFramePositions * nFrames];
+    normals   = new Vec4[nFramePositions * nFrames];
 
     for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      vertices[i].x = is.readFloat();
-      vertices[i].y = is.readFloat();
-      vertices[i].z = is.readFloat();
-      vertices[i].w = 1.0f;
+      positions[i].x = is.readFloat();
+      positions[i].y = is.readFloat();
+      positions[i].z = is.readFloat();
+      positions[i].w = 1.0f;
     }
 
     for( int i = 0; i < nFramePositions * nFrames; ++i ) {
@@ -511,26 +480,39 @@ namespace client
       normals[i].w  = 0.0f;
     }
 
-    glGenTextures( 1, &vertexTexId );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFrames, nFramePositions, 0,
-                  GL_RGBA, GL_FLOAT, vertices );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    if( shader.hasVertexTexture ) {
+      glGenTextures( 1, &vertexTexId );
+      glBindTexture( GL_TEXTURE_2D, vertexTexId );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, nFrames, 0,
+                    GL_RGBA, GL_FLOAT, positions );
+      glBindTexture( GL_TEXTURE_2D, 0 );
 
-    glGenTextures( 1, &normalTexId );
-    glBindTexture( GL_TEXTURE_2D, normalTexId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFrames, nFramePositions, 0,
-                  GL_RGBA, GL_FLOAT, normals );
-    glBindTexture( GL_TEXTURE_2D, 0 );
+      glGenTextures( 1, &normalTexId );
+      glBindTexture( GL_TEXTURE_2D, normalTexId );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, nFrames, 0,
+                    GL_RGBA, GL_FLOAT, normals );
+      glBindTexture( GL_TEXTURE_2D, 0 );
 
-    delete[] vertices;
-    delete[] normals;
+      delete[] positions;
+      delete[] normals;
 
-    mesh.load( &is, GL_STREAM_DRAW );
+      mesh.load( &is, GL_STATIC_DRAW );
+    }
+
+    if( !shader.hasVertexTexture ) {
+      const Vertex* vertexBuffer = reinterpret_cast<const Vertex*>( is.getPos() + 2*sizeof( int ) );
+
+      vertices = new Vertex[nFrameVertices];
+      for( int i = 0; i < nFrameVertices; ++i ) {
+        vertices[i] = vertexBuffer[i];
+      }
+
+      mesh.load( &is, GL_STREAM_DRAW );
+    }
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -558,6 +540,31 @@ namespace client
   {
     shader.use( shaderId );
 
+    if( !shader.hasVertexTexture ) {
+      const Vec4* framePositions = &positions[frame * nFramePositions];
+      const Vec4* frameNormals   = &normals[frame * nFramePositions];
+
+      for( int i = 0; i < nFrameVertices; ++i ) {
+        int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
+
+        Vec4 pos    = framePositions[j];
+        Vec4 normal = frameNormals[j];
+
+        animBuffer[i].pos[0] = pos.x;
+        animBuffer[i].pos[1] = pos.y;
+        animBuffer[i].pos[2] = pos.z;
+
+        animBuffer[i].normal[0] = normal.x;
+        animBuffer[i].normal[1] = normal.y;
+        animBuffer[i].normal[2] = normal.z;
+
+        animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
+        animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
+      }
+
+      mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
+    }
+
     glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, vertexTexId );
     glActiveTexture( GL_TEXTURE2 );
@@ -573,6 +580,35 @@ namespace client
   void MD2::draw( const AnimState* anim ) const
   {
     shader.use( shaderId );
+
+    if( !shader.hasVertexTexture ) {
+      const Vec4* currFramePositions = &positions[anim->currFrame * nFramePositions];
+      const Vec4* nextFramePositions = &positions[anim->nextFrame * nFramePositions];
+      const Vec4* currFrameNormals   = &normals[anim->currFrame * nFramePositions];
+      const Vec4* nextFrameNormals   = &normals[anim->nextFrame * nFramePositions];
+
+      float t = anim->fps * anim->currTime;
+
+      for( int i = 0; i < nFrameVertices; ++i ) {
+        int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
+
+        Vec4 pos    = currFramePositions[j] + t * ( nextFramePositions[j] - currFramePositions[j] );
+        Vec4 normal = currFrameNormals[j]   + t * ( nextFrameNormals[j]   - currFrameNormals[j]   );
+
+        animBuffer[i].pos[0] = pos.x;
+        animBuffer[i].pos[1] = pos.y;
+        animBuffer[i].pos[2] = pos.z;
+
+        animBuffer[i].normal[0] = normal.x;
+        animBuffer[i].normal[1] = normal.y;
+        animBuffer[i].normal[2] = normal.z;
+
+        animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
+        animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
+      }
+
+      mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
+    }
 
     glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, vertexTexId );

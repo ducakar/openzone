@@ -35,6 +35,7 @@ namespace oz
 
       float  enginePitchBias;
       float  enginePitchRatio;
+      float  enginePitchLimit;
 
       int    nWeapons;
       String weaponNames[Vehicle::WEAPONS_MAX];

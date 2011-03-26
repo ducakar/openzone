@@ -32,11 +32,10 @@ namespace ui
     }
 
     path = config.getSet( "ui.font.mono.file", "fonts/DejaVuSansMono.ttf" );
-    monoHeight = config.getSet( "ui.font.mono.height", 12 );
 
-    log.print( "Opening font '%s' %d px ...", path, monoHeight );
+    log.print( "Opening font '%s' %d px ...", path, MONO_HEIGHT );
 
-    monoFont = TTF_OpenFont( path, monoHeight );
+    monoFont = TTF_OpenFont( path, MONO_HEIGHT );
     if( monoFont == null ) {
       log.printEnd( " Error: %s", TTF_GetError() );
       return false;
@@ -45,11 +44,10 @@ namespace ui
     log.printEnd( " OK" );
 
     path = config.getSet( "ui.font.sans.file", "fonts/DejaVuSans.ttf" );
-    sansHeight = config.getSet( "ui.font.sans.height", 11 );
 
-    log.print( "Opening font '%s' %d px ...", path, sansHeight );
+    log.print( "Opening font '%s' %d px ...", path, SANS_HEIGHT );
 
-    sansFont = TTF_OpenFont( path, sansHeight );
+    sansFont = TTF_OpenFont( path, SANS_HEIGHT );
     if( sansFont == null ) {
       log.printEnd( " Error: %s", TTF_GetError() );
       TTF_CloseFont( monoFont );
@@ -60,12 +58,11 @@ namespace ui
     log.printEnd( " OK" );
 
     path = config.getSet( "ui.font.title.file", "fonts/DejaVuSans.ttf" );
-    titleHeight = config.getSet( "ui.font.title.height", 14 );
 
-    log.print( "Opening font '%s' %d px ...", path, titleHeight );
+    log.print( "Opening font '%s' %d px ...", path, TITLE_HEIGHT );
 
-    titleFont = TTF_OpenFont( path, titleHeight );
-    if( titleHeight == 0 ) {
+    titleFont = TTF_OpenFont( path, TITLE_HEIGHT );
+    if( titleFont == null ) {
       log.printEnd( " Error: %s", TTF_GetError() );
       TTF_CloseFont( monoFont );
       monoFont = null;

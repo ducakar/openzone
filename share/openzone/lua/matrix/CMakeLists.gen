@@ -1,0 +1,15 @@
+#!/bin/sh
+
+printf '' > CMakeLists.txt
+
+ls *.lua &> /dev/null || exit 0
+
+for script in *.lua; do
+  baseName=`basename $script .lua`
+  echo "add_custom_target( lua_matrix_$baseName ALL" >> CMakeLists.txt
+  echo "                   SOURCES \${CMAKE_CURRENT_SOURCE_DIR}/$baseName.lua" >> CMakeLists.txt
+  echo "                   DEPENDS $baseName.luac )" >> CMakeLists.txt
+  echo "add_custom_command( OUTPUT $baseName.luac" >> CMakeLists.txt
+  echo "                    DEPENDS \${CMAKE_CURRENT_SOURCE_DIR}/$baseName.lua" >> CMakeLists.txt
+  echo "                    COMMAND luac -o $baseName.luac \${CMAKE_CURRENT_SOURCE_DIR}/$baseName.lua )" >> CMakeLists.txt
+done

@@ -30,6 +30,22 @@ namespace oz
       // column for value alignment when writing .rc configuration files
       static const int ALIGNMENT = 32;
 
+      struct Elem
+      {
+        const char* key;
+        const char* value;
+#ifdef OZ_VERBOSE_CONFIG
+        bool isUsed;
+
+        explicit Elem() : isUsed( false ) {}
+#endif
+
+        bool operator < ( const Elem& e ) const
+        {
+          return String::compare( key, e.key ) < 0;
+        }
+      };
+
       // Hashtable of variables.
       HashString<String, SIZE> vars;
 #ifdef OZ_VERBOSE_CONFIG

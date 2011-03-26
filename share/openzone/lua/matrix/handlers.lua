@@ -164,6 +164,7 @@ function tank_onShot2( l )
 
   ozOrbisForceAddObj( "shell", pX, pY, pZ )
   ozDynSetMomentum( vX * 400, vY * 400, vZ * 400 )
+  ozDynSetVelocity( vX * 400, vY * 400, vZ * 400 )
 end
 
 function axe_onShot( l )
