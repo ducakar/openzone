@@ -177,6 +177,8 @@ namespace client
       bool isLoaded;
       bool hasVertexTexture;
 
+      explicit Shader();
+
       void use( int id );
       void push();
       void pop();

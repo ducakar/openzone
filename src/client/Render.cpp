@@ -1,4 +1,4 @@
- /*
+/*
  *  Render.cpp
  *
  *  Graphics render engine
@@ -28,6 +28,12 @@
 #include "client/ExplosionModel.hpp"
 #include "client/MD2Model.hpp"
 #include "client/MD2WeaponModel.hpp"
+
+#define OZ_REGISTER_GLFUNC( func, type ) \
+  func = reinterpret_cast<type>( SDL_GL_GetProcAddress( #func ) ); \
+  if( func == null ) { \
+    throw Exception( "Failed to get OpenGL function '" #func "'" ); \
+  }
 
 namespace oz
 {
@@ -544,59 +550,59 @@ namespace client
     particleShaderId     = translator.shaderIndex( "particles" );
 
 #ifdef OZ_WINDOWS
-    glUniform1i               = reinterpret_cast<PFNGLUNIFORM1IPROC>               ( SDL_GL_GetProcAddress( "glUniform1i" ) );
-    glUniform2i               = reinterpret_cast<PFNGLUNIFORM2IPROC>               ( SDL_GL_GetProcAddress( "glUniform2i" ) );
-    glUniform3i               = reinterpret_cast<PFNGLUNIFORM3IPROC>               ( SDL_GL_GetProcAddress( "glUniform3i" ) );
-    glUniform4i               = reinterpret_cast<PFNGLUNIFORM4IPROC>               ( SDL_GL_GetProcAddress( "glUniform4i" ) );
-    glUniform1iv              = reinterpret_cast<PFNGLUNIFORM1IVPROC>              ( SDL_GL_GetProcAddress( "glUniform1iv" ) );
-    glUniform2iv              = reinterpret_cast<PFNGLUNIFORM2IVPROC>              ( SDL_GL_GetProcAddress( "glUniform2iv" ) );
-    glUniform3iv              = reinterpret_cast<PFNGLUNIFORM3IVPROC>              ( SDL_GL_GetProcAddress( "glUniform3iv" ) );
-    glUniform4iv              = reinterpret_cast<PFNGLUNIFORM4IVPROC>              ( SDL_GL_GetProcAddress( "glUniform4iv" ) );
-    glUniform1f               = reinterpret_cast<PFNGLUNIFORM1FPROC>               ( SDL_GL_GetProcAddress( "glUniform1f" ) );
-    glUniform2f               = reinterpret_cast<PFNGLUNIFORM2FPROC>               ( SDL_GL_GetProcAddress( "glUniform2f" ) );
-    glUniform3f               = reinterpret_cast<PFNGLUNIFORM3FPROC>               ( SDL_GL_GetProcAddress( "glUniform3f" ) );
-    glUniform4f               = reinterpret_cast<PFNGLUNIFORM4FPROC>               ( SDL_GL_GetProcAddress( "glUniform4f" ) );
-    glUniform1fv              = reinterpret_cast<PFNGLUNIFORM1FVPROC>              ( SDL_GL_GetProcAddress( "glUniform1fv" ) );
-    glUniform2fv              = reinterpret_cast<PFNGLUNIFORM2FVPROC>              ( SDL_GL_GetProcAddress( "glUniform2fv" ) );
-    glUniform3fv              = reinterpret_cast<PFNGLUNIFORM3FVPROC>              ( SDL_GL_GetProcAddress( "glUniform3fv" ) );
-    glUniform4fv              = reinterpret_cast<PFNGLUNIFORM4FVPROC>              ( SDL_GL_GetProcAddress( "glUniform4fv" ) );
-    glUniformMatrix4fv        = reinterpret_cast<PFNGLUNIFORMMATRIX4FVPROC>        ( SDL_GL_GetProcAddress( "glUniformMatrix4fv" ) );
+    OZ_REGISTER_GLFUNC( glUniform1i,               PFNGLUNIFORM1IPROC               );
+    OZ_REGISTER_GLFUNC( glUniform2i,               PFNGLUNIFORM2IPROC               );
+    OZ_REGISTER_GLFUNC( glUniform3i,               PFNGLUNIFORM3IPROC               );
+    OZ_REGISTER_GLFUNC( glUniform4i,               PFNGLUNIFORM4IPROC               );
+    OZ_REGISTER_GLFUNC( glUniform1iv,              PFNGLUNIFORM1IVPROC              );
+    OZ_REGISTER_GLFUNC( glUniform2iv,              PFNGLUNIFORM2IVPROC              );
+    OZ_REGISTER_GLFUNC( glUniform3iv,              PFNGLUNIFORM3IVPROC              );
+    OZ_REGISTER_GLFUNC( glUniform4iv,              PFNGLUNIFORM4IVPROC              );
+    OZ_REGISTER_GLFUNC( glUniform1f,               PFNGLUNIFORM1FPROC               );
+    OZ_REGISTER_GLFUNC( glUniform2f,               PFNGLUNIFORM2FPROC               );
+    OZ_REGISTER_GLFUNC( glUniform3f,               PFNGLUNIFORM3FPROC               );
+    OZ_REGISTER_GLFUNC( glUniform4f,               PFNGLUNIFORM4FPROC               );
+    OZ_REGISTER_GLFUNC( glUniform1fv,              PFNGLUNIFORM1FVPROC              );
+    OZ_REGISTER_GLFUNC( glUniform2fv,              PFNGLUNIFORM2FVPROC              );
+    OZ_REGISTER_GLFUNC( glUniform3fv,              PFNGLUNIFORM3FVPROC              );
+    OZ_REGISTER_GLFUNC( glUniform4fv,              PFNGLUNIFORM4FVPROC              );
+    OZ_REGISTER_GLFUNC( glUniformMatrix4fv,        PFNGLUNIFORMMATRIX4FVPROC        );
 
-    glGenVertexArrays         = reinterpret_cast<PFNGLGENVERTEXARRAYSPROC>         ( SDL_GL_GetProcAddress( "glGenVertexArrays" ) );
-    glDeleteVertexArrays      = reinterpret_cast<PFNGLDELETEVERTEXARRAYSPROC>      ( SDL_GL_GetProcAddress( "glDeleteVertexArrays" ) );
-    glBindVertexArray         = reinterpret_cast<PFNGLBINDVERTEXARRAYPROC>         ( SDL_GL_GetProcAddress( "glBindVertexArray" ) );
+    OZ_REGISTER_GLFUNC( glGenVertexArrays,         PFNGLGENVERTEXARRAYSPROC         );
+    OZ_REGISTER_GLFUNC( glDeleteVertexArrays,      PFNGLDELETEVERTEXARRAYSPROC      );
+    OZ_REGISTER_GLFUNC( glBindVertexArray,         PFNGLBINDVERTEXARRAYPROC         );
 
-    glGenBuffers              = reinterpret_cast<PFNGLGENBUFFERSPROC>              ( SDL_GL_GetProcAddress( "glGenBuffers" ) );
-    glDeleteBuffers           = reinterpret_cast<PFNGLDELETEBUFFERSPROC>           ( SDL_GL_GetProcAddress( "glDeleteBuffers" ) );
-    glBindBuffer              = reinterpret_cast<PFNGLBINDBUFFERPROC>              ( SDL_GL_GetProcAddress( "glBindBuffer" ) );
-    glBufferData              = reinterpret_cast<PFNGLBUFFERDATAPROC>              ( SDL_GL_GetProcAddress( "glBufferData" ) );
-    glMapBuffer               = reinterpret_cast<PFNGLMAPBUFFERPROC>               ( SDL_GL_GetProcAddress( "glMapBuffer" ) );
-    glUnmapBuffer             = reinterpret_cast<PFNGLUNMAPBUFFERPROC>             ( SDL_GL_GetProcAddress( "glUnmapBuffer" ) );
+    OZ_REGISTER_GLFUNC( glGenBuffers,              PFNGLGENBUFFERSPROC              );
+    OZ_REGISTER_GLFUNC( glDeleteBuffers,           PFNGLDELETEBUFFERSPROC           );
+    OZ_REGISTER_GLFUNC( glBindBuffer,              PFNGLBINDBUFFERPROC              );
+    OZ_REGISTER_GLFUNC( glBufferData,              PFNGLBUFFERDATAPROC              );
+    OZ_REGISTER_GLFUNC( glMapBuffer,               PFNGLMAPBUFFERPROC               );
+    OZ_REGISTER_GLFUNC( glUnmapBuffer,             PFNGLUNMAPBUFFERPROC             );
 
-    glEnableVertexAttribArray = reinterpret_cast<PFNGLENABLEVERTEXATTRIBARRAYPROC> ( SDL_GL_GetProcAddress( "glEnableVertexAttribArray" ) );
-    glVertexAttribPointer     = reinterpret_cast<PFNGLVERTEXATTRIBPOINTERPROC>     ( SDL_GL_GetProcAddress( "glVertexAttribPointer" ) );
+    OZ_REGISTER_GLFUNC( glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYPROC );
+    OZ_REGISTER_GLFUNC( glVertexAttribPointer,     PFNGLVERTEXATTRIBPOINTERPROC     );
 
-    glCreateShader            = reinterpret_cast<PFNGLCREATESHADERPROC>            ( SDL_GL_GetProcAddress( "glCreateShader" ) );
-    glDeleteShader            = reinterpret_cast<PFNGLDELETESHADERPROC>            ( SDL_GL_GetProcAddress( "glDeleteShader" ) );
-    glShaderSource            = reinterpret_cast<PFNGLSHADERSOURCEPROC>            ( SDL_GL_GetProcAddress( "glShaderSource" ) );
-    glCompileShader           = reinterpret_cast<PFNGLCOMPILESHADERPROC>           ( SDL_GL_GetProcAddress( "glCompileShader" ) );
-    glGetShaderiv             = reinterpret_cast<PFNGLGETSHADERIVPROC>             ( SDL_GL_GetProcAddress( "glGetShaderiv" ) );
-    glGetShaderInfoLog        = reinterpret_cast<PFNGLGETSHADERINFOLOGPROC>        ( SDL_GL_GetProcAddress( "glGetShaderInfoLog" ) );
-    glCreateProgram           = reinterpret_cast<PFNGLCREATEPROGRAMPROC>           ( SDL_GL_GetProcAddress( "glCreateProgram" ) );
-    glDeleteProgram           = reinterpret_cast<PFNGLDELETEPROGRAMPROC>           ( SDL_GL_GetProcAddress( "glDeleteProgram" ) );
-    glAttachShader            = reinterpret_cast<PFNGLATTACHSHADERPROC>            ( SDL_GL_GetProcAddress( "glAttachShader" ) );
-    glDetachShader            = reinterpret_cast<PFNGLDETACHSHADERPROC>            ( SDL_GL_GetProcAddress( "glDetachShader" ) );
-    glLinkProgram             = reinterpret_cast<PFNGLLINKPROGRAMPROC>             ( SDL_GL_GetProcAddress( "glLinkProgram" ) );
-    glGetProgramiv            = reinterpret_cast<PFNGLGETPROGRAMIVPROC>            ( SDL_GL_GetProcAddress( "glGetProgramiv" ) );
-    glGetProgramInfoLog       = reinterpret_cast<PFNGLGETPROGRAMINFOLOGPROC>       ( SDL_GL_GetProcAddress( "glGetProgramInfoLog" ) );
-    glGetUniformLocation      = reinterpret_cast<PFNGLGETUNIFORMLOCATIONPROC>      ( SDL_GL_GetProcAddress( "glGetUniformLocation" ) );
-    glBindAttribLocation      = reinterpret_cast<PFNGLBINDFRAGDATALOCATIONPROC>    ( SDL_GL_GetProcAddress( "glBindAttribLocation" ) );
-    glBindFragDataLocation    = reinterpret_cast<PFNGLBINDFRAGDATALOCATIONPROC>    ( SDL_GL_GetProcAddress( "glBindFragDataLocation" ) );
-    glUseProgram              = reinterpret_cast<PFNGLUSEPROGRAMPROC>              ( SDL_GL_GetProcAddress( "glUseProgram" ) );
+    OZ_REGISTER_GLFUNC( glCreateShader,            PFNGLCREATESHADERPROC            );
+    OZ_REGISTER_GLFUNC( glDeleteShader,            PFNGLDELETESHADERPROC            );
+    OZ_REGISTER_GLFUNC( glShaderSource,            PFNGLSHADERSOURCEPROC            );
+    OZ_REGISTER_GLFUNC( glCompileShader,           PFNGLCOMPILESHADERPROC           );
+    OZ_REGISTER_GLFUNC( glGetShaderiv,             PFNGLGETSHADERIVPROC             );
+    OZ_REGISTER_GLFUNC( glGetShaderInfoLog,        PFNGLGETSHADERINFOLOGPROC        );
+    OZ_REGISTER_GLFUNC( glCreateProgram,           PFNGLCREATEPROGRAMPROC           );
+    OZ_REGISTER_GLFUNC( glDeleteProgram,           PFNGLDELETEPROGRAMPROC           );
+    OZ_REGISTER_GLFUNC( glAttachShader,            PFNGLATTACHSHADERPROC            );
+    OZ_REGISTER_GLFUNC( glDetachShader,            PFNGLDETACHSHADERPROC            );
+    OZ_REGISTER_GLFUNC( glLinkProgram,             PFNGLLINKPROGRAMPROC             );
+    OZ_REGISTER_GLFUNC( glGetProgramiv,            PFNGLGETPROGRAMIVPROC            );
+    OZ_REGISTER_GLFUNC( glGetProgramInfoLog,       PFNGLGETPROGRAMINFOLOGPROC       );
+    OZ_REGISTER_GLFUNC( glGetUniformLocation,      PFNGLGETUNIFORMLOCATIONPROC      );
+    OZ_REGISTER_GLFUNC( glBindAttribLocation,      PFNGLBINDFRAGDATALOCATIONPROC    );
+//     OZ_REGISTER_GLFUNC( glBindFragDataLocation,    PFNGLBINDFRAGDATALOCATIONPROC    );
+    OZ_REGISTER_GLFUNC( glUseProgram,              PFNGLUSEPROGRAMPROC              );
 
-    wglActiveTexture          = reinterpret_cast<PFNGLACTIVETEXTUREPROC>           ( SDL_GL_GetProcAddress( "glActiveTexture" ) );
-    wglCompressedTexImage2D   = reinterpret_cast<PFNGLCOMPRESSEDTEXIMAGE2DPROC>    ( SDL_GL_GetProcAddress( "glCompressedTexImage2D" ) );
-    wglDrawRangeElements      = reinterpret_cast<PFNGLDRAWRANGEELEMENTSPROC>       ( SDL_GL_GetProcAddress( "glDrawRangeElements" ) );
+    OZ_REGISTER_GLFUNC( glActiveTexture,           PFNGLACTIVETEXTUREPROC           );
+    OZ_REGISTER_GLFUNC( glCompressedTexImage2D,    PFNGLCOMPRESSEDTEXIMAGE2DPROC    );
+    OZ_REGISTER_GLFUNC( glDrawRangeElements,       PFNGLDRAWRANGEELEMENTSPROC       );
 #endif
 
     glEnable( GL_CULL_FACE );

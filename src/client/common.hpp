@@ -130,7 +130,7 @@ namespace client
   extern PFNGLGETPROGRAMINFOLOGPROC       glGetProgramInfoLog;
   extern PFNGLGETUNIFORMLOCATIONPROC      glGetUniformLocation;
   extern PFNGLBINDATTRIBLOCATIONPROC      glBindAttribLocation;
-  extern PFNGLBINDFRAGDATALOCATIONPROC    glBindFragDataLocation;
+//   extern PFNGLBINDFRAGDATALOCATIONPROC    glBindFragDataLocation;
   extern PFNGLUSEPROGRAMPROC              glUseProgram;
 
   extern PFNGLACTIVETEXTUREPROC           wglActiveTexture;
