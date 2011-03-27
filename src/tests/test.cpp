@@ -18,7 +18,5 @@ bool Alloc::isLocked = true;
 
 int main( int, char** )
 {
-  float x = Math::NaN;
-  printf( "%x\n", x == x + 1 );
   return 0;
 }

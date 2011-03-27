@@ -60,7 +60,19 @@ endif( OZ_INSTALL_LIBOZ )
 
 if( WIN32 )
   install( FILES
-    mingw32/OpenAL32.dll
+    AUTHORS
+    COPYING
+    README
+    DESTINATION . )
+else( WIN32 )
+  install( FILES
+    AUTHORS
+    COPYING
+    README
+    DESTINATION share/doc/openzone )
+endif( WIN32 )
+if( WIN32 )
+  install( FILES
     mingw32/SDL.dll
     mingw32/SDL_ttf.dll
     mingw32/libalut-0.dll
@@ -75,6 +87,11 @@ if( WIN32 )
     mingw32/libvorbisfile-3.dll
     mingw32/oalinst.exe
     DESTINATION bin )
+  install( FILES
+    mingw32/install_openal.bat
+    mingw32/openzone-restart-world.bat
+    mingw32/openzone.bat
+    DESTINATION . )
 endif( WIN32 )
 
 string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" client_location_var )
@@ -118,6 +135,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/class )
 
   install( FILES
+    share/openzone/fonts/DejaVu.COPYING
     share/openzone/fonts/DejaVuSans.ttf
     share/openzone/fonts/DejaVuSansMono.ttf
     DESTINATION share/openzone/fonts )
@@ -147,7 +165,6 @@ if( OZ_INSTALL_DATA )
     share/openzone/bsp/tex/_Spestalnica.ozcTex
     share/openzone/bsp/tex/crate1.ozcTex
     share/openzone/bsp/tex/glass.ozcTex
-    share/openzone/bsp/tex/particle.ozcTex
     share/openzone/bsp/tex/roof1.ozcTex
     share/openzone/bsp/tex/slick.ozcTex
     share/openzone/bsp/tex/stone1.ozcTex

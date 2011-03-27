@@ -66,6 +66,7 @@ namespace ui
 
     shape.bindVertexArray();
 
+    glClear( GL_DEPTH_BUFFER_BIT );
     glEnable( GL_BLEND );
 
     root->drawChildren();

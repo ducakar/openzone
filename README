@@ -118,6 +118,7 @@ openzone [OPTIONS]
 
 Notes
 -----
+- Make sure you have the *LATEST* display drivers.
 - On first run ~/.openzone/client.rc configuration file with default settings is generated.
   Edit it to change any settings you wish.
 - "~" means $HOME on Linux (i.e. /home/username) and $USERPROFILE on Windows (i.e.

@@ -417,7 +417,8 @@ namespace client
   }
 #endif
 
-  MD2::MD2( int id_ ) : id( id_ ), isLoaded( false )
+  MD2::MD2( int id_ ) : id( id_ ), vertices( null ), positions( null ), normals( 0 ),
+      isLoaded( false )
   {}
 
   MD2::~MD2()
@@ -540,7 +541,14 @@ namespace client
   {
     shader.use( shaderId );
 
-    if( !shader.hasVertexTexture ) {
+    if( shader.hasVertexTexture ) {
+      glActiveTexture( GL_TEXTURE1 );
+      glBindTexture( GL_TEXTURE_2D, vertexTexId );
+      glActiveTexture( GL_TEXTURE2 );
+      glBindTexture( GL_TEXTURE_2D, normalTexId );
+      glActiveTexture( GL_TEXTURE0 );
+    }
+    else {
       const Vec4* framePositions = &positions[frame * nFramePositions];
       const Vec4* frameNormals   = &normals[frame * nFramePositions];
 
@@ -565,12 +573,6 @@ namespace client
       mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
     }
 
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
-    glActiveTexture( GL_TEXTURE2 );
-    glBindTexture( GL_TEXTURE_2D, normalTexId );
-    glActiveTexture( GL_TEXTURE0 );
-
     glUniform3f( param.oz_MD2Anim, float( frame ) / float( nFrames ), 0.0f, 0.0f );
     tf.apply();
 
@@ -581,7 +583,14 @@ namespace client
   {
     shader.use( shaderId );
 
-    if( !shader.hasVertexTexture ) {
+    if( shader.hasVertexTexture ) {
+      glActiveTexture( GL_TEXTURE1 );
+      glBindTexture( GL_TEXTURE_2D, vertexTexId );
+      glActiveTexture( GL_TEXTURE2 );
+      glBindTexture( GL_TEXTURE_2D, normalTexId );
+      glActiveTexture( GL_TEXTURE0 );
+    }
+    else {
       const Vec4* currFramePositions = &positions[anim->currFrame * nFramePositions];
       const Vec4* nextFramePositions = &positions[anim->nextFrame * nFramePositions];
       const Vec4* currFrameNormals   = &normals[anim->currFrame * nFramePositions];
@@ -609,12 +618,6 @@ namespace client
 
       mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
     }
-
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, vertexTexId );
-    glActiveTexture( GL_TEXTURE2 );
-    glBindTexture( GL_TEXTURE_2D, normalTexId );
-    glActiveTexture( GL_TEXTURE0 );
 
     glUniform3f( param.oz_MD2Anim,
                  float( anim->currFrame ) / float( nFrames ),

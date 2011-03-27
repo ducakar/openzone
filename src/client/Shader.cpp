@@ -110,10 +110,6 @@ namespace client
     sources[2] = buffer.begin();
     lengths[2] = buffer.length();
 
-    printf( "%d {\n %s }\n", lengths[0], sources[0] );
-    printf( "%d {\n %s }\n", lengths[1], sources[1] );
-    printf( "%d {\n %s }\n", lengths[2], sources[2] );
-
     glShaderSource( id, 3, sources, lengths );
 
     buffer.dealloc();
@@ -175,9 +171,9 @@ namespace client
 //     OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
 //     OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
 
-    OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
-    OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
-    OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
+//     OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
+//     OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
+//     OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
 
     glLinkProgram( programs[id].program );
 
@@ -241,6 +237,9 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
+
+  Shader::Shader() : ui( -1 )
+  {}
 
   void Shader::use( int id )
   {
@@ -455,17 +454,17 @@ namespace client
   {
     log.print( "Shutting down Shader ..." );
 
-    if( programs[ui].program != 0 ) {
+    if( ui != -1 && programs[ui].program != 0 ) {
       glDetachShader( programs[ui].program, programs[ui].vertShader );
       glDetachShader( programs[ui].program, programs[ui].fragShader );
       glDeleteProgram( programs[ui].program );
       programs[ui].program = 0;
     }
-    if( programs[ui].vertShader != 0 ) {
+    if( ui != -1 && programs[ui].vertShader != 0 ) {
       glDeleteShader( programs[ui].vertShader );
       programs[ui].vertShader = 0;
     }
-    if( programs[ui].fragShader != 0 ) {
+    if( ui != -1 && programs[ui].fragShader != 0 ) {
       glDeleteShader( programs[ui].fragShader );
       programs[ui].fragShader = 0;
     }
