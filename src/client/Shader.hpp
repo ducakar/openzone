@@ -63,7 +63,7 @@ namespace client
 
     private:
 
-      SVector<Mat44, 8> stack;
+      Vector<Mat44, 8> stack;
 
     public:
 
@@ -146,6 +146,7 @@ namespace client
         Point3 pos;
         Vec4   diffuse;
 
+        explicit Light() = default;
         explicit Light( const Point3& pos, const Vec4& diffuse );
       };
 

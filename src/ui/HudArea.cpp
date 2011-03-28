@@ -82,8 +82,12 @@ namespace ui
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
         if( tagged->flags & Object::VEHICLE_BIT ) {
-          glBindTexture( GL_TEXTURE_2D, mountTexId );
-          shape.fill( mountIconX, mountIconY, ICON_SIZE, ICON_SIZE );
+          const Vehicle* vehicle = static_cast<const Vehicle*>( tagged );
+
+          if( vehicle->crew[Vehicle::PILOT] == -1 ) {
+            glBindTexture( GL_TEXTURE_2D, mountTexId );
+            shape.fill( mountIconX, mountIconY, ICON_SIZE, ICON_SIZE );
+          }
         }
         else if( tagged->flags & Object::USE_FUNC_BIT ) {
           glBindTexture( GL_TEXTURE_2D, useTexId );

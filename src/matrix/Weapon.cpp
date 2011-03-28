@@ -37,6 +37,9 @@ namespace oz
     }
   }
 
+  Weapon::Weapon()
+  {}
+
   void Weapon::trigger( Bot* user )
   {
     hard_assert( user != null );

@@ -32,6 +32,7 @@ namespace oz
       static int  maxCount;
       static long maxAmount;
 
+      OZ_WEAK_SYMBOL
       static bool isLocked;
 
       explicit Alloc() = delete;

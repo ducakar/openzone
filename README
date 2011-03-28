@@ -44,7 +44,7 @@ Vehicle controls
 mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
 arrow keys          - look around
 w, a, s, d          - move forwards, left, backwards, right
-Space               - up (air vehicles only)
+Space               - up (hover and air vehicles only)
 Ctrl                - down (air vehicles only)
 
 left click          - trigger selected weapon
@@ -84,13 +84,15 @@ droid (droid)
 Tips
 ----
 - You can jump to a little higher places if you crouch and uncrouch during jump.
-- To lift object, your hands must be empty (no weapon equipped), you must not be swimming and
-  object must not be too heavy. If you don't stand close enough to the object it may slip from your
-  hands immediately after you grab it.
 - To equip/unequip a weapon right click it in your inventory.
+- To lift an object, your hands must be empty (no weapon equipped), you must not be swimming and
+  object must not be too heavy. If you don't stand close enough to the object it may slip from your
+  hands immediately after you grab it. It may also slip from your hands if it is hit by another
+  object form above.
 - To climb the ladder look up or down into a ladder. If you move away from the ladder you will
   fall from it.
 - You can move faster under water if you walk on the bottom. Just move into the bottom to do it.
+- When a vehicle is destroyed, it automatically ejects the pilot.
 - To see some fun, spawn a droid (not droid commander) form the build menu.
 - To see some more fun, put the droid into a tank. (Just incarnate into the droid, embark the tank
   and deincarnate. The AI will take over the droid and perform some rampage.)
@@ -130,7 +132,7 @@ Dependencies
 - SDL_image (needed for prebuild only, needs at least PNG and JPEG support)
 - SDL_ttf
 - SDL_net
-- OpenGL (MesaGL headers included in source)
+- OpenGL (MesaGL headers)
 - OpenAL
 - FreeALUT
 - libvorbis
@@ -141,11 +143,11 @@ For Windows build, all dependencies are included.
 
 Licence
 -------
-Copyright (C) 2002-2001  Davorin Učakar <davorin.ucakar@gmail.com>
+Copyright (C) 2002-2011  Davorin Učakar <davorin.ucakar@gmail.com>
 
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions; See COPYING file for details.
 
-Data (everything under 'share' directory) and included libraries ('*.dll' in the root directory) are
-work of various authors. See respective readme files for details.
+Data (everything under 'share/openzone/data' directory) and included libraries ('*.dll' in the root
+directory) are work of various authors. See respective readme files for details.

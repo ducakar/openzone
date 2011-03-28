@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-# ifndef OZ_WINDOWS
+# ifndef OZ_MINGW
 #  define GL_GLEXT_PROTOTYPES
 #  define GL_VERSION_1_2_DEPRECATED
 #  define GL_VERSION_1_3_DEPRECATED
@@ -40,8 +40,7 @@ namespace client
     float u;
     float v;
 
-    explicit TexCoord()
-    {}
+    explicit TexCoord() = default;
 
     explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ )
     {}
@@ -81,7 +80,7 @@ namespace client
     }
   };
 
-#ifdef OZ_WINDOWS
+#ifdef OZ_MINGW
 
   extern PFNGLUNIFORM1IPROC               glUniform1i;
   extern PFNGLUNIFORM2IPROC               glUniform2i;

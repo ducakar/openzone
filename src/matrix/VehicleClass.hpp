@@ -51,6 +51,7 @@ namespace oz
       float  hoverHeight;
       float  hoverHeightStiffness;
       float  hoverMomentumStiffness;
+      float  hoverJumpFactor;
 
       static ObjectClass* init( const String& name, const Config* config );
 

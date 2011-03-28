@@ -17,7 +17,11 @@
 
 using namespace oz;
 
+#ifdef OZ_MINGW
+bool Alloc::isLocked = false;
+#else
 bool Alloc::isLocked = true;
+#endif
 
 int main( int argc, char** argv )
 {
@@ -65,7 +69,9 @@ int main( int argc, char** argv )
 
   client::client.shutdown();
 
+#ifndef OZ_MINGW
   Alloc::isLocked = true;
+#endif
   Alloc::printLeaks();
   return exitCode;
 }

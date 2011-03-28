@@ -87,8 +87,8 @@ namespace oz
       /**
        * Default constructor.
        */
-      explicit Array()
-      {}
+      OZ_ALWAYS_INLINE
+      explicit Array() = default;
 
       /**
        * Initialise from a C++ array.

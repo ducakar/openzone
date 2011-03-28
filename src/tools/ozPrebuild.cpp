@@ -187,16 +187,21 @@ int main( int argc, char** argv )
       "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    if( argc != 2 ) {
-      oz::log.println( "Usage: %s data_directory", program_invocation_short_name );
+    if( argc == 2 && String::equals( argv[1], "--help" ) ) {
+      oz::log.println( "Usage: %s [data_directory]", program_invocation_short_name );
       oz::log.println();
       return -1;
     }
 
     oz::log.printlnETD( OZ_APPLICATION_NAME " Prebuild started at" );
 
-    oz::log.print( "Setting working directory to data directory '%s' ...", argv[1] );
-    if( chdir( argv[1] ) != 0 ) {
+    String dataDir = OZ_DEFAULT_DATA_DIR;
+    if( argc >= 2 ) {
+      dataDir = argv[1];
+    }
+
+    oz::log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
+    if( chdir( dataDir ) != 0 ) {
       oz::log.printEnd( " Failed" );
       return -1;
     }

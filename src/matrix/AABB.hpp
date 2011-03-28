@@ -11,7 +11,6 @@
 
 #include "stable.hpp"
 
-#include "matrix/Sphere.hpp"
 #include "matrix/Bounds.hpp"
 
 namespace oz
@@ -36,8 +35,7 @@ namespace oz
       Vec3   dim;
 
       OZ_ALWAYS_INLINE
-      explicit AABB()
-      {}
+      explicit AABB() = default;
 
       OZ_ALWAYS_INLINE
       explicit AABB( const Point3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )

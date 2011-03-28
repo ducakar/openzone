@@ -26,7 +26,7 @@
 # include <SDL_net.h>
 #endif
 
-#ifdef OZ_WINDOWS
+#ifdef OZ_MINGW
 # define program_invocation_short_name "openzone"
 #endif
 
@@ -246,7 +246,7 @@ namespace client
 
     uint createTime = SDL_GetTicks();
 
-#ifdef OZ_WINDOWS
+#ifdef OZ_MINGW
     const char* homeVar = getenv( "USERPROFILE" );
 #else
     const char* homeVar = getenv( "HOME" );
@@ -261,7 +261,7 @@ namespace client
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource directory found, creating '%s' ...", rcDir.cstr() );
 
-#ifdef OZ_WINDOWS
+#ifdef OZ_MINGW
       if( mkdir( rcDir.cstr() ) != 0 ) {
 #else
       if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
@@ -272,24 +272,25 @@ namespace client
       printf( " OK\n" );
     }
 
-#ifdef OZ_CLIENT_LOG_FILE
-    String logPath = rcDir + "/" OZ_CLIENT_LOG_FILE;
-
-    if( !log.init( logPath, true, "  " ) ) {
-      printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
-      return -1;
+    if( String::equals( OZ_CLIENT_LOG_FILE, "STDOUT" ) ) {
+      log.init( null, true, "  " );
+      log.println( "Log stream stdout ... OK" );
     }
-    log.println( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
-        "This program comes with ABSOLUTELY NO WARRANTY.\n"
-        "This is free software, and you are welcome to redistribute it\n"
-        "under certain conditions; See COPYING file for details.\n" );
+    else {
+      String logPath = rcDir + "/" OZ_CLIENT_LOG_FILE;
 
-    log.println( "Log file '%s'", logPath.cstr() );
-    printf( "Log file '%s'\n", logPath.cstr() );
-#else
-    log.init( null, true, "  " );
-    log.println( "Log stream stdout ... OK" );
-#endif
+      if( !log.init( logPath, true, "  " ) ) {
+        printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
+        return -1;
+      }
+      log.println( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
+          "This program comes with ABSOLUTELY NO WARRANTY.\n"
+          "This is free software, and you are welcome to redistribute it\n"
+          "under certain conditions; See COPYING file for details.\n" );
+
+      log.println( "Log file '%s'", logPath.cstr() );
+      printf( "Log file '%s'\n", logPath.cstr() );
+    }
 
     log.printlnETD( OZ_APPLICATION_NAME " " OZ_APPLICATION_VERSION " started at" );
 
