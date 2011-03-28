@@ -17,7 +17,7 @@ if( NOT OZ_APPLICATION_NAME )
 endif( NOT OZ_APPLICATION_NAME )
 
 if( NOT OZ_APPLICATION_VERSION )
-  set( OZ_APPLICATION_VERSION "0.1.0" CACHE STRING "" FORCE )
+  set( OZ_APPLICATION_VERSION "0.1.1" CACHE STRING "" FORCE )
 endif( NOT OZ_APPLICATION_VERSION )
 
 if( NOT OZ_RC_DIR )
@@ -33,7 +33,7 @@ if( NOT OZ_CLIENT_CONFIG_FILE )
 endif( NOT OZ_CLIENT_CONFIG_FILE )
 
 if( NOT OZ_DEFAULT_DATA_DIR )
-  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
+  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone/data" CACHE STRING "" FORCE )
 endif( NOT OZ_DEFAULT_DATA_DIR )
 
 option( OZ_NETWORKING "Enable networking" OFF )
@@ -175,7 +175,6 @@ endif()
 # detect platform
 if( NOT UNIX )
   set( OZ_MINGW ON )
-  set( OZ_WINDOWS ON )
 endif( NOT UNIX )
 
 include_directories( ${SDL_INCLUDE_DIR} )
@@ -209,9 +208,9 @@ if( OZ_BUILD_TOOLS )
   set( libs "${libs};${SDLIMAGE_LIBRARY}" )
 endif( OZ_BUILD_TOOLS )
 
-if( OZ_WINDOWS )
+if( OZ_MINGW )
   include_directories( ./include )
-endif( OZ_WINDOWS )
+endif( OZ_MINGW )
 
 # compiler and linker flags
 set( flags "-std=c++0x -pipe" )
@@ -220,10 +219,10 @@ set( warnings "${warnings} -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor"
 set( warnings "${warnings} -Wmissing-declarations -Wdisabled-optimization" )
 set( arch_flags "-msse3 -ffast-math" )
 
-if( NOT OZ_WINDOWS )
+if( NOT OZ_MINGW )
   set( warnings "${warnings} -Wredundant-decls" )
   set( arch_flags "${arch_flags} -fstrict-enums" )
-endif( NOT OZ_WINDOWS )
+endif( NOT OZ_MINGW )
 
 if( CLANG )
   set( warnings "${warnings} -Wno-invalid-offsetof" )
@@ -240,21 +239,21 @@ set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3 -ffast-math -fdata-sections -ffunct
 set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-Wl,--gc-sections" CACHE STRING "" FORCE )
 set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-Wl,--gc-sections" CACHE STRING "" FORCE )
 
-if( OZ_WINDOWS )
+if( OZ_MINGW )
   set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import" )
-else( OZ_WINDOWS )
+else( OZ_MINGW )
   set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -flto" )
 
   set( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto" )
   set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} -flto" )
-endif( OZ_WINDOWS )
+endif( OZ_MINGW )
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings} ${includes}" )
 
 # sources
 add_subdirectory( src )
-add_subdirectory( share/openzone )
+add_subdirectory( share/openzone/data )
 
 # installation
 include( install_files.cmake )

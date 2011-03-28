@@ -507,7 +507,7 @@ namespace client
     log.println( "}" );
 
     int major = atoi( version );
-    int minor = atoi( version + version.index( '.' ) + 1 );
+    int minor = atoi( version.cstr() + version.index( '.' ) + 1 );
 
     if( major < 2 || ( major == 2 && minor < 1 ) ) {
       log.println( "Error: at least OpenGL 2.1 required" );
@@ -549,7 +549,7 @@ namespace client
     simpleShaderId       = translator.shaderIndex( "simple" );
     particleShaderId     = translator.shaderIndex( "particles" );
 
-#ifdef OZ_WINDOWS
+#ifdef OZ_MINGW
     OZ_REGISTER_GLFUNC( glUniform1i,               PFNGLUNIFORM1IPROC               );
     OZ_REGISTER_GLFUNC( glUniform2i,               PFNGLUNIFORM2IPROC               );
     OZ_REGISTER_GLFUNC( glUniform3i,               PFNGLUNIFORM3IPROC               );

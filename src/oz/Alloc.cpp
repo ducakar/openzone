@@ -15,12 +15,12 @@
 
 #include <cstdlib>
 
-#ifdef OZ_WINDOWS
+#ifdef OZ_MINGW
 # include <malloc.h>
 #endif
 
 #ifdef OZ_TRACE_LEAKS
-# ifndef OZ_WINDOWS
+# ifndef OZ_MINGW
 #  include <pthread.h>
 # else
 #  include <windows.h>
@@ -49,7 +49,7 @@ namespace oz
 
   // if we deallocate from two different threads at once with OZ_TRACE_LEAKS, changing the list
   // of allocated blocks while iterating it in another thread can result in a SIGSEGV.
-#ifndef OZ_WINDOWS
+#ifndef OZ_MINGW
   static pthread_mutex_t sectionMutex = PTHREAD_MUTEX_INITIALIZER;
 #else
 # define pthread_mutex_lock( mutex ) \
@@ -155,7 +155,7 @@ using oz::sectionMutex;
 
 #endif
 
-#ifdef OZ_WINDOWS
+#ifdef OZ_MINGW
 
 static int posix_memalign( void** ptr, size_t alignment, size_t size )
 {

@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <cxxabi.h>
 
-#ifndef OZ_WINDOWS
+#ifndef OZ_MINGW
 # include <execinfo.h>
 #endif
 
@@ -74,7 +74,7 @@ namespace oz
   thread_local void* System::framePtrs[System::TRACE_SIZE + 1];
   thread_local char  System::output[System::TRACE_BUFFER_SIZE];
 
-#ifndef OZ_WINDOWS
+#ifndef OZ_MINGW
 
   void System::signalHandler( int signum )
   {

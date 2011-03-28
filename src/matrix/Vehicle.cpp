@@ -44,7 +44,20 @@ namespace oz
 
     const Vec3& right = rotMat.x;
     const Vec3& at    = rotMat.y;
-//     const Vec3& up    = rotMat.z;
+    const Vec3& up    = rotMat.z;
+
+    // hover momentum
+    collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - clazz->hoverHeight ) );
+    float ratio  = 1.0f - clamp( ( p.z - dim.z ) / clazz->hoverHeight, 0.0f, collider.hit.ratio );
+    Vec3  normal = collider.hit.normal;
+
+    if( ratio != 0.0f ) {
+      float groundMomentum = min( velocity * normal, 0.0f );
+      float tickRatio = ratio*ratio * Timer::TICK_TIME;
+
+      momentum.z += clazz->hoverHeightStiffness * tickRatio;
+      momentum.z -= groundMomentum * clazz->hoverMomentumStiffness * min( tickRatio / 4.0f, 1.0f );
+    }
 
     // controls
     Vec3 move = Vec3::ZERO;
@@ -65,23 +78,11 @@ namespace oz
       move.x -= right.x;
       move.y -= right.y;
     }
-//     if( actions & Bot::ACTION_VEH_UP ) {
-//       move += up;
-//     }
+    if( actions & Bot::ACTION_VEH_UP ) {
+      move += up * ratio * clazz->hoverJumpFactor;
+    }
 
     momentum += move * clazz->moveMomentum;
-
-    collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - clazz->hoverHeight ) );
-    float ratio  = 1.0f - min( collider.hit.ratio, ( p.z - dim.z ) / clazz->hoverHeight );
-    Vec3  normal = collider.hit.normal;
-
-    if( ratio != 0.0f ) {
-      float groundMomentum = min( velocity * normal, 0.0f );
-      float tickRatio = ratio*ratio * Timer::TICK_TIME;
-
-      momentum.z += clazz->hoverHeightStiffness * tickRatio;
-      momentum.z -= groundMomentum * clazz->hoverMomentumStiffness * min( tickRatio / 4.0f, 1.0f );
-    }
   }
 
   void Vehicle::airHandler( const Mat44& rotMat )
@@ -126,16 +127,27 @@ namespace oz
 
   void Vehicle::onDestroy()
   {
+    const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
+
+    Mat44 rotMat = Mat44( rot );
+
     for( int i = 0; i < CREW_MAX; ++i ) {
       if( crew[i] != -1 ) {
         Bot* bot = static_cast<Bot*>( orbis.objects[ crew[i] ] );
 
+        crew[i] = -1;
+
         if( bot != null ) {
-          Point3 ejectPos = Point3( p.x, p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
+          bot->p = p + rotMat * clazz->crewPos[i];
 
-          if( !collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
-            crew[i] = -1;
+          Point3 ejectPos = Point3( bot->p.x, bot->p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
 
+          // kill bot if eject path is blocked
+          if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
+            bot->kill();
+            bot->exit();
+          }
+          else {
             float hsc[2];
             Math::sincos( h, &hsc[0], &hsc[1] );
 
@@ -225,7 +237,7 @@ namespace oz
       if( crew[i] != -1 ) {
         Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
 
-        bot->p = p + rotMat * clazz->crewPos[0] + momentum * Timer::TICK_TIME;
+        bot->p = p + rotMat * clazz->crewPos[i] + momentum * Timer::TICK_TIME;
         bot->momentum = velocity;
         bot->velocity = velocity;
 
@@ -244,11 +256,18 @@ namespace oz
           }
         }
         else if( bot->actions & Bot::ACTION_EJECT ) {
+          bot->p = p + rotMat * clazz->crewPos[i];
+
           Point3 ejectPos = Point3( p.x, p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
 
-          if( !collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
-            crew[i] = -1;
+          crew[i] = -1;
 
+          // kill bot if eject path is blocked
+          if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
+            bot->kill();
+            bot->exit();
+          }
+          else {
             float hsc[2];
             Math::sincos( h, &hsc[0], &hsc[1] );
 

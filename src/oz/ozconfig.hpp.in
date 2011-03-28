@@ -31,17 +31,25 @@
 // enable warnings about missing and unused variables in config files
 #cmakedefine OZ_VERBOSE_CONFIG
 
-// platform
-#if defined( WIN32 ) || defined( __WIN32__ )
-# define OZ_WINDOWS
+// we are compiling with MinGW for Windows platform
+#cmakedefine OZ_MINGW
+
+#if !defined( __GNUC__ ) || __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 5 )
+# error Only GCC >= 4.5 is supported
 #endif
 
-#if defined( OZ_WINDOWS ) && defined( __GNUC__ )
-# define OZ_MINGW
+// compiler-specific hacks
+#if __GNUC__ == 4 && __GNUC_MINOR__ == 5
+# define nullptr __null
+# define explicit
+#endif
+
+#ifdef __clang__
+# undef __GXX_EXPERIMENTAL_CXX0X__
 #endif
 
 // machine endian
-#if defined( __BIG_ENDIAN__ )
+#ifdef __BIG_ENDIAN__
 # define OZ_BIG_ENDIAN_ARCH
 #endif
 
@@ -50,33 +58,8 @@
 # define OZ_LONG_32
 #endif
 
-#if !defined( __LP64__ ) && !defined( __LLP64__ ) && !defined( _WIN64 )
+#if !defined( __LP64__ ) && !defined( __LLP64__ )
 # define OZ_POINTER_32
-#endif
-
-// compiler-specific hacks
-#if defined( __GNUC__ ) && !defined( __clang__ )
-# if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 4 )
-#  error Too old GCC, at least 4.4 is required, 4.5 recommended
-# endif
-# if __GNUC__ == 4 && __GNUC_MINOR__ <= 5
-#  define nullptr __null
-# endif
-#endif
-
-#ifdef __clang__
-# undef __GXX_EXPERIMENTAL_CXX0X__
-#endif
-
-#ifdef OZ_ECLIPSE_HIGHLIGHTING
-# define nil            nil
-# define byte           byte
-# define ubyte          ubyte
-# define ushort         ushort
-# define uint           uint
-# define ulong          ulong
-# define long64         long64
-# define ulong64        ulong64
 #endif
 
 #ifdef OZ_ALWAYS_INLINE
@@ -88,6 +71,13 @@
 
 #define OZ_WEAK_SYMBOL __attribute__(( weak ))
 
-#if !defined( __GNUC__ ) && !defined( __clang__ )
-# undef OZ_BUILTIN_MATH
+#ifdef OZ_ECLIPSE_HIGHLIGHTING
+# define nil            nil
+# define byte           byte
+# define ubyte          ubyte
+# define ushort         ushort
+# define uint           uint
+# define ulong          ulong
+# define long64         long64
+# define ulong64        ulong64
 #endif

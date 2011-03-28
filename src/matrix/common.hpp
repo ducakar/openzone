@@ -11,6 +11,10 @@
 
 #include "stable.hpp"
 
+#include "matrix/Bounds.hpp"
+#include "matrix/AABB.hpp"
+#include "matrix/Sphere.hpp"
+
 namespace oz
 {
 
@@ -23,9 +27,10 @@ namespace oz
     int maxX;
     int maxY;
 
-    explicit Span()
-    {}
+    OZ_ALWAYS_INLINE
+    explicit Span() = default;
 
+    OZ_ALWAYS_INLINE
     explicit Span( int minX_, int minY_, int maxX_, int maxY_ ) :
         minX( minX_ ), minY( minY_ ), maxX( maxX_ ), maxY( maxY_ )
     {}
@@ -43,5 +48,3 @@ namespace oz
   };
 
 }
-
-#include "matrix/AABB.hpp"

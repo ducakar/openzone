@@ -134,6 +134,7 @@ namespace oz
        * Should be overridden in derived classes
        * @return
        */
+      OZ_ALWAYS_INLINE
       CIteratorBase& operator ++ () = delete;
 
   };
@@ -285,6 +286,7 @@ namespace oz
        * Should be overridden in derived classes
        * @return
        */
+      OZ_ALWAYS_INLINE
       IteratorBase& operator ++ () = delete;
 
   };

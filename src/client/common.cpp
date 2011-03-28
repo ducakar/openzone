@@ -20,7 +20,7 @@ namespace client
 
   const TexCoord TexCoord::ZERO = TexCoord( 0.0f, 0.0f );
 
-#ifdef OZ_WINDOWS
+#ifdef OZ_MINGW
 
   PFNGLUNIFORM1IPROC               glUniform1i;
   PFNGLUNIFORM2IPROC               glUniform2i;

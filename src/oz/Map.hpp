@@ -30,19 +30,19 @@ namespace oz
         Key   key;
         Value value;
 
-        explicit Elem()
-        {}
-
+        OZ_ALWAYS_INLINE
         explicit Elem( const Key& key_, const Value& value_ ) :
             key( key_ ), value( value_ )
         {}
 
         // operators overloads are required for bisection algorithms to work properly
+        OZ_ALWAYS_INLINE
         friend bool operator == ( const Key& key, const Elem& e )
         {
           return key == e.key;
         }
 
+        OZ_ALWAYS_INLINE
         friend bool operator < ( const Key& key, const Elem& e )
         {
           return key < e.key;
@@ -65,6 +65,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator() : B( null, null )
           {}
 
@@ -72,12 +73,14 @@ namespace oz
            * Make iterator for given vector. After creation it points to first element.
            * @param m
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator( const Map& m ) : B( m.data, m.data + m.count )
           {}
 
           /**
            * @return constant pointer to current element's value
            */
+          OZ_ALWAYS_INLINE
           operator const Value* () const
           {
             return &B::elem->value;
@@ -86,6 +89,7 @@ namespace oz
           /**
            * @return constant reference to current element's value
            */
+          OZ_ALWAYS_INLINE
           const Value& operator * () const
           {
             return B::elem->value;
@@ -94,6 +98,7 @@ namespace oz
           /**
            * @return constant access to value's member
            */
+          OZ_ALWAYS_INLINE
           const Value* operator -> () const
           {
             return &B::elem->value;
@@ -102,6 +107,7 @@ namespace oz
           /**
            * @return constant reference to current element's key
            */
+          OZ_ALWAYS_INLINE
           const Key& key() const
           {
             return B::elem->key;
@@ -110,6 +116,7 @@ namespace oz
           /**
            * @return constant reference to current element's value
            */
+          OZ_ALWAYS_INLINE
           const Value& value() const
           {
             return B::elem->value;
@@ -131,6 +138,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator() : B( null, null )
           {}
 
@@ -138,12 +146,14 @@ namespace oz
            * Make iterator for given vector. After creation it points to first element.
            * @param m
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator( const Map& m ) : B( m.data, m.data + m.count )
           {}
 
           /**
            * @return constant pointer to current element's value
            */
+          OZ_ALWAYS_INLINE
           operator const Value* () const
           {
             return &B::elem->value;
@@ -152,6 +162,7 @@ namespace oz
           /**
            * @return pointer to current element's value
            */
+          OZ_ALWAYS_INLINE
           operator Value* ()
           {
             return &B::elem->value;
@@ -160,6 +171,7 @@ namespace oz
           /**
            * @return constant reference to current element's value
            */
+          OZ_ALWAYS_INLINE
           const Value& operator * () const
           {
             return B::elem->value;
@@ -168,6 +180,7 @@ namespace oz
           /**
            * @return reference to current element's value
            */
+          OZ_ALWAYS_INLINE
           Value& operator * ()
           {
             return B::elem->value;
@@ -176,6 +189,7 @@ namespace oz
           /**
            * @return constant access to value's member
            */
+          OZ_ALWAYS_INLINE
           const Value* operator -> () const
           {
             return &B::elem->value;
@@ -184,6 +198,7 @@ namespace oz
           /**
            * @return non-constant access to value's member
            */
+          OZ_ALWAYS_INLINE
           Value* operator -> ()
           {
             return &B::elem->value;
@@ -192,6 +207,7 @@ namespace oz
           /**
            * @return constant reference to current element's key
            */
+          OZ_ALWAYS_INLINE
           const Key& key() const
           {
             return B::elem->key;
@@ -200,6 +216,7 @@ namespace oz
           /**
            * @return constant reference to current element's value
            */
+          OZ_ALWAYS_INLINE
           const Value& value() const
           {
             return B::elem->value;
@@ -208,6 +225,7 @@ namespace oz
           /**
            * @return reference to current element's value
            */
+          OZ_ALWAYS_INLINE
           Value& value()
           {
             return B::elem->value;

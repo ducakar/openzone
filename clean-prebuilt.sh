@@ -1,8 +1,8 @@
 #!/bin/sh
 
-rm -f share/openzone/ui/*.{ozcCur,ozcTex}
-rm -f share/openzone/terra/*.{ozTerra,ozcTerra}
-rm -f share/openzone/sky/*.ozcSky
-rm -f share/openzone/bsp/*.{ozBSP,ozcBSP}
-rm -f share/openzone/bsp/tex/*.ozcTex
-rm -f share/openzone/mdl/*.{ozcSMM,ozcMD2}
+rm -f share/openzone/data/ui/*.{ozcCur,ozcTex}
+rm -f share/openzone/data/terra/*.{ozTerra,ozcTerra}
+rm -f share/openzone/data/sky/*.ozcSky
+rm -f share/openzone/data/bsp/*.{ozBSP,ozcBSP}
+rm -f share/openzone/data/bsp/tex/*.ozcTex
+rm -f share/openzone/data/mdl/*.{ozcSMM,ozcMD2}

@@ -2,7 +2,7 @@
  *  SVector.hpp
  *
  *  Static-size vector
- *  Type should be a POD type as C++0x is not yet fully supported by GCC.
+ *  Type should be have the default Type() constructor and default ~Type() destructor.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -45,9 +45,7 @@ namespace oz
            * @param v
            */
           OZ_ALWAYS_INLINE
-          explicit CIterator( const SVector& v ) :
-              B( reinterpret_cast<const Type*>( v.cdata ),
-                 reinterpret_cast<const Type*>( v.cdata ) + v.count )
+          explicit CIterator( const SVector& v ) : B( v.data, v.data + v.count )
           {}
 
       };
@@ -75,9 +73,7 @@ namespace oz
            * @param v
            */
           OZ_ALWAYS_INLINE
-          explicit Iterator( SVector& v ) :
-              B( reinterpret_cast<Type*>( v.cdata ),
-                 reinterpret_cast<const Type*>( v.cdata ) + v.count )
+          explicit Iterator( SVector& v ) : B( v.data, v.data + v.count )
           {}
 
       };
@@ -85,7 +81,11 @@ namespace oz
     private:
 
       // data array
-      char cdata[ SIZE * sizeof( Type ) ];
+      union
+      {
+        char cdata[ SIZE * sizeof( Type ) ];
+        Type data[SIZE];
+      };
       // Number of elements in vector
       int  count;
 
@@ -103,9 +103,7 @@ namespace oz
        */
       SVector( const SVector& v ) : count( v.count )
       {
-        aConstruct( reinterpret_cast<Type*>( cdata ),
-                    reinterpret_cast<const Type*>( v.cdata ),
-                    v.count );
+        aConstruct( data, v.data, v.count );
       }
 
       /**
@@ -113,7 +111,7 @@ namespace oz
        */
       ~SVector()
       {
-        aDestruct( reinterpret_cast<const Type*>( cdata ), count );
+        aDestruct( data, count );
       }
 
       /**
@@ -125,9 +123,7 @@ namespace oz
       {
         hard_assert( &v != this );
 
-        aCopy( reinterpret_cast<Type*>( cdata ),
-               reinterpret_cast<const Type*>( v.cdata ),
-               v.count );
+        aCopy( data, v.data, v.count );
         count = v.count;
         return *this;
       }
@@ -139,9 +135,7 @@ namespace oz
        */
       bool operator == ( const SVector& v ) const
       {
-        return count == v.count && aEquals( reinterpret_cast<const Type*>( cdata ),
-                                            reinterpret_cast<const Type*>( v.cdata ),
-                                            count );
+        return count == v.count && aEquals( data, v.data, count );
       }
 
       /**
@@ -151,9 +145,7 @@ namespace oz
        */
       bool operator != ( const SVector& v ) const
       {
-        return count != v.count || !aEquals( reinterpret_cast<const Type*>( cdata ),
-                                             reinterpret_cast<const Type*>( v.cdata ),
-                                             count );
+        return count != v.count || !aEquals( data, v.data, count );
       }
 
       /**
@@ -176,24 +168,24 @@ namespace oz
 
       /**
        * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
-       * overflows if you don't check the size of <code>cdata</code> array.
+       * overflows if you don't check the size of <code>data</code> array.
        * @return constant pointer to data array
        */
       OZ_ALWAYS_INLINE
       operator const Type* () const
       {
-        return reinterpret_cast<const Type*>( cdata );
+        return data;
       }
 
       /**
-       * Get pointer to <code>cdata</code> array. Use with caution, since you can easily make buffer
+       * Get pointer to <code>data</code> array. Use with caution, since you can easily make buffer
        * overflows if you don't check the size of <code>data</code> array.
        * @return non-constant pointer to data array
        */
       OZ_ALWAYS_INLINE
       operator Type* ()
       {
-        return reinterpret_cast<Type*>( cdata );
+        return data;
       }
 
       /**
@@ -229,7 +221,7 @@ namespace oz
        */
       bool contains( const Type& e ) const
       {
-        return aContains( reinterpret_cast<const Type*>( cdata ), e, count );
+        return aContains( data, e, count );
       }
 
       /**
@@ -241,7 +233,7 @@ namespace oz
       {
         hard_assert( uint( i ) < uint( count ) );
 
-        return reinterpret_cast<const Type*>( cdata )[i];
+        return data[i];
       }
 
       /**
@@ -253,7 +245,7 @@ namespace oz
       {
         hard_assert( uint( i ) < uint( count ) );
 
-        return reinterpret_cast<Type*>( cdata )[i];
+        return data[i];
       }
 
       /**
@@ -264,7 +256,7 @@ namespace oz
       {
         hard_assert( count != 0 );
 
-        return reinterpret_cast<const Type*>( cdata )[0];
+        return data[0];
       }
 
       /**
@@ -275,7 +267,7 @@ namespace oz
       {
         hard_assert( count != 0 );
 
-        return reinterpret_cast<Type*>( cdata )[0];
+        return data[0];
       }
 
       /**
@@ -286,7 +278,7 @@ namespace oz
       {
         hard_assert( count != 0 );
 
-        return reinterpret_cast<const Type*>( cdata )[count - 1];
+        return data[count - 1];
       }
 
       /**
@@ -297,7 +289,7 @@ namespace oz
       {
         hard_assert( count != 0 );
 
-        return reinterpret_cast<Type*>( cdata )[count - 1];
+        return data[count - 1];
       }
 
       /**
@@ -307,7 +299,7 @@ namespace oz
        */
       int index( const Type& e ) const
       {
-        return aIndex( reinterpret_cast<const Type*>( cdata ), e, count );
+        return aIndex( data, e, count );
       }
 
       /**
@@ -317,7 +309,7 @@ namespace oz
        */
       int lastIndex( const Type& e ) const
       {
-        return aLastIndex( reinterpret_cast<const Type*>( cdata ), e, count );
+        return aLastIndex( data, e, count );
       }
 
       /**
@@ -327,7 +319,7 @@ namespace oz
       {
         hard_assert( count < SIZE );
 
-        new( reinterpret_cast<Type*>( cdata ) + count ) Type;
+        new( data + count ) Type;
         ++count;
       }
 
@@ -339,7 +331,7 @@ namespace oz
       {
         hard_assert( count < SIZE );
 
-        new( reinterpret_cast<Type*>( cdata ) + count ) Type( e );
+        new( data + count ) Type( e );
         ++count;
       }
 
@@ -355,9 +347,7 @@ namespace oz
         hard_assert( SIZE >= newCount );
 
         for( int i = 0; i < arrayCount; ++i ) {
-          aConstruct( reinterpret_cast<Type*>( cdata ) + count,
-                      reinterpret_cast<const Type*>( array ),
-                      arrayCount );
+          aConstruct( data + count, array, arrayCount );
         }
         count = newCount;
       }
@@ -370,12 +360,12 @@ namespace oz
        */
       int include( const Type& e )
       {
-        int i = aIndex( reinterpret_cast<const Type*>( cdata ), e, count );
+        int i = aIndex( data, e, count );
 
         if( i == -1 ) {
           hard_assert( count < SIZE );
 
-          new( reinterpret_cast<Type*>( cdata ) + count ) Type( e );
+          new( data + count ) Type( e );
           i = count;
           ++count;
         }
@@ -394,15 +384,12 @@ namespace oz
         hard_assert( count < SIZE );
 
         if( i == count ) {
-          new( reinterpret_cast<Type*>( cdata ) + count ) Type( e );
+          new( data + count ) Type( e );
         }
         else {
-          new( reinterpret_cast<Type*>( cdata ) + count )
-              Type( reinterpret_cast<const Type*>( cdata )[count - 1] );
-          aReverseCopy( reinterpret_cast<Type*>( cdata ) + i + 1,
-                        reinterpret_cast<const Type*>( cdata ) + i,
-                        count - i - 1 );
-          reinterpret_cast<Type*>( cdata )[i] = e;
+          new( data + count ) Type( data[count - 1] );
+          aReverseCopy( data + i + 1, data + i, count - i - 1 );
+          data[i] = e;
         }
         ++count;
       }
@@ -415,7 +402,7 @@ namespace oz
         hard_assert( count != 0 );
 
         --count;
-        reinterpret_cast<const Type*>( cdata )[count].~Type();
+        data[count].~Type();
         return *this;
       }
 
@@ -428,10 +415,8 @@ namespace oz
         hard_assert( uint( i ) < uint( count ) );
 
         --count;
-        aCopy( reinterpret_cast<Type*>( cdata ) + i,
-               reinterpret_cast<const Type*>( cdata ) + i + 1,
-               count - i );
-        reinterpret_cast<const Type*>( cdata )[count].~Type();
+        aCopy( data + i, data + i + 1, count - i );
+        data[count].~Type();
       }
 
       /**
@@ -445,9 +430,9 @@ namespace oz
 
         --count;
         if( i != count ) {
-          reinterpret_cast<Type*>( cdata )[i] = reinterpret_cast<const Type*>( cdata )[count];
+          data[i] = data[count];
         }
-        reinterpret_cast<const Type*>( cdata )[count].~Type();
+        data[count].~Type();
       }
 
       /**
@@ -457,14 +442,12 @@ namespace oz
        */
       int exclude( const Type& e )
       {
-        int i = aIndex( reinterpret_cast<const Type*>( cdata ), e, count );
+        int i = aIndex( data, e, count );
 
         if( i != -1 ) {
           --count;
-          aCopy( reinterpret_cast<Type*>( cdata ) + i,
-                 reinterpret_cast<const Type*>( cdata ) + i + 1,
-                 count - i );
-          reinterpret_cast<const Type*>( cdata )[count].~Type();
+          aCopy( data + i, data + i + 1, count - i );
+          data[count].~Type();
         }
         return i;
       }
@@ -477,14 +460,14 @@ namespace oz
        */
       int excludeUO( const Type& e )
       {
-        int i = aIndex( reinterpret_cast<const Type*>( cdata ), e, count );
+        int i = aIndex( data, e, count );
 
         if( i != -1 ) {
           --count;
           if( i != count ) {
-            reinterpret_cast<Type*>( cdata )[i] = reinterpret_cast<const Type*>( cdata )[count];
+            data[i] = data[count];
           }
-          reinterpret_cast<const Type*>( cdata )[count].~Type();
+          data[count].~Type();
         }
         return i;
       }
@@ -498,16 +481,13 @@ namespace oz
         hard_assert( count < SIZE );
 
         if( count == 0 ) {
-          new( reinterpret_cast<Type*>( cdata ) + 0 ) Type( e );
+          new( data + 0 ) Type( e );
           ++count;
         }
         else {
-          new( reinterpret_cast<Type*>( cdata ) + count )
-              Type( reinterpret_cast<const Type*>( cdata )[count - 1] );
-          aReverseCopy( reinterpret_cast<Type*>( cdata ) + 1,
-                        reinterpret_cast<const Type*>( cdata ),
-                        count - 1 );
-          reinterpret_cast<const Type*>( cdata )[0] = e;
+          new( data + count ) Type( data[count - 1] );
+          aReverseCopy( data + 1, data, count - 1 );
+          data[0] = e;
           ++count;
         }
       }
@@ -520,7 +500,7 @@ namespace oz
       {
         hard_assert( count < SIZE );
 
-        new( reinterpret_cast<Type*>( cdata ) + count ) Type( e );
+        new( data + count ) Type( e );
         ++count;
       }
 
@@ -530,13 +510,11 @@ namespace oz
        */
       Type popFirst()
       {
-        Type e = reinterpret_cast<const Type*>( cdata )[0];
+        Type e = data[0];
 
         --count;
-        aCopy( reinterpret_cast<const Type*>( cdata ),
-               reinterpret_cast<const Type*>( cdata ) + 1,
-               count );
-        reinterpret_cast<const Type*>( cdata )[count].~Type();
+        aCopy( data, data + 1, count );
+        data[count].~Type();
 
         return e;
       }
@@ -550,8 +528,8 @@ namespace oz
         hard_assert( count != 0 );
 
         --count;
-        Type e = reinterpret_cast<const Type*>( cdata )[count];
-        reinterpret_cast<const Type*>( cdata )[count].~Type();
+        Type e = data[count];
+        data[count].~Type();
 
         return e;
       }
@@ -561,7 +539,7 @@ namespace oz
        */
       void sort()
       {
-        aSort( reinterpret_cast<Type*>( cdata ), count );
+        aSort( data, count );
       }
 
       /**
@@ -569,7 +547,7 @@ namespace oz
        */
       void clear()
       {
-        aDestruct( reinterpret_cast<const Type*>( cdata ), count );
+        aDestruct( data, count );
         count = 0;
       }
 
@@ -579,7 +557,7 @@ namespace oz
        */
       void free()
       {
-        aFree( reinterpret_cast<Type*>( cdata ), count );
+        aFree( data, count );
         clear();
       }
 

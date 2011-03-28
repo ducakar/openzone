@@ -217,6 +217,7 @@ namespace oz
     clazz->hoverHeight            = config->get( "hoverHeight", 2.0f );
     clazz->hoverHeightStiffness   = config->get( "hoverHeightStiffness", 40.0f );
     clazz->hoverMomentumStiffness = config->get( "hoverMomentumStiffness", 160.0f );
+    clazz->hoverJumpFactor        = config->get( "hoverJumpFactor", 4.0f );
 
     fillCommon( clazz, config );
     clazz->flags |= BASE_FLAGS;

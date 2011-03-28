@@ -37,6 +37,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator() : B( null, null )
           {}
 
@@ -44,6 +45,7 @@ namespace oz
            * Make iterator for given vector. After creation it points to first element.
            * @param v
            */
+          OZ_ALWAYS_INLINE
           explicit CIterator( const Vector& v ) : B( v.data, v.data + v.count )
           {}
 
@@ -63,6 +65,7 @@ namespace oz
           /**
            * Default constructor returns an invalid iterator
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator() : B( null, null )
           {}
 
@@ -70,6 +73,7 @@ namespace oz
            * Make iterator for given vector. After creation it points to first element.
            * @param v
            */
+          OZ_ALWAYS_INLINE
           explicit Iterator( const Vector& v ) : B( v.data, v.data + v.count )
           {}
 

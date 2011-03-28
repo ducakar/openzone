@@ -22,8 +22,7 @@ namespace oz
       static const Quat ID;
 
       OZ_ALWAYS_INLINE
-      explicit Quat()
-      {}
+      explicit Quat() = default;
 
       OZ_ALWAYS_INLINE
       explicit Quat( float x, float y, float z, float w ) : Vec4( x, y, z, w )
