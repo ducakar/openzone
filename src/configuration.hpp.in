@@ -18,6 +18,9 @@
 // default data directory
 #define OZ_DEFAULT_DATA_DIR     "@OZ_DEFAULT_DATA_DIR@"
 
+// enable cylinder collision model
+#cmakedefine                    OZ_ENABLE_CYLINDER
+
 // enable/disable networking
 #cmakedefine                    OZ_NETWORKING
 

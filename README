@@ -120,11 +120,22 @@ openzone [OPTIONS]
 
 Notes
 -----
-- Make sure you have the *LATEST* display drivers.
 - On first run ~/.openzone/client.rc configuration file with default settings is generated.
   Edit it to change any settings you wish.
 - "~" means $HOME on Linux (i.e. /home/username) and $USERPROFILE on Windows (i.e.
   C:\Documents and Settings\username on Windows XP or C:\Users\username on Windows Vista)
+
+Troubleshooting
+---------------
+- Make sure you have the *LATEST* display drivers.
+- You need at least OpenGL 2.1 compatible graphic card & driver that additionally supports the
+  following features:
+  - vertex array object (GL_ARB_vertex_array_object),
+  - framebuffer object (GL_ARB_framebuffer_object),
+  - float textures (GL_ARB_texture_float),
+  - S3 DXT1 and DXT5 texture compression (GL_EXT_texture_compression_s3tc) and
+  - GLSL 1.30 shading language.
+  A card with a complete DirectX 9.0c support should do.
 
 Dependencies
 ------------

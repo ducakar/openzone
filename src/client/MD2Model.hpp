@@ -33,7 +33,7 @@ namespace client
 
     protected:
 
-      explicit MD2Model()
+      MD2Model()
       {
         flags |= Model::MD2MODEL_BIT;
       }

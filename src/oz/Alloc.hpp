@@ -35,7 +35,7 @@ namespace oz
       OZ_WEAK_SYMBOL
       static bool isLocked;
 
-      explicit Alloc() = delete;
+      Alloc() = delete;
 
       /**
        * Allocate memory without constructing the elements. Memory has to be freed via

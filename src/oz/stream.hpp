@@ -19,6 +19,8 @@ namespace oz
 
   struct Endian
   {
+    Endian() = delete;
+
     OZ_ALWAYS_INLINE
     static ushort shuffle16( ushort s )
     {

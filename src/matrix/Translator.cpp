@@ -167,14 +167,14 @@ namespace oz
     Directory dir;
     Config classConfig;
 
-    log.println( "textures (*.png, *.jpeg, *.jpg in 'bsp/tex') {" );
+    log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/oz') {" );
     log.indent();
 
-    dir.open( "bsp/tex" );
+    dir.open( "data/textures/oz" );
     if( !dir.isOpened() ) {
       free();
 
-      log.println( "Cannot open directory 'bsp/tex'" );
+      log.println( "Cannot open directory 'data/textures/oz'" );
       log.unindent();
       log.println( "}" );
 
@@ -188,7 +188,7 @@ namespace oz
       }
 
       String name = ent.baseName();
-      String path = String( "bsp/tex/" ) + ent;
+      String path = String( "data/textures/oz/" ) + ent;
 
       if( textureIndices.contains( name ) ) {
         throw Exception( "Duplicated texture '" + name + "' ['" + path + "']" );
@@ -293,14 +293,14 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "BSP structures (*.rc in 'bsp') {" );
+    log.println( "BSP structures (*.rc in 'data/maps') {" );
     log.indent();
 
-    dir.open( "bsp" );
+    dir.open( "data/maps" );
     if( !dir.isOpened() ) {
       free();
 
-      log.println( "Cannot open directory 'bsp'" );
+      log.println( "Cannot open directory 'data/maps'" );
       log.unindent();
       log.println( "}" );
       throw Exception( "Translator initialisation failure" );
@@ -311,7 +311,7 @@ namespace oz
       }
 
       String name = ent.baseName();
-      String path = String( "bsp/" ) + ent;
+      String path = String( "data/maps/" ) + ent;
 
       bspIndices.add( name, bsps.length() );
       bsps.add( Resource( name, path ) );
@@ -428,6 +428,34 @@ namespace oz
       String path = String( "name/" ) + ent;
 
       names.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "music (*.ogg in 'music') {" );
+    log.indent();
+
+    dir.open( "music" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'music'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "ogg" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "music/" ) + ent;
+
+      musics.add( Resource( name, path ) );
 
       log.println( "%s", name.cstr() );
     }
@@ -781,6 +809,34 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
+    log.println( "music (*.ogg in 'music') {" );
+    log.indent();
+
+    dir.open( "music" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'music'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "ogg" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "music/" ) + ent;
+
+      musics.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
     log.println( "object classes (*.rc in 'class') {" );
     log.indent();
 
@@ -870,6 +926,8 @@ namespace oz
 
     names.clear();
     names.dealloc();
+    musics.clear();
+    musics.dealloc();
 
     baseClasses.clear();
     baseClasses.dealloc();

@@ -65,7 +65,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit CIterator() : B( null )
+          CIterator() : B( null )
           {}
 
           /**
@@ -169,7 +169,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit Iterator() : B( null )
+          Iterator() : B( null )
           {}
 
           /**
@@ -365,7 +365,7 @@ namespace oz
       /**
        * Constructor.
        */
-      explicit HashIndex() : count( 0 )
+      HashIndex() : count( 0 )
       {
         for( int i = 0; i < SIZE; ++i ) {
           data[i] = null;
@@ -384,15 +384,6 @@ namespace oz
       }
 
       /**
-       * Destructor.
-       */
-      ~HashIndex()
-      {
-        clear();
-        dealloc();
-      }
-
-      /**
        * Copy operator.
        * @param t
        * @return
@@ -408,6 +399,15 @@ namespace oz
         count = t.count;
 
         return *this;
+      }
+
+      /**
+       * Destructor.
+       */
+      ~HashIndex()
+      {
+        clear();
+        dealloc();
       }
 
       /**

@@ -52,7 +52,7 @@ namespace oz
 
       List<Object::Event>::Iterator event;
 
-      explicit Lua();
+      Lua();
 
       void call( const char* functionName, Object* self_, Bot* user_ = null )
       {
@@ -138,6 +138,7 @@ namespace oz
       static LuaAPI ozEventBindNext;
       static LuaAPI ozEventGet;
 
+      static LuaAPI ozDynBindParent;
       static LuaAPI ozDynGetVelocity;
       static LuaAPI ozDynSetVelocity;
       static LuaAPI ozDynAddVelocity;

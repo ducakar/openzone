@@ -29,7 +29,7 @@ namespace oz
        * Initialises Log with default parameters to init() (look declaration).
        * @return
        */
-      explicit Log();
+      Log();
 
       /**
        * Destructor closes the stream.

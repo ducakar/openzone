@@ -34,7 +34,7 @@ namespace ui
 
     public:
 
-      explicit BuildMenu();
+      BuildMenu();
 
   };
 

@@ -36,8 +36,7 @@ namespace oz
   {
     private:
 
-      static const float LOCAL_EPS;
-      static const Vec3  normals[];
+      static const Vec3 normals[];
 
       Span   span;
       Bounds trace;
@@ -98,13 +97,13 @@ namespace oz
       /**
        * Collision feedback data
        */
-      Hit  hit;
+      Hit hit;
       /**
        * Collision bitmask for Object::flags
        */
-      int  mask;
+      int mask;
 
-      explicit Collider();
+      Collider();
 
       bool overlaps( const Point3& point, const Object* exclObj = null );
       // test for object collisions only (no structures or terrain)

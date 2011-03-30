@@ -17,11 +17,7 @@
 
 using namespace oz;
 
-#ifdef OZ_MINGW
-bool Alloc::isLocked = false;
-#else
 bool Alloc::isLocked = true;
-#endif
 
 int main( int argc, char** argv )
 {
@@ -40,12 +36,12 @@ int main( int argc, char** argv )
     exitCode = client::client.main( &argc, argv );
   }
   catch( const Exception& e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.printException( e );
-    oz::log.println();
+    log.resetIndent();
+    log.println();
+    log.printException( e );
+    log.println();
 
-    if( oz::log.isFile() ) {
+    if( log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
       fprintf( stderr, "  in %s\n\n", e.function );
       fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
@@ -54,13 +50,13 @@ int main( int argc, char** argv )
     exitCode = -1;
   }
   catch( const std::exception& e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println();
-    oz::log.println( "EXCEPTION: %s", e.what() );
-    oz::log.println();
+    log.resetIndent();
+    log.println();
+    log.println();
+    log.println( "EXCEPTION: %s", e.what() );
+    log.println();
 
-    if( oz::log.isFile() ) {
+    if( log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
 
@@ -69,9 +65,7 @@ int main( int argc, char** argv )
 
   client::client.shutdown();
 
-#ifndef OZ_MINGW
   Alloc::isLocked = true;
-#endif
   Alloc::printLeaks();
   return exitCode;
 }

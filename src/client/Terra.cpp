@@ -238,7 +238,7 @@ namespace client
     submergedLandShaderId = translator.shaderIndex( "submergedTerraLand" );
     submergedWaterShaderId = translator.shaderIndex( "submergedTerraWater" );
 
-    float scales[2] = { float( oz::Terra::QUADS ), 1.0f };
+    float scales[2] = { 2.0f * float( oz::Terra::QUADS ), 1.0f };
 
     shader.use( landShaderId );
     glUniform1fv( param.oz_TextureScales, 2, scales );

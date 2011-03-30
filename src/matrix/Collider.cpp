@@ -16,8 +16,6 @@ namespace oz
 
   Collider collider;
 
-  const float Collider::LOCAL_EPS = 256.0f * Math::EPSILON;
-
   const Vec3 Collider::normals[] =
   {
     Vec3(  1.0f,  0.0f,  0.0f ),
@@ -45,6 +43,7 @@ namespace oz
   // checks if AABB and Object overlap
   bool Collider::overlapsAABBObj( const Object* sObj ) const
   {
+#ifdef OZ_ENABLE_CYLINDER
     if( flags & sObj->flags & Object::CYLINDER_BIT ) {
       Vec3  relPos  = aabb.p - sObj->p;
       float sumDimX = aabb.dim.x + sObj->dim.x;
@@ -56,9 +55,8 @@ namespace oz
           relPos.z <= +sumDimZ + EPSILON &&
           relPos.z >= -sumDimZ - EPSILON;
     }
-    else {
-      return sObj->overlaps( aabb, EPSILON );
-    }
+#endif
+    return sObj->overlaps( aabb, EPSILON );
   }
 
   // checks if AABB and Brush overlap
@@ -299,10 +297,10 @@ namespace oz
       float endDist   = orbis.maxs[i] + endPos[i]   * normal[i] - aabb.dim[i];
 
       if( endDist <= EPSILON && endDist <= startDist ) {
-        float ratio = max( startDist - EPSILON, 0.0f ) / ( startDist - endDist + EPSILON );
+        float ratio = startDist / max( startDist - endDist, Math::EPSILON );
 
         if( ratio < hit.ratio ) {
-          hit.ratio    = ratio;
+          hit.ratio    = max( 0.0f, ratio );
           hit.normal   = normal;
           hit.obj      = null;
           hit.str      = null;
@@ -326,19 +324,20 @@ namespace oz
 
     int   firstPlane  = 0;
 
+#ifdef OZ_ENABLE_CYLINDER
     if( flags & sObj->flags & Object::CYLINDER_BIT ) {
       firstPlane = 2;
 
-      float px           = relStartPos.x;
-      float py           = relStartPos.y;
-      float rx           = relEndPos.x;
-      float ry           = relEndPos.y;
-      float sx           = move.x;
-      float sy           = move.y;
-      float startDist2   = px*px + py*py;
-      float endDist2     = rx*rx + ry*ry;
-      float radius2      = sumDim.x*sumDim.x;
-      float radiusEps2   = ( sumDim.x + EPSILON ) * ( sumDim.x + EPSILON );
+      float px         = relStartPos.x;
+      float py         = relStartPos.y;
+      float rx         = relEndPos.x;
+      float ry         = relEndPos.y;
+      float sx         = move.x;
+      float sy         = move.y;
+      float startDist2 = px*px + py*py;
+      float endDist2   = rx*rx + ry*ry;
+      float radius2    = sumDim.x*sumDim.x;
+      float radiusEps2 = ( sumDim.x + EPSILON ) * ( sumDim.x + EPSILON );
 
       if( endDist2 > radiusEps2 ) {
         float moveDist2    = sx*sx + sy*sy;
@@ -350,7 +349,7 @@ namespace oz
           hard_assert( discriminant > 0.0f );
 
           float sqrtDiscr = Math::sqrt( discriminant );
-          float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
+          float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / max( moveDist2, Math::EPSILON );
 
           maxRatio = min( maxRatio, endRatio );
         }
@@ -359,7 +358,7 @@ namespace oz
         }
         else {
           float sqrtDiscr = Math::sqrt( discriminant );
-          float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
+          float endRatio  = ( -pxsx_pysy + sqrtDiscr ) / max( moveDist2, Math::EPSILON );
 
           if( endRatio <= 0.0f ) {
             return;
@@ -367,7 +366,7 @@ namespace oz
 
           maxRatio = min( maxRatio, endRatio );
 
-          float startRatio = ( -pxsx_pysy - sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
+          float startRatio = ( -pxsx_pysy - sqrtDiscr ) / max( moveDist2, Math::EPSILON );
 
           if( startRatio > minRatio ) {
             minRatio = startRatio;
@@ -381,7 +380,7 @@ namespace oz
         float pxsy_pysx    = px*sy - py*sx;
         float discriminant = radiusEps2 * moveDist2 - pxsy_pysx * pxsy_pysx;
         float sqrtDiscr    = Math::sqrt( max( discriminant, 0.0f ) );
-        float startRatio   = ( -pxsx_pysy - sqrtDiscr ) / ( moveDist2 + LOCAL_EPS );
+        float startRatio   = ( -pxsx_pysy - sqrtDiscr ) / max( moveDist2, Math::EPSILON );
 
         if( startRatio > minRatio ) {
           minRatio   = startRatio;
@@ -389,6 +388,7 @@ namespace oz
         }
       }
     }
+#endif
 
     for( int i = firstPlane; i < 3; ++i ) {
       float startDist, endDist;
@@ -405,7 +405,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + LOCAL_EPS );
+        float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
@@ -425,7 +425,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + LOCAL_EPS );
+        float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
@@ -467,7 +467,7 @@ namespace oz
         }
       }
       else if( startDist >= 0.0f && endDist <= startDist ) {
-        float ratio = ( startDist - EPSILON ) / ( startDist - endDist + LOCAL_EPS );
+        float ratio = ( startDist - EPSILON ) / max( startDist - endDist, Math::EPSILON );
 
         if( ratio > minRatio ) {
           minRatio   = ratio;

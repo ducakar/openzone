@@ -31,7 +31,7 @@ namespace oz
 
     public:
 
-      explicit System() = delete;
+      System() = delete;
 
       /**
        * Set signal handlers to catch critical signals, print information, stack trace and wait

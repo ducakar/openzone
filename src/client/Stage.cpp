@@ -1,5 +1,5 @@
 /*
- *  DebugFrame.hpp
+ *  Stage.hpp
  *
  *  [description]
  *
@@ -7,31 +7,17 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#pragma once
-
 #include "stable.hpp"
 
-#include "ui/Frame.hpp"
+#include "client/Stage.hpp"
 
 namespace oz
 {
 namespace client
 {
-namespace ui
-{
 
-  class DebugFrame : public Frame
-  {
-    protected:
+  Stage::~Stage()
+  {}
 
-      virtual void onDraw();
-
-    public:
-
-      DebugFrame();
-
-  };
-
-}
 }
 }

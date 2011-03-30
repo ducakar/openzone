@@ -30,7 +30,7 @@ namespace oz
   const float Bot::GRAB_MOM_MAX        = 1.0f;
   const float Bot::GRAB_MOM_MAX_SQ     = 1.0f;
   const float Bot::DEAD_BODY_LIFT      = 100.0f;
-  const float Bot::BODY_FADEOUT_FACTOR = 0.0005f;
+  const float Bot::BODY_FADEOUT_FACTOR = 0.0008f;
 
   Pool<Bot, 1024> Bot::pool;
 
@@ -38,6 +38,7 @@ namespace oz
   {
     // only play death sound when an alive bot is destroyed but not when a body is destroyed
     if( !( state & DEATH_BIT ) ) {
+      state |= DEATH_BIT;
       addEvent( EVENT_DEATH, 1.0f );
     }
     Object::onDestroy();
@@ -72,31 +73,44 @@ namespace oz
       weaponItem = -1;
     }
 
-    if( actions & ACTION_SUICIDE ) {
-      life = clazz->life / 2.0f - EPSILON;
-    }
-
     if( life <= clazz->life / 2.0f ) {
-      if( !( state & DEATH_BIT ) && life > 0.0f ) {
-        flags |= WIDE_CULL_BIT;
-        flags &= ~SOLID_BIT;
-        addEvent( EVENT_DEATH, 1.0f );
-        life = clazz->life / 2.0f - EPSILON;
-        anim = Anim::DEATH_FALLBACK;
-      }
-      state |= DEATH_BIT;
-    }
-    if( state & DEATH_BIT ) {
-      // if body gets destroyed during fade out, skip this, or Object::destroy() won't be called
       if( life > 0.0f ) {
-        life -= clazz->life * BODY_FADEOUT_FACTOR;
-        // we don't want Object::destroy() to be called when body dissolves (destroy() causes sounds
-        // and particles to fly around), that's why we remove the object
-        if( life <= 0.0f ) {
-          synapse.remove( this );
+        if( !( state & DEATH_BIT ) ) {
+          state |= DEATH_BIT;
+          flags |= WIDE_CULL_BIT;
+          flags &= ~SOLID_BIT;
+          life  = clazz->life / 2.0f - EPSILON;
+          anim  = Anim::Type( Anim::DEATH_FALLBACK + Math::randn( 3 ) );
+
+          addEvent( EVENT_DEATH, 1.0f );
+        }
+        else {
+          life -= clazz->life * BODY_FADEOUT_FACTOR;
+          // we don't want Object::destroy() to be called when body dissolves (destroy() causes
+          // sounds and particles to fly around), that's why we remove the object
+          if( life <= 0.0f ) {
+            synapse.remove( this );
+          }
         }
       }
       return;
+    }
+
+    if( actions & ~oldActions & ACTION_SUICIDE ) {
+      life = clazz->life / 2.0f - EPSILON;
+    }
+    else if( actions & ~oldActions & ACTION_INV_USE ) {
+      if( taggedItem != -1 && taggedItem < items.length() && items[taggedItem] != -1 ) {
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
+
+        hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+
+        synapse.use( this, item );
+        // the object may have removed itself after use
+        if( item->index == -1 ) {
+          items.remove( taggedItem );
+        }
+      }
     }
 
     h = Math::mod( h + Math::TAU, Math::TAU );
@@ -536,19 +550,6 @@ namespace oz
             grabHandle = dist;
             flags      &= ~ON_LADDER_BIT;
           }
-        }
-      }
-    }
-    else if( actions & ~oldActions & ACTION_INV_USE ) {
-      if( taggedItem != -1 && taggedItem < items.length() && items[taggedItem] != -1 ) {
-        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
-
-        hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
-
-        synapse.use( this, item );
-        // the object may have removed itself after use
-        if( item->index == -1 ) {
-          items.remove( taggedItem );
         }
       }
     }

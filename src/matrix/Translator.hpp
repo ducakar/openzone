@@ -79,6 +79,7 @@ namespace oz
       Vector<Resource> nirvanaScripts;
 
       Vector<Resource> names;
+      Vector<Resource> musics;
 
       HashString<const ObjectClass::InitFunc, 8> baseClasses;
       HashString<const ObjectClass*, 64> classes;

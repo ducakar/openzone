@@ -31,7 +31,7 @@ namespace ui
       return false;
     }
 
-    path = config.getSet( "ui.font.mono.file", "fonts/DejaVuSansMono.ttf" );
+    path = config.getSet( "ui.font.mono.file", "ui/font/DejaVuSansMono.ttf" );
 
     log.print( "Opening font '%s' %d px ...", path, MONO_HEIGHT );
 
@@ -43,7 +43,7 @@ namespace ui
 
     log.printEnd( " OK" );
 
-    path = config.getSet( "ui.font.sans.file", "fonts/DejaVuSans.ttf" );
+    path = config.getSet( "ui.font.sans.file", "ui/font/DejaVuSans.ttf" );
 
     log.print( "Opening font '%s' %d px ...", path, SANS_HEIGHT );
 
@@ -57,7 +57,7 @@ namespace ui
 
     log.printEnd( " OK" );
 
-    path = config.getSet( "ui.font.title.file", "fonts/DejaVuSans.ttf" );
+    path = config.getSet( "ui.font.title.file", "ui/font/DejaVuSans.ttf" );
 
     log.print( "Opening font '%s' %d px ...", path, TITLE_HEIGHT );
 

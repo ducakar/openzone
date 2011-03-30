@@ -38,7 +38,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit CIterator() : B( null, null )
+          CIterator() : B( null, null )
           {}
 
           /**
@@ -66,7 +66,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit Iterator() : B( null, null )
+          Iterator() : B( null, null )
           {}
 
           /**
@@ -132,15 +132,7 @@ namespace oz
       /**
        * Create empty vector with initial capacity 8.
        */
-      explicit Vector() : data( null ), size( 0 ), count( 0 )
-      {}
-
-      /**
-       * Create empty vector with given initial capacity.
-       * @param initSize
-       */
-      explicit Vector( int initSize ) : data( initSize == 0 ? null : Alloc::alloc<Type>( initSize ) ),
-          size( initSize ), count( 0 )
+      Vector() : data( null ), size( 0 ), count( 0 )
       {}
 
       /**
@@ -151,15 +143,6 @@ namespace oz
           size( v.size ), count( v.count )
       {
         aConstruct( data, v.data, v.count );
-      }
-
-      /**
-       * Destructor.
-       */
-      ~Vector()
-      {
-        aDestruct( data, count );
-        Alloc::dealloc( data );
       }
 
       /**
@@ -184,6 +167,24 @@ namespace oz
         count = v.count;
         return *this;
       }
+
+      /**
+       * Destructor.
+       */
+      ~Vector()
+      {
+        aDestruct( data, count );
+        Alloc::dealloc( data );
+      }
+
+      /**
+       * Create empty vector with given initial capacity.
+       * @param initSize
+       */
+      explicit Vector( int initSize ) :
+          data( initSize == 0 ? null : Alloc::alloc<Type>( initSize ) ),
+          size( initSize ), count( 0 )
+      {}
 
       /**
        * Equality operator. Capacity of vectors doesn't matter.

@@ -42,6 +42,22 @@ namespace ui
     }
   }
 
+  bool BuildMenu::onMouseEvent()
+  {
+    if( mouse.doShow ) {
+      return Frame::onMouseEvent();
+    }
+    return false;
+  }
+
+  void BuildMenu::onDraw()
+  {
+    if( mouse.doShow ) {
+      Frame::onDraw();
+      print( 50, -10, ALIGN_CENTRE, "Create" );
+    }
+  }
+
   BuildMenu::BuildMenu() : Frame( -228, -258, 220, 250 )
   {
     setFont( Font::TITLE );
@@ -63,22 +79,6 @@ namespace ui
     add( new Button( "droidCommander", createObject, 100, 15 ), 115, -135 );
     add( new Button( "raptor", createObject, 100, 15 ), 115, -155 );
     add( new Button( "tank", createObject, 100, 15 ), 115, -175 );
-  }
-
-  bool BuildMenu::onMouseEvent()
-  {
-    if( mouse.doShow ) {
-      return Frame::onMouseEvent();
-    }
-    return false;
-  }
-
-  void BuildMenu::onDraw()
-  {
-    if( mouse.doShow ) {
-      Frame::onDraw();
-      print( 50, -10, ALIGN_CENTRE, "Create" );
-    }
   }
 
 }

@@ -23,8 +23,7 @@ namespace oz
       Point3 mins;
       Point3 maxs;
 
-      OZ_ALWAYS_INLINE
-      explicit Bounds() = default;
+      Bounds() = default;
 
       OZ_ALWAYS_INLINE
       explicit Bounds( const Point3& mins_, const Point3& maxs_ ) : mins( mins_ ), maxs( maxs_ )

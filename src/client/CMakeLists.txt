@@ -62,6 +62,7 @@ add_library( client STATIC
   Sound.hpp
   SparkModel.cpp
   SparkModel.hpp
+  Stage.cpp
   Stage.hpp
   StrategicProxy.cpp
   StrategicProxy.hpp

@@ -40,7 +40,7 @@ namespace client
     float u;
     float v;
 
-    explicit TexCoord() = default;
+    TexCoord() = default;
 
     explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ )
     {}

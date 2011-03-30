@@ -66,7 +66,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit CIterator() : B( null, null )
+          CIterator() : B( null, null )
           {}
 
           /**
@@ -139,7 +139,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit Iterator() : B( null, null )
+          Iterator() : B( null, null )
           {}
 
           /**
@@ -262,17 +262,9 @@ namespace oz
     public:
 
       /**
-       * Create empty map with initial capacity 8.
+       * Create empty map.
        */
-      explicit Map() : data( null ), size( 0 ), count( 0 )
-      {}
-
-      /**
-       * Create empty map with given initial capacity.
-       * @param initSize
-       */
-      explicit Map( int initSize ) : data( initSize == 0 ? null : Alloc::alloc<Elem>( initSize ) ),
-          size( initSize ), count( 0 )
+      Map() : data( null ), size( 0 ), count( 0 )
       {}
 
       /**
@@ -283,15 +275,6 @@ namespace oz
           size( m.size ), count( m.count )
       {
         aConstruct( data, m.data, m.count );
-      }
-
-      /**
-       * Destructor.
-       */
-      ~Map()
-      {
-        aDestruct( data, count );
-        Alloc::dealloc( data );
       }
 
       /**
@@ -316,6 +299,23 @@ namespace oz
         count = m.count;
         return *this;
       }
+
+      /**
+       * Destructor.
+       */
+      ~Map()
+      {
+        aDestruct( data, count );
+        Alloc::dealloc( data );
+      }
+
+      /**
+       * Create empty map with given initial capacity.
+       * @param initSize
+       */
+      explicit Map( int initSize ) : data( initSize == 0 ? null : Alloc::alloc<Elem>( initSize ) ),
+          size( initSize ), count( 0 )
+      {}
 
       /**
        * Equality operator. Capacity of map doesn't matter.

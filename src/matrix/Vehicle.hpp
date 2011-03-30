@@ -91,7 +91,7 @@ namespace oz
 
       int   crew[CREW_MAX];
 
-      explicit Vehicle();
+      Vehicle();
 
       void service();
 

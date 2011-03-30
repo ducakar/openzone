@@ -33,6 +33,9 @@ namespace ui
 
   void UI::update()
   {
+    if( keyboard.keys[SDLK_TAB] & ~keyboard.oldKeys[SDLK_TAB] ) {
+      mouse.doShow = !mouse.doShow;
+    }
     if( mouse.doShow ) {
       root->passMouseEvents();
     }

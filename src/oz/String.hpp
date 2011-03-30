@@ -37,9 +37,45 @@ namespace oz
 
     public:
 
-      explicit String() : buffer( baseBuffer ), count( 0 )
+      String() : buffer( baseBuffer ), count( 0 )
       {
         buffer[0] = '\0';
+      }
+
+      String( const String& s ) : count( s.count )
+      {
+        hard_assert( &s != this );
+
+        ensureCapacity();
+        aCopy( buffer, s.buffer, count + 1 );
+
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+      }
+
+      String& operator = ( const String& s )
+      {
+        hard_assert( &s != this );
+
+        count = s.count;
+
+        if( buffer != baseBuffer ) {
+          delete[] buffer;
+        }
+        ensureCapacity();
+        aCopy( buffer, s.buffer, count + 1 );
+
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+
+        return *this;
+      }
+
+      ~String()
+      {
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+
+        if( buffer != baseBuffer ) {
+          delete[] buffer;
+        }
       }
 
       explicit String( const char* s, int count_ ) : count( count_ )
@@ -136,25 +172,6 @@ namespace oz
 
       explicit String( double d );
 
-      String( const String& s ) : count( s.count )
-      {
-        hard_assert( &s != this );
-
-        ensureCapacity();
-        aCopy( buffer, s.buffer, count + 1 );
-
-        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-      }
-
-      ~String()
-      {
-        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-
-        if( buffer != baseBuffer ) {
-          delete[] buffer;
-        }
-      }
-
       String& operator = ( const char* s )
       {
         hard_assert( s != buffer );
@@ -166,23 +183,6 @@ namespace oz
         }
         ensureCapacity();
         aCopy( buffer, s, count + 1 );
-
-        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-
-        return *this;
-      }
-
-      String& operator = ( const String& s )
-      {
-        hard_assert( &s != this );
-
-        count = s.count;
-
-        if( buffer != baseBuffer ) {
-          delete[] buffer;
-        }
-        ensureCapacity();
-        aCopy( buffer, s.buffer, count + 1 );
 
         hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
 

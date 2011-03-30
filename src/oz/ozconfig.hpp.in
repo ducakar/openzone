@@ -41,7 +41,6 @@
 // compiler-specific hacks
 #if __GNUC__ == 4 && __GNUC_MINOR__ == 5
 # define nullptr __null
-# define explicit
 #endif
 
 #ifdef __clang__

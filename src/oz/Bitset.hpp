@@ -37,26 +37,8 @@ namespace oz
       /**
        * Create a new bitset without allocating any space.
        */
-      explicit Bitset() : data( null ), size( 0 )
+      Bitset() : data( null ), size( 0 )
       {}
-
-      /**
-       * Allocate a new bitset that holds at least <code>nBits</code> bits. The size of
-       * <code>data</code> array is adjusted to least multiplier of unit size that can hold the
-       * requested number of bits.
-       * @param nBits the number of bits the bitset should hold
-       */
-      explicit Bitset( int nBits )
-      {
-        if( nBits == 0 ) {
-          data = null;
-          size = 0;
-        }
-        else {
-          size = ( nBits - 1 ) / ULONG_BITSIZE + 1;
-          data = new ulong[size];
-        }
-      }
 
       /**
        * Copy constructor.
@@ -65,14 +47,6 @@ namespace oz
       Bitset( const Bitset& b ) : data( b.size == 0 ? null : new ulong[b.size] ), size( b.size )
       {
         aCopy( data, b.data, b.size );
-      }
-
-      /**
-       * Destructor.
-       */
-      ~Bitset()
-      {
-        delete[] data;
       }
 
       /**
@@ -92,6 +66,32 @@ namespace oz
 
         aCopy( data, b.data, b.size );
         return *this;
+      }
+
+      /**
+       * Destructor.
+       */
+      ~Bitset()
+      {
+        delete[] data;
+      }
+
+      /**
+       * Allocate a new bitset that holds at least <code>nBits</code> bits. The size of
+       * <code>data</code> array is adjusted to least multiplier of unit size that can hold the
+       * requested number of bits.
+       * @param nBits the number of bits the bitset should hold
+       */
+      explicit Bitset( int nBits )
+      {
+        if( nBits == 0 ) {
+          data = null;
+          size = 0;
+        }
+        else {
+          size = ( nBits - 1 ) / ULONG_BITSIZE + 1;
+          data = new ulong[size];
+        }
       }
 
       /**

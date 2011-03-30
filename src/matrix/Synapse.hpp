@@ -55,7 +55,7 @@ namespace oz
       // ordered by server.
       bool isClient;
 
-      explicit Synapse();
+      Synapse();
 
       // interactions
       void use( Bot* user, Object* target );

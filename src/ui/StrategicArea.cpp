@@ -208,7 +208,8 @@ namespace ui
     shape.tag( minX, minY, maxX, maxY );
   }
 
-  StrategicArea::StrategicArea() : Area( camera.width, camera.height )
+  StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hadMouseEvent( false ),
+      hovered( null )
   {
     flags |= IGNORE_BIT | HIDDEN_BIT | UPDATE_FUNC_BIT;
     setFont( Font::SANS );
@@ -220,17 +221,10 @@ namespace ui
   StrategicArea::~StrategicArea()
   {}
 
-  void StrategicArea::onUpdate()
+  bool StrategicArea::onMouseEvent()
   {
-    if( camera.state != Camera::STRATEGIC ) {
-      show( false );
-      tagged.clear();
-      return;
-    }
-  }
+    hard_assert( camera.state == Camera::STRATEGIC );
 
-  void StrategicArea::onDraw()
-  {
     Vec3 at = Vec3( float( mouse.x - camera.centreX ) * pixelStep * 100.0f,
                     float( mouse.y - camera.centreY ) * pixelStep * 100.0f,
                     -100.0f );
@@ -242,16 +236,11 @@ namespace ui
     hovered = collider.hit.obj;
 
     if( hovered != null ) {
-      Span span = projectBounds( *hovered + ( Point3::ORIGIN - camera.p ) );
+      camera.setTagged( null );
 
-      if( span.maxX - span.minX >= 10 ) {
-        drawHoveredRect( span );
-        camera.setTagged( hovered );
-
-        if( ui::mouse.leftClick ) {
-          tagged.clear();
-          tagged.add( hovered->index );
-        }
+      if( ui::mouse.leftClick ) {
+        tagged.clear();
+        tagged.add( hovered->index );
       }
     }
     else {
@@ -262,25 +251,58 @@ namespace ui
       }
     }
 
+    hadMouseEvent = true;
+    return true;
+  }
+
+  void StrategicArea::onUpdate()
+  {
+    hard_assert( camera.state == Camera::STRATEGIC );
+
+    if( !hadMouseEvent ) {
+      hovered = null;
+    }
+    hadMouseEvent = false;
+
     for( int i = 0; i < tagged.length(); ) {
-      const Object* obj = orbis.objects[tagged[i]];
+      const Object* obj = orbis.objects[ tagged[i] ];
 
       if( obj == null ||
           ( ( obj->flags & Object::BOT_BIT ) && obj->life <= obj->clazz->life / 2.0f ) )
       {
         tagged.removeUO( i );
-        continue;
       }
+      else {
+        ++i;
+      }
+    }
+  }
 
-      AABB bb = *obj + ( Point3::ORIGIN - camera.p );
-      if( bb.p * camera.at >= TAG_CLIP_DIST ) {
-        Span span = projectBounds( bb );
+  void StrategicArea::onDraw()
+  {
+    hard_assert( camera.state == Camera::STRATEGIC );
 
-        if( span.maxX - span.minX >= 6 && span.maxY - span.minY >= 6 ) {
-          drawTaggedRect( obj, span );
+    if( hovered != null ) {
+      Span span = projectBounds( *hovered + ( Point3::ORIGIN - camera.p ) );
+
+      if( span.maxX - span.minX >= 10 ) {
+        drawHoveredRect( span );
+      }
+    }
+
+    foreach( objIndex, tagged.citer() ) {
+      const Object* obj = orbis.objects[*objIndex];
+
+      if( obj != null ) {
+        AABB bb = *obj + ( Point3::ORIGIN - camera.p );
+        if( bb.p * camera.at >= TAG_CLIP_DIST ) {
+          Span span = projectBounds( bb );
+
+          if( span.maxX - span.minX >= 6 && span.maxY - span.minY >= 6 ) {
+            drawTaggedRect( obj, span );
+          }
         }
       }
-      ++i;
     }
   }
 

@@ -25,6 +25,7 @@ namespace oz
   {
     System::trap();
     nFrames = System::getStackTrace( &frames );
+    System::abort( "%s", message.cstr() );
   }
 
   Exception::~Exception() throw()

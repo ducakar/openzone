@@ -116,7 +116,7 @@ namespace oz
       float       camZ;
       Anim::Type  anim;
 
-      explicit Bot();
+      Bot();
 
       void take( Dynamic* item );
       void enter( int vehicle );

@@ -107,6 +107,9 @@ function bomb_onUpdate( l )
 end
 
 function bomb_onDestroy( l )
+  if ozDynBindParent() then
+    ozObjDestroy()
+  end
   ozOrbisForceAddObj( "bigExplosion", ozObjGetPos() )
 end
 
@@ -188,7 +191,7 @@ function serviceStation_onUpdate( l )
     -- check for vehicles every second
     l.ticks = 50
 
-    ozSelfBindAllOverlaps( 4, 4, 4 )
+    ozSelfBindAllOverlaps( 6, 6, 2 )
     while ozObjBindNext() do
       if ozObjIsVehicle() then
         ozVehicleService()

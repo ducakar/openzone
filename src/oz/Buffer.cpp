@@ -20,25 +20,12 @@ namespace oz
   Buffer::Buffer() : data( null ), count( 0 )
   {}
 
-  Buffer::Buffer( int size ) : data( new char[size] ), count( size )
-  {}
-
-  Buffer::Buffer( const char* file ) : data( null ), count( 0 )
-  {
-    read( file );
-  }
-
   Buffer::Buffer( const Buffer& b ) : data( null ), count( b.count )
   {
     if( b.count != 0 ) {
       data = new char[b.count];
       aCopy( data, b.data, b.count );
     }
-  }
-
-  Buffer::~Buffer()
-  {
-    dealloc();
   }
 
   Buffer& Buffer::operator = ( const Buffer& b )
@@ -52,6 +39,19 @@ namespace oz
 
     aCopy( data, b.data, b.count );
     return *this;
+  }
+
+  Buffer::~Buffer()
+  {
+    dealloc();
+  }
+
+  Buffer::Buffer( int size ) : data( new char[size] ), count( size )
+  {}
+
+  Buffer::Buffer( const char* file ) : data( null ), count( 0 )
+  {
+    read( file );
   }
 
   void Buffer::alloc( int size )

@@ -54,12 +54,6 @@ namespace client
 
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-    if( bot->parent != -1 ) {
-      ui::mouse.doShow = false;
-    }
-    else if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
-      ui::mouse.doShow = !ui::mouse.doShow;
-    }
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
       bot->state &= ~Bot::PLAYER_BIT;
       camera.setBot( null );

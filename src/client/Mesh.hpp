@@ -83,7 +83,7 @@ namespace client
 
     public:
 
-      explicit Mesh();
+      Mesh();
       ~Mesh();
 
       void load( InputStream* stream, int usage );

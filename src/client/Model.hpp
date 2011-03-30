@@ -31,7 +31,7 @@ namespace client
 
     protected:
 
-      explicit Model() : obj( null ), flags( 0 ) {}
+      Model() : obj( null ), flags( 0 ) {}
 
     public:
 

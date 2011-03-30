@@ -53,7 +53,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit CIterator() : B( null, null )
+          CIterator() : B( null, null )
           {}
 
           /**
@@ -122,7 +122,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit Iterator() : B( null, null )
+          Iterator() : B( null, null )
           {}
 
           /**
@@ -244,20 +244,8 @@ namespace oz
       /**
        * Create empty sparse vector with initial capacity 8.
        */
-      explicit Sparse() : data( null ), size( 0 ), count( 0 ), freeSlot( 0 )
+      Sparse() : data( null ), size( 0 ), count( 0 ), freeSlot( 0 )
       {}
-
-      /**
-       * Create empty sparse vector with given initial capacity.
-       * @param initSize
-       */
-      explicit Sparse( int initSize ) : data( initSize == 0 ? null : new Elem[initSize] ),
-          size( initSize ), count( 0 ), freeSlot( 0 )
-      {
-        for( int i = 0; i < size; ++i ) {
-          data[i].nextSlot = i + 1;
-        }
-      }
 
       /**
        * Copy constructor.
@@ -267,14 +255,6 @@ namespace oz
           size( s.size ), count( s.count ), freeSlot( s.freeSlot )
       {
         aCopy( data, s.data, size );
-      }
-
-      /**
-       * Destructor.
-       */
-      ~Sparse()
-      {
-        delete[] data;
       }
 
       /**
@@ -298,6 +278,26 @@ namespace oz
         count = s.count;
         freeSlot = s.freeSlot;
         return *this;
+      }
+
+      /**
+       * Destructor.
+       */
+      ~Sparse()
+      {
+        delete[] data;
+      }
+
+      /**
+       * Create empty sparse vector with given initial capacity.
+       * @param initSize
+       */
+      explicit Sparse( int initSize ) : data( initSize == 0 ? null : new Elem[initSize] ),
+          size( initSize ), count( 0 ), freeSlot( 0 )
+      {
+        for( int i = 0; i < size; ++i ) {
+          data[i].nextSlot = i + 1;
+        }
       }
 
       /**
