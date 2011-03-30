@@ -96,7 +96,7 @@ namespace client
     }
 
     if( bot->state & Bot::DEATH_BIT ) {
-      shader.colour.w = min( bot->life * 3.0f / clazz->life, 1.0f );
+      shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
       if( shader.colour.w != 1.0f ) {
         glEnable( GL_BLEND );
       }

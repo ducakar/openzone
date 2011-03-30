@@ -204,7 +204,7 @@ namespace oz
       void check( bool isOptimised ) const;
       bool save( const char* fileName );
 
-      explicit QBSP();
+      QBSP();
 
     public:
 

@@ -29,36 +29,46 @@
 #include <SDL_main.h>
 
 using namespace oz;
-using oz::uint;
 
 bool Alloc::isLocked = true;
 
 static void prebuildTextures( const char* srcDir, const char* destDir,
                               bool wrap, int magFilter, int minFilter )
 {
-  oz::log.println( "Prebuilding textures in '%s' {", srcDir );
-  oz::log.indent();
+  log.println( "Prebuilding textures in '%s' {", srcDir );
+  log.indent();
 
-  String dirName = srcDir;
-  Directory dir( srcDir );
+  String sSrcDir = srcDir;
+  String sDestDir = destDir;
+  Directory dir( sSrcDir );
 
   if( !dir.isOpened() ) {
-    throw Exception( "Cannot open directory '" + dirName + "'" );
+    throw Exception( "Cannot open directory '" + sSrcDir + "'" );
   }
 
-  dirName = dirName + "/";
+  sSrcDir  = sSrcDir + "/";
+  sDestDir = sDestDir + "/";
 
   foreach( ent, dir.citer() ) {
-    if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpg" )  ) {
+    if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpg" ) ) {
       continue;
     }
 
-    String name = ent.baseName();
-    String srcPath = dirName + ent;
-    String destPath = String( destDir ) + "/" + name + ".ozcTex";
+    String srcPath = sSrcDir + ent;
+    String destPath = sDestDir + ent.baseName() + ".ozcTex";
 
-    oz::log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
-    oz::log.indent();
+    struct stat srcInfo;
+    struct stat destInfo;
+
+    if( stat( srcPath, &srcInfo ) != 0 ) {
+      throw Exception( "Source texture '" + srcPath + "' stat error" );
+    }
+    if( stat( destPath, &destInfo ) == 0 && destInfo.st_mtime > srcInfo.st_mtime ) {
+      continue;
+    }
+
+    log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
+    log.indent();
 
     int nMipmaps;
     uint id = client::context.loadRawTexture( srcPath, &nMipmaps, wrap, magFilter, minFilter );
@@ -67,28 +77,28 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
 
     OutputStream os = buffer.outputStream();
 
-    oz::log.println( "Compiling into '%s'", destPath.cstr() );
+    log.println( "Compiling into '%s'", destPath.cstr() );
     client::context.writeTexture( id, nMipmaps, &os );
 
     if( !buffer.write( destPath, os.length() ) ) {
       throw Exception( "Texture writing failed" );
     }
 
-    oz::log.unindent();
-    oz::log.println( "}" );
+    log.unindent();
+    log.println( "}" );
   }
 
-  oz::log.unindent();
-  oz::log.println( "}" );
+  log.unindent();
+  log.println( "}" );
 }
 
-static void prebuildModels( const char* path )
+static void prebuildModels()
 {
-  oz::log.println( "Prebuilding models in '%s' {", path );
-  oz::log.indent();
+  log.println( "Prebuilding models {" );
+  log.indent();
 
-  String dirName = path;
-  Directory dir( path );
+  String dirName = "mdl";
+  Directory dir( dirName );
 
   if( !dir.isOpened() ) {
     throw Exception( "Cannot open directory '" + dirName + "'" );
@@ -97,40 +107,88 @@ static void prebuildModels( const char* path )
   dirName = dirName + "/";
 
   foreach( ent, dir.citer() ) {
-    struct stat statInfo;
+    struct stat srcInfo0;
+    struct stat srcInfo1;
+    struct stat configInfo;
+    struct stat destInfo;
 
     String path = dirName + ent;
-    String objPath = path + "/data.obj";
-    String md2Path = path + "/tris.md2";
 
-    if( stat( objPath, &statInfo ) == 0 ) {
+    if( stat( path + "/data.obj", &srcInfo0 ) == 0 ) {
+      if( stat( path + "/data.mtl", &srcInfo1 ) != 0 ||
+        stat( path + "/config.rc", &configInfo ) != 0 )
+      {
+        throw Exception( "OBJ model '" + ent.baseName() + "' source files missing" );
+      }
+      if( stat( dirName + ent.baseName() + ".ozcSMM", &destInfo ) == 0 &&
+          configInfo.st_mtime < destInfo.st_mtime &&
+          srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
+      {
+        continue;
+      }
+
       client::OBJ::prebuild( path );
     }
-    else if( stat( md2Path, &statInfo ) == 0 ) {
+    else if( stat( path + "/tris.md2", &srcInfo0 ) == 0 ) {
+      if( stat( path + "/skin.jpg", &srcInfo1 ) != 0 ||
+        stat( path + "/config.rc", &configInfo ) != 0 )
+      {
+        throw Exception( "MD2 model '" + ent.baseName() + "' source files missing" );
+      }
+      if( ( stat( dirName + ent.baseName() + ".ozcSMM", &destInfo ) == 0 ||
+            stat( dirName + ent.baseName() + ".ozcMD2", &destInfo ) == 0 ) &&
+          configInfo.st_mtime < destInfo.st_mtime &&
+          srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
+      {
+        continue;
+      }
+
       client::MD2::prebuild( path );
     }
   }
 
-  oz::log.unindent();
-  oz::log.println( "}" );
+  log.unindent();
+  log.println( "}" );
 }
 
-static void prebuildBSPs( const char* path )
+static void prebuildBSPs()
 {
-  oz::log.println( "Prebuilding BSPs in '%s' {", path );
-  oz::log.indent();
+  log.println( "Prebuilding BSPs {" );
+  log.indent();
 
-  String dirName = path;
-  Directory dir( path );
+  String srcDir = "data/maps";
+  String destDir = "bsp";
+  Directory dir( srcDir );
 
   if( !dir.isOpened() ) {
-    throw Exception( "Cannot open directory '" + dirName + "'" );
+    throw Exception( "Cannot open directory '" + srcDir + "'" );
   }
 
-  dirName = dirName + "/";
+  srcDir = srcDir + "/";
+  destDir = destDir + "/";
 
   foreach( ent, dir.citer() ) {
     if( !ent.hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    String srcPath0 = srcDir + ent;
+    String srcPath1 = srcDir + ent.baseName() + ".bsp";
+    String destPath0 = destDir + ent.baseName() + ".ozBSP";
+    String destPath1 = destDir + ent.baseName() + ".ozcBSP";
+
+    struct stat srcInfo0;
+    struct stat srcInfo1;
+    struct stat destInfo0;
+    struct stat destInfo1;
+
+    if( stat( srcPath0, &srcInfo0 ) != 0 || stat( srcPath1, &srcInfo1 ) != 0 ) {
+      throw Exception( "Source BSP stat error" );
+    }
+    if( stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
+        destInfo0.st_mtime > srcInfo0.st_mtime && destInfo0.st_mtime > srcInfo1.st_mtime &&
+        destInfo1.st_mtime >= destInfo0.st_mtime )
+    {
       continue;
     }
 
@@ -140,26 +198,43 @@ static void prebuildBSPs( const char* path )
     client::BSP::prebuild( name );
   }
 
-  oz::log.unindent();
-  oz::log.println( "}" );
+  log.unindent();
+  log.println( "}" );
 }
 
 static void prebuildTerras( const char* path )
 {
-  oz::log.println( "Prebuilding Terras in '%s' {", path );
-  oz::log.indent();
+  log.println( "Prebuilding Terras in '%s' {", path );
+  log.indent();
 
-  String dirName = path;
+  String srcDir = path;
   Directory dir( path );
 
   if( !dir.isOpened() ) {
-    throw Exception( "Cannot open directory '" + dirName + "'" );
+    throw Exception( "Cannot open directory '" + srcDir + "'" );
   }
 
-  dirName = dirName + "/";
+  srcDir = srcDir + "/";
 
   foreach( ent, dir.citer() ) {
     if( !ent.hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    String srcPath = srcDir + ent;
+    String destPath0 = srcDir + ent.baseName() + ".ozTerra";
+    String destPath1 = srcDir + ent.baseName() + ".ozcTerra";
+
+    struct stat srcInfo;
+    struct stat destInfo0;
+    struct stat destInfo1;
+
+    if( stat( srcPath, &srcInfo ) != 0 ) {
+      throw Exception( "Terra .rc stat error" );
+    }
+    if( stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
+        destInfo0.st_mtime > srcInfo.st_mtime && destInfo1.st_mtime >= destInfo0.st_mtime )
+    {
       continue;
     }
 
@@ -169,8 +244,8 @@ static void prebuildTerras( const char* path )
     client::terra.prebuild( name );
   }
 
-  oz::log.unindent();
-  oz::log.println( "}" );
+  log.unindent();
+  log.println( "}" );
 }
 
 int main( int argc, char** argv )
@@ -188,24 +263,24 @@ int main( int argc, char** argv )
 
   try {
     if( argc == 2 && String::equals( argv[1], "--help" ) ) {
-      oz::log.println( "Usage: %s [data_directory]", program_invocation_short_name );
-      oz::log.println();
+      log.println( "Usage: %s [data_directory]", program_invocation_short_name );
+      log.println();
       return -1;
     }
 
-    oz::log.printlnETD( OZ_APPLICATION_NAME " Prebuild started at" );
+    log.printlnETD( OZ_APPLICATION_NAME " Prebuild started at" );
 
     String dataDir = OZ_DEFAULT_DATA_DIR;
     if( argc >= 2 ) {
       dataDir = argv[1];
     }
 
-    oz::log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
+    log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
     if( chdir( dataDir ) != 0 ) {
-      oz::log.printEnd( " Failed" );
+      log.printEnd( " Failed" );
       return -1;
     }
-    oz::log.printEnd( " OK" );
+    log.printEnd( " OK" );
 
     SDL_Init( SDL_INIT_VIDEO );
 
@@ -225,28 +300,28 @@ int main( int argc, char** argv )
 
     client::ui::Mouse::prebuild();
 
-    prebuildTextures( "ui", "ui", true, GL_LINEAR, GL_LINEAR );
-    prebuildTextures( "textures/oz", "bsp/tex", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
+    prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
+    prebuildTextures( "data/textures/oz", "bsp/tex", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
 
     client::Sky::prebuild( "sky" );
     prebuildTerras( "terra" );
 
-    prebuildBSPs( "maps" );
-    prebuildModels( "mdl" );
+    prebuildBSPs();
+    prebuildModels();
 
     long endTime = SDL_GetTicks();
 
-    oz::log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
+    log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 
     SDL_Quit();
   }
   catch( const Exception& e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.printException( e );
-    oz::log.println();
+    log.resetIndent();
+    log.println();
+    log.printException( e );
+    log.println();
 
-    if( oz::log.isFile() ) {
+    if( log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n", e.what() );
       fprintf( stderr, "  in %s\n\n", e.function );
       fprintf( stderr, "  at %s:%d\n\n", e.file, e.line );
@@ -255,12 +330,12 @@ int main( int argc, char** argv )
     exitCode = -1;
   }
   catch( const std::exception& e ) {
-    oz::log.resetIndent();
-    oz::log.println();
-    oz::log.println( "EXCEPTION: %s", e.what() );
-    oz::log.println();
+    log.resetIndent();
+    log.println();
+    log.println( "EXCEPTION: %s", e.what() );
+    log.println();
 
-    if( oz::log.isFile() ) {
+    if( log.isFile() ) {
       fprintf( stderr, "\nEXCEPTION: %s\n\n", e.what() );
     }
 
@@ -275,7 +350,7 @@ int main( int argc, char** argv )
   config.clear();
 
   Alloc::printStatistics();
-  oz::log.printlnETD( OZ_APPLICATION_NAME " Prebuild finished at" );
+  log.printlnETD( OZ_APPLICATION_NAME " Prebuild finished at" );
 
   Alloc::isLocked = true;
   Alloc::printLeaks();

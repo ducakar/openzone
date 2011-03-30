@@ -29,8 +29,7 @@ namespace oz
       /**
        * Default constructor.
        */
-      OZ_ALWAYS_INLINE
-      explicit Pair() = default;
+      Pair() = default;
 
       /**
        * Constructor that initialises members.

@@ -667,6 +667,27 @@ namespace oz
     return 2;
   }
 
+  int Lua::ozDynBindParent( lua_State* l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
+      OZ_LUA_ERROR( "selected object is not dynamic" );
+    }
+
+    const Dynamic* obj = static_cast<const Dynamic*>( lua.obj );
+
+    if( obj->parent != -1 && orbis.objects[obj->parent] != null ) {
+      lua.obj = orbis.objects[obj->parent];
+      lua_pushboolean( l, true );
+    }
+    else {
+      lua_pushboolean( l, false );
+    }
+    return 1;
+  }
+
   int Lua::ozDynGetVelocity( lua_State* l )
   {
     if( lua.obj == null ) {
@@ -1740,6 +1761,7 @@ namespace oz
     OZ_LUA_FUNCTION( ozEventBindNext );
     OZ_LUA_FUNCTION( ozEventGet );
 
+    OZ_LUA_FUNCTION( ozDynBindParent );
     OZ_LUA_FUNCTION( ozDynGetVelocity );
     OZ_LUA_FUNCTION( ozDynSetVelocity );
     OZ_LUA_FUNCTION( ozDynAddVelocity );

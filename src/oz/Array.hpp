@@ -37,7 +37,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit CIterator() : B( null, null )
+          CIterator() : B( null, null )
           {}
 
           /**
@@ -65,7 +65,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit Iterator() : B( null, null )
+          Iterator() : B( null, null )
           {}
 
           /**
@@ -87,8 +87,7 @@ namespace oz
       /**
        * Default constructor.
        */
-      OZ_ALWAYS_INLINE
-      explicit Array() = default;
+      Array() = default;
 
       /**
        * Initialise from a C++ array.

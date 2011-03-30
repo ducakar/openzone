@@ -28,7 +28,8 @@ namespace oz
 
         public:
 
-          explicit CIterator();
+          CIterator();
+
           explicit CIterator( const Directory& d );
 
           CIterator& operator ++ ();
@@ -47,12 +48,12 @@ namespace oz
 
     public:
 
+      Directory();
       Directory( const Directory& ) = delete;
       Directory& operator = ( const Directory& ) = delete;
-
-      explicit Directory();
-      explicit Directory( const char* path );
       ~Directory();
+
+      explicit Directory( const char* path );
 
       CIterator citer() const;
 

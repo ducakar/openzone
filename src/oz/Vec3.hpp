@@ -24,8 +24,7 @@ namespace oz
       float y;
       float z;
 
-      OZ_ALWAYS_INLINE
-      explicit Vec3() = default;
+      Vec3() = default;
 
       OZ_ALWAYS_INLINE
       explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )

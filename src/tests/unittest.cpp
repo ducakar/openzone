@@ -40,20 +40,11 @@ namespace oz
     Test* prev[1];
     Test* next[1];
 
-    explicit Test()
+    Test()
     {
       hard_assert( magic != 42 );
 
       magic = 42;
-      ++constructCount;
-    }
-
-    explicit Test( int value_ )
-    {
-      hard_assert( magic != 42 );
-
-      magic = 42;
-      value = value_;
       ++constructCount;
     }
 
@@ -67,6 +58,15 @@ namespace oz
       ++constructCount;
     }
 
+    Test& operator = ( const Test& t )
+    {
+      hard_assert( magic == 42 );
+      hard_assert( t.magic == 42 );
+
+      value = t.value;
+      return *this;
+    }
+
     ~Test()
     {
       hard_assert( magic == 42 );
@@ -75,13 +75,13 @@ namespace oz
       --constructCount;
     }
 
-    Test& operator = ( const Test& t )
+    explicit Test( int value_ )
     {
-      hard_assert( magic == 42 );
-      hard_assert( t.magic == 42 );
+      hard_assert( magic != 42 );
 
-      value = t.value;
-      return *this;
+      magic = 42;
+      value = value_;
+      ++constructCount;
     }
 
     bool operator == ( const Test& t ) const

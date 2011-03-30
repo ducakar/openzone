@@ -51,7 +51,7 @@ namespace oz
       float     mass;
       float     lifeTime;
 
-      explicit Particle() : index( -1 ), cell( null )
+      Particle() : index( -1 ), cell( null )
       {}
 
       explicit Particle( int index, const Point3& p, const Vec3& velocity, const Vec3& colour,

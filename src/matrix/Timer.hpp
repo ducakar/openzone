@@ -48,7 +48,7 @@ namespace oz
       int   frameMillis;
       float frameTime;
 
-      explicit Timer();
+      Timer();
 
       void reset();
       void tick();

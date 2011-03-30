@@ -39,7 +39,7 @@ namespace ui
     log.indent();
 
     for( int i = 0; i < MAX; ++i ) {
-      FILE* f = fopen( "ui/" + String( NAMES[i] ) + ".in", "r" );
+      FILE* f = fopen( "ui/cur/" + String( NAMES[i] ) + ".in", "r" );
       if( f == null ) {
         throw Exception( "Cursor prebuilding failed" );
       }
@@ -50,7 +50,7 @@ namespace ui
       fclose( f );
 
       int nMipmaps;
-      uint texId = context.loadRawTexture( "ui/" + String( imgFile ), &nMipmaps,
+      uint texId = context.loadRawTexture( "ui/cur/" + String( imgFile ), &nMipmaps,
                                            false, GL_LINEAR, GL_LINEAR );
 
       OutputStream os = buffer.outputStream();
@@ -62,7 +62,7 @@ namespace ui
 
       glDeleteTextures( 1, &texId );
 
-      buffer.write( "ui/" + String( NAMES[i] ) + ".ozcCur", os.length() );
+      buffer.write( "ui/cur/" + String( NAMES[i] ) + ".ozcCur", os.length() );
     }
 
     log.unindent();
@@ -132,7 +132,7 @@ namespace ui
     for( int i = 0; i < MAX; ++i ) {
       log.print( "Loading cursor '%s' ...", NAMES[i] );
 
-      if( !buffer.read( "ui/" + String( NAMES[i] ) + ".ozcCur" ) ) {
+      if( !buffer.read( "ui/cur/" + String( NAMES[i] ) + ".ozcCur" ) ) {
         log.printEnd( " Failed" );
         throw Exception( "Cursor loading failed" );
       }

@@ -32,7 +32,7 @@ namespace ui
 
     public:
 
-      explicit LoadingArea();
+      LoadingArea();
       virtual ~LoadingArea();
 
   };

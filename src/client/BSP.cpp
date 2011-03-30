@@ -369,7 +369,7 @@ namespace client
     log.println( "Prebuilding Quake 3 BSP model '%s' {", name_ );
     log.indent();
 
-    loadQBSP( "maps/" + name );
+    loadQBSP( "data/maps/" + name );
     optimise();
     save( "bsp/" + name + ".ozcBSP" );
     freeQBSP();

@@ -44,6 +44,8 @@ namespace client
 
   void StrategicProxy::update()
   {
+    ui::ui.strategic->show( true );
+
     camera.h += camera.relH;
     camera.v += camera.relV;
 
@@ -58,9 +60,6 @@ namespace client
         ui::mouse.doShow = true;
         isFreeFast = true;
       }
-    }
-    if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] && isFree ) {
-      ui::mouse.doShow = !ui::mouse.doShow;
     }
 
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
@@ -84,6 +83,7 @@ namespace client
 
         if( me != null ) {
           me->state |= Bot::PLAYER_BIT;
+          ui::ui.strategic->show( false );
           camera.setBot( me );
           camera.setState( Camera::BOT );
         }

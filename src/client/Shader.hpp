@@ -63,7 +63,7 @@ namespace client
 
     private:
 
-      Vector<Mat44, 8> stack;
+      SVector<Mat44, 8> stack;
 
     public:
 
@@ -146,7 +146,8 @@ namespace client
         Point3 pos;
         Vec4   diffuse;
 
-        explicit Light() = default;
+        Light() = default;
+
         explicit Light( const Point3& pos, const Vec4& diffuse );
       };
 
@@ -159,7 +160,7 @@ namespace client
 
       float           lightingDistance;
       SkyLight        skyLight;
-//       Sparse<Light>   lights;
+      Sparse<Light>   lights;
 
       void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
       void loadProgram( int id, const char** sources, int* lengths );
@@ -178,7 +179,7 @@ namespace client
       bool isLoaded;
       bool hasVertexTexture;
 
-      explicit Shader();
+      Shader();
 
       void use( int id );
       void push();

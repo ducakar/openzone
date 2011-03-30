@@ -30,7 +30,7 @@ namespace ui
   {
     x = ( camera.width - width ) / 2;
 
-    useTexId = context.loadTexture( "ui/use.ozcTex" );
+    useTexId = context.loadTexture( "ui/icon/use.ozcTex" );
     tagged = -1;
     row = 0;
   }

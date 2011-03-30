@@ -33,8 +33,10 @@ if( NOT OZ_CLIENT_CONFIG_FILE )
 endif( NOT OZ_CLIENT_CONFIG_FILE )
 
 if( NOT OZ_DEFAULT_DATA_DIR )
-  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone/data" CACHE STRING "" FORCE )
+  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
 endif( NOT OZ_DEFAULT_DATA_DIR )
+
+option( OZ_ENABLE_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
 
 option( OZ_NETWORKING "Enable networking" OFF )
 
@@ -93,7 +95,7 @@ macro( add_pch _targetName _inputHeader )
   # properly)
   add_custom_command( OUTPUT "${_inputHeader}.gch"
     ${ARGN} "${_inputHeader}"
-    COMMAND ${CMAKE_COMMAND} -E remove "${_inputHeader}"
+    COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}"
     COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}.gch"
     COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
     COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
@@ -253,7 +255,7 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings} ${in
 
 # sources
 add_subdirectory( src )
-add_subdirectory( share/openzone/data )
+add_subdirectory( share/openzone )
 
 # installation
 include( install_files.cmake )

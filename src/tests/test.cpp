@@ -16,6 +16,15 @@ using namespace oz;
 
 bool Alloc::isLocked = true;
 
+struct A
+{
+  A() = default;
+
+  A( const A& ) = default;
+
+  ~A() = default;
+};
+
 int main( int, char** )
 {
   return 0;

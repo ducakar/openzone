@@ -71,6 +71,7 @@ else( WIN32 )
     README
     DESTINATION share/doc/openzone )
 endif( WIN32 )
+
 if( WIN32 )
   install( FILES
     mingw32/SDL.dll
@@ -109,196 +110,212 @@ endif( OZ_INSTALL_CLIENT )
 if( OZ_INSTALL_DATA )
 
   install( FILES
-    share/openzone/data/class/beast.rc
-    share/openzone/data/class/bigCrate.rc
-    share/openzone/data/class/bigExplosion.rc
-    share/openzone/data/class/bomb.rc
-    share/openzone/data/class/cvicek.rc
-    share/openzone/data/class/drevo.rc
-    share/openzone/data/class/droid.rc
-    share/openzone/data/class/droidCommander.rc
-    share/openzone/data/class/droidRifle.rc
-    share/openzone/data/class/firstAid.rc
-    share/openzone/data/class/goblin.rc
-    share/openzone/data/class/goblinAxe.rc
-    share/openzone/data/class/knight.rc
-    share/openzone/data/class/lord.rc
-    share/openzone/data/class/metalBarrel.rc
-    share/openzone/data/class/palma.rc
-    share/openzone/data/class/raptor.rc
-    share/openzone/data/class/serviceStation.rc
-    share/openzone/data/class/shell.rc
-    share/openzone/data/class/smallCrate.rc
-    share/openzone/data/class/smallExplosion.rc
-    share/openzone/data/class/smreka.rc
-    share/openzone/data/class/tank.rc
-    DESTINATION share/openzone/data/class )
+    share/openzone/class/beast.rc
+    share/openzone/class/bigCrate.rc
+    share/openzone/class/bigExplosion.rc
+    share/openzone/class/bomb.rc
+    share/openzone/class/cvicek.rc
+    share/openzone/class/drevo.rc
+    share/openzone/class/droid.rc
+    share/openzone/class/droidCommander.rc
+    share/openzone/class/droidRifle.rc
+    share/openzone/class/firstAid.rc
+    share/openzone/class/goblin.rc
+    share/openzone/class/goblinAxe.rc
+    share/openzone/class/knight.rc
+    share/openzone/class/lord.rc
+    share/openzone/class/metalBarrel.rc
+    share/openzone/class/palma.rc
+    share/openzone/class/raptor.rc
+    share/openzone/class/serviceStation.rc
+    share/openzone/class/shell.rc
+    share/openzone/class/smallCrate.rc
+    share/openzone/class/smallExplosion.rc
+    share/openzone/class/smreka.rc
+    share/openzone/class/tank.rc
+    DESTINATION share/openzone/class )
 
   install( FILES
-    share/openzone/data/fonts/DejaVu.COPYING
-    share/openzone/data/fonts/DejaVuSans.ttf
-    share/openzone/data/fonts/DejaVuSansMono.ttf
-    DESTINATION share/openzone/data/fonts )
+    DESTINATION share/openzone/fonts )
 
   install( FILES
-    share/openzone/data/lua/matrix/handlers.lua
-    DESTINATION share/openzone/data/lua/matrix )
+    share/openzone/lua/matrix/handlers.lua
+    DESTINATION share/openzone/lua/matrix )
 
   install( FILES
-    share/openzone/data/lua/nirvana/droid.lua
-    share/openzone/data/lua/nirvana/minds.lua
-    DESTINATION share/openzone/data/lua/nirvana )
+    share/openzone/lua/nirvana/droid.lua
+    share/openzone/lua/nirvana/minds.lua
+    DESTINATION share/openzone/lua/nirvana )
 
   install( FILES
-    share/openzone/data/bsp/bunker.ozBSP
-    share/openzone/data/bsp/bunker.ozcBSP
-    share/openzone/data/bsp/castle.ozBSP
-    share/openzone/data/bsp/castle.ozcBSP
-    share/openzone/data/bsp/pool.ozBSP
-    share/openzone/data/bsp/pool.ozcBSP
-    DESTINATION share/openzone/data/bsp )
+    share/openzone/bsp/bunker.ozBSP
+    share/openzone/bsp/bunker.ozcBSP
+    share/openzone/bsp/castle.ozBSP
+    share/openzone/bsp/castle.ozcBSP
+    share/openzone/bsp/pool.ozBSP
+    share/openzone/bsp/pool.ozcBSP
+    DESTINATION share/openzone/bsp )
 
   install( FILES
-    share/openzone/data/bsp/tex/_Drkalisce.ozcTex
-    share/openzone/data/bsp/tex/_Potiskalnica.ozcTex
-    share/openzone/data/bsp/tex/_Samostojeca_voda.ozcTex
-    share/openzone/data/bsp/tex/_Spestalnica.ozcTex
-    share/openzone/data/bsp/tex/crate1.ozcTex
-    share/openzone/data/bsp/tex/glass.ozcTex
-    share/openzone/data/bsp/tex/roof1.ozcTex
-    share/openzone/data/bsp/tex/slick.ozcTex
-    share/openzone/data/bsp/tex/stone1.ozcTex
-    share/openzone/data/bsp/tex/stone2.ozcTex
-    share/openzone/data/bsp/tex/stone3.ozcTex
-    share/openzone/data/bsp/tex/water1.ozcTex
-    share/openzone/data/bsp/tex/wood1.ozcTex
-    share/openzone/data/bsp/tex/wood2.ozcTex
-    DESTINATION share/openzone/data/bsp/tex )
+    share/openzone/bsp/tex/_Drkalisce.ozcTex
+    share/openzone/bsp/tex/_Potiskalnica.ozcTex
+    share/openzone/bsp/tex/_Samostojeca_voda.ozcTex
+    share/openzone/bsp/tex/_Spestalnica.ozcTex
+    share/openzone/bsp/tex/crate1.ozcTex
+    share/openzone/bsp/tex/glass.ozcTex
+    share/openzone/bsp/tex/roof1.ozcTex
+    share/openzone/bsp/tex/slick.ozcTex
+    share/openzone/bsp/tex/stone1.ozcTex
+    share/openzone/bsp/tex/stone2.ozcTex
+    share/openzone/bsp/tex/stone3.ozcTex
+    share/openzone/bsp/tex/water1.ozcTex
+    share/openzone/bsp/tex/wood1.ozcTex
+    share/openzone/bsp/tex/wood2.ozcTex
+    DESTINATION share/openzone/bsp/tex )
 
   install( FILES
-    share/openzone/data/mdl/barrel1.ozcSMM
-    share/openzone/data/mdl/bauul.ozcMD2
-    share/openzone/data/mdl/bigCrate.ozcSMM
-    share/openzone/data/mdl/biotank.ozcSMM
-    share/openzone/data/mdl/bombs.ozcSMM
-    share/openzone/data/mdl/console.ozcSMM
-    share/openzone/data/mdl/droid-rifle.ozcMD2
-    share/openzone/data/mdl/droid_commander.ozcMD2
-    share/openzone/data/mdl/droid_infantry.ozcMD2
-    share/openzone/data/mdl/explosion.ozcSMM
-    share/openzone/data/mdl/goblin-axe.ozcMD2
-    share/openzone/data/mdl/goblin.ozcMD2
-    share/openzone/data/mdl/health.ozcSMM
-    share/openzone/data/mdl/hobgoblin.ozcMD2
-    share/openzone/data/mdl/knight.ozcMD2
-    share/openzone/data/mdl/palmtree.ozcSMM
-    share/openzone/data/mdl/raptor.ozcSMM
-    share/openzone/data/mdl/shell.ozcSMM
-    share/openzone/data/mdl/smallCrate.ozcSMM
-    share/openzone/data/mdl/tank.ozcSMM
-    share/openzone/data/mdl/tree2.ozcSMM
-    share/openzone/data/mdl/tree3.ozcSMM
-    share/openzone/data/mdl/winebottle.ozcSMM
-    DESTINATION share/openzone/data/mdl )
+    share/openzone/mdl/barrel1.README
+    share/openzone/mdl/barrel1.ozcSMM
+    share/openzone/mdl/bauul.README
+    share/openzone/mdl/bauul.ozcMD2
+    share/openzone/mdl/bigCrate.ozcSMM
+    share/openzone/mdl/biotank.ozcSMM
+    share/openzone/mdl/bombs.ozcSMM
+    share/openzone/mdl/console.ozcSMM
+    share/openzone/mdl/droid-rifle.README
+    share/openzone/mdl/droid-rifle.ozcMD2
+    share/openzone/mdl/droid_commander.README
+    share/openzone/mdl/droid_commander.ozcMD2
+    share/openzone/mdl/droid_infantry.README
+    share/openzone/mdl/droid_infantry.ozcMD2
+    share/openzone/mdl/explosion.ozcSMM
+    share/openzone/mdl/goblin-axe.README
+    share/openzone/mdl/goblin-axe.ozcMD2
+    share/openzone/mdl/goblin.README
+    share/openzone/mdl/goblin.ozcMD2
+    share/openzone/mdl/health.ozcSMM
+    share/openzone/mdl/hobgoblin.ozcMD2
+    share/openzone/mdl/knight.README
+    share/openzone/mdl/knight.ozcMD2
+    share/openzone/mdl/palmtree.ozcSMM
+    share/openzone/mdl/raptor.ozcSMM
+    share/openzone/mdl/shell.ozcSMM
+    share/openzone/mdl/smallCrate.ozcSMM
+    share/openzone/mdl/tank.ozcSMM
+    share/openzone/mdl/tree2.README
+    share/openzone/mdl/tree2.ozcSMM
+    share/openzone/mdl/tree3.README
+    share/openzone/mdl/tree3.ozcSMM
+    share/openzone/mdl/winebottle.ozcSMM
+    DESTINATION share/openzone/mdl )
 
   install( FILES
-    share/openzone/data/name/COPYING.wesnoth
-    share/openzone/data/name/wesnoth.drake-male.txt
-    DESTINATION share/openzone/data/name )
+    share/openzone/name/bogovi.txt
+    share/openzone/name/wesnoth.COPYING
+    share/openzone/name/wesnoth.drake-female.txt
+    share/openzone/name/wesnoth.drake-male.txt
+    share/openzone/name/wesnoth.dwarvish-male.txt
+    share/openzone/name/wesnoth.elvish-female.txt
+    share/openzone/name/wesnoth.elvish-male.txt
+    share/openzone/name/wesnoth.gryphon-female.txt
+    share/openzone/name/wesnoth.gryphon-male.txt
+    share/openzone/name/wesnoth.human-female.txt
+    share/openzone/name/wesnoth.human-male.txt
+    share/openzone/name/wesnoth.lizard-male.txt
+    share/openzone/name/wesnoth.merman-female.txt
+    share/openzone/name/wesnoth.merman-male.txt
+    share/openzone/name/wesnoth.naga-female.txt
+    share/openzone/name/wesnoth.naga-male.txt
+    share/openzone/name/wesnoth.ogre-male.txt
+    share/openzone/name/wesnoth.orcish-male.txt
+    share/openzone/name/wesnoth.troll-male.txt
+    share/openzone/name/wesnoth.village.txt
+    share/openzone/name/wesnoth.wose-male.txt
+    DESTINATION share/openzone/name )
 
   install( FILES
-    share/openzone/data/snd/acid5.wav
-    share/openzone/data/snd/cg2.wav
-    share/openzone/data/snd/damage_bot1.wav
-    share/openzone/data/snd/damage_bot2.wav
-    share/openzone/data/snd/death1.wav
-    share/openzone/data/snd/death2.wav
-    share/openzone/data/snd/destroy_metal1.wav
-    share/openzone/data/snd/destroy_wood1.wav
-    share/openzone/data/snd/door.wav
-    share/openzone/data/snd/explosion.wav
-    share/openzone/data/snd/fan-stari1.wav
-    share/openzone/data/snd/fan.wav
-    share/openzone/data/snd/friction1.wav
-    share/openzone/data/snd/gesture_flip.wav
-    share/openzone/data/snd/hit1.wav
-    share/openzone/data/snd/hit_bot1.wav
-    share/openzone/data/snd/hit_bot2.wav
-    share/openzone/data/snd/hit_metal1.wav
-    share/openzone/data/snd/hit_metal2.wav
-    share/openzone/data/snd/hit_wood1.wav
-    share/openzone/data/snd/hit_wood2.wav
-    share/openzone/data/snd/hum6.wav
-    share/openzone/data/snd/itemback.wav
-    share/openzone/data/snd/itempick.wav
-    share/openzone/data/snd/jump1.wav
-    share/openzone/data/snd/jump2.wav
-    share/openzone/data/snd/land1.wav
-    share/openzone/data/snd/land2.wav
-    share/openzone/data/snd/outofammo.wav
-    share/openzone/data/snd/splash1.wav
-    share/openzone/data/snd/splash2.wav
-    share/openzone/data/snd/tak.wav
-    share/openzone/data/snd/tick.wav
-    DESTINATION share/openzone/data/snd )
+    share/openzone/snd/acid5.wav
+    share/openzone/snd/cg2.wav
+    share/openzone/snd/damage_bot1.wav
+    share/openzone/snd/damage_bot2.wav
+    share/openzone/snd/death1.wav
+    share/openzone/snd/death2.wav
+    share/openzone/snd/destroy_metal1.wav
+    share/openzone/snd/destroy_wood1.wav
+    share/openzone/snd/door.wav
+    share/openzone/snd/explosion.wav
+    share/openzone/snd/fan-stari1.wav
+    share/openzone/snd/fan.wav
+    share/openzone/snd/friction1.wav
+    share/openzone/snd/gesture_flip.wav
+    share/openzone/snd/hit1.wav
+    share/openzone/snd/hit_bot1.wav
+    share/openzone/snd/hit_bot2.wav
+    share/openzone/snd/hit_metal1.wav
+    share/openzone/snd/hit_metal2.wav
+    share/openzone/snd/hit_wood1.wav
+    share/openzone/snd/hit_wood2.wav
+    share/openzone/snd/hum6.wav
+    share/openzone/snd/itemback.wav
+    share/openzone/snd/itempick.wav
+    share/openzone/snd/jump1.wav
+    share/openzone/snd/jump2.wav
+    share/openzone/snd/land1.wav
+    share/openzone/snd/land2.wav
+    share/openzone/snd/outofammo.wav
+    share/openzone/snd/splash1.wav
+    share/openzone/snd/splash2.wav
+    share/openzone/snd/tak.wav
+    share/openzone/snd/tick.wav
+    DESTINATION share/openzone/snd )
 
   install( FILES
-    share/openzone/data/terra/heightmap.ozTerra
-    share/openzone/data/terra/heightmap.ozcTerra
-    DESTINATION share/openzone/data/terra )
+    share/openzone/terra/heightmap.ozTerra
+    share/openzone/terra/heightmap.ozcTerra
+    DESTINATION share/openzone/terra )
 
   install( FILES
-    share/openzone/data/sky/sky.ozcSky
-    DESTINATION share/openzone/data/sky )
+    share/openzone/sky/sky.ozcSky
+    DESTINATION share/openzone/sky )
 
   install( FILES
-    share/openzone/data/ui/COPYING
-    share/openzone/data/ui/X_cursor.ozcCur
-    share/openzone/data/ui/X_cursor.ozcTex
-    share/openzone/data/ui/crosshair.ozcTex
-    share/openzone/data/ui/fleur.ozcCur
-    share/openzone/data/ui/fleur.ozcTex
-    share/openzone/data/ui/grab.ozcTex
-    share/openzone/data/ui/hand2.ozcCur
-    share/openzone/data/ui/hand2.ozcTex
-    share/openzone/data/ui/left_ptr.ozcCur
-    share/openzone/data/ui/left_ptr.ozcTex
-    share/openzone/data/ui/lift.ozcTex
-    share/openzone/data/ui/mount.ozcTex
-    share/openzone/data/ui/take.ozcTex
-    share/openzone/data/ui/use.ozcTex
-    share/openzone/data/ui/xterm.ozcCur
-    share/openzone/data/ui/xterm.ozcTex
-    DESTINATION share/openzone/data/ui )
+    share/openzone/ui/iconcrosshair.ozcTex
+    share/openzone/ui/icongrab.ozcTex
+    share/openzone/ui/iconlift.ozcTex
+    share/openzone/ui/iconmount.ozcTex
+    share/openzone/ui/icontake.ozcTex
+    share/openzone/ui/iconuse.ozcTex
+    DESTINATION share/openzone/ui )
 
   install( FILES
-    share/openzone/data/glsl/bigMesh.frag
-    share/openzone/data/glsl/bigMesh.vert
-    share/openzone/data/glsl/celestial.frag
-    share/openzone/data/glsl/celestial.vert
-    share/openzone/data/glsl/header.glsl
-    share/openzone/data/glsl/md2.frag
-    share/openzone/data/glsl/md2.vert
-    share/openzone/data/glsl/mesh.frag
-    share/openzone/data/glsl/mesh.vert
-    share/openzone/data/glsl/particles.frag
-    share/openzone/data/glsl/particles.vert
-    share/openzone/data/glsl/plant.frag
-    share/openzone/data/glsl/plant.vert
-    share/openzone/data/glsl/simple.frag
-    share/openzone/data/glsl/simple.vert
-    share/openzone/data/glsl/stars.frag
-    share/openzone/data/glsl/stars.vert
-    share/openzone/data/glsl/submergedTerraLand.frag
-    share/openzone/data/glsl/submergedTerraLand.vert
-    share/openzone/data/glsl/submergedTerraWater.frag
-    share/openzone/data/glsl/submergedTerraWater.vert
-    share/openzone/data/glsl/terraLand.frag
-    share/openzone/data/glsl/terraLand.vert
-    share/openzone/data/glsl/terraWater.frag
-    share/openzone/data/glsl/terraWater.vert
-    share/openzone/data/glsl/ui.frag
-    share/openzone/data/glsl/ui.vert
-    DESTINATION share/openzone/data/glsl )
+    share/openzone/glsl/COPYING
+    share/openzone/glsl/bigMesh.frag
+    share/openzone/glsl/bigMesh.vert
+    share/openzone/glsl/celestial.frag
+    share/openzone/glsl/celestial.vert
+    share/openzone/glsl/header.glsl
+    share/openzone/glsl/md2.frag
+    share/openzone/glsl/md2.vert
+    share/openzone/glsl/mesh.frag
+    share/openzone/glsl/mesh.vert
+    share/openzone/glsl/particles.frag
+    share/openzone/glsl/particles.vert
+    share/openzone/glsl/plant.frag
+    share/openzone/glsl/plant.vert
+    share/openzone/glsl/simple.frag
+    share/openzone/glsl/simple.vert
+    share/openzone/glsl/stars.frag
+    share/openzone/glsl/stars.vert
+    share/openzone/glsl/submergedTerraLand.frag
+    share/openzone/glsl/submergedTerraLand.vert
+    share/openzone/glsl/submergedTerraWater.frag
+    share/openzone/glsl/submergedTerraWater.vert
+    share/openzone/glsl/terraLand.frag
+    share/openzone/glsl/terraLand.vert
+    share/openzone/glsl/terraWater.frag
+    share/openzone/glsl/terraWater.vert
+    share/openzone/glsl/ui.frag
+    share/openzone/glsl/ui.vert
+    DESTINATION share/openzone/glsl )
 
 endif( OZ_INSTALL_DATA )

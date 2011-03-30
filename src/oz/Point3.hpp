@@ -26,8 +26,7 @@ namespace oz
 
     public:
 
-      OZ_ALWAYS_INLINE
-      explicit Point3() = default;
+      Point3() = default;
 
       OZ_ALWAYS_INLINE
       explicit Point3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )

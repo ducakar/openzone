@@ -37,8 +37,8 @@ namespace ui
       };
 
       static const int MONO_HEIGHT  = 12;
-      static const int SANS_HEIGHT  = 12;
-      static const int TITLE_HEIGHT = 14;
+      static const int SANS_HEIGHT  = 13;
+      static const int TITLE_HEIGHT = 15;
 
       TTF_Font* monoFont;
       TTF_Font* sansFont;

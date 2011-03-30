@@ -64,7 +64,7 @@ namespace ui
 
     public:
 
-      explicit HudArea();
+      HudArea();
       virtual ~HudArea();
 
   };

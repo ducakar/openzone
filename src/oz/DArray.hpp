@@ -36,7 +36,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit CIterator() : B( null, null )
+          CIterator() : B( null, null )
           {}
 
           /**
@@ -64,7 +64,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit Iterator() : B( null, null )
+          Iterator() : B( null, null )
           {}
 
           /**
@@ -87,26 +87,8 @@ namespace oz
       /**
        * Create a null array.
        */
-      explicit DArray() : data( null ), count( 0 )
+      DArray() : data( null ), count( 0 )
       {}
-
-      /**
-       * Create an empty array with the given size.
-       * @param size
-       */
-      explicit DArray( int size ) : data( size == 0 ? null : new Type[size] ), count( size )
-      {}
-
-      /**
-       * Initialise from a C++ array.
-       * @param array
-       * @param size
-       */
-      explicit DArray( const Type* array, int size ) : data( size == 0 ? null : new Type[size] ),
-          count( size )
-      {
-        aCopy( data, array, size );
-      }
 
       /**
        * Copy constructor.
@@ -115,14 +97,6 @@ namespace oz
       DArray( const DArray& a ) : data( a.count == 0 ? null : new Type[a.count] ), count( a.count )
       {
         aCopy( data, a.data, count );
-      }
-
-      /**
-       * Destructor.
-       */
-      ~DArray()
-      {
-        delete[] data;
       }
 
       /**
@@ -143,6 +117,32 @@ namespace oz
 
         aCopy( data, a.data, a.count );
         return *this;
+      }
+
+      /**
+       * Destructor.
+       */
+      ~DArray()
+      {
+        delete[] data;
+      }
+
+      /**
+       * Create an empty array with the given size.
+       * @param size
+       */
+      explicit DArray( int size ) : data( size == 0 ? null : new Type[size] ), count( size )
+      {}
+
+      /**
+       * Initialise from a C++ array.
+       * @param array
+       * @param size
+       */
+      explicit DArray( const Type* array, int size ) : data( size == 0 ? null : new Type[size] ),
+          count( size )
+      {
+        aCopy( data, array, size );
       }
 
       /**

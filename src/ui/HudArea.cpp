@@ -50,7 +50,7 @@ namespace ui
 
       // it might happen that bot itself is tagged object for a frame when switching from freecam
       // into a bot
-      if( tagged != null && ( tagged->flags & Object::SOLID_BIT ) && tagged != bot ) {
+      if( tagged != null && tagged != bot ) {
         float life = ( tagged->flags & Object::BOT_BIT ) ?
             ( tagged->life - taggedClazz->life / 2.0f ) / ( taggedClazz->life / 2.0f ) :
             tagged->life / taggedClazz->life;
@@ -231,14 +231,14 @@ namespace ui
   HudArea::HudArea() : Area( camera.width, camera.height )
   {
     flags |= IGNORE_BIT;
-    setFont( Font::TITLE );
+    setFont( Font::SANS );
 
-    crossTexId = context.loadTexture( "ui/crosshair.ozcTex" );
-    useTexId   = context.loadTexture( "ui/use.ozcTex" );
-    mountTexId = context.loadTexture( "ui/mount.ozcTex" );
-    takeTexId  = context.loadTexture( "ui/take.ozcTex" );
-    liftTexId  = context.loadTexture( "ui/lift.ozcTex" );
-    grabTexId  = context.loadTexture( "ui/grab.ozcTex" );
+    crossTexId = context.loadTexture( "ui/icon/crosshair.ozcTex" );
+    useTexId   = context.loadTexture( "ui/icon/use.ozcTex" );
+    mountTexId = context.loadTexture( "ui/icon/mount.ozcTex" );
+    takeTexId  = context.loadTexture( "ui/icon/take.ozcTex" );
+    liftTexId  = context.loadTexture( "ui/icon/lift.ozcTex" );
+    grabTexId  = context.loadTexture( "ui/icon/grab.ozcTex" );
 
     crossIconX = ( width - ICON_SIZE ) / 2;
     crossIconY = ( height - ICON_SIZE ) / 2;

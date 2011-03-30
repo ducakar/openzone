@@ -35,6 +35,8 @@ namespace client
 
   int GameStage::auxMain( void* )
   {
+    System::catchSignals();
+
     try{
       gameStage.run();
     }
@@ -193,7 +195,7 @@ namespace client
     render.draw( Render::DRAW_UI_BIT );
     render.sync();
 
-//     sound.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
+    sound.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
 
     camera.update();
     camera.prepare();

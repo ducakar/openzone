@@ -221,7 +221,7 @@ namespace oz
 
     public:
 
-      explicit Object() : index( -1 ), cell( null )
+      Object() : index( -1 ), cell( null )
       {}
 
       virtual ~Object();

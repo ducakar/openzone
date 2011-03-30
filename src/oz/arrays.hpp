@@ -39,7 +39,7 @@ namespace oz
        * Default constructor returns an invalid iterator
        */
       OZ_ALWAYS_INLINE
-      explicit CIterator() : B( null ), past( null )
+      CIterator() : B( null ), past( null )
       {}
 
       /**
@@ -103,7 +103,7 @@ namespace oz
        * Default constructor returns an invalid iterator
        */
       OZ_ALWAYS_INLINE
-      explicit Iterator() : B( null ), past( null )
+      Iterator() : B( null ), past( null )
       {}
 
       /**

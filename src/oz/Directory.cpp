@@ -46,7 +46,7 @@ namespace oz
       return "";
     }
 
-    const char* dot = String::find( elem, '.' );
+    const char* dot = String::findLast( elem, '.' );
     if( dot == null ) {
       return elem;
     }
@@ -60,7 +60,7 @@ namespace oz
       return "";
     }
 
-    const char* dot = String::find( elem, '.' );
+    const char* dot = String::findLast( elem, '.' );
     if( dot == null ) {
       return "";
     }

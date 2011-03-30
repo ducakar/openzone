@@ -101,7 +101,7 @@ namespace oz
        * Create empty pool, storage is allocated on first element addition.
        * @param initSize
        */
-      explicit Pool() : firstBlock( null ), freeSlot( null ), size( 0 ), count( 0 )
+      Pool() : firstBlock( null ), freeSlot( null ), size( 0 ), count( 0 )
       {}
 
       /**
@@ -111,6 +111,12 @@ namespace oz
       Pool( const Pool& ) = delete;
 
       /**
+       * No copying
+       * @param
+       */
+      Pool& operator = ( const Pool& ) = delete;
+
+      /**
        * Destructor.
        */
       ~Pool()
@@ -118,12 +124,6 @@ namespace oz
         // there's a memory leak if count != 0
         soft_assert( count == 0 );
       }
-
-      /**
-       * No copying
-       * @param
-       */
-      Pool& operator = ( const Pool& ) = delete;
 
       /**
        * Allocate a new element.

@@ -37,7 +37,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit CIterator() : B( null, null )
+          CIterator() : B( null, null )
           {}
 
           /**
@@ -65,7 +65,7 @@ namespace oz
            * Default constructor returns an invalid iterator
            */
           OZ_ALWAYS_INLINE
-          explicit Iterator() : B( null, null )
+          Iterator() : B( null, null )
           {}
 
           /**
@@ -94,7 +94,7 @@ namespace oz
       /**
        * Create empty vector with capacity SIZE.
        */
-      explicit SVector() : count( 0 )
+      SVector() : count( 0 )
       {}
 
       /**
@@ -104,14 +104,6 @@ namespace oz
       SVector( const SVector& v ) : count( v.count )
       {
         aConstruct( data, v.data, v.count );
-      }
-
-      /**
-       * Destructor.
-       */
-      ~SVector()
-      {
-        aDestruct( data, count );
       }
 
       /**
@@ -126,6 +118,14 @@ namespace oz
         aCopy( data, v.data, v.count );
         count = v.count;
         return *this;
+      }
+
+      /**
+       * Destructor.
+       */
+      ~SVector()
+      {
+        aDestruct( data, count );
       }
 
       /**

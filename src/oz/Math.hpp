@@ -34,7 +34,7 @@ namespace oz
 
       static const float MAX_RAND;
 
-      explicit Math() = delete;
+      Math() = delete;
 
       OZ_ALWAYS_INLINE
       static float abs( float x )

@@ -852,7 +852,7 @@ namespace oz
 
     QBSP* bsp = new QBSP();
 
-    if( !bsp->loadQBSP( "maps/" + name ) ) {
+    if( !bsp->loadQBSP( "data/maps/" + name ) ) {
       bsp->freeQBSP( name );
       log.unindent();
       log.println( "}" );

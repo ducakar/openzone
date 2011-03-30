@@ -48,7 +48,7 @@ namespace nirvana
 
       bool            forceUpdate;
 
-      explicit Lua();
+      Lua();
 
       void call( const char* functionName, Bot* self_ )
       {
@@ -126,6 +126,7 @@ namespace nirvana
       static LuaAPI ozEventBindNext;
       static LuaAPI ozEventGet;
 
+      static LuaAPI ozDynBindParent;
       static LuaAPI ozDynGetVelocity;
       static LuaAPI ozDynGetMomentum;
       static LuaAPI ozDynGetMass;

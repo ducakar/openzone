@@ -35,8 +35,8 @@ namespace oz
       int   lower;      // index of the lower object
       float depth;      // how deep under water the object's lower bound is
 
-      explicit Dynamic() : velocity( Vec3::ZERO ), momentum( Vec3::ZERO ), parent( -1 ),
-          lower( -1 ), depth( 0.0f )
+      Dynamic() : velocity( Vec3::ZERO ), momentum( Vec3::ZERO ), parent( -1 ), lower( -1 ),
+          depth( 0.0f )
       {}
 
       virtual void readFull( InputStream* istream );

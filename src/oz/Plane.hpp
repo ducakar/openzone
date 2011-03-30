@@ -21,8 +21,7 @@ namespace oz
       Vec3  n;
       float d;
 
-      OZ_ALWAYS_INLINE
-      explicit Plane() = default;
+      Plane() = default;
 
       OZ_ALWAYS_INLINE
       explicit Plane( const Vec3& n_, float d_ ) : n( n_ ), d( d_ )
