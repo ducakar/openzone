@@ -65,6 +65,7 @@ namespace oz
       HashString<int, 16>  terraIndices;
       HashString<int, 64>  bspIndices;
       HashString<int, 256> modelIndices;
+      HashString<int, 16>  nameListIndices;
 
     public:
 
@@ -74,11 +75,7 @@ namespace oz
       Vector<Resource> terras;
       Vector<Resource> bsps;
       Vector<Resource> models;
-
-      Vector<Resource> matrixScripts;
-      Vector<Resource> nirvanaScripts;
-
-      Vector<Resource> names;
+      Vector<Resource> nameLists;
       Vector<Resource> musics;
 
       HashString<const ObjectClass::InitFunc, 8> baseClasses;
@@ -90,6 +87,7 @@ namespace oz
       int terraIndex( const char* name ) const;
       int bspIndex( const char* name ) const;
       int modelIndex( const char* name ) const;
+      int nameListIndex( const char* name ) const;
 
       Struct* createStruct( int index, const char* name, const Point3& p,
                             Struct::Rotation rot ) const;

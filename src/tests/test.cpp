@@ -7,25 +7,18 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-#include "../oz/oz.hpp"
+#include "stable.hpp"
 
 #include <cstdio>
-#include <cmath>
+
+#include <libintl.h>
 
 using namespace oz;
 
 bool Alloc::isLocked = true;
 
-struct A
-{
-  A() = default;
-
-  A( const A& ) = default;
-
-  ~A() = default;
-};
-
 int main( int, char** )
 {
+  bindtextdomain( OZ_APPLICATION_NAME, OZ_INSTALL_PREFIX );
   return 0;
 }

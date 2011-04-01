@@ -11,13 +11,6 @@
 
 #include "Pair.hpp"
 
-/*
- * Standard math header, if we don't use built-in math
- */
-#ifndef OZ_BUILTIN_MATH
-# include <cmath>
-#endif
-
 namespace oz
 {
 
@@ -39,251 +32,154 @@ namespace oz
       OZ_ALWAYS_INLINE
       static float abs( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_fabsf( x );
-#else
-        return fabsf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float floor( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_floorf( x );
-#else
-        return floorf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float ceil( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_ceilf( x );
-#else
-        return ceilf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float round( float x )
       {
-#ifdef OZ_BUILTIN_MATH
-# ifdef __clang__
+#ifdef __clang__
         return x < 0.0f ? __builtin_ceilf( x - 0.5f ) : __builtin_floorf( x + 0.5f );
-# else
-        return __builtin_roundf( x );
-# endif
 #else
-        return roundf( x );
+        return __builtin_roundf( x );
 #endif
       }
 
       OZ_ALWAYS_INLINE
       static float trunc( float x )
       {
-#ifdef OZ_BUILTIN_MATH
-# ifdef __clang__
+#ifdef __clang__
         return x < 0.0f ? __builtin_ceilf( x ) : __builtin_floorf( x );
-# else
-        return __builtin_truncf( x );
-# endif
 #else
-        return truncf( x );
+        return __builtin_truncf( x );
 #endif
       }
 
       OZ_ALWAYS_INLINE
       static float mod( float x, float y )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_fmodf( x, y );
-#else
-        return fmodf( x, y );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static Pair<float> fract( float x )
       {
         float integral;
-#ifdef OZ_BUILTIN_MATH
         float fractional = __builtin_modff( x, &integral );
-#else
-        float fractional = modff( x, &integral );
-#endif
         return Pair<float>( integral, fractional );
       }
 
       OZ_ALWAYS_INLINE
       static float sqrt( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_sqrtf( x );
-#else
-        return sqrtf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float exp( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_expf( x );
-#else
-        return expf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float log( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_logf( x );
-#else
-        return logf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float pow( float x, float y )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_powf( x, y );
-#else
-        return powf( x, y );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float sin( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_sinf( x );
-#else
-        return sinf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float cos( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_cosf( x );
-#else
-        return cosf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static void sincos( float x, float* s, float* c )
       {
-#ifdef OZ_BUILTIN_MATH
-# if defined( OZ_HAVE_SINCOSF ) && !defined( __clang__ )
+#if defined( OZ_HAVE_SINCOSF ) && !defined( __clang__ )
         __builtin_sincosf( x, s, c );
-# else
+#else
         *s = __builtin_sinf( x );
         *c = __builtin_cosf( x );
-# endif
-#else
-# ifdef OZ_HAVE_SINCOSF
-        sincosf( x, s, c );
-# else
-        *s = sinf( x );
-        *c = cosf( x );
-# endif
 #endif
       }
 
       OZ_ALWAYS_INLINE
       static float tan( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_tanf( x );
-#else
-        return tanf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float asin( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_asinf( x );
-#else
-        return asinf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float acos( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_acosf( x );
-#else
-        return acosf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float atan( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_atanf( x );
-#else
-        return atanf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float atan2( float x, float y )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_atan2f( x, y );
-#else
-        return atan2f( x, y );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static bool isNaN( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_isnan( x ) || x == x + 1;
-#else
-        return std::isnan( x ) || x == x + 1;
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static bool isFinite( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_isfinite( x ) && x != x + 1;
-#else
-        return std::isfinite( x ) && x != x + 1;
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static int isInf( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_isinf( x );
-#else
-        return std::isinf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static bool isNormal( float x )
       {
-#ifdef OZ_BUILTIN_MATH
         return __builtin_isnormal( x );
-#else
-        return std::isnormal( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
@@ -313,8 +209,7 @@ namespace oz
           float f;
           int   b;
         };
-        FloatToBits fb = { x };
-        return fb.b;
+        return FloatToBits{ x }.b;
       }
 
       OZ_ALWAYS_INLINE
@@ -325,8 +220,7 @@ namespace oz
           int   b;
           float f;
         };
-        BitsToFloat fb = { i };
-        return fb.f;
+        return BitsToFloat{ i }.f;
       }
 
       OZ_ALWAYS_INLINE

@@ -131,7 +131,7 @@ namespace oz
 
       /**
        * Advance to the next element
-       * Should be overridden in derived classes
+       * Should be implemented in derived classes
        * @return
        */
       OZ_ALWAYS_INLINE
@@ -283,7 +283,7 @@ namespace oz
 
       /**
        * Advance to the next element
-       * Should be overridden in derived classes
+       * Should be implemented in derived classes
        * @return
        */
       OZ_ALWAYS_INLINE

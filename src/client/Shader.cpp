@@ -171,7 +171,7 @@ namespace client
 //     OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
 //     OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
 
-//     OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
+    OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
 //     OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
 //     OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
 
@@ -209,9 +209,9 @@ namespace client
     OZ_REGISTER_PARAMETER( oz_Textures,                 "oz_Textures" );
     OZ_REGISTER_PARAMETER( oz_TextureScales,            "oz_TextureScales" );
 
-    OZ_REGISTER_PARAMETER( oz_SkyLight_dir,             "oz_SkyLight.dir" );
-    OZ_REGISTER_PARAMETER( oz_SkyLight_diffuse,         "oz_SkyLight.diffuse" );
-    OZ_REGISTER_PARAMETER( oz_SkyLight_ambient,         "oz_SkyLight.ambient" );
+    OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,          "oz_CaelumLight.dir" );
+    OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse,      "oz_CaelumLight.diffuse" );
+    OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient,      "oz_CaelumLight.ambient" );
     OZ_REGISTER_PARAMETER( oz_PointLights,              "oz_PointLights" );
 
     OZ_REGISTER_PARAMETER( oz_Specular,                 "oz_Specular" );
@@ -272,13 +272,13 @@ namespace client
 
   void Shader::setAmbientLight( const Vec4& colour )
   {
-    skyLight.ambient = colour;
+    caelumLight.ambient = colour;
   }
 
-  void Shader::setSkyLight( const Vec3& dir, const Vec4& colour )
+  void Shader::setCaelumLight( const Vec3& dir, const Vec4& colour )
   {
-    skyLight.dir = dir;
-    skyLight.diffuse = colour;
+    caelumLight.dir = dir;
+    caelumLight.diffuse = colour;
   }
 
 //   int Shader::addLight( const Point3& pos, const Vec4& colour )
@@ -299,9 +299,9 @@ namespace client
 
   void Shader::updateLights()
   {
-    glUniform3fv( param.oz_SkyLight_dir,     1, skyLight.dir );
-    glUniform4fv( param.oz_SkyLight_diffuse, 1, skyLight.diffuse );
-    glUniform4fv( param.oz_SkyLight_ambient, 1, skyLight.ambient );
+    glUniform3fv( param.oz_CaelumLight_dir,     1, caelumLight.dir );
+    glUniform4fv( param.oz_CaelumLight_diffuse, 1, caelumLight.diffuse );
+    glUniform4fv( param.oz_CaelumLight_ambient, 1, caelumLight.ambient );
 
 //     Map<float, const Light*> localLights( lights.length() );
 
@@ -392,7 +392,11 @@ namespace client
       }
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    int error = glGetError();
+    hard_assert( error == GL_NO_ERROR );
+
+    hard_assert( tf.stack.isEmpty() );
+    tf.stack.dealloc();
 
     log.printEnd( " OK" );
   }

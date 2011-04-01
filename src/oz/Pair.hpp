@@ -32,15 +32,6 @@ namespace oz
       Pair() = default;
 
       /**
-       * Constructor that initialises members.
-       * @param x_
-       * @param y_
-       */
-      OZ_ALWAYS_INLINE
-      explicit Pair( const TypeX& x_, const TypeY& y_ ) : x( x_ ), y( y_ )
-      {}
-
-      /**
        * Copy constructor for constructing from pairs of different types.
        * @param p
        */
@@ -62,6 +53,15 @@ namespace oz
         y = p.y;
         return *this;
       }
+
+      /**
+       * Constructor that initialises members.
+       * @param x_
+       * @param y_
+       */
+      OZ_ALWAYS_INLINE
+      explicit Pair( const TypeX& x_, const TypeY& y_ ) : x( x_ ), y( y_ )
+      {}
 
       /**
        * Equality operator.

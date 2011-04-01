@@ -12,7 +12,7 @@
 #include "matrix/BotClass.hpp"
 
 #include "matrix/Bot.hpp"
-#include "matrix/Names.hpp"
+#include "matrix/NamePool.hpp"
 #include "matrix/Synapse.hpp"
 
 #define OZ_CLASS_SET_STATE( stateBit, varName, defValue ) \
@@ -105,7 +105,7 @@ namespace oz
     clazz->bobSwimAmplitude     = config->get( "bobSwimAmplitude", 0.05f );
 
     clazz->walkMomentum         = config->get( "walkMomentum", 1.5f );
-    clazz->runMomentum          = config->get( "runMomentum", 4.0f );
+    clazz->runMomentum          = config->get( "runMomentum", 3.5f );
     clazz->crouchMomentum       = config->get( "crouchMomentum", 1.2f );
     clazz->jumpMomentum         = config->get( "jumpMomentum", 5.0f );
 
@@ -156,6 +156,9 @@ namespace oz
     clazz->mindType             = config->get( "mindType", "" );
     clazz->mindFunction         = config->get( "mindFunction", "" );
 
+    String sNameList            = config->get( "nameList", "" );
+    clazz->nameList             = sNameList.isEmpty() ? -1 : translator.nameListIndex( sNameList );
+
     fillCommon( clazz, config );
     clazz->flags |= BASE_FLAGS;
 
@@ -188,7 +191,7 @@ namespace oz
     obj->oldState = state;
     obj->stamina  = stamina;
 
-    obj->name     = names.genName();
+    obj->name     = namePool.genName( nameList );
 
     for( int i = 0; i < inventoryItems.length(); ++i ) {
       int index = synapse.addObject( inventoryItems[i], Point3::ORIGIN );

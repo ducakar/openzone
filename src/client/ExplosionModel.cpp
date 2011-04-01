@@ -52,7 +52,7 @@ namespace client
 
     float millis = float( timer.millis - startMillis );
     float radius = millis * obj->dim.z * 0.006f; // 0.006f = 0.001f * Render::WIDE_CULL_FACTOR
-    float alpha  = 1.0f - 0.001f * millis;
+    float alpha  = 1.0f - 0.002f * millis;
 
     glEnable( GL_BLEND );
     glDisable( GL_CULL_FACE );

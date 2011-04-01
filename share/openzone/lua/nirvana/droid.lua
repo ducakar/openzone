@@ -19,7 +19,7 @@ function droid_followCommander( l )
     ozSelfBindObjOverlaps( 50, 50, 50 )
     while ozObjBindNext() do
       if ozObjIsBot() and not ozObjIsSelf() and ozObjGetTypeName() == "droidCommander" then
-	l.commander = ozObjGetIndex()
+        l.commander = ozObjGetIndex()
         break
       end
     end
@@ -40,13 +40,13 @@ function droid_followCommander( l )
       ozSelfActionForward()
 
       if distance > 100 then
-	l.commander = nil
-	l.nearCommander = false
+        l.commander = nil
+        l.nearCommander = false
       elseif distance > 10 then
-	ozSelfStateSetRunning( true )
-	l.nearCommander = false
+        ozSelfStateSetRunning( true )
+        l.nearCommander = false
       else
-	ozSelfStateSetRunning( false )
+        ozSelfStateSetRunning( false )
       end
     end
     return true
@@ -67,11 +67,11 @@ function droid_huntTarget( l )
       ozSelfSetV( ozObjPitchFromSelfEye() )
 
       if distance < 30 then
-	ozSelfActionAttack()
-	ozForceUpdate()
+        ozSelfActionAttack()
+        ozForceUpdate()
       else
-	ozSelfStateSetRunning( true )
-	ozSelfActionForward()
+        ozSelfStateSetRunning( true )
+        ozSelfActionForward()
       end
     else
       l.target = nil
@@ -86,11 +86,11 @@ function droid( l )
     while ozObjBindNext() do
       local typeName = ozObjGetTypeName()
       if ozObjIsBot() and not ozObjIsSelf() and string.sub( typeName, 1, 5 ) ~= "droid" then
-	local distance = ozObjDistanceFromSelf()
-	if distance < minDistance then
-	  l.target = ozObjGetIndex()
-	  minDistance = distance
-	end
+        local distance = ozObjDistanceFromSelf()
+        if distance < minDistance then
+          l.target = ozObjGetIndex()
+          minDistance = distance
+        end
       end
     end
   end

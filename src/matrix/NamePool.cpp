@@ -1,5 +1,5 @@
 /*
- *  Names.cpp
+ *  NamePool.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "matrix/Names.hpp"
+#include "matrix/NamePool.hpp"
 
 #include "matrix/Translator.hpp"
 
@@ -19,32 +19,33 @@
 namespace oz
 {
 
-  Names names;
+  NamePool namePool;
 
-  const String& Names::genName() const
+  const String& NamePool::genName( int list ) const
   {
     hard_assert( names.length() > 0 );
 
-    if( names.length() == 1 ) {
+    if( list == -1 ) {
       return names[0];
     }
 
-    int index = Math::randn( names.length() - 1 ) + 1;
+    int index = listPositions[list] + Math::randn( listPositions[list + 1] - listPositions[list] );
     return names[index];
   }
 
-  void Names::init()
+  void NamePool::init()
   {
     log.println( "Loading name databases {" );
     log.indent();
 
     // a default entry, we need it if nothing is read
     names.add( "" );
+    listPositions.add( names.length() );
 
-    for( int i = 0; i < translator.names.length(); ++i ) {
-      log.print( "'%s' ...", translator.names[i].name.cstr() );
+    for( int i = 0; i < translator.nameLists.length(); ++i ) {
+      log.print( "'%s' ...", translator.nameLists[i].name.cstr() );
 
-      FILE* file = fopen( translator.names[i].path, "r" );
+      FILE* file = fopen( translator.nameLists[i].path, "r" );
       if( file == null ) {
         log.printEnd( " Failed" );
         return;
@@ -62,17 +63,23 @@ namespace oz
       }
       fclose( file );
 
+      listPositions.add( names.length() );
+
       log.printEnd( " OK" );
     }
+
+    hard_assert( listPositions.length() == translator.nameLists.length() + 1 );
 
     log.unindent();
     log.println( "}" );
   }
 
-  void Names::free()
+  void NamePool::free()
   {
     names.clear();
     names.dealloc();
+    listPositions.clear();
+    listPositions.dealloc();
   }
 
 }

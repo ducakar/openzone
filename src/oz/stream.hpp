@@ -119,7 +119,7 @@ namespace oz
         const char* oldPos = pos;
         pos += count;
 
-#ifdef OZ_STREAM_READ_CHECK
+#ifndef NDEBUG
         if( pos > end ) {
           pos -= count;
           throw Exception( "Buffer overrun for " + String( int( ptrdiff_t( pos + count - end ) ) ) +

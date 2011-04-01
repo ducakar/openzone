@@ -92,7 +92,18 @@ namespace oz
       return *value;
     }
     else {
-      throw Exception( "Invalid Model index requested '" + String( name ) + "'" );
+      throw Exception( "Invalid model index requested '" + String( name ) + "'" );
+    }
+  }
+
+  int Translator::nameListIndex( const char* name ) const
+  {
+    const int* value = nameListIndices.find( name );
+    if( value != null ) {
+      return *value;
+    }
+    else {
+      throw Exception( "Invalid name list index requested '" + String( name ) + "'" );
     }
   }
 
@@ -104,7 +115,7 @@ namespace oz
       return new Struct( index, *value, p, rot );
     }
     else {
-      throw Exception( "Invalid Structure class requested '" + String( name ) + "'" );
+      throw Exception( "Invalid structure class requested '" + String( name ) + "'" );
     }
   }
 
@@ -115,7 +126,7 @@ namespace oz
       return new Struct( index, *value, istream );
     }
     else {
-      throw Exception( "Invalid Structure class requested '" + String( name ) + "'" );
+      throw Exception( "Invalid structure class requested '" + String( name ) + "'" );
     }
   }
 
@@ -126,7 +137,7 @@ namespace oz
       return ( *value )->create( index, p );
     }
     else {
-      throw Exception( "Invalid Object class requested '" + String( name ) + "'" );
+      throw Exception( "Invalid object class requested '" + String( name ) + "'" );
     }
   }
 
@@ -137,7 +148,7 @@ namespace oz
       return ( *value )->create( index, istream );
     }
     else {
-      throw Exception( "Invalid Object class requested '" + String( name ) + "'" );
+      throw Exception( "Invalid object class requested '" + String( name ) + "'" );
     }
   }
 
@@ -155,11 +166,7 @@ namespace oz
     terras.alloc( 16 );
     bsps.alloc( 64 );
     models.alloc( 256 );
-
-    matrixScripts.alloc( 64 );
-    nirvanaScripts.alloc( 64 );
-
-    names.alloc( 16 );
+    nameLists.alloc( 16 );
 
     log.println( "Translator mapping resources {" );
     log.indent();
@@ -351,63 +358,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "matrix scripts (*.lua in 'lua/matrix') {" );
-    log.indent();
-
-    dir.open( "lua/matrix" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'lua/matrix'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "lua" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "lua/matrix/" ) + ent;
-
-      matrixScripts.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "nirvana scripts (*.lua in 'lua/nirvana') {" );
-    log.indent();
-
-    dir.open( "lua/nirvana" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'lua/nirvana'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "lua" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "lua/nirvana/" ) + ent;
-
-      nirvanaScripts.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "names (*.txt in 'name') {" );
+    log.println( "name lists (*.txt in 'name') {" );
     log.indent();
 
     dir.open( "name" );
@@ -427,7 +378,8 @@ namespace oz
       String name = ent.baseName();
       String path = String( "name/" ) + ent;
 
-      names.add( Resource( name, path ) );
+      nameListIndices.add( name, nameLists.length() );
+      nameLists.add( Resource( name, path ) );
 
       log.println( "%s", name.cstr() );
     }
@@ -531,11 +483,7 @@ namespace oz
     terras.alloc( 16 );
     bsps.alloc( 64 );
     models.alloc( 256 );
-
-    matrixScripts.alloc( 64 );
-    nirvanaScripts.alloc( 64 );
-
-    names.alloc( 16 );
+    nameLists.alloc( 16 );
 
     log.println( "Translator mapping resources {" );
     log.indent();
@@ -725,63 +673,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "matrix scripts (*.lua in 'lua/matrix') {" );
-    log.indent();
-
-    dir.open( "lua/matrix" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'lua/matrix'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "lua" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "lua/matrix/" ) + ent;
-
-      matrixScripts.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "nirvana scripts (*.lua in 'lua/nirvana') {" );
-    log.indent();
-
-    dir.open( "lua/nirvana" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'lua/nirvana'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "lua" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "lua/nirvana/" ) + ent;
-
-      nirvanaScripts.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "names (*.txt in 'name') {" );
+    log.println( "name lists (*.txt in 'name') {" );
     log.indent();
 
     dir.open( "name" );
@@ -801,7 +693,8 @@ namespace oz
       String name = ent.baseName();
       String path = String( "name/" ) + ent;
 
-      names.add( Resource( name, path ) );
+      nameListIndices.add( name, nameLists.length() );
+      nameLists.add( Resource( name, path ) );
 
       log.println( "%s", name.cstr() );
     }
@@ -905,6 +798,8 @@ namespace oz
     bspIndices.dealloc();
     modelIndices.clear();
     modelIndices.dealloc();
+    nameListIndices.clear();
+    nameListIndices.dealloc();
 
     textures.clear();
     textures.dealloc();
@@ -918,14 +813,9 @@ namespace oz
     bsps.dealloc();
     models.clear();
     models.dealloc();
+    nameLists.clear();
+    nameLists.dealloc();
 
-    matrixScripts.clear();
-    matrixScripts.dealloc();
-    nirvanaScripts.clear();
-    nirvanaScripts.dealloc();
-
-    names.clear();
-    names.dealloc();
     musics.clear();
     musics.dealloc();
 

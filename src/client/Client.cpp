@@ -93,7 +93,7 @@ namespace client
       float soundTime     = float( timer.soundMillis )           * 0.001f;
       float renderTime    = float( timer.renderMillis )          * 0.001f;
       float scheduleTime  = float( timer.renderScheduleMillis )  * 0.001f;
-      float skyTime       = float( timer.renderSkyMillis )       * 0.001f;
+      float caelumTime    = float( timer.renderCaelumMillis )    * 0.001f;
       float terraTime     = float( timer.renderTerraMillis )     * 0.001f;
       float structsTime   = float( timer.renderStructsMillis )   * 0.001f;
       float objectsTime   = float( timer.renderObjectsMillis )   * 0.001f;
@@ -142,7 +142,7 @@ namespace client
       log.println( "    %6.2f %%  [M:2] - sound",         soundTime     / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2] - render",        renderTime    / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2]   + schedule",    scheduleTime  / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2]   + sky",         skyTime       / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:2]   + caelum",      caelumTime    / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2]   + terra",       terraTime     / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2]   + structs",     structsTime   / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2]   + objects",     objectsTime   / activeTime * 100.0f );
@@ -157,7 +157,7 @@ namespace client
       log.unindent();
       log.println( "}" );
 
-      log.printlnETD( OZ_APPLICATION_NAME " " OZ_APPLICATION_VERSION " finished at" );
+      log.printlnETD( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " finished at" );
     }
   }
 
@@ -247,7 +247,7 @@ namespace client
     uint createTime = SDL_GetTicks();
 
 #ifdef OZ_MINGW
-    const char* homeVar = getenv( "USERPROFILE" );
+    const char* homeVar = getenv( "APPDATA" );
 #else
     const char* homeVar = getenv( "HOME" );
 #endif
@@ -292,7 +292,7 @@ namespace client
       printf( "Log file '%s'\n", logPath.cstr() );
     }
 
-    log.printlnETD( OZ_APPLICATION_NAME " " OZ_APPLICATION_VERSION " started at" );
+    log.printlnETD( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started at" );
 
     buffer.alloc( 4 * 1024 * 1024 );
 
@@ -307,6 +307,7 @@ namespace client
         log.println( "Invalid configuration file version, will be overwritten on exit" );
         config.clear();
         config.add( "_version", OZ_APPLICATION_VERSION );
+        config.add( "gameStage.autoload", "false" );
       }
     }
     else {
@@ -340,7 +341,7 @@ namespace client
     }
     ui::keyboard.init();
 
-    const char* data = config.getSet( "dir.data", OZ_DEFAULT_DATA_DIR );
+    const char* data = config.getSet( "dir.data", OZ_INSTALL_PREFIX "/share/" OZ_APPLICATION_NAME );
 
     log.print( "Setting working directory to data directory '%s' ...", data );
     if( chdir( data ) != 0 ) {

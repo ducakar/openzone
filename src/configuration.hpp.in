@@ -1,10 +1,16 @@
 #pragma once
 
-// application name
+// short application name (for internal use)
 #define OZ_APPLICATION_NAME     "@OZ_APPLICATION_NAME@"
 
 // version
 #define OZ_APPLICATION_VERSION  "@OZ_APPLICATION_VERSION@"
+
+// full application name
+#define OZ_APPLICATION_TITLE    "@OZ_APPLICATION_TITLE@"
+
+// default data directory
+#define OZ_INSTALL_PREFIX       "@CMAKE_INSTALL_PREFIX@"
 
 // resource dir (configuration, saved games, logs)
 #define OZ_RC_DIR               "@OZ_RC_DIR@"
@@ -15,17 +21,14 @@
 // main configuration file name
 #define OZ_CLIENT_CONFIG_FILE   "@OZ_CLIENT_CONFIG_FILE@"
 
-// default data directory
-#define OZ_DEFAULT_DATA_DIR     "@OZ_DEFAULT_DATA_DIR@"
+// whether to build tools (build prebuild support)
+#cmakedefine                    OZ_BUILD_TOOLS
 
 // enable cylinder collision model
-#cmakedefine                    OZ_ENABLE_CYLINDER
+#cmakedefine                    OZ_CYLINDER
 
 // enable/disable networking
 #cmakedefine                    OZ_NETWORKING
-
-// whether to build tools (build prebuild support)
-#cmakedefine                    OZ_BUILD_TOOLS
 
 // fix error in vorbisfile.h
 #ifdef OZ_MINGW

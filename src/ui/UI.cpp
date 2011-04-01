@@ -36,7 +36,16 @@ namespace ui
     if( keyboard.keys[SDLK_TAB] & ~keyboard.oldKeys[SDLK_TAB] ) {
       mouse.doShow = !mouse.doShow;
     }
-    if( mouse.doShow ) {
+    if( mouse.doShow != isFreelook ) {
+      isFreelook = mouse.doShow;
+
+      foreach( area, root->children.iter() ) {
+        if( !( area->flags & Area::PINNED_BIT ) ) {
+          area->show( isFreelook );
+        }
+      }
+    }
+    if( isFreelook ) {
       root->passMouseEvents();
     }
     Area::update();
@@ -57,7 +66,7 @@ namespace ui
         tf.applyCamera();
 
         shader.setAmbientLight( Vec4( 0.6f, 0.5f, 0.6f, 1.0f ) );
-        shader.setSkyLight( Vec3( 0.67f, -0.67f, -0.33f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
+        shader.setCaelumLight( Vec3( 0.67f, -0.67f, -0.33f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
         shader.updateLights();
 
         glUniform1f( param.oz_Fog_start, 1000000.0f );
@@ -82,6 +91,8 @@ namespace ui
 
   void UI::load()
   {
+    isFreelook = false;
+
     mouse.load();
 
     hud = new HudArea();
@@ -108,6 +119,8 @@ namespace ui
     if( !font.init() ) {
       throw Exception( "Failed to load font" );
     }
+
+    isFreelook = false;
 
     root = new Area( camera.width, camera.height );
     loadingScreen = new LoadingArea();

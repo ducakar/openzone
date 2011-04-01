@@ -12,7 +12,6 @@
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
-#include <ctime>
 
 namespace oz
 {

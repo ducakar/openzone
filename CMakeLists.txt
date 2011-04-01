@@ -3,25 +3,28 @@ cmake_minimum_required( VERSION 2.8 )
 project( openzone C CXX )
 
 option( OZ_ECLIPSE_HIGHLIGHTING "Define custom 'keywords' as macros to highlight them in Eclipse IDE" OFF )
-option( OZ_ALWAYS_INLINE "Enable inlining in debug mode for critical functions" ON )
-option( OZ_ALLOC_STATISTICS "Use overloads for default new and delete that record heap usage statistics" ON )
 option( OZ_TRACE_LEAKS "Use overloads for default new and delete that saves stacktrace for each new call and trace memory leaks" ON )
 option( OZ_POOL_ALLOC "Enable Pool and new/delete overloads that use it. Otherwise use a dummy class that calls generic new/delete." ON )
-option( OZ_BUILTIN_MATH "Use GCC/clang built-in math functions (no need to include <cmath>, possibly faster math calls in debug mode)" ON )
 option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and networking" OFF )
-option( OZ_STREAM_READ_CHECK "Check for buffer overruns when reading from InputStream" ON )
-option( OZ_VERBOSE_CONFIG "Print warnings about redundant variables in configuration files" ON )
 
 if( NOT OZ_APPLICATION_NAME )
-  set( OZ_APPLICATION_NAME "OpenZone" CACHE STRING "" FORCE )
+  set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
 endif( NOT OZ_APPLICATION_NAME )
 
 if( NOT OZ_APPLICATION_VERSION )
-  set( OZ_APPLICATION_VERSION "0.1.1" CACHE STRING "" FORCE )
+  set( OZ_APPLICATION_VERSION "0.1.2" CACHE STRING "" FORCE )
 endif( NOT OZ_APPLICATION_VERSION )
 
+if( NOT OZ_APPLICATION_TITLE )
+  set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
+endif( NOT OZ_APPLICATION_TITLE )
+
 if( NOT OZ_RC_DIR )
-  set( OZ_RC_DIR ".openzone" CACHE STRING "" FORCE )
+  if( WIN32 )
+    set( OZ_RC_DIR "OpenZone" CACHE STRING "" FORCE )
+  else( WIN32 )
+    set( OZ_RC_DIR ".config/openzone" CACHE STRING "" FORCE )
+  endif( WIN32 )
 endif( NOT OZ_RC_DIR )
 
 if( NOT OZ_CLIENT_LOG_FILE )
@@ -32,11 +35,7 @@ if( NOT OZ_CLIENT_CONFIG_FILE )
   set( OZ_CLIENT_CONFIG_FILE "client.rc" CACHE STRING "" FORCE )
 endif( NOT OZ_CLIENT_CONFIG_FILE )
 
-if( NOT OZ_DEFAULT_DATA_DIR )
-  set( OZ_DEFAULT_DATA_DIR "${CMAKE_INSTALL_PREFIX}/share/openzone" CACHE STRING "" FORCE )
-endif( NOT OZ_DEFAULT_DATA_DIR )
-
-option( OZ_ENABLE_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
+option( OZ_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
 
 option( OZ_NETWORKING "Enable networking" OFF )
 
@@ -49,7 +48,6 @@ option( OZ_INSTALL_LIBOZ "Install liboz" ON )
 option( OZ_INSTALL_CLIENT "Install openzone client executable" OFF )
 option( OZ_INSTALL_SERVER "Install openzone server executable" OFF )
 option( OZ_INSTALL_DATA "Install game data" ON )
-option( OZ_INSTALL_OPENAL "Include OpenAL installation in NSIS installer" ON )
 
 set( CPACK_PACKAGE_NAME "${OZ_APPLICATION_NAME}" )
 set( CPACK_PACKAGE_VERSION "${OZ_APPLICATION_VERSION}" )
@@ -255,7 +253,6 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings} ${in
 
 # sources
 add_subdirectory( src )
-add_subdirectory( share/openzone )
 
 # installation
 include( install_files.cmake )

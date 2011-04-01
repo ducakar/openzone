@@ -39,7 +39,7 @@ namespace oz
     soundMillis           = 0;
     renderMillis          = 0;
     renderScheduleMillis  = 0;
-    renderSkyMillis       = 0;
+    renderCaelumMillis    = 0;
     renderTerraMillis     = 0;
     renderStructsMillis   = 0;
     renderObjectsMillis   = 0;

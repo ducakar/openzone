@@ -396,11 +396,7 @@ namespace oz
 
   static void ozAllocUnittest()
   {
-#ifdef OZ_ALLOC_STATISTICS
     static const size_t STAT_META_SIZE = Alloc::ALIGNMENT;
-#else
-    static const size_t STAT_META_SIZE = 0;
-#endif
 
     Test* array = Alloc::alloc<Test>( 10 );
     hard_assert( Alloc::amount == 10 * sizeof( Test ) + STAT_META_SIZE );

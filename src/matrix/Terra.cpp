@@ -70,7 +70,7 @@ namespace oz
     float heightStep = terraConfig.get( "step", 0.5f );
     float heightBias = terraConfig.get( "bias", 0.0f );
 
-    // just to mark them as used for OZ_VERBOSE_CONFIG
+    // just to mark them used to prevent unused config variables warning
     terraConfig.get( "detailTexture", "" );
     terraConfig.get( "mapTexture", "" );
     terraConfig.get( "waterTexture", "" );

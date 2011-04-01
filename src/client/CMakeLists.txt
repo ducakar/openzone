@@ -9,6 +9,8 @@ add_library( client STATIC
   BotAudio.hpp
   BotProxy.cpp
   BotProxy.hpp
+  Caelum.cpp
+  Caelum.hpp
   Camera.cpp
   Camera.hpp
   Client.cpp
@@ -56,8 +58,6 @@ add_library( client STATIC
   Shader.hpp
   Shape.cpp
   Shape.hpp
-  Sky.cpp
-  Sky.hpp
   Sound.cpp
   Sound.hpp
   SparkModel.cpp

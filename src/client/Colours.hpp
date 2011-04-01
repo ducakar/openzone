@@ -32,7 +32,7 @@ namespace client
 
     static Vec4 diffuse;
     static Vec4 ambient;
-    static Vec4 sky;
+    static Vec4 caelum;
     static Vec4 water;
 
     static Vec4 waterBlend1;

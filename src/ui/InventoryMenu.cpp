@@ -42,7 +42,7 @@ namespace ui
 
   bool InventoryMenu::onMouseEvent()
   {
-    if( camera.state != Camera::BOT || camera.bot == -1 || !mouse.doShow ) {
+    if( camera.state != Camera::BOT || camera.bot == -1 ) {
       return false;
     }
 
@@ -92,7 +92,7 @@ namespace ui
 
   void InventoryMenu::onDraw()
   {
-    if( camera.state != Camera::BOT || camera.bot == -1 || !mouse.doShow ) {
+    if( camera.state != Camera::BOT || camera.bot == -1 ) {
       tagged = -1;
       row = 0;
       return;

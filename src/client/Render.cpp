@@ -19,7 +19,7 @@
 #include "client/Colours.hpp"
 #include "client/Shape.hpp"
 
-#include "client/Sky.hpp"
+#include "client/Caelum.hpp"
 #include "client/Terra.hpp"
 #include "client/BSP.hpp"
 
@@ -96,12 +96,12 @@ namespace client
     Vec4 clearColour;
 
     if( shader.isInWater ) {
-      visibility = waterNightVisibility + sky.ratio * ( waterDayVisibility - waterNightVisibility );
+      visibility = waterNightVisibility + caelum.ratio * ( waterDayVisibility - waterNightVisibility );
       clearColour = Colours::water;
     }
     else {
-      visibility = nightVisibility + sky.ratio * ( dayVisibility - nightVisibility );
-      clearColour = Colours::sky;
+      visibility = nightVisibility + caelum.ratio * ( dayVisibility - nightVisibility );
+      clearColour = Colours::caelum;
     }
 
     // frustum
@@ -116,7 +116,7 @@ namespace client
     span.minY = max( span.minY - 2, 0 );
     span.maxY = min( span.maxY + 2, Orbis::MAX - 1 );
 
-    sky.update();
+    caelum.update();
 
     // drawnStructs
     if( drawnStructs.length() < orbis.structs.length() ) {
@@ -158,7 +158,7 @@ namespace client
       camera.maxDist = 100.0f;
       tf.projection();
 
-      sky.draw();
+      caelum.draw();
 
       camera.maxDist = visibility;
     }
@@ -178,7 +178,7 @@ namespace client
       tf.applyCamera();
 
       shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
-      shader.setSkyLight( sky.lightDir, Colours::diffuse );
+      shader.setCaelumLight( caelum.lightDir, Colours::diffuse );
       shader.updateLights();
 
       glUniform1f( param.oz_Specular, 1.0f );
@@ -193,7 +193,7 @@ namespace client
     glEnable( GL_DEPTH_TEST );
 
     currentTime = SDL_GetTicks();
-    timer.renderSkyMillis += currentTime - beginTime;
+    timer.renderCaelumMillis += currentTime - beginTime;
     beginTime = currentTime;
 
     hard_assert( !glIsEnabled( GL_BLEND ) );
@@ -385,8 +385,8 @@ namespace client
 
     frustum.init();
     shape.load();
-    sky.load( "sky" );
     terra.load();
+    caelum.load( "caelum" );
 
     structs.alloc( 64 );
     objects.alloc( 8192 );
@@ -405,8 +405,8 @@ namespace client
 
     drawnStructs.dealloc();
 
+    caelum.unload();
     terra.unload();
-    sky.unload();
     shape.unload();
 
     structs.clear();
@@ -456,7 +456,7 @@ namespace client
       throw Exception( "Window creation failed" );
     }
 
-    SDL_WM_SetCaption( OZ_APPLICATION_NAME " " OZ_APPLICATION_VERSION, null );
+    SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION, null );
 
     screenX   = surface->w;
     screenY   = surface->h;
@@ -519,7 +519,7 @@ namespace client
       throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
     }
     if( !isFBOSupported ) {
-      log.println( "Error: Frame buffer object (GL_ARB_framebuffer_object) is not supported" );
+      log.println( "Error: Framebuffer object (GL_ARB_framebuffer_object) is not supported" );
       throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
     }
     if( !isFloatTexSupported ) {
@@ -597,7 +597,7 @@ namespace client
     OZ_REGISTER_GLFUNC( glGetProgramInfoLog,       PFNGLGETPROGRAMINFOLOGPROC       );
     OZ_REGISTER_GLFUNC( glGetUniformLocation,      PFNGLGETUNIFORMLOCATIONPROC      );
     OZ_REGISTER_GLFUNC( glBindAttribLocation,      PFNGLBINDFRAGDATALOCATIONPROC    );
-//     OZ_REGISTER_GLFUNC( glBindFragDataLocation,    PFNGLBINDFRAGDATALOCATIONPROC    );
+    OZ_REGISTER_GLFUNC( glBindFragDataLocation,    PFNGLBINDFRAGDATALOCATIONPROC    );
     OZ_REGISTER_GLFUNC( glUseProgram,              PFNGLUSEPROGRAMPROC              );
 
     OZ_REGISTER_GLFUNC( glActiveTexture,           PFNGLACTIVETEXTUREPROC           );

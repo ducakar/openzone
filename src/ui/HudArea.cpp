@@ -230,7 +230,7 @@ namespace ui
 
   HudArea::HudArea() : Area( camera.width, camera.height )
   {
-    flags |= IGNORE_BIT;
+    flags = IGNORE_BIT | PINNED_BIT;
     setFont( Font::SANS );
 
     crossTexId = context.loadTexture( "ui/icon/crosshair.ozcTex" );

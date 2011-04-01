@@ -43,7 +43,7 @@ namespace oz
   // checks if AABB and Object overlap
   bool Collider::overlapsAABBObj( const Object* sObj ) const
   {
-#ifdef OZ_ENABLE_CYLINDER
+#ifdef OZ_CYLINDER
     if( flags & sObj->flags & Object::CYLINDER_BIT ) {
       Vec3  relPos  = aabb.p - sObj->p;
       float sumDimX = aabb.dim.x + sObj->dim.x;
@@ -324,7 +324,7 @@ namespace oz
 
     int   firstPlane  = 0;
 
-#ifdef OZ_ENABLE_CYLINDER
+#ifdef OZ_CYLINDER
     if( flags & sObj->flags & Object::CYLINDER_BIT ) {
       firstPlane = 2;
 

@@ -28,7 +28,7 @@
 #include "ozconfig.hpp"
 
 /*
- * The most essential C/C++ definitions (size_t, ptrdiff_t, NULL and offsetof)
+ * The most essential C/C++ definitions (std::nullptr_t, size_t, ptrdiff_t, NULL and offsetof)
  */
 #include <cstddef>
 
@@ -59,12 +59,6 @@ namespace oz
    * It is equivalent to nullptr/NULL but it looks prettier.
    */
 # define null nullptr
-
-  /**
-   * \def thread_local
-   * Thread-local modifier for a type.
-   */
-# define thread_local __thread
 
   /**
    * \def soft_assert
@@ -133,6 +127,11 @@ namespace oz
       return false;
     }
   };
+
+  /**
+   * nullptr_t
+   */
+  using std::nullptr_t;
 
   /**
    * signed byte
