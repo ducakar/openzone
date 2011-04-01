@@ -17,8 +17,8 @@
 namespace oz
 {
 
-  const float Object::MOMENTUM_INTENSITY_COEF = -0.1f;
-  const float Object::DAMAGE_INTENSITY_COEF   = 0.02f;
+  const float Object::MOMENTUM_INTENSITY_COEF = -0.10f;
+  const float Object::DAMAGE_INTENSITY_COEF   = +0.02f;
 
   Pool<Object::Event, 4096> Object::Event::pool;
   Pool<Object, 2048>        Object::pool;

@@ -27,6 +27,8 @@ namespace ui
   DebugFrame::DebugFrame() : Frame( 8, -18 - 6 * ( Font::MONO_HEIGHT + 2 ),
                                     560, 10 + 6 * ( Font::MONO_HEIGHT + 2 ) )
   {
+    flags = PINNED_BIT;
+
     setFont( Font::MONO );
   }
 

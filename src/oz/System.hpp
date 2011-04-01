@@ -24,8 +24,8 @@ namespace oz
 
       static const char* const SIGNALS[][2];
 
-      static thread_local void* framePtrs[TRACE_SIZE + 1];
-      static thread_local char  output[TRACE_BUFFER_SIZE];
+      static OZ_THREAD_LOCAL void* framePtrs[TRACE_SIZE + 1];
+      static OZ_THREAD_LOCAL char  output[TRACE_BUFFER_SIZE];
 
       static void signalHandler( int signum );
 

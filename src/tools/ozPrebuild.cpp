@@ -16,7 +16,7 @@
 
 #include "client/Context.hpp"
 #include "client/Compiler.hpp"
-#include "client/Sky.hpp"
+#include "client/Caelum.hpp"
 #include "client/Terra.hpp"
 #include "client/BSP.hpp"
 #include "client/OBJ.hpp"
@@ -31,6 +31,8 @@
 using namespace oz;
 
 bool Alloc::isLocked = true;
+
+static bool forceRebuild = false;
 
 static void prebuildTextures( const char* srcDir, const char* destDir,
                               bool wrap, int magFilter, int minFilter )
@@ -63,7 +65,8 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
     if( stat( srcPath, &srcInfo ) != 0 ) {
       throw Exception( "Source texture '" + srcPath + "' stat error" );
     }
-    if( stat( destPath, &destInfo ) == 0 && destInfo.st_mtime > srcInfo.st_mtime ) {
+    if( !forceRebuild && stat( destPath, &destInfo ) == 0 && destInfo.st_mtime > srcInfo.st_mtime )
+    {
       continue;
     }
 
@@ -116,11 +119,11 @@ static void prebuildModels()
 
     if( stat( path + "/data.obj", &srcInfo0 ) == 0 ) {
       if( stat( path + "/data.mtl", &srcInfo1 ) != 0 ||
-        stat( path + "/config.rc", &configInfo ) != 0 )
+          stat( path + "/config.rc", &configInfo ) != 0 )
       {
         throw Exception( "OBJ model '" + ent.baseName() + "' source files missing" );
       }
-      if( stat( dirName + ent.baseName() + ".ozcSMM", &destInfo ) == 0 &&
+      if( !forceRebuild && stat( dirName + ent.baseName() + ".ozcSMM", &destInfo ) == 0 &&
           configInfo.st_mtime < destInfo.st_mtime &&
           srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
       {
@@ -131,12 +134,12 @@ static void prebuildModels()
     }
     else if( stat( path + "/tris.md2", &srcInfo0 ) == 0 ) {
       if( stat( path + "/skin.jpg", &srcInfo1 ) != 0 ||
-        stat( path + "/config.rc", &configInfo ) != 0 )
+          stat( path + "/config.rc", &configInfo ) != 0 )
       {
         throw Exception( "MD2 model '" + ent.baseName() + "' source files missing" );
       }
-      if( ( stat( dirName + ent.baseName() + ".ozcSMM", &destInfo ) == 0 ||
-            stat( dirName + ent.baseName() + ".ozcMD2", &destInfo ) == 0 ) &&
+      if( !forceRebuild && ( stat( dirName + ent.baseName() + ".ozcSMM", &destInfo ) == 0 ||
+          stat( dirName + ent.baseName() + ".ozcMD2", &destInfo ) == 0 ) &&
           configInfo.st_mtime < destInfo.st_mtime &&
           srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
       {
@@ -185,7 +188,7 @@ static void prebuildBSPs()
     if( stat( srcPath0, &srcInfo0 ) != 0 || stat( srcPath1, &srcInfo1 ) != 0 ) {
       throw Exception( "Source BSP stat error" );
     }
-    if( stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
+    if( !forceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
         destInfo0.st_mtime > srcInfo0.st_mtime && destInfo0.st_mtime > srcInfo1.st_mtime &&
         destInfo1.st_mtime >= destInfo0.st_mtime )
     {
@@ -202,13 +205,13 @@ static void prebuildBSPs()
   log.println( "}" );
 }
 
-static void prebuildTerras( const char* path )
+static void prebuildTerras()
 {
-  log.println( "Prebuilding Terras in '%s' {", path );
+  log.println( "Prebuilding Terra {" );
   log.indent();
 
-  String srcDir = path;
-  Directory dir( path );
+  String srcDir = "terra";
+  Directory dir( srcDir );
 
   if( !dir.isOpened() ) {
     throw Exception( "Cannot open directory '" + srcDir + "'" );
@@ -232,7 +235,7 @@ static void prebuildTerras( const char* path )
     if( stat( srcPath, &srcInfo ) != 0 ) {
       throw Exception( "Terra .rc stat error" );
     }
-    if( stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
+    if( !forceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
         destInfo0.st_mtime > srcInfo.st_mtime && destInfo1.st_mtime >= destInfo0.st_mtime )
     {
       continue;
@@ -242,6 +245,58 @@ static void prebuildTerras( const char* path )
 
     orbis.terra.prebuild( name );
     client::terra.prebuild( name );
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
+static void prebuildLua( const char* path )
+{
+  log.println( "Prebuilding Lua scripts '%s' {", path );
+  log.indent();
+
+  bool doRebuild = forceRebuild;
+
+  String srcDir = path;
+  String destFile = srcDir + ".luac";
+  Directory dir( path );
+
+  if( !dir.isOpened() ) {
+    throw Exception( "Cannot open directory '" + srcDir + "'" );
+  }
+
+  srcDir = srcDir + "/";
+
+  struct stat destInfo;
+  if( stat( destFile, &destInfo ) != 0 ) {
+    doRebuild = true;
+  }
+
+  String sources;
+
+  foreach( ent, dir.citer() ) {
+    if( !ent.hasExtension( "lua" ) ) {
+      continue;
+    }
+
+    String srcPath = srcDir + ent;
+
+    struct stat srcInfo;
+    if( stat( srcPath, &srcInfo ) != 0 ) {
+      throw Exception( "Lua .lua stat error" );
+    }
+    if( destInfo.st_mtime <= srcInfo.st_mtime )
+    {
+      doRebuild = true;
+    }
+
+    sources = sources + " " + srcPath;
+  }
+
+  if( doRebuild ) {
+    log.println( "luac -o %s%s", destFile.cstr(), sources.cstr() );
+    system( "luac -o " + destFile + sources );
   }
 
   log.unindent();
@@ -263,16 +318,21 @@ int main( int argc, char** argv )
 
   try {
     if( argc == 2 && String::equals( argv[1], "--help" ) ) {
-      log.println( "Usage: %s [data_directory]", program_invocation_short_name );
+      log.println( "Usage: %s [options] [data_directory]", program_invocation_short_name );
+      log.println( "-f" );
+      log.println( "  Force rebuild of all resources" );
       log.println();
       return -1;
     }
+    else if( argc >= 2 && String::equals( argv[1], "-f" ) ) {
+      forceRebuild = true;
+    }
 
-    log.printlnETD( OZ_APPLICATION_NAME " Prebuild started at" );
+    log.printlnETD( OZ_APPLICATION_TITLE " Prebuild started at" );
 
-    String dataDir = OZ_DEFAULT_DATA_DIR;
-    if( argc >= 2 ) {
-      dataDir = argv[1];
+    String dataDir = OZ_INSTALL_PREFIX "/share/" OZ_APPLICATION_NAME;
+    if( argc >= 2 && !String::equals( argv[argc - 1], "-f" ) ) {
+      dataDir = argv[argc - 1];
     }
 
     log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
@@ -293,7 +353,7 @@ int main( int argc, char** argv )
     config.add( "screen.bpp", "32" );
     config.add( "screen.full", "false" );
     client::render.init();
-    SDL_WM_SetCaption( "OpenZone :: Prebuilding data ...", null );
+    SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Prebuilding data ...", null );
 
     buffer.alloc( 10 * 1024 * 1024 );
     matrix.init();
@@ -303,11 +363,14 @@ int main( int argc, char** argv )
     prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
     prebuildTextures( "data/textures/oz", "bsp/tex", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
 
-    client::Sky::prebuild( "sky" );
-    prebuildTerras( "terra" );
+    client::Caelum::prebuild( "caelum" );
+    prebuildTerras();
 
     prebuildBSPs();
     prebuildModels();
+
+    prebuildLua( "lua/matrix" );
+    prebuildLua( "lua/nirvana" );
 
     long endTime = SDL_GetTicks();
 
@@ -350,7 +413,7 @@ int main( int argc, char** argv )
   config.clear();
 
   Alloc::printStatistics();
-  log.printlnETD( OZ_APPLICATION_NAME " Prebuild finished at" );
+  log.printlnETD( OZ_APPLICATION_TITLE " Prebuild finished at" );
 
   Alloc::isLocked = true;
   Alloc::printLeaks();

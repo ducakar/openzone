@@ -40,6 +40,10 @@ namespace ui
 
   class UI
   {
+    private:
+
+      bool isFreelook;
+
     public:
 
       Area*          root;

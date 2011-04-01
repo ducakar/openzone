@@ -25,6 +25,8 @@ namespace ui
 
   LoadingArea::LoadingArea() : Area( camera.width, camera.height )
   {
+    flags = PINNED_BIT;
+
     setFont( Font::TITLE );
   }
 

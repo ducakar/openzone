@@ -1,5 +1,5 @@
 /*
- *  Sky.cpp
+ *  Caelum.cpp
  *
  *  [description]
  *
@@ -9,26 +9,26 @@
 
 #include "stable.hpp"
 
-#include "matrix/Sky.hpp"
+#include "matrix/Caelum.hpp"
 
 #include "matrix/Timer.hpp"
 
 namespace oz
 {
 
-  void Sky::update()
+  void Caelum::update()
   {
     time = Math::mod( time + Timer::TICK_TIME, period );
   }
 
-  void Sky::read( InputStream* istream )
+  void Caelum::read( InputStream* istream )
   {
     time    = istream->readFloat();
     period  = istream->readFloat();
     heading = istream->readFloat();
   }
 
-  void Sky::write( OutputStream* ostream )
+  void Caelum::write( OutputStream* ostream )
   {
     ostream->writeFloat( time );
     ostream->writeFloat( period );

@@ -1,5 +1,5 @@
 /*
- *  Names.hpp
+ *  Caelum.hpp
  *
  *  [description]
  *
@@ -14,23 +14,19 @@
 namespace oz
 {
 
-  class Names
+  class Caelum
   {
-    private:
-
-      static const int LINE_LENGTH = 64;
-
-      Vector<String> names;
-
     public:
 
-      const String& genName() const;
+      float time;
+      float period;
+      float heading;
 
-      void init();
-      void free();
+      void update();
+
+      void read( InputStream* istream );
+      void write( OutputStream* ostream );
 
   };
-
-  extern Names names;
 
 }

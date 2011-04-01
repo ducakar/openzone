@@ -127,7 +127,7 @@ namespace client
     beginTime = SDL_GetTicks();
 
     if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
-      orbis.sky.time += orbis.sky.period * 0.125f;
+      orbis.caelum.time += orbis.caelum.period * 0.125f;
     }
 
     camera.update();

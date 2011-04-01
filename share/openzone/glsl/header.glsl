@@ -22,26 +22,26 @@ struct Transform
   mat4 complete;
 };
 
-uniform Transform oz_Transform;
+uniform Transform       oz_Transform;
 
-uniform vec3      oz_CameraPosition;
+uniform vec3            oz_CameraPosition;
 
 /*
  * Colour
  */
-uniform vec4      oz_Colour = vec4( 1.0, 1.0, 1.0, 1.0 );
+uniform vec4            oz_Colour = vec4( 1.0, 1.0, 1.0, 1.0 );
 
 /*
  * Texturing
  */
-uniform bool      oz_IsTextureEnabled = false;
-uniform sampler2D oz_Textures[4];
-uniform float     oz_TextureScales[4] = float[4]( 1.0, 1.0, 1.0, 1.0 );
+uniform bool            oz_IsTextureEnabled = false;
+uniform sampler2D       oz_Textures[4];
+uniform float           oz_TextureScales[4] = float[4]( 1.0, 1.0, 1.0, 1.0 );
 
 /*
  * Lighting
  */
-struct SkyLight
+struct CaelumLight
 {
   vec3 dir;
   vec4 diffuse;
@@ -54,10 +54,10 @@ struct Light
   vec4 diffuse;
 };
 
-uniform SkyLight  oz_SkyLight;
-uniform Light     oz_PointLights[8];
+uniform CaelumLight     oz_CaelumLight;
+uniform Light           oz_PointLights[8];
 
-uniform float     oz_Specular = 0.0;
+uniform float           oz_Specular = 0.0;
 
 /*
  * Fog
@@ -68,22 +68,22 @@ struct Fog {
   vec4  colour;
 };
 
-uniform Fog       oz_Fog;
+uniform Fog             oz_Fog;
 
 /*
  * Water
  */
-uniform float     oz_WaveBias;
+uniform float           oz_WaveBias;
 
 /*
  * Wind
  */
-uniform vec4      oz_Wind;      // vec4( vec2( dirXY ), amplitude, phi )
+uniform vec4            oz_Wind;      // vec4( vec2( dirXY ), amplitude, phi )
 
 /*
  * MD2 animation
  */
-uniform vec3      oz_MD2Anim;   // vec3( firstFrame, secondFrame, interpolation )
+uniform vec3            oz_MD2Anim;   // vec3( firstFrame, secondFrame, interpolation )
 
 /*
  * FUNCTIONS
@@ -97,16 +97,16 @@ vec4 greyscale( vec4 colour )
 
 vec4 skyLightColour( vec3 normal )
 {
-  float diffuseFactor = max( dot( -oz_SkyLight.dir, normal ), 0.0 );
-  vec4 colour = diffuseFactor * oz_SkyLight.diffuse + oz_SkyLight.ambient;
+  float diffuseFactor = max( dot( -oz_CaelumLight.dir, normal ), 0.0 );
+  vec4 colour = diffuseFactor * oz_CaelumLight.diffuse + oz_CaelumLight.ambient;
   return min( colour, vec4( 1.0, 1.0, 1.0, 1.0 ) );
 }
 
 vec4 specularColour( vec3 normal, vec3 toCamera )
 {
-  vec3  reflectedLight = reflect( oz_SkyLight.dir, normal );
+  vec3  reflectedLight = reflect( oz_CaelumLight.dir, normal );
   float factor = oz_Specular * max( dot( reflectedLight, toCamera ), 0.0 );
-  return vec4( 1.0, 1.0, 1.0, 1.0 ) + vec4( factor * oz_SkyLight.diffuse.xyz, 0.0 );
+  return vec4( 1.0, 1.0, 1.0, 1.0 ) + vec4( factor * oz_CaelumLight.diffuse.xyz, 0.0 );
 }
 
 vec4 applyFog( vec4 colour, float dist )

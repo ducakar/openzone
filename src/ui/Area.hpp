@@ -38,6 +38,8 @@ namespace ui
       static const int GRAB_BIT        = 0x08;
       // do not draw
       static const int HIDDEN_BIT      = 0x10;
+      // pin (show in both freelook and interface mode)
+      static const int PINNED_BIT      = 0x20;
 
       // text alignment
       static const int ALIGN_LEFT      = 0x00;

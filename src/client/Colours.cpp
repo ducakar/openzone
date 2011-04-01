@@ -30,7 +30,7 @@ namespace client
 
   Vec4 Colours::diffuse = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
   Vec4 Colours::ambient = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-  Vec4 Colours::sky = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+  Vec4 Colours::caelum = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
   Vec4 Colours::water = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
 
   Vec4 Colours::waterBlend1 = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );

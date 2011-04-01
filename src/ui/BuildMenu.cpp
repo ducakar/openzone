@@ -42,20 +42,10 @@ namespace ui
     }
   }
 
-  bool BuildMenu::onMouseEvent()
-  {
-    if( mouse.doShow ) {
-      return Frame::onMouseEvent();
-    }
-    return false;
-  }
-
   void BuildMenu::onDraw()
   {
-    if( mouse.doShow ) {
-      Frame::onDraw();
-      print( 50, -10, ALIGN_CENTRE, "Create" );
-    }
+    Frame::onDraw();
+    print( 50, -10, ALIGN_CENTRE, "Create" );
   }
 
   BuildMenu::BuildMenu() : Frame( -228, -258, 220, 250 )

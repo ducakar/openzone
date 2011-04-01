@@ -1,8 +1,8 @@
 /*
  *  Alloc.cpp
  *
- *  Overload default new and delete operators for slightly better performance (ifndef OZ_ALLOC) or
- *  provide heap allocation statistics (ifdef OZ_ALLOC).
+ *  Overload default new and delete operators to provide allocation statistics and optionally
+ *  check for leaks and mismatched new/delete (if OZ_TRACE_LEAKS is turned on).
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -77,13 +77,6 @@ namespace oz
   OZ_WEAK_SYMBOL
   bool Alloc::isLocked  = false;
 
-#ifndef OZ_ALLOC_STATISTICS
-
-  void Alloc::printStatistics()
-  {}
-
-#else
-
   void Alloc::printStatistics()
   {
     log.println( "Alloc statistics {" );
@@ -102,8 +95,6 @@ namespace oz
     log.unindent();
     log.println( "}" );
   }
-
-#endif
 
 #ifndef OZ_TRACE_LEAKS
 
@@ -190,9 +181,7 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   hard_assert( !Alloc::isLocked );
   hard_assert( size != 0 );
 
-#ifdef OZ_ALLOC_STATISTICS
   size += Alloc::alignUp( sizeof( size_t ) );
-#endif
 
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
@@ -215,7 +204,6 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
-#ifdef OZ_ALLOC_STATISTICS
   ++Alloc::count;
   Alloc::amount += size;
 
@@ -227,7 +215,7 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
   ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
   reinterpret_cast<size_t*>( ptr )[-1] = size;
-#endif
+
   return ptr;
 }
 
@@ -236,9 +224,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   hard_assert( !Alloc::isLocked );
   hard_assert( size != 0 );
 
-#ifdef OZ_ALLOC_STATISTICS
   size += Alloc::alignUp( sizeof( size_t ) );
-#endif
 
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
@@ -261,7 +247,6 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
-#ifdef OZ_ALLOC_STATISTICS
   ++Alloc::count;
   Alloc::amount += size;
 
@@ -273,24 +258,20 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
   ptr = reinterpret_cast<char*>( ptr ) + Alloc::alignUp( sizeof( size_t ) );
   reinterpret_cast<size_t*>( ptr )[-1] = size;
-#endif
+
   return ptr;
 }
 
-void operator delete ( void* ptr ) throw()
+void operator delete ( void* ptr ) noexcept
 {
   hard_assert( !Alloc::isLocked );
   hard_assert( ptr != null );
 
-#ifdef OZ_ALLOC_STATISTICS
   size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
 
   --Alloc::count;
   Alloc::amount -= size;
-#else
-  void* chunk = ptr;
-#endif
 
 #ifdef OZ_TRACE_LEAKS
   System::resetSignals();
@@ -302,9 +283,7 @@ void operator delete ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
-# ifdef OZ_ALLOC_STATISTICS
       hard_assert( st->size == size );
-# endif
 
       if( prev == null ) {
         firstObjectTraceEntry = st->next;
@@ -344,20 +323,16 @@ void operator delete ( void* ptr ) throw()
   posix_memalign_free( chunk );
 }
 
-void operator delete[] ( void* ptr ) throw()
+void operator delete[] ( void* ptr ) noexcept
 {
   hard_assert( !Alloc::isLocked );
   hard_assert( ptr != null );
 
-#ifdef OZ_ALLOC_STATISTICS
   size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
 
   --Alloc::count;
   Alloc::amount -= size;
-#else
-  void* chunk = ptr;
-#endif
 
 #ifdef OZ_TRACE_LEAKS
   System::resetSignals();
@@ -369,9 +344,7 @@ void operator delete[] ( void* ptr ) throw()
 
   while( st != null ) {
     if( st->address == chunk ) {
-# ifdef OZ_ALLOC_STATISTICS
       hard_assert( st->size == size );
-# endif
 
       if( prev == null ) {
         firstArrayTraceEntry = st->next;

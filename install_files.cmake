@@ -110,10 +110,12 @@ endif( OZ_INSTALL_CLIENT )
 if( OZ_INSTALL_DATA )
 
   install( FILES
+    share/openzone/class/barrel2.rc
     share/openzone/class/beast.rc
     share/openzone/class/bigCrate.rc
     share/openzone/class/bigExplosion.rc
     share/openzone/class/bomb.rc
+    share/openzone/class/crate4.rc
     share/openzone/class/cvicek.rc
     share/openzone/class/drevo.rc
     share/openzone/class/droid.rc
@@ -139,13 +141,10 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/fonts )
 
   install( FILES
-    share/openzone/lua/matrix/handlers.lua
-    DESTINATION share/openzone/lua/matrix )
-
-  install( FILES
-    share/openzone/lua/nirvana/droid.lua
-    share/openzone/lua/nirvana/minds.lua
-    DESTINATION share/openzone/lua/nirvana )
+    share/openzone/lua/COPYING
+    share/openzone/lua/matrix.luac
+    share/openzone/lua/nirvana.luac
+    DESTINATION share/openzone/lua )
 
   install( FILES
     share/openzone/bsp/bunker.ozBSP
@@ -176,12 +175,16 @@ if( OZ_INSTALL_DATA )
   install( FILES
     share/openzone/mdl/barrel1.README
     share/openzone/mdl/barrel1.ozcSMM
+    share/openzone/mdl/barrel2.README
+    share/openzone/mdl/barrel2.ozcSMM
     share/openzone/mdl/bauul.README
     share/openzone/mdl/bauul.ozcMD2
     share/openzone/mdl/bigCrate.ozcSMM
     share/openzone/mdl/biotank.ozcSMM
     share/openzone/mdl/bombs.ozcSMM
     share/openzone/mdl/console.ozcSMM
+    share/openzone/mdl/crate4.README
+    share/openzone/mdl/crate4.ozcSMM
     share/openzone/mdl/droid-rifle.README
     share/openzone/mdl/droid-rifle.ozcMD2
     share/openzone/mdl/droid_commander.README
@@ -210,27 +213,13 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/mdl )
 
   install( FILES
+    share/openzone/name/boginje.txt
     share/openzone/name/bogovi.txt
     share/openzone/name/wesnoth.COPYING
-    share/openzone/name/wesnoth.drake-female.txt
     share/openzone/name/wesnoth.drake-male.txt
-    share/openzone/name/wesnoth.dwarvish-male.txt
-    share/openzone/name/wesnoth.elvish-female.txt
-    share/openzone/name/wesnoth.elvish-male.txt
-    share/openzone/name/wesnoth.gryphon-female.txt
-    share/openzone/name/wesnoth.gryphon-male.txt
-    share/openzone/name/wesnoth.human-female.txt
     share/openzone/name/wesnoth.human-male.txt
     share/openzone/name/wesnoth.lizard-male.txt
-    share/openzone/name/wesnoth.merman-female.txt
-    share/openzone/name/wesnoth.merman-male.txt
-    share/openzone/name/wesnoth.naga-female.txt
-    share/openzone/name/wesnoth.naga-male.txt
-    share/openzone/name/wesnoth.ogre-male.txt
-    share/openzone/name/wesnoth.orcish-male.txt
     share/openzone/name/wesnoth.troll-male.txt
-    share/openzone/name/wesnoth.village.txt
-    share/openzone/name/wesnoth.wose-male.txt
     DESTINATION share/openzone/name )
 
   install( FILES
@@ -275,16 +264,9 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/terra )
 
   install( FILES
-    share/openzone/sky/sky.ozcSky
     DESTINATION share/openzone/sky )
 
   install( FILES
-    share/openzone/ui/iconcrosshair.ozcTex
-    share/openzone/ui/icongrab.ozcTex
-    share/openzone/ui/iconlift.ozcTex
-    share/openzone/ui/iconmount.ozcTex
-    share/openzone/ui/icontake.ozcTex
-    share/openzone/ui/iconuse.ozcTex
     DESTINATION share/openzone/ui )
 
   install( FILES

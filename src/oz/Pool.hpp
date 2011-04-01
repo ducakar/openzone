@@ -2,6 +2,7 @@
  *  Pool.hpp
  *
  *  Pool memory allocator
+ *  It is only used if OZ_POOL_ALLOC is enabled.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.

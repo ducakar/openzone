@@ -12,13 +12,11 @@
 
 #include "stable.hpp"
 
-#include "matrix/BSP.hpp"
-#include "matrix/Terra.hpp"
-#include "matrix/Sky.hpp"
-
 #include "matrix/Struct.hpp"
 #include "matrix/Dynamic.hpp"
 #include "matrix/Particle.hpp"
+#include "matrix/Terra.hpp"
+#include "matrix/Caelum.hpp"
 
 namespace oz
 {
@@ -53,8 +51,8 @@ namespace oz
       Vector<Object*>   objects;
       Vector<Particle*> parts;
 
-      Sky               sky;
       Terra             terra;
+      Caelum            caelum;
 
     private:
 

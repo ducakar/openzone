@@ -30,6 +30,291 @@ namespace oz
 
   Lua lua;
 
+  Lua::Lua() : l( null )
+  {}
+
+  void Lua::call( const char* functionName, Object* self_, Bot* user_ )
+  {
+    self  = self_;
+    user  = user_;
+    obj   = self_;
+    str   = null;
+    part  = null;
+    event = List<Object::Event>::Iterator();
+
+    hard_assert( self != null );
+
+    objIndex = 0;
+    strIndex = 0;
+
+    lua_getglobal( l, "ozLocalData" );
+    lua_getglobal( l, functionName );
+    lua_rawgeti( l, -2, self->index );
+    lua_pcall( l, 1, 0, 0 );
+
+    if( lua_isstring( l, -1 ) ) {
+      log.println( "M! %s", lua_tostring( l, -1 ) );
+      lua_pop( l, 1 );
+
+      throw Exception( "Matrix Lua function call finished with an error" );
+    }
+    lua_pop( l, 1 );
+  }
+
+  void Lua::registerObject( int index )
+  {
+    // create object's local data
+    lua_getglobal( l, "ozLocalData" );
+    lua_newtable( l );
+    lua_rawseti( l, -2, index );
+    lua_pop( l, 1 );
+  }
+
+  void Lua::unregisterObject( int index )
+  {
+    // delete object's local data
+    lua_getglobal( l, "ozLocalData" );
+    lua_pushnil( l );
+    lua_rawseti( l, -2, index );
+    lua_pop( l, 1 );
+  }
+
+  void Lua::init()
+  {
+    l = null;
+
+    log.print( "Initialising Matrix Lua ..." );
+
+    l = lua_open();
+    luaL_openlibs( l );
+
+    OZ_LUA_FUNCTION( ozPrintln );
+    OZ_LUA_FUNCTION( ozException );
+
+    OZ_LUA_FUNCTION( ozBindAllOverlaps );
+    OZ_LUA_FUNCTION( ozBindStrOverlaps );
+    OZ_LUA_FUNCTION( ozBindObjOverlaps );
+    OZ_LUA_FUNCTION( ozSelfBindAllOverlaps );
+    OZ_LUA_FUNCTION( ozSelfBindStrOverlaps );
+    OZ_LUA_FUNCTION( ozSelfBindObjOverlaps );
+
+    OZ_LUA_FUNCTION( ozStrBindIndex );
+    OZ_LUA_FUNCTION( ozStrBindNext );
+
+    OZ_LUA_FUNCTION( ozStrIsNull );
+    OZ_LUA_FUNCTION( ozStrGetBounds );
+    OZ_LUA_FUNCTION( ozStrGetIndex );
+    OZ_LUA_FUNCTION( ozStrGetPos );
+    OZ_LUA_FUNCTION( ozStrGetBSP );
+    OZ_LUA_FUNCTION( ozStrDamage );
+    OZ_LUA_FUNCTION( ozStrDestroy );
+
+    OZ_LUA_FUNCTION( ozStrVectorFromSelf );
+    OZ_LUA_FUNCTION( ozStrDirectionFromSelf );
+    OZ_LUA_FUNCTION( ozStrDistanceFromSelf );
+    OZ_LUA_FUNCTION( ozStrHeadingFromSelf );
+    OZ_LUA_FUNCTION( ozStrPitchFromSelf );
+
+    OZ_LUA_FUNCTION( ozObjBindIndex );
+    OZ_LUA_FUNCTION( ozObjBindSelf );
+    OZ_LUA_FUNCTION( ozObjBindUser );
+    OZ_LUA_FUNCTION( ozObjBindNext );
+
+    OZ_LUA_FUNCTION( ozObjIsNull );
+    OZ_LUA_FUNCTION( ozObjIsSelf );
+    OZ_LUA_FUNCTION( ozObjIsUser );
+    OZ_LUA_FUNCTION( ozObjIsPut );
+    OZ_LUA_FUNCTION( ozObjIsDynamic );
+    OZ_LUA_FUNCTION( ozObjIsItem );
+    OZ_LUA_FUNCTION( ozObjIsWeapon );
+    OZ_LUA_FUNCTION( ozObjIsBot );
+    OZ_LUA_FUNCTION( ozObjIsVehicle );
+    OZ_LUA_FUNCTION( ozObjGetPos );
+    OZ_LUA_FUNCTION( ozObjSetPos );
+    OZ_LUA_FUNCTION( ozObjAddPos );
+    OZ_LUA_FUNCTION( ozObjGetDim );
+    OZ_LUA_FUNCTION( ozObjGetIndex );
+    OZ_LUA_FUNCTION( ozObjGetFlags );
+    OZ_LUA_FUNCTION( ozObjGetOldFlags );
+    OZ_LUA_FUNCTION( ozObjGetTypeName );
+    OZ_LUA_FUNCTION( ozObjGetLife );
+    OZ_LUA_FUNCTION( ozObjSetLife );
+    OZ_LUA_FUNCTION( ozObjAddLife );
+    OZ_LUA_FUNCTION( ozObjAddEvent );
+    OZ_LUA_FUNCTION( ozObjDamage );
+    OZ_LUA_FUNCTION( ozObjDestroy );
+    OZ_LUA_FUNCTION( ozObjQuietDestroy );
+
+    OZ_LUA_FUNCTION( ozObjVectorFromSelf );
+    OZ_LUA_FUNCTION( ozObjDirectionFromSelf );
+    OZ_LUA_FUNCTION( ozObjDistanceFromSelf );
+    OZ_LUA_FUNCTION( ozObjHeadingFromSelf );
+    OZ_LUA_FUNCTION( ozObjPitchFromSelf );
+    OZ_LUA_FUNCTION( ozObjPitchFromSelfEye );
+
+    OZ_LUA_FUNCTION( ozObjBindEvent );
+    OZ_LUA_FUNCTION( ozEventBindNext );
+    OZ_LUA_FUNCTION( ozEventGet );
+
+    OZ_LUA_FUNCTION( ozDynBindParent );
+    OZ_LUA_FUNCTION( ozDynGetVelocity );
+    OZ_LUA_FUNCTION( ozDynSetVelocity );
+    OZ_LUA_FUNCTION( ozDynAddVelocity );
+    OZ_LUA_FUNCTION( ozDynGetMomentum );
+    OZ_LUA_FUNCTION( ozDynSetMomentum );
+    OZ_LUA_FUNCTION( ozDynAddMomentum );
+    OZ_LUA_FUNCTION( ozDynGetMass );
+    OZ_LUA_FUNCTION( ozDynSetMass );
+    OZ_LUA_FUNCTION( ozDynAddMass );
+    OZ_LUA_FUNCTION( ozDynResetMass );
+    OZ_LUA_FUNCTION( ozDynGetLift );
+    OZ_LUA_FUNCTION( ozDynSetLift );
+    OZ_LUA_FUNCTION( ozDynAddLift );
+    OZ_LUA_FUNCTION( ozDynResetLift );
+
+    OZ_LUA_FUNCTION( ozBotGetEyePos );
+    OZ_LUA_FUNCTION( ozBotGetH );
+    OZ_LUA_FUNCTION( ozBotSetH );
+    OZ_LUA_FUNCTION( ozBotAddH );
+    OZ_LUA_FUNCTION( ozBotGetV );
+    OZ_LUA_FUNCTION( ozBotSetV );
+    OZ_LUA_FUNCTION( ozBotAddV );
+    OZ_LUA_FUNCTION( ozBotGetDir );
+    OZ_LUA_FUNCTION( ozBotActionForward );
+    OZ_LUA_FUNCTION( ozBotActionBackward );
+    OZ_LUA_FUNCTION( ozBotActionRight );
+    OZ_LUA_FUNCTION( ozBotActionLeft );
+    OZ_LUA_FUNCTION( ozBotActionJump );
+    OZ_LUA_FUNCTION( ozBotActionCrouch );
+    OZ_LUA_FUNCTION( ozBotActionUse );
+    OZ_LUA_FUNCTION( ozBotActionTake );
+    OZ_LUA_FUNCTION( ozBotActionGrab );
+    OZ_LUA_FUNCTION( ozBotActionThrow );
+    OZ_LUA_FUNCTION( ozBotActionAttack );
+    OZ_LUA_FUNCTION( ozBotActionExit );
+    OZ_LUA_FUNCTION( ozBotActionEject );
+    OZ_LUA_FUNCTION( ozBotActionSuicide );
+    OZ_LUA_FUNCTION( ozBotStateIsRunning );
+    OZ_LUA_FUNCTION( ozBotStateSetRunning );
+    OZ_LUA_FUNCTION( ozBotStateToggleRunning );
+    OZ_LUA_FUNCTION( ozBotGetStamina );
+    OZ_LUA_FUNCTION( ozBotSetStamina );
+    OZ_LUA_FUNCTION( ozBotAddStamina );
+
+    OZ_LUA_FUNCTION( ozVehicleService );
+
+    OZ_LUA_FUNCTION( ozPartBindIndex );
+    OZ_LUA_FUNCTION( ozPartIsNull );
+    OZ_LUA_FUNCTION( ozPartGetPos );
+    OZ_LUA_FUNCTION( ozPartSetPos );
+    OZ_LUA_FUNCTION( ozPartAddPos );
+    OZ_LUA_FUNCTION( ozPartGetIndex );
+    OZ_LUA_FUNCTION( ozPartGetVelocity );
+    OZ_LUA_FUNCTION( ozPartSetVelocity );
+    OZ_LUA_FUNCTION( ozPartAddVelocity );
+    OZ_LUA_FUNCTION( ozPartGetLife );
+    OZ_LUA_FUNCTION( ozPartSetLife );
+    OZ_LUA_FUNCTION( ozPartAddLife );
+
+    OZ_LUA_FUNCTION( ozOrbisAddStr );
+    OZ_LUA_FUNCTION( ozOrbisForceAddStr );
+    OZ_LUA_FUNCTION( ozOrbisAddObj );
+    OZ_LUA_FUNCTION( ozOrbisForceAddObj );
+    OZ_LUA_FUNCTION( ozOrbisAddPart );
+    OZ_LUA_FUNCTION( ozOrbisRemoveStr );
+    OZ_LUA_FUNCTION( ozOrbisRemoveObj );
+    OZ_LUA_FUNCTION( ozOrbisRemovePart );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DAMAGE_FUNC_BIT",      Object::DAMAGE_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_HIT_FUNC_BIT",         Object::HIT_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_MODEL_BIT",            Object::MODEL_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_CUT_BIT",              Object::CUT_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_HIT_BIT",              Object::HIT_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_IN_WATER_BIT",         Object::IN_WATER_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_SOLID_BIT",            Object::SOLID_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_HOVER_BIT",            Object::HOVER_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_RANDOM_HEADING_BIT",   Object::RANDOM_HEADING_BIT );
+
+    OZ_LUA_INT_CONST( "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
+    OZ_LUA_INT_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
+    OZ_LUA_INT_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
+    OZ_LUA_INT_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
+    OZ_LUA_INT_CONST( "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
+    OZ_LUA_INT_CONST( "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
+    OZ_LUA_INT_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
+    OZ_LUA_INT_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
+    OZ_LUA_INT_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
+    OZ_LUA_INT_CONST( "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SERVICE",               Vehicle::EVENT_SERVICE );
+    OZ_LUA_INT_CONST( "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT0_EMPTY",           Vehicle::EVENT_SHOT0_EMPTY );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT1",                 Vehicle::EVENT_SHOT1 );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT1_EMPTY",           Vehicle::EVENT_SHOT1_EMPTY );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );
+    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2_EMPTY",           Vehicle::EVENT_SHOT2_EMPTY );
+
+    lua_newtable( l );
+    lua_setglobal( l, "ozLocalData" );
+
+    if( luaL_dofile( l, "lua/matrix.luac" ) != 0 ) {
+      log.printEnd( " Failed" );
+      throw Exception( "Matrix Lua script error" );
+    }
+
+    log.printEnd( " OK" );
+  }
+
+  void Lua::free()
+  {
+    log.print( "Freeing Matrix Lua ..." );
+
+    if( l != null ) {
+      lua_close( l );
+      l = null;
+    }
+
+    objects.clear();
+    objects.dealloc();
+
+    structs.clear();
+    structs.dealloc();
+
+    log.printEnd( " OK" );
+  }
+
   int Lua::ozPrintln( lua_State* l )
   {
     log.println( "M> %s", lua_tostring( l, 1 ) );
@@ -1634,300 +1919,6 @@ namespace oz
     synapse.remove( lua.part );
     lua.part = null;
     return 0;
-  }
-
-  Lua::Lua() : l( null )
-  {}
-
-  void Lua::callFunc( const char* functionName, int index )
-  {
-    hard_assert( self != null );
-
-    obj   = self;
-    str   = null;
-    part  = null;
-    event = List<Object::Event>::Iterator();
-
-    objIndex = 0;
-    strIndex = 0;
-
-    lua_getglobal( l, "ozLocalData" );
-    lua_getglobal( l, functionName );
-    lua_rawgeti( l, -2, index );
-    lua_pcall( l, 1, 0, 0 );
-
-    if( lua_isstring( l, -1 ) ) {
-      log.println( "M! %s", lua_tostring( l, -1 ) );
-      lua_pop( l, 1 );
-
-      throw Exception( "Matrix Lua function call finished with an error" );
-    }
-    lua_pop( l, 1 );
-  }
-
-  void Lua::registerObject( int index )
-  {
-    // create object's local data
-    lua_getglobal( l, "ozLocalData" );
-    lua_newtable( l );
-    lua_rawseti( l, -2, index );
-    lua_pop( l, 1 );
-  }
-
-  void Lua::unregisterObject( int index )
-  {
-    // delete object's local data
-    lua_getglobal( l, "ozLocalData" );
-    lua_pushnil( l );
-    lua_rawseti( l, -2, index );
-    lua_pop( l, 1 );
-  }
-
-  void Lua::init()
-  {
-    l = null;
-
-    log.println( "Initialising Matrix Lua {" );
-    log.indent();
-
-    l = lua_open();
-    luaL_openlibs( l );
-
-    OZ_LUA_FUNCTION( ozPrintln );
-    OZ_LUA_FUNCTION( ozException );
-
-    OZ_LUA_FUNCTION( ozBindAllOverlaps );
-    OZ_LUA_FUNCTION( ozBindStrOverlaps );
-    OZ_LUA_FUNCTION( ozBindObjOverlaps );
-    OZ_LUA_FUNCTION( ozSelfBindAllOverlaps );
-    OZ_LUA_FUNCTION( ozSelfBindStrOverlaps );
-    OZ_LUA_FUNCTION( ozSelfBindObjOverlaps );
-
-    OZ_LUA_FUNCTION( ozStrBindIndex );
-    OZ_LUA_FUNCTION( ozStrBindNext );
-
-    OZ_LUA_FUNCTION( ozStrIsNull );
-    OZ_LUA_FUNCTION( ozStrGetBounds );
-    OZ_LUA_FUNCTION( ozStrGetIndex );
-    OZ_LUA_FUNCTION( ozStrGetPos );
-    OZ_LUA_FUNCTION( ozStrGetBSP );
-    OZ_LUA_FUNCTION( ozStrDamage );
-    OZ_LUA_FUNCTION( ozStrDestroy );
-
-    OZ_LUA_FUNCTION( ozStrVectorFromSelf );
-    OZ_LUA_FUNCTION( ozStrDirectionFromSelf );
-    OZ_LUA_FUNCTION( ozStrDistanceFromSelf );
-    OZ_LUA_FUNCTION( ozStrHeadingFromSelf );
-    OZ_LUA_FUNCTION( ozStrPitchFromSelf );
-
-    OZ_LUA_FUNCTION( ozObjBindIndex );
-    OZ_LUA_FUNCTION( ozObjBindSelf );
-    OZ_LUA_FUNCTION( ozObjBindUser );
-    OZ_LUA_FUNCTION( ozObjBindNext );
-
-    OZ_LUA_FUNCTION( ozObjIsNull );
-    OZ_LUA_FUNCTION( ozObjIsSelf );
-    OZ_LUA_FUNCTION( ozObjIsUser );
-    OZ_LUA_FUNCTION( ozObjIsPut );
-    OZ_LUA_FUNCTION( ozObjIsDynamic );
-    OZ_LUA_FUNCTION( ozObjIsItem );
-    OZ_LUA_FUNCTION( ozObjIsWeapon );
-    OZ_LUA_FUNCTION( ozObjIsBot );
-    OZ_LUA_FUNCTION( ozObjIsVehicle );
-    OZ_LUA_FUNCTION( ozObjGetPos );
-    OZ_LUA_FUNCTION( ozObjSetPos );
-    OZ_LUA_FUNCTION( ozObjAddPos );
-    OZ_LUA_FUNCTION( ozObjGetDim );
-    OZ_LUA_FUNCTION( ozObjGetIndex );
-    OZ_LUA_FUNCTION( ozObjGetFlags );
-    OZ_LUA_FUNCTION( ozObjGetOldFlags );
-    OZ_LUA_FUNCTION( ozObjGetTypeName );
-    OZ_LUA_FUNCTION( ozObjGetLife );
-    OZ_LUA_FUNCTION( ozObjSetLife );
-    OZ_LUA_FUNCTION( ozObjAddLife );
-    OZ_LUA_FUNCTION( ozObjAddEvent );
-    OZ_LUA_FUNCTION( ozObjDamage );
-    OZ_LUA_FUNCTION( ozObjDestroy );
-    OZ_LUA_FUNCTION( ozObjQuietDestroy );
-
-    OZ_LUA_FUNCTION( ozObjVectorFromSelf );
-    OZ_LUA_FUNCTION( ozObjDirectionFromSelf );
-    OZ_LUA_FUNCTION( ozObjDistanceFromSelf );
-    OZ_LUA_FUNCTION( ozObjHeadingFromSelf );
-    OZ_LUA_FUNCTION( ozObjPitchFromSelf );
-    OZ_LUA_FUNCTION( ozObjPitchFromSelfEye );
-
-    OZ_LUA_FUNCTION( ozObjBindEvent );
-    OZ_LUA_FUNCTION( ozEventBindNext );
-    OZ_LUA_FUNCTION( ozEventGet );
-
-    OZ_LUA_FUNCTION( ozDynBindParent );
-    OZ_LUA_FUNCTION( ozDynGetVelocity );
-    OZ_LUA_FUNCTION( ozDynSetVelocity );
-    OZ_LUA_FUNCTION( ozDynAddVelocity );
-    OZ_LUA_FUNCTION( ozDynGetMomentum );
-    OZ_LUA_FUNCTION( ozDynSetMomentum );
-    OZ_LUA_FUNCTION( ozDynAddMomentum );
-    OZ_LUA_FUNCTION( ozDynGetMass );
-    OZ_LUA_FUNCTION( ozDynSetMass );
-    OZ_LUA_FUNCTION( ozDynAddMass );
-    OZ_LUA_FUNCTION( ozDynResetMass );
-    OZ_LUA_FUNCTION( ozDynGetLift );
-    OZ_LUA_FUNCTION( ozDynSetLift );
-    OZ_LUA_FUNCTION( ozDynAddLift );
-    OZ_LUA_FUNCTION( ozDynResetLift );
-
-    OZ_LUA_FUNCTION( ozBotGetEyePos );
-    OZ_LUA_FUNCTION( ozBotGetH );
-    OZ_LUA_FUNCTION( ozBotSetH );
-    OZ_LUA_FUNCTION( ozBotAddH );
-    OZ_LUA_FUNCTION( ozBotGetV );
-    OZ_LUA_FUNCTION( ozBotSetV );
-    OZ_LUA_FUNCTION( ozBotAddV );
-    OZ_LUA_FUNCTION( ozBotGetDir );
-    OZ_LUA_FUNCTION( ozBotActionForward );
-    OZ_LUA_FUNCTION( ozBotActionBackward );
-    OZ_LUA_FUNCTION( ozBotActionRight );
-    OZ_LUA_FUNCTION( ozBotActionLeft );
-    OZ_LUA_FUNCTION( ozBotActionJump );
-    OZ_LUA_FUNCTION( ozBotActionCrouch );
-    OZ_LUA_FUNCTION( ozBotActionUse );
-    OZ_LUA_FUNCTION( ozBotActionTake );
-    OZ_LUA_FUNCTION( ozBotActionGrab );
-    OZ_LUA_FUNCTION( ozBotActionThrow );
-    OZ_LUA_FUNCTION( ozBotActionAttack );
-    OZ_LUA_FUNCTION( ozBotActionExit );
-    OZ_LUA_FUNCTION( ozBotActionEject );
-    OZ_LUA_FUNCTION( ozBotActionSuicide );
-    OZ_LUA_FUNCTION( ozBotStateIsRunning );
-    OZ_LUA_FUNCTION( ozBotStateSetRunning );
-    OZ_LUA_FUNCTION( ozBotStateToggleRunning );
-    OZ_LUA_FUNCTION( ozBotGetStamina );
-    OZ_LUA_FUNCTION( ozBotSetStamina );
-    OZ_LUA_FUNCTION( ozBotAddStamina );
-
-    OZ_LUA_FUNCTION( ozVehicleService );
-
-    OZ_LUA_FUNCTION( ozPartBindIndex );
-    OZ_LUA_FUNCTION( ozPartIsNull );
-    OZ_LUA_FUNCTION( ozPartGetPos );
-    OZ_LUA_FUNCTION( ozPartSetPos );
-    OZ_LUA_FUNCTION( ozPartAddPos );
-    OZ_LUA_FUNCTION( ozPartGetIndex );
-    OZ_LUA_FUNCTION( ozPartGetVelocity );
-    OZ_LUA_FUNCTION( ozPartSetVelocity );
-    OZ_LUA_FUNCTION( ozPartAddVelocity );
-    OZ_LUA_FUNCTION( ozPartGetLife );
-    OZ_LUA_FUNCTION( ozPartSetLife );
-    OZ_LUA_FUNCTION( ozPartAddLife );
-
-    OZ_LUA_FUNCTION( ozOrbisAddStr );
-    OZ_LUA_FUNCTION( ozOrbisForceAddStr );
-    OZ_LUA_FUNCTION( ozOrbisAddObj );
-    OZ_LUA_FUNCTION( ozOrbisForceAddObj );
-    OZ_LUA_FUNCTION( ozOrbisAddPart );
-    OZ_LUA_FUNCTION( ozOrbisRemoveStr );
-    OZ_LUA_FUNCTION( ozOrbisRemoveObj );
-    OZ_LUA_FUNCTION( ozOrbisRemovePart );
-
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
-
-    OZ_LUA_INT_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DAMAGE_FUNC_BIT",      Object::DAMAGE_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_HIT_FUNC_BIT",         Object::HIT_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
-
-    OZ_LUA_INT_CONST( "OZ_OBJECT_MODEL_BIT",            Object::MODEL_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
-
-    OZ_LUA_INT_CONST( "OZ_OBJECT_CUT_BIT",              Object::CUT_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
-
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_HIT_BIT",              Object::HIT_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_IN_WATER_BIT",         Object::IN_WATER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_SOLID_BIT",            Object::SOLID_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_HOVER_BIT",            Object::HOVER_BIT );
-
-    OZ_LUA_INT_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_RANDOM_HEADING_BIT",   Object::RANDOM_HEADING_BIT );
-
-    OZ_LUA_INT_CONST( "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
-    OZ_LUA_INT_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
-    OZ_LUA_INT_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
-    OZ_LUA_INT_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
-    OZ_LUA_INT_CONST( "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
-    OZ_LUA_INT_CONST( "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
-    OZ_LUA_INT_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
-    OZ_LUA_INT_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
-    OZ_LUA_INT_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
-    OZ_LUA_INT_CONST( "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SERVICE",               Vehicle::EVENT_SERVICE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT0_EMPTY",           Vehicle::EVENT_SHOT0_EMPTY );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT1",                 Vehicle::EVENT_SHOT1 );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT1_EMPTY",           Vehicle::EVENT_SHOT1_EMPTY );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2_EMPTY",           Vehicle::EVENT_SHOT2_EMPTY );
-
-    lua_newtable( l );
-    lua_setglobal( l, "ozLocalData" );
-
-    for( int i = 0; i < translator.matrixScripts.length(); ++i ) {
-      const Translator::Resource& res = translator.matrixScripts[i];
-
-      log.print( "Processing '%s' ...", res.path.cstr() );
-
-      if( luaL_dofile( l, res.path ) != 0 ) {
-        log.printEnd( " Failed" );
-        throw Exception( "Matrix Lua script error" );
-      }
-      else {
-        log.printEnd( " OK" );
-      }
-    }
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void Lua::free()
-  {
-    log.print( "Freeing Matrix Lua ..." );
-
-    if( l != null ) {
-      lua_close( l );
-      l = null;
-    }
-
-    objects.clear();
-    objects.dealloc();
-
-    structs.clear();
-    structs.dealloc();
-
-    log.printEnd( " OK" );
   }
 
 }

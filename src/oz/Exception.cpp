@@ -19,7 +19,7 @@ namespace oz
 {
 
   Exception::Exception( const String& message_, const char* file_, int line_,
-                        const char* function_ ) throw() :
+                        const char* function_ ) noexcept :
       message( message_ ), file( file_ ), line( line_ ), function( function_ ),
       nFrames( 0 ), frames( null )
   {
@@ -28,12 +28,12 @@ namespace oz
     System::abort( "%s", message.cstr() );
   }
 
-  Exception::~Exception() throw()
+  Exception::~Exception() noexcept
   {
     free( frames );
   }
 
-  const char* Exception::what() const throw()
+  const char* Exception::what() const noexcept
   {
     return message;
   }

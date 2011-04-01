@@ -8,6 +8,8 @@ add_library( matrix STATIC
   BotClass.cpp
   BotClass.hpp
   Bounds.hpp
+  Caelum.cpp
+  Caelum.hpp
   Collider.cpp
   Collider.hpp
   Dynamic.cpp
@@ -20,8 +22,8 @@ add_library( matrix STATIC
   Lua.hpp
   Matrix.cpp
   Matrix.hpp
-  Names.cpp
-  Names.hpp
+  NamePool.cpp
+  NamePool.hpp
   Object.cpp
   Object.hpp
   ObjectClass.cpp
@@ -34,8 +36,6 @@ add_library( matrix STATIC
   Physics.hpp
   QBSP.cpp
   QBSP.hpp
-  Sky.cpp
-  Sky.hpp
   Sphere.hpp
   Struct.cpp
   Struct.hpp

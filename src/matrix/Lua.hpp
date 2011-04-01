@@ -54,13 +54,7 @@ namespace oz
 
       Lua();
 
-      void call( const char* functionName, Object* self_, Bot* user_ = null )
-      {
-        self   = self_;
-        user   = user_;
-
-        callFunc( functionName, self->index );
-      }
+      void call( const char* functionName, Object* self, Bot* user = null );
 
       void registerObject( int index );
       void unregisterObject( int index );

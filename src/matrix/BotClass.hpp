@@ -74,6 +74,8 @@ namespace oz
       String mindType;
       String mindFunction;
 
+      int    nameList;
+
       static ObjectClass* init( const String& name, const Config* config );
 
       virtual Object* create( int index, const Point3& pos ) const;

@@ -34,7 +34,7 @@ namespace oz
       {
         const char* key;
         const char* value;
-#ifdef OZ_VERBOSE_CONFIG
+#ifndef NDEBUG
         bool isUsed;
 
         Elem() : isUsed( false ) {}
@@ -48,7 +48,7 @@ namespace oz
 
       // Hashtable of variables.
       HashString<String, SIZE> vars;
-#ifdef OZ_VERBOSE_CONFIG
+#ifndef NDEBUG
       mutable HashString<nil, SIZE> usedVars;
 #endif
 

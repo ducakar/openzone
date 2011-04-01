@@ -53,11 +53,9 @@ namespace client
       isFree = !isFree;
 
       if( isFree ) {
-        ui::mouse.doShow = false;
         isRTSFast = false;
       }
       else {
-        ui::mouse.doShow = true;
         isFreeFast = true;
       }
     }

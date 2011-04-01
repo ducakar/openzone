@@ -11,10 +11,28 @@ function heal100( l )
   ozObjAddLife( 100.0 )
 end
 
-function disposableHeal100( l )
+function heal100_disposable( l )
   ozObjQuietDestroy()
   ozObjBindUser()
   ozObjAddLife( 100.0 )
+end
+
+function explode( l )
+  ozOrbisForceAddObj( "smallExplosion", ozObjGetPos() );
+end
+
+function itemExplode( l )
+  if ozDynBindParent() then
+    ozObjDestroy()
+  end
+  ozOrbisForceAddObj( "smallExplosion", ozObjGetPos() )
+end
+
+function itemExplode_big( l )
+  if ozDynBindParent() then
+    ozObjDestroy()
+  end
+  ozOrbisForceAddObj( "bigExplosion", ozObjGetPos() )
 end
 
 function spawnGoblin( l )
@@ -30,7 +48,7 @@ function bigExplosion_onUpdate( l )
       ozOrbisRemoveObj()
     end
   else
-    l.ticks = 50
+    l.ticks = 25
 
     local distance
     local dirX, dirY, dirZ
@@ -41,16 +59,16 @@ function bigExplosion_onUpdate( l )
     end
     while ozObjBindNext() do
       if not ozObjIsSelf() then
-	distance = ozObjDistanceFromSelf()
-	if distance < 20 then
-	  distance = 20 - distance
-	  ozObjDamage( 100 + distance*distance )
+        distance = ozObjDistanceFromSelf()
+        if distance < 20 then
+          distance = 20 - distance
+          ozObjDamage( 100 + distance*distance )
 
-	  if distance < 19.9 and ozObjIsDynamic() then
-	    dirX, dirY, dirZ = ozObjDirectionFromSelf()
-	    ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
-	  end
-	end
+          if distance < 19.9 and ozObjIsDynamic() then
+            dirX, dirY, dirZ = ozObjDirectionFromSelf()
+            ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
+          end
+        end
       end
     end
   end
@@ -64,20 +82,20 @@ function smallExplosion_onUpdate( l )
       ozOrbisRemoveObj()
     end
   else
-    l.ticks = 50
+    l.ticks = 25
 
     local distance
     local dirX, dirY, dirZ
 
-    ozSelfBindObjOverlaps( 8, 8, 8 )
+    ozSelfBindObjOverlaps( 4, 4, 4 )
     while ozObjBindNext() do
       if not ozObjIsSelf() then
         distance = ozObjDistanceFromSelf()
-        if distance < 10 then
-          distance = 10 - distance
-          ozObjDamage( 100 + 4*distance*distance )
+        if distance < 4 then
+          distance = 4 - distance
+          ozObjDamage( 100 + 50*distance )
 
-          if distance < 9.9 and ozObjIsDynamic() then
+          if distance < 3.9 and ozObjIsDynamic() then
             dirX, dirY, dirZ = ozObjDirectionFromSelf()
             distance = 2 * distance
             ozDynAddMomentum( dirX * distance, dirY * distance, dirZ * distance )
@@ -106,17 +124,6 @@ function bomb_onUpdate( l )
   end
 end
 
-function bomb_onDestroy( l )
-  if ozDynBindParent() then
-    ozObjDestroy()
-  end
-  ozOrbisForceAddObj( "bigExplosion", ozObjGetPos() )
-end
-
-function shell_onDestroy( l )
-  ozOrbisForceAddObj( "smallExplosion", ozObjGetPos() );
-end
-
 function shell_onUpdate( l )
   if not l.ticks then
     l.ticks = 2 * 50
@@ -133,11 +140,11 @@ function rifle_onShot( l )
   local pX, pY, pZ = ozBotGetEyePos()
   local vX, vY, vZ = ozBotGetDir()
   local dX, dY, dZ = 3 - math.random() * 6,
-		     3 - math.random() * 6,
-		     3 - math.random() * 6
+                     3 - math.random() * 6,
+                     3 - math.random() * 6
 
   ozOrbisAddPart( pX, pY, pZ, vX * 200 + dX, vY * 200 + dY, vZ * 200 + dZ,
-		  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
+                  1.0, 1.0, 0.0, 1.9, 0.005, 5.0 );
 end
 
 function tank_onShot0( l )

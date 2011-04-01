@@ -28,8 +28,6 @@ namespace nirvana
 
       lua_State* l;
 
-      void callFunc( const char* functionName, int botIndex );
-
     public:
 
       Bot*            self;
@@ -50,15 +48,7 @@ namespace nirvana
 
       Lua();
 
-      void call( const char* functionName, Bot* self_ )
-      {
-        forceUpdate = false;
-        self        = self_;
-
-        callFunc( functionName, self->index );
-      }
-
-    public:
+      void call( const char* functionName, Bot* self );
 
       // create a table for a mind that can act as mind's local storage, mind's local variables
       void registerMind( int botIndex );

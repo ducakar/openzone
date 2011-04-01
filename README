@@ -120,10 +120,10 @@ openzone [OPTIONS]
 
 Notes
 -----
-- On first run ~/.openzone/client.rc configuration file with default settings is generated.
-  Edit it to change any settings you wish.
-- "~" means $HOME on Linux (i.e. /home/username) and $USERPROFILE on Windows (i.e.
-  C:\Documents and Settings\username on Windows XP or C:\Users\username on Windows Vista)
+- On first run ~/.config/openzone/client.rc (on Windows: %APPDATA%\OpenZone\client.rc) configuration
+  file with default settings is generated. Edit it to change any settings you wish.
+- %APPDATA% usually means C:\Documents and Settings\username\Application Data on Windows XP or
+  C:\Users\username\AppData\Roaming on Windows 7
 
 Troubleshooting
 ---------------
@@ -132,9 +132,10 @@ Troubleshooting
   following features:
   - vertex array object (GL_ARB_vertex_array_object),
   - framebuffer object (GL_ARB_framebuffer_object),
-  - float textures (GL_ARB_texture_float),
-  - S3 DXT1 and DXT5 texture compression (GL_EXT_texture_compression_s3tc) and
-  - GLSL 1.30 shading language.
+  - textures that contain data in floating-point format (GL_ARB_texture_float),
+  - S3 DXT1 and DXT5 texture compression (GL_EXT_texture_compression_s3tc),
+  - GLSL 1.30 shading language and
+  - vertex texture fetch (optional).
   A card with a complete DirectX 9.0c support should do.
 
 Dependencies
@@ -142,7 +143,7 @@ Dependencies
 - SDL
 - SDL_image (needed for prebuild only, needs at least PNG and JPEG support)
 - SDL_ttf
-- SDL_net
+- SDL_net (optional)
 - OpenGL (MesaGL headers)
 - OpenAL
 - FreeALUT
@@ -160,5 +161,5 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions; See COPYING file for details.
 
-Data (everything under 'share/openzone/data' directory) and included libraries ('*.dll' in the root
-directory) are work of various authors. See respective readme files for details.
+Data (everything under 'share/openzone' directory) and included libraries ('*.dll' under 'bin'
+directory) are work of various authors. See respective *README and *COPYING files for details.

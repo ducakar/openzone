@@ -34,7 +34,7 @@ namespace oz
       uint  soundMillis;
       uint  renderMillis;
       uint  renderScheduleMillis;
-      uint  renderSkyMillis;
+      uint  renderCaelumMillis;
       uint  renderTerraMillis;
       uint  renderStructsMillis;
       uint  renderObjectsMillis;

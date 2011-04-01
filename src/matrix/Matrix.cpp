@@ -11,9 +11,9 @@
 
 #include "matrix/Matrix.hpp"
 
-#include "matrix/Names.hpp"
-#include "matrix/Lua.hpp"
 #include "matrix/Translator.hpp"
+#include "matrix/NamePool.hpp"
+#include "matrix/Lua.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Physics.hpp"
 #include "matrix/Synapse.hpp"
@@ -109,9 +109,9 @@ namespace oz
 
   void Matrix::loadSample()
   {
-    orbis.sky.heading = Math::TAU / 16;
-    orbis.sky.period = 1440.0f;
-    orbis.sky.time = 180.0f;
+    orbis.caelum.heading = Math::TAU / 16;
+    orbis.caelum.period = 1440.0f;
+    orbis.caelum.time = 180.0f;
 
     int index = synapse.addObject( "lord", Point3( 138, -11, 73 ) );
     static_cast<Bot*>( orbis.objects[index] )->h = 0.75f * Math::TAU;
@@ -158,6 +158,8 @@ namespace oz
     synapse.addObject( "smallCrate", Point3( 148, 12, 76 ) );
 
     synapse.addObject( "bigCrate", Point3( 140, -7, 72 ) );
+    synapse.addObject( "crate4", Point3( 140, -4, 72 ) );
+    synapse.addObject( "barrel2", Point3( 140, -6, 72 ) );
 
     synapse.addStruct( "castle", Point3( 143, 0, 79 ), Struct::R0 );
     synapse.addStruct( "pool", Point3( 112, -7, 70 ), Struct::R0 );
@@ -312,7 +314,7 @@ namespace oz
     log.println( "Initialising Matrix {" );
     log.indent();
 
-    names.init();
+    namePool.init();
     lua.init();
     orbis.init();
 
@@ -327,7 +329,7 @@ namespace oz
 
     orbis.free();
     lua.free();
-    names.free();
+    namePool.free();
 
     log.unindent();
     log.println( "}" );

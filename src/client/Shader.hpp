@@ -13,6 +13,8 @@
 
 #include "client/common.hpp"
 
+// FIXME remove GCC 4.5 compatibility stuff when MinGW migrates to GCC 4.6
+
 namespace oz
 {
 namespace client
@@ -36,9 +38,9 @@ namespace client
     int oz_Textures;
     int oz_TextureScales;
 
-    int oz_SkyLight_dir;
-    int oz_SkyLight_diffuse;
-    int oz_SkyLight_ambient;
+    int oz_CaelumLight_dir;
+    int oz_CaelumLight_diffuse;
+    int oz_CaelumLight_ambient;
 
     int oz_Specular;
 
@@ -63,7 +65,8 @@ namespace client
 
     private:
 
-      SVector<Mat44, 8> stack;
+      Vector<Mat44> stack;
+//       SVector<Mat44> stack;
 
     public:
 
@@ -102,9 +105,9 @@ namespace client
     {
       POSITION,
       TEXCOORD,
-      NORMAL/*,
+      NORMAL,
       TANGENT,
-      BINORMAL*/
+      BINORMAL
     };
   };
 
@@ -130,9 +133,9 @@ namespace client
         Param param;
       };
 
-      struct SkyLight
+      struct CaelumLight
       {
-        static const SkyLight NONE;
+        static const CaelumLight NONE;
 
         Vec3 dir;
         Vec4 diffuse;
@@ -159,8 +162,8 @@ namespace client
       SVector<int, 8> programStack;
 
       float           lightingDistance;
-      SkyLight        skyLight;
-      Sparse<Light>   lights;
+      CaelumLight     caelumLight;
+//       Sparse<Light>   lights;
 
       void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
       void loadProgram( int id, const char** sources, int* lengths );
@@ -187,7 +190,7 @@ namespace client
 
       void setLightingDistance( float distance );
       void setAmbientLight( const Vec4& colour );
-      void setSkyLight( const Vec3& dir, const Vec4& colour );
+      void setCaelumLight( const Vec3& dir, const Vec4& colour );
 
       int  addLight( const Point3& pos, const Vec4& colour );
       void removeLight( int id );

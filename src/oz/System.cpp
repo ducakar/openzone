@@ -71,8 +71,8 @@ namespace oz
     { "SIGSYS",         "Bad system call"            }  // 31
   };
 
-  thread_local void* System::framePtrs[System::TRACE_SIZE + 1];
-  thread_local char  System::output[System::TRACE_BUFFER_SIZE];
+  OZ_THREAD_LOCAL void* System::framePtrs[System::TRACE_SIZE + 1];
+  OZ_THREAD_LOCAL char  System::output[System::TRACE_BUFFER_SIZE];
 
 #ifndef OZ_MINGW
 

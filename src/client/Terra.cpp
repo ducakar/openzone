@@ -50,7 +50,7 @@ namespace client
     Config terraConfig;
     terraConfig.load( configFile );
 
-    // just to mark them used for OZ_VERBOSE_CONFIG
+    // just to mark them used to prevent unused config variables warning
     terraConfig.get( "step", 0.5f );
     terraConfig.get( "bias", 0.0f );
 

@@ -36,7 +36,7 @@ function beastie( localData )
       localData.run = true
       ozSelfStateSetRunning( true )
       if math.random( 2 ) == 1 then
-	ozSelfActionJump()
+        ozSelfActionJump()
       end
     end
   end
@@ -55,8 +55,8 @@ function prey( localData )
     if not ozObjIsSelf() and ozObjIsBot() and ozObjGetTypeName() ~= "goblin" then
       distance = ozObjDistanceFromSelf()
       if distance < minDistance then
-	minDistance = distance
-	heading = ozObjHeadingFromSelf()
+        minDistance = distance
+        heading = ozObjHeadingFromSelf()
       end
     end
   end
@@ -79,8 +79,8 @@ function predator( localData )
     if not ozObjIsSelf() and ozObjIsBot() and ozObjGetTypeName() == "goblin" then
       distance = ozObjDistanceFromSelf()
       if distance < minDistance then
-	minDistance = distance
-	heading = ozObjHeadingFromSelf()
+        minDistance = distance
+        heading = ozObjHeadingFromSelf()
       end
     end
   end

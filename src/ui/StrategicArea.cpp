@@ -211,7 +211,7 @@ namespace ui
   StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hadMouseEvent( false ),
       hovered( null )
   {
-    flags |= IGNORE_BIT | HIDDEN_BIT | UPDATE_FUNC_BIT;
+    flags = IGNORE_BIT | HIDDEN_BIT | UPDATE_FUNC_BIT | PINNED_BIT;
     setFont( Font::SANS );
 
     pixelStep = camera.coeff / float( camera.height / 2 );

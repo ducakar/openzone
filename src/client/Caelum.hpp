@@ -1,5 +1,5 @@
 /*
- *  Sky.hpp
+ *  Caelum.hpp
  *
  *  [description]
  *
@@ -16,7 +16,7 @@ namespace oz
 namespace client
 {
 
-  class Sky
+  class Caelum
   {
     private:
 
@@ -66,7 +66,7 @@ namespace client
       void draw();
   };
 
-  extern Sky sky;
+  extern Caelum caelum;
 
 }
 }

@@ -278,7 +278,7 @@ namespace oz
     freeing = !freeing;
     waiting = !waiting;
 
-    sky.update();
+    caelum.update();
   }
 
   void Orbis::load()
@@ -435,7 +435,7 @@ namespace oz
       partAvailableIndices.add( istream->readInt() );
     }
 
-    sky.read( istream );
+    caelum.read( istream );
 
     int nStructs   = istream->readInt();
     int nObjects   = istream->readInt();
@@ -545,7 +545,7 @@ namespace oz
       ostream->writeInt( *i );
     }
 
-    sky.write( ostream );
+    caelum.write( ostream );
 
     ostream->writeInt( structs.length() );
     ostream->writeInt( objects.length() );

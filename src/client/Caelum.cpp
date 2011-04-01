@@ -1,5 +1,5 @@
 /*
- *  Sky.cpp
+ *  Caelum.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/Sky.hpp"
+#include "client/Caelum.hpp"
 
 #include "matrix/Timer.hpp"
 #include "matrix/Orbis.hpp"
@@ -24,27 +24,27 @@ namespace oz
 namespace client
 {
 
-  Sky sky;
+  Caelum caelum;
 
-  const float Sky::DAY_BIAS       = 0.4f;
+  const float Caelum::DAY_BIAS       = 0.4f;
 
-  const float Sky::AMBIENT_COEF   = 0.40f;
+  const float Caelum::AMBIENT_COEF   = 0.40f;
 
-  const float Sky::RED_COEF       = +0.05f;
-  const float Sky::GREEN_COEF     = -0.05f;
-  const float Sky::BLUE_COEF      = -0.10f;
+  const float Caelum::RED_COEF       = +0.05f;
+  const float Caelum::GREEN_COEF     = -0.05f;
+  const float Caelum::BLUE_COEF      = -0.10f;
 
-  const float Sky::DAY_COLOUR[]   = { 0.45f, 0.60f, 0.90f, 1.0f };
-  const float Sky::NIGHT_COLOUR[] = { 0.02f, 0.02f, 0.05f, 1.0f };
-  const float Sky::WATER_COLOUR[] = { 0.00f, 0.05f, 0.25f, 1.0f };
-  const float Sky::STAR_COLOUR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
+  const float Caelum::DAY_COLOUR[]   = { 0.45f, 0.60f, 0.90f, 1.0f };
+  const float Caelum::NIGHT_COLOUR[] = { 0.02f, 0.02f, 0.05f, 1.0f };
+  const float Caelum::WATER_COLOUR[] = { 0.00f, 0.05f, 0.25f, 1.0f };
+  const float Caelum::STAR_COLOUR[]  = { 0.80f, 0.80f, 0.80f, 1.0f };
 
-  const float Sky::STAR_DIM       = 0.10f;
+  const float Caelum::STAR_DIM       = 0.10f;
 
 #ifdef OZ_BUILD_TOOLS
-  void Sky::prebuild( const char* name )
+  void Caelum::prebuild( const char* name )
   {
-    log.println( "Prebuilding sky '%s' {", name );
+    log.println( "Prebuilding Caelum '%s' {", name );
     log.indent();
 
     DArray<Point3> positions( MAX_STARS );
@@ -84,16 +84,16 @@ namespace client
     }
 
     int nMipmaps;
-    uint texId = context.loadRawTexture( "sky/simplesun.png", &nMipmaps, false,
+    uint texId = context.loadRawTexture( "caelum/simplesun.png", &nMipmaps, false,
                                          GL_LINEAR, GL_LINEAR );
     context.writeTexture( texId, nMipmaps, &os );
     glDeleteTextures( 1, &texId );
 
-    texId = context.loadRawTexture( "sky/moon18.png", &nMipmaps, false, GL_LINEAR, GL_LINEAR );
+    texId = context.loadRawTexture( "caelum/moon18.png", &nMipmaps, false, GL_LINEAR, GL_LINEAR );
     context.writeTexture( texId, nMipmaps, &os );
     glDeleteTextures( 1, &texId );
 
-    buffer.write( "sky/" + String( name ) + ".ozcSky", os.length() );
+    buffer.write( "caelum/" + String( name ) + ".ozcCaelum", os.length() );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -102,18 +102,20 @@ namespace client
   }
 #endif
 
-  void Sky::load( const char* name )
+  void Caelum::load( const char* name )
   {
-    log.print( "Loading sky '%s' ...", name );
+    log.print( "Loading Caelum '%s' ...", name );
 
-    axis = Vec3( -Math::sin( orbis.sky.heading ), Math::cos( orbis.sky.heading ), 0.0f );
-    originalLightDir = Vec3( Math::cos( orbis.sky.heading ), Math::sin( orbis.sky.heading ), 0.0f );
+    axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
+    originalLightDir = Vec3( Math::cos( orbis.caelum.heading ),
+                             Math::sin( orbis.caelum.heading ),
+                             0.0f );
 
     DArray<Vertex> vertices(  MAX_STARS * 4 );
 
-    if( !buffer.read( "sky/" + String( name ) + ".ozcSky" ) ) {
+    if( !buffer.read( "caelum/" + String( name ) + ".ozcCaelum" ) ) {
       log.printEnd( " Cannot open file" );
-      throw Exception( "Sky loading failed" );
+      throw Exception( "Caelum loading failed" );
     }
 
     InputStream is = buffer.inputStream();
@@ -152,7 +154,7 @@ namespace client
     log.printEnd( " OK" );
   }
 
-  void Sky::unload()
+  void Caelum::unload()
   {
     glDeleteTextures( 1, &sunTexId );
     glDeleteTextures( 1, &moonTexId );
@@ -161,9 +163,9 @@ namespace client
     glDeleteBuffers( 1, &vbo );
   }
 
-  void Sky::update()
+  void Caelum::update()
   {
-    angle = Math::TAU * ( orbis.sky.time / orbis.sky.period );
+    angle = Math::TAU * ( orbis.caelum.time / orbis.caelum.period );
 
     Mat44 rot = Mat44::rotation( Quat::rotAxis( axis, angle ) );
     Vec3  dir = rot * originalLightDir;
@@ -171,10 +173,10 @@ namespace client
     ratio = clamp( -dir.z + DAY_BIAS, 0.0f, 1.0f );
     float ratioDiff = ( 1.0f - Math::abs( 1.0f - 2.0f * ratio ) );
 
-    Colours::sky[0] = NIGHT_COLOUR[0] + ratio * ( DAY_COLOUR[0] - NIGHT_COLOUR[0] ) + RED_COEF * ratioDiff;
-    Colours::sky[1] = NIGHT_COLOUR[1] + ratio * ( DAY_COLOUR[1] - NIGHT_COLOUR[1] ) + GREEN_COEF * ratioDiff;
-    Colours::sky[2] = NIGHT_COLOUR[2] + ratio * ( DAY_COLOUR[2] - NIGHT_COLOUR[2] ) + BLUE_COEF * ratioDiff;
-    Colours::sky[3] = 1.0f;
+    Colours::caelum[0] = NIGHT_COLOUR[0] + ratio * ( DAY_COLOUR[0] - NIGHT_COLOUR[0] ) + RED_COEF * ratioDiff;
+    Colours::caelum[1] = NIGHT_COLOUR[1] + ratio * ( DAY_COLOUR[1] - NIGHT_COLOUR[1] ) + GREEN_COEF * ratioDiff;
+    Colours::caelum[2] = NIGHT_COLOUR[2] + ratio * ( DAY_COLOUR[2] - NIGHT_COLOUR[2] ) + BLUE_COEF * ratioDiff;
+    Colours::caelum[3] = 1.0f;
 
     Colours::water[0] = NIGHT_COLOUR[0] + ratio * ( WATER_COLOUR[0] - NIGHT_COLOUR[0] );
     Colours::water[1] = NIGHT_COLOUR[1] + ratio * ( WATER_COLOUR[1] - NIGHT_COLOUR[1] );
@@ -194,7 +196,7 @@ namespace client
     Colours::ambient[3] = 1.0f;
   }
 
-  void Sky::draw()
+  void Caelum::draw()
   {
     float colour[4] = {
       STAR_COLOUR[0] + ratio * ( DAY_COLOUR[0] - STAR_COLOUR[0] ),
@@ -204,7 +206,7 @@ namespace client
     };
 
     // we need the transformation matrix for occlusion of stars below horizon
-    Mat44 transf = Mat44::rotationZ( orbis.sky.heading ) *
+    Mat44 transf = Mat44::rotationZ( orbis.caelum.heading ) *
         Mat44::rotationY( angle - Math::TAU / 4.0f );
 
     hard_assert( glGetError() == GL_NO_ERROR );
@@ -217,7 +219,7 @@ namespace client
 
     glBindVertexArray( vao );
 
-    glUniform4fv( param.oz_Fog_colour, 1, Colours::sky );
+    glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
     glUniform4fv( param.oz_Colour, 1, colour );
 
     glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );

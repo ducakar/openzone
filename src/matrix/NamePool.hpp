@@ -1,5 +1,5 @@
 /*
- *  BuildMenu.hpp
+ *  NamePool.hpp
  *
  *  [description]
  *
@@ -11,32 +11,27 @@
 
 #include "stable.hpp"
 
-#include "ui/Frame.hpp"
-#include "ui/Button.hpp"
-
 namespace oz
 {
-namespace client
-{
-namespace ui
-{
 
-  class BuildMenu : public Frame
+  class NamePool
   {
     private:
 
-      static void createObject( Button* button );
+      static const int LINE_LENGTH = 64;
 
-    protected:
-
-      virtual void onDraw();
+      Vector<String> names;
+      Vector<int>    listPositions;
 
     public:
 
-      BuildMenu();
+      const String& genName( int list ) const;
+
+      void init();
+      void free();
 
   };
 
-}
-}
+  extern NamePool namePool;
+
 }
