@@ -1,0 +1,19 @@
+#!/bin/sh
+
+sources='src/*/*.hpp src/*/*.cpp'
+classes='share/openzone/class/*.rc'
+output='openzone.pot'
+
+rm -rf $output
+xgettext -c++ -s -d openzone -o $output $sources
+
+for class in $classes; do
+  class=`basename $class .rc`
+  if ( grep "msgid \"$class\"" $output &> /dev/null ); then
+    echo &> /dev/null;
+  else
+    echo >> $output
+    echo "msgid \"$class\"" >> $output
+    echo "msgstr \"\"" >> $output
+  fi
+done

@@ -28,7 +28,6 @@ namespace oz
     BotClass* clazz = new BotClass();
 
     clazz->name                 = name;
-    clazz->description          = config->get( "description", name );
 
     clazz->dim.x                = config->get( "dim.x", 0.44f );
     clazz->dim.y                = config->get( "dim.y", 0.44f );
@@ -51,7 +50,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
     OZ_CLASS_SET_FLAG( Object::CLIMBER_BIT,        "flag.climber",      true  );
     OZ_CLASS_SET_FLAG( Object::PUSHER_BIT,         "flag.pusher",       true  );
-    OZ_CLASS_SET_FLAG( Object::HOVER_BIT,          "flag.hover",        false );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 

@@ -108,6 +108,7 @@ endif()
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 
+Find_Package( Gettext REQUIRED )
 Find_Package( SDL REQUIRED )
 Find_Package( SDL_ttf REQUIRED )
 Find_Package( Lua51 REQUIRED )

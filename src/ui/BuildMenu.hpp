@@ -27,10 +27,6 @@ namespace ui
 
       static void createObject( Button* button );
 
-    protected:
-
-      virtual void onDraw();
-
     public:
 
       BuildMenu();

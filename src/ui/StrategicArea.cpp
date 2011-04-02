@@ -208,18 +208,25 @@ namespace ui
     shape.tag( minX, minY, maxX, maxY );
   }
 
-  StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hadMouseEvent( false ),
-      hovered( null )
+  void StrategicArea::onUpdate()
   {
-    flags = IGNORE_BIT | HIDDEN_BIT | UPDATE_FUNC_BIT | PINNED_BIT;
-    setFont( Font::SANS );
+    if( camera.state != Camera::STRATEGIC ) {
+      hovered = null;
+      tagged.clear();
+      return;
+    }
 
-    pixelStep = camera.coeff / float( camera.height / 2 );
-    stepPixel = 1.0f / pixelStep;
+    for( int i = 0; i < tagged.length(); ) {
+      const Dynamic* dyn = static_cast<const Dynamic*>( orbis.objects[ tagged[i] ] );
+
+      if( dyn == null || ( ( dyn->flags & Object::DYNAMIC_BIT ) && dyn->parent != -1 ) ) {
+        tagged.removeUO( i );
+      }
+      else {
+        ++i;
+      }
+    }
   }
-
-  StrategicArea::~StrategicArea()
-  {}
 
   bool StrategicArea::onMouseEvent()
   {
@@ -251,31 +258,7 @@ namespace ui
       }
     }
 
-    hadMouseEvent = true;
     return true;
-  }
-
-  void StrategicArea::onUpdate()
-  {
-    hard_assert( camera.state == Camera::STRATEGIC );
-
-    if( !hadMouseEvent ) {
-      hovered = null;
-    }
-    hadMouseEvent = false;
-
-    for( int i = 0; i < tagged.length(); ) {
-      const Object* obj = orbis.objects[ tagged[i] ];
-
-      if( obj == null ||
-          ( ( obj->flags & Object::BOT_BIT ) && obj->life <= obj->clazz->life / 2.0f ) )
-      {
-        tagged.removeUO( i );
-      }
-      else {
-        ++i;
-      }
-    }
   }
 
   void StrategicArea::onDraw()
@@ -305,6 +288,18 @@ namespace ui
       }
     }
   }
+
+  StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hovered( null )
+  {
+    flags = IGNORE_BIT | HIDDEN_BIT | UPDATE_BIT | PINNED_BIT;
+    setFont( Font::SANS );
+
+    pixelStep = camera.coeff / float( camera.height / 2 );
+    stepPixel = 1.0f / pixelStep;
+  }
+
+  StrategicArea::~StrategicArea()
+  {}
 
 }
 }

@@ -48,11 +48,22 @@ namespace ui
 
   void Frame::onDraw()
   {
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.25f );
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
     fill( 0, 0, width, height );
+
+    setFont( Font::TITLE );
+    print( width / 2, -textHeight - 4, ALIGN_HCENTRE, title );
 
     drawChildren();
   }
+
+  Frame::Frame( int width, int height, const char* title_ ) :
+      Area( width, height + Font::INFOS[Font::TITLE].height + 8 ), title( title_ )
+  {}
+
+  Frame::Frame( int x, int y, int width, int height, const char* title_ ) :
+      Area( x, y, width, height + Font::INFOS[Font::TITLE].height + 8 ), title( title_ )
+  {}
 
 }
 }

@@ -36,7 +36,6 @@ namespace ui
 
       float pixelStep;
       float stepPixel;
-      bool  hadMouseEvent;
 
     public:
 
@@ -55,8 +54,8 @@ namespace ui
 
     protected:
 
-      virtual bool onMouseEvent();
       virtual void onUpdate();
+      virtual bool onMouseEvent();
       virtual void onDraw();
 
     public:

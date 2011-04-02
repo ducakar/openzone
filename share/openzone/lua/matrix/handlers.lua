@@ -173,8 +173,8 @@ function tank_onShot2( l )
   local vX, vY, vZ = ozBotGetDir()
 
   ozOrbisForceAddObj( "shell", pX, pY, pZ )
-  ozDynSetMomentum( vX * 400, vY * 400, vZ * 400 )
-  ozDynSetVelocity( vX * 400, vY * 400, vZ * 400 )
+  ozDynSetMomentum( vX * 200, vY * 200, vZ * 200 )
+  ozDynSetVelocity( vX * 200, vY * 200, vZ * 200 )
 end
 
 function axe_onShot( l )

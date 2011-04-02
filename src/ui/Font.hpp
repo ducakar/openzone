@@ -33,16 +33,23 @@ namespace ui
       {
         MONO,
         SANS,
-        TITLE
+        SMALL,
+        LARGE,
+        TITLE,
+        SYMBOL,
+        MAX
       };
 
-      static const int MONO_HEIGHT  = 12;
-      static const int SANS_HEIGHT  = 13;
-      static const int TITLE_HEIGHT = 15;
+      struct Info
+      {
+        const char* name;
+        const char* file;
+        int height;
+      };
 
-      TTF_Font* monoFont;
-      TTF_Font* sansFont;
-      TTF_Font* titleFont;
+      static const Info INFOS[MAX];
+
+      TTF_Font* fonts[MAX];
 
       uint textTexId;
 

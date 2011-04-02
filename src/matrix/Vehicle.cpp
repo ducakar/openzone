@@ -12,6 +12,7 @@
 #include "matrix/Vehicle.hpp"
 
 #include "matrix/Collider.hpp"
+#include "matrix/Physics.hpp"
 #include "matrix/VehicleClass.hpp"
 #include "matrix/Bot.hpp"
 #include "matrix/Lua.hpp"
@@ -93,13 +94,6 @@ namespace oz
     const Vec3& at    = rotMat.y;
     const Vec3& up    = rotMat.z;
 
-    if( crew[PILOT] == -1 ) {
-      flags &= ~HOVER_BIT;
-    }
-    else {
-      flags |= HOVER_BIT;
-    }
-
     // controls
     Vec3 move = Vec3::ZERO;
 
@@ -123,6 +117,8 @@ namespace oz
     }
 
     momentum += move * clazz->moveMomentum;
+    momentum.z -= Physics::G_MOMENTUM;
+    momentum.z *= 1.0f - Physics::AIR_FRICTION;
   }
 
   void Vehicle::onDestroy()
@@ -196,7 +192,9 @@ namespace oz
 
     Mat44 rotMat = Mat44::rotation( rot );
 
-    ( this->*handlers[clazz->type] )( rotMat );
+    if( crew[PILOT] != -1 ) {
+      ( this->*handlers[clazz->type] )( rotMat );
+    }
 
     // move forwards (predicted movement) to prevent our bullets hitting us in the back when we are
     // moving very fast

@@ -135,8 +135,8 @@ namespace oz
       // enable pushing to side directions
       static const int PUSHER_BIT         = 0x00000010;
 
-      // if the object is immune to gravity
-      static const int HOVER_BIT          = 0x00000008;
+      // if the object is immune to friction
+      static const int FRICTLESS_BIT      = 0x00000008;
 
       /*
        * RENDER FLAGS

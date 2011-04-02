@@ -42,33 +42,27 @@ namespace ui
     }
   }
 
-  void BuildMenu::onDraw()
+  BuildMenu::BuildMenu() : Frame( -8, -8, 240, 250, gettext( "Create" ) )
   {
-    Frame::onDraw();
-    print( 50, -10, ALIGN_CENTRE, "Create" );
-  }
+    setFont( Font::SANS );
 
-  BuildMenu::BuildMenu() : Frame( -228, -258, 220, 250 )
-  {
-    setFont( Font::TITLE );
+    add( new Button( "smallCrate", createObject, 110, 15 ), 5, -40 );
+    add( new Button( "bigCrate", createObject, 110, 15 ), 5, -60 );
+    add( new Button( "metalBarrel", createObject, 110, 15 ), 5, -80 );
+    add( new Button( "firstAid", createObject, 110, 15 ), 5, -100 );
+    add( new Button( "cvicek", createObject, 110, 15 ), 5, -120 );
+    add( new Button( "bomb", createObject, 110, 15 ), 5, -140 );
+    add( new Button( "droidRifle", createObject, 110, 15 ), 5, -160 );
+    add( new Button( "goblinAxe", createObject, 110, 15 ), 5, -180 );
 
-    add( new Button( "smallCrate", createObject, 100, 15 ), 5, -35 );
-    add( new Button( "bigCrate", createObject, 100, 15 ), 5, -55 );
-    add( new Button( "metalBarrel", createObject, 100, 15 ), 5, -75 );
-    add( new Button( "firstAid", createObject, 100, 15 ), 5, -95 );
-    add( new Button( "cvicek", createObject, 100, 15 ), 5, -115 );
-    add( new Button( "bomb", createObject, 100, 15 ), 5, -135 );
-    add( new Button( "droidRifle", createObject, 100, 15 ), 5, -155 );
-    add( new Button( "goblinAxe", createObject, 100, 15 ), 5, -175 );
-
-    add( new Button( "goblin", createObject, 100, 15 ), 115, -35 );
-    add( new Button( "knight", createObject, 100, 15 ), 115, -55 );
-    add( new Button( "lord", createObject, 100, 15 ), 115, -75 );
-    add( new Button( "beast", createObject, 100, 15 ), 115, -95 );
-    add( new Button( "droid", createObject, 100, 15 ), 115, -115 );
-    add( new Button( "droidCommander", createObject, 100, 15 ), 115, -135 );
-    add( new Button( "raptor", createObject, 100, 15 ), 115, -155 );
-    add( new Button( "tank", createObject, 100, 15 ), 115, -175 );
+    add( new Button( "goblin", createObject, 110, 15 ), -115, -40 );
+    add( new Button( "knight", createObject, 110, 15 ), -115, -60 );
+    add( new Button( "lord", createObject, 110, 15 ), -115, -80 );
+    add( new Button( "beast", createObject, 110, 15 ), -115, -100 );
+    add( new Button( "droid", createObject, 110, 15 ), -115, -120 );
+    add( new Button( "droidCommander", createObject, 110, 15 ), -115, -140 );
+    add( new Button( "raptor", createObject, 110, 15 ), -115, -160 );
+    add( new Button( "tank", createObject, 110, 15 ), -115, -180 );
   }
 
 }
