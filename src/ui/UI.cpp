@@ -100,9 +100,12 @@ namespace ui
 
     root->add( hud );
     root->add( strategic );
+#ifndef NDEBUG
     root->add( new DebugFrame() );
+#endif
     root->add( new BuildMenu() );
     root->add( new InventoryMenu() );
+    root->add( new MusicPlayer() );
 
     root->focus( loadingScreen );
   }

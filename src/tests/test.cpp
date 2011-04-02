@@ -9,16 +9,11 @@
 
 #include "stable.hpp"
 
-#include <cstdio>
-
-#include <libintl.h>
-
 using namespace oz;
 
 bool Alloc::isLocked = true;
 
 int main( int, char** )
 {
-  bindtextdomain( OZ_APPLICATION_NAME, OZ_INSTALL_PREFIX );
   return 0;
 }

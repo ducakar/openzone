@@ -75,6 +75,7 @@ namespace client
 
     SDL_SemPost( mainSemaphore );
     SDL_SemPost( mainSemaphore );
+    SDL_SemPost( mainSemaphore );
     SDL_SemWait( auxSemaphore );
 
     while( isAlive ) {
@@ -195,8 +196,6 @@ namespace client
     render.draw( Render::DRAW_UI_BIT );
     render.sync();
 
-    sound.loadMusic( "music/04_fanatic-unreleased-rage.ogg" );
-
     camera.update();
     camera.prepare();
 
@@ -214,9 +213,7 @@ namespace client
   }
 
   void GameStage::end()
-  {
-    sound.unloadMusic();
-  }
+  {}
 
   void GameStage::load()
   {
@@ -262,6 +259,8 @@ namespace client
     mainSemaphore = SDL_CreateSemaphore( 0 );
     auxSemaphore  = SDL_CreateSemaphore( 0 );
     auxThread     = SDL_CreateThread( auxMain, null );
+
+    SDL_SemWait( mainSemaphore );
 
     log.printEnd( " OK" );
 

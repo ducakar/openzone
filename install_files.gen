@@ -174,4 +174,15 @@ ls share/openzone/glsl/{*.{glsl,vert,frag},*README*,*COPYING*} 2> /dev/null | se
 echo '    DESTINATION share/openzone/glsl )' >> install_files.cmake
 echo >> install_files.cmake
 
+#
+# share/locale
+#
+for langDir in share/locale/*; do
+  echo >> install_files.cmake
+  echo '  install( FILES' >> install_files.cmake
+  echo "    $langDir/LC_MESSAGES/openzone.mo" >> install_files.cmake
+  echo "    DESTINATION $langDir/LC_MESSAGES )" >> install_files.cmake
+  echo >> install_files.cmake
+done
+
 echo 'endif( OZ_INSTALL_DATA )' >> install_files.cmake

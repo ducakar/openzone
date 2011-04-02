@@ -13,6 +13,8 @@
 
 #include "ui/Area.hpp"
 
+#include "client/Camera.hpp"
+
 #include <SDL_ttf.h>
 #include <GL/gl.h>
 
@@ -28,14 +30,19 @@ namespace ui
   Vector<Area*> Area::updateAreas;
 
   Area::Area( int width_, int height_ ) :
-      parent( null ), x( 0 ), y( 0 ), width( width_ ), height( height_ ), flags( 0 ),
-      currentFont( font.sansFont ), textWidth( 0 ), textHeight( font.SANS_HEIGHT )
+      flags( 0 ), currentFont( font.fonts[Font::SANS] ), parent( null ), x( 0 ), y( 0 ),
+      width( width_ ), height( height_ ), textWidth( 0 ),
+      textHeight( Font::INFOS[Font::SANS].height )
   {}
 
   Area::Area( int x_, int y_, int width_, int height_ ) :
-      parent( null ), x( x_ ), y( y_ ), width( width_ ), height( height_ ), flags( 0 ),
-      currentFont( font.sansFont ), textWidth( 0 ), textHeight( font.SANS_HEIGHT )
-  {}
+      flags( 0 ), currentFont( font.fonts[Font::SANS] ), parent( null ), x( x_ ), y( y_ ),
+      width( width_ ), height( height_ ), textWidth( 0 ),
+      textHeight( Font::INFOS[Font::SANS].height )
+  {
+    x = x < 0 ? camera.width  - width  + x : x;
+    y = y < 0 ? camera.height - height + y : y;
+  }
 
   Area::~Area()
   {
@@ -44,18 +51,8 @@ namespace ui
 
   void Area::setFont( Font::Type type )
   {
-    if( type == Font::MONO ) {
-      currentFont = font.monoFont;
-      textHeight  = Font::MONO_HEIGHT;
-    }
-    else if( type == Font::SANS ) {
-      currentFont = font.sansFont;
-      textHeight  = Font::SANS_HEIGHT;
-    }
-    else {
-      currentFont = font.titleFont;
-      textHeight  = Font::TITLE_HEIGHT;
-    }
+    currentFont = font.fonts[type];
+    textHeight  = Font::INFOS[type].height;
   }
 
   void Area::fill( int x, int y, int width, int height ) const
@@ -76,6 +73,8 @@ namespace ui
 
   void Area::print( int x, int y, int align, const char* s, ... )
   {
+    hard_assert( s != null );
+
     char buffer[1024];
     va_list ap;
 
@@ -83,6 +82,10 @@ namespace ui
     vsnprintf( buffer, 1024, s, ap );
     va_end( ap );
     buffer[1023] = '\0';
+
+    if( buffer[0] == '\0' ) {
+      return;
+    }
 
     SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
 
@@ -184,8 +187,6 @@ namespace ui
   {
     for( int i = 0; i < updateAreas.length(); ++i ) {
       if( updateAreas[i]->flags & UPDATE_BIT ) {
-        hard_assert( updateAreas[i]->flags & UPDATE_FUNC_BIT );
-
         updateAreas[i]->onUpdate();
       }
     }
@@ -208,14 +209,9 @@ namespace ui
   {
     if( doShow ) {
       flags &= ~( IGNORE_BIT | HIDDEN_BIT );
-
-      if( flags & UPDATE_FUNC_BIT ) {
-        flags |= UPDATE_BIT;
-      }
     }
     else {
       flags |= IGNORE_BIT | HIDDEN_BIT;
-      flags &= ~UPDATE_BIT;
     }
   }
 
@@ -235,7 +231,7 @@ namespace ui
 
     children.pushFirst( area );
 
-    if( area->flags & UPDATE_FUNC_BIT ) {
+    if( area->flags & UPDATE_BIT ) {
       updateAreas.add( area );
     }
   }
@@ -247,7 +243,7 @@ namespace ui
 
   void Area::remove( Area* area )
   {
-    if( area->flags & UPDATE_FUNC_BIT ) {
+    if( area->flags & UPDATE_BIT ) {
       updateAreas.exclude( area );
     }
 

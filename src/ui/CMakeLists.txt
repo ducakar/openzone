@@ -21,6 +21,8 @@ add_library( ui STATIC
   LoadingArea.hpp
   Mouse.cpp
   Mouse.hpp
+  MusicPlayer.cpp
+  MusicPlayer.hpp
   StrategicArea.cpp
   StrategicArea.hpp
   UI.cpp

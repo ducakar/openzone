@@ -18,6 +18,7 @@
 #include "client/Render.hpp"
 
 #include <cerrno>
+#include <clocale>
 #include <ctime>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -316,6 +317,16 @@ namespace client
     }
 
     config.add( "dir.rc", rcDir );
+
+    log.print( "Setting locale LC_CTYPE/LC_MESSAGES ..." );
+
+    setlocale( LC_CTYPE, config.getSet( "locale.ctype", "" ) );
+    setlocale( LC_MESSAGES, config.getSet( "locale.messages", "" ) );
+
+    bindtextdomain( OZ_APPLICATION_NAME, "../locale" );
+    textdomain( OZ_APPLICATION_NAME );
+
+    log.printEnd( " %s/%s", setlocale( LC_CTYPE, null ), setlocale( LC_MESSAGES, null ) );
 
     if( config.contains( "seed" ) && config["seed"].equals( "time" ) ) {
       uint seed = uint( time( null ) );

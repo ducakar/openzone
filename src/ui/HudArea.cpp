@@ -143,7 +143,7 @@ namespace ui
     if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
       const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weaponItem] );
 
-      glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.25f );
+      glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
       fill( 8, 52, 200, textHeight + 8 );
 
       print( 16, 54, ALIGN_LEFT, "%s", weapon->clazz->description.cstr() );
@@ -199,7 +199,7 @@ namespace ui
       int yBias = ( clazz->nWeapons - 1 - i ) * ( textHeight + 8 );
 
       if( i == vehicle->weapon ) {
-        glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.25f );
+        glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
         fill( -208, 30 + yBias, 200, textHeight + 8 );
       }
 
@@ -231,7 +231,7 @@ namespace ui
   HudArea::HudArea() : Area( camera.width, camera.height )
   {
     flags = IGNORE_BIT | PINNED_BIT;
-    setFont( Font::SANS );
+    setFont( Font::LARGE );
 
     crossTexId = context.loadTexture( "ui/icon/crosshair.ozcTex" );
     useTexId   = context.loadTexture( "ui/icon/use.ozcTex" );

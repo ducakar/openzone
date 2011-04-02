@@ -59,7 +59,7 @@ namespace client
       result = int( ov_read( &oggStream, &data[bytesRead], MUSIC_BUFFER_SIZE - bytesRead,
                              0, 2, 1, &section ) );
       bytesRead += result;
-      if( result < 0 ) {
+      if( result <= 0 ) {
         isMusicPlaying = false;
         return;
       }
@@ -95,8 +95,6 @@ namespace client
       return false;
     }
 
-    isMusicLoaded = true;
-
     vorbisInfo = ov_info( &oggStream, -1 );
     if( vorbisInfo == null ) {
       ov_clear( &oggStream );
@@ -116,13 +114,24 @@ namespace client
       return AL_NONE;
     }
 
-    isMusicPlaying = true;
+    hard_assert( alGetError() == AL_NO_ERROR );
 
-    alGenBuffers( 2, musicBuffers );
+    if( isMusicPlaying ) {
+      alSourceStop( musicSource );
+      alSourceUnqueueBuffers( musicSource, 2, &musicBuffers[0] );
+    }
+
+    hard_assert( alGetError() == AL_NO_ERROR );
+
     loadMusicBuffer( musicBuffers[0] );
     loadMusicBuffer( musicBuffers[1] );
+
+    hard_assert( alGetError() == AL_NO_ERROR );
+
     alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
     alSourcePlay( musicSource );
+
+    isMusicPlaying = true;
 
     hard_assert( alGetError() == AL_NO_ERROR );
 
@@ -130,16 +139,17 @@ namespace client
     return true;
   }
 
-  void Sound::unloadMusic()
+  void Sound::stopMusic()
   {
-    if( isMusicLoaded ) {
+    if( isMusicPlaying ) {
       alSourceStop( musicSource );
-      alDeleteSources( 1, &musicSource );
-      alDeleteBuffers( 2, musicBuffers );
+      alSourceUnqueueBuffers( musicSource, 2, &musicBuffers[0] );
 
       ov_clear( &oggStream );
 
-      isMusicLoaded = false;
+      isMusicPlaying = false;
+
+      hard_assert( alGetError() == AL_NO_ERROR );
     }
   }
 
@@ -175,22 +185,22 @@ namespace client
       return;
     }
 
-    int processed;
-    alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &processed );
+    int nProcessed;
+    alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &nProcessed );
 
-    while( processed > 0 ) {
+    while( nProcessed > 0 ) {
       uint buffer;
       alSourceUnqueueBuffers( musicSource, 1, &buffer );
       loadMusicBuffer( buffer );
       alSourceQueueBuffers( musicSource, 1, &buffer );
-      --processed;
+      --nProcessed;
     }
 
-    ALint value;
-    alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
+    if( !isMusicPlaying ) {
+      alSourceStop( musicSource );
+      alSourceUnqueueBuffers( musicSource, 2, &musicBuffers[0] );
 
-    if( value != AL_PLAYING ) {
-      alSourcePlay( musicSource );
+      ov_clear( &oggStream );
     }
   }
 
@@ -227,10 +237,11 @@ namespace client
     log.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
     log.println( "ALUT supported formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
 
-    isMusicLoaded  = false;
     isMusicPlaying = false;
 
+    alGenBuffers( 2, musicBuffers );
     alGenSources( 1, &musicSource );
+
     alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
 
     setVolume( config.getSet( "sound.volume", 1.00f ) );
@@ -248,9 +259,13 @@ namespace client
   {
     log.print( "Shutting down Sound ..." );
 
+    stopMusic();
+
     playedStructs.dealloc();
 
-    unloadMusic();
+    alDeleteSources( 1, &musicSource );
+    alDeleteBuffers( 2, musicBuffers );
+
     hard_assert( alGetError() == AL_NO_ERROR );
 
     alutExit();

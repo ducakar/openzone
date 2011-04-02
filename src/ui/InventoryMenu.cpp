@@ -26,7 +26,7 @@ namespace ui
   const float InventoryMenu::SLOT_DIMF = float( SLOT_SIZE ) / 2.0f;
 
   InventoryMenu::InventoryMenu() :
-      Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + HEADER_SIZE + FOOTER_SIZE )
+      Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, gettext( "Inventory" ) )
   {
     x = ( camera.width - width ) / 2;
 
@@ -99,9 +99,6 @@ namespace ui
     }
 
     Frame::onDraw();
-
-    setFont( Font::TITLE );
-    print( SLOT_SIZE * COLS / 2, -HEADER_SIZE / 2, ALIGN_CENTRE, "Inventory" );
 
     glEnable( GL_DEPTH_TEST );
     glDisable( GL_BLEND );

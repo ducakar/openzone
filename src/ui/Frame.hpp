@@ -24,13 +24,15 @@ namespace ui
   {
     protected:
 
+      String title;
+
       virtual bool onMouseEvent();
       virtual void onDraw();
 
     public:
 
-      explicit Frame( int width, int height ) : Area( width, height ) {}
-      explicit Frame( int x, int y, int width, int height ) : Area( x, y, width, height ) {}
+      explicit Frame( int width, int height, const char* title );
+      explicit Frame( int x, int y, int width, int height, const char* title );
 
   };
 

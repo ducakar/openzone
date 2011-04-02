@@ -19,12 +19,13 @@
 #include "ui/Frame.hpp"
 #include "ui/Button.hpp"
 
+#include "ui/LoadingArea.hpp"
 #include "ui/HudArea.hpp"
 #include "ui/StrategicArea.hpp"
-#include "ui/DebugFrame.hpp"
 #include "ui/InventoryMenu.hpp"
+#include "ui/DebugFrame.hpp"
 #include "ui/BuildMenu.hpp"
-#include "ui/LoadingArea.hpp"
+#include "ui/MusicPlayer.hpp"
 
 namespace oz
 {

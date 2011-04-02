@@ -32,7 +32,7 @@ namespace client
       static const float DMAX;
       static const float DMAX_SQ;
 
-      static const int MUSIC_BUFFER_SIZE = 32 * 1024;
+      static const int MUSIC_BUFFER_SIZE = 64 * 1024;
 
       /*
        * SFX
@@ -52,15 +52,14 @@ namespace client
       uint                       musicSource;
       ALenum                     musicFormat;
 
-      bool                       isMusicPlaying;
-      bool                       isMusicLoaded;
-
     public:
+
+      bool                       isMusicPlaying;
 
       void setVolume( float volume );
       void setMusicVolume( float volume );
       bool loadMusic( const char* path );
-      void unloadMusic();
+      void stopMusic();
 
       void play();
       void update();

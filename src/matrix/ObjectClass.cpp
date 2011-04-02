@@ -22,11 +22,13 @@ namespace oz
 
   void ObjectClass::fillCommon( ObjectClass* clazz, const Config* config )
   {
-    clazz->onDestroy = config->get( "onDestroy", "" );
-    clazz->onDamage  = config->get( "onDamage", "" );
-    clazz->onHit     = config->get( "onHit", "" );
-    clazz->onUse     = config->get( "onUse", "" );
-    clazz->onUpdate  = config->get( "onUpdate", "" );
+    clazz->description = gettext( clazz->name );
+
+    clazz->onDestroy   = config->get( "onDestroy", "" );
+    clazz->onDamage    = config->get( "onDamage", "" );
+    clazz->onHit       = config->get( "onHit", "" );
+    clazz->onUse       = config->get( "onUse", "" );
+    clazz->onUpdate    = config->get( "onUpdate", "" );
 
     if( !String::isEmpty( clazz->onDestroy ) ) {
       // disable event handler if explicitly set to false
@@ -117,7 +119,6 @@ namespace oz
     ObjectClass* clazz = new ObjectClass();
 
     clazz->name                 = name;
-    clazz->description          = config->get( "description", name );
 
     clazz->dim.x                = config->get( "dim.x", 0.50f );
     clazz->dim.y                = config->get( "dim.y", 0.50f );

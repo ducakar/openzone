@@ -11,6 +11,8 @@
 
 #include "stable.hpp"
 
+#ifndef NDEBUG
+
 #include "ui/Frame.hpp"
 
 namespace oz
@@ -35,3 +37,5 @@ namespace ui
 }
 }
 }
+
+#endif

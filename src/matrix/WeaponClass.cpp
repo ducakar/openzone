@@ -21,7 +21,6 @@ namespace oz
     WeaponClass* clazz = new WeaponClass();
 
     clazz->name                 = name;
-    clazz->description          = config->get( "description", name );
 
     clazz->dim.x                = config->get( "dim.x", 0.50f );
     clazz->dim.y                = config->get( "dim.y", 0.50f );
@@ -42,7 +41,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.updateFunc",   false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
     OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
-    OZ_CLASS_SET_FLAG( Object::HOVER_BIT,          "flag.hover",        false );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 

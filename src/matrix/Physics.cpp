@@ -106,26 +106,15 @@ namespace oz
   {
     float systemMom = G_MOMENTUM;
 
-    if( dyn->flags & ( Object::HOVER_BIT | Object::ON_LADDER_BIT ) ) {
+    if( dyn->flags & ( Object::FRICTLESS_BIT | Object::ON_LADDER_BIT ) ) {
       // in air
-      if( dyn->flags & Object::HOVER_BIT ) {
+      if( dyn->flags & Object::FRICTLESS_BIT ) {
         if( dyn->momentum.sqL() <= AIR_STICK_VELOCITY ) {
           dyn->momentum = Vec3::ZERO;
         }
-        else {
-          dyn->momentum *= 1.0f - AIR_FRICTION;
-        }
-      }
-      // swimming
-      else if( dyn->flags & Object::IN_WATER_BIT ) {
-        // lift
-        systemMom += ( 0.5f * dyn->depth / dyn->dim.z ) * dyn->lift * Timer::TICK_TIME;
-
-        dyn->momentum *= 1.0f - WATER_FRICTION;
-        dyn->momentum.z += systemMom;
       }
       // on ladder
-      else if( dyn->flags & Object::ON_LADDER_BIT ) {
+      else {
         if( dyn->momentum.sqL() <= STICK_VELOCITY ) {
           dyn->momentum = Vec3::ZERO;
         }

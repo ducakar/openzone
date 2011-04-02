@@ -300,4 +300,14 @@ if( OZ_INSTALL_DATA )
     share/openzone/glsl/ui.vert
     DESTINATION share/openzone/glsl )
 
+
+  install( FILES
+    share/locale/en/LC_MESSAGES/openzone.mo
+    DESTINATION share/locale/en/LC_MESSAGES )
+
+
+  install( FILES
+    share/locale/sl/LC_MESSAGES/openzone.mo
+    DESTINATION share/locale/sl/LC_MESSAGES )
+
 endif( OZ_INSTALL_DATA )

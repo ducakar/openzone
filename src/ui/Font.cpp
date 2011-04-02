@@ -23,6 +23,15 @@ namespace ui
 
   Font font;
 
+  const Font::Info Font::INFOS[MAX] = {
+    { "mono",   "ui/font/DejaVuSansMono.ttf", 13 },
+    { "sans",   "ui/font/DejaVuSans.ttf",     13 },
+    { "small",  "ui/font/DejaVuSans.ttf",     11 },
+    { "large",  "ui/font/DejaVuSans.ttf",     14 },
+    { "title",  "ui/font/DejaVuSans.ttf",     15 },
+    { "symbol", "ui/font/DejaVuSans.ttf",     14 }
+  };
+
   bool Font::init()
   {
     const char* path;
@@ -31,47 +40,21 @@ namespace ui
       return false;
     }
 
-    path = config.getSet( "ui.font.mono.file", "ui/font/DejaVuSansMono.ttf" );
+    textTexId = 0;
 
-    log.print( "Opening font '%s' %d px ...", path, MONO_HEIGHT );
+    for( int i = 0; i < MAX; ++i ) {
+      path = config.getSet( "ui.font." + String( INFOS[i].name ) + ".file", INFOS[i].file );
 
-    monoFont = TTF_OpenFont( path, MONO_HEIGHT );
-    if( monoFont == null ) {
-      log.printEnd( " Error: %s", TTF_GetError() );
-      return false;
+      log.print( "Opening font '%s' %d px ...", path, INFOS[i].height );
+
+      fonts[i] = TTF_OpenFont( path, INFOS[i].height );
+      if( fonts[i] == null ) {
+        log.printEnd( " Error: %s", TTF_GetError() );
+        return false;
+      }
+
+      log.printEnd( " OK" );
     }
-
-    log.printEnd( " OK" );
-
-    path = config.getSet( "ui.font.sans.file", "ui/font/DejaVuSans.ttf" );
-
-    log.print( "Opening font '%s' %d px ...", path, SANS_HEIGHT );
-
-    sansFont = TTF_OpenFont( path, SANS_HEIGHT );
-    if( sansFont == null ) {
-      log.printEnd( " Error: %s", TTF_GetError() );
-      TTF_CloseFont( monoFont );
-      monoFont = null;
-      return false;
-    }
-
-    log.printEnd( " OK" );
-
-    path = config.getSet( "ui.font.title.file", "ui/font/DejaVuSans.ttf" );
-
-    log.print( "Opening font '%s' %d px ...", path, TITLE_HEIGHT );
-
-    titleFont = TTF_OpenFont( path, TITLE_HEIGHT );
-    if( titleFont == null ) {
-      log.printEnd( " Error: %s", TTF_GetError() );
-      TTF_CloseFont( monoFont );
-      monoFont = null;
-      TTF_CloseFont( sansFont );
-      sansFont = null;
-      return false;
-    }
-
-    log.printEnd( " OK" );
 
     log.print( "Generating text texture ..." );
 
@@ -100,18 +83,14 @@ namespace ui
       log.printEnd( " Not initialised" );
       return;
     }
-    if( monoFont != null ) {
-      TTF_CloseFont( monoFont );
-      monoFont = null;
+
+    for( int i = 0; i < MAX; ++i ) {
+      if( fonts[i] == null ) {
+        TTF_CloseFont( fonts[i] );
+        fonts[i] = null;
+      }
     }
-    if( sansFont != null ) {
-      TTF_CloseFont( sansFont );
-      sansFont = null;
-    }
-    if( titleFont != null ) {
-      TTF_CloseFont( titleFont );
-      titleFont = null;
-    }
+
     TTF_Quit();
 
     log.printEnd( " OK" );

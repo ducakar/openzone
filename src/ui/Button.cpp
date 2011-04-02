@@ -47,8 +47,8 @@ namespace ui
     else {
       glUniform4f( param.oz_Colour, 0.6f, 0.6f, 0.6f, 0.4f );
     }
+
     fill( 0, 0, width, height );
-    setFont( Font::SANS );
     print( width / 2, height / 2, ALIGN_CENTRE, "%s", label.cstr() );
 
     isHighlighted = false;
