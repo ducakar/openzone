@@ -48,7 +48,7 @@ namespace client
     }
   }
 
-  void Sound::loadMusicBuffer( uint buffer )
+  bool Sound::loadMusicBuffer( uint buffer )
   {
     char data[MUSIC_BUFFER_SIZE];
     int  section;
@@ -60,13 +60,14 @@ namespace client
                              0, 2, 1, &section ) );
       bytesRead += result;
       if( result <= 0 ) {
-        isMusicPlaying = false;
-        return;
+        return false;
       }
     }
     while( result > 0 && bytesRead < MUSIC_BUFFER_SIZE );
 
     alBufferData( buffer, musicFormat, data, bytesRead, ALsizei( vorbisInfo->rate ) );
+
+    return true;
   }
 
   void Sound::setVolume( float volume )
@@ -79,78 +80,23 @@ namespace client
     alSourcef( musicSource, AL_GAIN, volume );
   }
 
-  bool Sound::loadMusic( const char* path )
+  void Sound::playMusic( int track )
   {
-    log.print( "Loading music '%s' ...", path );
+    hard_assert( track >= 0 );
 
-    FILE* oggFile = fopen( path, "rb" );
-
-    if( oggFile == null ) {
-      log.printEnd( " Failed to open file" );
-      return false;
-    }
-    if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
-      fclose( oggFile );
-      log.printEnd( " Failed to open Ogg stream" );
-      return false;
-    }
-
-    vorbisInfo = ov_info( &oggStream, -1 );
-    if( vorbisInfo == null ) {
-      ov_clear( &oggStream );
-      log.printEnd( " Failed to read Vorbis header" );
-      return false;
-    }
-
-    if( vorbisInfo->channels == 1 ) {
-      musicFormat = AL_FORMAT_MONO16;
-    }
-    else if( vorbisInfo->channels == 2 ) {
-      musicFormat = AL_FORMAT_STEREO16;
-    }
-    else {
-      ov_clear( &oggStream );
-      log.printEnd( " Invalid number of channels, should be 1 or 2" );
-      return AL_NONE;
-    }
-
-    hard_assert( alGetError() == AL_NO_ERROR );
-
-    if( isMusicPlaying ) {
-      alSourceStop( musicSource );
-      alSourceUnqueueBuffers( musicSource, 2, &musicBuffers[0] );
-    }
-
-    hard_assert( alGetError() == AL_NO_ERROR );
-
-    loadMusicBuffer( musicBuffers[0] );
-    loadMusicBuffer( musicBuffers[1] );
-
-    hard_assert( alGetError() == AL_NO_ERROR );
-
-    alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
-    alSourcePlay( musicSource );
-
-    isMusicPlaying = true;
-
-    hard_assert( alGetError() == AL_NO_ERROR );
-
-    log.printEnd( " OK" );
-    return true;
+    selectedTrack = track;
+    currentTrack  = track;
   }
 
   void Sound::stopMusic()
   {
-    if( isMusicPlaying ) {
-      alSourceStop( musicSource );
-      alSourceUnqueueBuffers( musicSource, 2, &musicBuffers[0] );
+    selectedTrack = -2;
+    currentTrack  = -1;
+  }
 
-      ov_clear( &oggStream );
-
-      isMusicPlaying = false;
-
-      hard_assert( alGetError() == AL_NO_ERROR );
-    }
+  bool Sound::isMusicPlaying() const
+  {
+    return currentTrack != -1;
   }
 
   void Sound::play()
@@ -181,26 +127,95 @@ namespace client
   {
     hard_assert( alGetError() == AL_NO_ERROR );
 
-    if( !isMusicPlaying ) {
-      return;
-    }
-
-    int nProcessed;
-    alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &nProcessed );
-
-    while( nProcessed > 0 ) {
-      uint buffer;
-      alSourceUnqueueBuffers( musicSource, 1, &buffer );
-      loadMusicBuffer( buffer );
-      alSourceQueueBuffers( musicSource, 1, &buffer );
-      --nProcessed;
-    }
-
-    if( !isMusicPlaying ) {
+    if( selectedTrack != -1 ) {
       alSourceStop( musicSource );
-      alSourceUnqueueBuffers( musicSource, 2, &musicBuffers[0] );
+
+      int nQueued;
+      alGetSourcei( musicSource, AL_BUFFERS_QUEUED, &nQueued );
+
+      uint buffer[2];
+      alSourceUnqueueBuffers( musicSource, nQueued, buffer );
 
       ov_clear( &oggStream );
+
+      hard_assert( alGetError() == AL_NO_ERROR );
+
+      currentTrack = -1;
+
+      if( selectedTrack == -2 ) {
+        selectedTrack = -1;
+      }
+      else {
+        const char* path = translator.musics[selectedTrack].path;
+
+        log.print( "Loading music '%s' ...", path );
+
+        FILE* oggFile = fopen( path, "rb" );
+
+        if( oggFile == null ) {
+          log.printEnd( " Failed to open file" );
+          throw Exception( "Music loading failed" );
+        }
+        if( ov_open( oggFile, &oggStream, null, 0 ) < 0 ) {
+          fclose( oggFile );
+          log.printEnd( " Failed to open Ogg stream" );
+          throw Exception( "Music loading failed" );
+        }
+
+        vorbisInfo = ov_info( &oggStream, -1 );
+        if( vorbisInfo == null ) {
+          ov_clear( &oggStream );
+          log.printEnd( " Failed to read Vorbis header" );
+          throw Exception( "Music loading failed" );
+        }
+
+        if( vorbisInfo->channels == 1 ) {
+          musicFormat = AL_FORMAT_MONO16;
+        }
+        else if( vorbisInfo->channels == 2 ) {
+          musicFormat = AL_FORMAT_STEREO16;
+        }
+        else {
+          ov_clear( &oggStream );
+          log.printEnd( " Invalid number of channels, should be 1 or 2" );
+          throw Exception( "Music loading failed" );
+        }
+
+        loadMusicBuffer( musicBuffers[0] );
+        loadMusicBuffer( musicBuffers[1] );
+
+        alSourceQueueBuffers( musicSource, 2, &musicBuffers[0] );
+        alSourcePlay( musicSource );
+
+        currentTrack  = selectedTrack;
+        selectedTrack = -1;
+
+        hard_assert( alGetError() == AL_NO_ERROR );
+
+        log.printEnd( " OK" );
+      }
+    }
+    else if( currentTrack != -1 ) {
+      int nProcessed;
+      alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &nProcessed );
+
+      for( int i = 0; i < nProcessed; ++i ) {
+        uint buffer;
+        alSourceUnqueueBuffers( musicSource, 1, &buffer );
+
+        if( loadMusicBuffer( buffer ) ) {
+          alSourceQueueBuffers( musicSource, 1, &buffer );
+        }
+      }
+
+      ALint value;
+      alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
+
+      if( value == AL_STOPPED ) {
+        currentTrack = -1;
+
+        ov_clear( &oggStream );
+      }
     }
   }
 
@@ -237,7 +252,8 @@ namespace client
     log.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
     log.println( "ALUT supported formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
 
-    isMusicPlaying = false;
+    selectedTrack = -1;
+    currentTrack  = -1;
 
     alGenBuffers( 2, musicBuffers );
     alGenSources( 1, &musicSource );

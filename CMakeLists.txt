@@ -9,31 +9,31 @@ option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and net
 
 if( NOT OZ_APPLICATION_NAME )
   set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
-endif( NOT OZ_APPLICATION_NAME )
+endif()
 
 if( NOT OZ_APPLICATION_VERSION )
   set( OZ_APPLICATION_VERSION "0.1.2" CACHE STRING "" FORCE )
-endif( NOT OZ_APPLICATION_VERSION )
+endif()
 
 if( NOT OZ_APPLICATION_TITLE )
   set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
-endif( NOT OZ_APPLICATION_TITLE )
+endif()
 
 if( NOT OZ_RC_DIR )
   if( WIN32 )
     set( OZ_RC_DIR "OpenZone" CACHE STRING "" FORCE )
-  else( WIN32 )
+  else()
     set( OZ_RC_DIR ".config/openzone" CACHE STRING "" FORCE )
-  endif( WIN32 )
-endif( NOT OZ_RC_DIR )
+  endif()
+endif()
 
 if( NOT OZ_CLIENT_LOG_FILE )
   set( OZ_CLIENT_LOG_FILE "client.log" CACHE STRING "" FORCE )
-endif( NOT OZ_CLIENT_LOG_FILE )
+endif()
 
 if( NOT OZ_CLIENT_CONFIG_FILE )
   set( OZ_CLIENT_CONFIG_FILE "client.rc" CACHE STRING "" FORCE )
-endif( NOT OZ_CLIENT_CONFIG_FILE )
+endif()
 
 option( OZ_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
 
@@ -45,7 +45,7 @@ option( OZ_BUILD_CLIENT "Build client" ON )
 option( OZ_BUILD_SERVER "Build server" OFF )
 
 option( OZ_INSTALL_LIBOZ "Install liboz" ON )
-option( OZ_INSTALL_CLIENT "Install openzone client executable" OFF )
+option( OZ_INSTALL_CLIENT "Install openzone client executable" ON )
 option( OZ_INSTALL_SERVER "Install openzone server executable" OFF )
 option( OZ_INSTALL_DATA "Install game data" ON )
 
@@ -59,7 +59,7 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
 set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
 if( NOT OZ_SYSTEM_NAME )
    set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}" CACHE STRING "" FORCE )
-endif( NOT OZ_SYSTEM_NAME )
+endif()
 set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
 set( CPACK_PACKAGE_EXECUTABLES "openzone" "OpenZone" )
 set( CPACK_STRIP_FILES "bin/openzone" )
@@ -69,7 +69,7 @@ if( WIN32 )
   set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
   set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
   set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )
-endif( WIN32 )
+endif()
 include( CheckLibraryExists )
 include( CPack )
 
@@ -100,7 +100,7 @@ macro( add_pch _targetName _inputHeader )
   add_custom_target( ${_targetName}
     SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
     DEPENDS "${_inputHeader}.gch" )
-endmacro( add_pch )
+endmacro()
 
 if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE )
@@ -108,7 +108,6 @@ endif()
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 
-Find_Package( Gettext REQUIRED )
 Find_Package( SDL REQUIRED )
 Find_Package( SDL_ttf REQUIRED )
 Find_Package( Lua51 REQUIRED )
@@ -117,13 +116,13 @@ Find_Package( OpenAL REQUIRED )
 
 if( OZ_NETWORKING )
   Find_Package( SDL_net REQUIRED )
-endif( OZ_NETWORKING )
+endif()
 
 if( OZ_BUILD_TOOLS )
   Find_Package( SDL_image REQUIRED )
   Find_Package( PNG REQUIRED )
   Find_Package( JPEG REQUIRED )
-endif( OZ_BUILD_TOOLS )
+endif()
 
 mark_as_advanced( SDL_INCLUDE_DIR )
 mark_as_advanced( SDL_LIBRARY )
@@ -138,33 +137,26 @@ mark_as_advanced( SDLIMAGE_LIBRARY )
 mark_as_advanced( SDLTTF_INCLUDE_DIR )
 mark_as_advanced( SDLTTF_LIBRARY )
 
+if( WIN32 )
+  find_library( INTL_LIBRARY intl )
+endif()
+
 if( NOT ALUT_INCLUDE_DIR )
   set( ALUT_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif( NOT ALUT_INCLUDE_DIR )
+endif()
 
 find_library( ALUT_LIBRARY alut )
 
 mark_as_advanced( ALUT_INCLUDE_DIR )
 mark_as_advanced( ALUT_LIBRARY )
 
-if( NOT OGG_INCLUDE_DIR )
-  set( OGG_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif( NOT OGG_INCLUDE_DIR )
+if( NOT VORBISFILE_INCLUDE_DIR )
+  set( VORBISFILE_INCLUDE_DIR "" CACHE PATH "" FORCE )
+endif()
 
-find_library( OGG_LIBRARY ogg )
-
-mark_as_advanced( OGG_INCLUDE_DIR )
-mark_as_advanced( OGG_LIBRARY )
-
-if( NOT VORBIS_INCLUDE_DIR )
-  set( VORBIS_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif( NOT VORBIS_INCLUDE_DIR )
-
-find_library( VORBIS_LIBRARY vorbis )
 find_library( VORBISFILE_LIBRARY vorbisfile )
 
-mark_as_advanced( VORBIS_INCLUDE_DIR )
-mark_as_advanced( VORBIS_LIBRARY )
+mark_as_advanced( VORBISFILE_INCLUDE_DIR )
 mark_as_advanced( VORBISFILE_LIBRARY )
 
 # detect clang
@@ -176,7 +168,7 @@ endif()
 # detect platform
 if( NOT UNIX )
   set( OZ_MINGW ON )
-endif( NOT UNIX )
+endif()
 
 include_directories( ${SDL_INCLUDE_DIR} )
 include_directories( ${SDLTTF_INCLUDE_DIR} )
@@ -187,70 +179,79 @@ include_directories( ${ALUT_INCLUDE_DIR} )
 include_directories( ${OGG_INCLUDE_DIR} )
 include_directories( ${VORBIS_INCLUDE_DIR} )
 
-set( libs "${SDLMAIN_LIBRARY}" )
+set( libs "" )
+set( libs "${libs};${SDLMAIN_LIBRARY}" )
 set( libs "${libs};${SDL_LIBRARY}" )
 set( libs "${libs};${SDLTTF_LIBRARY}" )
 set( libs "${libs};${LUA_LIBRARY}" )
 set( libs "${libs};${OPENGL_gl_LIBRARY}" )
-set( libs "${libs};${OPENGL_glu_LIBRARY}" )
 set( libs "${libs};${OPENAL_LIBRARY}" )
 set( libs "${libs};${ALUT_LIBRARY}" )
-set( libs "${libs};${OGG_LIBRARY}" )
-set( libs "${libs};${VORBIS_LIBRARY}" )
 set( libs "${libs};${VORBISFILE_LIBRARY}" )
+
+if( WIN32 )
+  set( libs "${libs};${INTL_LIBRARY}" )
+endif()
 
 if( OZ_NETWORK )
   include_directories( ${SDLNET_INCLUDE_DIR} )
   set( libs "${libs};${SDLNET_LIBRARY}" )
-endif( OZ_NETWORK )
+endif()
 
 if( OZ_BUILD_TOOLS )
   include_directories( ${SDLIMAGE_INCLUDE_DIR} )
   set( libs "${libs};${SDLIMAGE_LIBRARY}" )
-endif( OZ_BUILD_TOOLS )
+endif()
 
 if( OZ_MINGW )
   include_directories( ./include )
-endif( OZ_MINGW )
+endif()
 
 # compiler and linker flags
-set( flags "-std=c++0x -pipe" )
-set( warnings "-Wall -Wextra -Winvalid-pch -Wold-style-cast -Wcast-qual -Wcast-align" )
-set( warnings "${warnings} -Wsign-promo -Woverloaded-virtual -Wnon-virtual-dtor" )
-set( warnings "${warnings} -Wmissing-declarations -Wdisabled-optimization" )
-set( arch_flags "-msse3 -ffast-math" )
+set( flags "-pipe -std=c++0x -ffast-math" )
+set( warnings "-Wall -Wextra -Wold-style-cast -Wcast-align -Wsign-promo -Wconversion -Wlogical-op" )
+set( warnings "${warnings} -Winvalid-pch -Wdisabled-optimization -Wmissing-declarations" )
+set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wattributes" )
+set( arch_flags "-msse3" )
 
 if( NOT OZ_MINGW )
   set( warnings "${warnings} -Wredundant-decls" )
-  set( arch_flags "${arch_flags} -fstrict-enums" )
-endif( NOT OZ_MINGW )
+  set( flags "${flags} -fstrict-enums" )
+endif()
 
 if( CLANG )
   set( warnings "${warnings} -Wno-invalid-offsetof" )
-else( CLANG )
-  set( warnings "${warnings} -Wlogical-op -Wconversion" )
+else()
+  set( warnings "${warnings}  " )
   set( arch_flags "${arch_flags} -mfpmath=sse" )
-endif( CLANG )
+endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
-set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3 -ffast-math -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_DEBUG "-g3 -O0" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3 -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
 
 set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-Wl,--gc-sections" CACHE STRING "" FORCE )
 set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-Wl,--gc-sections" CACHE STRING "" FORCE )
 
 if( OZ_MINGW )
   set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import" )
-else( OZ_MINGW )
+else()
+  set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fstack-protector-all" )
   set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto" )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -flto" )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -fstack-protector-all -flto" )
 
   set( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto" )
   set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} -flto" )
-endif( OZ_MINGW )
+endif()
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings} ${includes}" )
+
+string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )
+string( TOUPPER "CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TYPE}" OZ_EXE_LINKER_FLAGS )
+
+set( OZ_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${${OZ_CXX_FLAGS}}" )
+set( OZ_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${${OZ_EXE_LINKER_FLAGS}}" )
 
 # sources
 add_subdirectory( src )

@@ -13,7 +13,7 @@
 
 #include "matrix/Orbis.hpp"
 
-#include "ui/UI.hpp"
+#include "client/ui/UI.hpp"
 
 #include "client/BSP.hpp"
 #include "client/Terra.hpp"

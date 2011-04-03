@@ -3,8 +3,8 @@
  *
  *  Sparse vector
  *  Similar to Vector, but it can have holes in the middle. When a new elements are added it first
- *  tries to occupy all free slots, new element is added to the end only if there is no holes in
- *  the middle.
+ *  tries to occupy all free slots. New element is added to the end only if there is no free slots
+ *  in the middle.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -91,7 +91,7 @@ namespace oz
           }
 
           /**
-           * Advance to next element.
+           * Advance to the next element.
            * @return
            */
           CIterator& operator ++ ()
@@ -187,7 +187,7 @@ namespace oz
           }
 
           /**
-           * Advance to next element.
+           * Advance to the next element.
            * @return
            */
           Iterator& operator ++ ()

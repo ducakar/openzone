@@ -171,7 +171,7 @@ namespace client
 //     OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
 //     OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
 
-    OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
+//     OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
 //     OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
 //     OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
 

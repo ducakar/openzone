@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/Mouse.hpp"
+#include "client/ui/Mouse.hpp"
 
 #include "client/Camera.hpp"
 #include "client/Context.hpp"

@@ -15,8 +15,8 @@
 #include "matrix/BotClass.hpp"
 #include "matrix/VehicleClass.hpp"
 
-#include "ui/Keyboard.hpp"
-#include "ui/Mouse.hpp"
+#include "client/ui/Keyboard.hpp"
+#include "client/ui/Mouse.hpp"
 
 #include "client/Camera.hpp"
 
@@ -26,7 +26,7 @@ namespace client
 {
 
   const float BotProxy::THIRD_PERSON_CLIP_DIST = 0.20f;
-  const float BotProxy::BOB_SUPPRESSION_COEF   = 0.80f;
+  const float BotProxy::BOB_SUPPRESSION_COEF   = 0.60f;
 
   void BotProxy::begin()
   {
@@ -221,37 +221,32 @@ namespace client
       else { // 1st person, not in vehicle
         const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-        if( bot->state & Bot::MOVING_BIT ) {
-          if( bot->flags & Object::IN_WATER_BIT ) {
-            float bobInc = ( bot->state & Bot::RUNNING_BIT ) && bot->grabObj == -1 ?
+        if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
+            Bot::MOVING_BIT )
+        {
+          float bobInc =
+              ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT &&
+              bot->grabObj == -1 ? clazz->bobRunInc : clazz->bobWalkInc;
+
+          bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
+          bobTheta = Math::sin( bobPhi ) * clazz->bobRotation;
+          bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobAmplitude;
+        }
+        else if( ( bot->state & ( Bot::MOVING_BIT | Bot::SWIMMING_BIT | Bot::CLIMBING_BIT ) ) ==
+            ( Bot::MOVING_BIT | Bot::SWIMMING_BIT ) )
+        {
+          float bobInc =
+              ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT ?
               clazz->bobSwimRunInc : clazz->bobSwimInc;
 
-            bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
-            bobTheta = 0.0f;
-            bobBias  = Math::sin( -2.0f * bobPhi ) * clazz->bobSwimAmplitude;
-          }
-          else if( ( bot->flags & Object::ON_FLOOR_BIT ) || bot->lower != -1 ) {
-            float bobInc =
-                ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT &&
-                bot->grabObj == -1 ? clazz->bobRunInc : clazz->bobWalkInc;
-
-            bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
-            bobTheta = Math::sin( bobPhi ) * clazz->bobRotation;
-            bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobAmplitude;
-          }
-          else {
-            bobPhi   = 0.0f;
-            bobTheta *= BOB_SUPPRESSION_COEF;
-            bobBias  *= BOB_SUPPRESSION_COEF;
-          }
+          bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
+          bobTheta = 0.0f;
+          bobBias  = Math::sin( 2.0f * bobPhi ) * clazz->bobSwimAmplitude;
         }
         else {
           bobPhi   = 0.0f;
           bobTheta *= BOB_SUPPRESSION_COEF;
           bobBias  *= BOB_SUPPRESSION_COEF;
-        }
-        if( bot->flags & Object::IN_WATER_BIT ) {
-          bobTheta = 0.0f;
         }
 
         Point3 p = bot->p;

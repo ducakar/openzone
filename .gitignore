@@ -10,10 +10,10 @@
 /Windows-*
 /mingw32
 
+/gettext.pot
 /doxygen
 /tags
 /openzone.tag
-/openzone.pot
 
 /valgrind.supp
 

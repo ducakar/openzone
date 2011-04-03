@@ -74,7 +74,8 @@ namespace oz
           {}
 
           /**
-           * Advance to next element.
+           * Advance to the next element.
+           * @return
            */
           OZ_ALWAYS_INLINE
           CIterator& operator ++ ()
@@ -114,7 +115,8 @@ namespace oz
           {}
 
           /**
-           * Advance to next element.
+           * Advance to the next element.
+           * @return
            */
           OZ_ALWAYS_INLINE
           Iterator& operator ++ ()
@@ -386,22 +388,6 @@ namespace oz
 
         firstElem = p->next[INDEX];
         return p;
-      }
-
-      /**
-       * Transfer elements from given list. The given list is cleared after the operation.
-       * @param l
-       */
-      void take( List& l )
-      {
-        if( l.isEmpty() ) {
-          return;
-        }
-
-        l.last()->next[INDEX] = firstElem;
-        firstElem = l.firstElem;
-
-        firstElem = null;
       }
 
       /**

@@ -1,5 +1,5 @@
 /*
- *  DebugFrame.hpp
+ *  LoadingArea.hpp
  *
  *  [description]
  *
@@ -11,9 +11,7 @@
 
 #include "stable.hpp"
 
-#ifndef NDEBUG
-
-#include "ui/Frame.hpp"
+#include "client/ui/Area.hpp"
 
 namespace oz
 {
@@ -22,20 +20,23 @@ namespace client
 namespace ui
 {
 
-  class DebugFrame : public Frame
+  class LoadingArea : public Area
   {
+    friend class UI;
+
+    private:
+
     protected:
 
       virtual void onDraw();
 
     public:
 
-      DebugFrame();
+      LoadingArea();
+      virtual ~LoadingArea();
 
   };
 
 }
 }
 }
-
-#endif

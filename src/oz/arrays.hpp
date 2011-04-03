@@ -504,58 +504,6 @@ namespace oz
   }
 
   /**
-   * Utility function for aSort. It could also be called directly.
-   * Implementation of operator < is must be provided as a parameter.
-   * @param first pointer to first element in the array to be sorted
-   * @param last pointer to last element in the array
-   * @param isLess operator < implementation for Type
-   */
-  template <typename Type, typename LessComp>
-  static void quicksort( Type* first, Type* last, const LessComp& isLess )
-  {
-    // 8-14 seem as an optimal thresholds for switching to selection sort
-    if( last - first > 8 ) {
-      // quicksort
-      Type* top = first;
-      Type* bottom = last - 1;
-
-      do {
-        while( top <= bottom && !isLess( *last, *top ) ) {
-          ++top;
-        }
-        while( top < bottom && isLess( *last, *bottom ) ) {
-          --bottom;
-        }
-        if( top >= bottom ) {
-          break;
-        }
-        swap( *top, *bottom );
-      }
-      while( true );
-
-      swap( *top, *last );
-
-      quicksort( first, top - 1, isLess );
-      quicksort( top + 1, last, isLess );
-    }
-    else {
-      // selection sort
-      for( Type* i = first; i < last; ) {
-        Type* pivot = i;
-        Type* min = i;
-        ++i;
-
-        for( Type* j = i; j <= last; ++j ) {
-          if( isLess( *j, *min ) ) {
-            min = j;
-          }
-        }
-        swap( *pivot, *min );
-      }
-    }
-  }
-
-  /**
    * Perform quicksort on the array. Recursive quicksort algorithm is used which takes first
    * element in partition as a pivot so sorting a sorted or nearly sorted array will take O(n^2)
    * time instead of O(n log n) as in general case.
@@ -567,21 +515,6 @@ namespace oz
   inline void aSort( Type* aSrc, int count )
   {
     quicksort( aSrc, aSrc + count - 1 );
-  }
-
-  /**
-   * Perform quicksort on the array. Recursive quicksort algorithm is used which takes first
-   * element in partition as a pivot so sorting a sorted or nearly sorted array will take O(n^2)
-   * time instead of O(n log n) as in general case.
-   * Implementation of operator < must be provided as a parameter.
-   * @param array pointer to the first element in the array
-   * @param count number of elements to be sorted
-   * @param isLess operator < implementation for Type
-   */
-  template <typename Type, typename LessComp>
-  inline void aSort( Type* aSrc, int count, const LessComp& isLess )
-  {
-    quicksort( aSrc, aSrc + count - 1, isLess );
   }
 
   /**

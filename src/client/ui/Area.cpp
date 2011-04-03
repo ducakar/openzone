@@ -11,7 +11,7 @@
 
 #include "client/Shape.hpp"
 
-#include "ui/Area.hpp"
+#include "client/ui/Area.hpp"
 
 #include "client/Camera.hpp"
 

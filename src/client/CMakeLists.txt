@@ -72,6 +72,34 @@ add_library( client STATIC
   VehicleAudio.hpp
   common.cpp
   common.hpp
+  ui/Area.cpp
+  ui/Area.hpp
+  ui/BuildMenu.cpp
+  ui/BuildMenu.hpp
+  ui/Button.cpp
+  ui/Button.hpp
+  ui/DebugFrame.cpp
+  ui/DebugFrame.hpp
+  ui/Font.cpp
+  ui/Font.hpp
+  ui/Frame.cpp
+  ui/Frame.hpp
+  ui/HudArea.cpp
+  ui/HudArea.hpp
+  ui/InventoryMenu.cpp
+  ui/InventoryMenu.hpp
+  ui/Keyboard.cpp
+  ui/Keyboard.hpp
+  ui/LoadingArea.cpp
+  ui/LoadingArea.hpp
+  ui/Mouse.cpp
+  ui/Mouse.hpp
+  ui/MusicPlayer.cpp
+  ui/MusicPlayer.hpp
+  ui/StrategicArea.cpp
+  ui/StrategicArea.hpp
+  ui/UI.cpp
+  ui/UI.hpp
 )
 
-add_dependencies( client ui nirvana matrix pch )
+add_dependencies( client nirvana matrix pch )

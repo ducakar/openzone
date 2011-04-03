@@ -295,8 +295,13 @@ static void prebuildLua( const char* path )
   }
 
   if( doRebuild ) {
+#ifdef NDEBUG
+    log.println( "luac -s -o %s%s", destFile.cstr(), sources.cstr() );
+    system( "luac -s -o " + destFile + sources );
+#else
     log.println( "luac -o %s%s", destFile.cstr(), sources.cstr() );
     system( "luac -o " + destFile + sources );
+#endif
   }
 
   log.unindent();

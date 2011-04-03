@@ -9,7 +9,9 @@
 
 #include "stable.hpp"
 
-#include "ui/Frame.hpp"
+#include "client/ui/Frame.hpp"
+
+#include "client/ui/Keyboard.hpp"
 
 #include "client/Shader.hpp"
 
@@ -28,10 +30,7 @@ namespace ui
       parent->focus( this );
     }
 
-    if( !( flags & GRAB_BIT ) && passMouseEvents() ) {
-      return true;
-    }
-    if( mouse.buttons & SDL_BUTTON_LMASK ) {
+    if( keyboard.keys[SDLK_LALT] && ( mouse.buttons & SDL_BUTTON_LMASK ) ) {
       if( mouse.leftClick ) {
         flags |= GRAB_BIT;
       }
@@ -42,6 +41,9 @@ namespace ui
     }
     else {
       flags &= ~GRAB_BIT;
+    }
+    if( !( flags & GRAB_BIT ) && passMouseEvents() ) {
+      return true;
     }
     return true;
   }

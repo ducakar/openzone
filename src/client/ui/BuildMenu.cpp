@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/BuildMenu.hpp"
+#include "client/ui/BuildMenu.hpp"
 
 #include "matrix/Translator.hpp"
 #include "matrix/Collider.hpp"
@@ -42,7 +42,7 @@ namespace ui
     }
   }
 
-  BuildMenu::BuildMenu() : Frame( -8, -8, 240, 250, gettext( "Create" ) )
+  BuildMenu::BuildMenu() : Frame( -8, -8, 240, 250, OZ_GETTEXT( "Create" ) )
   {
     setFont( Font::SANS );
 

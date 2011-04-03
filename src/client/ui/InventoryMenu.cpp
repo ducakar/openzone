@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/InventoryMenu.hpp"
+#include "client/ui/InventoryMenu.hpp"
 
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
@@ -26,7 +26,7 @@ namespace ui
   const float InventoryMenu::SLOT_DIMF = float( SLOT_SIZE ) / 2.0f;
 
   InventoryMenu::InventoryMenu() :
-      Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, gettext( "Inventory" ) )
+      Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, OZ_GETTEXT( "Inventory" ) )
   {
     x = ( camera.width - width ) / 2;
 

@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#include "ui/Frame.hpp"
+#include "client/ui/Frame.hpp"
 
 namespace oz
 {

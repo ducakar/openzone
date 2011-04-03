@@ -144,9 +144,9 @@ namespace oz
       aDestruct( nodes, nNodes );
       aDestruct( leaves, nLeaves );
       aDestruct( leafBrushes, nLeafBrushes );
-      aDestruct( models, nModels );
       aDestruct( brushes, nBrushes );
       aDestruct( brushSides, nBrushSides );
+      aDestruct( models, nModels );
 
       Alloc::dealloc( planes );
 
@@ -154,17 +154,17 @@ namespace oz
       nNodes       = 0;
       nLeaves      = 0;
       nLeafBrushes = 0;
-      nModels      = 0;
       nBrushes     = 0;
       nBrushSides  = 0;
+      nModels      = 0;
 
       planes      = null;
       nodes       = null;
       leaves      = null;
       leafBrushes = null;
-      models      = null;
       brushes     = null;
       brushSides  = null;
+      models      = null;
     }
 
     log.printEnd( " OK" );

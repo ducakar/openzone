@@ -127,7 +127,7 @@ namespace oz
 
           /**
            * Advance to the next element.
-           * @param
+           * @return
            */
           CIterator& operator ++ ()
           {
@@ -267,7 +267,7 @@ namespace oz
 
           /**
            * Advance to the next element.
-           * @param
+           * @return
            */
           Iterator& operator ++ ()
           {

@@ -214,7 +214,8 @@ namespace oz
     va_start( ap, s );
 
     vfprintf( f, s, ap );
-    fprintf( f, " %02d.%02d.%04d %02d:%02d:%02d\n", t.tm_mday, t.tm_mon + 1, t.tm_year + 1900,
+    fprintf( f, " %d.%d.%04d %02d:%02d:%02d\n",
+             t.tm_mday, t.tm_mon + 1, t.tm_year + 1900,
              t.tm_hour, t.tm_min, t.tm_sec );
 
     va_end( ap );

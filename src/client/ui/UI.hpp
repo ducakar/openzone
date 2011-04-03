@@ -11,21 +11,21 @@
 
 #include "stable.hpp"
 
-#include "ui/Font.hpp"
-#include "ui/Keyboard.hpp"
-#include "ui/Mouse.hpp"
+#include "client/ui/Font.hpp"
+#include "client/ui/Keyboard.hpp"
+#include "client/ui/Mouse.hpp"
 
-#include "ui/Area.hpp"
-#include "ui/Frame.hpp"
-#include "ui/Button.hpp"
+#include "client/ui/Area.hpp"
+#include "client/ui/Frame.hpp"
+#include "client/ui/Button.hpp"
 
-#include "ui/LoadingArea.hpp"
-#include "ui/HudArea.hpp"
-#include "ui/StrategicArea.hpp"
-#include "ui/InventoryMenu.hpp"
-#include "ui/DebugFrame.hpp"
-#include "ui/BuildMenu.hpp"
-#include "ui/MusicPlayer.hpp"
+#include "client/ui/LoadingArea.hpp"
+#include "client/ui/HudArea.hpp"
+#include "client/ui/StrategicArea.hpp"
+#include "client/ui/InventoryMenu.hpp"
+#include "client/ui/DebugFrame.hpp"
+#include "client/ui/BuildMenu.hpp"
+#include "client/ui/MusicPlayer.hpp"
 
 namespace oz
 {

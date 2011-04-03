@@ -282,9 +282,9 @@ namespace client
     ct = time( null );
     t = *localtime( &ct );
 
-    snprintf( fileName, 1024, "%s/screenshot %04d-%02d-%02d %02d:%02d:%02d.bmp",
+    snprintf( fileName, 1024, "%s/screenshot %d.%d.%04d %02d:%02d:%02d.bmp",
               config.get( "dir.rc", "" ),
-              1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec );
+              t.tm_mday, 1 + t.tm_mon, 1900 + t.tm_year, t.tm_hour, t.tm_min, t.tm_sec );
     fileName[1023] = '\0';
 
     log.print( "Saving screenshot to '%s' ...", fileName );
