@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/HudArea.hpp"
+#include "client/ui/HudArea.hpp"
 
 #include "matrix/BotClass.hpp"
 #include "matrix/VehicleClass.hpp"

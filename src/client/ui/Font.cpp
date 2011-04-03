@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/Font.hpp"
+#include "client/ui/Font.hpp"
 
 #include <SDL_ttf.h>
 #include <GL/gl.h>

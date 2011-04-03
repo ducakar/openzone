@@ -15,7 +15,7 @@
 #include "matrix/Collider.hpp"
 #include "matrix/BotClass.hpp"
 #include "matrix/Vehicle.hpp"
-#include "ui/UI.hpp"
+#include "client/ui/UI.hpp"
 
 namespace oz
 {
@@ -125,12 +125,12 @@ namespace client
     smoothCoef   = config.getSet( "camera.smoothCoef", 0.50f );
     isExternal   = true;
 
-    float angle = Math::rad( config.getSet( "camera.angle", 80.0f ) );
+    float angle  = Math::rad( config.getSet( "camera.angle", 80.0f ) );
 
-    aspect     = aspect != 0.0f ? aspect : float( width ) / float( height );
-    coeff      = Math::tan( angle / 2.0f );
-    horizPlane = coeff * minDist;
-    vertPlane  = aspect * horizPlane;
+    aspect       = aspect != 0.0f ? aspect : float( width ) / float( height );
+    coeff        = Math::tan( angle / 2.0f );
+    horizPlane   = coeff * minDist;
+    vertPlane    = aspect * horizPlane;
 
     String sDefaultState = config.getSet( "camera.defaultState", "STRATEGIC" );
     if( sDefaultState.equals( "STRATEGIC" ) ) {

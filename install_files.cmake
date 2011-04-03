@@ -56,35 +56,36 @@ if( OZ_INSTALL_LIBOZ )
     src/oz/stream.hpp
     DESTINATION include/oz )
   install( FILES ${liboz_file} DESTINATION lib )
-endif( OZ_INSTALL_LIBOZ )
+endif()
 
 if( WIN32 )
   install( FILES
     AUTHORS
     COPYING
     README
+    README.sl
     DESTINATION . )
-else( WIN32 )
+else()
   install( FILES
     AUTHORS
     COPYING
     README
+    README.sl
     DESTINATION share/doc/openzone )
-endif( WIN32 )
+endif()
 
 if( WIN32 )
   install( FILES
     mingw32/SDL.dll
     mingw32/SDL_ttf.dll
     mingw32/libalut-0.dll
-    mingw32/libcharset-1.dll
     mingw32/libfreetype-6.dll
     mingw32/libgcc_s_sjlj-1.dll
     mingw32/libiconv-2.dll
+    mingw32/libintl-8.dll
     mingw32/libogg-0.dll
     mingw32/libstdc++-6.dll
     mingw32/libvorbis-0.dll
-    mingw32/libvorbisenc-2.dll
     mingw32/libvorbisfile-3.dll
     mingw32/oalinst.exe
     DESTINATION bin )
@@ -93,7 +94,7 @@ if( WIN32 )
     mingw32/openzone-restart-world.bat
     mingw32/openzone.bat
     DESTINATION . )
-endif( WIN32 )
+endif()
 
 string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" client_location_var )
 get_target_property( client_file openzone ${client_location_var} )
@@ -105,10 +106,9 @@ if( OZ_INSTALL_CLIENT )
     OWNER_READ OWNER_WRITE OWNER_EXECUTE
     GROUP_READ GROUP_EXECUTE
     WORLD_READ WORLD_EXECUTE )
-endif( OZ_INSTALL_CLIENT )
+endif()
 
 if( OZ_INSTALL_DATA )
-
   install( FILES
     share/openzone/class/barrel2.rc
     share/openzone/class/beast.rc
@@ -138,7 +138,32 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/class )
 
   install( FILES
-    DESTINATION share/openzone/fonts )
+    share/openzone/ui/font/DejaVu.COPYING
+    share/openzone/ui/font/DejaVuSans.ttf
+    share/openzone/ui/font/DejaVuSansMono.ttf
+    share/openzone/ui/font/Droid.COPYING
+    share/openzone/ui/font/DroidSans.ttf
+    share/openzone/ui/font/DroidSansMono.ttf
+    DESTINATION share/openzone/ui/font )
+
+  install( FILES
+    share/openzone/ui/cur/COPYING
+    share/openzone/ui/cur/README
+    share/openzone/ui/cur/X_cursor.ozcCur
+    share/openzone/ui/cur/fleur.ozcCur
+    share/openzone/ui/cur/hand2.ozcCur
+    share/openzone/ui/cur/left_ptr.ozcCur
+    share/openzone/ui/cur/xterm.ozcCur
+    DESTINATION share/openzone/ui/cur )
+
+  install( FILES
+    share/openzone/ui/icon/crosshair.ozcTex
+    share/openzone/ui/icon/grab.ozcTex
+    share/openzone/ui/icon/lift.ozcTex
+    share/openzone/ui/icon/mount.ozcTex
+    share/openzone/ui/icon/take.ozcTex
+    share/openzone/ui/icon/use.ozcTex
+    DESTINATION share/openzone/ui/icon )
 
   install( FILES
     share/openzone/lua/COPYING
@@ -259,15 +284,20 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/snd )
 
   install( FILES
+    "share/openzone/music/Crimson And Clover.ogg"
+    "share/openzone/music/Fanatic - Assault.ogg"
+    "share/openzone/music/Fanatic - Cubed to Death.ogg"
+    "share/openzone/music/Fanatic - Unreleased Rage.ogg"
+    DESTINATION share/openzone/music )
+
+  install( FILES
     share/openzone/terra/heightmap.ozTerra
     share/openzone/terra/heightmap.ozcTerra
     DESTINATION share/openzone/terra )
 
   install( FILES
-    DESTINATION share/openzone/sky )
-
-  install( FILES
-    DESTINATION share/openzone/ui )
+    share/openzone/caelum/caelum.ozcCaelum
+    DESTINATION share/openzone/caelum )
 
   install( FILES
     share/openzone/glsl/COPYING
@@ -300,14 +330,11 @@ if( OZ_INSTALL_DATA )
     share/openzone/glsl/ui.vert
     DESTINATION share/openzone/glsl )
 
-
   install( FILES
     share/locale/en/LC_MESSAGES/openzone.mo
     DESTINATION share/locale/en/LC_MESSAGES )
 
-
   install( FILES
     share/locale/sl/LC_MESSAGES/openzone.mo
     DESTINATION share/locale/sl/LC_MESSAGES )
-
-endif( OZ_INSTALL_DATA )
+endif()

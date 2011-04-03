@@ -11,8 +11,8 @@
 
 #include "stable.hpp"
 
-#include "ui/Frame.hpp"
-#include "ui/Button.hpp"
+#include "client/ui/Frame.hpp"
+#include "client/ui/Button.hpp"
 
 namespace oz
 {
@@ -25,15 +25,15 @@ namespace ui
   {
     private:
 
-      int currentSong;
+      int currentTrack;
       const char* title;
       int volume;
       bool isPlaying;
 
-      static void prevSong( Button* sender );
-      static void nextSong( Button* sender );
-      static void playSong( Button* sender );
-      static void stopSong( Button* sender );
+      static void prevTrack( Button* sender );
+      static void nextTrack( Button* sender );
+      static void playTrack( Button* sender );
+      static void stopTrack( Button* sender );
       static void volumeDown( Button* sender );
       static void volumeUp( Button* sender );
 

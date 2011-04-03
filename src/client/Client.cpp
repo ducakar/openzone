@@ -11,6 +11,8 @@
 
 #include "client/Client.hpp"
 
+#include "Build.hpp"
+
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
 #include "client/GameStage.hpp"
@@ -66,7 +68,7 @@ namespace client
     if( initFlags & INIT_TRANSLATOR ) {
       translator.free();
     }
-    if( ( initFlags & INIT_CONFIG ) == 0 ) {
+    if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
       String rcDir = config.get( "dir.rc", "" );
 
       if( !rcDir.isEmpty() ) {
@@ -237,16 +239,6 @@ namespace client
       }
     }
 
-    log.print( "Initialising SDL ..." );
-    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO ) != 0 ) {
-      log.printEnd( " Failed" );
-      return -1;
-    }
-    log.printEnd( " OK" );
-    initFlags |= INIT_SDL;
-
-    uint createTime = SDL_GetTicks();
-
 #ifdef OZ_MINGW
     const char* homeVar = getenv( "APPDATA" );
 #else
@@ -284,16 +276,40 @@ namespace client
         printf( "Can't create/open log file '%s' for writing\n", logPath.cstr() );
         return -1;
       }
+
+      printf( "Log file '%s'\n", logPath.cstr() );
+
       log.println( "OpenZone  Copyright (C) 2002-2011  Davorin Učakar\n"
           "This program comes with ABSOLUTELY NO WARRANTY.\n"
           "This is free software, and you are welcome to redistribute it\n"
           "under certain conditions; See COPYING file for details.\n" );
-
-      log.println( "Log file '%s'", logPath.cstr() );
-      printf( "Log file '%s'\n", logPath.cstr() );
     }
 
     log.printlnETD( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION " started at" );
+
+    log.print( "Initialising SDL ..." );
+    if( SDL_Init( SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO ) != 0 ) {
+      log.printEnd( " Failed" );
+      return -1;
+    }
+    log.printEnd( " OK" );
+    initFlags |= INIT_SDL;
+
+    uint createTime = SDL_GetTicks();
+
+    log.println( "Build details {" );
+    log.indent();
+
+    log.println( "Date:            %s", Build::TIME );
+    log.println( "Host system:     %s", Build::HOST_SYSTEM );
+    log.println( "Target system:   %s", Build::TARGET_SYSTEM );
+    log.println( "Build type:      %s", Build::BUILD_TYPE );
+    log.println( "Compiler:        %s", Build::COMPILER );
+    log.println( "Compiler flags:  %s", Build::CXX_FLAGS );
+    log.println( "Linker flags:    %s", Build::EXE_LINKER_FLAGS );
+
+    log.unindent();
+    log.println( "}" );
 
     buffer.alloc( 4 * 1024 * 1024 );
 
@@ -318,15 +334,18 @@ namespace client
 
     config.add( "dir.rc", rcDir );
 
-    log.print( "Setting locale LC_CTYPE/LC_MESSAGES ..." );
+    log.print( "Setting localisation ..." );
 
     setlocale( LC_CTYPE, config.getSet( "locale.ctype", "" ) );
     setlocale( LC_MESSAGES, config.getSet( "locale.messages", "" ) );
 
     bindtextdomain( OZ_APPLICATION_NAME, "../locale" );
+    bind_textdomain_codeset( OZ_APPLICATION_NAME, "UTF-8" );
     textdomain( OZ_APPLICATION_NAME );
 
-    log.printEnd( " %s/%s", setlocale( LC_CTYPE, null ), setlocale( LC_MESSAGES, null ) );
+    log.printEnd( " OK, LC_CTYPE: %s LC_MESSAGES: %s",
+                  setlocale( LC_CTYPE, null ),
+                  setlocale( LC_MESSAGES, null ) );
 
     if( config.contains( "seed" ) && config["seed"].equals( "time" ) ) {
       uint seed = uint( time( null ) );

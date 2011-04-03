@@ -1,5 +1,5 @@
 /*
- *  BuildMenu.hpp
+ *  DebugFrame.hpp
  *
  *  [description]
  *
@@ -11,8 +11,9 @@
 
 #include "stable.hpp"
 
-#include "ui/Frame.hpp"
-#include "ui/Button.hpp"
+#ifndef NDEBUG
+
+#include "client/ui/Frame.hpp"
 
 namespace oz
 {
@@ -21,18 +22,20 @@ namespace client
 namespace ui
 {
 
-  class BuildMenu : public Frame
+  class DebugFrame : public Frame
   {
-    private:
+    protected:
 
-      static void createObject( Button* button );
+      virtual void onDraw();
 
     public:
 
-      BuildMenu();
+      DebugFrame();
 
   };
 
 }
 }
 }
+
+#endif

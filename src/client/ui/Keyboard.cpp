@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/Keyboard.hpp"
+#include "client/ui/Keyboard.hpp"
 
 namespace oz
 {

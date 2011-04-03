@@ -224,6 +224,9 @@ namespace oz
       Object() : index( -1 ), cell( null )
       {}
 
+      Object( const Object& ) = delete;
+      Object& operator = ( const Object& ) = delete;
+
       virtual ~Object();
 
       /**

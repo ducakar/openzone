@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/UI.hpp"
+#include "client/ui/UI.hpp"
 
 #include "client/Camera.hpp"
 #include "client/Colours.hpp"

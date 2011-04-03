@@ -11,8 +11,8 @@
 
 #include "stable.hpp"
 
-#include "ui/Font.hpp"
-#include "ui/Mouse.hpp"
+#include "client/ui/Font.hpp"
+#include "client/ui/Mouse.hpp"
 
 namespace oz
 {

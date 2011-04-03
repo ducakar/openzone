@@ -69,6 +69,9 @@ namespace oz
         ++i;
       }
     }
+    if( grabObj != -1 && orbis.objects[grabObj] == null ) {
+      grabObj = -1;
+    }
     if( weaponItem != -1 && orbis.objects[weaponItem] == null ) {
       weaponItem = -1;
     }
@@ -96,6 +99,20 @@ namespace oz
       return;
     }
 
+    h = Math::mod( h + Math::TAU, Math::TAU );
+    v = clamp( v, 0.0f, Math::TAU / 2.0f );
+
+    stamina = min( stamina + clazz->staminaGain, clazz->stamina );
+
+    if( state & SUBMERGED_BIT ) {
+      stamina -= clazz->staminaWaterDrain;
+
+      if( stamina < 0.0f ) {
+        life += stamina;
+        stamina = 0.0f;
+      }
+    }
+
     if( actions & ~oldActions & ACTION_SUICIDE ) {
       life = clazz->life / 2.0f - EPSILON;
     }
@@ -112,9 +129,6 @@ namespace oz
         }
       }
     }
-
-    h = Math::mod( h + Math::TAU, Math::TAU );
-    v = clamp( v, 0.0f, Math::TAU / 2.0f );
 
     if( parent != -1 ) {
       grabObj = -1;
@@ -146,17 +160,6 @@ namespace oz
 
     stepRate -= ( velocity.x*velocity.x + velocity.y*velocity.y );
     stepRate *= clazz->stepRateSupp;
-
-    stamina = min( stamina + clazz->staminaGain, clazz->stamina );
-
-    if( state & SUBMERGED_BIT ) {
-      stamina -= clazz->staminaWaterDrain;
-
-      if( stamina < 0.0f ) {
-        life += stamina;
-        stamina = 0.0f;
-      }
-    }
 
     /*
      * JUMP, CROUCH

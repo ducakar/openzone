@@ -517,11 +517,8 @@ namespace oz
     hard_assert( bsp != null );
 
     nEntities = bsp->nModels;
-    entities = null;
+    entities = nEntities == 0 ? null : new Entity[nEntities];
 
-    if( nEntities != 0 ) {
-      entities = new Entity[nEntities];
-    }
     for( int i = 0; i < nEntities; ++i ) {
       Entity& entity = entities[i];
 
@@ -542,11 +539,8 @@ namespace oz
     hard_assert( bsp != null );
 
     nEntities = bsp->nModels;
-    entities = null;
+    entities = nEntities == 0 ? null : new Entity[nEntities];
 
-    if( nEntities != 0 ) {
-      entities = new Entity[nEntities];
-    }
     for( int i = 0; i < nEntities; ++i ) {
       Entity& entity = entities[i];
 

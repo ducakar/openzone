@@ -40,7 +40,7 @@ namespace client
       Bitset                    playedStructs;
 
       void playCell( int cellX, int cellY );
-      void loadMusicBuffer( uint buffer );
+      bool loadMusicBuffer( uint buffer );
 
       /*
        * Music
@@ -48,18 +48,23 @@ namespace client
       OggVorbis_File             oggStream;
       vorbis_info*               vorbisInfo;
 
+      ALenum                     musicFormat;
       uint                       musicBuffers[2];
       uint                       musicSource;
-      ALenum                     musicFormat;
+
+      // music track id to switch to, -1 to do nothing, -2 stop playing
+      int                        selectedTrack;
+      // music track id, -1 for not playing
+      int                        currentTrack;
 
     public:
 
-      bool                       isMusicPlaying;
-
       void setVolume( float volume );
       void setMusicVolume( float volume );
-      bool loadMusic( const char* path );
+
+      void playMusic( int track );
       void stopMusic();
+      bool isMusicPlaying() const;
 
       void play();
       void update();

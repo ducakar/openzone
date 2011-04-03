@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#include "ui/Area.hpp"
+#include "client/ui/Area.hpp"
 
 namespace oz
 {

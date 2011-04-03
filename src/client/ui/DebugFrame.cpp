@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/DebugFrame.hpp"
+#include "client/ui/DebugFrame.hpp"
 
 #ifndef NDEBUG
 
@@ -27,7 +27,7 @@ namespace ui
 {
 
   DebugFrame::DebugFrame() :
-      Frame( 8, -8, 560, 10 + 6 * ( Font::INFOS[Font::MONO].height + 2 ), gettext( "Debug" ) )
+      Frame( 8, -8, 560, 10 + 6 * ( Font::INFOS[Font::MONO].height + 2 ), OZ_GETTEXT( "Debug" ) )
   {
     flags = PINNED_BIT;
 

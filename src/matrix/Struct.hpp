@@ -90,6 +90,9 @@ namespace oz
       explicit Struct( int index, int bsp, const Point3& p, Rotation rot );
       explicit Struct( int index, int bsp, InputStream* istream );
 
+      Struct( const Struct& ) = delete;
+      Struct& operator = ( const Struct& ) = delete;
+
       ~Struct();
 
       /**

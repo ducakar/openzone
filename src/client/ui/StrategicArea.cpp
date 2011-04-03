@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/StrategicArea.hpp"
+#include "client/ui/StrategicArea.hpp"
 
 #include "matrix/Collider.hpp"
 
@@ -17,7 +17,7 @@
 #include "client/Colours.hpp"
 #include "client/Shape.hpp"
 
-#include "ui/Keyboard.hpp"
+#include "client/ui/Keyboard.hpp"
 
 #include <SDL_ttf.h>
 #include <GL/gl.h>
@@ -29,53 +29,56 @@ namespace client
 namespace ui
 {
 
-  const float StrategicArea::TAG_CLIP_DIST = 0.1f;
+  const float StrategicArea::TAG_CLIP_DIST      = 0.1f;
+  const float StrategicArea::TAG_CLAMP_LIMIT    = 1e6f;
+  // size in pixels
+  const float StrategicArea::TAG_MIN_PIXEL_SIZE = 4.0f;
+  // size in coefficient
+  const float StrategicArea::TAG_MAX_COEFF_SIZE = 4.0f;
 
-  Pair<int> StrategicArea::project( const Point3& p ) const
+  bool StrategicArea::projectBounds( Span* span, const AABB& bb ) const
   {
-    Point3 t = camera.rotTMat * p;
+    Point3 corners[8] = {
+      bb.p + Vec3( -bb.dim.x, -bb.dim.y, -bb.dim.z ),
+      bb.p + Vec3( -bb.dim.x, -bb.dim.y, +bb.dim.z ),
+      bb.p + Vec3( -bb.dim.x, +bb.dim.y, -bb.dim.z ),
+      bb.p + Vec3( -bb.dim.x, +bb.dim.y, +bb.dim.z ),
+      bb.p + Vec3( +bb.dim.x, -bb.dim.y, -bb.dim.z ),
+      bb.p + Vec3( +bb.dim.x, -bb.dim.y, +bb.dim.z ),
+      bb.p + Vec3( +bb.dim.x, +bb.dim.y, -bb.dim.z ),
+      bb.p + Vec3( +bb.dim.x, +bb.dim.y, +bb.dim.z )
+    };
 
-    float px = Math::round( ( t.x / -t.z ) * stepPixel );
-    float py = Math::round( ( t.y / -t.z ) * stepPixel );
+    float minX = +Math::INF;
+    float minY = +Math::INF;
+    float maxX = -Math::INF;
+    float maxY = -Math::INF;
 
-    return Pair<int>( camera.centreX + int( px ), camera.centreY + int( py ) );
-  }
+    for( int i = 0; i < 8; ++i ) {
+      Point3 t = camera.rotTMat * corners[i];
+      float  d = max( -t.z, TAG_CLIP_DIST );
+      // we have to clamp to prevent integer overflows
+      float  x = clamp( ( t.x / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
+      float  y = clamp( ( t.y / d ) * stepPixel, -TAG_CLAMP_LIMIT, +TAG_CLAMP_LIMIT );
 
-  Span StrategicArea::projectBounds( const AABB& bb ) const
-  {
-    Span span;
-    Pair<int> t[8];
-
-    t[0] = project( bb.p + Vec3( -bb.dim.x, -bb.dim.y, -bb.dim.z ) );
-    t[1] = project( bb.p + Vec3( +bb.dim.x, -bb.dim.y, -bb.dim.z ) );
-    t[2] = project( bb.p + Vec3( -bb.dim.x, +bb.dim.y, -bb.dim.z ) );
-    t[3] = project( bb.p + Vec3( +bb.dim.x, +bb.dim.y, -bb.dim.z ) );
-    t[4] = project( bb.p + Vec3( -bb.dim.x, -bb.dim.y, +bb.dim.z ) );
-    t[5] = project( bb.p + Vec3( +bb.dim.x, -bb.dim.y, +bb.dim.z ) );
-    t[6] = project( bb.p + Vec3( -bb.dim.x, +bb.dim.y, +bb.dim.z ) );
-    t[7] = project( bb.p + Vec3( +bb.dim.x, +bb.dim.y, +bb.dim.z ) );
-
-    span.minX = t[0].x;
-    span.maxX = t[0].x;
-    span.minY = t[0].y;
-    span.maxY = t[0].y;
-
-    for( int i = 1; i < 8; ++i ) {
-      span.minX = min( t[i].x, span.minX );
-      span.maxX = max( t[i].x, span.maxX );
-      span.minY = min( t[i].y, span.minY );
-      span.maxY = max( t[i].y, span.maxY );
+      minX = min( minX, x );
+      minY = min( minY, y );
+      maxX = max( maxX, x );
+      maxY = max( maxY, y );
     }
 
-    // we must contain boxes that are to far outside the screen, otherwise we get healthbars drawn
-    // over half of the screen and similar defects
-    // 2 px margin so that whole box is drawn inside screen
-    span.minX = max( span.minX, 2 );
-    span.maxX = min( span.maxX, camera.width - 2 );
-    span.minY = max( span.minY, 2 );
-    span.maxY = min( span.maxY, camera.height - 2 );
+    if( maxX - minX < TAG_MIN_PIXEL_SIZE || ( maxX - minX ) * pixelStep > TAG_MAX_COEFF_SIZE ||
+        maxY - minY < TAG_MIN_PIXEL_SIZE || ( maxY - minY ) * pixelStep > TAG_MAX_COEFF_SIZE )
+    {
+      return false;
+    }
 
-    return span;
+    span->minX = camera.centreX + int( minX + 0.5f );
+    span->minY = camera.centreY + int( minY + 0.5f );
+    span->maxX = camera.centreX + int( maxX + 0.5f );
+    span->maxY = camera.centreY + int( maxY + 0.5f );
+
+    return true;
   }
 
   void StrategicArea::printName( int baseX, int baseY, const char* s, ... )
@@ -172,6 +175,9 @@ namespace ui
     float minY = float( span.minY );
     float maxY = float( span.maxY );
 
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.tag( minX, minY, maxX, maxY );
+
     if( obj != hovered ) {
       const ObjectClass *clazz = obj->clazz;
       float life = ( obj->flags & Object::BOT_BIT ) ?
@@ -203,9 +209,6 @@ namespace ui
         description = clazz->description;
       }
     }
-
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    shape.tag( minX, minY, maxX, maxY );
   }
 
   void StrategicArea::onUpdate()
@@ -265,13 +268,15 @@ namespace ui
   {
     hard_assert( camera.state == Camera::STRATEGIC );
 
-    if( hovered != null ) {
-      Span span = projectBounds( *hovered + ( Point3::ORIGIN - camera.p ) );
+    Span span;
 
-      if( span.maxX - span.minX >= 10 ) {
+    if( hovered != null ) {
+      if( projectBounds( &span, *hovered + ( Point3::ORIGIN - camera.p ) ) ) {
         drawHoveredRect( span );
       }
     }
+
+    hovered = null;
 
     foreach( objIndex, tagged.citer() ) {
       const Object* obj = orbis.objects[*objIndex];
@@ -279,9 +284,7 @@ namespace ui
       if( obj != null ) {
         AABB bb = *obj + ( Point3::ORIGIN - camera.p );
         if( bb.p * camera.at >= TAG_CLIP_DIST ) {
-          Span span = projectBounds( bb );
-
-          if( span.maxX - span.minX >= 6 && span.maxY - span.minY >= 6 ) {
+          if( projectBounds( &span, bb ) ) {
             drawTaggedRect( obj, span );
           }
         }
@@ -294,8 +297,8 @@ namespace ui
     flags = IGNORE_BIT | HIDDEN_BIT | UPDATE_BIT | PINNED_BIT;
     setFont( Font::SANS );
 
-    pixelStep = camera.coeff / float( camera.height / 2 );
-    stepPixel = 1.0f / pixelStep;
+    pixelStep   = camera.coeff / float( camera.height / 2 );
+    stepPixel   = 1.0f / pixelStep;
   }
 
   StrategicArea::~StrategicArea()

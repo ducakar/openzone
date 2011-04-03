@@ -6,8 +6,8 @@ pkgdesc="A simple cross-platform 3D engine"
 url="http://github.com/ducakar/openzone/"
 arch=('i686' 'x86_64')
 license=('GPL3')
-depends=('gettext' 'libgl' 'freealut' 'libvorbis' 'lua' 'sdl_ttf')
-makedepends=('git' 'cmake' 'mesa' 'gcc>=4.6')
+depends=('gcc-libs' 'lua' 'sdl_ttf' 'libgl' 'freealut' 'libvorbis')
+makedepends=('git' 'cmake' 'gcc>=4.5' 'gettext' 'sdl_image' 'mesa')
 source=('openzone-sdk.tar.xz')
 sha1sums=('')
 

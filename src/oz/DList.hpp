@@ -78,7 +78,8 @@ namespace oz
           {}
 
           /**
-           * Advance to next element.
+           * Advance to the next element.
+           * @return
            */
           OZ_ALWAYS_INLINE
           CIterator& operator ++ ()
@@ -118,7 +119,8 @@ namespace oz
           {}
 
           /**
-           * Advance to next element.
+           * Advance to the next element.
+           * @return
            */
           OZ_ALWAYS_INLINE
           Iterator& operator ++ ()
@@ -481,34 +483,6 @@ namespace oz
           lastElem->next[INDEX] = null;
         }
         return p;
-      }
-
-      /**
-       * Transfer elements from given list. The given list is cleared after the operation.
-       * @param l
-       */
-      void take( DList& l )
-      {
-        if( l.isEmpty() ) {
-          return;
-        }
-
-        hard_assert( l.firstElem->prev[INDEX] == null );
-        hard_assert( l.lastElem->next[INDEX] == null );
-
-        l.lastElem->next[INDEX] = firstElem;
-
-        if( firstElem == null ) {
-          firstElem = l.firstElem;
-          lastElem = l.lastElem;
-        }
-        else {
-          firstElem->prev[INDEX] = l.lastElem;
-          firstElem = l.firstElem;
-        }
-
-        firstElem = null;
-        lastElem = null;
       }
 
       /**

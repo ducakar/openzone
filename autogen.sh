@@ -16,8 +16,6 @@ echo Generating src/nirvana/CMakeLists.txt
 cd src/nirvana && ./CMakeLists.gen && cd ../..
 echo Generating src/architect/CMakeLists.txt
 cd src/architect && ./CMakeLists.gen && cd ../..
-echo Generating src/ui/CMakeLists.txt
-cd src/ui      && ./CMakeLists.gen && cd ../..
 echo Generating src/client/CMakeLists.txt
 cd src/client  && ./CMakeLists.gen && cd ../..
 echo Generating src/server/CMakeLists.txt
@@ -30,3 +28,9 @@ cd src/server  && ./CMakeLists.gen && cd ../..
 
 echo Generating install_files.cmake
 ./install_files.gen
+
+#
+# generate .pot gettext translations template
+#
+echo Generating gettext.pot
+./gettext.gen

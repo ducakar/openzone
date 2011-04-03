@@ -1,5 +1,5 @@
 /*
- *  LoadingArea.hpp
+ *  BuildMenu.hpp
  *
  *  [description]
  *
@@ -11,7 +11,8 @@
 
 #include "stable.hpp"
 
-#include "ui/Area.hpp"
+#include "client/ui/Frame.hpp"
+#include "client/ui/Button.hpp"
 
 namespace oz
 {
@@ -20,20 +21,15 @@ namespace client
 namespace ui
 {
 
-  class LoadingArea : public Area
+  class BuildMenu : public Frame
   {
-    friend class UI;
-
     private:
 
-    protected:
-
-      virtual void onDraw();
+      static void createObject( Button* button );
 
     public:
 
-      LoadingArea();
-      virtual ~LoadingArea();
+      BuildMenu();
 
   };
 

@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "ui/LoadingArea.hpp"
+#include "client/ui/LoadingArea.hpp"
 
 #include "client/Camera.hpp"
 #include "client/Shader.hpp"
@@ -37,7 +37,7 @@ namespace ui
   {
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
     fill( 0, 0, camera.width, camera.height );
-    print( camera.width / 2, camera.height / 4, ALIGN_CENTRE, gettext( "Loading ..." ) );
+    print( camera.width / 2, camera.height / 4, ALIGN_CENTRE, OZ_GETTEXT( "Loading ..." ) );
   }
 
 }

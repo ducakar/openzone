@@ -110,8 +110,9 @@ namespace client
   {
     uint texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
 
-    if( texNum == ~0u ) {
-      log.println( "Error creating texture from buffer" );
+    if( texNum == 0 ) {
+      log.println( "Error while creating texture from buffer" );
+      throw Exception( "Texture loading failed" );
     }
     return texNum;
   }
@@ -124,11 +125,11 @@ namespace client
     SDL_Surface* image = IMG_Load( path );
     if( image == null ) {
       log.printEnd( " No such file" );
-      return 0;
+      throw Exception( "Texture loading failed" );
     }
     if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
       log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
-      return 0;
+      throw Exception( "Texture loading failed" );
     }
     log.printEnd( " OK, %s", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
 
@@ -137,6 +138,10 @@ namespace client
                                 magFilter, minFilter );
 
     SDL_FreeSurface( image );
+
+    if( texNum == 0 ) {
+      throw Exception( "Texture loading failed" );
+    }
 
     hard_assert( glIsTexture( texNum ) );
 
@@ -196,7 +201,7 @@ namespace client
 
     if( !buffer.read( path ) ) {
       log.printEnd( " No such file" );
-      return 0;
+      throw Exception( "Texture loading failed" );
     }
 
     InputStream is = buffer.inputStream();
@@ -204,7 +209,7 @@ namespace client
 
     if( id == 0 ) {
       log.printEnd( " Failed" );
-      return 0;
+      throw Exception( "Texture loading failed" );
     }
 
     log.printEnd( " OK" );
@@ -278,7 +283,7 @@ namespace client
 
     if( resource.id == 0 ) {
       log.printEnd( " Failed" );
-      return 0;
+      throw Exception( "Texture loading failed" );
     }
 
     log.printEnd( " OK" );
@@ -297,7 +302,9 @@ namespace client
     if( resource.nUsers == 0 ) {
       log.print( "Unloading texture '%s' ...", translator.textures[id].name.cstr() );
       glDeleteTextures( 1, &resource.id );
+
       hard_assert( glGetError() == GL_NO_ERROR );
+
       log.printEnd( " OK" );
     }
   }
@@ -321,7 +328,7 @@ namespace client
 
     if( resource.id == 0 ) {
       log.printEnd( " Failed" );
-      return 0;
+      throw Exception( "Sound loading failed" );
     }
 
     log.printEnd( " OK" );

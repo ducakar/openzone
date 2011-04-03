@@ -32,6 +32,11 @@ namespace oz
       Pair() = default;
 
       /**
+       * Copy constructor.
+       */
+      Pair( const Pair& p ) = default;
+
+      /**
        * Copy constructor for constructing from pairs of different types.
        * @param p
        */
@@ -39,6 +44,11 @@ namespace oz
       OZ_ALWAYS_INLINE
       Pair( const Pair<TypeX_, TypeY_>& p ) : x( p.x ), y( p.y )
       {}
+
+      /**
+       * Copy operator.
+       */
+      Pair& operator = ( const Pair& ) = default;
 
       /**
        * Copy operator for copying pairs of different types.
@@ -107,18 +117,6 @@ namespace oz
       bool operator != ( const Pair<TypeX_, TypeY_>& p ) const
       {
         return x != p.x || y != p.y;
-      }
-
-      /**
-       * Set both values at once.
-       * @param x_
-       * @param y_
-       */
-      OZ_ALWAYS_INLINE
-      void set( const TypeX& x_, const TypeY& y_ )
-      {
-        x = x_;
-        y = y_;
       }
 
   };

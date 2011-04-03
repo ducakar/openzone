@@ -1,7 +1,13 @@
+
+                                        OpenZone
+
+                                      version 0.2.1
+
 Free camera controls
 --------------------
 mouse movement      - rotate camera (when in UI mode, push mouse cursor into screen borders)
 arrow keys          - rotate camera
+w/a/s/d             - move forwards, left, backwards, right
 Space               - up/increase height
 Ctrl                - down/decrease height
 Tab                 - toggle interface mode
@@ -12,7 +18,7 @@ Bot controls
 ------------
 mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
 arrow keys          - look around
-w, a, s, d          - move forwards, left, backwards, right
+w/a/s/d             - move forwards, left, backwards, right
 Shift               - toggle run
 Ctrl                - toggle crouch
 Space               - jump
@@ -24,7 +30,7 @@ middle click        - grab/drop tagged object or take an item from the inventory
 wheel up            - throw object you are currently holding
 wheel down          - put tagged object into inventory
 
-m                   - suicide
+m                   - commit suicide
 i                   - leave bot
 p                   - toggle ability to step over small obstacles, e.g. walk up the stairs
 
@@ -43,41 +49,37 @@ Vehicle controls
 ----------------
 mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
 arrow keys          - look around
-w, a, s, d          - move forwards, left, backwards, right
+w/a/s/d             - move forwards, left, backwards, right
 Space               - up (hover and air vehicles only)
 Ctrl                - down (air vehicles only)
 
 left click          - trigger selected weapon
 right click         - select next weapon
-wheel up            - select previous weapon
-wheel down          - select next weapon
 
 x                   - exit vehicle
 j                   - eject from vehicle
-i                   - leave bot
-m                   - suicide
-
-Tab                 - toggle interface mode
-Numpad Enter        - switch between 1st persorn and 3rd person camera
-Numpad *            - toggle freelook (look around without rotating the vehicle)
 
 Misc controls
 -------------
 o                   - forward sky time for 1/8 of a day
 
-F11                 - screenshot (saved to ~/.openzone/screenshot-DATE.bmp)
+Left Alt            - hold to drag windows
+
+F11                 - screenshot (saved to ~/.openzone/screenshot DATE TIME.bmp)
 F12                 - minimise and freeze (not working on Windows)
+
+Esc                 - exit application
 
 AI behaviours
 -------------
 beastie (beast)
-- Just randomly run and jump aroud.
+- Just randomly run and jump around.
 prey (goblin)
 - Run away from everyone but another goblin.
 predator (knight)
 - Search for goblins and run into them.
 droid (droid)
-- If you see anything but another droid or droid commander, hunt it.
+- If you see anything but another droid or droid commander, hunt and shoot it.
 - If there's no target, follow droid commander if any nearby, otherwise walk around and search for
   a target.
 
@@ -106,12 +108,12 @@ openzone [OPTIONS]
 
 --load, --no-load
 -l, -L
-      Enables or disables autoload of ~/.openzone/default.ozState on startup respectively.
+      Enables or disables autoload of ~/.config/openzone/default.ozState on startup respectively.
       Overrides the 'autoload' resource.
 
 --save, --no-save
 -s, -S
-      Enables or disables autosave to ~/.openzone/default.ozState on exit respectively.
+      Enables or disables autosave to ~/.config/openzone/default.ozState on exit respectively.
       Overrides the 'autosave' resource.
 
 --time num
@@ -130,10 +132,10 @@ Troubleshooting
 - Make sure you have the *LATEST* display drivers.
 - You need at least OpenGL 2.1 compatible graphic card & driver that additionally supports the
   following features:
-  - vertex array object (GL_ARB_vertex_array_object),
-  - framebuffer object (GL_ARB_framebuffer_object),
-  - textures that contain data in floating-point format (GL_ARB_texture_float),
-  - S3 DXT1 and DXT5 texture compression (GL_EXT_texture_compression_s3tc),
+  - GL_ARB_vertex_array_object,
+  - GL_ARB_framebuffer_object,
+  - GL_ARB_texture_float,
+  - GL_EXT_texture_compression_s3tc,
   - GLSL 1.30 shading language and
   - vertex texture fetch (optional).
   A card with a complete DirectX 9.0c support should do.

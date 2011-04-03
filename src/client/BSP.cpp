@@ -234,7 +234,7 @@ namespace client
         }
         else {
           compiler.material( GL_DIFFUSE, 1.0f );
-          compiler.material( GL_SPECULAR, 0.2f );
+          compiler.material( GL_SPECULAR, 0.0f );
           flags |= Mesh::SOLID_BIT;
         }
 

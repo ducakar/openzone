@@ -12,7 +12,7 @@
 
 #include "stable.hpp"
 
-#include "ui/Area.hpp"
+#include "client/ui/Area.hpp"
 
 #include "matrix/common.hpp"
 
@@ -33,19 +33,21 @@ namespace ui
     private:
 
       static const float TAG_CLIP_DIST;
+      static const float TAG_CLAMP_LIMIT;
+      static const float TAG_MIN_PIXEL_SIZE;
+      static const float TAG_MAX_COEFF_SIZE;
 
       float pixelStep;
       float stepPixel;
 
     public:
 
+      Vector<int> tagged;
       const Object* hovered;
-      Vector<int>   tagged;
 
     private:
 
-      Pair<int> project( const Point3& p ) const;
-      Span projectBounds( const AABB& bb ) const;
+      bool projectBounds( Span* span, const AABB& bb ) const;
 
       void printName( int baseX, int baseY, const char* s, ... );
 
