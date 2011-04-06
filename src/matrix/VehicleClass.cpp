@@ -75,8 +75,8 @@ namespace oz
     clazz->mass                 = config->get( "mass", 100.0f );
     clazz->lift                 = config->get( "lift", 12.0f );
 
-    if( clazz->mass < 0.1f ) {
-      throw Exception( "Invalid object mass. Should be >= 0.1." );
+    if( clazz->mass < 0.01f ) {
+      throw Exception( "Invalid object mass. Should be >= 0.01." );
     }
     if( clazz->lift < 0.0f ) {
       throw Exception( "Invalid object lift. Should be >= 0." );
@@ -216,7 +216,6 @@ namespace oz
     clazz->hoverHeight            = config->get( "hoverHeight", 2.0f );
     clazz->hoverHeightStiffness   = config->get( "hoverHeightStiffness", 40.0f );
     clazz->hoverMomentumStiffness = config->get( "hoverMomentumStiffness", 160.0f );
-    clazz->hoverJumpFactor        = config->get( "hoverJumpFactor", 4.0f );
 
     fillCommon( clazz, config );
     clazz->flags |= BASE_FLAGS;

@@ -15,8 +15,7 @@
 #include "matrix/BotClass.hpp"
 #include "matrix/VehicleClass.hpp"
 
-#include "client/ui/Keyboard.hpp"
-#include "client/ui/Mouse.hpp"
+#include "client/ui/UI.hpp"
 
 #include "client/Camera.hpp"
 
@@ -30,7 +29,9 @@ namespace client
 
   void BotProxy::begin()
   {
-    hard_assert( camera.bot != -1 );
+    if( camera.bot == -1 ) {
+      return;
+    }
 
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
@@ -44,6 +45,8 @@ namespace client
     camera.v = bot->v;
     camera.isExternal = isExternal;
     camera.setTagged( null );
+
+    ui::ui.strategic->tagged.clear();
   }
 
   void BotProxy::update()

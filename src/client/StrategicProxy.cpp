@@ -38,7 +38,6 @@ namespace client
     camera.w = 0.0f;
     camera.setTagged( null );
 
-    ui::ui.strategic->show( true );
     ui::mouse.doShow = true;
   }
 
@@ -81,7 +80,6 @@ namespace client
 
         if( me != null ) {
           me->state |= Bot::PLAYER_BIT;
-          ui::ui.strategic->show( false );
           camera.setBot( me );
           camera.setState( Camera::BOT );
         }

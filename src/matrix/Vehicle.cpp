@@ -26,7 +26,7 @@ namespace oz
 
   Pool<Vehicle> Vehicle::pool;
 
-  void ( Vehicle::* Vehicle::handlers[] )( const Mat44& rotMat ) = {
+  void ( Vehicle::* Vehicle::handlers[4] )( const Mat44& rotMat ) = {
     &Vehicle::wheeledHandler,
     &Vehicle::trackedHandler,
     &Vehicle::hoverHandler,
@@ -45,20 +45,19 @@ namespace oz
 
     const Vec3& right = rotMat.x;
     const Vec3& at    = rotMat.y;
-    const Vec3& up    = rotMat.z;
 
-    // hover momentum
+    // raycast for hover
+    float ratio = clamp( p.z / ( dim.z + clazz->hoverHeight ), 0.0f, 1.0f );
+    Vec3  floor = Vec3( 0.0f, 0.0f, 1.0f );
+
     collider.translate( p, Vec3( 0.0f, 0.0f, -dim.z - clazz->hoverHeight ) );
-    float ratio  = 1.0f - clamp( ( p.z - dim.z ) / clazz->hoverHeight, 0.0f, collider.hit.ratio );
-    Vec3  normal = collider.hit.normal;
 
-    if( ratio != 0.0f ) {
-      float groundMomentum = min( velocity * normal, 0.0f );
-      float tickRatio = ratio*ratio * Timer::TICK_TIME;
-
-      momentum.z += clazz->hoverHeightStiffness * tickRatio;
-      momentum.z -= groundMomentum * clazz->hoverMomentumStiffness * min( tickRatio / 4.0f, 1.0f );
+    if( collider.hit.ratio < ratio ) {
+      ratio = collider.hit.ratio;
+      floor = collider.hit.normal;
     }
+
+    float ratio_1 = 1.0f - ratio;
 
     // controls
     Vec3 move = Vec3::ZERO;
@@ -79,11 +78,17 @@ namespace oz
       move.x -= right.x;
       move.y -= right.y;
     }
-    if( actions & Bot::ACTION_VEH_UP ) {
-      move += up * ratio * clazz->hoverJumpFactor;
-    }
 
     momentum += move * clazz->moveMomentum;
+
+    // hover momentum
+    if( ratio_1 != 0.0f ) {
+      float groundMomentum = min( velocity * floor, 0.0f );
+      float tickRatio = ratio_1*ratio_1 * Timer::TICK_TIME;
+
+      momentum.z += clazz->hoverHeightStiffness * tickRatio;
+      momentum.z -= groundMomentum * clazz->hoverMomentumStiffness * min( tickRatio / 4.0f, 1.0f );
+    }
   }
 
   void Vehicle::airHandler( const Mat44& rotMat )

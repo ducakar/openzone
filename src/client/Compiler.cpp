@@ -367,6 +367,8 @@ namespace client
 
   void Compiler::free()
   {
+    part.texture = "";
+
     vertices.clear();
     vertices.dealloc();
 

@@ -29,9 +29,9 @@ namespace oz
 
     clazz->name                 = name;
 
-    clazz->dim.x                = config->get( "dim.x", 0.44f );
-    clazz->dim.y                = config->get( "dim.y", 0.44f );
-    clazz->dim.z                = config->get( "dim.z", 0.99f );
+    clazz->dim.x                = config->get( "dim.x", 0.45f );
+    clazz->dim.y                = config->get( "dim.y", 0.45f );
+    clazz->dim.z                = config->get( "dim.z", 1.00f );
 
     if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
         clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||
@@ -76,8 +76,8 @@ namespace oz
     clazz->mass                 = config->get( "mass", 100.0f );
     clazz->lift                 = config->get( "lift", 13.0f );
 
-    if( clazz->mass < 0.1f ) {
-      throw Exception( "Invalid object mass. Should be >= 0.1." );
+    if( clazz->mass < 0.01f ) {
+      throw Exception( "Invalid object mass. Should be >= 0.01." );
     }
     if( clazz->lift < 0.0f ) {
       throw Exception( "Invalid object lift. Should be >= 0." );
@@ -85,7 +85,7 @@ namespace oz
 
     clazz->dimCrouch.x          = clazz->dim.x;
     clazz->dimCrouch.y          = clazz->dim.y;
-    clazz->dimCrouch.z          = config->get( "dimCrouch.z", 0.79f );
+    clazz->dimCrouch.z          = config->get( "dimCrouch.z", 0.80f );
 
     if( clazz->dimCrouch.z < 0.0f ) {
       throw Exception( "Invalid bot crouch dimensions. Should be >= 0." );

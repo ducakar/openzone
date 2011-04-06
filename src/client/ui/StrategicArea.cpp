@@ -213,12 +213,6 @@ namespace ui
 
   void StrategicArea::onUpdate()
   {
-    if( camera.state != Camera::STRATEGIC ) {
-      hovered = null;
-      tagged.clear();
-      return;
-    }
-
     for( int i = 0; i < tagged.length(); ) {
       const Dynamic* dyn = static_cast<const Dynamic*>( orbis.objects[ tagged[i] ] );
 
@@ -233,8 +227,6 @@ namespace ui
 
   bool StrategicArea::onMouseEvent()
   {
-    hard_assert( camera.state == Camera::STRATEGIC );
-
     Vec3 at = Vec3( float( mouse.x - camera.centreX ) * pixelStep * 100.0f,
                     float( mouse.y - camera.centreY ) * pixelStep * 100.0f,
                     -100.0f );
@@ -266,8 +258,6 @@ namespace ui
 
   void StrategicArea::onDraw()
   {
-    hard_assert( camera.state == Camera::STRATEGIC );
-
     Span span;
 
     if( hovered != null ) {

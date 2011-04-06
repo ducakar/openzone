@@ -119,8 +119,13 @@ namespace oz
       Bot();
 
       void take( Dynamic* item );
+
+      void heal();
+      void rearm();
+
       void enter( int vehicle );
       void exit();
+
       void kill();
 
       virtual void readFull( InputStream* istream );

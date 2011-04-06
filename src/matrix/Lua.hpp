@@ -176,6 +176,7 @@ namespace oz
       static LuaAPI ozBotGetStamina;
       static LuaAPI ozBotSetStamina;
       static LuaAPI ozBotAddStamina;
+      static LuaAPI ozBotRearm;
 
       static LuaAPI ozVehicleService;
 

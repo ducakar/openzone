@@ -272,23 +272,23 @@ namespace client
 
     fclose( file );
 
-    String shaderName    = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
-    float  scale         = config.get( "scale", 0.04f );
-    float  specular      = config.get( "specular", 0.0f );
+    String shaderName   = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
+    float  scale        = config.get( "scale", 0.04f );
+    float  specular     = config.get( "specular", 0.0f );
 
-    Vec3   translation   = Vec3( config.get( "translate.x", +0.00f ),
+    Vec3   translation  = Vec3( config.get( "translate.x", +0.00f ),
                                  config.get( "translate.y", +0.00f ),
                                  config.get( "translate.z", -0.04f ) );
-    Vec3   jumpTransl    = Vec3( config.get( "jumpTranslate.x", 0.00f ),
+    Vec3   jumpTransl   = Vec3( config.get( "jumpTranslate.x", 0.00f ),
                                  config.get( "jumpTranslate.y", 0.00f ),
                                  config.get( "jumpTranslate.z", 0.00f ) );
-    Vec3   weaponTransl  = Vec3( config.get( "weaponTranslate.x", 0.00f ),
+    Vec3   weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
                                  config.get( "weaponTranslate.y", 0.00f ),
                                  config.get( "weaponTranslate.z", 0.00f ) );
-    Vec3   weaponRot     = Vec3( config.get( "weaponRotate.x", 0.00f ),
+    Vec3   weaponRot    = Vec3( config.get( "weaponRotate.x", 0.00f ),
                                  config.get( "weaponRotate.y", 0.00f ),
                                  config.get( "weaponRotate.z", 0.00f ) );
-    Mat44 weaponTransf  = Mat44::ID;
+    Mat44  weaponTransf = Mat44::ID;
 
     weaponTransf.rotateX( Math::rad( weaponRot.x ) );
     weaponTransf.rotateY( Math::rad( weaponRot.y ) );

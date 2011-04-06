@@ -605,6 +605,26 @@ namespace oz
     synapse.cut( item );
   }
 
+  void Bot::heal()
+  {
+    life = clazz->life;
+  }
+
+  void Bot::rearm()
+  {
+    foreach( item, items.iter() ) {
+      if( *item != -1 ) {
+        Weapon* weapon = static_cast<Weapon*>( orbis.objects[*item] );
+
+        if( weapon != null && ( weapon->flags & Object::WEAPON_BIT ) ) {
+          const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+          weapon->nShots = clazz->nShots;
+        }
+      }
+    }
+  }
+
   void Bot::enter( int vehicle_ )
   {
     hard_assert( cell != null && vehicle_ != -1 );

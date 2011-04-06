@@ -200,6 +200,7 @@ namespace oz
     OZ_LUA_FUNCTION( ozBotGetStamina );
     OZ_LUA_FUNCTION( ozBotSetStamina );
     OZ_LUA_FUNCTION( ozBotAddStamina );
+    OZ_LUA_FUNCTION( ozBotRearm );
 
     OZ_LUA_FUNCTION( ozVehicleService );
 
@@ -1643,6 +1644,21 @@ namespace oz
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
     bot->stamina = clamp( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
+    return 0;
+  }
+
+  int Lua::ozBotRearm( lua_State* l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
+      OZ_LUA_ERROR( "selected object is not a bot" );
+    }
+
+    Bot* bot = static_cast<Bot*>( lua.obj );
+
+    bot->rearm();
     return 0;
   }
 

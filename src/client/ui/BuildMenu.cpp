@@ -26,9 +26,15 @@ namespace client
 namespace ui
 {
 
-  void BuildMenu::createObject( Button* button )
+  BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
+      Button( OZ_GETTEXT( className ), callback, width, height ), className( className )
+  {}
+
+  void BuildMenu::createObject( Button* button_ )
   {
-    const ObjectClass* const* clazz = translator.classes.find( button->label );
+    const BuildButton* button = static_cast<const BuildButton*>( button_ );
+    const ObjectClass* const* clazz = translator.classes.find( button->className );
+
     if( clazz == null ) {
       return;
     }
@@ -38,7 +44,7 @@ namespace ui
     AABB bb = AABB( p, ( *clazz )->dim );
 
     if( !collider.overlaps( bb ) ) {
-      synapse.addObject( button->label, p );
+      synapse.addObject( button->className, p );
     }
   }
 
@@ -46,23 +52,25 @@ namespace ui
   {
     setFont( Font::SANS );
 
-    add( new Button( "smallCrate", createObject, 110, 15 ), 5, -40 );
-    add( new Button( "bigCrate", createObject, 110, 15 ), 5, -60 );
-    add( new Button( "metalBarrel", createObject, 110, 15 ), 5, -80 );
-    add( new Button( "firstAid", createObject, 110, 15 ), 5, -100 );
-    add( new Button( "cvicek", createObject, 110, 15 ), 5, -120 );
-    add( new Button( "bomb", createObject, 110, 15 ), 5, -140 );
-    add( new Button( "droidRifle", createObject, 110, 15 ), 5, -160 );
-    add( new Button( "goblinAxe", createObject, 110, 15 ), 5, -180 );
+    add( new BuildButton( "smallCrate", createObject, 110, 15 ), 5, -40 );
+    add( new BuildButton( "bigCrate", createObject, 110, 15 ), 5, -60 );
+    add( new BuildButton( "metalBarrel", createObject, 110, 15 ), 5, -80 );
+    add( new BuildButton( "firstAid", createObject, 110, 15 ), 5, -100 );
+    add( new BuildButton( "cvicek", createObject, 110, 15 ), 5, -120 );
+    add( new BuildButton( "bomb", createObject, 110, 15 ), 5, -140 );
+    add( new BuildButton( "droid_weapon.blaster", createObject, 110, 15 ), 5, -160 );
+    add( new BuildButton( "droid_weapon.hyperblaster", createObject, 110, 15 ), 5, -180 );
+    add( new BuildButton( "droid_weapon.chaingun", createObject, 110, 15 ), 5, -200 );
+    add( new BuildButton( "droid_weapon.grenadeLauncher", createObject, 110, 15 ), 5, -220 );
 
-    add( new Button( "goblin", createObject, 110, 15 ), -115, -40 );
-    add( new Button( "knight", createObject, 110, 15 ), -115, -60 );
-    add( new Button( "lord", createObject, 110, 15 ), -115, -80 );
-    add( new Button( "beast", createObject, 110, 15 ), -115, -100 );
-    add( new Button( "droid", createObject, 110, 15 ), -115, -120 );
-    add( new Button( "droidCommander", createObject, 110, 15 ), -115, -140 );
-    add( new Button( "raptor", createObject, 110, 15 ), -115, -160 );
-    add( new Button( "tank", createObject, 110, 15 ), -115, -180 );
+    add( new BuildButton( "goblin", createObject, 110, 15 ), -115, -40 );
+    add( new BuildButton( "knight", createObject, 110, 15 ), -115, -60 );
+    add( new BuildButton( "lord", createObject, 110, 15 ), -115, -80 );
+    add( new BuildButton( "beast", createObject, 110, 15 ), -115, -100 );
+    add( new BuildButton( "droid", createObject, 110, 15 ), -115, -120 );
+    add( new BuildButton( "droid.OOM-9", createObject, 110, 15 ), -115, -140 );
+    add( new BuildButton( "raptor", createObject, 110, 15 ), -115, -160 );
+    add( new BuildButton( "tank", createObject, 110, 15 ), -115, -180 );
   }
 
 }

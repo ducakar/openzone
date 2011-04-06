@@ -490,6 +490,7 @@ namespace client
     audio->play( parent );
   }
 
+#ifndef NDEBUG
   void Context::updateLoad()
   {
     maxModels     = max( maxModels, models.length() );
@@ -515,6 +516,7 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
+#endif
 
   void Context::load()
   {

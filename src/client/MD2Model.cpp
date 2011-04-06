@@ -62,9 +62,23 @@ namespace client
     anim.endFrame   = MD2::ANIM_LIST[type].lastFrame;
     anim.nextFrame  = anim.startFrame == anim.endFrame ? anim.endFrame : anim.startFrame + 1;
 
-    anim.fps        = MD2::ANIM_LIST[type].fps;
-    anim.frameTime  = 1.0f / anim.fps;
     anim.currTime   = 0.0f;
+
+    if( type_ == Anim::ATTACK ) {
+      const Bot*    bot    = static_cast<const Bot*>( obj );
+      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weaponItem] );
+
+      if( weapon != null ) {
+        const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+        anim.fps       = MD2::ANIM_LIST[type].fps * 0.5f / clazz->shotInterval;
+        anim.frameTime = 1.0f / anim.fps;
+      }
+    }
+    else {
+      anim.fps       = MD2::ANIM_LIST[type].fps;
+      anim.frameTime = 1.0f / anim.fps;
+    }
   }
 
   void MD2Model::draw( const Model* parent )
@@ -126,8 +140,12 @@ namespace client
       tf.model.rotateX( bot->v - Math::TAU / 4.0f );
       tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
 
+      glDepthFunc( GL_ALWAYS );
+
       md2->advance( &anim, timer.frameTime );
       context.drawModel( orbis.objects[bot->weaponItem], this );
+
+      glDepthFunc( GL_LESS );
     }
   }
 

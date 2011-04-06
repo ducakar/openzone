@@ -1,7 +1,7 @@
 
                                         OpenZone
 
-                                      version 0.2.1
+                                      version 0.1.2
 
 Free camera controls
 --------------------
@@ -9,7 +9,8 @@ mouse movement      - rotate camera (when in UI mode, push mouse cursor into scr
 arrow keys          - rotate camera
 w/a/s/d             - move forwards, left, backwards, right
 Space               - up/increase height
-Ctrl                - down/decrease height
+LCtrl               - down/decrease height
+LShift              - toggle fast move
 Tab                 - toggle interface mode
 Numpad Enter        - switch between FreeCam and Strategic camera
 i                   - incarnate into the selected bot (also works when the bot is inside a vehicle)
@@ -19,8 +20,8 @@ Bot controls
 mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
 arrow keys          - look around
 w/a/s/d             - move forwards, left, backwards, right
-Shift               - toggle run
-Ctrl                - toggle crouch
+LShift              - toggle run
+LCtrl               - toggle crouch
 Space               - jump
 
 left click          - trigger equipped weapon
@@ -50,8 +51,8 @@ Vehicle controls
 mouse movement      - look around (when in UI mode, push mouse cursor into screen borders)
 arrow keys          - look around
 w/a/s/d             - move forwards, left, backwards, right
-Space               - up (hover and air vehicles only)
-Ctrl                - down (air vehicles only)
+Space               - up (air vehicles only)
+LCtrl               - down (air vehicles only)
 
 left click          - trigger selected weapon
 right click         - select next weapon
@@ -63,7 +64,7 @@ Misc controls
 -------------
 o                   - forward sky time for 1/8 of a day
 
-Left Alt            - hold to drag windows
+LAlt + drag         - move windows
 
 F11                 - screenshot (saved to ~/.openzone/screenshot DATE TIME.bmp)
 F12                 - minimise and freeze (not working on Windows)
@@ -94,6 +95,7 @@ Tips
 - To climb the ladder look up or down into a ladder. If you move away from the ladder you will
   fall from it.
 - You can move faster under water if you walk on the bottom. Just move into the bottom to do it.
+- You can run only if you are not crouched and you are not holding an object.
 - When a vehicle is destroyed, it automatically ejects the pilot.
 - To see some fun, spawn a droid (not droid commander) form the build menu.
 - To see some more fun, put the droid into a tank. (Just incarnate into the droid, embark the tank
@@ -125,7 +127,7 @@ Notes
 - On first run ~/.config/openzone/client.rc (on Windows: %APPDATA%\OpenZone\client.rc) configuration
   file with default settings is generated. Edit it to change any settings you wish.
 - %APPDATA% usually means C:\Documents and Settings\username\Application Data on Windows XP or
-  C:\Users\username\AppData\Roaming on Windows 7
+  C:\Users\username\AppData\Roaming on Windows 7.
 
 Troubleshooting
 ---------------

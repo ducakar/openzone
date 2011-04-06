@@ -118,12 +118,16 @@ if( OZ_INSTALL_DATA )
     share/openzone/class/crate4.rc
     share/openzone/class/cvicek.rc
     share/openzone/class/drevo.rc
+    share/openzone/class/droid.OOM-9.rc
     share/openzone/class/droid.rc
-    share/openzone/class/droidCommander.rc
-    share/openzone/class/droidRifle.rc
+    share/openzone/class/droid_weapon.blaster.rc
+    share/openzone/class/droid_weapon.chaingun.rc
+    share/openzone/class/droid_weapon.grenadeLauncher.rc
+    share/openzone/class/droid_weapon.hyperblaster.rc
     share/openzone/class/firstAid.rc
     share/openzone/class/goblin.rc
-    share/openzone/class/goblinAxe.rc
+    share/openzone/class/goblin_weapon.axe.rc
+    share/openzone/class/grenade.rc
     share/openzone/class/knight.rc
     share/openzone/class/lord.rc
     share/openzone/class/metalBarrel.rc
@@ -207,20 +211,25 @@ if( OZ_INSTALL_DATA )
     share/openzone/mdl/bigCrate.ozcSMM
     share/openzone/mdl/biotank.ozcSMM
     share/openzone/mdl/bombs.ozcSMM
-    share/openzone/mdl/console.ozcSMM
     share/openzone/mdl/crate4.README
     share/openzone/mdl/crate4.ozcSMM
-    share/openzone/mdl/droid-rifle.README
-    share/openzone/mdl/droid-rifle.ozcMD2
-    share/openzone/mdl/droid_commander.README
-    share/openzone/mdl/droid_commander.ozcMD2
-    share/openzone/mdl/droid_infantry.README
-    share/openzone/mdl/droid_infantry.ozcMD2
+    share/openzone/mdl/droid.OOM-9.README
+    share/openzone/mdl/droid.OOM-9.ozcMD2
+    share/openzone/mdl/droid.README
+    share/openzone/mdl/droid.ozcMD2
+    share/openzone/mdl/droid_weapon.bfg.ozcMD2
+    share/openzone/mdl/droid_weapon.blaster.README
+    share/openzone/mdl/droid_weapon.blaster.ozcMD2
+    share/openzone/mdl/droid_weapon.chaingun.README
+    share/openzone/mdl/droid_weapon.chaingun.ozcMD2
+    share/openzone/mdl/droid_weapon.grenadeLauncher.README
+    share/openzone/mdl/droid_weapon.grenadeLauncher.ozcMD2
+    share/openzone/mdl/droid_weapon.hyperblaster.README
+    share/openzone/mdl/droid_weapon.hyperblaster.ozcMD2
     share/openzone/mdl/explosion.ozcSMM
-    share/openzone/mdl/goblin-axe.README
-    share/openzone/mdl/goblin-axe.ozcMD2
     share/openzone/mdl/goblin.README
     share/openzone/mdl/goblin.ozcMD2
+    share/openzone/mdl/goblin_weapon.axe.ozcMD2
     share/openzone/mdl/health.ozcSMM
     share/openzone/mdl/hobgoblin.ozcMD2
     share/openzone/mdl/knight.README
@@ -248,6 +257,7 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/name )
 
   install( FILES
+    share/openzone/snd/README
     share/openzone/snd/acid5.wav
     share/openzone/snd/cg2.wav
     share/openzone/snd/damage_bot1.wav
@@ -284,10 +294,9 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/snd )
 
   install( FILES
-    "share/openzone/music/Crimson And Clover.ogg"
-    "share/openzone/music/Fanatic - Assault.ogg"
-    "share/openzone/music/Fanatic - Cubed to Death.ogg"
-    "share/openzone/music/Fanatic - Unreleased Rage.ogg"
+    "share/openzone/music/Fanatic - Antipodes.ogg"
+    "share/openzone/music/Fanatic - Incindental.ogg"
+    "share/openzone/music/README"
     DESTINATION share/openzone/music )
 
   install( FILES

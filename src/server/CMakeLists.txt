@@ -9,5 +9,5 @@ add_executable( server
   Server.hpp
 )
 
-add_dependencies( server nirvana matrix pch )
-target_link_libraries( server nirvana matrix oz )
+add_dependencies( server censor nirvana matrix pch )
+target_link_libraries( server censor nirvana matrix oz )
