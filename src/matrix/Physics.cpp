@@ -109,9 +109,15 @@ namespace oz
     if( dyn->flags & ( Object::FRICTLESS_BIT | Object::ON_LADDER_BIT ) ) {
       // in air
       if( dyn->flags & Object::FRICTLESS_BIT ) {
-        if( dyn->momentum.sqL() <= AIR_STICK_VELOCITY ) {
-          dyn->momentum = Vec3::ZERO;
+        if( dyn->flags & Object::IN_WATER_BIT ) {
+          float frictionFactor = 0.5f * dyn->depth / dyn->dim.z;
+
+          // it's frictless only in air
+          dyn->momentum *= 1.0f - frictionFactor * WATER_FRICTION;
+          systemMom += frictionFactor * dyn->lift * Timer::TICK_TIME;
         }
+
+        dyn->momentum.z += systemMom;
       }
       // on ladder
       else {
@@ -228,7 +234,7 @@ namespace oz
         sDyn->lower = dyn->index;
         sDyn->floor = Vec3( 0.0f, 0.0f, 1.0f );
 
-        dyn->flags  |= Object::UPPER_BIT;
+        dyn->flags |= Object::UPPER_BIT;
 
         sDyn->momentum.z = momentum.z;
         dyn->momentum.z  = sDyn->velocity.z;
@@ -245,9 +251,8 @@ namespace oz
         if( !( sDyn->flags & Object::DISABLED_BIT ) ) {
           sDyn->momentum.z = momentum.z;
           dyn->momentum.z  = sDyn->velocity.z;
-        }
-        else {
-          dyn->momentum.z = 0.0f;
+
+          sDyn->flags |= Object::UPPER_BIT;
         }
       }
     }

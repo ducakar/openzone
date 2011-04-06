@@ -44,6 +44,51 @@ namespace client
   {
     uint beginTime = SDL_GetTicks();
 
+#ifndef NDEBUG
+    log.print( "Counting objects ..." );
+
+    int nObjects  = 0;
+    int nDynamics = 0;
+    int nWeapons  = 0;
+    int nBots     = 0;
+    int nVehicles = 0;
+
+    Map<const ObjectClass*, int> classCounts;
+
+    for( int i = 0; i < orbis.objects.length(); ++i ) {
+      const Object* obj = orbis.objects[i];
+
+      if( obj != null ) {
+        int* count = classCounts.find( obj->clazz );
+
+        if( count == null ) {
+          classCounts.add( obj->clazz, 1 );
+        }
+        else {
+          ++*count;
+        }
+
+        if( obj->flags & Object::VEHICLE_BIT ) {
+          ++nVehicles;
+        }
+        else if( obj->flags & Object::BOT_BIT ) {
+          ++nBots;
+        }
+        else if( obj->flags & Object::WEAPON_BIT ) {
+          ++nWeapons;
+        }
+        else if( obj->flags & Object::DYNAMIC_BIT ) {
+          ++nDynamics;
+        }
+        else {
+          ++nObjects;
+        }
+      }
+    }
+
+    log.printEnd( " OK" );
+#endif
+
     if( initFlags & INIT_RENDER_LOAD ) {
       render.unload();
     }
@@ -118,7 +163,29 @@ namespace client
 
       float shutdownTime  = float( SDL_GetTicks() - beginTime )  * 0.001f;
 
+#ifndef NDEBUG
+      log.println( "Object counts {" );
+      log.indent();
+
+      foreach( i, classCounts.citer() ) {
+        log.println( "%6d  %s", i.value(), i.key()->name.cstr() );
+      }
+
+      log.println();
+      log.println( "%6d  vehicles", nVehicles );
+      log.println( "%6d  bots", nBots );
+      log.println( "%6d  weapons", nWeapons );
+      log.println( "%6d  other dynamic objects", nDynamics );
+      log.println( "%6d  static objects", nObjects );
+
+      classCounts.clear();
+
+      log.unindent();
+      log.println( "}" );
+
       context.printLoad();
+#endif
+
       Alloc::printStatistics();
 
       log.println( "Time statistics {" );
@@ -504,9 +571,10 @@ namespace client
 
       ui::mouse.update();
 
+      timer.tick();
+
       isAlive &= stage->update();
 
-      timer.tick();
       timeNow = SDL_GetTicks();
       timeSpent = timeNow - timeLast;
 

@@ -13,7 +13,7 @@
 
 using namespace oz;
 
-bool Alloc::isLocked = true;
+bool Alloc::isLocked = false;
 
 struct Foo
 {
@@ -23,13 +23,11 @@ struct Foo
 
 int main( int, char** )
 {
-  log.println( "Build details {" );
-  log.indent();
+  HashString<int> h;
+  h.add( "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 1 );
+  h.clear();
+  h.dealloc();
 
-  log.println( "Time: %s", Build::TIME );
-  log.println( "Compiler: %s", Build::COMPILER );
-
-  log.unindent();
-  log.println( "}" );
+  Alloc::printLeaks();
   return 0;
 }

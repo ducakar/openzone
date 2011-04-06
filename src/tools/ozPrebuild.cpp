@@ -115,15 +115,16 @@ static void prebuildModels()
     struct stat configInfo;
     struct stat destInfo;
 
-    String path = dirName + ent;
+    String name = static_cast<const char*>( ent );
+    String path = dirName + name;
 
     if( stat( path + "/data.obj", &srcInfo0 ) == 0 ) {
       if( stat( path + "/data.mtl", &srcInfo1 ) != 0 ||
           stat( path + "/config.rc", &configInfo ) != 0 )
       {
-        throw Exception( "OBJ model '" + ent.baseName() + "' source files missing" );
+        throw Exception( "OBJ model '" + name + "' source files missing" );
       }
-      if( !forceRebuild && stat( dirName + ent.baseName() + ".ozcSMM", &destInfo ) == 0 &&
+      if( !forceRebuild && stat( dirName + name + ".ozcSMM", &destInfo ) == 0 &&
           configInfo.st_mtime < destInfo.st_mtime &&
           srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
       {
@@ -136,10 +137,10 @@ static void prebuildModels()
       if( stat( path + "/skin.jpg", &srcInfo1 ) != 0 ||
           stat( path + "/config.rc", &configInfo ) != 0 )
       {
-        throw Exception( "MD2 model '" + ent.baseName() + "' source files missing" );
+        throw Exception( "MD2 model '" + name + "' source files missing" );
       }
-      if( !forceRebuild && ( stat( dirName + ent.baseName() + ".ozcSMM", &destInfo ) == 0 ||
-          stat( dirName + ent.baseName() + ".ozcMD2", &destInfo ) == 0 ) &&
+      if( !forceRebuild && ( stat( dirName + name + ".ozcSMM", &destInfo ) == 0 ||
+          stat( dirName + name + ".ozcMD2", &destInfo ) == 0 ) &&
           configInfo.st_mtime < destInfo.st_mtime &&
           srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
       {

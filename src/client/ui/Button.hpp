@@ -39,7 +39,7 @@ namespace ui
 
     public:
 
-      String   label;
+      String label;
 
       explicit Button( const char* label, Callback* callback, int width, int height );
 

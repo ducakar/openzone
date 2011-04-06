@@ -340,7 +340,9 @@ namespace oz
         while( chain != null ) {
           Elem* next = chain->next[0];
 
+          chain->~Elem();
           pool.dealloc( chain );
+
           chain = next;
         }
       }
@@ -355,7 +357,9 @@ namespace oz
           Elem* next = chain->next[0];
 
           delete chain->value;
+          chain->~Elem();
           pool.dealloc( chain );
+
           chain = next;
         }
       }
@@ -622,7 +626,7 @@ namespace oz
       {
         hard_assert( !contains( key ) );
 
-        int  i = key % SIZE;
+        int   i = key % SIZE;
         Elem* elem = new( pool ) Elem( key, value, data[i] );
 
         data[i] = elem;
@@ -646,8 +650,10 @@ namespace oz
         while( p != null ) {
           if( p->key == key ) {
             *prev = p->next[0];
-            pool.dealloc( p );
             --count;
+
+            p->~Elem();
+            pool.dealloc( p );
             return;
           }
           else {

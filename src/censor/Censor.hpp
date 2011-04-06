@@ -1,5 +1,5 @@
 /*
- *  Architect.hpp
+ *  Censor.hpp
  *
  *  [description]
  *
@@ -13,10 +13,10 @@
 
 namespace oz
 {
-namespace architect
+namespace censor
 {
 
-  class Architect
+  class Censor
   {
     private:
 
@@ -34,7 +34,7 @@ namespace architect
 
   };
 
-  extern Architect architect;
+  extern Censor censor;
 
 }
 }

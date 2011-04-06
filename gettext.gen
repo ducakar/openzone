@@ -1,6 +1,6 @@
 #!/bin/sh
 
-sources='src/*/*.hpp src/*/*.cpp'
+sources='src/*/*.hpp src/*/*/*.hpp src/*/*.cpp src/*/*/*.cpp'
 classes='share/openzone/class/*.rc'
 output='gettext.pot'
 

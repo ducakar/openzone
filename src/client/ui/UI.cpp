@@ -95,11 +95,11 @@ namespace ui
 
     mouse.load();
 
-    hud = new HudArea();
     strategic = new StrategicArea();
+    hud = new HudArea();
 
-    root->add( hud );
     root->add( strategic );
+    root->add( hud );
 #ifndef NDEBUG
     root->add( new DebugFrame() );
 #endif

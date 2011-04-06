@@ -15,7 +15,7 @@
 
 namespace oz
 {
-namespace architect
+namespace censor
 {
 
   extern Collider collider;

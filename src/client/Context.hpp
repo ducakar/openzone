@@ -158,8 +158,10 @@ namespace client
       void drawModel( const Object* obj, const Model* parent );
       void playAudio( const Object* obj, const Audio* parent );
 
+#ifndef NDEBUG
       void updateLoad();
       void printLoad();
+#endif
 
       void load();
       void unload();

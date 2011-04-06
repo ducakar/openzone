@@ -30,7 +30,7 @@ namespace oz
 
   void Matrix::loadStressTest()
   {
-    for( int i = 0; i < 500; ++i ) {
+    for( int i = 0; i < 1000; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
@@ -45,7 +45,7 @@ namespace oz
         synapse.addObject( "goblin", aabb.p );
       }
     }
-    for( int i = 0; i < 500; ++i ) {
+    for( int i = 0; i < 1000; ++i ) {
       float x = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float y = -Orbis::DIM + 2.0f * Orbis::DIM * Math::frand();
       float z = orbis.terra.height( x, y );
@@ -116,12 +116,15 @@ namespace oz
     int index = synapse.addObject( "lord", Point3( 138, -11, 73 ) );
     static_cast<Bot*>( orbis.objects[index] )->h = 0.75f * Math::TAU;
 
-    index = synapse.addObject( "droidCommander", Point3( 140, -11, 73 ) );
+    index = synapse.addObject( "droid.OOM-9", Point3( 140, -11, 73 ) );
     static_cast<Bot*>( orbis.objects[index] )->h = 0.25f * Math::TAU;
 
     synapse.addObject( "cvicek", Point3( 135, -3, 73 ) );
     synapse.addObject( "firstAid", Point3( 136, -3, 73 ) );
-    synapse.addObject( "droidRifle", Point3( 137, -3, 73 ) );
+    synapse.addObject( "bomb", Point3( 137, -3, 73 ) );
+    synapse.addObject( "droid_weapon.hyperblaster", Point3( 135, -4, 73 ) );
+    synapse.addObject( "droid_weapon.chaingun", Point3( 136, -4, 73 ) );
+    synapse.addObject( "droid_weapon.grenadeLauncher", Point3( 137, -4, 73 ) );
 
     synapse.addObject( "raptor", Point3( 155, -30, 70 ) );
     synapse.addObject( "tank", Point3( 145, -30, 71 ) );

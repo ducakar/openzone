@@ -65,7 +65,7 @@ namespace oz
 
     protected:
 
-      static void ( Vehicle::* handlers[] )( const Mat44& rotMat );
+      static void ( Vehicle::* handlers[4] )( const Mat44& rotMat );
 
       void wheeledHandler( const Mat44& rotMat );
       void trackedHandler( const Mat44& rotMat );

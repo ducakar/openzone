@@ -78,6 +78,10 @@ namespace ui
 
         print( descTextX, descTextY, ALIGN_CENTRE, "%s", description.cstr() );
 
+        if( !( tagged->flags & Object::SOLID_BIT ) ) {
+          return;
+        }
+
         glUniform1i( param.oz_IsTextureEnabled, true );
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 

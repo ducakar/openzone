@@ -9,11 +9,11 @@
 
 #include "stable.hpp"
 
-#include "architect/common.hpp"
+#include "censor/common.hpp"
 
 namespace oz
 {
-namespace architect
+namespace censor
 {
 
   Collider collider;

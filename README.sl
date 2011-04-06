@@ -1,7 +1,7 @@
 
                                         OpenZone
 
-                                     različica 0.2.1
+                                     različica 0.1.2
 
 Nadzor kamere
 -------------
@@ -9,7 +9,8 @@ gibanje miške       - sukaj kamero (kadar si v vmesniškem načinu, potisni kaz
 smerne tipke        - sukaj kamero
 w/a/s/d             - pojdi naprej/levo/nazaj/desno
 Space               - gor / povečaj višino
-Ctrl                - dol / zmanjšaj višino
+LCtrl               - dol / zmanjšaj višino
+LShift              - preklopi hitro premikanje
 Tab                 - preklopi način vmesnika
 Numpad Enter        - preklopi med kamero FreeCam in Strategic
 i                   - inkarniraj se v izbranega bota (deluje tudi ko je bot v vozilu)
@@ -19,16 +20,16 @@ Nadzor bota
 gibanje miške       - glej okoli (kadar si v vmesniškem načinu, potisni kazalec v rob zaslona)
 smerne tipke        - glej okoli
 w/a/s/d             - pojdi naprej/levo/nazaj/desno
-Shift               - preklopi tek
-Ctrl                - preklopi počep
+LShift              - preklopi tek
+LCtrl               - preklopi počep
 Space               - skoči
 
-left click          - sproži orožje
-right click         - uporabi označen predmet ali vstopi v označeno vozilo
-middle click        - zgrabi/spusti označen predmet ali vzemi označen predmet iz inventarja, kadar
+levi klik           - sproži orožje
+desni klik          - uporabi označen predmet ali vstopi v označeno vozilo
+srednji klik        - zgrabi/spusti označen predmet ali vzemi označen predmet iz inventarja, kadar
                       klikneš na predmet v inventarju
-wheel up            - vrzi predmet, ki ga trenutno držiš
-wheel down          - pospravi izbran predmet v inventar
+kolešček gor        - vrzi predmet, ki ga trenutno držiš
+kolešček dol         - pospravi izbran predmet v inventar
 
 m                   - stori samomor
 i                   - zapusti bota
@@ -50,11 +51,11 @@ Nadzor vozil
 gibanje miške       - glej okoli (kadar si v vmesniškem načinu, potisni kazalec v rob zaslona)
 smerne tipke        - glej okoli
 w/a/s/d             - pojdi naprej/levo/nazaj/desno
-Space               - gor (lebdeča in zračna vozila)
-Ctrl                - dol (zračna vozila)
+Space               - gor (samo leteča vozila)
+LCtrl               - dol (samo leteča vozila)
 
-left click          - sproži izbrano orožje
-right click         - izberi naslednje orožje
+levi klik           - sproži izbrano orožje
+desni klik          - izberi naslednje orožje
 
 x                   - izstopi
 j                   - izskoči
@@ -63,7 +64,7 @@ Razno
 -----
 o                   - prevrti nebo naprej za 1/8 dneva
 
-Levi Alt            - tišči za vleko oken
+Alt + vlečenje      - vleka oken
 
 F11                 - zajem zaslona (shrani se v ~/config/.openzone/screenshot DATUM ČAS.bmp)
 F12                 - minimiraj in zamrzni (ne dela na Windows)
@@ -92,6 +93,7 @@ Nasveti
 - Da se povzpneš po lestvi, glej gor oziroma dol po lestvi. Če se pomakneš stran od lestve, padeš
   dol.
 - Pod vodo se lahko pomikaš nekoliko hitreje, če hodiš po dnu. Pomikaj se v dno, da to dosežeš.
+- Tečeš lahko le, če ne čepiš in ne nosiš nobenega predmeta.
 - Če je vezilo uničeno, samodejno izvrže pilota.
 - Za nekaj zabave ustvari droida (ne poveljniškega droida) z menija Ustvari.
 - Za še nekaj več zabave, daj tega droida v tank. (Inkarniraj se v droida, vkrcaj se v tank in
@@ -123,12 +125,12 @@ Opombe
 - Med prvim zagonom se ustvari nastavitvena datoteka ~/.config/openzone/client.rc
   (na Windowsu: %APPDATA%\OpenZone\client.rc) s privzetimi nastavitvami. Uredi jo po želji.
 - %APPDATA% ponavadi pomeni C:\Documents and Settings\uporabnik\Application Data na Windowsu XP ali
-  C:\Users\uporabnik\AppData\Roaming na Windowsu 7
+  C:\Users\uporabnik\AppData\Roaming na Windowsu 7.
 
 Problemi
 --------
 - Prepričaj se, da imaš *NAJNOVEJŠE* gonilnike za grafično kartico.
-- Potrebuješ vsaj grafično kartico in gonolnik s podporo za OpenGL 2.1 in naslednje razširitve:
+- Potrebuješ vsaj grafično kartico in gonilnik s podporo za OpenGL 2.1 in naslednje razširitve:
   - GL_ARB_vertex_array_object,
   - GL_ARB_framebuffer_object,
   - GL_ARB_texture_float,

@@ -260,8 +260,8 @@ namespace client
 
     alSourcei( musicSource, AL_SOURCE_RELATIVE, AL_TRUE );
 
-    setVolume( config.getSet( "sound.volume", 1.00f ) );
-    setMusicVolume( config.getSet( "sound.volume.music", 0.40f ) );
+    setVolume( config.getSet( "sound.volume", 1.0f ) );
+    setMusicVolume( config.getSet( "sound.volume.music", 0.5f ) );
 
     log.unindent();
     log.println( "}" );

@@ -342,11 +342,11 @@ namespace oz
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( ent.hasExtension() ) {
+      if( ent.hasExtension( "ozcSMM" ) || ent.hasExtension( "ozcMD2" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
+      String name = static_cast<const char*>( ent );
       String path = String( "mdl/" ) + ent;
 
       modelIndices.add( name, models.length() );
@@ -480,10 +480,12 @@ namespace oz
 
     textures.alloc( 256 );
     sounds.alloc( 256 );
+    shaders.alloc( 32 );
     terras.alloc( 16 );
     bsps.alloc( 64 );
     models.alloc( 256 );
     nameLists.alloc( 16 );
+    musics.alloc( 32 );
 
     log.println( "Translator mapping resources {" );
     log.indent();
@@ -815,7 +817,6 @@ namespace oz
     models.dealloc();
     nameLists.clear();
     nameLists.dealloc();
-
     musics.clear();
     musics.dealloc();
 

@@ -1,9 +1,0 @@
-#!/bin/sh
-
-echo 'add_library( architect STATIC' > CMakeLists.txt
-
-ls *.{hpp,cpp} | sed -e 's/^./  \0/' >> CMakeLists.txt
-
-echo ')' >> CMakeLists.txt
-echo '' >> CMakeLists.txt
-echo 'add_dependencies( architect nirvana matrix pch )' >> CMakeLists.txt
