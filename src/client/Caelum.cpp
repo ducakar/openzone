@@ -70,26 +70,27 @@ namespace client
       Mat44 rot = Mat44( x, y, z, Vec3::ZERO );
       Vertex vertex;
 
-      vertex.set( positions[i] + rot * Vec3( -STAR_DIM, 0.0f, 0.0f ) );
+      vertex = Vertex( positions[i] + rot * Vec3( -STAR_DIM, 0.0f, 0.0f ) );
       vertex.write( &os );
 
-      vertex.set( positions[i] + rot * Vec3( 0.0f, -STAR_DIM, 0.0f ) );
+      vertex = Vertex( positions[i] + rot * Vec3( 0.0f, -STAR_DIM, 0.0f ) );
       vertex.write( &os );
 
-      vertex.set( positions[i] + rot * Vec3( +STAR_DIM, 0.0f, 0.0f ) );
+      vertex = Vertex( positions[i] + rot * Vec3( +STAR_DIM, 0.0f, 0.0f ) );
       vertex.write( &os );
 
-      vertex.set( positions[i] + rot * Vec3( 0.0f, +STAR_DIM, 0.0f ) );
+      vertex = Vertex( positions[i] + rot * Vec3( 0.0f, +STAR_DIM, 0.0f ) );
       vertex.write( &os );
     }
 
     int nMipmaps;
     uint texId = context.loadRawTexture( "caelum/simplesun.png", &nMipmaps, false,
-                                         GL_LINEAR, GL_LINEAR );
+                                         Context::DEFAULT_MAG_FILTER, Context::DEFAULT_MAG_FILTER );
     context.writeTexture( texId, nMipmaps, &os );
     glDeleteTextures( 1, &texId );
 
-    texId = context.loadRawTexture( "caelum/moon18.png", &nMipmaps, false, GL_LINEAR, GL_LINEAR );
+    texId = context.loadRawTexture( "caelum/moon18.png", &nMipmaps, false,
+                                    Context::DEFAULT_MAG_FILTER, Context::DEFAULT_MAG_FILTER );
     context.writeTexture( texId, nMipmaps, &os );
     glDeleteTextures( 1, &texId );
 

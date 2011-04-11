@@ -294,8 +294,26 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/snd )
 
   install( FILES
+    "share/openzone/music/Crimson And Clover.ogg"
     "share/openzone/music/Fanatic - Antipodes.ogg"
+    "share/openzone/music/Fanatic - Assault.ogg"
+    "share/openzone/music/Fanatic - Conquerer.ogg"
+    "share/openzone/music/Fanatic - Cubed to Death.ogg"
+    "share/openzone/music/Fanatic - Demagogue.ogg"
+    "share/openzone/music/Fanatic - Disrupting Force.ogg"
+    "share/openzone/music/Fanatic - Hit Them Hard.ogg"
+    "share/openzone/music/Fanatic - Inchoate.ogg"
     "share/openzone/music/Fanatic - Incindental.ogg"
+    "share/openzone/music/Fanatic - Lost in the Mist.ogg"
+    "share/openzone/music/Fanatic - Mephistopheles.ogg"
+    "share/openzone/music/Fanatic - My Destiny.ogg"
+    "share/openzone/music/Fanatic - Ostentation.ogg"
+    "share/openzone/music/Fanatic - Set Free.ogg"
+    "share/openzone/music/Fanatic - Tranquility.ogg"
+    "share/openzone/music/Fanatic - Tribulation.ogg"
+    "share/openzone/music/Fanatic - Unreleased Rage.ogg"
+    "share/openzone/music/Fanatic - Vexation.ogg"
+    "share/openzone/music/Fanatic - Waiting to Strike.ogg"
     "share/openzone/music/README"
     DESTINATION share/openzone/music )
 

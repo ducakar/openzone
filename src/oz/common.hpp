@@ -131,7 +131,7 @@ namespace oz
   /**
    * nullptr_t
    */
-  using std::nullptr_t;
+  typedef decltype( nullptr ) nullptr_t;
 
   /**
    * signed byte

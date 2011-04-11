@@ -91,7 +91,7 @@ namespace oz
 
       /**
        * Initialise from a C++ array.
-       * It could also be used as <code>Array<int, 2> array = (int[]) { 1, 2 };</code>
+       * It could also be used as <code>Array&lt;int, 2&gt; array = (int[]) { 1, 2 };</code>
        * @param array
        */
       Array( const Type* array )

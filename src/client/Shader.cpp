@@ -168,12 +168,12 @@ namespace client
     OZ_REGISTER_ATTRIBUTE( Attrib::POSITION,            "inPosition" );
     OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD,            "inTexCoord" );
     OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,              "inNormal" );
-//     OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
-//     OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
+    OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
+    OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
 
-//     OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
-//     OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
-//     OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
+    OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
+    OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
+    OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
 
     glLinkProgram( programs[id].program );
 
@@ -228,7 +228,8 @@ namespace client
 
     param = programs[id].param;
 
-    glUniform1iv( param.oz_Textures, 4, (int[]) { 0, 1, 2, 3 } );
+    int textureIds[4] = { 0, 1, 2, 3 };
+    glUniform1iv( param.oz_Textures, 4, textureIds );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 

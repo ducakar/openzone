@@ -1,7 +1,7 @@
 if( OZ_BUILD_CLIENT )
   add_executable( openzone openzone.cpp )
   add_dependencies( openzone client ui nirvana matrix build pch )
-  target_link_libraries( openzone client censor nirvana matrix build oz ${libs} )
+  target_link_libraries( openzone client arch nirvana matrix build oz ${libs} )
 endif()
 
 if( OZ_BUILD_TOOLS )

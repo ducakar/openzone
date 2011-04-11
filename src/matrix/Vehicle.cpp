@@ -122,7 +122,7 @@ namespace oz
     }
 
     momentum += move * clazz->moveMomentum;
-    momentum.z -= Physics::G_MOMENTUM;
+    momentum.z -= Physics::G_ACCEL * Timer::TICK_TIME;
     momentum.z *= 1.0f - Physics::AIR_FRICTION;
   }
 

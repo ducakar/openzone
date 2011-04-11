@@ -18,24 +18,24 @@ namespace oz
 
   Physics physics;
 
-  const float Physics::MOVE_BOUNCE            = 1.5f * EPSILON;
+  const float Physics::MOVE_BOUNCE            =  1.5f * EPSILON;
   const float Physics::HIT_THRESHOLD          = -3.0f;
   const float Physics::SPLASH_THRESHOLD       = -2.0f;
-  const float Physics::FLOOR_NORMAL_Z         = 0.60f;
-  const float Physics::G_MOMENTUM             = -9.81f * Timer::TICK_TIME;
-  const float Physics::WEIGHT_FACTOR          = 0.1f;
+  const float Physics::FLOOR_NORMAL_Z         =  0.60f;
+  const float Physics::G_ACCEL                = -9.81f;
+  const float Physics::WEIGHT_FACTOR          =  0.1f;
 
-  const float Physics::STICK_VELOCITY         = 0.015f;
-  const float Physics::SLICK_STICK_VELOCITY   = 0.001f;
-  const float Physics::AIR_STICK_VELOCITY     = 0.001f;
-  const float Physics::AIR_FRICTION           = 0.02f;
-  const float Physics::WATER_FRICTION         = 0.08f;
-  const float Physics::LADDER_FRICTION        = 0.65f;
-  const float Physics::FLOOR_FRICTION         = 0.40f;
-  const float Physics::SLICK_FRICTION         = 0.02f;
+  const float Physics::STICK_VELOCITY         =  0.015f;
+  const float Physics::SLICK_STICK_VELOCITY   =  0.001f;
+  const float Physics::AIR_STICK_VELOCITY     =  0.001f;
+  const float Physics::AIR_FRICTION           =  0.02f;
+  const float Physics::WATER_FRICTION         =  0.08f;
+  const float Physics::LADDER_FRICTION        =  0.65f;
+  const float Physics::FLOOR_FRICTION         =  0.40f;
+  const float Physics::SLICK_FRICTION         =  0.02f;
 
-  const float Physics::PART_HIT_VELOCITY2     = 100.0f;
-  const float Physics::PART_DESTROY_VELOCITY2 = 900.0f;
+  const float Physics::PART_HIT_VELOCITY2     =  100.0f;
+  const float Physics::PART_DESTROY_VELOCITY2 =  900.0f;
 
   //***********************************
   //*   PARTICLE COLLISION HANDLING   *
@@ -104,7 +104,7 @@ namespace oz
 
   bool Physics::handleObjFriction()
   {
-    float systemMom = G_MOMENTUM;
+    float systemMom = G_ACCEL * Timer::TICK_TIME;
 
     if( dyn->flags & ( Object::FRICTLESS_BIT | Object::ON_LADDER_BIT ) ) {
       // in air
@@ -370,7 +370,7 @@ namespace oz
 
     hard_assert( part->cell != null );
 
-    part->velocity.z += G_MOMENTUM;
+    part->velocity.z += G_ACCEL * Timer::TICK_TIME;
     part->lifeTime -= Timer::TICK_TIME;
 
     part->rot += part->rotVelocity * Timer::TICK_TIME;

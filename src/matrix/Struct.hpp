@@ -37,7 +37,7 @@ namespace oz
             CLOSED,
             OPENING,
             OPENED,
-            CLOSING,
+            CLOSING
           };
 
           Vec3              offset;

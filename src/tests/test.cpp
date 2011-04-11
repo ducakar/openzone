@@ -9,25 +9,68 @@
 
 #include "stable.hpp"
 
-#include "Build.hpp"
+#include <algorithm>
+#include <iostream>
 
 using namespace oz;
 
-bool Alloc::isLocked = false;
-
 struct Foo
 {
-  int a;
-  int b[];
+  Foo()
+  {
+    printf( "Foo()\n" );
+  }
+
+  Foo( const Foo& )
+  {
+    printf( "Foo( const Foo& )\n" );
+  }
+
+  Foo( Foo&& )
+  {
+    printf( "Foo( Foo&& )\n" );
+  }
+
+  Foo& operator = ( const Foo& )
+  {
+    printf( "Foo& operator = ( const Foo& )\n" );
+    return *this;
+  }
+
+  Foo& operator = ( Foo&& )
+  {
+    printf( "Foo& operator = ( Foo&& )\n" );
+    return *this;
+  }
+
+  ~Foo()
+  {
+    printf( "~Foo()\n" );
+  }
 };
+
+void bar( const Foo& )
+{
+  printf( "void bar( const Foo& )\n" );
+}
+
+void bar( Foo&& )
+{
+  printf( "void bar( Foo&& )\n" );
+}
+
+#define move_cast( expr ) \
+  static_cast< decltype( expr )&& >( expr )
+
+template <class Type>
+void cal( Type&& f )
+{
+  bar( move_cast( f ) );
+}
 
 int main( int, char** )
 {
-  HashString<int> h;
-  h.add( "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 1 );
-  h.clear();
-  h.dealloc();
-
-  Alloc::printLeaks();
+  Foo f;
+  cal( move_cast( f ) );
   return 0;
 }

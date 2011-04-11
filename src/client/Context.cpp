@@ -28,8 +28,7 @@
 # include <SDL_image.h>
 #endif
 #include <GL/gl.h>
-#include <AL/alut.h>
-#include <vorbis/vorbisfile.h>
+#include <AL/al.h>
 
 #define OZ_REGISTER_MODELCLASS( name ) \
   modelClasses.add( #name, &name##Model::create )
@@ -89,19 +88,59 @@ namespace client
   }
 #endif
 
-  void Context::deleteSound( int id )
+  void Context::addSource( uint srcId, int sample )
   {
-    Resource<uint>& resource = sounds[id];
+    hard_assert( sounds[sample].nUsers > 0 );
 
-    hard_assert( uint( id ) < uint( translator.sounds.length() ) );
-    hard_assert( resource.nUsers == -2 );
+    ++sounds[sample].nUsers;
+    sources.add( new Source( srcId, sample ) );
+  }
 
-    log.print( "Unloading sound '%s' ...", translator.sounds[id].name.cstr() );
-    alDeleteBuffers( 1, &resource.id );
-    resource.nUsers = -1;
+  void Context::addBSPSource( uint srcId, int sample, uint key )
+  {
+    hard_assert( sounds[sample].nUsers > 0 );
 
-    hard_assert( alGetError() == AL_NO_ERROR );
-    log.printEnd( " OK" );
+    ++sounds[sample].nUsers;
+    bspSources.add( key, ContSource( srcId, sample ) );
+  }
+
+  void Context::addObjSource( uint srcId, int sample, uint key )
+  {
+    hard_assert( sounds[sample].nUsers > 0 );
+
+    ++sounds[sample].nUsers;
+    objSources.add( key, ContSource( srcId, sample ) );
+  }
+
+  void Context::removeSource( Source* source, Source* prev )
+  {
+    int sample = source->sample;
+
+    hard_assert( sounds[sample].nUsers > 0 );
+
+    sources.remove( source, prev );
+    delete source;
+    releaseSound( sample );
+  }
+
+  void Context::removeBSPSource( ContSource* contSource, uint key )
+  {
+    int sample = contSource->sample;
+
+    hard_assert( sounds[sample].nUsers > 0 );
+
+    bspSources.exclude( key );
+    releaseSound( sample );
+  }
+
+  void Context::removeObjSource( ContSource* contSource, uint key )
+  {
+    int sample = contSource->sample;
+
+    hard_assert( sounds[sample].nUsers > 0 );
+
+    objSources.exclude( key );
+    releaseSound( sample );
   }
 
 #ifdef OZ_BUILD_TOOLS
@@ -131,7 +170,7 @@ namespace client
       log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
       throw Exception( "Texture loading failed" );
     }
-    log.printEnd( " OK, %s", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
+    log.printEnd( " %s ... OK", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     int texNum = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
@@ -263,10 +302,11 @@ namespace client
   {
     Resource<uint>& resource = textures[id];
 
-    if( resource.nUsers > 0 ) {
+    if( resource.nUsers != 0 ) {
       ++resource.nUsers;
       return resource.id;
     }
+
     resource.nUsers = 1;
 
     const String& name = translator.textures[id].name;
@@ -294,8 +334,7 @@ namespace client
   {
     Resource<uint>& resource = textures[id];
 
-    hard_assert( uint( id ) < uint( translator.textures.length() ) );
-    hard_assert( resource.nUsers > 0 );
+    hard_assert( uint( id ) < uint( translator.textures.length() ) && resource.nUsers > 0 );
 
     --resource.nUsers;
 
@@ -313,8 +352,8 @@ namespace client
   {
     Resource<uint>& resource = sounds[id];
 
-    if( resource.nUsers != -1 ) {
-      resource.nUsers = resource.nUsers < 0 ? 1 : resource.nUsers + 1;
+    if( resource.nUsers != 0 ) {
+      ++resource.nUsers;
       return resource.id;
     }
 
@@ -324,14 +363,34 @@ namespace client
 
     log.print( "Loading sound '%s' ...", translator.sounds[id].name.cstr() );
 
-    resource.id = alutCreateBufferFromFile( translator.sounds[id].path );
+    uint   length;
+    ubyte* data;
+
+    SDL_AudioSpec audioSpec;
+    audioSpec = *SDL_LoadWAV( translator.sounds[id].path, &audioSpec, &data, &length );
+
+    if( audioSpec.channels != 1 ||
+        ( audioSpec.format != AUDIO_U8 && audioSpec.format != AUDIO_S16 ) )
+    {
+      log.printEnd( " Failed, format should be mono U8 mono or S16LE mono" );
+        throw Exception( "Invalid sound format, should be U8 mono or S16LE mono" );
+    }
+
+    ALenum format = audioSpec.format == AUDIO_U8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
+
+    alGenBuffers( 1, &resource.id );
+    alBufferData( resource.id, format, data, length, audioSpec.freq );
+
+    SDL_FreeWAV( data );
+
+    hard_assert( alGetError() == AL_NO_ERROR );
 
     if( resource.id == 0 ) {
       log.printEnd( " Failed" );
       throw Exception( "Sound loading failed" );
     }
 
-    log.printEnd( " OK" );
+    log.printEnd( " %s %d Hz ... OK", format == AL_FORMAT_MONO8 ? "U8" : "S16LE", audioSpec.freq );
     return resource.id;
   }
 
@@ -339,10 +398,18 @@ namespace client
   {
     Resource<uint>& resource = sounds[id];
 
-    hard_assert( uint( id ) < uint( translator.sounds.length() ) );
-    hard_assert( resource.nUsers > 0 );
+    hard_assert( uint( id ) < uint( translator.sounds.length() ) && resource.nUsers > 0 );
 
     --resource.nUsers;
+
+    if( resource.nUsers == 0 ) {
+      log.print( "Unloading sound '%s' ...", translator.sounds[id].name.cstr() );
+      alDeleteBuffers( 1, &resource.id );
+
+      hard_assert( alGetError() == AL_NO_ERROR );
+
+      log.printEnd( " OK" );
+    }
   }
 
   SMM* Context::requestSMM( int id )
@@ -526,7 +593,7 @@ namespace client
       textures[i].nUsers = 0;
     }
     for( int i = 0; i < translator.sounds.length(); ++i ) {
-      sounds[i].nUsers = -1;
+      sounds[i].nUsers = 0;
     }
     for( int i = 0; i < translator.bsps.length(); ++i ) {
       bsps[i].object = null;
@@ -591,16 +658,25 @@ namespace client
     md2s.dealloc();
     md3s.dealloc();
 
-    foreach( src, sources.citer() ) {
-      alDeleteSources( 1, &src->source );
+    while( !sources.isEmpty() ) {
+      alDeleteSources( 1, &sources.first()->id );
+      removeSource( sources.first(), null );
       hard_assert( alGetError() == AL_NO_ERROR );
     }
-    foreach( src, bspSources.citer() ) {
-      alDeleteSources( 1, &src->source );
+    for( auto i = bspSources.iter(); i.isValid(); ) {
+      auto src = i;
+      ++i;
+
+      alDeleteSources( 1, &src->id );
+      removeBSPSource( src, src.key() );
       hard_assert( alGetError() == AL_NO_ERROR );
     }
-    foreach( src, objSources.citer() ) {
-      alDeleteSources( 1, &src->source );
+    for( auto i = objSources.iter(); i.isValid(); ) {
+      auto src = i;
+      ++i;
+
+      alDeleteSources( 1, &src->id );
+      removeObjSource( src, src.key() );
       hard_assert( alGetError() == AL_NO_ERROR );
     }
 
@@ -614,12 +690,7 @@ namespace client
       hard_assert( textures[i].nUsers == 0 );
     }
     for( int i = 0; i < translator.sounds.length(); ++i ) {
-      hard_assert( sounds[i].nUsers <= 0 );
-
-      if( sounds[i].nUsers != -1 ) {
-        sounds[i].nUsers = -2;
-        deleteSound( i );
-      }
+      hard_assert( sounds[i].nUsers == 0 );
     }
 
     hard_assert( glGetError() == AL_NO_ERROR );

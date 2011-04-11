@@ -124,7 +124,7 @@ namespace ui
   }
 
   MusicPlayer::MusicPlayer() :
-      Frame( -8, -289, 240, 36 + Font::INFOS[Font::SMALL].height, OZ_GETTEXT( "Music Player" ) ),
+      Frame( -8, -289, 240, 36 + Font::INFOS[Font::SMALL].height, gettext( "Music Player" ) ),
       currentTrack( 0 ), title( "" ), isPlaying( false )
   {
     flags = UPDATE_BIT;

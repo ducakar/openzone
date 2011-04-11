@@ -24,7 +24,7 @@ namespace oz
       static const float HIT_THRESHOLD;
       static const float SPLASH_THRESHOLD;
       static const float FLOOR_NORMAL_Z;
-      static const float G_MOMENTUM;
+      static const float G_ACCEL;
       static const float WEIGHT_FACTOR;
 
       static const float STICK_VELOCITY;

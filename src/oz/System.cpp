@@ -17,9 +17,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
-#include <cxxabi.h>
 
-#ifndef OZ_MINGW
+#if !defined( __clang__ ) && !defined( OZ_MINGW )
+# include <cxxabi.h>
 # include <execinfo.h>
 #endif
 
@@ -28,8 +28,8 @@
 # undef SIG_ERR
 # undef SIG_DFL
 # undef SIG_IGN
-# define SIG_DFL reinterpret_cast<__sighandler_t>(  0 )            /* Default action.  */
-# define SIG_IGN reinterpret_cast<__sighandler_t>(  1 )            /* Ignore signal.  */
+# define SIG_DFL reinterpret_cast<__sighandler_t>( 0 )            /* Default action.  */
+# define SIG_IGN reinterpret_cast<__sighandler_t>( 1 )            /* Ignore signal.  */
 #endif
 
 namespace oz
@@ -74,7 +74,65 @@ namespace oz
   OZ_THREAD_LOCAL void* System::framePtrs[System::TRACE_SIZE + 1];
   OZ_THREAD_LOCAL char  System::output[System::TRACE_BUFFER_SIZE];
 
-#ifndef OZ_MINGW
+#if defined( __clang__ ) || defined( OZ_MINGW )
+
+  void System::signalHandler( int )
+  {}
+
+  void System::catchSignals()
+  {}
+
+  void System::resetSignals()
+  {}
+
+  int System::getStackTrace( char** bufferPtr )
+  {
+    *bufferPtr = null;
+    return 0;
+  }
+
+  void System::trap()
+  {}
+
+  void System::error( const char* msg, ... )
+  {
+    va_list ap;
+    va_start( ap, msg );
+
+    fflush( stdout );
+
+    fprintf( stderr, "\n" );
+    vfprintf( stderr, msg, ap );
+    fprintf( stderr, "\n" );
+
+    fflush( stderr );
+
+    if( log.isFile() ) {
+      log.printEnd( "\n" );
+      log.vprintRaw( msg, ap );
+      log.printEnd( "\n" );
+    }
+
+    va_end( ap );
+  }
+
+  void System::abort( const char* msg, ... )
+  {
+    System::resetSignals();
+
+    va_list ap;
+    va_start( ap, msg );
+
+    fflush( stdout );
+
+    fprintf( stderr, "\n" );
+    vfprintf( stderr, msg, ap );
+    fprintf( stderr, "\n" );
+
+    ::abort();
+  }
+
+#else
 
   void System::signalHandler( int signum )
   {
@@ -324,64 +382,6 @@ namespace oz
     fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
     fflush( stderr );
     while( sleep( 1 ) == 0 );
-
-    ::abort();
-  }
-
-#else
-
-  void System::signalHandler( int )
-  {}
-
-  void System::catchSignals()
-  {}
-
-  void System::resetSignals()
-  {}
-
-  int System::getStackTrace( char** bufferPtr )
-  {
-    *bufferPtr = null;
-    return 0;
-  }
-
-  void System::trap()
-  {}
-
-  void System::error( const char* msg, ... )
-  {
-    va_list ap;
-    va_start( ap, msg );
-
-    fflush( stdout );
-
-    fprintf( stderr, "\n" );
-    vfprintf( stderr, msg, ap );
-    fprintf( stderr, "\n" );
-
-    fflush( stderr );
-
-    if( log.isFile() ) {
-      log.printEnd( "\n" );
-      log.vprintRaw( msg, ap );
-      log.printEnd( "\n" );
-    }
-
-    va_end( ap );
-  }
-
-  void System::abort( const char* msg, ... )
-  {
-    System::resetSignals();
-
-    va_list ap;
-    va_start( ap, msg );
-
-    fflush( stdout );
-
-    fprintf( stderr, "\n" );
-    vfprintf( stderr, msg, ap );
-    fprintf( stderr, "\n" );
 
     ::abort();
   }

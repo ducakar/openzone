@@ -309,7 +309,7 @@ namespace client
     alSourcef( srcId, AL_GAIN, 1.0f );
     alSourcePlay( srcId );
 
-    context.sources.add( new Context::Source( srcId ) );
+    context.addSource( srcId, sample );
 
     hard_assert( alGetError() == AL_NO_ERROR );
   }
@@ -320,13 +320,13 @@ namespace client
 
     const Struct* str = entity->str;
     // we can have at most 100 models per BSP, so stride 128 should do
-    int id = str->index * 128 + int( entity - str->entities );
+    uint key = str->index * 128 + int( entity - str->entities );
 
     Bounds bounds = *entity->model;
     Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
     Point3 p = entity->str->toAbsoluteCS( localPos + entity->offset );
 
-    Context::ContSource* contSource = context.bspSources.find( id );
+    Context::ContSource* contSource = context.bspSources.find( key );
 
     if( contSource == null ) {
       uint srcId;
@@ -350,10 +350,10 @@ namespace client
       alSourcef( srcId, AL_GAIN, 1.0f );
       alSourcePlay( srcId );
 
-      context.bspSources.add( id, Context::ContSource( srcId ) );
+      context.addBSPSource( srcId, sample, key );
     }
     else {
-      alSourcefv( contSource->source, AL_POSITION, p );
+      alSourcefv( contSource->id, AL_POSITION, p );
 
       contSource->isUpdated = true;
     }

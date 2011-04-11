@@ -18,7 +18,7 @@ using namespace oz;
 
 bool Alloc::isLocked = true;
 
-#if 1
+#if 0
 struct __attribute__(( aligned( 16 ) )) VecX
 {
   union {
@@ -108,7 +108,7 @@ struct __attribute__(( aligned( 16 ) )) VecX
   }
 };
 #else
-# define VecX Vec4
+# define VecX Vec3
 #endif
 
 static const int MAX = 10000;

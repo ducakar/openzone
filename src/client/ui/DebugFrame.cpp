@@ -27,7 +27,7 @@ namespace ui
 {
 
   DebugFrame::DebugFrame() :
-      Frame( 8, -8, 560, 10 + 6 * ( Font::INFOS[Font::MONO].height + 2 ), OZ_GETTEXT( "Debug" ) )
+      Frame( 8, -8, 560, 10 + 6 * ( Font::INFOS[Font::MONO].height + 2 ), gettext( "Debug" ) )
   {
     flags = PINNED_BIT;
 
@@ -61,7 +61,7 @@ namespace ui
              bot->depth );
 
       print( 5, 5 + height * 2, ALIGN_NONE,
-             "d %d fl %d lw %d up %d h %d fr %d iw %d s %d ld %d ovlp %d sR %.3f",
+             "d %d fl %d lw %d up %d h %d fr %d iw %d s %d ld %d ovlp %d sr %.3f",
              ( bot->flags & Object::DISABLED_BIT ) != 0,
              ( bot->flags & Object::ON_FLOOR_BIT ) != 0,
              bot->lower,

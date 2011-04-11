@@ -18,7 +18,7 @@
 #include "client/MD3.hpp"
 
 #include <ctime>
-#include <AL/alut.h>
+#include <AL/al.h>
 
 namespace oz
 {
@@ -33,16 +33,15 @@ namespace client
 
     // delete models of removed objects
     for( auto i = context.models.citer(); i.isValid(); ) {
-      Model* model = i.value();
-      uint   key   = i.key();
+      auto model = i;
       ++i;
 
       // We can afford to do this as orbis.objects[key] will remain null at least one whole tick
       // after the object has been removed (because matrix also needs to clear references to this
       // object).
-      if( orbis.objects[key] == null ) {
-        delete model;
-        context.models.exclude( key );
+      if( orbis.objects[ model.key() ] == null ) {
+        delete model.value();
+        context.models.exclude( model.key() );
       }
     }
 
@@ -70,18 +69,15 @@ namespace client
     if( tick % MODEL_CLEAR_INTERVAL == 0 ) {
       // remove unused models
       for( auto i = context.models.citer(); i.isValid(); ) {
-        Model* model = *i;
-        uint   key   = i.key();
-
-        // we should advance now, so that we don't remove the element the iterator is pointing at
+        auto model = i;
         ++i;
 
-        if( model->flags & Model::UPDATED_BIT ) {
-          model->flags &= ~Model::UPDATED_BIT;
+        if( model.value()->flags & Model::UPDATED_BIT ) {
+          model.value()->flags &= ~Model::UPDATED_BIT;
         }
         else {
-          context.models.exclude( key );
-          delete model;
+          context.models.exclude( model.key() );
+          delete model.value();
         }
       }
     }
@@ -95,16 +91,15 @@ namespace client
 
     // remove audio models of removed objects
     for( auto i = context.audios.citer(); i.isValid(); ) {
-      Audio* audio = i.value();
-      uint key     = i.key();
+      auto audio = i;
       ++i;
 
       // We can afford to do this as orbis.objects[key] will remain null at least one whole tick
       // after the object has been removed (because matrix also needs to clear references to this
       // object).
-      if( orbis.objects[key] == null ) {
-        delete audio;
-        context.audios.exclude( key );
+      if( orbis.objects[ audio.key() ] == null ) {
+        delete audio.value();
+        context.audios.exclude( audio.key() );
       }
     }
 
@@ -112,34 +107,28 @@ namespace client
 
     // remove continous sounds that are not played any more
     for( auto i = context.bspSources.iter(); i.isValid(); ) {
-      Context::ContSource* src = i;
-      uint key = i.key();
-
-      // we should advance now, so that we don't remove the element the iterator is pointing at
+      auto src = i;
       ++i;
 
       if( src->isUpdated ) {
         src->isUpdated = false;
       }
       else {
-        alDeleteSources( 1, &src->source );
-        context.bspSources.exclude( key );
+        alDeleteSources( 1, &src->id );
+        context.removeBSPSource( src, src.key() );
       }
     }
 
     for( auto i = context.objSources.iter(); i.isValid(); ) {
-      Context::ContSource* src = i;
-      uint key = i.key();
-
-      // we should advance now, so that we don't remove the element the iterator is pointing at
+      auto src = i;
       ++i;
 
       if( src->isUpdated ) {
         src->isUpdated = false;
       }
       else {
-        alDeleteSources( 1, &src->source );
-        context.objSources.exclude( key );
+        alDeleteSources( 1, &src->id );
+        context.removeObjSource( src, src.key() );
       }
     }
 
@@ -154,12 +143,11 @@ namespace client
         Context::Source* next = src->next[0];
 
         ALint value;
-        alGetSourcei( src->source, AL_SOURCE_STATE, &value );
+        alGetSourcei( src->id, AL_SOURCE_STATE, &value );
 
         if( value != AL_PLAYING ) {
-          alDeleteSources( 1, &src->source );
-          context.sources.remove( src, prev );
-          delete src;
+          alDeleteSources( 1, &src->id );
+          context.removeSource( src, prev );
         }
         else {
           prev = src;
@@ -175,31 +163,15 @@ namespace client
 
       // remove unused Audio objects
       for( auto i = context.audios.citer(); i.isValid(); ) {
-        Audio* audio = *i;
-        uint   key   = i.key();
-
-        // we should advance now, so that we don't remove the element the iterator is pointing at
+        auto audio = i;
         ++i;
 
-        if( audio->flags & Audio::UPDATED_BIT ) {
-          audio->flags &= ~Audio::UPDATED_BIT ;
+        if( audio.value()->flags & Audio::UPDATED_BIT ) {
+          audio.value()->flags &= ~Audio::UPDATED_BIT ;
         }
         else {
-          context.audios.exclude( key );
-          delete audio;
-        }
-      }
-
-      hard_assert( alGetError() == AL_NO_ERROR );
-
-      // remove unused (no object audio uses it) buffers
-      for( int i = 0; i < translator.sounds.length(); ++i ) {
-        // first, only
-        if( context.sounds[i].nUsers == 0 ) {
-          context.sounds[i].nUsers = -2;
-        }
-        else if( context.sounds[i].nUsers == -2 ) {
-          context.deleteSound( i );
+          context.audios.exclude( audio.key() );
+          delete audio.value();
         }
       }
     }

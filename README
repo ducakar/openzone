@@ -67,7 +67,9 @@ o                   - forward sky time for 1/8 of a day
 LAlt + drag         - move windows
 
 F11                 - screenshot (saved to ~/.openzone/screenshot DATE TIME.bmp)
-F12                 - minimise and freeze (not working on Windows)
+F12                 - minimise (application is automatically halted when minimised)
+Shift + F12         - toggle fullscreen
+Ctrl + F12          - force exit
 
 Esc                 - exit application
 
@@ -150,7 +152,6 @@ Dependencies
 - SDL_net (optional)
 - OpenGL (MesaGL headers)
 - OpenAL
-- FreeALUT
 - libvorbis
 - Lua
 

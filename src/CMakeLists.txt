@@ -20,7 +20,7 @@ add_library( build STATIC ${CMAKE_CURRENT_BINARY_DIR}/Build.cpp )
 
 add_subdirectory( matrix )
 add_subdirectory( nirvana )
-add_subdirectory( censor )
+add_subdirectory( arch )
 
 if( OZ_BUILD_CLIENT )
   add_subdirectory( client )

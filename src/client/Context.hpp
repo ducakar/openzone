@@ -38,20 +38,19 @@ namespace client
     friend class BSP;
     friend class Loader;
 
-    private:
+    public:
 
       static const int DEFAULT_MAG_FILTER = GL_LINEAR;
       static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
-      static const int BUFFER_SIZE        = 256 * 1024;
+
+    private:
+
+      static const int BUFFER_SIZE = 256 * 1024;
 
       template <typename Type>
       struct Resource
       {
         Type id;
-        // for sounds:
-        //  0: loaded, but no source needs it
-        // -1: not loaded
-        // -2: scheduled for removal
         int  nUsers;
       };
 
@@ -59,15 +58,16 @@ namespace client
       struct Resource<Type*>
       {
         Type* object;
-        int  nUsers;
+        int   nUsers;
       };
 
       struct Source
       {
-        uint    source;
+        uint    id;
+        int     sample;
         Source* next[1];
 
-        explicit Source( uint sourceId ) : source( sourceId )
+        explicit Source( uint sourceId, int sample_ ) : id( sourceId ), sample( sample_ )
         {}
 
         static Pool<Source> pool;
@@ -77,14 +77,14 @@ namespace client
 
       struct ContSource
       {
-        uint source;
+        uint id;
+        int  sample;
         bool isUpdated;
 
-        explicit ContSource( uint sourceId ) : source( sourceId ), isUpdated( true )
+        explicit ContSource( uint sourceId, int sample_ ) :
+            id( sourceId ), sample( sample_ ), isUpdated( true )
         {}
       };
-
-    private:
 
       HashString<Model::CreateFunc, 16> modelClasses;
       HashString<Audio::CreateFunc, 8>  audioClasses;
@@ -95,8 +95,8 @@ namespace client
       // non-looping sources
       List<Source>                      sources;
       // looping sources
-      HashIndex<ContSource, 256>        bspSources;
-      HashIndex<ContSource, 256>        objSources;
+      HashIndex<ContSource, 64>         bspSources;
+      HashIndex<ContSource, 64>         objSources;
 
       Resource<BSP*>*                   bsps;
 
@@ -119,7 +119,14 @@ namespace client
       static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
 #endif
-      void deleteSound( int resource );
+
+      void addSource( uint srcId, int sample );
+      void addBSPSource( uint srcId, int sample, uint key );
+      void addObjSource( uint srcId, int sample, uint key );
+
+      void removeSource( Source* source, Source* prev );
+      void removeBSPSource( ContSource* contSource, uint key );
+      void removeObjSource( ContSource* contSource, uint key );
 
     public:
 

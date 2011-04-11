@@ -23,9 +23,3 @@
 // include SDL as it is commonly used
 #define SDL_NO_COMPAT
 #include <SDL.h>
-
-#define OZ_GETTEXT( text ) ({ \
-  const char* s = text; \
-  hard_assert( s != null ); \
-  s[0] == '\0' ? "" : gettext( s ); \
-})

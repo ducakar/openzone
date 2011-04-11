@@ -122,53 +122,61 @@ namespace client
     DArray<Vertex> vertices( 36 + MAX_PARTS * 12 );
 
     // filled rectangle
-    vertices[ 0].set( 0.0f, 0.0f, 0.0f, 0.0f, 1.0f );
-    vertices[ 1].set( 1.0f, 0.0f, 0.0f, 1.0f, 1.0f );
-    vertices[ 2].set( 0.0f, 1.0f, 0.0f, 0.0f, 0.0f );
-    vertices[ 3].set( 1.0f, 1.0f, 0.0f, 1.0f, 0.0f );
+    vertices[ 0] = Vertex( Point3( 0.0f, 0.0f, 0.0f ), TexCoord( 0.0f, 1.0f ) );
+    vertices[ 1] = Vertex( Point3( 1.0f, 0.0f, 0.0f ), TexCoord( 1.0f, 1.0f ) );
+    vertices[ 2] = Vertex( Point3( 0.0f, 1.0f, 0.0f ), TexCoord( 0.0f, 0.0f ) );
+    vertices[ 3] = Vertex( Point3( 1.0f, 1.0f, 0.0f ), TexCoord( 1.0f, 0.0f ) );
 
     // line rectangle
-    vertices[ 4].set( 0.0f, 0.0f, 0.0f );
-    vertices[ 5].set( 1.0f, 0.0f, 0.0f );
-    vertices[ 6].set( 1.0f, 1.0f, 0.0f );
-    vertices[ 7].set( 0.0f, 1.0f, 0.0f );
+    vertices[ 4] = Vertex( Point3( 0.0f, 0.0f, 0.0f ) );
+    vertices[ 5] = Vertex( Point3( 1.0f, 0.0f, 0.0f ) );
+    vertices[ 6] = Vertex( Point3( 1.0f, 1.0f, 0.0f ) );
+    vertices[ 7] = Vertex( Point3( 0.0f, 1.0f, 0.0f ) );
 
     // tag box
-    vertices[ 8].set( -1.5f, -1.5f, 0.0f );
-    vertices[ 9].set( -1.5f, +3.5f, 0.0f );
-    vertices[10].set( -0.5f, -1.5f, 0.0f );
-    vertices[11].set( +3.5f, -1.5f, 0.0f );
+    vertices[ 8] = Vertex( Point3( -1.5f, -1.5f, 0.0f ) );
+    vertices[ 9] = Vertex( Point3( -1.5f, +3.5f, 0.0f ) );
+    vertices[10] = Vertex( Point3( -0.5f, -1.5f, 0.0f ) );
+    vertices[11] = Vertex( Point3( +3.5f, -1.5f, 0.0f ) );
 
-    vertices[12].set( +1.5f, -1.5f, 0.0f );
-    vertices[13].set( -3.5f, -1.5f, 0.0f );
-    vertices[14].set( +1.5f, -0.5f, 0.0f );
-    vertices[15].set( +1.5f, +3.5f, 0.0f );
+    vertices[12] = Vertex( Point3( +1.5f, -1.5f, 0.0f ) );
+    vertices[13] = Vertex( Point3( -3.5f, -1.5f, 0.0f ) );
+    vertices[14] = Vertex( Point3( +1.5f, -0.5f, 0.0f ) );
+    vertices[15] = Vertex( Point3( +1.5f, +3.5f, 0.0f ) );
 
-    vertices[16].set( +1.5f, +1.5f, 0.0f );
-    vertices[17].set( -3.5f, +1.5f, 0.0f );
-    vertices[18].set( +1.5f, +0.5f, 0.0f );
-    vertices[19].set( +1.5f, -3.5f, 0.0f );
+    vertices[16] = Vertex( Point3( +1.5f, +1.5f, 0.0f ) );
+    vertices[17] = Vertex( Point3( -3.5f, +1.5f, 0.0f ) );
+    vertices[18] = Vertex( Point3( +1.5f, +0.5f, 0.0f ) );
+    vertices[19] = Vertex( Point3( +1.5f, -3.5f, 0.0f ) );
 
-    vertices[20].set( -1.5f, +1.5f, 0.0f );
-    vertices[21].set( +3.5f, +1.5f, 0.0f );
-    vertices[22].set( -1.5f, +0.5f, 0.0f );
-    vertices[23].set( -1.5f, -3.5f, 0.0f );
+    vertices[20] = Vertex( Point3( -1.5f, +1.5f, 0.0f ) );
+    vertices[21] = Vertex( Point3( +3.5f, +1.5f, 0.0f ) );
+    vertices[22] = Vertex( Point3( -1.5f, +0.5f, 0.0f ) );
+    vertices[23] = Vertex( Point3( -1.5f, -3.5f, 0.0f ) );
 
     // sprite
-    vertices[24].set( -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f );
-    vertices[25].set( +1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f );
-    vertices[26].set( -1.0f, +1.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f );
-    vertices[27].set( +1.0f, +1.0f, 0.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f );
+    vertices[24] = Vertex( Point3( -1.0f, -1.0f, 0.0f ),
+                           TexCoord( 0.0f, 0.0f ),
+                           Vec3( 0.0f, -1.0f, 0.0f ) );
+    vertices[25] = Vertex( Point3( +1.0f, -1.0f, 0.0f ),
+                           TexCoord( 1.0f, 0.0f ),
+                           Vec3( 0.0f, -1.0f, 0.0f ) );
+    vertices[26] = Vertex( Point3( -1.0f, +1.0f, 0.0f ),
+                           TexCoord( 0.0f, 1.0f ),
+                           Vec3( 0.0f, -1.0f, 0.0f ) );
+    vertices[27] = Vertex( Point3( +1.0f, +1.0f, 0.0f ),
+                           TexCoord( 1.0f, 1.0f ),
+                           Vec3( 0.0f, -1.0f, 0.0f ) );
 
     // box
-    vertices[28].set( -1.0f, -1.0f, -1.0f );
-    vertices[29].set( -1.0f, -1.0f, +1.0f );
-    vertices[30].set( -1.0f, +1.0f, -1.0f );
-    vertices[31].set( -1.0f, +1.0f, +1.0f );
-    vertices[32].set( +1.0f, -1.0f, -1.0f );
-    vertices[33].set( +1.0f, -1.0f, +1.0f );
-    vertices[34].set( +1.0f, +1.0f, -1.0f );
-    vertices[35].set( +1.0f, +1.0f, +1.0f );
+    vertices[28] = Vertex( Point3( -1.0f, -1.0f, -1.0f ) );
+    vertices[29] = Vertex( Point3( -1.0f, -1.0f, +1.0f ) );
+    vertices[30] = Vertex( Point3( -1.0f, +1.0f, -1.0f ) );
+    vertices[31] = Vertex( Point3( -1.0f, +1.0f, +1.0f ) );
+    vertices[32] = Vertex( Point3( +1.0f, -1.0f, -1.0f ) );
+    vertices[33] = Vertex( Point3( +1.0f, -1.0f, +1.0f ) );
+    vertices[34] = Vertex( Point3( +1.0f, +1.0f, -1.0f ) );
+    vertices[35] = Vertex( Point3( +1.0f, +1.0f, +1.0f ) );
 
     int  k = 36;
     Vec3 normal;
@@ -182,30 +190,30 @@ namespace client
       // fore
       normal = ~( ( v2 - v1 ) ^ ( v0 - v1 ) );
 
-      vertices[k++].set( v0, TexCoord(), normal );
-      vertices[k++].set( v1, TexCoord(), normal );
-      vertices[k++].set( v2, TexCoord(), normal );
+      vertices[k++] = Vertex( v0, TexCoord(), normal );
+      vertices[k++] = Vertex( v1, TexCoord(), normal );
+      vertices[k++] = Vertex( v2, TexCoord(), normal );
 
       // left
       normal = ~( ( v1 - v3 ) ^ ( v0 - v3 ) );
 
-      vertices[k++].set( v0, TexCoord(), normal );
-      vertices[k++].set( v3, TexCoord(), normal );
-      vertices[k++].set( v1, TexCoord(), normal );
+      vertices[k++] = Vertex( v0, TexCoord(), normal );
+      vertices[k++] = Vertex( v3, TexCoord(), normal );
+      vertices[k++] = Vertex( v1, TexCoord(), normal );
 
       // right
       normal = ~( ( v3 - v2 ) ^ ( v0 - v2 ) );
 
-      vertices[k++].set( v0, TexCoord(), normal );
-      vertices[k++].set( v2, TexCoord(), normal );
-      vertices[k++].set( v3, TexCoord(), normal );
+      vertices[k++] = Vertex( v0, TexCoord(), normal );
+      vertices[k++] = Vertex( v2, TexCoord(), normal );
+      vertices[k++] = Vertex( v3, TexCoord(), normal );
 
       // bottom
       normal = ~( ( v3 - v1 ) ^ ( v2 - v1 ) );
 
-      vertices[k++].set( v1, TexCoord(), normal );
-      vertices[k++].set( v3, TexCoord(), normal );
-      vertices[k++].set( v2, TexCoord(), normal );
+      vertices[k++] = Vertex( v1, TexCoord(), normal );
+      vertices[k++] = Vertex( v3, TexCoord(), normal );
+      vertices[k++] = Vertex( v2, TexCoord(), normal );
     }
 
     /*
@@ -303,13 +311,13 @@ namespace client
     glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-//     glEnableVertexAttribArray( Attrib::TANGENT );
-//     glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
-//
-//     glEnableVertexAttribArray( Attrib::BINORMAL );
-//     glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-//                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+    glEnableVertexAttribArray( Attrib::TANGENT );
+    glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+
+    glEnableVertexAttribArray( Attrib::BINORMAL );
+    glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 
     glBindVertexArray( 0 );
 

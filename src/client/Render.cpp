@@ -384,7 +384,6 @@ namespace client
     ui::ui.load();
 
     frustum.init();
-    shape.load();
     terra.load();
     caelum.load( "caelum" );
 
@@ -407,7 +406,6 @@ namespace client
 
     caelum.unload();
     terra.unload();
-    shape.unload();
 
     structs.clear();
     structs.dealloc();
@@ -449,7 +447,7 @@ namespace client
       throw Exception( "Video mode not supported" );
     }
 
-    SDL_Surface* surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
+    surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
 
     if( surface == null ) {
       log.printEnd( " Failed" );
@@ -466,7 +464,7 @@ namespace client
     config.getSet( "screen.height", screenY );
     config.getSet( "screen.bpp", screenBpp );
 
-    log.printEnd( " OK, %dx%d-%d", screenX, screenY, screenBpp );
+    log.printEnd( " %dx%d-%d ... OK", screenX, screenY, screenBpp );
 
     SDL_ShowCursor( SDL_FALSE );
 
@@ -597,7 +595,7 @@ namespace client
     OZ_REGISTER_GLFUNC( glGetProgramInfoLog,       PFNGLGETPROGRAMINFOLOGPROC       );
     OZ_REGISTER_GLFUNC( glGetUniformLocation,      PFNGLGETUNIFORMLOCATIONPROC      );
     OZ_REGISTER_GLFUNC( glBindAttribLocation,      PFNGLBINDFRAGDATALOCATIONPROC    );
-//     OZ_REGISTER_GLFUNC( glBindFragDataLocation,    PFNGLBINDFRAGDATALOCATIONPROC    );
+    OZ_REGISTER_GLFUNC( glBindFragDataLocation,    PFNGLBINDFRAGDATALOCATIONPROC    );
     OZ_REGISTER_GLFUNC( glUseProgram,              PFNGLUSEPROGRAMPROC              );
 
     OZ_REGISTER_GLFUNC( glActiveTexture,           PFNGLACTIVETEXTUREPROC           );
@@ -615,11 +613,9 @@ namespace client
     glEnable( GL_TEXTURE_2D );
 
     shader.init();
+    shape.load();
     camera.init();
     ui::ui.init();
-    ui::ui.draw();
-
-    SDL_GL_SwapBuffers();
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -633,6 +629,7 @@ namespace client
     log.indent();
 
     ui::ui.free();
+    shape.unload();
     shader.free();
 
     log.unindent();

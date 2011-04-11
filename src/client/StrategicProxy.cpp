@@ -43,7 +43,7 @@ namespace client
 
   void StrategicProxy::update()
   {
-    ui::ui.strategic->show( true );
+    ui::ui.strategicArea->show( true );
 
     camera.h += camera.relH;
     camera.v += camera.relV;
@@ -60,8 +60,8 @@ namespace client
     }
 
     if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
-      if( ui::ui.strategic->tagged.length() == 1 ) {
-        Object* tagged = orbis.objects[ ui::ui.strategic->tagged.first() ];
+      if( ui::ui.strategicArea->tagged.length() == 1 ) {
+        Object* tagged = orbis.objects[ ui::ui.strategicArea->tagged.first() ];
         Bot*    me = null;
 
         if( tagged->flags & Object::BOT_BIT ) {

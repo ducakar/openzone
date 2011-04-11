@@ -35,8 +35,6 @@ namespace client
 
   int GameStage::auxMain( void* )
   {
-    System::catchSignals();
-
     try{
       gameStage.run();
     }
@@ -143,7 +141,9 @@ namespace client
 
     beginTime = SDL_GetTicks();
 
+#ifndef NDEBUG
     context.updateLoad();
+#endif
     // clean up unused models, audios and audio sources
     loader.cleanup();
     // load scheduled resources
@@ -190,11 +190,6 @@ namespace client
   {
     log.println( "Preloading GameStage {" );
     log.indent();
-
-    SDL_Delay( uint( config.get( "gameStage.loadingTime", 0.0f ) * 1000.0f ) );
-
-    render.draw( Render::DRAW_UI_BIT );
-    render.sync();
 
     camera.update();
     camera.prepare();

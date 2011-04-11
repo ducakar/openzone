@@ -46,7 +46,7 @@ namespace client
     camera.isExternal = isExternal;
     camera.setTagged( null );
 
-    ui::ui.strategic->tagged.clear();
+    ui::ui.strategicArea->tagged.clear();
   }
 
   void BotProxy::update()
