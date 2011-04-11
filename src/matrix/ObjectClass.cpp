@@ -22,7 +22,7 @@ namespace oz
 
   void ObjectClass::fillCommon( ObjectClass* clazz, const Config* config )
   {
-    clazz->description = OZ_GETTEXT( clazz->name );
+    clazz->description = gettext( clazz->name );
 
     clazz->onDestroy   = config->get( "onDestroy", "" );
     clazz->onDamage    = config->get( "onDamage", "" );

@@ -340,19 +340,19 @@ namespace client
       MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[0] );
 
       foreach( vertex, mesh.vertices.iter() ) {
-        int index = int( vertex->pos[0] + 0.5f );
+        int index = int( vertex->pos.x + 0.5f );
 
-        vertex->pos[0] = float( frame.verts[index].p[1] ) * -frame.scale[1] - frame.translate[1];
-        vertex->pos[1] = float( frame.verts[index].p[0] ) *  frame.scale[0] + frame.translate[0];
-        vertex->pos[2] = float( frame.verts[index].p[2] ) *  frame.scale[2] + frame.translate[2];
+        vertex->pos.x = float( frame.verts[index].p[1] ) * -frame.scale[1] - frame.translate[1];
+        vertex->pos.y = float( frame.verts[index].p[0] ) *  frame.scale[0] + frame.translate[0];
+        vertex->pos.z = float( frame.verts[index].p[2] ) *  frame.scale[2] + frame.translate[2];
 
-        vertex->pos[0] = vertex->pos[0] * scale + translation.x;
-        vertex->pos[1] = vertex->pos[1] * scale + translation.y;
-        vertex->pos[2] = vertex->pos[2] * scale + translation.z;
+        vertex->pos.x = vertex->pos.x * scale + translation.x;
+        vertex->pos.y = vertex->pos.y * scale + translation.y;
+        vertex->pos.z = vertex->pos.z * scale + translation.z;
 
-        vertex->normal[0] = NORMALS[ frame.verts[index].normal ].x;
-        vertex->normal[1] = NORMALS[ frame.verts[index].normal ].y;
-        vertex->normal[2] = NORMALS[ frame.verts[index].normal ].z;
+        vertex->normal.x = NORMALS[ frame.verts[index].normal ].x;
+        vertex->normal.y = NORMALS[ frame.verts[index].normal ].y;
+        vertex->normal.z = NORMALS[ frame.verts[index].normal ].z;
       }
     }
     else {
@@ -366,11 +366,15 @@ namespace client
         MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[i * header.frameSize] );
 
         for( int j = 0; j < header.nFramePositions; ++j ) {
-          Point3 p = Point3( float( frame.verts[j].p[1] ) * -frame.scale[1] - frame.translate[1],
-                             float( frame.verts[j].p[0] ) *  frame.scale[0] + frame.translate[0],
-                             float( frame.verts[j].p[2] ) *  frame.scale[2] + frame.translate[2] );
+          Point3 p;
 
-          p = Point3::ORIGIN + ( p - Point3::ORIGIN ) * scale + translation;
+          p.x = float( frame.verts[j].p[1] ) * -frame.scale[1] - frame.translate[1];
+          p.y = float( frame.verts[j].p[0] ) *  frame.scale[0] + frame.translate[0];
+          p.z = float( frame.verts[j].p[2] ) *  frame.scale[2] + frame.translate[2];
+
+          p.x = p.x * scale + translation.x;
+          p.y = p.y * scale + translation.y;
+          p.z = p.z * scale + translation.z;
 
           if( ANIM_LIST[Anim::JUMP].firstFrame <= i && i <= ANIM_LIST[Anim::JUMP].lastFrame ) {
             p += jumpTransl;
@@ -391,9 +395,9 @@ namespace client
       // if we have an animated model, we use vertex position to save texture coordinate for vertex
       // texture to fetch the positions in both frames and interpolate them in vertex shader
       foreach( vertex, mesh.vertices.iter() ) {
-        vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( header.nFramePositions );
-        vertex->pos[1] = 0.0f;
-        vertex->pos[2] = 0.0f;
+        vertex->pos.x = ( vertex->pos.x + 0.5f ) / float( header.nFramePositions );
+        vertex->pos.y = 0.0f;
+        vertex->pos.z = 0.0f;
       }
     }
 
@@ -553,21 +557,14 @@ namespace client
       const Vec4* frameNormals   = &normals[frame * nFramePositions];
 
       for( int i = 0; i < nFrameVertices; ++i ) {
-        int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
+        int j = int( vertices[i].pos.x * float( nFramePositions - 1 ) + 0.5f );
 
         Vec4 pos    = framePositions[j];
         Vec4 normal = frameNormals[j];
 
-        animBuffer[i].pos[0] = pos.x;
-        animBuffer[i].pos[1] = pos.y;
-        animBuffer[i].pos[2] = pos.z;
-
-        animBuffer[i].normal[0] = normal.x;
-        animBuffer[i].normal[1] = normal.y;
-        animBuffer[i].normal[2] = normal.z;
-
-        animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
-        animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
+        animBuffer[i].pos      = Point3( pos );
+        animBuffer[i].texCoord = vertices[i].texCoord;
+        animBuffer[i].normal   = normal;
       }
 
       mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
@@ -604,16 +601,9 @@ namespace client
         Vec4 pos    = currFramePositions[j] + t * ( nextFramePositions[j] - currFramePositions[j] );
         Vec4 normal = currFrameNormals[j]   + t * ( nextFrameNormals[j]   - currFrameNormals[j]   );
 
-        animBuffer[i].pos[0] = pos.x;
-        animBuffer[i].pos[1] = pos.y;
-        animBuffer[i].pos[2] = pos.z;
-
-        animBuffer[i].normal[0] = normal.x;
-        animBuffer[i].normal[1] = normal.y;
-        animBuffer[i].normal[2] = normal.z;
-
-        animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
-        animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
+        animBuffer[i].pos      = Point3( pos );
+        animBuffer[i].texCoord = vertices[i].texCoord;
+        animBuffer[i].normal   = normal;
       }
 
       mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );

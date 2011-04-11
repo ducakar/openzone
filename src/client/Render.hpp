@@ -112,6 +112,8 @@ namespace client
 
     public:
 
+      SDL_Surface* surface;
+
       void draw( int flags );
       void sync() const;
 

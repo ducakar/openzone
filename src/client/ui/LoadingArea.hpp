@@ -24,13 +24,13 @@ namespace ui
   {
     friend class UI;
 
-    private:
-
     protected:
 
       virtual void onDraw();
 
     public:
+
+      String statusText;
 
       LoadingArea();
       virtual ~LoadingArea();

@@ -34,7 +34,7 @@ namespace oz
       /**
        * Copy constructor.
        */
-      Pair( const Pair& p ) = default;
+      Pair( const Pair& ) = default;
 
       /**
        * Copy constructor for constructing from pairs of different types.

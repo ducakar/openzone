@@ -141,15 +141,6 @@ if( WIN32 )
   find_library( INTL_LIBRARY intl )
 endif()
 
-if( NOT ALUT_INCLUDE_DIR )
-  set( ALUT_INCLUDE_DIR "" CACHE PATH "" FORCE )
-endif()
-
-find_library( ALUT_LIBRARY alut )
-
-mark_as_advanced( ALUT_INCLUDE_DIR )
-mark_as_advanced( ALUT_LIBRARY )
-
 if( NOT VORBISFILE_INCLUDE_DIR )
   set( VORBISFILE_INCLUDE_DIR "" CACHE PATH "" FORCE )
 endif()
@@ -162,11 +153,11 @@ mark_as_advanced( VORBISFILE_LIBRARY )
 # detect clang
 string( REGEX MATCH "clang\\+\\+" compiler_base "${CMAKE_CXX_COMPILER}" )
 if( "${compiler_base}" STREQUAL "clang++" )
-  set( CLANG ON )
+  set( OZ_CLANG ON )
 endif()
 
 # detect platform
-if( NOT UNIX )
+if( WIN32 )
   set( OZ_MINGW ON )
 endif()
 
@@ -189,7 +180,7 @@ set( libs "${libs};${OPENAL_LIBRARY}" )
 set( libs "${libs};${ALUT_LIBRARY}" )
 set( libs "${libs};${VORBISFILE_LIBRARY}" )
 
-if( WIN32 )
+if( OZ_MINGW )
   set( libs "${libs};${INTL_LIBRARY}" )
 endif()
 
@@ -208,22 +199,20 @@ if( OZ_MINGW )
 endif()
 
 # compiler and linker flags
-set( flags "-pipe -std=c++0x -ffast-math" )
+set( flags "-pipe -std=c++0x -pedantic-errors -ffast-math" )
 set( warnings "-Wall -Wextra -Wold-style-cast -Wcast-align -Wsign-promo -Wconversion -Wlogical-op" )
 set( warnings "${warnings} -Winvalid-pch -Wdisabled-optimization -Wmissing-declarations" )
 set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wattributes" )
-set( arch_flags "-msse3" )
+set( arch_flags "-msse3 -mfpmath=sse" )
 
-if( NOT OZ_MINGW )
-  set( warnings "${warnings} -Wredundant-decls" )
-  set( flags "${flags} -fstrict-enums" )
-endif()
-
-if( CLANG )
-  set( warnings "${warnings} -Wno-invalid-offsetof" )
+if( OZ_CLANG )
+  set( flags "${flags} -stdlib=libc++" )
 else()
-  set( warnings "${warnings}  " )
-  set( arch_flags "${arch_flags} -mfpmath=sse" )
+  if( OZ_MINGW )
+  else()
+    set( flags "${flags} -fstrict-enums" )
+    set( warnings "${warnings} -Wredundant-decls" )
+  endif()
 endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )

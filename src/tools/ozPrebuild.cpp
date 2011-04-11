@@ -367,7 +367,8 @@ int main( int argc, char** argv )
     client::ui::Mouse::prebuild();
 
     prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
-    prebuildTextures( "data/textures/oz", "bsp/tex", true, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
+    prebuildTextures( "data/textures/oz", "bsp/tex", true,
+                      client::Context::DEFAULT_MAG_FILTER, client::Context::DEFAULT_MIN_FILTER );
 
     client::Caelum::prebuild( "caelum" );
     prebuildTerras();

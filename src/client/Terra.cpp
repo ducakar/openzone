@@ -63,7 +63,8 @@ namespace client
 
     uint waterTexId  = context.loadRawTexture( waterTexture, &nWaterMipmaps );
     uint detailTexId = context.loadRawTexture( detailTexture, &nDetailMipmaps );
-    uint mapTexId    = context.loadRawTexture( mapTexture, &nMapMipmaps );
+    uint mapTexId    = context.loadRawTexture( mapTexture, &nMapMipmaps, true,
+                                               GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
 
     OutputStream os = buffer.outputStream();
 
@@ -130,10 +131,10 @@ namespace client
               waterTiles.set( i * TILES + j );
             }
 
-            vertex.set( pos,
-                        TexCoord( float( x ) / float( oz::Terra::VERTS ),
-                                  float( y ) / float( oz::Terra::VERTS ) ),
-                        ~normal );
+            vertex.pos = pos;
+            vertex.texCoord.u = float( x ) / float( oz::Terra::VERTS );
+            vertex.texCoord.v = float( y ) / float( oz::Terra::VERTS );
+            vertex.normal = normal;
             vertex.write( &os );
           }
         }
@@ -211,13 +212,13 @@ namespace client
         glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                               reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
-//         glEnableVertexAttribArray( Attrib::TANGENT );
-//         glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-//                               reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
-//
-//         glEnableVertexAttribArray( Attrib::BINORMAL );
-//         glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-//                               reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+        glEnableVertexAttribArray( Attrib::TANGENT );
+        glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+
+        glEnableVertexAttribArray( Attrib::BINORMAL );
+        glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
 
         glBindVertexArray( 0 );
       }

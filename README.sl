@@ -147,7 +147,6 @@ Odvisnosti
 - SDL_net (neobvezno)
 - OpenGL (glave MesaGL)
 - OpenAL
-- FreeALUT
 - libvorbis
 - Lua
 

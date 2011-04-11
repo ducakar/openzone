@@ -27,7 +27,7 @@ namespace ui
 {
 
   BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
-      Button( OZ_GETTEXT( className ), callback, width, height ), className( className )
+      Button( gettext( className ), callback, width, height ), className( className )
   {}
 
   void BuildMenu::createObject( Button* button_ )
@@ -48,7 +48,7 @@ namespace ui
     }
   }
 
-  BuildMenu::BuildMenu() : Frame( -8, -8, 240, 250, OZ_GETTEXT( "Create" ) )
+  BuildMenu::BuildMenu() : Frame( -8, -8, 240, 250, gettext( "Create" ) )
   {
     setFont( Font::SANS );
 

@@ -76,12 +76,3 @@ cd $prefix/build
 # cmake-gui .
 # make -j2 DESTDIR=$PREFIX install
 # cd ..
-
-echo
-echo '*** Building freealut ***'
-echo
-
-tar zxf freealut-1.1.0.tar.gz
-cd freealut-1.1.0
-./configure --host=i486-mingw32 --prefix=$PREFIX && make -j2 prefix=$prefix exec_prefix=$prefix LIBS="-lOpenAL32" DESTDIR=$prefix install
-cd ..

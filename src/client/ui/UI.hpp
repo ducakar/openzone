@@ -48,9 +48,15 @@ namespace ui
     public:
 
       Area*          root;
-      HudArea*       hud;
-      StrategicArea* strategic;
       LoadingArea*   loadingScreen;
+      HudArea*       hudArea;
+      StrategicArea* strategicArea;
+      InventoryMenu* inventoryMenu;
+      MusicPlayer*   musicPlayer;
+      BuildMenu*     buildMenu;
+#ifndef NDEBUG
+      DebugFrame*    debugFrame;
+#endif
 
       void showLoadingScreen( bool doShow );
 

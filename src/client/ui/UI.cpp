@@ -95,23 +95,47 @@ namespace ui
 
     mouse.load();
 
-    strategic = new StrategicArea();
-    hud = new HudArea();
-
-    root->add( strategic );
-    root->add( hud );
+    strategicArea = new StrategicArea();
+    hudArea       = new HudArea();
+    inventoryMenu = new InventoryMenu();
+    musicPlayer   = new MusicPlayer();
+    buildMenu     = new BuildMenu();
 #ifndef NDEBUG
-    root->add( new DebugFrame() );
+    debugFrame    = new DebugFrame();
 #endif
-    root->add( new BuildMenu() );
-    root->add( new InventoryMenu() );
-    root->add( new MusicPlayer() );
+
+    root->add( strategicArea );
+    root->add( hudArea );
+    root->add( inventoryMenu );
+    root->add( musicPlayer );
+    root->add( buildMenu );
+#ifndef NDEBUG
+    root->add( debugFrame );
+#endif
 
     root->focus( loadingScreen );
   }
 
   void UI::unload()
   {
+#ifndef NDEBUG
+    root->remove( debugFrame );
+#endif
+    root->remove( buildMenu );
+    root->remove( musicPlayer );
+    root->remove( inventoryMenu );
+    root->remove( hudArea  );
+    root->remove( strategicArea );
+
+#ifndef NDEBUG
+    debugFrame    = null;
+#endif
+    buildMenu     = null;
+    musicPlayer   = null;
+    inventoryMenu = null;
+    hudArea       = null;
+    strategicArea = null;
+
     mouse.unload();
   }
 
@@ -128,8 +152,14 @@ namespace ui
     root = new Area( camera.width, camera.height );
     loadingScreen = new LoadingArea();
 
-    hud = null;
-    strategic = null;
+    strategicArea = null;
+    hudArea       = null;
+    inventoryMenu = null;
+    musicPlayer   = null;
+    buildMenu     = null;
+#ifndef NDEBUG
+    debugFrame    = null;
+#endif
 
     root->add( loadingScreen );
   }

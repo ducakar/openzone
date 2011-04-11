@@ -45,26 +45,31 @@ namespace client
     explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ )
     {}
 
+    OZ_ALWAYS_INLINE
     bool operator == ( const TexCoord& tc ) const
     {
       return u == tc.u && v == tc.v;
     }
 
+    OZ_ALWAYS_INLINE
     bool operator != ( const TexCoord& tc ) const
     {
       return u != tc.u || v != tc.v;
     }
 
+    OZ_ALWAYS_INLINE
     operator const float* () const
     {
       return &u;
     }
 
+    OZ_ALWAYS_INLINE
     operator float* ()
     {
       return &u;
     }
 
+    OZ_ALWAYS_INLINE
     const float& operator [] ( int i ) const
     {
       hard_assert( 0 <= i && i < 2 );
@@ -72,6 +77,7 @@ namespace client
       return ( &u )[i];
     }
 
+    OZ_ALWAYS_INLINE
     float& operator [] ( int i )
     {
       hard_assert( 0 <= i && i < 2 );
@@ -129,7 +135,7 @@ namespace client
   extern PFNGLGETPROGRAMINFOLOGPROC       glGetProgramInfoLog;
   extern PFNGLGETUNIFORMLOCATIONPROC      glGetUniformLocation;
   extern PFNGLBINDATTRIBLOCATIONPROC      glBindAttribLocation;
-//   extern PFNGLBINDFRAGDATALOCATIONPROC    glBindFragDataLocation;
+  extern PFNGLBINDFRAGDATALOCATIONPROC    glBindFragDataLocation;
   extern PFNGLUSEPROGRAMPROC              glUseProgram;
 
   extern PFNGLACTIVETEXTUREPROC           wglActiveTexture;

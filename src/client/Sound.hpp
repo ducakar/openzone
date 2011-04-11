@@ -16,7 +16,8 @@
 #include "client/Audio.hpp"
 #include "client/Context.hpp"
 
-#include <AL/alut.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 #include <vorbis/vorbisfile.h>
 
 namespace oz
@@ -33,6 +34,9 @@ namespace client
       static const float DMAX_SQ;
 
       static const int MUSIC_BUFFER_SIZE = 64 * 1024;
+
+      ALCdevice                 *soundDevice;
+      ALCcontext                *soundContext;
 
       /*
        * SFX
@@ -59,17 +63,20 @@ namespace client
 
     public:
 
-      void setVolume( float volume );
-      void setMusicVolume( float volume );
+      void setVolume( float volume ) const;
+      void setMusicVolume( float volume ) const;
 
       void playMusic( int track );
       void stopMusic();
       bool isMusicPlaying() const;
 
+      void resume() const;
+      void suspend() const;
+
       void play();
       void update();
 
-      bool init( int* argc, char** argv );
+      void init();
       void free();
 
   };

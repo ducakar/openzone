@@ -5,7 +5,7 @@ classes='share/openzone/class/*.rc'
 output='gettext.pot'
 
 rm -rf $output
-xgettext --omit-header -c++ -kOZ_GETTEXT -s -d openzone -o $output $sources
+xgettext --omit-header -c++ -s -d openzone -o $output $sources
 
 for class in $classes; do
   class=`basename $class .rc`

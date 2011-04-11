@@ -33,7 +33,7 @@ int main( int argc, char** argv )
       "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    exitCode = client::client.main( &argc, argv );
+    exitCode = client::client.main( argc, argv );
   }
   catch( const Exception& e ) {
     log.resetIndent();

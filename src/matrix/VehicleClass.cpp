@@ -135,7 +135,7 @@ namespace oz
       shotIntervalBuffer[6] = char( '0' + ( i / 10 ) );
       shotIntervalBuffer[7] = char( '0' + ( i % 10 ) );
 
-      clazz->weaponNames[i]  = OZ_GETTEXT( config->get( weaponNameBuffer, "" ) );
+      clazz->weaponNames[i]  = gettext( config->get( weaponNameBuffer, "" ) );
       clazz->onShot[i]       = config->get( onShotBuffer, "" );
       clazz->nShots[i]       = config->get( nShotsBuffer, -1 );
       clazz->shotInterval[i] = config->get( shotIntervalBuffer, 0.5f );

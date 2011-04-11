@@ -1,5 +1,5 @@
 /*
- *  Censor.hpp
+ *  Arch.hpp
  *
  *  [description]
  *
@@ -13,10 +13,10 @@
 
 namespace oz
 {
-namespace censor
+namespace arch
 {
 
-  class Censor
+  class Arch
   {
     private:
 
@@ -34,7 +34,7 @@ namespace censor
 
   };
 
-  extern Censor censor;
+  extern Arch arch;
 
 }
 }

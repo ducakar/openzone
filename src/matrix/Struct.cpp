@@ -231,7 +231,7 @@ namespace oz
           momentum = str->toAbsoluteCS( momentum ) * ( 1.0f + 2.0f * EPSILON );
 
           if( momentum.z > 0.0f ) {
-            momentum.z -= Physics::G_MOMENTUM;
+            momentum.z -= Physics::G_ACCEL * Timer::TICK_TIME;
           }
 
           foreach( obj, overlappingObjs.iter() ) {
@@ -296,7 +296,7 @@ namespace oz
           momentum = str->toAbsoluteCS( momentum ) * ( 1.0f + 2.0f * EPSILON );
 
           if( momentum.z > 0.0f ) {
-            momentum.z -= Physics::G_MOMENTUM;
+            momentum.z -= Physics::G_ACCEL * Timer::TICK_TIME;
           }
 
           foreach( obj, overlappingObjs.iter() ) {

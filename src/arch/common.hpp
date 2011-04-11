@@ -1,5 +1,5 @@
 /*
- *  common.cpp
+ *  common.hpp
  *
  *  [description]
  *
@@ -7,16 +7,18 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
+#pragma once
+
 #include "stable.hpp"
 
-#include "censor/common.hpp"
+#include "matrix/Collider.hpp"
 
 namespace oz
 {
-namespace censor
+namespace arch
 {
 
-  Collider collider;
+  extern Collider collider;
 
 }
 }

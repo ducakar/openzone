@@ -23,25 +23,21 @@ namespace client
 
   struct Vertex
   {
-    float pos[3];
-    float texCoord[2];
-    float normal[3];
-//     float tangent[3];
-//     float binormal[3];
+    Point3   pos;
+    TexCoord texCoord;
+    Vec3     normal;
+    Vec3     tangent;
+    Vec3     binormal;
+
+    Vertex() = default;
+
+    explicit Vertex( const Point3& pos,
+                     const TexCoord& texCoord = TexCoord( 0.0f, 0.0f ),
+                     const Vec3& normal = Vec3::ZERO,
+                     const Vec3& tangent = Vec3::ZERO,
+                     const Vec3& binormal = Vec3::ZERO );
 
     bool operator == ( const Vertex& v ) const;
-
-    void set( float x = 0.0f, float y = 0.0f, float z = 0.0f,
-              float u = 0.0f, float v = 0.0f,
-              float nx = 0.0f, float ny = 0.0f, float nz = 0.0f,
-              float tx = 0.0f, float ty = 0.0f, float tz = 0.0f,
-              float bx = 0.0f, float by = 0.0f, float bz = 0.0f );
-
-    void set( const Point3& p = Point3::ORIGIN,
-              const TexCoord& c = TexCoord( 0.0f, 0.0f ),
-              const Vec3& n = Vec3::ZERO,
-              const Vec3& t = Vec3::ZERO,
-              const Vec3& b = Vec3::ZERO );
 
     void read( InputStream* stream );
     void write( OutputStream* stream ) const;

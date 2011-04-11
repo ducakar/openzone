@@ -86,6 +86,13 @@ namespace client
       }
     }
 
+    Vector< Pair<String, int> > classNameCounts;
+
+    foreach( i, classCounts.citer() ) {
+      classNameCounts.add( pair( i.key()->name, i.value() ) );
+    }
+    classCounts.clear();
+
     log.printEnd( " OK" );
 #endif
 
@@ -167,8 +174,8 @@ namespace client
       log.println( "Object counts {" );
       log.indent();
 
-      foreach( i, classCounts.citer() ) {
-        log.println( "%6d  %s", i.value(), i.key()->name.cstr() );
+      foreach( i, classNameCounts.citer() ) {
+        log.println( "%6d  %s", i->y, i->x.cstr() );
       }
 
       log.println();
@@ -178,7 +185,7 @@ namespace client
       log.println( "%6d  other dynamic objects", nDynamics );
       log.println( "%6d  static objects", nObjects );
 
-      classCounts.clear();
+      classNameCounts.clear();
 
       log.unindent();
       log.println( "}" );
@@ -258,7 +265,7 @@ namespace client
     log.unindent();
   }
 
-  int Client::main( int* argc, char** argv )
+  int Client::main( int argc, char** argv )
   {
     initFlags = 0;
     String rcDir;
@@ -266,13 +273,13 @@ namespace client
     bool  isBenchmark = false;
     float benchmarkTime = 0.0f;
 
-    for( int i = 1; i < *argc; ++i ) {
+    for( int i = 1; i < argc; ++i ) {
       if( String::equals( argv[i], "--help" ) ) {
         printUsage();
         return -1;
       }
       else if( String::equals( argv[i], "--time" ) || String::equals( argv[i], "-t" ) ) {
-        if( i + 1 < *argc ) {
+        if( i + 1 < argc ) {
           errno = 0;
           char* end;
 
@@ -410,7 +417,7 @@ namespace client
     bind_textdomain_codeset( OZ_APPLICATION_NAME, "UTF-8" );
     textdomain( OZ_APPLICATION_NAME );
 
-    log.printEnd( " OK, LC_CTYPE: %s LC_MESSAGES: %s",
+    log.printEnd( " LC_CTYPE: %s LC_MESSAGES: %s ... OK",
                   setlocale( LC_CTYPE, null ),
                   setlocale( LC_MESSAGES, null ) );
 
@@ -453,8 +460,12 @@ namespace client
     initFlags |= INIT_RENDER_INIT;
     render.init();
 
+    ui::ui.loadingScreen->statusText = gettext( "Initialising ..." );
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
+
     initFlags |= INIT_AUDIO;
-    sound.init( argc, argv );
+    sound.init();
 
     initFlags |= INIT_CONTEXT_INIT;
     context.init();
@@ -464,14 +475,24 @@ namespace client
     initFlags |= INIT_GAME_INIT;
     stage->init();
 
+    ui::ui.loadingScreen->statusText = gettext( "Loading ..." );
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
+
     initFlags |= INIT_GAME_LOAD;
     stage->load();
 
     initFlags |= INIT_CONTEXT_LOAD;
     context.load();
 
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
+
     initFlags |= INIT_RENDER_LOAD;
     render.load();
+
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
 
     stage->begin();
 
@@ -522,7 +543,21 @@ namespace client
             break;
           }
           case SDL_KEYDOWN: {
-            ui::keyboard.keys[event.key.keysym.sym] |= SDL_PRESSED;
+            const SDL_keysym& keysym = event.key.keysym;
+
+            ui::keyboard.keys[keysym.sym] |= SDL_PRESSED;
+
+            if( keysym.sym == SDLK_F12 ) {
+              if( keysym.mod & KMOD_CTRL ) {
+                isAlive = false;
+              }
+              else if( keysym.mod & KMOD_SHIFT ) {
+                SDL_WM_ToggleFullScreen( render.surface );
+              }
+              else {
+                SDL_WM_IconifyWindow();
+              }
+            }
             break;
           }
           case SDL_MOUSEBUTTONUP: {
@@ -542,7 +577,16 @@ namespace client
             break;
           }
           case SDL_ACTIVEEVENT: {
-            isActive |= ( event.active.gain && event.active.state == SDL_APPACTIVE );
+            if( event.active.state & SDL_APPACTIVE ) {
+              if( event.active.gain ) {
+                sound.resume();
+                isActive = true;
+              }
+              else {
+                sound.suspend();
+                isActive = false;
+              }
+            }
             break;
           }
           case SDL_QUIT: {
@@ -550,11 +594,6 @@ namespace client
             break;
           }
         }
-      }
-
-      if( ui::keyboard.keys[SDLK_F12] ) {
-        SDL_WM_IconifyWindow();
-        isActive = false;
       }
 
       // waste time when iconified
@@ -608,6 +647,12 @@ namespace client
 
     log.unindent();
     log.println( "}" );
+
+    ui::ui.loadingScreen->statusText = gettext( "Shutting down ..." );
+    ui::ui.loadingScreen->show( true );
+    ui::ui.root->focus( ui::ui.loadingScreen );
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
 
     allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
 

@@ -14,7 +14,7 @@
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
 
-#include <AL/alut.h>
+#include <AL/al.h>
 
 namespace oz
 {
@@ -61,7 +61,7 @@ namespace client
     alSourcef( srcId, AL_GAIN, volume );
     alSourcePlay( srcId );
 
-    context.sources.add( new Context::Source( srcId ) );
+    context.addSource( srcId, sample );
 
     hard_assert( alGetError() == AL_NO_ERROR );
   }
@@ -71,9 +71,9 @@ namespace client
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
 
-    int id = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
+    uint key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
 
-    Context::ContSource* contSource = context.objSources.find( id );
+    Context::ContSource* contSource = context.objSources.find( key );
 
     if( contSource == null ) {
       uint srcId;
@@ -93,11 +93,11 @@ namespace client
       alSourcef( srcId, AL_GAIN, volume );
       alSourcePlay( srcId );
 
-      context.objSources.add( id, Context::ContSource( srcId ) );
+      context.addObjSource( srcId, sample, key );
     }
     else {
-      alSourcefv( contSource->source, AL_POSITION, parent->p );
-      alSourcef( contSource->source, AL_GAIN, volume );
+      alSourcefv( contSource->id, AL_POSITION, parent->p );
+      alSourcef( contSource->id, AL_GAIN, volume );
 
       contSource->isUpdated = true;
     }
@@ -109,9 +109,9 @@ namespace client
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
 
-    int id = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
+    uint key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
 
-    Context::ContSource* contSource = context.objSources.find( id );
+    Context::ContSource* contSource = context.objSources.find( key );
 
     if( contSource == null ) {
       uint srcId;
@@ -131,12 +131,12 @@ namespace client
       alSourcef( srcId, AL_PITCH, pitch );
       alSourcePlay( srcId );
 
-      context.objSources.add( id, Context::ContSource( srcId ) );
+      context.addObjSource( srcId, sample, key );
     }
     else {
-      alSourcefv( contSource->source, AL_POSITION, obj->p );
-      alSourcef( contSource->source, AL_GAIN, volume );
-      alSourcef( contSource->source, AL_PITCH, pitch );
+      alSourcefv( contSource->id, AL_POSITION, obj->p );
+      alSourcef( contSource->id, AL_GAIN, volume );
+      alSourcef( contSource->id, AL_PITCH, pitch );
 
       contSource->isUpdated = true;
     }

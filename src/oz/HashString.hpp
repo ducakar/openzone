@@ -24,19 +24,13 @@ namespace oz
 
       struct Elem
       {
-        String key;
-        Type   value;
-        Elem*  next[1];
+        const String key;
+        Type         value;
+        Elem*        next[1];
 
         OZ_ALWAYS_INLINE
         explicit Elem( const char* key_, const Type& value_, Elem* next_ ) :
             key( key_ ), value( value_ )
-        {
-          next[0] = next_;
-        }
-
-        OZ_ALWAYS_INLINE
-        explicit Elem( const char* key_, Elem* next_ ) : key( key_ )
         {
           next[0] = next_;
         }

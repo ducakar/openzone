@@ -467,11 +467,11 @@ namespace oz
           Vec3 momDiff      = ( desiredMom - obj->momentum ) * GRAB_MOM_RATIO;
 
           float momDiffSqL  = momDiff.sqL();
-          momDiff.z         += Physics::G_MOMENTUM;
+          momDiff.z         += Physics::G_ACCEL * Timer::TICK_TIME;
           if( momDiffSqL > GRAB_MOM_MAX_SQ ) {
             momDiff *= GRAB_MOM_MAX / Math::sqrt( momDiffSqL );
           }
-          momDiff.z         -= Physics::G_MOMENTUM;
+          momDiff.z         -= Physics::G_ACCEL * Timer::TICK_TIME;
 
           obj->momentum += momDiff;
           obj->flags    &= ~DISABLED_BIT;

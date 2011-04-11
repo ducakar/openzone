@@ -13,8 +13,6 @@
 
 #include "client/common.hpp"
 
-// FIXME remove GCC 4.5 compatibility stuff when MinGW migrates to GCC 4.6
-
 namespace oz
 {
 namespace client
@@ -65,8 +63,7 @@ namespace client
 
     private:
 
-      Vector<Mat44> stack;
-//       SVector<Mat44> stack;
+      Vector<Mat44, 8> stack;
 
     public:
 

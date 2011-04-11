@@ -59,16 +59,9 @@ namespace client
     part.alpha    = 1.0f;
     part.specular = 0.0f;
 
-    vert.pos[0] = 0.0f;
-    vert.pos[1] = 0.0f;
-    vert.pos[2] = 0.0f;
-
-    vert.texCoord[0] = 0.0f;
-    vert.texCoord[1] = 0.0f;
-
-    vert.normal[0] = 0.0f;
-    vert.normal[1] = 0.0f;
-    vert.normal[2] = 0.0f;
+    vert.pos      = Point3::ORIGIN;
+    vert.texCoord = TexCoord( 0.0f, 0.0f );
+    vert.normal   = Vec3::ZERO;
   }
 
   void Compiler::endMesh()
@@ -213,8 +206,7 @@ namespace client
   {
     hard_assert( flags & MESH_BIT );
 
-    vert.texCoord[0] = u;
-    vert.texCoord[1] = v;
+    vert.texCoord = TexCoord( u, v );
   }
 
   void Compiler::texCoord( const float* v )
@@ -226,9 +218,7 @@ namespace client
   {
     hard_assert( flags & MESH_BIT );
 
-    vert.normal[0] = nx;
-    vert.normal[1] = ny;
-    vert.normal[2] = nz;
+    vert.normal = Vec3( nx, ny, nz );
   }
 
   void Compiler::normal( const float* v )
@@ -240,9 +230,7 @@ namespace client
   {
     hard_assert( flags & MESH_BIT );
 
-    vert.pos[0] = x;
-    vert.pos[1] = y;
-    vert.pos[2] = z;
+    vert.pos = Point3( x, y, z );
 
     if( !( flags & SURFACE_BIT ) ) {
       vertices.add( vert );

@@ -46,4 +46,11 @@ namespace oz
     static const int OBJECT_BIT  = 0x00000040;
   };
 
+  inline const char* gettext( const char* text )
+  {
+    hard_assert( text != null );
+
+    return text[0] == '\0' ? "" : ::gettext( text );
+  }
+
 }

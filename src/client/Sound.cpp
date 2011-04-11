@@ -70,12 +70,12 @@ namespace client
     return true;
   }
 
-  void Sound::setVolume( float volume )
+  void Sound::setVolume( float volume ) const
   {
     alListenerf( AL_GAIN, volume );
   }
 
-  void Sound::setMusicVolume( float volume )
+  void Sound::setMusicVolume( float volume ) const
   {
     alSourcef( musicSource, AL_GAIN, volume );
   }
@@ -97,6 +97,18 @@ namespace client
   bool Sound::isMusicPlaying() const
   {
     return currentTrack != -1;
+  }
+
+  void Sound::resume() const
+  {
+    alcProcessContext( soundContext );
+    alSourcePlay( musicSource );
+  }
+
+  void Sound::suspend() const
+  {
+    alSourceStop( musicSource );
+    alcSuspendContext( soundContext );
   }
 
   void Sound::play()
@@ -196,6 +208,8 @@ namespace client
       }
     }
     else if( currentTrack != -1 ) {
+      bool hasLoaded = false;
+
       int nProcessed;
       alGetSourcei( musicSource, AL_BUFFERS_PROCESSED, &nProcessed );
 
@@ -205,6 +219,7 @@ namespace client
 
         if( loadMusicBuffer( buffer ) ) {
           alSourceQueueBuffers( musicSource, 1, &buffer );
+          hasLoaded = true;
         }
       }
 
@@ -212,24 +227,53 @@ namespace client
       alGetSourcei( musicSource, AL_SOURCE_STATE, &value );
 
       if( value == AL_STOPPED ) {
-        currentTrack = -1;
+        if( hasLoaded ) {
+          alSourcePlay( musicSource );
+        }
+        else {
+          currentTrack = -1;
 
-        ov_clear( &oggStream );
+          ov_clear( &oggStream );
+        }
       }
     }
   }
 
-  bool Sound::init( int* argc, char** argv )
+  void Sound::init()
   {
     log.println( "Initialising Sound {" );
     log.indent();
 
-    alutInit( argc, argv );
-    if( alutGetError() != ALUT_ERROR_NO_ERROR ) {
-      log.println( "Failed to initialise ALUT" );
+    const char* deviceName = config.getSet( "sound.device", "" );
+
+    soundDevice = alcOpenDevice( deviceName );
+    if( soundDevice == null ) {
+      log.println( "Failed to open OpenAL device" );
       log.unindent();
       log.println( "}" );
-      return false;
+      throw Exception( "Failed to open OpenAL device" );
+    }
+
+    int attribs[] = {
+      ALC_FREQUENCY, config.getSet( "sound.frequency", 44100 ),
+      ALC_MONO_SOURCES, 256,
+      ALC_STEREO_SOURCES, 1,
+      0
+    };
+
+    soundContext = alcCreateContext( soundDevice, attribs );
+    if( soundContext == null ) {
+      log.println( "Failed to create OpenAL context" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Failed to create OpenAL context" );
+    }
+
+    if( alcMakeContextCurrent( soundContext ) != ALC_TRUE ) {
+      log.println( "Failed to select OpenAL context" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Failed to select OpenAL context" );
     }
 
     hard_assert( alGetError() == AL_NO_ERROR );
@@ -238,6 +282,7 @@ namespace client
     String sExtensions = alGetString( AL_EXTENSIONS );
     sExtensions.trim().split( ' ', &extensions );
 
+    log.println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
     log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
     log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
     log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );
@@ -248,9 +293,6 @@ namespace client
     }
     log.unindent();
     log.println( "}" );
-
-    log.println( "ALUT version: %d.%d", alutGetMajorVersion(), alutGetMinorVersion() );
-    log.println( "ALUT supported formats: %s", alutGetMIMETypes( ALUT_LOADER_BUFFER ) );
 
     selectedTrack = -1;
     currentTrack  = -1;
@@ -267,24 +309,29 @@ namespace client
     log.println( "}" );
 
     hard_assert( alGetError() == AL_NO_ERROR );
-
-    return true;
   }
 
   void Sound::free()
   {
     log.print( "Shutting down Sound ..." );
 
-    stopMusic();
+    if( soundContext != null ) {
+      stopMusic();
 
-    playedStructs.dealloc();
+      playedStructs.dealloc();
 
-    alDeleteSources( 1, &musicSource );
-    alDeleteBuffers( 2, musicBuffers );
+      alDeleteSources( 1, &musicSource );
+      alDeleteBuffers( 2, musicBuffers );
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+      hard_assert( alGetError() == AL_NO_ERROR );
 
-    alutExit();
+      alcDestroyContext( soundContext );
+      soundContext = null;
+
+      alcCloseDevice( soundDevice );
+      soundDevice = null;
+    }
+
     log.printEnd( " OK" );
   }
 

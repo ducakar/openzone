@@ -1,5 +1,5 @@
 /*
- *  Censor.cpp
+ *  Arch.cpp
  *
  *  [description]
  *
@@ -9,48 +9,48 @@
 
 #include "stable.hpp"
 
-#include "censor/Censor.hpp"
+#include "arch/Arch.hpp"
 
 namespace oz
 {
-namespace censor
+namespace arch
 {
 
-  Censor censor;
+  Arch arch;
 
-  void Censor::apply()
+  void Arch::apply()
   {}
 
-  void Censor::sync()
+  void Arch::sync()
   {}
 
-  void Censor::update()
+  void Arch::update()
   {}
 
-  void Censor::load( InputStream* /*istream*/ )
+  void Arch::load( InputStream* /*istream*/ )
   {
-    log.print( "Loading Censor ..." );
+    log.print( "Loading Arch ..." );
     log.printEnd( " OK" );
   }
 
-  void Censor::unload( OutputStream* /*ostream*/ )
+  void Arch::unload( OutputStream* /*ostream*/ )
   {
-    log.print( "Unloading Censor ..." );
+    log.print( "Unloading Arch ..." );
     log.printEnd( " OK" );
   }
 
-  void Censor::init()
+  void Arch::init()
   {
-    log.println( "Initialising Censor {" );
+    log.println( "Initialising Arch {" );
     log.indent();
 
     log.unindent();
     log.println( "}" );
   }
 
-  void Censor::free()
+  void Arch::free()
   {
-    log.println( "Freeing Censor {" );
+    log.println( "Freeing Arch {" );
     log.indent();
 
     log.unindent();
