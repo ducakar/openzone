@@ -12,14 +12,36 @@
 #include "oz/oz.hpp"
 #include "configuration.hpp"
 
-// we want to use C++ wrapped C headers, not vanilla ones that are included via SDL
+// we want to use C++ wrapped C headers, not vanilla C ones that are included via SDL
 #include <cctype>
 #include <cinttypes>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+
+// gettext
 #include <libintl.h>
-// include SDL as it is commonly used
+
+// include SDL
 #define SDL_NO_COMPAT
 #include <SDL.h>
+
+// include OpenGL
+#ifdef OZ_OPENGL3
+# define GL_VERSION_1_2_DEPRECATED
+# define GL_VERSION_1_3_DEPRECATED
+# define GL_VERSION_1_4_DEPRECATED
+# define GL_VERSION_1_5_DEPRECATED
+# define GL_VERSION_2_0_DEPRECATED
+# define GL_VERSION_2_1_DEPRECATED
+# define GL_VERSION_3_0_DEPRECATED
+# define GL_ARB_imaging_DEPRECATED
+# define GL_ARB_framebuffer_object_DEPRECATED
+#endif
+
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+
+// include OpenAL
+#include <AL/al.h>

@@ -30,10 +30,12 @@ namespace client
       static const float DIM;
 
       uint vao;
-      uint ibo;
       uint vbo;
+      uint ibo;
 
     public:
+
+      Shape();
 
       void bindVertexArray() const;
 

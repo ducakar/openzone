@@ -161,6 +161,10 @@ namespace oz
 
         Slot* slot = reinterpret_cast<Slot*>( ptr );
 
+# ifndef NDEBUG
+        __builtin_memset( slot, 0xee, sizeof( Slot ) );
+# endif
+
         slot->nextSlot = freeSlot;
         freeSlot = slot;
         --count;
@@ -195,8 +199,8 @@ namespace oz
 
       /**
        * Free the pool.
-       * Frees all blocks allocated. It won't end good if something still uses memory allocated
-       * by this pool.
+       * Frees all blocks allocated. It won't end good if something still uses memory allocated by
+       * the pool.
        */
       void free()
       {

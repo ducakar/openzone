@@ -30,12 +30,19 @@ namespace client
   const float Terra::TILE_SIZE     = TILE_QUADS * oz::Terra::Quad::SIZE;
   const float Terra::TILE_INV_SIZE = 1.0f / TILE_SIZE;
 
-  const float Terra::DETAIL_SCALE  = 4.00f;
-  const float Terra::WATER_SCALE   = 0.25f;
-
   const float Terra::WAVE_BIAS_INC = 2.0f * Timer::TICK_TIME;
 
   Terra terra;
+
+  Terra::Terra() : ibo( 0 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 )
+  {
+    for( int i = 0; i < TILES; ++i ) {
+      for( int j = 0; j < TILES; ++j ) {
+        vbos[i][j] = 0;
+        vaos[i][j] = 0;
+      }
+    }
+  }
 
 #ifdef OZ_BUILD_TOOLS
   void Terra::prebuild( const char* name_ )
@@ -59,18 +66,16 @@ namespace client
     String detailTexture = terraDir + terraConfig.get( "detailTexture", "" );
     String mapTexture    = terraDir + terraConfig.get( "mapTexture", "" );
 
-    int nWaterMipmaps, nDetailMipmaps, nMapMipmaps;
-
-    uint waterTexId  = context.loadRawTexture( waterTexture, &nWaterMipmaps );
-    uint detailTexId = context.loadRawTexture( detailTexture, &nDetailMipmaps );
-    uint mapTexId    = context.loadRawTexture( mapTexture, &nMapMipmaps, true,
+    uint waterTexId  = context.loadRawTexture( waterTexture );
+    uint detailTexId = context.loadRawTexture( detailTexture );
+    uint mapTexId    = context.loadRawTexture( mapTexture, true,
                                                GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
 
     OutputStream os = buffer.outputStream();
 
-    context.writeTexture( waterTexId, nWaterMipmaps, &os );
-    context.writeTexture( detailTexId, nDetailMipmaps, &os );
-    context.writeTexture( mapTexId, nMapMipmaps, &os );
+    context.writeTexture( waterTexId, &os );
+    context.writeTexture( detailTexId, &os );
+    context.writeTexture( mapTexId, &os );
 
     glDeleteTextures( 1, &waterTexId );
     glDeleteTextures( 1, &detailTexId );
@@ -152,124 +157,6 @@ namespace client
   }
 #endif
 
-  void Terra::load()
-  {
-    const String& name = translator.terras[orbis.terra.id].name;
-    String path = "terra/" + name + ".ozcTerra";
-
-    log.print( "Loading terra '%s' ...", name.cstr() );
-
-    ushort* indices  = new ushort[TILE_INDICES];
-    Vertex* vertices = new Vertex[TILE_VERTICES];
-
-    if( !buffer.read( path ) ) {
-      log.printEnd( " Failed" );
-      throw Exception( "Terra loading failed" );
-    }
-
-    InputStream is = buffer.inputStream();
-
-    waterTexId  = context.readTexture( &is );
-    detailTexId = context.readTexture( &is );
-    mapTexId    = context.readTexture( &is );
-
-    glGenVertexArrays( TILES * TILES, &vaos[0][0] );
-    glGenBuffers( TILES * TILES, &vbos[0][0] );
-    glGenBuffers( 1, &ibo );
-
-    for( int i = 0; i < TILE_INDICES; ++i ) {
-      indices[i] = is.readShort();
-    }
-
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, TILE_INDICES * sizeof( ushort ), indices,
-                  GL_STATIC_DRAW );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-    for( int i = 0; i < TILES; ++i ) {
-      for( int j = 0; j < TILES; ++j ) {
-        for( int k = 0; k < TILE_VERTICES; ++k ) {
-          vertices[k].read( &is );
-        }
-
-        glBindVertexArray( vaos[i][j] );
-
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-
-        glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-        glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), vertices,
-                      GL_STATIC_DRAW );
-
-        glEnableVertexAttribArray( Attrib::POSITION );
-        glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
-
-        glEnableVertexAttribArray( Attrib::TEXCOORD );
-        glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                               reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-        glEnableVertexAttribArray( Attrib::NORMAL );
-        glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-
-        glEnableVertexAttribArray( Attrib::TANGENT );
-        glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
-
-        glEnableVertexAttribArray( Attrib::BINORMAL );
-        glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
-
-        glBindVertexArray( 0 );
-      }
-    }
-
-    waterTiles.clearAll();
-    for( int i = 0; i < waterTiles.length(); ++i ) {
-      if( is.readChar() ) {
-        waterTiles.set( i );
-      }
-    }
-
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-    landShaderId = translator.shaderIndex( "terraLand" );
-    waterShaderId = translator.shaderIndex( "terraWater" );
-    submergedLandShaderId = translator.shaderIndex( "submergedTerraLand" );
-    submergedWaterShaderId = translator.shaderIndex( "submergedTerraWater" );
-
-    float scales[2] = { 2.0f * float( oz::Terra::QUADS ), 1.0f };
-
-    shader.use( landShaderId );
-    glUniform1fv( param.oz_TextureScales, 2, scales );
-
-    shader.use( waterShaderId );
-    glUniform1fv( param.oz_TextureScales, 2, scales );
-
-    shader.use( submergedLandShaderId );
-    glUniform1fv( param.oz_TextureScales, 2, scales );
-
-    shader.use( submergedWaterShaderId );
-    glUniform1fv( param.oz_TextureScales, 2, scales );
-
-    delete[] indices;
-    delete[] vertices;
-
-    log.printEnd( " OK" );
-  }
-
-  void Terra::unload()
-  {
-    glDeleteTextures( 1, &mapTexId );
-    glDeleteTextures( 1, &detailTexId );
-    glDeleteTextures( 1, &waterTexId );
-
-    glDeleteBuffers( 1, &ibo );
-    glDeleteBuffers( TILES * TILES, &vbos[0][0] );
-    glDeleteVertexArrays( TILES * TILES, &vaos[0][0] );
-  }
-
   void Terra::draw()
   {
     span.minX = max( int( ( camera.p.x - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
@@ -340,6 +227,126 @@ namespace client
     }
 
     hard_assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void Terra::load()
+  {
+    const String& name = translator.terras[orbis.terra.id].name;
+    String path = "terra/" + name + ".ozcTerra";
+
+    log.print( "Loading terra '%s' ...", name.cstr() );
+
+    ushort* indices  = new ushort[TILE_INDICES];
+    Vertex* vertices = new Vertex[TILE_VERTICES];
+
+    if( !buffer.read( path ) ) {
+      log.printEnd( " Failed" );
+      throw Exception( "Terra loading failed" );
+    }
+
+    InputStream is = buffer.inputStream();
+
+    waterTexId  = context.readTexture( &is );
+    detailTexId = context.readTexture( &is );
+    mapTexId    = context.readTexture( &is );
+
+    glGenVertexArrays( TILES * TILES, &vaos[0][0] );
+    glGenBuffers( TILES * TILES, &vbos[0][0] );
+    glGenBuffers( 1, &ibo );
+
+    for( int i = 0; i < TILE_INDICES; ++i ) {
+      indices[i] = is.readShort();
+    }
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, TILE_INDICES * sizeof( ushort ), indices,
+                  GL_STATIC_DRAW );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+    for( int i = 0; i < TILES; ++i ) {
+      for( int j = 0; j < TILES; ++j ) {
+        for( int k = 0; k < TILE_VERTICES; ++k ) {
+          vertices[k].read( &is );
+        }
+
+        glBindVertexArray( vaos[i][j] );
+
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+
+        glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+        glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), vertices,
+                      GL_STATIC_DRAW );
+
+        glEnableVertexAttribArray( Attrib::POSITION );
+        glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+
+        glEnableVertexAttribArray( Attrib::TEXCOORD );
+        glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                               reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+
+        glEnableVertexAttribArray( Attrib::NORMAL );
+        glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+
+#ifdef OZ_BUMPMAP
+        glEnableVertexAttribArray( Attrib::TANGENT );
+        glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+
+        glEnableVertexAttribArray( Attrib::BINORMAL );
+        glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+#endif
+
+        glBindVertexArray( 0 );
+      }
+    }
+
+    waterTiles.clearAll();
+    for( int i = 0; i < waterTiles.length(); ++i ) {
+      if( is.readChar() ) {
+        waterTiles.set( i );
+      }
+    }
+
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+    landShaderId = translator.shaderIndex( "terraLand" );
+    waterShaderId = translator.shaderIndex( "terraWater" );
+    submergedLandShaderId = translator.shaderIndex( "submergedTerraLand" );
+    submergedWaterShaderId = translator.shaderIndex( "submergedTerraWater" );
+
+    delete[] indices;
+    delete[] vertices;
+
+    log.printEnd( " OK" );
+  }
+
+  void Terra::unload()
+  {
+    if( ibo != 0 ) {
+      glDeleteTextures( 1, &mapTexId );
+      glDeleteTextures( 1, &detailTexId );
+      glDeleteTextures( 1, &waterTexId );
+
+      glDeleteBuffers( 1, &ibo );
+      glDeleteBuffers( TILES * TILES, &vbos[0][0] );
+      glDeleteVertexArrays( TILES * TILES, &vaos[0][0] );
+
+      mapTexId = 0;
+      detailTexId = 0;
+      waterTexId = 0;
+
+      ibo = 0;
+      for( int i = 0; i < TILES; ++i ) {
+        for( int j = 0; j < TILES; ++j ) {
+          vbos[i][j] = 0;
+          vaos[i][j] = 0;
+        }
+      }
+    }
   }
 
 }

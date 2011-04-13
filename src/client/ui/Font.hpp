@@ -53,6 +53,8 @@ namespace ui
 
       uint textTexId;
 
+      Font();
+
       bool init();
       void free();
 

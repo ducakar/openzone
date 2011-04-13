@@ -18,7 +18,6 @@
 #include "client/MD3.hpp"
 
 #include <ctime>
-#include <AL/al.h>
 
 namespace oz
 {
@@ -76,8 +75,8 @@ namespace client
           model.value()->flags &= ~Model::UPDATED_BIT;
         }
         else {
-          context.models.exclude( model.key() );
           delete model.value();
+          context.models.exclude( model.key() );
         }
       }
     }
@@ -170,8 +169,8 @@ namespace client
           audio.value()->flags &= ~Audio::UPDATED_BIT ;
         }
         else {
-          context.audios.exclude( audio.key() );
           delete audio.value();
+          context.audios.exclude( audio.key() );
         }
       }
     }

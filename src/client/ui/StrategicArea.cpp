@@ -20,7 +20,6 @@
 #include "client/ui/Keyboard.hpp"
 
 #include <SDL_ttf.h>
-#include <GL/gl.h>
 
 namespace oz
 {
@@ -156,8 +155,6 @@ namespace ui
     float barWidth = maxX - minX + 2.0f;
     float lifeWidth = life * barWidth;
     float lifeWidthLeft = barWidth - lifeWidth;
-
-    hard_assert( 0.0f <= life && life <= 1.0f );
 
     glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 1.0f );
     shape.fill( minX - 1.0f, maxY + 3.0f, lifeWidth, 6.0f );

@@ -30,7 +30,7 @@
 #include "client/MD2WeaponModel.hpp"
 
 #define OZ_REGISTER_GLFUNC( func, type ) \
-  func = reinterpret_cast<type>( SDL_GL_GetProcAddress( #func ) ); \
+  *reinterpret_cast<void**>( &func ) = SDL_GL_GetProcAddress( #func ); \
   if( func == null ) { \
     throw Exception( "Failed to get OpenGL function '" #func "'" ); \
   }
@@ -420,7 +420,6 @@ namespace client
     waterStructs.dealloc();
 
     ui::ui.unload();
-
     shader.unload();
 
     log.unindent();
@@ -468,10 +467,13 @@ namespace client
 
     SDL_ShowCursor( SDL_FALSE );
 
+#ifndef OZ_OPENGL3
     bool isVAOSupported = false;
-    bool isFBOSupported = false;
+#endif
     bool isFloatTexSupported = false;
+#ifdef OZ_TEXTURE_COMPRESSION
     bool isS3TCSupported = false;
+#endif
 
     String version = String::cstr( glGetString( GL_VERSION ) );
     DArray<String> extensions;
@@ -487,18 +489,19 @@ namespace client
     foreach( extension, extensions.citer() ) {
       log.println( "%s", extension->cstr() );
 
+#ifndef OZ_OPENGL3
       if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
         isVAOSupported = true;
       }
-      if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
-        isFBOSupported = true;
-      }
+#endif
       if( extension->equals( "GL_ARB_texture_float" ) ) {
         isFloatTexSupported = true;
       }
+#ifdef OZ_TEXTURE_COMPRESSION
       if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
         isS3TCSupported = true;
       }
+#endif
     }
 
     log.unindent();
@@ -507,27 +510,33 @@ namespace client
     int major = atoi( version );
     int minor = atoi( version.cstr() + version.index( '.' ) + 1 );
 
-    if( major < 2 || ( major == 2 && minor < 1 ) ) {
-      log.println( "Error: at least OpenGL 2.1 required" );
+#ifdef OZ_OPENGL3
+    if( major < 3 || ( major == 3 && minor < 0 ) ) {
+      log.println( "Error: at least OpenGL 3.0 is required" );
       throw Exception( "Too old OpenGL version" );
     }
+#else
+    if( major < 2 || ( major == 2 && minor < 1 ) ) {
+      log.println( "Error: at least OpenGL 2.1 with some 3.0 capabilities is required" );
+      throw Exception( "Too old OpenGL version" );
+    }
+#endif
 
+#ifndef OZ_OPENGL3
     if( !isVAOSupported ) {
       log.println( "Error: vertex array object (GL_ARB_vertex_array_object) is not supported" );
       throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
     }
-    if( !isFBOSupported ) {
-      log.println( "Error: Framebuffer object (GL_ARB_framebuffer_object) is not supported" );
-      throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
-    }
+#endif
     if( !isFloatTexSupported ) {
-      log.println( "Error: Floating point texture pixels (GL_ARB_texture_float) not supported" );
-      throw Exception( "GL_ARB_texture_float not supported by OpenGL" );
+      config.add( "shader.vertexTexture", "false" );
     }
+#ifdef OZ_TEXTURE_COMPRESSION
     if( !isS3TCSupported ) {
       log.println( "Error: S3 texture compression (GL_EXT_texture_compression_s3tc) is not supported" );
       throw Exception( "GL_EXT_texture_compression_s3tc not supported by OpenGL" );
     }
+#endif
 
     nearDist2            = config.getSet( "render.nearDistance",         100.0f );
 
@@ -547,7 +556,7 @@ namespace client
     simpleShaderId       = translator.shaderIndex( "simple" );
     particleShaderId     = translator.shaderIndex( "particles" );
 
-#ifdef OZ_MINGW
+#ifndef OZ_OPENGL3
     OZ_REGISTER_GLFUNC( glUniform1i,               PFNGLUNIFORM1IPROC               );
     OZ_REGISTER_GLFUNC( glUniform2i,               PFNGLUNIFORM2IPROC               );
     OZ_REGISTER_GLFUNC( glUniform3i,               PFNGLUNIFORM3IPROC               );
@@ -595,7 +604,6 @@ namespace client
     OZ_REGISTER_GLFUNC( glGetProgramInfoLog,       PFNGLGETPROGRAMINFOLOGPROC       );
     OZ_REGISTER_GLFUNC( glGetUniformLocation,      PFNGLGETUNIFORMLOCATIONPROC      );
     OZ_REGISTER_GLFUNC( glBindAttribLocation,      PFNGLBINDFRAGDATALOCATIONPROC    );
-    OZ_REGISTER_GLFUNC( glBindFragDataLocation,    PFNGLBINDFRAGDATALOCATIONPROC    );
     OZ_REGISTER_GLFUNC( glUseProgram,              PFNGLUSEPROGRAMPROC              );
 
     OZ_REGISTER_GLFUNC( glActiveTexture,           PFNGLACTIVETEXTUREPROC           );

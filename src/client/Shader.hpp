@@ -34,7 +34,6 @@ namespace client
 
     int oz_IsTextureEnabled;
     int oz_Textures;
-    int oz_TextureScales;
 
     int oz_CaelumLight_dir;
     int oz_CaelumLight_diffuse;
@@ -63,7 +62,8 @@ namespace client
 
     private:
 
-      Vector<Mat44, 8> stack;
+//       SVector<Mat44, 8> stack;
+      Vector<Mat44> stack;
 
     public:
 
@@ -102,12 +102,17 @@ namespace client
     {
       POSITION,
       TEXCOORD,
+#ifdef OZ_BUMPMAP
       NORMAL,
       TANGENT,
       BINORMAL
+#else
+      NORMAL
+#endif
     };
   };
 
+#ifdef OZ_OPENGL3
   struct FragData
   {
     enum Type : int
@@ -117,6 +122,7 @@ namespace client
       NORMAL
     };
   };
+#endif
 
   class Shader
   {
@@ -189,9 +195,9 @@ namespace client
       void setAmbientLight( const Vec4& colour );
       void setCaelumLight( const Vec3& dir, const Vec4& colour );
 
-      int  addLight( const Point3& pos, const Vec4& colour );
-      void removeLight( int id );
-      void setLight( int id, const Point3& pos, const Vec4& colour );
+//       int  addLight( const Point3& pos, const Vec4& colour );
+//       void removeLight( int id );
+//       void setLight( int id, const Point3& pos, const Vec4& colour );
 
       void updateLights();
 

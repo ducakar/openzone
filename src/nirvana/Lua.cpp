@@ -84,7 +84,12 @@ namespace nirvana
   {
     log.print( "Initialising Nirvana Lua ..." );
 
-    l = lua_open();
+    l = luaL_newstate();
+    if( l == null ) {
+      log.printEnd( " Failed" );
+      throw Exception( "Lua initialisation failed" );
+    }
+
     luaL_openlibs( l );
 
     OZ_LUA_FUNCTION( ozPrintln );
@@ -252,6 +257,10 @@ namespace nirvana
 
   void Lua::free()
   {
+    if( l == null ) {
+      return;
+    }
+
     log.print( "Freeing Nirvana Lua ..." );
 
     objects.clear();

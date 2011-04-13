@@ -210,7 +210,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "sounds (*.au, *.wav in 'snd') {" );
+    log.println( "sounds (*.wav in 'snd') {" );
     log.indent();
 
     dir.open( "snd" );
@@ -223,16 +223,12 @@ namespace oz
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "au" ) && !ent.hasExtension( "wav" ) ) {
+      if( !ent.hasExtension( "wav" ) ) {
         continue;
       }
 
       String name = ent.baseName();
       String path = String( "snd/" ) + ent;
-
-      if( soundIndices.contains( name ) ) {
-        throw Exception( "Duplicated sound '" + name + "' ['" + path + "']" );
-      }
 
       soundIndices.add( name, sounds.length() );
       sounds.add( Resource( name, path ) );
@@ -523,7 +519,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "sounds (*.au, *.wav in 'snd') {" );
+    log.println( "sounds (*.wav in 'snd') {" );
     log.indent();
 
     dir.open( "snd" );
@@ -536,16 +532,12 @@ namespace oz
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "au" ) && !ent.hasExtension( "wav" ) ) {
+      if( !ent.hasExtension( "wav" ) ) {
         continue;
       }
 
       String name = ent.baseName();
       String path = String( "snd/" ) + ent;
-
-      if( soundIndices.contains( name ) ) {
-        throw Exception( "Duplicated sound '" + name + "' ['" + path + "']" );
-      }
 
       soundIndices.add( name, sounds.length() );
       sounds.add( Resource( name, path ) );

@@ -9,17 +9,17 @@
 export LC_COLLATE=C
 
 echo Generating src/oz/CMakeLists.txt
-cd src/oz      && ./CMakeLists.gen && cd ../..
+cd src/oz      && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/matrix/CMakeLists.txt
-cd src/matrix  && ./CMakeLists.gen && cd ../..
+cd src/matrix  && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/nirvana/CMakeLists.txt
-cd src/nirvana && ./CMakeLists.gen && cd ../..
+cd src/nirvana && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/arch/CMakeLists.txt
-cd src/arch &&    ./CMakeLists.gen && cd ../..
+cd src/arch &&    ./CMakeLists-gen.sh && cd ../..
 echo Generating src/client/CMakeLists.txt
-cd src/client  && ./CMakeLists.gen && cd ../..
+cd src/client  && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/server/CMakeLists.txt
-cd src/server  && ./CMakeLists.gen && cd ../..
+cd src/server  && ./CMakeLists-gen.sh && cd ../..
 
 #
 # For the same reason as CMakeLists.txt we also automatically generate install_files.cmake file
@@ -27,10 +27,10 @@ cd src/server  && ./CMakeLists.gen && cd ../..
 #
 
 echo Generating install_files.cmake
-./install_files.gen
+./install_files-gen.sh
 
 #
 # generate .pot gettext translations template
 #
 echo Generating gettext.pot
-./gettext.gen
+./gettext-gen.sh

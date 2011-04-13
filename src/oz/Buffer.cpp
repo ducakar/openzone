@@ -101,7 +101,7 @@ namespace oz
       alloc( int( fileStat.st_size ) );
     }
 
-    int blocksRead = int( fread( data, fileStat.st_size, 1, handle ) );
+    int blocksRead = int( fread( data, size_t( fileStat.st_size ), 1, handle ) );
     fclose( handle );
 
     if( blocksRead != 1 && fileStat.st_size != 0 ) {
@@ -119,7 +119,7 @@ namespace oz
       return false;
     }
 
-    int result = int( fwrite( data, size, 1, handle ) );
+    int result = int( fwrite( data, size_t( size ), 1, handle ) );
     fclose( handle );
 
     return result == 1;

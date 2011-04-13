@@ -28,14 +28,12 @@ namespace oz
       static const float WEIGHT_FACTOR;
 
       static const float STICK_VELOCITY;
-      static const float AIR_STICK_VELOCITY;
       static const float SLICK_STICK_VELOCITY;
-      static const float BOTTOM_STICK_VELOCITY;
+      static const float FLOAT_STICK_VELOCITY;
       static const float AIR_FRICTION;
       static const float WATER_FRICTION;
       static const float LADDER_FRICTION;
       static const float FLOOR_FRICTION;
-      static const float OBJ_FRICTION;
       static const float SLICK_FRICTION;
 
       static const float PART_HIT_VELOCITY2;

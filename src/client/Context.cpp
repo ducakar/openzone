@@ -27,8 +27,6 @@
 #ifdef OZ_BUILD_TOOLS
 # include <SDL_image.h>
 #endif
-#include <GL/gl.h>
-#include <AL/al.h>
 
 #define OZ_REGISTER_MODELCLASS( name ) \
   modelClasses.add( #name, &name##Model::create )
@@ -54,9 +52,13 @@ namespace client
     hard_assert( bytesPerPixel == 3 || bytesPerPixel == 4 );
 
     GLenum sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+#ifdef OZ_TEXTURE_COMPRESSION
     GLenum internalFormat = bytesPerPixel == 4 ?
         GL_COMPRESSED_RGBA_S3TC_DXT5_EXT :
-        GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+        GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+#else
+    GLenum internalFormat = GL_RGBA;
+#endif
 
     uint texId;
     glGenTextures( 1, &texId );
@@ -66,14 +68,54 @@ namespace client
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
 
+    bool hasMipmaps = false;
+
+    switch( magFilter ) {
+      case GL_NEAREST:
+      case GL_LINEAR: {
+        break;
+      }
+      default: {
+        throw Exception( "Invalid texture magnification filter" );
+      }
+    }
+
+    switch( minFilter ) {
+      case GL_NEAREST:
+      case GL_LINEAR: {
+        break;
+      }
+      case GL_NEAREST_MIPMAP_NEAREST:
+      case GL_NEAREST_MIPMAP_LINEAR:
+      case GL_LINEAR_MIPMAP_NEAREST:
+      case GL_LINEAR_MIPMAP_LINEAR: {
+        hasMipmaps = true;
+        break;
+      }
+      default: {
+        throw Exception( "Invalid texture minification filter" );
+      }
+    }
+
     if( !wrap ) {
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     }
 
+#ifndef OZ_OPENGL3
+    if( hasMipmaps ) {
+      glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
+    }
+#endif
+
     glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
                   sourceFormat, GL_UNSIGNED_BYTE, data );
-    glGenerateMipmap( GL_TEXTURE_2D );
+
+#ifdef OZ_OPENGL3
+    if( hasMipmaps ) {
+      glGenerateMipmap( GL_TEXTURE_2D );
+    }
+#endif
 
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texId );
@@ -143,6 +185,9 @@ namespace client
     releaseSound( sample );
   }
 
+  Context::Context() : textures( null ), sounds( null ), bsps( null )
+  {}
+
 #ifdef OZ_BUILD_TOOLS
   uint Context::createTexture( const void* data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
@@ -156,8 +201,7 @@ namespace client
     return texNum;
   }
 
-  uint Context::loadRawTexture( const char* path, int* nMipmaps, bool wrap,
-                                int magFilter, int minFilter )
+  uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int minFilter )
   {
     log.print( "Loading raw texture '%s' ...", path );
 
@@ -184,50 +228,58 @@ namespace client
 
     hard_assert( glIsTexture( texNum ) );
 
-    if( nMipmaps != null ) {
-      *nMipmaps = 0;
-      for( int i = 0; i < 1000; ++i ) {
-        int mipmapSize;
-        glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &mipmapSize );
-
-        if( glGetError() != GL_NO_ERROR ) {
-          break;
-        }
-
-        ++*nMipmaps;
-      }
-    }
-
     return texNum;
   }
 
-  void Context::writeTexture( uint id, int nMipmaps, OutputStream* stream )
+  void Context::writeTexture( uint id, OutputStream* stream )
   {
     glBindTexture( GL_TEXTURE_2D, id );
 
-    int internalFormat, magFilter, minFilter, wrap;
-    glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
+    int wrap, magFilter, minFilter, nMipmaps, internalFormat;
+
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
     glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
     glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &minFilter );
-    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, &nMipmaps );
 
-    stream->writeInt( nMipmaps );
-    stream->writeInt( internalFormat );
+    int width;
+    for( nMipmaps = 0; nMipmaps < 1000; ++nMipmaps ) {
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, nMipmaps, GL_TEXTURE_WIDTH, &width );
+
+      if( width == 0 ) {
+        break;
+      }
+    }
+
+    glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
+    hard_assert( glGetError() == GL_NO_ERROR );
+
+    stream->writeInt( wrap );
     stream->writeInt( magFilter );
     stream->writeInt( minFilter );
-    stream->writeInt( wrap );
+    stream->writeInt( nMipmaps );
+    stream->writeInt( internalFormat );
 
     for( int i = 0; i < nMipmaps; ++i ) {
       int width, height, size;
 
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
       glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
       glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
+#ifdef OZ_TEXTURE_COMPRESSION
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
+#else
+      size = width * height * 4;
+#endif
 
       stream->writeInt( width );
       stream->writeInt( height );
       stream->writeInt( size );
+
+#ifdef OZ_TEXTURE_COMPRESSION
       glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
+#else
+      glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareWrite( size ) );
+#endif
     }
 
     hard_assert( glGetError() == GL_NO_ERROR );
@@ -263,27 +315,32 @@ namespace client
     glGenTextures( 1, &texId );
     glBindTexture( GL_TEXTURE_2D, texId );
 
-    int nMipmaps       = stream->readInt();
-    int internalFormat = stream->readInt();
+    int wrap           = stream->readInt();
     int magFilter      = stream->readInt();
     int minFilter      = stream->readInt();
-    int wrap           = stream->readInt();
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
+    int nMipmaps       = stream->readInt();
+    int internalFormat = stream->readInt();
 
     if( !wrap ) {
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     }
 
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
+
     for( int i = 0; i < nMipmaps; ++i ) {
       int width = stream->readInt();
       int height = stream->readInt();
       int size = stream->readInt();
 
+#ifdef OZ_TEXTURE_COMPRESSION
       glCompressedTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0, size,
                               stream->prepareRead( size ) );
+#else
+      glTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
+                    GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareRead( size ) );
+#endif
     }
 
     if( glGetError() != GL_NO_ERROR ) {
@@ -361,13 +418,24 @@ namespace client
 
     hard_assert( alGetError() == AL_NO_ERROR );
 
-    log.print( "Loading sound '%s' ...", translator.sounds[id].name.cstr() );
+    const String& name = translator.sounds[id].name;
+    const String& path = translator.sounds[id].path;
+
+    log.print( "Loading sound '%s' ...", name.cstr() );
 
     uint   length;
     ubyte* data;
 
     SDL_AudioSpec audioSpec;
-    audioSpec = *SDL_LoadWAV( translator.sounds[id].path, &audioSpec, &data, &length );
+
+    audioSpec.freq     = DEFAULT_AUDIO_FREQ;
+    audioSpec.format   = DEFAULT_AUDIO_FORMAT;
+    audioSpec.channels = 1;
+    audioSpec.samples  = 0;
+
+    if( SDL_LoadWAV( path, &audioSpec, &data, &length ) == null ) {
+      throw Exception( "Failed to load sound" );
+    }
 
     if( audioSpec.channels != 1 ||
         ( audioSpec.format != AUDIO_U8 && audioSpec.format != AUDIO_S16 ) )

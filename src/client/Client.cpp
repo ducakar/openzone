@@ -45,55 +45,57 @@ namespace client
     uint beginTime = SDL_GetTicks();
 
 #ifndef NDEBUG
-    log.print( "Counting objects ..." );
-
     int nObjects  = 0;
     int nDynamics = 0;
     int nWeapons  = 0;
     int nBots     = 0;
     int nVehicles = 0;
 
-    Map<const ObjectClass*, int> classCounts;
-
-    for( int i = 0; i < orbis.objects.length(); ++i ) {
-      const Object* obj = orbis.objects[i];
-
-      if( obj != null ) {
-        int* count = classCounts.find( obj->clazz );
-
-        if( count == null ) {
-          classCounts.add( obj->clazz, 1 );
-        }
-        else {
-          ++*count;
-        }
-
-        if( obj->flags & Object::VEHICLE_BIT ) {
-          ++nVehicles;
-        }
-        else if( obj->flags & Object::BOT_BIT ) {
-          ++nBots;
-        }
-        else if( obj->flags & Object::WEAPON_BIT ) {
-          ++nWeapons;
-        }
-        else if( obj->flags & Object::DYNAMIC_BIT ) {
-          ++nDynamics;
-        }
-        else {
-          ++nObjects;
-        }
-      }
-    }
-
     Vector< Pair<String, int> > classNameCounts;
 
-    foreach( i, classCounts.citer() ) {
-      classNameCounts.add( pair( i.key()->name, i.value() ) );
-    }
-    classCounts.clear();
+    if( initFlags & INIT_MAIN_LOOP ) {
+      log.print( "Counting objects ..." );
 
-    log.printEnd( " OK" );
+      Map<const ObjectClass*, int> classCounts;
+
+      for( int i = 0; i < orbis.objects.length(); ++i ) {
+        const Object* obj = orbis.objects[i];
+
+        if( obj != null ) {
+          int* count = classCounts.find( obj->clazz );
+
+          if( count == null ) {
+            classCounts.add( obj->clazz, 1 );
+          }
+          else {
+            ++*count;
+          }
+
+          if( obj->flags & Object::VEHICLE_BIT ) {
+            ++nVehicles;
+          }
+          else if( obj->flags & Object::BOT_BIT ) {
+            ++nBots;
+          }
+          else if( obj->flags & Object::WEAPON_BIT ) {
+            ++nWeapons;
+          }
+          else if( obj->flags & Object::DYNAMIC_BIT ) {
+            ++nDynamics;
+          }
+          else {
+            ++nObjects;
+          }
+        }
+      }
+
+      foreach( i, classCounts.citer() ) {
+        classNameCounts.add( pair( i.key()->name, i.value() ) );
+      }
+      classCounts.clear();
+
+      log.printEnd( " OK" );
+    }
 #endif
 
     if( initFlags & INIT_RENDER_LOAD ) {
@@ -186,6 +188,7 @@ namespace client
       log.println( "%6d  static objects", nObjects );
 
       classNameCounts.clear();
+      classNameCounts.dealloc();
 
       log.unindent();
       log.println( "}" );
@@ -193,7 +196,17 @@ namespace client
       context.printLoad();
 #endif
 
+      log.println( "Memory usage {" );
+      log.indent();
+
       Alloc::printStatistics();
+
+      log.println( "Orbis                %.2f MiB (%d B)",
+                   float( sizeof( Orbis ) ) / ( 1024.0f * 1024.0f ),
+                   int( sizeof( Orbis ) ) );
+
+      log.unindent();
+      log.println( "}" );
 
       log.println( "Time statistics {" );
       log.indent();

@@ -13,8 +13,6 @@
 
 #include "client/Camera.hpp"
 
-#include <GL/gl.h>
-
 #define OZ_REGISTER_PARAMETER( paramVar, uniformName ) \
   programs[id].param.paramVar = glGetUniformLocation( programs[id].program, uniformName )
 
@@ -168,12 +166,16 @@ namespace client
     OZ_REGISTER_ATTRIBUTE( Attrib::POSITION,            "inPosition" );
     OZ_REGISTER_ATTRIBUTE( Attrib::TEXCOORD,            "inTexCoord" );
     OZ_REGISTER_ATTRIBUTE( Attrib::NORMAL,              "inNormal" );
+#ifdef OZ_BUMPMAP
     OZ_REGISTER_ATTRIBUTE( Attrib::TANGENT,             "inTangent" );
     OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
+#endif
 
-    OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
-    OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
-    OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
+#ifdef OZ_OPENGL3
+//     OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
+//     OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
+//     OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
+#endif
 
     glLinkProgram( programs[id].program );
 
@@ -207,7 +209,6 @@ namespace client
 
     OZ_REGISTER_PARAMETER( oz_IsTextureEnabled,         "oz_IsTextureEnabled" );
     OZ_REGISTER_PARAMETER( oz_Textures,                 "oz_Textures" );
-    OZ_REGISTER_PARAMETER( oz_TextureScales,            "oz_TextureScales" );
 
     OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,          "oz_CaelumLight.dir" );
     OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse,      "oz_CaelumLight.diffuse" );
@@ -329,20 +330,13 @@ namespace client
     const char* sources[3];
     int         lengths[3];
 
-    defines = "#version 130\n";
-    defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
-
-    for( int i = 2; i < 10; ++i ) {
-      defines = defines + "\n";
-    }
-
     sources[0] = defines;
     lengths[0] = defines.length();
 
     log.print( "Reading 'glsl/header.glsl' ..." );
 
-    Buffer buffer;
-    if( !buffer.read( "glsl/header.glsl" ) ) {
+    Buffer buffer( "glsl/header.glsl" );
+    if( buffer.isEmpty() ) {
       log.printEnd( " Failed" );
       throw Exception( "Shader loading failed" );
     }
@@ -393,9 +387,7 @@ namespace client
       }
     }
 
-    int error = glGetError();
-    hard_assert( error == GL_NO_ERROR );
-
+    hard_assert( glGetError() == GL_NO_ERROR );
     hard_assert( tf.stack.isEmpty() );
     tf.stack.dealloc();
 
@@ -419,7 +411,7 @@ namespace client
     const char* sources[3];
     int         lengths[3];
 
-    defines = "#version 130\n";
+    defines = "#version 120\n";
     defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
 
     for( int i = 2; i < 10; ++i ) {
@@ -431,8 +423,8 @@ namespace client
 
     log.print( "Reading 'glsl/header.glsl' ..." );
 
-    Buffer buffer;
-    if( !buffer.read( "glsl/header.glsl" ) ) {
+    Buffer buffer( "glsl/header.glsl" );
+    if( buffer.isEmpty() ) {
       log.printEnd( " Failed" );
       throw Exception( "Shader loading failed" );
     }
@@ -474,6 +466,7 @@ namespace client
       programs[ui].fragShader = 0;
     }
 
+    ui = -1;
     defines = "";
 
     programs.dealloc();

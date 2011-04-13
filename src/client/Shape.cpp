@@ -22,6 +22,9 @@ namespace client
   const float Shape::SQRT_3_THIRDS = Math::sqrt( 3.0f ) / 3.0f;
   const float Shape::DIM = 1.0f / 2.0f;
 
+  Shape::Shape() : vao( 0 ), vbo( 0 ), ibo( 0 )
+  {}
+
   void Shape::bindVertexArray() const
   {
     glBindVertexArray( vao );
@@ -311,6 +314,7 @@ namespace client
     glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
+#ifdef OZ_BUMPMAP
     glEnableVertexAttribArray( Attrib::TANGENT );
     glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
@@ -318,6 +322,7 @@ namespace client
     glEnableVertexAttribArray( Attrib::BINORMAL );
     glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+#endif
 
     glBindVertexArray( 0 );
 
@@ -327,9 +332,15 @@ namespace client
 
   void Shape::unload()
   {
-    glDeleteVertexArrays( 1, &vao );
-    glDeleteBuffers( 1, &ibo );
-    glDeleteBuffers( 1, &vbo );
+    if( vao != 0 ) {
+      glDeleteBuffers( 1, &ibo );
+      glDeleteBuffers( 1, &vbo );
+      glDeleteVertexArrays( 1, &vao );
+
+      ibo = 0;
+      vbo = 0;
+      vao = 0;
+    }
   }
 
 }

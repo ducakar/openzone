@@ -78,7 +78,6 @@ if( WIN32 )
   install( FILES
     mingw32/SDL.dll
     mingw32/SDL_ttf.dll
-    mingw32/libalut-0.dll
     mingw32/libfreetype-6.dll
     mingw32/libgcc_s_sjlj-1.dll
     mingw32/libiconv-2.dll
@@ -262,7 +261,6 @@ if( OZ_INSTALL_DATA )
     share/openzone/snd/cg2.wav
     share/openzone/snd/damage_bot1.wav
     share/openzone/snd/damage_bot2.wav
-    share/openzone/snd/death1.wav
     share/openzone/snd/death2.wav
     share/openzone/snd/destroy_metal1.wav
     share/openzone/snd/destroy_wood1.wav

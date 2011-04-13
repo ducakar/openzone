@@ -19,8 +19,6 @@
 #include "client/Model.hpp"
 #include "client/Audio.hpp"
 
-#include <GL/gl.h>
-
 namespace oz
 {
 namespace client
@@ -45,7 +43,11 @@ namespace client
 
     private:
 
-      static const int BUFFER_SIZE = 256 * 1024;
+      // texture reading buffer
+      static const int BUFFER_SIZE          = 256 * 1024;
+      // default audio format
+      static const int DEFAULT_AUDIO_FREQ   = 44100;
+      static const int DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
 
       template <typename Type>
       struct Resource
@@ -130,15 +132,17 @@ namespace client
 
     public:
 
+      Context();
+
 #ifdef OZ_BUILD_TOOLS
       static uint createTexture( const void* data, int width, int height, int bytesPerPixel,
                           bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );
 
-      static uint loadRawTexture( const char* path, int* nMipmaps = null, bool wrap = true,
+      static uint loadRawTexture( const char* path, bool wrap = true,
                                   int magFilter = DEFAULT_MAG_FILTER,
                                   int minFilter = DEFAULT_MIN_FILTER );
-      static void writeTexture( uint id, int nMipmaps, OutputStream* stream );
+      static void writeTexture( uint id, OutputStream* stream );
 #endif
 
       static uint loadTexture( const char* path );

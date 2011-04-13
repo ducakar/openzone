@@ -98,6 +98,7 @@ namespace oz
 #ifdef OZ_BUILD_TOOLS
       void prebuildInit();
 #endif
+
       void init();
       void free();
   };

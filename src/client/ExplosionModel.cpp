@@ -15,8 +15,6 @@
 #include "client/Context.hpp"
 #include "client/Colours.hpp"
 
-#include <GL/gl.h>
-
 namespace oz
 {
 namespace client

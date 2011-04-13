@@ -270,6 +270,10 @@ void operator delete ( void* ptr ) noexcept
   size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
 
+# ifndef NDEBUG
+  __builtin_memset( chunk, 0xee, size );
+# endif
+
   --Alloc::count;
   Alloc::amount -= size;
 
@@ -330,6 +334,10 @@ void operator delete[] ( void* ptr ) noexcept
 
   size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
+
+# ifndef NDEBUG
+  __builtin_memset( chunk, 0xee, size );
+# endif
 
   --Alloc::count;
   Alloc::amount -= size;

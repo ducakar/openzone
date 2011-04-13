@@ -14,8 +14,6 @@
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
 
-#include <AL/al.h>
-
 namespace oz
 {
 namespace client

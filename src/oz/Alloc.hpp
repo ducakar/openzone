@@ -89,29 +89,29 @@ namespace oz
       template <typename Size>
       static Size alignDown( Size size )
       {
-        size_t s = static_cast<size_t>( size );
-        return static_cast<Size>( s & ~( ALIGNMENT - 1 ) );
+        return static_cast<Size>
+            ( size_t( size ) & ~size_t( ALIGNMENT - 1 ) );
       }
 
       template <typename Size>
       static Size alignUp( Size size )
       {
-        size_t s = static_cast<size_t>( size );
-        return static_cast<Size>( ( ( s - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
+        return static_cast<Size>
+            ( ( size_t( size - 1 ) & ~size_t( ALIGNMENT - 1 ) ) + size_t( ALIGNMENT ) );
       }
 
       template <typename Pointer>
       static Pointer* alignDown( Pointer* size )
       {
-        size_t s = reinterpret_cast<size_t>( size );
-        return reinterpret_cast<Pointer*>( s & ~( ALIGNMENT - 1 ) );
+        return reinterpret_cast<Pointer*>
+            ( size_t( size ) & ~size_t( ALIGNMENT - 1 ) );
       }
 
       template <typename Pointer>
       static Pointer* alignUp( Pointer* size )
       {
-        size_t s = reinterpret_cast<size_t>( size );
-        return reinterpret_cast<Pointer*>( ( ( s - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
+        return reinterpret_cast<Pointer*>
+            ( ( size_t( size - 1 ) & ~size_t( ALIGNMENT - 1 ) ) + size_t( ALIGNMENT ) );
       }
 
       static void printStatistics();

@@ -31,18 +31,18 @@ namespace oz
         {}
       };
 
-      Vector<Action>  actions;
+      Vector<Action> actions;
 
-      Vector<int>     putObjects;
-      Vector<int>     cutObjects;
+      Vector<int>    putObjects;
+      Vector<int>    cutObjects;
 
-      Vector<int>     addedStructs;
-      Vector<int>     addedObjects;
-      Vector<int>     addedParts;
+      Vector<int>    addedStructs;
+      Vector<int>    addedObjects;
+      Vector<int>    addedParts;
 
-      Vector<int>     removedStructs;
-      Vector<int>     removedObjects;
-      Vector<int>     removedParts;
+      Vector<int>    removedStructs;
+      Vector<int>    removedObjects;
+      Vector<int>    removedParts;
 
       // isSingle XOR isServer XOR isClient
 

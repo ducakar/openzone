@@ -12,7 +12,6 @@
 #include "client/ui/Font.hpp"
 
 #include <SDL_ttf.h>
-#include <GL/gl.h>
 
 namespace oz
 {
@@ -32,6 +31,13 @@ namespace ui
     { "symbol", "ui/font/DejaVuSans.ttf",     14 }
   };
 
+  Font::Font() : textTexId( 0 )
+  {
+    for( int i = 0; i < MAX; ++i ) {
+      fonts[i] = null;
+    }
+  }
+
   bool Font::init()
   {
     const char* path;
@@ -39,8 +45,6 @@ namespace ui
     if( TTF_Init() == -1 ) {
       return false;
     }
-
-    textTexId = 0;
 
     for( int i = 0; i < MAX; ++i ) {
       path = config.getSet( "ui.font." + String( INFOS[i].name ) + ".file", INFOS[i].file );
@@ -74,6 +78,7 @@ namespace ui
     log.print( "Deleting text texture ..." );
 
     glDeleteTextures( 1, &textTexId );
+    textTexId = 0;
 
     log.printEnd( " OK" );
 

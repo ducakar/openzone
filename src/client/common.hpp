@@ -11,22 +11,10 @@
 
 #include "stable.hpp"
 
-# ifndef OZ_MINGW
-#  define GL_GLEXT_PROTOTYPES
-#  define GL_VERSION_1_2_DEPRECATED
-#  define GL_VERSION_1_3_DEPRECATED
-#  define GL_VERSION_1_4_DEPRECATED
-#  define GL_VERSION_1_5_DEPRECATED
-#  define GL_VERSION_2_0_DEPRECATED
-#  define GL_VERSION_2_1_DEPRECATED
-#  define GL_VERSION_3_0_DEPRECATED
-#  define GL_ARB_imaging_DEPRECATED
-#  define GL_ARB_framebuffer_object_DEPRECATED
-# else
-#  include <GL/gl.h>
-#  undef near
-#  undef far
-# endif
+#ifdef OZ_MINGW
+# undef near
+# undef far
+#endif
 
 namespace oz
 {
@@ -42,6 +30,7 @@ namespace client
 
     TexCoord() = default;
 
+    OZ_ALWAYS_INLINE
     explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ )
     {}
 
@@ -86,8 +75,7 @@ namespace client
     }
   };
 
-#ifdef OZ_MINGW
-
+#ifndef OZ_OPENGL3
   extern PFNGLUNIFORM1IPROC               glUniform1i;
   extern PFNGLUNIFORM2IPROC               glUniform2i;
   extern PFNGLUNIFORM3IPROC               glUniform3i;
@@ -135,18 +123,15 @@ namespace client
   extern PFNGLGETPROGRAMINFOLOGPROC       glGetProgramInfoLog;
   extern PFNGLGETUNIFORMLOCATIONPROC      glGetUniformLocation;
   extern PFNGLBINDATTRIBLOCATIONPROC      glBindAttribLocation;
-  extern PFNGLBINDFRAGDATALOCATIONPROC    glBindFragDataLocation;
   extern PFNGLUSEPROGRAMPROC              glUseProgram;
 
-  extern PFNGLACTIVETEXTUREPROC           wglActiveTexture;
-  extern PFNGLCOMPRESSEDTEXIMAGE2DPROC    wglCompressedTexImage2D;
-  extern PFNGLDRAWRANGEELEMENTSPROC       wglDrawRangeElements;
-
-# define glActiveTexture                  wglActiveTexture
-# define glCompressedTexImage2D           wglCompressedTexImage2D
-# define glDrawRangeElements              wglDrawRangeElements
-
+  extern PFNGLACTIVETEXTUREPROC           glActiveTexture;
+  extern PFNGLCOMPRESSEDTEXIMAGE2DPROC    glCompressedTexImage2D;
+  extern PFNGLDRAWRANGEELEMENTSPROC       glDrawRangeElements;
 #endif
+
+  GLenum glGetError();
+  ALenum alGetError();
 
 }
 }

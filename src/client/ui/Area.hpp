@@ -51,7 +51,7 @@ namespace ui
 
     protected:
 
-      static const SDL_Color SDL_COLOUR_WHITE;
+      static const SDL_Colour SDL_COLOUR_WHITE;
 
       static Vector<Area*> updateAreas;
 

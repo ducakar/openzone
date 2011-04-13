@@ -85,7 +85,12 @@ namespace oz
 
     log.print( "Initialising Matrix Lua ..." );
 
-    l = lua_open();
+    l = luaL_newstate();
+    if( l == null ) {
+      log.printEnd( " Failed" );
+      throw Exception( "Lua initialisation failed" );
+    }
+
     luaL_openlibs( l );
 
     OZ_LUA_FUNCTION( ozPrintln );
@@ -300,18 +305,20 @@ namespace oz
 
   void Lua::free()
   {
-    log.print( "Freeing Matrix Lua ..." );
-
-    if( l != null ) {
-      lua_close( l );
-      l = null;
+    if( l == null ) {
+      return;
     }
+
+    log.print( "Freeing Matrix Lua ..." );
 
     objects.clear();
     objects.dealloc();
 
     structs.clear();
     structs.dealloc();
+
+    lua_close( l );
+    l = null;
 
     log.printEnd( " OK" );
   }

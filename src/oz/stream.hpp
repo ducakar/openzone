@@ -22,43 +22,32 @@ namespace oz
     Endian() = delete;
 
     OZ_ALWAYS_INLINE
-    static ushort shuffle16( ushort s )
+    static short shuffle16( short s )
     {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return s;
 #else
-      return ushort( s << 8 | s >> 8 );
+      return short( ushort( s ) << 8 | ushort( s ) >> 8 );
 #endif
     }
 
     OZ_ALWAYS_INLINE
-    static uint shuffle32( uint i )
+    static int shuffle32( int i )
     {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return i;
 #else
-# ifdef __GNUC__
       return __builtin_bswap32( i );
-# else
-      return ( i << 24 ) | ( i << 8 & 0x00ff0000 ) |
-          ( i >> 8 & 0x0000ff00 ) | ( i >> 24 );
-# endif
 #endif
     }
 
     OZ_ALWAYS_INLINE
-    static ulong64 shuffle64( ulong64 l )
+    static long64 shuffle64( long64 l )
     {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return l;
 #else
-# ifdef __GNUC__
       return __builtin_bswap64( l );
-# else
-      return ( l << 56 ) | ( l << 40 & 0x00ff000000000000 ) | ( l << 24 & 0x0000ff0000000000 ) |
-          ( l << 8 & 0x000000ff00000000 ) | ( l >> 8 & 0x00000000ff000000 ) |
-          ( l >> 24 & 0x0000000000ff0000 ) | ( l >> 40 & 0x000000000000ff00 ) | ( l >> 56 );
-# endif
 #endif
     }
   };

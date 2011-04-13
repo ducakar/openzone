@@ -21,18 +21,15 @@
 
 #if defined( __clang__ )
 # error gcc >= 4.5 is the only supported compiler
-# if __clang_major__ < 2 || ( __clang_major__ == 2 && __clang_minor__ < 9 )
-#  error gcc >= 4.5 and clang >= 2.9 are the only supported compilers
-# endif
 #elif defined( __GNUC__ )
 # if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 5 )
-#  error gcc >= 4.5 and clang >= 2.9 are the only supported compilers
+#  error gcc >= 4.5 is the only supported compiler
 # elif __GNUC__ == 4 && __GNUC_MINOR__ == 5
 #  define nullptr __null
 #  define noexcept throw()
 # endif
 #else
-# error gcc >= 4.5 and clang >= 2.9 are the only supported compilers
+# error gcc >= 4.5 is the only supported compiler
 #endif
 
 #ifdef OZ_ECLIPSE_HIGHLIGHTING
