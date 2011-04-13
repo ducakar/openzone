@@ -42,7 +42,9 @@ namespace nirvana
       static Mind* create( int bot );
       static Mind* read( InputStream* istream );
 
-      explicit Mind( int bot_ ) : flags( 0 ), bot( bot_ ) {}
+      explicit Mind( int bot_ ) : flags( 0 ), bot( bot_ )
+      {}
+
       virtual ~Mind();
 
       virtual const char* type() const;

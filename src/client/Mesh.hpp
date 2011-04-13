@@ -26,8 +26,10 @@ namespace client
     Point3   pos;
     TexCoord texCoord;
     Vec3     normal;
+#ifdef OZ_BUMPMAP
     Vec3     tangent;
     Vec3     binormal;
+#endif
 
     Vertex() = default;
 

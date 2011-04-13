@@ -7,16 +7,14 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec2 exTexCoord;
-
-out vec4 outColour;
+varying vec2 exTexCoord;
 
 void main()
 {
   if( oz_IsTextureEnabled ) {
-    outColour = texture( oz_Textures[0], exTexCoord );
+    gl_FragData[0] = texture2D( oz_Textures[0], exTexCoord );
   }
   else {
-    outColour = oz_Colour;
+    gl_FragData[0] = oz_Colour;
   }
 }

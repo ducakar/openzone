@@ -25,6 +25,16 @@ namespace ui
 
   UI ui;
 
+#ifndef NDEBUG
+  UI::UI() : root( null ), loadingScreen( null ), hudArea( null ), strategicArea( null ),
+      inventoryMenu( null ), musicPlayer( null ), buildMenu( null ), debugFrame( null )
+  {}
+#else
+  UI::UI() : root( null ), loadingScreen( null ), hudArea( null ), strategicArea( null ),
+      inventoryMenu( null ), musicPlayer( null ), buildMenu( null )
+  {}
+#endif
+
   void UI::showLoadingScreen( bool doShow )
   {
     root->focus( loadingScreen );
@@ -91,18 +101,63 @@ namespace ui
 
   void UI::load()
   {
+    bool areasConstructed = false;
+
     isFreelook = false;
 
     mouse.load();
 
     strategicArea = new StrategicArea();
-    hudArea       = new HudArea();
+    onleave( [&]() {
+      if( !areasConstructed ) {
+        delete strategicArea;
+        strategicArea = null;
+      }
+    } );
+
+    hudArea = new HudArea();
+    onleave( [&]() {
+      if( !areasConstructed ) {
+        delete hudArea;
+        hudArea = null;
+      }
+    } );
+
     inventoryMenu = new InventoryMenu();
-    musicPlayer   = new MusicPlayer();
-    buildMenu     = new BuildMenu();
+    onleave( [&]() {
+      if( !areasConstructed ) {
+        delete inventoryMenu;
+        inventoryMenu = null;
+      }
+    } );
+
+    musicPlayer = new MusicPlayer();
+    onleave( [&]() {
+      if( !areasConstructed ) {
+        delete musicPlayer;
+        musicPlayer = null;
+      }
+    } );
+
+    buildMenu = new BuildMenu();
+    onleave( [&]() {
+      if( !areasConstructed ) {
+        delete buildMenu;
+        buildMenu = null;
+      }
+    } );
+
 #ifndef NDEBUG
-    debugFrame    = new DebugFrame();
+    debugFrame = new DebugFrame();
+    onleave( [&]() {
+      if( !areasConstructed ) {
+        delete debugFrame;
+        debugFrame = null;
+      }
+    } );
 #endif
+
+    areasConstructed = true;
 
     root->add( strategicArea );
     root->add( hudArea );
@@ -119,22 +174,31 @@ namespace ui
   void UI::unload()
   {
 #ifndef NDEBUG
-    root->remove( debugFrame );
+    if( debugFrame != null ) {
+      root->remove( debugFrame );
+      debugFrame = null;
+    }
 #endif
-    root->remove( buildMenu );
-    root->remove( musicPlayer );
-    root->remove( inventoryMenu );
-    root->remove( hudArea  );
-    root->remove( strategicArea );
-
-#ifndef NDEBUG
-    debugFrame    = null;
-#endif
-    buildMenu     = null;
-    musicPlayer   = null;
-    inventoryMenu = null;
-    hudArea       = null;
-    strategicArea = null;
+    if( buildMenu != null ) {
+      root->remove( buildMenu );
+      buildMenu = null;
+    }
+    if( musicPlayer != null ) {
+      root->remove( musicPlayer );
+      musicPlayer = null;
+    }
+    if( inventoryMenu != null ) {
+      root->remove( inventoryMenu );
+      inventoryMenu = null;
+    }
+    if( hudArea != null ) {
+      root->remove( hudArea  );
+      hudArea = null;
+    }
+    if( strategicArea != null ) {
+      root->remove( strategicArea );
+      strategicArea = null;
+    }
 
     mouse.unload();
   }
@@ -152,16 +216,9 @@ namespace ui
     root = new Area( camera.width, camera.height );
     loadingScreen = new LoadingArea();
 
-    strategicArea = null;
-    hudArea       = null;
-    inventoryMenu = null;
-    musicPlayer   = null;
-    buildMenu     = null;
-#ifndef NDEBUG
-    debugFrame    = null;
-#endif
-
     root->add( loadingScreen );
+
+    hard_assert( ui::ui.strategicArea == null );
   }
 
   void UI::free()

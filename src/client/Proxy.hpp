@@ -20,7 +20,8 @@ namespace client
   {
     public:
 
-      virtual ~Proxy() {}
+      virtual ~Proxy()
+      {}
 
       virtual void begin()   = 0;
       virtual void update()  = 0;

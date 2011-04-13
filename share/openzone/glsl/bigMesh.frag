@@ -7,15 +7,13 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec2  exTexCoord;
-in float exDistance;
-in vec4  exColour;
-
-out vec4 outColour;
+varying vec2  exTexCoord;
+varying float exDistance;
+varying vec4  exColour;
 
 void main()
 {
-  outColour = exColour;
-  outColour *= texture( oz_Textures[0], exTexCoord );
-  outColour = applyFog( outColour, exDistance );
+  gl_FragData[0] = exColour;
+  gl_FragData[0] *= texture2D( oz_Textures[0], exTexCoord );
+  gl_FragData[0] = applyFog( gl_FragData[0], exDistance );
 }

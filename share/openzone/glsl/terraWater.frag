@@ -1,5 +1,5 @@
 /*
- *  bigTerraWater.frag
+ *  terraWater.frag
  *
  *  Terrain water (sea) shader.
  *
@@ -7,16 +7,14 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec3  exPosition;
-in vec2  exTexCoord;
-in float exDistance;
-in vec4  exColour;
-
-out vec4 outColour;
+varying vec3  exPosition;
+varying vec2  exTexCoord;
+varying float exDistance;
+varying vec4  exColour;
 
 void main()
 {
-  outColour = exColour;
-  outColour *= texture( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
-  outColour = applyFog( outColour, exDistance );
+  gl_FragData[0] = exColour;
+  gl_FragData[0] *= texture2D( oz_Textures[0], exTexCoord * TERRA_WATER_SCALE );
+  gl_FragData[0] = applyFog( gl_FragData[0], exDistance );
 }

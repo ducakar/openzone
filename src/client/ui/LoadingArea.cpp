@@ -14,8 +14,6 @@
 #include "client/Camera.hpp"
 #include "client/Shader.hpp"
 
-#include <GL/gl.h>
-
 namespace oz
 {
 namespace client

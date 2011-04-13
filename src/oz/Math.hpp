@@ -50,21 +50,13 @@ namespace oz
       OZ_ALWAYS_INLINE
       static float round( float x )
       {
-#ifdef __clang__
-        return x < 0.0f ? __builtin_ceilf( x - 0.5f ) : __builtin_floorf( x + 0.5f );
-#else
         return __builtin_roundf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
       static float trunc( float x )
       {
-#ifdef __clang__
-        return x < 0.0f ? __builtin_ceilf( x ) : __builtin_floorf( x );
-#else
         return __builtin_truncf( x );
-#endif
       }
 
       OZ_ALWAYS_INLINE
@@ -209,7 +201,9 @@ namespace oz
           float f;
           int   b;
         };
-        return FloatToBits{ x }.b;
+        //return FloatToBits{ x }.b;
+        FloatToBits fb = { x };
+        return fb.b;
       }
 
       OZ_ALWAYS_INLINE
@@ -220,7 +214,9 @@ namespace oz
           int   b;
           float f;
         };
-        return BitsToFloat{ i }.f;
+        //return BitsToFloat{ i }.f;
+        BitsToFloat bf = { i };
+        return bf.f;
       }
 
       OZ_ALWAYS_INLINE

@@ -31,7 +31,8 @@ namespace client
 
     protected:
 
-      Model() : obj( null ), flags( 0 ) {}
+      Model() : obj( null ), flags( 0 )
+      {}
 
     public:
 
@@ -39,7 +40,8 @@ namespace client
       int flags;
       const ObjectClass* clazz;
 
-      virtual ~Model();
+      virtual ~Model()
+      {}
 
       virtual void draw( const Model* parent ) = 0;
 

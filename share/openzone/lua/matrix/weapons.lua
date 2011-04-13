@@ -73,7 +73,7 @@ function axe_onShot( l )
   end
 end
 
-function vehicle_30mm_onShot( l )
+function vehicle_heavyBlaster_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   ozObjBindUser();
   local vX, vY, vZ = ozBotGetDir()

@@ -7,21 +7,21 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec3 inPosition;
-in vec2 inTexCoord;
-in vec3 inNormal;
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
+attribute vec3 inNormal;
 
-out vec3 exPosition;
-out vec2 exTexCoord;
-out vec3 exNormal;
+varying vec3 exPosition;
+varying vec2 exTexCoord;
+varying vec3 exNormal;
 
 void main()
 {
 #ifdef OZ_VERTEX_TEXTURE
-  vec4 firstPosition  = texture( oz_Textures[1], vec2( inPosition.x, oz_MD2Anim[0] ) );
-  vec4 secondPosition = texture( oz_Textures[1], vec2( inPosition.x, oz_MD2Anim[1] ) );
-  vec4 firstNormal    = texture( oz_Textures[2], vec2( inPosition.x, oz_MD2Anim[0] ) );
-  vec4 secondNormal   = texture( oz_Textures[2], vec2( inPosition.x, oz_MD2Anim[1] ) );
+  vec4 firstPosition  = texture2D( oz_Textures[1], vec2( inPosition.x, oz_MD2Anim[0] ) );
+  vec4 secondPosition = texture2D( oz_Textures[1], vec2( inPosition.x, oz_MD2Anim[1] ) );
+  vec4 firstNormal    = texture2D( oz_Textures[2], vec2( inPosition.x, oz_MD2Anim[0] ) );
+  vec4 secondNormal   = texture2D( oz_Textures[2], vec2( inPosition.x, oz_MD2Anim[1] ) );
   vec4 localPosition  = mix( firstPosition, secondPosition, oz_MD2Anim[2] );
   vec4 localNormal    = mix( firstNormal, secondNormal, oz_MD2Anim[2] );
 

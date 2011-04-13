@@ -58,6 +58,8 @@ namespace ui
       DebugFrame*    debugFrame;
 #endif
 
+      UI();
+
       void showLoadingScreen( bool doShow );
 
       void update();

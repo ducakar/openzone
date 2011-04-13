@@ -17,9 +17,6 @@
 namespace oz
 {
 
-  ObjectClass::~ObjectClass()
-  {}
-
   void ObjectClass::fillCommon( ObjectClass* clazz, const Config* config )
   {
     clazz->description = gettext( clazz->name );
@@ -113,6 +110,9 @@ namespace oz
       throw Exception( "Cylindric object '" + clazz->name + "' should have dim.x == dim.y" );
     }
   }
+
+  ObjectClass::~ObjectClass()
+  {}
 
   ObjectClass* ObjectClass::init( const String& name, const Config* config )
   {

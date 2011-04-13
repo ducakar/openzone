@@ -16,7 +16,6 @@
 #include "client/Camera.hpp"
 
 #include <SDL_ttf.h>
-#include <GL/gl.h>
 
 namespace oz
 {
@@ -25,7 +24,7 @@ namespace client
 namespace ui
 {
 
-  const SDL_Color Area::SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
+  const SDL_Colour Area::SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
   Vector<Area*> Area::updateAreas;
 
@@ -243,6 +242,8 @@ namespace ui
 
   void Area::remove( Area* area )
   {
+    hard_assert( children.contains( area ) );
+
     if( area->flags & UPDATE_BIT ) {
       updateAreas.exclude( area );
     }

@@ -11,8 +11,6 @@
 
 #include "client/common.hpp"
 
-#include <GL/gl.h>
-
 namespace oz
 {
 namespace client
@@ -20,8 +18,7 @@ namespace client
 
   const TexCoord TexCoord::ZERO = TexCoord( 0.0f, 0.0f );
 
-#ifdef OZ_MINGW
-
+#ifndef OZ_OPENGL3
   PFNGLUNIFORM1IPROC               glUniform1i;
   PFNGLUNIFORM2IPROC               glUniform2i;
   PFNGLUNIFORM3IPROC               glUniform3i;
@@ -69,14 +66,80 @@ namespace client
   PFNGLGETPROGRAMINFOLOGPROC       glGetProgramInfoLog;
   PFNGLGETUNIFORMLOCATIONPROC      glGetUniformLocation;
   PFNGLBINDATTRIBLOCATIONPROC      glBindAttribLocation;
-  PFNGLBINDFRAGDATALOCATIONPROC    glBindFragDataLocation;
   PFNGLUSEPROGRAMPROC              glUseProgram;
 
-  PFNGLACTIVETEXTUREPROC           wglActiveTexture;
-  PFNGLCOMPRESSEDTEXIMAGE2DPROC    wglCompressedTexImage2D;
-  PFNGLDRAWRANGEELEMENTSPROC       wglDrawRangeElements;
-
+  PFNGLACTIVETEXTUREPROC           glActiveTexture;
+  PFNGLCOMPRESSEDTEXIMAGE2DPROC    glCompressedTexImage2D;
+  PFNGLDRAWRANGEELEMENTSPROC       glDrawRangeElements;
 #endif
+
+  GLenum glGetError()
+  {
+    GLenum result = ::glGetError();
+
+    if( result != GL_NO_ERROR ) {
+      switch( result ) {
+        case GL_INVALID_ENUM: {
+          log.println( "GL: GL_INVALID_ENUM" );
+          break;
+        }
+        case GL_INVALID_VALUE: {
+          log.println( "GL: GL_INVALID_VALUE" );
+          break;
+        }
+        case GL_INVALID_OPERATION: {
+          log.println( "GL: GL_INVALID_OPERATION" );
+          break;
+        }
+        case GL_STACK_OVERFLOW: {
+          log.println( "GL: GL_STACK_OVERFLOW" );
+          break;
+        }
+        case GL_OUT_OF_MEMORY: {
+          log.println( "GL: GL_OUT_OF_MEMORY" );
+          break;
+        }
+        case GL_TABLE_TOO_LARGE: {
+          log.println( "GL: GL_TABLE_TOO_LARGE" );
+          break;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  ALenum alGetError()
+  {
+    ALenum result = ::alGetError();
+
+    if( result != AL_NO_ERROR ) {
+      switch( result ) {
+        case AL_INVALID_NAME: {
+          log.println( "AL: AL_INVALID_NAME" );
+          break;
+        }
+        case AL_INVALID_ENUM: {
+          log.println( "AL: AL_INVALID_ENUM" );
+          break;
+        }
+        case AL_INVALID_VALUE: {
+          log.println( "AL: AL_INVALID_VALUE" );
+          break;
+        }
+        case AL_INVALID_OPERATION: {
+          log.println( "AL: AL_INVALID_OPERATION" );
+          break;
+        }
+        case AL_OUT_OF_MEMORY: {
+          log.println( "AL: AL_OUT_OF_MEMORY" );
+          break;
+        }
+      }
+    }
+
+    return result;
+  }
 
 }
 }

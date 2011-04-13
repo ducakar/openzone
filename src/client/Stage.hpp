@@ -20,7 +20,8 @@ namespace client
   {
     public:
 
-      virtual ~Stage();
+      virtual ~Stage()
+      {}
 
       virtual bool update()  = 0;
       virtual void present() = 0;

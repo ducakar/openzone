@@ -503,7 +503,7 @@ namespace oz
        */
       bool contains( const char* key ) const
       {
-        int   i = String::hash( key ) % SIZE;
+        uint  i = uint( String::hash( key ) ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -524,7 +524,7 @@ namespace oz
        */
       const Type* find( const char* key ) const
       {
-        int   i = String::hash( key ) % SIZE;
+        uint  i = uint( String::hash( key ) ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -545,7 +545,7 @@ namespace oz
        */
       Type* find( const char* key )
       {
-        int   i = String::hash( key ) % SIZE;
+        uint  i = uint( String::hash( key ) ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -567,7 +567,7 @@ namespace oz
        */
       const Type& get( const char* key ) const
       {
-        int   i = String::hash( key ) % SIZE;
+        uint  i = uint( String::hash( key ) ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -592,7 +592,7 @@ namespace oz
        */
       Type& get( const char* key )
       {
-        int   i = String::hash( key ) % SIZE;
+        uint  i = uint( String::hash( key ) ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -619,7 +619,7 @@ namespace oz
       {
         hard_assert( !contains( key ) );
 
-        int   i = String::hash( key ) % SIZE;
+        uint  i = uint( String::hash( key ) ) % uint( SIZE );
         Elem* elem = new( pool ) Elem( key, value, data[i] );
 
         data[i] = elem;
@@ -636,7 +636,7 @@ namespace oz
        */
       void exclude( const char* key )
       {
-        int    i = String::hash( key ) % SIZE;
+        uint   i = uint( String::hash( key ) ) % uint( SIZE );
         Elem*  p = data[i];
         Elem** prev = &data[i];
 

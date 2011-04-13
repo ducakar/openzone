@@ -37,7 +37,8 @@ namespace oz
 #ifndef NDEBUG
         bool isUsed;
 
-        Elem() : isUsed( false ) {}
+        Elem() : isUsed( false )
+        {}
 #endif
 
         bool operator < ( const Elem& e ) const

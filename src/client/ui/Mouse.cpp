@@ -49,8 +49,7 @@ namespace ui
       fscanf( f, "%d %d %d %31s", &size, &hotspotX, &hotspotY, imgFile );
       fclose( f );
 
-      int nMipmaps;
-      uint texId = context.loadRawTexture( "ui/cur/" + String( imgFile ), &nMipmaps,
+      uint texId = context.loadRawTexture( "ui/cur/" + String( imgFile ),
                                            false, GL_LINEAR, GL_LINEAR );
 
       OutputStream os = buffer.outputStream();
@@ -58,7 +57,7 @@ namespace ui
       os.writeInt( size );
       os.writeInt( hotspotX );
       os.writeInt( hotspotY );
-      context.writeTexture( texId, nMipmaps, &os );
+      context.writeTexture( texId, &os );
 
       glDeleteTextures( 1, &texId );
 
@@ -157,6 +156,11 @@ namespace ui
     glDeleteTextures( 1, &cursors[ARROW].texId );
     glDeleteTextures( 1, &cursors[MOVE].texId );
     glDeleteTextures( 1, &cursors[TEXT].texId );
+
+    cursors[X].texId     = 0;
+    cursors[ARROW].texId = 0;
+    cursors[MOVE].texId  = 0;
+    cursors[TEXT].texId  = 0;
   }
 
   void Mouse::init()
@@ -172,6 +176,11 @@ namespace ui
     buttons = 0;
     oldButtons = 0;
     currButtons = 0;
+
+    cursors[X].texId     = 0;
+    cursors[ARROW].texId = 0;
+    cursors[MOVE].texId  = 0;
+    cursors[TEXT].texId  = 0;
   }
 
   void Mouse::free()

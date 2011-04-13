@@ -16,7 +16,6 @@
 #include "client/Audio.hpp"
 #include "client/Context.hpp"
 
-#include <AL/al.h>
 #include <AL/alc.h>
 #include <vorbis/vorbisfile.h>
 
@@ -42,6 +41,7 @@ namespace client
        * SFX
        */
       Bitset                    playedStructs;
+      float                     volume;
 
       void playCell( int cellX, int cellY );
       bool loadMusicBuffer( uint buffer );
@@ -63,7 +63,7 @@ namespace client
 
     public:
 
-      void setVolume( float volume ) const;
+      void setVolume( float volume );
       void setMusicVolume( float volume ) const;
 
       void playMusic( int track );

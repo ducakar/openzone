@@ -397,22 +397,22 @@ namespace oz
        * @param s
        * @return absolute value of hash
        */
-      static uint hash( const char* s )
+      static int hash( const char* s )
       {
         uint hash = 5381;
 
         while( *s != '\0' ) {
-          hash = hash * 33 + *s;
+          hash = hash * 33 + uint( *s );
           ++s;
         }
-        return hash;
+        return int( hash );
       }
 
       /**
        * Bernstein's hash function.
        * @return absolute value of hash
        */
-      uint hash() const
+      int hash() const
       {
         return hash( buffer );
       }

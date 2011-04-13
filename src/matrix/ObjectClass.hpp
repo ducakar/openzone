@@ -65,9 +65,14 @@ namespace oz
       String audioType;
       int    audioSamples[AUDIO_SAMPLES];
 
-      virtual ~ObjectClass();
+    protected:
 
       static void fillCommon( ObjectClass* clazz, const Config* config );
+
+    public:
+
+      virtual ~ObjectClass();
+
       static ObjectClass* init( const String& name, const Config* config );
 
       virtual Object* create( int index, const Point3& pos ) const;

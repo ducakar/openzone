@@ -37,7 +37,6 @@ namespace client
       static const int   MAX_STARS = 4096;
 
       uint   vao;
-      uint   ibo;
       uint   vbo;
 
       uint   sunTexId;
@@ -55,15 +54,18 @@ namespace client
 
       Vec3   lightDir;
 
+      Caelum();
+
 #ifdef OZ_BUILD_TOOLS
       static void prebuild( const char* name );
 #endif
 
+      void update();
+      void draw();
+
       void load( const char* name );
       void unload();
 
-      void update();
-      void draw();
   };
 
   extern Caelum caelum;

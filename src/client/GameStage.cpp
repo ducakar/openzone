@@ -35,6 +35,8 @@ namespace client
 
   int GameStage::auxMain( void* )
   {
+    System::catchSignals();
+
     try{
       gameStage.run();
     }

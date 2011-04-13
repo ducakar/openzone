@@ -227,11 +227,13 @@ namespace oz
       obj->update();
 
       // object might have removed itself within onUpdate()
-      if( obj->index == -1 ) {
+      if( orbis.objects[i] == null ) {
         continue;
       }
-
-      if( obj->flags & Object::DYNAMIC_BIT ) {
+      else if( obj->life <= 0.0f ) {
+        obj->destroy();
+      }
+      else if( obj->flags & Object::DYNAMIC_BIT ) {
         Dynamic* dyn = static_cast<Dynamic*>( obj );
 
         if( dyn->cell == null ) {
@@ -250,10 +252,6 @@ namespace oz
             synapse.remove( obj );
           }
         }
-      }
-
-      if( obj->life <= 0.0f ) {
-        obj->destroy();
       }
     }
 

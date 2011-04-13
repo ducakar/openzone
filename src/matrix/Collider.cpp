@@ -493,25 +493,27 @@ namespace oz
     for( int i = 0; i < brush->nSides; ++i ) {
       const Plane& plane = bsp->planes[ bsp->brushSides[brush->firstSide + i] ];
 
-      if( plane.n.z <= 0.0f ) {
-        float centreDist = startPos * plane;
+      float offset = aabb.dim * plane.abs();
+      float dist   = startPos * plane - offset;
 
-        if( centreDist > -EPSILON ) {
-          return;
-        }
+      if( dist >= 0.0f ) {
+        return;
       }
-      else {
-        float dist = ( plane.d - startPos.x*plane.n.x + startPos.y*plane.n.y ) /
-            plane.n.z - startPos.z + aabb.dim.z;
+      else if( plane.n.z > 0.0f ) {
+        float lowerDist = ( plane.d - startPos.x*plane.n.x - startPos.y*plane.n.y ) / plane.n.z -
+            startPos.z + aabb.dim.z;
 
-        if( dist < 0.0f ) {
-          return;
+        if( lowerDist > 0.0f ) {
+          depth = min( depth, lowerDist );
         }
         else {
-          depth = min( depth, dist );
+          return;
         }
       }
     }
+
+    hard_assert( depth > 0.0f );
+
     hit.waterDepth = max( hit.waterDepth, depth );
     hit.inWater    = true;
   }
@@ -529,6 +531,7 @@ namespace oz
         return;
       }
     }
+
     hit.onLadder = true;
   }
 
@@ -606,6 +609,7 @@ namespace oz
         }
       }
     }
+
     startPos = originalStartPos;
     endPos   = originalEndPos;
   }

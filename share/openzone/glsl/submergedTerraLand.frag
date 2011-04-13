@@ -7,19 +7,17 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec3 exPosition;
-in vec2 exTexCoord;
-in vec3 exNormal;
-
-out vec4 outColour;
+varying vec3 exPosition;
+varying vec2 exTexCoord;
+varying vec3 exNormal;
 
 void main()
 {
   vec3 toCamera = oz_CameraPosition - exPosition;
   float dist = length( toCamera );
 
-  outColour = skyLightColour( exNormal );
-  outColour *= texture( oz_Textures[0], exTexCoord * oz_TextureScales[0] );
-  outColour *= texture( oz_Textures[1], exTexCoord * oz_TextureScales[1] );
-  outColour = applyFog( outColour, dist );
+  gl_FragData[0] = skyLightColour( exNormal );
+  gl_FragData[0] *= texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
+  gl_FragData[0] *= texture2D( oz_Textures[1], exTexCoord );
+  gl_FragData[0] = applyFog( gl_FragData[0], dist );
 }

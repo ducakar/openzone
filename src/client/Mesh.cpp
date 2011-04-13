@@ -19,6 +19,7 @@ namespace oz
 namespace client
 {
 
+#ifdef OZ_BUMPMAP
   Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_,
                   const Vec3& tangent_, const Vec3& binormal_ ) :
       pos( pos_ ), texCoord( texCoord_ ), normal( normal_ ),
@@ -28,8 +29,19 @@ namespace client
   bool Vertex::operator == ( const Vertex& v ) const
   {
     return pos == v.pos && texCoord == v.texCoord && normal == v.normal &&
-    tangent == v.tangent && binormal == v.binormal;
+        tangent == v.tangent && binormal == v.binormal;
   }
+#else
+  Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_,
+                  const Vec3&, const Vec3& ) :
+      pos( pos_ ), texCoord( texCoord_ ), normal( normal_ )
+  {}
+
+  bool Vertex::operator == ( const Vertex& v ) const
+  {
+    return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
+  }
+#endif
 
   void Vertex::read( InputStream* stream )
   {
@@ -39,8 +51,10 @@ namespace client
     texCoord[1] = stream->readFloat();
 
     normal   = stream->readVec3();
+#ifdef OZ_BUMPMAP
     tangent  = stream->readVec3();
     binormal = stream->readVec3();
+#endif
   }
 
   void Vertex::write( OutputStream* stream ) const
@@ -51,8 +65,10 @@ namespace client
     stream->writeFloat( texCoord[1] );
 
     stream->writeVec3( normal );
+#ifdef OZ_BUMPMAP
     stream->writeVec3( tangent );
     stream->writeVec3( binormal );
+#endif
   }
 
   Mesh::Mesh() : vao( 0 )
@@ -110,6 +126,7 @@ namespace client
     glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
 
+#ifdef OZ_BUMPMAP
     glEnableVertexAttribArray( Attrib::TANGENT );
     glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
@@ -117,6 +134,7 @@ namespace client
     glEnableVertexAttribArray( Attrib::BINORMAL );
     glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+#endif
 
     glBindVertexArray( 0 );
 
@@ -312,10 +330,9 @@ namespace client
       stream->writeInt( ~textures.length() );
 
       for( int i = 1; i < textures.length(); ++i ) {
-        int nMipmaps;
-        uint id = context.loadRawTexture( textures[i], &nMipmaps );
+        uint id = context.loadRawTexture( textures[i] );
 
-        context.writeTexture( id, nMipmaps, stream );
+        context.writeTexture( id, stream );
         glDeleteTextures( 1, &id );
       }
     }

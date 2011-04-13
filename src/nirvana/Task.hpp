@@ -45,8 +45,10 @@ namespace nirvana
       static Task* create( const Task* parent );
       static Task* read( InputStream* istream, const Task* parent );
 
-      explicit Task( Mind* mind_, Task* parent_ ) : flags( 0 ), mind( mind_ ), parent( parent_ ) {}
-      virtual ~Task() {}
+      explicit Task( Mind* mind_, Task* parent_ ) : flags( 0 ), mind( mind_ ), parent( parent_ )
+      {}
+
+      virtual ~Task();
 
       virtual const char* type() const = 0;
 

@@ -77,6 +77,8 @@ namespace oz
 
     log.print( "Loading terrain heightmap image '%s' ...", name.cstr() );
 
+    init();
+
     SDL_Surface* image = IMG_Load( imageFile );
 
     if( image == null ) {

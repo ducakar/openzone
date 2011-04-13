@@ -73,15 +73,14 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
     log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
     log.indent();
 
-    int nMipmaps;
-    uint id = client::context.loadRawTexture( srcPath, &nMipmaps, wrap, magFilter, minFilter );
+    uint id = client::context.loadRawTexture( srcPath, wrap, magFilter, minFilter );
 
     hard_assert( id != 0 );
 
     OutputStream os = buffer.outputStream();
 
     log.println( "Compiling into '%s'", destPath.cstr() );
-    client::context.writeTexture( id, nMipmaps, &os );
+    client::context.writeTexture( id, &os );
 
     if( !buffer.write( destPath, os.length() ) ) {
       throw Exception( "Texture writing failed" );
@@ -362,7 +361,6 @@ int main( int argc, char** argv )
     SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Prebuilding data ...", null );
 
     buffer.alloc( 10 * 1024 * 1024 );
-    matrix.init();
 
     client::ui::Mouse::prebuild();
 
@@ -413,7 +411,6 @@ int main( int argc, char** argv )
   }
 
   client::compiler.free();
-  matrix.free();
   buffer.dealloc();
   client::render.free();
   translator.free();

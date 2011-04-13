@@ -7,11 +7,9 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec3 exPosition;
-in vec2 exTexCoord;
-in vec3 exNormal;
-
-out vec4 outColour;
+varying vec3 exPosition;
+varying vec2 exTexCoord;
+varying vec3 exNormal;
 
 void main()
 {
@@ -19,9 +17,9 @@ void main()
   vec3 normal = normalize( exNormal );
   float dist = length( toCamera );
 
-  outColour = oz_Colour;
-  outColour *= skyLightColour( normal );
-  outColour *= specularColour( normal, toCamera / dist );
-  outColour *= texture( oz_Textures[0], exTexCoord );
-  outColour = applyFog( outColour, dist );
+  gl_FragData[0] = oz_Colour;
+  gl_FragData[0] *= skyLightColour( normal );
+  gl_FragData[0] *= specularColour( normal, toCamera / dist );
+  gl_FragData[0] *= texture2D( oz_Textures[0], exTexCoord );
+  gl_FragData[0] = applyFog( gl_FragData[0], dist );
 }

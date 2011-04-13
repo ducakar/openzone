@@ -35,7 +35,8 @@ struct Object
 
   virtual string name() = 0;
 
-  virtual ~Object() {}
+  virtual ~Object()
+  {}
 };
 
 struct Human : Object
@@ -47,7 +48,8 @@ struct Human : Object
     return "Human";
   }
 
-  virtual ~Human() {}
+  virtual ~Human()
+  {}
 };
 
 struct Vehicle : Object
@@ -59,7 +61,8 @@ struct Vehicle : Object
     return "Vehicle";
   }
 
-  virtual ~Vehicle() {}
+  virtual ~Vehicle()
+  {}
 };
 
 map<string, Object* (*)()> registry;

@@ -9,6 +9,9 @@
 
 const float TAU = 6.283185307179586;
 
+const float TERRA_DETAIL_SCALE = 512.0;
+const float TERRA_WATER_SCALE  = 512.0;
+
 /*
  * Transformation
  */
@@ -36,7 +39,6 @@ uniform vec4            oz_Colour = vec4( 1.0, 1.0, 1.0, 1.0 );
  */
 uniform bool            oz_IsTextureEnabled = false;
 uniform sampler2D       oz_Textures[4];
-uniform float           oz_TextureScales[4] = float[4]( 1.0, 1.0, 1.0, 1.0 );
 
 /*
  * Lighting
@@ -119,6 +121,8 @@ vec2 noise( vec2 seed )
 {
   return vec2( cos( seed.x ), sin( seed.y ) );
 }
+
+
 
 
 

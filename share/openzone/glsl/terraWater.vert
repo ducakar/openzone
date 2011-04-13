@@ -1,5 +1,5 @@
 /*
- *  bigTerraWater.vert
+ *  terraWater.vert
  *
  *  Terrain water (sea) shader.
  *
@@ -7,14 +7,14 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-in vec3 inPosition;
-in vec2 inTexCoord;
-in vec3 inNormal;
+attribute vec3 inPosition;
+attribute vec2 inTexCoord;
+attribute vec3 inNormal;
 
-out vec3  exPosition;
-out vec2  exTexCoord;
-out float exDistance;
-out vec4  exColour;
+varying vec3  exPosition;
+varying vec2  exTexCoord;
+varying float exDistance;
+varying vec4  exColour;
 
 void main()
 {

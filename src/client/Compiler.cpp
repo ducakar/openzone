@@ -16,8 +16,6 @@
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
 
-#include <GL/gl.h>
-
 namespace oz
 {
 namespace client
@@ -355,8 +353,6 @@ namespace client
 
   void Compiler::free()
   {
-    part.texture = "";
-
     vertices.clear();
     vertices.dealloc();
 
@@ -366,6 +362,7 @@ namespace client
     alphaParts.clear();
     alphaParts.dealloc();
 
+    part.texture = "";
     part.indices.clear();
     part.indices.dealloc();
   }

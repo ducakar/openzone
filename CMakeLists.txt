@@ -28,7 +28,7 @@ if( NOT OZ_RC_DIR )
 endif()
 
 if( NOT OZ_CLIENT_LOG_FILE )
-  set( OZ_CLIENT_LOG_FILE "client.log" CACHE STRING "" FORCE )
+  set( OZ_CLIENT_LOG_FILE "STDOUT" CACHE STRING "" FORCE )
 endif()
 
 if( NOT OZ_CLIENT_CONFIG_FILE )
@@ -36,8 +36,10 @@ if( NOT OZ_CLIENT_CONFIG_FILE )
 endif()
 
 option( OZ_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
-
 option( OZ_NETWORKING "Enable networking" OFF )
+option( OZ_OPENGL3 "Compile for OpenGL 3+ instead for OpenGL 2.1" OFF )
+option( OZ_TEXTURE_COMPRESSION "Use S3 texture compression (doesn't work with open source drivers)" OFF )
+option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)" OFF )
 
 option( OZ_BUILD_TESTS "Build tests" ON )
 option( OZ_BUILD_TOOLS "Build tools" ON )
@@ -86,7 +88,7 @@ macro( add_pch _targetName _inputHeader )
   get_directory_property( _includes INCLUDE_DIRECTORIES )
   foreach( _inc_dir ${_includes} )
     list( APPEND _flags "-I${_inc_dir}" )
-  endforeach( _inc_dir ${_includes} )
+  endforeach()
 
   # set build rules (build precompiled header and copy original header to build folder - needed to
   # be there to be included via other headers - which is needed for KDevelop's indexer to work
@@ -166,18 +168,14 @@ include_directories( ${SDLTTF_INCLUDE_DIR} )
 include_directories( ${LUA_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
 include_directories( ${OPENAL_INCLUDE_DIR} )
-include_directories( ${ALUT_INCLUDE_DIR} )
 include_directories( ${OGG_INCLUDE_DIR} )
 include_directories( ${VORBIS_INCLUDE_DIR} )
 
-set( libs "" )
-set( libs "${libs};${SDLMAIN_LIBRARY}" )
-set( libs "${libs};${SDL_LIBRARY}" )
+set( libs "${SDL_LIBRARY}" )
 set( libs "${libs};${SDLTTF_LIBRARY}" )
 set( libs "${libs};${LUA_LIBRARY}" )
 set( libs "${libs};${OPENGL_gl_LIBRARY}" )
 set( libs "${libs};${OPENAL_LIBRARY}" )
-set( libs "${libs};${ALUT_LIBRARY}" )
 set( libs "${libs};${VORBISFILE_LIBRARY}" )
 
 if( OZ_MINGW )
@@ -200,14 +198,16 @@ endif()
 
 # compiler and linker flags
 set( flags "-pipe -std=c++0x -pedantic-errors -ffast-math" )
-set( warnings "-Wall -Wextra -Wold-style-cast -Wcast-align -Wsign-promo -Wconversion -Wlogical-op" )
+set( warnings "-Wall -Wextra -Wold-style-cast -Wcast-align -Wsign-promo -Wconversion" )
 set( warnings "${warnings} -Winvalid-pch -Wdisabled-optimization -Wmissing-declarations" )
 set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wattributes" )
-set( arch_flags "-msse3 -mfpmath=sse" )
+set( arch_flags "-msse3" )
 
 if( OZ_CLANG )
-  set( flags "${flags} -stdlib=libc++" )
+  set( warnings "${warnings} -Wno-sign-conversion -Wno-invalid-offsetof" )
 else()
+  set( warnings "${warnings} -Wlogical-op" )
+  set( arch_flags "${arch_flags} -mfpmath=sse" )
   if( OZ_MINGW )
   else()
     set( flags "${flags} -fstrict-enums" )
@@ -215,32 +215,44 @@ else()
   endif()
 endif()
 
-set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo Release" )
+set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo RelGenProf RelUseProf" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g3 -O0" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
 set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3 -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
+# set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections -fprofile-generate" CACHE STRING "" FORCE )
+# set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections -fprofile-use" CACHE STRING "" FORCE )
 
-set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-Wl,--gc-sections" CACHE STRING "" FORCE )
 set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "-Wl,--gc-sections" CACHE STRING "" FORCE )
+set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-Wl,--gc-sections" CACHE STRING "" FORCE )
+# set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-fprofile-generate -Wl,--gc-sections" CACHE STRING "" FORCE )
+# set( CMAKE_EXE_LINKER_FLAGS_RELEASE "-fprofile-use -Wl,--gc-sections" CACHE STRING "" FORCE )
 
 if( OZ_MINGW )
   set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-auto-import" )
 else()
   set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fstack-protector-all" )
-  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -fstack-protector-all -flto" )
+  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -flto" )
 
-  set( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto" )
   set( CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} -flto" )
+  set( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto" )
 endif()
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings} ${includes}" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings}" )
 
 string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" OZ_CXX_FLAGS )
 string( TOUPPER "CMAKE_EXE_LINKER_FLAGS_${CMAKE_BUILD_TYPE}" OZ_EXE_LINKER_FLAGS )
 
+set( libsString "" )
+foreach( lib ${libs} )
+  set( libsString "${libsString} ${lib}" )
+endforeach()
+
 set( OZ_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${${OZ_CXX_FLAGS}}" )
-set( OZ_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${${OZ_EXE_LINKER_FLAGS}}" )
+set( OZ_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${${OZ_EXE_LINKER_FLAGS}} ${libsString}" )
+
+string( STRIP "${OZ_CXX_FLAGS}" OZ_CXX_FLAGS )
+string( STRIP "${OZ_EXE_LINKER_FLAGS}" OZ_EXE_LINKER_FLAGS )
 
 # sources
 add_subdirectory( src )

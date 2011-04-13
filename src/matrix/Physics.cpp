@@ -27,7 +27,7 @@ namespace oz
 
   const float Physics::STICK_VELOCITY         =  0.015f;
   const float Physics::SLICK_STICK_VELOCITY   =  0.001f;
-  const float Physics::AIR_STICK_VELOCITY     =  0.001f;
+  const float Physics::FLOAT_STICK_VELOCITY   =  0.0002f;
   const float Physics::AIR_FRICTION           =  0.02f;
   const float Physics::WATER_FRICTION         =  0.08f;
   const float Physics::LADDER_FRICTION        =  0.65f;
@@ -179,10 +179,18 @@ namespace oz
 
         dyn->flags |= Object::FRICTING_BIT;
       }
+      // in air on in water
       else {
         dyn->momentum.x *= 1.0f - AIR_FRICTION;
         dyn->momentum.y *= 1.0f - AIR_FRICTION;
         dyn->momentum.z += systemMom;
+
+        if( Math::abs( systemMom ) <= FLOAT_STICK_VELOCITY &&
+            dyn->momentum.sqL() <= FLOAT_STICK_VELOCITY )
+        {
+          dyn->momentum = Vec3::ZERO;
+          return false;
+        }
       }
     }
 

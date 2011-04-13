@@ -70,9 +70,10 @@ namespace client
     return true;
   }
 
-  void Sound::setVolume( float volume ) const
+  void Sound::setVolume( float volume_ )
   {
-    alListenerf( AL_GAIN, volume );
+    volume = volume_;
+    alListenerf( AL_GAIN, volume_ );
   }
 
   void Sound::setMusicVolume( float volume ) const
@@ -102,12 +103,12 @@ namespace client
   void Sound::resume() const
   {
     alcProcessContext( soundContext );
-    alSourcePlay( musicSource );
+    alListenerf( AL_GAIN, volume );
   }
 
   void Sound::suspend() const
   {
-    alSourceStop( musicSource );
+    alListenerf( AL_GAIN, 0.0f );
     alcSuspendContext( soundContext );
   }
 
@@ -244,6 +245,9 @@ namespace client
     log.println( "Initialising Sound {" );
     log.indent();
 
+    musicBuffers[0] = 0;
+    musicBuffers[1] = 0;
+
     const char* deviceName = config.getSet( "sound.device", "" );
 
     soundDevice = alcOpenDevice( deviceName );
@@ -254,14 +258,15 @@ namespace client
       throw Exception( "Failed to open OpenAL device" );
     }
 
-    int attribs[] = {
+    int defaultAttributes[] = {
       ALC_FREQUENCY, config.getSet( "sound.frequency", 44100 ),
-      ALC_MONO_SOURCES, 256,
+      ALC_SYNC, 0,
+      ALC_MONO_SOURCES, 255,
       ALC_STEREO_SOURCES, 1,
       0
     };
 
-    soundContext = alcCreateContext( soundDevice, attribs );
+    soundContext = alcCreateContext( soundDevice, defaultAttributes );
     if( soundContext == null ) {
       log.println( "Failed to create OpenAL context" );
       log.unindent();
@@ -278,11 +283,51 @@ namespace client
 
     hard_assert( alGetError() == AL_NO_ERROR );
 
+    log.println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
+
+    int nAttributes;
+    alcGetIntegerv( soundDevice, ALC_ATTRIBUTES_SIZE, 1, &nAttributes );
+
+    int* attributes = new int[nAttributes];
+    alcGetIntegerv( soundDevice, ALC_ALL_ATTRIBUTES, nAttributes, attributes );
+
+    log.println( "OpenAL attributes {" );
+    log.indent();
+
+    for( int i = 0; i < nAttributes; i += 2 ) {
+      switch( attributes[i] ) {
+        case ALC_FREQUENCY: {
+          log.println( "ALC_FREQUENCY: %d Hz", attributes[i + 1] );
+          break;
+        }
+        case ALC_REFRESH: {
+          log.println( "ALC_REFRESH: %d Hz", attributes[i + 1] );
+          break;
+        }
+        case ALC_SYNC: {
+          log.println( "ALC_SYNC: %s", attributes[i + 1] != 0 ? "on" : "off" );
+          break;
+        }
+        case ALC_MONO_SOURCES: {
+          log.println( "ALC_MONO_SOURCES: %d", attributes[i + 1] );
+          break;
+        }
+        case ALC_STEREO_SOURCES: {
+          log.println( "ALC_STEREO_SOURCES: %d", attributes[i + 1] );
+          break;
+        }
+      }
+    }
+
+    delete[] attributes;
+
+    log.unindent();
+    log.println( "}" );
+
     DArray<String> extensions;
     String sExtensions = alGetString( AL_EXTENSIONS );
     sExtensions.trim().split( ' ', &extensions );
 
-    log.println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
     log.println( "OpenAL vendor: %s", alGetString( AL_VENDOR ) );
     log.println( "OpenAL renderer: %s", alGetString( AL_RENDERER ) );
     log.println( "OpenAL version: %s", alGetString( AL_VERSION ) );

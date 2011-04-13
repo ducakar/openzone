@@ -41,6 +41,9 @@ namespace client
 
   const float Caelum::STAR_DIM       = 0.10f;
 
+  Caelum::Caelum() : vao( 0 ), vbo( 0 ), sunTexId( 0 ), moonTexId( 0 )
+  {}
+
 #ifdef OZ_BUILD_TOOLS
   void Caelum::prebuild( const char* name )
   {
@@ -83,15 +86,14 @@ namespace client
       vertex.write( &os );
     }
 
-    int nMipmaps;
-    uint texId = context.loadRawTexture( "caelum/simplesun.png", &nMipmaps, false,
+    uint texId = context.loadRawTexture( "caelum/simplesun.png", false,
                                          Context::DEFAULT_MAG_FILTER, Context::DEFAULT_MAG_FILTER );
-    context.writeTexture( texId, nMipmaps, &os );
+    context.writeTexture( texId, &os );
     glDeleteTextures( 1, &texId );
 
-    texId = context.loadRawTexture( "caelum/moon18.png", &nMipmaps, false,
+    texId = context.loadRawTexture( "caelum/moon18.png", false,
                                     Context::DEFAULT_MAG_FILTER, Context::DEFAULT_MAG_FILTER );
-    context.writeTexture( texId, nMipmaps, &os );
+    context.writeTexture( texId, &os );
     glDeleteTextures( 1, &texId );
 
     buffer.write( "caelum/" + String( name ) + ".ozcCaelum", os.length() );
@@ -102,67 +104,6 @@ namespace client
     log.println( "}" );
   }
 #endif
-
-  void Caelum::load( const char* name )
-  {
-    log.print( "Loading Caelum '%s' ...", name );
-
-    axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
-    originalLightDir = Vec3( Math::cos( orbis.caelum.heading ),
-                             Math::sin( orbis.caelum.heading ),
-                             0.0f );
-
-    DArray<Vertex> vertices(  MAX_STARS * 4 );
-
-    if( !buffer.read( "caelum/" + String( name ) + ".ozcCaelum" ) ) {
-      log.printEnd( " Cannot open file" );
-      throw Exception( "Caelum loading failed" );
-    }
-
-    InputStream is = buffer.inputStream();
-
-    for( int i = 0; i < MAX_STARS * 4; ++i ) {
-      vertices[i].read( &is );
-    }
-
-    glGenVertexArrays( 1, &vao );
-    glBindVertexArray( vao );
-
-    glGenBuffers( 1, &vbo );
-    glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices,
-                  GL_STATIC_DRAW );
-    vertices.dealloc();
-
-    glEnableVertexAttribArray( Attrib::POSITION );
-    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
-
-    glBindVertexArray( 0 );
-
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-    sunTexId  = context.readTexture( &is );
-    moonTexId = context.readTexture( &is );
-
-    starShaderId      = translator.shaderIndex( "stars" );
-    celestialShaderId = translator.shaderIndex( "celestial" );
-
-    hard_assert( glGetError() == GL_NO_ERROR );
-
-    update();
-
-    log.printEnd( " OK" );
-  }
-
-  void Caelum::unload()
-  {
-    glDeleteTextures( 1, &sunTexId );
-    glDeleteTextures( 1, &moonTexId );
-
-    glDeleteVertexArrays( 1, &vao );
-    glDeleteBuffers( 1, &vbo );
-  }
 
   void Caelum::update()
   {
@@ -259,6 +200,74 @@ namespace client
     glEnable( GL_CULL_FACE );
 
     hard_assert( glGetError() == GL_NO_ERROR );
+  }
+
+  void Caelum::load( const char* name )
+  {
+    log.print( "Loading Caelum '%s' ...", name );
+
+    axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
+    originalLightDir = Vec3( Math::cos( orbis.caelum.heading ),
+                             Math::sin( orbis.caelum.heading ),
+                             0.0f );
+
+    DArray<Vertex> vertices(  MAX_STARS * 4 );
+
+    if( !buffer.read( "caelum/" + String( name ) + ".ozcCaelum" ) ) {
+      log.printEnd( " Cannot open file" );
+      throw Exception( "Caelum loading failed" );
+    }
+
+    InputStream is = buffer.inputStream();
+
+    for( int i = 0; i < MAX_STARS * 4; ++i ) {
+      vertices[i].read( &is );
+    }
+
+    glGenVertexArrays( 1, &vao );
+    glBindVertexArray( vao );
+
+    glGenBuffers( 1, &vbo );
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices,
+                  GL_STATIC_DRAW );
+    vertices.dealloc();
+
+    glEnableVertexAttribArray( Attrib::POSITION );
+    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+
+    glBindVertexArray( 0 );
+
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+    sunTexId  = context.readTexture( &is );
+    moonTexId = context.readTexture( &is );
+
+    starShaderId      = translator.shaderIndex( "stars" );
+    celestialShaderId = translator.shaderIndex( "celestial" );
+
+    hard_assert( glGetError() == GL_NO_ERROR );
+
+    update();
+
+    log.printEnd( " OK" );
+  }
+
+  void Caelum::unload()
+  {
+    if( vao != 0 ) {
+      glDeleteTextures( 1, &sunTexId );
+      glDeleteTextures( 1, &moonTexId );
+
+      glDeleteBuffers( 1, &vbo );
+      glDeleteVertexArrays( 1, &vao );
+
+      sunTexId = 0;
+      moonTexId = 0;
+      vbo = 0;
+      vao = 0;
+    }
   }
 
 }

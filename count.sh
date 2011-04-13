@@ -5,5 +5,5 @@ if [ -x /usr/bin/sloccount ]; then
 fi
 
 if [ -x /usr/bin/cloc ]; then
-  /usr/bin/cloc --exclude-ext=gen src share/openzone/lua share/openzone/glsl
+  /usr/bin/cloc --exclude-ext=xml `git ls-files | grep -v '^include'`
 fi

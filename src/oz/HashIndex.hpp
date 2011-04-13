@@ -1,7 +1,7 @@
 /*
  *  HashIndex.hpp
  *
- *  Chaining hashtable implementation with uint key type.
+ *  Chaining hashtable implementation with int key type.
  *  A prime number is recommended as hashtable size unless key distribution is "random".
  *  You can find a list of millions of primes at http://www.bigprimes.net/.
  *
@@ -26,12 +26,12 @@ namespace oz
 
       struct Elem
       {
-        const uint key;
-        Type       value;
-        Elem*      next[1];
+        const int key;
+        Type      value;
+        Elem*     next[1];
 
         OZ_ALWAYS_INLINE
-        explicit Elem( uint key_, const Type& value_, Elem* next_ ) : key( key_ ), value( value_ )
+        explicit Elem( int key_, const Type& value_, Elem* next_ ) : key( key_ ), value( value_ )
         {
           next[0] = next_;
         }
@@ -105,7 +105,7 @@ namespace oz
            * @return current element's key
            */
           OZ_ALWAYS_INLINE
-          const uint& key() const
+          const int& key() const
           {
             return B::elem->key;
           }
@@ -236,7 +236,7 @@ namespace oz
            * @return current element's key
            */
           OZ_ALWAYS_INLINE
-          const uint& key() const
+          const int& key() const
           {
             return B::elem->key;
           }
@@ -502,9 +502,9 @@ namespace oz
        * @param key
        * @return true if found
        */
-      bool contains( uint key ) const
+      bool contains( int key ) const
       {
-        int   i = key % SIZE;
+        uint  i = uint( key ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -523,9 +523,9 @@ namespace oz
        * @param key
        * @return
        */
-      const Type* find( uint key ) const
+      const Type* find( int key ) const
       {
-        int   i = key % SIZE;
+        uint  i = uint( key ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -544,9 +544,9 @@ namespace oz
        * @param key
        * @return
        */
-      Type* find( uint key )
+      Type* find( int key )
       {
-        int   i = key % SIZE;
+        uint  i = uint( key ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -566,9 +566,9 @@ namespace oz
        * @param key
        * @return constant reference to value associated to the given key
        */
-      const Type& get( uint key ) const
+      const Type& get( int key ) const
       {
-        int   i = key % SIZE;
+        uint  i = uint( key ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -591,9 +591,9 @@ namespace oz
        * @param key
        * @return reference to value associated to the given key
        */
-      Type& get( uint key )
+      Type& get( int key )
       {
-        int   i = key % SIZE;
+        uint  i = uint( key ) % uint( SIZE );
         Elem* p = data[i];
 
         while( p != null ) {
@@ -616,11 +616,11 @@ namespace oz
        * @param value
        * @return pointer to new entry's value
        */
-      Type* add( uint key, const Type& value = Type() )
+      Type* add( int key, const Type& value = Type() )
       {
         hard_assert( !contains( key ) );
 
-        int   i = key % SIZE;
+        uint  i = uint( key ) % uint( SIZE );
         Elem* elem = new( pool ) Elem( key, value, data[i] );
 
         data[i] = elem;
@@ -635,9 +635,9 @@ namespace oz
        * Remove element with given key.
        * @param key
        */
-      void exclude( uint key )
+      void exclude( int key )
       {
-        int    i = key % SIZE;
+        uint   i = uint( key ) % uint( SIZE );
         Elem*  p = data[i];
         Elem** prev = &data[i];
 

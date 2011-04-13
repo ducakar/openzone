@@ -33,9 +33,6 @@ namespace client
       static const float TILE_SIZE;
       static const float TILE_INV_SIZE;
 
-      static const float DETAIL_SCALE;
-      static const float WATER_SCALE;
-
       static const float WAVE_BIAS_INC;
 
       uint  vaos[TILES][TILES];
@@ -58,15 +55,17 @@ namespace client
 
     public:
 
+      Terra();
+
 #ifdef OZ_BUILD_TOOLS
       void prebuild( const char* name );
 #endif
 
-      void load();
-      void unload();
-
       void draw();
       void drawWater();
+
+      void load();
+      void unload();
   };
 
   extern Terra terra;

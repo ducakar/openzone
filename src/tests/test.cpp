@@ -49,6 +49,10 @@ struct Foo
   }
 };
 
+void bar( const Foo& );
+
+void bar( Foo&& );
+
 void bar( const Foo& )
 {
   printf( "void bar( const Foo& )\n" );
