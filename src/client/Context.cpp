@@ -689,7 +689,7 @@ namespace client
 
     hard_assert( alGetError() == AL_NO_ERROR );
 
-    for( auto i = smms.citer(); i.isValid(); ) {
+    for( auto i = smms.citer(); i != nil; ) {
       auto resource = i;
       ++i;
 
@@ -698,7 +698,7 @@ namespace client
       delete resource->object;
       smms.exclude( resource.key() );
     }
-    for( auto i = md2s.citer(); i.isValid(); ) {
+    for( auto i = md2s.citer(); i != nil; ) {
       auto resource = i;
       ++i;
 
@@ -707,7 +707,7 @@ namespace client
       delete resource->object;
       md2s.exclude( resource.key() );
     }
-    for( auto i = md3s.citer(); i.isValid(); ) {
+    for( auto i = md3s.citer(); i != nil; ) {
       auto resource = i;
       ++i;
 
@@ -731,7 +731,7 @@ namespace client
       removeSource( sources.first(), null );
       hard_assert( alGetError() == AL_NO_ERROR );
     }
-    for( auto i = bspSources.iter(); i.isValid(); ) {
+    for( auto i = bspSources.iter(); i != nil; ) {
       auto src = i;
       ++i;
 
@@ -739,7 +739,7 @@ namespace client
       removeBSPSource( src, src.key() );
       hard_assert( alGetError() == AL_NO_ERROR );
     }
-    for( auto i = objSources.iter(); i.isValid(); ) {
+    for( auto i = objSources.iter(); i != nil; ) {
       auto src = i;
       ++i;
 

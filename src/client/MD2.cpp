@@ -327,6 +327,8 @@ namespace client
     translator.shaderIndex( shaderName );
 
     if( nFrameVertices > MAX_VERTS ) {
+      delete[] frameData;
+
       throw Exception( "MD2 model has too many vertices" );
     }
 

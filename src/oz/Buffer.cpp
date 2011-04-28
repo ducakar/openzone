@@ -20,6 +20,11 @@ namespace oz
   Buffer::Buffer() : data( null ), count( 0 )
   {}
 
+  Buffer::~Buffer()
+  {
+    dealloc();
+  }
+
   Buffer::Buffer( const Buffer& b ) : data( null ), count( b.count )
   {
     if( b.count != 0 ) {
@@ -28,9 +33,18 @@ namespace oz
     }
   }
 
+  Buffer::Buffer( Buffer&& b ) : data( b.data ), count( b.count )
+  {
+    b.data  = null;
+    b.count = 0;
+  }
+
   Buffer& Buffer::operator = ( const Buffer& b )
   {
-    hard_assert( &b != this );
+    if( &b == this ) {
+      soft_assert( &b != this );
+      return *this;
+    }
 
     if( count < b.count ) {
       dealloc();
@@ -41,9 +55,20 @@ namespace oz
     return *this;
   }
 
-  Buffer::~Buffer()
+  Buffer& Buffer::operator = ( Buffer&& b )
   {
-    dealloc();
+    if( &b == this ) {
+      soft_assert( &b != this );
+      return *this;
+    }
+
+    data  = b.data;
+    count = b.count;
+
+    b.data  = null;
+    b.count = 0;
+
+    return *this;
   }
 
   Buffer::Buffer( int size ) : data( new char[size] ), count( size )

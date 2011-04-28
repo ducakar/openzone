@@ -41,6 +41,14 @@ namespace oz
       {}
 
       /**
+       * Destructor.
+       */
+      ~Bitset()
+      {
+        delete[] data;
+      }
+
+      /**
        * Copy constructor.
        * @param b the original Bitset
        */
@@ -50,13 +58,26 @@ namespace oz
       }
 
       /**
+       * Move constructor.
+       * @param b the original Bitset
+       */
+      Bitset( Bitset&& b ) : data( b.data ), size( b.size )
+      {
+        b.data = null;
+        b.size = 0;
+      }
+
+      /**
        * Copy operator.
        * @param b the original Bitset
        * @return
        */
       Bitset& operator = ( const Bitset& b )
       {
-        hard_assert( &b != this );
+        if( &b == this ) {
+          soft_assert( &b != this );
+          return *this;
+        }
 
         if( size != b.size ) {
           delete[] data;
@@ -69,11 +90,26 @@ namespace oz
       }
 
       /**
-       * Destructor.
+       * Move operator.
+       * @param b the original Bitset
+       * @return
        */
-      ~Bitset()
+      Bitset& operator = ( Bitset&& b )
       {
+        if( &b == this ) {
+          soft_assert( &b != this );
+          return *this;
+        }
+
         delete[] data;
+
+        data = b.data;
+        size = b.size;
+
+        b.data = null;
+        b.size = 0;
+
+        return *this;
       }
 
       /**

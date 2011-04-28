@@ -134,6 +134,8 @@ namespace client
         shaderBaseName = String::findLast( shaders[0].name, '\\' );
       }
       if( shaderBaseName == null ) {
+        delete[] shaders;
+
         log.println( "MD3 model file '%s' invalid format", path.cstr() );
         throw Exception( "MD3 model part file invalid format" );
       }

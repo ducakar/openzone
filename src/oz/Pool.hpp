@@ -57,7 +57,7 @@ namespace oz
     private:
 
       /**
-       * Slot that occcupies memory for an object. It also provides a pointer to the next slot
+       * Slot that occupies memory for an object. It also provides a pointer to the next slot
        * in a block.
        */
       union Slot
@@ -105,29 +105,63 @@ namespace oz
       {}
 
       /**
-       * No copying
-       * @param
-       */
-      Pool( const Pool& ) = delete;
-
-      /**
-       * No copying
-       * @param
-       */
-      Pool& operator = ( const Pool& ) = delete;
-
-      /**
        * Destructor.
        */
       ~Pool()
       {
         // there's a memory leak if count != 0
-        soft_assert( count == 0 );
+        hard_assert( count == 0 && size == 0 );
+      }
+
+      /**
+       * No copying.
+       * @param
+       */
+      Pool( const Pool& ) = delete;
+
+      /**
+       * Move constructor.
+       * @param p
+       */
+      Pool( Pool&& p ) : firstBlock( p.firstBlock ), freeSlot( p.freeSlot ),
+          size( p.size ), count( p.count )
+      {
+        p.firstBlock = null;
+        p.freeSlot   = null;
+        p.size       = 0;
+        p.count      = 0;
+      }
+
+      /**
+       * No copying.
+       * @param
+       * @return
+       */
+      Pool& operator = ( const Pool& ) = delete;
+
+      /**
+       * Move operator.
+       * @param p
+       * @return
+       */
+      Pool& operator = ( Pool&& p )
+      {
+        firstBlock = p.firstBlock;
+        freeSlot   = p.freeSlot;
+        size       = p.size;
+        count      = p.count;
+
+        p.firstBlock = null;
+        p.freeSlot   = null;
+        p.size       = 0;
+        p.count      = 0;
+
+        return *this;
       }
 
       /**
        * Allocate a new element.
-       * @param e
+       * @return
        */
       void* alloc()
       {
@@ -176,25 +210,28 @@ namespace oz
       /**
        * @return number of used slots in the pool
        */
+      OZ_ALWAYS_INLINE
       int length() const
       {
         return count;
       }
 
       /**
-       * @return capacity of the pool
-       */
-      int capacity() const
-      {
-        return size;
-      }
-
-      /**
        * @return true if pool has no used slots
        */
+      OZ_ALWAYS_INLINE
       bool isEmpty() const
       {
         return count == 0;
+      }
+
+      /**
+       * @return capacity of the pool
+       */
+      OZ_ALWAYS_INLINE
+      int capacity() const
+      {
+        return size;
       }
 
       /**

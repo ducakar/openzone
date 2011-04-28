@@ -97,6 +97,14 @@ namespace oz
       {}
 
       /**
+       * Destructor.
+       */
+      ~SVector()
+      {
+        aDestruct( data, count );
+      }
+
+      /**
        * Copy constructor.
        * @param v
        */
@@ -106,13 +114,27 @@ namespace oz
       }
 
       /**
+       * Move constructor.
+       * @param v
+       */
+      SVector( SVector&& v ) : count( v.count )
+      {
+        aReconstruct( data, v.data, v.count );
+        aDestruct( v.data, v.count );
+        v.count = 0;
+      }
+
+      /**
        * Copy operator.
        * @param v
        * @return
        */
       SVector& operator = ( const SVector& v )
       {
-        hard_assert( &v != this );
+        if( &v == this ) {
+          soft_assert( &v != this );
+          return *this;
+        }
 
         aCopy( data, v.data, v.count );
         count = v.count;
@@ -120,11 +142,50 @@ namespace oz
       }
 
       /**
-       * Destructor.
+       * Move operator.
+       * @param v
+       * @return
        */
-      ~SVector()
+      SVector& operator = ( SVector&& v )
       {
+        if( &v == this ) {
+          soft_assert( &v != this );
+          return *this;
+        }
+
+        aMove( data, v.data, v.count );
+        aDestruct( v.data, v.count );
+        count   = v.count;
+        v.count = 0;
+
+        return *this;
+      }
+
+      /**
+       * Initialise from an initialiser list.
+       * @param l
+       */
+      SVector( initializer_list<Type> l ) : count( int( l.size() ) )
+      {
+        hard_assert( count <= SIZE );
+
+        aConstruct( data, l.begin(), count );
+      }
+
+      /**
+       * Copy from an initialiser list.
+       * @param l
+       * @return
+       */
+      SVector& operator = ( initializer_list<Type> l )
+      {
+        hard_assert( int( l.size() ) <= SIZE );
+
         aDestruct( data, count );
+        count = int( l.size() );
+
+        aConstruct( data, l.begin(), count );
+        return *this;
       }
 
       /**
@@ -316,7 +377,7 @@ namespace oz
        */
       void add()
       {
-        hard_assert( count < SIZE );
+        hard_assert( uint( count ) < uint( SIZE ) );
 
         new( data + count ) Type;
         ++count;
@@ -326,11 +387,12 @@ namespace oz
        * Add an element to the end.
        * @param e
        */
-      void add( const Type& e )
+      template <typename Value>
+      void add( Value&& e )
       {
-        hard_assert( count < SIZE );
+        hard_assert( uint( count ) < uint( SIZE ) );
 
-        new( data + count ) Type( e );
+        new( data + count ) Type( static_cast<Value&&>( e ) );
         ++count;
       }
 
@@ -343,7 +405,7 @@ namespace oz
       {
         int newCount = count + arrayCount;
 
-        hard_assert( SIZE >= newCount );
+        hard_assert( uint( newCount ) <= uint( SIZE ) );
 
         for( int i = 0; i < arrayCount; ++i ) {
           aConstruct( data + count, array, arrayCount );
@@ -357,14 +419,15 @@ namespace oz
        * @param e
        * @return position of the inserted element or an existing one if it was not inserted
        */
-      int include( const Type& e )
+      template <typename Value>
+      int include( Value&& e )
       {
         int i = aIndex( data, e, count );
 
         if( i == -1 ) {
-          hard_assert( count < SIZE );
+          hard_assert( uint( count ) < uint( SIZE ) );
 
-          new( data + count ) Type( e );
+          new( data + count ) Type( static_cast<Value&&>( e ) );
           i = count;
           ++count;
         }
@@ -377,18 +440,19 @@ namespace oz
        * @param e
        * @param i
        */
-      void insert( int i, const Type& e )
+      template <typename Value>
+      void insert( int i, Value&& e )
       {
         hard_assert( uint( i ) <= uint( count ) );
-        hard_assert( count < SIZE );
+        hard_assert( uint( count ) < uint( SIZE ) );
 
         if( i == count ) {
-          new( data + count ) Type( e );
+          new( data + count ) Type( static_cast<Value&&>( e ) );
         }
         else {
-          new( data + count ) Type( data[count - 1] );
-          aReverseCopy( data + i + 1, data + i, count - i - 1 );
-          data[i] = e;
+          new( data + count ) Type( static_cast<Type&&>( data[count - 1] ) );
+          aReverseMove( data + i + 1, data + i, count - i - 1 );
+          data[i] = static_cast<Value&&>( e );
         }
         ++count;
       }
@@ -402,7 +466,6 @@ namespace oz
 
         --count;
         data[count].~Type();
-        return *this;
       }
 
       /**
@@ -414,7 +477,7 @@ namespace oz
         hard_assert( uint( i ) < uint( count ) );
 
         --count;
-        aCopy( data + i, data + i + 1, count - i );
+        aMove( data + i, data + i + 1, count - i );
         data[count].~Type();
       }
 
@@ -429,7 +492,7 @@ namespace oz
 
         --count;
         if( i != count ) {
-          data[i] = data[count];
+          data[i] = static_cast<Type&&>( data[count] );
         }
         data[count].~Type();
       }
@@ -445,7 +508,7 @@ namespace oz
 
         if( i != -1 ) {
           --count;
-          aCopy( data + i, data + i + 1, count - i );
+          aMove( data + i, data + i + 1, count - i );
           data[count].~Type();
         }
         return i;
@@ -464,7 +527,7 @@ namespace oz
         if( i != -1 ) {
           --count;
           if( i != count ) {
-            data[i] = data[count];
+            data[i] = static_cast<Type&&>( data[count] );
           }
           data[count].~Type();
         }
@@ -475,18 +538,19 @@ namespace oz
        * Add an element to the beginning.
        * @param e
        */
-      void pushFirst( const Type& e )
+      template <typename Value>
+      void pushFirst( Value&& e )
       {
-        hard_assert( count < SIZE );
+        hard_assert( uint( count ) < uint( SIZE ) );
 
         if( count == 0 ) {
-          new( data + 0 ) Type( e );
+          new( data + 0 ) Type( static_cast<Value&&>( e ) );
           ++count;
         }
         else {
-          new( data + count ) Type( data[count - 1] );
-          aReverseCopy( data + 1, data, count - 1 );
-          data[0] = e;
+          new( data + count ) Type( static_cast<Type&&>( data[count - 1] ) );
+          aReverseMove( data + 1, data, count - 1 );
+          data[0] = static_cast<Value&&>( e );
           ++count;
         }
       }
@@ -495,11 +559,12 @@ namespace oz
        * Add an element to the end.
        * @param e
        */
-      void pushLast( const Type& e )
+      template <typename Value>
+      void pushLast( Value&& e )
       {
-        hard_assert( count < SIZE );
+        hard_assert( uint( count ) < uint( SIZE ) );
 
-        new( data + count ) Type( e );
+        new( data + count ) Type( static_cast<Value&&>( e ) );
         ++count;
       }
 
@@ -509,10 +574,10 @@ namespace oz
        */
       Type popFirst()
       {
-        Type e = data[0];
+        Type e = static_cast<Type&&>( data[0] );
 
         --count;
-        aCopy( data, data + 1, count );
+        aMove( data, data + 1, count );
         data[count].~Type();
 
         return e;
@@ -527,7 +592,7 @@ namespace oz
         hard_assert( count != 0 );
 
         --count;
-        Type e = data[count];
+        Type e = static_cast<Type&&>( data[count] );
         data[count].~Type();
 
         return e;

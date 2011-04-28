@@ -26,7 +26,7 @@
 #include <cerrno>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <SDL_main.h>
+#include <SDL/SDL_main.h>
 
 using namespace oz;
 

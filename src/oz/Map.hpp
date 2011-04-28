@@ -13,12 +13,13 @@
 #pragma once
 
 #include "arrays.hpp"
+#include "Pair.hpp"
 #include "Alloc.hpp"
 
 namespace oz
 {
 
-  template <typename Key, typename Value = nil, int GRANULARITY = 8>
+  template <typename Key, typename Value = nil_t, int GRANULARITY = 8>
   class Map
   {
     static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
@@ -30,9 +31,10 @@ namespace oz
         Key   key;
         Value value;
 
+        template <typename Value_>
         OZ_ALWAYS_INLINE
-        explicit Elem( const Key& key_, const Value& value_ ) :
-            key( key_ ), value( value_ )
+        explicit Elem( const Key& key_, Value_&& value_ ) :
+            key( key_ ), value( static_cast<Value_&&>( value_ ) )
         {}
 
         // operators overloads are required for bisection algorithms to work properly
@@ -268,6 +270,15 @@ namespace oz
       {}
 
       /**
+       * Destructor.
+       */
+      ~Map()
+      {
+        aDestruct( data, count );
+        Alloc::dealloc( data );
+      }
+
+      /**
        * Copy constructor.
        * @param m
        */
@@ -278,17 +289,31 @@ namespace oz
       }
 
       /**
+       * Move constructor.
+       * @param m
+       */
+      Map( Map&& m ) : data( m.data ), size( m.size ), count( m.count )
+      {
+        m.data  = null;
+        m.size  = 0;
+        m.count = 0;
+      }
+
+      /**
        * Copy operator.
        * @param m
        * @return
        */
       Map& operator = ( const Map& m )
       {
-        hard_assert( &m != this );
+        if( &m == this ) {
+          soft_assert( &m != this );
+          return *this;
+        }
 
         aDestruct( data, count );
 
-        if( size < m.count ) {
+        if( size != m.count ) {
           Alloc::dealloc( data );
 
           data = Alloc::alloc<Elem>( m.size );
@@ -301,12 +326,29 @@ namespace oz
       }
 
       /**
-       * Destructor.
+       * Move operator.
+       * @param m
+       * @return
        */
-      ~Map()
+      Map& operator = ( Map&& m )
       {
+        if( &m == this ) {
+          soft_assert( &m != this );
+          return *this;
+        }
+
         aDestruct( data, count );
         Alloc::dealloc( data );
+
+        data  = m.data;
+        size  = m.size;
+        count = m.count;
+
+        m.data  = null;
+        m.size  = 0;
+        m.count = 0;
+
+        return *this;
       }
 
       /**
@@ -316,6 +358,44 @@ namespace oz
       explicit Map( int initSize ) : data( initSize == 0 ? null : Alloc::alloc<Elem>( initSize ) ),
           size( initSize ), count( 0 )
       {}
+
+      /**
+       * Initialise from an initialiser list.
+       * @param l
+       */
+      Map( initializer_list< Pair<Key, Value> > l ) : data( Alloc::alloc<Elem>( int( l.size() ) ) ),
+          size( int( l.size() ) ), count( int( l.size() ) )
+      {
+        const Pair<Key, Value>* src = l.begin();
+        for( int i = 0; i < count; ++i ) {
+          new( &data[i] ) Elem( src[i].x, src[i].y );
+        }
+      }
+
+      /**
+       * Copy from an initialiser list.
+       * @param l
+       * @return
+       */
+      Map& operator = ( initializer_list< Pair<Key, Value> > l )
+      {
+        aDestruct( data, count );
+        count = int( l.size() );
+
+        if( size < count ) {
+          Alloc::dealloc( data );
+
+          data = Alloc::alloc<Elem>( count );
+          size = count;
+        }
+
+        const Pair<Key, Value>* src = l.begin();
+        for( int i = 0; i < count; ++i ) {
+          new( &data[i] ) Elem( src[i].x, src[i].y );
+        }
+
+        return *this;
+      }
 
       /**
        * Equality operator. Capacity of map doesn't matter.
@@ -528,12 +608,13 @@ namespace oz
        * @param e
        * @return true if element has been added
        */
-      int add( const Key& key, const Value& value = Value() )
+      template <typename Value_ = Value>
+      int add( const Key& key, Value_&& value = Value() )
       {
         hard_assert( !contains( key ) );
 
         int i = aBisectPosition( data, key, count );
-        insert( i, key, value );
+        insert( i, key, static_cast<Value_&&>( value ) );
         return i;
       }
 
@@ -542,12 +623,13 @@ namespace oz
        * @param e
        * @return position of the inserted element or an existing one if it was not inserted
        */
-      int include( const Key& key, const Value& value = Value() )
+      template <typename Value_ = Value>
+      int include( const Key& key, Value_&& value = Value_() )
       {
         int i = aBisectPosition( data, key, count );
 
         if( i == 0 || !( data[i - 1].key == key ) ) {
-          insert( i, key, value );
+          insert( i, key, static_cast<Value_&&>( value ) );
         }
         return i;
       }
@@ -558,19 +640,22 @@ namespace oz
        * @param e
        * @param i
        */
-      void insert( int i, const Key& k, const Value& v = Value() )
+      template <typename Value_ = Value>
+      void insert( int i, const Key& k, Value_&& v = Value_() )
       {
         hard_assert( uint( i ) <= uint( count ) );
 
         ensureCapacity();
 
         if( i == count ) {
-          new( data + count ) Elem( k, v );
+          new( data + count ) Elem( k, static_cast<Value_&&>( v ) );
         }
         else {
-          new( data + count ) Elem( data[count - 1] );
-          aReverseCopy( data + i + 1, data + i, count - i - 1 );
-          data[i] = Elem( k, v );
+          new( data + count ) Elem( static_cast<Elem&&>( data[count - 1] ) );
+          aReverseMove( data + i + 1, data + i, count - i - 1 );
+
+          data[i].key   = k;
+          data[i].value = static_cast<Value_&&>( v );
         }
         ++count;
       }
@@ -584,7 +669,7 @@ namespace oz
         hard_assert( uint( i ) < uint( count ) );
 
         --count;
-        aCopy( data + i, data + i + 1, count - i );
+        aMove( data + i, data + i + 1, count - i );
         data[count].~Type();
       }
 

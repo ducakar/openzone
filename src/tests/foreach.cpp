@@ -9,8 +9,8 @@
 
 #include "stable.hpp"
 
-#include <SDL.h>
-#include <SDL_main.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_main.h>
 
 using namespace oz;
 

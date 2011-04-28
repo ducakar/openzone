@@ -10,7 +10,7 @@
 #include "stable.hpp"
 
 #include <iostream>
-#include <SDL_main.h>
+#include <SDL/SDL_main.h>
 
 #ifdef NDEBUG
 # warning NDEBUG should not be defined. Unittest needs assert macro enabled to function properly.

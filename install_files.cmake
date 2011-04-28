@@ -76,22 +76,8 @@ endif()
 
 if( WIN32 )
   install( FILES
-    mingw32/SDL.dll
-    mingw32/SDL_ttf.dll
-    mingw32/libfreetype-6.dll
-    mingw32/libgcc_s_sjlj-1.dll
-    mingw32/libiconv-2.dll
-    mingw32/libintl-8.dll
-    mingw32/libogg-0.dll
-    mingw32/libstdc++-6.dll
-    mingw32/libvorbis-0.dll
-    mingw32/libvorbisfile-3.dll
-    mingw32/oalinst.exe
     DESTINATION bin )
   install( FILES
-    mingw32/install_openal.bat
-    mingw32/openzone-restart-world.bat
-    mingw32/openzone.bat
     DESTINATION . )
 endif()
 
@@ -292,26 +278,26 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/snd )
 
   install( FILES
-    "share/openzone/music/Crimson And Clover.ogg"
-    "share/openzone/music/Fanatic - Antipodes.ogg"
-    "share/openzone/music/Fanatic - Assault.ogg"
-    "share/openzone/music/Fanatic - Conquerer.ogg"
-    "share/openzone/music/Fanatic - Cubed to Death.ogg"
-    "share/openzone/music/Fanatic - Demagogue.ogg"
-    "share/openzone/music/Fanatic - Disrupting Force.ogg"
-    "share/openzone/music/Fanatic - Hit Them Hard.ogg"
-    "share/openzone/music/Fanatic - Inchoate.ogg"
-    "share/openzone/music/Fanatic - Incindental.ogg"
-    "share/openzone/music/Fanatic - Lost in the Mist.ogg"
-    "share/openzone/music/Fanatic - Mephistopheles.ogg"
-    "share/openzone/music/Fanatic - My Destiny.ogg"
-    "share/openzone/music/Fanatic - Ostentation.ogg"
-    "share/openzone/music/Fanatic - Set Free.ogg"
-    "share/openzone/music/Fanatic - Tranquility.ogg"
-    "share/openzone/music/Fanatic - Tribulation.ogg"
-    "share/openzone/music/Fanatic - Unreleased Rage.ogg"
-    "share/openzone/music/Fanatic - Vexation.ogg"
-    "share/openzone/music/Fanatic - Waiting to Strike.ogg"
+    "share/openzone/music/Crimson And Clover.oga"
+    "share/openzone/music/Fanatic - Antipodes.oga"
+    "share/openzone/music/Fanatic - Assault.oga"
+    "share/openzone/music/Fanatic - Conquerer.oga"
+    "share/openzone/music/Fanatic - Cubed to Death.oga"
+    "share/openzone/music/Fanatic - Demagogue.oga"
+    "share/openzone/music/Fanatic - Disrupting Force.oga"
+    "share/openzone/music/Fanatic - Hit Them Hard.oga"
+    "share/openzone/music/Fanatic - Inchoate.oga"
+    "share/openzone/music/Fanatic - Incindental.oga"
+    "share/openzone/music/Fanatic - Lost in the Mist.oga"
+    "share/openzone/music/Fanatic - Mephistopheles.oga"
+    "share/openzone/music/Fanatic - My Destiny.oga"
+    "share/openzone/music/Fanatic - Ostentation.oga"
+    "share/openzone/music/Fanatic - Set Free.oga"
+    "share/openzone/music/Fanatic - Tranquility.oga"
+    "share/openzone/music/Fanatic - Tribulation.oga"
+    "share/openzone/music/Fanatic - Unreleased Rage.oga"
+    "share/openzone/music/Fanatic - Vexation.oga"
+    "share/openzone/music/Fanatic - Waiting to Strike.oga"
     "share/openzone/music/README"
     DESTINATION share/openzone/music )
 

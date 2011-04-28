@@ -26,11 +26,7 @@ namespace oz
 
       struct Elem
       {
-        union
-        {
-          char cvalue[ sizeof( Type ) ];
-          Type value;
-        };
+        Type value;
         // -1 if occupied, index of next slot if empty, size if the last empty slot
         int  nextSlot;
       };
@@ -247,6 +243,14 @@ namespace oz
       {}
 
       /**
+       * Destructor.
+       */
+      ~Sparse()
+      {
+        delete[] data;
+      }
+
+      /**
        * Copy constructor.
        * @param s
        */
@@ -257,16 +261,31 @@ namespace oz
       }
 
       /**
+       * Move constructor.
+       * @param s
+       */
+      Sparse( Sparse&& s ) : data( s.data ), size( s.size ), count( s.count ),
+          freeSlot( s.freeSlot )
+      {
+        s.data     = null;
+        s.size     = 0;
+        s.count    = 0;
+        s.freeSlot = 0;
+      }
+
+      /**
        * Copy operator.
        * @param s
        * @return
        */
       Sparse& operator = ( const Sparse& s )
       {
-        hard_assert( &s != this );
+        if( &s == this ) {
+          soft_assert( &s != this );
+          return *this;
+        }
 
-        // create new data array of the new data doesn't fit, keep the old one otherwise
-        if( size < s.size ) {
+        if( size != s.size ) {
           delete[] data;
 
           data = new Elem[s.size];
@@ -274,17 +293,37 @@ namespace oz
         }
 
         aCopy( data, s.data, s.size );
-        count = s.count;
+        count    = s.count;
         freeSlot = s.freeSlot;
+
         return *this;
       }
 
       /**
-       * Destructor.
+       * Move operator.
+       * @param s
+       * @return
        */
-      ~Sparse()
+      Sparse& operator = ( Sparse&& s )
       {
+        if( &s == this ) {
+          soft_assert( &s != this );
+          return *this;
+        }
+
         delete[] data;
+
+        data     = s.data;
+        size     = s.size;
+        count    = s.count;
+        freeSlot = s.freeSlot;
+
+        s.data     = null;
+        s.size     = 0;
+        s.count    = 0;
+        s.freeSlot = 0;
+
+        return *this;
       }
 
       /**
@@ -297,6 +336,44 @@ namespace oz
         for( int i = 0; i < size; ++i ) {
           data[i].nextSlot = i + 1;
         }
+      }
+
+      /**
+       * Initialise from an initialiser list.
+       * @param l
+       */
+      Sparse( initializer_list<Type> l ) : data( new Elem[ int( l.size() ) ] ),
+          size( int( l.size() ) ), count( int( l.size() ) ), freeSlot( int( l.size() ) )
+      {
+        const Type* src = l.begin();
+        for( int i = 0; i < count; ++i ) {
+          data[i].value    = src[i];
+          data[i].nextSlot = -1;
+        }
+      }
+
+      /**
+       * Copy from an initialiser list.
+       * @param l
+       * @return
+       */
+      Sparse& operator = ( initializer_list<Type> l )
+      {
+        count = int( l.size() );
+
+        if( size < count ) {
+          delete[] data;
+
+          data = new Elem[count];
+          size = count;
+        }
+
+        const Type* src = l.begin();
+        for( int i = 0; i < count; ++i ) {
+          data[i] = Elem( src[i], -1 );
+        }
+
+        return *this;
       }
 
       /**
@@ -470,7 +547,6 @@ namespace oz
         int i = freeSlot;
 
         freeSlot = data[i].nextSlot;
-        new( &data[i].value ) Type;
         data[i].nextSlot = -1;
         ++count;
 
@@ -482,14 +558,15 @@ namespace oz
        * @param e
        * @return index at which the element was inserted
        */
-      int add( const Type& e )
+      template <typename Value>
+      int add( Value&& e )
       {
         ensureCapacity();
 
         int i = freeSlot;
 
         freeSlot = data[i].nextSlot;
-        new( &data[i].value ) Type( e );
+        data[i].value = static_cast<Value&&>( e );
         data[i].nextSlot = -1;
         ++count;
 
@@ -504,7 +581,6 @@ namespace oz
       {
         hard_assert( uint( i ) < uint( size ) );
 
-        data[i].value.~Type();
         data[i].nextSlot = freeSlot;
         freeSlot = i;
         --count;
@@ -516,7 +592,6 @@ namespace oz
       void clear()
       {
         for( int i = 0; i < size; ++i ) {
-          data[i].value.~Type();
           data[i].nextSlot = i + 1;
         }
 
@@ -552,9 +627,9 @@ namespace oz
 
         delete[] data;
 
-        data = null;
-        size = 0;
-        count = 0;
+        data     = null;
+        size     = 0;
+        count    = 0;
         freeSlot = 0;
       }
 

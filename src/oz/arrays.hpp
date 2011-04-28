@@ -43,6 +43,30 @@ namespace oz
       {}
 
       /**
+       * Returns true if the iterator has passed all the elements in the container and thus
+       * points to an invalid location.
+       * @param
+       * @return
+       */
+      OZ_ALWAYS_INLINE
+      bool operator == ( nil_t ) const
+      {
+        return B::elem == past;
+      }
+
+      /**
+       * Returns true while the iterator has not passed all the elements in the container and thus
+       * points to a valid location.
+       * @param
+       * @return
+       */
+      OZ_ALWAYS_INLINE
+      bool operator != ( nil_t ) const
+      {
+        return B::elem != past;
+      }
+
+      /**
        * @param start first element for forward iterator or successor of last element for backward
        * iterator
        * @param past_ successor of last element for forward iterator or predecessor of first element
@@ -51,17 +75,6 @@ namespace oz
       OZ_ALWAYS_INLINE
       explicit CIterator( const Type* start, const Type* past_ ) : B( start ), past( past_ )
       {}
-
-      /**
-       * Returns true while the iterator has not passed all the elements in the container and thus
-       * points to a valid location.
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool isValid() const
-      {
-        return B::elem != past;
-      }
 
       /**
        * Advance to next element.
@@ -117,12 +130,25 @@ namespace oz
       {}
 
       /**
-       * Returns true while the iterator has not passed all the elements in the container and thus
-       * points to a valid location.
+       * Returns true if the iterator has passed all the elements in the container and thus
+       * points to an invalid location.
+       * @param
        * @return
        */
       OZ_ALWAYS_INLINE
-      bool isValid() const
+      bool operator == ( nil_t ) const
+      {
+        return B::elem == past;
+      }
+
+      /**
+       * Returns true while the iterator has not passed all the elements in the container and thus
+       * points to a valid location.
+       * @param
+       * @return
+       */
+      OZ_ALWAYS_INLINE
+      bool operator != ( nil_t ) const
       {
         return B::elem != past;
       }
@@ -192,6 +218,19 @@ namespace oz
   }
 
   /**
+   * Destruct elements of an initialised array.
+   * @param aDest
+   * @param count
+   */
+  template <typename Type>
+  inline void aDestruct( const Type* aSrc, int count )
+  {
+    for( int i = 0; i < count; ++i ) {
+      aSrc[i].~Type();
+    }
+  }
+
+  /**
    * Construct elements via copy constructor from an already constructed array.
    * @param aDest
    * @param aSrc
@@ -206,15 +245,16 @@ namespace oz
   }
 
   /**
-   * Destruct elements of an initialised array.
+   * Construct elements via move constructor from an already constructed array.
    * @param aDest
+   * @param aSrc
    * @param count
    */
   template <typename Type>
-  inline void aDestruct( const Type* aSrc, int count )
+  inline void aReconstruct( Type* aDest, Type* aSrc, int count )
   {
     for( int i = 0; i < count; ++i ) {
-      aSrc[i].~Type();
+      new( &aDest[i] ) Type( static_cast<Type&&>( aSrc[i] ) );
     }
   }
 
@@ -228,10 +268,33 @@ namespace oz
   template <typename Type>
   inline void aCopy( Type* aDest, const Type* aSrc, int count )
   {
-    hard_assert( aDest != aSrc );
+    if( aDest == aSrc ) {
+      soft_assert( aDest != aSrc );
+      return;
+    }
 
     for( int i = 0; i < count; ++i ) {
       aDest[i] = aSrc[i];
+    }
+  }
+
+  /**
+   * Move array from first to last element.
+   * In contrast with memcpy it calls move operator on objects.
+   * @param aDest pointer to the first element in the destination array
+   * @param aSrc pointer to the first element in the source array
+   * @param count number of elements to be moved
+   */
+  template <typename Type>
+  inline void aMove( Type* aDest, Type* aSrc, int count )
+  {
+    if( aDest == aSrc ) {
+      soft_assert( aDest != aSrc );
+      return;
+    }
+
+    for( int i = 0; i < count; ++i ) {
+      aDest[i] = static_cast<Type&&>( aSrc[i] );
     }
   }
 
@@ -245,10 +308,33 @@ namespace oz
   template <typename Type>
   inline void aReverseCopy( Type* aDest, const Type* aSrc, int count )
   {
-    hard_assert( aDest != aSrc );
+    if( aDest == aSrc ) {
+      soft_assert( aDest != aSrc );
+      return;
+    }
 
     for( int i = count - 1; i >= 0; --i ) {
       aDest[i] = aSrc[i];
+    }
+  }
+
+  /**
+   * Move array from last to first element.
+   * It may be used where you cannot use aMove due to source and destination overlapping.
+   * @param aDest pointer to the first element in the destination array
+   * @param aSrc pointer to the first element in the source array
+   * @param count number of elements to be moved
+   */
+  template <typename Type>
+  inline void aReverseMove( Type* aDest, Type* aSrc, int count )
+  {
+    if( aDest == aSrc ) {
+      soft_assert( aDest != aSrc );
+      return;
+    }
+
+    for( int i = count - 1; i >= 0; --i ) {
+      aDest[i] = static_cast<Type&&>( aSrc[i] );
     }
   }
 
@@ -380,7 +466,7 @@ namespace oz
 
   /**
    * Reallocate array (realloc).
-   * Allocates new block of size newSize * sizeof( Type ) and copies first "count" elements of
+   * Allocates new block of size newSize * sizeof( Type ) and moves first "count" elements of
    * source array. newCount should be equal to or greater than count.
    * @param aDest pointer to the source array
    * @param count number of elements to be copied
@@ -393,7 +479,7 @@ namespace oz
     Type* aNew = new Type[newCount];
 
     for( int i = 0; i < count; ++i ) {
-      aNew[i] = aDest[i];
+      aNew[i] = static_cast<Type&&>( aDest[i] );
     }
     delete[] aDest;
 
@@ -407,19 +493,20 @@ namespace oz
    * @param index position where the element is to be inserted
    * @param count number of elements in the array
    */
-  template <typename Type>
-  inline void aInsert( Type* aDest, const Type& value, int index, int count )
+  template <typename Type, typename Value>
+  inline void aInsert( Type* aDest, Value&& value, int index, int count )
   {
     hard_assert( uint( index ) < uint( count ) );
 
     for( int i = count - 1; i > index; --i ) {
-      aDest[i] = aDest[i - 1];
+      aDest[i] = static_cast<Type&&>( aDest[i - 1] );
     }
-    aDest[index] = value;
+    aDest[index] = static_cast<Value&&>( value );
   }
 
   /**
    * Remove the element at the specified index. Shift the remaining elements to fill the gap.
+   * The last element may become invalid because of move semantics.
    * @param aDest pointer to the first element in the array
    * @param index position of the element to be removed
    * @param count number of elements in the array
@@ -430,7 +517,7 @@ namespace oz
     hard_assert( uint( index ) < uint( count ) );
 
     for( int i = index + 1; i < count; ++i ) {
-      aDest[i - 1] = aDest[i];
+      aDest[i - 1] = static_cast<Type&&>( aDest[i] );
     }
   }
 

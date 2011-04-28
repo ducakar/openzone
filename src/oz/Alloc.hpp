@@ -62,7 +62,7 @@ namespace oz
 
       /**
        * Allocates new memory for the array for newSize elements to fit in. Elements are constructed
-       * via copy constructor in the new copy of the array and destructed in the old copy before it
+       * via move constructor in the new copy of the array and destructed in the old copy before it
        * is freed. The memory has to be allocated with <code>Alloc::alloc</code> function and freed
        * with <code>Alloc::dealloc</code>.
        * It's similar to aRealloc, but works on arrays where only first <code>count</code> elements
@@ -75,10 +75,10 @@ namespace oz
       template <typename Type>
       static Type* realloc( Type* array, int count, int newSize )
       {
-        Type* newArray = reinterpret_cast<Type*>( new char[newSize * sizeof( Type )] );
+        Type* newArray = reinterpret_cast<Type*>( new char[ newSize * sizeof( Type ) ] );
 
         for( int i = 0; i < count; ++i ) {
-          new( newArray + i ) Type( array[i] );
+          new( newArray + i ) Type( static_cast<Type&&>( array[i] ) );
           array[i].~Type();
         }
         delete[] reinterpret_cast<char*>( array );
@@ -87,28 +87,28 @@ namespace oz
       }
 
       template <typename Size>
-      static Size alignDown( Size size )
+      constexpr static Size alignDown( Size size )
       {
         return static_cast<Size>
             ( size_t( size ) & ~size_t( ALIGNMENT - 1 ) );
       }
 
       template <typename Size>
-      static Size alignUp( Size size )
+      constexpr static Size alignUp( Size size )
       {
         return static_cast<Size>
             ( ( size_t( size - 1 ) & ~size_t( ALIGNMENT - 1 ) ) + size_t( ALIGNMENT ) );
       }
 
       template <typename Pointer>
-      static Pointer* alignDown( Pointer* size )
+      constexpr static Pointer* alignDown( Pointer* size )
       {
         return reinterpret_cast<Pointer*>
             ( size_t( size ) & ~size_t( ALIGNMENT - 1 ) );
       }
 
       template <typename Pointer>
-      static Pointer* alignUp( Pointer* size )
+      constexpr static Pointer* alignUp( Pointer* size )
       {
         return reinterpret_cast<Pointer*>
             ( ( size_t( size - 1 ) & ~size_t( ALIGNMENT - 1 ) ) + size_t( ALIGNMENT ) );

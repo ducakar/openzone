@@ -143,6 +143,47 @@ namespace oz
       {}
 
       /**
+       * Initialise a chain from an initialiser list of pointers.
+       * @param l
+       */
+      List( initializer_list<Type*> l )
+      {
+        firstElem = *l.begin();
+
+        Type* prev = firstElem;
+
+        for( Type* const* i = l.begin() + 1; i != l.end(); ++i ) {
+          Type* curr = *i;
+
+          prev->next[INDEX] = curr;
+          prev = curr;
+        }
+
+        prev->next[INDEX] = null;
+      }
+
+      /**
+       * Copy a chain from an initialiser list of pointers.
+       * @param l
+       * @return
+       */
+      List& operator = ( initializer_list<Type*> l )
+      {
+        firstElem = *l.begin();
+
+        Type* prev = firstElem;
+
+        for( Type* const* i = l.begin() + 1; i != l.end(); ++i ) {
+          Type* curr = *i;
+
+          prev->next[INDEX] = curr;
+          prev = curr;
+        }
+
+        prev->next[INDEX] = null;
+      }
+
+      /**
        * Clone list.
        * Create a new list from copies of all elements of the original list.
        * @return

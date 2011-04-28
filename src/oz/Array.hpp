@@ -91,12 +91,35 @@ namespace oz
 
       /**
        * Initialise from a C++ array.
-       * It could also be used as <code>Array&lt;int, 2&gt; array = (int[]) { 1, 2 };</code>
        * @param array
        */
-      Array( const Type* array )
+      explicit Array( const Type* array )
       {
         aCopy( data, array, SIZE );
+      }
+
+      /**
+       * Initialise from an initialiser list.
+       * @param l
+       */
+      Array( initializer_list<Type> l )
+      {
+        hard_assert( int( l.size() ) == SIZE );
+
+        aCopy( data, l.begin(), SIZE );
+      }
+
+      /**
+       * Copy from an initialiser list.
+       * @param l
+       * @return
+       */
+      Array& operator = ( initializer_list<Type> l )
+      {
+        hard_assert( int( l.size() ) == SIZE );
+
+        aCopy( data, l.begin(), SIZE );
+        return *this;
       }
 
       /**

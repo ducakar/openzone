@@ -25,7 +25,7 @@
 
 // include SDL
 #define SDL_NO_COMPAT
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 // include OpenGL
 #ifdef OZ_OPENGL3

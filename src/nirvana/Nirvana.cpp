@@ -32,7 +32,7 @@ namespace nirvana
   void Nirvana::sync()
   {
     // remove minds of removed bots
-    for( auto i = minds.iter(); i.isValid(); ) {
+    for( auto i = minds.iter(); i != nil; ) {
       Mind* mind = i;
       ++i;
 

@@ -1,9 +1,5 @@
 #pragma once
 
-// define custom "keywords" as macros to highlight them in Eclipse CDT (assuming one has set the
-// same highlighting for macros and keywords)
-#cmakedefine OZ_ECLIPSE_HIGHLIGHTING
-
 // enable new and delete to save stack traces to show memory leaks
 #cmakedefine OZ_TRACE_LEAKS
 
@@ -20,27 +16,44 @@
 #cmakedefine OZ_MINGW
 
 #if defined( __clang__ )
-# error gcc >= 4.5 is the only supported compiler
+# if __clang_major__ < 2 || ( __clang_major__ == 2 && __clang_minor < 9 )
+#  error gcc >= 4.5 is the only supported compiler
+# endif
 #elif defined( __GNUC__ )
 # if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 5 )
 #  error gcc >= 4.5 is the only supported compiler
 # elif __GNUC__ == 4 && __GNUC_MINOR__ == 5
-#  define nullptr __null
+#  define constexpr
 #  define noexcept throw()
+#  define nullptr __null
 # endif
 #else
 # error gcc >= 4.5 is the only supported compiler
 #endif
 
+// OZ_ECLIPSE_HIGHLIGHTING should never be enabled for compiler to process it, it is only intended
+// for Eclipse IDE to properly highlight custom keywords.
+// You should set OZ_ECLIPSE_HIGHLIGHTING to 1 in your projects settings.
 #ifdef OZ_ECLIPSE_HIGHLIGHTING
-# define nil     nil
-# define byte    byte
-# define ubyte   ubyte
-# define ushort  ushort
-# define uint    uint
-# define ulong   ulong
-# define long64  long64
-# define ulong64 ulong64
+// C++0x reserved words
+# define constexpr
+# define noexcept      throw()
+# define nullptr        __null
+// <cstddef>
+# define nullptr_t      nullptr_t
+# define ptrdiff_t      ptrdiff_t
+# define size_t         size_t
+// custom
+# define nil_t          nil_t
+# define nil            nil
+# define null           null
+# define byte           byte
+# define ubyte          ubyte
+# define ushort         ushort
+# define uint           uint
+# define ulong          ulong
+# define long64         long64
+# define ulong64        ulong64
 #endif
 
 // machine endian

@@ -12,6 +12,7 @@
 #pragma once
 
 #include "arrays.hpp"
+#include "Alloc.hpp"
 
 namespace oz
 {
@@ -91,12 +92,30 @@ namespace oz
       {}
 
       /**
+       * Destructor.
+       */
+      ~DArray()
+      {
+        delete[] data;
+      }
+
+      /**
        * Copy constructor.
        * @param a
        */
       DArray( const DArray& a ) : data( a.count == 0 ? null : new Type[a.count] ), count( a.count )
       {
-        aCopy( data, a.data, count );
+        aCopy( data, a.data, a.count );
+      }
+
+      /**
+       * Move constructor.
+       * @param a
+       */
+      DArray( DArray&& a ) : data( a.data ), count( a.count )
+      {
+        a.data  = null;
+        a.count = 0;
       }
 
       /**
@@ -106,7 +125,10 @@ namespace oz
        */
       DArray& operator = ( const DArray& a )
       {
-        hard_assert( &a != this );
+        if( &a == this ) {
+          soft_assert( &a != this );
+          return *this;
+        }
 
         if( count != a.count ) {
           delete[] data;
@@ -120,15 +142,30 @@ namespace oz
       }
 
       /**
-       * Destructor.
+       * Move operator.
+       * @param a
+       * @return
        */
-      ~DArray()
+      DArray& operator = ( DArray&& a )
       {
+        if( &a == this ) {
+          soft_assert( &a != this );
+          return *this;
+        }
+
         delete[] data;
+
+        data  = a.data;
+        count = a.count;
+
+        a.data  = null;
+        a.count = 0;
+
+        return *this;
       }
 
       /**
-       * Create an empty array with the given size.
+       * Create an array with the given size.
        * @param size
        */
       explicit DArray( int size ) : data( size == 0 ? null : new Type[size] ), count( size )
@@ -142,7 +179,33 @@ namespace oz
       explicit DArray( const Type* array, int size ) : data( size == 0 ? null : new Type[size] ),
           count( size )
       {
-        aCopy( data, array, size );
+        aCopy( data, array, count );
+      }
+
+      /**
+       * Initialise from an initialiser list.
+       * @param l
+       */
+      DArray( initializer_list<Type> l ) : data( new Type[ l.size() ] ), count( int( l.size() ) )
+      {
+        aCopy( data, l.begin(), count );
+      }
+
+      /**
+       * Copy from an initialiser list.
+       * @param l
+       * @return
+       */
+      DArray& operator = ( initializer_list<Type> l )
+      {
+        if( count != int( l.size() ) ) {
+          delete[] data;
+          data  = new Type[ l.size() ];
+          count = int( l.size() );
+        }
+
+        aCopy( data, l.begin(), count );
+        return *this;
       }
 
       /**

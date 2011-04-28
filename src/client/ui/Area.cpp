@@ -15,7 +15,7 @@
 
 #include "client/Camera.hpp"
 
-#include <SDL_ttf.h>
+#include <SDL/SDL_ttf.h>
 
 namespace oz
 {

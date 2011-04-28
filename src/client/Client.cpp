@@ -90,7 +90,7 @@ namespace client
       }
 
       foreach( i, classCounts.citer() ) {
-        classNameCounts.add( pair( i.key()->name, i.value() ) );
+        classNameCounts.add( Pair<String, int>( i.key()->name, i.value() ) );
       }
       classCounts.clear();
 
