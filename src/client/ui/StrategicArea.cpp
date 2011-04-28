@@ -19,7 +19,7 @@
 
 #include "client/ui/Keyboard.hpp"
 
-#include <SDL_ttf.h>
+#include <SDL/SDL_ttf.h>
 
 namespace oz
 {

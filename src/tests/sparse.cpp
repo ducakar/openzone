@@ -10,7 +10,7 @@
 #include "stable.hpp"
 
 #include <cstdio>
-#include <SDL_main.h>
+#include <SDL/SDL_main.h>
 
 using namespace oz;
 

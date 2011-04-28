@@ -9,72 +9,97 @@
 
 #include "stable.hpp"
 
-#include <algorithm>
-#include <iostream>
+#include <initializer_list>
 
 using namespace oz;
 
 struct Foo
 {
+  int data[2];
+
+  Foo* prev[1];
+  Foo* next[1];
+
   Foo()
   {
     printf( "Foo()\n" );
-  }
-
-  Foo( const Foo& )
-  {
-    printf( "Foo( const Foo& )\n" );
-  }
-
-  Foo( Foo&& )
-  {
-    printf( "Foo( Foo&& )\n" );
-  }
-
-  Foo& operator = ( const Foo& )
-  {
-    printf( "Foo& operator = ( const Foo& )\n" );
-    return *this;
-  }
-
-  Foo& operator = ( Foo&& )
-  {
-    printf( "Foo& operator = ( Foo&& )\n" );
-    return *this;
   }
 
   ~Foo()
   {
     printf( "~Foo()\n" );
   }
+
+  Foo( const Foo& f )
+  {
+    printf( "Foo( const Foo& )\n" );
+
+    data[0] = f.data[0];
+    data[1] = f.data[1];
+    prev[0] = f.prev[0];
+    next[0] = f.next[0];
+  }
+
+  Foo( Foo&& f )
+  {
+    printf( "Foo( Foo&& )\n" );
+
+    data[0] = f.data[0];
+    data[1] = f.data[1];
+    prev[0] = f.prev[0];
+    next[0] = f.next[0];
+  }
+
+  Foo& operator = ( const Foo& f )
+  {
+    printf( "Foo& operator = ( const Foo& )\n" );
+
+    data[0] = f.data[0];
+    data[1] = f.data[1];
+    prev[0] = f.prev[0];
+    next[0] = f.next[0];
+    return *this;
+  }
+
+  Foo& operator = ( Foo&& f )
+  {
+    printf( "Foo& operator = ( Foo&& )\n" );
+
+    data[0] = f.data[0];
+    data[1] = f.data[1];
+    prev[0] = f.prev[0];
+    next[0] = f.next[0];
+    return *this;
+  }
+
+  Foo( oz::initializer_list<int> l )
+  {
+    printf( "Foo( oz::initializer_list<int> )\n" );
+
+    data[0] = l.begin()[0];
+    data[1] = l.begin()[1];
+  }
+
 };
 
-void bar( const Foo& );
-
-void bar( Foo&& );
-
-void bar( const Foo& )
+struct Bar
 {
-  printf( "void bar( const Foo& )\n" );
-}
-
-void bar( Foo&& )
-{
-  printf( "void bar( Foo&& )\n" );
-}
-
-#define move_cast( expr ) \
-  static_cast< decltype( expr )&& >( expr )
-
-template <class Type>
-void cal( Type&& f )
-{
-  bar( move_cast( f ) );
-}
+  int i;
+  Bar* next;
+};
 
 int main( int, char** )
 {
-  Foo f;
-  cal( move_cast( f ) );
+  HashString<Foo> hs = { { "300", Foo() }, { "200", Foo() } };
+  HashString<Foo> hs1;
+  hs1 = static_cast< HashString<Foo>&& >( hs );
+
+  foreach( i, hs1.citer() ) {
+    printf( "%s :: ", i.key().cstr() );
+  }
+  printf( "\n" );
+
+  hs.add( "0" );
+
   return 0;
 }

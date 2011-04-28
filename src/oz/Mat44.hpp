@@ -257,7 +257,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       void rotate( const Quat& q )
       {
-        *this = *this * Mat44::rotation( q );
+        *this = *this * rotation( q );
       }
 
       OZ_ALWAYS_INLINE

@@ -13,7 +13,7 @@
 #include "matrix/Synapse.hpp"
 #include "matrix/Matrix.hpp"
 
-#include <SDL_main.h>
+#include <SDL/SDL_main.h>
 #include <unistd.h>
 
 using namespace oz;

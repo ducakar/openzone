@@ -236,15 +236,15 @@ namespace client
 
     log.print( "Loading terra '%s' ...", name.cstr() );
 
-    ushort* indices  = new ushort[TILE_INDICES];
-    Vertex* vertices = new Vertex[TILE_VERTICES];
-
     if( !buffer.read( path ) ) {
       log.printEnd( " Failed" );
       throw Exception( "Terra loading failed" );
     }
 
     InputStream is = buffer.inputStream();
+
+    ushort* indices  = new ushort[TILE_INDICES];
+    Vertex* vertices = new Vertex[TILE_VERTICES];
 
     waterTexId  = context.readTexture( &is );
     detailTexId = context.readTexture( &is );

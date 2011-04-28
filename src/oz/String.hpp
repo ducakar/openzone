@@ -42,19 +42,45 @@ namespace oz
         buffer[0] = '\0';
       }
 
+      ~String()
+      {
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+
+        if( buffer != baseBuffer ) {
+          delete[] buffer;
+        }
+      }
+
       String( const String& s ) : count( s.count )
       {
-        hard_assert( &s != this );
-
         ensureCapacity();
         aCopy( buffer, s.buffer, count + 1 );
 
         hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
+      String( String&& s ) : count( s.count )
+      {
+        if( s.buffer != s.baseBuffer ) {
+          buffer      = s.buffer;
+          s.buffer    = s.baseBuffer;
+          s.count     = 0;
+          s.buffer[0] = '\0';
+        }
+        else {
+          buffer = baseBuffer;
+          aCopy( buffer, s.buffer, count + 1 );
+        }
+
+        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+      }
+
       String& operator = ( const String& s )
       {
-        hard_assert( &s != this );
+        if( &s == this ) {
+          soft_assert( &s != this );
+          return *this;
+        }
 
         count = s.count;
 
@@ -69,13 +95,30 @@ namespace oz
         return *this;
       }
 
-      ~String()
+      String& operator = ( String&& s )
       {
-        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
+        if( &s == this ) {
+          soft_assert( &s != this );
+          return *this;
+        }
+
+        count = s.count;
 
         if( buffer != baseBuffer ) {
           delete[] buffer;
         }
+        if( s.buffer != s.baseBuffer ) {
+          buffer      = s.buffer;
+          s.buffer    = s.baseBuffer;
+          s.count     = 0;
+          s.buffer[0] = '\0';
+        }
+        else {
+          buffer = baseBuffer;
+          aCopy( buffer, s.buffer, count + 1 );
+        }
+
+        return *this;
       }
 
       explicit String( const char* s, int count_ ) : count( count_ )
@@ -174,7 +217,10 @@ namespace oz
 
       String& operator = ( const char* s )
       {
-        hard_assert( s != buffer );
+        if( s == buffer ) {
+          soft_assert( s != buffer );
+          return *this;
+        }
 
         count = length( s );
 
@@ -446,7 +492,7 @@ namespace oz
       {
         hard_assert( s != null );
 
-        int    sLength = String::length( s );
+        int    sLength = length( s );
         int    rCount  = t.count + sLength;
         String r       = String( rCount, 0 );
 
@@ -543,6 +589,17 @@ namespace oz
           ++i;
         }
         ( *array )[i] = substring( p0 );
+      }
+
+      void clear()
+      {
+        if( buffer != baseBuffer ) {
+          delete[] buffer;
+          buffer = baseBuffer;
+        }
+
+        buffer[0] = '\0';
+        count     = 0;
       }
 
       static bool isDigit( char c )

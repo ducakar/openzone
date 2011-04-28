@@ -92,6 +92,7 @@ namespace oz
        * Size of bitset in units.
        * @return
        */
+      OZ_ALWAYS_INLINE
       int unitLength() const
       {
         return SIZE;

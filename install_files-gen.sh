@@ -161,7 +161,7 @@ echo >> install_files.cmake
 # share/openzone/music
 #
 echo '  install( FILES' >> install_files.cmake
-ls share/openzone/music/{*.ogg,*README*,*COPYING*} 2> /dev/null | sed -e 's/^.*/    "\0"/' >> install_files.cmake
+ls share/openzone/music/{*.oga,*README*,*COPYING*} 2> /dev/null | sed -e 's/^.*/    "\0"/' >> install_files.cmake
 echo '    DESTINATION share/openzone/music )' >> install_files.cmake
 echo >> install_files.cmake
 

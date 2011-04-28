@@ -22,7 +22,7 @@ namespace oz
     Endian() = delete;
 
     OZ_ALWAYS_INLINE
-    static short shuffle16( short s )
+    constexpr static short shuffle16( short s )
     {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return s;
@@ -32,7 +32,7 @@ namespace oz
     }
 
     OZ_ALWAYS_INLINE
-    static int shuffle32( int i )
+    constexpr static int shuffle32( int i )
     {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return i;
@@ -42,7 +42,7 @@ namespace oz
     }
 
     OZ_ALWAYS_INLINE
-    static long64 shuffle64( long64 l )
+    constexpr static long64 shuffle64( long64 l )
     {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
       return l;

@@ -751,7 +751,7 @@ namespace nirvana
 
   int Lua::ozEventBindNext( lua_State* l )
   {
-    if( lua.event.isValid() ) {
+    if( lua.event != nil ) {
       ++lua.event;
       lua_pushboolean( l, true );
     }
@@ -763,8 +763,8 @@ namespace nirvana
 
   int Lua::ozEventGet( lua_State* l )
   {
-    if( !lua.event.isValid() ) {
-      OZ_LUA_ERROR( "event is null" );
+    if( lua.event == nil ) {
+      OZ_LUA_ERROR( "event is nil" );
     }
     lua_pushinteger( l, lua.event->id );
     lua_pushnumber( l, lua.event->intensity );

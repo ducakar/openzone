@@ -49,9 +49,10 @@ namespace oz
     public:
 
       Directory();
+      ~Directory();
+
       Directory( const Directory& ) = delete;
       Directory& operator = ( const Directory& ) = delete;
-      ~Directory();
 
       explicit Directory( const char* path );
 

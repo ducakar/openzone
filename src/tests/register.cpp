@@ -21,7 +21,7 @@
   }; \
   Register_##t register_##t;
 
-#include <SDL_main.h>
+#include <SDL/SDL_main.h>
 
 bool oz::Alloc::isLocked = false;
 

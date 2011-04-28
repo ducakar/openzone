@@ -28,9 +28,11 @@ namespace oz
     public:
 
       Buffer();
-      Buffer( const Buffer& b );
-      Buffer& operator = ( const Buffer& b );
       ~Buffer();
+      Buffer( const Buffer& b );
+      Buffer( Buffer&& b );
+      Buffer& operator = ( const Buffer& b );
+      Buffer& operator = ( Buffer&& b );
 
       explicit Buffer( int size );
       explicit Buffer( const char* file );

@@ -37,18 +37,38 @@ namespace oz
       Pair( const Pair& ) = default;
 
       /**
+       * Move constructor.
+       */
+      Pair( Pair&& ) = default;
+
+      /**
        * Copy constructor for constructing from pairs of different types.
        * @param p
        */
       template <typename TypeX_, typename TypeY_>
       OZ_ALWAYS_INLINE
-      Pair( const Pair<TypeX_, TypeY_>& p ) : x( p.x ), y( p.y )
+      constexpr Pair( const Pair<TypeX_, TypeY_>& p ) : x( p.x ), y( p.y )
+      {}
+
+      /**
+       * Move constructor for constructing from pairs of different types.
+       * @param p
+       */
+      template <typename TypeX_, typename TypeY_>
+      OZ_ALWAYS_INLINE
+      constexpr Pair( Pair<TypeX_, TypeY_>&& p ) :
+          x( static_cast<TypeX_&&>( p.x ) ), y( static_cast<TypeY_&&>( p.y ) )
       {}
 
       /**
        * Copy operator.
        */
       Pair& operator = ( const Pair& ) = default;
+
+      /**
+       * Move operator.
+       */
+      Pair& operator = ( Pair&& ) = default;
 
       /**
        * Copy operator for copying pairs of different types.
@@ -65,12 +85,28 @@ namespace oz
       }
 
       /**
+       * Move operator for moving pairs of different types.
+       * @param p
+       * @return
+       */
+      template <typename TypeX_, typename TypeY_>
+      OZ_ALWAYS_INLINE
+      Pair& operator = ( Pair<TypeX_, TypeY_>&& p )
+      {
+        x = static_cast<TypeX_&&>( p.x );
+        y = static_cast<TypeY_&&>( p.y );
+        return *this;
+      }
+
+      /**
        * Constructor that initialises members.
        * @param x_
        * @param y_
        */
+      template <typename ValueX, typename ValueY>
       OZ_ALWAYS_INLINE
-      explicit Pair( const TypeX& x_, const TypeY& y_ ) : x( x_ ), y( y_ )
+      constexpr Pair( ValueX&& x_, ValueY&& y_ ) :
+          x( static_cast<ValueX&&>( x_ ) ), y( static_cast<ValueY&&>( y_ ) )
       {}
 
       /**
@@ -79,7 +115,7 @@ namespace oz
        * @return
        */
       OZ_ALWAYS_INLINE
-      bool operator == ( const Pair& p ) const
+      constexpr bool operator == ( const Pair& p ) const
       {
         return x == p.x && y == p.y;
       }
@@ -90,7 +126,7 @@ namespace oz
        * @return
        */
       OZ_ALWAYS_INLINE
-      bool operator != ( const Pair& p ) const
+      constexpr bool operator != ( const Pair& p ) const
       {
         return x != p.x || y != p.y;
       }
@@ -102,7 +138,7 @@ namespace oz
        */
       template <typename TypeX_, typename TypeY_>
       OZ_ALWAYS_INLINE
-      bool operator == ( const Pair<TypeX_, TypeY_>& p ) const
+      constexpr bool operator == ( const Pair<TypeX_, TypeY_>& p ) const
       {
         return x == p.x && y == p.y;
       }
@@ -114,24 +150,11 @@ namespace oz
        */
       template <typename TypeX_, typename TypeY_>
       OZ_ALWAYS_INLINE
-      bool operator != ( const Pair<TypeX_, TypeY_>& p ) const
+      constexpr bool operator != ( const Pair<TypeX_, TypeY_>& p ) const
       {
         return x != p.x || y != p.y;
       }
 
   };
-
-  /**
-   * Utility for constructing a pair.
-   * @param x
-   * @param y
-   * @return
-   */
-  template <typename TypeX, typename TypeY>
-  OZ_ALWAYS_INLINE
-  inline Pair<TypeX, TypeY> pair( const TypeX& x, const TypeY& y )
-  {
-    return Pair<TypeX, TypeY>( x, y );
-  }
 
 }

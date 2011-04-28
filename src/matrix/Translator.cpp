@@ -383,7 +383,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "music (*.ogg in 'music') {" );
+    log.println( "music (*.oga in 'music') {" );
     log.indent();
 
     dir.open( "music" );
@@ -396,7 +396,7 @@ namespace oz
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "ogg" ) ) {
+      if( !ent.hasExtension( "oga" ) ) {
         continue;
       }
 
@@ -696,7 +696,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "music (*.ogg in 'music') {" );
+    log.println( "music (*.oga in 'music') {" );
     log.indent();
 
     dir.open( "music" );
@@ -709,7 +709,7 @@ namespace oz
       throw Exception( "Translator initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "ogg" ) ) {
+      if( !ent.hasExtension( "oga" ) ) {
         continue;
       }
 

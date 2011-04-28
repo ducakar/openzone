@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <SDL_net.h>
+#include <SDL/SDL_net.h>
 
 namespace oz
 {

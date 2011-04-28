@@ -9,13 +9,14 @@
 
 #pragma once
 
+#include "Pair.hpp"
 #include "String.hpp"
 #include "Pool.hpp"
 
 namespace oz
 {
 
-  template <typename Type = nil, int SIZE = 256>
+  template <typename Type = nil_t, int SIZE = 256>
   class HashString
   {
     static_assert( SIZE > 0, "HashString size must be at least 1" );
@@ -26,14 +27,13 @@ namespace oz
       {
         const String key;
         Type         value;
-        Elem*        next[1];
+        Elem*        next;
 
+        template <typename Value>
         OZ_ALWAYS_INLINE
-        explicit Elem( const char* key_, const Type& value_, Elem* next_ ) :
-            key( key_ ), value( value_ )
-        {
-          next[0] = next_;
-        }
+        explicit Elem( const char* key_, Value&& value_, Elem* next_ ) :
+            key( key_ ), value( static_cast<Value&&>( value_ ) ), next( next_ )
+        {}
 
         OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
       };
@@ -126,8 +126,8 @@ namespace oz
           {
             hard_assert( B::elem != null );
 
-            if( B::elem->next[0] != null ) {
-              B::elem = B::elem->next[0];
+            if( B::elem->next != null ) {
+              B::elem = B::elem->next;
             }
             else if( index < SIZE - 1 ) {
               do {
@@ -266,8 +266,8 @@ namespace oz
           {
             hard_assert( B::elem != null );
 
-            if( B::elem->next[0] != null ) {
-              B::elem = B::elem->next[0];
+            if( B::elem->next != null ) {
+              B::elem = B::elem->next;
             }
             else if( index < SIZE - 1 ) {
               do {
@@ -301,8 +301,9 @@ namespace oz
           if( chainA->key != chainB->key || chainA->value != chainB->value ) {
             return false;
           }
-          chainA = chainA->next[0];
-          chainB = chainB->next[0];
+
+          chainA = chainA->next;
+          chainB = chainB->next;
         }
         // at least one is null, so (chainA == chainB) <=> (chainA == null && chainB == null)
         return chainA == chainB;
@@ -319,7 +320,7 @@ namespace oz
 
         while( chain != null ) {
           newChain = new( pool ) Elem( chain->key, chain->value, newChain );
-          chain = chain->next[0];
+          chain = chain->next;
         }
         return newChain;
       }
@@ -331,7 +332,7 @@ namespace oz
       void freeChain( Elem* chain )
       {
         while( chain != null ) {
-          Elem* next = chain->next[0];
+          Elem* next = chain->next;
 
           chain->~Elem();
           pool.dealloc( chain );
@@ -347,7 +348,7 @@ namespace oz
       void freeChainAndValues( Elem* chain )
       {
         while( chain != null ) {
-          Elem* next = chain->next[0];
+          Elem* next = chain->next;
 
           delete chain->value;
           chain->~Elem();
@@ -364,9 +365,16 @@ namespace oz
        */
       HashString() : count( 0 )
       {
-        for( int i = 0; i < SIZE; ++i ) {
-          data[i] = null;
-        }
+        aSet<Elem*>( data, null, SIZE );
+      }
+
+      /**
+       * Destructor.
+       */
+      ~HashString()
+      {
+        clear();
+        dealloc();
       }
 
       /**
@@ -381,13 +389,29 @@ namespace oz
       }
 
       /**
+       * Move constructor.
+       * @param t
+       */
+      HashString( HashString&& t ) : pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ),
+          count( t.count )
+      {
+        aCopy( data, t.data, SIZE );
+
+        aSet<Elem*>( t.data, null, SIZE );
+        t.count = 0;
+      }
+
+      /**
        * Copy operator.
        * @param t
        * @return
        */
       HashString& operator = ( const HashString& t )
       {
-        hard_assert( &t != this );
+        if( &t == this ) {
+          soft_assert( &t != this );
+          return *this;
+        }
 
         for( int i = 0; i < SIZE; ++i ) {
           freeChain( data[i] );
@@ -399,12 +423,60 @@ namespace oz
       }
 
       /**
-       * Destructor.
+       * Move operator.
+       * @param t
+       * @return
        */
-      ~HashString()
+      HashString& operator = ( HashString&& t )
+      {
+        if( &t == this ) {
+          soft_assert( &t != this );
+          return *this;
+        }
+
+        aCopy( data, t.data, SIZE );
+        pool  = static_cast< Pool<Elem, SIZE>&& >( t.pool );
+        count = t.count;
+
+        aSet<Elem*>( t.data, null, SIZE );
+        t.count = 0;
+
+        return *this;
+      }
+
+      /**
+       * Initialise from an initialiser list.
+       * @param l
+       */
+      HashString( initializer_list< Pair<const char*, Type> > l ) : count( 0 )
+      {
+        const Pair<const char*, Type>* src = l.begin();
+        int size = int( l.size() );
+
+        aSet<Elem*>( data, null, SIZE );
+
+        for( int i = 0; i < size; ++i ) {
+          add( src[i].x, src[i].y );
+        }
+      }
+
+      /**
+       * Copy from an initialiser list.
+       * @param l
+       * @return
+       */
+      HashString& operator = ( initializer_list< Pair<const char*, Type> > l )
       {
         clear();
-        dealloc();
+
+        const Pair<const char*, Type>* src = l.begin();
+        int size = int( l.size() );
+
+        for( int i = 0; i < size; ++i ) {
+          add( src[i].x, src[i].y );
+        }
+
+        return *this;
       }
 
       /**
@@ -511,7 +583,7 @@ namespace oz
             return true;
           }
           else {
-            p = p->next[0];
+            p = p->next;
           }
         }
         return false;
@@ -532,7 +604,7 @@ namespace oz
             return &p->value;
           }
           else {
-            p = p->next[0];
+            p = p->next;
           }
         }
         return null;
@@ -553,7 +625,7 @@ namespace oz
             return &p->value;
           }
           else {
-            p = p->next[0];
+            p = p->next;
           }
         }
         return null;
@@ -575,7 +647,7 @@ namespace oz
             return p->value;
           }
           else {
-            p = p->next[0];
+            p = p->next;
           }
         }
 
@@ -600,7 +672,7 @@ namespace oz
             return p->value;
           }
           else {
-            p = p->next[0];
+            p = p->next;
           }
         }
 
@@ -615,12 +687,13 @@ namespace oz
        * @param value
        * @return pointer to new entry's value
        */
-      Type* add( const char* key, const Type& value = Type() )
+      template <typename Value = Type>
+      Type* add( const char* key, Value&& value = Value() )
       {
         hard_assert( !contains( key ) );
 
         uint  i = uint( String::hash( key ) ) % uint( SIZE );
-        Elem* elem = new( pool ) Elem( key, value, data[i] );
+        Elem* elem = new( pool ) Elem( key, static_cast<Value&&>( value ), data[i] );
 
         data[i] = elem;
         ++count;
@@ -642,7 +715,7 @@ namespace oz
 
         while( p != null ) {
           if( p->key.equals( key ) ) {
-            *prev = p->next[0];
+            *prev = p->next;
             --count;
 
             p->~Elem();
@@ -650,8 +723,8 @@ namespace oz
             return;
           }
           else {
-            prev = &p->next[0];
-            p = p->next[0];
+            prev = &p->next;
+            p = p->next;
           }
         }
 

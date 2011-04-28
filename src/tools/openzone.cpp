@@ -11,9 +11,10 @@
 
 #include "client/Client.hpp"
 
-#include "matrix/common.hpp"
+#include <SDL/SDL_main.h>
 
-#include <SDL_main.h>
+#include <QtGui/QApplication>
+#include <QtGui/QMessageBox>
 
 using namespace oz;
 
