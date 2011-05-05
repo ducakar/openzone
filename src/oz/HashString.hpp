@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include "Pair.hpp"
 #include "String.hpp"
 #include "Pool.hpp"
 
@@ -29,10 +28,9 @@ namespace oz
         Type         value;
         Elem*        next;
 
-        template <typename Value>
         OZ_ALWAYS_INLINE
-        explicit Elem( const char* key_, Value&& value_, Elem* next_ ) :
-            key( key_ ), value( static_cast<Value&&>( value_ ) ), next( next_ )
+        explicit Elem( const char* key_, const Type& value_, Elem* next_ ) :
+            key( key_ ), value( value_ ), next( next_ )
         {}
 
         OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -389,19 +387,6 @@ namespace oz
       }
 
       /**
-       * Move constructor.
-       * @param t
-       */
-      HashString( HashString&& t ) : pool( static_cast< Pool<Elem, SIZE>&& >( t.pool ) ),
-          count( t.count )
-      {
-        aCopy( data, t.data, SIZE );
-
-        aSet<Elem*>( t.data, null, SIZE );
-        t.count = 0;
-      }
-
-      /**
        * Copy operator.
        * @param t
        * @return
@@ -418,63 +403,6 @@ namespace oz
           data[i] = copyChain( t.data[i] );
         }
         count = t.count;
-
-        return *this;
-      }
-
-      /**
-       * Move operator.
-       * @param t
-       * @return
-       */
-      HashString& operator = ( HashString&& t )
-      {
-        if( &t == this ) {
-          soft_assert( &t != this );
-          return *this;
-        }
-
-        aCopy( data, t.data, SIZE );
-        pool  = static_cast< Pool<Elem, SIZE>&& >( t.pool );
-        count = t.count;
-
-        aSet<Elem*>( t.data, null, SIZE );
-        t.count = 0;
-
-        return *this;
-      }
-
-      /**
-       * Initialise from an initialiser list.
-       * @param l
-       */
-      HashString( initializer_list< Pair<const char*, Type> > l ) : count( 0 )
-      {
-        const Pair<const char*, Type>* src = l.begin();
-        int size = int( l.size() );
-
-        aSet<Elem*>( data, null, SIZE );
-
-        for( int i = 0; i < size; ++i ) {
-          add( src[i].x, src[i].y );
-        }
-      }
-
-      /**
-       * Copy from an initialiser list.
-       * @param l
-       * @return
-       */
-      HashString& operator = ( initializer_list< Pair<const char*, Type> > l )
-      {
-        clear();
-
-        const Pair<const char*, Type>* src = l.begin();
-        int size = int( l.size() );
-
-        for( int i = 0; i < size; ++i ) {
-          add( src[i].x, src[i].y );
-        }
 
         return *this;
       }
@@ -687,13 +615,12 @@ namespace oz
        * @param value
        * @return pointer to new entry's value
        */
-      template <typename Value = Type>
-      Type* add( const char* key, Value&& value = Value() )
+      Type* add( const char* key, const Type& value = Type() )
       {
         hard_assert( !contains( key ) );
 
         uint  i = uint( String::hash( key ) ) % uint( SIZE );
-        Elem* elem = new( pool ) Elem( key, static_cast<Value&&>( value ), data[i] );
+        Elem* elem = new( pool ) Elem( key, value, data[i] );
 
         data[i] = elem;
         ++count;

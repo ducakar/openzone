@@ -38,11 +38,6 @@
 #include <cstdarg>
 
 /*
- * Initialiser list (only works when declared as std::initializer_list)
- */
-#include <initializer_list>
-
-/*
  * Standard exception definitions (usually included via <new>, but just for sure)
  */
 #include <exception>
@@ -110,7 +105,7 @@ namespace oz
      * @return
      */
     OZ_ALWAYS_INLINE
-    constexpr bool operator == ( nil_t ) const
+    bool operator == ( nil_t ) const
     {
       return true;
     }
@@ -121,7 +116,7 @@ namespace oz
      * @return
      */
     OZ_ALWAYS_INLINE
-    constexpr bool operator != ( nil_t ) const
+    bool operator != ( nil_t ) const
     {
       return false;
     }
@@ -135,13 +130,13 @@ namespace oz
   /**
    * nullptr_t
    */
-  typedef decltype( nullptr ) nullptr_t;
+  typedef typeof( nullptr ) nullptr_t;
 
   /**
-   * null
+   * \def null
    * Nicer alias for nullptr.
    */
-  const nullptr_t null = nullptr;
+# define null nullptr
 
   /**
    * signed byte
@@ -182,11 +177,6 @@ namespace oz
    */
   typedef unsigned long long ulong64;
 
-  /**
-   * Import initialiser list
-   */
-  using std::initializer_list;
-
   // some assumptions about types
   static_assert( sizeof( short ) == 2, "sizeof( short ) should be 2" );
   static_assert( sizeof( int ) == 4, "sizeof( int ) should be 4" );
@@ -205,9 +195,9 @@ namespace oz
   OZ_ALWAYS_INLINE
   inline void swap( Type& a, Type& b )
   {
-    Type t = static_cast<Type&&>( a );
-    a = static_cast<Type&&>( b );
-    b = static_cast<Type&&>( t );
+    Type t = a;
+    a = b;
+    b = t;
   }
 
   /**
@@ -218,7 +208,7 @@ namespace oz
    */
   template <typename Type>
   OZ_ALWAYS_INLINE
-  inline constexpr const Type& min( const Type& a, const Type& b )
+  inline const Type& min( const Type& a, const Type& b )
   {
     return b < a ? b : a;
   }
@@ -231,7 +221,7 @@ namespace oz
    */
   template <typename Type>
   OZ_ALWAYS_INLINE
-  inline constexpr const Type& max( const Type& a, const Type& b )
+  inline const Type& max( const Type& a, const Type& b )
   {
     return a < b ? b : a;
   }
@@ -245,7 +235,7 @@ namespace oz
    */
   template <typename Type>
   OZ_ALWAYS_INLINE
-  inline constexpr const Type& clamp( const Type& c, const Type& a, const Type& b )
+  inline const Type& clamp( const Type& c, const Type& a, const Type& b )
   {
     return c < a ? a : ( b < c ? b : c );
   }

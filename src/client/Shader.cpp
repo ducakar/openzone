@@ -172,9 +172,9 @@ namespace client
 #endif
 
 #ifdef OZ_OPENGL3
-//     OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
-//     OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
-//     OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
+    OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
+    OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
+    OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
 #endif
 
     glLinkProgram( programs[id].program );
@@ -283,21 +283,21 @@ namespace client
     caelumLight.diffuse = colour;
   }
 
-//   int Shader::addLight( const Point3& pos, const Vec4& colour )
-//   {
-//     return lights.add( Light( pos, colour ) );
-//   }
-//
-//   void Shader::removeLight( int id )
-//   {
-//     lights.remove( id );
-//   }
-//
-//   void Shader::setLight( int id, const Point3& pos, const Vec4& colour )
-//   {
-//     lights[id].pos = pos;
-//     lights[id].diffuse = colour;
-//   }
+  int Shader::addLight( const Point3& pos, const Vec4& colour )
+  {
+    return lights.add( Light( pos, colour ) );
+  }
+
+  void Shader::removeLight( int id )
+  {
+    lights.remove( id );
+  }
+
+  void Shader::setLight( int id, const Point3& pos, const Vec4& colour )
+  {
+    lights[id].pos = pos;
+    lights[id].diffuse = colour;
+  }
 
   void Shader::updateLights()
   {
@@ -389,7 +389,6 @@ namespace client
 
     hard_assert( glGetError() == GL_NO_ERROR );
     hard_assert( tf.stack.isEmpty() );
-    tf.stack.dealloc();
 
     log.printEnd( " OK" );
   }

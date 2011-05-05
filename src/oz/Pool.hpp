@@ -43,8 +43,9 @@ public:\
 public: \
   void* operator new ( size_t, oz::Pool<Type, SIZE>& pool ) { return pool.alloc(); } \
   void  operator delete ( void* ptr, oz::Pool<Type, SIZE>& pool ) { pool.dealloc( ptr ); } \
-  void* operator new ( size_t ) = delete; \
-  void  operator delete ( void* ) = delete;
+private: \
+  void* operator new ( size_t ); \
+  void  operator delete ( void* );
 
 namespace oz
 {
@@ -113,51 +114,22 @@ namespace oz
         hard_assert( count == 0 && size == 0 );
       }
 
+    private:
+
       /**
        * No copying.
        * @param
        */
-      Pool( const Pool& ) = delete;
-
-      /**
-       * Move constructor.
-       * @param p
-       */
-      Pool( Pool&& p ) : firstBlock( p.firstBlock ), freeSlot( p.freeSlot ),
-          size( p.size ), count( p.count )
-      {
-        p.firstBlock = null;
-        p.freeSlot   = null;
-        p.size       = 0;
-        p.count      = 0;
-      }
+      Pool( const Pool& );
 
       /**
        * No copying.
        * @param
        * @return
        */
-      Pool& operator = ( const Pool& ) = delete;
+      Pool& operator = ( const Pool& );
 
-      /**
-       * Move operator.
-       * @param p
-       * @return
-       */
-      Pool& operator = ( Pool&& p )
-      {
-        firstBlock = p.firstBlock;
-        freeSlot   = p.freeSlot;
-        size       = p.size;
-        count      = p.count;
-
-        p.firstBlock = null;
-        p.freeSlot   = null;
-        p.size       = 0;
-        p.count      = 0;
-
-        return *this;
-      }
+    public:
 
       /**
        * Allocate a new element.

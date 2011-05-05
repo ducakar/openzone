@@ -27,40 +27,45 @@ namespace oz
 
       static const float MAX_RAND;
 
-      Math() = delete;
+    private:
+
+      // singleton
+      Math();
+
+    public:
 
       OZ_ALWAYS_INLINE
-      constexpr static float abs( float x )
+      static float abs( float x )
       {
         return __builtin_fabsf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float floor( float x )
+      static float floor( float x )
       {
         return __builtin_floorf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float ceil( float x )
+      static float ceil( float x )
       {
         return __builtin_ceilf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float round( float x )
+      static float round( float x )
       {
         return __builtin_roundf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float trunc( float x )
+      static float trunc( float x )
       {
         return __builtin_truncf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float mod( float x, float y )
+      static float mod( float x, float y )
       {
         return __builtin_fmodf( x, y );
       }
@@ -74,37 +79,37 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float sqrt( float x )
+      static float sqrt( float x )
       {
         return __builtin_sqrtf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float exp( float x )
+      static float exp( float x )
       {
         return __builtin_expf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float log( float x )
+      static float log( float x )
       {
         return __builtin_logf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float pow( float x, float y )
+      static float pow( float x, float y )
       {
         return __builtin_powf( x, y );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float sin( float x )
+      static float sin( float x )
       {
         return __builtin_sinf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float cos( float x )
+      static float cos( float x )
       {
         return __builtin_cosf( x );
       }
@@ -121,61 +126,61 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float tan( float x )
+      static float tan( float x )
       {
         return __builtin_tanf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float asin( float x )
+      static float asin( float x )
       {
         return __builtin_asinf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float acos( float x )
+      static float acos( float x )
       {
         return __builtin_acosf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float atan( float x )
+      static float atan( float x )
       {
         return __builtin_atanf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float atan2( float x, float y )
+      static float atan2( float x, float y )
       {
         return __builtin_atan2f( x, y );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static bool isNaN( float x )
+      static bool isNaN( float x )
       {
         return __builtin_isnan( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static bool isFinite( float x )
+      static bool isFinite( float x )
       {
         return __builtin_isfinite( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static int isInf( float x )
+      static int isInf( float x )
       {
         return __builtin_isinf( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static bool isNormal( float x )
+      static bool isNormal( float x )
       {
         return __builtin_isnormal( x );
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float sgn( float x )
+      static float sgn( float x )
       {
         return x < 0.0f ? -1.0f : ( x > 0.0f ? 1.0f : 0.0f );
       }
@@ -194,25 +199,27 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static int toBits( float x )
+      static int toBits( float x )
       {
         union FloatToBits
         {
           float f;
           int   b;
         };
-        return FloatToBits{ x }.b;
+        FloatToBits fb = { x };
+        return fb.b;
       }
 
       OZ_ALWAYS_INLINE
-      constexpr static float fromBits( int i )
+      static float fromBits( int i )
       {
         union BitsToFloat
         {
           int   b;
           float f;
         };
-        return BitsToFloat{ i }.f;
+        BitsToFloat bf = { i };
+        return bf.f;
       }
 
       OZ_ALWAYS_INLINE
@@ -232,7 +239,7 @@ namespace oz
       // is power of two?
       template <typename Value>
       OZ_ALWAYS_INLINE
-      constexpr static bool isPow2( const Value& v )
+      static bool isPow2( const Value& v )
       {
         return ( v & ( v - 1 ) ) == 0;
       }

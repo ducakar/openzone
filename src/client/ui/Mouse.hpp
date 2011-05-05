@@ -25,7 +25,7 @@ namespace ui
   {
     public:
 
-      enum Icon : int
+      enum Icon
       {
         X,
         ARROW,

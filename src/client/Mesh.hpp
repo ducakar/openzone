@@ -31,7 +31,9 @@ namespace client
     Vec3     binormal;
 #endif
 
-    Vertex() = default;
+    OZ_ALWAYS_INLINE
+    Vertex()
+    {}
 
     explicit Vertex( const Point3& pos,
                      const TexCoord& texCoord = TexCoord( 0.0f, 0.0f ),

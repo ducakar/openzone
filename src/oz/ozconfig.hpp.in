@@ -16,19 +16,19 @@
 #cmakedefine OZ_MINGW
 
 #if defined( __clang__ )
-# if __clang_major__ < 2 || ( __clang_major__ == 2 && __clang_minor < 9 )
-#  error gcc >= 4.5 is the only supported compiler
+# if __clang_major__ < 2 || ( __clang_major__ == 2 && __clang_minor__ < 9 )
+#  error gcc >= 4.5 and clang 2.9 are the only supported compilers
+# elif __clang_major__ == 2 && __clang_minor__ == 9
+#  undef __GXX_EXPERIMENTAL_CXX0X__
 # endif
 #elif defined( __GNUC__ )
 # if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 5 )
-#  error gcc >= 4.5 is the only supported compiler
+#  error gcc >= 4.5 and clang 2.9 are the only supported compilers
 # elif __GNUC__ == 4 && __GNUC_MINOR__ == 5
-#  define constexpr
-#  define noexcept throw()
 #  define nullptr __null
 # endif
 #else
-# error gcc >= 4.5 is the only supported compiler
+# error gcc >= 4.5 and clang 2.9 are the only supported compilers
 #endif
 
 // OZ_ECLIPSE_HIGHLIGHTING should never be enabled for compiler to process it, it is only intended

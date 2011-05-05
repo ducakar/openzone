@@ -62,8 +62,7 @@ namespace client
 
     private:
 
-//       SVector<Mat44, 8> stack;
-      Vector<Mat44> stack;
+      SVector<Mat44, 8> stack;
 
     public:
 
@@ -98,7 +97,7 @@ namespace client
 
   struct Attrib
   {
-    enum Type : int
+    enum Type
     {
       POSITION,
       TEXCOORD,
@@ -115,7 +114,7 @@ namespace client
 #ifdef OZ_OPENGL3
   struct FragData
   {
-    enum Type : int
+    enum Type
     {
       COLOUR,
       EFFECT,
@@ -152,7 +151,8 @@ namespace client
         Point3 pos;
         Vec4   diffuse;
 
-        Light() = default;
+        Light()
+        {}
 
         explicit Light( const Point3& pos, const Vec4& diffuse );
       };
@@ -166,7 +166,7 @@ namespace client
 
       float           lightingDistance;
       CaelumLight     caelumLight;
-//       Sparse<Light>   lights;
+      Sparse<Light>   lights;
 
       void compileShader( uint id, const char* path, const char** sources, int* lengths ) const;
       void loadProgram( int id, const char** sources, int* lengths );
@@ -195,9 +195,9 @@ namespace client
       void setAmbientLight( const Vec4& colour );
       void setCaelumLight( const Vec3& dir, const Vec4& colour );
 
-//       int  addLight( const Point3& pos, const Vec4& colour );
-//       void removeLight( int id );
-//       void setLight( int id, const Point3& pos, const Vec4& colour );
+      int  addLight( const Point3& pos, const Vec4& colour );
+      void removeLight( int id );
+      void setLight( int id, const Point3& pos, const Vec4& colour );
 
       void updateLights();
 

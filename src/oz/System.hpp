@@ -29,9 +29,12 @@ namespace oz
 
       static void signalHandler( int signum );
 
-    public:
+    private:
 
-      System() = delete;
+      // singleton
+      System();
+
+    public:
 
       /**
        * Set signal handlers to catch critical signals, print information, stack trace and wait

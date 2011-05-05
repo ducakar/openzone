@@ -51,8 +51,13 @@ namespace oz
       Directory();
       ~Directory();
 
-      Directory( const Directory& ) = delete;
-      Directory& operator = ( const Directory& ) = delete;
+    private:
+
+      // no copying
+      Directory( const Directory& );
+      Directory& operator = ( const Directory& );
+
+    public:
 
       explicit Directory( const char* path );
 

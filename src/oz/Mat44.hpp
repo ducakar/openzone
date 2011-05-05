@@ -31,7 +31,9 @@ namespace oz
       // last column (translation)
       Vec4 w;
 
-      Mat44() = default;
+      OZ_ALWAYS_INLINE
+      Mat44()
+      {}
 
       OZ_ALWAYS_INLINE
       explicit Mat44( const Vec4& a, const Vec4& b, const Vec4& c, const Vec4& d ) :

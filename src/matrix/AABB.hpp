@@ -34,7 +34,9 @@ namespace oz
        */
       Vec3   dim;
 
-      AABB() = default;
+      OZ_ALWAYS_INLINE
+      AABB()
+      {}
 
       OZ_ALWAYS_INLINE
       explicit AABB( const Point3& p_, const Vec3& dim_ ) : p( p_ ), dim( dim_ )

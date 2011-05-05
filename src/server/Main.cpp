@@ -14,7 +14,7 @@
 #include "Game.hpp"
 
 #ifdef OZ_MINGW
-# include <direct.h>
+# include <dirent.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 #else
@@ -176,8 +176,6 @@ namespace server
 
 }
 }
-
-OZ_IMPORT()
 
 int main( int, char** )
 {

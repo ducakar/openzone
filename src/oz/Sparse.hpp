@@ -261,19 +261,6 @@ namespace oz
       }
 
       /**
-       * Move constructor.
-       * @param s
-       */
-      Sparse( Sparse&& s ) : data( s.data ), size( s.size ), count( s.count ),
-          freeSlot( s.freeSlot )
-      {
-        s.data     = null;
-        s.size     = 0;
-        s.count    = 0;
-        s.freeSlot = 0;
-      }
-
-      /**
        * Copy operator.
        * @param s
        * @return
@@ -300,33 +287,6 @@ namespace oz
       }
 
       /**
-       * Move operator.
-       * @param s
-       * @return
-       */
-      Sparse& operator = ( Sparse&& s )
-      {
-        if( &s == this ) {
-          soft_assert( &s != this );
-          return *this;
-        }
-
-        delete[] data;
-
-        data     = s.data;
-        size     = s.size;
-        count    = s.count;
-        freeSlot = s.freeSlot;
-
-        s.data     = null;
-        s.size     = 0;
-        s.count    = 0;
-        s.freeSlot = 0;
-
-        return *this;
-      }
-
-      /**
        * Create empty sparse vector with given initial capacity.
        * @param initSize
        */
@@ -336,44 +296,6 @@ namespace oz
         for( int i = 0; i < size; ++i ) {
           data[i].nextSlot = i + 1;
         }
-      }
-
-      /**
-       * Initialise from an initialiser list.
-       * @param l
-       */
-      Sparse( initializer_list<Type> l ) : data( new Elem[ int( l.size() ) ] ),
-          size( int( l.size() ) ), count( int( l.size() ) ), freeSlot( int( l.size() ) )
-      {
-        const Type* src = l.begin();
-        for( int i = 0; i < count; ++i ) {
-          data[i].value    = src[i];
-          data[i].nextSlot = -1;
-        }
-      }
-
-      /**
-       * Copy from an initialiser list.
-       * @param l
-       * @return
-       */
-      Sparse& operator = ( initializer_list<Type> l )
-      {
-        count = int( l.size() );
-
-        if( size < count ) {
-          delete[] data;
-
-          data = new Elem[count];
-          size = count;
-        }
-
-        const Type* src = l.begin();
-        for( int i = 0; i < count; ++i ) {
-          data[i] = Elem( src[i], -1 );
-        }
-
-        return *this;
       }
 
       /**
@@ -558,15 +480,14 @@ namespace oz
        * @param e
        * @return index at which the element was inserted
        */
-      template <typename Value>
-      int add( Value&& e )
+      int add( const Type& e )
       {
         ensureCapacity();
 
         int i = freeSlot;
 
         freeSlot = data[i].nextSlot;
-        data[i].value = static_cast<Value&&>( e );
+        data[i].value = e;
         data[i].nextSlot = -1;
         ++count;
 

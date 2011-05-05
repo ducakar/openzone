@@ -14,6 +14,7 @@
 #include "Log.hpp"
 
 #include <cstdlib>
+#include <cstring>
 
 #ifdef OZ_MINGW
 # include <malloc.h>
@@ -132,7 +133,6 @@ namespace oz
 
 }
 
-using oz::null;
 using oz::max;
 using oz::Alloc;
 using oz::System;
@@ -263,7 +263,7 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
   return ptr;
 }
 
-void operator delete ( void* ptr ) noexcept
+void operator delete ( void* ptr ) throw()
 {
   hard_assert( !Alloc::isLocked );
   hard_assert( ptr != null );
@@ -275,7 +275,7 @@ void operator delete ( void* ptr ) noexcept
   Alloc::amount -= size;
 
 #ifndef NDEBUG
-  __builtin_memset( chunk, 0xee, size );
+  memset( chunk, 0xee, size );
 #endif
 
 #ifdef OZ_TRACE_LEAKS
@@ -328,7 +328,7 @@ void operator delete ( void* ptr ) noexcept
   posix_memalign_free( chunk );
 }
 
-void operator delete[] ( void* ptr ) noexcept
+void operator delete[] ( void* ptr ) throw()
 {
   hard_assert( !Alloc::isLocked );
   hard_assert( ptr != null );
@@ -340,7 +340,7 @@ void operator delete[] ( void* ptr ) noexcept
   Alloc::amount -= size;
 
 #ifndef NDEBUG
-  __builtin_memset( chunk, 0xee, size );
+  memset( chunk, 0xee, size );
 #endif
 
 #ifdef OZ_TRACE_LEAKS

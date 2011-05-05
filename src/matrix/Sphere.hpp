@@ -29,7 +29,9 @@ namespace oz
 
     public:
 
-      Sphere() = default;
+      OZ_ALWAYS_INLINE
+      Sphere()
+      {}
 
       OZ_ALWAYS_INLINE
       explicit Sphere( const Point3& p_, float r_ ) : p( p_ ), r( r_ )

@@ -44,7 +44,7 @@ namespace client
 
       struct QBSPLump
       {
-        enum Lumps : int
+        enum Lumps
         {
           ENTITIES,
           TEXTURES,

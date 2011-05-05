@@ -26,7 +26,7 @@ namespace client
   {
     public:
 
-      enum State : int
+      enum State
       {
         NONE,
         STRATEGIC,

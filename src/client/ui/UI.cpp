@@ -101,63 +101,41 @@ namespace ui
 
   void UI::load()
   {
-    bool areasConstructed = false;
-
     isFreelook = false;
 
     mouse.load();
 
-    strategicArea = new StrategicArea();
-    onleave( [&]() {
-      if( !areasConstructed ) {
-        delete strategicArea;
-        strategicArea = null;
-      }
-    } );
-
-    hudArea = new HudArea();
-    onleave( [&]() {
-      if( !areasConstructed ) {
-        delete hudArea;
-        hudArea = null;
-      }
-    } );
-
-    inventoryMenu = new InventoryMenu();
-    onleave( [&]() {
-      if( !areasConstructed ) {
-        delete inventoryMenu;
-        inventoryMenu = null;
-      }
-    } );
-
-    musicPlayer = new MusicPlayer();
-    onleave( [&]() {
-      if( !areasConstructed ) {
-        delete musicPlayer;
-        musicPlayer = null;
-      }
-    } );
-
-    buildMenu = new BuildMenu();
-    onleave( [&]() {
-      if( !areasConstructed ) {
-        delete buildMenu;
-        buildMenu = null;
-      }
-    } );
-
+    try {
+      strategicArea = new StrategicArea();
+      hudArea       = new HudArea();
+      inventoryMenu = new InventoryMenu();
+      musicPlayer   = new MusicPlayer();
+      buildMenu     = new BuildMenu();
 #ifndef NDEBUG
-    debugFrame = new DebugFrame();
-    onleave( [&]() {
-      if( !areasConstructed ) {
-        delete debugFrame;
-        debugFrame = null;
-      }
-    } );
+      debugFrame    = new DebugFrame();
+#endif
+    }
+    catch( ... ) {
+      delete strategicArea;
+      delete hudArea;
+      delete inventoryMenu;
+      delete musicPlayer;
+      delete buildMenu;
+#ifndef NDEBUG
+      delete debugFrame;
 #endif
 
-    areasConstructed = true;
+      strategicArea = null;
+      hudArea       = null;
+      inventoryMenu = null;
+      musicPlayer   = null;
+      buildMenu     = null;
+#ifndef NDEBUG
+      debugFrame    = null;
+#endif
+
+      throw;
+    }
 
     root->add( strategicArea );
     root->add( hudArea );

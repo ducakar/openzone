@@ -23,7 +23,7 @@ namespace client
   {
     public:
 
-      enum State : int
+      enum State
       {
         GAME,
         MENU

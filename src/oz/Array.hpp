@@ -87,7 +87,9 @@ namespace oz
       /**
        * Default constructor.
        */
-      Array() = default;
+      OZ_ALWAYS_INLINE
+      Array()
+      {}
 
       /**
        * Initialise from a C++ array.
@@ -96,30 +98,6 @@ namespace oz
       explicit Array( const Type* array )
       {
         aCopy( data, array, SIZE );
-      }
-
-      /**
-       * Initialise from an initialiser list.
-       * @param l
-       */
-      Array( initializer_list<Type> l )
-      {
-        hard_assert( int( l.size() ) == SIZE );
-
-        aCopy( data, l.begin(), SIZE );
-      }
-
-      /**
-       * Copy from an initialiser list.
-       * @param l
-       * @return
-       */
-      Array& operator = ( initializer_list<Type> l )
-      {
-        hard_assert( int( l.size() ) == SIZE );
-
-        aCopy( data, l.begin(), SIZE );
-        return *this;
       }
 
       /**

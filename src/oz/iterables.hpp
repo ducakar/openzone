@@ -142,13 +142,15 @@ namespace oz
         return elem;
       }
 
+    private:
+
       /**
        * Advance to the next element
        * Should be implemented in derived classes
        * @return
        */
       OZ_ALWAYS_INLINE
-      CIteratorBase& operator ++ () = delete;
+      CIteratorBase& operator ++ ();
 
   };
 
@@ -307,13 +309,15 @@ namespace oz
         return elem;
       }
 
+    private:
+
       /**
        * Advance to the next element
        * Should be implemented in derived classes
        * @return
        */
       OZ_ALWAYS_INLINE
-      IteratorBase& operator ++ () = delete;
+      IteratorBase& operator ++ ();
 
   };
 
@@ -385,26 +389,6 @@ namespace oz
   }
 
   /**
-   * Construct elements via move constructor from an already constructed container.
-   * @param iDest
-   * @param iSrc
-   */
-  template <class IteratorA, class IteratorB>
-  inline void iReconstruct( IteratorA iDest, IteratorB iSrc )
-  {
-    typedef typename IteratorA::Elem TypeA;
-    typedef typename IteratorB::Elem TypeB;
-
-    while( iDest != nil ) {
-      hard_assert( iSrc != nil );
-
-      new( static_cast<TypeA*>( iDest ) ) TypeA( static_cast<TypeB&&>( *iSrc ) );
-      ++iDest;
-      ++iSrc;
-    }
-  }
-
-  /**
    * Copy elements from first to last (like std::copy, but reversed parameters).
    * @param iDest
    * @param iSrc
@@ -421,30 +405,6 @@ namespace oz
       hard_assert( iSrc != nil );
 
       *iDest = *iSrc;
-      ++iDest;
-      ++iSrc;
-    }
-  }
-
-  /**
-   * Move elements from first to last
-   * @param iDest
-   * @param iSrc
-   */
-  template <class IteratorA, class IteratorB>
-  inline void iMove( IteratorA iDest, IteratorB iSrc )
-  {
-    typedef typename IteratorB::Elem TypeB;
-
-    if( iDest == iSrc ) {
-      soft_assert( iDest != iSrc );
-      return;
-    }
-
-    while( iDest != nil ) {
-      hard_assert( iSrc != nil );
-
-      *iDest = static_cast<TypeB&&>( *iSrc );
       ++iDest;
       ++iSrc;
     }

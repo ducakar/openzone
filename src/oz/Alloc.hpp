@@ -35,7 +35,12 @@ namespace oz
       OZ_WEAK_SYMBOL
       static bool isLocked;
 
-      Alloc() = delete;
+    private:
+
+      // singleton
+      Alloc();
+
+    public:
 
       /**
        * Allocate memory without constructing the elements. Memory has to be freed via
@@ -78,7 +83,7 @@ namespace oz
         Type* newArray = reinterpret_cast<Type*>( new char[ newSize * sizeof( Type ) ] );
 
         for( int i = 0; i < count; ++i ) {
-          new( newArray + i ) Type( static_cast<Type&&>( array[i] ) );
+          new( newArray + i ) Type( array[i] );
           array[i].~Type();
         }
         delete[] reinterpret_cast<char*>( array );
@@ -87,28 +92,28 @@ namespace oz
       }
 
       template <typename Size>
-      constexpr static Size alignDown( Size size )
+      static Size alignDown( Size size )
       {
         return static_cast<Size>
             ( size_t( size ) & ~size_t( ALIGNMENT - 1 ) );
       }
 
       template <typename Size>
-      constexpr static Size alignUp( Size size )
+      static Size alignUp( Size size )
       {
         return static_cast<Size>
             ( ( size_t( size - 1 ) & ~size_t( ALIGNMENT - 1 ) ) + size_t( ALIGNMENT ) );
       }
 
       template <typename Pointer>
-      constexpr static Pointer* alignDown( Pointer* size )
+      static Pointer* alignDown( Pointer* size )
       {
         return reinterpret_cast<Pointer*>
             ( size_t( size ) & ~size_t( ALIGNMENT - 1 ) );
       }
 
       template <typename Pointer>
-      constexpr static Pointer* alignUp( Pointer* size )
+      static Pointer* alignUp( Pointer* size )
       {
         return reinterpret_cast<Pointer*>
             ( ( size_t( size - 1 ) & ~size_t( ALIGNMENT - 1 ) ) + size_t( ALIGNMENT ) );
