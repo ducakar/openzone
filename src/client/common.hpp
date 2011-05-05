@@ -28,7 +28,9 @@ namespace client
     float u;
     float v;
 
-    TexCoord() = default;
+    OZ_ALWAYS_INLINE
+    TexCoord()
+    {}
 
     OZ_ALWAYS_INLINE
     explicit TexCoord( float u_, float v_ ) : u( u_ ), v( v_ )

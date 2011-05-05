@@ -40,15 +40,15 @@ struct Foo
     next[0] = f.next[0];
   }
 
-  Foo( Foo&& f )
-  {
-    printf( "Foo( Foo&& )\n" );
-
-    data[0] = f.data[0];
-    data[1] = f.data[1];
-    prev[0] = f.prev[0];
-    next[0] = f.next[0];
-  }
+//   Foo( Foo&& f )
+//   {
+//     printf( "Foo( Foo&& )\n" );
+//
+//     data[0] = f.data[0];
+//     data[1] = f.data[1];
+//     prev[0] = f.prev[0];
+//     next[0] = f.next[0];
+//   }
 
   Foo& operator = ( const Foo& f )
   {
@@ -61,24 +61,16 @@ struct Foo
     return *this;
   }
 
-  Foo& operator = ( Foo&& f )
-  {
-    printf( "Foo& operator = ( Foo&& )\n" );
-
-    data[0] = f.data[0];
-    data[1] = f.data[1];
-    prev[0] = f.prev[0];
-    next[0] = f.next[0];
-    return *this;
-  }
-
-  Foo( oz::initializer_list<int> l )
-  {
-    printf( "Foo( oz::initializer_list<int> )\n" );
-
-    data[0] = l.begin()[0];
-    data[1] = l.begin()[1];
-  }
+//   Foo& operator = ( Foo&& f )
+//   {
+//     printf( "Foo& operator = ( Foo&& )\n" );
+//
+//     data[0] = f.data[0];
+//     data[1] = f.data[1];
+//     prev[0] = f.prev[0];
+//     next[0] = f.next[0];
+//     return *this;
+//   }
 
 };
 
@@ -90,9 +82,9 @@ struct Bar
 
 int main( int, char** )
 {
-  HashString<Foo> hs = { { "300", Foo() }, { "200", Foo() } };
+  HashString<Foo> hs;
   HashString<Foo> hs1;
-  hs1 = static_cast< HashString<Foo>&& >( hs );
+  hs1 = /*static_cast< HashString<Foo>&& >(*/ hs /*)*/;
 
   foreach( i, hs1.citer() ) {
     printf( "%s :: ", i.key().cstr() );

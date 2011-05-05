@@ -4,18 +4,18 @@ configure_file( Build.cpp.in Build.cpp )
 
 # required to include configuration headers when we use a separate build directory
 # the second entry must be included before '.', so precompiled header is used instead the actual one
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/oz )
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
+include_directories( ${CMAKE_BINARY_DIR}/src/oz )
+include_directories( ${CMAKE_BINARY_DIR}/src )
 
 include_directories( . )
 
 add_subdirectory( oz )
 
-add_pch( pch stable.hpp DEPENDS oz ${CMAKE_CURRENT_BINARY_DIR}/configuration.hpp )
+add_pch( pch stable.hpp DEPENDS oz ${CMAKE_BINARY_DIR}/src/configuration.hpp )
 
-add_library( build STATIC ${CMAKE_CURRENT_BINARY_DIR}/Build.cpp )
+add_library( build STATIC ${CMAKE_BINARY_DIR}/src/Build.cpp )
 # add_custom_target( build_rebuild
-#   COMMAND ${CMAKE_COMMAND} -E touch_nocreate ${CMAKE_CURRENT_BINARY_DIR}/Build.cpp )
+#   COMMAND ${CMAKE_COMMAND} -E touch_nocreate ${CMAKE_BINARY_DIR}/src/Build.cpp )
 # add_dependencies( build build_rebuild )
 
 add_subdirectory( matrix )

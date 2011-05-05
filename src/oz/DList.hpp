@@ -149,53 +149,6 @@ namespace oz
       {}
 
       /**
-       * Initialise a chain from an initialiser list of pointers.
-       * @param l
-       */
-      DList( initializer_list<Type*> l )
-      {
-        firstElem = *l.begin();
-        firstElem->prev[INDEX] = null;
-
-        Type* prev = firstElem;
-
-        for( Type* const* i = l.begin() + 1; i != l.end(); ++i ) {
-          Type* curr = *i;
-
-          prev->next[INDEX] = curr;
-          curr->prev[INDEX] = prev;
-          prev = curr;
-        }
-
-        prev->next[INDEX] = null;
-        lastElem = prev;
-      }
-
-      /**
-       * Copy a chain from an initialiser list of pointers.
-       * @param l
-       * @return
-       */
-      DList& operator = ( initializer_list<Type*> l )
-      {
-        firstElem = *l.begin();
-        firstElem->prev[INDEX] = null;
-
-        Type* prev = firstElem;
-
-        for( Type* const* i = l.begin() + 1; i != l.end(); ++i ) {
-          Type* curr = *i;
-
-          prev->next[INDEX] = curr;
-          curr->prev[INDEX] = prev;
-          prev = curr;
-        }
-
-        prev->next[INDEX] = null;
-        lastElem = prev;
-      }
-
-      /**
        * Clone list.
        * Create a new list from copies of all elements of the original list.
        * @return

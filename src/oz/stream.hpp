@@ -17,39 +17,45 @@
 namespace oz
 {
 
-  struct Endian
+  class Endian
   {
-    Endian() = delete;
+    private:
 
-    OZ_ALWAYS_INLINE
-    constexpr static short shuffle16( short s )
-    {
-#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
-      return s;
-#else
-      return short( ushort( s ) << 8 | ushort( s ) >> 8 );
-#endif
-    }
+      //singleton
+      Endian();
 
-    OZ_ALWAYS_INLINE
-    constexpr static int shuffle32( int i )
-    {
-#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
-      return i;
-#else
-      return __builtin_bswap32( i );
-#endif
-    }
+    public:
 
-    OZ_ALWAYS_INLINE
-    constexpr static long64 shuffle64( long64 l )
-    {
+      OZ_ALWAYS_INLINE
+      static short shuffle16( short s )
+      {
 #if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
-      return l;
+        return s;
 #else
-      return __builtin_bswap64( l );
+        return short( ushort( s ) << 8 | ushort( s ) >> 8 );
 #endif
-    }
+      }
+
+      OZ_ALWAYS_INLINE
+      static int shuffle32( int i )
+      {
+#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
+        return i;
+#else
+        return __builtin_bswap32( i );
+#endif
+      }
+
+      OZ_ALWAYS_INLINE
+      static long64 shuffle64( long64 l )
+      {
+#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
+        return l;
+#else
+        return __builtin_bswap64( l );
+#endif
+      }
+
   };
 
   /**

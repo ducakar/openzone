@@ -12,7 +12,6 @@
 #pragma once
 
 #include "arrays.hpp"
-#include "Alloc.hpp"
 
 namespace oz
 {
@@ -109,16 +108,6 @@ namespace oz
       }
 
       /**
-       * Move constructor.
-       * @param a
-       */
-      DArray( DArray&& a ) : data( a.data ), count( a.count )
-      {
-        a.data  = null;
-        a.count = 0;
-      }
-
-      /**
        * Copy operator.
        * @param a
        * @return
@@ -142,29 +131,6 @@ namespace oz
       }
 
       /**
-       * Move operator.
-       * @param a
-       * @return
-       */
-      DArray& operator = ( DArray&& a )
-      {
-        if( &a == this ) {
-          soft_assert( &a != this );
-          return *this;
-        }
-
-        delete[] data;
-
-        data  = a.data;
-        count = a.count;
-
-        a.data  = null;
-        a.count = 0;
-
-        return *this;
-      }
-
-      /**
        * Create an array with the given size.
        * @param size
        */
@@ -180,32 +146,6 @@ namespace oz
           count( size )
       {
         aCopy( data, array, count );
-      }
-
-      /**
-       * Initialise from an initialiser list.
-       * @param l
-       */
-      DArray( initializer_list<Type> l ) : data( new Type[ l.size() ] ), count( int( l.size() ) )
-      {
-        aCopy( data, l.begin(), count );
-      }
-
-      /**
-       * Copy from an initialiser list.
-       * @param l
-       * @return
-       */
-      DArray& operator = ( initializer_list<Type> l )
-      {
-        if( count != int( l.size() ) ) {
-          delete[] data;
-          data  = new Type[ l.size() ];
-          count = int( l.size() );
-        }
-
-        aCopy( data, l.begin(), count );
-        return *this;
       }
 
       /**

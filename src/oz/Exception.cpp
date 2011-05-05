@@ -19,7 +19,7 @@ namespace oz
 {
 
   Exception::Exception( const String& message_, const char* file_, int line_,
-                        const char* function_ ) noexcept :
+                        const char* function_ ) throw() :
       message( message_ ), file( file_ ), line( line_ ), function( function_ ),
       nFrames( 0 ), frames( null )
   {
@@ -27,12 +27,12 @@ namespace oz
     nFrames = System::getStackTrace( &frames );
   }
 
-  Exception::~Exception() noexcept
+  Exception::~Exception() throw()
   {
     free( frames );
   }
 
-  const char* Exception::what() const noexcept
+  const char* Exception::what() const throw()
   {
     return message;
   }

@@ -29,6 +29,12 @@ struct Elem
 struct SparseElem
 {
   int value;
+
+  SparseElem()
+  {}
+
+  SparseElem( int value_ ) : value( value_ )
+  {}
 };
 
 int main( int, char** )
@@ -61,7 +67,7 @@ int main( int, char** )
   a[0] = 1;
   v.add( 1 );
   sv.add( 1 );
-  s.add( SparseElem{ 1 } );
+  s.add( SparseElem( 1 ) );
   m.include( 1 );
   hi.add( 101, 1 );
   hs.add( "101", 1 );
@@ -72,7 +78,7 @@ int main( int, char** )
   a[1] = 2;
   v.add( 2 );
   sv.add( 2 );
-  s.add( SparseElem{ 2 } );
+  s.add( SparseElem( 2 ) );
   m.include( 2 );
   hi.add( 102, 2 );
   hs.add( "102", 2 );
@@ -83,7 +89,7 @@ int main( int, char** )
   a[2] = 4;
   v.add( 4 );
   sv.add( 4 );
-  s.add( SparseElem{ 4 } );
+  s.add( SparseElem( 4 ) );
   m.include( 4 );
   hi.add( 104, 4 );
   hs.add( "104", 4 );
@@ -94,7 +100,7 @@ int main( int, char** )
   a[3] = 3;
   v.add( 3 );
   sv.add( 3 );
-  s.add( SparseElem{ 3 } );
+  s.add( SparseElem( 3 ) );
   m.include( 3 );
   hi.add( 103, 3 );
   hs.add( "103", 3 );
@@ -105,7 +111,7 @@ int main( int, char** )
   a[4] = 5;
   v.add( 5 );
   sv.add( 5 );
-  s.add( SparseElem{ 5 } );
+  s.add( SparseElem( 5 ) );
   m.include( 5 );
   hi.add( 105, 5 );
   hs.add( "105", 5 );
@@ -177,6 +183,16 @@ int main( int, char** )
 
   l.free();
   dl.free();
+  v.clear();
+  v.dealloc();
+  s.clear();
+  s.dealloc();
+  m.clear();
+  m.dealloc();
+  hi.clear();
+  hi.dealloc();
+  hs.clear();
+  hs.dealloc();
 
   Alloc::isLocked = true;
   Alloc::printLeaks();

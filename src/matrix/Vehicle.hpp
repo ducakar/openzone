@@ -20,7 +20,7 @@ namespace oz
   {
     public:
 
-      enum Type : int
+      enum Type
       {
         WHEELED,
         TRACKED,
@@ -28,7 +28,7 @@ namespace oz
         AIR
       };
 
-      enum Crew : int
+      enum Crew
       {
         PILOT,
         GUNNER,

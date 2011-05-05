@@ -224,10 +224,15 @@ namespace oz
       Object() : index( -1 ), cell( null )
       {}
 
-      Object( const Object& ) = delete;
-      Object& operator = ( const Object& ) = delete;
-
       virtual ~Object();
+
+    private:
+
+      // no copying
+      Object( const Object& );
+      Object& operator = ( const Object& );
+
+    public:
 
       /**
        * Add an event to the object. Events can be used for reporting collisions, sounds etc.

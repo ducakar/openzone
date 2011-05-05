@@ -19,7 +19,7 @@ namespace oz
 
   struct Anim
   {
-    enum Type : int
+    enum Type
     {
       STAND,
       RUN,

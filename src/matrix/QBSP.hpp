@@ -38,7 +38,7 @@ namespace oz
 
       struct QBSPLump
       {
-        enum Lumps : int
+        enum Lumps
         {
           ENTITIES,
           TEXTURES,
@@ -149,7 +149,7 @@ namespace oz
 
       struct Model : Bounds
       {
-        enum Type : int
+        enum Type
         {
           IGNORING,
           BLOCKING,

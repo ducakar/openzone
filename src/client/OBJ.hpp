@@ -37,7 +37,9 @@ namespace client
         // vertex texture coordinates in texCoords array
         int texCoord;
 
-        FaceVertex() = default;
+        OZ_ALWAYS_INLINE
+        FaceVertex()
+        {}
 
         explicit FaceVertex( int pos_, int norm_, int texCoord_ ) :
             position( pos_ ), normal( norm_ ), texCoord( texCoord_ )

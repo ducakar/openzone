@@ -196,8 +196,11 @@ namespace oz
     hard_assert( iFindLast( l.citer(), Test( 5 ) ) == li );
     hard_assert( iFindLast( v.citer(), Test( 5 ) ) == vi );
 
-    li = decltype( li )();
-    vi = decltype( vi )();
+    typedef typeof( li ) LI;
+    typedef typeof( vi ) VI;
+
+    li = LI();
+    vi = VI();
 
     hard_assert( iFindLast( l.citer(), Test( 0 ) ) == li );
     hard_assert( iFindLast( v.citer(), Test( 0 ) ) == vi );

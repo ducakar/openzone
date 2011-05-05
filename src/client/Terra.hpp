@@ -24,8 +24,8 @@ namespace client
   {
     private:
 
-      static const int   TILE_QUADS   = 16;
-      static const int   TILES        = oz::Terra::QUADS / TILE_QUADS;
+      static const int   TILE_QUADS = 16;
+      static const int   TILES      = oz::Terra::QUADS / TILE_QUADS;
 
       static const int   TILE_INDICES;
       static const int   TILE_VERTICES;

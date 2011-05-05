@@ -33,12 +33,6 @@ namespace oz
     }
   }
 
-  Buffer::Buffer( Buffer&& b ) : data( b.data ), count( b.count )
-  {
-    b.data  = null;
-    b.count = 0;
-  }
-
   Buffer& Buffer::operator = ( const Buffer& b )
   {
     if( &b == this ) {
@@ -52,22 +46,6 @@ namespace oz
     }
 
     aCopy( data, b.data, b.count );
-    return *this;
-  }
-
-  Buffer& Buffer::operator = ( Buffer&& b )
-  {
-    if( &b == this ) {
-      soft_assert( &b != this );
-      return *this;
-    }
-
-    data  = b.data;
-    count = b.count;
-
-    b.data  = null;
-    b.count = 0;
-
     return *this;
   }
 

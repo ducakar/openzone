@@ -503,6 +503,11 @@ namespace oz
     }
   }
 
+  Struct::~Struct()
+  {
+    delete[] entities;
+  }
+
   Struct::Struct( int index_, int bsp_, const Point3& p_, Rotation rot_ ) :
       p( p_ ), index( index_ ), bsp( bsp_ ), rot( rot_ ), life( orbis.bsps[bsp]->life )
   {
@@ -543,11 +548,6 @@ namespace oz
     }
 
     readFull( istream );
-  }
-
-  Struct::~Struct()
-  {
-    delete[] entities;
   }
 
   Bounds Struct::toStructCS( const Bounds& bb ) const

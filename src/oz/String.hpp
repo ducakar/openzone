@@ -59,22 +59,6 @@ namespace oz
         hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
       }
 
-      String( String&& s ) : count( s.count )
-      {
-        if( s.buffer != s.baseBuffer ) {
-          buffer      = s.buffer;
-          s.buffer    = s.baseBuffer;
-          s.count     = 0;
-          s.buffer[0] = '\0';
-        }
-        else {
-          buffer = baseBuffer;
-          aCopy( buffer, s.buffer, count + 1 );
-        }
-
-        hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-      }
-
       String& operator = ( const String& s )
       {
         if( &s == this ) {
@@ -91,32 +75,6 @@ namespace oz
         aCopy( buffer, s.buffer, count + 1 );
 
         hard_assert( ( buffer == baseBuffer ) == ( count < BUFFER_SIZE ) );
-
-        return *this;
-      }
-
-      String& operator = ( String&& s )
-      {
-        if( &s == this ) {
-          soft_assert( &s != this );
-          return *this;
-        }
-
-        count = s.count;
-
-        if( buffer != baseBuffer ) {
-          delete[] buffer;
-        }
-        if( s.buffer != s.baseBuffer ) {
-          buffer      = s.buffer;
-          s.buffer    = s.baseBuffer;
-          s.count     = 0;
-          s.buffer[0] = '\0';
-        }
-        else {
-          buffer = baseBuffer;
-          aCopy( buffer, s.buffer, count + 1 );
-        }
 
         return *this;
       }

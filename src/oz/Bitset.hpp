@@ -58,16 +58,6 @@ namespace oz
       }
 
       /**
-       * Move constructor.
-       * @param b the original Bitset
-       */
-      Bitset( Bitset&& b ) : data( b.data ), size( b.size )
-      {
-        b.data = null;
-        b.size = 0;
-      }
-
-      /**
        * Copy operator.
        * @param b the original Bitset
        * @return
@@ -86,29 +76,6 @@ namespace oz
         }
 
         aCopy( data, b.data, b.size );
-        return *this;
-      }
-
-      /**
-       * Move operator.
-       * @param b the original Bitset
-       * @return
-       */
-      Bitset& operator = ( Bitset&& b )
-      {
-        if( &b == this ) {
-          soft_assert( &b != this );
-          return *this;
-        }
-
-        delete[] data;
-
-        data = b.data;
-        size = b.size;
-
-        b.data = null;
-        b.size = 0;
-
         return *this;
       }
 

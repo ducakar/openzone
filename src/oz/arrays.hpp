@@ -245,20 +245,6 @@ namespace oz
   }
 
   /**
-   * Construct elements via move constructor from an already constructed array.
-   * @param aDest
-   * @param aSrc
-   * @param count
-   */
-  template <typename Type>
-  inline void aReconstruct( Type* aDest, Type* aSrc, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      new( &aDest[i] ) Type( static_cast<Type&&>( aSrc[i] ) );
-    }
-  }
-
-  /**
    * Copy array from first to last element (memcpy).
    * In contrast with memcpy it calls copy operator on objects.
    * @param aDest pointer to the first element in the destination array
@@ -279,26 +265,6 @@ namespace oz
   }
 
   /**
-   * Move array from first to last element.
-   * In contrast with memcpy it calls move operator on objects.
-   * @param aDest pointer to the first element in the destination array
-   * @param aSrc pointer to the first element in the source array
-   * @param count number of elements to be moved
-   */
-  template <typename Type>
-  inline void aMove( Type* aDest, Type* aSrc, int count )
-  {
-    if( aDest == aSrc ) {
-      soft_assert( aDest != aSrc );
-      return;
-    }
-
-    for( int i = 0; i < count; ++i ) {
-      aDest[i] = static_cast<Type&&>( aSrc[i] );
-    }
-  }
-
-  /**
    * Copy array from last to first element.
    * It may be used where you cannot use aCopy due to source and destination overlapping.
    * @param aDest pointer to the first element in the destination array
@@ -315,26 +281,6 @@ namespace oz
 
     for( int i = count - 1; i >= 0; --i ) {
       aDest[i] = aSrc[i];
-    }
-  }
-
-  /**
-   * Move array from last to first element.
-   * It may be used where you cannot use aMove due to source and destination overlapping.
-   * @param aDest pointer to the first element in the destination array
-   * @param aSrc pointer to the first element in the source array
-   * @param count number of elements to be moved
-   */
-  template <typename Type>
-  inline void aReverseMove( Type* aDest, Type* aSrc, int count )
-  {
-    if( aDest == aSrc ) {
-      soft_assert( aDest != aSrc );
-      return;
-    }
-
-    for( int i = count - 1; i >= 0; --i ) {
-      aDest[i] = static_cast<Type&&>( aSrc[i] );
     }
   }
 
@@ -479,7 +425,7 @@ namespace oz
     Type* aNew = new Type[newCount];
 
     for( int i = 0; i < count; ++i ) {
-      aNew[i] = static_cast<Type&&>( aDest[i] );
+      aNew[i] = aDest[i];
     }
     delete[] aDest;
 
@@ -494,14 +440,14 @@ namespace oz
    * @param count number of elements in the array
    */
   template <typename Type, typename Value>
-  inline void aInsert( Type* aDest, Value&& value, int index, int count )
+  inline void aInsert( Type* aDest, const Value& value, int index, int count )
   {
     hard_assert( uint( index ) < uint( count ) );
 
     for( int i = count - 1; i > index; --i ) {
-      aDest[i] = static_cast<Type&&>( aDest[i - 1] );
+      aDest[i] = aDest[i - 1];
     }
-    aDest[index] = static_cast<Value&&>( value );
+    aDest[index] = value;
   }
 
   /**
@@ -517,7 +463,7 @@ namespace oz
     hard_assert( uint( index ) < uint( count ) );
 
     for( int i = index + 1; i < count; ++i ) {
-      aDest[i - 1] = static_cast<Type&&>( aDest[i] );
+      aDest[i - 1] = aDest[i];
     }
   }
 

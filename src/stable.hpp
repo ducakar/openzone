@@ -14,8 +14,6 @@
 
 // we want to use C++ wrapped C headers, not vanilla C ones that are included via SDL
 #include <cctype>
-#include <cinttypes>
-#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>

@@ -32,7 +32,7 @@ namespace oz
 
         public:
 
-          enum State : int
+          enum State
           {
             CLOSED,
             OPENING,
@@ -61,7 +61,7 @@ namespace oz
 
       };
 
-      enum Rotation : int
+      enum Rotation
       {
         R0,
         R90,
@@ -87,13 +87,18 @@ namespace oz
       int      nEntities;
       Entity*  entities;
 
+      ~Struct();
+
+    private:
+
+      // no copying
+      Struct( const Struct& );
+      Struct& operator = ( const Struct& );
+
+    public:
+
       explicit Struct( int index, int bsp, const Point3& p, Rotation rot );
       explicit Struct( int index, int bsp, InputStream* istream );
-
-      Struct( const Struct& ) = delete;
-      Struct& operator = ( const Struct& ) = delete;
-
-      ~Struct();
 
       /**
        * Rotate vector from absolute coordinate system to structure coordinate system.
