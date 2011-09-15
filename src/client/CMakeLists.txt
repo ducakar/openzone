@@ -100,4 +100,4 @@ add_library( client STATIC
   ui/UI.hpp
 )
 
-add_dependencies( client censor nirvana matrix pch )
+add_dependencies( client arch nirvana matrix pch )

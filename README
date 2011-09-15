@@ -1,7 +1,7 @@
 
                                         OpenZone
 
-                                      version 0.1.2
+                                      version 0.1.3
 
 Free camera controls
 --------------------
@@ -36,7 +36,7 @@ i                   - leave bot
 p                   - toggle ability to step over small obstacles, e.g. walk up the stairs
 
 Tab                 - toggle interface mode
-Numpad Enter        - switch between 1st persorn and 3rd person camera
+Numpad Enter        - switch between 1st person and 3rd person camera
 Numpad *            - toggle freelook (look around without rotating the bot)
 
 f                   - point gesture
@@ -136,27 +136,37 @@ Troubleshooting
 - Make sure you have the *LATEST* display drivers.
 - You need at least OpenGL 2.1 compatible graphic card & driver that additionally supports the
   following features:
-  - GL_ARB_vertex_array_object,
   - GL_ARB_framebuffer_object,
-  - GL_ARB_texture_float,
-  - GL_EXT_texture_compression_s3tc,
-  - GLSL 1.30 shading language and
+  - GL_ARB_texture_float in
   - vertex texture fetch (optional).
-  A card with a complete DirectX 9.0c support should do.
+  A cards with complete DirectX 9.0c support should do, a DirectX 10 card will certainly do.
+  On Linux the engine works both with properitary and opensource Gallium3D drivers.
 
 Dependencies
 ------------
+- pthreads (already included in glibc on Linux)
+- libintl (already included in glibc on Linux)
 - SDL
-- SDL_image (needed for prebuild only, needs at least PNG and JPEG support)
+- SDL_image (optional, for ozPrebuild tool, must support at least PNG and JPEG)
 - SDL_ttf
-- SDL_net (optional)
-- OpenGL (MesaGL headers)
+- SDL_net (optional, for multiplayer -- which does not work yet)
+- OpenGL
 - OpenAL
 - libvorbis
 - Lua
 
 On Linux you have to install packages that provide those libraries.
 For Windows build, all dependencies are included.
+
+Build dependencies
+------------------
+- basic GNU system (bash, coreutils, grep, sed ...)
+- cmake
+- GNU make
+- GNU binutils
+- GCC >= 4.5 or LLVM/Clang >= 2.9
+- gettext
+- development packages of libraries from previous section
 
 Licence
 -------

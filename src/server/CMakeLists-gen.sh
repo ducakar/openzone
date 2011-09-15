@@ -1,10 +1,9 @@
 #!/bin/sh
 
-echo 'add_executable( server' > CMakeLists.txt
+cat << EOF > CMakeLists.txt
+add_library( server STATIC
+`LC_COLLATE=C ls *.{hpp,cpp} | xargs printf '  %s\n'`
+)
 
-ls *.{hpp,cpp} | sed -e 's/^./  \0/' >> CMakeLists.txt
-
-echo ')' >> CMakeLists.txt
-echo '' >> CMakeLists.txt
-echo 'add_dependencies( server censor nirvana matrix pch )' >> CMakeLists.txt
-echo 'target_link_libraries( server censor nirvana matrix oz )' >> CMakeLists.txt
+add_dependencies( server arch nirvana matrix pch )
+EOF

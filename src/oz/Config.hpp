@@ -50,7 +50,7 @@ namespace oz
       // Hashtable of variables.
       HashString<String, SIZE> vars;
 #ifndef NDEBUG
-      mutable HashString<nil_t, SIZE> usedVars;
+      mutable HashString<void, SIZE> usedVars;
 #endif
 
       bool loadConf( const char* file );

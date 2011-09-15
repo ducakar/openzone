@@ -17,7 +17,7 @@ namespace oz
   /**
    * Generalised constant iterator (constant access to data in a container).
    * It should only be used as a base class. Following functions need to be implemented:<br>
-   * <code>bool operator ==/!= ( nil_t ) const</code> (if necessary)<br>
+   * <code>bool isValid() const</code> (if necessary)<br>
    * <code>CIterator& operator ++ ()</code><br>
    * and a constructor of course.
    */
@@ -48,71 +48,15 @@ namespace oz
     public:
 
       /**
-       * Returns true if the iterators point at the same element.
-       * @param i
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator == ( const CIteratorBase& i ) const
-      {
-        return elem == i.elem;
-      }
-
-      /**
-       * Returns true if the iterators do not point at the same element.
-       * @param i
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator != ( const CIteratorBase& i ) const
-      {
-        return elem != i.elem;
-      }
-
-      /**
-       * Returns true if the iterator has passed all the elements in the container and thus
-       * points to an invalid location.
-       * @param
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator == ( nil_t ) const
-      {
-        return elem == null;
-      }
-
-      /**
        * Returns true while the iterator has not passed all the elements in the container and thus
        * points to a valid location.
        * @param
        * @return
        */
       OZ_ALWAYS_INLINE
-      bool operator != ( nil_t ) const
+      bool isValid() const
       {
         return elem != null;
-      }
-
-      /**
-       * Returns true if the iterator is at the given element.
-       * @param e
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator == ( const Type* e ) const
-      {
-        return elem == e;
-      }
-
-      /**
-       * Returns true if the iterator is not at the given element.
-       * @param e
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator != ( const Type* e ) const
-      {
-        return elem != e;
       }
 
       /**
@@ -157,7 +101,7 @@ namespace oz
   /**
    * Generalised iterator (non-constant access to data in a container).
    * It should only be used as a base class. Following functions need to be implemented:<br>
-   * <code>bool operator ==/!= ( nil_t ) const</code> (if necessary)<br>
+   * <code>bool isValid() const</code> (if necessary)<br>
    * <code>Iterator& operator ++ ()</code><br>
    * and a constructor of course.
    */
@@ -188,71 +132,15 @@ namespace oz
     public:
 
       /**
-       * Returns true if the iterators point at the same element.
-       * @param e
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator == ( const IteratorBase& i ) const
-      {
-        return elem == i.elem;
-      }
-
-      /**
-       * Returns true if the iterators do not point at the same element.
-       * @param e
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator != ( const IteratorBase& i ) const
-      {
-        return elem != i.elem;
-      }
-
-      /**
-       * Returns true if the iterator has passed all the elements in the container and thus
-       * points to an invalid location.
-       * @param
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator == ( nil_t ) const
-      {
-        return elem == null;
-      }
-
-      /**
        * Returns true while the iterator has not passed all the elements in the container and thus
        * points to a valid location.
        * @param
        * @return
        */
       OZ_ALWAYS_INLINE
-      bool operator != ( nil_t ) const
+      bool isValid() const
       {
         return elem != null;
-      }
-
-      /**
-       * Returns true if the iterator is at the given element.
-       * @param e
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator == ( const Type* e ) const
-      {
-        return elem == e;
-      }
-
-      /**
-       * Returns true if the iterator is not at the given element.
-       * @param e
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator != ( const Type* e ) const
-      {
-        return elem != e;
       }
 
       /**
@@ -332,12 +220,12 @@ namespace oz
    * This replaces a longer piece of code, like:
    * <pre>
    * Vector&lt;int&gt; v;
-   * for( Vector&lt;int&gt;::CIterator i = v; i != nil; ++i )
+   * for( Vector&lt;int&gt;::CIterator i = v; i.isValid(); ++i )
    *   printf( "%d ", *i );
    * }</pre>
    */
 # define foreach( i, iterator ) \
-  for( auto i = iterator; i != nil; ++i )
+  for( auto i = iterator; i.isValid(); ++i )
 
   /**
    * Construct elements of an uninitialised container.
@@ -348,7 +236,7 @@ namespace oz
   {
     typedef typename Iterator::Elem Type;
 
-    while( iDest != nil ) {
+    while( iDest.isValid() ) {
       new( static_cast<Type*>( iDest ) ) Type;
       ++iDest;
     }
@@ -363,7 +251,7 @@ namespace oz
   {
     typedef typename CIterator::Elem Type;
 
-    while( iSrc != nil ) {
+    while( iSrc.isValid() ) {
       ( *iSrc ).~Type();
       ++iSrc;
     }
@@ -379,8 +267,8 @@ namespace oz
   {
     typedef typename IteratorA::Elem TypeA;
 
-    while( iDest != nil ) {
-      hard_assert( iSrc != nil );
+    while( iDest.isValid() ) {
+      hard_assert( iSrc.isValid() );
 
       new( static_cast<TypeA*>( iDest ) ) TypeA( *iSrc );
       ++iDest;
@@ -401,8 +289,8 @@ namespace oz
       return;
     }
 
-    while( iDest != nil ) {
-      hard_assert( iSrc != nil );
+    while( iDest.isValid() ) {
+      hard_assert( iSrc.isValid() );
 
       *iDest = *iSrc;
       ++iDest;
@@ -418,7 +306,7 @@ namespace oz
   template <class Iterator, typename Value>
   inline void iSet( Iterator iDest, const Value& value )
   {
-    while( iDest != nil ) {
+    while( iDest.isValid() ) {
       *iDest = value;
       ++iDest;
     }
@@ -432,7 +320,7 @@ namespace oz
   template <class Iterator, typename Method>
   inline void iMap( Iterator iDest, const Method& method )
   {
-    while( iDest != nil ) {
+    while( iDest.isValid() ) {
       method( *iDest );
       ++iDest;
     }
@@ -449,11 +337,11 @@ namespace oz
   {
     hard_assert( iSrcA != iSrcB );
 
-    while( iSrcA != nil && iSrcB != nil && *iSrcA == *iSrcB ) {
+    while( iSrcA.isValid() && iSrcB.isValid() && *iSrcA == *iSrcB ) {
       ++iSrcA;
       ++iSrcB;
     }
-    return iSrcA == nil && iSrcB == nil;
+    return !iSrcA.isValid() && !iSrcB.isValid();
   }
 
   /**
@@ -465,10 +353,10 @@ namespace oz
   template <class CIterator, typename Value>
   inline bool iContains( CIterator iSrc, const Value& value )
   {
-    while( iSrc != nil && !( *iSrc == value ) ) {
+    while( iSrc.isValid() && !( *iSrc == value ) ) {
       ++iSrc;
     }
-    return iSrc != nil;
+    return iSrc.isValid();
   }
 
   /**
@@ -480,7 +368,7 @@ namespace oz
   template <class CIterator, typename Value>
   inline CIterator iFind( CIterator iSrc, const Value& value )
   {
-    while( iSrc != nil && !( *iSrc == value ) ) {
+    while( iSrc.isValid() && !( *iSrc == value ) ) {
       ++iSrc;
     }
     return iSrc;
@@ -498,7 +386,7 @@ namespace oz
     // default constructor produces an invalid, passed iterator
     CIterator lastOccurence;
 
-    while( iSrc != nil ) {
+    while( iSrc.isValid() ) {
       if( *iSrc == value ) {
         lastOccurence = iSrc;
       }
@@ -518,11 +406,11 @@ namespace oz
   {
     int index = 0;
 
-    while( iSrc != nil && !( *iSrc == value ) ) {
+    while( iSrc.isValid() && !( *iSrc == value ) ) {
       ++iSrc;
       ++index;
     }
-    return iSrc == nil ? -1 : index;
+    return !iSrc.isValid() ? -1 : index;
   }
 
   /**
@@ -537,7 +425,7 @@ namespace oz
     int index = 0;
     int lastIndex = -1;
 
-    while( iSrc != nil ) {
+    while( iSrc.isValid() ) {
       if( *iSrc == value ) {
         lastIndex = index;
       }
@@ -556,7 +444,7 @@ namespace oz
   {
     typedef typename Iterator::Elem Type;
 
-    while( iDest != nil ) {
+    while( iDest.isValid() ) {
       Type& elem = *iDest;
       ++iDest;
 

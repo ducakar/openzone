@@ -1,7 +1,15 @@
 #!/bin/sh
 
-echo 'add_library( oz STATIC' > CMakeLists.txt
+cat << EOF > CMakeLists.txt
+add_library( oz STATIC
+`LC_COLLATE=C ls *.{hpp,cpp} | xargs printf '  %s\n'`
+)
 
-ls *.{hpp,cpp} | sed -e 's/^./  \0/' >> CMakeLists.txt
-
-echo ')' >> CMakeLists.txt
+if( OZ_INSTALL_LIBOZ )
+  install( FILES
+    \${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp
+`LC_COLLATE=C ls *.{hpp,cpp} | xargs printf '    %s\n'`
+    DESTINATION include/oz )
+  install( TARGETS oz DESTINATION lib )
+endif()
+EOF

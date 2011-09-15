@@ -1,4 +1,4 @@
-add_executable( server
+add_library( server STATIC
   Game.cpp
   Game.hpp
   Main.cpp
@@ -9,5 +9,4 @@ add_executable( server
   Server.hpp
 )
 
-add_dependencies( server censor nirvana matrix pch )
-target_link_libraries( server censor nirvana matrix oz )
+add_dependencies( server arch nirvana matrix pch )

@@ -1,69 +1,14 @@
-string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" liboz_location_var )
-get_target_property( liboz_file oz ${liboz_location_var} )
-
-if( OZ_INSTALL_LIBOZ )
-  install( FILES
-    ${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp
-    src/oz/Alloc.cpp
-    src/oz/Alloc.hpp
-    src/oz/Array.hpp
-    src/oz/Bitset.hpp
-    src/oz/Buffer.cpp
-    src/oz/Buffer.hpp
-    src/oz/Config.cpp
-    src/oz/Config.hpp
-    src/oz/DArray.hpp
-    src/oz/DList.hpp
-    src/oz/Directory.cpp
-    src/oz/Directory.hpp
-    src/oz/Exception.cpp
-    src/oz/Exception.hpp
-    src/oz/HashIndex.hpp
-    src/oz/HashString.hpp
-    src/oz/List.hpp
-    src/oz/Log.cpp
-    src/oz/Log.hpp
-    src/oz/Map.hpp
-    src/oz/Mat44.cpp
-    src/oz/Mat44.hpp
-    src/oz/Math.cpp
-    src/oz/Math.hpp
-    src/oz/Pair.hpp
-    src/oz/Plane.hpp
-    src/oz/Point3.cpp
-    src/oz/Point3.hpp
-    src/oz/Pool.hpp
-    src/oz/Quat.cpp
-    src/oz/Quat.hpp
-    src/oz/SBitset.hpp
-    src/oz/SVector.hpp
-    src/oz/Sparse.hpp
-    src/oz/String.cpp
-    src/oz/String.hpp
-    src/oz/System.cpp
-    src/oz/System.hpp
-    src/oz/Vec3.cpp
-    src/oz/Vec3.hpp
-    src/oz/Vec4.cpp
-    src/oz/Vec4.hpp
-    src/oz/Vector.hpp
-    src/oz/arrays.hpp
-    src/oz/common.cpp
-    src/oz/common.hpp
-    src/oz/iterables.hpp
-    src/oz/oz.cpp
-    src/oz/oz.hpp
-    src/oz/stream.hpp
-    DESTINATION include/oz )
-  install( FILES ${liboz_file} DESTINATION lib )
-endif()
-
+#
+# info files
+#
 if( WIN32 )
   install( FILES
     AUTHORS
     COPYING
     README
     README.sl
+    README.sl~
+    README~
     DESTINATION . )
 else()
   install( FILES
@@ -71,29 +16,31 @@ else()
     COPYING
     README
     README.sl
+    README.sl~
+    README~
     DESTINATION share/doc/openzone )
 endif()
 
+#
+# oalinst, DLLs
+#
 if( WIN32 )
   install( FILES
+    mingw32/oalinst.exe
     DESTINATION bin )
   install( FILES
+    mingw32/openzone.bat
     DESTINATION . )
 endif()
 
-string( TOUPPER "LOCATION_${CMAKE_BUILD_TYPE}" client_location_var )
-get_target_property( client_file openzone ${client_location_var} )
-
-if( OZ_INSTALL_CLIENT )
-  install( FILES ${client_file}
-    DESTINATION bin
-    PERMISSIONS
-    OWNER_READ OWNER_WRITE OWNER_EXECUTE
-    GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE )
-endif()
-
+#
+# data
+#
 if( OZ_INSTALL_DATA )
+
+  #
+  # share/openzone/class
+  #
   install( FILES
     share/openzone/class/barrel2.rc
     share/openzone/class/beast.rc
@@ -126,6 +73,9 @@ if( OZ_INSTALL_DATA )
     share/openzone/class/tank.rc
     DESTINATION share/openzone/class )
 
+  #
+  # share/openzone/ui/font
+  #
   install( FILES
     share/openzone/ui/font/DejaVu.COPYING
     share/openzone/ui/font/DejaVuSans.ttf
@@ -135,6 +85,9 @@ if( OZ_INSTALL_DATA )
     share/openzone/ui/font/DroidSansMono.ttf
     DESTINATION share/openzone/ui/font )
 
+  #
+  # share/openzone/ui/cur
+  #
   install( FILES
     share/openzone/ui/cur/COPYING
     share/openzone/ui/cur/README
@@ -145,6 +98,9 @@ if( OZ_INSTALL_DATA )
     share/openzone/ui/cur/xterm.ozcCur
     DESTINATION share/openzone/ui/cur )
 
+  #
+  # share/openzone/ui/icon
+  #
   install( FILES
     share/openzone/ui/icon/crosshair.ozcTex
     share/openzone/ui/icon/grab.ozcTex
@@ -154,12 +110,18 @@ if( OZ_INSTALL_DATA )
     share/openzone/ui/icon/use.ozcTex
     DESTINATION share/openzone/ui/icon )
 
+  #
+  # share/openzone/lua
+  #
   install( FILES
     share/openzone/lua/COPYING
     share/openzone/lua/matrix.luac
     share/openzone/lua/nirvana.luac
     DESTINATION share/openzone/lua )
 
+  #
+  # share/openzone/bsp
+  #
   install( FILES
     share/openzone/bsp/bunker.ozBSP
     share/openzone/bsp/bunker.ozcBSP
@@ -169,6 +131,9 @@ if( OZ_INSTALL_DATA )
     share/openzone/bsp/pool.ozcBSP
     DESTINATION share/openzone/bsp )
 
+  #
+  # share/openzone/bsp/tex
+  #
   install( FILES
     share/openzone/bsp/tex/_Drkalisce.ozcTex
     share/openzone/bsp/tex/_Potiskalnica.ozcTex
@@ -186,6 +151,9 @@ if( OZ_INSTALL_DATA )
     share/openzone/bsp/tex/wood2.ozcTex
     DESTINATION share/openzone/bsp/tex )
 
+  #
+  # share/openzone/mdl
+  #
   install( FILES
     share/openzone/mdl/barrel1.README
     share/openzone/mdl/barrel1.ozcSMM
@@ -231,9 +199,13 @@ if( OZ_INSTALL_DATA )
     share/openzone/mdl/winebottle.ozcSMM
     DESTINATION share/openzone/mdl )
 
+  #
+  # share/openzone/name
+  #
   install( FILES
     share/openzone/name/boginje.txt
     share/openzone/name/bogovi.txt
+    share/openzone/name/japonski.txt
     share/openzone/name/wesnoth.COPYING
     share/openzone/name/wesnoth.drake-male.txt
     share/openzone/name/wesnoth.human-male.txt
@@ -241,6 +213,9 @@ if( OZ_INSTALL_DATA )
     share/openzone/name/wesnoth.troll-male.txt
     DESTINATION share/openzone/name )
 
+  #
+  # share/openzone/snd
+  #
   install( FILES
     share/openzone/snd/README
     share/openzone/snd/acid5.wav
@@ -277,6 +252,9 @@ if( OZ_INSTALL_DATA )
     share/openzone/snd/tick.wav
     DESTINATION share/openzone/snd )
 
+  #
+  # share/openzone/music
+  #
   install( FILES
     "share/openzone/music/Crimson And Clover.oga"
     "share/openzone/music/Fanatic - Antipodes.oga"
@@ -301,15 +279,24 @@ if( OZ_INSTALL_DATA )
     "share/openzone/music/README"
     DESTINATION share/openzone/music )
 
+  #
+  # share/openzone/terra
+  #
   install( FILES
     share/openzone/terra/heightmap.ozTerra
     share/openzone/terra/heightmap.ozcTerra
     DESTINATION share/openzone/terra )
 
+  #
+  # share/openzone/caelum
+  #
   install( FILES
     share/openzone/caelum/caelum.ozcCaelum
     DESTINATION share/openzone/caelum )
 
+  #
+  # share/openzone/glsl
+  #
   install( FILES
     share/openzone/glsl/COPYING
     share/openzone/glsl/bigMesh.frag
@@ -341,11 +328,14 @@ if( OZ_INSTALL_DATA )
     share/openzone/glsl/ui.vert
     DESTINATION share/openzone/glsl )
 
+  #
+  # share/locale
+  #
   install( FILES
     share/locale/en/LC_MESSAGES/openzone.mo
     DESTINATION share/locale/en/LC_MESSAGES )
-
   install( FILES
     share/locale/sl/LC_MESSAGES/openzone.mo
     DESTINATION share/locale/sl/LC_MESSAGES )
+
 endif()

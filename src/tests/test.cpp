@@ -82,16 +82,27 @@ struct Bar
 
 int main( int, char** )
 {
-  HashString<Foo> hs;
-  HashString<Foo> hs1;
+  HashString<> hs;
+  HashString<> hs1;
   hs1 = /*static_cast< HashString<Foo>&& >(*/ hs /*)*/;
+
+  hs.add( "0" );
+  hs.add( "1" );
+  hs.add( "3" );
+
+  hs1 = hs;
 
   foreach( i, hs1.citer() ) {
     printf( "%s :: ", i.key().cstr() );
   }
   printf( "\n" );
 
-  hs.add( "0" );
+  hs.clear();
+  hs.dealloc();
+  hs1.clear();
+  hs1.dealloc();
+
+  Alloc::printLeaks();
 
   return 0;
 }

@@ -11,7 +11,7 @@ if( NOT OZ_APPLICATION_NAME )
 endif()
 
 if( NOT OZ_APPLICATION_VERSION )
-  set( OZ_APPLICATION_VERSION "0.1.2" CACHE STRING "" FORCE )
+  set( OZ_APPLICATION_VERSION "0.1.3" CACHE STRING "" FORCE )
 endif()
 
 if( NOT OZ_APPLICATION_TITLE )
@@ -36,18 +36,14 @@ endif()
 
 option( OZ_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
 option( OZ_NETWORKING "Enable networking" OFF )
-option( OZ_OPENGL3 "Compile for OpenGL 3+ instead for OpenGL 2.1" OFF )
-option( OZ_TEXTURE_COMPRESSION "Use S3 texture compression (doesn't work with open source drivers)" OFF )
+option( OZ_MESA_COMPATIBLE "Disable some features that don't work with MesaGL" OFF )
 option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)" OFF )
 
-option( OZ_BUILD_TESTS "Build tests" ON )
 option( OZ_BUILD_TOOLS "Build tools" ON )
-option( OZ_BUILD_CLIENT "Build client" ON )
-option( OZ_BUILD_SERVER "Build server" OFF )
+option( OZ_BUILD_TESTS "Build tests" OFF )
 
 option( OZ_INSTALL_LIBOZ "Install liboz" ON )
-option( OZ_INSTALL_CLIENT "Install openzone client executable" ON )
-option( OZ_INSTALL_SERVER "Install openzone server executable" OFF )
+option( OZ_INSTALL_BIN "Install all executables that are built except tests" ON )
 option( OZ_INSTALL_DATA "Install game data" ON )
 
 set( CPACK_PACKAGE_NAME "${OZ_APPLICATION_NAME}" )
@@ -215,9 +211,9 @@ else()
 endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo RelGenProf RelUseProf" )
-set( CMAKE_CXX_FLAGS_DEBUG "-g3 -O1" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3" CACHE STRING "" FORCE )
-set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_DEBUG "-g3" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g3 -O3 -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
+set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections" CACHE STRING "" FORCE )
 # set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections -fprofile-generate" CACHE STRING "" FORCE )
 # set( CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -O3 -fdata-sections -ffunction-sections -fprofile-use" CACHE STRING "" FORCE )
 

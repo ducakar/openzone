@@ -50,3 +50,60 @@ add_library( oz STATIC
   oz.hpp
   stream.hpp
 )
+
+if( OZ_INSTALL_LIBOZ )
+  install( FILES
+    ${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp
+    Alloc.cpp
+    Alloc.hpp
+    Array.hpp
+    Bitset.hpp
+    Buffer.cpp
+    Buffer.hpp
+    Config.cpp
+    Config.hpp
+    DArray.hpp
+    DList.hpp
+    Directory.cpp
+    Directory.hpp
+    Exception.cpp
+    Exception.hpp
+    HashIndex.hpp
+    HashString.hpp
+    List.hpp
+    Log.cpp
+    Log.hpp
+    Map.hpp
+    Mat44.cpp
+    Mat44.hpp
+    Math.cpp
+    Math.hpp
+    Pair.hpp
+    Plane.hpp
+    Point3.cpp
+    Point3.hpp
+    Pool.hpp
+    Quat.cpp
+    Quat.hpp
+    SBitset.hpp
+    SVector.hpp
+    Sparse.hpp
+    String.cpp
+    String.hpp
+    System.cpp
+    System.hpp
+    Vec3.cpp
+    Vec3.hpp
+    Vec4.cpp
+    Vec4.hpp
+    Vector.hpp
+    arrays.hpp
+    common.cpp
+    common.hpp
+    iterables.hpp
+    oz.cpp
+    oz.hpp
+    stream.hpp
+    DESTINATION include/oz )
+  install( TARGETS oz DESTINATION lib )
+endif()

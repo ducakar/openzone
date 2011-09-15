@@ -1,7 +1,7 @@
 
                                         OpenZone
 
-                                     različica 0.1.2
+                                     različica 0.1.3
 
 Nadzor kamere
 -------------
@@ -67,7 +67,7 @@ o                   - prevrti nebo naprej za 1/8 dneva
 Alt + vlečenje      - vleka oken
 
 F11                 - zajem zaslona (shrani se v ~/config/.openzone/screenshot DATUM ČAS.bmp)
-F12                 - minimiraj in zamrzni (ne dela na Windows)
+F12                 - minimiziraj in zamrzni (ne dela na Windows)
 
 Esc                 - končaj program
 
@@ -81,7 +81,7 @@ predator (vitez)
 - Išči škrate in teči proti njim.
 droid (droid)
 - Če vidiš kogarkoli, ki ni droid ali poveljniški droid, ga ulovi in ustreli.
-- Če ni nobene tarče, potem sledi povelniškemu droidu, če je kakšen v bližini, sicer išči tarčo.
+- Če ni nobene tarče, potem sledi poveljniškemu droidu, če je kakšen v bližini, sicer išči tarčo.
 
 Nasveti
 -------
@@ -94,7 +94,7 @@ Nasveti
   dol.
 - Pod vodo se lahko pomikaš nekoliko hitreje, če hodiš po dnu. Pomikaj se v dno, da to dosežeš.
 - Tečeš lahko le, če ne čepiš in ne nosiš nobenega predmeta.
-- Če je vezilo uničeno, samodejno izvrže pilota.
+- Če je vozilo uničeno, samodejno izvrže pilota.
 - Za nekaj zabave ustvari droida (ne poveljniškega droida) z menija Ustvari.
 - Za še nekaj več zabave, daj tega droida v tank. (Inkarniraj se v droida, vkrcaj se v tank in
   odinkarniraj. Umetna inteligenca bo prevzela droida, ki bo raztural.)
@@ -113,7 +113,7 @@ openzone [MOŽNOSTI]
 
 --save, --no-save
 -s, -S
-      Vklopi ali izklopi samodejno sharnjevanje iz ~/.config/openzone/default.ozState ob izhodu.
+      Vklopi ali izklopi samodejno shranjevanje iz ~/.config/openzone/default.ozState ob izhodu.
       To preglasi nastavitev 'autosave'.
 
 --time št
@@ -130,28 +130,40 @@ Opombe
 Problemi
 --------
 - Prepričaj se, da imaš *NAJNOVEJŠE* gonilnike za grafično kartico.
-- Potrebuješ vsaj grafično kartico in gonilnik s podporo za OpenGL 2.1 in naslednje razširitve:
+- Potrebuješ vsaj grafično kartico in gonilnik s podporo za OpenGL 2.1 in naslednjimi razširitvami:
   - GL_ARB_vertex_array_object,
   - GL_ARB_framebuffer_object,
-  - GL_ARB_texture_float,
-  - GL_EXT_texture_compression_s3tc,
-  - senčilni jezik GLSL 1.30 in
+  - GL_ARB_texture_float in
   - vertex texture fetch (neobvezno).
-  Kartica s popolno podporo za DirectX 9.0c bi morala zadostovati.
+  Kartica s popolno podporo za DirectX 9.0c bi morala zadostovati, zagotovo pa zadostuje kartica s
+  podporo za DirectX 10.
+  Na Linuxu pogon deluje tako na lastniških kot na odprtokodnih gonilnikih Gallium3D.
 
 Odvisnosti
 ----------
+- pthreads (na Linuxu že vgrajeno v glibc)
+- libintl (na Linuxu že vgrajeno v glibc)
 - SDL
-- SDL_image (potrebno le za prebuild, potrebuje vsaj podporo za PNG in JPEG)
+- SDL_image (potrebno le za ozPrebuild, vsaj s podporo za PNG in JPEG)
 - SDL_ttf
-- SDL_net (neobvezno)
-- OpenGL (glave MesaGL)
+- SDL_net (potrebno le za večigralstvo, ki pa še ne deluje)
+- OpenGL
 - OpenAL
 - libvorbis
 - Lua
 
 Na Linuxu morate namestiti pakete, ki vsebujejo zgornje knjižnice.
 V distribuciji za Windows so vse potrebne knjižnice že vključene.
+
+Odvisnosti za gradnjo
+---------------------
+- osnovni sistem GNU (bash, coreutils, grep, sed ...)
+- cmake
+- GNU make
+- GNU binutils
+- GCC >= 4.5 ali LLVM/Clang >= 2.9
+- gettext
+- razvojni paketi knjižnic iz prejšnjega razdelka
 
 Licenca
 -------
@@ -161,5 +173,5 @@ Ta program je POPOLNOMA BREZ GARANCIJE.
 To je prosto programje, ki se lahko distribuira po določenimi pogoji;
 za podrobnosti glej datoteko COPYING.
 
-Podatki (vse pod direktorijem 'share/openzone') in priložene knjižnice ('*.dll' po direktorijem
+Podatki (vse pod imenikom 'share/openzone') in priložene knjižnice ('*.dll' po imenikom
 'bin') so delo različnih avtorjev. Za podrobnosti glej pripadajoče datoteke *README in *COPYING.

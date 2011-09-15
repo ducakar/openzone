@@ -1,9 +1,9 @@
 #!/bin/sh
 
-echo 'add_library( nirvana STATIC' > CMakeLists.txt
+cat << EOF > CMakeLists.txt
+add_library( nirvana STATIC
+`LC_COLLATE=C ls *.{hpp,cpp} | xargs printf '  %s\n'`
+)
 
-ls *.{hpp,cpp} | sed -e 's/^./  \0/' >> CMakeLists.txt
-
-echo ')' >> CMakeLists.txt
-echo '' >> CMakeLists.txt
-echo 'add_dependencies( nirvana matrix pch )' >> CMakeLists.txt
+add_dependencies( nirvana matrix pch )
+EOF

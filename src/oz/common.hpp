@@ -95,39 +95,6 @@ namespace oz
   //***********************************
 
   /**
-   * Unit type
-   */
-  struct nil_t
-  {
-    /**
-     * Always return true as all instances of this type are the same.
-     * @param
-     * @return
-     */
-    OZ_ALWAYS_INLINE
-    bool operator == ( nil_t ) const
-    {
-      return true;
-    }
-
-    /**
-     * Always return false as all instances of this type are the same.
-     * @param
-     * @return
-     */
-    OZ_ALWAYS_INLINE
-    bool operator != ( nil_t ) const
-    {
-      return false;
-    }
-  };
-
-  /**
-   * Unit value
-   */
-  const nil_t nil = nil_t();
-
-  /**
    * nullptr_t
    */
   typedef typeof( nullptr ) nullptr_t;
