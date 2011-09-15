@@ -17,7 +17,7 @@
 namespace oz
 {
 
-  template <typename Type = nil_t, int SIZE = 253>
+  template <typename Type = void, int SIZE = 253>
   class HashIndex
   {
     static_assert( SIZE > 0, "HashIndex size must be at least 1" );
@@ -682,6 +682,470 @@ namespace oz
         }
 
         pool.free();
+        count = 0;
+      }
+
+      /**
+       * Deallocate memory from Pool.
+       */
+      void dealloc()
+      {
+        hard_assert( count == 0 );
+
+        pool.free();
+      }
+
+  };
+
+  template <int SIZE>
+  class HashIndex<void, SIZE>
+  {
+    static_assert( SIZE > 0, "HashIndex size must be at least 1" );
+
+    private:
+
+      struct Elem
+      {
+        const int key;
+        Elem*     next;
+
+        OZ_ALWAYS_INLINE
+        explicit Elem( int key_, Elem* next_ ) : key( key_ ), next( next_ )
+        {}
+
+        OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
+      };
+
+    public:
+
+      /**
+       * Constant HashIndex iterator.
+       */
+      class CIterator : public CIteratorBase<Elem>
+      {
+        private:
+
+          typedef CIteratorBase<Elem> B;
+
+          const Elem* const* data;
+          int index;
+
+        public:
+
+          /**
+           * Default constructor returns an invalid iterator
+           */
+          OZ_ALWAYS_INLINE
+          CIterator() : B( null )
+          {}
+
+          /**
+           * Make iterator for given HashIndex. After creation it points to first element.
+           * @param t
+           */
+          explicit CIterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          {
+            while( B::elem == null && index < SIZE - 1 ) {
+              ++index;
+              B::elem = data[index];
+            }
+          }
+
+          /**
+           * no access to value
+           */
+          OZ_ALWAYS_INLINE
+          void operator * () const
+          {}
+
+          /**
+           * no access to value
+           */
+          OZ_ALWAYS_INLINE
+          void operator -> () const
+          {}
+
+          /**
+           * Advance to the next element.
+           * @return
+           */
+          CIterator& operator ++ ()
+          {
+            hard_assert( B::elem != null );
+
+            if( B::elem->next != null ) {
+              B::elem = B::elem->next;
+            }
+            else if( index < SIZE - 1 ) {
+              do {
+                ++index;
+                B::elem = data[index];
+              }
+              while( B::elem == null && index < SIZE - 1 );
+            }
+            else {
+              B::elem = null;
+            }
+            return *this;
+          }
+
+      };
+
+      /**
+       * HashIndex iterator.
+       */
+      class Iterator : public IteratorBase<Elem>
+      {
+        private:
+
+          typedef IteratorBase<Elem> B;
+
+          Elem* const* data;
+          int index;
+
+        public:
+
+          /**
+           * Default constructor returns an invalid iterator
+           */
+          OZ_ALWAYS_INLINE
+          Iterator() : B( null )
+          {}
+
+          /**
+           * Make iterator for given HashIndex. After creation it points to first element.
+           * @param t
+           */
+          explicit Iterator( const HashIndex& t ) : B( t.data[0] ), data( t.data ), index( 0 )
+          {
+            while( B::elem == null && index < SIZE - 1 ) {
+              ++index;
+              B::elem = data[index];
+            }
+          }
+
+          /**
+           * no access to value
+           */
+          OZ_ALWAYS_INLINE
+          void operator * () const
+          {}
+
+          /**
+           * no access to value
+           */
+          OZ_ALWAYS_INLINE
+          void operator -> () const
+          {}
+
+          /**
+           * @return current element's key
+           */
+          OZ_ALWAYS_INLINE
+          const int& key() const
+          {
+            return B::elem->key;
+          }
+
+          /**
+           * Advance to the next element.
+           * @return
+           */
+          Iterator& operator ++ ()
+          {
+            hard_assert( B::elem != null );
+
+            if( B::elem->next != null ) {
+              B::elem = B::elem->next;
+            }
+            else if( index < SIZE - 1 ) {
+              do {
+                ++index;
+                B::elem = data[index];
+              }
+              while( B::elem == null && index < SIZE - 1 );
+            }
+            else {
+              B::elem = null;
+            }
+            return *this;
+          }
+
+      };
+
+    private:
+
+      Elem*            data[SIZE];
+      Pool<Elem, SIZE> pool;
+      int              count;
+
+      /**
+       * @param chainA
+       * @param chainB
+       * @return true if chains are equal length and all elements are equal
+       */
+      static bool areChainsEqual( const Elem* chainA, const Elem* chainB )
+      {
+        while( chainA != null && chainB != null ) {
+          if( chainA->key != chainB->key ) {
+            return false;
+          }
+          chainA = chainA->next;
+          chainB = chainB->next;
+        }
+        // at least one is null, so (chainA == chainB) <=> (chainA == null && chainB == null)
+        return chainA == chainB;
+      }
+
+      /**
+       * Allocate space and make a copy of a given chain.
+       * @param chain
+       * @return pointer to first element of newly allocated chain
+       */
+      Elem* copyChain( const Elem* chain )
+      {
+        Elem* newChain = null;
+
+        while( chain != null ) {
+          newChain = new( pool ) Elem( chain->key, newChain );
+          chain = chain->next;
+        }
+        return newChain;
+      }
+
+      /**
+       * Delete all elements in given chain.
+       * @param chain
+       */
+      void freeChain( Elem* chain )
+      {
+        while( chain != null ) {
+          Elem* next = chain->next;
+
+          chain->~Elem();
+          pool.dealloc( chain );
+
+          chain = next;
+        }
+      }
+
+    public:
+
+      /**
+       * Constructor.
+       */
+      HashIndex() : count( 0 )
+      {
+        aSet<Elem*>( data, null, SIZE );
+      }
+
+      /**
+       * Destructor.
+       */
+      ~HashIndex()
+      {
+        clear();
+        dealloc();
+      }
+
+      /**
+       * Copy constructor.
+       * @param t
+       */
+      HashIndex( const HashIndex& t ) : count( t.count )
+      {
+        for( int i = 0; i < SIZE; ++i ) {
+          data[i] = copyChain( t.data[i] );
+        }
+      }
+
+      /**
+       * Copy operator.
+       * @param t
+       * @return
+       */
+      HashIndex& operator = ( const HashIndex& t )
+      {
+        if( &t == this ) {
+          soft_assert( &t != this );
+          return *this;
+        }
+
+        for( int i = 0; i < SIZE; ++i ) {
+          freeChain( data[i] );
+          data[i] = copyChain( t.data[i] );
+        }
+        count = t.count;
+
+        return *this;
+      }
+
+      /**
+       * Equality operator.
+       * @param t
+       * @return
+       */
+      bool operator == ( const HashIndex& t ) const
+      {
+        if( count != t.count ) {
+          return false;
+        }
+        for( int i = 0; i < SIZE; ++i ) {
+          if( !areChainsEqual( data[i], t.data[i] ) ) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+      /**
+       * Inequality operator.
+       * @param t
+       * @return
+       */
+      bool operator != ( const HashIndex& t ) const
+      {
+        if( count != t.count ) {
+          return true;
+        }
+        for( int i = 0; i < SIZE; ++i ) {
+          if( !areChainsEqual( data[i], t.data[i] ) ) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      /**
+       * @return constant iterator for this HashIndex
+       */
+      OZ_ALWAYS_INLINE
+      CIterator citer() const
+      {
+        return CIterator( *this );
+      }
+
+      /**
+       * @return iterator for this HashIndex
+       */
+      OZ_ALWAYS_INLINE
+      Iterator iter() const
+      {
+        return Iterator( *this );
+      }
+
+      /**
+       * @return number of elements
+       */
+      OZ_ALWAYS_INLINE
+      int length() const
+      {
+        return count;
+      }
+
+      /**
+       * @return true if HashIndex has no elements
+       */
+      OZ_ALWAYS_INLINE
+      bool isEmpty() const
+      {
+        return count == 0;
+      }
+
+      /**
+       * @return capacity
+       */
+      OZ_ALWAYS_INLINE
+      int capacity() const
+      {
+        return SIZE;
+      }
+
+      /**
+       * @return load factor of hashtable (number of elements / capacity)
+       */
+      float loadFactor() const
+      {
+        return float( count ) / float( SIZE );
+      }
+
+      /**
+       * Find element with given value.
+       * @param key
+       * @return true if found
+       */
+      bool contains( int key ) const
+      {
+        uint  i = uint( key ) % uint( SIZE );
+        Elem* p = data[i];
+
+        while( p != null ) {
+          if( p->key == key ) {
+            return true;
+          }
+          else {
+            p = p->next;
+          }
+        }
+        return false;
+      }
+
+      /**
+       * Add new element. The key must not yet exist in this HashIndex.
+       * @param key
+       * @param value
+       * @return pointer to new entry's value
+       */
+      void add( int key )
+      {
+        hard_assert( !contains( key ) );
+
+        uint  i = uint( key ) % uint( SIZE );
+        Elem* elem = new( pool ) Elem( key, data[i] );
+
+        data[i] = elem;
+        ++count;
+
+        soft_assert( loadFactor() < 0.75f );
+      }
+
+      /**
+       * Remove element with given key.
+       * @param key
+       */
+      void exclude( int key )
+      {
+        uint   i = uint( key ) % uint( SIZE );
+        Elem*  p = data[i];
+        Elem** prev = &data[i];
+
+        while( p != null ) {
+          if( p->key == key ) {
+            *prev = p->next;
+            --count;
+
+            p->~Elem();
+            pool.dealloc( p );
+            return;
+          }
+          else {
+            prev = &p->next;
+            p = p->next;
+          }
+        }
+
+        hard_assert( false );
+      }
+
+      /**
+       * Remove all elements.
+       */
+      void clear()
+      {
+        for( int i = 0; i < SIZE; ++i ) {
+          freeChain( data[i] );
+          data[i] = null;
+        }
         count = 0;
       }
 

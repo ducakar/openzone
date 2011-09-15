@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo 'add_library( client STATIC' > CMakeLists.txt
+cat << EOF > CMakeLists.txt
+add_library( client STATIC
+`LC_COLLATE=C ls *.{hpp,cpp} | xargs printf '  %s\n'`
+`LC_COLLATE=C ls ui/*.{hpp,cpp} | xargs printf '  %s\n'`
+)
 
-ls *.{hpp,cpp} | sed -e 's/^./  \0/' >> CMakeLists.txt
-ls ui/*.{hpp,cpp} | sed -e 's/^./  \0/' >> CMakeLists.txt
-
-echo ')' >> CMakeLists.txt
-echo '' >> CMakeLists.txt
-echo 'add_dependencies( client censor nirvana matrix pch )' >> CMakeLists.txt
+add_dependencies( client arch nirvana matrix pch )
+EOF

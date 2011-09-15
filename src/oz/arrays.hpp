@@ -43,25 +43,13 @@ namespace oz
       {}
 
       /**
-       * Returns true if the iterator has passed all the elements in the container and thus
-       * points to an invalid location.
-       * @param
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator == ( nil_t ) const
-      {
-        return B::elem == past;
-      }
-
-      /**
        * Returns true while the iterator has not passed all the elements in the container and thus
        * points to a valid location.
        * @param
        * @return
        */
       OZ_ALWAYS_INLINE
-      bool operator != ( nil_t ) const
+      bool isValid() const
       {
         return B::elem != past;
       }
@@ -130,25 +118,13 @@ namespace oz
       {}
 
       /**
-       * Returns true if the iterator has passed all the elements in the container and thus
-       * points to an invalid location.
-       * @param
-       * @return
-       */
-      OZ_ALWAYS_INLINE
-      bool operator == ( nil_t ) const
-      {
-        return B::elem == past;
-      }
-
-      /**
        * Returns true while the iterator has not passed all the elements in the container and thus
        * points to a valid location.
        * @param
        * @return
        */
       OZ_ALWAYS_INLINE
-      bool operator != ( nil_t ) const
+      bool isValid() const
       {
         return B::elem != past;
       }

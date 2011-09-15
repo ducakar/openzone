@@ -26,7 +26,7 @@ namespace oz
       // Number of bits per unit.
       static const int ULONG_BITSIZE = sizeof( ulong ) * 8;
 
-      // Pointer to unit[] that holds the data.
+      // Pointer to array of units that holds the data.
       ulong* data;
 
       // Size of data array (in units, not in bits).
@@ -81,7 +81,7 @@ namespace oz
 
       /**
        * Allocate a new bitset that holds at least <code>nBits</code> bits. The size of
-       * <code>data</code> array is adjusted to least multiplier of unit size that can hold the
+       * <code>data</code> array is adjusted to the smallest unit number that can hold the
        * requested number of bits.
        * @param nBits the number of bits the bitset should hold
        */

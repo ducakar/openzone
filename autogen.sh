@@ -32,5 +32,6 @@ echo Generating install_files.cmake
 #
 # generate .pot gettext translations template
 #
+
 echo Generating gettext.pot
 ./gettext-gen.sh

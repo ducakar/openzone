@@ -36,7 +36,7 @@ target_link_libraries( sparse oz ${libs} )
 
 add_executable( test test.cpp )
 add_dependencies( test build pch )
-target_link_libraries( test build oz QtGui ${libs} )
+target_link_libraries( test build oz ${libs} )
 
 add_executable( unittest unittest.cpp )
 add_dependencies( unittest pch )

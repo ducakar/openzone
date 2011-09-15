@@ -21,17 +21,7 @@ add_library( build STATIC ${CMAKE_BINARY_DIR}/src/Build.cpp )
 add_subdirectory( matrix )
 add_subdirectory( nirvana )
 add_subdirectory( arch )
-
-if( OZ_BUILD_CLIENT )
-  add_subdirectory( client )
-endif()
-
-if( OZ_BUILD_SERVER )
-  add_subdirectory( server )
-endif()
-
+add_subdirectory( client )
+# add_subdirectory( server )
 add_subdirectory( tools )
-
-if( OZ_BUILD_TESTS )
-  add_subdirectory( tests )
-endif()
+add_subdirectory( tests )

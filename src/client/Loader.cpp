@@ -31,7 +31,7 @@ namespace client
     hard_assert( glGetError() == GL_NO_ERROR );
 
     // delete models of removed objects
-    for( auto i = context.models.citer(); i != nil; ) {
+    for( auto i = context.models.citer(); i.isValid(); ) {
       auto model = i;
       ++i;
 
@@ -67,7 +67,7 @@ namespace client
 
     if( tick % MODEL_CLEAR_INTERVAL == 0 ) {
       // remove unused models
-      for( auto i = context.models.citer(); i != nil; ) {
+      for( auto i = context.models.citer(); i.isValid(); ) {
         auto model = i;
         ++i;
 
@@ -89,7 +89,7 @@ namespace client
     hard_assert( alGetError() == AL_NO_ERROR );
 
     // remove audio models of removed objects
-    for( auto i = context.audios.citer(); i != nil; ) {
+    for( auto i = context.audios.citer(); i.isValid(); ) {
       auto audio = i;
       ++i;
 
@@ -105,7 +105,7 @@ namespace client
     hard_assert( alGetError() == AL_NO_ERROR );
 
     // remove continous sounds that are not played any more
-    for( auto i = context.bspSources.iter(); i != nil; ) {
+    for( auto i = context.bspSources.iter(); i.isValid(); ) {
       auto src = i;
       ++i;
 
@@ -118,7 +118,7 @@ namespace client
       }
     }
 
-    for( auto i = context.objSources.iter(); i != nil; ) {
+    for( auto i = context.objSources.iter(); i.isValid(); ) {
       auto src = i;
       ++i;
 
@@ -161,7 +161,7 @@ namespace client
       hard_assert( alGetError() == AL_NO_ERROR );
 
       // remove unused Audio objects
-      for( auto i = context.audios.citer(); i != nil; ) {
+      for( auto i = context.audios.citer(); i.isValid(); ) {
         auto audio = i;
         ++i;
 
@@ -192,7 +192,7 @@ namespace client
     }
 
     // SMM
-    for( auto i = context.smms.iter(); i != nil; ) {
+    for( auto i = context.smms.iter(); i.isValid(); ) {
       auto j = i;
 
       ++i;
@@ -207,7 +207,7 @@ namespace client
     }
 
     // MD2
-    for( auto i = context.md2s.iter(); i != nil; ) {
+    for( auto i = context.md2s.iter(); i.isValid(); ) {
       auto j = i;
 
       ++i;
@@ -222,7 +222,7 @@ namespace client
     }
 
     // MD3
-    for( auto i = context.md3s.iter(); i != nil; ) {
+    for( auto i = context.md3s.iter(); i.isValid(); ) {
       auto j = i;
 
       ++i;
