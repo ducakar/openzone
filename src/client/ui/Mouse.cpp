@@ -113,13 +113,10 @@ namespace ui
     const Cursor& cur = cursors[icon];
 
     if( doShow ) {
-      glUniform1i( param.oz_IsTextureEnabled, true );
       glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
       glBindTexture( GL_TEXTURE_2D, cur.texId );
-
       shape.fill( x - cur.hotspotX, y + 1 + cur.hotspotY - cur.size, cur.size, cur.size );
-
-      glUniform1i( param.oz_IsTextureEnabled, false );
+      glBindTexture( GL_TEXTURE_2D, 0 );
     }
   }
 

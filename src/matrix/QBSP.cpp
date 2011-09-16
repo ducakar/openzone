@@ -76,7 +76,7 @@ namespace oz
     QBSPLump lumps[QBSPLump::MAX];
     fread( lumps, sizeof( QBSPLump ), QBSPLump::MAX, file );
 
-    int nTextures = int( lumps[QBSPLump::TEXTURES].length / sizeof( QBSPTexture ) );
+    int nTextures = lumps[QBSPLump::TEXTURES].length / int( sizeof( QBSPTexture ) );
     int* texFlags = new int[nTextures];
     int* texTypes = new int[nTextures];
     fseek( file, lumps[QBSPLump::TEXTURES].offset, SEEK_SET );
@@ -92,7 +92,7 @@ namespace oz
       log.println( "Texture '%s' flags %x type %x", texture.name, texture.flags, texture.type );
     }
 
-    nPlanes = int( lumps[QBSPLump::PLANES].length / sizeof( QBSPPlane ) );
+    nPlanes = lumps[QBSPLump::PLANES].length / int( sizeof( QBSPPlane ) );
     planes = new Plane[nPlanes];
     fseek( file, lumps[QBSPLump::PLANES].offset, SEEK_SET );
 
@@ -115,7 +115,7 @@ namespace oz
       }
     }
 
-    nNodes = int( lumps[QBSPLump::NODES].length / sizeof( QBSPNode ) );
+    nNodes = lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) );
     nodes = new QBSP::Node[nNodes];
     fseek( file, lumps[QBSPLump::NODES].offset, SEEK_SET );
 
@@ -129,7 +129,7 @@ namespace oz
       nodes[i].back  = node.back;
     }
 
-    nLeaves = int( lumps[QBSPLump::LEAFS].length / sizeof( QBSPLeaf ) );
+    nLeaves = lumps[QBSPLump::LEAFS].length / int( sizeof( QBSPLeaf ) );
     leaves = new QBSP::Leaf[nLeaves];
     fseek( file, lumps[QBSPLump::LEAFS].offset, SEEK_SET );
 
@@ -142,12 +142,12 @@ namespace oz
       leaves[i].nBrushes   = leaf.nBrushes;
     }
 
-    nLeafBrushes = int( lumps[QBSPLump::LEAFBRUSHES].length / sizeof( int ) );
+    nLeafBrushes = lumps[QBSPLump::LEAFBRUSHES].length / int( sizeof( int ) );
     leafBrushes = new int[nLeafBrushes];
     fseek( file, lumps[QBSPLump::LEAFBRUSHES].offset, SEEK_SET );
-    fread( leafBrushes, sizeof( int ), nLeafBrushes, file );
+    fread( leafBrushes, sizeof( int ), size_t( nLeafBrushes ), file );
 
-    nModels = int( lumps[QBSPLump::MODELS].length / sizeof( QBSPModel ) ) - 1;
+    nModels = lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) ) - 1;
     models = null;
 
     if( nModels != 0 ) {
@@ -232,7 +232,7 @@ namespace oz
       }
     }
 
-    nBrushSides = int( lumps[QBSPLump::BRUSHSIDES].length / sizeof( QBSPBrushSide ) );
+    nBrushSides = lumps[QBSPLump::BRUSHSIDES].length / int( sizeof( QBSPBrushSide ) );
     brushSides = new int[nBrushSides];
     fseek( file, lumps[QBSPLump::BRUSHSIDES].offset, SEEK_SET );
 
@@ -244,7 +244,7 @@ namespace oz
       brushSides[i] = brushSide.plane;
     }
 
-    nBrushes = int( lumps[QBSPLump::BRUSHES].length / sizeof( QBSPBrush ) );
+    nBrushes = lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) );
     brushes = new QBSP::Brush[nBrushes];
     fseek( file, lumps[QBSPLump::BRUSHES].offset, SEEK_SET );
 

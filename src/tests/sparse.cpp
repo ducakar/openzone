@@ -63,6 +63,9 @@ int main( int, char** )
   }
   printf( "\n" );
 
+  sparse.clear();
+  sparse.dealloc();
+
   Alloc::isLocked = true;
   Alloc::printLeaks();
   return 0;

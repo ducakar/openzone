@@ -37,7 +37,7 @@ namespace oz
        */
 
       // DynObject
-      static const int DYNAMIC_BIT        = 0x80000000;
+      static const int DYNAMIC_BIT        = int( 0x80000000 );
       // can be put into inventory
       static const int ITEM_BIT           = 0x40000000;
       // Weapon

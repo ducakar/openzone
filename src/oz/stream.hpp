@@ -341,7 +341,7 @@ namespace oz
       OZ_ALWAYS_INLINE
       void writeChars( char *array, int count )
       {
-        char* data = reinterpret_cast<char*>( prepareWrite( count * sizeof( char ) ) );
+        char* data = reinterpret_cast<char*>( prepareWrite( count * int( sizeof( char ) ) ) );
         aCopy( data, array, count );
       }
 

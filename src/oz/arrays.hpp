@@ -231,7 +231,7 @@ namespace oz
   inline void aCopy( Type* aDest, const Type* aSrc, int count )
   {
     if( aDest == aSrc ) {
-      soft_assert( aDest != aSrc );
+      soft_assert( count == 0 || aDest != aSrc );
       return;
     }
 
@@ -251,7 +251,7 @@ namespace oz
   inline void aReverseCopy( Type* aDest, const Type* aSrc, int count )
   {
     if( aDest == aSrc ) {
-      soft_assert( aDest != aSrc );
+      soft_assert( count == 0 || aDest != aSrc );
       return;
     }
 

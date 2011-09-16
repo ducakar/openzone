@@ -27,7 +27,7 @@ namespace oz
 
   FloraManager floraManager;
 
-  inline void FloraManager::addTree( float x, float y )
+  void FloraManager::addTree( float x, float y )
   {
     Point3 pos = Point3( x, y, orbis.terra.height( x, y ) );
 
@@ -60,7 +60,7 @@ namespace oz
     }
   }
 
-  inline void FloraManager::addPlant( const char* type, float x, float y )
+  void FloraManager::addPlant( const char* type, float x, float y )
   {
     Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) );
     AABB   bounds = AABB( pos, translator.classes.get( type )->dim );

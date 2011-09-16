@@ -28,6 +28,10 @@
 #include <sys/stat.h>
 #include <SDL/SDL_main.h>
 
+#ifdef OZ_MINGW
+# define program_invocation_short_name "openzone"
+#endif
+
 using namespace oz;
 
 bool Alloc::isLocked = true;
@@ -251,26 +255,16 @@ static void prebuildTerras()
   log.println( "}" );
 }
 
-static void prebuildLua( const char* path )
+static void checkLua( const char* path )
 {
-  log.println( "Prebuilding Lua scripts '%s' {", path );
+  log.println( "Checking Lua scripts '%s' {", path );
   log.indent();
 
-  bool doRebuild = forceRebuild;
-
-  String srcDir = path;
-  String destFile = srcDir + ".luac";
+  String srcDir = path + String( "/" );
   Directory dir( path );
 
   if( !dir.isOpened() ) {
     throw Exception( "Cannot open directory '" + srcDir + "'" );
-  }
-
-  srcDir = srcDir + "/";
-
-  struct stat destInfo;
-  if( stat( destFile, &destInfo ) != 0 ) {
-    doRebuild = true;
   }
 
   String sources;
@@ -280,28 +274,12 @@ static void prebuildLua( const char* path )
       continue;
     }
 
-    String srcPath = srcDir + ent;
-
-    struct stat srcInfo;
-    if( stat( srcPath, &srcInfo ) != 0 ) {
-      throw Exception( "Lua .lua stat error" );
-    }
-    if( destInfo.st_mtime <= srcInfo.st_mtime )
-    {
-      doRebuild = true;
-    }
-
-    sources = sources + " " + srcPath;
+    sources = sources + " " + srcDir + ent;
   }
 
-  if( doRebuild ) {
-#ifdef NDEBUG
-    log.println( "luac -s -o %s%s", destFile.cstr(), sources.cstr() );
-    system( "luac -s -o " + destFile + sources );
-#else
-    log.println( "luac -o %s%s", destFile.cstr(), sources.cstr() );
-    system( "luac -o " + destFile + sources );
-#endif
+  log.println( "luac -p%s", sources.cstr() );
+  if( system( "luac -p" + sources ) != 0 ) {
+    throw Exception( "Lua syntax check failed" );
   }
 
   log.unindent();
@@ -374,8 +352,8 @@ int main( int argc, char** argv )
     prebuildBSPs();
     prebuildModels();
 
-    prebuildLua( "lua/matrix" );
-    prebuildLua( "lua/nirvana" );
+    checkLua( "lua/matrix" );
+    checkLua( "lua/nirvana" );
 
     long endTime = SDL_GetTicks();
 

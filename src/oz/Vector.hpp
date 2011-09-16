@@ -169,7 +169,7 @@ namespace oz
         aDestruct( data, count );
         count = v.count;
 
-        if( size != v.count ) {
+        if( size < v.count ) {
           Alloc::dealloc( data );
 
           data = Alloc::alloc<Type>( v.size );

@@ -48,6 +48,7 @@ namespace oz
       if( velocity2 >= PART_DESTROY_VELOCITY2 ) {
         part->lifeTime = 0.0f;
       }
+
       if( collider.hit.obj != null && part->mass != 0.0f ) {
         Object* sObj = const_cast<Object*>( collider.hit.obj );
         float damage = velocity2 * part->mass;
@@ -139,7 +140,7 @@ namespace oz
 
       Dynamic* sObj = dyn->lower == -1 ? null : static_cast<Dynamic*>( orbis.objects[dyn->lower] );
 
-      // on floor or still object
+      // on floor or on a still object
       if( ( dyn->flags & Object::ON_FLOOR_BIT ) ||
           ( sObj != null && ( sObj->flags & Object::DISABLED_BIT ) ) )
       {

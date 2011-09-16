@@ -45,6 +45,8 @@ namespace client
 
     void read( InputStream* stream );
     void write( OutputStream* stream ) const;
+
+    static void setFormat();
   };
 
   class Mesh
@@ -67,15 +69,15 @@ namespace client
         float  alpha;
         float  specular;
 
-        int    mode;
+        uint   mode;
 
         int    nIndices;
         int    firstIndex;
       };
 
       uint         vao;
-      uint         ibo;
       uint         vbo;
+      uint         ibo;
 
       int          flags;
       DArray<int>  texIds;
@@ -86,11 +88,11 @@ namespace client
       Mesh();
       ~Mesh();
 
-      void load( InputStream* stream, int usage );
+      void load( InputStream* stream, uint usage );
       void unload();
 
-      void upload( const Vertex* vertices, int nVertices, int flags = 0 ) const;
-      Vertex* map( int access ) const;
+      void upload( const Vertex* vertices, int nVertices, uint usage ) const;
+      Vertex* map( uint access ) const;
       void unmap() const;
 
       void draw( int mask ) const;
@@ -110,7 +112,7 @@ namespace client
         float  alpha;
         float  specular;
 
-        int    mode;
+        uint   mode;
 
         int    nIndices;
         int    firstIndex;

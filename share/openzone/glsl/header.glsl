@@ -17,11 +17,7 @@ const float TERRA_WATER_SCALE  = 512.0;
  */
 struct Transform
 {
-  mat4 proj;
-  mat4 camera;
   mat4 model;
-
-  mat4 cameraProj;
   mat4 complete;
 };
 
@@ -37,7 +33,6 @@ uniform vec4            oz_Colour = vec4( 1.0, 1.0, 1.0, 1.0 );
 /*
  * Texturing
  */
-uniform bool            oz_IsTextureEnabled = false;
 uniform sampler2D       oz_Textures[4];
 
 /*
@@ -93,8 +88,8 @@ uniform vec3            oz_MD2Anim;   // vec3( firstFrame, secondFrame, interpol
 
 vec4 greyscale( vec4 colour )
 {
-  float avg = ( colour.x + colour.y + colour.z ) / 3.0;
-  return vec4( avg, avg, avg, colour.w );
+  float avg = dot( colour, vec4( 0.333, 0.333, 0.333, 0.0 ) );
+  return vec4( avg, avg, avg, colour.a );
 }
 
 vec4 skyLightColour( vec3 normal )
@@ -108,7 +103,7 @@ vec4 specularColour( vec3 normal, vec3 toCamera )
 {
   vec3  reflectedLight = reflect( oz_CaelumLight.dir, normal );
   float factor = oz_Specular * max( dot( reflectedLight, toCamera ), 0.0 );
-  return vec4( 1.0, 1.0, 1.0, 1.0 ) + vec4( factor * oz_CaelumLight.diffuse.xyz, 0.0 );
+  return vec4( 1.0, 1.0, 1.0, 1.0 ) + vec4( factor * oz_CaelumLight.diffuse.rgb, 0.0 );
 }
 
 vec4 applyFog( vec4 colour, float dist )

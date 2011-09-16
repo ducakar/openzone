@@ -106,11 +106,11 @@ namespace client
     nFrames = header.nFrames;
 
     MD3Frame* frames = new MD3Frame[header.nFrames];
-    fread( frames, sizeof( MD3Frame ), header.nFrames, file );
+    fread( frames, sizeof( MD3Frame ), size_t( header.nFrames ), file );
     delete[] frames;
 
     *tags = new MD3Tag[header.nFrames * header.nTags];
-    fread( *tags, sizeof( MD3Tag ), header.nFrames * header.nTags, file );
+    fread( *tags, sizeof( MD3Tag ), size_t( header.nFrames * header.nTags ), file );
 
     meshes.alloc( header.nSurfaces );
     for( int i = 0; i < header.nSurfaces; ++i ) {
@@ -122,10 +122,10 @@ namespace client
       mesh->nVertices = surface.nVertices;
 
       mesh->triangles.alloc( surface.nTriangles );
-      fread( mesh->triangles, sizeof( Triangle ), surface.nTriangles, file );
+      fread( mesh->triangles, sizeof( Triangle ), size_t( surface.nTriangles ), file );
 
       MD3Shader* shaders = new MD3Shader[surface.nShaders];
-      fread( shaders, sizeof( MD3Shader ), surface.nShaders, file );
+      fread( shaders, sizeof( MD3Shader ), size_t( surface.nShaders ), file );
 
       const char* shaderBaseName;
 
@@ -145,7 +145,7 @@ namespace client
       delete[] shaders;
 
       mesh->texCoords.alloc( surface.nVertices );
-      fread( mesh->texCoords, sizeof( TexCoord ), surface.nVertices, file );
+      fread( mesh->texCoords, sizeof( TexCoord ), size_t( surface.nVertices ), file );
 
       // convert (S,T) -> (U,V) i.e. top-left origin coords to lower-left origin coords
       for( int j = 0; j < mesh->texCoords.length(); ++j ) {
@@ -154,7 +154,7 @@ namespace client
 
       mesh->vertices.alloc( surface.nFrames * surface.nVertices );
       MD3Vertex* vertices = new MD3Vertex[mesh->vertices.length()];
-      fread( vertices, sizeof( MD3Vertex ), mesh->vertices.length(), file );
+      fread( vertices, sizeof( MD3Vertex ), size_t( mesh->vertices.length() ), file );
 
       for( int j = 0; j < mesh->vertices.length(); ++j ) {
         mesh->vertices[j].p.x = -float( vertices[j].p[1] ) / 64.0f;

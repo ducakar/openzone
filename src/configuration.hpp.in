@@ -30,11 +30,8 @@
 // enable/disable networking
 #cmakedefine                    OZ_NETWORKING
 
-// compile for OpenGL 3+
-#cmakedefine                    OZ_OPENGL3
-
-// use S3 texture compression
-#cmakedefine                    OZ_TEXTURE_COMPRESSION
+// enable some mesa-specific compatibility
+#cmakedefine                    OZ_MESA_COMPATIBLE
 
 // enable bumpmap
 #cmakedefine                    OZ_BUMPMAP

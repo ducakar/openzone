@@ -26,20 +26,25 @@
 #include <SDL/SDL.h>
 
 // include OpenGL
-#ifdef OZ_OPENGL3
-# define GL_VERSION_1_2_DEPRECATED
-# define GL_VERSION_1_3_DEPRECATED
-# define GL_VERSION_1_4_DEPRECATED
-# define GL_VERSION_1_5_DEPRECATED
-# define GL_VERSION_2_0_DEPRECATED
-# define GL_VERSION_2_1_DEPRECATED
-# define GL_VERSION_3_0_DEPRECATED
-# define GL_ARB_imaging_DEPRECATED
-# define GL_ARB_framebuffer_object_DEPRECATED
-#endif
+// #define GL_VERSION_1_2_DEPRECATED
+// #define GL_VERSION_1_3_DEPRECATED
+// #define GL_VERSION_1_4_DEPRECATED
+// #define GL_VERSION_1_5_DEPRECATED
+// #define GL_VERSION_2_0_DEPRECATED
+// #define GL_VERSION_2_1_DEPRECATED
+// #define GL_VERSION_3_0_DEPRECATED
+// #define GL_ARB_imaging_DEPRECATED
+// #define GL_ARB_framebuffer_object_DEPRECATED
 
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 
 // include OpenAL
 #include <AL/al.h>
+
+// fix M$ crap in Windows headers
+#ifdef OZ_MINGW
+# undef PLANES
+# undef near
+# undef far
+#endif

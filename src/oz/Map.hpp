@@ -298,8 +298,9 @@ namespace oz
         }
 
         aDestruct( data, count );
+        count = m.count;
 
-        if( size != m.count ) {
+        if( size < m.count ) {
           Alloc::dealloc( data );
 
           data = Alloc::alloc<Elem>( m.size );
@@ -307,7 +308,6 @@ namespace oz
         }
 
         aConstruct( data, m.data, m.count );
-        count = m.count;
         return *this;
       }
 
@@ -873,8 +873,9 @@ namespace oz
         }
 
         aDestruct( data, count );
+        count = m.count;
 
-        if( size != m.count ) {
+        if( size < m.count ) {
           Alloc::dealloc( data );
 
           data = Alloc::alloc<Elem>( m.size );
@@ -882,7 +883,6 @@ namespace oz
         }
 
         aConstruct( data, m.data, m.count );
-        count = m.count;
         return *this;
       }
 

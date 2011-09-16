@@ -123,12 +123,12 @@ namespace client
 #endif
 
       void addSource( uint srcId, int sample );
-      void addBSPSource( uint srcId, int sample, uint key );
-      void addObjSource( uint srcId, int sample, uint key );
+      void addBSPSource( uint srcId, int sample, int key );
+      void addObjSource( uint srcId, int sample, int key );
 
       void removeSource( Source* source, Source* prev );
-      void removeBSPSource( ContSource* contSource, uint key );
-      void removeObjSource( ContSource* contSource, uint key );
+      void removeBSPSource( ContSource* contSource, int key );
+      void removeObjSource( ContSource* contSource, int key );
 
     public:
 

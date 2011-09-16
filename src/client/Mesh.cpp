@@ -71,6 +71,31 @@ namespace client
 #endif
   }
 
+  void Vertex::setFormat()
+  {
+    glEnableVertexAttribArray( Attrib::POSITION );
+    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+
+    glEnableVertexAttribArray( Attrib::TEXCOORD );
+    glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
+
+    glEnableVertexAttribArray( Attrib::NORMAL );
+    glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
+
+#ifdef OZ_BUMPMAP
+    glEnableVertexAttribArray( Attrib::TANGENT );
+    glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
+
+    glEnableVertexAttribArray( Attrib::BINORMAL );
+    glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
+#endif
+  }
+
   Mesh::Mesh() : vao( 0 )
   {}
 
@@ -79,7 +104,7 @@ namespace client
     hard_assert( vao == 0 );
   }
 
-  void Mesh::load( InputStream* stream, int usage )
+  void Mesh::load( InputStream* stream, uint usage )
   {
     DArray<uint> textures;
 
@@ -106,35 +131,15 @@ namespace client
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
 
-    glGenBuffers( 1, &ibo );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * sizeof( ushort ), indices, GL_STATIC_DRAW );
-
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, usage );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
 
-    glEnableVertexAttribArray( Attrib::POSITION );
-    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+    glGenBuffers( 1, &ibo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * int( sizeof( ushort ) ), indices, GL_STATIC_DRAW );
 
-    glEnableVertexAttribArray( Attrib::TEXCOORD );
-    glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-    glEnableVertexAttribArray( Attrib::NORMAL );
-    glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-
-#ifdef OZ_BUMPMAP
-    glEnableVertexAttribArray( Attrib::TANGENT );
-    glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
-
-    glEnableVertexAttribArray( Attrib::BINORMAL );
-    glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
-#endif
+    Vertex::setFormat();
 
     glBindVertexArray( 0 );
 
@@ -200,7 +205,7 @@ namespace client
       parts[i].alpha      = stream->readFloat();
       parts[i].specular   = stream->readFloat();
 
-      parts[i].mode       = stream->readInt();
+      parts[i].mode       = uint( stream->readInt() );
 
       parts[i].nIndices   = stream->readInt();
       parts[i].firstIndex = stream->readInt();
@@ -238,14 +243,14 @@ namespace client
     hard_assert( glGetError() == GL_NO_ERROR );
   }
 
-  void Mesh::upload( const Vertex* vertices, int nVertices, int usage ) const
+  void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
   {
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * sizeof( Vertex ), vertices, usage );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
   }
 
-  Vertex* Mesh::map( int access ) const
+  Vertex* Mesh::map( uint access ) const
   {
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     return reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, access ) );
@@ -267,7 +272,13 @@ namespace client
 
     int firstAlphaPart = flags & FIRST_ALPHA_PART_MASK;
 
+#ifdef OZ_MESA_COMPATIBLE
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    Vertex::setFormat();
+#else
     glBindVertexArray( vao );
+#endif
 
     glUniform4fv( param.oz_Colour, 1, shader.colour );
 
@@ -313,7 +324,7 @@ namespace client
       vertex->write( stream );
     }
     foreach( index, indices.citer() ) {
-      stream->writeShort( *index );
+      stream->writeShort( short( *index ) );
     }
 
     Vector<String> textures;
@@ -351,7 +362,7 @@ namespace client
       stream->writeFloat( part->alpha );
       stream->writeFloat( part->specular );
 
-      stream->writeInt( part->mode );
+      stream->writeInt( int( part->mode ) );
 
       stream->writeInt( part->nIndices );
       stream->writeInt( part->firstIndex );
@@ -361,7 +372,7 @@ namespace client
       stream->writeFloat( part->alpha );
       stream->writeFloat( part->specular );
 
-      stream->writeInt( part->mode );
+      stream->writeInt( int( part->mode ) );
 
       stream->writeInt( part->nIndices );
       stream->writeInt( part->firstIndex );

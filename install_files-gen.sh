@@ -66,11 +66,18 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/ui/icon )
 
   #
-  # share/openzone/lua
+  # share/openzone/lua/matrix
   #
   install( FILES
-`ls -Q share/openzone/lua/{*.luac,*README*,*COPYING*} 2> /dev/null | xargs printf '    %s\n'`
-    DESTINATION share/openzone/lua )
+`ls -Q share/openzone/lua/matrix/{*.lua,*README*,*COPYING*} 2> /dev/null | xargs printf '    %s\n'`
+    DESTINATION share/openzone/lua/matrix )
+
+  #
+  # share/openzone/lua/nirvana
+  #
+  install( FILES
+`ls -Q share/openzone/lua/nirvana/{*.lua,*README*,*COPYING*} 2> /dev/null | xargs printf '    %s\n'`
+    DESTINATION share/openzone/lua/nirvana )
 
   #
   # share/openzone/bsp

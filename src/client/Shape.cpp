@@ -27,7 +27,13 @@ namespace client
 
   void Shape::bindVertexArray() const
   {
+#ifdef OZ_MESA_COMPATIBLE
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    Vertex::setFormat();
+#else
     glBindVertexArray( vao );
+#endif
   }
 
   void Shape::fill( float x, float y, float width, float height )
@@ -296,33 +302,13 @@ namespace client
 
     glGenBuffers( 1, &ibo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, 46 * sizeof( ushort ), indices, GL_STATIC_DRAW );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, 46 * int( sizeof( ushort ) ), indices, GL_STATIC_DRAW );
 
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices, GL_STATIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER, vertices.length() * int( sizeof( Vertex ) ), vertices, GL_STATIC_DRAW );
 
-    glEnableVertexAttribArray( Attrib::POSITION );
-    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
-
-    glEnableVertexAttribArray( Attrib::TEXCOORD );
-    glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-    glEnableVertexAttribArray( Attrib::NORMAL );
-    glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-
-#ifdef OZ_BUMPMAP
-    glEnableVertexAttribArray( Attrib::TANGENT );
-    glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
-
-    glEnableVertexAttribArray( Attrib::BINORMAL );
-    glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                          reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
-#endif
+    Vertex::setFormat();
 
     glBindVertexArray( 0 );
 

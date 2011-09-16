@@ -85,15 +85,15 @@ namespace client
     int index = 0;
     for( int x = 0; x < TILE_QUADS; ++x ) {
       if( x != 0 ) {
-        os.writeShort( ushort( index + TILE_QUADS + 1 ) );
+        os.writeShort( short( index + TILE_QUADS + 1 ) );
       }
       for( int y = 0; y <= TILE_QUADS; ++y ) {
-        os.writeShort( ushort( index + TILE_QUADS + 1 ) );
-        os.writeShort( ushort( index ) );
+        os.writeShort( short( index + TILE_QUADS + 1 ) );
+        os.writeShort( short( index ) );
         ++index;
       }
       if( x != TILE_QUADS - 1 ) {
-        os.writeShort( ushort( index - 1 ) );
+        os.writeShort( short( index - 1 ) );
       }
     }
 
@@ -172,7 +172,6 @@ namespace client
     glBindTexture( GL_TEXTURE_2D, detailTexId );
     glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, mapTexId );
-    glActiveTexture( GL_TEXTURE0 );
 
     hard_assert( glGetError() == GL_NO_ERROR );
 
@@ -188,6 +187,9 @@ namespace client
     }
 
     glFrontFace( GL_CCW );
+
+    glBindTexture( GL_TEXTURE_2D, 0 );
+    glActiveTexture( GL_TEXTURE0 );
 
     hard_assert( glGetError() == GL_NO_ERROR );
   }
@@ -211,10 +213,19 @@ namespace client
 
     glEnable( GL_BLEND );
 
+#ifdef OZ_MESA_COMPATIBLE
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+#endif
+
     for( int i = span.minX; i <= span.maxX; ++i ) {
       for( int j = span.minY; j <= span.maxY; ++j ) {
         if( waterTiles.get( i * TILES + j ) ) {
+#ifdef OZ_MESA_COMPATIBLE
+          glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+          Vertex::setFormat();
+#else
           glBindVertexArray( vaos[i][j] );
+#endif
           glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, 0 );
         }
       }
@@ -255,7 +266,7 @@ namespace client
     glGenBuffers( 1, &ibo );
 
     for( int i = 0; i < TILE_INDICES; ++i ) {
-      indices[i] = is.readShort();
+      indices[i] = ushort( is.readShort() );
     }
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
@@ -271,37 +282,20 @@ namespace client
 
         glBindVertexArray( vaos[i][j] );
 
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-
         glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
         glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), vertices,
                       GL_STATIC_DRAW );
 
-        glEnableVertexAttribArray( Attrib::POSITION );
-        glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 
-        glEnableVertexAttribArray( Attrib::TEXCOORD );
-        glVertexAttribPointer( Attrib::TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                               reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, texCoord ) );
-
-        glEnableVertexAttribArray( Attrib::NORMAL );
-        glVertexAttribPointer( Attrib::NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, normal ) );
-
-#ifdef OZ_BUMPMAP
-        glEnableVertexAttribArray( Attrib::TANGENT );
-        glVertexAttribPointer( Attrib::TANGENT, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, tangent ) );
-
-        glEnableVertexAttribArray( Attrib::BINORMAL );
-        glVertexAttribPointer( Attrib::BINORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
-                              reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, binormal ) );
-#endif
+        Vertex::setFormat();
 
         glBindVertexArray( 0 );
       }
     }
+
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
     waterTiles.clearAll();
     for( int i = 0; i < waterTiles.length(); ++i ) {
@@ -309,9 +303,6 @@ namespace client
         waterTiles.set( i );
       }
     }
-
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
     landShaderId = translator.shaderIndex( "terraLand" );
     waterShaderId = translator.shaderIndex( "terraWater" );

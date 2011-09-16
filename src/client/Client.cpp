@@ -440,7 +440,7 @@ namespace client
       log.println( "Random generator seed set to current time: %d", seed );
     }
     else {
-      uint seed = config.getSet( "seed", 42 );
+      uint seed = uint( config.getSet( "seed", 42 ) );
       Math::seed( seed );
       log.println( "Random generator seed set to: %d", seed );
     }
@@ -523,7 +523,6 @@ namespace client
     bool isAlive        = true;
     bool isActive       = true;
 
-    const uint tick     = static_cast<const uint>( Timer::TICK_MILLIS );
     // time passed form start of the frame
     uint timeSpent;
     uint timeNow;
@@ -532,9 +531,9 @@ namespace client
     uint timeLast       = timeZero;
     uint timeLastRender = timeZero;
 
-    loadingTime = float( timeZero - createTime ) / 1000.0f;
-    inactiveMillis = 0;
-    droppedMillis = 0;
+    loadingTime         = float( timeZero - createTime ) / 1000.0f;
+    inactiveMillis      = 0;
+    droppedMillis       = 0;
 
     initFlags |= INIT_MAIN_LOOP;
 
@@ -611,7 +610,7 @@ namespace client
 
       // waste time when iconified
       if( !isActive ) {
-        SDL_Delay( tick );
+        SDL_Delay( Timer::TICK_MILLIS );
 
         timeSpent = SDL_GetTicks() - timeLast;
 
@@ -631,7 +630,9 @@ namespace client
       timeSpent = timeNow - timeLast;
 
       // render graphics, if we have enough time left
-      if( timeSpent < tick || timeNow - timeLastRender > 50 * tick ) {
+      if( timeSpent < uint( Timer::TICK_MILLIS ) ||
+          timeNow - timeLastRender > uint( 50 * Timer::TICK_MILLIS ) )
+      {
         stage->present();
 
         timer.frame();
@@ -639,18 +640,18 @@ namespace client
         timeLastRender = SDL_GetTicks();
         timeSpent = timeLastRender - timeLast;
 
-        while( timeSpent < tick ) {
-          SDL_Delay( tick - timeSpent );
-          timer.sleepMillis += tick - timeSpent;
+        if( timeSpent < uint( Timer::TICK_MILLIS ) ) {
+          SDL_Delay( Timer::TICK_MILLIS - timeSpent );
+          timer.sleepMillis += Timer::TICK_MILLIS - timeSpent;
 
-          timeSpent = SDL_GetTicks() - timeLast;
+          timeSpent = Timer::TICK_MILLIS;
         }
       }
-      if( timeSpent > 4 * tick ) {
-        timeLast += timeSpent - tick;
-        droppedMillis += timeSpent - tick;
+      if( timeSpent > 4 * Timer::TICK_MILLIS ) {
+        timeLast += timeSpent - Timer::TICK_MILLIS;
+        droppedMillis += timeSpent - Timer::TICK_MILLIS;
       }
-      timeLast += tick;
+      timeLast += Timer::TICK_MILLIS;
 
       if( isBenchmark && float( SDL_GetTicks() - timeZero ) >= benchmarkTime * 1000.0f ) {
         isAlive = false;
@@ -661,13 +662,13 @@ namespace client
     log.unindent();
     log.println( "}" );
 
+    allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
+
     ui::ui.loadingScreen->statusText = gettext( "Shutting down ..." );
     ui::ui.loadingScreen->show( true );
     ui::ui.root->focus( ui::ui.loadingScreen );
     render.draw( Render::DRAW_UI_BIT );
     render.sync();
-
-    allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
 
     stage->end();
 

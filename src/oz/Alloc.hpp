@@ -23,14 +23,14 @@ namespace oz
       static const int BACKTRACE_SIZE       = 16;
       static const int DEMANGLE_BUFFER_SIZE = 1024;
 
-      static int  count;
-      static long amount;
+      static int    count;
+      static size_t amount;
 
-      static int  sumCount;
-      static long sumAmount;
+      static int    sumCount;
+      static size_t sumAmount;
 
-      static int  maxCount;
-      static long maxAmount;
+      static int    maxCount;
+      static size_t maxAmount;
 
       OZ_WEAK_SYMBOL
       static bool isLocked;
@@ -51,7 +51,7 @@ namespace oz
       template <typename Type>
       static Type* alloc( int size )
       {
-        return reinterpret_cast<Type*>( new char[ size * sizeof( Type ) ] );
+        return reinterpret_cast<Type*>( new char[ size_t( size ) * sizeof( Type ) ] );
       }
 
       /**
@@ -80,7 +80,7 @@ namespace oz
       template <typename Type>
       static Type* realloc( Type* array, int count, int newSize )
       {
-        Type* newArray = reinterpret_cast<Type*>( new char[ newSize * sizeof( Type ) ] );
+        Type* newArray = reinterpret_cast<Type*>( new char[ size_t( newSize ) * sizeof( Type ) ] );
 
         for( int i = 0; i < count; ++i ) {
           new( newArray + i ) Type( array[i] );

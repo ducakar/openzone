@@ -83,11 +83,12 @@ namespace oz
   {
     l = null;
 
-    log.print( "Initialising Matrix Lua ..." );
+    log.println( "Initialising Matrix Lua {" );
+    log.indent();
 
     l = luaL_newstate();
     if( l == null ) {
-      log.printEnd( " Failed" );
+      log.println( "Failed to create state" );
       throw Exception( "Lua initialisation failed" );
     }
 
@@ -295,12 +296,24 @@ namespace oz
     lua_newtable( l );
     lua_setglobal( l, "ozLocalData" );
 
-    if( luaL_dofile( l, "lua/matrix.luac" ) != 0 ) {
-      log.printEnd( " Failed" );
-      throw Exception( "Matrix Lua script error" );
+    Directory luaDir;
+    luaDir.open( "lua/matrix" );
+
+    foreach( file, luaDir.citer() ) {
+      if( file.hasExtension( "lua" ) ) {
+        log.print( "%s ...", &*file );
+
+        if( luaL_dofile( l, String( "lua/matrix/" ) + file ) != 0 ) {
+          log.printEnd( " Failed" );
+          throw Exception( "Matrix Lua script error" );
+        }
+
+        log.printEnd( " OK" );
+      }
     }
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Lua::free()
