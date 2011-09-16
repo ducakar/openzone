@@ -229,12 +229,6 @@ namespace oz
     v.pushFirst( Test( 0 ) );
     hard_assert( iEquals( l.citer(), v.citer() ) );
 
-    iDestruct( l.citer() );
-    hard_assert( constructCount == 6 );
-    iConstruct( l.iter(), v.citer() );
-    hard_assert( constructCount == 12 );
-    hard_assert( iEquals( l.citer(), v.citer() ) );
-
     struct
     {
       void operator () ( Test& t ) const
@@ -249,34 +243,36 @@ namespace oz
     iSet( v.iter(), Test( 12 ) );
     hard_assert( iEquals( v.citer(), l.citer() ) );
 
-    iDestruct( v.citer() );
-    hard_assert( constructCount == 6 );
-    iConstruct( v.iter(), l.citer() );
-    hard_assert( constructCount == 12 );
-    hard_assert( iEquals( l.citer(), v.citer() ) );
-
     iCopy( l.iter(), v.citer() );
     hard_assert( iEquals( l.citer(), v.citer() ) );
 
-    iDestruct( l.citer() );
-    iConstruct( l.iter() );
+    struct
+    {
+      void operator () ( Test& t ) const
+      {
+        t.value = 101;
+      }
+    }
+    set101;
 
     struct
     {
       void operator () ( const Test& t ) const
       {
-        delete &t;
+        hard_assert( t.value == 101 );
       }
     }
-    destroy;
+    check101;
 
-    iMap( l.citer(), destroy );
+    iMap( l.iter(), set101 );
+    iMap( l.citer(), check101 );
 
     Vector<Test*> pv;
     pv.add( new Test() );
     pv.add( new Test() );
 
     iFree( pv.iter() );
+    l.free();
   }
 
   static void ozArraysUnittest()
@@ -321,13 +317,6 @@ namespace oz
     a[0] = Test( 0 );
     hard_assert( !aEquals( b, a, 5 ) );
 
-    aDestruct( a, 5 );
-    hard_assert( constructCount == 5 );
-    aConstruct( a, b, 5 );
-    hard_assert( constructCount == 10 );
-    hard_assert( aEquals( a, b, 5 ) );
-
-    a[0] = Test( 0 );
     aCopy( a, b, 5 );
     hard_assert( aEquals( a, b, 5 ) );
     a[0] = Test( 0 );
@@ -401,25 +390,23 @@ namespace oz
   {
     static const size_t STAT_META_SIZE = Alloc::ALIGNMENT;
 
-    Test* array = Alloc::alloc<Test>( 10 );
-    hard_assert( Alloc::amount == 10 * sizeof( Test ) + STAT_META_SIZE );
-    hard_assert( Alloc::sumAmount == 10 * sizeof( Test ) + STAT_META_SIZE );
+    hard_assert( Alloc::amount == 0 );
+    Test* array = new Test[10];
+    hard_assert( Alloc::amount >= 10 * sizeof( Test ) + STAT_META_SIZE );
+    hard_assert( Alloc::sumAmount >= 10 * sizeof( Test ) + STAT_META_SIZE );
     hard_assert( Alloc::count == 1 );
     hard_assert( Alloc::sumCount == 1 );
-    aConstruct( array, 5 );
 
-    array = Alloc::realloc( array, 5, 8 );
-    hard_assert( Alloc::amount == 8 * sizeof( Test ) + STAT_META_SIZE );
-    hard_assert( Alloc::sumAmount == 18 * sizeof( Test ) + 2 * STAT_META_SIZE );
+    array = aRealloc( array, 5, 8 );
+    hard_assert( Alloc::amount >= 8 * sizeof( Test ) + STAT_META_SIZE );
+    hard_assert( Alloc::sumAmount >= 18 * sizeof( Test ) + 2 * STAT_META_SIZE );
     hard_assert( Alloc::count == 1 );
     hard_assert( Alloc::sumCount == 2 );
-    hard_assert( constructCount == 5 );
+    hard_assert( constructCount == 8 );
 
-    aDestruct( array, 5 );
-    hard_assert( constructCount == 0 );
-    Alloc::dealloc( array );
+    delete[] array;
     hard_assert( Alloc::amount == 0 );
-    hard_assert( Alloc::sumAmount == 18 * sizeof( Test ) + 2 * STAT_META_SIZE );
+    hard_assert( Alloc::sumAmount >= 18 * sizeof( Test ) + 2 * STAT_META_SIZE );
     hard_assert( Alloc::count == 0 );
     hard_assert( Alloc::sumCount == 2 );
   }

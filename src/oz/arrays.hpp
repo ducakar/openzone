@@ -181,46 +181,6 @@ namespace oz
   }
 
   /**
-   * Construct elements of an uninitialised array.
-   * @param aDest
-   * @param count
-   */
-  template <typename Type>
-  inline void aConstruct( Type* aDest, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      new( &aDest[i] ) Type;
-    }
-  }
-
-  /**
-   * Destruct elements of an initialised array.
-   * @param aDest
-   * @param count
-   */
-  template <typename Type>
-  inline void aDestruct( const Type* aSrc, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      aSrc[i].~Type();
-    }
-  }
-
-  /**
-   * Construct elements via copy constructor from an already constructed array.
-   * @param aDest
-   * @param aSrc
-   * @param count
-   */
-  template <typename Type>
-  inline void aConstruct( Type* aDest, const Type* aSrc, int count )
-  {
-    for( int i = 0; i < count; ++i ) {
-      new( &aDest[i] ) Type( aSrc[i] );
-    }
-  }
-
-  /**
    * Copy array from first to last element (memcpy).
    * In contrast with memcpy it calls copy operator on objects.
    * @param aDest pointer to the first element in the destination array
@@ -230,10 +190,7 @@ namespace oz
   template <typename Type>
   inline void aCopy( Type* aDest, const Type* aSrc, int count )
   {
-    if( aDest == aSrc ) {
-      soft_assert( count == 0 || aDest != aSrc );
-      return;
-    }
+    hard_assert( count == 0 || aDest != aSrc );
 
     for( int i = 0; i < count; ++i ) {
       aDest[i] = aSrc[i];
@@ -250,10 +207,7 @@ namespace oz
   template <typename Type>
   inline void aReverseCopy( Type* aDest, const Type* aSrc, int count )
   {
-    if( aDest == aSrc ) {
-      soft_assert( count == 0 || aDest != aSrc );
-      return;
-    }
+    hard_assert( count == 0 || aDest != aSrc );
 
     for( int i = count - 1; i >= 0; --i ) {
       aDest[i] = aSrc[i];
@@ -383,7 +337,21 @@ namespace oz
   template <typename Type>
   inline int aLength( const Type& aSrc )
   {
-    return sizeof( aSrc ) / sizeof( aSrc[0] );
+    return int( sizeof( aSrc ) / sizeof( aSrc[0] ) );
+  }
+
+  /**
+   * Destruct elements of an array.
+   * Mainly to call destructors on arrays constructed via placement new operator.
+   * @param aDest
+   * @param count
+   */
+  template <typename Type>
+  inline void aDestruct( const Type* aSrc, int count )
+  {
+    for( int i = 0; i < count; ++i ) {
+      aSrc[i].~Type();
+    }
   }
 
   /**

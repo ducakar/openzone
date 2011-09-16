@@ -27,6 +27,9 @@ namespace oz
         int user;
         int target;
 
+        Action()
+        {}
+
         explicit Action( int user_, int target_ ) : user( user_ ), target( target_ )
         {}
       };

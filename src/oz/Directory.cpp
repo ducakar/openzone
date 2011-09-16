@@ -19,32 +19,31 @@ namespace oz
 
   Directory::CIterator::CIterator( const Directory& d ) : B( null ), dir( d.dir )
   {
-    if( dir != null ) {
-      do {
-        struct dirent* file = readdir( reinterpret_cast<DIR*>( dir ) );
-        elem = file == null ? null : file->d_name;
-      }
-      while( elem != null && elem[0] == '.' );
+    hard_assert( dir != null );
+
+    do {
+      struct dirent* file = readdir( reinterpret_cast<DIR*>( dir ) );
+      elem = file == null ? null : file->d_name;
     }
+    while( elem != null && elem[0] == '.' );
   }
 
   Directory::CIterator& Directory::CIterator::operator ++ ()
   {
-    if( elem != null ) {
-      do {
-        struct dirent* file = readdir( reinterpret_cast<DIR*>( dir ) );
-        elem = file == null ? null : file->d_name;
-      }
-      while( elem != null && elem[0] == '.' );
+    hard_assert( elem != null );
+
+    do {
+      struct dirent* file = readdir( reinterpret_cast<DIR*>( dir ) );
+      elem = file == null ? null : file->d_name;
     }
+    while( elem != null && elem[0] == '.' );
+
     return *this;
   }
 
   String Directory::CIterator::baseName() const
   {
-    if( elem == null ) {
-      return "";
-    }
+    hard_assert( elem != null );
 
     const char* dot = String::findLast( elem, '.' );
     if( dot == null ) {
@@ -56,9 +55,7 @@ namespace oz
 
   String Directory::CIterator::extension() const
   {
-    if( elem == null ) {
-      return "";
-    }
+    hard_assert( elem != null );
 
     const char* dot = String::findLast( elem, '.' );
     if( dot == null ) {
@@ -70,9 +67,7 @@ namespace oz
 
   bool Directory::CIterator::hasExtension() const
   {
-    if( elem == null ) {
-      return false;
-    }
+    hard_assert( elem != null );
 
     const char* dot = String::findLast( elem, '.' );
     return dot != null;
@@ -80,9 +75,7 @@ namespace oz
 
   bool Directory::CIterator::hasExtension( const char* ext ) const
   {
-    if( elem == null ) {
-      return false;
-    }
+    hard_assert( elem != null );
 
     const char* dot = String::findLast( elem, '.' );
     if( dot == null ) {

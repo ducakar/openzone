@@ -52,26 +52,23 @@ namespace client
           const Object* obj;
         };
 
+        OZ_ALWAYS_INLINE
+        ObjectEntry()
+        {}
+
+        OZ_ALWAYS_INLINE
         explicit ObjectEntry( float dist2_, const Struct* str_ ) :
             dist2( dist2_ ), str( str_ )
         {}
 
+        OZ_ALWAYS_INLINE
         explicit ObjectEntry( float dist2_, const Object* obj_ ) :
             dist2( dist2_ ), obj( obj_ )
         {}
 
         // sort in reverse order (farest to nearest)
+        OZ_ALWAYS_INLINE
         bool operator < ( const ObjectEntry& oe ) const
-        {
-          return dist2 > oe.dist2;
-        }
-
-        friend bool operator == ( float dist2, const ObjectEntry& oe )
-        {
-          return dist2 == oe.dist2;
-        }
-
-        friend bool operator < ( float dist2, const ObjectEntry& oe )
         {
           return dist2 > oe.dist2;
         }

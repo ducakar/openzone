@@ -3,7 +3,7 @@
 // enable new and delete to save stack traces to show memory leaks
 #cmakedefine OZ_TRACE_LEAKS
 
-// enable Pool allocator; otherwise just call Alloc::alloc/dealloc
+// enable Pool allocator; otherwise just call new char[]/delete[]
 #cmakedefine OZ_POOL_ALLOC
 
 // whether math library has sincosf function
