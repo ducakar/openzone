@@ -73,20 +73,20 @@ namespace client
     QBSPLump lumps[QBSPLump::MAX];
     fread( lumps, sizeof( QBSPLump ), QBSPLump::MAX, file );
 
-    nTextures = int( lumps[QBSPLump::TEXTURES].length / sizeof( QBSPTexture ) );
+    nTextures = lumps[QBSPLump::TEXTURES].length / int( sizeof( QBSPTexture ) );
     textures.alloc( nTextures );
     fseek( file, lumps[QBSPLump::TEXTURES].offset, SEEK_SET );
-    fread( textures, sizeof( QBSPTexture ), nTextures, file );
+    fread( textures, sizeof( QBSPTexture ), size_t( nTextures ), file );
 
-    nModels = int( lumps[QBSPLump::MODELS].length / sizeof( QBSPModel ) );
+    nModels = lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) );
     models.alloc( nModels );
     fseek( file, lumps[QBSPLump::MODELS].offset, SEEK_SET );
-    fread( models, sizeof( QBSPModel ), nModels, file );
+    fread( models, sizeof( QBSPModel ), size_t( nModels ), file );
 
-    nVertices = int( lumps[QBSPLump::VERTICES].length / sizeof( QBSPVertex ) );
+    nVertices = lumps[QBSPLump::VERTICES].length / int( sizeof( QBSPVertex ) );
     vertices.alloc( nVertices );
     fseek( file, lumps[QBSPLump::VERTICES].offset, SEEK_SET );
-    fread( vertices, sizeof( QBSPVertex ), nVertices, file );
+    fread( vertices, sizeof( QBSPVertex ), size_t( nVertices ), file );
 
     foreach( vertex, vertices.iter() ) {
       vertex->p[0] *= scale;
@@ -94,15 +94,15 @@ namespace client
       vertex->p[2] *= scale;
     }
 
-    nIndices = int( lumps[QBSPLump::INDICES].length / sizeof( int ) );
+    nIndices = lumps[QBSPLump::INDICES].length / int( sizeof( int ) );
     indices.alloc( nIndices );
     fseek( file, lumps[QBSPLump::INDICES].offset, SEEK_SET );
-    fread( indices, sizeof( int ), nIndices, file );
+    fread( indices, sizeof( int ), size_t( nIndices ), file );
 
-    nFaces = int( lumps[QBSPLump::FACES].length / sizeof( QBSPFace ) );
+    nFaces = lumps[QBSPLump::FACES].length / int( sizeof( QBSPFace ) );
     faces.alloc( nFaces );
     fseek( file, lumps[QBSPLump::FACES].offset, SEEK_SET );
-    fread( faces, sizeof( QBSPFace ), nFaces, file );
+    fread( faces, sizeof( QBSPFace ), size_t( nFaces ), file );
 
     foreach( face, faces.iter() ) {
       for( int i = 0; i < face->nVertices; ++i ) {
@@ -298,7 +298,7 @@ namespace client
       return;
     }
 
-    alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
+    alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
     alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
     alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
 
@@ -317,7 +317,7 @@ namespace client
 
     const Struct* str = entity->str;
     // we can have at most 100 models per BSP, so stride 128 should do
-    uint key = str->index * 128 + int( entity - str->entities );
+    int key = str->index * 128 + int( entity - str->entities );
 
     Bounds bounds = *entity->model;
     Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
@@ -339,7 +339,7 @@ namespace client
 
       p = entity->str->toAbsoluteCS( p + entity->offset );
 
-      alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
+      alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
       alSourcei( srcId, AL_LOOPING, AL_TRUE );
       alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
 

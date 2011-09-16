@@ -275,7 +275,7 @@ namespace oz
         if( size != s.size ) {
           delete[] data;
 
-          data = new Elem[s.size];
+          data = s.size == 0 ? null : new Elem[s.size];
           size = s.size;
         }
 

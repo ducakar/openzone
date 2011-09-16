@@ -11,11 +11,6 @@
 
 #include "stable.hpp"
 
-#ifdef OZ_MINGW
-# undef near
-# undef far
-#endif
-
 namespace oz
 {
 namespace client
@@ -77,7 +72,7 @@ namespace client
     }
   };
 
-#ifndef OZ_OPENGL3
+#ifdef OZ_MINGW
   extern PFNGLUNIFORM1IPROC               glUniform1i;
   extern PFNGLUNIFORM2IPROC               glUniform2i;
   extern PFNGLUNIFORM3IPROC               glUniform3i;

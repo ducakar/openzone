@@ -110,14 +110,12 @@ namespace ui
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                   text->pixels);
 
-    glUniform1i( param.oz_IsTextureEnabled, true );
-
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
     shape.fill( x + 1, y - 1, text->w, text->h );
     glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
     shape.fill( x, y, text->w, text->h );
 
-    glUniform1i( param.oz_IsTextureEnabled, false );
+    glBindTexture( GL_TEXTURE_2D, 0 );
 
     SDL_FreeSurface( text );
   }

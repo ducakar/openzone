@@ -85,6 +85,7 @@ namespace ui
     }
 
     shader.use( shader.ui );
+    glBindTexture( GL_TEXTURE_2D, 0 );
 
     shape.bindVertexArray();
 

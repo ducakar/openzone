@@ -48,8 +48,8 @@ int main( int, char** )
   SVector<int, 5> sv;
   Sparse<SparseElem> s;
   Map<int> m;
-  HashIndex<int, 4> hi;
-  HashString<int, 4> hs;
+  HashIndex<int, 7> hi;
+  HashString<int, 7> hs;
 
   List<Elem, 0> l1;
   DList<Elem, 0> dl1;
@@ -58,8 +58,8 @@ int main( int, char** )
   SVector<int, 5> sv1;
   Sparse<SparseElem> s1;
   Map<int> m1;
-  HashIndex<int, 4> hi1;
-  HashString<int, 4> hs1;
+  HashIndex<int, 7> hi1;
+  HashString<int, 7> hs1;
 
   // 1
   l.add( new Elem( 1 ) );
@@ -135,6 +135,12 @@ int main( int, char** )
   swap( m, m1 );
   swap( hi, hi1 );
   swap( hs, hs1 );
+
+  v1.dealloc();
+  s1.dealloc();
+  m1.dealloc();
+  hi1.dealloc();
+  hs1.dealloc();
 
   foreach( i, l.citer() ) {
     printf( "%d ", i->value );

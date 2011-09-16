@@ -66,14 +66,14 @@ namespace oz
 
 #endif
 
-  int  Alloc::count     = 0;
-  long Alloc::amount    = 0;
+  int    Alloc::count     = 0;
+  size_t Alloc::amount    = 0;
 
-  int  Alloc::sumCount  = 0;
-  long Alloc::sumAmount = 0;
+  int    Alloc::sumCount  = 0;
+  size_t Alloc::sumAmount = 0;
 
-  int  Alloc::maxCount  = 0;
-  long Alloc::maxAmount = 0;
+  int    Alloc::maxCount  = 0;
+  size_t Alloc::maxAmount = 0;
 
   OZ_WEAK_SYMBOL
   bool Alloc::isLocked  = false;
@@ -266,7 +266,10 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 void operator delete ( void* ptr ) throw()
 {
   hard_assert( !Alloc::isLocked );
-  hard_assert( ptr != null );
+
+  if( ptr == null ) {
+    return;
+  }
 
   size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );
@@ -331,7 +334,10 @@ void operator delete ( void* ptr ) throw()
 void operator delete[] ( void* ptr ) throw()
 {
   hard_assert( !Alloc::isLocked );
-  hard_assert( ptr != null );
+
+  if( ptr == null ) {
+    return;
+  }
 
   size_t size  = reinterpret_cast<size_t*>( ptr )[-1];
   char*  chunk = reinterpret_cast<char*>( ptr ) - Alloc::alignUp( sizeof( size_t ) );

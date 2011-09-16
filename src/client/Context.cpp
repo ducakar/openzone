@@ -51,24 +51,23 @@ namespace client
     hard_assert( glGetError() == GL_NO_ERROR );
     hard_assert( bytesPerPixel == 3 || bytesPerPixel == 4 );
 
-    GLenum sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-#ifdef OZ_TEXTURE_COMPRESSION
-    GLenum internalFormat = bytesPerPixel == 4 ?
+    uint sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+#ifdef OZ_MESA_COMPATIBLE
+    int internalFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+#else
+    int internalFormat = bytesPerPixel == 4 ?
         GL_COMPRESSED_RGBA_S3TC_DXT5_EXT :
         GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-#else
-    GLenum internalFormat = GL_RGBA;
 #endif
+
+    bool doGenerateMipmaps = false;
 
     uint texId;
     glGenTextures( 1, &texId );
-    glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
     glBindTexture( GL_TEXTURE_2D, texId );
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
-
-    bool hasMipmaps = false;
 
     switch( magFilter ) {
       case GL_NEAREST:
@@ -89,7 +88,7 @@ namespace client
       case GL_NEAREST_MIPMAP_LINEAR:
       case GL_LINEAR_MIPMAP_NEAREST:
       case GL_LINEAR_MIPMAP_LINEAR: {
-        hasMipmaps = true;
+        doGenerateMipmaps = true;
         break;
       }
       default: {
@@ -102,20 +101,21 @@ namespace client
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     }
 
-#ifndef OZ_OPENGL3
-    if( hasMipmaps ) {
+#ifdef OZ_MESA_COMPATIBLE
+    if( doGenerateMipmaps ) {
       glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
     }
 #endif
 
     glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
                   sourceFormat, GL_UNSIGNED_BYTE, data );
-
-#ifdef OZ_OPENGL3
-    if( hasMipmaps ) {
+#ifndef OZ_MESA_COMPATIBLE
+    if( doGenerateMipmaps ) {
       glGenerateMipmap( GL_TEXTURE_2D );
     }
 #endif
+
+    glBindTexture( GL_TEXTURE_2D, 0 );
 
     if( glGetError() != GL_NO_ERROR ) {
       glDeleteTextures( 1, &texId );
@@ -138,7 +138,7 @@ namespace client
     sources.add( new Source( srcId, sample ) );
   }
 
-  void Context::addBSPSource( uint srcId, int sample, uint key )
+  void Context::addBSPSource( uint srcId, int sample, int key )
   {
     hard_assert( sounds[sample].nUsers > 0 );
 
@@ -146,7 +146,7 @@ namespace client
     bspSources.add( key, ContSource( srcId, sample ) );
   }
 
-  void Context::addObjSource( uint srcId, int sample, uint key )
+  void Context::addObjSource( uint srcId, int sample, int key )
   {
     hard_assert( sounds[sample].nUsers > 0 );
 
@@ -165,7 +165,7 @@ namespace client
     releaseSound( sample );
   }
 
-  void Context::removeBSPSource( ContSource* contSource, uint key )
+  void Context::removeBSPSource( ContSource* contSource, int key )
   {
     int sample = contSource->sample;
 
@@ -175,7 +175,7 @@ namespace client
     releaseSound( sample );
   }
 
-  void Context::removeObjSource( ContSource* contSource, uint key )
+  void Context::removeObjSource( ContSource* contSource, int key )
   {
     int sample = contSource->sample;
 
@@ -216,9 +216,9 @@ namespace client
     }
     log.printEnd( " %s ... OK", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
 
-    int bytesPerPixel = image->format->BitsPerPixel / 8;
-    int texNum = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
-                                magFilter, minFilter );
+    int  bytesPerPixel = image->format->BitsPerPixel / 8;
+    uint texNum = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
+                                 magFilter, minFilter );
 
     SDL_FreeSurface( image );
 
@@ -447,7 +447,7 @@ namespace client
     ALenum format = audioSpec.format == AUDIO_U8 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16;
 
     alGenBuffers( 1, &resource.id );
-    alBufferData( resource.id, format, data, length, audioSpec.freq );
+    alBufferData( resource.id, format, data, int( length ), audioSpec.freq );
 
     SDL_FreeWAV( data );
 

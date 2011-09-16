@@ -66,10 +66,6 @@ namespace client
   {
     projCamera = proj * camera;
 
-    glUniformMatrix4fv( param.oz_Transform_proj, 1, GL_FALSE, proj );
-    glUniformMatrix4fv( param.oz_Transform_camera, 1, GL_FALSE, camera );
-    glUniformMatrix4fv( param.oz_Transform_projCamera, 1, GL_FALSE, projCamera );
-
     glUniform3fv( param.oz_CameraPosition, 1, client::camera.p );
   }
 
@@ -171,12 +167,6 @@ namespace client
     OZ_REGISTER_ATTRIBUTE( Attrib::BINORMAL,            "inBinormal" );
 #endif
 
-#ifdef OZ_OPENGL3
-    OZ_REGISTER_FRAGDATA( FragData::COLOUR,             "outColour" );
-    OZ_REGISTER_FRAGDATA( FragData::EFFECT,             "outEffect" );
-    OZ_REGISTER_FRAGDATA( FragData::NORMAL,             "outNormal" );
-#endif
-
     glLinkProgram( programs[id].program );
 
     int result;
@@ -197,17 +187,12 @@ namespace client
 
     glUseProgram( programs[id].program );
 
-    OZ_REGISTER_PARAMETER( oz_Transform_proj,           "oz_Transform.proj" );
-    OZ_REGISTER_PARAMETER( oz_Transform_camera,         "oz_Transform.camera" );
-    OZ_REGISTER_PARAMETER( oz_Transform_projCamera,     "oz_Transform.projCamera" );
     OZ_REGISTER_PARAMETER( oz_Transform_model,          "oz_Transform.model" );
     OZ_REGISTER_PARAMETER( oz_Transform_complete,       "oz_Transform.complete" );
 
     OZ_REGISTER_PARAMETER( oz_CameraPosition,           "oz_CameraPosition" );
 
     OZ_REGISTER_PARAMETER( oz_Colour,                   "oz_Colour" );
-
-    OZ_REGISTER_PARAMETER( oz_IsTextureEnabled,         "oz_IsTextureEnabled" );
     OZ_REGISTER_PARAMETER( oz_Textures,                 "oz_Textures" );
 
     OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,          "oz_CaelumLight.dir" );
@@ -399,6 +384,22 @@ namespace client
     log.indent();
 
     hasVertexTexture = config.getSet( "shader.vertexTexture", false );
+
+    // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
+    // always returns white colour when texture 0 is bound)
+    ubyte whitePixel[] = { 0xff, 0xff, 0xff };
+
+    for( int i = 0; i < 2; ++i ) {
+      glActiveTexture( GL_TEXTURE0 + uint( i ) );
+      glEnable( GL_TEXTURE_2D );
+
+      glBindTexture( GL_TEXTURE_2D, 0 );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, whitePixel );
+    }
+
+    glActiveTexture( GL_TEXTURE0 );
 
     programs.alloc( translator.shaders.length() );
     for( int i = 0; i < translator.shaders.length(); ++i ) {

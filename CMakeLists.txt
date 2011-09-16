@@ -134,10 +134,6 @@ mark_as_advanced( SDLIMAGE_LIBRARY )
 mark_as_advanced( SDLTTF_INCLUDE_DIR )
 mark_as_advanced( SDLTTF_LIBRARY )
 
-if( WIN32 )
-  find_library( INTL_LIBRARY intl )
-endif()
-
 if( NOT VORBISFILE_INCLUDE_DIR )
   set( VORBISFILE_INCLUDE_DIR "" CACHE PATH "" FORCE )
 endif()
@@ -146,6 +142,13 @@ find_library( VORBISFILE_LIBRARY vorbisfile )
 
 mark_as_advanced( VORBISFILE_INCLUDE_DIR )
 mark_as_advanced( VORBISFILE_LIBRARY )
+
+if( WIN32 )
+  find_library( INTL_LIBRARY intl )
+
+  mark_as_advanced( MINGW32_LIBRARY )
+  mark_as_advanced( INTL_LIBRARY )
+endif()
 
 # detect clang
 string( REGEX MATCH "clang\\+\\+" compiler_base "${CMAKE_CXX_COMPILER}" )
@@ -192,22 +195,22 @@ if( OZ_MINGW )
 endif()
 
 # compiler and linker flags
-set( flags "-pipe -std=gnu++0x -ffast-math" )
+set( flags "-pipe -std=c++0x -pedantic -ffast-math" )
 set( warnings "-Wall -Wextra -Wold-style-cast -Wcast-align -Wsign-promo -Wconversion" )
 set( warnings "${warnings} -Winvalid-pch -Wdisabled-optimization -Wmissing-declarations" )
 set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wattributes" )
 set( arch_flags "-msse3" )
 
 if( OZ_CLANG )
-  set( warnings "${warnings} -Wno-sign-conversion -Wno-invalid-offsetof" )
-else()
+  set( warnings "${warnings} -Wno-invalid-offsetof -Wno-sign-conversion" )
+elseif( OZ_MINGW )
   set( flags "${flags} -freciprocal-math" )
-  set( warnings "${warnings} -Wlogical-op" )
+  set( warnings "${warnings} -Wsign-conversion -Wlogical-op" )
   set( arch_flags "${arch_flags} -mfpmath=sse" )
-  if( OZ_MINGW )
-  else()
-    set( flags "${flags} -fstrict-enums" )
-  endif()
+else()
+  set( flags "${flags} -fstrict-enums -freciprocal-math" )
+  set( warnings "${warnings} -Wsign-conversion -Wlogical-op" )
+  set( arch_flags "${arch_flags} -mfpmath=sse" )
 endif()
 
 set( CMAKE_BUILD_TYPE Debug CACHE STRING "Debug RelWithDebInfo RelGenProf RelUseProf" )

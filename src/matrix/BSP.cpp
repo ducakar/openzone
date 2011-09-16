@@ -60,7 +60,7 @@ namespace oz
     for( int i = 0; i < nPlanes; ++i ) {
       planes[i] = is.readPlane();
     }
-    data += nPlanes * sizeof( Plane );
+    data += nPlanes * int( sizeof( Plane ) );
 
     data = Alloc::alignUp( data );
 
@@ -70,7 +70,7 @@ namespace oz
       nodes[i].front = is.readInt();
       nodes[i].back = is.readInt();
     }
-    data += nNodes * sizeof( Node );
+    data += nNodes * int( sizeof( Node ) );
 
     data = Alloc::alignUp( data );
 
@@ -79,7 +79,7 @@ namespace oz
       leaves[i].firstBrush = is.readInt();
       leaves[i].nBrushes = is.readInt();
     }
-    data += nLeaves * sizeof( Leaf );
+    data += nLeaves * int( sizeof( Leaf ) );
 
     data = Alloc::alignUp( data );
 
@@ -87,7 +87,7 @@ namespace oz
     for( int i = 0; i < nLeafBrushes; ++i ) {
       leafBrushes[i] = is.readInt();
     }
-    data += nLeafBrushes * sizeof( int );
+    data += nLeafBrushes * int( sizeof( int ) );
 
     data = Alloc::alignUp( data );
 
@@ -97,7 +97,7 @@ namespace oz
       brushes[i].nSides = is.readInt();
       brushes[i].material = is.readInt();
     }
-    data += nBrushes * sizeof( Brush );
+    data += nBrushes * int( sizeof( Brush ) );
 
     data = Alloc::alignUp( data );
 
@@ -105,7 +105,7 @@ namespace oz
     for( int i = 0; i < nBrushSides; ++i ) {
       brushSides[i] = is.readInt();
     }
-    data += nBrushSides * sizeof( int );
+    data += nBrushSides * int( sizeof( int ) );
 
     data = Alloc::alignUp( data );
 

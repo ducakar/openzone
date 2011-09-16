@@ -71,7 +71,8 @@ namespace oz
 
         if( size != b.size ) {
           delete[] data;
-          data = new ulong[b.size];
+
+          data = b.size == 0 ? null : new ulong[b.size];
           size = b.size;
         }
 

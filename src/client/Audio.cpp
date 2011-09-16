@@ -34,7 +34,7 @@ namespace client
       return;
     }
 
-    alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
+    alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
 
     // If the object moves since source starts playing and source stands still, it's usually
     // not noticeable for short-time source. After all, sound source many times does't move
@@ -69,7 +69,7 @@ namespace client
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
 
-    uint key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
+    int key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
 
     Context::ContSource* contSource = context.objSources.find( key );
 
@@ -82,7 +82,7 @@ namespace client
         return;
       }
 
-      alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
+      alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
       alSourcei( srcId, AL_LOOPING, AL_TRUE );
       alSourcef( srcId, AL_REFERENCE_DISTANCE, REFERENCE_DISTANCE );
       alSourcef( srcId, AL_ROLLOFF_FACTOR, ROLLOFF_FACTOR );
@@ -107,7 +107,7 @@ namespace client
   {
     hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
 
-    uint key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
+    int key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
 
     Context::ContSource* contSource = context.objSources.find( key );
 
@@ -120,7 +120,7 @@ namespace client
         return;
       }
 
-      alSourcei( srcId, AL_BUFFER, context.sounds[sample].id );
+      alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
       alSourcei( srcId, AL_LOOPING, AL_TRUE );
       alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
 

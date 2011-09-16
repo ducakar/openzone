@@ -22,17 +22,12 @@ namespace client
 
   struct Param
   {
-    int oz_Transform_proj;
-    int oz_Transform_camera;
-    int oz_Transform_projCamera;
     int oz_Transform_model;
     int oz_Transform_complete;
 
     int oz_CameraPosition;
 
     int oz_Colour;
-
-    int oz_IsTextureEnabled;
     int oz_Textures;
 
     int oz_CaelumLight_dir;
@@ -110,18 +105,6 @@ namespace client
 #endif
     };
   };
-
-#ifdef OZ_OPENGL3
-  struct FragData
-  {
-    enum Type
-    {
-      COLOUR,
-      EFFECT,
-      NORMAL
-    };
-  };
-#endif
 
   class Shader
   {

@@ -18,7 +18,8 @@
 #if defined( __clang__ )
 # if __clang_major__ < 2 || ( __clang_major__ == 2 && __clang_minor__ < 9 )
 #  error gcc >= 4.5 and clang 2.9 are the only supported compilers
-# elif __clang_major__ == 2 && __clang_minor__ == 9
+# else
+// Clang 2.9 is not compatible with libstdc++'s C++0x support, but we don't need it anyway.
 #  undef __GXX_EXPERIMENTAL_CXX0X__
 # endif
 #elif defined( __GNUC__ )
@@ -29,6 +30,12 @@
 # endif
 #else
 # error gcc >= 4.5 and clang 2.9 are the only supported compilers
+#endif
+
+// A trick for KDevelop's parser to "understand" decltype keyword (ifdef will always be processed
+// by KDevelop but never by any compiler).
+#ifndef __LINE__
+# define decltype typeof
 #endif
 
 // OZ_ECLIPSE_HIGHLIGHTING should never be enabled for compiler to process it, it is only intended
@@ -44,8 +51,6 @@
 # define ptrdiff_t      ptrdiff_t
 # define size_t         size_t
 // custom
-# define nil_t          nil_t
-# define nil            nil
 # define null           null
 # define byte           byte
 # define ubyte          ubyte

@@ -18,7 +18,7 @@ namespace client
 
   const TexCoord TexCoord::ZERO = TexCoord( 0.0f, 0.0f );
 
-#ifndef OZ_OPENGL3
+#ifdef OZ_MINGW
   PFNGLUNIFORM1IPROC               glUniform1i;
   PFNGLUNIFORM2IPROC               glUniform2i;
   PFNGLUNIFORM3IPROC               glUniform3i;

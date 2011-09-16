@@ -306,8 +306,8 @@ namespace oz
       free( demangleBuf );
     }
 
-    *bufferPtr = reinterpret_cast<char*>( realloc( frames, out - output ) );
-    memcpy( *bufferPtr, output, out - output );
+    *bufferPtr = reinterpret_cast<char*>( realloc( frames, size_t( out - output ) ) );
+    memcpy( *bufferPtr, output, size_t( out - output ) );
     return nFrames;
   }
 

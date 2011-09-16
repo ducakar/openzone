@@ -82,11 +82,12 @@ namespace nirvana
 
   void Lua::init()
   {
-    log.print( "Initialising Nirvana Lua ..." );
+    log.println( "Initialising Nirvana Lua {" );
+    log.indent();
 
     l = luaL_newstate();
     if( l == null ) {
-      log.printEnd( " Failed" );
+      log.println( "Failed to create state" );
       throw Exception( "Lua initialisation failed" );
     }
 
@@ -247,12 +248,24 @@ namespace nirvana
     lua_setglobal( l, "ozLocalData" );
     lua_getglobal( l, "ozLocalData" );
 
-    if( luaL_dofile( l, "lua/nirvana.luac" ) != 0 ) {
-      log.printEnd( " Failed" );
-      throw Exception( "Nirvana Lua script error" );
+    Directory luaDir;
+    luaDir.open( "lua/nirvana" );
+
+    foreach( file, luaDir.citer() ) {
+      if( file.hasExtension( "lua" ) ) {
+        log.print( "%s ...", &*file );
+
+        if( luaL_dofile( l, String( "lua/nirvana/" ) + file ) != 0 ) {
+          log.printEnd( " Failed" );
+          throw Exception( "Nirvana Lua script error" );
+        }
+
+        log.printEnd( " OK" );
+      }
     }
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Lua::free()

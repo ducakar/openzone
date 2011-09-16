@@ -1,18 +1,14 @@
-Matrix
-  - triggers
-
-Client
-  - FireModel
-  - weather
-  - menu support
-
-UI
-  ? scripting
-  
-Networking
-  - EVERYTHING
-
-DROPPED (for v2.0.0)
-  - multithreaded update
-  - PhysFS
-  - Bullet physics engine
+- matrix
+  * check for handler functions on Lua init
+  * disable running when hurt
+  * INVENTORY_BIT, Vector<int> Object::inventory
+- nirvana
+  * check for functions on Lua init
+  * colloquium
+- ui
+  * improve font rendering, Label, colour schemas
+  * other object inventory dialog in UI mode when pointing at an object with an inventory
+- client
+  * FireModel
+  * weather
+  * menu support

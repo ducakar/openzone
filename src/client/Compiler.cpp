@@ -99,7 +99,7 @@ namespace client
     part.texture = texture;
   }
 
-  void Compiler::begin( int mode_ )
+  void Compiler::begin( uint mode_ )
   {
     hard_assert( flags & MESH_BIT );
     hard_assert( !( flags & SURFACE_BIT ) );

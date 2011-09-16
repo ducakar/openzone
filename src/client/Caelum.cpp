@@ -229,7 +229,7 @@ namespace client
 
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, vertices.length() * sizeof( Vertex ), vertices,
+    glBufferData( GL_ARRAY_BUFFER, vertices.length() * int( sizeof( Vertex ) ), vertices,
                   GL_STATIC_DRAW );
     vertices.dealloc();
 

@@ -262,13 +262,13 @@ namespace client
     char* frameData = new char[header.nFrames * header.frameSize];
 
     fseek( file, header.offFrames, SEEK_SET );
-    fread( frameData, 1, header.nFrames * header.frameSize, file );
+    fread( frameData, 1, size_t( header.nFrames * header.frameSize ), file );
 
     fseek( file, header.offTexCoords, SEEK_SET );
-    fread( texCoords, 1, header.nTexCoords * sizeof( MD2TexCoord ), file );
+    fread( texCoords, 1, size_t( header.nTexCoords ) * sizeof( MD2TexCoord ), file );
 
     fseek( file, header.offTriangles, SEEK_SET );
-    fread( triangles, 1, header.nTriangles * sizeof( MD2Triangle ), file );
+    fread( triangles, 1, size_t( header.nTriangles ) * sizeof( MD2Triangle ), file );
 
     fclose( file );
 

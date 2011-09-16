@@ -37,7 +37,7 @@ namespace client
         float  alpha;
         float  specular;
 
-        int    mode;
+        uint   mode;
 
         Vector<int> indices;
 
@@ -53,7 +53,7 @@ namespace client
 
       int            caps;
       int            flags;
-      int            mode;
+      uint           mode;
       int            vertNum;
 
     public:
@@ -67,7 +67,7 @@ namespace client
       void material( int target, float param );
       void texture( const char* texture );
 
-      void begin( int mode );
+      void begin( uint mode );
       void end();
 
       void texCoord( float u, float v );

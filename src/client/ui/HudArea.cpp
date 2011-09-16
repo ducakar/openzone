@@ -32,15 +32,13 @@ namespace ui
     const Bot*      bot   = camera.botObj;
     const BotClass* clazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-    glUniform1i( param.oz_IsTextureEnabled, true );
     glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
     if( !camera.isExternal ) {
       glBindTexture( GL_TEXTURE_2D, crossTexId );
       shape.fill( crossIconX, crossIconY, ICON_SIZE, ICON_SIZE );
+      glBindTexture( GL_TEXTURE_2D, 0 );
     }
-
-    glUniform1i( param.oz_IsTextureEnabled, false );
 
     if( bot->parent == -1 && camera.tagged != -1 ) {
       const Object* tagged = camera.taggedObj;
@@ -80,7 +78,6 @@ namespace ui
           return;
         }
 
-        glUniform1i( param.oz_IsTextureEnabled, true );
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
         if( tagged->flags & Object::VEHICLE_BIT ) {
@@ -118,7 +115,7 @@ namespace ui
           shape.fill( grabIconX, grabIconY, ICON_SIZE, ICON_SIZE );
         }
 
-        glUniform1i( param.oz_IsTextureEnabled, false );
+        glBindTexture( GL_TEXTURE_2D, 0 );
       }
     }
   }
@@ -179,7 +176,7 @@ namespace ui
     context.drawModel( vehicle, null );
 
     shape.bindVertexArray();
-
+    glBindTexture( GL_TEXTURE_2D, 0 );
     shader.use( shader.ui );
 
     tf.camera = Mat44::ID;

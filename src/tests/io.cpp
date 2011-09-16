@@ -41,6 +41,8 @@ int main( int, char** )
 
   printf( "OK\n" );
 
+  buffer.dealloc();
+
   Alloc::isLocked = true;
   Alloc::printLeaks();
   return 0;

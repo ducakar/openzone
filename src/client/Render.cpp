@@ -431,22 +431,24 @@ namespace client
     log.println( "Initialising Render {" );
     log.indent();
 
-    int screenX    = config.get( "screen.width", 0 );
-    int screenY    = config.get( "screen.height", 0 );
-    int screenBpp  = config.get( "screen.bpp", 0 );
-    int screenFull = config.getSet( "screen.full", true ) ? SDL_FULLSCREEN : 0;
+    int  screenX      = config.get( "screen.width", 0 );
+    int  screenY      = config.get( "screen.height", 0 );
+    int  screenBpp    = config.get( "screen.bpp", 0 );
+    bool isFullScreen = config.getSet( "screen.full", true );
 
     log.print( "Creating OpenGL window %dx%d-%d %s ...",
-               screenX, screenY, screenBpp, screenFull ? "fullscreen" : "windowed" );
+               screenX, screenY, screenBpp, isFullScreen ? "fullscreen" : "windowed" );
 
     if( ( screenX != 0 || screenY != 0 || screenBpp != 0 ) &&
-        SDL_VideoModeOK( screenX, screenY, screenBpp, SDL_OPENGL | screenFull ) == 0 )
+        SDL_VideoModeOK( screenX, screenY, screenBpp,
+                         SDL_OPENGL | ( isFullScreen ? SDL_FULLSCREEN : 0 ) ) == 0 )
     {
       log.printEnd( " Mode not supported" );
       throw Exception( "Video mode not supported" );
     }
 
-    surface = SDL_SetVideoMode( screenX, screenY, screenBpp, SDL_OPENGL | screenFull );
+    surface = SDL_SetVideoMode( screenX, screenY, screenBpp,
+                                SDL_OPENGL | ( isFullScreen ? SDL_FULLSCREEN : 0 ) );
 
     if( surface == null ) {
       log.printEnd( " Failed" );
@@ -467,11 +469,10 @@ namespace client
 
     SDL_ShowCursor( SDL_FALSE );
 
-#ifndef OZ_OPENGL3
     bool isVAOSupported = false;
-#endif
+    bool isFBOSupported = false;
     bool isFloatTexSupported = false;
-#ifdef OZ_TEXTURE_COMPRESSION
+#ifndef OZ_MESA_COMPATIBLE
     bool isS3TCSupported = false;
 #endif
 
@@ -489,15 +490,16 @@ namespace client
     foreach( extension, extensions.citer() ) {
       log.println( "%s", extension->cstr() );
 
-#ifndef OZ_OPENGL3
       if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
         isVAOSupported = true;
       }
-#endif
+      if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
+        isFBOSupported = true;
+      }
       if( extension->equals( "GL_ARB_texture_float" ) ) {
         isFloatTexSupported = true;
       }
-#ifdef OZ_TEXTURE_COMPRESSION
+#ifndef OZ_MESA_COMPATIBLE
       if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
         isS3TCSupported = true;
       }
@@ -510,28 +512,23 @@ namespace client
     int major = atoi( version );
     int minor = atoi( version.cstr() + version.index( '.' ) + 1 );
 
-#ifdef OZ_OPENGL3
-    if( major < 3 || ( major == 3 && minor < 0 ) ) {
-      log.println( "Error: at least OpenGL 3.0 is required" );
-      throw Exception( "Too old OpenGL version" );
-    }
-#else
     if( major < 2 || ( major == 2 && minor < 1 ) ) {
       log.println( "Error: at least OpenGL 2.1 with some 3.0 capabilities is required" );
-      throw Exception( "Too old OpenGL version" );
+//       throw Exception( "Too old OpenGL version" );
     }
-#endif
 
-#ifndef OZ_OPENGL3
     if( !isVAOSupported ) {
       log.println( "Error: vertex array object (GL_ARB_vertex_array_object) is not supported" );
-      throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
+//       throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
     }
-#endif
+    if( !isFBOSupported ) {
+      log.println( "Error: frame buffer object (GL_ARB_framebuffer_object) is not supported" );
+      throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
+    }
     if( !isFloatTexSupported ) {
       config.add( "shader.vertexTexture", "false" );
     }
-#ifdef OZ_TEXTURE_COMPRESSION
+#ifndef OZ_MESA_COMPATIBLE
     if( !isS3TCSupported ) {
       log.println( "Error: S3 texture compression (GL_EXT_texture_compression_s3tc) is not supported" );
       throw Exception( "GL_EXT_texture_compression_s3tc not supported by OpenGL" );
@@ -556,7 +553,7 @@ namespace client
     simpleShaderId       = translator.shaderIndex( "simple" );
     particleShaderId     = translator.shaderIndex( "particles" );
 
-#ifndef OZ_OPENGL3
+#ifdef OZ_MINGW
     OZ_REGISTER_GLFUNC( glUniform1i,               PFNGLUNIFORM1IPROC               );
     OZ_REGISTER_GLFUNC( glUniform2i,               PFNGLUNIFORM2IPROC               );
     OZ_REGISTER_GLFUNC( glUniform3i,               PFNGLUNIFORM3IPROC               );
@@ -616,7 +613,7 @@ namespace client
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     glActiveTexture( GL_TEXTURE1 );
-    glEnable( GL_TEXTURE_2D );
+//     glEnable( GL_TEXTURE_2D );
     glActiveTexture( GL_TEXTURE0 );
     glEnable( GL_TEXTURE_2D );
 

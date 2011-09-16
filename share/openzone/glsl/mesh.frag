@@ -14,8 +14,8 @@ varying vec3 exNormal;
 void main()
 {
   vec3 toCamera = oz_CameraPosition - exPosition;
-  vec3 normal = normalize( exNormal );
-  float dist = length( toCamera );
+  vec3 normal   = normalize( exNormal );
+  float dist    = length( toCamera );
 
   gl_FragData[0] = oz_Colour;
   gl_FragData[0] *= skyLightColour( normal );

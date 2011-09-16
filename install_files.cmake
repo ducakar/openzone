@@ -7,8 +7,6 @@ if( WIN32 )
     COPYING
     README
     README.sl
-    README.sl~
-    README~
     DESTINATION . )
 else()
   install( FILES
@@ -16,8 +14,6 @@ else()
     COPYING
     README
     README.sl
-    README.sl~
-    README~
     DESTINATION share/doc/openzone )
 endif()
 
@@ -26,7 +22,21 @@ endif()
 #
 if( WIN32 )
   install( FILES
+    mingw32/SDL.dll
+    mingw32/SDL_image.dll
+    mingw32/SDL_ttf.dll
+    mingw32/libfreetype-6.dll
+    mingw32/libgcc_s_sjlj-1.dll
+    mingw32/libiconv-2.dll
+    mingw32/libintl-8.dll
+    mingw32/libogg-0.dll
+    mingw32/libpng15-15.dll
+    mingw32/libstdc++-6.dll
+    mingw32/libvorbis-0.dll
+    mingw32/libvorbisfile-3.dll
+    mingw32/lua51.dll
     mingw32/oalinst.exe
+    mingw32/zlib1.dll
     DESTINATION bin )
   install( FILES
     mingw32/openzone.bat
@@ -111,13 +121,21 @@ if( OZ_INSTALL_DATA )
     DESTINATION share/openzone/ui/icon )
 
   #
-  # share/openzone/lua
+  # share/openzone/lua/matrix
   #
   install( FILES
-    share/openzone/lua/COPYING
-    share/openzone/lua/matrix.luac
-    share/openzone/lua/nirvana.luac
-    DESTINATION share/openzone/lua )
+    share/openzone/lua/matrix/generic.lua
+    share/openzone/lua/matrix/handlers.lua
+    share/openzone/lua/matrix/weapons.lua
+    DESTINATION share/openzone/lua/matrix )
+
+  #
+  # share/openzone/lua/nirvana
+  #
+  install( FILES
+    share/openzone/lua/nirvana/droid.lua
+    share/openzone/lua/nirvana/minds.lua
+    DESTINATION share/openzone/lua/nirvana )
 
   #
   # share/openzone/bsp

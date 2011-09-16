@@ -174,13 +174,10 @@ namespace ui
       rect( -52, -16, 48, 12 );
 
       if( taggedItem->flags & Object::USE_FUNC_BIT ) {
-        glUniform1i( param.oz_IsTextureEnabled, true );
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
         glBindTexture( GL_TEXTURE_2D, useTexId );
-
         shape.fill( x + width - ICON_SIZE - 4, y + 4, ICON_SIZE, ICON_SIZE );
-
-        glUniform1i( param.oz_IsTextureEnabled, false );
+        glBindTexture( GL_TEXTURE_2D, 0 );
       }
 
       setFont( Font::SANS );

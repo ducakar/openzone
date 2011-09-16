@@ -97,7 +97,7 @@ namespace oz
   /**
    * nullptr_t
    */
-  typedef typeof( nullptr ) nullptr_t;
+  typedef decltype( nullptr ) nullptr_t;
 
   /**
    * \def null
