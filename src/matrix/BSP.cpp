@@ -36,23 +36,23 @@ namespace oz
     nBrushSides  = is.readInt();
     nModels      = is.readInt();
 
-    int size = 0;
+    size_t size = 0;
 
-    size += nPlanes      * int( sizeof( Plane ) );
+    size += size_t( nPlanes )      * sizeof( Plane );
     size = Alloc::alignUp( size );
-    size += nNodes       * int( sizeof( Node ) );
+    size += size_t( nNodes )       * sizeof( Node );
     size = Alloc::alignUp( size );
-    size += nLeaves      * int( sizeof( Leaf ) );
+    size += size_t( nLeaves )      * sizeof( Leaf );
     size = Alloc::alignUp( size );
-    size += nLeafBrushes * int( sizeof( int ) );
+    size += size_t( nLeafBrushes ) * sizeof( int );
     size = Alloc::alignUp( size );
-    size += nBrushes     * int( sizeof( Brush ) );
+    size += size_t( nBrushes )     * sizeof( Brush );
     size = Alloc::alignUp( size );
-    size += nBrushSides  * int( sizeof( int ) );
+    size += size_t( nBrushSides )  * sizeof( int );
     size = Alloc::alignUp( size );
-    size += nModels      * int( sizeof( Model ) );
+    size += size_t( nModels )      * sizeof( Model );
 
-    char* data = Alloc::alloc<char>( size );
+    char* data = new char[size];
 
     hard_assert( data == Alloc::alignUp( data ) );
 
@@ -148,7 +148,7 @@ namespace oz
       aDestruct( brushSides, nBrushSides );
       aDestruct( models, nModels );
 
-      Alloc::dealloc( planes );
+      delete[] reinterpret_cast<char*>( planes );
 
       nPlanes      = 0;
       nNodes       = 0;

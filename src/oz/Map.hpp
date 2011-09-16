@@ -18,7 +18,7 @@
 namespace oz
 {
 
-  template <typename Key, typename Value = void, int GRANULARITY = 8>
+  template <typename Key, typename Value = nullptr_t, int GRANULARITY = 8>
   class Map
   {
     static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
@@ -29,6 +29,10 @@ namespace oz
       {
         Key   key;
         Value value;
+
+        OZ_ALWAYS_INLINE
+        Elem()
+        {}
 
         OZ_ALWAYS_INLINE
         explicit Elem( const Key& key_, const Value& value_ ) : key( key_ ), value( value_ )
@@ -249,11 +253,11 @@ namespace oz
         if( size == count ) {
           if( size == 0 ) {
             size = GRANULARITY;
-            data = Alloc::alloc<Elem>( size );
+            data = new Elem[size];
           }
           else {
             size *= 2;
-            data = Alloc::realloc( data, count, size );
+            data = aRealloc( data, count, size );
           }
         }
       }
@@ -271,19 +275,16 @@ namespace oz
        */
       ~Map()
       {
-        aDestruct( data, count );
-        Alloc::dealloc( data );
+        delete[] data;
       }
 
       /**
        * Copy constructor.
        * @param m
        */
-      Map( const Map& m ) : data( m.size == 0 ? null : Alloc::alloc<Elem>( m.size ) ),
+      Map( const Map& m ) : data( m.size == 0 ? null : new Elem[m.size] ),
           size( m.size ), count( m.count )
-      {
-        aConstruct( data, m.data, m.count );
-      }
+      {}
 
       /**
        * Copy operator.
@@ -297,17 +298,15 @@ namespace oz
           return *this;
         }
 
-        aDestruct( data, count );
-        count = m.count;
-
         if( size < m.count ) {
-          Alloc::dealloc( data );
+          delete[] data;
 
-          data = Alloc::alloc<Elem>( m.size );
+          data = new Elem[m.size];
           size = m.size;
         }
 
-        aConstruct( data, m.data, m.count );
+        aCopy( data, m.data, m.count );
+        count = m.count;
         return *this;
       }
 
@@ -315,7 +314,7 @@ namespace oz
        * Create empty map with given initial capacity.
        * @param initSize
        */
-      explicit Map( int initSize ) : data( initSize == 0 ? null : Alloc::alloc<Elem>( initSize ) ),
+      explicit Map( int initSize ) : data( initSize == 0 ? null : new Elem[initSize] ),
           size( initSize ), count( 0 )
       {}
 
@@ -566,16 +565,10 @@ namespace oz
 
         ensureCapacity();
 
-        if( i == count ) {
-          new( data + count ) Elem( k, v );
-        }
-        else {
-          new( data + count ) Elem( data[count - 1] );
-          aReverseCopy( data + i + 1, data + i, count - i - 1 );
+        aReverseCopy( data + i + 1, data + i, count - i );
+        data[i].key   = k;
+        data[i].value = v;
 
-          data[i].key   = k;
-          data[i].value = v;
-        }
         ++count;
       }
 
@@ -589,7 +582,6 @@ namespace oz
 
         --count;
         aCopy( data + i, data + i + 1, count - i );
-        data[count].~Type();
       }
 
       /**
@@ -612,7 +604,6 @@ namespace oz
        */
       void clear()
       {
-        aDestruct( data, count );
         count = 0;
       }
 
@@ -639,7 +630,7 @@ namespace oz
       {
         hard_assert( size == 0 && initSize > 0 );
 
-        data = Alloc::alloc<Elem>( initSize );
+        data = new Elem[initSize];
         size = initSize;
       }
 
@@ -651,11 +642,10 @@ namespace oz
       {
         hard_assert( count == 0 );
 
-        Alloc::dealloc( data );
+        delete[] data;
 
         data = null;
         size = 0;
-        count = 0;
       }
 
       /**
@@ -668,492 +658,7 @@ namespace oz
 
         if( newSize < size ) {
           size = newSize;
-          data = Alloc::realloc( data, count, size );
-        }
-      }
-
-  };
-
-  template <typename Key, int GRANULARITY>
-  class Map<Key, void, GRANULARITY>
-  {
-    static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
-
-    private:
-
-      struct Elem
-      {
-        Key   key;
-
-        OZ_ALWAYS_INLINE
-        explicit Elem( const Key& key_ ) : key( key_ )
-        {}
-
-        // operators overloads are required for bisection algorithms to work properly
-        OZ_ALWAYS_INLINE
-        friend bool operator == ( const Key& key, const Elem& e )
-        {
-          return key == e.key;
-        }
-
-        OZ_ALWAYS_INLINE
-        friend bool operator < ( const Key& key, const Elem& e )
-        {
-          return key < e.key;
-        }
-      };
-
-    public:
-
-      /**
-       * Constant Map iterator.
-       */
-      class CIterator : public oz::CIterator<Elem>
-      {
-        private:
-
-          typedef oz::CIterator<Elem> B;
-
-        public:
-
-          /**
-           * Default constructor returns an invalid iterator
-           */
-          OZ_ALWAYS_INLINE
-          CIterator() : B( null, null )
-          {}
-
-          /**
-           * Make iterator for given vector. After creation it points to first element.
-           * @param m
-           */
-          OZ_ALWAYS_INLINE
-          explicit CIterator( const Map& m ) : B( m.data, m.data + m.count )
-          {}
-
-           /**
-           * no access to value
-           */
-          OZ_ALWAYS_INLINE
-          void operator * () const
-          {}
-
-          /**
-           * no access to value
-           */
-          OZ_ALWAYS_INLINE
-          void operator -> () const
-          {}
-
-          /**
-           * @return constant reference to current element's key
-           */
-          OZ_ALWAYS_INLINE
-          const Key& key() const
-          {
-            return B::elem->key;
-          }
-
-      };
-
-      /**
-       * Map iterator.
-       */
-      class Iterator : public oz::Iterator<Elem>
-      {
-        private:
-
-          typedef oz::Iterator<Elem> B;
-
-        public:
-
-          /**
-           * Default constructor returns an invalid iterator
-           */
-          OZ_ALWAYS_INLINE
-          Iterator() : B( null, null )
-          {}
-
-          /**
-           * Make iterator for given vector. After creation it points to first element.
-           * @param m
-           */
-          OZ_ALWAYS_INLINE
-          explicit Iterator( const Map& m ) : B( m.data, m.data + m.count )
-          {}
-
-           /**
-           * no access to value
-           */
-          OZ_ALWAYS_INLINE
-          void operator * () const
-          {}
-
-          /**
-           * no access to value
-           */
-          OZ_ALWAYS_INLINE
-          void operator -> () const
-          {}
-
-          /**
-           * @return constant reference to current element's key
-           */
-          OZ_ALWAYS_INLINE
-          const Key& key() const
-          {
-            return B::elem->key;
-          }
-
-      };
-
-    private:
-
-      // Pointer to data array
-      Elem* data;
-      // Size of data array
-      int   size;
-      // Number of elements in the vector
-      int   count;
-
-      /**
-       * Enlarge capacity by two times if there's not enough space to add another element.
-       */
-      void ensureCapacity()
-      {
-        if( size == count ) {
-          if( size == 0 ) {
-            size = GRANULARITY;
-            data = Alloc::alloc<Elem>( size );
-          }
-          else {
-            size *= 2;
-            data = Alloc::realloc( data, count, size );
-          }
-        }
-      }
-
-    public:
-
-      /**
-       * Create empty map.
-       */
-      Map() : data( null ), size( 0 ), count( 0 )
-      {}
-
-      /**
-       * Destructor.
-       */
-      ~Map()
-      {
-        aDestruct( data, count );
-        Alloc::dealloc( data );
-      }
-
-      /**
-       * Copy constructor.
-       * @param m
-       */
-      Map( const Map& m ) : data( m.size == 0 ? null : Alloc::alloc<Elem>( m.size ) ),
-          size( m.size ), count( m.count )
-      {
-        aConstruct( data, m.data, m.count );
-      }
-
-      /**
-       * Copy operator.
-       * @param m
-       * @return
-       */
-      Map& operator = ( const Map& m )
-      {
-        if( &m == this ) {
-          soft_assert( &m != this );
-          return *this;
-        }
-
-        aDestruct( data, count );
-        count = m.count;
-
-        if( size < m.count ) {
-          Alloc::dealloc( data );
-
-          data = Alloc::alloc<Elem>( m.size );
-          size = m.size;
-        }
-
-        aConstruct( data, m.data, m.count );
-        return *this;
-      }
-
-      /**
-       * Create empty map with given initial capacity.
-       * @param initSize
-       */
-      explicit Map( int initSize ) : data( initSize == 0 ? null : Alloc::alloc<Elem>( initSize ) ),
-          size( initSize ), count( 0 )
-      {}
-
-      /**
-       * Equality operator. Capacity of map doesn't matter.
-       * @param m
-       * @return true if all elements in both vectors are equal
-       */
-      bool operator == ( const Map& m ) const
-      {
-        return count == m.count && aEquals( data, m.data, count );
-      }
-
-      /**
-       * Inequality operator. Capacity of map doesn't matter.
-       * @param m
-       * @return false if all elements in both vectors are equal
-       */
-      bool operator != ( const Map& m ) const
-      {
-        return count != m.count || !aEquals( data, m.data, count );
-      }
-
-      /**
-       * @return constant iterator for this map
-       */
-      OZ_ALWAYS_INLINE
-      CIterator citer() const
-      {
-        return CIterator( *this );
-      }
-
-      /**
-       * @return iterator for this map
-       */
-      OZ_ALWAYS_INLINE
-      Iterator iter() const
-      {
-        return Iterator( *this );
-      }
-
-      /**
-       * @return number of elements in the map
-       */
-      OZ_ALWAYS_INLINE
-      int length() const
-      {
-        return count;
-      }
-
-      /**
-       * @return capacity of the map
-       */
-      OZ_ALWAYS_INLINE
-      int capacity() const
-      {
-        return size;
-      }
-
-      /**
-       * @return true if map has no elements
-       */
-      OZ_ALWAYS_INLINE
-      bool isEmpty() const
-      {
-        return count == 0;
-      }
-
-      /**
-       * @param e
-       * @return true if the key is found in the vector
-       */
-      bool contains( const Key& key ) const
-      {
-        return aBisectFind( data, key, count ) != -1;
-      }
-
-      /**
-       * @param i
-       * @return constant reference i-th element's key
-       */
-      OZ_ALWAYS_INLINE
-      const Key& operator [] ( int i ) const
-      {
-        hard_assert( uint( i ) < uint( count ) );
-
-        return data[i].key;
-      }
-
-      /**
-       * @param i
-       * @return reference i-th element's key
-       */
-      OZ_ALWAYS_INLINE
-      Key& operator [] ( int i )
-      {
-        hard_assert( uint( i ) < uint( count ) );
-
-        return data[i].key;
-      }
-
-      /**
-       * @return constant reference to first element's key
-       */
-      OZ_ALWAYS_INLINE
-      const Key& first() const
-      {
-        hard_assert( count != 0 );
-
-        return data[0].key;
-      }
-
-      /**
-       * @return constant reference to last element's key
-       */
-      OZ_ALWAYS_INLINE
-      const Key& last() const
-      {
-        hard_assert( count != 0 );
-
-        return data[count - 1].key;
-      }
-
-      /**
-       * Return index of the specified element
-       * @param e
-       * @return index of element, -1 if not found
-       */
-      int index( const Key& key ) const
-      {
-        return aBisectFind( data, key, count );
-      }
-
-      /**
-       * Add an element. The key must not yet exist in this map.
-       * @param e
-       * @return true if element has been added
-       */
-      int add( const Key& key )
-      {
-        hard_assert( !contains( key ) );
-
-        int i = aBisectPosition( data, key, count );
-        insert( i, key );
-        return i;
-      }
-
-      /**
-       * Add an element, but only if there's no any equal element in the map.
-       * @param e
-       * @return position of the inserted element or an existing one if it was not inserted
-       */
-      int include( const Key& key )
-      {
-        int i = aBisectPosition( data, key, count );
-
-        if( i == 0 || !( data[i - 1].key == key ) ) {
-          insert( i, key );
-        }
-        return i;
-      }
-
-      /**
-       * Insert an element at given position. All later elements are shifted to make a gap
-       * for the new element.
-       * @param e
-       * @param i
-       */
-      void insert( int i, const Key& k )
-      {
-        hard_assert( uint( i ) <= uint( count ) );
-
-        ensureCapacity();
-
-        if( i == count ) {
-          new( data + count ) Elem( k );
-        }
-        else {
-          new( data + count ) Elem( data[count - 1] );
-          aReverseCopy( data + i + 1, data + i, count - i - 1 );
-
-          data[i].key = k;
-        }
-        ++count;
-      }
-
-      /**
-       * Remove the element at given position. All later element are shifted to fill the gap.
-       * @param i
-       */
-      void remove( int i )
-      {
-        hard_assert( uint( i ) < uint( count ) );
-
-        --count;
-        aCopy( data + i, data + i + 1, count - i );
-        data[count].~Type();
-      }
-
-      /**
-       * Find and remove the given element.
-       * @param e
-       * @return
-       */
-      int exclude( const Key& key )
-      {
-        int i = aBisectFind( data, key, count );
-
-        if( i != -1 ) {
-          remove( i );
-        }
-        return i;
-      }
-
-      /**
-       * Empty the map but don't delete the elements.
-       */
-      void clear()
-      {
-        aDestruct( data, count );
-        count = 0;
-      }
-
-      /**
-       * Allocates capacity for initSize elements. It analoguous to Map( initSize ) constructor
-       * if one want to reserving size on construction cannot be done.
-       * Map must be empty for this function to work.
-       * @param initSize
-       */
-      void alloc( int initSize )
-      {
-        hard_assert( size == 0 && initSize > 0 );
-
-        data = Alloc::alloc<Elem>( initSize );
-        size = initSize;
-      }
-
-      /**
-       * Deallocate resources.
-       * Container must be empty for this function to work.
-       */
-      void dealloc()
-      {
-        hard_assert( count == 0 );
-
-        Alloc::dealloc( data );
-
-        data = null;
-        size = 0;
-        count = 0;
-      }
-
-      /**
-       * Trim map, leave at most <code>left</code> elements/capacity.
-       * @param left
-       */
-      void trim()
-      {
-        int newSize = ( ( count - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
-
-        if( newSize < size ) {
-          size = newSize;
-          data = Alloc::realloc( data, count, size );
+          data = aRealloc( data, count, size );
         }
       }
 

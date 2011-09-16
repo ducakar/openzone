@@ -96,11 +96,11 @@ namespace oz
         if( size == count ) {
           if( size == 0 ) {
             size = GRANULARITY;
-            data = Alloc::alloc<Type>( size );
+            data = new Type[size];
           }
           else {
             size *= 2;
-            data = Alloc::realloc( data, count, size );
+            data = aRealloc( data, count, size );
           }
         }
       }
@@ -119,10 +119,10 @@ namespace oz
           while( size < desiredSize );
 
           if( data == null ) {
-            data = Alloc::alloc<Type>( size );
+            data = new Type[size];
           }
           else {
-            data = Alloc::realloc( data, count, size );
+            data = aRealloc( data, count, size );
           }
         }
       }
@@ -130,7 +130,7 @@ namespace oz
     public:
 
       /**
-       * Create empty vector with initial capacity 8.
+       * Create empty vector
        */
       Vector() : data( null ), size( 0 ), count( 0 )
       {}
@@ -140,19 +140,16 @@ namespace oz
        */
       ~Vector()
       {
-        aDestruct( data, count );
-        Alloc::dealloc( data );
+        delete[] data;
       }
 
       /**
        * Copy constructor.
        * @param v
        */
-      Vector( const Vector& v ) : data( v.size == 0 ? null : Alloc::alloc<Type>( v.size ) ),
+      Vector( const Vector& v ) : data( v.size == 0 ? null : new Type[v.size] ),
           size( v.size ), count( v.count )
-      {
-        aConstruct( data, v.data, v.count );
-      }
+      {}
 
       /**
        * Copy operator.
@@ -166,17 +163,16 @@ namespace oz
           return *this;
         }
 
-        aDestruct( data, count );
-        count = v.count;
-
         if( size < v.count ) {
-          Alloc::dealloc( data );
+          delete[] data;
 
-          data = Alloc::alloc<Type>( v.size );
+          data = new Type[v.size];
           size = v.size;
         }
 
-        aConstruct( data, v.data, count );
+        aCopy( data, v.data, v.count );
+        count = v.count;
+
         return *this;
       }
 
@@ -184,8 +180,7 @@ namespace oz
        * Create empty vector with given initial capacity.
        * @param initSize
        */
-      explicit Vector( int initSize ) :
-          data( initSize == 0 ? null : Alloc::alloc<Type>( initSize ) ),
+      explicit Vector( int initSize ) : data( initSize == 0 ? null : new Type[initSize] ),
           size( initSize ), count( 0 )
       {}
 
@@ -380,7 +375,6 @@ namespace oz
       {
         ensureCapacity();
 
-        new( data + count ) Type;
         ++count;
       }
 
@@ -392,7 +386,7 @@ namespace oz
       {
         ensureCapacity();
 
-        new( data + count ) Type( e );
+        data[count] = e;
         ++count;
       }
 
@@ -407,7 +401,7 @@ namespace oz
 
         ensureCapacity( newCount );
 
-        aConstruct( data + count, array, arrayCount );
+        aCopy( data + count, array, arrayCount );
         count = newCount;
       }
 
@@ -424,7 +418,7 @@ namespace oz
         if( i == -1 ) {
           ensureCapacity();
 
-          new( data + count ) Type( e );
+          data[count] = e;
           i = count;
           ++count;
         }
@@ -443,14 +437,8 @@ namespace oz
 
         ensureCapacity();
 
-        if( i == count ) {
-          new( data + count ) Type( e );
-        }
-        else {
-          new( data + count ) Type( data[count - 1] );
-          aReverseCopy( data + i + 1, data + i, count - i - 1 );
-          data[i] = e;
-        }
+        aReverseCopy( data + i + 1, data + i, count - i );
+        data[i] = e;
         ++count;
       }
 
@@ -462,7 +450,6 @@ namespace oz
         hard_assert( count != 0 );
 
         --count;
-        data[count].~Type();
       }
 
       /**
@@ -475,7 +462,6 @@ namespace oz
 
         --count;
         aCopy( data + i, data + i + 1, count - i );
-        data[count].~Type();
       }
 
       /**
@@ -489,7 +475,6 @@ namespace oz
 
         --count;
         data[i] = data[count];
-        data[count].~Type();
       }
 
       /**
@@ -504,7 +489,6 @@ namespace oz
         if( i != -1 ) {
           --count;
           aCopy( data + i, data + i + 1, count - i );
-          data[count].~Type();
         }
         return i;
       }
@@ -522,7 +506,6 @@ namespace oz
         if( i != -1 ) {
           --count;
           data[i] = data[count];
-          data[count].~Type();
         }
         return i;
       }
@@ -535,16 +518,9 @@ namespace oz
       {
         ensureCapacity();
 
-        if( count == 0 ) {
-          new( data + 0 ) Type( e );
-          ++count;
-        }
-        else {
-          new( data + count ) Type( data[count - 1] );
-          aReverseCopy( data + 1, data, count - 1 );
-          data[0] = e;
-          ++count;
-        }
+        aReverseCopy( data + 1, data, count );
+        data[0] = e;
+        ++count;
       }
 
       /**
@@ -555,7 +531,7 @@ namespace oz
       {
         ensureCapacity();
 
-        new( data + count ) Type( e );
+        data[count] = e;
         ++count;
       }
 
@@ -569,7 +545,6 @@ namespace oz
 
         --count;
         aCopy( data, data + 1, count );
-        data[count].~Type();
 
         return e;
       }
@@ -583,10 +558,8 @@ namespace oz
         hard_assert( count != 0 );
 
         --count;
-        Type e = data[count];
-        data[count].~Type();
 
-        return e;
+        return data[count + 1];;
       }
 
       /**
@@ -602,7 +575,6 @@ namespace oz
        */
       void clear()
       {
-        aDestruct( data, count );
         count = 0;
       }
 
@@ -626,7 +598,7 @@ namespace oz
       {
         hard_assert( size == 0 && initSize > 0 );
 
-        data = Alloc::alloc<Type>( initSize );
+        data = new Type[initSize];
         size = initSize;
       }
 
@@ -638,11 +610,10 @@ namespace oz
       {
         hard_assert( count == 0 );
 
-        Alloc::dealloc( data );
+        delete[] data;
 
         data = null;
         size = 0;
-        count = 0;
       }
 
       /**
@@ -655,7 +626,7 @@ namespace oz
 
         if( newSize < size ) {
           size = newSize;
-          data = Alloc::realloc( data, count, size );
+          data = aRealloc( data, count, size );
         }
       }
 

@@ -228,55 +228,6 @@ namespace oz
   for( auto i = iterator; i.isValid(); ++i )
 
   /**
-   * Construct elements of an uninitialised container.
-   * @param iDest
-   */
-  template <class Iterator>
-  inline void iConstruct( Iterator iDest )
-  {
-    typedef typename Iterator::Elem Type;
-
-    while( iDest.isValid() ) {
-      new( static_cast<Type*>( iDest ) ) Type;
-      ++iDest;
-    }
-  }
-
-  /**
-   * Destruct all elements.
-   * @param iDest
-   */
-  template <typename CIterator>
-  inline void iDestruct( CIterator iSrc )
-  {
-    typedef typename CIterator::Elem Type;
-
-    while( iSrc.isValid() ) {
-      ( *iSrc ).~Type();
-      ++iSrc;
-    }
-  }
-
-  /**
-   * Construct elements via copy constructor from an already constructed container.
-   * @param iDest
-   * @param iSrc
-   */
-  template <class IteratorA, class CIteratorB>
-  inline void iConstruct( IteratorA iDest, CIteratorB iSrc )
-  {
-    typedef typename IteratorA::Elem TypeA;
-
-    while( iDest.isValid() ) {
-      hard_assert( iSrc.isValid() );
-
-      new( static_cast<TypeA*>( iDest ) ) TypeA( *iSrc );
-      ++iDest;
-      ++iSrc;
-    }
-  }
-
-  /**
    * Copy elements from first to last (like std::copy, but reversed parameters).
    * @param iDest
    * @param iSrc
@@ -284,10 +235,7 @@ namespace oz
   template <class IteratorA, class CIteratorB>
   inline void iCopy( IteratorA iDest, CIteratorB iSrc )
   {
-    if( iDest == iSrc ) {
-      soft_assert( iDest != iSrc );
-      return;
-    }
+    hard_assert( !iDest.isValid() || iDest != iSrc );
 
     while( iDest.isValid() ) {
       hard_assert( iSrc.isValid() );
@@ -442,16 +390,12 @@ namespace oz
   template <class Iterator>
   inline void iFree( Iterator iDest )
   {
-    typedef typename Iterator::Elem Type;
-
     while( iDest.isValid() ) {
-      Type& elem = *iDest;
+      typename Iterator::Elem& elem = *iDest;
       ++iDest;
 
-      if( !( elem == null ) ) {
-        delete elem;
-        elem = null;
-      }
+      delete elem;
+      elem = null;
     }
   }
 

@@ -19,9 +19,9 @@ namespace oz
   {
     public:
 
-      static const int ALIGNMENT            = 16;
-      static const int BACKTRACE_SIZE       = 16;
-      static const int DEMANGLE_BUFFER_SIZE = 1024;
+      static const size_t ALIGNMENT            = 16;
+      static const int    BACKTRACE_SIZE       = 16;
+      static const int    DEMANGLE_BUFFER_SIZE = 1024;
 
       static int    count;
       static size_t amount;
@@ -42,81 +42,26 @@ namespace oz
 
     public:
 
-      /**
-       * Allocate memory without constructing the elements. Memory has to be freed via
-       * <code>Alloc::dealloc</code>.
-       * @param size
-       * @return
-       */
-      template <typename Type>
-      static Type* alloc( int size )
+      static size_t alignDown( size_t size )
       {
-        return reinterpret_cast<Type*>( new char[ size_t( size ) * sizeof( Type ) ] );
+        return size & ~( ALIGNMENT - 1 );
       }
 
-      /**
-       * Free memory allocated with <code>Alloc::alloc</code> function without destructing the
-       * elements.
-       * @param ptr
-       */
-      template <typename Type>
-      static void dealloc( Type* ptr )
+      static size_t alignUp( size_t size )
       {
-        delete[] reinterpret_cast<char*>( ptr );
-      }
-
-      /**
-       * Allocates new memory for the array for newSize elements to fit in. Elements are constructed
-       * via move constructor in the new copy of the array and destructed in the old copy before it
-       * is freed. The memory has to be allocated with <code>Alloc::alloc</code> function and freed
-       * with <code>Alloc::dealloc</code>.
-       * It's similar to aRealloc, but works on arrays where only first <code>count</code> elements
-       * are constructed.
-       * @param array
-       * @param count number of elements from the beginning of the array that are constructed
-       * @param newSize new size of the array
-       * @return
-       */
-      template <typename Type>
-      static Type* realloc( Type* array, int count, int newSize )
-      {
-        Type* newArray = reinterpret_cast<Type*>( new char[ size_t( newSize ) * sizeof( Type ) ] );
-
-        for( int i = 0; i < count; ++i ) {
-          new( newArray + i ) Type( array[i] );
-          array[i].~Type();
-        }
-        delete[] reinterpret_cast<char*>( array );
-
-        return newArray;
-      }
-
-      template <typename Size>
-      static Size alignDown( Size size )
-      {
-        return static_cast<Size>
-            ( size_t( size ) & ~size_t( ALIGNMENT - 1 ) );
-      }
-
-      template <typename Size>
-      static Size alignUp( Size size )
-      {
-        return static_cast<Size>
-            ( ( size_t( size - 1 ) & ~size_t( ALIGNMENT - 1 ) ) + size_t( ALIGNMENT ) );
+        return ( ( size - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT;
       }
 
       template <typename Pointer>
-      static Pointer* alignDown( Pointer* size )
+      static Pointer* alignDown( Pointer* p )
       {
-        return reinterpret_cast<Pointer*>
-            ( size_t( size ) & ~size_t( ALIGNMENT - 1 ) );
+        return reinterpret_cast<Pointer*>( size_t( p ) & ~( ALIGNMENT - 1 ) );
       }
 
       template <typename Pointer>
-      static Pointer* alignUp( Pointer* size )
+      static Pointer* alignUp( Pointer* p )
       {
-        return reinterpret_cast<Pointer*>
-            ( ( size_t( size - 1 ) & ~size_t( ALIGNMENT - 1 ) ) + size_t( ALIGNMENT ) );
+        return reinterpret_cast<Pointer*>( ( size_t( p - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );
       }
 
       static void printStatistics();

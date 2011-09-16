@@ -237,7 +237,7 @@ namespace oz
     public:
 
       /**
-       * Create empty sparse vector with initial capacity 8.
+       * Create empty sparse vector
        */
       Sparse() : data( null ), size( 0 ), count( 0 ), freeSlot( 0 )
       {}

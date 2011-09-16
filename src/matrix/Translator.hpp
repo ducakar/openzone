@@ -54,6 +54,9 @@ namespace oz
         String name;
         String path;
 
+        Resource()
+        {}
+
         explicit Resource( const String& name, const String& path );
       };
 

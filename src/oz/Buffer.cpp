@@ -28,8 +28,8 @@ namespace oz
   Buffer::Buffer( const Buffer& b ) : data( null ), count( b.count )
   {
     if( b.count != 0 ) {
-      data = new char[b.count];
-      aCopy( data, b.data, b.count );
+      data = new char[count];
+      aCopy( data, b.data, count );
     }
   }
 
