@@ -14,6 +14,8 @@
 #include "client/Camera.hpp"
 #include "client/Context.hpp"
 
+#include "client/OpenAL.hpp"
+
 namespace oz
 {
 namespace client

@@ -50,7 +50,7 @@ endif()
 
 option( OZ_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
 option( OZ_NETWORKING "Enable networking" OFF )
-option( OZ_MESA_COMPATIBLE "Disable some features that don't work with MesaGL" OFF )
+option( OZ_GL_COMPATIBLE "Use common subset of OpenGL 2.1, OpenGL 3.0, OpenGL ES 2.0, no texture compression, GLSL 1.20" ON )
 option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)" OFF )
 
 option( OZ_SDK "Build SDL instead of game" OFF )
@@ -186,7 +186,7 @@ if( OZ_SDK )
 endif()
 
 # detect clang
-string( REGEX MATCH "clang\\+\\+" compiler_base "${CMAKE_CXX_COMPILER}" )
+string( REGEX MATCH "clang\\+\\+$" compiler_base "${CMAKE_CXX_COMPILER}" )
 if( "${compiler_base}" STREQUAL "clang++" )
   set( OZ_CLANG ON )
 endif()
@@ -230,7 +230,7 @@ if( OZ_MINGW )
 endif()
 
 # compiler and linker flags
-set( flags "-pipe -std=c++0x -pedantic -ffast-math" )
+set( flags "-pipe -std=c++0x -ffast-math" )
 set( warnings "-Wall -Wextra -Wold-style-cast -Wcast-align -Wsign-promo -Wconversion" )
 set( warnings "${warnings} -Winvalid-pch -Wdisabled-optimization -Wmissing-declarations" )
 set( warnings "${warnings} -Woverloaded-virtual -Wnon-virtual-dtor -Wattributes" )

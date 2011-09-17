@@ -14,6 +14,8 @@
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
 
+#include "client/OpenGL.hpp"
+
 namespace oz
 {
 namespace client
@@ -128,8 +130,12 @@ namespace client
     }
 #endif
 
+#ifdef OZ_GL_COMPATIBLE
+    vao = 1;
+#else
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
+#endif
 
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -139,9 +145,11 @@ namespace client
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * int( sizeof( ushort ) ), indices, GL_STATIC_DRAW );
 
+#ifndef OZ_GL_COMPATIBLE
     Vertex::setFormat();
 
     glBindVertexArray( 0 );
+#endif
 
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -235,7 +243,9 @@ namespace client
 
       glDeleteBuffers( 1, &vbo );
       glDeleteBuffers( 1, &ibo );
+#ifndef OZ_GL_COMPATIBLE
       glDeleteVertexArrays( 1, &vao );
+#endif
 
       vao = 0;
     }
@@ -272,7 +282,7 @@ namespace client
 
     int firstAlphaPart = flags & FIRST_ALPHA_PART_MASK;
 
-#ifdef OZ_MESA_COMPATIBLE
+#ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
     Vertex::setFormat();

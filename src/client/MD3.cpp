@@ -14,6 +14,8 @@
 #include "client/Context.hpp"
 #include "Colours.hpp"
 
+#include "client/OpenGL.hpp"
+
 #define FOURCC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
 

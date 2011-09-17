@@ -50,7 +50,6 @@ namespace oz
       /**
        * Returns true while the iterator has not passed all the elements in the container and thus
        * points to a valid location.
-       * @param
        * @return
        */
       OZ_ALWAYS_INLINE
@@ -134,7 +133,6 @@ namespace oz
       /**
        * Returns true while the iterator has not passed all the elements in the container and thus
        * points to a valid location.
-       * @param
        * @return
        */
       OZ_ALWAYS_INLINE
@@ -390,8 +388,10 @@ namespace oz
   template <class Iterator>
   inline void iFree( Iterator iDest )
   {
+    typedef typename Iterator::Elem Type;
+
     while( iDest.isValid() ) {
-      typename Iterator::Elem& elem = *iDest;
+      Type& elem = *iDest;
       ++iDest;
 
       delete elem;

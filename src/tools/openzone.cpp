@@ -63,7 +63,7 @@ int main( int argc, char** argv )
 
   client::client.shutdown();
 
-  Alloc::isLocked = true;
-  Alloc::printLeaks();
+//   Alloc::isLocked = true;
+//   Alloc::printLeaks();
   return exitCode;
 }

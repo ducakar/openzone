@@ -10,11 +10,6 @@
 #pragma once
 
 /*
- * Configuration
- */
-#include "ozconfig.hpp"
-
-/*
  * Base definitions and templates
  */
 #include "common.hpp"

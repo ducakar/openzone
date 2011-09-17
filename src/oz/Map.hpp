@@ -18,12 +18,12 @@
 namespace oz
 {
 
-  template <typename Key, typename Value = nullptr_t, int GRANULARITY = 8>
+  template <typename Key, typename Value = nullptr_t>
   class Map
   {
-    static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
-
     private:
+
+      static const int GRANULARITY = 8;
 
       struct Elem
       {

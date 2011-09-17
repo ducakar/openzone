@@ -68,7 +68,7 @@ namespace oz
 
       int    state;
 
-      Vector<String, INVENTORY_ITEMS> inventoryItems;
+      Vector<String> inventoryItems;
       int    weaponItem;
 
       String mindType;

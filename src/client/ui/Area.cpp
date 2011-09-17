@@ -9,11 +9,12 @@
 
 #include "stable.hpp"
 
-#include "client/Shape.hpp"
-
 #include "client/ui/Area.hpp"
 
+#include "client/Shape.hpp"
 #include "client/Camera.hpp"
+
+#include "client/OpenGL.hpp"
 
 #include <SDL/SDL_ttf.h>
 

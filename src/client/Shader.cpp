@@ -13,6 +13,8 @@
 
 #include "client/Camera.hpp"
 
+#include "client/OpenGL.hpp"
+
 #define OZ_REGISTER_PARAMETER( paramVar, uniformName ) \
   programs[id].param.paramVar = glGetUniformLocation( programs[id].program, uniformName )
 

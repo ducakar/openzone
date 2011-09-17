@@ -17,6 +17,9 @@
 #include "client/MD2.hpp"
 #include "client/MD3.hpp"
 
+#include "client/OpenGL.hpp"
+#include "client/OpenAL.hpp"
+
 #include <ctime>
 
 namespace oz

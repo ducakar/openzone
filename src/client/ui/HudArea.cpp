@@ -18,6 +18,8 @@
 #include "client/Context.hpp"
 #include "client/Shape.hpp"
 
+#include "client/OpenGL.hpp"
+
 namespace oz
 {
 namespace client

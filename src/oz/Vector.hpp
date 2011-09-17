@@ -16,10 +16,12 @@
 namespace oz
 {
 
-  template <typename Type, int GRANULARITY = 8>
+  template <typename Type>
   class Vector
   {
-    static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
+    private:
+
+      static const int GRANULARITY = 8;
 
     public:
 
@@ -130,7 +132,7 @@ namespace oz
     public:
 
       /**
-       * Create empty vector
+       * Create empty vector.
        */
       Vector() : data( null ), size( 0 ), count( 0 )
       {}
