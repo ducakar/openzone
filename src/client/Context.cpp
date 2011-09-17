@@ -24,6 +24,9 @@
 #include "client/BotAudio.hpp"
 #include "client/VehicleAudio.hpp"
 
+#include "client/OpenGL.hpp"
+#include "client/OpenAL.hpp"
+
 #ifdef OZ_SDK
 # include <SDL_image.h>
 #endif
@@ -41,6 +44,9 @@ namespace client
 
   Context context;
 
+  const int Context::DEFAULT_MAG_FILTER = GL_LINEAR;
+  const int Context::DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
+
   Pool<Context::Source> Context::Source::pool;
   Buffer Context::buffer;
 
@@ -52,7 +58,7 @@ namespace client
     hard_assert( bytesPerPixel == 3 || bytesPerPixel == 4 );
 
     uint sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-#ifdef OZ_MESA_COMPATIBLE
+#ifdef OZ_GL_COMPATIBLE
     int internalFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
 #else
     int internalFormat = bytesPerPixel == 4 ?
@@ -101,19 +107,12 @@ namespace client
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
     }
 
-#ifdef OZ_MESA_COMPATIBLE
-    if( doGenerateMipmaps ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
-    }
-#endif
-
     glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
                   sourceFormat, GL_UNSIGNED_BYTE, data );
-#ifndef OZ_MESA_COMPATIBLE
+
     if( doGenerateMipmaps ) {
       glGenerateMipmap( GL_TEXTURE_2D );
     }
-#endif
 
     glBindTexture( GL_TEXTURE_2D, 0 );
 
@@ -265,20 +264,20 @@ namespace client
 
       glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
       glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
-#ifdef OZ_TEXTURE_COMPRESSION
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
-#else
+#ifdef OZ_GL_COMPATIBLE
       size = width * height * 4;
+#else
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
 #endif
 
       stream->writeInt( width );
       stream->writeInt( height );
       stream->writeInt( size );
 
-#ifdef OZ_TEXTURE_COMPRESSION
-      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
-#else
+#ifdef OZ_GL_COMPATIBLE
       glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareWrite( size ) );
+#else
+      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
 #endif
     }
 
@@ -321,6 +320,13 @@ namespace client
     int nMipmaps       = stream->readInt();
     int internalFormat = stream->readInt();
 
+#ifdef OZ_GL_COMPATIBLE
+    hard_assert( internalFormat == GL_RGB || internalFormat == GL_RGBA );
+#else
+    hard_assert( internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
+                 internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT );
+#endif
+
     if( !wrap ) {
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
@@ -334,12 +340,12 @@ namespace client
       int height = stream->readInt();
       int size = stream->readInt();
 
-#ifdef OZ_TEXTURE_COMPRESSION
-      glCompressedTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0, size,
-                              stream->prepareRead( size ) );
-#else
+#ifdef OZ_GL_COMPATIBLE
       glTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
                     GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareRead( size ) );
+#else
+      glCompressedTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
+                              size, stream->prepareRead( size ) );
 #endif
     }
 

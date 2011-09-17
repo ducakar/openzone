@@ -19,6 +19,8 @@
 
 #include "client/ui/Keyboard.hpp"
 
+#include "client/OpenGL.hpp"
+
 #include <SDL/SDL_ttf.h>
 
 namespace oz

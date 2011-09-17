@@ -45,7 +45,6 @@ namespace oz
       /**
        * Returns true while the iterator has not passed all the elements in the container and thus
        * points to a valid location.
-       * @param
        * @return
        */
       OZ_ALWAYS_INLINE
@@ -120,7 +119,6 @@ namespace oz
       /**
        * Returns true while the iterator has not passed all the elements in the container and thus
        * points to a valid location.
-       * @param
        * @return
        */
       OZ_ALWAYS_INLINE

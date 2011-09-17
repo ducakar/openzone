@@ -29,6 +29,8 @@
 #include "client/MD2Model.hpp"
 #include "client/MD2WeaponModel.hpp"
 
+#include "client/OpenGL.hpp"
+
 #define OZ_REGISTER_GLFUNC( func, type ) \
   *reinterpret_cast<void**>( &func ) = SDL_GL_GetProcAddress( #func ); \
   if( func == null ) { \
@@ -469,10 +471,10 @@ namespace client
 
     SDL_ShowCursor( SDL_FALSE );
 
-    bool isVAOSupported = false;
     bool isFBOSupported = false;
+#ifndef OZ_GL_COMPATIBLE
+    bool isVAOSupported = false;
     bool isFloatTexSupported = false;
-#ifndef OZ_MESA_COMPATIBLE
     bool isS3TCSupported = false;
 #endif
 
@@ -490,16 +492,16 @@ namespace client
     foreach( extension, extensions.citer() ) {
       log.println( "%s", extension->cstr() );
 
-      if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
-        isVAOSupported = true;
-      }
       if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
         isFBOSupported = true;
+      }
+#ifndef OZ_GL_COMPATIBLE
+      if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
+        isVAOSupported = true;
       }
       if( extension->equals( "GL_ARB_texture_float" ) ) {
         isFloatTexSupported = true;
       }
-#ifndef OZ_MESA_COMPATIBLE
       if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
         isS3TCSupported = true;
       }
@@ -514,21 +516,21 @@ namespace client
 
     if( major < 2 || ( major == 2 && minor < 1 ) ) {
       log.println( "Error: at least OpenGL 2.1 with some 3.0 capabilities is required" );
-//       throw Exception( "Too old OpenGL version" );
+      throw Exception( "Too old OpenGL version" );
     }
 
-    if( !isVAOSupported ) {
-      log.println( "Error: vertex array object (GL_ARB_vertex_array_object) is not supported" );
-//       throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
-    }
     if( !isFBOSupported ) {
       log.println( "Error: frame buffer object (GL_ARB_framebuffer_object) is not supported" );
       throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
     }
+#ifndef OZ_GL_COMPATIBLE
+    if( !isVAOSupported ) {
+      log.println( "Error: vertex array object (GL_ARB_vertex_array_object) is not supported" );
+      throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
+    }
     if( !isFloatTexSupported ) {
       config.add( "shader.vertexTexture", "false" );
     }
-#ifndef OZ_MESA_COMPATIBLE
     if( !isS3TCSupported ) {
       log.println( "Error: S3 texture compression (GL_EXT_texture_compression_s3tc) is not supported" );
       throw Exception( "GL_EXT_texture_compression_s3tc not supported by OpenGL" );
@@ -572,9 +574,9 @@ namespace client
     OZ_REGISTER_GLFUNC( glUniform4fv,              PFNGLUNIFORM4FVPROC              );
     OZ_REGISTER_GLFUNC( glUniformMatrix4fv,        PFNGLUNIFORMMATRIX4FVPROC        );
 
-    OZ_REGISTER_GLFUNC( glGenVertexArrays,         PFNGLGENVERTEXARRAYSPROC         );
-    OZ_REGISTER_GLFUNC( glDeleteVertexArrays,      PFNGLDELETEVERTEXARRAYSPROC      );
-    OZ_REGISTER_GLFUNC( glBindVertexArray,         PFNGLBINDVERTEXARRAYPROC         );
+    OZ_REGISTER_GLFUNC( glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYPROC );
+    OZ_REGISTER_GLFUNC( glVertexAttribPointer,     PFNGLVERTEXATTRIBPOINTERPROC     );
+    OZ_REGISTER_GLFUNC( glDrawRangeElements,       PFNGLDRAWRANGEELEMENTSPROC       );
 
     OZ_REGISTER_GLFUNC( glGenBuffers,              PFNGLGENBUFFERSPROC              );
     OZ_REGISTER_GLFUNC( glDeleteBuffers,           PFNGLDELETEBUFFERSPROC           );
@@ -582,9 +584,6 @@ namespace client
     OZ_REGISTER_GLFUNC( glBufferData,              PFNGLBUFFERDATAPROC              );
     OZ_REGISTER_GLFUNC( glMapBuffer,               PFNGLMAPBUFFERPROC               );
     OZ_REGISTER_GLFUNC( glUnmapBuffer,             PFNGLUNMAPBUFFERPROC             );
-
-    OZ_REGISTER_GLFUNC( glEnableVertexAttribArray, PFNGLENABLEVERTEXATTRIBARRAYPROC );
-    OZ_REGISTER_GLFUNC( glVertexAttribPointer,     PFNGLVERTEXATTRIBPOINTERPROC     );
 
     OZ_REGISTER_GLFUNC( glCreateShader,            PFNGLCREATESHADERPROC            );
     OZ_REGISTER_GLFUNC( glDeleteShader,            PFNGLDELETESHADERPROC            );
@@ -605,7 +604,13 @@ namespace client
 
     OZ_REGISTER_GLFUNC( glActiveTexture,           PFNGLACTIVETEXTUREPROC           );
     OZ_REGISTER_GLFUNC( glCompressedTexImage2D,    PFNGLCOMPRESSEDTEXIMAGE2DPROC    );
-    OZ_REGISTER_GLFUNC( glDrawRangeElements,       PFNGLDRAWRANGEELEMENTSPROC       );
+    OZ_REGISTER_GLFUNC( glGenerateMipmap,          PFNGLGENERATEMIPMAPPROC          );
+
+# ifndef OZ_GL_COMPATIBLE
+    OZ_REGISTER_GLFUNC( glGenVertexArrays,         PFNGLGENVERTEXARRAYSPROC         );
+    OZ_REGISTER_GLFUNC( glDeleteVertexArrays,      PFNGLDELETEVERTEXARRAYSPROC      );
+    OZ_REGISTER_GLFUNC( glBindVertexArray,         PFNGLBINDVERTEXARRAYPROC         );
+# endif
 #endif
 
     glEnable( GL_CULL_FACE );
@@ -613,7 +618,7 @@ namespace client
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     glActiveTexture( GL_TEXTURE1 );
-//     glEnable( GL_TEXTURE_2D );
+    glEnable( GL_TEXTURE_2D );
     glActiveTexture( GL_TEXTURE0 );
     glEnable( GL_TEXTURE_2D );
 

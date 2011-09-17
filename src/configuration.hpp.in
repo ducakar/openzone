@@ -31,7 +31,7 @@
 #cmakedefine                    OZ_NETWORKING
 
 // enable some mesa-specific compatibility
-#cmakedefine                    OZ_MESA_COMPATIBLE
+#cmakedefine                    OZ_GL_COMPATIBLE
 
 // enable bumpmap
 #cmakedefine                    OZ_BUMPMAP

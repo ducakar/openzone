@@ -19,6 +19,8 @@
 #include "client/Frustum.hpp"
 #include "client/Colours.hpp"
 
+#include "client/OpenGL.hpp"
+
 namespace oz
 {
 namespace client
@@ -179,9 +181,18 @@ namespace client
     // we draw column-major (strips along y axis) for better cache performance
     glFrontFace( GL_CW );
 
+#ifdef OZ_GL_COMPATIBLE
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+#endif
+
     for( int i = span.minX; i <= span.maxX; ++i ) {
       for( int j = span.minY; j <= span.maxY; ++j ) {
+#ifdef OZ_GL_COMPATIBLE
+        glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+        Vertex::setFormat();
+#else
         glBindVertexArray( vaos[i][j] );
+#endif
         glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, 0 );
       }
     }
@@ -213,14 +224,14 @@ namespace client
 
     glEnable( GL_BLEND );
 
-#ifdef OZ_MESA_COMPATIBLE
+#ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
 #endif
 
     for( int i = span.minX; i <= span.maxX; ++i ) {
       for( int j = span.minY; j <= span.maxY; ++j ) {
         if( waterTiles.get( i * TILES + j ) ) {
-#ifdef OZ_MESA_COMPATIBLE
+#ifdef OZ_GL_COMPATIBLE
           glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
           Vertex::setFormat();
 #else
@@ -261,7 +272,9 @@ namespace client
     detailTexId = context.readTexture( &is );
     mapTexId    = context.readTexture( &is );
 
+#ifndef OZ_GL_COMPATIBLE
     glGenVertexArrays( TILES * TILES, &vaos[0][0] );
+#endif
     glGenBuffers( TILES * TILES, &vbos[0][0] );
     glGenBuffers( 1, &ibo );
 
@@ -280,17 +293,20 @@ namespace client
           vertices[k].read( &is );
         }
 
+#ifndef OZ_GL_COMPATIBLE
         glBindVertexArray( vaos[i][j] );
+#endif
 
         glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
         glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), vertices,
                       GL_STATIC_DRAW );
 
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-
+#ifndef OZ_GL_COMPATIBLE
         Vertex::setFormat();
 
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
         glBindVertexArray( 0 );
+#endif
       }
     }
 
@@ -324,7 +340,9 @@ namespace client
 
       glDeleteBuffers( 1, &ibo );
       glDeleteBuffers( TILES * TILES, &vbos[0][0] );
+#ifndef OZ_GL_COMPATIBLE
       glDeleteVertexArrays( TILES * TILES, &vaos[0][0] );
+#endif
 
       mapTexId = 0;
       detailTexId = 0;

@@ -1,5 +1,5 @@
 /*
- *  common.cpp
+ *  OpenAL.hpp
  *
  *  [description]
  *
@@ -7,16 +7,18 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
+#pragma once
+
 #include "stable.hpp"
 
-#include "client/common.hpp"
+#include <AL/al.h>
 
 namespace oz
 {
 namespace client
 {
 
-  const TexCoord TexCoord::ZERO = TexCoord( 0.0f, 0.0f );
+  ALenum alGetError();
 
 }
 }

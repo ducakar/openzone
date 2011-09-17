@@ -52,7 +52,7 @@ namespace client
       OggVorbis_File             oggStream;
       vorbis_info*               vorbisInfo;
 
-      ALenum                     musicFormat;
+      int                        musicFormat;
       uint                       musicBuffers[2];
       uint                       musicSource;
 

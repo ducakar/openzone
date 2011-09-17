@@ -44,6 +44,10 @@ add_library( client STATIC
   Network.hpp
   OBJ.cpp
   OBJ.hpp
+  OpenAL.cpp
+  OpenAL.hpp
+  OpenGL.cpp
+  OpenGL.hpp
   Proxy.hpp
   Render.cpp
   Render.hpp

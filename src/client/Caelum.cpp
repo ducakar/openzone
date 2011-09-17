@@ -19,6 +19,8 @@
 #include "client/Colours.hpp"
 #include "client/Shape.hpp"
 
+#include "client/OpenGL.hpp"
+
 namespace oz
 {
 namespace client
@@ -159,10 +161,21 @@ namespace client
     tf.model = transf;
     tf.apply();
 
+#ifdef OZ_GL_COMPATIBLE
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    Vertex::setFormat();
+#else
     glBindVertexArray( vao );
+#endif
 
     glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
     glUniform4fv( param.oz_Colour, 1, colour );
+
+#ifdef OZ_GL_COMPATIBLE
+    glEnableVertexAttribArray( Attrib::POSITION );
+    glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
+                           reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
+#endif
 
     glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );
 
@@ -224,8 +237,12 @@ namespace client
       vertices[i].read( &is );
     }
 
+#ifdef OZ_GL_COMPATIBLE
+    vao = 1;
+#else
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
+#endif
 
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -233,11 +250,13 @@ namespace client
                   GL_STATIC_DRAW );
     vertices.dealloc();
 
+#ifndef OZ_GL_COMPATIBLE
     glEnableVertexAttribArray( Attrib::POSITION );
     glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                            reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
     glBindVertexArray( 0 );
+#endif
 
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
@@ -261,7 +280,9 @@ namespace client
       glDeleteTextures( 1, &moonTexId );
 
       glDeleteBuffers( 1, &vbo );
+#ifndef OZ_GL_COMPATIBLE
       glDeleteVertexArrays( 1, &vao );
+#endif
 
       sunTexId = 0;
       moonTexId = 0;

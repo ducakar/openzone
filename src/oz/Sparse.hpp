@@ -17,12 +17,12 @@
 namespace oz
 {
 
-  template <class Type, int GRANULARITY = 8>
+  template <class Type>
   class Sparse
   {
-    static_assert( GRANULARITY > 0, "GRANULARITY must be at least 1" );
-
     private:
+
+      static const int GRANULARITY = 8;
 
       struct Elem
       {
@@ -237,7 +237,7 @@ namespace oz
     public:
 
       /**
-       * Create empty sparse vector
+       * Create empty sparse vector.
        */
       Sparse() : data( null ), size( 0 ), count( 0 ), freeSlot( 0 )
       {}

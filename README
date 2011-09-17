@@ -135,10 +135,8 @@ Troubleshooting
 ---------------
 - Make sure you have the *LATEST* display drivers.
 - You need at least OpenGL 2.1 compatible graphic card & driver that additionally supports the
-  following features:
-  - GL_ARB_framebuffer_object,
-  - GL_ARB_texture_float in
-  - vertex texture fetch (optional).
+  following extensions:
+  - GL_ARB_framebuffer_object.
   A cards with complete DirectX 9.0c support should do, a DirectX 10 card will certainly do.
   On Linux the engine works both with properitary and opensource Gallium3D drivers.
 

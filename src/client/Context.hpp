@@ -38,8 +38,8 @@ namespace client
 
     public:
 
-      static const int DEFAULT_MAG_FILTER = GL_LINEAR;
-      static const int DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
+      static const int DEFAULT_MAG_FILTER;
+      static const int DEFAULT_MIN_FILTER;
 
     private:
 

@@ -17,6 +17,8 @@
 #include "client/BasicAudio.hpp"
 #include "client/BotAudio.hpp"
 
+#include "client/OpenAL.hpp"
+
 namespace oz
 {
 namespace client

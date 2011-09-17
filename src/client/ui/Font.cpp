@@ -11,6 +11,8 @@
 
 #include "client/ui/Font.hpp"
 
+#include "client/OpenGL.hpp"
+
 #include <SDL/SDL_ttf.h>
 
 namespace oz

@@ -18,6 +18,9 @@
 #include "client/Shape.hpp"
 #include "client/Audio.hpp"
 
+#include "client/OpenGL.hpp"
+#include "client/OpenAL.hpp"
+
 namespace oz
 {
 namespace client

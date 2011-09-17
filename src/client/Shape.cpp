@@ -12,6 +12,8 @@
 #include "client/Shape.hpp"
 #include "client/Camera.hpp"
 
+#include "client/OpenGL.hpp"
+
 namespace oz
 {
 namespace client
@@ -27,7 +29,7 @@ namespace client
 
   void Shape::bindVertexArray() const
   {
-#ifdef OZ_MESA_COMPATIBLE
+#ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
     Vertex::setFormat();
@@ -297,8 +299,12 @@ namespace client
     indices[44] = 28 + 3;
     indices[45] = 28 + 7;
 
+#ifdef OZ_GL_COMPATIBLE
+    vao = 1;
+#else
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
+#endif
 
     glGenBuffers( 1, &ibo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
@@ -308,9 +314,11 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBufferData( GL_ARRAY_BUFFER, vertices.length() * int( sizeof( Vertex ) ), vertices, GL_STATIC_DRAW );
 
+#ifndef OZ_GL_COMPATIBLE
     Vertex::setFormat();
 
     glBindVertexArray( 0 );
+#endif
 
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -321,7 +329,9 @@ namespace client
     if( vao != 0 ) {
       glDeleteBuffers( 1, &ibo );
       glDeleteBuffers( 1, &vbo );
+#ifndef OZ_GL_COMPATIBLE
       glDeleteVertexArrays( 1, &vao );
+#endif
 
       ibo = 0;
       vbo = 0;

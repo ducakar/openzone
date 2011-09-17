@@ -131,10 +131,7 @@ Problemi
 --------
 - Prepričaj se, da imaš *NAJNOVEJŠE* gonilnike za grafično kartico.
 - Potrebuješ vsaj grafično kartico in gonilnik s podporo za OpenGL 2.1 in naslednjimi razširitvami:
-  - GL_ARB_vertex_array_object,
-  - GL_ARB_framebuffer_object,
-  - GL_ARB_texture_float in
-  - vertex texture fetch (neobvezno).
+  - GL_ARB_framebuffer_object.
   Kartica s popolno podporo za DirectX 9.0c bi morala zadostovati, zagotovo pa zadostuje kartica s
   podporo za DirectX 10.
   Na Linuxu pogon deluje tako na lastniških kot na odprtokodnih gonilnikih Gallium3D.

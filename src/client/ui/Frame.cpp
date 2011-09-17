@@ -15,6 +15,8 @@
 
 #include "client/Shader.hpp"
 
+#include "client/OpenGL.hpp"
+
 namespace oz
 {
 namespace client
