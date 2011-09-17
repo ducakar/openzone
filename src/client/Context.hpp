@@ -117,7 +117,7 @@ namespace client
       int                               maxBSPSources;
       int                               maxObjSources;
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
       static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
 #endif
@@ -134,7 +134,7 @@ namespace client
 
       Context();
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
       static uint createTexture( const void* data, int width, int height, int bytesPerPixel,
                           bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
                           int minFilter = DEFAULT_MIN_FILTER );

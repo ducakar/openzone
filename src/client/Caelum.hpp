@@ -56,7 +56,7 @@ namespace client
 
       Caelum();
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
       static void prebuild( const char* name );
 #endif
 

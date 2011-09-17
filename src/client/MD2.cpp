@@ -25,7 +25,7 @@ namespace client
 
   Vertex MD2::animBuffer[MAX_VERTS];
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
   const Vec3 MD2::NORMALS[] =
   {
     Vec3( -0.000000f, -0.525731f,  0.850651f ),
@@ -219,7 +219,7 @@ namespace client
     {   0, 197,  7.0f, 1 }    // FULL
   };
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
   void MD2::prebuild( const char* path )
   {
     String sPath = path;

@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
 
 #include "matrix/common.hpp"
 

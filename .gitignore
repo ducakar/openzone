@@ -6,9 +6,8 @@
 /.settings
 
 /Linux-*
-/MinGW-*
 /Windows-*
-/mingw32
+/support
 
 /gettext.pot
 /doxygen

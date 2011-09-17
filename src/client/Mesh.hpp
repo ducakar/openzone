@@ -99,7 +99,7 @@ namespace client
 
   };
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
   class MeshData
   {
     friend class Compiler;

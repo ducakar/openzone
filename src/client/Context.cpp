@@ -24,7 +24,7 @@
 #include "client/BotAudio.hpp"
 #include "client/VehicleAudio.hpp"
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
 # include <SDL_image.h>
 #endif
 
@@ -44,7 +44,7 @@ namespace client
   Pool<Context::Source> Context::Source::pool;
   Buffer Context::buffer;
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
   uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
@@ -188,7 +188,7 @@ namespace client
   Context::Context() : textures( null ), sounds( null ), bsps( null )
   {}
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
   uint Context::createTexture( const void* data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
   {
