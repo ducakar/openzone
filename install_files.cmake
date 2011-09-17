@@ -1,359 +1,278 @@
 #
 # info files
 #
-if( WIN32 )
+if( WIN32 OR OZ_INSTALL_STANDALONE )
+  file( GLOB files README.* )
   install( FILES
     AUTHORS
     COPYING
     README
-    README.sl
+    ${files}
     DESTINATION . )
-else()
-  install( FILES
-    AUTHORS
-    COPYING
-    README
-    README.sl
-    DESTINATION share/doc/openzone )
 endif()
 
 #
 # oalinst, DLLs
 #
 if( WIN32 )
-  install( FILES
-    mingw32/SDL.dll
-    mingw32/SDL_image.dll
-    mingw32/SDL_ttf.dll
-    mingw32/libfreetype-6.dll
-    mingw32/libgcc_s_sjlj-1.dll
-    mingw32/libiconv-2.dll
-    mingw32/libintl-8.dll
-    mingw32/libogg-0.dll
-    mingw32/libpng15-15.dll
-    mingw32/libstdc++-6.dll
-    mingw32/libvorbis-0.dll
-    mingw32/libvorbisfile-3.dll
-    mingw32/lua51.dll
-    mingw32/oalinst.exe
-    mingw32/zlib1.dll
-    DESTINATION bin )
-  install( FILES
-    mingw32/openzone.bat
-    DESTINATION . )
+  if( OZ_SDK )
+    file( GLOB files support/mingw32-client/*.exe support/mingw32-client/*.dll )
+    install( FILES ${files} DESTINATION bin )
+    if( OZ_INSTALL_STANDALONE )
+      install( FILES support/prebuild.bat DESTINATION . )
+    endif()
+  else()
+    file( GLOB files support/mingw32-client/*.exe support/mingw32-client/*.dll )
+    install( FILES ${files} DESTINATION bin )
+    if( OZ_INSTALL_STANDALONE )
+      install( FILES support/oalinst.exe support/openzone.bat DESTINATION . )
+    endif()
+  endif()
+else()
+  if( OZ_SDK )
+    if( OZ_INSTALL_STANDALONE )
+      install( FILES support/prebuild.sh DESTINATION . PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+    endif()
+  else()
+    if( OZ_INSTALL_STANDALONE )
+      install( FILES support/openzone.sh DESTINATION . PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
+    endif()
+  endif()
 endif()
 
 #
 # data
 #
-if( OZ_INSTALL_DATA )
+if( OZ_SDK )
 
   #
-  # share/openzone/class
+  # caelum
   #
-  install( FILES
-    share/openzone/class/barrel2.rc
-    share/openzone/class/beast.rc
-    share/openzone/class/bigCrate.rc
-    share/openzone/class/bigExplosion.rc
-    share/openzone/class/bomb.rc
-    share/openzone/class/crate4.rc
-    share/openzone/class/cvicek.rc
-    share/openzone/class/drevo.rc
-    share/openzone/class/droid.OOM-9.rc
-    share/openzone/class/droid.rc
-    share/openzone/class/droid_weapon.blaster.rc
-    share/openzone/class/droid_weapon.chaingun.rc
-    share/openzone/class/droid_weapon.grenadeLauncher.rc
-    share/openzone/class/droid_weapon.hyperblaster.rc
-    share/openzone/class/firstAid.rc
-    share/openzone/class/goblin.rc
-    share/openzone/class/goblin_weapon.axe.rc
-    share/openzone/class/grenade.rc
-    share/openzone/class/knight.rc
-    share/openzone/class/lord.rc
-    share/openzone/class/metalBarrel.rc
-    share/openzone/class/palma.rc
-    share/openzone/class/raptor.rc
-    share/openzone/class/serviceStation.rc
-    share/openzone/class/shell.rc
-    share/openzone/class/smallCrate.rc
-    share/openzone/class/smallExplosion.rc
-    share/openzone/class/smreka.rc
-    share/openzone/class/tank.rc
-    DESTINATION share/openzone/class )
+  file( GLOB files
+    share/openzone/caelum/*.png
+    share/openzone/caelum/*.jpg
+    share/openzone/caelum/*.xcf
+    share/openzone/caelum/*README*
+    share/openzone/caelum/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/caelum )
 
   #
-  # share/openzone/ui/font
+  # data
   #
-  install( FILES
-    share/openzone/ui/font/DejaVu.COPYING
-    share/openzone/ui/font/DejaVuSans.ttf
-    share/openzone/ui/font/DejaVuSansMono.ttf
-    share/openzone/ui/font/Droid.COPYING
-    share/openzone/ui/font/DroidSans.ttf
-    share/openzone/ui/font/DroidSansMono.ttf
-    DESTINATION share/openzone/ui/font )
+  file( GLOB files
+    share/openzone/data/maps/*.rc
+    share/openzone/data/maps/*.bsp
+    share/openzone/data/maps/*.map
+    share/openzone/data/maps/*README*
+    share/openzone/data/maps/*COPYING* )
+  foreach( file IN ITEMS ${files} )
+    if( ${file} MATCHES "\\.autosave\\.map" )
+      list( REMOVE_ITEM files ${file} )
+    endif()
+  endforeach()
+  install( FILES ${files} DESTINATION share/openzone/data/maps )
+
+  install( DIRECTORY share/openzone/data/scripts DESTINATION share/openzone/data/scripts )
+
+  file( GLOB files
+    share/openzone/data/textures/oz/*.png
+    share/openzone/data/textures/oz/*.jpg
+    share/openzone/data/textures/oz/*README*
+    share/openzone/data/textures/oz/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/data/textures/oz )
 
   #
-  # share/openzone/ui/cur
+  # terra
   #
-  install( FILES
-    share/openzone/ui/cur/COPYING
-    share/openzone/ui/cur/README
-    share/openzone/ui/cur/X_cursor.ozcCur
-    share/openzone/ui/cur/fleur.ozcCur
-    share/openzone/ui/cur/hand2.ozcCur
-    share/openzone/ui/cur/left_ptr.ozcCur
-    share/openzone/ui/cur/xterm.ozcCur
-    DESTINATION share/openzone/ui/cur )
+  file( GLOB files
+    share/openzone/terra/*.rc
+    share/openzone/terra/*.png
+    share/openzone/terra/*.jpg
+    share/openzone/terra/*README*
+    share/openzone/terra/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/terra )
 
   #
-  # share/openzone/ui/icon
+  # netradiant
   #
-  install( FILES
-    share/openzone/ui/icon/crosshair.ozcTex
-    share/openzone/ui/icon/grab.ozcTex
-    share/openzone/ui/icon/lift.ozcTex
-    share/openzone/ui/icon/mount.ozcTex
-    share/openzone/ui/icon/take.ozcTex
-    share/openzone/ui/icon/use.ozcTex
-    DESTINATION share/openzone/ui/icon )
+  install( DIRECTORY share/openzone/netradiant DESTINATION share/openzone )
 
   #
-  # share/openzone/lua/matrix
+  # mdl
   #
-  install( FILES
-    share/openzone/lua/matrix/generic.lua
-    share/openzone/lua/matrix/handlers.lua
-    share/openzone/lua/matrix/weapons.lua
-    DESTINATION share/openzone/lua/matrix )
+  file( GLOB files share/openzone/mdl/* )
+  foreach( file IN ITEMS ${files} )
+    if( NOT EXISTS ${file}/config.rc )
+      list( REMOVE_ITEM files ${file} )
+    endif()
+  endforeach()
+  install( DIRECTORY ${files} DESTINATION share/openzone/mdl )
 
   #
-  # share/openzone/lua/nirvana
+  # ui
   #
-  install( FILES
-    share/openzone/lua/nirvana/droid.lua
-    share/openzone/lua/nirvana/minds.lua
-    DESTINATION share/openzone/lua/nirvana )
+  file( GLOB files
+    share/openzone/ui/cur/*.in
+    share/openzone/ui/cur/*.png
+    share/openzone/ui/cur/*README*
+    share/openzone/ui/cur/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/ui/cur )
+
+  file( GLOB files
+    share/openzone/ui/icon/*.png
+    share/openzone/ui/icon/*.xcf
+    share/openzone/ui/icon/*README*
+    share/openzone/ui/icon/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/ui/icon )
 
   #
-  # share/openzone/bsp
+  # locale
   #
-  install( FILES
-    share/openzone/bsp/bunker.ozBSP
-    share/openzone/bsp/bunker.ozcBSP
-    share/openzone/bsp/castle.ozBSP
-    share/openzone/bsp/castle.ozcBSP
-    share/openzone/bsp/pool.ozBSP
-    share/openzone/bsp/pool.ozcBSP
-    DESTINATION share/openzone/bsp )
+  file( GLOB dirs share/locale/* )
+  foreach( dir IN ITEMS ${dirs} )
+    file( RELATIVE_PATH dir ${CMAKE_SOURCE_DIR} ${dir} )
+    install( FILES ${dir}/LC_MESSAGES/openzone.po DESTINATION ${dir}/LC_MESSAGES )
+  endforeach()
+
+else()
 
   #
-  # share/openzone/bsp/tex
+  # bsp
   #
-  install( FILES
-    share/openzone/bsp/tex/_Drkalisce.ozcTex
-    share/openzone/bsp/tex/_Potiskalnica.ozcTex
-    share/openzone/bsp/tex/_Samostojeca_voda.ozcTex
-    share/openzone/bsp/tex/_Spestalnica.ozcTex
-    share/openzone/bsp/tex/crate1.ozcTex
-    share/openzone/bsp/tex/glass.ozcTex
-    share/openzone/bsp/tex/roof1.ozcTex
-    share/openzone/bsp/tex/slick.ozcTex
-    share/openzone/bsp/tex/stone1.ozcTex
-    share/openzone/bsp/tex/stone2.ozcTex
-    share/openzone/bsp/tex/stone3.ozcTex
-    share/openzone/bsp/tex/water1.ozcTex
-    share/openzone/bsp/tex/wood1.ozcTex
-    share/openzone/bsp/tex/wood2.ozcTex
-    DESTINATION share/openzone/bsp/tex )
+  file( GLOB files
+    share/openzone/bsp/*.ozBSP
+    share/openzone/bsp/*.ozcBSP
+    share/openzone/bsp/*README*
+    share/openzone/bsp/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/bsp )
+
+  file( GLOB files
+    share/openzone/bsp/tex/*.ozcTex
+    share/openzone/bsp/tex/*README*
+    share/openzone/bsp/tex/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/bsp/tex )
 
   #
-  # share/openzone/mdl
+  # caelum
   #
-  install( FILES
-    share/openzone/mdl/barrel1.README
-    share/openzone/mdl/barrel1.ozcSMM
-    share/openzone/mdl/barrel2.README
-    share/openzone/mdl/barrel2.ozcSMM
-    share/openzone/mdl/bauul.README
-    share/openzone/mdl/bauul.ozcMD2
-    share/openzone/mdl/bigCrate.ozcSMM
-    share/openzone/mdl/biotank.ozcSMM
-    share/openzone/mdl/bombs.ozcSMM
-    share/openzone/mdl/crate4.README
-    share/openzone/mdl/crate4.ozcSMM
-    share/openzone/mdl/droid.OOM-9.README
-    share/openzone/mdl/droid.OOM-9.ozcMD2
-    share/openzone/mdl/droid.README
-    share/openzone/mdl/droid.ozcMD2
-    share/openzone/mdl/droid_weapon.bfg.ozcMD2
-    share/openzone/mdl/droid_weapon.blaster.README
-    share/openzone/mdl/droid_weapon.blaster.ozcMD2
-    share/openzone/mdl/droid_weapon.chaingun.README
-    share/openzone/mdl/droid_weapon.chaingun.ozcMD2
-    share/openzone/mdl/droid_weapon.grenadeLauncher.README
-    share/openzone/mdl/droid_weapon.grenadeLauncher.ozcMD2
-    share/openzone/mdl/droid_weapon.hyperblaster.README
-    share/openzone/mdl/droid_weapon.hyperblaster.ozcMD2
-    share/openzone/mdl/explosion.ozcSMM
-    share/openzone/mdl/goblin.README
-    share/openzone/mdl/goblin.ozcMD2
-    share/openzone/mdl/goblin_weapon.axe.ozcMD2
-    share/openzone/mdl/health.ozcSMM
-    share/openzone/mdl/hobgoblin.ozcMD2
-    share/openzone/mdl/knight.README
-    share/openzone/mdl/knight.ozcMD2
-    share/openzone/mdl/palmtree.ozcSMM
-    share/openzone/mdl/raptor.ozcSMM
-    share/openzone/mdl/shell.ozcSMM
-    share/openzone/mdl/smallCrate.ozcSMM
-    share/openzone/mdl/tank.ozcSMM
-    share/openzone/mdl/tree2.README
-    share/openzone/mdl/tree2.ozcSMM
-    share/openzone/mdl/tree3.README
-    share/openzone/mdl/tree3.ozcSMM
-    share/openzone/mdl/winebottle.ozcSMM
-    DESTINATION share/openzone/mdl )
+  file( GLOB files
+    share/openzone/caelum/*.ozcCaelum
+    share/openzone/caelum/*README*
+    share/openzone/caelum/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/caelum )
 
   #
-  # share/openzone/name
+  # class
   #
-  install( FILES
-    share/openzone/name/boginje.txt
-    share/openzone/name/bogovi.txt
-    share/openzone/name/japonski.txt
-    share/openzone/name/wesnoth.COPYING
-    share/openzone/name/wesnoth.drake-male.txt
-    share/openzone/name/wesnoth.human-male.txt
-    share/openzone/name/wesnoth.lizard-male.txt
-    share/openzone/name/wesnoth.troll-male.txt
-    DESTINATION share/openzone/name )
+  file( GLOB files
+    share/openzone/class/*.rc
+    share/openzone/class/*README*
+    share/openzone/class/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/class )
 
   #
-  # share/openzone/snd
+  # glsl
   #
-  install( FILES
-    share/openzone/snd/README
-    share/openzone/snd/acid5.wav
-    share/openzone/snd/cg2.wav
-    share/openzone/snd/damage_bot1.wav
-    share/openzone/snd/damage_bot2.wav
-    share/openzone/snd/death2.wav
-    share/openzone/snd/destroy_metal1.wav
-    share/openzone/snd/destroy_wood1.wav
-    share/openzone/snd/door.wav
-    share/openzone/snd/explosion.wav
-    share/openzone/snd/fan-stari1.wav
-    share/openzone/snd/fan.wav
-    share/openzone/snd/friction1.wav
-    share/openzone/snd/gesture_flip.wav
-    share/openzone/snd/hit1.wav
-    share/openzone/snd/hit_bot1.wav
-    share/openzone/snd/hit_bot2.wav
-    share/openzone/snd/hit_metal1.wav
-    share/openzone/snd/hit_metal2.wav
-    share/openzone/snd/hit_wood1.wav
-    share/openzone/snd/hit_wood2.wav
-    share/openzone/snd/hum6.wav
-    share/openzone/snd/itemback.wav
-    share/openzone/snd/itempick.wav
-    share/openzone/snd/jump1.wav
-    share/openzone/snd/jump2.wav
-    share/openzone/snd/land1.wav
-    share/openzone/snd/land2.wav
-    share/openzone/snd/outofammo.wav
-    share/openzone/snd/splash1.wav
-    share/openzone/snd/splash2.wav
-    share/openzone/snd/tak.wav
-    share/openzone/snd/tick.wav
-    DESTINATION share/openzone/snd )
+  file( GLOB files
+    share/openzone/glsl/*.glsl
+    share/openzone/glsl/*.vert
+    share/openzone/glsl/*.frag
+    share/openzone/glsl/*README*
+    share/openzone/glsl/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/glsl )
 
   #
-  # share/openzone/music
+  # lua
   #
-  install( FILES
-    "share/openzone/music/Crimson And Clover.oga"
-    "share/openzone/music/Fanatic - Antipodes.oga"
-    "share/openzone/music/Fanatic - Assault.oga"
-    "share/openzone/music/Fanatic - Conquerer.oga"
-    "share/openzone/music/Fanatic - Cubed to Death.oga"
-    "share/openzone/music/Fanatic - Demagogue.oga"
-    "share/openzone/music/Fanatic - Disrupting Force.oga"
-    "share/openzone/music/Fanatic - Hit Them Hard.oga"
-    "share/openzone/music/Fanatic - Inchoate.oga"
-    "share/openzone/music/Fanatic - Incindental.oga"
-    "share/openzone/music/Fanatic - Lost in the Mist.oga"
-    "share/openzone/music/Fanatic - Mephistopheles.oga"
-    "share/openzone/music/Fanatic - My Destiny.oga"
-    "share/openzone/music/Fanatic - Ostentation.oga"
-    "share/openzone/music/Fanatic - Set Free.oga"
-    "share/openzone/music/Fanatic - Tranquility.oga"
-    "share/openzone/music/Fanatic - Tribulation.oga"
-    "share/openzone/music/Fanatic - Unreleased Rage.oga"
-    "share/openzone/music/Fanatic - Vexation.oga"
-    "share/openzone/music/Fanatic - Waiting to Strike.oga"
-    "share/openzone/music/README"
-    DESTINATION share/openzone/music )
+  file( GLOB files
+    share/openzone/lua/matrix/*.lua
+    share/openzone/lua/matrix/*README*
+    share/openzone/lua/matrix/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/lua/matrix )
+
+  file( GLOB files
+    share/openzone/lua/nirvana/*.lua
+    share/openzone/lua/nirvana/*README*
+    share/openzone/lua/nirvana/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/lua/nirvana )
 
   #
-  # share/openzone/terra
+  # mdl
   #
-  install( FILES
-    share/openzone/terra/heightmap.ozTerra
-    share/openzone/terra/heightmap.ozcTerra
-    DESTINATION share/openzone/terra )
+  file( GLOB files
+    share/openzone/mdl/*.ozcSMM
+    share/openzone/mdl/*.ozcMD2
+    share/openzone/mdl/*README*
+    share/openzone/mdl/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/mdl )
 
   #
-  # share/openzone/caelum
+  # music
   #
-  install( FILES
-    share/openzone/caelum/caelum.ozcCaelum
-    DESTINATION share/openzone/caelum )
+  file( GLOB files
+    share/openzone/music/*.oga
+    share/openzone/music/*README*
+    share/openzone/music/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/music )
 
   #
-  # share/openzone/glsl
+  # name
   #
-  install( FILES
-    share/openzone/glsl/COPYING
-    share/openzone/glsl/bigMesh.frag
-    share/openzone/glsl/bigMesh.vert
-    share/openzone/glsl/celestial.frag
-    share/openzone/glsl/celestial.vert
-    share/openzone/glsl/header.glsl
-    share/openzone/glsl/md2.frag
-    share/openzone/glsl/md2.vert
-    share/openzone/glsl/mesh.frag
-    share/openzone/glsl/mesh.vert
-    share/openzone/glsl/particles.frag
-    share/openzone/glsl/particles.vert
-    share/openzone/glsl/plant.frag
-    share/openzone/glsl/plant.vert
-    share/openzone/glsl/simple.frag
-    share/openzone/glsl/simple.vert
-    share/openzone/glsl/stars.frag
-    share/openzone/glsl/stars.vert
-    share/openzone/glsl/submergedTerraLand.frag
-    share/openzone/glsl/submergedTerraLand.vert
-    share/openzone/glsl/submergedTerraWater.frag
-    share/openzone/glsl/submergedTerraWater.vert
-    share/openzone/glsl/terraLand.frag
-    share/openzone/glsl/terraLand.vert
-    share/openzone/glsl/terraWater.frag
-    share/openzone/glsl/terraWater.vert
-    share/openzone/glsl/ui.frag
-    share/openzone/glsl/ui.vert
-    DESTINATION share/openzone/glsl )
+  file( GLOB files
+    share/openzone/name/*.txt
+    share/openzone/name/*README*
+    share/openzone/name/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/names )
 
   #
-  # share/locale
+  # snd
   #
-  install( FILES
-    share/locale/en/LC_MESSAGES/openzone.mo
-    DESTINATION share/locale/en/LC_MESSAGES )
-  install( FILES
-    share/locale/sl/LC_MESSAGES/openzone.mo
-    DESTINATION share/locale/sl/LC_MESSAGES )
+  file( GLOB files
+    share/openzone/snd/*.wav
+    share/openzone/snd/*README*
+    share/openzone/snd/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/snd )
+
+  #
+  # terra
+  #
+  file( GLOB files
+    share/openzone/terra/*.ozTerra
+    share/openzone/terra/*.ozcTerra
+    share/openzone/terra/*README*
+    share/openzone/terra/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/terra )
+
+  #
+  # ui
+  #
+  file( GLOB files
+    share/openzone/ui/cur/*.ozcCur
+    share/openzone/ui/cur/*README*
+    share/openzone/ui/cur/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/ui/cur )
+
+  file( GLOB files
+    share/openzone/ui/font/*.ttf
+    share/openzone/ui/font/*README*
+    share/openzone/ui/font/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/ui/font )
+
+  file( GLOB files
+    share/openzone/ui/icon/*.ozcTex
+    share/openzone/ui/icon/*README*
+    share/openzone/ui/icon/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/ui/icon )
+
+  #
+  # locale
+  #
+  file( GLOB dirs share/locale/* )
+  foreach( dir IN ITEMS ${dirs} )
+    file( RELATIVE_PATH dir ${CMAKE_SOURCE_DIR} ${dir} )
+    install( FILES ${dir}/LC_MESSAGES/openzone.mo DESTINATION ${dir}/LC_MESSAGES )
+  endforeach()
 
 endif()

@@ -11,7 +11,7 @@
 
 #include "matrix/QBSP.hpp"
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
 
 #include "matrix/Timer.hpp"
 #include "matrix/Translator.hpp"

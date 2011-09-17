@@ -2,12 +2,12 @@ configure_file( oz/ozconfig.hpp.in oz/ozconfig.hpp )
 configure_file( configuration.hpp.in configuration.hpp )
 configure_file( Build.cpp.in Build.cpp )
 
+include_directories( . )
+
 # required to include configuration headers when we use a separate build directory
 # the second entry must be included before '.', so precompiled header is used instead the actual one
 include_directories( ${CMAKE_BINARY_DIR}/src/oz )
 include_directories( ${CMAKE_BINARY_DIR}/src )
-
-include_directories( . )
 
 add_subdirectory( oz )
 

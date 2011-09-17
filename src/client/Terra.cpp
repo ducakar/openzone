@@ -44,7 +44,7 @@ namespace client
     }
   }
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
   void Terra::prebuild( const char* name_ )
   {
     String name       = name_;

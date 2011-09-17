@@ -98,7 +98,7 @@ namespace oz
       Object* createObject( int index, const char* name, const Point3& p ) const;
       Object* createObject( int index, const char* name, InputStream* istream ) const;
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
       void prebuildInit();
 #endif
 

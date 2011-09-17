@@ -73,7 +73,7 @@ namespace ui
       int  icon;
       bool doShow;
 
-#ifdef OZ_BUILD_TOOLS
+#ifdef OZ_SDK
       static void prebuild();
 #endif
 

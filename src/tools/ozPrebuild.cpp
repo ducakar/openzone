@@ -327,7 +327,7 @@ int main( int argc, char** argv )
 
     SDL_Init( SDL_INIT_VIDEO );
 
-    long startTime = SDL_GetTicks();
+    uint startTime = SDL_GetTicks();
 
     translator.prebuildInit();
 
@@ -355,7 +355,7 @@ int main( int argc, char** argv )
     checkLua( "lua/matrix" );
     checkLua( "lua/nirvana" );
 
-    long endTime = SDL_GetTicks();
+    uint endTime = SDL_GetTicks();
 
     log.println( "Build time: %.2f s", float( endTime - startTime ) / 1000.0f );
 
