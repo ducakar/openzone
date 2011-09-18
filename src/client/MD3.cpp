@@ -270,7 +270,7 @@ namespace client
 
   MD3::~MD3()
   {
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void MD3::load()

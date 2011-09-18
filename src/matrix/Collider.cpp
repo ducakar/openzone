@@ -471,7 +471,7 @@ namespace oz
 
         if( ratio > minRatio ) {
           minRatio   = ratio;
-          lastNormal = plane.n;
+          lastNormal = plane.n();
         }
       }
     }
@@ -499,8 +499,8 @@ namespace oz
       if( dist >= 0.0f ) {
         return;
       }
-      else if( plane.n.z > 0.0f ) {
-        float lowerDist = ( plane.d - startPos.x*plane.n.x - startPos.y*plane.n.y ) / plane.n.z -
+      else if( plane.z > 0.0f ) {
+        float lowerDist = ( plane.w - startPos.x*plane.x - startPos.y*plane.y ) / plane.z -
             startPos.z + aabb.dim.z;
 
         if( lowerDist > 0.0f ) {

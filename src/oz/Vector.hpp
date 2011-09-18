@@ -96,14 +96,8 @@ namespace oz
       void ensureCapacity()
       {
         if( size == count ) {
-          if( size == 0 ) {
-            size = GRANULARITY;
-            data = new Type[size];
-          }
-          else {
-            size *= 2;
-            data = aRealloc( data, count, size );
-          }
+          size = size == 0 ? GRANULARITY : 2 * size;
+          data = aRealloc( data, count, size );
         }
       }
 
@@ -113,19 +107,8 @@ namespace oz
       void ensureCapacity( int desiredSize )
       {
         if( size < desiredSize ) {
-          size = size == 0 ? GRANULARITY : size;
-
-          do {
-            size *= 2;
-          }
-          while( size < desiredSize );
-
-          if( data == null ) {
-            data = new Type[size];
-          }
-          else {
-            data = aRealloc( data, count, size );
-          }
+          size = ( ( desiredSize - 1 ) / GRANULARITY + 1 ) * GRANULARITY;
+          data = aRealloc( data, count, size );
         }
       }
 
@@ -561,7 +544,7 @@ namespace oz
 
         --count;
 
-        return data[count + 1];;
+        return data[count];
       }
 
       /**

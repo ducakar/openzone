@@ -18,7 +18,13 @@ namespace oz
 namespace client
 {
 
-  ALenum alGetError();
+#ifdef NDEBUG
+# define OZ_AL_CHECK_ERROR() void( 0 )
+# else
+# define OZ_AL_CHECK_ERROR() alCheckError( __FILE__, __LINE__, __PRETTY_FUNCTION__ )
+#endif
+
+  void alCheckError( const char* file, int line, const char* function );
 
 }
 }

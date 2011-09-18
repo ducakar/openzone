@@ -35,11 +35,14 @@ if( OZ_BUILD_TESTS )
   add_dependencies( sparse pch )
   target_link_libraries( sparse oz ${libs} )
 
-  add_executable( test test.cpp )
-  add_dependencies( test build pch )
-  target_link_libraries( test build oz ${libs} )
-
   add_executable( unittest unittest.cpp )
   add_dependencies( unittest pch )
   target_link_libraries( unittest oz ${libs} )
+endif()
+
+if( OZ_BUILD_TESTS )
+  add_executable( test test.cpp )
+  add_dependencies( test build pch )
+
+  target_link_libraries( test build oz ${libs} )
 endif()

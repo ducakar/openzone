@@ -85,7 +85,7 @@ namespace client
 
   void Render::drawOrbis()
   {
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     uint currentTime = SDL_GetTicks();
     uint beginTime = currentTime;
@@ -265,7 +265,7 @@ namespace client
 
     glDisable( GL_BLEND );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     currentTime = SDL_GetTicks();
     timer.renderParticlesMillis += currentTime - beginTime;
@@ -311,7 +311,7 @@ namespace client
                       ( objects[i].obj->flags & Object::SOLID_BIT ) ?
                           Colours::CLIP_AABB : Colours::NOCLIP_AABB );
         shape.wireBox( *objects[i].obj );
-        hard_assert( glGetError() == GL_NO_ERROR );
+        OZ_GL_CHECK_ERROR();
       }
 
       glUniform4fv( param.oz_Colour, 1, Colours::STRUCTURE_AABB );
@@ -324,12 +324,12 @@ namespace client
         foreach( entity, citer( str->entities, str->nEntities ) ) {
           Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
           shape.wireBox( bb.toAABB() );
-          hard_assert( glGetError() == GL_NO_ERROR );
+          OZ_GL_CHECK_ERROR();
         }
 
         glUniform4fv( param.oz_Colour, 1, Colours::STRUCTURE_AABB );
         shape.wireBox( str->toAABB() );
-        hard_assert( glGetError() == GL_NO_ERROR );
+        OZ_GL_CHECK_ERROR();
       }
     }
 
@@ -340,7 +340,7 @@ namespace client
 
     glDisable( GL_DEPTH_TEST );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     currentTime = SDL_GetTicks();
     timer.renderMiscMillis += currentTime - beginTime;
@@ -379,7 +379,7 @@ namespace client
     log.println( "Loading Render {" );
     log.indent();
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     shader.load();
 
@@ -627,7 +627,7 @@ namespace client
     camera.init();
     ui::ui.init();
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     log.unindent();
     log.println( "}" );

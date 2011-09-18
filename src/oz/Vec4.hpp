@@ -22,26 +22,24 @@ namespace oz
       static const Vec4 ONE;
       static const Vec4 ID;
 
-      float w;
-
       OZ_ALWAYS_INLINE
       Vec4()
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec4( float x, float y, float z, float w_ ) : Vec3( x, y, z ), w( w_ )
+      explicit Vec4( float x, float y, float z, float w ) : Vec3( x, y, z, w )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec4( const float* v ) : Vec3( v ), w( v[3] )
+      explicit Vec4( const float* v ) : Vec3( v[0], v[1], v[2], v[3] )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec4( const Vec3& v, float w_ = 0.0f ) : Vec3( v ), w( w_ )
+      explicit Vec4( const Vec3& v, float w = 0.0f ) : Vec3( v.x, v.y, v.z, w )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec4( const Point3& p ) : Vec3( p.x, p.y, p.z ), w( 1.0f )
+      explicit Vec4( const Point3& p ) : Vec3( p.x, p.y, p.z, 1.0f )
       {}
 
       OZ_ALWAYS_INLINE
@@ -77,11 +75,23 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
+      operator const float* () const
+      {
+        return f;
+      }
+
+      OZ_ALWAYS_INLINE
+      operator float* ()
+      {
+        return f;
+      }
+
+      OZ_ALWAYS_INLINE
       const float& operator [] ( int i ) const
       {
         hard_assert( 0 <= i && i < 4 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE
@@ -89,7 +99,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 4 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE

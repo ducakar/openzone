@@ -135,12 +135,12 @@ namespace client
       }
     }
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
   void Sound::update()
   {
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     if( selectedTrack != -1 ) {
       alSourceStop( musicSource );
@@ -153,7 +153,7 @@ namespace client
 
       ov_clear( &oggStream );
 
-      hard_assert( alGetError() == AL_NO_ERROR );
+      OZ_AL_CHECK_ERROR();
 
       currentTrack = -1;
 
@@ -205,7 +205,7 @@ namespace client
         currentTrack  = selectedTrack;
         selectedTrack = -1;
 
-        hard_assert( alGetError() == AL_NO_ERROR );
+        OZ_AL_CHECK_ERROR();
 
         log.printEnd( " OK" );
       }
@@ -283,7 +283,7 @@ namespace client
       throw Exception( "Failed to select OpenAL context" );
     }
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     log.println( "OpenAL device: %s", alcGetString( soundDevice, ALC_DEVICE_SPECIFIER ) );
 
@@ -355,7 +355,7 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
   void Sound::free()
@@ -370,7 +370,7 @@ namespace client
       alDeleteSources( 1, &musicSource );
       alDeleteBuffers( 2, musicBuffers );
 
-      hard_assert( alGetError() == AL_NO_ERROR );
+      OZ_AL_CHECK_ERROR();
 
       alcDestroyContext( soundContext );
       soundContext = null;

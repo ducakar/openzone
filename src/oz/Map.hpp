@@ -251,14 +251,8 @@ namespace oz
       void ensureCapacity()
       {
         if( size == count ) {
-          if( size == 0 ) {
-            size = GRANULARITY;
-            data = new Elem[size];
-          }
-          else {
-            size *= 2;
-            data = aRealloc( data, count, size );
-          }
+          size = size == 0 ? GRANULARITY : 2 * size;
+          data = aRealloc( data, count, size );
         }
       }
 

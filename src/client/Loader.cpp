@@ -31,7 +31,7 @@ namespace client
 
   void Loader::cleanupRender()
   {
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     // delete models of removed objects
     for( auto i = context.models.citer(); i.isValid(); ) {
@@ -47,7 +47,7 @@ namespace client
       }
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     if( tick % BSP_CLEAR_INTERVAL == 0 ) {
       // remove unused BSPs
@@ -66,7 +66,7 @@ namespace client
       }
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     if( tick % MODEL_CLEAR_INTERVAL == 0 ) {
       // remove unused models
@@ -84,12 +84,12 @@ namespace client
       }
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void Loader::cleanupSound()
   {
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     // remove audio models of removed objects
     for( auto i = context.audios.citer(); i.isValid(); ) {
@@ -105,7 +105,7 @@ namespace client
       }
     }
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     // remove continous sounds that are not played any more
     for( auto i = context.bspSources.iter(); i.isValid(); ) {
@@ -134,7 +134,7 @@ namespace client
       }
     }
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     if( tick % SOURCE_CLEAR_INTERVAL ) {
       // remove stopped sources of non-continous sounds
@@ -158,10 +158,10 @@ namespace client
       }
     }
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     if( tick % AUDIO_CLEAR_INTERVAL == 0 ) {
-      hard_assert( alGetError() == AL_NO_ERROR );
+      OZ_AL_CHECK_ERROR();
 
       // remove unused Audio objects
       for( auto i = context.audios.citer(); i.isValid(); ) {
@@ -178,7 +178,7 @@ namespace client
       }
     }
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
   void Loader::update()

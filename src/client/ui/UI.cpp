@@ -65,7 +65,7 @@ namespace ui
 
   void UI::draw()
   {
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     tf.ortho();
     tf.camera = Mat44::ID;
@@ -99,7 +99,7 @@ namespace ui
 
     glDisable( GL_BLEND );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void UI::load()

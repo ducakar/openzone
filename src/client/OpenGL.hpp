@@ -97,7 +97,13 @@ namespace client
 # endif
 #endif
 
-  GLenum glGetError();
+#ifdef NDEBUG
+# define OZ_GL_CHECK_ERROR() void( 0 )
+# else
+# define OZ_GL_CHECK_ERROR() glCheckError( __FILE__, __LINE__, __PRETTY_FUNCTION__ )
+#endif
+
+  void glCheckError( const char* file, int line, const char* function );
 
 }
 }

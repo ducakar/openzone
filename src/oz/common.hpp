@@ -149,6 +149,55 @@ namespace oz
   static_assert( sizeof( int ) == 4, "sizeof( int ) should be 4" );
   static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
 
+  /*
+   * SIMD types
+   */
+  typedef int   __attribute__(( vector_size( 16 ) )) int4;
+  typedef uint  __attribute__(( vector_size( 16 ) )) uint4;
+  typedef float __attribute__(( vector_size( 16 ) )) float4;
+
+  /*
+   * SIMD union
+   */
+  struct Simd
+  {
+    union
+    {
+      int4   i4;
+      int    i[4];
+
+      uint4  u4;
+      uint   u[4];
+
+      float4 f4;
+      float  f[4];
+
+      struct
+      {
+        float x;
+        float y;
+        float z;
+        float w;
+      };
+    };
+
+    OZ_ALWAYS_INLINE
+    Simd()
+    {}
+
+    OZ_ALWAYS_INLINE
+    Simd( int x, int y, int z, int w ) : i4( (int4) { x, y, z, w } )
+    {}
+
+    OZ_ALWAYS_INLINE
+    Simd( uint x, uint y, uint z, uint w ) : u4( (uint4) { x, y, z, w } )
+    {}
+
+    OZ_ALWAYS_INLINE
+    Simd( float x, float y, float z, float w ) : f4( (float4) { x, y, z, w } )
+    {}
+  };
+
   //***********************************
   //*        BASIC ALGORITHMS         *
   //***********************************

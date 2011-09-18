@@ -100,7 +100,7 @@ namespace client
 
     buffer.write( "caelum/" + String( name ) + ".ozcCaelum", os.length() );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     log.unindent();
     log.println( "}" );
@@ -153,7 +153,7 @@ namespace client
     Mat44 transf = Mat44::rotationZ( orbis.caelum.heading ) *
         Mat44::rotationY( angle - Math::TAU / 4.0f );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     shader.use( starShaderId );
     tf.applyCamera();
@@ -212,7 +212,7 @@ namespace client
 
     glEnable( GL_CULL_FACE );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void Caelum::load( const char* name )
@@ -266,7 +266,7 @@ namespace client
     starShaderId      = translator.shaderIndex( "stars" );
     celestialShaderId = translator.shaderIndex( "celestial" );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     update();
 

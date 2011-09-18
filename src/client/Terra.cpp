@@ -175,7 +175,7 @@ namespace client
     glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, mapTexId );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     // to match strip triangles with matrix terrain we have to make them clockwise since
     // we draw column-major (strips along y axis) for better cache performance
@@ -202,7 +202,7 @@ namespace client
     glBindTexture( GL_TEXTURE_2D, 0 );
     glActiveTexture( GL_TEXTURE0 );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void Terra::drawWater()
@@ -248,7 +248,7 @@ namespace client
       glFrontFace( GL_CCW );
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void Terra::load()

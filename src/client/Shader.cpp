@@ -139,7 +139,7 @@ namespace client
       throw Exception( "Shader compile failed" );
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void Shader::loadProgram( int id, const char** sources, int* lengths )
@@ -219,7 +219,7 @@ namespace client
     int textureIds[4] = { 0, 1, 2, 3 };
     glUniform1iv( param.oz_Textures, 4, textureIds );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     log.printEnd( " OK" );
 
@@ -241,7 +241,7 @@ namespace client
     glUseProgram( programs[id].program );
     param = programs[id].param;
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void Shader::push()
@@ -374,7 +374,7 @@ namespace client
       }
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
     hard_assert( tf.stack.isEmpty() );
 
     log.printEnd( " OK" );
@@ -473,7 +473,7 @@ namespace client
 
     programs.dealloc();
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     log.printEnd( " OK" );
   }

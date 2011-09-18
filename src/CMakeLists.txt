@@ -14,9 +14,9 @@ add_subdirectory( oz )
 add_pch( pch stable.hpp DEPENDS oz ${CMAKE_BINARY_DIR}/src/configuration.hpp )
 
 add_library( build STATIC ${CMAKE_BINARY_DIR}/src/Build.cpp )
-# add_custom_target( build_rebuild
-#   COMMAND ${CMAKE_COMMAND} -E touch_nocreate ${CMAKE_BINARY_DIR}/src/Build.cpp )
-# add_dependencies( build build_rebuild )
+add_custom_target( build_rebuild
+  COMMAND ${CMAKE_COMMAND} -E touch_nocreate ${CMAKE_BINARY_DIR}/src/Build.cpp )
+add_dependencies( build build_rebuild )
 
 add_subdirectory( matrix )
 add_subdirectory( nirvana )

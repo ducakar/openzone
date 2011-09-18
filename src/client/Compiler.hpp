@@ -15,6 +15,8 @@
 
 #include "client/Mesh.hpp"
 
+#include "client/OpenGL.hpp"
+
 namespace oz
 {
 namespace client

@@ -74,40 +74,47 @@ namespace client
 # endif
 #endif
 
-  GLenum glGetError()
+  void glCheckError( const char* file, int line, const char* function )
   {
-    GLenum result = ::glGetError();
+    const char* message;
+    GLenum result = glGetError();
 
-    if( result != GL_NO_ERROR ) {
-      switch( result ) {
-        case GL_INVALID_ENUM: {
-          log.println( "GL: GL_INVALID_ENUM" );
-          break;
-        }
-        case GL_INVALID_VALUE: {
-          log.println( "GL: GL_INVALID_VALUE" );
-          break;
-        }
-        case GL_INVALID_OPERATION: {
-          log.println( "GL: GL_INVALID_OPERATION" );
-          break;
-        }
-        case GL_STACK_OVERFLOW: {
-          log.println( "GL: GL_STACK_OVERFLOW" );
-          break;
-        }
-        case GL_OUT_OF_MEMORY: {
-          log.println( "GL: GL_OUT_OF_MEMORY" );
-          break;
-        }
-        case GL_TABLE_TOO_LARGE: {
-          log.println( "GL: GL_TABLE_TOO_LARGE" );
-          break;
-        }
+    switch( result ) {
+      case GL_NO_ERROR: {
+        return;
+      }
+      case GL_INVALID_ENUM: {
+        message = "GL_INVALID_ENUM";
+        break;
+      }
+      case GL_INVALID_VALUE: {
+        message = "GL_INVALID_VALUE";
+        break;
+      }
+      case GL_INVALID_OPERATION: {
+        message = "GL_INVALID_OPERATION";
+        break;
+      }
+      case GL_STACK_OVERFLOW: {
+        message = "GL_STACK_OVERFLOW";
+        break;
+      }
+      case GL_OUT_OF_MEMORY: {
+        message = "GL_OUT_OF_MEMORY";
+        break;
+      }
+      case GL_TABLE_TOO_LARGE: {
+        message = "GL_TABLE_TOO_LARGE";
+        break;
+      }
+      default: {
+        message = "UNKNOWN(" + String( int( result ) ) + ")";
+        break;
       }
     }
 
-    return result;
+    System::trap();
+    System::abort( "GL error `%s' at %s:%d: %s", message, file, line, function );
   }
 
 }
