@@ -14,26 +14,26 @@
 namespace oz
 {
 
-  class Vec3
+  class Vec3 : public Simd
   {
     public:
 
       static const Vec3 ZERO;
-
-      float x;
-      float y;
-      float z;
 
       OZ_ALWAYS_INLINE
       Vec3()
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec3( float x_, float y_, float z_ ) : x( x_ ), y( y_ ), z( z_ )
+      explicit Vec3( float x_, float y_, float z_, float w_ ) : Simd( x_, y_, z_, w_ )
       {}
 
       OZ_ALWAYS_INLINE
-      explicit Vec3( const float* v ) : x( v[0] ), y( v[1] ), z( v[2] )
+      explicit Vec3( float x_, float y_, float z_ ) : Simd( x_, y_, z_, 0.0f )
+      {}
+
+      OZ_ALWAYS_INLINE
+      explicit Vec3( const float* v ) : Simd( v[0], v[1], v[2], 0.0f )
       {}
 
       OZ_ALWAYS_INLINE
@@ -51,13 +51,13 @@ namespace oz
       OZ_ALWAYS_INLINE
       operator const float* () const
       {
-        return &x;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
       operator float* ()
       {
-        return &x;
+        return f;
       }
 
       OZ_ALWAYS_INLINE
@@ -65,7 +65,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 3 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE
@@ -73,7 +73,7 @@ namespace oz
       {
         hard_assert( 0 <= i && i < 3 );
 
-        return ( &x )[i];
+        return f[i];
       }
 
       OZ_ALWAYS_INLINE

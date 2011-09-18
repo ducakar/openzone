@@ -440,10 +440,10 @@ namespace oz
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float[4] ) ) );
 
-        data[0] = Endian::shuffle32( Math::toBits( p.n.x ) );
-        data[1] = Endian::shuffle32( Math::toBits( p.n.y ) );
-        data[2] = Endian::shuffle32( Math::toBits( p.n.z ) );
-        data[3] = Endian::shuffle32( Math::toBits( p.d ) );
+        data[0] = Endian::shuffle32( Math::toBits( p.x ) );
+        data[1] = Endian::shuffle32( Math::toBits( p.y ) );
+        data[2] = Endian::shuffle32( Math::toBits( p.z ) );
+        data[3] = Endian::shuffle32( Math::toBits( p.w ) );
       }
 
       OZ_ALWAYS_INLINE

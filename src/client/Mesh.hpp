@@ -23,23 +23,29 @@ namespace client
 
   struct Vertex
   {
-    Point3   pos;
-    TexCoord texCoord;
-    Vec3     normal;
+    float pos[3];
+    float texCoord[2];
+    float normal[3];
 #ifdef OZ_BUMPMAP
-    Vec3     tangent;
-    Vec3     binormal;
+    float tangent[3];
+    float binormal[3];
 #endif
 
     OZ_ALWAYS_INLINE
     Vertex()
     {}
 
+#ifndef OZ_BUMPMAP
+    explicit Vertex( const Point3& pos,
+                     const TexCoord& texCoord = TexCoord( 0.0f, 0.0f ),
+                     const Vec3& normal = Vec3::ZERO );
+#else
     explicit Vertex( const Point3& pos,
                      const TexCoord& texCoord = TexCoord( 0.0f, 0.0f ),
                      const Vec3& normal = Vec3::ZERO,
                      const Vec3& tangent = Vec3::ZERO,
                      const Vec3& binormal = Vec3::ZERO );
+#endif
 
     bool operator == ( const Vertex& v ) const;
 

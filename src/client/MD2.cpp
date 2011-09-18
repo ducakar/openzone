@@ -449,7 +449,7 @@ namespace client
 
     log.printEnd( " OK" );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void MD2::load()
@@ -523,7 +523,7 @@ namespace client
       mesh.load( &is, GL_STREAM_DRAW );
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     isLoaded = true;
 
@@ -561,14 +561,21 @@ namespace client
       const Vec4* frameNormals   = &normals[frame * nFramePositions];
 
       for( int i = 0; i < nFrameVertices; ++i ) {
-        int j = int( vertices[i].pos.x * float( nFramePositions - 1 ) + 0.5f );
+        int j = int( vertices[i].pos[0] * float( nFramePositions - 1 ) + 0.5f );
 
         Vec4 pos    = framePositions[j];
         Vec4 normal = frameNormals[j];
 
-        animBuffer[i].pos      = Point3( pos );
-        animBuffer[i].texCoord = vertices[i].texCoord;
-        animBuffer[i].normal   = normal;
+        animBuffer[i].pos[0] = pos.x;
+        animBuffer[i].pos[1] = pos.y;
+        animBuffer[i].pos[2] = pos.z;
+
+        animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
+        animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
+
+        animBuffer[i].normal[0] = normal.x;
+        animBuffer[i].normal[1] = normal.y;
+        animBuffer[i].normal[2] = normal.z;
       }
 
       mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );
@@ -605,9 +612,16 @@ namespace client
         Vec4 pos    = currFramePositions[j] + t * ( nextFramePositions[j] - currFramePositions[j] );
         Vec4 normal = currFrameNormals[j]   + t * ( nextFrameNormals[j]   - currFrameNormals[j]   );
 
-        animBuffer[i].pos      = Point3( pos );
-        animBuffer[i].texCoord = vertices[i].texCoord;
-        animBuffer[i].normal   = normal;
+        animBuffer[i].pos[0] = pos.x;
+        animBuffer[i].pos[1] = pos.y;
+        animBuffer[i].pos[2] = pos.z;
+
+        animBuffer[i].texCoord[0] = vertices[i].texCoord[0];
+        animBuffer[i].texCoord[1] = vertices[i].texCoord[1];
+
+        animBuffer[i].normal[0] = normal.x;
+        animBuffer[i].normal[1] = normal.y;
+        animBuffer[i].normal[2] = normal.z;
       }
 
       mesh.upload( animBuffer, nFrameVertices, GL_STREAM_DRAW );

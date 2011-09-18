@@ -54,16 +54,16 @@ namespace client
   uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
     hard_assert( bytesPerPixel == 3 || bytesPerPixel == 4 );
 
     uint sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-#ifdef OZ_GL_COMPATIBLE
-    int internalFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-#else
+#ifdef OZ_GL_S3TC
     int internalFormat = bytesPerPixel == 4 ?
         GL_COMPRESSED_RGBA_S3TC_DXT5_EXT :
         GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+#else
+    int internalFormat = int( sourceFormat );
 #endif
 
     bool doGenerateMipmaps = false;
@@ -116,14 +116,12 @@ namespace client
 
     glBindTexture( GL_TEXTURE_2D, 0 );
 
-    if( glGetError() != GL_NO_ERROR ) {
+    if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
       glDeleteTextures( 1, &texId );
       texId = 0;
 
-      hard_assert( glGetError() == GL_NO_ERROR );
+      OZ_GL_CHECK_ERROR();
     }
-
-    hard_assert( glIsTexture( texId ) );
 
     return texId;
   }
@@ -191,13 +189,13 @@ namespace client
   uint Context::createTexture( const void* data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
   {
-    uint texNum = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
+    uint texId = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
 
-    if( texNum == 0 ) {
+    if( texId == 0 ) {
       log.println( "Error while creating texture from buffer" );
       throw Exception( "Texture loading failed" );
     }
-    return texNum;
+    return texId;
   }
 
   uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int minFilter )
@@ -216,18 +214,16 @@ namespace client
     log.printEnd( " %s ... OK", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
 
     int  bytesPerPixel = image->format->BitsPerPixel / 8;
-    uint texNum = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
+    uint texId = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
                                  magFilter, minFilter );
 
     SDL_FreeSurface( image );
 
-    if( texNum == 0 ) {
+    if( texId == 0 || !glIsTexture( texId ) ) {
       throw Exception( "Texture loading failed" );
     }
 
-    hard_assert( glIsTexture( texNum ) );
-
-    return texNum;
+    return texId;
   }
 
   void Context::writeTexture( uint id, OutputStream* stream )
@@ -251,7 +247,7 @@ namespace client
     }
 
     glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     stream->writeInt( wrap );
     stream->writeInt( magFilter );
@@ -264,24 +260,24 @@ namespace client
 
       glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
       glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
-#ifdef OZ_GL_COMPATIBLE
-      size = width * height * 4;
-#else
+#ifdef OZ_GL_S3TC
       glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
+#else
+      size = width * height * 4;
 #endif
 
       stream->writeInt( width );
       stream->writeInt( height );
       stream->writeInt( size );
 
-#ifdef OZ_GL_COMPATIBLE
-      glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareWrite( size ) );
-#else
+#ifdef OZ_GL_S3TC
       glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
+#else
+      glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareWrite( size ) );
 #endif
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 #endif
 
@@ -308,7 +304,7 @@ namespace client
 
   uint Context::readTexture( InputStream* stream )
   {
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     uint texId;
     glGenTextures( 1, &texId );
@@ -320,11 +316,11 @@ namespace client
     int nMipmaps       = stream->readInt();
     int internalFormat = stream->readInt();
 
-#ifdef OZ_GL_COMPATIBLE
-    hard_assert( internalFormat == GL_RGB || internalFormat == GL_RGBA );
-#else
+#ifdef OZ_GL_S3TC
     hard_assert( internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
                  internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT );
+#else
+    hard_assert( internalFormat == GL_RGB || internalFormat == GL_RGBA );
 #endif
 
     if( !wrap ) {
@@ -340,23 +336,21 @@ namespace client
       int height = stream->readInt();
       int size = stream->readInt();
 
-#ifdef OZ_GL_COMPATIBLE
+#ifdef OZ_GL_S3TC
+      glCompressedTexImage2D( GL_TEXTURE_2D, i, uint( internalFormat ), width, height, 0,
+                              size, stream->prepareRead( size ) );
+#else
       glTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
                     GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareRead( size ) );
-#else
-      glCompressedTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
-                              size, stream->prepareRead( size ) );
 #endif
     }
 
-    if( glGetError() != GL_NO_ERROR ) {
+    if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
       glDeleteTextures( 1, &texId );
       texId = 0;
-
-      hard_assert( glGetError() == GL_NO_ERROR );
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
 
     return texId;
   }
@@ -405,7 +399,7 @@ namespace client
       log.print( "Unloading texture '%s' ...", translator.textures[id].name.cstr() );
       glDeleteTextures( 1, &resource.id );
 
-      hard_assert( glGetError() == GL_NO_ERROR );
+      OZ_GL_CHECK_ERROR();
 
       log.printEnd( " OK" );
     }
@@ -422,7 +416,7 @@ namespace client
 
     resource.nUsers = 1;
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     const String& name = translator.sounds[id].name;
     const String& path = translator.sounds[id].path;
@@ -457,7 +451,7 @@ namespace client
 
     SDL_FreeWAV( data );
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     if( resource.id == 0 ) {
       log.printEnd( " Failed" );
@@ -480,7 +474,7 @@ namespace client
       log.print( "Unloading sound '%s' ...", translator.sounds[id].name.cstr() );
       alDeleteBuffers( 1, &resource.id );
 
-      hard_assert( alGetError() == AL_NO_ERROR );
+      OZ_AL_CHECK_ERROR();
 
       log.printEnd( " OK" );
     }
@@ -693,7 +687,7 @@ namespace client
     audios.free();
     audios.dealloc();
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     for( auto i = smms.citer(); i.isValid(); ) {
       auto resource = i;
@@ -735,7 +729,7 @@ namespace client
     while( !sources.isEmpty() ) {
       alDeleteSources( 1, &sources.first()->id );
       removeSource( sources.first(), null );
-      hard_assert( alGetError() == AL_NO_ERROR );
+      OZ_AL_CHECK_ERROR();
     }
     for( auto i = bspSources.iter(); i.isValid(); ) {
       auto src = i;
@@ -743,7 +737,7 @@ namespace client
 
       alDeleteSources( 1, &src->id );
       removeBSPSource( src, src.key() );
-      hard_assert( alGetError() == AL_NO_ERROR );
+      OZ_AL_CHECK_ERROR();
     }
     for( auto i = objSources.iter(); i.isValid(); ) {
       auto src = i;
@@ -751,7 +745,7 @@ namespace client
 
       alDeleteSources( 1, &src->id );
       removeObjSource( src, src.key() );
-      hard_assert( alGetError() == AL_NO_ERROR );
+      OZ_AL_CHECK_ERROR();
     }
 
     sources.free();
@@ -768,7 +762,7 @@ namespace client
     }
 
     hard_assert( glGetError() == AL_NO_ERROR );
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
 
     Source::pool.free();
 

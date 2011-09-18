@@ -311,7 +311,7 @@ namespace client
 
     context.addSource( srcId, sample );
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
   void BSP::playContSound( const Struct::Entity* entity, int sample ) const
@@ -358,7 +358,7 @@ namespace client
       contSource->isUpdated = true;
     }
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
 #ifdef OZ_SDK

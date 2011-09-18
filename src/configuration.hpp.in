@@ -33,7 +33,10 @@
 // enable some mesa-specific compatibility
 #cmakedefine                    OZ_GL_COMPATIBLE
 
-// enable bumpmap
+// use S3 texture compression
+#cmakedefine                    OZ_GL_S3TC
+
+// enable bump-mapping
 #cmakedefine                    OZ_BUMPMAP
 
 // fix error in vorbisfile.h

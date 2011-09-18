@@ -9,100 +9,11 @@
 
 #include "stable.hpp"
 
-#include <initializer_list>
-
 using namespace oz;
-
-struct Foo
-{
-  int data[2];
-
-  Foo* prev[1];
-  Foo* next[1];
-
-  Foo()
-  {
-    printf( "Foo()\n" );
-  }
-
-  ~Foo()
-  {
-    printf( "~Foo()\n" );
-  }
-
-  Foo( const Foo& f )
-  {
-    printf( "Foo( const Foo& )\n" );
-
-    data[0] = f.data[0];
-    data[1] = f.data[1];
-    prev[0] = f.prev[0];
-    next[0] = f.next[0];
-  }
-
-//   Foo( Foo&& f )
-//   {
-//     printf( "Foo( Foo&& )\n" );
-//
-//     data[0] = f.data[0];
-//     data[1] = f.data[1];
-//     prev[0] = f.prev[0];
-//     next[0] = f.next[0];
-//   }
-
-  Foo& operator = ( const Foo& f )
-  {
-    printf( "Foo& operator = ( const Foo& )\n" );
-
-    data[0] = f.data[0];
-    data[1] = f.data[1];
-    prev[0] = f.prev[0];
-    next[0] = f.next[0];
-    return *this;
-  }
-
-//   Foo& operator = ( Foo&& f )
-//   {
-//     printf( "Foo& operator = ( Foo&& )\n" );
-//
-//     data[0] = f.data[0];
-//     data[1] = f.data[1];
-//     prev[0] = f.prev[0];
-//     next[0] = f.next[0];
-//     return *this;
-//   }
-
-};
-
-struct Bar
-{
-  int i;
-  Bar* next;
-};
 
 int main( int, char** )
 {
-  HashString<> hs;
-  HashString<> hs1;
-  hs1 = /*static_cast< HashString<Foo>&& >(*/ hs /*)*/;
-
-  hs.add( "0" );
-  hs.add( "1" );
-  hs.add( "3" );
-
-  hs1 = hs;
-
-  foreach( i, hs1.citer() ) {
-    printf( "%s :: ", i.key().cstr() );
-  }
-  printf( "\n" );
-
-  hs.clear();
-  hs.dealloc();
-  hs1.clear();
-  hs1.dealloc();
-
+  new int;
   Alloc::printLeaks();
-
   return 0;
 }

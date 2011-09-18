@@ -54,7 +54,7 @@ namespace client
 
     log.printEnd( " OK" );
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void SMM::draw() const

@@ -218,14 +218,8 @@ namespace oz
         hard_assert( ( count == size ) == ( freeSlot == size ) );
 
         if( freeSlot == size ) {
-          if( size == 0 ) {
-            size = GRANULARITY;
-            data = new Elem[size];
-          }
-          else {
-            size *= 2;
-            data = aRealloc( data, count, size );
-          }
+          size = size == 0 ? GRANULARITY : 2 * size;
+          data = aRealloc( data, count, size );
 
           freeSlot = count;
           for( int i = count; i < size; ++i ) {

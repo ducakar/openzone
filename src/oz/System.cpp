@@ -18,9 +18,11 @@
 #include <cstring>
 #include <unistd.h>
 
-#if !defined( __clang__ ) && !defined( OZ_MINGW )
-# include <cxxabi.h>
+#ifndef OZ_MINGW
 # include <execinfo.h>
+# ifndef __clang__
+#  include <cxxabi.h>
+# endif
 #endif
 
 // prevent old-style cast warning due to a bug in <bits/signum.h>
@@ -74,7 +76,7 @@ namespace oz
   OZ_THREAD_LOCAL void* System::framePtrs[System::TRACE_SIZE + 1];
   OZ_THREAD_LOCAL char  System::output[System::TRACE_BUFFER_SIZE];
 
-#if defined( __clang__ ) || defined( OZ_MINGW )
+#ifdef OZ_MINGW
 
   void System::signalHandler( int )
   {}
@@ -85,52 +87,8 @@ namespace oz
   void System::resetSignals()
   {}
 
-  int System::getStackTrace( char** bufferPtr )
-  {
-    *bufferPtr = null;
-    return 0;
-  }
-
   void System::trap()
   {}
-
-  void System::error( const char* msg, ... )
-  {
-    va_list ap;
-    va_start( ap, msg );
-
-    fflush( stdout );
-
-    fprintf( stderr, "\n" );
-    vfprintf( stderr, msg, ap );
-    fprintf( stderr, "\n" );
-
-    fflush( stderr );
-
-    if( log.isFile() ) {
-      log.printEnd( "\n" );
-      log.vprintRaw( msg, ap );
-      log.printEnd( "\n" );
-    }
-
-    va_end( ap );
-  }
-
-  void System::abort( const char* msg, ... )
-  {
-    System::resetSignals();
-
-    va_list ap;
-    va_start( ap, msg );
-
-    fflush( stdout );
-
-    fprintf( stderr, "\n" );
-    vfprintf( stderr, msg, ap );
-    fprintf( stderr, "\n" );
-
-    ::abort();
-  }
 
 #else
 
@@ -167,6 +125,63 @@ namespace oz
     signal( SIGTERM, SIG_DFL );
   }
 
+  void System::trap()
+  {
+    signal( SIGTRAP, SIG_IGN );
+    raise( SIGTRAP );
+    signal( SIGTRAP, SIG_DFL );
+  }
+
+#endif
+
+  void System::error( const char* msg, ... )
+  {
+    va_list ap;
+    va_start( ap, msg );
+
+    fflush( stdout );
+
+    fprintf( stderr, "\n" );
+    vfprintf( stderr, msg, ap );
+    fprintf( stderr, "\n" );
+
+    fflush( stderr );
+
+    if( log.isFile() ) {
+      log.printEnd( "\n" );
+      log.vprintRaw( msg, ap );
+      log.printEnd( "\n" );
+    }
+
+    va_end( ap );
+  }
+
+#ifdef OZ_MINGW
+
+  int System::getStackTrace( char** bufferPtr )
+  {
+    *bufferPtr = null;
+    return 0;
+  }
+
+  void System::abort( const char* msg, ... )
+  {
+    System::resetSignals();
+
+    va_list ap;
+    va_start( ap, msg );
+
+    fflush( stdout );
+
+    fprintf( stderr, "\n" );
+    vfprintf( stderr, msg, ap );
+    fprintf( stderr, "\n" );
+
+    ::abort();
+  }
+
+#else
+
   int System::getStackTrace( char** bufferPtr )
   {
     int    nFrames = backtrace( framePtrs, TRACE_SIZE + 1 ) - 1;
@@ -176,7 +191,7 @@ namespace oz
       return 0;
     }
 
-    const char* outEnd = output + TRACE_BUFFER_SIZE;
+    const char* const outEnd = output + TRACE_BUFFER_SIZE;
     char* out = output;
 
     *out = '\0';
@@ -241,29 +256,34 @@ namespace oz
       *address = '\0';
       ++address;
 
+# ifdef __clang__
+      size_t size;
+# else
       // demangle name
       char*  demangleBuf = reinterpret_cast<char*>( malloc( STRING_BUFFER_SIZE ) );
       char*  demangleOut;
-      char*  demangled;
       size_t size = STRING_BUFFER_SIZE;
       int    status = 0;
 
       demangleOut = abi::__cxa_demangle( func, demangleBuf, &size, &status );
       demangleBuf = demangleOut != null ? demangleOut : demangleBuf;
-      demangled   = status == 0 ? demangleOut : func;
+      func        = status == 0 ? demangleOut : func;
+# endif
 
-      size_t fileLen      = strnlen( file, size );
-      size_t demangledLen = strnlen( demangled, size );
-      size_t offsetLen    = strnlen( offset, size );
-      size_t addressLen   = strnlen( address, size );
+      size_t fileLen    = strnlen( file, STRING_BUFFER_SIZE );
+      size_t funcLen    = strnlen( func, STRING_BUFFER_SIZE );
+      size_t offsetLen  = strnlen( offset, STRING_BUFFER_SIZE );
+      size_t addressLen = strnlen( address, STRING_BUFFER_SIZE );
 
       size = fileLen + 2 + addressLen + 1;
-      size = demangledLen != 0 && offsetLen != 0 ?
-          size + 1 + demangledLen + 3 + offsetLen + 1 :
-          size;
+      if( funcLen != 0 && offsetLen != 0 ) {
+        size += 1 + funcLen + 3 + offsetLen + 1;
+      }
 
       if( out + size > outEnd ) {
+# ifndef __clang__
         free( demangleBuf );
+# endif
         break;
       }
 
@@ -273,12 +293,12 @@ namespace oz
       *out = '(';
       ++out;
 
-      if( demangledLen != 0 && offsetLen != 0 ) {
+      if( funcLen != 0 && offsetLen != 0 ) {
         *out = ' ';
         ++out;
 
-        memcpy( out, demangled, demangledLen );
-        out += demangledLen;
+        memcpy( out, func, funcLen );
+        out += funcLen;
 
         *out = ' ';
         ++out;
@@ -303,41 +323,14 @@ namespace oz
       *out = '\0';
       ++out;
 
+# ifndef __clang__
       free( demangleBuf );
+# endif
     }
 
     *bufferPtr = reinterpret_cast<char*>( realloc( frames, size_t( out - output ) ) );
     memcpy( *bufferPtr, output, size_t( out - output ) );
     return nFrames;
-  }
-
-  void System::trap()
-  {
-    signal( SIGTRAP, SIG_IGN );
-    raise( SIGTRAP );
-    signal( SIGTRAP, SIG_DFL );
-  }
-
-  void System::error( const char* msg, ... )
-  {
-    va_list ap;
-    va_start( ap, msg );
-
-    fflush( stdout );
-
-    fprintf( stderr, "\n" );
-    vfprintf( stderr, msg, ap );
-    fprintf( stderr, "\n" );
-
-    fflush( stderr );
-
-    if( log.isFile() ) {
-      log.printEnd( "\n" );
-      log.vprintRaw( msg, ap );
-      log.printEnd( "\n" );
-    }
-
-    va_end( ap );
   }
 
   void System::abort( const char* msg, ... )

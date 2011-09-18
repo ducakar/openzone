@@ -48,16 +48,6 @@ namespace oz
       static void resetSignals();
 
       /**
-       * Generates and demangles stack trace.
-       * On success it allocates a buffer via malloc where it stores null-byte-separated string
-       * of frame names. The caller should free buffer.
-       * On failure 0 is returned and bufferPtr is unchanged.
-       * @param bufferPtr where to save pointer to buffer
-       * @return number of frames
-       */
-      static int getStackTrace( char** bufferPtr );
-
-      /**
        * Raise trap signal (to trigger breakpoint).
        */
       static void trap();
@@ -68,6 +58,16 @@ namespace oz
        * @param msg
        */
       static void error( const char* msg, ... );
+
+      /**
+       * Generates and demangles stack trace.
+       * On success it allocates a buffer via malloc where it stores null-byte-separated string
+       * of frame names. The caller should free buffer.
+       * On failure 0 is returned and bufferPtr is unchanged.
+       * @param bufferPtr where to save pointer to buffer
+       * @return number of frames
+       */
+      static int getStackTrace( char** bufferPtr );
 
       /**
        * Crash with given message, stack trace and wait for a debugger or fatal signal.

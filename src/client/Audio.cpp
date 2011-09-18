@@ -63,7 +63,7 @@ namespace client
 
     context.addSource( srcId, sample );
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
   void Audio::playContSound( int sample, float volume, const Object* obj,
@@ -102,7 +102,7 @@ namespace client
       contSource->isUpdated = true;
     }
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
   void Audio::playEngineSound( int sample, float volume, float pitch, const Object* obj ) const
@@ -141,7 +141,7 @@ namespace client
       contSource->isUpdated = true;
     }
 
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
   Audio::Audio( const Object* obj_ ) : obj( obj_ ), clazz( obj_->clazz ), flags( 0 )
@@ -153,7 +153,7 @@ namespace client
         context.requestSound( samples[i] );
       }
     }
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
   Audio::~Audio()
@@ -165,7 +165,7 @@ namespace client
         context.releaseSound( samples[i] );
       }
     }
-    hard_assert( alGetError() == AL_NO_ERROR );
+    OZ_AL_CHECK_ERROR();
   }
 
 }

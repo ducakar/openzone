@@ -21,55 +21,110 @@ namespace oz
 namespace client
 {
 
-#ifdef OZ_BUMPMAP
-  Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_,
-                  const Vec3& tangent_, const Vec3& binormal_ ) :
-      pos( pos_ ), texCoord( texCoord_ ), normal( normal_ ),
-      tangent( tangent_ ), binormal( binormal_ )
-  {}
+#ifndef OZ_BUMPMAP
+
+  Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_ )
+  {
+    pos[0] = pos_.x;
+    pos[1] = pos_.y;
+    pos[2] = pos_.z;
+
+    texCoord[0] = texCoord_.u;
+    texCoord[1] = texCoord_.v;
+
+    normal[0] = normal_.x;
+    normal[1] = normal_.y;
+    normal[2] = normal_.z;
+  }
 
   bool Vertex::operator == ( const Vertex& v ) const
   {
-    return pos == v.pos && texCoord == v.texCoord && normal == v.normal &&
-        tangent == v.tangent && binormal == v.binormal;
+    return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
+        texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
+        normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2];
   }
+
 #else
+
   Vertex::Vertex( const Point3& pos_, const TexCoord& texCoord_, const Vec3& normal_,
-                  const Vec3&, const Vec3& ) :
-      pos( pos_ ), texCoord( texCoord_ ), normal( normal_ )
-  {}
+                  const Vec3& tangent_, const Vec3& binormal_ )
+  {
+    pos[0] = pos_.x;
+    pos[1] = pos_.y;
+    pos[2] = pos_.z;
+
+    texCoord[0] = texCoord_.u;
+    texCoord[1] = texCoord_.v;
+
+    normal[0] = normal_.x;
+    normal[1] = normal_.y;
+    normal[2] = normal_.z;
+
+    tangent[0] = tangent_.x;
+    tangent[1] = tangent_.y;
+    tangent[2] = tangent_.z;
+
+    binormal[0] = binormal_.x;
+    binormal[1] = binormal_.y;
+    binormal[2] = binormal_.z;
+  }
 
   bool Vertex::operator == ( const Vertex& v ) const
   {
-    return pos == v.pos && texCoord == v.texCoord && normal == v.normal;
+    return pos[0] == v.pos[0] && pos[1] == v.pos[1] && pos[2] == v.pos[2] &&
+        texCoord[0] == v.texCoord[0] && texCoord[1] == v.texCoord[1] &&
+        normal[0] == v.normal[0] && normal[1] == v.normal[1] && normal[2] == v.normal[2] &&
+        tangent[0] == v.tangent[0] && tangent[1] == v.tangent[1] && tangent[2] == v.tangent[2] &&
+        binormal[0] == v.binormal[0] && binormal[1] == v.binormal[1] && binormal[2] == v.binormal[2];
   }
+
 #endif
 
   void Vertex::read( InputStream* stream )
   {
-    pos = stream->readPoint3();
+    pos[0] = stream->readFloat();
+    pos[1] = stream->readFloat();
+    pos[2] = stream->readFloat();
 
     texCoord[0] = stream->readFloat();
     texCoord[1] = stream->readFloat();
 
-    normal   = stream->readVec3();
+    normal[0] = stream->readFloat();
+    normal[1] = stream->readFloat();
+    normal[2] = stream->readFloat();
+
 #ifdef OZ_BUMPMAP
-    tangent  = stream->readVec3();
-    binormal = stream->readVec3();
+    tangent[0] = stream->readFloat();
+    tangent[1] = stream->readFloat();
+    tangent[2] = stream->readFloat();
+
+    binormal[0] = stream->readFloat();
+    binormal[1] = stream->readFloat();
+    binormal[2] = stream->readFloat();
 #endif
   }
 
   void Vertex::write( OutputStream* stream ) const
   {
-    stream->writePoint3( pos );
+    stream->writeFloat( pos[0] );
+    stream->writeFloat( pos[1] );
+    stream->writeFloat( pos[2] );
 
     stream->writeFloat( texCoord[0] );
     stream->writeFloat( texCoord[1] );
 
-    stream->writeVec3( normal );
+    stream->writeFloat( normal[0] );
+    stream->writeFloat( normal[1] );
+    stream->writeFloat( normal[2] );
+
 #ifdef OZ_BUMPMAP
-    stream->writeVec3( tangent );
-    stream->writeVec3( binormal );
+    stream->writeFloat( tangent[0] );
+    stream->writeFloat( tangent[1] );
+    stream->writeFloat( tangent[2] );
+
+    stream->writeFloat( binormal[0] );
+    stream->writeFloat( binormal[1] );
+    stream->writeFloat( binormal[2] );
 #endif
   }
 
@@ -160,6 +215,7 @@ namespace client
 #endif
 
     int nTextures = stream->readInt();
+    hard_assert( nTextures != 0 );
 
     if( nTextures < 0 ) {
       nTextures = ~nTextures;
@@ -221,7 +277,7 @@ namespace client
 
     textures.dealloc();
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void Mesh::unload()
@@ -250,7 +306,7 @@ namespace client
       vao = 0;
     }
 
-    hard_assert( glGetError() == GL_NO_ERROR );
+    OZ_GL_CHECK_ERROR();
   }
 
   void Mesh::upload( const Vertex* vertices, int nVertices, uint usage ) const
