@@ -56,8 +56,8 @@ namespace oz
       float  debrisRejection;
       float  debrisMass;
       float  debrisLifeTime;
-      Vec3   debrisColour;
       float  debrisColourSpread;
+      Vec3   debrisColour;
 
       String modelType;
       int    modelIndex;

@@ -21,8 +21,8 @@ namespace oz
       String      message;
 
       const char* file;
-      int         line;
       const char* function;
+      int         line;
 
       int         nFrames;
       char*       frames;

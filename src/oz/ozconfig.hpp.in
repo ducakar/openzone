@@ -9,6 +9,9 @@
 // whether math library has sincosf function
 #cmakedefine OZ_HAVE_SINCOSF
 
+// enable SIMD code for linear math
+#cmakedefine OZ_SIMD
+
 // use big-endian for stream
 #cmakedefine OZ_BIG_ENDIAN_STREAM
 

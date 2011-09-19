@@ -16,11 +16,6 @@ namespace oz
 
   class Matrix
   {
-    private:
-
-      void loadStressTest();
-      void loadSample();
-
     public:
 
       static const float MAX_VELOCITY2;

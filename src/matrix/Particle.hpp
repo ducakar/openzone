@@ -36,8 +36,8 @@ namespace oz
       Particle* prev[1];
       Particle* next[1];
 
-      int       index;        // position in world.objects vector
       Cell*     cell;
+      int       index;        // position in world.objects vector
 
       Point3    p;            // position
       Vec3      velocity;
@@ -51,7 +51,7 @@ namespace oz
       float     mass;
       float     lifeTime;
 
-      Particle() : index( -1 ), cell( null )
+      Particle() : cell( null ), index( -1 )
       {}
 
     private:

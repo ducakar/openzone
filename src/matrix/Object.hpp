@@ -204,16 +204,16 @@ namespace oz
       Object*            prev[1];     // the previous object in cell.objects and list
       Object*            next[1];     // the next object in cell.objects and list
 
-      int                index;       // position in world.objects vector
       Cell*              cell;        // parent cell, null if not positioned in the world
+      int                index;       // position in world.objects vector
 
       int                flags;
       int                oldFlags;
 
-      const ObjectClass* clazz;
-
       // damage
       float              life;
+
+      const ObjectClass* clazz;
 
       // events are used for reporting hits, friction & stuff and are cleared at the beginning of
       // the frame
@@ -221,7 +221,7 @@ namespace oz
 
     public:
 
-      Object() : index( -1 ), cell( null )
+      Object() : cell( null ), index( -1 )
       {}
 
       virtual ~Object();

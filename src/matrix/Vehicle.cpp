@@ -222,7 +222,7 @@ namespace oz
             nShots[weapon] = max( -1, nShots[weapon] - 1 );
 
             addEvent( EVENT_SHOT0 + weapon*2, 1.0f );
-            lua.call( clazz->onShot[weapon], this, pilot );
+            lua.objectCall( clazz->onShot[weapon], this, pilot );
           }
         }
       }

@@ -14,6 +14,9 @@
 #include "arrays.hpp"
 #include "Pool.hpp"
 
+#pragma GCC diagnostic push "-Wpadded"
+#pragma GCC diagnostic ignored "-Wpadded"
+
 namespace oz
 {
 
@@ -26,13 +29,13 @@ namespace oz
 
       struct Elem
       {
+        Elem*     next;
         const int key;
         Type      value;
-        Elem*     next;
 
         OZ_ALWAYS_INLINE
-        explicit Elem( int key_, const Type& value_, Elem* next_ ) :
-            key( key_ ), value( value_ ), next( next_ )
+        explicit Elem( Elem* next_, int key_, const Type& value_ ) :
+            next( next_ ), key( key_ ), value( value_ )
         {}
 
         OZ_PLACEMENT_POOL_ALLOC( Elem, SIZE )
@@ -318,7 +321,7 @@ namespace oz
         Elem* newChain = null;
 
         while( chain != null ) {
-          newChain = new( pool ) Elem( chain->key, chain->value, newChain );
+          newChain = new( pool ) Elem( newChain, chain->key, chain->value );
           chain = chain->next;
         }
         return newChain;
@@ -621,7 +624,7 @@ namespace oz
         hard_assert( !contains( key ) );
 
         uint  i = uint( key ) % uint( SIZE );
-        Elem* elem = new( pool ) Elem( key, value, data[i] );
+        Elem* elem = new( pool ) Elem( data[i], key, value );
 
         data[i] = elem;
         ++count;
@@ -698,3 +701,5 @@ namespace oz
   };
 
 }
+
+#pragma GCC diagnostic pop "-Wpadded"

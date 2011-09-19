@@ -149,6 +149,7 @@ namespace oz
   static_assert( sizeof( int ) == 4, "sizeof( int ) should be 4" );
   static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
 
+#ifdef OZ_SIMD
   /*
    * SIMD types
    */
@@ -156,8 +157,12 @@ namespace oz
   typedef uint  __attribute__(( vector_size( 16 ) )) uint4;
   typedef float __attribute__(( vector_size( 16 ) )) float4;
 
+# define   int4( x, y, z, w )   (int4) { x, y, z, w }
+# define  uint4( x, y, z, w )  (uint4) { x, y, z, w }
+# define float4( x, y, z, w ) (float4) { x, y, z, w }
+
   /*
-   * SIMD union
+   * SIMD register representation
    */
   struct Simd
   {
@@ -172,12 +177,22 @@ namespace oz
       float4 f4;
       float  f[4];
 
+      // vector members
       struct
       {
         float x;
         float y;
         float z;
         float w;
+      };
+
+      // plane members
+      struct
+      {
+        float nx;
+        float ny;
+        float nz;
+        float d;
       };
     };
 
@@ -186,17 +201,18 @@ namespace oz
     {}
 
     OZ_ALWAYS_INLINE
-    Simd( int x, int y, int z, int w ) : i4( (int4) { x, y, z, w } )
+    Simd( int4 i4_ ) : i4( i4_ )
     {}
 
     OZ_ALWAYS_INLINE
-    Simd( uint x, uint y, uint z, uint w ) : u4( (uint4) { x, y, z, w } )
+    Simd( uint4 u4_ ) : u4( u4_ )
     {}
 
     OZ_ALWAYS_INLINE
-    Simd( float x, float y, float z, float w ) : f4( (float4) { x, y, z, w } )
+    Simd( float4 f4_ ) : f4( f4_ )
     {}
   };
+#endif
 
   //***********************************
   //*        BASIC ALGORITHMS         *

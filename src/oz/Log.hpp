@@ -11,6 +11,9 @@
 
 #include "Exception.hpp"
 
+#pragma GCC diagnostic push "-Wpadded"
+#pragma GCC diagnostic ignored "-Wpadded"
+
 namespace oz
 {
 
@@ -19,7 +22,7 @@ namespace oz
     private:
 
       void*  stream;          // should be declared as FILE*, but we don't want to include <cstdio>
-      int    tabs;            // amount of indent (one indent is 3 spaces)
+      int    tabs;            // amount of indent
       String indentStr;       // indent string
 
     public:
@@ -143,3 +146,5 @@ namespace oz
   extern Log log;
 
 }
+
+#pragma GCC diagnostic pop "-Wpadded"

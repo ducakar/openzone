@@ -11,6 +11,9 @@
 
 #include "stream.hpp"
 
+#pragma GCC diagnostic push "-Wpadded"
+#pragma GCC diagnostic ignored "-Wpadded"
+
 namespace oz
 {
 
@@ -79,3 +82,5 @@ namespace oz
   extern Buffer buffer;
 
 }
+
+#pragma GCC diagnostic pop "-Wpadded"
