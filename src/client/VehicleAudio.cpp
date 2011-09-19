@@ -37,7 +37,7 @@ namespace client
     const int ( &samples )[ObjectClass::AUDIO_SAMPLES] = obj->clazz->audioSamples;
 
     // engine sound
-    if( vehicle->crew[Vehicle::PILOT] != -1 && samples[Vehicle::EVENT_ENGINE] != -1 ) {
+    if( vehicle->pilot != -1 && samples[Vehicle::EVENT_ENGINE] != -1 ) {
       float pitch = clazz->enginePitchBias + min( vehicle->momentum.sqL() * clazz->enginePitchRatio,
                                                   clazz->enginePitchLimit );
 
@@ -55,16 +55,14 @@ namespace client
       }
     }
 
-    // crew
-    for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
-      if( vehicle->crew[i] != -1 ) {
-        const Bot* bot = static_cast<const Bot*>( orbis.objects[ vehicle->crew[i] ] );
+    // pilot
+    if( vehicle->pilot != -1 ) {
+      const Bot* bot = static_cast<const Bot*>( orbis.objects[vehicle->pilot] );
 
-        hard_assert( bot->flags & Object::BOT_BIT );
+      hard_assert( bot->flags & Object::BOT_BIT );
 
-        if( bot != null && ( bot->flags & Object::AUDIO_BIT ) ) {
-          context.playAudio( bot, parent == null ? this : parent );
-        }
+      if( bot != null && ( bot->flags & Object::AUDIO_BIT ) ) {
+        context.playAudio( bot, parent == null ? this : parent );
       }
     }
   }

@@ -132,30 +132,28 @@ namespace oz
 
     Mat44 rotMat = Mat44( rot );
 
-    for( int i = 0; i < CREW_MAX; ++i ) {
-      if( crew[i] != -1 ) {
-        Bot* bot = static_cast<Bot*>( orbis.objects[ crew[i] ] );
+    if( pilot != -1 ) {
+      Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-        crew[i] = -1;
+      pilot  = -1;
 
-        if( bot != null ) {
-          bot->p = p + rotMat * clazz->crewPos[i];
+      if( bot != null ) {
+        bot->p = p + rotMat * clazz->pilotPos;
 
-          Point3 ejectPos = Point3( bot->p.x, bot->p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
+        Point3 ejectPos = Point3( bot->p.x, bot->p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
 
-          // kill bot if eject path is blocked
-          if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
-            bot->kill();
-            bot->exit();
-          }
-          else {
-            float hsc[2];
-            Math::sincos( h, &hsc[0], &hsc[1] );
+        // kill bot if eject path is blocked
+        if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
+          bot->kill();
+          bot->exit();
+        }
+        else {
+          float hsc[2];
+          Math::sincos( h, &hsc[0], &hsc[1] );
 
-            bot->p = ejectPos;
-            bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
-            bot->exit();
-          }
+          bot->p = ejectPos;
+          bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+          bot->exit();
         }
       }
     }
@@ -166,38 +164,36 @@ namespace oz
   {
     const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-    // clean invalid crew references and throw out dead crew
-    for( int i = 0; i < CREW_MAX; ++i ) {
-      if( crew[i] != -1 ) {
-        Bot* bot = static_cast<Bot*>( orbis.objects[ crew[i] ] );
+    // clean invalid pilot reference and throw him out if dead
+    if( pilot != -1 ) {
+      Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-        if( bot == null || bot->parent == -1 ) {
-          crew[i] = -1;
-        }
-        else if( bot->flags & Bot::DEATH_BIT ) {
-          crew[i] = -1;
-          bot->exit();
-        }
+      if( bot == null || bot->parent == -1 ) {
+        pilot = -1;
+      }
+      else if( bot->flags & Bot::DEATH_BIT ) {
+        pilot = -1;
+        bot->exit();
       }
     }
 
     actions = 0;
 
-    Bot* pilot = null;
+    Bot* bot = null;
 
-    if( crew[PILOT] != -1 ) {
-      pilot = static_cast<Bot*>( orbis.objects[ crew[PILOT] ] );
+    if( pilot != -1 ) {
+      bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-      h = pilot->h;
-      v = pilot->v;
+      h = bot->h;
+      v = bot->v;
       rot = Quat::rotZYX( h, 0.0f, v - Math::TAU / 4.0f );
-      actions = pilot->actions;
+      actions = bot->actions;
       flags &= ~DISABLED_BIT;
     }
 
     Mat44 rotMat = Mat44::rotation( rot );
 
-    if( crew[PILOT] != -1 ) {
+    if( pilot != -1 ) {
       ( this->*handlers[clazz->type] )( rotMat );
     }
 
@@ -222,7 +218,7 @@ namespace oz
             nShots[weapon] = max( -1, nShots[weapon] - 1 );
 
             addEvent( EVENT_SHOT0 + weapon*2, 1.0f );
-            lua.objectCall( clazz->onShot[weapon], this, pilot );
+            lua.objectCall( clazz->onShot[weapon], this, bot );
           }
         }
       }
@@ -236,48 +232,44 @@ namespace oz
       }
     }
 
-    for( int i = 0; i < CREW_MAX; ++i ) {
-      if( crew[i] != -1 ) {
-        Bot* bot = static_cast<Bot*>( orbis.objects[crew[i]] );
+    if( bot != null ) {
+      bot->p = p + rotMat * clazz->pilotPos + momentum * Timer::TICK_TIME;
+      bot->momentum = velocity;
+      bot->velocity = velocity;
 
-        bot->p = p + rotMat * clazz->crewPos[i] + momentum * Timer::TICK_TIME;
-        bot->momentum = velocity;
-        bot->velocity = velocity;
+      if( bot->actions & Bot::ACTION_EXIT ) {
+        float hsc[2];
+        Math::sincos( h, &hsc[0], &hsc[1] );
 
-        if( bot->actions & Bot::ACTION_EXIT ) {
+        float  handle = !( dim + bot->dim ) + EXIT_EPSILON;
+        Point3 exitPos = Point3( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
+
+        if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
+          pilot = -1;
+
+          bot->p = exitPos;
+          bot->exit();
+        }
+      }
+      else if( bot->actions & Bot::ACTION_EJECT ) {
+        bot->p = p + rotMat * clazz->pilotPos;
+
+        Point3 ejectPos = Point3( p.x, p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
+
+        pilot = -1;
+
+        // kill bot if eject path is blocked
+        if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
+          bot->kill();
+          bot->exit();
+        }
+        else {
           float hsc[2];
           Math::sincos( h, &hsc[0], &hsc[1] );
 
-          float  handle = !( dim + bot->dim ) + EXIT_EPSILON;
-          Point3 exitPos = Point3( p.x - hsc[0] * handle, p.y + hsc[1] * handle, p.z + dim.z );
-
-          if( !collider.overlaps( AABB( exitPos, bot->dim ) ) ) {
-            crew[i] = -1;
-
-            bot->p = exitPos;
-            bot->exit();
-          }
-        }
-        else if( bot->actions & Bot::ACTION_EJECT ) {
-          bot->p = p + rotMat * clazz->crewPos[i];
-
-          Point3 ejectPos = Point3( p.x, p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
-
-          crew[i] = -1;
-
-          // kill bot if eject path is blocked
-          if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
-            bot->kill();
-            bot->exit();
-          }
-          else {
-            float hsc[2];
-            Math::sincos( h, &hsc[0], &hsc[1] );
-
-            bot->p = ejectPos;
-            bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
-            bot->exit();
-          }
+          bot->p = ejectPos;
+          bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
+          bot->exit();
         }
       }
     }
@@ -288,8 +280,8 @@ namespace oz
 
   void Vehicle::onUse( Bot* user )
   {
-    if( crew[PILOT] == -1 ) {
-      crew[PILOT] = user->index;
+    if( pilot == -1 ) {
+      pilot = user->index;
 
       user->h = h;
       user->v = v;
@@ -297,10 +289,8 @@ namespace oz
     }
   }
 
-  Vehicle::Vehicle() : actions( 0 ), oldActions( 0 ), weapon( 0 )
-  {
-    aSet( crew, -1, CREW_MAX );
-  }
+  Vehicle::Vehicle() : actions( 0 ), oldActions( 0 ), weapon( 0 ), pilot( -1 )
+  {}
 
   void Vehicle::service()
   {
@@ -343,9 +333,7 @@ namespace oz
       shotTime[i] = istream->readFloat();
     }
 
-    for( int i = 0; i < CREW_MAX; ++i ) {
-      crew[i] = istream->readInt();
-    }
+    pilot = istream->readInt();
   }
 
   void Vehicle::writeFull( OutputStream* ostream ) const
@@ -367,9 +355,7 @@ namespace oz
       ostream->writeFloat( shotTime[i] );
     }
 
-    for( int i = 0; i < CREW_MAX; ++i ) {
-      ostream->writeInt( crew[i] );
-    }
+    ostream->writeInt( pilot );
   }
 
   void Vehicle::readUpdate( InputStream* istream )
@@ -384,6 +370,8 @@ namespace oz
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
       nShots[i] = istream->readInt();
     }
+
+    pilot = istream->readInt();
   }
 
   void Vehicle::writeUpdate( OutputStream* ostream ) const
@@ -398,6 +386,8 @@ namespace oz
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
       ostream->writeInt( nShots[i] );
     }
+
+    ostream->writeInt( pilot );
   }
 
 }

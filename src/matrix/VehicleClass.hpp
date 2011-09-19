@@ -43,8 +43,8 @@ namespace oz
       int    nShots[Vehicle::WEAPONS_MAX];
       float  shotInterval[Vehicle::WEAPONS_MAX];
 
-      Vec3   crewPos[Vehicle::CREW_MAX];
-      Quat   crewRot[Vehicle::CREW_MAX];
+      Vec3   pilotPos;
+      Quat   pilotRot;
 
       float  moveMomentum;
 

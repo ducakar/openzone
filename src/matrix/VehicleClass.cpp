@@ -148,68 +148,12 @@ namespace oz
       }
     }
 
-    clazz->crewPos[Vehicle::PILOT] = Vec3( config->get( "crew.pilot.pos.x", 0.0f ),
-                                           config->get( "crew.pilot.pos.y", 0.0f ),
-                                           config->get( "crew.pilot.pos.z", 0.0f ) );
-    clazz->crewRot[Vehicle::PILOT] = Quat::rotZYX( config->get( "crew.pilot.rot.z", 0.0f ),
-                                                   0.0f,
-                                                   config->get( "crew.pilot.rot.x", 0.0f ) );
-
-    clazz->crewPos[Vehicle::GUNNER] = Vec3( config->get( "crew.gunner.pos.x", 0.0f ),
-                                            config->get( "crew.gunner.pos.y", 0.0f ),
-                                            config->get( "crew.gunner.pos.z", 0.0f ) );
-    clazz->crewRot[Vehicle::GUNNER] = Quat::rotZYX( config->get( "crew.gunner.rot.z", 0.0f ),
-                                                    0.0f,
-                                                    config->get( "crew.gunner.rot.x", 0.0f ) );
-
-    clazz->crewPos[Vehicle::COMMANDER] = Vec3( config->get( "crew.commander.pos.x", 0.0f ),
-                                               config->get( "crew.commander.pos.y", 0.0f ),
-                                               config->get( "crew.commander.pos.z", 0.0f ) );
-    clazz->crewRot[Vehicle::COMMANDER] = Quat::rotZYX( config->get( "crew.commander.rot.z", 0.0f ),
-                                                       0.0f,
-                                                       config->get( "crew.commander.rot.x", 0.0f ) );
-
-    clazz->crewPos[Vehicle::PASSENGER0] = Vec3( config->get( "crew.passenger0.pos.x", 0.0f ),
-                                                config->get( "crew.passenger0.pos.y", 0.0f ),
-                                                config->get( "crew.passenger0.pos.z", 0.0f ) );
-    clazz->crewRot[Vehicle::PASSENGER0] = Quat::rotZYX( config->get( "crew.passenger0.rot.z", 0.0f ),
-                                                        0.0f,
-                                                        config->get( "crew.passenger0.rot.x", 0.0f ) );
-
-    clazz->crewPos[Vehicle::PASSENGER1] = Vec3( config->get( "crew.passenger1.pos.x", 0.0f ),
-                                                config->get( "crew.passenger1.pos.y", 0.0f ),
-                                                config->get( "crew.passenger1.pos.z", 0.0f ) );
-    clazz->crewRot[Vehicle::PASSENGER1] = Quat::rotZYX( config->get( "crew.passenger1.rot.z", 0.0f ),
-                                                        0.0f,
-                                                        config->get( "crew.passenger1.rot.x", 0.0f ) );
-
-    clazz->crewPos[Vehicle::PASSENGER2] = Vec3( config->get( "crew.passenger2.pos.x", 0.0f ),
-                                                config->get( "crew.passenger2.pos.y", 0.0f ),
-                                                config->get( "crew.passenger2.pos.z", 0.0f ) );
-    clazz->crewRot[Vehicle::PASSENGER2] = Quat::rotZYX( config->get( "crew.passenger2.rot.z", 0.0f ),
-                                                        0.0f,
-                                                        config->get( "crew.passenger2.rot.x", 0.0f ) );
-
-    clazz->crewPos[Vehicle::PASSENGER3] = Vec3( config->get( "crew.passenger3.pos.x", 0.0f ),
-                                                config->get( "crew.passenger3.pos.y", 0.0f ),
-                                                config->get( "crew.passenger3.pos.z", 0.0f ) );
-    clazz->crewRot[Vehicle::PASSENGER3] = Quat::rotZYX( config->get( "crew.passenger3.rot.z", 0.0f ),
-                                                        0.0f,
-                                                        config->get( "crew.passenger3.rot.x", 0.0f ) );
-
-    clazz->crewPos[Vehicle::PASSENGER4] = Vec3( config->get( "crew.passenger4.pos.x", 0.0f ),
-                                                config->get( "crew.passenger4.pos.y", 0.0f ),
-                                                config->get( "crew.passenger4.pos.z", 0.0f ) );
-    clazz->crewRot[Vehicle::PASSENGER4] = Quat::rotZYX( config->get( "crew.passenger4.rot.z", 0.0f ),
-                                                        0.0f,
-                                                        config->get( "crew.passenger4.rot.x", 0.0f ) );
-
-    clazz->crewPos[Vehicle::PASSENGER5] = Vec3( config->get( "crew.passenger5.pos.x", 0.0f ),
-                                                config->get( "crew.passenger5.pos.y", 0.0f ),
-                                                config->get( "crew.passenger5.pos.z", 0.0f ) );
-    clazz->crewRot[Vehicle::PASSENGER5] = Quat::rotZYX( config->get( "crew.passenger5.rot.z", 0.0f ),
-                                                        0.0f,
-                                                        config->get( "crew.passenger5.rot.x", 0.0f ) );
+    clazz->pilotPos = Vec3( config->get( "pilot.pos.x", 0.0f ),
+                            config->get( "pilot.pos.y", 0.0f ),
+                            config->get( "pilot.pos.z", 0.0f ) );
+    clazz->pilotRot = Quat::rotZYX( config->get( "pilot.rot.z", 0.0f ),
+                                    0.0f,
+                                    config->get( "pilot.rot.x", 0.0f ) );
 
     clazz->moveMomentum           = config->get( "moveMomentum", 2.0f );
 

@@ -53,19 +53,15 @@ namespace client
       tf.model.rotate( veh->rot );
 
       if( veh->state & Vehicle::CREW_VISIBLE_BIT ) {
-        for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
-          int index = veh->crew[i];
+        if( veh->pilot != -1 ) {
+          const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->pilot] );
 
-          if( index != -1 ) {
-            const Bot* bot = static_cast<const Bot*>( orbis.objects[veh->crew[i]] );
+          tf.push();
+          tf.model.translate( clazz->pilotPos );
 
-            tf.push();
-            tf.model.translate( Vec3( clazz->crewPos[i].x, clazz->crewPos[i].y, clazz->crewPos[i].z ) );
+          context.drawModel( bot, this );
 
-            context.drawModel( bot, this );
-
-            tf.pop();
-          }
+          tf.pop();
         }
       }
     }
