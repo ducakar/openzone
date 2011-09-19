@@ -60,7 +60,7 @@ namespace oz
         nShots = max( -1, nShots - 1 );
 
         addEvent( EVENT_SHOT, 1.0f );
-        lua.call( clazz->onShot, this, user );
+        lua.objectCall( clazz->onShot, this, user );
       }
     }
   }

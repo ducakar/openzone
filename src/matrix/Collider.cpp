@@ -499,8 +499,8 @@ namespace oz
       if( dist >= 0.0f ) {
         return;
       }
-      else if( plane.z > 0.0f ) {
-        float lowerDist = ( plane.w - startPos.x*plane.x - startPos.y*plane.y ) / plane.z -
+      else if( plane.nz > 0.0f ) {
+        float lowerDist = ( plane.d - startPos.x*plane.nx - startPos.y*plane.ny ) / plane.nz -
             startPos.z + aabb.dim.z;
 
         if( lowerDist > 0.0f ) {

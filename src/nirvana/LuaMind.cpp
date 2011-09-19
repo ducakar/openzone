@@ -61,7 +61,7 @@ namespace nirvana
 
       flags &= ~FORCE_UPDATE_BIT;
       bot->actions = 0;
-      lua.call( clazz->mindFunction, bot );
+      lua.mindCall( clazz->mindFunction, bot );
 
       if( lua.forceUpdate ) {
         flags |= FORCE_UPDATE_BIT;

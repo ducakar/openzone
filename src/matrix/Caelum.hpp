@@ -18,9 +18,9 @@ namespace oz
   {
     public:
 
-      float time;
-      float period;
       float heading;
+      float period;
+      float time;
 
       void update();
 

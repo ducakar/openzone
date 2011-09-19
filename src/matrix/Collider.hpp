@@ -95,13 +95,14 @@ namespace oz
     public:
 
       /**
-       * Collision feedback data
-       */
-      Hit hit;
-      /**
        * Collision bitmask for Object::flags
        */
       int mask;
+
+      /**
+       * Collision feedback data
+       */
+      Hit hit;
 
       Collider();
 

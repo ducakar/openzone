@@ -70,8 +70,8 @@ namespace ui
       bool wheelUp;
       bool wheelDown;
 
-      int  icon;
       bool doShow;
+      int  icon;
 
 #ifdef OZ_SDK
       static void prebuild();

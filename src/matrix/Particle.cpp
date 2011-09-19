@@ -21,7 +21,7 @@ namespace oz
 
   Particle::Particle( int index_, const Point3& p_, const Vec3& velocity_, const Vec3& colour_,
                       float restitution_, float mass_, float lifeTime_ ) :
-      index( index_ ), cell( null ), p( p_ ), velocity( velocity_ ), colour( colour_ ),
+      cell( null ), index( index_ ), p( p_ ), velocity( velocity_ ), colour( colour_ ),
       rot( Vec3( Math::frand() * Math::TAU, Math::frand() * Math::TAU, Math::frand() * Math::TAU ) ),
       rotVelocity( Vec3( Math::frand() * MAX_ROTVELOCITY,
                          Math::frand() * MAX_ROTVELOCITY,

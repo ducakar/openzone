@@ -54,7 +54,8 @@ namespace oz
 
       Lua();
 
-      void call( const char* functionName, Object* self, Bot* user = null );
+      void staticCall( const char* functionName );
+      void objectCall( const char* functionName, Object* self, Bot* user = null );
 
       void registerObject( int index );
       void unregisterObject( int index );
@@ -201,6 +202,17 @@ namespace oz
       static LuaAPI ozOrbisRemoveStr;
       static LuaAPI ozOrbisRemoveObj;
       static LuaAPI ozOrbisRemovePart;
+      static LuaAPI ozOrbisGenParts;
+
+      static LuaAPI ozTerraHeight;
+
+      static LuaAPI ozCaelumGetHeading;
+      static LuaAPI ozCaelumSetHeading;
+      static LuaAPI ozCaelumGetPeriod;
+      static LuaAPI ozCaelumSetPeriod;
+      static LuaAPI ozCaelumGetTime;
+      static LuaAPI ozCaelumSetTime;
+      static LuaAPI ozCaelumAddTime;
 
   };
 

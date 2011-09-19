@@ -48,7 +48,7 @@ namespace nirvana
 
       Lua();
 
-      void call( const char* functionName, Bot* self );
+      void mindCall( const char* functionName, Bot* self );
 
       // create a table for a mind that can act as mind's local storage, mind's local variables
       void registerMind( int botIndex );
@@ -160,6 +160,12 @@ namespace nirvana
       static LuaAPI ozPartGetIndex;
       static LuaAPI ozPartGetVelocity;
       static LuaAPI ozPartGetLife;
+
+      static LuaAPI ozTerraHeight;
+
+      static LuaAPI ozCaelumGetHeading;
+      static LuaAPI ozCaelumGetPeriod;
+      static LuaAPI ozCaelumGetTime;
 
   };
 

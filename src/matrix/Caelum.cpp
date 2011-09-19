@@ -23,16 +23,16 @@ namespace oz
 
   void Caelum::read( InputStream* istream )
   {
-    time    = istream->readFloat();
-    period  = istream->readFloat();
     heading = istream->readFloat();
+    period  = istream->readFloat();
+    time    = istream->readFloat();
   }
 
   void Caelum::write( OutputStream* ostream )
   {
-    ostream->writeFloat( time );
-    ostream->writeFloat( period );
     ostream->writeFloat( heading );
+    ostream->writeFloat( period );
+    ostream->writeFloat( time );
   }
 
 }

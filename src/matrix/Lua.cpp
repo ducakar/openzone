@@ -33,7 +33,30 @@ namespace oz
   Lua::Lua() : l( null )
   {}
 
-  void Lua::call( const char* functionName, Object* self_, Bot* user_ )
+  void Lua::staticCall( const char* functionName )
+  {
+    self  = null;
+    user  = null;
+    obj   = null;
+    str   = null;
+    part  = null;
+    event = List<Object::Event>::Iterator();
+
+    objIndex = 0;
+    strIndex = 0;
+
+    lua_getglobal( l, functionName );
+    lua_pcall( l, 0, 0, 0 );
+
+    if( lua_isstring( l, -1 ) ) {
+      log.println( "M! %s", lua_tostring( l, -1 ) );
+      lua_pop( l, 1 );
+
+      throw Exception( "Matrix Lua function call finished with an error" );
+    }
+  }
+
+  void Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
   {
     self  = self_;
     user  = user_;
@@ -231,6 +254,22 @@ namespace oz
     OZ_LUA_FUNCTION( ozOrbisRemoveStr );
     OZ_LUA_FUNCTION( ozOrbisRemoveObj );
     OZ_LUA_FUNCTION( ozOrbisRemovePart );
+    OZ_LUA_FUNCTION( ozOrbisGenParts );
+
+    OZ_LUA_FUNCTION( ozTerraHeight );
+
+    OZ_LUA_FUNCTION( ozCaelumGetHeading );
+    OZ_LUA_FUNCTION( ozCaelumSetHeading );
+    OZ_LUA_FUNCTION( ozCaelumGetPeriod );
+    OZ_LUA_FUNCTION( ozCaelumSetPeriod );
+    OZ_LUA_FUNCTION( ozCaelumGetTime );
+    OZ_LUA_FUNCTION( ozCaelumSetTime );
+    OZ_LUA_FUNCTION( ozCaelumAddTime );
+
+    OZ_LUA_INT_CONST( "OZ_STRUCT_R0",                   Struct::R0 );
+    OZ_LUA_INT_CONST( "OZ_STRUCT_R90",                  Struct::R90 );
+    OZ_LUA_INT_CONST( "OZ_STRUCT_R180",                 Struct::R180 );
+    OZ_LUA_INT_CONST( "OZ_STRUCT_R270",                 Struct::R270 );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
@@ -292,6 +331,8 @@ namespace oz
     OZ_LUA_INT_CONST( "OZ_EVENT_SHOT1_EMPTY",           Vehicle::EVENT_SHOT1_EMPTY );
     OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );
     OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2_EMPTY",           Vehicle::EVENT_SHOT2_EMPTY );
+
+    OZ_LUA_FLOAT_CONST( "OZ_ORBIS_DIM",                 Orbis::DIM );
 
     lua_newtable( l );
     lua_setglobal( l, "ozLocalData" );
@@ -1838,14 +1879,14 @@ namespace oz
 
     Bounds bounds = Struct::rotate( *orbis.bsps[bsp], rot );
 
-    if( !collider.overlaps( bounds.toAABB() + ( p - Point3::ORIGIN ) ) ) {
+    if( collider.overlaps( bounds.toAABB() + ( p - Point3::ORIGIN ) ) ) {
+      lua.str = null;
+      lua_pushinteger( l, -1 );
+    }
+    else {
       int index = synapse.addStruct( name, p, rot );
       lua.str = orbis.structs[index];
       lua_pushinteger( l, index );
-    }
-    else {
-      lua.str = null;
-      lua_pushinteger( l, -1 );
     }
     return 1;
   }
@@ -1875,13 +1916,13 @@ namespace oz
     AABB aabb = AABB( p, ( *value )->dim );
 
     if( collider.overlaps( aabb ) ) {
+      lua.obj = null;
+      lua_pushinteger( l, -1 );
+    }
+    else {
       int index = synapse.addObject( name, p );
       lua.obj = orbis.objects[index];
       lua_pushinteger( l, index );
-    }
-    else {
-      lua.obj = null;
-      lua_pushinteger( l, -1 );
     }
     return 1;
   }
@@ -1954,6 +1995,75 @@ namespace oz
 
     synapse.remove( lua.part );
     lua.part = null;
+    return 0;
+  }
+
+  int Lua::ozOrbisGenParts( lua_State* l )
+  {
+    int    number         = int( lua_tonumber( l, 1 ) );
+    Point3 p              = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    Vec3   velocity       = Vec3( float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ), float( lua_tonumber( l, 7 ) ) );
+    float  velocitySpread = float( lua_tonumber( l, 8 ) );
+    Vec3   colour         = Vec3( float( lua_tonumber( l, 9 ) ), float( lua_tonumber( l, 10 ) ), float( lua_tonumber( l, 11 ) ) );
+    float  colourSpread   = float( lua_tonumber( l, 12 ) );
+    float  restitution    = float( lua_tonumber( l, 13 ) );
+    float  mass           = float( lua_tonumber( l, 14 ) );
+    float  lifeTime       = float( lua_tonumber( l, 15 ) );
+
+    synapse.genParts( number, p, velocity, velocitySpread, colour, colourSpread,
+                      restitution, mass, lifeTime );
+    lua.part = null;
+    return 0;
+  }
+
+  int Lua::ozTerraHeight( lua_State* l )
+  {
+    float x = float( lua_tonumber( l, 1 ) );
+    float y = float( lua_tonumber( l, 2 ) );
+
+    lua_pushnumber( l, orbis.terra.height( x, y ) );
+    return 1;
+  }
+
+  int Lua::ozCaelumGetHeading( lua_State* l )
+  {
+    lua_pushnumber( l, orbis.caelum.heading );
+    return 1;
+  }
+
+  int Lua::ozCaelumSetHeading( lua_State* l )
+  {
+    orbis.caelum.heading = float( lua_tonumber( l, 1 ) );
+    return 0;
+  }
+
+  int Lua::ozCaelumGetPeriod( lua_State* l )
+  {
+    lua_pushnumber( l, orbis.caelum.period );
+    return 1;
+  }
+
+  int Lua::ozCaelumSetPeriod( lua_State* l )
+  {
+    orbis.caelum.period = float( lua_tonumber( l, 1 ) );
+    return 0;
+  }
+
+  int Lua::ozCaelumGetTime( lua_State* l )
+  {
+    lua_pushnumber( l, orbis.caelum.time );
+    return 1;
+  }
+
+  int Lua::ozCaelumSetTime( lua_State* l )
+  {
+    orbis.caelum.time = float( lua_tonumber( l, 1 ) );
+    return 0;
+  }
+
+  int Lua::ozCaelumAddTime( lua_State* l )
+  {
+    orbis.caelum.time += float( lua_tonumber( l, 1 ) );
     return 0;
   }
 

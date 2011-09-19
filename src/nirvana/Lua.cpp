@@ -32,7 +32,7 @@ namespace nirvana
   Lua::Lua() : l( null )
   {}
 
-  void Lua::call( const char* functionName, Bot* self_ )
+  void Lua::mindCall( const char* functionName, Bot* self_ )
   {
     hard_assert( self_ != null );
     hard_assert( lua_gettop( l ) == 1 && lua_istable( l, 1 ) );
@@ -194,6 +194,17 @@ namespace nirvana
     OZ_LUA_FUNCTION( ozPartGetVelocity );
     OZ_LUA_FUNCTION( ozPartGetLife );
 
+    OZ_LUA_FUNCTION( ozTerraHeight );
+
+    OZ_LUA_FUNCTION( ozCaelumGetHeading );
+    OZ_LUA_FUNCTION( ozCaelumGetPeriod );
+    OZ_LUA_FUNCTION( ozCaelumGetTime );
+
+    OZ_LUA_INT_CONST( "OZ_STRUCT_R0",                   Struct::R0 );
+    OZ_LUA_INT_CONST( "OZ_STRUCT_R90",                  Struct::R90 );
+    OZ_LUA_INT_CONST( "OZ_STRUCT_R180",                 Struct::R180 );
+    OZ_LUA_INT_CONST( "OZ_STRUCT_R270",                 Struct::R270 );
+
     OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
@@ -243,6 +254,8 @@ namespace nirvana
     OZ_LUA_INT_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
     OZ_LUA_INT_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
     OZ_LUA_INT_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
+
+    OZ_LUA_FLOAT_CONST( "OZ_ORBIS_DIM",                 Orbis::DIM );
 
     lua_newtable( l );
     lua_setglobal( l, "ozLocalData" );
@@ -1185,6 +1198,33 @@ namespace nirvana
     }
 
     lua_pushnumber( l, lua.part->lifeTime );
+    return 1;
+  }
+
+  int Lua::ozTerraHeight( lua_State* l )
+  {
+    float x = float( lua_tonumber( l, 1 ) );
+    float y = float( lua_tonumber( l, 2 ) );
+
+    lua_pushnumber( l, orbis.terra.height( x, y ) );
+    return 1;
+  }
+
+  int Lua::ozCaelumGetHeading( lua_State* l )
+  {
+    lua_pushnumber( l, orbis.caelum.heading );
+    return 1;
+  }
+
+  int Lua::ozCaelumGetPeriod( lua_State* l )
+  {
+    lua_pushnumber( l, orbis.caelum.period );
+    return 1;
+  }
+
+  int Lua::ozCaelumGetTime( lua_State* l )
+  {
+    lua_pushnumber( l, orbis.caelum.time );
     return 1;
   }
 

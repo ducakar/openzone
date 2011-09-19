@@ -11,6 +11,9 @@
 
 #include "HashString.hpp"
 
+#pragma GCC diagnostic push "-Wpadded"
+#pragma GCC diagnostic ignored "-Wpadded"
+
 namespace oz
 {
 
@@ -196,3 +199,5 @@ namespace oz
   extern Config config;
 
 }
+
+#pragma GCC diagnostic pop "-Wpadded"

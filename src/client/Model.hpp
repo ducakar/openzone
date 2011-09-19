@@ -37,8 +37,8 @@ namespace client
     public:
 
       const Object* obj;
-      int flags;
       const ObjectClass* clazz;
+      int flags;
 
       virtual ~Model()
       {}

@@ -13,6 +13,9 @@
 #include "arrays.hpp"
 #include "Alloc.hpp"
 
+#pragma GCC diagnostic push "-Wpadded"
+#pragma GCC diagnostic ignored "-Wpadded"
+
 namespace oz
 {
 
@@ -618,3 +621,5 @@ namespace oz
   };
 
 }
+
+#pragma GCC diagnostic pop "-Wpadded"

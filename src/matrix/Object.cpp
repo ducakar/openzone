@@ -38,7 +38,7 @@ namespace oz
                       clazz->debrisRejection, clazz->debrisMass, clazz->debrisLifeTime );
 
     if( !clazz->onDestroy.isEmpty() ) {
-      lua.call( clazz->onDestroy, this );
+      lua.objectCall( clazz->onDestroy, this );
     }
   }
 
@@ -46,7 +46,7 @@ namespace oz
   {
     if( !clazz->onDamage.isEmpty() ) {
       lua.damage = damage;
-      lua.call( clazz->onDamage, this );
+      lua.objectCall( clazz->onDamage, this );
     }
   }
 
@@ -54,21 +54,21 @@ namespace oz
   {
     if( !clazz->onHit.isEmpty() ) {
       lua.hitMomentum = hitMomentum;
-      lua.call( clazz->onHit, this );
+      lua.objectCall( clazz->onHit, this );
     }
   }
 
   void Object::onUse( Bot* user )
   {
     if( !clazz->onUse.isEmpty() ) {
-      lua.call( clazz->onUse, this, user );
+      lua.objectCall( clazz->onUse, this, user );
     }
   }
 
   void Object::onUpdate()
   {
     if( !clazz->onUpdate.isEmpty() ) {
-      lua.call( clazz->onUpdate, this );
+      lua.objectCall( clazz->onUpdate, this );
     }
   }
 
