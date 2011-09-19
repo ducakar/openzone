@@ -139,6 +139,14 @@ Troubleshooting
   - GL_ARB_framebuffer_object.
   A cards with complete DirectX 9.0c support should do, a DirectX 10 card will certainly do.
   On Linux the engine works both with properitary and opensource Gallium3D drivers.
+- If you are using Gallium3D based drivers and all textures are (mostly) missing, set
+  shader.setSamplerIndices to "false" in client.rc file.
+- If you are using AMD/ATI Catalyst driver and terrain looks white/grey, set
+  shader.setSamplerIndices to "true" in client.rc file.
+- If you are using some old graphics card or AMD/ATI Catalyst drivers and MD2 models are missing
+  set shader.vertexTexture to "false" in client.rc file.
+- For better performance you can enable MD2 animation to be performed in the vertex shader by
+  setting shader.vertexTexture to "true" in client.rc file.
 
 Dependencies
 ------------
