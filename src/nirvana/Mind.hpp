@@ -11,16 +11,10 @@
 
 #include "stable.hpp"
 
-#include "nirvana/common.hpp"
-#include "nirvana/Task.hpp"
-
 namespace oz
 {
 namespace nirvana
 {
-
-  class RandomMind;
-  class LuaMind;
 
   class Mind
   {
@@ -31,7 +25,7 @@ namespace nirvana
       typedef Mind* ( * CreateFunc )( int bot );
       typedef Mind* ( * ReadFunc )( InputStream* istream );
 
-      static Pool<Mind> pool;
+      static Pool<Mind, 1024> pool;
 
       Mind* prev[1];
       Mind* next[1];
@@ -39,18 +33,13 @@ namespace nirvana
       int flags;
       int bot;
 
-      static Mind* create( int bot );
-      static Mind* read( InputStream* istream );
+      explicit Mind( int bot );
+      explicit Mind( InputStream* istream );
+      ~Mind();
 
-      explicit Mind( int bot_ ) : flags( 0 ), bot( bot_ )
-      {}
+      void update();
 
-      virtual ~Mind();
-
-      virtual const char* type() const;
-      virtual void update();
-
-      virtual void write( OutputStream* ostream ) const;
+      void write( OutputStream* ostream ) const;
 
     OZ_STATIC_POOL_ALLOC( pool )
 

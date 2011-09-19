@@ -71,7 +71,6 @@ namespace oz
       Vector<String> inventoryItems;
       int    weaponItem;
 
-      String mindType;
       String mindFunction;
 
       int    nameList;

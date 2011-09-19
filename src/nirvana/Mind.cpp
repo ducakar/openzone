@@ -11,40 +11,54 @@
 
 #include "nirvana/Mind.hpp"
 
+#include "nirvana/Lua.hpp"
+#include "matrix/Bot.hpp"
+#include "matrix/BotClass.hpp"
+
 namespace oz
 {
 namespace nirvana
 {
 
-  Pool<Mind> Mind::pool;
+  Pool<Mind, 1024> Mind::pool;
 
-  Mind* Mind::create( int bot )
+  Mind::Mind( int bot_ ) : flags( 0 ), bot( bot_ )
   {
-    Mind* mind = new Mind( bot );
-    return mind;
+    lua.registerMind( bot );
   }
 
-  Mind* Mind::read( InputStream* istream )
+  Mind::Mind( InputStream* istream ) : flags( 0 ), bot( istream->readInt() )
   {
-    Mind* mind = new Mind( istream->readInt() );
-    return mind;
+    lua.registerMind( bot );
   }
 
   Mind::~Mind()
-  {}
-
-  const char* Mind::type() const
   {
-    return "";
+    lua.unregisterMind( bot );
   }
 
   void Mind::update()
-  {}
-
-  void Mind::write( OutputStream* ostream ) const
   {
-    ostream->writeInt( bot );
+    hard_assert( orbis.objects[bot] != null );
+    hard_assert( orbis.objects[bot]->flags & Object::BOT_BIT );
+
+    Bot* bot = static_cast<Bot*>( orbis.objects[this->bot] );
+
+    if( !( bot->state & Bot::DEATH_BIT ) ) {
+      const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+
+      flags &= ~FORCE_UPDATE_BIT;
+      bot->actions = 0;
+      lua.mindCall( clazz->mindFunction, bot );
+
+      if( lua.forceUpdate ) {
+        flags |= FORCE_UPDATE_BIT;
+      }
+    }
   }
+
+  void Mind::write( OutputStream* ) const
+  {}
 
 }
 }

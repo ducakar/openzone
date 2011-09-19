@@ -14,13 +14,8 @@
 #include "matrix/Synapse.hpp"
 #include "matrix/Matrix.hpp"
 #include "matrix/BotClass.hpp"
+#include "nirvana/Mind.hpp"
 #include "nirvana/Lua.hpp"
-
-#include "nirvana/LuaMind.hpp"
-#include "nirvana/RandomMind.hpp"
-
-#define OZ_REGISTER_MINDCLASS( name ) \
-  mindClasses.add( #name, MindCtor( &name##Mind::create, &name##Mind::read ) )
 
 namespace oz
 {
@@ -46,15 +41,10 @@ namespace nirvana
       const Object* obj = orbis.objects[*i];
 
       if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
-        const Bot* bot = static_cast<const Bot*>( obj );
-        const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
+        const BotClass* clazz = static_cast<const BotClass*>( obj->clazz );
 
-        MindCtor* value = mindClasses.find( clazz->mindType );
-        if( value != null ) {
-          minds.add( value->create( bot->index ) );
-        }
-        else if( !clazz->mindType.isEmpty() ) {
-          throw Exception( "Invalid mind type" );
+        if( !clazz->mindFunction.isEmpty() ) {
+          minds.add( new Mind( obj->index ) );
         }
       }
     }
@@ -88,7 +78,7 @@ namespace nirvana
       for( int i = 0; i < nMinds; ++i ) {
         typeName = istream->readString();
         if( !typeName.isEmpty() ) {
-          minds.add( mindClasses.get( typeName ).read( istream ) );
+          minds.add( new Mind( istream ) );
         }
       }
     }
@@ -104,14 +94,12 @@ namespace nirvana
       ostream->writeInt( minds.length() );
 
       foreach( mind, minds.citer() ) {
-        ostream->writeString( mind->type() );
         mind->write( ostream );
       }
     }
     minds.free();
 
-    RandomMind::pool.free();
-    LuaMind::pool.free();
+    Mind::pool.free();
 
     log.printEnd( " OK" );
   }
@@ -122,9 +110,6 @@ namespace nirvana
     log.indent();
 
     lua.init();
-
-    OZ_REGISTER_MINDCLASS( Lua );
-    OZ_REGISTER_MINDCLASS( Random );
 
     updateModulo = 0;
 
@@ -137,8 +122,6 @@ namespace nirvana
     log.println( "Freeing Nirvana {" );
     log.indent();
 
-    mindClasses.clear();
-    mindClasses.dealloc();
     lua.free();
 
     log.unindent();
