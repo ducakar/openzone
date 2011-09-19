@@ -135,6 +135,14 @@ Problemi
   Kartica s popolno podporo za DirectX 9.0c bi morala zadostovati, zagotovo pa zadostuje kartica s
   podporo za DirectX 10.
   Na Linuxu pogon deluje tako na lastniških kot na odprtokodnih gonilnikih Gallium3D.
+- Če uporabljate gonilnike osnovane na Gallium3D in teksture (večinoma) manjkajo, nastavite
+  shader.setSamplerIndices na "false" v datoteki client.rc.
+- Če uporabljate gonilnike AMD/ATI Catalyst in je teren bel/siv nastavite shader.setSamplerIndices
+  na "true" v datoteki client.rc.
+- Če imate staro grafično kartico ali gonilnike AMD/ATI Catalyst in manjkajo modeli MD2, nastavite
+  shader.vertexTexture na "false" v datoteki client.rc.
+- Za hitrejše izrisovanje lahko omogočite animacijo MD2 modelov na senčilnikih, če nastavite
+  shader.vertexTexture na "true" v client.rc.
 
 Odvisnosti
 ----------

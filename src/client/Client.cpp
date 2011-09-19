@@ -282,6 +282,7 @@ namespace client
   {
     initFlags = 0;
     String rcDir;
+    String prefixDir;
 
     bool  isBenchmark = false;
     float benchmarkTime = 0.0f;
@@ -292,19 +293,23 @@ namespace client
         return -1;
       }
       else if( String::equals( argv[i], "--time" ) || String::equals( argv[i], "-t" ) ) {
-        if( i + 1 < argc ) {
-          errno = 0;
-          char* end;
-
-          benchmarkTime = strtof( argv[i + 1], &end );
-
-          if( errno == 0 && end != argv[i + 1] ) {
-            isBenchmark = true;
-            ++i;
-            continue;
-          }
+        if( i + 1 == argc ) {
+          printUsage();
+          return -1;
         }
-        printUsage();
+
+        errno = 0;
+        char* end;
+
+        benchmarkTime = strtof( argv[i + 1], &end );
+
+        if( errno != 0 || end == argv[i + 1] ) {
+          printUsage();
+          return -1;
+        }
+
+        isBenchmark = true;
+        ++i;
       }
       else if( String::equals( argv[i], "--load" ) || String::equals( argv[i], "-l" ) ) {
         config.add( "gameStage.autoload", "true" );
@@ -317,6 +322,15 @@ namespace client
       }
       else if( String::equals( argv[i], "--no-save" ) || String::equals( argv[i], "-S" ) ) {
         config.add( "gameStage.autosave", "false" );
+      }
+      else if( String::equals( argv[i], "--prefix" ) || String::equals( argv[i], "-p" ) ) {
+        if( i + 1 == argc ) {
+          printUsage();
+          return -1;
+        }
+
+        config.add( "dir.prefix", argv[i + 1] );
+        ++i;
       }
       else {
         log.println( "Invalid command-line option '%s'", argv[i] );
@@ -421,6 +435,13 @@ namespace client
 
     config.add( "dir.rc", rcDir );
 
+    if( prefixDir.isEmpty() ) {
+      prefixDir = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
+    }
+    else {
+      config.getSet( "dir.prefix", prefixDir );
+    }
+
     log.print( "Setting localisation ..." );
 
     setlocale( LC_CTYPE, config.getSet( "locale.ctype", "" ) );
@@ -458,7 +479,7 @@ namespace client
     }
     ui::keyboard.init();
 
-    const char* data = config.getSet( "dir.data", OZ_INSTALL_PREFIX "/share/" OZ_APPLICATION_NAME );
+    const char* data = config.getSet( "dir.data", prefixDir + "/share/" OZ_APPLICATION_NAME );
 
     log.print( "Setting working directory to data directory '%s' ...", data );
     if( chdir( data ) != 0 ) {

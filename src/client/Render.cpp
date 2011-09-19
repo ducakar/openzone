@@ -433,10 +433,10 @@ namespace client
     log.println( "Initialising Render {" );
     log.indent();
 
-    int  screenX      = config.get( "screen.width", 0 );
-    int  screenY      = config.get( "screen.height", 0 );
-    int  screenBpp    = config.get( "screen.bpp", 0 );
-    bool isFullScreen = config.getSet( "screen.full", true );
+    int  screenX      = config.get( "screen.width", 1280 );
+    int  screenY      = config.get( "screen.height", 720 );
+    int  screenBpp    = config.get( "screen.bpp", 32 );
+    bool isFullScreen = config.getSet( "screen.full", false );
 
     log.print( "Creating OpenGL window %dx%d-%d %s ...",
                screenX, screenY, screenBpp, isFullScreen ? "fullscreen" : "windowed" );
@@ -472,19 +472,21 @@ namespace client
     SDL_ShowCursor( SDL_FALSE );
 
     bool isFBOSupported = false;
+    bool isFloatTexSupported = false;
 #ifndef OZ_GL_COMPATIBLE
     bool isVAOSupported = false;
-    bool isFloatTexSupported = false;
     bool isS3TCSupported = false;
 #endif
 
-    String version = String::cstr( glGetString( GL_VERSION ) );
+    String vendor   = String::cstr( glGetString( GL_VENDOR ) );
+    String renderer = String::cstr( glGetString( GL_RENDERER ) );
+    String version  = String::cstr( glGetString( GL_VERSION ) );
     DArray<String> extensions;
     String sExtensions = String::cstr( glGetString( GL_EXTENSIONS ) );
     sExtensions.trim().split( ' ', &extensions );
 
-    log.println( "OpenGL vendor: %s", glGetString( GL_VENDOR ) );
-    log.println( "OpenGL renderer: %s", glGetString( GL_RENDERER ) );
+    log.println( "OpenGL vendor: %s", vendor.cstr() );
+    log.println( "OpenGL renderer: %s", renderer.cstr() );
     log.println( "OpenGL version: %s", version.cstr() );
     log.println( "OpenGL extensions {" );
     log.indent();
@@ -495,12 +497,12 @@ namespace client
       if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
         isFBOSupported = true;
       }
+      if( extension->equals( "GL_ARB_texture_float" ) ) {
+        isFloatTexSupported = true;
+      }
 #ifndef OZ_GL_COMPATIBLE
       if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
         isVAOSupported = true;
-      }
-      if( extension->equals( "GL_ARB_texture_float" ) ) {
-        isFloatTexSupported = true;
       }
       if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
         isS3TCSupported = true;
@@ -523,19 +525,26 @@ namespace client
       log.println( "Error: frame buffer object (GL_ARB_framebuffer_object) is not supported" );
       throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
     }
+    if( !isFloatTexSupported ) {
+      config.add( "shader.vertexTexture", "false" );
+    }
 #ifndef OZ_GL_COMPATIBLE
     if( !isVAOSupported ) {
       log.println( "Error: vertex array object (GL_ARB_vertex_array_object) is not supported" );
       throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
-    }
-    if( !isFloatTexSupported ) {
-      config.add( "shader.vertexTexture", "false" );
     }
     if( !isS3TCSupported ) {
       log.println( "Error: S3 texture compression (GL_EXT_texture_compression_s3tc) is not supported" );
       throw Exception( "GL_EXT_texture_compression_s3tc not supported by OpenGL" );
     }
 #endif
+
+    if( strstr( vendor, "ATI" ) != null ) {
+      config.add( "shader.vertexTexture", "false" );
+    }
+    if( strstr( renderer, "Gallium" ) != null ) {
+      config.add( "shader.setSamplerIndices", "false" );
+    }
 
     nearDist2            = config.getSet( "render.nearDistance",         100.0f );
 

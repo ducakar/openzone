@@ -216,8 +216,10 @@ namespace client
 
     param = programs[id].param;
 
-    int textureIds[4] = { 0, 1, 2, 3 };
-    glUniform1iv( param.oz_Textures, 4, textureIds );
+    if( config.getSet( "shader.setSamplerIndices", true ) ) {
+      int textureIds[4] = { 0, 1, 2, 3 };
+      glUniform1iv( param.oz_Textures, 4, textureIds );
+    }
 
     OZ_GL_CHECK_ERROR();
 

@@ -41,7 +41,7 @@ namespace oz
         explicit Elem( const Key& key_, const Value& value_ ) : key( key_ ), value( value_ )
         {}
 
-        // operators overloads are required for bisection algorithms to work properly
+        // required for bisection algorithms to work properly
         OZ_ALWAYS_INLINE
         friend bool operator == ( const Key& key, const Elem& e )
         {
