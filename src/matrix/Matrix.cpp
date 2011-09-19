@@ -18,7 +18,12 @@
 #include "matrix/Physics.hpp"
 #include "matrix/Synapse.hpp"
 #include "matrix/Vehicle.hpp"
-#include "matrix/FloraManager.hpp"
+
+#include "matrix/modules/FloraModule.hpp"
+
+#define OZ_REGISTER_MODULE( module ) \
+  modules.add( &module##Module ); \
+  module##Module.onRegister()
 
 namespace oz
 {
@@ -132,11 +137,12 @@ namespace oz
     synapse.load();
 
     if( istream != null ) {
+      // to create the variable when running for the first time
+      config.getSet( "matrix.onCreate", "matrix_onCreate" );
+
       orbis.read( istream );
     }
     else {
-      floraManager.seed();
-
       lua.staticCall( config.getSet( "matrix.onCreate", "matrix_onCreate" ) );
     }
 
@@ -168,6 +174,8 @@ namespace oz
     namePool.init();
     lua.init();
     orbis.init();
+
+    OZ_REGISTER_MODULE( flora );
 
     log.unindent();
     log.println( "}" );

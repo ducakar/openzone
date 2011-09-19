@@ -11,6 +11,8 @@
 
 #include "stable.hpp"
 
+#include "matrix/Module.hpp"
+
 namespace oz
 {
 
@@ -19,6 +21,12 @@ namespace oz
     public:
 
       static const float MAX_VELOCITY2;
+
+    private:
+
+      Vector<Module*> modules;
+
+    public:
 
       void update();
 

@@ -1,107 +1,54 @@
 add_library( client STATIC
   Audio.cpp
-  Audio.hpp
   BSP.cpp
-  BSP.hpp
   BasicAudio.cpp
-  BasicAudio.hpp
   BotAudio.cpp
-  BotAudio.hpp
   BotProxy.cpp
-  BotProxy.hpp
   Caelum.cpp
-  Caelum.hpp
   Camera.cpp
-  Camera.hpp
   Client.cpp
-  Client.hpp
   Colours.cpp
-  Colours.hpp
   Compiler.cpp
-  Compiler.hpp
   Context.cpp
-  Context.hpp
   ExplosionModel.cpp
-  ExplosionModel.hpp
   Frustum.cpp
-  Frustum.hpp
   GameStage.cpp
-  GameStage.hpp
   Loader.cpp
-  Loader.hpp
   MD2.cpp
-  MD2.hpp
   MD2Model.cpp
-  MD2Model.hpp
   MD2WeaponModel.cpp
-  MD2WeaponModel.hpp
   MD3.cpp
-  MD3.hpp
   Mesh.cpp
-  Mesh.hpp
-  Model.hpp
   Network.cpp
-  Network.hpp
   OBJ.cpp
-  OBJ.hpp
   OpenAL.cpp
-  OpenAL.hpp
   OpenGL.cpp
-  OpenGL.hpp
-  Proxy.hpp
   Render.cpp
-  Render.hpp
   SMM.cpp
-  SMM.hpp
   SMMModel.cpp
-  SMMModel.hpp
   SMMVehicleModel.cpp
-  SMMVehicleModel.hpp
   Shader.cpp
-  Shader.hpp
   Shape.cpp
-  Shape.hpp
   Sound.cpp
-  Sound.hpp
   SparkModel.cpp
-  SparkModel.hpp
-  Stage.hpp
   StrategicProxy.cpp
-  StrategicProxy.hpp
   Terra.cpp
-  Terra.hpp
   VehicleAudio.cpp
-  VehicleAudio.hpp
   common.cpp
-  common.hpp
   ui/Area.cpp
-  ui/Area.hpp
   ui/BuildMenu.cpp
-  ui/BuildMenu.hpp
   ui/Button.cpp
-  ui/Button.hpp
   ui/DebugFrame.cpp
-  ui/DebugFrame.hpp
   ui/Font.cpp
-  ui/Font.hpp
   ui/Frame.cpp
-  ui/Frame.hpp
   ui/HudArea.cpp
-  ui/HudArea.hpp
   ui/InventoryMenu.cpp
-  ui/InventoryMenu.hpp
   ui/Keyboard.cpp
-  ui/Keyboard.hpp
   ui/LoadingArea.cpp
-  ui/LoadingArea.hpp
   ui/Mouse.cpp
-  ui/Mouse.hpp
   ui/MusicPlayer.cpp
-  ui/MusicPlayer.hpp
   ui/StrategicArea.cpp
-  ui/StrategicArea.hpp
   ui/UI.cpp
-  ui/UI.hpp
 )
 
-add_dependencies( client arch nirvana matrix pch )
+add_dependencies( client nirvana matrix pch )

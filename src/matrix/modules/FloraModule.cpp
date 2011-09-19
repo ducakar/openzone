@@ -1,5 +1,5 @@
 /*
- *  FloraManager.cpp
+ *  FloraModule.cpp
  *
  *  [description]
  *
@@ -9,25 +9,25 @@
 
 #include "stable.hpp"
 
-#include "matrix/FloraManager.hpp"
+#include "matrix/modules/FloraModule.hpp"
 
 #include "matrix/Translator.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 
+#include <lua.hpp>
+
 namespace oz
 {
 
   // plants/m2
-  const float FloraManager::DENSITY = 0.04f;
+  const float FloraModule::DENSITY = 0.04f;
   // dim * SPACING
-  const float FloraManager::SPACING = 12.0f;
-  // plants/m2/s
-  const float FloraManager::GROWTH =  0.0001f;
+  const float FloraModule::SPACING = 12.0f;
 
-  FloraManager floraManager;
+  FloraModule floraModule;
 
-  void FloraManager::addTree( float x, float y )
+  void FloraModule::addTree( float x, float y )
   {
     Point3 pos = Point3( x, y, orbis.terra.height( x, y ) );
 
@@ -60,7 +60,7 @@ namespace oz
     }
   }
 
-  void FloraManager::addPlant( const char* type, float x, float y )
+  void FloraModule::addPlant( const char* type, float x, float y )
   {
     Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) );
     AABB   bounds = AABB( pos, translator.classes.get( type )->dim );
@@ -74,12 +74,11 @@ namespace oz
     }
   }
 
-  void FloraManager::seed()
+  void FloraModule::seed()
   {
     float area = 4.0f * Orbis::DIM * Orbis::DIM * DENSITY;
 
     number = int( area * DENSITY );
-    growth = int( area * GROWTH );
 
     for( int i = 0; i < number; ++i ) {
       float x = Math::frand() * 2.0f * Orbis::DIM - Orbis::DIM;
@@ -89,12 +88,55 @@ namespace oz
     }
   }
 
-  void FloraManager::clear()
+  void FloraModule::onRegister()
   {
-    plants.clear();
+    OZ_LUA_REGISTER_FUNC( ozFloraGetDensity );
+    OZ_LUA_REGISTER_FUNC( ozFloraSetDensity );
+    OZ_LUA_REGISTER_FUNC( ozFloraGetSpacing );
+    OZ_LUA_REGISTER_FUNC( ozFloraSetSpacing );
+    OZ_LUA_REGISTER_FUNC( ozFloraGetNumber );
+    OZ_LUA_REGISTER_FUNC( ozFloraSeed );
   }
 
-  void FloraManager::update()
-  {}
+  int FloraModule::ozFloraGetDensity( lua_State* l )
+  {
+    lua_pushnumber( l, floraModule.density );
+    return 1;
+  }
+
+  int FloraModule::ozFloraSetDensity( lua_State* l )
+  {
+    floraModule.density = float( lua_tonumber( l, 1 ) );
+    return 0;
+  }
+
+  int FloraModule::ozFloraGetSpacing( lua_State* l )
+  {
+    lua_pushnumber( l, floraModule.spacing );
+    return 1;
+  }
+
+  int FloraModule::ozFloraSetSpacing( lua_State* l )
+  {
+    float spacing = float( lua_tonumber( l, 1 ) );
+    if( spacing < 0 ) {
+      throw Exception( "Lua::ozFloraGetSpacing: spacing must be >= 0.0" );
+    }
+
+    floraModule.spacing = spacing;
+    return 0;
+  }
+
+  int FloraModule::ozFloraGetNumber( lua_State* l )
+  {
+    lua_pushnumber( l, floraModule.number );
+    return 1;
+  }
+
+  int FloraModule::ozFloraSeed( lua_State* )
+  {
+    floraModule.seed();
+    return 0;
+  }
 
 }

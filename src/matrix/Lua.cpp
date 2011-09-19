@@ -20,6 +20,7 @@
 #include <lua.hpp>
 
 #define OZ_LUA_ERROR( message ) luaL_error( l, "[%s] %s", __FUNCTION__, message );
+
 #define OZ_LUA_FUNCTION( func ) lua_register( l, #func, func )
 #define OZ_LUA_INT_CONST( name, value ) lua_pushinteger( l, value ); lua_setglobal( l, name )
 #define OZ_LUA_FLOAT_CONST( name, value ) lua_pushnumber( l, value ); lua_setglobal( l, name )
@@ -100,6 +101,26 @@ namespace oz
     lua_pushnil( l );
     lua_rawseti( l, -2, index );
     lua_pop( l, 1 );
+  }
+
+  void Lua::registerFunction( const char* name, LuaAPI func )
+  {
+    lua_register( l, name, func );
+  }
+
+  void Lua::registerConstant( const char* name, int value )
+  {
+    OZ_LUA_INT_CONST( name, value );
+  }
+
+  void Lua::registerConstant( const char* name, float value )
+  {
+    OZ_LUA_FLOAT_CONST( name, value );
+  }
+
+  void Lua::registerConstant( const char* name, const char* value )
+  {
+    OZ_LUA_STRING_CONST( name, value );
   }
 
   void Lua::init()
