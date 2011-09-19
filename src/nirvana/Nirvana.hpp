@@ -27,18 +27,6 @@ namespace nirvana
       // to force update, set Mind::FORCE_UPDATE_BIT
       static const int UPDATE_INTERVAL = 32;
 
-      struct MindCtor
-      {
-        Mind::CreateFunc create;
-        Mind::ReadFunc   read;
-
-        explicit MindCtor( Mind::CreateFunc create_, Mind::ReadFunc read_ ) :
-            create( create_ ), read( read_ )
-        {}
-      };
-
-      HashString<MindCtor, 8> mindClasses;
-
       DList<Mind> minds;
       int updateModulo;
 

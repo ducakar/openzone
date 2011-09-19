@@ -151,7 +151,6 @@ namespace oz
 
     clazz->weaponItem           = config->get( "weaponItem", -1 );
 
-    clazz->mindType             = config->get( "mindType", "" );
     clazz->mindFunction         = config->get( "mindFunction", "" );
 
     String sNameList            = config->get( "nameList", "" );
