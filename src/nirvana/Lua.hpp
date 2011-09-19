@@ -20,11 +20,11 @@ namespace oz
 namespace nirvana
 {
 
+  typedef int ( LuaAPI )( lua_State* );
+
   class Lua
   {
     private:
-
-      typedef int ( LuaAPI )( lua_State* );
 
       lua_State* l;
 
@@ -50,9 +50,13 @@ namespace nirvana
 
       void mindCall( const char* functionName, Bot* self );
 
-      // create a table for a mind that can act as mind's local storage, mind's local variables
       void registerMind( int botIndex );
       void unregisterMind( int botIndex );
+
+      void registerFunction( const char* name, LuaAPI func );
+      void registerConstant( const char* name, int value );
+      void registerConstant( const char* name, float value );
+      void registerConstant( const char* name, const char* value );
 
       void init();
       void free();

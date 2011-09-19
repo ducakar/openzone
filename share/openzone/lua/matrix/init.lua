@@ -1,18 +1,21 @@
 function matrix_onCreate()
-  init_sample()
-  init_stressTest()
-end
-
-function init_sample()
   ozCaelumSetHeading( math.pi / 8 )
   ozCaelumSetPeriod( 1440 )
   ozCaelumSetTime( 180 )
 
+  init_sample()
+
+  ozFloraSeed()
+
+  init_stressTest()
+end
+
+function init_sample()
   ozOrbisForceAddObj( "lord", 138, -11, 73 )
-  ozBotSetH( 1.5 * math.pi )
+  ozBotSetH( 270 )
 
   ozOrbisForceAddObj( "droid.OOM-9", 140, -11, 73 )
-  ozBotSetH( 0.5 * math.pi )
+  ozBotSetH( 90 )
 
   ozOrbisGenParts( 1000, 136, -3, 71, 0, 0, 10, 15, 0.4, 0.4, 0.4, 0.2, 1.95, 0.1, 5.0 )
 

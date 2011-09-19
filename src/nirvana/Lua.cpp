@@ -80,6 +80,26 @@ namespace nirvana
     lua_rawseti( l, 1, botIndex );
   }
 
+  void Lua::registerFunction( const char* name, LuaAPI func )
+  {
+    lua_register( l, name, func );
+  }
+
+  void Lua::registerConstant( const char* name, int value )
+  {
+    OZ_LUA_INT_CONST( name, value );
+  }
+
+  void Lua::registerConstant( const char* name, float value )
+  {
+    OZ_LUA_FLOAT_CONST( name, value );
+  }
+
+  void Lua::registerConstant( const char* name, const char* value )
+  {
+    OZ_LUA_STRING_CONST( name, value );
+  }
+
   void Lua::init()
   {
     log.println( "Initialising Nirvana Lua {" );

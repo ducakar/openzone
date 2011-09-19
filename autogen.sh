@@ -12,8 +12,6 @@ echo Generating src/matrix/CMakeLists.txt
 cd src/matrix  && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/nirvana/CMakeLists.txt
 cd src/nirvana && ./CMakeLists-gen.sh && cd ../..
-echo Generating src/arch/CMakeLists.txt
-cd src/arch &&    ./CMakeLists-gen.sh && cd ../..
 echo Generating src/client/CMakeLists.txt
 cd src/client  && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/server/CMakeLists.txt

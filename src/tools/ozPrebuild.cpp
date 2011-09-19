@@ -9,6 +9,8 @@
 
 #include "stable.hpp"
 
+#include "Build.hpp"
+
 #include "matrix/Translator.hpp"
 #include "matrix/Orbis.hpp"
 #include "matrix/QBSP.hpp"
@@ -312,6 +314,20 @@ int main( int argc, char** argv )
     }
 
     log.printlnETD( OZ_APPLICATION_TITLE " Prebuild started at" );
+
+    log.println( "Build details {" );
+    log.indent();
+
+    log.println( "Date:            %s", Build::TIME );
+    log.println( "Host system:     %s", Build::HOST_SYSTEM );
+    log.println( "Target system:   %s", Build::TARGET_SYSTEM );
+    log.println( "Build type:      %s", Build::BUILD_TYPE );
+    log.println( "Compiler:        %s", Build::COMPILER );
+    log.println( "Compiler flags:  %s", Build::CXX_FLAGS );
+    log.println( "Linker flags:    %s", Build::EXE_LINKER_FLAGS );
+
+    log.unindent();
+    log.println( "}" );
 
     String dataDir = OZ_INSTALL_PREFIX "/share/" OZ_APPLICATION_NAME;
     if( argc >= 2 && !String::equals( argv[argc - 1], "-f" ) ) {

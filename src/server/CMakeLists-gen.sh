@@ -2,8 +2,8 @@
 
 cat << EOF > CMakeLists.txt
 add_library( server STATIC
-`LC_COLLATE=C ls *.{hpp,cpp} | xargs printf '  %s\n'`
+`LC_COLLATE=C ls *.cpp | xargs printf '  %s\n'`
 )
 
-add_dependencies( server arch nirvana matrix pch )
+add_dependencies( server nirvana matrix pch )
 EOF
