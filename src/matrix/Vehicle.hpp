@@ -28,20 +28,6 @@ namespace oz
         AIR
       };
 
-      enum Crew
-      {
-        PILOT,
-        GUNNER,
-        COMMANDER,
-        PASSENGER0,
-        PASSENGER1,
-        PASSENGER2,
-        PASSENGER3,
-        PASSENGER4,
-        PASSENGER5,
-        CREW_MAX
-      };
-
       static const int   WEAPONS_MAX            = 8;
 
       // not used, to reserve slot for engine sound sample
@@ -89,7 +75,7 @@ namespace oz
       int   nShots[WEAPONS_MAX];
       float shotTime[WEAPONS_MAX];
 
-      int   crew[CREW_MAX];
+      int   pilot;
 
       Vehicle();
 

@@ -85,7 +85,7 @@ namespace ui
         if( tagged->flags & Object::VEHICLE_BIT ) {
           const Vehicle* vehicle = static_cast<const Vehicle*>( tagged );
 
-          if( vehicle->crew[Vehicle::PILOT] == -1 ) {
+          if( vehicle->pilot == -1 ) {
             glBindTexture( GL_TEXTURE_2D, mountTexId );
             shape.fill( mountIconX, mountIconY, ICON_SIZE, ICON_SIZE );
           }

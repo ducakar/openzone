@@ -70,11 +70,8 @@ namespace client
         else if( tagged->flags & Object::VEHICLE_BIT ) {
           Vehicle* veh = const_cast<Vehicle*>( static_cast<const Vehicle*>( tagged ) );
 
-          for( int i = 0; i < Vehicle::CREW_MAX; ++i ) {
-            if( veh->crew[i] != -1 && orbis.objects[ veh->crew[i] ] != null ) {
-              me = const_cast<Bot*>( static_cast<const Bot*>( orbis.objects[ veh->crew[i] ] ) );
-              break;
-            }
+          if( veh->pilot != -1 && orbis.objects[veh->pilot] != null ) {
+            me = const_cast<Bot*>( static_cast<const Bot*>( orbis.objects[veh->pilot] ) );
           }
         }
 
