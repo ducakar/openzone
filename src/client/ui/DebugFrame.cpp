@@ -42,7 +42,7 @@ namespace ui
 
     print( 5, 5 + height * 5, ALIGN_NONE,
            "cam.p(%.2f %.2f %.2f) cam.relRot(%.2f %.2f)",
-           camera.p.x, camera.p.y, camera.p.z, camera.h / Math::TAU, camera.v / Math::TAU );
+           camera.p.x, camera.p.y, camera.p.z, Math::deg( camera.h ), Math::deg( camera.v ) );
 
     if( camera.bot != -1 ) {
       const Bot* bot = static_cast<const Bot*>( camera.botObj );
@@ -50,7 +50,7 @@ namespace ui
       print( 5, 5 + height * 4, ALIGN_NONE,
              "bot.pos(%.2f %.2f %.2f) bot.rot(%.2f %.2f)",
              bot->p.x, bot->p.y, bot->p.z,
-             bot->h / Math::TAU, bot->v / Math::TAU );
+             Math::deg( bot->h ), Math::deg( bot->v ) );
 
       print( 5, 5 + height * 3, ALIGN_NONE,
              "bot.vel(%.2f %.2f %.2f) bot.mom(%.2f %.2f %.2f) bot.wd %.2f",

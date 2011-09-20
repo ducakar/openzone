@@ -452,7 +452,9 @@ namespace oz
         classConfig.clear();
         continue;
       }
-      classes.add( name, ( *initFunc )( name, &classConfig ) );
+
+      classConfig.add( "name", name );
+      classes.add( name, ( *initFunc )( &classConfig ) );
       classConfig.clear();
 
       log.println( "%s", name.cstr() );
@@ -765,7 +767,9 @@ namespace oz
         classConfig.clear();
         continue;
       }
-      classes.add( name, ( *initFunc )( name, &classConfig ) );
+
+      classConfig.add( "name", name );
+      classes.add( name, ( *initFunc )( &classConfig ) );
       classConfig.clear();
 
       log.println( "%s", name.cstr() );

@@ -75,7 +75,7 @@ namespace oz
 
       int    nameList;
 
-      static ObjectClass* init( const String& name, const Config* config );
+      static ObjectClass* init( const Config* config );
 
       virtual Object* create( int index, const Point3& pos ) const;
       virtual Object* create( int index, InputStream* istream ) const;

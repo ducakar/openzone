@@ -175,6 +175,7 @@ namespace nirvana
     OZ_LUA_FUNCTION( ozDynGetMass );
     OZ_LUA_FUNCTION( ozDynGetLift );
 
+    OZ_LUA_FUNCTION( ozBotGetName );
     OZ_LUA_FUNCTION( ozBotGetEyePos );
     OZ_LUA_FUNCTION( ozBotGetH );
     OZ_LUA_FUNCTION( ozBotGetV );
@@ -182,6 +183,7 @@ namespace nirvana
     OZ_LUA_FUNCTION( ozBotStateIsRunning );
     OZ_LUA_FUNCTION( ozBotGetStamina );
 
+    OZ_LUA_FUNCTION( ozSelfGetName );
     OZ_LUA_FUNCTION( ozSelfGetEyePos );
     OZ_LUA_FUNCTION( ozSelfGetH );
     OZ_LUA_FUNCTION( ozSelfSetH );
@@ -902,6 +904,21 @@ namespace nirvana
     return 1;
   }
 
+  int Lua::ozBotGetName( lua_State* l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
+      OZ_LUA_ERROR( "selected object is not a bot" );
+    }
+
+    const Bot* bot = static_cast<const Bot*>( lua.obj );
+
+    lua_pushstring( l, bot->name );
+    return 1;
+  }
+
   int Lua::ozBotGetEyePos( lua_State* l )
   {
     if( lua.obj == null ) {
@@ -1006,6 +1023,12 @@ namespace nirvana
     return 1;
   }
 
+  int Lua::ozSelfGetName( lua_State* l )
+  {
+    lua_pushstring( l, lua.self->name );
+    return 1;
+  }
+
   int Lua::ozSelfGetEyePos( lua_State* l )
   {
     lua_pushnumber( l, lua.self->p.x );
@@ -1024,14 +1047,14 @@ namespace nirvana
   {
     lua.self->h = Math::rad( float( lua_tonumber( l, 1 ) ) );
     lua.self->h = Math::mod( lua.self->h + Math::TAU, Math::TAU );
-    return 1;
+    return 0;
   }
 
   int Lua::ozSelfAddH( lua_State* l )
   {
     lua.self->h += Math::rad( float( lua_tonumber( l, 1 ) ) );
     lua.self->h = Math::mod( lua.self->h + Math::TAU, Math::TAU );
-    return 1;
+    return 0;
   }
 
   int Lua::ozSelfGetV( lua_State* l )
@@ -1044,14 +1067,14 @@ namespace nirvana
   {
     lua.self->v = Math::rad( float( lua_tonumber( l, 1 ) ) );
     lua.self->v = clamp( lua.self->v, 0.0f, Math::TAU / 2.0f );
-    return 1;
+    return 0;
   }
 
   int Lua::ozSelfAddV( lua_State* l )
   {
     lua.self->v += Math::rad( float( lua_tonumber( l, 1 ) ) );
     lua.self->v = clamp( lua.self->v, 0.0f, Math::TAU / 2.0f );
-    return 1;
+    return 0;
   }
 
   int Lua::ozSelfActionForward( lua_State* )

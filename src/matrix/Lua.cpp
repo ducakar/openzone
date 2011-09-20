@@ -222,6 +222,8 @@ namespace oz
     OZ_LUA_FUNCTION( ozDynAddLift );
     OZ_LUA_FUNCTION( ozDynResetLift );
 
+    OZ_LUA_FUNCTION( ozBotGetName );
+    OZ_LUA_FUNCTION( ozBotSetName );
     OZ_LUA_FUNCTION( ozBotGetEyePos );
     OZ_LUA_FUNCTION( ozBotGetH );
     OZ_LUA_FUNCTION( ozBotSetH );
@@ -1284,6 +1286,36 @@ namespace oz
     return 0;
   }
 
+  int Lua::ozBotGetName( lua_State* l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
+      OZ_LUA_ERROR( "selected object is not a bot" );
+    }
+
+    const Bot* bot = static_cast<const Bot*>( lua.obj );
+
+    lua_pushstring( l, bot->name );
+    return 1;
+  }
+
+  int Lua::ozBotSetName( lua_State* l )
+  {
+    if( lua.obj == null ) {
+      OZ_LUA_ERROR( "selected object is null" );
+    }
+    if( !( lua.obj->flags & Object::BOT_BIT ) ) {
+      OZ_LUA_ERROR( "selected object is not a bot" );
+    }
+
+    Bot* bot = static_cast<Bot*>( lua.obj );
+
+    bot->name = lua_tostring( l, 1 );
+    return 0;
+  }
+
   int Lua::ozBotGetEyePos( lua_State* l )
   {
     if( lua.obj == null ) {
@@ -1329,7 +1361,7 @@ namespace oz
 
     bot->h = Math::rad( float( lua_tonumber( l, 1 ) ) );
     bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
-    return 1;
+    return 0;
   }
 
   int Lua::ozBotAddH( lua_State* l )
@@ -1345,7 +1377,7 @@ namespace oz
 
     bot->h += Math::rad( float( lua_tonumber( l, 1 ) ) );
     bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
-    return 1;
+    return 0;
   }
 
   int Lua::ozBotGetV( lua_State* l )
@@ -1376,7 +1408,7 @@ namespace oz
 
     bot->v = Math::rad( float( lua_tonumber( l, 1 ) ) );
     bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
-    return 1;
+    return 0;
   }
 
   int Lua::ozBotAddV( lua_State* l )
@@ -1392,7 +1424,7 @@ namespace oz
 
     bot->v += Math::rad( float( lua_tonumber( l, 1 ) ) );
     bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
-    return 1;
+    return 0;
   }
 
   int Lua::ozBotGetDir( lua_State* l )

@@ -185,8 +185,16 @@ namespace ui
       }
 
       setFont( Font::SANS );
-      print( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE,
-             "%s", taggedItem->clazz->description.cstr() );
+
+      const ObjectClass* clazz = taggedItem->clazz;
+      if( !clazz->description.isEmpty() ) {
+        print( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE,
+              "%s - %s", clazz->title.cstr(), clazz->description.cstr() );
+      }
+      else {
+        print( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE,
+              "%s", clazz->title.cstr() );
+      }
     }
   }
 

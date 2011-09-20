@@ -255,30 +255,31 @@ namespace client
   {
     log.println( "Usage:" );
     log.indent();
-    log.println( "%s [OPTIONS]", program_invocation_short_name );
+    log.println( "openzone [--help] [--load | -l | --no-load | -L]" );
+    log.println( "         [--save | -s | --no-save | -S] [(--time | -t) <num>]" );
+    log.println( "         [(--prefix | -p) <prefix>]",
+                 program_invocation_short_name );
     log.println();
     log.println( "--help" );
     log.println( "\tPrints that help message." );
     log.println();
-    log.println( "--prefix prefix_dir" );
-    log.println( "-p prefix_dir" );
-    log.println( "\tSets data directory to prefix_dir/share/openzone and locale directory to\n"
-                  "\tprefix_dir/locale." );
+    log.println( "-l, --load" );
+    log.println( "-L, --no-load" );
+    log.println( "\tEnables or disables autoload of ~/" OZ_RC_DIR "/default.ozState on" );
+    log.println( "\tstartup respectively. Overrides the 'autoload' resource." );
     log.println();
-    log.println( "--load, --no-load" );
-    log.println( "-l, -L" );
-    log.println( "\tEnables or disables autoload of ~/" OZ_RC_DIR "/default.ozState on\n"
-                 "\tstartup respectively. Overrides the 'autoload' resource." );
+    log.println( "-s, --save" );
+    log.println( "-S, --no-save" );
+    log.println( "\tEnables or disables autosave to ~/" OZ_RC_DIR "/default.ozState on exit" );
+    log.println( "\trespectively. Overrides the 'autosave' resource." );
     log.println();
-    log.println( "--save, --no-save" );
-    log.println( "-s, -S" );
-    log.println( "\tEnables or disables autosave to ~/" OZ_RC_DIR "/default.ozState on exit\n"
-                 "\trespectively. Overrides the 'autosave' resource." );
+    log.println( "-t <num>, --time <num>" );
+    log.println( "\tExits after <num> seconds (can be a floating-point number)." );
+    log.println( "\tFor benchmarking purposes." );
     log.println();
-    log.println( "--time num" );
-    log.println( "-t num" );
-    log.println( "\tExits after num seconds (can be a floating-point number).\n"
-                 "\tFor benchmarking purposes." );
+    log.println( "-p <prefix>, --prefix <prefix>" );
+    log.println( "\tSets data directory to <prefix>/share/openzone and locale directory to" );
+    log.println( "\t<prefix>/share/locale." );
     log.println();
     log.unindent();
   }
@@ -286,8 +287,6 @@ namespace client
   int Client::main( int argc, char** argv )
   {
     initFlags = 0;
-    String rcDir;
-    String prefixDir;
 
     bool  isBenchmark = false;
     float benchmarkTime = 0.0f;
@@ -354,7 +353,7 @@ namespace client
       throw Exception( "Cannot determine user home directory from environment" );
     }
 
-    rcDir = homeVar + String( "/" OZ_RC_DIR );
+    String rcDir = homeVar + String( "/" OZ_RC_DIR );
 
     struct stat homeDirStat;
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
@@ -440,13 +439,6 @@ namespace client
 
     config.add( "dir.rc", rcDir );
 
-    if( prefixDir.isEmpty() ) {
-      prefixDir = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
-    }
-    else {
-      config.getSet( "dir.prefix", prefixDir );
-    }
-
     log.print( "Setting localisation ..." );
 
     setlocale( LC_CTYPE, config.getSet( "locale.ctype", "" ) );
@@ -484,10 +476,11 @@ namespace client
     }
     ui::keyboard.init();
 
-    const char* data = config.getSet( "dir.data", prefixDir + "/share/" OZ_APPLICATION_NAME );
+    String prefixDir = config.getSet( "dir.prefix", OZ_INSTALL_PREFIX );
+    String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;
 
-    log.print( "Setting working directory to data directory '%s' ...", data );
-    if( chdir( data ) != 0 ) {
+    log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
+    if( chdir( dataDir ) != 0 ) {
       log.printEnd( " Failed" );
       return -1;
     }

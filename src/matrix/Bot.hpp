@@ -77,6 +77,7 @@ namespace oz
       static const int GESTURE_ALL_BIT          = 0x00200000;
 
       static const float HIT_HARD_THRESHOLD;
+      static const float WOUNDED_THRESHOLD;
       static const float GRAB_EPSILON;
       static const float GRAB_STRING_RATIO;
       static const float GRAB_HANDLE_TOL;

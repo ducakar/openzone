@@ -16,11 +16,9 @@
 namespace oz
 {
 
-  ObjectClass* DynamicClass::init( const String& name, const Config* config )
+  ObjectClass* DynamicClass::init( const Config* config )
   {
     DynamicClass* clazz = new DynamicClass();
-
-    clazz->name                 = name;
 
     clazz->dim.x                = config->get( "dim.x", 0.50f );
     clazz->dim.y                = config->get( "dim.y", 0.50f );

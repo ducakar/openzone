@@ -1,11 +1,10 @@
 # Author: Davorin Učakar <davorin.ucakar@gmail.com>
 
-# add_pch( target_name header.hpp DEPENDS dep1 dep2 ... )
-# Notes: - Fails if the source directory is used as the build directory
-#        - Only works for GCC and compatible compilers (e.g. Clang)
-#        - Compiler flags are retrieved from CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_BUILDTYPE,
+# add_syncheck( target_name "-DFOO -DBAR" file1 file2 ... )
+# Notes: - Compiler flags are retrieved from CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_BUILDTYPE,
 #          everything set via add_definitions() is ignored
-macro( add_pch _targetName _inputHeader )
+#        - definitions is a string of space-separated additional flags for compiler.
+macro( add_syncheck _targetName _definitions )
   # extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for current build configuration XXX
   string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _build_type_flags_var )
   set( _flags "${CMAKE_CXX_FLAGS} ${${_build_type_flags_var}}" )
@@ -19,15 +18,15 @@ macro( add_pch _targetName _inputHeader )
     list( APPEND _flags "-I${_inc_dir}" )
   endforeach()
 
+  # definitions are given in a string because we already use varargs for files.
+  separate_arguments( _definitions )
+
   # set build rules (build precompiled header and copy original header to build folder - needed to
   # be there to be included via other headers - which is needed for KDevelop's indexer to work
   # properly)
-  add_custom_command( OUTPUT "${_inputHeader}.gch"
-    ${ARGN} "${_inputHeader}"
-    COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}" "${_inputHeader}.gch"
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
-    COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
+  add_custom_command( OUTPUT ${_targetName}_checking
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_CXX_COMPILER} ${_flags} ${_definitions} -fsyntax-only ${ARGN} )
   add_custom_target( ${_targetName}
-    SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
-    DEPENDS "${_inputHeader}.gch" )
+   DEPENDS ${_targetName}_checking )
 endmacro()

@@ -62,19 +62,11 @@ namespace ui
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
         rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
 
-        String description;
-        if( tagged->flags & Object::BOT_BIT ) {
-          const Bot* bot = static_cast<const Bot*>( tagged );
+        const Bot* bot = static_cast<const Bot*>( tagged );
+        String title = ( tagged->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
+            bot->name + " (" + taggedClazz->title + ")" : taggedClazz->title;
 
-          description = bot->name.isEmpty() ?
-              taggedClazz->description :
-              bot->name + " (" + taggedClazz->description + ")";
-        }
-        else {
-          description = taggedClazz->description;
-        }
-
-        print( descTextX, descTextY, ALIGN_CENTRE, "%s", description.cstr() );
+        print( descTextX, descTextY, ALIGN_CENTRE, "%s", title.cstr() );
 
         if( !( tagged->flags & Object::SOLID_BIT ) ) {
           return;
@@ -147,7 +139,7 @@ namespace ui
       glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
       fill( 8, 52, 200, textHeight + 8 );
 
-      print( 16, 54, ALIGN_LEFT, "%s", weapon->clazz->description.cstr() );
+      print( 16, 54, ALIGN_LEFT, "%s", weapon->clazz->title.cstr() );
       print( 200, 54, ALIGN_RIGHT, weapon->nShots == -1 ? "∞" : "%d", weapon->nShots );
     }
   }

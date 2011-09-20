@@ -155,6 +155,8 @@ namespace oz
       static LuaAPI ozDynAddLift;
       static LuaAPI ozDynResetLift;
 
+      static LuaAPI ozBotGetName;
+      static LuaAPI ozBotSetName;
       static LuaAPI ozBotGetEyePos;
       static LuaAPI ozBotGetH;
       static LuaAPI ozBotSetH;

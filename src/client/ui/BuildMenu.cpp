@@ -27,8 +27,12 @@ namespace ui
 {
 
   BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
-      Button( gettext( className ), callback, width, height ), className( className )
-  {}
+      Button( "", callback, width, height ), className( className )
+  {
+    const ObjectClass* clazz = *translator.classes.find( className );
+
+    label = gettext( clazz->title );
+  }
 
   void BuildMenu::createObject( Button* button_ )
   {

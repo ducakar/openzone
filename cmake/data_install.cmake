@@ -32,6 +32,13 @@ if( OZ_INSTALL_OPENZONE )
 endif()
 
 #
+# icons
+#
+if( OZ_INSTALL_ICONS )
+  install( DIRECTORY share/applications share/icons DESTINATION share COMPONENT icons )
+endif()
+
+#
 # oalinst, DLLs
 #
 if( WIN32 )
@@ -44,8 +51,8 @@ if( WIN32 )
     endif()
   endif()
 
-  if( OZ_INTALL_TOOLS )
-    file( GLOB files support/mingw32-client/*.exe support/mingw32-client/*.dll )
+  if( OZ_INSTALL_TOOLS )
+    file( GLOB files support/mingw32-tools/*.exe support/mingw32-tools/*.dll )
     install( FILES ${files} DESTINATION bin COMPONENT tools )
 
     if( OZ_INSTALL_STANDALONE )

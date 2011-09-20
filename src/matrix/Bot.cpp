@@ -22,6 +22,7 @@ namespace oz
 {
 
   const float Bot::HIT_HARD_THRESHOLD  = -8.00f;
+  const float Bot::WOUNDED_THRESHOLD   = 0.70f;
   const float Bot::GRAB_EPSILON        = 0.20f;
   const float Bot::GRAB_STRING_RATIO   = 10.0f;
   const float Bot::GRAB_HANDLE_TOL     = 1.60f;
@@ -228,7 +229,7 @@ namespace oz
         state  |= CROUCHING_BIT;
       }
     }
-    if( stamina < clazz->staminaRunDrain ) {
+    if( stamina < clazz->staminaRunDrain || life < WOUNDED_THRESHOLD * clazz->life ) {
       state &= ~RUNNING_BIT;
     }
 
