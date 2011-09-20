@@ -11,7 +11,7 @@
 
 #include "matrix/QBSP.hpp"
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
 
 #include "matrix/Timer.hpp"
 #include "matrix/Translator.hpp"
@@ -102,8 +102,10 @@ namespace oz
 
       fread( &plane, sizeof( QBSPPlane ), 1, file );
 
-      planes[i].n = Vec3( plane.normal );
-      planes[i].d = plane.distance * scale;
+      planes[i].nx = plane.normal[0];
+      planes[i].ny = plane.normal[1];
+      planes[i].nz = plane.normal[2];
+      planes[i].d  = plane.distance * scale;
 
       float offset = Vec3( maxDim, maxDim, maxDim ) * planes[i].abs();
 
@@ -637,22 +639,22 @@ namespace oz
     for( int i = 0; i < nBrushSides; ++i ) {
       Plane& plane = planes[ brushSides[i] ];
 
-      if( plane.n.x == -1.0f ) {
+      if( plane.nx == -1.0f ) {
         mins.x = min( -plane.d, mins.x );
       }
-      else if( plane.n.x == 1.0f ) {
+      else if( plane.nx == 1.0f ) {
         maxs.x = max( +plane.d, maxs.x );
       }
-      else if( plane.n.y == -1.0f ) {
+      else if( plane.ny == -1.0f ) {
         mins.y = min( -plane.d, mins.y );
       }
-      else if( plane.n.y == 1.0f ) {
+      else if( plane.ny == 1.0f ) {
         maxs.y = max( +plane.d, maxs.y );
       }
-      else if( plane.n.z == -1.0f ) {
+      else if( plane.nz == -1.0f ) {
         mins.z = min( -plane.d, mins.z );
       }
-      else if( plane.n.z == 1.0f ) {
+      else if( plane.nz == 1.0f ) {
         maxs.z = max( +plane.d, maxs.z );
       }
     }

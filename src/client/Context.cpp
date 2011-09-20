@@ -27,7 +27,7 @@
 #include "client/OpenGL.hpp"
 #include "client/OpenAL.hpp"
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
 # include <SDL_image.h>
 #endif
 
@@ -50,7 +50,7 @@ namespace client
   Pool<Context::Source> Context::Source::pool;
   Buffer Context::buffer;
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
@@ -185,7 +185,7 @@ namespace client
   Context::Context() : textures( null ), sounds( null ), bsps( null )
   {}
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   uint Context::createTexture( const void* data, int width, int height, int bytesPerPixel,
                                bool wrap, int magFilter, int minFilter )
   {

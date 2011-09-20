@@ -57,7 +57,7 @@ namespace client
 
       Terra();
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
       void prebuild( const char* name );
 #endif
 

@@ -6,20 +6,25 @@ endif()
 
 project( openzone C CXX )
 
-option( OZ_TRACE_LEAKS "Use overloads for default new and delete that saves stacktrace for each new call and trace memory leaks" ON )
+option( OZ_TRACE_LEAKS "Use overloads for default new and delete that saves stacktrace for each new call and trace memory leaks." OFF )
 option( OZ_POOL_ALLOC "Enable Pool and new/delete overloads that use it. Otherwise use a dummy class that calls generic new/delete." ON )
-option( OZ_SIMD "Enable generic SIMD code in linear algebra math classes." ON )
+option( OZ_SIMD "Enable generic SIMD code in linear algebra math classes." OFF )
 option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and networking" OFF )
 
 option( OZ_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
-option( OZ_NETWORKING "Enable networking" OFF )
-option( OZ_GL_COMPATIBLE "Use common subset of OpenGL 2.1, OpenGL 3.0, OpenGL ES 2.0, no texture compression, GLSL 1.20" ON )
-option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)" OFF )
+option( OZ_NETWORKING "Enable networking." OFF )
+option( OZ_GL_COMPATIBLE "Use common subset of OpenGL 2.1, OpenGL 3.0, OpenGL ES 2.0, no texture compression, GLSL 1.20." ON )
+option( OZ_GL_S3TC "Use S3 texture compression." OFF )
+option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)." OFF )
 
-option( OZ_SDK "Build SDL instead of game" OFF )
-option( OZ_BUILD_TESTS "Build tests" OFF )
-option( OZ_INSTALL_LIBOZ "Install liboz" OFF )
-option( OZ_INSTALL_STANDALONE "Install some support files if a standalone archive" OFF )
+option( OZ_BUILD_TESTS "Build tests." OFF )
+option( OZ_INSTALL_LIBOZ "Install liboz." OFF )
+option( OZ_INSTALL_OPENZONE "Install OpenZone engine." OFF )
+option( OZ_INSTALL_TOOLS "Install ozPrebuild tool for prebuilding data." OFF )
+option( OZ_INSTALL_INFO "Install info files (README, COPYING, ...)." OFF )
+option( OZ_INSTALL_DATA "Install prebuild data needed to run game." OFF )
+option( OZ_INSTALL_DATA_SRC "Install sources of prebuilt data (for content development)." OFF )
+option( OZ_INSTALL_STANDALONE "Install some support files if a standalone archive." OFF )
 
 if( NOT DEFINED OZ_APPLICATION_NAME )
   set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
@@ -49,17 +54,6 @@ if( NOT DEFINED OZ_CLIENT_CONFIG_FILE )
   set( OZ_CLIENT_CONFIG_FILE "client.rc" CACHE STRING "" FORCE )
 endif()
 
-option( OZ_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
-option( OZ_NETWORKING "Enable networking" OFF )
-option( OZ_GL_COMPATIBLE "Use common subset of OpenGL 2.1, OpenGL 3.0, OpenGL ES 2.0, no texture compression, GLSL 1.20" ON )
-option( OZ_GL_S3TC "Use S3 texture compression" OFF )
-option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)" OFF )
-
-option( OZ_SDK "Build SDL instead of game" OFF )
-option( OZ_BUILD_TESTS "Build tests" OFF )
-option( OZ_INSTALL_LIBOZ "Install liboz" OFF )
-option( OZ_INSTALL_STANDALONE "Install some support files if a standalone archive" OFF )
-
 if( NOT DEFINED OZ_SYSTEM_NAME )
   if( WIN32 )
     set( OZ_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-i686" CACHE STRING "" FORCE )
@@ -72,71 +66,26 @@ if( NOT CMAKE_BUILD_TYPE )
   set( CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE )
 endif()
 
-if( OZ_SDK )
-
-  set( CPACK_PACKAGE_NAME "${OZ_APPLICATION_NAME}-sdk" )
-  set( CPACK_PACKAGE_VERSION "${OZ_APPLICATION_VERSION}" )
-  set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "SDK for OpenZone engine" )
-  set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
-  set( CPACK_TOPLEVEL_TAG "openzone" )
-  set( CPACK_PACKAGE_INSTALL_DIRECTORY "OpenZone" )
-  set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "OpenZoneSDK" )
-  set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
-  set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
-  set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
-  set( CPACK_STRIP_FILES "bin/ozPrebuild" )
-
-else()
-
-  set( CPACK_PACKAGE_NAME "${OZ_APPLICATION_NAME}" )
-  set( CPACK_PACKAGE_VERSION "${OZ_APPLICATION_VERSION}" )
-  set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform 3D game engine" )
-  set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
-  set( CPACK_TOPLEVEL_TAG "openzone" )
-  set( CPACK_PACKAGE_INSTALL_DIRECTORY "OpenZone" )
-  set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "OpenZone" )
-  set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
-  set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
-  set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
-  set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
-  set( CPACK_STRIP_FILES "bin/openzone" )
-  set( CPACK_NSIS_DISPLAY_NAME "OpenZone" )
-  set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
-  set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
-  set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )
-
-endif()
+set( CPACK_PACKAGE_NAME "${OZ_APPLICATION_NAME}" )
+set( CPACK_PACKAGE_VERSION "${OZ_APPLICATION_VERSION}" )
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform 3D game engine" )
+set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
+set( CPACK_TOPLEVEL_TAG "openzone" )
+set( CPACK_PACKAGE_INSTALL_DIRECTORY "OpenZone" )
+set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "OpenZone" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
+set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
+set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
+set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
+set( CPACK_STRIP_FILES "bin/openzone" )
+set( CPACK_NSIS_DISPLAY_NAME "OpenZone" )
+set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
+set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
+set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )
 
 include( CheckLibraryExists )
 include( CPack )
-
-# add_pch( target_name header.hpp DEPENDS dep1 dep2 ... )
-macro( add_pch _targetName _inputHeader )
-  # extract CMAKE_CXX_FLAGS and CMAKE_CXX_FLAGS_XXX for current build configuration XXX
-  string( TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _build_type_flags_var )
-  set( _flags "${CMAKE_CXX_FLAGS} ${${_build_type_flags_var}}" )
-
-  # convert string of space separated flags into a list
-  separate_arguments( _flags )
-
-  # extract include directories set by include_directories command
-  get_directory_property( _includes INCLUDE_DIRECTORIES )
-  foreach( _inc_dir ${_includes} )
-    list( APPEND _flags "-I${_inc_dir}" )
-  endforeach()
-
-  # set build rules (build precompiled header and copy original header to build folder - needed to
-  # be there to be included via other headers - which is needed for KDevelop's indexer to work
-  # properly)
-  add_custom_command( OUTPUT "${_inputHeader}.gch"
-    ${ARGN} "${_inputHeader}"
-    COMMAND ${CMAKE_COMMAND} -E remove -f "${_inputHeader}" "${_inputHeader}.gch"
-    COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" "${_inputHeader}"
-    COMMAND ${CMAKE_CXX_COMPILER} ${_flags} -o "${_inputHeader}.gch" "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}" )
-  add_custom_target( ${_targetName}
-    SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${_inputHeader}"
-    DEPENDS "${_inputHeader}.gch" )
-endmacro()
+include( cmake/pch.cmake )
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )
 
@@ -186,14 +135,12 @@ if( WIN32 )
   mark_as_advanced( INTL_LIBRARY )
 endif()
 
-if( OZ_SDK )
-  Find_Package( SDL_image REQUIRED )
-  Find_Package( PNG REQUIRED )
-  Find_Package( JPEG REQUIRED )
+Find_Package( SDL_image REQUIRED )
+Find_Package( PNG REQUIRED )
+Find_Package( JPEG REQUIRED )
 
-  mark_as_advanced( SDLIMAGE_INCLUDE_DIR )
-  mark_as_advanced( SDLIMAGE_LIBRARY )
-endif()
+mark_as_advanced( SDLIMAGE_INCLUDE_DIR )
+mark_as_advanced( SDLIMAGE_LIBRARY )
 
 # detect clang
 string( REGEX MATCH "clang\\+\\+$" compiler_base "${CMAKE_CXX_COMPILER}" )
@@ -231,10 +178,8 @@ if( OZ_NETWORK )
   set( libs "${libs};${SDLNET_LIBRARY}" )
 endif()
 
-if( OZ_SDK )
-  include_directories( ${SDLIMAGE_INCLUDE_DIR} )
-  set( libs "${libs};${SDLIMAGE_LIBRARY}" )
-endif()
+include_directories( ${SDLIMAGE_INCLUDE_DIR} )
+set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )
 
 if( OZ_MINGW )
   include_directories( ./include )
@@ -304,5 +249,5 @@ string( STRIP "${OZ_EXE_LINKER_FLAGS}" OZ_EXE_LINKER_FLAGS )
 # sources
 add_subdirectory( src )
 
-# installation
-include( install_files.cmake )
+# data installation
+include( cmake/data_install.cmake )

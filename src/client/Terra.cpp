@@ -46,7 +46,7 @@ namespace client
     }
   }
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   void Terra::prebuild( const char* name_ )
   {
     String name       = name_;
@@ -138,10 +138,17 @@ namespace client
               waterTiles.set( i * TILES + j );
             }
 
-            vertex.pos = pos;
-            vertex.texCoord.u = float( x ) / float( oz::Terra::VERTS );
-            vertex.texCoord.v = float( y ) / float( oz::Terra::VERTS );
-            vertex.normal = normal;
+            vertex.pos[0] = pos.x;
+            vertex.pos[1] = pos.y;
+            vertex.pos[2] = pos.z;
+
+            vertex.texCoord[0] = float( x ) / float( oz::Terra::VERTS );
+            vertex.texCoord[1] = float( y ) / float( oz::Terra::VERTS );
+
+            vertex.normal[0] = normal.x;
+            vertex.normal[1] = normal.y;
+            vertex.normal[2] = normal.z;
+
             vertex.write( &os );
           }
         }

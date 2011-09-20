@@ -387,7 +387,7 @@ namespace client
     log.println( "Initialising Shader {" );
     log.indent();
 
-    hasVertexTexture = config.getSet( "shader.vertexTexture", false );
+    hasVertexTexture = config.getSet( "shader.vertexTexture", true );
 
     // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
     // always returns white colour when texture 0 is bound)

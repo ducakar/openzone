@@ -31,14 +31,77 @@
 #include <SDL/SDL_main.h>
 
 #ifdef OZ_MINGW
-# define program_invocation_short_name "openzone"
+# define program_invocation_short_name "ozPrebuild"
 #endif
 
 using namespace oz;
 
+static const char* const CREATE_DIRS[] = {
+  "bsp",
+  "bsp/tex",
+  "caelum",
+  "class",
+  "glsl",
+  "lua",
+  "lua/matrix",
+  "lua/nirvana",
+  "mdl",
+  "music",
+  "name",
+  "snd",
+  "terra",
+  "ui",
+  "ui/cur",
+  "ui/font",
+  "ui/icon"
+};
+
 bool Alloc::isLocked = true;
 
-static bool forceRebuild = false;
+static bool doForceRebuild = false;
+
+static void printUsage()
+{
+  log.println( "Usage:" );
+  log.indent();
+  log.println( "%s [OPTIONS] [DATA_DIR]", program_invocation_short_name );
+  log.println();
+  log.println( "--force" );
+  log.println( "-f" );
+  log.println( "\tForce rebuild of all resources" );
+  log.println();
+  log.unindent();
+}
+
+static void createDirs()
+{
+  log.println( "Creating directory structure {" );
+  log.indent();
+
+  for( int i = 0; i < aLength( CREATE_DIRS ); ++i ) {
+    log.print( "%-11s ...", CREATE_DIRS[i] );
+
+    struct stat dirStat;
+    if( stat( CREATE_DIRS[i], &dirStat ) == 0 ) {
+      log.printEnd( " OK, exists" );
+      continue;
+    }
+
+#ifdef OZ_MINGW
+    if( mkdir( CREATE_DIRS[i] ) != 0 ) {
+#else
+    if( mkdir( CREATE_DIRS[i], S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
+#endif
+      log.printEnd( " Failed" );
+      throw Exception( "Failed to create directories" );
+    }
+
+    log.printEnd( " OK, created" );
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
 
 static void prebuildTextures( const char* srcDir, const char* destDir,
                               bool wrap, int magFilter, int minFilter )
@@ -71,7 +134,8 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
     if( stat( srcPath, &srcInfo ) != 0 ) {
       throw Exception( "Source texture '" + srcPath + "' stat error" );
     }
-    if( !forceRebuild && stat( destPath, &destInfo ) == 0 && destInfo.st_mtime > srcInfo.st_mtime )
+    if( !doForceRebuild && stat( destPath, &destInfo ) == 0 &&
+        destInfo.st_mtime > srcInfo.st_mtime )
     {
       continue;
     }
@@ -129,7 +193,7 @@ static void prebuildModels()
       {
         throw Exception( "OBJ model '" + name + "' source files missing" );
       }
-      if( !forceRebuild && stat( dirName + name + ".ozcSMM", &destInfo ) == 0 &&
+      if( !doForceRebuild && stat( dirName + name + ".ozcSMM", &destInfo ) == 0 &&
           configInfo.st_mtime < destInfo.st_mtime &&
           srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
       {
@@ -144,7 +208,7 @@ static void prebuildModels()
       {
         throw Exception( "MD2 model '" + name + "' source files missing" );
       }
-      if( !forceRebuild && ( stat( dirName + name + ".ozcSMM", &destInfo ) == 0 ||
+      if( !doForceRebuild && ( stat( dirName + name + ".ozcSMM", &destInfo ) == 0 ||
           stat( dirName + name + ".ozcMD2", &destInfo ) == 0 ) &&
           configInfo.st_mtime < destInfo.st_mtime &&
           srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
@@ -194,7 +258,7 @@ static void prebuildBSPs()
     if( stat( srcPath0, &srcInfo0 ) != 0 || stat( srcPath1, &srcInfo1 ) != 0 ) {
       throw Exception( "Source BSP stat error" );
     }
-    if( !forceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
+    if( !doForceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
         destInfo0.st_mtime > srcInfo0.st_mtime && destInfo0.st_mtime > srcInfo1.st_mtime &&
         destInfo1.st_mtime >= destInfo0.st_mtime )
     {
@@ -241,7 +305,7 @@ static void prebuildTerras()
     if( stat( srcPath, &srcInfo ) != 0 ) {
       throw Exception( "Terra .rc stat error" );
     }
-    if( !forceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
+    if( !doForceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
         destInfo0.st_mtime > srcInfo.st_mtime && destInfo1.st_mtime >= destInfo0.st_mtime )
     {
       continue;
@@ -302,15 +366,23 @@ int main( int argc, char** argv )
       "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    if( argc == 2 && String::equals( argv[1], "--help" ) ) {
-      log.println( "Usage: %s [options] [data_directory]", program_invocation_short_name );
-      log.println( "-f" );
-      log.println( "  Force rebuild of all resources" );
-      log.println();
-      return -1;
-    }
-    else if( argc >= 2 && String::equals( argv[1], "-f" ) ) {
-      forceRebuild = true;
+    for( int i = 1; i < argc; ++i ) {
+      if( String::equals( argv[i], "--help" ) ) {
+        printUsage();
+        return -1;
+      }
+      else if( String::equals( argv[i], "--force" ) || String::equals( argv[i], "-f" ) ) {
+        doForceRebuild = true;
+      }
+      else if( argv[i][0] != '-' && !config.contains( "data.dir" ) ) {
+        config.add( "data.dir", argv[i] );
+      }
+      else {
+        log.println( "Invalid command-line option '%s'", argv[i] );
+        log.println();
+        printUsage();
+        return -1;
+      }
     }
 
     log.printlnETD( OZ_APPLICATION_TITLE " Prebuild started at" );
@@ -329,10 +401,7 @@ int main( int argc, char** argv )
     log.unindent();
     log.println( "}" );
 
-    String dataDir = OZ_INSTALL_PREFIX "/share/" OZ_APPLICATION_NAME;
-    if( argc >= 2 && !String::equals( argv[argc - 1], "-f" ) ) {
-      dataDir = argv[argc - 1];
-    }
+    String dataDir = config.get( "data.dir", OZ_INSTALL_PREFIX "/share/" OZ_APPLICATION_NAME );
 
     log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
     if( chdir( dataDir ) != 0 ) {
@@ -355,6 +424,8 @@ int main( int argc, char** argv )
     SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Prebuilding data ...", null );
 
     buffer.alloc( 10 * 1024 * 1024 );
+
+    createDirs();
 
     client::ui::Mouse::prebuild();
 

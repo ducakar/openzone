@@ -16,3 +16,5 @@ echo Generating src/client/CMakeLists.txt
 cd src/client  && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/server/CMakeLists.txt
 cd src/server  && ./CMakeLists-gen.sh && cd ../..
+echo Generating src/tools/CMakeLists.txt
+cd src/tools   && ./CMakeLists-gen.sh && cd ../..

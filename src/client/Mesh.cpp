@@ -373,7 +373,7 @@ namespace client
     }
   }
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   void MeshData::write( OutputStream* stream, bool embedTextures ) const
   {
     hard_assert( solidParts.length() > 0 || alphaParts.length() > 0 );

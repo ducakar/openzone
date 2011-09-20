@@ -260,20 +260,25 @@ namespace client
     log.println( "--help" );
     log.println( "\tPrints that help message." );
     log.println();
+    log.println( "--prefix prefix_dir" );
+    log.println( "-p prefix_dir" );
+    log.println( "\tSets data directory to prefix_dir/share/openzone and locale directory to\n"
+                  "\tprefix_dir/locale." );
+    log.println();
     log.println( "--load, --no-load" );
     log.println( "-l, -L" );
-    log.println( "\tEnables or disables autoload of ~/" OZ_RC_DIR "/default.ozState on startup "
-                 "respectively. Overrides the 'autoload' resource." );
+    log.println( "\tEnables or disables autoload of ~/" OZ_RC_DIR "/default.ozState on\n"
+                 "\tstartup respectively. Overrides the 'autoload' resource." );
     log.println();
     log.println( "--save, --no-save" );
     log.println( "-s, -S" );
-    log.println( "\tEnables or disables autosave to ~/" OZ_RC_DIR "/default.ozState on exit "
-                 "respectively. Overrides the 'autosave' resource." );
+    log.println( "\tEnables or disables autosave to ~/" OZ_RC_DIR "/default.ozState on exit\n"
+                 "\trespectively. Overrides the 'autosave' resource." );
     log.println();
     log.println( "--time num" );
     log.println( "-t num" );
-    log.println( "\tExits after num seconds (can be a floating-point number). For "
-                 "benchmarking purposes." );
+    log.println( "\tExits after num seconds (can be a floating-point number).\n"
+                 "\tFor benchmarking purposes." );
     log.println();
     log.unindent();
   }

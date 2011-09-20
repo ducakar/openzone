@@ -12,9 +12,6 @@
 
 #include "common.hpp"
 
-#pragma GCC diagnostic push "-Wpadded"
-#pragma GCC diagnostic ignored "-Wpadded"
-
 #ifdef OZ_POOL_ALLOC
 /**
  * \def OZ_STATIC_POOL_ALLOC( pool )
@@ -236,5 +233,3 @@ namespace oz
   };
 
 }
-
-#pragma GCC diagnostic pop "-Wpadded"
