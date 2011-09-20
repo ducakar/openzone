@@ -76,10 +76,7 @@ namespace nirvana
       int nMinds = istream->readInt();
 
       for( int i = 0; i < nMinds; ++i ) {
-        typeName = istream->readString();
-        if( !typeName.isEmpty() ) {
-          minds.add( new Mind( istream ) );
-        }
+        minds.add( new Mind( istream ) );
       }
     }
 

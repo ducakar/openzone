@@ -11,7 +11,7 @@
 
 #include "client/OBJ.hpp"
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
 
 #include "client/Context.hpp"
 #include "client/Colours.hpp"

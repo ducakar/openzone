@@ -34,7 +34,7 @@ namespace ui
     "hand2"
   };
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   void Mouse::prebuild()
   {
     log.println( "Prebuilding mouse cursors {" );

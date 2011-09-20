@@ -151,6 +151,8 @@ namespace ui
       tf.camera.translate( Vec3( float( SLOT_SIZE ), 0.0f, 0.0f ) );
     }
 
+    glBindTexture( GL_TEXTURE_2D, 0 );
+
     shape.bindVertexArray();
 
     shader.use( shader.ui );

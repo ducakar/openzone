@@ -53,7 +53,7 @@ namespace client
 
     private:
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
       struct MD2Header
       {
         int id;
@@ -132,7 +132,7 @@ namespace client
       Mat44   weaponTransf;
       bool    isLoaded;
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
       static void prebuild( const char* name );
 #endif
 

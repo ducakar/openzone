@@ -27,7 +27,7 @@ namespace client
 
   Vertex MD2::animBuffer[MAX_VERTS];
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   const Vec3 MD2::NORMALS[] =
   {
     Vec3( -0.000000f, -0.525731f,  0.850651f ),
@@ -221,7 +221,7 @@ namespace client
     {   0, 197,  7.0f, 1 }    // FULL
   };
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   void MD2::prebuild( const char* path )
   {
     String sPath = path;
@@ -344,19 +344,19 @@ namespace client
       MD2Frame& frame = *reinterpret_cast<MD2Frame*>( &frameData[0] );
 
       foreach( vertex, mesh.vertices.iter() ) {
-        int index = int( vertex->pos.x + 0.5f );
+        int index = int( vertex->pos[0] + 0.5f );
 
-        vertex->pos.x = float( frame.verts[index].p[1] ) * -frame.scale[1] - frame.translate[1];
-        vertex->pos.y = float( frame.verts[index].p[0] ) *  frame.scale[0] + frame.translate[0];
-        vertex->pos.z = float( frame.verts[index].p[2] ) *  frame.scale[2] + frame.translate[2];
+        vertex->pos[0] = float( frame.verts[index].p[1] ) * -frame.scale[1] - frame.translate[1];
+        vertex->pos[1] = float( frame.verts[index].p[0] ) *  frame.scale[0] + frame.translate[0];
+        vertex->pos[2] = float( frame.verts[index].p[2] ) *  frame.scale[2] + frame.translate[2];
 
-        vertex->pos.x = vertex->pos.x * scale + translation.x;
-        vertex->pos.y = vertex->pos.y * scale + translation.y;
-        vertex->pos.z = vertex->pos.z * scale + translation.z;
+        vertex->pos[0] = vertex->pos[0] * scale + translation.x;
+        vertex->pos[1] = vertex->pos[1] * scale + translation.y;
+        vertex->pos[2] = vertex->pos[2] * scale + translation.z;
 
-        vertex->normal.x = NORMALS[ frame.verts[index].normal ].x;
-        vertex->normal.y = NORMALS[ frame.verts[index].normal ].y;
-        vertex->normal.z = NORMALS[ frame.verts[index].normal ].z;
+        vertex->normal[0] = NORMALS[ frame.verts[index].normal ].x;
+        vertex->normal[1] = NORMALS[ frame.verts[index].normal ].y;
+        vertex->normal[2] = NORMALS[ frame.verts[index].normal ].z;
       }
     }
     else {
@@ -399,9 +399,9 @@ namespace client
       // if we have an animated model, we use vertex position to save texture coordinate for vertex
       // texture to fetch the positions in both frames and interpolate them in vertex shader
       foreach( vertex, mesh.vertices.iter() ) {
-        vertex->pos.x = ( vertex->pos.x + 0.5f ) / float( header.nFramePositions );
-        vertex->pos.y = 0.0f;
-        vertex->pos.z = 0.0f;
+        vertex->pos[0] = ( vertex->pos[0] + 0.5f ) / float( header.nFramePositions );
+        vertex->pos[1] = 0.0f;
+        vertex->pos[2] = 0.0f;
       }
     }
 

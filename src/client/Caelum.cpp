@@ -46,7 +46,7 @@ namespace client
   Caelum::Caelum() : vao( 0 ), vbo( 0 ), sunTexId( 0 ), moonTexId( 0 )
   {}
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   void Caelum::prebuild( const char* name )
   {
     log.println( "Prebuilding Caelum '%s' {", name );

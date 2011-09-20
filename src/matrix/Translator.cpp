@@ -152,7 +152,7 @@ namespace oz
     }
   }
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   void Translator::prebuildInit()
   {
     OZ_REGISTER_BASECLASS( Object );

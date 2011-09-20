@@ -11,7 +11,7 @@
 
 #include "client/Compiler.hpp"
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
 
 #include "client/Colours.hpp"
 #include "client/Context.hpp"
@@ -57,9 +57,16 @@ namespace client
     part.alpha    = 1.0f;
     part.specular = 0.0f;
 
-    vert.pos      = Point3::ORIGIN;
-    vert.texCoord = TexCoord( 0.0f, 0.0f );
-    vert.normal   = Vec3::ZERO;
+    vert.pos[0]      = 0.0f;
+    vert.pos[1]      = 0.0f;
+    vert.pos[2]      = 0.0f;
+
+    vert.texCoord[0] = 0.0f;
+    vert.texCoord[1] = 0.0f;
+
+    vert.normal[0]   = 0.0f;
+    vert.normal[1]   = 0.0f;
+    vert.normal[2]   = 0.0f;
   }
 
   void Compiler::endMesh()
@@ -204,7 +211,8 @@ namespace client
   {
     hard_assert( flags & MESH_BIT );
 
-    vert.texCoord = TexCoord( u, v );
+    vert.texCoord[0] = u;
+    vert.texCoord[1] = v;
   }
 
   void Compiler::texCoord( const float* v )
@@ -216,7 +224,9 @@ namespace client
   {
     hard_assert( flags & MESH_BIT );
 
-    vert.normal = Vec3( nx, ny, nz );
+    vert.normal[0] = nx;
+    vert.normal[1] = ny;
+    vert.normal[2] = nz;
   }
 
   void Compiler::normal( const float* v )
@@ -228,7 +238,9 @@ namespace client
   {
     hard_assert( flags & MESH_BIT );
 
-    vert.pos = Point3( x, y, z );
+    vert.pos[0] = x;
+    vert.pos[1] = y;
+    vert.pos[2] = z;
 
     if( !( flags & SURFACE_BIT ) ) {
       vertices.add( vert );

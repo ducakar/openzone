@@ -22,7 +22,7 @@
 #define OZ_CLIENT_CONFIG_FILE   "@OZ_CLIENT_CONFIG_FILE@"
 
 // whether to build tools (build prebuild support)
-#cmakedefine                    OZ_SDK
+#cmakedefine                    OZ_TOOLS
 
 // enable cylinder collision model
 #cmakedefine                    OZ_CYLINDER

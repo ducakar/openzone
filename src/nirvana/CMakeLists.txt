@@ -5,5 +5,4 @@ add_library( nirvana STATIC
   Task.cpp
   common.cpp
 )
-
 add_dependencies( nirvana matrix pch )

@@ -28,5 +28,4 @@ add_library( matrix STATIC
   common.cpp
   modules/FloraModule.cpp
 )
-
 add_dependencies( matrix pch )

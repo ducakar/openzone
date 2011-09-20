@@ -26,7 +26,7 @@ namespace oz
 namespace client
 {
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   int BSP::nTextures;
   int BSP::nModels;
   int BSP::nVertices;
@@ -361,7 +361,7 @@ namespace client
     OZ_AL_CHECK_ERROR();
   }
 
-#ifdef OZ_SDK
+#ifdef OZ_TOOLS
   void BSP::prebuild( const char* name_ )
   {
     String name = name_;
