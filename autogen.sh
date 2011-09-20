@@ -7,14 +7,16 @@
 #
 
 echo Generating src/oz/CMakeLists.txt
-cd src/oz      && ./CMakeLists-gen.sh && cd ../..
+cd src/oz       && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/matrix/CMakeLists.txt
-cd src/matrix  && ./CMakeLists-gen.sh && cd ../..
+cd src/matrix   && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/nirvana/CMakeLists.txt
-cd src/nirvana && ./CMakeLists-gen.sh && cd ../..
+cd src/nirvana  && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/client/CMakeLists.txt
-cd src/client  && ./CMakeLists-gen.sh && cd ../..
+cd src/client   && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/server/CMakeLists.txt
-cd src/server  && ./CMakeLists-gen.sh && cd ../..
+cd src/server   && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/tools/CMakeLists.txt
-cd src/tools   && ./CMakeLists-gen.sh && cd ../..
+cd src/tools    && ./CMakeLists-gen.sh && cd ../..
+echo Generating src/syncheck/CMakeLists.txt
+cd src/syncheck && ./CMakeLists-gen.sh && cd ../..

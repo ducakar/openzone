@@ -92,6 +92,10 @@ namespace ui
     va_end( ap );
     buffer[1023] = '\0';
 
+    if( buffer[0] == '\0' ) {
+      return;
+    }
+
     SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
 
     textWidth = text->w;
@@ -132,19 +136,11 @@ namespace ui
     float maxX = float( span.maxX );
     float maxY = float( span.maxY );
 
-    String description;
-    if( hovered->flags & Object::BOT_BIT ) {
-      const Bot* bot = static_cast<const Bot*>( hovered );
+    const Bot* bot = static_cast<const Bot*>( hovered );
+    String title = ( hovered->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
+        bot->name + " (" + clazz->title + ")" : clazz->title;
 
-      description = bot->name.isEmpty() ?
-          clazz->description :
-          bot->name + " (" + clazz->description + ")";
-    }
-    else {
-      description = clazz->description;
-    }
-
-    printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", description.cstr() );
+    printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
 
     float life = ( hovered->flags & Object::BOT_BIT ) ?
         ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
@@ -193,18 +189,6 @@ namespace ui
 
       glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.5f );
       shape.rect( minX - 2.0f, maxY + 2.0f, barWidth + 2.0f, 8.0f );
-
-      String description;
-      if( obj->flags & Object::BOT_BIT ) {
-        const Bot* bot = static_cast<const Bot*>( obj );
-
-        description = bot->name.isEmpty() ?
-            clazz->description :
-            bot->name + " (" + clazz->description + ")";
-      }
-      else {
-        description = clazz->description;
-      }
     }
   }
 

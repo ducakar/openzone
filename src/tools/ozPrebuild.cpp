@@ -64,11 +64,16 @@ static void printUsage()
 {
   log.println( "Usage:" );
   log.indent();
-  log.println( "%s [OPTIONS] [DATA_DIR]", program_invocation_short_name );
+  log.println( "ozPrebuild [--help] [-f | --force] <prefix>", program_invocation_short_name );
   log.println();
-  log.println( "--force" );
-  log.println( "-f" );
-  log.println( "\tForce rebuild of all resources" );
+  log.println( "--help" );
+  log.println( "\tPrints that help message." );
+  log.println();
+  log.println( "-f, --force" );
+  log.println( "\tForce rebuild of all resources." );
+  log.println();
+  log.println( "<prefix>" );
+  log.println( "\tSets data directory to <prefix>/share/openzone." );
   log.println();
   log.unindent();
 }
@@ -374,8 +379,8 @@ int main( int argc, char** argv )
       else if( String::equals( argv[i], "--force" ) || String::equals( argv[i], "-f" ) ) {
         doForceRebuild = true;
       }
-      else if( argv[i][0] != '-' && !config.contains( "data.dir" ) ) {
-        config.add( "data.dir", argv[i] );
+      else if( argv[i][0] != '-' && !config.contains( "dir.prefix" ) ) {
+        config.add( "dir.prefix", argv[i] );
       }
       else {
         log.println( "Invalid command-line option '%s'", argv[i] );
@@ -383,6 +388,12 @@ int main( int argc, char** argv )
         printUsage();
         return -1;
       }
+    }
+    if( !config.contains( "dir.prefix" ) ) {
+      log.println( "Missing data directory as parameter" );
+      log.println();
+      printUsage();
+      return -1;
     }
 
     log.printlnETD( OZ_APPLICATION_TITLE " Prebuild started at" );
@@ -401,7 +412,8 @@ int main( int argc, char** argv )
     log.unindent();
     log.println( "}" );
 
-    String dataDir = config.get( "data.dir", OZ_INSTALL_PREFIX "/share/" OZ_APPLICATION_NAME );
+    String prefixDir = config.get( "dir.prefix", OZ_INSTALL_PREFIX );
+    String dataDir   = prefixDir + "/share/" OZ_APPLICATION_NAME;
 
     log.print( "Setting working directory to data directory '%s' ...", dataDir.cstr() );
     if( chdir( dataDir ) != 0 ) {

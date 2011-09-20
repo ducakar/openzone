@@ -519,16 +519,20 @@ namespace oz
       }
 
       /**
-       * Add an element. The key must not yet exist in this map.
+       * Add an element, override if already exists.
        * @param e
        * @return true if element has been added
        */
       int add( const Key& key, const Value& value = Value() )
       {
-        hard_assert( !contains( key ) );
-
         int i = aBisectPosition( data, key, count );
-        insert( i, key, value );
+
+        if( i != 0 && data[i - 1].key == key ) {
+          data[i - 1].value = value;
+        }
+        else {
+          insert( i, key, value );
+        }
         return i;
       }
 

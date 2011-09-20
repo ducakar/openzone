@@ -1,0 +1,18 @@
+set( CPACK_PACKAGE_NAME "${OZ_APPLICATION_NAME}" )
+set( CPACK_PACKAGE_VERSION "${OZ_APPLICATION_VERSION}" )
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "A simple cross-platform 3D game engine" )
+set( CPACK_PACKAGE_CONTACT "Davorin Učakar <davorin.ucakar@gmail.com>" )
+set( CPACK_TOPLEVEL_TAG "openzone" )
+set( CPACK_PACKAGE_INSTALL_DIRECTORY "OpenZone" )
+set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "OpenZone" )
+set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/COPYING" )
+set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
+set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
+set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
+set( CPACK_STRIP_FILES "bin/openzone" )
+set( CPACK_NSIS_DISPLAY_NAME "OpenZone" )
+set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
+set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )
+set( CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\"" )
+
+include( CPack )

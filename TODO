@@ -1,6 +1,5 @@
 - matrix
   * check for handler functions on Lua init
-  * disable running when hurt
   * INVENTORY_BIT, Vector<int> Object::inventory
 - nirvana
   * check for functions on Lua init

@@ -1,7 +1,7 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
-pkgbase=openzone
-pkgname=('liboz' 'openzone' 'openzone-tools' 'openzone-data')
+pkgbase=openzone-git
+pkgname=('liboz-git' 'openzone-git' 'openzone-tools-git' 'openzone-data')
 pkgver=20110920
 pkgrel=1
 _dataver=0.1.3
@@ -10,7 +10,7 @@ license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('git' 'cmake' 'gcc>=4.5' 'gettext' 'libvorbis' 'lua' 'mesa' 'sdl_ttf' 'sdl_image')
 source=("http://openzone.googlecode.com/files/openzone-data-src-${_dataver}.tar.xz")
-md5sums=('7e3fee55da5582b853213a3e472b8548')
+md5sums=('b6735ba4bf5f4abe8097e6e95b44e9d1')
 
 _gitroot='git://github.com/ducakar/openzone.git'
 _gitname='openzone-src'
@@ -39,12 +39,14 @@ build() {
 
   cp -Rf ${srcdir}/openzone/share/* ${srcdir}/${_gitname}/share
 
-  ./src/tools/ozPrebuild ${srcdir}/${_gitname}/share/openzone
+  ./src/tools/ozPrebuild ${srcdir}/${_gitname}
 }
 
-package_liboz() {
+package_liboz-git() {
   pkgdesc='Base library used by OpenZone 3D engine'
   depends=('gcc-libs')
+  conflicts=('liboz')
+  provides=('liboz')
 
   cd ${srcdir}/${_gitname}/build
 
@@ -53,6 +55,7 @@ package_liboz() {
     -D OZ_INSTALL_OPENZONE=0 \
     -D OZ_INSTALL_TOOLS=0 \
     -D OZ_INSTALL_INFO=0 \
+    -D OZ_INSTALL_ICONS=0 \
     -D OZ_INSTALL_DATA=0 \
     -D OZ_INSTALL_DATA_SRC=0 \
     -D OZ_INSTALL_STANDALONE=0 \
@@ -61,9 +64,11 @@ package_liboz() {
   make install DESTDIR=${pkgdir}
 }
 
-package_openzone() {
+package_openzone-git() {
   pkgdesc='A simple cross-platform 3D engine'
   depends=('libgl' 'libvorbis' 'lua' 'openal' 'openzone-data' 'sdl_ttf')
+  conflicts=('openzone')
+  provides=('openzone')
 
   cd ${srcdir}/${_gitname}/build
 
@@ -72,6 +77,7 @@ package_openzone() {
     -D OZ_INSTALL_OPENZONE=1 \
     -D OZ_INSTALL_TOOLS=0 \
     -D OZ_INSTALL_INFO=1 \
+    -D OZ_INSTALL_ICONS=1 \
     -D OZ_INSTALL_DATA=0 \
     -D OZ_INSTALL_DATA_SRC=0 \
     -D OZ_INSTALL_STANDALONE=0 \
@@ -80,9 +86,11 @@ package_openzone() {
   make install DESTDIR=${pkgdir}
 }
 
-package_openzone-tools() {
+package_openzone-tools-git() {
   pkgdesc='Tools for prebuilding data for OpenZone 3D engine'
   depends=('libgl' 'libvorbis' 'lua' 'openal' 'sdl_image' 'sdl_ttf')
+  conflicts=('openzone-tools')
+  provides=('openzone-tools')
 
   cd ${srcdir}/${_gitname}/build
 
@@ -91,6 +99,7 @@ package_openzone-tools() {
     -D OZ_INSTALL_OPENZONE=0 \
     -D OZ_INSTALL_TOOLS=1 \
     -D OZ_INSTALL_INFO=0 \
+    -D OZ_INSTALL_ICONS=0 \
     -D OZ_INSTALL_DATA=0 \
     -D OZ_INSTALL_DATA_SRC=0 \
     -D OZ_INSTALL_STANDALONE=0 \
@@ -100,6 +109,7 @@ package_openzone-tools() {
 }
 
 package_openzone-data() {
+  pkgver=${_dataver}
   pkgdesc='Runtime data for OpenZone 3D engine'
   arch=('any')
 
@@ -110,6 +120,7 @@ package_openzone-data() {
     -D OZ_INSTALL_OPENZONE=0 \
     -D OZ_INSTALL_TOOLS=0 \
     -D OZ_INSTALL_INFO=0 \
+    -D OZ_INSTALL_ICONS=0 \
     -D OZ_INSTALL_DATA=1 \
     -D OZ_INSTALL_DATA_SRC=0 \
     -D OZ_INSTALL_STANDALONE=0 \

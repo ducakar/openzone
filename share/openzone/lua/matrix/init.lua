@@ -13,6 +13,7 @@ end
 function init_sample()
   ozOrbisForceAddObj( "lord", 138, -11, 73 )
   ozBotSetH( 270 )
+  ozBotSetName( "Davorin" )
 
   ozOrbisForceAddObj( "droid.OOM-9", 140, -11, 73 )
   ozBotSetH( 90 )

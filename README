@@ -105,24 +105,30 @@ Tips
 
 Command line
 ------------
-openzone [OPTIONS]
+openzone [--help] [--load | -l | --no-load | -L]
+         [--save | -s | --no-save | -S] [(--time | -t) <num>]
+         [(--prefix | -p) <prefix>]
 
 --help
       Prints that help message.
 
---load, --no-load
--l, -L
-      Enables or disables autoload of ~/.config/openzone/default.ozState on startup respectively.
-      Overrides the 'autoload' resource.
+-l, --load
+-L, --no-load
+      Enables or disables autoload of ~/.config/openzone/default.ozState on
+      startup respectively. Overrides the 'autoload' resource.
 
---save, --no-save
--s, -S
-      Enables or disables autosave to ~/.config/openzone/default.ozState on exit respectively.
-      Overrides the 'autosave' resource.
+-s, --save
+-S, --no-save
+      Enables or disables autosave to ~/.config/openzone/default.ozState on exit
+      respectively. Overrides the 'autosave' resource.
 
---time num
--t num
-      Exits after num seconds (can be a floating-point number). For benchmarking purposes.
+-t <num>, --time <num>
+      Exits after <num> seconds (can be a floating-point number).
+      For benchmarking purposes.
+
+-p <prefix>, --prefix <prefix>
+      Sets data directory to <prefix>/share/openzone and locale directory to
+      <prefix>/share/locale.
 
 Notes
 -----

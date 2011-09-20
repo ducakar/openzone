@@ -19,7 +19,11 @@ namespace oz
 
   void ObjectClass::fillCommon( ObjectClass* clazz, const Config* config )
   {
-    clazz->description = gettext( clazz->name );
+    clazz->name        = ( *config )["name"];
+    clazz->title       = gettext( config->get( "title", clazz->name ) );
+    clazz->description = gettext( config->get( "description", "" ) );
+
+    hard_assert( !clazz->name.isEmpty() );
 
     clazz->onDestroy   = config->get( "onDestroy", "" );
     clazz->onDamage    = config->get( "onDamage", "" );
@@ -114,11 +118,9 @@ namespace oz
   ObjectClass::~ObjectClass()
   {}
 
-  ObjectClass* ObjectClass::init( const String& name, const Config* config )
+  ObjectClass* ObjectClass::init( const Config* config )
   {
     ObjectClass* clazz = new ObjectClass();
-
-    clazz->name                 = name;
 
     clazz->dim.x                = config->get( "dim.x", 0.50f );
     clazz->dim.y                = config->get( "dim.y", 0.50f );

@@ -34,9 +34,10 @@ namespace oz
       // 00 <= AUDIOARGS <= 99 (two decimal digits)
       static const int AUDIO_SAMPLES = 32;
 
-      typedef ObjectClass* ( * InitFunc )( const String& name, const Config* config );
+      typedef ObjectClass* ( * InitFunc )( const Config* config );
 
       String name;
+      String title;
       String description;
 
       Vec3   dim;
@@ -73,7 +74,7 @@ namespace oz
 
       virtual ~ObjectClass();
 
-      static ObjectClass* init( const String& name, const Config* config );
+      static ObjectClass* init( const Config* config );
 
       virtual Object* create( int index, const Point3& pos ) const;
       virtual Object* create( int index, InputStream* istream ) const;

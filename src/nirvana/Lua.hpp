@@ -126,6 +126,7 @@ namespace nirvana
       static LuaAPI ozDynGetMass;
       static LuaAPI ozDynGetLift;
 
+      static LuaAPI ozBotGetName;
       static LuaAPI ozBotGetEyePos;
       static LuaAPI ozBotGetH;
       static LuaAPI ozBotGetV;
@@ -133,6 +134,7 @@ namespace nirvana
       static LuaAPI ozBotStateIsRunning;
       static LuaAPI ozBotGetStamina;
 
+      static LuaAPI ozSelfGetName;
       static LuaAPI ozSelfGetEyePos;
       static LuaAPI ozSelfGetH;
       static LuaAPI ozSelfSetH;

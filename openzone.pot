@@ -1,0 +1,112 @@
+#: src/client/ui/BuildMenu.cpp:55
+msgid "Create"
+msgstr ""
+
+#: src/client/ui/DebugFrame.cpp:28
+msgid "Debug"
+msgstr ""
+
+#: src/client/Client.cpp:502
+msgid "Initialising ..."
+msgstr ""
+
+#: src/client/ui/InventoryMenu.cpp:31
+msgid "Inventory"
+msgstr ""
+
+#: src/client/Client.cpp:517
+msgid "Loading ..."
+msgstr ""
+
+#: src/client/ui/MusicPlayer.cpp:127
+msgid "Music Player"
+msgstr ""
+
+#: src/client/Client.cpp:693
+msgid "Shutting down ..."
+msgstr ""
+
+#
+# share/class/*.rc
+#
+
+msgid "barrel"
+msgstr ""
+
+msgid "beast"
+msgstr ""
+
+msgid "crate"
+msgstr ""
+
+msgid "explosion"
+msgstr ""
+
+msgid "bomb"
+msgstr ""
+
+msgid "cviček"
+msgstr ""
+
+msgid "drevo"
+msgstr ""
+
+msgid "droid OOM-9"
+msgstr ""
+
+msgid "droid"
+msgstr ""
+
+msgid "blaster"
+msgstr ""
+
+msgid "chaingun"
+msgstr ""
+
+msgid "grenade launcher"
+msgstr ""
+
+msgid "hyperblaster"
+msgstr ""
+
+msgid "first aid"
+msgstr ""
+
+msgid "goblin"
+msgstr ""
+
+msgid "axe"
+msgstr ""
+
+msgid "grenade"
+msgstr ""
+
+msgid "knight"
+msgstr ""
+
+msgid "lord"
+msgstr ""
+
+msgid "palma"
+msgstr ""
+
+msgid "raptor"
+msgstr ""
+
+msgid "service station"
+msgstr ""
+
+msgid "shell"
+msgstr ""
+
+msgid "smreka"
+msgstr ""
+
+msgid "tank"
+msgstr ""
+
+msgid "heavy blaster"
+msgstr ""
+
+msgid "cannon"
+msgstr ""

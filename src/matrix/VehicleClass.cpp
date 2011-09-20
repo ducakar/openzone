@@ -23,11 +23,9 @@
 namespace oz
 {
 
-  ObjectClass* VehicleClass::init( const String& name, const Config* config )
+  ObjectClass* VehicleClass::init( const Config* config )
   {
     VehicleClass* clazz = new VehicleClass();
-
-    clazz->name                 = name;
 
     clazz->dim.x                = config->get( "dim.x", 0.50f );
     clazz->dim.y                = config->get( "dim.y", 0.50f );

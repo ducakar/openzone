@@ -101,24 +101,29 @@ Nasveti
 
 Ukazna vrstica
 --------------
-openzone [MOŽNOSTI]
+openzone [--help] [--load | -l | --no-load | -L]
+         [--save | -s | --no-save | -S] [(--time | -t) <št>]
+         [(--prefix | -p) <predpona>]
 
 --help
       Prikaže to sporočilo s pomočjo.
 
---load, --no-load
--l, -L
+-l, --load
+-L, --no-load
       Vklopi ali izklopi samodejno nalaganje iz ~/.config/openzone/default.ozState med zagonom.
       To preglasi nastavitev 'autoload'.
 
---save, --no-save
--s, -S
+-s, --save
+-S, --no-save
       Vklopi ali izklopi samodejno shranjevanje iz ~/.config/openzone/default.ozState ob izhodu.
       To preglasi nastavitev 'autosave'.
 
---time št
--t št
-      Končaj po št sekundah (lahko je decimalno število). Za potrebe benchmarka.
+-t <št>, --time <št>
+      Končaj po <št> sekundah (lahko je decimalno število). Za potrebe benchmarka.
+
+-p <predpona>, --prefix <predpona>
+      Nastavi podatkovni imenik na <predpona>/share/openzone in imenik lokalizacije na
+      <predpona>/share/locale.
 
 Opombe
 ------

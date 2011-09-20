@@ -23,11 +23,9 @@
 namespace oz
 {
 
-  ObjectClass* BotClass::init( const String& name, const Config* config )
+  ObjectClass* BotClass::init( const Config* config )
   {
     BotClass* clazz = new BotClass();
-
-    clazz->name                 = name;
 
     clazz->dim.x                = config->get( "dim.x", 0.45f );
     clazz->dim.y                = config->get( "dim.y", 0.45f );
