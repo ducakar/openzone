@@ -16,7 +16,7 @@ namespace oz
   // ensure epsilon is big enough for a 4 km x 4 km world (1 mm should do)
   // EPSILON = Orbis::DIM * 4.0f * Math::EPSILON
 #ifdef OZ_MINGW
-  // WTF __FLT_EPSILON__ works, but not Math::EPSILON? Compiler/linker bug?
+  // FIXME WTF __FLT_EPSILON__ works, but not Math::EPSILON? Compiler/linker bug?
   const float EPSILON = 2048.0f * 4.0f * __FLT_EPSILON__;
 #else
   const float EPSILON = 2048.0f * 4.0f * Math::EPSILON;

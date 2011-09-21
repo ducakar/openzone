@@ -25,8 +25,6 @@ namespace oz
       static const float INF;
       static const float NaN;
 
-      static const float MAX_RAND;
-
     private:
 
       // singleton
@@ -228,7 +226,7 @@ namespace oz
         return x * fastInvSqrt( x );
       }
 
-      // famous fast inverse sqrt from Quake source (google for detailed explanations)
+      // fast inverse sqrt from Quake source (google for detailed explanations)
       OZ_ALWAYS_INLINE
       static float fastInvSqrt( float x )
       {
@@ -244,22 +242,14 @@ namespace oz
         return ( v & ( v - 1 ) ) == 0;
       }
 
-      // pointer to srand in cstdlib
-      static void ( * const seed )( uint seed );
-
-      // random integer between 0 and RAND_MAX
-      // (pointer to rand() function in <cstdlib>)
-      static int ( * const rand )();
+      // seed for random generator
+      static void seed( int n );
 
       // random integer between 0 and max - 1
-      OZ_ALWAYS_INLINE
-      static int randn( int max )
-      {
-        return rand() % max;
-      }
+      static int rand( int max );
 
       // random float from interval [0, 1]
-      static float frand();
+      static float rand();
 
   };
 

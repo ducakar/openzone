@@ -368,7 +368,7 @@ namespace oz
 
     int r[1000];
     for( int i = 0; i < 1000; ++i ) {
-      r[i] = Math::randn( 1000 );
+      r[i] = Math::rand( 1000 );
     }
     aSort( r, 1000 );
 

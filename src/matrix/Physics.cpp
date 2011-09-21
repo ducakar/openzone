@@ -55,7 +55,7 @@ namespace oz
 
         if( damage > sObj->clazz->damageThreshold ) {
           damage -= sObj->clazz->damageThreshold;
-          damage *= Math::frand();
+          damage *= Math::rand();
           sObj->damage( sObj->clazz->damageThreshold + damage );
         }
       }
@@ -220,13 +220,17 @@ namespace oz
       }
 
       if( hit.normal.z == 0.0f ) {
-        sDyn->flags &= ~Object::DISABLED_BIT;
-
         float dynMomProj  =  dyn->momentum.x * hit.normal.x +  dyn->momentum.y * hit.normal.y;
         float sDynMomProj = sDyn->momentum.x * hit.normal.x + sDyn->momentum.y * hit.normal.y;
         float sDynVelProj = sDyn->velocity.x * hit.normal.x + sDyn->velocity.y * hit.normal.y;
 
+        dyn->momentum.x -= ( dynMomProj - sDynVelProj ) * hit.normal.x;
+        dyn->momentum.y -= ( dynMomProj - sDynVelProj ) * hit.normal.y;
+
+        sDyn->flags &= ~Object::DISABLED_BIT;
+
         if( dyn->flags & Object::PUSHER_BIT ) {
+          // OK, since sDyn->momentum is (almost) always smaller by absolute value
           sDyn->momentum.x = momentum.x;
           sDyn->momentum.y = momentum.y;
         }
@@ -234,34 +238,29 @@ namespace oz
           sDyn->momentum.x += ( dynMomProj - sDynMomProj ) * hit.normal.x;
           sDyn->momentum.y += ( dynMomProj - sDynMomProj ) * hit.normal.y;
         }
-
-        dyn->momentum.x  -= ( dynMomProj - sDynVelProj ) * hit.normal.x;
-        dyn->momentum.y  -= ( dynMomProj - sDynVelProj ) * hit.normal.y;
       }
       else if( hit.normal.z == -1.0f ) {
+        dyn->flags |= Object::UPPER_BIT;
+        dyn->momentum.z = sDyn->velocity.z;
+
         sDyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
         sDyn->lower = dyn->index;
         sDyn->floor = Vec3( 0.0f, 0.0f, 1.0f );
-
-        dyn->flags |= Object::UPPER_BIT;
-
         sDyn->momentum.z = momentum.z;
-        dyn->momentum.z  = sDyn->velocity.z;
       }
       else { // hit.normal.z == 1.0f
         hard_assert( hit.normal.z == 1.0f );
 
-        sDyn->damage( dyn->mass * WEIGHT_FACTOR );
+        dyn->flags &= ~Object::ON_FLOOR_BIT;
+        dyn->lower = sDyn->index;
+        dyn->floor = Vec3( 0.0f, 0.0f, 1.0f );
+        dyn->momentum.z = sDyn->velocity.z;
 
-        dyn->flags  &= ~Object::ON_FLOOR_BIT;
-        dyn->lower  = sDyn->index;
-        dyn->floor  = Vec3( 0.0f, 0.0f, 1.0f );
+        sDyn->flags |= Object::UPPER_BIT;
+        sDyn->damage( dyn->mass * WEIGHT_FACTOR );
 
         if( !( sDyn->flags & Object::DISABLED_BIT ) ) {
           sDyn->momentum.z = momentum.z;
-          dyn->momentum.z  = sDyn->velocity.z;
-
-          sDyn->flags |= Object::UPPER_BIT;
         }
       }
     }

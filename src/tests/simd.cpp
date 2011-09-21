@@ -124,10 +124,10 @@ int main( int, char** )
   Alloc::isLocked = false;
 
   for( int i = 0; i < MAX; ++i ) {
-    a[i] = VecX( Math::frand(), Math::frand(), Math::frand() ) * 100.0f;
-    b[i] = VecX( Math::frand(), Math::frand(), Math::frand() ) * 100.0f;
-    c[i] = VecX( Math::frand(), Math::frand(), Math::frand() ) * 100.0f;
-    d[i] = VecX( Math::frand(), Math::frand(), Math::frand() ) * 100.0f;
+    a[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
+    b[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
+    c[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
+    d[i] = VecX( Math::rand(), Math::rand(), Math::rand() ) * 100.0f;
   }
   long t0 = clock();
   for( int k = 0; k < 10000; ++k ) {

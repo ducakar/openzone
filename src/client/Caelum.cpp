@@ -244,9 +244,9 @@ namespace client
     for( int i = 0; i < MAX_STARS; ++i ) {
       float length;
       do {
-        positions[i] = Point3( 200.0f * Math::frand() - 100.0f,
-                               200.0f * Math::frand() - 100.0f,
-                               200.0f * Math::frand() - 100.0f );
+        positions[i] = Point3( 200.0f * Math::rand() - 100.0f,
+                               200.0f * Math::rand() - 100.0f,
+                               200.0f * Math::rand() - 100.0f );
         length = ( positions[i] - Point3::ORIGIN ).sqL();
       }
       while( Math::isNaN( length ) || length < 2500.0f || length > 10000.0f );

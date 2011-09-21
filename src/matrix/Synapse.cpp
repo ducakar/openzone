@@ -145,13 +145,13 @@ namespace oz
     float colourSpread2 = colourSpread / 2.0f;
 
     for( int i = 0; i < number; ++i ) {
-      Vec3 velDisturb = Vec3( velocitySpread * Math::frand() - velocitySpread2,
-                              velocitySpread * Math::frand() - velocitySpread2,
-                              velocitySpread * Math::frand() - velocitySpread2 );
-      Vec3 colourDisturb = Vec3( colourSpread * Math::frand() - colourSpread2,
-                                 colourSpread * Math::frand() - colourSpread2,
-                                 colourSpread * Math::frand() - colourSpread2 );
-      float timeDisturb = lifeTime * Math::frand();
+      Vec3 velDisturb = Vec3( velocitySpread * Math::rand() - velocitySpread2,
+                              velocitySpread * Math::rand() - velocitySpread2,
+                              velocitySpread * Math::rand() - velocitySpread2 );
+      Vec3 colourDisturb = Vec3( colourSpread * Math::rand() - colourSpread2,
+                                 colourSpread * Math::rand() - colourSpread2,
+                                 colourSpread * Math::rand() - colourSpread2 );
+      float timeDisturb = lifeTime * Math::rand();
 
       addPart( p, velocity + velDisturb, colour + colourDisturb,
                restitution, mass, 0.5f * lifeTime + timeDisturb );
