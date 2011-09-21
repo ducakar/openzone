@@ -84,7 +84,7 @@ namespace oz
           flags |= WIDE_CULL_BIT;
           flags &= ~SOLID_BIT;
           life  = clazz->life / 2.0f - EPSILON;
-          anim  = Anim::Type( Anim::DEATH_FALLBACK + Math::randn( 3 ) );
+          anim  = Anim::Type( Anim::DEATH_FALLBACK + Math::rand( 3 ) );
 
           addEvent( EVENT_DEATH, 1.0f );
         }
@@ -352,16 +352,19 @@ namespace oz
       if( flags & ON_SLICK_BIT ) {
         desiredMomentum *= clazz->slickControl;
       }
-      else if( !( state & GROUNDED_BIT ) ) {
-        if( state & CLIMBING_BIT ) {
-          desiredMomentum *= clazz->climbControl;
-        }
-        else if( state & SWIMMING_BIT ) {
+      else if( state & CLIMBING_BIT ) {
+        desiredMomentum *= clazz->climbControl;
+      }
+      else if( state & SWIMMING_BIT ) {
+        bool isOnStaticGround = ( flags & ON_FLOOR_BIT ) ||
+          ( lower != -1 && ( orbis.objects[lower]->flags & Object::DISABLED_BIT ) );
+
+        if( !isOnStaticGround ) {
           desiredMomentum *= clazz->waterControl;
         }
-        else {
-          desiredMomentum *= clazz->airControl;
-        }
+      }
+      else if( !( state & GROUNDED_BIT ) ) {
+        desiredMomentum *= clazz->airControl;
       }
 
       if( ( flags & ( ON_FLOOR_BIT | IN_WATER_BIT ) ) == ON_FLOOR_BIT && floor.z != 1.0f ) {

@@ -22,14 +22,19 @@ namespace oz
   const float Math::INF        = float( INFINITY );
   const float Math::NaN        = float( NAN );
 
-  const float Math::MAX_RAND = float( RAND_MAX );
-
-  void ( * const Math::seed )( uint ) = ::srand;
-  int ( * const Math::rand )() = ::rand;
-
-  float Math::frand()
+  void Math::seed( int n )
   {
-    return float( rand() ) / MAX_RAND;
+    srand( uint( n ) );
+  }
+
+  int Math::rand( int max )
+  {
+    return ::rand() % max;
+  }
+
+  float Math::rand()
+  {
+    return float( ::rand() ) / float( RAND_MAX );
   }
 
 }

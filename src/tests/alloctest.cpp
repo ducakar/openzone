@@ -34,9 +34,9 @@ int main( int, char** )
   orbis.load();
 
   for( int i = 0; i < 1000000; ++i ) {
-    float x = -Orbis::DIM + Math::frand() * 2.0f * Orbis::DIM;
-    float y = -Orbis::DIM + Math::frand() * 2.0f * Orbis::DIM;
-    float z = -Orbis::DIM + Math::frand() * 2.0f * Orbis::DIM;
+    float x = -Orbis::DIM + Math::rand() * 2.0f * Orbis::DIM;
+    float y = -Orbis::DIM + Math::rand() * 2.0f * Orbis::DIM;
+    float z = -Orbis::DIM + Math::rand() * 2.0f * Orbis::DIM;
 
     synapse.addObject( "Tree2", Point3( x, y, z ) );
   }

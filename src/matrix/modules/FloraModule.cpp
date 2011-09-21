@@ -81,8 +81,8 @@ namespace oz
     number = int( area * DENSITY );
 
     for( int i = 0; i < number; ++i ) {
-      float x = Math::frand() * 2.0f * Orbis::DIM - Orbis::DIM;
-      float y = Math::frand() * 2.0f * Orbis::DIM - Orbis::DIM;
+      float x = Math::rand() * 2.0f * Orbis::DIM - Orbis::DIM;
+      float y = Math::rand() * 2.0f * Orbis::DIM - Orbis::DIM;
 
       addTree( x, y );
     }

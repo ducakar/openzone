@@ -29,7 +29,7 @@ namespace oz
       return names[0];
     }
 
-    int index = listPositions[list] + Math::randn( listPositions[list + 1] - listPositions[list] );
+    int index = listPositions[list] + Math::rand( listPositions[list + 1] - listPositions[list] );
     return names[index];
   }
 

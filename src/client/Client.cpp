@@ -453,12 +453,12 @@ namespace client
                   setlocale( LC_MESSAGES, null ) );
 
     if( config.contains( "seed" ) && config["seed"].equals( "time" ) ) {
-      uint seed = uint( time( null ) );
+      int seed = int( time( null ) );
       Math::seed( seed );
       log.println( "Random generator seed set to current time: %d", seed );
     }
     else {
-      uint seed = uint( config.getSet( "seed", 42 ) );
+      int seed = config.getSet( "seed", 42 );
       Math::seed( seed );
       log.println( "Random generator seed set to: %d", seed );
     }

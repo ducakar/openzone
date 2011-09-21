@@ -193,10 +193,10 @@ namespace client
     Vec3 normal;
 
     for( int i = 0; i < MAX_PARTS; ++i ) {
-      Point3 v0 = Point3::ORIGIN + Math::frand() * DIM * Vec3( 0.0f,            0.0f,        1.0f );
-      Point3 v1 = Point3::ORIGIN + Math::frand() * DIM * Vec3( 0.0f,            2.0f / 3.0f, 0.0f );
-      Point3 v2 = Point3::ORIGIN + Math::frand() * DIM * Vec3( -SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
-      Point3 v3 = Point3::ORIGIN + Math::frand() * DIM * Vec3(  SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
+      Point3 v0 = Point3::ORIGIN + Math::rand() * DIM * Vec3( 0.0f,            0.0f,        1.0f );
+      Point3 v1 = Point3::ORIGIN + Math::rand() * DIM * Vec3( 0.0f,            2.0f / 3.0f, 0.0f );
+      Point3 v2 = Point3::ORIGIN + Math::rand() * DIM * Vec3( -SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
+      Point3 v3 = Point3::ORIGIN + Math::rand() * DIM * Vec3(  SQRT_3_THIRDS, -1.0f / 3.0f, 0.0f );
 
       // fore
       normal = ~( ( v2 - v1 ) ^ ( v0 - v1 ) );
