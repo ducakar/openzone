@@ -21,48 +21,6 @@ namespace oz
 
   Config config;
 
-  Config::~Config()
-  {
-    clear();
-  }
-
-  void Config::add( const char* key, const char* value_ )
-  {
-    String* value = vars.find( key );
-    if( value != null ) {
-      *value = value_;
-    }
-    else {
-      vars.add( key, value_ );
-    }
-  }
-
-  void Config::include( const char* key, const char* value_ )
-  {
-    String* value = vars.find( key );
-    if( value == null ) {
-      vars.add( key, value_ );
-    }
-  }
-
-  void Config::exclude( const char* key )
-  {
-    vars.exclude( key );
-  }
-
-  bool Config::contains( const char* key ) const
-  {
-    return vars.contains( key );
-  }
-
-  const String& Config::operator [] ( const char* key ) const
-  {
-#ifdef OZ_VERBOSE_CONFIG
-    usedVars.add( key );
-#endif
-    return vars.get( key );
-  }
-
   bool Config::loadConf( const char* file )
   {
     char buffer[BUFFER_SIZE];
@@ -173,6 +131,48 @@ namespace oz
 
     log.printEnd( " OK" );
     return true;
+  }
+
+  Config::~Config()
+  {
+    clear();
+  }
+
+  void Config::add( const char* key, const char* value_ )
+  {
+    String* value = vars.find( key );
+    if( value != null ) {
+      *value = value_;
+    }
+    else {
+      vars.add( key, value_ );
+    }
+  }
+
+  void Config::include( const char* key, const char* value_ )
+  {
+    String* value = vars.find( key );
+    if( value == null ) {
+      vars.add( key, value_ );
+    }
+  }
+
+  void Config::exclude( const char* key )
+  {
+    vars.exclude( key );
+  }
+
+  bool Config::contains( const char* key ) const
+  {
+    return vars.contains( key );
+  }
+
+  const String& Config::operator [] ( const char* key ) const
+  {
+#ifdef OZ_VERBOSE_CONFIG
+    usedVars.add( key );
+#endif
+    return vars.get( key );
   }
 
   bool Config::get( const char* name, bool defVal ) const

@@ -426,8 +426,8 @@ namespace client
         initFlags |= INIT_CONFIG;
       }
       else {
-        log.println( "Invalid configuration file version, will be overwritten on exit" );
-        config.clear();
+        log.println( "Invalid configuration file version, will be overwritten on exit."
+                     "If you experience any trouble, delete it." );
         config.add( "_version", OZ_APPLICATION_VERSION );
         config.add( "gameStage.autoload", "false" );
       }
@@ -559,7 +559,7 @@ namespace client
     log.println( "Main loop {" );
     log.indent();
 
-    // THE MAGNIFICANT MAIN LOOP
+    // THE MAGNIFICENT MAIN LOOP
     do {
       // read input & events
       ui::keyboard.prepare();

@@ -26,6 +26,8 @@ namespace client
   {
     private:
 
+#ifndef OZ_TOOLS
+
       struct Triangle
       {
         int indices[3];
@@ -102,6 +104,9 @@ namespace client
 
       void genList();
       void deleteList() const;
+
+#else
+#endif
 
   };
 

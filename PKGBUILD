@@ -1,28 +1,29 @@
 # Maintainer: Davorin Učakar <davorin.ucakar@gmail.com>
 
-pkgbase=openzone-git
-pkgname=('liboz-git' 'openzone-git' 'openzone-tools-git' 'openzone-data')
-pkgver=20110920
-pkgrel=1
+pkgbase=openzone
+pkgname=('liboz' 'openzone' 'openzone-tools' 'openzone-data')
+pkgver=0.1.3
 _dataver=0.1.3
+pkgrel=1
 url="http://github.com/ducakar/openzone/"
 license=('GPL3')
 arch=('i686' 'x86_64')
 makedepends=('git' 'cmake' 'gcc>=4.5' 'gettext' 'libvorbis' 'lua' 'mesa' 'sdl_ttf' 'sdl_image')
-source=("http://openzone.googlecode.com/files/openzone-data-src-${_dataver}.tar.xz")
-md5sums=('b6735ba4bf5f4abe8097e6e95b44e9d1')
+source=("http://openzone.googlecode.com/files/openzone-data-src-${pkgver}.zip")
+md5sums=('91c8318ca776ab4f6d85cea5d26083b0')
 
-_gitroot='git://github.com/ducakar/openzone.git'
 _gitname='openzone-src'
 
 build() {
   cd ${srcdir}
 
-  msg "git checkout for ${_gitroot}"
-  if [ -d ${_gitname} ]; then
-    ( cd ${_gitname} && git pull origin )
-  else
+  _gitroot='git://github.com/ducakar/openzone.git'
+  _gittag="v${pkgver}"
+
+  msg "git checkout for ${_gitroot} tag ${_gittag}"
+  if [[ ! -d ${_gitname} ]]; then
     git clone ${_gitroot} ${_gitname}
+    cd ${srcdir}/${_gitname} && git checkout ${_gittag}
   fi
   msg "git checkout done or server timeout"
 
@@ -42,7 +43,7 @@ build() {
   ./src/tools/ozPrebuild ${srcdir}/${_gitname}
 }
 
-package_liboz-git() {
+package_liboz() {
   pkgdesc='Base library used by OpenZone 3D engine'
   depends=('gcc-libs')
   conflicts=('liboz')
@@ -64,7 +65,7 @@ package_liboz-git() {
   make install DESTDIR=${pkgdir}
 }
 
-package_openzone-git() {
+package_openzone() {
   pkgdesc='A simple cross-platform 3D engine'
   depends=('libgl' 'libvorbis' 'lua' 'openal' 'openzone-data' 'sdl_ttf')
   conflicts=('openzone')
@@ -86,7 +87,7 @@ package_openzone-git() {
   make install DESTDIR=${pkgdir}
 }
 
-package_openzone-tools-git() {
+package_openzone-tools() {
   pkgdesc='Tools for prebuilding data for OpenZone 3D engine'
   depends=('libgl' 'libvorbis' 'lua' 'openal' 'sdl_image' 'sdl_ttf')
   conflicts=('openzone-tools')

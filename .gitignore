@@ -9,11 +9,8 @@
 /Windows-*
 /support
 
-/gettext.pot
-/doxygen
-/tags
-/openzone.tag
-
+/openzone.pot
 /valgrind.supp
+/doxygen
 
 /*.patch

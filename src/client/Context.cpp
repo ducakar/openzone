@@ -47,85 +47,10 @@ namespace client
   const int Context::DEFAULT_MAG_FILTER = GL_LINEAR;
   const int Context::DEFAULT_MIN_FILTER = GL_LINEAR_MIPMAP_LINEAR;
 
+#ifndef OZ_TOOLS
+
   Pool<Context::Source> Context::Source::pool;
   Buffer Context::buffer;
-
-#ifdef OZ_TOOLS
-  uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
-                              bool wrap, int magFilter, int minFilter )
-  {
-    OZ_GL_CHECK_ERROR();
-    hard_assert( bytesPerPixel == 3 || bytesPerPixel == 4 );
-
-    uint sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-#ifdef OZ_GL_S3TC
-    int internalFormat = bytesPerPixel == 4 ?
-        GL_COMPRESSED_RGBA_S3TC_DXT5_EXT :
-        GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-#else
-    int internalFormat = int( sourceFormat );
-#endif
-
-    bool doGenerateMipmaps = false;
-
-    uint texId;
-    glGenTextures( 1, &texId );
-    glBindTexture( GL_TEXTURE_2D, texId );
-
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
-
-    switch( magFilter ) {
-      case GL_NEAREST:
-      case GL_LINEAR: {
-        break;
-      }
-      default: {
-        throw Exception( "Invalid texture magnification filter" );
-      }
-    }
-
-    switch( minFilter ) {
-      case GL_NEAREST:
-      case GL_LINEAR: {
-        break;
-      }
-      case GL_NEAREST_MIPMAP_NEAREST:
-      case GL_NEAREST_MIPMAP_LINEAR:
-      case GL_LINEAR_MIPMAP_NEAREST:
-      case GL_LINEAR_MIPMAP_LINEAR: {
-        doGenerateMipmaps = true;
-        break;
-      }
-      default: {
-        throw Exception( "Invalid texture minification filter" );
-      }
-    }
-
-    if( !wrap ) {
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
-    }
-
-    glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
-                  sourceFormat, GL_UNSIGNED_BYTE, data );
-
-    if( doGenerateMipmaps ) {
-      glGenerateMipmap( GL_TEXTURE_2D );
-    }
-
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
-      glDeleteTextures( 1, &texId );
-      texId = 0;
-
-      OZ_GL_CHECK_ERROR();
-    }
-
-    return texId;
-  }
-#endif
 
   void Context::addSource( uint srcId, int sample )
   {
@@ -185,102 +110,6 @@ namespace client
   Context::Context() : textures( null ), sounds( null ), bsps( null )
   {}
 
-#ifdef OZ_TOOLS
-  uint Context::createTexture( const void* data, int width, int height, int bytesPerPixel,
-                               bool wrap, int magFilter, int minFilter )
-  {
-    uint texId = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
-
-    if( texId == 0 ) {
-      log.println( "Error while creating texture from buffer" );
-      throw Exception( "Texture loading failed" );
-    }
-    return texId;
-  }
-
-  uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int minFilter )
-  {
-    log.print( "Loading raw texture '%s' ...", path );
-
-    SDL_Surface* image = IMG_Load( path );
-    if( image == null ) {
-      log.printEnd( " No such file" );
-      throw Exception( "Texture loading failed" );
-    }
-    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
-      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
-      throw Exception( "Texture loading failed" );
-    }
-    log.printEnd( " %s ... OK", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
-
-    int  bytesPerPixel = image->format->BitsPerPixel / 8;
-    uint texId = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
-                                 magFilter, minFilter );
-
-    SDL_FreeSurface( image );
-
-    if( texId == 0 || !glIsTexture( texId ) ) {
-      throw Exception( "Texture loading failed" );
-    }
-
-    return texId;
-  }
-
-  void Context::writeTexture( uint id, OutputStream* stream )
-  {
-    glBindTexture( GL_TEXTURE_2D, id );
-
-    int wrap, magFilter, minFilter, nMipmaps, internalFormat;
-
-    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
-    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
-    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &minFilter );
-    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, &nMipmaps );
-
-    int width;
-    for( nMipmaps = 0; nMipmaps < 1000; ++nMipmaps ) {
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, nMipmaps, GL_TEXTURE_WIDTH, &width );
-
-      if( width == 0 ) {
-        break;
-      }
-    }
-
-    glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
-    OZ_GL_CHECK_ERROR();
-
-    stream->writeInt( wrap );
-    stream->writeInt( magFilter );
-    stream->writeInt( minFilter );
-    stream->writeInt( nMipmaps );
-    stream->writeInt( internalFormat );
-
-    for( int i = 0; i < nMipmaps; ++i ) {
-      int width, height, size;
-
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
-#ifdef OZ_GL_S3TC
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
-#else
-      size = width * height * 4;
-#endif
-
-      stream->writeInt( width );
-      stream->writeInt( height );
-      stream->writeInt( size );
-
-#ifdef OZ_GL_S3TC
-      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
-#else
-      glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareWrite( size ) );
-#endif
-    }
-
-    OZ_GL_CHECK_ERROR();
-  }
-#endif
-
   uint Context::loadTexture( const char* path )
   {
     log.print( "Loading texture '%s' ...", path );
@@ -292,11 +121,6 @@ namespace client
 
     InputStream is = buffer.inputStream();
     uint id = readTexture( &is );
-
-    if( id == 0 ) {
-      log.printEnd( " Failed" );
-      throw Exception( "Texture loading failed" );
-    }
 
     log.printEnd( " OK" );
     return id;
@@ -316,12 +140,12 @@ namespace client
     int nMipmaps       = stream->readInt();
     int internalFormat = stream->readInt();
 
-#ifdef OZ_GL_S3TC
+# ifdef OZ_GL_S3TC
     hard_assert( internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
                  internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT );
-#else
+# else
     hard_assert( internalFormat == GL_RGB || internalFormat == GL_RGBA );
-#endif
+# endif
 
     if( !wrap ) {
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
@@ -336,26 +160,25 @@ namespace client
       int height = stream->readInt();
       int size = stream->readInt();
 
-#ifdef OZ_GL_S3TC
+# ifdef OZ_GL_S3TC
       glCompressedTexImage2D( GL_TEXTURE_2D, i, uint( internalFormat ), width, height, 0,
                               size, stream->prepareRead( size ) );
-#else
+# else
       glTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
                     GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareRead( size ) );
-#endif
+# endif
     }
 
     if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
       glDeleteTextures( 1, &texId );
-      texId = 0;
-    }
 
-    OZ_GL_CHECK_ERROR();
+      throw Exception( "Texture loading failed" );
+    }
 
     return texId;
   }
 
-  uint Context::requestTexture( int id )
+uint Context::requestTexture( int id )
   {
     Resource<uint>& resource = textures[id];
 
@@ -625,7 +448,7 @@ namespace client
     audio->play( parent );
   }
 
-#ifndef NDEBUG
+# ifndef NDEBUG
   void Context::updateLoad()
   {
     maxModels     = max( maxModels, models.length() );
@@ -651,7 +474,7 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
-#endif
+# endif
 
   void Context::load()
   {
@@ -838,6 +661,178 @@ namespace client
 
     log.printEnd( " OK" );
   }
+
+#else
+
+  uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
+                              bool wrap, int magFilter, int minFilter )
+  {
+    OZ_GL_CHECK_ERROR();
+    hard_assert( bytesPerPixel == 3 || bytesPerPixel == 4 );
+
+    uint sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
+# ifdef OZ_GL_S3TC
+    int internalFormat = bytesPerPixel == 4 ?
+        GL_COMPRESSED_RGBA_S3TC_DXT5_EXT :
+        GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+# else
+    int internalFormat = int( sourceFormat );
+# endif
+
+    bool doGenerateMipmaps = false;
+
+    uint texId;
+    glGenTextures( 1, &texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
+
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter );
+
+    switch( magFilter ) {
+      case GL_NEAREST:
+      case GL_LINEAR: {
+        break;
+      }
+      default: {
+        throw Exception( "Invalid texture magnification filter" );
+      }
+    }
+
+    switch( minFilter ) {
+      case GL_NEAREST:
+      case GL_LINEAR: {
+        break;
+      }
+      case GL_NEAREST_MIPMAP_NEAREST:
+      case GL_NEAREST_MIPMAP_LINEAR:
+      case GL_LINEAR_MIPMAP_NEAREST:
+      case GL_LINEAR_MIPMAP_LINEAR: {
+        doGenerateMipmaps = true;
+        break;
+      }
+      default: {
+        throw Exception( "Invalid texture minification filter" );
+      }
+    }
+
+    if( !wrap ) {
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );
+    }
+
+    glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
+                  sourceFormat, GL_UNSIGNED_BYTE, data );
+
+    if( doGenerateMipmaps ) {
+      glGenerateMipmap( GL_TEXTURE_2D );
+    }
+
+    glBindTexture( GL_TEXTURE_2D, 0 );
+
+    if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
+      throw Exception( "Texture building failed" );
+    }
+
+    return texId;
+  }
+
+  uint Context::createTexture( const void* data, int width, int height, int bytesPerPixel,
+                               bool wrap, int magFilter, int minFilter )
+  {
+    uint texId = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
+
+    if( texId == 0 ) {
+      log.println( "Error while creating texture from buffer" );
+      throw Exception( "Texture loading failed" );
+    }
+    return texId;
+  }
+
+  uint Context::loadRawTexture( const char* path, bool wrap, int magFilter, int minFilter )
+  {
+    log.print( "Loading raw texture '%s' ...", path );
+
+    SDL_Surface* image = IMG_Load( path );
+    if( image == null ) {
+      log.printEnd( " No such file" );
+      throw Exception( "Texture loading failed" );
+    }
+    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
+      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
+      throw Exception( "Texture loading failed" );
+    }
+    log.printEnd( " %s ... OK", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
+
+    int  bytesPerPixel = image->format->BitsPerPixel / 8;
+    uint texId = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
+                                 magFilter, minFilter );
+
+    SDL_FreeSurface( image );
+
+    if( texId == 0 || !glIsTexture( texId ) ) {
+      glDeleteTextures( 1, &texId );
+
+      throw Exception( "Texture loading failed" );
+    }
+
+    return texId;
+  }
+
+  void Context::writeTexture( uint id, OutputStream* stream )
+  {
+    glBindTexture( GL_TEXTURE_2D, id );
+
+    int wrap, magFilter, minFilter, nMipmaps, internalFormat;
+
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, &wrap );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &magFilter );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, &minFilter );
+    glGetTexParameteriv( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, &nMipmaps );
+
+    int width;
+    for( nMipmaps = 0; nMipmaps < 1000; ++nMipmaps ) {
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, nMipmaps, GL_TEXTURE_WIDTH, &width );
+
+      if( width == 0 ) {
+        break;
+      }
+    }
+
+    glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &internalFormat );
+    OZ_GL_CHECK_ERROR();
+
+    stream->writeInt( wrap );
+    stream->writeInt( magFilter );
+    stream->writeInt( minFilter );
+    stream->writeInt( nMipmaps );
+    stream->writeInt( internalFormat );
+
+    for( int i = 0; i < nMipmaps; ++i ) {
+      int width, height, size;
+
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
+# ifdef OZ_GL_S3TC
+      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
+# else
+      size = width * height * 4;
+# endif
+
+      stream->writeInt( width );
+      stream->writeInt( height );
+      stream->writeInt( size );
+
+# ifdef OZ_GL_S3TC
+      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
+# else
+      glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareWrite( size ) );
+# endif
+    }
+
+    OZ_GL_CHECK_ERROR();
+  }
+
+#endif
 
 }
 }

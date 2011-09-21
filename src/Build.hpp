@@ -1,7 +1,7 @@
 /*
  *  Build.hpp
  *
- *  .cpp is auto-generated on each build and provides information about the current build.
+ *  The .cpp file is auto-generated on each build and provides information about the current build.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.

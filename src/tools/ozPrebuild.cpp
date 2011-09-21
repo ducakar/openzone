@@ -12,9 +12,7 @@
 #include "Build.hpp"
 
 #include "matrix/Translator.hpp"
-#include "matrix/Orbis.hpp"
 #include "matrix/QBSP.hpp"
-#include "matrix/Matrix.hpp"
 
 #include "client/Context.hpp"
 #include "client/Compiler.hpp"
@@ -36,6 +34,8 @@
 
 using namespace oz;
 
+bool Alloc::isLocked = true;
+
 static const char* const CREATE_DIRS[] = {
   "bsp",
   "bsp/tex",
@@ -56,9 +56,7 @@ static const char* const CREATE_DIRS[] = {
   "ui/icon"
 };
 
-bool Alloc::isLocked = true;
-
-static bool doForceRebuild = false;
+static bool  doForceRebuild = false;
 
 static void printUsage()
 {
@@ -426,7 +424,7 @@ int main( int argc, char** argv )
 
     uint startTime = SDL_GetTicks();
 
-    translator.prebuildInit();
+    translator.init();
 
     config.add( "screen.width", "400" );
     config.add( "screen.height", "40" );

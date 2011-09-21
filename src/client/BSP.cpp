@@ -26,7 +26,207 @@ namespace oz
 namespace client
 {
 
-#ifdef OZ_TOOLS
+#ifndef OZ_TOOLS
+
+  void BSP::playSound( const Struct::Entity* entity, int sample ) const
+  {
+    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+
+    Bounds bounds = *entity->model;
+    Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+    Point3 p = entity->str->toAbsoluteCS( localPos + entity->offset );
+
+    uint srcId;
+
+    alGenSources( 1, &srcId );
+    if( alGetError() != AL_NO_ERROR ) {
+      log.println( "AL: Too many sources" );
+      return;
+    }
+
+    alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
+    alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
+    alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
+
+    alSourcefv( srcId, AL_POSITION, p );
+    alSourcef( srcId, AL_GAIN, 1.0f );
+    alSourcePlay( srcId );
+
+    context.addSource( srcId, sample );
+
+    OZ_AL_CHECK_ERROR();
+  }
+
+  void BSP::playContSound( const Struct::Entity* entity, int sample ) const
+  {
+    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+
+    const Struct* str = entity->str;
+    // we can have at most 100 models per BSP, so stride 128 should do
+    int key = str->index * 128 + int( entity - str->entities );
+
+    Bounds bounds = *entity->model;
+    Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+    Point3 p = entity->str->toAbsoluteCS( localPos + entity->offset );
+
+    Context::ContSource* contSource = context.bspSources.find( key );
+
+    if( contSource == null ) {
+      uint srcId;
+
+      alGenSources( 1, &srcId );
+      if( alGetError() != AL_NO_ERROR ) {
+        log.println( "AL: Too many sources" );
+        return;
+      }
+
+      Bounds bounds = *entity->model;
+      Point3 p = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
+
+      p = entity->str->toAbsoluteCS( p + entity->offset );
+
+      alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
+      alSourcei( srcId, AL_LOOPING, AL_TRUE );
+      alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
+
+      alSourcefv( srcId, AL_POSITION, p );
+      alSourcef( srcId, AL_GAIN, 1.0f );
+      alSourcePlay( srcId );
+
+      context.addBSPSource( srcId, sample, key );
+    }
+    else {
+      alSourcefv( contSource->id, AL_POSITION, p );
+
+      contSource->isUpdated = true;
+    }
+
+    OZ_AL_CHECK_ERROR();
+  }
+
+  BSP::BSP( int id ) : bsp( orbis.bsps[id] ), flags( 0 ), isLoaded( false )
+  {}
+
+  BSP::~BSP()
+  {
+    if( !isLoaded ) {
+      return;
+    }
+
+    log.println( "Unloading BSP model '%s' {", translator.bsps[bsp->id].name.cstr() );
+    log.indent();
+
+    foreach( mesh, meshes.iter() ) {
+      mesh->unload();
+    }
+
+    for( int i = 0; i < bsp->nModels; ++i ) {
+      if( bsp->models[i].openSample != -1 ) {
+        context.releaseSound( bsp->models[i].openSample );
+      }
+      if( bsp->models[i].closeSample != -1 ) {
+        context.releaseSound( bsp->models[i].closeSample );
+      }
+      if( bsp->models[i].frictSample != -1 ) {
+        context.releaseSound( bsp->models[i].frictSample );
+      }
+    }
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void BSP::load()
+  {
+    hard_assert( bsp != null );
+
+    const String& name = translator.bsps[bsp->id].name;
+
+    log.println( "Loading BSP model '%s' {", name.cstr() );
+    log.indent();
+
+    if( !buffer.read( "bsp/" + name + ".ozcBSP" ) ) {
+      throw Exception( "BSP loading failed" );
+    }
+
+    InputStream is = buffer.inputStream();
+
+    flags = is.readInt();
+
+    int nMeshes = is.readInt();
+
+    meshes.alloc( nMeshes );
+    foreach( mesh, meshes.iter() ) {
+      mesh->load( &is, GL_STATIC_DRAW );
+    }
+
+    for( int i = 0; i < bsp->nModels; ++i ) {
+      if( bsp->models[i].openSample != -1 ) {
+        context.requestSound( bsp->models[i].openSample );
+      }
+      if( bsp->models[i].closeSample != -1 ) {
+        context.requestSound( bsp->models[i].closeSample );
+      }
+      if( bsp->models[i].frictSample != -1 ) {
+        context.requestSound( bsp->models[i].frictSample );
+      }
+    }
+
+    log.unindent();
+    log.println( "}" );
+
+    isLoaded = true;
+  }
+
+  void BSP::draw( const Struct* str, int mask ) const
+  {
+    mask &= flags;
+
+    if( mask == 0 ) {
+      return;
+    }
+
+    shader.use( shader.isInWater ? shader.mesh : shader.bigMesh );
+
+    for( int i = 0; i < meshes.length(); ++i ) {
+      const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;
+
+      tf.push();
+      tf.model.translate( entityPos );
+      tf.apply();
+
+      meshes[i].draw( mask );
+
+      tf.pop();
+    }
+  }
+
+  void BSP::play( const Struct* str ) const
+  {
+    for( int i = 0; i < str->nEntities; ++i ) {
+      const Struct::Entity& entity = str->entities[i];
+
+      if( entity.state == Struct::Entity::OPENING ) {
+        if( entity.ratio == 0.0f && bsp->models[i].openSample != -1 ) {
+          playSound( &entity, bsp->models[i].openSample );
+        }
+        if( bsp->models[i].frictSample != -1 ) {
+          playContSound( &entity, bsp->models[i].frictSample );
+        }
+      }
+      else if( entity.state == Struct::Entity::CLOSING ) {
+        if( entity.ratio == 1.0f && bsp->models[i].closeSample != -1 ) {
+          playSound( &entity, bsp->models[i].closeSample );
+        }
+        if( bsp->models[i].frictSample != -1 ) {
+          playContSound( &entity, bsp->models[i].frictSample );
+        }
+      }
+    }
+  }
+
+#else // OZ_TOOLS
+
   int BSP::nTextures;
   int BSP::nModels;
   int BSP::nVertices;
@@ -283,85 +483,7 @@ namespace client
 
     log.printEnd( " OK" );
   }
-#endif
 
-  void BSP::playSound( const Struct::Entity* entity, int sample ) const
-  {
-    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
-
-    Bounds bounds = *entity->model;
-    Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
-    Point3 p = entity->str->toAbsoluteCS( localPos + entity->offset );
-
-    uint srcId;
-
-    alGenSources( 1, &srcId );
-    if( alGetError() != AL_NO_ERROR ) {
-      log.println( "AL: Too many sources" );
-      return;
-    }
-
-    alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
-    alSourcef( srcId, AL_REFERENCE_DISTANCE, Audio::REFERENCE_DISTANCE );
-    alSourcef( srcId, AL_ROLLOFF_FACTOR, Audio::ROLLOFF_FACTOR );
-
-    alSourcefv( srcId, AL_POSITION, p );
-    alSourcef( srcId, AL_GAIN, 1.0f );
-    alSourcePlay( srcId );
-
-    context.addSource( srcId, sample );
-
-    OZ_AL_CHECK_ERROR();
-  }
-
-  void BSP::playContSound( const Struct::Entity* entity, int sample ) const
-  {
-    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
-
-    const Struct* str = entity->str;
-    // we can have at most 100 models per BSP, so stride 128 should do
-    int key = str->index * 128 + int( entity - str->entities );
-
-    Bounds bounds = *entity->model;
-    Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
-    Point3 p = entity->str->toAbsoluteCS( localPos + entity->offset );
-
-    Context::ContSource* contSource = context.bspSources.find( key );
-
-    if( contSource == null ) {
-      uint srcId;
-
-      alGenSources( 1, &srcId );
-      if( alGetError() != AL_NO_ERROR ) {
-        log.println( "AL: Too many sources" );
-        return;
-      }
-
-      Bounds bounds = *entity->model;
-      Point3 p = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
-
-      p = entity->str->toAbsoluteCS( p + entity->offset );
-
-      alSourcei( srcId, AL_BUFFER, int( context.sounds[sample].id ) );
-      alSourcei( srcId, AL_LOOPING, AL_TRUE );
-      alSourcef( srcId, AL_ROLLOFF_FACTOR, 0.25f );
-
-      alSourcefv( srcId, AL_POSITION, p );
-      alSourcef( srcId, AL_GAIN, 1.0f );
-      alSourcePlay( srcId );
-
-      context.addBSPSource( srcId, sample, key );
-    }
-    else {
-      alSourcefv( contSource->id, AL_POSITION, p );
-
-      contSource->isUpdated = true;
-    }
-
-    OZ_AL_CHECK_ERROR();
-  }
-
-#ifdef OZ_TOOLS
   void BSP::prebuild( const char* name_ )
   {
     String name = name_;
@@ -377,128 +499,8 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
-#endif
 
-  BSP::BSP( int id ) : bsp( orbis.bsps[id] ), flags( 0 ), isLoaded( false )
-  {}
-
-  BSP::~BSP()
-  {
-    if( !isLoaded ) {
-      return;
-    }
-
-    log.println( "Unloading BSP model '%s' {", translator.bsps[bsp->id].name.cstr() );
-    log.indent();
-
-    foreach( mesh, meshes.iter() ) {
-      mesh->unload();
-    }
-
-    for( int i = 0; i < bsp->nModels; ++i ) {
-      if( bsp->models[i].openSample != -1 ) {
-        context.releaseSound( bsp->models[i].openSample );
-      }
-      if( bsp->models[i].closeSample != -1 ) {
-        context.releaseSound( bsp->models[i].closeSample );
-      }
-      if( bsp->models[i].frictSample != -1 ) {
-        context.releaseSound( bsp->models[i].frictSample );
-      }
-    }
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void BSP::load()
-  {
-    hard_assert( bsp != null );
-
-    const String& name = translator.bsps[bsp->id].name;
-
-    log.println( "Loading BSP model '%s' {", name.cstr() );
-    log.indent();
-
-    if( !buffer.read( "bsp/" + name + ".ozcBSP" ) ) {
-      throw Exception( "BSP loading failed" );
-    }
-
-    InputStream is = buffer.inputStream();
-
-    flags = is.readInt();
-
-    int nMeshes = is.readInt();
-
-    meshes.alloc( nMeshes );
-    foreach( mesh, meshes.iter() ) {
-      mesh->load( &is, GL_STATIC_DRAW );
-    }
-
-    for( int i = 0; i < bsp->nModels; ++i ) {
-      if( bsp->models[i].openSample != -1 ) {
-        context.requestSound( bsp->models[i].openSample );
-      }
-      if( bsp->models[i].closeSample != -1 ) {
-        context.requestSound( bsp->models[i].closeSample );
-      }
-      if( bsp->models[i].frictSample != -1 ) {
-        context.requestSound( bsp->models[i].frictSample );
-      }
-    }
-
-    log.unindent();
-    log.println( "}" );
-
-    isLoaded = true;
-  }
-
-  void BSP::draw( const Struct* str, int mask ) const
-  {
-    mask &= flags;
-
-    if( mask == 0 ) {
-      return;
-    }
-
-    shader.use( shader.isInWater ? shader.mesh : shader.bigMesh );
-
-    for( int i = 0; i < meshes.length(); ++i ) {
-      const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;
-
-      tf.push();
-      tf.model.translate( entityPos );
-      tf.apply();
-
-      meshes[i].draw( mask );
-
-      tf.pop();
-    }
-  }
-
-  void BSP::play( const Struct* str ) const
-  {
-    for( int i = 0; i < str->nEntities; ++i ) {
-      const Struct::Entity& entity = str->entities[i];
-
-      if( entity.state == Struct::Entity::OPENING ) {
-        if( entity.ratio == 0.0f && bsp->models[i].openSample != -1 ) {
-          playSound( &entity, bsp->models[i].openSample );
-        }
-        if( bsp->models[i].frictSample != -1 ) {
-          playContSound( &entity, bsp->models[i].frictSample );
-        }
-      }
-      else if( entity.state == Struct::Entity::CLOSING ) {
-        if( entity.ratio == 1.0f && bsp->models[i].closeSample != -1 ) {
-          playSound( &entity, bsp->models[i].closeSample );
-        }
-        if( bsp->models[i].frictSample != -1 ) {
-          playContSound( &entity, bsp->models[i].frictSample );
-        }
-      }
-    }
-  }
+#endif // OZ_TOOLS
 
 }
 }

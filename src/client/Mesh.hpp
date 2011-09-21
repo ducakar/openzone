@@ -67,6 +67,8 @@ namespace client
       static const int ALPHA_BIT             = 0x0200;
       static const int EMBEDED_TEX_BIT       = 0x0400;
 
+#ifndef OZ_TOOLS
+
     private:
 
       struct Part
@@ -103,9 +105,12 @@ namespace client
 
       void draw( int mask ) const;
 
+#endif
+
   };
 
 #ifdef OZ_TOOLS
+
   class MeshData
   {
     friend class Compiler;
@@ -133,6 +138,7 @@ namespace client
       void write( OutputStream* stream, bool embedTextures = true ) const;
 
   };
+
 #endif
 
 }

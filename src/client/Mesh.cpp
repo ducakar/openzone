@@ -153,6 +153,8 @@ namespace client
 #endif
   }
 
+#ifndef OZ_TOOLS
+
   Mesh::Mesh() : vao( 0 )
   {}
 
@@ -170,10 +172,10 @@ namespace client
     int nVertices = stream->readInt();
     int nIndices  = stream->readInt();
 
-#if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
+# if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
     const char* vertices = stream->prepareRead( nVertices * int( sizeof( Vertex ) ) );
     const char* indices  = stream->prepareRead( nIndices *  int( sizeof( ushort ) ) );
-#else
+# else
     Vertex* vertices = new Vertex[nVertices];
     for( int i = 0; i < nVertices; ++i ) {
       vertices[i].read( stream );
@@ -183,14 +185,14 @@ namespace client
     for( int i = 0; i < nIndices; ++i ) {
       indices[i] = stream->readShort();
     }
-#endif
+# endif
 
-#ifdef OZ_GL_COMPATIBLE
+# ifdef OZ_GL_COMPATIBLE
     vao = 1;
-#else
+# else
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
-#endif
+# endif
 
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -200,22 +202,21 @@ namespace client
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * int( sizeof( ushort ) ), indices, GL_STATIC_DRAW );
 
-#ifndef OZ_GL_COMPATIBLE
+# ifndef OZ_GL_COMPATIBLE
     Vertex::setFormat();
 
     glBindVertexArray( 0 );
-#endif
+# endif
 
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-#if defined( OZ_BIG_ENDIAN_STREAM ) != defined( OZ_BIG_ENDIAN_ARCH )
+# if defined( OZ_BIG_ENDIAN_STREAM ) != defined( OZ_BIG_ENDIAN_ARCH )
     delete[] indices;
     delete[] vertices;
-#endif
+# endif
 
     int nTextures = stream->readInt();
-    hard_assert( nTextures != 0 );
 
     if( nTextures < 0 ) {
       nTextures = ~nTextures;
@@ -226,8 +227,6 @@ namespace client
 
       for( int i = 1; i < nTextures; ++i ) {
         textures[i] = context.readTexture( stream );
-
-        hard_assert( textures[i] != 0 );
       }
     }
     else {
@@ -299,9 +298,9 @@ namespace client
 
       glDeleteBuffers( 1, &vbo );
       glDeleteBuffers( 1, &ibo );
-#ifndef OZ_GL_COMPATIBLE
+# ifndef OZ_GL_COMPATIBLE
       glDeleteVertexArrays( 1, &vao );
-#endif
+# endif
 
       vao = 0;
     }
@@ -338,13 +337,13 @@ namespace client
 
     int firstAlphaPart = flags & FIRST_ALPHA_PART_MASK;
 
-#ifdef OZ_GL_COMPATIBLE
+# ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
     Vertex::setFormat();
-#else
+# else
     glBindVertexArray( vao );
-#endif
+# endif
 
     glUniform4fv( param.oz_Colour, 1, shader.colour );
 
@@ -373,7 +372,8 @@ namespace client
     }
   }
 
-#ifdef OZ_TOOLS
+#else // OZ_TOOLS
+
   void MeshData::write( OutputStream* stream, bool embedTextures ) const
   {
     hard_assert( solidParts.length() > 0 || alphaParts.length() > 0 );
@@ -447,7 +447,8 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
-#endif
+
+#endif // OZ_TOOLS
 
 }
 }

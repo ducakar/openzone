@@ -35,6 +35,8 @@ namespace client
 
       static const float WAVE_BIAS_INC;
 
+#ifndef OZ_TOOLS
+
       uint  vaos[TILES][TILES];
       uint  vbos[TILES][TILES];
       uint  ibo;
@@ -57,15 +59,19 @@ namespace client
 
       Terra();
 
-#ifdef OZ_TOOLS
-      void prebuild( const char* name );
-#endif
-
       void draw();
       void drawWater();
 
       void load();
       void unload();
+
+#else
+
+    public:
+
+      static void prebuild( const char* name );
+
+#endif
   };
 
   extern Terra terra;

@@ -36,6 +36,8 @@ namespace client
 
   Terra terra;
 
+#ifndef OZ_TOOLS
+
   Terra::Terra() : ibo( 0 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 )
   {
     for( int i = 0; i < TILES; ++i ) {
@@ -46,7 +48,207 @@ namespace client
     }
   }
 
-#ifdef OZ_TOOLS
+  void Terra::draw()
+  {
+    span.minX = max( int( ( camera.p.x - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
+    span.minY = max( int( ( camera.p.y - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
+    span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
+    span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
+
+    shader.use( shader.isInWater ? submergedLandShaderId : landShaderId );
+
+    tf.model = Mat44::ID;
+    tf.apply();
+
+    glBindTexture( GL_TEXTURE_2D, detailTexId );
+    glActiveTexture( GL_TEXTURE1 );
+    glBindTexture( GL_TEXTURE_2D, mapTexId );
+
+    OZ_GL_CHECK_ERROR();
+
+    // to match strip triangles with matrix terrain we have to make them clockwise since
+    // we draw column-major (strips along y axis) for better cache performance
+    glFrontFace( GL_CW );
+
+# ifdef OZ_GL_COMPATIBLE
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+# endif
+
+    for( int i = span.minX; i <= span.maxX; ++i ) {
+      for( int j = span.minY; j <= span.maxY; ++j ) {
+# ifdef OZ_GL_COMPATIBLE
+        glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+        Vertex::setFormat();
+# else
+        glBindVertexArray( vaos[i][j] );
+# endif
+        glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, 0 );
+      }
+    }
+
+    glFrontFace( GL_CCW );
+
+    glBindTexture( GL_TEXTURE_2D, 0 );
+    glActiveTexture( GL_TEXTURE0 );
+
+    OZ_GL_CHECK_ERROR();
+  }
+
+  void Terra::drawWater()
+  {
+    waveBias = Math::mod( waveBias + WAVE_BIAS_INC, Math::TAU );
+
+    shader.use( waterShaderId );
+
+    glUniform1f( param.oz_Specular, 0.5f );
+    glUniform1f( param.oz_WaveBias, waveBias );
+    tf.model = Mat44::ID;
+    tf.apply();
+
+    glBindTexture( GL_TEXTURE_2D, waterTexId );
+
+    if( camera.p.z >= 0.0f ) {
+      glFrontFace( GL_CW );
+    }
+
+    glEnable( GL_BLEND );
+
+# ifdef OZ_GL_COMPATIBLE
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+# endif
+
+    for( int i = span.minX; i <= span.maxX; ++i ) {
+      for( int j = span.minY; j <= span.maxY; ++j ) {
+        if( waterTiles.get( i * TILES + j ) ) {
+# ifdef OZ_GL_COMPATIBLE
+          glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+          Vertex::setFormat();
+# else
+          glBindVertexArray( vaos[i][j] );
+# endif
+          glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, 0 );
+        }
+      }
+    }
+
+    glDisable( GL_BLEND );
+
+    if( camera.p.z >= 0.0f ) {
+      glFrontFace( GL_CCW );
+    }
+
+    OZ_GL_CHECK_ERROR();
+  }
+
+  void Terra::load()
+  {
+    const String& name = translator.terras[orbis.terra.id].name;
+    String path = "terra/" + name + ".ozcTerra";
+
+    log.print( "Loading terra '%s' ...", name.cstr() );
+
+    if( !buffer.read( path ) ) {
+      log.printEnd( " Failed" );
+      throw Exception( "Terra loading failed" );
+    }
+
+    InputStream is = buffer.inputStream();
+
+    ushort* indices  = new ushort[TILE_INDICES];
+    Vertex* vertices = new Vertex[TILE_VERTICES];
+
+    waterTexId  = context.readTexture( &is );
+    detailTexId = context.readTexture( &is );
+    mapTexId    = context.readTexture( &is );
+
+# ifndef OZ_GL_COMPATIBLE
+    glGenVertexArrays( TILES * TILES, &vaos[0][0] );
+# endif
+    glGenBuffers( TILES * TILES, &vbos[0][0] );
+    glGenBuffers( 1, &ibo );
+
+    for( int i = 0; i < TILE_INDICES; ++i ) {
+      indices[i] = ushort( is.readShort() );
+    }
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, TILE_INDICES * sizeof( ushort ), indices,
+                  GL_STATIC_DRAW );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+    for( int i = 0; i < TILES; ++i ) {
+      for( int j = 0; j < TILES; ++j ) {
+        for( int k = 0; k < TILE_VERTICES; ++k ) {
+          vertices[k].read( &is );
+        }
+
+# ifndef OZ_GL_COMPATIBLE
+        glBindVertexArray( vaos[i][j] );
+# endif
+
+        glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
+        glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), vertices,
+                      GL_STATIC_DRAW );
+
+# ifndef OZ_GL_COMPATIBLE
+        Vertex::setFormat();
+
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+        glBindVertexArray( 0 );
+# endif
+      }
+    }
+
+    glBindBuffer( GL_ARRAY_BUFFER, 0 );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+    waterTiles.clearAll();
+    for( int i = 0; i < waterTiles.length(); ++i ) {
+      if( is.readChar() ) {
+        waterTiles.set( i );
+      }
+    }
+
+    landShaderId = translator.shaderIndex( "terraLand" );
+    waterShaderId = translator.shaderIndex( "terraWater" );
+    submergedLandShaderId = translator.shaderIndex( "submergedTerraLand" );
+    submergedWaterShaderId = translator.shaderIndex( "submergedTerraWater" );
+
+    delete[] indices;
+    delete[] vertices;
+
+    log.printEnd( " OK" );
+  }
+
+  void Terra::unload()
+  {
+    if( ibo != 0 ) {
+      glDeleteTextures( 1, &mapTexId );
+      glDeleteTextures( 1, &detailTexId );
+      glDeleteTextures( 1, &waterTexId );
+
+      glDeleteBuffers( 1, &ibo );
+      glDeleteBuffers( TILES * TILES, &vbos[0][0] );
+# ifndef OZ_GL_COMPATIBLE
+      glDeleteVertexArrays( TILES * TILES, &vaos[0][0] );
+# endif
+
+      mapTexId = 0;
+      detailTexId = 0;
+      waterTexId = 0;
+
+      ibo = 0;
+      for( int i = 0; i < TILES; ++i ) {
+        for( int j = 0; j < TILES; ++j ) {
+          vbos[i][j] = 0;
+          vaos[i][j] = 0;
+        }
+      }
+    }
+  }
+
+#else // OZ_TOOLS
+
   void Terra::prebuild( const char* name_ )
   {
     String name       = name_;
@@ -104,6 +306,7 @@ namespace client
     Vec3   normal;
     Vertex vertex;
 
+    Bitset waterTiles( TILES * TILES );
     waterTiles.clearAll();
 
     for( int i = 0; i < TILES; ++i ) {
@@ -164,206 +367,8 @@ namespace client
     log.unindent();
     log.println( "}" );
   }
-#endif
 
-  void Terra::draw()
-  {
-    span.minX = max( int( ( camera.p.x - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
-    span.minY = max( int( ( camera.p.y - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
-    span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
-    span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
-
-    shader.use( shader.isInWater ? submergedLandShaderId : landShaderId );
-
-    tf.model = Mat44::ID;
-    tf.apply();
-
-    glBindTexture( GL_TEXTURE_2D, detailTexId );
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, mapTexId );
-
-    OZ_GL_CHECK_ERROR();
-
-    // to match strip triangles with matrix terrain we have to make them clockwise since
-    // we draw column-major (strips along y axis) for better cache performance
-    glFrontFace( GL_CW );
-
-#ifdef OZ_GL_COMPATIBLE
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-#endif
-
-    for( int i = span.minX; i <= span.maxX; ++i ) {
-      for( int j = span.minY; j <= span.maxY; ++j ) {
-#ifdef OZ_GL_COMPATIBLE
-        glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-        Vertex::setFormat();
-#else
-        glBindVertexArray( vaos[i][j] );
-#endif
-        glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, 0 );
-      }
-    }
-
-    glFrontFace( GL_CCW );
-
-    glBindTexture( GL_TEXTURE_2D, 0 );
-    glActiveTexture( GL_TEXTURE0 );
-
-    OZ_GL_CHECK_ERROR();
-  }
-
-  void Terra::drawWater()
-  {
-    waveBias = Math::mod( waveBias + WAVE_BIAS_INC, Math::TAU );
-
-    shader.use( waterShaderId );
-
-    glUniform1f( param.oz_Specular, 0.5f );
-    glUniform1f( param.oz_WaveBias, waveBias );
-    tf.model = Mat44::ID;
-    tf.apply();
-
-    glBindTexture( GL_TEXTURE_2D, waterTexId );
-
-    if( camera.p.z >= 0.0f ) {
-      glFrontFace( GL_CW );
-    }
-
-    glEnable( GL_BLEND );
-
-#ifdef OZ_GL_COMPATIBLE
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-#endif
-
-    for( int i = span.minX; i <= span.maxX; ++i ) {
-      for( int j = span.minY; j <= span.maxY; ++j ) {
-        if( waterTiles.get( i * TILES + j ) ) {
-#ifdef OZ_GL_COMPATIBLE
-          glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-          Vertex::setFormat();
-#else
-          glBindVertexArray( vaos[i][j] );
-#endif
-          glDrawElements( GL_TRIANGLE_STRIP, TILE_INDICES, GL_UNSIGNED_SHORT, 0 );
-        }
-      }
-    }
-
-    glDisable( GL_BLEND );
-
-    if( camera.p.z >= 0.0f ) {
-      glFrontFace( GL_CCW );
-    }
-
-    OZ_GL_CHECK_ERROR();
-  }
-
-  void Terra::load()
-  {
-    const String& name = translator.terras[orbis.terra.id].name;
-    String path = "terra/" + name + ".ozcTerra";
-
-    log.print( "Loading terra '%s' ...", name.cstr() );
-
-    if( !buffer.read( path ) ) {
-      log.printEnd( " Failed" );
-      throw Exception( "Terra loading failed" );
-    }
-
-    InputStream is = buffer.inputStream();
-
-    ushort* indices  = new ushort[TILE_INDICES];
-    Vertex* vertices = new Vertex[TILE_VERTICES];
-
-    waterTexId  = context.readTexture( &is );
-    detailTexId = context.readTexture( &is );
-    mapTexId    = context.readTexture( &is );
-
-#ifndef OZ_GL_COMPATIBLE
-    glGenVertexArrays( TILES * TILES, &vaos[0][0] );
-#endif
-    glGenBuffers( TILES * TILES, &vbos[0][0] );
-    glGenBuffers( 1, &ibo );
-
-    for( int i = 0; i < TILE_INDICES; ++i ) {
-      indices[i] = ushort( is.readShort() );
-    }
-
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, TILE_INDICES * sizeof( ushort ), indices,
-                  GL_STATIC_DRAW );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-    for( int i = 0; i < TILES; ++i ) {
-      for( int j = 0; j < TILES; ++j ) {
-        for( int k = 0; k < TILE_VERTICES; ++k ) {
-          vertices[k].read( &is );
-        }
-
-#ifndef OZ_GL_COMPATIBLE
-        glBindVertexArray( vaos[i][j] );
-#endif
-
-        glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-        glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), vertices,
-                      GL_STATIC_DRAW );
-
-#ifndef OZ_GL_COMPATIBLE
-        Vertex::setFormat();
-
-        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-        glBindVertexArray( 0 );
-#endif
-      }
-    }
-
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-    waterTiles.clearAll();
-    for( int i = 0; i < waterTiles.length(); ++i ) {
-      if( is.readChar() ) {
-        waterTiles.set( i );
-      }
-    }
-
-    landShaderId = translator.shaderIndex( "terraLand" );
-    waterShaderId = translator.shaderIndex( "terraWater" );
-    submergedLandShaderId = translator.shaderIndex( "submergedTerraLand" );
-    submergedWaterShaderId = translator.shaderIndex( "submergedTerraWater" );
-
-    delete[] indices;
-    delete[] vertices;
-
-    log.printEnd( " OK" );
-  }
-
-  void Terra::unload()
-  {
-    if( ibo != 0 ) {
-      glDeleteTextures( 1, &mapTexId );
-      glDeleteTextures( 1, &detailTexId );
-      glDeleteTextures( 1, &waterTexId );
-
-      glDeleteBuffers( 1, &ibo );
-      glDeleteBuffers( TILES * TILES, &vbos[0][0] );
-#ifndef OZ_GL_COMPATIBLE
-      glDeleteVertexArrays( TILES * TILES, &vaos[0][0] );
-#endif
-
-      mapTexId = 0;
-      detailTexId = 0;
-      waterTexId = 0;
-
-      ibo = 0;
-      for( int i = 0; i < TILES; ++i ) {
-        for( int j = 0; j < TILES; ++j ) {
-          vbos[i][j] = 0;
-          vaos[i][j] = 0;
-        }
-      }
-    }
-  }
+#endif // OZ_TOOLS
 
 }
 }

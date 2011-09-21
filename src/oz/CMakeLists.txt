@@ -70,7 +70,6 @@ if( OZ_INSTALL_LIBOZ )
     oz.cpp
     oz.hpp
     stream.hpp
-    DESTINATION include/oz
-    COMPONENT liboz )
-  install( TARGETS oz DESTINATION lib COMPONENT liboz )
+    DESTINATION include/oz )
+  install( TARGETS oz DESTINATION lib )
 endif()

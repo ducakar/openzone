@@ -24,6 +24,8 @@ namespace oz
 namespace client
 {
 
+#ifndef OZ_TOOLS
+
   struct MD3Header
   {
     int  id;
@@ -355,6 +357,9 @@ namespace client
   {
     glDeleteLists( list, 1 );
   }
+
+#else
+#endif
 
 }
 }

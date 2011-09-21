@@ -43,69 +43,10 @@ namespace client
 
   const float Caelum::STAR_DIM       = 0.10f;
 
+#ifndef OZ_TOOLS
+
   Caelum::Caelum() : vao( 0 ), vbo( 0 ), sunTexId( 0 ), moonTexId( 0 )
   {}
-
-#ifdef OZ_TOOLS
-  void Caelum::prebuild( const char* name )
-  {
-    log.println( "Prebuilding Caelum '%s' {", name );
-    log.indent();
-
-    DArray<Point3> positions( MAX_STARS );
-
-    for( int i = 0; i < MAX_STARS; ++i ) {
-      float length;
-      do {
-        positions[i] = Point3( 200.0f * Math::frand() - 100.0f,
-                               200.0f * Math::frand() - 100.0f,
-                               200.0f * Math::frand() - 100.0f );
-        length = ( positions[i] - Point3::ORIGIN ).sqL();
-      }
-      while( Math::isNaN( length ) || length < 2500.0f || length > 10000.0f );
-    }
-
-    OutputStream os = buffer.outputStream();
-
-    for( int i = 0; i < MAX_STARS; ++i ) {
-      Vec3 z = ~( Point3::ORIGIN - positions[i] );
-      Vec3 x = ~Vec3( z.z, 0.0f, -z.x );
-      Vec3 y = z ^ x;
-
-      Mat44 rot = Mat44( x, y, z, Vec3::ZERO );
-      Vertex vertex;
-
-      vertex = Vertex( positions[i] + rot * Vec3( -STAR_DIM, 0.0f, 0.0f ) );
-      vertex.write( &os );
-
-      vertex = Vertex( positions[i] + rot * Vec3( 0.0f, -STAR_DIM, 0.0f ) );
-      vertex.write( &os );
-
-      vertex = Vertex( positions[i] + rot * Vec3( +STAR_DIM, 0.0f, 0.0f ) );
-      vertex.write( &os );
-
-      vertex = Vertex( positions[i] + rot * Vec3( 0.0f, +STAR_DIM, 0.0f ) );
-      vertex.write( &os );
-    }
-
-    uint texId = context.loadRawTexture( "caelum/simplesun.png", false,
-                                         Context::DEFAULT_MAG_FILTER, Context::DEFAULT_MAG_FILTER );
-    context.writeTexture( texId, &os );
-    glDeleteTextures( 1, &texId );
-
-    texId = context.loadRawTexture( "caelum/moon18.png", false,
-                                    Context::DEFAULT_MAG_FILTER, Context::DEFAULT_MAG_FILTER );
-    context.writeTexture( texId, &os );
-    glDeleteTextures( 1, &texId );
-
-    buffer.write( "caelum/" + String( name ) + ".ozcCaelum", os.length() );
-
-    OZ_GL_CHECK_ERROR();
-
-    log.unindent();
-    log.println( "}" );
-  }
-#endif
 
   void Caelum::update()
   {
@@ -161,21 +102,21 @@ namespace client
     tf.model = transf;
     tf.apply();
 
-#ifdef OZ_GL_COMPATIBLE
+# ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
     Vertex::setFormat();
-#else
+# else
     glBindVertexArray( vao );
-#endif
+# endif
 
     glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
     glUniform4fv( param.oz_Colour, 1, colour );
 
-#ifdef OZ_GL_COMPATIBLE
+# ifdef OZ_GL_COMPATIBLE
     glEnableVertexAttribArray( Attrib::POSITION );
     glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                            reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
-#endif
+# endif
 
     glDrawArrays( GL_QUADS, 0, MAX_STARS * 4 );
 
@@ -237,12 +178,12 @@ namespace client
       vertices[i].read( &is );
     }
 
-#ifdef OZ_GL_COMPATIBLE
+# ifdef OZ_GL_COMPATIBLE
     vao = 1;
-#else
+# else
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
-#endif
+# endif
 
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -250,13 +191,13 @@ namespace client
                   GL_STATIC_DRAW );
     vertices.dealloc();
 
-#ifndef OZ_GL_COMPATIBLE
+# ifndef OZ_GL_COMPATIBLE
     glEnableVertexAttribArray( Attrib::POSITION );
     glVertexAttribPointer( Attrib::POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ),
                            reinterpret_cast<const char*>( 0 ) + offsetof( Vertex, pos ) );
 
     glBindVertexArray( 0 );
-#endif
+# endif
 
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
@@ -280,9 +221,9 @@ namespace client
       glDeleteTextures( 1, &moonTexId );
 
       glDeleteBuffers( 1, &vbo );
-#ifndef OZ_GL_COMPATIBLE
+# ifndef OZ_GL_COMPATIBLE
       glDeleteVertexArrays( 1, &vao );
-#endif
+# endif
 
       sunTexId = 0;
       moonTexId = 0;
@@ -290,6 +231,69 @@ namespace client
       vao = 0;
     }
   }
+
+#else // OZ_TOOLS
+
+  void Caelum::prebuild( const char* name )
+  {
+    log.println( "Prebuilding Caelum '%s' {", name );
+    log.indent();
+
+    DArray<Point3> positions( MAX_STARS );
+
+    for( int i = 0; i < MAX_STARS; ++i ) {
+      float length;
+      do {
+        positions[i] = Point3( 200.0f * Math::frand() - 100.0f,
+                               200.0f * Math::frand() - 100.0f,
+                               200.0f * Math::frand() - 100.0f );
+        length = ( positions[i] - Point3::ORIGIN ).sqL();
+      }
+      while( Math::isNaN( length ) || length < 2500.0f || length > 10000.0f );
+    }
+
+    OutputStream os = buffer.outputStream();
+
+    for( int i = 0; i < MAX_STARS; ++i ) {
+      Vec3 z = ~( Point3::ORIGIN - positions[i] );
+      Vec3 x = ~Vec3( z.z, 0.0f, -z.x );
+      Vec3 y = z ^ x;
+
+      Mat44 rot = Mat44( x, y, z, Vec3::ZERO );
+      Vertex vertex;
+
+      vertex = Vertex( positions[i] + rot * Vec3( -STAR_DIM, 0.0f, 0.0f ) );
+      vertex.write( &os );
+
+      vertex = Vertex( positions[i] + rot * Vec3( 0.0f, -STAR_DIM, 0.0f ) );
+      vertex.write( &os );
+
+      vertex = Vertex( positions[i] + rot * Vec3( +STAR_DIM, 0.0f, 0.0f ) );
+      vertex.write( &os );
+
+      vertex = Vertex( positions[i] + rot * Vec3( 0.0f, +STAR_DIM, 0.0f ) );
+      vertex.write( &os );
+    }
+
+    uint texId = context.loadRawTexture( "caelum/sun.png", false,
+                                         Context::DEFAULT_MAG_FILTER, Context::DEFAULT_MAG_FILTER );
+    context.writeTexture( texId, &os );
+    glDeleteTextures( 1, &texId );
+
+    texId = context.loadRawTexture( "caelum/moon.png", false,
+                                    Context::DEFAULT_MAG_FILTER, Context::DEFAULT_MAG_FILTER );
+    context.writeTexture( texId, &os );
+    glDeleteTextures( 1, &texId );
+
+    buffer.write( "caelum/" + String( name ) + ".ozcCaelum", os.length() );
+
+    OZ_GL_CHECK_ERROR();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+#endif
 
 }
 }

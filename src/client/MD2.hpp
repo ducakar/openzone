@@ -51,9 +51,47 @@ namespace client
         float currTime;
       };
 
+       static const AnimInfo ANIM_LIST[];
+
     private:
 
-#ifdef OZ_TOOLS
+#ifndef OZ_TOOLS
+
+      static Vertex animBuffer[MAX_VERTS];
+
+      int     id;
+
+      int     nFrames;
+      int     nFrameVertices;
+      int     nFramePositions;
+
+      uint    vertexTexId;
+      uint    normalTexId;
+      int     shaderId;
+
+      Vertex* vertices;
+      Vec4*   positions;
+      Vec4*   normals;
+
+      Mesh    mesh;
+
+    public:
+
+      Mat44   weaponTransf;
+      bool    isLoaded;
+
+      explicit MD2( int id );
+      ~MD2();
+
+      void load();
+
+      void advance( AnimState* anim, float dt ) const;
+
+      void drawFrame( int frame ) const;
+      void draw( const AnimState* anim ) const;
+
+#else // OZ_TOOLS
+
       struct MD2Header
       {
         int id;
@@ -105,46 +143,12 @@ namespace client
       };
 
       static const Vec3 NORMALS[];
-#endif
-
-      static Vertex animBuffer[MAX_VERTS];
-
-      int     id;
-
-      int     nFrames;
-      int     nFrameVertices;
-      int     nFramePositions;
-
-      uint    vertexTexId;
-      uint    normalTexId;
-      int     shaderId;
-
-      Vertex* vertices;
-      Vec4*   positions;
-      Vec4*   normals;
-
-      Mesh    mesh;
 
     public:
 
-      static const AnimInfo ANIM_LIST[];
-
-      Mat44   weaponTransf;
-      bool    isLoaded;
-
-#ifdef OZ_TOOLS
       static void prebuild( const char* name );
-#endif
 
-      explicit MD2( int id );
-      ~MD2();
-
-      void load();
-
-      void advance( AnimState* anim, float dt ) const;
-
-      void drawFrame( int frame ) const;
-      void draw( const AnimState* anim ) const;
+#endif // OZ_TOOLS
 
   };
 

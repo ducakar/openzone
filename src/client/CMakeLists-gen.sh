@@ -12,6 +12,6 @@ add_dependencies( openzone client nirvana matrix build pch )
 target_link_libraries( openzone build client nirvana matrix build oz \${libs} )
 
 if( OZ_INSTALL_OPENZONE )
-  install( TARGETS openzone DESTINATION bin COMPONENT openzone )
+  install( TARGETS openzone DESTINATION bin )
 endif()
 EOF
