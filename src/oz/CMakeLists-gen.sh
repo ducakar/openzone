@@ -9,8 +9,7 @@ if( OZ_INSTALL_LIBOZ )
   install( FILES
     \${CMAKE_BINARY_DIR}/src/oz/ozconfig.hpp
 `LC_COLLATE=C ls *.{hpp,cpp} | xargs printf '    %s\n'`
-    DESTINATION include/oz
-    COMPONENT liboz )
-  install( TARGETS oz DESTINATION lib COMPONENT liboz )
+    DESTINATION include/oz )
+  install( TARGETS oz DESTINATION lib )
 endif()
 EOF

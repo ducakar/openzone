@@ -34,42 +34,7 @@ namespace ui
     "hand2"
   };
 
-#ifdef OZ_TOOLS
-  void Mouse::prebuild()
-  {
-    log.println( "Prebuilding mouse cursors {" );
-    log.indent();
-
-    for( int i = 0; i < MAX; ++i ) {
-      FILE* f = fopen( "ui/cur/" + String( NAMES[i] ) + ".in", "r" );
-      if( f == null ) {
-        throw Exception( "Cursor prebuilding failed" );
-      }
-
-      int size, hotspotX, hotspotY;
-      char imgFile[32];
-      fscanf( f, "%d %d %d %31s", &size, &hotspotX, &hotspotY, imgFile );
-      fclose( f );
-
-      uint texId = context.loadRawTexture( "ui/cur/" + String( imgFile ),
-                                           false, GL_LINEAR, GL_LINEAR );
-
-      OutputStream os = buffer.outputStream();
-
-      os.writeInt( size );
-      os.writeInt( hotspotX );
-      os.writeInt( hotspotY );
-      context.writeTexture( texId, &os );
-
-      glDeleteTextures( 1, &texId );
-
-      buffer.write( "ui/cur/" + String( NAMES[i] ) + ".ozcCur", os.length() );
-    }
-
-    log.unindent();
-    log.println( "}" );
-  }
-#endif
+#ifndef OZ_TOOLS
 
   void Mouse::prepare()
   {
@@ -184,6 +149,45 @@ namespace ui
 
   void Mouse::free()
   {}
+
+#else // OZ_TOOLS
+
+  void Mouse::prebuild()
+  {
+    log.println( "Prebuilding mouse cursors {" );
+    log.indent();
+
+    for( int i = 0; i < MAX; ++i ) {
+      FILE* f = fopen( "ui/cur/" + String( NAMES[i] ) + ".in", "r" );
+      if( f == null ) {
+        throw Exception( "Cursor prebuilding failed" );
+      }
+
+      int size, hotspotX, hotspotY;
+      char imgFile[32];
+      fscanf( f, "%d %d %d %31s", &size, &hotspotX, &hotspotY, imgFile );
+      fclose( f );
+
+      uint texId = context.loadRawTexture( "ui/cur/" + String( imgFile ),
+                                           false, GL_LINEAR, GL_LINEAR );
+
+      OutputStream os = buffer.outputStream();
+
+      os.writeInt( size );
+      os.writeInt( hotspotX );
+      os.writeInt( hotspotY );
+      context.writeTexture( texId, &os );
+
+      glDeleteTextures( 1, &texId );
+
+      buffer.write( "ui/cur/" + String( NAMES[i] ) + ".ozcCur", os.length() );
+    }
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+#endif // OZ_TOOLS
 
 }
 }

@@ -54,6 +54,8 @@ namespace oz
       Terra             terra;
       Caelum            caelum;
 
+#ifndef OZ_TOOLS
+
     private:
 
       /*
@@ -138,9 +140,13 @@ namespace oz
       bool read( InputStream* istream );
       bool write( OutputStream* ostream );
 
+#endif
+
   };
 
   extern Orbis orbis;
+
+#ifndef OZ_TOOLS
 
   inline Cell* Orbis::getCell( float x, float y )
   {
@@ -191,5 +197,7 @@ namespace oz
   {
     return getInters( bounds.mins.x, bounds.mins.y, bounds.maxs.x, bounds.maxs.y, epsilon );
   }
+
+#endif
 
 }

@@ -107,6 +107,8 @@ namespace oz
     }
   }
 
+#ifndef OZ_TOOLS
+
   Struct* Translator::createStruct( int index, const char* name, const Point3& p,
                                     Struct::Rotation rot ) const
   {
@@ -151,322 +153,6 @@ namespace oz
       throw Exception( "Invalid object class requested '" + String( name ) + "'" );
     }
   }
-
-#ifdef OZ_TOOLS
-  void Translator::prebuildInit()
-  {
-    OZ_REGISTER_BASECLASS( Object );
-    OZ_REGISTER_BASECLASS( Dynamic );
-    OZ_REGISTER_BASECLASS( Weapon );
-    OZ_REGISTER_BASECLASS( Bot );
-    OZ_REGISTER_BASECLASS( Vehicle );
-
-    textures.alloc( 256 );
-    sounds.alloc( 256 );
-    terras.alloc( 16 );
-    bsps.alloc( 64 );
-    models.alloc( 256 );
-    nameLists.alloc( 16 );
-
-    log.println( "Translator mapping resources {" );
-    log.indent();
-
-    Directory dir;
-    Config classConfig;
-
-    log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/oz') {" );
-    log.indent();
-
-    dir.open( "data/textures/oz" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'data/textures/oz'" );
-      log.unindent();
-      log.println( "}" );
-
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpeg" ) &&
-          !ent.hasExtension( "jpg" ) )
-      {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "data/textures/oz/" ) + ent;
-
-      if( textureIndices.contains( name ) ) {
-        throw Exception( "Duplicated texture '" + name + "' ['" + path + "']" );
-      }
-
-      textureIndices.add( name, textures.length() );
-      textures.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "sounds (*.wav in 'snd') {" );
-    log.indent();
-
-    dir.open( "snd" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'snd'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "wav" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "snd/" ) + ent;
-
-      soundIndices.add( name, sounds.length() );
-      sounds.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "shaders (*.vert/*.frag in 'glsl') {" );
-    log.indent();
-
-    dir.open( "glsl" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'glsl'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "vert" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-
-      shaderIndices.add( name, shaders.length() );
-      shaders.add( Resource( name, "" ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "Terrains (*.rc in 'terra') {" );
-    log.indent();
-
-    dir.open( "terra" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'terra'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "rc" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "terra/" ) + ent;
-
-      terraIndices.add( name, terras.length() );
-      terras.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "BSP structures (*.rc in 'data/maps') {" );
-    log.indent();
-
-    dir.open( "data/maps" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'data/maps'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "rc" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "data/maps/" ) + ent;
-
-      bspIndices.add( name, bsps.length() );
-      bsps.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "models (* in 'mdl') {" );
-    log.indent();
-
-    dir.open( "mdl" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'mdl'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( ent.hasExtension( "ozcSMM" ) || ent.hasExtension( "ozcMD2" ) ) {
-        continue;
-      }
-
-      String name = static_cast<const char*>( ent );
-      String path = String( "mdl/" ) + ent;
-
-      modelIndices.add( name, models.length() );
-      models.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "name lists (*.txt in 'name') {" );
-    log.indent();
-
-    dir.open( "name" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'name'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "txt" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "name/" ) + ent;
-
-      nameListIndices.add( name, nameLists.length() );
-      nameLists.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "music (*.oga in 'music') {" );
-    log.indent();
-
-    dir.open( "music" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'music'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "oga" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "music/" ) + ent;
-
-      musics.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.println( "object classes (*.rc in 'class') {" );
-    log.indent();
-
-    dir.open( "class" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'class'" );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "rc" ) ) {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "class/" ) + ent;
-
-      if( !classConfig.load( path ) ) {
-        log.println( "invalid config file %s", path.cstr() );
-        classConfig.clear();
-        continue;
-      }
-      if( !classConfig.contains( "base" ) ) {
-        log.println( "missing base variable" );
-        classConfig.clear();
-        continue;
-      }
-      const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
-      if( initFunc == null ) {
-        log.println( "invalid base %s", classConfig["base"].cstr() );
-        classConfig.clear();
-        continue;
-      }
-      if( classes.contains( name ) ) {
-        log.println( "duplicated class: %s", name.cstr() );
-        classConfig.clear();
-        continue;
-      }
-
-      classConfig.add( "name", name );
-      classes.add( name, ( *initFunc )( &classConfig ) );
-      classConfig.clear();
-
-      log.println( "%s", name.cstr() );
-    }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-    log.unindent();
-    log.println( "}" );
-  }
-#endif
 
   void Translator::init()
   {
@@ -781,6 +467,318 @@ namespace oz
     log.unindent();
     log.println( "}" );
   }
+
+#else // OZ_TOOLS
+
+  void Translator::init()
+  {
+    textures.alloc( 256 );
+    sounds.alloc( 256 );
+    terras.alloc( 16 );
+    bsps.alloc( 64 );
+    models.alloc( 256 );
+    nameLists.alloc( 16 );
+
+    log.println( "Translator mapping resources {" );
+    log.indent();
+
+    Directory dir;
+    Config classConfig;
+
+    log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/oz') {" );
+    log.indent();
+
+    dir.open( "data/textures/oz" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'data/textures/oz'" );
+      log.unindent();
+      log.println( "}" );
+
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpeg" ) &&
+          !ent.hasExtension( "jpg" ) )
+      {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "data/textures/oz/" ) + ent;
+
+      if( textureIndices.contains( name ) ) {
+        throw Exception( "Duplicated texture '" + name + "' ['" + path + "']" );
+      }
+
+      textureIndices.add( name, textures.length() );
+      textures.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "sounds (*.wav in 'snd') {" );
+    log.indent();
+
+    dir.open( "snd" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'snd'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "wav" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "snd/" ) + ent;
+
+      soundIndices.add( name, sounds.length() );
+      sounds.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "shaders (*.vert/*.frag in 'glsl') {" );
+    log.indent();
+
+    dir.open( "glsl" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'glsl'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "vert" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+
+      shaderIndices.add( name, shaders.length() );
+      shaders.add( Resource( name, "" ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "Terrains (*.rc in 'terra') {" );
+    log.indent();
+
+    dir.open( "terra" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'terra'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "rc" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "terra/" ) + ent;
+
+      terraIndices.add( name, terras.length() );
+      terras.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "BSP structures (*.rc in 'data/maps') {" );
+    log.indent();
+
+    dir.open( "data/maps" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'data/maps'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "rc" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "data/maps/" ) + ent;
+
+      bspIndices.add( name, bsps.length() );
+      bsps.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "models (* in 'mdl') {" );
+    log.indent();
+
+    dir.open( "mdl" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'mdl'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( ent.hasExtension( "ozcSMM" ) || ent.hasExtension( "ozcMD2" ) ) {
+        continue;
+      }
+
+      String name = static_cast<const char*>( ent );
+      String path = String( "mdl/" ) + ent;
+
+      modelIndices.add( name, models.length() );
+      models.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "name lists (*.txt in 'name') {" );
+    log.indent();
+
+    dir.open( "name" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'name'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "txt" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "name/" ) + ent;
+
+      nameListIndices.add( name, nameLists.length() );
+      nameLists.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "music (*.oga in 'music') {" );
+    log.indent();
+
+    dir.open( "music" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'music'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "oga" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "music/" ) + ent;
+
+      musics.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "object classes (*.rc in 'class') {" );
+    log.indent();
+
+    dir.open( "class" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'class'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "rc" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "class/" ) + ent;
+
+      if( !classConfig.load( path ) ) {
+        log.println( "invalid config file %s", path.cstr() );
+        classConfig.clear();
+        continue;
+      }
+      if( !classConfig.contains( "base" ) ) {
+        log.println( "missing base variable" );
+        classConfig.clear();
+        continue;
+      }
+      const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
+      if( initFunc == null ) {
+        log.println( "invalid base %s", classConfig["base"].cstr() );
+        classConfig.clear();
+        continue;
+      }
+      if( classes.contains( name ) ) {
+        log.println( "duplicated class: %s", name.cstr() );
+        classConfig.clear();
+        continue;
+      }
+
+      classConfig.add( "name", name );
+      classes.add( name, null );
+      classConfig.clear();
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.unindent();
+    log.println( "}" );
+  }
+
+#endif // OZ_TOOLS
 
   void Translator::free()
   {

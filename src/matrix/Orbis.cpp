@@ -27,6 +27,8 @@ namespace oz
   const float Cell::INV_SIZE = 1.0f / float( SIZEI );
   const float Cell::RADIUS   = SIZE * Math::sqrt( 2 ) / 2.0f;
 
+#ifndef OZ_TOOLS
+
   const float Orbis::DIM     = Cell::SIZE * MAX / 2.0f;
 
   bool Orbis::position( Struct* str )
@@ -596,5 +598,7 @@ namespace oz
     log.printEnd( " OK" );
     return true;
   }
+
+#endif // OZ_TOOLS
 
 }

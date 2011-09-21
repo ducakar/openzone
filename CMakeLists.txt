@@ -32,7 +32,7 @@ if( NOT DEFINED OZ_APPLICATION_NAME )
 endif()
 
 if( NOT DEFINED OZ_APPLICATION_VERSION )
-  set( OZ_APPLICATION_VERSION "0.1.3" CACHE STRING "" FORCE )
+  set( OZ_APPLICATION_VERSION "0.1.4" CACHE STRING "" FORCE )
 endif()
 
 if( NOT DEFINED OZ_APPLICATION_TITLE )
@@ -68,8 +68,7 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 include( cmake/pch.cmake )
-include( cmake/syncheck.cmake )
-include( cmake/packaging.cmake )
+include( cmake/pack_config.cmake )
 include( CheckLibraryExists )
 
 check_library_exists( m sincosf "" OZ_HAVE_SINCOSF )

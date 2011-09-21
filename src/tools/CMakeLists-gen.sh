@@ -20,6 +20,6 @@ add_dependencies( ozPrebuild client-tools nirvana matrix-tools build pch )
 target_link_libraries( ozPrebuild client-tools nirvana matrix-tools build oz \${libs_tools} )
 
 if( OZ_INSTALL_TOOLS )
-  install( TARGETS ozPrebuild DESTINATION bin COMPONENT tools )
+  install( TARGETS ozPrebuild DESTINATION bin )
 endif()
 EOF

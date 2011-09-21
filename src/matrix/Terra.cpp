@@ -26,7 +26,51 @@ namespace oz
 
   const float Terra::DIM            = Terra::Quad::DIM * QUADS;
 
+  void Terra::load( int id_ )
+  {
+    id = id_;
+
+    const String& name = translator.terras[id].name;
+    const String& path = translator.terras[id].path;
+
+    log.print( "Loading terrain '%s' ...", name.cstr() );
+
+    if( !buffer.read( path ) ) {
+      log.printEnd( " Cannot read file" );
+      throw Exception( "Failed to load terrain" );
+    }
+
+    InputStream is = buffer.inputStream();
+
+    int max = is.readInt();
+    if( max != VERTS ) {
+      log.printEnd( " Invalid dimension %d, should be %d", max, VERTS );
+      throw Exception( "Failed to load terrain" );
+    }
+
+    for( int x = 0; x < VERTS; ++x ) {
+      for( int y = 0; y < VERTS; ++y ) {
+        quads[x][y].vertex       = is.readPoint3();
+        quads[x][y].triNormal[0] = is.readVec3();
+        quads[x][y].triNormal[1] = is.readVec3();
+      }
+    }
+
+    log.printEnd( " OK" );
+  }
+
+  void Terra::init()
+  {
+    for( int x = 0; x < VERTS; ++x ) {
+      for( int y = 0; y < VERTS; ++y ) {
+        quads[x][y].vertex.x = float( x * Quad::SIZEI ) - DIM;
+        quads[x][y].vertex.y = float( y * Quad::SIZEI ) - DIM;
+      }
+    }
+  }
+
 #ifdef OZ_TOOLS
+
   void Terra::buildTerraFrame()
   {
     for( int x = 0; x < QUADS; ++x ) {
@@ -130,49 +174,7 @@ namespace oz
 
     log.printEnd( " OK" );
   }
-#endif
 
-  void Terra::load( int id_ )
-  {
-    id = id_;
-
-    const String& name = translator.terras[id].name;
-    const String& path = translator.terras[id].path;
-
-    log.print( "Loading terrain '%s' ...", name.cstr() );
-
-    if( !buffer.read( path ) ) {
-      log.printEnd( " Cannot read file" );
-      throw Exception( "Failed to load terrain" );
-    }
-
-    InputStream is = buffer.inputStream();
-
-    int max = is.readInt();
-    if( max != VERTS ) {
-      log.printEnd( " Invalid dimension %d, should be %d", max, VERTS );
-      throw Exception( "Failed to load terrain" );
-    }
-
-    for( int x = 0; x < VERTS; ++x ) {
-      for( int y = 0; y < VERTS; ++y ) {
-        quads[x][y].vertex       = is.readPoint3();
-        quads[x][y].triNormal[0] = is.readVec3();
-        quads[x][y].triNormal[1] = is.readVec3();
-      }
-    }
-
-    log.printEnd( " OK" );
-  }
-
-  void Terra::init()
-  {
-    for( int x = 0; x < VERTS; ++x ) {
-      for( int y = 0; y < VERTS; ++y ) {
-        quads[x][y].vertex.x = float( x * Quad::SIZEI ) - DIM;
-        quads[x][y].vertex.y = float( y * Quad::SIZEI ) - DIM;
-      }
-    }
-  }
+#endif // OZ_TOOLS
 
 }

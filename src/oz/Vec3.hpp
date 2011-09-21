@@ -19,12 +19,13 @@ namespace oz
   class Plane;
 
   class Vec3 : public Simd
-#else
-  class Vec3
-#endif
   {
     friend class Point3;
     friend class Plane;
+#else
+  class Vec3
+  {
+#endif
 
     public:
 

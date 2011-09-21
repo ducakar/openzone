@@ -36,6 +36,8 @@ namespace client
       static const float STAR_DIM;
       static const int   MAX_STARS = 4096;
 
+#ifndef OZ_TOOLS
+
       uint   vao;
       uint   vbo;
 
@@ -56,15 +58,19 @@ namespace client
 
       Caelum();
 
-#ifdef OZ_TOOLS
-      static void prebuild( const char* name );
-#endif
-
       void update();
       void draw();
 
       void load( const char* name );
       void unload();
+
+#else
+
+    public:
+
+      static void prebuild( const char* name );
+
+#endif
 
   };
 

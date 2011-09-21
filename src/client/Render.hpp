@@ -17,7 +17,6 @@
 
 #include "client/BSP.hpp"
 #include "client/Terra.hpp"
-#include "client/OBJ.hpp"
 #include "client/MD2.hpp"
 #include "client/Model.hpp"
 #include "client/Context.hpp"
@@ -102,20 +101,24 @@ namespace client
       int                     simpleShaderId;
       int                     particleShaderId;
 
+#ifndef OZ_TOOLS
       void scheduleCell( int cellX, int cellY );
 
       void drawUI();
       void drawOrbis();
+#endif
 
     public:
 
       SDL_Surface* surface;
 
+#ifndef OZ_TOOLS
       void draw( int flags );
       void sync() const;
 
       void load();
       void unload();
+#endif
 
       void init();
       void free();

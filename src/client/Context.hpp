@@ -49,6 +49,8 @@ namespace client
       static const int DEFAULT_AUDIO_FREQ   = 44100;
       static const int DEFAULT_AUDIO_FORMAT = AUDIO_S16LSB;
 
+#ifndef OZ_TOOLS
+
       template <typename Type>
       struct Resource
       {
@@ -117,11 +119,6 @@ namespace client
       int                               maxBSPSources;
       int                               maxObjSources;
 
-#ifdef OZ_TOOLS
-      static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
-                                bool wrap, int magFilter, int minFilter );
-#endif
-
       void addSource( uint srcId, int sample );
       void addBSPSource( uint srcId, int sample, int key );
       void addObjSource( uint srcId, int sample, int key );
@@ -133,17 +130,6 @@ namespace client
     public:
 
       Context();
-
-#ifdef OZ_TOOLS
-      static uint createTexture( const void* data, int width, int height, int bytesPerPixel,
-                          bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
-                          int minFilter = DEFAULT_MIN_FILTER );
-
-      static uint loadRawTexture( const char* path, bool wrap = true,
-                                  int magFilter = DEFAULT_MAG_FILTER,
-                                  int minFilter = DEFAULT_MIN_FILTER );
-      static void writeTexture( uint id, OutputStream* stream );
-#endif
 
       static uint loadTexture( const char* path );
       static uint readTexture( InputStream* stream );
@@ -169,16 +155,34 @@ namespace client
       void drawModel( const Object* obj, const Model* parent );
       void playAudio( const Object* obj, const Audio* parent );
 
-#ifndef NDEBUG
+# ifndef NDEBUG
       void updateLoad();
       void printLoad();
-#endif
+# endif
 
       void load();
       void unload();
 
       void init();
       void free();
+
+#else
+
+      static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
+                                bool wrap, int magFilter, int minFilter );
+
+    public:
+
+      static uint createTexture( const void* data, int width, int height, int bytesPerPixel,
+                                 bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
+                                 int minFilter = DEFAULT_MIN_FILTER );
+
+      static uint loadRawTexture( const char* path, bool wrap = true,
+                                  int magFilter = DEFAULT_MAG_FILTER,
+                                  int minFilter = DEFAULT_MIN_FILTER );
+      static void writeTexture( uint id, OutputStream* stream );
+
+#endif
 
   };
 

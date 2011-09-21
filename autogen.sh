@@ -18,5 +18,3 @@ echo Generating src/server/CMakeLists.txt
 cd src/server   && ./CMakeLists-gen.sh && cd ../..
 echo Generating src/tools/CMakeLists.txt
 cd src/tools    && ./CMakeLists-gen.sh && cd ../..
-echo Generating src/syncheck/CMakeLists.txt
-cd src/syncheck && ./CMakeLists-gen.sh && cd ../..

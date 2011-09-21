@@ -31,8 +31,6 @@ namespace client
 
       bool isLoaded;
 
-      static void prebuild( const char* name );
-
       explicit SMM( int id );
       ~SMM();
 

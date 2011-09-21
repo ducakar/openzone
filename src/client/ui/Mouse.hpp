@@ -47,6 +47,8 @@ namespace ui
 
       static const char* NAMES[MAX];
 
+#ifndef OZ_TOOLS
+
       Cursor cursors[MAX];
 
     public:
@@ -73,10 +75,6 @@ namespace ui
       bool doShow;
       int  icon;
 
-#ifdef OZ_TOOLS
-      static void prebuild();
-#endif
-
       void prepare();
       void update();
 
@@ -87,6 +85,14 @@ namespace ui
 
       void init();
       void free();
+
+#else
+
+    public:
+
+      static void prebuild();
+
+#endif
 
   };
 

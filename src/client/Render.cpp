@@ -51,6 +51,8 @@ namespace client
   const float Render::NIGHT_FOG_DIST   = 0.3f;
   const float Render::WATER_VISIBILITY = 8.0f;
 
+#ifndef OZ_TOOLS
+
   void Render::scheduleCell( int cellX, int cellY )
   {
     const Cell& cell = orbis.cells[cellX][cellY];
@@ -291,6 +293,8 @@ namespace client
     timer.renderStructsMillis += currentTime - beginTime;
     beginTime = currentTime;
 
+    glBindTexture( GL_TEXTURE_2D, 0 );
+
     shader.use( simpleShaderId );
     tf.model = Mat44::ID;
 
@@ -428,6 +432,8 @@ namespace client
     log.println( "}" );
   }
 
+#endif // OZ_TOOLS
+
   void Render::init()
   {
     log.println( "Initialising Render {" );
@@ -540,10 +546,10 @@ namespace client
 #endif
 
     if( strstr( vendor, "ATI" ) != null ) {
-      config.add( "shader.vertexTexture", "false" );
+      config.include( "shader.vertexTexture", "false" );
     }
     if( strstr( renderer, "Gallium" ) != null ) {
-      config.add( "shader.setSamplerIndices", "false" );
+      config.include( "shader.setSamplerIndices", "false" );
     }
 
     nearDist2            = config.getSet( "render.nearDistance",         100.0f );
@@ -631,10 +637,12 @@ namespace client
     glActiveTexture( GL_TEXTURE0 );
     glEnable( GL_TEXTURE_2D );
 
+#ifndef OZ_TOOLS
     shader.init();
     shape.load();
     camera.init();
     ui::ui.init();
+#endif
 
     OZ_GL_CHECK_ERROR();
 
@@ -647,9 +655,11 @@ namespace client
     log.println( "Shutting down Render {" );
     log.indent();
 
+#ifndef OZ_TOOLS
     ui::ui.free();
     shape.unload();
     shader.free();
+#endif
 
     log.unindent();
     log.println( "}" );
