@@ -30,7 +30,6 @@ namespace oz
 
       uint  sleepMillis;
       uint  loaderMillis;
-      uint  uiMillis;
       uint  soundMillis;
       uint  renderMillis;
       uint  renderScheduleMillis;
@@ -42,6 +41,7 @@ namespace oz
       uint  renderMiscMillis;
       uint  renderUiMillis;
       uint  renderSyncMillis;
+      uint  uiMillis;
 
       int   nFrames;
       int   frameTicks;

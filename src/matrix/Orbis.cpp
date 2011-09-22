@@ -283,118 +283,11 @@ namespace oz
     caelum.update();
   }
 
-  void Orbis::load()
-  {
-    log.println( "Loading Orbis {" );
-    log.indent();
-
-    bsps.alloc( 32 );
-    structs.alloc( 128 );
-    objects.alloc( 4096 );
-    parts.alloc( 2048 );
-
-    strFreedIndices[0].alloc( 4 );
-    strFreedIndices[1].alloc( 4 );
-    objFreedIndices[0].alloc( 64 );
-    objFreedIndices[1].alloc( 64 );
-    partFreedIndices[0].alloc( 128 );
-    partFreedIndices[1].alloc( 128 );
-
-    strAvailableIndices.alloc( 16 );
-    objAvailableIndices.alloc( 256 );
-    partAvailableIndices.alloc( 512 );
-
-    for( int i = 0; i < translator.bsps.length(); ++i ) {
-      bsps.add( new BSP( i ) );
-    }
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void Orbis::unload()
-  {
-    log.println( "Unloading Orbis {" );
-    log.indent();
-
-    for( int i = 0; i < Orbis::MAX; ++i ) {
-      for( int j = 0; j < Orbis::MAX; ++j ) {
-        cells[i][j].structs.clear();
-        cells[i][j].objects.clear();
-        cells[i][j].particles.clear();
-      }
-    }
-
-    Struct::overlappingObjs.clear();
-    Struct::overlappingObjs.dealloc();
-
-    bsps.free();
-    bsps.dealloc();
-    structs.free();
-    structs.dealloc();
-    objects.free();
-    objects.dealloc();
-    parts.free();
-    parts.dealloc();
-
-    strFreedIndices[0].clear();
-    strFreedIndices[0].dealloc();
-    strFreedIndices[1].clear();
-    strFreedIndices[1].dealloc();
-    objFreedIndices[0].clear();
-    objFreedIndices[0].dealloc();
-    objFreedIndices[1].clear();
-    objFreedIndices[1].dealloc();
-    partFreedIndices[0].clear();
-    partFreedIndices[0].dealloc();
-    partFreedIndices[1].clear();
-    partFreedIndices[1].dealloc();
-
-    strAvailableIndices.clear();
-    strAvailableIndices.dealloc();
-    objAvailableIndices.clear();
-    objAvailableIndices.dealloc();
-    partAvailableIndices.clear();
-    partAvailableIndices.dealloc();
-
-    Struct::pool.free();
-
-    Object::Event::pool.free();
-    Object::pool.free();
-    Dynamic::pool.free();
-    Weapon::pool.free();
-    Bot::pool.free();
-    Vehicle::pool.free();
-
-    Particle::pool.free();
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void Orbis::init()
-  {
-    log.print( "Initialising Orbis ..." );
-
-    freeing = 0;
-    waiting = 1;
-
-    mins = Point3( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
-    maxs = Point3(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
-
-    terra.init();
-
-    log.printEnd( " OK" );
-  }
-
-  void Orbis::free()
-  {}
-
-  bool Orbis::read( InputStream* istream )
+  void Orbis::read( InputStream* istream )
   {
     hard_assert( structs.length() == 0 && objects.length() == 0 && parts.length() == 0 );
 
-    log.print( "Reading Orbis from stream ..." );
+    log.print( "Reading Orbis ..." );
 
     int n;
 
@@ -460,7 +353,7 @@ namespace oz
         structs.add( str );
 
         if( !position( str ) ) {
-          throw Exception( "Matrix structure reading failed, too many structures per cell." );
+          throw Exception( "Orbis structure reading failed, too many structures per cell." );
         }
       }
     }
@@ -501,12 +394,11 @@ namespace oz
     }
 
     log.printEnd( " OK" );
-    return true;
   }
 
-  bool Orbis::write( OutputStream* ostream )
+  void Orbis::write( OutputStream* ostream )
   {
-    log.print( "Writing Orbis to stream ..." );
+    log.print( "Writing Orbis ..." );
 
     ostream->writeInt( strFreedIndices[freeing].length() );
     foreach( i, strFreedIndices[freeing].citer() ) {
@@ -596,8 +488,120 @@ namespace oz
     }
 
     log.printEnd( " OK" );
-    return true;
   }
+
+  void Orbis::load()
+  {
+    log.println( "Loading Orbis {" );
+    log.indent();
+
+    bsps.alloc( 32 );
+    structs.alloc( 128 );
+    objects.alloc( 4096 );
+    parts.alloc( 2048 );
+
+    strFreedIndices[0].alloc( 4 );
+    strFreedIndices[1].alloc( 4 );
+    objFreedIndices[0].alloc( 64 );
+    objFreedIndices[1].alloc( 64 );
+    partFreedIndices[0].alloc( 128 );
+    partFreedIndices[1].alloc( 128 );
+
+    strAvailableIndices.alloc( 16 );
+    objAvailableIndices.alloc( 256 );
+    partAvailableIndices.alloc( 512 );
+
+    for( int i = 0; i < translator.bsps.length(); ++i ) {
+      bsps.add( new BSP( i ) );
+    }
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Orbis::unload()
+  {
+    log.println( "Unloading Orbis {" );
+    log.indent();
+
+    for( int i = 0; i < objects.length(); ++i ) {
+      if( objects[i] != null && ( objects[i]->flags & Object::LUA_BIT ) ) {
+        lua.unregisterObject( i );
+      }
+    }
+
+    for( int i = 0; i < Orbis::MAX; ++i ) {
+      for( int j = 0; j < Orbis::MAX; ++j ) {
+        cells[i][j].structs.clear();
+        cells[i][j].objects.clear();
+        cells[i][j].particles.clear();
+      }
+    }
+
+    Struct::overlappingObjs.clear();
+    Struct::overlappingObjs.dealloc();
+
+    bsps.free();
+    bsps.dealloc();
+    structs.free();
+    structs.dealloc();
+    objects.free();
+    objects.dealloc();
+    parts.free();
+    parts.dealloc();
+
+    strFreedIndices[0].clear();
+    strFreedIndices[0].dealloc();
+    strFreedIndices[1].clear();
+    strFreedIndices[1].dealloc();
+    objFreedIndices[0].clear();
+    objFreedIndices[0].dealloc();
+    objFreedIndices[1].clear();
+    objFreedIndices[1].dealloc();
+    partFreedIndices[0].clear();
+    partFreedIndices[0].dealloc();
+    partFreedIndices[1].clear();
+    partFreedIndices[1].dealloc();
+
+    strAvailableIndices.clear();
+    strAvailableIndices.dealloc();
+    objAvailableIndices.clear();
+    objAvailableIndices.dealloc();
+    partAvailableIndices.clear();
+    partAvailableIndices.dealloc();
+
+    Struct::pool.free();
+
+    Object::Event::pool.free();
+    Object::pool.free();
+    Dynamic::pool.free();
+    Weapon::pool.free();
+    Bot::pool.free();
+    Vehicle::pool.free();
+
+    Particle::pool.free();
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Orbis::init()
+  {
+    log.print( "Initialising Orbis ..." );
+
+    freeing = 0;
+    waiting = 1;
+
+    mins = Point3( -Orbis::DIM, -Orbis::DIM, -Orbis::DIM );
+    maxs = Point3(  Orbis::DIM,  Orbis::DIM,  Orbis::DIM );
+
+    terra.init();
+
+    log.printEnd( " OK" );
+  }
+
+  void Orbis::free()
+  {}
 
 #endif // OZ_TOOLS
 

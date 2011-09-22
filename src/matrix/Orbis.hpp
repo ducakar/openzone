@@ -131,14 +131,14 @@ namespace oz
 
       void update();
 
+      void read( InputStream* istream );
+      void write( OutputStream* ostream );
+
       void load();
       void unload();
 
       void init();
       void free();
-
-      bool read( InputStream* istream );
-      bool write( OutputStream* ostream );
 
 #endif
 

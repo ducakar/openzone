@@ -46,12 +46,18 @@ namespace client
 
       State  state;
       Proxy* proxy;
+      Buffer buffer;
 
       virtual bool update();
       virtual void present();
 
       virtual void begin();
       virtual void end();
+
+      bool read( const char* file );
+      void write( const char* file );
+
+      void clear();
 
       virtual void load();
       virtual void unload();

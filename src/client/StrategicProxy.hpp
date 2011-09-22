@@ -42,6 +42,9 @@ namespace client
       virtual void update();
       virtual void prepare();
 
+      virtual void read( InputStream* istream );
+      virtual void write( OutputStream* ostream ) const;
+
       void init();
 
   };

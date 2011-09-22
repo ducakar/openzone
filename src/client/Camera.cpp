@@ -109,6 +109,77 @@ namespace client
     proxy->prepare();
   }
 
+  void Camera::read( InputStream* istream )
+  {
+    ui::mouse.doShow = istream->readBool();
+    isExternal = istream->readBool();
+
+    p         = istream->readPoint3();
+    oldP      = p;
+    newP      = p;
+
+    h         = istream->readFloat();
+    v         = istream->readFloat();
+    w         = istream->readFloat();
+    relH      = istream->readFloat();
+    relV      = istream->readFloat();
+
+    rot       = Quat::rotZ( h ) ^ Quat::rotX( v ) ^ Quat::rotZ( w );
+    rotMat    = Mat44::rotation( rot );
+    rotTMat   = ~rotMat;
+
+    right     = rotMat.x;
+    up        = rotMat.y;
+    at        = -rotMat.z;
+
+    tagged    = -1;
+    taggedObj = null;
+    bot       = istream->readInt();
+    botObj    = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
+
+    state     = State( istream->readInt() );
+    newState  = state;
+
+    strategicProxy.read( istream );
+    botProxy.read( istream );
+
+    switch( state ) {
+      case STRATEGIC: {
+        proxy = &strategicProxy;
+        break;
+      }
+      case BOT: {
+        proxy = &botProxy;
+        break;
+      }
+      case NONE: {
+        hard_assert( false );
+        break;
+      }
+    }
+  }
+
+  void Camera::write( OutputStream* ostream ) const
+  {
+    ostream->writeBool( ui::mouse.doShow );
+    ostream->writeBool( isExternal );
+
+    ostream->writePoint3( newP );
+
+    ostream->writeFloat( h );
+    ostream->writeFloat( v );
+    ostream->writeFloat( w );
+    ostream->writeFloat( relH );
+    ostream->writeFloat( relV );
+
+    ostream->writeInt( bot );
+
+    ostream->writeInt( state );
+
+    strategicProxy.write( ostream );
+    botProxy.write( ostream );
+  }
+
   void Camera::init()
   {
     width        = config.get( "screen.width",         1024 );
@@ -142,35 +213,35 @@ namespace client
       defaultState = STRATEGIC;
     }
 
-    p            = Point3::ORIGIN;
-    oldP         = Point3::ORIGIN;
-    newP         = Point3::ORIGIN;
-    h            = 0.0f;
-    v            = Math::TAU / 4.0f;
-    w            = 0.0f;
-    relH         = 0.0f;
-    relV         = 0.0f;
+    p         = Point3::ORIGIN;
+    oldP      = Point3::ORIGIN;
+    newP      = Point3::ORIGIN;
+    h         = 0.0f;
+    v         = Math::TAU / 4.0f;
+    w         = 0.0f;
+    relH      = 0.0f;
+    relV      = 0.0f;
 
-    rot          = Quat::ID;
-    relRot       = Quat::ID;
+    rot       = Quat::ID;
+    relRot    = Quat::ID;
 
-    rotMat       = Mat44::rotation( rot );
-    rotTMat      = ~rotTMat;
+    rotMat    = Mat44::rotation( rot );
+    rotTMat   = ~rotTMat;
 
-    right        = rotMat.x;
-    up           = rotMat.y;
-    at           = -rotMat.z;
+    right     = rotMat.x;
+    up        = rotMat.y;
+    at        = -rotMat.z;
 
-    tagged       = -1;
-    taggedObj    = null;
-    bot          = -1;
-    botObj       = null;
+    tagged    = -1;
+    taggedObj = null;
+    bot       = -1;
+    botObj    = null;
 
     strategicProxy.init();
     botProxy.init();
 
-    state        = NONE;
-    newState     = defaultState;
+    state     = NONE;
+    newState  = defaultState;
   }
 
 }

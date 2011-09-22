@@ -268,8 +268,8 @@ namespace ui
     flags = IGNORE_BIT | HIDDEN_BIT | UPDATE_BIT | PINNED_BIT;
     setFont( Font::SANS );
 
-    pixelStep   = camera.coeff / float( camera.height / 2 );
-    stepPixel   = 1.0f / pixelStep;
+    pixelStep = camera.coeff / float( camera.height / 2 );
+    stepPixel = 1.0f / pixelStep;
   }
 
   StrategicArea::~StrategicArea()

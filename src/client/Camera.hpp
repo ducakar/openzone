@@ -140,6 +140,9 @@ namespace client
       void update();
       void prepare();
 
+      void read( InputStream* istream );
+      void write( OutputStream* ostream ) const;
+
       void init();
 
   };
