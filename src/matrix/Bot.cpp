@@ -453,7 +453,11 @@ namespace oz
     }
 
     if( grabObj != -1 ) {
-      if( lower == grabObj || ( state & SWIMMING_BIT ) || ( obj->flags & UPPER_BIT ) ) {
+      const Bot* bot = static_cast<const Bot*>( obj );
+
+      if( lower == grabObj || ( state & SWIMMING_BIT ) || ( obj->flags & UPPER_BIT ) ||
+          ( ( obj->flags & BOT_BIT ) && ( bot->actions & ACTION_JUMP ) ) )
+      {
         grabObj = -1;
       }
       else {
@@ -546,7 +550,7 @@ namespace oz
         const Bot* bot = static_cast<const Bot*>( collider.hit.obj );
 
         if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
-            lower != obj->index && ( !( obj->flags & BOT_BIT ) || bot->grabObj == -1 ) )
+            lower != obj->index && ( !( obj->flags & BOT_BIT ) || bot->grabObj != index ) )
         {
           float dimX = dim.x + obj->dim.x;
           float dimY = dim.y + obj->dim.y;

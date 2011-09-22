@@ -43,15 +43,18 @@ namespace ui
     }
 
     if( bot->parent == -1 && camera.tagged != -1 ) {
-      const Object* tagged = camera.taggedObj;
-      const ObjectClass* taggedClazz = tagged->clazz;
+      const Object* taggedObj = camera.taggedObj;
+      const ObjectClass* taggedClazz = camera.taggedObj->clazz;
 
       // it might happen that bot itself is tagged object for a frame when switching from freecam
       // into a bot
-      if( tagged != null && tagged != bot ) {
-        float life = ( tagged->flags & Object::BOT_BIT ) ?
-            ( tagged->life - taggedClazz->life / 2.0f ) / ( taggedClazz->life / 2.0f ) :
-            tagged->life / taggedClazz->life;
+      if( taggedObj != null && taggedObj != bot ) {
+        const Dynamic* taggedDyn = static_cast<const Dynamic*>( taggedObj );
+        const Bot* taggedBot = static_cast<const Bot*>( taggedObj );
+
+        float life = ( taggedObj->flags & Object::BOT_BIT ) ?
+            ( taggedObj->life - taggedClazz->life / 2.0f ) / ( taggedClazz->life / 2.0f ) :
+            taggedObj->life / taggedClazz->life;
         int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
 
         life = max( life, 0.0f );
@@ -62,43 +65,39 @@ namespace ui
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
         rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
 
-        const Bot* bot = static_cast<const Bot*>( tagged );
-        String title = ( tagged->flags & Object::BOT_BIT ) && !bot->name.isEmpty() ?
-            bot->name + " (" + taggedClazz->title + ")" : taggedClazz->title;
+        String title = ( taggedObj->flags & Object::BOT_BIT ) && !taggedBot->name.isEmpty() ?
+            taggedBot->name + " (" + taggedClazz->title + ")" : taggedClazz->title;
 
         print( descTextX, descTextY, ALIGN_CENTRE, "%s", title.cstr() );
 
-        if( !( tagged->flags & Object::SOLID_BIT ) ) {
+        if( !( taggedObj->flags & Object::SOLID_BIT ) ) {
           return;
         }
 
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
 
-        if( tagged->flags & Object::VEHICLE_BIT ) {
-          const Vehicle* vehicle = static_cast<const Vehicle*>( tagged );
+        if( taggedObj->flags & Object::VEHICLE_BIT ) {
+          const Vehicle* vehicle = static_cast<const Vehicle*>( taggedObj );
 
           if( vehicle->pilot == -1 ) {
             glBindTexture( GL_TEXTURE_2D, mountTexId );
             shape.fill( mountIconX, mountIconY, ICON_SIZE, ICON_SIZE );
           }
         }
-        else if( tagged->flags & Object::USE_FUNC_BIT ) {
+        else if( taggedObj->flags & Object::USE_FUNC_BIT ) {
           glBindTexture( GL_TEXTURE_2D, useTexId );
           shape.fill( useIconX, useIconY, ICON_SIZE, ICON_SIZE );
         }
-        if( tagged->flags & Object::ITEM_BIT ) {
+        if( taggedObj->flags & Object::ITEM_BIT ) {
           glBindTexture( GL_TEXTURE_2D, takeTexId );
           shape.fill( takeIconX, takeIconY, ICON_SIZE, ICON_SIZE );
         }
 
-        const Dynamic* taggedDyn = static_cast<const Dynamic*>( tagged );
-        const Bot* taggedBot = static_cast<const Bot*>( tagged );
-
-        if( bot->grabObj == -1 && bot->weaponItem == -1 && ( tagged->flags & Object::DYNAMIC_BIT ) &&
+        if( bot->grabObj == -1 && bot->weaponItem == -1 && ( taggedObj->flags & Object::DYNAMIC_BIT ) &&
             // not swimming
             ( bot->depth <= bot->dim.z ) &&
             // if it is not a bot that is holding us
-            ( !( tagged->flags & Object::BOT_BIT ) || ( taggedBot->grabObj == -1 ) ) &&
+            ( !( taggedObj->flags & Object::BOT_BIT ) || ( taggedBot->grabObj != bot->index ) ) &&
             taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged )
         {
           glBindTexture( GL_TEXTURE_2D, liftTexId );

@@ -18,6 +18,7 @@ namespace oz
 
   bool BSP::loadOZBSP( const char* path )
   {
+    Buffer buffer;
     if( !buffer.read( path ) ) {
       return false;
     }

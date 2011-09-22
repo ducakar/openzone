@@ -141,6 +141,7 @@ namespace oz
       config.getSet( "matrix.onCreate", "matrix_onCreate" );
 
       orbis.read( istream );
+      lua.read( istream );
 
       for( int i = 0; i < modules.length(); ++i ) {
         modules[i]->read( istream );
@@ -160,6 +161,7 @@ namespace oz
     log.indent();
 
     orbis.write( ostream );
+    lua.write( ostream );
 
     for( int i = 0; i < modules.length(); ++i ) {
       modules[i]->write( ostream );

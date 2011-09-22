@@ -42,23 +42,27 @@ namespace oz
 
     public:
 
+      OZ_ALWAYS_INLINE
       static size_t alignDown( size_t size )
       {
         return size & ~( ALIGNMENT - 1 );
       }
 
+      OZ_ALWAYS_INLINE
       static size_t alignUp( size_t size )
       {
         return ( ( size - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT;
       }
 
       template <typename Pointer>
+      OZ_ALWAYS_INLINE
       static Pointer* alignDown( Pointer* p )
       {
         return reinterpret_cast<Pointer*>( size_t( p ) & ~( ALIGNMENT - 1 ) );
       }
 
       template <typename Pointer>
+      OZ_ALWAYS_INLINE
       static Pointer* alignUp( Pointer* p )
       {
         return reinterpret_cast<Pointer*>( ( size_t( p - 1 ) & ~( ALIGNMENT - 1 ) ) + ALIGNMENT );

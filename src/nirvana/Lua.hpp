@@ -28,8 +28,6 @@ namespace nirvana
 
       lua_State* l;
 
-    public:
-
       Bot*            self;
 
       Struct*         str;
@@ -44,7 +42,16 @@ namespace nirvana
 
       List<Object::Event>::CIterator event;
 
+    public:
+
       bool            forceUpdate;
+
+    private:
+
+      bool readVariable( InputStream* istream );
+      void writeVariable( OutputStream* stream );
+
+    public:
 
       Lua();
 
@@ -57,6 +64,9 @@ namespace nirvana
       void registerConstant( const char* name, int value );
       void registerConstant( const char* name, float value );
       void registerConstant( const char* name, const char* value );
+
+      void read( InputStream* istream );
+      void write( OutputStream* ostream );
 
       void init();
       void free();

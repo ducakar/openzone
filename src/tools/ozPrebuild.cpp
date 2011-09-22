@@ -150,6 +150,7 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
 
     hard_assert( id != 0 );
 
+    Buffer buffer( 4 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     log.println( "Compiling into '%s'", destPath.cstr() );
@@ -433,8 +434,6 @@ int main( int argc, char** argv )
     client::render.init();
     SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Prebuilding data ...", null );
 
-    buffer.alloc( 10 * 1024 * 1024 );
-
     createDirs();
 
     client::ui::Mouse::prebuild();
@@ -486,7 +485,6 @@ int main( int argc, char** argv )
   }
 
   client::compiler.free();
-  buffer.dealloc();
   client::render.free();
   translator.free();
   config.clear();

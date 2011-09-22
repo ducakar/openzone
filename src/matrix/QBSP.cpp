@@ -773,6 +773,7 @@ namespace oz
   {
     log.print( "Dumping BSP structure to '%s' ...", path );
 
+    Buffer buffer( 4 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     os.writePoint3( mins );

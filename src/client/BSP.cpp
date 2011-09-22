@@ -145,6 +145,7 @@ namespace client
     log.println( "Loading BSP model '%s' {", name.cstr() );
     log.indent();
 
+    Buffer buffer;
     if( !buffer.read( "bsp/" + name + ".ozcBSP" ) ) {
       throw Exception( "BSP loading failed" );
     }
@@ -468,6 +469,7 @@ namespace client
       compiler.getMeshData( &meshes.last() );
     }
 
+    Buffer buffer( 4 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     os.writeInt( flags );

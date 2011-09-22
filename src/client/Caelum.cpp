@@ -167,6 +167,7 @@ namespace client
 
     DArray<Vertex> vertices(  MAX_STARS * 4 );
 
+    Buffer buffer;
     if( !buffer.read( "caelum/" + String( name ) + ".ozcCaelum" ) ) {
       log.printEnd( " Cannot open file" );
       throw Exception( "Caelum loading failed" );
@@ -252,6 +253,7 @@ namespace client
       while( Math::isNaN( length ) || length < 2500.0f || length > 10000.0f );
     }
 
+    Buffer buffer( 4 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     for( int i = 0; i < MAX_STARS; ++i ) {

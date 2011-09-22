@@ -134,7 +134,6 @@ namespace client
     }
 
     config.clear();
-    buffer.dealloc();
 
     if( initFlags & INIT_SDL ) {
       log.print( "Shutting down SDL ..." );
@@ -416,8 +415,6 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    buffer.alloc( 4 * 1024 * 1024 );
-
     String configPath = rcDir + "/" OZ_CLIENT_CONFIG_FILE;
     if( config.load( configPath ) ) {
       log.printEnd( "Configuration read from '%s'", configPath.cstr() );
@@ -492,10 +489,6 @@ namespace client
     initFlags |= INIT_RENDER_INIT;
     render.init();
 
-    ui::ui.loadingScreen->statusText = gettext( "Initialising ..." );
-    render.draw( Render::DRAW_UI_BIT );
-    render.sync();
-
     initFlags |= INIT_AUDIO;
     sound.init();
 
@@ -506,10 +499,6 @@ namespace client
 
     initFlags |= INIT_GAME_INIT;
     stage->init();
-
-    ui::ui.loadingScreen->statusText = gettext( "Loading ..." );
-    render.draw( Render::DRAW_UI_BIT );
-    render.sync();
 
     initFlags |= INIT_GAME_LOAD;
     stage->load();
@@ -682,12 +671,6 @@ namespace client
     log.println( "}" );
 
     allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
-
-    ui::ui.loadingScreen->statusText = gettext( "Shutting down ..." );
-    ui::ui.loadingScreen->show( true );
-    ui::ui.root->focus( ui::ui.loadingScreen );
-    render.draw( Render::DRAW_UI_BIT );
-    render.sync();
 
     stage->end();
 

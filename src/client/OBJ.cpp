@@ -401,6 +401,7 @@ namespace client
     MeshData mesh;
     compiler.getMeshData( &mesh );
 
+    Buffer buffer( 4 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     os.writeString( shaderName );

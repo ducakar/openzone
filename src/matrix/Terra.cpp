@@ -35,6 +35,7 @@ namespace oz
 
     log.print( "Loading terrain '%s' ...", name.cstr() );
 
+    Buffer buffer;
     if( !buffer.read( path ) ) {
       log.printEnd( " Cannot read file" );
       throw Exception( "Failed to load terrain" );
@@ -151,6 +152,7 @@ namespace oz
     log.printEnd( " OK" );
     log.print( "Dumping terrain to '%s' ...", destFile.cstr() );
 
+    Buffer buffer( 10 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     os.writeInt( VERTS );

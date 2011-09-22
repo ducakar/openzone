@@ -29,6 +29,96 @@ namespace nirvana
 
   Lua lua;
 
+  bool Lua::readVariable( InputStream* istream )
+  {
+    char ch = istream->readChar();
+
+    switch( ch ) {
+      case 'N': {
+        lua_pushnil( l );
+        return true;
+      }
+      case 'b': {
+        lua_pushboolean( l, istream->readBool() );
+        return true;
+      }
+      case 'n': {
+        lua_pushnumber( l, istream->readDouble() );
+        return true;
+      }
+      case 's': {
+        lua_pushstring( l, istream->readString() );
+        return true;
+      }
+      case '[': {
+        lua_newtable( l );
+
+        while( readVariable( istream ) ) { // key
+          readVariable( istream ); // value
+
+          lua_rawset( l, -3 );
+        }
+        return true;
+      }
+      case ']': {
+        return false;
+      }
+      default: {
+        throw Exception( "Invalid type char '" + String( ch ) + "' in serialised Lua data" );
+      }
+    }
+  }
+
+  void Lua::writeVariable( OutputStream* ostream )
+  {
+    int type = lua_type( l, -1 );
+
+    switch( type ) {
+      case LUA_TNIL: {
+        ostream->writeChar( 'N' );
+        break;
+      }
+      case LUA_TBOOLEAN: {
+        ostream->writeChar( 'b' );
+        ostream->writeBool( lua_toboolean( l, -1 ) != 0 );
+        break;
+      }
+      case LUA_TNUMBER: {
+        ostream->writeChar( 'n' );
+        ostream->writeDouble( lua_tonumber( l, -1 ) );
+        break;
+      }
+      case LUA_TSTRING: {
+        ostream->writeChar( 's' );
+        ostream->writeString( lua_tostring( l, -1 ) );
+        break;
+      }
+      case LUA_TTABLE: {
+        ostream->writeChar( '[' );
+
+        lua_pushnil( l );
+        while( lua_next( l, -2 ) != 0 ) {
+          // key
+          lua_pushvalue( l, -2 );
+          writeVariable( ostream );
+          lua_pop( l, 1 );
+
+          // value
+          writeVariable( ostream );
+
+          lua_pop( l, 1 );
+        }
+
+        ostream->writeChar( ']' );
+        break;
+      }
+      default: {
+        throw Exception( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER, "
+                         "LUA_TSTRING and LUA_TTABLE data types" );
+      }
+    }
+  }
+
   Lua::Lua() : l( null )
   {}
 
@@ -53,20 +143,18 @@ namespace nirvana
     lua_pcall( l, 1, 0, 0 );
 
     if( lua_gettop( l ) != 1 ){
-      if( lua_isstring( l, -1 ) ) {
-        log.println( "N! %s", lua_tostring( l, -1 ) );
-      }
-
-      throw Exception( "Nirvana Lua function call finished with an error" );
-
+      log.println( "N! %s", lua_tostring( l, -1 ) );
       lua_settop( l, 1 );
+
+      if( config.get( "lua.tolerant", false ) ) {
+        throw Exception( "Nirvana Lua function call finished with an error" );
+      }
     }
-    hard_assert( lua_gettop( l ) == 1 && lua_istable( l, 1 ) );
   }
 
   void Lua::registerMind( int botIndex )
   {
-    hard_assert( lua_istable( l, 1 ) );
+    hard_assert( lua_gettop( l ) == 1 );
 
     lua_newtable( l );
     lua_rawseti( l, 1, botIndex );
@@ -74,7 +162,7 @@ namespace nirvana
 
   void Lua::unregisterMind( int botIndex )
   {
-    hard_assert( lua_istable( l, 1 ) );
+    hard_assert( lua_gettop( l ) == 1 );
 
     lua_pushnil( l );
     lua_rawseti( l, 1, botIndex );
@@ -100,10 +188,59 @@ namespace nirvana
     OZ_LUA_STRING_CONST( name, value );
   }
 
+  void Lua::read( InputStream* istream )
+  {
+    hard_assert( lua_gettop( l ) == 1 );
+
+    lua_settop( l, 0 );
+    lua_newtable( l );
+    lua_setglobal( l, "ozLocalData" );
+    lua_getglobal( l, "ozLocalData" );
+
+    char ch = istream->readChar();
+    hard_assert( ch ==  '[' );
+
+    ch = istream->readChar();
+
+    while( ch != ']' ) {
+      hard_assert( ch == 'i' );
+
+      int index = istream->readInt();
+      readVariable( istream );
+
+      lua_rawseti( l, 1, index );
+
+      ch = istream->readChar();
+    }
+  }
+
+  void Lua::write( OutputStream* ostream )
+  {
+    hard_assert( lua_gettop( l ) == 1 );
+
+    ostream->writeChar( '[' );
+
+    lua_pushnil( l );
+    while( lua_next( l, 1 ) != 0 ) {
+      hard_assert( lua_type( l, -2 ) == LUA_TNUMBER );
+      hard_assert( lua_type( l, -1 ) == LUA_TTABLE );
+
+      ostream->writeChar( 'i' );
+      ostream->writeInt( int( lua_tointeger( l, -2 ) ) );
+      writeVariable( ostream );
+
+      lua_pop( l, 1 );
+    }
+
+    ostream->writeChar( ']' );
+  }
+
   void Lua::init()
   {
     log.println( "Initialising Nirvana Lua {" );
     log.indent();
+
+    config.getSet( "lua.tolerant", false );
 
     l = luaL_newstate();
     if( l == null ) {
@@ -298,6 +435,8 @@ namespace nirvana
         log.printEnd( " OK" );
       }
     }
+
+    hard_assert( lua_gettop( l ) == 1 );
 
     log.unindent();
     log.println( "}" );
