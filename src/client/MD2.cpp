@@ -89,6 +89,7 @@ namespace client
 
     log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
+    Buffer buffer;
     if( !buffer.read( path ) ) {
       throw Exception( "MD2 cannot read model file" );
     }
@@ -546,6 +547,7 @@ namespace client
       throw Exception( "MD2 model has too many vertices" );
     }
 
+    Buffer buffer( 4 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     os.writeString( shaderName );

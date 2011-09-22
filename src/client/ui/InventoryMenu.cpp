@@ -28,7 +28,8 @@ namespace ui
   const float InventoryMenu::SLOT_DIMF = float( SLOT_SIZE ) / 2.0f;
 
   InventoryMenu::InventoryMenu() :
-      Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, gettext( "Inventory" ) )
+      Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, gettext( "Inventory" ) ),
+      baseTitle( title )
   {
     x = ( camera.width - width ) / 2;
 
@@ -100,6 +101,7 @@ namespace ui
       return;
     }
 
+    title = camera.botObj->name + " (" + camera.botObj->clazz->title + ")";
     Frame::onDraw();
 
     glEnable( GL_DEPTH_TEST );

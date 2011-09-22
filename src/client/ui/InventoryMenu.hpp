@@ -31,9 +31,10 @@ namespace ui
       static const int   ROWS        = 2;
       static const int   FOOTER_SIZE = 32;
 
-      uint useTexId;
-      int  tagged;
-      int  row;
+      String baseTitle;
+      uint   useTexId;
+      int    tagged;
+      int    row;
 
     protected:
 

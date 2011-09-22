@@ -144,12 +144,50 @@ namespace client
       write( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
     }
     if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
+      ui::ui.loadingScreen->statusText = gettext( "Loading ..." );
+      ui::ui.showLoadingScreen( true );
+      ui::ui.root->focus( ui::ui.loadingScreen );
+
+      render.draw( Render::DRAW_UI_BIT );
+      render.sync();
+
       clear();
       read( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
+
+      camera.update();
+      camera.prepare();
+
+      render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+      loader.update();
+      render.sync();
+
+      sound.play();
+      sound.update();
+
+      ui::ui.showLoadingScreen( false );
     }
     if( ui::keyboard.keys[SDLK_F8] && !ui::keyboard.oldKeys[SDLK_F8] ) {
+      ui::ui.loadingScreen->statusText = gettext( "Loading ..." );
+      ui::ui.showLoadingScreen( true );
+      ui::ui.root->focus( ui::ui.loadingScreen );
+
+      render.draw( Render::DRAW_UI_BIT );
+      render.sync();
+
       clear();
       read( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) );
+
+      camera.update();
+      camera.prepare();
+
+      render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+      loader.update();
+      render.sync();
+
+      sound.play();
+      sound.update();
+
+      ui::ui.showLoadingScreen( false );
     }
 
     camera.update();
@@ -171,6 +209,7 @@ namespace client
 #ifndef NDEBUG
     context.updateLoad();
 #endif
+
     // clean up unused models, audios and audio sources
     loader.cleanup();
     // load scheduled resources
@@ -239,7 +278,14 @@ namespace client
   }
 
   void GameStage::end()
-  {}
+  {
+    ui::ui.loadingScreen->statusText = gettext( "Shutting down ..." );
+    ui::ui.loadingScreen->show( true );
+    ui::ui.root->focus( ui::ui.loadingScreen );
+
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
+  }
 
   bool GameStage::read( const char* file )
   {
@@ -366,6 +412,12 @@ namespace client
   {
     log.println( "Initialising GameStage {" );
     log.indent();
+
+    ui::ui.loadingScreen->statusText = gettext( "Loading ..." );
+    ui::ui.loadingScreen->show( true );
+
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
 
     buffer.alloc( 4 * 1024 * 1024 );
 

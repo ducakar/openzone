@@ -167,6 +167,20 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
+      double readDouble()
+      {
+        union BitsToDouble
+        {
+          long64 b;
+          double d;
+        };
+
+        const long64* data = reinterpret_cast<const long64*>( prepareRead( sizeof( long64 ) ) );
+        BitsToDouble bd = { Endian::shuffle64( *data ) };
+        return bd.d;
+      }
+
+      OZ_ALWAYS_INLINE
       String readString()
       {
         int length = 0;
@@ -364,6 +378,20 @@ namespace oz
       {
         int* data = reinterpret_cast<int*>( prepareWrite( sizeof( float ) ) );
         *data = Endian::shuffle32( Math::toBits( f ) );
+      }
+
+      OZ_ALWAYS_INLINE
+      void writeDouble( double d )
+      {
+        union DoubleToBits
+        {
+          double d;
+          long64 b;
+        };
+        DoubleToBits db = { d };
+
+        long64* data = reinterpret_cast<long64*>( prepareWrite( sizeof( double ) ) );
+        *data = Endian::shuffle64( db.b );
       }
 
       OZ_ALWAYS_INLINE

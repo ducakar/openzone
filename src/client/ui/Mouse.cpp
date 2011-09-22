@@ -95,6 +95,7 @@ namespace ui
     for( int i = 0; i < MAX; ++i ) {
       log.print( "Loading cursor '%s' ...", NAMES[i] );
 
+      Buffer buffer;
       if( !buffer.read( "ui/cur/" + String( NAMES[i] ) + ".ozcCur" ) ) {
         log.printEnd( " Failed" );
         throw Exception( "Cursor loading failed" );
@@ -171,6 +172,7 @@ namespace ui
       uint texId = context.loadRawTexture( "ui/cur/" + String( imgFile ),
                                            false, GL_LINEAR, GL_LINEAR );
 
+      Buffer buffer( 4 * 1024 * 1024 );
       OutputStream os = buffer.outputStream();
 
       os.writeInt( size );

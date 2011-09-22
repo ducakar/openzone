@@ -76,6 +76,4 @@ namespace oz
 
   };
 
-  extern Buffer buffer;
-
 }

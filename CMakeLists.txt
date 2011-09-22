@@ -138,6 +138,7 @@ if( WIN32 )
 endif()
 
 include_directories( ${SDL_INCLUDE_DIR} )
+include_directories( ${SDLIMAGE_INCLUDE_DIR} )
 include_directories( ${SDLTTF_INCLUDE_DIR} )
 include_directories( ${LUA_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
@@ -145,6 +146,10 @@ include_directories( ${OPENAL_INCLUDE_DIR} )
 include_directories( ${OGG_INCLUDE_DIR} )
 include_directories( ${VORBIS_INCLUDE_DIR} )
 include_directories( ${VORBISFILE_INCLUDE_DIR} )
+
+if( OZ_MINGW )
+  include_directories( ./include )
+endif()
 
 set( libs "${SDL_LIBRARY}" )
 set( libs "${libs};${SDLTTF_LIBRARY}" )
@@ -162,12 +167,9 @@ if( OZ_NETWORK )
   set( libs "${libs};${SDLNET_LIBRARY}" )
 endif()
 
-include_directories( ${SDLIMAGE_INCLUDE_DIR} )
-set( libs_tools "${libs};${SDLIMAGE_LIBRARY}" )
-
-if( OZ_MINGW )
-  include_directories( ./include )
-endif()
+set( libs_tools "${SDL_LIBRARY}" )
+set( libs_tools "${libs_tools};${SDLIMAGE_LIBRARY}" )
+set( libs_tools "${libs_tools};${OPENGL_gl_LIBRARY}" )
 
 # compiler and linker flags
 set( flags "-pipe -std=c++0x -ffast-math" )

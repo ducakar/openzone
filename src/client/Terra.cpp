@@ -147,6 +147,7 @@ namespace client
 
     log.print( "Loading terra '%s' ...", name.cstr() );
 
+    Buffer buffer;
     if( !buffer.read( path ) ) {
       log.printEnd( " Failed" );
       throw Exception( "Terra loading failed" );
@@ -275,6 +276,7 @@ namespace client
     uint mapTexId    = context.loadRawTexture( mapTexture, true,
                                                GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
 
+    Buffer buffer( 10 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     context.writeTexture( waterTexId, &os );

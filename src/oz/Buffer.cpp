@@ -15,8 +15,6 @@
 namespace oz
 {
 
-  Buffer buffer;
-
   Buffer::Buffer() : data( null ), count( 0 )
   {}
 

@@ -33,8 +33,6 @@ namespace oz
 
       lua_State*      l;
 
-    public:
-
       Object*         self;
       Bot*            user;
 
@@ -45,13 +43,22 @@ namespace oz
       int             strIndex;
       int             objIndex;
 
+      Vector<Struct*> structs;
+      Vector<Object*> objects;
+
+      List<Object::Event>::Iterator event;
+
+    public:
+
       float           damage;
       float           hitMomentum;
 
-      Vector<Object*> objects;
-      Vector<Struct*> structs;
+    private:
 
-      List<Object::Event>::Iterator event;
+      bool readVariable( InputStream* istream );
+      void writeVariable( OutputStream* stream );
+
+    public:
 
       Lua();
 
@@ -65,6 +72,9 @@ namespace oz
       void registerConstant( const char* name, int value );
       void registerConstant( const char* name, float value );
       void registerConstant( const char* name, const char* value );
+
+      void read( InputStream* istream );
+      void write( OutputStream* ostream );
 
       void init();
       void free();

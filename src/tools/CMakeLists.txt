@@ -31,7 +31,7 @@ add_dependencies( client-tools matrix-tools pch )
 
 add_executable( ozPrebuild ozPrebuild.cpp )
 add_dependencies( ozPrebuild client-tools matrix-tools build pch )
-target_link_libraries( ozPrebuild client-tools matrix-tools build oz -lSDL -lSDL_image -lGL )
+target_link_libraries( ozPrebuild client-tools matrix-tools build oz ${libs_tools} )
 
 if( OZ_INSTALL_TOOLS )
   install( TARGETS ozPrebuild DESTINATION bin )

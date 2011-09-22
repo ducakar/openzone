@@ -28,6 +28,7 @@ namespace client
 
     log.print( "Loading SMM model '%s' ...", name.cstr() );
 
+    Buffer buffer;
     if( !buffer.read( path ) ) {
       throw Exception( "Cannot read model file" );
     }

@@ -145,9 +145,11 @@ namespace oz
   typedef unsigned long long ulong64;
 
   // some assumptions about types
-  static_assert( sizeof( short ) == 2, "sizeof( short ) should be 2" );
-  static_assert( sizeof( int ) == 4, "sizeof( int ) should be 4" );
+  static_assert( sizeof( short )  == 2, "sizeof( short ) should be 2" );
+  static_assert( sizeof( int )    == 4, "sizeof( int ) should be 4" );
   static_assert( sizeof( long64 ) == 8, "sizeof( long64 ) should be 8" );
+  static_assert( sizeof( float )  == 4, "sizeof( float ) should be 4" );
+  static_assert( sizeof( double ) == 8, "sizeof( double ) should be 8" );
 
 #ifdef OZ_SIMD
   /*
