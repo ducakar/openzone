@@ -41,7 +41,7 @@ namespace ui
 
   class UI
   {
-    private:
+    public:
 
       bool isFreelook;
 

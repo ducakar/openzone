@@ -37,7 +37,7 @@ namespace oz
 
       void seed();
 
-      virtual void onRegister();
+      virtual void init();
 
     private:
 

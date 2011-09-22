@@ -66,8 +66,14 @@ o                   - prevrti nebo naprej za 1/8 dneva
 
 Alt + vlečenje      - vleka oken
 
+F5                  - hitro shranjevanje (v ~/.config/openzone/quicksave.ozState)
+F7                  - hitro nalaganje (iz ~/.config/openzone/quicksave.ozState)
+F7                  - naloži zadnje avtomatično shranjeno stanje
+                      (iz ~/.config/openzone/autosave.ozState)
 F11                 - zajem zaslona (shrani se v ~/config/.openzone/screenshot DATUM ČAS.bmp)
-F12                 - minimiziraj in zamrzni (ne dela na Windows)
+F12                 - minimiraj in zamrzni
+Shift + F12         - preklopi celozaslonski način
+Ctrl + F12          - prisilni izhod
 
 Esc                 - končaj program
 

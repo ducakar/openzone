@@ -66,9 +66,12 @@ o                   - forward sky time for 1/8 of a day
 
 LAlt + drag         - move windows
 
-F11                 - screenshot (saved to ~/.openzone/screenshot DATE TIME.bmp)
-F12                 - minimise (application is automatically halted when minimised)
-Shift + F12         - toggle fullscreen
+F5                  - quick save (to ~/.config/openzone/quicksave.ozState)
+F7                  - quick load (from ~/.config/openzone/quicksave.ozState)
+F7                  - load autosaved state (from ~/.config/openzone/autosave.ozState)
+F11                 - screenshot (saved to ~/.config/openzone/screenshot DATE TIME.bmp)
+F12                 - minimise and pause
+Shift + F12         - toggle fullscreen mode
 Ctrl + F12          - force exit
 
 Esc                 - exit application

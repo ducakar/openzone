@@ -23,7 +23,7 @@
 
 #define OZ_REGISTER_MODULE( module ) \
   modules.add( &module##Module ); \
-  module##Module.onRegister()
+  module##Module.init()
 
 namespace oz
 {
@@ -123,24 +123,28 @@ namespace oz
       }
     }
 
+    for( int i = 0; i < modules.length(); ++i ) {
+      modules[i]->update();
+    }
+
     // rotate freeing/waiting/available indices
     orbis.update();
   }
 
-  void Matrix::load( InputStream* istream )
+  void Matrix::read( InputStream* istream )
   {
-    log.println( "Loading Matrix {" );
+    log.println( "Reading Matrix {" );
     log.indent();
-
-    orbis.terra.load( 0 );
-    orbis.load();
-    synapse.load();
 
     if( istream != null ) {
       // to create the variable when running for the first time
       config.getSet( "matrix.onCreate", "matrix_onCreate" );
 
       orbis.read( istream );
+
+      for( int i = 0; i < modules.length(); ++i ) {
+        modules[i]->read( istream );
+      }
     }
     else {
       lua.staticCall( config.getSet( "matrix.onCreate", "matrix_onCreate" ) );
@@ -150,13 +154,48 @@ namespace oz
     log.println( "}" );
   }
 
-  void Matrix::unload( OutputStream* ostream )
+  void Matrix::write( OutputStream* ostream ) const
+  {
+    log.println( "Writing Matrix {" );
+    log.indent();
+
+    orbis.write( ostream );
+
+    for( int i = 0; i < modules.length(); ++i ) {
+      modules[i]->write( ostream );
+    }
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Matrix::load()
+  {
+    log.println( "Loading Matrix {" );
+    log.indent();
+
+    // TODO terrain selection
+    orbis.terra.load( 0 );
+
+    orbis.load();
+    synapse.load();
+
+    for( int i = 0; i < modules.length(); ++i ) {
+      modules[i]->load();
+    }
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  void Matrix::unload()
   {
     log.println( "Unloading Matrix {" );
     log.indent();
 
-    if( ostream != null ) {
-      orbis.write( ostream );
+
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->unload();
     }
 
     synapse.unload();
@@ -185,6 +224,10 @@ namespace oz
   {
     log.println( "Freeing Matrix {" );
     log.indent();
+
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->free();
+    }
 
     orbis.free();
     lua.free();

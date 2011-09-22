@@ -35,8 +35,11 @@ namespace nirvana
       void sync();
       void update();
 
-      void load( InputStream* istream );
-      void unload( OutputStream* ostream );
+      void read( InputStream* istream );
+      void write( OutputStream* ostream ) const;
+
+      void load();
+      void unload();
 
       void init();
       void free();

@@ -150,6 +150,14 @@ namespace ui
 #endif
 
     root->focus( loadingScreen );
+
+    isFreelook = mouse.doShow;
+
+    foreach( area, root->children.iter() ) {
+      if( !( area->flags & Area::PINNED_BIT ) ) {
+        area->show( isFreelook );
+      }
+    }
   }
 
   void UI::unload()

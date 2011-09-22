@@ -162,6 +162,22 @@ namespace client
     camera.move( p );
   }
 
+  void StrategicProxy::read( InputStream* istream )
+  {
+    height     = istream->readFloat();
+    isFree     = istream->readBool();
+    isFreeFast = istream->readBool();
+    isRTSFast  = istream->readBool();
+  }
+
+  void StrategicProxy::write( OutputStream* ostream ) const
+  {
+    ostream->writeFloat( height );
+    ostream->writeBool( isFree );
+    ostream->writeBool( isFreeFast );
+    ostream->writeBool( isRTSFast );
+  }
+
   void StrategicProxy::init()
   {
     isFree     = false;

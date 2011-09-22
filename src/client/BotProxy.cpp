@@ -331,6 +331,22 @@ namespace client
     }
   }
 
+  void BotProxy::read( InputStream* istream )
+  {
+    bobPhi   = 0.0f;
+    bobTheta = 0.0f;
+    bobBias  = 0.0f;
+
+    isExternal = istream->readBool();
+    isFreelook = istream->readBool();
+  }
+
+  void BotProxy::write( OutputStream* ostream ) const
+  {
+    ostream->writeBool( isExternal );
+    ostream->writeBool( isFreelook );
+  }
+
   void BotProxy::init()
   {
     externalDistFactor = config.getSet( "botProxy.externalDistFactor", 2.75f );

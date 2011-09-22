@@ -88,7 +88,7 @@ namespace oz
     }
   }
 
-  void FloraModule::onRegister()
+  void FloraModule::init()
   {
     OZ_LUA_REGISTER_FUNC( ozFloraGetDensity );
     OZ_LUA_REGISTER_FUNC( ozFloraSetDensity );

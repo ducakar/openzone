@@ -146,7 +146,6 @@ namespace client
     if( ( initFlags & INIT_MAIN_LOOP ) && allTime >= Timer::TICK_TIME ) {
       float sleepTime     = float( timer.sleepMillis )           * 0.001f;
       float loaderTime    = float( timer.loaderMillis )          * 0.001f;
-      float uiTime        = float( timer.uiMillis )              * 0.001f;
       float soundTime     = float( timer.soundMillis )           * 0.001f;
       float renderTime    = float( timer.renderMillis )          * 0.001f;
       float scheduleTime  = float( timer.renderScheduleMillis )  * 0.001f;
@@ -158,6 +157,7 @@ namespace client
       float miscTime      = float( timer.renderMiscMillis )      * 0.001f;
       float renderUiTime  = float( timer.renderUiMillis )        * 0.001f;
       float syncTime      = float( timer.renderSyncMillis )      * 0.001f;
+      float uiTime        = float( timer.uiMillis )              * 0.001f;
 
       float matrixTime    = float( timer.matrixMillis )          * 0.001f;
       float nirvanaTime   = float( timer.nirvanaMillis )         * 0.001f;
@@ -228,7 +228,6 @@ namespace client
       log.println( "    %6.2f %%  [M:0] sleep",           sleepTime     / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:1] loader",          loaderTime    / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2] presentation",    m2Time        / activeTime * 100.0f );
-      log.println( "    %6.2f %%  [M:2] - ui",            uiTime        / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2] - sound",         soundTime     / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2] - render",        renderTime    / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2]   + schedule",    scheduleTime  / activeTime * 100.0f );
@@ -240,6 +239,7 @@ namespace client
       log.println( "    %6.2f %%  [M:2]   + misc",        miscTime      / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2]   + ui",          renderUiTime  / activeTime * 100.0f );
       log.println( "    %6.2f %%  [M:2]   + sync",        syncTime      / activeTime * 100.0f );
+      log.println( "    %6.2f %%  [M:3] ui",              uiTime        / activeTime * 100.0f );
       log.println( "    %6.2f %%  [A:1] matrix",          matrixTime    / activeTime * 100.0f );
       log.println( "    %6.2f %%  [A:2] nirvana",         nirvanaTime   / activeTime * 100.0f );
       log.println( "  }" );

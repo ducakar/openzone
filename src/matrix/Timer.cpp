@@ -35,7 +35,6 @@ namespace oz
 
     sleepMillis           = 0;
     loaderMillis          = 0;
-    uiMillis              = 0;
     soundMillis           = 0;
     renderMillis          = 0;
     renderScheduleMillis  = 0;
@@ -47,6 +46,7 @@ namespace oz
     renderMiscMillis      = 0;
     renderUiMillis        = 0;
     renderSyncMillis      = 0;
+    uiMillis              = 0;
 
     nFrames               = 0;
     frameTicks            = 0;

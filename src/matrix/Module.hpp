@@ -18,20 +18,28 @@ namespace oz
   {
     public:
 
-      static const int UPDATE_FUNC_BIT = 0x01;
-
-      int flags;
-
-      Module() : flags( 0 )
-      {}
-
       virtual ~Module()
       {}
 
-      virtual void onUpdate()
+      virtual void update()
       {}
 
-      virtual void onRegister()
+      virtual void read( InputStream* )
+      {}
+
+      virtual void write( OutputStream* ) const
+      {}
+
+      virtual void load()
+      {}
+
+      virtual void unload()
+      {}
+
+      virtual void init()
+      {}
+
+      virtual void free()
       {}
 
   };

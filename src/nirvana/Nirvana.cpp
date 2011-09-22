@@ -67,35 +67,44 @@ namespace nirvana
     updateModulo = ( updateModulo + 1 ) % UPDATE_INTERVAL;
   }
 
-  void Nirvana::load( InputStream* istream )
+  void Nirvana::read( InputStream* istream )
   {
-    log.print( "Loading Nirvana ..." );
+    log.print( "Reading Nirvana ..." );
 
-    if( istream != null ) {
-      String typeName;
-      int nMinds = istream->readInt();
+    String typeName;
+    int nMinds = istream->readInt();
 
-      for( int i = 0; i < nMinds; ++i ) {
-        minds.add( new Mind( istream ) );
-      }
+    for( int i = 0; i < nMinds; ++i ) {
+      minds.add( new Mind( istream ) );
     }
 
     log.printEnd( " OK" );
   }
 
-  void Nirvana::unload( OutputStream* ostream )
+  void Nirvana::write( OutputStream* ostream ) const
+  {
+    log.print( "Writing Nirvana ..." );
+
+    ostream->writeInt( minds.length() );
+
+    foreach( mind, minds.citer() ) {
+      mind->write( ostream );
+    }
+
+    log.printEnd( " OK" );
+  }
+
+  void Nirvana::load()
+  {
+    log.print( "Loading Nirvana ..." );
+    log.printEnd( " OK" );
+  }
+
+  void Nirvana::unload()
   {
     log.print( "Unloading Nirvana ..." );
 
-    if( ostream != null ) {
-      ostream->writeInt( minds.length() );
-
-      foreach( mind, minds.citer() ) {
-        mind->write( ostream );
-      }
-    }
     minds.free();
-
     Mind::pool.free();
 
     log.printEnd( " OK" );

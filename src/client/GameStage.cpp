@@ -105,13 +105,18 @@ namespace client
       // now synapse lists are not needed any more
       synapse.update();
 
-      // we can now add/remove object from the main thread after synapse lists have been cleared
-      SDL_SemPost( mainSemaphore );
-
       // update minds
       nirvana.update();
 
       timer.nirvanaMillis += SDL_GetTicks() - beginTime;
+
+      // we can now manipulate world from the main thread after synapse lists have been cleared
+      // and nirvana is not accessing matrix any more
+      SDL_SemPost( mainSemaphore );
+
+      /*
+       * PHASE 3
+       */
 
       SDL_SemPost( mainSemaphore );
       SDL_SemWait( auxSemaphore );
@@ -125,10 +130,26 @@ namespace client
 
     SDL_SemWait( mainSemaphore );
 
+    /*
+     * PHASE 3
+     */
+
     beginTime = SDL_GetTicks();
 
     if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
       orbis.caelum.time += orbis.caelum.period * 0.125f;
+    }
+
+    if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
+      write( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
+    }
+    if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
+      clear();
+      read( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
+    }
+    if( ui::keyboard.keys[SDLK_F8] && !ui::keyboard.oldKeys[SDLK_F8] ) {
+      clear();
+      read( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) );
     }
 
     camera.update();
@@ -140,6 +161,10 @@ namespace client
 
     SDL_SemPost( auxSemaphore );
     SDL_SemWait( mainSemaphore );
+
+    /*
+     * PHASE 1
+     */
 
     beginTime = SDL_GetTicks();
 
@@ -159,6 +184,10 @@ namespace client
 
     SDL_SemPost( auxSemaphore );
     SDL_SemWait( mainSemaphore );
+
+    /*
+     * PHASE 2
+     */
 
     beginTime = SDL_GetTicks();
 
@@ -212,42 +241,75 @@ namespace client
   void GameStage::end()
   {}
 
+  bool GameStage::read( const char* file )
+  {
+    if( file == null ) {
+      log.print( "Initialising new world" );
+
+      matrix.read( null );
+      camera.warp( Point3( 141.0f, -12.0f, 84.75f ) );
+    }
+    else {
+      log.print( "Loading state from '%s' ...", file );
+
+      if( !buffer.read( file ) ) {
+        log.printEnd( " Failed" );
+        return false;
+      }
+
+      log.printEnd( " OK" );
+
+      InputStream is = buffer.inputStream();
+
+      matrix.read( &is );
+      nirvana.read( &is );
+      camera.read( &is );
+    }
+
+    return true;
+  }
+
+  void GameStage::write( const char* file )
+  {
+    OutputStream os = buffer.outputStream();
+
+    matrix.write( &os );
+    nirvana.write( &os );
+    camera.write( &os );
+
+    log.print( "Saving state to %s ...", file );
+    buffer.write( file, os.length() );
+    log.printEnd( " OK" );
+  }
+
+  void GameStage::clear()
+  {
+    context.unload();
+
+    nirvana.unload();
+    matrix.unload();
+
+    matrix.load();
+    nirvana.load();
+
+    context.load();
+  }
+
   void GameStage::load()
   {
     log.println( "Loading GameStage {" );
     log.indent();
 
+    matrix.load();
+    nirvana.load();
+
+    if( !config.getSet( "gameStage.autoload", true ) ||
+        !read( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) ) )
+    {
+      read( null );
+    }
+
     network.connect();
-
-    if( config.getSet( "gameStage.autoload", true ) ) {
-      String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
-
-      log.print( "Loading world stream from '%s' ...", stateFile.cstr() );
-      Buffer buffer( 4 * 1024 * 1024 );
-
-      if( buffer.read( stateFile ) ) {
-        log.printEnd( " OK" );
-
-        InputStream is = buffer.inputStream();
-
-        matrix.load( &is );
-        nirvana.load( &is );
-      }
-      else {
-        log.printEnd( " Failed, starting a new world" );
-
-        matrix.load( null );
-        nirvana.load( null );
-      }
-    }
-    else {
-      log.println( "Initialising a new world" );
-
-      matrix.load( null );
-      nirvana.load( null );
-    }
-
-    camera.warp( Point3( 141.0f, -12.0f, 84.75f ) );
 
     log.print( "Starting auxilary thread ..." );
 
@@ -287,27 +349,14 @@ namespace client
 
     log.printEnd( " OK" );
 
-    if( camera.bot != -1 ) {
-      const_cast<Bot*>( camera.botObj )->state &= ~Bot::PLAYER_BIT;
-    }
+    network.disconnect();
 
     if( config.getSet( "gameStage.autosave", true ) ) {
-      OutputStream os = buffer.outputStream();
-      String stateFile = config.get( "dir.rc", "" ) + String( "/default.ozState" );
-
-      matrix.unload( &os );
-      nirvana.unload( &os );
-
-      log.print( "Writing world stream to %s ...", stateFile.cstr() );
-      buffer.write( stateFile, os.length() );
-      log.printEnd( " OK" );
-    }
-    else {
-      matrix.unload( null );
-      nirvana.unload( null );
+      write( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) );
     }
 
-    network.disconnect();
+    nirvana.unload();
+    matrix.unload();
 
     log.unindent();
     log.println( "}" );
@@ -317,6 +366,8 @@ namespace client
   {
     log.println( "Initialising GameStage {" );
     log.indent();
+
+    buffer.alloc( 4 * 1024 * 1024 );
 
     matrix.init();
     nirvana.init();
@@ -334,6 +385,8 @@ namespace client
     loader.free();
     nirvana.free();
     matrix.free();
+
+    buffer.dealloc();
 
     log.unindent();
     log.println( "}" );
