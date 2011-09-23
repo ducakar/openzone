@@ -2,6 +2,7 @@ add_definitions( -DOZ_TOOLS )
 
 add_library( matrix-tools STATIC
   ../matrix/AABB.cpp
+  ../matrix/Caelum.cpp
   ../matrix/common.cpp
   ../matrix/Orbis.cpp
   ../matrix/QBSP.cpp

@@ -38,7 +38,7 @@ namespace client
 
 #ifndef OZ_TOOLS
 
-  Terra::Terra() : ibo( 0 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 )
+  Terra::Terra() : ibo( 0 ), waterTexId( 0 ), detailTexId( 0 ), mapTexId( 0 ), id( -1 )
   {
     for( int i = 0; i < TILES; ++i ) {
       for( int j = 0; j < TILES; ++j ) {
@@ -50,6 +50,10 @@ namespace client
 
   void Terra::draw()
   {
+    if( id == -1 ) {
+      return;
+    }
+
     span.minX = max( int( ( camera.p.x - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
     span.minY = max( int( ( camera.p.y - frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), 0 );
     span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
@@ -96,6 +100,10 @@ namespace client
 
   void Terra::drawWater()
   {
+    if( id == -1 ) {
+      return;
+    }
+
     waveBias = Math::mod( waveBias + WAVE_BIAS_INC, Math::TAU );
 
     shader.use( waterShaderId );
@@ -142,7 +150,9 @@ namespace client
 
   void Terra::load()
   {
-    const String& name = translator.terras[orbis.terra.id].name;
+    id = orbis.terra.id;
+
+    const String& name = translator.terras[id].name;
     String path = "terra/" + name + ".ozcTerra";
 
     log.print( "Loading terra '%s' ...", name.cstr() );
@@ -223,7 +233,7 @@ namespace client
 
   void Terra::unload()
   {
-    if( ibo != 0 ) {
+    if( id != -1 ) {
       glDeleteTextures( 1, &mapTexId );
       glDeleteTextures( 1, &detailTexId );
       glDeleteTextures( 1, &waterTexId );
@@ -245,6 +255,8 @@ namespace client
           vaos[i][j] = 0;
         }
       }
+
+      id = -1;
     }
   }
 
@@ -262,7 +274,7 @@ namespace client
     Config terraConfig;
     terraConfig.load( configFile );
 
-    // just to mark them used to prevent unused config variables warning
+    // just to mark them used to prevent unused config variable warning
     terraConfig.get( "step", 0.5f );
     terraConfig.get( "bias", 0.0f );
 

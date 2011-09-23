@@ -12,7 +12,7 @@ attribute vec2 inTexCoord;
 attribute vec3 inNormal;
 
 varying vec2  exTexCoord;
-varying vec4  exColour;
+varying vec3  exNormal;
 varying float exDistance;
 
 void main()
@@ -22,7 +22,7 @@ void main()
   vec3 toCamera = oz_CameraPosition - position;
 
   exTexCoord    = inTexCoord;
-  exColour      = skyLightColour( normal );
+  exNormal      = inNormal;
   exDistance    = length( toCamera );
   gl_Position   = oz_Transform.complete * vec4( inPosition, 1.0 );
 }

@@ -57,6 +57,8 @@ namespace client
 
     public:
 
+      int id;
+
       Terra();
 
       void draw();

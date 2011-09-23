@@ -18,6 +18,7 @@
 #include "client/GameStage.hpp"
 #include "client/Sound.hpp"
 #include "client/Render.hpp"
+#include "client/Loader.hpp"
 
 #include <cerrno>
 #include <clocale>
@@ -449,13 +450,13 @@ namespace client
                   setlocale( LC_CTYPE, null ),
                   setlocale( LC_MESSAGES, null ) );
 
-    if( config.contains( "seed" ) && config["seed"].equals( "time" ) ) {
+    if( String::equals( config.getSet( "seed", "TIME" ), "TIME" ) ) {
       int seed = int( time( null ) );
       Math::seed( seed );
       log.println( "Random generator seed set to current time: %d", seed );
     }
     else {
-      int seed = config.getSet( "seed", 42 );
+      int seed = config.get( "seed", 0 );
       Math::seed( seed );
       log.println( "Random generator seed set to: %d", seed );
     }
@@ -558,7 +559,7 @@ namespace client
         switch( event.type ) {
           case SDL_MOUSEMOTION: {
             ui::mouse.relX = -event.motion.xrel;
-            ui::mouse.relY = event.motion.yrel;
+            ui::mouse.relY = +event.motion.yrel;
             SDL_WarpMouse( screenCentreX, screenCentreY );
             break;
           }
@@ -567,15 +568,22 @@ namespace client
 
             ui::keyboard.keys[keysym.sym] |= SDL_PRESSED;
 
-            if( keysym.sym == SDLK_F12 ) {
-              if( keysym.mod & KMOD_CTRL ) {
-                isAlive = false;
+            if( keysym.sym == SDLK_F10 ) {
+              if( keysym.mod == 0 ) {
+                loader.makeScreenshot();
               }
-              else if( keysym.mod & KMOD_SHIFT ) {
+            }
+            else if( keysym.sym == SDLK_F11 ) {
+              if( ( keysym.mod & KMOD_CTRL ) && !( keysym.mod & ~KMOD_CTRL ) ) {
                 SDL_WM_ToggleFullScreen( render.surface );
               }
-              else {
+            }
+            else if( keysym.sym == SDLK_F12 ) {
+              if( keysym.mod == 0 ) {
                 SDL_WM_IconifyWindow();
+              }
+              else if( ( keysym.mod & KMOD_CTRL ) && !( keysym.mod & ~KMOD_CTRL ) ) {
+                isAlive = false;
               }
             }
             break;

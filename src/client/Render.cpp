@@ -390,8 +390,6 @@ namespace client
     ui::ui.load();
 
     frustum.init();
-    terra.load();
-    caelum.load( "caelum" );
 
     structs.alloc( 64 );
     objects.alloc( 8192 );

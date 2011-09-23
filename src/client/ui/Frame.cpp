@@ -30,7 +30,9 @@ namespace ui
       parent->focus( this );
     }
 
-    if( keyboard.keys[SDLK_LALT] && ( mouse.buttons & SDL_BUTTON_LMASK ) ) {
+    if( ( keyboard.keys[SDLK_LALT] || keyboard.keys[SDLK_RALT] ) &&
+        ( mouse.buttons & SDL_BUTTON_LMASK ) )
+    {
       if( mouse.leftClick ) {
         flags |= GRAB_BIT;
       }

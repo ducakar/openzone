@@ -54,6 +54,8 @@ namespace oz
       Quad quads[VERTS][VERTS];
       int  id;
 
+      Terra();
+
       Span getInters( float minX, float minY, float maxX, float maxY, float epsilon = 0.0f ) const;
       // indices of TerraQuad and index of the triangle inside the TerraQuad
       Pair<int> getIndices( float x, float y ) const;
@@ -61,6 +63,9 @@ namespace oz
 
       void load( int id );
       void init();
+
+      void read( InputStream* istream );
+      void write( OutputStream* ostream ) const;
 
 #ifdef OZ_TOOLS
 

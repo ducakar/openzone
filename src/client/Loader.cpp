@@ -11,8 +11,10 @@
 
 #include "client/Loader.hpp"
 
-#include "client/Context.hpp"
 #include "client/Camera.hpp"
+#include "client/Context.hpp"
+#include "client/Terra.hpp"
+#include "client/Caelum.hpp"
 #include "client/SMM.hpp"
 #include "client/MD2.hpp"
 #include "client/MD3.hpp"
@@ -184,6 +186,18 @@ namespace client
   void Loader::update()
   {
     tick = ( tick + 1 ) % TICK_CLEAR_PERIOD;
+
+    // terra
+    if( terra.id != orbis.terra.id ) {
+      terra.unload();
+      terra.load();
+    }
+
+    // caelum
+    if( caelum.id != orbis.caelum.id ) {
+      caelum.unload();
+      caelum.load();
+    }
 
     // BSP
     for( int i = 0; i < translator.bsps.length(); ++i ) {

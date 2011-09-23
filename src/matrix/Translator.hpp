@@ -66,6 +66,7 @@ namespace oz
       HashString<int, 256> soundIndices;
       HashString<int, 64>  shaderIndices;
       HashString<int, 16>  terraIndices;
+      HashString<int, 16>  caelumIndices;
       HashString<int, 64>  bspIndices;
       HashString<int, 256> modelIndices;
       HashString<int, 16>  nameListIndices;
@@ -76,6 +77,7 @@ namespace oz
       Vector<Resource> sounds;
       Vector<Resource> shaders;
       Vector<Resource> terras;
+      Vector<Resource> caela;
       Vector<Resource> bsps;
       Vector<Resource> models;
       Vector<Resource> nameLists;
@@ -88,6 +90,7 @@ namespace oz
       int soundIndex( const char* name ) const;
       int shaderIndex( const char* name ) const;
       int terraIndex( const char* name ) const;
+      int caelumIndex( const char* name ) const;
       int bspIndex( const char* name ) const;
       int modelIndex( const char* name ) const;
       int nameListIndex( const char* name ) const;

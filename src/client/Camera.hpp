@@ -143,6 +143,8 @@ namespace client
       void read( InputStream* istream );
       void write( OutputStream* ostream ) const;
 
+      void clear();
+
       void init();
 
   };

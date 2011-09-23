@@ -1,4 +1,7 @@
 function matrix_onCreate()
+  ozTerraLoad( "terra" )
+
+  ozCaelumLoad( "earth" )
   ozCaelumSetHeading( math.pi / 8 )
   ozCaelumSetPeriod( 1440 )
   ozCaelumSetTime( 180 )

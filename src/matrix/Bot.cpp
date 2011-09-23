@@ -673,7 +673,7 @@ namespace oz
     grabObj    = istream->readInt();
     grabHandle = istream->readFloat();
 
-    stepRate     = istream->readFloat();
+    stepRate   = istream->readFloat();
 
     int nItems = istream->readInt();
     for( int i = 0; i < nItems; ++i ) {

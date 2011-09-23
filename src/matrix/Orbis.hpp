@@ -132,7 +132,7 @@ namespace oz
       void update();
 
       void read( InputStream* istream );
-      void write( OutputStream* ostream );
+      void write( OutputStream* ostream ) const;
 
       void load();
       void unload();

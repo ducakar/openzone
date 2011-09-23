@@ -62,17 +62,18 @@ j                   - izskoči
 
 Razno
 -----
-o                   - prevrti nebo naprej za 1/8 dneva
+o                   - hitro vrti nebo naprej
+Shift + o           - hitro vrti nebo nazaj
 
-Alt + vlečenje      - vleka oken
+LAlt + vlečenje     - vleka oken
 
 F5                  - hitro shranjevanje (v ~/.config/openzone/quicksave.ozState)
 F7                  - hitro nalaganje (iz ~/.config/openzone/quicksave.ozState)
-F7                  - naloži zadnje avtomatično shranjeno stanje
+Ctrl + F8           - naloži zadnje avtomatično shranjeno stanje
                       (iz ~/.config/openzone/autosave.ozState)
-F11                 - zajem zaslona (shrani se v ~/config/.openzone/screenshot DATUM ČAS.bmp)
-F12                 - minimiraj in zamrzni
-Shift + F12         - preklopi celozaslonski način
+F10                 - zajem zaslona (shrani se v '~/config/.openzone/screenshot DATUM ČAS.bmp')
+F11                 - preklopi celozaslonski način
+Ctrl + F12          - minimiraj in zamrzni
 Ctrl + F12          - prisilni izhod
 
 Esc                 - končaj program
@@ -135,8 +136,8 @@ Opombe
 ------
 - Med prvim zagonom se ustvari nastavitvena datoteka ~/.config/openzone/client.rc
   (na Windowsu: %APPDATA%\OpenZone\client.rc) s privzetimi nastavitvami. Uredi jo po želji.
-- %APPDATA% ponavadi pomeni C:\Documents and Settings\uporabnik\Application Data na Windowsu XP ali
-  C:\Users\uporabnik\AppData\Roaming na Windowsu 7.
+- %APPDATA% ponavadi pomeni 'C:\Documents and Settings\uporabnik\Application Data' na Windowsu XP
+  ali C:\Users\uporabnik\AppData\Roaming na Windowsu 7.
 
 Problemi
 --------

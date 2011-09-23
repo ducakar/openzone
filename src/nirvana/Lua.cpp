@@ -191,6 +191,7 @@ namespace nirvana
   void Lua::read( InputStream* istream )
   {
     hard_assert( lua_gettop( l ) == 1 );
+    hard_assert( ( lua_pushnil( l ), lua_next( l, 1 ) == 0 ) );
 
     lua_settop( l, 0 );
     lua_newtable( l );

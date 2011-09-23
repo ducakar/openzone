@@ -136,8 +136,13 @@ namespace client
 
     beginTime = SDL_GetTicks();
 
-    if( ui::keyboard.keys[SDLK_o] && !ui::keyboard.oldKeys[SDLK_o] ) {
-      orbis.caelum.time += orbis.caelum.period * 0.125f;
+    if( ui::keyboard.keys[SDLK_o] ) {
+      if( ui::keyboard.keys[SDLK_LSHIFT] || ui::keyboard.keys[SDLK_RSHIFT] ) {
+        orbis.caelum.time -= orbis.caelum.period * 0.002f;
+      }
+      else {
+        orbis.caelum.time += orbis.caelum.period * 0.002f;
+      }
     }
 
     if( ui::keyboard.keys[SDLK_F5] && !ui::keyboard.oldKeys[SDLK_F5] ) {
@@ -175,7 +180,14 @@ namespace client
       render.sync();
 
       clear();
-      read( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) );
+      camera.clear();
+
+      if( ui::keyboard.keys[SDLK_LCTRL] || ui::keyboard.keys[SDLK_RCTRL] ) {
+        read( null );
+      }
+      else {
+        read( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) );
+      }
 
       camera.update();
       camera.prepare();
@@ -214,10 +226,6 @@ namespace client
     loader.cleanup();
     // load scheduled resources
     loader.update();
-
-    if( ui::keyboard.keys[SDLK_F11] && !ui::keyboard.oldKeys[SDLK_F11] ) {
-      loader.makeScreenshot();
-    }
 
     timer.loaderMillis += SDL_GetTicks() - beginTime;
 
@@ -293,11 +301,11 @@ namespace client
       log.print( "Initialising new world" );
 
       matrix.read( null );
-      camera.warp( Point3( 141.0f, -12.0f, 84.75f ) );
     }
     else {
       log.print( "Loading state from '%s' ...", file );
 
+      Buffer buffer;
       if( !buffer.read( file ) ) {
         log.printEnd( " Failed" );
         return false;
@@ -315,8 +323,9 @@ namespace client
     return true;
   }
 
-  void GameStage::write( const char* file )
+  void GameStage::write( const char* file ) const
   {
+    Buffer buffer( 4 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     matrix.write( &os );
@@ -353,6 +362,7 @@ namespace client
         !read( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) ) )
     {
       read( null );
+      camera.warp( Point3( 141.0f, -12.0f, 84.75f ) );
     }
 
     network.connect();
@@ -368,6 +378,8 @@ namespace client
     SDL_SemWait( mainSemaphore );
 
     log.printEnd( " OK" );
+
+    isLoaded = true;
 
     log.unindent();
     log.println( "}" );
@@ -397,12 +409,14 @@ namespace client
 
     network.disconnect();
 
-    if( config.getSet( "gameStage.autosave", true ) ) {
+    if( isLoaded && config.getSet( "gameStage.autosave", true ) ) {
       write( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) );
     }
 
     nirvana.unload();
     matrix.unload();
+
+    isLoaded = false;
 
     log.unindent();
     log.println( "}" );
@@ -410,6 +424,8 @@ namespace client
 
   void GameStage::init()
   {
+    isLoaded = false;
+
     log.println( "Initialising GameStage {" );
     log.indent();
 
@@ -418,8 +434,6 @@ namespace client
 
     render.draw( Render::DRAW_UI_BIT );
     render.sync();
-
-    buffer.alloc( 4 * 1024 * 1024 );
 
     matrix.init();
     nirvana.init();
@@ -437,8 +451,6 @@ namespace client
     loader.free();
     nirvana.free();
     matrix.free();
-
-    buffer.dealloc();
 
     log.unindent();
     log.println( "}" );
