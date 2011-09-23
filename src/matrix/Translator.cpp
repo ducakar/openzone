@@ -74,6 +74,17 @@ namespace oz
     }
   }
 
+  int Translator::caelumIndex( const char* name ) const
+  {
+    const int* value = caelumIndices.find( name );
+    if( value != null ) {
+      return *value;
+    }
+    else {
+      throw Exception( "Invalid caelum index requested '" + String( name ) + "'" );
+    }
+  }
+
   int Translator::bspIndex( const char* name ) const
   {
     const int* value = bspIndices.find( name );
@@ -286,6 +297,35 @@ namespace oz
 
       terraIndices.add( name, terras.length() );
       terras.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
+    log.println( "Caela (*.ozcCaelum in 'caelum') {" );
+    log.indent();
+
+    dir.open( "caelum" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'caelum'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "ozcCaelum" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "caelum/" ) + ent;
+
+      caelumIndices.add( name, caela.length() );
+      caela.add( Resource( name, path ) );
 
       log.println( "%s", name.cstr() );
     }
@@ -607,6 +647,35 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
+    log.println( "Caela (*.rc in 'caelum') {" );
+    log.indent();
+
+    dir.open( "caelum" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'caelum'" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "Translator initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( !ent.hasExtension( "rc" ) ) {
+        continue;
+      }
+
+      String name = ent.baseName();
+      String path = String( "caelum/" ) + ent;
+
+      caelumIndices.add( name, caela.length() );
+      caela.add( Resource( name, path ) );
+
+      log.println( "%s", name.cstr() );
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
     log.println( "BSP structures (*.rc in 'data/maps') {" );
     log.indent();
 
@@ -790,6 +859,8 @@ namespace oz
     shaderIndices.dealloc();
     terraIndices.clear();
     terraIndices.dealloc();
+    caelumIndices.clear();
+    caelumIndices.dealloc();
     bspIndices.clear();
     bspIndices.dealloc();
     modelIndices.clear();
@@ -805,6 +876,8 @@ namespace oz
     shaders.dealloc();
     terras.clear();
     terras.dealloc();
+    caela.clear();
+    caela.dealloc();
     bsps.clear();
     bsps.dealloc();
     models.clear();

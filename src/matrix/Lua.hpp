@@ -76,6 +76,8 @@ namespace oz
       void read( InputStream* istream );
       void write( OutputStream* ostream );
 
+      void clear();
+
       void init();
       void free();
 
@@ -222,8 +224,10 @@ namespace oz
       static LuaAPI ozOrbisRemovePart;
       static LuaAPI ozOrbisGenParts;
 
+      static LuaAPI ozTerraLoad;
       static LuaAPI ozTerraHeight;
 
+      static LuaAPI ozCaelumLoad;
       static LuaAPI ozCaelumGetHeading;
       static LuaAPI ozCaelumSetHeading;
       static LuaAPI ozCaelumGetPeriod;

@@ -74,6 +74,8 @@ namespace client
 # endif
 #endif
 
+#ifndef NDEBUG
+
   void glCheckError( const char* file, int line, const char* function )
   {
     const char* message;
@@ -116,6 +118,8 @@ namespace client
     System::trap();
     System::abort( "GL error `%s' at %s:%d: %s", message, file, line, function );
   }
+
+#endif
 
 }
 }

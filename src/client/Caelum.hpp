@@ -56,12 +56,14 @@ namespace client
 
       Vec3   lightDir;
 
+      int    id;
+
       Caelum();
 
       void update();
       void draw();
 
-      void load( const char* name );
+      void load();
       void unload();
 
 #else

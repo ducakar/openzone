@@ -281,7 +281,7 @@ static void prebuildBSPs()
 
 static void prebuildTerras()
 {
-  log.println( "Prebuilding Terra {" );
+  log.println( "Prebuilding Terras {" );
   log.indent();
 
   String srcDir = "terra";
@@ -319,6 +319,49 @@ static void prebuildTerras()
 
     orbis.terra.prebuild( name );
     client::terra.prebuild( name );
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
+static void prebuildCaela()
+{
+  log.println( "Prebuilding Caela {" );
+  log.indent();
+
+  String srcDir = "caelum";
+  Directory dir( srcDir );
+
+  if( !dir.isOpened() ) {
+    throw Exception( "Cannot open directory '" + srcDir + "'" );
+  }
+
+  srcDir = srcDir + "/";
+
+  foreach( ent, dir.citer() ) {
+    if( !ent.hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    String srcPath = srcDir + ent;
+    String destPath = srcDir + ent.baseName() + ".ozcCaelum";
+
+    struct stat srcInfo;
+    struct stat destInfo;
+
+    if( stat( srcPath, &srcInfo ) != 0 ) {
+      throw Exception( "Caelum .rc stat error" );
+    }
+    if( !doForceRebuild && stat( destPath, &destInfo ) == 0 &&
+        destInfo.st_mtime > srcInfo.st_mtime )
+    {
+      continue;
+    }
+
+    String name = ent.baseName();
+
+    client::caelum.prebuild( name );
   }
 
   log.unindent();
@@ -442,8 +485,8 @@ int main( int argc, char** argv )
     prebuildTextures( "data/textures/oz", "bsp/tex", true,
                       client::Context::DEFAULT_MAG_FILTER, client::Context::DEFAULT_MIN_FILTER );
 
-    client::Caelum::prebuild( "caelum" );
     prebuildTerras();
+    prebuildCaela();
 
     prebuildBSPs();
     prebuildModels();

@@ -8,12 +8,12 @@
  */
 
 varying vec2  exTexCoord;
-varying vec4  exColour;
+varying vec3  exNormal;
 varying float exDistance;
 
 void main()
 {
-  gl_FragData[0] = exColour;
+  gl_FragData[0] = skyLightColour( normalize( exNormal ) );
   gl_FragData[0] *= texture2D( oz_Textures[0], exTexCoord * TERRA_DETAIL_SCALE );
   gl_FragData[0] *= texture2D( oz_Textures[1], exTexCoord );
   gl_FragData[0] = applyFog( gl_FragData[0], exDistance );

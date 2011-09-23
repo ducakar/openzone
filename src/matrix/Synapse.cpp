@@ -158,6 +158,33 @@ namespace oz
     }
   }
 
+  void Synapse::clear()
+  {
+    for( int i = 0; i < orbis.bsps.length(); ++i ) {
+      Struct* str = orbis.structs[i];
+
+      removedStructs.add( str->index );
+      orbis.unposition( str );
+      orbis.remove( str );
+    }
+
+    for( int i = 0; i < orbis.objects.length(); ++i ) {
+      Object* obj = orbis.objects[i];
+
+      removedObjects.add( obj->index );
+      orbis.unposition( obj );
+      orbis.remove( obj );
+    }
+
+    for( int i = 0; i < orbis.parts.length(); ++i ) {
+      Particle* part = orbis.parts[i];
+
+      removedParts.add( part->index );
+      orbis.unposition( part );
+      orbis.remove( part );
+    }
+  }
+
   void Synapse::update()
   {
     actions.clear();

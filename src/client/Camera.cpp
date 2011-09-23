@@ -180,6 +180,18 @@ namespace client
     botProxy.write( ostream );
   }
 
+  void Camera::clear()
+  {
+    w         = 0.0f;
+    relH      = 0.0f;
+    relV      = 0.0f;
+
+    tagged    = -1;
+    taggedObj = null;
+    bot       = -1;
+    botObj    = null;
+  }
+
   void Camera::init()
   {
     width        = config.get( "screen.width",         1024 );

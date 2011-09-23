@@ -68,7 +68,7 @@ function axe_onShot( l )
   ozBindObjOverlaps( pX + 0.5*vX, pY + 0.5*vY, pZ + 0.5*vZ, 0.3, 0.3, 0.3 );
   while ozObjBindNext() do
     if not ( ozObjIsSelf() or ozObjIsUser() ) then
-      ozObjDamage( 120.0 )
+      ozObjDamage( 150.0 )
     end
   end
 end

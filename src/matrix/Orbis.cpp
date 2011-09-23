@@ -289,6 +289,69 @@ namespace oz
 
     log.print( "Reading Orbis ..." );
 
+    terra.read( istream );
+    caelum.read( istream );
+
+    int nStructs   = istream->readInt();
+    int nObjects   = istream->readInt();
+    int nParticles = istream->readInt();
+
+    String    bspName;
+    Struct*   str;
+    Object*   obj;
+    String    typeName;
+    Particle* part;
+
+    for( int i = 0; i < nStructs; ++i ) {
+      bspName = istream->readString();
+
+      if( bspName.isEmpty() ) {
+        structs.add( null );
+      }
+      else {
+        str = translator.createStruct( i, bspName, istream );
+        structs.add( str );
+
+        if( !position( str ) ) {
+          throw Exception( "Orbis structure reading failed, too many structures per cell." );
+        }
+      }
+    }
+    for( int i = 0; i < nObjects; ++i ) {
+      typeName = istream->readString();
+
+      if( typeName.isEmpty() ) {
+        objects.add( null );
+      }
+      else {
+        obj = translator.createObject( i, typeName, istream );
+        objects.add( obj );
+
+        // no need to register objects since Lua state is being deserialised
+
+        if( obj->flags & Object::CUT_BIT ) {
+          obj->flags &= ~Object::CUT_BIT;
+        }
+        else {
+          position( obj );
+        }
+      }
+    }
+    for( int i = 0; i < nParticles; ++i ) {
+      bool exists = istream->readBool();
+
+      if( !exists ) {
+        parts.add( null );
+      }
+      else {
+        part = new Particle();
+        part->readFull( istream );
+        part->index = i;
+        parts.add( part );
+        position( part );
+      }
+    }
+
     int n;
 
     n = istream->readInt();
@@ -330,115 +393,14 @@ namespace oz
       partAvailableIndices.add( istream->readInt() );
     }
 
-    caelum.read( istream );
-
-    int nStructs   = istream->readInt();
-    int nObjects   = istream->readInt();
-    int nParticles = istream->readInt();
-
-    String    bspName;
-    Struct*   str;
-    Object*   obj;
-    String    typeName;
-    Particle* part;
-
-    for( int i = 0; i < nStructs; ++i ) {
-      bspName = istream->readString();
-
-      if( bspName.isEmpty() ) {
-        structs.add( null );
-      }
-      else {
-        str = translator.createStruct( i, bspName, istream );
-        structs.add( str );
-
-        if( !position( str ) ) {
-          throw Exception( "Orbis structure reading failed, too many structures per cell." );
-        }
-      }
-    }
-    for( int i = 0; i < nObjects; ++i ) {
-      typeName = istream->readString();
-
-      if( typeName.isEmpty() ) {
-        objects.add( null );
-      }
-      else {
-        obj = translator.createObject( i, typeName, istream );
-        objects.add( obj );
-
-        if( obj->flags & Object::LUA_BIT ) {
-          lua.registerObject( i );
-        }
-        if( obj->flags & Object::CUT_BIT ) {
-          obj->flags &= ~Object::CUT_BIT;
-        }
-        else {
-          position( obj );
-        }
-      }
-    }
-    for( int i = 0; i < nParticles; ++i ) {
-      bool exists = istream->readBool();
-
-      if( !exists ) {
-        parts.add( null );
-      }
-      else {
-        part = new Particle();
-        part->readFull( istream );
-        part->index = i;
-        parts.add( part );
-        position( part );
-      }
-    }
-
     log.printEnd( " OK" );
   }
 
-  void Orbis::write( OutputStream* ostream )
+  void Orbis::write( OutputStream* ostream ) const
   {
     log.print( "Writing Orbis ..." );
 
-    ostream->writeInt( strFreedIndices[freeing].length() );
-    foreach( i, strFreedIndices[freeing].citer() ) {
-      ostream->writeInt( *i );
-    }
-    ostream->writeInt( objFreedIndices[freeing].length() );
-    foreach( i, objFreedIndices[freeing].citer() ) {
-      ostream->writeInt( *i );
-    }
-    ostream->writeInt( partFreedIndices[freeing].length() );
-    foreach( i, partFreedIndices[freeing].citer() ) {
-      ostream->writeInt( *i );
-    }
-
-    ostream->writeInt( strFreedIndices[waiting].length() );
-    foreach( i, strFreedIndices[waiting].citer() ) {
-      ostream->writeInt( *i );
-    }
-    ostream->writeInt( objFreedIndices[waiting].length() );
-    foreach( i, objFreedIndices[waiting].citer() ) {
-      ostream->writeInt( *i );
-    }
-    ostream->writeInt( partFreedIndices[waiting].length() );
-    foreach( i, partFreedIndices[waiting].citer() ) {
-      ostream->writeInt( *i );
-    }
-
-    ostream->writeInt( strAvailableIndices.length() );
-    foreach( i, strAvailableIndices.citer() ) {
-      ostream->writeInt( *i );
-    }
-    ostream->writeInt( objAvailableIndices.length() );
-    foreach( i, objAvailableIndices.citer() ) {
-      ostream->writeInt( *i );
-    }
-    ostream->writeInt( partAvailableIndices.length() );
-    foreach( i, partAvailableIndices.citer() ) {
-      ostream->writeInt( *i );
-    }
-
+    terra.write( ostream );
     caelum.write( ostream );
 
     ostream->writeInt( structs.length() );
@@ -485,6 +447,45 @@ namespace oz
         ostream->writeBool( true );
         part->writeFull( ostream );
       }
+    }
+
+    ostream->writeInt( strFreedIndices[freeing].length() );
+    foreach( i, strFreedIndices[freeing].citer() ) {
+      ostream->writeInt( *i );
+    }
+    ostream->writeInt( objFreedIndices[freeing].length() );
+    foreach( i, objFreedIndices[freeing].citer() ) {
+      ostream->writeInt( *i );
+    }
+    ostream->writeInt( partFreedIndices[freeing].length() );
+    foreach( i, partFreedIndices[freeing].citer() ) {
+      ostream->writeInt( *i );
+    }
+
+    ostream->writeInt( strFreedIndices[waiting].length() );
+    foreach( i, strFreedIndices[waiting].citer() ) {
+      ostream->writeInt( *i );
+    }
+    ostream->writeInt( objFreedIndices[waiting].length() );
+    foreach( i, objFreedIndices[waiting].citer() ) {
+      ostream->writeInt( *i );
+    }
+    ostream->writeInt( partFreedIndices[waiting].length() );
+    foreach( i, partFreedIndices[waiting].citer() ) {
+      ostream->writeInt( *i );
+    }
+
+    ostream->writeInt( strAvailableIndices.length() );
+    foreach( i, strAvailableIndices.citer() ) {
+      ostream->writeInt( *i );
+    }
+    ostream->writeInt( objAvailableIndices.length() );
+    foreach( i, objAvailableIndices.citer() ) {
+      ostream->writeInt( *i );
+    }
+    ostream->writeInt( partAvailableIndices.length() );
+    foreach( i, partAvailableIndices.citer() ) {
+      ostream->writeInt( *i );
     }
 
     log.printEnd( " OK" );

@@ -222,6 +222,7 @@ namespace oz
   void Lua::read( InputStream* istream )
   {
     hard_assert( lua_gettop( l ) == 1 );
+    hard_assert( ( lua_pushnil( l ), lua_next( l, 1 ) == 0 ) );
 
     lua_settop( l, 0 );
     lua_newtable( l );
@@ -264,6 +265,11 @@ namespace oz
     }
 
     ostream->writeChar( ']' );
+  }
+
+  void Lua::clear()
+  {
+
   }
 
   void Lua::init()
@@ -422,8 +428,10 @@ namespace oz
     OZ_LUA_FUNCTION( ozOrbisRemovePart );
     OZ_LUA_FUNCTION( ozOrbisGenParts );
 
+    OZ_LUA_FUNCTION( ozTerraLoad );
     OZ_LUA_FUNCTION( ozTerraHeight );
 
+    OZ_LUA_FUNCTION( ozCaelumLoad );
     OZ_LUA_FUNCTION( ozCaelumGetHeading );
     OZ_LUA_FUNCTION( ozCaelumSetHeading );
     OZ_LUA_FUNCTION( ozCaelumGetPeriod );
@@ -2215,6 +2223,15 @@ namespace oz
     return 0;
   }
 
+  int Lua::ozTerraLoad( lua_State* l )
+  {
+    String name = lua_tostring( l, 1 );
+    int id = translator.terraIndex( name );
+
+    orbis.terra.load( id );
+    return 0;
+  }
+
   int Lua::ozTerraHeight( lua_State* l )
   {
     float x = float( lua_tonumber( l, 1 ) );
@@ -2222,6 +2239,15 @@ namespace oz
 
     lua_pushnumber( l, orbis.terra.height( x, y ) );
     return 1;
+  }
+
+  int Lua::ozCaelumLoad( lua_State* l )
+  {
+    String name = lua_tostring( l, 1 );
+    int id = translator.caelumIndex( name );
+
+    orbis.caelum.id = id;
+    return 0;
   }
 
   int Lua::ozCaelumGetHeading( lua_State* l )

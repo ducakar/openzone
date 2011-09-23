@@ -25,16 +25,19 @@ namespace client
   const float StrategicProxy::MIN_HEIGHT      = 5.00f;
   const float StrategicProxy::MAX_HEIGHT      = 50.0f;
   const float StrategicProxy::DEFAULT_HEIGHT  = 15.0f;
+  const float StrategicProxy::DEFAULT_ANGLE   = 30.0f;
   const float StrategicProxy::FREE_LOW_SPEED  = 0.04f;
   const float StrategicProxy::FREE_HIGH_SPEED = 0.50f;
   const float StrategicProxy::RTS_LOW_SPEED   = 0.25f;
   const float StrategicProxy::RTS_HIGH_SPEED  = 0.75f;
   const float StrategicProxy::ZOOM_FACTOR     = 0.15f;
 
+  StrategicProxy::StrategicProxy() : height( DEFAULT_HEIGHT )
+  {}
+
   void StrategicProxy::begin()
   {
-    height   = DEFAULT_HEIGHT;
-    camera.v = Math::rad( 15.0f );
+    camera.v = isFree ? camera.v : Math::rad( DEFAULT_ANGLE );
     camera.w = 0.0f;
     camera.setTagged( null );
 

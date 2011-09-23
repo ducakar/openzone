@@ -100,8 +100,14 @@ namespace ui
             ( !( taggedObj->flags & Object::BOT_BIT ) || ( taggedBot->grabObj != bot->index ) ) &&
             taggedDyn->mass <= clazz->grabMass && bot->lower != camera.tagged )
         {
-          glBindTexture( GL_TEXTURE_2D, liftTexId );
-          shape.fill( liftIconX, liftIconY, ICON_SIZE, ICON_SIZE );
+          float dimX = bot->dim.x + taggedDyn->dim.x;
+          float dimY = bot->dim.y + taggedDyn->dim.y;
+          float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + Bot::GRAB_EPSILON;
+
+          if( dist <= clazz->grabDistance ) {
+            glBindTexture( GL_TEXTURE_2D, liftTexId );
+            shape.fill( liftIconX, liftIconY, ICON_SIZE, ICON_SIZE );
+          }
         }
         if( camera.botObj->grabObj != -1 ) {
           glBindTexture( GL_TEXTURE_2D, grabTexId );

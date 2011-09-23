@@ -26,6 +26,9 @@ namespace oz
 
   const float Terra::DIM            = Terra::Quad::DIM * QUADS;
 
+  Terra::Terra() : id( -1 )
+  {}
+
   void Terra::load( int id_ )
   {
     id = id_;
@@ -66,8 +69,24 @@ namespace oz
       for( int y = 0; y < VERTS; ++y ) {
         quads[x][y].vertex.x = float( x * Quad::SIZEI ) - DIM;
         quads[x][y].vertex.y = float( y * Quad::SIZEI ) - DIM;
+        quads[x][y].vertex.z = 0.0f;
+        quads[x][y].triNormal[0] = Vec3::ZERO;
+        quads[x][y].triNormal[1] = Vec3::ZERO;
       }
     }
+  }
+
+  void Terra::read( InputStream* istream )
+  {
+    String name = istream->readString();
+    int id = translator.terraIndex( name );
+
+    load( id );
+  }
+
+  void Terra::write( OutputStream* ostream ) const
+  {
+    ostream->writeString( translator.terras[id].name );
   }
 
 #ifdef OZ_TOOLS

@@ -149,6 +149,10 @@ namespace oz
     }
     else {
       lua.staticCall( config.getSet( "matrix.onCreate", "matrix_onCreate" ) );
+
+      if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
+        throw Exception( "Terrain and Caelum must both be loaded in the matrix.onCreate method" );
+      }
     }
 
     log.unindent();
@@ -175,9 +179,6 @@ namespace oz
   {
     log.println( "Loading Matrix {" );
     log.indent();
-
-    // TODO terrain selection
-    orbis.terra.load( 0 );
 
     orbis.load();
     synapse.load();
@@ -230,6 +231,8 @@ namespace oz
     for( int i = modules.length() - 1; i >= 0; --i ) {
       modules[i]->free();
     }
+    modules.clear();
+    modules.dealloc();
 
     orbis.free();
     lua.free();

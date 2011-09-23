@@ -62,16 +62,18 @@ j                   - eject from vehicle
 
 Misc controls
 -------------
-o                   - forward sky time for 1/8 of a day
+o                   - rotate sky forward fast
+Shift + o           - rotate sky backwards fast
 
 LAlt + drag         - move windows
 
 F5                  - quick save (to ~/.config/openzone/quicksave.ozState)
 F7                  - quick load (from ~/.config/openzone/quicksave.ozState)
-F7                  - load autosaved state (from ~/.config/openzone/autosave.ozState)
-F11                 - screenshot (saved to ~/.config/openzone/screenshot DATE TIME.bmp)
+F8                  - load autosaved state (from ~/.config/openzone/autosave.ozState)
+Ctrl + F8           - load new world
+F10                 - screenshot (saved to '~/.config/openzone/screenshot DATE TIME.bmp')
+Ctrl + F11          - toggle fullscreen mode
 F12                 - minimise and pause
-Shift + F12         - toggle fullscreen mode
 Ctrl + F12          - force exit
 
 Esc                 - exit application
@@ -137,7 +139,7 @@ Notes
 -----
 - On first run ~/.config/openzone/client.rc (on Windows: %APPDATA%\OpenZone\client.rc) configuration
   file with default settings is generated. Edit it to change any settings you wish.
-- %APPDATA% usually means C:\Documents and Settings\username\Application Data on Windows XP or
+- %APPDATA% usually means 'C:\Documents and Settings\username\Application Data' on Windows XP or
   C:\Users\username\AppData\Roaming on Windows 7.
 
 Troubleshooting

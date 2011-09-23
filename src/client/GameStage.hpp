@@ -42,11 +42,12 @@ namespace client
 
       void run();
 
+      bool   isLoaded;
+
     public:
 
       State  state;
       Proxy* proxy;
-      Buffer buffer;
 
       virtual bool update();
       virtual void present();
@@ -55,7 +56,7 @@ namespace client
       virtual void end();
 
       bool read( const char* file );
-      void write( const char* file );
+      void write( const char* file ) const;
 
       void clear();
 

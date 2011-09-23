@@ -18,14 +18,18 @@ namespace oz
   {
     public:
 
+      int   id;
+
       float heading;
       float period;
       float time;
 
+      Caelum();
+
       void update();
 
       void read( InputStream* istream );
-      void write( OutputStream* ostream );
+      void write( OutputStream* ostream ) const;
 
   };
 

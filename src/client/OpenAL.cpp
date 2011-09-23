@@ -16,6 +16,8 @@ namespace oz
 namespace client
 {
 
+#ifndef NDEBUG
+
   void alCheckError( const char* file, int line, const char* function )
   {
     const char* message;
@@ -54,6 +56,8 @@ namespace client
     System::trap();
     System::abort( "AL error `%s' at %s:%d: %s", message, file, line, function );
   }
+
+#endif
 
 }
 }

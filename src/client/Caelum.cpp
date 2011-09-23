@@ -45,11 +45,17 @@ namespace client
 
 #ifndef OZ_TOOLS
 
-  Caelum::Caelum() : vao( 0 ), vbo( 0 ), sunTexId( 0 ), moonTexId( 0 )
-  {}
+  Caelum::Caelum() : vao( 0 ), vbo( 0 ), sunTexId( 0 ), moonTexId( 0 ),
+      lightDir( Vec3( 0.0f, 0.0f, 1.0f ) ), id( -1 )
+  {
+  }
 
   void Caelum::update()
   {
+    if( id == -1 ) {
+      return;
+    }
+
     angle = Math::TAU * ( orbis.caelum.time / orbis.caelum.period );
 
     Mat44 rot = Mat44::rotation( Quat::rotAxis( axis, angle ) );
@@ -83,6 +89,10 @@ namespace client
 
   void Caelum::draw()
   {
+    if( id == -1 ) {
+      return;
+    }
+
     float colour[4] = {
       STAR_COLOUR[0] + ratio * ( DAY_COLOUR[0] - STAR_COLOUR[0] ),
       STAR_COLOUR[1] + ratio * ( DAY_COLOUR[1] - STAR_COLOUR[1] ),
@@ -156,9 +166,14 @@ namespace client
     OZ_GL_CHECK_ERROR();
   }
 
-  void Caelum::load( const char* name )
+  void Caelum::load()
   {
-    log.print( "Loading Caelum '%s' ...", name );
+    id = orbis.caelum.id;
+
+    const String& name = translator.caela[id].name;
+    const String& path = translator.caela[id].path;
+
+    log.print( "Loading Caelum '%s' ...", name.cstr() );
 
     axis = Vec3( -Math::sin( orbis.caelum.heading ), Math::cos( orbis.caelum.heading ), 0.0f );
     originalLightDir = Vec3( Math::cos( orbis.caelum.heading ),
@@ -168,7 +183,7 @@ namespace client
     DArray<Vertex> vertices(  MAX_STARS * 4 );
 
     Buffer buffer;
-    if( !buffer.read( "caelum/" + String( name ) + ".ozcCaelum" ) ) {
+    if( !buffer.read( path ) ) {
       log.printEnd( " Cannot open file" );
       throw Exception( "Caelum loading failed" );
     }
@@ -179,9 +194,7 @@ namespace client
       vertices[i].read( &is );
     }
 
-# ifdef OZ_GL_COMPATIBLE
-    vao = 1;
-# else
+# ifndef OZ_GL_COMPATIBLE
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
 # endif
@@ -217,7 +230,7 @@ namespace client
 
   void Caelum::unload()
   {
-    if( vao != 0 ) {
+    if( id != -1 ) {
       glDeleteTextures( 1, &sunTexId );
       glDeleteTextures( 1, &moonTexId );
 
@@ -230,6 +243,15 @@ namespace client
       moonTexId = 0;
       vbo = 0;
       vao = 0;
+
+      Colours::diffuse = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+      Colours::ambient = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+      Colours::caelum = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+      Colours::water = Vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+
+      lightDir = Vec3( 0.0f, 0.0f, 1.0f );
+
+      id = -1;
     }
   }
 

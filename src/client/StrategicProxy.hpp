@@ -25,6 +25,7 @@ namespace client
       static const float MIN_HEIGHT;
       static const float MAX_HEIGHT;
       static const float DEFAULT_HEIGHT;
+      static const float DEFAULT_ANGLE;
       static const float FREE_LOW_SPEED;
       static const float FREE_HIGH_SPEED;
       static const float RTS_LOW_SPEED;
@@ -37,6 +38,8 @@ namespace client
       bool  isRTSFast;
 
     public:
+
+      StrategicProxy();
 
       virtual void begin();
       virtual void update();
