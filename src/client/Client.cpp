@@ -30,10 +30,6 @@
 # include <SDL_net.h>
 #endif
 
-#ifdef OZ_MINGW
-# define program_invocation_short_name "openzone"
-#endif
-
 namespace oz
 {
 namespace client
@@ -257,8 +253,7 @@ namespace client
     log.indent();
     log.println( "openzone [--help] [--load | -l | --no-load | -L]" );
     log.println( "         [--save | -s | --no-save | -S] [(--time | -t) <num>]" );
-    log.println( "         [(--prefix | -p) <prefix>]",
-                 program_invocation_short_name );
+    log.println( "         [(--prefix | -p) <prefix>]" );
     log.println();
     log.println( "--help" );
     log.println( "\tPrints that help message." );

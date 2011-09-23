@@ -165,9 +165,6 @@ namespace client
 
     InputStream is = buffer.inputStream();
 
-    ushort* indices  = new ushort[TILE_INDICES];
-    Vertex* vertices = new Vertex[TILE_VERTICES];
-
     waterTexId  = context.readTexture( &is );
     detailTexId = context.readTexture( &is );
     mapTexId    = context.readTexture( &is );
@@ -178,28 +175,36 @@ namespace client
     glGenBuffers( TILES * TILES, &vbos[0][0] );
     glGenBuffers( 1, &ibo );
 
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, TILE_INDICES * sizeof( ushort ), 0, GL_STATIC_DRAW );
+
+    ushort* indices =
+        reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+
     for( int i = 0; i < TILE_INDICES; ++i ) {
       indices[i] = ushort( is.readShort() );
     }
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, TILE_INDICES * sizeof( ushort ), indices,
-                  GL_STATIC_DRAW );
+    glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
     for( int i = 0; i < TILES; ++i ) {
       for( int j = 0; j < TILES; ++j ) {
-        for( int k = 0; k < TILE_VERTICES; ++k ) {
-          vertices[k].read( &is );
-        }
-
 # ifndef OZ_GL_COMPATIBLE
         glBindVertexArray( vaos[i][j] );
 # endif
 
         glBindBuffer( GL_ARRAY_BUFFER, vbos[i][j] );
-        glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), vertices,
-                      GL_STATIC_DRAW );
+        glBufferData( GL_ARRAY_BUFFER, TILE_VERTICES * sizeof( Vertex ), 0, GL_STATIC_DRAW );
+
+        Vertex* vertices =
+            reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+
+        for( int k = 0; k < TILE_VERTICES; ++k ) {
+          vertices[k].read( &is );
+        }
+
+        glUnmapBuffer( GL_ARRAY_BUFFER );
 
 # ifndef OZ_GL_COMPATIBLE
         Vertex::setFormat();
@@ -224,9 +229,6 @@ namespace client
     waterShaderId = translator.shaderIndex( "terraWater" );
     submergedLandShaderId = translator.shaderIndex( "submergedTerraLand" );
     submergedWaterShaderId = translator.shaderIndex( "submergedTerraWater" );
-
-    delete[] indices;
-    delete[] vertices;
 
     log.printEnd( " OK" );
   }

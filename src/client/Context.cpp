@@ -51,6 +51,7 @@ namespace client
 
   Pool<Context::Source> Context::Source::pool;
   Buffer Context::buffer;
+  bool Context::enableS3TC = false;
 
   void Context::addSource( uint srcId, int sample )
   {
@@ -140,12 +141,12 @@ namespace client
     int nMipmaps       = stream->readInt();
     int internalFormat = stream->readInt();
 
-# ifdef OZ_GL_S3TC
-    hard_assert( internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
-                 internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT );
-# else
-    hard_assert( internalFormat == GL_RGB || internalFormat == GL_RGBA );
-# endif
+    bool usesS3TC = internalFormat == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
+        internalFormat == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+
+    if( !enableS3TC && usesS3TC ) {
+      throw Exception( "Texture uses S3 texture compression but texture compression disabled" );
+    }
 
     if( !wrap ) {
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
@@ -160,13 +161,14 @@ namespace client
       int height = stream->readInt();
       int size = stream->readInt();
 
-# ifdef OZ_GL_S3TC
-      glCompressedTexImage2D( GL_TEXTURE_2D, i, uint( internalFormat ), width, height, 0,
-                              size, stream->prepareRead( size ) );
-# else
-      glTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
-                    GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareRead( size ) );
-# endif
+      if( usesS3TC ) {
+        glCompressedTexImage2D( GL_TEXTURE_2D, i, uint( internalFormat ), width, height, 0,
+                                size, stream->prepareRead( size ) );
+      }
+      else {
+        glTexImage2D( GL_TEXTURE_2D, i, internalFormat, width, height, 0,
+                      GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareRead( size ) );
+      }
     }
 
     if( glGetError() != GL_NO_ERROR || !glIsTexture( texId ) ) {
@@ -605,11 +607,13 @@ uint Context::requestTexture( int id )
 
   void Context::init()
   {
+    log.print( "Initialising Context ..." );
+
     textures = null;
     sounds   = null;
     bsps     = null;
 
-    log.print( "Initialising Context ..." );
+    enableS3TC = config.get( "context.enableS3TC", false );
 
     OZ_REGISTER_MODELCLASS( SMM );
     OZ_REGISTER_MODELCLASS( SMMVehicle );
@@ -664,22 +668,19 @@ uint Context::requestTexture( int id )
 
 #else
 
+  bool Context::useS3TC = false;
+
   uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
                               bool wrap, int magFilter, int minFilter )
   {
     OZ_GL_CHECK_ERROR();
     hard_assert( bytesPerPixel == 3 || bytesPerPixel == 4 );
 
+    bool generateMipmaps = false;
     uint sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-# ifdef OZ_GL_S3TC
     int internalFormat = bytesPerPixel == 4 ?
-        GL_COMPRESSED_RGBA_S3TC_DXT5_EXT :
-        GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-# else
-    int internalFormat = int( sourceFormat );
-# endif
-
-    bool doGenerateMipmaps = false;
+        ( useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA ) :
+        ( useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB );
 
     uint texId;
     glGenTextures( 1, &texId );
@@ -707,7 +708,7 @@ uint Context::requestTexture( int id )
       case GL_NEAREST_MIPMAP_LINEAR:
       case GL_LINEAR_MIPMAP_NEAREST:
       case GL_LINEAR_MIPMAP_LINEAR: {
-        doGenerateMipmaps = true;
+        generateMipmaps = true;
         break;
       }
       default: {
@@ -723,7 +724,7 @@ uint Context::requestTexture( int id )
     glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
                   sourceFormat, GL_UNSIGNED_BYTE, data );
 
-    if( doGenerateMipmaps ) {
+    if( generateMipmaps ) {
       glGenerateMipmap( GL_TEXTURE_2D );
     }
 
@@ -812,21 +813,24 @@ uint Context::requestTexture( int id )
 
       glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_WIDTH, &width );
       glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_HEIGHT, &height );
-# ifdef OZ_GL_S3TC
-      glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
-# else
-      size = width * height * 4;
-# endif
+
+      if( useS3TC ) {
+        glGetTexLevelParameteriv( GL_TEXTURE_2D, i, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &size );
+      }
+      else {
+        size = width * height * 4;
+      }
 
       stream->writeInt( width );
       stream->writeInt( height );
       stream->writeInt( size );
 
-# ifdef OZ_GL_S3TC
-      glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
-# else
-      glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareWrite( size ) );
-# endif
+      if( useS3TC ) {
+        glGetCompressedTexImage( GL_TEXTURE_2D, i, stream->prepareWrite( size ) );
+      }
+      else {
+        glGetTexImage( GL_TEXTURE_2D, i, GL_RGBA, GL_UNSIGNED_BYTE, stream->prepareWrite( size ) );
+      }
     }
 
     OZ_GL_CHECK_ERROR();

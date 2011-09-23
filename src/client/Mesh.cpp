@@ -172,21 +172,6 @@ namespace client
     int nVertices = stream->readInt();
     int nIndices  = stream->readInt();
 
-# if defined( OZ_BIG_ENDIAN_STREAM ) == defined( OZ_BIG_ENDIAN_ARCH )
-    const char* vertices = stream->prepareRead( nVertices * int( sizeof( Vertex ) ) );
-    const char* indices  = stream->prepareRead( nIndices *  int( sizeof( ushort ) ) );
-# else
-    Vertex* vertices = new Vertex[nVertices];
-    for( int i = 0; i < nVertices; ++i ) {
-      vertices[i].read( stream );
-    }
-
-    ushort* indices = new ushort[nIndices];
-    for( int i = 0; i < nIndices; ++i ) {
-      indices[i] = stream->readShort();
-    }
-# endif
-
 # ifdef OZ_GL_COMPATIBLE
     vao = 1;
 # else
@@ -196,11 +181,28 @@ namespace client
 
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), vertices, usage );
+    glBufferData( GL_ARRAY_BUFFER, nVertices * int( sizeof( Vertex ) ), 0, usage );
+
+    Vertex* vertices = reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+
+    for( int i = 0; i < nVertices; ++i ) {
+      vertices[i].read( stream );
+    }
+
+    glUnmapBuffer( GL_ARRAY_BUFFER );
 
     glGenBuffers( 1, &ibo );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * int( sizeof( ushort ) ), indices, GL_STATIC_DRAW );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, nIndices * int( sizeof( ushort ) ), 0, GL_STATIC_DRAW );
+
+    ushort* indices =
+        reinterpret_cast<ushort*>( glMapBuffer( GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+
+    for( int i = 0; i < nIndices; ++i ) {
+      indices[i] = ushort( stream->readShort() );
+    }
+
+    glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER );
 
 # ifndef OZ_GL_COMPATIBLE
     Vertex::setFormat();
@@ -210,11 +212,6 @@ namespace client
 
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-# if defined( OZ_BIG_ENDIAN_STREAM ) != defined( OZ_BIG_ENDIAN_ARCH )
-    delete[] indices;
-    delete[] vertices;
-# endif
 
     int nTextures = stream->readInt();
 
