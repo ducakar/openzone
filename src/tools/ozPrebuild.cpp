@@ -28,10 +28,6 @@
 #include <sys/stat.h>
 #include <SDL/SDL_main.h>
 
-#ifdef OZ_MINGW
-# define program_invocation_short_name "ozPrebuild"
-#endif
-
 using namespace oz;
 
 bool Alloc::isLocked = true;
@@ -56,19 +52,22 @@ static const char* const CREATE_DIRS[] = {
   "ui/icon"
 };
 
-static bool  doForceRebuild = false;
+static bool forceRebuild = false;
 
 static void printUsage()
 {
   log.println( "Usage:" );
   log.indent();
-  log.println( "ozPrebuild [--help] [-f | --force] <prefix>", program_invocation_short_name );
+  log.println( "ozPrebuild [--help] [-f | --force] <prefix>" );
   log.println();
   log.println( "--help" );
   log.println( "\tPrints that help message." );
   log.println();
   log.println( "-f, --force" );
   log.println( "\tForce rebuild of all resources." );
+  log.println();
+  log.println( "-C, --use-S3TC" );
+  log.println( "\tUse S3 texture compression" );
   log.println();
   log.println( "<prefix>" );
   log.println( "\tSets data directory to <prefix>/share/openzone." );
@@ -137,7 +136,7 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
     if( stat( srcPath, &srcInfo ) != 0 ) {
       throw Exception( "Source texture '" + srcPath + "' stat error" );
     }
-    if( !doForceRebuild && stat( destPath, &destInfo ) == 0 &&
+    if( !forceRebuild && stat( destPath, &destInfo ) == 0 &&
         destInfo.st_mtime > srcInfo.st_mtime )
     {
       continue;
@@ -197,7 +196,7 @@ static void prebuildModels()
       {
         throw Exception( "OBJ model '" + name + "' source files missing" );
       }
-      if( !doForceRebuild && stat( dirName + name + ".ozcSMM", &destInfo ) == 0 &&
+      if( !forceRebuild && stat( dirName + name + ".ozcSMM", &destInfo ) == 0 &&
           configInfo.st_mtime < destInfo.st_mtime &&
           srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
       {
@@ -212,7 +211,7 @@ static void prebuildModels()
       {
         throw Exception( "MD2 model '" + name + "' source files missing" );
       }
-      if( !doForceRebuild && ( stat( dirName + name + ".ozcSMM", &destInfo ) == 0 ||
+      if( !forceRebuild && ( stat( dirName + name + ".ozcSMM", &destInfo ) == 0 ||
           stat( dirName + name + ".ozcMD2", &destInfo ) == 0 ) &&
           configInfo.st_mtime < destInfo.st_mtime &&
           srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
@@ -262,7 +261,7 @@ static void prebuildBSPs()
     if( stat( srcPath0, &srcInfo0 ) != 0 || stat( srcPath1, &srcInfo1 ) != 0 ) {
       throw Exception( "Source BSP stat error" );
     }
-    if( !doForceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
+    if( !forceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
         destInfo0.st_mtime > srcInfo0.st_mtime && destInfo0.st_mtime > srcInfo1.st_mtime &&
         destInfo1.st_mtime >= destInfo0.st_mtime )
     {
@@ -309,7 +308,7 @@ static void prebuildTerras()
     if( stat( srcPath, &srcInfo ) != 0 ) {
       throw Exception( "Terra .rc stat error" );
     }
-    if( !doForceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
+    if( !forceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
         destInfo0.st_mtime > srcInfo.st_mtime && destInfo1.st_mtime >= destInfo0.st_mtime )
     {
       continue;
@@ -353,7 +352,7 @@ static void prebuildCaela()
     if( stat( srcPath, &srcInfo ) != 0 ) {
       throw Exception( "Caelum .rc stat error" );
     }
-    if( !doForceRebuild && stat( destPath, &destInfo ) == 0 &&
+    if( !forceRebuild && stat( destPath, &destInfo ) == 0 &&
         destInfo.st_mtime > srcInfo.st_mtime )
     {
       continue;
@@ -419,7 +418,10 @@ int main( int argc, char** argv )
         return -1;
       }
       else if( String::equals( argv[i], "--force" ) || String::equals( argv[i], "-f" ) ) {
-        doForceRebuild = true;
+        forceRebuild = true;
+      }
+      else if( String::equals( argv[i], "--use-S3TC" ) || String::equals( argv[i], "-C" ) ) {
+        client::context.useS3TC = true;
       }
       else if( argv[i][0] != '-' && !config.contains( "dir.prefix" ) ) {
         config.add( "dir.prefix", argv[i] );
@@ -476,6 +478,10 @@ int main( int argc, char** argv )
     config.add( "screen.full", "false" );
     client::render.init();
     SDL_WM_SetCaption( OZ_APPLICATION_TITLE " :: Prebuilding data ...", null );
+
+    if( !config.get( "context.enableS3TC", false ) && client::context.useS3TC ) {
+      throw Exception( "S3 texture compression enable but not supported" );
+    }
 
     createDirs();
 

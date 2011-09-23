@@ -180,8 +180,6 @@ namespace client
                              Math::sin( orbis.caelum.heading ),
                              0.0f );
 
-    DArray<Vertex> vertices(  MAX_STARS * 4 );
-
     Buffer buffer;
     if( !buffer.read( path ) ) {
       log.printEnd( " Cannot open file" );
@@ -190,10 +188,6 @@ namespace client
 
     InputStream is = buffer.inputStream();
 
-    for( int i = 0; i < MAX_STARS * 4; ++i ) {
-      vertices[i].read( &is );
-    }
-
 # ifndef OZ_GL_COMPATIBLE
     glGenVertexArrays( 1, &vao );
     glBindVertexArray( vao );
@@ -201,9 +195,15 @@ namespace client
 
     glGenBuffers( 1, &vbo );
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
-    glBufferData( GL_ARRAY_BUFFER, vertices.length() * int( sizeof( Vertex ) ), vertices,
-                  GL_STATIC_DRAW );
-    vertices.dealloc();
+    glBufferData( GL_ARRAY_BUFFER, MAX_STARS * 4 * int( sizeof( Vertex ) ), 0, GL_STATIC_DRAW );
+
+    Vertex* vertices = reinterpret_cast<Vertex*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+
+    for( int i = 0; i < MAX_STARS * 4; ++i ) {
+      vertices[i].read( &is );
+    }
+
+    glUnmapBuffer( GL_ARRAY_BUFFER );
 
 # ifndef OZ_GL_COMPATIBLE
     glEnableVertexAttribArray( Attrib::POSITION );

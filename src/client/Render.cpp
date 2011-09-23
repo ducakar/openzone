@@ -475,11 +475,13 @@ namespace client
 
     SDL_ShowCursor( SDL_FALSE );
 
-    bool isFBOSupported = false;
-    bool isFloatTexSupported = false;
+    bool isCatalyst  = false;
+    bool isGallium   = false;
+    bool hasFBO      = false;
+    bool hasFloatTex = false;
+    bool hasS3TC     = false;
 #ifndef OZ_GL_COMPATIBLE
-    bool isVAOSupported = false;
-    bool isS3TCSupported = false;
+    bool hasVAO      = false;
 #endif
 
     String vendor   = String::cstr( glGetString( GL_VENDOR ) );
@@ -495,21 +497,28 @@ namespace client
     log.println( "OpenGL extensions {" );
     log.indent();
 
+    if( strstr( vendor, "ATI" ) != null ) {
+      isCatalyst = true;
+    }
+    if( strstr( renderer, "Gallium" ) != null ) {
+      isGallium = true;
+    }
+
     foreach( extension, extensions.citer() ) {
       log.println( "%s", extension->cstr() );
 
       if( extension->equals( "GL_ARB_framebuffer_object" ) ) {
-        isFBOSupported = true;
+        hasFBO = true;
       }
       if( extension->equals( "GL_ARB_texture_float" ) ) {
-        isFloatTexSupported = true;
+        hasFloatTex = true;
+      }
+      if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
+        hasS3TC = true;
       }
 #ifndef OZ_GL_COMPATIBLE
       if( extension->equals( "GL_ARB_vertex_array_object" ) ) {
-        isVAOSupported = true;
-      }
-      if( extension->equals( "GL_EXT_texture_compression_s3tc" ) ) {
-        isS3TCSupported = true;
+        hasVAO = true;
       }
 #endif
     }
@@ -525,30 +534,41 @@ namespace client
       throw Exception( "Too old OpenGL version" );
     }
 
-    if( !isFBOSupported ) {
+    if( !hasFBO ) {
       log.println( "Error: frame buffer object (GL_ARB_framebuffer_object) is not supported" );
       throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
     }
-    if( !isFloatTexSupported ) {
+
+    if( isGallium ) {
+      config.include( "shader.setSamplerIndices", "false" );
+    }
+    else {
+      config.include( "shader.setSamplerIndices", "true" );
+    }
+
+    if( !hasFloatTex ) {
       config.add( "shader.vertexTexture", "false" );
     }
+    else if( isCatalyst ) {
+      config.include( "shader.vertexTexture", "false" );
+    }
+    else {
+      config.include( "shader.vertexTexture", "true" );
+    }
+
+    if( !hasS3TC ) {
+      config.add( "context.enableS3TC", "false" );
+    }
+    else {
+      config.include( "context.enableS3TC", "true" );
+    }
+
 #ifndef OZ_GL_COMPATIBLE
-    if( !isVAOSupported ) {
+    if( !hasVAO ) {
       log.println( "Error: vertex array object (GL_ARB_vertex_array_object) is not supported" );
       throw Exception( "GL_ARB_vertex_array_object not supported by OpenGL" );
     }
-    if( !isS3TCSupported ) {
-      log.println( "Error: S3 texture compression (GL_EXT_texture_compression_s3tc) is not supported" );
-      throw Exception( "GL_EXT_texture_compression_s3tc not supported by OpenGL" );
-    }
 #endif
-
-    if( strstr( vendor, "ATI" ) != null ) {
-      config.include( "shader.vertexTexture", "false" );
-    }
-    if( strstr( renderer, "Gallium" ) != null ) {
-      config.include( "shader.setSamplerIndices", "false" );
-    }
 
     nearDist2            = config.getSet( "render.nearDistance",         100.0f );
 

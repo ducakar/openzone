@@ -109,6 +109,14 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
+      void setPos( const char* newPos )
+      {
+        hard_assert( start <= newPos && newPos <= end );
+
+        pos = newPos;
+      }
+
+      OZ_ALWAYS_INLINE
       const char* prepareRead( int count )
       {
         const char* oldPos = pos;
@@ -322,6 +330,14 @@ namespace oz
         hard_assert( start <= pos && pos <= end );
 
         return pos;
+      }
+
+      OZ_ALWAYS_INLINE
+      void setPos( char* newPos )
+      {
+        hard_assert( start <= newPos && newPos <= end );
+
+        pos = newPos;
       }
 
       OZ_ALWAYS_INLINE

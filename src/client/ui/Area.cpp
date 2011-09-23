@@ -109,7 +109,7 @@ namespace ui
 
     glBindTexture( GL_TEXTURE_2D, font.textTexId );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                  text->pixels);
+                  text->pixels );
 
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
     shape.fill( x + 1, y - 1, text->w, text->h );

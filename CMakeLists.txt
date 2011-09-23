@@ -11,10 +11,8 @@ option( OZ_POOL_ALLOC "Enable Pool and new/delete overloads that use it. Otherwi
 option( OZ_SIMD "Enable generic SIMD code in linear algebra math classes." OFF )
 option( OZ_BIG_ENDIAN_STREAM "Use big-endian byte order for binary files and networking" OFF )
 
-option( OZ_CYLINDER "Enable cylinder collision model for object pairs that both have cylinder flag (in other cases AABB is used)." ON )
 option( OZ_NETWORKING "Enable networking." OFF )
 option( OZ_GL_COMPATIBLE "Use common subset of OpenGL 2.1, OpenGL 3.0, OpenGL ES 2.0, no texture compression, GLSL 1.20." ON )
-option( OZ_GL_S3TC "Use S3 texture compression." OFF )
 option( OZ_BUMPMAP "Enable bumpmap support (not implemented yet, only vertex format for now)." OFF )
 
 option( OZ_BUILD_TESTS "Build tests." OFF )

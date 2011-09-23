@@ -82,85 +82,6 @@ namespace client
     OZ_GL_CHECK_ERROR();
   }
 
-  void MD2::load()
-  {
-    const String& name = translator.models[id].name;
-    const String& path = translator.models[id].path;
-
-    log.print( "Loading MD2 model '%s' ...", name.cstr() );
-
-    Buffer buffer;
-    if( !buffer.read( path ) ) {
-      throw Exception( "MD2 cannot read model file" );
-    }
-
-    InputStream is  = buffer.inputStream();
-
-    shaderId        = translator.shaderIndex( is.readString() );
-
-    nFrames         = is.readInt();
-    nFrameVertices  = is.readInt();
-    nFramePositions = is.readInt();
-    weaponTransf    = is.readMat44();
-
-    positions = new Vec4[nFramePositions * nFrames];
-    normals   = new Vec4[nFramePositions * nFrames];
-
-    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      positions[i].x = is.readFloat();
-      positions[i].y = is.readFloat();
-      positions[i].z = is.readFloat();
-      positions[i].w = 1.0f;
-    }
-
-    for( int i = 0; i < nFramePositions * nFrames; ++i ) {
-      normals[i].x  = is.readFloat();
-      normals[i].y  = is.readFloat();
-      normals[i].z  = is.readFloat();
-      normals[i].w  = 0.0f;
-    }
-
-    if( shader.hasVertexTexture ) {
-      glGenTextures( 1, &vertexTexId );
-      glBindTexture( GL_TEXTURE_2D, vertexTexId );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, nFrames, 0,
-                    GL_RGBA, GL_FLOAT, positions );
-      glBindTexture( GL_TEXTURE_2D, 0 );
-
-      glGenTextures( 1, &normalTexId );
-      glBindTexture( GL_TEXTURE_2D, normalTexId );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, nFrames, 0,
-                    GL_RGBA, GL_FLOAT, normals );
-      glBindTexture( GL_TEXTURE_2D, 0 );
-
-      delete[] positions;
-      delete[] normals;
-
-      mesh.load( &is, GL_STATIC_DRAW );
-    }
-
-    if( !shader.hasVertexTexture ) {
-      const Vertex* vertexBuffer = reinterpret_cast<const Vertex*>( is.getPos() + 2*sizeof( int ) );
-
-      vertices = new Vertex[nFrameVertices];
-      for( int i = 0; i < nFrameVertices; ++i ) {
-        vertices[i] = vertexBuffer[i];
-      }
-
-      mesh.load( &is, GL_STREAM_DRAW );
-    }
-
-    OZ_GL_CHECK_ERROR();
-
-    isLoaded = true;
-
-    log.printEnd( " OK" );
-  }
-
   void MD2::advance( AnimState* anim, float dt ) const
   {
     anim->currTime += dt;
@@ -265,6 +186,124 @@ namespace client
     tf.apply();
 
     mesh.draw( Mesh::SOLID_BIT );
+  }
+
+  void MD2::load()
+  {
+    const String& name = translator.models[id].name;
+    const String& path = translator.models[id].path;
+
+    log.print( "Loading MD2 model '%s' ...", name.cstr() );
+
+    Buffer buffer;
+    if( !buffer.read( path ) ) {
+      throw Exception( "MD2 cannot read model file" );
+    }
+
+    InputStream is  = buffer.inputStream();
+
+    shaderId        = translator.shaderIndex( is.readString() );
+
+    nFrames         = is.readInt();
+    nFrameVertices  = is.readInt();
+    nFramePositions = is.readInt();
+    weaponTransf    = is.readMat44();
+
+    if( shader.hasVertexTexture ) {
+      uint pbos[2];
+
+      glGenBuffers( 2, pbos );
+
+      glBindBuffer( GL_PIXEL_UNPACK_BUFFER, pbos[0] );
+      glBufferData( GL_PIXEL_UNPACK_BUFFER, nFrames * nFramePositions * int( sizeof( Vec4 ) ), 0,
+                    GL_STREAM_DRAW );
+
+      positions = reinterpret_cast<Vec4*>( glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY ) );
+
+      for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+        positions[i].x = is.readFloat();
+        positions[i].y = is.readFloat();
+        positions[i].z = is.readFloat();
+        positions[i].w = 1.0f;
+      }
+
+      glUnmapBuffer( GL_PIXEL_UNPACK_BUFFER );
+
+      glGenTextures( 1, &vertexTexId );
+      glBindTexture( GL_TEXTURE_2D, vertexTexId );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, nFrames, 0,
+                    GL_RGBA, GL_FLOAT, 0 );
+      glBindTexture( GL_TEXTURE_2D, 0 );
+
+      glBindBuffer( GL_PIXEL_UNPACK_BUFFER, pbos[0] );
+      glBufferData( GL_PIXEL_UNPACK_BUFFER, nFrames * nFramePositions * int( sizeof( Vec4 ) ), 0,
+                    GL_STREAM_DRAW );
+
+      normals = reinterpret_cast<Vec4*>( glMapBuffer( GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY ) );
+
+      for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+        normals[i].x  = is.readFloat();
+        normals[i].y  = is.readFloat();
+        normals[i].z  = is.readFloat();
+        normals[i].w  = 0.0f;
+      }
+
+      glUnmapBuffer( GL_PIXEL_UNPACK_BUFFER );
+
+      glGenTextures( 1, &normalTexId );
+      glBindTexture( GL_TEXTURE_2D, normalTexId );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, nFrames, 0,
+                    GL_RGBA, GL_FLOAT, 0 );
+      glBindTexture( GL_TEXTURE_2D, 0 );
+
+      glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
+
+      mesh.load( &is, GL_STATIC_DRAW );
+
+      glDeleteBuffers( 2, pbos );
+    }
+    else {
+      positions = new Vec4[nFramePositions * nFrames];
+      normals   = new Vec4[nFramePositions * nFrames];
+
+      for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+        positions[i].x = is.readFloat();
+        positions[i].y = is.readFloat();
+        positions[i].z = is.readFloat();
+        positions[i].w = 1.0f;
+      }
+
+      for( int i = 0; i < nFramePositions * nFrames; ++i ) {
+        normals[i].x  = is.readFloat();
+        normals[i].y  = is.readFloat();
+        normals[i].z  = is.readFloat();
+        normals[i].w  = 0.0f;
+      }
+
+      const char* meshStart = is.getPos();
+
+      is.readInt();
+      is.readInt();
+
+      vertices = new Vertex[nFrameVertices];
+      for( int i = 0; i < nFrameVertices; ++i ) {
+        vertices[i].read( &is );
+      }
+
+      is.setPos( meshStart );
+
+      mesh.load( &is, GL_STREAM_DRAW );
+    }
+
+    OZ_GL_CHECK_ERROR();
+
+    isLoaded = true;
+
+    log.printEnd( " OK" );
   }
 
 #else // OZ_TOOLS
@@ -448,7 +487,7 @@ namespace client
     Config config;
     config.load( configFile );
 
-    bool doForceStatic = config.get( "forceStatic", false );
+    bool forceStatic = config.get( "forceStatic", false );
 
     FILE* file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
@@ -467,7 +506,7 @@ namespace client
       throw Exception( "MD2 model loading error" );
     }
 
-    if( doForceStatic ) {
+    if( forceStatic ) {
       header.nFrames = 1;
     }
 
@@ -509,8 +548,6 @@ namespace client
     weaponTransf.rotateY( Math::rad( weaponRot.y ) );
     weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
     weaponTransf.translate( weaponTransl );
-
-    header.nFrames = doForceStatic ? 1 : header.nFrames;
 
     compiler.beginMesh();
     compiler.enable( CAP_UNIQUE );

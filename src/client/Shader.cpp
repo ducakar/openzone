@@ -216,7 +216,7 @@ namespace client
 
     param = programs[id].param;
 
-    if( config.getSet( "shader.setSamplerIndices", true ) ) {
+    if( config.get( "shader.setSamplerIndices", true ) ) {
       int textureIds[4] = { 0, 1, 2, 3 };
       glUniform1iv( param.oz_Textures, 4, textureIds );
     }
@@ -387,7 +387,7 @@ namespace client
     log.println( "Initialising Shader {" );
     log.indent();
 
-    hasVertexTexture = config.getSet( "shader.vertexTexture", true );
+    hasVertexTexture = config.get( "shader.vertexTexture", true );
 
     // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
     // always returns white colour when texture 0 is bound)

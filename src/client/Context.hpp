@@ -111,13 +111,14 @@ namespace client
       HashIndex<Model*, 8191>           models;   // currently loaded models
       HashIndex<Audio*, 2039>           audios;   // currently loaded audio models
 
-      static Buffer                     buffer;
-
       int                               maxModels;
       int                               maxAudios;
       int                               maxSources;
       int                               maxBSPSources;
       int                               maxObjSources;
+
+      static Buffer                     buffer;
+      static bool                       enableS3TC;
 
       void addSource( uint srcId, int sample );
       void addBSPSource( uint srcId, int sample, int key );
@@ -167,6 +168,12 @@ namespace client
       void free();
 
 #else
+
+    public:
+
+      static bool useS3TC;
+
+    private:
 
       static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
                                 bool wrap, int magFilter, int minFilter );
