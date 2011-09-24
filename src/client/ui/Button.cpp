@@ -49,15 +49,16 @@ namespace ui
     }
 
     fill( 0, 0, width, height );
-    print( width / 2, height / 2, ALIGN_CENTRE, "%s", label.cstr() );
+    label.draw( this );
 
     isHighlighted = false;
     isClicked = false;
   }
 
-  Button::Button( const char* label_, Callback* callback, int width, int height ) :
-      Area( width, height ), callback( callback ), isHighlighted( false ), isClicked( false ),
-      label( label_ )
+  Button::Button( const char* text, Callback* callback, int width, int height ) :
+      Area( width, height ),
+      label( width / 2, height / 2, ALIGN_CENTRE, Font::SANS, text ),
+      callback( callback ), isHighlighted( false ), isClicked( false )
   {}
 
   void Button::setCallback( Callback* callback_ )

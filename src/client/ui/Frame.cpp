@@ -55,19 +55,24 @@ namespace ui
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
     fill( 0, 0, width, height );
 
-    setFont( Font::TITLE );
-    print( width / 2, -textHeight - 4, ALIGN_HCENTRE, title );
+    title.draw( this );
 
     drawChildren();
   }
 
   Frame::Frame( int width, int height, const char* title_ ) :
-      Area( width, height + Font::INFOS[Font::TITLE].height + 8 ), title( title_ )
-  {}
+      Area( width, height + Font::INFOS[Font::TITLE].height + 8 )
+  {
+    int textHeight = font.INFOS[Font::TITLE].height;
+
+    title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::TITLE, title_ );
+  }
 
   Frame::Frame( int x, int y, int width, int height, const char* title_ ) :
-      Area( x, y, width, height + Font::INFOS[Font::TITLE].height + 8 ), title( title_ )
-  {}
+      Area( x, y, width, height + Font::INFOS[Font::TITLE].height + 8 )
+  {
+    title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::TITLE, title_ );
+  }
 
 }
 }

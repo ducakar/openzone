@@ -98,24 +98,19 @@ namespace ui
 
     SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
 
-    textWidth = text->w;
-
     int x = baseX - text->w / 2;
     int y = baseY - text->h / 2;
 
     if( x < 0 || x + text->w >= camera.width - 1 || y < 1 || y + text->h >= camera.height ) {
-      textWidth = 0;
       SDL_FreeSurface( text );
       return;
     }
 
-    uint textTexId;
-    glGenTextures( 1, &textTexId );
-    glBindTexture( GL_TEXTURE_2D, textTexId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glBindTexture( GL_TEXTURE_2D, titleTexId );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                   text->pixels);
+
+    SDL_FreeSurface( text );
 
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
     shape.fill( x + 1, y - 1, text->w, text->h );
@@ -123,9 +118,6 @@ namespace ui
     shape.fill( x, y, text->w, text->h );
 
     glBindTexture( GL_TEXTURE_2D, 0 );
-
-    glDeleteTextures( 1, &textTexId );
-    SDL_FreeSurface( text );
   }
 
   void StrategicArea::drawHoveredRect( const Span& span )
@@ -266,14 +258,21 @@ namespace ui
   StrategicArea::StrategicArea() : Area( camera.width, camera.height ), hovered( null )
   {
     flags = IGNORE_BIT | HIDDEN_BIT | UPDATE_BIT | PINNED_BIT;
-    setFont( Font::SANS );
+
+    glGenTextures( 1, &titleTexId );
+    glBindTexture( GL_TEXTURE_2D, titleTexId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glBindTexture( GL_TEXTURE_2D, 0 );
 
     pixelStep = camera.coeff / float( camera.height / 2 );
     stepPixel = 1.0f / pixelStep;
   }
 
   StrategicArea::~StrategicArea()
-  {}
+  {
+    glDeleteTextures( 1, &titleTexId );
+  }
 
 }
 }

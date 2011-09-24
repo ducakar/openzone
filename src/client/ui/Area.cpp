@@ -29,6 +29,117 @@ namespace ui
 
   Vector<Area*> Area::updateAreas;
 
+  void Area::Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, va_list ap )
+  {
+    hard_assert( s != null );
+
+    x     = x_;
+    y     = y_;
+    align = align_;
+    font  = font_;
+
+    char buffer[1024];
+    vsnprintf( buffer, 1024, s, ap );
+    buffer[1023] = '\0';
+
+    if( buffer[0] == '\0' ) {
+      offsetX = 0;
+      offsetY = 0;
+      width   = 0;
+      height  = 0;
+
+      activeTexId = 0;
+      return;
+    }
+
+    SDL_Surface* text = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, SDL_COLOUR_WHITE );
+
+    glBindTexture( GL_TEXTURE_2D, texId );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                  text->pixels );
+    glBindTexture( GL_TEXTURE_2D, 0 );
+
+    SDL_FreeSurface( text );
+
+    activeTexId = texId;
+
+    offsetX = x;
+    offsetY = y;
+    width   = text->w;
+    height  = text->h;
+
+    if( align & ALIGN_RIGHT ) {
+      offsetX -= width;
+    }
+    else if( align & ALIGN_HCENTRE ) {
+      offsetX -= width / 2;
+    }
+    if( align & ALIGN_TOP ) {
+      offsetY -= height;
+    }
+    else if( align & ALIGN_VCENTRE ) {
+      offsetY -= height / 2;
+    }
+  }
+
+  Area::Label::Label() : x( 0 ), y( 0 ),align( ALIGN_NONE ), font( Font::MONO ),
+      offsetX( 0 ), offsetY( 0 ), width( 0 ), height( 0 ), activeTexId( 0 )
+  {
+    glGenTextures( 1, &texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  }
+
+  Area::Label::~Label()
+  {
+    glDeleteTextures( 1, &texId );
+  }
+
+  Area::Label::Label( int x, int y, int align, Font::Type font, const char* s, ... )
+  {
+    glGenTextures( 1, &texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+    va_list ap;
+    va_start( ap, s );
+    vset( x, y, align, font, s, ap );
+    va_end( ap );
+  }
+
+  void Area::Label::set( int x, int y, int align, Font::Type font, const char* s, ... )
+  {
+    va_list ap;
+    va_start( ap, s );
+    vset( x, y, align, font, s, ap );
+    va_end( ap );
+  }
+
+  void Area::Label::setText( const char* s, ... )
+  {
+    va_list ap;
+    va_start( ap, s );
+    vset( x, y, align, font, s, ap );
+    va_end( ap );
+  }
+
+  void Area::Label::draw( const Area* area ) const
+  {
+    glBindTexture( GL_TEXTURE_2D, width == 0 ? 0 : texId );
+
+    int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
+    int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
+
+    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
+    shape.fill( posX + 1, posY - 1, width, height );
+    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+    shape.fill( posX, posY, width, height );
+
+    glBindTexture( GL_TEXTURE_2D, 0 );
+  }
+
   Area::Area( int width_, int height_ ) :
       flags( 0 ), currentFont( font.fonts[Font::SANS] ), parent( null ), x( 0 ), y( 0 ),
       width( width_ ), height( height_ ), textWidth( 0 ),
@@ -49,12 +160,6 @@ namespace ui
     children.free();
   }
 
-  void Area::setFont( Font::Type type )
-  {
-    currentFont = font.fonts[type];
-    textHeight  = Font::INFOS[type].height;
-  }
-
   void Area::fill( int x, int y, int width, int height ) const
   {
     x = x < 0 ? this->x + this->width  + x : this->x + x;
@@ -69,56 +174,6 @@ namespace ui
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
     shape.rect( x, y, width, height );
-  }
-
-  void Area::print( int x, int y, int align, const char* s, ... )
-  {
-    hard_assert( s != null );
-
-    char buffer[1024];
-    va_list ap;
-
-    va_start( ap, s );
-    vsnprintf( buffer, 1024, s, ap );
-    va_end( ap );
-    buffer[1023] = '\0';
-
-    if( buffer[0] == '\0' ) {
-      return;
-    }
-
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
-
-    textWidth = text->w;
-
-    x = x < 0 ? this->x + this->width  + x : this->x + x;
-    y = y < 0 ? this->y + this->height + y : this->y + y;
-
-    if( align & ALIGN_RIGHT ) {
-      x -= text->w;
-    }
-    else if( align & ALIGN_HCENTRE ) {
-      x -= text->w / 2;
-    }
-    if( align & ALIGN_TOP ) {
-      y -= text->h;
-    }
-    else if( align & ALIGN_VCENTRE ) {
-      y -= text->h / 2;
-    }
-
-    glBindTexture( GL_TEXTURE_2D, font.textTexId );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                  text->pixels );
-
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
-    shape.fill( x + 1, y - 1, text->w, text->h );
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    shape.fill( x, y, text->w, text->h );
-
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    SDL_FreeSurface( text );
   }
 
   void Area::realign( int newX, int newY )

@@ -65,10 +65,11 @@ namespace ui
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.8f );
         rect( healthBarX, healthBarY + 10, ICON_SIZE + 16, 12 );
 
-        String title = ( taggedObj->flags & Object::BOT_BIT ) && !taggedBot->name.isEmpty() ?
+        String sTitle = ( taggedObj->flags & Object::BOT_BIT ) && !taggedBot->name.isEmpty() ?
             taggedBot->name + " (" + taggedClazz->title + ")" : taggedClazz->title;
 
-        print( descTextX, descTextY, ALIGN_CENTRE, "%s", title.cstr() );
+        title.setText( "%s", sTitle.cstr() );
+        title.draw( this );
 
         if( !( taggedObj->flags & Object::SOLID_BIT ) ) {
           return;
@@ -144,8 +145,17 @@ namespace ui
       glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
       fill( 8, 52, 200, textHeight + 8 );
 
-      print( 16, 54, ALIGN_LEFT, "%s", weapon->clazz->title.cstr() );
-      print( 200, 54, ALIGN_RIGHT, weapon->nShots == -1 ? "∞" : "%d", weapon->nShots );
+      if( lastWeaponId != bot->weaponItem ) {
+        lastWeaponId = bot->weaponItem;
+        weaponName.setText( "%s", weapon->clazz->title.cstr() );
+      }
+      if( lastWeaponRounds != weapon->nShots ) {
+        lastWeaponRounds = weapon->nShots;
+        weaponRounds.setText( weapon->nShots == -1 ? "∞" : "%d", weapon->nShots );
+      }
+
+      weaponName.draw( this );
+      weaponRounds.draw( this );
     }
   }
 
@@ -193,19 +203,41 @@ namespace ui
     glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 0.6f );
     rect( -208, 8, 200, 14 );
 
-    for( int i = 0; i < clazz->nWeapons; ++i ) {
-      int yBias = ( clazz->nWeapons - 1 - i ) * ( textHeight + 8 );
+    if( lastVehicleId != bot->parent ) {
+      lastVehicleId = bot->parent;
 
+      for( int i = 0; i < clazz->nWeapons; ++i ) {
+        int labelIndex = clazz->nWeapons - i - 1;
+
+        vehicleWeaponNames[labelIndex].setText( "%s", clazz->weaponNames[i].cstr() );
+      }
+    }
+
+    for( int i = 0; i < clazz->nWeapons; ++i ) {
       if( i == vehicle->weapon ) {
+        int step = font.INFOS[Font::LARGE].height + 8;
+
         glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
-        fill( -208, 30 + yBias, 200, textHeight + 8 );
+        fill( -208, 30 + ( clazz->nWeapons - 1 - i ) * step, 200, textHeight + 8 );
       }
 
-      print( -200, 32 + yBias, ALIGN_LEFT,
-             "%s", clazz->weaponNames[i].cstr() );
-      print( -16, 32 + yBias, ALIGN_RIGHT,
-             vehicle->nShots[i] == -1 ? "∞" : "%d", vehicle->nShots[i] );
+      int labelIndex = clazz->nWeapons - i - 1;
+
+      if( lastVehicleWeaponRounds[labelIndex] != vehicle->nShots[i] ) {
+        lastVehicleWeaponRounds[labelIndex] = vehicle->nShots[i];
+        vehicleWeaponRounds[labelIndex].
+            setText( vehicle->nShots[i] == -1 ? "∞" : "%d", vehicle->nShots[i] );
+      }
+
+      vehicleWeaponNames[labelIndex].draw( this );
+      vehicleWeaponRounds[labelIndex].draw( this );
     }
+  }
+
+  void HudArea::onInterrupt()
+  {
+    lastWeaponId  = -1;
+    lastVehicleId = -1;
   }
 
   void HudArea::onDraw()
@@ -221,15 +253,31 @@ namespace ui
       if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
         drawVehicleStatus();
       }
+      else {
+        lastVehicleId = -1;
+      }
+    }
+    else {
+      lastWeaponId = -1;
     }
 
     drawChildren();
   }
 
-  HudArea::HudArea() : Area( camera.width, camera.height )
+  HudArea::HudArea() : Area( camera.width, camera.height ),
+      weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, ""  ),
+      weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
+      lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )
   {
     flags = IGNORE_BIT | PINNED_BIT;
-    setFont( Font::LARGE );
+
+    int step = font.INFOS[Font::LARGE].height + 8;
+    for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
+      lastVehicleWeaponRounds[i] = -1;
+
+      vehicleWeaponNames[i].set( -200, 32 + i * step, ALIGN_LEFT, Font::LARGE, "" );
+      vehicleWeaponRounds[i].set( -16, 32 + i * step, ALIGN_RIGHT, Font::LARGE, "∞" );
+    }
 
     crossTexId = context.loadTexture( "ui/icon/crosshair.ozcTex" );
     useTexId   = context.loadTexture( "ui/icon/use.ozcTex" );
@@ -254,6 +302,8 @@ namespace ui
     healthBarY = crossIconY + ICON_SIZE;
     descTextX  = width / 2;
     descTextY  = crossIconY + ICON_SIZE + 36;
+
+    title.set( descTextX, descTextY, ALIGN_CENTRE, Font::LARGE, "" );
   }
 
   HudArea::~HudArea()
