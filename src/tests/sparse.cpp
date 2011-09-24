@@ -23,7 +23,7 @@ struct A
   A()
   {}
 
-  A( int value_ ) : value( value_ )
+  explicit A( int value_ ) : value( value_ )
   {}
 };
 

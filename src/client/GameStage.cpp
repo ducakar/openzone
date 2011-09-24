@@ -149,7 +149,7 @@ namespace client
       write( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
     }
     if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
-      ui::ui.loadingScreen->statusText = gettext( "Loading ..." );
+      ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
       ui::ui.showLoadingScreen( true );
       ui::ui.root->focus( ui::ui.loadingScreen );
 
@@ -172,7 +172,7 @@ namespace client
       ui::ui.showLoadingScreen( false );
     }
     if( ui::keyboard.keys[SDLK_F8] && !ui::keyboard.oldKeys[SDLK_F8] ) {
-      ui::ui.loadingScreen->statusText = gettext( "Loading ..." );
+      ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
       ui::ui.showLoadingScreen( true );
       ui::ui.root->focus( ui::ui.loadingScreen );
 
@@ -287,7 +287,7 @@ namespace client
 
   void GameStage::end()
   {
-    ui::ui.loadingScreen->statusText = gettext( "Shutting down ..." );
+    ui::ui.loadingScreen->status.setText( gettext( "Shutting down ..." ) );
     ui::ui.loadingScreen->show( true );
     ui::ui.root->focus( ui::ui.loadingScreen );
 
@@ -429,7 +429,7 @@ namespace client
     log.println( "Initialising GameStage {" );
     log.indent();
 
-    ui::ui.loadingScreen->statusText = gettext( "Loading ..." );
+    ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
     ui::ui.loadingScreen->show( true );
 
     render.draw( Render::DRAW_UI_BIT );

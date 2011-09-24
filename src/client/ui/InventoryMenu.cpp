@@ -28,8 +28,8 @@ namespace ui
   const float InventoryMenu::SLOT_DIMF = float( SLOT_SIZE ) / 2.0f;
 
   InventoryMenu::InventoryMenu() :
-      Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, gettext( "Inventory" ) ),
-      baseTitle( title )
+      Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, "" ),
+      itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, "" )
   {
     x = ( camera.width - width ) / 2;
 
@@ -101,7 +101,8 @@ namespace ui
       return;
     }
 
-    title = camera.botObj->name + " (" + camera.botObj->clazz->title + ")";
+    title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::TITLE,
+               camera.botObj->name + " (" + camera.botObj->clazz->title + ")" );
     Frame::onDraw();
 
     glEnable( GL_DEPTH_TEST );
@@ -186,17 +187,15 @@ namespace ui
         glBindTexture( GL_TEXTURE_2D, 0 );
       }
 
-      setFont( Font::SANS );
-
       const ObjectClass* clazz = taggedItem->clazz;
       if( !clazz->description.isEmpty() ) {
-        print( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE,
-              "%s - %s", clazz->title.cstr(), clazz->description.cstr() );
+        itemDesc.setText( "%s - %s", clazz->title.cstr(), clazz->description.cstr() );
       }
       else {
-        print( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE,
-              "%s", clazz->title.cstr() );
+        itemDesc.setText( "%s", clazz->title.cstr() );
       }
+
+      itemDesc.draw( this );
     }
   }
 

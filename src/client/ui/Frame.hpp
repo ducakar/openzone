@@ -24,7 +24,7 @@ namespace ui
   {
     protected:
 
-      String title;
+      Label title;
 
       virtual bool onMouseEvent();
       virtual void onDraw();

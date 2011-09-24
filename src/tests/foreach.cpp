@@ -33,7 +33,7 @@ struct SparseElem
   SparseElem()
   {}
 
-  SparseElem( int value_ ) : value( value_ )
+  explicit SparseElem( int value_ ) : value( value_ )
   {}
 };
 

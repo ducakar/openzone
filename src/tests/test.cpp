@@ -13,7 +13,9 @@ using namespace oz;
 
 int main( int, char** )
 {
-  new int;
+  Pair<int, int> p;
+  Pair<int, int> r = p;
+
   Alloc::printLeaks();
   return 0;
 }

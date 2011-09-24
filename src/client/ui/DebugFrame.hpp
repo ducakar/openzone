@@ -26,6 +26,13 @@ namespace ui
   {
     protected:
 
+      Label camPosRot;
+      Label botPosRot;
+      Label botVelMom;
+      Label botFlagsState;
+      Label tagVelMom;
+      Label tagFlags;
+
       virtual void onDraw();
 
     public:

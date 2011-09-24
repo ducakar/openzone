@@ -33,7 +33,8 @@ namespace ui
       sound.stopMusic();
       sound.playMusic( musicPlayer->currentTrack );
 
-      musicPlayer->title = translator.musics[musicPlayer->currentTrack].name;
+      musicPlayer->title.setText( "%s", translator.musics[musicPlayer->currentTrack].name.cstr() );
+      musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack );
       musicPlayer->isPlaying = true;
     }
   }
@@ -49,7 +50,8 @@ namespace ui
       sound.stopMusic();
       sound.playMusic( musicPlayer->currentTrack );
 
-      musicPlayer->title = translator.musics[musicPlayer->currentTrack].name;
+      musicPlayer->title.setText( "%s", translator.musics[musicPlayer->currentTrack].name.cstr() );
+      musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack );
       musicPlayer->isPlaying = true;
     }
   }
@@ -63,7 +65,8 @@ namespace ui
       sound.stopMusic();
       sound.playMusic( musicPlayer->currentTrack );
 
-      musicPlayer->title = translator.musics[musicPlayer->currentTrack].name;
+      musicPlayer->title.setText( "%s", translator.musics[musicPlayer->currentTrack].name.cstr() );
+      musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack );
       musicPlayer->isPlaying = true;
     }
   }
@@ -76,7 +79,7 @@ namespace ui
     if( nTracks != 0 ) {
       sound.stopMusic();
 
-      musicPlayer->title = "";
+      musicPlayer->title.setText( "" );
       musicPlayer->isPlaying = false;
     }
   }
@@ -86,6 +89,7 @@ namespace ui
     MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
 
     musicPlayer->volume = max( musicPlayer->volume - 1, 0 );
+    musicPlayer->volumeLabel.setText( "%.1f", float( musicPlayer->volume ) / 10.0f );
     sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
   }
 
@@ -94,6 +98,7 @@ namespace ui
     MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
 
     musicPlayer->volume = min( musicPlayer->volume + 1, 10 );
+    musicPlayer->volumeLabel.setText( "%.1f", float( musicPlayer->volume ) / 10.0f );
     sound.setMusicVolume( float( musicPlayer->volume ) / 10.0f );
   }
 
@@ -108,7 +113,8 @@ namespace ui
         sound.stopMusic();
         sound.playMusic( currentTrack );
 
-        title = translator.musics[currentTrack].name;
+        title.setText( "%s", translator.musics[currentTrack].name.cstr() );
+        trackLabel.setText( "%d", currentTrack );
       }
     }
   }
@@ -117,20 +123,24 @@ namespace ui
   {
     Frame::onDraw();
 
-    setFont( Font::SMALL );
-    print( width / 2, 32, ALIGN_HCENTRE, "%s", title );
-    print( 39, 14, ALIGN_CENTRE, "%d", currentTrack );
-    print( 201, 14, ALIGN_CENTRE, "%.1f", float( volume ) / 10.0f );
+    title.draw( this );
+    trackLabel.draw( this );
+    volumeLabel.draw( this );
   }
 
   MusicPlayer::MusicPlayer() :
       Frame( -8, -289, 240, 36 + Font::INFOS[Font::SMALL].height, gettext( "Music Player" ) ),
-      currentTrack( 0 ), title( "" ), isPlaying( false )
+      title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, "" ),
+      trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
+      volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, "" ),
+      currentTrack( 0 ), isPlaying( false )
   {
     flags = UPDATE_BIT;
 
-    volume = int( config.get( "sound.volume.music", 0.40f ) * 10.0f + 0.5f );
+    volume = int( config.get( "sound.volume.music", 0.50f ) * 10.0f + 0.5f );
     volume = clamp( volume, 0, 10 );
+
+    volumeLabel.setText( "%.1f", float( volume ) / 10.0f );
 
     add( new Button( "−", volumeDown, 20, 20 ), 4, 4 );
     add( new Button( "◁", prevTrack, 30, 20 ), 54, 4 );
@@ -138,10 +148,6 @@ namespace ui
     add( new Button( "◼", stopTrack, 30, 20 ), 122, 4 );
     add( new Button( "▷", nextTrack, 30, 20 ), 156, 4 );
     add( new Button( "+", volumeUp, 20, 20 ), 216, 4 );
-
-    foreach( child, children.iter() ) {
-      child->setFont( Font::SYMBOL );
-    }
   }
 
   MusicPlayer::~MusicPlayer()

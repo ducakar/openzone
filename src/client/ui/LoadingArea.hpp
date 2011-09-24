@@ -30,7 +30,7 @@ namespace ui
 
     public:
 
-      String statusText;
+      Label status;
 
       LoadingArea();
       virtual ~LoadingArea();

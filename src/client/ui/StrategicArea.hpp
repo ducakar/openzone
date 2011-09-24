@@ -37,6 +37,7 @@ namespace ui
       static const float TAG_MIN_PIXEL_SIZE;
       static const float TAG_MAX_COEFF_SIZE;
 
+      uint  titleTexId;
       float pixelStep;
       float stepPixel;
 
@@ -48,7 +49,6 @@ namespace ui
     private:
 
       bool projectBounds( Span* span, const AABB& bb ) const;
-
       void printName( int baseX, int baseY, const char* s, ... );
 
       void drawHoveredRect( const Span& span );

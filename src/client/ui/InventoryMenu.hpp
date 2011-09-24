@@ -31,7 +31,7 @@ namespace ui
       static const int   ROWS        = 2;
       static const int   FOOTER_SIZE = 32;
 
-      String baseTitle;
+      Label  itemDesc;
       uint   useTexId;
       int    tagged;
       int    row;

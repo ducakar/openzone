@@ -27,12 +27,9 @@ namespace ui
 {
 
   BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
-      Button( "", callback, width, height ), className( className )
-  {
-    const ObjectClass* clazz = *translator.classes.find( className );
-
-    label = gettext( clazz->title );
-  }
+      Button( gettext( ( *translator.classes.find( className ) )->title ), callback, width, height ),
+      className( className )
+  {}
 
   void BuildMenu::createObject( Button* button_ )
   {
@@ -54,8 +51,6 @@ namespace ui
 
   BuildMenu::BuildMenu() : Frame( -8, -8, 240, 250, gettext( "Create" ) )
   {
-    setFont( Font::SANS );
-
     add( new BuildButton( "smallCrate", createObject, 110, 15 ), 5, -40 );
     add( new BuildButton( "bigCrate", createObject, 110, 15 ), 5, -60 );
     add( new BuildButton( "metalBarrel", createObject, 110, 15 ), 5, -80 );
