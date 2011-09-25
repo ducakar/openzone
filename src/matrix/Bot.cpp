@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -38,6 +38,20 @@ namespace oz
 
   Pool<Bot, 1024> Bot::pool;
 
+  const Object* Bot::getTagged( float* hvsc, int mask ) const
+  {
+    const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+    Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
+    Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
+
+    collider.mask = mask;
+    collider.translate( eye, look, this );
+    collider.mask = SOLID_BIT;
+
+    return collider.hit.obj;
+  }
+
   void Bot::onDestroy()
   {
     // only play death sound when an alive bot is destroyed but not when a body is destroyed
@@ -64,11 +78,35 @@ namespace oz
   {
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-    if( grabObj != -1 && orbis.objects[grabObj] == null ) {
-      grabObj = -1;
+    Object*  instrumentObj = null;
+    Dynamic* grabbedObj    = null;
+    Weapon*  weaponObj     = null;
+
+    if( instrument != -1 ) {
+      instrumentObj = orbis.objects[instrument];
+
+      if( instrumentObj == null ) {
+        instrument = -1;
+      }
     }
-    if( weaponItem != -1 && orbis.objects[weaponItem] == null ) {
-      weaponItem = -1;
+
+    if( grabbed != -1 ) {
+      grabbedObj = static_cast<Dynamic*>( orbis.objects[grabbed] );
+
+      if( grabbedObj == null || grabbedObj->cell == null ) {
+        grabbed = -1;
+      }
+    }
+
+    if( weapon != -1 ) {
+      grabbed = -1;
+      grabbedObj = null;
+
+      weaponObj = static_cast<Weapon*>( orbis.objects[weapon] );
+
+      if( weaponObj == null || weaponObj->parent != index ) {
+        weapon = -1;
+      }
     }
 
     if( life <= clazz->life / 2.0f ) {
@@ -81,7 +119,8 @@ namespace oz
           anim  = Anim::Type( Anim::DEATH_FALLBACK + Math::rand( 3 ) );
 
           instrument = -1;
-          grabObj = -1;
+          grabbed = -1;
+          taggedItem = -1;
 
           if( clazz->nItems != 0 ) {
             flags |= INVENTORY_BIT;
@@ -106,21 +145,13 @@ namespace oz
 
     stamina = min( stamina + clazz->staminaGain, clazz->stamina );
 
-    if( state & SUBMERGED_BIT ) {
-      stamina -= clazz->staminaWaterDrain;
-
-      if( stamina < 0.0f ) {
-        life += stamina;
-        stamina = 0.0f;
-      }
-    }
-
     if( actions & ~oldActions & ACTION_SUICIDE ) {
       life = clazz->life / 2.0f - EPSILON;
     }
+    // we implement inventory actions here so they can be used inside vehicles
     else if( actions & ~oldActions & ACTION_INV_USE ) {
       if( taggedItem != -1 && taggedItem < items.length() ) {
-        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[ items[taggedItem] ] );
 
         hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 
@@ -131,10 +162,36 @@ namespace oz
         }
       }
     }
+    else if( actions & ~oldActions & ACTION_INV_TAKE ) {
+      if( instrumentObj != null && taggedItem != -1 && taggedItem < instrumentObj->items.length() &&
+          items.length() < clazz->nItems )
+      {
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[ instrumentObj->items[taggedItem] ] );
+
+        hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+
+        items.add( item->index );
+        instrumentObj->items.remove( taggedItem );
+        item->parent = index;
+      }
+    }
+    else if( actions & ~oldActions & ACTION_INV_GIVE ) {
+      if( instrumentObj != null && taggedItem != -1 && taggedItem < items.length() &&
+          instrumentObj->items.length() < instrumentObj->clazz->nItems )
+      {
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[ items[taggedItem] ] );
+
+        hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
+
+        instrumentObj->items.add( item->index );
+        items.remove( taggedItem );
+        item->parent = instrument;
+      }
+    }
 
     if( parent != -1 ) {
-      instrument = -1;
-      grabObj = -1;
+      hard_assert( cell == null && instrument == parent && grabbed == -1 );
+
       taggedItem = -1;
       return;
     }
@@ -155,11 +212,20 @@ namespace oz
     state &= ~( GROUNDED_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT );
 
     state |= lower != -1 || ( flags & ON_FLOOR_BIT )    ? GROUNDED_BIT  : 0;
-    state |= ( flags & ON_LADDER_BIT ) && grabObj == -1 ? CLIMBING_BIT  : 0;
+    state |= ( flags & ON_LADDER_BIT ) && grabbed == -1 ? CLIMBING_BIT  : 0;
     state |= depth > dim.z                              ? SWIMMING_BIT  : 0;
     state |= depth > dim.z + camZ                       ? SUBMERGED_BIT : 0;
 
     flags |= CLIMBER_BIT;
+
+    if( state & SUBMERGED_BIT ) {
+      stamina -= clazz->staminaWaterDrain;
+
+      if( stamina < 0.0f ) {
+        life += stamina;
+        stamina = 0.0f;
+      }
+    }
 
     stepRate -= ( velocity.x*velocity.x + velocity.y*velocity.y );
     stepRate *= clazz->stepRateSupp;
@@ -179,7 +245,7 @@ namespace oz
         state |= JUMP_SCHED_BIT;
       }
       if( ( state & JUMP_SCHED_BIT ) && ( state & ( GROUNDED_BIT | SWIMMING_BIT ) ) &&
-          grabObj == -1 && stamina >= clazz->staminaJumpDrain )
+          grabbed == -1 && stamina >= clazz->staminaJumpDrain )
       {
         flags &= ~( DISABLED_BIT | ON_FLOOR_BIT | ON_SLICK_BIT );
         lower = -1;
@@ -245,12 +311,10 @@ namespace oz
     else if( actions & ( ACTION_FORWARD | ACTION_BACKWARD | ACTION_LEFT | ACTION_RIGHT ) ) {
       anim = ( state & CROUCHING_BIT ) ? Anim::CROUCH_WALK : Anim::RUN;
     }
-    else if( ( actions & ACTION_ATTACK ) && weaponItem != -1 && grabObj == -1 ) {
-      Weapon* weapon = static_cast<Weapon*>( orbis.objects[weaponItem] );
-
-      if( weapon != null && weapon->shotTime == 0.0f ) {
+    else if( ( actions & ACTION_ATTACK ) && grabbed == -1 ) {
+      if( weaponObj != null && weaponObj->shotTime == 0.0f ) {
         anim = ( state & CROUCHING_BIT ) ? Anim::CROUCH_ATTACK : Anim::ATTACK;
-        weapon->trigger( this );
+        weaponObj->trigger( this );
       }
     }
     else if( state & CROUCHING_BIT ) {
@@ -344,7 +408,7 @@ namespace oz
       if( state & CROUCHING_BIT ) {
         desiredMomentum *= clazz->crouchMomentum;
       }
-      else if( ( state & RUNNING_BIT ) && grabObj == -1 ) {
+      else if( ( state & RUNNING_BIT ) && grabbed == -1 ) {
         desiredMomentum *= clazz->runMomentum;
       }
       else {
@@ -444,39 +508,33 @@ namespace oz
      * GRAB MOVEMENT
      */
 
-    Dynamic* obj = null;
-    if( grabObj != -1 ) {
-      obj = static_cast<Dynamic*>( orbis.objects[grabObj] );
-
-      if( obj == null || obj->cell == null || weaponItem != -1 ) {
-        grabObj = -1;
-        obj = null;
-      }
-    }
-
-    if( grabObj != -1 ) {
-      const Bot* bot = static_cast<const Bot*>( obj );
+    if( grabbedObj != null ) {
+      const Bot* obj = static_cast<const Bot*>( grabbedObj );
 
       if( ( obj->flags & UPPER_BIT ) || ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
           obj->p.z + obj->dim.z < p.z - dim.z ||
-          ( ( obj->flags & BOT_BIT ) && ( ( bot->actions & ACTION_JUMP ) || bot->grabObj != -1 ) ) )
+          ( ( obj->flags & BOT_BIT ) && ( ( obj->actions & ACTION_JUMP ) || obj->grabbed != -1 ) ) )
       {
-        grabObj = -1;
+        grabbed = -1;
       }
       else {
+        Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[grabbed] );
+
+        hard_assert( dyn->flags & Object::DYNAMIC_BIT );
+
         // keep constant length of xy projection of handle
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * grabHandle;
         // bottom of the object cannot be raised over the player AABB, neither can be lowered
         // under the player (in the latter case one can lift himself with the lower object)
         handle.z    = clamp( handle.z, -dim.z - camZ, dim.z - camZ );
-        Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - obj->p;
+        Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - dyn->p;
 
         if( string.sqL() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
-          grabObj = -1;
+          grabbed = -1;
         }
         else {
           Vec3 desiredMom   = string * GRAB_STRING_RATIO;
-          Vec3 momDiff      = ( desiredMom - obj->momentum ) * GRAB_MOM_RATIO;
+          Vec3 momDiff      = ( desiredMom - dyn->momentum ) * GRAB_MOM_RATIO;
 
           float momDiffSqL  = momDiff.sqL();
           momDiff.z         += Physics::G_ACCEL * Timer::TICK_TIME;
@@ -485,10 +543,21 @@ namespace oz
           }
           momDiff.z         -= Physics::G_ACCEL * Timer::TICK_TIME;
 
-          obj->momentum += momDiff;
-          obj->flags    &= ~DISABLED_BIT;
+          dyn->momentum += momDiff;
+          dyn->flags    &= ~DISABLED_BIT;
           flags         &= ~CLIMBER_BIT;
         }
+      }
+    }
+
+    /*
+     * INSTRUMENT PERSISTENCE
+     */
+    if( instrument != -1 ) {
+      const Object* instrumentObj = orbis.objects[instrument];
+
+      if( instrumentObj == null || getTagged( hvsc, ~0 ) != instrumentObj ) {
+        instrument = -1;
       }
     }
 
@@ -497,42 +566,35 @@ namespace oz
      */
 
     if( actions & ~oldActions & ACTION_USE ) {
-      if( grabObj != -1 ) {
-        synapse.use( this, obj );
+      if( grabbedObj != null ) {
+        synapse.use( this, grabbedObj );
       }
       else {
-        Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
+        const Object* obj = getTagged( hvsc );
 
-        collider.translate( eye, look, this );
-
-        if( collider.hit.obj != null ) {
-          synapse.use( this, const_cast<Object*>( collider.hit.obj ) );
+        if( obj != null ) {
+          synapse.use( this, orbis.objects[obj->index] );
         }
       }
     }
     else if( actions & ~oldActions & ACTION_TAKE ) {
-      if( grabObj != -1 ) {
-        if( obj->flags & INVENTORY_BIT ) {
-          instrument = grabObj;
+      if( grabbedObj != null ) {
+        if( grabbedObj->flags & INVENTORY_BIT ) {
+          instrument = grabbed;
         }
-        else if( ( obj->flags & ITEM_BIT ) && items.length() < clazz->nItems ) {
-          hard_assert( obj->flags & DYNAMIC_BIT );
+        else if( ( grabbedObj->flags & ITEM_BIT ) && items.length() < clazz->nItems ) {
+          hard_assert( grabbedObj->flags & DYNAMIC_BIT );
 
-          items.add( obj->index );
-          obj->parent = index;
-          synapse.cut( obj );
+          items.add( grabbed );
+          grabbedObj->parent = index;
+          synapse.cut( grabbedObj );
+
+          grabbed = -1;
         }
       }
       else {
-        Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
+        const Dynamic* obj = static_cast<const Dynamic*>( getTagged( hvsc, ~0 ) );
 
-        collider.mask = ~0;
-        collider.translate( eye, look, this );
-        collider.mask = SOLID_BIT;
-
-        const Dynamic* obj = static_cast<const Dynamic*>( collider.hit.obj );
         if( obj != null ) {
           if( obj->flags & INVENTORY_BIT ) {
             instrument = obj->index;
@@ -550,44 +612,39 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_THROW ) {
-      if( grabObj != -1 && stamina >= clazz->staminaThrowDrain ) {
+      if( grabbed != -1 && stamina >= clazz->staminaThrowDrain ) {
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] );
 
         stamina -= clazz->staminaThrowDrain;
-        obj->momentum = handle * clazz->throwMomentum;
-        grabObj = -1;
+        grabbedObj->momentum = handle * clazz->throwMomentum;
+
+        grabbed = -1;
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
-      if( grabObj != -1 || weaponItem != -1 || ( state & SWIMMING_BIT ) ) {
-        grabObj = -1;
+      if( grabbed != -1 || weapon != -1 || ( state & SWIMMING_BIT ) ) {
+        grabbed = -1;
       }
       else {
-        Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
-
-        collider.translate( eye, look, this );
-
-        const Dynamic* obj = static_cast<const Dynamic*>( collider.hit.obj );
-        const Bot* bot = static_cast<const Bot*>( collider.hit.obj );
+        const Bot* obj = static_cast<const Bot*>( getTagged( hvsc ) );
 
         if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
-            ( !( obj->flags & BOT_BIT ) || bot->grabObj == -1 ) )
+            ( !( obj->flags & BOT_BIT ) || obj->grabbed == -1 ) )
         {
           float dimX = dim.x + obj->dim.x;
           float dimY = dim.y + obj->dim.y;
           float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
           if( dist <= clazz->grabDistance ) {
-            grabObj    = obj->index;
+            grabbed    = obj->index;
             grabHandle = dist;
             flags      &= ~ON_LADDER_BIT;
           }
         }
       }
     }
-    else if( actions & ~oldActions & ACTION_INV_GRAB ) {
-      if( grabObj == -1 && taggedItem != -1 && taggedItem < items.length() ) {
+    else if( actions & ~oldActions & ( ACTION_INV_GRAB | ACTION_INV_DROP ) ) {
+      if( grabbed == -1 && taggedItem != -1 && taggedItem < items.length() ) {
         Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
 
         hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
@@ -599,7 +656,7 @@ namespace oz
         // keep constant length of xy projection of handle
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * dist;
         // bottom of the object cannot be raised over the player aabb
-        handle.z    = min( handle.z, dim.z - camZ + item->dim.z );
+        handle.z    = clamp( handle.z, -dim.z - camZ, dim.z - camZ );
         item->p     = p + Vec3( 0.0f, 0.0f, camZ ) + handle;
 
         if( !collider.overlaps( item ) ) {
@@ -607,46 +664,23 @@ namespace oz
           synapse.put( item );
           items.remove( taggedItem );
 
-          grabObj    = item->index;
-          grabHandle = dist;
-          flags      &= ~ON_LADDER_BIT;
-
-          if( item->index == weaponItem ) {
-            weaponItem = -1;
+          if( actions & ~oldActions & ACTION_INV_GRAB ) {
+            grabbed    = item->index;
+            grabHandle = dist;
+            flags      &= ~ON_LADDER_BIT;
           }
         }
       }
     }
 
-    /*
-     * INSTRUMENT PERSISTENCE
-     */
-    if( instrument != -1 ) {
-      const Dynamic* instrumentObj = static_cast<const Dynamic*>( orbis.objects[instrument] );
-
-      if( instrumentObj == null ) {
-        instrument = -1;
-      }
-      else {
-        Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-        Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
-
-        collider.mask = ~0;
-        collider.translate( eye, look, this );
-        collider.mask = SOLID_BIT;
-
-        if( collider.hit.obj == null || collider.hit.obj->index != instrument ) {
-          instrument = -1;
-        }
-      }
-    }
+    taggedItem = -1;
 
     oldState   = state;
     oldActions = actions;
   }
 
   Bot::Bot() : actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
-      instrument( -1 ), grabObj( -1 ), weaponItem( -1 ), anim( Anim::STAND )
+      instrument( -1 ), grabbed( -1 ), weapon( -1 ), anim( Anim::STAND )
   {}
 
   void Bot::heal()
@@ -658,12 +692,12 @@ namespace oz
   {
     foreach( item, items.iter() ) {
       if( *item != -1 ) {
-        Weapon* weapon = static_cast<Weapon*>( orbis.objects[*item] );
+        Weapon* weaponObj = static_cast<Weapon*>( orbis.objects[*item] );
 
-        if( weapon != null && ( weapon->flags & Object::WEAPON_BIT ) ) {
-          const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+        if( weaponObj != null && ( weaponObj->flags & Object::WEAPON_BIT ) ) {
+          const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weaponObj->clazz );
 
-          weapon->nShots = clazz->nShots;
+          weaponObj->nShots = weaponClazz->nShots;
         }
       }
     }
@@ -673,10 +707,12 @@ namespace oz
   {
     hard_assert( cell != null && vehicle_ != -1 );
 
-    parent  = vehicle_;
-    actions = 0;
-    grabObj = -1;
-    anim    = Anim::STAND;
+    parent     = vehicle_;
+    actions    = 0;
+    instrument = vehicle_;
+    grabbed    = -1;
+    anim       = Anim::STAND;
+
     synapse.cut( this );
   }
 
@@ -684,8 +720,10 @@ namespace oz
   {
     hard_assert( cell == null && parent != -1 );
 
-    parent  = -1;
-    actions = 0;
+    parent     = -1;
+    actions    = 0;
+    instrument = -1;
+
     synapse.put( this );
   }
 
@@ -706,7 +744,7 @@ namespace oz
     oldActions = istream->readInt();
     stamina    = istream->readFloat();
 
-    grabObj    = istream->readInt();
+    grabbed    = istream->readInt();
     grabHandle = istream->readFloat();
 
     stepRate   = istream->readFloat();
@@ -715,7 +753,7 @@ namespace oz
     for( int i = 0; i < nItems; ++i ) {
       items.add( istream->readInt() );
     }
-    weaponItem = istream->readInt();
+    weapon = istream->readInt();
 
     anim       = Anim::Type( istream->readInt() );
     name       = istream->readString();
@@ -736,7 +774,7 @@ namespace oz
     ostream->writeInt( oldActions );
     ostream->writeFloat( stamina );
 
-    ostream->writeInt( grabObj );
+    ostream->writeInt( grabbed );
     ostream->writeFloat( grabHandle );
 
     ostream->writeFloat( stepRate );
@@ -745,7 +783,7 @@ namespace oz
     foreach( item, items.citer() ) {
       ostream->writeInt( *item );
     }
-    ostream->writeInt( weaponItem );
+    ostream->writeInt( weapon );
 
     ostream->writeInt( int( anim ) );
     ostream->writeString( name );
@@ -758,7 +796,7 @@ namespace oz
     h       = istream->readFloat();
     v       = istream->readFloat();
     state   = istream->readInt();
-    grabObj = istream->readInt();
+    grabbed = istream->readInt();
     anim    = Anim::Type( istream->readInt() );
   }
 
@@ -769,7 +807,7 @@ namespace oz
     ostream->writeFloat( h );
     ostream->writeFloat( v );
     ostream->writeInt( state );
-    ostream->writeInt( grabObj );
+    ostream->writeInt( grabbed );
     ostream->writeInt( int( anim ) );
   }
 

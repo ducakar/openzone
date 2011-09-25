@@ -6,7 +6,7 @@
  *  large maps HashIndex/HashString is preferred as it is much faster on average.
  *  It can also be used as a set if we omit values.
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 

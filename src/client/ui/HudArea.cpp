@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -117,12 +117,12 @@ namespace ui
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
 
-      if( bot->grabObj == -1 && bot->weaponItem == -1 &&
+      if( bot->grabbed == -1 && bot->weapon == -1 &&
           ( taggedObj->flags & Object::DYNAMIC_BIT ) && taggedDyn->mass <= botClazz->grabMass &&
           // not swimming
           ( bot->depth <= bot->dim.z ) &&
           // if it is not a bot that is holding something
-          ( !( taggedObj->flags & Object::BOT_BIT ) || taggedBot->grabObj == -1 ) )
+          ( !( taggedObj->flags & Object::BOT_BIT ) || taggedBot->grabbed == -1 ) )
       {
         float dimX = bot->dim.x + taggedDyn->dim.x;
         float dimY = bot->dim.y + taggedDyn->dim.y;
@@ -133,7 +133,7 @@ namespace ui
           shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
         }
       }
-      if( camera.botObj->grabObj != -1 ) {
+      if( camera.botObj->grabbed != -1 ) {
         glBindTexture( GL_TEXTURE_2D, grabTexId );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }
@@ -161,19 +161,19 @@ namespace ui
     rect( 8, 30, 200, 14 );
     rect( 8, 8, 200, 14 );
 
-    if( bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
-      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weaponItem] );
+    if( bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
+      const Weapon* weaponObj = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
       glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 0.3f );
       fill( 8, 52, 200, textHeight + 8 );
 
-      if( lastWeaponId != bot->weaponItem ) {
-        lastWeaponId = bot->weaponItem;
-        weaponName.setText( "%s", weapon->clazz->title.cstr() );
+      if( lastWeaponId != bot->weapon ) {
+        lastWeaponId = bot->weapon;
+        weaponName.setText( "%s", weaponObj->clazz->title.cstr() );
       }
-      if( lastWeaponRounds != weapon->nShots ) {
-        lastWeaponRounds = weapon->nShots;
-        weaponRounds.setText( weapon->nShots == -1 ? "∞" : "%d", weapon->nShots );
+      if( lastWeaponRounds != weaponObj->nShots ) {
+        lastWeaponRounds = weaponObj->nShots;
+        weaponRounds.setText( weaponObj->nShots == -1 ? "∞" : "%d", weaponObj->nShots );
       }
 
       weaponName.draw( this );

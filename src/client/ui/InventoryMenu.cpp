@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -62,39 +62,13 @@ namespace ui
 
         if( mouse.leftClick ) {
           if( container != null ) {
+            bot->taggedItem = tagged;
+
             if( master == null ) {
-              if( container->items.length() < container->clazz->nItems &&
-                  tagged < bot->items.length() )
-              {
-                Dynamic* obj = static_cast<Dynamic*>( orbis.objects[ bot->items[tagged] ] );
-
-                hard_assert( ( obj->flags & Object::DYNAMIC_BIT ) && obj->parent == bot->index );
-
-                if( obj != null ) {
-                  container->items.add( obj->index );
-                  bot->items.remove( tagged );
-                  obj->parent = container->index;
-
-                  if( bot->weaponItem == obj->index ) {
-                    bot->weaponItem = -1;
-                  }
-                }
-              }
+              bot->actions |= Bot::ACTION_INV_GIVE;
             }
             else {
-              if( bot->items.length() < bot->clazz->nItems &&
-                  tagged < container->items.length() )
-              {
-                Dynamic* obj = static_cast<Dynamic*>( orbis.objects[ container->items[tagged] ] );
-
-                hard_assert( ( obj->flags & Object::DYNAMIC_BIT ) && obj->parent == container->index );
-
-                if( obj != null ) {
-                  bot->items.add( container->items[tagged] );
-                  container->items.remove( tagged );
-                  obj->parent = bot->index;
-                }
-              }
+              bot->actions |= Bot::ACTION_INV_TAKE;
             }
           }
         }
@@ -102,6 +76,10 @@ namespace ui
           if( mouse.rightClick ) {
             bot->taggedItem = tagged;
             bot->actions |= Bot::ACTION_INV_USE;
+          }
+          else if( mouse.wheelUp ) {
+            bot->taggedItem = tagged;
+            bot->actions |= Bot::ACTION_INV_DROP;
           }
           else if( mouse.middleClick ) {
             bot->taggedItem = tagged;
@@ -241,7 +219,7 @@ namespace ui
       if( master == null && ( taggedItem->flags & Object::USE_FUNC_BIT ) ) {
         uint texId = useTexId;
         if( taggedItem->flags & Object::WEAPON_BIT ) {
-          texId = taggedItem->index == camera.botObj->weaponItem ? unequipTexId : equipTexId;
+          texId = taggedItem->index == camera.botObj->weapon ? unequipTexId : equipTexId;
         }
 
         glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );

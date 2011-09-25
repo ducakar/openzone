@@ -3,7 +3,7 @@
  *
  *  Bot class
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -30,20 +30,26 @@ namespace oz
       static const int ACTION_RIGHT             = 0x00000008;
       static const int ACTION_JUMP              = 0x00000010;
       static const int ACTION_CROUCH            = 0x00000020;
+
       static const int ACTION_USE               = 0x00000040;
       static const int ACTION_TAKE              = 0x00000080;
       static const int ACTION_GRAB              = 0x00000100;
       static const int ACTION_THROW             = 0x00000200;
+
       static const int ACTION_ATTACK            = 0x00000400;
       static const int ACTION_EXIT              = 0x00000800;
       static const int ACTION_EJECT             = 0x00001000;
       static const int ACTION_SUICIDE           = 0x00002000;
-      static const int ACTION_INV_USE           = 0x00004000;
-      static const int ACTION_INV_GRAB          = 0x00008000;
 
-      static const int ACTION_VEH_UP            = 0x00010000;
-      static const int ACTION_VEH_DOWN          = 0x00020000;
-      static const int ACTION_VEH_NEXT_WEAPON   = 0x00040000;
+      static const int ACTION_INV_USE           = 0x00004000;
+      static const int ACTION_INV_DROP          = 0x00008000;
+      static const int ACTION_INV_GRAB          = 0x00010000;
+      static const int ACTION_INV_TAKE          = 0x00020000;
+      static const int ACTION_INV_GIVE          = 0x00040000;
+
+      static const int ACTION_VEH_UP            = 0x00100000;
+      static const int ACTION_VEH_DOWN          = 0x00200000;
+      static const int ACTION_VEH_NEXT_WEAPON   = 0x00400000;
 
       static const int EVENT_HIT_HARD           = 7;
       static const int EVENT_LAND               = 8;
@@ -91,6 +97,8 @@ namespace oz
 
       static Pool<Bot, 1024> pool;
 
+      const Object* getTagged( float* hvsc, int mask = Object::SOLID_BIT ) const;
+
     protected:
 
       virtual void onDestroy();
@@ -108,12 +116,10 @@ namespace oz
       float      stepRate;
 
       int        instrument;
-
-      int        grabObj;
+      int        grabbed;
       float      grabHandle;
-
+      int        weapon;
       int        taggedItem;
-      int        weaponItem;
 
       String     name;
 

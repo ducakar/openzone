@@ -5,7 +5,7 @@
  *  The advantage over C++ arrays is it has bounds checking, iterator and it frees allocated
  *  memory when destroyed.
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 

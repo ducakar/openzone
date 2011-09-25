@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -239,7 +239,7 @@ namespace client
         {
           float bobInc =
               ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT &&
-              bot->grabObj == -1 ? clazz->bobRunInc : clazz->bobWalkInc;
+              bot->grabbed == -1 ? clazz->bobRunInc : clazz->bobWalkInc;
 
           bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
           bobTheta = Math::sin( bobPhi ) * clazz->bobRotation;
@@ -304,8 +304,8 @@ namespace client
     if( bot->parent != -1 ) {
       camera.setTagged( null );
     }
-    else if( bot->grabObj != -1 ) {
-      camera.setTagged( orbis.objects[camera.botObj->grabObj] );
+    else if( bot->grabbed != -1 ) {
+      camera.setTagged( orbis.objects[camera.botObj->grabbed] );
     }
     else if( isFreelook ) {
       // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }

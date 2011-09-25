@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -38,10 +38,10 @@ namespace oz
       parent = user->index;
       synapse.cut( this );
 
-      user->weaponItem = index;
+      user->weapon = index;
     }
     else if( parent == user->index ) {
-      user->weaponItem = user->weaponItem == index  ? -1 : index;
+      user->weapon = user->weapon == index  ? -1 : index;
     }
   }
 
