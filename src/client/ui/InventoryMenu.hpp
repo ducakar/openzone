@@ -34,15 +34,17 @@ namespace ui
       const InventoryMenu* const master;
 
       Label  itemDesc;
-      uint   useTexId;
-      uint   equipTexId;
+
       int    tagged;
       int    row;
+      uint   grabTexId;
+      uint   useTexId;
+      uint   equipTexId;
+      uint   unequipTexId;
 
     protected:
 
       virtual bool onMouseEvent();
-      virtual void onUpdate();
       virtual void onDraw();
 
     public:

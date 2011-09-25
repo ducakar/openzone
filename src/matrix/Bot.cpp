@@ -119,7 +119,7 @@ namespace oz
       life = clazz->life / 2.0f - EPSILON;
     }
     else if( actions & ~oldActions & ACTION_INV_USE ) {
-      if( taggedItem != -1 && taggedItem < items.length() && items[taggedItem] != -1 ) {
+      if( taggedItem != -1 && taggedItem < items.length() ) {
         Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
 
         hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );

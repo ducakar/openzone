@@ -35,8 +35,6 @@ namespace client
 
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-    ui::mouse.doShow = false;
-
     bobPhi   = 0.0f;
     bobTheta = 0.0f;
     bobBias  = 0.0f;
@@ -47,6 +45,9 @@ namespace client
     camera.setTagged( null );
 
     ui::ui.strategicArea->tagged.clear();
+    ui::ui.strategicArea->show( false );
+    ui::ui.hudArea->show( true );
+    ui::mouse.doShow = false;
   }
 
   void BotProxy::update()
@@ -184,12 +185,21 @@ namespace client
       }
       if( ui::mouse.wheelDown ) {
         bot->actions |= Bot::ACTION_TAKE;
+
+        if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::INVENTORY_BIT ) ) {
+          ui::mouse.doShow = true;
+        }
       }
       if( ui::mouse.wheelUp ) {
         bot->actions |= Bot::ACTION_THROW;
       }
       if( ui::mouse.middleClick ) {
         bot->actions |= Bot::ACTION_GRAB;
+      }
+    }
+    else if( ui::mouse.wheelDown ) {
+      if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::INVENTORY_BIT ) ) {
+        bot->actions |= Bot::ACTION_TAKE;
       }
     }
   }
