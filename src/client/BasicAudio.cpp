@@ -13,6 +13,8 @@
 
 #include "matrix/Orbis.hpp"
 
+#include "client/Context.hpp"
+
 namespace oz
 {
 namespace client
@@ -68,6 +70,15 @@ namespace client
         hard_assert( 0.0f <= event->intensity );
 
         playSound( samples[event->id], event->intensity, obj, parent == null ? obj : parent->obj );
+      }
+    }
+
+    // inventory items' events
+    foreach( item, obj->items.citer() ) {
+      const Object* obj = orbis.objects[*item];
+
+      if( obj != null && ( obj->flags & Object::AUDIO_BIT ) ) {
+        context.playAudio( obj, parent == null ? this : parent );
       }
     }
   }

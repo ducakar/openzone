@@ -80,14 +80,12 @@ namespace oz
       }
 
       // clear inventory of dead references
-      if( obj->flags & Object::INVENTORY_BIT ) {
-        for( int i = 0; i < obj->items.length(); ) {
-          if( orbis.objects[ obj->items[i] ] == null ) {
-            obj->items.remove( i );
-          }
-          else {
-            ++i;
-          }
+      for( int j = 0; j < obj->items.length(); ) {
+        if( orbis.objects[ obj->items[j] ] == null ) {
+          obj->items.remove( j );
+        }
+        else {
+          ++j;
         }
       }
 

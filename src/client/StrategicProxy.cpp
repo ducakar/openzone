@@ -41,6 +41,9 @@ namespace client
     camera.w = 0.0f;
     camera.setTagged( null );
 
+    ui::ui.strategicArea->tagged.clear();
+    ui::ui.hudArea->show( false );
+    ui::ui.strategicArea->show( true );
     ui::mouse.doShow = true;
   }
 
