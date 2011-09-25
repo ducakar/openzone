@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -68,7 +68,7 @@ namespace client
 
     if( type_ == Anim::ATTACK ) {
       const Bot*    bot    = static_cast<const Bot*>( obj );
-      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weaponItem] );
+      const Weapon* weapon = static_cast<const Weapon*>( orbis.objects[bot->weapon] );
 
       if( weapon != null ) {
         const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
@@ -133,11 +133,11 @@ namespace client
       md2->advance( &anim, timer.frameTime );
       md2->draw( &anim );
 
-      if( parent == null && bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
-        context.drawModel( orbis.objects[bot->weaponItem], this );
+      if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
+        context.drawModel( orbis.objects[bot->weapon], this );
       }
     }
-    else if( parent == null && bot->weaponItem != -1 && orbis.objects[bot->weaponItem] != null ) {
+    else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
       tf.model.translate( Vec3( 0.0f, 0.0f,  bot->camZ ) );
       tf.model.rotateX( bot->v - Math::TAU / 4.0f );
       tf.model.translate( Vec3( 0.0f, 0.0f, -bot->camZ ) );
@@ -145,7 +145,7 @@ namespace client
       glDepthFunc( GL_ALWAYS );
 
       md2->advance( &anim, timer.frameTime );
-      context.drawModel( orbis.objects[bot->weaponItem], this );
+      context.drawModel( orbis.objects[bot->weapon], this );
 
       glDepthFunc( GL_LESS );
     }

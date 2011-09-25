@@ -3,7 +3,7 @@
  *
  *  [description]
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -148,7 +148,7 @@ namespace oz
       if( weaponItem == i ) {
         const Dynamic* item = static_cast<const Dynamic*>( orbis.objects[ obj->items[i] ] );
 
-        obj->weaponItem = item->index;
+        obj->weapon = item->index;
         break;
       }
     }

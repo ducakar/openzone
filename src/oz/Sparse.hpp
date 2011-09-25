@@ -6,7 +6,7 @@
  *  tries to occupy all free slots. New element is added to the end only if there is no free slots
  *  in the middle.
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 

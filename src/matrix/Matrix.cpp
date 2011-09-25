@@ -3,7 +3,7 @@
  *
  *  World model
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
@@ -101,9 +101,9 @@ namespace oz
       else if( obj->flags & Object::DYNAMIC_BIT ) {
         Dynamic* dyn = static_cast<Dynamic*>( obj );
 
-        if( dyn->cell == null ) {
-          hard_assert( dyn->parent != -1 );
+        hard_assert( ( dyn->parent != -1 ) == ( dyn->cell == null ) );
 
+        if( dyn->cell == null ) {
           // remove if its container has been removed
           if( orbis.objects[dyn->parent] == null ) {
             synapse.removeCut( dyn );

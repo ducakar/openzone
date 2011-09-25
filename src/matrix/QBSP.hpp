@@ -3,7 +3,7 @@
  *
  *  Data structure used for prebuilding BSP from Quake3 BSP.
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 

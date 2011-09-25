@@ -4,7 +4,7 @@
  *  Overload default new and delete operators to provide allocation statistics and optionally
  *  check for leaks and mismatched new/delete (if OZ_TRACE_LEAKS is turned on).
  *
- *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
+ *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
