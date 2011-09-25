@@ -1,7 +1,7 @@
 /*
- *  Translator.hpp
+ *  Library.hpp
  *
- *  [description]
+ *  Map of all resources, object types, scripts etc.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -45,7 +45,7 @@ namespace oz
     };
   };
 
-  class Translator
+  class Library
   {
     public:
 
@@ -107,6 +107,6 @@ namespace oz
       void free();
   };
 
-  extern Translator translator;
+  extern Library library;
 
 }

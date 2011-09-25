@@ -11,7 +11,7 @@
 
 #include "matrix/Orbis.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 #include "matrix/Lua.hpp"
 #include "matrix/Dynamic.hpp"
 #include "matrix/Bot.hpp"
@@ -186,16 +186,16 @@ namespace oz
 
     if( strAvailableIndices.isEmpty() ) {
       index = structs.length();
-      structs.add( translator.createStruct( index, name, p, rot ) );
+      structs.add( library.createStruct( index, name, p, rot ) );
     }
     else {
       index = strAvailableIndices.popLast();
-      structs[index] = translator.createStruct( index, name, p, rot );
+      structs[index] = library.createStruct( index, name, p, rot );
     }
     return index;
   }
 
-  // has to be reentrant, can be called again from translator.createObject
+  // has to be reentrant, can be called again from library.createObject
   int Orbis::addObject( const char* name, const Point3& p )
   {
     int index;
@@ -209,7 +209,7 @@ namespace oz
       index = objAvailableIndices.popLast();
     }
     // objects vector may relocate during createObject call, we must use this workaround
-    Object* obj = translator.createObject( index, name, p );
+    Object* obj = library.createObject( index, name, p );
     objects[index] = obj;
 
     if( objects[index]->flags & Object::LUA_BIT ) {
@@ -309,7 +309,7 @@ namespace oz
         structs.add( null );
       }
       else {
-        str = translator.createStruct( i, bspName, istream );
+        str = library.createStruct( i, bspName, istream );
         structs.add( str );
 
         if( !position( str ) ) {
@@ -324,15 +324,13 @@ namespace oz
         objects.add( null );
       }
       else {
-        obj = translator.createObject( i, typeName, istream );
+        obj = library.createObject( i, typeName, istream );
         objects.add( obj );
 
         // no need to register objects since Lua state is being deserialised
 
-        if( obj->flags & Object::CUT_BIT ) {
-          obj->flags &= ~Object::CUT_BIT;
-        }
-        else {
+        bool isCut = istream->readBool();
+        if( !isCut ) {
           position( obj );
         }
       }
@@ -419,7 +417,7 @@ namespace oz
         ostream->writeString( "" );
       }
       else {
-        ostream->writeString( translator.bsps[str->bsp].name );
+        ostream->writeString( library.bsps[str->bsp].name );
         str->writeFull( ostream );
       }
     }
@@ -430,11 +428,9 @@ namespace oz
         ostream->writeString( "" );
       }
       else {
-        if( obj->cell == null ) {
-          obj->flags |= obj->CUT_BIT;
-        }
         ostream->writeString( obj->clazz->name );
         obj->writeFull( ostream );
+        ostream->writeBool( obj->cell == null );
       }
     }
     for( int i = 0; i < parts.length(); ++i ) {
@@ -512,7 +508,7 @@ namespace oz
     objAvailableIndices.alloc( 256 );
     partAvailableIndices.alloc( 512 );
 
-    for( int i = 0; i < translator.bsps.length(); ++i ) {
+    for( int i = 0; i < library.bsps.length(); ++i ) {
       bsps.add( new BSP( i ) );
     }
 

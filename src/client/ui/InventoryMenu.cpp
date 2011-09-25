@@ -27,15 +27,21 @@ namespace ui
 
   const float InventoryMenu::SLOT_DIMF = float( SLOT_SIZE ) / 2.0f;
 
-  InventoryMenu::InventoryMenu() :
+  InventoryMenu::InventoryMenu( const InventoryMenu* master_ ) :
       Frame( 0, 8, COLS*SLOT_SIZE, ROWS*SLOT_SIZE + FOOTER_SIZE, "" ),
-      itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, "" )
+      master( master_ ),
+      itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, "" ),
+      tagged( -1 ),
+      row( 0 )
   {
     x = ( camera.width - width ) / 2;
 
+    if( master != null ) {
+      y = 8 + height + 8;
+      flags |= UPDATE_BIT;
+    }
+
     useTexId = context.loadTexture( "ui/icon/use.ozcTex" );
-    tagged = -1;
-    row = 0;
   }
 
   InventoryMenu::~InventoryMenu()
@@ -91,6 +97,24 @@ namespace ui
     row = ( row + nRows ) % nRows;
 
     return true;
+  }
+
+  void InventoryMenu::onUpdate()
+  {
+    if( flags & IGNORE_BIT ) {
+      if( camera.state == Camera::BOT && camera.botObj != null &&
+          camera.botObj->instrument != -1 )
+      {
+        show( true );
+      }
+    }
+    else {
+      if( camera.state != Camera::BOT || camera.botObj == null ||
+          camera.botObj->instrument == -1 )
+      {
+        show( false );
+      }
+    }
   }
 
   void InventoryMenu::onDraw()

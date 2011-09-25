@@ -12,7 +12,7 @@
 #include "nirvana/Lua.hpp"
 
 #include "matrix/BotClass.hpp"
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 
 #include <lua.hpp>
 
@@ -366,10 +366,11 @@ namespace nirvana
     OZ_LUA_INT_CONST( "OZ_STRUCT_R270",                 Struct::R270 );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_INVENTORY_BIT",        Object::INVENTORY_BIT );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
@@ -382,7 +383,6 @@ namespace nirvana
     OZ_LUA_INT_CONST( "OZ_OBJECT_MODEL_BIT",            Object::MODEL_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
 
-    OZ_LUA_INT_CONST( "OZ_OBJECT_CUT_BIT",              Object::CUT_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );

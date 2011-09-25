@@ -11,7 +11,7 @@
 
 #include "matrix/Matrix.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 #include "matrix/NamePool.hpp"
 #include "matrix/Lua.hpp"
 #include "matrix/Collider.hpp"
@@ -77,6 +77,18 @@ namespace oz
 
       if( obj == null ) {
         continue;
+      }
+
+      // clear inventory of dead references
+      if( obj->flags & Object::INVENTORY_BIT ) {
+        for( int i = 0; i < obj->items.length(); ) {
+          if( orbis.objects[ obj->items[i] ] == null ) {
+            obj->items.remove( i );
+          }
+          else {
+            ++i;
+          }
+        }
       }
 
       obj->update();

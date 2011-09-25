@@ -18,12 +18,6 @@ namespace oz
 
   class BotClass : public DynamicClass
   {
-    private:
-
-      static const int INVENTORY_ITEMS = 16;
-      static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT |
-          Object::UPDATE_FUNC_BIT | Object::BOT_BIT;
-
     public:
 
       Vec3   dimCrouch;
@@ -68,7 +62,6 @@ namespace oz
 
       int    state;
 
-      Vector<String> inventoryItems;
       int    weaponItem;
 
       String mindFunction;

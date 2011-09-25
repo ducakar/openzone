@@ -27,18 +27,8 @@ namespace oz
   {
     BotClass* clazz = new BotClass();
 
-    clazz->dim.x                = config->get( "dim.x", 0.45f );
-    clazz->dim.y                = config->get( "dim.y", 0.45f );
-    clazz->dim.z                = config->get( "dim.z", 1.00f );
-
-    if( clazz->dim.x < 0.0f || clazz->dim.x > AABB::REAL_MAX_DIM ||
-        clazz->dim.y < 0.0f || clazz->dim.y > AABB::REAL_MAX_DIM ||
-        clazz->dim.z < 0.0f )
-    {
-      throw Exception( "Invalid object dimensions. Should be >= 0 and <= 3.99." );
-    }
-
-    clazz->flags = 0;
+    clazz->flags = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT |
+        Object::UPDATE_FUNC_BIT | Object::BOT_BIT;
 
     OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.destroyFunc",  true  );
     OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.damageFunc",   false );
@@ -51,28 +41,15 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 
-    clazz->life                 = 2.0f * config->get( "life", 100.0f );
-    clazz->damageThreshold      = config->get( "damageThreshold", 100.0f );
+    clazz->fillCommonConfig( config );
 
-    if( clazz->life <= 0.0f ) {
-      throw Exception( "Invalid object life. Should be > 0." );
-    }
-    if( clazz->damageThreshold < 0.0f ) {
-      throw Exception( "Invalid object damageThreshold. Should be >= 0." );
-    }
+    // we don't allow browsing other bots' inventory as long as they are alive
+    clazz->flags &= ~Object::INVENTORY_BIT;
 
-    clazz->nDebris              = config->get( "nDebris", 8 );
-    clazz->debrisVelocitySpread = config->get( "debrisVelocitySpread", 4.0f );
-    clazz->debrisRejection      = config->get( "debrisRejection", 1.95f );
-    clazz->debrisMass           = config->get( "debrisMass", 0.0f );
-    clazz->debrisLifeTime       = config->get( "debrisLifeTime", 2.5f );
-    clazz->debrisColour.x       = config->get( "debrisColour.r", 0.5f );
-    clazz->debrisColour.y       = config->get( "debrisColour.g", 0.0f );
-    clazz->debrisColour.z       = config->get( "debrisColour.b", 0.0f );
-    clazz->debrisColourSpread   = config->get( "debrisColourSpread", 0.1f );
+    clazz->life *= 2.0f;
 
-    clazz->mass                 = config->get( "mass", 100.0f );
-    clazz->lift                 = config->get( "lift", 13.0f );
+    clazz->mass = config->get( "mass", 100.0f );
+    clazz->lift = config->get( "lift", 13.0f );
 
     if( clazz->mass < 0.01f ) {
       throw Exception( "Invalid object mass. Should be >= 0.01." );
@@ -81,51 +58,51 @@ namespace oz
       throw Exception( "Invalid object lift. Should be >= 0." );
     }
 
-    clazz->dimCrouch.x          = clazz->dim.x;
-    clazz->dimCrouch.y          = clazz->dim.y;
-    clazz->dimCrouch.z          = config->get( "dimCrouch.z", 0.80f );
+    clazz->dimCrouch.x = clazz->dim.x;
+    clazz->dimCrouch.y = clazz->dim.y;
+    clazz->dimCrouch.z = config->get( "dimCrouch.z", 0.80f );
 
     if( clazz->dimCrouch.z < 0.0f ) {
       throw Exception( "Invalid bot crouch dimensions. Should be >= 0." );
     }
 
-    clazz->camZ                 = config->get( "camZ", 0.79f );
-    clazz->crouchCamZ           = config->get( "crouchCamZ", 0.69f );
+    clazz->camZ              = config->get( "camZ", 0.79f );
+    clazz->crouchCamZ        = config->get( "crouchCamZ", 0.69f );
 
-    clazz->bobWalkInc           = Math::rad( config->get( "bobWalkInc", 8.00f ) );
-    clazz->bobRunInc            = Math::rad( config->get( "bobRunInc", 16.00f ) );
-    clazz->bobSwimInc           = Math::rad( config->get( "bobSwimInc", 2.00f ) );
-    clazz->bobSwimRunInc        = Math::rad( config->get( "bobSwimRunInc", 4.00f ) );
-    clazz->bobRotation          = Math::rad( config->get( "bobRotation", 0.25f ) );
-    clazz->bobAmplitude         = config->get( "bobAmplitude", 0.02f );
-    clazz->bobSwimAmplitude     = config->get( "bobSwimAmplitude", 0.05f );
+    clazz->bobWalkInc        = Math::rad( config->get( "bobWalkInc", 8.00f ) );
+    clazz->bobRunInc         = Math::rad( config->get( "bobRunInc", 16.00f ) );
+    clazz->bobSwimInc        = Math::rad( config->get( "bobSwimInc", 2.00f ) );
+    clazz->bobSwimRunInc     = Math::rad( config->get( "bobSwimRunInc", 4.00f ) );
+    clazz->bobRotation       = Math::rad( config->get( "bobRotation", 0.25f ) );
+    clazz->bobAmplitude      = config->get( "bobAmplitude", 0.02f );
+    clazz->bobSwimAmplitude  = config->get( "bobSwimAmplitude", 0.05f );
 
-    clazz->walkMomentum         = config->get( "walkMomentum", 1.5f );
-    clazz->runMomentum          = config->get( "runMomentum", 3.5f );
-    clazz->crouchMomentum       = config->get( "crouchMomentum", 1.2f );
-    clazz->jumpMomentum         = config->get( "jumpMomentum", 5.0f );
+    clazz->walkMomentum      = config->get( "walkMomentum", 1.5f );
+    clazz->runMomentum       = config->get( "runMomentum", 3.5f );
+    clazz->crouchMomentum    = config->get( "crouchMomentum", 1.2f );
+    clazz->jumpMomentum      = config->get( "jumpMomentum", 5.0f );
 
-    clazz->stepInc              = config->get( "stepInc", 0.25f );
-    clazz->stepMax              = config->get( "stepMax", 0.50f );
-    clazz->stepRateLimit        = config->get( "stepRateLimit", 0.00f );
-    clazz->stepRateCoeff        = config->get( "stepRateCoeff", 500.0f );
-    clazz->stepRateSupp         = config->get( "stepRatesupp", 0.50f );
+    clazz->stepInc           = config->get( "stepInc", 0.25f );
+    clazz->stepMax           = config->get( "stepMax", 0.50f );
+    clazz->stepRateLimit     = config->get( "stepRateLimit", 0.00f );
+    clazz->stepRateCoeff     = config->get( "stepRateCoeff", 500.0f );
+    clazz->stepRateSupp      = config->get( "stepRatesupp", 0.50f );
 
-    clazz->airControl           = config->get( "airControl", 0.025f );
-    clazz->climbControl         = config->get( "climbControl", 1.50f );
-    clazz->waterControl         = config->get( "waterControl", 0.05f );
-    clazz->slickControl         = config->get( "slickControl", 0.04f );
+    clazz->airControl        = config->get( "airControl", 0.025f );
+    clazz->climbControl      = config->get( "climbControl", 1.50f );
+    clazz->waterControl      = config->get( "waterControl", 0.05f );
+    clazz->slickControl      = config->get( "slickControl", 0.04f );
 
-    clazz->grabDistance         = config->get( "grabDistance", 2.0f );
-    clazz->grabMass             = config->get( "grabMass", 50.0f );
-    clazz->throwMomentum        = config->get( "throwMomentum", 6.0f );
+    clazz->grabDistance      = config->get( "grabDistance", 2.0f );
+    clazz->grabMass          = config->get( "grabMass", 50.0f );
+    clazz->throwMomentum     = config->get( "throwMomentum", 6.0f );
 
-    clazz->stamina              = config->get( "stamina", 100.0f );
-    clazz->staminaGain          = config->get( "staminaGain", 0.05f );
-    clazz->staminaWaterDrain    = config->get( "staminaWaterDrain", 0.10f );
-    clazz->staminaRunDrain      = config->get( "staminaRunDrain", 0.08f );
-    clazz->staminaJumpDrain     = config->get( "staminaJumpDrain", 4.0f );
-    clazz->staminaThrowDrain    = config->get( "staminaThrowDrain", 8.0f );
+    clazz->stamina           = config->get( "stamina", 100.0f );
+    clazz->staminaGain       = config->get( "staminaGain", 0.05f );
+    clazz->staminaWaterDrain = config->get( "staminaWaterDrain", 0.10f );
+    clazz->staminaRunDrain   = config->get( "staminaRunDrain", 0.08f );
+    clazz->staminaJumpDrain  = config->get( "staminaJumpDrain", 4.0f );
+    clazz->staminaThrowDrain = config->get( "staminaThrowDrain", 8.0f );
 
     clazz->state = 0;
 
@@ -133,29 +110,12 @@ namespace oz
     OZ_CLASS_SET_STATE( Bot::CROUCHING_BIT, "state.crouching", false );
     OZ_CLASS_SET_STATE( Bot::RUNNING_BIT,   "state.running",   true );
 
-    // default inventory
-    char buffer[] = "inventoryItem  ";
-    for( int i = 0; i < INVENTORY_ITEMS; ++i ) {
-      hard_assert( i < 100 );
-
-      buffer[ sizeof buffer - 3 ] = char( '0' + ( i / 10 ) );
-      buffer[ sizeof buffer - 2 ] = char( '0' + ( i % 10 ) );
-
-      String itemName = config->get( buffer, "" );
-      if( !itemName.isEmpty() ) {
-        clazz->inventoryItems.add( itemName );
-      }
-    }
-
     clazz->weaponItem           = config->get( "weaponItem", -1 );
 
     clazz->mindFunction         = config->get( "mindFunction", "" );
 
     String sNameList            = config->get( "nameList", "" );
-    clazz->nameList             = sNameList.isEmpty() ? -1 : translator.nameListIndex( sNameList );
-
-    fillCommon( clazz, config );
-    clazz->flags |= BASE_FLAGS;
+    clazz->nameList             = sNameList.isEmpty() ? -1 : library.nameListIndex( sNameList );
 
     return clazz;
   }
@@ -167,16 +127,10 @@ namespace oz
     hard_assert( obj->index == -1 && obj->cell == null && obj->parent == -1 );
 
     obj->p        = pos;
-    obj->dim      = dim;
+    obj->index    = index;
 
     obj->h        = 0.0f;
     obj->v        = Math::TAU / 4.0f;
-
-    obj->index    = index;
-    obj->flags    = flags;
-    obj->oldFlags = flags;
-    obj->clazz    = this;
-    obj->life     = life;
 
     obj->mass     = mass;
     obj->lift     = lift;
@@ -188,16 +142,15 @@ namespace oz
 
     obj->name     = namePool.genName( nameList );
 
-    for( int i = 0; i < inventoryItems.length(); ++i ) {
-      int index = synapse.addObject( inventoryItems[i], Point3::ORIGIN );
-      Dynamic* item = static_cast<Dynamic*>( orbis.objects[index] );
+    fillCommonFields( obj );
 
-      hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
-
+    for( int i = 0; i < obj->items.length(); ++i ) {
       if( weaponItem == i ) {
+        const Dynamic* item = static_cast<const Dynamic*>( orbis.objects[ obj->items[i] ] );
+
         obj->weaponItem = item->index;
+        break;
       }
-      obj->take( item );
     }
 
     return obj;
@@ -207,15 +160,15 @@ namespace oz
   {
     Bot* obj = new Bot();
 
-    obj->index  = index;
-    obj->clazz  = this;
+    obj->index = index;
+    obj->clazz = this;
 
-    obj->mass   = mass;
-    obj->lift   = lift;
+    obj->mass  = mass;
+    obj->lift  = lift;
 
     obj->readFull( istream );
 
-    obj->camZ = ( obj->state & Bot::CROUCHING_BIT ) ? crouchCamZ : camZ;
+    obj->camZ  = ( obj->state & Bot::CROUCHING_BIT ) ? crouchCamZ : camZ;
 
     return obj;
   }

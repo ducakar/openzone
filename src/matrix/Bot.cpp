@@ -23,6 +23,8 @@ namespace oz
 
   const float Bot::HIT_HARD_THRESHOLD  = -8.00f;
   const float Bot::WOUNDED_THRESHOLD   = 0.70f;
+  const float Bot::INSTRUMENT_DIST_MAX = 2.00f;
+  const float Bot::INSTRUMENT_DOT_MIN  = 0.80f;
   const float Bot::GRAB_EPSILON        = 0.20f;
   const float Bot::GRAB_STRING_RATIO   = 10.0f;
   const float Bot::GRAB_HANDLE_TOL     = 1.60f;
@@ -31,7 +33,8 @@ namespace oz
   const float Bot::GRAB_MOM_MAX        = 1.0f;
   const float Bot::GRAB_MOM_MAX_SQ     = 1.0f;
   const float Bot::DEAD_BODY_LIFT      = 100.0f;
-  const float Bot::BODY_FADEOUT_FACTOR = 0.0008f;
+  // 100 s
+  const float Bot::BODY_FADE_FACTOR    = 0.5f / 100.0f * Timer::TICK_TIME;
 
   Pool<Bot, 1024> Bot::pool;
 
@@ -61,15 +64,6 @@ namespace oz
   {
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-    // clear invalid references from inventory
-    for( int i = 0; i < items.length(); ) {
-      if( orbis.objects[ items[i] ] == null ) {
-        items.remove( i );
-      }
-      else {
-        ++i;
-      }
-    }
     if( grabObj != -1 && orbis.objects[grabObj] == null ) {
       grabObj = -1;
     }
@@ -80,16 +74,23 @@ namespace oz
     if( life <= clazz->life / 2.0f ) {
       if( life > 0.0f ) {
         if( !( state & DEATH_BIT ) ) {
-          state |= DEATH_BIT;
           flags |= WIDE_CULL_BIT;
           flags &= ~SOLID_BIT;
           life  = clazz->life / 2.0f - EPSILON;
+          state |= DEATH_BIT;
           anim  = Anim::Type( Anim::DEATH_FALLBACK + Math::rand( 3 ) );
+
+          instrument = -1;
+          grabObj = -1;
+
+          if( clazz->nItems != 0 ) {
+            flags |= INVENTORY_BIT;
+          }
 
           addEvent( EVENT_DEATH, 1.0f );
         }
         else {
-          life -= clazz->life * BODY_FADEOUT_FACTOR;
+          life -= clazz->life * BODY_FADE_FACTOR;
           // we don't want Object::destroy() to be called when body dissolves (destroy() causes
           // sounds and particles to fly around), that's why we remove the object
           if( life <= 0.0f ) {
@@ -132,6 +133,7 @@ namespace oz
     }
 
     if( parent != -1 ) {
+      instrument = -1;
       grabObj = -1;
       taggedItem = -1;
       return;
@@ -455,16 +457,18 @@ namespace oz
     if( grabObj != -1 ) {
       const Bot* bot = static_cast<const Bot*>( obj );
 
-      if( lower == grabObj || ( state & SWIMMING_BIT ) || ( obj->flags & UPPER_BIT ) ||
-          ( ( obj->flags & BOT_BIT ) && ( bot->actions & ACTION_JUMP ) ) )
+      if( ( obj->flags & UPPER_BIT ) || ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
+          obj->p.z + obj->dim.z < p.z - dim.z ||
+          ( ( obj->flags & BOT_BIT ) && ( ( bot->actions & ACTION_JUMP ) || bot->grabObj != -1 ) ) )
       {
         grabObj = -1;
       }
       else {
         // keep constant length of xy projection of handle
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * grabHandle;
-        // bottom of the object cannot be raised over the player aabb
-        handle.z    = min( handle.z, dim.z - camZ + obj->dim.z );
+        // bottom of the object cannot be raised over the player AABB, neither can be lowered
+        // under the player (in the latter case one can lift himself with the lower object)
+        handle.z    = clamp( handle.z, -dim.z - camZ, dim.z - camZ );
         Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - obj->p;
 
         if( string.sqL() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
@@ -509,21 +513,39 @@ namespace oz
     }
     else if( actions & ~oldActions & ACTION_TAKE ) {
       if( grabObj != -1 ) {
-        if( obj->flags & ITEM_BIT ) {
-          take( obj );
+        if( obj->flags & INVENTORY_BIT ) {
+          instrument = grabObj;
+        }
+        else if( ( obj->flags & ITEM_BIT ) && items.length() < clazz->nItems ) {
+          hard_assert( obj->flags & DYNAMIC_BIT );
+
+          items.add( obj->index );
+          obj->parent = index;
+          synapse.cut( obj );
         }
       }
       else {
         Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
         Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
 
+        collider.mask = ~0;
         collider.translate( eye, look, this );
+        collider.mask = SOLID_BIT;
 
         const Dynamic* obj = static_cast<const Dynamic*>( collider.hit.obj );
-        if( obj != null && ( obj->flags & ITEM_BIT ) ) {
-          hard_assert( obj->flags & DYNAMIC_BIT );
+        if( obj != null ) {
+          if( obj->flags & INVENTORY_BIT ) {
+            instrument = obj->index;
+          }
+          else if( ( obj->flags & ITEM_BIT ) && items.length() < clazz->nItems ) {
+            hard_assert( obj->flags & DYNAMIC_BIT );
 
-          take( const_cast<Dynamic*>( obj ) );
+            Dynamic* item = const_cast<Dynamic*>( obj );
+
+            items.add( item->index );
+            item->parent = index;
+            synapse.cut( item );
+          }
         }
       }
     }
@@ -537,7 +559,7 @@ namespace oz
       }
     }
     else if( actions & ~oldActions & ACTION_GRAB ) {
-      if( grabObj != -1 || ( state & SWIMMING_BIT ) || weaponItem != -1 ) {
+      if( grabObj != -1 || weaponItem != -1 || ( state & SWIMMING_BIT ) ) {
         grabObj = -1;
       }
       else {
@@ -550,7 +572,7 @@ namespace oz
         const Bot* bot = static_cast<const Bot*>( collider.hit.obj );
 
         if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
-            lower != obj->index && ( !( obj->flags & BOT_BIT ) || bot->grabObj != index ) )
+            ( !( obj->flags & BOT_BIT ) || bot->grabObj == -1 ) )
         {
           float dimX = dim.x + obj->dim.x;
           float dimY = dim.y + obj->dim.y;
@@ -596,22 +618,36 @@ namespace oz
       }
     }
 
+    /*
+     * INSTRUMENT PERSISTENCE
+     */
+    if( instrument != -1 ) {
+      const Dynamic* instrumentObj = static_cast<const Dynamic*>( orbis.objects[instrument] );
+
+      if( instrumentObj == null ) {
+        instrument = -1;
+      }
+      else {
+        Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
+        Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
+
+        collider.mask = ~0;
+        collider.translate( eye, look, this );
+        collider.mask = SOLID_BIT;
+
+        if( collider.hit.obj == null || collider.hit.obj->index != instrument ) {
+          instrument = -1;
+        }
+      }
+    }
+
     oldState   = state;
     oldActions = actions;
   }
 
   Bot::Bot() : actions( 0 ), oldActions( 0 ), stepRate( 0.0f ),
-      grabObj( -1 ), weaponItem( -1 ), anim( Anim::STAND )
+      instrument( -1 ), grabObj( -1 ), weaponItem( -1 ), anim( Anim::STAND )
   {}
-
-  void Bot::take( Dynamic* item )
-  {
-    hard_assert( index != -1 && ( item->flags & ITEM_BIT ) );
-
-    items.add( item->index );
-    item->parent = index;
-    synapse.cut( item );
-  }
 
   void Bot::heal()
   {

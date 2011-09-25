@@ -117,7 +117,7 @@ namespace client
       render.free();
     }
     if( initFlags & INIT_TRANSLATOR ) {
-      translator.free();
+      library.free();
     }
     if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
       String rcDir = config.get( "dir.rc", "" );
@@ -480,7 +480,7 @@ namespace client
     log.printEnd( " OK" );
 
     initFlags |= INIT_TRANSLATOR;
-    translator.init();
+    library.init();
 
     initFlags |= INIT_RENDER_INIT;
     render.init();

@@ -11,7 +11,7 @@
 
 #include "client/ui/MusicPlayer.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 
 #include "client/Sound.hpp"
 
@@ -25,7 +25,7 @@ namespace ui
   void MusicPlayer::prevTrack( Button* sender )
   {
     MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
-    int nTracks = translator.musics.length();
+    int nTracks = library.musics.length();
 
     if( nTracks > 1 ) {
       musicPlayer->currentTrack = ( nTracks + musicPlayer->currentTrack - 1 ) % nTracks;
@@ -33,7 +33,7 @@ namespace ui
       sound.stopMusic();
       sound.playMusic( musicPlayer->currentTrack );
 
-      musicPlayer->title.setText( "%s", translator.musics[musicPlayer->currentTrack].name.cstr() );
+      musicPlayer->title.setText( "%s", library.musics[musicPlayer->currentTrack].name.cstr() );
       musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack );
       musicPlayer->isPlaying = true;
     }
@@ -42,7 +42,7 @@ namespace ui
   void MusicPlayer::nextTrack( Button* sender )
   {
     MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
-    int nTracks = translator.musics.length();
+    int nTracks = library.musics.length();
 
     if( nTracks > 1 ) {
       musicPlayer->currentTrack = ( musicPlayer->currentTrack + 1 ) % nTracks;
@@ -50,7 +50,7 @@ namespace ui
       sound.stopMusic();
       sound.playMusic( musicPlayer->currentTrack );
 
-      musicPlayer->title.setText( "%s", translator.musics[musicPlayer->currentTrack].name.cstr() );
+      musicPlayer->title.setText( "%s", library.musics[musicPlayer->currentTrack].name.cstr() );
       musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack );
       musicPlayer->isPlaying = true;
     }
@@ -59,13 +59,13 @@ namespace ui
   void MusicPlayer::playTrack( Button* sender )
   {
     MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
-    int nTracks = translator.musics.length();
+    int nTracks = library.musics.length();
 
     if( nTracks != 0 ) {
       sound.stopMusic();
       sound.playMusic( musicPlayer->currentTrack );
 
-      musicPlayer->title.setText( "%s", translator.musics[musicPlayer->currentTrack].name.cstr() );
+      musicPlayer->title.setText( "%s", library.musics[musicPlayer->currentTrack].name.cstr() );
       musicPlayer->trackLabel.setText( "%d", musicPlayer->currentTrack );
       musicPlayer->isPlaying = true;
     }
@@ -74,7 +74,7 @@ namespace ui
   void MusicPlayer::stopTrack( Button* sender )
   {
     MusicPlayer* musicPlayer = static_cast<MusicPlayer*>( sender->parent );
-    int nTracks = translator.musics.length();
+    int nTracks = library.musics.length();
 
     if( nTracks != 0 ) {
       sound.stopMusic();
@@ -105,7 +105,7 @@ namespace ui
   void MusicPlayer::onUpdate()
   {
     if( isPlaying && !sound.isMusicPlaying() ) {
-      int nTracks = translator.musics.length();
+      int nTracks = library.musics.length();
 
       if( nTracks > 0 ) {
         currentTrack = ( currentTrack + 1 ) % nTracks;
@@ -113,7 +113,7 @@ namespace ui
         sound.stopMusic();
         sound.playMusic( currentTrack );
 
-        title.setText( "%s", translator.musics[currentTrack].name.cstr() );
+        title.setText( "%s", library.musics[currentTrack].name.cstr() );
         trackLabel.setText( "%d", currentTrack );
       }
     }

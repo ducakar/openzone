@@ -61,7 +61,7 @@ namespace client
 
   MD2::~MD2()
   {
-    const String& name = translator.models[id].name;
+    const String& name = library.models[id].name;
 
     log.print( "Unloading MD2 model '%s' ...", name.cstr() );
 
@@ -190,8 +190,8 @@ namespace client
 
   void MD2::load()
   {
-    const String& name = translator.models[id].name;
-    const String& path = translator.models[id].path;
+    const String& name = library.models[id].name;
+    const String& path = library.models[id].path;
 
     log.print( "Loading MD2 model '%s' ...", name.cstr() );
 
@@ -202,7 +202,7 @@ namespace client
 
     InputStream is  = buffer.inputStream();
 
-    shaderId        = translator.shaderIndex( is.readString() );
+    shaderId        = library.shaderIndex( is.readString() );
 
     nFrames         = is.readInt();
     nFrameVertices  = is.readInt();
@@ -576,7 +576,7 @@ namespace client
 
     int nFrameVertices = mesh.vertices.length();
 
-    translator.shaderIndex( shaderName );
+    library.shaderIndex( shaderName );
 
     if( nFrameVertices > MAX_VERTS ) {
       delete[] frameData;

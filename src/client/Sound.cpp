@@ -161,7 +161,7 @@ namespace client
         selectedTrack = -1;
       }
       else {
-        const char* path = translator.musics[selectedTrack].path;
+        const char* path = library.musics[selectedTrack].path;
 
         log.print( "Loading music '%s' ...", path );
 

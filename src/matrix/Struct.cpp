@@ -24,7 +24,6 @@ namespace oz
   void ( Struct::Entity::* Struct::Entity::handlers[] )() = {
     &Struct::Entity::updateIgnoring,
     &Struct::Entity::updateBlocking,
-    &Struct::Entity::updatePushing,
     &Struct::Entity::updateCrushing,
     &Struct::Entity::updateAutoDoor
   };
@@ -204,146 +203,6 @@ namespace oz
     }
   }
 
-  void Struct::Entity::updatePushing()
-  {
-    switch( state ) {
-      case CLOSED: {
-        time += Timer::TICK_TIME;
-
-        if( time >= model->timeout ) {
-          time = 0.0f;
-          state = OPENING;
-        }
-        break;
-      }
-      case OPENING: {
-        float oldRatio = ratio;
-        Vec3 oldOffset = offset;
-
-        ratio = min( ratio + model->ratioInc, 1.0f );
-        offset = ratio * model->move;
-
-        overlappingObjs.clear();
-        collider.getOverlaps( this, &overlappingObjs, 0.0f * EPSILON );
-
-        if( !overlappingObjs.isEmpty() ) {
-          Vec3 momentum = ( model->ratioInc * model->move ) / Timer::TICK_TIME;
-          momentum = str->toAbsoluteCS( momentum ) * ( 1.0f + 2.0f * EPSILON );
-
-          if( momentum.z > 0.0f ) {
-            momentum.z -= Physics::G_ACCEL * Timer::TICK_TIME;
-          }
-
-          foreach( obj, overlappingObjs.iter() ) {
-            Dynamic* dyn = static_cast<Dynamic*>( *obj );
-
-            if( dyn->flags & Object::DYNAMIC_BIT ) {
-              dyn->momentum += momentum;
-              dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
-            }
-          }
-
-          ratio = oldRatio;
-          offset = oldOffset;
-
-          if( ratio == 0.0f ) {
-            state = CLOSED;
-          }
-        }
-        else {
-          if( ratio == 1.0f ) {
-            state = OPENED;
-          }
-
-          offset = oldOffset;
-
-          overlappingObjs.clear();
-          collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
-
-          offset = ratio * model->move;
-
-          foreach( obj, overlappingObjs.iter() ) {
-            Dynamic* dyn = static_cast<Dynamic*>( *obj );
-
-            if( dyn->flags & Object::DYNAMIC_BIT ) {
-              dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
-            }
-          }
-        }
-        break;
-      }
-      case OPENED: {
-        time += Timer::TICK_TIME;
-
-        if( time >= model->timeout ) {
-          time = 0.0f;
-          state = CLOSING;
-        }
-        break;
-      }
-      case CLOSING: {
-        float oldRatio = ratio;
-        Vec3 oldOffset = offset;
-
-        ratio = max( ratio - model->ratioInc, 0.0f );
-        offset = ratio * model->move;
-
-        overlappingObjs.clear();
-        collider.getOverlaps( this, &overlappingObjs, 0.0f * EPSILON );
-
-        if( !overlappingObjs.isEmpty() ) {
-          Vec3 momentum = ( model->ratioInc * -model->move ) / Timer::TICK_TIME;
-          momentum = str->toAbsoluteCS( momentum ) * ( 1.0f + 2.0f * EPSILON );
-
-          if( momentum.z > 0.0f ) {
-            momentum.z -= Physics::G_ACCEL * Timer::TICK_TIME;
-          }
-
-          foreach( obj, overlappingObjs.iter() ) {
-            Dynamic* dyn = static_cast<Dynamic*>( *obj );
-
-            if( dyn->flags & Object::DYNAMIC_BIT ) {
-              dyn->momentum += momentum;
-              dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
-            }
-          }
-
-          ratio = oldRatio;
-          offset = oldOffset;
-
-          if( ratio == 0.0f ) {
-            state = OPENED;
-          }
-        }
-        else {
-          if( ratio == 0.0f ) {
-            state = CLOSED;
-          }
-
-          offset = oldOffset;
-
-          overlappingObjs.clear();
-          collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
-
-          offset = ratio * model->move;
-
-          foreach( obj, overlappingObjs.iter() ) {
-            Dynamic* dyn = static_cast<Dynamic*>( *obj );
-
-            if( dyn->flags & Object::DYNAMIC_BIT ) {
-              dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
-            }
-          }
-        }
-        break;
-      }
-      default: {
-        hard_assert( false );
-        break;
-      }
-    }
-  }
-
   void Struct::Entity::updateCrushing()
   {
     switch( state ) {
@@ -357,11 +216,13 @@ namespace oz
         break;
       }
       case OPENING: {
+        collider.touchOverlaps( str->toAbsoluteCS( *model + offset ).toAABB(), 2.0f * EPSILON );
+
         ratio = min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
 
         overlappingObjs.clear();
-        collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
+        collider.getOverlaps( this, &overlappingObjs, 0.5f * EPSILON );
 
         if( !overlappingObjs.isEmpty() ) {
           Vec3 move = ( model->ratioInc + 2.0f * EPSILON ) * model->move;
@@ -376,7 +237,6 @@ namespace oz
               if( collider.hit.ratio == 1.0f ) {
                 dyn->p += move;
                 dyn->velocity += move / Timer::TICK_TIME;
-                dyn->momentum += move / Timer::TICK_TIME;
                 dyn->flags &= ~Object::DISABLED_BIT;
               }
               else {
@@ -400,11 +260,13 @@ namespace oz
         break;
       }
       case CLOSING: {
+        collider.touchOverlaps( str->toAbsoluteCS( *model + offset ).toAABB(), 2.0f * EPSILON );
+
         ratio = max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
 
         overlappingObjs.clear();
-        collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
+        collider.getOverlaps( this, &overlappingObjs, 0.5f * EPSILON );
 
         if( !overlappingObjs.isEmpty() ) {
           Vec3 move = ( model->ratioInc + 2.0f * EPSILON ) * -model->move;
@@ -419,7 +281,6 @@ namespace oz
               if( collider.hit.ratio == 1.0f ) {
                 dyn->p += move;
                 dyn->velocity += move / Timer::TICK_TIME;
-                dyn->momentum += move / Timer::TICK_TIME;
                 dyn->flags &= ~Object::DISABLED_BIT;
               }
               else {

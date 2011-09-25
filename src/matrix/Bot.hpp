@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 #include "matrix/Dynamic.hpp"
 #include "matrix/Weapon.hpp"
 
@@ -78,6 +78,8 @@ namespace oz
 
       static const float HIT_HARD_THRESHOLD;
       static const float WOUNDED_THRESHOLD;
+      static const float INSTRUMENT_DIST_MAX;
+      static const float INSTRUMENT_DOT_MIN;
       static const float GRAB_EPSILON;
       static const float GRAB_STRING_RATIO;
       static const float GRAB_HANDLE_TOL;
@@ -85,7 +87,7 @@ namespace oz
       static const float GRAB_MOM_MAX;
       static const float GRAB_MOM_MAX_SQ;
       static const float DEAD_BODY_LIFT;
-      static const float BODY_FADEOUT_FACTOR;
+      static const float BODY_FADE_FACTOR;
 
       static Pool<Bot, 1024> pool;
 
@@ -97,29 +99,28 @@ namespace oz
 
     public:
 
-      float       h;
-      float       v;
-      int         state, oldState;
-      int         actions, oldActions;
+      float      h;
+      float      v;
+      int        state, oldState;
+      int        actions, oldActions;
 
-      float       stamina;
-      float       stepRate;
+      float      stamina;
+      float      stepRate;
 
-      int         grabObj;
-      float       grabHandle;
+      int        instrument;
 
-      Vector<int> items;
-      int         taggedItem;
-      int         weaponItem;
+      int        grabObj;
+      float      grabHandle;
 
-      String      name;
+      int        taggedItem;
+      int        weaponItem;
 
-      float       camZ;
-      Anim::Type  anim;
+      String     name;
+
+      float      camZ;
+      Anim::Type anim;
 
       Bot();
-
-      void take( Dynamic* item );
 
       void heal();
       void rearm();

@@ -170,8 +170,8 @@ namespace client
   {
     id = orbis.caelum.id;
 
-    const String& name = translator.caela[id].name;
-    const String& path = translator.caela[id].path;
+    const String& name = library.caela[id].name;
+    const String& path = library.caela[id].path;
 
     log.print( "Loading Caelum '%s' ...", name.cstr() );
 
@@ -218,8 +218,8 @@ namespace client
     sunTexId  = context.readTexture( &is );
     moonTexId = context.readTexture( &is );
 
-    starShaderId      = translator.shaderIndex( "stars" );
-    celestialShaderId = translator.shaderIndex( "celestial" );
+    starShaderId      = library.shaderIndex( "stars" );
+    celestialShaderId = library.shaderIndex( "celestial" );
 
     OZ_GL_CHECK_ERROR();
 

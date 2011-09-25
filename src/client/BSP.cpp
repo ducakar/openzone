@@ -30,7 +30,7 @@ namespace client
 
   void BSP::playSound( const Struct::Entity* entity, int sample ) const
   {
-    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+    hard_assert( uint( sample ) < uint( library.sounds.length() ) );
 
     Bounds bounds = *entity->model;
     Point3 localPos = bounds.mins + 0.5f * ( bounds.maxs - bounds.mins );
@@ -59,7 +59,7 @@ namespace client
 
   void BSP::playContSound( const Struct::Entity* entity, int sample ) const
   {
-    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+    hard_assert( uint( sample ) < uint( library.sounds.length() ) );
 
     const Struct* str = entity->str;
     // we can have at most 100 models per BSP, so stride 128 should do
@@ -113,7 +113,7 @@ namespace client
       return;
     }
 
-    log.println( "Unloading BSP model '%s' {", translator.bsps[bsp->id].name.cstr() );
+    log.println( "Unloading BSP model '%s' {", library.bsps[bsp->id].name.cstr() );
     log.indent();
 
     foreach( mesh, meshes.iter() ) {
@@ -140,7 +140,7 @@ namespace client
   {
     hard_assert( bsp != null );
 
-    const String& name = translator.bsps[bsp->id].name;
+    const String& name = library.bsps[bsp->id].name;
 
     log.println( "Loading BSP model '%s' {", name.cstr() );
     log.indent();
@@ -253,8 +253,8 @@ namespace client
     float scale = bspConfig.get( "scale", 0.01f );
     float maxDim = bspConfig.get( "maxDim", Math::INF );
 
-    translator.shaderIndex( "mesh" );
-    translator.shaderIndex( "bigMesh" );
+    library.shaderIndex( "mesh" );
+    library.shaderIndex( "bigMesh" );
 
     if( Math::isNaN( scale ) ) {
       throw Exception( "BSP scale is NaN" );

@@ -152,7 +152,7 @@ namespace client
   {
     id = orbis.terra.id;
 
-    const String& name = translator.terras[id].name;
+    const String& name = library.terras[id].name;
     String path = "terra/" + name + ".ozcTerra";
 
     log.print( "Loading terra '%s' ...", name.cstr() );
@@ -225,10 +225,10 @@ namespace client
       }
     }
 
-    landShaderId = translator.shaderIndex( "terraLand" );
-    waterShaderId = translator.shaderIndex( "terraWater" );
-    submergedLandShaderId = translator.shaderIndex( "submergedTerraLand" );
-    submergedWaterShaderId = translator.shaderIndex( "submergedTerraWater" );
+    landShaderId = library.shaderIndex( "terraLand" );
+    waterShaderId = library.shaderIndex( "terraWater" );
+    submergedLandShaderId = library.shaderIndex( "submergedTerraLand" );
+    submergedWaterShaderId = library.shaderIndex( "submergedTerraWater" );
 
     log.printEnd( " OK" );
   }

@@ -50,7 +50,6 @@ namespace oz
         {
           IGNORING,
           BLOCKING,
-          PUSHING,
           CRUSHING,
           AUTO_DOOR
         };

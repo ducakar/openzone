@@ -191,7 +191,7 @@ uint Context::requestTexture( int id )
 
     resource.nUsers = 1;
 
-    const String& name = translator.textures[id].name;
+    const String& name = library.textures[id].name;
 
     log.print( "Loading texture '%s' ...", name.cstr() );
 
@@ -216,12 +216,12 @@ uint Context::requestTexture( int id )
   {
     Resource<uint>& resource = textures[id];
 
-    hard_assert( uint( id ) < uint( translator.textures.length() ) && resource.nUsers > 0 );
+    hard_assert( uint( id ) < uint( library.textures.length() ) && resource.nUsers > 0 );
 
     --resource.nUsers;
 
     if( resource.nUsers == 0 ) {
-      log.print( "Unloading texture '%s' ...", translator.textures[id].name.cstr() );
+      log.print( "Unloading texture '%s' ...", library.textures[id].name.cstr() );
       glDeleteTextures( 1, &resource.id );
 
       OZ_GL_CHECK_ERROR();
@@ -243,8 +243,8 @@ uint Context::requestTexture( int id )
 
     OZ_AL_CHECK_ERROR();
 
-    const String& name = translator.sounds[id].name;
-    const String& path = translator.sounds[id].path;
+    const String& name = library.sounds[id].name;
+    const String& path = library.sounds[id].path;
 
     log.print( "Loading sound '%s' ...", name.cstr() );
 
@@ -291,12 +291,12 @@ uint Context::requestTexture( int id )
   {
     Resource<uint>& resource = sounds[id];
 
-    hard_assert( uint( id ) < uint( translator.sounds.length() ) && resource.nUsers > 0 );
+    hard_assert( uint( id ) < uint( library.sounds.length() ) && resource.nUsers > 0 );
 
     --resource.nUsers;
 
     if( resource.nUsers == 0 ) {
-      log.print( "Unloading sound '%s' ...", translator.sounds[id].name.cstr() );
+      log.print( "Unloading sound '%s' ...", library.sounds[id].name.cstr() );
       alDeleteBuffers( 1, &resource.id );
 
       OZ_AL_CHECK_ERROR();
@@ -482,13 +482,13 @@ uint Context::requestTexture( int id )
   {
     log.print( "Loading Context ..." );
 
-    for( int i = 0; i < translator.textures.length(); ++i ) {
+    for( int i = 0; i < library.textures.length(); ++i ) {
       textures[i].nUsers = 0;
     }
-    for( int i = 0; i < translator.sounds.length(); ++i ) {
+    for( int i = 0; i < library.sounds.length(); ++i ) {
       sounds[i].nUsers = 0;
     }
-    for( int i = 0; i < translator.bsps.length(); ++i ) {
+    for( int i = 0; i < library.bsps.length(); ++i ) {
       bsps[i].object = null;
       bsps[i].nUsers = 0;
     }
@@ -541,7 +541,7 @@ uint Context::requestTexture( int id )
       delete resource->object;
       md3s.exclude( resource.key() );
     }
-    for( int i = 0; i < translator.bsps.length(); ++i ) {
+    for( int i = 0; i < library.bsps.length(); ++i ) {
       delete bsps[i].object;
       bsps[i].object = null;
       bsps[i].nUsers = 0;
@@ -579,10 +579,10 @@ uint Context::requestTexture( int id )
     objSources.clear();
     objSources.dealloc();
 
-    for( int i = 0; i < translator.textures.length(); ++i ) {
+    for( int i = 0; i < library.textures.length(); ++i ) {
       hard_assert( textures[i].nUsers == 0 );
     }
-    for( int i = 0; i < translator.sounds.length(); ++i ) {
+    for( int i = 0; i < library.sounds.length(); ++i ) {
       hard_assert( sounds[i].nUsers == 0 );
     }
 
@@ -625,19 +625,19 @@ uint Context::requestTexture( int id )
     OZ_REGISTER_AUDIOCLASS( Bot );
     OZ_REGISTER_AUDIOCLASS( Vehicle );
 
-    if( translator.textures.length() == 0 ) {
+    if( library.textures.length() == 0 ) {
       throw Exception( "Context: textures missing!" );
     }
-    if( translator.sounds.length() == 0 ) {
+    if( library.sounds.length() == 0 ) {
       throw Exception( "Context: sounds missing!" );
     }
-    if( translator.bsps.length() == 0 ) {
+    if( library.bsps.length() == 0 ) {
       throw Exception( "Context: BSPs missing!" );
     }
 
-    textures = new Resource<uint>[translator.textures.length()];
-    sounds   = new Resource<uint>[translator.sounds.length()];
-    bsps     = new Resource<BSP*>[translator.bsps.length()];
+    textures = new Resource<uint>[library.textures.length()];
+    sounds   = new Resource<uint>[library.sounds.length()];
+    bsps     = new Resource<BSP*>[library.bsps.length()];
 
     buffer.alloc( BUFFER_SIZE );
 

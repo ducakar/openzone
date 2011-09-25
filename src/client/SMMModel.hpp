@@ -24,7 +24,7 @@ namespace client
     protected:
 
       SMM*  smm;
-      float heading;
+      float h;
 
       virtual ~SMMModel();
 

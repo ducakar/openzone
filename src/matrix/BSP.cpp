@@ -11,7 +11,7 @@
 
 #include "matrix/BSP.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 
 namespace oz
 {
@@ -128,9 +128,9 @@ namespace oz
       const char* sCloseSample = is.readString();
       const char* sFrictSample = is.readString();
 
-      models[i].openSample  = sOpenSample[0]  == '\0' ? -1 : translator.soundIndex( sOpenSample );
-      models[i].closeSample = sCloseSample[0] == '\0' ? -1 : translator.soundIndex( sCloseSample );
-      models[i].frictSample = sFrictSample[0] == '\0' ? -1 : translator.soundIndex( sFrictSample );
+      models[i].openSample  = sOpenSample[0]  == '\0' ? -1 : library.soundIndex( sOpenSample );
+      models[i].closeSample = sCloseSample[0] == '\0' ? -1 : library.soundIndex( sCloseSample );
+      models[i].frictSample = sFrictSample[0] == '\0' ? -1 : library.soundIndex( sFrictSample );
     }
 
     return true;
@@ -138,7 +138,7 @@ namespace oz
 
   void BSP::freeOZBSP()
   {
-    log.print( "Freeing BSP structure '%s' ...", translator.bsps[id].name.cstr() );
+    log.print( "Freeing BSP structure '%s' ...", library.bsps[id].name.cstr() );
 
     if( planes != null ) {
       aDestruct( planes, nPlanes );
@@ -178,9 +178,9 @@ namespace oz
       planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), models( null ),
       brushes( null ), brushSides( null )
   {
-    log.print( "Loading OpenZone BSP structure '%s' ...", translator.bsps[id].name.cstr() );
+    log.print( "Loading OpenZone BSP structure '%s' ...", library.bsps[id].name.cstr() );
 
-    if( !loadOZBSP( translator.bsps[id].path ) ) {
+    if( !loadOZBSP( library.bsps[id].path ) ) {
       log.printEnd( " Failed" );
       freeOZBSP();
       throw Exception( "Matrix ozBSP loading failed" );

@@ -38,6 +38,7 @@ namespace ui
       Label vehicleWeaponNames[Vehicle::WEAPONS_MAX];
       Label vehicleWeaponRounds[Vehicle::WEAPONS_MAX];
 
+      int   lastTaggedId;
       int   lastWeaponId;
       int   lastWeaponRounds;
       int   lastVehicleId;
@@ -45,27 +46,25 @@ namespace ui
 
       uint  crossTexId;
       uint  useTexId;
+      uint  equipTexId;
       uint  mountTexId;
       uint  takeTexId;
+      uint  browseTexId;
       uint  liftTexId;
       uint  grabTexId;
 
-      int   crossIconX;
-      int   crossIconY;
-      int   useIconX;
-      int   useIconY;
-      int   mountIconX;
-      int   mountIconY;
-      int   takeIconX;
-      int   takeIconY;
-      int   liftIconX;
-      int   liftIconY;
-      int   grabIconX;
-      int   grabIconY;
-      int   healthBarX;
-      int   healthBarY;
       int   descTextX;
       int   descTextY;
+      int   healthBarX;
+      int   healthBarY;
+      int   crossIconX;
+      int   crossIconY;
+      int   leftIconX;
+      int   leftIconY;
+      int   rightIconX;
+      int   rightIconY;
+      int   bottomIconX;
+      int   bottomIconY;
 
       void drawBotCrosshair();
       void drawBotStatus();
@@ -73,7 +72,7 @@ namespace ui
 
     protected:
 
-      virtual void onInterrupt();
+      virtual void onUpdate();
       virtual void onDraw();
 
     public:

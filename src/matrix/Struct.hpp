@@ -55,7 +55,6 @@ namespace oz
 
           void updateIgnoring();
           void updateBlocking();
-          void updatePushing();
           void updateCrushing();
           void updateAutoDoor();
 

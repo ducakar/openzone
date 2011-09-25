@@ -11,7 +11,7 @@
 
 #include "client/ui/BuildMenu.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 
@@ -27,14 +27,14 @@ namespace ui
 {
 
   BuildButton::BuildButton( const char* className, Callback* callback, int width, int height ) :
-      Button( gettext( ( *translator.classes.find( className ) )->title ), callback, width, height ),
+      Button( gettext( ( *library.classes.find( className ) )->title ), callback, width, height ),
       className( className )
   {}
 
   void BuildMenu::createObject( Button* button_ )
   {
     const BuildButton* button = static_cast<const BuildButton*>( button_ );
-    const ObjectClass* const* clazz = translator.classes.find( button->className );
+    const ObjectClass* const* clazz = library.classes.find( button->className );
 
     if( clazz == null ) {
       return;

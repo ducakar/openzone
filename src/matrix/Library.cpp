@@ -1,7 +1,7 @@
 /*
- *  Translator.cpp
+ *  Library.cpp
  *
- *  [description]
+ *  Map of all resources, object types, scripts etc.
  *
  *  Copyright (C) 2002-2011, Davorin Učakar <davorin.ucakar@gmail.com>
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 
 #include "matrix/WeaponClass.hpp"
 #include "matrix/BotClass.hpp"
@@ -24,13 +24,13 @@
 namespace oz
 {
 
-  Translator translator;
+  Library library;
 
-  Translator::Resource::Resource( const String& name_, const String& path_ ) :
+  Library::Resource::Resource( const String& name_, const String& path_ ) :
       name( name_ ), path( path_ )
   {}
 
-  int Translator::textureIndex( const char* name ) const
+  int Library::textureIndex( const char* name ) const
   {
     const int* value = textureIndices.find( name );
     if( value != null ) {
@@ -41,7 +41,7 @@ namespace oz
     }
   }
 
-  int Translator::soundIndex( const char* name ) const
+  int Library::soundIndex( const char* name ) const
   {
     const int* value = soundIndices.find( name );
     if( value != null ) {
@@ -52,7 +52,7 @@ namespace oz
     }
   }
 
-  int Translator::shaderIndex( const char* name ) const
+  int Library::shaderIndex( const char* name ) const
   {
     const int* value = shaderIndices.find( name );
     if( value != null ) {
@@ -63,7 +63,7 @@ namespace oz
     }
   }
 
-  int Translator::terraIndex( const char* name ) const
+  int Library::terraIndex( const char* name ) const
   {
     const int* value = terraIndices.find( name );
     if( value != null ) {
@@ -74,7 +74,7 @@ namespace oz
     }
   }
 
-  int Translator::caelumIndex( const char* name ) const
+  int Library::caelumIndex( const char* name ) const
   {
     const int* value = caelumIndices.find( name );
     if( value != null ) {
@@ -85,7 +85,7 @@ namespace oz
     }
   }
 
-  int Translator::bspIndex( const char* name ) const
+  int Library::bspIndex( const char* name ) const
   {
     const int* value = bspIndices.find( name );
     if( value != null ) {
@@ -96,7 +96,7 @@ namespace oz
     }
   }
 
-  int Translator::modelIndex( const char* name ) const
+  int Library::modelIndex( const char* name ) const
   {
     const int* value = modelIndices.find( name );
     if( value != null ) {
@@ -107,7 +107,7 @@ namespace oz
     }
   }
 
-  int Translator::nameListIndex( const char* name ) const
+  int Library::nameListIndex( const char* name ) const
   {
     const int* value = nameListIndices.find( name );
     if( value != null ) {
@@ -120,7 +120,7 @@ namespace oz
 
 #ifndef OZ_TOOLS
 
-  Struct* Translator::createStruct( int index, const char* name, const Point3& p,
+  Struct* Library::createStruct( int index, const char* name, const Point3& p,
                                     Struct::Rotation rot ) const
   {
     const int* value = bspIndices.find( name );
@@ -132,7 +132,7 @@ namespace oz
     }
   }
 
-  Struct* Translator::createStruct( int index, const char* name, InputStream* istream ) const
+  Struct* Library::createStruct( int index, const char* name, InputStream* istream ) const
   {
     const int* value = bspIndices.find( name );
     if( value != null ) {
@@ -143,7 +143,7 @@ namespace oz
     }
   }
 
-  Object* Translator::createObject( int index, const char* name, const Point3& p ) const
+  Object* Library::createObject( int index, const char* name, const Point3& p ) const
   {
     const ObjectClass* const* value = classes.find( name );
     if( value != null ) {
@@ -154,7 +154,7 @@ namespace oz
     }
   }
 
-  Object* Translator::createObject( int index, const char* name, InputStream* istream ) const
+  Object* Library::createObject( int index, const char* name, InputStream* istream ) const
   {
     const ObjectClass* const* value = classes.find( name );
     if( value != null ) {
@@ -165,7 +165,7 @@ namespace oz
     }
   }
 
-  void Translator::init()
+  void Library::init()
   {
     OZ_REGISTER_BASECLASS( Object );
     OZ_REGISTER_BASECLASS( Dynamic );
@@ -182,7 +182,7 @@ namespace oz
     nameLists.alloc( 16 );
     musics.alloc( 32 );
 
-    log.println( "Translator mapping resources {" );
+    log.println( "Library mapping resources {" );
     log.indent();
 
     Directory dir;
@@ -199,7 +199,7 @@ namespace oz
       log.unindent();
       log.println( "}" );
 
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "ozcTex" ) ) {
@@ -228,7 +228,7 @@ namespace oz
       log.println( "Cannot open directory 'snd'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "wav" ) ) {
@@ -257,7 +257,7 @@ namespace oz
       log.println( "Cannot open directory 'glsl'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "vert" ) ) {
@@ -285,7 +285,7 @@ namespace oz
       log.println( "Cannot open directory 'terra'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "ozTerra" ) ) {
@@ -314,7 +314,7 @@ namespace oz
       log.println( "Cannot open directory 'caelum'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "ozcCaelum" ) ) {
@@ -343,7 +343,7 @@ namespace oz
       log.println( "Cannot open directory 'bsp'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "ozBSP" ) ) {
@@ -372,7 +372,7 @@ namespace oz
       log.println( "Cannot open directory 'mdl'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "ozcSMM" ) && !ent.hasExtension( "ozcMD2" ) ) {
@@ -405,7 +405,7 @@ namespace oz
       log.println( "Cannot open directory 'name'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "txt" ) ) {
@@ -434,7 +434,7 @@ namespace oz
       log.println( "Cannot open directory 'music'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "oga" ) ) {
@@ -462,7 +462,7 @@ namespace oz
       log.println( "Cannot open directory 'class'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "rc" ) ) {
@@ -510,7 +510,7 @@ namespace oz
 
 #else // OZ_TOOLS
 
-  void Translator::init()
+  void Library::init()
   {
     textures.alloc( 256 );
     sounds.alloc( 256 );
@@ -519,7 +519,7 @@ namespace oz
     models.alloc( 256 );
     nameLists.alloc( 16 );
 
-    log.println( "Translator mapping resources {" );
+    log.println( "Library mapping resources {" );
     log.indent();
 
     Directory dir;
@@ -536,7 +536,7 @@ namespace oz
       log.unindent();
       log.println( "}" );
 
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpeg" ) &&
@@ -571,7 +571,7 @@ namespace oz
       log.println( "Cannot open directory 'snd'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "wav" ) ) {
@@ -600,7 +600,7 @@ namespace oz
       log.println( "Cannot open directory 'glsl'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "vert" ) ) {
@@ -628,7 +628,7 @@ namespace oz
       log.println( "Cannot open directory 'terra'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "rc" ) ) {
@@ -657,7 +657,7 @@ namespace oz
       log.println( "Cannot open directory 'caelum'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "rc" ) ) {
@@ -686,7 +686,7 @@ namespace oz
       log.println( "Cannot open directory 'data/maps'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "rc" ) ) {
@@ -715,7 +715,7 @@ namespace oz
       log.println( "Cannot open directory 'mdl'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( ent.hasExtension( "ozcSMM" ) || ent.hasExtension( "ozcMD2" ) ) {
@@ -744,7 +744,7 @@ namespace oz
       log.println( "Cannot open directory 'name'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "txt" ) ) {
@@ -773,7 +773,7 @@ namespace oz
       log.println( "Cannot open directory 'music'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "oga" ) ) {
@@ -801,7 +801,7 @@ namespace oz
       log.println( "Cannot open directory 'class'" );
       log.unindent();
       log.println( "}" );
-      throw Exception( "Translator initialisation failure" );
+      throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
       if( !ent.hasExtension( "rc" ) ) {
@@ -849,7 +849,7 @@ namespace oz
 
 #endif // OZ_TOOLS
 
-  void Translator::free()
+  void Library::free()
   {
     textureIndices.clear();
     textureIndices.dealloc();

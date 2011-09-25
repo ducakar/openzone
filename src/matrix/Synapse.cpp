@@ -11,7 +11,7 @@
 
 #include "matrix/Synapse.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Bot.hpp"
 

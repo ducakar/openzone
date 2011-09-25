@@ -144,7 +144,7 @@ namespace client
 
   void Shader::loadProgram( int id, const char** sources, int* lengths )
   {
-    const String& name = translator.shaders[id].name;
+    const String& name = library.shaders[id].name;
 
     log.println( "Creating program '%s' {", name.cstr() );
     log.indent();
@@ -335,7 +335,7 @@ namespace client
 
     log.printEnd( " OK" );
 
-    for( int i = 0; i < translator.shaders.length(); ++i ) {
+    for( int i = 0; i < library.shaders.length(); ++i ) {
       if( i == ui ) {
         continue;
       }
@@ -355,7 +355,7 @@ namespace client
 
     isLoaded = false;
 
-    for( int i = 0; i < translator.shaders.length(); ++i ) {
+    for( int i = 0; i < library.shaders.length(); ++i ) {
       if( i == ui ) {
         continue;
       }
@@ -405,8 +405,8 @@ namespace client
 
     glActiveTexture( GL_TEXTURE0 );
 
-    programs.alloc( translator.shaders.length() );
-    for( int i = 0; i < translator.shaders.length(); ++i ) {
+    programs.alloc( library.shaders.length() );
+    for( int i = 0; i < library.shaders.length(); ++i ) {
       programs[i].program    = 0;
       programs[i].vertShader = 0;
       programs[i].fragShader = 0;
@@ -438,9 +438,9 @@ namespace client
 
     log.printEnd( " OK" );
 
-    ui        = translator.shaderIndex( "ui" );
-    mesh      = translator.shaderIndex( "mesh" );
-    bigMesh   = translator.shaderIndex( "bigMesh" );
+    ui        = library.shaderIndex( "ui" );
+    mesh      = library.shaderIndex( "mesh" );
+    bigMesh   = library.shaderIndex( "bigMesh" );
     colour    = Vec4::ONE;
     isInWater = false;
     isLoaded  = false;

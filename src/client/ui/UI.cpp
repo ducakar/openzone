@@ -71,7 +71,7 @@ namespace ui
     tf.camera = Mat44::ID;
 
     // set shaders
-    for( int i = 0; i < translator.shaders.length(); ++i ) {
+    for( int i = 0; i < library.shaders.length(); ++i ) {
       if( shader.isLoaded || i == shader.ui ) {
         shader.use( i );
 
@@ -111,7 +111,8 @@ namespace ui
     try {
       strategicArea = new StrategicArea();
       hudArea       = new HudArea();
-      inventoryMenu = new InventoryMenu();
+      inventoryMenu = new InventoryMenu( null );
+      browseMenu    = new InventoryMenu( inventoryMenu );
       musicPlayer   = new MusicPlayer();
       buildMenu     = new BuildMenu();
 #ifndef NDEBUG
@@ -122,6 +123,7 @@ namespace ui
       delete strategicArea;
       delete hudArea;
       delete inventoryMenu;
+      delete inventoryMenu;
       delete musicPlayer;
       delete buildMenu;
 #ifndef NDEBUG
@@ -131,6 +133,7 @@ namespace ui
       strategicArea = null;
       hudArea       = null;
       inventoryMenu = null;
+      browseMenu    = null;
       musicPlayer   = null;
       buildMenu     = null;
 #ifndef NDEBUG
@@ -143,6 +146,7 @@ namespace ui
     root->add( strategicArea );
     root->add( hudArea );
     root->add( inventoryMenu );
+    root->add( browseMenu );
     root->add( musicPlayer );
     root->add( buildMenu );
 #ifndef NDEBUG
@@ -179,6 +183,10 @@ namespace ui
     if( inventoryMenu != null ) {
       root->remove( inventoryMenu );
       inventoryMenu = null;
+    }
+    if( browseMenu != null ) {
+      root->remove( browseMenu );
+      browseMenu = null;
     }
     if( hudArea != null ) {
       root->remove( hudArea  );

@@ -26,7 +26,7 @@ namespace client
 
   void Audio::playSound( int sample, float volume, const Object* obj, const Object* parent ) const
   {
-    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+    hard_assert( uint( sample ) < uint( library.sounds.length() ) );
 
     uint srcId;
 
@@ -69,7 +69,7 @@ namespace client
   void Audio::playContSound( int sample, float volume, const Object* obj,
                              const Object* parent ) const
   {
-    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+    hard_assert( uint( sample ) < uint( library.sounds.length() ) );
 
     int key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
 
@@ -107,7 +107,7 @@ namespace client
 
   void Audio::playEngineSound( int sample, float volume, float pitch, const Object* obj ) const
   {
-    hard_assert( uint( sample ) < uint( translator.sounds.length() ) );
+    hard_assert( uint( sample ) < uint( library.sounds.length() ) );
 
     int key = obj->index * ObjectClass::AUDIO_SAMPLES + sample;
 

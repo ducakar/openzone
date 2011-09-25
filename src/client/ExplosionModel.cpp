@@ -30,7 +30,7 @@ namespace client
   {
     ExplosionModel* model = new ExplosionModel();
 
-    modelId = translator.modelIndex( "explosion" );
+    modelId = library.modelIndex( "explosion" );
 
     model->obj = obj;
     model->smm = context.requestSMM( modelId );

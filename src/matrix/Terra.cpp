@@ -11,7 +11,7 @@
 
 #include "matrix/Terra.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 
 #ifdef OZ_TOOLS
 # include <SDL_image.h>
@@ -33,8 +33,8 @@ namespace oz
   {
     id = id_;
 
-    const String& name = translator.terras[id].name;
-    const String& path = translator.terras[id].path;
+    const String& name = library.terras[id].name;
+    const String& path = library.terras[id].path;
 
     log.print( "Loading terrain '%s' ...", name.cstr() );
 
@@ -79,14 +79,14 @@ namespace oz
   void Terra::read( InputStream* istream )
   {
     String name = istream->readString();
-    int id = translator.terraIndex( name );
+    int id = library.terraIndex( name );
 
     load( id );
   }
 
   void Terra::write( OutputStream* ostream ) const
   {
-    ostream->writeString( translator.terras[id].name );
+    ostream->writeString( library.terras[id].name );
   }
 
 #ifdef OZ_TOOLS

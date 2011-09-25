@@ -11,7 +11,6 @@
 
 #include "stable.hpp"
 
-#include "matrix/Object.hpp"
 #include "matrix/ObjectClass.hpp"
 
 namespace oz
@@ -19,10 +18,6 @@ namespace oz
 
   class DynamicClass : public ObjectClass
   {
-    private:
-
-      static const int BASE_FLAGS = Object::DYNAMIC_BIT;
-
     public:
 
       float mass;

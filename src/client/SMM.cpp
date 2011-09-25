@@ -23,8 +23,8 @@ namespace client
 
   void SMM::load()
   {
-    const String& name = translator.models[id].name;
-    const String& path = translator.models[id].path;
+    const String& name = library.models[id].name;
+    const String& path = library.models[id].path;
 
     log.print( "Loading SMM model '%s' ...", name.cstr() );
 
@@ -34,7 +34,7 @@ namespace client
     }
     InputStream is = buffer.inputStream();
 
-    shaderId = translator.shaderIndex( is.readString() );
+    shaderId = library.shaderIndex( is.readString() );
     mesh.load( &is, GL_STATIC_DRAW );
 
     isLoaded = true;
@@ -47,7 +47,7 @@ namespace client
 
   SMM::~SMM()
   {
-    const String& name = translator.models[id].name;
+    const String& name = library.models[id].name;
 
     log.print( "Unloading SMM model '%s' ...", name.cstr() );
 

@@ -7,6 +7,7 @@ add_library( matrix STATIC
   Collider.cpp
   Dynamic.cpp
   DynamicClass.cpp
+  Library.cpp
   Lua.cpp
   Matrix.cpp
   NamePool.cpp
@@ -20,7 +21,6 @@ add_library( matrix STATIC
   Synapse.cpp
   Terra.cpp
   Timer.cpp
-  Translator.cpp
   Vehicle.cpp
   VehicleClass.cpp
   Weapon.cpp
