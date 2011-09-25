@@ -170,7 +170,7 @@ namespace ui
 
   void Area::rect( int x, int y, int width, int height ) const
   {
-    x = x < 0 ? this->x + this->width + x  : this->x + x;
+    x = x < 0 ? this->x + this->width  + x : this->x + x;
     y = y < 0 ? this->y + this->height + y : this->y + y;
 
     shape.rect( x, y, width, height );
@@ -178,6 +178,9 @@ namespace ui
 
   void Area::realign( int newX, int newY )
   {
+    newX = newX < 0 ? parent->width  - width  + newX : newX;
+    newY = newY < 0 ? parent->height - height + newY : newY;
+
     int dx = newX - x;
     int dy = newY - y;
 

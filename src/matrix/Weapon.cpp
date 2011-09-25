@@ -11,10 +11,11 @@
 
 #include "matrix/Weapon.hpp"
 
+#include "matrix/WeaponClass.hpp"
 #include "matrix/Timer.hpp"
 #include "matrix/Bot.hpp"
-#include "matrix/WeaponClass.hpp"
 #include "matrix/Lua.hpp"
+#include "matrix/Synapse.hpp"
 
 namespace oz
 {
@@ -32,7 +33,14 @@ namespace oz
   {
     hard_assert( parent == -1 || parent == user->index );
 
-    if( parent == user->index ) {
+    if( parent == -1 && user->items.length() < user->clazz->nItems ) {
+      user->items.add( index );
+      parent = user->index;
+      synapse.cut( this );
+
+      user->weaponItem = index;
+    }
+    else if( parent == user->index ) {
       user->weaponItem = user->weaponItem == index  ? -1 : index;
     }
   }

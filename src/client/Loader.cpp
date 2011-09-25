@@ -53,7 +53,7 @@ namespace client
 
     if( tick % BSP_CLEAR_INTERVAL == 0 ) {
       // remove unused BSPs
-      for( int i = 0; i < translator.bsps.length(); ++i ) {
+      for( int i = 0; i < library.bsps.length(); ++i ) {
         Context::Resource<BSP*>& bsp = context.bsps[i];
 
         if( bsp.object != null ) {
@@ -200,7 +200,7 @@ namespace client
     }
 
     // BSP
-    for( int i = 0; i < translator.bsps.length(); ++i ) {
+    for( int i = 0; i < library.bsps.length(); ++i ) {
       BSP* bsp = context.bsps[i].object;
 
       if( bsp != null && !bsp->isLoaded ) {

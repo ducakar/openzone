@@ -27,7 +27,7 @@ namespace oz
   {
     private:
 
-      static const int BASE_FLAGS = 0;
+      static const int INVENTORY_ITEMS = 100;
 
     public:
 
@@ -66,9 +66,13 @@ namespace oz
       String audioType;
       int    audioSamples[AUDIO_SAMPLES];
 
+      int    nItems;
+      Vector<String> items;
+
     protected:
 
-      static void fillCommon( ObjectClass* clazz, const Config* config );
+      void fillCommonConfig( const Config* config );
+      void fillCommonFields( Object* obj ) const;
 
     public:
 

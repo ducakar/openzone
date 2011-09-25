@@ -13,7 +13,7 @@
 
 #ifdef OZ_TOOLS
 
-#include "matrix/common.hpp"
+#include "matrix/BSP.hpp"
 
 namespace oz
 {
@@ -149,18 +149,6 @@ namespace oz
 
       struct Model : Bounds
       {
-        enum Type
-        {
-          IGNORING,
-          BLOCKING,
-          PUSHING,
-          CRUSHING,
-          AUTO_DOOR
-        };
-
-        static const int AUTOMATIC_BIT = 0x00000001;
-        static const int LUA_BIT       = 0x00000002;
-
         Vec3   move;
 
         int    firstBrush;
@@ -168,7 +156,8 @@ namespace oz
 
         float  ratioInc;
         int    flags;
-        Type   type;
+
+        int    type;
 
         float  margin;
         float  timeout;

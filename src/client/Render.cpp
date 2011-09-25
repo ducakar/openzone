@@ -172,7 +172,7 @@ namespace client
     tf.camera.translate( Point3::ORIGIN - camera.p );
 
     // set shaders
-    for( int i = 0; i < translator.shaders.length(); ++i ) {
+    for( int i = 0; i < library.shaders.length(); ++i ) {
       if( i == shader.ui ) {
         continue;
       }
@@ -585,8 +585,8 @@ namespace client
     nearDist2            *= nearDist2;
     windPhi              = 0.0f;
 
-    simpleShaderId       = translator.shaderIndex( "simple" );
-    particleShaderId     = translator.shaderIndex( "particles" );
+    simpleShaderId       = library.shaderIndex( "simple" );
+    particleShaderId     = library.shaderIndex( "particles" );
 
 #ifdef OZ_MINGW
     OZ_REGISTER_GLFUNC( glUniform1i,               PFNGLUNIFORM1IPROC               );

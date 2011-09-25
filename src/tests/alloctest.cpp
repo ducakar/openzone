@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 #include "matrix/Synapse.hpp"
 #include "matrix/Matrix.hpp"
 
@@ -28,7 +28,7 @@ int main( int, char** )
 
   chdir( "data" );
 
-  translator.init();
+  library.init();
   matrix.init();
   synapse.load();
   orbis.load();
@@ -44,7 +44,7 @@ int main( int, char** )
   synapse.unload();
   orbis.unload();
   matrix.free();
-  translator.init();
+  library.init();
 
   SDL_Quit();
 

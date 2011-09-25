@@ -14,7 +14,7 @@
 #ifdef OZ_TOOLS
 
 #include "matrix/Timer.hpp"
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 
 namespace oz
 {
@@ -193,26 +193,24 @@ namespace oz
 
         String type = bspConfig.get( keyName + ".type", "BLOCKING" );
         if( type.equals( "IGNORING" ) ) {
-          models[i].type = Model::IGNORING;
+          models[i].type = BSP::Model::IGNORING;
         }
         else if( type.equals( "BLOCKING" ) ) {
-          models[i].type = Model::BLOCKING;
-        }
-        else if( type.equals( "PUSHING" ) ) {
-          models[i].type = Model::PUSHING;
+          models[i].type = BSP::Model::BLOCKING;
         }
         else if( type.equals( "CRUSHING" ) ) {
-          models[i].type = Model::CRUSHING;
+          models[i].type = BSP::Model::CRUSHING;
         }
         else if( type.equals( "AUTO_DOOR" ) ) {
-          models[i].type = Model::AUTO_DOOR;
+          models[i].type = BSP::Model::AUTO_DOOR;
         }
         else {
-          log.println( "invalid BSP entity type, should be either IGNORING, BLOCKING, PUSHING, "
+          log.println( "invalid BSP entity model, should be either IGNORING, BLOCKING, "
               "CRUSHING or AUTO_DOOR" );
           delete[] texFlags;
           delete[] texTypes;
-          return false;
+
+          throw Exception( "Invalid BSP model type" );
         }
 
         models[i].margin   = bspConfig.get( keyName + ".margin", 1.0f );
@@ -223,13 +221,13 @@ namespace oz
         models[i].frictSample = bspConfig.get( keyName + ".frictSample", "" );
 
         if( !models[i].openSample.isEmpty() ) {
-          translator.soundIndex( models[i].openSample );
+          library.soundIndex( models[i].openSample );
         }
         if( !models[i].closeSample.isEmpty() ) {
-          translator.soundIndex( models[i].closeSample );
+          library.soundIndex( models[i].closeSample );
         }
         if( !models[i].frictSample.isEmpty() ) {
-          translator.soundIndex( models[i].frictSample );
+          library.soundIndex( models[i].frictSample );
         }
       }
     }

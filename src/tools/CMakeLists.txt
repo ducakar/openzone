@@ -8,7 +8,7 @@ add_library( matrix-tools STATIC
   ../matrix/QBSP.cpp
   ../matrix/Timer.cpp
   ../matrix/Terra.cpp
-  ../matrix/Translator.cpp
+  ../matrix/Library.cpp
 )
 add_dependencies( matrix-tools pch )
 

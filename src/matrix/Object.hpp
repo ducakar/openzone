@@ -37,54 +37,53 @@ namespace oz
        */
 
       // DynObject
-      static const int DYNAMIC_BIT        = int( 0x80000000 );
-      // can be put into inventory
-      static const int ITEM_BIT           = 0x40000000;
+      static const int DYNAMIC_BIT        = 0x40000000;
       // Weapon
       static const int WEAPON_BIT         = 0x20000000;
       // Bot
       static const int BOT_BIT            = 0x10000000;
       // Vehicle
       static const int VEHICLE_BIT        = 0x08000000;
+      // can be put into inventory
+      static const int ITEM_BIT           = 0x04000000;
+      // object can contain other objects
+      static const int INVENTORY_BIT      = 0x02000000;
 
       /*
        * FUNCTION FLAGS
        */
 
       // if object has Lua handlers
-      static const int LUA_BIT            = 0x02000000;
+      static const int LUA_BIT            = 0x01000000;
 
       // if the onDestroy function should be called on destruction
-      static const int DESTROY_FUNC_BIT   = 0x01000000;
+      static const int DESTROY_FUNC_BIT   = 0x00800000;
 
       // if the onDamage function should be called on damage received
-      static const int DAMAGE_FUNC_BIT    = 0x00800000;
+      static const int DAMAGE_FUNC_BIT    = 0x00400000;
 
       // if the onHit function should be called on hit
-      static const int HIT_FUNC_BIT       = 0x00400000;
+      static const int HIT_FUNC_BIT       = 0x00200000;
 
       // if the onUse function should be called when object is used
-      static const int USE_FUNC_BIT       = 0x00200000;
+      static const int USE_FUNC_BIT       = 0x00100000;
 
-      // if the onUpdate method should be called each step
-      static const int UPDATE_FUNC_BIT    = 0x00100000;
+      // if the onUpdate method should be called on each tick
+      static const int UPDATE_FUNC_BIT    = 0x00080000;
 
       /*
        * FRONTEND OBJECTS
        */
 
       // if the object has a model object in frontend
-      static const int MODEL_BIT          = 0x00080000;
+      static const int MODEL_BIT          = 0x00040000;
 
       // if the object has an audio object in frontend
-      static const int AUDIO_BIT          = 0x00040000;
+      static const int AUDIO_BIT          = 0x00020000;
 
       /*
        * STATE FLAGS
        */
-
-      // if object is not positioned in the world (used only when loading/saving the world)
-      static const int CUT_BIT            = 0x00020000;
 
       // when object's life drops to <= 0.0f it's tagged as destroyed first and kept one more tick
       // in the world, so destruction effects can be processed by frontend (e.g. destruction sounds)
@@ -151,7 +150,7 @@ namespace oz
       static const int WIDE_CULL_BIT      = 0x00000002;
 
       // set pseudo-random heading to object's model on model creation; heading is calculated from
-      // object's position, so for static objects its always the same direction (if model is
+      // object's position, so for static objects it's always the same direction (if model is
       // recreated after object becomes visible again after some time)
       static const int RANDOM_HEADING_BIT = 0x00000001;
 
@@ -216,8 +215,10 @@ namespace oz
       const ObjectClass* clazz;
 
       // events are used for reporting hits, friction & stuff and are cleared at the beginning of
-      // the frame
+      // the matrix tick
       List<Event>        events;
+      // inventory of an object
+      Vector<int>        items;
 
     public:
 
@@ -238,6 +239,7 @@ namespace oz
        * Add an event to the object. Events can be used for reporting collisions, sounds etc.
        * @param id
        */
+      OZ_ALWAYS_INLINE
       void addEvent( int id )
       {
         events.add( new Event( id ) );
@@ -248,6 +250,7 @@ namespace oz
        * @param id
        * @param intensity
        */
+      OZ_ALWAYS_INLINE
       void addEvent( int id, float intensity )
       {
         events.add( new Event( id, intensity ) );
@@ -308,6 +311,7 @@ namespace oz
       /**
        * Perform object update. One can implement onUpdate function to do some custom stuff.
        */
+      OZ_ALWAYS_INLINE
       void update()
       {
         if( flags & UPDATE_FUNC_BIT ) {

@@ -11,7 +11,7 @@
 
 #include "matrix/NamePool.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 
 #include <dirent.h>
 #include <sys/types.h>
@@ -42,10 +42,10 @@ namespace oz
     names.add( "" );
     listPositions.add( names.length() );
 
-    for( int i = 0; i < translator.nameLists.length(); ++i ) {
-      log.print( "'%s' ...", translator.nameLists[i].name.cstr() );
+    for( int i = 0; i < library.nameLists.length(); ++i ) {
+      log.print( "'%s' ...", library.nameLists[i].name.cstr() );
 
-      FILE* file = fopen( translator.nameLists[i].path, "r" );
+      FILE* file = fopen( library.nameLists[i].path, "r" );
       if( file == null ) {
         log.printEnd( " Failed" );
         return;
@@ -68,7 +68,7 @@ namespace oz
       log.printEnd( " OK" );
     }
 
-    hard_assert( listPositions.length() == translator.nameLists.length() + 1 );
+    hard_assert( listPositions.length() == library.nameLists.length() + 1 );
 
     log.unindent();
     log.println( "}" );

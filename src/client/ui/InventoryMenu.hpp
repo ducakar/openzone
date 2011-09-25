@@ -31,19 +31,23 @@ namespace ui
       static const int   ROWS        = 2;
       static const int   FOOTER_SIZE = 32;
 
+      const InventoryMenu* const master;
+
       Label  itemDesc;
       uint   useTexId;
+      uint   equipTexId;
       int    tagged;
       int    row;
 
     protected:
 
       virtual bool onMouseEvent();
+      virtual void onUpdate();
       virtual void onDraw();
 
     public:
 
-      InventoryMenu();
+      InventoryMenu( const InventoryMenu* master );
       virtual ~InventoryMenu();
 
   };

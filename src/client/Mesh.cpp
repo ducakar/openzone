@@ -238,7 +238,7 @@ namespace client
           textures[i] = 0;
         }
         else {
-          texIds[i] = translator.textureIndex( name );
+          texIds[i] = library.textureIndex( name );
           textures[i] = context.requestTexture( texIds[i] );
         }
       }

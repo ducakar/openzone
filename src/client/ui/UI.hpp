@@ -52,6 +52,7 @@ namespace ui
       HudArea*       hudArea;
       StrategicArea* strategicArea;
       InventoryMenu* inventoryMenu;
+      InventoryMenu* browseMenu;
       MusicPlayer*   musicPlayer;
       BuildMenu*     buildMenu;
 #ifndef NDEBUG

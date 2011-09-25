@@ -13,7 +13,7 @@
 
 #include "matrix/BotClass.hpp"
 #include "matrix/VehicleClass.hpp"
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 
@@ -446,10 +446,11 @@ namespace oz
     OZ_LUA_INT_CONST( "OZ_STRUCT_R270",                 Struct::R270 );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
+    OZ_LUA_INT_CONST( "OZ_OBJECT_INVENTORY_BIT",        Object::INVENTORY_BIT );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
@@ -462,7 +463,6 @@ namespace oz
     OZ_LUA_INT_CONST( "OZ_OBJECT_MODEL_BIT",            Object::MODEL_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
 
-    OZ_LUA_INT_CONST( "OZ_OBJECT_CUT_BIT",              Object::CUT_BIT );
     OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
 
     OZ_LUA_INT_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
@@ -2079,7 +2079,7 @@ namespace oz
     Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
     Struct::Rotation rot = Struct::Rotation( lua_tointeger( l, 5 ) );
 
-    int bsp = translator.bspIndex( name );
+    int bsp = library.bspIndex( name );
     if( bsp == -1 ) {
       OZ_LUA_ERROR( "invalid bsp name" );
     }
@@ -2115,7 +2115,7 @@ namespace oz
     const char* name = lua_tostring( l, 1 );
     Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
 
-    const ObjectClass* const* value = translator.classes.find( name );
+    const ObjectClass* const* value = library.classes.find( name );
     if( value == null ) {
       OZ_LUA_ERROR( "invalid object class" );
     }
@@ -2226,7 +2226,7 @@ namespace oz
   int Lua::ozTerraLoad( lua_State* l )
   {
     String name = lua_tostring( l, 1 );
-    int id = translator.terraIndex( name );
+    int id = library.terraIndex( name );
 
     orbis.terra.load( id );
     return 0;
@@ -2244,7 +2244,7 @@ namespace oz
   int Lua::ozCaelumLoad( lua_State* l )
   {
     String name = lua_tostring( l, 1 );
-    int id = translator.caelumIndex( name );
+    int id = library.caelumIndex( name );
 
     orbis.caelum.id = id;
     return 0;

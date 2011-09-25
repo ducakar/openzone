@@ -11,7 +11,7 @@
 
 #include "Build.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 #include "matrix/QBSP.hpp"
 
 #include "client/Context.hpp"
@@ -470,7 +470,7 @@ int main( int argc, char** argv )
 
     uint startTime = SDL_GetTicks();
 
-    translator.init();
+    library.init();
 
     config.add( "screen.width", "400" );
     config.add( "screen.height", "40" );
@@ -535,7 +535,7 @@ int main( int argc, char** argv )
 
   client::compiler.free();
   client::render.free();
-  translator.free();
+  library.free();
   config.clear();
 
   Alloc::printStatistics();

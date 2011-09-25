@@ -18,11 +18,6 @@ namespace oz
 
   class WeaponClass : public DynamicClass
   {
-    private:
-
-      static const int BASE_FLAGS = Object::DYNAMIC_BIT | Object::WEAPON_BIT | Object::ITEM_BIT |
-          Object::UPDATE_FUNC_BIT | Object::USE_FUNC_BIT;
-
     public:
 
       String onShot;

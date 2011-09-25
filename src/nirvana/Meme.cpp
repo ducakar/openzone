@@ -1,5 +1,5 @@
 /*
- *  test.cpp
+ *  Meme.cpp
  *
  *  [description]
  *
@@ -9,14 +9,12 @@
 
 #include "stable.hpp"
 
-using namespace oz;
+#include "nirvana/Meme.hpp"
 
-int main( int, char** )
+namespace oz
 {
-  config.load( "share/openzone/class/lord.rc" );
+namespace nirvana
+{
 
-  printf( "%g\n", config.get( "life", 0.0f ) );
-
-  Alloc::printLeaks();
-  return 0;
+}
 }

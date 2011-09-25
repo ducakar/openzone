@@ -11,7 +11,7 @@
 
 #include "matrix/modules/FloraModule.hpp"
 
-#include "matrix/Translator.hpp"
+#include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 
@@ -52,7 +52,7 @@ namespace oz
       return;
     }
 
-    AABB bounds = AABB( pos, translator.classes.get( type )->dim );
+    AABB bounds = AABB( pos, library.classes.get( type )->dim );
     bounds *= SPACING;
 
     if( !collider.overlapsOSO( bounds ) ) {
@@ -63,7 +63,7 @@ namespace oz
   void FloraModule::addPlant( const char* type, float x, float y )
   {
     Point3 pos    = Point3( x, y, orbis.terra.height( x, y ) );
-    AABB   bounds = AABB( pos, translator.classes.get( type )->dim );
+    AABB   bounds = AABB( pos, library.classes.get( type )->dim );
 
     if( pos.z < 0.0f || 40.0f < pos.z ) {
       return;
