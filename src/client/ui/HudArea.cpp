@@ -79,7 +79,7 @@ namespace ui
 
       title.draw( this );
 
-      if( taggedObj->flags & Object::INVENTORY_BIT ) {
+      if( taggedObj->flags & Object::BROWSABLE_BIT ) {
         glBindTexture( GL_TEXTURE_2D, browseTexId );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
@@ -117,12 +117,12 @@ namespace ui
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
 
-      if( bot->grabbed == -1 && bot->weapon == -1 &&
+      if( !( bot->state & Bot::GRAB_BIT ) && bot->weapon == -1 &&
           ( taggedObj->flags & Object::DYNAMIC_BIT ) && taggedDyn->mass <= botClazz->grabMass &&
-          // not swimming
-          ( bot->depth <= bot->dim.z ) &&
+          // not swimming or on ladder
+          !( bot->state & ( Bot::CLIMBING_BIT | Bot::SWIMMING_BIT ) ) &&
           // if it is not a bot that is holding something
-          ( !( taggedObj->flags & Object::BOT_BIT ) || taggedBot->grabbed == -1 ) )
+          ( !( taggedObj->flags & Object::BOT_BIT ) || !( taggedBot->state & Bot::GRAB_BIT ) ) )
       {
         float dimX = bot->dim.x + taggedDyn->dim.x;
         float dimY = bot->dim.y + taggedDyn->dim.y;
@@ -133,7 +133,7 @@ namespace ui
           shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
         }
       }
-      if( camera.botObj->grabbed != -1 ) {
+      if( camera.botObj->state & Bot::GRAB_BIT ) {
         glBindTexture( GL_TEXTURE_2D, grabTexId );
         shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
       }

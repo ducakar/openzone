@@ -46,8 +46,8 @@ namespace oz
       static const int VEHICLE_BIT        = 0x08000000;
       // can be put into inventory
       static const int ITEM_BIT           = 0x04000000;
-      // object can contain other objects
-      static const int INVENTORY_BIT      = 0x02000000;
+      // bots have access to this object's inventory
+      static const int BROWSABLE_BIT      = 0x02000000;
 
       /*
        * FUNCTION FLAGS
@@ -72,7 +72,7 @@ namespace oz
       static const int UPDATE_FUNC_BIT    = 0x00080000;
 
       /*
-       * FRONTEND OBJECTS
+       * BOUND OBJECTS
        */
 
       // if the object has a model object in frontend
@@ -155,6 +155,17 @@ namespace oz
       static const int RANDOM_HEADING_BIT = 0x00000001;
 
       /*
+       * FLAG MASKS
+       */
+
+      // those flags are cleared by Physics on each tick
+      static const int TICK_CLEAR_MASK    = HIT_BIT | FRICTING_BIT | UPPER_BIT;
+
+      // those flags are cleared by Physics on each update when an object moves (plus lower = -1)
+      static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT |
+                                                ON_LADDER_BIT | ON_SLICK_BIT;
+
+      /*
        * STANDARD EVENT IDs
        */
 
@@ -209,7 +220,6 @@ namespace oz
       int                flags;
       int                oldFlags;
 
-      // damage
       float              life;
 
       const ObjectClass* clazz;

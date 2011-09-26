@@ -43,8 +43,8 @@ namespace oz
 
     clazz->fillCommonConfig( config );
 
-    // we don't allow browsing other bots' inventory as long as they are alive
-    clazz->flags &= ~Object::INVENTORY_BIT;
+    // we don't allow browsing bots' inventory as long as they are alive
+    clazz->flags &= ~Object::BROWSABLE_BIT;
 
     clazz->life *= 2.0f;
 

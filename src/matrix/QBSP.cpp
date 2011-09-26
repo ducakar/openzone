@@ -195,9 +195,6 @@ namespace oz
         if( type.equals( "IGNORING" ) ) {
           models[i].type = BSP::Model::IGNORING;
         }
-        else if( type.equals( "BLOCKING" ) ) {
-          models[i].type = BSP::Model::BLOCKING;
-        }
         else if( type.equals( "CRUSHING" ) ) {
           models[i].type = BSP::Model::CRUSHING;
         }
@@ -205,8 +202,7 @@ namespace oz
           models[i].type = BSP::Model::AUTO_DOOR;
         }
         else {
-          log.println( "invalid BSP entity model, should be either IGNORING, BLOCKING, "
-              "CRUSHING or AUTO_DOOR" );
+          log.println( "invalid BSP entity model, must be either IGNORING, CRUSHING or AUTO_DOOR" );
           delete[] texFlags;
           delete[] texTypes;
 

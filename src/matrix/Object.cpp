@@ -13,6 +13,7 @@
 
 #include "matrix/Lua.hpp"
 #include "matrix/Synapse.hpp"
+#include "matrix/Bot.hpp"
 
 namespace oz
 {
@@ -37,6 +38,14 @@ namespace oz
                       clazz->debrisColour, clazz->debrisColourSpread,
                       clazz->debrisRejection, clazz->debrisMass, clazz->debrisLifeTime );
 
+    for( int i = 0; i < items.length(); ++i ) {
+      Object* obj = orbis.objects[ items[i] ];
+
+      if( obj != null ) {
+        obj->destroy();
+      }
+    }
+
     if( !clazz->onDestroy.isEmpty() ) {
       lua.objectCall( clazz->onDestroy, this );
     }
@@ -44,32 +53,35 @@ namespace oz
 
   void Object::onDamage( float damage )
   {
-    if( !clazz->onDamage.isEmpty() ) {
-      lua.damage = damage;
-      lua.objectCall( clazz->onDamage, this );
-    }
+    hard_assert( !clazz->onDamage.isEmpty() );
+
+    lua.damage = damage;
+    lua.objectCall( clazz->onDamage, this );
   }
 
   void Object::onHit( const Hit*, float hitMomentum )
   {
-    if( !clazz->onHit.isEmpty() ) {
-      lua.hitMomentum = hitMomentum;
-      lua.objectCall( clazz->onHit, this );
-    }
+    hard_assert( !clazz->onHit.isEmpty() );
+
+    lua.hitMomentum = hitMomentum;
+    lua.objectCall( clazz->onHit, this );
   }
 
   void Object::onUse( Bot* user )
   {
-    if( !clazz->onUse.isEmpty() ) {
+    if( clazz->onUse.isEmpty() ) {
+      user->instrument = index;
+    }
+    else {
       lua.objectCall( clazz->onUse, this, user );
     }
   }
 
   void Object::onUpdate()
   {
-    if( !clazz->onUpdate.isEmpty() ) {
-      lua.objectCall( clazz->onUpdate, this );
-    }
+    hard_assert( !clazz->onUpdate.isEmpty() );
+
+    lua.objectCall( clazz->onUpdate, this );
   }
 
   void Object::readFull( InputStream* istream )
