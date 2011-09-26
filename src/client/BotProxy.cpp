@@ -186,7 +186,7 @@ namespace client
       if( ui::mouse.wheelDown ) {
         bot->actions |= Bot::ACTION_TAKE;
 
-        if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::INVENTORY_BIT ) ) {
+        if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
           ui::mouse.doShow = true;
         }
       }
@@ -198,7 +198,7 @@ namespace client
       }
     }
     else if( ui::mouse.wheelDown ) {
-      if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::INVENTORY_BIT ) ) {
+      if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
         bot->actions |= Bot::ACTION_TAKE;
       }
     }
@@ -238,8 +238,8 @@ namespace client
             Bot::MOVING_BIT )
         {
           float bobInc =
-              ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT ) ) == Bot::RUNNING_BIT &&
-              bot->grabbed == -1 ? clazz->bobRunInc : clazz->bobWalkInc;
+              ( bot->state & ( Bot::RUNNING_BIT | Bot::CROUCHING_BIT | Bot::GRAB_BIT ) ) ==
+                Bot::RUNNING_BIT ? clazz->bobRunInc : clazz->bobWalkInc;
 
           bobPhi   = Math::mod( bobPhi + bobInc, Math::TAU );
           bobTheta = Math::sin( bobPhi ) * clazz->bobRotation;
@@ -304,8 +304,8 @@ namespace client
     if( bot->parent != -1 ) {
       camera.setTagged( null );
     }
-    else if( bot->grabbed != -1 ) {
-      camera.setTagged( orbis.objects[camera.botObj->grabbed] );
+    else if( bot->state & Bot::GRAB_BIT ) {
+      camera.setTagged( orbis.objects[camera.botObj->instrument] );
     }
     else if( isFreelook ) {
       // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }

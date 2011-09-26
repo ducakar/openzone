@@ -227,6 +227,64 @@ static void prebuildModels()
   log.println( "}" );
 }
 
+static void compileBSPs()
+{
+  log.println( "Compiling BSPs {" );
+  log.indent();
+
+  String dirName = "data/maps";
+  Directory dir( dirName );
+
+  if( !dir.isOpened() ) {
+    throw Exception( "Cannot open directory '" + dirName + "'" );
+  }
+
+  dirName = dirName + "/";
+
+  foreach( ent, dir.citer() ) {
+    if( !ent.hasExtension( "map" ) ) {
+      continue;
+    }
+
+    const char* dot = ent.baseName().findLast( '.' );
+
+    if( dot != null && String::equals( dot + 1, "autosave" ) ) {
+      continue;
+    }
+
+    String srcPath = dirName + ent;
+    String destPath = dirName + ent.baseName() + ".bsp";
+
+    struct stat srcInfo;
+    struct stat destInfo;
+
+    if( stat( srcPath, &srcInfo ) != 0 ) {
+      throw Exception( "Source map stat error" );
+    }
+    if( !forceRebuild && stat( destPath, &destInfo ) == 0 &&
+        destInfo.st_mtime > srcInfo.st_mtime )
+    {
+      continue;
+    }
+
+    String cmdLine = "q3map2 -fs_basepath . -fs_game data " + dirName + ent;
+
+    log.println( "%s", cmdLine.cstr() );
+    log.println();
+    log.println( "========== q3map2 OUTPUT BEGIN %s ==========", ent.baseName().cstr() );
+    log.println();
+    if( system( cmdLine ) != 0 ) {
+      throw Exception( "BSP map compilation failed" );
+    }
+    log.println();
+    log.println( "========== q3map2 OUTPUT END %s ==========", ent.baseName().cstr() );
+    log.println();
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
 static void prebuildBSPs()
 {
   log.println( "Prebuilding BSPs {" );
@@ -484,6 +542,8 @@ int main( int argc, char** argv )
     }
 
     createDirs();
+
+    compileBSPs();
 
     client::ui::Mouse::prebuild();
 

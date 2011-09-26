@@ -27,8 +27,8 @@ namespace oz
   {
     VehicleClass* clazz = new VehicleClass();
 
-    clazz->flags = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT |
-        Object::USE_FUNC_BIT | Object::UPDATE_FUNC_BIT | Object::VEHICLE_BIT;
+    clazz->flags = Object::DYNAMIC_BIT | Object::USE_FUNC_BIT | Object::UPDATE_FUNC_BIT |
+        Object::VEHICLE_BIT;
 
     OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.destroyFunc",  true  );
     OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.damageFunc",   false );

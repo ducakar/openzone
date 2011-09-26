@@ -39,7 +39,7 @@ namespace ui
     if( camera.botObj->instrument != -1 ) {
       container = orbis.objects[camera.botObj->instrument];
 
-      if( container == null ) {
+      if( container == null || !( container->flags & Object::BROWSABLE_BIT ) ) {
         return false;
       }
     }
@@ -116,26 +116,26 @@ namespace ui
       return;
     }
 
-    const Object*      obj;
-    const ObjectClass* objClazz;
+    const Object*      container;
+    const ObjectClass* containerClazz;
 
     if( master == null ) {
-      obj = camera.botObj;
-      objClazz = obj->clazz;
+      container = camera.botObj;
+      containerClazz = container->clazz;
     }
     else {
-      obj = orbis.objects[camera.botObj->instrument];
+      container = orbis.objects[camera.botObj->instrument];
 
-      if( obj == null ) {
+      if( container == null || !( container->flags & Object::BROWSABLE_BIT ) ) {
         return;
       }
 
-      objClazz = obj->clazz;
+      containerClazz = container->clazz;
     }
 
-    String sTitle = ( obj->flags & Object::BOT_BIT ) ?
-        static_cast<const Bot*>( obj )->name + " (" + objClazz->title + ")" :
-        objClazz->title;
+    String sTitle = ( container->flags & Object::BOT_BIT ) ?
+        static_cast<const Bot*>( container )->name + " (" + containerClazz->title + ")" :
+        containerClazz->title;
     title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::TITLE, "%s", sTitle.cstr() );
     Frame::onDraw();
 
@@ -147,7 +147,7 @@ namespace ui
     tf.camera.translate( Vec3( float( COLS * SLOT_SIZE ), float( ROWS * SLOT_SIZE ), 0.0f ) );
     tf.camera.scale( Vec3( 1.0f, 1.0f, 0.001f ) );
 
-    const Vector<int>& items = obj->items;
+    const Vector<int>& items = container->items;
 
     int minIndex = row * COLS;
     int maxIndex = min( minIndex + COLS * ROWS, items.length() );

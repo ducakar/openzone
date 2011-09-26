@@ -88,14 +88,20 @@ namespace oz
       }
     }
     if( !onUse.isEmpty() ) {
-      flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
-
-      // disable event handler if explicitly set to false
-      if( !config->get( "flag.useFunc", true ) ) {
-        flags &= ~Object::USE_FUNC_BIT;
+      if( onUse.equals( "INSTRUMENT" ) ) {
+        flags |= Object::USE_FUNC_BIT;
+        onUse.clear();
       }
       else {
         flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
+
+        // disable event handler if explicitly set to false
+        if( !config->get( "flag.useFunc", true ) ) {
+          flags &= ~Object::USE_FUNC_BIT;
+        }
+        else {
+          flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
+        }
       }
     }
     if( !onUpdate.isEmpty() ) {
@@ -185,11 +191,11 @@ namespace oz
     nItems = config->get( "nItems", 0 );
 
     if( nItems != 0 ) {
-      flags |= Object::INVENTORY_BIT;
+      flags |= Object::BROWSABLE_BIT;
     }
 
     if( nItems < 0 ) {
-      throw Exception( "Inventory size must be 0 or positive integer" );
+      throw Exception( "Inventory size must be 0 or a positive integer" );
     }
 
     // default inventory

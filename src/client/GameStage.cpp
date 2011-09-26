@@ -205,8 +205,6 @@ namespace client
     camera.update();
     ui::ui.update();
 
-    bool doQuit = ui::keyboard.keys[SDLK_ESCAPE] != 0;
-
     timer.uiMillis += SDL_GetTicks() - beginTime;
 
     SDL_SemPost( auxSemaphore );
@@ -250,7 +248,7 @@ namespace client
 
     timer.soundMillis += SDL_GetTicks() - beginTime;
 
-    return !doQuit;
+    return !ui::keyboard.keys[SDLK_ESCAPE];
   }
 
   void GameStage::present()

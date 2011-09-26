@@ -54,7 +54,6 @@ namespace oz
           static void ( Entity::* handlers[] )();
 
           void updateIgnoring();
-          void updateBlocking();
           void updateCrushing();
           void updateAutoDoor();
 

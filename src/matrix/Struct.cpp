@@ -23,7 +23,6 @@ namespace oz
 
   void ( Struct::Entity::* Struct::Entity::handlers[] )() = {
     &Struct::Entity::updateIgnoring,
-    &Struct::Entity::updateBlocking,
     &Struct::Entity::updateCrushing,
     &Struct::Entity::updateAutoDoor
   };
@@ -92,108 +91,6 @@ namespace oz
         }
 
         offset = ratio * model->move;
-        break;
-      }
-      default: {
-        hard_assert( false );
-        break;
-      }
-    }
-  }
-
-  void Struct::Entity::updateBlocking()
-  {
-    switch( state ) {
-      case CLOSED: {
-        time += Timer::TICK_TIME;
-
-        if( time >= model->timeout ) {
-          time = 0.0f;
-          state = OPENING;
-        }
-        break;
-      }
-      case OPENING: {
-        Vec3 oldOffset = offset;
-        float oldRatio = ratio;
-
-        ratio = min( ratio + model->ratioInc, 1.0f );
-        offset = ratio * model->move;
-
-        if( collider.overlapsOO( this ) ) {
-          ratio = oldRatio;
-          offset = oldOffset;
-
-          if( ratio == 0.0f ) {
-            state = CLOSED;
-          }
-        }
-        else {
-          if( ratio == 1.0f ) {
-            state = OPENED;
-          }
-
-          offset = oldOffset;
-
-          overlappingObjs.clear();
-          collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
-
-          offset = ratio * model->move;
-
-          foreach( obj, overlappingObjs.iter() ) {
-            Dynamic* dyn = static_cast<Dynamic*>( *obj );
-
-            if( dyn->flags & Object::DYNAMIC_BIT ) {
-              dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
-            }
-          }
-        }
-        break;
-      }
-      case OPENED: {
-        time += Timer::TICK_TIME;
-
-        if( time >= model->timeout ) {
-          time = 0.0f;
-          state = CLOSING;
-        }
-        break;
-      }
-      case CLOSING: {
-        float oldRatio = ratio;
-        Vec3 oldOffset = offset;
-
-        ratio = max( ratio - model->ratioInc, 0.0f );
-        offset = ratio * model->move;
-
-        if( collider.overlapsOO( this ) ) {
-          ratio = oldRatio;
-          offset = oldOffset;
-
-          if( ratio == 0.0f ) {
-            state = OPENED;
-          }
-        }
-        else {
-          if( ratio == 0.0f ) {
-            state = CLOSED;
-          }
-
-          offset = oldOffset;
-
-          overlappingObjs.clear();
-          collider.getOverlaps( this, &overlappingObjs, 2.0f * EPSILON );
-
-          offset = ratio * model->move;
-
-          foreach( obj, overlappingObjs.iter() ) {
-            Dynamic* dyn = static_cast<Dynamic*>( *obj );
-
-            if( dyn->flags & Object::DYNAMIC_BIT ) {
-              dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
-            }
-          }
-        }
         break;
       }
       default: {

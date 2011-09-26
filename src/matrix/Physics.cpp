@@ -195,8 +195,7 @@ namespace oz
       }
     }
 
-    dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT |
-        Object::IN_WATER_BIT | Object::ON_LADDER_BIT | Object::ON_SLICK_BIT );
+    dyn->flags &= ~Object::MOVE_CLEAR_MASK;
     dyn->lower = -1;
 
     return true;
@@ -392,7 +391,7 @@ namespace oz
     hard_assert( dyn->cell != null );
     hard_assert( !( dyn->flags & Object::ON_FLOOR_BIT ) || ( dyn->lower == -1 ) );
 
-    dyn->flags &= ~( Object::HIT_BIT | Object::FRICTING_BIT | Object::UPPER_BIT );
+    dyn->flags &= ~Object::TICK_CLEAR_MASK;
 
     if( dyn->lower != -1 ) {
       Object* sObj = orbis.objects[dyn->lower];

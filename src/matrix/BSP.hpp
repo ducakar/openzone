@@ -49,13 +49,11 @@ namespace oz
         enum Type
         {
           IGNORING,
-          BLOCKING,
           CRUSHING,
           AUTO_DOOR
         };
 
         static const int AUTOMATIC_BIT = 0x00000001;
-        static const int LUA_BIT       = 0x00000002;
 
         Vec3  move;
 
