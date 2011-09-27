@@ -104,7 +104,7 @@ namespace client
     OZ_AL_CHECK_ERROR();
   }
 
-  BSP::BSP( int id ) : bsp( orbis.bsps[id] ), flags( 0 ), isLoaded( false )
+  BSP::BSP( int id_ ) : id( id_ ), flags( 0 ), isLoaded( false )
   {}
 
   BSP::~BSP()
@@ -113,22 +113,20 @@ namespace client
       return;
     }
 
-    log.println( "Unloading BSP model '%s' {", library.bsps[bsp->id].name.cstr() );
+    log.println( "Unloading BSP model '%s' {", library.bsps[id].name.cstr() );
     log.indent();
 
-    foreach( mesh, meshes.iter() ) {
-      mesh->unload();
-    }
+    foreach( model, models.iter() ) {
+      model->mesh.unload();
 
-    for( int i = 0; i < bsp->nModels; ++i ) {
-      if( bsp->models[i].openSample != -1 ) {
-        context.releaseSound( bsp->models[i].openSample );
+      if( model->openSample != -1 ) {
+        context.releaseSound( model->openSample );
       }
-      if( bsp->models[i].closeSample != -1 ) {
-        context.releaseSound( bsp->models[i].closeSample );
+      if( model->closeSample != -1 ) {
+        context.releaseSound( model->closeSample );
       }
-      if( bsp->models[i].frictSample != -1 ) {
-        context.releaseSound( bsp->models[i].frictSample );
+      if( model->frictSample != -1 ) {
+        context.releaseSound( model->frictSample );
       }
     }
 
@@ -138,9 +136,7 @@ namespace client
 
   void BSP::load()
   {
-    hard_assert( bsp != null );
-
-    const String& name = library.bsps[bsp->id].name;
+    const String& name = library.bsps[id].name;
 
     log.println( "Loading BSP model '%s' {", name.cstr() );
     log.indent();
@@ -154,22 +150,28 @@ namespace client
 
     flags = is.readInt();
 
-    int nMeshes = is.readInt();
+    int nModels = is.readInt();
 
-    meshes.alloc( nMeshes );
-    foreach( mesh, meshes.iter() ) {
-      mesh->load( &is, GL_STATIC_DRAW );
-    }
+    models.alloc( nModels );
+    foreach( model, models.iter() ) {
+      model->mesh.load( &is, GL_STATIC_DRAW );
 
-    for( int i = 0; i < bsp->nModels; ++i ) {
-      if( bsp->models[i].openSample != -1 ) {
-        context.requestSound( bsp->models[i].openSample );
+      String sOpenSample  = is.readString();
+      String sCloseSample = is.readString();
+      String sFrictSample = is.readString();
+
+      model->openSample  = sOpenSample.isEmpty()  ? -1 : library.soundIndex( sOpenSample );
+      model->closeSample = sCloseSample.isEmpty() ? -1 : library.soundIndex( sCloseSample );
+      model->frictSample = sFrictSample.isEmpty() ? -1 : library.soundIndex( sFrictSample );
+
+      if( model->openSample != -1 ) {
+        context.requestSound( model->openSample );
       }
-      if( bsp->models[i].closeSample != -1 ) {
-        context.requestSound( bsp->models[i].closeSample );
+      if( model->closeSample != -1 ) {
+        context.requestSound( model->closeSample );
       }
-      if( bsp->models[i].frictSample != -1 ) {
-        context.requestSound( bsp->models[i].frictSample );
+      if( model->frictSample != -1 ) {
+        context.requestSound( model->frictSample );
       }
     }
 
@@ -189,14 +191,14 @@ namespace client
 
     shader.use( shader.isInWater ? shader.mesh : shader.bigMesh );
 
-    for( int i = 0; i < meshes.length(); ++i ) {
+    for( int i = 0; i < models.length(); ++i ) {
       const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;
 
       tf.push();
       tf.model.translate( entityPos );
       tf.apply();
 
-      meshes[i].draw( mask );
+      models[i].mesh.draw( mask );
 
       tf.pop();
     }
@@ -204,23 +206,25 @@ namespace client
 
   void BSP::play( const Struct* str ) const
   {
-    for( int i = 0; i < str->nEntities; ++i ) {
-      const Struct::Entity& entity = str->entities[i];
+    hard_assert( models.length() - 1 == str->nEntities );
+
+    for( int i = 1; i < models.length(); ++i ) {
+      const Struct::Entity& entity = str->entities[i - 1];
 
       if( entity.state == Struct::Entity::OPENING ) {
-        if( entity.ratio == 0.0f && bsp->models[i].openSample != -1 ) {
-          playSound( &entity, bsp->models[i].openSample );
+        if( entity.ratio == 0.0f && models[i].openSample != -1 ) {
+          playSound( &entity, models[i].openSample );
         }
-        if( bsp->models[i].frictSample != -1 ) {
-          playContSound( &entity, bsp->models[i].frictSample );
+        if( models[i].frictSample != -1 ) {
+          playContSound( &entity, models[i].frictSample );
         }
       }
       else if( entity.state == Struct::Entity::CLOSING ) {
-        if( entity.ratio == 1.0f && bsp->models[i].closeSample != -1 ) {
-          playSound( &entity, bsp->models[i].closeSample );
+        if( entity.ratio == 1.0f && models[i].closeSample != -1 ) {
+          playSound( &entity, models[i].closeSample );
         }
-        if( bsp->models[i].frictSample != -1 ) {
-          playContSound( &entity, bsp->models[i].frictSample );
+        if( models[i].frictSample != -1 ) {
+          playContSound( &entity, models[i].frictSample );
         }
       }
     }
@@ -234,11 +238,12 @@ namespace client
   int BSP::nIndices;
   int BSP::nFaces;
 
-  DArray<BSP::QBSPTexture> BSP::textures;
-  DArray<BSP::QBSPModel>   BSP::models;
-  DArray<BSP::QBSPVertex>  BSP::vertices;
-  DArray<int>              BSP::indices;
-  DArray<BSP::QBSPFace>    BSP::faces;
+  DArray<BSP::QBSPTexture>  BSP::textures;
+  DArray<BSP::QBSPModel>    BSP::models;
+  DArray<BSP::QBSPVertex>   BSP::vertices;
+  DArray<int>               BSP::indices;
+  DArray<BSP::QBSPFace>     BSP::faces;
+  DArray<BSP::ModelSamples> BSP::modelSamples;
 
   void BSP::loadQBSP( const char* path )
   {
@@ -327,6 +332,7 @@ namespace client
     // to disable warnings
     bspConfig.get( "life", 0.0f );
 
+    modelSamples.alloc( nModels );
     if( nModels != 1 ) {
       hard_assert( nModels <= 99 );
       char keyBuffer[] = "model  ";
@@ -346,8 +352,19 @@ namespace client
         bspConfig.get( keyName + ".margin", 0.0f );
         bspConfig.get( keyName + ".timeout", 0.0f );
 
-        bspConfig.get( keyName + ".openSample", "" );
-        bspConfig.get( keyName + ".closeSample", "" );
+        modelSamples[i].openSample  = bspConfig.get( keyName + ".openSample", "" );
+        modelSamples[i].closeSample = bspConfig.get( keyName + ".closeSample", "" );
+        modelSamples[i].frictSample = bspConfig.get( keyName + ".frictSample", "" );
+
+        if( !modelSamples[i].openSample.isEmpty() ) {
+          library.soundIndex( modelSamples[i].openSample );
+        }
+        if( !modelSamples[i].closeSample.isEmpty() ) {
+          library.soundIndex( modelSamples[i].closeSample );
+        }
+        if( !modelSamples[i].frictSample.isEmpty() ) {
+          library.soundIndex( modelSamples[i].frictSample );
+        }
       }
     }
   }
@@ -359,6 +376,7 @@ namespace client
     vertices.dealloc();
     indices.dealloc();
     faces.dealloc();
+    modelSamples.dealloc();
   }
 
   void BSP::optimise()
@@ -475,8 +493,12 @@ namespace client
     os.writeInt( flags );
     os.writeInt( nModels );
 
-    foreach( mesh, meshes.citer() ) {
-      mesh->write( &os, false );
+    for( int i = 0; i < nModels; ++i ) {
+      meshes[i].write( &os, false );
+
+      os.writeString( modelSamples[i].openSample );
+      os.writeString( modelSamples[i].closeSample );
+      os.writeString( modelSamples[i].frictSample );
     }
 
     log.print( "Dumping BSP model to '%s' ...", path );

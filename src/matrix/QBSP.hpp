@@ -161,13 +161,12 @@ namespace oz
 
         float  margin;
         float  timeout;
-
-        String openSample;
-        String closeSample;
-        String frictSample;
       };
 
+      String  name;
+
       float   life;
+      float   damageTreshold;
 
       int     nPlanes;
       int     nNodes;
@@ -187,13 +186,12 @@ namespace oz
 
       bool includes( const Brush& brush, float maxDim ) const;
 
-      bool loadQBSP( const char* filePath );
-      void freeQBSP( const char* name );
       void optimise();
       void check( bool isOptimised ) const;
-      bool save( const char* fileName );
+      bool save( const char* path );
 
-      QBSP();
+      QBSP( const char* name, const char* path );
+      ~QBSP();
 
     public:
 

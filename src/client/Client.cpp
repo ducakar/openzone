@@ -95,12 +95,6 @@ namespace client
     }
 #endif
 
-    if( initFlags & INIT_RENDER_LOAD ) {
-      render.unload();
-    }
-    if( initFlags & INIT_CONTEXT_LOAD ) {
-      context.unload();
-    }
     if( initFlags & INIT_GAME_LOAD ) {
       stage->unload();
     }
@@ -116,7 +110,7 @@ namespace client
     if( initFlags & INIT_RENDER_INIT ) {
       render.free();
     }
-    if( initFlags & INIT_TRANSLATOR ) {
+    if( initFlags & INIT_LIBRARY ) {
       library.free();
     }
     if( ( initFlags & ( INIT_CONFIG | INIT_MAIN_LOOP ) ) == INIT_MAIN_LOOP ) {
@@ -479,7 +473,7 @@ namespace client
     }
     log.printEnd( " OK" );
 
-    initFlags |= INIT_TRANSLATOR;
+    initFlags |= INIT_LIBRARY;
     library.init();
 
     initFlags |= INIT_RENDER_INIT;
@@ -498,18 +492,6 @@ namespace client
 
     initFlags |= INIT_GAME_LOAD;
     stage->load();
-
-    initFlags |= INIT_CONTEXT_LOAD;
-    context.load();
-
-    render.draw( Render::DRAW_UI_BIT );
-    render.sync();
-
-    initFlags |= INIT_RENDER_LOAD;
-    render.load();
-
-    render.draw( Render::DRAW_UI_BIT );
-    render.sync();
 
     stage->begin();
 

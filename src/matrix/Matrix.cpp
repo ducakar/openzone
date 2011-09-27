@@ -151,7 +151,6 @@ namespace oz
       config.getSet( "matrix.onCreate", "matrix_onCreate" );
 
       orbis.read( istream );
-      lua.read( istream );
 
       for( int i = 0; i < modules.length(); ++i ) {
         modules[i]->read( istream );
@@ -175,7 +174,6 @@ namespace oz
     log.indent();
 
     orbis.write( ostream );
-    lua.write( ostream );
 
     for( int i = 0; i < modules.length(); ++i ) {
       modules[i]->write( ostream );
@@ -223,8 +221,8 @@ namespace oz
     log.println( "Initialising Matrix {" );
     log.indent();
 
-    namePool.init();
     lua.init();
+    namePool.init();
     orbis.init();
 
     OZ_REGISTER_MODULE( flora );
@@ -245,8 +243,8 @@ namespace oz
     modules.dealloc();
 
     orbis.free();
-    lua.free();
     namePool.free();
+    lua.free();
 
     log.unindent();
     log.println( "}" );

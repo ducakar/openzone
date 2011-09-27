@@ -25,17 +25,18 @@ namespace oz
 
     InputStream is = buffer.inputStream();
 
-    mins         = is.readPoint3();
-    maxs         = is.readPoint3();
-    life         = is.readFloat();
+    mins           = is.readPoint3();
+    maxs           = is.readPoint3();
+    life           = is.readFloat();
+    damageTreshold = is.readFloat();
 
-    nPlanes      = is.readInt();
-    nNodes       = is.readInt();
-    nLeaves      = is.readInt();
-    nLeafBrushes = is.readInt();
-    nBrushes     = is.readInt();
-    nBrushSides  = is.readInt();
-    nModels      = is.readInt();
+    nPlanes        = is.readInt();
+    nNodes         = is.readInt();
+    nLeaves        = is.readInt();
+    nLeafBrushes   = is.readInt();
+    nBrushes       = is.readInt();
+    nBrushSides    = is.readInt();
+    nModels        = is.readInt();
 
     size_t size = 0;
 
@@ -123,14 +124,6 @@ namespace oz
       models[i].type = Model::Type( is.readInt() );
       models[i].margin = is.readFloat();
       models[i].timeout = is.readFloat();
-
-      const char* sOpenSample  = is.readString();
-      const char* sCloseSample = is.readString();
-      const char* sFrictSample = is.readString();
-
-      models[i].openSample  = sOpenSample[0]  == '\0' ? -1 : library.soundIndex( sOpenSample );
-      models[i].closeSample = sCloseSample[0] == '\0' ? -1 : library.soundIndex( sCloseSample );
-      models[i].frictSample = sFrictSample[0] == '\0' ? -1 : library.soundIndex( sFrictSample );
     }
 
     return true;

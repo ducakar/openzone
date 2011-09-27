@@ -100,7 +100,6 @@ namespace oz
     removedStructs.add( str->index );
     orbis.unposition( str );
     orbis.remove( str );
-    delete str;
   }
 
   void Synapse::remove( Object* obj )
@@ -114,7 +113,6 @@ namespace oz
     removedObjects.add( obj->index );
     orbis.unposition( obj );
     orbis.remove( obj );
-    delete obj;
   }
 
   void Synapse::remove( Particle* part )
@@ -124,7 +122,6 @@ namespace oz
     removedParts.add( part->index );
     orbis.unposition( part );
     orbis.remove( part );
-    delete part;
   }
 
   void Synapse::removeCut( Dynamic* obj )
@@ -133,7 +130,6 @@ namespace oz
 
     removedObjects.add( obj->index );
     orbis.remove( obj );
-    delete obj;
   }
 
   void Synapse::genParts( int number, const Point3& p,
@@ -155,33 +151,6 @@ namespace oz
 
       addPart( p, velocity + velDisturb, colour + colourDisturb,
                restitution, mass, 0.5f * lifeTime + timeDisturb );
-    }
-  }
-
-  void Synapse::clear()
-  {
-    for( int i = 0; i < orbis.bsps.length(); ++i ) {
-      Struct* str = orbis.structs[i];
-
-      removedStructs.add( str->index );
-      orbis.unposition( str );
-      orbis.remove( str );
-    }
-
-    for( int i = 0; i < orbis.objects.length(); ++i ) {
-      Object* obj = orbis.objects[i];
-
-      removedObjects.add( obj->index );
-      orbis.unposition( obj );
-      orbis.remove( obj );
-    }
-
-    for( int i = 0; i < orbis.parts.length(); ++i ) {
-      Particle* part = orbis.parts[i];
-
-      removedParts.add( part->index );
-      orbis.unposition( part );
-      orbis.remove( part );
     }
   }
 

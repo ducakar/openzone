@@ -29,11 +29,6 @@
 
 namespace oz
 {
-  class Bot;
-}
-
-namespace oz
-{
 namespace client
 {
 namespace ui

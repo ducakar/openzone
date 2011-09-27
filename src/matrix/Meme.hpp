@@ -13,7 +13,7 @@
 
 namespace oz
 {
-namespace nirvana
+namespace matrix
 {
 
   class Meme

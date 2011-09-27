@@ -90,12 +90,12 @@ namespace oz
 
   void FloraModule::init()
   {
-    OZ_LUA_REGISTER_FUNC( ozFloraGetDensity );
-    OZ_LUA_REGISTER_FUNC( ozFloraSetDensity );
-    OZ_LUA_REGISTER_FUNC( ozFloraGetSpacing );
-    OZ_LUA_REGISTER_FUNC( ozFloraSetSpacing );
-    OZ_LUA_REGISTER_FUNC( ozFloraGetNumber );
-    OZ_LUA_REGISTER_FUNC( ozFloraSeed );
+    OZ_LUA_FUNC( ozFloraGetDensity );
+    OZ_LUA_FUNC( ozFloraSetDensity );
+    OZ_LUA_FUNC( ozFloraGetSpacing );
+    OZ_LUA_FUNC( ozFloraSetSpacing );
+    OZ_LUA_FUNC( ozFloraGetNumber );
+    OZ_LUA_FUNC( ozFloraSeed );
   }
 
   int FloraModule::ozFloraGetDensity( lua_State* l )

@@ -31,9 +31,18 @@ namespace client
 
 #ifndef OZ_TOOLS
 
-      const oz::BSP* bsp;
-      DArray<Mesh>   meshes;
-      int            flags;
+      struct Model
+      {
+        Mesh mesh;
+        int  openSample;
+        int  closeSample;
+        int  frictSample;
+      };
+
+      int           id;
+      DArray<Model> models;
+
+      int           flags;
 
       void playSound( const Struct::Entity* entity, int sample ) const;
       void playContSound( const Struct::Entity* entity, int sample ) const;
@@ -142,17 +151,25 @@ namespace client
         int   size[2];
       };
 
-      static int    nTextures;
-      static int    nModels;
-      static int    nVertices;
-      static int    nIndices;
-      static int    nFaces;
+      struct ModelSamples
+      {
+        String openSample;
+        String closeSample;
+        String frictSample;
+      };
 
-      static DArray<QBSPTexture> textures;
-      static DArray<QBSPModel>   models;
-      static DArray<QBSPVertex>  vertices;
-      static DArray<int>         indices;
-      static DArray<QBSPFace>    faces;
+      static int nTextures;
+      static int nModels;
+      static int nVertices;
+      static int nIndices;
+      static int nFaces;
+
+      static DArray<QBSPTexture>  textures;
+      static DArray<QBSPModel>    models;
+      static DArray<QBSPVertex>   vertices;
+      static DArray<int>          indices;
+      static DArray<QBSPFace>     faces;
+      static DArray<ModelSamples> modelSamples;
 
       // prebuild
       static void loadQBSP( const char* path );

@@ -254,7 +254,7 @@ namespace client
     if( firstAlphaPart != 0 ) {
       flags |= SOLID_BIT;
     }
-    if( firstAlphaPart != parts.length() ) {
+    if( firstAlphaPart != nParts ) {
       flags |= ALPHA_BIT;
     }
 

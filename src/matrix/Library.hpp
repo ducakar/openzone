@@ -96,9 +96,9 @@ namespace oz
       int nameListIndex( const char* name ) const;
 
 #ifndef OZ_TOOLS
-      Struct* createStruct( int index, const char* name, const Point3& p,
+      Struct* createStruct( int index, int id, const Point3& p,
                             Struct::Rotation rot ) const;
-      Struct* createStruct( int index, const char* name, InputStream* istream ) const;
+      Struct* createStruct( int index, int id, InputStream* istream ) const;
       Object* createObject( int index, const char* name, const Point3& p ) const;
       Object* createObject( int index, const char* name, InputStream* istream ) const;
 #endif

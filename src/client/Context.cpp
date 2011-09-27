@@ -376,10 +376,10 @@ uint Context::requestTexture( int id )
 
   void Context::drawBSP( const Struct* str, int mask )
   {
-    Resource<BSP*>& resource = bsps[str->bsp];
+    Resource<BSP*>& resource = bsps[str->id];
 
     if( resource.object == null ) {
-      resource.object = new BSP( str->bsp );
+      resource.object = new BSP( str->id );
       resource.nUsers = 1;
     }
     else if( resource.object->isLoaded ) {
@@ -391,10 +391,10 @@ uint Context::requestTexture( int id )
 
   void Context::playBSP( const Struct* str )
   {
-    Resource<BSP*>& resource = bsps[str->bsp];
+    Resource<BSP*>& resource = bsps[str->id];
 
     if( resource.object == null ) {
-      resource.object = new BSP( str->bsp );
+      resource.object = new BSP( str->id );
       resource.nUsers = 1;
     }
     else if( resource.object->isLoaded ) {
@@ -479,28 +479,7 @@ uint Context::requestTexture( int id )
 # endif
 
   void Context::load()
-  {
-    log.print( "Loading Context ..." );
-
-    for( int i = 0; i < library.textures.length(); ++i ) {
-      textures[i].nUsers = 0;
-    }
-    for( int i = 0; i < library.sounds.length(); ++i ) {
-      sounds[i].nUsers = 0;
-    }
-    for( int i = 0; i < library.bsps.length(); ++i ) {
-      bsps[i].object = null;
-      bsps[i].nUsers = 0;
-    }
-
-    maxModels     = 0;
-    maxAudios     = 0;
-    maxSources    = 0;
-    maxBSPSources = 0;
-    maxObjSources = 0;
-
-    log.printEnd( " OK" );
-  }
+  {}
 
   void Context::unload()
   {
@@ -640,6 +619,23 @@ uint Context::requestTexture( int id )
     bsps     = new Resource<BSP*>[library.bsps.length()];
 
     buffer.alloc( BUFFER_SIZE );
+
+    for( int i = 0; i < library.textures.length(); ++i ) {
+      textures[i].nUsers = 0;
+    }
+    for( int i = 0; i < library.sounds.length(); ++i ) {
+      sounds[i].nUsers = 0;
+    }
+    for( int i = 0; i < library.bsps.length(); ++i ) {
+      bsps[i].object = null;
+      bsps[i].nUsers = 0;
+    }
+
+    maxModels     = 0;
+    maxAudios     = 0;
+    maxSources    = 0;
+    maxBSPSources = 0;
+    maxObjSources = 0;
 
     log.printEnd( " OK" );
   }

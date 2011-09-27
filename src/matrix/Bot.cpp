@@ -559,7 +559,7 @@ namespace oz
      */
 
     if( actions & ~oldActions & ACTION_USE ) {
-      const Object* obj = instrumentObj != null ? instrumentObj : getTagged( hvsc );
+      const Object* obj = instrumentObj != null ? instrumentObj : getTagged( hvsc, ~0 );
 
       if( obj != null ) {
         synapse.use( this, orbis.objects[obj->index] );
@@ -580,7 +580,9 @@ namespace oz
         if( obj->flags & BROWSABLE_BIT ) {
           instrument = obj->index;
         }
-        else if( ( obj->flags & ITEM_BIT ) && items.length() < clazz->nItems ) {
+        else if( ( obj->flags & ( ITEM_BIT | SOLID_BIT ) ) == ( ITEM_BIT | SOLID_BIT ) &&
+            items.length() < clazz->nItems )
+        {
           hard_assert( obj->flags & DYNAMIC_BIT );
 
           state &= ~GRAB_BIT;

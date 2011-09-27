@@ -9,11 +9,11 @@
 
 #include "stable.hpp"
 
-#include "nirvana/Meme.hpp"
+#include "matrix/Meme.hpp"
 
 namespace oz
 {
-namespace nirvana
+namespace matrix
 {
 
 }
