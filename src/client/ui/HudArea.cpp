@@ -83,7 +83,7 @@ namespace ui
         glBindTexture( GL_TEXTURE_2D, browseTexId );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
-      if( ( taggedObj->flags & ( Object::USE_FUNC_BIT | Object::WEAPON_BIT ) ) ==
+      if( ( taggedObj->flags & ( Object::USE_FUNC_BIT | Object::WEAPON_BIT | Object::VEHICLE_BIT ) ) ==
           Object::USE_FUNC_BIT )
       {
         glBindTexture( GL_TEXTURE_2D, useTexId );

@@ -202,10 +202,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "bsp/tex/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       textureIndices.add( name, textures.length() );
       textures.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -231,10 +231,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "snd/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       soundIndices.add( name, sounds.length() );
       sounds.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -259,10 +259,10 @@ namespace oz
 
       String name = ent.baseName();
 
+      log.println( "%s", name.cstr() );
+
       shaderIndices.add( name, shaders.length() );
       shaders.add( Resource( name, "" ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -288,10 +288,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "terra/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       terraIndices.add( name, terras.length() );
       terras.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -317,10 +317,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "caelum/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       caelumIndices.add( name, caela.length() );
       caela.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -328,6 +328,8 @@ namespace oz
     log.println( "}" );
     log.println( "BSP structures (*.ozBSP/*.ozcBSP in 'bsp') {" );
     log.indent();
+
+    Buffer buffer;
 
     dir.open( "bsp" );
     if( !dir.isOpened() ) {
@@ -346,12 +348,26 @@ namespace oz
       String name = ent.baseName();
       String path = String( "bsp/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       bspIndices.add( name, bsps.length() );
       bsps.add( Resource( name, path ) );
 
-      log.println( "%s", name.cstr() );
+      // read bounds
+      if( !buffer.read( path ) ) {
+        throw Exception( "cannot read dimensions from BSP" );
+      }
+
+      InputStream is = buffer.inputStream();
+
+      Point3 mins = is.readPoint3();
+      Point3 maxs = is.readPoint3();
+
+      bspBounds.add( Bounds( mins, maxs ) );
     }
     dir.close();
+
+    buffer.dealloc();
 
     log.unindent();
     log.println( "}" );
@@ -375,14 +391,14 @@ namespace oz
       String name = ent.baseName();
       String path = String( "mdl/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       if( modelIndices.contains( name ) ) {
         throw Exception( "Duplicated model '" + name + "' ['" + path + "']" );
       }
 
       modelIndices.add( name, models.length() );
       models.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -408,10 +424,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "name/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       nameListIndices.add( name, nameLists.length() );
       nameLists.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -437,9 +453,9 @@ namespace oz
       String name = ent.baseName();
       String path = String( "music/" ) + ent;
 
-      musics.add( Resource( name, path ) );
-
       log.println( "%s", name.cstr() );
+
+      musics.add( Resource( name, path ) );
     }
     dir.close();
 
@@ -464,6 +480,8 @@ namespace oz
 
       String name = ent.baseName();
       String path = String( "class/" ) + ent;
+
+      log.println( "%s", name.cstr() );
 
       if( !classConfig.load( path ) ) {
         log.println( "invalid config file %s", path.cstr() );
@@ -490,8 +508,6 @@ namespace oz
       classConfig.add( "name", name );
       classes.add( name, ( *initFunc )( &classConfig ) );
       classConfig.clear();
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -547,14 +563,14 @@ namespace oz
       String name = ent.baseName();
       String path = String( "data/textures/oz/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       if( textureIndices.contains( name ) ) {
         throw Exception( "Duplicated texture '" + name + "' ['" + path + "']" );
       }
 
       textureIndices.add( name, textures.length() );
       textures.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -580,10 +596,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "snd/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       soundIndices.add( name, sounds.length() );
       sounds.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -608,10 +624,10 @@ namespace oz
 
       String name = ent.baseName();
 
+      log.println( "%s", name.cstr() );
+
       shaderIndices.add( name, shaders.length() );
       shaders.add( Resource( name, "" ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -637,10 +653,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "terra/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       terraIndices.add( name, terras.length() );
       terras.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -666,10 +682,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "caelum/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       caelumIndices.add( name, caela.length() );
       caela.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -695,10 +711,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "data/maps/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       bspIndices.add( name, bsps.length() );
       bsps.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -724,10 +740,10 @@ namespace oz
       String name = static_cast<const char*>( ent );
       String path = String( "mdl/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       modelIndices.add( name, models.length() );
       models.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -753,10 +769,10 @@ namespace oz
       String name = ent.baseName();
       String path = String( "name/" ) + ent;
 
+      log.println( "%s", name.cstr() );
+
       nameListIndices.add( name, nameLists.length() );
       nameLists.add( Resource( name, path ) );
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 
@@ -782,9 +798,9 @@ namespace oz
       String name = ent.baseName();
       String path = String( "music/" ) + ent;
 
-      musics.add( Resource( name, path ) );
-
       log.println( "%s", name.cstr() );
+
+      musics.add( Resource( name, path ) );
     }
     dir.close();
 
@@ -809,6 +825,8 @@ namespace oz
 
       String name = ent.baseName();
       String path = String( "class/" ) + ent;
+
+      log.println( "%s", name.cstr() );
 
       if( !classConfig.load( path ) ) {
         log.println( "invalid config file %s", path.cstr() );
@@ -835,8 +853,6 @@ namespace oz
       classConfig.add( "name", name );
       classes.add( name, null );
       classConfig.clear();
-
-      log.println( "%s", name.cstr() );
     }
     dir.close();
 

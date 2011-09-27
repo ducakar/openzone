@@ -83,6 +83,8 @@ namespace oz
       Vector<Resource> nameLists;
       Vector<Resource> musics;
 
+      Vector<Bounds>   bspBounds;
+
       HashString<const ObjectClass::InitFunc, 8> baseClasses;
       HashString<const ObjectClass*, 64> classes;
 

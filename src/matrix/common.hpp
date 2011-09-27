@@ -16,6 +16,15 @@
 #include "matrix/AABB.hpp"
 #include "matrix/Sphere.hpp"
 
+#define OZ_LUA_API( func ) \
+  static int func( lua_State* l )
+
+#define OZ_LUA_FUNC( func ) \
+  lua.registerFunction( #func, func )
+
+#define OZ_LUA_CONST( name, value ) \
+  lua.registerConstant( name, value )
+
 namespace oz
 {
 
