@@ -13,17 +13,61 @@
 #define API( func ) \
   int Lua::func( lua_State* l )
 
-#define ERROR( message ) \
-  luaL_error( l, "[%s] %s", __FUNCTION__, message )
+#define ARG( n ) \
+  hard_assert( lua_gettop( l ) == ( n ) ); \
+  static_cast<void>( l )
 
-#define OBJ( obj, i ) \
-  if( uint( i ) >= uint( orbis.objects.length() ) ) { \
-    luaL_error( l, "object index %d out of bounds", i ); \
-  } \
-  Object* obj = orbis.objects[i]; \
-  if( obj == null ) { \
-    luaL_error( l, "bound object at %d is null", i ); \
+#define ERROR( message ) \
+  luaL_error( l, "%s: %s", __FUNCTION__, message )
+
+#define STR_NOT_NULL() \
+  if( lua.str == null ) { \
+    ERROR( "bound structure is null" ); \
   }
+
+#define EVENT_NOT_NULL() \
+  if( !lua.event.isValid() ) { \
+    ERROR( "bound event is null" ); \
+  }
+
+#define OBJ_NOT_NULL() \
+  if( lua.obj == null ) { \
+    ERROR( "bound object is null" ); \
+  }
+
+#define OBJ_NOT_SELF() \
+  if( lua.obj == lua.self ) { \
+    ERROR( "bound object if self" ); \
+  }
+
+#define OBJ_DYNAMIC() \
+  if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) { \
+    ERROR( "bound object is not dynamic" ); \
+  } \
+  Dynamic* dyn = static_cast<Dynamic*>( lua.obj );
+
+#define OBJ_BOT() \
+  if( !( lua.obj->flags & Object::BOT_BIT ) ) { \
+    ERROR( "bound object is not a bot" ); \
+  } \
+  Bot* bot = static_cast<Bot*>( lua.obj );
+
+#define OBJ_VEHICLE() \
+  if( !( lua.obj->flags & Object::VEHICLE_BIT ) ) { \
+    ERROR( "bound object is not a vehicle" ); \
+  } \
+  Vehicle* vehicle = static_cast<Vehicle*>( lua.obj );
+
+#define PART_NOT_NULL() \
+  if( lua.part == null ) { \
+    ERROR( "bound particle is null" ); \
+  }
+
+#define SELF_BOT() \
+  if( lua.self == null || !( lua.self->flags & Object::BOT_BIT ) ) { \
+    ERROR( "self is not a bot" ); \
+  } \
+  Bot* self = static_cast<Bot*>( lua.self );
 
 #define settop( i )             lua_settop( l, i )
 #define gettop()                lua_gettop( l )

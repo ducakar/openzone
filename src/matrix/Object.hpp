@@ -174,8 +174,8 @@ namespace oz
       static const int EVENT_DAMAGE       = 2;
       static const int EVENT_HIT          = 3;
       static const int EVENT_SPLASH       = 4;
-      // EVENT_FRICTING not in use, but reserved for more convenient BasicAudio (reserves a slot for
-      // friction sound)
+      // EVENT_FRICTING not in use, but reserved for more convenient BasicAudio
+      // (reserves a slot for friction sound)
       static const int EVENT_FRICTING     = 5;
       static const int EVENT_USE          = 6;
 

@@ -13,9 +13,6 @@
 
 #include "matrix/Object.hpp"
 
-#define OZ_LUA_FUNC( func ) lua.registerFunction( #func, func )
-#define OZ_LUA_CONST( name, value ) lua.registerConstant( name, value )
-
 struct lua_State;
 
 namespace oz
@@ -42,11 +39,12 @@ namespace oz
 
       int             strIndex;
       int             objIndex;
+      bool            isFirstEvent;
 
       Vector<Struct*> structs;
       Vector<Object*> objects;
 
-      List<Object::Event>::Iterator event;
+      List<Object::Event>::CIterator event;
 
     private:
 
@@ -77,184 +75,230 @@ namespace oz
 
     private:
 
-      static LuaAPI ozPrintln;
-      static LuaAPI ozException;
-
-      static LuaAPI ozBindAllOverlaps;
-      static LuaAPI ozBindStrOverlaps;
-      static LuaAPI ozBindObjOverlaps;
-
       /*
-       * Struct
+       * Generic functions
        */
 
-      static LuaAPI ozStrBindIndex;
-      static LuaAPI ozStrBindNext;
+      OZ_LUA_API( ozPrintln );
+      OZ_LUA_API( ozException );
 
-      static LuaAPI ozStrIsNull;
+      /*
+       * Orbis
+       */
 
-      static LuaAPI ozStrGetBounds;
-      static LuaAPI ozStrGetIndex;
-      static LuaAPI ozStrGetPos;
-      static LuaAPI ozStrGetBSP;
-      static LuaAPI ozStrGetRotation;
-      static LuaAPI ozStrGetLife;
-      static LuaAPI ozStrSetLife;
-      static LuaAPI ozStrAddLife;
+      OZ_LUA_API( ozOrbisAddStr );
+      OZ_LUA_API( ozOrbisTryAddStr );
+      OZ_LUA_API( ozOrbisAddObj );
+      OZ_LUA_API( ozOrbisTryAddObj );
+      OZ_LUA_API( ozOrbisAddPart );
+      OZ_LUA_API( ozOrbisGenParts );
 
-      static LuaAPI ozStrDamage;
-      static LuaAPI ozStrDestroy;
+      OZ_LUA_API( ozOrbisBindAllOverlaps );
+      OZ_LUA_API( ozOrbisBindStrOverlaps );
+      OZ_LUA_API( ozOrbisBindObjOverlaps );
 
-      static LuaAPI ozStrVectorFromSelf;
-      static LuaAPI ozStrDirectionFromSelf;
-      static LuaAPI ozStrDistanceFromSelf;
-      static LuaAPI ozStrHeadingFromSelf;
-      static LuaAPI ozStrPitchFromSelf;
+      /*
+       * Terra
+       */
 
-      static LuaAPI ozStrBindAllOverlaps;
-      static LuaAPI ozStrBindStrOverlaps;
-      static LuaAPI ozStrBindObjOverlaps;
+      OZ_LUA_API( ozTerraLoad );
+
+      OZ_LUA_API( ozTerraHeight );
+
+      /*
+       * Caelum
+       */
+
+      OZ_LUA_API( ozCaelumLoad );
+
+      OZ_LUA_API( ozCaelumGetHeading );
+      OZ_LUA_API( ozCaelumSetHeading );
+      OZ_LUA_API( ozCaelumGetPeriod );
+      OZ_LUA_API( ozCaelumSetPeriod );
+      OZ_LUA_API( ozCaelumGetTime );
+      OZ_LUA_API( ozCaelumSetTime );
+      OZ_LUA_API( ozCaelumAddTime );
+
+      /*
+       * Structure
+       */
+
+      OZ_LUA_API( ozStrBindIndex );
+      OZ_LUA_API( ozStrBindNext );
+
+      OZ_LUA_API( ozStrIsNull );
+
+      OZ_LUA_API( ozStrGetIndex );
+      OZ_LUA_API( ozStrGetBounds );
+      OZ_LUA_API( ozStrGetPos );
+      OZ_LUA_API( ozStrGetBSP );
+      OZ_LUA_API( ozStrGetRotation );
+      OZ_LUA_API( ozStrGetLife );
+      OZ_LUA_API( ozStrSetLife );
+      OZ_LUA_API( ozStrAddLife );
+
+      OZ_LUA_API( ozStrDamage );
+      OZ_LUA_API( ozStrDestroy );
+      OZ_LUA_API( ozStrRemove );
+
+      OZ_LUA_API( ozStrVectorFromSelf );
+      OZ_LUA_API( ozStrVectorFromSelfEye );
+      OZ_LUA_API( ozStrDirectionFromSelf );
+      OZ_LUA_API( ozStrDirectionFromSelfEye );
+      OZ_LUA_API( ozStrDistanceFromSelf );
+      OZ_LUA_API( ozStrDistanceFromSelfEye );
+      OZ_LUA_API( ozStrHeadingFromSelf );
+      OZ_LUA_API( ozStrPitchFromSelf );
+      OZ_LUA_API( ozStrPitchFromSelfEye );
+
+      OZ_LUA_API( ozStrBindAllOverlaps );
+      OZ_LUA_API( ozStrBindStrOverlaps );
+      OZ_LUA_API( ozStrBindObjOverlaps );
 
       /*
        * Object
        */
 
-      static LuaAPI ozEventBindNext;
-      static LuaAPI ozEventGet;
+      OZ_LUA_API( ozEventBindNext );
 
-      static LuaAPI ozObjBindIndex;
-      static LuaAPI ozObjBindSelf;
-      static LuaAPI ozObjBindUser;
-      static LuaAPI ozObjBindNext;
+      OZ_LUA_API( ozEventGet );
 
-      static LuaAPI ozObjBindAllOverlaps;
-      static LuaAPI ozObjBindStrOverlaps;
-      static LuaAPI ozObjBindObjOverlaps;
+      OZ_LUA_API( ozObjBindIndex );
+      OZ_LUA_API( ozObjBindSelf );
+      OZ_LUA_API( ozObjBindUser );
+      OZ_LUA_API( ozObjBindNext );
 
-      static LuaAPI ozObjIsNull;
-      static LuaAPI ozObjIsSelf;
-      static LuaAPI ozObjIsUser;
-      static LuaAPI ozObjIsPut;
-      static LuaAPI ozObjIsDynamic;
-      static LuaAPI ozObjIsItem;
-      static LuaAPI ozObjIsWeapon;
-      static LuaAPI ozObjIsBot;
-      static LuaAPI ozObjIsVehicle;
-      static LuaAPI ozObjGetPos;
-      static LuaAPI ozObjSetPos;
-      static LuaAPI ozObjAddPos;
-      static LuaAPI ozObjGetDim;
-      static LuaAPI ozObjGetIndex;
-      static LuaAPI ozObjGetFlags;
-      static LuaAPI ozObjGetOldFlags;
-      static LuaAPI ozObjGetTypeName;
-      static LuaAPI ozObjGetLife;
-      static LuaAPI ozObjSetLife;
-      static LuaAPI ozObjAddLife;
-      static LuaAPI ozObjAddEvent;
+      OZ_LUA_API( ozObjIsNull );
+      OZ_LUA_API( ozObjIsSelf );
+      OZ_LUA_API( ozObjIsUser );
+      OZ_LUA_API( ozObjIsCut );
+      OZ_LUA_API( ozObjIsBrowsable );
+      OZ_LUA_API( ozObjIsDynamic );
+      OZ_LUA_API( ozObjIsItem );
+      OZ_LUA_API( ozObjIsWeapon );
+      OZ_LUA_API( ozObjIsBot );
+      OZ_LUA_API( ozObjIsVehicle );
 
-      static LuaAPI ozObjDamage;
-      static LuaAPI ozObjDestroy;
-      static LuaAPI ozObjQuietDestroy;
+      OZ_LUA_API( ozObjGetIndex );
+      OZ_LUA_API( ozObjGetPos );
+      OZ_LUA_API( ozObjSetPos );
+      OZ_LUA_API( ozObjAddPos );
+      OZ_LUA_API( ozObjGetDim );
+      OZ_LUA_API( ozObjGetFlags );
+      OZ_LUA_API( ozObjGetOldFlags );
+      OZ_LUA_API( ozObjGetTypeName );
+      OZ_LUA_API( ozObjGetLife );
+      OZ_LUA_API( ozObjSetLife );
+      OZ_LUA_API( ozObjAddLife );
 
-      static LuaAPI ozObjVectorFromSelf;
-      static LuaAPI ozObjDirectionFromSelf;
-      static LuaAPI ozObjDistanceFromSelf;
-      static LuaAPI ozObjHeadingFromSelf;
-      static LuaAPI ozObjPitchFromSelf;
-      static LuaAPI ozObjPitchFromSelfEye;
+      OZ_LUA_API( ozObjAddEvent );
+      OZ_LUA_API( ozObjDamage );
+      OZ_LUA_API( ozObjDestroy );
+      OZ_LUA_API( ozObjRemove );
 
-      static LuaAPI ozObjBindEvents;
-      static LuaAPI ozObjBindItems;
+      OZ_LUA_API( ozObjVectorFromSelf );
+      OZ_LUA_API( ozObjVectorFromSelfEye );
+      OZ_LUA_API( ozObjDirectionFromSelf );
+      OZ_LUA_API( ozObjDirectionFromSelfEye );
+      OZ_LUA_API( ozObjDistanceFromSelf );
+      OZ_LUA_API( ozObjDistanceFromSelfEye );
+      OZ_LUA_API( ozObjHeadingFromSelf );
+      OZ_LUA_API( ozObjPitchFromSelf );
+      OZ_LUA_API( ozObjPitchFromSelfEye );
+
+      OZ_LUA_API( ozObjBindEvents );
+      OZ_LUA_API( ozObjBindItems );
+
+      OZ_LUA_API( ozObjBindAllOverlaps );
+      OZ_LUA_API( ozObjBindStrOverlaps );
+      OZ_LUA_API( ozObjBindObjOverlaps );
 
       /*
-       * Dynamic
+       * Dynamic object
        */
 
-      static LuaAPI ozDynBindParent;
-      static LuaAPI ozDynGetVelocity;
-      static LuaAPI ozDynSetVelocity;
-      static LuaAPI ozDynAddVelocity;
-      static LuaAPI ozDynGetMomentum;
-      static LuaAPI ozDynSetMomentum;
-      static LuaAPI ozDynAddMomentum;
-      static LuaAPI ozDynGetMass;
-      static LuaAPI ozDynSetMass;
-      static LuaAPI ozDynAddMass;
-      static LuaAPI ozDynResetMass;
-      static LuaAPI ozDynGetLift;
-      static LuaAPI ozDynSetLift;
-      static LuaAPI ozDynAddLift;
-      static LuaAPI ozDynResetLift;
+      OZ_LUA_API( ozDynBindParent );
 
-      static LuaAPI ozBotGetName;
-      static LuaAPI ozBotSetName;
-      static LuaAPI ozBotGetEyePos;
-      static LuaAPI ozBotGetH;
-      static LuaAPI ozBotSetH;
-      static LuaAPI ozBotAddH;
-      static LuaAPI ozBotGetV;
-      static LuaAPI ozBotSetV;
-      static LuaAPI ozBotAddV;
-      static LuaAPI ozBotGetDir;
-      static LuaAPI ozBotActionForward;
-      static LuaAPI ozBotActionBackward;
-      static LuaAPI ozBotActionRight;
-      static LuaAPI ozBotActionLeft;
-      static LuaAPI ozBotActionJump;
-      static LuaAPI ozBotActionCrouch;
-      static LuaAPI ozBotActionUse;
-      static LuaAPI ozBotActionTake;
-      static LuaAPI ozBotActionGrab;
-      static LuaAPI ozBotActionThrow;
-      static LuaAPI ozBotActionAttack;
-      static LuaAPI ozBotActionExit;
-      static LuaAPI ozBotActionEject;
-      static LuaAPI ozBotActionSuicide;
-      static LuaAPI ozBotStateIsRunning;
-      static LuaAPI ozBotStateSetRunning;
-      static LuaAPI ozBotStateToggleRunning;
-      static LuaAPI ozBotGetStamina;
-      static LuaAPI ozBotSetStamina;
-      static LuaAPI ozBotAddStamina;
-      static LuaAPI ozBotRearm;
+      OZ_LUA_API( ozDynGetVelocity );
+      OZ_LUA_API( ozDynSetVelocity );
+      OZ_LUA_API( ozDynAddVelocity );
+      OZ_LUA_API( ozDynGetMomentum );
+      OZ_LUA_API( ozDynSetMomentum );
+      OZ_LUA_API( ozDynAddMomentum );
+      OZ_LUA_API( ozDynGetMass );
+      OZ_LUA_API( ozDynGetLift );
 
-      static LuaAPI ozVehicleService;
+      /*
+       * Bot
+       */
 
-      static LuaAPI ozPartBindIndex;
-      static LuaAPI ozPartIsNull;
-      static LuaAPI ozPartGetPos;
-      static LuaAPI ozPartSetPos;
-      static LuaAPI ozPartAddPos;
-      static LuaAPI ozPartGetIndex;
-      static LuaAPI ozPartGetVelocity;
-      static LuaAPI ozPartSetVelocity;
-      static LuaAPI ozPartAddVelocity;
-      static LuaAPI ozPartGetLife;
-      static LuaAPI ozPartSetLife;
-      static LuaAPI ozPartAddLife;
+      OZ_LUA_API( ozBotGetName );
+      OZ_LUA_API( ozBotSetName );
+      OZ_LUA_API( ozBotGetEyePos );
+      OZ_LUA_API( ozBotGetH );
+      OZ_LUA_API( ozBotSetH );
+      OZ_LUA_API( ozBotAddH );
+      OZ_LUA_API( ozBotGetV );
+      OZ_LUA_API( ozBotSetV );
+      OZ_LUA_API( ozBotAddV );
+      OZ_LUA_API( ozBotGetDir );
+      OZ_LUA_API( ozBotGetStamina );
+      OZ_LUA_API( ozBotSetStamina );
+      OZ_LUA_API( ozBotAddStamina );
 
-      static LuaAPI ozOrbisAddStr;
-      static LuaAPI ozOrbisForceAddStr;
-      static LuaAPI ozOrbisAddObj;
-      static LuaAPI ozOrbisForceAddObj;
-      static LuaAPI ozOrbisAddPart;
-      static LuaAPI ozOrbisRemoveStr;
-      static LuaAPI ozOrbisRemoveObj;
-      static LuaAPI ozOrbisRemovePart;
-      static LuaAPI ozOrbisGenParts;
+      OZ_LUA_API( ozBotActionForward );
+      OZ_LUA_API( ozBotActionBackward );
+      OZ_LUA_API( ozBotActionRight );
+      OZ_LUA_API( ozBotActionLeft );
+      OZ_LUA_API( ozBotActionJump );
+      OZ_LUA_API( ozBotActionCrouch );
+      OZ_LUA_API( ozBotActionUse );
+      OZ_LUA_API( ozBotActionTake );
+      OZ_LUA_API( ozBotActionGrab );
+      OZ_LUA_API( ozBotActionThrow );
+      OZ_LUA_API( ozBotActionAttack );
+      OZ_LUA_API( ozBotActionExit );
+      OZ_LUA_API( ozBotActionEject );
+      OZ_LUA_API( ozBotActionSuicide );
 
-      static LuaAPI ozTerraLoad;
-      static LuaAPI ozTerraHeight;
+      OZ_LUA_API( ozBotStateIsRunning );
+      OZ_LUA_API( ozBotStateSetRunning );
+      OZ_LUA_API( ozBotStateToggleRunning );
 
-      static LuaAPI ozCaelumLoad;
-      static LuaAPI ozCaelumGetHeading;
-      static LuaAPI ozCaelumSetHeading;
-      static LuaAPI ozCaelumGetPeriod;
-      static LuaAPI ozCaelumSetPeriod;
-      static LuaAPI ozCaelumGetTime;
-      static LuaAPI ozCaelumSetTime;
-      static LuaAPI ozCaelumAddTime;
+      OZ_LUA_API( ozBotRearm );
+
+      OZ_LUA_API( ozBotVectorFromSelfEye );
+      OZ_LUA_API( ozBotDirectionFromSelfEye );
+      OZ_LUA_API( ozBotDistanceFromSelfEye );
+      OZ_LUA_API( ozBotHeadingFromSelfEye );
+      OZ_LUA_API( ozBotPitchFromSelfEye );
+
+      /*
+       * Vehicle
+       */
+
+      OZ_LUA_API( ozVehicleService );
+
+      /*
+       * Particle
+       */
+
+      OZ_LUA_API( ozPartBindIndex );
+
+      OZ_LUA_API( ozPartIsNull );
+
+      OZ_LUA_API( ozPartGetPos );
+      OZ_LUA_API( ozPartSetPos );
+      OZ_LUA_API( ozPartAddPos );
+      OZ_LUA_API( ozPartGetIndex );
+      OZ_LUA_API( ozPartGetVelocity );
+      OZ_LUA_API( ozPartSetVelocity );
+      OZ_LUA_API( ozPartAddVelocity );
+      OZ_LUA_API( ozPartGetLife );
+      OZ_LUA_API( ozPartSetLife );
+      OZ_LUA_API( ozPartAddLife );
+
+      OZ_LUA_API( ozPartRemove );
 
   };
 

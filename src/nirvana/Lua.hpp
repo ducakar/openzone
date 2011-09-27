@@ -36,6 +36,7 @@ namespace nirvana
 
       int             strIndex;
       int             objIndex;
+      bool            isFirstEvent;
 
       Vector<Object*> objects;
       Vector<Struct*> structs;
@@ -44,7 +45,7 @@ namespace nirvana
 
     public:
 
-      bool            forceUpdate;
+      bool forceUpdate;
 
     private:
 
@@ -61,6 +62,7 @@ namespace nirvana
       void unregisterMind( int botIndex );
 
       void registerFunction( const char* name, LuaAPI func );
+      void registerConstant( const char* name, bool value );
       void registerConstant( const char* name, int value );
       void registerConstant( const char* name, float value );
       void registerConstant( const char* name, const char* value );
@@ -73,115 +75,203 @@ namespace nirvana
 
     private:
 
-      static LuaAPI ozPrintln;
-      static LuaAPI ozException;
-      static LuaAPI ozForceUpdate;
+      /*
+       * Generic functions
+       */
 
-      static LuaAPI ozBindAllOverlaps;
-      static LuaAPI ozBindStrOverlaps;
-      static LuaAPI ozBindObjOverlaps;
-      static LuaAPI ozSelfBindAllOverlaps;
-      static LuaAPI ozSelfBindStrOverlaps;
-      static LuaAPI ozSelfBindObjOverlaps;
+      OZ_LUA_API( ozPrintln );
+      OZ_LUA_API( ozException );
+      OZ_LUA_API( ozForceUpdate );
 
-      static LuaAPI ozStrBindIndex;
-      static LuaAPI ozStrBindNext;
+      /*
+       * Orbis
+       */
 
-      static LuaAPI ozStrIsNull;
-      static LuaAPI ozStrGetBounds;
-      static LuaAPI ozStrGetIndex;
-      static LuaAPI ozStrGetPos;
-      static LuaAPI ozStrGetBSP;
+      OZ_LUA_API( ozOrbisBindAllOverlaps );
+      OZ_LUA_API( ozOrbisBindStrOverlaps );
+      OZ_LUA_API( ozOrbisBindObjOverlaps );
 
-      static LuaAPI ozStrVectorFromSelf;
-      static LuaAPI ozStrDirectionFromSelf;
-      static LuaAPI ozStrDistanceFromSelf;
-      static LuaAPI ozStrHeadingFromSelf;
-      static LuaAPI ozStrPitchFromSelf;
+      /*
+       * Terra
+       */
 
-      static LuaAPI ozObjBindIndex;
-      static LuaAPI ozObjBindSelf;
-      static LuaAPI ozObjBindNext;
+      OZ_LUA_API( ozTerraHeight );
 
-      static LuaAPI ozObjIsNull;
-      static LuaAPI ozObjIsSelf;
-      static LuaAPI ozObjIsPut;
-      static LuaAPI ozObjIsDynamic;
-      static LuaAPI ozObjIsItem;
-      static LuaAPI ozObjIsWeapon;
-      static LuaAPI ozObjIsBot;
-      static LuaAPI ozObjIsVehicle;
-      static LuaAPI ozObjGetPos;
-      static LuaAPI ozObjGetDim;
-      static LuaAPI ozObjGetIndex;
-      static LuaAPI ozObjGetFlags;
-      static LuaAPI ozObjGetOldFlags;
-      static LuaAPI ozObjGetTypeName;
-      static LuaAPI ozObjGetLife;
+      /*
+       * Caelum
+       */
 
-      static LuaAPI ozObjVectorFromSelf;
-      static LuaAPI ozObjDirectionFromSelf;
-      static LuaAPI ozObjDistanceFromSelf;
-      static LuaAPI ozObjHeadingFromSelf;
-      static LuaAPI ozObjPitchFromSelf;
-      static LuaAPI ozObjPitchFromSelfEye;
+      OZ_LUA_API( ozCaelumGetHeading );
+      OZ_LUA_API( ozCaelumGetPeriod );
+      OZ_LUA_API( ozCaelumGetTime );
 
-      static LuaAPI ozObjBindEvent;
-      static LuaAPI ozEventBindNext;
-      static LuaAPI ozEventGet;
+      /*
+       * Structure
+       */
 
-      static LuaAPI ozDynBindParent;
-      static LuaAPI ozDynGetVelocity;
-      static LuaAPI ozDynGetMomentum;
-      static LuaAPI ozDynGetMass;
-      static LuaAPI ozDynGetLift;
+      OZ_LUA_API( ozStrBindIndex );
+      OZ_LUA_API( ozStrBindNext );
 
-      static LuaAPI ozBotGetName;
-      static LuaAPI ozBotGetEyePos;
-      static LuaAPI ozBotGetH;
-      static LuaAPI ozBotGetV;
-      static LuaAPI ozBotGetDir;
-      static LuaAPI ozBotStateIsRunning;
-      static LuaAPI ozBotGetStamina;
+      OZ_LUA_API( ozStrIsNull );
 
-      static LuaAPI ozSelfGetName;
-      static LuaAPI ozSelfGetEyePos;
-      static LuaAPI ozSelfGetH;
-      static LuaAPI ozSelfSetH;
-      static LuaAPI ozSelfAddH;
-      static LuaAPI ozSelfGetV;
-      static LuaAPI ozSelfSetV;
-      static LuaAPI ozSelfAddV;
-      static LuaAPI ozSelfActionForward;
-      static LuaAPI ozSelfActionBackward;
-      static LuaAPI ozSelfActionRight;
-      static LuaAPI ozSelfActionLeft;
-      static LuaAPI ozSelfActionJump;
-      static LuaAPI ozSelfActionCrouch;
-      static LuaAPI ozSelfActionUse;
-      static LuaAPI ozSelfActionTake;
-      static LuaAPI ozSelfActionGrab;
-      static LuaAPI ozSelfActionThrow;
-      static LuaAPI ozSelfActionAttack;
-      static LuaAPI ozSelfActionExit;
-      static LuaAPI ozSelfActionEject;
-      static LuaAPI ozSelfActionSuicide;
-      static LuaAPI ozSelfStateIsRunning;
-      static LuaAPI ozSelfStateSetRunning;
-      static LuaAPI ozSelfStateToggleRunning;
+      OZ_LUA_API( ozStrGetIndex );
+      OZ_LUA_API( ozStrGetBounds );
+      OZ_LUA_API( ozStrGetPos );
+      OZ_LUA_API( ozStrGetBSP );
+      OZ_LUA_API( ozStrGetRotation );
+      OZ_LUA_API( ozStrGetLife );
 
-      static LuaAPI ozPartBindIndex;
-      static LuaAPI ozPartIsNull;
-      static LuaAPI ozPartGetPos;
-      static LuaAPI ozPartGetIndex;
-      static LuaAPI ozPartGetVelocity;
-      static LuaAPI ozPartGetLife;
+      OZ_LUA_API( ozStrVectorFromSelf );
+      OZ_LUA_API( ozStrVectorFromSelfEye );
+      OZ_LUA_API( ozStrDirectionFromSelf );
+      OZ_LUA_API( ozStrDirectionFromSelfEye );
+      OZ_LUA_API( ozStrDistanceFromSelf );
+      OZ_LUA_API( ozStrDistanceFromSelfEye );
+      OZ_LUA_API( ozStrHeadingFromSelf );
+      OZ_LUA_API( ozStrPitchFromSelf );
+      OZ_LUA_API( ozStrPitchFromSelfEye );
 
-      static LuaAPI ozTerraHeight;
+      OZ_LUA_API( ozStrBindAllOverlaps );
+      OZ_LUA_API( ozStrBindStrOverlaps );
+      OZ_LUA_API( ozStrBindObjOverlaps );
 
-      static LuaAPI ozCaelumGetHeading;
-      static LuaAPI ozCaelumGetPeriod;
-      static LuaAPI ozCaelumGetTime;
+      /*
+       * Object
+       */
+
+      OZ_LUA_API( ozEventBindNext );
+
+      OZ_LUA_API( ozEventGet );
+
+      OZ_LUA_API( ozObjBindIndex );
+      OZ_LUA_API( ozObjBindSelf );
+      OZ_LUA_API( ozObjBindNext );
+
+      OZ_LUA_API( ozObjIsNull );
+      OZ_LUA_API( ozObjIsSelf );
+      OZ_LUA_API( ozObjIsCut );
+      OZ_LUA_API( ozObjIsBrowsable );
+      OZ_LUA_API( ozObjIsDynamic );
+      OZ_LUA_API( ozObjIsItem );
+      OZ_LUA_API( ozObjIsWeapon );
+      OZ_LUA_API( ozObjIsBot );
+      OZ_LUA_API( ozObjIsVehicle );
+
+      OZ_LUA_API( ozObjGetIndex );
+      OZ_LUA_API( ozObjGetPos );
+      OZ_LUA_API( ozObjGetDim );
+      OZ_LUA_API( ozObjGetFlags );
+      OZ_LUA_API( ozObjGetOldFlags );
+      OZ_LUA_API( ozObjGetTypeName );
+      OZ_LUA_API( ozObjGetLife );
+
+      OZ_LUA_API( ozObjVectorFromSelf );
+      OZ_LUA_API( ozObjVectorFromSelfEye );
+      OZ_LUA_API( ozObjDirectionFromSelf );
+      OZ_LUA_API( ozObjDirectionFromSelfEye );
+      OZ_LUA_API( ozObjDistanceFromSelf );
+      OZ_LUA_API( ozObjDistanceFromSelfEye );
+      OZ_LUA_API( ozObjHeadingFromSelf );
+      OZ_LUA_API( ozObjPitchFromSelf );
+      OZ_LUA_API( ozObjPitchFromSelfEye );
+
+      OZ_LUA_API( ozObjBindEvents );
+      OZ_LUA_API( ozObjBindItems );
+
+      OZ_LUA_API( ozObjBindAllOverlaps );
+      OZ_LUA_API( ozObjBindStrOverlaps );
+      OZ_LUA_API( ozObjBindObjOverlaps );
+
+      /*
+       * Dynamic object
+       */
+
+      OZ_LUA_API( ozDynBindParent );
+
+      OZ_LUA_API( ozDynGetVelocity );
+      OZ_LUA_API( ozDynGetMomentum );
+      OZ_LUA_API( ozDynGetMass );
+      OZ_LUA_API( ozDynGetLift );
+
+      /*
+       * Bot
+       */
+
+      OZ_LUA_API( ozBotGetName );
+      OZ_LUA_API( ozBotGetEyePos );
+      OZ_LUA_API( ozBotGetH );
+      OZ_LUA_API( ozBotGetV );
+      OZ_LUA_API( ozBotGetDir );
+      OZ_LUA_API( ozBotGetStamina );
+
+      OZ_LUA_API( ozBotStateIsRunning );
+
+      OZ_LUA_API( ozBotVectorFromSelfEye );
+      OZ_LUA_API( ozBotDirectionFromSelfEye );
+      OZ_LUA_API( ozBotDistanceFromSelfEye );
+      OZ_LUA_API( ozBotHeadingFromSelfEye );
+      OZ_LUA_API( ozBotPitchFromSelfEye );
+
+      /*
+       * Vehicle
+       */
+
+      /*
+       * Mind's bot
+       */
+
+      OZ_LUA_API( ozSelfIsCut );
+
+      OZ_LUA_API( ozSelfGetIndex );
+      OZ_LUA_API( ozSelfGetPos );
+      OZ_LUA_API( ozSelfGetDim );
+      OZ_LUA_API( ozSelfGetFlags );
+      OZ_LUA_API( ozSelfGetOldFlags );
+      OZ_LUA_API( ozSelfGetTypeName );
+      OZ_LUA_API( ozSelfGetLife );
+
+      OZ_LUA_API( ozSelfGetVelocity );
+      OZ_LUA_API( ozSelfGetMomentum );
+      OZ_LUA_API( ozSelfGetMass );
+      OZ_LUA_API( ozSelfGetLift );
+
+      OZ_LUA_API( ozSelfGetName );
+      OZ_LUA_API( ozSelfGetEyePos );
+      OZ_LUA_API( ozSelfGetH );
+      OZ_LUA_API( ozSelfSetH );
+      OZ_LUA_API( ozSelfAddH );
+      OZ_LUA_API( ozSelfGetV );
+      OZ_LUA_API( ozSelfSetV );
+      OZ_LUA_API( ozSelfAddV );
+      OZ_LUA_API( ozSelfGetDir );
+      OZ_LUA_API( ozSelfGetStamina );
+
+      OZ_LUA_API( ozSelfActionForward );
+      OZ_LUA_API( ozSelfActionBackward );
+      OZ_LUA_API( ozSelfActionRight );
+      OZ_LUA_API( ozSelfActionLeft );
+      OZ_LUA_API( ozSelfActionJump );
+      OZ_LUA_API( ozSelfActionCrouch );
+      OZ_LUA_API( ozSelfActionUse );
+      OZ_LUA_API( ozSelfActionTake );
+      OZ_LUA_API( ozSelfActionGrab );
+      OZ_LUA_API( ozSelfActionThrow );
+      OZ_LUA_API( ozSelfActionAttack );
+      OZ_LUA_API( ozSelfActionExit );
+      OZ_LUA_API( ozSelfActionEject );
+      OZ_LUA_API( ozSelfActionSuicide );
+
+      OZ_LUA_API( ozSelfStateIsRunning );
+      OZ_LUA_API( ozSelfStateSetRunning );
+      OZ_LUA_API( ozSelfStateToggleRunning );
+
+      OZ_LUA_API( ozSelfBindEvents );
+      OZ_LUA_API( ozSelfBindItems );
+      OZ_LUA_API( ozSelfBindParent );
+
+      OZ_LUA_API( ozSelfBindAllOverlaps );
+      OZ_LUA_API( ozSelfBindStrOverlaps );
+      OZ_LUA_API( ozSelfBindObjOverlaps );
 
   };
 
