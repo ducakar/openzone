@@ -68,14 +68,11 @@ namespace oz
 
         float margin;
         float timeout;
-
-        int   openSample;
-        int   closeSample;
-        int   frictSample;
       };
 
       int     id;
       float   life;
+      float   damageTreshold;
 
       int     nPlanes;
       int     nNodes;

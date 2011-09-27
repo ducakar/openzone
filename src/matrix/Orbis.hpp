@@ -46,17 +46,19 @@ namespace oz
 
       Cell              cells[Orbis::MAX][Orbis::MAX];
 
-      Vector<BSP*>      bsps;
       Vector<Struct*>   structs;
       Vector<Object*>   objects;
       Vector<Particle*> parts;
 
+      BSP**             bsps;
       Terra             terra;
       Caelum            caelum;
 
 #ifndef OZ_TOOLS
 
     private:
+
+      int*              bspUsers;
 
       /*
        * Index reusing: when an entity is removed, there may still be references to it (from other
@@ -88,6 +90,9 @@ namespace oz
       Vector<int>        partAvailableIndices;
 
     private:
+
+      void requestBSP( int id );
+      void releaseBSP( int id );
 
       bool position( Struct* str );
       void unposition( Struct* str );

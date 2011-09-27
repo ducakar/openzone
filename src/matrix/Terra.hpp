@@ -16,26 +16,15 @@
 namespace oz
 {
 
-  namespace client
-  {
-    class Terra;
-  }
-
   class Terra
   {
-    friend class client::Terra;
-
     public:
 
       static const int QUADS = 256;
       static const int VERTS = QUADS + 1;
 
-    private:
-
       // Orbis::DIM == Terrain::DIM == Terrain::MAX * TerraQuad::DIM
       static const float DIM;
-
-    public:
 
       struct Quad
       {

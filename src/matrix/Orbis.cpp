@@ -31,9 +31,28 @@ namespace oz
 
   const float Orbis::DIM     = Cell::SIZE * MAX / 2.0f;
 
+  void Orbis::requestBSP( int id )
+  {
+    if( bspUsers[id] == 0 ) {
+      bsps[id] = new BSP( id );
+    }
+
+    ++bspUsers[id];
+  }
+
+  void Orbis::releaseBSP( int id )
+  {
+    --bspUsers[id];
+
+    if( bspUsers[id] == 0 ) {
+      delete bsps[id];
+      bsps[id] = null;
+    }
+  }
+
   bool Orbis::position( Struct* str )
   {
-    str->setRotation( *bsps[str->bsp], str->rot );
+    str->setRotation( *str->bsp, str->rot );
 
     Span span = getInters( *str, EPSILON );
 
@@ -183,14 +202,17 @@ namespace oz
   int Orbis::addStruct( const char* name, const Point3& p, Struct::Rotation rot )
   {
     int index;
+    int id = library.bspIndex( name );
+
+    requestBSP( id );
 
     if( strAvailableIndices.isEmpty() ) {
       index = structs.length();
-      structs.add( library.createStruct( index, name, p, rot ) );
+      structs.add( library.createStruct( index, id, p, rot ) );
     }
     else {
       index = strAvailableIndices.popLast();
-      structs[index] = library.createStruct( index, name, p, rot );
+      structs[index] = library.createStruct( index, id, p, rot );
     }
     return index;
   }
@@ -240,7 +262,10 @@ namespace oz
 
     strFreedIndices[freeing].add( str->index );
     structs[str->index] = null;
-    str->index = -1;
+
+    releaseBSP( str->id );
+
+    delete str;
   }
 
   void Orbis::remove( Object* obj )
@@ -253,7 +278,8 @@ namespace oz
     }
     objFreedIndices[freeing].add( obj->index );
     objects[obj->index] = null;
-    obj->index = -1;
+
+    delete obj;
   }
 
   void Orbis::remove( Particle* part )
@@ -263,7 +289,8 @@ namespace oz
 
     partFreedIndices[freeing].add( part->index );
     parts[part->index] = null;
-    part->index = -1;
+
+    delete part;
   }
 
   void Orbis::update()
@@ -289,6 +316,8 @@ namespace oz
 
     log.print( "Reading Orbis ..." );
 
+    lua.read( istream );
+
     terra.read( istream );
     caelum.read( istream );
 
@@ -309,7 +338,10 @@ namespace oz
         structs.add( null );
       }
       else {
-        str = library.createStruct( i, bspName, istream );
+        int id = library.bspIndex( bspName );
+
+        requestBSP( id );
+        str = library.createStruct( i, id, istream );
         structs.add( str );
 
         if( !position( str ) ) {
@@ -398,6 +430,8 @@ namespace oz
   {
     log.print( "Writing Orbis ..." );
 
+    lua.write( ostream );
+
     terra.write( ostream );
     caelum.write( ostream );
 
@@ -417,7 +451,7 @@ namespace oz
         ostream->writeString( "" );
       }
       else {
-        ostream->writeString( library.bsps[str->bsp].name );
+        ostream->writeString( library.bsps[str->id].name );
         str->writeFull( ostream );
       }
     }
@@ -492,10 +526,15 @@ namespace oz
     log.println( "Loading Orbis {" );
     log.indent();
 
-    bsps.alloc( 32 );
     structs.alloc( 128 );
     objects.alloc( 4096 );
     parts.alloc( 2048 );
+
+    bsps = new BSP*[ library.bsps.length() ];
+    bspUsers = new int[ library.bsps.length() ];
+
+    aSet<BSP*>( bsps, null, library.bsps.length() );
+    aSet( bspUsers, 0, library.bsps.length() );
 
     strFreedIndices[0].alloc( 4 );
     strFreedIndices[1].alloc( 4 );
@@ -507,10 +546,6 @@ namespace oz
     strAvailableIndices.alloc( 16 );
     objAvailableIndices.alloc( 256 );
     partAvailableIndices.alloc( 512 );
-
-    for( int i = 0; i < library.bsps.length(); ++i ) {
-      bsps.add( new BSP( i ) );
-    }
 
     log.unindent();
     log.println( "}" );
@@ -538,14 +573,17 @@ namespace oz
     Struct::overlappingObjs.clear();
     Struct::overlappingObjs.dealloc();
 
-    bsps.free();
-    bsps.dealloc();
     structs.free();
     structs.dealloc();
     objects.free();
     objects.dealloc();
     parts.free();
     parts.dealloc();
+
+    aFree( bsps, library.bsps.length() );
+
+    delete[] bsps;
+    delete[] bspUsers;
 
     strFreedIndices[0].clear();
     strFreedIndices[0].dealloc();

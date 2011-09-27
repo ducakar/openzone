@@ -83,6 +83,12 @@ namespace ui
         glBindTexture( GL_TEXTURE_2D, browseTexId );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
+      if( ( taggedObj->flags & ( Object::USE_FUNC_BIT | Object::WEAPON_BIT ) ) ==
+          Object::USE_FUNC_BIT )
+      {
+        glBindTexture( GL_TEXTURE_2D, useTexId );
+        shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
+      }
 
       if( !( taggedObj->flags & Object::SOLID_BIT ) ) {
         glBindTexture( GL_TEXTURE_2D, 0 );
@@ -97,15 +103,9 @@ namespace ui
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }
       }
-      else if( taggedObj->flags & Object::USE_FUNC_BIT ) {
-        if( taggedObj->flags & Object::WEAPON_BIT ) {
-          if( bot->items.length() < botClazz->nItems ) {
-            glBindTexture( GL_TEXTURE_2D, equipTexId );
-            shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
-          }
-        }
-        else {
-          glBindTexture( GL_TEXTURE_2D, useTexId );
+      else if( taggedObj->flags & Object::WEAPON_BIT ) {
+        if( bot->items.length() < botClazz->nItems ) {
+          glBindTexture( GL_TEXTURE_2D, equipTexId );
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }
       }

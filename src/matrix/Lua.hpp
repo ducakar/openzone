@@ -13,8 +13,8 @@
 
 #include "matrix/Object.hpp"
 
-#define OZ_LUA_REGISTER_FUNC( func ) lua.registerFunction( #func, func )
-#define OZ_LUA_REGISTER_CONST( name, value ) lua.registerConstant( #name, value )
+#define OZ_LUA_FUNC( func ) lua.registerFunction( #func, func )
+#define OZ_LUA_CONST( name, value ) lua.registerConstant( name, value )
 
 struct lua_State;
 
@@ -48,11 +48,6 @@ namespace oz
 
       List<Object::Event>::Iterator event;
 
-    public:
-
-      float           damage;
-      float           hitMomentum;
-
     private:
 
       bool readVariable( InputStream* istream );
@@ -69,14 +64,13 @@ namespace oz
       void unregisterObject( int index );
 
       void registerFunction( const char* name, LuaAPI func );
+      void registerConstant( const char* name, bool value );
       void registerConstant( const char* name, int value );
       void registerConstant( const char* name, float value );
       void registerConstant( const char* name, const char* value );
 
       void read( InputStream* istream );
       void write( OutputStream* ostream );
-
-      void clear();
 
       void init();
       void free();
@@ -89,18 +83,25 @@ namespace oz
       static LuaAPI ozBindAllOverlaps;
       static LuaAPI ozBindStrOverlaps;
       static LuaAPI ozBindObjOverlaps;
-      static LuaAPI ozSelfBindAllOverlaps;
-      static LuaAPI ozSelfBindStrOverlaps;
-      static LuaAPI ozSelfBindObjOverlaps;
+
+      /*
+       * Struct
+       */
 
       static LuaAPI ozStrBindIndex;
       static LuaAPI ozStrBindNext;
 
       static LuaAPI ozStrIsNull;
+
       static LuaAPI ozStrGetBounds;
       static LuaAPI ozStrGetIndex;
       static LuaAPI ozStrGetPos;
       static LuaAPI ozStrGetBSP;
+      static LuaAPI ozStrGetRotation;
+      static LuaAPI ozStrGetLife;
+      static LuaAPI ozStrSetLife;
+      static LuaAPI ozStrAddLife;
+
       static LuaAPI ozStrDamage;
       static LuaAPI ozStrDestroy;
 
@@ -110,10 +111,25 @@ namespace oz
       static LuaAPI ozStrHeadingFromSelf;
       static LuaAPI ozStrPitchFromSelf;
 
+      static LuaAPI ozStrBindAllOverlaps;
+      static LuaAPI ozStrBindStrOverlaps;
+      static LuaAPI ozStrBindObjOverlaps;
+
+      /*
+       * Object
+       */
+
+      static LuaAPI ozEventBindNext;
+      static LuaAPI ozEventGet;
+
       static LuaAPI ozObjBindIndex;
       static LuaAPI ozObjBindSelf;
       static LuaAPI ozObjBindUser;
       static LuaAPI ozObjBindNext;
+
+      static LuaAPI ozObjBindAllOverlaps;
+      static LuaAPI ozObjBindStrOverlaps;
+      static LuaAPI ozObjBindObjOverlaps;
 
       static LuaAPI ozObjIsNull;
       static LuaAPI ozObjIsSelf;
@@ -136,6 +152,7 @@ namespace oz
       static LuaAPI ozObjSetLife;
       static LuaAPI ozObjAddLife;
       static LuaAPI ozObjAddEvent;
+
       static LuaAPI ozObjDamage;
       static LuaAPI ozObjDestroy;
       static LuaAPI ozObjQuietDestroy;
@@ -147,9 +164,12 @@ namespace oz
       static LuaAPI ozObjPitchFromSelf;
       static LuaAPI ozObjPitchFromSelfEye;
 
-      static LuaAPI ozObjBindEvent;
-      static LuaAPI ozEventBindNext;
-      static LuaAPI ozEventGet;
+      static LuaAPI ozObjBindEvents;
+      static LuaAPI ozObjBindItems;
+
+      /*
+       * Dynamic
+       */
 
       static LuaAPI ozDynBindParent;
       static LuaAPI ozDynGetVelocity;

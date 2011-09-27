@@ -51,19 +51,17 @@ namespace oz
     }
   }
 
-  void Object::onDamage( float damage )
+  void Object::onDamage( float )
   {
     hard_assert( !clazz->onDamage.isEmpty() );
 
-    lua.damage = damage;
     lua.objectCall( clazz->onDamage, this );
   }
 
-  void Object::onHit( const Hit*, float hitMomentum )
+  void Object::onHit( const Hit*, float )
   {
     hard_assert( !clazz->onHit.isEmpty() );
 
-    lua.hitMomentum = hitMomentum;
     lua.objectCall( clazz->onHit, this );
   }
 

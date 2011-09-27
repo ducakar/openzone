@@ -14,6 +14,7 @@
 #ifdef OZ_TOOLS
 
 #include "matrix/Timer.hpp"
+#include "matrix/Collider.hpp"
 #include "matrix/Library.hpp"
 
 namespace oz
@@ -31,297 +32,6 @@ namespace oz
       }
     }
     return true;
-  }
-
-  bool QBSP::loadQBSP( const char* path )
-  {
-    String rcFile = path + String( ".rc" );
-    String bspFile = path + String( ".bsp" );
-
-    Config bspConfig;
-    if( !bspConfig.load( rcFile ) ) {
-      return false;
-    }
-
-    float scale = bspConfig.get( "scale", 0.01f );
-    float maxDim = bspConfig.get( "maxDim", Math::INF );
-    life = bspConfig.get( "life", 1000.0f );
-
-    mins = Point3( -maxDim, -maxDim, -maxDim );
-    maxs = Point3( +maxDim, +maxDim, +maxDim );
-
-    if( Math::isNaN( scale ) || Math::isNaN( maxDim ) ) {
-      log.println( "Invalid config" );
-      log.unindent();
-      log.println( "}" );
-      return false;
-    }
-
-    FILE* file = fopen( bspFile, "rb" );
-    if( file == null ) {
-      log.println( "File not found" );
-      return false;
-    }
-
-    QBSPHeader header;
-    fread( &header, sizeof( QBSPHeader ), 1, file );
-
-    if( header.id[0] != 'I' || header.id[1] != 'B' || header.id[2] != 'S' || header.id[3] != 'P' ||
-        header.version != 46 )
-    {
-      log.println( "Wrong format" );
-      return false;
-    }
-
-    QBSPLump lumps[QBSPLump::MAX];
-    fread( lumps, sizeof( QBSPLump ), QBSPLump::MAX, file );
-
-    int nTextures = lumps[QBSPLump::TEXTURES].length / int( sizeof( QBSPTexture ) );
-    int* texFlags = new int[nTextures];
-    int* texTypes = new int[nTextures];
-    fseek( file, lumps[QBSPLump::TEXTURES].offset, SEEK_SET );
-
-    for( int i = 0; i < nTextures; ++i ) {
-      QBSPTexture texture;
-
-      fread( &texture, sizeof( QBSPTexture ), 1, file );
-
-      texFlags[i] = texture.flags;
-      texTypes[i] = texture.type;
-
-      log.println( "Texture '%s' flags %x type %x", texture.name, texture.flags, texture.type );
-    }
-
-    nPlanes = lumps[QBSPLump::PLANES].length / int( sizeof( QBSPPlane ) );
-    planes = new Plane[nPlanes];
-    fseek( file, lumps[QBSPLump::PLANES].offset, SEEK_SET );
-
-    // rescale plane data
-    for( int i = 0; i < nPlanes; ++i ) {
-      QBSPPlane plane;
-
-      fread( &plane, sizeof( QBSPPlane ), 1, file );
-
-      planes[i].nx = plane.normal[0];
-      planes[i].ny = plane.normal[1];
-      planes[i].nz = plane.normal[2];
-      planes[i].d  = plane.distance * scale;
-
-      float offset = Vec3( maxDim, maxDim, maxDim ) * planes[i].abs();
-
-      if( planes[i].d < -offset ) {
-        planes[i].d = -Math::INF;
-      }
-      else if( planes[i].d > offset ) {
-        planes[i].d = Math::INF;
-      }
-    }
-
-    nNodes = lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) );
-    nodes = new QBSP::Node[nNodes];
-    fseek( file, lumps[QBSPLump::NODES].offset, SEEK_SET );
-
-    for( int i = 0; i < nNodes; ++i ) {
-      QBSPNode node;
-
-      fread( &node, sizeof( QBSPNode ), 1, file );
-
-      nodes[i].plane = node.plane;
-      nodes[i].front = node.front;
-      nodes[i].back  = node.back;
-    }
-
-    nLeaves = lumps[QBSPLump::LEAFS].length / int( sizeof( QBSPLeaf ) );
-    leaves = new QBSP::Leaf[nLeaves];
-    fseek( file, lumps[QBSPLump::LEAFS].offset, SEEK_SET );
-
-    for( int i = 0; i < nLeaves; ++i ) {
-      QBSPLeaf leaf;
-
-      fread( &leaf, sizeof( QBSPLeaf ), 1, file );
-
-      leaves[i].firstBrush = leaf.firstBrush;
-      leaves[i].nBrushes   = leaf.nBrushes;
-    }
-
-    nLeafBrushes = lumps[QBSPLump::LEAFBRUSHES].length / int( sizeof( int ) );
-    leafBrushes = new int[nLeafBrushes];
-    fseek( file, lumps[QBSPLump::LEAFBRUSHES].offset, SEEK_SET );
-    fread( leafBrushes, sizeof( int ), size_t( nLeafBrushes ), file );
-
-    nModels = lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) ) - 1;
-    models = null;
-
-    if( nModels != 0 ) {
-      models = new Model[nModels];
-      fseek( file, lumps[QBSPLump::MODELS].offset, SEEK_SET );
-
-      hard_assert( nModels <= 99 );
-      char keyBuffer[] = "model  ";
-
-      // skip model 0 (whole BSP)
-      QBSPModel model;
-      fread( &model, sizeof( QBSPModel ), 1, file );
-
-      for( int i = 0; i < nModels; ++i ) {
-        fread( &model, sizeof( QBSPModel ), 1, file );
-
-        keyBuffer[5] = char( '0' + i / 10 );
-        keyBuffer[6] = char( '0' + i % 10 );
-        String keyName = keyBuffer;
-
-        models[i].mins.x = model.bb[0][0] * scale;
-        models[i].mins.y = model.bb[0][1] * scale;
-        models[i].mins.z = model.bb[0][2] * scale;
-
-        models[i].maxs.x = model.bb[1][0] * scale;
-        models[i].maxs.y = model.bb[1][1] * scale;
-        models[i].maxs.z = model.bb[1][2] * scale;
-
-        models[i].mins -= Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
-        models[i].maxs += Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
-
-        models[i].firstBrush = model.firstBrush;
-        models[i].nBrushes   = model.nBrushes;
-
-        models[i].move.x = bspConfig.get( keyName + ".move.x", 0.0f );
-        models[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
-        models[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
-
-        models[i].ratioInc = Timer::TICK_TIME / bspConfig.get( keyName + ".slideTime", 1.0f );
-        models[i].flags    = 0;
-
-        String type = bspConfig.get( keyName + ".type", "BLOCKING" );
-        if( type.equals( "IGNORING" ) ) {
-          models[i].type = BSP::Model::IGNORING;
-        }
-        else if( type.equals( "CRUSHING" ) ) {
-          models[i].type = BSP::Model::CRUSHING;
-        }
-        else if( type.equals( "AUTO_DOOR" ) ) {
-          models[i].type = BSP::Model::AUTO_DOOR;
-        }
-        else {
-          log.println( "invalid BSP entity model, must be either IGNORING, CRUSHING or AUTO_DOOR" );
-          delete[] texFlags;
-          delete[] texTypes;
-
-          throw Exception( "Invalid BSP model type" );
-        }
-
-        models[i].margin   = bspConfig.get( keyName + ".margin", 1.0f );
-        models[i].timeout  = bspConfig.get( keyName + ".timeout", 6.0f );
-
-        models[i].openSample  = bspConfig.get( keyName + ".openSample", "" );
-        models[i].closeSample = bspConfig.get( keyName + ".closeSample", "" );
-        models[i].frictSample = bspConfig.get( keyName + ".frictSample", "" );
-
-        if( !models[i].openSample.isEmpty() ) {
-          library.soundIndex( models[i].openSample );
-        }
-        if( !models[i].closeSample.isEmpty() ) {
-          library.soundIndex( models[i].closeSample );
-        }
-        if( !models[i].frictSample.isEmpty() ) {
-          library.soundIndex( models[i].frictSample );
-        }
-      }
-    }
-
-    nBrushSides = lumps[QBSPLump::BRUSHSIDES].length / int( sizeof( QBSPBrushSide ) );
-    brushSides = new int[nBrushSides];
-    fseek( file, lumps[QBSPLump::BRUSHSIDES].offset, SEEK_SET );
-
-    for( int i = 0; i < nBrushSides; ++i ) {
-      QBSPBrushSide brushSide;
-
-      fread( &brushSide, sizeof( QBSPBrushSide ), 1, file );
-
-      brushSides[i] = brushSide.plane;
-    }
-
-    nBrushes = lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) );
-    brushes = new QBSP::Brush[nBrushes];
-    fseek( file, lumps[QBSPLump::BRUSHES].offset, SEEK_SET );
-
-    for( int i = 0; i < nBrushes; ++i ) {
-      QBSPBrush brush;
-
-      fread( &brush, sizeof( QBSPBrush ), 1, file );
-
-      brushes[i].firstSide = brush.firstSide;
-      brushes[i].nSides    = brush.nSides;
-      brushes[i].material  = 0;
-
-      const int& flags = texFlags[brush.texture];
-      const int& type  = texTypes[brush.texture];
-
-      if( flags & QBSP_LADDER_FLAG_BIT ) {
-        brushes[i].material |= Material::LADDER_BIT;
-      }
-      if( !( flags & QBSP_NONSOLID_FLAG_BIT ) ) {
-        brushes[i].material |= Material::STRUCT_BIT;
-      }
-      if( flags & QBSP_SLICK_FLAG_BIT ) {
-        brushes[i].material |= Material::SLICK_BIT;
-      }
-      if( type & QBSP_WATER_TYPE_BIT ) {
-        brushes[i].material |= Material::WATER_BIT;
-      }
-
-      // brush out of bounds, mark it for exclusion
-      if( !includes( brushes[i], maxDim ) ) {
-        brushes[i].nSides = 0;
-      }
-    }
-
-    if( nBrushes > MAX_BRUSHES ) {
-      log.println( "Too many brushes %d, maximum is %d", nBrushes, MAX_BRUSHES );
-      delete[] texFlags;
-      delete[] texTypes;
-      return false;
-    }
-
-    delete[] texFlags;
-    delete[] texTypes;
-
-    fclose( file );
-
-    // to disable warnings
-    bspConfig.get( "shader", "" );
-
-    return true;
-  }
-
-  void QBSP::freeQBSP( const char* name )
-  {
-    log.print( "Freeing Quake 3 BSP structure '%s' ...", name );
-
-    delete[] planes;
-    delete[] nodes;
-    delete[] leaves;
-    delete[] leafBrushes;
-    delete[] models;
-    delete[] brushes;
-    delete[] brushSides;
-
-    planes      = null;
-    nodes       = null;
-    leaves      = null;
-    leafBrushes = null;
-    models      = null;
-    brushes     = null;
-    brushSides  = null;
-
-    nPlanes      = 0;
-    nNodes       = 0;
-    nLeaves      = 0;
-    nLeafBrushes = 0;
-    nModels      = 0;
-    nBrushes     = 0;
-    nBrushSides  = 0;
-
-    log.printEnd( " OK" );
   }
 
   void QBSP::optimise()
@@ -773,6 +483,7 @@ namespace oz
     os.writePoint3( mins );
     os.writePoint3( maxs );
     os.writeFloat( life );
+    os.writeFloat( damageTreshold );
 
     os.writeInt( nPlanes );
     os.writeInt( nNodes );
@@ -822,9 +533,6 @@ namespace oz
       os.writeInt( int( models[i].type ) );
       os.writeFloat( models[i].margin );
       os.writeFloat( models[i].timeout );
-      os.writeString( models[i].openSample );
-      os.writeString( models[i].closeSample );
-      os.writeString( models[i].frictSample );
     }
 
     buffer.write( path, os.length() );
@@ -833,12 +541,286 @@ namespace oz
     return true;
   }
 
-  QBSP::QBSP() :
-      nPlanes( 0 ), nNodes( 0 ), nLeaves( 0 ), nLeafBrushes( 0 ), nModels( 0 ),
-      nBrushes( 0 ), nBrushSides( 0 ),
-      planes( null ), nodes( null ), leaves( null ), leafBrushes( null ), models( null ),
-      brushes( null ), brushSides( null )
-  {}
+  QBSP::QBSP( const char* name_, const char* path ) : name( name_ )
+  {
+    String rcFile = path + String( ".rc" );
+    String bspFile = path + String( ".bsp" );
+
+    Config bspConfig;
+    if( !bspConfig.load( rcFile ) ) {
+      throw Exception( "QBSP loading failed" );
+    }
+
+    float scale = bspConfig.get( "scale", 0.01f );
+    float maxDim = bspConfig.get( "maxDim", Math::INF );
+    life = bspConfig.get( "life", 1000.0f );
+    damageTreshold = bspConfig.get( "damageTreshold", 400.0f );
+
+    mins = Point3( -maxDim, -maxDim, -maxDim );
+    maxs = Point3( +maxDim, +maxDim, +maxDim );
+
+    if( Math::isNaN( scale ) || Math::isNaN( maxDim ) ) {
+      log.println( "Invalid config" );
+      log.unindent();
+      log.println( "}" );
+      throw Exception( "invalid BSP config" );
+    }
+
+    FILE* file = fopen( bspFile, "rb" );
+    if( file == null ) {
+      log.println( "File not found" );
+      throw Exception( "QBSP loading failed" );
+    }
+
+    QBSPHeader header;
+    fread( &header, sizeof( QBSPHeader ), 1, file );
+
+    if( header.id[0] != 'I' || header.id[1] != 'B' || header.id[2] != 'S' || header.id[3] != 'P' ||
+        header.version != 46 )
+    {
+      log.println( "Wrong format" );
+      throw Exception( "QBSP loading failed" );
+    }
+
+    QBSPLump lumps[QBSPLump::MAX];
+    fread( lumps, sizeof( QBSPLump ), QBSPLump::MAX, file );
+
+    int nTextures = lumps[QBSPLump::TEXTURES].length / int( sizeof( QBSPTexture ) );
+    int* texFlags = new int[nTextures];
+    int* texTypes = new int[nTextures];
+    fseek( file, lumps[QBSPLump::TEXTURES].offset, SEEK_SET );
+
+    for( int i = 0; i < nTextures; ++i ) {
+      QBSPTexture texture;
+
+      fread( &texture, sizeof( QBSPTexture ), 1, file );
+
+      texFlags[i] = texture.flags;
+      texTypes[i] = texture.type;
+
+      log.println( "Texture '%s' flags %x type %x", texture.name, texture.flags, texture.type );
+    }
+
+    nPlanes = lumps[QBSPLump::PLANES].length / int( sizeof( QBSPPlane ) );
+    planes = new Plane[nPlanes];
+    fseek( file, lumps[QBSPLump::PLANES].offset, SEEK_SET );
+
+    // rescale plane data
+    for( int i = 0; i < nPlanes; ++i ) {
+      QBSPPlane plane;
+
+      fread( &plane, sizeof( QBSPPlane ), 1, file );
+
+      planes[i].nx = plane.normal[0];
+      planes[i].ny = plane.normal[1];
+      planes[i].nz = plane.normal[2];
+      planes[i].d  = plane.distance * scale;
+
+      float offset = Vec3( maxDim, maxDim, maxDim ) * planes[i].abs();
+
+      if( planes[i].d < -offset ) {
+        planes[i].d = -Math::INF;
+      }
+      else if( planes[i].d > offset ) {
+        planes[i].d = Math::INF;
+      }
+    }
+
+    nNodes = lumps[QBSPLump::NODES].length / int( sizeof( QBSPNode ) );
+    nodes = new QBSP::Node[nNodes];
+    fseek( file, lumps[QBSPLump::NODES].offset, SEEK_SET );
+
+    for( int i = 0; i < nNodes; ++i ) {
+      QBSPNode node;
+
+      fread( &node, sizeof( QBSPNode ), 1, file );
+
+      nodes[i].plane = node.plane;
+      nodes[i].front = node.front;
+      nodes[i].back  = node.back;
+    }
+
+    nLeaves = lumps[QBSPLump::LEAFS].length / int( sizeof( QBSPLeaf ) );
+    leaves = new QBSP::Leaf[nLeaves];
+    fseek( file, lumps[QBSPLump::LEAFS].offset, SEEK_SET );
+
+    for( int i = 0; i < nLeaves; ++i ) {
+      QBSPLeaf leaf;
+
+      fread( &leaf, sizeof( QBSPLeaf ), 1, file );
+
+      leaves[i].firstBrush = leaf.firstBrush;
+      leaves[i].nBrushes   = leaf.nBrushes;
+    }
+
+    nLeafBrushes = lumps[QBSPLump::LEAFBRUSHES].length / int( sizeof( int ) );
+    leafBrushes = new int[nLeafBrushes];
+    fseek( file, lumps[QBSPLump::LEAFBRUSHES].offset, SEEK_SET );
+    fread( leafBrushes, sizeof( int ), size_t( nLeafBrushes ), file );
+
+    nModels = lumps[QBSPLump::MODELS].length / int( sizeof( QBSPModel ) ) - 1;
+    models = null;
+
+    if( nModels != 0 ) {
+      models = new Model[nModels];
+      fseek( file, lumps[QBSPLump::MODELS].offset, SEEK_SET );
+
+      hard_assert( nModels <= 99 );
+      char keyBuffer[] = "model  ";
+
+      // skip model 0 (whole BSP)
+      QBSPModel model;
+      fread( &model, sizeof( QBSPModel ), 1, file );
+
+      for( int i = 0; i < nModels; ++i ) {
+        fread( &model, sizeof( QBSPModel ), 1, file );
+
+        keyBuffer[5] = char( '0' + i / 10 );
+        keyBuffer[6] = char( '0' + i % 10 );
+        String keyName = keyBuffer;
+
+        models[i].mins.x = model.bb[0][0] * scale;
+        models[i].mins.y = model.bb[0][1] * scale;
+        models[i].mins.z = model.bb[0][2] * scale;
+
+        models[i].maxs.x = model.bb[1][0] * scale;
+        models[i].maxs.y = model.bb[1][1] * scale;
+        models[i].maxs.z = model.bb[1][2] * scale;
+
+        models[i].mins -= Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
+        models[i].maxs += Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
+
+        models[i].firstBrush = model.firstBrush;
+        models[i].nBrushes   = model.nBrushes;
+
+        models[i].move.x = bspConfig.get( keyName + ".move.x", 0.0f );
+        models[i].move.y = bspConfig.get( keyName + ".move.y", 0.0f );
+        models[i].move.z = bspConfig.get( keyName + ".move.z", 0.0f );
+
+        models[i].ratioInc = Timer::TICK_TIME / bspConfig.get( keyName + ".slideTime", 1.0f );
+        models[i].flags    = 0;
+
+        String type = bspConfig.get( keyName + ".type", "BLOCKING" );
+        if( type.equals( "IGNORING" ) ) {
+          models[i].type = BSP::Model::IGNORING;
+        }
+        else if( type.equals( "CRUSHING" ) ) {
+          models[i].type = BSP::Model::CRUSHING;
+        }
+        else if( type.equals( "AUTO_DOOR" ) ) {
+          models[i].type = BSP::Model::AUTO_DOOR;
+        }
+        else {
+          log.println( "invalid BSP entity model, must be either IGNORING, CRUSHING or AUTO_DOOR" );
+          delete[] texFlags;
+          delete[] texTypes;
+
+          throw Exception( "Invalid BSP model type" );
+        }
+
+        models[i].margin  = bspConfig.get( keyName + ".margin", 1.0f );
+        models[i].timeout = bspConfig.get( keyName + ".timeout", 6.0f );
+
+        // disable warnings
+        bspConfig.get( keyName + ".openSample", "" );
+        bspConfig.get( keyName + ".closeSample", "" );
+        bspConfig.get( keyName + ".frictSample", "" );
+      }
+    }
+
+    nBrushSides = lumps[QBSPLump::BRUSHSIDES].length / int( sizeof( QBSPBrushSide ) );
+    brushSides = new int[nBrushSides];
+    fseek( file, lumps[QBSPLump::BRUSHSIDES].offset, SEEK_SET );
+
+    for( int i = 0; i < nBrushSides; ++i ) {
+      QBSPBrushSide brushSide;
+
+      fread( &brushSide, sizeof( QBSPBrushSide ), 1, file );
+
+      brushSides[i] = brushSide.plane;
+    }
+
+    nBrushes = lumps[QBSPLump::BRUSHES].length / int( sizeof( QBSPBrush ) );
+    brushes = new QBSP::Brush[nBrushes];
+    fseek( file, lumps[QBSPLump::BRUSHES].offset, SEEK_SET );
+
+    for( int i = 0; i < nBrushes; ++i ) {
+      QBSPBrush brush;
+
+      fread( &brush, sizeof( QBSPBrush ), 1, file );
+
+      brushes[i].firstSide = brush.firstSide;
+      brushes[i].nSides    = brush.nSides;
+      brushes[i].material  = 0;
+
+      const int& flags = texFlags[brush.texture];
+      const int& type  = texTypes[brush.texture];
+
+      if( flags & QBSP_LADDER_FLAG_BIT ) {
+        brushes[i].material |= Material::LADDER_BIT;
+      }
+      if( !( flags & QBSP_NONSOLID_FLAG_BIT ) ) {
+        brushes[i].material |= Material::STRUCT_BIT;
+      }
+      if( flags & QBSP_SLICK_FLAG_BIT ) {
+        brushes[i].material |= Material::SLICK_BIT;
+      }
+      if( type & QBSP_WATER_TYPE_BIT ) {
+        brushes[i].material |= Material::WATER_BIT;
+      }
+
+      // brush out of bounds, mark it for exclusion
+      if( !includes( brushes[i], maxDim ) ) {
+        brushes[i].nSides = 0;
+      }
+    }
+
+    if( nBrushes > MAX_BRUSHES ) {
+      log.println( "Too many brushes %d, maximum is %d", nBrushes, MAX_BRUSHES );
+      delete[] texFlags;
+      delete[] texTypes;
+      throw Exception( "QBSP loading failed" );
+    }
+
+    delete[] texFlags;
+    delete[] texTypes;
+
+    fclose( file );
+
+    // to disable warnings
+    bspConfig.get( "shader", "" );
+  }
+
+  QBSP::~QBSP()
+  {
+    log.print( "Freeing QBSP structure '%s' ...", name.cstr() );
+
+    delete[] planes;
+    delete[] nodes;
+    delete[] leaves;
+    delete[] leafBrushes;
+    delete[] models;
+    delete[] brushes;
+    delete[] brushSides;
+
+    planes      = null;
+    nodes       = null;
+    leaves      = null;
+    leafBrushes = null;
+    models      = null;
+    brushes     = null;
+    brushSides  = null;
+
+    nPlanes      = 0;
+    nNodes       = 0;
+    nLeaves      = 0;
+    nLeafBrushes = 0;
+    nModels      = 0;
+    nBrushes     = 0;
+    nBrushSides  = 0;
+
+    log.printEnd( " OK" );
+  }
 
   void QBSP::prebuild( const char* name_ )
   {
@@ -847,20 +829,10 @@ namespace oz
     log.println( "Prebuilding Quake 3 BSP structure '%s' {", name_ );
     log.indent();
 
-    QBSP* bsp = new QBSP();
-
-    if( !bsp->loadQBSP( "data/maps/" + name ) ) {
-      bsp->freeQBSP( name );
-      log.unindent();
-      log.println( "}" );
-      throw Exception( "Matrix QBSP loading failed" );
-    }
-
+    QBSP* bsp = new QBSP( name, "data/maps/" + name );
     bsp->optimise();
     bsp->check( true );
     bsp->save( "bsp/" + name + ".ozBSP" );
-    bsp->freeQBSP( name );
-
     delete bsp;
 
     log.unindent();

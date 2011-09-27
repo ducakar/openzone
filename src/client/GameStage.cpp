@@ -296,7 +296,7 @@ namespace client
   bool GameStage::read( const char* file )
   {
     if( file == null ) {
-      log.print( "Initialising new world" );
+      log.println( "Initialising new world" );
 
       matrix.read( null );
     }
@@ -377,6 +377,14 @@ namespace client
 
     log.printEnd( " OK" );
 
+    context.load();
+
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
+    render.load();
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
+
     isLoaded = true;
 
     log.unindent();
@@ -387,6 +395,9 @@ namespace client
   {
     log.println( "Unloading GameStage {" );
     log.indent();
+
+    render.unload();
+    context.unload();
 
     log.print( "Stopping auxilary thread ..." );
 

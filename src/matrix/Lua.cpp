@@ -19,12 +19,37 @@
 
 #include <lua.hpp>
 
-#define OZ_LUA_ERROR( message ) luaL_error( l, "[%s] %s", __FUNCTION__, message );
+#include "luamacros.h"
 
-#define OZ_LUA_FUNCTION( func ) lua_register( l, #func, func )
-#define OZ_LUA_INT_CONST( name, value ) lua_pushinteger( l, value ); lua_setglobal( l, name )
-#define OZ_LUA_FLOAT_CONST( name, value ) lua_pushnumber( l, value ); lua_setglobal( l, name )
-#define OZ_LUA_STRING_CONST( name, value ) lua_pushstring( l, value ); lua_setglobal( l, name )
+#define STR_NOT_NULL() \
+  if( lua.str == null ) { \
+    ERROR( "bound structure is null" ); \
+  }
+
+#define OBJ_NOT_NULL() \
+  if( lua.obj == null ) { \
+    ERROR( "bound object is null" ); \
+  }
+
+#define OBJ_NOT_SELF() \
+  if( lua.obj == lua.self ) { \
+    ERROR( "bound object if self" ); \
+  }
+
+#define OBJ_DYNAMIC() \
+  if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) { \
+    ERROR( "bound object is not dynamic" ); \
+  }
+
+#define OBJ_BOT() \
+  if( !( lua.obj->flags & Object::BOT_BIT ) ) { \
+    ERROR( "bound object is not a bot" ); \
+  }
+
+#define EVENT_NOT_NULL() \
+  if( !lua.event.isValid() ) { \
+    ERROR( "bound event is null" ); \
+  }
 
 namespace oz
 {
@@ -37,28 +62,28 @@ namespace oz
 
     switch( ch ) {
       case 'N': {
-        lua_pushnil( l );
+        pushnil();
         return true;
       }
       case 'b': {
-        lua_pushboolean( l, istream->readBool() );
+        pushbool( istream->readBool() );
         return true;
       }
       case 'n': {
-        lua_pushnumber( l, istream->readDouble() );
+        pushdouble( istream->readDouble() );
         return true;
       }
       case 's': {
-        lua_pushstring( l, istream->readString() );
+        pushstring( istream->readString() );
         return true;
       }
       case '[': {
-        lua_newtable( l );
+        newtable();
 
         while( readVariable( istream ) ) { // key
           readVariable( istream ); // value
 
-          lua_rawset( l, -3 );
+          rawset( -3 );
         }
         return true;
       }
@@ -73,7 +98,7 @@ namespace oz
 
   void Lua::writeVariable( OutputStream* ostream )
   {
-    int type = lua_type( l, -1 );
+    int type = type( -1 );
 
     switch( type ) {
       case LUA_TNIL: {
@@ -82,33 +107,33 @@ namespace oz
       }
       case LUA_TBOOLEAN: {
         ostream->writeChar( 'b' );
-        ostream->writeBool( lua_toboolean( l, -1 ) != 0 );
+        ostream->writeBool( tobool( -1 ) != 0 );
         break;
       }
       case LUA_TNUMBER: {
         ostream->writeChar( 'n' );
-        ostream->writeDouble( lua_tonumber( l, -1 ) );
+        ostream->writeDouble( todouble( -1 ) );
         break;
       }
       case LUA_TSTRING: {
         ostream->writeChar( 's' );
-        ostream->writeString( lua_tostring( l, -1 ) );
+        ostream->writeString( tostring( -1 ) );
         break;
       }
       case LUA_TTABLE: {
         ostream->writeChar( '[' );
 
-        lua_pushnil( l );
-        while( lua_next( l, -2 ) != 0 ) {
+        pushnil();
+        while( next( -2 ) != 0 ) {
           // key
-          lua_pushvalue( l, -2 );
+          pushvalue( -2 );
           writeVariable( ostream );
-          lua_pop( l, 1 );
+          pop( 1 );
 
           // value
           writeVariable( ostream );
 
-          lua_pop( l, 1 );
+          pop( 1 );
         }
 
         ostream->writeChar( ']' );
@@ -136,14 +161,14 @@ namespace oz
     objIndex = 0;
     strIndex = 0;
 
-    hard_assert( lua_gettop( l ) == 1 );
+    hard_assert( gettop() == 1 );
 
-    lua_getglobal( l, functionName );
+    getglobal( functionName );
     lua_pcall( l, 0, 0, 0 );
 
-    if( lua_gettop( l ) != 1 ) {
-      log.println( "M! %s", lua_tostring( l, -1 ) );
-      lua_settop( l, 1 );
+    if( gettop() != 1 ) {
+      log.println( "M! %s", tostring( -1 ) );
+      settop( 1 );
 
       if( !config.get( "lua.tolerant", false ) ) {
         throw Exception( "Matrix Lua function call finished with an error" );
@@ -165,15 +190,15 @@ namespace oz
     objIndex = 0;
     strIndex = 0;
 
-    hard_assert( lua_gettop( l ) == 1 );
+    hard_assert( gettop() == 1 );
 
-    lua_getglobal( l, functionName );
-    lua_rawgeti( l, 1, self->index );
+    getglobal( functionName );
+    rawgeti( 1, self->index );
     lua_pcall( l, 1, 0, 0 );
 
-    if( lua_gettop( l ) != 1 ) {
-      log.println( "M! %s", lua_tostring( l, -1 ) );
-      lua_settop( l, 1 );
+    if( gettop() != 1 ) {
+      log.println( "M! %s", tostring( -1 ) );
+      settop( 1 );
 
       if( !config.get( "lua.tolerant", false ) ) {
         throw Exception( "Matrix Lua function call finished with an error" );
@@ -184,19 +209,19 @@ namespace oz
   void Lua::registerObject( int index )
   {
     // create object's local data
-    lua_getglobal( l, "ozLocalData" );
-    lua_newtable( l );
-    lua_rawseti( l, -2, index );
-    lua_pop( l, 1 );
+    getglobal( "ozLocalData" );
+    newtable();
+    rawseti( -2, index );
+    pop( 1 );
   }
 
   void Lua::unregisterObject( int index )
   {
     // delete object's local data
-    lua_getglobal( l, "ozLocalData" );
-    lua_pushnil( l );
-    lua_rawseti( l, -2, index );
-    lua_pop( l, 1 );
+    getglobal( "ozLocalData" );
+    pushnil();
+    rawseti( -2, index );
+    pop( 1 );
   }
 
   void Lua::registerFunction( const char* name, LuaAPI func )
@@ -204,30 +229,34 @@ namespace oz
     lua_register( l, name, func );
   }
 
+  void Lua::registerConstant( const char* name, bool value )
+  {
+    pushbool( value );
+    setglobal( name );
+  }
+
   void Lua::registerConstant( const char* name, int value )
   {
-    OZ_LUA_INT_CONST( name, value );
+    pushint( value );
+    setglobal( name );
   }
 
   void Lua::registerConstant( const char* name, float value )
   {
-    OZ_LUA_FLOAT_CONST( name, value );
+    pushfloat( value );
+    setglobal( name );
   }
 
   void Lua::registerConstant( const char* name, const char* value )
   {
-    OZ_LUA_STRING_CONST( name, value );
+    pushstring( value );
+    setglobal( name );
   }
 
   void Lua::read( InputStream* istream )
   {
-    hard_assert( lua_gettop( l ) == 1 );
-    hard_assert( ( lua_pushnil( l ), lua_next( l, 1 ) == 0 ) );
-
-    lua_settop( l, 0 );
-    lua_newtable( l );
-    lua_setglobal( l, "ozLocalData" );
-    lua_getglobal( l, "ozLocalData" );
+    hard_assert( gettop() == 1 );
+    hard_assert( ( pushnil(), next( 1 ) == 0 ) );
 
     char ch = istream->readChar();
     hard_assert( ch ==  '[' );
@@ -240,7 +269,7 @@ namespace oz
       int index = istream->readInt();
       readVariable( istream );
 
-      lua_rawseti( l, 1, index );
+      rawseti( 1, index );
 
       ch = istream->readChar();
     }
@@ -248,28 +277,23 @@ namespace oz
 
   void Lua::write( OutputStream* ostream )
   {
-    hard_assert( lua_gettop( l ) == 1 );
+    hard_assert( gettop() == 1 );
 
     ostream->writeChar( '[' );
 
-    lua_pushnil( l );
-    while( lua_next( l, 1 ) != 0 ) {
-      hard_assert( lua_type( l, -2 ) == LUA_TNUMBER );
-      hard_assert( lua_type( l, -1 ) == LUA_TTABLE );
+    pushnil();
+    while( next( 1 ) != 0 ) {
+      hard_assert( type( -2 ) == LUA_TNUMBER );
+      hard_assert( type( -1 ) == LUA_TTABLE );
 
       ostream->writeChar( 'i' );
-      ostream->writeInt( int( lua_tointeger( l, -2 ) ) );
+      ostream->writeInt( toint( -2 ) );
       writeVariable( ostream );
 
-      lua_pop( l, 1 );
+      pop( 1 );
     }
 
     ostream->writeChar( ']' );
-  }
-
-  void Lua::clear()
-  {
-
   }
 
   void Lua::init()
@@ -287,230 +311,240 @@ namespace oz
 
     luaL_openlibs( l );
 
-    OZ_LUA_FUNCTION( ozPrintln );
-    OZ_LUA_FUNCTION( ozException );
+    OZ_LUA_FUNC( ozPrintln );
+    OZ_LUA_FUNC( ozException );
 
-    OZ_LUA_FUNCTION( ozBindAllOverlaps );
-    OZ_LUA_FUNCTION( ozBindStrOverlaps );
-    OZ_LUA_FUNCTION( ozBindObjOverlaps );
-    OZ_LUA_FUNCTION( ozSelfBindAllOverlaps );
-    OZ_LUA_FUNCTION( ozSelfBindStrOverlaps );
-    OZ_LUA_FUNCTION( ozSelfBindObjOverlaps );
+    OZ_LUA_FUNC( ozBindAllOverlaps );
+    OZ_LUA_FUNC( ozBindStrOverlaps );
+    OZ_LUA_FUNC( ozBindObjOverlaps );
 
-    OZ_LUA_FUNCTION( ozStrBindIndex );
-    OZ_LUA_FUNCTION( ozStrBindNext );
+    OZ_LUA_FUNC( ozStrBindIndex );
+    OZ_LUA_FUNC( ozStrBindNext );
 
-    OZ_LUA_FUNCTION( ozStrIsNull );
-    OZ_LUA_FUNCTION( ozStrGetBounds );
-    OZ_LUA_FUNCTION( ozStrGetIndex );
-    OZ_LUA_FUNCTION( ozStrGetPos );
-    OZ_LUA_FUNCTION( ozStrGetBSP );
-    OZ_LUA_FUNCTION( ozStrDamage );
-    OZ_LUA_FUNCTION( ozStrDestroy );
+    OZ_LUA_FUNC( ozStrIsNull );
+    OZ_LUA_FUNC( ozStrGetBounds );
+    OZ_LUA_FUNC( ozStrGetIndex );
+    OZ_LUA_FUNC( ozStrGetPos );
+    OZ_LUA_FUNC( ozStrGetBSP );
+    OZ_LUA_FUNC( ozStrGetLife );
+    OZ_LUA_FUNC( ozStrSetLife );
 
-    OZ_LUA_FUNCTION( ozStrVectorFromSelf );
-    OZ_LUA_FUNCTION( ozStrDirectionFromSelf );
-    OZ_LUA_FUNCTION( ozStrDistanceFromSelf );
-    OZ_LUA_FUNCTION( ozStrHeadingFromSelf );
-    OZ_LUA_FUNCTION( ozStrPitchFromSelf );
+    OZ_LUA_FUNC( ozStrDamage );
+    OZ_LUA_FUNC( ozStrDestroy );
 
-    OZ_LUA_FUNCTION( ozObjBindIndex );
-    OZ_LUA_FUNCTION( ozObjBindSelf );
-    OZ_LUA_FUNCTION( ozObjBindUser );
-    OZ_LUA_FUNCTION( ozObjBindNext );
+    OZ_LUA_FUNC( ozStrVectorFromSelf );
+    OZ_LUA_FUNC( ozStrDirectionFromSelf );
+    OZ_LUA_FUNC( ozStrDistanceFromSelf );
+    OZ_LUA_FUNC( ozStrHeadingFromSelf );
+    OZ_LUA_FUNC( ozStrPitchFromSelf );
 
-    OZ_LUA_FUNCTION( ozObjIsNull );
-    OZ_LUA_FUNCTION( ozObjIsSelf );
-    OZ_LUA_FUNCTION( ozObjIsUser );
-    OZ_LUA_FUNCTION( ozObjIsPut );
-    OZ_LUA_FUNCTION( ozObjIsDynamic );
-    OZ_LUA_FUNCTION( ozObjIsItem );
-    OZ_LUA_FUNCTION( ozObjIsWeapon );
-    OZ_LUA_FUNCTION( ozObjIsBot );
-    OZ_LUA_FUNCTION( ozObjIsVehicle );
-    OZ_LUA_FUNCTION( ozObjGetPos );
-    OZ_LUA_FUNCTION( ozObjSetPos );
-    OZ_LUA_FUNCTION( ozObjAddPos );
-    OZ_LUA_FUNCTION( ozObjGetDim );
-    OZ_LUA_FUNCTION( ozObjGetIndex );
-    OZ_LUA_FUNCTION( ozObjGetFlags );
-    OZ_LUA_FUNCTION( ozObjGetOldFlags );
-    OZ_LUA_FUNCTION( ozObjGetTypeName );
-    OZ_LUA_FUNCTION( ozObjGetLife );
-    OZ_LUA_FUNCTION( ozObjSetLife );
-    OZ_LUA_FUNCTION( ozObjAddLife );
-    OZ_LUA_FUNCTION( ozObjAddEvent );
-    OZ_LUA_FUNCTION( ozObjDamage );
-    OZ_LUA_FUNCTION( ozObjDestroy );
-    OZ_LUA_FUNCTION( ozObjQuietDestroy );
+    OZ_LUA_FUNC( ozStrBindAllOverlaps );
+    OZ_LUA_FUNC( ozStrBindStrOverlaps );
+    OZ_LUA_FUNC( ozStrBindObjOverlaps );
 
-    OZ_LUA_FUNCTION( ozObjVectorFromSelf );
-    OZ_LUA_FUNCTION( ozObjDirectionFromSelf );
-    OZ_LUA_FUNCTION( ozObjDistanceFromSelf );
-    OZ_LUA_FUNCTION( ozObjHeadingFromSelf );
-    OZ_LUA_FUNCTION( ozObjPitchFromSelf );
-    OZ_LUA_FUNCTION( ozObjPitchFromSelfEye );
+    OZ_LUA_FUNC( ozEventBindNext );
+    OZ_LUA_FUNC( ozEventGet );
 
-    OZ_LUA_FUNCTION( ozObjBindEvent );
-    OZ_LUA_FUNCTION( ozEventBindNext );
-    OZ_LUA_FUNCTION( ozEventGet );
+    OZ_LUA_FUNC( ozObjBindIndex );
+    OZ_LUA_FUNC( ozObjBindSelf );
+    OZ_LUA_FUNC( ozObjBindUser );
+    OZ_LUA_FUNC( ozObjBindNext );
 
-    OZ_LUA_FUNCTION( ozDynBindParent );
-    OZ_LUA_FUNCTION( ozDynGetVelocity );
-    OZ_LUA_FUNCTION( ozDynSetVelocity );
-    OZ_LUA_FUNCTION( ozDynAddVelocity );
-    OZ_LUA_FUNCTION( ozDynGetMomentum );
-    OZ_LUA_FUNCTION( ozDynSetMomentum );
-    OZ_LUA_FUNCTION( ozDynAddMomentum );
-    OZ_LUA_FUNCTION( ozDynGetMass );
-    OZ_LUA_FUNCTION( ozDynSetMass );
-    OZ_LUA_FUNCTION( ozDynAddMass );
-    OZ_LUA_FUNCTION( ozDynResetMass );
-    OZ_LUA_FUNCTION( ozDynGetLift );
-    OZ_LUA_FUNCTION( ozDynSetLift );
-    OZ_LUA_FUNCTION( ozDynAddLift );
-    OZ_LUA_FUNCTION( ozDynResetLift );
+    OZ_LUA_FUNC( ozObjIsNull );
+    OZ_LUA_FUNC( ozObjIsSelf );
+    OZ_LUA_FUNC( ozObjIsUser );
+    OZ_LUA_FUNC( ozObjIsPut );
+    OZ_LUA_FUNC( ozObjIsDynamic );
+    OZ_LUA_FUNC( ozObjIsItem );
+    OZ_LUA_FUNC( ozObjIsWeapon );
+    OZ_LUA_FUNC( ozObjIsBot );
+    OZ_LUA_FUNC( ozObjIsVehicle );
+    OZ_LUA_FUNC( ozObjGetPos );
+    OZ_LUA_FUNC( ozObjSetPos );
+    OZ_LUA_FUNC( ozObjAddPos );
+    OZ_LUA_FUNC( ozObjGetDim );
+    OZ_LUA_FUNC( ozObjGetIndex );
+    OZ_LUA_FUNC( ozObjGetFlags );
+    OZ_LUA_FUNC( ozObjGetOldFlags );
+    OZ_LUA_FUNC( ozObjGetTypeName );
+    OZ_LUA_FUNC( ozObjGetLife );
+    OZ_LUA_FUNC( ozObjSetLife );
+    OZ_LUA_FUNC( ozObjAddLife );
+    OZ_LUA_FUNC( ozObjAddEvent );
+    OZ_LUA_FUNC( ozObjDamage );
+    OZ_LUA_FUNC( ozObjDestroy );
+    OZ_LUA_FUNC( ozObjQuietDestroy );
 
-    OZ_LUA_FUNCTION( ozBotGetName );
-    OZ_LUA_FUNCTION( ozBotSetName );
-    OZ_LUA_FUNCTION( ozBotGetEyePos );
-    OZ_LUA_FUNCTION( ozBotGetH );
-    OZ_LUA_FUNCTION( ozBotSetH );
-    OZ_LUA_FUNCTION( ozBotAddH );
-    OZ_LUA_FUNCTION( ozBotGetV );
-    OZ_LUA_FUNCTION( ozBotSetV );
-    OZ_LUA_FUNCTION( ozBotAddV );
-    OZ_LUA_FUNCTION( ozBotGetDir );
-    OZ_LUA_FUNCTION( ozBotActionForward );
-    OZ_LUA_FUNCTION( ozBotActionBackward );
-    OZ_LUA_FUNCTION( ozBotActionRight );
-    OZ_LUA_FUNCTION( ozBotActionLeft );
-    OZ_LUA_FUNCTION( ozBotActionJump );
-    OZ_LUA_FUNCTION( ozBotActionCrouch );
-    OZ_LUA_FUNCTION( ozBotActionUse );
-    OZ_LUA_FUNCTION( ozBotActionTake );
-    OZ_LUA_FUNCTION( ozBotActionGrab );
-    OZ_LUA_FUNCTION( ozBotActionThrow );
-    OZ_LUA_FUNCTION( ozBotActionAttack );
-    OZ_LUA_FUNCTION( ozBotActionExit );
-    OZ_LUA_FUNCTION( ozBotActionEject );
-    OZ_LUA_FUNCTION( ozBotActionSuicide );
-    OZ_LUA_FUNCTION( ozBotStateIsRunning );
-    OZ_LUA_FUNCTION( ozBotStateSetRunning );
-    OZ_LUA_FUNCTION( ozBotStateToggleRunning );
-    OZ_LUA_FUNCTION( ozBotGetStamina );
-    OZ_LUA_FUNCTION( ozBotSetStamina );
-    OZ_LUA_FUNCTION( ozBotAddStamina );
-    OZ_LUA_FUNCTION( ozBotRearm );
+    OZ_LUA_FUNC( ozObjVectorFromSelf );
+    OZ_LUA_FUNC( ozObjDirectionFromSelf );
+    OZ_LUA_FUNC( ozObjDistanceFromSelf );
+    OZ_LUA_FUNC( ozObjHeadingFromSelf );
+    OZ_LUA_FUNC( ozObjPitchFromSelf );
+    OZ_LUA_FUNC( ozObjPitchFromSelfEye );
 
-    OZ_LUA_FUNCTION( ozVehicleService );
+    OZ_LUA_FUNC( ozObjBindEvents );
+    OZ_LUA_FUNC( ozObjBindItems );
 
-    OZ_LUA_FUNCTION( ozPartBindIndex );
-    OZ_LUA_FUNCTION( ozPartIsNull );
-    OZ_LUA_FUNCTION( ozPartGetPos );
-    OZ_LUA_FUNCTION( ozPartSetPos );
-    OZ_LUA_FUNCTION( ozPartAddPos );
-    OZ_LUA_FUNCTION( ozPartGetIndex );
-    OZ_LUA_FUNCTION( ozPartGetVelocity );
-    OZ_LUA_FUNCTION( ozPartSetVelocity );
-    OZ_LUA_FUNCTION( ozPartAddVelocity );
-    OZ_LUA_FUNCTION( ozPartGetLife );
-    OZ_LUA_FUNCTION( ozPartSetLife );
-    OZ_LUA_FUNCTION( ozPartAddLife );
+    OZ_LUA_FUNC( ozObjBindAllOverlaps );
+    OZ_LUA_FUNC( ozObjBindStrOverlaps );
+    OZ_LUA_FUNC( ozObjBindObjOverlaps );
 
-    OZ_LUA_FUNCTION( ozOrbisAddStr );
-    OZ_LUA_FUNCTION( ozOrbisForceAddStr );
-    OZ_LUA_FUNCTION( ozOrbisAddObj );
-    OZ_LUA_FUNCTION( ozOrbisForceAddObj );
-    OZ_LUA_FUNCTION( ozOrbisAddPart );
-    OZ_LUA_FUNCTION( ozOrbisRemoveStr );
-    OZ_LUA_FUNCTION( ozOrbisRemoveObj );
-    OZ_LUA_FUNCTION( ozOrbisRemovePart );
-    OZ_LUA_FUNCTION( ozOrbisGenParts );
+    OZ_LUA_FUNC( ozDynBindParent );
+    OZ_LUA_FUNC( ozDynGetVelocity );
+    OZ_LUA_FUNC( ozDynSetVelocity );
+    OZ_LUA_FUNC( ozDynAddVelocity );
+    OZ_LUA_FUNC( ozDynGetMomentum );
+    OZ_LUA_FUNC( ozDynSetMomentum );
+    OZ_LUA_FUNC( ozDynAddMomentum );
+    OZ_LUA_FUNC( ozDynGetMass );
+    OZ_LUA_FUNC( ozDynSetMass );
+    OZ_LUA_FUNC( ozDynAddMass );
+    OZ_LUA_FUNC( ozDynResetMass );
+    OZ_LUA_FUNC( ozDynGetLift );
+    OZ_LUA_FUNC( ozDynSetLift );
+    OZ_LUA_FUNC( ozDynAddLift );
+    OZ_LUA_FUNC( ozDynResetLift );
 
-    OZ_LUA_FUNCTION( ozTerraLoad );
-    OZ_LUA_FUNCTION( ozTerraHeight );
+    OZ_LUA_FUNC( ozBotGetName );
+    OZ_LUA_FUNC( ozBotSetName );
+    OZ_LUA_FUNC( ozBotGetEyePos );
+    OZ_LUA_FUNC( ozBotGetH );
+    OZ_LUA_FUNC( ozBotSetH );
+    OZ_LUA_FUNC( ozBotAddH );
+    OZ_LUA_FUNC( ozBotGetV );
+    OZ_LUA_FUNC( ozBotSetV );
+    OZ_LUA_FUNC( ozBotAddV );
+    OZ_LUA_FUNC( ozBotGetDir );
+    OZ_LUA_FUNC( ozBotActionForward );
+    OZ_LUA_FUNC( ozBotActionBackward );
+    OZ_LUA_FUNC( ozBotActionRight );
+    OZ_LUA_FUNC( ozBotActionLeft );
+    OZ_LUA_FUNC( ozBotActionJump );
+    OZ_LUA_FUNC( ozBotActionCrouch );
+    OZ_LUA_FUNC( ozBotActionUse );
+    OZ_LUA_FUNC( ozBotActionTake );
+    OZ_LUA_FUNC( ozBotActionGrab );
+    OZ_LUA_FUNC( ozBotActionThrow );
+    OZ_LUA_FUNC( ozBotActionAttack );
+    OZ_LUA_FUNC( ozBotActionExit );
+    OZ_LUA_FUNC( ozBotActionEject );
+    OZ_LUA_FUNC( ozBotActionSuicide );
+    OZ_LUA_FUNC( ozBotStateIsRunning );
+    OZ_LUA_FUNC( ozBotStateSetRunning );
+    OZ_LUA_FUNC( ozBotStateToggleRunning );
+    OZ_LUA_FUNC( ozBotGetStamina );
+    OZ_LUA_FUNC( ozBotSetStamina );
+    OZ_LUA_FUNC( ozBotAddStamina );
+    OZ_LUA_FUNC( ozBotRearm );
 
-    OZ_LUA_FUNCTION( ozCaelumLoad );
-    OZ_LUA_FUNCTION( ozCaelumGetHeading );
-    OZ_LUA_FUNCTION( ozCaelumSetHeading );
-    OZ_LUA_FUNCTION( ozCaelumGetPeriod );
-    OZ_LUA_FUNCTION( ozCaelumSetPeriod );
-    OZ_LUA_FUNCTION( ozCaelumGetTime );
-    OZ_LUA_FUNCTION( ozCaelumSetTime );
-    OZ_LUA_FUNCTION( ozCaelumAddTime );
+    OZ_LUA_FUNC( ozVehicleService );
 
-    OZ_LUA_INT_CONST( "OZ_STRUCT_R0",                   Struct::R0 );
-    OZ_LUA_INT_CONST( "OZ_STRUCT_R90",                  Struct::R90 );
-    OZ_LUA_INT_CONST( "OZ_STRUCT_R180",                 Struct::R180 );
-    OZ_LUA_INT_CONST( "OZ_STRUCT_R270",                 Struct::R270 );
+    OZ_LUA_FUNC( ozPartBindIndex );
+    OZ_LUA_FUNC( ozPartIsNull );
+    OZ_LUA_FUNC( ozPartGetPos );
+    OZ_LUA_FUNC( ozPartSetPos );
+    OZ_LUA_FUNC( ozPartAddPos );
+    OZ_LUA_FUNC( ozPartGetIndex );
+    OZ_LUA_FUNC( ozPartGetVelocity );
+    OZ_LUA_FUNC( ozPartSetVelocity );
+    OZ_LUA_FUNC( ozPartAddVelocity );
+    OZ_LUA_FUNC( ozPartGetLife );
+    OZ_LUA_FUNC( ozPartSetLife );
+    OZ_LUA_FUNC( ozPartAddLife );
 
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_BROWSABLE_BIT",        Object::BROWSABLE_BIT );
+    OZ_LUA_FUNC( ozOrbisAddStr );
+    OZ_LUA_FUNC( ozOrbisForceAddStr );
+    OZ_LUA_FUNC( ozOrbisAddObj );
+    OZ_LUA_FUNC( ozOrbisForceAddObj );
+    OZ_LUA_FUNC( ozOrbisAddPart );
+    OZ_LUA_FUNC( ozOrbisRemoveStr );
+    OZ_LUA_FUNC( ozOrbisRemoveObj );
+    OZ_LUA_FUNC( ozOrbisRemovePart );
+    OZ_LUA_FUNC( ozOrbisGenParts );
 
-    OZ_LUA_INT_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DAMAGE_FUNC_BIT",      Object::DAMAGE_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_HIT_FUNC_BIT",         Object::HIT_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
+    OZ_LUA_FUNC( ozTerraLoad );
+    OZ_LUA_FUNC( ozTerraHeight );
 
-    OZ_LUA_INT_CONST( "OZ_OBJECT_MODEL_BIT",            Object::MODEL_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
+    OZ_LUA_FUNC( ozCaelumLoad );
+    OZ_LUA_FUNC( ozCaelumGetHeading );
+    OZ_LUA_FUNC( ozCaelumSetHeading );
+    OZ_LUA_FUNC( ozCaelumGetPeriod );
+    OZ_LUA_FUNC( ozCaelumSetPeriod );
+    OZ_LUA_FUNC( ozCaelumGetTime );
+    OZ_LUA_FUNC( ozCaelumSetTime );
+    OZ_LUA_FUNC( ozCaelumAddTime );
 
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
+    OZ_LUA_CONST( "OZ_STRUCT_R0",                   Struct::R0 );
+    OZ_LUA_CONST( "OZ_STRUCT_R90",                  Struct::R90 );
+    OZ_LUA_CONST( "OZ_STRUCT_R180",                 Struct::R180 );
+    OZ_LUA_CONST( "OZ_STRUCT_R270",                 Struct::R270 );
 
-    OZ_LUA_INT_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_HIT_BIT",              Object::HIT_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_IN_WATER_BIT",         Object::IN_WATER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_SOLID_BIT",            Object::SOLID_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_FRICTLESS_BIT",        Object::FRICTLESS_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_DYNAMIC_BIT",          Object::DYNAMIC_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_WEAPON_BIT",           Object::WEAPON_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_BOT_BIT",              Object::BOT_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_VEHICLE_BIT",          Object::VEHICLE_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_ITEM_BIT",             Object::ITEM_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_BROWSABLE_BIT",        Object::BROWSABLE_BIT );
 
-    OZ_LUA_INT_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
-    OZ_LUA_INT_CONST( "OZ_OBJECT_RANDOM_HEADING_BIT",   Object::RANDOM_HEADING_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_LUA_BIT",              Object::LUA_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_DESTROY_FUNC_BIT",     Object::DESTROY_FUNC_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_DAMAGE_FUNC_BIT",      Object::DAMAGE_FUNC_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_HIT_FUNC_BIT",         Object::HIT_FUNC_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
 
-    OZ_LUA_INT_CONST( "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
-    OZ_LUA_INT_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
-    OZ_LUA_INT_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
-    OZ_LUA_INT_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
-    OZ_LUA_INT_CONST( "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
-    OZ_LUA_INT_CONST( "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
-    OZ_LUA_INT_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
-    OZ_LUA_INT_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
-    OZ_LUA_INT_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
-    OZ_LUA_INT_CONST( "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SERVICE",               Vehicle::EVENT_SERVICE );
-    OZ_LUA_INT_CONST( "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT0_EMPTY",           Vehicle::EVENT_SHOT0_EMPTY );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT1",                 Vehicle::EVENT_SHOT1 );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT1_EMPTY",           Vehicle::EVENT_SHOT1_EMPTY );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );
-    OZ_LUA_INT_CONST( "OZ_EVENT_SHOT2_EMPTY",           Vehicle::EVENT_SHOT2_EMPTY );
+    OZ_LUA_CONST( "OZ_OBJECT_MODEL_BIT",            Object::MODEL_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
 
-    OZ_LUA_FLOAT_CONST( "OZ_ORBIS_DIM",                 Orbis::DIM );
+    OZ_LUA_CONST( "OZ_OBJECT_DESTROYED_BIT",        Object::DESTROYED_BIT );
 
-    lua_newtable( l );
-    lua_setglobal( l, "ozLocalData" );
-    lua_getglobal( l, "ozLocalData" );
+    OZ_LUA_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_HIT_BIT",              Object::HIT_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_IN_WATER_BIT",         Object::IN_WATER_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_ON_LADDER_BIT",        Object::ON_LADDER_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_SOLID_BIT",            Object::SOLID_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_FRICTLESS_BIT",        Object::FRICTLESS_BIT );
+
+    OZ_LUA_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_RANDOM_HEADING_BIT",   Object::RANDOM_HEADING_BIT );
+
+    OZ_LUA_CONST( "OZ_EVENT_CREATE",                Object::EVENT_CREATE );
+    OZ_LUA_CONST( "OZ_EVENT_DESTROY",               Object::EVENT_DESTROY );
+    OZ_LUA_CONST( "OZ_EVENT_DAMAGE",                Object::EVENT_DAMAGE );
+    OZ_LUA_CONST( "OZ_EVENT_HIT",                   Object::EVENT_HIT );
+    OZ_LUA_CONST( "OZ_EVENT_SPLASH",                Object::EVENT_SPLASH );
+    OZ_LUA_CONST( "OZ_EVENT_FRICTING",              Object::EVENT_FRICTING );
+    OZ_LUA_CONST( "OZ_EVENT_USE",                   Object::EVENT_USE );
+    OZ_LUA_CONST( "OZ_EVENT_SHOT",                  Weapon::EVENT_SHOT );
+    OZ_LUA_CONST( "OZ_EVENT_SHOT_EMPTY",            Weapon::EVENT_SHOT_EMPTY );
+    OZ_LUA_CONST( "OZ_EVENT_HIT_HARD",              Bot::EVENT_HIT_HARD );
+    OZ_LUA_CONST( "OZ_EVENT_LAND",                  Bot::EVENT_LAND );
+    OZ_LUA_CONST( "OZ_EVENT_JUMP",                  Bot::EVENT_JUMP );
+    OZ_LUA_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
+    OZ_LUA_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
+    OZ_LUA_CONST( "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
+    OZ_LUA_CONST( "OZ_EVENT_SERVICE",               Vehicle::EVENT_SERVICE );
+    OZ_LUA_CONST( "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
+    OZ_LUA_CONST( "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
+    OZ_LUA_CONST( "OZ_EVENT_SHOT0_EMPTY",           Vehicle::EVENT_SHOT0_EMPTY );
+    OZ_LUA_CONST( "OZ_EVENT_SHOT1",                 Vehicle::EVENT_SHOT1 );
+    OZ_LUA_CONST( "OZ_EVENT_SHOT1_EMPTY",           Vehicle::EVENT_SHOT1_EMPTY );
+    OZ_LUA_CONST( "OZ_EVENT_SHOT2",                 Vehicle::EVENT_SHOT2 );
+    OZ_LUA_CONST( "OZ_EVENT_SHOT2_EMPTY",           Vehicle::EVENT_SHOT2_EMPTY );
+
+    OZ_LUA_CONST( "OZ_ORBIS_DIM",                   Orbis::DIM );
+
+    newtable();
+    setglobal( "ozLocalData" );
+    getglobal( "ozLocalData" );
 
     Directory luaDir;
     luaDir.open( "lua/matrix" );
@@ -528,7 +562,7 @@ namespace oz
       }
     }
 
-    hard_assert( lua_gettop( l ) == 1 );
+    hard_assert( gettop() == 1 );
 
     log.unindent();
     log.println( "}" );
@@ -556,20 +590,21 @@ namespace oz
 
   int Lua::ozPrintln( lua_State* l )
   {
-    log.println( "M> %s", lua_tostring( l, 1 ) );
+    log.println( "M> %s", tostring( 1 ) );
     return 0;
   }
 
   int Lua::ozException( lua_State* l )
   {
-    const char* message = lua_tostring( l, 1 );
+    const char* message = tostring( 1 );
     throw Exception( message );
   }
 
   int Lua::ozBindAllOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
-                      Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
+    AABB aabb = AABB( Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ),
+                      Vec3( tofloat( 4 ), tofloat( 5 ), tofloat( 6 ) ) );
+
     lua.objects.clear();
     lua.structs.clear();
     collider.getOverlaps( aabb, &lua.objects, &lua.structs );
@@ -580,8 +615,9 @@ namespace oz
 
   int Lua::ozBindStrOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
-                      Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
+    AABB aabb = AABB( Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ),
+                      Vec3( tofloat( 4 ), tofloat( 5 ), tofloat( 6 ) ) );
+
     lua.structs.clear();
     collider.getOverlaps( aabb, null, &lua.structs );
     lua.strIndex = 0;
@@ -590,40 +626,9 @@ namespace oz
 
   int Lua::ozBindObjOverlaps( lua_State* l )
   {
-    AABB aabb = AABB( Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ),
-                      Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) ) );
-    lua.objects.clear();
-    collider.getOverlaps( aabb, &lua.objects, null );
-    lua.objIndex = 0;
-    return 0;
-  }
+    AABB aabb = AABB( Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ),
+                      Vec3( tofloat( 4 ), tofloat( 5 ), tofloat( 6 ) ) );
 
-  int Lua::ozSelfBindAllOverlaps( lua_State* l )
-  {
-    AABB aabb = AABB( lua.self->p,
-                      Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
-    lua.objects.clear();
-    lua.structs.clear();
-    collider.getOverlaps( aabb, &lua.objects, &lua.structs );
-    lua.objIndex = 0;
-    lua.strIndex = 0;
-    return 0;
-  }
-
-  int Lua::ozSelfBindStrOverlaps( lua_State* l )
-  {
-    AABB aabb = AABB( lua.self->p,
-                      Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
-    lua.structs.clear();
-    collider.getOverlaps( aabb, null, &lua.structs );
-    lua.strIndex = 0;
-    return 0;
-  }
-
-  int Lua::ozSelfBindObjOverlaps( lua_State* l )
-  {
-    AABB aabb = AABB( lua.self->p,
-                      Vec3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) ) );
     lua.objects.clear();
     collider.getOverlaps( aabb, &lua.objects, null );
     lua.objIndex = 0;
@@ -632,9 +637,9 @@ namespace oz
 
   int Lua::ozStrBindIndex( lua_State* l )
   {
-    int index = int( lua_tointeger( l, 1 ) );
+    int index = toint( 1 );
     if( index < 0 || orbis.structs.length() <= index ) {
-      OZ_LUA_ERROR( "invalid structure index" );
+      ERROR( "invalid structure index" );
     }
     lua.str = orbis.structs[index];
     return 0;
@@ -645,82 +650,94 @@ namespace oz
     if( lua.strIndex < lua.structs.length() ) {
       lua.str = lua.structs[lua.strIndex];
       ++lua.strIndex;
-      lua_pushboolean( l, true );
+      pushbool( true );
     }
     else {
-      lua_pushboolean( l, false );
+      pushbool( false );
     }
     return 1;
   }
 
   int Lua::ozStrIsNull( lua_State* l )
   {
-    lua_pushboolean( l, lua.str == null );
+    pushbool( lua.str == null );
     return 1;
   }
 
   int Lua::ozStrGetBounds( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
 
-    lua_pushnumber( l, lua.str->mins.x );
-    lua_pushnumber( l, lua.str->mins.y );
-    lua_pushnumber( l, lua.str->mins.z );
-    lua_pushnumber( l, lua.str->maxs.x );
-    lua_pushnumber( l, lua.str->maxs.y );
-    lua_pushnumber( l, lua.str->maxs.z );
+    pushfloat( lua.str->mins.x );
+    pushfloat( lua.str->mins.y );
+    pushfloat( lua.str->mins.z );
+    pushfloat( lua.str->maxs.x );
+    pushfloat( lua.str->maxs.y );
+    pushfloat( lua.str->maxs.z );
     return 6;
   }
 
   int Lua::ozStrGetPos( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
 
-    lua_pushnumber( l, lua.str->p.x );
-    lua_pushnumber( l, lua.str->p.y );
-    lua_pushnumber( l, lua.str->p.z );
+    pushfloat( lua.str->p.x );
+    pushfloat( lua.str->p.y );
+    pushfloat( lua.str->p.z );
     return 3;
   }
 
   int Lua::ozStrGetIndex( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
 
-    lua_pushinteger( l, lua.str->index );
+    pushint( lua.str->index );
     return 1;
   }
 
   int Lua::ozStrGetBSP( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
 
-    lua_pushinteger( l, lua.str->bsp );
+    pushint( lua.str->id );
     return 1;
+  }
+
+  int Lua::ozStrGetLife( lua_State* l )
+  {
+    STR_NOT_NULL();
+
+    pushfloat( lua.str->life );
+    return 1;
+  }
+
+  int Lua::ozStrSetLife( lua_State* l )
+  {
+    STR_NOT_NULL();
+
+    lua.str->life = tofloat( 1 );
+    return 0;
+  }
+
+  int Lua::ozStrAddLife( lua_State* l )
+  {
+    STR_NOT_NULL();
+
+    lua.str->life += tofloat( 1 );
+    return 0;
   }
 
   int Lua::ozStrDamage( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
 
-    lua.str->damage( float( lua_tonumber( l, 1 ) ) );
+    lua.str->damage( tofloat( 1 ) );
     return 0;
   }
 
   int Lua::ozStrDestroy( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
 
     lua.str->destroy();
     return 0;
@@ -728,69 +745,129 @@ namespace oz
 
   int Lua::ozStrVectorFromSelf( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
+
     Vec3 vec = lua.str->p - lua.self->p;
-    lua_pushnumber( l, vec.x );
-    lua_pushnumber( l, vec.y );
-    lua_pushnumber( l, vec.z );
+    pushfloat( vec.x );
+    pushfloat( vec.y );
+    pushfloat( vec.z );
     return 3;
   }
 
   int Lua::ozStrDirectionFromSelf( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
+
     Vec3 dir = ~( lua.str->p - lua.self->p );
-    lua_pushnumber( l, dir.x );
-    lua_pushnumber( l, dir.y );
-    lua_pushnumber( l, dir.z );
+    pushfloat( dir.x );
+    pushfloat( dir.y );
+    pushfloat( dir.z );
     return 3;
   }
 
   int Lua::ozStrDistanceFromSelf( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
-    lua_pushnumber( l, !( lua.str->p - lua.self->p ) );
+    STR_NOT_NULL();
+
+    pushfloat( !( lua.str->p - lua.self->p ) );
     return 1;
   }
 
   int Lua::ozStrHeadingFromSelf( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
+
     float dx = lua.str->p.x - lua.self->p.x;
     float dy = lua.str->p.y - lua.self->p.y;
     float angle = Math::deg( Math::atan2( -dx, dy ) );
 
-    lua_pushnumber( l, angle );
+    pushfloat( angle );
     return 1;
   }
 
   int Lua::ozStrPitchFromSelf( lua_State* l )
   {
-    if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
-    }
+    STR_NOT_NULL();
+
     float dx = lua.str->p.x - lua.self->p.x;
     float dy = lua.str->p.y - lua.self->p.y;
     float dz = lua.str->p.z - lua.self->p.z;
     float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
-    lua_pushnumber( l, angle );
+    pushfloat( angle );
     return 1;
+  }
+
+  int Lua::ozStrBindAllOverlaps( lua_State* l )
+  {
+    STR_NOT_NULL();
+
+    AABB aabb = AABB( lua.str->p,
+                      Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
+
+    lua.objects.clear();
+    lua.structs.clear();
+    collider.getOverlaps( aabb, &lua.objects, &lua.structs );
+    lua.objIndex = 0;
+    lua.strIndex = 0;
+    return 0;
+  }
+
+  int Lua::ozStrBindStrOverlaps( lua_State* l )
+  {
+    STR_NOT_NULL();
+
+    AABB aabb = AABB( lua.str->p,
+                      Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
+
+    lua.structs.clear();
+    collider.getOverlaps( aabb, null, &lua.structs );
+    lua.strIndex = 0;
+    return 0;
+  }
+
+  int Lua::ozStrBindObjOverlaps( lua_State* l )
+  {
+    STR_NOT_NULL();
+
+    AABB aabb = AABB( lua.str->p,
+                      Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
+
+    lua.objects.clear();
+    collider.getOverlaps( aabb, &lua.objects, null );
+    lua.objIndex = 0;
+    return 0;
+  }
+
+  int Lua::ozEventBindNext( lua_State* l )
+  {
+    if( lua.event.isValid() ) {
+      ++lua.event;
+      pushbool( true );
+    }
+    else {
+      pushbool( false );
+    }
+    return 1;
+  }
+
+  int Lua::ozEventGet( lua_State* l )
+  {
+    EVENT_NOT_NULL();
+
+    if( !lua.event.isValid() ) {
+      ERROR( "event is null" );
+    }
+    pushint( lua.event->id );
+    pushfloat( lua.event->intensity );
+    return 2;
   }
 
   int Lua::ozObjBindIndex( lua_State* l )
   {
-    int index = int( lua_tointeger( l, 1 ) );
+    int index = toint( 1 );
     if( index < 0 || orbis.objects.length() <= index ) {
-      OZ_LUA_ERROR( "invalid object index" );
+      ERROR( "invalid object index" );
     }
     lua.obj = orbis.objects[index];
     return 0;
@@ -813,78 +890,76 @@ namespace oz
     if( lua.objIndex < lua.objects.length() ) {
       lua.obj = lua.objects[lua.objIndex];
       ++lua.objIndex;
-      lua_pushboolean( l, true );
+      pushbool( true );
     }
     else {
-      lua_pushboolean( l, false );
+      pushbool( false );
     }
     return 1;
   }
 
   int Lua::ozObjIsNull( lua_State* l )
   {
-    lua_pushboolean( l, lua.obj == null );
+    pushbool( lua.obj == null );
     return 1;
   }
 
   int Lua::ozObjIsSelf( lua_State* l )
   {
-    lua_pushboolean( l, lua.obj == lua.self );
+    pushbool( lua.obj == lua.self );
     return 1;
   }
 
   int Lua::ozObjIsUser( lua_State* l )
   {
-    lua_pushboolean( l, lua.obj == lua.user );
+    pushbool( lua.obj == lua.user );
     return 1;
   }
 
   int Lua::ozObjIsPut( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
-    lua_pushboolean( l, lua.obj->cell != null );
+    pushbool( lua.obj->cell != null );
     return 1;
   }
 
   int Lua::ozObjIsDynamic( lua_State* l )
   {
-    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::DYNAMIC_BIT ) );
+    pushbool( lua.obj != null && ( lua.obj->flags & Object::DYNAMIC_BIT ) );
     return 1;
   }
 
   int Lua::ozObjIsItem( lua_State* l )
   {
-    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::ITEM_BIT ) );
+    pushbool( lua.obj != null && ( lua.obj->flags & Object::ITEM_BIT ) );
     return 1;
   }
 
   int Lua::ozObjIsWeapon( lua_State* l )
   {
-    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::WEAPON_BIT ) );
+    pushbool( lua.obj != null && ( lua.obj->flags & Object::WEAPON_BIT ) );
     return 1;
   }
 
   int Lua::ozObjIsBot( lua_State* l )
   {
     const Bot* bot = static_cast<const Bot*>( lua.obj );
-    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::BOT_BIT ) &&
+    pushbool( lua.obj != null && ( lua.obj->flags & Object::BOT_BIT ) &&
                      !( bot->state & Bot::DEATH_BIT ) );
     return 1;
   }
 
   int Lua::ozObjIsVehicle( lua_State* l )
   {
-    lua_pushboolean( l, lua.obj != null && ( lua.obj->flags & Object::VEHICLE_BIT ) );
+    pushbool( lua.obj != null && ( lua.obj->flags & Object::VEHICLE_BIT ) );
     return 1;
   }
 
   int Lua::ozObjGetPos( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
     if( lua.obj->cell == null ) {
       hard_assert( lua.obj->flags & Object::DYNAMIC_BIT );
@@ -895,123 +970,103 @@ namespace oz
         Object* parent = orbis.objects[dyn->parent];
 
         if( parent != null ) {
-          lua_pushnumber( l, parent->p.x );
-          lua_pushnumber( l, parent->p.y );
-          lua_pushnumber( l, parent->p.z );
+          pushfloat( parent->p.x );
+          pushfloat( parent->p.y );
+          pushfloat( parent->p.z );
           return 3;
         }
       }
     }
 
-    lua_pushnumber( l, lua.obj->p.x );
-    lua_pushnumber( l, lua.obj->p.y );
-    lua_pushnumber( l, lua.obj->p.z );
+    pushfloat( lua.obj->p.x );
+    pushfloat( lua.obj->p.y );
+    pushfloat( lua.obj->p.z );
     return 3;
   }
 
   int Lua::ozObjSetPos( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua.obj->p.x = float( lua_tonumber( l, 1 ) );
-    lua.obj->p.y = float( lua_tonumber( l, 2 ) );
-    lua.obj->p.z = float( lua_tonumber( l, 3 ) );
+    lua.obj->p.x = tofloat( 1 );
+    lua.obj->p.y = tofloat( 2 );
+    lua.obj->p.z = tofloat( 3 );
     return 0;
   }
 
   int Lua::ozObjAddPos( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua.obj->p.x += float( lua_tonumber( l, 1 ) );
-    lua.obj->p.y += float( lua_tonumber( l, 2 ) );
-    lua.obj->p.z += float( lua_tonumber( l, 3 ) );
+    lua.obj->p.x += tofloat( 1 );
+    lua.obj->p.y += tofloat( 2 );
+    lua.obj->p.z += tofloat( 3 );
     return 0;
   }
 
   int Lua::ozObjGetDim( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua_pushnumber( l, lua.obj->dim.x );
-    lua_pushnumber( l, lua.obj->dim.y );
-    lua_pushnumber( l, lua.obj->dim.z );
+    pushfloat( lua.obj->dim.x );
+    pushfloat( lua.obj->dim.y );
+    pushfloat( lua.obj->dim.z );
     return 3;
   }
 
   int Lua::ozObjGetIndex( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua_pushinteger( l, lua.obj->index );
+    pushint( lua.obj->index );
     return 1;
   }
 
   int Lua::ozObjGetFlags( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua_pushinteger( l, lua.obj->flags );
+    pushint( lua.obj->flags );
     return 1;
   }
 
   int Lua::ozObjGetOldFlags( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua_pushinteger( l, lua.obj->oldFlags );
+    pushint( lua.obj->oldFlags );
     return 1;
   }
 
   int Lua::ozObjGetTypeName( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua_pushstring( l, lua.obj->clazz->name );
+    pushstring( lua.obj->clazz->name );
     return 1;
   }
 
   int Lua::ozObjGetLife( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua_pushnumber( l, lua.obj->life );
+    pushfloat( lua.obj->life );
     return 1;
   }
 
   int Lua::ozObjSetLife( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua.obj->life = clamp( float( lua_tonumber( l, 1 ) ), 0.0f, lua.obj->clazz->life );
+    lua.obj->life = clamp( tofloat( 1 ), 0.0f, lua.obj->clazz->life );
     return 0;
   }
 
   int Lua::ozObjAddLife( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua.obj->life = clamp( lua.obj->life + float( lua_tonumber( l, 1 ) ),
+    lua.obj->life = clamp( lua.obj->life + tofloat( 1 ),
                            0.0f,
                            lua.obj->clazz->life );
     return 0;
@@ -1019,14 +1074,13 @@ namespace oz
 
   int Lua::ozObjAddEvent( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
-    int   id        = int( lua_tointeger( l, 1 ) );
-    float intensity = float( lua_tonumber( l, 2 ) );
+    OBJ_NOT_NULL();
+
+    int   id        = toint( 1 );
+    float intensity = tofloat( 2 );
 
     if( id >= 0 && intensity < 0.0f ) {
-      OZ_LUA_ERROR( "event intensity for sounds (id >= 0) has to be > 0.0" );
+      ERROR( "event intensity for sounds (id >= 0) has to be > 0.0" );
     }
     lua.obj->addEvent( id, intensity );
     return 0;
@@ -1034,19 +1088,15 @@ namespace oz
 
   int Lua::ozObjDamage( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
-    lua.obj->damage( float( lua_tonumber( l, 1 ) ) );
+    lua.obj->damage( tofloat( 1 ) );
     return 0;
   }
 
   int Lua::ozObjDestroy( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
     lua.obj->life = 0.0f;
     return 0;
@@ -1054,9 +1104,7 @@ namespace oz
 
   int Lua::ozObjQuietDestroy( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
 
     lua.obj->flags |= Object::DESTROYED_BIT;
     return 0;
@@ -1064,89 +1112,71 @@ namespace oz
 
   int Lua::ozObjVectorFromSelf( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
-    if( lua.obj == lua.self ) {
-      OZ_LUA_ERROR( "selected object is self" );
-    }
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+
     Vec3 vec = lua.obj->p - lua.self->p;
-    lua_pushnumber( l, vec.x );
-    lua_pushnumber( l, vec.y );
-    lua_pushnumber( l, vec.z );
+    pushfloat( vec.x );
+    pushfloat( vec.y );
+    pushfloat( vec.z );
     return 3;
   }
 
   int Lua::ozObjDirectionFromSelf( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
-    if( lua.obj == lua.self ) {
-      OZ_LUA_ERROR( "selected object is self" );
-    }
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+
     Vec3 dir = ~( lua.obj->p - lua.self->p );
-    lua_pushnumber( l, dir.x );
-    lua_pushnumber( l, dir.y );
-    lua_pushnumber( l, dir.z );
+    pushfloat( dir.x );
+    pushfloat( dir.y );
+    pushfloat( dir.z );
     return 3;
   }
 
   int Lua::ozObjDistanceFromSelf( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
-    if( lua.obj == lua.self ) {
-      OZ_LUA_ERROR( "selected object is self" );
-    }
-    lua_pushnumber( l, !( lua.obj->p - lua.self->p ) );
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+
+    pushfloat( !( lua.obj->p - lua.self->p ) );
     return 1;
   }
 
   int Lua::ozObjHeadingFromSelf( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
-    if( lua.obj == lua.self ) {
-      OZ_LUA_ERROR( "selected object is self" );
-    }
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+
     float dx = lua.obj->p.x - lua.self->p.x;
     float dy = lua.obj->p.y - lua.self->p.y;
     float angle = Math::deg( Math::atan2( -dx, dy ) );
 
-    lua_pushnumber( l, angle );
+    pushfloat( angle );
     return 1;
   }
 
   int Lua::ozObjPitchFromSelf( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
-    if( lua.obj == lua.self ) {
-      OZ_LUA_ERROR( "selected object is self" );
-    }
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+
     float dx = lua.obj->p.x - lua.self->p.x;
     float dy = lua.obj->p.y - lua.self->p.y;
     float dz = lua.obj->p.z - lua.self->p.z;
     float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
-    lua_pushnumber( l, angle );
+    pushfloat( angle );
     return 1;
   }
 
   int Lua::ozObjPitchFromSelfEye( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
-    if( lua.obj == lua.self ) {
-      OZ_LUA_ERROR( "selected object is self" );
-    }
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+
     if( lua.self->flags & Object::BOT_BIT ) {
-      OZ_LUA_ERROR( "self is not a bot" );
+      ERROR( "self is not a bot" );
     }
 
     const Bot* bot = static_cast<const Bot*>( lua.self );
@@ -1156,58 +1186,88 @@ namespace oz
     float dz = lua.obj->p.z - bot->p.z - bot->camZ;
     float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
-    lua_pushnumber( l, angle );
+    pushfloat( angle );
     return 1;
   }
 
-  int Lua::ozObjBindEvent( lua_State* l )
+  int Lua::ozObjBindEvents( lua_State* l )
   {
-    if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
-    }
+    OBJ_NOT_NULL();
+
     lua.event = lua.obj->events.iter();
     return 0;
   }
 
-  int Lua::ozEventBindNext( lua_State* l )
+  int Lua::ozObjBindItems( lua_State* l )
   {
-    if( lua.event.isValid() ) {
-      ++lua.event;
-      lua_pushboolean( l, true );
+    OBJ_NOT_NULL();
+
+    lua.objects.clear();
+    foreach( item, lua.obj->items.citer() ) {
+      lua.objects.add( orbis.objects[*item] );
     }
-    else {
-      lua_pushboolean( l, false );
-    }
-    return 1;
+    lua.objIndex = 0;
+    return 0;
   }
 
-  int Lua::ozEventGet( lua_State* l )
+  int Lua::ozObjBindAllOverlaps( lua_State* l )
   {
-    if( !lua.event.isValid() ) {
-      OZ_LUA_ERROR( "event is nil" );
-    }
-    lua_pushinteger( l, lua.event->id );
-    lua_pushnumber( l, lua.event->intensity );
-    return 2;
+    OBJ_NOT_NULL();
+
+    AABB aabb = AABB( lua.obj->p,
+                      Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
+
+    lua.objects.clear();
+    lua.structs.clear();
+    collider.getOverlaps( aabb, &lua.objects, &lua.structs );
+    lua.objIndex = 0;
+    lua.strIndex = 0;
+    return 0;
+  }
+
+  int Lua::ozObjBindStrOverlaps( lua_State* l )
+  {
+    OBJ_NOT_NULL();
+
+    AABB aabb = AABB( lua.obj->p,
+                      Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
+
+    lua.structs.clear();
+    collider.getOverlaps( aabb, null, &lua.structs );
+    lua.strIndex = 0;
+    return 0;
+  }
+
+  int Lua::ozObjBindObjOverlaps( lua_State* l )
+  {
+    OBJ_NOT_NULL();
+
+    AABB aabb = AABB( lua.obj->p,
+                      Vec3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) ) );
+
+    lua.objects.clear();
+    collider.getOverlaps( aabb, &lua.objects, null );
+    lua.objIndex = 0;
+    return 0;
   }
 
   int Lua::ozDynBindParent( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     const Dynamic* obj = static_cast<const Dynamic*>( lua.obj );
 
     if( obj->parent != -1 && orbis.objects[obj->parent] != null ) {
       lua.obj = orbis.objects[obj->parent];
-      lua_pushboolean( l, true );
+      pushbool( true );
     }
     else {
-      lua_pushboolean( l, false );
+      pushbool( false );
     }
     return 1;
   }
@@ -1215,161 +1275,161 @@ namespace oz
   int Lua::ozDynGetVelocity( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     const Dynamic* obj = static_cast<const Dynamic*>( lua.obj );
 
-    lua_pushnumber( l, obj->velocity.x );
-    lua_pushnumber( l, obj->velocity.y );
-    lua_pushnumber( l, obj->velocity.z );
+    pushfloat( obj->velocity.x );
+    pushfloat( obj->velocity.y );
+    pushfloat( obj->velocity.z );
     return 3;
   }
 
   int Lua::ozDynSetVelocity( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
     obj->flags &= ~Object::DISABLED_BIT;
-    obj->velocity.x = float( lua_tonumber( l, 1 ) );
-    obj->velocity.y = float( lua_tonumber( l, 2 ) );
-    obj->velocity.z = float( lua_tonumber( l, 3 ) );
+    obj->velocity.x = tofloat( 1 );
+    obj->velocity.y = tofloat( 2 );
+    obj->velocity.z = tofloat( 3 );
     return 0;
   }
 
   int Lua::ozDynAddVelocity( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
     obj->flags &= ~Object::DISABLED_BIT;
-    obj->velocity.x += float( lua_tonumber( l, 1 ) );
-    obj->velocity.y += float( lua_tonumber( l, 2 ) );
-    obj->velocity.z += float( lua_tonumber( l, 3 ) );
+    obj->velocity.x += tofloat( 1 );
+    obj->velocity.y += tofloat( 2 );
+    obj->velocity.z += tofloat( 3 );
     return 0;
   }
 
   int Lua::ozDynGetMomentum( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     const Dynamic* obj = static_cast<const Dynamic*>( lua.obj );
 
-    lua_pushnumber( l, obj->momentum.x );
-    lua_pushnumber( l, obj->momentum.y );
-    lua_pushnumber( l, obj->momentum.z );
+    pushfloat( obj->momentum.x );
+    pushfloat( obj->momentum.y );
+    pushfloat( obj->momentum.z );
     return 3;
   }
 
   int Lua::ozDynSetMomentum( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
     obj->flags &= ~Object::DISABLED_BIT;
-    obj->momentum.x = float( lua_tonumber( l, 1 ) );
-    obj->momentum.y = float( lua_tonumber( l, 2 ) );
-    obj->momentum.z = float( lua_tonumber( l, 3 ) );
+    obj->momentum.x = tofloat( 1 );
+    obj->momentum.y = tofloat( 2 );
+    obj->momentum.z = tofloat( 3 );
     return 0;
   }
 
   int Lua::ozDynAddMomentum( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
     obj->flags &= ~Object::DISABLED_BIT;
-    obj->momentum.x += float( lua_tonumber( l, 1 ) );
-    obj->momentum.y += float( lua_tonumber( l, 2 ) );
-    obj->momentum.z += float( lua_tonumber( l, 3 ) );
+    obj->momentum.x += tofloat( 1 );
+    obj->momentum.y += tofloat( 2 );
+    obj->momentum.z += tofloat( 3 );
     return 0;
   }
 
   int Lua::ozDynGetMass( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     const Dynamic* obj = static_cast<const Dynamic*>( lua.obj );
 
-    lua_pushnumber( l, obj->mass );
+    pushfloat( obj->mass );
     return 1;
   }
 
   int Lua::ozDynSetMass( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
-    obj->mass = float( lua_tonumber( l, 1 ) );
+    obj->mass = tofloat( 1 );
     return 0;
   }
 
   int Lua::ozDynAddMass( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
-    obj->mass += float( lua_tonumber( l, 1 ) );
+    obj->mass += tofloat( 1 );
     return 0;
   }
 
   int Lua::ozDynResetMass( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
@@ -1382,55 +1442,55 @@ namespace oz
   int Lua::ozDynGetLift( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     const Dynamic* obj = static_cast<const Dynamic*>( lua.obj );
 
-    lua_pushnumber( l, obj->lift );
+    pushfloat( obj->lift );
     return 1;
   }
 
   int Lua::ozDynSetLift( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
-    obj->lift = float( lua_tonumber( l, 1 ) );
+    obj->lift = tofloat( 1 );
     return 0;
   }
 
   int Lua::ozDynAddLift( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
 
-    obj->lift += float( lua_tonumber( l, 1 ) );
+    obj->lift += tofloat( 1 );
     return 0;
   }
 
   int Lua::ozDynResetLift( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::DYNAMIC_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not dynamic" );
+      ERROR( "selected object is not dynamic" );
     }
 
     Dynamic* obj = static_cast<Dynamic*>( lua.obj );
@@ -1443,77 +1503,77 @@ namespace oz
   int Lua::ozBotGetName( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushstring( l, bot->name );
+    pushstring( bot->name );
     return 1;
   }
 
   int Lua::ozBotSetName( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->name = lua_tostring( l, 1 );
+    bot->name = tostring( 1 );
     return 0;
   }
 
   int Lua::ozBotGetEyePos( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushnumber( l, bot->p.x );
-    lua_pushnumber( l, bot->p.y );
-    lua_pushnumber( l, bot->p.z + bot->camZ );
+    pushfloat( bot->p.x );
+    pushfloat( bot->p.y );
+    pushfloat( bot->p.z + bot->camZ );
     return 3;
   }
 
   int Lua::ozBotGetH( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushnumber( l, Math::deg( bot->h ) );
+    pushfloat( Math::deg( bot->h ) );
     return 1;
   }
 
   int Lua::ozBotSetH( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->h = Math::rad( float( lua_tonumber( l, 1 ) ) );
+    bot->h = Math::rad( tofloat( 1 ) );
     bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
     return 0;
   }
@@ -1521,15 +1581,15 @@ namespace oz
   int Lua::ozBotAddH( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->h += Math::rad( float( lua_tonumber( l, 1 ) ) );
+    bot->h += Math::rad( tofloat( 1 ) );
     bot->h = Math::mod( bot->h + Math::TAU, Math::TAU );
     return 0;
   }
@@ -1537,30 +1597,30 @@ namespace oz
   int Lua::ozBotGetV( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushnumber( l, Math::deg( bot->v ) );
+    pushfloat( Math::deg( bot->v ) );
     return 1;
   }
 
   int Lua::ozBotSetV( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->v = Math::rad( float( lua_tonumber( l, 1 ) ) );
+    bot->v = Math::rad( tofloat( 1 ) );
     bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
     return 0;
   }
@@ -1568,15 +1628,15 @@ namespace oz
   int Lua::ozBotAddV( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    bot->v += Math::rad( float( lua_tonumber( l, 1 ) ) );
+    bot->v += Math::rad( tofloat( 1 ) );
     bot->v = clamp( bot->v, 0.0f, Math::TAU / 2.0f );
     return 0;
   }
@@ -1584,10 +1644,10 @@ namespace oz
   int Lua::ozBotGetDir( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
@@ -1601,9 +1661,9 @@ namespace oz
     hvsc[4] = hvsc[2] * hvsc[0];
     hvsc[5] = hvsc[2] * hvsc[1];
 
-    lua_pushnumber( l, -hvsc[4] );
-    lua_pushnumber( l,  hvsc[5] );
-    lua_pushnumber( l, -hvsc[3] );
+    pushfloat( -hvsc[4] );
+    pushfloat(  hvsc[5] );
+    pushfloat( -hvsc[3] );
 
     return 3;
   }
@@ -1611,10 +1671,10 @@ namespace oz
   int Lua::ozBotActionForward( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1626,10 +1686,10 @@ namespace oz
   int Lua::ozBotActionBackward( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1641,10 +1701,10 @@ namespace oz
   int Lua::ozBotActionRight( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1656,10 +1716,10 @@ namespace oz
   int Lua::ozBotActionLeft( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1671,10 +1731,10 @@ namespace oz
   int Lua::ozBotActionJump( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1686,10 +1746,10 @@ namespace oz
   int Lua::ozBotActionCrouch( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1701,10 +1761,10 @@ namespace oz
   int Lua::ozBotActionUse( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1716,10 +1776,10 @@ namespace oz
   int Lua::ozBotActionTake( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1731,10 +1791,10 @@ namespace oz
   int Lua::ozBotActionGrab( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1746,10 +1806,10 @@ namespace oz
   int Lua::ozBotActionThrow( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1761,10 +1821,10 @@ namespace oz
   int Lua::ozBotActionAttack( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1776,10 +1836,10 @@ namespace oz
   int Lua::ozBotActionExit( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1791,10 +1851,10 @@ namespace oz
   int Lua::ozBotActionEject( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1806,10 +1866,10 @@ namespace oz
   int Lua::ozBotActionSuicide( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1821,30 +1881,30 @@ namespace oz
   int Lua::ozBotStateIsRunning( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushboolean( l, bot->state & Bot::RUNNING_BIT );
+    pushbool( bot->state & Bot::RUNNING_BIT );
     return 1;
   }
 
   int Lua::ozBotStateSetRunning( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
 
-    if( lua_toboolean( l, 1 ) ) {
+    if( tobool( 1 ) ) {
       bot->state |= Bot::RUNNING_BIT;
     }
     else {
@@ -1856,10 +1916,10 @@ namespace oz
   int Lua::ozBotStateToggleRunning( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1871,57 +1931,57 @@ namespace oz
   int Lua::ozBotGetStamina( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
 
-    lua_pushnumber( l, bot->stamina );
+    pushfloat( bot->stamina );
     return 1;
   }
 
   int Lua::ozBotSetStamina( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    bot->stamina = clamp( float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
+    bot->stamina = clamp( tofloat( 1 ), 0.0f, clazz->stamina );
     return 0;
   }
 
   int Lua::ozBotAddStamina( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
-    bot->stamina = clamp( bot->stamina + float( lua_tonumber( l, 1 ) ), 0.0f, clazz->stamina );
+    bot->stamina = clamp( bot->stamina + tofloat( 1 ), 0.0f, clazz->stamina );
     return 0;
   }
 
   int Lua::ozBotRearm( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::BOT_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a bot" );
+      ERROR( "selected object is not a bot" );
     }
 
     Bot* bot = static_cast<Bot*>( lua.obj );
@@ -1933,10 +1993,10 @@ namespace oz
   int Lua::ozVehicleService( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
     if( !( lua.obj->flags & Object::VEHICLE_BIT ) ) {
-      OZ_LUA_ERROR( "selected object is not a vehicle" );
+      ERROR( "selected object is not a vehicle" );
     }
 
     Vehicle* vehicle = static_cast<Vehicle*>( lua.obj );
@@ -1947,9 +2007,9 @@ namespace oz
 
   int Lua::ozPartBindIndex( lua_State* l )
   {
-    int index = int( lua_tointeger( l, 1 ) );
+    int index = toint( 1 );
     if( index < 0 || orbis.parts.length() <= index ) {
-      OZ_LUA_ERROR( "invalid particle index" );
+      ERROR( "invalid particle index" );
     }
     lua.part = orbis.parts[index];
     return 0;
@@ -1957,213 +2017,213 @@ namespace oz
 
   int Lua::ozPartIsNull( lua_State* l )
   {
-    lua_pushboolean( l, lua.part == null );
+    pushbool( lua.part == null );
     return 1;
   }
 
   int Lua::ozPartGetPos( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua_pushnumber( l, lua.part->p.x );
-    lua_pushnumber( l, lua.part->p.y );
-    lua_pushnumber( l, lua.part->p.z );
+    pushfloat( lua.part->p.x );
+    pushfloat( lua.part->p.y );
+    pushfloat( lua.part->p.z );
     return 3;
   }
 
   int Lua::ozPartSetPos( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua.part->p.x = float( lua_tonumber( l, 1 ) );
-    lua.part->p.y = float( lua_tonumber( l, 2 ) );
-    lua.part->p.z = float( lua_tonumber( l, 3 ) );
+    lua.part->p.x = tofloat( 1 );
+    lua.part->p.y = tofloat( 2 );
+    lua.part->p.z = tofloat( 3 );
     return 0;
   }
 
   int Lua::ozPartAddPos( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua.part->p.x += float( lua_tonumber( l, 1 ) );
-    lua.part->p.y += float( lua_tonumber( l, 2 ) );
-    lua.part->p.z += float( lua_tonumber( l, 3 ) );
+    lua.part->p.x += tofloat( 1 );
+    lua.part->p.y += tofloat( 2 );
+    lua.part->p.z += tofloat( 3 );
     return 0;
   }
 
   int Lua::ozPartGetIndex( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua_pushinteger( l, lua.part->index );
+    pushint( lua.part->index );
     return 1;
   }
 
   int Lua::ozPartGetVelocity( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua_pushnumber( l, lua.part->velocity.x );
-    lua_pushnumber( l, lua.part->velocity.y );
-    lua_pushnumber( l, lua.part->velocity.z );
+    pushfloat( lua.part->velocity.x );
+    pushfloat( lua.part->velocity.y );
+    pushfloat( lua.part->velocity.z );
     return 3;
   }
 
   int Lua::ozPartSetVelocity( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua.part->velocity.x = float( lua_tonumber( l, 1 ) );
-    lua.part->velocity.y = float( lua_tonumber( l, 2 ) );
-    lua.part->velocity.z = float( lua_tonumber( l, 3 ) );
+    lua.part->velocity.x = tofloat( 1 );
+    lua.part->velocity.y = tofloat( 2 );
+    lua.part->velocity.z = tofloat( 3 );
     return 0;
   }
 
   int Lua::ozPartAddVelocity( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua.part->velocity.x += float( lua_tonumber( l, 1 ) );
-    lua.part->velocity.y += float( lua_tonumber( l, 2 ) );
-    lua.part->velocity.z += float( lua_tonumber( l, 3 ) );
+    lua.part->velocity.x += tofloat( 1 );
+    lua.part->velocity.y += tofloat( 2 );
+    lua.part->velocity.z += tofloat( 3 );
     return 0;
   }
 
   int Lua::ozPartGetLife( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua_pushnumber( l, lua.part->lifeTime );
+    pushfloat( lua.part->lifeTime );
     return 1;
   }
 
   int Lua::ozPartSetLife( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua.part->lifeTime = float( lua_tonumber( l, 1 ) );
+    lua.part->lifeTime = tofloat( 1 );
     return 0;
   }
 
   int Lua::ozPartAddLife( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
-    lua.part->lifeTime += float( lua_tonumber( l, 1 ) );
+    lua.part->lifeTime += tofloat( 1 );
     return 0;
   }
 
   int Lua::ozOrbisAddStr( lua_State* l )
   {
-    const char* name = lua_tostring( l, 1 );
-    Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
-    Struct::Rotation rot = Struct::Rotation( lua_tointeger( l, 5 ) );
+    const char* name = tostring( 1 );
+    Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
+    Struct::Rotation rot = Struct::Rotation( toint( 5 ) );
 
     int bsp = library.bspIndex( name );
     if( bsp == -1 ) {
-      OZ_LUA_ERROR( "invalid bsp name" );
+      ERROR( "invalid bsp name" );
     }
 
     Bounds bounds = Struct::rotate( *orbis.bsps[bsp], rot );
 
     if( collider.overlaps( bounds.toAABB() + ( p - Point3::ORIGIN ) ) ) {
       lua.str = null;
-      lua_pushinteger( l, -1 );
+      pushint( -1 );
     }
     else {
       int index = synapse.addStruct( name, p, rot );
       lua.str = orbis.structs[index];
-      lua_pushinteger( l, index );
+      pushint( index );
     }
     return 1;
   }
 
   int Lua::ozOrbisForceAddStr( lua_State* l )
   {
-    const char* name = lua_tostring( l, 1 );
-    Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
-    Struct::Rotation rot = Struct::Rotation( lua_tointeger( l, 5 ) );
+    const char* name = tostring( 1 );
+    Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
+    Struct::Rotation rot = Struct::Rotation( toint( 5 ) );
 
     int index = synapse.addStruct( name, p, rot );
     lua.str = orbis.structs[index];
-    lua_pushinteger( l, index );
+    pushint( index );
     return 1;
   }
 
   int Lua::ozOrbisAddObj( lua_State* l )
   {
-    const char* name = lua_tostring( l, 1 );
-    Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    const char* name = tostring( 1 );
+    Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
 
     const ObjectClass* const* value = library.classes.find( name );
     if( value == null ) {
-      OZ_LUA_ERROR( "invalid object class" );
+      ERROR( "invalid object class" );
     }
 
     AABB aabb = AABB( p, ( *value )->dim );
 
     if( collider.overlaps( aabb ) ) {
       lua.obj = null;
-      lua_pushinteger( l, -1 );
+      pushint( -1 );
     }
     else {
       int index = synapse.addObject( name, p );
       lua.obj = orbis.objects[index];
-      lua_pushinteger( l, index );
+      pushint( index );
     }
     return 1;
   }
 
   int Lua::ozOrbisForceAddObj( lua_State* l )
   {
-    const char* name = lua_tostring( l, 1 );
-    Point3 p = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
+    const char* name = tostring( 1 );
+    Point3 p = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
 
     int index = synapse.addObject( name, p );
     lua.obj = orbis.objects[index];
-    lua_pushinteger( l, index );
+    pushint( index );
     return 1;
   }
 
   int Lua::ozOrbisAddPart( lua_State* l )
   {
-    Point3 p           = Point3( float( lua_tonumber( l, 1 ) ), float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ) );
-    Vec3   velocity    = Vec3( float( lua_tonumber( l, 4 ) ), float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ) );
-    Vec3   colour      = Vec3( float( lua_tonumber( l, 7 ) ), float( lua_tonumber( l, 8 ) ), float( lua_tonumber( l, 9 ) ) );
-    float  restitution = float( lua_tonumber( l, 10 ) );
-    float  mass        = float( lua_tonumber( l, 11 ) );
-    float  lifeTime    = float( lua_tonumber( l, 12 ) );
+    Point3 p           = Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) );
+    Vec3   velocity    = Vec3( tofloat( 4 ), tofloat( 5 ), tofloat( 6 ) );
+    Vec3   colour      = Vec3( tofloat( 7 ), tofloat( 8 ), tofloat( 9 ) );
+    float  restitution = tofloat( 10 );
+    float  mass        = tofloat( 11 );
+    float  lifeTime    = tofloat( 12 );
 
     int index = synapse.addPart( p, velocity, colour, restitution, mass, lifeTime );
     lua.part = orbis.parts[index];
-    lua_pushinteger( l, index );
+    pushint( index );
     return 1;
   }
 
   int Lua::ozOrbisRemoveStr( lua_State* l )
   {
     if( lua.str == null ) {
-      OZ_LUA_ERROR( "selected structure is null" );
+      ERROR( "selected structure is null" );
     }
 
     synapse.remove( lua.str );
@@ -2174,7 +2234,7 @@ namespace oz
   int Lua::ozOrbisRemoveObj( lua_State* l )
   {
     if( lua.obj == null ) {
-      OZ_LUA_ERROR( "selected object is null" );
+      ERROR( "selected object is null" );
     }
 
     if( lua.obj->cell == null ) {
@@ -2197,7 +2257,7 @@ namespace oz
   int Lua::ozOrbisRemovePart( lua_State* l )
   {
     if( lua.part == null ) {
-      OZ_LUA_ERROR( "selected particle is null" );
+      ERROR( "selected particle is null" );
     }
 
     synapse.remove( lua.part );
@@ -2207,15 +2267,15 @@ namespace oz
 
   int Lua::ozOrbisGenParts( lua_State* l )
   {
-    int    number         = int( lua_tonumber( l, 1 ) );
-    Point3 p              = Point3( float( lua_tonumber( l, 2 ) ), float( lua_tonumber( l, 3 ) ), float( lua_tonumber( l, 4 ) ) );
-    Vec3   velocity       = Vec3( float( lua_tonumber( l, 5 ) ), float( lua_tonumber( l, 6 ) ), float( lua_tonumber( l, 7 ) ) );
-    float  velocitySpread = float( lua_tonumber( l, 8 ) );
-    Vec3   colour         = Vec3( float( lua_tonumber( l, 9 ) ), float( lua_tonumber( l, 10 ) ), float( lua_tonumber( l, 11 ) ) );
-    float  colourSpread   = float( lua_tonumber( l, 12 ) );
-    float  restitution    = float( lua_tonumber( l, 13 ) );
-    float  mass           = float( lua_tonumber( l, 14 ) );
-    float  lifeTime       = float( lua_tonumber( l, 15 ) );
+    int    number         = int( tofloat( 1 ) );
+    Point3 p              = Point3( tofloat( 2 ), tofloat( 3 ), tofloat( 4 ) );
+    Vec3   velocity       = Vec3( tofloat( 5 ), tofloat( 6 ), tofloat( 7 ) );
+    float  velocitySpread = tofloat( 8 );
+    Vec3   colour         = Vec3( tofloat( 9 ), tofloat( 10 ), tofloat( 11 ) );
+    float  colourSpread   = tofloat( 12 );
+    float  restitution    = tofloat( 13 );
+    float  mass           = tofloat( 14 );
+    float  lifeTime       = tofloat( 15 );
 
     synapse.genParts( number, p, velocity, velocitySpread, colour, colourSpread,
                       restitution, mass, lifeTime );
@@ -2225,7 +2285,7 @@ namespace oz
 
   int Lua::ozTerraLoad( lua_State* l )
   {
-    String name = lua_tostring( l, 1 );
+    String name = tostring( 1 );
     int id = library.terraIndex( name );
 
     orbis.terra.load( id );
@@ -2234,16 +2294,16 @@ namespace oz
 
   int Lua::ozTerraHeight( lua_State* l )
   {
-    float x = float( lua_tonumber( l, 1 ) );
-    float y = float( lua_tonumber( l, 2 ) );
+    float x = tofloat( 1 );
+    float y = tofloat( 2 );
 
-    lua_pushnumber( l, orbis.terra.height( x, y ) );
+    pushfloat( orbis.terra.height( x, y ) );
     return 1;
   }
 
   int Lua::ozCaelumLoad( lua_State* l )
   {
-    String name = lua_tostring( l, 1 );
+    String name = tostring( 1 );
     int id = library.caelumIndex( name );
 
     orbis.caelum.id = id;
@@ -2252,43 +2312,43 @@ namespace oz
 
   int Lua::ozCaelumGetHeading( lua_State* l )
   {
-    lua_pushnumber( l, orbis.caelum.heading );
+    pushfloat( orbis.caelum.heading );
     return 1;
   }
 
   int Lua::ozCaelumSetHeading( lua_State* l )
   {
-    orbis.caelum.heading = float( lua_tonumber( l, 1 ) );
+    orbis.caelum.heading = tofloat( 1 );
     return 0;
   }
 
   int Lua::ozCaelumGetPeriod( lua_State* l )
   {
-    lua_pushnumber( l, orbis.caelum.period );
+    pushfloat( orbis.caelum.period );
     return 1;
   }
 
   int Lua::ozCaelumSetPeriod( lua_State* l )
   {
-    orbis.caelum.period = float( lua_tonumber( l, 1 ) );
+    orbis.caelum.period = tofloat( 1 );
     return 0;
   }
 
   int Lua::ozCaelumGetTime( lua_State* l )
   {
-    lua_pushnumber( l, orbis.caelum.time );
+    pushfloat( orbis.caelum.time );
     return 1;
   }
 
   int Lua::ozCaelumSetTime( lua_State* l )
   {
-    orbis.caelum.time = float( lua_tonumber( l, 1 ) );
+    orbis.caelum.time = tofloat( 1 );
     return 0;
   }
 
   int Lua::ozCaelumAddTime( lua_State* l )
   {
-    orbis.caelum.time += float( lua_tonumber( l, 1 ) );
+    orbis.caelum.time += tofloat( 1 );
     return 0;
   }
 

@@ -88,8 +88,6 @@ namespace oz
                      const Vec3& colour, float colourSpread,
                      float restitution, float mass, float lifeTime );
 
-      void clear();
-
       // clear lists for actions, additions, removals
       void update();
 

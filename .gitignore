@@ -1,5 +1,6 @@
 /openzone.kdev4
 /.kdev4
+*.kate-swp
 
 /.project
 /.cproject

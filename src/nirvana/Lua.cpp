@@ -615,7 +615,7 @@ namespace nirvana
       OZ_LUA_ERROR( "selected structure is null" );
     }
 
-    lua_pushinteger( l, lua.str->bsp );
+    lua_pushinteger( l, lua.str->id );
     return 1;
   }
 

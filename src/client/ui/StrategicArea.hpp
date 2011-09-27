@@ -14,12 +14,9 @@
 
 #include "client/ui/Area.hpp"
 
-#include "matrix/common.hpp"
+#include "matrix/Object.hpp"
 
-namespace oz
-{
-  class Object;
-}
+#include "client/common.hpp"
 
 namespace oz
 {

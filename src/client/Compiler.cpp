@@ -53,9 +53,9 @@ namespace client
     solidParts.clear();
     alphaParts.clear();
 
-    part.texture  = "";
-    part.alpha    = 1.0f;
-    part.specular = 0.0f;
+    part.texture     = "";
+    part.alpha       = 1.0f;
+    part.specular    = 0.0f;
 
     vert.pos[0]      = 0.0f;
     vert.pos[1]      = 0.0f;

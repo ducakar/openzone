@@ -158,6 +158,7 @@ set( libs "${libs};${VORBISFILE_LIBRARY}" )
 
 set( libs_tools "${SDL_LIBRARY}" )
 set( libs_tools "${libs_tools};${SDLIMAGE_LIBRARY}" )
+set( libs_tools "${libs_tools};${LUA_LIBRARY}" )
 set( libs_tools "${libs_tools};${OPENGL_gl_LIBRARY}" )
 
 if( OZ_MINGW )

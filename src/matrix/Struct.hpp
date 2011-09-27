@@ -20,10 +20,6 @@ namespace oz
 
   class Struct : public Bounds
   {
-    private:
-
-      static const float DAMAGE_THRESHOLD;
-
     public:
 
       class Entity
@@ -76,14 +72,15 @@ namespace oz
 
     public:
 
-      Point3   p;
-      int      index;
-      int      bsp;
-      Rotation rot;
-      float    life;
+      Point3     p;
+      int        index;
+      int        id;
+      const BSP* bsp;
+      Rotation   rot;
+      float      life;
 
-      int      nEntities;
-      Entity*  entities;
+      int        nEntities;
+      Entity*    entities;
 
       ~Struct();
 
@@ -95,8 +92,8 @@ namespace oz
 
     public:
 
-      explicit Struct( int index, int bsp, const Point3& p, Rotation rot );
-      explicit Struct( int index, int bsp, InputStream* istream );
+      explicit Struct( int index, int bspId, const Point3& p, Rotation rot );
+      explicit Struct( int index, int bpsId, InputStream* istream );
 
       /**
        * Rotate vector from absolute coordinate system to structure coordinate system.
@@ -176,7 +173,7 @@ namespace oz
 
   inline void Struct::damage( float damage )
   {
-    damage -= DAMAGE_THRESHOLD;
+    damage -= bsp->damageTreshold;
 
     if( damage > 0.0f ) {
       life -= damage;

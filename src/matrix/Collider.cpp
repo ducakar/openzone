@@ -167,7 +167,7 @@ namespace oz
             visitedBrushes.clearAll();
 
             startPos = str->toStructCS( aabb.p );
-            bsp      = orbis.bsps[str->bsp];
+            bsp      = str->bsp;
 
             if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
               return true;
@@ -228,7 +228,7 @@ namespace oz
             visitedBrushes.clearAll();
 
             startPos = str->toStructCS( aabb.p );
-            bsp      = orbis.bsps[str->bsp];
+            bsp      = str->bsp;
 
             if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
               return true;
@@ -732,7 +732,7 @@ namespace oz
 
             startPos = str->toStructCS( originalStartPos );
             endPos   = str->toStructCS( originalEndPos );
-            bsp      = orbis.bsps[str->bsp];
+            bsp      = str->bsp;
             entity   = null;
 
             trimAABBNode( 0 );
@@ -785,7 +785,7 @@ namespace oz
               visitedBrushes.clearAll();
 
               startPos = str->toStructCS( aabb.p );
-              bsp      = orbis.bsps[str->bsp];
+              bsp      = str->bsp;
 
               if( overlapsAABBNode( 0 ) || overlapsAABBEntities() ) {
                 structs->add( str );

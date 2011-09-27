@@ -87,21 +87,20 @@ namespace oz
         flags |= Object::LUA_BIT | Object::HIT_FUNC_BIT;
       }
     }
+    if( name.equals( "datacube" ) ) {
+        System::trap();
+      }
     if( !onUse.isEmpty() ) {
-      if( onUse.equals( "INSTRUMENT" ) ) {
-        flags |= Object::USE_FUNC_BIT;
+      // disable event handler if explicitly set to false
+      if( !config->get( "flag.useFunc", true ) ) {
+        flags &= ~Object::USE_FUNC_BIT;
+      }
+      else if( onUse.equals( "INSTRUMENT" ) ) {
         onUse.clear();
+        flags |= Object::USE_FUNC_BIT;
       }
       else {
         flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
-
-        // disable event handler if explicitly set to false
-        if( !config->get( "flag.useFunc", true ) ) {
-          flags &= ~Object::USE_FUNC_BIT;
-        }
-        else {
-          flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
-        }
       }
     }
     if( !onUpdate.isEmpty() ) {

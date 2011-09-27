@@ -19,8 +19,6 @@
 namespace oz
 {
 
-  const float Struct::DAMAGE_THRESHOLD = 400.0f;
-
   void ( Struct::Entity::* Struct::Entity::handlers[] )() = {
     &Struct::Entity::updateIgnoring,
     &Struct::Entity::updateCrushing,
@@ -266,13 +264,10 @@ namespace oz
     delete[] entities;
   }
 
-  Struct::Struct( int index_, int bsp_, const Point3& p_, Rotation rot_ ) :
-      p( p_ ), index( index_ ), bsp( bsp_ ), rot( rot_ ), life( orbis.bsps[bsp]->life )
+  Struct::Struct( int index_, int bspId, const Point3& p_, Rotation rot_ ) :
+      p( p_ ), index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] ),
+      rot( rot_ ), life( bsp->life )
   {
-    const BSP* bsp = orbis.bsps[this->bsp];
-
-    hard_assert( bsp != null );
-
     nEntities = bsp->nModels;
     entities = nEntities == 0 ? null : new Entity[nEntities];
 
@@ -288,11 +283,9 @@ namespace oz
     }
   }
 
-  Struct::Struct( int index_, int bsp_, InputStream* istream ) :
-      index( index_ ), bsp( bsp_ )
+  Struct::Struct( int index_, int bspId, InputStream* istream ) :
+      index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] )
   {
-    const BSP* bsp = orbis.bsps[this->bsp];
-
     hard_assert( bsp != null );
 
     nEntities = bsp->nModels;

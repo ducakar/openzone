@@ -18,8 +18,13 @@
 #include <dirent.h>
 #include <sys/types.h>
 
-#define OZ_REGISTER_BASECLASS( name ) \
+#ifndef OZ_TOOLS
+# define OZ_REGISTER_BASECLASS( name ) \
   baseClasses.add( #name, &name##Class::init )
+#else
+# define OZ_REGISTER_BASECLASS( name ) \
+  baseClasses.add( #name, null )
+#endif
 
 namespace oz
 {
@@ -120,27 +125,15 @@ namespace oz
 
 #ifndef OZ_TOOLS
 
-  Struct* Library::createStruct( int index, const char* name, const Point3& p,
+  Struct* Library::createStruct( int index, int id, const Point3& p,
                                     Struct::Rotation rot ) const
   {
-    const int* value = bspIndices.find( name );
-    if( value != null ) {
-      return new Struct( index, *value, p, rot );
-    }
-    else {
-      throw Exception( "Invalid structure class requested '" + String( name ) + "'" );
-    }
+    return new Struct( index, id, p, rot );
   }
 
-  Struct* Library::createStruct( int index, const char* name, InputStream* istream ) const
+  Struct* Library::createStruct( int index, int id, InputStream* istream ) const
   {
-    const int* value = bspIndices.find( name );
-    if( value != null ) {
-      return new Struct( index, *value, istream );
-    }
-    else {
-      throw Exception( "Invalid structure class requested '" + String( name ) + "'" );
-    }
+    return new Struct( index, id, istream );
   }
 
   Object* Library::createObject( int index, const char* name, const Point3& p ) const
@@ -475,23 +468,23 @@ namespace oz
       if( !classConfig.load( path ) ) {
         log.println( "invalid config file %s", path.cstr() );
         classConfig.clear();
-        continue;
+        throw Exception( "Class description error" );
       }
       if( !classConfig.contains( "base" ) ) {
         log.println( "missing base variable" );
         classConfig.clear();
-        continue;
+        throw Exception( "Class description error" );
       }
       const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
       if( initFunc == null ) {
         log.println( "invalid base %s", classConfig["base"].cstr() );
         classConfig.clear();
-        continue;
+        throw Exception( "Class description error" );
       }
       if( classes.contains( name ) ) {
         log.println( "duplicated class: %s", name.cstr() );
         classConfig.clear();
-        continue;
+        throw Exception( "Class description error" );
       }
 
       classConfig.add( "name", name );
@@ -512,6 +505,12 @@ namespace oz
 
   void Library::init()
   {
+    OZ_REGISTER_BASECLASS( Object );
+    OZ_REGISTER_BASECLASS( Dynamic );
+    OZ_REGISTER_BASECLASS( Weapon );
+    OZ_REGISTER_BASECLASS( Bot );
+    OZ_REGISTER_BASECLASS( Vehicle );
+
     textures.alloc( 256 );
     sounds.alloc( 256 );
     terras.alloc( 16 );
@@ -814,23 +813,23 @@ namespace oz
       if( !classConfig.load( path ) ) {
         log.println( "invalid config file %s", path.cstr() );
         classConfig.clear();
-        continue;
+        throw Exception( "Class description error" );
       }
       if( !classConfig.contains( "base" ) ) {
         log.println( "missing base variable" );
         classConfig.clear();
-        continue;
+        throw Exception( "Class description error" );
       }
       const ObjectClass::InitFunc* initFunc = baseClasses.find( classConfig["base"] );
       if( initFunc == null ) {
         log.println( "invalid base %s", classConfig["base"].cstr() );
         classConfig.clear();
-        continue;
+        throw Exception( "Class description error" );
       }
       if( classes.contains( name ) ) {
         log.println( "duplicated class: %s", name.cstr() );
         classConfig.clear();
-        continue;
+        throw Exception( "Class description error" );
       }
 
       classConfig.add( "name", name );
