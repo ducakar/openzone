@@ -9,13 +9,16 @@
 
 #include "stable.hpp"
 
-#include "matrix/Lua.hpp"
+#include "client/Lua.hpp"
 
 #include "matrix/BotClass.hpp"
 #include "matrix/VehicleClass.hpp"
 #include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
+#include "matrix/Lua.hpp"
+
+#include "client/Camera.hpp"
 
 #include <lua.hpp>
 
@@ -23,106 +26,16 @@
 
 namespace oz
 {
+namespace client
+{
 
   Lua lua;
-
-  bool Lua::readVariable( InputStream* istream )
-  {
-    char ch = istream->readChar();
-
-    switch( ch ) {
-      case 'N': {
-        pushnil();
-        return true;
-      }
-      case 'b': {
-        pushbool( istream->readBool() );
-        return true;
-      }
-      case 'n': {
-        pushdouble( istream->readDouble() );
-        return true;
-      }
-      case 's': {
-        pushstring( istream->readString() );
-        return true;
-      }
-      case '[': {
-        newtable();
-
-        while( readVariable( istream ) ) { // key
-          readVariable( istream ); // value
-
-          rawset( -3 );
-        }
-        return true;
-      }
-      case ']': {
-        return false;
-      }
-      default: {
-        throw Exception( "Invalid type char '" + String( ch ) + "' in serialised Lua data" );
-      }
-    }
-  }
-
-  void Lua::writeVariable( OutputStream* ostream )
-  {
-    int type = type( -1 );
-
-    switch( type ) {
-      case LUA_TNIL: {
-        ostream->writeChar( 'N' );
-        break;
-      }
-      case LUA_TBOOLEAN: {
-        ostream->writeChar( 'b' );
-        ostream->writeBool( tobool( -1 ) != 0 );
-        break;
-      }
-      case LUA_TNUMBER: {
-        ostream->writeChar( 'n' );
-        ostream->writeDouble( todouble( -1 ) );
-        break;
-      }
-      case LUA_TSTRING: {
-        ostream->writeChar( 's' );
-        ostream->writeString( tostring( -1 ) );
-        break;
-      }
-      case LUA_TTABLE: {
-        ostream->writeChar( '[' );
-
-        pushnil();
-        while( next( -2 ) != 0 ) {
-          // key
-          pushvalue( -2 );
-          writeVariable( ostream );
-          pop( 1 );
-
-          // value
-          writeVariable( ostream );
-
-          pop( 1 );
-        }
-
-        ostream->writeChar( ']' );
-        break;
-      }
-      default: {
-        throw Exception( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER, "
-                         "LUA_TSTRING and LUA_TTABLE data types" );
-      }
-    }
-  }
 
   Lua::Lua() : l( null )
   {}
 
   void Lua::staticCall( const char* functionName )
   {
-    self         = null;
-    user         = null;
     obj          = null;
     str          = null;
     part         = null;
@@ -131,67 +44,19 @@ namespace oz
     isFirstEvent = false;
     event        = List<Object::Event>::CIterator();
 
-    hard_assert( gettop() == 1 );
+    hard_assert( gettop() == 0 );
 
     getglobal( functionName );
     lua_pcall( l, 0, 0, 0 );
 
-    if( gettop() != 1 ) {
-      log.println( "M! %s", tostring( -1 ) );
-      settop( 1 );
+    if( gettop() != 0 ) {
+      log.println( "C! %s", tostring( -1 ) );
+      settop( 0 );
 
       if( !config.get( "lua.tolerant", false ) ) {
-        throw Exception( "Matrix Lua function call finished with an error" );
+        throw Exception( "Client Lua function call finished with an error" );
       }
     }
-  }
-
-  void Lua::objectCall( const char* functionName, Object* self_, Bot* user_ )
-  {
-    self         = self_;
-    user         = user_;
-    obj          = self_;
-    str          = null;
-    part         = null;
-    objIndex     = 0;
-    strIndex     = 0;
-    isFirstEvent = false;
-    event        = List<Object::Event>::CIterator();
-
-    hard_assert( gettop() == 1 && self != null );
-
-    getglobal( functionName );
-    rawgeti( 1, self->index );
-    lua_pcall( l, 1, 0, 0 );
-
-    if( gettop() != 1 ) {
-      log.println( "M! %s", tostring( -1 ) );
-      settop( 1 );
-
-      if( !config.get( "lua.tolerant", false ) ) {
-        throw Exception( "Matrix Lua function call finished with an error" );
-      }
-    }
-  }
-
-  void Lua::registerObject( int index )
-  {
-    // we cannot depend that ozLocalData exists at index 1 as this function can be called via a
-    // script creating an object
-    getglobal( "ozLocalData" );
-    newtable();
-    rawseti( -2, index );
-    pop( 1 );
-  }
-
-  void Lua::unregisterObject( int index )
-  {
-    // we cannot depend that ozLocalData exists at index 1 as this function can be called via a
-    // script creating an object
-    getglobal( "ozLocalData" );
-    pushnil();
-    rawseti( -2, index );
-    pop( 1 );
   }
 
   void Lua::registerFunction( const char* name, LuaAPI func )
@@ -223,52 +88,9 @@ namespace oz
     setglobal( name );
   }
 
-  void Lua::read( InputStream* istream )
-  {
-    hard_assert( gettop() == 1 );
-    hard_assert( ( pushnil(), next( 1 ) == 0 ) );
-
-    char ch = istream->readChar();
-    hard_assert( ch ==  '[' );
-
-    ch = istream->readChar();
-
-    while( ch != ']' ) {
-      hard_assert( ch == 'i' );
-
-      int index = istream->readInt();
-      readVariable( istream );
-
-      rawseti( 1, index );
-
-      ch = istream->readChar();
-    }
-  }
-
-  void Lua::write( OutputStream* ostream )
-  {
-    hard_assert( gettop() == 1 );
-
-    ostream->writeChar( '[' );
-
-    pushnil();
-    while( next( 1 ) != 0 ) {
-      hard_assert( type( -2 ) == LUA_TNUMBER );
-      hard_assert( type( -1 ) == LUA_TTABLE );
-
-      ostream->writeChar( 'i' );
-      ostream->writeInt( toint( -2 ) );
-      writeVariable( ostream );
-
-      pop( 1 );
-    }
-
-    ostream->writeChar( ']' );
-  }
-
   void Lua::init()
   {
-    log.println( "Initialising Matrix Lua {" );
+    log.println( "Initialising Client Lua {" );
     log.indent();
 
     config.getSet( "lua.tolerant", false );
@@ -287,6 +109,8 @@ namespace oz
 
     OZ_LUA_FUNC( ozPrintln );
     OZ_LUA_FUNC( ozException );
+
+    OZ_LUA_FUNC( ozMatrixCall );
 
     /*
      * Orbis
@@ -347,16 +171,6 @@ namespace oz
     OZ_LUA_FUNC( ozStrDestroy );
     OZ_LUA_FUNC( ozStrRemove );
 
-    OZ_LUA_FUNC( ozStrVectorFromSelf );
-    OZ_LUA_FUNC( ozStrVectorFromSelfEye );
-    OZ_LUA_FUNC( ozStrDirectionFromSelf );
-    OZ_LUA_FUNC( ozStrDirectionFromSelfEye );
-    OZ_LUA_FUNC( ozStrDistanceFromSelf );
-    OZ_LUA_FUNC( ozStrDistanceFromSelfEye );
-    OZ_LUA_FUNC( ozStrHeadingFromSelf );
-    OZ_LUA_FUNC( ozStrPitchFromSelf );
-    OZ_LUA_FUNC( ozStrPitchFromSelfEye );
-
     OZ_LUA_FUNC( ozStrBindAllOverlaps );
     OZ_LUA_FUNC( ozStrBindStrOverlaps );
     OZ_LUA_FUNC( ozStrBindObjOverlaps );
@@ -370,13 +184,9 @@ namespace oz
     OZ_LUA_FUNC( ozEventGet );
 
     OZ_LUA_FUNC( ozObjBindIndex );
-    OZ_LUA_FUNC( ozObjBindSelf );
-    OZ_LUA_FUNC( ozObjBindUser );
     OZ_LUA_FUNC( ozObjBindNext );
 
     OZ_LUA_FUNC( ozObjIsNull );
-    OZ_LUA_FUNC( ozObjIsSelf );
-    OZ_LUA_FUNC( ozObjIsUser );
     OZ_LUA_FUNC( ozObjIsCut );
     OZ_LUA_FUNC( ozObjIsBrowsable );
     OZ_LUA_FUNC( ozObjIsDynamic );
@@ -401,16 +211,6 @@ namespace oz
     OZ_LUA_FUNC( ozObjDamage );
     OZ_LUA_FUNC( ozObjDestroy );
     OZ_LUA_FUNC( ozObjRemove );
-
-    OZ_LUA_FUNC( ozObjVectorFromSelf );
-    OZ_LUA_FUNC( ozObjVectorFromSelfEye );
-    OZ_LUA_FUNC( ozObjDirectionFromSelf );
-    OZ_LUA_FUNC( ozObjDirectionFromSelfEye );
-    OZ_LUA_FUNC( ozObjDistanceFromSelf );
-    OZ_LUA_FUNC( ozObjDistanceFromSelfEye );
-    OZ_LUA_FUNC( ozObjHeadingFromSelf );
-    OZ_LUA_FUNC( ozObjPitchFromSelf );
-    OZ_LUA_FUNC( ozObjPitchFromSelfEye );
 
     OZ_LUA_FUNC( ozObjBindEvents );
     OZ_LUA_FUNC( ozObjBindItems );
@@ -501,6 +301,17 @@ namespace oz
     OZ_LUA_FUNC( ozPartRemove );
 
     /*
+     * Camera
+     */
+
+    OZ_LUA_FUNC( ozCameraGetPos );
+    OZ_LUA_FUNC( ozCameraMoveTo );
+    OZ_LUA_FUNC( ozCameraWarpTo );
+
+    OZ_LUA_FUNC( ozCameraAllowReincarnation );
+    OZ_LUA_FUNC( ozCameraIncarnate );
+
+    /*
      * Constants
      */
 
@@ -572,27 +383,23 @@ namespace oz
     OZ_LUA_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_RANDOM_HEADING_BIT",   Object::RANDOM_HEADING_BIT );
 
-    newtable();
-    setglobal( "ozLocalData" );
-    getglobal( "ozLocalData" );
-
     Directory luaDir;
-    luaDir.open( "lua/matrix" );
+    luaDir.open( "lua/client" );
 
     foreach( file, luaDir.citer() ) {
       if( file.hasExtension( "lua" ) ) {
         log.print( "%s ...", &*file );
 
-        if( luaL_dofile( l, String( "lua/matrix/" ) + file ) != 0 ) {
+        if( luaL_dofile( l, String( "lua/client/" ) + file ) != 0 ) {
           log.printEnd( " Failed" );
-          throw Exception( "Matrix Lua script error" );
+          throw Exception( "Client Lua script error" );
         }
 
         log.printEnd( " OK" );
       }
     }
 
-    hard_assert( gettop() == 1 );
+    hard_assert( gettop() == 0 );
 
     log.unindent();
     log.println( "}" );
@@ -604,7 +411,7 @@ namespace oz
       return;
     }
 
-    log.print( "Freeing Matrix Lua ..." );
+    log.print( "Freeing Client Lua ..." );
 
     objects.clear();
     objects.dealloc();
@@ -626,7 +433,7 @@ namespace oz
   {
     ARG( 1 );
 
-    log.println( "M> %s", tostring( 1 ) );
+    log.println( "C> %s", tostring( 1 ) );
     return 0;
   }
 
@@ -636,6 +443,14 @@ namespace oz
 
     const char* message = tostring( 1 );
     throw Exception( message );
+  }
+
+  int Lua::ozMatrixCall( lua_State* l )
+  {
+    ARG( 1 );
+
+    oz::lua.staticCall( tostring( 1 ) );
+    return 0;
   }
 
   /*
@@ -1045,125 +860,6 @@ namespace oz
     return 0;
   }
 
-  int Lua::ozStrVectorFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    STR_NOT_NULL();
-
-    Vec3 vec = lua.str->p - lua.self->p;
-    pushfloat( vec.x );
-    pushfloat( vec.y );
-    pushfloat( vec.z );
-    return 3;
-  }
-
-  int Lua::ozStrVectorFromSelfEye( lua_State* l )
-  {
-    ARG( 0 );
-    STR_NOT_NULL();
-    SELF_BOT();
-
-    Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-    Vec3 vec = lua.str->p - eye;
-    pushfloat( vec.x );
-    pushfloat( vec.y );
-    pushfloat( vec.z );
-    return 3;
-  }
-
-  int Lua::ozStrDirectionFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    STR_NOT_NULL();
-
-    Vec3 dir = ~( lua.str->p - lua.self->p );
-    pushfloat( dir.x );
-    pushfloat( dir.y );
-    pushfloat( dir.z );
-    return 3;
-  }
-
-  int Lua::ozStrDirectionFromSelfEye( lua_State* l )
-  {
-    ARG( 0 );
-    STR_NOT_NULL();
-    SELF_BOT();
-
-    Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-    Vec3 dir = ~( lua.str->p - eye );
-    pushfloat( dir.x );
-    pushfloat( dir.y );
-    pushfloat( dir.z );
-    return 3;
-  }
-
-  int Lua::ozStrDistanceFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    STR_NOT_NULL();
-
-    pushfloat( !( lua.str->p - lua.self->p ) );
-    return 1;
-  }
-
-  int Lua::ozStrDistanceFromSelfEye( lua_State* l )
-  {
-    ARG( 0 );
-    STR_NOT_NULL();
-    SELF_BOT();
-
-    Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-    pushfloat( !( lua.str->p - eye ) );
-    return 1;
-  }
-
-  int Lua::ozStrHeadingFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    STR_NOT_NULL();
-
-    float dx = lua.str->p.x - lua.self->p.x;
-    float dy = lua.str->p.y - lua.self->p.y;
-    float angle = Math::deg( Math::atan2( -dx, dy ) );
-
-    pushfloat( angle );
-    return 1;
-  }
-
-  int Lua::ozStrPitchFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    STR_NOT_NULL();
-
-    float dx = lua.str->p.x - lua.self->p.x;
-    float dy = lua.str->p.y - lua.self->p.y;
-    float dz = lua.str->p.z - lua.self->p.z;
-    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
-
-    pushfloat( angle );
-    return 1;
-  }
-
-  int Lua::ozStrPitchFromSelfEye( lua_State* l )
-  {
-    ARG( 0 );
-    STR_NOT_NULL();
-    SELF_BOT();
-
-    Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-    float dx = lua.str->p.x - eye.x;
-    float dy = lua.str->p.y - eye.y;
-    float dz = lua.str->p.z - eye.z;
-    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
-
-    pushfloat( angle );
-    return 1;
-  }
-
   int Lua::ozStrBindAllOverlaps( lua_State* l )
   {
     ARG( 3 );
@@ -1255,22 +951,6 @@ namespace oz
     return 0;
   }
 
-  int Lua::ozObjBindSelf( lua_State* l )
-  {
-    ARG( 0 );
-
-    lua.obj = lua.self;
-    return 0;
-  }
-
-  int Lua::ozObjBindUser( lua_State* l )
-  {
-    ARG( 0 );
-
-    lua.obj = lua.user;
-    return 0;
-  }
-
   int Lua::ozObjBindNext( lua_State* l )
   {
     ARG( 0 );
@@ -1291,22 +971,6 @@ namespace oz
     ARG( 0 );
 
     pushbool( lua.obj == null );
-    return 1;
-  }
-
-  int Lua::ozObjIsSelf( lua_State* l )
-  {
-    ARG( 0 );
-
-    pushbool( lua.obj == lua.self );
-    return 1;
-  }
-
-  int Lua::ozObjIsUser( lua_State* l )
-  {
-    ARG( 0 );
-
-    pushbool( lua.obj == lua.user );
     return 1;
   }
 
@@ -1546,140 +1210,8 @@ namespace oz
       synapse.remove( lua.obj );
     }
 
-    lua.self = lua.self == lua.obj ? null : lua.self;
-    lua.user = lua.user == lua.obj ? null : lua.user;
     lua.obj  = null;
     return 0;
-  }
-
-  int Lua::ozObjVectorFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    OBJ_NOT_NULL();
-    OBJ_NOT_SELF();
-
-    Vec3 vec = lua.obj->p - lua.self->p;
-
-    pushfloat( vec.x );
-    pushfloat( vec.y );
-    pushfloat( vec.z );
-    return 3;
-  }
-
-  int Lua::ozObjVectorFromSelfEye( lua_State* l )
-  {
-    ARG( 0 );
-    OBJ_NOT_NULL();
-    OBJ_NOT_SELF();
-    SELF_BOT();
-
-    Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-    Vec3   vec = lua.obj->p - eye;
-
-    pushfloat( vec.x );
-    pushfloat( vec.y );
-    pushfloat( vec.z );
-    return 3;
-  }
-
-  int Lua::ozObjDirectionFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    OBJ_NOT_NULL();
-    OBJ_NOT_SELF();
-
-    Vec3 dir = ~( lua.obj->p - lua.self->p );
-
-    pushfloat( dir.x );
-    pushfloat( dir.y );
-    pushfloat( dir.z );
-    return 3;
-  }
-
-  int Lua::ozObjDirectionFromSelfEye( lua_State* l )
-  {
-    ARG( 0 );
-    OBJ_NOT_NULL();
-    OBJ_NOT_SELF();
-    SELF_BOT();
-
-    Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-    Vec3   dir = ~( lua.obj->p - eye );
-
-    pushfloat( dir.x );
-    pushfloat( dir.y );
-    pushfloat( dir.z );
-    return 3;
-  }
-
-  int Lua::ozObjDistanceFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    OBJ_NOT_NULL();
-    OBJ_NOT_SELF();
-
-    pushfloat( !( lua.obj->p - lua.self->p ) );
-    return 1;
-  }
-
-  int Lua::ozObjDistanceFromSelfEye( lua_State* l )
-  {
-    ARG( 0 );
-    OBJ_NOT_NULL();
-    OBJ_NOT_SELF();
-    SELF_BOT();
-
-    Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-    pushfloat( !( lua.obj->p - eye ) );
-    return 1;
-  }
-
-  int Lua::ozObjHeadingFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    OBJ_NOT_NULL();
-    OBJ_NOT_SELF();
-
-    float dx = lua.obj->p.x - lua.self->p.x;
-    float dy = lua.obj->p.y - lua.self->p.y;
-    float angle = Math::deg( Math::atan2( -dx, dy ) );
-
-    pushfloat( angle );
-    return 1;
-  }
-
-  int Lua::ozObjPitchFromSelf( lua_State* l )
-  {
-    ARG( 0 );
-    OBJ_NOT_NULL();
-    OBJ_NOT_SELF();
-
-    float dx = lua.obj->p.x - lua.self->p.x;
-    float dy = lua.obj->p.y - lua.self->p.y;
-    float dz = lua.obj->p.z - lua.self->p.z;
-    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
-
-    pushfloat( angle );
-    return 1;
-  }
-
-  int Lua::ozObjPitchFromSelfEye( lua_State* l )
-  {
-    ARG( 0 );
-    OBJ_NOT_NULL();
-    OBJ_NOT_SELF();
-    SELF_BOT();
-
-    Point3 eye = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
-
-    float dx = lua.obj->p.x - eye.x;
-    float dy = lua.obj->p.y - eye.y;
-    float dz = lua.obj->p.z - eye.z;
-    float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
-
-    pushfloat( angle );
-    return 1;
   }
 
   int Lua::ozObjBindEvents( lua_State* l )
@@ -2360,4 +1892,71 @@ namespace oz
     return 0;
   }
 
+  /*
+   * Camera
+   */
+
+  int Lua::ozCameraGetPos( lua_State* l )
+  {
+    ARG( 0 );
+
+    pushfloat( camera.p.x );
+    pushfloat( camera.p.y );
+    pushfloat( camera.p.z );
+
+    return 3;
+  }
+
+  int Lua::ozCameraMoveTo( lua_State* l )
+  {
+    ARG( 3 );
+
+    Point3 pos = Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) );
+    camera.move( pos );
+
+    return 3;
+  }
+
+  int Lua::ozCameraWarpTo( lua_State* l )
+  {
+    ARG( 3 );
+
+    Point3 pos = Point3( tofloat( 1 ), tofloat( 2 ), tofloat( 3 ) );
+    camera.warp( pos );
+
+    return 3;
+  }
+
+  int Lua::ozCameraIncarnate( lua_State* l )
+  {
+    ARG( 1 );
+
+    int index = toint( 1 );
+    if( uint( index ) >= uint( orbis.objects.length() ) ) {
+      ERROR( "invalid object index" );
+    }
+
+    Bot* bot = static_cast<Bot*>( orbis.objects[index] );
+    if( bot == null ) {
+      ERROR( "object is null" );
+    }
+    else if( !( bot->flags & Object::BOT_BIT ) ) {
+      ERROR( "object is not a bot" );
+    }
+
+    camera.setBot( bot );
+    camera.setState( Camera::BOT );
+
+    return 0;
+  }
+
+  int Lua::ozCameraAllowReincarnation( lua_State* l )
+  {
+    ARG( 1 );
+
+    camera.allowReincarnation = tobool( 1 );
+    return 0;
+  }
+
+}
 }

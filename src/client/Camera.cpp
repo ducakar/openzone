@@ -112,7 +112,6 @@ namespace client
   void Camera::read( InputStream* istream )
   {
     ui::mouse.doShow = istream->readBool();
-    isExternal = istream->readBool();
 
     p         = istream->readPoint3();
     oldP      = p;
@@ -140,6 +139,9 @@ namespace client
     state     = State( istream->readInt() );
     newState  = state;
 
+    isExternal         = istream->readBool();
+    allowReincarnation = istream->readBool();
+
     strategicProxy.read( istream );
     botProxy.read( istream );
 
@@ -162,7 +164,6 @@ namespace client
   void Camera::write( OutputStream* ostream ) const
   {
     ostream->writeBool( ui::mouse.doShow );
-    ostream->writeBool( isExternal );
 
     ostream->writePoint3( newP );
 
@@ -175,6 +176,9 @@ namespace client
     ostream->writeInt( bot );
 
     ostream->writeInt( state );
+
+    ostream->writeBool( isExternal );
+    ostream->writeBool( allowReincarnation );
 
     strategicProxy.write( ostream );
     botProxy.write( ostream );
@@ -206,7 +210,6 @@ namespace client
     keyXSens     = config.getSet( "camera.keysXSens",  2.0f );
     keyYSens     = config.getSet( "camera.keysYSens",  2.0f );
     smoothCoef   = config.getSet( "camera.smoothCoef", 0.50f );
-    isExternal   = true;
 
     float angle  = Math::rad( config.getSet( "camera.angle", 80.0f ) );
 
@@ -254,6 +257,9 @@ namespace client
 
     state     = NONE;
     newState  = defaultState;
+
+    isExternal         = true;
+    allowReincarnation = true;
   }
 
 }

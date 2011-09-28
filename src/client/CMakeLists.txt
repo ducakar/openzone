@@ -14,6 +14,7 @@ add_library( client STATIC
   Frustum.cpp
   GameStage.cpp
   Loader.cpp
+  Lua.cpp
   MD2.cpp
   MD2Model.cpp
   MD2WeaponModel.cpp

@@ -21,8 +21,8 @@
 #include "client/Loader.hpp"
 #include "client/Render.hpp"
 #include "client/Sound.hpp"
-
 #include "client/Camera.hpp"
+#include "client/Lua.hpp"
 
 namespace oz
 {
@@ -299,6 +299,12 @@ namespace client
       log.println( "Initialising new world" );
 
       matrix.read( null );
+
+      lua.staticCall( onCreate );
+
+      if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
+        throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
+      }
     }
     else {
       log.print( "Loading state from '%s' ...", file );
@@ -360,7 +366,6 @@ namespace client
         !read( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) ) )
     {
       read( null );
-      camera.warp( Point3( 141.0f, -12.0f, 84.75f ) );
     }
 
     network.connect();
@@ -444,9 +449,16 @@ namespace client
     render.draw( Render::DRAW_UI_BIT );
     render.sync();
 
+    onCreate = config.get( "client.onCreate", "init_default" );
+
+    if( onCreate.isEmpty() ) {
+      throw Exception( "missing client.onCreate setting" );
+    }
+
     matrix.init();
     nirvana.init();
     loader.init();
+    lua.init();
 
     log.unindent();
     log.println( "}" );
@@ -457,6 +469,7 @@ namespace client
     log.println( "Freeing GameStage {" );
     log.indent();
 
+    lua.free();
     loader.free();
     nirvana.free();
     matrix.free();
