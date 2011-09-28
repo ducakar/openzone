@@ -41,6 +41,7 @@ static const char* const CREATE_DIRS[] = {
   "lua",
   "lua/matrix",
   "lua/nirvana",
+  "lua/client",
   "mdl",
   "music",
   "name",
@@ -559,6 +560,7 @@ int main( int argc, char** argv )
 
     checkLua( "lua/matrix" );
     checkLua( "lua/nirvana" );
+    checkLua( "lua/client" );
 
     uint endTime = SDL_GetTicks();
 

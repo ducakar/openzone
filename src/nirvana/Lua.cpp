@@ -251,11 +251,12 @@ namespace nirvana
     luaL_openlibs( l );
 
     /*
-     * Generic functions
+     * General functions
      */
 
     OZ_LUA_FUNC( ozPrintln );
     OZ_LUA_FUNC( ozException );
+
     OZ_LUA_FUNC( ozForceUpdate );
 
     /*
@@ -315,6 +316,7 @@ namespace nirvana
      */
 
     OZ_LUA_FUNC( ozEventBindNext );
+
     OZ_LUA_FUNC( ozEventGet );
 
     OZ_LUA_FUNC( ozObjBindIndex );
@@ -559,14 +561,14 @@ namespace nirvana
   }
 
   /*
-   * Generic functions
+   * General functions
    */
 
   int Lua::ozPrintln( lua_State* l )
   {
     ARG( 1 );
 
-    log.println( "M> %s", tostring( 1 ) );
+    log.println( "N> %s", tostring( 1 ) );
     return 0;
   }
 
@@ -683,7 +685,7 @@ namespace nirvana
     ARG( 1 );
 
     int index = toint( 1 );
-    if( index < 0 || orbis.structs.length() <= index ) {
+    if( uint( index ) >= uint( orbis.structs.length() ) ) {
       ERROR( "invalid structure index" );
     }
     lua.str = orbis.structs[index];
@@ -981,7 +983,7 @@ namespace nirvana
     ARG( 1 );
 
     int index = toint( 1 );
-    if( index < 0 || orbis.objects.length() <= index ) {
+    if( uint( index ) >= uint( orbis.objects.length() ) ) {
       ERROR( "invalid object index" );
     }
     lua.obj = orbis.objects[index];
@@ -1087,9 +1089,13 @@ namespace nirvana
   int Lua::ozObjGetIndex( lua_State* l )
   {
     ARG( 0 );
-    OBJ_NOT_NULL();
 
-    pushint( lua.obj->index );
+    if( lua.obj == null ) {
+      pushint( -1 );
+    }
+    else {
+      pushint( lua.obj->index );
+    }
     return 1;
   }
 

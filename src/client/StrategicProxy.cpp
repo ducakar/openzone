@@ -65,7 +65,7 @@ namespace client
       }
     }
 
-    if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
+    if( camera.allowReincarnation && ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
       if( ui::ui.strategicArea->tagged.length() == 1 ) {
         Object* tagged = orbis.objects[ ui::ui.strategicArea->tagged.first() ];
         Bot*    me = null;

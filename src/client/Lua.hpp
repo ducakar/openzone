@@ -22,6 +22,9 @@ namespace oz
   class Bot;
   class Particle;
 
+namespace client
+{
+
   typedef int ( LuaAPI )( lua_State* );
 
   class Lua
@@ -29,9 +32,6 @@ namespace oz
     private:
 
       lua_State*      l;
-
-      Object*         self;
-      Bot*            user;
 
       Struct*         str;
       Object*         obj;
@@ -46,27 +46,17 @@ namespace oz
 
       List<Object::Event>::CIterator event;
 
-      bool readVariable( InputStream* istream );
-      void writeVariable( OutputStream* stream );
-
     public:
 
       Lua();
 
       void staticCall( const char* functionName );
-      void objectCall( const char* functionName, Object* self, Bot* user = null );
-
-      void registerObject( int index );
-      void unregisterObject( int index );
 
       void registerFunction( const char* name, LuaAPI func );
       void registerConstant( const char* name, bool value );
       void registerConstant( const char* name, int value );
       void registerConstant( const char* name, float value );
       void registerConstant( const char* name, const char* value );
-
-      void read( InputStream* istream );
-      void write( OutputStream* ostream );
 
       void init();
       void free();
@@ -79,6 +69,8 @@ namespace oz
 
       OZ_LUA_API( ozPrintln );
       OZ_LUA_API( ozException );
+
+      OZ_LUA_API( ozMatrixCall );
 
       /*
        * Orbis
@@ -139,16 +131,6 @@ namespace oz
       OZ_LUA_API( ozStrDestroy );
       OZ_LUA_API( ozStrRemove );
 
-      OZ_LUA_API( ozStrVectorFromSelf );
-      OZ_LUA_API( ozStrVectorFromSelfEye );
-      OZ_LUA_API( ozStrDirectionFromSelf );
-      OZ_LUA_API( ozStrDirectionFromSelfEye );
-      OZ_LUA_API( ozStrDistanceFromSelf );
-      OZ_LUA_API( ozStrDistanceFromSelfEye );
-      OZ_LUA_API( ozStrHeadingFromSelf );
-      OZ_LUA_API( ozStrPitchFromSelf );
-      OZ_LUA_API( ozStrPitchFromSelfEye );
-
       OZ_LUA_API( ozStrBindAllOverlaps );
       OZ_LUA_API( ozStrBindStrOverlaps );
       OZ_LUA_API( ozStrBindObjOverlaps );
@@ -162,13 +144,9 @@ namespace oz
       OZ_LUA_API( ozEventGet );
 
       OZ_LUA_API( ozObjBindIndex );
-      OZ_LUA_API( ozObjBindSelf );
-      OZ_LUA_API( ozObjBindUser );
       OZ_LUA_API( ozObjBindNext );
 
       OZ_LUA_API( ozObjIsNull );
-      OZ_LUA_API( ozObjIsSelf );
-      OZ_LUA_API( ozObjIsUser );
       OZ_LUA_API( ozObjIsCut );
       OZ_LUA_API( ozObjIsBrowsable );
       OZ_LUA_API( ozObjIsDynamic );
@@ -193,16 +171,6 @@ namespace oz
       OZ_LUA_API( ozObjDamage );
       OZ_LUA_API( ozObjDestroy );
       OZ_LUA_API( ozObjRemove );
-
-      OZ_LUA_API( ozObjVectorFromSelf );
-      OZ_LUA_API( ozObjVectorFromSelfEye );
-      OZ_LUA_API( ozObjDirectionFromSelf );
-      OZ_LUA_API( ozObjDirectionFromSelfEye );
-      OZ_LUA_API( ozObjDistanceFromSelf );
-      OZ_LUA_API( ozObjDistanceFromSelfEye );
-      OZ_LUA_API( ozObjHeadingFromSelf );
-      OZ_LUA_API( ozObjPitchFromSelf );
-      OZ_LUA_API( ozObjPitchFromSelfEye );
 
       OZ_LUA_API( ozObjBindEvents );
       OZ_LUA_API( ozObjBindItems );
@@ -298,8 +266,20 @@ namespace oz
 
       OZ_LUA_API( ozPartRemove );
 
+      /*
+       * Camera
+       */
+
+      OZ_LUA_API( ozCameraGetPos );
+      OZ_LUA_API( ozCameraMoveTo );
+      OZ_LUA_API( ozCameraWarpTo );
+
+      OZ_LUA_API( ozCameraAllowReincarnation );
+      OZ_LUA_API( ozCameraIncarnate );
+
   };
 
   extern Lua lua;
 
+}
 }

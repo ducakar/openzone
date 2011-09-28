@@ -93,6 +93,7 @@ namespace client
       float  maxDist;
 
       bool   isExternal;
+      bool   allowReincarnation;
 
       void setState( State state )
       {

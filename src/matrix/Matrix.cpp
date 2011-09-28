@@ -147,20 +147,10 @@ namespace oz
     log.indent();
 
     if( istream != null ) {
-      // to create the variable when running for the first time
-      config.getSet( "matrix.onCreate", "matrix_onCreate" );
-
       orbis.read( istream );
 
       for( int i = 0; i < modules.length(); ++i ) {
         modules[i]->read( istream );
-      }
-    }
-    else {
-      lua.staticCall( config.getSet( "matrix.onCreate", "matrix_onCreate" ) );
-
-      if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
-        throw Exception( "Terrain and Caelum must both be loaded in the matrix.onCreate method" );
       }
     }
 

@@ -43,16 +43,12 @@ namespace nirvana
 
       List<Object::Event>::CIterator event;
 
-    public:
-
-      bool forceUpdate;
-
-    private:
-
       bool readVariable( InputStream* istream );
       void writeVariable( OutputStream* stream );
 
     public:
+
+      bool forceUpdate;
 
       Lua();
 
@@ -76,11 +72,12 @@ namespace nirvana
     private:
 
       /*
-       * Generic functions
+       * General functions
        */
 
       OZ_LUA_API( ozPrintln );
       OZ_LUA_API( ozException );
+
       OZ_LUA_API( ozForceUpdate );
 
       /*

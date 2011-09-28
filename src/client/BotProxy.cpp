@@ -58,7 +58,7 @@ namespace client
 
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-    if( ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
+    if( camera.allowReincarnation && ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
       bot->state &= ~Bot::PLAYER_BIT;
       camera.setBot( null );
       return;
@@ -75,6 +75,7 @@ namespace client
       float relH = camera.relH;
       float relV = camera.relV;
 
+      // TODO
 //       if( bot->parent != -1 && orbis.objects[bot->parent] != null ) {
 //         const Vehicle*      vehicle = static_cast<const Vehicle*>( orbis.objects[bot->parent] );
 //         const VehicleClass* clazz   = static_cast<const VehicleClass*>( vehicle->clazz );

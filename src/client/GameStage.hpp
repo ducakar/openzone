@@ -36,15 +36,16 @@ namespace client
       SDL_sem*      mainSemaphore;
       SDL_sem*      auxSemaphore;
 
+      volatile bool isAlive;
+
+      bool          isLoaded;
       bool          saveOnExit;
 
-      volatile bool isAlive;
+      String        onCreate;
 
       static int auxMain( void* );
 
       void run();
-
-      bool   isLoaded;
 
     public:
 
