@@ -11,6 +11,8 @@
 
 #include "stable.hpp"
 
+#include "matrix/common.hpp"
+
 namespace oz
 {
 
@@ -34,6 +36,9 @@ namespace oz
       {}
 
       virtual void unload()
+      {}
+
+      virtual void registerLua( lua_State*, bool ) const
       {}
 
       virtual void init()

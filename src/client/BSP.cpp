@@ -432,13 +432,16 @@ namespace client
         const QBSPTexture& texture = textures[face.texture];
         String name = texture.name;
 
-        if( name.length() <= 12 || name.equals( "textures/NULL" ) ||
+        if( name.length() <= 9 || name.equals( "textures/NULL" ) ||
             ( texture.flags & QBSP_LADDER_FLAG_BIT ) )
         {
           name = "";
         }
         else {
-          name = name.substring( 12 );
+          name = name.substring( 9 );
+
+          int id = library.textureIndex( name );
+          library.usedTextures.set( id );
         }
 
         if( texture.type & QBSP_WATER_TYPE_BIT ) {

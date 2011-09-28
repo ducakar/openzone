@@ -14,10 +14,9 @@
 #include "matrix/BotClass.hpp"
 #include "matrix/VehicleClass.hpp"
 #include "matrix/Library.hpp"
+#include "matrix/Module.hpp"
 
-#include <lua.hpp>
-
-#include "luamacros.h"
+#include "matrix/luaapi.hpp"
 
 namespace oz
 {
@@ -138,7 +137,7 @@ namespace nirvana
     lua_pcall( l, 1, 0, 0 );
 
     if( gettop() != 1 ) {
-      log.println( "N! %s", tostring( -1 ) );
+      log.println( "N! [%s] %s", functionName, tostring( -1 ) );
       settop( 1 );
 
       if( !config.get( "lua.tolerant", false ) ) {
@@ -161,35 +160,6 @@ namespace nirvana
 
     pushnil();
     rawseti( 1, botIndex );
-  }
-
-  void Lua::registerFunction( const char* name, LuaAPI func )
-  {
-    lua_register( l, name, func );
-  }
-
-  void Lua::registerConstant( const char* name, bool value )
-  {
-    pushbool( value );
-    setglobal( name );
-  }
-
-  void Lua::registerConstant( const char* name, int value )
-  {
-    pushint( value );
-    setglobal( name );
-  }
-
-  void Lua::registerConstant( const char* name, float value )
-  {
-    pushfloat( value );
-    setglobal( name );
-  }
-
-  void Lua::registerConstant( const char* name, const char* value )
-  {
-    pushstring( value );
-    setglobal( name );
   }
 
   void Lua::read( InputStream* istream )
@@ -233,6 +203,11 @@ namespace nirvana
     }
 
     ostream->writeChar( ']' );
+  }
+
+  void Lua::registerModule( const Module* module )
+  {
+    module->registerLua( l, true );
   }
 
   void Lua::init()
@@ -368,6 +343,13 @@ namespace nirvana
     OZ_LUA_FUNC( ozDynGetMomentum );
     OZ_LUA_FUNC( ozDynGetMass );
     OZ_LUA_FUNC( ozDynGetLift );
+
+    /*
+     * Weapon
+     */
+
+    OZ_LUA_FUNC( ozWeaponGetDefaultRounds );
+    OZ_LUA_FUNC( ozWeaponGetRounds );
 
     /*
      * Bot
@@ -1432,6 +1414,32 @@ namespace nirvana
     OBJ_DYNAMIC();
 
     pushfloat( dyn->lift );
+    return 1;
+  }
+
+  /*
+   * Weapon
+   */
+
+  int Lua::ozWeaponGetDefaultRounds( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_WEAPON();
+
+    const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+    pushint( weaponClazz->nRounds );
+    return 1;
+  }
+
+  int Lua::ozWeaponGetRounds( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_WEAPON();
+
+    pushint( weapon->nRounds );
     return 1;
   }
 

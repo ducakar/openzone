@@ -15,7 +15,7 @@
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 
-#include <lua.hpp>
+#include "matrix/luaapi.hpp"
 
 namespace oz
 {
@@ -88,37 +88,48 @@ namespace oz
     }
   }
 
-  void FloraModule::init()
+  void FloraModule::registerLua( lua_State* l, bool isReadOnly ) const
   {
     OZ_LUA_FUNC( ozFloraGetDensity );
-    OZ_LUA_FUNC( ozFloraSetDensity );
     OZ_LUA_FUNC( ozFloraGetSpacing );
-    OZ_LUA_FUNC( ozFloraSetSpacing );
     OZ_LUA_FUNC( ozFloraGetNumber );
-    OZ_LUA_FUNC( ozFloraSeed );
+
+    if( !isReadOnly ) {
+      OZ_LUA_FUNC( ozFloraSetSpacing );
+      OZ_LUA_FUNC( ozFloraSetDensity );
+      OZ_LUA_FUNC( ozFloraSeed );
+    }
   }
 
   int FloraModule::ozFloraGetDensity( lua_State* l )
   {
-    lua_pushnumber( l, floraModule.density );
+    ARG( 0 );
+
+    pushfloat( floraModule.density );
     return 1;
   }
 
   int FloraModule::ozFloraSetDensity( lua_State* l )
   {
-    floraModule.density = float( lua_tonumber( l, 1 ) );
+    ARG( 1 );
+
+    floraModule.density = tofloat( 1 );
     return 0;
   }
 
   int FloraModule::ozFloraGetSpacing( lua_State* l )
   {
-    lua_pushnumber( l, floraModule.spacing );
+    ARG( 0 );
+
+    pushfloat( floraModule.spacing );
     return 1;
   }
 
   int FloraModule::ozFloraSetSpacing( lua_State* l )
   {
-    float spacing = float( lua_tonumber( l, 1 ) );
+    ARG( 1 );
+
+    float spacing = tofloat( 1 );
     if( spacing < 0 ) {
       throw Exception( "Lua::ozFloraGetSpacing: spacing must be >= 0.0" );
     }
@@ -129,12 +140,16 @@ namespace oz
 
   int FloraModule::ozFloraGetNumber( lua_State* l )
   {
-    lua_pushnumber( l, floraModule.number );
+    ARG( 0 );
+
+    pushfloat( floraModule.number );
     return 1;
   }
 
-  int FloraModule::ozFloraSeed( lua_State* )
+  int FloraModule::ozFloraSeed( lua_State* l )
   {
+    ARG( 0 );
+
     floraModule.seed();
     return 0;
   }

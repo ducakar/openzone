@@ -56,7 +56,7 @@ namespace ui
       const Bot*     taggedBot = static_cast<const Bot*>( taggedObj );
 
       float life;
-      if( Math::isInf( taggedObj->life ) ) {
+      if( Math::isInfFM( taggedObj->life ) ) {
         life = 1.0f;
       }
       else if( taggedObj->flags & Object::BOT_BIT ) {
@@ -155,7 +155,7 @@ namespace ui
     const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
     float life;
-    if( Math::isInf( bot->life ) ) {
+    if( Math::isInfFM( bot->life ) ) {
       life = 1.0f;
     }
     else {
@@ -185,9 +185,9 @@ namespace ui
         lastWeaponId = bot->weapon;
         weaponName.setText( "%s", weaponObj->clazz->title.cstr() );
       }
-      if( lastWeaponRounds != weaponObj->nShots ) {
-        lastWeaponRounds = weaponObj->nShots;
-        weaponRounds.setText( weaponObj->nShots == -1 ? "∞" : "%d", weaponObj->nShots );
+      if( lastWeaponRounds != weaponObj->nRounds ) {
+        lastWeaponRounds = weaponObj->nRounds;
+        weaponRounds.setText( weaponObj->nRounds == -1 ? "∞" : "%d", weaponObj->nRounds );
       }
 
       weaponName.draw( this );
@@ -230,7 +230,7 @@ namespace ui
     glEnable( GL_BLEND );
     glDisable( GL_DEPTH_TEST );
 
-    float life      = Math::isInf( vehicle->life ) ? 1.0f : vehicle->life / vehClazz->life;
+    float life      = Math::isInfFM( vehicle->life ) ? 1.0f : vehicle->life / vehClazz->life;
     int   lifeWidth = max( int( life * 198.0f ), 0 );
 
     glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
@@ -259,10 +259,10 @@ namespace ui
 
       int labelIndex = vehClazz->nWeapons - i - 1;
 
-      if( lastVehicleWeaponRounds[labelIndex] != vehicle->nShots[i] ) {
-        lastVehicleWeaponRounds[labelIndex] = vehicle->nShots[i];
+      if( lastVehicleWeaponRounds[labelIndex] != vehicle->nRounds[i] ) {
+        lastVehicleWeaponRounds[labelIndex] = vehicle->nRounds[i];
         vehicleWeaponRounds[labelIndex].
-            setText( vehicle->nShots[i] == -1 ? "∞" : "%d", vehicle->nShots[i] );
+            setText( vehicle->nRounds[i] == -1 ? "∞" : "%d", vehicle->nRounds[i] );
       }
 
       vehicleWeaponNames[labelIndex].draw( this );

@@ -26,7 +26,6 @@ namespace oz
     static const int   SIZEI = 16;
     static const float SIZE;
     static const float INV_SIZE;
-    static const float RADIUS;
 
     List<Object>      objects;
     List<Particle>    particles;

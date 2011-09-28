@@ -18,6 +18,13 @@ namespace oz
   {
     public:
 
+      enum Type
+      {
+        OTHER,
+        REGULAR_FILE,
+        DIRECTORY
+      };
+
       class CIterator : public CIteratorBase<const char>
       {
         private:
@@ -28,6 +35,8 @@ namespace oz
 
         public:
 
+          Type type;
+
           CIterator();
 
           explicit CIterator( const Directory& d );
@@ -36,6 +45,7 @@ namespace oz
 
           String baseName() const;
           String extension() const;
+
           bool hasExtension() const;
           bool hasExtension( const char* ext ) const;
 

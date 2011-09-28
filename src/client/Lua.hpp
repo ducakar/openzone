@@ -13,19 +13,16 @@
 
 #include "matrix/Object.hpp"
 
-struct lua_State;
-
 namespace oz
 {
 
   class Struct;
   class Bot;
   class Particle;
+  class Module;
 
 namespace client
 {
-
-  typedef int ( LuaAPI )( lua_State* );
 
   class Lua
   {
@@ -52,11 +49,7 @@ namespace client
 
       void staticCall( const char* functionName );
 
-      void registerFunction( const char* name, LuaAPI func );
-      void registerConstant( const char* name, bool value );
-      void registerConstant( const char* name, int value );
-      void registerConstant( const char* name, float value );
-      void registerConstant( const char* name, const char* value );
+      void registerModule( const Module* module );
 
       void init();
       void free();
@@ -199,6 +192,16 @@ namespace client
       OZ_LUA_API( ozDynAddMomentum );
       OZ_LUA_API( ozDynGetMass );
       OZ_LUA_API( ozDynGetLift );
+
+      /*
+       * Weapon
+       */
+
+      OZ_LUA_API( ozWeaponGetDefaultRounds );
+      OZ_LUA_API( ozWeaponGetRounds );
+      OZ_LUA_API( ozWeaponSetRounds );
+      OZ_LUA_API( ozWeaponAddRounds );
+      OZ_LUA_API( ozWeaponReload );
 
       /*
        * Bot

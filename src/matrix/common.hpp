@@ -17,18 +17,16 @@
 #include "matrix/Sphere.hpp"
 
 #define OZ_LUA_API( func ) \
-  static int func( lua_State* l )
+  static LuaAPI func
 
-#define OZ_LUA_FUNC( func ) \
-  lua.registerFunction( #func, func )
-
-#define OZ_LUA_CONST( name, value ) \
-  lua.registerConstant( name, value )
+struct lua_State;
 
 namespace oz
 {
 
   extern const float EPSILON;
+
+  typedef int ( LuaAPI )( lua_State* );
 
   inline const char* gettext( const char* text )
   {

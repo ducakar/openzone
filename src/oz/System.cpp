@@ -144,6 +144,13 @@ namespace oz
 
 #endif
 
+  void System::halt()
+  {
+    fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
+    fflush( stderr );
+    while( sleep( 1 ) == 0 );
+  }
+
   void System::error( const char* msg, ... )
   {
     va_list ap;

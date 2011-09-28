@@ -31,9 +31,6 @@ namespace client
 
       float radius;
 
-      void init();
-      void update();
-
       OZ_ALWAYS_INLINE
       bool isVisible( const Point3& p, float radius = 0.0f )
       {
@@ -43,25 +40,6 @@ namespace client
             p * up    > -radius &&
             p * down  > -radius &&
             p * front < +radius;
-      }
-
-      OZ_ALWAYS_INLINE
-      bool isVisible( const Sphere& s, float factor = 1.0f )
-      {
-        return isVisible( s.p, s.r * factor );
-      }
-
-      OZ_ALWAYS_INLINE
-      bool isVisible( const Bounds& b, float factor = 1.0f )
-      {
-        Vec3 dim = b.maxs - b.mins;
-        return isVisible( b.mins + 0.5f * dim, dim.fastL() * factor );
-      }
-
-      OZ_ALWAYS_INLINE
-      bool isVisible( const AABB& bb, float factor = 1.0f )
-      {
-        return isVisible( bb.p, bb.dim.fastL() * factor );
       }
 
       OZ_ALWAYS_INLINE
@@ -78,14 +56,11 @@ namespace client
             ( mins * front < +radius || maxs * front < +radius );
       }
 
-      // get min and max index for cells per each axis, which should be included in pvs
-      void getExtrems( Span& span, const Point3& p )
-      {
-        span.minX = max( int( ( p.x - radius + Orbis::DIM ) * Cell::INV_SIZE ), 0 );
-        span.minY = max( int( ( p.y - radius + Orbis::DIM ) * Cell::INV_SIZE ), 0 );
-        span.maxX = min( int( ( p.x + radius + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 );
-        span.maxY = min( int( ( p.y + radius + Orbis::DIM ) * Cell::INV_SIZE ), Orbis::MAX - 1 );
-      }
+      // get min and max index for cells per each axis, which should be included in PVS
+      void getExtrems( Span& span, const Point3& p );
+
+      void update();
+      void init();
 
   };
 

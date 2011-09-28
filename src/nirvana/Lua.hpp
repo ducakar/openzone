@@ -13,14 +13,13 @@
 
 #include "nirvana/common.hpp"
 
-struct lua_State;
-
 namespace oz
 {
+
+  class Module;
+
 namespace nirvana
 {
-
-  typedef int ( LuaAPI )( lua_State* );
 
   class Lua
   {
@@ -57,14 +56,10 @@ namespace nirvana
       void registerMind( int botIndex );
       void unregisterMind( int botIndex );
 
-      void registerFunction( const char* name, LuaAPI func );
-      void registerConstant( const char* name, bool value );
-      void registerConstant( const char* name, int value );
-      void registerConstant( const char* name, float value );
-      void registerConstant( const char* name, const char* value );
-
       void read( InputStream* istream );
       void write( OutputStream* ostream );
+
+      void registerModule( const Module* module );
 
       void init();
       void free();
@@ -189,6 +184,13 @@ namespace nirvana
       OZ_LUA_API( ozDynGetMomentum );
       OZ_LUA_API( ozDynGetMass );
       OZ_LUA_API( ozDynGetLift );
+
+      /*
+       * Weapon
+       */
+
+      OZ_LUA_API( ozWeaponGetDefaultRounds );
+      OZ_LUA_API( ozWeaponGetRounds );
 
       /*
        * Bot

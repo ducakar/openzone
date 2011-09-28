@@ -135,7 +135,7 @@ namespace ui
     printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
 
     float life;
-    if( Math::isInf( hovered->life ) ) {
+    if( Math::isInfFM( hovered->life ) ) {
       life = 1.0f;
     }
     else if( hovered->flags & Object::BOT_BIT ) {
@@ -173,7 +173,7 @@ namespace ui
       const ObjectClass *clazz = obj->clazz;
 
       float life;
-      if( Math::isInf( obj->life ) ) {
+      if( Math::isInfFM( obj->life ) ) {
         life = 1.0f;
       }
       else if( obj->flags & Object::BOT_BIT ) {

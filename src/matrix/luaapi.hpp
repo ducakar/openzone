@@ -10,8 +10,15 @@
 
 #pragma once
 
-#define API( func ) \
-  int Lua::func( lua_State* l )
+#include "matrix/common.hpp"
+
+#include <lua.hpp>
+
+#define OZ_LUA_FUNC( func ) \
+  oz::registerLuaFunction( l, #func, func )
+
+#define OZ_LUA_CONST( name, value ) \
+  oz::registerLuaConstant( l, name, value )
 
 #define ARG( n ) \
   hard_assert( lua_gettop( l ) == ( n ) ); \
@@ -45,6 +52,12 @@
     ERROR( "bound object is not dynamic" ); \
   } \
   Dynamic* dyn = static_cast<Dynamic*>( lua.obj );
+
+#define OBJ_WEAPON() \
+  if( !( lua.obj->flags & Object::WEAPON_BIT ) ) { \
+    ERROR( "bound object is not a weapon" ); \
+  } \
+  Weapon* weapon = static_cast<Weapon*>( lua.obj );
 
 #define OBJ_BOT() \
   if( !( lua.obj->flags & Object::BOT_BIT ) ) { \
@@ -97,3 +110,14 @@
 
 #define getglobal( n )          lua_getglobal( l, n )
 #define setglobal( n )          lua_setglobal( l, n )
+
+namespace oz
+{
+
+  void registerLuaFunction( lua_State* l, const char* name, LuaAPI func );
+  void registerLuaConstant( lua_State* l, const char* name, bool value );
+  void registerLuaConstant( lua_State* l, const char* name, int value );
+  void registerLuaConstant( lua_State* l, const char* name, float value );
+  void registerLuaConstant( lua_State* l, const char* name, const char* value );
+
+}

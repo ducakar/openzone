@@ -180,7 +180,7 @@ namespace client
     return texId;
   }
 
-uint Context::requestTexture( int id )
+  uint Context::requestTexture( int id )
   {
     Resource<uint>& resource = textures[id];
 
@@ -197,7 +197,7 @@ uint Context::requestTexture( int id )
 
     resource.id = GL_NONE;
 
-    if( buffer.read( "bsp/tex/" + name + ".ozcTex" ) ) {
+    if( buffer.read( "bsp/" + name + ".ozcTex" ) ) {
       InputStream is = buffer.inputStream();
 
       resource.id = readTexture( &is );

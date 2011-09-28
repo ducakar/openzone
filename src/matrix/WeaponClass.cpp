@@ -50,7 +50,7 @@ namespace oz
       clazz->flags |= Object::LUA_BIT;
     }
 
-    clazz->nShots       = config->get( "nShots", -1 );
+    clazz->nRounds      = config->get( "nRounds", -1 );
     clazz->shotInterval = config->get( "shotInterval", 0.5f );
 
     return clazz;
@@ -68,7 +68,7 @@ namespace oz
     obj->mass     = mass;
     obj->lift     = lift;
 
-    obj->nShots   = nShots;
+    obj->nRounds  = nRounds;
     obj->shotTime = 0.0f;
 
     fillCommonFields( obj );

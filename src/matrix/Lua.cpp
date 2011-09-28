@@ -16,10 +16,9 @@
 #include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
+#include "matrix/Module.hpp"
 
-#include <lua.hpp>
-
-#include "luamacros.h"
+#include "matrix/luaapi.hpp"
 
 namespace oz
 {
@@ -137,7 +136,7 @@ namespace oz
     lua_pcall( l, 0, 0, 0 );
 
     if( gettop() != 1 ) {
-      log.println( "M! %s", tostring( -1 ) );
+      log.println( "M! [%s] %s", functionName, tostring( -1 ) );
       settop( 1 );
 
       if( !config.get( "lua.tolerant", false ) ) {
@@ -165,7 +164,7 @@ namespace oz
     lua_pcall( l, 1, 0, 0 );
 
     if( gettop() != 1 ) {
-      log.println( "M! %s", tostring( -1 ) );
+      log.println( "M! [%s] %s", functionName, tostring( -1 ) );
       settop( 1 );
 
       if( !config.get( "lua.tolerant", false ) ) {
@@ -192,35 +191,6 @@ namespace oz
     pushnil();
     rawseti( -2, index );
     pop( 1 );
-  }
-
-  void Lua::registerFunction( const char* name, LuaAPI func )
-  {
-    lua_register( l, name, func );
-  }
-
-  void Lua::registerConstant( const char* name, bool value )
-  {
-    pushbool( value );
-    setglobal( name );
-  }
-
-  void Lua::registerConstant( const char* name, int value )
-  {
-    pushint( value );
-    setglobal( name );
-  }
-
-  void Lua::registerConstant( const char* name, float value )
-  {
-    pushfloat( value );
-    setglobal( name );
-  }
-
-  void Lua::registerConstant( const char* name, const char* value )
-  {
-    pushstring( value );
-    setglobal( name );
   }
 
   void Lua::read( InputStream* istream )
@@ -264,6 +234,11 @@ namespace oz
     }
 
     ostream->writeChar( ']' );
+  }
+
+  void Lua::registerModule( const Module* module )
+  {
+    module->registerLua( l, false );
   }
 
   void Lua::init()
@@ -439,6 +414,16 @@ namespace oz
     OZ_LUA_FUNC( ozDynAddMomentum );
     OZ_LUA_FUNC( ozDynGetMass );
     OZ_LUA_FUNC( ozDynGetLift );
+
+    /*
+     * Weapon
+     */
+
+    OZ_LUA_FUNC( ozWeaponGetDefaultRounds );
+    OZ_LUA_FUNC( ozWeaponGetRounds );
+    OZ_LUA_FUNC( ozWeaponSetRounds );
+    OZ_LUA_FUNC( ozWeaponAddRounds );
+    OZ_LUA_FUNC( ozWeaponReload );
 
     /*
      * Bot
@@ -1562,7 +1547,7 @@ namespace oz
     OBJ_NOT_NULL();
 
     int item = toint( 1 );
-    if( uint( item ) >= lua.obj->items.length() ) {
+    if( uint( item ) >= uint( lua.obj->items.length() ) ) {
       ERROR( "invalid item number" );
     }
 
@@ -1952,6 +1937,70 @@ namespace oz
     OBJ_DYNAMIC();
 
     pushfloat( dyn->lift );
+    return 1;
+  }
+
+  /*
+   * Weapon
+   */
+
+  int Lua::ozWeaponGetDefaultRounds( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_WEAPON();
+
+    const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+    pushint( weaponClazz->nRounds );
+    return 1;
+  }
+
+  int Lua::ozWeaponGetRounds( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_WEAPON();
+
+    pushint( weapon->nRounds );
+    return 1;
+  }
+
+  int Lua::ozWeaponSetRounds( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_WEAPON();
+
+    const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+    weapon->nRounds = clamp( toint( 1 ), -1, weaponClazz->nRounds );
+    return 1;
+  }
+
+  int Lua::ozWeaponAddRounds( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_WEAPON();
+
+    const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+    if( weapon->nRounds != -1 ) {
+      weapon->nRounds = min( weapon->nRounds + toint( 1 ), weaponClazz->nRounds );
+    }
+    return 1;
+  }
+
+  int Lua::ozWeaponReload( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_WEAPON();
+
+    const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weapon->clazz );
+
+    weapon->nRounds = weaponClazz->nRounds;
     return 1;
   }
 

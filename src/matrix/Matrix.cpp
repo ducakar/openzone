@@ -23,7 +23,8 @@
 
 #define OZ_REGISTER_MODULE( module ) \
   modules.add( &module##Module ); \
-  module##Module.init()
+  module##Module.init(); \
+  lua.registerModule( &module##Module )
 
 namespace oz
 {
