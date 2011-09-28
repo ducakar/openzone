@@ -82,7 +82,6 @@ namespace client
         }
 
         if( me != null ) {
-          me->state |= Bot::PLAYER_BIT;
           camera.setBot( me );
           camera.setState( Camera::BOT );
         }

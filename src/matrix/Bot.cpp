@@ -101,24 +101,10 @@ namespace oz
       }
     }
 
-    if( life <= clazz->life / 2.0f ) {
+    if( life < clazz->life / 2.0f ) {
       if( life > 0.0f ) {
         if( !( state & DEATH_BIT ) ) {
-          flags |= WIDE_CULL_BIT;
-          flags &= ~SOLID_BIT;
-          life  = clazz->life / 2.0f - EPSILON;
-          state |= DEATH_BIT;
-          state &= ~GRAB_BIT;
-          anim  = Anim::Type( Anim::DEATH_FALLBACK + Math::rand( 3 ) );
-
-          instrument = -1;
-          taggedItem = -1;
-
-          if( clazz->nItems != 0 ) {
-            flags |= BROWSABLE_BIT;
-          }
-
-          addEvent( EVENT_DEATH, 1.0f );
+          kill();
         }
         else {
           life -= clazz->life * BODY_FADE_FACTOR;
@@ -138,7 +124,12 @@ namespace oz
     stamina = min( stamina + clazz->staminaGain, clazz->stamina );
 
     if( actions & ~oldActions & ACTION_SUICIDE ) {
-      life = clazz->life / 2.0f - EPSILON;
+      if( Math::isInf( life ) ) {
+        life = 0.0f;
+      }
+      else {
+        life = clazz->life / 2.0f - EPSILON;
+      }
     }
     // we implement inventory actions here so they can be used inside vehicles
     else if( actions & ~oldActions & ACTION_INV_USE ) {
@@ -682,7 +673,10 @@ namespace oz
 
   void Bot::heal()
   {
-    life = clazz->life;
+    const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
+    life    = clazz->life;
+    stamina = clazz->stamina;
   }
 
   void Bot::rearm()
@@ -697,6 +691,27 @@ namespace oz
           weaponObj->nShots = weaponClazz->nShots;
         }
       }
+    }
+  }
+
+  void Bot::kill()
+  {
+    if( !Math::isInf( life ) ) {
+      flags |= WIDE_CULL_BIT;
+      flags &= ~SOLID_BIT;
+      life  = clazz->life / 2.0f - EPSILON;
+      state |= DEATH_BIT;
+      state &= ~GRAB_BIT;
+      anim  = Anim::Type( Anim::DEATH_FALLBACK + Math::rand( 3 ) );
+
+      instrument = -1;
+      taggedItem = -1;
+
+      if( clazz->nItems != 0 ) {
+        flags |= BROWSABLE_BIT;
+      }
+
+      addEvent( EVENT_DEATH, 1.0f );
     }
   }
 
@@ -727,11 +742,6 @@ namespace oz
     synapse.put( this );
   }
 
-  void Bot::kill()
-  {
-    life = clazz->life / 2.0f - EPSILON;
-  }
-
   void Bot::readFull( InputStream* istream )
   {
     Dynamic::readFull( istream );
@@ -756,7 +766,9 @@ namespace oz
     weapon     = istream->readInt();
 
     anim       = Anim::Type( istream->readInt() );
+
     name       = istream->readString();
+    mindFunc   = istream->readString();
 
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
     dim = ( state & CROUCHING_BIT ) ? clazz->dimCrouch : clazz->dim;
@@ -786,7 +798,9 @@ namespace oz
     ostream->writeInt( weapon );
 
     ostream->writeInt( int( anim ) );
+
     ostream->writeString( name );
+    ostream->writeString( mindFunc );
   }
 
   void Bot::readUpdate( InputStream* istream )

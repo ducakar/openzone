@@ -256,11 +256,22 @@ namespace client
     log.println( "-L, --no-load" );
     log.println( "\tEnables or disables autoload of ~/" OZ_RC_DIR "/default.ozState on" );
     log.println( "\tstartup respectively. Overrides the 'autoload' resource." );
+    log.println( "\tDefault: enable autoload." );
     log.println();
     log.println( "-s, --save" );
     log.println( "-S, --no-save" );
     log.println( "\tEnables or disables autosave to ~/" OZ_RC_DIR "/default.ozState on exit" );
     log.println( "\trespectively. Overrides the 'autosave' resource." );
+    log.println( "\tDefault: enable autosave." );
+    log.println();
+    log.println( "-i, --init <function>" );
+    log.println( "\tUse Lua function <function> from <prefix>/share/openzone/lua/client*.lua" );
+    log.println( "\tto initialise game. Overrides 'client.onCreate' resource. You probably" );
+    log.println( "\twant to use this flag in combination with --no-load." );
+    log.println( "\tDefault: 'client_onCreate'." );
+    log.println();
+    log.println( "-I <function>" );
+    log.println( "\tHas same effect as --no-load --init <function>." );
     log.println();
     log.println( "-t <num>, --time <num>" );
     log.println( "\tExits after <num> seconds (can be a floating-point number)." );
@@ -269,6 +280,7 @@ namespace client
     log.println( "-p <prefix>, --prefix <prefix>" );
     log.println( "\tSets data directory to <prefix>/share/openzone and locale directory to" );
     log.println( "\t<prefix>/share/locale." );
+    log.println( "\tDefault: '%s'.", OZ_INSTALL_PREFIX );
     log.println();
     log.unindent();
   }
@@ -315,6 +327,25 @@ namespace client
       }
       else if( String::equals( argv[i], "--no-save" ) || String::equals( argv[i], "-S" ) ) {
         config.add( "gameStage.autosave", "false" );
+      }
+      else if( String::equals( argv[i], "--init" ) || String::equals( argv[i], "-i" ) ) {
+        if( i + 1 == argc ) {
+          printUsage();
+          return -1;
+        }
+
+        config.add( "client.onCreate", argv[i + 1] );
+        ++i;
+      }
+      else if( String::equals( argv[i], "-I" ) ) {
+        if( i + 1 == argc ) {
+          printUsage();
+          return -1;
+        }
+
+        config.add( "gameStage.autoload", "false" );
+        config.add( "client.onCreate", argv[i + 1] );
+        ++i;
       }
       else if( String::equals( argv[i], "--prefix" ) || String::equals( argv[i], "-p" ) ) {
         if( i + 1 == argc ) {

@@ -398,8 +398,14 @@ namespace oz
     OZ_LUA_FUNC( ozObjAddLife );
 
     OZ_LUA_FUNC( ozObjAddEvent );
+
+    OZ_LUA_FUNC( ozObjAddItem );
+    OZ_LUA_FUNC( ozObjRemoveItem );
+    OZ_LUA_FUNC( ozObjRemoveAllItems );
+
     OZ_LUA_FUNC( ozObjDamage );
     OZ_LUA_FUNC( ozObjDestroy );
+    OZ_LUA_FUNC( ozObjQuietDestroy );
     OZ_LUA_FUNC( ozObjRemove );
 
     OZ_LUA_FUNC( ozObjVectorFromSelf );
@@ -440,6 +446,9 @@ namespace oz
 
     OZ_LUA_FUNC( ozBotGetName );
     OZ_LUA_FUNC( ozBotSetName );
+    OZ_LUA_FUNC( ozBotGetMindFunc );
+    OZ_LUA_FUNC( ozBotSetMindFunc );
+
     OZ_LUA_FUNC( ozBotGetEyePos );
     OZ_LUA_FUNC( ozBotGetH );
     OZ_LUA_FUNC( ozBotSetH );
@@ -471,7 +480,11 @@ namespace oz
     OZ_LUA_FUNC( ozBotStateSetRunning );
     OZ_LUA_FUNC( ozBotStateToggleRunning );
 
+    OZ_LUA_FUNC( ozBotSetWeaponItem );
+
+    OZ_LUA_FUNC( ozBotHeal );
     OZ_LUA_FUNC( ozBotRearm );
+    OZ_LUA_FUNC( ozBotKill );
 
     /*
      * Vehicle
@@ -1512,6 +1525,74 @@ namespace oz
     return 0;
   }
 
+  int Lua::ozObjAddItem( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+
+    if( lua.obj->items.length() == lua.obj->clazz->nItems ) {
+      pushbool( false );
+      return 1;
+    }
+
+    int index = toint( 1 );
+    if( uint( index ) >= uint( orbis.objects.length() ) ) {
+      ERROR( "invalid object index" );
+    }
+
+    Dynamic* obj = static_cast<Dynamic*>( orbis.objects[index] );
+    if( !( obj->flags & Object::ITEM_BIT ) ) {
+      ERROR( "object is not an item" );
+    }
+    if( obj->cell == null ) {
+      ERROR( "object is already cut" );
+    }
+
+    synapse.cut( obj );
+    lua.obj->items.add( obj->index );
+    obj->parent = lua.obj->index;
+
+    pushbool( true );
+    return 0;
+  }
+
+  int Lua::ozObjRemoveItem( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+
+    int item = toint( 1 );
+    if( uint( item ) >= lua.obj->items.length() ) {
+      ERROR( "invalid item number" );
+    }
+
+    int index = lua.obj->items[item];
+    Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[index] );
+
+    if( dyn != null ) {
+      synapse.removeCut( dyn );
+      lua.obj->items.remove( item );
+    }
+    return 0;
+  }
+
+  int Lua::ozObjRemoveAllItems( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+
+    foreach( item, lua.obj->items.citer() ) {
+      Dynamic* dyn = static_cast<Dynamic*>( orbis.objects[*item] );
+
+      if( dyn != null ) {
+        synapse.removeCut( dyn );
+      }
+    }
+
+    lua.obj->items.clear();
+    return 0;
+  }
+
   int Lua::ozObjDamage( lua_State* l )
   {
     ARG( 1 );
@@ -1527,6 +1608,15 @@ namespace oz
     OBJ_NOT_NULL();
 
     lua.obj->life = 0.0f;
+    return 0;
+  }
+
+  int Lua::ozObjQuietDestroy( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+
+    lua.obj->flags |= Object::DESTROYED_BIT;
     return 0;
   }
 
@@ -1889,6 +1979,26 @@ namespace oz
     return 0;
   }
 
+  int Lua::ozBotGetMindFunc( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_BOT();
+
+    pushstring( bot->mindFunc );
+    return 1;
+  }
+
+  int Lua::ozBotSetMindFunc( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_BOT();
+
+    bot->mindFunc = tostring( 1 );
+    return 0;
+  }
+
   int Lua::ozBotGetEyePos( lua_State* l )
   {
     ARG( 0 );
@@ -2196,6 +2306,50 @@ namespace oz
     return 0;
   }
 
+  int Lua::ozBotSetWeaponItem( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_BOT();
+
+    int item = toint( 1 );
+    if( item == -1 ) {
+      bot->weapon = -1;
+    }
+    else {
+      if( uint( item ) >= uint( lua.obj->items.length() ) ) {
+        ERROR( "invalid item number" );
+      }
+
+      int index = lua.obj->items[item];
+      Weapon* weapon = static_cast<Weapon*>( orbis.objects[index] );
+
+      if( weapon == null ) {
+        pushbool( false );
+        return 1;
+      }
+
+      if( !( weapon->flags & Object::WEAPON_BIT ) ) {
+        ERROR( "object is not a weapon" );
+      }
+
+      bot->weapon = index;
+    }
+
+    pushbool( true );
+    return 1;
+  }
+
+  int Lua::ozBotHeal( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_BOT();
+
+    bot->heal();
+    return 0;
+  }
+
   int Lua::ozBotRearm( lua_State* l )
   {
     ARG( 0 );
@@ -2203,6 +2357,16 @@ namespace oz
     OBJ_BOT();
 
     bot->rearm();
+    return 0;
+  }
+
+  int Lua::ozBotKill( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_BOT();
+
+    bot->kill();
     return 0;
   }
 

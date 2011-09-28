@@ -74,7 +74,7 @@ namespace client
       const Object* taggedObj;
 
       int    bot;
-      const Bot* botObj;
+      Bot*   botObj;
 
       State  state;
       State  newState;
@@ -106,10 +106,22 @@ namespace client
         taggedObj = obj;
       }
 
-      void setBot( const Bot* bot_ )
+      void setBot( Bot* botObj_ )
       {
-        bot    = bot_ == null ? -1 : bot_->index;
-        botObj = bot_;
+        if( botObj != null ) {
+          botObj->state &= ~Bot::PLAYER_BIT;
+        }
+
+        if( botObj_ == null ) {
+          bot    = -1;
+          botObj = null;
+        }
+        else {
+          bot    = botObj_->index;
+          botObj = botObj_;
+
+          botObj_->state |= Bot::PLAYER_BIT;
+        }
 
         hard_assert( botObj == null || ( botObj->flags & Object::BOT_BIT ) );
       }

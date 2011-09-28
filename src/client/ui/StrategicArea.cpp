@@ -134,11 +134,17 @@ namespace ui
 
     printName( ( span.minX + span.maxX ) / 2, ( span.maxY + 18 ), "%s", title.cstr() );
 
-    float life = ( hovered->flags & Object::BOT_BIT ) ?
-        ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) :
-        hovered->life / clazz->life;
-
-    life = max( life, 0.0f );
+    float life;
+    if( Math::isInf( hovered->life ) ) {
+      life = 1.0f;
+    }
+    else if( hovered->flags & Object::BOT_BIT ) {
+      life = ( hovered->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
+      life = max( life, 0.0f );
+    }
+    else{
+      life = hovered->life / clazz->life;
+    }
 
     float barWidth = maxX - minX + 2.0f;
     float lifeWidth = life * barWidth;
@@ -165,9 +171,19 @@ namespace ui
 
     if( obj != hovered ) {
       const ObjectClass *clazz = obj->clazz;
-      float life = ( obj->flags & Object::BOT_BIT ) ?
-          max( 0.0f, ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f ) ) :
-          obj->life / clazz->life;
+
+      float life;
+      if( Math::isInf( obj->life ) ) {
+        life = 1.0f;
+      }
+      else if( obj->flags & Object::BOT_BIT ) {
+        life = ( obj->life - clazz->life / 2.0f ) / ( clazz->life / 2.0f );
+        life = max( life, 0.0f );
+      }
+      else{
+        life = obj->life / clazz->life;
+      }
+
       float barWidth = maxX - minX + 2.0f;
       float lifeWidth = life * barWidth;
       float lifeWidthLeft = barWidth - lifeWidth;

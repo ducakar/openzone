@@ -449,7 +449,7 @@ namespace client
     render.draw( Render::DRAW_UI_BIT );
     render.sync();
 
-    onCreate = config.get( "client.onCreate", "init_default" );
+    onCreate = config.getSet( "client.onCreate", "client_onCreate" );
 
     if( onCreate.isEmpty() ) {
       throw Exception( "missing client.onCreate setting" );
