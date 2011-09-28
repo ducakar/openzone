@@ -34,7 +34,6 @@ bool Alloc::isLocked = true;
 
 static const char* const CREATE_DIRS[] = {
   "bsp",
-  "bsp/tex",
   "caelum",
   "class",
   "glsl",
@@ -168,6 +167,62 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
   log.println( "}" );
 }
 
+static void prebuildBSPTextures()
+{
+  log.println( "Prebuilding BSP textures {" );
+  log.indent();
+
+  for( int i = 0; i < library.textures.length(); ++i ) {
+    if( !library.usedTextures.get( i ) ) {
+      continue;
+    }
+
+    String srcPath = "data/textures/" + library.textures[i].path;
+    String destPath = "bsp/" + library.textures[i].name + ".ozcTex";
+
+    struct stat srcInfo;
+    struct stat destInfo;
+
+    if( stat( srcPath, &srcInfo ) != 0 ) {
+      throw Exception( "Source texture '" + srcPath + "' stat error" );
+    }
+    if( !forceRebuild && stat( destPath, &destInfo ) == 0 &&
+        destInfo.st_mtime > srcInfo.st_mtime )
+    {
+      continue;
+    }
+
+    log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
+    log.indent();
+
+    uint id = client::context.loadRawTexture( srcPath );
+
+    hard_assert( id != 0 );
+
+    Buffer buffer( 4 * 1024 * 1024 );
+    OutputStream os = buffer.outputStream();
+
+    log.println( "Compiling into '%s'", destPath.cstr() );
+    client::context.writeTexture( id, &os );
+
+    int slash = destPath.lastIndex( '/' );
+    hard_assert( slash != -1 );
+    String dir = destPath.substring( 0, slash );
+
+    mkdir( dir, S_IRUSR | S_IWUSR | S_IXUSR );
+
+    if( !buffer.write( destPath, os.length() ) ) {
+      throw Exception( "Texture writing failed" );
+    }
+
+    log.unindent();
+    log.println( "}" );
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
 static void prebuildModels()
 {
   log.println( "Prebuilding models {" );
@@ -207,7 +262,7 @@ static void prebuildModels()
       client::OBJ::prebuild( path );
     }
     else if( stat( path + "/tris.md2", &srcInfo0 ) == 0 ) {
-      if( stat( path + "/skin.jpg", &srcInfo1 ) != 0 ||
+      if( stat( path + "/skin.png", &srcInfo1 ) != 0 ||
           stat( path + "/config.rc", &configInfo ) != 0 )
       {
         throw Exception( "MD2 model '" + name + "' source files missing" );
@@ -550,13 +605,13 @@ int main( int argc, char** argv )
     client::ui::Mouse::prebuild();
 
     prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
-    prebuildTextures( "data/textures/oz", "bsp/tex", true,
-                      client::Context::DEFAULT_MAG_FILTER, client::Context::DEFAULT_MIN_FILTER );
 
     prebuildTerras();
     prebuildCaela();
 
     prebuildBSPs();
+    prebuildBSPTextures();
+
     prebuildModels();
 
     checkLua( "lua/matrix" );

@@ -22,7 +22,7 @@ namespace oz
 
       String onShot;
 
-      int    nShots;
+      int    nRounds;
       float  shotInterval;
 
       static ObjectClass* init( const Config* config );

@@ -85,6 +85,10 @@ namespace oz
 
       Vector<Bounds>   bspBounds;
 
+#ifdef OZ_TOOLS
+      Bitset usedTextures;
+#endif
+
       HashString<const ObjectClass::InitFunc, 8> baseClasses;
       HashString<const ObjectClass*, 64> classes;
 

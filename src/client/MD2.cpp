@@ -17,6 +17,8 @@
 
 #include "client/OpenGL.hpp"
 
+#include <sys/stat.h>
+
 #define FOURCC( a, b, c, d ) \
   ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
 
@@ -478,7 +480,7 @@ namespace client
   {
     String sPath = path;
     String modelFile = sPath + "/tris.md2";
-    String skinFile = sPath + "/skin.jpg";
+    String skinFile = sPath + "/skin.png";
     String configFile = sPath + "/config.rc";
 
     log.println( "Prebuilding MD2 model '%s' {", path );

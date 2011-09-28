@@ -45,7 +45,7 @@ namespace nirvana
 
     Bot* bot = static_cast<Bot*>( orbis.objects[this->bot] );
 
-    if( !( bot->state & Bot::DEATH_BIT ) ) {
+    if( !bot->mindFunc.isEmpty() && !( bot->state & Bot::DEATH_BIT ) ) {
       const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
 
       flags &= ~FORCE_UPDATE_BIT;

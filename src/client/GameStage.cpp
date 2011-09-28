@@ -460,6 +460,10 @@ namespace client
     loader.init();
     lua.init();
 
+    foreach( module, matrix.modules.citer() ) {
+      lua.registerModule( *module );
+    }
+
     log.unindent();
     log.println( "}" );
   }

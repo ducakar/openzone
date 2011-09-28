@@ -34,7 +34,7 @@ namespace oz
       int    nWeapons;
       String weaponNames[Vehicle::WEAPONS_MAX];
       String onShot[Vehicle::WEAPONS_MAX];
-      int    nShots[Vehicle::WEAPONS_MAX];
+      int    nRounds[Vehicle::WEAPONS_MAX];
       float  shotInterval[Vehicle::WEAPONS_MAX];
 
       Vec3   pilotPos;

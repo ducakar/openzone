@@ -124,7 +124,7 @@ namespace oz
     stamina = min( stamina + clazz->staminaGain, clazz->stamina );
 
     if( actions & ~oldActions & ACTION_SUICIDE ) {
-      if( Math::isInf( life ) ) {
+      if( Math::isInfFM( life ) ) {
         life = 0.0f;
       }
       else {
@@ -649,10 +649,13 @@ namespace oz
           synapse.put( item );
           items.remove( taggedItem );
 
-          if( actions & ~oldActions & ACTION_INV_GRAB ) {
+          if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
+              ( weapon == -1 || weapon == item->index ) )
+          {
             flags      &= ~ON_LADDER_BIT;
             state      |= GRAB_BIT;
             instrument = item->index;
+            weapon     = -1;
             grabHandle = dist;
           }
         }
@@ -688,7 +691,7 @@ namespace oz
         if( weaponObj != null && ( weaponObj->flags & Object::WEAPON_BIT ) ) {
           const WeaponClass* weaponClazz = static_cast<const WeaponClass*>( weaponObj->clazz );
 
-          weaponObj->nShots = weaponClazz->nShots;
+          weaponObj->nRounds = weaponClazz->nRounds;
         }
       }
     }
@@ -696,7 +699,7 @@ namespace oz
 
   void Bot::kill()
   {
-    if( !Math::isInf( life ) ) {
+    if( !Math::isInfFM( life ) ) {
       flags |= WIDE_CULL_BIT;
       flags &= ~SOLID_BIT;
       life  = clazz->life / 2.0f - EPSILON;

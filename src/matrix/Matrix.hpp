@@ -22,11 +22,7 @@ namespace oz
 
       static const float MAX_VELOCITY2;
 
-    private:
-
       Vector<Module*> modules;
-
-    public:
 
       void update();
 

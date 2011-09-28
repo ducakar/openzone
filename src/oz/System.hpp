@@ -65,6 +65,11 @@ namespace oz
       static void trap();
 
       /**
+       * Halt. Print a message to stdout and wait for a key to continue.
+       */
+      static void halt();
+
+      /**
        * Print given error message.
        * Everything is printed to stderr and log file, if log target is a file.
        * @param msg

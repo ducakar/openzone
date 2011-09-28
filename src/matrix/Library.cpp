@@ -179,33 +179,56 @@ namespace oz
     log.indent();
 
     Directory dir;
+    Directory subDir;
     Config classConfig;
 
-    log.println( "textures (*.ozcTex in 'bsp/tex') {" );
+    log.println( "textures (*.ozcTex in 'bsp/*') {" );
     log.indent();
 
-    dir.open( "bsp/tex" );
+    dir.open( "bsp" );
     if( !dir.isOpened() ) {
       free();
 
-      log.println( "Cannot open directory 'bsp/tex'" );
+      log.println( "Cannot open directory 'bsp'" );
       log.unindent();
       log.println( "}" );
 
       throw Exception( "Library initialisation failure" );
     }
     foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "ozcTex" ) ) {
+      if( ent.type != Directory::DIRECTORY ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "bsp/tex/" ) + ent;
+      String subDirName = &*ent;
 
-      log.println( "%s", name.cstr() );
+      subDir.open( "bsp/" + subDirName );
+      if( !subDir.isOpened() ) {
+        free();
 
-      textureIndices.add( name, textures.length() );
-      textures.add( Resource( name, path ) );
+        log.println( "Cannot open directory 'bsp/%s'", subDirName.cstr() );
+        log.unindent();
+        log.println( "}" );
+
+        throw Exception( "Library initialisation failure" );
+      }
+
+      subDirName = subDirName + "/";
+
+      foreach( ent, subDir.citer() ) {
+        if( !ent.hasExtension( "ozcTex" ) ) {
+          continue;
+        }
+
+        String name = subDirName + ent.baseName();
+        String path = "bsp/" + subDirName + ent;
+
+        log.println( "%s", name.cstr() );
+
+        textureIndices.add( name, textures.length() );
+        textures.add( Resource( name, path ) );
+      }
+      subDir.close();
     }
     dir.close();
 
@@ -538,7 +561,67 @@ namespace oz
     log.indent();
 
     Directory dir;
+    Directory subDir;
     Config classConfig;
+
+    log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/*') {" );
+    log.indent();
+
+    dir.open( "data/textures" );
+    if( !dir.isOpened() ) {
+      free();
+
+      log.println( "Cannot open directory 'data/textures'" );
+      log.unindent();
+      log.println( "}" );
+
+      throw Exception( "Library initialisation failure" );
+    }
+    foreach( ent, dir.citer() ) {
+      if( ent.type != Directory::DIRECTORY ) {
+        continue;
+      }
+
+      String subDirName = &*ent;
+
+      subDir.open( "data/textures/" + subDirName );
+      if( !subDir.isOpened() ) {
+        free();
+
+        log.println( "Cannot open directory 'data/textures/%s'", subDirName.cstr() );
+        log.unindent();
+        log.println( "}" );
+
+        throw Exception( "Library initialisation failure" );
+      }
+
+      subDirName = subDirName + "/";
+
+      foreach( ent, subDir.citer() ) {
+        if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpeg" ) &&
+            !ent.hasExtension( "jpg" ) )
+        {
+          continue;
+        }
+
+        String name = subDirName + ent.baseName();
+        String path = subDirName + ent;
+
+        log.println( "%s", name.cstr() );
+
+        if( textureIndices.contains( name ) ) {
+          throw Exception( "Duplicated texture '" + name + "' ['" + path + "']" );
+        }
+
+        textureIndices.add( name, textures.length() );
+        textures.add( Resource( name, path ) );
+      }
+      subDir.close();
+    }
+    dir.close();
+
+    log.unindent();
+    log.println( "}" );
 
     log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/oz') {" );
     log.indent();
@@ -856,6 +939,9 @@ namespace oz
     }
     dir.close();
 
+    usedTextures.alloc( textures.length() );
+    usedTextures.clearAll();
+
     log.unindent();
     log.println( "}" );
     log.unindent();
@@ -906,6 +992,10 @@ namespace oz
     baseClasses.dealloc();
     classes.free();
     classes.dealloc();
+
+#ifdef OZ_TOOLS
+    usedTextures.dealloc();
+#endif
   }
 
 }

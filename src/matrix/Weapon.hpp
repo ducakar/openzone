@@ -32,7 +32,7 @@ namespace oz
       static Pool<Weapon, 1024> pool;
 
       // -1: unlimited
-      int   nShots;
+      int   nRounds;
       float shotTime;
 
       Weapon();

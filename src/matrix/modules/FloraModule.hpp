@@ -37,16 +37,16 @@ namespace oz
 
       void seed();
 
-      virtual void init();
+      virtual void registerLua( lua_State* l, bool isReadOnly ) const;
 
     private:
 
-      static LuaAPI ozFloraGetDensity;
-      static LuaAPI ozFloraSetDensity;
-      static LuaAPI ozFloraGetSpacing;
-      static LuaAPI ozFloraSetSpacing;
-      static LuaAPI ozFloraGetNumber;
-      static LuaAPI ozFloraSeed;
+      OZ_LUA_API( ozFloraGetDensity );
+      OZ_LUA_API( ozFloraSetDensity );
+      OZ_LUA_API( ozFloraGetSpacing );
+      OZ_LUA_API( ozFloraSetSpacing );
+      OZ_LUA_API( ozFloraGetNumber );
+      OZ_LUA_API( ozFloraSeed );
 
   };
 

@@ -85,7 +85,7 @@ namespace oz
 
     char weaponNameBuffer[]   = "weapon  .name";
     char onShotBuffer[]       = "weapon  .onShot";
-    char nShotsBuffer[]       = "weapon  .nShots";
+    char nRoundsBuffer[]      = "weapon  .nRounds";
     char shotIntervalBuffer[] = "weapon  .shotInterval";
 
     clazz->nWeapons = Vehicle::WEAPONS_MAX;
@@ -99,15 +99,15 @@ namespace oz
       onShotBuffer[6] = char( '0' + ( i / 10 ) );
       onShotBuffer[7] = char( '0' + ( i % 10 ) );
 
-      nShotsBuffer[6] = char( '0' + ( i / 10 ) );
-      nShotsBuffer[7] = char( '0' + ( i % 10 ) );
+      nRoundsBuffer[6] = char( '0' + ( i / 10 ) );
+      nRoundsBuffer[7] = char( '0' + ( i % 10 ) );
 
       shotIntervalBuffer[6] = char( '0' + ( i / 10 ) );
       shotIntervalBuffer[7] = char( '0' + ( i % 10 ) );
 
       clazz->weaponNames[i]  = gettext( config->get( weaponNameBuffer, "" ) );
       clazz->onShot[i]       = config->get( onShotBuffer, "" );
-      clazz->nShots[i]       = config->get( nShotsBuffer, -1 );
+      clazz->nRounds[i]      = config->get( nRoundsBuffer, -1 );
       clazz->shotInterval[i] = config->get( shotIntervalBuffer, 0.5f );
 
       if( clazz->weaponNames[i].isEmpty() && clazz->nWeapons > i ) {
@@ -153,7 +153,7 @@ namespace oz
     obj->weapon   = 0;
 
     for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
-      obj->nShots[i]   = nShots[i];
+      obj->nRounds[i]  = nRounds[i];
       obj->shotTime[i] = 0.0f;
     }
 

@@ -27,6 +27,10 @@ namespace oz
     if( shotTime > 0.0f ) {
       shotTime = max( shotTime - Timer::TICK_TIME, 0.0f );
     }
+
+    if( ( flags & LUA_BIT ) && !clazz->onUpdate.isEmpty() ) {
+      lua.objectCall( clazz->onUpdate, this );
+    }
   }
 
   void Weapon::onUse( Bot* user )
@@ -42,6 +46,10 @@ namespace oz
     }
     else if( parent == user->index ) {
       user->weapon = user->weapon == index  ? -1 : index;
+    }
+
+    if( ( flags & LUA_BIT ) && !clazz->onUse.isEmpty() ) {
+      lua.objectCall( clazz->onUse, this, user );
     }
   }
 
@@ -61,11 +69,11 @@ namespace oz
     if( shotTime == 0.0f ) {
       shotTime = clazz->shotInterval;
 
-      if( nShots == 0 ) {
+      if( nRounds == 0 ) {
         addEvent( EVENT_SHOT_EMPTY, 1.0f );
       }
       else {
-        nShots = max( -1, nShots - 1 );
+        nRounds = max( -1, nRounds - 1 );
 
         addEvent( EVENT_SHOT, 1.0f );
         lua.objectCall( clazz->onShot, this, user );
@@ -77,7 +85,7 @@ namespace oz
   {
     Dynamic::readFull( istream );
 
-    nShots   = istream->readInt();
+    nRounds  = istream->readInt();
     shotTime = istream->readFloat();
   }
 
@@ -85,7 +93,7 @@ namespace oz
   {
     Dynamic::writeFull( ostream );
 
-    ostream->writeInt( nShots );
+    ostream->writeInt( nRounds );
     ostream->writeFloat( shotTime );
   }
 
@@ -93,14 +101,14 @@ namespace oz
   {
     Dynamic::readUpdate( istream );
 
-    nShots = istream->readInt();
+    nRounds = istream->readInt();
   }
 
   void Weapon::writeUpdate( OutputStream* ostream ) const
   {
     Dynamic::writeUpdate( ostream );
 
-    ostream->writeInt( nShots );
+    ostream->writeInt( nRounds );
   }
 
 }

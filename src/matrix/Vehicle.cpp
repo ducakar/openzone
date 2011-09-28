@@ -211,11 +211,11 @@ namespace oz
         if( shotTime[weapon] == 0.0f ) {
           shotTime[weapon] = clazz->shotInterval[weapon];
 
-          if( nShots[weapon] == 0 ) {
+          if( nRounds[weapon] == 0 ) {
             addEvent( EVENT_SHOT0_EMPTY + weapon*2, 1.0f );
           }
           else {
-            nShots[weapon] = max( -1, nShots[weapon] - 1 );
+            nRounds[weapon] = max( -1, nRounds[weapon] - 1 );
 
             addEvent( EVENT_SHOT0 + weapon*2, 1.0f );
             lua.objectCall( clazz->onShot[weapon], this, bot );
@@ -303,8 +303,8 @@ namespace oz
     }
 
     for( int i = 0; i < clazz->nWeapons; ++i ) {
-      if( nShots[i] != clazz->nShots[i] ) {
-        nShots[i] = clazz->nShots[i];
+      if( nRounds[i] != clazz->nRounds[i] ) {
+        nRounds[i] = clazz->nRounds[i];
         wasServiced = true;
       }
     }
@@ -329,7 +329,7 @@ namespace oz
     weapon            = istream->readInt();
 
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
-      nShots[i]   = istream->readInt();
+      nRounds[i]  = istream->readInt();
       shotTime[i] = istream->readFloat();
     }
 
@@ -351,7 +351,7 @@ namespace oz
     ostream->writeInt( weapon );
 
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
-      ostream->writeInt( nShots[i] );
+      ostream->writeInt( nRounds[i] );
       ostream->writeFloat( shotTime[i] );
     }
 
@@ -368,7 +368,7 @@ namespace oz
     weapon          = istream->readInt();
 
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
-      nShots[i] = istream->readInt();
+      nRounds[i] = istream->readInt();
     }
 
     pilot = istream->readInt();
@@ -384,7 +384,7 @@ namespace oz
     ostream->writeInt( weapon );
 
     for( int i = 0; i < WEAPONS_MAX; ++i ) {
-      ostream->writeInt( nShots[i] );
+      ostream->writeInt( nRounds[i] );
     }
 
     ostream->writeInt( pilot );

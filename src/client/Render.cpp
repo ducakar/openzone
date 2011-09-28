@@ -45,7 +45,8 @@ namespace client
   Render render;
 
   const float Render::WIDE_CULL_FACTOR = 6.0f;
-  const float Render::CELL_WIDE_RADIUS = Cell::RADIUS + AABB::MAX_DIM * WIDE_CULL_FACTOR;
+  const float Render::CELL_WIDE_RADIUS =
+      ( Cell::SIZE / 2.0f + AABB::MAX_DIM * WIDE_CULL_FACTOR ) * Math::sqrt( 2.0f );
 
   const float Render::NIGHT_FOG_COEFF  = 2.0f;
   const float Render::NIGHT_FOG_DIST   = 0.3f;
@@ -58,19 +59,21 @@ namespace client
     const Cell& cell = orbis.cells[cellX][cellY];
 
     for( int i = 0; i < cell.structs.length(); ++i ) {
-      Struct* str = orbis.structs[ cell.structs[i] ];
+      Struct* str    = orbis.structs[ cell.structs[i] ];
+      Vec3    dim    = str->maxs - str->mins;
+      Point3  p      = str->mins + 0.5f * dim;
+      float   radius = dim.fastL();
 
-      if( !drawnStructs.get( cell.structs[i] ) && frustum.isVisible( *str ) ) {
+      if( !drawnStructs.get( cell.structs[i] ) && frustum.isVisible( p, radius ) ) {
         drawnStructs.set( cell.structs[i] );
 
-        Vec3 relPos = str->mins + 0.5f * ( str->maxs - str->mins ) - camera.p;
-        structs.add( ObjectEntry( relPos.sqL(), str ) );
+        structs.add( ObjectEntry( ( p - camera.p ).fastL() - radius, str ) );
       }
     }
 
     foreach( obj, cell.objects.citer() ) {
-      float factor = ( obj->flags & Object::WIDE_CULL_BIT ) ? WIDE_CULL_FACTOR : 1.0f;
-      float radius = factor * obj->dim.fastL();
+      float radius = ( obj->flags & Object::WIDE_CULL_BIT ) ?
+          WIDE_CULL_FACTOR * obj->dim.fastL() : obj->dim.fastL();
 
       if( frustum.isVisible( obj->p, radius ) ) {
         float range = ( obj->p - camera.p ).fastL() - radius;
@@ -137,7 +140,7 @@ namespace client
       float y = minYCentre;
 
       for( int j = span.minY; j <= span.maxY; ++j, y += Cell::SIZE ) {
-        if( frustum.isVisible( x, y, CELL_WIDE_RADIUS  ) ) {
+        if( frustum.isVisible( x, y, CELL_WIDE_RADIUS ) ) {
           scheduleCell( i, j );
         }
       }

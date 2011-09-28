@@ -72,7 +72,7 @@ namespace oz
       int   actions, oldActions;
 
       int   weapon;
-      int   nShots[WEAPONS_MAX];
+      int   nRounds[WEAPONS_MAX];
       float shotTime[WEAPONS_MAX];
 
       int   pilot;
