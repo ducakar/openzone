@@ -67,7 +67,7 @@ namespace client
       relV += keyXSens * Timer::TICK_TIME;
     }
 
-    botObj = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
+    botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 
     if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
       bot = -1;
@@ -99,7 +99,7 @@ namespace client
 
   void Camera::prepare()
   {
-    botObj = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
+    botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 
     if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
       bot = -1;
@@ -134,7 +134,7 @@ namespace client
     tagged    = -1;
     taggedObj = null;
     bot       = istream->readInt();
-    botObj    = bot == -1 ? null : static_cast<const Bot*>( orbis.objects[bot] );
+    botObj    = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 
     state     = State( istream->readInt() );
     newState  = state;

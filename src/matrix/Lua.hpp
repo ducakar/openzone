@@ -190,8 +190,14 @@ namespace oz
       OZ_LUA_API( ozObjAddLife );
 
       OZ_LUA_API( ozObjAddEvent );
+
+      OZ_LUA_API( ozObjAddItem );
+      OZ_LUA_API( ozObjRemoveItem );
+      OZ_LUA_API( ozObjRemoveAllItems );
+
       OZ_LUA_API( ozObjDamage );
       OZ_LUA_API( ozObjDestroy );
+      OZ_LUA_API( ozObjQuietDestroy );
       OZ_LUA_API( ozObjRemove );
 
       OZ_LUA_API( ozObjVectorFromSelf );
@@ -232,6 +238,9 @@ namespace oz
 
       OZ_LUA_API( ozBotGetName );
       OZ_LUA_API( ozBotSetName );
+      OZ_LUA_API( ozBotGetMindFunc );
+      OZ_LUA_API( ozBotSetMindFunc );
+
       OZ_LUA_API( ozBotGetEyePos );
       OZ_LUA_API( ozBotGetH );
       OZ_LUA_API( ozBotSetH );
@@ -263,7 +272,11 @@ namespace oz
       OZ_LUA_API( ozBotStateSetRunning );
       OZ_LUA_API( ozBotStateToggleRunning );
 
+      OZ_LUA_API( ozBotSetWeaponItem );
+
+      OZ_LUA_API( ozBotHeal );
       OZ_LUA_API( ozBotRearm );
+      OZ_LUA_API( ozBotKill );
 
       OZ_LUA_API( ozBotVectorFromSelfEye );
       OZ_LUA_API( ozBotDirectionFromSelfEye );

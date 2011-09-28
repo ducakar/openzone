@@ -59,7 +59,6 @@ namespace client
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
     if( camera.allowReincarnation && ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
-      bot->state &= ~Bot::PLAYER_BIT;
       camera.setBot( null );
       return;
     }

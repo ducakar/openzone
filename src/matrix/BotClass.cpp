@@ -141,6 +141,7 @@ namespace oz
     obj->stamina  = stamina;
 
     obj->name     = namePool.genName( nameList );
+    obj->mindFunc = mindFunction;
 
     fillCommonFields( obj );
 

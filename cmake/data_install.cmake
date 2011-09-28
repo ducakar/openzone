@@ -120,6 +120,12 @@ if( OZ_INSTALL_DATA )
     share/openzone/lua/nirvana/*COPYING* )
   install( FILES ${files} DESTINATION share/openzone/lua/nirvana )
 
+  file( GLOB files
+    share/openzone/lua/client/*.lua
+    share/openzone/lua/client/*README*
+    share/openzone/lua/client/*COPYING* )
+  install( FILES ${files} DESTINATION share/openzone/lua/client )
+
   # mdl
   file( GLOB files
     share/openzone/mdl/*.ozcSMM

@@ -153,6 +153,8 @@ namespace oz
         return __builtin_atan2f( x, y );
       }
 
+      // don't work with -ffast-math
+      /*
       OZ_ALWAYS_INLINE
       static bool isNaN( float x )
       {
@@ -168,13 +170,20 @@ namespace oz
       OZ_ALWAYS_INLINE
       static int isInf( float x )
       {
-        return __builtin_isinf( x );
+        return __builtin_ininf( x );
       }
 
       OZ_ALWAYS_INLINE
       static bool isNormal( float x )
       {
         return __builtin_isnormal( x );
+      }
+      */
+
+      OZ_ALWAYS_INLINE
+      static int isInf( float x )
+      {
+        return x == 2.0f * x;
       }
 
       OZ_ALWAYS_INLINE

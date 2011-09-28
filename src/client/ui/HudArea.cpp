@@ -55,12 +55,19 @@ namespace ui
       const Dynamic* taggedDyn = static_cast<const Dynamic*>( taggedObj );
       const Bot*     taggedBot = static_cast<const Bot*>( taggedObj );
 
-      float life = ( taggedObj->flags & Object::BOT_BIT ) ?
-          ( taggedObj->life - taggedClazz->life / 2.0f ) / ( taggedClazz->life / 2.0f ) :
-          taggedObj->life / taggedClazz->life;
-      int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
+      float life;
+      if( Math::isInf( taggedObj->life ) ) {
+        life = 1.0f;
+      }
+      else if( taggedObj->flags & Object::BOT_BIT ) {
+        life = ( taggedObj->life - taggedClazz->life / 2.0f ) / ( taggedClazz->life / 2.0f );
+        life = max( life, 0.0f );
+      }
+      else{
+        life = taggedObj->life / taggedClazz->life;
+      }
 
-      life = max( life, 0.0f );
+      int lifeWidth = int( life * float( ICON_SIZE + 14 ) );
 
       glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );
       fill( healthBarX + 1, healthBarY + 11, lifeWidth, 10 );
@@ -147,7 +154,14 @@ namespace ui
     const Bot*      bot      = camera.botObj;
     const BotClass* botClazz = static_cast<const BotClass*>( camera.botObj->clazz );
 
-    float life         = ( bot->life - botClazz->life / 2.0f ) / ( botClazz->life / 2.0f );
+    float life;
+    if( Math::isInf( bot->life ) ) {
+      life = 1.0f;
+    }
+    else {
+      life = ( bot->life - botClazz->life / 2.0f ) / ( botClazz->life / 2.0f );
+    }
+
     int   lifeWidth    = max( int( life * 198.0f ), 0 );
     float stamina      = bot->stamina / botClazz->stamina;
     int   staminaWidth = max( int( stamina * 198.0f ), 0 );
@@ -216,7 +230,7 @@ namespace ui
     glEnable( GL_BLEND );
     glDisable( GL_DEPTH_TEST );
 
-    float life      = vehicle->life / vehClazz->life;
+    float life      = Math::isInf( vehicle->life ) ? 1.0f : vehicle->life / vehClazz->life;
     int   lifeWidth = max( int( life * 198.0f ), 0 );
 
     glUniform4f( param.oz_Colour, 1.0f - life, life, 0.0f, 0.6f );

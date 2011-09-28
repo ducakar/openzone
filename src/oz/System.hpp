@@ -27,6 +27,8 @@ namespace oz
       static OZ_THREAD_LOCAL void* framePtrs[TRACE_SIZE + 1];
       static OZ_THREAD_LOCAL char  output[TRACE_BUFFER_SIZE];
 
+      static bool isHaltEnabled;
+
       static void signalHandler( int signum );
 
     private:
@@ -35,6 +37,16 @@ namespace oz
       System();
 
     public:
+
+      /**
+       * If turned on, the signal handler will halt the program on a fatal signal, write a
+       * notification to stderr and wait for another fatal signal (e.g. CTRL-C).
+       * This is intended to halt the program on a crash, so one can attach with debugger and
+       * inspect the program state.
+       * Default is off.
+       * @param value
+       */
+      static void enableHalt( bool value );
 
       /**
        * Set signal handlers to catch critical signals, print information, stack trace and wait

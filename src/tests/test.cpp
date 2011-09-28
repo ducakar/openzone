@@ -13,9 +13,10 @@ using namespace oz;
 
 int main( int, char** )
 {
-  config.load( "share/openzone/class/lord.rc" );
+  float a = 0.0f;
+  float b = 1e10;
 
-  printf( "%g\n", config.get( "life", 0.0f ) );
+  log.println( "%d", a == 2.0f * a );
 
   Alloc::printLeaks();
   return 0;

@@ -122,6 +122,7 @@ namespace oz
       int        taggedItem;
 
       String     name;
+      String     mindFunc;
 
       float      camZ;
       Anim::Type anim;
@@ -130,11 +131,10 @@ namespace oz
 
       void heal();
       void rearm();
+      void kill();
 
       void enter( int vehicle );
       void exit();
-
-      void kill();
 
       virtual void readFull( InputStream* istream );
       virtual void writeFull( OutputStream* ostream ) const;

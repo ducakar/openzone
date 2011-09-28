@@ -76,7 +76,12 @@ namespace oz
   OZ_THREAD_LOCAL void* System::framePtrs[System::TRACE_SIZE + 1];
   OZ_THREAD_LOCAL char  System::output[System::TRACE_BUFFER_SIZE];
 
+  bool System::isHaltEnabled = false;
+
 #ifdef OZ_MINGW
+
+  void System::enableHalt( bool )
+  {}
 
   void System::signalHandler( int )
   {}
@@ -91,6 +96,11 @@ namespace oz
   {}
 
 #else
+
+  void System::enableHalt( bool value )
+  {
+    isHaltEnabled = value;
+  }
 
   void System::signalHandler( int signum )
   {
@@ -372,9 +382,11 @@ namespace oz
 
     free( frames );
 
-    fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
-    fflush( stderr );
-    while( sleep( 1 ) == 0 );
+    if( isHaltEnabled ) {
+      fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
+      fflush( stderr );
+      while( sleep( 1 ) == 0 );
+    }
 
     ::abort();
   }
