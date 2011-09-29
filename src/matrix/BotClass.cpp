@@ -88,6 +88,10 @@ namespace oz
     clazz->stepRateCoeff     = config->get( "stepRateCoeff", 500.0f );
     clazz->stepRateSupp      = config->get( "stepRatesupp", 0.50f );
 
+    clazz->climbInc          = config->get( "climbInc", 0.25f );
+    clazz->climbMax          = config->get( "climbMax", 2.0f );
+    clazz->climbMomentum     = config->get( "climbMomentum", 2.0f );
+
     clazz->airControl        = config->get( "airControl", 0.025f );
     clazz->climbControl      = config->get( "climbControl", 1.50f );
     clazz->waterControl      = config->get( "waterControl", 0.05f );

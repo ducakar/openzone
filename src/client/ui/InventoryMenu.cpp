@@ -27,6 +27,11 @@ namespace ui
 
   const float InventoryMenu::SLOT_DIMF = float( SLOT_SIZE ) / 2.0f;
 
+  void InventoryMenu::onVisibilityChange()
+  {
+    scroll = 0;
+  }
+
   bool InventoryMenu::onMouseEvent()
   {
     if( camera.state != Camera::BOT || camera.bot == -1 ||
@@ -93,12 +98,14 @@ namespace ui
 
     // scroll
     if( mouse.wheelDown ) {
-      int nScrollRows = max( 0, bot->items.length() - ( ROWS - 1 ) * COLS - 1 ) / COLS;
+      int nItems = master == null ? bot->clazz->nItems : container->clazz->nItems;
+      int nScrollRows = max( 0, nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
 
       scroll = clamp( scroll + 1,  0, nScrollRows );
     }
     if( mouse.wheelUp ) {
-      int nScrollRows = max( 0, bot->items.length() - ( ROWS - 1 ) * COLS - 1 ) / COLS;
+      int nItems = master == null ? bot->clazz->nItems : container->clazz->nItems;
+      int nScrollRows = max( 0, nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
 
       scroll = clamp( scroll - 1,  0, nScrollRows );
     }
@@ -138,6 +145,36 @@ namespace ui
     title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::TITLE, "%s", sTitle.cstr() );
     Frame::onDraw();
 
+    glUniform4f( param.oz_Colour, 0.3f, 0.3f, 0.3f, 0.6f );
+
+    for( int i = 0; i < ROWS; ++i ) {
+      for( int j = 0; j < COLS; ++j ) {
+        if( ( scroll + i ) * COLS + j < containerClazz->nItems ) {
+          fill( j * SLOT_SIZE + 1, FOOTER_SIZE + ( ROWS - i - 1 ) * SLOT_SIZE + 1,
+                SLOT_SIZE - 2, SLOT_SIZE - 2 );
+        }
+        else {
+          goto slotsRendered;
+        }
+      }
+    }
+    slotsRendered:;
+
+    int nScrollRows = max( 0, containerClazz->nItems - ( ROWS - 1 ) * COLS - 1 ) / COLS;
+
+    if( scroll != 0 ) {
+      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+      glBindTexture( GL_TEXTURE_2D, scrollUpTexId );
+      fill( 16, FOOTER_SIZE + ROWS * SLOT_SIZE, 16, 16 );
+      glBindTexture( GL_TEXTURE_2D, 0 );
+    }
+    if( scroll != nScrollRows ) {
+      glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
+      glBindTexture( GL_TEXTURE_2D, scrollDownTexId );
+      fill( 16, FOOTER_SIZE - 16, 16, 16 );
+      glBindTexture( GL_TEXTURE_2D, 0 );
+    }
+
     glEnable( GL_DEPTH_TEST );
     glDisable( GL_BLEND );
 
@@ -150,10 +187,10 @@ namespace ui
 
     int minIndex = scroll * COLS;
     int maxIndex = min( minIndex + COLS * ROWS, items.length() );
-    Dynamic* taggedItem = null;
+    const Dynamic* taggedItem = null;
 
     for( int i = minIndex; i < maxIndex; ++i ) {
-      Dynamic* item = static_cast<Dynamic*>( orbis.objects[ items[i] ] );
+      const Dynamic* item = static_cast<const Dynamic*>( orbis.objects[ items[i] ] );
 
       hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
@@ -252,6 +289,8 @@ namespace ui
     }
 
     if( master == null ) {
+      scrollUpTexId = context.loadTexture( "ui/icon/scrollUp.ozcTex" );
+      scrollDownTexId = context.loadTexture( "ui/icon/scrollDown.ozcTex" );
       useTexId = context.loadTexture( "ui/icon/use.ozcTex" );
       equipTexId = context.loadTexture( "ui/icon/equip.ozcTex" );
       unequipTexId = context.loadTexture( "ui/icon/unequip.ozcTex" );
@@ -261,6 +300,8 @@ namespace ui
   InventoryMenu::~InventoryMenu()
   {
     if( master == null ) {
+      glDeleteTextures( 1, &scrollUpTexId );
+      glDeleteTextures( 1, &scrollDownTexId );
       glDeleteTextures( 1, &useTexId );
       glDeleteTextures( 1, &equipTexId );
       glDeleteTextures( 1, &unequipTexId );

@@ -248,6 +248,9 @@ namespace ui
     }
   }
 
+  void Area::onVisibilityChange()
+  {}
+
   bool Area::onMouseEvent()
   {
     return false;
@@ -269,6 +272,8 @@ namespace ui
     else {
       flags |= IGNORE_BIT | HIDDEN_BIT;
     }
+
+    onVisibilityChange();
   }
 
   void Area::add( Area* area, int relativeX, int relativeY )

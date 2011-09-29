@@ -120,6 +120,7 @@ namespace ui
       bool passMouseEvents();
       void drawChildren();
 
+      virtual void onVisibilityChange();
       // return true if event has been caught
       virtual bool onMouseEvent();
       virtual void onUpdate();

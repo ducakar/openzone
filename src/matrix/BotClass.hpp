@@ -44,6 +44,10 @@ namespace oz
       float  stepRateCoeff;
       float  stepRateSupp;
 
+      float  climbInc;
+      float  climbMax;
+      float  climbMomentum;
+
       float  airControl;
       float  climbControl;
       float  waterControl;
