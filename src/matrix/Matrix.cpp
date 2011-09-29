@@ -19,6 +19,7 @@
 #include "matrix/Synapse.hpp"
 #include "matrix/Vehicle.hpp"
 
+#include "matrix/modules/PreferencesModule.hpp"
 #include "matrix/modules/FloraModule.hpp"
 
 #define OZ_REGISTER_MODULE( module ) \
@@ -216,6 +217,7 @@ namespace oz
     namePool.init();
     orbis.init();
 
+    OZ_REGISTER_MODULE( preferences );
     OZ_REGISTER_MODULE( flora );
 
     log.unindent();

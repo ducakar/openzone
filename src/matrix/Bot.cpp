@@ -43,7 +43,7 @@ namespace oz
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
     Point3 eye  = p + Vec3( 0.0f, 0.0f, camZ );
-    Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->grabDistance;
+    Vec3   look = Vec3( -hvsc[4], hvsc[5], -hvsc[3] ) * clazz->reachDist;
 
     collider.mask = mask;
     collider.translate( eye, look, this );
@@ -121,6 +121,7 @@ namespace oz
     h = Math::mod( h + Math::TAU, Math::TAU );
     v = clamp( v, 0.0f, Math::TAU / 2.0f );
 
+    life    = min( life + clazz->regeneration, clazz->life );
     stamina = min( stamina + clazz->staminaGain, clazz->stamina );
 
     if( actions & ~oldActions & ACTION_SUICIDE ) {
@@ -210,7 +211,7 @@ namespace oz
       }
     }
 
-    stepRate -= ( velocity.x*velocity.x + velocity.y*velocity.y );
+    stepRate -= velocity.x*velocity.x + velocity.y*velocity.y;
     stepRate *= clazz->stepRateSupp;
 
     /*
@@ -497,20 +498,24 @@ namespace oz
       hard_assert( obj->flags & DYNAMIC_BIT );
       hard_assert( !( obj->flags & ON_LADDER_BIT ) );
 
-      if( obj == null || obj->cell == null || obj->p.z + obj->dim.z < p.z - dim.z ||
-          ( obj->flags & UPPER_BIT ) || ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
+      const Object* lowerObj = lower == -1 ? null : orbis.objects[lower];
+
+      if( obj == null || obj->cell == null ||
+          ( lowerObj != null && !( lowerObj->flags & DISABLED_BIT ) ) ||
+          ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
           ( ( obj->flags & BOT_BIT ) && ( ( obj->actions & ACTION_JUMP ) || ( obj->state & GRAB_BIT ) ) ) )
       {
         state &= ~GRAB_BIT;
         instrument = -1;
         instrumentObj = null;
       }
+
       else {
         // keep constant length of xy projection of handle
         Vec3 handle = Vec3( -hvsc[0], hvsc[1], -hvsc[3] ) * grabHandle;
         // bottom of the object cannot be raised over the player AABB, neither can be lowered
         // under the player (in the latter case one can lift himself with the lower object)
-        handle.z    = clamp( handle.z, -dim.z - camZ, dim.z - camZ );
+        handle.z    = min( handle.z, dim.z - camZ );
         Vec3 string = p + Vec3( 0.0f, 0.0f, camZ ) + handle - obj->p;
 
         if( string.sqL() > GRAB_HANDLE_TOL * grabHandle*grabHandle ) {
@@ -619,8 +624,7 @@ namespace oz
           float dimY = dim.y + obj->dim.y;
           float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + GRAB_EPSILON;
 
-          if( dist <= clazz->grabDistance ) {
-            flags      &= ~ON_LADDER_BIT;
+          if( dist <= clazz->reachDist ) {
             state      |= GRAB_BIT;
             instrument = obj->index;
             grabHandle = dist;

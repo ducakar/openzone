@@ -36,7 +36,7 @@ namespace ui
       Label  itemDesc;
 
       int    tagged;
-      int    row;
+      int    scroll;
       uint   grabTexId;
       uint   useTexId;
       uint   equipTexId;

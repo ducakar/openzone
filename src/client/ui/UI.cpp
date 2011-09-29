@@ -27,15 +27,9 @@ namespace ui
 
   UI ui;
 
-#ifndef NDEBUG
-  UI::UI() : root( null ), loadingScreen( null ), hudArea( null ), strategicArea( null ),
-      inventoryMenu( null ), musicPlayer( null ), buildMenu( null ), debugFrame( null )
-  {}
-#else
   UI::UI() : root( null ), loadingScreen( null ), hudArea( null ), strategicArea( null ),
       inventoryMenu( null ), musicPlayer( null ), buildMenu( null )
   {}
-#endif
 
   void UI::showLoadingScreen( bool doShow )
   {
@@ -115,9 +109,7 @@ namespace ui
       browseMenu    = new InventoryMenu( inventoryMenu );
       musicPlayer   = new MusicPlayer();
       buildMenu     = new BuildMenu();
-#ifndef NDEBUG
-      debugFrame    = new DebugFrame();
-#endif
+      debugFrame    = showDebug ? new DebugFrame() : null;
     }
     catch( ... ) {
       delete strategicArea;
@@ -126,9 +118,7 @@ namespace ui
       delete inventoryMenu;
       delete musicPlayer;
       delete buildMenu;
-#ifndef NDEBUG
       delete debugFrame;
-#endif
 
       strategicArea = null;
       hudArea       = null;
@@ -136,9 +126,7 @@ namespace ui
       browseMenu    = null;
       musicPlayer   = null;
       buildMenu     = null;
-#ifndef NDEBUG
       debugFrame    = null;
-#endif
 
       throw;
     }
@@ -149,9 +137,10 @@ namespace ui
     root->add( browseMenu );
     root->add( musicPlayer );
     root->add( buildMenu );
-#ifndef NDEBUG
-    root->add( debugFrame );
-#endif
+
+    if( showDebug ) {
+      root->add( debugFrame );
+    }
 
     root->focus( loadingScreen );
 
@@ -166,12 +155,10 @@ namespace ui
 
   void UI::unload()
   {
-#ifndef NDEBUG
     if( debugFrame != null ) {
       root->remove( debugFrame );
       debugFrame = null;
     }
-#endif
     if( buildMenu != null ) {
       root->remove( buildMenu );
       buildMenu = null;
@@ -209,6 +196,7 @@ namespace ui
     }
 
     isFreelook = false;
+    showDebug = config.getSet( "ui.showDebug", false );
 
     root = new Area( camera.width, camera.height );
     loadingScreen = new LoadingArea();

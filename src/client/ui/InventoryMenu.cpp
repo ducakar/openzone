@@ -58,10 +58,14 @@ namespace ui
       int i = ( mouse.x - x ) / SLOT_SIZE + COLS * ( ROWS - 1 - ( mouse.y - minY ) / SLOT_SIZE );
 
       if( 0 <= i && i < COLS * ROWS ) {
-        tagged = row * COLS + i;
+        tagged = scroll * COLS + i;
 
         if( mouse.leftClick ) {
-          if( container != null ) {
+          if( container == null ) {
+            bot->taggedItem = tagged;
+            bot->actions |= Bot::ACTION_INV_DROP;
+          }
+          else {
             bot->taggedItem = tagged;
 
             if( master == null ) {
@@ -77,10 +81,6 @@ namespace ui
             bot->taggedItem = tagged;
             bot->actions |= Bot::ACTION_INV_USE;
           }
-          else if( mouse.wheelUp ) {
-            bot->taggedItem = tagged;
-            bot->actions |= Bot::ACTION_INV_DROP;
-          }
           else if( mouse.middleClick ) {
             bot->taggedItem = tagged;
             bot->actions |= Bot::ACTION_INV_GRAB;
@@ -93,16 +93,15 @@ namespace ui
 
     // scroll
     if( mouse.wheelDown ) {
-      ++row;
+      int nScrollRows = max( 0, bot->items.length() - ( ROWS - 1 ) * COLS - 1 ) / COLS;
+
+      scroll = clamp( scroll + 1,  0, nScrollRows );
     }
     if( mouse.wheelUp ) {
-      --row;
+      int nScrollRows = max( 0, bot->items.length() - ( ROWS - 1 ) * COLS - 1 ) / COLS;
+
+      scroll = clamp( scroll - 1,  0, nScrollRows );
     }
-
-    // works fine if there's no items (then nRows == 1)
-    int nRows = ( bot->items.length() - 1 ) / COLS + 1;
-    row = ( row + nRows ) % nRows;
-
     return true;
   }
 
@@ -112,7 +111,7 @@ namespace ui
         ( master != null && camera.botObj->instrument == -1 ) )
     {
       tagged = -1;
-      row = 0;
+      scroll = 0;
       return;
     }
 
@@ -149,7 +148,7 @@ namespace ui
 
     const Vector<int>& items = container->items;
 
-    int minIndex = row * COLS;
+    int minIndex = scroll * COLS;
     int maxIndex = min( minIndex + COLS * ROWS, items.length() );
     Dynamic* taggedItem = null;
 
@@ -244,7 +243,7 @@ namespace ui
       master( master_ ),
       itemDesc( -ICON_SIZE - 12, FOOTER_SIZE / 2, ALIGN_RIGHT | ALIGN_VCENTRE, Font::SANS, "" ),
       tagged( -1 ),
-      row( 0 )
+      scroll( 0 )
   {
     x = ( camera.width - width ) / 2;
 

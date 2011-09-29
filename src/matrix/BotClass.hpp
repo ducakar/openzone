@@ -49,9 +49,12 @@ namespace oz
       float  waterControl;
       float  slickControl;
 
-      float  grabDistance;
+      float  reachDist;
+
       float  grabMass;
       float  throwMomentum;
+
+      float  regeneration;
 
       float  stamina;
       float  staminaGain;

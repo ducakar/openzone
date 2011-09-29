@@ -320,7 +320,7 @@ namespace client
       // at vector must be based on bot's orientation, not on camera's
       Vec3 at = Vec3( -hvsc[4], hvsc[5], -hvsc[3] );
 
-      float distance = static_cast<const BotClass*>( camera.botObj->clazz )->grabDistance;
+      float distance = static_cast<const BotClass*>( camera.botObj->clazz )->reachDist;
       collider.mask = ~0;
       collider.translate( camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ ),
                           at * distance,
@@ -330,7 +330,7 @@ namespace client
       camera.setTagged( collider.hit.obj );
     }
     else {
-      float distance = static_cast<const BotClass*>( camera.botObj->clazz )->grabDistance;
+      float distance = static_cast<const BotClass*>( camera.botObj->clazz )->reachDist;
       collider.mask = ~0;
       collider.translate( camera.botObj->p + Vec3( 0.0f, 0.0f, camera.botObj->camZ ),
                           camera.at * distance,

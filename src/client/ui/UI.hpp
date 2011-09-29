@@ -39,6 +39,7 @@ namespace ui
     public:
 
       bool isFreelook;
+      bool showDebug;
 
     public:
 
@@ -50,9 +51,7 @@ namespace ui
       InventoryMenu* browseMenu;
       MusicPlayer*   musicPlayer;
       BuildMenu*     buildMenu;
-#ifndef NDEBUG
       DebugFrame*    debugFrame;
-#endif
 
       UI();
 
