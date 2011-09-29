@@ -197,11 +197,6 @@ namespace client
         bot->actions |= Bot::ACTION_GRAB;
       }
     }
-    else if( ui::mouse.wheelDown ) {
-      if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::BROWSABLE_BIT ) ) {
-        bot->actions |= Bot::ACTION_TAKE;
-      }
-    }
   }
 
   void BotProxy::prepare()

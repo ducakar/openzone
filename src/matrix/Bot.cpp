@@ -193,7 +193,7 @@ namespace oz
     hvsc[4] = hvsc[2] * hvsc[0];
     hvsc[5] = hvsc[2] * hvsc[1];
 
-    state &= ~( GROUNDED_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT );
+    state &= ~( GROUNDED_BIT | ON_STAIRS_BIT | CLIMBING_BIT | SWIMMING_BIT | SUBMERGED_BIT );
 
     state |= lower != -1 || ( flags & ON_FLOOR_BIT ) ? GROUNDED_BIT  : 0;
     state |= ( flags & ON_LADDER_BIT )               ? CLIMBING_BIT  : 0;
@@ -437,7 +437,7 @@ namespace oz
       // step over an edge. In other words:
       //
       //      .                                  Start and end position must be on different sides
-      //  end  .     end of a failed attempt     of a obstacle side plane we collided to.
+      //  end  .     end of a failed attempt     of the obstacle side plane we collided to.
       //     \  .   /
       //      o  . x
       // ----------     collision point
@@ -451,7 +451,7 @@ namespace oz
       if( ( state & ( STEPPING_BIT | CLIMBING_BIT ) ) == STEPPING_BIT &&
           stepRate <= clazz->stepRateLimit )
       {
-        // check if bot's gonna hit a stair in next frame
+        // check if bot's gonna hit a stair in the next frame
         Vec3 desiredMove = momentum * Timer::TICK_TIME;
 
         collider.mask = flags & SOLID_BIT;
@@ -482,6 +482,40 @@ namespace oz
           }
           p.z = originalZ;
           stepSucceeded:;
+        }
+
+        collider.mask = SOLID_BIT;
+      }
+
+      /*
+       * Ledge climbing
+       */
+
+      if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) ) {
+        // check if bot's gonna hit a wall in the next frame
+        Vec3 desiredMove = momentum * Timer::TICK_TIME;
+
+        collider.mask = flags & SOLID_BIT;
+        collider.translate( this, desiredMove );
+
+        if( collider.hit.ratio != 1.0f && collider.hit.normal.z < Physics::FLOOR_NORMAL_Z ) {
+          Point3 originalP = p;
+
+          p += desiredMove;
+          p.z += clazz->climbInc;
+
+          for( float raise = clazz->stepMax; raise <= clazz->climbMax; raise += clazz->climbInc ) {
+            if( !collider.overlaps( this, this ) ) {
+              momentum.x *= ( 1.0f - Physics::LADDER_FRICTION );
+              momentum.y *= ( 1.0f - Physics::LADDER_FRICTION );
+              momentum.z = max( momentum.z, clazz->climbMomentum );
+              break;
+            }
+
+            p.z += clazz->climbInc;
+          }
+
+          p = originalP;
         }
 
         collider.mask = SOLID_BIT;

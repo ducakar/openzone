@@ -37,13 +37,16 @@ namespace ui
 
       int    tagged;
       int    scroll;
-      uint   grabTexId;
+
+      uint   scrollUpTexId;
+      uint   scrollDownTexId;
       uint   useTexId;
       uint   equipTexId;
       uint   unequipTexId;
 
     protected:
 
+      virtual void onVisibilityChange();
       virtual bool onMouseEvent();
       virtual void onDraw();
 
