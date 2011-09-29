@@ -93,15 +93,18 @@ namespace oz
     clazz->waterControl      = config->get( "waterControl", 0.05f );
     clazz->slickControl      = config->get( "slickControl", 0.04f );
 
-    clazz->grabDistance      = config->get( "grabDistance", 2.0f );
+    clazz->reachDist         = config->get( "reachDist", 2.0f );
+
     clazz->grabMass          = config->get( "grabMass", 50.0f );
     clazz->throwMomentum     = config->get( "throwMomentum", 6.0f );
 
+    clazz->regeneration      = config->get( "regeneration", 0.0f ) * Timer::TICK_TIME;
+
     clazz->stamina           = config->get( "stamina", 100.0f );
-    clazz->staminaGain       = config->get( "staminaGain", 0.05f );
-    clazz->staminaWaterDrain = config->get( "staminaWaterDrain", 0.10f );
-    clazz->staminaRunDrain   = config->get( "staminaRunDrain", 0.08f );
-    clazz->staminaJumpDrain  = config->get( "staminaJumpDrain", 4.0f );
+    clazz->staminaGain       = config->get( "staminaGain", 2.5f ) * Timer::TICK_TIME;
+    clazz->staminaWaterDrain = config->get( "staminaWaterDrain", 5.0f ) * Timer::TICK_TIME;
+    clazz->staminaRunDrain   = config->get( "staminaRunDrain", 4.0f ) * Timer::TICK_TIME;
+    clazz->staminaJumpDrain  = config->get( "staminaJumpDrain", 5.0f );
     clazz->staminaThrowDrain = config->get( "staminaThrowDrain", 8.0f );
 
     clazz->state = 0;

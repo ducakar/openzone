@@ -239,7 +239,6 @@ namespace oz
         }
       }
       else if( hit.normal.z == -1.0f ) {
-        dyn->flags |= Object::UPPER_BIT;
         dyn->momentum.z = sDyn->velocity.z;
 
         sDyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
@@ -255,7 +254,6 @@ namespace oz
         dyn->floor = Vec3( 0.0f, 0.0f, 1.0f );
         dyn->momentum.z = sDyn->velocity.z;
 
-        sDyn->flags |= Object::UPPER_BIT;
         sDyn->damage( dyn->mass * WEIGHT_FACTOR );
 
         if( !( sDyn->flags & Object::DISABLED_BIT ) ) {

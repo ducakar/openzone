@@ -29,5 +29,6 @@ add_library( matrix STATIC
   common.cpp
   luaapi.cpp
   modules/FloraModule.cpp
+  modules/PreferencesModule.cpp
 )
 add_dependencies( matrix pch )

@@ -135,7 +135,7 @@ namespace ui
         float dimY = bot->dim.y + taggedDyn->dim.y;
         float dist = Math::sqrt( dimX*dimX + dimY*dimY ) + Bot::GRAB_EPSILON;
 
-        if( dist <= botClazz->grabDistance ) {
+        if( dist <= botClazz->reachDist ) {
           glBindTexture( GL_TEXTURE_2D, liftTexId );
           shape.fill( bottomIconX, bottomIconY, ICON_SIZE, ICON_SIZE );
         }

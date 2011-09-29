@@ -87,9 +87,6 @@ namespace oz
         flags |= Object::LUA_BIT | Object::HIT_FUNC_BIT;
       }
     }
-    if( name.equals( "datacube" ) ) {
-        System::trap();
-      }
     if( !onUse.isEmpty() ) {
       // disable event handler if explicitly set to false
       if( !config->get( "flag.useFunc", true ) ) {
