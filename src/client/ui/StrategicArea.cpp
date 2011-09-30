@@ -96,7 +96,7 @@ namespace ui
       return;
     }
 
-    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, SDL_COLOUR_WHITE );
+    SDL_Surface* text = TTF_RenderUTF8_Blended( currentFont, buffer, Font::SDL_COLOUR_WHITE );
 
     int x = baseX - text->w / 2;
     int y = baseY - text->h / 2;

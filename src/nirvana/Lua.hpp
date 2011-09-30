@@ -272,6 +272,13 @@ namespace nirvana
       OZ_LUA_API( ozSelfBindStrOverlaps );
       OZ_LUA_API( ozSelfBindObjOverlaps );
 
+      /*
+       * Nirvana
+       */
+
+      OZ_LUA_API( ozNirvanaRemoveDevice );
+      OZ_LUA_API( ozNirvanaAddMemo );
+
   };
 
   extern Lua lua;

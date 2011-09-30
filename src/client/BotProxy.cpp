@@ -182,6 +182,10 @@ namespace client
       }
       if( ui::mouse.rightClick ) {
         bot->actions |= Bot::ACTION_USE | Bot::ACTION_VEH_NEXT_WEAPON;
+
+        if( camera.taggedObj != null && ( camera.taggedObj->flags & Object::DEVICE_BIT ) ) {
+          ui::mouse.doShow = true;
+        }
       }
       if( ui::mouse.wheelDown ) {
         bot->actions |= Bot::ACTION_TAKE;

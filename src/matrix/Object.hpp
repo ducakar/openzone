@@ -37,43 +37,46 @@ namespace oz
        */
 
       // DynObject
-      static const int DYNAMIC_BIT        = 0x40000000;
+      static const int DYNAMIC_BIT        = int( 0x80000000 );
       // Weapon
-      static const int WEAPON_BIT         = 0x20000000;
+      static const int WEAPON_BIT         = 0x40000000;
       // Bot
-      static const int BOT_BIT            = 0x10000000;
+      static const int BOT_BIT            = 0x20000000;
       // Vehicle
-      static const int VEHICLE_BIT        = 0x08000000;
+      static const int VEHICLE_BIT        = 0x10000000;
       // can be put into inventory
-      static const int ITEM_BIT           = 0x04000000;
+      static const int ITEM_BIT           = 0x08000000;
       // bots have access to this object's inventory
-      static const int BROWSABLE_BIT      = 0x02000000;
+      static const int BROWSABLE_BIT      = 0x04000000;
 
       /*
        * FUNCTION FLAGS
        */
 
       // if object has Lua handlers
-      static const int LUA_BIT            = 0x01000000;
+      static const int LUA_BIT            = 0x02000000;
 
       // if the onDestroy function should be called on destruction
-      static const int DESTROY_FUNC_BIT   = 0x00800000;
+      static const int DESTROY_FUNC_BIT   = 0x01000000;
 
       // if the onDamage function should be called on damage received
-      static const int DAMAGE_FUNC_BIT    = 0x00400000;
+      static const int DAMAGE_FUNC_BIT    = 0x00800000;
 
       // if the onHit function should be called on hit
-      static const int HIT_FUNC_BIT       = 0x00200000;
+      static const int HIT_FUNC_BIT       = 0x00400000;
 
       // if the onUse function should be called when object is used
-      static const int USE_FUNC_BIT       = 0x00100000;
+      static const int USE_FUNC_BIT       = 0x00200000;
 
       // if the onUpdate method should be called on each tick
-      static const int UPDATE_FUNC_BIT    = 0x00080000;
+      static const int UPDATE_FUNC_BIT    = 0x00100000;
 
       /*
        * BOUND OBJECTS
        */
+
+      // if a the object has a device in nirvana
+      static const int DEVICE_BIT         = 0x00080000;
 
       // if the object has a model object in frontend
       static const int MODEL_BIT          = 0x00040000;
@@ -226,13 +229,6 @@ namespace oz
       // inventory of an object
       Vector<int>        items;
 
-    public:
-
-      Object() : cell( null ), index( -1 )
-      {}
-
-      virtual ~Object();
-
     private:
 
       // no copying
@@ -240,6 +236,11 @@ namespace oz
       Object& operator = ( const Object& );
 
     public:
+
+      Object() : cell( null ), index( -1 )
+      {}
+
+      virtual ~Object();
 
       /**
        * Add an event to the object. Events can be used for reporting collisions, sounds etc.

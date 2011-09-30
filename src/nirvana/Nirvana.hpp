@@ -11,6 +11,7 @@
 
 #include "stable.hpp"
 
+#include "nirvana/Device.hpp"
 #include "nirvana/Mind.hpp"
 
 namespace oz
@@ -27,10 +28,12 @@ namespace nirvana
       // to force update, set Mind::FORCE_UPDATE_BIT
       static const int UPDATE_INTERVAL = 32;
 
-      DList<Mind> minds;
       int updateModulo;
 
     public:
+
+      HashIndex<Device*, 2039> devices;
+      HashIndex<Mind, 2039>    minds;
 
       void sync();
       void update();

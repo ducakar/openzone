@@ -580,9 +580,7 @@ namespace oz
           }
         }
 
-        hard_assert( false );
-
-        return data[0].value;
+        throw;
       }
 
       /**
@@ -605,9 +603,7 @@ namespace oz
           }
         }
 
-        hard_assert( false );
-
-        return data[0].value;
+        throw;
       }
 
       /**

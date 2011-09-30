@@ -92,10 +92,6 @@ namespace oz
       if( !config->get( "flag.useFunc", true ) ) {
         flags &= ~Object::USE_FUNC_BIT;
       }
-      else if( onUse.equals( "INSTRUMENT" ) ) {
-        onUse.clear();
-        flags |= Object::USE_FUNC_BIT;
-      }
       else {
         flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
       }
@@ -137,6 +133,20 @@ namespace oz
     debrisColour.y       = config->get( "debrisColour.g", 0.5f );
     debrisColour.z       = config->get( "debrisColour.b", 0.5f );
     debrisColourSpread   = config->get( "debrisColourSpread", 0.1f );
+
+    /*
+     * device
+     */
+
+    deviceType = config->get( "deviceType", "" );
+
+    if( !deviceType.isEmpty() ) {
+      flags |= Object::DEVICE_BIT;
+
+      if( flags & Object::USE_FUNC_BIT ) {
+        throw Exception( "device cannot have onUse handler" );
+      }
+    }
 
     /*
      * model

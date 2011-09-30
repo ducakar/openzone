@@ -14,6 +14,7 @@
 #include "matrix/Vehicle.hpp"
 
 #include "client/ui/Area.hpp"
+#include "client/ui/Label.hpp"
 
 namespace oz
 {
@@ -46,6 +47,7 @@ namespace ui
 
       uint  crossTexId;
       uint  useTexId;
+      uint  deviceTexId;
       uint  equipTexId;
       uint  mountTexId;
       uint  takeTexId;

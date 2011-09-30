@@ -23,7 +23,28 @@ namespace oz
 
     do {
       struct dirent* file = readdir( reinterpret_cast<DIR*>( dir ) );
-      elem = file == null ? null : file->d_name;
+
+      if( file == null ) {
+        elem = null;
+      }
+      else {
+        elem = file->d_name;
+
+        switch( file->d_type ) {
+          case DT_REG: {
+            type = REGULAR_FILE;
+            break;
+          }
+          case DT_DIR: {
+            type = DIRECTORY;
+            break;
+          }
+          default: {
+            type = OTHER;
+            break;
+          }
+        }
+      }
     }
     while( elem != null && elem[0] == '.' );
   }

@@ -34,7 +34,7 @@ namespace ui
 
   bool InventoryMenu::onMouseEvent()
   {
-    if( camera.state != Camera::BOT || camera.bot == -1 ||
+    if( camera.state != Camera::BOT || camera.botObj == null ||
         ( master != null && camera.botObj->instrument == -1 ) )
     {
       return false;
@@ -114,7 +114,7 @@ namespace ui
 
   void InventoryMenu::onDraw()
   {
-    if( camera.state != Camera::BOT || camera.bot == -1 ||
+    if( camera.state != Camera::BOT || camera.botObj == null ||
         ( master != null && camera.botObj->instrument == -1 ) )
     {
       tagged = -1;

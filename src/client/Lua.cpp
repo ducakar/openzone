@@ -19,9 +19,14 @@
 #include "matrix/Lua.hpp"
 #include "matrix/Module.hpp"
 
+#include "nirvana/Nirvana.hpp"
+#include "nirvana/Memo.hpp"
+
 #include "client/Camera.hpp"
 
 #include "matrix/luaapi.hpp"
+
+using namespace oz::nirvana;
 
 namespace oz
 {
@@ -309,6 +314,13 @@ namespace client
 
     OZ_LUA_FUNC( ozCameraAllowReincarnation );
     OZ_LUA_FUNC( ozCameraIncarnate );
+
+    /*
+     * Nirvana
+     */
+
+    OZ_LUA_FUNC( ozNirvanaRemoveDevice );
+    OZ_LUA_FUNC( ozNirvanaAddMemo );
 
     /*
      * Constants
@@ -2103,6 +2115,48 @@ namespace client
 
     synapse.remove( lua.part );
     lua.part = null;
+    return 0;
+  }
+
+  /*
+   * Nirvana
+   */
+
+  int Lua::ozNirvanaRemoveDevice( lua_State* l )
+  {
+    ARG( 1 );
+
+    int index = toint( 1 );
+    const Device* const* device = nirvana::nirvana.devices.find( index );
+
+    if( device == null ) {
+      pushbool( false );
+    }
+    else {
+      delete *device;
+      nirvana::nirvana.devices.exclude( index );
+      pushbool( true );
+    }
+    return 1;
+  }
+
+  int Lua::ozNirvanaAddMemo( lua_State* l )
+  {
+    ARG( 2 );
+
+    int index = toint( 1 );
+    if( uint( index ) >= uint( orbis.objects.length() ) ) {
+      ERROR( "invalid object index" );
+    }
+    if( orbis.objects[index] == null ) {
+      ERROR( "object is null" );
+    }
+
+    if( nirvana::nirvana.devices.contains( index ) ) {
+      ERROR( "object already has a device" );
+    }
+
+    nirvana::nirvana.devices.add( index, new Memo( tostring( 2 ) ) );
     return 0;
   }
 

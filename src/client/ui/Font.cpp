@@ -24,6 +24,8 @@ namespace ui
 
   Font font;
 
+  const SDL_Colour Font::SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
+
   const Font::Info Font::INFOS[MAX] = {
     { "mono",   "ui/font/DejaVuSansMono.ttf", 13 },
     { "sans",   "ui/font/DejaVuSans.ttf",     13 },

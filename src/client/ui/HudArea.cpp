@@ -90,10 +90,12 @@ namespace ui
         glBindTexture( GL_TEXTURE_2D, browseTexId );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }
-      if( ( taggedObj->flags & ( Object::USE_FUNC_BIT | Object::WEAPON_BIT | Object::VEHICLE_BIT ) ) ==
-          Object::USE_FUNC_BIT )
+      if( ( taggedObj->flags & ( Object::USE_FUNC_BIT | Object::DEVICE_BIT ) ) &&
+          !( taggedObj->flags & ( Object::WEAPON_BIT | Object::VEHICLE_BIT ) ) )
       {
-        glBindTexture( GL_TEXTURE_2D, useTexId );
+
+        glBindTexture( GL_TEXTURE_2D,
+                       ( taggedObj->flags & Object::USE_FUNC_BIT ) ? useTexId : deviceTexId );
         shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
       }
 
@@ -307,7 +309,7 @@ namespace ui
   HudArea::HudArea() : Area( camera.width, camera.height ),
       weaponName( 16, 54, ALIGN_LEFT, Font::LARGE, ""  ),
       weaponRounds( 200, 54, ALIGN_RIGHT, Font::LARGE, "∞" ),
-      lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )
+      lastTaggedId( -1 ), lastWeaponId( -1 ), lastWeaponRounds( -1 ), lastVehicleId( -1 )
   {
     flags = UPDATE_BIT | IGNORE_BIT | PINNED_BIT;
 
@@ -321,6 +323,7 @@ namespace ui
 
     crossTexId  = context.loadTexture( "ui/icon/crosshair.ozcTex" );
     useTexId    = context.loadTexture( "ui/icon/use.ozcTex" );
+    deviceTexId = context.loadTexture( "ui/icon/device.ozcTex" );
     equipTexId  = context.loadTexture( "ui/icon/equip.ozcTex" );
     mountTexId  = context.loadTexture( "ui/icon/mount.ozcTex" );
     takeTexId   = context.loadTexture( "ui/icon/take.ozcTex" );
@@ -348,6 +351,7 @@ namespace ui
   {
     glDeleteTextures( 1, &crossTexId );
     glDeleteTextures( 1, &useTexId );
+    glDeleteTextures( 1, &deviceTexId );
     glDeleteTextures( 1, &equipTexId );
     glDeleteTextures( 1, &mountTexId );
     glDeleteTextures( 1, &takeTexId );

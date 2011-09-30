@@ -67,12 +67,7 @@ namespace oz
 
   void Object::onUse( Bot* user )
   {
-    if( clazz->onUse.isEmpty() ) {
-      user->instrument = index;
-    }
-    else {
-      lua.objectCall( clazz->onUse, this, user );
-    }
+    lua.objectCall( clazz->onUse, this, user );
   }
 
   void Object::onUpdate()

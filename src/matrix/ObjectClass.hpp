@@ -60,6 +60,8 @@ namespace oz
       float  debrisColourSpread;
       Vec3   debrisColour;
 
+      String deviceType;
+
       String modelType;
       int    modelIndex;
 

@@ -23,6 +23,7 @@
 #include "client/ui/HudArea.hpp"
 #include "client/ui/StrategicArea.hpp"
 #include "client/ui/InventoryMenu.hpp"
+#include "client/ui/InfoFrame.hpp"
 #include "client/ui/DebugFrame.hpp"
 #include "client/ui/BuildMenu.hpp"
 #include "client/ui/MusicPlayer.hpp"
@@ -39,6 +40,7 @@ namespace ui
     public:
 
       bool isFreelook;
+      bool showBuild;
       bool showDebug;
 
     public:
@@ -49,6 +51,7 @@ namespace ui
       StrategicArea* strategicArea;
       InventoryMenu* inventoryMenu;
       InventoryMenu* browseMenu;
+      InfoFrame*     infoFrame;
       MusicPlayer*   musicPlayer;
       BuildMenu*     buildMenu;
       DebugFrame*    debugFrame;

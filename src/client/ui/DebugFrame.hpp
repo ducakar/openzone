@@ -11,8 +11,6 @@
 
 #include "stable.hpp"
 
-#ifndef NDEBUG
-
 #include "client/ui/Frame.hpp"
 
 namespace oz
@@ -44,5 +42,3 @@ namespace ui
 }
 }
 }
-
-#endif

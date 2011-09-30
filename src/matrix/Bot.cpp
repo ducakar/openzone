@@ -592,7 +592,12 @@ namespace oz
       const Object* obj = instrumentObj != null ? instrumentObj : getTagged( hvsc, ~0 );
 
       if( obj != null ) {
-        synapse.use( this, orbis.objects[obj->index] );
+        if( obj->flags & DEVICE_BIT ) {
+          instrument = obj->index;
+        }
+        else {
+          synapse.use( this, orbis.objects[obj->index] );
+        }
       }
     }
     else if( actions & ~oldActions & ACTION_TAKE ) {
