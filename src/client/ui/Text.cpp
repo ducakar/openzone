@@ -26,115 +26,84 @@ namespace client
 namespace ui
 {
 
-  void Text::vset( int x_, int y_, int align_, Font::Type font_, const char* s, va_list ap )
+  char Text::buffer[2048];
+
+  Text::Text( int x_, int y_, int width_, int lines_, Font::Type font_ ) :
+      x( x_ ), y( y_ ), width( width_ ), lines( lines_ ), font( ui::font.fonts[font_] )
   {
-    hard_assert( s != null );
+    labels = new Label[lines];
 
-    x     = x_;
-    y     = y_;
-    align = align_;
-    font  = font_;
-
-    char buffer[1024];
-    vsnprintf( buffer, 1024, s, ap );
-    buffer[1023] = '\0';
-
-    if( buffer[0] == '\0' ) {
-      offsetX = 0;
-      offsetY = 0;
-      width   = 0;
-      height  = 0;
-
-      activeTexId = 0;
-      return;
+    for( int i = 0; i < lines; ++i ) {
+      labels[i].set( x, y + ( lines - i - 1 ) * Font::INFOS[font_].height + 2,
+                     Area::ALIGN_NONE, font_, "" );
     }
-
-    SDL_Surface* text = TTF_RenderUTF8_Blended( ui::font.fonts[font], buffer, Font::SDL_COLOUR_WHITE );
-
-    glBindTexture( GL_TEXTURE_2D, texId );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                  text->pixels );
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    activeTexId = texId;
-
-    offsetX = x;
-    offsetY = y;
-    width   = text->w;
-    height  = text->h;
-
-    SDL_FreeSurface( text );
-
-    if( align & Area::ALIGN_RIGHT ) {
-      offsetX -= width;
-    }
-    else if( align & Area::ALIGN_HCENTRE ) {
-      offsetX -= width / 2;
-    }
-    if( align & Area::ALIGN_TOP ) {
-      offsetY -= height;
-    }
-    else if( align & Area::ALIGN_VCENTRE ) {
-      offsetY -= height / 2;
-    }
-  }
-
-  Text::Text() : x( 0 ), y( 0 ),align( Area::ALIGN_NONE ), font( Font::MONO ),
-      offsetX( 0 ), offsetY( 0 ), width( 0 ), height( 0 ), activeTexId( 0 )
-  {
-    glGenTextures( 1, &texId );
-    glBindTexture( GL_TEXTURE_2D, texId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  }
-
-  Text::~Text()
-  {
-    glDeleteTextures( 1, &texId );
-  }
-
-  Text::Text( int x, int y, int align, Font::Type font, const char* s, ... )
-  {
-    glGenTextures( 1, &texId );
-    glBindTexture( GL_TEXTURE_2D, texId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-
-    va_list ap;
-    va_start( ap, s );
-    vset( x, y, align, font, s, ap );
-    va_end( ap );
-  }
-
-  void Text::set( int x, int y, int align, Font::Type font, const char* s, ... )
-  {
-    va_list ap;
-    va_start( ap, s );
-    vset( x, y, align, font, s, ap );
-    va_end( ap );
   }
 
   void Text::setText( const char* s, ... )
   {
     va_list ap;
     va_start( ap, s );
-    vset( x, y, align, font, s, ap );
+    vsnprintf( buffer, 2048, s, ap );
     va_end( ap );
+
+    int line = 0;
+
+    char* pos = buffer;
+    char* end = min( strchrnul( buffer, ' ' ), strchrnul( buffer, '\n' ) );
+
+    while( *end != '\0' && line < lines - 1 ) {
+      char* next;
+
+      while( *end == ' ' ) {
+        next = min( strchrnul( end + 1, ' ' ), strchrnul( end + 1, '\n' ) );
+
+        char ch = *next;
+        *next = '\0';
+
+        int w;
+        TTF_SizeUTF8( font, pos, &w, null );
+
+        *next = ch;
+
+        if( w > width ) {
+          break;
+        }
+
+        end = next;
+      }
+
+      char ch = *end;
+      *end = '\0';
+
+      labels[line].setText( pos );
+
+      *end = ch;
+
+      if( ch == '\0' ) {
+        return;
+      }
+
+      pos = end + 1;
+      end = min( strchrnul( pos, ' ' ), strchrnul( pos, '\n' ) );
+
+      ++line;
+    }
+
+    labels[line].setText( pos );
+  }
+
+  void Text::clear()
+  {
+    for( int i = 0; i < lines; ++i ) {
+      labels[i].setText( "" );
+    }
   }
 
   void Text::draw( const Area* area ) const
   {
-    glBindTexture( GL_TEXTURE_2D, width == 0 ? 0 : texId );
-
-    int posX = area->x + ( x < 0 ? area->width  + offsetX : offsetX );
-    int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
-
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
-    shape.fill( posX + 1, posY - 1, width, height );
-    glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    shape.fill( posX, posY, width, height );
-
-    glBindTexture( GL_TEXTURE_2D, 0 );
+    for( int i = 0; i < lines; ++i ) {
+      labels[i].draw( area );
+    }
   }
 
 }

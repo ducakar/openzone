@@ -15,8 +15,12 @@
 #include "matrix/Matrix.hpp"
 #include "matrix/BotClass.hpp"
 
-#include "nirvana/Mind.hpp"
 #include "nirvana/Lua.hpp"
+#include "nirvana/Mind.hpp"
+#include "nirvana/Memo.hpp"
+
+#define OZ_REGISTER_DEVICE( name ) \
+  deviceClasses.add( #name, &name::create )
 
 namespace oz
 {
@@ -30,13 +34,14 @@ namespace nirvana
     // remove devices and minds of removed objects
     foreach( i, synapse.removedObjects.citer() ) {
       const Device* const* device = devices.find( *i );
-      const Mind* mind = minds.find( *i );
+      const Mind* const* mind = minds.find( *i );
 
       if( device != null ) {
         delete *device;
         devices.exclude( *i );
       }
       if( mind != null ) {
+        delete *mind;
         minds.exclude( *i );
       }
     }
@@ -44,17 +49,11 @@ namespace nirvana
     foreach( i, synapse.addedObjects.citer() ) {
       const Object* obj = orbis.objects[*i];
 
-      if( obj == null ) {
-        continue;
-      }
-
-      if( obj->flags & Object::DEVICE_BIT ) {
-      }
-      else if( obj->flags & Object::BOT_BIT ) {
+      if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
         const BotClass* clazz = static_cast<const BotClass*>( obj->clazz );
 
         if( !clazz->mindFunction.isEmpty() ) {
-          minds.add( obj->index, Mind( obj->index ) );
+          minds.add( obj->index, new Mind( obj->index ) );
         }
       }
     }
@@ -63,7 +62,9 @@ namespace nirvana
   void Nirvana::update()
   {
     int count = 0;
-    foreach( mind, minds.iter() ) {
+    foreach( i, minds.iter() ) {
+      Mind* mind = *i;
+
       const Bot* bot = static_cast<const Bot*>( orbis.objects[mind->bot] );
       hard_assert( bot != null && ( bot->flags & Object::BOT_BIT ) );
 
@@ -81,13 +82,29 @@ namespace nirvana
   {
     log.print( "Reading Nirvana ..." );
 
-    String typeName;
-    int nMinds = istream->readInt();
+    lua.read( istream );
 
+    String typeName;
+
+    int nDevices = istream->readInt();
+    int nMinds   = istream->readInt();
+
+    for( int i = 0; i < nDevices; ++i ) {
+      int index   = istream->readInt();
+      String type = istream->readString();
+
+      const Device::CreateFunc* func = deviceClasses.find( type );
+
+      if( func == null ) {
+        throw Exception( "Invalid device type '" + type + "'" );
+      }
+
+      devices.add( index, ( *func )( index, istream ) );
+    }
     for( int i = 0; i < nMinds; ++i ) {
       int index = istream->readInt();
 
-      minds.add( index, Mind( index, istream ) );
+      minds.add( index, new Mind( index, istream ) );
     }
 
     log.printEnd( " OK" );
@@ -97,10 +114,20 @@ namespace nirvana
   {
     log.print( "Writing Nirvana ..." );
 
+    lua.write( ostream );
+
+    ostream->writeInt( devices.length() );
     ostream->writeInt( minds.length() );
 
+    foreach( device, devices.citer() ) {
+      ostream->writeInt( device.key() );
+      ostream->writeString( device.value()->type() );
+
+      device.value()->write( ostream );
+    }
     foreach( mind, minds.citer() ) {
-      mind.value().write( ostream );
+      ostream->writeInt( mind.value()->bot );
+      mind.value()->write( ostream );
     }
 
     log.printEnd( " OK" );
@@ -116,8 +143,10 @@ namespace nirvana
   {
     log.print( "Unloading Nirvana ..." );
 
-    devices.clear();
-    minds.clear();
+    devices.free();
+    minds.free();
+
+    Memo::pool.free();
     Mind::pool.free();
 
     log.printEnd( " OK" );
@@ -129,6 +158,8 @@ namespace nirvana
     log.indent();
 
     lua.init();
+
+    OZ_REGISTER_DEVICE( Memo );
 
     updateModulo = 0;
 

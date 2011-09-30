@@ -62,12 +62,13 @@ namespace ui
                          bot->depth );
       botVelMom.draw( this );
 
-      botFlagsState.setText( "d %d fl %d lw %d h %d fr %d iw %d s %d ld %d ovlp %d sr %.3f",
+      botFlagsState.setText( "d %d fl %d lw %d h %d fr %d b %d iw %d s %d ld %d ovlp %d sr %.3f",
                              ( bot->flags & Object::DISABLED_BIT ) != 0,
                              ( bot->flags & Object::ON_FLOOR_BIT ) != 0,
                              bot->lower,
                              ( bot->flags & Object::HIT_BIT ) != 0,
                              ( bot->flags & Object::FRICTING_BIT ) != 0,
+                             ( bot->flags & Object::BELOW_BIT ) != 0,
                              ( bot->flags & Object::IN_WATER_BIT ) != 0,
                              ( bot->flags & Object::ON_SLICK_BIT ) != 0,
                              ( bot->flags & Object::ON_LADDER_BIT ) != 0,
@@ -84,10 +85,11 @@ namespace ui
                          dyn->momentum.x, dyn->momentum.y, dyn->momentum.z );
       tagVelMom.draw( this );
 
-      tagFlags.setText( "d %d fl %d lw %d h %d fr %d iw %d s %d ld %d",
+      tagFlags.setText( "d %d fl %d lw %d h %d fr %d b %d iw %d s %d ld %d",
                         ( dyn->flags & Object::DISABLED_BIT ) != 0,
                         ( dyn->flags & Object::ON_FLOOR_BIT ) != 0,
                         dyn->lower,
+                        ( dyn->flags & Object::BELOW_BIT ) != 0,
                         ( dyn->flags & Object::HIT_BIT ) != 0,
                         ( dyn->flags & Object::FRICTING_BIT ) != 0,
                         ( dyn->flags & Object::IN_WATER_BIT ) != 0,

@@ -12,6 +12,7 @@
 #include "stable.hpp"
 
 #include "client/ui/Frame.hpp"
+#include "client/ui/Text.hpp"
 
 namespace oz
 {
@@ -24,8 +25,8 @@ namespace ui
   {
     private:
 
-      Label text;
-      int   lastId;
+      Text text;
+      int  lastId;
 
     protected:
 

@@ -22,9 +22,6 @@ namespace nirvana
 
       static const int FORCE_UPDATE_BIT = 0x00000001;
 
-      typedef Mind* ( * CreateFunc )( int bot );
-      typedef Mind* ( * ReadFunc )( InputStream* istream );
-
       static Pool<Mind, 1024> pool;
 
       Mind* prev[1];

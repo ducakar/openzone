@@ -106,35 +106,39 @@ namespace oz
       // if the object is has been sliding on a floor or on another object in last step
       static const int FRICTING_BIT       = 0x00002000;
 
+      // if the object has collided into another dynamic object from below (to prevent stacked
+      // object from being carried around)
+      static const int BELOW_BIT          = 0x00001000;
+
       // if the the object lies or moves on a structure, terrain or non-dynamic object
       // (if on another dynamic object, we determine that with "lower" index)
       // (not cleared if disabled)
-      static const int ON_FLOOR_BIT       = 0x00001000;
+      static const int ON_FLOOR_BIT       = 0x00000800;
 
       // if the object is on slipping surface (not cleared if disabled)
-      static const int ON_SLICK_BIT       = 0x00000800;
+      static const int ON_SLICK_BIT       = 0x00000400;
 
       // if the object intersects with water (not cleared if disabled)
-      static const int IN_WATER_BIT       = 0x00000400;
+      static const int IN_WATER_BIT       = 0x00000300;
 
       // if the object is on ladder (not cleared if disabled)
-      static const int ON_LADDER_BIT      = 0x00000200;
+      static const int ON_LADDER_BIT      = 0x00000100;
 
       // other object collide with the object
-      static const int SOLID_BIT          = 0x00000100;
+      static const int SOLID_BIT          = 0x00000080;
 
       // use cylinder model for collision between objects when both are flagged as cylinder
-      static const int CYLINDER_BIT       = 0x00000080;
+      static const int CYLINDER_BIT       = 0x00000040;
 
       // If the object is climber it is tested against ladder brushes and gains ON_LADDER_BIT if it
       // intersects with a ladder brush. Otherwise object is not affected by ladders.
-      static const int CLIMBER_BIT        = 0x00000040;
+      static const int CLIMBER_BIT        = 0x00000020;
 
       // enable pushing to side directions
-      static const int PUSHER_BIT         = 0x00000020;
+      static const int PUSHER_BIT         = 0x00000010;
 
       // if the object is immune to friction
-      static const int FRICTLESS_BIT      = 0x00000010;
+      static const int FRICTLESS_BIT      = 0x00000008;
 
       /*
        * RENDER FLAGS

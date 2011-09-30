@@ -16,6 +16,12 @@ namespace oz
 namespace nirvana
 {
 
+  void Device::onUse( const Bot* )
+  {}
+
+  void Device::onUpdate()
+  {}
+
   Device::~Device()
   {}
 
@@ -24,12 +30,8 @@ namespace nirvana
     return null;
   }
 
-  void Device::onUse( const Bot* )
+  void Device::write( OutputStream* ) const
   {}
-
-  void Device::onUpdate()
-  {}
-
 
 }
 }
