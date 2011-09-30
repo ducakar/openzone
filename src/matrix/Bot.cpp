@@ -38,7 +38,7 @@ namespace oz
 
   Pool<Bot, 1024> Bot::pool;
 
-  const Object* Bot::getTagged( float* hvsc, int mask ) const
+  Object* Bot::getTagged( float* hvsc, int mask ) const
   {
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
@@ -532,12 +532,10 @@ namespace oz
       hard_assert( obj->flags & DYNAMIC_BIT );
       hard_assert( !( obj->flags & ON_LADDER_BIT ) );
 
-      const Object* lowerObj = lower == -1 ? null : orbis.objects[lower];
-
-      if( obj == null || obj->cell == null ||
-          ( lowerObj != null && !( lowerObj->flags & DISABLED_BIT ) ) ||
+      if( obj == null || obj->cell == null || ( obj->flags & BELOW_BIT ) ||
           ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
-          ( ( obj->flags & BOT_BIT ) && ( ( obj->actions & ACTION_JUMP ) || ( obj->state & GRAB_BIT ) ) ) )
+          ( ( obj->flags & BOT_BIT ) &&
+            ( ( obj->actions & ACTION_JUMP ) | ( obj->state & GRAB_BIT ) ) ) )
       {
         state &= ~GRAB_BIT;
         instrument = -1;
@@ -589,14 +587,14 @@ namespace oz
      */
 
     if( actions & ~oldActions & ACTION_USE ) {
-      const Object* obj = instrumentObj != null ? instrumentObj : getTagged( hvsc, ~0 );
+      Object* obj = instrumentObj != null ? instrumentObj : getTagged( hvsc, ~0 );
 
       if( obj != null ) {
         if( obj->flags & DEVICE_BIT ) {
           instrument = obj->index;
         }
         else {
-          synapse.use( this, orbis.objects[obj->index] );
+          synapse.use( this, obj );
         }
       }
     }
@@ -604,11 +602,7 @@ namespace oz
       Dynamic* obj = static_cast<Dynamic*>( instrumentObj );
 
       if( obj == null ) {
-        const Object* tagged = getTagged( hvsc, ~0 );
-
-        if( tagged != null ) {
-          obj = static_cast<Dynamic*>( orbis.objects[tagged->index] );
-        }
+        obj = static_cast<Dynamic*>( getTagged( hvsc, ~0 ) );
       }
 
       if( obj != null ) {
@@ -654,7 +648,7 @@ namespace oz
         state &= ~GRAB_BIT;
       }
       else {
-        const Bot* obj = static_cast<const Bot*>( getTagged( hvsc ) );
+        Bot* obj = static_cast<Bot*>( getTagged( hvsc ) );
 
         if( obj != null && ( obj->flags & DYNAMIC_BIT ) && obj->mass <= clazz->grabMass &&
             !( ( obj->flags & BOT_BIT ) && ( obj->state & GRAB_BIT ) ) )
@@ -667,13 +661,15 @@ namespace oz
             state      |= GRAB_BIT;
             instrument = obj->index;
             grabHandle = dist;
+
+            obj->flags &= ~BELOW_BIT;
           }
         }
       }
     }
     else if( actions & ~oldActions & ( ACTION_INV_GRAB | ACTION_INV_DROP ) ) {
       if( !( state & GRAB_BIT ) && taggedItem != -1 && taggedItem < items.length() ) {
-        Dynamic* item = static_cast<Dynamic*>( orbis.objects[items[taggedItem]] );
+        Dynamic* item = static_cast<Dynamic*>( orbis.objects[ items[taggedItem] ] );
 
         hard_assert( item != null && ( item->flags & DYNAMIC_BIT ) && ( item->flags & ITEM_BIT ) );
 

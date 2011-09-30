@@ -39,8 +39,6 @@ namespace ui
       uint       texId;
       uint       activeTexId;
 
-      void vset( int x, int y, int align, Font::Type font, const char* s, va_list ap );
-
     public:
 
       Label();
@@ -48,6 +46,7 @@ namespace ui
 
       explicit Label( int x, int y, int align, Font::Type font, const char* s, ... );
 
+      void vset( int x, int y, int align, Font::Type font, const char* s, va_list ap );
       void set( int x, int y, int align, Font::Type font, const char* s, ... );
       void setText( const char* s, ... );
 

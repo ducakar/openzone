@@ -90,35 +90,35 @@ namespace client
         {}
       };
 
-      HashString<Model::CreateFunc, 16> modelClasses;
-      HashString<Audio::CreateFunc, 8>  audioClasses;
+      HashString<const Model::CreateFunc, 16> modelClasses;
+      HashString<const Audio::CreateFunc, 8>  audioClasses;
 
-      Resource<uint>*                   textures;
-      Resource<uint>*                   sounds;
+      Resource<uint>*                 textures;
+      Resource<uint>*                 sounds;
 
       // non-looping sources
-      List<Source>                      sources;
+      List<Source>                    sources;
       // looping sources
-      HashIndex<ContSource, 64>         bspSources;
-      HashIndex<ContSource, 64>         objSources;
+      HashIndex<ContSource, 64>       bspSources;
+      HashIndex<ContSource, 64>       objSources;
 
-      Resource<BSP*>*                   bsps;
+      Resource<BSP*>*                 bsps;
 
-      HashIndex< Resource<SMM*>, 61 >   smms;
-      HashIndex< Resource<MD2*>, 61 >   md2s;
-      HashIndex< Resource<MD3*>, 61 >   md3s;
+      HashIndex< Resource<SMM*>, 61 > smms;
+      HashIndex< Resource<MD2*>, 61 > md2s;
+      HashIndex< Resource<MD3*>, 61 > md3s;
 
-      HashIndex<Model*, 8191>           models;   // currently loaded models
-      HashIndex<Audio*, 2039>           audios;   // currently loaded audio models
+      HashIndex<Model*, 8191>         models;   // currently loaded models
+      HashIndex<Audio*, 2039>         audios;   // currently loaded audio models
 
-      int                               maxModels;
-      int                               maxAudios;
-      int                               maxSources;
-      int                               maxBSPSources;
-      int                               maxObjSources;
+      int                             maxModels;
+      int                             maxAudios;
+      int                             maxSources;
+      int                             maxBSPSources;
+      int                             maxObjSources;
 
-      static Buffer                     buffer;
-      static bool                       enableS3TC;
+      static Buffer                   buffer;
+      static bool                     enableS3TC;
 
       void addSource( uint srcId, int sample );
       void addBSPSource( uint srcId, int sample, int key );

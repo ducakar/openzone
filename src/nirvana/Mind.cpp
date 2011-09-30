@@ -27,8 +27,10 @@ namespace nirvana
     lua.registerMind( bot );
   }
 
-  Mind::Mind( int bot_, InputStream* ) : flags( 0 ), bot( bot_ )
+  Mind::Mind( int bot_, InputStream* istream ) : bot( bot_ )
   {
+    flags = istream->readInt();
+
     lua.registerMind( bot );
   }
 
@@ -59,7 +61,7 @@ namespace nirvana
 
   void Mind::write( OutputStream* ostream ) const
   {
-    ostream->writeInt( bot );
+    ostream->writeInt( flags );
   }
 
 }

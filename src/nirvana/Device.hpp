@@ -25,11 +25,9 @@ namespace nirvana
       static const int MEMO_BIT     = 0x0001;
       static const int COMPUTER_BIT = 0x0002;
 
+      typedef Device* ( * CreateFunc )( int id, InputStream* istream );
+
       int flags;
-
-      virtual ~Device();
-
-      virtual const char* getMemo() const;
 
     protected:
 
@@ -38,6 +36,16 @@ namespace nirvana
 
       virtual void onUse( const Bot* user );
       virtual void onUpdate();
+
+    public:
+
+      virtual ~Device();
+
+      virtual const char* type() const = 0;
+
+      virtual const char* getMemo() const;
+
+      virtual void write( OutputStream* ostream ) const;
 
   };
 

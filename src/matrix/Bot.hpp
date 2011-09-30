@@ -99,7 +99,7 @@ namespace oz
 
       static Pool<Bot, 1024> pool;
 
-      const Object* getTagged( float* hvsc, int mask = Object::SOLID_BIT ) const;
+      Object* getTagged( float* hvsc, int mask = Object::SOLID_BIT ) const;
 
     protected:
 

@@ -26,8 +26,8 @@ namespace ui
 {
 
   InfoFrame::InfoFrame() :
-      Frame( -8, -8, 400, 15 + 6 * ( Font::INFOS[Font::MONO].height + 2 ), "" ),
-      text( 10, 100, ALIGN_NONE, Font::SANS, "" )
+      Frame( -8, -8, 308, 8 + 15 * ( Font::INFOS[Font::MONO].height + 2 ), "" ),
+      text( 4, 4, 300, 15, Font::SANS )
   {
     flags = PINNED_BIT;
   }

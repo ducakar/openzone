@@ -310,7 +310,7 @@ namespace oz
   }
 
   // finds out if AABB-AABB collision occurs and the time when it occurs
-  void Collider::trimAABBObj( const Object* sObj )
+  void Collider::trimAABBObj( Object* sObj )
   {
     float minRatio   = -1.0f;
     float maxRatio   =  1.0f;
@@ -745,7 +745,7 @@ namespace oz
         startPos = originalStartPos;
         endPos   = originalEndPos;
 
-        foreach( sObj, cell.objects.citer() ) {
+        foreach( sObj, cell.objects.iter() ) {
           if( sObj != exclObj && ( sObj->flags & mask ) && sObj->overlaps( trace ) ) {
             trimAABBObj( sObj );
           }

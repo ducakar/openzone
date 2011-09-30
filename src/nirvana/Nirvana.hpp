@@ -32,8 +32,10 @@ namespace nirvana
 
     public:
 
+      HashString<const Device::CreateFunc, 32> deviceClasses;
+
       HashIndex<Device*, 2039> devices;
-      HashIndex<Mind, 2039>    minds;
+      HashIndex<Mind*, 2039>   minds;
 
       void sync();
       void update();

@@ -31,7 +31,7 @@ namespace oz
   {
     Vec3  normal;
 
-    const Object* obj;
+    Object* obj;
     const Struct* str;
     const Struct::Entity* entity;
 
@@ -88,7 +88,7 @@ namespace oz
       bool overlapsEntityOrbisOO();
 
       void trimAABBVoid();
-      void trimAABBObj( const Object* sObj );
+      void trimAABBObj( Object* sObj );
       void trimAABBBrush( const BSP::Brush* brush );
       void trimAABBWater( const BSP::Brush* brush );
       void trimAABBLadder( const BSP::Brush* brush );

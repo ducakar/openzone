@@ -11,7 +11,7 @@
 
 #include "stable.hpp"
 
-#include "client/ui/Font.hpp"
+#include "client/ui/Label.hpp"
 
 namespace oz
 {
@@ -26,30 +26,22 @@ namespace ui
   {
     private:
 
-      int        x;
-      int        y;
-      int        align;
-      Font::Type font;
+      int    x;
+      int    y;
+      int    width;
+      int    lines;
 
-      int        offsetX;
-      int        offsetY;
-      int        width;
-      int        height;
+      TTF_Font* font;
+      Label* labels;
 
-      uint       texId;
-      uint       activeTexId;
-
-      void vset( int x, int y, int align, Font::Type font, const char* s, va_list ap );
+      static char buffer[2048];
 
     public:
 
-      Text();
-      ~Text();
+      explicit Text( int x, int y, int width, int lines, Font::Type font );
 
-      explicit Text( int x, int y, int align, Font::Type font, const char* s, ... );
-
-      void set( int x, int y, int align, Font::Type font, const char* s, ... );
       void setText( const char* s, ... );
+      void clear();
 
       void draw( const Area* area ) const;
 

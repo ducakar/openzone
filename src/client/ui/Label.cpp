@@ -26,6 +26,33 @@ namespace client
 namespace ui
 {
 
+  Label::Label() : x( 0 ), y( 0 ),align( Area::ALIGN_NONE ), font( Font::MONO ),
+      offsetX( 0 ), offsetY( 0 ), width( 0 ), height( 0 ), activeTexId( 0 )
+  {
+    glGenTextures( 1, &texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  }
+
+  Label::~Label()
+  {
+    glDeleteTextures( 1, &texId );
+  }
+
+  Label::Label( int x, int y, int align, Font::Type font, const char* s, ... )
+  {
+    glGenTextures( 1, &texId );
+    glBindTexture( GL_TEXTURE_2D, texId );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+    va_list ap;
+    va_start( ap, s );
+    vset( x, y, align, font, s, ap );
+    va_end( ap );
+  }
+
   void Label::vset( int x_, int y_, int align_, Font::Type font_, const char* s, va_list ap )
   {
     hard_assert( s != null );
@@ -77,33 +104,6 @@ namespace ui
     else if( align & Area::ALIGN_VCENTRE ) {
       offsetY -= height / 2;
     }
-  }
-
-  Label::Label() : x( 0 ), y( 0 ),align( Area::ALIGN_NONE ), font( Font::MONO ),
-      offsetX( 0 ), offsetY( 0 ), width( 0 ), height( 0 ), activeTexId( 0 )
-  {
-    glGenTextures( 1, &texId );
-    glBindTexture( GL_TEXTURE_2D, texId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  }
-
-  Label::~Label()
-  {
-    glDeleteTextures( 1, &texId );
-  }
-
-  Label::Label( int x, int y, int align, Font::Type font, const char* s, ... )
-  {
-    glGenTextures( 1, &texId );
-    glBindTexture( GL_TEXTURE_2D, texId );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-
-    va_list ap;
-    va_start( ap, s );
-    vset( x, y, align, font, s, ap );
-    va_end( ap );
   }
 
   void Label::set( int x, int y, int align, Font::Type font, const char* s, ... )
