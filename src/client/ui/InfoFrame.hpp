@@ -1,5 +1,5 @@
 /*
- *  LoadingArea.hpp
+ *  InfoFrame.hpp
  *
  *  [description]
  *
@@ -11,8 +11,7 @@
 
 #include "stable.hpp"
 
-#include "client/ui/Area.hpp"
-#include "client/ui/Label.hpp"
+#include "client/ui/Frame.hpp"
 
 namespace oz
 {
@@ -21,20 +20,22 @@ namespace client
 namespace ui
 {
 
-  class LoadingArea : public Area
+  class InfoFrame : public Frame
   {
-    friend class UI;
+    private:
+
+      Label text;
+      int   lastId;
 
     protected:
 
+      virtual void onVisibilityChange();
+      virtual bool onMouseOver();
       virtual void onDraw();
 
     public:
 
-      Label status;
-
-      LoadingArea();
-      virtual ~LoadingArea();
+      InfoFrame();
 
   };
 

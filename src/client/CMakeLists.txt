@@ -43,12 +43,15 @@ add_library( client STATIC
   ui/Font.cpp
   ui/Frame.cpp
   ui/HudArea.cpp
+  ui/InfoFrame.cpp
   ui/InventoryMenu.cpp
   ui/Keyboard.cpp
+  ui/Label.cpp
   ui/LoadingArea.cpp
   ui/Mouse.cpp
   ui/MusicPlayer.cpp
   ui/StrategicArea.cpp
+  ui/Text.cpp
   ui/UI.cpp
 )
 add_dependencies( client nirvana matrix pch )

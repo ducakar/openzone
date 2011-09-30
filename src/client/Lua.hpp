@@ -283,6 +283,13 @@ namespace client
       OZ_LUA_API( ozPartRemove );
 
       /*
+       * Nirvana
+       */
+
+      OZ_LUA_API( ozNirvanaRemoveDevice );
+      OZ_LUA_API( ozNirvanaAddMemo );
+
+      /*
        * Camera
        */
 

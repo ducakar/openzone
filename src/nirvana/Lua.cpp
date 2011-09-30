@@ -16,6 +16,9 @@
 #include "matrix/Library.hpp"
 #include "matrix/Module.hpp"
 
+#include "nirvana/Nirvana.hpp"
+#include "nirvana/Memo.hpp"
+
 #include "matrix/luaapi.hpp"
 
 namespace oz
@@ -424,6 +427,13 @@ namespace nirvana
     OZ_LUA_FUNC( ozSelfBindAllOverlaps );
     OZ_LUA_FUNC( ozSelfBindStrOverlaps );
     OZ_LUA_FUNC( ozSelfBindObjOverlaps );
+
+    /*
+     * Nirvana
+     */
+
+    OZ_LUA_FUNC( ozNirvanaRemoveDevice );
+    OZ_LUA_FUNC( ozNirvanaAddMemo );
 
     /*
      * Constants
@@ -1969,6 +1979,48 @@ namespace nirvana
       pushbool( false );
     }
     return 1;
+  }
+
+  /*
+   * Nirvana
+   */
+
+  int Lua::ozNirvanaRemoveDevice( lua_State* l )
+  {
+    ARG( 1 );
+
+    int index = toint( 1 );
+    const Device* const* device = nirvana.devices.find( index );
+
+    if( device == null ) {
+      pushbool( false );
+    }
+    else {
+      delete *device;
+      nirvana.devices.exclude( index );
+      pushbool( true );
+    }
+    return 1;
+  }
+
+  int Lua::ozNirvanaAddMemo( lua_State* l )
+  {
+    ARG( 2 );
+
+    int index = toint( 1 );
+    if( uint( index ) >= uint( orbis.objects.length() ) ) {
+      ERROR( "invalid object index" );
+    }
+    if( orbis.objects[index] == null ) {
+      ERROR( "object is null" );
+    }
+
+    if( nirvana.devices.contains( index ) ) {
+      ERROR( "object already has a device" );
+    }
+
+    nirvana.devices.add( index, new Memo( tostring( 2 ) ) );
+    return 0;
   }
 
 }

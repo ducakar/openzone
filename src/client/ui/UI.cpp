@@ -28,7 +28,8 @@ namespace ui
   UI ui;
 
   UI::UI() : root( null ), loadingScreen( null ), hudArea( null ), strategicArea( null ),
-      inventoryMenu( null ), musicPlayer( null ), buildMenu( null )
+      inventoryMenu( null ), browseMenu( null ), musicPlayer( null ), buildMenu( null ),
+      debugFrame( null )
   {}
 
   void UI::showLoadingScreen( bool doShow )
@@ -107,15 +108,17 @@ namespace ui
       hudArea       = new HudArea();
       inventoryMenu = new InventoryMenu( null );
       browseMenu    = new InventoryMenu( inventoryMenu );
+      infoFrame     = new InfoFrame();
       musicPlayer   = new MusicPlayer();
-      buildMenu     = new BuildMenu();
+      buildMenu     = showBuild ? new BuildMenu() : null;
       debugFrame    = showDebug ? new DebugFrame() : null;
     }
     catch( ... ) {
       delete strategicArea;
       delete hudArea;
       delete inventoryMenu;
-      delete inventoryMenu;
+      delete browseMenu;
+      delete infoFrame;
       delete musicPlayer;
       delete buildMenu;
       delete debugFrame;
@@ -124,6 +127,7 @@ namespace ui
       hudArea       = null;
       inventoryMenu = null;
       browseMenu    = null;
+      infoFrame     = null;
       musicPlayer   = null;
       buildMenu     = null;
       debugFrame    = null;
@@ -135,9 +139,12 @@ namespace ui
     root->add( hudArea );
     root->add( inventoryMenu );
     root->add( browseMenu );
+    root->add( infoFrame );
     root->add( musicPlayer );
-    root->add( buildMenu );
 
+    if( showBuild ) {
+      root->add( buildMenu );
+    }
     if( showDebug ) {
       root->add( debugFrame );
     }
@@ -167,13 +174,17 @@ namespace ui
       root->remove( musicPlayer );
       musicPlayer = null;
     }
-    if( inventoryMenu != null ) {
-      root->remove( inventoryMenu );
-      inventoryMenu = null;
+    if( infoFrame != null ) {
+      root->remove( infoFrame );
+      infoFrame = null;
     }
     if( browseMenu != null ) {
       root->remove( browseMenu );
       browseMenu = null;
+    }
+    if( inventoryMenu != null ) {
+      root->remove( inventoryMenu );
+      inventoryMenu = null;
     }
     if( hudArea != null ) {
       root->remove( hudArea  );
@@ -196,6 +207,8 @@ namespace ui
     }
 
     isFreelook = false;
+
+    showBuild = config.getSet( "ui.showBuild", false );
     showDebug = config.getSet( "ui.showDebug", false );
 
     root = new Area( camera.width, camera.height );

@@ -47,6 +47,7 @@ namespace ui
         int height;
       };
 
+      static const SDL_Colour SDL_COLOUR_WHITE;
       static const Info INFOS[MAX];
 
       TTF_Font* fonts[MAX];

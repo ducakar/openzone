@@ -49,42 +49,7 @@ namespace ui
       static const int ALIGN_NONE      = ALIGN_LEFT | ALIGN_BOTTOM;
       static const int ALIGN_CENTRE    = ALIGN_HCENTRE | ALIGN_VCENTRE;
 
-      class Label
-      {
-        private:
-
-          int        x;
-          int        y;
-          int        align;
-          Font::Type font;
-
-          int        offsetX;
-          int        offsetY;
-          int        width;
-          int        height;
-
-          uint       texId;
-          uint       activeTexId;
-
-          void vset( int x, int y, int align, Font::Type font, const char* s, va_list ap );
-
-        public:
-
-          Label();
-          ~Label();
-
-          explicit Label( int x, int y, int align, Font::Type font, const char* s, ... );
-
-          void set( int x, int y, int align, Font::Type font, const char* s, ... );
-          void setText( const char* s, ... );
-
-          void draw( const Area* area ) const;
-
-      };
-
     protected:
-
-      static const SDL_Colour SDL_COLOUR_WHITE;
 
       static Vector<Area*> updateAreas;
 

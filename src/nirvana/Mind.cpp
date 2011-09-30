@@ -27,9 +27,8 @@ namespace nirvana
     lua.registerMind( bot );
   }
 
-  Mind::Mind( InputStream* istream ) : flags( 0 )
+  Mind::Mind( int bot_, InputStream* ) : flags( 0 ), bot( bot_ )
   {
-    bot = istream->readInt();
     lua.registerMind( bot );
   }
 

@@ -1,5 +1,5 @@
 /*
- *  Meme.hpp
+ *  Memo.hpp
  *
  *  [description]
  *
@@ -11,16 +11,24 @@
 
 #include "stable.hpp"
 
+#include "nirvana/Device.hpp"
+
 namespace oz
 {
-namespace matrix
+namespace nirvana
 {
 
-  class Meme
+  class Memo : public Device
   {
     private:
 
+      String text;
+
     public:
+
+      explicit Memo( const char* text );
+
+      virtual const char* getMemo() const;
 
   };
 

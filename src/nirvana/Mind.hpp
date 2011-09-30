@@ -34,7 +34,7 @@ namespace nirvana
       int bot;
 
       explicit Mind( int bot );
-      explicit Mind( InputStream* istream );
+      explicit Mind( int bot, InputStream* istream );
       ~Mind();
 
       void update();

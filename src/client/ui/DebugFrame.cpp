@@ -11,8 +11,6 @@
 
 #include "client/ui/DebugFrame.hpp"
 
-#ifndef NDEBUG
-
 #include "matrix/Orbis.hpp"
 #include "matrix/Collider.hpp"
 #include "client/Camera.hpp"
@@ -102,5 +100,3 @@ namespace ui
 }
 }
 }
-
-#endif

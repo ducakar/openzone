@@ -10,7 +10,6 @@ add_library( matrix STATIC
   Library.cpp
   Lua.cpp
   Matrix.cpp
-  Meme.cpp
   NamePool.cpp
   Object.cpp
   ObjectClass.cpp

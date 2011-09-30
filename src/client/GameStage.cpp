@@ -73,6 +73,8 @@ namespace client
 
     nirvana.sync();
 
+    synapse.update();
+
     SDL_SemPost( mainSemaphore );
     SDL_SemPost( mainSemaphore );
     SDL_SemPost( mainSemaphore );

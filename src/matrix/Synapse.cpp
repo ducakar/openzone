@@ -158,6 +158,9 @@ namespace oz
   {
     actions.clear();
 
+    putObjects.clear();
+    cutObjects.clear();
+
     addedStructs.clear();
     addedObjects.clear();
     addedParts.clear();

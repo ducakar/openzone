@@ -14,6 +14,7 @@
 #include "matrix/Synapse.hpp"
 #include "matrix/Matrix.hpp"
 #include "matrix/BotClass.hpp"
+
 #include "nirvana/Mind.hpp"
 #include "nirvana/Lua.hpp"
 
@@ -26,25 +27,34 @@ namespace nirvana
 
   void Nirvana::sync()
   {
-    // remove minds of removed bots
-    for( auto i = minds.iter(); i.isValid(); ) {
-      Mind* mind = i;
-      ++i;
+    // remove devices and minds of removed objects
+    foreach( i, synapse.removedObjects.citer() ) {
+      const Device* const* device = devices.find( *i );
+      const Mind* mind = minds.find( *i );
 
-      if( orbis.objects[mind->bot] == null ) {
-        minds.remove( mind );
-        delete mind;
+      if( device != null ) {
+        delete *device;
+        devices.exclude( *i );
+      }
+      if( mind != null ) {
+        minds.exclude( *i );
       }
     }
     // add minds for new bots
     foreach( i, synapse.addedObjects.citer() ) {
       const Object* obj = orbis.objects[*i];
 
-      if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
+      if( obj == null ) {
+        continue;
+      }
+
+      if( obj->flags & Object::DEVICE_BIT ) {
+      }
+      else if( obj->flags & Object::BOT_BIT ) {
         const BotClass* clazz = static_cast<const BotClass*>( obj->clazz );
 
         if( !clazz->mindFunction.isEmpty() ) {
-          minds.add( new Mind( obj->index ) );
+          minds.add( obj->index, Mind( obj->index ) );
         }
       }
     }
@@ -75,7 +85,9 @@ namespace nirvana
     int nMinds = istream->readInt();
 
     for( int i = 0; i < nMinds; ++i ) {
-      minds.add( new Mind( istream ) );
+      int index = istream->readInt();
+
+      minds.add( index, Mind( index, istream ) );
     }
 
     log.printEnd( " OK" );
@@ -88,7 +100,7 @@ namespace nirvana
     ostream->writeInt( minds.length() );
 
     foreach( mind, minds.citer() ) {
-      mind->write( ostream );
+      mind.value().write( ostream );
     }
 
     log.printEnd( " OK" );
@@ -104,7 +116,8 @@ namespace nirvana
   {
     log.print( "Unloading Nirvana ..." );
 
-    minds.free();
+    devices.clear();
+    minds.clear();
     Mind::pool.free();
 
     log.printEnd( " OK" );
