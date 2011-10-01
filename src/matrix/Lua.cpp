@@ -574,14 +574,15 @@ namespace oz
     setglobal( "ozLocalData" );
     getglobal( "ozLocalData" );
 
-    Directory luaDir;
-    luaDir.open( "lua/matrix" );
+    DArray<File> luaFiles;
+    File luaDir( "lua/matrix" );
+    luaDir.ls( &luaFiles );
 
-    foreach( file, luaDir.citer() ) {
-      if( file.hasExtension( "lua" ) ) {
-        log.print( "%s ...", &*file );
+    foreach( file, luaFiles.citer() ) {
+      if( file->hasExtension( "lua" ) ) {
+        log.print( "%s ...", file->name() );
 
-        if( luaL_dofile( l, String( "lua/matrix/" ) + file ) != 0 ) {
+        if( luaL_dofile( l, file->path() ) != 0 ) {
           log.printEnd( " Failed" );
           throw Exception( "Matrix Lua script error" );
         }

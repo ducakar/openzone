@@ -379,11 +379,7 @@ namespace client
     if( stat( rcDir.cstr(), &homeDirStat ) != 0 ) {
       printf( "No resource directory found, creating '%s' ...", rcDir.cstr() );
 
-#ifdef OZ_MINGW
-      if( mkdir( rcDir.cstr() ) != 0 ) {
-#else
-      if( mkdir( rcDir.cstr(), S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
-#endif
+      if( !File::mkdir( rcDir.cstr(), 0700 ) ) {
         printf( " Failed\n" );
         return -1;
       }

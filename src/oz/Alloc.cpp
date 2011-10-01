@@ -171,10 +171,6 @@ static void posix_memalign_free( void* ptr )
   free( beginPtr[-1] );
 }
 
-#else
-
-# define posix_memalign_free( ptr ) free( ptr )
-
 #endif
 
 void* operator new ( size_t size ) throw( std::bad_alloc )
@@ -184,11 +180,19 @@ void* operator new ( size_t size ) throw( std::bad_alloc )
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
+#ifdef OZ_SIMD
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     System::trap();
     throw std::bad_alloc();
   }
+#else
+  void* ptr = malloc( size );
+  if( ptr == null ) {
+    System::trap();
+    throw std::bad_alloc();
+  }
+#endif
 
 #ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
@@ -227,11 +231,19 @@ void* operator new[] ( size_t size ) throw( std::bad_alloc )
 
   size += Alloc::alignUp( sizeof( size_t ) );
 
+#ifdef OZ_SIMD
   void* ptr;
   if( posix_memalign( &ptr, Alloc::ALIGNMENT, size ) ) {
     System::trap();
     throw std::bad_alloc();
   }
+#else
+  void* ptr = malloc( size );
+  if( ptr == null ) {
+    System::trap();
+    throw std::bad_alloc();
+  }
+#endif
 
 #ifdef OZ_TRACE_LEAKS
   TraceEntry* st = reinterpret_cast<TraceEntry*>( malloc( sizeof( TraceEntry ) ) );
@@ -328,7 +340,11 @@ void operator delete ( void* ptr ) throw()
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
+#if defined( OZ_MINGW ) && defined( OZ_MINGW )
   posix_memalign_free( chunk );
+#else
+  free( chunk );
+#endif
 }
 
 void operator delete[] ( void* ptr ) throw()
@@ -395,5 +411,9 @@ void operator delete[] ( void* ptr ) throw()
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
+#if defined( OZ_MINGW ) && defined( OZ_SIMD )
   posix_memalign_free( chunk );
+#else
+  free( chunk );
+#endif
 }

@@ -13,10 +13,16 @@ using namespace oz;
 
 int main( int, char** )
 {
-  float a = 0.0f;
-  float b = 1e10;
+  File f( "/etc" );
+  DArray<File> list;
 
-  log.println( "%d", a == 2.0f * a );
+  f.ls( &list );
+
+  foreach( file, list.citer() ) {
+    printf( "%s\n", file->path() );
+  }
+
+  list.dealloc();
 
   Alloc::printLeaks();
   return 0;
