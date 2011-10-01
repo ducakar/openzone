@@ -511,14 +511,15 @@ namespace nirvana
     setglobal( "ozLocalData" );
     getglobal( "ozLocalData" );
 
-    Directory luaDir;
-    luaDir.open( "lua/nirvana" );
+    DArray<File> luaFiles;
+    File luaDir( "lua/nirvana" );
+    luaDir.ls( &luaFiles );
 
-    foreach( file, luaDir.citer() ) {
-      if( file.hasExtension( "lua" ) ) {
-        log.print( "%s ...", &*file );
+    foreach( file, luaFiles.citer() ) {
+      if( file->hasExtension( "lua" ) ) {
+        log.print( "%s ...", file->name() );
 
-        if( luaL_dofile( l, String( "lua/nirvana/" ) + file ) != 0 ) {
+        if( luaL_dofile( l, file->path() ) != 0 ) {
           log.printEnd( " Failed" );
           throw Exception( "Nirvana Lua script error" );
         }

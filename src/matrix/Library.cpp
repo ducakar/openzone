@@ -178,15 +178,18 @@ namespace oz
     log.println( "Library mapping resources {" );
     log.indent();
 
-    Directory dir;
-    Directory subDir;
+    File dir;
+    File subDir;
+    DArray<File> dirList;
+    DArray<File> subDirList;
     Config classConfig;
 
     log.println( "textures (*.ozcTex in 'bsp/*') {" );
     log.indent();
 
-    dir.open( "bsp" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "bsp" );
+
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'bsp'" );
@@ -195,50 +198,45 @@ namespace oz
 
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( ent.type != Directory::DIRECTORY ) {
+    foreach( file, dirList.iter() ) {
+      if( file->getType() != File::DIRECTORY ) {
         continue;
       }
 
-      String subDirName = &*ent;
-
-      subDir.open( "bsp/" + subDirName );
-      if( !subDir.isOpened() ) {
+      subDir.setPath( file->path() );
+      if( !subDir.ls( &subDirList ) ) {
         free();
 
-        log.println( "Cannot open directory 'bsp/%s'", subDirName.cstr() );
+        log.println( "Cannot open directory '%s'", subDir.path() );
         log.unindent();
         log.println( "}" );
 
         throw Exception( "Library initialisation failure" );
       }
 
-      subDirName = subDirName + "/";
-
-      foreach( ent, subDir.citer() ) {
-        if( !ent.hasExtension( "ozcTex" ) ) {
+      foreach( file, subDirList.citer() ) {
+        if( !file->hasExtension( "ozcTex" ) ) {
           continue;
         }
 
-        String name = subDirName + ent.baseName();
-        String path = "bsp/" + subDirName + ent;
+        String name = subDir.name() + String( "/" ) + file->baseName();
 
         log.println( "%s", name.cstr() );
 
         textureIndices.add( name, textures.length() );
-        textures.add( Resource( name, path ) );
+        textures.add( Resource( name, file->path() ) );
       }
-      subDir.close();
+      subDirList.dealloc();
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "sounds (*.wav in 'snd') {" );
     log.indent();
 
-    dir.open( "snd" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "snd" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'snd'" );
@@ -246,28 +244,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "wav" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "wav" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "snd/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       soundIndices.add( name, sounds.length() );
-      sounds.add( Resource( name, path ) );
+      sounds.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "shaders (*.vert/*.frag in 'glsl') {" );
     log.indent();
 
-    dir.open( "glsl" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "glsl" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'glsl'" );
@@ -275,27 +272,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "vert" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "vert" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       shaderIndices.add( name, shaders.length() );
       shaders.add( Resource( name, "" ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "Terrains (*.ozTerra/*.ozcTerra in 'terra') {" );
     log.indent();
 
-    dir.open( "terra" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "terra" );
+    if( !dir.ls( &dirList) ) {
       free();
 
       log.println( "Cannot open directory 'terra'" );
@@ -303,28 +300,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "ozTerra" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "ozTerra" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "terra/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       terraIndices.add( name, terras.length() );
-      terras.add( Resource( name, path ) );
+      terras.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "Caela (*.ozcCaelum in 'caelum') {" );
     log.indent();
 
-    dir.open( "caelum" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "caelum" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'caelum'" );
@@ -332,20 +328,19 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "ozcCaelum" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "ozcCaelum" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "caelum/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       caelumIndices.add( name, caela.length() );
-      caela.add( Resource( name, path ) );
+      caela.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
@@ -354,8 +349,8 @@ namespace oz
 
     Buffer buffer;
 
-    dir.open( "bsp" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "bsp" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'bsp'" );
@@ -363,21 +358,20 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "ozBSP" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "ozBSP" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "bsp/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       bspIndices.add( name, bsps.length() );
-      bsps.add( Resource( name, path ) );
+      bsps.add( Resource( name, file->path() ) );
 
       // read bounds
-      if( !buffer.read( path ) ) {
+      if( !buffer.read( file->path() ) ) {
         throw Exception( "cannot read dimensions from BSP" );
       }
 
@@ -388,7 +382,7 @@ namespace oz
 
       bspBounds.add( Bounds( mins, maxs ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     buffer.dealloc();
 
@@ -397,8 +391,8 @@ namespace oz
     log.println( "models (*.ozcSMM, *.ozcMD2 in 'mdl') {" );
     log.indent();
 
-    dir.open( "mdl" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "mdl" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'mdl'" );
@@ -406,32 +400,31 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "ozcSMM" ) && !ent.hasExtension( "ozcMD2" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "ozcSMM" ) && !file->hasExtension( "ozcMD2" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "mdl/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       if( modelIndices.contains( name ) ) {
-        throw Exception( "Duplicated model '" + name + "' ['" + path + "']" );
+        throw Exception( "Duplicated model '" + name + "'" );
       }
 
       modelIndices.add( name, models.length() );
-      models.add( Resource( name, path ) );
+      models.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "name lists (*.txt in 'name') {" );
     log.indent();
 
-    dir.open( "name" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "name" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'name'" );
@@ -439,28 +432,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "txt" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "txt" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "name/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       nameListIndices.add( name, nameLists.length() );
-      nameLists.add( Resource( name, path ) );
+      nameLists.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "music (*.oga in 'music') {" );
     log.indent();
 
-    dir.open( "music" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "music" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'music'" );
@@ -468,27 +460,26 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "oga" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "oga" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "music/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
-      musics.add( Resource( name, path ) );
+      musics.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "object classes (*.rc in 'class') {" );
     log.indent();
 
-    dir.open( "class" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "class" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'class'" );
@@ -496,18 +487,17 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "rc" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "rc" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "class/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
-      if( !classConfig.load( path ) ) {
-        log.println( "invalid config file %s", path.cstr() );
+      if( !classConfig.load( file->path() ) ) {
+        log.println( "invalid config file %s", file->path() );
         classConfig.clear();
         throw Exception( "Class description error" );
       }
@@ -532,7 +522,7 @@ namespace oz
       classes.add( name, ( *initFunc )( &classConfig ) );
       classConfig.clear();
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
@@ -560,15 +550,17 @@ namespace oz
     log.println( "Library mapping resources {" );
     log.indent();
 
-    Directory dir;
-    Directory subDir;
+    File dir;
+    File subDir;
+    DArray<File> dirList;
+    DArray<File> subDirList;
     Config classConfig;
 
     log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/*') {" );
     log.indent();
 
-    dir.open( "data/textures" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "data/textures" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'data/textures'" );
@@ -577,93 +569,51 @@ namespace oz
 
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( ent.type != Directory::DIRECTORY ) {
+    foreach( file, dirList.iter() ) {
+      if( file->getType() != File::DIRECTORY ) {
         continue;
       }
 
-      String subDirName = &*ent;
-
-      subDir.open( "data/textures/" + subDirName );
-      if( !subDir.isOpened() ) {
+      subDir.setPath( file->path() );
+      if( !subDir.ls( &subDirList ) ) {
         free();
 
-        log.println( "Cannot open directory 'data/textures/%s'", subDirName.cstr() );
+        log.println( "Cannot open directory '%s'", subDir.path() );
         log.unindent();
         log.println( "}" );
 
         throw Exception( "Library initialisation failure" );
       }
 
-      subDirName = subDirName + "/";
-
-      foreach( ent, subDir.citer() ) {
-        if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpeg" ) &&
-            !ent.hasExtension( "jpg" ) )
+      foreach( file, subDirList.citer() ) {
+        if( !file->hasExtension( "png" ) && !file->hasExtension( "jpeg" ) &&
+            !file->hasExtension( "jpg" ) )
         {
           continue;
         }
 
-        String name = subDirName + ent.baseName();
-        String path = subDirName + ent;
+        String name = subDir.name() + String( "/" ) + file->baseName();
 
         log.println( "%s", name.cstr() );
 
         if( textureIndices.contains( name ) ) {
-          throw Exception( "Duplicated texture '" + name + "' ['" + path + "']" );
+          throw Exception( "Duplicated texture '" + name + "'" );
         }
 
         textureIndices.add( name, textures.length() );
-        textures.add( Resource( name, path ) );
+        textures.add( Resource( name, file->path() ) );
       }
-      subDir.close();
+      subDirList.dealloc();
     }
-    dir.close();
-
-    log.unindent();
-    log.println( "}" );
-
-    log.println( "textures (*.png, *.jpeg, *.jpg in 'data/textures/oz') {" );
-    log.indent();
-
-    dir.open( "data/textures/oz" );
-    if( !dir.isOpened() ) {
-      free();
-
-      log.println( "Cannot open directory 'data/textures/oz'" );
-      log.unindent();
-      log.println( "}" );
-
-      throw Exception( "Library initialisation failure" );
-    }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpeg" ) &&
-          !ent.hasExtension( "jpg" ) )
-      {
-        continue;
-      }
-
-      String name = ent.baseName();
-      String path = String( "data/textures/oz/" ) + ent;
-
-      log.println( "%s", name.cstr() );
-
-      if( textureIndices.contains( name ) ) {
-        throw Exception( "Duplicated texture '" + name + "' ['" + path + "']" );
-      }
-
-      textureIndices.add( name, textures.length() );
-      textures.add( Resource( name, path ) );
-    }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "sounds (*.wav in 'snd') {" );
     log.indent();
 
-    dir.open( "snd" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "snd" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'snd'" );
@@ -671,28 +621,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "wav" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "wav" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "snd/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       soundIndices.add( name, sounds.length() );
-      sounds.add( Resource( name, path ) );
+      sounds.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "shaders (*.vert/*.frag in 'glsl') {" );
     log.indent();
 
-    dir.open( "glsl" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "glsl" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'glsl'" );
@@ -700,27 +649,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "vert" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "vert" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       shaderIndices.add( name, shaders.length() );
       shaders.add( Resource( name, "" ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "Terrains (*.rc in 'terra') {" );
     log.indent();
 
-    dir.open( "terra" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "terra" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'terra'" );
@@ -728,28 +677,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "rc" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "rc" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "terra/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       terraIndices.add( name, terras.length() );
-      terras.add( Resource( name, path ) );
+      terras.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "Caela (*.rc in 'caelum') {" );
     log.indent();
 
-    dir.open( "caelum" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "caelum" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'caelum'" );
@@ -757,28 +705,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "rc" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "rc" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "caelum/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       caelumIndices.add( name, caela.length() );
-      caela.add( Resource( name, path ) );
+      caela.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "BSP structures (*.rc in 'data/maps') {" );
     log.indent();
 
-    dir.open( "data/maps" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "data/maps" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'data/maps'" );
@@ -786,28 +733,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "rc" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "rc" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "data/maps/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       bspIndices.add( name, bsps.length() );
-      bsps.add( Resource( name, path ) );
+      bsps.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "models (* in 'mdl') {" );
     log.indent();
 
-    dir.open( "mdl" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "mdl" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'mdl'" );
@@ -815,28 +761,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( ent.hasExtension( "ozcSMM" ) || ent.hasExtension( "ozcMD2" ) ) {
+    foreach( file, dirList.iter() ) {
+      if( file->getType() != File::DIRECTORY ) {
         continue;
       }
 
-      String name = static_cast<const char*>( ent );
-      String path = String( "mdl/" ) + ent;
+      String name = file->name();
 
       log.println( "%s", name.cstr() );
 
       modelIndices.add( name, models.length() );
-      models.add( Resource( name, path ) );
+      models.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "name lists (*.txt in 'name') {" );
     log.indent();
 
-    dir.open( "name" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "name" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'name'" );
@@ -844,28 +789,27 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "txt" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "txt" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "name/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
       nameListIndices.add( name, nameLists.length() );
-      nameLists.add( Resource( name, path ) );
+      nameLists.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "music (*.oga in 'music') {" );
     log.indent();
 
-    dir.open( "music" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "music" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'music'" );
@@ -873,27 +817,26 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "oga" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "oga" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "music/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
-      musics.add( Resource( name, path ) );
+      musics.add( Resource( name, file->path() ) );
     }
-    dir.close();
+    dirList.dealloc();
 
     log.unindent();
     log.println( "}" );
     log.println( "object classes (*.rc in 'class') {" );
     log.indent();
 
-    dir.open( "class" );
-    if( !dir.isOpened() ) {
+    dir.setPath( "class" );
+    if( !dir.ls( &dirList ) ) {
       free();
 
       log.println( "Cannot open directory 'class'" );
@@ -901,18 +844,17 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( ent, dir.citer() ) {
-      if( !ent.hasExtension( "rc" ) ) {
+    foreach( file, dirList.citer() ) {
+      if( !file->hasExtension( "rc" ) ) {
         continue;
       }
 
-      String name = ent.baseName();
-      String path = String( "class/" ) + ent;
+      String name = file->baseName();
 
       log.println( "%s", name.cstr() );
 
-      if( !classConfig.load( path ) ) {
-        log.println( "invalid config file %s", path.cstr() );
+      if( !classConfig.load( file->path() ) ) {
+        log.println( "invalid config file %s", file->path() );
         classConfig.clear();
         throw Exception( "Class description error" );
       }
@@ -937,7 +879,7 @@ namespace oz
       classes.add( name, null );
       classConfig.clear();
     }
-    dir.close();
+    dirList.dealloc();
 
     usedTextures.alloc( textures.length() );
     usedTextures.clearAll();

@@ -78,8 +78,8 @@ namespace oz
   {
     const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
 
-    Object*  instrumentObj = null;
-    Weapon*  weaponObj     = null;
+    Object* instrumentObj = null;
+    Weapon* weaponObj     = null;
 
     hard_assert( instrument != -1 || !( state & GRAB_BIT ) );
 

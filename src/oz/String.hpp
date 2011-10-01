@@ -521,7 +521,7 @@ namespace oz
        */
       void split( char ch, DArray<String>* array ) const
       {
-        hard_assert( array->isEmpty() );
+        hard_assert( array != null && array->isEmpty() );
 
         int p0    = 0;
         int p1    = index( ch );

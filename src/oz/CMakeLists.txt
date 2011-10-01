@@ -2,8 +2,8 @@ add_library( oz STATIC
   Alloc.cpp
   Buffer.cpp
   Config.cpp
-  Directory.cpp
   Exception.cpp
+  File.cpp
   Log.cpp
   Mat44.cpp
   Math.cpp
@@ -30,10 +30,10 @@ if( OZ_INSTALL_LIBOZ )
     Config.hpp
     DArray.hpp
     DList.hpp
-    Directory.cpp
-    Directory.hpp
     Exception.cpp
     Exception.hpp
+    File.cpp
+    File.hpp
     HashIndex.hpp
     HashString.hpp
     List.hpp

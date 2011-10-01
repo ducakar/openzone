@@ -394,14 +394,15 @@ namespace client
     OZ_LUA_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_RANDOM_HEADING_BIT",   Object::RANDOM_HEADING_BIT );
 
-    Directory luaDir;
-    luaDir.open( "lua/client" );
+    DArray<File> luaFiles;
+    File luaDir( "lua/client" );
+    luaDir.ls( &luaFiles );
 
-    foreach( file, luaDir.citer() ) {
-      if( file.hasExtension( "lua" ) ) {
-        log.print( "%s ...", &*file );
+    foreach( file, luaFiles.citer() ) {
+      if( file->hasExtension( "lua" ) ) {
+        log.print( "%s ...", file->name() );
 
-        if( luaL_dofile( l, String( "lua/client/" ) + file ) != 0 ) {
+        if( luaL_dofile( l, file->path() ) != 0 ) {
           log.printEnd( " Failed" );
           throw Exception( "Client Lua script error" );
         }

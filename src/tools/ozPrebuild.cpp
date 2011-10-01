@@ -89,11 +89,7 @@ static void createDirs()
       continue;
     }
 
-#ifdef OZ_MINGW
-    if( mkdir( CREATE_DIRS[i] ) != 0 ) {
-#else
-    if( mkdir( CREATE_DIRS[i], S_IRUSR | S_IWUSR | S_IXUSR ) != 0 ) {
-#endif
+    if( !File::mkdir( CREATE_DIRS[i] ) ) {
       log.printEnd( " Failed" );
       throw Exception( "Failed to create directories" );
     }
@@ -113,22 +109,23 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
 
   String sSrcDir = srcDir;
   String sDestDir = destDir;
-  Directory dir( sSrcDir );
+  File dir( sSrcDir );
+  DArray<File> dirList;
 
-  if( !dir.isOpened() ) {
+  if( !dir.ls( &dirList ) ) {
     throw Exception( "Cannot open directory '" + sSrcDir + "'" );
   }
 
   sSrcDir  = sSrcDir + "/";
   sDestDir = sDestDir + "/";
 
-  foreach( ent, dir.citer() ) {
-    if( !ent.hasExtension( "png" ) && !ent.hasExtension( "jpg" ) ) {
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "png" ) && !file->hasExtension( "jpg" ) ) {
       continue;
     }
 
-    String srcPath = sSrcDir + ent;
-    String destPath = sDestDir + ent.baseName() + ".ozcTex";
+    String srcPath = file->path();
+    String destPath = sDestDir + file->baseName() + ".ozcTex";
 
     struct stat srcInfo;
     struct stat destInfo;
@@ -177,7 +174,7 @@ static void prebuildBSPTextures()
       continue;
     }
 
-    String srcPath = "data/textures/" + library.textures[i].path;
+    String srcPath = library.textures[i].path;
     String destPath = "bsp/" + library.textures[i].name + ".ozcTex";
 
     struct stat srcInfo;
@@ -209,7 +206,7 @@ static void prebuildBSPTextures()
     hard_assert( slash != -1 );
     String dir = destPath.substring( 0, slash );
 
-    mkdir( dir, S_IRUSR | S_IWUSR | S_IXUSR );
+    File::mkdir( dir );
 
     if( !buffer.write( destPath, os.length() ) ) {
       throw Exception( "Texture writing failed" );
@@ -229,22 +226,23 @@ static void prebuildModels()
   log.indent();
 
   String dirName = "mdl";
-  Directory dir( dirName );
+  File dir( dirName );
+  DArray<File> dirList;
 
-  if( !dir.isOpened() ) {
+  if( !dir.ls( &dirList ) ) {
     throw Exception( "Cannot open directory '" + dirName + "'" );
   }
 
   dirName = dirName + "/";
 
-  foreach( ent, dir.citer() ) {
+  foreach( file, dirList.citer() ) {
     struct stat srcInfo0;
     struct stat srcInfo1;
     struct stat configInfo;
     struct stat destInfo;
 
-    String name = static_cast<const char*>( ent );
-    String path = dirName + name;
+    String name = file->name();
+    String path = file->path();
 
     if( stat( path + "/data.obj", &srcInfo0 ) == 0 ) {
       if( stat( path + "/data.mtl", &srcInfo1 ) != 0 ||
@@ -289,27 +287,28 @@ static void compileBSPs()
   log.indent();
 
   String dirName = "data/maps";
-  Directory dir( dirName );
+  File dir( dirName );
+  DArray<File> dirList;
 
-  if( !dir.isOpened() ) {
+  if( !dir.ls( &dirList ) ) {
     throw Exception( "Cannot open directory '" + dirName + "'" );
   }
 
   dirName = dirName + "/";
 
-  foreach( ent, dir.citer() ) {
-    if( !ent.hasExtension( "map" ) ) {
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "map" ) ) {
       continue;
     }
 
-    const char* dot = ent.baseName().findLast( '.' );
+    const char* dot = String::findLast( file->baseName(), '.' );
 
     if( dot != null && String::equals( dot + 1, "autosave" ) ) {
       continue;
     }
 
-    String srcPath = dirName + ent;
-    String destPath = dirName + ent.baseName() + ".bsp";
+    String srcPath = file->path();
+    String destPath = dirName + file->baseName() + ".bsp";
 
     struct stat srcInfo;
     struct stat destInfo;
@@ -323,17 +322,17 @@ static void compileBSPs()
       continue;
     }
 
-    String cmdLine = "q3map2 -fs_basepath . -fs_game data " + dirName + ent;
+    String cmdLine = "q3map2 -fs_basepath . -fs_game data " + String( file->path() );
 
     log.println( "%s", cmdLine.cstr() );
     log.println();
-    log.println( "========== q3map2 OUTPUT BEGIN %s ==========", ent.baseName().cstr() );
+    log.println( "========== q3map2 OUTPUT BEGIN %s ==========", file->baseName().cstr() );
     log.println();
     if( system( cmdLine ) != 0 ) {
       throw Exception( "BSP map compilation failed" );
     }
     log.println();
-    log.println( "========== q3map2 OUTPUT END %s ==========", ent.baseName().cstr() );
+    log.println( "========== q3map2 OUTPUT END %s ==========", file->baseName().cstr() );
     log.println();
   }
 
@@ -348,24 +347,25 @@ static void prebuildBSPs()
 
   String srcDir = "data/maps";
   String destDir = "bsp";
-  Directory dir( srcDir );
+  File dir( srcDir );
+  DArray<File> dirList;
 
-  if( !dir.isOpened() ) {
+  if( !dir.ls( &dirList ) ) {
     throw Exception( "Cannot open directory '" + srcDir + "'" );
   }
 
   srcDir = srcDir + "/";
   destDir = destDir + "/";
 
-  foreach( ent, dir.citer() ) {
-    if( !ent.hasExtension( "rc" ) ) {
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "rc" ) ) {
       continue;
     }
 
-    String srcPath0 = srcDir + ent;
-    String srcPath1 = srcDir + ent.baseName() + ".bsp";
-    String destPath0 = destDir + ent.baseName() + ".ozBSP";
-    String destPath1 = destDir + ent.baseName() + ".ozcBSP";
+    String srcPath0 = file->path();
+    String srcPath1 = srcDir + file->baseName() + ".bsp";
+    String destPath0 = destDir + file->baseName() + ".ozBSP";
+    String destPath1 = destDir + file->baseName() + ".ozcBSP";
 
     struct stat srcInfo0;
     struct stat srcInfo1;
@@ -382,7 +382,7 @@ static void prebuildBSPs()
       continue;
     }
 
-    String name = ent.baseName();
+    String name = file->baseName();
 
     QBSP::prebuild( name );
     client::BSP::prebuild( name );
@@ -398,22 +398,23 @@ static void prebuildTerras()
   log.indent();
 
   String srcDir = "terra";
-  Directory dir( srcDir );
+  File dir( srcDir );
+  DArray<File> dirList;
 
-  if( !dir.isOpened() ) {
+  if( !dir.ls( &dirList ) ) {
     throw Exception( "Cannot open directory '" + srcDir + "'" );
   }
 
   srcDir = srcDir + "/";
 
-  foreach( ent, dir.citer() ) {
-    if( !ent.hasExtension( "rc" ) ) {
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "rc" ) ) {
       continue;
     }
 
-    String srcPath = srcDir + ent;
-    String destPath0 = srcDir + ent.baseName() + ".ozTerra";
-    String destPath1 = srcDir + ent.baseName() + ".ozcTerra";
+    String srcPath = file->path();
+    String destPath0 = srcDir + file->baseName() + ".ozTerra";
+    String destPath1 = srcDir + file->baseName() + ".ozcTerra";
 
     struct stat srcInfo;
     struct stat destInfo0;
@@ -428,7 +429,7 @@ static void prebuildTerras()
       continue;
     }
 
-    String name = ent.baseName();
+    String name = file->baseName();
 
     orbis.terra.prebuild( name );
     client::terra.prebuild( name );
@@ -444,21 +445,22 @@ static void prebuildCaela()
   log.indent();
 
   String srcDir = "caelum";
-  Directory dir( srcDir );
+  File dir( srcDir );
+  DArray<File> dirList;
 
-  if( !dir.isOpened() ) {
+  if( !dir.ls( &dirList ) ) {
     throw Exception( "Cannot open directory '" + srcDir + "'" );
   }
 
   srcDir = srcDir + "/";
 
-  foreach( ent, dir.citer() ) {
-    if( !ent.hasExtension( "rc" ) ) {
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "rc" ) ) {
       continue;
     }
 
-    String srcPath = srcDir + ent;
-    String destPath = srcDir + ent.baseName() + ".ozcCaelum";
+    String srcPath = file->path();
+    String destPath = srcDir + file->baseName() + ".ozcCaelum";
 
     struct stat srcInfo;
     struct stat destInfo;
@@ -472,7 +474,7 @@ static void prebuildCaela()
       continue;
     }
 
-    String name = ent.baseName();
+    String name = file->baseName();
 
     client::caelum.prebuild( name );
   }
@@ -487,20 +489,21 @@ static void checkLua( const char* path )
   log.indent();
 
   String srcDir = path + String( "/" );
-  Directory dir( path );
+  File dir( path );
+  DArray<File> dirList;
 
-  if( !dir.isOpened() ) {
+  if( !dir.ls( &dirList ) ) {
     throw Exception( "Cannot open directory '" + srcDir + "'" );
   }
 
   String sources;
 
-  foreach( ent, dir.citer() ) {
-    if( !ent.hasExtension( "lua" ) ) {
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "lua" ) ) {
       continue;
     }
 
-    sources = sources + " " + srcDir + ent;
+    sources = sources + " " + file->path();
   }
 
   log.println( "luac -p%s", sources.cstr() );

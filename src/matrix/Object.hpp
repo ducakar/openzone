@@ -119,7 +119,7 @@ namespace oz
       static const int ON_SLICK_BIT       = 0x00000400;
 
       // if the object intersects with water (not cleared if disabled)
-      static const int IN_WATER_BIT       = 0x00000300;
+      static const int IN_WATER_BIT       = 0x00000200;
 
       // if the object is on ladder (not cleared if disabled)
       static const int ON_LADDER_BIT      = 0x00000100;
@@ -267,6 +267,7 @@ namespace oz
         events.add( new Event( id, intensity ) );
       }
 
+      OZ_ALWAYS_INLINE
       void destroy()
       {
         if( !( flags & DESTROYED_BIT ) ) {
@@ -284,6 +285,7 @@ namespace oz
        * Inflict damage to the object.
        * @param damage
        */
+      OZ_ALWAYS_INLINE
       void damage( float damage )
       {
         damage -= clazz->damageThreshold;
@@ -303,6 +305,7 @@ namespace oz
        * @param hit Hit class filled with collision data
        * @param hitMomentum momentum of the object projected to hit normal
        */
+      OZ_ALWAYS_INLINE
       void hit( const Hit* hit, float hitMomentum )
       {
         flags |= HIT_BIT;
@@ -314,6 +317,7 @@ namespace oz
         }
       }
 
+      OZ_ALWAYS_INLINE
       void splash( float momentum )
       {
         addEvent( EVENT_SPLASH, momentum * MOMENTUM_INTENSITY_COEF );
@@ -331,6 +335,7 @@ namespace oz
         oldFlags = flags;
       }
 
+      OZ_ALWAYS_INLINE
       void use( Bot* user )
       {
         if( flags & USE_FUNC_BIT ) {
