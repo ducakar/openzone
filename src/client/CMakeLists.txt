@@ -19,6 +19,7 @@ add_library( client STATIC
   MD2Model.cpp
   MD2WeaponModel.cpp
   MD3.cpp
+  MenuStage.cpp
   Mesh.cpp
   Network.cpp
   OBJ.cpp
@@ -32,6 +33,7 @@ add_library( client STATIC
   Shape.cpp
   Sound.cpp
   SparkModel.cpp
+  Stage.cpp
   StrategicProxy.cpp
   Terra.cpp
   VehicleAudio.cpp
@@ -48,6 +50,7 @@ add_library( client STATIC
   ui/Keyboard.cpp
   ui/Label.cpp
   ui/LoadingArea.cpp
+  ui/MainMenu.cpp
   ui/Mouse.cpp
   ui/MusicPlayer.cpp
   ui/StrategicArea.cpp

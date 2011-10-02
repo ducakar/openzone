@@ -23,6 +23,7 @@
 #include "client/Sound.hpp"
 #include "client/Camera.hpp"
 #include "client/Lua.hpp"
+#include "client/MenuStage.hpp"
 
 namespace oz
 {
@@ -32,6 +33,9 @@ namespace client
   using oz::nirvana::nirvana;
 
   GameStage gameStage;
+
+  String GameStage::AUTOSAVE_FILE;
+  String GameStage::QUICKSAVE_FILE;
 
   int GameStage::auxMain( void* )
   {
@@ -125,6 +129,53 @@ namespace client
     }
   }
 
+  void GameStage::reload()
+  {
+    ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
+    ui::ui.showLoadingScreen( true );
+    ui::ui.root->focus( ui::ui.loadingScreen );
+
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
+
+    context.unload();
+
+    nirvana.unload();
+    matrix.unload();
+
+    matrix.load();
+    nirvana.load();
+
+    context.load();
+
+    if( !onCreate.isEmpty() ) {
+      log.println( "Initialising new world" );
+
+      lua.staticCall( onCreate );
+
+      if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
+        throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
+      }
+    }
+    else {
+      if( !read( stateFile ) ) {
+        throw Exception( "reading saved state '" + stateFile + "' failed" );
+      }
+    }
+
+    camera.update();
+    camera.prepare();
+
+    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+    loader.update();
+    render.sync();
+
+    sound.play();
+    sound.update();
+
+    ui::ui.showLoadingScreen( false );
+  }
+
   bool GameStage::update()
   {
     uint beginTime;
@@ -151,57 +202,17 @@ namespace client
       write( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
     }
     if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
-      ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
-      ui::ui.showLoadingScreen( true );
-      ui::ui.root->focus( ui::ui.loadingScreen );
-
-      render.draw( Render::DRAW_UI_BIT );
-      render.sync();
-
-      clear();
-      read( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
-
-      camera.update();
-      camera.prepare();
-
-      render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-      loader.update();
-      render.sync();
-
-      sound.play();
-      sound.update();
-
-      ui::ui.showLoadingScreen( false );
+      onCreate = "";
+      stateFile = QUICKSAVE_FILE;
+      reload();
     }
     if( ui::keyboard.keys[SDLK_F8] && !ui::keyboard.oldKeys[SDLK_F8] ) {
-      ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
-      ui::ui.showLoadingScreen( true );
-      ui::ui.root->focus( ui::ui.loadingScreen );
-
-      render.draw( Render::DRAW_UI_BIT );
-      render.sync();
-
-      clear();
-      camera.clear();
-
-      if( ui::keyboard.keys[SDLK_LCTRL] || ui::keyboard.keys[SDLK_RCTRL] ) {
-        read( null );
-      }
-      else {
-        read( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) );
-      }
-
-      camera.update();
-      camera.prepare();
-
-      render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-      loader.update();
-      render.sync();
-
-      sound.play();
-      sound.update();
-
-      ui::ui.showLoadingScreen( false );
+      onCreate = "";
+      stateFile = AUTOSAVE_FILE;
+      reload();
+    }
+    if( ui::keyboard.keys[SDLK_ESCAPE] ) {
+      Stage::nextStage = &menuStage;
     }
 
     camera.update();
@@ -250,7 +261,7 @@ namespace client
 
     timer.soundMillis += SDL_GetTicks() - beginTime;
 
-    return !ui::keyboard.keys[SDLK_ESCAPE];
+    return true;
   }
 
   void GameStage::present()
@@ -264,67 +275,23 @@ namespace client
     timer.renderMillis += SDL_GetTicks() - beginTime;
   }
 
-  void GameStage::begin()
-  {
-    log.println( "Preloading GameStage {" );
-    log.indent();
-
-    camera.update();
-    camera.prepare();
-
-    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
-    loader.update();
-    render.sync();
-
-    sound.play();
-    sound.update();
-
-    ui::ui.showLoadingScreen( false );
-
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void GameStage::end()
-  {
-    ui::ui.loadingScreen->status.setText( gettext( "Shutting down ..." ) );
-    ui::ui.loadingScreen->show( true );
-    ui::ui.root->focus( ui::ui.loadingScreen );
-
-    render.draw( Render::DRAW_UI_BIT );
-    render.sync();
-  }
-
   bool GameStage::read( const char* file )
   {
-    if( file == null ) {
-      log.println( "Initialising new world" );
+    log.print( "Loading state from '%s' ...", file );
 
-      matrix.read( null );
-
-      lua.staticCall( onCreate );
-
-      if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
-        throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
-      }
+    Buffer buffer;
+    if( !buffer.read( file ) ) {
+      log.printEnd( " Failed" );
+      return false;
     }
-    else {
-      log.print( "Loading state from '%s' ...", file );
 
-      Buffer buffer;
-      if( !buffer.read( file ) ) {
-        log.printEnd( " Failed" );
-        return false;
-      }
+    log.printEnd( " OK" );
 
-      log.printEnd( " OK" );
+    InputStream is = buffer.inputStream();
 
-      InputStream is = buffer.inputStream();
-
-      matrix.read( &is );
-      nirvana.read( &is );
-      camera.read( &is );
-    }
+    matrix.read( &is );
+    nirvana.read( &is );
+    camera.read( &is );
 
     return true;
   }
@@ -343,31 +310,31 @@ namespace client
     log.printEnd( " OK" );
   }
 
-  void GameStage::clear()
-  {
-    context.unload();
-
-    nirvana.unload();
-    matrix.unload();
-
-    matrix.load();
-    nirvana.load();
-
-    context.load();
-  }
-
   void GameStage::load()
   {
     log.println( "Loading GameStage {" );
     log.indent();
 
+    ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
+    ui::ui.loadingScreen->show( true );
+
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
+
     matrix.load();
     nirvana.load();
 
-    if( !config.getSet( "gameStage.autoload", true ) ||
-        !read( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) ) )
-    {
-      read( null );
+    if( !onCreate.isEmpty() ) {
+      log.println( "Initialising new world" );
+
+      lua.staticCall( onCreate );
+
+      if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
+        throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
+      }
+    }
+    else if( !read( stateFile ) ) {
+      throw Exception( "reading saved state '" + stateFile + "' failed" );
     }
 
     network.connect();
@@ -385,12 +352,22 @@ namespace client
     log.printEnd( " OK" );
 
     context.load();
-
-    render.draw( Render::DRAW_UI_BIT );
-    render.sync();
     render.load();
-    render.draw( Render::DRAW_UI_BIT );
+
+    camera.update();
+    camera.prepare();
+
+    render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
+    loader.update();
     render.sync();
+
+    sound.play();
+    sound.update();
+
+    ui::ui.showLoadingScreen( false );
+    ui::mouse.doShow = false;
+    ui::mouse.buttons = 0;
+    ui::mouse.currButtons = 0;
 
     isLoaded = true;
 
@@ -402,6 +379,12 @@ namespace client
   {
     log.println( "Unloading GameStage {" );
     log.indent();
+
+    ui::ui.loadingScreen->status.setText( gettext( "Shutting down ..." ) );
+    ui::ui.showLoadingScreen( true );
+
+    render.draw( Render::DRAW_UI_BIT );
+    render.sync();
 
     render.unload();
     context.unload();
@@ -426,11 +409,13 @@ namespace client
     network.disconnect();
 
     if( isLoaded && config.getSet( "gameStage.autosave", true ) ) {
-      write( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) );
+      write( AUTOSAVE_FILE );
     }
 
     nirvana.unload();
     matrix.unload();
+
+    ui::ui.showLoadingScreen( false );
 
     isLoaded = false;
 
@@ -442,20 +427,14 @@ namespace client
   {
     isLoaded = false;
 
+    AUTOSAVE_FILE = config.get( "dir.rc", "" ) + String( "/autosave.ozState" );
+    QUICKSAVE_FILE = config.get( "dir.rc", "" ) + String( "/quicksave.ozState" );
+
+    onCreate = "";
+    stateFile = "";
+
     log.println( "Initialising GameStage {" );
     log.indent();
-
-    ui::ui.loadingScreen->status.setText( gettext( "Loading ..." ) );
-    ui::ui.loadingScreen->show( true );
-
-    render.draw( Render::DRAW_UI_BIT );
-    render.sync();
-
-    onCreate = config.getSet( "client.onCreate", "client_onCreate" );
-
-    if( onCreate.isEmpty() ) {
-      throw Exception( "missing client.onCreate setting" );
-    }
 
     matrix.init();
     nirvana.init();

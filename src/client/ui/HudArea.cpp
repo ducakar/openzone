@@ -119,9 +119,7 @@ namespace ui
         }
       }
 
-      if( ( taggedObj->flags & Object::ITEM_BIT ) &&
-          bot->items.length() < botClazz->nItems )
-      {
+      if( taggedObj->flags & Object::ITEM_BIT ) {
         glBindTexture( GL_TEXTURE_2D, takeTexId );
         shape.fill( leftIconX, leftIconY, ICON_SIZE, ICON_SIZE );
       }

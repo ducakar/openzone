@@ -378,6 +378,7 @@ namespace oz
     OZ_LUA_FUNC( ozObjRemoveItem );
     OZ_LUA_FUNC( ozObjRemoveAllItems );
 
+    OZ_LUA_FUNC( ozObjEnableUpdate );
     OZ_LUA_FUNC( ozObjDamage );
     OZ_LUA_FUNC( ozObjDestroy );
     OZ_LUA_FUNC( ozObjQuietDestroy );
@@ -1576,6 +1577,20 @@ namespace oz
     }
 
     lua.obj->items.clear();
+    return 0;
+  }
+
+  int Lua::ozObjEnableUpdate( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+
+    if( tobool( 1 ) ) {
+      lua.obj->flags |= Object::UPDATE_FUNC_BIT;
+    }
+    else {
+      lua.obj->flags &= ~Object::UPDATE_FUNC_BIT;
+    }
     return 0;
   }
 

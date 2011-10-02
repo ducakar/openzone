@@ -1,5 +1,5 @@
 /*
- *  Scientia.cpp
+ *  Stage.hpp
  *
  *  [description]
  *
@@ -9,14 +9,17 @@
 
 #include "stable.hpp"
 
-#include "nirvana/Scientia.hpp"
+#include "client/Stage.hpp"
 
 namespace oz
 {
-namespace nirvana
+namespace client
 {
 
-  Scientia scientia;
+  Stage* Stage::nextStage = null;
+
+  Stage::~Stage()
+  {}
 
 }
 }

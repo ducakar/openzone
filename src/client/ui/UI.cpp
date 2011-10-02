@@ -101,8 +101,6 @@ namespace ui
   {
     isFreelook = false;
 
-    mouse.load();
-
     try {
       strategicArea = new StrategicArea();
       hudArea       = new HudArea();
@@ -194,8 +192,6 @@ namespace ui
       root->remove( strategicArea );
       strategicArea = null;
     }
-
-    mouse.unload();
   }
 
   void UI::init()
@@ -211,6 +207,8 @@ namespace ui
     showBuild = config.getSet( "ui.showBuild", false );
     showDebug = config.getSet( "ui.showDebug", false );
 
+    mouse.load();
+
     root = new Area( camera.width, camera.height );
     loadingScreen = new LoadingArea();
 
@@ -222,6 +220,8 @@ namespace ui
   void UI::free()
   {
     delete root;
+
+    mouse.unload();
 
     Area::updateAreas.clear();
     Area::updateAreas.dealloc();

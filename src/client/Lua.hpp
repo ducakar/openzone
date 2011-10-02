@@ -166,6 +166,7 @@ namespace client
       OZ_LUA_API( ozObjRemoveItem );
       OZ_LUA_API( ozObjRemoveAllItems );
 
+      OZ_LUA_API( ozObjEnableUpdate );
       OZ_LUA_API( ozObjDamage );
       OZ_LUA_API( ozObjDestroy );
       OZ_LUA_API( ozObjQuietDestroy );

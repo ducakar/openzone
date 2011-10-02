@@ -34,7 +34,7 @@ namespace ui
 
   void LoadingArea::onDraw()
   {
-    glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
+    glUniform4f( param.oz_Colour, 0.1f, 0.1f, 0.1f, 1.0f );
     fill( 0, 0, camera.width, camera.height );
 
     status.draw( this );
