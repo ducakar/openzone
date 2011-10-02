@@ -29,6 +29,9 @@ namespace client
         MENU
       };
 
+      static String AUTOSAVE_FILE;
+      static String QUICKSAVE_FILE;
+
     private:
 
       SDL_Thread*   auxThread;
@@ -39,29 +42,26 @@ namespace client
       volatile bool isAlive;
 
       bool          isLoaded;
-      bool          saveOnExit;
-
-      String        onCreate;
 
       static int auxMain( void* );
 
       void run();
+
+      void reload();
 
     public:
 
       State  state;
       Proxy* proxy;
 
+      String onCreate;
+      String stateFile;
+
       virtual bool update();
       virtual void present();
 
-      virtual void begin();
-      virtual void end();
-
       bool read( const char* file );
       void write( const char* file ) const;
-
-      void clear();
 
       virtual void load();
       virtual void unload();

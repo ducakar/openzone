@@ -4,7 +4,6 @@ add_library( nirvana STATIC
   Memo.cpp
   Mind.cpp
   Nirvana.cpp
-  Scientia.cpp
   Task.cpp
   common.cpp
 )

@@ -148,12 +148,10 @@ namespace oz
     log.println( "Reading Matrix {" );
     log.indent();
 
-    if( istream != null ) {
-      orbis.read( istream );
+    orbis.read( istream );
 
-      for( int i = 0; i < modules.length(); ++i ) {
-        modules[i]->read( istream );
-      }
+    for( int i = 0; i < modules.length(); ++i ) {
+      modules[i]->read( istream );
     }
 
     log.unindent();

@@ -15,6 +15,7 @@
 
 #include "client/Context.hpp"
 #include "client/Camera.hpp"
+#include "client/MenuStage.hpp"
 #include "client/GameStage.hpp"
 #include "client/Sound.hpp"
 #include "client/Render.hpp"
@@ -95,11 +96,9 @@ namespace client
     }
 #endif
 
-    if( initFlags & INIT_GAME_LOAD ) {
-      stage->unload();
-    }
-    if( initFlags & INIT_GAME_INIT ) {
-      stage->free();
+    if( initFlags & INIT_STAGE_INIT ) {
+      gameStage.free();
+      menuStage.free();
     }
     if( initFlags & INIT_CONTEXT_INIT ) {
       context.free();
@@ -253,25 +252,12 @@ namespace client
     log.println( "\tPrints that help message." );
     log.println();
     log.println( "-l, --load" );
-    log.println( "-L, --no-load" );
-    log.println( "\tEnables or disables autoload of ~/" OZ_RC_DIR "/default.ozState on" );
-    log.println( "\tstartup respectively. Overrides the 'autoload' resource." );
-    log.println( "\tDefault: enable autoload." );
-    log.println();
-    log.println( "-s, --save" );
-    log.println( "-S, --no-save" );
-    log.println( "\tEnables or disables autosave to ~/" OZ_RC_DIR "/default.ozState on exit" );
-    log.println( "\trespectively. Overrides the 'autosave' resource." );
-    log.println( "\tDefault: enable autosave." );
+    log.println( "\tLoad autosaved state from ~/" OZ_RC_DIR "/default.ozState." );
+    log.println( "\tSkips main menu." );
     log.println();
     log.println( "-i, --init <function>" );
     log.println( "\tUse Lua function <function> from <prefix>/share/openzone/lua/client*.lua" );
-    log.println( "\tto initialise game. Overrides 'client.onCreate' resource. You probably" );
-    log.println( "\twant to use this flag in combination with --no-load." );
-    log.println( "\tDefault: 'client_onCreate'." );
-    log.println();
-    log.println( "-I <function>" );
-    log.println( "\tHas same effect as --no-load --init <function>." );
+    log.println( "\tto initialise game while skipping the main menu." );
     log.println();
     log.println( "-t <num>, --time <num>" );
     log.println( "\tExits after <num> seconds (can be a floating-point number)." );
@@ -289,8 +275,10 @@ namespace client
   {
     initFlags = 0;
 
-    bool  isBenchmark = false;
-    float benchmarkTime = 0.0f;
+    bool   doAutoload = false;
+    String initFunc;
+    bool   isBenchmark = false;
+    float  benchmarkTime = 0.0f;
 
     for( int i = 1; i < argc; ++i ) {
       if( String::equals( argv[i], "--help" ) ) {
@@ -317,16 +305,7 @@ namespace client
         ++i;
       }
       else if( String::equals( argv[i], "--load" ) || String::equals( argv[i], "-l" ) ) {
-        config.add( "gameStage.autoload", "true" );
-      }
-      else if( String::equals( argv[i], "--no-load" ) || String::equals( argv[i], "-L" ) ) {
-        config.add( "gameStage.autoload", "false" );
-      }
-      else if( String::equals( argv[i], "--save" ) || String::equals( argv[i], "-s" ) ) {
-        config.add( "gameStage.autosave", "true" );
-      }
-      else if( String::equals( argv[i], "--no-save" ) || String::equals( argv[i], "-S" ) ) {
-        config.add( "gameStage.autosave", "false" );
+        doAutoload = true;
       }
       else if( String::equals( argv[i], "--init" ) || String::equals( argv[i], "-i" ) ) {
         if( i + 1 == argc ) {
@@ -334,17 +313,7 @@ namespace client
           return -1;
         }
 
-        config.add( "client.onCreate", argv[i + 1] );
-        ++i;
-      }
-      else if( String::equals( argv[i], "-I" ) ) {
-        if( i + 1 == argc ) {
-          printUsage();
-          return -1;
-        }
-
-        config.add( "gameStage.autoload", "false" );
-        config.add( "client.onCreate", argv[i + 1] );
+        initFunc = argv[i + 1];
         ++i;
       }
       else if( String::equals( argv[i], "--prefix" ) || String::equals( argv[i], "-p" ) ) {
@@ -512,15 +481,23 @@ namespace client
     initFlags |= INIT_CONTEXT_INIT;
     context.init();
 
-    stage = &gameStage;
+    initFlags |= INIT_STAGE_INIT;
+    menuStage.init();
+    gameStage.init();
 
-    initFlags |= INIT_GAME_INIT;
-    stage->init();
+    Stage::nextStage = null;
 
-    initFlags |= INIT_GAME_LOAD;
-    stage->load();
-
-    stage->begin();
+    if( !initFunc.isEmpty() ) {
+      gameStage.onCreate = initFunc;
+      stage = &gameStage;
+    }
+    else if( doAutoload ) {
+      gameStage.stateFile = GameStage::AUTOSAVE_FILE;
+      stage = &gameStage;
+    }
+    else {
+      stage = &menuStage;
+    }
 
     SDL_Event event;
 
@@ -547,6 +524,8 @@ namespace client
     loadingTime         = float( timeZero - createTime ) / 1000.0f;
     inactiveMillis      = 0;
     droppedMillis       = 0;
+
+    stage->load();
 
     initFlags |= INIT_MAIN_LOOP;
 
@@ -646,6 +625,18 @@ namespace client
 
       isAlive &= stage->update();
 
+      if( Stage::nextStage != null ) {
+        stage->unload();
+
+        stage = Stage::nextStage;
+        Stage::nextStage = null;
+
+        stage->load();
+
+        timeLast = SDL_GetTicks();
+        continue;
+      }
+
       timeNow = SDL_GetTicks();
       timeSpent = timeNow - timeLast;
 
@@ -682,9 +673,9 @@ namespace client
     log.unindent();
     log.println( "}" );
 
-    allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
+    stage->unload();
 
-    stage->end();
+    allTime = float( SDL_GetTicks() - timeZero ) / 1000.0f;
 
     return 0;
   }

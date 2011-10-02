@@ -61,48 +61,58 @@ namespace oz
     onUpdate  = config->get( "onUpdate", "" );
 
     if( !onDestroy.isEmpty() ) {
+      flags |= Object::LUA_BIT;
+
       // disable event handler if explicitly set to false
       if( !config->get( "flag.destroyFunc", true ) ) {
         flags &= ~Object::DESTROY_FUNC_BIT;
       }
       else {
-        flags |= Object::LUA_BIT | Object::DESTROY_FUNC_BIT;;
+        flags |= Object::DESTROY_FUNC_BIT;;
       }
     }
     if( !onDamage.isEmpty() ) {
+      flags |= Object::LUA_BIT;
+
       // disable event handler if explicitly set to false
       if( !config->get( "flag.damageFunc", true ) ) {
         flags &= ~Object::DAMAGE_FUNC_BIT;
       }
       else {
-        flags |= Object::LUA_BIT | Object::DAMAGE_FUNC_BIT;
+        flags |= Object::DAMAGE_FUNC_BIT;
       }
     }
     if( !onHit.isEmpty() ) {
+      flags |= Object::LUA_BIT;
+
       // disable event handler if explicitly set to false
       if( !config->get( "flag.hitFunc", true ) ) {
         flags &= ~Object::HIT_FUNC_BIT;
       }
       else {
-        flags |= Object::LUA_BIT | Object::HIT_FUNC_BIT;
+        flags |= Object::HIT_FUNC_BIT;
       }
     }
     if( !onUse.isEmpty() ) {
+      flags |= Object::LUA_BIT;
+
       // disable event handler if explicitly set to false
       if( !config->get( "flag.useFunc", true ) ) {
         flags &= ~Object::USE_FUNC_BIT;
       }
       else {
-        flags |= Object::LUA_BIT | Object::USE_FUNC_BIT;
+        flags |= Object::USE_FUNC_BIT;
       }
     }
     if( !onUpdate.isEmpty() ) {
+      flags |= Object::LUA_BIT;
+
       // disable event handler if explicitly set to false
       if( !config->get( "flag.updateFunc", true ) ) {
         flags &= ~Object::UPDATE_FUNC_BIT;
       }
       else {
-        flags |= Object::LUA_BIT | Object::UPDATE_FUNC_BIT;
+        flags |= Object::UPDATE_FUNC_BIT;
       }
     }
 

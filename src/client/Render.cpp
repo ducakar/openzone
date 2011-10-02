@@ -440,10 +440,10 @@ namespace client
     log.println( "Initialising Render {" );
     log.indent();
 
-    int  screenX      = config.get( "screen.width", 1280 );
-    int  screenY      = config.get( "screen.height", 720 );
-    int  screenBpp    = config.get( "screen.bpp", 32 );
-    bool isFullScreen = config.getSet( "screen.full", false );
+    int  screenX      = config.get( "screen.width", 0 );
+    int  screenY      = config.get( "screen.height", 0 );
+    int  screenBpp    = config.get( "screen.bpp", 0 );
+    bool isFullScreen = config.getSet( "screen.full", true );
 
     log.print( "Creating OpenGL window %dx%d-%d %s ...",
                screenX, screenY, screenBpp, isFullScreen ? "fullscreen" : "windowed" );
