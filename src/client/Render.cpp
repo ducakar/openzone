@@ -640,6 +640,7 @@ namespace client
 
     OZ_REGISTER_GLFUNC( glActiveTexture,           PFNGLACTIVETEXTUREPROC           );
     OZ_REGISTER_GLFUNC( glCompressedTexImage2D,    PFNGLCOMPRESSEDTEXIMAGE2DPROC    );
+    OZ_REGISTER_GLFUNC( glGetCompressedTexImage,   PFNGLGETCOMPRESSEDTEXIMAGEPROC   );
     OZ_REGISTER_GLFUNC( glGenerateMipmap,          PFNGLGENERATEMIPMAPPROC          );
 
 # ifndef OZ_GL_COMPATIBLE

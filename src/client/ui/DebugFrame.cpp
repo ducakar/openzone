@@ -23,9 +23,11 @@ namespace ui
 {
 
   DebugFrame::DebugFrame() :
-      Frame( 8, -8, 560, 10 + 6 * ( Font::INFOS[Font::MONO].height + 2 ), gettext( "Debug" ) )
+      Frame( 0, -8, 560, 10 + 6 * ( Font::INFOS[Font::MONO].height + 2 ), gettext( "Debug" ) )
   {
     flags = PINNED_BIT;
+
+    x = 2 * ( camera.width - width ) / 5;
 
     int height = textHeight + 2;
 
@@ -89,9 +91,9 @@ namespace ui
                         ( dyn->flags & Object::DISABLED_BIT ) != 0,
                         ( dyn->flags & Object::ON_FLOOR_BIT ) != 0,
                         dyn->lower,
-                        ( dyn->flags & Object::BELOW_BIT ) != 0,
                         ( dyn->flags & Object::HIT_BIT ) != 0,
                         ( dyn->flags & Object::FRICTING_BIT ) != 0,
+                        ( dyn->flags & Object::BELOW_BIT ) != 0,
                         ( dyn->flags & Object::IN_WATER_BIT ) != 0,
                         ( dyn->flags & Object::ON_SLICK_BIT ) != 0,
                         ( dyn->flags & Object::ON_LADDER_BIT ) != 0 );

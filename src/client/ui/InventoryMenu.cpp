@@ -142,7 +142,7 @@ namespace ui
     String sTitle = ( container->flags & Object::BOT_BIT ) ?
         static_cast<const Bot*>( container )->name + " (" + containerClazz->title + ")" :
         containerClazz->title;
-    title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::TITLE, "%s", sTitle.cstr() );
+    title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::LARGE, "%s", sTitle.cstr() );
     Frame::onDraw();
 
     glUniform4f( param.oz_Colour, 0.3f, 0.3f, 0.3f, 0.6f );
@@ -288,9 +288,10 @@ namespace ui
       y = 8 + height + 8;
     }
 
+    scrollUpTexId = context.loadTexture( "ui/icon/scrollUp.ozcTex" );
+    scrollDownTexId = context.loadTexture( "ui/icon/scrollDown.ozcTex" );
+
     if( master == null ) {
-      scrollUpTexId = context.loadTexture( "ui/icon/scrollUp.ozcTex" );
-      scrollDownTexId = context.loadTexture( "ui/icon/scrollDown.ozcTex" );
       useTexId = context.loadTexture( "ui/icon/use.ozcTex" );
       equipTexId = context.loadTexture( "ui/icon/equip.ozcTex" );
       unequipTexId = context.loadTexture( "ui/icon/unequip.ozcTex" );
@@ -299,9 +300,10 @@ namespace ui
 
   InventoryMenu::~InventoryMenu()
   {
+    glDeleteTextures( 1, &scrollUpTexId );
+    glDeleteTextures( 1, &scrollDownTexId );
+
     if( master == null ) {
-      glDeleteTextures( 1, &scrollUpTexId );
-      glDeleteTextures( 1, &scrollDownTexId );
       glDeleteTextures( 1, &useTexId );
       glDeleteTextures( 1, &equipTexId );
       glDeleteTextures( 1, &unequipTexId );

@@ -147,7 +147,7 @@ using oz::sectionMutex;
 
 #endif
 
-#ifdef OZ_MINGW
+#if defined( OZ_MINGW ) && defined( OZ_SIMD )
 
 static int posix_memalign( void** ptr, size_t alignment, size_t size )
 {
@@ -340,7 +340,7 @@ void operator delete ( void* ptr ) throw()
   pthread_mutex_unlock( &sectionMutex );
 #endif
 
-#if defined( OZ_MINGW ) && defined( OZ_MINGW )
+#if defined( OZ_MINGW ) && defined( OZ_SIMD )
   posix_memalign_free( chunk );
 #else
   free( chunk );

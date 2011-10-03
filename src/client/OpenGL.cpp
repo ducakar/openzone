@@ -65,6 +65,7 @@ namespace client
 
   PFNGLACTIVETEXTUREPROC           glActiveTexture;
   PFNGLCOMPRESSEDTEXIMAGE2DPROC    glCompressedTexImage2D;
+  PFNGLGETCOMPRESSEDTEXIMAGEPROC   glGetCompressedTexImage;
   PFNGLGENERATEMIPMAPPROC          glGenerateMipmap;
 
 #ifndef OZ_GL_COMPATIBLE

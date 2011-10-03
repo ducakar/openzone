@@ -69,7 +69,7 @@ LAlt + vlečenje     - vleka oken
 
 F5                  - hitro shranjevanje (v ~/.config/openzone/quicksave.ozState)
 F7                  - hitro nalaganje (iz ~/.config/openzone/quicksave.ozState)
-Ctrl + F8           - naloži zadnje avtomatično shranjeno stanje
+F8                  - naloži zadnje samodejno shranjeno stanje
                       (iz ~/.config/openzone/autosave.ozState)
 F10                 - zajem zaslona (shrani se v '~/config/.openzone/screenshot DATUM ČAS.bmp')
 F11                 - preklopi celozaslonski način
@@ -108,22 +108,19 @@ Nasveti
 
 Ukazna vrstica
 --------------
-openzone [--help] [--load | -l | --no-load | -L]
-         [--save | -s | --no-save | -S] [(--time | -t) <št>]
-         [(--prefix | -p) <predpona>]
+openzone [--help] [(--load | -l) | (--init | -i) <function>]
+         [(--time | -t) <št>] [(--prefix | -p) <predpona>]
 
 --help
       Prikaže to sporočilo s pomočjo.
 
 -l, --load
--L, --no-load
-      Vklopi ali izklopi samodejno nalaganje iz ~/.config/openzone/default.ozState med zagonom.
-      To preglasi nastavitev 'autoload'.
+      Preskoči glavni meni in naloži samodejno shranjeno stanje.
+      Samodejno shranjeno stanje se nahaja v ~/.config/openzone/autosave.ozState.
 
--s, --save
--S, --no-save
-      Vklopi ali izklopi samodejno shranjevanje iz ~/.config/openzone/default.ozState ob izhodu.
-      To preglasi nastavitev 'autosave'.
+-i <funkcija>, --init <funkcija>
+      Preskoči glavni meni in uporabi odjemalčevo Lua-funkcijo <funkcija> za stvaritev igre.
+      Odjemalčevi Lua-skripti se nahajajo v <prefix>/share/openzone/lua/client.
 
 -t <št>, --time <št>
       Končaj po <št> sekundah (lahko je decimalno število). Za potrebe benchmarka.
@@ -187,8 +184,8 @@ Licenca
 Copyright (C) 2002-2011  Davorin Učakar <davorin.ucakar@gmail.com>
 
 Ta program je POPOLNOMA BREZ GARANCIJE.
-To je prosto programje, ki se lahko distribuira po določenimi pogoji;
-za podrobnosti glej datoteko COPYING.
+To je prosto programje, ki se lahko razpečuje pod določenimi pogoji;
+za podrobnosti glejte datoteko COPYING.
 
 Podatki (vse pod imenikom 'share/openzone') in priložene knjižnice ('*.dll' po imenikom
-'bin') so delo različnih avtorjev. Za podrobnosti glej pripadajoče datoteke *README in *COPYING.
+'bin') so delo različnih avtorjev. Za podrobnosti glejte pripadajoče datoteke *README in *COPYING.

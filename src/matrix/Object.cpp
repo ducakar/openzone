@@ -91,6 +91,13 @@ namespace oz
 
       addEvent( id, intensity );
     }
+
+    int nItems = istream->readInt();
+    for( int i = 0; i < nItems; ++i ) {
+      int index = istream->readInt();
+
+      items.add( index );
+    }
   }
 
   void Object::writeFull( OutputStream* ostream ) const
@@ -105,6 +112,11 @@ namespace oz
       ostream->writeInt( event->id );
       ostream->writeFloat( event->intensity );
     }
+
+    ostream->writeInt( items.length() );
+    foreach( item, items.citer() ) {
+      ostream->writeInt( *item );
+    }
   }
 
   void Object::readUpdate( InputStream* istream )
@@ -118,6 +130,13 @@ namespace oz
 
       addEvent( id, intensity );
     }
+
+    int nItems = istream->readInt();
+    for( int i = 0; i < nItems; ++i ) {
+      int index = istream->readInt();
+
+      items.add( index );
+    }
   }
 
   void Object::writeUpdate( OutputStream* ostream ) const
@@ -128,6 +147,11 @@ namespace oz
     foreach( event, events.citer() ) {
       ostream->writeInt( event->id );
       ostream->writeFloat( event->intensity );
+    }
+
+    ostream->writeInt( items.length() );
+    foreach( item, items.citer() ) {
+      ostream->writeInt( *item );
     }
   }
 

@@ -19,6 +19,14 @@
 
 #include <SDL/SDL_ttf.h>
 
+#ifdef OZ_MINGW
+static char* strchrnul( const char* s, int c )
+{
+  char* p = strchr( s, c );
+  return p == null ? const_cast<char*>( s ) + strlen( s ) : p;
+}
+#endif
+
 namespace oz
 {
 namespace client
@@ -28,15 +36,20 @@ namespace ui
 
   char Text::buffer[2048];
 
-  Text::Text( int x_, int y_, int width_, int lines_, Font::Type font_ ) :
-      x( x_ ), y( y_ ), width( width_ ), lines( lines_ ), font( ui::font.fonts[font_] )
+  Text::Text( int x_, int y_, int width_, int nLines_, Font::Type font_ ) :
+      x( x_ ), y( y_ ), width( width_ ), nLines( nLines_ ), font( ui::font.fonts[font_] )
   {
-    labels = new Label[lines];
+    labels = new Label[nLines];
 
-    for( int i = 0; i < lines; ++i ) {
-      labels[i].set( x, y + ( lines - i - 1 ) * Font::INFOS[font_].height + 2,
+    for( int i = 0; i < nLines; ++i ) {
+      labels[i].set( x, y + ( nLines - i - 1 ) * Font::INFOS[font_].height,
                      Area::ALIGN_NONE, font_, "" );
     }
+  }
+
+  Text::~Text()
+  {
+    delete[] labels;
   }
 
   void Text::setText( const char* s, ... )
@@ -51,7 +64,7 @@ namespace ui
     char* pos = buffer;
     char* end = min( strchrnul( buffer, ' ' ), strchrnul( buffer, '\n' ) );
 
-    while( *end != '\0' && line < lines - 1 ) {
+    while( *end != '\0' && line < nLines - 1 ) {
       char* next;
 
       while( *end == ' ' ) {
@@ -72,16 +85,16 @@ namespace ui
         end = next;
       }
 
+      if( *end == '\0' ) {
+        break;
+      }
+
       char ch = *end;
       *end = '\0';
 
       labels[line].setText( pos );
 
       *end = ch;
-
-      if( ch == '\0' ) {
-        return;
-      }
 
       pos = end + 1;
       end = min( strchrnul( pos, ' ' ), strchrnul( pos, '\n' ) );
@@ -90,18 +103,24 @@ namespace ui
     }
 
     labels[line].setText( pos );
+    ++line;
+
+    while( line < nLines ) {
+      labels[line].setText( "" );
+      ++line;
+    }
   }
 
   void Text::clear()
   {
-    for( int i = 0; i < lines; ++i ) {
+    for( int i = 0; i < nLines; ++i ) {
       labels[i].setText( "" );
     }
   }
 
   void Text::draw( const Area* area ) const
   {
-    for( int i = 0; i < lines; ++i ) {
+    for( int i = 0; i < nLines; ++i ) {
       labels[i].draw( area );
     }
   }

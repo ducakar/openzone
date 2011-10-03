@@ -65,7 +65,7 @@ namespace ui
     add( new BuildButton( "goblin", createObject, 110, 15 ), -115, -40 );
     add( new BuildButton( "knight", createObject, 110, 15 ), -115, -60 );
     add( new BuildButton( "lord", createObject, 110, 15 ), -115, -80 );
-    add( new BuildButton( "hobgoblin", createObject, 110, 15 ), -115, -100 );
+    add( new BuildButton( "beast", createObject, 110, 15 ), -115, -100 );
     add( new BuildButton( "droid", createObject, 110, 15 ), -115, -120 );
     add( new BuildButton( "droid.OOM-9", createObject, 110, 15 ), -115, -140 );
     add( new BuildButton( "raptor", createObject, 110, 15 ), -115, -160 );

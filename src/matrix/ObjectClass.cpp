@@ -64,7 +64,7 @@ namespace oz
       flags |= Object::LUA_BIT;
 
       // disable event handler if explicitly set to false
-      if( !config->get( "flag.destroyFunc", true ) ) {
+      if( !config->get( "flag.onDestroy", true ) ) {
         flags &= ~Object::DESTROY_FUNC_BIT;
       }
       else {
@@ -75,7 +75,7 @@ namespace oz
       flags |= Object::LUA_BIT;
 
       // disable event handler if explicitly set to false
-      if( !config->get( "flag.damageFunc", true ) ) {
+      if( !config->get( "flag.onDamage", true ) ) {
         flags &= ~Object::DAMAGE_FUNC_BIT;
       }
       else {
@@ -86,7 +86,7 @@ namespace oz
       flags |= Object::LUA_BIT;
 
       // disable event handler if explicitly set to false
-      if( !config->get( "flag.hitFunc", true ) ) {
+      if( !config->get( "flag.onHit", true ) ) {
         flags &= ~Object::HIT_FUNC_BIT;
       }
       else {
@@ -97,7 +97,7 @@ namespace oz
       flags |= Object::LUA_BIT;
 
       // disable event handler if explicitly set to false
-      if( !config->get( "flag.useFunc", true ) ) {
+      if( !config->get( "flag.onUse", true ) ) {
         flags &= ~Object::USE_FUNC_BIT;
       }
       else {
@@ -108,7 +108,7 @@ namespace oz
       flags |= Object::LUA_BIT;
 
       // disable event handler if explicitly set to false
-      if( !config->get( "flag.updateFunc", true ) ) {
+      if( !config->get( "flag.onUpdate", true ) ) {
         flags &= ~Object::UPDATE_FUNC_BIT;
       }
       else {
@@ -265,11 +265,11 @@ namespace oz
 
     clazz->flags = 0;
 
-    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.destroyFunc",   true  );
-    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.damageFunc",    false );
-    OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.hitFunc",       false );
-    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",       false );
-    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.updateFunc",    false );
+    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",     true  );
+    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",      false );
+    OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.onHit",         false );
+    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.onUse",         false );
+    OZ_CLASS_SET_FLAG( Object::UPDATE_FUNC_BIT,    "flag.onUpdate",      false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",         true  );
     OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",      true  );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",        false );

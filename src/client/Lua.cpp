@@ -89,6 +89,7 @@ namespace client
 
     OZ_LUA_FUNC( ozPrintln );
     OZ_LUA_FUNC( ozException );
+    OZ_LUA_FUNC( ozGettext );
 
     OZ_LUA_FUNC( ozMatrixCall );
 
@@ -456,6 +457,14 @@ namespace client
 
     const char* message = tostring( 1 );
     throw Exception( message );
+  }
+
+  int Lua::ozGettext( lua_State* l )
+  {
+    ARG( 1 );
+
+    pushstring( gettext( tostring( 1 ) ) );
+    return 1;
   }
 
   int Lua::ozMatrixCall( lua_State* l )

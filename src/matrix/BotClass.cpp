@@ -30,9 +30,9 @@ namespace oz
     clazz->flags = Object::DYNAMIC_BIT | Object::HIT_FUNC_BIT |
         Object::UPDATE_FUNC_BIT | Object::BOT_BIT;
 
-    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.destroyFunc",  true  );
-    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.damageFunc",   false );
-    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.useFunc",      false );
+    OZ_CLASS_SET_FLAG( Object::DESTROY_FUNC_BIT,   "flag.onDestroy",    true  );
+    OZ_CLASS_SET_FLAG( Object::DAMAGE_FUNC_BIT,    "flag.onDamage",     false );
+    OZ_CLASS_SET_FLAG( Object::USE_FUNC_BIT,       "flag.onUse",        false );
     OZ_CLASS_SET_FLAG( Object::ITEM_BIT,           "flag.item",         false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
     OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
@@ -106,8 +106,9 @@ namespace oz
 
     clazz->stamina           = config->get( "stamina", 100.0f );
     clazz->staminaGain       = config->get( "staminaGain", 2.5f ) * Timer::TICK_TIME;
-    clazz->staminaWaterDrain = config->get( "staminaWaterDrain", 5.0f ) * Timer::TICK_TIME;
     clazz->staminaRunDrain   = config->get( "staminaRunDrain", 4.0f ) * Timer::TICK_TIME;
+    clazz->staminaWaterDrain = config->get( "staminaWaterDrain", 5.0f ) * Timer::TICK_TIME;
+    clazz->staminaClimbDrain = config->get( "staminaClimbDrain", 10.0f ) * Timer::TICK_TIME;
     clazz->staminaJumpDrain  = config->get( "staminaJumpDrain", 5.0f );
     clazz->staminaThrowDrain = config->get( "staminaThrowDrain", 8.0f );
 

@@ -70,7 +70,6 @@ LAlt + drag         - move windows
 F5                  - quick save (to ~/.config/openzone/quicksave.ozState)
 F7                  - quick load (from ~/.config/openzone/quicksave.ozState)
 F8                  - load autosaved state (from ~/.config/openzone/autosave.ozState)
-Ctrl + F8           - load new world
 F10                 - screenshot (saved to '~/.config/openzone/screenshot DATE TIME.bmp')
 Ctrl + F11          - toggle fullscreen mode
 F12                 - minimise and pause
@@ -110,22 +109,20 @@ Tips
 
 Command line
 ------------
-openzone [--help] [--load | -l | --no-load | -L]
-         [--save | -s | --no-save | -S] [(--time | -t) <num>]
-         [(--prefix | -p) <prefix>]
+openzone [--help] [(--load | -l) | (--init | -i) <function>]
+         [(--time | -t) <num>] [(--prefix | -p) <prefix>]
 
 --help
       Prints that help message.
 
 -l, --load
--L, --no-load
-      Enables or disables autoload of ~/.config/openzone/default.ozState on
-      startup respectively. Overrides the 'autoload' resource.
+      Skip main menu and load autosaved state.
+      Autosaved game state resides in ~/.config/openzone/autosave.ozState.
 
--s, --save
--S, --no-save
-      Enables or disables autosave to ~/.config/openzone/default.ozState on exit
-      respectively. Overrides the 'autosave' resource.
+-i, --init <function>
+      Skip main menu and use client Lua function <function> to initialise
+      the game.
+      Client Lua scripts reside in <prefix>/share/openzone/lua/client.
 
 -t <num>, --time <num>
       Exits after <num> seconds (can be a floating-point number).
@@ -134,6 +131,7 @@ openzone [--help] [--load | -l | --no-load | -L]
 -p <prefix>, --prefix <prefix>
       Sets data directory to <prefix>/share/openzone and locale directory to
       <prefix>/share/locale.
+      Default: '/usr/local'.
 
 Notes
 -----

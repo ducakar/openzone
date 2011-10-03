@@ -324,19 +324,6 @@ namespace client
     matrix.load();
     nirvana.load();
 
-    if( !onCreate.isEmpty() ) {
-      log.println( "Initialising new world" );
-
-      lua.staticCall( onCreate );
-
-      if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
-        throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
-      }
-    }
-    else if( !read( stateFile ) ) {
-      throw Exception( "reading saved state '" + stateFile + "' failed" );
-    }
-
     network.connect();
 
     log.print( "Starting auxilary thread ..." );
@@ -350,6 +337,23 @@ namespace client
     SDL_SemWait( mainSemaphore );
 
     log.printEnd( " OK" );
+
+    ui::mouse.doShow = true;
+    ui::mouse.buttons = 0;
+    ui::mouse.currButtons = 0;
+
+    if( !onCreate.isEmpty() ) {
+      log.println( "Initialising new world" );
+
+      lua.staticCall( onCreate );
+
+      if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
+        throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
+      }
+    }
+    else if( !read( stateFile ) ) {
+      throw Exception( "reading saved state '" + stateFile + "' failed" );
+    }
 
     context.load();
     render.load();
@@ -365,9 +369,6 @@ namespace client
     sound.update();
 
     ui::ui.showLoadingScreen( false );
-    ui::mouse.doShow = false;
-    ui::mouse.buttons = 0;
-    ui::mouse.currButtons = 0;
 
     isLoaded = true;
 
@@ -389,6 +390,10 @@ namespace client
     render.unload();
     context.unload();
 
+    if( isLoaded && config.getSet( "gameStage.autosave", true ) ) {
+      write( AUTOSAVE_FILE );
+    }
+
     log.print( "Stopping auxilary thread ..." );
 
     isAlive = false;
@@ -408,12 +413,10 @@ namespace client
 
     network.disconnect();
 
-    if( isLoaded && config.getSet( "gameStage.autosave", true ) ) {
-      write( AUTOSAVE_FILE );
-    }
-
     nirvana.unload();
     matrix.unload();
+
+    camera.clear();
 
     ui::ui.showLoadingScreen( false );
 
@@ -458,6 +461,9 @@ namespace client
     loader.free();
     nirvana.free();
     matrix.free();
+
+    AUTOSAVE_FILE.clear();
+    QUICKSAVE_FILE.clear();
 
     log.unindent();
     log.println( "}" );

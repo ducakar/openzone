@@ -144,7 +144,10 @@ namespace nirvana
     log.print( "Unloading Nirvana ..." );
 
     devices.free();
+    devices.dealloc();
+
     minds.free();
+    minds.dealloc();
 
     Memo::pool.free();
     Mind::pool.free();
@@ -157,9 +160,9 @@ namespace nirvana
     log.println( "Initialising Nirvana {" );
     log.indent();
 
-    lua.init();
-
     OZ_REGISTER_DEVICE( Memo );
+
+    lua.init();
 
     updateModulo = 0;
 
@@ -173,6 +176,9 @@ namespace nirvana
     log.indent();
 
     lua.free();
+
+    deviceClasses.clear();
+    deviceClasses.dealloc();
 
     log.unindent();
     log.println( "}" );

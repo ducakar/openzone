@@ -35,14 +35,11 @@ namespace ui
         SANS,
         SMALL,
         LARGE,
-        TITLE,
-        SYMBOL,
         MAX
       };
 
       struct Info
       {
-        const char* name;
         const char* file;
         int height;
       };

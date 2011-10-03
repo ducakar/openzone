@@ -677,7 +677,6 @@ namespace oz
         }
 
         count = 0;
-        pool.free();
       }
 
       /**
