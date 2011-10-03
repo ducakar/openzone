@@ -32,6 +32,9 @@ namespace ui
       Text copyright;
 
       MainMenu();
+      ~MainMenu();
+
+    protected:
 
       virtual void onDraw();
 

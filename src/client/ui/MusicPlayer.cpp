@@ -142,11 +142,18 @@ namespace ui
 
     volumeLabel.setText( "%.1f", float( volume ) / 10.0f );
 
+//     add( new Button( "−", volumeDown, 20, 20 ), 4, 4 );
+//     add( new Button( "◁", prevTrack, 30, 20 ), 54, 4 );
+//     add( new Button( "▶", playTrack, 30, 20 ), 88, 4 );
+//     add( new Button( "◼", stopTrack, 30, 20 ), 122, 4 );
+//     add( new Button( "▷", nextTrack, 30, 20 ), 156, 4 );
+//     add( new Button( "+", volumeUp, 20, 20 ), 216, 4 );
+
     add( new Button( "−", volumeDown, 20, 20 ), 4, 4 );
-    add( new Button( "◁", prevTrack, 30, 20 ), 54, 4 );
-    add( new Button( "▶", playTrack, 30, 20 ), 88, 4 );
-    add( new Button( "◼", stopTrack, 30, 20 ), 122, 4 );
-    add( new Button( "▷", nextTrack, 30, 20 ), 156, 4 );
+    add( new Button( "<<", prevTrack, 30, 20 ), 54, 4 );
+    add( new Button( "P", playTrack, 30, 20 ), 88, 4 );
+    add( new Button( "S", stopTrack, 30, 20 ), 122, 4 );
+    add( new Button( ">>", nextTrack, 30, 20 ), 156, 4 );
     add( new Button( "+", volumeUp, 20, 20 ), 216, 4 );
   }
 

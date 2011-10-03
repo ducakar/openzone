@@ -244,20 +244,20 @@ namespace client
   {
     log.println( "Usage:" );
     log.indent();
-    log.println( "openzone [--help] [--load | -l | --no-load | -L]" );
-    log.println( "         [--save | -s | --no-save | -S] [(--time | -t) <num>]" );
-    log.println( "         [(--prefix | -p) <prefix>]" );
+    log.println( "openzone [--help] [(--load | -l) | (--init | -i) <function>]" );
+    log.println( "         [(--time | -t) <num>] [(--prefix | -p) <prefix>]" );
     log.println();
     log.println( "--help" );
     log.println( "\tPrints that help message." );
     log.println();
     log.println( "-l, --load" );
-    log.println( "\tLoad autosaved state from ~/" OZ_RC_DIR "/default.ozState." );
-    log.println( "\tSkips main menu." );
+    log.println( "\tSkip main menu and load autosaved state." );
+    log.println( "\tAutosaved game state resides in ~/" OZ_RC_DIR "/autosave.ozState." );
     log.println();
     log.println( "-i, --init <function>" );
-    log.println( "\tUse Lua function <function> from <prefix>/share/openzone/lua/client*.lua" );
-    log.println( "\tto initialise game while skipping the main menu." );
+    log.println( "\tSkip main menu and use client Lua function <function> to initialise" );
+    log.println( "\tthe game." );
+    log.println( "\tClient Lua scripts reside in <prefix>/share/openzone/lua/client." );
     log.println();
     log.println( "-t <num>, --time <num>" );
     log.println( "\tExits after <num> seconds (can be a floating-point number)." );

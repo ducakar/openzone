@@ -26,8 +26,8 @@ namespace ui
 {
 
   InfoFrame::InfoFrame() :
-      Frame( -8, -8, 308, 8 + 15 * ( Font::INFOS[Font::MONO].height + 2 ), "" ),
-      text( 4, 4, 300, 15, Font::SANS )
+      Frame( -8, -8, 360, 12 + 24 * Font::INFOS[Font::SANS].height, "" ),
+      text( 6, 4, 348, 24, Font::SANS ), lastId( -1 )
   {
     flags = PINNED_BIT;
   }
@@ -59,6 +59,7 @@ namespace ui
     if( lastId != camera.tagged ) {
       const Device* device = nirvana::nirvana.devices.get( camera.tagged );
 
+      title.setText( camera.taggedObj->clazz->title );
       text.setText( "%s", device->getMemo() );
 
       lastId = camera.tagged;

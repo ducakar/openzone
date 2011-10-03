@@ -61,17 +61,17 @@ namespace ui
   }
 
   Frame::Frame( int width, int height, const char* title_ ) :
-      Area( width, height + Font::INFOS[Font::TITLE].height + 8 )
+      Area( width, height + Font::INFOS[Font::LARGE].height + 8 )
   {
-    int textHeight = font.INFOS[Font::TITLE].height;
+    int textHeight = font.INFOS[Font::LARGE].height;
 
-    title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::TITLE, title_ );
+    title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::LARGE, title_ );
   }
 
   Frame::Frame( int x, int y, int width, int height, const char* title_ ) :
-      Area( x, y, width, height + Font::INFOS[Font::TITLE].height + 8 )
+      Area( x, y, width, height + Font::INFOS[Font::LARGE].height + 8 )
   {
-    title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::TITLE, title_ );
+    title.set( width / 2, -textHeight - 8, ALIGN_HCENTRE, Font::LARGE, title_ );
   }
 
 }

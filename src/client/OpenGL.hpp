@@ -88,6 +88,7 @@ namespace client
 
   extern PFNGLACTIVETEXTUREPROC           glActiveTexture;
   extern PFNGLCOMPRESSEDTEXIMAGE2DPROC    glCompressedTexImage2D;
+  extern PFNGLGETCOMPRESSEDTEXIMAGEPROC   glGetCompressedTexImage;
   extern PFNGLGENERATEMIPMAPPROC          glGenerateMipmap;
 
 # ifndef OZ_GL_COMPATIBLE

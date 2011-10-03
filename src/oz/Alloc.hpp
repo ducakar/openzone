@@ -19,7 +19,11 @@ namespace oz
   {
     public:
 
+#ifdef OZ_SIMD
       static const size_t ALIGNMENT            = 16;
+#else
+      static const size_t ALIGNMENT            = sizeof( size_t );
+#endif
       static const int    BACKTRACE_SIZE       = 16;
       static const int    DEMANGLE_BUFFER_SIZE = 1024;
 

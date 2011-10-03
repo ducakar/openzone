@@ -136,29 +136,14 @@ namespace client
     bot       = istream->readInt();
     botObj    = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 
-    state     = State( istream->readInt() );
-    newState  = state;
+    state     = NONE;
+    newState  = State( istream->readInt() );
 
     isExternal         = istream->readBool();
     allowReincarnation = istream->readBool();
 
     strategicProxy.read( istream );
     botProxy.read( istream );
-
-    switch( state ) {
-      case STRATEGIC: {
-        proxy = &strategicProxy;
-        break;
-      }
-      case BOT: {
-        proxy = &botProxy;
-        break;
-      }
-      case NONE: {
-        hard_assert( false );
-        break;
-      }
-    }
   }
 
   void Camera::write( OutputStream* ostream ) const
@@ -186,14 +171,35 @@ namespace client
 
   void Camera::clear()
   {
+    p         = Point3::ORIGIN;
+    oldP      = Point3::ORIGIN;
+    newP      = Point3::ORIGIN;
+    h         = 0.0f;
+    v         = Math::TAU / 4.0f;
     w         = 0.0f;
     relH      = 0.0f;
     relV      = 0.0f;
+
+    rot       = Quat::ID;
+    relRot    = Quat::ID;
+
+    rotMat    = Mat44::rotation( rot );
+    rotTMat   = ~rotTMat;
+
+    right     = rotMat.x;
+    up        = rotMat.y;
+    at        = -rotMat.z;
 
     tagged    = -1;
     taggedObj = null;
     bot       = -1;
     botObj    = null;
+
+    state     = NONE;
+    newState  = defaultState;
+
+    isExternal = true;
+    allowReincarnation = true;
   }
 
   void Camera::init()

@@ -62,6 +62,7 @@ namespace client
 
       OZ_LUA_API( ozPrintln );
       OZ_LUA_API( ozException );
+      OZ_LUA_API( ozGettext );
 
       OZ_LUA_API( ozMatrixCall );
 

@@ -66,33 +66,42 @@ namespace ui
     menuStage.doExit = true;
   }
 
-  MainMenu::MainMenu() : Frame( 0, 0, 360, 360, gettext( "Main Menu" ) ),
-      copyright( 10, 10, 340, 5, Font::SANS )
+  MainMenu::MainMenu() : Frame( 0, 0, 400, 450, gettext( "Main Menu" ) ),
+      copyright( 10, 10, 380, 10, Font::SANS )
   {
     x = ( camera.width - width ) / 2;
     y = ( camera.height - height ) / 2;
 
-    copyright.setText( "OpenZone engine Copyright © 2011 Davorin Učakar\n"
-                       "\n"
-                       "Data files come form different sources. See respective README and COPYING "
-                       "files for details about copyrights and licences." );
+    copyright.setText(
+        String( "OpenZone  Copyright © 2002-2011  Davorin Učakar" ) +
+        gettext( "\n\nThis program comes with ABSOLUTELY NO WARRANTY. "
+                 "This is free software, and you are welcome to redistribute it "
+                 "under certain conditions; See COPYING file for details.\n\n"
+                 "Data files come form different sources. See respective README and COPYING "
+                 "files for details about copyrights and licences." ) );
 
     File autosaveFile( config.get( "dir.rc", "" ) + String( "/autosave.ozState" ) );
     File quicksaveFile( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
 
     if( autosaveFile.getType() == File::REGULAR ) {
       MainMenu::autosaveFile = autosaveFile.path();
-      add( new Button( gettext( "Continue" ), continueAutosaved, 300, 20 ), 30, 310 );
+      add( new Button( gettext( "Continue" ), continueAutosaved, 300, 20 ), 50, -60 );
     }
     if( quicksaveFile.getType() == File::REGULAR ) {
       MainMenu::quicksaveFile = quicksaveFile.path();
-      add( new Button( gettext( "Load Quicksave" ), continueQuicksaved, 300, 20 ), 30, 280 );
+      add( new Button( gettext( "Load Quicksave" ), continueQuicksaved, 300, 20 ), 50, -90 );
     }
 
-    add( new Button( gettext( "Tutorial" ), loadTutorial, 300, 20 ), 30, 230 );
-    add( new Button( gettext( "Sample Mission" ), loadSample, 300, 20 ), 30, 200 );
-    add( new Button( gettext( "Test World" ), loadTest, 300, 20 ), 30, 170 );
-    add( new Button( gettext( "Exit" ), exit, 300, 20 ), 30, 120 );
+    add( new Button( gettext( "Tutorial" ), loadTutorial, 300, 20 ), 50, -150 );
+    add( new Button( gettext( "Sample Mission" ), loadSample, 300, 20 ), 50, -180 );
+    add( new Button( gettext( "Test World" ), loadTest, 300, 20 ), 50, -210 );
+    add( new Button( gettext( "Exit" ), exit, 300, 20 ), 50, -270 );
+  }
+
+  MainMenu::~MainMenu()
+  {
+    autosaveFile.clear();;
+    quicksaveFile.clear();
   }
 
   void MainMenu::onDraw()

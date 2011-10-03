@@ -100,22 +100,24 @@ namespace ui
 
     int x = baseX - text->w / 2;
     int y = baseY - text->h / 2;
+    int width = text->w;
+    int height = text->h;
 
-    if( x < 0 || x + text->w >= camera.width - 1 || y < 1 || y + text->h >= camera.height ) {
+    if( x < 0 || x + width >= camera.width - 1 || y < 1 || y + height >= camera.height ) {
       SDL_FreeSurface( text );
       return;
     }
 
     glBindTexture( GL_TEXTURE_2D, titleTexId );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->w, text->h, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                   text->pixels);
 
     SDL_FreeSurface( text );
 
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
-    shape.fill( x + 1, y - 1, text->w, text->h );
+    shape.fill( x + 1, y - 1, width, height );
     glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    shape.fill( x, y, text->w, text->h );
+    shape.fill( x, y, width, height );
 
     glBindTexture( GL_TEXTURE_2D, 0 );
   }

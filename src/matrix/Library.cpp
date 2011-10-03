@@ -930,6 +930,9 @@ namespace oz
     musics.clear();
     musics.dealloc();
 
+    bspBounds.clear();
+    bspBounds.dealloc();
+
     baseClasses.clear();
     baseClasses.dealloc();
     classes.free();

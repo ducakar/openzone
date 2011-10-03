@@ -258,7 +258,8 @@ namespace oz
         sDyn->flags |= Object::BELOW_BIT;
         sDyn->damage( dyn->mass * WEIGHT_FACTOR );
 
-        if( !( sDyn->flags & Object::DISABLED_BIT ) ) {
+        if( !( sDyn->flags & Object::ON_FLOOR_BIT ) && sDyn->lower == -1 ) {
+          sDyn->flags &= ~Object::DISABLED_BIT;
           sDyn->momentum.z = momentum.z;
         }
       }

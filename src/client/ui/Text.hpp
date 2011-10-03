@@ -29,7 +29,7 @@ namespace ui
       int    x;
       int    y;
       int    width;
-      int    lines;
+      int    nLines;
 
       TTF_Font* font;
       Label* labels;
@@ -38,7 +38,8 @@ namespace ui
 
     public:
 
-      explicit Text( int x, int y, int width, int lines, Font::Type font );
+      explicit Text( int x, int y, int width, int nLines, Font::Type font );
+      ~Text();
 
       void setText( const char* s, ... );
       void clear();

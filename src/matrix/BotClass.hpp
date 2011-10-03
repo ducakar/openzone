@@ -62,8 +62,9 @@ namespace oz
 
       float  stamina;
       float  staminaGain;
-      float  staminaWaterDrain;
       float  staminaRunDrain;
+      float  staminaWaterDrain;
+      float  staminaClimbDrain;
       float  staminaJumpDrain;
       float  staminaThrowDrain;
 

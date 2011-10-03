@@ -24,7 +24,7 @@ namespace ui
 {
 
   LoadingArea::LoadingArea() : Area( camera.width, camera.height ),
-      status( camera.width / 2, camera.height / 4, ALIGN_CENTRE, Font::TITLE, "" )
+      status( camera.width / 2, camera.height / 5, ALIGN_CENTRE, Font::LARGE, "" )
   {
     flags = PINNED_BIT;
   }

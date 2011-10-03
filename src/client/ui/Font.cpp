@@ -27,12 +27,10 @@ namespace ui
   const SDL_Colour Font::SDL_COLOUR_WHITE = { 0xff, 0xff, 0xff, 0xff };
 
   const Font::Info Font::INFOS[MAX] = {
-    { "mono",   "ui/font/DejaVuSansMono.ttf", 13 },
-    { "sans",   "ui/font/DejaVuSans.ttf",     13 },
-    { "small",  "ui/font/DejaVuSans.ttf",     11 },
-    { "large",  "ui/font/DejaVuSans.ttf",     14 },
-    { "title",  "ui/font/DejaVuSans.ttf",     15 },
-    { "symbol", "ui/font/DejaVuSans.ttf",     14 }
+    { "ui/font/DroidSansMono.ttf", 13 },
+    { "ui/font/DroidSans.ttf",     13 },
+    { "ui/font/DroidSans.ttf",     11 },
+    { "ui/font/DroidSans.ttf",     14 },
   };
 
   Font::Font() : textTexId( 0 )
@@ -51,7 +49,7 @@ namespace ui
     }
 
     for( int i = 0; i < MAX; ++i ) {
-      path = config.getSet( "ui.font." + String( INFOS[i].name ) + ".file", INFOS[i].file );
+      path = INFOS[i].file;
 
       log.print( "Opening font '%s' %d px ...", path, INFOS[i].height );
 

@@ -406,12 +406,7 @@ namespace oz
         desiredMomentum *= clazz->climbControl;
       }
       else if( state & SWIMMING_BIT ) {
-        bool isOnStaticGround = ( flags & ON_FLOOR_BIT ) ||
-          ( lower != -1 && ( orbis.objects[lower]->flags & Object::DISABLED_BIT ) );
-
-        if( !isOnStaticGround ) {
-          desiredMomentum *= clazz->waterControl;
-        }
+        desiredMomentum *= clazz->waterControl;
       }
       else if( !( state & GROUNDED_BIT ) ) {
         desiredMomentum *= clazz->airControl;
@@ -491,7 +486,9 @@ namespace oz
        * Ledge climbing
        */
 
-      if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) ) {
+      if( ( actions & ( ACTION_FORWARD | ACTION_JUMP ) ) == ( ACTION_FORWARD | ACTION_JUMP ) &&
+          stamina > clazz->staminaClimbDrain )
+      {
         // check if bot's gonna hit a wall in the next frame
         Vec3 desiredMove = momentum * Timer::TICK_TIME;
 
@@ -506,9 +503,15 @@ namespace oz
 
           for( float raise = clazz->stepMax; raise <= clazz->climbMax; raise += clazz->climbInc ) {
             if( !collider.overlaps( this, this ) ) {
-              momentum.x *= ( 1.0f - Physics::LADDER_FRICTION );
-              momentum.y *= ( 1.0f - Physics::LADDER_FRICTION );
-              momentum.z = max( momentum.z, clazz->climbMomentum );
+              momentum.x    *= ( 1.0f - Physics::LADDER_FRICTION );
+              momentum.y    *= ( 1.0f - Physics::LADDER_FRICTION );
+              momentum.z    = max( momentum.z, clazz->climbMomentum );
+
+              instrument    = -1;
+              instrumentObj = null;
+              state         &= ~GRAB_BIT;
+              stamina       -= clazz->staminaClimbDrain;
+
               break;
             }
 
@@ -528,9 +531,6 @@ namespace oz
 
     if( state & GRAB_BIT ) {
       Bot* obj = static_cast<Bot*>( instrumentObj );
-
-      hard_assert( obj->flags & DYNAMIC_BIT );
-      hard_assert( !( obj->flags & ON_LADDER_BIT ) );
 
       if( obj == null || obj->cell == null || ( obj->flags & BELOW_BIT ) ||
           ( state & SWIMMING_BIT ) || ( actions & ACTION_JUMP ) ||
@@ -689,13 +689,15 @@ namespace oz
           items.remove( taggedItem );
 
           if( ( actions & ~oldActions & ACTION_INV_GRAB ) &&
+              !( state & ( CLIMBING_BIT | SWIMMING_BIT ) ) &&
               ( weapon == -1 || weapon == item->index ) )
           {
-            flags      &= ~ON_LADDER_BIT;
             state      |= GRAB_BIT;
             instrument = item->index;
             weapon     = -1;
             grabHandle = dist;
+
+            item->flags &= ~BELOW_BIT;
           }
         }
       }
@@ -801,10 +803,6 @@ namespace oz
 
     stepRate   = istream->readFloat();
 
-    int nItems = istream->readInt();
-    for( int i = 0; i < nItems; ++i ) {
-      items.add( istream->readInt() );
-    }
     weapon     = istream->readInt();
 
     anim       = Anim::Type( istream->readInt() );
@@ -833,10 +831,6 @@ namespace oz
 
     ostream->writeFloat( stepRate );
 
-    ostream->writeInt( items.length() );
-    foreach( item, items.citer() ) {
-      ostream->writeInt( *item );
-    }
     ostream->writeInt( weapon );
 
     ostream->writeInt( int( anim ) );

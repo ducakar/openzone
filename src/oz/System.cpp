@@ -10,7 +10,7 @@
 #include "System.hpp"
 
 #include "common.hpp"
-#include "Log.hpp"
+// #include "Log.hpp"
 
 #include <csignal>
 #include <cstdio>
@@ -95,6 +95,9 @@ namespace oz
   void System::trap()
   {}
 
+  void System::halt()
+  {}
+
 #else
 
   void System::enableHalt( bool value )
@@ -142,14 +145,14 @@ namespace oz
     signal( SIGTRAP, SIG_DFL );
   }
 
-#endif
-
   void System::halt()
   {
     fprintf( stderr, "Attach a debugger or send a fatal signal (e.g. CTRL-C) to kill ...\n" );
     fflush( stderr );
     while( sleep( 1 ) == 0 );
   }
+
+#endif
 
   void System::error( const char* msg, ... )
   {
@@ -164,11 +167,11 @@ namespace oz
 
     fflush( stderr );
 
-    if( log.isFile() ) {
-      log.printEnd( "\n" );
-      log.vprintRaw( msg, ap );
-      log.printEnd( "\n" );
-    }
+//     if( log.isFile() ) {
+//       log.printEnd( "\n" );
+//       log.vprintRaw( msg, ap );
+//       log.printEnd( "\n" );
+//     }
 
     va_end( ap );
   }
@@ -374,16 +377,16 @@ namespace oz
 
     fflush( stderr );
 
-    if( log.isFile() ) {
-      log.printEnd();
-      log.vprintRaw( msg, ap );
-      log.printEnd( "\n" );
-
-      log.resetIndent();
-      log.indent();
-      log.printTrace( frames, nFrames );
-      log.unindent();
-    }
+//     if( log.isFile() ) {
+//       log.printEnd();
+//       log.vprintRaw( msg, ap );
+//       log.printEnd( "\n" );
+//
+//       log.resetIndent();
+//       log.indent();
+//       log.printTrace( frames, nFrames );
+//       log.unindent();
+//     }
 
     va_end( ap );
 

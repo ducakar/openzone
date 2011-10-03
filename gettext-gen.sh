@@ -45,3 +45,15 @@ for weapon in $weapons; do
     echo "msgstr \"\"" >> $output
   fi
 done
+
+echo >> $output
+echo '#' >> $output
+echo '# share/lua/*/*.lua' >> $output
+echo '#' >> $output
+
+lua_src="share/openzone/lua/*/*.lua"
+
+for lua_file in $lua_src; do
+  cat $lua_file | grep ' *ozGettext( ".*" )$' | \
+      sed 's/ *ozGettext( "\(.*\)" )$/\nmsgid "\1"\nmsgstr ""/' >> $output
+done

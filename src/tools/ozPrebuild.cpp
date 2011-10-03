@@ -663,6 +663,6 @@ int main( int argc, char** argv )
   log.printlnETD( OZ_APPLICATION_TITLE " Prebuild finished at" );
 
 //   Alloc::isLocked = true;
-//   Alloc::printLeaks();
+  Alloc::printLeaks();
   return exitCode;
 }
