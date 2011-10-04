@@ -25,7 +25,7 @@ namespace client
 namespace ui
 {
 
-  const float InventoryMenu::SLOT_DIMF = float( SLOT_SIZE ) / 2.0f;
+  const float InventoryMenu::SLOT_OBJ_DIMF = float( SLOT_SIZE - 2*PADDING_SIZE ) / 2.0f;
 
   void InventoryMenu::onVisibilityChange()
   {
@@ -150,8 +150,10 @@ namespace ui
     for( int i = 0; i < ROWS; ++i ) {
       for( int j = 0; j < COLS; ++j ) {
         if( ( scroll + i ) * COLS + j < containerClazz->nItems ) {
-          fill( j * SLOT_SIZE + 1, FOOTER_SIZE + ( ROWS - i - 1 ) * SLOT_SIZE + 1,
-                SLOT_SIZE - 2, SLOT_SIZE - 2 );
+          fill( j * SLOT_SIZE + PADDING_SIZE,
+                FOOTER_SIZE + ( ROWS - i - 1 ) * SLOT_SIZE + PADDING_SIZE,
+                SLOT_SIZE - 2*PADDING_SIZE,
+                SLOT_SIZE - 2*PADDING_SIZE );
         }
         else {
           goto slotsRendered;
@@ -195,7 +197,7 @@ namespace ui
       hard_assert( ( item->flags & Object::DYNAMIC_BIT ) && ( item->flags & Object::ITEM_BIT ) );
 
       float size = item->dim.fastL();
-      float scale = SLOT_DIMF / size;
+      float scale = SLOT_OBJ_DIMF / size;
 
       if( i % COLS == 0 ) {
         tf.camera.translate( Vec3( -COLS * SLOT_SIZE, -SLOT_SIZE, 0.0f ) );

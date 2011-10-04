@@ -152,11 +152,10 @@ namespace client
       void align();
       void update();
       void prepare();
+      void reset();
 
       void read( InputStream* istream );
       void write( OutputStream* ostream ) const;
-
-      void clear();
 
       void init();
 

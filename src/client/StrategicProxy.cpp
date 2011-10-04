@@ -167,6 +167,14 @@ namespace client
     camera.move( p );
   }
 
+  void StrategicProxy::reset()
+  {
+    height     = DEFAULT_HEIGHT;
+    isFree     = false;
+    isFreeFast = true;
+    isRTSFast  = false;
+  }
+
   void StrategicProxy::read( InputStream* istream )
   {
     height     = istream->readFloat();
@@ -184,11 +192,7 @@ namespace client
   }
 
   void StrategicProxy::init()
-  {
-    isFree     = false;
-    isFreeFast = true;
-    isRTSFast  = false;
-  }
+  {}
 
 }
 }

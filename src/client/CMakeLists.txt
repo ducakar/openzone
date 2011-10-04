@@ -44,7 +44,6 @@ add_library( client STATIC
   ui/DebugFrame.cpp
   ui/Font.cpp
   ui/Frame.cpp
-  ui/GalileoFrame.cpp
   ui/HudArea.cpp
   ui/InfoFrame.cpp
   ui/InventoryMenu.cpp
@@ -53,12 +52,15 @@ add_library( client STATIC
   ui/LoadingArea.cpp
   ui/MainMenu.cpp
   ui/Mouse.cpp
-  ui/MusicPlayer.cpp
   ui/StrategicArea.cpp
   ui/Text.cpp
   ui/UI.cpp
   modules/FloraModule.cpp
-  modules/PreferencesModule.cpp
+  modules/GalileoFrame.cpp
+  modules/GalileoModule.cpp
+  modules/MusicPlayer.cpp
+  modules/MusicPlayerModule.cpp
+  modules/ProfileModule.cpp
 )
 add_dependencies( client nirvana matrix pch )
 

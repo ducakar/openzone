@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/ui/GalileoFrame.hpp"
+#include "client/modules/GalileoFrame.hpp"
 
 namespace oz
 {

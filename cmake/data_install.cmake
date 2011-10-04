@@ -21,13 +21,8 @@ endif()
 # glsl
 #
 if( OZ_INSTALL_OPENZONE )
-  file( GLOB files
-    share/openzone/glsl/*.glsl
-    share/openzone/glsl/*.vert
-    share/openzone/glsl/*.frag
-    share/openzone/glsl/*README*
-    share/openzone/glsl/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/glsl )
+  install( DIRECTORY share/openzone/glsl DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE )
 endif()
 
 #
@@ -42,8 +37,7 @@ endif()
 #
 if( WIN32 )
   if( OZ_INSTALL_OPENZONE )
-    file( GLOB files support/mingw32-client/*.exe support/mingw32-client/*.dll )
-    install( FILES ${files} DESTINATION bin )
+    install( DIRECTORY support/mingw32-client/ DESTINATION bin )
 
     if( OZ_INSTALL_STANDALONE )
       install( FILES support/oalinst.exe support/openzone.bat DESTINATION . )
@@ -51,8 +45,7 @@ if( WIN32 )
   endif()
 
   if( OZ_INSTALL_TOOLS )
-    file( GLOB files support/mingw32-tools/*.exe support/mingw32-tools/*.dll )
-    install( FILES ${files} DESTINATION bin )
+    install( DIRECTORY support/mingw32-tools/ DESTINATION bin )
 
     if( OZ_INSTALL_STANDALONE )
       install( FILES support/prebuild.bat DESTINATION . )
@@ -80,114 +73,95 @@ if( OZ_INSTALL_DATA )
   install( FILES share/openzone/README DESTINATION share/openzone )
 
   # bsp
-  file( GLOB files
-    share/openzone/bsp/*.ozBSP
-    share/openzone/bsp/*.ozcBSP
-    share/openzone/bsp/*README*
-    share/openzone/bsp/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/bsp )
-
-  file( GLOB files
-    share/openzone/bsp/tex/*.ozcTex
-    share/openzone/bsp/tex/*README*
-    share/openzone/bsp/tex/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/bsp/tex )
+  install( DIRECTORY share/openzone/bsp DESTINATION share/openzone )
 
   # caelum
-  file( GLOB files
-    share/openzone/caelum/*.ozcCaelum
-    share/openzone/caelum/*README*
-    share/openzone/caelum/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/caelum )
+  install( DIRECTORY share/openzone/caelum DESTINATION share/openzone
+           FILES_MATCHING PATTERN "caelum/*.ozcCaelum" )
+
+  install( DIRECTORY share/openzone/caelum DESTINATION share/openzone
+           FILES_MATCHING PATTERN "caelum/*README*" )
+
+  install( DIRECTORY share/openzone/caelum DESTINATION share/openzone
+           FILES_MATCHING PATTERN "caelum/*COPYING*" )
 
   # class
-  file( GLOB files
-    share/openzone/class/*.rc
-    share/openzone/class/*README*
-    share/openzone/class/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/class )
+  install( DIRECTORY share/openzone/class DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE )
 
   # lua
-  file( GLOB files
-    share/openzone/lua/matrix/*.lua
-    share/openzone/lua/matrix/*README*
-    share/openzone/lua/matrix/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/lua/matrix )
-
-  file( GLOB files
-    share/openzone/lua/nirvana/*.lua
-    share/openzone/lua/nirvana/*README*
-    share/openzone/lua/nirvana/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/lua/nirvana )
-
-  file( GLOB files
-    share/openzone/lua/client/*.lua
-    share/openzone/lua/client/*README*
-    share/openzone/lua/client/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/lua/client )
+  install( DIRECTORY share/openzone/lua DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE )
 
   # mdl
-  file( GLOB files
-    share/openzone/mdl/*.ozcSMM
-    share/openzone/mdl/*.ozcMD2
-    share/openzone/mdl/*README*
-    share/openzone/mdl/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/mdl )
+  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone
+           FILES_MATCHING PATTERN "mdl/*.ozcSMM" )
+
+  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone
+           FILES_MATCHING PATTERN "mdl/*.ozcMD2" )
+
+  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone
+           FILES_MATCHING PATTERN "mdl/*README*" )
+
+  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone
+           FILES_MATCHING PATTERN "mdl/*COPYING*" )
 
   # music
-  file( GLOB files
-    share/openzone/music/*.oga
-    share/openzone/music/*README*
-    share/openzone/music/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/music )
+  install( DIRECTORY share/openzone/music DESTINATION share/openzone
+           PATTERN "ALL" EXCLUDE )
 
   # name
-  file( GLOB files
-    share/openzone/name/*.txt
-    share/openzone/name/*README*
-    share/openzone/name/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/name )
+  install( DIRECTORY share/openzone/name DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE )
 
   # snd
-  file( GLOB files
-    share/openzone/snd/*.wav
-    share/openzone/snd/*README*
-    share/openzone/snd/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/snd )
+  install( DIRECTORY share/openzone/snd DESTINATION share/openzone
+           PATTERN "ALL" EXCLUDE )
 
   # terra
-  file( GLOB files
-    share/openzone/terra/*.ozTerra
-    share/openzone/terra/*.ozcTerra
-    share/openzone/terra/*README*
-    share/openzone/terra/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/terra )
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone
+           FILES_MATCHING PATTERN "terra/*.ozTerra" )
+
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone
+           FILES_MATCHING PATTERN "terra/*.ozcTerra" )
+
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone
+           FILES_MATCHING PATTERN "terra/*README*" )
+
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone
+           FILES_MATCHING PATTERN "terra/*COPYING*" )
 
   # ui
-  file( GLOB files
-    share/openzone/ui/cur/*.ozcCur
-    share/openzone/ui/cur/*README*
-    share/openzone/ui/cur/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/ui/cur )
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           FILES_MATCHING PATTERN "ui/*/cur/*.ozcCur" )
 
-  file( GLOB files
-    share/openzone/ui/font/*.ttf
-    share/openzone/ui/font/*README*
-    share/openzone/ui/font/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/ui/font )
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           FILES_MATCHING PATTERN "ui/*/cur/*README*" )
 
-  file( GLOB files
-    share/openzone/ui/icon/*.ozcTex
-    share/openzone/ui/icon/*README*
-    share/openzone/ui/icon/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/ui/icon )
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           FILES_MATCHING PATTERN "ui/*/cur/*COPYING*" )
+
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           FILES_MATCHING PATTERN "ui/*/font/*.ttf" )
+
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           FILES_MATCHING PATTERN "ui/*/font/*README*" )
+
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           FILES_MATCHING PATTERN "ui/*/font/*COPYING*" )
+
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           FILES_MATCHING PATTERN "ui/*/icon/*.ozcTex" )
+
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           FILES_MATCHING PATTERN "ui/*/icon/*README*" )
+
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           FILES_MATCHING PATTERN "ui/*/icon/*COPYING*" )
 
   # locale
-  file( GLOB dirs share/locale/* )
-  foreach( dir IN ITEMS ${dirs} )
-    file( RELATIVE_PATH dir ${CMAKE_SOURCE_DIR} ${dir} )
-    install( FILES ${dir}/LC_MESSAGES/openzone.mo DESTINATION ${dir}/LC_MESSAGES )
-  endforeach()
+  install( DIRECTORY share/locale DESTINATION share
+           FILES_MATCHING PATTERN "*.mo" )
 
 endif()
 
@@ -199,129 +173,66 @@ if( OZ_INSTALL_DATA_SRC )
   install( FILES share/openzone/README DESTINATION share/openzone )
 
   # caelum
-  file( GLOB files
-    share/openzone/caelum/*.png
-    share/openzone/caelum/*.jpg
-    share/openzone/caelum/*.xcf
-    share/openzone/caelum/*README*
-    share/openzone/caelum/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/caelum )
+  install( DIRECTORY share/openzone/caelum DESTINATION share/openzone
+           PATTERN "*.ozcCaelum" EXCLUDE )
 
   # class
-  file( GLOB files
-    share/openzone/class/*.rc
-    share/openzone/class/*README*
-    share/openzone/class/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/class )
+  install( DIRECTORY share/openzone/class DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE )
 
   # data
-  file( GLOB files
-    share/openzone/data/maps/*.rc
-    share/openzone/data/maps/*.bsp
-    share/openzone/data/maps/*.map
-    share/openzone/data/maps/*README*
-    share/openzone/data/maps/*COPYING* )
-  foreach( file IN ITEMS ${files} )
-    if( ${file} MATCHES "\\.autosave\\.map" )
-      list( REMOVE_ITEM files ${file} )
-    endif()
-  endforeach()
-  install( FILES ${files} DESTINATION share/openzone/data/maps )
+  install( DIRECTORY share/openzone/data/maps DESTINATION share/openzone/data
+           PATTERN "DISABLED" EXCLUDE
+           PATTERN "*.bsp" EXCLUDE
+           PATTERN "*.prt" EXCLUDE
+           PATTERN "*.srf" EXCLUDE
+           PATTERN "*autosave.map" EXCLUDE
+           PATTERN "*.bak" EXCLUDE )
 
-  install( DIRECTORY share/openzone/data/scripts DESTINATION share/openzone/data/scripts )
+  install( DIRECTORY share/openzone/data/scripts DESTINATION share/openzone/data
+           PATTERN "DISABLED" EXCLUDE )
 
-  file( GLOB files
-    share/openzone/data/textures/oz/*.png
-    share/openzone/data/textures/oz/*.jpg
-    share/openzone/data/textures/oz/*README*
-    share/openzone/data/textures/oz/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/data/textures/oz )
+  install( DIRECTORY share/openzone/data/textures DESTINATION share/openzone/data
+           PATTERN "DISABLED" EXCLUDE )
 
   # lua
-  file( GLOB files
-    share/openzone/lua/matrix/*.lua
-    share/openzone/lua/matrix/*README*
-    share/openzone/lua/matrix/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/lua/matrix )
-
-  file( GLOB files
-    share/openzone/lua/nirvana/*.lua
-    share/openzone/lua/nirvana/*README*
-    share/openzone/lua/nirvana/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/lua/nirvana )
+  install( DIRECTORY share/openzone/lua DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE )
 
   # music
-  file( GLOB files
-    share/openzone/music/*.oga
-    share/openzone/music/*README*
-    share/openzone/music/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/music )
+  install( DIRECTORY share/openzone/music DESTINATION share/openzone
+           PATTERN "ALL" EXCLUDE )
 
   # name
-  file( GLOB files
-    share/openzone/name/*.txt
-    share/openzone/name/*README*
-    share/openzone/name/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/name )
+  install( DIRECTORY share/openzone/name DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE )
 
   # snd
-  file( GLOB files
-    share/openzone/snd/*.wav
-    share/openzone/snd/*README*
-    share/openzone/snd/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/snd )
+  install( DIRECTORY share/openzone/snd DESTINATION share/openzone
+           PATTERN "ALL" EXCLUDE )
 
   # terra
-  file( GLOB files
-    share/openzone/terra/*.rc
-    share/openzone/terra/*.png
-    share/openzone/terra/*.jpg
-    share/openzone/terra/*README*
-    share/openzone/terra/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/terra )
+  install( DIRECTORY share/openzone/terra DESTINATION share/openzone
+           PATTERN "*.ozTerra" EXCLUDE
+           PATTERN "*.ozcTerra" EXCLUDE )
 
   # netradiant
   install( DIRECTORY share/openzone/netradiant DESTINATION share/openzone )
 
   # mdl
-  file( GLOB files share/openzone/mdl/* )
-  foreach( file IN ITEMS ${files} )
-    if( NOT EXISTS ${file}/config.rc )
-      list( REMOVE_ITEM files ${file} )
-    endif()
-  endforeach()
-  install( DIRECTORY ${files} DESTINATION share/openzone/mdl )
+  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE
+           PATTERN "mdl/*.ozcSMM" EXCLUDE
+           PATTERN "mdl/*.ozcMD2" EXCLUDE )
 
   # ui
-  file( GLOB files
-    share/openzone/ui/cur/*.in
-    share/openzone/ui/cur/*.png
-    share/openzone/ui/cur/*README*
-    share/openzone/ui/cur/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/ui/cur )
-
-  file( GLOB files
-    share/openzone/ui/font/*.ttf
-    share/openzone/ui/font/*README*
-    share/openzone/ui/font/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/ui/font )
-
-  file( GLOB files
-    share/openzone/ui/icon/*.png
-    share/openzone/ui/icon/*.xcf
-    share/openzone/ui/icon/*README*
-    share/openzone/ui/icon/*COPYING* )
-  install( FILES ${files} DESTINATION share/openzone/ui/icon )
+  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE
+           PATTERN "*.ozcCur" EXCLUDE
+           PATTERN "*.ozcTex" EXCLUDE )
 
   # locale
-  file( GLOB dirs share/locale/* )
-  foreach( dir IN ITEMS ${dirs} )
-    file( RELATIVE_PATH dir ${CMAKE_SOURCE_DIR} ${dir} )
-    install( FILES ${dir}/LC_MESSAGES/openzone.po ${dir}/LC_MESSAGES/openzone.mo
-      DESTINATION ${dir}/LC_MESSAGES )
-  endforeach()
-
-  install( FILES openzone.pot DESTINATION . )
+  install( DIRECTORY share/locale DESTINATION share )
 
   # launcher, icon
   install( DIRECTORY share/applications share/icons DESTINATION share )

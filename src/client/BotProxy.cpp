@@ -35,9 +35,9 @@ namespace client
 
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-    bobPhi   = 0.0f;
-    bobTheta = 0.0f;
-    bobBias  = 0.0f;
+    bobPhi     = 0.0f;
+    bobTheta   = 0.0f;
+    bobBias    = 0.0f;
 
     camera.h = bot->h;
     camera.v = bot->v;
@@ -340,6 +340,12 @@ namespace client
     }
   }
 
+  void BotProxy::reset()
+  {
+    isExternal = config.getSet( "botProxy.isExternal", false );
+    isFreelook = false;
+  }
+
   void BotProxy::read( InputStream* istream )
   {
     bobPhi   = 0.0f;
@@ -359,8 +365,6 @@ namespace client
   void BotProxy::init()
   {
     externalDistFactor = config.getSet( "botProxy.externalDistFactor", 2.75f );
-    isExternal         = config.getSet( "botProxy.isExternal", false );
-    isFreelook         = false;
   }
 
 }

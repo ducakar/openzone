@@ -9,10 +9,11 @@
 
 #include "stable.hpp"
 
-#include "client/ui/MusicPlayer.hpp"
+#include "client/modules/MusicPlayer.hpp"
 
 #include "matrix/Library.hpp"
 
+#include "client/Camera.hpp"
 #include "client/Sound.hpp"
 
 namespace oz
@@ -104,6 +105,29 @@ namespace ui
 
   void MusicPlayer::onUpdate()
   {
+    if( camera.state == Camera::BOT && camera.botObj != null ) {
+      const Vector<int>& items = camera.botObj->items;
+
+      for( int i = 0; i < items.length(); ++i ) {
+        const Object* item = orbis.objects[ items[i] ];
+
+        if( item != null && item->clazz->name.equals( "musicPlayer" ) ) {
+          goto musicPlayerEnabled;
+        }
+      }
+
+      if( isPlaying ) {
+        isPlaying = false;
+        sound.stopMusic();
+      }
+      doShow = false;
+      return;
+    }
+
+    musicPlayerEnabled:;
+
+    doShow = true;
+
     if( isPlaying && !sound.isMusicPlaying() ) {
       int nTracks = library.musics.length();
 
@@ -119,8 +143,22 @@ namespace ui
     }
   }
 
+  bool MusicPlayer::onMouseEvent()
+  {
+    if( !doShow ) {
+      return false;
+    }
+    else {
+      return Frame::onMouseEvent();
+    }
+  }
+
   void MusicPlayer::onDraw()
   {
+    if( !doShow ) {
+      return;
+    }
+
     Frame::onDraw();
 
     title.draw( this );
@@ -133,7 +171,7 @@ namespace ui
       title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, "" ),
       trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
       volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, "" ),
-      currentTrack( 0 ), isPlaying( false )
+      currentTrack( 0 ), isPlaying( false ), doShow( true )
   {
     flags = UPDATE_BIT;
 
@@ -142,17 +180,10 @@ namespace ui
 
     volumeLabel.setText( "%.1f", float( volume ) / 10.0f );
 
-//     add( new Button( "−", volumeDown, 20, 20 ), 4, 4 );
-//     add( new Button( "◁", prevTrack, 30, 20 ), 54, 4 );
-//     add( new Button( "▶", playTrack, 30, 20 ), 88, 4 );
-//     add( new Button( "◼", stopTrack, 30, 20 ), 122, 4 );
-//     add( new Button( "▷", nextTrack, 30, 20 ), 156, 4 );
-//     add( new Button( "+", volumeUp, 20, 20 ), 216, 4 );
-
     add( new Button( "−", volumeDown, 20, 20 ), 4, 4 );
     add( new Button( "<<", prevTrack, 30, 20 ), 54, 4 );
-    add( new Button( "P", playTrack, 30, 20 ), 88, 4 );
-    add( new Button( "S", stopTrack, 30, 20 ), 122, 4 );
+    add( new Button( ">", playTrack, 30, 20 ), 88, 4 );
+    add( new Button( "x", stopTrack, 30, 20 ), 122, 4 );
     add( new Button( ">>", nextTrack, 30, 20 ), 156, 4 );
     add( new Button( "+", volumeUp, 20, 20 ), 216, 4 );
   }

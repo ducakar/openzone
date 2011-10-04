@@ -10,8 +10,6 @@
 /Windows-*
 /support
 
-/openzone.pot
-/valgrind.supp
 /doxygen
 
 /*.patch

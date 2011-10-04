@@ -31,6 +31,7 @@ namespace ui
       int   currentTrack;
       int   volume;
       bool  isPlaying;
+      bool  doShow;
 
       static void prevTrack( Button* sender );
       static void nextTrack( Button* sender );
@@ -42,6 +43,7 @@ namespace ui
     protected:
 
       virtual void onUpdate();
+      virtual bool onMouseEvent();
       virtual void onDraw();
 
     public:

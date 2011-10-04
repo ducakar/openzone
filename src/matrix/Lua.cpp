@@ -526,7 +526,6 @@ namespace oz
     OZ_LUA_CONST( "OZ_EVENT_FLIP",                  Bot::EVENT_FLIP );
     OZ_LUA_CONST( "OZ_EVENT_DEATH",                 Bot::EVENT_DEATH );
     OZ_LUA_CONST( "OZ_EVENT_ENGINE",                Vehicle::EVENT_ENGINE );
-    OZ_LUA_CONST( "OZ_EVENT_SERVICE",               Vehicle::EVENT_SERVICE );
     OZ_LUA_CONST( "OZ_EVENT_NEXT_WEAPON",           Vehicle::EVENT_NEXT_WEAPON );
     OZ_LUA_CONST( "OZ_EVENT_SHOT0",                 Vehicle::EVENT_SHOT0 );
     OZ_LUA_CONST( "OZ_EVENT_SHOT0_EMPTY",           Vehicle::EVENT_SHOT0_EMPTY );

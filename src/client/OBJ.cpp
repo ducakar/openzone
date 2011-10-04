@@ -85,7 +85,7 @@ namespace client
       if( nMatches != 2 ) {
         return false;
       }
-      texCoords.add( TexCoord( u, v ) );
+      texCoords.add( TexCoord( 1.0f - u, 1.0f - v ) );
       return true;
     }
     return false;

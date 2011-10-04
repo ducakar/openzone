@@ -1,5 +1,5 @@
 /*
- *  PreferencesModule.cpp
+ *  ProfileModule.cpp
  *
  *  [description]
  *
@@ -9,7 +9,7 @@
 
 #include "stable.hpp"
 
-#include "client/modules/PreferencesModule.hpp"
+#include "client/modules/ProfileModule.hpp"
 
 #include "luamacros.hpp"
 
@@ -18,23 +18,23 @@ namespace oz
 namespace client
 {
 
-  PreferencesModule preferencesModule;
+  ProfileModule profileModule;
 
-  void PreferencesModule::init()
+  void ProfileModule::init()
   {
     const char* userName = getenv( "USER" );
     userName = userName == null ? "Player" : userName;
 
-    playerName = config.getSet( "modules.preferences.playerName", userName );
+    playerName = config.getSet( "modules.profile.playerName", userName );
 
-    OZ_LUA_FUNC( ozPreferencesGetPlayerName );
+    OZ_LUA_FUNC( ozProfileGetPlayerName );
   }
 
-  int PreferencesModule::ozPreferencesGetPlayerName( lua_State* l )
+  int ProfileModule::ozProfileGetPlayerName( lua_State* l )
   {
     ARG( 0 );
 
-    pushstring( preferencesModule.playerName );
+    pushstring( profileModule.playerName );
     return 1;
   }
 

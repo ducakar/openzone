@@ -311,10 +311,6 @@ namespace oz
         wasServiced = true;
       }
     }
-
-    if( wasServiced ) {
-      addEvent( EVENT_SERVICE, 1.0f );
-    }
   }
 
   void Vehicle::readFull( InputStream* istream )
