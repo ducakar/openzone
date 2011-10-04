@@ -50,7 +50,6 @@ namespace oz
 
       Lua();
 
-      void staticCall( const char* functionName );
       void objectCall( const char* functionName, Object* self, Bot* user = null );
 
       void registerObject( int index );
@@ -59,7 +58,11 @@ namespace oz
       void read( InputStream* istream );
       void write( OutputStream* ostream );
 
-      void registerModule( const Module* module );
+      void registerFunction( const char* name, LuaAPI func );
+      void registerConstant( const char* name, bool value );
+      void registerConstant( const char* name, int value );
+      void registerConstant( const char* name, float value );
+      void registerConstant( const char* name, const char* value );
 
       void init();
       void free();
@@ -178,7 +181,7 @@ namespace oz
       OZ_LUA_API( ozObjGetDim );
       OZ_LUA_API( ozObjGetFlags );
       OZ_LUA_API( ozObjGetOldFlags );
-      OZ_LUA_API( ozObjGetTypeName );
+      OZ_LUA_API( ozObjGetClassName );
       OZ_LUA_API( ozObjGetLife );
       OZ_LUA_API( ozObjSetLife );
       OZ_LUA_API( ozObjAddLife );
@@ -246,6 +249,7 @@ namespace oz
       OZ_LUA_API( ozBotGetMindFunc );
       OZ_LUA_API( ozBotSetMindFunc );
 
+      OZ_LUA_API( ozBotGetState );
       OZ_LUA_API( ozBotGetEyePos );
       OZ_LUA_API( ozBotGetH );
       OZ_LUA_API( ozBotSetH );
@@ -273,9 +277,9 @@ namespace oz
       OZ_LUA_API( ozBotActionEject );
       OZ_LUA_API( ozBotActionSuicide );
 
-      OZ_LUA_API( ozBotStateIsRunning );
-      OZ_LUA_API( ozBotStateSetRunning );
-      OZ_LUA_API( ozBotStateToggleRunning );
+      OZ_LUA_API( ozBotIsRunning );
+      OZ_LUA_API( ozBotSetRunning );
+      OZ_LUA_API( ozBotToggleRunning );
 
       OZ_LUA_API( ozBotSetWeaponItem );
 

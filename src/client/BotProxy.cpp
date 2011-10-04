@@ -133,7 +133,7 @@ namespace client
       camera.v = bot->v;
     }
     if( ui::keyboard.keys[SDLK_p] && !ui::keyboard.oldKeys[SDLK_p] ) {
-      bot->state ^= Bot::STEPPING_BIT;
+      bot->state ^= Bot::STEPABLE_BIT;
     }
 
     bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT |

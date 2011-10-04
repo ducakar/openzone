@@ -69,7 +69,7 @@ namespace client
 
     botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 
-    if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
+    if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
       bot = -1;
       botObj = null;
     }
@@ -101,7 +101,7 @@ namespace client
   {
     botObj = bot == -1 ? null : static_cast<Bot*>( orbis.objects[bot] );
 
-    if( botObj == null || ( botObj->state & Bot::DEATH_BIT ) ) {
+    if( botObj == null || ( botObj->state & Bot::DEAD_BIT ) ) {
       bot = -1;
       botObj = null;
     }

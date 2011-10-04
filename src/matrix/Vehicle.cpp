@@ -171,7 +171,7 @@ namespace oz
       if( bot == null || bot->parent == -1 ) {
         pilot = -1;
       }
-      else if( bot->flags & Bot::DEATH_BIT ) {
+      else if( bot->flags & Bot::DEAD_BIT ) {
         pilot = -1;
         bot->exit();
       }

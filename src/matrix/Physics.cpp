@@ -107,27 +107,12 @@ namespace oz
   {
     float systemMom = G_ACCEL * Timer::TICK_TIME;
 
-    if( dyn->flags & ( Object::FRICTLESS_BIT | Object::ON_LADDER_BIT ) ) {
-      // in air
-      if( dyn->flags & Object::FRICTLESS_BIT ) {
-        if( dyn->flags & Object::IN_WATER_BIT ) {
-          float frictionFactor = 0.5f * dyn->depth / dyn->dim.z;
-
-          // it's frictless only in air
-          dyn->momentum *= 1.0f - frictionFactor * WATER_FRICTION;
-          systemMom += frictionFactor * dyn->lift * Timer::TICK_TIME;
-        }
-
-        dyn->momentum.z += systemMom;
+    if( dyn->flags & Object::ON_LADDER_BIT ) {
+      if( dyn->momentum.sqL() <= STICK_VELOCITY ) {
+        dyn->momentum = Vec3::ZERO;
       }
-      // on ladder
       else {
-        if( dyn->momentum.sqL() <= STICK_VELOCITY ) {
-          dyn->momentum = Vec3::ZERO;
-        }
-        else {
-          dyn->momentum *= 1.0f - LADDER_FRICTION;
-        }
+        dyn->momentum *= 1.0f - LADDER_FRICTION;
       }
     }
     else {

@@ -55,8 +55,8 @@ namespace oz
   void Bot::onDestroy()
   {
     // only play death sound when an alive bot is destroyed but not when a body is destroyed
-    if( !( state & DEATH_BIT ) ) {
-      state |= DEATH_BIT;
+    if( !( state & DEAD_BIT ) ) {
+      state |= DEAD_BIT;
       addEvent( EVENT_DEATH, 1.0f );
     }
     Object::onDestroy();
@@ -103,7 +103,7 @@ namespace oz
 
     if( life < clazz->life / 2.0f ) {
       if( life > 0.0f ) {
-        if( !( state & DEATH_BIT ) ) {
+        if( !( state & DEAD_BIT ) ) {
           kill();
         }
         else {
@@ -443,7 +443,7 @@ namespace oz
       //               \----------
       //
       //
-      if( ( state & ( STEPPING_BIT | CLIMBING_BIT ) ) == STEPPING_BIT &&
+      if( ( state & ( STEPABLE_BIT | CLIMBING_BIT ) ) == STEPABLE_BIT &&
           stepRate <= clazz->stepRateLimit )
       {
         // check if bot's gonna hit a stair in the next frame
@@ -744,7 +744,7 @@ namespace oz
       flags |= WIDE_CULL_BIT;
       flags &= ~SOLID_BIT;
       life  = clazz->life / 2.0f - EPSILON;
-      state |= DEATH_BIT;
+      state |= DEAD_BIT;
       state &= ~GRAB_BIT;
       anim  = Anim::Type( Anim::DEATH_FALLBACK + Math::rand( 3 ) );
 

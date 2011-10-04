@@ -49,16 +49,16 @@ namespace ui
     gameStage.onCreate = "init_tutorial";
   }
 
-  static void loadSample( ui::Button* )
-  {
-    Stage::nextStage = &gameStage;
-    gameStage.onCreate = "init_sample";
-  }
-
   static void loadTest( ui::Button* )
   {
     Stage::nextStage = &gameStage;
     gameStage.onCreate = "init_test";
+  }
+
+  static void loadCvicek( ui::Button* )
+  {
+    Stage::nextStage = &gameStage;
+    gameStage.onCreate = "init_cvicek";
   }
 
   static void exit( ui::Button* )
@@ -66,8 +66,8 @@ namespace ui
     menuStage.doExit = true;
   }
 
-  MainMenu::MainMenu() : Frame( 0, 0, 400, 450, gettext( "Main Menu" ) ),
-      copyright( 10, 10, 380, 10, Font::SANS )
+  MainMenu::MainMenu() : Frame( 0, 0, 400, 450, OZ_APPLICATION_TITLE " v" OZ_APPLICATION_VERSION ),
+      copyright( 10, 10, 380, 9, Font::SANS )
   {
     x = ( camera.width - width ) / 2;
     y = ( camera.height - height ) / 2;
@@ -93,8 +93,8 @@ namespace ui
     }
 
     add( new Button( gettext( "Tutorial" ), loadTutorial, 300, 20 ), 50, -150 );
-    add( new Button( gettext( "Sample Mission" ), loadSample, 300, 20 ), 50, -180 );
     add( new Button( gettext( "Test World" ), loadTest, 300, 20 ), 50, -210 );
+    add( new Button( gettext( "Mission 1: Wine & Farm" ), loadCvicek, 300, 20 ), 50, -180 );
     add( new Button( gettext( "Exit" ), exit, 300, 20 ), 50, -270 );
   }
 

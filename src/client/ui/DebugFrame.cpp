@@ -27,7 +27,7 @@ namespace ui
   {
     flags = PINNED_BIT;
 
-    x = 2 * ( camera.width - width ) / 5;
+    x = ( camera.width - width ) / 2;
 
     int height = textHeight + 2;
 

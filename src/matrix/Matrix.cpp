@@ -19,14 +19,6 @@
 #include "matrix/Synapse.hpp"
 #include "matrix/Vehicle.hpp"
 
-#include "matrix/modules/PreferencesModule.hpp"
-#include "matrix/modules/FloraModule.hpp"
-
-#define OZ_REGISTER_MODULE( module ) \
-  modules.add( &module##Module ); \
-  module##Module.init(); \
-  lua.registerModule( &module##Module )
-
 namespace oz
 {
 
@@ -135,10 +127,6 @@ namespace oz
       }
     }
 
-    for( int i = 0; i < modules.length(); ++i ) {
-      modules[i]->update();
-    }
-
     // rotate freeing/waiting/available indices
     orbis.update();
   }
@@ -150,10 +138,6 @@ namespace oz
 
     orbis.read( istream );
 
-    for( int i = 0; i < modules.length(); ++i ) {
-      modules[i]->read( istream );
-    }
-
     log.unindent();
     log.println( "}" );
   }
@@ -164,10 +148,6 @@ namespace oz
     log.indent();
 
     orbis.write( ostream );
-
-    for( int i = 0; i < modules.length(); ++i ) {
-      modules[i]->write( ostream );
-    }
 
     log.unindent();
     log.println( "}" );
@@ -181,10 +161,6 @@ namespace oz
     orbis.load();
     synapse.load();
 
-    for( int i = 0; i < modules.length(); ++i ) {
-      modules[i]->load();
-    }
-
     log.unindent();
     log.println( "}" );
   }
@@ -193,11 +169,6 @@ namespace oz
   {
     log.println( "Unloading Matrix {" );
     log.indent();
-
-
-    for( int i = modules.length() - 1; i >= 0; --i ) {
-      modules[i]->unload();
-    }
 
     synapse.unload();
     orbis.unload();
@@ -215,9 +186,6 @@ namespace oz
     namePool.init();
     orbis.init();
 
-    OZ_REGISTER_MODULE( preferences );
-    OZ_REGISTER_MODULE( flora );
-
     log.unindent();
     log.println( "}" );
   }
@@ -226,12 +194,6 @@ namespace oz
   {
     log.println( "Freeing Matrix {" );
     log.indent();
-
-    for( int i = modules.length() - 1; i >= 0; --i ) {
-      modules[i]->free();
-    }
-    modules.clear();
-    modules.dealloc();
 
     orbis.free();
     namePool.free();

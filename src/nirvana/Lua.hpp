@@ -59,7 +59,11 @@ namespace nirvana
       void read( InputStream* istream );
       void write( OutputStream* ostream );
 
-      void registerModule( const Module* module );
+      void registerFunction( const char* name, LuaAPI func );
+      void registerConstant( const char* name, bool value );
+      void registerConstant( const char* name, int value );
+      void registerConstant( const char* name, float value );
+      void registerConstant( const char* name, const char* value );
 
       void init();
       void free();
@@ -155,7 +159,7 @@ namespace nirvana
       OZ_LUA_API( ozObjGetDim );
       OZ_LUA_API( ozObjGetFlags );
       OZ_LUA_API( ozObjGetOldFlags );
-      OZ_LUA_API( ozObjGetTypeName );
+      OZ_LUA_API( ozObjGetClassName );
       OZ_LUA_API( ozObjGetLife );
 
       OZ_LUA_API( ozObjVectorFromSelf );
@@ -198,13 +202,15 @@ namespace nirvana
        */
 
       OZ_LUA_API( ozBotGetName );
+
+      OZ_LUA_API( ozBotGetState );
       OZ_LUA_API( ozBotGetEyePos );
       OZ_LUA_API( ozBotGetH );
       OZ_LUA_API( ozBotGetV );
       OZ_LUA_API( ozBotGetDir );
       OZ_LUA_API( ozBotGetStamina );
 
-      OZ_LUA_API( ozBotStateIsRunning );
+      OZ_LUA_API( ozBotIsRunning );
 
       OZ_LUA_API( ozBotVectorFromSelfEye );
       OZ_LUA_API( ozBotDirectionFromSelfEye );
@@ -236,6 +242,8 @@ namespace nirvana
       OZ_LUA_API( ozSelfGetLift );
 
       OZ_LUA_API( ozSelfGetName );
+
+      OZ_LUA_API( ozSelfGetState );
       OZ_LUA_API( ozSelfGetEyePos );
       OZ_LUA_API( ozSelfGetH );
       OZ_LUA_API( ozSelfSetH );
@@ -261,9 +269,9 @@ namespace nirvana
       OZ_LUA_API( ozSelfActionEject );
       OZ_LUA_API( ozSelfActionSuicide );
 
-      OZ_LUA_API( ozSelfStateIsRunning );
-      OZ_LUA_API( ozSelfStateSetRunning );
-      OZ_LUA_API( ozSelfStateToggleRunning );
+      OZ_LUA_API( ozSelfIsRunning );
+      OZ_LUA_API( ozSelfSetRunning );
+      OZ_LUA_API( ozSelfToggleRunning );
 
       OZ_LUA_API( ozSelfBindEvents );
       OZ_LUA_API( ozSelfBindItems );

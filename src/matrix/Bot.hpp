@@ -57,32 +57,34 @@ namespace oz
       static const int EVENT_FLIP               = 10;
       static const int EVENT_DEATH              = 11;
 
-      // bot is controlled by a player, nirvana shouldn't bind a mind to it
-      static const int PLAYER_BIT               = 0x00000001;
-      static const int DEATH_BIT                = 0x00000002;
+      static const int DEAD_BIT                 = 0x00000001;
+      static const int MECHANICAL_BIT           = 0x00000002;
+      static const int INCARNATABLE_BIT         = 0x00000004;
+      // bot is currently controlled by player, nirvana shouldn't process its mind
+      static const int PLAYER_BIT               = 0x00000008;
 
       // can step over obstacles, e.g. walk up the stairs
-      static const int STEPPING_BIT             = 0x00000004;
-      static const int CROUCHING_BIT            = 0x00000008;
-      static const int JUMP_SCHED_BIT           = 0x00000010;
-      static const int RUNNING_BIT              = 0x00000020;
-      static const int SHOOTING_BIT             = 0x00000040;
-      static const int MOVING_BIT               = 0x00000080;
-      static const int GRAB_BIT                 = 0x00000100;
+      static const int STEPABLE_BIT             = 0x00000100;
+      static const int CROUCHING_BIT            = 0x00000200;
+      static const int RUNNING_BIT              = 0x00000400;
+      static const int SHOOTING_BIT             = 0x00000800;
+      static const int MOVING_BIT               = 0x00001000;
+      static const int GRAB_BIT                 = 0x00002000;
 
       // current state bits
-      static const int GROUNDED_BIT             = 0x00000200;
-      static const int ON_STAIRS_BIT            = 0x00000400;
-      static const int CLIMBING_BIT             = 0x00000800;
-      static const int SWIMMING_BIT             = 0x00001000;
-      static const int SUBMERGED_BIT            = 0x00002000;
+      static const int JUMP_SCHED_BIT           = 0x00004000;
+      static const int GROUNDED_BIT             = 0x00008000;
+      static const int ON_STAIRS_BIT            = 0x00010000;
+      static const int CLIMBING_BIT             = 0x00020000;
+      static const int SWIMMING_BIT             = 0x00040000;
+      static const int SUBMERGED_BIT            = 0x00080000;
 
-      static const int GESTURE0_BIT             = 0x00010000;
-      static const int GESTURE1_BIT             = 0x00020000;
-      static const int GESTURE2_BIT             = 0x00040000;
-      static const int GESTURE3_BIT             = 0x00080000;
-      static const int GESTURE4_BIT             = 0x00100000;
-      static const int GESTURE_ALL_BIT          = 0x00200000;
+      static const int GESTURE0_BIT             = 0x01000000;
+      static const int GESTURE1_BIT             = 0x02000000;
+      static const int GESTURE2_BIT             = 0x04000000;
+      static const int GESTURE3_BIT             = 0x08000000;
+      static const int GESTURE4_BIT             = 0x10000000;
+      static const int GESTURE_ALL_BIT          = 0x20000000;
 
       static const float HIT_HARD_THRESHOLD;
       static const float WOUNDED_THRESHOLD;

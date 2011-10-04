@@ -111,7 +111,7 @@ namespace client
       tf.model.rotateZ( h );
     }
 
-    if( bot->state & Bot::DEATH_BIT ) {
+    if( bot->state & Bot::DEAD_BIT ) {
       shader.colour.w = min( bot->life * 8.0f / clazz->life, 1.0f );
       if( shader.colour.w != 1.0f ) {
         glEnable( GL_BLEND );

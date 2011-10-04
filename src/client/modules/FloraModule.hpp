@@ -11,10 +11,12 @@
 
 #include "stable.hpp"
 
-#include "matrix/Module.hpp"
-#include "matrix/Lua.hpp"
+#include "client/Module.hpp"
+#include "client/Lua.hpp"
 
 namespace oz
+{
+namespace client
 {
 
   class FloraModule : public Module
@@ -37,7 +39,7 @@ namespace oz
 
       void seed();
 
-      virtual void registerLua( lua_State* l, bool isReadOnly ) const;
+      virtual void init();
 
     private:
 
@@ -52,4 +54,5 @@ namespace oz
 
   extern FloraModule floraModule;
 
+}
 }
