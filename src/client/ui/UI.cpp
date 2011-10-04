@@ -28,8 +28,8 @@ namespace ui
   UI ui;
 
   UI::UI() : root( null ), loadingScreen( null ), hudArea( null ), strategicArea( null ),
-      inventoryMenu( null ), browseMenu( null ), musicPlayer( null ), buildMenu( null ),
-      debugFrame( null )
+      inventoryMenu( null ), browseMenu( null ), infoFrame( null ), galileoFrame( null ),
+      musicPlayer( null ), buildMenu( null ), debugFrame( null )
   {}
 
   void UI::showLoadingScreen( bool doShow )
@@ -107,6 +107,7 @@ namespace ui
       inventoryMenu = new InventoryMenu( null );
       browseMenu    = new InventoryMenu( inventoryMenu );
       infoFrame     = new InfoFrame();
+      galileoFrame  = new GalileoFrame();
       musicPlayer   = new MusicPlayer();
       buildMenu     = showBuild ? new BuildMenu() : null;
       debugFrame    = showDebug ? new DebugFrame() : null;
@@ -117,6 +118,7 @@ namespace ui
       delete inventoryMenu;
       delete browseMenu;
       delete infoFrame;
+      delete galileoFrame;
       delete musicPlayer;
       delete buildMenu;
       delete debugFrame;
@@ -126,6 +128,7 @@ namespace ui
       inventoryMenu = null;
       browseMenu    = null;
       infoFrame     = null;
+      galileoFrame  = null;
       musicPlayer   = null;
       buildMenu     = null;
       debugFrame    = null;
@@ -138,6 +141,7 @@ namespace ui
     root->add( inventoryMenu );
     root->add( browseMenu );
     root->add( infoFrame );
+    root->add( galileoFrame );
     root->add( musicPlayer );
 
     if( showBuild ) {
@@ -175,6 +179,10 @@ namespace ui
     if( infoFrame != null ) {
       root->remove( infoFrame );
       infoFrame = null;
+    }
+    if( galileoFrame != null ) {
+      root->remove( galileoFrame );
+      galileoFrame = null;
     }
     if( browseMenu != null ) {
       root->remove( browseMenu );

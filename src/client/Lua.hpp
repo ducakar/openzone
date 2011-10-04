@@ -79,9 +79,9 @@ namespace client
       OZ_LUA_API( ozOrbisAddPart );
       OZ_LUA_API( ozOrbisGenParts );
 
-      OZ_LUA_API( ozOrbisBindAllOverlaps );
-      OZ_LUA_API( ozOrbisBindStrOverlaps );
-      OZ_LUA_API( ozOrbisBindObjOverlaps );
+      OZ_LUA_API( ozBindAllOverlaps );
+      OZ_LUA_API( ozBindStrOverlaps );
+      OZ_LUA_API( ozBindObjOverlaps );
 
       /*
        * Terra

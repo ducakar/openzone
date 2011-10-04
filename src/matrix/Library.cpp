@@ -244,17 +244,35 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
-      if( !file->hasExtension( "wav" ) ) {
+    foreach( file, dirList.iter() ) {
+      if( file->getType() != File::DIRECTORY ) {
         continue;
       }
 
-      String name = file->baseName();
+      subDir.setPath( file->path() );
+      if( !subDir.ls( &subDirList ) ) {
+        free();
 
-      log.println( "%s", name.cstr() );
+        log.println( "Cannot open directory '%s'", subDir.path() );
+        log.unindent();
+        log.println( "}" );
 
-      soundIndices.add( name, sounds.length() );
-      sounds.add( Resource( name, file->path() ) );
+        throw Exception( "Library initialisation failure" );
+      }
+
+      foreach( file, subDirList.citer() ) {
+        if( !file->hasExtension( "wav" ) ) {
+          continue;
+        }
+
+        String name = subDir.name() + String( "/" ) + file->baseName();
+
+        log.println( "%s", name.cstr() );
+
+        soundIndices.add( name, sounds.length() );
+        sounds.add( Resource( name, file->path() ) );
+      }
+      subDirList.dealloc();
     }
     dirList.dealloc();
 
@@ -621,17 +639,35 @@ namespace oz
       log.println( "}" );
       throw Exception( "Library initialisation failure" );
     }
-    foreach( file, dirList.citer() ) {
-      if( !file->hasExtension( "wav" ) ) {
+    foreach( file, dirList.iter() ) {
+      if( file->getType() != File::DIRECTORY ) {
         continue;
       }
 
-      String name = file->baseName();
+      subDir.setPath( file->path() );
+      if( !subDir.ls( &subDirList ) ) {
+        free();
 
-      log.println( "%s", name.cstr() );
+        log.println( "Cannot open directory '%s'", subDir.path() );
+        log.unindent();
+        log.println( "}" );
 
-      soundIndices.add( name, sounds.length() );
-      sounds.add( Resource( name, file->path() ) );
+        throw Exception( "Library initialisation failure" );
+      }
+
+      foreach( file, subDirList.citer() ) {
+        if( !file->hasExtension( "wav" ) ) {
+          continue;
+        }
+
+        String name = subDir.name() + String( "/" ) + file->baseName();
+
+        log.println( "%s", name.cstr() );
+
+        soundIndices.add( name, sounds.length() );
+        sounds.add( Resource( name, file->path() ) );
+      }
+      subDirList.dealloc();
     }
     dirList.dealloc();
 

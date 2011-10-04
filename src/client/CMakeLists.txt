@@ -44,6 +44,7 @@ add_library( client STATIC
   ui/DebugFrame.cpp
   ui/Font.cpp
   ui/Frame.cpp
+  ui/GalileoFrame.cpp
   ui/HudArea.cpp
   ui/InfoFrame.cpp
   ui/InventoryMenu.cpp

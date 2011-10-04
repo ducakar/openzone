@@ -60,7 +60,7 @@ namespace oz
 
       virtual void onDestroy();
       virtual void onUpdate();
-      virtual void onUse( Bot* user );
+      virtual bool onUse( Bot* user );
 
     public:
 

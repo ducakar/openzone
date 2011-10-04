@@ -278,7 +278,7 @@ namespace oz
     oldState   = state;
   }
 
-  void Vehicle::onUse( Bot* user )
+  bool Vehicle::onUse( Bot* user )
   {
     if( pilot == -1 ) {
       pilot = user->index;
@@ -286,7 +286,10 @@ namespace oz
       user->h = h;
       user->v = v;
       user->enter( index );
+
+      return true;
     }
+    return false;
   }
 
   Vehicle::Vehicle() : actions( 0 ), oldActions( 0 ), weapon( 0 ), pilot( -1 )

@@ -337,9 +337,9 @@ namespace client
       hard_assert( nModels <= 99 );
       char keyBuffer[] = "model  ";
 
-      for( int i = 0; i < nModels - 1; ++i ) {
-        keyBuffer[5] = char( '0' + i / 10 );
-        keyBuffer[6] = char( '0' + i % 10 );
+      for( int i = 1; i < nModels; ++i ) {
+        keyBuffer[5] = char( '0' + ( i - 1 ) / 10 );
+        keyBuffer[6] = char( '0' + ( i - 1 ) % 10 );
         String keyName = keyBuffer;
 
         bspConfig.get( keyName + ".move.x", 0.0f );

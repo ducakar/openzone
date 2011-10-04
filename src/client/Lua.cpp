@@ -125,9 +125,9 @@ namespace client
     OZ_LUA_FUNC( ozOrbisAddPart );
     OZ_LUA_FUNC( ozOrbisGenParts );
 
-    OZ_LUA_FUNC( ozOrbisBindAllOverlaps );
-    OZ_LUA_FUNC( ozOrbisBindStrOverlaps );
-    OZ_LUA_FUNC( ozOrbisBindObjOverlaps );
+    OZ_LUA_FUNC( ozBindAllOverlaps );
+    OZ_LUA_FUNC( ozBindStrOverlaps );
+    OZ_LUA_FUNC( ozBindObjOverlaps );
 
     /*
      * Terra
@@ -622,7 +622,7 @@ namespace client
     return 0;
   }
 
-  int Lua::ozOrbisBindAllOverlaps( lua_State* l )
+  int Lua::ozBindAllOverlaps( lua_State* l )
   {
     ARG( 6 );
 
@@ -637,7 +637,7 @@ namespace client
     return 0;
   }
 
-  int Lua::ozOrbisBindStrOverlaps( lua_State* l )
+  int Lua::ozBindStrOverlaps( lua_State* l )
   {
     ARG( 6 );
 
@@ -650,7 +650,7 @@ namespace client
     return 0;
   }
 
-  int Lua::ozOrbisBindObjOverlaps( lua_State* l )
+  int Lua::ozBindObjOverlaps( lua_State* l )
   {
     ARG( 6 );
 
