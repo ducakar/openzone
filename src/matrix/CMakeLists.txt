@@ -26,8 +26,5 @@ add_library( matrix STATIC
   Weapon.cpp
   WeaponClass.cpp
   common.cpp
-  luaapi.cpp
-  modules/FloraModule.cpp
-  modules/PreferencesModule.cpp
 )
 add_dependencies( matrix pch )

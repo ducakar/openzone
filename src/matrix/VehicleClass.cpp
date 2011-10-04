@@ -35,7 +35,6 @@ namespace oz
     OZ_CLASS_SET_FLAG( Object::HIT_FUNC_BIT,       "flag.onHit",        false );
     OZ_CLASS_SET_FLAG( Object::SOLID_BIT,          "flag.solid",        true  );
     OZ_CLASS_SET_FLAG( Object::CYLINDER_BIT,       "flag.cylinder",     true  );
-    OZ_CLASS_SET_FLAG( Object::FRICTLESS_BIT,      "flag.frictless",    false );
     OZ_CLASS_SET_FLAG( Object::NO_DRAW_BIT,        "flag.noDraw",       false );
     OZ_CLASS_SET_FLAG( Object::WIDE_CULL_BIT,      "flag.wideCull",     false );
 

@@ -9,15 +9,17 @@
 
 #include "stable.hpp"
 
-#include "matrix/modules/FloraModule.hpp"
+#include "client/modules/FloraModule.hpp"
 
 #include "matrix/Library.hpp"
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 
-#include "matrix/luaapi.hpp"
+#include "luamacros.hpp"
 
 namespace oz
+{
+namespace client
 {
 
   // plants/m2
@@ -37,15 +39,15 @@ namespace oz
       return;
     }
     else if( pos.z > 70.0f ) {
-      type = "smreka";
+      type = "pine";
       pos.z += 7.0f;
     }
     else if( pos.z > 30.0f ) {
-      type = "drevo";
+      type = "tree";
       pos.z += 3.0f;
     }
     else if( pos.z > 2.0f ) {
-      type = "palma";
+      type = "palm";
       pos.z += 8.0f;
     }
     else {
@@ -88,17 +90,14 @@ namespace oz
     }
   }
 
-  void FloraModule::registerLua( lua_State* l, bool isReadOnly ) const
+  void FloraModule::init()
   {
     OZ_LUA_FUNC( ozFloraGetDensity );
+    OZ_LUA_FUNC( ozFloraSetDensity );
     OZ_LUA_FUNC( ozFloraGetSpacing );
+    OZ_LUA_FUNC( ozFloraSetSpacing );
     OZ_LUA_FUNC( ozFloraGetNumber );
-
-    if( !isReadOnly ) {
-      OZ_LUA_FUNC( ozFloraSetSpacing );
-      OZ_LUA_FUNC( ozFloraSetDensity );
-      OZ_LUA_FUNC( ozFloraSeed );
-    }
+    OZ_LUA_FUNC( ozFloraSeed );
   }
 
   int FloraModule::ozFloraGetDensity( lua_State* l )
@@ -154,4 +153,5 @@ namespace oz
     return 0;
   }
 
+}
 }

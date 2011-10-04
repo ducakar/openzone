@@ -114,9 +114,10 @@ namespace oz
 
     clazz->state = 0;
 
-    OZ_CLASS_SET_STATE( Bot::STEPPING_BIT,  "state.stepping",  true );
-    OZ_CLASS_SET_STATE( Bot::CROUCHING_BIT, "state.crouching", false );
-    OZ_CLASS_SET_STATE( Bot::RUNNING_BIT,   "state.running",   true );
+    OZ_CLASS_SET_STATE( Bot::MECHANICAL_BIT, "state.mechanical", false );
+    OZ_CLASS_SET_STATE( Bot::STEPABLE_BIT,   "state.stepable",   true );
+    OZ_CLASS_SET_STATE( Bot::CROUCHING_BIT,  "state.crouching",  false );
+    OZ_CLASS_SET_STATE( Bot::RUNNING_BIT,    "state.running",    true );
 
     clazz->weaponItem           = config->get( "weaponItem", -1 );
 

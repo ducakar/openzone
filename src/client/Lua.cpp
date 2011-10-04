@@ -17,14 +17,13 @@
 #include "matrix/Collider.hpp"
 #include "matrix/Synapse.hpp"
 #include "matrix/Lua.hpp"
-#include "matrix/Module.hpp"
 
 #include "nirvana/Nirvana.hpp"
 #include "nirvana/Memo.hpp"
 
 #include "client/Camera.hpp"
 
-#include "matrix/luaapi.hpp"
+#include "luamacros.hpp"
 
 using namespace oz::nirvana;
 
@@ -63,9 +62,33 @@ namespace client
     }
   }
 
-  void Lua::registerModule( const Module* module )
+  void Lua::registerFunction( const char* name, LuaAPI func )
   {
-    module->registerLua( l, false );
+    lua_register( l, name, func );
+  }
+
+  void Lua::registerConstant( const char* name, bool value )
+  {
+    pushbool( value );
+    setglobal( name );
+  }
+
+  void Lua::registerConstant( const char* name, int value )
+  {
+    pushint( value );
+    setglobal( name );
+  }
+
+  void Lua::registerConstant( const char* name, float value )
+  {
+    pushfloat( value );
+    setglobal( name );
+  }
+
+  void Lua::registerConstant( const char* name, const char* value )
+  {
+    pushstring( value );
+    setglobal( name );
   }
 
   void Lua::init()
@@ -90,8 +113,6 @@ namespace client
     OZ_LUA_FUNC( ozPrintln );
     OZ_LUA_FUNC( ozException );
     OZ_LUA_FUNC( ozGettext );
-
-    OZ_LUA_FUNC( ozMatrixCall );
 
     /*
      * Orbis
@@ -183,7 +204,7 @@ namespace client
     OZ_LUA_FUNC( ozObjGetDim );
     OZ_LUA_FUNC( ozObjGetFlags );
     OZ_LUA_FUNC( ozObjGetOldFlags );
-    OZ_LUA_FUNC( ozObjGetTypeName );
+    OZ_LUA_FUNC( ozObjGetClassName );
     OZ_LUA_FUNC( ozObjGetLife );
     OZ_LUA_FUNC( ozObjSetLife );
     OZ_LUA_FUNC( ozObjAddLife );
@@ -241,6 +262,7 @@ namespace client
     OZ_LUA_FUNC( ozBotGetMindFunc );
     OZ_LUA_FUNC( ozBotSetMindFunc );
 
+    OZ_LUA_FUNC( ozBotGetState );
     OZ_LUA_FUNC( ozBotGetEyePos );
     OZ_LUA_FUNC( ozBotGetH );
     OZ_LUA_FUNC( ozBotSetH );
@@ -268,9 +290,9 @@ namespace client
     OZ_LUA_FUNC( ozBotActionEject );
     OZ_LUA_FUNC( ozBotActionSuicide );
 
-    OZ_LUA_FUNC( ozBotStateIsRunning );
-    OZ_LUA_FUNC( ozBotStateSetRunning );
-    OZ_LUA_FUNC( ozBotStateToggleRunning );
+    OZ_LUA_FUNC( ozBotIsRunning );
+    OZ_LUA_FUNC( ozBotSetRunning );
+    OZ_LUA_FUNC( ozBotToggleRunning );
 
     OZ_LUA_FUNC( ozBotSetWeaponItem );
 
@@ -372,8 +394,9 @@ namespace client
     OZ_LUA_CONST( "OZ_OBJECT_HIT_FUNC_BIT",         Object::HIT_FUNC_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
-    OZ_LUA_CONST( "OZ_OBJECT_USE_FUNC_BIT",         Object::USE_FUNC_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_UPDATE_FUNC_BIT",      Object::UPDATE_FUNC_BIT );
 
+    OZ_LUA_CONST( "OZ_OBJECT_DEVICE_BIT",           Object::DEVICE_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_MODEL_BIT",            Object::MODEL_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_AUDIO_BIT",            Object::AUDIO_BIT );
 
@@ -382,6 +405,7 @@ namespace client
     OZ_LUA_CONST( "OZ_OBJECT_DISABLED_BIT",         Object::DISABLED_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_HIT_BIT",              Object::HIT_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_FRICTING_BIT",         Object::FRICTING_BIT );
+    OZ_LUA_CONST( "OZ_OBJECT_BELOW_BIT",            Object::BELOW_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_ON_FLOOR_BIT",         Object::ON_FLOOR_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_ON_SLICK_BIT",         Object::ON_SLICK_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_IN_WATER_BIT",         Object::IN_WATER_BIT );
@@ -390,11 +414,23 @@ namespace client
     OZ_LUA_CONST( "OZ_OBJECT_CYLINDER_BIT",         Object::CYLINDER_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_CLIMBER_BIT",          Object::CLIMBER_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_PUSHER_BIT",           Object::PUSHER_BIT );
-    OZ_LUA_CONST( "OZ_OBJECT_FRICTLESS_BIT",        Object::FRICTLESS_BIT );
 
     OZ_LUA_CONST( "OZ_OBJECT_NO_DRAW_BIT",          Object::NO_DRAW_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_WIDE_CULL_BIT",        Object::WIDE_CULL_BIT );
     OZ_LUA_CONST( "OZ_OBJECT_RANDOM_HEADING_BIT",   Object::RANDOM_HEADING_BIT );
+
+    OZ_LUA_CONST( "OZ_BOT_DEAD_BIT",                Bot::DEAD_BIT );
+    OZ_LUA_CONST( "OZ_BOT_MECHANICAL_BIT",          Bot::MECHANICAL_BIT );
+    OZ_LUA_CONST( "OZ_BOT_INCARNATABLE_BIT",        Bot::INCARNATABLE_BIT );
+    OZ_LUA_CONST( "OZ_BOT_PLAYER_BIT",              Bot::PLAYER_BIT );
+
+    OZ_LUA_CONST( "OZ_BOT_STEPABLE_BIT",            Bot::STEPABLE_BIT );
+    OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
+    OZ_LUA_CONST( "OZ_BOT_RUNNING_BIT",             Bot::RUNNING_BIT );
+    OZ_LUA_CONST( "OZ_BOT_SHOOTING_BIT",            Bot::SHOOTING_BIT );
+    OZ_LUA_CONST( "OZ_BOT_MOVING_BIT",              Bot::MOVING_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GRAB_BIT",                Bot::GRAB_BIT );
+    OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
 
     DArray<File> luaFiles;
     File luaDir( "lua/client" );
@@ -465,14 +501,6 @@ namespace client
 
     pushstring( gettext( tostring( 1 ) ) );
     return 1;
-  }
-
-  int Lua::ozMatrixCall( lua_State* l )
-  {
-    ARG( 1 );
-
-    oz::lua.staticCall( tostring( 1 ) );
-    return 0;
   }
 
   /*
@@ -1041,7 +1069,7 @@ namespace client
     ARG( 0 );
 
     const Bot* bot = static_cast<const Bot*>( lua.obj );
-    pushbool( bot != null && ( bot->flags & Object::BOT_BIT ) && !( bot->state & Bot::DEATH_BIT ) );
+    pushbool( bot != null && ( bot->flags & Object::BOT_BIT ) && !( bot->state & Bot::DEAD_BIT ) );
     return 1;
   }
 
@@ -1129,23 +1157,25 @@ namespace client
 
   int Lua::ozObjGetFlags( lua_State* l )
   {
-    ARG( 0 );
+    ARG( 1 );
     OBJ_NOT_NULL();
 
-    pushint( lua.obj->flags );
+    int mask = toint( 1 );
+    pushbool( ( lua.obj->flags & mask ) != 0 );
     return 1;
   }
 
   int Lua::ozObjGetOldFlags( lua_State* l )
   {
-    ARG( 0 );
+    ARG( 1 );
     OBJ_NOT_NULL();
 
-    pushint( lua.obj->oldFlags );
+    int mask = toint( 1 );
+    pushbool( ( lua.obj->oldFlags & mask ) != 0 );
     return 1;
   }
 
-  int Lua::ozObjGetTypeName( lua_State* l )
+  int Lua::ozObjGetClassName( lua_State* l )
   {
     ARG( 0 );
     OBJ_NOT_NULL();
@@ -1618,6 +1648,17 @@ namespace client
     return 0;
   }
 
+  int Lua::ozBotGetState( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_BOT();
+
+    int mask = toint( 1 );
+    pushbool( ( bot->state & mask ) != 0 );
+    return 1;
+  }
+
   int Lua::ozBotGetEyePos( lua_State* l )
   {
     ARG( 0 );
@@ -1890,7 +1931,7 @@ namespace client
     return 0;
   }
 
-  int Lua::ozBotStateIsRunning( lua_State* l )
+  int Lua::ozBotIsRunning( lua_State* l )
   {
     ARG( 0 );
     OBJ_NOT_NULL();
@@ -1900,7 +1941,7 @@ namespace client
     return 1;
   }
 
-  int Lua::ozBotStateSetRunning( lua_State* l )
+  int Lua::ozBotSetRunning( lua_State* l )
   {
     ARG( 0 );
     OBJ_NOT_NULL();
@@ -1915,7 +1956,7 @@ namespace client
     return 0;
   }
 
-  int Lua::ozBotStateToggleRunning( lua_State* l )
+  int Lua::ozBotToggleRunning( lua_State* l )
   {
     ARG( 0 );
     OBJ_NOT_NULL();

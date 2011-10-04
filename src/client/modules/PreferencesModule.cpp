@@ -9,11 +9,13 @@
 
 #include "stable.hpp"
 
-#include "matrix/modules/PreferencesModule.hpp"
+#include "client/modules/PreferencesModule.hpp"
 
-#include "matrix/luaapi.hpp"
+#include "luamacros.hpp"
 
 namespace oz
+{
+namespace client
 {
 
   PreferencesModule preferencesModule;
@@ -24,10 +26,7 @@ namespace oz
     userName = userName == null ? "Player" : userName;
 
     playerName = config.getSet( "modules.preferences.playerName", userName );
-  }
 
-  void PreferencesModule::registerLua( lua_State* l, bool ) const
-  {
     OZ_LUA_FUNC( ozPreferencesGetPlayerName );
   }
 
@@ -39,4 +38,5 @@ namespace oz
     return 1;
   }
 
+}
 }

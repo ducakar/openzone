@@ -68,7 +68,7 @@ namespace client
       if( event->id >= 0 && samples[event->id] != -1 ) {
         hard_assert( 0.0f <= event->intensity );
 
-        if( event->id == Object::EVENT_DAMAGE && ( bot->state & Bot::DEATH_BIT ) ) {
+        if( event->id == Object::EVENT_DAMAGE && ( bot->state & Bot::DEAD_BIT ) ) {
           continue;
         }
 

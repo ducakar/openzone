@@ -25,6 +25,12 @@
 #include "client/Lua.hpp"
 #include "client/MenuStage.hpp"
 
+#include "client/modules/PreferencesModule.hpp"
+#include "client/modules/FloraModule.hpp"
+
+#define OZ_REGISTER_MODULE( module ) \
+  modules.add( &module##Module )
+
 namespace oz
 {
 namespace client
@@ -218,6 +224,10 @@ namespace client
     camera.update();
     ui::ui.update();
 
+    for( int i = 0; i < modules.length(); ++i ) {
+      modules[i]->update();
+    }
+
     timer.uiMillis += SDL_GetTicks() - beginTime;
 
     SDL_SemPost( auxSemaphore );
@@ -287,11 +297,15 @@ namespace client
 
     log.printEnd( " OK" );
 
-    InputStream is = buffer.inputStream();
+    InputStream istream = buffer.inputStream();
 
-    matrix.read( &is );
-    nirvana.read( &is );
-    camera.read( &is );
+    matrix.read( &istream );
+    nirvana.read( &istream );
+    camera.read( &istream );
+
+    for( int i = 0; i < modules.length(); ++i ) {
+      modules[i]->read( &istream );
+    }
 
     return true;
   }
@@ -299,14 +313,18 @@ namespace client
   void GameStage::write( const char* file ) const
   {
     Buffer buffer( 4 * 1024 * 1024 );
-    OutputStream os = buffer.outputStream();
+    OutputStream ostream = buffer.outputStream();
 
-    matrix.write( &os );
-    nirvana.write( &os );
-    camera.write( &os );
+    matrix.write( &ostream );
+    nirvana.write( &ostream );
+    camera.write( &ostream );
+
+    for( int i = 0; i < modules.length(); ++i ) {
+      modules[i]->write( &ostream );
+    }
 
     log.print( "Saving state to %s ...", file );
-    buffer.write( file, os.length() );
+    buffer.write( file, ostream.length() );
     log.printEnd( " OK" );
   }
 
@@ -323,6 +341,10 @@ namespace client
 
     matrix.load();
     nirvana.load();
+
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->load();
+    }
 
     network.connect();
 
@@ -413,6 +435,10 @@ namespace client
 
     network.disconnect();
 
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->unload();
+    }
+
     nirvana.unload();
     matrix.unload();
 
@@ -430,22 +456,25 @@ namespace client
   {
     isLoaded = false;
 
+    log.println( "Initialising GameStage {" );
+    log.indent();
+
     AUTOSAVE_FILE = config.get( "dir.rc", "" ) + String( "/autosave.ozState" );
     QUICKSAVE_FILE = config.get( "dir.rc", "" ) + String( "/quicksave.ozState" );
 
     onCreate = "";
     stateFile = "";
 
-    log.println( "Initialising GameStage {" );
-    log.indent();
+    OZ_REGISTER_MODULE( preferences );
+    OZ_REGISTER_MODULE( flora );
 
     matrix.init();
     nirvana.init();
     loader.init();
     lua.init();
 
-    foreach( module, matrix.modules.citer() ) {
-      lua.registerModule( *module );
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->init();
     }
 
     log.unindent();
@@ -456,6 +485,12 @@ namespace client
   {
     log.println( "Freeing GameStage {" );
     log.indent();
+
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->free();
+    }
+    modules.clear();
+    modules.dealloc();
 
     lua.free();
     loader.free();

@@ -13,6 +13,7 @@
 
 #include "client/Stage.hpp"
 #include "client/Proxy.hpp"
+#include "client/Module.hpp"
 
 namespace oz
 {
@@ -34,14 +35,14 @@ namespace client
 
     private:
 
-      SDL_Thread*   auxThread;
+      SDL_Thread*     auxThread;
+      SDL_sem*        mainSemaphore;
+      SDL_sem*        auxSemaphore;
+      volatile bool   isAlive;
 
-      SDL_sem*      mainSemaphore;
-      SDL_sem*      auxSemaphore;
+      bool            isLoaded;
 
-      volatile bool isAlive;
-
-      bool          isLoaded;
+      Vector<Module*> modules;
 
       static int auxMain( void* );
 

@@ -15,6 +15,8 @@
 
 namespace oz
 {
+namespace client
+{
 
   class Module
   {
@@ -49,4 +51,5 @@ namespace oz
 
   };
 
+}
 }

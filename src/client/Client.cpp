@@ -412,7 +412,6 @@ namespace client
         log.println( "Invalid configuration file version, will be overwritten on exit."
                      "If you experience any trouble, delete it." );
         config.add( "_version", OZ_APPLICATION_VERSION );
-        config.add( "gameStage.autoload", "false" );
       }
     }
     else {

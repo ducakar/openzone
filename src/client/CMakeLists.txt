@@ -56,6 +56,8 @@ add_library( client STATIC
   ui/StrategicArea.cpp
   ui/Text.cpp
   ui/UI.cpp
+  modules/FloraModule.cpp
+  modules/PreferencesModule.cpp
 )
 add_dependencies( client nirvana matrix pch )
 
