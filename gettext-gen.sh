@@ -2,7 +2,7 @@
 
 sources='src/*/*.hpp src/*/*/*.hpp src/*/*.cpp src/*/*/*.cpp'
 classes='share/openzone/class/*.rc'
-output='openzone.pot'
+output='share/locale/openzone.pot'
 
 rm -rf $output
 xgettext --omit-header -c++ -s -d openzone -o $output $sources

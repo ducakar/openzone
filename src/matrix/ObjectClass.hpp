@@ -31,8 +31,8 @@ namespace oz
 
     public:
 
-      // 00 <= AUDIOARGS <= 99 (two decimal digits)
-      static const int AUDIO_SAMPLES = 32;
+      // 00 <= AUDIO_SAMPLES <= 99 (two decimal digits)
+      static const int AUDIO_SAMPLES = 16;
 
       typedef ObjectClass* ( * InitFunc )( const Config* config );
 

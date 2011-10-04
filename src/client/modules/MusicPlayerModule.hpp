@@ -1,5 +1,5 @@
 /*
- *  PreferencesModule.hpp
+ *  MusicPlayerModule.hpp
  *
  *  [description]
  *
@@ -14,28 +14,29 @@
 #include "client/Module.hpp"
 #include "client/Lua.hpp"
 
+#include "client/modules/MusicPlayer.hpp"
+
 namespace oz
 {
 namespace client
 {
 
-  class PreferencesModule : public Module
+  class MusicPlayerModule : public Module
   {
     private:
 
-      String playerName;
+      ui::MusicPlayer* musicPlayer;
 
     public:
 
-      virtual void init();
+      MusicPlayerModule();
 
-    private:
-
-      OZ_LUA_API( ozPreferencesGetPlayerName );
+      virtual void load();
+      virtual void unload();
 
   };
 
-  extern PreferencesModule preferencesModule;
+  extern MusicPlayerModule musicPlayerModule;
 
 }
 }

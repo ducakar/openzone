@@ -25,8 +25,10 @@
 #include "client/Lua.hpp"
 #include "client/MenuStage.hpp"
 
-#include "client/modules/PreferencesModule.hpp"
+#include "client/modules/ProfileModule.hpp"
 #include "client/modules/FloraModule.hpp"
+#include "client/modules/MusicPlayerModule.hpp"
+#include "client/modules/GalileoModule.hpp"
 
 #define OZ_REGISTER_MODULE( module ) \
   modules.add( &module##Module )
@@ -342,10 +344,6 @@ namespace client
     matrix.load();
     nirvana.load();
 
-    for( int i = modules.length() - 1; i >= 0; --i ) {
-      modules[i]->load();
-    }
-
     network.connect();
 
     log.print( "Starting auxilary thread ..." );
@@ -364,6 +362,8 @@ namespace client
     ui::mouse.buttons = 0;
     ui::mouse.currButtons = 0;
 
+    camera.reset();
+
     if( !onCreate.isEmpty() ) {
       log.println( "Initialising new world" );
 
@@ -380,8 +380,14 @@ namespace client
     context.load();
     render.load();
 
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->load();
+    }
+
     camera.update();
     camera.prepare();
+
+    ui::ui.showLoadingScreen( true );
 
     render.draw( Render::DRAW_ORBIS_BIT | Render::DRAW_UI_BIT );
     loader.update();
@@ -409,6 +415,10 @@ namespace client
     render.draw( Render::DRAW_UI_BIT );
     render.sync();
 
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->unload();
+    }
+
     render.unload();
     context.unload();
 
@@ -435,14 +445,10 @@ namespace client
 
     network.disconnect();
 
-    for( int i = modules.length() - 1; i >= 0; --i ) {
-      modules[i]->unload();
-    }
-
     nirvana.unload();
     matrix.unload();
 
-    camera.clear();
+    camera.reset();
 
     ui::ui.showLoadingScreen( false );
 
@@ -465,8 +471,10 @@ namespace client
     onCreate = "";
     stateFile = "";
 
-    OZ_REGISTER_MODULE( preferences );
+    OZ_REGISTER_MODULE( profile );
     OZ_REGISTER_MODULE( flora );
+    OZ_REGISTER_MODULE( musicPlayer );
+    OZ_REGISTER_MODULE( galileo );
 
     matrix.init();
     nirvana.init();

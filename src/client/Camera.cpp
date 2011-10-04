@@ -109,6 +109,42 @@ namespace client
     proxy->prepare();
   }
 
+  void Camera::reset()
+  {
+    p         = Point3::ORIGIN;
+    oldP      = Point3::ORIGIN;
+    newP      = Point3::ORIGIN;
+    h         = 0.0f;
+    v         = Math::TAU / 4.0f;
+    w         = 0.0f;
+    relH      = 0.0f;
+    relV      = 0.0f;
+
+    rot       = Quat::ID;
+    relRot    = Quat::ID;
+
+    rotMat    = Mat44::rotation( rot );
+    rotTMat   = ~rotTMat;
+
+    right     = rotMat.x;
+    up        = rotMat.y;
+    at        = -rotMat.z;
+
+    tagged    = -1;
+    taggedObj = null;
+    bot       = -1;
+    botObj    = null;
+
+    state     = NONE;
+    newState  = defaultState;
+
+    strategicProxy.reset();
+    botProxy.reset();
+
+    isExternal         = true;
+    allowReincarnation = true;
+  }
+
   void Camera::read( InputStream* istream )
   {
     ui::mouse.doShow = istream->readBool();
@@ -169,39 +205,6 @@ namespace client
     botProxy.write( ostream );
   }
 
-  void Camera::clear()
-  {
-    p         = Point3::ORIGIN;
-    oldP      = Point3::ORIGIN;
-    newP      = Point3::ORIGIN;
-    h         = 0.0f;
-    v         = Math::TAU / 4.0f;
-    w         = 0.0f;
-    relH      = 0.0f;
-    relV      = 0.0f;
-
-    rot       = Quat::ID;
-    relRot    = Quat::ID;
-
-    rotMat    = Mat44::rotation( rot );
-    rotTMat   = ~rotTMat;
-
-    right     = rotMat.x;
-    up        = rotMat.y;
-    at        = -rotMat.z;
-
-    tagged    = -1;
-    taggedObj = null;
-    bot       = -1;
-    botObj    = null;
-
-    state     = NONE;
-    newState  = defaultState;
-
-    isExternal = true;
-    allowReincarnation = true;
-  }
-
   void Camera::init()
   {
     width        = config.get( "screen.width",         1024 );
@@ -234,38 +237,10 @@ namespace client
       defaultState = STRATEGIC;
     }
 
-    p         = Point3::ORIGIN;
-    oldP      = Point3::ORIGIN;
-    newP      = Point3::ORIGIN;
-    h         = 0.0f;
-    v         = Math::TAU / 4.0f;
-    w         = 0.0f;
-    relH      = 0.0f;
-    relV      = 0.0f;
-
-    rot       = Quat::ID;
-    relRot    = Quat::ID;
-
-    rotMat    = Mat44::rotation( rot );
-    rotTMat   = ~rotTMat;
-
-    right     = rotMat.x;
-    up        = rotMat.y;
-    at        = -rotMat.z;
-
-    tagged    = -1;
-    taggedObj = null;
-    bot       = -1;
-    botObj    = null;
-
     strategicProxy.init();
     botProxy.init();
 
-    state     = NONE;
-    newState  = defaultState;
-
-    isExternal         = true;
-    allowReincarnation = true;
+    reset();
   }
 
 }

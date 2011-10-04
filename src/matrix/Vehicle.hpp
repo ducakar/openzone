@@ -32,14 +32,13 @@ namespace oz
 
       // not used, to reserve slot for engine sound sample
       static const int   EVENT_ENGINE           = 7;
-      static const int   EVENT_SERVICE          = 8;
-      static const int   EVENT_NEXT_WEAPON      = 9;
-      static const int   EVENT_SHOT0            = 10;
-      static const int   EVENT_SHOT0_EMPTY      = 11;
-      static const int   EVENT_SHOT1            = 12;
-      static const int   EVENT_SHOT1_EMPTY      = 13;
-      static const int   EVENT_SHOT2            = 14;
-      static const int   EVENT_SHOT2_EMPTY      = 15;
+      static const int   EVENT_NEXT_WEAPON      = 8;
+      static const int   EVENT_SHOT0            = 9;
+      static const int   EVENT_SHOT0_EMPTY      = 10;
+      static const int   EVENT_SHOT1            = 11;
+      static const int   EVENT_SHOT1_EMPTY      = 12;
+      static const int   EVENT_SHOT2            = 13;
+      static const int   EVENT_SHOT2_EMPTY      = 14;
 
       static const int   CREW_VISIBLE_BIT       = 0x00000001;
 
