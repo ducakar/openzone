@@ -126,8 +126,9 @@ namespace oz
     part         = null;
     objIndex     = 0;
     strIndex     = 0;
-    isFirstEvent = false;
     event        = List<Object::Event>::CIterator();
+    isFirstEvent = false;
+    hasUseFailed = false;
 
     hard_assert( gettop() == 1 && self != null );
 
@@ -260,6 +261,8 @@ namespace oz
     OZ_LUA_FUNC( ozException );
     OZ_LUA_FUNC( ozGettext );
 
+    OZ_LUA_FUNC( ozUseFailed );
+
     /*
      * Orbis
      */
@@ -271,9 +274,9 @@ namespace oz
     OZ_LUA_FUNC( ozOrbisAddPart );
     OZ_LUA_FUNC( ozOrbisGenParts );
 
-    OZ_LUA_FUNC( ozOrbisBindAllOverlaps );
-    OZ_LUA_FUNC( ozOrbisBindStrOverlaps );
-    OZ_LUA_FUNC( ozOrbisBindObjOverlaps );
+    OZ_LUA_FUNC( ozBindAllOverlaps );
+    OZ_LUA_FUNC( ozBindStrOverlaps );
+    OZ_LUA_FUNC( ozBindObjOverlaps );
 
     /*
      * Terra
@@ -658,6 +661,14 @@ namespace oz
     return 1;
   }
 
+  int Lua::ozUseFailed( lua_State* l )
+  {
+    ARG( 0 );
+
+    lua.hasUseFailed = true;
+    return 1;
+  }
+
   /*
    * Orbis
    */
@@ -777,7 +788,7 @@ namespace oz
     return 0;
   }
 
-  int Lua::ozOrbisBindAllOverlaps( lua_State* l )
+  int Lua::ozBindAllOverlaps( lua_State* l )
   {
     ARG( 6 );
 
@@ -792,7 +803,7 @@ namespace oz
     return 0;
   }
 
-  int Lua::ozOrbisBindStrOverlaps( lua_State* l )
+  int Lua::ozBindStrOverlaps( lua_State* l )
   {
     ARG( 6 );
 
@@ -805,7 +816,7 @@ namespace oz
     return 0;
   }
 
-  int Lua::ozOrbisBindObjOverlaps( lua_State* l )
+  int Lua::ozBindObjOverlaps( lua_State* l )
   {
     ARG( 6 );
 

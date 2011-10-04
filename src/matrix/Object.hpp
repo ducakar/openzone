@@ -320,6 +320,16 @@ namespace oz
         addEvent( EVENT_SPLASH, momentum * MOMENTUM_INTENSITY_COEF );
       }
 
+      OZ_ALWAYS_INLINE
+      void use( Bot* user )
+      {
+        if( flags & USE_FUNC_BIT ) {
+          if( onUse( user ) ) {
+            addEvent( EVENT_USE, 1.0f );
+          }
+        }
+      }
+
       /**
        * Perform object update. One can implement onUpdate function to do some custom stuff.
        */
@@ -332,21 +342,12 @@ namespace oz
         oldFlags = flags;
       }
 
-      OZ_ALWAYS_INLINE
-      void use( Bot* user )
-      {
-        if( flags & USE_FUNC_BIT ) {
-          addEvent( EVENT_USE, 1.0f );
-          onUse( user );
-        }
-      }
-
     protected:
 
       virtual void onDestroy();
       virtual void onDamage( float damage );
       virtual void onHit( const Hit* hit, float momentum );
-      virtual void onUse( Bot* user );
+      virtual bool onUse( Bot* user );
       virtual void onUpdate();
 
     public:

@@ -121,20 +121,25 @@ namespace oz
 
         dyn->momentum *= 1.0f - frictionFactor * WATER_FRICTION;
         systemMom += frictionFactor * dyn->lift * Timer::TICK_TIME;
+
+        if( systemMom >= 0.0f ) {
+          goto airFriction;
+        }
       }
 
-      Dynamic* sObj = dyn->lower == -1 ? null : static_cast<Dynamic*>( orbis.objects[dyn->lower] );
+      Dynamic* sObj;
+      sObj = dyn->lower == -1 ? null : static_cast<Dynamic*>( orbis.objects[dyn->lower] );
 
       // on floor or on a still object
       if( ( dyn->flags & Object::ON_FLOOR_BIT ) ||
           ( sObj != null && ( sObj->flags & Object::DISABLED_BIT ) ) )
       {
-        float stickVel = STICK_VELOCITY;
         float friction = FLOOR_FRICTION;
+        float stickVel = STICK_VELOCITY;
 
         if( dyn->flags & Object::ON_SLICK_BIT ) {
-          stickVel = SLICK_STICK_VELOCITY;
           friction = SLICK_FRICTION;
+          stickVel = SLICK_STICK_VELOCITY;
         }
 
         dyn->momentum += ( systemMom * dyn->floor.z ) * dyn->floor;
@@ -165,8 +170,10 @@ namespace oz
 
         dyn->flags |= Object::FRICTING_BIT;
       }
-      // in air on in water
+      // in air or swimming
       else {
+        airFriction:;
+
         dyn->momentum.x *= 1.0f - AIR_FRICTION;
         dyn->momentum.y *= 1.0f - AIR_FRICTION;
         dyn->momentum.z += systemMom;

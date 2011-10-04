@@ -65,9 +65,10 @@ namespace oz
     lua.objectCall( clazz->onHit, this );
   }
 
-  void Object::onUse( Bot* user )
+  bool Object::onUse( Bot* user )
   {
     lua.objectCall( clazz->onUse, this, user );
+    return !lua.hasUseFailed;
   }
 
   void Object::onUpdate()

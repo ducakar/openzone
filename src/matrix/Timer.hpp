@@ -18,7 +18,7 @@ namespace oz
   {
     public:
 
-      static const int   TICK_MILLIS = 20;
+      static const int   TICK_MILLIS = 17;
       static const float TICK_TIME;
 
       int   ticks;

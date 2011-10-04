@@ -406,7 +406,13 @@ namespace oz
         desiredMomentum *= clazz->climbControl;
       }
       else if( state & SWIMMING_BIT ) {
-        desiredMomentum *= clazz->waterControl;
+        if( Physics::G_ACCEL + lift >= 0.0f ||
+            // not on a static ground
+            ( !( flags & ON_FLOOR_BIT ) &&
+              ( lower == -1 || !( orbis.objects[lower]->flags & Object::DISABLED_BIT ) ) ) )
+        {
+          desiredMomentum *= clazz->waterControl;
+        }
       }
       else if( !( state & GROUNDED_BIT ) ) {
         desiredMomentum *= clazz->airControl;

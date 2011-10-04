@@ -24,9 +24,10 @@
 #include "client/ui/StrategicArea.hpp"
 #include "client/ui/InventoryMenu.hpp"
 #include "client/ui/InfoFrame.hpp"
-#include "client/ui/DebugFrame.hpp"
-#include "client/ui/BuildMenu.hpp"
+#include "client/ui/GalileoFrame.hpp"
 #include "client/ui/MusicPlayer.hpp"
+#include "client/ui/BuildMenu.hpp"
+#include "client/ui/DebugFrame.hpp"
 
 namespace oz
 {
@@ -52,6 +53,7 @@ namespace ui
       InventoryMenu* inventoryMenu;
       InventoryMenu* browseMenu;
       InfoFrame*     infoFrame;
+      GalileoFrame*  galileoFrame;
       MusicPlayer*   musicPlayer;
       BuildMenu*     buildMenu;
       DebugFrame*    debugFrame;

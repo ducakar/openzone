@@ -33,7 +33,7 @@ namespace oz
     }
   }
 
-  void Weapon::onUse( Bot* user )
+  bool Weapon::onUse( Bot* user )
   {
     hard_assert( parent == -1 || parent == user->index );
 
@@ -43,14 +43,15 @@ namespace oz
       synapse.cut( this );
 
       user->weapon = index;
+
+      return true;
     }
     else if( parent == user->index ) {
       user->weapon = user->weapon == index  ? -1 : index;
-    }
 
-    if( ( flags & LUA_BIT ) && !clazz->onUse.isEmpty() ) {
-      lua.objectCall( clazz->onUse, this, user );
+      return true;
     }
+    return false;
   }
 
   Weapon::Weapon()
