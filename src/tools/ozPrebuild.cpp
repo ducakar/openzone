@@ -22,6 +22,7 @@
 #include "client/OBJ.hpp"
 #include "client/MD2.hpp"
 #include "client/Render.hpp"
+#include "client/Module.hpp"
 
 #include <cerrno>
 #include <unistd.h>
@@ -483,6 +484,22 @@ static void prebuildCaela()
   log.println( "}" );
 }
 
+static void prebuildModules()
+{
+  log.println( "Prebuilding Modules {" );
+  log.indent();
+
+  Vector<client::Module*> modules;
+  client::Module::listModules( &modules );
+
+  for( int i = 0; i < modules.length(); ++i ) {
+    modules[i]->prebuild();
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
 static void checkLua( const char* path )
 {
   log.println( "Checking Lua scripts '%s' {", path );
@@ -608,6 +625,7 @@ int main( int argc, char** argv )
     client::ui::Mouse::prebuild();
 
     prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
+    prebuildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
 
     prebuildTerras();
     prebuildCaela();
@@ -616,6 +634,8 @@ int main( int argc, char** argv )
     prebuildBSPTextures();
 
     prebuildModels();
+
+    prebuildModules();
 
     checkLua( "lua/matrix" );
     checkLua( "lua/nirvana" );

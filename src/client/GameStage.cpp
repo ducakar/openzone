@@ -17,21 +17,14 @@
 
 #include "nirvana/Nirvana.hpp"
 
-#include "client/Network.hpp"
 #include "client/Loader.hpp"
 #include "client/Render.hpp"
 #include "client/Sound.hpp"
+#include "client/Network.hpp"
 #include "client/Camera.hpp"
 #include "client/Lua.hpp"
 #include "client/MenuStage.hpp"
-
-#include "client/modules/ProfileModule.hpp"
-#include "client/modules/FloraModule.hpp"
-#include "client/modules/MusicPlayerModule.hpp"
-#include "client/modules/GalileoModule.hpp"
-
-#define OZ_REGISTER_MODULE( module ) \
-  modules.add( &module##Module )
+#include "client/Module.hpp"
 
 namespace oz
 {
@@ -358,11 +351,18 @@ namespace client
 
     log.printEnd( " OK" );
 
+    context.load();
+    render.load();
+
     ui::mouse.doShow = true;
     ui::mouse.buttons = 0;
     ui::mouse.currButtons = 0;
 
     camera.reset();
+
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->load();
+    }
 
     if( !onCreate.isEmpty() ) {
       log.println( "Initialising new world" );
@@ -375,13 +375,6 @@ namespace client
     }
     else if( !read( stateFile ) ) {
       throw Exception( "reading saved state '" + stateFile + "' failed" );
-    }
-
-    context.load();
-    render.load();
-
-    for( int i = modules.length() - 1; i >= 0; --i ) {
-      modules[i]->load();
     }
 
     camera.update();
@@ -415,16 +408,16 @@ namespace client
     render.draw( Render::DRAW_UI_BIT );
     render.sync();
 
+    if( isLoaded ) {
+      write( AUTOSAVE_FILE );
+    }
+
     for( int i = modules.length() - 1; i >= 0; --i ) {
       modules[i]->unload();
     }
 
     render.unload();
     context.unload();
-
-    if( isLoaded && config.getSet( "gameStage.autosave", true ) ) {
-      write( AUTOSAVE_FILE );
-    }
 
     log.print( "Stopping auxilary thread ..." );
 
@@ -448,8 +441,6 @@ namespace client
     nirvana.unload();
     matrix.unload();
 
-    camera.reset();
-
     ui::ui.showLoadingScreen( false );
 
     isLoaded = false;
@@ -471,10 +462,7 @@ namespace client
     onCreate = "";
     stateFile = "";
 
-    OZ_REGISTER_MODULE( profile );
-    OZ_REGISTER_MODULE( flora );
-    OZ_REGISTER_MODULE( musicPlayer );
-    OZ_REGISTER_MODULE( galileo );
+    Module::listModules( &modules );
 
     matrix.init();
     nirvana.init();

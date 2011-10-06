@@ -168,16 +168,16 @@ namespace client
     // sprite
     vertices[24] = Vertex( Point3( -1.0f, -1.0f, 0.0f ),
                            TexCoord( 0.0f, 0.0f ),
-                           Vec3( 0.0f, -1.0f, 0.0f ) );
+                           Vec3( 0.0f, 0.0f, 1.0f ) );
     vertices[25] = Vertex( Point3( +1.0f, -1.0f, 0.0f ),
                            TexCoord( 1.0f, 0.0f ),
-                           Vec3( 0.0f, -1.0f, 0.0f ) );
+                           Vec3( 0.0f, 0.0f, 1.0f ) );
     vertices[26] = Vertex( Point3( -1.0f, +1.0f, 0.0f ),
                            TexCoord( 0.0f, 1.0f ),
-                           Vec3( 0.0f, -1.0f, 0.0f ) );
+                           Vec3( 0.0f, 0.0f, 1.0f ) );
     vertices[27] = Vertex( Point3( +1.0f, +1.0f, 0.0f ),
                            TexCoord( 1.0f, 1.0f ),
-                           Vec3( 0.0f, -1.0f, 0.0f ) );
+                           Vec3( 0.0f, 0.0f, 1.0f ) );
 
     // box
     vertices[28] = Vertex( Point3( -1.0f, -1.0f, -1.0f ) );

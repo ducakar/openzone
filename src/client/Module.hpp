@@ -22,6 +22,8 @@ namespace client
   {
     public:
 
+      static void listModules( Vector<Module*>* list );
+
       virtual ~Module()
       {}
 
@@ -48,6 +50,11 @@ namespace client
 
       virtual void free()
       {}
+
+#ifdef OZ_TOOLS
+      virtual void prebuild()
+      {}
+#endif
 
   };
 

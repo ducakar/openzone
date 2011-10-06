@@ -298,17 +298,14 @@ namespace oz
   void Vehicle::service()
   {
     const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
-    bool wasServiced = false;
 
     if( life != clazz->life ) {
       life = clazz->life;
-      wasServiced = true;
     }
 
     for( int i = 0; i < clazz->nWeapons; ++i ) {
       if( nRounds[i] != clazz->nRounds[i] ) {
         nRounds[i] = clazz->nRounds[i];
-        wasServiced = true;
       }
     }
   }
