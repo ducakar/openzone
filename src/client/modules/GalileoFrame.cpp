@@ -15,6 +15,7 @@
 #include "client/Context.hpp"
 
 #include "client/modules/GalileoModule.hpp"
+#include "client/modules/QuestModule.hpp"
 
 #include "client/OpenGL.hpp"
 
@@ -95,9 +96,9 @@ namespace ui
 
     glBindTexture( GL_TEXTURE_2D, markerTexId );
 
-    for( int i = 0; i < galileoModule.markers.length(); ++i ) {
-      float mapX = oX + ( Orbis::DIM + galileoModule.markers[i].x ) / ( 2.0f*Orbis::DIM ) * fWidth;
-      float mapY = oY + ( Orbis::DIM + galileoModule.markers[i].y ) / ( 2.0f*Orbis::DIM ) * fHeight;
+    foreach( quest, questModule.quests.citer() ) {
+      float mapX = oX + ( Orbis::DIM + quest->place.x ) / ( 2.0f*Orbis::DIM ) * fWidth;
+      float mapY = oY + ( Orbis::DIM + quest->place.y ) / ( 2.0f*Orbis::DIM ) * fHeight;
 
       tf.model = Mat44::translation( Vec3( mapX, mapY, 0.0f ) );
       tf.model.scale( Vec3( 16.0f, 16.0f, 0.0f ) );

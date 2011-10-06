@@ -29,11 +29,11 @@ desni klik          - uporabi označen predmet ali vstopi v označeno vozilo
 srednji klik        - zgrabi/spusti označen predmet ali vzemi označen predmet iz inventarja, kadar
                       klikneš na predmet v inventarju
 kolešček gor        - vrzi predmet, ki ga trenutno držiš
-kolešček dol         - pospravi izbran predmet v inventar
+kolešček dol        - pospravi izbran predmet v inventar
 
-m                   - stori samomor
+ALT + m             - stori samomor
+ALT + p             - preklopi zmožnost stopanja čez manjše ovire, npr. hoja po stopnicah
 i                   - zapusti bota
-p                   - preklopi zmožnost stopanja čez manjše ovire, npr. hoja po stopnicah
 
 Tab                 - preklopi način uporabniškega vmesnika
 Numpad Enter        - preklopi med prvoosebno in tretjeosebno kamero
@@ -58,7 +58,7 @@ levi klik           - sproži izbrano orožje
 desni klik          - izberi naslednje orožje
 
 x                   - izstopi
-j                   - izskoči
+ALT + x             - izskoči
 
 Razno
 -----
@@ -78,34 +78,6 @@ Ctrl + F12          - prisilni izhod
 
 Esc                 - končaj program
 
-Vedenja umetne inteligence
---------------------------
-beastie (beštija)
-- Nakljušno teči in skači naokoli.
-prey (škrat)
-- Beži pred vsemi razen pred drugim škratom.
-predator (vitez)
-- Išči škrate in teči proti njim.
-droid (droid)
-- Če vidiš kogarkoli, ki ni droid ali poveljniški droid, ga ulovi in ustreli.
-- Če ni nobene tarče, potem sledi poveljniškemu droidu, če je kakšen v bližini, sicer išči tarčo.
-
-Nasveti
--------
-- Skočiš lahko višje, če med skokom na hitro počepneš in od-počepneš.
-- Klikni orožje v inventarju z desnim gumbom, da ga vzameš v roke oziroma pospraviš nazaj.
-- Če želiš dvigniti predmet, morajo biti tvoje roke prazne (brez orožja), ne smeš plavati in predmet
-  ne sme biti pretežak. Če ne stojiš dovolj blizu predmeta, ti lahko zdrsne z rok takoj zatem, ko
-  ga pograbiš. Prav tako utegne zdrsniti z rok, če ga od zgoraj zadane drug predmet.
-- Da se povzpneš po lestvi, glej gor oziroma dol po lestvi. Če se pomakneš stran od lestve, padeš
-  dol.
-- Pod vodo se lahko pomikaš nekoliko hitreje, če hodiš po dnu. Pomikaj se v dno, da to dosežeš.
-- Tečeš lahko le, če ne čepiš in ne nosiš nobenega predmeta.
-- Če je vozilo uničeno, samodejno izvrže pilota.
-- Za nekaj zabave ustvari droida (ne poveljniškega droida) z menija Ustvari.
-- Za še nekaj več zabave, daj tega droida v tank. (Inkarniraj se v droida, vkrcaj se v tank in
-  odinkarniraj. Umetna inteligenca bo prevzela droida, ki bo raztural.)
-
 Ukazna vrstica
 --------------
 openzone [--help] [(--load | -l) | (--init | -i) <function>]
@@ -118,9 +90,10 @@ openzone [--help] [(--load | -l) | (--init | -i) <function>]
       Preskoči glavni meni in naloži samodejno shranjeno stanje.
       Samodejno shranjeno stanje se nahaja v ~/.config/openzone/autosave.ozState.
 
--i <funkcija>, --init <funkcija>
-      Preskoči glavni meni in uporabi odjemalčevo Lua-funkcijo <funkcija> za stvaritev igre.
-      Odjemalčevi Lua-skripti se nahajajo v <prefix>/share/openzone/lua/client.
+-i <misija>, --init <misija>
+      Preskoči glavni meni in poženi misijo <misija>.
+      Misije se nahajajo v <predpona>/share/openzone/lua/mission in v datotekah
+      poimenovanih <misija>.lua.
 
 -t <št>, --time <št>
       Končaj po <št> sekundah (lahko je decimalno število). Za potrebe benchmarka.
@@ -140,7 +113,8 @@ Problemi
 --------
 - Prepričaj se, da imaš *NAJNOVEJŠE* gonilnike za grafično kartico.
 - Potrebuješ vsaj grafično kartico in gonilnik s podporo za OpenGL 2.1 in naslednjimi razširitvami:
-  - GL_ARB_framebuffer_object.
+  - GL_ARB_framebuffer_object in
+  - GL_EXT_texture_compression_s3tc.
   Kartica s popolno podporo za DirectX 9.0c bi morala zadostovati, zagotovo pa zadostuje kartica s
   podporo za DirectX 10.
   Na Linuxu pogon deluje tako na lastniških kot na odprtokodnih gonilnikih Gallium3D.

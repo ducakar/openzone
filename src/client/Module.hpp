@@ -42,7 +42,7 @@ namespace client
       virtual void unload()
       {}
 
-      virtual void registerLua( lua_State*, bool ) const
+      virtual void registerLua() const
       {}
 
       virtual void init()

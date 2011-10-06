@@ -31,22 +31,6 @@ namespace client
   GalileoModule::GalileoModule() : galileoFrame( null )
   {}
 
-  void GalileoModule::read( InputStream* istream )
-  {
-    int nMarkers = istream->readInt();
-    for( int i = 0; i < nMarkers; ++i ) {
-      markers.add( istream->readPoint3() );
-    }
-  }
-
-  void GalileoModule::write( OutputStream* ostream ) const
-  {
-    ostream->writeInt( markers.length() );
-    for( int i = 0; i < markers.length(); ++i ) {
-      ostream->writePoint3( markers[i] );
-    }
-  }
-
   void GalileoModule::load()
   {
     galileoFrame = new ui::GalileoFrame();
@@ -59,22 +43,6 @@ namespace client
       ui::ui.root->remove( galileoFrame );
       galileoFrame = null;
     }
-
-    markers.clear();
-    markers.dealloc();
-  }
-
-  void GalileoModule::init()
-  {
-    OZ_LUA_FUNC( ozGalileoAddMarker );
-  }
-
-  int GalileoModule::ozGalileoAddMarker( lua_State* l )
-  {
-    ARG( 2 );
-
-    galileoModule.markers.add( Point3( tofloat( 1 ), tofloat( 2 ), 0.0f ) );
-    return 0;
   }
 
 #else

@@ -43,11 +43,22 @@ namespace client
 
       List<Object::Event>::CIterator event;
 
+      String          missionFile;
+
+      bool readVariable( InputStream* istream );
+      void writeVariable( OutputStream* stream );
+
     public:
 
       Lua();
 
       void staticCall( const char* functionName );
+
+      void update();
+      void create( const char* missionFile );
+
+      void read( InputStream* istream );
+      void write( OutputStream* ostream );
 
       void registerFunction( const char* name, LuaAPI func );
       void registerConstant( const char* name, bool value );

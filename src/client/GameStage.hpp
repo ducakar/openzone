@@ -55,8 +55,8 @@ namespace client
       State  state;
       Proxy* proxy;
 
-      String onCreate;
       String stateFile;
+      String missionFile;
 
       virtual bool update();
       virtual void present();

@@ -32,33 +32,34 @@ namespace ui
   static void continueAutosaved( ui::Button* )
   {
     Stage::nextStage = &gameStage;
-    gameStage.onCreate = "";
     gameStage.stateFile = GameStage::AUTOSAVE_FILE;
   }
 
   static void continueQuicksaved( ui::Button* )
   {
     Stage::nextStage = &gameStage;
-    gameStage.onCreate = "";
     gameStage.stateFile = GameStage::QUICKSAVE_FILE;
   }
 
   static void loadTutorial( ui::Button* )
   {
     Stage::nextStage = &gameStage;
-    gameStage.onCreate = "init_tutorial";
+    gameStage.stateFile = "";
+    gameStage.missionFile = "tutorial";
   }
 
   static void loadTest( ui::Button* )
   {
     Stage::nextStage = &gameStage;
-    gameStage.onCreate = "init_test";
+    gameStage.stateFile = "";
+    gameStage.missionFile = "test";
   }
 
   static void loadCvicek( ui::Button* )
   {
     Stage::nextStage = &gameStage;
-    gameStage.onCreate = "init_cvicek";
+    gameStage.stateFile = "";
+    gameStage.missionFile = "cvicek";
   }
 
   static void exit( ui::Button* )
@@ -93,8 +94,8 @@ namespace ui
     }
 
     add( new Button( gettext( "Tutorial" ), loadTutorial, 300, 20 ), 50, -150 );
-    add( new Button( gettext( "Test World" ), loadTest, 300, 20 ), 50, -210 );
-    add( new Button( gettext( "Mission 1: Wine & Farm" ), loadCvicek, 300, 20 ), 50, -180 );
+    add( new Button( gettext( "Test World" ), loadTest, 300, 20 ), 50, -180 );
+    add( new Button( gettext( "Mission 1: Wine & Farm" ), loadCvicek, 300, 20 ), 50, -210 );
     add( new Button( gettext( "Exit" ), exit, 300, 20 ), 50, -270 );
   }
 

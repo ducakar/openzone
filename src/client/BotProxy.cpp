@@ -58,7 +58,10 @@ namespace client
 
     Bot* bot = static_cast<Bot*>( orbis.objects[camera.bot] );
 
-    if( camera.allowReincarnation && ui::keyboard.keys[SDLK_i] && !ui::keyboard.oldKeys[SDLK_i] ) {
+    const char* keys    = ui::keyboard.keys;
+    const char* oldKeys = ui::keyboard.oldKeys;
+
+    if( camera.allowReincarnation && keys[SDLK_i] && !oldKeys[SDLK_i] ) {
       camera.setBot( null );
       return;
     }
@@ -92,73 +95,73 @@ namespace client
     /*
      * Movement
      */
-    if( ui::keyboard.keys[SDLK_w] ) {
+    if( keys[SDLK_w] ) {
       bot->actions |= Bot::ACTION_FORWARD;
     }
-    if( ui::keyboard.keys[SDLK_s] ) {
+    if( keys[SDLK_s] ) {
       bot->actions |= Bot::ACTION_BACKWARD;
     }
-    if( ui::keyboard.keys[SDLK_d] ) {
+    if( keys[SDLK_d] ) {
       bot->actions |= Bot::ACTION_RIGHT;
     }
-    if( ui::keyboard.keys[SDLK_a] ) {
+    if( keys[SDLK_a] ) {
       bot->actions |= Bot::ACTION_LEFT;
     }
 
     /*
      * Actions
      */
-    if( ui::keyboard.keys[SDLK_SPACE] ) {
+    if( keys[SDLK_SPACE] ) {
       bot->actions |= Bot::ACTION_JUMP | Bot::ACTION_VEH_UP;
     }
-    if( ui::keyboard.keys[SDLK_LCTRL] ) {
+    if( keys[SDLK_LCTRL] ) {
       bot->actions |= Bot::ACTION_CROUCH | Bot::ACTION_VEH_DOWN;
     }
-    if( ui::keyboard.keys[SDLK_LSHIFT] && !ui::keyboard.oldKeys[SDLK_LSHIFT] ) {
+    if( keys[SDLK_LSHIFT] && !oldKeys[SDLK_LSHIFT] ) {
       bot->state ^= Bot::RUNNING_BIT;
     }
-    if( ui::keyboard.keys[SDLK_x] ) {
+    if( keys[SDLK_x] && oldKeys[SDLK_x] ) {
       bot->actions |= Bot::ACTION_EXIT;
     }
-    if( ui::keyboard.keys[SDLK_j] ) {
+    if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_x] && !oldKeys[SDLK_x] ) {
       bot->actions |= Bot::ACTION_EJECT;
     }
-    if( ui::keyboard.keys[SDLK_m] ) {
+    if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_m] && !oldKeys[SDLK_m] ) {
       bot->actions |= Bot::ACTION_SUICIDE;
     }
-    if( ui::keyboard.keys[SDLK_KP_MULTIPLY] && !ui::keyboard.oldKeys[SDLK_KP_MULTIPLY] ) {
+    if( keys[SDLK_KP_MULTIPLY] && !oldKeys[SDLK_KP_MULTIPLY] ) {
       isFreelook = !isFreelook;
 
       camera.h = bot->h;
       camera.v = bot->v;
     }
-    if( ui::keyboard.keys[SDLK_p] && !ui::keyboard.oldKeys[SDLK_p] ) {
+    if( ( keys[SDLK_LALT] || keys[SDLK_RALT] ) && keys[SDLK_p] && !oldKeys[SDLK_p] ) {
       bot->state ^= Bot::STEPABLE_BIT;
     }
 
     bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT |
         Bot::GESTURE3_BIT | Bot::GESTURE4_BIT | Bot::GESTURE_ALL_BIT );
 
-    if( ui::keyboard.keys[SDLK_f] ) {
+    if( keys[SDLK_f] ) {
       bot->state |= Bot::GESTURE0_BIT;
     }
-    if( ui::keyboard.keys[SDLK_g] ) {
+    if( keys[SDLK_g] ) {
       bot->state |= Bot::GESTURE1_BIT;
     }
-    if( ui::keyboard.keys[SDLK_h] ) {
+    if( keys[SDLK_h] ) {
       bot->state |= Bot::GESTURE2_BIT;
     }
-    if( ui::keyboard.keys[SDLK_j] ) {
+    if( keys[SDLK_j] ) {
       bot->state |= Bot::GESTURE3_BIT;
     }
-    if( ui::keyboard.keys[SDLK_k] ) {
+    if( keys[SDLK_k] ) {
       bot->state |= Bot::GESTURE4_BIT;
     }
-    if( ui::keyboard.keys[SDLK_l] ) {
+    if( keys[SDLK_l] ) {
       bot->state |= Bot::GESTURE_ALL_BIT;
     }
 
-    if( ui::keyboard.keys[SDLK_KP_ENTER] && !ui::keyboard.oldKeys[SDLK_KP_ENTER] ) {
+    if( keys[SDLK_KP_ENTER] && !oldKeys[SDLK_KP_ENTER] ) {
       camera.h = bot->h;
       camera.v = bot->v;
 

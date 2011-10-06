@@ -31,9 +31,9 @@ middle click        - grab/drop tagged object or take an item from the inventory
 wheel up            - throw object you are currently holding
 wheel down          - put tagged object into inventory
 
-m                   - commit suicide
+ALT + m             - commit suicide
+ALT + p             - toggle ability to step over small obstacles, e.g. walk up the stairs
 i                   - leave bot
-p                   - toggle ability to step over small obstacles, e.g. walk up the stairs
 
 Tab                 - toggle interface mode
 Numpad Enter        - switch between 1st person and 3rd person camera
@@ -58,7 +58,7 @@ left click          - trigger selected weapon
 right click         - select next weapon
 
 x                   - exit vehicle
-j                   - eject from vehicle
+ALT + x             - eject from vehicle
 
 Misc controls
 -------------
@@ -77,36 +77,6 @@ Ctrl + F12          - force exit
 
 Esc                 - exit application
 
-AI behaviours
--------------
-beastie (beast)
-- Just randomly run and jump around.
-prey (goblin)
-- Run away from everyone but another goblin.
-predator (knight)
-- Search for goblins and run into them.
-droid (droid)
-- If you see anything but another droid or droid commander, hunt and shoot it.
-- If there's no target, follow droid commander if any nearby, otherwise walk around and search for
-  a target.
-
-Tips
-----
-- You can jump to a little higher places if you crouch and uncrouch during jump.
-- To equip/unequip a weapon right click it in your inventory.
-- To lift an object, your hands must be empty (no weapon equipped), you must not be swimming and
-  object must not be too heavy. If you don't stand close enough to the object it may slip from your
-  hands immediately after you grab it. It may also slip from your hands if it is hit by another
-  object form above.
-- To climb the ladder look up or down into a ladder. If you move away from the ladder you will
-  fall from it.
-- You can move faster under water if you walk on the bottom. Just move into the bottom to do it.
-- You can run only if you are not crouched and you are not holding an object.
-- When a vehicle is destroyed, it automatically ejects the pilot.
-- To see some fun, spawn a droid (not droid commander) form the build menu.
-- To see some more fun, put the droid into a tank. (Just incarnate into the droid, embark the tank
-  and deincarnate. The AI will take over the droid and perform some rampage.)
-
 Command line
 ------------
 openzone [--help] [(--load | -l) | (--init | -i) <function>]
@@ -119,10 +89,10 @@ openzone [--help] [(--load | -l) | (--init | -i) <function>]
       Skip main menu and load autosaved state.
       Autosaved game state resides in ~/.config/openzone/autosave.ozState.
 
--i, --init <function>
-      Skip main menu and use client Lua function <function> to initialise
-      the game.
-      Client Lua scripts reside in <prefix>/share/openzone/lua/client.
+-i <mission>, --init <mission>
+      Skip main menu and start mission <mission>.
+      Missions reside in <prefix>/share/openzone/lua/mission in files named
+      <mission>.lua files.
 
 -t <num>, --time <num>
       Exits after <num> seconds (can be a floating-point number).
@@ -145,7 +115,8 @@ Troubleshooting
 - Make sure you have the *LATEST* display drivers.
 - You need at least OpenGL 2.1 compatible graphic card & driver that additionally supports the
   following extensions:
-  - GL_ARB_framebuffer_object.
+  - GL_ARB_framebuffer_object and
+  - GL_EXT_texture_compression_s3tc.
   A cards with complete DirectX 9.0c support should do, a DirectX 10 card will certainly do.
   On Linux the engine works both with properitary and opensource Gallium3D drivers.
 - If you are using Gallium3D based drivers and all textures are (mostly) missing, set

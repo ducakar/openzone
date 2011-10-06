@@ -14,6 +14,8 @@
 #include "client/Module.hpp"
 #include "client/Lua.hpp"
 
+#include "client/modules/QuestFrame.hpp"
+
 namespace oz
 {
 namespace client
@@ -30,13 +32,18 @@ namespace client
 
     String title;
     String description;
+    Point3 place;
     int    state;
 
-    explicit Quest( const char* title, const char* description, int state );
+    explicit Quest( const char* title, const char* description, const Point3& place, int state );
   };
 
   class QuestModule : public Module
   {
+    private:
+
+      ui::QuestFrame* questFrame;
+
     public:
 
       HashString<Quest> quests;
@@ -44,7 +51,10 @@ namespace client
       virtual void read( InputStream* istream );
       virtual void write( OutputStream* ostream ) const;
 
+      virtual void load();
       virtual void unload();
+
+      virtual void registerLua() const;
 
       virtual void init();
 

@@ -36,13 +36,12 @@ namespace oz
 
       int             strIndex;
       int             objIndex;
+      bool            isFirstEvent;
 
       Vector<Struct*> structs;
       Vector<Object*> objects;
 
       List<Object::Event>::CIterator event;
-
-      bool            isFirstEvent;
 
       bool readVariable( InputStream* istream );
       void writeVariable( OutputStream* stream );

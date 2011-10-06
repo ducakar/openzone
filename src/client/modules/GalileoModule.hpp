@@ -30,21 +30,10 @@ namespace client
 
     public:
 
-      Vector<Point3> markers;
-
       GalileoModule();
-
-      virtual void read( InputStream* istream );
-      virtual void write( OutputStream* ostream ) const;
 
       virtual void load();
       virtual void unload();
-
-      virtual void init();
-
-    private:
-
-      OZ_LUA_API( ozGalileoAddMarker );
 
 #else
     public:

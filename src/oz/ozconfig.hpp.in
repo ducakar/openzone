@@ -20,19 +20,19 @@
 
 #if defined( __clang__ )
 # if __clang_major__ < 2 || ( __clang_major__ == 2 && __clang_minor__ < 9 )
-#  error gcc >= 4.5 and clang 2.9 are the only supported compilers
+#  error GCC >= 4.5 and LLVM/Clang >= 2.9 are the only supported compilers
 # else
-// Clang 2.9 is not compatible with libstdc++'s C++0x support, but we don't need it anyway.
+// Clang 2.9 is not compatible with libstdc++'s C++11 support, but we don't need it anyway.
 #  undef __GXX_EXPERIMENTAL_CXX0X__
 # endif
 #elif defined( __GNUC__ )
 # if __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 5 )
-#  error gcc >= 4.5 and clang 2.9 are the only supported compilers
+#  error GCC >= 4.5 and LLVM/Clang >= 2.9 are the only supported compilers
 # elif __GNUC__ == 4 && __GNUC_MINOR__ == 5
 #  define nullptr __null
 # endif
 #else
-# error gcc >= 4.5 and clang 2.9 are the only supported compilers
+# error GCC >= 4.5 and LLVM/Clang >= 2.9 are the only supported compilers
 #endif
 
 // A trick for KDevelop's parser to "understand" decltype keyword (ifdef will always be processed
@@ -45,16 +45,15 @@
 // for Eclipse IDE to properly highlight custom keywords.
 // You should set OZ_ECLIPSE_HIGHLIGHTING to 1 in your projects settings.
 #ifdef OZ_ECLIPSE_HIGHLIGHTING
-// C++0x reserved words
+// C++11 reserved words
 # define constexpr
-# define noexcept      throw()
+# define noexcept       throw()
 # define nullptr        __null
 // <cstddef>
 # define nullptr_t      nullptr_t
 # define ptrdiff_t      ptrdiff_t
 # define size_t         size_t
-// custom
-# define null           null
+// custom types
 # define byte           byte
 # define ubyte          ubyte
 # define ushort         ushort
