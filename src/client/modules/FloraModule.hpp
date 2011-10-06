@@ -39,7 +39,7 @@ namespace client
 
       void seed();
 
-      virtual void init();
+      virtual void registerLua() const;
 
     private:
 

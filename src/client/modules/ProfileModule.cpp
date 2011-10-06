@@ -20,14 +20,17 @@ namespace client
 
   ProfileModule profileModule;
 
+  void ProfileModule::registerLua() const
+  {
+    OZ_LUA_FUNC( ozProfileGetPlayerName );
+  }
+
   void ProfileModule::init()
   {
     const char* userName = getenv( "USER" );
     userName = userName == null ? "Player" : userName;
 
     playerName = config.getSet( "modules.profile.playerName", userName );
-
-    OZ_LUA_FUNC( ozProfileGetPlayerName );
   }
 
   int ProfileModule::ozProfileGetPlayerName( lua_State* l )

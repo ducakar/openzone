@@ -40,19 +40,17 @@ namespace ui
 
   void UI::update()
   {
-    if( keyboard.keys[SDLK_TAB] & ~keyboard.oldKeys[SDLK_TAB] ) {
-      mouse.doShow = !mouse.doShow;
-    }
-    if( mouse.doShow != isFreelook ) {
-      isFreelook = mouse.doShow;
+    if( mouse.doShow == isFreelook ) {
+      isFreelook = !mouse.doShow;
 
       foreach( area, root->children.iter() ) {
         if( !( area->flags & Area::PINNED_BIT ) ) {
-          area->show( isFreelook );
+          area->show( mouse.doShow );
         }
       }
     }
-    if( isFreelook ) {
+
+    if( !isFreelook ) {
       root->passMouseEvents();
     }
     Area::update();
@@ -144,14 +142,6 @@ namespace ui
     }
 
     root->focus( loadingScreen );
-
-    isFreelook = mouse.doShow;
-
-    foreach( area, root->children.iter() ) {
-      if( !( area->flags & Area::PINNED_BIT ) ) {
-        area->show( isFreelook );
-      }
-    }
   }
 
   void UI::unload()

@@ -139,7 +139,13 @@ namespace client
     render.draw( Render::DRAW_UI_BIT );
     render.sync();
 
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->unload();
+    }
+
     context.unload();
+
+    lua.free();
 
     nirvana.unload();
     matrix.unload();
@@ -147,12 +153,21 @@ namespace client
     matrix.load();
     nirvana.load();
 
+    lua.init();
+    for( int i = 0; i < modules.length(); ++i ) {
+      modules[i]->registerLua();
+    }
+
     context.load();
 
-    if( !onCreate.isEmpty() ) {
+    for( int i = modules.length() - 1; i >= 0; --i ) {
+      modules[i]->load();
+    }
+
+    if( stateFile.isEmpty() ) {
       log.println( "Initialising new world" );
 
-      lua.staticCall( onCreate );
+      lua.create( "lua/mission/" + missionFile + ".lua" );
 
       if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
         throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
@@ -190,6 +205,10 @@ namespace client
 
     beginTime = SDL_GetTicks();
 
+    if( ui::keyboard.keys[SDLK_TAB] && !ui::keyboard.oldKeys[SDLK_TAB] ) {
+      ui::mouse.doShow = !ui::mouse.doShow;
+    }
+
     if( ui::keyboard.keys[SDLK_o] ) {
       if( ui::keyboard.keys[SDLK_LSHIFT] || ui::keyboard.keys[SDLK_RSHIFT] ) {
         orbis.caelum.time -= orbis.caelum.period * 0.002f;
@@ -203,12 +222,10 @@ namespace client
       write( config.get( "dir.rc", "" ) + String( "/quicksave.ozState" ) );
     }
     if( ui::keyboard.keys[SDLK_F7] && !ui::keyboard.oldKeys[SDLK_F7] ) {
-      onCreate = "";
       stateFile = QUICKSAVE_FILE;
       reload();
     }
     if( ui::keyboard.keys[SDLK_F8] && !ui::keyboard.oldKeys[SDLK_F8] ) {
-      onCreate = "";
       stateFile = AUTOSAVE_FILE;
       reload();
     }
@@ -222,6 +239,8 @@ namespace client
     for( int i = 0; i < modules.length(); ++i ) {
       modules[i]->update();
     }
+
+    lua.update();
 
     timer.uiMillis += SDL_GetTicks() - beginTime;
 
@@ -297,6 +316,7 @@ namespace client
     matrix.read( &istream );
     nirvana.read( &istream );
     camera.read( &istream );
+    lua.read( &istream );
 
     for( int i = 0; i < modules.length(); ++i ) {
       modules[i]->read( &istream );
@@ -313,6 +333,7 @@ namespace client
     matrix.write( &ostream );
     nirvana.write( &ostream );
     camera.write( &ostream );
+    lua.write( &ostream );
 
     for( int i = 0; i < modules.length(); ++i ) {
       modules[i]->write( &ostream );
@@ -351,12 +372,13 @@ namespace client
 
     log.printEnd( " OK" );
 
+    lua.init();
+    for( int i = 0; i < modules.length(); ++i ) {
+      modules[i]->registerLua();
+    }
+
     context.load();
     render.load();
-
-    ui::mouse.doShow = true;
-    ui::mouse.buttons = 0;
-    ui::mouse.currButtons = 0;
 
     camera.reset();
 
@@ -364,10 +386,10 @@ namespace client
       modules[i]->load();
     }
 
-    if( !onCreate.isEmpty() ) {
+    if( stateFile.isEmpty() ) {
       log.println( "Initialising new world" );
 
-      lua.staticCall( onCreate );
+      lua.create( "lua/mission/" + missionFile + ".lua" );
 
       if( orbis.terra.id == -1 || orbis.caelum.id == -1 ) {
         throw Exception( "Terrain and Caelum must both be loaded via the client.onCreate" );
@@ -376,6 +398,9 @@ namespace client
     else if( !read( stateFile ) ) {
       throw Exception( "reading saved state '" + stateFile + "' failed" );
     }
+
+    ui::mouse.buttons = 0;
+    ui::mouse.currButtons = 0;
 
     camera.update();
     camera.prepare();
@@ -419,6 +444,8 @@ namespace client
     render.unload();
     context.unload();
 
+    lua.free();
+
     log.print( "Stopping auxilary thread ..." );
 
     isAlive = false;
@@ -459,15 +486,11 @@ namespace client
     AUTOSAVE_FILE = config.get( "dir.rc", "" ) + String( "/autosave.ozState" );
     QUICKSAVE_FILE = config.get( "dir.rc", "" ) + String( "/quicksave.ozState" );
 
-    onCreate = "";
-    stateFile = "";
-
     Module::listModules( &modules );
 
     matrix.init();
     nirvana.init();
     loader.init();
-    lua.init();
 
     for( int i = modules.length() - 1; i >= 0; --i ) {
       modules[i]->init();
@@ -488,10 +511,12 @@ namespace client
     modules.clear();
     modules.dealloc();
 
-    lua.free();
     loader.free();
     nirvana.free();
     matrix.free();
+
+    stateFile.clear();
+    missionFile.clear();
 
     AUTOSAVE_FILE.clear();
     QUICKSAVE_FILE.clear();

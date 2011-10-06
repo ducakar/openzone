@@ -34,6 +34,96 @@ namespace client
 
   Lua lua;
 
+  bool Lua::readVariable( InputStream* istream )
+  {
+    char ch = istream->readChar();
+
+    switch( ch ) {
+      case 'N': {
+        pushnil();
+        return true;
+      }
+      case 'b': {
+        pushbool( istream->readBool() );
+        return true;
+      }
+      case 'n': {
+        pushdouble( istream->readDouble() );
+        return true;
+      }
+      case 's': {
+        pushstring( istream->readString() );
+        return true;
+      }
+      case '[': {
+        newtable();
+
+        while( readVariable( istream ) ) { // key
+          readVariable( istream ); // value
+
+          rawset( -3 );
+        }
+        return true;
+      }
+      case ']': {
+        return false;
+      }
+      default: {
+        throw Exception( "Invalid type char '" + String( ch ) + "' in serialised Lua data" );
+      }
+    }
+  }
+
+  void Lua::writeVariable( OutputStream* ostream )
+  {
+    int type = type( -1 );
+
+    switch( type ) {
+      case LUA_TNIL: {
+        ostream->writeChar( 'N' );
+        break;
+      }
+      case LUA_TBOOLEAN: {
+        ostream->writeChar( 'b' );
+        ostream->writeBool( tobool( -1 ) != 0 );
+        break;
+      }
+      case LUA_TNUMBER: {
+        ostream->writeChar( 'n' );
+        ostream->writeDouble( todouble( -1 ) );
+        break;
+      }
+      case LUA_TSTRING: {
+        ostream->writeChar( 's' );
+        ostream->writeString( tostring( -1 ) );
+        break;
+      }
+      case LUA_TTABLE: {
+        ostream->writeChar( '[' );
+
+        pushnil();
+        while( next( -2 ) != 0 ) {
+          // key
+          pushvalue( -2 );
+          writeVariable( ostream );
+          pop( 1 );
+
+          // value
+          writeVariable( ostream );
+
+          pop( 1 );
+        }
+
+        ostream->writeChar( ']' );
+        break;
+      }
+      default: {
+        throw Exception( "Serialisation is only supported for LUA_TNIL, LUA_TBOOLEAN, LUA_TNUMBER, "
+                         "LUA_TSTRING and LUA_TTABLE data types" );
+      }
+    }
+  }
+
   Lua::Lua() : l( null )
   {}
 
@@ -60,6 +150,85 @@ namespace client
         throw Exception( "Client Lua function call finished with an error" );
       }
     }
+  }
+
+  void Lua::update()
+  {
+    staticCall( "onUpdate" );
+  }
+
+  void Lua::create( const char* missionFile_ )
+  {
+    missionFile = missionFile_;
+
+    log.print( "Reading mission script %s ...", missionFile.cstr() );
+
+    if( luaL_dofile( l, missionFile ) != 0 ) {
+      log.printEnd( " Failed" );
+      throw Exception( "Client Lua script error" );
+    }
+
+    log.printEnd( " OK" );
+
+    staticCall( "onCreate" );
+  }
+
+  void Lua::read( InputStream* istream )
+  {
+    hard_assert( gettop() == 0 );
+
+    missionFile = istream->readString();
+
+    log.print( "Reading mission script %s ...", missionFile.cstr() );
+
+    if( luaL_dofile( l, missionFile ) != 0 ) {
+      log.printEnd( " Failed" );
+      throw Exception( "Client Lua script error" );
+    }
+
+    log.printEnd( " OK" );
+
+    char ch = istream->readChar();
+    hard_assert( ch ==  '[' );
+
+    ch = istream->readChar();
+
+    while( ch != ']' ) {
+      hard_assert( ch == 's' );
+
+      String name = istream->readString();
+      readVariable( istream );
+
+      setglobal( name );
+
+      ch = istream->readChar();
+    }
+  }
+
+  void Lua::write( OutputStream* ostream )
+  {
+    hard_assert( gettop() == 0 );
+
+    ostream->writeString( missionFile );
+
+    ostream->writeChar( '[' );
+
+    pushnil();
+    while( next( LUA_GLOBALSINDEX ) != 0 ) {
+      hard_assert( type( -2 ) == LUA_TSTRING );
+
+      const char* name = tostring( -2 );
+      if( name[0] == 'o' && name[1] == 'z' && name[2] == '_' ) {
+        ostream->writeChar( 's' );
+        ostream->writeString( tostring( -2 ) );
+
+        writeVariable( ostream );
+      }
+
+      pop( 1 );
+    }
+
+    ostream->writeChar( ']' );
   }
 
   void Lua::registerFunction( const char* name, LuaAPI func )
@@ -93,8 +262,7 @@ namespace client
 
   void Lua::init()
   {
-    log.println( "Initialising Client Lua {" );
-    log.indent();
+    log.print( "Initialising Client Lua ..." );
 
     config.getSet( "lua.tolerant", false );
 
@@ -431,27 +599,9 @@ namespace client
     OZ_LUA_CONST( "OZ_BOT_GRAB_BIT",                Bot::GRAB_BIT );
     OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
 
-    DArray<File> luaFiles;
-    File luaDir( "lua/client" );
-    luaDir.ls( &luaFiles );
-
-    foreach( file, luaFiles.citer() ) {
-      if( file->hasExtension( "lua" ) ) {
-        log.print( "%s ...", file->name() );
-
-        if( luaL_dofile( l, file->path() ) != 0 ) {
-          log.printEnd( " Failed" );
-          throw Exception( "Client Lua script error" );
-        }
-
-        log.printEnd( " OK" );
-      }
-    }
-
     hard_assert( gettop() == 0 );
 
-    log.unindent();
-    log.println( "}" );
+    log.printEnd( " OK" );
   }
 
   void Lua::free()
@@ -461,6 +611,8 @@ namespace client
     }
 
     log.print( "Freeing Client Lua ..." );
+
+    missionFile.clear();
 
     objects.clear();
     objects.dealloc();

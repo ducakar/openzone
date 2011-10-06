@@ -27,6 +27,8 @@ namespace client
 
     public:
 
+      virtual void registerLua() const;
+
       virtual void init();
 
     private:

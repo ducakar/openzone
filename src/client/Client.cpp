@@ -254,10 +254,10 @@ namespace client
     log.println( "\tSkip main menu and load autosaved state." );
     log.println( "\tAutosaved game state resides in ~/" OZ_RC_DIR "/autosave.ozState." );
     log.println();
-    log.println( "-i, --init <function>" );
-    log.println( "\tSkip main menu and use client Lua function <function> to initialise" );
-    log.println( "\tthe game." );
-    log.println( "\tClient Lua scripts reside in <prefix>/share/openzone/lua/client." );
+    log.println( "-i <mission>, --init <mission>" );
+    log.println( "\tSkip main menu and start mission <mission>." );
+    log.println( "\tMissions reside in <prefix>/share/openzone/lua/mission in files named" );
+    log.println( "\t<mission>.lua files." );
     log.println();
     log.println( "-t <num>, --time <num>" );
     log.println( "\tExits after <num> seconds (can be a floating-point number)." );
@@ -276,7 +276,7 @@ namespace client
     initFlags = 0;
 
     bool   doAutoload = false;
-    String initFunc;
+    String mission;
     bool   isBenchmark = false;
     float  benchmarkTime = 0.0f;
 
@@ -313,7 +313,7 @@ namespace client
           return -1;
         }
 
-        initFunc = argv[i + 1];
+        mission = argv[i + 1];
         ++i;
       }
       else if( String::equals( argv[i], "--prefix" ) || String::equals( argv[i], "-p" ) ) {
@@ -486,8 +486,8 @@ namespace client
 
     Stage::nextStage = null;
 
-    if( !initFunc.isEmpty() ) {
-      gameStage.onCreate = initFunc;
+    if( !mission.isEmpty() ) {
+      gameStage.missionFile = mission;
       stage = &gameStage;
     }
     else if( doAutoload ) {

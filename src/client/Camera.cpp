@@ -147,8 +147,6 @@ namespace client
 
   void Camera::read( InputStream* istream )
   {
-    ui::mouse.doShow = istream->readBool();
-
     p         = istream->readPoint3();
     oldP      = p;
     newP      = p;
@@ -184,8 +182,6 @@ namespace client
 
   void Camera::write( OutputStream* ostream ) const
   {
-    ostream->writeBool( ui::mouse.doShow );
-
     ostream->writePoint3( newP );
 
     ostream->writeFloat( h );

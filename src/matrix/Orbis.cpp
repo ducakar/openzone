@@ -313,7 +313,8 @@ namespace oz
   {
     hard_assert( structs.length() == 0 && objects.length() == 0 && parts.length() == 0 );
 
-    log.print( "Reading Orbis ..." );
+    log.println( "Reading Orbis {" );
+    log.indent();
 
     lua.read( istream );
 
@@ -422,7 +423,8 @@ namespace oz
       partAvailableIndices.add( istream->readInt() );
     }
 
-    log.printEnd( " OK" );
+    log.unindent();
+    log.println( "}" );
   }
 
   void Orbis::write( OutputStream* ostream ) const

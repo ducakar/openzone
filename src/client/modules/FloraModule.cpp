@@ -90,7 +90,7 @@ namespace client
     }
   }
 
-  void FloraModule::init()
+  void FloraModule::registerLua() const
   {
     OZ_LUA_FUNC( ozFloraGetDensity );
     OZ_LUA_FUNC( ozFloraSetDensity );
