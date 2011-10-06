@@ -21,6 +21,7 @@ add_library( client STATIC
   MD3.cpp
   MenuStage.cpp
   Mesh.cpp
+  Module.cpp
   Network.cpp
   OBJ.cpp
   OpenAL.cpp
@@ -61,6 +62,7 @@ add_library( client STATIC
   modules/MusicPlayer.cpp
   modules/MusicPlayerModule.cpp
   modules/ProfileModule.cpp
+  modules/QuestModule.cpp
 )
 add_dependencies( client nirvana matrix pch )
 

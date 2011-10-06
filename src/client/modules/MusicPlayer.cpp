@@ -118,15 +118,16 @@ namespace ui
 
       if( isPlaying ) {
         isPlaying = false;
+        title.setText( "" );
         sound.stopMusic();
       }
-      doShow = false;
+      isVisible = false;
       return;
     }
 
     musicPlayerEnabled:;
 
-    doShow = true;
+    isVisible = true;
 
     if( isPlaying && !sound.isMusicPlaying() ) {
       int nTracks = library.musics.length();
@@ -145,7 +146,7 @@ namespace ui
 
   bool MusicPlayer::onMouseEvent()
   {
-    if( !doShow ) {
+    if( !isVisible ) {
       return false;
     }
     else {
@@ -155,7 +156,7 @@ namespace ui
 
   void MusicPlayer::onDraw()
   {
-    if( !doShow ) {
+    if( !isVisible ) {
       return;
     }
 
@@ -171,7 +172,7 @@ namespace ui
       title( width / 2, 32, ALIGN_HCENTRE, Font::SMALL, "" ),
       trackLabel( 39, 14, ALIGN_CENTRE, Font::SMALL, "0" ),
       volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, "" ),
-      currentTrack( 0 ), isPlaying( false ), doShow( true )
+      currentTrack( 0 ), isPlaying( false ), isVisible( true )
   {
     flags = UPDATE_BIT;
 
@@ -186,6 +187,10 @@ namespace ui
     add( new Button( "x", stopTrack, 30, 20 ), 122, 4 );
     add( new Button( ">>", nextTrack, 30, 20 ), 156, 4 );
     add( new Button( "+", volumeUp, 20, 20 ), 216, 4 );
+
+    if( !ui::mouse.doShow ) {
+      show( false );
+    }
   }
 
   MusicPlayer::~MusicPlayer()

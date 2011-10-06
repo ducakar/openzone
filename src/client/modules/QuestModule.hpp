@@ -1,5 +1,5 @@
 /*
- *  GalileoModule.hpp
+ *  QuestModule.hpp
  *
  *  [description]
  *
@@ -14,47 +14,48 @@
 #include "client/Module.hpp"
 #include "client/Lua.hpp"
 
-#include "client/modules/GalileoFrame.hpp"
-
 namespace oz
 {
 namespace client
 {
 
-  class GalileoModule : public Module
+  struct Quest
   {
-#ifndef OZ_TOOLS
-    private:
+    enum State
+    {
+      PENDING,
+      SUCCESSFUL,
+      FAILED
+    };
 
-      ui::GalileoFrame* galileoFrame;
+    String title;
+    String description;
+    int    state;
 
+    explicit Quest( const char* title, const char* description, int state );
+  };
+
+  class QuestModule : public Module
+  {
     public:
 
-      Vector<Point3> markers;
-
-      GalileoModule();
+      HashString<Quest> quests;
 
       virtual void read( InputStream* istream );
       virtual void write( OutputStream* ostream ) const;
 
-      virtual void load();
       virtual void unload();
 
       virtual void init();
 
     private:
 
-      OZ_LUA_API( ozGalileoAddMarker );
+      OZ_LUA_API( ozQuestAdd );
+      OZ_LUA_API( ozQuestEnd );
 
-#else
-    public:
-
-      virtual void prebuild();
-
-#endif
   };
 
-  extern GalileoModule galileoModule;
+  extern QuestModule questModule;
 
 }
 }

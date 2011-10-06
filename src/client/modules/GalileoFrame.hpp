@@ -22,13 +22,24 @@ namespace ui
 
   class GalileoFrame : public Frame
   {
+    private:
+
+      uint mapTexId;
+      uint arrowTexId;
+      uint markerTexId;
+      bool isVisible;
+
+      uint loadTexture( const char* path ) const;
+
     protected:
 
+      virtual bool onMouseEvent();
       virtual void onDraw();
 
     public:
 
       GalileoFrame();
+      virtual ~GalileoFrame();
 
   };
 

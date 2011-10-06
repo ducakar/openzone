@@ -31,7 +31,7 @@ namespace ui
       int   currentTrack;
       int   volume;
       bool  isPlaying;
-      bool  doShow;
+      bool  isVisible;
 
       static void prevTrack( Button* sender );
       static void nextTrack( Button* sender );

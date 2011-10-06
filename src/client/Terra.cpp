@@ -361,8 +361,8 @@ namespace client
             vertex.pos[1] = pos.y;
             vertex.pos[2] = pos.z;
 
-            vertex.texCoord[0] = float( x ) / float( oz::Terra::VERTS );
-            vertex.texCoord[1] = float( y ) / float( oz::Terra::VERTS );
+            vertex.texCoord[0] = 1.0f - float( x ) / float( oz::Terra::VERTS );
+            vertex.texCoord[1] = 1.0f - float( y ) / float( oz::Terra::VERTS );
 
             vertex.normal[0] = normal.x;
             vertex.normal[1] = normal.y;

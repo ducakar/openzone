@@ -20,6 +20,7 @@ add_library( client-tools STATIC
   ../client/MD2.cpp
   ../client/MD3.cpp
   ../client/Mesh.cpp
+  ../client/Module.cpp
   ../client/OBJ.cpp
   ../client/OpenGL.cpp
   ../client/Render.cpp
@@ -27,6 +28,7 @@ add_library( client-tools STATIC
   ../client/Terra.cpp
   ../client/common.cpp
   ../client/ui/Mouse.cpp
+  ../client/modules/GalileoModule.cpp
 )
 add_dependencies( client-tools matrix-tools pch )
 

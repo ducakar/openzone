@@ -187,6 +187,7 @@ namespace client
       static uint loadRawTexture( const char* path, bool wrap = true,
                                   int magFilter = DEFAULT_MAG_FILTER,
                                   int minFilter = DEFAULT_MIN_FILTER );
+
       static void writeTexture( uint id, OutputStream* stream );
 
 #endif
