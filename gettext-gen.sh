@@ -1,11 +1,11 @@
 #!/bin/sh
 
-sources='src/*/*.hpp src/*/*/*.hpp src/*/*.cpp src/*/*/*.cpp'
+sources='src/*/*.hpp src/*/*/*.hpp src/*/*.cpp src/*/*/*.cpp share/openzone/lua/*/*.lua'
 classes='share/openzone/class/*.rc'
 output='share/locale/openzone.pot'
 
 rm -rf $output
-xgettext --omit-header -c++ -s -d openzone -o $output $sources
+xgettext --omit-header -C -s -kozGettext -d openzone -o $output $sources
 
 echo >> $output
 echo '#' >> $output
@@ -44,16 +44,4 @@ for weapon in $weapons; do
     echo "msgid \"$weapon\"" >> $output
     echo "msgstr \"\"" >> $output
   fi
-done
-
-echo >> $output
-echo '#' >> $output
-echo '# share/lua/*/*.lua' >> $output
-echo '#' >> $output
-
-lua_src="share/openzone/lua/*/*.lua"
-
-for lua_file in $lua_src; do
-  cat $lua_file | grep ' *ozGettext( ".*" )[,]*$' | \
-      sed 's/ *ozGettext( "\(.*\)" )$/\nmsgid "\1"\nmsgstr ""/' >> $output
 done

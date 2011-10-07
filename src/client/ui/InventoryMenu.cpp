@@ -256,7 +256,14 @@ namespace ui
 
       if( master == null && ( taggedItem->flags & Object::USE_FUNC_BIT ) ) {
         uint texId = useTexId;
+
         if( taggedItem->flags & Object::WEAPON_BIT ) {
+          const WeaponClass* clazz = static_cast<const WeaponClass*>( taggedClazz );
+
+          if( !clazz->allowedUsers.contains( containerClazz ) ) {
+            goto noIcon;
+          }
+
           texId = taggedItem->index == camera.botObj->weapon ? unequipTexId : equipTexId;
         }
 
@@ -265,6 +272,7 @@ namespace ui
         shape.fill( x + width - ICON_SIZE - 4, y + 4, ICON_SIZE, ICON_SIZE );
         glBindTexture( GL_TEXTURE_2D, 0 );
       }
+      noIcon:;
 
       if( !taggedClazz->description.isEmpty() ) {
         itemDesc.setText( "%s - %s", taggedClazz->title.cstr(), taggedClazz->description.cstr() );

@@ -113,7 +113,9 @@ namespace ui
         }
       }
       else if( taggedObj->flags & Object::WEAPON_BIT ) {
-        if( bot->items.length() < botClazz->nItems ) {
+        const WeaponClass* clazz = static_cast<const WeaponClass*>( taggedObj->clazz );
+
+        if( clazz->allowedUsers.contains( botClazz ) ) {
           glBindTexture( GL_TEXTURE_2D, equipTexId );
           shape.fill( rightIconX, rightIconY, ICON_SIZE, ICON_SIZE );
         }

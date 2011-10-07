@@ -49,7 +49,9 @@ namespace ui
     }
   }
 
-  BuildMenu::BuildMenu() : Frame( -8, -8, 240, 250, gettext( "Create" ) )
+  BuildMenu::BuildMenu() :
+      Frame( 8, -308 - Font::INFOS[Font::SMALL].height - Font::INFOS[Font::LARGE].height,
+             240, 250, gettext( "Create" ) )
   {
     add( new BuildButton( "smallCrate", createObject, 110, 15 ), 5, -40 );
     add( new BuildButton( "bigCrate", createObject, 110, 15 ), 5, -60 );
@@ -69,7 +71,7 @@ namespace ui
     add( new BuildButton( "droid", createObject, 110, 15 ), -115, -120 );
     add( new BuildButton( "droid.OOM-9", createObject, 110, 15 ), -115, -140 );
     add( new BuildButton( "raptor", createObject, 110, 15 ), -115, -160 );
-    add( new BuildButton( "tank", createObject, 110, 15 ), -115, -180 );
+    add( new BuildButton( "hoverTank", createObject, 110, 15 ), -115, -180 );
   }
 
 }

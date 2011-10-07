@@ -22,6 +22,9 @@ namespace client
 
   QuestModule questModule;
 
+  Quest::Quest()
+  {}
+
   Quest::Quest( const char* title_, const char* description_, const Point3& place_, int state_ ) :
       title( title_ ), description( description_ ), place( place_ ), state( state_ )
   {}
@@ -30,13 +33,12 @@ namespace client
   {
     int nQuests = istream->readInt();
     for( int i = 0; i < nQuests; ++i ) {
-      String id          = istream->readString();
       String title       = istream->readString();
       String description = istream->readString();
       Point3 place       = istream->readPoint3();
       int    state       = istream->readInt();
 
-      quests.add( id, Quest( title, description, place, state ) );
+      quests.add( Quest( title, description, place, state ) );
     }
   }
 
@@ -44,11 +46,10 @@ namespace client
   {
     ostream->writeInt( quests.length() );
     foreach( quest, quests.citer() ) {
-      ostream->writeString( quest.key() );
-      ostream->writeString( quest.value().title );
-      ostream->writeString( quest.value().description );
-      ostream->writePoint3( quest.value().place );
-      ostream->writeInt( quest.value().state );
+      ostream->writeString( quest->title );
+      ostream->writeString( quest->description );
+      ostream->writePoint3( quest->place );
+      ostream->writeInt( quest->state );
     }
   }
 
@@ -85,30 +86,27 @@ namespace client
 
   int QuestModule::ozQuestAdd( lua_State* l )
   {
-    ARG( 6 );
+    ARG( 5 );
 
-    const char* id = tostring( 1 );
-    if( questModule.quests.contains( id ) ) {
-      ERROR( "quest id already exists" );
-    }
+    questModule.quests.add( Quest( tostring( 1 ),
+                                   tostring( 2 ),
+                                   Point3( tofloat( 3 ), tofloat( 4 ), tofloat( 5 ) ),
+                                   Quest::PENDING ) );
 
-    questModule.quests.add( id, Quest( tostring( 2 ),
-                                       tostring( 3 ),
-                                       Point3( tofloat( 4 ), tofloat( 5 ), tofloat( 6 ) ),
-                                       Quest::PENDING ) );
-    return 0;
+    pushint( questModule.quests.length() - 1 );
+    return 1;
   }
 
   int QuestModule::ozQuestEnd( lua_State* l )
   {
     ARG( 2 );
 
-    Quest* quest = questModule.quests.find( tostring( 1 ) );
-    if( quest == null ) {
+    int id = toint( 1 );
+    if( uint( id ) >= uint( questModule.quests.length() ) ) {
       ERROR( "invalid quest id" );
     }
 
-    quest->state = toint( 2 );
+    questModule.quests[id].state = tobool( 2 ) ? Quest::SUCCESSFUL : Quest::FAILED;
     return 0;
   }
 

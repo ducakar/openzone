@@ -187,10 +187,6 @@ namespace ui
     add( new Button( "x", stopTrack, 30, 20 ), 122, 4 );
     add( new Button( ">>", nextTrack, 30, 20 ), 156, 4 );
     add( new Button( "+", volumeUp, 20, 20 ), 216, 4 );
-
-    if( !ui::mouse.doShow ) {
-      show( false );
-    }
   }
 
   MusicPlayer::~MusicPlayer()

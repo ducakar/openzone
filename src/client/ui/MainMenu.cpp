@@ -95,7 +95,7 @@ namespace ui
 
     add( new Button( gettext( "Tutorial" ), loadTutorial, 300, 20 ), 50, -150 );
     add( new Button( gettext( "Test World" ), loadTest, 300, 20 ), 50, -180 );
-    add( new Button( gettext( "Mission 1: Wine & Farm" ), loadCvicek, 300, 20 ), 50, -210 );
+    add( new Button( gettext( "Mission 1: Cvicek" ), loadCvicek, 300, 20 ), 50, -210 );
     add( new Button( gettext( "Exit" ), exit, 300, 20 ), 50, -270 );
   }
 

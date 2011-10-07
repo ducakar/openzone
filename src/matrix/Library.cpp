@@ -542,6 +542,14 @@ namespace oz
     }
     dirList.dealloc();
 
+    foreach( clazz, classes.citer() ) {
+      const WeaponClass* weaponClass = dynamic_cast<const WeaponClass*>( clazz.value() );
+
+      if( weaponClass != null ) {
+        const_cast<WeaponClass*>( weaponClass )->fillAllowedUsers();
+      }
+    }
+
     log.unindent();
     log.println( "}" );
     log.unindent();
