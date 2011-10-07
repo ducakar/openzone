@@ -94,11 +94,14 @@ namespace ui
     float fWidth  = float( width );
     float fHeight = float( height );
 
-    glBindTexture( GL_TEXTURE_2D, markerTexId );
+    const QuestFrame* questFrame = questModule.questFrame;
+    if( questFrame != null && questFrame->currentQuest != -1 ) {
+      const Quest& quest = questModule.quests[questFrame->currentQuest];
 
-    foreach( quest, questModule.quests.citer() ) {
-      float mapX = oX + ( Orbis::DIM + quest->place.x ) / ( 2.0f*Orbis::DIM ) * fWidth;
-      float mapY = oY + ( Orbis::DIM + quest->place.y ) / ( 2.0f*Orbis::DIM ) * fHeight;
+      glBindTexture( GL_TEXTURE_2D, markerTexId );
+
+      float mapX = oX + ( Orbis::DIM + quest.place.x ) / ( 2.0f*Orbis::DIM ) * fWidth;
+      float mapY = oY + ( Orbis::DIM + quest.place.y ) / ( 2.0f*Orbis::DIM ) * fHeight;
 
       tf.model = Mat44::translation( Vec3( mapX, mapY, 0.0f ) );
       tf.model.scale( Vec3( 16.0f, 16.0f, 0.0f ) );
@@ -132,10 +135,6 @@ namespace ui
   {
     arrowTexId = loadTexture( "ui/galileo/arrow.ozcTex" );
     markerTexId = loadTexture( "ui/galileo/marker.ozcTex" );
-
-    if( !ui::mouse.doShow ) {
-      show( false );
-    }
   }
 
   GalileoFrame::~GalileoFrame()

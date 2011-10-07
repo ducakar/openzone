@@ -2144,7 +2144,10 @@ namespace client
         ERROR( "object is not a weapon" );
       }
 
-      bot->weapon = index;
+      const WeaponClass* clazz = static_cast<const WeaponClass*>( weapon->clazz );
+      if( clazz->allowedUsers.contains( bot->clazz ) ) {
+        bot->weapon = index;
+      }
     }
 
     pushbool( true );

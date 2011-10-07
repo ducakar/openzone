@@ -23,7 +23,7 @@ namespace ui
 {
 
   DebugFrame::DebugFrame() :
-      Frame( 0, -8, 560, 10 + 6 * ( Font::INFOS[Font::MONO].height + 2 ), gettext( "Debug" ) )
+      Frame( 0, -38, 560, 10 + 7 * ( Font::INFOS[Font::MONO].height + 2 ), gettext( "Debug" ) )
   {
     flags = PINNED_BIT;
 
@@ -31,12 +31,13 @@ namespace ui
 
     int height = textHeight + 2;
 
-    camPosRot.set( 5, 5 + height * 5, ALIGN_NONE, Font::MONO, "" );
+    camPosRot.set( 5, 5 + height * 6, ALIGN_NONE, Font::MONO, "" );
 
-    botPosRot.set( 5, 5 + height * 4, ALIGN_NONE, Font::MONO, "" );
-    botVelMom.set( 5, 5 + height * 3, ALIGN_NONE, Font::MONO, "" );
-    botFlagsState.set( 5, 5 + height * 2, ALIGN_NONE, Font::MONO, "" );
+    botPosRot.set( 5, 5 + height * 5, ALIGN_NONE, Font::MONO, "" );
+    botVelMom.set( 5, 5 + height * 4, ALIGN_NONE, Font::MONO, "" );
+    botFlagsState.set( 5, 5 + height * 3, ALIGN_NONE, Font::MONO, "" );
 
+    tagPos.set( 5, 5 + height * 2, ALIGN_NONE, Font::MONO, "" );
     tagVelMom.set( 5, 5 + height * 1, ALIGN_NONE, Font::MONO, "" );
     tagFlags.set( 5, 5 + height * 0, ALIGN_NONE, Font::MONO, "" );
   }
@@ -81,6 +82,9 @@ namespace ui
 
     if( camera.tagged != -1 && ( camera.taggedObj->flags & Object::DYNAMIC_BIT ) ) {
       const Dynamic* dyn = static_cast<const Dynamic*>( camera.taggedObj );
+
+      tagPos.setText( "tagDyn.pos(%.2f %.2f %.2f)", dyn->p.x, dyn->p.y, dyn->p.z );
+      tagPos.draw( this );
 
       tagVelMom.setText( "tagDyn.vel(%.2f %.2f %.2f) tagDyn.mom(%.2f %.2f %.2f)",
                          dyn->velocity.x, dyn->velocity.y, dyn->velocity.z,

@@ -28,6 +28,7 @@ namespace ui
       Label botPosRot;
       Label botVelMom;
       Label botFlagsState;
+      Label tagPos;
       Label tagVelMom;
       Label tagFlags;
 

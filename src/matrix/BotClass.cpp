@@ -156,9 +156,17 @@ namespace oz
 
     for( int i = 0; i < obj->items.length(); ++i ) {
       if( weaponItem == i ) {
-        const Dynamic* item = static_cast<const Dynamic*>( orbis.objects[ obj->items[i] ] );
+        const ObjectClass* itemClazz = orbis.objects[ obj->items[i] ]->clazz;
+        const WeaponClass* weaponClazz = dynamic_cast<const WeaponClass*>( itemClazz );
 
-        obj->weapon = item->index;
+        if( weaponClazz == null ) {
+          throw Exception( "Default weapon of '" + name + "' is of non-weapon class" );
+        }
+        else if( !weaponClazz->allowedUsers.contains( this ) ) {
+          throw Exception( "Default weapon of '" + name + "' is not allowed for this class" );
+        }
+
+        obj->weapon = obj->items[i];
         break;
       }
     }

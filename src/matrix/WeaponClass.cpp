@@ -12,6 +12,7 @@
 #include "matrix/WeaponClass.hpp"
 
 #include "matrix/Weapon.hpp"
+#include "matrix/Library.hpp"
 
 namespace oz
 {
@@ -91,6 +92,29 @@ namespace oz
     obj->readFull( istream );
 
     return obj;
+  }
+
+  void WeaponClass::fillAllowedUsers()
+  {
+    int underscore = name.index( '_' );
+    if( underscore == -1 ) {
+      throw Exception( "Weapon class file must be named <botClass>_weapon.<weapon>.rc" );
+    }
+
+    String matchClass = name.substring( 0, underscore );
+
+    foreach( clazz, library.classes.citer() ) {
+      String botClassBase = clazz.value()->name;
+
+      int dot = botClassBase.index( '.' );
+      if( dot != -1 ) {
+        botClassBase = botClassBase.substring( 0, dot );
+      }
+
+      if( matchClass.equals( botClassBase ) ) {
+        allowedUsers.add( clazz.value() );
+      }
+    }
   }
 
 }

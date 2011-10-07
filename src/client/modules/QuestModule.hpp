@@ -25,9 +25,9 @@ namespace client
   {
     enum State
     {
-      PENDING,
-      SUCCESSFUL,
-      FAILED
+      PENDING    = 0,
+      SUCCESSFUL = 1,
+      FAILED     = 2
     };
 
     String title;
@@ -35,18 +35,17 @@ namespace client
     Point3 place;
     int    state;
 
+    Quest();
     explicit Quest( const char* title, const char* description, const Point3& place, int state );
   };
 
   class QuestModule : public Module
   {
-    private:
-
-      ui::QuestFrame* questFrame;
-
     public:
 
-      HashString<Quest> quests;
+      Vector<Quest> quests;
+
+      ui::QuestFrame* questFrame;
 
       virtual void read( InputStream* istream );
       virtual void write( OutputStream* ostream ) const;

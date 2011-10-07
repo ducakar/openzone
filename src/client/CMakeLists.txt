@@ -62,6 +62,7 @@ add_library( client STATIC
   modules/MusicPlayer.cpp
   modules/MusicPlayerModule.cpp
   modules/ProfileModule.cpp
+
   modules/QuestFrame.cpp
   modules/QuestModule.cpp
 )

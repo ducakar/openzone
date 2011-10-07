@@ -37,6 +37,13 @@ namespace oz
   {
     hard_assert( parent == -1 || parent == user->index );
 
+    const WeaponClass* clazz = static_cast<const WeaponClass*>( this->clazz );
+
+    if( !clazz->allowedUsers.contains( user->clazz ) ) {
+      hard_assert( user->weapon != index );
+      return false;
+    }
+
     if( parent == -1 && user->items.length() < user->clazz->nItems ) {
       user->items.add( index );
       parent = user->index;

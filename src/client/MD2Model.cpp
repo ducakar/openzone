@@ -97,7 +97,10 @@ namespace client
     }
 
     if( parent == null ) {
-      if( bot->h - h > Math::TAU / 2.0f ) {
+      if( !camera.isExternal ) {
+        h = bot->h;
+      }
+      else if( bot->h - h > Math::TAU / 2.0f ) {
         h = bot->h + TURN_SMOOTHING_COEF * ( h + Math::TAU - bot->h );
       }
       else if( h - bot->h > Math::TAU / 2.0f ) {

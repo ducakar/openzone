@@ -90,7 +90,7 @@ namespace oz
 #endif
 
       HashString<const ObjectClass::InitFunc, 8> baseClasses;
-      HashString<const ObjectClass*, 64> classes;
+      HashString<const ObjectClass*, 128> classes;
 
       int textureIndex( const char* name ) const;
       int soundIndex( const char* name ) const;
@@ -102,8 +102,7 @@ namespace oz
       int nameListIndex( const char* name ) const;
 
 #ifndef OZ_TOOLS
-      Struct* createStruct( int index, int id, const Point3& p,
-                            Struct::Rotation rot ) const;
+      Struct* createStruct( int index, int id, const Point3& p, Struct::Rotation rot ) const;
       Struct* createStruct( int index, int id, InputStream* istream ) const;
       Object* createObject( int index, const char* name, const Point3& p ) const;
       Object* createObject( int index, const char* name, InputStream* istream ) const;

@@ -20,6 +20,8 @@ namespace oz
   {
     public:
 
+      Map<const ObjectClass*> allowedUsers;
+
       String onShot;
 
       int    nRounds;
@@ -29,6 +31,8 @@ namespace oz
 
       virtual Object* create( int index, const Point3& pos ) const;
       virtual Object* create( int index, InputStream* istream ) const;
+
+      void fillAllowedUsers();
   };
 
 }
