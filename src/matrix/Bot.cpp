@@ -64,6 +64,10 @@ namespace oz
 
   void Bot::onHit( const Hit* hit, float hitMomentum )
   {
+    if( state & DEAD_BIT ) {
+      return;
+    }
+
     if( hit->normal.z >= Physics::FLOOR_NORMAL_Z ) {
       hard_assert( hitMomentum <= 0.0f );
 

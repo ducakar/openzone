@@ -46,7 +46,7 @@ namespace ui
   {
     Frame::onDraw();
 
-    camPosRot.setText( "cam.p(%.2f %.2f %.2f) cam.relRot(%.2f %.2f)",
+    camPosRot.setText( "cam.p(%+.2f %+.2f %+.2f) cam.relRot(%+.2f %+.2f)",
                        camera.p.x, camera.p.y, camera.p.z,
                        Math::deg( camera.h ), Math::deg( camera.v ) );
     camPosRot.draw( this );
@@ -54,18 +54,18 @@ namespace ui
     if( camera.bot != -1 ) {
       const Bot* bot = static_cast<const Bot*>( camera.botObj );
 
-      botPosRot.setText( "bot.pos(%.2f %.2f %.2f) bot.rot(%.2f %.2f)",
+      botPosRot.setText( "bot.pos(%+.2f %+.2f %+.2f) bot.rot(%+.2f %+.2f)",
                          bot->p.x, bot->p.y, bot->p.z,
                          Math::deg( bot->h ), Math::deg( bot->v ) );
       botPosRot.draw( this );
 
-      botVelMom.setText( "bot.vel(%.2f %.2f %.2f) bot.mom(%.2f %.2f %.2f) bot.wd %.2f",
+      botVelMom.setText( "bot.vel(%+.2f %+.2f %+.2f) bot.mom(%+.2f %+.2f %+.2f) bot.wd %+.2f",
                          bot->velocity.x, bot->velocity.y, bot->velocity.z,
                          bot->momentum.x, bot->momentum.y, bot->momentum.z,
                          bot->depth );
       botVelMom.draw( this );
 
-      botFlagsState.setText( "d %d fl %d lw %d h %d fr %d b %d iw %d s %d ld %d ovlp %d sr %.3f",
+      botFlagsState.setText( "d %d fl %d lw %d h %d fr %d b %d iw %d s %d ld %d ovlp %d sr %+.3f",
                              ( bot->flags & Object::DISABLED_BIT ) != 0,
                              ( bot->flags & Object::ON_FLOOR_BIT ) != 0,
                              bot->lower,
@@ -83,10 +83,10 @@ namespace ui
     if( camera.tagged != -1 && ( camera.taggedObj->flags & Object::DYNAMIC_BIT ) ) {
       const Dynamic* dyn = static_cast<const Dynamic*>( camera.taggedObj );
 
-      tagPos.setText( "tagDyn.pos(%.2f %.2f %.2f)", dyn->p.x, dyn->p.y, dyn->p.z );
+      tagPos.setText( "tagDyn.pos(%+.2f %+.2f %+.2f)", dyn->p.x, dyn->p.y, dyn->p.z );
       tagPos.draw( this );
 
-      tagVelMom.setText( "tagDyn.vel(%.2f %.2f %.2f) tagDyn.mom(%.2f %.2f %.2f)",
+      tagVelMom.setText( "tagDyn.vel(%+.2f %+.2f %+.2f) tagDyn.mom(%+.2f %+.2f %+.2f)",
                          dyn->velocity.x, dyn->velocity.y, dyn->velocity.z,
                          dyn->momentum.x, dyn->momentum.y, dyn->momentum.z );
       tagVelMom.draw( this );

@@ -393,6 +393,8 @@ namespace oz
     OZ_LUA_FUNC( ozObjHeadingFromSelf );
     OZ_LUA_FUNC( ozObjPitchFromSelf );
     OZ_LUA_FUNC( ozObjPitchFromSelfEye );
+    OZ_LUA_FUNC( ozObjIsVisibleFromSelf );
+    OZ_LUA_FUNC( ozObjIsVisibleFromSelfEye );
 
     OZ_LUA_FUNC( ozObjBindEvents );
     OZ_LUA_FUNC( ozObjBindItems );
@@ -430,6 +432,8 @@ namespace oz
      * Bot
      */
 
+    OZ_LUA_FUNC( ozBotBindPilot );
+
     OZ_LUA_FUNC( ozBotGetName );
     OZ_LUA_FUNC( ozBotSetName );
     OZ_LUA_FUNC( ozBotGetMindFunc );
@@ -444,6 +448,7 @@ namespace oz
     OZ_LUA_FUNC( ozBotSetV );
     OZ_LUA_FUNC( ozBotAddV );
     OZ_LUA_FUNC( ozBotGetDir );
+
     OZ_LUA_FUNC( ozBotGetStamina );
     OZ_LUA_FUNC( ozBotSetStamina );
     OZ_LUA_FUNC( ozBotAddStamina );
@@ -467,15 +472,27 @@ namespace oz
     OZ_LUA_FUNC( ozBotSetRunning );
     OZ_LUA_FUNC( ozBotToggleRunning );
 
+    OZ_LUA_FUNC( ozBotSetGesture );
+
     OZ_LUA_FUNC( ozBotSetWeaponItem );
 
     OZ_LUA_FUNC( ozBotHeal );
     OZ_LUA_FUNC( ozBotRearm );
     OZ_LUA_FUNC( ozBotKill );
 
+    OZ_LUA_FUNC( ozBotIsVisibleFromSelfEyeToEye );
+
     /*
      * Vehicle
      */
+
+    OZ_LUA_FUNC( ozVehicleGetH );
+    OZ_LUA_FUNC( ozVehicleSetH );
+    OZ_LUA_FUNC( ozVehicleAddH );
+    OZ_LUA_FUNC( ozVehicleGetV );
+    OZ_LUA_FUNC( ozVehicleSetV );
+    OZ_LUA_FUNC( ozVehicleAddV );
+    OZ_LUA_FUNC( ozVehicleGetDir );
 
     OZ_LUA_FUNC( ozVehicleService );
 
@@ -584,6 +601,12 @@ namespace oz
     OZ_LUA_CONST( "OZ_BOT_MOVING_BIT",              Bot::MOVING_BIT );
     OZ_LUA_CONST( "OZ_BOT_GRAB_BIT",                Bot::GRAB_BIT );
     OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
+
+    OZ_LUA_CONST( "OZ_BOT_GESTURE0_BIT",            Bot::GESTURE0_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE1_BIT",            Bot::GESTURE1_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE2_BIT",            Bot::GESTURE2_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE3_BIT",            Bot::GESTURE3_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE4_BIT",            Bot::GESTURE4_BIT );
 
     newtable();
     setglobal( "ozLocalData" );
@@ -1157,7 +1180,7 @@ namespace oz
 
     float dx = lua.str->p.x - lua.self->p.x;
     float dy = lua.str->p.y - lua.self->p.y;
-    float angle = Math::deg( Math::atan2( -dx, dy ) );
+    float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
     pushfloat( angle );
     return 1;
@@ -1766,7 +1789,7 @@ namespace oz
 
     float dx = lua.obj->p.x - lua.self->p.x;
     float dy = lua.obj->p.y - lua.self->p.y;
-    float angle = Math::deg( Math::atan2( -dx, dy ) );
+    float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
     pushfloat( angle );
     return 1;
@@ -1802,6 +1825,35 @@ namespace oz
     float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
     pushfloat( angle );
+    return 1;
+  }
+
+  int Lua::ozObjIsVisibleFromSelf( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+
+    Point3 eye    = Point3( lua.self->p.x, lua.self->p.y, lua.self->p.z );
+    Vec3   vector = lua.obj->p - eye;
+
+    collider.translate( eye, vector, lua.obj );
+    pushbool( collider.hit.ratio == 1.0f );
+    return 1;
+  }
+
+  int Lua::ozObjIsVisibleFromSelfEye( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+    SELF_BOT();
+
+    Point3 eye    = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+    Vec3   vector = lua.obj->p - eye;
+
+    collider.translate( eye, vector, lua.obj );
+    pushbool( collider.hit.ratio == 1.0f );
     return 1;
   }
 
@@ -2055,6 +2107,16 @@ namespace oz
   /*
    * Bot
    */
+
+  int Lua::ozBotBindPilot( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    lua.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
+    return 0;
+  }
 
   int Lua::ozBotGetName( lua_State* l )
   {
@@ -2414,6 +2476,17 @@ namespace oz
     return 0;
   }
 
+  int Lua::ozBotSetGesture( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_BOT();
+
+    bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE4_BIT );
+    bot->state |= toint( 1 );
+    return 0;
+  }
+
   int Lua::ozBotSetWeaponItem( lua_State* l )
   {
     ARG( 1 );
@@ -2481,9 +2554,119 @@ namespace oz
     return 0;
   }
 
+  int Lua::ozBotIsVisibleFromSelfEyeToEye( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+    OBJ_BOT();
+    SELF_BOT();
+
+    Point3 eye    = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+    Vec3   vector = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ ) - eye;
+
+    collider.translate( eye, vector, lua.obj );
+    pushbool( collider.hit.ratio == 1.0f );
+    return 1;
+  }
+
   /*
    * Vehicle
    */
+
+  int Lua::ozVehicleGetH( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    pushfloat( Math::deg( vehicle->h ) );
+    return 1;
+  }
+
+  int Lua::ozVehicleSetH( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    vehicle->h = Math::rad( tofloat( 1 ) );
+    vehicle->h = Math::mod( vehicle->h + Math::TAU, Math::TAU );
+
+    vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+    return 0;
+  }
+
+  int Lua::ozVehicleAddH( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    vehicle->h += Math::rad( tofloat( 1 ) );
+    vehicle->h = Math::mod( vehicle->h + Math::TAU, Math::TAU );
+
+    vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+    return 0;
+  }
+
+  int Lua::ozVehicleGetV( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    pushfloat( Math::deg( vehicle->v ) );
+    return 1;
+  }
+
+  int Lua::ozVehicleSetV( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    vehicle->v = Math::rad( tofloat( 1 ) );
+    vehicle->v = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
+
+    vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+    return 0;
+  }
+
+  int Lua::ozVehicleAddV( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    vehicle->v += Math::rad( tofloat( 1 ) );
+    vehicle->v = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
+
+    vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+    return 0;
+  }
+
+  int Lua::ozVehicleGetDir( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+    float hvsc[6];
+
+    Math::sincos( vehicle->h, &hvsc[0], &hvsc[1] );
+    Math::sincos( vehicle->v, &hvsc[2], &hvsc[3] );
+
+    hvsc[4] = hvsc[2] * hvsc[0];
+    hvsc[5] = hvsc[2] * hvsc[1];
+
+    pushfloat( -hvsc[4] );
+    pushfloat(  hvsc[5] );
+    pushfloat( -hvsc[3] );
+
+    return 3;
+  }
 
   int Lua::ozVehicleService( lua_State* l )
   {

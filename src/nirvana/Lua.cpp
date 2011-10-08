@@ -352,6 +352,8 @@ namespace nirvana
     OZ_LUA_FUNC( ozObjHeadingFromSelf );
     OZ_LUA_FUNC( ozObjPitchFromSelf );
     OZ_LUA_FUNC( ozObjPitchFromSelfEye );
+    OZ_LUA_FUNC( ozObjIsVisibleFromSelf );
+    OZ_LUA_FUNC( ozObjIsVisibleFromSelfEye );
 
     OZ_LUA_FUNC( ozObjBindEvents );
     OZ_LUA_FUNC( ozObjBindItems );
@@ -382,6 +384,8 @@ namespace nirvana
      * Bot
      */
 
+    OZ_LUA_FUNC( ozBotBindPilot );
+
     OZ_LUA_FUNC( ozBotGetName );
 
     OZ_LUA_FUNC( ozBotGetState );
@@ -393,9 +397,15 @@ namespace nirvana
 
     OZ_LUA_FUNC( ozBotIsRunning );
 
+    OZ_LUA_FUNC( ozBotIsVisibleFromSelfEyeToEye );
+
     /*
      * Vehicle
      */
+
+    OZ_LUA_FUNC( ozVehicleGetH );
+    OZ_LUA_FUNC( ozVehicleGetV );
+    OZ_LUA_FUNC( ozVehicleGetDir );
 
     /*
      * Mind's bot
@@ -447,6 +457,8 @@ namespace nirvana
     OZ_LUA_FUNC( ozSelfIsRunning );
     OZ_LUA_FUNC( ozSelfSetRunning );
     OZ_LUA_FUNC( ozSelfToggleRunning );
+
+    OZ_LUA_FUNC( ozSelfSetGesture );
 
     OZ_LUA_FUNC( ozSelfBindEvents );
     OZ_LUA_FUNC( ozSelfBindItems );
@@ -547,6 +559,12 @@ namespace nirvana
     OZ_LUA_CONST( "OZ_BOT_MOVING_BIT",              Bot::MOVING_BIT );
     OZ_LUA_CONST( "OZ_BOT_GRAB_BIT",                Bot::GRAB_BIT );
     OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
+
+    OZ_LUA_CONST( "OZ_BOT_GESTURE0_BIT",            Bot::GESTURE0_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE1_BIT",            Bot::GESTURE1_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE2_BIT",            Bot::GESTURE2_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE3_BIT",            Bot::GESTURE3_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE4_BIT",            Bot::GESTURE4_BIT );
 
     newtable();
     setglobal( "ozLocalData" );
@@ -904,7 +922,7 @@ namespace nirvana
 
     float dx = lua.str->p.x - lua.self->p.x;
     float dy = lua.str->p.y - lua.self->p.y;
-    float angle = Math::deg( Math::atan2( -dx, dy ) );
+    float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
     pushfloat( angle );
     return 1;
@@ -1309,7 +1327,7 @@ namespace nirvana
 
     float dx = lua.obj->p.x - lua.self->p.x;
     float dy = lua.obj->p.y - lua.self->p.y;
-    float angle = Math::deg( Math::atan2( -dx, dy ) );
+    float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
 
     pushfloat( angle );
     return 1;
@@ -1345,6 +1363,35 @@ namespace nirvana
     float angle = Math::deg( Math::atan2( dz, Math::sqrt( dx*dx + dy*dy ) ) + Math::TAU / 4.0f );
 
     pushfloat( angle );
+    return 1;
+  }
+
+  int Lua::ozObjIsVisibleFromSelf( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+
+    Point3 eye    = Point3( lua.self->p.x, lua.self->p.y, lua.self->p.z );
+    Vec3   vector = lua.obj->p - eye;
+
+    collider.translate( eye, vector, lua.obj );
+    pushbool( collider.hit.ratio == 1.0f );
+    return 1;
+  }
+
+  int Lua::ozObjIsVisibleFromSelfEye( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+    SELF_BOT();
+
+    Point3 eye    = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+    Vec3   vector = lua.obj->p - eye;
+
+    collider.translate( eye, vector, lua.obj );
+    pushbool( collider.hit.ratio == 1.0f );
     return 1;
   }
 
@@ -1509,6 +1556,16 @@ namespace nirvana
    * Bot
    */
 
+  int Lua::ozBotBindPilot( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    lua.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
+    return 0;
+  }
+
   int Lua::ozBotGetName( lua_State* l )
   {
     ARG( 0 );
@@ -1604,9 +1661,67 @@ namespace nirvana
     return 1;
   }
 
+  int Lua::ozBotIsVisibleFromSelfEyeToEye( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+    OBJ_BOT();
+    SELF_BOT();
+
+    Point3 eye    = Point3( self->p.x, self->p.y, self->p.z + self->camZ );
+    Vec3   vector = Point3( bot->p.x, bot->p.y, bot->p.z + bot->camZ ) - eye;
+
+    collider.translate( eye, vector, lua.obj );
+    pushbool( collider.hit.ratio == 1.0f );
+    return 1;
+  }
+
   /*
    * Vehicle
    */
+
+  int Lua::ozVehicleGetH( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    pushfloat( Math::deg( vehicle->h ) );
+    return 1;
+  }
+
+  int Lua::ozVehicleGetV( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    pushfloat( Math::deg( vehicle->v ) );
+    return 1;
+  }
+
+  int Lua::ozVehicleGetDir( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+    float hvsc[6];
+
+    Math::sincos( vehicle->h, &hvsc[0], &hvsc[1] );
+    Math::sincos( vehicle->v, &hvsc[2], &hvsc[3] );
+
+    hvsc[4] = hvsc[2] * hvsc[0];
+    hvsc[5] = hvsc[2] * hvsc[1];
+
+    pushfloat( -hvsc[4] );
+    pushfloat(  hvsc[5] );
+    pushfloat( -hvsc[3] );
+
+    return 3;
+  }
 
   /*
    * Mind's bot
@@ -1976,6 +2091,16 @@ namespace nirvana
     ARG( 0 );
 
     lua.self->state ^= Bot::RUNNING_BIT;
+    return 0;
+  }
+
+  int Lua::ozSelfSetGesture( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+
+    lua.self->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE4_BIT );
+    lua.self->state |= toint( 1 );
     return 0;
   }
 

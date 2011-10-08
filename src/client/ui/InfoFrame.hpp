@@ -25,8 +25,11 @@ namespace ui
   {
     private:
 
+      static const int REFRESH_INTERVAL = 200;
+
       Text text;
       int  lastId;
+      int  lastTicks;
 
     protected:
 

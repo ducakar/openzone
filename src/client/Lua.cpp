@@ -425,6 +425,8 @@ namespace client
      * Bot
      */
 
+    OZ_LUA_FUNC( ozBotBindPilot );
+
     OZ_LUA_FUNC( ozBotGetName );
     OZ_LUA_FUNC( ozBotSetName );
     OZ_LUA_FUNC( ozBotGetMindFunc );
@@ -439,6 +441,7 @@ namespace client
     OZ_LUA_FUNC( ozBotSetV );
     OZ_LUA_FUNC( ozBotAddV );
     OZ_LUA_FUNC( ozBotGetDir );
+
     OZ_LUA_FUNC( ozBotGetStamina );
     OZ_LUA_FUNC( ozBotSetStamina );
     OZ_LUA_FUNC( ozBotAddStamina );
@@ -462,6 +465,8 @@ namespace client
     OZ_LUA_FUNC( ozBotSetRunning );
     OZ_LUA_FUNC( ozBotToggleRunning );
 
+    OZ_LUA_FUNC( ozBotSetGesture );
+
     OZ_LUA_FUNC( ozBotSetWeaponItem );
 
     OZ_LUA_FUNC( ozBotHeal );
@@ -471,6 +476,14 @@ namespace client
     /*
      * Vehicle
      */
+
+    OZ_LUA_FUNC( ozVehicleGetH );
+    OZ_LUA_FUNC( ozVehicleSetH );
+    OZ_LUA_FUNC( ozVehicleAddH );
+    OZ_LUA_FUNC( ozVehicleGetV );
+    OZ_LUA_FUNC( ozVehicleSetV );
+    OZ_LUA_FUNC( ozVehicleAddV );
+    OZ_LUA_FUNC( ozVehicleGetDir );
 
     OZ_LUA_FUNC( ozVehicleService );
 
@@ -598,6 +611,12 @@ namespace client
     OZ_LUA_CONST( "OZ_BOT_MOVING_BIT",              Bot::MOVING_BIT );
     OZ_LUA_CONST( "OZ_BOT_GRAB_BIT",                Bot::GRAB_BIT );
     OZ_LUA_CONST( "OZ_BOT_CROUCHING_BIT",           Bot::CROUCHING_BIT );
+
+    OZ_LUA_CONST( "OZ_BOT_GESTURE0_BIT",            Bot::GESTURE0_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE1_BIT",            Bot::GESTURE1_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE2_BIT",            Bot::GESTURE2_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE3_BIT",            Bot::GESTURE3_BIT );
+    OZ_LUA_CONST( "OZ_BOT_GESTURE4_BIT",            Bot::GESTURE4_BIT );
 
     hard_assert( gettop() == 0 );
 
@@ -1759,6 +1778,16 @@ namespace client
    * Bot
    */
 
+  int Lua::ozBotBindPilot( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    lua.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
+    return 0;
+  }
+
   int Lua::ozBotGetName( lua_State* l )
   {
     ARG( 0 );
@@ -2117,6 +2146,17 @@ namespace client
     return 0;
   }
 
+  int Lua::ozBotSetGesture( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_BOT();
+
+    bot->state &= ~( Bot::GESTURE0_BIT | Bot::GESTURE1_BIT | Bot::GESTURE2_BIT | Bot::GESTURE4_BIT );
+    bot->state |= toint( 1 );
+    return 0;
+  }
+
   int Lua::ozBotSetWeaponItem( lua_State* l )
   {
     ARG( 1 );
@@ -2187,6 +2227,100 @@ namespace client
   /*
    * Vehicle
    */
+
+  int Lua::ozVehicleGetH( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    pushfloat( Math::deg( vehicle->h ) );
+    return 1;
+  }
+
+  int Lua::ozVehicleSetH( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    vehicle->h = Math::rad( tofloat( 1 ) );
+    vehicle->h = Math::mod( vehicle->h + Math::TAU, Math::TAU );
+
+    vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+    return 0;
+  }
+
+  int Lua::ozVehicleAddH( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    vehicle->h += Math::rad( tofloat( 1 ) );
+    vehicle->h = Math::mod( vehicle->h + Math::TAU, Math::TAU );
+
+    vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+    return 0;
+  }
+
+  int Lua::ozVehicleGetV( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    pushfloat( Math::deg( vehicle->v ) );
+    return 1;
+  }
+
+  int Lua::ozVehicleSetV( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    vehicle->v = Math::rad( tofloat( 1 ) );
+    vehicle->v = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
+
+    vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+    return 0;
+  }
+
+  int Lua::ozVehicleAddV( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    vehicle->v += Math::rad( tofloat( 1 ) );
+    vehicle->v = clamp( vehicle->v, 0.0f, Math::TAU / 2.0f );
+
+    vehicle->rot = Quat::rotZYX( vehicle->h, 0.0f, vehicle->v - Math::TAU / 4.0f );
+    return 0;
+  }
+
+  int Lua::ozVehicleGetDir( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    // { hsine, hcosine, vsine, vcosine, vsine * hsine, vsine * hcosine }
+    float hvsc[6];
+
+    Math::sincos( vehicle->h, &hvsc[0], &hvsc[1] );
+    Math::sincos( vehicle->v, &hvsc[2], &hvsc[3] );
+
+    hvsc[4] = hvsc[2] * hvsc[0];
+    hvsc[5] = hvsc[2] * hvsc[1];
+
+    pushfloat( -hvsc[4] );
+    pushfloat(  hvsc[5] );
+    pushfloat( -hvsc[3] );
+
+    return 3;
+  }
 
   int Lua::ozVehicleService( lua_State* l )
   {
