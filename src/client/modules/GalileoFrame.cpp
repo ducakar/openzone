@@ -133,6 +133,8 @@ namespace ui
       mapTexId( 0 ), arrowTexId( 0 ), markerTexId( 0 ), isVisible( true )
 
   {
+    flags = PINNED_BIT;
+
     arrowTexId = loadTexture( "ui/galileo/arrow.ozcTex" );
     markerTexId = loadTexture( "ui/galileo/marker.ozcTex" );
   }

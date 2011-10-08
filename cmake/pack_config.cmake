@@ -10,6 +10,15 @@ set( CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README" )
 set( CPACK_SYSTEM_NAME "${OZ_SYSTEM_NAME}" )
 set( CPACK_PACKAGE_EXECUTABLES "bin/openzone" "OpenZone" ) # start menu entry
 set( CPACK_STRIP_FILES "bin/openzone" )
+
+set( CPACK_RPM_PACKAGE_VERSION "0.2.0rc1" )
+set( CPACK_RPM_PACKAGE_LICENSE "GPL3" )
+set( CPACK_RPM_PACKAGE_GROUP "Amusements/Games" )
+set( CPACK_RPM_PACKAGE_VENDOR "Davorin Učakar" )
+set( CPACK_RPM_PACKAGE_URL "http://openzone.github.com/" )
+set( CPACK_RPM_PACKAGE_DESCRIPTION "" )
+set( CPACK_RPM_COMPRESSION_TYPE "xz" )
+
 set( CPACK_NSIS_DISPLAY_NAME "OpenZone" )
 set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegStr HKLM \\\"SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Environment\\\" \\\"SDL_STDIO_REDIRECT\\\" \\\"0\\\"" )
 set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "${CPACK_NSIS_EXTRA_INSTALL_COMMANDS};ExecWait '\\\"$INSTDIR\\\\support\\\\oalinst.exe\\\"'" )

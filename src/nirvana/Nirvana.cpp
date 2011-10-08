@@ -50,11 +50,7 @@ namespace nirvana
       const Object* obj = orbis.objects[*i];
 
       if( obj != null && ( obj->flags & Object::BOT_BIT ) ) {
-        const BotClass* clazz = static_cast<const BotClass*>( obj->clazz );
-
-        if( !clazz->mindFunction.isEmpty() ) {
-          minds.add( obj->index, new Mind( obj->index ) );
-        }
+        minds.add( obj->index, new Mind( obj->index ) );
       }
     }
   }

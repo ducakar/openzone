@@ -102,7 +102,11 @@ namespace oz
 
   void System::enableHalt( bool value )
   {
+# ifdef NDEBUG
+    static_cast<void>( value );
+# else
     isHaltEnabled = value;
+# endif
   }
 
   void System::signalHandler( int signum )

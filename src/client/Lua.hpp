@@ -151,6 +151,7 @@ namespace client
       OZ_LUA_API( ozEventGet );
 
       OZ_LUA_API( ozObjBindIndex );
+      OZ_LUA_API( ozObjBindPilot );
       OZ_LUA_API( ozObjBindNext );
 
       OZ_LUA_API( ozObjIsNull );
@@ -289,6 +290,8 @@ namespace client
       OZ_LUA_API( ozVehicleSetV );
       OZ_LUA_API( ozVehicleAddV );
       OZ_LUA_API( ozVehicleGetDir );
+
+      OZ_LUA_API( ozVehicleEmbarkPilot );
 
       OZ_LUA_API( ozVehicleService );
 

@@ -354,6 +354,7 @@ namespace client
     OZ_LUA_FUNC( ozEventGet );
 
     OZ_LUA_FUNC( ozObjBindIndex );
+    OZ_LUA_FUNC( ozObjBindPilot );
     OZ_LUA_FUNC( ozObjBindNext );
 
     OZ_LUA_FUNC( ozObjIsNull );
@@ -484,6 +485,8 @@ namespace client
     OZ_LUA_FUNC( ozVehicleSetV );
     OZ_LUA_FUNC( ozVehicleAddV );
     OZ_LUA_FUNC( ozVehicleGetDir );
+
+    OZ_LUA_FUNC( ozVehicleEmbarkPilot );
 
     OZ_LUA_FUNC( ozVehicleService );
 
@@ -1168,6 +1171,16 @@ namespace client
       ERROR( "invalid object index" );
     }
     lua.obj = orbis.objects[index];
+    return 0;
+  }
+
+  int Lua::ozObjBindPilot( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    lua.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
     return 0;
   }
 
@@ -2320,6 +2333,34 @@ namespace client
     pushfloat( -hvsc[3] );
 
     return 3;
+  }
+
+  int Lua::ozVehicleEmbarkPilot( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    if( vehicle->pilot != -1 ) {
+      ERROR( "vehicle already has a pilot" );
+    }
+
+    int index = toint( 1 );
+    if( uint( index ) >= uint( orbis.objects.length() ) ) {
+      ERROR( "invalid bot index" );
+    }
+
+    Bot* bot = static_cast<Bot*>( orbis.objects[index] );
+    if( !( bot->flags & Object::BOT_BIT ) ) {
+      ERROR( "object is not a bot" );
+    }
+    if( bot->cell == null ) {
+      ERROR( "bot is already cut" );
+    }
+
+    vehicle->pilot = index;
+    bot->enter( vehicle->index );
+    return 0;
   }
 
   int Lua::ozVehicleService( lua_State* l )

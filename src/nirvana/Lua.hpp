@@ -125,6 +125,7 @@ namespace nirvana
       OZ_LUA_API( ozStrDistanceFromSelf );
       OZ_LUA_API( ozStrDistanceFromSelfEye );
       OZ_LUA_API( ozStrHeadingFromSelf );
+      OZ_LUA_API( ozStrRelativeHeadingFromSelf );
       OZ_LUA_API( ozStrPitchFromSelf );
       OZ_LUA_API( ozStrPitchFromSelfEye );
 
@@ -141,6 +142,7 @@ namespace nirvana
       OZ_LUA_API( ozEventGet );
 
       OZ_LUA_API( ozObjBindIndex );
+      OZ_LUA_API( ozObjBindPilot );
       OZ_LUA_API( ozObjBindSelf );
       OZ_LUA_API( ozObjBindNext );
 
@@ -169,6 +171,7 @@ namespace nirvana
       OZ_LUA_API( ozObjDistanceFromSelf );
       OZ_LUA_API( ozObjDistanceFromSelfEye );
       OZ_LUA_API( ozObjHeadingFromSelf );
+      OZ_LUA_API( ozObjRelativeHeadingFromSelf );
       OZ_LUA_API( ozObjPitchFromSelf );
       OZ_LUA_API( ozObjPitchFromSelfEye );
       OZ_LUA_API( ozObjIsVisibleFromSelf );

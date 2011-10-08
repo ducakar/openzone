@@ -174,7 +174,7 @@ namespace ui
       volumeLabel( 201, 14, ALIGN_CENTRE, Font::SMALL, "" ),
       currentTrack( 0 ), isPlaying( false ), isVisible( true )
   {
-    flags = UPDATE_BIT;
+    flags = UPDATE_BIT | PINNED_BIT;
 
     volume = int( config.get( "sound.volume.music", 0.50f ) * 10.0f + 0.5f );
     volume = clamp( volume, 0, 10 );
