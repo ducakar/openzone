@@ -171,6 +171,8 @@ namespace nirvana
       OZ_LUA_API( ozObjHeadingFromSelf );
       OZ_LUA_API( ozObjPitchFromSelf );
       OZ_LUA_API( ozObjPitchFromSelfEye );
+      OZ_LUA_API( ozObjIsVisibleFromSelf );
+      OZ_LUA_API( ozObjIsVisibleFromSelfEye );
 
       OZ_LUA_API( ozObjBindEvents );
       OZ_LUA_API( ozObjBindItems );
@@ -201,6 +203,8 @@ namespace nirvana
        * Bot
        */
 
+      OZ_LUA_API( ozBotBindPilot );
+
       OZ_LUA_API( ozBotGetName );
 
       OZ_LUA_API( ozBotGetState );
@@ -212,15 +216,15 @@ namespace nirvana
 
       OZ_LUA_API( ozBotIsRunning );
 
-      OZ_LUA_API( ozBotVectorFromSelfEye );
-      OZ_LUA_API( ozBotDirectionFromSelfEye );
-      OZ_LUA_API( ozBotDistanceFromSelfEye );
-      OZ_LUA_API( ozBotHeadingFromSelfEye );
-      OZ_LUA_API( ozBotPitchFromSelfEye );
+      OZ_LUA_API( ozBotIsVisibleFromSelfEyeToEye );
 
       /*
        * Vehicle
        */
+
+      OZ_LUA_API( ozVehicleGetH );
+      OZ_LUA_API( ozVehicleGetV );
+      OZ_LUA_API( ozVehicleGetDir );
 
       /*
        * Mind's bot
@@ -272,6 +276,10 @@ namespace nirvana
       OZ_LUA_API( ozSelfIsRunning );
       OZ_LUA_API( ozSelfSetRunning );
       OZ_LUA_API( ozSelfToggleRunning );
+
+      OZ_LUA_API( ozSelfSetGesture );
+
+      OZ_LUA_API( ozSelfSetWeaponItem );
 
       OZ_LUA_API( ozSelfBindEvents );
       OZ_LUA_API( ozSelfBindItems );

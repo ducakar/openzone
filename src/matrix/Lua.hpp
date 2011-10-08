@@ -211,6 +211,8 @@ namespace oz
       OZ_LUA_API( ozObjHeadingFromSelf );
       OZ_LUA_API( ozObjPitchFromSelf );
       OZ_LUA_API( ozObjPitchFromSelfEye );
+      OZ_LUA_API( ozObjIsVisibleFromSelf );
+      OZ_LUA_API( ozObjIsVisibleFromSelfEye );
 
       OZ_LUA_API( ozObjBindEvents );
       OZ_LUA_API( ozObjBindItems );
@@ -248,6 +250,8 @@ namespace oz
        * Bot
        */
 
+      OZ_LUA_API( ozBotBindPilot );
+
       OZ_LUA_API( ozBotGetName );
       OZ_LUA_API( ozBotSetName );
       OZ_LUA_API( ozBotGetMindFunc );
@@ -262,6 +266,7 @@ namespace oz
       OZ_LUA_API( ozBotSetV );
       OZ_LUA_API( ozBotAddV );
       OZ_LUA_API( ozBotGetDir );
+
       OZ_LUA_API( ozBotGetStamina );
       OZ_LUA_API( ozBotSetStamina );
       OZ_LUA_API( ozBotAddStamina );
@@ -285,21 +290,27 @@ namespace oz
       OZ_LUA_API( ozBotSetRunning );
       OZ_LUA_API( ozBotToggleRunning );
 
+      OZ_LUA_API( ozBotSetGesture );
+
       OZ_LUA_API( ozBotSetWeaponItem );
 
       OZ_LUA_API( ozBotHeal );
       OZ_LUA_API( ozBotRearm );
       OZ_LUA_API( ozBotKill );
 
-      OZ_LUA_API( ozBotVectorFromSelfEye );
-      OZ_LUA_API( ozBotDirectionFromSelfEye );
-      OZ_LUA_API( ozBotDistanceFromSelfEye );
-      OZ_LUA_API( ozBotHeadingFromSelfEye );
-      OZ_LUA_API( ozBotPitchFromSelfEye );
+      OZ_LUA_API( ozBotIsVisibleFromSelfEyeToEye );
 
       /*
        * Vehicle
        */
+
+      OZ_LUA_API( ozVehicleGetH );
+      OZ_LUA_API( ozVehicleSetH );
+      OZ_LUA_API( ozVehicleAddH );
+      OZ_LUA_API( ozVehicleGetV );
+      OZ_LUA_API( ozVehicleSetV );
+      OZ_LUA_API( ozVehicleAddV );
+      OZ_LUA_API( ozVehicleGetDir );
 
       OZ_LUA_API( ozVehicleService );
 

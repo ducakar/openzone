@@ -222,6 +222,8 @@ namespace client
        * Bot
        */
 
+      OZ_LUA_API( ozBotBindPilot );
+
       OZ_LUA_API( ozBotGetName );
       OZ_LUA_API( ozBotSetName );
       OZ_LUA_API( ozBotGetMindFunc );
@@ -236,6 +238,7 @@ namespace client
       OZ_LUA_API( ozBotSetV );
       OZ_LUA_API( ozBotAddV );
       OZ_LUA_API( ozBotGetDir );
+
       OZ_LUA_API( ozBotGetStamina );
       OZ_LUA_API( ozBotSetStamina );
       OZ_LUA_API( ozBotAddStamina );
@@ -259,6 +262,8 @@ namespace client
       OZ_LUA_API( ozBotSetRunning );
       OZ_LUA_API( ozBotToggleRunning );
 
+      OZ_LUA_API( ozBotSetGesture );
+
       OZ_LUA_API( ozBotSetWeaponItem );
 
       OZ_LUA_API( ozBotHeal );
@@ -274,6 +279,16 @@ namespace client
       /*
        * Vehicle
        */
+
+      OZ_LUA_API( ozVehicleBindVehicle );
+
+      OZ_LUA_API( ozVehicleGetH );
+      OZ_LUA_API( ozVehicleSetH );
+      OZ_LUA_API( ozVehicleAddH );
+      OZ_LUA_API( ozVehicleGetV );
+      OZ_LUA_API( ozVehicleSetV );
+      OZ_LUA_API( ozVehicleAddV );
+      OZ_LUA_API( ozVehicleGetDir );
 
       OZ_LUA_API( ozVehicleService );
 

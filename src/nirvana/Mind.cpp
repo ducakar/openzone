@@ -30,8 +30,6 @@ namespace nirvana
   Mind::Mind( int bot_, InputStream* istream ) : bot( bot_ )
   {
     flags = istream->readInt();
-
-    lua.registerMind( bot );
   }
 
   Mind::~Mind()
@@ -47,11 +45,9 @@ namespace nirvana
     Bot* bot = static_cast<Bot*>( orbis.objects[this->bot] );
 
     if( !bot->mindFunc.isEmpty() && !( bot->state & Bot::DEAD_BIT ) ) {
-      const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
-
       flags &= ~FORCE_UPDATE_BIT;
       bot->actions = 0;
-      lua.mindCall( clazz->mindFunction, bot );
+      lua.mindCall( bot->mindFunc, bot );
 
       if( lua.forceUpdate ) {
         flags |= FORCE_UPDATE_BIT;

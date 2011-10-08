@@ -56,13 +56,20 @@ namespace ui
       return;
     }
 
-    if( lastId != camera.tagged ) {
+    if( lastId != camera.tagged || uint( timer.ticks - lastTicks ) >= uint( REFRESH_INTERVAL ) ) {
+      const Bot*    tagged = static_cast<const Bot*>( camera.taggedObj );
       const Device* device = nirvana::nirvana.devices.get( camera.tagged );
 
-      title.setText( camera.taggedObj->clazz->title );
+      if( tagged->flags & Object::BOT_BIT ) {
+        title.setText( "%s (%s)", tagged->name.cstr(), tagged->clazz->title.cstr() );
+      }
+      else {
+        title.setText( "%s", tagged->clazz->title.cstr() );
+      }
       text.setText( "%s", device->getMemo() );
 
       lastId = camera.tagged;
+      lastTicks = timer.ticks;
     }
 
     Frame::onDraw();

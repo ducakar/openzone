@@ -130,20 +130,19 @@ namespace oz
   {
     const VehicleClass* clazz = static_cast<const VehicleClass*>( this->clazz );
 
-    Mat44 rotMat = Mat44( rot );
+    Mat44 rotMat = Mat44::rotation( rot );
 
     if( pilot != -1 ) {
       Bot* bot = static_cast<Bot*>( orbis.objects[pilot] );
 
-      pilot  = -1;
+      pilot = -1;
 
       if( bot != null ) {
         bot->p = p + rotMat * clazz->pilotPos;
-
-        Point3 ejectPos = Point3( bot->p.x, bot->p.y, p.z + dim.z + bot->dim.z + EXIT_EPSILON );
+        bot->p.z += dim.z + EXIT_EPSILON;
 
         // kill bot if eject path is blocked
-        if( collider.overlaps( AABB( ejectPos, bot->dim ) ) ) {
+        if( collider.overlaps( *bot, this ) ) {
           bot->kill();
           bot->exit();
         }
@@ -151,7 +150,6 @@ namespace oz
           float hsc[2];
           Math::sincos( h, &hsc[0], &hsc[1] );
 
-          bot->p = ejectPos;
           bot->momentum += EJECT_MOMENTUM * ~Vec3( hsc[0], -hsc[1], 0.10f );
           bot->exit();
         }
