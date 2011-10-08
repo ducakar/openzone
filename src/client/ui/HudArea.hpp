@@ -43,7 +43,7 @@ namespace ui
       int   lastWeaponId;
       int   lastWeaponRounds;
       int   lastVehicleId;
-      int   lastVehicleWeaponRounds[3];
+      int   lastVehicleWeaponRounds[Vehicle::WEAPONS_MAX];
 
       uint  crossTexId;
       uint  useTexId;

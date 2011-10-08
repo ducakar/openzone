@@ -111,7 +111,7 @@ namespace oz
         break;
       }
       case OPENING: {
-        collider.touchOverlaps( str->toAbsoluteCS( *model + offset ).toAABB(), 2.0f * EPSILON );
+        collider.touchOverlaps( str->toAbsoluteCS( *model + offset ).toAABB(), 4.0f * EPSILON );
 
         ratio = min( ratio + model->ratioInc, 1.0f );
         offset = ratio * model->move;
@@ -120,7 +120,7 @@ namespace oz
         collider.getOverlaps( this, &overlappingObjs, 0.5f * EPSILON );
 
         if( !overlappingObjs.isEmpty() ) {
-          Vec3 move = ( model->ratioInc + 2.0f * EPSILON ) * model->move;
+          Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * model->move;
           move = str->toAbsoluteCS( move );
 
           foreach( obj, overlappingObjs.iter() ) {
@@ -155,7 +155,7 @@ namespace oz
         break;
       }
       case CLOSING: {
-        collider.touchOverlaps( str->toAbsoluteCS( *model + offset ).toAABB(), 2.0f * EPSILON );
+        collider.touchOverlaps( str->toAbsoluteCS( *model + offset ).toAABB(), 4.0f * EPSILON );
 
         ratio = max( ratio - model->ratioInc, 0.0f );
         offset = ratio * model->move;
@@ -164,7 +164,7 @@ namespace oz
         collider.getOverlaps( this, &overlappingObjs, 0.5f * EPSILON );
 
         if( !overlappingObjs.isEmpty() ) {
-          Vec3 move = ( model->ratioInc + 2.0f * EPSILON ) * -model->move;
+          Vec3 move = ( model->ratioInc + 4.0f * EPSILON ) * -model->move;
           move = str->toAbsoluteCS( move );
 
           foreach( obj, overlappingObjs.iter() ) {
@@ -409,6 +409,8 @@ namespace oz
 
   void Struct::destroy()
   {
+    collider.touchOverlaps( this->toAABB(), 4.0f * EPSILON );
+
     synapse.genParts( 100, p, Vec3::ZERO, 10.0f, Vec3( 0.4f, 0.4f, 0.4f ), 0.1f,
                       1.98f, 0.0f, 2.0f );
     synapse.remove( this );

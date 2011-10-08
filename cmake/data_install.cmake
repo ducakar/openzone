@@ -94,17 +94,13 @@ if( OZ_INSTALL_DATA )
            PATTERN "DISABLED" EXCLUDE )
 
   # mdl
-  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone
-           FILES_MATCHING PATTERN "mdl/*.ozcSMM" )
+  file( GLOB files
+    share/openzone/mdl/*.ozcSMM
+    share/openzone/mdl/*.ozcMD2
+    share/openzone/mdl/*README*
+    share/openzone/mdl/*COPYING* )
 
-  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone
-           FILES_MATCHING PATTERN "mdl/*.ozcMD2" )
-
-  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone
-           FILES_MATCHING PATTERN "mdl/*README*" )
-
-  install( DIRECTORY share/openzone/mdl DESTINATION share/openzone
-           FILES_MATCHING PATTERN "mdl/*COPYING*" )
+  install( FILES ${files} DESTINATION share/openzone/mdl )
 
   # music
   install( DIRECTORY share/openzone/music DESTINATION share/openzone
@@ -133,31 +129,19 @@ if( OZ_INSTALL_DATA )
 
   # ui
   install( DIRECTORY share/openzone/ui DESTINATION share/openzone
-           FILES_MATCHING PATTERN "ui/*/cur/*.ozcCur" )
+           FILES_MATCHING PATTERN "ui/*/*.ozcTex" )
 
   install( DIRECTORY share/openzone/ui DESTINATION share/openzone
-           FILES_MATCHING PATTERN "ui/*/cur/*README*" )
+           FILES_MATCHING PATTERN "ui/*/*.ozcCur" )
 
   install( DIRECTORY share/openzone/ui DESTINATION share/openzone
-           FILES_MATCHING PATTERN "ui/*/cur/*COPYING*" )
+           FILES_MATCHING PATTERN "ui/*/*.ttf" )
 
   install( DIRECTORY share/openzone/ui DESTINATION share/openzone
-           FILES_MATCHING PATTERN "ui/*/font/*.ttf" )
+           FILES_MATCHING PATTERN "ui/*/*README*" )
 
   install( DIRECTORY share/openzone/ui DESTINATION share/openzone
-           FILES_MATCHING PATTERN "ui/*/font/*README*" )
-
-  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
-           FILES_MATCHING PATTERN "ui/*/font/*COPYING*" )
-
-  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
-           FILES_MATCHING PATTERN "ui/*/icon/*.ozcTex" )
-
-  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
-           FILES_MATCHING PATTERN "ui/*/icon/*README*" )
-
-  install( DIRECTORY share/openzone/ui DESTINATION share/openzone
-           FILES_MATCHING PATTERN "ui/*/icon/*COPYING*" )
+           FILES_MATCHING PATTERN "ui/*/*COPYING*" )
 
   # locale
   install( DIRECTORY share/locale DESTINATION share

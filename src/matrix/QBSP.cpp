@@ -687,8 +687,8 @@ namespace oz
         models[i].maxs.y = model.bb[1][1] * scale;
         models[i].maxs.z = model.bb[1][2] * scale;
 
-        models[i].mins -= Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
-        models[i].maxs += Vec3( 2.0f * EPSILON, 2.0f * EPSILON, 2.0f * EPSILON );
+        models[i].mins -= Vec3( 4.0f * EPSILON, 4.0f * EPSILON, 4.0f * EPSILON );
+        models[i].maxs += Vec3( 4.0f * EPSILON, 4.0f * EPSILON, 4.0f * EPSILON );
 
         models[i].firstBrush = model.firstBrush;
         models[i].nBrushes   = model.nBrushes;

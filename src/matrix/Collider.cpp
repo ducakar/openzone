@@ -833,8 +833,7 @@ namespace oz
 
         foreach( sObj, cell.objects.iter() ) {
           if( ( sObj->flags & Object::DYNAMIC_BIT ) && sObj->overlaps( trace ) ) {
-            // clearing these two bits should do
-            sObj->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT );
+            sObj->flags &= ~Object::MOVE_CLEAR_MASK;
           }
         }
       }
@@ -906,7 +905,7 @@ namespace oz
     exclObj = exclObj_;
     flags = 0;
 
-    trace = aabb.toBounds( 2.0f * EPSILON );
+    trace = aabb.toBounds( 4.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsAABBOrbis();
@@ -918,7 +917,7 @@ namespace oz
     exclObj = exclObj_;
     flags = 0;
 
-    trace = aabb.toBounds( 2.0f * EPSILON );
+    trace = aabb.toBounds( 4.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsAABBOrbisOO();
@@ -930,7 +929,7 @@ namespace oz
     exclObj = exclObj_;
     flags = 0;
 
-    trace = aabb.toBounds( 2.0f * EPSILON );
+    trace = aabb.toBounds( 4.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsAABBOrbisOSO();
@@ -942,7 +941,7 @@ namespace oz
     exclObj = exclObj_;
     flags = obj_->flags;
 
-    trace = aabb.toBounds( 2.0f * EPSILON );
+    trace = aabb.toBounds( 4.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsAABBOrbis();
@@ -954,7 +953,7 @@ namespace oz
     exclObj = exclObj_;
     flags = obj_->flags;
 
-    trace = aabb.toBounds( 2.0f * EPSILON );
+    trace = aabb.toBounds( 4.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsAABBOrbisOO();
@@ -966,7 +965,7 @@ namespace oz
     exclObj = exclObj_;
     flags = obj_->flags;
 
-    trace = aabb.toBounds( 2.0f * EPSILON );
+    trace = aabb.toBounds( 4.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     return overlapsAABBOrbisOSO();
@@ -1048,7 +1047,7 @@ namespace oz
     exclObj = exclObj_;
     flags = Object::CYLINDER_BIT;
 
-    trace.fromPointMove( point, move, 2.0f * EPSILON );
+    trace.fromPointMove( point, move, 4.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     trimAABBOrbis();
@@ -1062,7 +1061,7 @@ namespace oz
     exclObj = exclObj_;
     flags = 0;
 
-    trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
+    trace.fromAABBMove( aabb, move, 4.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     trimAABBOrbis();
@@ -1078,7 +1077,7 @@ namespace oz
     exclObj = obj_;
     flags = obj_->flags;
 
-    trace.fromAABBMove( aabb, move, 2.0f * EPSILON );
+    trace.fromAABBMove( aabb, move, 4.0f * EPSILON );
     span = orbis.getInters( trace, AABB::MAX_DIM );
 
     trimAABBOrbis();

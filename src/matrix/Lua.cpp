@@ -329,6 +329,7 @@ namespace oz
     OZ_LUA_FUNC( ozStrDistanceFromSelf );
     OZ_LUA_FUNC( ozStrDistanceFromSelfEye );
     OZ_LUA_FUNC( ozStrHeadingFromSelf );
+    OZ_LUA_FUNC( ozStrRelativeHeadingFromSelf );
     OZ_LUA_FUNC( ozStrPitchFromSelf );
     OZ_LUA_FUNC( ozStrPitchFromSelfEye );
 
@@ -345,6 +346,7 @@ namespace oz
     OZ_LUA_FUNC( ozEventGet );
 
     OZ_LUA_FUNC( ozObjBindIndex );
+    OZ_LUA_FUNC( ozObjBindPilot );
     OZ_LUA_FUNC( ozObjBindSelf );
     OZ_LUA_FUNC( ozObjBindUser );
     OZ_LUA_FUNC( ozObjBindNext );
@@ -391,6 +393,7 @@ namespace oz
     OZ_LUA_FUNC( ozObjDistanceFromSelf );
     OZ_LUA_FUNC( ozObjDistanceFromSelfEye );
     OZ_LUA_FUNC( ozObjHeadingFromSelf );
+    OZ_LUA_FUNC( ozObjRelativeHeadingFromSelf );
     OZ_LUA_FUNC( ozObjPitchFromSelf );
     OZ_LUA_FUNC( ozObjPitchFromSelfEye );
     OZ_LUA_FUNC( ozObjIsVisibleFromSelf );
@@ -493,6 +496,8 @@ namespace oz
     OZ_LUA_FUNC( ozVehicleSetV );
     OZ_LUA_FUNC( ozVehicleAddV );
     OZ_LUA_FUNC( ozVehicleGetDir );
+
+    OZ_LUA_FUNC( ozVehicleEmbarkPilot );
 
     OZ_LUA_FUNC( ozVehicleService );
 
@@ -1173,7 +1178,7 @@ namespace oz
     return 1;
   }
 
-  int Lua::ozStrHeadingFromSelf( lua_State* l )
+  int Lua::ozStrRelativeHeadingFromSelf( lua_State* l )
   {
     ARG( 0 );
     STR_NOT_NULL();
@@ -1181,6 +1186,20 @@ namespace oz
     float dx = lua.str->p.x - lua.self->p.x;
     float dy = lua.str->p.y - lua.self->p.y;
     float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
+
+    pushfloat( angle );
+    return 1;
+  }
+
+  int Lua::ozStrHeadingFromSelf( lua_State* l )
+  {
+    ARG( 0 );
+    STR_NOT_NULL();
+    SELF_BOT();
+
+    float dx = lua.str->p.x - self->p.x;
+    float dy = lua.str->p.y - self->p.y;
+    float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) - self->h ) + 720.0f, 360.0f );
 
     pushfloat( angle );
     return 1;
@@ -1305,6 +1324,16 @@ namespace oz
       ERROR( "invalid object index" );
     }
     lua.obj = orbis.objects[index];
+    return 0;
+  }
+
+  int Lua::ozObjBindPilot( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    lua.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
     return 0;
   }
 
@@ -1790,6 +1819,21 @@ namespace oz
     float dx = lua.obj->p.x - lua.self->p.x;
     float dy = lua.obj->p.y - lua.self->p.y;
     float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
+
+    pushfloat( angle );
+    return 1;
+  }
+
+  int Lua::ozObjRelativeHeadingFromSelf( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+    SELF_BOT();
+
+    float dx = lua.obj->p.x - self->p.x;
+    float dy = lua.obj->p.y - self->p.y;
+    float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) - self->h ) + 720.0f, 360.0f );
 
     pushfloat( angle );
     return 1;
@@ -2666,6 +2710,34 @@ namespace oz
     pushfloat( -hvsc[3] );
 
     return 3;
+  }
+
+  int Lua::ozVehicleEmbarkPilot( lua_State* l )
+  {
+    ARG( 1 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    if( vehicle->pilot != -1 ) {
+      ERROR( "vehicle already has a pilot" );
+    }
+
+    int index = toint( 1 );
+    if( uint( index ) >= uint( orbis.objects.length() ) ) {
+      ERROR( "invalid bot index" );
+    }
+
+    Bot* bot = static_cast<Bot*>( orbis.objects[index] );
+    if( !( bot->flags & Object::BOT_BIT ) ) {
+      ERROR( "object is not a bot" );
+    }
+    if( bot->cell == null ) {
+      ERROR( "bot is already cut" );
+    }
+
+    vehicle->pilot = index;
+    bot->enter( vehicle->index );
+    return 0;
   }
 
   int Lua::ozVehicleService( lua_State* l )

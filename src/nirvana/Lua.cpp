@@ -306,6 +306,7 @@ namespace nirvana
     OZ_LUA_FUNC( ozStrDistanceFromSelf );
     OZ_LUA_FUNC( ozStrDistanceFromSelfEye );
     OZ_LUA_FUNC( ozStrHeadingFromSelf );
+    OZ_LUA_FUNC( ozStrRelativeHeadingFromSelf );
     OZ_LUA_FUNC( ozStrPitchFromSelf );
     OZ_LUA_FUNC( ozStrPitchFromSelfEye );
 
@@ -322,6 +323,7 @@ namespace nirvana
     OZ_LUA_FUNC( ozEventGet );
 
     OZ_LUA_FUNC( ozObjBindIndex );
+    OZ_LUA_FUNC( ozObjBindPilot );
     OZ_LUA_FUNC( ozObjBindSelf );
     OZ_LUA_FUNC( ozObjBindNext );
 
@@ -350,6 +352,7 @@ namespace nirvana
     OZ_LUA_FUNC( ozObjDistanceFromSelf );
     OZ_LUA_FUNC( ozObjDistanceFromSelfEye );
     OZ_LUA_FUNC( ozObjHeadingFromSelf );
+    OZ_LUA_FUNC( ozObjRelativeHeadingFromSelf );
     OZ_LUA_FUNC( ozObjPitchFromSelf );
     OZ_LUA_FUNC( ozObjPitchFromSelfEye );
     OZ_LUA_FUNC( ozObjIsVisibleFromSelf );
@@ -928,6 +931,19 @@ namespace nirvana
     return 1;
   }
 
+  int Lua::ozStrRelativeHeadingFromSelf( lua_State* l )
+  {
+    ARG( 0 );
+    STR_NOT_NULL();
+
+    float dx = lua.str->p.x - lua.self->p.x;
+    float dy = lua.str->p.y - lua.self->p.y;
+    float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) - lua.self->h ) + 720.0f, 360.0f );
+
+    pushfloat( angle );
+    return 1;
+  }
+
   int Lua::ozStrPitchFromSelf( lua_State* l )
   {
     ARG( 0 );
@@ -1047,6 +1063,16 @@ namespace nirvana
       ERROR( "invalid object index" );
     }
     lua.obj = orbis.objects[index];
+    return 0;
+  }
+
+  int Lua::ozObjBindPilot( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_VEHICLE();
+
+    lua.obj = vehicle->pilot == -1 ? null : orbis.objects[vehicle->pilot];
     return 0;
   }
 
@@ -1328,6 +1354,20 @@ namespace nirvana
     float dx = lua.obj->p.x - lua.self->p.x;
     float dy = lua.obj->p.y - lua.self->p.y;
     float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) ) + 360.0f, 360.0f );
+
+    pushfloat( angle );
+    return 1;
+  }
+
+  int Lua::ozObjRelativeHeadingFromSelf( lua_State* l )
+  {
+    ARG( 0 );
+    OBJ_NOT_NULL();
+    OBJ_NOT_SELF();
+
+    float dx = lua.obj->p.x - lua.self->p.x;
+    float dy = lua.obj->p.y - lua.self->p.y;
+    float angle = Math::mod( Math::deg( Math::atan2( -dx, dy ) - lua.self->h ) + 720.0f, 360.0f );
 
     pushfloat( angle );
     return 1;
