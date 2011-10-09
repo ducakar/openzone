@@ -17,6 +17,9 @@
 #include "client/GameStage.hpp"
 #include "client/MenuStage.hpp"
 
+#include "client/ui/SettingsFrame.hpp"
+#include "client/ui/UI.hpp"
+
 #include "client/OpenGL.hpp"
 
 namespace oz
@@ -29,41 +32,58 @@ namespace ui
   String MainMenu::autosaveFile;
   String MainMenu::quicksaveFile;
 
-  static void continueAutosaved( ui::Button* )
+  static void continueAutosaved( Button* sender )
   {
+    ui.root->remove( sender->parent );
+
     Stage::nextStage = &gameStage;
     gameStage.stateFile = GameStage::AUTOSAVE_FILE;
   }
 
-  static void continueQuicksaved( ui::Button* )
+  static void continueQuicksaved( Button* sender )
   {
+    ui.root->remove( sender->parent );
+
     Stage::nextStage = &gameStage;
     gameStage.stateFile = GameStage::QUICKSAVE_FILE;
   }
 
-  static void loadTutorial( ui::Button* )
+  static void loadTutorial( Button* sender )
   {
+    ui.root->remove( sender->parent );
+
     Stage::nextStage = &gameStage;
     gameStage.stateFile = "";
     gameStage.missionFile = "tutorial";
   }
 
-  static void loadTest( ui::Button* )
+  static void loadTest( Button* sender )
   {
+    ui.root->remove( sender->parent );
+
     Stage::nextStage = &gameStage;
     gameStage.stateFile = "";
     gameStage.missionFile = "test";
   }
 
-  static void loadCvicek( ui::Button* )
+  static void loadCvicek( Button* sender )
   {
+    ui.root->remove( sender->parent );
+
     Stage::nextStage = &gameStage;
     gameStage.stateFile = "";
     gameStage.missionFile = "cvicek";
   }
 
-  static void exit( ui::Button* )
+  static void settings( Button* sender )
   {
+    ui.root->remove( sender->parent );
+    ui.root->add( new SettingsFrame() );
+  }
+
+  static void exit( Button* sender )
+  {
+    ui.root->remove( sender->parent );
     menuStage.doExit = true;
   }
 
@@ -96,7 +116,9 @@ namespace ui
     add( new Button( gettext( "Tutorial" ), loadTutorial, 300, 20 ), 50, -150 );
     add( new Button( gettext( "Test World" ), loadTest, 300, 20 ), 50, -180 );
     add( new Button( gettext( "Mission 1: Cvicek" ), loadCvicek, 300, 20 ), 50, -210 );
-    add( new Button( gettext( "Exit" ), exit, 300, 20 ), 50, -270 );
+
+    add( new Button( gettext( "Settings" ), settings, 300, 20 ), 50, -270 );
+    add( new Button( gettext( "Exit" ), exit, 300, 20 ), 50, -300 );
   }
 
   MainMenu::~MainMenu()

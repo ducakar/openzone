@@ -53,6 +53,7 @@ add_library( client STATIC
   ui/LoadingArea.cpp
   ui/MainMenu.cpp
   ui/Mouse.cpp
+  ui/SettingsFrame.cpp
   ui/StrategicArea.cpp
   ui/Text.cpp
   ui/UI.cpp
@@ -62,7 +63,6 @@ add_library( client STATIC
   modules/MusicPlayer.cpp
   modules/MusicPlayerModule.cpp
   modules/ProfileModule.cpp
-
   modules/QuestFrame.cpp
   modules/QuestModule.cpp
 )

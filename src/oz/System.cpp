@@ -10,7 +10,7 @@
 #include "System.hpp"
 
 #include "common.hpp"
-// #include "Log.hpp"
+#include "Log.hpp"
 
 #include <csignal>
 #include <cstdio>
@@ -102,11 +102,7 @@ namespace oz
 
   void System::enableHalt( bool value )
   {
-# ifdef NDEBUG
-    static_cast<void>( value );
-# else
     isHaltEnabled = value;
-# endif
   }
 
   void System::signalHandler( int signum )
@@ -171,11 +167,11 @@ namespace oz
 
     fflush( stderr );
 
-//     if( log.isFile() ) {
-//       log.printEnd( "\n" );
-//       log.vprintRaw( msg, ap );
-//       log.printEnd( "\n" );
-//     }
+    if( log.isFile() ) {
+      log.printEnd( "\n" );
+      log.vprintRaw( msg, ap );
+      log.printEnd( "\n" );
+    }
 
     va_end( ap );
   }
@@ -381,16 +377,16 @@ namespace oz
 
     fflush( stderr );
 
-//     if( log.isFile() ) {
-//       log.printEnd();
-//       log.vprintRaw( msg, ap );
-//       log.printEnd( "\n" );
-//
-//       log.resetIndent();
-//       log.indent();
-//       log.printTrace( frames, nFrames );
-//       log.unindent();
-//     }
+    if( log.isFile() ) {
+      log.printEnd();
+      log.vprintRaw( msg, ap );
+      log.printEnd( "\n" );
+
+      log.resetIndent();
+      log.indent();
+      log.printTrace( frames, nFrames );
+      log.unindent();
+    }
 
     va_end( ap );
 

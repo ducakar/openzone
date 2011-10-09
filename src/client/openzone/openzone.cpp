@@ -20,7 +20,7 @@ bool Alloc::isLocked = true;
 int main( int argc, char** argv )
 {
   System::catchSignals();
-  System::enableHalt( true );
+//   System::enableHalt( true );
 
   Alloc::isLocked = false;
 
@@ -65,6 +65,6 @@ int main( int argc, char** argv )
   client::client.shutdown();
 
 //   Alloc::isLocked = true;
-  Alloc::printLeaks();
+//   Alloc::printLeaks();
   return exitCode;
 }

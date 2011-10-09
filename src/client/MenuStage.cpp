@@ -38,9 +38,7 @@ namespace client
 
   void MenuStage::load()
   {
-    mainMenu = new ui::MainMenu();
-
-    ui::ui.root->add( mainMenu );
+    ui::ui.root->add( new ui::MainMenu() );
     ui::mouse.doShow = true;
     ui::mouse.buttons = 0;
     ui::mouse.currButtons = 0;
@@ -49,15 +47,10 @@ namespace client
   }
 
   void MenuStage::unload()
-  {
-    ui::ui.root->remove( mainMenu );
-
-    mainMenu = null;
-  }
+  {}
 
   void MenuStage::init()
   {
-    mainMenu = null;
     doExit = false;
   }
 

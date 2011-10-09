@@ -22,10 +22,6 @@ namespace client
 
   class MenuStage : public Stage
   {
-    private:
-
-      ui::MainMenu* mainMenu;
-
     public:
 
       bool doExit;

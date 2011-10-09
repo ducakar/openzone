@@ -1,7 +1,7 @@
 
                                         OpenZone
 
-                                      version 0.1.3
+                                      version 0.2.0
 
 Free camera controls
 --------------------
@@ -26,8 +26,7 @@ Space               - jump
 
 left click          - trigger equipped weapon
 right click         - use tagged object or enter tagged vehicle
-middle click        - grab/drop tagged object or take an item from the inventory when clicking on an
-                      inventory item
+middle click        - grab/drop tagged object
 wheel up            - throw object you are currently holding
 wheel down          - put tagged object into inventory
 
@@ -45,6 +44,12 @@ h                   - salute gesture
 j                   - wave gesture
 k                   - flip out gesture
 l                   - play all animations
+
+Inventar
+--------
+left click          - drop item or move item between inventories when you have two inventory windows
+middle click        - grab item from your inventory
+right click         - use object, for weapons: arm it or put it away into your inventory
 
 Vehicle controls
 ----------------
