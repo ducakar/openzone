@@ -38,7 +38,7 @@ namespace ui
       }
       if( flags & GRAB_BIT ) {
         mouse.icon = Mouse::MOVE;
-        move( mouse.relX, mouse.relY );
+        move( mouse.uiRelX, mouse.uiRelY );
       }
     }
     else {

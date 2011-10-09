@@ -558,6 +558,7 @@ namespace client
             else if( keysym.sym == SDLK_F11 ) {
               if( ( keysym.mod & KMOD_CTRL ) && !( keysym.mod & ~KMOD_CTRL ) ) {
                 SDL_WM_ToggleFullScreen( render.surface );
+                ui::mouse.doAccelerate = !ui::mouse.doAccelerate;
               }
             }
             else if( keysym.sym == SDLK_F12 ) {

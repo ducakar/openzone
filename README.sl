@@ -1,7 +1,7 @@
 
                                         OpenZone
 
-                                     različica 0.1.3
+                                     različica 0.2.0
 
 Nadzor kamere
 -------------
@@ -26,8 +26,7 @@ Space               - skoči
 
 levi klik           - sproži orožje
 desni klik          - uporabi označen predmet ali vstopi v označeno vozilo
-srednji klik        - zgrabi/spusti označen predmet ali vzemi označen predmet iz inventarja, kadar
-                      klikneš na predmet v inventarju
+srednji klik        - zgrabi/spusti označen predmet
 kolešček gor        - vrzi predmet, ki ga trenutno držiš
 kolešček dol        - pospravi izbran predmet v inventar
 
@@ -45,6 +44,13 @@ h                   - kretnja "pozdrav"
 j                   - kretnja "pomahaj"
 k                   - kretnja "ponori"
 l                   - predvajaj vse animacije
+
+Inventar
+--------
+levi klik           - odvrzi predmet ali prestavi predmet v drug inventar, kadar imaš odprti dve
+                      okni z inventarjem
+srednji klik        - zgrabi predmet iz inventarja
+desni klik          - uporabi predmet, za orožja: vzemi orožje v roke oziroma ga pospravi
 
 Nadzor vozil
 ------------

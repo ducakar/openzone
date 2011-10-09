@@ -210,8 +210,8 @@ namespace client
 
     aspect       = config.getSet( "camera.aspect",     0.0f );
     minDist      = config.getSet( "camera.minDist",    0.1f );
-    mouseXSens   = config.getSet( "camera.mouseXSens", 0.003f );
-    mouseYSens   = config.getSet( "camera.mouseYSens", 0.003f );
+    mouseXSens   = config.getSet( "camera.mouseXSens", 0.005f );
+    mouseYSens   = config.getSet( "camera.mouseYSens", 0.005f );
     keyXSens     = config.getSet( "camera.keysXSens",  2.0f );
     keyYSens     = config.getSet( "camera.keysYSens",  2.0f );
     smoothCoef   = config.getSet( "camera.smoothCoef", 0.50f );

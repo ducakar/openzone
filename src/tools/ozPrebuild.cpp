@@ -535,7 +535,7 @@ static void checkLua( const char* path )
 int main( int argc, char** argv )
 {
   System::catchSignals();
-  System::enableHalt( true );
+//   System::enableHalt( true );
 
   Alloc::isLocked = false;
 
@@ -683,6 +683,6 @@ int main( int argc, char** argv )
   log.printlnETD( OZ_APPLICATION_TITLE " Prebuild finished at" );
 
 //   Alloc::isLocked = true;
-  Alloc::printLeaks();
+//   Alloc::printLeaks();
   return exitCode;
 }

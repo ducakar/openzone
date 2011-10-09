@@ -773,13 +773,18 @@ namespace oz
   {
     hard_assert( cell != null && vehicle_ != -1 );
 
+    const BotClass* clazz = static_cast<const BotClass*>( this->clazz );
+
     flags      &= ~( Object::TICK_CLEAR_MASK | Object::MOVE_CLEAR_MASK );
     lower      = -1;
-
     parent     = vehicle_;
+
+    dim        = clazz->dim;
+    camZ       = clazz->camZ;
+    state      &= ~( CROUCHING_BIT | GRAB_BIT );
+
     actions    = 0;
     instrument = vehicle_;
-    state      &= ~GRAB_BIT;
     anim       = Anim::STAND;
 
     synapse.cut( this );

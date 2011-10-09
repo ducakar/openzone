@@ -55,25 +55,32 @@ namespace ui
 
       int  x;
       int  y;
-      int  relX;
-      int  relY;
-      int  relZ;
 
-      char buttons;
-      char oldButtons;
-      char currButtons;
+      int   relX;
+      int   relY;
+      int   relZ;
 
-      int  overEdgeX;
-      int  overEdgeY;
+      int   uiRelX;
+      int   uiRelY;
 
-      bool leftClick;
-      bool rightClick;
-      bool middleClick;
-      bool wheelUp;
-      bool wheelDown;
+      char  buttons;
+      char  oldButtons;
+      char  currButtons;
 
-      bool doShow;
-      int  icon;
+      int   overEdgeX;
+      int   overEdgeY;
+
+      bool  leftClick;
+      bool  rightClick;
+      bool  middleClick;
+      bool  wheelUp;
+      bool  wheelDown;
+
+      bool  doShow;
+      bool  doAccelerate;
+      float accelThreshold;
+
+      int   icon;
 
       void prepare();
       void update();

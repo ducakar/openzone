@@ -51,8 +51,21 @@ namespace ui
     if( doShow ) {
       icon = ARROW;
 
-      int desiredX = x + relX;
-      int desiredY = y + relY;
+      uiRelX = relX;
+      uiRelY = relY;
+
+# ifndef OZ_MINGW
+      if( doAccelerate ) {
+        float moveSq = float( relX )*float( relX ) + float( relY )*float( relY );
+        if( moveSq >= accelThreshold ) {
+          uiRelX += relX;
+          uiRelY += relY;
+        }
+      }
+# endif
+
+      int desiredX = x + uiRelX;
+      int desiredY = y + uiRelY;
 
       x = clamp( desiredX, 0, camera.width - 1 );
       y = clamp( desiredY, 0, camera.height - 1 );
@@ -130,13 +143,18 @@ namespace ui
 
   void Mouse::init()
   {
-    icon = ARROW;
     doShow = false;
+    doAccelerate = config.get( "screen.full", true );
+    accelThreshold = config.getSet( "mouse.accelThreshorld", 64.0f );
+    icon = ARROW;
 
     x = camera.centreX;
     y = camera.centreY;
     relX = 0;
     relY = 0;
+    relZ = 0;
+    uiRelX = 0;
+    uiRelY = 0;
 
     buttons = 0;
     oldButtons = 0;

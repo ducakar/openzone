@@ -27,6 +27,7 @@
 
 // fix M$ crap from Windows headers
 #ifdef OZ_MINGW
+# undef ERROR
 # undef PLANES
 # undef near
 # undef far

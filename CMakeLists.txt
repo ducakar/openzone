@@ -25,17 +25,13 @@ option( OZ_INSTALL_DATA "Install prebuild data needed to run game." ON )
 option( OZ_INSTALL_DATA_SRC "Install sources of prebuilt data (for content development)." OFF )
 option( OZ_INSTALL_STANDALONE "Install some support files if a standalone archive." OFF )
 
-if( NOT DEFINED OZ_APPLICATION_NAME )
-  set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
-endif()
+set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
+set( OZ_APPLICATION_VERSION "0.2.0" CACHE STRING "" FORCE )
+set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
-if( NOT DEFINED OZ_APPLICATION_VERSION )
-  set( OZ_APPLICATION_VERSION "0.2.0" CACHE STRING "" FORCE )
-endif()
-
-if( NOT DEFINED OZ_APPLICATION_TITLE )
-  set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
-endif()
+mark_as_advanced( OZ_APPLICATION_NAME )
+mark_as_advanced( OZ_APPLICATION_VERSION )
+mark_as_advanced( OZ_APPLICATION_TITLE )
 
 if( NOT DEFINED OZ_RC_DIR )
   if( WIN32 )
@@ -215,6 +211,9 @@ else()
   set( CMAKE_EXE_LINKER_FLAGS_RELEASEGEN "${CMAKE_EXE_LINKER_FLAGS_RELEASEGEN} -flto" )
   set( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} -flto" )
 endif()
+
+mark_as_advanced( CMAKE_CXX_FLAGS_RELEASEGEN )
+mark_as_advanced( CMAKE_EXE_LINKER_FLAGS_RELEASEGEN )
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags} ${arch_flags} ${warnings}" )
 

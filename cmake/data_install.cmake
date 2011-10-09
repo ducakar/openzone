@@ -3,18 +3,21 @@
 #
 if( OZ_INSTALL_INFO )
   if( WIN32 OR OZ_INSTALL_STANDALONE )
-    set( dir "." )
+    file( GLOB files README.* )
+    install( FILES
+      COPYING
+      README
+      ${files}
+      DESTINATION . )
   else()
-    set( dir "share/doc" )
+    file( GLOB files README.* )
+    install( FILES
+      AUTHORS
+      COPYING
+      README
+      ${files}
+      DESTINATION share/doc )
   endif()
-
-  file( GLOB files README.* )
-  install( FILES
-    AUTHORS
-    COPYING
-    README
-    ${files}
-    DESTINATION ${dir} )
 endif()
 
 #
@@ -220,8 +223,5 @@ if( OZ_INSTALL_DATA_SRC )
 
   # launcher, icon
   install( DIRECTORY share/applications share/icons DESTINATION share )
-
-  # support files (DLLs, launcher scripts ...)
-  install( DIRECTORY support DESTINATION . )
 
 endif()
