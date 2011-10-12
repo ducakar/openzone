@@ -381,6 +381,14 @@ namespace client
     timer.renderSyncMillis += SDL_GetTicks() - beginTime;
   }
 
+  void Render::toggleFullscreen() const
+  {
+    if( SDL_WM_ToggleFullScreen( surface ) ) {
+      ui::mouse.isGrabOn = !ui::mouse.isGrabOn;
+      SDL_WM_GrabInput( ui::mouse.isGrabOn ? SDL_GRAB_ON : SDL_GRAB_OFF );
+    }
+  }
+
   void Render::load()
   {
     log.println( "Loading Render {" );
@@ -443,26 +451,31 @@ namespace client
     int  screenX      = config.get( "screen.width", 0 );
     int  screenY      = config.get( "screen.height", 0 );
     int  screenBpp    = config.get( "screen.bpp", 0 );
-    bool isFullScreen = config.getSet( "screen.full", true );
+    bool isFullscreen = config.getSet( "screen.full", true );
 
     log.print( "Creating OpenGL window %dx%d-%d %s ...",
-               screenX, screenY, screenBpp, isFullScreen ? "fullscreen" : "windowed" );
+               screenX, screenY, screenBpp, isFullscreen ? "fullscreen" : "windowed" );
 
     if( ( screenX != 0 || screenY != 0 || screenBpp != 0 ) &&
         SDL_VideoModeOK( screenX, screenY, screenBpp,
-                         SDL_OPENGL | ( isFullScreen ? SDL_FULLSCREEN : 0 ) ) == 0 )
+                         SDL_OPENGL | ( isFullscreen ? SDL_FULLSCREEN : 0 ) ) == 0 )
     {
       log.printEnd( " Mode not supported" );
       throw Exception( "Video mode not supported" );
     }
 
     surface = SDL_SetVideoMode( screenX, screenY, screenBpp,
-                                SDL_OPENGL | ( isFullScreen ? SDL_FULLSCREEN : 0 ) );
+                                SDL_OPENGL | ( isFullscreen ? SDL_FULLSCREEN : 0 ) );
 
     if( surface == null ) {
       log.printEnd( " Failed" );
       throw Exception( "Window creation failed" );
     }
+
+#ifndef OZ_TOOLS
+    SDL_WM_GrabInput( isFullscreen ? SDL_GRAB_ON : SDL_GRAB_OFF );
+    ui::mouse.isGrabOn = SDL_WM_GrabInput( SDL_GRAB_QUERY ) == SDL_GRAB_ON;
+#endif
 
     SDL_WM_SetCaption( OZ_APPLICATION_TITLE " " OZ_APPLICATION_VERSION, null );
 

@@ -6,10 +6,11 @@
 /.cproject
 /.settings
 
+/share
+/support
+/doxygen
+
 /Linux-*
 /Windows-*
-/support
-
-/doxygen
 
 /*.patch

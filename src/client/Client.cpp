@@ -537,12 +537,19 @@ namespace client
       ui::keyboard.prepare();
       ui::mouse.prepare();
 
+      if( ui::mouse.isGrabOn ) {
+        SDL_GetRelativeMouseState( &ui::mouse.relX, &ui::mouse.relY );
+        ui::mouse.relY = -ui::mouse.relY;
+      }
+
       while( SDL_PollEvent( &event ) ) {
         switch( event.type ) {
           case SDL_MOUSEMOTION: {
-            ui::mouse.relX = -event.motion.xrel;
-            ui::mouse.relY = +event.motion.yrel;
-            SDL_WarpMouse( screenCentreX, screenCentreY );
+            if( !ui::mouse.isGrabOn ) {
+              ui::mouse.relX = -event.motion.xrel;
+              ui::mouse.relY = +event.motion.yrel;
+              SDL_WarpMouse( screenCentreX, screenCentreY );
+            }
             break;
           }
           case SDL_KEYDOWN: {
@@ -557,8 +564,7 @@ namespace client
             }
             else if( keysym.sym == SDLK_F11 ) {
               if( ( keysym.mod & KMOD_CTRL ) && !( keysym.mod & ~KMOD_CTRL ) ) {
-                SDL_WM_ToggleFullScreen( render.surface );
-                ui::mouse.doAccelerate = !ui::mouse.doAccelerate;
+                render.toggleFullscreen();
               }
             }
             else if( keysym.sym == SDLK_F12 ) {
@@ -642,7 +648,7 @@ namespace client
 
       // render graphics, if we have enough time left
       if( timeSpent < uint( Timer::TICK_MILLIS ) ||
-          timeNow - timeLastRender > uint( 50 * Timer::TICK_MILLIS ) )
+          timeNow - timeLastRender > uint( Timer::TICKS_PER_SEC ) )
       {
         stage->present();
 

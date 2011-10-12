@@ -41,6 +41,9 @@ namespace client
   int GameStage::auxMain( void* )
   {
     System::catchSignals();
+#ifndef NDEBUG
+    System::enableHalt( true );
+#endif
 
     try{
       gameStage.run();
@@ -76,11 +79,6 @@ namespace client
   {
     uint beginTime;
 
-    nirvana.sync();
-
-    synapse.update();
-
-    SDL_SemPost( mainSemaphore );
     SDL_SemPost( mainSemaphore );
     SDL_SemPost( mainSemaphore );
     SDL_SemWait( auxSemaphore );
@@ -178,6 +176,9 @@ namespace client
         throw Exception( "reading saved state '" + stateFile + "' failed" );
       }
     }
+
+    nirvana.sync();
+    synapse.update();
 
     camera.update();
     camera.prepare();
@@ -368,8 +369,6 @@ namespace client
     auxSemaphore  = SDL_CreateSemaphore( 0 );
     auxThread     = SDL_CreateThread( auxMain, null );
 
-    SDL_SemWait( mainSemaphore );
-
     log.printEnd( " OK" );
 
     lua.init();
@@ -398,6 +397,9 @@ namespace client
     else if( !read( stateFile ) ) {
       throw Exception( "reading saved state '" + stateFile + "' failed" );
     }
+
+    nirvana.sync();
+    synapse.update();
 
     ui::mouse.buttons = 0;
     ui::mouse.currButtons = 0;
@@ -450,7 +452,6 @@ namespace client
 
     isAlive = false;
 
-    SDL_SemPost( auxSemaphore );
     SDL_SemPost( auxSemaphore );
     SDL_WaitThread( auxThread, null );
 

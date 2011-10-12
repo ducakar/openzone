@@ -16,14 +16,15 @@
 
 #include "client/Camera.hpp"
 
-using namespace oz::nirvana;
-
 namespace oz
 {
 namespace client
 {
 namespace ui
 {
+
+  using namespace oz::nirvana;
+  using oz::nirvana::nirvana;
 
   InfoFrame::InfoFrame() :
       Frame( -8, -8, 360, 12 + 24 * Font::INFOS[Font::SANS].height, "" ),
@@ -40,7 +41,7 @@ namespace ui
   bool InfoFrame::onMouseOver()
   {
     if( camera.state != Camera::BOT || camera.botObj == null || camera.tagged == -1 ||
-        !nirvana::nirvana.devices.contains( camera.tagged ) )
+        !nirvana.devices.contains( camera.tagged ) )
     {
       return false;
     }
@@ -51,14 +52,14 @@ namespace ui
   void InfoFrame::onDraw()
   {
     if( camera.state != Camera::BOT || camera.botObj == null || camera.tagged == -1 ||
-        !nirvana::nirvana.devices.contains( camera.tagged ) )
+        !nirvana.devices.contains( camera.tagged ) )
     {
       return;
     }
 
     if( lastId != camera.tagged || uint( timer.ticks - lastTicks ) >= uint( REFRESH_INTERVAL ) ) {
       const Bot*    tagged = static_cast<const Bot*>( camera.taggedObj );
-      const Device* device = nirvana::nirvana.devices.get( camera.tagged );
+      const Device* device = nirvana.devices.get( camera.tagged );
 
       if( tagged->flags & Object::BOT_BIT ) {
         title.setText( "%s (%s)", tagged->name.cstr(), tagged->clazz->title.cstr() );

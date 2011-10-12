@@ -21,18 +21,10 @@ if( OZ_INSTALL_INFO )
 endif()
 
 #
-# glsl
-#
-if( OZ_INSTALL_OPENZONE )
-  install( DIRECTORY share/openzone/glsl DESTINATION share/openzone
-           PATTERN "DISABLED" EXCLUDE )
-endif()
-
-#
 # icons
 #
 if( OZ_INSTALL_ICONS )
-  install( DIRECTORY share/applications share/icons DESTINATION share )
+  install( DIRECTORY share/applications share/pixmaps DESTINATION share )
 endif()
 
 #
@@ -90,6 +82,10 @@ if( OZ_INSTALL_DATA )
 
   # class
   install( DIRECTORY share/openzone/class DESTINATION share/openzone
+           PATTERN "DISABLED" EXCLUDE )
+
+  # glsl
+  install( DIRECTORY share/openzone/glsl DESTINATION share/openzone
            PATTERN "DISABLED" EXCLUDE )
 
   # lua
@@ -180,6 +176,10 @@ if( OZ_INSTALL_DATA_SRC )
            PATTERN "DISABLED" EXCLUDE )
 
   install( DIRECTORY share/openzone/data/textures DESTINATION share/openzone/data
+           PATTERN "DISABLED" EXCLUDE )
+
+  # glsl
+  install( DIRECTORY share/openzone/glsl DESTINATION share/openzone
            PATTERN "DISABLED" EXCLUDE )
 
   # lua
