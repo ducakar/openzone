@@ -23,7 +23,6 @@ namespace oz
     reset();
   }
 
-
   void Timer::reset()
   {
     ticks                 = 0;

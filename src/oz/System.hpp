@@ -49,8 +49,9 @@ namespace oz
       static void enableHalt( bool value );
 
       /**
-       * Set signal handlers to catch critical signals, print information, stack trace and wait
-       * for a debugger. SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV, SIGTERM are caught.
+       * Set signal handlers to catch critical signals, print information, stack trace and,
+       * optionally, wait for a debugger to attach.
+       * SIGINT, SIGQUIT, SIGILL, SIGABRT, SIGFPE, SIGSEGV and SIGTERM are caught.
        */
       static void catchSignals();
 

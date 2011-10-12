@@ -60,9 +60,6 @@ namespace ui
       int   relY;
       int   relZ;
 
-      int   uiRelX;
-      int   uiRelY;
-
       char  buttons;
       char  oldButtons;
       char  currButtons;
@@ -77,8 +74,8 @@ namespace ui
       bool  wheelDown;
 
       bool  doShow;
-      bool  doAccelerate;
-      float accelThreshold;
+      bool  isGrabOn;
+      float accelFactor;
 
       int   icon;
 

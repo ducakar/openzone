@@ -38,6 +38,7 @@ namespace client
       SDL_Thread*     auxThread;
       SDL_sem*        mainSemaphore;
       SDL_sem*        auxSemaphore;
+
       volatile bool   isAlive;
 
       bool            isLoaded;

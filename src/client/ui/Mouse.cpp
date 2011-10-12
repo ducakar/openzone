@@ -48,24 +48,21 @@ namespace ui
 
   void Mouse::update()
   {
+#ifndef OZ_MINGW
+    if( isGrabOn ) {
+      float move  = Math::sqrt( float( relX )*float( relX ) + float( relY )*float( relY ) );
+      float accel = min( 1.0f + move * accelFactor, 2.0f );
+
+      relX = int( float( relX ) * accel );
+      relY = int( float( relY ) * accel );
+    }
+#endif
+
     if( doShow ) {
       icon = ARROW;
 
-      uiRelX = relX;
-      uiRelY = relY;
-
-# ifndef OZ_MINGW
-      if( doAccelerate ) {
-        float moveSq = float( relX )*float( relX ) + float( relY )*float( relY );
-        if( moveSq >= accelThreshold ) {
-          uiRelX += relX;
-          uiRelY += relY;
-        }
-      }
-# endif
-
-      int desiredX = x + uiRelX;
-      int desiredY = y + uiRelY;
+      int desiredX = x + relX;
+      int desiredY = y + relY;
 
       x = clamp( desiredX, 0, camera.width - 1 );
       y = clamp( desiredY, 0, camera.height - 1 );
@@ -144,8 +141,8 @@ namespace ui
   void Mouse::init()
   {
     doShow = false;
-    doAccelerate = config.get( "screen.full", true );
-    accelThreshold = config.getSet( "mouse.accelThreshorld", 64.0f );
+    isGrabOn = config.get( "screen.full", true );
+    accelFactor = config.getSet( "mouse.accelFactor", 0.05f );
     icon = ARROW;
 
     x = camera.centreX;
@@ -153,8 +150,6 @@ namespace ui
     relX = 0;
     relY = 0;
     relZ = 0;
-    uiRelX = 0;
-    uiRelY = 0;
 
     buttons = 0;
     oldButtons = 0;

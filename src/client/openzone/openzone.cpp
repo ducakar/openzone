@@ -20,7 +20,9 @@ bool Alloc::isLocked = true;
 int main( int argc, char** argv )
 {
   System::catchSignals();
-//   System::enableHalt( true );
+#ifndef NDEBUG
+  System::enableHalt( true );
+#endif
 
   Alloc::isLocked = false;
 

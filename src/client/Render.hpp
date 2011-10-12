@@ -115,6 +115,7 @@ namespace client
 #ifndef OZ_TOOLS
       void draw( int flags );
       void sync() const;
+      void toggleFullscreen() const;
 
       void load();
       void unload();
