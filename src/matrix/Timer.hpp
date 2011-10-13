@@ -33,13 +33,14 @@ namespace oz
       uint  loaderMillis;
       uint  soundMillis;
       uint  renderMillis;
-      uint  renderScheduleMillis;
+      uint  renderPrepareMillis;
       uint  renderCaelumMillis;
       uint  renderTerraMillis;
       uint  renderStructsMillis;
       uint  renderObjectsMillis;
       uint  renderParticlesMillis;
       uint  renderMiscMillis;
+      uint  renderPostprocessMillis;
       uint  renderUiMillis;
       uint  renderSyncMillis;
       uint  uiMillis;

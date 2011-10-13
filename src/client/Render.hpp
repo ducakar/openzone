@@ -92,6 +92,8 @@ namespace client
       bool                    showBounds;
       bool                    showAim;
 
+      bool                    isDeferred;
+
       float                   visibility;
 
       float                   windFactor;
@@ -102,13 +104,16 @@ namespace client
       int                     renderHeight;
 
       uint                    fbo;
-      uint                    rbo;
-      uint                    cbos[2];
+      uint                    rbos[3];
+      uint                    depthBuffer;
       uint                    colourBuffer;
       uint                    normalBuffer;
 
 #ifndef OZ_TOOLS
       void scheduleCell( int cellX, int cellY );
+      void prepareDraw();
+      void drawGeometry();
+      void postprocess();
 
       void drawUI();
       void drawOrbis();

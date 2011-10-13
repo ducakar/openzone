@@ -68,7 +68,7 @@ namespace client
   {
     projCamera = proj * camera;
 
-    OZ_GL_CHECK_ERROR();
+    glUniform3fv( param.oz_CameraPosition, 1, client::camera.p );
   }
 
   void Transform::applyModel() const
@@ -192,6 +192,8 @@ namespace client
     OZ_REGISTER_PARAMETER( oz_Transform_model,          "oz_Transform.model" );
     OZ_REGISTER_PARAMETER( oz_Transform_complete,       "oz_Transform.complete" );
 
+    OZ_REGISTER_PARAMETER( oz_CameraPosition,           "oz_CameraPosition" );
+
     OZ_REGISTER_PARAMETER( oz_Colour,                   "oz_Colour" );
     OZ_REGISTER_PARAMETER( oz_Textures,                 "oz_Textures" );
 
@@ -199,7 +201,12 @@ namespace client
     OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse,      "oz_CaelumLight.diffuse" );
     OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient,      "oz_CaelumLight.ambient" );
 
-    OZ_REGISTER_PARAMETER( oz_SkyColour,                "oz_SkyColour" );
+    OZ_REGISTER_PARAMETER( oz_Specular,                 "oz_Specular" );
+
+    OZ_REGISTER_PARAMETER( oz_Fog_start,                "oz_Fog.start" );
+    OZ_REGISTER_PARAMETER( oz_Fog_end,                  "oz_Fog.end" );
+    OZ_REGISTER_PARAMETER( oz_Fog_colour,               "oz_Fog.colour" );
+
     OZ_REGISTER_PARAMETER( oz_WaveBias,                 "oz_WaveBias" );
     OZ_REGISTER_PARAMETER( oz_Wind,                     "oz_Wind" );
     OZ_REGISTER_PARAMETER( oz_MD2Anim,                  "oz_MD2Anim" );
@@ -280,7 +287,7 @@ namespace client
 
   void Shader::updateLights()
   {
-    glUniform3fv( param.oz_CaelumLight_dir,     1, tf.projCamera * caelumLight.dir );
+    glUniform3fv( param.oz_CaelumLight_dir,     1, caelumLight.dir );
     glUniform4fv( param.oz_CaelumLight_diffuse, 1, caelumLight.diffuse );
     glUniform4fv( param.oz_CaelumLight_ambient, 1, caelumLight.ambient );
 
@@ -377,6 +384,7 @@ namespace client
     log.println( "Initialising Shader {" );
     log.indent();
 
+    bool isDeferred = config.get( "render.deferred", false );
     hasVertexTexture = config.get( "shader.vertexTexture", true );
 
     // bind white texture to id 0 to emulate fixed functionality (in fixed functionality sampler
@@ -406,9 +414,10 @@ namespace client
     int         lengths[3];
 
     defines = "#version 120\n";
+    defines = defines + ( isDeferred ?       "#define OZ_DEFERRED\n" : "\n" );
     defines = defines + ( hasVertexTexture ? "#define OZ_VERTEX_TEXTURE\n" : "\n" );
 
-    for( int i = 2; i < 10; ++i ) {
+    for( int i = 3; i < 10; ++i ) {
       defines = defines + "\n";
     }
 

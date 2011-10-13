@@ -108,7 +108,7 @@ namespace client
 
     shader.use( waterShaderId );
 
-//     glUniform1f( param.oz_Specular, 0.5f );
+    glUniform1f( param.oz_Specular, 0.5f );
     glUniform1f( param.oz_WaveBias, waveBias );
     tf.model = Mat44::ID;
     tf.apply();
@@ -118,8 +118,6 @@ namespace client
     if( camera.p.z >= 0.0f ) {
       glFrontFace( GL_CW );
     }
-
-    glEnable( GL_BLEND );
 
 # ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
@@ -138,8 +136,6 @@ namespace client
         }
       }
     }
-
-    glDisable( GL_BLEND );
 
     if( camera.p.z >= 0.0f ) {
       glFrontFace( GL_CCW );

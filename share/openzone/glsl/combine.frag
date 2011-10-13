@@ -7,15 +7,6 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
-struct CaelumLight
-{
-  vec3 dir;
-  vec4 diffuse;
-  vec4 ambient;
-};
-
-uniform CaelumLight oz_CaelumLight;
-
 varying vec2 exTexCoord;
 
 void main()

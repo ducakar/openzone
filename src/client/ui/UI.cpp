@@ -71,15 +71,17 @@ namespace ui
       if( shader.isLoaded || i == shader.plain ) {
         shader.use( i );
         tf.applyCamera();
+
+        glUniform1f( param.oz_Fog_start, 1000000.0f );
+        glUniform1f( param.oz_Fog_end, 2000000.0f );
       }
     }
 
     glEnable( GL_BLEND );
 
-    shader.use( shader.plain );
+    glClear( GL_DEPTH_BUFFER_BIT );
 
-    glBindTexture( GL_TEXTURE_2D, 0 );
-    shape.bindVertexArray();
+    shader.use( shader.plain );
 
     root->drawChildren();
     mouse.draw();

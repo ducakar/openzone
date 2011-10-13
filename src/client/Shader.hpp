@@ -25,6 +25,8 @@ namespace client
     int oz_Transform_model;
     int oz_Transform_complete;
 
+    int oz_CameraPosition;
+
     int oz_Colour;
     int oz_Textures;
 
@@ -32,7 +34,12 @@ namespace client
     int oz_CaelumLight_diffuse;
     int oz_CaelumLight_ambient;
 
-    int oz_SkyColour;
+    int oz_Specular;
+
+    int oz_Fog_start;
+    int oz_Fog_end;
+    int oz_Fog_colour;
+
     int oz_WaveBias;
     int oz_Wind;
     int oz_MD2Anim;

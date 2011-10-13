@@ -235,7 +235,7 @@ namespace client
       glBindTexture( GL_TEXTURE_2D, vertexTexId );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F_ARB, nFramePositions, nFrames, 0,
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, nFramePositions, nFrames, 0,
                     GL_RGBA, GL_FLOAT, 0 );
       glBindTexture( GL_TEXTURE_2D, 0 );
 
@@ -258,7 +258,7 @@ namespace client
       glBindTexture( GL_TEXTURE_2D, normalTexId );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32F, nFramePositions, nFrames, 0,
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, nFramePositions, nFrames, 0,
                     GL_RGBA, GL_FLOAT, 0 );
       glBindTexture( GL_TEXTURE_2D, 0 );
 
