@@ -466,7 +466,7 @@ namespace client
         for( int k = 0; k < face.nIndices; ++k ) {
           const QBSPVertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
 
-          compiler.texCoord( vertex.texCoord );
+          compiler.texCoord( vertex.texCoord[0], 1.0f - vertex.texCoord[1] );
           compiler.normal( face.normal );
           compiler.vertex( vertex.p );
         }
@@ -475,7 +475,7 @@ namespace client
           for( int k = face.nIndices - 1; k >= 0; --k ) {
             const QBSPVertex& vertex = vertices[ face.firstVertex + indices[face.firstIndex + k] ];
 
-            compiler.texCoord( vertex.texCoord );
+            compiler.texCoord( vertex.texCoord[0], 1.0f - vertex.texCoord[1] );
             compiler.normal( -face.normal[0], -face.normal[1], -face.normal[2] );
             compiler.vertex( vertex.p );
           }

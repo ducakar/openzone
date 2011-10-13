@@ -564,7 +564,7 @@ namespace client
         const MD2TexCoord& texCoord = texCoords[ triangles[i].texCoords[j] ];
 
         compiler.texCoord( float( texCoord.s ) / float( header.skinWidth ),
-                           float( texCoord.t ) / float( header.skinHeight ) );
+                           float( header.skinHeight - texCoord.t ) / float( header.skinHeight ) );
         // position index (to make it unique and) to replace it later by the actual coordinates
         compiler.vertex( float( triangles[i].vertices[j] ), 0.0f, 0.0f );
       }

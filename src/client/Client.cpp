@@ -161,30 +161,6 @@ namespace client
 
       float shutdownTime  = float( SDL_GetTicks() - beginTime )  * 0.001f;
 
-#ifndef NDEBUG
-      log.println( "Object counts {" );
-      log.indent();
-
-      foreach( i, classNameCounts.citer() ) {
-        log.println( "%6d  %s", i->y, i->x.cstr() );
-      }
-
-      log.println();
-      log.println( "%6d  vehicles", nVehicles );
-      log.println( "%6d  bots", nBots );
-      log.println( "%6d  weapons", nWeapons );
-      log.println( "%6d  other dynamic objects", nDynamics );
-      log.println( "%6d  static objects", nObjects );
-
-      classNameCounts.clear();
-      classNameCounts.dealloc();
-
-      log.unindent();
-      log.println( "}" );
-
-      context.printLoad();
-#endif
-
       log.println( "Memory usage {" );
       log.indent();
 
