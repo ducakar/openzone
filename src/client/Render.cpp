@@ -88,18 +88,8 @@ namespace client
     }
   }
 
-  void Render::drawOrbis()
+  void Render::prepareDraw()
   {
-    OZ_GL_CHECK_ERROR();
-
-    glPushAttrib( GL_VIEWPORT_BIT );
-    glViewport( 0, 0, renderWidth, renderHeight );
-
-    uint dbos[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-
-    glBindFramebuffer( GL_FRAMEBUFFER, fbo );
-    glDrawBuffers( 2, dbos );
-
     uint currentTime = SDL_GetTicks();
     uint beginTime = currentTime;
 
@@ -108,15 +98,11 @@ namespace client
 
     windPhi = Math::mod( windPhi + windPhiInc, Math::TAU );
 
-    Vec4 clearColour;
-
     if( shader.isInWater ) {
       visibility = waterNightVisibility + caelum.ratio * ( waterDayVisibility - waterNightVisibility );
-      clearColour = Colours::water;
     }
     else {
       visibility = nightVisibility + caelum.ratio * ( dayVisibility - nightVisibility );
-      clearColour = Colours::caelum;
     }
 
     // frustum
@@ -157,11 +143,18 @@ namespace client
     structs.sort();
     objects.sort();
 
-    hard_assert( !glIsEnabled( GL_BLEND ) );
-
     currentTime = SDL_GetTicks();
-    timer.renderScheduleMillis += currentTime - beginTime;
-    beginTime = currentTime;
+    timer.renderPrepareMillis += currentTime - beginTime;
+  }
+
+  void Render::drawGeometry()
+  {
+    uint currentTime = SDL_GetTicks();
+    uint beginTime = currentTime;
+
+    OZ_GL_CHECK_ERROR();
+
+    Vec4 clearColour = shader.isInWater ? Colours::water : Colours::caelum;
 
     // clear buffer
     glClearColor( clearColour.x, clearColour.y, clearColour.z, clearColour.w );
@@ -190,6 +183,15 @@ namespace client
       shader.use( i );
 
       tf.applyCamera();
+
+      shader.updateLights();
+
+      glUniform1f( param.oz_Specular, 1.0f );
+
+      glUniform1f( param.oz_Fog_start, shader.isInWater ? 0.0f : 100.0f );
+      glUniform1f( param.oz_Fog_end, visibility );
+      glUniform4fv( param.oz_Fog_colour, 1, clearColour );
+
       glUniform4f( param.oz_Wind, 1.0f, 1.0f, windFactor, windPhi );
     }
 
@@ -198,8 +200,6 @@ namespace client
     currentTime = SDL_GetTicks();
     timer.renderCaelumMillis += currentTime - beginTime;
     beginTime = currentTime;
-
-    hard_assert( !glIsEnabled( GL_BLEND ) );
 
     // draw structures
     shader.use( shader.mesh );
@@ -252,7 +252,7 @@ namespace client
     shader.use( shader.mesh );
 
     glBindTexture( GL_TEXTURE_2D, 0 );
-//     glUniform1f( param.oz_Specular, 1.0f );
+    glUniform1f( param.oz_Specular, 1.0f );
 
     shape.bindVertexArray();
 
@@ -266,8 +266,6 @@ namespace client
 
       shape.draw( part );
     }
-
-    glDisable( GL_BLEND );
 
     OZ_GL_CHECK_ERROR();
 
@@ -293,15 +291,15 @@ namespace client
       context.drawBSP( str, Mesh::ALPHA_BIT );
     }
 
+    glDisable( GL_BLEND );
+
     currentTime = SDL_GetTicks();
     timer.renderStructsMillis += currentTime - beginTime;
     beginTime = currentTime;
 
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
     shader.use( shader.plain );
-    tf.model = Mat44::ID;
 
+    glBindTexture( GL_TEXTURE_2D, 0 );
     shape.bindVertexArray();
 
     if( showAim ) {
@@ -319,7 +317,6 @@ namespace client
                       ( objects[i].obj->flags & Object::SOLID_BIT ) ?
                           Colours::CLIP_AABB : Colours::NOCLIP_AABB );
         shape.wireBox( *objects[i].obj );
-        OZ_GL_CHECK_ERROR();
       }
 
       glUniform4fv( param.oz_Colour, 1, Colours::STRUCTURE_AABB );
@@ -332,54 +329,79 @@ namespace client
         foreach( entity, citer( str->entities, str->nEntities ) ) {
           Bounds bb = str->toAbsoluteCS( *entity->model + entity->offset );
           shape.wireBox( bb.toAABB() );
-          OZ_GL_CHECK_ERROR();
         }
 
         glUniform4fv( param.oz_Colour, 1, Colours::STRUCTURE_AABB );
         shape.wireBox( str->toAABB() );
-        OZ_GL_CHECK_ERROR();
       }
     }
+
+    glDisable( GL_DEPTH_TEST );
+
+    OZ_GL_CHECK_ERROR();
 
     structs.clear();
     waterStructs.clear();
     objects.clear();
     particles.clear();
 
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-    glPopAttrib();
-
-    glDisable( GL_DEPTH_TEST );
-    glDisable( GL_BLEND );
-
-    // postprocess
-    tf.ortho();
-    tf.camera = Mat44::ID;
-    tf.applyCamera();
-
-    shader.use( shader.combine );
-
-    shader.setAmbientLight( Colours::ambient );
-    shader.setCaelumLight( caelum.lightDir, Colours::diffuse );
-    shader.updateLights();
-
-    shape.bindVertexArray();
-
-    glBindTexture( GL_TEXTURE_2D, colourBuffer );
-    glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, normalBuffer );
-
-    shape.fill( 0, 0, camera.width, camera.height );
-
-    glBindTexture( GL_TEXTURE_2D, 0 );
-    glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    OZ_GL_CHECK_ERROR();
-
     currentTime = SDL_GetTicks();
     timer.renderMiscMillis += currentTime - beginTime;
+  }
+
+  void Render::drawOrbis()
+  {
+    if( isDeferred ) {
+      glPushAttrib( GL_VIEWPORT_BIT );
+      glViewport( 0, 0, renderWidth, renderHeight );
+
+      uint dbos[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+
+      glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+      glDrawBuffers( 1, dbos );
+    }
+
+    prepareDraw();
+    drawGeometry();
+
+    if( isDeferred ) {
+      glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+      glPopAttrib();
+
+    // postprocess
+//     tf.ortho();
+//     tf.camera = Mat44::ID;
+//     tf.applyCamera();
+//
+//     shader.use( shader.combine );
+//
+//     shader.setAmbientLight( Colours::ambient );
+//     shader.setCaelumLight( caelum.lightDir, Colours::diffuse );
+//     shader.updateLights();
+//
+//     shape.bindVertexArray();
+//
+//     glBindTexture( GL_TEXTURE_2D, colourBuffer );
+//     glActiveTexture( GL_TEXTURE1 );
+//     glBindTexture( GL_TEXTURE_2D, normalBuffer );
+//
+//     shape.fill( 0, 0, camera.width, camera.height );
+//
+//     glBindTexture( GL_TEXTURE_2D, 0 );
+//     glActiveTexture( GL_TEXTURE0 );
+//     glBindTexture( GL_TEXTURE_2D, 0 );
+
+      glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
+      glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+
+      glBlitFramebuffer( 0, 0, renderWidth, renderHeight, 0, 0, camera.width, camera.height,
+                       GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+      glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
+    }
+
+    OZ_GL_CHECK_ERROR();
   }
 
   void Render::drawUI()
@@ -393,8 +415,6 @@ namespace client
 
   void Render::draw( int flags )
   {
-    glClear( GL_DEPTH_BUFFER_BIT );
-
     if( flags & DRAW_ORBIS_BIT ) {
       drawOrbis();
     }
@@ -480,7 +500,6 @@ namespace client
     log.indent();
 
     fbo  = 0;
-    rbo  = 0;
 
     int  screenX      = config.get( "screen.width", 0 );
     int  screenY      = config.get( "screen.height", 0 );
@@ -620,8 +639,10 @@ namespace client
     }
 #endif
 
-    renderWidth          = config.getSet( "render.width", screenX );
-    renderHeight         = config.getSet( "render.height", screenY );
+    renderWidth          = config.getSet( "render.width",                screenX );
+    renderHeight         = config.getSet( "render.height",               screenY );
+
+    isDeferred           = config.getSet( "render.deferred",             false );
 
     nearDist2            = config.getSet( "render.nearDistance",         100.0f );
 
@@ -697,48 +718,57 @@ namespace client
 # endif
 #endif
 
-    glGenRenderbuffers( 1, &rbo );
-    glBindRenderbuffer( GL_RENDERBUFFER, rbo );
+    if( isDeferred ) {
+      glGenTextures( 3, rbos );
+      depthBuffer  = rbos[0];
+      colourBuffer = rbos[1];
+      normalBuffer = rbos[2];
 
-    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, renderWidth, renderHeight );
+      glBindTexture( GL_TEXTURE_2D, depthBuffer );
 
-    glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-    glGenTextures( 2, cbos );
-    colourBuffer = cbos[0];
-    normalBuffer = cbos[1];
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, renderWidth, renderHeight, 0,
+                    GL_DEPTH_COMPONENT, GL_FLOAT, null );
 
-    glBindTexture( GL_TEXTURE_2D, colourBuffer );
+      glBindTexture( GL_TEXTURE_2D, colourBuffer );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, renderWidth, renderHeight, 0, GL_RGB,
-                  GL_UNSIGNED_BYTE, null );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, renderWidth, renderHeight, 0,
+                    GL_RGB, GL_FLOAT, null );
 
-    glBindTexture( GL_TEXTURE_2D, normalBuffer );
+      glBindTexture( GL_TEXTURE_2D, normalBuffer );
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, renderWidth, renderHeight, 0, GL_RGB,
-                  GL_FLOAT, null );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, renderWidth, renderHeight, 0,
+                    GL_RGB, GL_FLOAT, null );
 
-    glBindTexture( GL_TEXTURE_2D, 0 );
+      glBindTexture( GL_TEXTURE_2D, 0 );
 
-    glGenFramebuffers( 1, &fbo );
-    glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+      glGenFramebuffers( 1, &fbo );
+      glBindFramebuffer( GL_FRAMEBUFFER, fbo );
 
-    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo );
+      glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  GL_TEXTURE_2D, depthBuffer,  0 );
+      glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
+      glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0 );
 
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0 );
+      if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
+        throw Exception( "framebuffer creation failed" );
+      }
 
-    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
-      throw Exception( "framebuffer creation failed" );
+      glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     }
-
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
     glEnable( GL_CULL_FACE );
     glDepthFunc( GL_LESS );
@@ -754,6 +784,11 @@ namespace client
     shape.load();
     camera.init();
     ui::ui.init();
+
+    shader.use( shader.plain );
+
+    glBindTexture( GL_TEXTURE_2D, 0 );
+    shape.bindVertexArray();
 #endif
 
     OZ_GL_CHECK_ERROR();
@@ -769,8 +804,7 @@ namespace client
 
     if( fbo != 0 ) {
       glDeleteRenderbuffers( 1, &fbo );
-      glDeleteTextures( 2, cbos );
-      glDeleteRenderbuffers( 1, &rbo );
+      glDeleteTextures( 3, rbos );
     }
 
 #ifndef OZ_TOOLS

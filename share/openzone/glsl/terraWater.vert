@@ -13,6 +13,7 @@ attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
 
+varying vec3 exPosition;
 varying vec2 exTexCoord;
 
 void main()
@@ -22,5 +23,6 @@ void main()
   vec3 position = ( oz_Transform.model * localPos ).xyz;
 
   gl_Position = oz_Transform.complete * localPos;
+  exPosition  = position;
   exTexCoord  = inTexCoord;
 }
