@@ -760,9 +760,27 @@ namespace client
     }
     log.printEnd( " %s ... OK", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
 
-    int  bytesPerPixel = image->format->BitsPerPixel / 8;
-    uint texId = createTexture( image->pixels, image->w, image->h, bytesPerPixel, wrap,
-                                 magFilter, minFilter );
+    int bytesPerPixel = image->format->BitsPerPixel / 8;
+    char* bytes = reinterpret_cast<char*>( image->pixels );
+
+    char* pos0 = &bytes[0];
+    char* pos1 = &bytes[ ( image->h - 1 ) * image->w * bytesPerPixel ];
+
+    for( int y = 0; y < image->h / 2; ++y ) {
+      for( int x = 0; x < image->w; ++x ) {
+        for( int i = 0; i < bytesPerPixel; ++i ) {
+          swap( pos0[i], pos1[i] );
+        }
+
+        pos0 += bytesPerPixel;
+        pos1 += bytesPerPixel;
+      }
+
+      pos1 -= 2 * image->w * bytesPerPixel;
+    }
+
+    uint texId = createTexture( bytes, image->w, image->h, bytesPerPixel, wrap,
+                                magFilter, minFilter );
 
     SDL_FreeSurface( image );
 

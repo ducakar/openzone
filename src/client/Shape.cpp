@@ -52,13 +52,27 @@ namespace client
     fill( float( x ), float( y ), float( width ), float( height ) );
   }
 
+  void Shape::fillInv( float x, float y, float width, float height )
+  {
+    tf.model = Mat44::translation( Vec3( x, y, 0.0f ) );
+    tf.model.scale( Vec3( width, height, 0.0f ) );
+    tf.apply();
+
+    glDrawArrays( GL_TRIANGLE_STRIP, 4, 4 );
+  }
+
+  void Shape::fillInv( int x, int y, int width, int height )
+  {
+    fillInv( float( x ), float( y ), float( width ), float( height ) );
+  }
+
   void Shape::rect( float x, float y, float width, float height )
   {
     tf.model = Mat44::translation( Vec3( x + 0.5f, y + 0.5f, 0.0f ) );
     tf.model.scale( Vec3( width - 1.0f, height - 1.0f, 0.0f ) );
     tf.apply();
 
-    glDrawArrays( GL_LINE_LOOP, 4, 4 );
+    glDrawArrays( GL_LINE_LOOP, 8, 4 );
   }
 
   void Shape::rect( int x, int y, int width, int height )
@@ -71,22 +85,22 @@ namespace client
     tf.model = Mat44::translation( Vec3( minX, minY, 0.0f ) );
     tf.apply();
 
-    glDrawArrays( GL_LINES,  8, 4 );
+    glDrawArrays( GL_LINES, 12, 4 );
 
     tf.model = Mat44::translation( Vec3( maxX, minY, 0.0f ) );
     tf.apply();
 
-    glDrawArrays( GL_LINES, 12, 4 );
+    glDrawArrays( GL_LINES, 16, 4 );
 
     tf.model = Mat44::translation( Vec3( maxX, maxY, 0.0f ) );
     tf.apply();
 
-    glDrawArrays( GL_LINES, 16, 4 );
+    glDrawArrays( GL_LINES, 20, 4 );
 
     tf.model = Mat44::translation( Vec3( minX, maxY, 0.0f ) );
     tf.apply();
 
-    glDrawArrays( GL_LINES, 20, 4 );
+    glDrawArrays( GL_LINES, 24, 4 );
   }
 
   void Shape::quad( float dimX, float dimY )
@@ -133,63 +147,69 @@ namespace client
     DArray<Vertex> vertices( 36 + MAX_PARTS * 12 );
 
     // filled rectangle
-    vertices[ 0] = Vertex( Point3( 0.0f, 0.0f, 0.0f ), TexCoord( 0.0f, 1.0f ) );
-    vertices[ 1] = Vertex( Point3( 1.0f, 0.0f, 0.0f ), TexCoord( 1.0f, 1.0f ) );
-    vertices[ 2] = Vertex( Point3( 0.0f, 1.0f, 0.0f ), TexCoord( 0.0f, 0.0f ) );
-    vertices[ 3] = Vertex( Point3( 1.0f, 1.0f, 0.0f ), TexCoord( 1.0f, 0.0f ) );
+    vertices[ 0] = Vertex( Point3( 0.0f, 0.0f, 0.0f ), TexCoord( 0.0f, 0.0f ) );
+    vertices[ 1] = Vertex( Point3( 1.0f, 0.0f, 0.0f ), TexCoord( 1.0f, 0.0f ) );
+    vertices[ 2] = Vertex( Point3( 0.0f, 1.0f, 0.0f ), TexCoord( 0.0f, 1.0f ) );
+    vertices[ 3] = Vertex( Point3( 1.0f, 1.0f, 0.0f ), TexCoord( 1.0f, 1.0f ) );
+
+    // filled rectangle (inverted)
+    vertices[ 4] = Vertex( Point3( 0.0f, 0.0f, 0.0f ), TexCoord( 0.0f, 1.0f ) );
+    vertices[ 5] = Vertex( Point3( 1.0f, 0.0f, 0.0f ), TexCoord( 1.0f, 1.0f ) );
+    vertices[ 6] = Vertex( Point3( 0.0f, 1.0f, 0.0f ), TexCoord( 0.0f, 0.0f ) );
+    vertices[ 7] = Vertex( Point3( 1.0f, 1.0f, 0.0f ), TexCoord( 1.0f, 0.0f ) );
 
     // line rectangle
-    vertices[ 4] = Vertex( Point3( 0.0f, 0.0f, 0.0f ) );
-    vertices[ 5] = Vertex( Point3( 1.0f, 0.0f, 0.0f ) );
-    vertices[ 6] = Vertex( Point3( 1.0f, 1.0f, 0.0f ) );
-    vertices[ 7] = Vertex( Point3( 0.0f, 1.0f, 0.0f ) );
+    vertices[ 8] = Vertex( Point3( 0.0f, 0.0f, 0.0f ) );
+    vertices[ 9] = Vertex( Point3( 1.0f, 0.0f, 0.0f ) );
+    vertices[10] = Vertex( Point3( 1.0f, 1.0f, 0.0f ) );
+    vertices[11] = Vertex( Point3( 0.0f, 1.0f, 0.0f ) );
 
     // tag box
-    vertices[ 8] = Vertex( Point3( -1.5f, -1.5f, 0.0f ) );
-    vertices[ 9] = Vertex( Point3( -1.5f, +3.5f, 0.0f ) );
-    vertices[10] = Vertex( Point3( -0.5f, -1.5f, 0.0f ) );
-    vertices[11] = Vertex( Point3( +3.5f, -1.5f, 0.0f ) );
+    vertices[12] = Vertex( Point3( -1.5f, -1.5f, 0.0f ) );
+    vertices[13] = Vertex( Point3( -1.5f, +3.5f, 0.0f ) );
+    vertices[14] = Vertex( Point3( -0.5f, -1.5f, 0.0f ) );
+    vertices[15] = Vertex( Point3( +3.5f, -1.5f, 0.0f ) );
 
-    vertices[12] = Vertex( Point3( +1.5f, -1.5f, 0.0f ) );
-    vertices[13] = Vertex( Point3( -3.5f, -1.5f, 0.0f ) );
-    vertices[14] = Vertex( Point3( +1.5f, -0.5f, 0.0f ) );
-    vertices[15] = Vertex( Point3( +1.5f, +3.5f, 0.0f ) );
+    vertices[16] = Vertex( Point3( +1.5f, -1.5f, 0.0f ) );
+    vertices[17] = Vertex( Point3( -3.5f, -1.5f, 0.0f ) );
+    vertices[18] = Vertex( Point3( +1.5f, -0.5f, 0.0f ) );
+    vertices[19] = Vertex( Point3( +1.5f, +3.5f, 0.0f ) );
 
-    vertices[16] = Vertex( Point3( +1.5f, +1.5f, 0.0f ) );
-    vertices[17] = Vertex( Point3( -3.5f, +1.5f, 0.0f ) );
-    vertices[18] = Vertex( Point3( +1.5f, +0.5f, 0.0f ) );
-    vertices[19] = Vertex( Point3( +1.5f, -3.5f, 0.0f ) );
+    vertices[20] = Vertex( Point3( +1.5f, +1.5f, 0.0f ) );
+    vertices[21] = Vertex( Point3( -3.5f, +1.5f, 0.0f ) );
+    vertices[22] = Vertex( Point3( +1.5f, +0.5f, 0.0f ) );
+    vertices[23] = Vertex( Point3( +1.5f, -3.5f, 0.0f ) );
 
-    vertices[20] = Vertex( Point3( -1.5f, +1.5f, 0.0f ) );
-    vertices[21] = Vertex( Point3( +3.5f, +1.5f, 0.0f ) );
-    vertices[22] = Vertex( Point3( -1.5f, +0.5f, 0.0f ) );
-    vertices[23] = Vertex( Point3( -1.5f, -3.5f, 0.0f ) );
+    vertices[24] = Vertex( Point3( -1.5f, +1.5f, 0.0f ) );
+    vertices[25] = Vertex( Point3( +3.5f, +1.5f, 0.0f ) );
+    vertices[26] = Vertex( Point3( -1.5f, +0.5f, 0.0f ) );
+    vertices[27] = Vertex( Point3( -1.5f, -3.5f, 0.0f ) );
 
     // sprite
-    vertices[24] = Vertex( Point3( -1.0f, -1.0f, 0.0f ),
+    vertices[28] = Vertex( Point3( -1.0f, -1.0f, 0.0f ),
                            TexCoord( 0.0f, 0.0f ),
                            Vec3( 0.0f, 0.0f, 1.0f ) );
-    vertices[25] = Vertex( Point3( +1.0f, -1.0f, 0.0f ),
+    vertices[29] = Vertex( Point3( +1.0f, -1.0f, 0.0f ),
                            TexCoord( 1.0f, 0.0f ),
                            Vec3( 0.0f, 0.0f, 1.0f ) );
-    vertices[26] = Vertex( Point3( -1.0f, +1.0f, 0.0f ),
+    vertices[30] = Vertex( Point3( -1.0f, +1.0f, 0.0f ),
                            TexCoord( 0.0f, 1.0f ),
                            Vec3( 0.0f, 0.0f, 1.0f ) );
-    vertices[27] = Vertex( Point3( +1.0f, +1.0f, 0.0f ),
+    vertices[31] = Vertex( Point3( +1.0f, +1.0f, 0.0f ),
                            TexCoord( 1.0f, 1.0f ),
                            Vec3( 0.0f, 0.0f, 1.0f ) );
 
     // box
-    vertices[28] = Vertex( Point3( -1.0f, -1.0f, -1.0f ) );
-    vertices[29] = Vertex( Point3( -1.0f, -1.0f, +1.0f ) );
-    vertices[30] = Vertex( Point3( -1.0f, +1.0f, -1.0f ) );
-    vertices[31] = Vertex( Point3( -1.0f, +1.0f, +1.0f ) );
-    vertices[32] = Vertex( Point3( +1.0f, -1.0f, -1.0f ) );
-    vertices[33] = Vertex( Point3( +1.0f, -1.0f, +1.0f ) );
-    vertices[34] = Vertex( Point3( +1.0f, +1.0f, -1.0f ) );
-    vertices[35] = Vertex( Point3( +1.0f, +1.0f, +1.0f ) );
+    vertices[32] = Vertex( Point3( -1.0f, -1.0f, -1.0f ) );
+    vertices[33] = Vertex( Point3( -1.0f, -1.0f, +1.0f ) );
+    vertices[34] = Vertex( Point3( -1.0f, +1.0f, -1.0f ) );
+    vertices[35] = Vertex( Point3( -1.0f, +1.0f, +1.0f ) );
+    vertices[36] = Vertex( Point3( +1.0f, -1.0f, -1.0f ) );
+    vertices[37] = Vertex( Point3( +1.0f, -1.0f, +1.0f ) );
+    vertices[38] = Vertex( Point3( +1.0f, +1.0f, -1.0f ) );
+    vertices[39] = Vertex( Point3( +1.0f, +1.0f, +1.0f ) );
 
-    int  k = 36;
+    int  k = 30;
     Vec3 normal;
 
     for( int i = 0; i < MAX_PARTS; ++i ) {
@@ -232,72 +252,72 @@ namespace client
      */
 
     // left
-    indices[ 0] = 28 + 0;
-    indices[ 1] = 28 + 1;
-    indices[ 2] = 28 + 2;
-    indices[ 3] = 28 + 3;
+    indices[ 0] = 32 + 0;
+    indices[ 1] = 32 + 1;
+    indices[ 2] = 32 + 2;
+    indices[ 3] = 32 + 3;
 
     // back
-    indices[ 4] = 28 + 6;
-    indices[ 5] = 28 + 7;
+    indices[ 4] = 32 + 6;
+    indices[ 5] = 32 + 7;
 
     // right
-    indices[ 6] = 28 + 4;
-    indices[ 7] = 28 + 5;
+    indices[ 6] = 32 + 4;
+    indices[ 7] = 32 + 5;
 
     // front
-    indices[ 8] = 28 + 0;
-    indices[ 9] = 28 + 1;
-    indices[10] = 28 + 1;
+    indices[ 8] = 32 + 0;
+    indices[ 9] = 32 + 1;
+    indices[10] = 32 + 1;
 
     // bottom
-    indices[11] = 28 + 0;
-    indices[12] = 28 + 0;
-    indices[13] = 28 + 2;
-    indices[14] = 28 + 4;
-    indices[15] = 28 + 6;
-    indices[16] = 28 + 6;
+    indices[11] = 32 + 0;
+    indices[12] = 32 + 0;
+    indices[13] = 32 + 2;
+    indices[14] = 32 + 4;
+    indices[15] = 32 + 6;
+    indices[16] = 32 + 6;
 
     // top
-    indices[17] = 28 + 1;
-    indices[18] = 28 + 1;
-    indices[19] = 28 + 5;
-    indices[20] = 28 + 3;
-    indices[21] = 28 + 7;
+    indices[17] = 32 + 1;
+    indices[18] = 32 + 1;
+    indices[19] = 32 + 5;
+    indices[20] = 32 + 3;
+    indices[21] = 32 + 7;
 
     /*
      * Wire box (GL_LINES)
      */
 
     // parallel to z
-    indices[22] = 28 + 0;
-    indices[23] = 28 + 1;
-    indices[24] = 28 + 2;
-    indices[25] = 28 + 3;
-    indices[26] = 28 + 4;
-    indices[27] = 28 + 5;
-    indices[28] = 28 + 6;
-    indices[29] = 28 + 7;
+    indices[22] = 32 + 0;
+    indices[23] = 32 + 1;
+    indices[24] = 32 + 2;
+    indices[25] = 32 + 3;
+    indices[26] = 32 + 4;
+    indices[27] = 32 + 5;
+    indices[28] = 32 + 6;
+    indices[29] = 32 + 7;
 
     // parallel to y
-    indices[30] = 28 + 0;
-    indices[31] = 28 + 2;
-    indices[32] = 28 + 1;
-    indices[33] = 28 + 3;
-    indices[34] = 28 + 4;
-    indices[35] = 28 + 6;
-    indices[36] = 28 + 5;
-    indices[37] = 28 + 7;
+    indices[30] = 32 + 0;
+    indices[31] = 32 + 2;
+    indices[32] = 32 + 1;
+    indices[33] = 32 + 3;
+    indices[34] = 32 + 4;
+    indices[35] = 32 + 6;
+    indices[36] = 32 + 5;
+    indices[37] = 32 + 7;
 
     // parallel to x
-    indices[38] = 28 + 0;
-    indices[39] = 28 + 4;
-    indices[40] = 28 + 1;
-    indices[41] = 28 + 5;
-    indices[42] = 28 + 2;
-    indices[43] = 28 + 6;
-    indices[44] = 28 + 3;
-    indices[45] = 28 + 7;
+    indices[38] = 32 + 0;
+    indices[39] = 32 + 4;
+    indices[40] = 32 + 1;
+    indices[41] = 32 + 5;
+    indices[42] = 32 + 2;
+    indices[43] = 32 + 6;
+    indices[44] = 32 + 3;
+    indices[45] = 32 + 7;
 
 #ifdef OZ_GL_COMPATIBLE
     vao = 1;

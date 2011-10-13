@@ -121,10 +121,6 @@ namespace oz
 
         dyn->momentum *= 1.0f - frictionFactor * WATER_FRICTION;
         systemMom += frictionFactor * dyn->lift * Timer::TICK_TIME;
-
-        if( systemMom >= 0.0f ) {
-          goto airFriction;
-        }
       }
 
       Dynamic* sObj;
@@ -172,8 +168,6 @@ namespace oz
       }
       // in air or swimming
       else {
-        airFriction:;
-
         dyn->momentum.x *= 1.0f - AIR_FRICTION;
         dyn->momentum.y *= 1.0f - AIR_FRICTION;
         dyn->momentum.z += systemMom;

@@ -115,9 +115,9 @@ namespace ui
     SDL_FreeSurface( text );
 
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
-    shape.fill( x + 1, y - 1, width, height );
+    shape.fillInv( x + 1, y - 1, width, height );
     glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    shape.fill( x, y, width, height );
+    shape.fillInv( x, y, width, height );
 
     glBindTexture( GL_TEXTURE_2D, 0 );
   }

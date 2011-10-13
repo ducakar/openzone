@@ -130,9 +130,9 @@ namespace ui
     int posY = area->y + ( y < 0 ? area->height + offsetY : offsetY );
 
     glUniform4f( param.oz_Colour, 0.0f, 0.0f, 0.0f, 1.0f );
-    shape.fill( posX + 1, posY - 1, width, height );
+    shape.fillInv( posX + 1, posY - 1, width, height );
     glUniform4f( param.oz_Colour, 1.0f, 1.0f, 1.0f, 1.0f );
-    shape.fill( posX, posY, width, height );
+    shape.fillInv( posX, posY, width, height );
 
     glBindTexture( GL_TEXTURE_2D, 0 );
   }
