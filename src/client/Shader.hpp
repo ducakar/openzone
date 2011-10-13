@@ -156,9 +156,8 @@ namespace client
 
     public:
 
-      int  ui;
+      int  plain;
       int  mesh;
-      int  bigMesh;
 
       int  activeProgram;
 

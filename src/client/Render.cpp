@@ -174,18 +174,15 @@ namespace client
     tf.projection();
     tf.camera.translate( Point3::ORIGIN - camera.p );
 
+    shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
+    shader.setCaelumLight( caelum.lightDir, Colours::diffuse );
+
     // set shaders
     for( int i = 0; i < library.shaders.length(); ++i ) {
-      if( i == shader.ui ) {
-        continue;
-      }
-
       shader.use( i );
 
       tf.applyCamera();
 
-      shader.setAmbientLight( Colours::GLOBAL_AMBIENT + Colours::ambient );
-      shader.setCaelumLight( caelum.lightDir, Colours::diffuse );
       shader.updateLights();
 
       glUniform1f( param.oz_Specular, 1.0f );
@@ -206,6 +203,8 @@ namespace client
     hard_assert( !glIsEnabled( GL_BLEND ) );
 
     // draw structures
+    shader.use( shader.mesh );
+
     for( int i = structs.length() - 1; i >= 0; --i ) {
       const Struct* str = structs[i].str;
 
@@ -251,10 +250,10 @@ namespace client
     // draw particles
     glEnable( GL_BLEND );
 
-    shader.use( particleShaderId );
+    shader.use( shader.mesh );
 
+    glBindTexture( GL_TEXTURE_2D, 0 );
     glUniform1f( param.oz_Specular, 1.0f );
-
     shape.bindVertexArray();
 
     for( int i = 0; i < particles.length(); ++i ) {
@@ -283,6 +282,8 @@ namespace client
     beginTime = currentTime;
 
     // draw structures' alpha parts
+    shader.use( shader.mesh );
+
     for( int i = 0; i < structs.length(); ++i ) {
       const Struct* str = structs[i].str;
 
@@ -298,7 +299,7 @@ namespace client
 
     glBindTexture( GL_TEXTURE_2D, 0 );
 
-    shader.use( simpleShaderId );
+    shader.use( shader.plain );
     tf.model = Mat44::ID;
 
     shape.bindVertexArray();
@@ -600,9 +601,6 @@ namespace client
 
     nearDist2            *= nearDist2;
     windPhi              = 0.0f;
-
-    simpleShaderId       = library.shaderIndex( "simple" );
-    particleShaderId     = library.shaderIndex( "particles" );
 
 #ifdef OZ_MINGW
     OZ_REGISTER_GLFUNC( glUniform1i,               PFNGLUNIFORM1IPROC               );

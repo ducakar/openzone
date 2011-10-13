@@ -1,7 +1,7 @@
 /*
- *  ui.vert
+ *  plain.vert
  *
- *  [description]
+ *  Shader for UI, bounding boxes, aim dot etc.
  *
  *  Copyright (C) 2002-2011  Davorin Učakar
  *  This software is covered by GNU GPLv3. See COPYING file for details.
@@ -14,6 +14,6 @@ varying vec2 exTexCoord;
 
 void main()
 {
-  exTexCoord  = inTexCoord;
   gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
+  exTexCoord  = inTexCoord;
 }

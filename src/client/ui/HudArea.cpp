@@ -222,15 +222,16 @@ namespace ui
 
     context.drawModel( vehicle, null );
 
-    shape.bindVertexArray();
+    glEnable( GL_BLEND );
+    glDisable( GL_DEPTH_TEST );
+
+    shader.use( shader.plain );
+
     glBindTexture( GL_TEXTURE_2D, 0 );
-    shader.use( shader.ui );
+    shape.bindVertexArray();
 
     tf.camera = Mat44::ID;
     tf.applyCamera();
-
-    glEnable( GL_BLEND );
-    glDisable( GL_DEPTH_TEST );
 
     float life      = Math::isInfFM( vehicle->life ) ? 1.0f : vehicle->life / vehClazz->life;
     int   lifeWidth = max( int( life * 198.0f ), 0 );

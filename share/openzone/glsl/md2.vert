@@ -7,6 +7,11 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
+#ifdef OZ_VERTEX_TEXTURE
+// vec3( firstFrame, secondFrame, interpolation )
+uniform vec3 oz_MD2Anim;
+#endif
+
 attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
@@ -25,14 +30,14 @@ void main()
   vec4 localPosition  = mix( firstPosition, secondPosition, oz_MD2Anim[2] );
   vec4 localNormal    = mix( firstNormal, secondNormal, oz_MD2Anim[2] );
 
+  gl_Position   = oz_Transform.complete * localPosition;
   exPosition    = ( oz_Transform.model * localPosition ).xyz;
   exTexCoord    = inTexCoord;
   exNormal      = ( oz_Transform.model * localNormal ).xyz;
-  gl_Position   = oz_Transform.complete * localPosition;
 #else
+  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
   exPosition  = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).xyz;
   exTexCoord  = inTexCoord;
   exNormal    = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
-  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
 #endif
 }

@@ -108,7 +108,7 @@ namespace client
     tf.model.scale( Vec3( dimX, 1.0f, dimY ) );
     tf.apply();
 
-    glDrawArrays( GL_TRIANGLE_STRIP, 24, 4 );
+    glDrawArrays( GL_TRIANGLE_STRIP, 28, 4 );
   }
 
   void Shape::box( const AABB& bb )
@@ -117,7 +117,7 @@ namespace client
     tf.model.scale( bb.dim );
     tf.apply();
 
-    glDrawRangeElements( GL_TRIANGLE_STRIP, 28, 35, 22, GL_UNSIGNED_SHORT,
+    glDrawRangeElements( GL_TRIANGLE_STRIP, 32, 39, 22, GL_UNSIGNED_SHORT,
                          reinterpret_cast<const ushort*>( 0 ) + 0 );
   }
 
@@ -127,7 +127,7 @@ namespace client
     tf.model.scale( bb.dim );
     tf.apply();
 
-    glDrawRangeElements( GL_LINES, 28, 35, 24, GL_UNSIGNED_SHORT,
+    glDrawRangeElements( GL_LINES, 32, 39, 24, GL_UNSIGNED_SHORT,
                          reinterpret_cast<const ushort*>( 0 ) + 22 );
   }
 
@@ -138,13 +138,13 @@ namespace client
     tf.apply();
 
     int index = part->index % MAX_PARTS;
-    glDrawArrays( GL_TRIANGLES, 36 + index * 12, 12 );
+    glDrawArrays( GL_TRIANGLES, 40 + index * 12, 12 );
   }
 
   void Shape::load()
   {
     DArray<ushort> indices( 46 );
-    DArray<Vertex> vertices( 36 + MAX_PARTS * 12 );
+    DArray<Vertex> vertices( 40 + MAX_PARTS * 12 );
 
     // filled rectangle
     vertices[ 0] = Vertex( Point3( 0.0f, 0.0f, 0.0f ), TexCoord( 0.0f, 0.0f ) );
@@ -209,7 +209,7 @@ namespace client
     vertices[38] = Vertex( Point3( +1.0f, +1.0f, -1.0f ) );
     vertices[39] = Vertex( Point3( +1.0f, +1.0f, +1.0f ) );
 
-    int  k = 30;
+    int  k = 40;
     Vec3 normal;
 
     for( int i = 0; i < MAX_PARTS; ++i ) {

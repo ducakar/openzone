@@ -64,14 +64,15 @@ namespace ui
     tf.camera = Mat44::ID;
 
     // set shaders
+    shader.setAmbientLight( Vec4( 0.6f, 0.5f, 0.6f, 1.0f ) );
+    shader.setCaelumLight( Vec3( 0.67f, -0.67f, -0.33f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
+
     for( int i = 0; i < library.shaders.length(); ++i ) {
-      if( shader.isLoaded || i == shader.ui ) {
+      if( shader.isLoaded || i == shader.plain ) {
         shader.use( i );
 
         tf.applyCamera();
 
-        shader.setAmbientLight( Vec4( 0.6f, 0.5f, 0.6f, 1.0f ) );
-        shader.setCaelumLight( Vec3( 0.67f, -0.67f, -0.33f ), Vec4( 0.6f, 0.6f, 0.6f, 1.0f ) );
         shader.updateLights();
 
         glUniform1f( param.oz_Fog_start, 1000000.0f );
@@ -79,13 +80,13 @@ namespace ui
       }
     }
 
-    shader.use( shader.ui );
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    shape.bindVertexArray();
-
     glClear( GL_DEPTH_BUFFER_BIT );
     glEnable( GL_BLEND );
+
+    shader.use( shader.plain );
+
+    glBindTexture( GL_TEXTURE_2D, 0 );
+    shape.bindVertexArray();
 
     root->drawChildren();
     mouse.draw();

@@ -226,17 +226,16 @@ namespace ui
       tf.camera.translate( Vec3( float( SLOT_SIZE ), 0.0f, 0.0f ) );
     }
 
+    glEnable( GL_BLEND );
+    glDisable( GL_DEPTH_TEST );
+
+    shader.use( shader.plain );
+
     glBindTexture( GL_TEXTURE_2D, 0 );
-
     shape.bindVertexArray();
-
-    shader.use( shader.ui );
 
     tf.camera = Mat44::ID;
     tf.applyCamera();
-
-    glEnable( GL_BLEND );
-    glDisable( GL_DEPTH_TEST );
 
     tagged = -1;
 

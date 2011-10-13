@@ -59,7 +59,7 @@ namespace client
     span.maxX = min( int( ( camera.p.x + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
     span.maxY = min( int( ( camera.p.y + frustum.radius + oz::Terra::DIM ) * TILE_INV_SIZE ), TILES - 1 );
 
-    shader.use( shader.isInWater ? submergedLandShaderId : landShaderId );
+    shader.use( landShaderId );
 
     tf.model = Mat44::ID;
     tf.apply();
@@ -227,8 +227,6 @@ namespace client
 
     landShaderId = library.shaderIndex( "terraLand" );
     waterShaderId = library.shaderIndex( "terraWater" );
-    submergedLandShaderId = library.shaderIndex( "submergedTerraLand" );
-    submergedWaterShaderId = library.shaderIndex( "submergedTerraWater" );
 
     log.printEnd( " OK" );
   }

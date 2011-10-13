@@ -1,5 +1,5 @@
 /*
- *  bigTerraLand.vert
+ *  terraLand.vert
  *
  *  Terrain (land) shader.
  *
@@ -11,18 +11,14 @@ attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
 
-varying vec2  exTexCoord;
-varying vec3  exNormal;
-varying float exDistance;
+varying vec3 exPosition;
+varying vec2 exTexCoord;
+varying vec3 exNormal;
 
 void main()
 {
-  vec3 position = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).xyz;
-  vec3 normal   = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
-  vec3 toCamera = oz_CameraPosition - position;
-
-  exTexCoord    = inTexCoord;
-  exNormal      = inNormal;
-  exDistance    = length( toCamera );
-  gl_Position   = oz_Transform.complete * vec4( inPosition, 1.0 );
+  gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
+  exPosition  = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).xyz;
+  exTexCoord  = inTexCoord;
+  exNormal    = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
 }

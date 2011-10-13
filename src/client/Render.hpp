@@ -98,9 +98,6 @@ namespace client
       float                   windPhiInc;
       float                   windPhi;
 
-      int                     simpleShaderId;
-      int                     particleShaderId;
-
 #ifndef OZ_TOOLS
       void scheduleCell( int cellX, int cellY );
 
