@@ -189,8 +189,6 @@ namespace client
       return;
     }
 
-    shader.use( shader.isInWater ? shader.mesh : shader.bigMesh );
-
     for( int i = 0; i < models.length(); ++i ) {
       const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;
 

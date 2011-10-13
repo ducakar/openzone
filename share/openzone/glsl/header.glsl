@@ -9,9 +9,6 @@
 
 const float TAU = 6.283185307179586;
 
-const float TERRA_DETAIL_SCALE = 512.0;
-const float TERRA_WATER_SCALE  = 512.0;
-
 /*
  * Transformation
  */
@@ -68,21 +65,6 @@ struct Fog {
 uniform Fog             oz_Fog;
 
 /*
- * Water
- */
-uniform float           oz_WaveBias;
-
-/*
- * Wind
- */
-uniform vec4            oz_Wind;      // vec4( vec2( dirXY ), amplitude, phi )
-
-/*
- * MD2 animation
- */
-uniform vec3            oz_MD2Anim;   // vec3( firstFrame, secondFrame, interpolation )
-
-/*
  * FUNCTIONS
  */
 
@@ -116,6 +98,27 @@ vec2 noise( vec2 seed )
 {
   return vec2( cos( seed.x ), sin( seed.y ) );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

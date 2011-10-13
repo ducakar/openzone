@@ -49,7 +49,7 @@ namespace client
       return;
     }
 
-    if( shader.activeProgram != shader.ui ) {
+    if( shader.activeProgram != shader.plain ) {
       tf.model.rotate( veh->rot );
 
       if( veh->state & Vehicle::CREW_VISIBLE_BIT ) {

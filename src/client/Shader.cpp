@@ -229,7 +229,7 @@ namespace client
     log.println( "}" );
   }
 
-  Shader::Shader() : ui( -1 )
+  Shader::Shader() : plain( -1 )
   {}
 
   void Shader::use( int id )
@@ -336,7 +336,7 @@ namespace client
     log.printEnd( " OK" );
 
     for( int i = 0; i < library.shaders.length(); ++i ) {
-      if( i == ui ) {
+      if( i == plain ) {
         continue;
       }
 
@@ -356,7 +356,7 @@ namespace client
     isLoaded = false;
 
     for( int i = 0; i < library.shaders.length(); ++i ) {
-      if( i == ui ) {
+      if( i == plain ) {
         continue;
       }
 
@@ -438,14 +438,13 @@ namespace client
 
     log.printEnd( " OK" );
 
-    ui        = library.shaderIndex( "ui" );
+    plain     = library.shaderIndex( "plain" );
     mesh      = library.shaderIndex( "mesh" );
-    bigMesh   = library.shaderIndex( "bigMesh" );
     colour    = Vec4::ONE;
     isInWater = false;
     isLoaded  = false;
 
-    loadProgram( ui, sources, lengths );
+    loadProgram( plain, sources, lengths );
 
     log.unindent();
     log.println( "}" );
@@ -455,22 +454,22 @@ namespace client
   {
     log.print( "Shutting down Shader ..." );
 
-    if( ui != -1 && programs[ui].program != 0 ) {
-      glDetachShader( programs[ui].program, programs[ui].vertShader );
-      glDetachShader( programs[ui].program, programs[ui].fragShader );
-      glDeleteProgram( programs[ui].program );
-      programs[ui].program = 0;
+    if( plain != -1 && programs[plain].program != 0 ) {
+      glDetachShader( programs[plain].program, programs[plain].vertShader );
+      glDetachShader( programs[plain].program, programs[plain].fragShader );
+      glDeleteProgram( programs[plain].program );
+      programs[plain].program = 0;
     }
-    if( ui != -1 && programs[ui].vertShader != 0 ) {
-      glDeleteShader( programs[ui].vertShader );
-      programs[ui].vertShader = 0;
+    if( plain != -1 && programs[plain].vertShader != 0 ) {
+      glDeleteShader( programs[plain].vertShader );
+      programs[plain].vertShader = 0;
     }
-    if( ui != -1 && programs[ui].fragShader != 0 ) {
-      glDeleteShader( programs[ui].fragShader );
-      programs[ui].fragShader = 0;
+    if( plain != -1 && programs[plain].fragShader != 0 ) {
+      glDeleteShader( programs[plain].fragShader );
+      programs[plain].fragShader = 0;
     }
 
-    ui = -1;
+    plain = -1;
     defines = "";
 
     programs.dealloc();
