@@ -11,14 +11,12 @@ attribute vec3 inPosition;
 attribute vec2 inTexCoord;
 attribute vec3 inNormal;
 
-varying vec3 exPosition;
 varying vec2 exTexCoord;
-varying vec3 exNormal;
+varying vec4 exNormal;
 
 void main()
 {
   gl_Position = oz_Transform.complete * vec4( inPosition, 1.0 );
-  exPosition  = ( oz_Transform.model * vec4( inPosition, 1.0 ) ).xyz;
   exTexCoord  = inTexCoord;
-  exNormal    = ( oz_Transform.model * vec4( inNormal, 0.0 ) ).xyz;
+  exNormal    = oz_Transform.complete * vec4( inNormal, 0.0 );
 }

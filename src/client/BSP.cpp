@@ -257,7 +257,6 @@ namespace client
     float maxDim = bspConfig.get( "maxDim", Math::INF );
 
     library.shaderIndex( "mesh" );
-    library.shaderIndex( "bigMesh" );
 
     if( Math::isNaN( scale ) ) {
       throw Exception( "BSP scale is NaN" );

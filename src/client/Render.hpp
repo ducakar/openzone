@@ -98,6 +98,15 @@ namespace client
       float                   windPhiInc;
       float                   windPhi;
 
+      int                     renderWidth;
+      int                     renderHeight;
+
+      uint                    fbo;
+      uint                    rbo;
+      uint                    cbos[2];
+      uint                    colourBuffer;
+      uint                    normalBuffer;
+
 #ifndef OZ_TOOLS
       void scheduleCell( int cellX, int cellY );
 

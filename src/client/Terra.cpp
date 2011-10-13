@@ -108,7 +108,7 @@ namespace client
 
     shader.use( waterShaderId );
 
-    glUniform1f( param.oz_Specular, 0.5f );
+//     glUniform1f( param.oz_Specular, 0.5f );
     glUniform1f( param.oz_WaveBias, waveBias );
     tf.model = Mat44::ID;
     tf.apply();

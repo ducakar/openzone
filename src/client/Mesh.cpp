@@ -347,7 +347,7 @@ namespace client
     if( mask & SOLID_BIT ) {
       for( int i = 0; i < firstAlphaPart; ++i ) {
         glBindTexture( GL_TEXTURE_2D, parts[i].texture );
-        glUniform1f( param.oz_Specular, parts[i].specular );
+//         glUniform1f( param.oz_Specular, parts[i].specular );
         glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }
@@ -359,7 +359,7 @@ namespace client
         glBindTexture( GL_TEXTURE_2D, parts[i].texture );
         glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
                      parts[i].alpha );
-        glUniform1f( param.oz_Specular, parts[i].specular );
+//         glUniform1f( param.oz_Specular, parts[i].specular );
         glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
                         reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
       }

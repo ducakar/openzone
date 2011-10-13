@@ -203,8 +203,8 @@ namespace client
 
   void Camera::init()
   {
-    width        = config.get( "screen.width",         1024 );
-    height       = config.get( "screen.height",        768  );
+    width        = config.get( "screen.width", 0 );
+    height       = config.get( "screen.height", 0 );
     centreX      = width / 2;
     centreY      = height / 2;
 

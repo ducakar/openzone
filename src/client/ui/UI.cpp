@@ -70,17 +70,10 @@ namespace ui
     for( int i = 0; i < library.shaders.length(); ++i ) {
       if( shader.isLoaded || i == shader.plain ) {
         shader.use( i );
-
         tf.applyCamera();
-
-        shader.updateLights();
-
-        glUniform1f( param.oz_Fog_start, 1000000.0f );
-        glUniform1f( param.oz_Fog_end, 2000000.0f );
       }
     }
 
-    glClear( GL_DEPTH_BUFFER_BIT );
     glEnable( GL_BLEND );
 
     shader.use( shader.plain );

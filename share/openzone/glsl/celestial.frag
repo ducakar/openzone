@@ -16,6 +16,5 @@ void main()
     discard;
   }
 
-  gl_FragData[0] = texture2D( oz_Textures[0], exTexCoord );
-  gl_FragData[0] *= oz_Colour;
+  gl_FragData[0] = oz_Colour * texture2D( oz_Textures[0], exTexCoord );
 }

@@ -7,6 +7,8 @@
  *  This software is covered by GNU GPLv3. See COPYING file for details.
  */
 
+uniform vec4 oz_SkyColour;
+
 varying vec3  exPosition;
 varying float exAzimuth;
 
@@ -17,8 +19,8 @@ void main()
   }
 
   float dist    = ( length( exPosition ) - 50.0 ) / 50.0;
-  vec4  diff    = oz_Colour - oz_Fog.colour;
+  vec4  diff    = oz_Colour - oz_SkyColour;
   vec4  disturb = vec4( sin( exPosition * 100.0 ) * 0.1, 0.0 ) * dot( diff, diff );
 
-  gl_FragData[0]  = mix( oz_Colour + disturb, oz_Fog.colour, dist );
+  gl_FragData[0] = mix( oz_Colour + disturb, oz_SkyColour, dist );
 }

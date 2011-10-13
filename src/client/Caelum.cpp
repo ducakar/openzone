@@ -47,8 +47,7 @@ namespace client
 
   Caelum::Caelum() : vao( 0 ), vbo( 0 ), sunTexId( 0 ), moonTexId( 0 ),
       lightDir( Vec3( 0.0f, 0.0f, 1.0f ) ), id( -1 )
-  {
-  }
+  {}
 
   void Caelum::update()
   {
@@ -119,7 +118,7 @@ namespace client
     glBindVertexArray( vao );
 # endif
 
-    glUniform4fv( param.oz_Fog_colour, 1, Colours::caelum );
+    glUniform4fv( param.oz_SkyColour, 1, Colours::caelum );
     glUniform4fv( param.oz_Colour, 1, colour );
 
 # ifdef OZ_GL_COMPATIBLE
