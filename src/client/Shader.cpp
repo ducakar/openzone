@@ -68,7 +68,7 @@ namespace client
   {
     projCamera = proj * camera;
 
-    glUniform3fv( param.oz_CameraPosition, 1, client::camera.p );
+    OZ_GL_CHECK_ERROR();
   }
 
   void Transform::applyModel() const
@@ -192,26 +192,16 @@ namespace client
     OZ_REGISTER_PARAMETER( oz_Transform_model,          "oz_Transform.model" );
     OZ_REGISTER_PARAMETER( oz_Transform_complete,       "oz_Transform.complete" );
 
-    OZ_REGISTER_PARAMETER( oz_CameraPosition,           "oz_CameraPosition" );
-
     OZ_REGISTER_PARAMETER( oz_Colour,                   "oz_Colour" );
     OZ_REGISTER_PARAMETER( oz_Textures,                 "oz_Textures" );
 
     OZ_REGISTER_PARAMETER( oz_CaelumLight_dir,          "oz_CaelumLight.dir" );
     OZ_REGISTER_PARAMETER( oz_CaelumLight_diffuse,      "oz_CaelumLight.diffuse" );
     OZ_REGISTER_PARAMETER( oz_CaelumLight_ambient,      "oz_CaelumLight.ambient" );
-    OZ_REGISTER_PARAMETER( oz_PointLights,              "oz_PointLights" );
 
-    OZ_REGISTER_PARAMETER( oz_Specular,                 "oz_Specular" );
-
-    OZ_REGISTER_PARAMETER( oz_Fog_start,                "oz_Fog.start" );
-    OZ_REGISTER_PARAMETER( oz_Fog_end,                  "oz_Fog.end" );
-    OZ_REGISTER_PARAMETER( oz_Fog_colour,               "oz_Fog.colour" );
-
+    OZ_REGISTER_PARAMETER( oz_SkyColour,                "oz_SkyColour" );
     OZ_REGISTER_PARAMETER( oz_WaveBias,                 "oz_WaveBias" );
-
     OZ_REGISTER_PARAMETER( oz_Wind,                     "oz_Wind" );
-
     OZ_REGISTER_PARAMETER( oz_MD2Anim,                  "oz_MD2Anim" );
 
     param = programs[id].param;
@@ -290,7 +280,7 @@ namespace client
 
   void Shader::updateLights()
   {
-    glUniform3fv( param.oz_CaelumLight_dir,     1, caelumLight.dir );
+    glUniform3fv( param.oz_CaelumLight_dir,     1, tf.projCamera * caelumLight.dir );
     glUniform4fv( param.oz_CaelumLight_diffuse, 1, caelumLight.diffuse );
     glUniform4fv( param.oz_CaelumLight_ambient, 1, caelumLight.ambient );
 
@@ -440,6 +430,7 @@ namespace client
 
     plain     = library.shaderIndex( "plain" );
     mesh      = library.shaderIndex( "mesh" );
+    combine   = library.shaderIndex( "combine" );
     colour    = Vec4::ONE;
     isInWater = false;
     isLoaded  = false;
