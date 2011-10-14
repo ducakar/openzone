@@ -35,6 +35,7 @@ namespace client
   {
     galileoFrame = new ui::GalileoFrame();
     ui::ui.root->add( galileoFrame );
+    ui::ui.root->focus( ui::ui.loadingScreen );
   }
 
   void GalileoModule::unload()

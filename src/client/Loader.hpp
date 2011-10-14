@@ -22,22 +22,22 @@ namespace client
   {
     private:
 
-      static const int TICK_CLEAR_PERIOD         = 60 * Timer::TICKS_PER_SEC;  // 60 s
+      static const int TICK_PERIOD               = 180 * Timer::TICKS_PER_SEC;  // 2 min
 
-      static const int MODEL_CLEAR_INTERVAL      = 20 * Timer::TICKS_PER_SEC;  // 20 s (mod  0 ms)
-      static const int MODEL_CLEAR_LAG           = 0;
+      static const int MODEL_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  // 10 s (+ 3 s)
+      static const int MODEL_CLEAR_LAG           = 3   * Timer::TICKS_PER_SEC;
 
-      static const int BSP_CLEAR_INTERVAL        = 40 * Timer::TICKS_PER_SEC;  // 40 s (mod 10 ms)
-      static const int BSP_CLEAR_LAG             = 10;
+      static const int MODELCLASS_CLEAR_INTERVAL = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 0 min)
+      static const int MODELCLASS_CLEAR_LAG      = 0   * Timer::TICKS_PER_SEC;
 
-      static const int AUDIO_CLEAR_INTERVAL      = 20 * Timer::TICKS_PER_SEC;  // 20 s (mod 20 ms)
-      static const int AUDIO_CLEAR_LAG           = 20;
+      static const int BSP_CLEAR_INTERVAL        = 120 * Timer::TICKS_PER_SEC;  // 2 min (+ 1 min)
+      static const int BSP_CLEAR_LAG             = 60  * Timer::TICKS_PER_SEC;
 
-      static const int SOURCE_CLEAR_INTERVAL     =  1 * Timer::TICKS_PER_SEC;  //  1 s (mod 30 ms)
-      static const int SOURCE_CLEAR_LAG          = 30;
+      static const int SOURCE_CLEAR_INTERVAL     = 1   * Timer::TICKS_PER_SEC;  //  1 s (+ ~0.5 s)
+      static const int SOURCE_CLEAR_LAG          = 1   * Timer::TICKS_PER_SEC / 2;
 
-      static const int CONTSOURCE_CLEAR_INTERVAL =  1 * Timer::TICKS_PER_SEC;  //  1 s (mod 40 ms)
-      static const int CONTSOURCE_CLEAR_LAG      = 40;
+      static const int AUDIO_CLEAR_INTERVAL      = 10  * Timer::TICKS_PER_SEC;  // 10 s (+ 6 s)
+      static const int AUDIO_CLEAR_LAG           = 6   * Timer::TICKS_PER_SEC;
 
       int tick;
 

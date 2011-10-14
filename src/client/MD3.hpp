@@ -75,7 +75,7 @@ namespace client
 
       };
 
-      String         name;
+      int            id;
 
       Vector<uint>   textures;
 
@@ -95,7 +95,7 @@ namespace client
       uint list;
       bool isLoaded;
 
-      explicit MD3( const char* name );
+      explicit MD3( int id );
       ~MD3();
 
       void load();

@@ -57,6 +57,7 @@ namespace client
   {
     questFrame = new ui::QuestFrame();
     ui::ui.root->add( questFrame );
+    ui::ui.root->focus( ui::ui.loadingScreen );
   }
 
   void QuestModule::unload()

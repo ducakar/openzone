@@ -93,6 +93,7 @@ namespace client
       bool                    showAim;
 
       bool                    isDeferred;
+      bool                    doPostprocess;
 
       float                   visibility;
 
@@ -103,8 +104,7 @@ namespace client
       int                     renderWidth;
       int                     renderHeight;
 
-      uint                    fbo;
-      uint                    rbos[3];
+      uint                    frameBuffer;
       uint                    depthBuffer;
       uint                    colourBuffer;
       uint                    normalBuffer;

@@ -267,7 +267,7 @@ namespace client
     lower->translate( t );
   }
 
-  MD3::MD3( const char* name_ ) : name( name_ ), isLoaded( false )
+  MD3::MD3( int id_ ) : id( id_ ), isLoaded( false )
   {}
 
   MD3::~MD3()
@@ -277,6 +277,8 @@ namespace client
 
   void MD3::load()
   {
+    const String& name = library.models[id].name;
+
     String dir        = "mdl/" + name + "/";
     String configFile = dir + "config.rc";
 
