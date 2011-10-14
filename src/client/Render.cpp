@@ -357,7 +357,16 @@ namespace client
 
       uint dbos[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
-      glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+      glBindFramebuffer( GL_FRAMEBUFFER, frameBuffer );
+      glDrawBuffers( 1, dbos );
+    }
+    else if( doPostprocess ) {
+      glPushAttrib( GL_VIEWPORT_BIT );
+      glViewport( 0, 0, renderWidth, renderHeight );
+
+      uint dbos[] = { GL_COLOR_ATTACHMENT0 };
+
+      glBindFramebuffer( GL_FRAMEBUFFER, frameBuffer );
       glDrawBuffers( 1, dbos );
     }
 
@@ -392,11 +401,22 @@ namespace client
 //     glActiveTexture( GL_TEXTURE0 );
 //     glBindTexture( GL_TEXTURE_2D, 0 );
 
-      glBindFramebuffer( GL_READ_FRAMEBUFFER, fbo );
-      glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
+      glBindFramebuffer( GL_READ_FRAMEBUFFER, frameBuffer );
 
       glBlitFramebuffer( 0, 0, renderWidth, renderHeight, 0, 0, camera.width, camera.height,
-                       GL_COLOR_BUFFER_BIT, GL_LINEAR );
+                         GL_COLOR_BUFFER_BIT, GL_LINEAR );
+
+      glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
+    }
+    else if( doPostprocess ) {
+      glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+      glPopAttrib();
+
+      glBindFramebuffer( GL_READ_FRAMEBUFFER, frameBuffer );
+
+      glBlitFramebuffer( 0, 0, renderWidth, renderHeight, 0, 0, camera.width, camera.height,
+                         GL_COLOR_BUFFER_BIT, GL_LINEAR );
 
       glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
     }
@@ -498,8 +518,6 @@ namespace client
   {
     log.println( "Initialising Render {" );
     log.indent();
-
-    fbo  = 0;
 
     int  screenX      = config.get( "screen.width", 0 );
     int  screenY      = config.get( "screen.height", 0 );
@@ -604,8 +622,12 @@ namespace client
     }
 
     if( !hasFBO ) {
-      log.println( "Error: frame buffer object (GL_ARB_framebuffer_object) is not supported" );
+      log.println( "Error: framebuffer object (GL_ARB_framebuffer_object) is not supported" );
       throw Exception( "GL_ARB_framebuffer_object not supported by OpenGL" );
+    }
+    if( !hasFloatTex ) {
+      log.println( "Error: floating-point data texture (GL_ARB_texture_float) is not supported" );
+      throw Exception( "GL_ARB_texture_float not supported by OpenGL" );
     }
 
     if( isGallium ) {
@@ -615,10 +637,7 @@ namespace client
       config.include( "shader.setSamplerIndices", "true" );
     }
 
-    if( !hasFloatTex ) {
-      config.add( "shader.vertexTexture", "false" );
-    }
-    else if( isCatalyst ) {
+    if( isCatalyst ) {
       config.include( "shader.vertexTexture", "false" );
     }
     else {
@@ -643,6 +662,7 @@ namespace client
     renderHeight         = config.getSet( "render.height",               screenY );
 
     isDeferred           = config.getSet( "render.deferred",             false );
+    doPostprocess        = config.getSet( "render.postprocess",          false );
 
     nearDist2            = config.getSet( "render.nearDistance",         100.0f );
 
@@ -719,10 +739,10 @@ namespace client
 #endif
 
     if( isDeferred ) {
-      glGenTextures( 3, rbos );
-      depthBuffer  = rbos[0];
-      colourBuffer = rbos[1];
-      normalBuffer = rbos[2];
+      glGenFramebuffers( 1, &frameBuffer );
+      glGenTextures( 1, &depthBuffer );
+      glGenTextures( 1, &colourBuffer );
+      glGenTextures( 1, &normalBuffer );
 
       glBindTexture( GL_TEXTURE_2D, depthBuffer );
 
@@ -742,7 +762,7 @@ namespace client
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, renderWidth, renderHeight, 0,
-                    GL_RGB, GL_FLOAT, null );
+                    GL_RGB, GL_UNSIGNED_BYTE, null );
 
       glBindTexture( GL_TEXTURE_2D, normalBuffer );
 
@@ -756,12 +776,45 @@ namespace client
 
       glBindTexture( GL_TEXTURE_2D, 0 );
 
-      glGenFramebuffers( 1, &fbo );
-      glBindFramebuffer( GL_FRAMEBUFFER, fbo );
+      glBindFramebuffer( GL_FRAMEBUFFER, frameBuffer );
 
       glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,  GL_TEXTURE_2D, depthBuffer,  0 );
       glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
       glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, normalBuffer, 0 );
+
+      if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
+        throw Exception( "framebuffer creation failed" );
+      }
+
+      glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    }
+    else if( doPostprocess ) {
+      glGenFramebuffers( 1, &frameBuffer );
+      glGenRenderbuffers( 1, &depthBuffer );
+      glGenTextures( 1, &colourBuffer );
+
+      glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
+
+      glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, renderWidth, renderHeight );
+
+      glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+
+      glBindTexture( GL_TEXTURE_2D, colourBuffer );
+
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+      glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, renderWidth, renderHeight, 0,
+                    GL_RGB, GL_FLOAT, null );
+
+      glBindTexture( GL_TEXTURE_2D, 0 );
+
+      glBindFramebuffer( GL_FRAMEBUFFER, frameBuffer );
+
+      glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
+      glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colourBuffer, 0 );
 
       if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE ) {
         throw Exception( "framebuffer creation failed" );
@@ -802,9 +855,17 @@ namespace client
     log.println( "Shutting down Render {" );
     log.indent();
 
-    if( fbo != 0 ) {
-      glDeleteRenderbuffers( 1, &fbo );
-      glDeleteTextures( 3, rbos );
+    if( isDeferred ) {
+      glDeleteFramebuffers( 1, &frameBuffer );
+      glDeleteTextures( 1, &depthBuffer );
+      glDeleteTextures( 1, &colourBuffer );
+      glDeleteTextures( 1, &normalBuffer );
+    }
+    else if( doPostprocess ) {
+      glDeleteFramebuffers( 1, &frameBuffer );
+      glDeleteRenderbuffers( 1, &depthBuffer );
+      glDeleteTextures( 1, &colourBuffer );
+      glDeleteTextures( 1, &normalBuffer );
     }
 
 #ifndef OZ_TOOLS

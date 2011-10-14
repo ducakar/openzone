@@ -49,28 +49,7 @@ namespace client
       }
     }
 
-    OZ_GL_CHECK_ERROR();
-
-    if( tick % BSP_CLEAR_INTERVAL == 0 ) {
-      // remove unused BSPs
-      for( int i = 0; i < library.bsps.length(); ++i ) {
-        Context::Resource<BSP*>& bsp = context.bsps[i];
-
-        if( bsp.object != null ) {
-          if( bsp.nUsers != 0 ) {
-            bsp.nUsers = 0;
-          }
-          else {
-            delete bsp.object;
-            bsp.object = null;
-          }
-        }
-      }
-    }
-
-    OZ_GL_CHECK_ERROR();
-
-    if( tick % MODEL_CLEAR_INTERVAL == 0 ) {
+    if( tick % MODEL_CLEAR_INTERVAL == MODEL_CLEAR_LAG ) {
       // remove unused models
       for( auto i = context.models.citer(); i.isValid(); ) {
         auto model = i;
@@ -82,6 +61,42 @@ namespace client
         else {
           delete model.value();
           context.models.exclude( model.key() );
+        }
+      }
+    }
+
+    if( tick % MODELCLASS_CLEAR_INTERVAL == MODELCLASS_CLEAR_LAG ) {
+      for( int i = 0; i < library.models.length(); ++i ) {
+        Context::Resource<SMM*>& smm = context.smms[i];
+        Context::Resource<MD2*>& md2 = context.md2s[i];
+        Context::Resource<MD3*>& md3 = context.md3s[i];
+
+        if( smm.object != null && smm.nUsers == 0 ) {
+          delete smm.object;
+          smm.object = null;
+        }
+        if( md2.object != null && md2.nUsers == 0 ) {
+          delete md2.object;
+          md2.object = null;
+        }
+        if( md3.object != null && md3.nUsers == 0 ) {
+          delete md3.object;
+          md3.object = null;
+        }
+      }
+    }
+
+    if( tick % BSP_CLEAR_INTERVAL == BSP_CLEAR_LAG ) {
+      // remove unused BSPs
+      for( int i = 0; i < library.bsps.length(); ++i ) {
+        Context::Resource<BSP*>& bsp = context.bsps[i];
+
+        if( bsp.nUsers != 0 ) {
+          bsp.nUsers = 0;
+        }
+        else {
+          delete bsp.object;
+          bsp.object = null;
         }
       }
     }
@@ -106,8 +121,6 @@ namespace client
         context.audios.exclude( audio.key() );
       }
     }
-
-    OZ_AL_CHECK_ERROR();
 
     // remove continous sounds that are not played any more
     for( auto i = context.bspSources.iter(); i.isValid(); ) {
@@ -136,9 +149,7 @@ namespace client
       }
     }
 
-    OZ_AL_CHECK_ERROR();
-
-    if( tick % SOURCE_CLEAR_INTERVAL ) {
+    if( tick % SOURCE_CLEAR_INTERVAL == SOURCE_CLEAR_LAG ) {
       // remove stopped sources of non-continous sounds
       Context::Source* prev = null;
       Context::Source* src  = context.sources.first();
@@ -160,11 +171,7 @@ namespace client
       }
     }
 
-    OZ_AL_CHECK_ERROR();
-
-    if( tick % AUDIO_CLEAR_INTERVAL == 0 ) {
-      OZ_AL_CHECK_ERROR();
-
+    if( tick % AUDIO_CLEAR_INTERVAL == AUDIO_CLEAR_LAG ) {
       // remove unused Audio objects
       for( auto i = context.audios.citer(); i.isValid(); ) {
         auto audio = i;
@@ -185,7 +192,7 @@ namespace client
 
   void Loader::update()
   {
-    tick = ( tick + 1 ) % TICK_CLEAR_PERIOD;
+    tick = ( tick + 1 ) % TICK_PERIOD;
 
     // terra
     if( terra.id != orbis.terra.id ) {
@@ -209,47 +216,29 @@ namespace client
     }
 
     // SMM
-    for( auto i = context.smms.iter(); i.isValid(); ) {
-      auto j = i;
+    for( int i = 0; i < library.models.length(); ++i ) {
+      SMM* smm = context.smms[i].object;
 
-      ++i;
-
-      if( !j->object->isLoaded ) {
-        j->object->load();
-      }
-      else if( j->nUsers == 0 ) {
-        delete j->object;
-        context.smms.exclude( j.key() );;
+      if( smm != null && !smm->isLoaded ) {
+        smm->load();
       }
     }
 
     // MD2
-    for( auto i = context.md2s.iter(); i.isValid(); ) {
-      auto j = i;
+    for( int i = 0; i < library.models.length(); ++i ) {
+      MD2* md2 = context.md2s[i].object;
 
-      ++i;
-
-      if( !j->object->isLoaded ) {
-        j->object->load();
-      }
-      else if( j->nUsers == 0 ) {
-        delete j->object;
-        context.md2s.exclude( j.key() );;
+      if( md2 != null && !md2->isLoaded ) {
+        md2->load();
       }
     }
 
     // MD3
-    for( auto i = context.md3s.iter(); i.isValid(); ) {
-      auto j = i;
+    for( int i = 0; i < library.models.length(); ++i ) {
+      MD3* md3 = context.md3s[i].object;
 
-      ++i;
-
-      if( !j->object->isLoaded ) {
-        j->object->load();
-      }
-      else if( j->nUsers == 0 ) {
-        delete j->object;
-        context.md3s.exclude( j.key() );;
+      if( md3 != null && !md3->isLoaded ) {
+        md3->load();
       }
     }
   }

@@ -29,6 +29,7 @@ namespace client
   {
     musicPlayer = new ui::MusicPlayer();
     ui::ui.root->add( musicPlayer );
+    ui::ui.root->focus( ui::ui.loadingScreen );
   }
 
   void MusicPlayerModule::unload()

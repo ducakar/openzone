@@ -307,84 +307,84 @@ namespace client
 
   SMM* Context::requestSMM( int id )
   {
-    Resource<SMM*>* resource = smms.find( id );
+    Resource<SMM*>& resource = smms[id];
 
-    if( resource == null ) {
-      resource = smms.add( id, Resource<SMM*>() );
-      resource->object = new SMM( id );
-      resource->nUsers = 0;
+    if( resource.object == null ) {
+      resource.object = new SMM( id );
+
+      hard_assert( resource.nUsers == 0 );
     }
 
-    ++resource->nUsers;
-    return resource->object;
+    ++resource.nUsers;
+    return resource.object;
   }
 
   void Context::releaseSMM( int id )
   {
-    Resource<SMM*>* resource = smms.find( id );
+    Resource<SMM*>& resource = smms[id];
 
-    hard_assert( resource != null && resource->nUsers > 0 );
+    hard_assert( resource.object != null && resource.nUsers > 0 );
 
-    --resource->nUsers;
+    --resource.nUsers;
   }
 
   MD2* Context::requestMD2( int id )
   {
-    Resource<MD2*>* resource = md2s.find( id );
+    Resource<MD2*>& resource = md2s[id];
 
-    if( resource == null ) {
-      resource = md2s.add( id, Resource<MD2*>() );
-      resource->object = new MD2( id );
-      resource->nUsers = 0;
+    if( resource.object == null ) {
+      resource.object = new MD2( id );
+
+      hard_assert( resource.nUsers == 0 );
     }
 
-    ++resource->nUsers;
-    return resource->object;
+    ++resource.nUsers;
+    return resource.object;
   }
 
   void Context::releaseMD2( int id )
   {
-    Resource<MD2*>* resource = md2s.find( id );
+    Resource<MD2*>& resource = md2s[id];
 
-    hard_assert( resource != null && resource->nUsers > 0 );
+    hard_assert( resource.object != null && resource.nUsers > 0 );
 
-    --resource->nUsers;
+    --resource.nUsers;
   }
 
-//   MD3* Context::loadMD3( const char* path )
-//   {
-//     Resource<MD3*>* resource = md3s.find( path );
-//
-//     if( resource == null ) {
-//       resource = md3s.add( path, Resource<MD3*>() );
-//       resource->object = new MD3( path );
-//       resource->nUsers = 0;
-//     }
-//
-//     ++resource->nUsers;
-//     return resource->object;
-//   }
-//
-//   void Context::releaseMD3( const char* path )
-//   {
-//     Resource<MD3*>* resource = md3s.find( path );
-//
-//     hard_assert( resource != null && resource->nUsers > 0 );
-//
-//     --resource->nUsers;
-//   }
+  MD3* Context::requestMD3( int id )
+  {
+    Resource<MD3*>& resource = md3s[id];
+
+    if( resource.object == null ) {
+      resource.object = new MD3( id );
+
+      hard_assert( resource.nUsers == 0 );
+    }
+
+    ++resource.nUsers;
+    return resource.object;
+  }
+
+  void Context::releaseMD3( int id )
+  {
+    Resource<MD3*>& resource = md3s[id];
+
+    hard_assert( resource.object != null && resource.nUsers > 0 );
+
+    --resource.nUsers;
+  }
 
   void Context::drawBSP( const Struct* str, int mask )
   {
     Resource<BSP*>& resource = bsps[str->id];
 
+    // we don't count users, just to show there is at least one
+    resource.nUsers = 1;
+
     if( resource.object == null ) {
       resource.object = new BSP( str->id );
-      resource.nUsers = 1;
     }
     else if( resource.object->isLoaded ) {
-      // we don't count users, just to show there is at least one
-      resource.nUsers = 1;
       resource.object->draw( str, mask );
     }
   }
@@ -393,13 +393,13 @@ namespace client
   {
     Resource<BSP*>& resource = bsps[str->id];
 
+    // we don't count users, just to show there is at least one
+    resource.nUsers = 1;
+
     if( resource.object == null ) {
       resource.object = new BSP( str->id );
-      resource.nUsers = 1;
     }
     else if( resource.object->isLoaded ) {
-      // we don't count users, just to show there is at least one
-      resource.nUsers = 1;
       resource.object->play( str );
     }
   }
@@ -493,42 +493,24 @@ namespace client
 
     OZ_AL_CHECK_ERROR();
 
-    for( auto i = smms.citer(); i.isValid(); ) {
-      auto resource = i;
-      ++i;
-
-      hard_assert( resource->nUsers == 0 );
-
-      delete resource->object;
-      smms.exclude( resource.key() );
-    }
-    for( auto i = md2s.citer(); i.isValid(); ) {
-      auto resource = i;
-      ++i;
-
-      hard_assert( resource->nUsers == 0 );
-
-      delete resource->object;
-      md2s.exclude( resource.key() );
-    }
-    for( auto i = md3s.citer(); i.isValid(); ) {
-      auto resource = i;
-      ++i;
-
-      hard_assert( resource->nUsers == 0 );
-
-      delete resource->object;
-      md3s.exclude( resource.key() );
-    }
     for( int i = 0; i < library.bsps.length(); ++i ) {
       delete bsps[i].object;
       bsps[i].object = null;
       bsps[i].nUsers = 0;
     }
+    for( int i = 0; i < library.models.length(); ++i ) {
+      delete smms[i].object;
+      smms[i].object = null;
+      smms[i].nUsers = 0;
 
-    smms.dealloc();
-    md2s.dealloc();
-    md3s.dealloc();
+      delete md2s[i].object;
+      md2s[i].object = null;
+      md2s[i].nUsers = 0;
+
+      delete md3s[i].object;
+      md3s[i].object = null;
+      md3s[i].nUsers = 0;
+    }
 
     while( !sources.isEmpty() ) {
       alDeleteSources( 1, &sources.first()->id );
@@ -591,6 +573,9 @@ namespace client
     textures = null;
     sounds   = null;
     bsps     = null;
+    smms     = null;
+    md2s     = null;
+    md3s     = null;
 
     enableS3TC = config.get( "context.enableS3TC", false );
 
@@ -613,10 +598,16 @@ namespace client
     if( library.bsps.length() == 0 ) {
       throw Exception( "Context: BSPs missing!" );
     }
+    if( library.models.length() == 0 ) {
+      throw Exception( "Context: models missing!" );
+    }
 
     textures = new Resource<uint>[library.textures.length()];
     sounds   = new Resource<uint>[library.sounds.length()];
     bsps     = new Resource<BSP*>[library.bsps.length()];
+    smms     = new Resource<SMM*>[library.models.length()];
+    md2s     = new Resource<MD2*>[library.models.length()];
+    md3s     = new Resource<MD3*>[library.models.length()];
 
     buffer.alloc( BUFFER_SIZE );
 
@@ -629,6 +620,16 @@ namespace client
     for( int i = 0; i < library.bsps.length(); ++i ) {
       bsps[i].object = null;
       bsps[i].nUsers = 0;
+    }
+    for( int i = 0; i < library.models.length(); ++i ) {
+      smms[i].object = null;
+      smms[i].nUsers = 0;
+
+      md2s[i].object = null;
+      md2s[i].nUsers = 0;
+
+      md3s[i].object = null;
+      md3s[i].nUsers = 0;
     }
 
     maxModels     = 0;
@@ -649,10 +650,16 @@ namespace client
     delete[] textures;
     delete[] sounds;
     delete[] bsps;
+    delete[] smms;
+    delete[] md2s;
+    delete[] md3s;
 
     textures = null;
     sounds   = null;
     bsps     = null;
+    smms     = null;
+    md2s     = null;
+    md3s     = null;
 
     modelClasses.clear();
     modelClasses.dealloc();

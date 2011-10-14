@@ -123,6 +123,10 @@ namespace ui
       currentQuest( -1 ),
       isOpened( false )
   {
+    if( !mouse.doShow ) {
+      flags = HIDDEN_BIT | IGNORE_BIT;
+    }
+
     contentHeight = 8 + 10 * font.INFOS[Font::SANS].height;
 
     x = ( camera.width - width ) / 2;

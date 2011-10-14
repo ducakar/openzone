@@ -26,7 +26,7 @@ option( OZ_INSTALL_DATA_SRC "Install sources of prebuilt data (for content devel
 option( OZ_INSTALL_STANDALONE "Install some support files if a standalone archive." OFF )
 
 set( OZ_APPLICATION_NAME "openzone" CACHE STRING "" FORCE )
-set( OZ_APPLICATION_VERSION "0.2.0" CACHE STRING "" FORCE )
+set( OZ_APPLICATION_VERSION "0.2.1" CACHE STRING "" FORCE )
 set( OZ_APPLICATION_TITLE "OpenZone" CACHE STRING "" FORCE )
 
 mark_as_advanced( OZ_APPLICATION_NAME )

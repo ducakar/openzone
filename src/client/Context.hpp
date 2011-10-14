@@ -103,10 +103,9 @@ namespace client
       HashIndex<ContSource, 64>       objSources;
 
       Resource<BSP*>*                 bsps;
-
-      HashIndex< Resource<SMM*>, 61 > smms;
-      HashIndex< Resource<MD2*>, 61 > md2s;
-      HashIndex< Resource<MD3*>, 61 > md3s;
+      Resource<SMM*>*                 smms;
+      Resource<MD2*>*                 md2s;
+      Resource<MD3*>*                 md3s;
 
       HashIndex<Model*, 8191>         models;   // currently loaded models
       HashIndex<Audio*, 2039>         audios;   // currently loaded audio models
@@ -119,6 +118,8 @@ namespace client
 
       static Buffer                   buffer;
       static bool                     enableS3TC;
+
+      void removeSound( int id );
 
       void addSource( uint srcId, int sample );
       void addBSPSource( uint srcId, int sample, int key );
