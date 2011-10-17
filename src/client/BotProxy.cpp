@@ -223,7 +223,7 @@ namespace client
     if( !isExternal ) {
       if( bot->parent != -1 ) { // inside vehicle
         hard_assert( orbis.objects[bot->parent] == null ||
-            orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT );
+            ( orbis.objects[bot->parent]->flags & Object::VEHICLE_BIT ) );
 
         camera.w = 0.0f;
         camera.align();

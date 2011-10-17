@@ -119,8 +119,6 @@ namespace client
       static Buffer                   buffer;
       static bool                     enableS3TC;
 
-      void removeSound( int id );
-
       void addSource( uint srcId, int sample );
       void addBSPSource( uint srcId, int sample, int key );
       void addObjSource( uint srcId, int sample, int key );
@@ -176,12 +174,12 @@ namespace client
 
     private:
 
-      static uint buildTexture( const void* data, int width, int height, int bytesPerPixel,
+      static uint buildTexture( const void* data, int width, int height, uint format,
                                 bool wrap, int magFilter, int minFilter );
 
     public:
 
-      static uint createTexture( const void* data, int width, int height, int bytesPerPixel,
+      static uint createTexture( const void* data, int width, int height, uint format,
                                  bool wrap = true, int magFilter = DEFAULT_MAG_FILTER,
                                  int minFilter = DEFAULT_MIN_FILTER );
 

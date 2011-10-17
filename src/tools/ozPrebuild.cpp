@@ -21,6 +21,7 @@
 #include "client/BSP.hpp"
 #include "client/OBJ.hpp"
 #include "client/MD2.hpp"
+#include "client/MD3.hpp"
 #include "client/Render.hpp"
 #include "client/Module.hpp"
 
@@ -53,25 +54,41 @@ static const char* const CREATE_DIRS[] = {
   "ui/icon"
 };
 
-static bool forceRebuild = false;
-
 static void printUsage()
 {
   log.println( "Usage:" );
   log.indent();
-  log.println( "ozPrebuild [--help] [-f | --force] <prefix>" );
-  log.println();
-  log.println( "--help" );
-  log.println( "\tPrints that help message." );
-  log.println();
-  log.println( "-f, --force" );
-  log.println( "\tForce rebuild of all resources." );
-  log.println();
-  log.println( "-C, --use-S3TC" );
-  log.println( "\tUse S3 texture compression" );
+  log.println( "ozPrebuild [OPTIONS] <prefix>" );
   log.println();
   log.println( "<prefix>" );
   log.println( "\tSets data directory to <prefix>/share/openzone." );
+  log.println();
+  log.println( "-u" );
+  log.println( "\tPrebuild UI." );
+  log.println();
+  log.println( "-t" );
+  log.println( "\tPrebuild terrae (terrains)." );
+  log.println();
+  log.println( "-c" );
+  log.println( "\tPrebuild caela (skies)." );
+  log.println();
+  log.println( "-b" );
+  log.println( "\tCompile maps into BSPs and prebuild BPSs with referenced textures." );
+  log.println();
+  log.println( "-m" );
+  log.println( "\tPrebuild models." );
+  log.println();
+  log.println( "-o" );
+  log.println( "\tPrebuild modules." );
+  log.println();
+  log.println( "-l" );
+  log.println( "\tCheck syntax of Lua scripts." );
+  log.println();
+  log.println( "-A" );
+  log.println( "\tPrebuild everything." );
+  log.println();
+  log.println( "-C" );
+  log.println( "\tUse S3 texture compression" );
   log.println();
   log.unindent();
 }
@@ -128,18 +145,6 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
     String srcPath = file->path();
     String destPath = sDestDir + file->baseName() + ".ozcTex";
 
-    struct stat srcInfo;
-    struct stat destInfo;
-
-    if( stat( srcPath, &srcInfo ) != 0 ) {
-      throw Exception( "Source texture '" + srcPath + "' stat error" );
-    }
-    if( !forceRebuild && stat( destPath, &destInfo ) == 0 &&
-        destInfo.st_mtime > srcInfo.st_mtime )
-    {
-      continue;
-    }
-
     log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
     log.indent();
 
@@ -165,6 +170,141 @@ static void prebuildTextures( const char* srcDir, const char* destDir,
   log.println( "}" );
 }
 
+static void prebuildTerrae()
+{
+  log.println( "Prebuilding Terras {" );
+  log.indent();
+
+  String srcDir = "terra";
+  File dir( srcDir );
+  DArray<File> dirList;
+
+  if( !dir.ls( &dirList ) ) {
+    throw Exception( "Cannot open directory '" + srcDir + "'" );
+  }
+
+  srcDir = srcDir + "/";
+
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    String name = file->baseName();
+
+    orbis.terra.prebuild( name );
+    client::terra.prebuild( name );
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
+static void prebuildCaela()
+{
+  log.println( "Prebuilding Caela {" );
+  log.indent();
+
+  String srcDir = "caelum";
+  File dir( srcDir );
+  DArray<File> dirList;
+
+  if( !dir.ls( &dirList ) ) {
+    throw Exception( "Cannot open directory '" + srcDir + "'" );
+  }
+
+  srcDir = srcDir + "/";
+
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    String name = file->baseName();
+
+    client::caelum.prebuild( name );
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
+static void compileBSPs()
+{
+  log.println( "Compiling BSPs {" );
+  log.indent();
+
+  String dirName = "data/maps";
+  File dir( dirName );
+  DArray<File> dirList;
+
+  if( !dir.ls( &dirList ) ) {
+    throw Exception( "Cannot open directory '" + dirName + "'" );
+  }
+
+  dirName = dirName + "/";
+
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "map" ) ) {
+      continue;
+    }
+
+    const char* dot = String::findLast( file->baseName(), '.' );
+
+    if( dot != null && String::equals( dot + 1, "autosave" ) ) {
+      continue;
+    }
+
+    String cmdLine = "q3map2 -fs_basepath . -fs_game data " + String( file->path() );
+
+    log.println( "%s", cmdLine.cstr() );
+    log.println();
+    log.println( "========== q3map2 OUTPUT BEGIN %s ==========", file->baseName().cstr() );
+    log.println();
+    if( system( cmdLine ) != 0 ) {
+      throw Exception( "BSP map compilation failed" );
+    }
+    log.println();
+    log.println( "========== q3map2 OUTPUT END %s ==========", file->baseName().cstr() );
+    log.println();
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
+static void prebuildBSPs()
+{
+  log.println( "Prebuilding BSPs {" );
+  log.indent();
+
+  String srcDir = "data/maps";
+  String destDir = "bsp";
+  File dir( srcDir );
+  DArray<File> dirList;
+
+  if( !dir.ls( &dirList ) ) {
+    throw Exception( "Cannot open directory '" + srcDir + "'" );
+  }
+
+  srcDir = srcDir + "/";
+  destDir = destDir + "/";
+
+  foreach( file, dirList.citer() ) {
+    if( !file->hasExtension( "rc" ) ) {
+      continue;
+    }
+
+    String name = file->baseName();
+
+    QBSP::prebuild( name );
+    client::BSP::prebuild( name );
+  }
+
+  log.unindent();
+  log.println( "}" );
+}
+
 static void prebuildBSPTextures()
 {
   log.println( "Prebuilding BSP textures {" );
@@ -177,18 +317,6 @@ static void prebuildBSPTextures()
 
     String srcPath = library.textures[i].path;
     String destPath = "bsp/" + library.textures[i].name + ".ozcTex";
-
-    struct stat srcInfo;
-    struct stat destInfo;
-
-    if( stat( srcPath, &srcInfo ) != 0 ) {
-      throw Exception( "Source texture '" + srcPath + "' stat error" );
-    }
-    if( !forceRebuild && stat( destPath, &destInfo ) == 0 &&
-        destInfo.st_mtime > srcInfo.st_mtime )
-    {
-      continue;
-    }
 
     log.println( "Prebuilding texture '%s' {", srcPath.cstr() );
     log.indent();
@@ -240,7 +368,6 @@ static void prebuildModels()
     struct stat srcInfo0;
     struct stat srcInfo1;
     struct stat configInfo;
-    struct stat destInfo;
 
     String name = file->name();
     String path = file->path();
@@ -251,12 +378,6 @@ static void prebuildModels()
       {
         throw Exception( "OBJ model '" + name + "' source files missing" );
       }
-      if( !forceRebuild && stat( dirName + name + ".ozcSMM", &destInfo ) == 0 &&
-          configInfo.st_mtime < destInfo.st_mtime &&
-          srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
-      {
-        continue;
-      }
 
       client::OBJ::prebuild( path );
     }
@@ -266,218 +387,16 @@ static void prebuildModels()
       {
         throw Exception( "MD2 model '" + name + "' source files missing" );
       }
-      if( !forceRebuild && ( stat( dirName + name + ".ozcSMM", &destInfo ) == 0 ||
-          stat( dirName + name + ".ozcMD2", &destInfo ) == 0 ) &&
-          configInfo.st_mtime < destInfo.st_mtime &&
-          srcInfo0.st_mtime < destInfo.st_mtime && srcInfo1.st_mtime < destInfo.st_mtime )
-      {
-        continue;
-      }
 
       client::MD2::prebuild( path );
     }
-  }
+    else if( stat( path + "/head.md3", &srcInfo0 ) == 0 ) {
+      if( stat( path + "/config.rc", &configInfo ) != 0 ) {
+        throw Exception( "MD3 model '" + name + "' source files missing" );
+      }
 
-  log.unindent();
-  log.println( "}" );
-}
-
-static void compileBSPs()
-{
-  log.println( "Compiling BSPs {" );
-  log.indent();
-
-  String dirName = "data/maps";
-  File dir( dirName );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + dirName + "'" );
-  }
-
-  dirName = dirName + "/";
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "map" ) ) {
-      continue;
+      client::MD3::prebuild( path );
     }
-
-    const char* dot = String::findLast( file->baseName(), '.' );
-
-    if( dot != null && String::equals( dot + 1, "autosave" ) ) {
-      continue;
-    }
-
-    String srcPath = file->path();
-    String destPath = dirName + file->baseName() + ".bsp";
-
-    struct stat srcInfo;
-    struct stat destInfo;
-
-    if( stat( srcPath, &srcInfo ) != 0 ) {
-      throw Exception( "Source map stat error" );
-    }
-    if( !forceRebuild && stat( destPath, &destInfo ) == 0 &&
-        destInfo.st_mtime > srcInfo.st_mtime )
-    {
-      continue;
-    }
-
-    String cmdLine = "q3map2 -fs_basepath . -fs_game data " + String( file->path() );
-
-    log.println( "%s", cmdLine.cstr() );
-    log.println();
-    log.println( "========== q3map2 OUTPUT BEGIN %s ==========", file->baseName().cstr() );
-    log.println();
-    if( system( cmdLine ) != 0 ) {
-      throw Exception( "BSP map compilation failed" );
-    }
-    log.println();
-    log.println( "========== q3map2 OUTPUT END %s ==========", file->baseName().cstr() );
-    log.println();
-  }
-
-  log.unindent();
-  log.println( "}" );
-}
-
-static void prebuildBSPs()
-{
-  log.println( "Prebuilding BSPs {" );
-  log.indent();
-
-  String srcDir = "data/maps";
-  String destDir = "bsp";
-  File dir( srcDir );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + srcDir + "'" );
-  }
-
-  srcDir = srcDir + "/";
-  destDir = destDir + "/";
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
-      continue;
-    }
-
-    String srcPath0 = file->path();
-    String srcPath1 = srcDir + file->baseName() + ".bsp";
-    String destPath0 = destDir + file->baseName() + ".ozBSP";
-    String destPath1 = destDir + file->baseName() + ".ozcBSP";
-
-    struct stat srcInfo0;
-    struct stat srcInfo1;
-    struct stat destInfo0;
-    struct stat destInfo1;
-
-    if( stat( srcPath0, &srcInfo0 ) != 0 || stat( srcPath1, &srcInfo1 ) != 0 ) {
-      throw Exception( "Source BSP stat error" );
-    }
-    if( !forceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
-        destInfo0.st_mtime > srcInfo0.st_mtime && destInfo0.st_mtime > srcInfo1.st_mtime &&
-        destInfo1.st_mtime >= destInfo0.st_mtime )
-    {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    QBSP::prebuild( name );
-    client::BSP::prebuild( name );
-  }
-
-  log.unindent();
-  log.println( "}" );
-}
-
-static void prebuildTerras()
-{
-  log.println( "Prebuilding Terras {" );
-  log.indent();
-
-  String srcDir = "terra";
-  File dir( srcDir );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + srcDir + "'" );
-  }
-
-  srcDir = srcDir + "/";
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
-      continue;
-    }
-
-    String srcPath = file->path();
-    String destPath0 = srcDir + file->baseName() + ".ozTerra";
-    String destPath1 = srcDir + file->baseName() + ".ozcTerra";
-
-    struct stat srcInfo;
-    struct stat destInfo0;
-    struct stat destInfo1;
-
-    if( stat( srcPath, &srcInfo ) != 0 ) {
-      throw Exception( "Terra .rc stat error" );
-    }
-    if( !forceRebuild && stat( destPath0, &destInfo0 ) == 0 && stat( destPath1, &destInfo1 ) == 0 &&
-        destInfo0.st_mtime > srcInfo.st_mtime && destInfo1.st_mtime >= destInfo0.st_mtime )
-    {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    orbis.terra.prebuild( name );
-    client::terra.prebuild( name );
-  }
-
-  log.unindent();
-  log.println( "}" );
-}
-
-static void prebuildCaela()
-{
-  log.println( "Prebuilding Caela {" );
-  log.indent();
-
-  String srcDir = "caelum";
-  File dir( srcDir );
-  DArray<File> dirList;
-
-  if( !dir.ls( &dirList ) ) {
-    throw Exception( "Cannot open directory '" + srcDir + "'" );
-  }
-
-  srcDir = srcDir + "/";
-
-  foreach( file, dirList.citer() ) {
-    if( !file->hasExtension( "rc" ) ) {
-      continue;
-    }
-
-    String srcPath = file->path();
-    String destPath = srcDir + file->baseName() + ".ozcCaelum";
-
-    struct stat srcInfo;
-    struct stat destInfo;
-
-    if( stat( srcPath, &srcInfo ) != 0 ) {
-      throw Exception( "Caelum .rc stat error" );
-    }
-    if( !forceRebuild && stat( destPath, &destInfo ) == 0 &&
-        destInfo.st_mtime > srcInfo.st_mtime )
-    {
-      continue;
-    }
-
-    String name = file->baseName();
-
-    client::caelum.prebuild( name );
   }
 
   log.unindent();
@@ -549,30 +468,72 @@ int main( int argc, char** argv )
       "under certain conditions; See COPYING file for details.\n\n" );
 
   try {
-    for( int i = 1; i < argc; ++i ) {
-      if( String::equals( argv[i], "--help" ) ) {
-        printUsage();
-        return -1;
-      }
-      else if( String::equals( argv[i], "--force" ) || String::equals( argv[i], "-f" ) ) {
-        forceRebuild = true;
-      }
-      else if( String::equals( argv[i], "--use-S3TC" ) || String::equals( argv[i], "-C" ) ) {
-        client::context.useS3TC = true;
-      }
-      else if( argv[i][0] != '-' && !config.contains( "dir.prefix" ) ) {
-        config.add( "dir.prefix", argv[i] );
-      }
-      else {
-        log.println( "Invalid command-line option '%s'", argv[i] );
-        log.println();
-        printUsage();
-        return -1;
+    bool doUI      = false;
+    bool doTerrae  = false;
+    bool doCaela   = false;
+    bool doBSPs    = false;
+    bool doModels  = false;
+    bool doModules = false;
+    bool doLua     = false;
+
+    optind = 1;
+    int opt;
+    while( ( opt = getopt( argc, argv, "utcbmdlCA" ) ) != -1 ) {
+      switch( opt ) {
+        case 'u': {
+          doUI = true;
+          break;
+        }
+        case 't': {
+          doTerrae = true;
+          break;
+        }
+        case 'c': {
+          doCaela = true;
+          break;
+        }
+        case 'b': {
+          doBSPs = true;
+          break;
+        }
+        case 'm': {
+          doModels = true;
+          break;
+        }
+        case 'd': {
+          doModels = true;
+          break;
+        }
+        case 'l': {
+          doLua = true;
+          break;
+        }
+        case 'C': {
+          client::context.useS3TC = true;
+          break;
+        }
+        case 'A': {
+          doUI      = true;
+          doTerrae  = true;
+          doCaela   = true;
+          doBSPs    = true;
+          doModels  = true;
+          doModules = true;
+          doLua     = true;
+          break;
+        }
+        default: {
+          log.println();
+          printUsage();
+          return -1;
+        }
       }
     }
-    if( !config.contains( "dir.prefix" ) ) {
-      log.println( "Missing data directory as parameter" );
-      log.println();
+
+    if( optind < argc ) {
+      config.add( "dir.prefix", argv[optind] );
+    }
+    else {
       printUsage();
       return -1;
     }
@@ -622,26 +583,40 @@ int main( int argc, char** argv )
 
     createDirs();
 
-    compileBSPs();
+    if( doUI ) {
+      client::ui::Mouse::prebuild();
 
-    client::ui::Mouse::prebuild();
+      prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
+      prebuildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
+    }
 
-    prebuildTextures( "ui/icon", "ui/icon", true, GL_LINEAR, GL_LINEAR );
-    prebuildTextures( "ui/galileo", "ui/galileo", true, GL_LINEAR, GL_LINEAR );
+    if( doTerrae ) {
+      prebuildTerrae();
+    }
 
-    prebuildTerras();
-    prebuildCaela();
+    if( doBSPs ) {
+      compileBSPs();
+      prebuildBSPs();
+      prebuildBSPTextures();
+    }
 
-    prebuildBSPs();
-    prebuildBSPTextures();
+    if( doCaela ) {
+      prebuildCaela();
+    }
 
-    prebuildModels();
+    if( doModels ) {
+      prebuildModels();
+    }
 
-    prebuildModules();
+    if( doModules ) {
+      prebuildModules();
+    }
 
-    checkLua( "lua/matrix" );
-    checkLua( "lua/nirvana" );
-    checkLua( "lua/mission" );
+    if( doLua ) {
+      checkLua( "lua/matrix" );
+      checkLua( "lua/nirvana" );
+      checkLua( "lua/mission" );
+    }
 
     uint endTime = SDL_GetTicks();
 

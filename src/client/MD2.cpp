@@ -19,9 +19,6 @@
 
 #include <sys/stat.h>
 
-#define FOURCC( a, b, c, d ) \
-  ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
-
 namespace oz
 {
 namespace client
@@ -489,8 +486,6 @@ namespace client
     Config config;
     config.load( configFile );
 
-    bool forceStatic = config.get( "forceStatic", false );
-
     FILE* file = fopen( modelFile.cstr(), "rb" );
     if( file == null ) {
       throw Exception( "MD2 file does not exist" );
@@ -498,7 +493,9 @@ namespace client
 
     MD2Header header;
     fread( &header, 1, sizeof( MD2Header ), file );
-    if( header.id != FOURCC( 'I', 'D', 'P', '2' ) || header.version != 8 ) {
+    if( header.id[0] != 'I' || header.id[1] != 'D' || header.id[2] != 'P' || header.id[3] != '2' ||
+        header.version != 8 )
+    {
       fclose( file );
       throw Exception( "MD2 invalid format" );
     }
@@ -508,9 +505,32 @@ namespace client
       throw Exception( "MD2 model loading error" );
     }
 
-    if( forceStatic ) {
+    if( config.get( "forceStatic", false ) ) {
       header.nFrames = 1;
     }
+
+    String shaderName   = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
+    float  specular     = config.get( "specular", 0.0f );
+    float  scale        = config.get( "scale", 0.04f );
+
+    Vec3   translation  = Vec3( config.get( "translate.x", +0.00f ),
+                                config.get( "translate.y", +0.00f ),
+                                config.get( "translate.z", -0.04f ) );
+    Vec3   jumpTransl   = Vec3( config.get( "jumpTranslate.x", 0.00f ),
+                                config.get( "jumpTranslate.y", 0.00f ),
+                                config.get( "jumpTranslate.z", 0.00f ) );
+    Vec3   weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
+                                config.get( "weaponTranslate.y", 0.00f ),
+                                config.get( "weaponTranslate.z", 0.00f ) );
+    Vec3   weaponRot    = Vec3( config.get( "weaponRotate.x", 0.00f ),
+                                config.get( "weaponRotate.y", 0.00f ),
+                                config.get( "weaponRotate.z", 0.00f ) );
+
+    Mat44 weaponTransf = Mat44::ID;
+    weaponTransf.rotateX( Math::rad( weaponRot.x ) );
+    weaponTransf.rotateY( Math::rad( weaponRot.y ) );
+    weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
+    weaponTransf.translate( weaponTransl );
 
     DArray<MD2TexCoord> texCoords( header.nTexCoords );
     DArray<MD2Triangle> triangles( header.nTriangles );
@@ -527,29 +547,6 @@ namespace client
     fread( triangles, 1, size_t( header.nTriangles ) * sizeof( MD2Triangle ), file );
 
     fclose( file );
-
-    String shaderName   = config.get( "shader", header.nFrames == 1 ? "mesh" : "md2" );
-    float  scale        = config.get( "scale", 0.04f );
-    float  specular     = config.get( "specular", 0.0f );
-
-    Vec3   translation  = Vec3( config.get( "translate.x", +0.00f ),
-                                 config.get( "translate.y", +0.00f ),
-                                 config.get( "translate.z", -0.04f ) );
-    Vec3   jumpTransl   = Vec3( config.get( "jumpTranslate.x", 0.00f ),
-                                 config.get( "jumpTranslate.y", 0.00f ),
-                                 config.get( "jumpTranslate.z", 0.00f ) );
-    Vec3   weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
-                                 config.get( "weaponTranslate.y", 0.00f ),
-                                 config.get( "weaponTranslate.z", 0.00f ) );
-    Vec3   weaponRot    = Vec3( config.get( "weaponRotate.x", 0.00f ),
-                                 config.get( "weaponRotate.y", 0.00f ),
-                                 config.get( "weaponRotate.z", 0.00f ) );
-    Mat44  weaponTransf = Mat44::ID;
-
-    weaponTransf.rotateX( Math::rad( weaponRot.x ) );
-    weaponTransf.rotateY( Math::rad( weaponRot.y ) );
-    weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
-    weaponTransf.translate( weaponTransl );
 
     compiler.beginMesh();
     compiler.enable( CAP_UNIQUE );

@@ -94,26 +94,26 @@ namespace client
 
       struct MD2Header
       {
-        int id;
-        int version;
+        char id[4];
+        int  version;
 
-        int skinWidth;
-        int skinHeight;
-        int frameSize;
+        int  skinWidth;
+        int  skinHeight;
+        int  frameSize;
 
-        int nSkins;
-        int nFramePositions;
-        int nTexCoords;
-        int nTriangles;
-        int nGlCmds;
-        int nFrames;
+        int  nSkins;
+        int  nFramePositions;
+        int  nTexCoords;
+        int  nTriangles;
+        int  nGlCmds;
+        int  nFrames;
 
-        int offSkins;
-        int offTexCoords;
-        int offTriangles;
-        int offFrames;
-        int offGLCmds;
-        int offEnd;
+        int  offSkins;
+        int  offTexCoords;
+        int  offTriangles;
+        int  offFrames;
+        int  offGLCmds;
+        int  offEnd;
       };
 
       struct MD2Vertex

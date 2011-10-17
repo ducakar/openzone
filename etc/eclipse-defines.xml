@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cdtprojectproperties>
+<section name="org.eclipse.cdt.internal.ui.wizards.settingswizards.Macros">
+<language name="C++ Source File">
+<macro>
+<name>size_t</name><value>size_t</value>
+</macro>
+<macro>
+<name>__null</name><value>0</value>
+</macro>
+<macro>
+<name>ptrdiff_t</name><value>ptrdiff_t</value>
+</macro>
+<macro>
+<name>nullptr</name><value>0</value>
+</macro>
+<macro>
+<name>nullptr_t</name><value>nullptr_t</value>
+</macro>
+<macro>
+<name>byte</name><value>byte</value>
+</macro>
+<macro>
+<name>ubyte</name><value>ubyte</value>
+</macro>
+<macro>
+<name>ushort</name><value>ushort</value>
+</macro>
+<macro>
+<name>uint</name><value>uint</value>
+</macro>
+<macro>
+<name>ulong</name><value>ulong</value>
+</macro>
+<macro>
+<name>long64</name><value>long64</value>
+</macro>
+<macro>
+<name>ulong64</name><value>ulong64</value>
+</macro>
+
+</language>
+<language name="C Source File">
+<macro>
+<name>OZ_ECLIPSE_HIGHLIGHTING</name><value>1</value>
+</macro>
+
+</language>
+<language name="Object File">
+
+</language>
+<language name="Assembly Source File">
+
+</language>
+</section>
+</cdtprojectproperties>

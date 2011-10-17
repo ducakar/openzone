@@ -304,9 +304,6 @@ namespace oz
   Bounds Struct::toStructCS( const Bounds& bb ) const
   {
     switch( rot ) {
-      default: {
-        hard_assert( false );
-      }
       case R0: {
         return Bounds( Point3( +bb.mins.x - p.x, +bb.mins.y - p.y, +bb.mins.z - p.z ),
                        Point3( +bb.maxs.x - p.x, +bb.maxs.y - p.y, +bb.maxs.z - p.z ) );
@@ -329,9 +326,6 @@ namespace oz
   Bounds Struct::toAbsoluteCS( const Bounds& bb ) const
   {
     switch( rot ) {
-      default: {
-        hard_assert( false );
-      }
       case R0: {
         return Bounds( p + Vec3( +bb.mins.x, +bb.mins.y, +bb.mins.z ),
                        p + Vec3( +bb.maxs.x, +bb.maxs.y, +bb.maxs.z ) );
@@ -356,9 +350,6 @@ namespace oz
     Point3 p = in.mins + ( in.maxs - in.mins ) * 0.5f;
 
     switch( rot ) {
-      default: {
-        hard_assert( false );
-      }
       case R0: {
         return Bounds( p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z ),
                        p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z ) );
@@ -381,9 +372,6 @@ namespace oz
   void Struct::setRotation( const Bounds& in, Rotation rot )
   {
     switch( rot ) {
-      default: {
-        hard_assert( false );
-      }
       case R0: {
         mins = p + Vec3( +in.mins.x, +in.mins.y, +in.mins.z );
         maxs = p + Vec3( +in.maxs.x, +in.maxs.y, +in.maxs.z );

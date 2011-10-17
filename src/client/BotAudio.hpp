@@ -30,7 +30,7 @@ namespace client
 
       static Audio* create( const Object* obj );
 
-      void play( const Audio* parent );
+      virtual void play( const Audio* parent );
 
     OZ_STATIC_POOL_ALLOC( pool )
 

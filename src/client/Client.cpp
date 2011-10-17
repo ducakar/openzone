@@ -42,72 +42,18 @@ namespace client
   {
     uint beginTime = SDL_GetTicks();
 
-#ifndef NDEBUG
-    int nObjects  = 0;
-    int nDynamics = 0;
-    int nWeapons  = 0;
-    int nBots     = 0;
-    int nVehicles = 0;
-
-    Vector< Pair<String, int> > classNameCounts;
-
-    if( initFlags & INIT_MAIN_LOOP ) {
-      log.print( "Counting objects ..." );
-
-      Map<const ObjectClass*, int> classCounts;
-
-      for( int i = 0; i < orbis.objects.length(); ++i ) {
-        const Object* obj = orbis.objects[i];
-
-        if( obj != null ) {
-          int* count = classCounts.find( obj->clazz );
-
-          if( count == null ) {
-            classCounts.add( obj->clazz, 1 );
-          }
-          else {
-            ++*count;
-          }
-
-          if( obj->flags & Object::VEHICLE_BIT ) {
-            ++nVehicles;
-          }
-          else if( obj->flags & Object::BOT_BIT ) {
-            ++nBots;
-          }
-          else if( obj->flags & Object::WEAPON_BIT ) {
-            ++nWeapons;
-          }
-          else if( obj->flags & Object::DYNAMIC_BIT ) {
-            ++nDynamics;
-          }
-          else {
-            ++nObjects;
-          }
-        }
-      }
-
-      foreach( i, classCounts.citer() ) {
-        classNameCounts.add( Pair<String, int>( i.key()->name, i.value() ) );
-      }
-      classCounts.clear();
-
-      log.printEnd( " OK" );
-    }
-#endif
-
     if( initFlags & INIT_STAGE_INIT ) {
       gameStage.free();
       menuStage.free();
-    }
-    if( initFlags & INIT_CONTEXT_INIT ) {
-      context.free();
     }
     if( initFlags & INIT_AUDIO ) {
       sound.free();
     }
     if( initFlags & INIT_RENDER_INIT ) {
       render.free();
+    }
+    if( initFlags & INIT_CONTEXT_INIT ) {
+      context.free();
     }
     if( initFlags & INIT_LIBRARY ) {
       library.free();
@@ -222,26 +168,22 @@ namespace client
   {
     log.println( "Usage:" );
     log.indent();
-    log.println( "openzone [--help] [(--load | -l) | (--init | -i) <function>]" );
-    log.println( "         [(--time | -t) <num>] [(--prefix | -p) <prefix>]" );
+    log.println( "openzone [-l | -i <function>] [-t <num>] [-p <prefix>]" );
     log.println();
-    log.println( "--help" );
-    log.println( "\tPrints that help message." );
-    log.println();
-    log.println( "-l, --load" );
+    log.println( "-l" );
     log.println( "\tSkip main menu and load autosaved state." );
     log.println( "\tAutosaved game state resides in ~/" OZ_RC_DIR "/autosave.ozState." );
     log.println();
-    log.println( "-i <mission>, --init <mission>" );
+    log.println( "-i <mission>" );
     log.println( "\tSkip main menu and start mission <mission>." );
     log.println( "\tMissions reside in <prefix>/share/openzone/lua/mission in files named" );
     log.println( "\t<mission>.lua files." );
     log.println();
-    log.println( "-t <num>, --time <num>" );
+    log.println( "-t <num>" );
     log.println( "\tExits after <num> seconds (can be a floating-point number)." );
     log.println( "\tFor benchmarking purposes." );
     log.println();
-    log.println( "-p <prefix>, --prefix <prefix>" );
+    log.println( "-p <prefix>" );
     log.println( "\tSets data directory to <prefix>/share/openzone and locale directory to" );
     log.println( "\t<prefix>/share/locale." );
     log.println( "\tDefault: '%s'.", OZ_INSTALL_PREFIX );
@@ -253,61 +195,45 @@ namespace client
   {
     initFlags = 0;
 
-    bool   doAutoload = false;
+    bool   doAutoload    = false;
     String mission;
-    bool   isBenchmark = false;
+    bool   isBenchmark   = false;
     float  benchmarkTime = 0.0f;
 
-    for( int i = 1; i < argc; ++i ) {
-      if( String::equals( argv[i], "--help" ) ) {
-        printUsage();
-        return -1;
-      }
-      else if( String::equals( argv[i], "--time" ) || String::equals( argv[i], "-t" ) ) {
-        if( i + 1 == argc ) {
+    optind = 1;
+    int opt;
+    while( ( opt = getopt( argc, argv, "li:t:p:" ) ) != -1 ) {
+      switch( opt ) {
+        case 'l': {
+          doAutoload = true;
+          break;
+        }
+        case 'i': {
+          mission = optarg;
+          break;
+        }
+        case 't': {
+          errno = 0;
+          char* end;
+          benchmarkTime = strtof( optarg, &end );
+
+          if( errno != 0 ) {
+            printUsage();
+            return -1;
+          }
+
+          isBenchmark = true;
+          break;
+        }
+        case 'p': {
+          config.add( "dir.prefix", optarg );
+          break;
+        }
+        default: {
+          log.println();
           printUsage();
           return -1;
         }
-
-        errno = 0;
-        char* end;
-
-        benchmarkTime = strtof( argv[i + 1], &end );
-
-        if( errno != 0 || end == argv[i + 1] ) {
-          printUsage();
-          return -1;
-        }
-
-        isBenchmark = true;
-        ++i;
-      }
-      else if( String::equals( argv[i], "--load" ) || String::equals( argv[i], "-l" ) ) {
-        doAutoload = true;
-      }
-      else if( String::equals( argv[i], "--init" ) || String::equals( argv[i], "-i" ) ) {
-        if( i + 1 == argc ) {
-          printUsage();
-          return -1;
-        }
-
-        mission = argv[i + 1];
-        ++i;
-      }
-      else if( String::equals( argv[i], "--prefix" ) || String::equals( argv[i], "-p" ) ) {
-        if( i + 1 == argc ) {
-          printUsage();
-          return -1;
-        }
-
-        config.add( "dir.prefix", argv[i + 1] );
-        ++i;
-      }
-      else {
-        log.println( "Invalid command-line option '%s'", argv[i] );
-        log.println();
-        printUsage();
-        return -1;
       }
     }
 
@@ -449,14 +375,14 @@ namespace client
     initFlags |= INIT_LIBRARY;
     library.init();
 
+    initFlags |= INIT_CONTEXT_INIT;
+    context.init();
+
     initFlags |= INIT_RENDER_INIT;
     render.init();
 
     initFlags |= INIT_AUDIO;
     sound.init();
-
-    initFlags |= INIT_CONTEXT_INIT;
-    context.init();
 
     initFlags |= INIT_STAGE_INIT;
     menuStage.init();
