@@ -377,7 +377,7 @@ namespace client
     hard_assert( indices.length() > 0 );
     hard_assert( vertices.length() > 0 );
 
-    log.println( "Compiling mesh {" );
+    log.println( "Writing mesh {" );
     log.indent();
 
     stream->writeInt( vertices.length() );

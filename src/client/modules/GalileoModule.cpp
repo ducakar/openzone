@@ -51,7 +51,7 @@ namespace client
   void GalileoModule::prebuild()
   {
     Config terraConfig;
-    Buffer buffer( 1024 * 1024 );
+    Buffer buffer( 2 * 1024 * 1024 );
 
     for( int i = 0; i < library.terras.length(); ++i ) {
       const String& name = library.terras[i].name;

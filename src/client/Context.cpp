@@ -19,6 +19,7 @@
 #include "client/ExplosionModel.hpp"
 #include "client/MD2Model.hpp"
 #include "client/MD2WeaponModel.hpp"
+#include "client/MD3Model.hpp"
 
 #include "client/BasicAudio.hpp"
 #include "client/BotAudio.hpp"
@@ -557,6 +558,7 @@ namespace client
     ExplosionModel::pool.free();
     MD2Model::pool.free();
     MD2WeaponModel::pool.free();
+    MD3Model::pool.free();
 
     BasicAudio::pool.free();
     BotAudio::pool.free();
@@ -584,6 +586,7 @@ namespace client
     OZ_REGISTER_MODELCLASS( Explosion );
     OZ_REGISTER_MODELCLASS( MD2 );
     OZ_REGISTER_MODELCLASS( MD2Weapon );
+    OZ_REGISTER_MODELCLASS( MD3 );
 
     OZ_REGISTER_AUDIOCLASS( Basic );
     OZ_REGISTER_AUDIOCLASS( Bot );
@@ -673,17 +676,15 @@ namespace client
 
   bool Context::useS3TC = false;
 
-  uint Context::buildTexture( const void* data, int width, int height, int bytesPerPixel,
+  uint Context::buildTexture( const void* data, int width, int height, uint format,
                               bool wrap, int magFilter, int minFilter )
   {
     OZ_GL_CHECK_ERROR();
-    hard_assert( bytesPerPixel == 3 || bytesPerPixel == 4 );
 
     bool generateMipmaps = false;
-    uint sourceFormat = bytesPerPixel == 4 ? GL_RGBA : GL_RGB;
-    int internalFormat = bytesPerPixel == 4 ?
-        ( useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA ) :
-        ( useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB );
+    int  internalFormat = format == GL_RGBA || format == GL_BGRA ?
+         ( useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA ) :
+         ( useS3TC ? GL_COMPRESSED_RGB_S3TC_DXT1_EXT : GL_RGB );
 
     uint texId;
     glGenTextures( 1, &texId );
@@ -725,7 +726,7 @@ namespace client
     }
 
     glTexImage2D( GL_TEXTURE_2D, 0, internalFormat, width, height, 0,
-                  sourceFormat, GL_UNSIGNED_BYTE, data );
+                  format, GL_UNSIGNED_BYTE, data );
 
     if( generateMipmaps ) {
       glGenerateMipmap( GL_TEXTURE_2D );
@@ -740,10 +741,10 @@ namespace client
     return texId;
   }
 
-  uint Context::createTexture( const void* data, int width, int height, int bytesPerPixel,
+  uint Context::createTexture( const void* data, int width, int height, uint format,
                                bool wrap, int magFilter, int minFilter )
   {
-    uint texId = buildTexture( data, width, height, bytesPerPixel, wrap, magFilter, minFilter );
+    uint texId = buildTexture( data, width, height, format, wrap, magFilter, minFilter );
 
     if( texId == 0 ) {
       log.println( "Error while creating texture from buffer" );
@@ -756,16 +757,46 @@ namespace client
   {
     log.print( "Loading raw texture '%s' ...", path );
 
+    const char* ext = String::findLast( path, '.' );
+    if( ext == null || ( !String::equals( ext, ".png" ) && !String::equals( ext, ".jpg" ) &&
+          !String::equals( ext, ".tga" ) ) )
+    {
+      throw Exception( "Invalid texture extension. Should be either '.png', '.jpg' or '.tga'" );
+    }
+
     SDL_Surface* image = IMG_Load( path );
     if( image == null ) {
-      log.printEnd( " No such file" );
       throw Exception( "Texture loading failed" );
     }
-    if( image->format->BitsPerPixel != 24 && image->format->BitsPerPixel != 32 ) {
-      log.printEnd( " Wrong format. Should be 24 bpp RGB or 32 bpp RGBA" );
-      throw Exception( "Texture loading failed" );
+
+    uint        format;
+    const char* sFormat;
+
+    if( image->format->BitsPerPixel == 24 ) {
+      if( String::equals( ext, ".tga" ) ) {
+        format = GL_BGR;
+        sFormat = "BGR";
+      }
+      else {
+        format = GL_RGB;
+        sFormat = "RGB";
+      }
     }
-    log.printEnd( " %s ... OK", image->format->BitsPerPixel == 24 ? "RGB" : "RGBA" );
+    else if( image->format->BitsPerPixel == 32 ) {
+      if( String::equals( ext, ".tga" ) ) {
+        format = GL_BGRA;
+        sFormat = "BGRA";
+      }
+      else {
+        format = GL_RGBA;
+        sFormat = "RBGA";
+      }
+    }
+    else {
+      throw Exception( "Wrong texture format. Should be 24 bpp RGB/BGR or 32 bpp RGBA/BGRA" );
+    }
+
+    log.printEnd( " %s ... OK", sFormat );
 
     int bytesPerPixel = image->format->BitsPerPixel / 8;
     char* bytes = reinterpret_cast<char*>( image->pixels );
@@ -786,7 +817,7 @@ namespace client
       pos1 -= 2 * image->w * bytesPerPixel;
     }
 
-    uint texId = createTexture( bytes, image->w, image->h, bytesPerPixel, wrap,
+    uint texId = createTexture( bytes, image->w, image->h, format, wrap,
                                 magFilter, minFilter );
 
     SDL_FreeSurface( image );

@@ -19,6 +19,7 @@ add_library( client STATIC
   MD2Model.cpp
   MD2WeaponModel.cpp
   MD3.cpp
+  MD3Model.cpp
   MenuStage.cpp
   Mesh.cpp
   Module.cpp

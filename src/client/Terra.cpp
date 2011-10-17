@@ -284,7 +284,7 @@ namespace client
     uint mapTexId    = context.loadRawTexture( mapTexture, true,
                                                GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR );
 
-    Buffer buffer( 10 * 1024 * 1024 );
+    Buffer buffer( 20 * 1024 * 1024 );
     OutputStream os = buffer.outputStream();
 
     context.writeTexture( waterTexId, &os );

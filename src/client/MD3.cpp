@@ -12,12 +12,9 @@
 #include "client/MD3.hpp"
 
 #include "client/Context.hpp"
-#include "Colours.hpp"
+#include "client/Compiler.hpp"
 
 #include "client/OpenGL.hpp"
-
-#define FOURCC( a, b, c, d ) \
-  ( ( a ) | ( ( b ) << 8 ) | ( ( c ) << 16 ) | ( ( d ) << 24 ) )
 
 namespace oz
 {
@@ -25,247 +22,6 @@ namespace client
 {
 
 #ifndef OZ_TOOLS
-
-  struct MD3Header
-  {
-    int  id;
-    int  version;
-    char fileName[64];
-    int  flags;
-
-    int  nFrames;
-    int  nTags;
-    int  nSurfaces;
-    int  nSkins;
-
-    int  offFrames;
-    int  offTags;
-    int  offSurfaces;
-    int  offEOF;
-  };
-
-  struct MD3Tag
-  {
-    char   name[64];
-    Point3 p;
-    float  rot[9];
-  };
-
-  struct MD3Surface
-  {
-    int  id;
-    char name[64];
-    int  flags;
-
-    int  nFrames;
-    int  nShaders;
-    int  nVertices;
-    int  nTriangles;
-
-    int  offTriangles;
-    int  offShaders;
-    int  offTexCoords;
-    int  offVertices;
-    int  offEnd;
-  };
-
-  struct MD3Frame : Bounds
-  {
-    Point3 p;
-    float  radius;
-    char   name[16];
-  };
-
-  struct MD3Shader
-  {
-    char name[64];
-    int  index;
-  };
-
-  struct MD3Vertex
-  {
-    short p[3];
-    ubyte normal[2];
-  };
-
-  MD3::Part::Part( MD3* parent, const String& dir, const char* fileName, MD3Tag** tags )
-  {
-    const String& path = dir + fileName;
-    FILE* file;
-
-    file = fopen( path, "rb" );
-    if( file == null ) {
-      log.println( "MD3 model part file '%s' not found", path.cstr() );
-      throw Exception( "MD3 model part file not found" );
-    }
-
-    MD3Header header;
-    fread( &header, sizeof( MD3Header ), 1, file );
-    if( header.id != FOURCC( 'I', 'D', 'P', '3' ) || header.version != 15 ) {
-      fclose( file );
-      log.println( "MD3 model part file '%s' invalid format", path.cstr() );
-      throw Exception( "MD3 model part file invalid format" );
-    }
-
-    nFrames = header.nFrames;
-
-    MD3Frame* frames = new MD3Frame[header.nFrames];
-    fread( frames, sizeof( MD3Frame ), size_t( header.nFrames ), file );
-    delete[] frames;
-
-    *tags = new MD3Tag[header.nFrames * header.nTags];
-    fread( *tags, sizeof( MD3Tag ), size_t( header.nFrames * header.nTags ), file );
-
-    meshes.alloc( header.nSurfaces );
-    for( int i = 0; i < header.nSurfaces; ++i ) {
-      Mesh* mesh = &meshes[i];
-
-      MD3Surface surface;
-      fread( &surface, sizeof( MD3Surface ), 1, file );
-
-      mesh->nVertices = surface.nVertices;
-
-      mesh->triangles.alloc( surface.nTriangles );
-      fread( mesh->triangles, sizeof( Triangle ), size_t( surface.nTriangles ), file );
-
-      MD3Shader* shaders = new MD3Shader[surface.nShaders];
-      fread( shaders, sizeof( MD3Shader ), size_t( surface.nShaders ), file );
-
-      const char* shaderBaseName;
-
-      shaderBaseName = String::findLast( shaders[0].name, '/' );
-      if( shaderBaseName == null ) {
-        shaderBaseName = String::findLast( shaders[0].name, '\\' );
-      }
-      if( shaderBaseName == null ) {
-        delete[] shaders;
-
-        log.println( "MD3 model file '%s' invalid format", path.cstr() );
-        throw Exception( "MD3 model part file invalid format" );
-      }
-      ++shaderBaseName;
-      mesh->texId = context.loadTexture( dir + shaderBaseName );
-      parent->textures.include( mesh->texId );
-      delete[] shaders;
-
-      mesh->texCoords.alloc( surface.nVertices );
-      fread( mesh->texCoords, sizeof( TexCoord ), size_t( surface.nVertices ), file );
-
-      // convert (S,T) -> (U,V) i.e. top-left origin coords to lower-left origin coords
-      for( int j = 0; j < mesh->texCoords.length(); ++j ) {
-//         mesh->texCoords[j].v = 1.0f - mesh->texCoords[j].v;
-      }
-
-      mesh->vertices.alloc( surface.nFrames * surface.nVertices );
-      MD3Vertex* vertices = new MD3Vertex[mesh->vertices.length()];
-      fread( vertices, sizeof( MD3Vertex ), size_t( mesh->vertices.length() ), file );
-
-      for( int j = 0; j < mesh->vertices.length(); ++j ) {
-        mesh->vertices[j].p.x = -float( vertices[j].p[1] ) / 64.0f;
-        mesh->vertices[j].p.y =  float( vertices[j].p[0] ) / 64.0f;
-        mesh->vertices[j].p.z =  float( vertices[j].p[2] ) / 64.0f;
-
-        // convert from zenith/azimuth coords
-        float azimuth = float( vertices[j].normal[0] ) * 4.0f / Math::TAU / 255.0f;
-        float zenith  = float( vertices[j].normal[1] ) * 4.0f / Math::TAU / 255.0f;
-        float xy      = Math::sin( zenith );
-
-        mesh->vertices[j].normal.x = xy * Math::cos( azimuth );
-        mesh->vertices[j].normal.y = xy * Math::sin( azimuth );
-        mesh->vertices[j].normal.z = Math::cos( zenith );
-      }
-      delete[] vertices;
-    }
-  }
-
-  MD3::Part::~Part()
-  {
-    if( !meshes.isEmpty() ) {
-      for( int i = 0; i < meshes.length(); ++i ) {
-        meshes[i].triangles.dealloc();
-        meshes[i].texCoords.dealloc();
-        meshes[i].vertices.dealloc();
-      }
-      meshes.dealloc();
-    }
-  }
-
-  void MD3::Part::scale( float scale )
-  {
-    foreach( mesh, meshes.citer() ) {
-      foreach( v, mesh->vertices.iter() ) {
-        v->p = Point3::ORIGIN + scale * ( v->p - Point3::ORIGIN );
-      }
-    }
-  }
-
-  void MD3::Part::translate( const Vec3& t )
-  {
-    foreach( mesh, meshes.citer() ) {
-      foreach( v, mesh->vertices.iter() ) {
-        v->p += t;
-      }
-    }
-  }
-
-  void MD3::Part::drawFrame( int frame ) const
-  {
-    hard_assert( frame < nFrames );
-
-    for( int i = 0; i < meshes.length(); ++i ) {
-      const Mesh& mesh = meshes[i];
-
-      glBindTexture( GL_TEXTURE_2D, mesh.texId );
-
-      glBegin( GL_TRIANGLES );
-      for( int j = 0; j < mesh.triangles.length(); ++j ) {
-        const Triangle& triangle  = mesh.triangles[j];
-        const TexCoord& texCoord0 = mesh.texCoords[triangle.indices[0]];
-        const TexCoord& texCoord1 = mesh.texCoords[triangle.indices[1]];
-        const TexCoord& texCoord2 = mesh.texCoords[triangle.indices[2]];
-        const Vertex&   vertex0   = mesh.vertices[frame * mesh.nVertices + triangle.indices[0]];
-        const Vertex&   vertex1   = mesh.vertices[frame * mesh.nVertices + triangle.indices[1]];
-        const Vertex&   vertex2   = mesh.vertices[frame * mesh.nVertices + triangle.indices[2]];
-
-        glTexCoord2fv( &texCoord0.u );
-        glNormal3fv( &vertex0.normal.x );
-        glVertex3fv( &vertex0.p.x );
-
-        glTexCoord2fv( &texCoord2.u );
-        glNormal3fv( &vertex2.normal.x );
-        glVertex3fv( &vertex2.p.x );
-
-        glTexCoord2fv( &texCoord1.u );
-        glNormal3fv( &vertex1.normal.x );
-        glVertex3fv( &vertex1.p.x );
-      }
-      glEnd();
-    }
-  }
-
-  void MD3::scale( float scale )
-  {
-    head->scale( scale );
-    upper->scale( scale );
-    lower->scale( scale );
-
-    foreach( offset, headOffsets.iter() ) {
-      offset->p *= scale;
-    }
-    foreach( offset, lowerOffsets.iter() ) {
-      offset->p *= scale;
-    }
-    foreach( offset, weaponOffsets.iter() ) {
-      offset->p *= scale;
-    }
-  }
-
-  void MD3::translate( const Vec3& t )
-  {
-    head->translate( t );
-    upper->translate( t );
-    lower->translate( t );
-  }
 
   MD3::MD3( int id_ ) : id( id_ ), isLoaded( false )
   {}
@@ -276,91 +32,278 @@ namespace client
   }
 
   void MD3::load()
+  {}
+
+  void MD3::drawFrame( int frame ) const
   {
-    const String& name = library.models[id].name;
+  }
 
-    String dir        = "mdl/" + name + "/";
-    String configFile = dir + "config.rc";
+#else
 
-    MD3Tag* headTags;
-    MD3Tag* upperTags;
-    MD3Tag* lowerTags;
+  String MD3::sPath;
+  Config MD3::config;
 
-    head  = new Part( this, dir, "head.md3", &headTags );
-    upper = new Part( this, dir, "upper.md3", &upperTags );
-    lower = new Part( this, dir, "lower.md3", &lowerTags );
+  bool   MD3::forceStatic;
+  float  MD3::scale;
+  Mat44  MD3::meshTransf;
+  Vec3   MD3::jumpTransl;
+  Mat44  MD3::weaponTransf;
 
-    headOffsets.alloc( upper->nFrames );
-    lowerOffsets.alloc( upper->nFrames );
-    weaponOffsets.alloc( upper->nFrames );
+  void MD3::buildMesh( const char* name, int frame, DArray<MD3Tag>* tags )
+  {
+    log.print( "Mesh '%s' ...", name );
 
-    // assemble the model
-    for( int i = 0; i < upper->nFrames; ++i ) {
-      headOffsets[i].p.x   = -upperTags[3 * i + 1].p.y;
-      headOffsets[i].p.y   =  upperTags[3 * i + 1].p.x;
-      headOffsets[i].p.z   = -upperTags[3 * i + 1].p.z;
+    String modelFile = sPath + "/" + String( name ) + ".md3";
 
-      lowerOffsets[i].p.x  = -lowerTags[i].p.y;
-      lowerOffsets[i].p.y  =  lowerTags[i].p.x;
-      lowerOffsets[i].p.z  = -lowerTags[i].p.z;
-
-      weaponOffsets[i].p.x = -upperTags[3 * i].p.y;
-      weaponOffsets[i].p.y =  upperTags[3 * i].p.x;
-      weaponOffsets[i].p.z = -upperTags[3 * i].p.z;
+    FILE* file = fopen( modelFile, "rb" );
+    if( file == null ) {
+      throw Exception( "MD3 model part file '" + modelFile + "' not found" );
     }
 
-    delete[] headTags;
-    delete[] upperTags;
-    delete[] lowerTags;
+    MD3Header header;
+    fread( &header, sizeof( MD3Header ), 1, file );
+
+    if( header.id[0] != 'I' || header.id[1] != 'D' || header.id[2] != 'P' || header.id[3] != '3' ) {
+      fclose( file );
+      throw Exception( "MD3 model part file invalid format" );
+    }
+
+    if( header.nFrames == 0 || header.nSurfaces == 0 ) {
+      throw Exception( "Invalid MD3 header counts" );
+    }
+
+    if( forceStatic ) {
+      header.nFrames = 1;
+    }
+
+    if( header.nTags != 0 ) {
+      tags->alloc( header.nTags );
+
+      fseek( file, header.offTags, SEEK_SET );
+      fread( *tags, sizeof( MD3Tag ), header.nTags, file );
+    }
+
+    fseek( file, header.offSurfaces, SEEK_SET );
+
+    int indexBase = 0;
+
+    for( int i = 0; i < header.nSurfaces; ++i ) {
+      long surfaceStart = ftell( file );
+
+      MD3Surface surface;
+      fread( &surface, sizeof( MD3Surface ), 1, file );
+
+      if( surface.nFrames == 0 || surface.nTriangles == 0 || surface.nShaders == 0 ||
+          surface.nVertices == 0 )
+      {
+        throw Exception( "Invalid MD3 surface counts" );
+      }
+
+      DArray<MD3Triangle> surfaceTriangles( surface.nTriangles );
+      DArray<MD3Shader>   surfaceShaders( surface.nShaders );
+      DArray<MD3TexCoord> surfaceTexCoords( surface.nVertices );
+      DArray<MD3Vertex>   surfaceVertices( surface.nFrames * surface.nVertices );
+
+      fseek( file, surfaceStart + surface.offTriangles, SEEK_SET );
+      fread( surfaceTriangles, sizeof( MD3Triangle ), size_t( surfaceTriangles.length() ), file );
+
+      fseek( file, surfaceStart + surface.offShaders, SEEK_SET );
+      fread( surfaceShaders, sizeof( MD3Shader ), size_t( surfaceShaders.length() ), file );
+
+      fseek( file, surfaceStart + surface.offTexCoords, SEEK_SET );
+      fread( surfaceTexCoords, sizeof( TexCoord ), size_t( surfaceTexCoords.length() ), file );
+
+      fseek( file, surfaceStart + surface.offVertices, SEEK_SET );
+      fread( surfaceVertices, sizeof( MD3Vertex ), size_t( surfaceVertices.length() ), file );
+
+      fseek( file, surfaceStart + surface.offEnd, SEEK_SET );
+
+      if( !forceStatic && surface.nFrames != header.nFrames ) {
+        throw Exception( "Invalid MD3 surface # of frames" );
+      }
+
+      const char* skinFile = max( String::findLast( surfaceShaders[0].name, '/' ),
+                                  String::findLast( surfaceShaders[0].name, '\\' ) );
+
+      if( skinFile == null ) {
+        skinFile = surfaceShaders[0].name;
+      }
+      else {
+        ++skinFile;
+      }
+
+      compiler.texture( sPath + "/" + skinFile );
+
+      compiler.begin( GL_TRIANGLES );
+
+      for( int i = 0; i < surfaceTriangles.length(); ++i ) {
+        for( int j = 0; j < 3; ++j ) {
+          int k = surfaceTriangles[i].vertices[j];
+
+          if( frame != -1 ) {
+            int l = frame * surface.nVertices + k;
+
+            float h  = float( surfaceVertices[l].normal[0] ) * Math::TAU / 255.0f;
+            float v  = float( surfaceVertices[l].normal[1] ) * Math::TAU / 255.0f;
+            float xy = Math::sin( v );
+
+            Vec3 normal = Vec3( xy * Math::sin( -h ), xy * Math::cos( +h ), Math::cos( v ) );
+
+            float x = float( -surfaceVertices[l].pos[1] ) / 64.0f;
+            float y = float( +surfaceVertices[l].pos[0] ) / 64.0f;
+            float z = float( +surfaceVertices[l].pos[2] ) / 64.0f;
+
+            Point3 position = Point3( x * scale, y * scale, z * scale );
+
+            compiler.texCoord( surfaceTexCoords[k].s, 1.0f - surfaceTexCoords[k].t );
+            compiler.normal( meshTransf * normal );
+            compiler.vertex( meshTransf * position );
+          }
+        }
+      }
+
+      compiler.end();
+
+      indexBase += surface.nVertices;
+    }
+
+    log.printEnd( " OK" );
+  }
+
+  void MD3::prebuild( const char* path )
+  {
+    sPath = path;
+
+    String configFile = sPath + "/config.rc";
+
+    log.println( "Prebuilding MD3 model '%s' {", path );
+    log.indent();
 
     Config config;
     config.load( configFile );
 
-    float scaling = config.get( "scale", 0.042f );
-    Vec3 translation = Vec3( config.get( "translate.x", 0.00f ),
-                             config.get( "translate.y", 0.00f ),
-                             config.get( "translate.z", 0.00f ) );
+    forceStatic  = config.get( "forceStatic", false );
+    // FIXME
+    forceStatic  = true;
+    String shaderName   = config.get( "shader", forceStatic ? "mesh" : "md3" );
+    float  specular     = config.get( "specular", 0.0f );
 
-    if( scaling != 1.0f ) {
-      scale( scaling );
+    scale        = config.get( "scale", 0.04f );
+
+    Vec3 translation  = Vec3( config.get( "translate.x", +0.00f ),
+                              config.get( "translate.y", +0.00f ),
+                              config.get( "translate.z", -0.04f ) );
+
+    Vec3 weaponTransl = Vec3( config.get( "weaponTranslate.x", 0.00f ),
+                              config.get( "weaponTranslate.y", 0.00f ),
+                              config.get( "weaponTranslate.z", 0.00f ) );
+
+    Vec3 weaponRot    = Vec3( config.get( "weaponRotate.x", 0.00f ),
+                              config.get( "weaponRotate.y", 0.00f ),
+                              config.get( "weaponRotate.z", 0.00f ) );
+
+    meshTransf = Mat44::translation( translation );
+
+    weaponTransf = Mat44::ID;
+    weaponTransf.rotateX( Math::rad( weaponRot.x ) );
+    weaponTransf.rotateY( Math::rad( weaponRot.y ) );
+    weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
+    weaponTransf.translate( weaponTransl );
+
+    const char* model = config.get( "model", "" );
+
+    Buffer buffer( 16 * 1024 * 1024 );
+    OutputStream ostream = buffer.outputStream();
+
+    ostream.writeString( shaderName );
+
+    if( !String::isEmpty( model ) ) {
+      compiler.beginMesh();
+
+      compiler.enable( CAP_UNIQUE );
+      compiler.enable( CAP_CW );
+      compiler.material( GL_SPECULAR, specular );
+
+      DArray<MD3Tag> tags;
+      buildMesh( model, 0, &tags );
+
+      compiler.endMesh();
+
+      MeshData mesh;
+      compiler.getMeshData( &mesh );
+      mesh.write( &ostream );
     }
-    translate( translation );
+    else if( forceStatic ) {
+      Vec3 originalTranslation = translation;
 
-    isLoaded = true;
+      compiler.beginMesh();
+
+      compiler.enable( CAP_UNIQUE );
+      compiler.enable( CAP_CW );
+      compiler.material( GL_SPECULAR, specular );
+
+      DArray<MD3Tag> tags;
+
+      buildMesh( "lower", 0, &tags );
+
+      foreach( tag, tags.citer() ) {
+        if( String::equals( tag->name, "tag_torso" ) ) {
+          Mat44 transf = Mat44( tag->rot[0], tag->rot[1], tag->rot[2], 0.0f,
+                                tag->rot[3], tag->rot[4], tag->rot[5], 0.0f,
+                                tag->rot[6], tag->rot[7], tag->rot[8], 0.0f,
+                                -tag->pos[1] * scale, +tag->pos[0] * scale, +tag->pos[2] * scale, 1.0f );
+
+          meshTransf = meshTransf * transf;
+
+          tags.dealloc();
+          break;
+        }
+      }
+
+      buildMesh( "upper", 0, &tags );
+
+      foreach( tag, tags.citer() ) {
+        if( String::equals( tag->name, "tag_head" ) ) {
+          Mat44 transf = Mat44( tag->rot[0], tag->rot[1], tag->rot[2], 0.0f,
+                                tag->rot[3], tag->rot[4], tag->rot[5], 0.0f,
+                                tag->rot[6], tag->rot[7], tag->rot[8], 0.0f,
+                                -tag->pos[1] * scale, +tag->pos[0] * scale, +tag->pos[2] * scale, 1.0f );
+
+          meshTransf = meshTransf * transf;
+
+          tags.dealloc();
+          break;
+        }
+      }
+
+      buildMesh( "head", 0, &tags );
+
+      compiler.endMesh();
+
+      MeshData mesh;
+      compiler.getMeshData( &mesh );
+      mesh.write( &ostream );
+    }
+
+    if( forceStatic ) {
+      log.print( "Writing to '%s' ...", ( sPath + ".ozcSMM" ).cstr() );
+      buffer.write( sPath + ".ozcSMM", ostream.length() );
+      log.printEnd( " OK" );
+    }
+    else {
+      log.print( "Writing to '%s' ...", ( sPath + ".ozcMD3" ).cstr() );
+      buffer.write( sPath + ".ozcMD3", ostream.length() );
+      log.printEnd( " OK" );
+    }
+
+    shaderName.clear();
+    config.clear();
+    sPath.clear();
+
+    log.unindent();
+    log.println( "}" );
   }
 
-  void MD3::drawFrame( int frame ) const
-  {
-    glPushMatrix();
-
-    upper->drawFrame( frame );
-
-//     glTranslatef( headOffsets[frame].p.x, headOffsets[frame].p.y, headOffsets[frame].p.z );
-//     head->drawFrame( 0 );
-//
-//     glPopMatrix();
-//     glPushMatrix();
-
-    glTranslatef( lowerOffsets[frame].p.x, lowerOffsets[frame].p.y, lowerOffsets[frame].p.z );
-    lower->drawFrame( frame );
-
-    glPopMatrix();
-  }
-
-  void MD3::genList()
-  {
-    list = glGenLists( 1 );
-    glNewList( list, GL_COMPILE );
-      drawFrame( 0 );
-    glEndList();
-  }
-
-  void MD3::deleteList() const
-  {
-    glDeleteLists( list, 1 );
-  }
-
-#else
 #endif
 
 }

@@ -34,6 +34,8 @@ function onCreate()
   ozOrbisAddObj( "droid.OOM-9", 140, -11, 73 )
   ozBotSetH( 90 )
 
+  ozOrbisAddObj( "reaper", 145, -15, 73 )
+
   ozOrbisGenParts( 1000, 136, -3, 71, 0, 0, 10, 15, 0.4, 0.4, 0.4, 0.2, 1.95, 0.1, 5.0 )
 
   ozOrbisAddObj( "musicPlayer", 135, -2, 73 )

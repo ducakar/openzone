@@ -36,7 +36,7 @@ namespace oz
        * TYPE FLAGS
        */
 
-      // DynObject
+      // Dynamic object
       static const int DYNAMIC_BIT        = int( 0x80000000 );
       // Weapon
       static const int WEAPON_BIT         = 0x40000000;

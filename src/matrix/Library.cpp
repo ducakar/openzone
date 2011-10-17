@@ -406,7 +406,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "models (*.ozcSMM, *.ozcMD2 in 'mdl') {" );
+    log.println( "models (*.ozcSMM, *.ozcMD2, *.ozcMD3 in 'mdl') {" );
     log.indent();
 
     dir.setPath( "mdl" );
@@ -419,7 +419,9 @@ namespace oz
       throw Exception( "Library initialisation failure" );
     }
     foreach( file, dirList.citer() ) {
-      if( !file->hasExtension( "ozcSMM" ) && !file->hasExtension( "ozcMD2" ) ) {
+      if( !file->hasExtension( "ozcSMM" ) && !file->hasExtension( "ozcMD2" ) &&
+          !file->hasExtension( "ozcMD3" ) )
+      {
         continue;
       }
 
@@ -793,7 +795,7 @@ namespace oz
 
     log.unindent();
     log.println( "}" );
-    log.println( "models (* in 'mdl') {" );
+    log.println( "models (directories in 'mdl') {" );
     log.indent();
 
     dir.setPath( "mdl" );
