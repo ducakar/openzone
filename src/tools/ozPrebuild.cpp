@@ -390,7 +390,7 @@ static void prebuildModels()
 
       client::MD2::prebuild( path );
     }
-    else if( stat( path + "/head.md3", &srcInfo0 ) == 0 ) {
+    else if( stat( path + "/.md3", &srcInfo0 ) == 0 ) {
       if( stat( path + "/config.rc", &configInfo ) != 0 ) {
         throw Exception( "MD3 model '" + name + "' source files missing" );
       }

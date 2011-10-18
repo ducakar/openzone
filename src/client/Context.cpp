@@ -681,6 +681,10 @@ namespace client
   {
     OZ_GL_CHECK_ERROR();
 
+    if( useS3TC && ( width != height || !Math::isPow2( width ) ) ) {
+      throw Exception( "Texture must be of dimensions 2^n x 2^n to use S3 texture compression." );
+    }
+
     bool generateMipmaps = false;
     int  internalFormat = format == GL_RGBA || format == GL_BGRA ?
          ( useS3TC ? GL_COMPRESSED_RGBA_S3TC_DXT5_EXT : GL_RGBA ) :
