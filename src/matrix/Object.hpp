@@ -38,14 +38,19 @@ namespace oz
 
       // Dynamic object
       static const int DYNAMIC_BIT        = int( 0x80000000 );
+
       // Weapon
       static const int WEAPON_BIT         = 0x40000000;
+
       // Bot
       static const int BOT_BIT            = 0x20000000;
+
       // Vehicle
       static const int VEHICLE_BIT        = 0x10000000;
+
       // can be put into inventory
       static const int ITEM_BIT           = 0x08000000;
+
       // bots have access to this object's inventory
       static const int BROWSABLE_BIT      = 0x04000000;
 
@@ -94,7 +99,7 @@ namespace oz
       static const int DESTROYED_BIT      = 0x00010000;
 
       /*
-       * DYNAMIC OBJECTS' BITS
+       * PHYSICS & COLLISION FLAGS
        */
 
       // if the object is still and on a still surface, we won't handle physics for it
@@ -107,7 +112,7 @@ namespace oz
       static const int FRICTING_BIT       = 0x00002000;
 
       // if the object has collided into another dynamic object from below (to prevent stacked
-      // object from being carried around)
+      // objects from being carried around)
       static const int BELOW_BIT          = 0x00001000;
 
       // if the the object lies or moves on a structure, terrain or non-dynamic object

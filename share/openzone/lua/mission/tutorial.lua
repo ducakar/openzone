@@ -76,7 +76,7 @@ function onCreate()
   )
 
   ozNirvanaAddMemo( infoWaterPush,
-    ozGettext( "8. PUSHING IN WATER\n\nYou will need a create from the previous room for this one. Bring it here, throw it in the water and push it undr water to the other side. There you will need the crate to jump on it to climb on a ledge." )
+    ozGettext( "8. PUSHING IN WATER\n\nYou will need a create from the previous room for this one. Bring it here, throw it in the water and push it under water to the other side. There you will need the crate to jump on it to climb on a ledge.\n\nYou can also push an object upwards or downwards with side-pushing while the object is in the water." )
   )
 
   local oX, oY, oZ = 82, -55, 69.2

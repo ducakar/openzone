@@ -218,6 +218,10 @@ namespace oz
           // OK, since sDyn->momentum is (almost) always smaller by absolute value
           sDyn->momentum.x = momentum.x;
           sDyn->momentum.y = momentum.y;
+
+          if( sDyn->flags & Object::IN_WATER_BIT ) {
+            sDyn->momentum.z = momentum.z;
+          }
         }
         else {
           sDyn->momentum.x += ( dynMomProj - sDynMomProj ) * hit.normal.x;

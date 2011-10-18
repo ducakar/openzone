@@ -286,12 +286,12 @@ namespace client
     }
 
     if( forceStatic ) {
-      log.print( "Writing to '%s' ...", ( sPath + ".ozcSMM" ).cstr() );
+      log.print( "Writing to '%s%s' ...", sPath.cstr(), ".ozcSMM" );
       buffer.write( sPath + ".ozcSMM", ostream.length() );
       log.printEnd( " OK" );
     }
     else {
-      log.print( "Writing to '%s' ...", ( sPath + ".ozcMD3" ).cstr() );
+      log.print( "Writing to '%s%s' ...", sPath.cstr(), ".ozcMD3" );
       buffer.write( sPath + ".ozcMD3", ostream.length() );
       log.printEnd( " OK" );
     }
