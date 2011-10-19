@@ -526,11 +526,10 @@ namespace client
                                 config.get( "weaponRotate.y", 0.00f ),
                                 config.get( "weaponRotate.z", 0.00f ) );
 
-    Mat44 weaponTransf = Mat44::ID;
-    weaponTransf.rotateX( Math::rad( weaponRot.x ) );
+    Mat44 weaponTransf = Mat44::translation( weaponTransl );
     weaponTransf.rotateY( Math::rad( weaponRot.y ) );
+    weaponTransf.rotateX( Math::rad( weaponRot.x ) );
     weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
-    weaponTransf.translate( weaponTransl );
 
     DArray<MD2TexCoord> texCoords( header.nTexCoords );
     DArray<MD2Triangle> triangles( header.nTriangles );

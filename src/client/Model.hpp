@@ -44,7 +44,7 @@ namespace client
       virtual ~Model()
       {}
 
-      virtual void draw( const Model* parent ) = 0;
+      virtual void draw( const Model* parent, int mask ) = 0;
 
   };
 

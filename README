@@ -118,6 +118,7 @@ Notes
 Troubleshooting
 ---------------
 - Make sure you have the *LATEST* display drivers.
+- Turning off desktop effects on Linux may improve performance when running in windowed mode.
 - You need at least OpenGL 2.1 compatible graphic card & driver that additionally supports the
   following extensions:
   - GL_ARB_framebuffer_object and

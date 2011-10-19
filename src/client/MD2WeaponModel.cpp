@@ -42,7 +42,7 @@ namespace client
     return model;
   }
 
-  void MD2WeaponModel::draw( const Model* parent )
+  void MD2WeaponModel::draw( const Model* parent, int )
   {
     if( !md2->isLoaded ) {
       return;

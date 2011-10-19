@@ -80,7 +80,7 @@ namespace client
       tags->alloc( header.nTags );
 
       fseek( file, header.offTags, SEEK_SET );
-      fread( *tags, sizeof( MD3Tag ), header.nTags, file );
+      fread( *tags, sizeof( MD3Tag ), size_t( header.nTags ), file );
     }
 
     fseek( file, header.offSurfaces, SEEK_SET );
@@ -204,11 +204,10 @@ namespace client
 
     meshTransf = Mat44::translation( translation );
 
-    weaponTransf = Mat44::ID;
+    weaponTransf = Mat44::translation( weaponTransl );
     weaponTransf.rotateX( Math::rad( weaponRot.x ) );
-    weaponTransf.rotateY( Math::rad( weaponRot.y ) );
     weaponTransf.rotateZ( Math::rad( weaponRot.z ) );
-    weaponTransf.translate( weaponTransl );
+    weaponTransf.rotateY( Math::rad( weaponRot.y ) );
 
     const char* model = config.get( "model", "" );
 
@@ -234,8 +233,6 @@ namespace client
       mesh.write( &ostream );
     }
     else if( forceStatic ) {
-      Vec3 originalTranslation = translation;
-
       compiler.beginMesh();
 
       compiler.enable( CAP_UNIQUE );

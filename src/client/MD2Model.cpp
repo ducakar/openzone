@@ -83,7 +83,7 @@ namespace client
     }
   }
 
-  void MD2Model::draw( const Model* parent )
+  void MD2Model::draw( const Model* parent, int mask )
   {
     const Bot* bot = static_cast<const Bot*>( obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
@@ -120,7 +120,9 @@ namespace client
         glEnable( GL_BLEND );
       }
 
-      md2->advance( &anim, timer.frameTime );
+      if( mask & Mesh::SOLID_BIT ) {
+        md2->advance( &anim, timer.frameTime );
+      }
       md2->draw( &anim );
 
       if( shader.colour.w != 1.0f ) {
@@ -133,11 +135,13 @@ namespace client
         tf.model.translate( Vec3( 0.0f, 0.0f, clazz->dim.z - clazz->dimCrouch.z ) );
       }
 
-      md2->advance( &anim, timer.frameTime );
+      if( mask & Mesh::SOLID_BIT ) {
+        md2->advance( &anim, timer.frameTime );
+      }
       md2->draw( &anim );
 
       if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
-        context.drawModel( orbis.objects[bot->weapon], this );
+        context.drawModel( orbis.objects[bot->weapon], this, mask );
       }
     }
     else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
@@ -147,8 +151,10 @@ namespace client
 
       glDepthFunc( GL_ALWAYS );
 
-      md2->advance( &anim, timer.frameTime );
-      context.drawModel( orbis.objects[bot->weapon], this );
+      if( mask & Mesh::SOLID_BIT ) {
+        md2->advance( &anim, timer.frameTime );
+      }
+      context.drawModel( orbis.objects[bot->weapon], this, mask );
 
       glDepthFunc( GL_LESS );
     }

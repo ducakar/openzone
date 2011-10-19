@@ -118,6 +118,20 @@ function mace_onShot( l )
   end
 end
 
+function skull_onShot( l )
+  ozObjBindUser()
+
+  local pX, pY, pZ = ozObjGetPos()
+  local vX, vY, vZ = ozBotGetDir()
+
+  ozBindObjOverlaps( pX + 0.6*vX, pY + 0.6*vY, pZ + 0.6*vZ, 0.4, 0.4, 0.4 );
+  while ozObjBindNext() do
+    if not ( ozObjIsSelf() or ozObjIsUser() ) then
+      ozObjDamage( 100.0 + 200.0 * math.random() )
+    end
+  end
+end
+
 function vehicle_heavyBlaster_onShot( l )
   local pX, pY, pZ = ozObjGetPos()
   ozObjBindUser();

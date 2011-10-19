@@ -30,31 +30,36 @@ namespace client
   {
     private:
 
-      static const int MESH_BIT     = 0x00000001;
-      static const int SURFACE_BIT  = 0x00000002;
+      static const int MESH_BIT = 0x00000001;
+      static const int PART_BIT = 0x00000002;
 
       struct Part
       {
+        int    component;
+        uint   mode;
+
         String texture;
         float  alpha;
         float  specular;
 
-        uint   mode;
-
         Vector<int> indices;
 
-        bool operator == ( const Part& part ) const;
+        bool operator == ( const Part& part ) const
+        {
+          return component == part.component && mode == part.mode && specular == part.specular &&
+              alpha == part.alpha && texture.equals( part.texture );
+        }
       };
 
       Vector<Vertex> vertices;
-      Vector<Part>   solidParts;
-      Vector<Part>   alphaParts;
+      Vector<Part>   parts;
 
       Vertex         vert;
       Part           part;
 
       int            caps;
       int            flags;
+      int            componentId;
       uint           mode;
       int            vertNum;
 
@@ -66,6 +71,7 @@ namespace client
       void beginMesh();
       void endMesh();
 
+      void component( int id );
       void material( int target, float param );
       void texture( const char* texture );
 

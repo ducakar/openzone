@@ -33,16 +33,15 @@ namespace client
 
       struct Model
       {
-        Mesh mesh;
         int  openSample;
         int  closeSample;
         int  frictSample;
       };
 
       int           id;
-      DArray<Model> models;
-
       int           flags;
+      DArray<Model> models;
+      Mesh          mesh;
 
       void playSound( const Struct::Entity* entity, int sample ) const;
       void playContSound( const Struct::Entity* entity, int sample ) const;
@@ -54,9 +53,10 @@ namespace client
       explicit BSP( int id );
       ~BSP();
 
-      void load();
       void draw( const Struct* str, int mask ) const;
       void play( const Struct* str ) const;
+
+      void load();
 
 #else
 

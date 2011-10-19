@@ -83,7 +83,7 @@ namespace client
 //     }
 //   }
 
-  void MD3Model::draw( const Model* parent )
+  void MD3Model::draw( const Model* parent, int mask )
   {
     const Bot* bot = static_cast<const Bot*>( obj );
     const BotClass* clazz = static_cast<const BotClass*>( bot->clazz );
@@ -139,7 +139,7 @@ namespace client
       md3->drawFrame( 0 );
 
       if( parent == null && bot->weapon!= -1 && orbis.objects[bot->weapon] != null ) {
-        context.drawModel( orbis.objects[bot->weapon], this );
+        context.drawModel( orbis.objects[bot->weapon], this, mask );
       }
     }
     else if( parent == null && bot->weapon != -1 && orbis.objects[bot->weapon] != null ) {
@@ -150,7 +150,7 @@ namespace client
       glDepthFunc( GL_ALWAYS );
 
 //       md2->advance( &anim, timer.frameTime );
-      context.drawModel( orbis.objects[bot->weapon], this );
+      context.drawModel( orbis.objects[bot->weapon], this, mask );
 
       glDepthFunc( GL_LESS );
     }

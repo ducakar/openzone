@@ -39,7 +39,7 @@ namespace client
     context.releaseSMM( clazz->modelIndex );
   }
 
-  void SMMModel::draw( const Model* )
+  void SMMModel::draw( const Model*, int mask )
   {
     if( !smm->isLoaded ) {
       return;
@@ -47,7 +47,7 @@ namespace client
 
     tf.model.rotateZ( h );
 
-    smm->draw();
+    smm->draw( mask );
   }
 
 }

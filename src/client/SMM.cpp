@@ -58,12 +58,12 @@ namespace client
     OZ_GL_CHECK_ERROR();
   }
 
-  void SMM::draw() const
+  void SMM::draw( int mask ) const
   {
     shader.use( shaderId );
     tf.apply();
 
-    mesh.draw( Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
+    mesh.draw( mask );
   }
 
 }

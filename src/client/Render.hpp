@@ -65,11 +65,10 @@ namespace client
             dist2( dist2_ ), obj( obj_ )
         {}
 
-        // sort in reverse order (farest to nearest)
         OZ_ALWAYS_INLINE
         bool operator < ( const ObjectEntry& oe ) const
         {
-          return dist2 > oe.dist2;
+          return dist2 < oe.dist2;
         }
       };
 
