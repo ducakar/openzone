@@ -1,6 +1,6 @@
 if( OZ_BUILD_TESTS )
   add_executable( alloctest alloctest.cpp )
-  add_dependencies( alloctest matrix  pch )
+  add_dependencies( alloctest pch )
   target_link_libraries( alloctest matrix oz ${libs} )
 
   add_executable( foreach foreach.cpp )
@@ -42,7 +42,7 @@ endif()
 
 if( OZ_BUILD_TESTS )
   add_executable( test test.cpp )
-  add_dependencies( test build pch )
+  add_dependencies( test pch )
 
   target_link_libraries( test build oz ${libs} )
 endif()

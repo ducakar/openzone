@@ -4,5 +4,4 @@ add_library( server STATIC
   Network.cpp
   Server.cpp
 )
-
-add_dependencies( server nirvana matrix pch )
+add_dependencies( server pch )

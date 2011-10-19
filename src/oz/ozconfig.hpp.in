@@ -9,7 +9,7 @@
 // whether math library has sincosf function
 #cmakedefine OZ_HAVE_SINCOSF
 
-// enable SIMD code for linear math
+// enable SIMD code for vector math
 #cmakedefine OZ_SIMD
 
 // use big-endian for stream
@@ -41,7 +41,6 @@
 # define decltype typeof
 #endif
 
-// machine endian
 #ifdef __BIG_ENDIAN__
 # define OZ_BIG_ENDIAN_ARCH
 #endif

@@ -33,7 +33,7 @@ namespace client
 
       virtual ~SMMVehicleModel();
 
-      virtual void draw( const Model* parent );
+      virtual void draw( const Model* parent, int mask );
 
     OZ_STATIC_POOL_ALLOC( pool )
 

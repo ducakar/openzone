@@ -181,7 +181,7 @@ namespace oz
       }
     }
 
-    dyn->flags &= ~Object::MOVE_CLEAR_MASK;
+    dyn->flags &= ~( Object::DISABLED_BIT | Object::ON_FLOOR_BIT | Object::ON_SLICK_BIT );
     dyn->lower = -1;
 
     return true;
@@ -219,7 +219,7 @@ namespace oz
           sDyn->momentum.x = momentum.x;
           sDyn->momentum.y = momentum.y;
 
-          if( sDyn->flags & Object::IN_WATER_BIT ) {
+          if( dyn->flags & sDyn->flags & Object::IN_WATER_BIT ) {
             sDyn->momentum.z = momentum.z;
           }
         }
@@ -343,6 +343,7 @@ namespace oz
     }
     while( true );
 
+    dyn->flags &= ~( Object::IN_WATER_BIT | Object::ON_LADDER_BIT );
     dyn->flags |= collider.hit.inWater  ? Object::IN_WATER_BIT  : 0;
     dyn->flags |= collider.hit.onLadder ? Object::ON_LADDER_BIT : 0;
     dyn->depth = min( collider.hit.waterDepth, 2.0f * dyn->dim.z );

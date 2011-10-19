@@ -44,9 +44,9 @@ namespace client
     context.releaseSMM( modelId );
   }
 
-  void ExplosionModel::draw( const Model* )
+  void ExplosionModel::draw( const Model*, int mask )
   {
-    if( !smm->isLoaded ) {
+    if( !smm->isLoaded || !( mask & Mesh::ALPHA_BIT ) ) {
       return;
     }
 
@@ -62,7 +62,7 @@ namespace client
     tf.model.scale( Vec3( radius, radius, radius ) );
     tf.apply();
 
-    smm->draw();
+    smm->draw( mask );
 
     shader.colour = Colours::WHITE;
 

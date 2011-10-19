@@ -152,7 +152,7 @@ namespace client
       void drawBSP( const Struct* str, int mask );
       void playBSP( const Struct* str );
 
-      void drawModel( const Object* obj, const Model* parent );
+      void drawModel( const Object* obj, const Model* parent, int mask );
       void playAudio( const Object* obj, const Audio* parent );
 
 # ifndef NDEBUG

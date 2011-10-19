@@ -117,8 +117,6 @@ namespace client
     log.indent();
 
     foreach( model, models.iter() ) {
-      model->mesh.unload();
-
       if( model->openSample != -1 ) {
         context.releaseSound( model->openSample );
       }
@@ -130,55 +128,10 @@ namespace client
       }
     }
 
-    log.unindent();
-    log.println( "}" );
-  }
-
-  void BSP::load()
-  {
-    const String& name = library.bsps[id].name;
-
-    log.println( "Loading BSP model '%s' {", name.cstr() );
-    log.indent();
-
-    Buffer buffer;
-    if( !buffer.read( "bsp/" + name + ".ozcBSP" ) ) {
-      throw Exception( "BSP loading failed" );
-    }
-
-    InputStream is = buffer.inputStream();
-
-    flags = is.readInt();
-
-    int nModels = is.readInt();
-
-    models.alloc( nModels );
-    foreach( model, models.iter() ) {
-      model->mesh.load( &is, GL_STATIC_DRAW );
-
-      String sOpenSample  = is.readString();
-      String sCloseSample = is.readString();
-      String sFrictSample = is.readString();
-
-      model->openSample  = sOpenSample.isEmpty()  ? -1 : library.soundIndex( sOpenSample );
-      model->closeSample = sCloseSample.isEmpty() ? -1 : library.soundIndex( sCloseSample );
-      model->frictSample = sFrictSample.isEmpty() ? -1 : library.soundIndex( sFrictSample );
-
-      if( model->openSample != -1 ) {
-        context.requestSound( model->openSample );
-      }
-      if( model->closeSample != -1 ) {
-        context.requestSound( model->closeSample );
-      }
-      if( model->frictSample != -1 ) {
-        context.requestSound( model->frictSample );
-      }
-    }
+    mesh.unload();
 
     log.unindent();
     log.println( "}" );
-
-    isLoaded = true;
   }
 
   void BSP::draw( const Struct* str, int mask ) const
@@ -189,6 +142,11 @@ namespace client
       return;
     }
 
+    mesh.bind();
+    tf.apply();
+
+    mesh.drawComponent( 0, mask );
+
     for( int i = 0; i < models.length(); ++i ) {
       const Vec3& entityPos = i == 0 ? Vec3::ZERO : str->entities[i - 1].offset;
 
@@ -196,7 +154,7 @@ namespace client
       tf.model.translate( entityPos );
       tf.apply();
 
-      models[i].mesh.draw( mask );
+      mesh.drawComponent( i, mask );
 
       tf.pop();
     }
@@ -226,6 +184,51 @@ namespace client
         }
       }
     }
+  }
+
+  void BSP::load()
+  {
+    const String& name = library.bsps[id].name;
+
+    log.println( "Loading BSP model '%s' {", name.cstr() );
+    log.indent();
+
+    Buffer buffer;
+    if( !buffer.read( "bsp/" + name + ".ozcBSP" ) ) {
+      throw Exception( "BSP loading failed" );
+    }
+
+    InputStream istream = buffer.inputStream();
+
+    flags = istream.readInt();
+
+    models.alloc( istream.readInt() );
+    foreach( model, models.iter() ) {
+      String sOpenSample  = istream.readString();
+      String sCloseSample = istream.readString();
+      String sFrictSample = istream.readString();
+
+      model->openSample  = sOpenSample.isEmpty()  ? -1 : library.soundIndex( sOpenSample );
+      model->closeSample = sCloseSample.isEmpty() ? -1 : library.soundIndex( sCloseSample );
+      model->frictSample = sFrictSample.isEmpty() ? -1 : library.soundIndex( sFrictSample );
+
+      if( model->openSample != -1 ) {
+        context.requestSound( model->openSample );
+      }
+      if( model->closeSample != -1 ) {
+        context.requestSound( model->closeSample );
+      }
+      if( model->frictSample != -1 ) {
+        context.requestSound( model->frictSample );
+      }
+    }
+
+    mesh.load( &istream, GL_STATIC_DRAW );
+
+    log.unindent();
+    log.println( "}" );
+
+    isLoaded = true;
   }
 
 #else // OZ_TOOLS
@@ -416,12 +419,13 @@ namespace client
   {
     int flags = 0;
 
-    Vector<MeshData> meshes( nModels );
+    compiler.beginMesh();
+
+    compiler.enable( CAP_UNIQUE );
+    compiler.enable( CAP_CW );
 
     for( int i = 0; i < nModels; ++i ) {
-      compiler.beginMesh();
-      compiler.enable( CAP_UNIQUE );
-      compiler.enable( CAP_CW );
+      compiler.component( i );
 
       for( int j = 0; j < models[i].nFaces; ++j ) {
         const QBSPFace& face = faces[ models[i].firstFace + j ];
@@ -480,30 +484,29 @@ namespace client
 
         compiler.end();
       }
-
-      compiler.endMesh();
-
-      meshes.add();
-      compiler.getMeshData( &meshes.last() );
     }
+
+    compiler.endMesh();
 
     Buffer buffer( 4 * 1024 * 1024 );
-    OutputStream os = buffer.outputStream();
+    OutputStream ostream = buffer.outputStream();
 
-    os.writeInt( flags );
-    os.writeInt( nModels );
+    ostream.writeInt( flags );
+    ostream.writeInt( nModels );
 
     for( int i = 0; i < nModels; ++i ) {
-      meshes[i].write( &os, false );
-
-      os.writeString( modelSamples[i].openSample );
-      os.writeString( modelSamples[i].closeSample );
-      os.writeString( modelSamples[i].frictSample );
+      ostream.writeString( modelSamples[i].openSample );
+      ostream.writeString( modelSamples[i].closeSample );
+      ostream.writeString( modelSamples[i].frictSample );
     }
+
+    MeshData mesh;
+    compiler.getMeshData( &mesh );
+    mesh.write( &ostream, false );
 
     log.print( "Dumping BSP model to '%s' ...", path );
 
-    buffer.write( path, os.length() );
+    buffer.write( path, ostream.length() );
 
     log.printEnd( " OK" );
   }

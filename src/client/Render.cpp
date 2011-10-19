@@ -66,8 +66,7 @@ namespace client
 
       if( !drawnStructs.get( cell.structs[i] ) && frustum.isVisible( p, radius ) ) {
         drawnStructs.set( cell.structs[i] );
-
-        structs.add( ObjectEntry( ( p - camera.p ).fastL() - radius, str ) );
+        structs.add( ObjectEntry( ( p - camera.p ).sqL(), str ) );
       }
     }
 
@@ -76,8 +75,7 @@ namespace client
           WIDE_CULL_FACTOR * obj->dim.fastL() : obj->dim.fastL();
 
       if( frustum.isVisible( obj->p, radius ) ) {
-        float range = ( obj->p - camera.p ).fastL() - radius;
-        objects.add( ObjectEntry( range, obj ) );
+        objects.add( ObjectEntry( ( obj->p - camera.p ).sqL(), obj ) );
       }
     }
 
@@ -204,7 +202,7 @@ namespace client
     // draw structures
     shader.use( shader.mesh );
 
-    for( int i = structs.length() - 1; i >= 0; --i ) {
+    for( int i = 0; i < structs.length(); ++i ) {
       const Struct* str = structs[i].str;
 
       tf.model = Mat44::translation( str->p - Point3::ORIGIN );
@@ -233,22 +231,36 @@ namespace client
 
       tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
 
-      context.drawModel( obj, null );
+      context.drawModel( obj, null, Mesh::SOLID_BIT );
 
       if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
         shader.colour = Colours::WHITE;
       }
     }
 
-    hard_assert( !glIsEnabled( GL_BLEND ) );
+    glEnable( GL_BLEND );
+
+    for( int i = objects.length() - 1; i >= 0; --i ) {
+      const Object* obj = objects[i].obj;
+
+      if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
+        shader.colour = Colours::TAG;
+      }
+
+      tf.model = Mat44::translation( obj->p - Point3::ORIGIN );
+
+      context.drawModel( obj, null, Mesh::ALPHA_BIT );
+
+      if( obj->index == camera.tagged && camera.state != Camera::STRATEGIC ) {
+        shader.colour = Colours::WHITE;
+      }
+    }
 
     currentTime = SDL_GetTicks();
     timer.renderObjectsMillis += currentTime - beginTime;
     beginTime = currentTime;
 
     // draw particles
-    glEnable( GL_BLEND );
-
     shader.use( shader.mesh );
 
     glBindTexture( GL_TEXTURE_2D, 0 );
@@ -282,7 +294,7 @@ namespace client
     // draw structures' alpha parts
     shader.use( shader.mesh );
 
-    for( int i = 0; i < structs.length(); ++i ) {
+    for( int i = structs.length() - 1; i >= 0; --i ) {
       const Struct* str = structs[i].str;
 
       tf.model = Mat44::translation( str->p - Point3::ORIGIN );
@@ -751,8 +763,8 @@ namespace client
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-      glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, renderWidth, renderHeight, 0,
-                    GL_DEPTH_COMPONENT, GL_FLOAT, null );
+      glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, renderWidth, renderHeight, 0,
+                    GL_DEPTH_COMPONENT, GL_HALF_FLOAT, null );
 
       glBindTexture( GL_TEXTURE_2D, colourBuffer );
 
@@ -772,7 +784,7 @@ namespace client
       glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
       glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, renderWidth, renderHeight, 0,
-                    GL_RGB, GL_FLOAT, null );
+                    GL_RGB, GL_HALF_FLOAT, null );
 
       glBindTexture( GL_TEXTURE_2D, 0 );
 

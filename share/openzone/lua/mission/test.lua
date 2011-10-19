@@ -24,11 +24,11 @@ function onCreate()
   ozBotSetName( ozProfileGetPlayerName() )
   ozBotSetMindFunc( "" )
 
-  local lord = ozOrbisAddObj( "lord", 138, -11, 73 )
+  local lord = ozOrbisAddObj( "bauul", 138, -11, 73 )
   ozBotSetH( 270 )
 
   local memo = ozOrbisAddObj( "datacube", 134, -6, 73 )
-  ozNirvanaAddMemo( memo, "drekec pekec ds a sda dasd a dw eqfeqwikfp weiofhowue hfuh weuiwhfuw h" )
+  ozNirvanaAddMemo( memo, "ds a sda dasd a dw eqfeqwikfp weiofhowue hfuh weuiwhfuw h" )
   ozNirvanaAddMemo( lord, "Buahahahaha" )
 
   ozOrbisAddObj( "droid.OOM-9", 140, -11, 73 )

@@ -118,6 +118,8 @@ Opombe
 Problemi
 --------
 - Prepričaj se, da imaš *NAJNOVEJŠE* gonilnike za grafično kartico.
+- Na Linuxu utegne izklop namiznih učinkov pohitriti grafiko, kadar ne poganjate v celozaslonskem
+  načinu.
 - Potrebuješ vsaj grafično kartico in gonilnik s podporo za OpenGL 2.1 in naslednjimi razširitvami:
   - GL_ARB_framebuffer_object in
   - GL_EXT_texture_compression_s3tc.

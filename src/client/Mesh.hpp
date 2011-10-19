@@ -62,10 +62,10 @@ namespace client
 
     public:
 
-      static const int FIRST_ALPHA_PART_MASK = 0x00ff;
-      static const int SOLID_BIT             = 0x0100;
-      static const int ALPHA_BIT             = 0x0200;
-      static const int EMBEDED_TEX_BIT       = 0x0400;
+      static const int COMPONENT_MASK  = 0x00ff;
+      static const int SOLID_BIT       = 0x0100;
+      static const int ALPHA_BIT       = 0x0200;
+      static const int EMBEDED_TEX_BIT = 0x0400;
 
 #ifndef OZ_TOOLS
 
@@ -73,14 +73,15 @@ namespace client
 
       struct Part
       {
-        uint   texture;
-        float  alpha;
-        float  specular;
+        int   flags;
+        uint  mode;
 
-        uint   mode;
+        uint  texture;
+        float alpha;
+        float specular;
 
-        int    nIndices;
-        int    firstIndex;
+        int   nIndices;
+        int   firstIndex;
       };
 
       uint         vao;
@@ -103,6 +104,8 @@ namespace client
       Vertex* map( uint access ) const;
       void unmap() const;
 
+      void bind() const;
+      void drawComponent( int id, int mask ) const;
       void draw( int mask ) const;
 
 #endif
@@ -119,18 +122,18 @@ namespace client
 
       struct Part
       {
+        int    component;
+        uint   mode;
+
         String texture;
         float  alpha;
         float  specular;
-
-        uint   mode;
 
         int    nIndices;
         int    firstIndex;
       };
 
-      Vector<Part>   solidParts;
-      Vector<Part>   alphaParts;
+      Vector<Part>   parts;
 
       DArray<ushort> indices;
       DArray<Vertex> vertices;

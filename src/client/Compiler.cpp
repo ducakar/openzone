@@ -23,14 +23,6 @@ namespace client
 
   Compiler compiler;
 
-  bool Compiler::Part::operator == ( const Part& part ) const
-  {
-    return mode == part.mode &&
-        alpha == part.alpha &&
-        specular == part.specular &&
-        texture.equals( part.texture );
-  }
-
   void Compiler::enable( int cap )
   {
     caps |= cap;
@@ -44,15 +36,15 @@ namespace client
   void Compiler::beginMesh()
   {
     hard_assert( !( flags & MESH_BIT ) );
-    hard_assert( !( flags & SURFACE_BIT ) );
+    hard_assert( !( flags & PART_BIT ) );
 
     flags |= MESH_BIT;
     caps = 0;
 
     vertices.clear();
-    solidParts.clear();
-    alphaParts.clear();
+    parts.clear();
 
+    part.component   = 0;
     part.texture     = "";
     part.alpha       = 1.0f;
     part.specular    = 0.0f;
@@ -72,15 +64,23 @@ namespace client
   void Compiler::endMesh()
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( !( flags & SURFACE_BIT ) );
+    hard_assert( !( flags & PART_BIT ) );
 
     flags &= ~MESH_BIT;
+  }
+
+  void Compiler::component( int id )
+  {
+    hard_assert( flags & MESH_BIT );
+    hard_assert( !( flags & PART_BIT ) );
+
+    componentId = id;
   }
 
   void Compiler::material( int target, float param )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( !( flags & SURFACE_BIT ) );
+    hard_assert( !( flags & PART_BIT ) );
 
     switch( target ) {
       case GL_DIFFUSE: {
@@ -101,7 +101,7 @@ namespace client
   void Compiler::texture( const char* texture )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( !( flags & SURFACE_BIT ) );
+    hard_assert( !( flags & PART_BIT ) );
 
     part.texture = texture;
   }
@@ -109,12 +109,14 @@ namespace client
   void Compiler::begin( uint mode_ )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( !( flags & SURFACE_BIT ) );
+    hard_assert( !( flags & PART_BIT ) );
 
-    flags |= SURFACE_BIT;
+    flags |= PART_BIT;
 
     mode = mode_;
     vertNum = 0;
+
+    part.component = componentId;
 
     switch( mode ) {
       case GL_QUADS:
@@ -132,9 +134,9 @@ namespace client
   void Compiler::end()
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( flags & SURFACE_BIT );
+    hard_assert( flags & PART_BIT );
 
-    flags &= ~SURFACE_BIT;
+    flags &= ~PART_BIT;
 
     if( caps & CAP_CW ) {
       aReverse<int>( part.indices, part.indices.length() );
@@ -177,31 +179,18 @@ namespace client
       }
     }
 
-    Vector<Part>* parts = part.alpha != 1.0f ? &alphaParts : &solidParts;
+    int partIndex = parts.index( part );
 
-    switch( mode ) {
-      default: {
-        int partIndex = parts->index( part );
-
-        if( partIndex == -1 ) {
-          parts->add( part );
-        }
-        else {
-          Part* destPart = &( *parts )[partIndex];
-
-          switch( part.mode ) {
-            case GL_TRIANGLE_STRIP: {
-              // reset triangle strip
-              int last = destPart->indices.last();
-              destPart->indices.add( last );
-              destPart->indices.add( part.indices.first() );
-              break;
-            }
-          }
-          destPart->indices.addAll( part.indices, part.indices.length() );
-        }
-        break;
+    if( partIndex == -1 ) {
+      parts.add( part );
+    }
+    else {
+      if( part.mode == GL_TRIANGLE_STRIP ) {
+        // reset triangle strip
+        parts[partIndex].indices.add( parts[partIndex].indices.last() );
+        parts[partIndex].indices.add( part.indices.first() );
       }
+      parts[partIndex].indices.addAll( part.indices, part.indices.length() );
     }
 
     part.indices.clear();
@@ -242,7 +231,7 @@ namespace client
     vert.pos[1] = y;
     vert.pos[2] = z;
 
-    if( !( flags & SURFACE_BIT ) ) {
+    if( !( flags & PART_BIT ) ) {
       vertices.add( vert );
     }
     else {
@@ -285,7 +274,7 @@ namespace client
   void Compiler::index( int i )
   {
     hard_assert( flags & MESH_BIT );
-    hard_assert( flags & SURFACE_BIT );
+    hard_assert( flags & PART_BIT );
 
     bool doRestart = false;
 
@@ -309,50 +298,30 @@ namespace client
   void Compiler::getMeshData( MeshData* mesh ) const
   {
     hard_assert( !( flags & MESH_BIT ) );
-    hard_assert( !( flags & SURFACE_BIT ) );
+    hard_assert( !( flags & PART_BIT ) );
 
     int nIndices = 0;
 
-    for( int i = 0; i < solidParts.length(); ++i ) {
-      mesh->solidParts.add();
+    for( int i = 0; i < parts.length(); ++i ) {
+      mesh->parts.add();
 
-      mesh->solidParts[i].texture    = solidParts[i].texture;
-      mesh->solidParts[i].alpha      = solidParts[i].alpha;
-      mesh->solidParts[i].specular   = solidParts[i].specular;
+      mesh->parts[i].component  = parts[i].component;
+      mesh->parts[i].mode       = parts[i].mode;
 
-      mesh->solidParts[i].mode       = solidParts[i].mode;
+      mesh->parts[i].texture    = parts[i].texture;
+      mesh->parts[i].specular   = parts[i].specular;
+      mesh->parts[i].alpha      = parts[i].alpha;
 
-      mesh->solidParts[i].nIndices   = solidParts[i].indices.length();
-      mesh->solidParts[i].firstIndex = nIndices;
+      mesh->parts[i].nIndices   = parts[i].indices.length();
+      mesh->parts[i].firstIndex = nIndices;
 
-      nIndices += solidParts[i].indices.length();
-    }
-
-    for( int i = 0; i < alphaParts.length(); ++i ) {
-      mesh->alphaParts.add();
-
-      mesh->alphaParts[i].texture    = alphaParts[i].texture;
-      mesh->alphaParts[i].alpha      = alphaParts[i].alpha;
-      mesh->alphaParts[i].specular   = alphaParts[i].specular;
-
-      mesh->alphaParts[i].mode       = alphaParts[i].mode;
-
-      mesh->alphaParts[i].nIndices   = alphaParts[i].indices.length();
-      mesh->alphaParts[i].firstIndex = nIndices;
-
-      nIndices += alphaParts[i].indices.length();
+      nIndices += parts[i].indices.length();
     }
 
     mesh->indices.alloc( nIndices );
     ushort* currIndex = mesh->indices;
 
-    foreach( part, solidParts.citer() ) {
-      foreach( i, part->indices.citer() ) {
-        *currIndex = ushort( *i );
-        ++currIndex;
-      }
-    }
-    foreach( part, alphaParts.citer() ) {
+    foreach( part, parts.citer() ) {
       foreach( i, part->indices.citer() ) {
         *currIndex = ushort( *i );
         ++currIndex;
@@ -368,11 +337,8 @@ namespace client
     vertices.clear();
     vertices.dealloc();
 
-    solidParts.clear();
-    solidParts.dealloc();
-
-    alphaParts.clear();
-    alphaParts.dealloc();
+    parts.clear();
+    parts.dealloc();
 
     part.texture = "";
     part.indices.clear();

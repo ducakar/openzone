@@ -7,4 +7,4 @@ add_library( nirvana STATIC
   Task.cpp
   common.cpp
 )
-add_dependencies( nirvana matrix pch )
+add_dependencies( nirvana pch )

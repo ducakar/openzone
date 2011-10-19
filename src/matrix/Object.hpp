@@ -99,7 +99,7 @@ namespace oz
       static const int DESTROYED_BIT      = 0x00010000;
 
       /*
-       * PHYSICS & COLLISION FLAGS
+       * COLLISION & PHYSICS FLAGS
        */
 
       // if the object is still and on a still surface, we won't handle physics for it
@@ -168,7 +168,7 @@ namespace oz
 
       // those flags are cleared by Physics on each update when an object moves (plus lower = -1)
       static const int MOVE_CLEAR_MASK    = DISABLED_BIT | ON_FLOOR_BIT | IN_WATER_BIT |
-                                                ON_LADDER_BIT | ON_SLICK_BIT;
+                                            ON_LADDER_BIT | ON_SLICK_BIT;
 
       /*
        * STANDARD EVENT IDs

@@ -405,7 +405,7 @@ namespace client
     }
   }
 
-  void Context::drawModel( const Object* obj, const Model* parent )
+  void Context::drawModel( const Object* obj, const Model* parent, int mask )
   {
     hard_assert( obj->flags & Object::MODEL_BIT );
 
@@ -425,7 +425,7 @@ namespace client
     Model* model = *value;
 
     model->flags |= Model::UPDATED_BIT;
-    model->draw( parent );
+    model->draw( parent, mask );
   }
 
   void Context::playAudio( const Object* obj, const Audio* parent )
@@ -681,8 +681,8 @@ namespace client
   {
     OZ_GL_CHECK_ERROR();
 
-    if( useS3TC && ( width != height || !Math::isPow2( width ) ) ) {
-      throw Exception( "Texture must be of dimensions 2^n x 2^n to use S3 texture compression." );
+    if( useS3TC && !( Math::isPow2( width ) && Math::isPow2( height ) ) ) {
+      throw Exception( "Texture must be of dimensions 2^n x 2^m to use S3 texture compression." );
     }
 
     bool generateMipmaps = false;

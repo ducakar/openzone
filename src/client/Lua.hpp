@@ -329,6 +329,10 @@ namespace client
 
       OZ_LUA_API( ozCameraGetPos );
       OZ_LUA_API( ozCameraGetDest );
+      OZ_LUA_API( ozCameraGetH );
+      OZ_LUA_API( ozCameraSetH );
+      OZ_LUA_API( ozCameraGetV );
+      OZ_LUA_API( ozCameraSetV );
       OZ_LUA_API( ozCameraMoveTo );
       OZ_LUA_API( ozCameraWarpTo );
 

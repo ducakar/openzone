@@ -517,6 +517,10 @@ namespace client
 
     OZ_LUA_FUNC( ozCameraGetPos );
     OZ_LUA_FUNC( ozCameraGetDest );
+    OZ_LUA_FUNC( ozCameraGetH );
+    OZ_LUA_FUNC( ozCameraSetH );
+    OZ_LUA_FUNC( ozCameraGetV );
+    OZ_LUA_FUNC( ozCameraSetV );
     OZ_LUA_FUNC( ozCameraMoveTo );
     OZ_LUA_FUNC( ozCameraWarpTo );
 
@@ -2579,6 +2583,38 @@ namespace client
     pushfloat( camera.newP.z );
 
     return 3;
+  }
+
+  int Lua::ozCameraGetH( lua_State* l )
+  {
+    ARG( 0 );
+
+    pushfloat( camera.h );
+    return 1;
+  }
+
+  int Lua::ozCameraSetH( lua_State* l )
+  {
+    ARG( 1 );
+
+    camera.h = tofloat( 1 );
+    return 0;
+  }
+
+  int Lua::ozCameraGetV( lua_State* l )
+  {
+    ARG( 0 );
+
+    pushfloat( camera.v );
+    return 1;
+  }
+
+  int Lua::ozCameraSetV( lua_State* l )
+  {
+    ARG( 1 );
+
+    camera.v = tofloat( 1 );
+    return 0;
   }
 
   int Lua::ozCameraMoveTo( lua_State* l )

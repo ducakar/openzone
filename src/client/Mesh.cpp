@@ -245,30 +245,22 @@ namespace client
     }
 
     int nParts = stream->readInt();
-    int firstAlphaPart = stream->readInt();
-
-    hard_assert( ( firstAlphaPart & FIRST_ALPHA_PART_MASK ) == firstAlphaPart );
-
-    flags |= firstAlphaPart;
-
-    if( firstAlphaPart != 0 ) {
-      flags |= SOLID_BIT;
-    }
-    if( firstAlphaPart != nParts ) {
-      flags |= ALPHA_BIT;
-    }
 
     parts.alloc( nParts );
 
-    for( int i = 0; i < nParts; ++i ) {
-      parts[i].texture    = textures[ stream->readInt() ];
-      parts[i].alpha      = stream->readFloat();
-      parts[i].specular   = stream->readFloat();
+    foreach( part, parts.iter() ) {
+      part->flags      = stream->readInt();
+      part->mode       = uint( stream->readInt() );
 
-      parts[i].mode       = uint( stream->readInt() );
+      part->texture    = textures[ stream->readInt() ];
+      part->alpha      = stream->readFloat();
+      part->specular   = stream->readFloat();
 
-      parts[i].nIndices   = stream->readInt();
-      parts[i].firstIndex = stream->readInt();
+      part->nIndices   = stream->readInt();
+      part->firstIndex = stream->readInt();
+
+      part->flags |= part->alpha == 1.0f ? 0x0100 : 0x0200;
+      flags |= part->flags & ( 0x0100 | 0x0200 );
     }
 
     textures.dealloc();
@@ -324,7 +316,20 @@ namespace client
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
   }
 
-  void Mesh::draw( int mask ) const
+  void Mesh::bind() const
+  {
+# ifdef OZ_GL_COMPATIBLE
+    glBindBuffer( GL_ARRAY_BUFFER, vbo );
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ibo );
+    Vertex::setFormat();
+# else
+    glBindVertexArray( vao );
+# endif
+
+    glUniform4fv( param.oz_Colour, 1, shader.colour );
+  }
+
+  void Mesh::drawComponent( int id, int mask ) const
   {
     mask &= flags;
 
@@ -332,7 +337,33 @@ namespace client
       return;
     }
 
-    int firstAlphaPart = flags & FIRST_ALPHA_PART_MASK;
+    foreach( part, parts.citer() ) {
+      int component = part->flags & COMPONENT_MASK;
+
+      if( component < id ) {
+        continue;
+      }
+      else if( component > id ) {
+        break;
+      }
+      else if( part->flags & mask ) {
+        glBindTexture( GL_TEXTURE_2D, part->texture );
+        glUniform1f( param.oz_Specular, part->specular );
+        glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
+                     part->alpha );
+        glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
+                        reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
+      }
+    }
+  }
+
+  void Mesh::draw( int mask ) const
+  {
+    mask &= flags;
+
+    if( mask == 0 ) {
+      return;
+    }
 
 # ifdef OZ_GL_COMPATIBLE
     glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -344,28 +375,15 @@ namespace client
 
     glUniform4fv( param.oz_Colour, 1, shader.colour );
 
-    if( mask & SOLID_BIT ) {
-      for( int i = 0; i < firstAlphaPart; ++i ) {
-        glBindTexture( GL_TEXTURE_2D, parts[i].texture );
-        glUniform1f( param.oz_Specular, parts[i].specular );
-        glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
-                        reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
-      }
-    }
-    if( mask & ALPHA_BIT ) {
-      glEnable( GL_BLEND );
-
-      for( int i = firstAlphaPart; i < parts.length(); ++i ) {
-        glBindTexture( GL_TEXTURE_2D, parts[i].texture );
+    foreach( part, parts.citer() ) {
+      if( part->flags & mask ) {
+        glBindTexture( GL_TEXTURE_2D, part->texture );
+        glUniform1f( param.oz_Specular, part->specular );
         glUniform4f( param.oz_Colour, shader.colour.x, shader.colour.y, shader.colour.z,
-                     parts[i].alpha );
-        glUniform1f( param.oz_Specular, parts[i].specular );
-        glDrawElements( parts[i].mode, parts[i].nIndices, GL_UNSIGNED_SHORT,
-                        reinterpret_cast<const ushort*>( 0 ) + parts[i].firstIndex );
+                     part->alpha );
+        glDrawElements( part->mode, part->nIndices, GL_UNSIGNED_SHORT,
+                        reinterpret_cast<const ushort*>( 0 ) + part->firstIndex );
       }
-
-      glUniform4fv( param.oz_Colour, 1, shader.colour );
-      glDisable( GL_BLEND );
     }
   }
 
@@ -373,7 +391,7 @@ namespace client
 
   void MeshData::write( OutputStream* stream, bool embedTextures ) const
   {
-    hard_assert( solidParts.length() > 0 || alphaParts.length() > 0 );
+    hard_assert( parts.length() > 0 );
     hard_assert( indices.length() > 0 );
     hard_assert( vertices.length() > 0 );
 
@@ -393,10 +411,7 @@ namespace client
     Vector<String> textures;
     textures.add( "" );
 
-    foreach( part, solidParts.citer() ) {
-      textures.include( part->texture );
-    }
-    foreach( part, alphaParts.citer() ) {
+    foreach( part, parts.citer() ) {
       textures.include( part->texture );
     }
 
@@ -417,25 +432,15 @@ namespace client
       }
     }
 
-    stream->writeInt( solidParts.length() + alphaParts.length() );
-    stream->writeInt( solidParts.length() );
+    stream->writeInt( parts.length() );
 
-    foreach( part, solidParts.citer() ) {
+    foreach( part, parts.citer() ) {
+      stream->writeInt( part->component );
+      stream->writeInt( int( part->mode ) );
+
       stream->writeInt( textures.index( part->texture ) );
       stream->writeFloat( part->alpha );
       stream->writeFloat( part->specular );
-
-      stream->writeInt( int( part->mode ) );
-
-      stream->writeInt( part->nIndices );
-      stream->writeInt( part->firstIndex );
-    }
-    foreach( part, alphaParts.citer() ) {
-      stream->writeInt( textures.index( part->texture ) );
-      stream->writeFloat( part->alpha );
-      stream->writeFloat( part->specular );
-
-      stream->writeInt( int( part->mode ) );
 
       stream->writeInt( part->nIndices );
       stream->writeInt( part->firstIndex );

@@ -35,7 +35,7 @@ namespace client
       ~SMM();
 
       void load();
-      void draw() const;
+      void draw( int mask ) const;
 
   };
 

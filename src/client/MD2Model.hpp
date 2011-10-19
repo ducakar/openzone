@@ -45,7 +45,7 @@ namespace client
       static Model* create( const Object* obj );
 
       void setAnim( Anim::Type anim );
-      virtual void draw( const Model* parent );
+      virtual void draw( const Model* parent, int mask );
 
     OZ_STATIC_POOL_ALLOC( pool )
 

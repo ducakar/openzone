@@ -40,7 +40,7 @@ namespace client
     context.releaseSMM( clazz->modelIndex );
   }
 
-  void SMMVehicleModel::draw( const Model* )
+  void SMMVehicleModel::draw( const Model*, int mask )
   {
     const Vehicle* veh = static_cast<const Vehicle*>( obj );
     const VehicleClass* clazz = static_cast<const VehicleClass*>( obj->clazz );
@@ -59,14 +59,14 @@ namespace client
           tf.push();
           tf.model.translate( clazz->pilotPos );
 
-          context.drawModel( bot, this );
+          context.drawModel( bot, this, mask );
 
           tf.pop();
         }
       }
     }
 
-    smm->draw();
+    smm->draw( mask );
   }
 
 }

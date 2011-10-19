@@ -220,7 +220,7 @@ namespace ui
     tf.camera.scale( Vec3( scale, scale, scale ) );
     tf.applyCamera();
 
-    context.drawModel( vehicle, null );
+    context.drawModel( vehicle, null, Mesh::SOLID_BIT | Mesh::ALPHA_BIT );
 
     glEnable( GL_BLEND );
     glDisable( GL_DEPTH_TEST );
