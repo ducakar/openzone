@@ -25,18 +25,18 @@ namespace oz
 
     InputStream is = buffer.inputStream();
 
-    mins           = is.readPoint3();
-    maxs           = is.readPoint3();
-    life           = is.readFloat();
-    damageTreshold = is.readFloat();
+    mins         = is.readPoint3();
+    maxs         = is.readPoint3();
+    life         = is.readFloat();
+    resistance   = is.readFloat();
 
-    nPlanes        = is.readInt();
-    nNodes         = is.readInt();
-    nLeaves        = is.readInt();
-    nLeafBrushes   = is.readInt();
-    nBrushes       = is.readInt();
-    nBrushSides    = is.readInt();
-    nModels        = is.readInt();
+    nPlanes      = is.readInt();
+    nNodes       = is.readInt();
+    nLeaves      = is.readInt();
+    nLeafBrushes = is.readInt();
+    nBrushes     = is.readInt();
+    nBrushSides  = is.readInt();
+    nModels      = is.readInt();
 
     size_t size = 0;
 

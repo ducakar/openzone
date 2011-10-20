@@ -20,7 +20,8 @@ namespace oz
   {
     public:
 
-      Vec3   dimCrouch;
+      Vec3   crouchDim;
+      Vec3   corpseDim;
 
       float  camZ;
       float  crouchCamZ;

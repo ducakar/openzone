@@ -223,8 +223,8 @@ namespace oz
       int                flags;
       int                oldFlags;
 
-      float              resistance;
       float              life;
+      float              resistance;
 
       const ObjectClass* clazz;
 
@@ -289,11 +289,12 @@ namespace oz
       OZ_ALWAYS_INLINE
       void damage( float damage )
       {
-        damage -= clazz->damageThreshold;
+        damage -= resistance;
 
         if( damage > 0.0f ) {
           life -= damage;
-          addEvent( EVENT_DAMAGE, damage * DAMAGE_INTENSITY_COEF );
+//           addEvent( EVENT_DAMAGE, damage * DAMAGE_INTENSITY_COEF );
+          addEvent( EVENT_DAMAGE, 1.0f );
 
           if( flags & DAMAGE_FUNC_BIT ) {
             onDamage( damage );
@@ -310,7 +311,8 @@ namespace oz
       void hit( const Hit* hit, float hitMomentum )
       {
         flags |= HIT_BIT;
-        addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_COEF );
+//         addEvent( EVENT_HIT, hitMomentum * MOMENTUM_INTENSITY_COEF );
+        addEvent( EVENT_HIT, 1.0f );
         damage( hitMomentum * hitMomentum );
 
         if( flags & HIT_FUNC_BIT ) {
@@ -319,9 +321,11 @@ namespace oz
       }
 
       OZ_ALWAYS_INLINE
-      void splash( float momentum )
+      void splash( float hitMomentum )
       {
-        addEvent( EVENT_SPLASH, momentum * MOMENTUM_INTENSITY_COEF );
+//         addEvent( EVENT_SPLASH, hitMomentum * MOMENTUM_INTENSITY_COEF );
+        static_cast<void>( hitMomentum );
+        addEvent( EVENT_SPLASH, 1.0f );
       }
 
       OZ_ALWAYS_INLINE
@@ -350,7 +354,7 @@ namespace oz
 
       virtual void onDestroy();
       virtual void onDamage( float damage );
-      virtual void onHit( const Hit* hit, float momentum );
+      virtual void onHit( const Hit* hit, float hitMomentum );
       virtual bool onUse( Bot* user );
       virtual void onUpdate();
 

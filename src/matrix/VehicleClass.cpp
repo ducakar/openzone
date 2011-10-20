@@ -135,19 +135,16 @@ namespace oz
   {
     Vehicle* obj = new Vehicle();
 
-    obj->p        = pos;
-    obj->index    = index;
-
-    obj->mass     = mass;
-    obj->lift     = lift;
-
-    obj->h        = 0.0f;
-    obj->v        = Math::TAU / 4.0f;
-    obj->rot      = Quat::ID;
-    obj->state    = state;
-    obj->oldState = state;
-
-    obj->weapon   = 0;
+    obj->p          = pos;
+    obj->index      = index;
+    obj->mass       = mass;
+    obj->lift       = lift;
+    obj->h          = 0.0f;
+    obj->v          = Math::TAU / 4.0f;
+    obj->rot        = Quat::ID;
+    obj->state      = state;
+    obj->oldState   = state;
+    obj->weapon     = 0;
 
     for( int i = 0; i < Vehicle::WEAPONS_MAX; ++i ) {
       obj->nRounds[i]  = nRounds[i];
@@ -163,16 +160,14 @@ namespace oz
   {
     Vehicle* obj = new Vehicle();
 
-    obj->dim    = dim;
-
-    obj->index  = index;
-    obj->clazz  = this;
-
-    obj->mass   = mass;
-    obj->lift   = lift;
+    obj->dim        = dim;
+    obj->index      = index;
+    obj->clazz      = this;
+    obj->resistance = resistance;
+    obj->mass       = mass;
+    obj->lift       = lift;
 
     obj->readFull( istream );
-
 
     return obj;
   }

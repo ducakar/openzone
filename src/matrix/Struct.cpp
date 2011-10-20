@@ -266,7 +266,7 @@ namespace oz
 
   Struct::Struct( int index_, int bspId, const Point3& p_, Heading heading_ ) :
       p( p_ ), index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] ),
-      heading( heading_ ), life( bsp->life )
+      heading( heading_ ), life( bsp->life ), resistance( bsp->resistance )
   {
     switch( heading ) {
       case NORTH: {
@@ -307,7 +307,7 @@ namespace oz
   }
 
   Struct::Struct( int index_, int bspId, InputStream* istream ) :
-      index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] )
+      index( index_ ), id( bspId ), bsp( orbis.bsps[bspId] ), resistance( bsp->resistance )
   {
     hard_assert( bsp != null );
 

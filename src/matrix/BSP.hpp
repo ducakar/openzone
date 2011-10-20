@@ -72,7 +72,7 @@ namespace oz
 
       int     id;
       float   life;
-      float   damageTreshold;
+      float   resistance;
 
       int     nPlanes;
       int     nNodes;

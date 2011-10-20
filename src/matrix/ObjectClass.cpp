@@ -120,14 +120,14 @@ namespace oz
      * life
      */
 
-    life            = config->get( "life", 100.0f );
-    damageThreshold = config->get( "damageThreshold", 100.0f );
+    life       = config->get( "life", 100.0f );
+    resistance = config->get( "resistance", 100.0f );
 
     if( life <= 0.0f ) {
       throw Exception( "Invalid object life. Should be > 0." );
     }
-    if( damageThreshold < 0.0f ) {
-      throw Exception( "Invalid object damageThreshold. Should be >= 0." );
+    if( resistance < 0.0f ) {
+      throw Exception( "Invalid object resistance. Should be >= 0." );
     }
 
     /*
@@ -238,11 +238,12 @@ namespace oz
 
   void ObjectClass::fillCommonFields( Object* obj ) const
   {
-    obj->dim      = dim;
-    obj->flags    = flags;
-    obj->oldFlags = flags;
-    obj->clazz    = this;
-    obj->life     = life;
+    obj->dim        = dim;
+    obj->flags      = flags;
+    obj->oldFlags   = flags;
+    obj->clazz      = this;
+    obj->life       = life;
+    obj->resistance = resistance;
 
     for( int i = 0; i < items.length(); ++i ) {
       int index = synapse.addObject( items[i], Point3::ORIGIN, NORTH );
@@ -286,8 +287,8 @@ namespace oz
 
     hard_assert( obj->index == -1 && obj->cell == null );
 
-    obj->p     = pos;
-    obj->index = index;
+    obj->p          = pos;
+    obj->index      = index;
 
     fillCommonFields( obj );
 
@@ -304,12 +305,12 @@ namespace oz
   {
     Object* obj = new Object();
 
-    obj->index = index;
-    obj->clazz = this;
+    obj->dim        = dim;
+    obj->index      = index;
+    obj->clazz      = this;
+    obj->resistance = resistance;
 
     obj->readFull( istream );
-
-    obj->dim   = dim;
 
     Heading heading = Heading( obj->flags & Object::HEADING_MASK );
     if( heading == WEST || heading == EAST ) {

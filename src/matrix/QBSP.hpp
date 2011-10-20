@@ -30,6 +30,9 @@ namespace oz
       static const int QBSP_NONSOLID_FLAG_BIT = 0x00004000;
       static const int QBSP_WATER_TYPE_BIT    = 0x00000020;
 
+      static const float DEFAULT_LIFE;
+      static const float DEFAULT_RESISTANCE;
+
       struct QBSPHeader
       {
         char id[4];
@@ -166,7 +169,7 @@ namespace oz
       String  name;
 
       float   life;
-      float   damageTreshold;
+      float   resistance;
 
       int     nPlanes;
       int     nNodes;

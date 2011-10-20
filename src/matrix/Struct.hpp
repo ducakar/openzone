@@ -70,6 +70,7 @@ namespace oz
       const BSP* bsp;
       Heading    heading;
       float      life;
+      float      resistance;
 
       int        nEntities;
       Entity*    entities;
@@ -142,32 +143,38 @@ namespace oz
 
   };
 
+  OZ_ALWAYS_INLINE
   inline Vec3 Struct::toStructCS( const Vec3& v ) const
   {
     return invRotations[heading] * v;
   }
 
+  OZ_ALWAYS_INLINE
   inline Vec3 Struct::toAbsoluteCS( const Vec3& v ) const
   {
     return rotations[heading] * v;
   }
 
+  OZ_ALWAYS_INLINE
   inline Point3 Struct::toStructCS( const Point3& point ) const
   {
     return Point3::ORIGIN + invRotations[heading] * ( point - p );
   }
 
+  OZ_ALWAYS_INLINE
   inline Point3 Struct::toAbsoluteCS( const Point3& point ) const
   {
     return p + rotations[heading] * ( point - Point3::ORIGIN );
   }
 
+  OZ_ALWAYS_INLINE
   inline void Struct::damage( float damage )
   {
-    damage -= bsp->damageTreshold;
+    damage -= resistance;
 
     if( damage > 0.0f ) {
       life -= damage;
+      printf( "%g\n", life );
     }
   }
 
